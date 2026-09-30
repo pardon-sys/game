@@ -58,6 +58,9 @@ const TYPED_SCENES := {
 		"feather": "res://scenes/traps/feather_trap.tscn",
 		"vent": "res://scenes/traps/powder_vent.tscn",
 		"brush": "res://scenes/traps/feather_brush.tscn",
+		"vine": "res://scenes/traps/tickle_vine.tscn",
+		"fan": "res://scenes/traps/feather_fan.tscn",
+		"conveyor": "res://scenes/traps/tickle_conveyor.tscn",
 	},
 	## 装在墙面格上的陷阱
 	"walltrap": {"hand": "res://scenes/traps/grab_hand.tscn"},
@@ -339,6 +342,11 @@ func _spawn(kind: String, info: Dictionary, x: int, y: int) -> Node2D:
 				prop = "required_key"
 				value = ItemDB.get_item(value)
 			["trap", "speed"]: prop = "spin_speed"
+			["trap", "len"]: prop = "length"
+			["trap", "lever"], ["walltrap", "lever"]:
+				# 受哪个拉杆组控制：加入该组
+				inst.add_to_group(str(value), true)
+				continue
 			["walltrap", "group"]: prop = "group_name"
 			["exit", "target"]:
 				prop = "target_level"

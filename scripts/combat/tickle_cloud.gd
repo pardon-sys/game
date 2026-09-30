@@ -17,6 +17,9 @@ var drift := Vector2.ZERO
 ## 星光爆发判定时额外的半径（雾有自己的大小）。
 var magic_radius := 0.0
 var blown := false
+## 被风扇卷起（粉末旋风）：挠到公主时触发这个组合技。
+var combo_id := ""
+var whirled := false
 
 var _age := 0.0
 var _tick := 0.0
@@ -47,6 +50,18 @@ func on_magic_burst(tier: int, caster: Node) -> void:
 	_age = maxf(_age, duration - 0.3)
 
 
+## 粉末旋风：被风扇卷起后顺风飘、变大、多停留一会儿。
+func whirl(wind: Vector2, grow: float, extra_time: float, id: String) -> void:
+	if whirled or blown:
+		drift = wind
+		return
+	whirled = true
+	drift = wind
+	combo_id = id
+	duration += extra_time
+	set_radius(radius * grow)
+
+
 ## 调整半径（粉末旋风：顺风变大）。
 func set_radius(r: float) -> void:
 	radius = r
@@ -66,7 +81,9 @@ func _physics_process(delta: float) -> void:
 		_tick = interval
 		for body in get_overlapping_bodies():
 			if _affects(body) and Contracts.is_tickleable(body):
-				body.receive_hit(HitData.make_tickle(self, tickle))
+				if body.receive_hit(HitData.make_tickle(self, tickle)) and combo_id != "" \
+						and body is PlayableCharacter and (body as PlayableCharacter).combo:
+					(body as PlayableCharacter).combo.trigger(combo_id, self)
 	if _age >= duration:
 		queue_free()
 	queue_redraw()

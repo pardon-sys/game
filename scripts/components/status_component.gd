@@ -128,6 +128,10 @@ func extend_root(extra: float) -> void:
 	apply_root(_root_time + extra)
 
 
+func clear_root() -> void:
+	_root_time = 0.0
+
+
 func is_rooted() -> bool:
 	return _root_time > 0.0
 

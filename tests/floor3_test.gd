@@ -25,6 +25,7 @@ func _ready() -> void:
 	await _run_status_effects()
 	await _run_combos()
 	await _run_new_monsters()
+	await _run_new_traps()
 	print("\n==== %s (%d 项失败) ====" % ["全部通过" if failures == 0 else "有失败", failures])
 	get_tree().quit(1 if failures else 0)
 
@@ -70,6 +71,14 @@ func _run_floor1_rooms() -> void:
 	var rack: Node = _find("Rack_38_37")
 	rack.receive_hit(HitData.make_attack(player, 1, 0.0))
 	await _wait(0.5)
+	var barrel: Node2D = load("res://scenes/objects/barrel.tscn").instantiate()
+	level.get_node("Entities").add_child(barrel)
+	barrel.global_position = player.global_position + Vector2(-14, 0)
+	player.facing = Vector2.LEFT
+	await _wait(0.1)
+	player.attack()
+	await _wait(0.35)
+	check("挥杖真的能打碎木桶（静态物体命中）", not is_instance_valid(barrel))
 	check("武器架可以打碎", not is_instance_valid(rack) or rack.is_queued_for_deletion())
 	check("兵器库宝箱放着心", _find("Chest_48_42").item.id == "heart")
 
@@ -611,6 +620,110 @@ func _run_new_monsters() -> void:
 	check("触手怪倒下打开 Boss 房的门", gate.is_open)
 	gate.queue_free()
 	player.status.clear()
+	_reset_magic()
+
+
+# ------------------------------------------------------------------ 新陷阱
+func _spawn_trap(file: String, offset: Vector2, props := {}) -> Trap:
+	var t: Trap = load("res://scenes/traps/%s.tscn" % file).instantiate()
+	for k in props:
+		t.set(k, props[k])
+	level.get_node("FloorObjects").add_child(t)
+	t.global_position = player.global_position + offset
+	return t
+
+
+func _run_new_traps() -> void:
+	print("-- 新陷阱")
+	_reset_magic()
+	player.combo.reset()
+	# 痒痒藤蔓
+	var vine: TickleVine = _spawn_trap("tickle_vine", Vector2(0, 30))
+	await _wait(0.1)
+	player.global_position = vine.global_position
+	await _wait(0.2)
+	check("踩到藤蔓：缠住脚（定身）", player.status.is_rooted() and vine.is_dangerous())
+	await _wait(0.6)
+	check("缠住期间持续挠痒", player.laugh.value >= 11.0)
+	player.facing = Vector2.DOWN
+	player.global_position = vine.global_position + Vector2(0, -14)
+	player.status.clear_root()
+	await _wait(0.1)
+	player.attack()
+	await _wait(0.35)
+	check("权杖砍断藤蔓", vine.is_cut() and not vine.cleared and not vine.active)
+	vine.cut_left = 0.05
+	await _wait(0.15)
+	check("砍断后会长回来", not vine.is_cut() and vine.active)
+	_reset_magic()
+	StarBurst.cast(player, 3)
+	check("满蓄力星光清除藤蔓，不再长回", vine.cleared)
+	vine.queue_free()
+
+	# 羽毛风扇
+	_reset_magic()
+	await _wait(0.1)
+	var fan: FeatherFan = _spawn_trap("feather_fan", Vector2(-24, 0), {"dir": "right", "length": 5})
+	fan.add_to_group("fan_test_lever")
+	await _wait(0.1)
+	var x0 := player.global_position.x
+	await _wait(0.6)
+	check("风扇把风道里的公主往外推", player.global_position.x - x0 > 20.0)
+	check("风里的羽毛轻挠", player.laugh.value > 0.0)
+	_reset_magic()
+	player.global_position = fan.global_position + Vector2(24, 0)
+	var cloud := TickleCloud.new()
+	cloud.duration = 3.0
+	level.get_node("Entities").add_child(cloud)
+	cloud.global_position = fan.global_position + Vector2(40, 0)
+	var r0 := cloud.radius
+	await _wait(0.1)
+	check("粉末旋风：粉雾顺风飘、变大", cloud.whirled and cloud.radius > r0 and cloud.drift.x > 0.0)
+	player.combo.reset()
+	player.global_position = cloud.global_position
+	var fired := [false]
+	var on_fire := func(id: String):
+		if id == "powder_whirlwind":
+			fired[0] = true
+	player.combo.triggered.connect(on_fire)
+	await _wait(0.6)
+	check("旋风粉雾挠到公主触发粉末旋风", fired[0])
+	player.combo.triggered.disconnect(on_fire)
+	cloud.queue_free()
+	var lever: Node = load("res://scenes/objects/lever.tscn").instantiate()
+	lever.target = "fan_test_lever"
+	level.get_node("Entities").add_child(lever)
+	lever.global_position = player.global_position + Vector2(0, 60)
+	lever.on_interact(player)
+	check("拉杆关掉风扇", not fan.active and not fan.is_dangerous())
+	_reset_magic()
+	player.global_position = fan.global_position + Vector2(24, 0)
+	x0 = player.global_position.x
+	await _wait(0.4)
+	check("关掉后不再推人", absf(player.global_position.x - x0) < 2.0)
+	lever.queue_free()
+	fan.queue_free()
+
+	# 痒痒传送带
+	_reset_magic()
+	player.global_position += Vector2(0, -8)
+	var conveyor: TickleConveyor = _spawn_trap("tickle_conveyor", Vector2(-8, 0), {"dir": "left", "length": 4})
+	await _wait(0.1)
+	x0 = player.global_position.x
+	await _wait(0.5)
+	check("传送带把公主往 dir 方向送", x0 - player.global_position.x > 10.0)
+	check("滚轮轻挠", player.laugh.value > 0.0)
+	var crab := _spawn_monster("pincer_crab", Vector2.ZERO, true)
+	crab.global_position = conveyor.global_position + Vector2(-20, 0)
+	var cx := crab.global_position.x
+	crab.process_mode = Node.PROCESS_MODE_INHERIT
+	crab.stun(1.0)
+	await _wait(0.4)
+	check("怪物也会被传送带送走", crab.global_position.x < cx - 4.0)
+	crab.queue_free()
+	conveyor.set_active(true)
+	check("拉杆能停下传送带", not conveyor.is_dangerous())
+	conveyor.queue_free()
 	_reset_magic()
 
 

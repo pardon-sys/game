@@ -12,7 +12,10 @@
   tentacle_boss.png 32x32 x 2帧 痒痒触手怪本体（放大 2 倍显示）
   tentacle.png      8x8 x 3    触手：节、尖端（带小羽毛）、吸盘节
   strike_mark.png   16x8 x 2   触手落点预警
-其余第三层素材见本文件后续函数。
+  vine.png          16x16 x 3  痒痒藤蔓：潜伏 / 缠绕 / 被砍断
+  fan.png           16x16 x 2  羽毛风扇（叶片转动）
+  wind_feather.png  5x5        风里的小羽毛粒子
+  conveyor.png      16x16 x 4  传送带（向右，箭头滚动 4 帧；其它方向旋转显示）
 
 用法：python tools/art/gen_expansion.py
 """
@@ -324,6 +327,99 @@ def gen_monsters():
     sheet.save(OUT / "strike_mark.png")
 
 
+# ------------------------------------------------------------------ 第三层陷阱
+LEAF = (110, 190, 90, 255)
+LEAF_L = (160, 220, 120, 255)
+LEAF_D = (60, 120, 60, 255)
+STONE = (139, 155, 180, 255)
+STONE_DK = (82, 96, 124, 255)
+BELT = (70, 64, 80, 255)
+BELT_L = (104, 96, 118, 255)
+ARROW = (255, 200, 120, 255)
+
+
+def vine(frame):
+    img, d = canvas()
+    if frame == 0:      # 潜伏：地上几片叶子
+        for x, y in ((3, 12), (8, 13), (12, 11)):
+            d.line((x, y + 2, x + 1, y), fill=LEAF_D)
+            d.point((x + 2, y), fill=LEAF)
+            d.point((x, y), fill=LEAF_L)
+    elif frame == 1:    # 缠绕：藤蔓卷起
+        d.arc((2, 3, 13, 15), 180, 360, fill=LEAF)
+        d.arc((3, 6, 12, 15), 0, 180, fill=LEAF_D)
+        d.line((4, 15, 6, 4), fill=LEAF)
+        d.line((11, 15, 9, 5), fill=LEAF)
+        for x, y in ((5, 5), (10, 6), (3, 9), (12, 10), (7, 3)):
+            d.point((x, y), fill=LEAF_L)
+            d.point((x + 1, y), fill=LEAF)
+    else:               # 被砍断：残桩
+        for x in (4, 8, 11):
+            d.line((x, 15, x, 13), fill=LEAF_D)
+            d.point((x, 12), fill=(210, 190, 120, 255))
+    return add_outline(img) if frame else img
+
+
+def fan(frame):
+    img, d = canvas()
+    d.rectangle((3, 10, 12, 15), fill=STONE_DK)           # 底座
+    d.rectangle((4, 10, 11, 11), fill=STONE)
+    d.ellipse((2, 1, 13, 12), fill=STONE)                 # 外框
+    d.ellipse((3, 2, 12, 11), fill=(60, 52, 72, 255))
+    c = (7.5, 6.5)
+    import math
+    for i in range(3):
+        a = i * 2 * math.pi / 3 + frame * math.pi / 3
+        x = c[0] + math.cos(a) * 4
+        y = c[1] + math.sin(a) * 4
+        d.line((round(c[0]), round(c[1]), round(x), round(y)), fill=PINK_F)
+        d.point((round(x), round(y)), fill=WHITE_F)
+    d.point((7, 6), fill=STAR)
+    return add_outline(img)
+
+
+PINK_F = (255, 170, 214, 255)
+
+
+def wind_feather():
+    img, d = canvas(5, 5)
+    d.line((0, 4, 4, 0), fill=WHITE_F)
+    d.point((1, 2), fill=PINK_F)
+    d.point((2, 3), fill=PINK_F)
+    return img
+
+
+def conveyor(frame):
+    img, d = canvas()
+    d.rectangle((0, 1, 15, 14), fill=BELT)
+    d.line((0, 1, 15, 1), fill=BELT_L)
+    d.line((0, 14, 15, 14), fill=STONE_DK)
+    for y in (3, 12):                                   # 滚轮边
+        for x in range(0, 16, 4):
+            d.point(((x + frame) % 16, y), fill=BELT_L)
+    for k in range(2):                                  # 滚动的箭头
+        x = (k * 8 + frame * 2) % 16
+        d.line((x, 5, x + 2, 7), fill=ARROW)
+        d.line((x + 2, 8, x, 10), fill=ARROW)
+    return img
+
+
+def gen_traps():
+    sheet = blank(48, 16)
+    for f in range(3):
+        sheet.alpha_composite(vine(f), (f * 16, 0))
+    sheet.save(OUT / "vine.png")
+    sheet = blank(32, 16)
+    for f in range(2):
+        sheet.alpha_composite(fan(f), (f * 16, 0))
+    sheet.save(OUT / "fan.png")
+    wind_feather().save(OUT / "wind_feather.png")
+    sheet = blank(64, 16)
+    for f in range(4):
+        sheet.alpha_composite(conveyor(f), (f * 16, 0))
+    sheet.save(OUT / "conveyor.png")
+
+
 def gen_floor_expansion():
     weapon_rack().save(OUT / "weapon_rack.png")
     secret_crack().save(OUT / "secret_crack.png")
@@ -333,6 +429,7 @@ def main():
     gen_floor_expansion()
     gen_magic()
     gen_monsters()
+    gen_traps()
 
 
 if __name__ == "__main__":

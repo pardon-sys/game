@@ -103,6 +103,15 @@ func is_dangerous() -> bool:
 	return active and phase == Phase.ACTIVE
 
 
+## 地图参数 dir=left/right/up/down → 方向向量。
+static func dir_vector(d: String) -> Vector2:
+	match d:
+		"left": return Vector2.LEFT
+		"up": return Vector2.UP
+		"down": return Vector2.DOWN
+	return Vector2.RIGHT
+
+
 # ------------------------------------------------------------------ 效果
 func _victims() -> Array:
 	var out := []
