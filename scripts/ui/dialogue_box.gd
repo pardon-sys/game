@@ -49,6 +49,9 @@ var _portrait_override: Texture2D
 var _wide := false
 var _wide_frame: Panel
 var _frame_tween: Tween
+var _shake_tween: Tween
+## 横版大框的基准位置（抖动围绕它进行）。
+var _wide_rect := Rect2()
 const PORTRAIT_RECT := Rect2(2, 114, 114, 152)
 const WIDE_POS := Vector2(4, 6)
 const WIDE_HEIGHT := 180.0
@@ -190,6 +193,30 @@ func is_portrait_wide() -> bool:
 	return _wide
 
 
+## 横版 CG 图随挠痒抖动（大框和图片一起，几个像素的来回晃动，结束后回到原位）。
+func shake_portrait(strength := 2.0, time := 0.2) -> void:
+	if not _wide:
+		return
+	if _frame_tween and _frame_tween.is_running():
+		return  # 大框正在展开，展开完再抖
+	if _shake_tween:
+		_shake_tween.kill()
+	var base := _wide_rect.position
+	_shake_tween = create_tween()
+	var steps := maxi(2, int(time / 0.04))
+	for i in steps:
+		var fade := 1.0 - float(i) / steps
+		var off := Vector2(randf_range(-1, 1), randf_range(-1, 1)).normalized() * strength * fade
+		off = off.round()
+		_shake_tween.tween_callback(func():
+			portrait.position = base + off
+			_wide_frame.position = base + off - Vector2(2, 2))
+		_shake_tween.tween_interval(0.04)
+	_shake_tween.tween_callback(func():
+		portrait.position = base
+		_wide_frame.position = base - Vector2(2, 2))
+
+
 func _set_wide(on: bool, tex: Texture2D) -> void:
 	_wide = on
 	if _wide_frame == null:
@@ -206,6 +233,8 @@ func _set_wide(on: bool, tex: Texture2D) -> void:
 		_wide_frame.hide()
 	if _frame_tween:
 		_frame_tween.kill()
+	if _shake_tween:
+		_shake_tween.kill()
 	if _portrait_tween:
 		_portrait_tween.kill()
 	portrait.scale = Vector2.ONE
@@ -214,6 +243,7 @@ func _set_wide(on: bool, tex: Texture2D) -> void:
 	if on:
 		var size := tex.get_size()
 		rect = Rect2(WIDE_POS, Vector2(roundf(WIDE_HEIGHT * size.x / size.y), WIDE_HEIGHT))
+		_wide_rect = rect
 		_wide_frame.position = rect.position - Vector2(2, 2)
 		_wide_frame.size = rect.size + Vector2(4, 4)
 		_wide_frame.modulate.a = 0.0

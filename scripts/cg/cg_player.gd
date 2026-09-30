@@ -434,6 +434,8 @@ func _act(a: Dictionary) -> float:
 		"shake":
 			t = t if t > 0.0 else 0.3
 			who.shake(t)
+			if who.kind == "princess":
+				Dialogue.shake_portrait(3.0, t)
 		"face":
 			who.set_dir(str(a.get("dir", "down")))
 		"pose":
@@ -456,6 +458,8 @@ func _act(a: Dictionary) -> float:
 						return
 					Audio.play("tickle", -3.0, 0.1, by.tickle_pitch if is_instance_valid(by) else 1.0)
 					who.shake(0.2)
+					if who.kind == "princess":
+						Dialogue.shake_portrait()  # 第三幕的横版 CG 图跟着挠痒一起抖
 					_spawn_fx(who, fx))
 				tw.tween_interval(every)
 			tw.tween_callback(func():

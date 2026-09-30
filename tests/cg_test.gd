@@ -142,6 +142,13 @@ func _run_playback() -> void:
 				checks_done["wide"] = Dialogue.is_portrait_wide() and Dialogue.current_portrait() == tex \
 					and Dialogue.portrait.size.is_equal_approx(Vector2(roundf(180.0 * tex.get_width() / tex.get_height()), 180.0))
 				checks_done["stage_right"] = CG.view.position.x > 200.0
+				# 挠痒时横版 CG 图抖动：采样一段时间内的位置，应该偏离过基准位置
+				var moved := false
+				for k in 20:
+					await get_tree().process_frame
+					if not Dialogue.portrait.position.is_equal_approx(Dialogue.WIDE_POS):
+						moved = true
+				checks_done["cg_shake"] = moved
 		if Dialogue.is_active():
 			Dialogue.advance()
 			Dialogue.advance()
@@ -151,12 +158,15 @@ func _run_playback() -> void:
 	check("第 4 步：镜头拉近、笑声响起", checks_done.get("zoom", false) and checks_done.get("voice", false))
 	check("第三幕：立绘框变成横版大框，显示史莱姆 CG 图（原比例）", checks_done.get("wide", false))
 	check("第三幕：舞台镜头移到右侧继续演", checks_done.get("stage_right", false))
+	check("第三幕：CG 图随挠痒抖动", checks_done.get("cg_shake", false))
 	check("CG 播完", not CG.is_playing() and seen.size() == CG.cgs()["death_slime"]["steps"].size())
 	await _wait(0.4)
 	check("CG 结束后在检查点复活", player.is_alive() and player.global_position.distance_to(checkpoint) < 4.0)
 	check("复活后满血、闷笑值清零", player.health.hp == player.health.max_hp and player.laugh.value == 0.0)
 	check("复活后恢复控制、立绘恢复", not GameState.in_dialogue and not GameState.in_cutscene and not Dialogue.has_portrait_override()
 		and not Dialogue.is_portrait_wide())
+	await _wait(0.3)
+	check("立绘框回到原位", Dialogue.portrait.position.is_equal_approx(Dialogue.PORTRAIT_RECT.position))
 	check("CG 后不再弹复活对话", not Dialogue.is_active())
 	check("记录为看过", GameState.has_flag("cg_seen_death_slime"))
 	slime.queue_free()
