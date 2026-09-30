@@ -27,6 +27,7 @@ func _ready() -> void:
 	await _run_playback()
 	await _run_skip()
 	await _run_other_deaths()
+	await _run_real_monsters()
 	_run_portrait_interface()
 	print("\n==== %s (%d 项失败) ====" % ["全部通过" if failures == 0 else "有失败", failures])
 	get_tree().quit(1 if failures else 0)
@@ -91,7 +92,7 @@ func _run_playback() -> void:
 	player.laugh.set_value(148.0)
 	slime._action_cd = 0.0
 	slime.tickle(player)
-	check("被史莱姆挠到笑倒", not player.is_alive() and player.died_from_laugh and player.last_tickle_key == "slime")
+	check("被史莱姆挠到笑倒", not player.is_alive() and player.died_from_laugh and player.defeat_source_key() == "slime")
 	check("开始播放史莱姆的笑倒 CG", await _wait_playing() and CG.current == "death_slime")
 	check("CG 期间游戏冻结", GameState.in_dialogue and GameState.in_cutscene)
 	check("舞台上有公主和史莱姆两个演员", CG.actors.has("princess") and CG.actors.has("foe") and CG.actors["foe"].reaction_key == "slime")
@@ -179,6 +180,78 @@ func _run_other_deaths() -> void:
 	check("照常复活并播复活对话", player.is_alive() and Dialogue.is_active())
 	_finish_dialogue()
 	foe.queue_free()
+
+
+# ------------------------------------------------------------------ 真实怪物 AI 挠到倒下
+const MONSTER_SCENES := {
+	"slime": "slime", "bat": "feather_bat", "ghost": "tickle_ghost", "spider": "tickle_spider",
+	"troll": "tickle_troll", "rat": "foot_rat", "crab": "pincer_crab", "split_slime": "split_slime",
+	"mimic": "mimic", "fairy": "fairy_swarm", "tentacle": "tentacle_boss",
+}
+
+
+func _skip_cg() -> void:
+	CG._can_skip = true
+	CG.skip()
+	await _wait(0.7)
+	_finish_dialogue()
+	await _wait(0.2)
+
+
+func _run_real_monsters() -> void:
+	print("-- 真实怪物 AI：每种怪物挠到公主倒下都播对应 CG")
+	var spot := Vector2(31 * 16 + 8, 23 * 16 + 12)   # 第一层守卫室中间，空间够大
+	for key in MONSTER_SCENES:
+		player.revive()
+		player.global_position = spot
+		player.camera.reset_smoothing()
+		player._full_invuln = 0.0
+		player._attack_invuln = 0.0
+		var m: Monster = load("res://scenes/actors/monsters/%s.tscn" % MONSTER_SCENES[key]).instantiate()
+		main.level.get_node("Entities").add_child(m)
+		m.global_position = spot + (Vector2(0, -60) if key == "tentacle" else Vector2(18, 0))
+		await _wait(0.1)
+		if m is Mimic:
+			(m as Mimic).on_interact(player)
+		# 公主剩 1 点血、闷笑值接近满、已经失控：接下来无论是挠痒还是普通攻击让她倒下，都算笑倒
+		player.health.damage(player.health.hp - 1)
+		player.laugh.set_value(140.0)
+		var t := 0.0
+		while player.is_alive() and t < 25.0:
+			await _wait(0.2)
+			t += 0.2
+			player._attack_invuln = 0.0
+			if player.is_alive() and player.laugh.value < 147.0:
+				player.laugh.set_value(147.0)  # 模拟一直被挠：下一下挠痒就会溢出，只看怪物自己的那一下能不能触发 CG
+		var playing := await _wait_playing(3.0)
+		check("%s 挠到倒下 → 播 %s 的 CG（实际：%s，%.1f 秒）" % [key, key, CG.current, t], playing and CG.current == "death_" + key)
+		if is_instance_valid(m):
+			m.queue_free()
+		for c in main.level.get_node("Entities").get_children():
+			if c is Monster and c.process_mode != Node.PROCESS_MODE_DISABLED:
+				c.queue_free()  # 分裂出来的小史莱姆、召唤的精灵
+		if CG.is_playing():
+			await _skip_cg()
+
+	print("-- 最后一下是普通攻击")
+	player.revive()
+	player.global_position = spot
+	var slime: Monster = load("res://scenes/actors/monsters/slime.tscn").instantiate()
+	main.level.get_node("Entities").add_child(slime)
+	slime.global_position = spot + Vector2(14, 0)
+	slime.process_mode = Node.PROCESS_MODE_DISABLED
+	player._full_invuln = 0.0
+	player._attack_invuln = 0.0
+	player.health.damage(player.health.hp - 1)
+	player.laugh.set_value(90.0)
+	slime.tickle(player)
+	player._attack_invuln = 0.0
+	slime._action_cd = 0.0
+	slime.attack(player)
+	check("失控时被普通攻击打倒", not player.is_alive() and not player.died_from_laugh and player.is_laugh_defeat())
+	check("仍然播史莱姆的笑倒 CG", await _wait_playing() and CG.current == "death_slime")
+	await _skip_cg()
+	slime.queue_free()
 
 
 func _run_portrait_interface() -> void:

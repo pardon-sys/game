@@ -41,6 +41,10 @@ var last_hit: HitData
 var died_from_laugh := false
 ## 最近一次挠痒（在加闷笑值之前记录：致命的那一下也能查到是谁挠的）。
 var last_tickle: HitData
+## 最近一次挠痒的时间（秒，Time.get_ticks_msec 换算）。
+var last_tickle_time := -INF
+## 死前这么多秒内被挠过，也算"笑倒"（最后一下是普通攻击时）。
+const LAUGH_DEFEAT_WINDOW := 2.0
 var _attack_invuln := 0.0
 var _full_invuln := 0.0
 var _dead := false
@@ -89,6 +93,7 @@ func receive_hit(hit: HitData) -> bool:
 				apply_knockback(hit.origin, hit.knockback)
 			hit.tickle *= _tickle_multiplier(hit)
 			last_tickle = hit
+			last_tickle_time = Time.get_ticks_msec() / 1000.0
 			laugh.add(hit.tickle)
 			if not _dead:
 				_on_tickled(hit)
@@ -188,9 +193,23 @@ func nearest_hostile(max_range := INF) -> Actor:
 	return best
 
 
+## 这次倒下算不算"笑倒"：闷笑值溢出致死，或死时正在失控 / 被抓住 / 刚被挠过痒。
+## （笑到失控时怪物常用普通攻击扣掉最后一点血，也要算笑倒。）
+func is_laugh_defeat() -> bool:
+	if died_from_laugh:
+		return true
+	if laugh and laugh.value > laugh.helpless_threshold:
+		return true
+	if status and status.is_grabbed():
+		return true
+	return Time.get_ticks_msec() / 1000.0 - last_tickle_time <= LAUGH_DEFEAT_WINDOW
+
+
 func revive() -> void:
 	_dead = false
 	died_from_laugh = false
+	last_tickle = null
+	last_tickle_time = -INF
 	if status:
 		status.clear()
 	if health:
