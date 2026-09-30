@@ -1,0 +1,29 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/traps/stocks.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/generated/stocks.png" id="tex"]
+
+[sub_resource type="RectangleShape2D" id="area"]
+size = Vector2(10, 10)
+
+[node name="Stocks" type="Area2D"]
+collision_layer = 0
+collision_mask = 2
+monitorable = false
+script = ExtResource("1")
+reaction_key = "stocks"
+trigger_mode = 1
+hit_kind = 1
+damage = 0
+tickle = 4.0
+tickle_pitch = 1.3
+warn_time = 0.0
+active_time = 0.3
+cooldown_time = 2.5
+
+[node name="Sprite" type="Sprite2D" parent="."]
+texture = ExtResource("tex")
+hframes = 2
+
+[node name="Shape" type="CollisionShape2D" parent="."]
+shape = SubResource("area")

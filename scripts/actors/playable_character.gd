@@ -491,6 +491,9 @@ func fatigue_burst() -> void:
 	FatiguePuddle.spawn(get_parent(), global_position)
 	add_buff("fatigue_scar", -1.0)
 	shake(0.3)
+	# 魔力反噬：爆发时身边有怪物（在爆发台词之前触发，让公主最后说的是爆发台词）
+	if combo and not combo.monsters_near(StarBurst.FATIGUE["radius"] + 24.0).is_empty():
+		combo.trigger("mana_backlash", self)
 	magic_event.emit("fatigue_burst", 0)
 
 

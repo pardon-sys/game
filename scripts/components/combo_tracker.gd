@@ -7,6 +7,8 @@ extends Node
 ##                                        force_effects = true 时冷却中也施加效果（只是不再弹横幅）
 ##   hit_multiplier(hit)                  条件型"本次挠痒倍率"（趁手打劫），由角色的 _tickle_multiplier 调用
 ## 组合技自己造成的额外挠痒 / 余痒来源是本节点，reaction_key 为空，不会被再次记录。
+## 条件型：狂热连击（被带狂热 / 力量增益的怪物暴击）在这里检测；魔力反噬（疲倦爆发时身边有怪物）由
+## PlayableCharacter.fatigue_burst 调用 trigger("mana_backlash")。
 
 signal triggered(id: String)
 
@@ -77,6 +79,8 @@ func _on_tickled(hit: HitData) -> void:
 	var key := ReactionDB.key_of(hit.source)
 	if key == "":
 		return
+	if hit.special and hit.source is Monster and ((hit.source as Monster).has_buff("frenzy") or (hit.source as Monster).has_buff("strength")):
+		trigger("frenzy_strike", hit.source)
 	_recent.append({"key": key, "time": _time, "source": hit.source})
 	var since := _time - window()
 	_recent = _recent.filter(func(e: Dictionary): return e["time"] >= since)
@@ -197,3 +201,30 @@ func _apply_effects(c: Dictionary, source: Node) -> void:
 			"pull":
 				if st and source is Node2D:
 					st.add_pull(source, float(e["speed"]), float(e["duration"]))
+			"fatigue":
+				var pc := _actor as PlayableCharacter
+				if pc and pc.fatigue and MagicFatigue.accumulate:
+					pc.fatigue.add(float(e["amount"]))
+			"debuff":
+				_actor.add_buff(str(e["buff"]), float(e.get("duration", -2.0)))
+			"seal":
+				_actor.add_buff("sealed", float(e["duration"]))
+			"special_next":
+				_actor.forced_specials += int(e.get("count", 1))
+			"buff_monsters":
+				for m in monsters_near(float(e.get("radius", 96.0))):
+					m.add_buff(str(e["buff"]), float(e.get("duration", -2.0)))
+			"puddle":
+				FatiguePuddle.spawn(_actor.get_parent(), _actor.global_position, float(e.get("life", 12.0)), float(e.get("radius", 20.0)))
+
+
+## 角色身边 radius 内活着的怪物。
+func monsters_near(radius: float) -> Array[Monster]:
+	var out: Array[Monster] = []
+	if _actor == null:
+		return out
+	for n in _actor.get_tree().get_nodes_in_group("enemy"):
+		var m := n as Monster
+		if m and m.is_alive() and m.global_position.distance_to(_actor.global_position) <= radius:
+			out.append(m)
+	return out

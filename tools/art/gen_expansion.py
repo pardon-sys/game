@@ -20,6 +20,8 @@
   bubble_fish.png   16x16 x 2  泡泡鱼                 bubble_shot.png 8x8 x 2 泡泡   bubble_cage.png 24x24 泡泡牢笼
   ghost_glove.png   16x16 x 2  幽灵手套               hedgehog.png 16x16 x 4 刷刷刺猬（走 2 帧 / 蜷缩 / 滚动）
   mana_drop.png     4x6        魔力雨滴
+  totem.png 16x24 x 3（亮 2 帧 / 碎）  hex_rune.png 16x16 x 3（待机 / 发光 / 冷却）  stocks.png 16x16 x 2（开 / 合）
+  carpet.png 16x16 x 2 黏黏毛毯       feather_arm.png 16x16 x 4（装置 / 预警 / 手臂节 / 羽毛尖，朝右）
 
 用法：python tools/art/gen_expansion.py
 """
@@ -720,6 +722,118 @@ def gen_floor4_monsters():
     mana_drop().save(OUT / "mana_drop.png")
 
 
+# ------------------------------------------------------------------ 第四层陷阱
+TOTEM = (150, 90, 70, 255)
+TOTEM_D = (96, 56, 48, 255)
+FLAME = (255, 140, 60, 255)
+FLAME_L = (255, 226, 120, 255)
+RUNE = (200, 90, 220, 255)
+RUNE_L = (255, 180, 255, 255)
+CARPET = (246, 150, 196, 255)
+CARPET_D = (214, 104, 160, 255)
+GOO = (255, 200, 230, 255)
+
+
+def totem(frame):
+    img, d = canvas(16, 24)
+    if frame < 2:
+        d.rectangle((4, 6, 11, 22), fill=TOTEM)
+        d.rectangle((4, 13, 11, 14), fill=TOTEM_D)
+        d.rectangle((3, 21, 12, 23), fill=TOTEM_D)
+        # 两张脸：上面生气眉毛，下面张嘴笑
+        d.line((5, 8, 7, 9), fill=EYE_P)
+        d.line((10, 8, 8, 9), fill=EYE_P)
+        d.point((6, 10), fill=FLAME_L)
+        d.point((9, 10), fill=FLAME_L)
+        d.rectangle((6, 17, 9, 19), fill=EYE_P)
+        d.point((7, 18), fill=FLAME)
+        # 头顶火焰
+        h = 1 if frame else 0
+        d.polygon([(5, 6), (8, 0 + h), (11, 6)], fill=FLAME)
+        d.polygon([(7, 6), (8, 3 + h), (9, 6)], fill=FLAME_L)
+    else:                       # 打碎
+        d.rectangle((4, 15, 11, 22), fill=TOTEM_D)
+        d.polygon([(4, 15), (6, 12), (8, 15), (10, 11), (11, 15)], fill=TOTEM)
+        d.rectangle((3, 21, 12, 23), fill=TOTEM_D)
+        d.point((1, 20), fill=TOTEM)
+        d.point((14, 21), fill=TOTEM)
+    return add_outline(img)
+
+
+def hex_rune(frame):
+    img, d = canvas()
+    c = [(120, 70, 140, 200), RUNE, (110, 80, 120, 140)][frame]
+    d.ellipse((1, 3, 14, 12), outline=c)
+    d.polygon([(8, 4), (12, 10), (4, 10)], outline=c)
+    d.point((8, 8), fill=RUNE_L if frame == 1 else c)
+    if frame == 1:
+        d.ellipse((0, 2, 15, 13), outline=RUNE_L)
+        for x, y in ((3, 1), (13, 3), (2, 13), (12, 14)):
+            d.point((x, y), fill=RUNE_L)
+    return img
+
+
+def stocks(frame):
+    img, d = canvas()
+    d.rectangle((1, 9, 14, 13), fill=WOOD)             # 底座
+    d.rectangle((1, 13, 14, 14), fill=WOOD_D)
+    top = 5 if frame == 0 else 8                          # 上面的木枷：张开 / 合上
+    d.rectangle((1, top - 3, 14, top), fill=WOOD_L)
+    d.rectangle((1, top, 14, top), fill=WOOD_D)
+    for x in (4, 11):                                     # 两个脚洞
+        d.ellipse((x - 2, 8, x + 1, 11), fill=WOOD_D)
+    d.rectangle((6, 11, 9, 13), fill=(255, 214, 230, 255))  # 羽毛滚轮
+    d.line((6, 12, 9, 12), fill=WHITE_F)
+    return add_outline(img)
+
+
+def carpet(frame):
+    img, d = canvas()
+    d.rectangle((0, 0, 15, 15), fill=CARPET)
+    for y in range(0, 16, 4):
+        for x in range((y // 4) % 2 * 2, 16, 4):
+            d.point((x, y + 1), fill=CARPET_D)
+    for i, (x, y) in enumerate(((3, 4), (11, 9), (6, 12), (13, 2))):
+        if (i + frame) % 2 == 0:
+            d.ellipse((x - 1, y - 1, x + 1, y + 1), fill=GOO)
+        else:
+            d.point((x, y), fill=GOO)
+    return img
+
+
+def feather_arm():
+    """4 格：装置（待机）、装置（预警）、手臂节、羽毛尖。都朝右画，游戏里按方向旋转。"""
+    sheet = blank(64, 16)
+    for k in range(2):
+        img, d = canvas()
+        d.rectangle((0, 3, 8, 12), fill=STEEL_D)
+        d.rectangle((1, 4, 7, 11), fill=STEEL)
+        d.ellipse((8, 5, 13, 10), fill=STEEL_D)
+        d.point((4, 7), fill=(255, 90, 110, 255) if k else EYE_P)
+        d.point((4, 8), fill=(255, 90, 110, 255) if k else EYE_P)
+        sheet.alpha_composite(add_outline(img), (k * 16, 0))
+    img, d = canvas()
+    d.rectangle((0, 6, 15, 9), fill=STEEL)
+    d.line((0, 6, 15, 6), fill=STEEL_D)
+    d.point((8, 8), fill=STEEL_D)
+    sheet.alpha_composite(img, (32, 0))
+    img, d = canvas()
+    d.rectangle((0, 6, 4, 9), fill=STEEL)
+    d.polygon([(4, 7), (15, 2), (13, 8), (15, 13)], fill=WHITE_F)
+    d.line((5, 7, 14, 4), fill=(255, 190, 220, 255))
+    d.line((5, 8, 14, 11), fill=(255, 190, 220, 255))
+    sheet.alpha_composite(add_outline(img), (48, 0))
+    return sheet
+
+
+def gen_floor4_traps():
+    _strip([totem(f) for f in range(3)], 16, 24).save(OUT / "totem.png")
+    _strip([hex_rune(f) for f in range(3)], 16, 16).save(OUT / "hex_rune.png")
+    _strip([stocks(f) for f in range(2)], 16, 16).save(OUT / "stocks.png")
+    _strip([carpet(f) for f in range(2)], 16, 16).save(OUT / "carpet.png")
+    feather_arm().save(OUT / "feather_arm.png")
+
+
 def gen_floor_expansion():
     weapon_rack().save(OUT / "weapon_rack.png")
     secret_crack().save(OUT / "secret_crack.png")
@@ -734,6 +848,7 @@ def main():
     gen_buff_icons()
     gen_fatigue_art()
     gen_floor4_monsters()
+    gen_floor4_traps()
 
 
 if __name__ == "__main__":

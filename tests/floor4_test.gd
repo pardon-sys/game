@@ -31,6 +31,8 @@ func _ready() -> void:
 	await _run_special()
 	await _run_fatigue()
 	await _run_monsters()
+	await _run_traps()
+	await _run_combos()
 	print("\n==== %s (%d 项失败) ====" % ["全部通过" if failures == 0 else "有失败", failures])
 	get_tree().quit(1 if failures else 0)
 
@@ -214,7 +216,9 @@ func _run_fatigue() -> void:
 	check("疲倦满 500 自动爆发：清零", f.value == 0.0)
 	check("爆发用战损释放姿势、原地定住", player.is_casting() and player.emotion.current == "damaged_burst")
 	check("爆发伤害 = 满蓄力的一半（2），半径 72", near.health.hp == 8 and far.health.hp == far.health.max_hp)
-	check("获得一层永久疲倦印记（闷笑积累 +1%）", player.buff_stacks("fatigue_scar") == 1 and is_equal_approx(player.stat_add("laugh_gain"), 0.01))
+	check("获得一层永久疲倦印记（闷笑积累 +1%）", player.buff_stacks("fatigue_scar") == 1
+		and is_equal_approx(player.buffs["fatigue_scar"].modifier("laugh_gain"), 0.01))
+	check("身边有怪物：同时触发魔力反噬", player.has_buff("ticklish"))
 	var puddles := get_tree().get_nodes_in_group("fatigue_puddle")
 	check("原地留下疲倦水液（30 秒）", puddles.size() == 1 and is_equal_approx(puddles[0].lifetime, 30.0)
 		and puddles[0].global_position.distance_to(player.global_position) < 4.0)
@@ -380,6 +384,227 @@ func _run_monsters() -> void:
 	_clear_puddles()
 	GameState.boss_changed.emit(null)
 	Monster.random_specials = true
+	f.clear()
+	_reset()
+
+
+# ------------------------------------------------------------------ 新陷阱
+func _trap(file: String, offset: Vector2, props := {}) -> Node2D:
+	var t: Node2D = load("res://scenes/traps/%s.tscn" % file).instantiate()
+	for k in props:
+		t.set(k, props[k])
+	level.get_node("Entities").add_child(t)
+	t.global_position = player.global_position + offset
+	return t
+
+
+func _run_traps() -> void:
+	print("-- 新陷阱")
+	Monster.random_specials = false
+	var f: MagicFatigue = player.fatigue
+
+	# 狂热图腾
+	_reset()
+	var totem: FrenzyTotem = _trap("frenzy_totem", Vector2(70, 0))
+	var slime := _spawn("slime", Vector2(70, 0), true)
+	slime.stats = slime.stats.duplicate()
+	slime.stats.detect_range = 0.0
+	await _wait(0.5)
+	check("狂热图腾：光环内的怪物获得狂热", slime.has_buff("frenzy"))
+	check("图腾挡路（墙层）", (totem.get_node("Body") as StaticBody2D).collision_layer & 1 == 1)
+	for i in 3:
+		totem.receive_hit(HitData.make_attack(player, 1))
+	check("权杖打三下打碎", totem.broken and not totem.active)
+	await _wait(1.5)
+	check("打碎后狂热消失", not slime.has_buff("frenzy"))
+	slime.queue_free()
+	var totem2: FrenzyTotem = _trap("frenzy_totem", Vector2(24, 0))
+	StarBurst.cast(player, 1)
+	check("1 档星光爆发就能打碎图腾", totem2.broken)
+	await _wait(0.6)
+	totem.queue_free()
+	totem2.queue_free()
+
+	# 诅咒符文
+	_reset()
+	player.laugh.clear()
+	var rune: HexRune = _trap("hex_rune", Vector2.ZERO)
+	await _wait(0.15)
+	check("诅咒符文：易痒诅咒 10 秒", player.has_buff("ticklish") and player.buffs["ticklish"].time_left > 9.5)
+	check("诅咒符文：魔力疲倦 +20", f.value >= 20.0 and f.value < 23.0)
+	check("诅咒符文：轻挠一下（算符文的）", player.last_tickle != null and player.last_tickle.source == rune)
+	await _wait(0.2)
+	check("符文冷却 4 秒", rune.phase == Trap.Phase.COOLDOWN)
+	rune.queue_free()
+	await _wait(0.1)
+
+	# 足枷台
+	_reset()
+	player.laugh.clear()
+	var stocks: Stocks = _trap("stocks", Vector2.ZERO)
+	await _wait(0.15)
+	check("足枷台：踩上去被锁住（抓取）", player.status.is_grabbed_by(stocks))
+	await _wait(0.9)
+	check("羽毛滚轮持续挠脚心", player.laugh.value >= 7.9 and player.last_tickle.source == stocks and not player.last_tickle.special)
+	for i in stocks.lock_presses:
+		player.status.struggle()
+	await _wait(0.1)
+	check("连按 6 次挣脱，挣脱时没有暴击", not player.status.is_grabbed() and not stocks.is_locking() and not player.last_tickle.special)
+	stocks.queue_free()
+	await _wait(0.1)
+	player._full_invuln = 0.0  # 挣脱后的短暂无敌
+	var stocks2: Stocks = _trap("stocks", Vector2.ZERO)
+	await _wait(3.3)
+	check("拖到时间结束：最后一下必定暴击（4 × 2）", not player.status.is_grabbed() and player.last_tickle.source == stocks2
+		and player.last_tickle.special and absf(player.last_tickle.tickle - 8.0) < 0.3)
+	stocks2.queue_free()
+	await _wait(0.1)
+
+	# 黏黏毛毯
+	_reset()
+	player.laugh.clear()
+	var carpet: StickyCarpet = _trap("sticky_carpet", Vector2(-16, -8), {"tiles_w": 3, "tiles_h": 2})
+	check("毛毯按 w/h 铺成多格", carpet._tiles.size() == 6 and ((carpet.get_node("Shape") as CollisionShape2D).shape as RectangleShape2D).size.x == 46.0)
+	await _wait(0.3)
+	check("走上毛毯变黏黏（减速）", player.has_buff("sticky"))
+	await _wait(1.0)
+	check("站着不动超过 1 秒被黏住（定身）", player.status.is_rooted())
+	check("绒毛轻挠（算毛毯的）", player.laugh.value > 0.0 and player.last_tickle.source == carpet)
+	player.laugh.set_value(player.laugh.helpless_threshold + 5.0)
+	var before := player.laugh.value
+	carpet._apply_effect(player)
+	check("失控时挠痒 ×2", absf(player.laugh.value - before - 2.0) < 0.1)
+	carpet.queue_free()
+	player.status.clear_root()
+	await _wait(0.4)
+
+	# 伸缩羽毛臂
+	_reset()
+	player.laugh.clear()
+	var arm: FeatherArm = _trap("feather_arm", Vector2(0, -12), {"dir": "down", "length": 2})
+	await _wait(0.15)
+	check("羽毛臂：有人进入探测区先预警", arm.phase == Trap.Phase.WARN)
+	await _wait(0.35)
+	check("羽毛臂横扫：定身 + 挠痒 8", player.status.is_rooted() and player.last_tickle != null
+		and player.last_tickle.source == arm and absf(player.laugh.value - 8.0) < 0.2)
+	check("扫一次只挠一下", absf(player.laugh.value - 8.0) < 0.2)
+	await _wait(0.3)
+	check("扫完缩回冷却", arm.phase == Trap.Phase.COOLDOWN)
+	arm.queue_free()
+
+	var has_lines := true
+	for k in ["rune", "stocks", "carpet", "arm"]:
+		has_lines = has_lines and not ReactionDB.source(k).is_empty() and not ReactionDB.first_encounter(k).is_empty()
+	check("新陷阱都有台词和首遇对话", has_lines)
+	Monster.random_specials = true
+	f.clear()
+	await _wait(0.3)
+	_reset()
+
+
+# ------------------------------------------------------------------ 组合技扩充
+func _run_combos() -> void:
+	print("-- 组合技扩充")
+	Monster.random_specials = false
+	var f: MagicFatigue = player.fatigue
+	var c: ComboTracker = player.combo
+	var fired: Array = []
+	var on_fired := func(id: String): fired.append(id)
+	c.triggered.connect(on_fired)
+	var slime := _spawn("slime", Vector2(40, 0))
+
+	_reset()
+	c.reset()
+	c.trigger("sole_duet")
+	check("脚心双重奏：下 1 次必暴击", player.forced_specials == 1)
+	c.trigger("sticky_feather")
+	check("黏黏羽毛：黏黏 3 秒", player.has_buff("sticky"))
+	c.trigger("invisible_web")
+	check("无形蛛网：封魔 3 秒", player.has_buff("sealed") and not player.can_cast())
+	c.trigger("fairy_cheer")
+	check("精灵起哄：附近怪物狂热", slime.has_buff("frenzy"))
+	f.clear()
+	c.trigger("tentacle_feet")
+	check("触手按脚：疲倦 +20", f.value >= 20.0)
+	c.trigger("crab_express")
+	check("螃蟹夹送：附近怪物力量", slime.has_buff("strength"))
+	c.trigger("wind_brush")
+	check("风卷刷：易痒", player.has_buff("ticklish"))
+	c.trigger("queen_call")
+	check("女王的召集：脚下生成水液", get_tree().get_nodes_in_group("fatigue_puddle").size() == 1)
+	_clear_puddles()
+	var all_extra := true
+	for id in ["sole_duet", "sticky_feather", "invisible_web", "fairy_cheer", "tentacle_feet", "assembly_line", "vine_sweep",
+			"wind_brush", "crab_express", "vine_rat", "powder_whirlwind", "powdered_bat", "hand_heist"]:
+		var types: Array = ComboTracker.combo_def(id).get("effects", []).map(func(e): return e["type"])
+		if not types.any(func(t): return t in ["fatigue", "debuff", "seal", "special_next", "buff_monsters", "puddle"]):
+			print("    旧组合没有新效果：", id)
+			all_extra = false
+	check("旧的 13 个组合都加了新效果", all_extra)
+
+	# 新的来源组合：两个来源在时间窗口内先后挠到
+	var pairs := {"bubble_bath": ["mana_jelly", "bubble_fish"], "stocks_glove": ["glove", "stocks"],
+		"carpet_roll": ["hedgehog", "carpet"], "hex_sweep": ["arm", "rune"],
+		"bubble_feather": ["bubble_fish", "arm"], "queen_call": ["jelly_queen", "mana_jelly"]}
+	var ok := true
+	for id in pairs:
+		_reset()
+		c.reset()
+		fired.clear()
+		for key in pairs[id]:
+			player.receive_hit(HitData.make_tickle(_src(key), 1.0))
+		if not fired.has(id):
+			print("    没触发：", id, " 实际：", fired)
+			ok = false
+	check("6 个新组合都能由对应来源触发", ok)
+	_clear_puddles()
+	_reset()
+	c.reset()
+	fired.clear()
+	f.clear()
+	player.receive_hit(HitData.make_tickle(_src("mana_jelly"), 1.0))
+	player.receive_hit(HitData.make_tickle(_src("bubble_fish"), 1.0))
+	check("泡泡魔力浴：疲倦 +40、易痒 5 秒", f.value >= 40.0 and player.has_buff("ticklish"))
+
+	# 狂热连击
+	_reset()
+	c.reset()
+	fired.clear()
+	f.clear()
+	slime.clear_buffs(false)
+	slime._action_cd = 0.0
+	slime.tickle(player)
+	check("没有增益的怪物暴击不算狂热连击", not fired.has("frenzy_strike"))
+	slime.add_buff("frenzy", 5.0)
+	player.forced_specials = 1
+	slime._action_cd = 0.0
+	slime.tickle(player)
+	check("被狂热怪物暴击：狂热连击（疲倦 +30，附近怪物力量）", fired.has("frenzy_strike") and f.value >= 30.0 and slime.has_buff("strength"))
+
+	# 魔力反噬
+	_reset()
+	c.reset()
+	fired.clear()
+	slime.clear_buffs(false)
+	slime.health.max_hp = 20
+	slime.health.fill()
+	f.set_value(499.0)
+	player.receive_hit(HitData.make_tickle(_src(""), 10.0))
+	await get_tree().physics_frame
+	check("疲倦爆发时身边有怪物：魔力反噬（怪物力量、公主易痒）", fired.has("mana_backlash")
+		and slime.has_buff("strength") and player.has_buff("ticklish"))
+	await _wait(0.8)
+	var named := true
+	for id in ComboTracker.ids():
+		if str(ReactionDB.combo(id).get("name", "")) == "" or ReactionDB.combo(id).get("lines", []).is_empty():
+			print("    缺名称 / 台词：", id)
+			named = false
+	check("21 个组合技都有名称和台词", named and ComboTracker.ids().size() == 21)
+	c.triggered.disconnect(on_fired)
+	slime.queue_free()
+	_clear_puddles()
+	Monster.random_specials = true
+	player.clear_buffs(false)
 	f.clear()
 	_reset()
 

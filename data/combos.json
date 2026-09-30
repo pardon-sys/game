@@ -5,7 +5,9 @@
 		"condition：条件型组合（不看时间窗口），由代码在特定情况下调用 ComboTracker.trigger(id)。",
 		"effects：burst 额外挠痒 amount；dot 余痒 rate/秒持续 duration；root 定身 duration（extend=true 为延长）；",
 		"multiplier 易痒 value 倍持续 duration；slow 减速到 value 倍持续 duration；pull 拉向来源 speed 持续 duration；",
-		"hit_multiplier 本次挠痒 ×value（条件型用）。名称、说明和公主台词在 princess_reactions.json 的 combos 段。"
+		"hit_multiplier 本次挠痒 ×value（条件型用）；fatigue 魔力疲倦 +amount；debuff 给公主加状态 buff（data/buffs.json）持续 duration；",
+		"seal 封魔 duration 秒；special_next 接下来 count 次挠痒必定暴击；buff_monsters 给 radius 内的怪物加增益 buff 持续 duration；",
+		"puddle 在公主脚下生成疲倦水液（life 秒）。名称、说明和公主台词在 princess_reactions.json 的 combos 段。"
 	],
 	"window": 1.5,
 	"cooldown": 4.0,
@@ -21,7 +23,12 @@
 			"split_slime",
 			"mimic",
 			"fairy",
-			"tentacle"
+			"tentacle",
+			"mana_jelly",
+			"bubble_fish",
+			"glove",
+			"hedgehog",
+			"jelly_queen"
 		],
 		"trap": [
 			"feather",
@@ -30,7 +37,11 @@
 			"hand",
 			"vine",
 			"fan",
-			"conveyor"
+			"conveyor",
+			"rune",
+			"stocks",
+			"carpet",
+			"arm"
 		]
 	},
 	"combos": [
@@ -53,6 +64,10 @@
 				{
 					"type": "root",
 					"duration": 0.8
+				},
+				{
+					"type": "special_next",
+					"count": 1
 				}
 			]
 		},
@@ -72,6 +87,11 @@
 				{
 					"type": "dot",
 					"rate": 3,
+					"duration": 3
+				},
+				{
+					"type": "debuff",
+					"buff": "sticky",
 					"duration": 3
 				}
 			]
@@ -96,6 +116,10 @@
 					"type": "multiplier",
 					"value": 1.5,
 					"duration": 3
+				},
+				{
+					"type": "seal",
+					"duration": 3
 				}
 			]
 		},
@@ -115,6 +139,12 @@
 					"type": "multiplier",
 					"value": 1.3,
 					"duration": 3
+				},
+				{
+					"type": "buff_monsters",
+					"buff": "frenzy",
+					"duration": 5,
+					"radius": 96
 				}
 			]
 		},
@@ -134,6 +164,10 @@
 				{
 					"type": "burst",
 					"amount": 12
+				},
+				{
+					"type": "fatigue",
+					"amount": 20
 				}
 			]
 		},
@@ -153,6 +187,10 @@
 				{
 					"type": "burst",
 					"amount": 10
+				},
+				{
+					"type": "fatigue",
+					"amount": 15
 				}
 			]
 		},
@@ -177,6 +215,10 @@
 					"type": "dot",
 					"rate": 4,
 					"duration": 2
+				},
+				{
+					"type": "special_next",
+					"count": 1
 				}
 			]
 		},
@@ -200,6 +242,11 @@
 					"type": "slow",
 					"value": 0.6,
 					"duration": 2
+				},
+				{
+					"type": "debuff",
+					"buff": "ticklish",
+					"duration": 4
 				}
 			]
 		},
@@ -222,6 +269,12 @@
 				{
 					"type": "root",
 					"duration": 0.6
+				},
+				{
+					"type": "buff_monsters",
+					"buff": "strength",
+					"duration": 6,
+					"radius": 96
 				}
 			]
 		},
@@ -241,6 +294,10 @@
 					"type": "multiplier",
 					"value": 1.5,
 					"duration": 2.5
+				},
+				{
+					"type": "special_next",
+					"count": 1
 				}
 			]
 		},
@@ -248,7 +305,13 @@
 			"id": "powder_whirlwind",
 			"category": "陷阱+陷阱",
 			"condition": "痒痒粉雾飘进羽毛风扇的风道：顺风飘动、变大",
-			"effects": []
+			"effects": [
+				{
+					"type": "debuff",
+					"buff": "ticklish",
+					"duration": 4
+				}
+			]
 		},
 		{
 			"id": "powdered_bat",
@@ -259,6 +322,10 @@
 					"type": "dot",
 					"rate": 2,
 					"duration": 2
+				},
+				{
+					"type": "fatigue",
+					"amount": 10
 				}
 			]
 		},
@@ -270,6 +337,179 @@
 				{
 					"type": "hit_multiplier",
 					"value": 1.5
+				},
+				{
+					"type": "fatigue",
+					"amount": 10
+				}
+			]
+		},
+		{
+			"id": "bubble_bath",
+			"category": "怪+怪",
+			"keys": [
+				[
+					"mana_jelly",
+					"jelly_queen"
+				],
+				[
+					"bubble_fish"
+				]
+			],
+			"effects": [
+				{
+					"type": "fatigue",
+					"amount": 40
+				},
+				{
+					"type": "debuff",
+					"buff": "ticklish",
+					"duration": 5
+				}
+			]
+		},
+		{
+			"id": "stocks_glove",
+			"category": "怪+陷阱",
+			"keys": [
+				[
+					"glove"
+				],
+				[
+					"stocks"
+				]
+			],
+			"effects": [
+				{
+					"type": "special_next",
+					"count": 2
+				},
+				{
+					"type": "root",
+					"duration": 1.0,
+					"extend": true
+				}
+			]
+		},
+		{
+			"id": "carpet_roll",
+			"category": "怪+陷阱",
+			"keys": [
+				[
+					"hedgehog"
+				],
+				[
+					"carpet"
+				]
+			],
+			"effects": [
+				{
+					"type": "burst",
+					"amount": 15
+				},
+				{
+					"type": "debuff",
+					"buff": "sticky",
+					"duration": 3
+				}
+			]
+		},
+		{
+			"id": "hex_sweep",
+			"category": "陷阱+陷阱",
+			"keys": [
+				[
+					"arm"
+				],
+				[
+					"rune"
+				]
+			],
+			"effects": [
+				{
+					"type": "debuff",
+					"buff": "ticklish",
+					"duration": 8
+				},
+				{
+					"type": "fatigue",
+					"amount": 20
+				}
+			]
+		},
+		{
+			"id": "bubble_feather",
+			"category": "怪+陷阱",
+			"keys": [
+				[
+					"bubble_fish"
+				],
+				[
+					"arm"
+				]
+			],
+			"effects": [
+				{
+					"type": "dot",
+					"rate": 4,
+					"duration": 3
+				}
+			]
+		},
+		{
+			"id": "queen_call",
+			"category": "怪+怪",
+			"keys": [
+				[
+					"jelly_queen"
+				],
+				[
+					"mana_jelly"
+				]
+			],
+			"effects": [
+				{
+					"type": "burst",
+					"amount": 20
+				},
+				{
+					"type": "puddle",
+					"life": 12
+				}
+			]
+		},
+		{
+			"id": "frenzy_strike",
+			"category": "条件",
+			"condition": "被带着狂热 / 力量增益的怪物暴击",
+			"effects": [
+				{
+					"type": "fatigue",
+					"amount": 30
+				},
+				{
+					"type": "buff_monsters",
+					"buff": "strength",
+					"duration": 6,
+					"radius": 96
+				}
+			]
+		},
+		{
+			"id": "mana_backlash",
+			"category": "条件",
+			"condition": "疲倦爆发时身边有怪物",
+			"effects": [
+				{
+					"type": "buff_monsters",
+					"buff": "strength",
+					"duration": 8,
+					"radius": 120
+				},
+				{
+					"type": "debuff",
+					"buff": "ticklish",
+					"duration": 5
 				}
 			]
 		}

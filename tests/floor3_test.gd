@@ -140,6 +140,8 @@ func _reset_magic() -> void:
 	player.status.clear()
 	player._attack_invuln = 0.0
 	player._full_invuln = 0.0
+	player.clear_buffs(false)  # 组合技附带的易痒 / 黏黏 / 封魔等状态
+	player.forced_specials = 0
 
 
 var ctrl := ScriptedController.new()
