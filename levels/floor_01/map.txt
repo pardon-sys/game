@@ -58,8 +58,8 @@ p = sign dialogue=sign_armory
 # ---- 强制遭遇 ----
 A = gate group=arena_guard is_open=true
 U = arena group=arena_guard w=17 h=9
-Y = trap type=conveyor dir=left len=13 push_speed=30.0 lever=belt1
-V = trap type=conveyor dir=right len=13 push_speed=30.0 lever=belt1
+Y = trap type=conveyor dir=left len=13 push_speed=55.0 lever=belt1
+V = trap type=conveyor dir=right len=13 push_speed=55.0 lever=belt1
 r = lever target=belt1
 
 [map]

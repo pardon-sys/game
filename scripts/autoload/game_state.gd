@@ -58,6 +58,7 @@ func save_player_state() -> void:
 		"hp": player.health.hp if player.health else 0,
 		"laugh": player.laugh.value if player.laugh else 0.0,
 		"battle_damaged": player.get("battle_damaged") == true,
+		"buffs": player.permanent_buffs(),
 	}
 
 
@@ -72,6 +73,8 @@ func restore_player_state(p: PlayableCharacter) -> void:
 		p.laugh.set_value(s["laugh"])
 	if "battle_damaged" in p:
 		p.battle_damaged = s["battle_damaged"]
+	for id in s.get("buffs", {}):
+		p.add_buff(id, -1.0, int(s["buffs"][id]))
 
 
 func reset() -> void:

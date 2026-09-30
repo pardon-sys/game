@@ -33,6 +33,7 @@ var _stun_left := 0.0
 
 
 func _setup() -> void:
+	buffs_changed.connect(_refresh_buff_mark)
 	if stats == null:
 		stats = MonsterStats.new()
 	if health:
@@ -109,7 +110,7 @@ func tickle(t: Node) -> bool:
 		return false
 	var ok: bool = t.receive_hit(HitData.make_tickle(self, _tickle_amount(t)))
 	if ok:
-		_action_cd = stats.tickle_cooldown
+		_action_cd = stats.tickle_cooldown * stat_mul("tickle_cd")
 		play_tickle_sound()
 		maybe_taunt()
 		_on_tickle_performed(t)
@@ -167,6 +168,33 @@ func is_stunned() -> bool:
 	return _stun_left > 0.0
 
 
+## 头顶的增益标记：有增益时显示第一个增益的图标，上下浮动。
+func _refresh_buff_mark() -> void:
+	var mark := get_node_or_null("BuffMark") as Sprite2D
+	var shown := ""
+	for id in buffs:
+		if not (buffs[id] as Buff).is_debuff():
+			shown = id
+			break
+	if shown == "":
+		if mark:
+			mark.queue_free()
+		return
+	if mark == null:
+		mark = Sprite2D.new()
+		mark.name = "BuffMark"
+		mark.texture = preload("res://assets/generated/buff_icons.png")
+		mark.hframes = 6
+		mark.z_index = 10
+		mark.scale = Vector2(0.75, 0.75)
+		add_child(mark)
+		var tw := mark.create_tween().set_loops()
+		tw.tween_property(mark, "offset:y", -2.0, 0.4)
+		tw.tween_property(mark, "offset:y", 0.0, 0.4)
+	mark.frame = int(Buff.info(shown).get("icon", 0))
+	mark.position = Vector2(0, -24.0 * (sprite.scale.y if sprite else 1.0) - 6.0)
+
+
 ## 子类钩子：被僵直（例如松开抓住的公主）。
 func _on_stunned(_duration: float) -> void:
 	pass
@@ -201,7 +229,7 @@ func _perform(action: String, t: Actor) -> bool:
 
 ## 移动方式（子类可重写，例如史莱姆的跳跃）。
 func _move(dir: Vector2, speed: float, delta: float) -> void:
-	velocity = velocity.move_toward(dir * speed, 400.0 * delta)
+	velocity = velocity.move_toward(dir * speed * stat_mul("speed"), 400.0 * delta)
 
 
 func _animate(_delta: float) -> void:

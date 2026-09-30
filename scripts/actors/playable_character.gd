@@ -130,7 +130,7 @@ func _tick(delta: float) -> void:
 	match state:
 		State.IDLE, State.MOVE:
 			var speed := move_speed * (laugh.speed_multiplier() if laugh else 1.0) \
-					* (status.speed_multiplier() if status else 1.0)
+					* (status.speed_multiplier() if status else 1.0) * stat_mul("speed")
 			var rooted := status != null and status.is_rooted()
 			if rooted:
 				# 定身：原地挣动，只能转向和攻击
@@ -298,7 +298,8 @@ func magic_cooldown_left() -> float:
 
 ## 能否开始吟唱：已学会、不在冷却、能正常行动、闷笑值没到失控线。
 func can_cast() -> bool:
-	return is_magic_unlocked() and _magic_cd <= 0.0 and can_act() and not (laugh and laugh.is_helpless())
+	return is_magic_unlocked() and _magic_cd <= 0.0 and can_act() and not (laugh and laugh.is_helpless()) \
+			and stat_flag("can_channel")
 
 
 func channel_tier_for(t: float) -> int:

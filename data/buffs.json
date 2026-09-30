@@ -1,0 +1,79 @@
+{
+	"_说明": [
+		"增益 / 减益状态表（Actor.add_buff 用）。buffs：id -> {name 显示名, icon buff_icons.png 的帧, debuff 是否减益,",
+		"duration 默认秒数（-1 = 永久，复活和换层都保留）, max_stacks 最多叠几层, modifiers {属性: 数值}}。",
+		"stat_kinds 规定属性的合并方式：add = 各层数值相加（Actor.stat_add）；mul = 各层数值相乘（Actor.stat_mul）；",
+		"flag = 任何一个状态写 0 就是关（Actor.stat_flag）。",
+		"属性：laugh_gain 闷笑积累加成（+0.3 = +30%）、special_chance 暴击率加成、tickle_cd 挠痒冷却倍率、speed 移动速度倍率、can_channel 能否吟唱。"
+	],
+	"stat_kinds": {
+		"laugh_gain": "add",
+		"special_chance": "add",
+		"tickle_cd": "mul",
+		"speed": "mul",
+		"can_channel": "flag"
+	},
+	"buffs": {
+		"strength": {
+			"name": "力量",
+			"icon": 0,
+			"debuff": false,
+			"duration": 10,
+			"max_stacks": 1,
+			"modifiers": {
+				"tickle_cd": 0.6
+			}
+		},
+		"frenzy": {
+			"name": "狂热",
+			"icon": 1,
+			"debuff": false,
+			"duration": 1.2,
+			"max_stacks": 1,
+			"modifiers": {
+				"special_chance": 0.2,
+				"tickle_cd": 0.8
+			}
+		},
+		"ticklish": {
+			"name": "易痒诅咒",
+			"icon": 2,
+			"debuff": true,
+			"duration": 10,
+			"max_stacks": 1,
+			"modifiers": {
+				"laugh_gain": 0.3
+			}
+		},
+		"sticky": {
+			"name": "黏黏",
+			"icon": 3,
+			"debuff": true,
+			"duration": 0.6,
+			"max_stacks": 1,
+			"modifiers": {
+				"speed": 0.4
+			}
+		},
+		"sealed": {
+			"name": "封魔",
+			"icon": 4,
+			"debuff": true,
+			"duration": 3,
+			"max_stacks": 1,
+			"modifiers": {
+				"can_channel": 0
+			}
+		},
+		"fatigue_scar": {
+			"name": "疲倦印记",
+			"icon": 5,
+			"debuff": true,
+			"duration": -1,
+			"max_stacks": 999,
+			"modifiers": {
+				"laugh_gain": 0.01
+			}
+		}
+	}
+}

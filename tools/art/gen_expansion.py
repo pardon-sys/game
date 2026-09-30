@@ -465,6 +465,43 @@ def gen_cg_fx():
     sheet.save(OUT / "cg_fx.png")
 
 
+# ------------------------------------------------------------------ 增益 / 减益图标
+def buff_icon(kind):
+    img, d = canvas(12, 12)
+    good = kind in (0, 1)
+    d.rounded_rectangle((0, 0, 11, 11), radius=2, fill=(40, 90, 60, 255) if good else (100, 40, 60, 255))
+    d.rounded_rectangle((0, 0, 11, 11), radius=2, outline=(120, 230, 150, 255) if good else (255, 120, 150, 255))
+    if kind == 0:      # 力量：向上的箭头
+        d.polygon([(6, 2), (9, 6), (7, 6), (7, 9), (5, 9), (5, 6), (3, 6)], fill=(255, 220, 120, 255))
+    elif kind == 1:    # 狂热：火焰
+        d.polygon([(6, 2), (9, 7), (8, 9), (4, 9), (3, 7), (5, 5)], fill=(255, 140, 60, 255))
+        d.polygon([(6, 5), (7, 8), (5, 8)], fill=(255, 230, 120, 255))
+    elif kind == 2:    # 易痒诅咒：羽毛 + 叹号
+        d.line((3, 9, 7, 3), fill=WHITE_F)
+        d.point((5, 5), fill=PINK_F)
+        d.point((4, 7), fill=PINK_F)
+        d.line((9, 2, 9, 6), fill=(255, 230, 120, 255))
+        d.point((9, 8), fill=(255, 230, 120, 255))
+    elif kind == 3:    # 黏黏：粘液滴
+        d.ellipse((3, 4, 8, 9), fill=(250, 140, 200, 255))
+        d.point((5, 3), fill=(250, 140, 200, 255))
+        d.point((4, 5), fill=WHITE_F)
+    elif kind == 4:    # 封魔：星星被划掉
+        d.polygon([(6, 2), (7, 5), (10, 5), (7, 7), (8, 10), (6, 8), (4, 10), (5, 7), (2, 5), (5, 5)], fill=STAR)
+        d.line((2, 2, 10, 10), fill=(255, 80, 100, 255))
+    else:              # 疲倦印记：紫色水滴
+        d.polygon([(6, 2), (9, 7), (6, 10), (3, 7)], fill=(170, 120, 255, 255))
+        d.point((5, 6), fill=(230, 210, 255, 255))
+    return img
+
+
+def gen_buff_icons():
+    sheet = blank(72, 12)
+    for i in range(6):
+        sheet.alpha_composite(buff_icon(i), (i * 12, 0))
+    sheet.save(OUT / "buff_icons.png")
+
+
 def gen_floor_expansion():
     weapon_rack().save(OUT / "weapon_rack.png")
     secret_crack().save(OUT / "secret_crack.png")
@@ -476,6 +513,7 @@ def main():
     gen_monsters()
     gen_traps()
     gen_cg_fx()
+    gen_buff_icons()
 
 
 if __name__ == "__main__":
