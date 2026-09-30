@@ -28,6 +28,7 @@ func _ready() -> void:
 		e.process_mode = Node.PROCESS_MODE_DISABLED
 	player.global_position = Vector2(31 * 16 + 8, 23 * 16 + 12)  # 第一层守卫室（空间大）
 	await _run_buffs()
+	await _run_special()
 	print("\n==== %s (%d 项失败) ====" % ["全部通过" if failures == 0 else "有失败", failures])
 	get_tree().quit(1 if failures else 0)
 
@@ -49,6 +50,7 @@ func _run_buffs() -> void:
 	check("怪物有增益时头顶显示标记", slime.get_node_or_null("BuffMark") != null)
 	slime.add_buff("frenzy", 0.3)
 	check("狂热：暴击率 +20%、冷却再 ×0.8", is_equal_approx(slime.stat_add("special_chance"), 0.2) and is_equal_approx(slime.stat_mul("tickle_cd"), 0.48))
+	slime.global_position = player.global_position + Vector2(0, 160)  # 离远点，只让它自己计时，别打到公主
 	slime.process_mode = Node.PROCESS_MODE_INHERIT
 	await _wait(0.45)
 	check("限时状态到时自动消失", not slime.has_buff("frenzy") and slime.has_buff("strength"))
@@ -92,6 +94,71 @@ func _run_buffs() -> void:
 	check("永久印记跨层保留", player.buff_stacks("fatigue_scar") == 3)
 	player.remove_buff("fatigue_scar")
 	await _goto("floor_01")
+
+
+# ------------------------------------------------------------------ 特殊挠痒（暴击）
+const MONSTER_KEYS := ["slime", "bat", "ghost", "spider", "troll", "rat", "crab", "split_slime", "mimic", "fairy", "tentacle"]
+
+
+func _run_special() -> void:
+	print("-- 特殊挠痒（暴击）")
+	_reset()
+	var said: Array = []
+	var on_said := func(text: String, _d: float): said.append(text)
+	GameState.princess_reacted.connect(on_said)
+	var slime := _spawn("slime", Vector2(14, 0))
+	slime.stats = slime.stats.duplicate()
+	check("普通怪暴击率 12%、Boss 20%", is_equal_approx(slime.stats.special_chance, 0.12)
+		and is_equal_approx(load("res://data/monsters/tickle_troll.tres").special_chance, 0.2)
+		and is_equal_approx(load("res://data/monsters/tentacle_boss.tres").special_chance, 0.2))
+	slime.stats.special_chance = 1.0
+	player.laugh.clear()
+	said.clear()
+	slime._action_cd = 0.0
+	slime.tickle(player)
+	check("暴击：闷笑积累是普通挠痒的 2 倍", is_equal_approx(player.laugh.value, slime.stats.tickle_amount * 2.0) and player.last_tickle.special)
+	var bubble := player.get_node_or_null("Speech") as Label
+	check("暴击：公主头上跳「暴击！」", bubble != null and bubble.text == "暴击！")
+	check("暴击：公主说史莱姆的暴击台词", not said.is_empty() and ReactionDB.special("slime").has(said.back()))
+	slime.stats.special_chance = 0.0
+	var crits := 0
+	for i in 10:
+		slime._action_cd = 0.0
+		slime.tickle(player)
+		crits += 1 if player.last_tickle.special else 0
+	check("暴击率 0 时不会暴击", crits == 0)
+	player.forced_specials = 1
+	slime._action_cd = 0.0
+	slime.tickle(player)
+	var first := player.last_tickle.special
+	slime._action_cd = 0.0
+	slime.tickle(player)
+	check("必暴击次数用完就恢复正常", first and not player.last_tickle.special and player.forced_specials == 0)
+	slime.add_buff("frenzy", 5.0)
+	check("狂热增益提高暴击率", is_equal_approx(slime.stats.special_chance + slime.stat_add("special_chance"), 0.2))
+	slime.queue_free()
+
+	_reset()
+	var troll: TickleTroll = _spawn("tickle_troll", Vector2(12, 0), true)
+	troll.stats = troll.stats.duplicate()
+	troll.stats.special_chance = 1.0
+	await _wait(0.1)
+	troll._perform("tickle", player)
+	player.laugh.clear()
+	await _wait(0.6)
+	check("抓住后的持续挠痒也会暴击", player.last_tickle != null and player.last_tickle.special
+		and player.laugh.value >= troll.grab_tickle * 2.0 - 0.01)
+	player.status.release()
+	troll.queue_free()
+	GameState.princess_reacted.disconnect(on_said)
+	var all := true
+	for key in MONSTER_KEYS:
+		if ReactionDB.source(key).get("special", []).size() < 2:
+			print("    缺暴击台词：", key)
+			all = false
+	check("每种怪物都有专属暴击台词", all and not ReactionDB.data()["lines"].get("special", []).is_empty())
+	await _wait(0.3)
+	_reset()
 
 
 # ------------------------------------------------------------------ 工具

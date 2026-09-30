@@ -16,6 +16,10 @@ var source: Node = null
 var origin := Vector2.ZERO
 ## 额外标记，如星光爆发的 "magic_1" ~ "magic_3"（分裂史莱姆、精灵群据此判断）。
 var tag := ""
+## 特殊挠痒（暴击）：挠痒量已经乘过 special_mult；魔力疲倦按 2 倍积累。
+var special := false
+## 魔力疲倦的额外倍率（魔力水母为 3）。
+var fatigue_mult := 1.0
 
 
 func is_magic() -> bool:

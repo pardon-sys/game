@@ -12,6 +12,7 @@ class Src extends Node2D:
 
 
 func _ready() -> void:
+	Monster.random_specials = false  # 这里要精确的挠痒数值；暴击在 floor4_test 里测
 	main = load("res://scenes/main.tscn").instantiate()
 	add_child(main)
 	await _wait(1.0)

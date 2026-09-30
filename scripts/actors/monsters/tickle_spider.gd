@@ -56,7 +56,7 @@ func _update_burst(delta: float) -> void:
 	_burst_t = burst_interval
 	_burst_left -= 1
 	if is_instance_valid(target) and hit_area and target in hit_area.get_overlapping_bodies():
-		if target.receive_hit(HitData.make_tickle(self, burst_amount)):
+		if deliver_tickle(target, burst_amount):
 			play_tickle_sound(-5.0)
 	else:
 		_burst_left = 0

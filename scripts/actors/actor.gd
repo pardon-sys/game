@@ -52,6 +52,8 @@ var last_tickle_time := -INF
 const LAUGH_DEFEAT_WINDOW := 2.0
 ## 身上的增益 / 减益：id -> Buff
 var buffs := {}
+## 接下来几次被怪物挠痒必定暴击（组合技 special_next 等）。
+var forced_specials := 0
 var _attack_invuln := 0.0
 var _full_invuln := 0.0
 var _dead := false

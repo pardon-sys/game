@@ -13,6 +13,7 @@ var failures := 0
 
 
 func _ready() -> void:
+	Monster.random_specials = false  # 这里要精确的挠痒数值；暴击在 floor4_test 里测
 	var main: Node = load("res://scenes/main.tscn").instantiate()
 	add_child(main)
 	level = main.get_node("Floor01")

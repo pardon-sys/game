@@ -17,6 +17,7 @@ display_name = "痒痒触手怪"
 reaction_key = "tentacle"
 taunt_chance = 0.45
 is_boss = true
+special_chance = 0.2
 max_hp = 20
 wander_speed = 0.0
 chase_speed = 0.0

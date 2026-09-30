@@ -40,6 +40,7 @@ const SOUNDS := {
 	"chime": ["res://assets/generated/sfx/chime.wav"],
 	"pop": ["res://assets/generated/sfx/pop.wav"],
 	"combo": ["res://assets/generated/sfx/combo.wav"],
+	"tickle_special": ["res://assets/generated/sfx/tickle_special.wav"],
 	# CC0: cicifyre (giggle), moxobna (continuous laugh); see each License.txt.
 	"giggle": ["res://assets/third_party/cicifyre_voice/giggle.wav"],
 	"laugh": ["res://assets/third_party/cicifyre_voice/laugh.wav"],

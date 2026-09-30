@@ -16,6 +16,7 @@
   chime        小精灵铃声
   pop          史莱姆分裂："啵"
   combo        组合技提示音：两声上扬
+  tickle_special 特殊挠痒（暴击）：水里的果冻抖动——闷闷的啵叽 + 慢颤音 + 气泡，整体音高上扬约 5 度
 
 用法：python tools/art/gen_sfx.py
 在游戏里通过 Audio.play("tickle", 音量, 抖动, 音高) 播放，怪物用不同音高区分（巨魔低沉、蝙蝠尖细）。
@@ -137,7 +138,27 @@ def save_loop(name, sig, gain=0.8):
         w.writeframes(pcm.tobytes())
 
 
+def underwater_jelly():
+    """暴击音效：果冻啵叽（音高一路上扬）→ 低通变闷像在水里 → 慢颤音 → 两三个小气泡。"""
+    dur = 0.55
+    t = t_axis(dur)
+    base = 260.0 * (2 ** (7 / 12 * np.clip(t / 0.4, 0, 1)))        # 上扬约 5 度（7 个半音）
+    wob = 1 + 0.08 * np.sin(2 * np.pi * 7 * t) * np.exp(-t / 0.35)  # 果冻抖动
+    phase = 2 * np.pi * np.cumsum(base * wob) / RATE
+    tone = np.sin(phase) + 0.45 * np.sin(2 * phase) + 0.2 * np.sin(3 * phase)
+    am = 0.7 + 0.3 * np.sin(2 * np.pi * 11 * t)
+    sig = tone * am * env(t, 0.01, 0.22)
+    sig = lowpass(sig, 1500)                                        # 水里：闷
+    for k, (st, f) in enumerate(((0.12, 900), (0.24, 1300), (0.33, 1700))):
+        bt = t_axis(0.06)
+        bub = np.sin(2 * np.pi * np.cumsum(f * (1 + 2.5 * bt / 0.06)) / RATE) * env(bt, 0.002, 0.018) * 0.35
+        i = int(st * RATE)
+        sig[i:i + len(bub)] += bub
+    return sig
+
+
 def gen_expansion_sfx():
+    save("tickle_special", underwater_jelly(), 0.8)
     # 吟唱：C 大三和弦 + 轻微颤音，1.2 秒循环
     t = t_axis(1.25)
     vib = 1 + 0.004 * np.sin(2 * np.pi * 5 * t)

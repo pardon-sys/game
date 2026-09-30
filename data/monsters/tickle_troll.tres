@@ -21,6 +21,7 @@ script = ExtResource("1")
 reaction_key = "troll"
 display_name = "挠痒巨魔"
 is_boss = true
+special_chance = 0.2
 max_hp = 12
 wander_speed = 12.0
 chase_speed = 26.0

@@ -76,6 +76,14 @@ func _on_tickled(hit: HitData) -> void:
 	var key := ReactionDB.key_of(hit.source)
 	if _play_first_encounter(key):
 		return
+	if hit.special:
+		# 暴击：被猛地挠中，打断普通台词冷却，控制不住地大笑 + 惊讶
+		GameState.emote("surprise", 0.8)
+		_say(ReactionDB.special(key), "special")
+		if not GameState.has_flag("hint_first_special"):
+			GameState.set_flag("hint_first_special")
+			GameState.notify(ReactionDB.hint("first_special"))
+		return
 	_react_to_tickle(key)
 	if not GameState.has_flag("hint_tickled"):
 		GameState.set_flag("hint_tickled")

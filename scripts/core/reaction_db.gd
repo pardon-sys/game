@@ -65,6 +65,12 @@ static func key_of(node: Object) -> String:
 	return ""
 
 
+## 特殊挠痒（暴击）时公主的台词：sources[key].special，没有则用通用 lines.special。
+static func special(key: String) -> Array:
+	var own: Array = source(key).get("special", [])
+	return own if not own.is_empty() else data().get("lines", {}).get("special", [])
+
+
 ## 组合技文本：combos[id] = {name, description, lines}。
 static func combo(id: String) -> Dictionary:
 	return data().get("combos", {}).get(id, {})
