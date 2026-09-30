@@ -40,6 +40,7 @@ func _setup() -> void:
 	GameState.enemy_defeated.connect(func(_e: Node): GameState.emote("happy", 1.5))
 	if status:
 		status.grabbed.connect(_on_grabbed)
+	magic_event.connect(_on_magic_event)
 
 
 func _on_damaged(hit: HitData) -> void:
@@ -151,6 +152,25 @@ func _say(candidates_in: Array, stage: String) -> void:
 	_reaction_stage = stage
 	_reaction_cooldown = float(ReactionDB.setting("cooldown_seconds", 1.6))
 	GameState.princess_reacted.emit(_last_reaction, float(ReactionDB.setting("display_seconds", 2.4)))
+
+
+func _on_magic_event(event: String, tier: int) -> void:
+	if GameState.in_dialogue:
+		return
+	match event:
+		"channel":
+			if not GameState.has_flag("hint_magic_exposed"):
+				GameState.set_flag("hint_magic_exposed")
+				GameState.notify(ReactionDB.hint("magic_exposed"))
+			_say(ReactionDB.magic("channel"), "magic")
+		"interrupted":
+			GameState.emote("angry", 1.2)
+			_say(ReactionDB.magic("interrupted"), "magic")
+		"fizzle":
+			_say(ReactionDB.magic("fizzle"), "magic")
+		"burst":
+			GameState.emote("happy", 1.2)
+			_say(ReactionDB.magic("burst_full" if tier >= channel_tiers.size() else "burst"), "magic")
 
 
 func _on_grabbed(source: Node) -> void:

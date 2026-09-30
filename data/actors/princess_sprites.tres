@@ -14,5 +14,6 @@ animations = {
 "attack": {"fps": 10.0, "frames": [0, 1, 2], "loop": false},
 "dash": {"fps": 12.0, "frames": [1, 3]},
 "hurt": {"fps": 1.0, "frames": [0]},
-"faint": {"fps": 1.0, "frames": [0], "loop": false}
+"faint": {"fps": 1.0, "frames": [0], "loop": false},
+"channel": {"fallback": "idle"}
 }

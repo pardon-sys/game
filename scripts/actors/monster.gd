@@ -4,12 +4,17 @@ extends Actor
 ##   attack(target) -> bool   攻击：扣目标血量
 ##   tickle(target) -> bool   挠痒：累积目标闷笑值（目标需有 LaughMeter）
 ## AI：闲逛 → 发现敌对目标后追击 → 接触范围（HitArea）内按 stats.tickle_weight 选择攻击或挠痒。
+## 弱点暴露：公主吟唱魔法时，expose_radius 内的怪物立即锁定她，追击速度 ×EXPOSED_CHASE_MULT
+##（挠痒加重由公主一侧的 _tickle_multiplier 处理，陷阱同样生效）。
+## stun(秒)：僵直（满蓄力星光爆发），期间不移动不行动。
 ##
 ## 约定子节点：Sprite、Health、HitArea (Area2D，接触范围，mask 应包含玩家/友军层)
 ## 子类可重写：_move(dir, speed, delta)、_animate(delta)、_choose_action(target)、
 ##            _on_attack_performed(target)、_on_tickle_performed(target)、_on_died()
 
 enum State { WANDER, CHASE, HURT }
+
+const EXPOSED_CHASE_MULT := 1.3
 
 @export var stats: MonsterStats
 
@@ -24,6 +29,7 @@ var _state_time := 0.0
 var _action_cd := 0.0
 var _last_taunt := -INF
 var _t := 0.0
+var _stun_left := 0.0
 
 
 func _setup() -> void:
@@ -41,6 +47,15 @@ func _tick(delta: float) -> void:
 	_state_time += delta
 	_action_cd = maxf(_action_cd - delta, 0.0)
 	var frozen := GameState.in_dialogue
+	if _stun_left > 0.0 and not frozen:
+		_stun_left -= delta
+		if _stun_left <= 0.0 and sprite:
+			sprite.modulate = Color.WHITE
+	if not frozen and state != State.HURT:
+		var exposed := exposed_player()
+		if exposed:
+			target = exposed
+			state = State.CHASE
 	match state:
 		State.WANDER:
 			_think -= delta
@@ -60,10 +75,11 @@ func _tick(delta: float) -> void:
 				target = null
 				state = State.WANDER
 			else:
-				_move(global_position.direction_to(target.global_position), stats.chase_speed, delta)
+				var speed := stats.chase_speed * (EXPOSED_CHASE_MULT if is_exposed_target(target) else 1.0)
+				_move(global_position.direction_to(target.global_position), speed, delta)
 		State.HURT:
 			velocity = velocity.move_toward(Vector2.ZERO, 600.0 * delta)
-			if _state_time > stats.hurt_time:
+			if _state_time > stats.hurt_time and _stun_left <= 0.0:
 				state = State.CHASE if target else State.WANDER
 	if frozen:
 		velocity = Vector2.ZERO
@@ -118,7 +134,42 @@ func play_tickle_sound(volume_db := -3.0) -> void:
 
 
 func can_act() -> bool:
-	return _action_cd <= 0.0 and not _dead
+	return _action_cd <= 0.0 and not _dead and _stun_left <= 0.0
+
+
+# ------------------------------------------------------------------ 弱点暴露 / 僵直
+## 正在吟唱且在暴露范围内的敌对公主（没有则 null）。
+func exposed_player() -> PlayableCharacter:
+	var p := GameState.player
+	if is_instance_valid(p) and is_exposed_target(p) and Faction.are_hostile(self, p) \
+			and global_position.distance_to(p.global_position) <= p.expose_radius:
+		return p
+	return null
+
+
+func is_exposed_target(t: Node) -> bool:
+	return is_instance_valid(t) and t is PlayableCharacter and (t as PlayableCharacter).is_channeling()
+
+
+func stun(duration: float) -> void:
+	if _dead:
+		return
+	_stun_left = maxf(_stun_left, duration)
+	state = State.HURT
+	_state_time = 0.0
+	velocity = Vector2.ZERO
+	if sprite:
+		sprite.modulate = Color(0.75, 0.85, 1.35)
+	_on_stunned(duration)
+
+
+func is_stunned() -> bool:
+	return _stun_left > 0.0
+
+
+## 子类钩子：被僵直（例如松开抓住的公主）。
+func _on_stunned(_duration: float) -> void:
+	pass
 
 
 # ------------------------------------------------------------------ AI

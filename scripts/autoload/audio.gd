@@ -29,10 +29,23 @@ const SOUNDS := {
 	"puff": ["res://assets/generated/sfx/puff.wav"],
 	"swish": ["res://assets/generated/sfx/swish.wav"],
 	"grab": ["res://assets/generated/sfx/grab.wav"],
+	"chant": ["res://assets/generated/sfx/chant.wav"],
+	"star_burst": ["res://assets/generated/sfx/star_burst.wav"],
+	"fizzle": ["res://assets/generated/sfx/fizzle.wav"],
+	"pinch": ["res://assets/generated/sfx/pinch.wav"],
+	"vine": ["res://assets/generated/sfx/vine.wav"],
+	"wind": ["res://assets/generated/sfx/wind.wav"],
+	"conveyor": ["res://assets/generated/sfx/conveyor.wav"],
+	"chomp": ["res://assets/generated/sfx/chomp.wav"],
+	"chime": ["res://assets/generated/sfx/chime.wav"],
+	"pop": ["res://assets/generated/sfx/pop.wav"],
+	"combo": ["res://assets/generated/sfx/combo.wav"],
 	# CC0: cicifyre (giggle), moxobna (continuous laugh); see each License.txt.
 	"giggle": ["res://assets/third_party/cicifyre_voice/giggle.wav"],
 	"laugh": ["res://assets/third_party/cicifyre_voice/laugh.wav"],
 }
+## 循环播放的声音（用 loop_stream 取流，挂到自己的播放器上）。
+const LOOPED := ["laugh", "chant", "wind", "conveyor"]
 const POOL_SIZE := 10
 
 var _streams := {}
@@ -50,7 +63,7 @@ func _ready() -> void:
 			var path: String = f if f.begins_with("res://") else DIR + f
 			var s := load(path) as AudioStream
 			if s:
-				if key == "laugh" and s is AudioStreamWAV:
+				if key in LOOPED and s is AudioStreamWAV:
 					var loop := s.duplicate() as AudioStreamWAV
 					loop.loop_mode = AudioStreamWAV.LOOP_FORWARD
 					loop.loop_begin = 0
@@ -79,6 +92,12 @@ func play(sound: String, volume_db := 0.0, pitch_jitter := 0.08, pitch := 1.0) -
 	p.volume_db = volume_db
 	p.pitch_scale = pitch * (1.0 + randf_range(-pitch_jitter, pitch_jitter))
 	p.play()
+
+
+## 取一个循环声音的流（吟唱、风扇、传送带），由调用者用自己的 AudioStreamPlayer(2D) 播放。
+func loop_stream(sound: String) -> AudioStream:
+	var list: Array = _streams.get(sound, [])
+	return list[0] if not list.is_empty() else null
 
 
 func set_voice_state(sound: String) -> void:

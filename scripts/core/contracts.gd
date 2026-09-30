@@ -9,6 +9,8 @@ extends RefCounted
 ##   Switchable   set_active(on: bool)                    可被拉杆等机关开关（铁栅门、陷阱）
 ##   Controllable CharacterController 子节点               可被键盘/脚本/AI 操控（PlayableCharacter）
 ##   Usable       ItemData.can_use(user) / use(user)       可使用的物品
+##   MagicReactive on_magic_burst(tier, caster)           对公主的星光爆发有反应（粉雾被吹散、藤蔓被清除…），
+##                加入 "magic_reactive" 组；可选属性 magic_radius 扩大判定
 
 const DAMAGEABLE: Array[StringName] = [&"receive_hit"]
 const SWITCHABLE: Array[StringName] = [&"set_active"]
@@ -18,6 +20,7 @@ const ALLY: Array[StringName] = [&"receive_hit", &"follow", &"engage", &"assist"
 const PLAYABLE: Array[StringName] = [&"receive_hit", &"attack", &"dash", &"interact", &"use_item", &"set_controller"]
 const TRAP: Array[StringName] = [&"set_active", &"trigger"]
 const ITEM: Array[StringName] = [&"can_use", &"use"]
+const MAGIC_REACTIVE: Array[StringName] = [&"on_magic_burst"]
 
 
 static func missing(obj: Object, methods: Array[StringName]) -> Array[StringName]:
@@ -34,6 +37,10 @@ static func implements(obj: Object, methods: Array[StringName]) -> bool:
 
 static func is_damageable(obj: Object) -> bool:
 	return obj != null and is_instance_valid(obj) and obj.has_method(&"receive_hit")
+
+
+static func is_magic_reactive(obj: Object) -> bool:
+	return obj != null and is_instance_valid(obj) and obj.has_method(&"on_magic_burst")
 
 
 static func is_tickleable(obj: Object) -> bool:

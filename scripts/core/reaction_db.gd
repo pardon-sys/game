@@ -34,6 +34,11 @@ static func source_keys() -> Array:
 	return data().get("sources", {}).keys()
 
 
+## 魔法台词：magic[event]（channel / interrupted / fizzle / burst / burst_full / exposed_hint）。
+static func magic(event: String) -> Array:
+	return data().get("magic", {}).get(event, [])
+
+
 static func lines(key: String, stage: String) -> Array:
 	var own: Array = source(key).get(stage, [])
 	return own if not own.is_empty() else data().get("lines", {}).get(stage, [])

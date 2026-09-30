@@ -15,11 +15,13 @@ func _ready() -> void:
 	_finish_dialogue()
 	for key in ReactionDB.source_keys():
 		GameState.set_flag("met_" + key)
+	GameState.set_flag("seen_laugh_recover")  # 否则第一次从失控恢复会弹对话、冻结输入
 	_refresh()
 	_run_floors()
 	await _run_floor1_rooms()
 	await _goto("floor_02")
 	await _run_floor2_rooms()
+	await _run_magic()
 	print("\n==== %s (%d 项失败) ====" % ["全部通过" if failures == 0 else "有失败", failures])
 	get_tree().quit(1 if failures else 0)
 
@@ -82,6 +84,189 @@ func _run_floor2_rooms() -> void:
 		check("第二层对话 " + id, Dialogue.has_dialogue(id))
 
 
+# ------------------------------------------------------------------ 魔法
+const SLIME := preload("res://scenes/actors/monsters/slime.tscn")
+
+
+func _spawn_dummy(offset: Vector2, active := false) -> Monster:
+	var m: Monster = SLIME.instantiate()
+	level.get_node("Entities").add_child(m)
+	m.global_position = player.global_position + offset
+	m.health.max_hp = 20
+	m.health.fill()
+	if not active:
+		m.process_mode = Node.PROCESS_MODE_DISABLED
+	return m
+
+
+func _cast(hold_time: float) -> int:
+	var events: Array = []
+	var cb := func(e: String, t: int): events.append([e, t])
+	player.magic_event.connect(cb)
+	ctrl.hold(&"magic", true)
+	await _wait(hold_time)
+	ctrl.hold(&"magic", false)
+	await _wait(0.1)
+	player.magic_event.disconnect(cb)
+	for e in events:
+		if e[0] == "burst":
+			return e[1]
+	return 0
+
+
+func _reset_magic() -> void:
+	player._magic_cd = 0.0
+	player.laugh.clear()
+	player.health.fill()
+	player.status.clear()
+	player._attack_invuln = 0.0
+	player._full_invuln = 0.0
+
+
+var ctrl := ScriptedController.new()
+
+
+func _run_magic() -> void:
+	print("-- 星光爆发魔法")
+	player.set_controller(ctrl)
+	_move_player_to(Vector2i(9, 38))
+	# 先把本层怪物都停掉，免得干扰
+	for e in get_tree().get_nodes_in_group("enemy"):
+		e.process_mode = Node.PROCESS_MODE_DISABLED
+	await _wait(0.2)
+	GameState.flags.erase("magic_unlocked")
+	check("未学会时不能吟唱", not player.begin_channel() and player.state != PlayableCharacter.State.CHANNEL)
+	var hud: Node = main.get_node("HUD")
+	await _wait(0.05)
+	check("未学会时 HUD 不显示魔法图标", not hud.magic_slot.visible)
+	Dialogue.start_lines([{"speaker": "石碑", "text": "测试", "set_flag": "magic_unlocked"}], "t")
+	_finish_dialogue()
+	check("对话行 set_flag 学会魔法", player.is_magic_unlocked())
+	await _wait(0.2)  # 对话结束后 0.12 秒才交还控制
+	check("学会后 HUD 显示魔法图标", hud.magic_slot.visible)
+
+	# 吟唱不能移动、档位
+	_reset_magic()
+	var pos := player.global_position
+	ctrl.move = Vector2.RIGHT
+	ctrl.hold(&"magic", true)
+	await _wait(0.3)
+	check("按住进入吟唱", player.is_channeling())
+	check("吟唱时不能移动", player.global_position.distance_to(pos) < 2.0)
+	check("HUD 显示弱点暴露", hud.exposed_label.visible)
+	ctrl.press(&"dash")
+	await _wait(0.05)
+	check("吟唱时不能冲刺", player.is_channeling())
+	ctrl.hold(&"magic", false)
+	ctrl.move = Vector2.ZERO
+	await _wait(0.1)
+	check("不到 0.6 秒松开 = 落空，短冷却", not player.is_channeling() and is_equal_approx(snappedf(player.magic_cooldown_left(), 0.5), 1.5))
+	check("档位阈值 0.6/1.2/2.0", player.channel_tier_for(0.59) == 0 and player.channel_tier_for(0.6) == 1
+		and player.channel_tier_for(1.3) == 2 and player.channel_tier_for(2.0) == 3)
+
+	# 1 档：半径 36，伤害 2
+	_reset_magic()
+	var near := _spawn_dummy(Vector2(30, 0))
+	var mid := _spawn_dummy(Vector2(0, 46))
+	var far := _spawn_dummy(Vector2(-66, 0))
+	var tier := await _cast(0.75)
+	check("按住 0.75 秒释放 1 档", tier == 1)
+	check("1 档命中近处怪物（伤害 2）", near.health.hp == 18)
+	check("1 档打不到 46px 外", mid.health.hp == 20)
+	check("释放后冷却 6 秒", player.magic_cooldown_left() > 5.5 and not player.can_cast())
+	# 2 档
+	_reset_magic()
+	for m in [near, mid, far]:
+		m._attack_invuln = 0.0
+	tier = await _cast(1.3)
+	check("按住 1.3 秒释放 2 档", tier == 2)
+	check("2 档命中 46px（伤害 3）", mid.health.hp == 17 and near.health.hp == 15)
+	check("2 档打不到 66px 外", far.health.hp == 20)
+	# 3 档：到 2 秒自动释放
+	_reset_magic()
+	for m in [near, mid, far]:
+		m._attack_invuln = 0.0
+	var cloud := TickleCloud.new()
+	level.get_node("Entities").add_child(cloud)
+	cloud.global_position = player.global_position + Vector2(0, -60)
+	tier = await _cast(2.3)
+	check("按满 2 秒自动释放 3 档", tier == 3)
+	check("3 档命中 66px（伤害 4）", far.health.hp == 16)
+	check("3 档让怪物僵直", far.is_stunned() and not far.can_act())
+	check("3 档吹散痒痒粉雾", not is_instance_valid(cloud) or cloud.blown)
+	for m in [near, mid, far]:
+		m.queue_free()
+
+	# 限制与打断
+	_reset_magic()
+	player.laugh.add(85.0)
+	await _wait(0.05)
+	check("闷笑值 >80 不能开始吟唱", not player.begin_channel())
+	_reset_magic()
+	await _wait(0.1)
+	var interrupted := [0]
+	var on_evt := func(e: String, _t: int):
+		if e == "interrupted":
+			interrupted[0] += 1
+	player.magic_event.connect(on_evt)
+	ctrl.hold(&"magic", true)
+	await _wait(0.2)
+	var tickler := _spawn_dummy(Vector2(10, 0))
+	tickler.tickle(player)
+	await _wait(0.05)
+	check("80 以下被挠痒不打断", player.is_channeling() and interrupted[0] == 0)
+	check("弱点暴露：挠痒 ×1.5", is_equal_approx(player.laugh.value, tickler.stats.tickle_amount * 1.5))
+	player.laugh.add(80.0)
+	await _wait(0.05)
+	check("吟唱中进入失控被打断", not player.is_channeling() and interrupted[0] == 1)
+	ctrl.hold(&"magic", false)
+	await _wait(0.05)
+
+	_reset_magic()
+	await _wait(0.05)
+	ctrl.hold(&"magic", true)
+	await _wait(0.2)
+	player.receive_hit(HitData.make_attack(tickler, 1))
+	await _wait(0.05)
+	check("吟唱中受到攻击被打断", not player.is_channeling() and interrupted[0] == 2)
+	ctrl.hold(&"magic", false)
+	await _wait(0.4)
+
+	_reset_magic()
+	await _wait(0.05)
+	ctrl.hold(&"magic", true)
+	await _wait(0.2)
+	player.status.grab(tickler, 1.0, 3)
+	await _wait(0.05)
+	check("吟唱中被抓住被打断", not player.is_channeling() and interrupted[0] == 3)
+	ctrl.hold(&"magic", false)
+	player.status.release()
+	player.magic_event.disconnect(on_evt)
+	tickler.queue_free()
+
+	# 弱点暴露吸引怪物
+	_reset_magic()
+	await _wait(0.8)
+	var lured := _spawn_dummy(Vector2(150, 0), true)
+	var ignored := _spawn_dummy(Vector2(0, 0), true)
+	ignored.global_position = player.global_position + Vector2(0, 200)
+	await _wait(0.05)
+	lured.state = Monster.State.WANDER
+	lured.target = null
+	ignored.state = Monster.State.WANDER
+	ignored.target = null
+	ctrl.hold(&"magic", true)
+	await _wait(0.15)
+	check("180px 内的怪物锁定吟唱的公主", lured.target == player and lured.state == Monster.State.CHASE)
+	check("180px 外的怪物不受影响", ignored.target != player)
+	check("被吸引的怪物追击加速", lured.is_exposed_target(player))
+	ctrl.hold(&"magic", false)
+	await _wait(0.1)
+	lured.queue_free()
+	ignored.queue_free()
+	_reset_magic()
+
+
 ## 从公主位置出发做 4 邻域洪泛：墙层有图块的格子不可走（暗墙可选视为可走），门、铁栅视为可走。
 ## 返回地面层上走不到的格子。
 func _unreachable_cells(secret_open: bool) -> Array[Vector2i]:
@@ -114,6 +299,11 @@ func _unreachable_cells(secret_open: bool) -> Array[Vector2i]:
 
 
 # ------------------------------------------------------------------ 工具
+func _move_player_to(c: Vector2i) -> void:
+	player.global_position = Vector2(c.x * 16 + 8, c.y * 16 + 12)
+	player.velocity = Vector2.ZERO
+
+
 func _goto(floor_id: String) -> void:
 	main.change_level(Floors.scene(floor_id))
 	await _wait(1.2)

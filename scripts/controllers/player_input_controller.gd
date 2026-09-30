@@ -9,3 +9,7 @@ func get_move_vector() -> Vector2:
 
 func is_action_just_pressed(action: StringName) -> bool:
 	return Input.is_action_just_pressed(action)
+
+
+func is_action_pressed(action: StringName) -> bool:
+	return Input.is_action_pressed(action)

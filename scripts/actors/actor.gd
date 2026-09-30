@@ -12,6 +12,7 @@ extends CharacterBody2D
 ##   _tick(delta)             每个物理帧
 ##   _on_damaged(hit)         受到攻击（已扣血）
 ##   _on_tickled(hit)         被挠痒（已加闷笑值）
+##   _tickle_multiplier(hit)  受到的挠痒倍率（默认 1）
 ##   _on_laugh_overflow()     闷笑值满（默认扣 1 点血）
 ##   _on_died()               死亡
 
@@ -75,6 +76,7 @@ func receive_hit(hit: HitData) -> bool:
 				return false
 			if hit.knockback > 0.0:
 				apply_knockback(hit.origin, hit.knockback)
+			hit.tickle *= _tickle_multiplier(hit)
 			laugh.add(hit.tickle)
 			if not _dead:
 				_on_tickled(hit)
@@ -189,6 +191,11 @@ func _on_damaged(_hit: HitData) -> void:
 
 func _on_tickled(_hit: HitData) -> void:
 	pass
+
+
+## 受到的挠痒倍率（易痒、弱点暴露等）。hit.tickle 会先乘上它再加到闷笑值。
+func _tickle_multiplier(_hit: HitData) -> float:
+	return 1.0
 
 
 ## 笑到脱力：默认扣 1 点血（半颗心）。

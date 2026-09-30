@@ -90,7 +90,15 @@ func _perform(action: String, t: Actor) -> bool:
 
 
 func is_stunned() -> bool:
-	return mode == Mode.STUNNED
+	return mode == Mode.STUNNED or super()
+
+
+## 星光爆发的僵直：打断蓄力重击、松开抓住的人。
+func _on_stunned(_duration: float) -> void:
+	sprite.position.x = 0.0
+	if mode == Mode.GRABBING:
+		_end_grab()
+	mode = Mode.NORMAL
 
 
 func _end_grab() -> void:

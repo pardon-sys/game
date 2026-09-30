@@ -138,6 +138,9 @@ func start_lines(lines: Array, id := "") -> void:
 
 func _show_line() -> void:
 	var line: Dictionary = _lines[_index]
+	# 对话行可以顺带设置剧情标记（如 "set_flag": "magic_unlocked"）
+	if line.has("set_flag"):
+		GameState.set_flag(str(line["set_flag"]))
 	var speaker: String = line.get("speaker", "")
 	var emotion: String = line.get("emotion", "")
 	var is_princess := speaker == PRINCESS
