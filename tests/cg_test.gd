@@ -49,6 +49,20 @@ func _run_data() -> void:
 		var texts: Array = CG.cgs()[id]["steps"].filter(func(s: Dictionary): return s.has("text"))
 		all_have_text = all_have_text and texts.size() >= 4
 	check("每段 CG 都有完整的对话过程", all_have_text)
+	var third_ok := true
+	for key in ["slime", "bat", "ghost", "spider", "troll", "rat", "crab", "split_slime", "mimic", "fairy", "tentacle"]:
+		var steps: Array = CG.cgs()["death_" + key]["steps"]
+		var idx := -1
+		for i in steps.size():
+			if str(steps[i].get("portrait", "")) == key + "_3":
+				idx = i
+		var after: Array = steps.slice(maxi(idx, 0)).filter(func(st: Dictionary): return st.has("text"))
+		var ok: bool = idx >= 0 and CG.has_portrait_file(key + "_3") and CG.data["portraits"][key + "_3"].get("wide", false) and after.size() >= 6
+		if not ok:
+			print("    第三幕有问题：", key)
+		third_ok = third_ok and ok
+	check("11 段怪物 CG 都有第三幕（横版 CG 图 + 最多的剧情）", third_ok)
+	check("通用 CG 没有第三幕", not CG.cgs()["death_generic"]["steps"].any(func(st: Dictionary): return str(st.get("portrait", "")).ends_with("_3")))
 	check("立绘缺素材时用失控 1 / 失控 2 占位", CG.portrait_texture("slime_1") == Dialogue.portrait_for("helpless_1")
 		and CG.portrait_texture("slime_2") == Dialogue.portrait_for("helpless_2") and not CG.has_portrait_file("slime_1"))
 
@@ -122,6 +136,12 @@ func _run_playback() -> void:
 				checks_done["pose2"] = CG.actors["princess"].visual == "helpless_2"
 				checks_done["zoom"] = CG.view.scale == Vector2(3, 3)
 				checks_done["voice"] = CG.voice.playing
+			elif i == 5:
+				await _wait(0.4)
+				var tex := CG.portrait_texture("slime_3")
+				checks_done["wide"] = Dialogue.is_portrait_wide() and Dialogue.current_portrait() == tex \
+					and Dialogue.portrait.size.is_equal_approx(Vector2(roundf(180.0 * tex.get_width() / tex.get_height()), 180.0))
+				checks_done["stage_right"] = CG.view.position.x > 200.0
 		if Dialogue.is_active():
 			Dialogue.advance()
 			Dialogue.advance()
@@ -129,11 +149,14 @@ func _run_playback() -> void:
 	check("第 2 步：立绘换成失控 1 占位、史莱姆登场", checks_done.get("p1", false) and checks_done.get("foe_in", false))
 	check("第 4 步：立绘换成失控 2 占位、公主姿势变失控 2", checks_done.get("p2", false) and checks_done.get("pose2", false))
 	check("第 4 步：镜头拉近、笑声响起", checks_done.get("zoom", false) and checks_done.get("voice", false))
+	check("第三幕：立绘框变成横版大框，显示史莱姆 CG 图（原比例）", checks_done.get("wide", false))
+	check("第三幕：舞台镜头移到右侧继续演", checks_done.get("stage_right", false))
 	check("CG 播完", not CG.is_playing() and seen.size() == CG.cgs()["death_slime"]["steps"].size())
 	await _wait(0.4)
 	check("CG 结束后在检查点复活", player.is_alive() and player.global_position.distance_to(checkpoint) < 4.0)
 	check("复活后满血、闷笑值清零", player.health.hp == player.health.max_hp and player.laugh.value == 0.0)
-	check("复活后恢复控制、立绘恢复", not GameState.in_dialogue and not GameState.in_cutscene and not Dialogue.has_portrait_override())
+	check("复活后恢复控制、立绘恢复", not GameState.in_dialogue and not GameState.in_cutscene and not Dialogue.has_portrait_override()
+		and not Dialogue.is_portrait_wide())
 	check("CG 后不再弹复活对话", not Dialogue.is_active())
 	check("记录为看过", GameState.has_flag("cg_seen_death_slime"))
 	slime.queue_free()

@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bq8lxy7tho3ex"
-path="res://.godot/imported/troll.png-85c817b69793e268fcbd081a7fb8cce6.ctex"
+uid="uid://rkbmq4nsubng"
+path="res://.godot/imported/tentacle_3.png-f119ffffdf8e8727354172c26c86c974.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/generated/CG/troll.png"
-dest_files=["res://.godot/imported/troll.png-85c817b69793e268fcbd081a7fb8cce6.ctex"]
+source_file="res://assets/cg/portraits/tentacle_3.png"
+dest_files=["res://.godot/imported/tentacle_3.png-f119ffffdf8e8727354172c26c86c974.ctex"]
 
 [params]
 

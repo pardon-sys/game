@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://cnvi58664c7pk"
-path="res://.godot/imported/fairy.png-1d0aea9a80c7bd5b4c2ca90e2c69bdeb.ctex"
+uid="uid://cefjw4u5aj3p4"
+path="res://.godot/imported/rat_3.png-4d0c42c29d9e8e9fbdea4e517666f1bd.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/generated/CG/fairy.png"
-dest_files=["res://.godot/imported/fairy.png-1d0aea9a80c7bd5b4c2ca90e2c69bdeb.ctex"]
+source_file="res://assets/cg/portraits/rat_3.png"
+dest_files=["res://.godot/imported/rat_3.png-4d0c42c29d9e8e9fbdea4e517666f1bd.ctex"]
 
 [params]
 

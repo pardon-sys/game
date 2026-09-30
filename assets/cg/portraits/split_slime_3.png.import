@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://chf6hpivxslcu"
-path="res://.godot/imported/ghost.png-593a9d423fd0a9fccfdfbc5b203d5460.ctex"
+uid="uid://c8owygeruh180"
+path="res://.godot/imported/split_slime_3.png-0ec67e6a7bfa06aa1d1e16aedf62d8ba.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/generated/CG/ghost.png"
-dest_files=["res://.godot/imported/ghost.png-593a9d423fd0a9fccfdfbc5b203d5460.ctex"]
+source_file="res://assets/cg/portraits/split_slime_3.png"
+dest_files=["res://.godot/imported/split_slime_3.png-0ec67e6a7bfa06aa1d1e16aedf62d8ba.ctex"]
 
 [params]
 

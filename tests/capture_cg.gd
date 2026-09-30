@@ -1,9 +1,9 @@
 extends Node
 ## 笑倒 CG 截图（开发用）：Godot --path . res://tests/capture_cg.tscn → tools/.cache/shots/cg_<id>_<步>.png
-## 每段 CG 截第 2 步（怪物登场）和第 4 步（失控 2 + 镜头拉近）；可传 -- only=death_slime 只截一段。
+## 每段 CG 截第 2 步（第一幕）、第 4 步（第二幕：失控 2 + 镜头拉近）、第 6 步（第三幕：横版 CG 图）；可传 -- only=death_slime 只截一段。
 
 const OUT := "res://tools/.cache/shots/"
-const SHOT_STEPS := [1, 3]
+const SHOT_STEPS := [1, 3, 5]
 
 
 func _ready() -> void:

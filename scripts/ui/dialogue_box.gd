@@ -45,6 +45,13 @@ var _reaction_time := 0.0
 var _portrait_tween: Tween
 ## CG 立绘接口：设置后常驻立绘显示这张图（按比例放进立绘框），公主表情变化不会覆盖它。
 var _portrait_override: Texture2D
+## 横版大图（笑倒 CG 第三幕）：立绘框变成对话框上方左侧的横版大框。
+var _wide := false
+var _wide_frame: Panel
+var _frame_tween: Tween
+const PORTRAIT_RECT := Rect2(2, 114, 114, 152)
+const WIDE_POS := Vector2(4, 6)
+const WIDE_HEIGHT := 180.0
 
 
 func _ready() -> void:
@@ -167,12 +174,56 @@ func _on_emotion_changed(emotion: String) -> void:
 
 
 ## CG 用：替换常驻立绘（null = 恢复为公主当前状态的立绘）。
-func set_portrait_override(tex: Texture2D) -> void:
+## wide = true：横版大图，立绘框变成高 180、宽度按图片比例的大框（原比例填满），带粉色边框。
+func set_portrait_override(tex: Texture2D, wide := false) -> void:
 	_portrait_override = tex
 	portrait.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED if tex else TextureRect.STRETCH_SCALE
+	var want_wide := wide and tex != null
+	if want_wide != _wide or want_wide:
+		_set_wide(want_wide, tex)
 	var emotion := GameState.player.emotion.current if is_instance_valid(GameState.player) else "normal"
 	_emotion = ""  # 强制刷新（播放换图的小跳动）
 	_show_portrait(emotion)
+
+
+func is_portrait_wide() -> bool:
+	return _wide
+
+
+func _set_wide(on: bool, tex: Texture2D) -> void:
+	_wide = on
+	if _wide_frame == null:
+		_wide_frame = Panel.new()
+		var sb := StyleBoxFlat.new()
+		sb.bg_color = Color(0.06, 0.03, 0.07)
+		sb.border_color = Color(0.95, 0.72, 0.84)
+		sb.set_border_width_all(2)
+		sb.set_corner_radius_all(3)
+		_wide_frame.add_theme_stylebox_override("panel", sb)
+		_wide_frame.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		add_child(_wide_frame)
+		move_child(_wide_frame, portrait.get_index())
+		_wide_frame.hide()
+	if _frame_tween:
+		_frame_tween.kill()
+	if _portrait_tween:
+		_portrait_tween.kill()
+	portrait.scale = Vector2.ONE
+	portrait.modulate.a = 1.0
+	var rect := PORTRAIT_RECT
+	if on:
+		var size := tex.get_size()
+		rect = Rect2(WIDE_POS, Vector2(roundf(WIDE_HEIGHT * size.x / size.y), WIDE_HEIGHT))
+		_wide_frame.position = rect.position - Vector2(2, 2)
+		_wide_frame.size = rect.size + Vector2(4, 4)
+		_wide_frame.modulate.a = 0.0
+		_wide_frame.show()
+	_frame_tween = create_tween().set_parallel()
+	_frame_tween.tween_property(portrait, "position", rect.position, 0.25).set_trans(Tween.TRANS_QUAD)
+	_frame_tween.tween_property(portrait, "size", rect.size, 0.25).set_trans(Tween.TRANS_QUAD)
+	_frame_tween.tween_property(_wide_frame, "modulate:a", 1.0 if on else 0.0, 0.25)
+	if not on:
+		_frame_tween.chain().tween_callback(_wide_frame.hide)
 
 
 func has_portrait_override() -> bool:
@@ -193,6 +244,10 @@ func close() -> void:
 
 func _show_portrait(emotion: String) -> void:
 	portrait.texture = _portrait_override if _portrait_override else portrait_for(emotion)
+	if _wide:  # 横版大图：不做滑入 / 小跳动，位置由 _set_wide 控制
+		portrait.show()
+		_emotion = emotion
+		return
 	var appearing := not portrait.visible
 	portrait.show()
 	if emotion == _emotion and not appearing:

@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dhlsug3q0qbja"
-path="res://.godot/imported/rat.png-19cfd27b391d24ab670180242edc7c3d.ctex"
+uid="uid://cxc7fac17atwn"
+path="res://.godot/imported/slime_3.png-57c4f890663b1307c203c4f166753a79.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/generated/CG/rat.png"
-dest_files=["res://.godot/imported/rat.png-19cfd27b391d24ab670180242edc7c3d.ctex"]
+source_file="res://assets/cg/portraits/slime_3.png"
+dest_files=["res://.godot/imported/slime_3.png-57c4f890663b1307c203c4f166753a79.ctex"]
 
 [params]
 

@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://n366foodb2tg"
-path="res://.godot/imported/split_slime.png-a1d0318a5550f51d6b05d049ece67653.ctex"
+uid="uid://bp7gyg3nft6d8"
+path="res://.godot/imported/mimic_3.png-f6ac5ea6f4194d1d705b5713a1f67f9b.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/generated/CG/split_slime.png"
-dest_files=["res://.godot/imported/split_slime.png-a1d0318a5550f51d6b05d049ece67653.ctex"]
+source_file="res://assets/cg/portraits/mimic_3.png"
+dest_files=["res://.godot/imported/mimic_3.png-f6ac5ea6f4194d1d705b5713a1f67f9b.ctex"]
 
 [params]
 

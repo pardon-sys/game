@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bvml4f0nwtfo4"
-path="res://.godot/imported/mimic.png-f9adebdef09c4210db6cdd325a6a2b42.ctex"
+uid="uid://dr1w5y1wg27xs"
+path="res://.godot/imported/fairy_3.png-cf2004b3246e09071fbc42c6aea36195.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/generated/CG/mimic.png"
-dest_files=["res://.godot/imported/mimic.png-f9adebdef09c4210db6cdd325a6a2b42.ctex"]
+source_file="res://assets/cg/portraits/fairy_3.png"
+dest_files=["res://.godot/imported/fairy_3.png-cf2004b3246e09071fbc42c6aea36195.ctex"]
 
 [params]
 
