@@ -62,7 +62,7 @@ func _tick(delta: float) -> void:
 			_mode_t -= delta
 			if _mode_t <= 0.0:
 				mode = Mode.NORMAL
-	move_and_slide()
+	move_with_push()
 	_animate(delta)
 
 

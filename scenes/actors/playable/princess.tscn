@@ -15,6 +15,7 @@
 [ext_resource type="Resource" uid="uid://13rxqv86bcmd" path="res://data/actors/princess_sprites.tres" id="13"]
 [ext_resource type="Script" uid="uid://dafg8gm880wsf" path="res://scripts/components/hitbox_component.gd" id="14"]
 [ext_resource type="Script" path="res://scripts/components/status_component.gd" id="status"]
+[ext_resource type="Script" path="res://scripts/components/combo_tracker.gd" id="combo"]
 
 [sub_resource type="ShaderMaterial" id="flash_mat"]
 resource_local_to_scene = true
@@ -59,6 +60,9 @@ overflow_reset_to = 100.0
 
 [node name="Status" type="Node" parent="."]
 script = ExtResource("status")
+
+[node name="Combo" type="Node" parent="."]
+script = ExtResource("combo")
 
 [node name="Controller" type="Node" parent="." unique_id=1561724890]
 script = ExtResource("11")

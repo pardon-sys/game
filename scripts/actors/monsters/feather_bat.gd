@@ -1,6 +1,7 @@
 class_name FeatherBat
 extends Monster
 ## 羽毛蝙蝠：绕着目标盘旋 → 俯冲挠一下 → 飞开 → 再绕回来（打了就跑）。只在俯冲时行动。
+## 扑粉蝙蝠（条件型组合技 powdered_bat）：飞过痒痒粉雾后 powder_time 秒内翅膀带粉，挠痒附带余痒。
 
 enum Phase { CIRCLE, DIVE, RETREAT }
 
@@ -9,10 +10,12 @@ enum Phase { CIRCLE, DIVE, RETREAT }
 @export var dive_time := 1.0
 @export var retreat_time := 1.2
 @export var dive_speed_mult := 1.8
+@export var powder_time := 5.0
 
 var phase := Phase.CIRCLE
 var _phase_t := 0.0
 var _orbit := 0.0
+var powdered_left := 0.0
 
 
 func _setup() -> void:
@@ -23,7 +26,23 @@ func _setup() -> void:
 
 func _tick(delta: float) -> void:
 	_phase_t -= delta
+	if powdered_left > 0.0 and not GameState.in_dialogue:
+		powdered_left -= delta
+	_check_powder()
+	sprite.self_modulate = Color(1.0, 0.72, 0.9) if is_powdered() else Color.WHITE
 	super(delta)
+
+
+func is_powdered() -> bool:
+	return powdered_left > 0.0
+
+
+func _check_powder() -> void:
+	for c in get_tree().get_nodes_in_group("tickle_cloud"):
+		var cloud := c as TickleCloud
+		if cloud and not cloud.blown and cloud.global_position.distance_to(global_position) <= cloud.radius:
+			powdered_left = powder_time
+			return
 
 
 func _move(dir: Vector2, speed: float, delta: float) -> void:
@@ -62,8 +81,10 @@ func _start_retreat() -> void:
 		_orbit = (global_position - target.global_position).angle()
 
 
-func _on_tickle_performed(_t: Node) -> void:
+func _on_tickle_performed(t: Node) -> void:
 	_start_retreat()
+	if is_powdered() and t is PlayableCharacter and (t as PlayableCharacter).combo:
+		(t as PlayableCharacter).combo.trigger("powdered_bat", self, true)
 
 
 func _on_attack_performed(_t: Node) -> void:

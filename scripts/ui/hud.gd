@@ -22,6 +22,8 @@ var exposed_label: Label
 var _icon_ready: AtlasTexture
 var _icon_cd: AtlasTexture
 var _blink := 0.0
+var combo_label: Label
+var _combo_tween: Tween
 
 
 func _ready() -> void:
@@ -34,6 +36,7 @@ func _ready() -> void:
 	GameState.inventory.changed.connect(_refresh_inventory)
 	GameState.emotion_changed.connect(_on_emotion_changed)
 	GameState.toast.connect(show_toast)
+	GameState.combo_triggered.connect(show_combo)
 	toast_label.modulate.a = 0.0
 	_build_magic_ui()
 	if GameState.player:
@@ -85,6 +88,30 @@ func _build_magic_ui() -> void:
 	exposed_label.add_theme_constant_override("outline_size", 4)
 	exposed_label.hide()
 	add_child(exposed_label)
+	combo_label = Label.new()
+	combo_label.name = "Combo"
+	combo_label.position = Vector2(90, 38)
+	combo_label.size = Vector2(300, 16)
+	combo_label.pivot_offset = Vector2(150, 8)
+	combo_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	combo_label.add_theme_color_override("font_color", Color(1, 0.86, 0.4))
+	combo_label.add_theme_color_override("font_outline_color", Color(0.45, 0.12, 0.3))
+	combo_label.add_theme_constant_override("outline_size", 5)
+	combo_label.modulate.a = 0.0
+	add_child(combo_label)
+
+
+## 组合技横幅：弹一下，停留后淡出。
+func show_combo(_id: String, combo_name: String) -> void:
+	combo_label.text = "【组合技】%s！" % combo_name
+	if _combo_tween:
+		_combo_tween.kill()
+	combo_label.modulate.a = 1.0
+	combo_label.scale = Vector2(1.5, 1.5)
+	_combo_tween = create_tween()
+	_combo_tween.tween_property(combo_label, "scale", Vector2.ONE, 0.15)
+	_combo_tween.tween_interval(1.6)
+	_combo_tween.tween_property(combo_label, "modulate:a", 0.0, 0.4)
 
 
 func _process(delta: float) -> void:

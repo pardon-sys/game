@@ -173,6 +173,14 @@ func _on_magic_event(event: String, tier: int) -> void:
 			_say(ReactionDB.magic("burst_full" if tier >= channel_tiers.size() else "burst"), "magic")
 
 
+## 组合技触发时由 ComboTracker 调用。
+func say_combo(id: String) -> void:
+	if GameState.in_dialogue:
+		return
+	GameState.emote("surprise", 1.0)
+	_say(ReactionDB.combo(id).get("lines", []), "combo")
+
+
 func _on_grabbed(source: Node) -> void:
 	if not GameState.has_flag("hint_grabbed"):
 		GameState.set_flag("hint_grabbed")

@@ -83,7 +83,7 @@ func _tick(delta: float) -> void:
 				state = State.CHASE if target else State.WANDER
 	if frozen:
 		velocity = Vector2.ZERO
-	move_and_slide()
+	move_with_push()
 	if velocity.x != 0.0:
 		facing = velocity.normalized()
 	if not frozen and state != State.HURT:

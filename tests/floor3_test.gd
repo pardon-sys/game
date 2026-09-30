@@ -22,6 +22,8 @@ func _ready() -> void:
 	await _goto("floor_02")
 	await _run_floor2_rooms()
 	await _run_magic()
+	await _run_status_effects()
+	await _run_combos()
 	print("\n==== %s (%d 项失败) ====" % ["全部通过" if failures == 0 else "有失败", failures])
 	get_tree().quit(1 if failures else 0)
 
@@ -264,6 +266,185 @@ func _run_magic() -> void:
 	await _wait(0.1)
 	lured.queue_free()
 	ignored.queue_free()
+	_reset_magic()
+
+
+# ------------------------------------------------------------------ 状态效果
+## 假的挠痒来源：只有 reaction_key。
+class Src extends Node2D:
+	var reaction_key := ""
+
+
+func _src(key: String, offset := Vector2(20, 0)) -> Src:
+	var n := Src.new()
+	n.reaction_key = key
+	level.get_node("Entities").add_child(n)
+	n.global_position = player.global_position + offset
+	return n
+
+
+func _tickle_from(key: String, amount := 4.0) -> void:
+	var n := _src(key)
+	player.receive_hit(HitData.make_tickle(n, amount))
+	n.queue_free()
+
+
+func _run_status_effects() -> void:
+	print("-- 状态效果")
+	_reset_magic()
+	player.combo.reset()
+	await _wait(0.1)
+	var pos := player.global_position
+	player.status.apply_root(0.5)
+	ctrl.move = Vector2.RIGHT
+	await _wait(0.25)
+	check("定身：不能移动", player.global_position.distance_to(pos) < 2.0 and player.is_immobile())
+	ctrl.press(&"dash")
+	await _wait(0.05)
+	check("定身：不能冲刺", player.state != PlayableCharacter.State.DASH)
+	ctrl.press(&"attack")
+	await _wait(0.05)
+	check("定身：仍可攻击", player.state == PlayableCharacter.State.ATTACK)
+	await _wait(0.5)
+	check("定身结束后能移动", player.global_position.distance_to(pos) > 4.0 and not player.is_immobile())
+	ctrl.move = Vector2.ZERO
+	await _wait(0.1)
+
+	player.laugh.clear()
+	player.status.add_dot(4.0, 1.0, null)
+	await _wait(1.1)
+	check("余痒：每秒 4 持续 1 秒 ≈ 4", absf(player.laugh.value - 4.0) < 0.6 and not player.status.has_dot())
+	player.laugh.clear()
+	player.status.add_tickle_multiplier(1.5, 0.5)
+	_tickle_from("slime", 10.0)
+	check("易痒 ×1.5", is_equal_approx(player.laugh.value, 15.0))
+	await _wait(0.6)
+	player.laugh.clear()
+	_tickle_from("slime", 10.0)
+	check("易痒到时失效", is_equal_approx(player.laugh.value, 10.0))
+	player.laugh.clear()
+
+	pos = player.global_position
+	for i in 20:
+		player.add_push(Vector2(60, 0))
+		await get_tree().physics_frame
+	check("外力推动角色", player.global_position.x - pos.x > 10.0)
+	check("外力不累积进速度", absf(player.velocity.x) < 1.0)
+	var anchor := _src("", Vector2(-60, 0))
+	pos = player.global_position
+	player.status.add_pull(anchor, 50.0, 0.4)
+	await _wait(0.45)
+	check("拉扯：被拉向来源", player.global_position.x < pos.x - 8.0)
+	anchor.queue_free()
+	player.status.clear()
+
+
+# ------------------------------------------------------------------ 组合技
+func _combo_keys(c: Dictionary) -> Array:
+	var keys: Array = []
+	for slot in c["keys"]:
+		var k: String = slot[0]
+		if k == "*":
+			for m in ComboTracker.group("monster"):
+				if not keys.has(m) and not c["keys"].any(func(sl: Array): return sl.has(m)):
+					k = m
+					break
+		keys.append(k)
+	return keys
+
+
+func _run_combos() -> void:
+	print("-- 组合技")
+	var fired: Array[String] = []
+	player.combo.triggered.connect(func(id: String): fired.append(id))
+	var hud: Node = main.get_node("HUD")
+	for c in ComboTracker.data()["combos"]:
+		var id: String = c["id"]
+		var text := ReactionDB.combo(id)
+		check("组合技 %s 有名称和公主台词" % id, text.get("name", "") != "" and not text.get("lines", []).is_empty())
+		if c.has("condition"):
+			continue
+		_reset_magic()
+		player.combo.reset()
+		fired.clear()
+		var keys := _combo_keys(c)
+		keys.reverse()  # 顺序无关
+		for k in keys:
+			_tickle_from(k)
+			await get_tree().physics_frame
+		check("时间窗口组合 %s（%s）触发" % [id, ", ".join(keys)], fired == [id])
+		if id == "sole_duet":
+			check("脚心双重奏：额外挠痒 + 定身", player.laugh.value >= 8.0 + 15.0 and player.status.is_rooted())
+			check("HUD 横幅显示组合技名", hud.combo_label.text.contains("脚心双重奏") and hud.combo_label.modulate.a > 0.5)
+		elif id == "sticky_feather":
+			check("黏黏羽毛：余痒", player.status.has_dot())
+		elif id == "invisible_web":
+			check("无形蛛网：定身 + 易痒", player.status.is_rooted() and player.status.tickle_multiplier() >= 1.5)
+		elif id == "wind_brush":
+			check("风卷刷：减速", player.status.is_slowed())
+
+	_reset_magic()
+	player.combo.reset()
+	fired.clear()
+	_tickle_from("rat")
+	await _wait(1.7)
+	_tickle_from("crab")
+	check("超出 1.5 秒窗口不触发", fired.is_empty())
+	player.combo.reset()
+	_tickle_from("rat")
+	_tickle_from("crab")
+	_tickle_from("rat")
+	_tickle_from("crab")
+	check("同一组合 4 秒冷却", fired.size() == 1)
+	player.combo.reset()
+	fired.clear()
+	_tickle_from("fairy")
+	_tickle_from("vine")
+	check("精灵起哄的 * 只匹配怪物（陷阱不算）", not fired.has("fairy_cheer"))
+	_tickle_from("ghost")
+	check("精灵起哄：精灵 + 任意怪物", fired.has("fairy_cheer"))
+	player.combo.reset()
+	fired.clear()
+	_tickle_from("spider")
+	_tickle_from("spider")
+	check("同一来源挠两次不算组合", fired.is_empty())
+
+	# 条件型：趁手打劫
+	_reset_magic()
+	player.combo.reset()
+	fired.clear()
+	var hand := _src("hand")
+	player.status.grab(hand, 3.0, 99)
+	await get_tree().physics_frame
+	_tickle_from("slime", 10.0)
+	check("趁手打劫：被机关手抓着时怪物挠痒 ×1.5", is_equal_approx(player.laugh.value, 15.0) and fired.has("hand_heist"))
+	player.laugh.clear()
+	_tickle_from("vine", 10.0)
+	check("趁手打劫只对怪物生效", is_equal_approx(player.laugh.value, 10.0))
+	player.status.release()
+	hand.queue_free()
+
+	# 条件型：扑粉蝙蝠
+	_reset_magic()
+	player.combo.reset()
+	fired.clear()
+	var bat: FeatherBat = load("res://scenes/actors/monsters/feather_bat.tscn").instantiate()
+	level.get_node("Entities").add_child(bat)
+	bat.global_position = player.global_position + Vector2(60, 0)
+	var cloud := TickleCloud.new()
+	cloud.affects_player = false
+	level.get_node("Entities").add_child(cloud)
+	cloud.global_position = bat.global_position
+	await _wait(0.1)
+	check("蝙蝠飞过粉雾后带粉", bat.is_powdered())
+	bat.process_mode = Node.PROCESS_MODE_DISABLED
+	bat.tickle(player)
+	check("扑粉蝙蝠：挠痒附带余痒", fired.has("powdered_bat") and player.status.has_dot())
+	bat.tickle(player)
+	check("扑粉蝙蝠冷却中仍然附带余痒", player.status._dots.size() >= 2)
+	bat.queue_free()
+	cloud.queue_free()
+	player.status.clear()
 	_reset_magic()
 
 

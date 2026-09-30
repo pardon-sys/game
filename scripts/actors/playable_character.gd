@@ -65,6 +65,7 @@ enum State { IDLE, MOVE, ATTACK, DASH, HURT, HELPLESS, GRABBED, DEAD, CHANNEL }
 @onready var slash: Sprite2D = get_node_or_null("Slash")
 @onready var prompt: Sprite2D = get_node_or_null("Prompt")
 @onready var camera: Camera2D = get_node_or_null("Camera")
+@onready var combo: ComboTracker = get_node_or_null("Combo")
 
 var state := State.IDLE
 var _state_time := 0.0
@@ -127,7 +128,14 @@ func _tick(delta: float) -> void:
 		State.IDLE, State.MOVE:
 			var speed := move_speed * (laugh.speed_multiplier() if laugh else 1.0) \
 					* (status.speed_multiplier() if status else 1.0)
-			if input != Vector2.ZERO:
+			var rooted := status != null and status.is_rooted()
+			if rooted:
+				# 定身：原地挣动，只能转向和攻击
+				if input != Vector2.ZERO:
+					facing = input.normalized()
+				velocity = velocity.move_toward(Vector2.ZERO, friction * delta)
+				_set_state(State.IDLE)
+			elif input != Vector2.ZERO:
 				facing = input.normalized()
 				velocity = velocity.move_toward(input.limit_length(1.0) * speed, accel * delta)
 				_set_state(State.MOVE)
@@ -138,7 +146,7 @@ func _tick(delta: float) -> void:
 			if can_control:
 				if controller.is_action_just_pressed(&"attack"):
 					attack()
-				elif controller.is_action_just_pressed(&"dash"):
+				elif controller.is_action_just_pressed(&"dash") and not rooted:
 					dash(input)
 				elif controller.is_action_just_pressed(&"magic"):
 					begin_channel()
@@ -193,7 +201,7 @@ func _tick(delta: float) -> void:
 		State.DEAD:
 			velocity = Vector2.ZERO
 
-	move_and_slide()
+	move_with_push()
 	_update_laughing(delta)
 	_update_interact_target()
 	_update_animation(delta)
@@ -222,7 +230,7 @@ func attack() -> void:
 
 
 func dash(input := Vector2.ZERO) -> void:
-	if not can_act() or _dash_cd > 0.0:
+	if not can_act() or _dash_cd > 0.0 or (status and status.is_rooted()):
 		return
 	_dash_dir = input.normalized() if input != Vector2.ZERO else facing
 	_dash_cd = dash_cooldown
@@ -368,13 +376,19 @@ func _on_channel_tier(tier: int) -> void:
 	magic_event.emit("tier", tier)
 
 
-## 受到的挠痒倍率：吟唱时弱点暴露。
+## 受到的挠痒倍率：状态（易痒）× 吟唱时弱点暴露。
 func _tickle_multiplier(hit: HitData) -> float:
-	return super(hit) * (exposed_tickle_mult if state == State.CHANNEL else 1.0)
+	var k := super(hit) * (exposed_tickle_mult if state == State.CHANNEL else 1.0)
+	return k * (combo.hit_multiplier(hit) if combo else 1.0)
 
 
 func is_grabbed() -> bool:
 	return state == State.GRABBED
+
+
+## 动不了：被抓、定身、吟唱、失控（挠脚鼠此时挠痒加倍）。
+func is_immobile() -> bool:
+	return state in [State.GRABBED, State.HELPLESS, State.CHANNEL] or (status != null and status.is_immobile())
 
 
 # ------------------------------------------------------------------ Actor 钩子
@@ -500,6 +514,8 @@ func _update_interact_target() -> void:
 
 
 func _anim_name() -> String:
+	if state == State.IDLE and status and status.is_rooted():
+		return "grabbed"
 	match state:
 		State.MOVE:
 			return "giggle" if laugh and laugh.is_giggling() else "walk"

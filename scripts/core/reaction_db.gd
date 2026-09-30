@@ -63,3 +63,8 @@ static func key_of(node: Object) -> String:
 	if node is Projectile:
 		return key_of((node as Projectile).shooter)
 	return ""
+
+
+## 组合技文本：combos[id] = {name, description, lines}。
+static func combo(id: String) -> Dictionary:
+	return data().get("combos", {}).get(id, {})

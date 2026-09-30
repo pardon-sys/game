@@ -17,6 +17,8 @@ extends CharacterBody2D
 ##   _on_died()               死亡
 
 signal died(actor: Actor)
+## 被挠痒（已加闷笑值；hit.tickle 是乘过倍率后的实际值）。组合技追踪等监听它。
+signal tickled(hit: HitData)
 
 @export var faction := Faction.Type.NEUTRAL
 ## 受到攻击后的无敌时间（只挡攻击，不挡挠痒）。
@@ -31,6 +33,8 @@ signal died(actor: Actor)
 @onready var status: StatusComponent = get_node_or_null("Status")
 
 var facing := Vector2.DOWN
+## 本帧累积的外力（风扇、传送带、拉扯），移动时叠加到速度上，然后清零。
+var _push := Vector2.ZERO
 var _attack_invuln := 0.0
 var _full_invuln := 0.0
 var _dead := false
@@ -80,6 +84,7 @@ func receive_hit(hit: HitData) -> bool:
 			laugh.add(hit.tickle)
 			if not _dead:
 				_on_tickled(hit)
+				tickled.emit(hit)
 			return true
 	return false
 
@@ -128,6 +133,23 @@ func flash(color: Color, duration := 0.25) -> void:
 	mat.set_shader_parameter("flash_color", color)
 	var tw := create_tween()
 	tw.tween_method(func(v: float): mat.set_shader_parameter("flash", v), 0.9, 0.0, duration)
+
+
+## 外力推动（风扇、传送带、触手拉扯）：每帧调用，只作用于这一帧。
+func add_push(v: Vector2) -> void:
+	_push += v
+
+
+## 带外力的 move_and_slide：外力不会累积进 velocity。
+func move_with_push() -> void:
+	if _push == Vector2.ZERO:
+		move_and_slide()
+		return
+	var base := velocity
+	velocity += _push
+	_push = Vector2.ZERO
+	move_and_slide()
+	velocity = base
 
 
 ## 4 方向朝向。
@@ -195,7 +217,7 @@ func _on_tickled(_hit: HitData) -> void:
 
 ## 受到的挠痒倍率（易痒、弱点暴露等）。hit.tickle 会先乘上它再加到闷笑值。
 func _tickle_multiplier(_hit: HitData) -> float:
-	return 1.0
+	return status.tickle_multiplier() if status else 1.0
 
 
 ## 笑到脱力：默认扣 1 点血（半颗心）。
