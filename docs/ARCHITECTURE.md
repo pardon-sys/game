@@ -13,7 +13,13 @@ Actor（角色基类，CharacterBody2D）
 │   ├── FeatherBat       羽毛蝙蝠（盘旋 → 俯冲挠痒 → 退开）
 │   ├── TickleGhost      痒痒幽灵（穿墙；火把照亮才显形、才能被打）
 │   ├── TickleSpider     挠痒蜘蛛（吐丝减速 + 贴身三连挠）
-│   └── TickleTroll      挠痒巨魔（小 Boss：抓取 / 僵直 / 重击）
+│   ├── TickleTroll      挠痒巨魔（小 Boss：抓取 / 僵直 / 重击）
+│   ├── FootRat          挠脚鼠（成群、快；公主动不了时挠痒 ×2）
+│   ├── PincerCrab       钳钳蟹（横着走，夹脚定身）
+│   ├── SplitSlime       分裂史莱姆（倒下分裂成 2 只小的；3 档星光打倒不分裂）
+│   ├── Mimic            宝箱怪（伪装，打开即抓住挠痒）
+│   ├── FairySwarm       羽毛小精灵群（只挠痒，70% 闪开普通攻击，魔法必中）
+│   └── TentacleBoss     痒痒触手怪（第三层 Boss：落点预警 → 抓住拉近多触手挠）
 └── Ally（友军）
 	└── Knight（示例）
 
@@ -22,11 +28,15 @@ Trap（陷阱基类，Area2D）
 ├── FeatherTrap       羽毛陷阱（ON_STEP）
 ├── PowderVent        痒痒粉喷口（PERIODIC，喷出 TickleCloud）
 ├── FeatherBrush      旋转羽毛刷（CONTINUOUS）
-└── GrabHand          机关手（MANUAL，由压力板触发，抓取）
+├── GrabHand          机关手（MANUAL，由压力板触发，抓取）
+├── TickleVine        痒痒藤蔓（ON_STEP，缠脚定身；可砍断、会长回）
+├── FeatherFan        羽毛风扇（CONTINUOUS，风道推人、卷起粉雾）
+└── TickleConveyor    痒痒传送带（CONTINUOUS，多格，送走任何阵营）
 
 Projectile（投射物基类，Area2D）
 └── WebShot           蛛丝（减速 + 少量挠痒）
-TickleCloud（会停留的粉雾，Area2D）
+TickleCloud（会停留的粉雾，Area2D；可被风吹动、被星光吹散）
+StarBurst（星光爆发：范围判定 + 特效）
 
 ItemData（物品基类，Resource）
 ├── HealItem          心
@@ -41,7 +51,8 @@ ItemData（物品基类，Resource）
 |---|---|---|
 | `HealthComponent` | `Health` | 血量（1 点 = 半颗心），信号 `changed / damaged / died` |
 | `LaughMeter` | `Laugh` | 闷笑值 0–150；**有它的角色才能被挠痒** |
-| `StatusComponent` | `Status` | 状态效果：减速、被抓住；有它才能被抓 |
+| `StatusComponent` | `Status` | 状态效果：减速、被抓住、定身、余痒、易痒、拉扯；有它才能被抓 |
+| `ComboTracker` | `Combo` | 组合技追踪（公主身上），见下文 |
 | `EmotionComponent` | `Emotion` | 表情行 + 头顶气泡 |
 | `SpriteSheetAnimator` | `Animator` | 按 `SpriteSheetConfig` 数据驱动精灵表动画 |
 | `HitboxComponent` | `Hitbox` | 近战挥击判定 |
@@ -57,6 +68,7 @@ ItemData（物品基类，Resource）
 | `ItemData` 及其子类 | `data/items/*.tres` |
 | `SpriteSheetConfig` | `data/actors/*.tres` |
 | `ItemDrop`（掉落表项） | 嵌在怪物数值或木桶场景中 |
+| 组合技表 | `data/combos.json`（机制）+ `data/princess_reactions.json` 的 `combos`（名称、说明、台词） |
 
 ## 接口
 
@@ -72,8 +84,9 @@ GDScript 没有 `interface` 关键字，本项目用**方法约定 + `Contracts`
 | Usable | `ItemData.can_use(user)` / `use(user) -> bool` | 所有物品 |
 | Triggerable | `trigger()` | 所有陷阱（压力板对目标组调用） |
 | Grabbable | Actor 且有 `Status` 组件，`can_be_grabbed()` | 公主 |
+| MagicReactive | `on_magic_burst(tier, caster)`，加入 `magic_reactive` 组，可选 `magic_radius` | 粉雾、藤蔓、小精灵群、触手怪 |
 
-所有伤害和挠痒都打包成 **`HitData`**（`kind` = `ATTACK` 或 `TICKLE`，以及 `damage / tickle / knockback / source`），只通过 `receive_hit` 传递。攻击方不需要知道对方是谁：
+所有伤害和挠痒都打包成 **`HitData`**（`kind` = `ATTACK` 或 `TICKLE`，以及 `damage / tickle / knockback / source`，星光爆发另带 `tag = "magic_1~3"`），只通过 `receive_hit` 传递。攻击方不需要知道对方是谁：
 
 ```gdscript
 target.receive_hit(HitData.make_attack(self, 1, 170.0))   # 扣 1 点血
@@ -100,6 +113,29 @@ target.receive_hit(HitData.make_tickle(self, 10.0))        # 闷笑值 +10
 - 减速：`apply_slow(倍率, 秒)`，与闷笑倍率相乘。蛛丝减速 50% 持续 2 秒。
 - 抓取：`grab(抓人者, 最长秒数, 挣脱次数)`。被抓时 PlayableCharacter 进入 `GRABBED`，不能行动；连按 J/E 同时计入挣脱次数和 `struggle()`（-3 闷笑值）。挣脱或超时后 0.6 秒全无敌；松开时闷笑值仍超过 80 则直接进入失控。冲刺无敌时抓不住。
 - 抓人者负责持续挠痒（巨魔每 0.5 秒 8，机关手每 0.5 秒 6），被抓期间形象、台词、笑声照常按闷笑值切到失控 1 / 2。
+
+**定身、余痒、易痒、拉扯、外力**（`StatusComponent` / `Actor`）
+- `apply_root(秒)`：定身，不能移动和冲刺，仍可攻击，公主播放挣扎动画（藤蔓、钳钳蟹、组合技）。
+- `add_dot(每秒, 秒, 来源)`：余痒，每 0.5 秒结算一次挠痒。
+- `add_tickle_multiplier(倍率, 秒)`：易痒，同时有多个时取最大；由 `Actor._tickle_multiplier(hit)` 乘到每次挠痒上。
+- `add_pull(来源, 速度, 秒)`：被拉向来源。
+- `Actor.add_push(向量)`：只作用一帧的外力（风扇、传送带、拉扯），`move_with_push()` 移动时叠加、不累积进速度。
+- `is_immobile()`：被抓或定身；`PlayableCharacter.is_immobile()` 另外算上吟唱和失控。
+
+**星光爆发魔法**（`PlayableCharacter` 的 `CHANNEL` 状态 + `StarBurst`）
+- 按住 `magic`（L / 鼠标右键 / 手柄 LB）吟唱：不能移动、冲刺。按住 0.6 / 1.2 / 2.0 秒分别到 1 / 2 / 3 档，满 2 秒自动释放；不到 0.6 秒松开 = 落空。
+- 1 档半径 36 伤害 2；2 档半径 52 伤害 3；3 档半径 72 伤害 4，并让怪物僵直 1.5 秒（`Monster.stun`），对 MagicReactive 生效（吹散粉雾、清除藤蔓、击散小精灵、触手怪收触手僵直 2 秒）。
+- 弱点暴露：吟唱时 180px 内的怪物立即锁定公主、追击 ×1.3；公主受到的挠痒 ×1.5（`_tickle_multiplier`，陷阱也算）。HUD 显示"弱点暴露！"。
+- 限制：闷笑值 >80 不能开始；吟唱中进入失控、被抓、受到攻击都会打断（`interrupt_channel`）；80 以下被挠痒不打断。释放后冷却 6 秒，落空/打断 1.5 秒。
+- 解锁：剧情标记 `magic_unlocked`（第三层开场对话的 `set_flag`）。数值都是 `PlayableCharacter` 的导出参数（`channel_tiers`、`magic_cooldown` …），档位半径伤害在 `StarBurst.TIERS`。
+- 事件信号 `magic_event(event, tier)`：`channel / tier / burst / fizzle / interrupted`，公主据此说 `princess_reactions.json` 的 `magic` 段台词。
+
+**组合技**（`ComboTracker`，公主的 `Combo` 节点）
+- 监听 `Actor.tickled(hit)`，记录 1.5 秒内挠到公主的来源键（`ReactionDB.key_of`）。来源不分先后，同一来源只算一次；`"*"` 匹配 `groups.monster` 里的任意怪物。
+- 匹配到 `data/combos.json` 中的组合就触发：施加效果、HUD 横幅（`GameState.combo_triggered`）、组合技提示音、公主说该组合的台词。同一组合 4 秒冷却。
+- 效果类型：`burst` 额外挠痒、`dot` 余痒、`root` 定身（`extend` 延长）、`multiplier` 易痒、`slow` 减速、`pull` 拉向来源、`hit_multiplier` 本次挠痒倍率。
+- 条件型组合（有 `condition` 字段）由代码触发 `combo.trigger(id, 来源, force_effects)`：扑粉蝙蝠（`FeatherBat` 飞过粉雾）、粉末旋风（`FeatherFan` 卷起的粉雾挠到公主）、趁手打劫（`ComboTracker.hit_multiplier`：被机关手抓着时怪物挠痒 ×1.5）。
+- 组合技自己造成的挠痒来源是 `ComboTracker`（`reaction_key` 为空），不会被再次记录。
 
 **怪物行动**
 - 敌人进入接触范围（`HitArea`）时，怪物按 `tickle_weight` 的概率选择挠痒，否则攻击。新怪物都 ≥ 0.85（幽灵 1.0），史莱姆 0.75。
@@ -168,6 +204,12 @@ HUD 背包栏会根据物品数据自动显示，不需要改 UI 代码。
 7. 装在墙上的陷阱（如机关手）在图例里用 `walltrap` 类型：`1 = walltrap type=hand group=hand1`，放在墙面格上（和火把一样）。
 8. 陷阱挠痒默认也播放果冻声，音高用 `tickle_pitch` 调。
 
+### 组合技
+1. 时间窗口组合：在 `data/combos.json` 的 `combos` 里加一项 `{"id", "category", "keys": [[来源键…], [来源键…]], "effects": [...]}`。每个槽位可以写多个备选键，`"*"` 表示任意怪物。
+2. 在 `data/princess_reactions.json` 的 `combos` 段加同 id 的 `name`（横幅）、`description`、`lines`（公主台词）。
+3. 条件型组合：写 `"condition": "说明"`，在满足条件的代码里调用 `player.combo.trigger("id", 来源)`（冷却中也要施加效果时传 `force_effects = true`）。
+4. `tests/floor3_test.gd` 会自动为每个时间窗口组合跑一遍触发测试，并检查它有名称和台词。
+
 ### 可操作角色
 1. 写脚本 `extends PlayableCharacter`。通用的移动、攻击、冲刺、交互、闷笑逻辑都已经在基类里。子类只写这个角色特有的反应，例如重写 `_on_damaged`、`_on_tickled`、`_on_laugh_level_changed`、`_on_respawned`，写法可参考 `princess.gd`。
 2. 场景参照 `scenes/actors/playable/princess.tscn`，复制后换掉精灵表和 `SpriteSheetConfig`（`data/actors/princess_sprites.tres`）。
@@ -193,7 +235,11 @@ data/dialogues.json  只放通用对话（复活、上锁提示、钥匙、失�
 - `scripts/main.gd`（主场景，组名 `main`）提供 `change_level(path)`：淡出 → 保存公主状态（`GameState.save_player_state()`：血量、闷笑值、战损）→ 换关卡 → 新关卡的公主注册时恢复 → 淡入。背包与剧情标记本来就在 GameState 中。
 - 图例 `exit target=next dialogue=… w=… h=…` 放置 `LevelExit`：走进去先播对话，再切换到 floors.json 中的下一层（`target=floor_03` 可直接指定楼层）。
 - 新增一层：建 `levels/floor_0N/` 的 `map.txt` 和 `dialogues.json`，在 `data/floors.json` 追加一项，运行构建器。
-- 第二层 `floor_02`：落脚点 → 蝙蝠巢穴（喷口）→ 幽灵长廊（点火把）→ 蜘蛛窝 → 机关走廊（旋转刷、压力板 + 机关手）→ 巨魔大厅（Boss，掉落金钥匙）→ 金锁门 → 出口楼梯（第二章完）。
+- 图例常用参数：陷阱 `dir=left/right/up/down`、`len=格数`、`lever=组名`（加入拉杆组）；拉杆 `target=组1,组2`；铁栅 `inverted=true`（通电关、断电开）；火把 `target=组名`（点亮时激活该组，如暗墙 `secret`）；怪物 `open_on_death=组名`。
+- 对话行可以带 `"set_flag": "标记"`，显示这一行时设置剧情标记。
+- 第一层 `floor_01`：牢房 → 火把走廊 → 守卫室（旁边兵器库）→ 储藏室 → 书房（火把照出暗墙 → 秘密储物间）→ 尖刺走廊 → 宝库 → 出口；走廊南侧有拉杆谜题间。
+- 第二层 `floor_02`：落脚点 → 蝙蝠巢穴（东侧喷口回廊 → 蛛丝幽灵房）→ 幽灵长廊（点火把）→ 蜘蛛窝 → 机关走廊（北侧休息室；旋转刷、压力板 + 机关手）→ 巨魔大厅（Boss，掉落金钥匙）→ 金锁门 → 出口楼梯（通往第三层）。
+- 第三层 `floor_03`：落脚点（学会星光爆发）→ 鼠窝 → 藤蔓迷道 → 蟹池 → 传送带工坊（西侧可选的组合试炼间）→ 风洞走廊（东侧宝物间有宝箱怪）→ 史莱姆与精灵厅 → 触手怪大厅（Boss，倒下开门）→ 出口楼梯（第三章完）。
 
 ## 公主状态与换美术素材
 
@@ -218,17 +264,21 @@ data/dialogues.json  只放通用对话（复活、上锁提示、钥匙、失�
 ## 目录
 
 ```
-scripts/core/         HitData、Faction、Contracts
+scripts/core/         HitData、Faction、Contracts、ReactionDB、Floors
 scripts/components/   各组件
 scripts/controllers/  输入来源
 scripts/actors/       Actor、PlayableCharacter、Monster、Ally 及具体角色
 scripts/traps/        Trap 与具体陷阱
-scripts/combat/       Projectile、WebShot、TickleCloud
+scripts/combat/       Projectile、WebShot、TickleCloud、StarBurst
+scripts/fx/           Fx、MagicCircle
 scripts/items/        ItemData 体系、Inventory、ItemDB、WorldItem、ItemDrop
-scripts/objects/      宝箱、门、铁栅门、拉杆、火把、木桶、石碑、检查点、对话触发
+scripts/objects/      宝箱、门、铁栅门、拉杆、火把、木桶、石碑、检查点、对话触发、暗墙、HitRelay
 scripts/autoload/     GameState（玩家引用、背包、标记、事件总线）、Audio
-data/                 对话、物品、怪物/友军数值、动画配置
+levels/floor_0N/      每层的地图、对话、场景
+data/                 楼层表、通用对话、组合技表、受挠台词、物品、怪物/友军数值、动画配置
 tests/smoke_test.gd   冒烟测试（含11状态、音频生命周期与接口约定检查）
 tests/floor2_test.gd  第二层：关卡切换、减速/抓取、新怪物、新陷阱、立绘密度
-tools/art/gen_sfx.py  合成果冻挠痒等音效
+tests/floor3_test.gd  楼层表与扩充房间、魔法、状态效果、组合技、第三层怪物/陷阱、第三层流程
+tools/art/gen_sfx.py  合成果冻挠痒、吟唱、爆发、组合技等音效
+tools/art/gen_expansion.py  扩展内容占位图（魔法、第三层怪物与陷阱、暗墙、武器架）
 ```
