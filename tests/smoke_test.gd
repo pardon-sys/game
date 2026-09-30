@@ -288,14 +288,16 @@ func _run_combat() -> void:
 	player.facing = Vector2.UP
 	# 史莱姆会反击/挠痒让公主进入受伤状态打断挥击；这里只测攻击输出，所以先给全无敌
 	player.set_invulnerable(2.0, true)
-	for i in 3:
-		if is_instance_valid(target):
-			target.global_position = player.global_position + Vector2(0, -12)
+	# 史莱姆 3 血；偶尔一次挥击落在它的受击无敌里，所以最多挥 5 次
+	var swings := 0
+	while is_instance_valid(target) and swings < 5:
+		target.global_position = player.global_position + Vector2(0, -12)
 		while not player.can_act():
 			await get_tree().physics_frame
 		player.attack()
+		swings += 1
 		await _wait(0.35)
-	check("三次攻击击败史莱姆", not is_instance_valid(target))
+	check("连续攻击击败史莱姆（%d 次挥击）" % swings, not is_instance_valid(target))
 	await _wait(0.2)
 
 	var barrel := _find("Barrel_5_20")

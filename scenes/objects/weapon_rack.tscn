@@ -1,0 +1,41 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/objects/breakable.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/generated/weapon_rack.png" id="tex"]
+[ext_resource type="Script" path="res://scripts/items/item_drop.gd" id="drop"]
+[ext_resource type="Resource" path="res://data/items/heart.tres" id="heart"]
+[ext_resource type="Resource" path="res://data/items/coin.tres" id="coin"]
+[ext_resource type="Resource" path="res://data/items/mint.tres" id="mint"]
+
+[sub_resource type="Resource" id="d_heart"]
+script = ExtResource("drop")
+item = ExtResource("heart")
+chance = 0.15
+
+[sub_resource type="Resource" id="d_coin"]
+script = ExtResource("drop")
+item = ExtResource("coin")
+chance = 0.5
+max_amount = 3
+
+[sub_resource type="Resource" id="d_mint"]
+script = ExtResource("drop")
+item = ExtResource("mint")
+chance = 0.12
+
+[sub_resource type="RectangleShape2D" id="body"]
+size = Vector2(12, 9)
+
+[node name="WeaponRack" type="StaticBody2D"]
+collision_layer = 33
+collision_mask = 0
+script = ExtResource("1")
+drops = Array[ExtResource("drop")]([SubResource("d_heart"), SubResource("d_coin"), SubResource("d_mint")])
+
+[node name="Sprite" type="Sprite2D" parent="."]
+texture = ExtResource("tex")
+offset = Vector2(0, -8)
+
+[node name="Shape" type="CollisionShape2D" parent="."]
+position = Vector2(0, -5)
+shape = SubResource("body")

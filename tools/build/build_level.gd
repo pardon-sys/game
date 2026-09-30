@@ -25,6 +25,8 @@ const SCENES := {
 	"player": "res://scenes/actors/playable/princess.tscn",
 	"chest": "res://scenes/objects/chest.tscn",
 	"barrel": "res://scenes/objects/barrel.tscn",
+	"rack": "res://scenes/objects/weapon_rack.tscn",
+	"secret": "res://scenes/objects/secret_wall.tscn",
 	"torch": "res://scenes/objects/torch.tscn",
 	"lever": "res://scenes/objects/lever.tscn",
 	"gate": "res://scenes/objects/gate.tscn",
@@ -55,7 +57,9 @@ const TYPED_SCENES := {
 	"walltrap": {"hand": "res://scenes/traps/grab_hand.tscn"},
 }
 ## 挂在墙上的类型：所在格仍是墙。
-const WALL_MOUNTED := ["torch", "face", "walltrap"]
+const WALL_MOUNTED := ["torch", "face", "walltrap", "secret"]
+## 看起来是墙、之后可能打开的格子：照常放墙块，下面再铺一层地面。
+const HIDDEN_PASSAGE := ["secret"]
 ## 放在地面层（总在角色下方）的类型。
 const FLOOR_LEVEL := ["trap", "checkpoint", "trigger", "plate", "exit"]
 ## Kenney 图块中带碰撞的装饰（下半格碰撞）。
@@ -147,6 +151,8 @@ func build(floor_id: String) -> int:
 			var kind: String = kind_at(x, y)
 			if is_wall(x, y):
 				_place_wall(walls_layer, x, y, info)
+				if kind in HIDDEN_PASSAGE:
+					floor_layer.set_cell(Vector2i(x, y), SRC_KENNEY, _kcoord(FLOOR_PLAIN))
 			else:
 				var tile := FLOOR_PLAIN
 				if kind == "floor" and info.has("tile"):
@@ -318,7 +324,7 @@ func _spawn(kind: String, info: Dictionary, x: int, y: int) -> Node2D:
 		var value: Variant = info[key]
 		var prop: String = key
 		match [kind, key]:
-			["gate", "group"]: prop = "group_name"
+			["gate", "group"], ["secret", "group"]: prop = "group_name"
 			["trap", "offset"]: prop = "phase_offset"
 			["chest", "item"], ["item", "id"]:
 				prop = "item"
