@@ -35,12 +35,29 @@ Godot 4.7 · 2D 俯视角像素游戏。粉发蓝眼、头戴金色小皇冠的�
 
 ## 笑倒 CG
 
-被挠到闷笑值满、把最后一点血笑没时，不会直接复活，而是先播一段笑倒 CG：画面切到一个小舞台，挠倒公主的那只怪物登场继续挠，配合对话、立绘切换和镜头，最后在检查点醒来。
+被挠到笑倒时，不会直接复活，而是先播一段笑倒 CG：画面切到一个小舞台，挠倒公主的那只怪物登场继续挠，配合对话、立绘切换和镜头，最后在检查点醒来。
 
-- 11 种怪物各有一段专属 CG；陷阱或来源不明时播通用 CG。被攻击打死不播 CG，照旧复活。
+- **算笑倒**：闷笑值满把最后一点血笑没；或者倒下时正在失控（闷笑值 >80）、正被抓住、2 秒内刚被挠过（最后一下是普通攻击也算）。不在挠痒状态时被打死不播 CG，照旧复活。
+- 11 种怪物各有一段专属 CG（按最后挠她的怪物选；来源不明时按打倒她的怪物），陷阱致死播通用 CG。
+- 怪物 CG 分三幕：失控 1 立绘 → 失控 2 立绘 → **CG 图**（剧情最多）。CG 图阶段立绘框变成对话框上方的横版大框（保持原图比例），并随挠痒抖动；右边的小舞台继续演。
 - 每次笑倒都会播；看过的 CG 画面角落会提示「Esc 跳过」，第一次看不能跳过。
 - 所有 CG 写在一个文件 `data/cgs.json` 里（对话、演员、演绎指令、立绘都按步骤写），格式说明在文件开头和架构文档里。
-- **立绘接口**：CG 立绘现在用失控 1 / 失控 2 占位。正式素材按 id 命名放进 `assets/cg/portraits/`（如 `slime_1.png`）就会自动替换，见该目录的 README。
+- **立绘接口**：前两幕的 CG 立绘现在用失控 1 / 失控 2 占位，正式素材按 id 命名放进 `assets/cg/portraits/`（如 `slime_1.png`）就会自动替换，见该目录的 README。
+- **CG 图**：手绘原图放在 `assets/generated/CG/<来源键>.png`，运行 `python tools/art/import_cg.py [--preview]` 像素化成 `assets/cg/portraits/<来源键>_3.png`（保持比例、高 360 = 显示 180 的 2 倍密度）。
+
+## 关卡设计：躲不开的陷阱配合
+
+每层都有几段"强制遭遇"，参考第三层风洞走廊（风扇把人吹进痒痒粉和旋转刷）的做法，让陷阱和怪物的配合绕不过去：
+
+- **强制位移**：风扇风道、传送带铺满整条通道，把人送进喷口 / 旋转刷 / 机关手 / 怪物堆；关掉它们的拉杆放在危险区的另一侧。
+- **窄道铺满陷阱**：羽毛陷阱、藤蔓铺满通道宽度（长度超过冲刺距离），出口处有怪物把守，方便打出组合技。
+- **锁门战斗房**：走进去铁栅落下，打倒房间里所有怪物（包括战斗中分裂 / 召唤出来的）才开门；中途倒下会开门重置。Boss 房也加了小怪和陷阱。
+
+| 层 | 强制段 | 锁门战斗房 |
+|---|---|---|
+| 一 | 守卫室门前羽毛门廊、尖刺间的羽毛带、宝库传送带 + 羽毛带 | 守卫室 |
+| 二 | 蝙蝠巢穴风道（粉末旋风）、幽灵长廊藤蔓带、机关走廊整高传送带 | 蜘蛛窝、巨魔大厅 |
+| 三 | 鼠窝藤蔓带、蟹池出口传送带、传送带工坊、风洞走廊 | 鼠窝、史莱姆与精灵厅、组合试炼间、触手怪大厅 |
 
 ## 星光爆发（高风险高回报）
 
@@ -133,12 +150,14 @@ Godot 4.7 · 2D 俯视角像素游戏。粉发蓝眼、头戴金色小皇冠的�
 Godot --headless --path . res://tests/smoke_test.tscn   # 检查交互、11状态、音频、战斗、物品和复活，退出码0为通过
 Godot --headless --path . res://tests/floor2_test.tscn  # 第二层：关卡切换、减速/抓取、新怪物、新陷阱、立绘密度
 Godot --headless --path . res://tests/floor3_test.tscn  # 楼层表与扩充房间、魔法、状态效果、组合技、第三层
-Godot --headless --path . res://tests/cg_test.tscn      # 笑倒 CG：数据校验、触发与选择、步骤切换、复活、跳过、立绘接口
+Godot --headless --path . res://tests/cg_test.tscn      # 笑倒 CG：数据校验、每种怪物真实 AI 触发、三幕切换、复活、跳过、立绘接口
+Godot --headless --path . res://tests/level_design_test.tscn  # 强制遭遇段绕不过去、锁门战斗房、各层连通
 Godot --path . res://tests/capture.tscn                 # 11 种状态截图到 tools/.cache/shots/
 Godot --path . res://tests/capture_floor2.tscn          # 第二层各房间截图
 Godot --path . res://tests/capture_rooms.tscn           # 第一、二层扩充房间截图
 Godot --path . res://tests/capture_floor3.tscn          # 第三层各房间、魔法、组合技、Boss 截图
-Godot --path . res://tests/capture_cg.tscn              # 每段笑倒 CG 的第 2、4 步截图（-- only=death_slime 只截一段）
+Godot --path . res://tests/capture_cg.tscn              # 每段笑倒 CG 三幕各一张截图（-- only=death_slime 只截一段）
+Godot --path . res://tests/capture_levels.tscn          # 每个强制段和战斗房的截图
 ```
 
 ## 目录
