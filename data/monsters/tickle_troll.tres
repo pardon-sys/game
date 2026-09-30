@@ -5,6 +5,8 @@
 [ext_resource type="Resource" path="res://data/items/heart.tres" id="3"]
 [ext_resource type="Resource" path="res://data/items/key_gold.tres" id="4"]
 
+[ext_resource type="Resource" path="res://data/items/clear_dew.tres" id="dew"]
+
 [sub_resource type="Resource" id="drop"]
 script = ExtResource("2")
 item = ExtResource("3")
@@ -14,6 +16,11 @@ max_amount = 2
 [sub_resource type="Resource" id="drop_key"]
 script = ExtResource("2")
 item = ExtResource("4")
+chance = 1.0
+
+[sub_resource type="Resource" id="drop_dew"]
+script = ExtResource("2")
+item = ExtResource("dew")
 chance = 1.0
 
 [resource]
@@ -34,4 +41,4 @@ tickle_amount = 8.0
 tickle_cooldown = 1.0
 tickle_weight = 0.85
 tickle_pitch = 0.6
-drops = Array[ExtResource("2")]([SubResource("drop_key"), SubResource("drop")])
+drops = Array[ExtResource("2")]([SubResource("drop_key"), SubResource("drop"), SubResource("drop_dew")])

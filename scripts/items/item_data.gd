@@ -21,6 +21,8 @@ enum Category { CONSUMABLE, KEY, CURRENCY, INSTANT }
 @export var pickup_sound := "pickup"
 ## 获得时公主的表情（留空不做表情）。
 @export var pickup_emotion := ""
+## 用哪个按键使用：use_item（Q，薄荷糖）/ use_special（R，清心花露）。
+@export var hotkey := "use_item"
 
 
 func can_use(_user: Node) -> bool:

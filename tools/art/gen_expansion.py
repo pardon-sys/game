@@ -502,6 +502,47 @@ def gen_buff_icons():
     sheet.save(OUT / "buff_icons.png")
 
 
+# ------------------------------------------------------------------ 魔力疲倦
+PURPLE = (150, 100, 230, 200)
+PURPLE_L = (200, 170, 255, 220)
+PURPLE_D = (90, 60, 160, 210)
+
+
+def fatigue_puddle(frame):
+    img, d = canvas(48, 24)
+    d.ellipse((1, 3, 46, 21), fill=PURPLE_D)
+    d.ellipse((4, 5, 43, 19), fill=PURPLE)
+    d.ellipse((10, 7, 30, 13), fill=PURPLE_L)
+    for i, (x, y) in enumerate(((14, 9), (30, 14), (22, 16), (36, 10))):
+        if (i + frame) % 3 == 0:
+            d.point((x, y), fill=(255, 255, 255, 255))
+            d.point((x + 1, y), fill=(230, 220, 255, 255))
+    return img
+
+
+def clear_dew():
+    img, d = canvas()
+    d.rectangle((6, 1, 9, 3), fill=(200, 170, 120, 255))     # 瓶塞
+    d.rectangle((6, 4, 9, 5), fill=(210, 240, 255, 255))     # 瓶颈
+    d.ellipse((3, 5, 12, 14), fill=(150, 210, 255, 255))     # 瓶身
+    d.ellipse((4, 8, 11, 14), fill=(110, 180, 250, 255))
+    d.point((5, 7), fill=(255, 255, 255, 255))
+    d.point((8, 10), fill=(255, 170, 214, 255))               # 花
+    d.point((7, 10), fill=(255, 220, 240, 255))
+    d.point((9, 10), fill=(255, 220, 240, 255))
+    d.point((8, 9), fill=(255, 220, 240, 255))
+    d.point((8, 11), fill=(255, 220, 240, 255))
+    return add_outline(img)
+
+
+def gen_fatigue_art():
+    sheet = blank(144, 24)
+    for f in range(3):
+        sheet.alpha_composite(fatigue_puddle(f), (f * 48, 0))
+    sheet.save(OUT / "fatigue_puddle.png")
+    clear_dew().save(OUT / "item_clear_dew.png")
+
+
 def gen_floor_expansion():
     weapon_rack().save(OUT / "weapon_rack.png")
     secret_crack().save(OUT / "secret_crack.png")
@@ -514,6 +555,7 @@ def main():
     gen_traps()
     gen_cg_fx()
     gen_buff_icons()
+    gen_fatigue_art()
 
 
 if __name__ == "__main__":

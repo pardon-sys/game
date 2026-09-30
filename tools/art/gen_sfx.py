@@ -16,6 +16,7 @@
   chime        小精灵铃声
   pop          史莱姆分裂："啵"
   combo        组合技提示音：两声上扬
+  puddle       魔力疲倦水液：啪嗒一声
   tickle_special 特殊挠痒（暴击）：水里的果冻抖动——闷闷的啵叽 + 慢颤音 + 气泡，整体音高上扬约 5 度
 
 用法：python tools/art/gen_sfx.py
@@ -159,6 +160,11 @@ def underwater_jelly():
 
 def gen_expansion_sfx():
     save("tickle_special", underwater_jelly(), 0.8)
+    # 水液啪嗒：低通噪声 + 下滑的小水声（不用 rng，避免改变后面音效的随机序列）
+    t = t_axis(0.35)
+    drop = np.sin(2 * np.pi * np.cumsum(900 * np.exp(-t / 0.06) + 180) / RATE) * env(t, 0.003, 0.08)
+    ripple = np.sin(2 * np.pi * 420 * t) * np.sin(2 * np.pi * 9 * t) * env(t, 0.05, 0.12) * 0.4
+    save("puddle", mix(drop, ripple), 0.6)
     # 吟唱：C 大三和弦 + 轻微颤音，1.2 秒循环
     t = t_axis(1.25)
     vib = 1 + 0.004 * np.sin(2 * np.pi * 5 * t)

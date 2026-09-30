@@ -27,6 +27,9 @@ var combo_label: Label
 var _combo_tween: Tween
 ## 公主身上的增益 / 减益图标（心形右边）
 var buff_row: HBoxContainer
+## 闷笑条下面的魔力疲倦条
+var fatigue_row: HBoxContainer
+var fatigue_bar: FatigueBar
 
 
 func _ready() -> void:
@@ -42,6 +45,20 @@ func _ready() -> void:
 	GameState.combo_triggered.connect(show_combo)
 	toast_label.modulate.a = 0.0
 	_build_magic_ui()
+	fatigue_row = HBoxContainer.new()
+	fatigue_row.name = "FatigueRow"
+	fatigue_row.position = Vector2(6, 35)
+	fatigue_row.add_theme_constant_override("separation", 4)
+	var fl := Label.new()
+	fl.text = "魔力"
+	fl.add_theme_color_override("font_color", Color(0.78, 0.66, 1.0))
+	fatigue_row.add_child(fl)
+	fatigue_bar = FatigueBar.new()
+	fatigue_bar.custom_minimum_size = Vector2(75, 5)
+	fatigue_bar.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	fatigue_row.add_child(fatigue_bar)
+	add_child(fatigue_row)
+	fatigue_row.hide()
 	buff_row = HBoxContainer.new()
 	buff_row.name = "Buffs"
 	buff_row.position = Vector2(92, 7)
@@ -63,6 +80,10 @@ func _bind_player(p: PlayableCharacter) -> void:
 	$LaughRow.visible = p.laugh != null
 	if p.laugh:
 		laugh_bar.bind(p.laugh)
+	var f: MagicFatigue = p.get("fatigue")
+	fatigue_row.visible = f != null
+	if f:
+		fatigue_bar.bind(f)
 	p.buffs_changed.connect(_refresh_buffs)
 	_refresh_buffs()
 
@@ -203,7 +224,7 @@ func _refresh_inventory() -> void:
 		var label := Label.new()
 		label.text = "×%d" % GameState.inventory.count(it.id)
 		if it.category == ItemData.Category.CONSUMABLE:
-			label.text += " [Q]"
+			label.text += " [R]" if it.hotkey == "use_special" else " [Q]"
 		slot.add_child(label)
 		inventory_row.add_child(slot)
 

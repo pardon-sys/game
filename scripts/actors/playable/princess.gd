@@ -20,6 +20,8 @@ var _reaction_stage := ""
 func resolve_visual(requested: String) -> String:
 	if not is_alive():
 		return "damaged" if battle_damaged else "sad"
+	if state == State.CAST and fatigue_bursting:
+		return "damaged_burst"  # 疲倦爆发复用战损释放
 	if state in [State.CHANNEL, State.CAST]:
 		return magic_visual(state == State.CAST)
 	return _resolve_normal(requested)
@@ -47,6 +49,8 @@ func _resolve_normal(requested: String) -> String:
 
 func _setup() -> void:
 	super()
+	if fatigue:
+		fatigue.changed.connect(_on_fatigue_changed)
 	tickled.connect(func(hit: HitData):
 		var k := ReactionDB.key_of(hit.source)
 		if k != "":
@@ -73,6 +77,8 @@ func _on_damaged(hit: HitData) -> void:
 
 func _on_tickled(hit: HitData) -> void:
 	super(hit)
+	if fatigue_bursting:
+		return  # 这一下挠痒把疲倦挠满、刚刚爆发：说疲倦爆发的台词，不说普通受挠台词
 	var key := ReactionDB.key_of(hit.source)
 	if _play_first_encounter(key):
 		return
@@ -224,6 +230,8 @@ func _on_magic_event(event: String, tier: int) -> void:
 	if GameState.in_dialogue:
 		return
 	match event:
+		"fatigue_burst":
+			_on_fatigue_burst()
 		"channel":
 			if not GameState.has_flag("hint_magic_exposed"):
 				GameState.set_flag("hint_magic_exposed")
@@ -237,6 +245,32 @@ func _on_magic_event(event: String, tier: int) -> void:
 		"burst":
 			GameState.emote("happy", 1.2)
 			_say(ReactionDB.magic("burst_full" if tier >= channel_tiers.size() else "burst"), "magic")
+
+
+# ------------------------------------------------------------------ 魔力疲倦
+var _fatigue_warned := false
+
+
+func _on_fatigue_changed(value: float, _max: float) -> void:
+	if value >= 450.0 and not _fatigue_warned and is_alive():
+		_fatigue_warned = true
+		_say(ReactionDB.fatigue("warning"), "fatigue")
+
+
+## 疲倦爆发：非常疲倦但一口气清空的舒服解脱感。第一次播一小段剧情，之后随机一句，几秒后再补一句。
+func _on_fatigue_burst() -> void:
+	_fatigue_warned = false
+	GameState.emote("happy", 2.0)  # 失控时失控表情仍然优先（resolve_visual）
+	if not GameState.has_flag("seen_fatigue_burst"):
+		GameState.set_flag("seen_fatigue_burst")
+		var lines := ReactionDB.fatigue("first")
+		if not lines.is_empty():
+			Dialogue.start_lines(lines, "fatigue_first")
+			return
+	_say(ReactionDB.fatigue("burst"), "fatigue")
+	await get_tree().create_timer(3.0).timeout
+	if is_alive() and not GameState.in_dialogue:
+		_say(ReactionDB.fatigue("after"), "fatigue")
 
 
 ## 组合技触发时由 ComboTracker 调用。

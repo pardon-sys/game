@@ -65,9 +65,9 @@ func use(id: String, user: Node) -> bool:
 
 
 ## 使用第一个可用的消耗品（快捷键 use_item）。
-func use_first_usable(user: Node) -> bool:
+func use_first_usable(user: Node, hotkey := "use_item") -> bool:
 	for it in items():
-		if it.category == ItemData.Category.CONSUMABLE and it.can_use(user):
+		if it.category == ItemData.Category.CONSUMABLE and it.hotkey == hotkey and it.can_use(user):
 			return use(it.id, user)
 	return false
 

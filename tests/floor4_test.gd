@@ -29,6 +29,7 @@ func _ready() -> void:
 	player.global_position = Vector2(31 * 16 + 8, 23 * 16 + 12)  # 第一层守卫室（空间大）
 	await _run_buffs()
 	await _run_special()
+	await _run_fatigue()
 	print("\n==== %s (%d 项失败) ====" % ["全部通过" if failures == 0 else "有失败", failures])
 	get_tree().quit(1 if failures else 0)
 
@@ -161,6 +162,111 @@ func _run_special() -> void:
 	_reset()
 
 
+# ------------------------------------------------------------------ 魔力疲倦
+func _run_fatigue() -> void:
+	print("-- 魔力疲倦")
+	_reset()
+	var f: MagicFatigue = player.fatigue
+	f.clear()
+	check("魔力疲倦上限 500，HUD 有疲倦条", f.max_value == 500.0 and main.get_node("HUD").fatigue_row.visible)
+	player.laugh.clear()
+	player.receive_hit(HitData.make_tickle(_src("slime"), 10.0))
+	check("普通挠痒：疲倦 = 挠痒值的一半", is_equal_approx(f.value, 5.0))
+	var h := HitData.make_tickle(_src("slime"), 20.0)
+	h.special = true
+	player.receive_hit(h)
+	check("暴击：疲倦 = 挠痒值的两倍", absf(f.value - 45.0) < 0.1)
+	var kept := f.value
+	await _wait(2.5)
+	check("疲倦不随时间下降", is_equal_approx(f.value, kept))
+	player.revive()
+	check("复活不清零", is_equal_approx(f.value, kept))
+	var pts := {100.0: 0.01, 200.0: 0.05, 300.0: 0.10, 400.0: 0.30, 500.0: 0.50}
+	var ok := true
+	for v in pts:
+		ok = ok and is_equal_approx(f.laugh_bonus(v), pts[v])
+	check("闷笑加成：200 +5%、300 +10%、400 +30%、500 +50%（先缓后升）", ok and f.laugh_bonus(250) < 0.1 and f.laugh_bonus(350) > 0.1)
+	f.set_value(400.0)
+	player.laugh.clear()
+	player.receive_hit(HitData.make_tickle(_src(""), 10.0))
+	check("疲倦 400 时闷笑积累 ×1.3", is_equal_approx(player.laugh.value, 13.0))
+	await _goto("floor_02")
+	check("疲倦跨层保留", player.fatigue.value > 400.0)
+	await _goto("floor_01")
+	f = player.fatigue
+
+	# 满值爆发
+	_reset()
+	player.global_position = Vector2(31 * 16 + 8, 23 * 16 + 12)
+	var near := _spawn("slime", Vector2(40, 0))
+	near.health.max_hp = 10
+	near.health.fill()
+	var far := _spawn("slime", Vector2(120, 0))
+	f.set_value(495.0)
+	GameState.flags.erase("seen_fatigue_burst")
+	var said: Array = []
+	var on_said := func(text: String, _d: float): said.append(text)
+	GameState.princess_reacted.connect(on_said)
+	player.receive_hit(HitData.make_tickle(_src(""), 12.0))
+	await get_tree().physics_frame
+	check("疲倦满 500 自动爆发：清零", f.value == 0.0)
+	check("爆发用战损释放姿势、原地定住", player.is_casting() and player.emotion.current == "damaged_burst")
+	check("爆发伤害 = 满蓄力的一半（2），半径 72", near.health.hp == 8 and far.health.hp == far.health.max_hp)
+	check("获得一层永久疲倦印记（闷笑积累 +1%）", player.buff_stacks("fatigue_scar") == 1 and is_equal_approx(player.stat_add("laugh_gain"), 0.01))
+	var puddles := get_tree().get_nodes_in_group("fatigue_puddle")
+	check("原地留下疲倦水液（30 秒）", puddles.size() == 1 and is_equal_approx(puddles[0].lifetime, 30.0)
+		and puddles[0].global_position.distance_to(player.global_position) < 4.0)
+	check("第一次爆发播放剧情对话（单独的台词文件）", Dialogue.is_active() and ReactionDB.fatigue("first").size() >= 2)
+	_finish_dialogue()
+	await _wait(0.6)
+	check("爆发后恢复行动", not player.is_casting())
+	f.set_value(499.0)
+	said.clear()
+	player.receive_hit(HitData.make_tickle(_src(""), 10.0))
+	await _wait(0.1)
+	check("之后爆发：说一句 burst 台词", not said.is_empty() and ReactionDB.fatigue("burst").has(said.back()))
+	await _wait(3.2)
+	check("几秒后再补一句 after 台词", ReactionDB.fatigue("after").has(said.back()))
+	GameState.princess_reacted.disconnect(on_said)
+	check("疲倦印记叠到 2 层", player.buff_stacks("fatigue_scar") == 2)
+
+	# 水液：怪物踩进去获得力量
+	near.process_mode = Node.PROCESS_MODE_INHERIT
+	near.global_position = get_tree().get_nodes_in_group("fatigue_puddle")[0].global_position
+	await _wait(0.2)
+	check("怪物踩进水液获得力量增益（挠痒冷却 ×0.6）", near.has_buff("strength") and is_equal_approx(near.stat_mul("tickle_cd"), 0.6))
+	for p in get_tree().get_nodes_in_group("fatigue_puddle"):
+		p.lifetime = p._age + 0.2
+	await _wait(0.4)
+	check("水液到时间干掉", get_tree().get_nodes_in_group("fatigue_puddle").is_empty())
+	near.queue_free()
+	far.queue_free()
+
+	# 清心花露
+	check("清心花露只在 Boss 掉落表里", _dew_sources() == ["tentacle_boss.tres", "tickle_troll.tres"])
+	GameState.give_item(ItemDB.get_item("mint"), 1, player)
+	GameState.give_item(ItemDB.get_item("clear_dew"), 1, player)
+	player.laugh.set_value(30.0)
+	player.use_item()
+	check("Q 键吃薄荷糖，不会用掉花露", GameState.inventory.count("clear_dew") == 1 and player.buff_stacks("fatigue_scar") == 2)
+	player.use_item("use_special")
+	check("R 键用清心花露：疲倦印记全部清掉", GameState.inventory.count("clear_dew") == 0 and not player.has_buff("fatigue_scar"))
+	f.clear()
+	_reset()
+
+
+func _dew_sources() -> Array:
+	var out: Array = []
+	for fname in DirAccess.get_files_at("res://data/monsters"):
+		if fname.ends_with(".tres") and FileAccess.get_file_as_string("res://data/monsters/" + fname).contains("clear_dew"):
+			out.append(fname)
+	for id in Floors.ids():
+		if FileAccess.get_file_as_string(Floors.map_path(id)).contains("clear_dew"):
+			out.append(id)
+	out.sort()
+	return out
+
+
 # ------------------------------------------------------------------ 工具
 func _spawn(file: String, offset: Vector2, active := false) -> Monster:
 	var m: Monster = load("res://scenes/actors/monsters/%s.tscn" % file).instantiate()
@@ -182,6 +288,8 @@ func _src(key: String) -> Src:
 func _reset() -> void:
 	player.revive()
 	player.clear_buffs(false)
+	if player.fatigue:
+		player.fatigue.clear()
 	player._full_invuln = 0.0
 	player._attack_invuln = 0.0
 	player._magic_cd = 0.0

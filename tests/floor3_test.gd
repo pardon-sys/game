@@ -10,6 +10,7 @@ var failures := 0
 
 func _ready() -> void:
 	Monster.random_specials = false  # 这里要精确的挠痒数值；暴击在 floor4_test 里测
+	MagicFatigue.accumulate = false  # 同理，魔力疲倦的闷笑加成在 floor4_test 里测
 	main = load("res://scenes/main.tscn").instantiate()
 	add_child(main)
 	await _wait(1.0)
@@ -129,6 +130,8 @@ func _cast(hold_time: float) -> int:
 
 
 func _reset_magic() -> void:
+	if player.fatigue:
+		player.fatigue.clear()  # 魔力疲倦不会自己消散，会给闷笑积累加成；这里的数值检查要从 0 开始
 	if player.is_casting():  # 释放动作还没播完：直接结束，方便连续施法测试
 		player._set_state(PlayableCharacter.State.IDLE)
 	player._magic_cd = 0.0

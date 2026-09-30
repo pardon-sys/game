@@ -65,6 +65,18 @@ static func key_of(node: Object) -> String:
 	return ""
 
 
+const FATIGUE_PATH := "res://data/princess_fatigue.json"
+static var _fatigue := {}
+
+
+## 魔力疲倦爆发的台词（单独文件 data/princess_fatigue.json）：burst / after / warning 为句子数组，first 为剧情对话行。
+static func fatigue(section: String) -> Array:
+	if _fatigue.is_empty():
+		var parsed: Variant = JSON.parse_string(FileAccess.get_file_as_string(FATIGUE_PATH))
+		_fatigue = parsed if parsed is Dictionary else {}
+	return _fatigue.get(section, [])
+
+
 ## 特殊挠痒（暴击）时公主的台词：sources[key].special，没有则用通用 lines.special。
 static func special(key: String) -> Array:
 	var own: Array = source(key).get("special", [])

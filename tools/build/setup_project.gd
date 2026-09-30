@@ -41,6 +41,7 @@ func _initialize() -> void:
 	_action("attack", [_key(KEY_J), _mouse(MOUSE_BUTTON_LEFT), _btn(JOY_BUTTON_X)])
 	_action("dash", [_key(KEY_K), _key(KEY_SHIFT), _btn(JOY_BUTTON_B), _btn(JOY_BUTTON_RIGHT_SHOULDER)])
 	_action("use_item", [_key(KEY_Q), _btn(JOY_BUTTON_Y)])
+	_action("use_special", [_key(KEY_R), _btn(JOY_BUTTON_BACK)])
 	_action("magic", [_key(KEY_L), _mouse(MOUSE_BUTTON_RIGHT), _btn(JOY_BUTTON_LEFT_SHOULDER)])
 	_action("pause", [_key(KEY_ESCAPE), _btn(JOY_BUTTON_START)])
 	var err := ProjectSettings.save()

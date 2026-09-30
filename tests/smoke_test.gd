@@ -14,6 +14,7 @@ var failures := 0
 
 func _ready() -> void:
 	Monster.random_specials = false  # 这里要精确的挠痒数值；暴击在 floor4_test 里测
+	MagicFatigue.accumulate = false  # 同理，魔力疲倦的闷笑加成在 floor4_test 里测
 	var main: Node = load("res://scenes/main.tscn").instantiate()
 	add_child(main)
 	level = main.get_node("Floor01")
@@ -133,6 +134,8 @@ func _run_visual_states() -> void:
 	check("HUD同步最终表情", hud != null and hud.portrait.texture == Dialogue.head_for("helpless_2"))
 	_finish_dialogue()
 	player.laugh.clear()
+	if player.fatigue:
+		player.fatigue.clear()
 	await _wait(1.4)
 	check("剧情结束后退回战损", player.emotion.current == "damaged" and Dialogue.portrait.texture == Dialogue.portrait_for("damaged"))
 	princess.revive()
@@ -155,6 +158,8 @@ func _run_visual_states() -> void:
 	check("暂停停止声音", not Audio._voice.playing)
 	get_tree().paused = false
 	player.laugh.clear()
+	if player.fatigue:
+		player.fatigue.clear()
 	check("恢复平静停止声音", not Audio._voice.playing)
 	princess.revive()
 	# Verify actual atlas columns for both independent horizontal directions.
@@ -241,6 +246,8 @@ func _run_reactions() -> void:
 	check("降至80停止连续大笑", not Audio._voice.playing and Audio._voice_state == "giggle")
 	player.laugh.decay_rate = old_decay
 	player.laugh.clear()
+	if player.fatigue:
+		player.fatigue.clear()
 	princess.revive()
 	var slime: Monster = _find("Slime_35_23")
 	check("挠痒冷却小于普通攻击", slime.stats.tickle_cooldown < slime.stats.attack_cooldown)
@@ -278,6 +285,8 @@ func _run_combat() -> void:
 	# Monster.attack / Monster.tickle
 	var slime: Monster = _find("Slime_35_23")
 	player.laugh.clear()
+	if player.fatigue:
+		player.fatigue.clear()
 	_clear_invuln()
 	hp = player.health.hp
 	check("怪物 attack() 成功", slime.attack(player))
@@ -291,6 +300,8 @@ func _run_combat() -> void:
 	check("tickle 加闷笑值", is_equal_approx(player.laugh.value, slime.stats.tickle_amount))
 	check("tickle 不扣血", player.health.hp == hp)
 	player.laugh.clear()
+	if player.fatigue:
+		player.fatigue.clear()
 	player.health.fill()
 
 	# 攻击史莱姆
@@ -317,6 +328,8 @@ func _run_combat() -> void:
 	await _wait(0.1)
 	check("木桶被打碎", not is_instance_valid(barrel))
 	player.laugh.clear()
+	if player.fatigue:
+		player.fatigue.clear()
 	player.health.fill()
 
 
@@ -420,6 +433,8 @@ func _run_items() -> void:
 	check("使用后薄荷糖被消耗", inv.count("mint") == 0)
 	check("没有闷笑值时不能使用薄荷糖", not mint.can_use(player) or player.laugh.value > 0.0)
 	player.laugh.clear()
+	if player.fatigue:
+		player.fatigue.clear()
 	check("钥匙不能主动使用", not ItemDB.get_item("key_gold").can_use(player))
 	var tmp := Inventory.new()
 	check("物品堆叠不超过上限", tmp.add(ItemDB.get_item("coin"), 5000) == 999 and tmp.count("coin") == 999)
@@ -457,6 +472,8 @@ func _run_ally() -> void:
 	await _wait(0.8)
 	check("公主闷笑时骑士帮忙降低（%.0f）" % player.laugh.value, player.laugh.value <= 45.5)
 	player.laugh.clear()
+	if player.fatigue:
+		player.fatigue.clear()
 
 	var slime: Monster = load(SLIME_SCENE).instantiate()
 	ents.add_child(slime)
@@ -467,6 +484,8 @@ func _run_ally() -> void:
 		slime.queue_free()
 	knight.queue_free()
 	player.laugh.clear()
+	if player.fatigue:
+		player.fatigue.clear()
 	player.health.fill()
 	await _wait(0.2)
 
@@ -495,6 +514,8 @@ func _run_traps() -> void:
 	await _wait(0.2)
 	hp = player.health.hp
 	player.laugh.clear()
+	if player.fatigue:
+		player.fatigue.clear()
 	player.global_position = feather.global_position + Vector2(0, 4)
 	await _wait(0.6)
 	check("踩到羽毛陷阱加闷笑值", player.laugh.value > 0.0)
@@ -502,6 +523,8 @@ func _run_traps() -> void:
 
 	_move_player_to(Vector2i(29, 40))
 	player.laugh.clear()
+	if player.fatigue:
+		player.fatigue.clear()
 	await _wait(1.8)
 	var lever := _find("Lever_34_41")
 	var gate1 := _find("Gate_31_36")

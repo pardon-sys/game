@@ -69,6 +69,9 @@ enum State { IDLE, MOVE, ATTACK, DASH, HURT, HELPLESS, GRABBED, DEAD, CHANNEL, C
 @onready var prompt: Sprite2D = get_node_or_null("Prompt")
 @onready var camera: Camera2D = get_node_or_null("Camera")
 @onready var combo: ComboTracker = get_node_or_null("Combo")
+@onready var fatigue: MagicFatigue = get_node_or_null("Fatigue")
+## 正在进行疲倦爆发（CAST 期间用战损释放姿势）。
+var fatigue_bursting := false
 
 var state := State.IDLE
 var _state_time := 0.0
@@ -87,6 +90,8 @@ var _chant: AudioStreamPlayer
 
 
 func _setup() -> void:
+	if fatigue:
+		fatigue.full.connect(fatigue_burst)
 	if controller == null:
 		set_controller(PlayerInputController.new())
 	if faction == Faction.Type.PLAYER:
@@ -157,6 +162,8 @@ func _tick(delta: float) -> void:
 					interact()
 				elif controller.is_action_just_pressed(&"use_item"):
 					use_item()
+				elif controller.is_action_just_pressed(&"use_special"):
+					use_item("use_special")
 		State.ATTACK:
 			velocity = velocity.move_toward(Vector2.ZERO, friction * delta)
 			if hitbox and _state_time >= attack_active_from and _state_time <= attack_active_to:
@@ -206,6 +213,7 @@ func _tick(delta: float) -> void:
 		State.CAST:
 			velocity = velocity.move_toward(Vector2.ZERO, friction * delta)
 			if _state_time >= cast_time:
+				fatigue_bursting = false
 				_set_state(State.IDLE)
 		State.DEAD:
 			velocity = Vector2.ZERO
@@ -255,10 +263,10 @@ func interact() -> void:
 
 
 ## 使用背包里第一个可用的消耗品（目前是薄荷糖）。
-func use_item() -> bool:
+func use_item(hotkey := "use_item") -> bool:
 	if state == State.DEAD:
 		return false
-	var used := GameState.inventory.use_first_usable(self)
+	var used := GameState.inventory.use_first_usable(self, hotkey)
 	if not used:
 		Audio.play("locked", -8.0)
 	return used
@@ -391,9 +399,10 @@ func _on_channel_tier(tier: int) -> void:
 	magic_event.emit("tier", tier)
 
 
-## 受到的挠痒倍率：状态（易痒）× 吟唱时弱点暴露。
+## 受到的挠痒倍率：状态（易痒、增益减益）× 吟唱时弱点暴露 × 魔力疲倦加成。
 func _tickle_multiplier(hit: HitData) -> float:
 	var k := super(hit) * (exposed_tickle_mult if state == State.CHANNEL else 1.0)
+	k *= 1.0 + (fatigue.laugh_bonus() if fatigue else 0.0)
 	return k * (combo.hit_multiplier(hit) if combo else 1.0)
 
 
@@ -416,8 +425,10 @@ func _on_damaged(_hit: HitData) -> void:
 		_set_state(State.HURT)
 
 
-func _on_tickled(_hit: HitData) -> void:
+func _on_tickled(hit: HitData) -> void:
 	shake(0.04)
+	if fatigue:
+		fatigue.from_tickle(hit)
 
 
 func _on_laugh_level_changed(level: LaughMeter.Level) -> void:
@@ -461,6 +472,26 @@ func respawn() -> void:
 
 func _on_respawned() -> void:
 	pass
+
+
+# ------------------------------------------------------------------ 魔力疲倦爆发
+## 魔力疲倦满 500：原地自动爆发（满蓄力档一半伤害，战损释放姿势定住 cast_time），
+## 留下疲倦水液，疲倦清零，获得一层永久的「疲倦印记」（闷笑积累 +1%）。被抓着会被炸开。
+func fatigue_burst() -> void:
+	if not is_alive() or fatigue == null:
+		return
+	fatigue.clear()
+	if status and status.is_grabbed():
+		status.release(true)
+	interrupt_channel()
+	_end_attack()
+	fatigue_bursting = true
+	_set_state(State.CAST)
+	StarBurst.cast_fatigue(self)
+	FatiguePuddle.spawn(get_parent(), global_position)
+	add_buff("fatigue_scar", -1.0)
+	shake(0.3)
+	magic_event.emit("fatigue_burst", 0)
 
 
 ## 子类钩子：死亡时要播过场就返回 true（由子类负责之后调用 respawn）。

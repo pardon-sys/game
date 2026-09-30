@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="CleanseItem" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/items/cleanse_item.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/generated/item_clear_dew.png" id="2"]
+
+[resource]
+script = ExtResource("1")
+icon = ExtResource("2")
+id = "clear_dew"
+display_name = "清心花露"
+description = "淡蓝色的花露，喝下后疲倦印记全部消散。只有强大的守护者身上才带着它。（R 键使用）"
+category = 0
+max_stack = 9
+pickup_emotion = "happy"
+hotkey = "use_special"
