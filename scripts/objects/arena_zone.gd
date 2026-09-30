@@ -57,7 +57,7 @@ func lock(player: Actor) -> void:
 
 
 func remaining() -> int:
-	return _tracked.filter(func(m: Node): return is_instance_valid(m) and m.is_alive()).size()
+	return _tracked.filter(func(m): return is_instance_valid(m) and m.is_alive()).size()
 
 
 func _collect() -> void:

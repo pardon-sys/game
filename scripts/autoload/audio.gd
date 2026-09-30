@@ -42,6 +42,12 @@ const SOUNDS := {
 	"combo": ["res://assets/generated/sfx/combo.wav"],
 	"tickle_special": ["res://assets/generated/sfx/tickle_special.wav"],
 	"puddle": ["res://assets/generated/sfx/puddle.wav"],
+	"bubble": ["res://assets/generated/sfx/bubble.wav"],
+	"bubble_pop": ["res://assets/generated/sfx/bubble_pop.wav"],
+	"roll": ["res://assets/generated/sfx/roll.wav"],
+	"stocks": ["res://assets/generated/sfx/stocks.wav"],
+	"totem": ["res://assets/generated/sfx/totem.wav"],
+	"rune": ["res://assets/generated/sfx/rune.wav"],
 	# CC0: cicifyre (giggle), moxobna (continuous laugh); see each License.txt.
 	"giggle": ["res://assets/third_party/cicifyre_voice/giggle.wav"],
 	"laugh": ["res://assets/third_party/cicifyre_voice/laugh.wav"],

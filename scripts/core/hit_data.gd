@@ -26,6 +26,11 @@ func is_magic() -> bool:
 	return tag.begins_with("magic_")
 
 
+## 星光爆发或疲倦爆发（刺猬滚球、狂热图腾这类"普通攻击打不动"的东西据此判断）。
+func is_burst() -> bool:
+	return is_magic() or tag == "fatigue_burst"
+
+
 func magic_tier() -> int:
 	return tag.substr(6).to_int() if is_magic() else 0
 

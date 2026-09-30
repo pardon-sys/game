@@ -16,6 +16,10 @@
   fan.png           16x16 x 2  羽毛风扇（叶片转动）
   wind_feather.png  5x5        风里的小羽毛粒子
   conveyor.png      16x16 x 4  传送带（向右，箭头滚动 4 帧；其它方向旋转显示）
+  mana_jelly.png    16x16 x 2  魔力水母（飘动）       jelly_queen.png 32x32 x 2 魔力水母女王（放大 2 倍）
+  bubble_fish.png   16x16 x 2  泡泡鱼                 bubble_shot.png 8x8 x 2 泡泡   bubble_cage.png 24x24 泡泡牢笼
+  ghost_glove.png   16x16 x 2  幽灵手套               hedgehog.png 16x16 x 4 刷刷刺猬（走 2 帧 / 蜷缩 / 滚动）
+  mana_drop.png     4x6        魔力雨滴
 
 用法：python tools/art/gen_expansion.py
 """
@@ -543,6 +547,179 @@ def gen_fatigue_art():
     clear_dew().save(OUT / "item_clear_dew.png")
 
 
+# ------------------------------------------------------------------ 第四层怪物
+JELLY = (160, 130, 250, 200)
+JELLY_L = (210, 190, 255, 230)
+JELLY_D = (100, 70, 190, 220)
+FISH = (120, 200, 250, 255)
+FISH_L = (190, 236, 255, 255)
+FISH_D = (60, 120, 200, 255)
+FIN = (255, 160, 200, 255)
+BUBBLE = (190, 230, 255, 150)
+BUBBLE_L = (240, 250, 255, 230)
+GLOVE = (236, 236, 255, 210)
+GLOVE_D = (170, 170, 220, 220)
+HEDGE = (150, 104, 80, 255)
+HEDGE_D = (100, 66, 52, 255)
+HEDGE_L = (230, 200, 170, 255)
+BRISTLE = (255, 214, 120, 255)
+CROWN = (255, 214, 72, 255)
+
+
+def mana_jelly(frame, size=16):
+    img, d = canvas(16, 16)
+    bob = frame
+    # 伞盖
+    d.pieslice((2, 1 + bob, 13, 12 + bob), 180, 360, fill=JELLY)
+    d.rectangle((2, 6 + bob, 13, 7 + bob), fill=JELLY_D)
+    d.arc((4, 2 + bob, 10, 8 + bob), 200, 280, fill=JELLY_L)
+    # 眼睛
+    d.point((6, 5 + bob), fill=EYE_P)
+    d.point((9, 5 + bob), fill=EYE_P)
+    d.point((7, 6 + bob), fill=(255, 170, 214, 255))
+    # 摆动的触须（末端带小羽毛）
+    for i, x in enumerate((3, 6, 9, 12)):
+        sway = 1 if (i + frame) % 2 else -1
+        d.line((x, 8 + bob, x + sway, 11 + bob), fill=JELLY)
+        d.line((x + sway, 11 + bob, x, 14), fill=JELLY_D)
+        d.point((x, 15), fill=WHITE_F if i % 2 == 0 else JELLY_L)
+    return add_outline(img)
+
+
+def jelly_queen(frame):
+    img, d = canvas(32, 32)
+    bob = frame
+    d.pieslice((2, 4 + bob, 29, 26 + bob), 180, 360, fill=JELLY)
+    d.rectangle((2, 14 + bob, 29, 16 + bob), fill=JELLY_D)
+    d.arc((6, 6 + bob, 18, 16 + bob), 200, 280, fill=JELLY_L)
+    d.arc((7, 7 + bob, 16, 15 + bob), 210, 260, fill=JELLY_L)
+    # 皇冠
+    d.polygon([(11, 5 + bob), (12, 1 + bob), (14, 4 + bob), (16, 0 + bob), (18, 4 + bob),
+               (20, 1 + bob), (21, 5 + bob)], fill=CROWN)
+    d.point((16, 3 + bob), fill=(232, 60, 92, 255))
+    # 眼睛（高傲的半睁眼）
+    for ex in (10, 19):
+        d.rectangle((ex, 9 + bob, ex + 3, 11 + bob), fill=EYE_W)
+        d.rectangle((ex, 9 + bob, ex + 3, 9 + bob), fill=JELLY_D)
+        d.rectangle((ex + 1 + frame, 10 + bob, ex + 2 + frame, 11 + bob), fill=EYE_P)
+    d.arc((12, 10 + bob, 20, 15 + bob), 20, 160, fill=EYE_P)
+    for x, y in ((6, 12), (25, 10), (22, 6)):
+        d.point((x, y + bob), fill=(255, 170, 214, 255))
+    # 触须
+    for i, x in enumerate(range(4, 29, 4)):
+        sway = 1 if (i + frame) % 2 else -1
+        d.line((x, 17 + bob, x + sway, 23), fill=JELLY)
+        d.line((x + sway, 23, x, 29), fill=JELLY_D)
+        d.point((x, 30), fill=WHITE_F if i % 2 else JELLY_L)
+    return add_outline(img)
+
+
+def bubble_fish(frame):
+    img, d = canvas(16, 16)
+    d.ellipse((2, 5, 12, 13), fill=FISH)
+    d.ellipse((3, 6, 9, 9), fill=FISH_L)
+    # 尾鳍（两帧摆动）
+    if frame == 0:
+        d.polygon([(11, 9), (15, 5), (15, 13)], fill=FIN)
+    else:
+        d.polygon([(11, 9), (15, 7), (14, 14)], fill=FIN)
+    d.polygon([(6, 5), (8, 2), (10, 5)], fill=FIN)          # 背鳍
+    d.point((5, 8), fill=EYE_W)
+    d.point((4, 8), fill=EYE_P)
+    d.ellipse((1, 9, 3, 11), outline=FISH_D)                  # 嘟起的嘴
+    d.point((7, 11), fill=FISH_D)
+    return add_outline(img)
+
+
+def bubble_shot(frame):
+    img, d = canvas(8, 8)
+    r = 3 if frame == 0 else 2
+    d.ellipse((4 - r, 4 - r, 3 + r, 3 + r), fill=BUBBLE, outline=BUBBLE_L)
+    d.point((3, 2), fill=(255, 255, 255, 255))
+    return img
+
+
+def bubble_cage():
+    img, d = canvas(24, 24)
+    d.ellipse((0, 0, 23, 23), fill=(190, 230, 255, 80), outline=BUBBLE_L)
+    d.ellipse((1, 1, 22, 22), outline=BUBBLE)
+    d.arc((4, 3, 14, 13), 190, 260, fill=(255, 255, 255, 255))
+    d.point((17, 17), fill=(255, 255, 255, 220))
+    return img
+
+
+def ghost_glove(frame):
+    img, d = canvas(16, 16)
+    bob = frame
+    d.rounded_rectangle((4, 6 + bob, 11, 12 + bob), radius=2, fill=GLOVE)     # 手掌
+    for i, x in enumerate((4, 6, 8, 10)):                                     # 四根手指（交替弯曲）
+        top = 2 + bob + (1 if (i + frame) % 2 else 0)
+        d.rectangle((x, top, x, 6 + bob), fill=GLOVE)
+    d.polygon([(11, 8 + bob), (14, 6 + bob), (14, 8 + bob), (11, 10 + bob)], fill=GLOVE)  # 拇指
+    d.rectangle((4, 12 + bob, 11, 13 + bob), fill=GLOVE_D)                     # 袖口
+    d.line((5, 14 + bob, 6, 15), fill=GLOVE_D)                                 # 幽灵尾巴
+    d.line((9, 14 + bob, 10, 15), fill=GLOVE_D)
+    d.point((6, 9 + bob), fill=EYE_P)
+    d.point((9, 9 + bob), fill=EYE_P)
+    return add_outline(img)
+
+
+def hedgehog(frame):
+    img, d = canvas(16, 16)
+    if frame < 2:          # 走路
+        step = frame
+        for x in range(3, 12, 2):                                  # 刷毛
+            d.line((x, 6, x - 1, 3), fill=BRISTLE)
+        d.ellipse((2, 5, 13, 13), fill=HEDGE)
+        d.ellipse((3, 5, 12, 9), fill=HEDGE_D)
+        for x in range(3, 12, 2):
+            d.point((x, 5), fill=BRISTLE)
+        d.ellipse((10, 8, 15, 12), fill=HEDGE_L)                   # 脸
+        d.point((14, 10), fill=EYE_P)                              # 鼻子
+        d.point((12, 9), fill=EYE_P)
+        d.point((4 + step, 13), fill=HEDGE_D)                      # 小脚
+        d.point((10 - step, 13), fill=HEDGE_D)
+    else:                  # 2 = 蜷缩，3 = 滚动（刷毛位置转一格）
+        d.ellipse((2, 3, 13, 14), fill=HEDGE_D)
+        d.ellipse((4, 5, 11, 12), fill=HEDGE)
+        rot = 0 if frame == 2 else 1
+        for i in range(8):
+            import math
+            a = (i + rot * 0.5) * math.pi / 4
+            x = 7.5 + math.cos(a) * 6.5
+            y = 8.5 + math.sin(a) * 6.5
+            d.point((round(x), round(y)), fill=BRISTLE)
+        if frame == 2:
+            d.point((6, 8), fill=EYE_P)
+            d.point((9, 8), fill=EYE_P)
+    return add_outline(img)
+
+
+def mana_drop():
+    img, d = canvas(4, 6)
+    d.polygon([(1, 0), (3, 3), (2, 5), (0, 3)], fill=JELLY_L)
+    d.point((1, 2), fill=(255, 255, 255, 255))
+    return img
+
+
+def _strip(frames, w, h):
+    sheet = blank(w * len(frames), h)
+    for i, f in enumerate(frames):
+        sheet.alpha_composite(f, (i * w, 0))
+    return sheet
+
+
+def gen_floor4_monsters():
+    _strip([mana_jelly(f) for f in range(2)], 16, 16).save(OUT / "mana_jelly.png")
+    _strip([jelly_queen(f) for f in range(2)], 32, 32).save(OUT / "jelly_queen.png")
+    _strip([bubble_fish(f) for f in range(2)], 16, 16).save(OUT / "bubble_fish.png")
+    _strip([bubble_shot(f) for f in range(2)], 8, 8).save(OUT / "bubble_shot.png")
+    bubble_cage().save(OUT / "bubble_cage.png")
+    _strip([ghost_glove(f) for f in range(2)], 16, 16).save(OUT / "ghost_glove.png")
+    _strip([hedgehog(f) for f in range(4)], 16, 16).save(OUT / "hedgehog.png")
+    mana_drop().save(OUT / "mana_drop.png")
+
+
 def gen_floor_expansion():
     weapon_rack().save(OUT / "weapon_rack.png")
     secret_crack().save(OUT / "secret_crack.png")
@@ -556,6 +733,7 @@ def main():
     gen_cg_fx()
     gen_buff_icons()
     gen_fatigue_art()
+    gen_floor4_monsters()
 
 
 if __name__ == "__main__":

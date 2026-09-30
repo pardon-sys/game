@@ -110,7 +110,7 @@ func attack(t: Node) -> bool:
 func tickle(t: Node) -> bool:
 	if not Contracts.is_tickleable(t):
 		return false
-	var ok := deliver_tickle(t, _tickle_amount(t))
+	var ok := deliver_tickle(t, _tickle_amount(t), _force_special(t))
 	if ok:
 		_action_cd = stats.tickle_cooldown * stat_mul("tickle_cd")
 		play_tickle_sound()
@@ -122,22 +122,22 @@ func tickle(t: Node) -> bool:
 # ------------------------------------------------------------------ 特殊挠痒（暴击）
 ## 怪物所有的挠痒都从这里生成（普通挠痒、抓住后的持续挠痒、蛛丝连挠……）：
 ## 暴击率 = stats.special_chance + 增益 special_chance；目标身上的 forced_specials 优先（必暴击）。
-func make_tickle(t: Node, amount: float, force_special := false) -> HitData:
+func make_tickle(t: Node, amount: float, force_special := false, kb := 0.0) -> HitData:
 	var special := force_special
 	if not special and t is Actor and (t as Actor).forced_specials > 0:
 		(t as Actor).forced_specials -= 1
 		special = true
 	if not special and random_specials:
 		special = randf() < stats.special_chance + stat_add("special_chance")
-	var h := HitData.make_tickle(self, amount * (stats.special_mult if special else 1.0))
+	var h := HitData.make_tickle(self, amount * (stats.special_mult if special else 1.0), kb)
 	h.special = special
 	h.fatigue_mult = stats.fatigue_mult
 	return h
 
 
 ## 生成并送出一次挠痒；暴击时播放暴击表现。返回是否挠到。
-func deliver_tickle(t: Node, amount: float, force_special := false) -> bool:
-	var h := make_tickle(t, amount, force_special)
+func deliver_tickle(t: Node, amount: float, force_special := false, kb := 0.0) -> bool:
+	var h := make_tickle(t, amount, force_special, kb)
 	var ok: bool = t.receive_hit(h)
 	if ok and h.special:
 		special_feedback(t)
@@ -155,6 +155,11 @@ static func special_feedback(t: Node) -> void:
 			b.add_theme_color_override("font_outline_color", Color(0.45, 0.12, 0.25))
 	if t is PlayableCharacter:
 		(t as PlayableCharacter).shake(0.18)
+
+
+## 子类钩子：这次普通挠痒是否必定暴击（幽灵手套成对时）。
+func _force_special(_t: Node) -> bool:
+	return false
 
 
 ## 子类钩子：打出暴击后（刺猬、手套、狂热连击等）。

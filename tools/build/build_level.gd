@@ -52,6 +52,11 @@ const TYPED_SCENES := {
 		"mimic": "res://scenes/actors/monsters/mimic.tscn",
 		"fairy": "res://scenes/actors/monsters/fairy_swarm.tscn",
 		"tentacle": "res://scenes/actors/monsters/tentacle_boss.tscn",
+		"mana_jelly": "res://scenes/actors/monsters/mana_jelly.tscn",
+		"bubble_fish": "res://scenes/actors/monsters/bubble_fish.tscn",
+		"glove": "res://scenes/actors/monsters/ghost_glove.tscn",
+		"hedgehog": "res://scenes/actors/monsters/brush_hedgehog.tscn",
+		"jelly_queen": "res://scenes/actors/monsters/jelly_queen.tscn",
 	},
 	"ally": {"knight": "res://scenes/actors/allies/knight.tscn"},
 	"trap": {

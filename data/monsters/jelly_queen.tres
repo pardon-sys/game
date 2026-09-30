@@ -1,0 +1,44 @@
+[gd_resource type="Resource" script_class="MonsterStats" format=3]
+
+[ext_resource type="Script" path="res://scripts/actors/monsters/monster_stats.gd" id="1"]
+[ext_resource type="Script" path="res://scripts/items/item_drop.gd" id="2"]
+[ext_resource type="Resource" path="res://data/items/heart.tres" id="i0"]
+[ext_resource type="Resource" path="res://data/items/clear_dew.tres" id="i1"]
+
+[sub_resource type="Resource" id="d0"]
+script = ExtResource("2")
+item = ExtResource("i0")
+chance = 1.0
+min_amount = 2
+max_amount = 2
+
+[sub_resource type="Resource" id="d1"]
+script = ExtResource("2")
+item = ExtResource("i1")
+chance = 1.0
+min_amount = 1
+max_amount = 1
+
+[resource]
+script = ExtResource("1")
+reaction_key = "jelly_queen"
+display_name = "魔力水母女王"
+max_hp = 24
+taunt_chance = 0.45
+is_boss = true
+special_chance = 0.35
+wander_speed = 8.0
+chase_speed = 16.0
+detect_range = 140.0
+lose_range = 400.0
+hurt_time = 0.15
+knockback_taken = 0.0
+attack_damage = 1
+attack_knockback = 180.0
+attack_cooldown = 1.8
+tickle_amount = 8.0
+tickle_cooldown = 0.9
+tickle_weight = 0.9
+tickle_pitch = 0.6
+fatigue_mult = 1.5
+drops = Array[ExtResource("2")]([SubResource("d0"), SubResource("d1")])

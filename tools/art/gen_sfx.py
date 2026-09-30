@@ -112,6 +112,7 @@ def main():
     thump = np.sin(2 * np.pi * np.cumsum(90 * np.exp(-t / 0.2) + 40) / RATE) * env(t, 0.005, 0.08)
     save("grab", mix(thump, jelly(0.22, 300, 130, delay=0.05) * 0.5))
     gen_expansion_sfx()
+    gen_floor4_sfx()
     print("音效已生成：", sorted(p.name for p in OUT.glob("*.wav")))
 
 
@@ -213,6 +214,41 @@ def gen_expansion_sfx():
     save("pop", mix(jelly(0.14, 700, 300, wobble=40, wet=0.1), jelly(0.14, 600, 280, wobble=36, wet=0.1, delay=0.07)), 0.6)
     # 组合技提示
     save("combo", mix(tone([784, 1175], 0.3, 0.003, 0.08), np.concatenate([np.zeros(int(0.1 * RATE)), tone([1047, 1568], 0.4, 0.003, 0.14)])), 0.6)
+
+
+def gen_floor4_sfx():
+    """第四层：泡泡、刺猬滚动、足枷台、图腾、符文。用单独的随机数，不影响前面音效。"""
+    r4 = np.random.default_rng(44)
+    # 吐泡泡：上滑的"噗"
+    t = t_axis(0.22)
+    blub = np.sin(2 * np.pi * np.cumsum(300 + 900 * (t / 0.22) ** 1.5) / RATE) * env(t, 0.004, 0.06)
+    save("bubble", lowpass(blub, 2200), 0.6)
+    # 泡泡破：短促高"啵" + 细碎水花
+    t = t_axis(0.16)
+    pop = np.sin(2 * np.pi * np.cumsum(1400 * np.exp(-t / 0.03) + 500) / RATE) * env(t, 0.001, 0.03)
+    spray = highpass(r4.standard_normal(len(t)), 3500) * env(t, 0.002, 0.03) * 0.3
+    save("bubble_pop", mix(pop, spray), 0.6)
+    # 刺猬滚动：沙沙的刷毛 + 滚动的低鸣
+    t = t_axis(0.5)
+    brush = highpass(lowpass(r4.standard_normal(len(t)), 6000), 1500) * (0.6 + 0.4 * np.abs(np.sin(2 * np.pi * 14 * t)))
+    rumble = np.sin(2 * np.pi * 85 * t) * 0.3
+    save("roll", mix(brush, rumble) * env(t, 0.03, 0.2), 0.5)
+    # 足枷台合上：两声木头咔哒
+    t = t_axis(0.3)
+    knock = np.sin(2 * np.pi * np.cumsum(220 * np.exp(-t / 0.04) + 140) / RATE) * env(t, 0.001, 0.03)
+    clk = highpass(r4.standard_normal(len(t)), 2500) * env(t, 0.001, 0.01) * 0.5
+    one = mix(knock, clk)
+    two = np.concatenate([np.zeros(int(0.09 * RATE)), one[: len(t) - int(0.09 * RATE)] * 0.8])
+    save("stocks", mix(one, two), 0.8)
+    # 图腾嗡鸣：低音 + 五度，缓慢起伏
+    t = t_axis(0.8)
+    hum = (np.sin(2 * np.pi * 110 * t) + 0.5 * np.sin(2 * np.pi * 165 * t) + 0.2 * np.sin(2 * np.pi * 330 * t))
+    hum *= (0.6 + 0.4 * np.sin(2 * np.pi * 6 * t)) * env(t, 0.1, 0.3)
+    save("totem", hum, 0.5)
+    # 符文诅咒：下滑的闪光 + 低沉的"嗡"
+    t = t_axis(0.6)
+    shimmer = np.sin(2 * np.pi * np.cumsum(1800 * np.exp(-t / 0.25) + 300) / RATE) * (0.6 + 0.4 * np.sin(2 * np.pi * 18 * t))
+    save("rune", mix(shimmer * env(t, 0.01, 0.2), np.sin(2 * np.pi * 98 * t) * env(t, 0.05, 0.3) * 0.5), 0.55)
 
 
 if __name__ == "__main__":

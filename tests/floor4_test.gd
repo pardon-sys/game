@@ -30,6 +30,7 @@ func _ready() -> void:
 	await _run_buffs()
 	await _run_special()
 	await _run_fatigue()
+	await _run_monsters()
 	print("\n==== %s (%d 项失败) ====" % ["全部通过" if failures == 0 else "有失败", failures])
 	get_tree().quit(1 if failures else 0)
 
@@ -98,7 +99,8 @@ func _run_buffs() -> void:
 
 
 # ------------------------------------------------------------------ 特殊挠痒（暴击）
-const MONSTER_KEYS := ["slime", "bat", "ghost", "spider", "troll", "rat", "crab", "split_slime", "mimic", "fairy", "tentacle"]
+const MONSTER_KEYS := ["slime", "bat", "ghost", "spider", "troll", "rat", "crab", "split_slime", "mimic", "fairy", "tentacle",
+		"mana_jelly", "bubble_fish", "glove", "hedgehog", "jelly_queen"]
 
 
 func _run_special() -> void:
@@ -243,7 +245,7 @@ func _run_fatigue() -> void:
 	far.queue_free()
 
 	# 清心花露
-	check("清心花露只在 Boss 掉落表里", _dew_sources() == ["tentacle_boss.tres", "tickle_troll.tres"])
+	check("清心花露只在 Boss 掉落表里", _dew_sources() == ["jelly_queen.tres", "tentacle_boss.tres", "tickle_troll.tres"])
 	GameState.give_item(ItemDB.get_item("mint"), 1, player)
 	GameState.give_item(ItemDB.get_item("clear_dew"), 1, player)
 	player.laugh.set_value(30.0)
@@ -253,6 +255,144 @@ func _run_fatigue() -> void:
 	check("R 键用清心花露：疲倦印记全部清掉", GameState.inventory.count("clear_dew") == 0 and not player.has_buff("fatigue_scar"))
 	f.clear()
 	_reset()
+
+
+# ------------------------------------------------------------------ 新怪物
+func _run_monsters() -> void:
+	print("-- 新怪物")
+	Monster.random_specials = false
+	var f: MagicFatigue = player.fatigue
+
+	# 魔力水母
+	_reset()
+	var jelly := _spawn("mana_jelly", Vector2(12, 0))
+	player.laugh.clear()
+	jelly._action_cd = 0.0
+	jelly.tickle(player)
+	check("魔力水母：挠痒 6，疲倦 ×3（6 × 0.5 × 3 = 9）", is_equal_approx(player.laugh.value, 6.0) and is_equal_approx(f.value, 9.0))
+	check("魔力水母：暴击率 25%", is_equal_approx(jelly.stats.special_chance, 0.25))
+	jelly.health.damage(99)
+	await _wait(0.1)
+	var puddles := get_tree().get_nodes_in_group("fatigue_puddle")
+	check("魔力水母被打散留下一小滩水液（12 秒）", puddles.size() == 1 and is_equal_approx(puddles[0].lifetime, 12.0))
+	_clear_puddles()
+
+	# 泡泡鱼
+	_reset()
+	var fish: BubbleFish = _spawn("bubble_fish", Vector2(60, 0))
+	fish.target = player
+	player.laugh.clear()
+	fish.shoot_bubble()
+	await _wait(1.0)
+	check("泡泡鱼：泡泡命中把公主关进泡泡（抓取）", player.status.is_grabbed_by(fish) and fish.is_trapping()
+		and player.get_children().any(func(c): return c is Sprite2D and c.texture == BubbleFish.CAGE_TEX))
+	fish.process_mode = Node.PROCESS_MODE_INHERIT
+	await _wait(0.7)
+	check("泡泡里持续挠痒（算泡泡鱼的）", player.laugh.value >= 5.9 and player.last_tickle.source == fish)
+	for i in fish.trap_presses:
+		player.status.struggle()
+	await _wait(0.3)
+	check("连按 5 次戳破泡泡", not player.status.is_grabbed() and not fish.is_trapping()
+		and not player.get_children().any(func(c): return c is Sprite2D and c.texture == BubbleFish.CAGE_TEX))
+	fish.queue_free()
+
+	# 幽灵手套（成对）
+	_reset()
+	var g1 := _spawn("ghost_glove", Vector2(10, 0), false, {"pair": "t"}) as GhostGlove
+	var g2 := _spawn("ghost_glove", Vector2(-10, 0), false, {"pair": "t"}) as GhostGlove
+	check("幽灵手套：同名 pair 的两只配成一对", g1.partner() == g2 and g2.partner() == g1)
+	check("幽灵手套只挠痒、不打人", g1._choose_action(player) == "tickle" and g1.stats.attack_damage == 0)
+	player.laugh.clear()
+	g1._action_cd = 0.0
+	g1.tickle(player)
+	check("两只都在身边：必定暴击 + 搭档补挠（5×2 + 5 = 15）", absf(player.laugh.value - 15.0) < 0.1 and g2._combo_cd > 0.0)
+	player.laugh.clear()
+	g1._action_cd = 0.0
+	g1.tickle(player)
+	check("配合技有冷却：下一下是普通挠痒", absf(player.laugh.value - 5.0) < 0.1)
+	g1._combo_cd = 0.0
+	g2._combo_cd = 0.0
+	g2.global_position = player.global_position + Vector2(0, 80)
+	check("只有一只在身边时不会配合", not g1.pair_ready(player))
+	g2.health.damage(99)
+	await _wait(0.1)
+	check("搭档被打散后变回单只", g1.partner() == null)
+	g1.queue_free()
+
+	# 刷刷刺猬
+	_reset()
+	var hog: BrushHedgehog = _spawn("brush_hedgehog", Vector2(80, 0), true)
+	hog._roll_cd = 0.0
+	player.laugh.clear()
+	await _wait(0.15)
+	check("刺猬：同一行时蜷缩准备滚动", hog.roll_state == BrushHedgehog.Roll.CURL)
+	var hp := hog.health.hp
+	check("蜷缩时普通攻击打不动", not hog.receive_hit(HitData.make_attack(player, 1)) and hog.health.hp == hp)
+	var x0 := player.global_position.x
+	await _wait(0.9)
+	check("滚中公主：必定暴击的挠痒（7×2）+ 击退", player.last_tickle != null and player.last_tickle.source == hog
+		and player.last_tickle.special and player.laugh.value >= 13.9 and player.global_position.x < x0 - 2.0)
+	hog.process_mode = Node.PROCESS_MODE_DISABLED
+	hog.roll_state = BrushHedgehog.Roll.NONE
+	hog.global_position = player.global_position + Vector2(0, 50)
+	var wall := _spawn("slime", Vector2(0, 80))
+	hog.process_mode = Node.PROCESS_MODE_INHERIT
+	hog.begin_curl(Vector2.DOWN)
+	await _wait(0.9)
+	check("撞到东西会晕（晕的时候能打）", hog.roll_state == BrushHedgehog.Roll.DIZZY and hog.receive_hit(HitData.make_attack(player, 1)))
+	hog.global_position = player.global_position + Vector2(0, 50)
+	hog.begin_curl(Vector2.DOWN)
+	var magic := HitData.make_attack(player, 1)
+	magic.tag = "magic_1"
+	hog._attack_invuln = 0.0
+	check("滚球可以被星光爆发打中", hog.receive_hit(magic))
+	hog.queue_free()
+	wall.queue_free()
+
+	# 魔力水母女王
+	_reset()
+	var queen: JellyQueen = _spawn("jelly_queen", Vector2(0, 60))
+	check("女王：Boss、血 24、暴击率 35%", queen.stats.is_boss and queen.health.max_hp == 24 and is_equal_approx(queen.stats.special_chance, 0.35))
+	queen._update_summon(10.0)
+	_freeze_group("summoned_jelly")
+	check("每 8 秒召唤 2 只魔力水母", get_tree().get_nodes_in_group("summoned_jelly").size() == 2 and is_equal_approx(queen._summon_cd, 8.0))
+	queen._update_summon(10.0)
+	_freeze_group("summoned_jelly")
+	queen._update_summon(10.0)
+	_freeze_group("summoned_jelly")
+	check("场上最多 4 只", get_tree().get_nodes_in_group("summoned_jelly").size() == 4)
+	queen._update_puddle(10.0)
+	check("定时在身下留水液", get_tree().get_nodes_in_group("fatigue_puddle").size() == 1)
+	f.clear()
+	queen._update_rain(1.0)
+	check("满血时没有魔力雨", not queen.raining and f.value == 0.0)
+	queen.health.damage(12)
+	queen._update_rain(1.0)
+	check("半血后魔力雨：每秒 +3 疲倦", queen.raining and absf(f.value - 3.0) < 0.01)
+	queen.health.damage(99)
+	await _wait(0.2)
+	check("女王倒下：召唤的水母一起散掉", get_tree().get_nodes_in_group("summoned_jelly").is_empty())
+	check("女王掉落清心花露", level.get_node("Entities").get_children().any(
+		func(n): return n is WorldItem and n.item and n.item.id == "clear_dew"))
+	for n in level.get_node("Entities").get_children():
+		if n is WorldItem:
+			n.queue_free()
+	_clear_puddles()
+	GameState.boss_changed.emit(null)
+	Monster.random_specials = true
+	f.clear()
+	_reset()
+
+
+func _freeze_group(g: String) -> void:
+	for n in get_tree().get_nodes_in_group(g):
+		n.process_mode = Node.PROCESS_MODE_DISABLED
+
+
+func _clear_puddles() -> void:
+	for p in get_tree().get_nodes_in_group("fatigue_puddle"):
+		p.remove_from_group("fatigue_puddle")
+		p.queue_free()
 
 
 func _dew_sources() -> Array:
@@ -268,8 +408,10 @@ func _dew_sources() -> Array:
 
 
 # ------------------------------------------------------------------ 工具
-func _spawn(file: String, offset: Vector2, active := false) -> Monster:
+func _spawn(file: String, offset: Vector2, active := false, props := {}) -> Monster:
 	var m: Monster = load("res://scenes/actors/monsters/%s.tscn" % file).instantiate()
+	for k in props:
+		m.set(k, props[k])
 	level.get_node("Entities").add_child(m)
 	m.global_position = player.global_position + offset
 	if not active:
