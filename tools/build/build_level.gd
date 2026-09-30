@@ -1,8 +1,9 @@
 extends SceneTree
-## 把 ASCII 关卡（tools/build/<level>.txt）构建成 scenes/levels/<level>.tscn。
+## 把楼层 ASCII 地图（levels/<floor>/map.txt）构建成 levels/<floor>/floor.tscn。
 ##
 ## 用法：
-##   Godot --headless --path . --script res://tools/build/build_level.gd -- level=dungeon_01
+##   Godot --headless --path . --script res://tools/build/build_level.gd -- floor=floor_01
+##   Godot --headless --path . --script res://tools/build/build_level.gd -- all      # data/floors.json 里的全部楼层
 ##
 ## 墙体自动拼接：
 ##   墙格下方是地面 → 墙面（wall_faces.png，砖墙）；否则 → 墙顶（walls.png，按 8 邻域掩码选图块）。
@@ -75,17 +76,34 @@ var height := 0
 
 
 func _initialize() -> void:
-	var level := "dungeon_01"
+	var targets: Array = []
 	for a in OS.get_cmdline_user_args():
-		if a.begins_with("level="):
-			level = a.substr(6)
-	var err := build(level)
+		if a.begins_with("floor="):
+			targets.append(a.substr(6))
+		elif a == "all":
+			targets = Floors.ids()
+	if targets.is_empty():
+		push_error("用法: -- floor=<id> 或 -- all")
+		quit(1)
+		return
+	var err := OK
+	for id in targets:
+		err = maxi(err, build(id))
 	quit(err)
 
 
-func build(level: String) -> int:
+func _reset() -> void:
 	rng.seed = 20260928
-	if not parse("res://tools/build/%s.txt" % level):
+	rows = []
+	legend = {}
+	level_meta = {}
+	width = 0
+	height = 0
+
+
+func build(floor_id: String) -> int:
+	_reset()
+	if not parse(Floors.map_path(floor_id)):
 		return 1
 	var ts := make_tileset()
 	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path("res://assets/tilesets"))
@@ -93,8 +111,9 @@ func build(level: String) -> int:
 	ts = ResourceLoader.load(TILESET_PATH, "", ResourceLoader.CACHE_MODE_REPLACE)
 
 	var root := Node2D.new()
-	root.name = level.to_pascal_case()
+	root.name = floor_id.to_pascal_case()
 	root.set_script(load("res://scripts/level.gd"))
+	root.set("floor_id", floor_id)
 	root.set("intro_dialogue", level_meta.get("intro", "intro"))
 
 	var cm := CanvasModulate.new()
@@ -156,8 +175,7 @@ func build(level: String) -> int:
 	if err != OK:
 		push_error("pack 失败: %s" % err)
 		return 1
-	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path("res://scenes/levels"))
-	var out := "res://scenes/levels/%s.tscn" % level
+	var out := Floors.scene(floor_id)
 	err = ResourceSaver.save(ps, out)
 	print("已生成 %s (%dx%d) 实体: %s" % [out, width, height, counts])
 	root.free()
@@ -312,7 +330,8 @@ func _spawn(kind: String, info: Dictionary, x: int, y: int) -> Node2D:
 			["walltrap", "group"]: prop = "group_name"
 			["exit", "target"]:
 				prop = "target_level"
-				value = "res://scenes/levels/%s.tscn" % value
+				# next = 下一层（运行时按 data/floors.json 解析）；也可以直接写楼层 id
+				value = "next" if value == "next" else Floors.scene(value)
 			["exit", "w"]:
 				inst.set("size", Vector2(float(info["w"]) * TILE, float(info.get("h", 1)) * TILE))
 				continue

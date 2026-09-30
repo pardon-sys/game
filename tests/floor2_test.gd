@@ -2,7 +2,7 @@ extends Node
 ## 第二层与新系统测试：关卡切换、减速/抓取、投射物、新怪物、新陷阱、立绘密度。
 ## 用法：Godot --headless --path . res://tests/floor2_test.tscn   （退出码 0 = 全部通过）
 
-const FLOOR2 := "res://scenes/levels/dungeon_02.tscn"
+const FLOOR2 := "res://levels/floor_02/floor.tscn"
 const WEB := preload("res://scenes/combat/web_shot.tscn")
 
 var main: Node
@@ -35,7 +35,7 @@ func _ready() -> void:
 func _run_transition() -> void:
 	print("-- 关卡切换")
 	var exit: Node = main.level.find_child("Exit_52_23", true, false)
-	check("第一层楼梯是通往第二层的出口", exit != null and exit.target_level == FLOOR2 and exit.dialogue == "ending")
+	check("第一层楼梯是通往下一层（floors.json → 第二层）的出口", exit != null and exit.target_level == "next" and exit.resolve_target() == FLOOR2 and exit.dialogue == "ending")
 	var p1: Princess = GameState.player
 	p1.health.set_hp(7)
 	p1.laugh.notify_attacked()
@@ -46,12 +46,14 @@ func _run_transition() -> void:
 	await _wait(1.3)
 	level = main.level
 	player = GameState.player
-	check("切换到第二层", level != null and level.name == "Dungeon02" and player != p1 and is_instance_valid(player))
+	check("切换到第二层", level != null and level.name == "Floor02" and player != p1 and is_instance_valid(player))
 	check("血量保留", player.health.hp == 7)
 	check("闷笑值保留（切换期间正常衰减）", player.laugh.value > 10.0 and player.laugh.value <= 30.0)
 	check("战损保留", (player as Princess).battle_damaged)
 	check("背包保留", GameState.inventory.count("mint") >= 1)
 	check("第二层开场对话", Dialogue.is_active())
+	check("按层载入对话：第二层对话可用、第一层专属对话已卸载、通用对话保留",
+		Dialogue.floor_id == "floor_02" and Dialogue.has_dialogue("troll_intro") and not Dialogue.has_dialogue("sign_cell") and Dialogue.has_dialogue("respawn"))
 	_finish_dialogue()
 	await _wait(0.3)
 	player.set_controller(ctrl)
@@ -188,12 +190,20 @@ func _run_traps() -> void:
 	player.laugh.clear()
 	var hp := player.health.hp
 	var vent: Trap = _find("Vent_7_19")
+	# 只测粉雾本身：暂停附近的怪物，避免蝙蝠的普通攻击随机扣血
+	var paused: Array[Node] = []
+	for e in get_tree().get_nodes_in_group("enemy"):
+		if e.global_position.distance_to(vent.global_position) < 200.0 and e.process_mode != Node.PROCESS_MODE_DISABLED:
+			e.process_mode = Node.PROCESS_MODE_DISABLED
+			paused.append(e)
 	player.global_position = vent.global_position + Vector2(0, 2)
 	vent.phase = Trap.Phase.IDLE
 	vent.trigger()
 	await _wait(1.6)
 	check("喷口粉雾持续挠痒", player.laugh.value >= 8.0)
 	check("粉雾不扣血", player.health.hp == hp)
+	for e in paused:
+		e.process_mode = Node.PROCESS_MODE_INHERIT
 	player.laugh.clear()
 	_move_player_to(Vector2i(9, 36))
 	await _wait(2.8)

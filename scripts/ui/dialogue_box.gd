@@ -1,5 +1,6 @@
 extends CanvasLayer
-## 对话框（Autoload 名为 Dialogue）。数据来自 data/dialogues.json。
+## 对话框（Autoload 名为 Dialogue）。通用对话来自 data/dialogues.json，
+## 楼层专属对话来自 levels/<id>/dialogues.json（进入楼层时 load_floor 合并）。
 ## 公主立绘常驻左侧；正式对话和不阻断操作的受挠台词分别显示。
 
 signal finished(id: String)
@@ -27,6 +28,8 @@ var head_size := 32
 @onready var reaction_text: Label = $Reaction/Text
 
 var _data := {}
+var _common := {}
+var floor_id := ""
 var _lines: Array = []
 var _index := 0
 var _id := ""
@@ -60,13 +63,32 @@ func _ready() -> void:
 		_portraits.append(_atlas(PORTRAIT_SHEET, Rect2(Vector2(i * portrait_cell.x, 0), portrait_cell)))
 		_heads.append(_atlas(HEAD_SHEET, Rect2(i * head_size, 0, head_size, head_size)))
 	_show_portrait("normal")
-	var f := FileAccess.open(DATA_PATH, FileAccess.READ)
-	if f:
-		var parsed: Variant = JSON.parse_string(f.get_as_text())
-		if parsed is Dictionary:
-			_data = parsed
-		else:
-			push_error("dialogues.json 解析失败")
+	_common = _read_json(DATA_PATH)
+	_data = _common.duplicate()
+
+
+func _read_json(path: String) -> Dictionary:
+	if not FileAccess.file_exists(path):
+		return {}
+	var parsed: Variant = JSON.parse_string(FileAccess.get_file_as_string(path))
+	if parsed is Dictionary:
+		return parsed
+	push_error("%s 解析失败" % path)
+	return {}
+
+
+## 通用对话 + 该楼层的对话。对话 id 全局唯一，和通用对话重名时报错并保留通用版本。
+func load_floor(id: String) -> void:
+	floor_id = id
+	_data = _common.duplicate()
+	if id == "":
+		return
+	var own := _read_json(Floors.dialogues_path(id))
+	for key in own:
+		if _data.has(key):
+			push_error("楼层 %s 的对话 id 与通用对话冲突: %s" % [id, key])
+			continue
+		_data[key] = own[key]
 
 
 func _atlas(tex: Texture2D, region: Rect2) -> AtlasTexture:

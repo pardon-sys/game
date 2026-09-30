@@ -32,7 +32,7 @@ $ = item id=coin
 f = trap type=feather
 N = ally type=knight
 x = checkpoint
-Z = exit target=dungeon_02 dialogue=ending w=7 h=1
+Z = exit target=next dialogue=ending w=7 h=1
 u = decor tile=75
 n = decor tile=73
 a = decor tile=74

@@ -15,7 +15,7 @@ var failures := 0
 func _ready() -> void:
 	var main: Node = load("res://scenes/main.tscn").instantiate()
 	add_child(main)
-	level = main.get_node("Dungeon01")
+	level = main.get_node("Floor01")
 	player = get_tree().get_first_node_in_group("player")
 	player.set_controller(ctrl)
 	_mark_all_sources_met()

@@ -1,12 +1,15 @@
 extends Node2D
-## 关卡根节点：设置相机边界、播放开场对话。
+## 楼层根节点：载入本层对话、设置相机边界、播放开场对话。
 
+## 楼层 id（levels/<floor_id>/），由构建器写入。
+@export var floor_id := ""
 @export var intro_dialogue := "intro"
 
 @onready var walls: TileMapLayer = $Walls
 
 
 func _ready() -> void:
+	Dialogue.load_floor(floor_id)
 	var player := get_tree().get_first_node_in_group("player") as PlayableCharacter
 	if player:
 		var rect := walls.get_used_rect()

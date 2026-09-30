@@ -176,12 +176,24 @@ HUD 背包栏会根据物品数据自动显示，不需要改 UI 代码。
    - `ScriptedController`：测试和过场动画
    - 以后也可以接 AI 或第二玩家
 
-## 关卡与切换
+## 楼层与切换
 
-- 每层是一个 `tools/build/<level>.txt`：可选的 `[level]` 段（`intro` 开场对话、`ambient` 环境光）、`[legend]` 图例、`[map]` 地图。
+每层一个文件夹，改某一层只需动这一个文件夹：
+
+```
+levels/floor_01/  map.txt  dialogues.json  floor.tscn
+levels/floor_02/  ...
+data/floors.json  楼层顺序 [{id, name, scene}]（读取入口 scripts/core/floors.gd：Floors.ids / scene / next_of）
+data/dialogues.json  只放通用对话（复活、上锁提示、钥匙、失控恢复、铁栅门）
+```
+
+- `map.txt`：可选的 `[level]` 段（`intro` 开场对话、`ambient` 环境光）、`[legend]` 图例、`[map]` 地图。
+- 构建：`build_level.gd -- floor=floor_02` 构建一层，`-- all` 构建 floors.json 里的全部楼层；产物 `floor.tscn` 的根节点名为 `Floor02`，并记录 `floor_id`。
+- 对话：楼层根节点（`scripts/level.gd`）进入时调用 `Dialogue.load_floor(floor_id)`，把本层 `dialogues.json` 合并到通用对话上；离开后上一层的专属对话卸载。对话 id 全局唯一，与通用对话重名会报错。
 - `scripts/main.gd`（主场景，组名 `main`）提供 `change_level(path)`：淡出 → 保存公主状态（`GameState.save_player_state()`：血量、闷笑值、战损）→ 换关卡 → 新关卡的公主注册时恢复 → 淡入。背包与剧情标记本来就在 GameState 中。
-- 图例 `exit target=dungeon_02 dialogue=… w=… h=…` 放置 `LevelExit`：走进去先播对话，再切换关卡。
-- 第二层 `dungeon_02`：落脚点 → 蝙蝠巢穴（喷口）→ 幽灵长廊（点火把）→ 蜘蛛窝 → 机关走廊（旋转刷、压力板 + 机关手）→ 巨魔大厅（Boss，掉落金钥匙）→ 金锁门 → 出口楼梯（第二章完）。
+- 图例 `exit target=next dialogue=… w=… h=…` 放置 `LevelExit`：走进去先播对话，再切换到 floors.json 中的下一层（`target=floor_03` 可直接指定楼层）。
+- 新增一层：建 `levels/floor_0N/` 的 `map.txt` 和 `dialogues.json`，在 `data/floors.json` 追加一项，运行构建器。
+- 第二层 `floor_02`：落脚点 → 蝙蝠巢穴（喷口）→ 幽灵长廊（点火把）→ 蜘蛛窝 → 机关走廊（旋转刷、压力板 + 机关手）→ 巨魔大厅（Boss，掉落金钥匙）→ 金锁门 → 出口楼梯（第二章完）。
 
 ## 公主状态与换美术素材
 
@@ -196,7 +208,7 @@ HUD 背包栏会根据物品数据自动显示，不需要改 UI 代码。
 - `Audio.set_voice_state()` 在>80时立即启动大笑。`AudioStreamWAV.LOOP_FORWARD` 在音频线程循环，53秒附近的自然笑声经去长停顿和循环交叉淡化制成5.34秒片段。`play_voice()` 拒绝重复启动；降档、死亡或暂停停止，解除暂停恢复。来源见 `assets/third_party/moxobna_voice/License.txt`，轻笑保留cicifyre素材。
 - `data/princess_reactions.json` 是**所有受挠台词的唯一文件**，由 `ReactionDB`（`scripts/core/reaction_db.gd`）读取：
   - `lines`：通用台词，按闷笑阶段 `calm / giggle / helpless_1 / helpless_2 / grabbed` 分组；`hints` 是系统提示。
-  - `sources`：按来源分组，键名 = 怪物 `MonsterStats.reaction_key` 或陷阱的 `reaction_key`（粉雾继承喷口、蛛丝继承发射的蜘蛛）。每组可写 `name`、`first_encounter`（第一次被它挠痒时播放的剧情对话，格式同 dialogues.json，会暂停战斗）、各阶段台词（缺哪档就回退到通用 `lines`）、`taunts`（怪物挠痒时按 `taunt_chance` 在头顶冒出的回嘴，`SpeechBubble` 显示）。
+  - `sources`：按来源分组，键名 = 怪物 `MonsterStats.reaction_key` 或陷阱的 `reaction_key`（粉雾继承喷口、蛛丝继承发射的蜘蛛）。每组可写 `name`、`first_encounter`（第一次被它挠痒时播放的剧情对话，格式同对话文件，会暂停战斗）、各阶段台词（缺哪档就回退到通用 `lines`）、`taunts`（怪物挠痒时按 `taunt_chance` 在头顶冒出的回嘴，`SpeechBubble` 显示）。
   - 新增怪物/陷阱的台词：给它设 `reaction_key`，在 `sources` 里加一段即可，不用改代码。
   - 公主字幕通过 `GameState.princess_reacted(text, duration)` 广播，由 `Dialogue` 的 Reaction 面板显示，不暂停战斗；同阶段 1.6 秒内不刷新，跨阶段立即更新。
   - 首次遭遇用剧情标记 `met_<key>` 记录（重新开始游戏会重置）。剧情对话期间陷阱、粉雾、投射物、抓取挠痒和状态计时都会暂停。

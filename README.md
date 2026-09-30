@@ -40,17 +40,19 @@ Godot 4.7 · 2D 俯视角像素游戏。粉发蓝眼、头戴金色小皇冠的�
 受到实际伤害或闷笑值超过80后，本次生命永久战损，回血不会修复，复活清除。显示优先级：失控2 > 失控1 > 憋笑（按战损区分）> 战损 > 剧情表情 > 普通；死亡定格淡出。旧剧情“大笑”已迁移为“开心”。
 
 - 事件自动触发：开箱/金钥匙/击败敌人→请求开心，读情书→请求害羞；受伤→战损，异常状态优先于这些剧情请求。
-- 对话脚本逐句指定：`data/dialogues.json` 中每句的 `emotion` 字段。
+- 对话脚本逐句指定：对话文件中每句的 `emotion` 字段。
 - 代码中调用：`GameState.emote("shy", 2.0)`（时长 ≤0 表示一直保持）。
 
 ## 修改内容
 
-- **对话**：直接编辑 `data/dialogues.json`。
-- **地图**：编辑 `tools/build/dungeon_01.txt`（`[legend]` 定义字符含义，`[map]` 为地图），然后重新构建：
+- **楼层**：每层一个文件夹 `levels/floor_0N/`，里面是地图 `map.txt`、本层对话 `dialogues.json` 和构建出的 `floor.tscn`；楼层顺序在 `data/floors.json`。
+- **对话**：本层剧情写在该层的 `dialogues.json`；复活、上锁提示等通用对话写在 `data/dialogues.json`。
+- **地图**：编辑 `levels/floor_01/map.txt`（`[legend]` 定义字符含义，`[map]` 为地图），然后重新构建：
   ```
-  Godot --headless --path . --script res://tools/build/build_level.gd -- level=dungeon_01
+  Godot --headless --path . --script res://tools/build/build_level.gd -- floor=floor_01
+  Godot --headless --path . --script res://tools/build/build_level.gd -- all   # 全部楼层
   ```
-  也可以直接在编辑器里打开 `scenes/levels/dungeon_01.tscn` 修改（注意重新构建会覆盖编辑器里的改动）。
+  也可以直接在编辑器里打开 `levels/floor_01/floor.tscn` 修改（注意重新构建会覆盖编辑器里的改动）。
 - **公主精灵与立绘**：保留原始 `princess2.png` / `princess3.png` / `portraits2.png` / `portraits3.png`。`tools/art/import_princess2.py` 去除白底、表格和标签，输出 `princess.png`（32×32，11行×16列）、`portraits.png`（113×152每格）和 `portrait_heads.png`（32×32每格）。图集顺序由 `data/actors/princess_visuals.json` 统一定义，运行时与导入器共同读取。
   - 每行依次为下、左、右、上，每方向4帧；左右使用独立素材。失控2原图每方向只有两幅宽姿势，按1、2、1、2重复为四帧，完整保留横卧身体。
   - 攻击/冲刺复用状态帧与既有刀光/残影；受击闪白，死亡定格淡出，没有新增绘画素材。
@@ -66,7 +68,6 @@ Godot 4.7 · 2D 俯视角像素游戏。粉发蓝眼、头戴金色小皇冠的�
   - `assets/third_party/moxobna_voice/laugh_loop.wav`：当前使用的连续大笑；可用 `tools/art/build_laugh_loop.py` 从源文件重新制作。
 - **立绘细节**：立绘以 2 倍像素密度生成（画面拉伸模式 `canvas_items`），脸部区域的眼睛、嘴、泪滴颜色会被优先保留；表格位置自动检测，重画素材只要保持表格形式即可重新运行导入脚本。
 - **音效**：`tools/art/gen_sfx.py` 合成果冻挠痒声（4 种）以及吐丝、喷粉、刷子、抓取声，输出到 `assets/generated/sfx/`。
-- **第二层地图**：`tools/build/dungeon_02.txt`，构建命令 `... build_level.gd -- level=dungeon_02`。
 - **其它像素美术**：`tools/art/gen_misc.py` 另外生成第二层机关占位图（`new_props.png`、`grab_hand.png`、`feather_brush.png`）；`tools/art/gen_misc.py` 生成表情气泡、道具、机关、墙体拼接图集（`gen_princess.py` / `gen_portraits.py` 是最初程序绘制的版本，现在只输出 `*_procedural.png` 备用）。
 
 ## 测试
@@ -81,9 +82,10 @@ Godot --path . res://tests/capture_floor2.tscn          # 第二层各房间截�
 ## 目录
 
 ```
-scenes/   main.tscn、levels/、actors/{playable,monsters,allies}/、traps/、items/、objects/、ui/
+levels/   floor_01/、floor_02/（每层的地图、对话、场景）
+scenes/   main.tscn、actors/{playable,monsters,allies}/、traps/、items/、objects/、ui/
 scripts/  core/、components/、controllers/、actors/、traps/、combat/、items/、objects/、autoload/、ui/、fx/、main.gd
-data/     dialogues.json、items/、monsters/、allies/、actors/（数值与动画配置资源）
+data/     floors.json、dialogues.json（通用对话）、items/、monsters/、allies/、actors/（数值与动画配置资源）
 docs/     ARCHITECTURE.md
 assets/   generated/（自绘）、third_party/（Kenney）、fonts/、tilesets/、lights/
 tools/    art/（Python 美术生成）、build/（关卡构建、工程设置脚本）
