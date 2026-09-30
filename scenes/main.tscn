@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://cwkg3r6qywsw0"]
 
-[ext_resource type="PackedScene" uid="uid://c1rd4p01xtcq1" path="res://scenes/levels/dungeon_01.tscn" id="1"]
+[ext_resource type="PackedScene" path="res://levels/floor_01/floor.tscn" id="1"]
 [ext_resource type="PackedScene" path="res://scenes/ui/hud.tscn" id="2"]
 [ext_resource type="PackedScene" path="res://scenes/ui/pause_menu.tscn" id="3"]
 [ext_resource type="Script" uid="uid://b5r3eep5uwl8w" path="res://scripts/main.gd" id="4"]
@@ -8,7 +8,7 @@
 [node name="Main" type="Node" unique_id=1696820938]
 script = ExtResource("4")
 
-[node name="Dungeon01" parent="." unique_id=796178585 instance=ExtResource("1")]
+[node name="Floor01" parent="." unique_id=796178585 instance=ExtResource("1")]
 
 [node name="HUD" parent="." unique_id=723963875 instance=ExtResource("2")]
 

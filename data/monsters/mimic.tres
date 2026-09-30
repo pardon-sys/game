@@ -1,0 +1,38 @@
+[gd_resource type="Resource" script_class="MonsterStats" format=3]
+
+[ext_resource type="Script" path="res://scripts/actors/monsters/monster_stats.gd" id="1"]
+[ext_resource type="Script" path="res://scripts/items/item_drop.gd" id="2"]
+[ext_resource type="Resource" path="res://data/items/coin.tres" id="i0"]
+[ext_resource type="Resource" path="res://data/items/mint.tres" id="i1"]
+
+[sub_resource type="Resource" id="d0"]
+script = ExtResource("2")
+item = ExtResource("i1")
+chance = 1.0
+min_amount = 2
+max_amount = 2
+
+[sub_resource type="Resource" id="d1"]
+script = ExtResource("2")
+item = ExtResource("i0")
+chance = 1.0
+min_amount = 5
+max_amount = 10
+
+[resource]
+script = ExtResource("1")
+display_name = "宝箱怪"
+reaction_key = "mimic"
+taunt_chance = 0.4
+max_hp = 5
+wander_speed = 14.0
+chase_speed = 36.0
+detect_range = 120.0
+lose_range = 220.0
+attack_damage = 1
+attack_cooldown = 1.4
+tickle_amount = 8.0
+tickle_cooldown = 0.8
+tickle_weight = 0.9
+tickle_pitch = 0.9
+drops = Array[ExtResource("2")]([SubResource("d0"), SubResource("d1")])

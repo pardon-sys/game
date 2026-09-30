@@ -27,7 +27,7 @@ func begin() -> void:
 
 
 func scan() -> void:
-	for body in get_overlapping_bodies():
+	for body in _targets():
 		if body == attacker or body in _hit or not Contracts.is_damageable(body):
 			continue
 		var f := Faction.of(body)
@@ -37,3 +37,24 @@ func scan() -> void:
 		var hit := HitData.make_tickle(attacker, tickle, knockback) if tickle > 0.0 else HitData.make_attack(attacker, damage, knockback)
 		if body.receive_hit(hit):
 			hit_landed.emit(body)
+
+
+## 重叠的物体。Area2D 的 get_overlapping_bodies() 检测不到 StaticBody2D（木桶、武器架、藤蔓），
+## 所以再用自身形状做一次物理查询补上。
+func _targets() -> Array:
+	var out: Array = get_overlapping_bodies()
+	for c in get_children():
+		var cs := c as CollisionShape2D
+		if cs == null or cs.shape == null or cs.disabled:
+			continue
+		var q := PhysicsShapeQueryParameters2D.new()
+		q.shape = cs.shape
+		q.transform = cs.global_transform
+		q.collision_mask = collision_mask
+		q.collide_with_bodies = true
+		q.collide_with_areas = false
+		for r in get_world_2d().direct_space_state.intersect_shape(q, 16):
+			var body: Object = r["collider"]
+			if body and not out.has(body):
+				out.append(body)
+	return out

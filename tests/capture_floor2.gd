@@ -12,7 +12,7 @@ func _ready() -> void:
 	add_child(main)
 	await _wait(1.0)
 	_finish()
-	main.change_level("res://scenes/levels/dungeon_02.tscn")
+	main.change_level("res://levels/floor_02/floor.tscn")
 	await _wait(1.4)
 	await _shot("f2_0_intro")
 	_finish()

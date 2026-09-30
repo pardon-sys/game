@@ -3,6 +3,8 @@ extends StaticBody2D
 
 @export var group_name := "gate1"
 @export var is_open := false
+## 反接：通电时关上、断电时打开（用来做拉杆顺序谜题）。
+@export var inverted := false
 
 @onready var sprite: Sprite2D = $Sprite
 @onready var shape: CollisionShape2D = $Shape
@@ -14,9 +16,9 @@ func _ready() -> void:
 	_apply(false)
 
 
-## Switchable：通电 = 打开。
+## Switchable：通电 = 打开（inverted 时相反）。
 func set_active(on: bool) -> void:
-	set_open(on)
+	set_open(on != inverted)
 
 
 func set_open(value: bool) -> void:

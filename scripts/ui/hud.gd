@@ -1,7 +1,9 @@
 extends CanvasLayer
 ## HUD：左上血量、闷笑值条、背包栏（按物品数据自动生成），右上表情头像，屏幕上方提示消息。
+## 魔法：闷笑条右边的魔法图标（学会后显示，冷却时变灰并显示剩余秒数），吟唱时屏幕上方闪"弱点暴露！"。
 
 const HUD_TEX := preload("res://assets/generated/hud.png")
+const MAGIC_ICON := preload("res://assets/generated/magic_icon.png")
 
 @onready var hearts: HBoxContainer = $Hearts
 @onready var laugh_bar: LaughBar = $LaughRow/Bar
@@ -13,6 +15,15 @@ const HUD_TEX := preload("res://assets/generated/hud.png")
 var _heart_tex: Array[AtlasTexture] = []
 var _toast_tween: Tween
 var _player: PlayableCharacter
+var magic_slot: Control
+var magic_icon: TextureRect
+var magic_label: Label
+var exposed_label: Label
+var _icon_ready: AtlasTexture
+var _icon_cd: AtlasTexture
+var _blink := 0.0
+var combo_label: Label
+var _combo_tween: Tween
 
 
 func _ready() -> void:
@@ -25,7 +36,9 @@ func _ready() -> void:
 	GameState.inventory.changed.connect(_refresh_inventory)
 	GameState.emotion_changed.connect(_on_emotion_changed)
 	GameState.toast.connect(show_toast)
+	GameState.combo_triggered.connect(show_combo)
 	toast_label.modulate.a = 0.0
+	_build_magic_ui()
 	if GameState.player:
 		_bind_player(GameState.player)
 	_refresh_inventory()
@@ -42,6 +55,80 @@ func _bind_player(p: PlayableCharacter) -> void:
 	$LaughRow.visible = p.laugh != null
 	if p.laugh:
 		laugh_bar.bind(p.laugh)
+
+
+func _build_magic_ui() -> void:
+	_icon_ready = AtlasTexture.new()
+	_icon_ready.atlas = MAGIC_ICON
+	_icon_ready.region = Rect2(0, 0, 16, 16)
+	_icon_cd = AtlasTexture.new()
+	_icon_cd.atlas = MAGIC_ICON
+	_icon_cd.region = Rect2(16, 0, 16, 16)
+	magic_slot = HBoxContainer.new()
+	magic_slot.name = "Magic"
+	magic_slot.position = Vector2(124, 20)
+	magic_slot.add_theme_constant_override("separation", 1)
+	add_child(magic_slot)
+	magic_icon = TextureRect.new()
+	magic_icon.texture = _icon_ready
+	magic_icon.custom_minimum_size = Vector2(16, 16)
+	magic_slot.add_child(magic_icon)
+	magic_label = Label.new()
+	magic_label.add_theme_color_override("font_color", Color(1, 0.94, 0.7))
+	magic_slot.add_child(magic_label)
+	magic_slot.hide()
+	exposed_label = Label.new()
+	exposed_label.name = "Exposed"
+	exposed_label.text = "弱点暴露！"
+	exposed_label.position = Vector2(90, 74)
+	exposed_label.size = Vector2(300, 16)
+	exposed_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	exposed_label.add_theme_color_override("font_color", Color(1, 0.45, 0.6))
+	exposed_label.add_theme_color_override("font_outline_color", Color(0.247, 0.149, 0.192))
+	exposed_label.add_theme_constant_override("outline_size", 4)
+	exposed_label.hide()
+	add_child(exposed_label)
+	combo_label = Label.new()
+	combo_label.name = "Combo"
+	combo_label.position = Vector2(90, 38)
+	combo_label.size = Vector2(300, 16)
+	combo_label.pivot_offset = Vector2(150, 8)
+	combo_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	combo_label.add_theme_color_override("font_color", Color(1, 0.86, 0.4))
+	combo_label.add_theme_color_override("font_outline_color", Color(0.45, 0.12, 0.3))
+	combo_label.add_theme_constant_override("outline_size", 5)
+	combo_label.modulate.a = 0.0
+	add_child(combo_label)
+
+
+## 组合技横幅：弹一下，停留后淡出。
+func show_combo(_id: String, combo_name: String) -> void:
+	combo_label.text = "【组合技】%s！" % combo_name
+	if _combo_tween:
+		_combo_tween.kill()
+	combo_label.modulate.a = 1.0
+	combo_label.scale = Vector2(1.5, 1.5)
+	_combo_tween = create_tween()
+	_combo_tween.tween_property(combo_label, "scale", Vector2.ONE, 0.15)
+	_combo_tween.tween_interval(1.6)
+	_combo_tween.tween_property(combo_label, "modulate:a", 0.0, 0.4)
+
+
+func _process(delta: float) -> void:
+	var p := _player
+	if not is_instance_valid(p):
+		return
+	magic_slot.visible = p.is_magic_unlocked()
+	if magic_slot.visible:
+		var cd := p.magic_cooldown_left()
+		magic_icon.texture = _icon_cd if cd > 0.0 or (p.laugh and p.laugh.is_helpless()) else _icon_ready
+		magic_label.text = "%d" % ceili(cd) if cd > 0.0 else "[L]"
+	exposed_label.visible = p.is_channeling()
+	if exposed_label.visible:
+		_blink += delta
+		exposed_label.modulate.a = 1.0 if int(_blink * 6.0) % 2 == 0 else 0.55
+	else:
+		_blink = 0.0
 
 
 func _on_hp_changed(hp: int, max_hp: int) -> void:

@@ -43,7 +43,7 @@ func _tick(delta: float) -> void:
 			Behavior.ASSIST: assist(leader, delta)
 			Behavior.ENGAGE: engage(enemy, delta)
 			_: follow(leader, delta)
-	move_and_slide()
+	move_with_push()
 	if velocity.length() > 1.0:
 		facing = velocity.normalized()
 	_animate(delta)

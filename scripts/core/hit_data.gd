@@ -14,6 +14,16 @@ var knockback := 0.0
 var source: Node = null
 ## 命中来源位置，用于计算击退方向。
 var origin := Vector2.ZERO
+## 额外标记，如星光爆发的 "magic_1" ~ "magic_3"（分裂史莱姆、精灵群据此判断）。
+var tag := ""
+
+
+func is_magic() -> bool:
+	return tag.begins_with("magic_")
+
+
+func magic_tier() -> int:
+	return tag.substr(6).to_int() if is_magic() else 0
 
 
 static func make_attack(src: Node, amount := 1, kb := 0.0) -> HitData:

@@ -1,0 +1,19 @@
+{
+	"floors": [
+		{
+			"id": "floor_01",
+			"name": "第一层·地牢",
+			"scene": "res://levels/floor_01/floor.tscn"
+		},
+		{
+			"id": "floor_02",
+			"name": "第二层·痒痒地牢",
+			"scene": "res://levels/floor_02/floor.tscn"
+		},
+		{
+			"id": "floor_03",
+			"name": "第三层·痒痒工坊",
+			"scene": "res://levels/floor_03/floor.tscn"
+		}
+	]
+}

@@ -2,7 +2,7 @@ class_name CharacterController
 extends Node
 ## 可操作角色的输入来源（Controllable 接口）。挂在 PlayableCharacter 下，节点名 "Controller"。
 ## 继承并重写这几个方法即可接入键盘、脚本（测试/过场）、AI、回放或第二玩家。
-## 动作名：attack / dash / interact / use_item
+## 动作名：attack / dash / interact / use_item / magic（magic 需要按住蓄力，用 is_action_pressed）
 
 
 func get_move_vector() -> Vector2:
@@ -10,6 +10,11 @@ func get_move_vector() -> Vector2:
 
 
 func is_action_just_pressed(_action: StringName) -> bool:
+	return false
+
+
+## 动作是否正被按住（蓄力类动作用）。
+func is_action_pressed(_action: StringName) -> bool:
 	return false
 
 

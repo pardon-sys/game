@@ -1,8 +1,9 @@
 extends SceneTree
-## 把 ASCII 关卡（tools/build/<level>.txt）构建成 scenes/levels/<level>.tscn。
+## 把楼层 ASCII 地图（levels/<floor>/map.txt）构建成 levels/<floor>/floor.tscn。
 ##
 ## 用法：
-##   Godot --headless --path . --script res://tools/build/build_level.gd -- level=dungeon_01
+##   Godot --headless --path . --script res://tools/build/build_level.gd -- floor=floor_01
+##   Godot --headless --path . --script res://tools/build/build_level.gd -- all      # data/floors.json 里的全部楼层
 ##
 ## 墙体自动拼接：
 ##   墙格下方是地面 → 墙面（wall_faces.png，砖墙）；否则 → 墙顶（walls.png，按 8 邻域掩码选图块）。
@@ -24,6 +25,8 @@ const SCENES := {
 	"player": "res://scenes/actors/playable/princess.tscn",
 	"chest": "res://scenes/objects/chest.tscn",
 	"barrel": "res://scenes/objects/barrel.tscn",
+	"rack": "res://scenes/objects/weapon_rack.tscn",
+	"secret": "res://scenes/objects/secret_wall.tscn",
 	"torch": "res://scenes/objects/torch.tscn",
 	"lever": "res://scenes/objects/lever.tscn",
 	"gate": "res://scenes/objects/gate.tscn",
@@ -42,6 +45,12 @@ const TYPED_SCENES := {
 		"ghost": "res://scenes/actors/monsters/tickle_ghost.tscn",
 		"spider": "res://scenes/actors/monsters/tickle_spider.tscn",
 		"troll": "res://scenes/actors/monsters/tickle_troll.tscn",
+		"rat": "res://scenes/actors/monsters/foot_rat.tscn",
+		"crab": "res://scenes/actors/monsters/pincer_crab.tscn",
+		"split_slime": "res://scenes/actors/monsters/split_slime.tscn",
+		"mimic": "res://scenes/actors/monsters/mimic.tscn",
+		"fairy": "res://scenes/actors/monsters/fairy_swarm.tscn",
+		"tentacle": "res://scenes/actors/monsters/tentacle_boss.tscn",
 	},
 	"ally": {"knight": "res://scenes/actors/allies/knight.tscn"},
 	"trap": {
@@ -49,12 +58,17 @@ const TYPED_SCENES := {
 		"feather": "res://scenes/traps/feather_trap.tscn",
 		"vent": "res://scenes/traps/powder_vent.tscn",
 		"brush": "res://scenes/traps/feather_brush.tscn",
+		"vine": "res://scenes/traps/tickle_vine.tscn",
+		"fan": "res://scenes/traps/feather_fan.tscn",
+		"conveyor": "res://scenes/traps/tickle_conveyor.tscn",
 	},
 	## 装在墙面格上的陷阱
 	"walltrap": {"hand": "res://scenes/traps/grab_hand.tscn"},
 }
 ## 挂在墙上的类型：所在格仍是墙。
-const WALL_MOUNTED := ["torch", "face", "walltrap"]
+const WALL_MOUNTED := ["torch", "face", "walltrap", "secret"]
+## 看起来是墙、之后可能打开的格子：照常放墙块，下面再铺一层地面。
+const HIDDEN_PASSAGE := ["secret"]
 ## 放在地面层（总在角色下方）的类型。
 const FLOOR_LEVEL := ["trap", "checkpoint", "trigger", "plate", "exit"]
 ## Kenney 图块中带碰撞的装饰（下半格碰撞）。
@@ -75,17 +89,34 @@ var height := 0
 
 
 func _initialize() -> void:
-	var level := "dungeon_01"
+	var targets: Array = []
 	for a in OS.get_cmdline_user_args():
-		if a.begins_with("level="):
-			level = a.substr(6)
-	var err := build(level)
+		if a.begins_with("floor="):
+			targets.append(a.substr(6))
+		elif a == "all":
+			targets = Floors.ids()
+	if targets.is_empty():
+		push_error("用法: -- floor=<id> 或 -- all")
+		quit(1)
+		return
+	var err := OK
+	for id in targets:
+		err = maxi(err, build(id))
 	quit(err)
 
 
-func build(level: String) -> int:
+func _reset() -> void:
 	rng.seed = 20260928
-	if not parse("res://tools/build/%s.txt" % level):
+	rows = []
+	legend = {}
+	level_meta = {}
+	width = 0
+	height = 0
+
+
+func build(floor_id: String) -> int:
+	_reset()
+	if not parse(Floors.map_path(floor_id)):
 		return 1
 	var ts := make_tileset()
 	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path("res://assets/tilesets"))
@@ -93,8 +124,9 @@ func build(level: String) -> int:
 	ts = ResourceLoader.load(TILESET_PATH, "", ResourceLoader.CACHE_MODE_REPLACE)
 
 	var root := Node2D.new()
-	root.name = level.to_pascal_case()
+	root.name = floor_id.to_pascal_case()
 	root.set_script(load("res://scripts/level.gd"))
+	root.set("floor_id", floor_id)
 	root.set("intro_dialogue", level_meta.get("intro", "intro"))
 
 	var cm := CanvasModulate.new()
@@ -128,6 +160,8 @@ func build(level: String) -> int:
 			var kind: String = kind_at(x, y)
 			if is_wall(x, y):
 				_place_wall(walls_layer, x, y, info)
+				if kind in HIDDEN_PASSAGE:
+					floor_layer.set_cell(Vector2i(x, y), SRC_KENNEY, _kcoord(FLOOR_PLAIN))
 			else:
 				var tile := FLOOR_PLAIN
 				if kind == "floor" and info.has("tile"):
@@ -156,8 +190,7 @@ func build(level: String) -> int:
 	if err != OK:
 		push_error("pack 失败: %s" % err)
 		return 1
-	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path("res://scenes/levels"))
-	var out := "res://scenes/levels/%s.tscn" % level
+	var out := Floors.scene(floor_id)
 	err = ResourceSaver.save(ps, out)
 	print("已生成 %s (%dx%d) 实体: %s" % [out, width, height, counts])
 	root.free()
@@ -300,7 +333,7 @@ func _spawn(kind: String, info: Dictionary, x: int, y: int) -> Node2D:
 		var value: Variant = info[key]
 		var prop: String = key
 		match [kind, key]:
-			["gate", "group"]: prop = "group_name"
+			["gate", "group"], ["secret", "group"]: prop = "group_name"
 			["trap", "offset"]: prop = "phase_offset"
 			["chest", "item"], ["item", "id"]:
 				prop = "item"
@@ -309,10 +342,16 @@ func _spawn(kind: String, info: Dictionary, x: int, y: int) -> Node2D:
 				prop = "required_key"
 				value = ItemDB.get_item(value)
 			["trap", "speed"]: prop = "spin_speed"
+			["trap", "len"]: prop = "length"
+			["trap", "lever"], ["walltrap", "lever"]:
+				# 受哪个拉杆组控制：加入该组
+				inst.add_to_group(str(value), true)
+				continue
 			["walltrap", "group"]: prop = "group_name"
 			["exit", "target"]:
 				prop = "target_level"
-				value = "res://scenes/levels/%s.tscn" % value
+				# next = 下一层（运行时按 data/floors.json 解析）；也可以直接写楼层 id
+				value = "next" if value == "next" else Floors.scene(value)
 			["exit", "w"]:
 				inst.set("size", Vector2(float(info["w"]) * TILE, float(info.get("h", 1)) * TILE))
 				continue

@@ -4,6 +4,9 @@ extends Actor
 ## 能力：8 方向移动、近战攻击、冲刺（全无敌）、与前方物体交互、使用背包物品。
 ## 闷笑值：GIGGLING 移动变慢并时不时发笑；HELPLESS 无法行动、持续大笑，连按攻击/交互键挣扎。
 ## 状态效果（Status 组件）：减速；被抓住（GRABBED）时不能行动，连按挣扎同时挣脱并降闷笑值。
+## 魔法（星光爆发）：按住 magic 进入 CHANNEL 吟唱，不能移动；按住越久档位越高（channel_tiers），
+##   松开释放 StarBurst。吟唱时弱点暴露：附近怪物锁定过来，受到的挠痒 ×exposed_tickle_mult。
+##   闷笑值超过失控线不能开始；吟唱中进入失控、被抓住、受到攻击都会打断。
 ##
 ## 约定的子节点（除 Actor 的之外）：
 ##   Controller (CharacterController)  Emotion (EmotionComponent)  Animator (SpriteSheetAnimator)
@@ -13,8 +16,10 @@ extends Actor
 
 signal giggled
 signal state_changed(state: State)
+## 魔法事件："channel" 开始吟唱、"tier" 升档、"burst" 释放、"fizzle" 蓄力不足落空、"interrupted" 被打断。
+signal magic_event(event: String, tier: int)
 
-enum State { IDLE, MOVE, ATTACK, DASH, HURT, HELPLESS, GRABBED, DEAD }
+enum State { IDLE, MOVE, ATTACK, DASH, HURT, HELPLESS, GRABBED, DEAD, CHANNEL }
 
 @export_group("移动")
 @export var move_speed := 80.0
@@ -35,6 +40,18 @@ enum State { IDLE, MOVE, ATTACK, DASH, HURT, HELPLESS, GRABBED, DEAD }
 @export var giggle_interval := Vector2(1.0, 2.5)
 ## HELPLESS 时笑声间隔（秒）。
 @export var helpless_laugh_interval := 0.6
+@export_group("魔法")
+## 学会魔法的剧情标记（空 = 一开始就会）。
+@export var magic_flag := "magic_unlocked"
+## 升到 1/2/3 档所需的吟唱时间；到最后一档自动释放。
+@export var channel_tiers := PackedFloat32Array([0.6, 1.2, 2.0])
+@export var magic_cooldown := 6.0
+## 落空或被打断后的短冷却。
+@export var fizzle_cooldown := 1.5
+## 吟唱时吸引怪物的半径。
+@export var expose_radius := 180.0
+## 吟唱时受到的挠痒倍率（弱点暴露）。
+@export var exposed_tickle_mult := 1.5
 @export_group("")
 @export var respawn_delay := 1.25
 ## 挣脱抓取后的全无敌时间。
@@ -48,6 +65,7 @@ enum State { IDLE, MOVE, ATTACK, DASH, HURT, HELPLESS, GRABBED, DEAD }
 @onready var slash: Sprite2D = get_node_or_null("Slash")
 @onready var prompt: Sprite2D = get_node_or_null("Prompt")
 @onready var camera: Camera2D = get_node_or_null("Camera")
+@onready var combo: ComboTracker = get_node_or_null("Combo")
 
 var state := State.IDLE
 var _state_time := 0.0
@@ -58,6 +76,11 @@ var _step_time := 0.0
 var _shake := 0.0
 var _laugh_timer := 0.0
 var _target: Interactable = null
+var _channel_time := 0.0
+var _channel_tier := 0
+var _magic_cd := 0.0
+var _magic_fx: MagicCircle
+var _chant: AudioStreamPlayer
 
 
 func _setup() -> void:
@@ -90,19 +113,29 @@ func set_controller(c: CharacterController) -> void:
 func _tick(delta: float) -> void:
 	_state_time += delta
 	_dash_cd = maxf(_dash_cd - delta, 0.0)
+	_magic_cd = maxf(_magic_cd - delta, 0.0)
 	var can_control := not GameState.in_dialogue and state != State.DEAD
 	var input := controller.get_move_vector() if can_control else Vector2.ZERO
 	if status and status.is_grabbed() and state not in [State.GRABBED, State.DEAD]:
+		interrupt_channel()
 		_end_attack()
 		_set_state(State.GRABBED)
-	elif laugh and laugh.is_helpless() and state in [State.IDLE, State.MOVE, State.ATTACK]:
+	elif laugh and laugh.is_helpless() and state in [State.IDLE, State.MOVE, State.ATTACK, State.CHANNEL]:
+		interrupt_channel()
 		_enter_helpless()
 
 	match state:
 		State.IDLE, State.MOVE:
 			var speed := move_speed * (laugh.speed_multiplier() if laugh else 1.0) \
 					* (status.speed_multiplier() if status else 1.0)
-			if input != Vector2.ZERO:
+			var rooted := status != null and status.is_rooted()
+			if rooted:
+				# 定身：原地挣动，只能转向和攻击
+				if input != Vector2.ZERO:
+					facing = input.normalized()
+				velocity = velocity.move_toward(Vector2.ZERO, friction * delta)
+				_set_state(State.IDLE)
+			elif input != Vector2.ZERO:
 				facing = input.normalized()
 				velocity = velocity.move_toward(input.limit_length(1.0) * speed, accel * delta)
 				_set_state(State.MOVE)
@@ -113,8 +146,10 @@ func _tick(delta: float) -> void:
 			if can_control:
 				if controller.is_action_just_pressed(&"attack"):
 					attack()
-				elif controller.is_action_just_pressed(&"dash"):
+				elif controller.is_action_just_pressed(&"dash") and not rooted:
 					dash(input)
+				elif controller.is_action_just_pressed(&"magic"):
+					begin_channel()
 				elif controller.is_action_just_pressed(&"interact"):
 					interact()
 				elif controller.is_action_just_pressed(&"use_item"):
@@ -153,10 +188,20 @@ func _tick(delta: float) -> void:
 			if not status.is_grabbed():
 				set_invulnerable(grab_escape_invuln, true)
 				_set_state(State.HELPLESS if laugh and laugh.is_helpless() else State.IDLE)
+		State.CHANNEL:
+			velocity = velocity.move_toward(Vector2.ZERO, friction * delta)
+			if not GameState.in_dialogue:
+				_channel_time += delta
+				var tier := channel_tier_for(_channel_time)
+				if tier != _channel_tier:
+					_channel_tier = tier
+					_on_channel_tier(tier)
+				if _channel_time >= channel_tiers[channel_tiers.size() - 1] or not controller.is_action_pressed(&"magic"):
+					release_magic()
 		State.DEAD:
 			velocity = Vector2.ZERO
 
-	move_and_slide()
+	move_with_push()
 	_update_laughing(delta)
 	_update_interact_target()
 	_update_animation(delta)
@@ -185,7 +230,7 @@ func attack() -> void:
 
 
 func dash(input := Vector2.ZERO) -> void:
-	if not can_act() or _dash_cd > 0.0:
+	if not can_act() or _dash_cd > 0.0 or (status and status.is_rooted()):
 		return
 	_dash_dir = input.normalized() if input != Vector2.ZERO else facing
 	_dash_cd = dash_cooldown
@@ -229,14 +274,128 @@ func is_helpless() -> bool:
 	return state == State.HELPLESS
 
 
+# ------------------------------------------------------------------ 魔法
+func is_magic_unlocked() -> bool:
+	return magic_flag == "" or GameState.has_flag(magic_flag)
+
+
+func is_channeling() -> bool:
+	return state == State.CHANNEL
+
+
+func magic_cooldown_left() -> float:
+	return _magic_cd
+
+
+## 能否开始吟唱：已学会、不在冷却、能正常行动、闷笑值没到失控线。
+func can_cast() -> bool:
+	return is_magic_unlocked() and _magic_cd <= 0.0 and can_act() and not (laugh and laugh.is_helpless())
+
+
+func channel_tier_for(t: float) -> int:
+	var tier := 0
+	for i in channel_tiers.size():
+		if t + 0.0001 >= channel_tiers[i]:
+			tier = i + 1
+	return tier
+
+
+func channel_time() -> float:
+	return _channel_time if state == State.CHANNEL else 0.0
+
+
+func begin_channel() -> bool:
+	if not can_cast():
+		if is_magic_unlocked() and can_act():
+			Audio.play("locked", -8.0)
+		return false
+	_channel_time = 0.0
+	_channel_tier = 0
+	_set_state(State.CHANNEL)
+	if _magic_fx == null:
+		_magic_fx = MagicCircle.new()
+		add_child(_magic_fx)
+	_magic_fx.set_stage(0)
+	_magic_fx.show()
+	if _chant == null:
+		_chant = AudioStreamPlayer.new()
+		_chant.stream = Audio.loop_stream("chant")
+		_chant.volume_db = -10.0
+		add_child(_chant)
+	_chant.pitch_scale = 0.85
+	_chant.play()
+	magic_event.emit("channel", 0)
+	return true
+
+
+## 松开：按当前档位释放；不到 1 档算落空。返回释放的档位（0 = 落空）。
+func release_magic() -> int:
+	if state != State.CHANNEL:
+		return 0
+	var tier := _channel_tier
+	_end_channel()
+	if tier <= 0:
+		_magic_cd = fizzle_cooldown
+		Audio.play("fizzle", -4.0)
+		magic_event.emit("fizzle", 0)
+		return 0
+	StarBurst.cast(self, tier)
+	_magic_cd = magic_cooldown
+	shake(0.06 * tier)
+	magic_event.emit("burst", tier)
+	return tier
+
+
+## 吟唱被打断（失控、被抓、受到攻击）。不在吟唱时什么也不做。
+func interrupt_channel() -> void:
+	if state != State.CHANNEL:
+		return
+	_end_channel()
+	_magic_cd = fizzle_cooldown
+	Audio.play("fizzle", -4.0)
+	magic_event.emit("interrupted", 0)
+
+
+func _end_channel() -> void:
+	if _magic_fx:
+		_magic_fx.hide()
+	if _chant:
+		_chant.stop()
+	_channel_time = 0.0
+	_channel_tier = 0
+	if state == State.CHANNEL:
+		_set_state(State.IDLE)
+
+
+func _on_channel_tier(tier: int) -> void:
+	if _magic_fx:
+		_magic_fx.set_stage(tier)
+	if _chant:
+		_chant.pitch_scale = 0.85 + tier * 0.15
+	Audio.play("chime", -8.0, 0.02, 0.8 + tier * 0.2)
+	magic_event.emit("tier", tier)
+
+
+## 受到的挠痒倍率：状态（易痒）× 吟唱时弱点暴露。
+func _tickle_multiplier(hit: HitData) -> float:
+	var k := super(hit) * (exposed_tickle_mult if state == State.CHANNEL else 1.0)
+	return k * (combo.hit_multiplier(hit) if combo else 1.0)
+
+
 func is_grabbed() -> bool:
 	return state == State.GRABBED
+
+
+## 动不了：被抓、定身、吟唱、失控（挠脚鼠此时挠痒加倍）。
+func is_immobile() -> bool:
+	return state in [State.GRABBED, State.HELPLESS, State.CHANNEL] or (status != null and status.is_immobile())
 
 
 # ------------------------------------------------------------------ Actor 钩子
 func _on_damaged(_hit: HitData) -> void:
 	Audio.play("hurt")
 	shake(0.18)
+	interrupt_channel()
 	_end_attack()
 	if state not in [State.HELPLESS, State.GRABBED]:
 		_set_state(State.HURT)
@@ -258,6 +417,7 @@ func _on_laugh_overflow() -> void:
 
 func _on_died() -> void:
 	Audio.set_voice_state("")
+	_end_channel()
 	_set_state(State.DEAD)
 	_end_attack()
 	var tw := create_tween()
@@ -354,6 +514,8 @@ func _update_interact_target() -> void:
 
 
 func _anim_name() -> String:
+	if state == State.IDLE and status and status.is_rooted():
+		return "grabbed"
 	match state:
 		State.MOVE:
 			return "giggle" if laugh and laugh.is_giggling() else "walk"
@@ -363,6 +525,7 @@ func _anim_name() -> String:
 		State.HELPLESS: return "helpless"
 		State.GRABBED: return "grabbed"
 		State.DEAD: return "faint"
+		State.CHANNEL: return "channel"
 	return "idle"
 
 

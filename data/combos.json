@@ -1,0 +1,277 @@
+{
+	"_说明": [
+		"组合技表。keys：每个槽位列出可以填的挠痒来源键（ReactionDB 的 reaction_key），window 秒内这些来源都挠到公主就触发；",
+		"来源不分先后，同一次挠痒只能填一个槽位；\"*\" = groups.monster 里任意一种怪物（不能和其它槽位重复）。",
+		"condition：条件型组合（不看时间窗口），由代码在特定情况下调用 ComboTracker.trigger(id)。",
+		"effects：burst 额外挠痒 amount；dot 余痒 rate/秒持续 duration；root 定身 duration（extend=true 为延长）；",
+		"multiplier 易痒 value 倍持续 duration；slow 减速到 value 倍持续 duration；pull 拉向来源 speed 持续 duration；",
+		"hit_multiplier 本次挠痒 ×value（条件型用）。名称、说明和公主台词在 princess_reactions.json 的 combos 段。"
+	],
+	"window": 1.5,
+	"cooldown": 4.0,
+	"groups": {
+		"monster": [
+			"slime",
+			"bat",
+			"ghost",
+			"spider",
+			"troll",
+			"rat",
+			"crab",
+			"split_slime",
+			"mimic",
+			"fairy",
+			"tentacle"
+		],
+		"trap": [
+			"feather",
+			"vent",
+			"brush",
+			"hand",
+			"vine",
+			"fan",
+			"conveyor"
+		]
+	},
+	"combos": [
+		{
+			"id": "sole_duet",
+			"category": "怪+怪",
+			"keys": [
+				[
+					"rat"
+				],
+				[
+					"crab"
+				]
+			],
+			"effects": [
+				{
+					"type": "burst",
+					"amount": 15
+				},
+				{
+					"type": "root",
+					"duration": 0.8
+				}
+			]
+		},
+		{
+			"id": "sticky_feather",
+			"category": "怪+怪",
+			"keys": [
+				[
+					"slime",
+					"split_slime"
+				],
+				[
+					"bat"
+				]
+			],
+			"effects": [
+				{
+					"type": "dot",
+					"rate": 3,
+					"duration": 3
+				}
+			]
+		},
+		{
+			"id": "invisible_web",
+			"category": "怪+怪",
+			"keys": [
+				[
+					"spider"
+				],
+				[
+					"ghost"
+				]
+			],
+			"effects": [
+				{
+					"type": "root",
+					"duration": 1.2
+				},
+				{
+					"type": "multiplier",
+					"value": 1.5,
+					"duration": 3
+				}
+			]
+		},
+		{
+			"id": "fairy_cheer",
+			"category": "怪+怪",
+			"keys": [
+				[
+					"fairy"
+				],
+				[
+					"*"
+				]
+			],
+			"effects": [
+				{
+					"type": "multiplier",
+					"value": 1.3,
+					"duration": 3
+				}
+			]
+		},
+		{
+			"id": "tentacle_feet",
+			"category": "怪+怪",
+			"keys": [
+				[
+					"tentacle"
+				],
+				[
+					"rat",
+					"crab"
+				]
+			],
+			"effects": [
+				{
+					"type": "burst",
+					"amount": 12
+				}
+			]
+		},
+		{
+			"id": "assembly_line",
+			"category": "陷阱+陷阱",
+			"keys": [
+				[
+					"conveyor"
+				],
+				[
+					"brush",
+					"hand"
+				]
+			],
+			"effects": [
+				{
+					"type": "burst",
+					"amount": 10
+				}
+			]
+		},
+		{
+			"id": "vine_sweep",
+			"category": "陷阱+陷阱",
+			"keys": [
+				[
+					"vine"
+				],
+				[
+					"feather"
+				]
+			],
+			"effects": [
+				{
+					"type": "root",
+					"duration": 1.0,
+					"extend": true
+				},
+				{
+					"type": "dot",
+					"rate": 4,
+					"duration": 2
+				}
+			]
+		},
+		{
+			"id": "wind_brush",
+			"category": "陷阱+陷阱",
+			"keys": [
+				[
+					"fan"
+				],
+				[
+					"brush"
+				]
+			],
+			"effects": [
+				{
+					"type": "burst",
+					"amount": 12
+				},
+				{
+					"type": "slow",
+					"value": 0.6,
+					"duration": 2
+				}
+			]
+		},
+		{
+			"id": "crab_express",
+			"category": "怪+陷阱",
+			"keys": [
+				[
+					"crab"
+				],
+				[
+					"conveyor"
+				]
+			],
+			"effects": [
+				{
+					"type": "burst",
+					"amount": 12
+				},
+				{
+					"type": "root",
+					"duration": 0.6
+				}
+			]
+		},
+		{
+			"id": "vine_rat",
+			"category": "怪+陷阱",
+			"keys": [
+				[
+					"rat"
+				],
+				[
+					"vine"
+				]
+			],
+			"effects": [
+				{
+					"type": "multiplier",
+					"value": 1.5,
+					"duration": 2.5
+				}
+			]
+		},
+		{
+			"id": "powder_whirlwind",
+			"category": "陷阱+陷阱",
+			"condition": "痒痒粉雾飘进羽毛风扇的风道：顺风飘动、变大",
+			"effects": []
+		},
+		{
+			"id": "powdered_bat",
+			"category": "怪+陷阱",
+			"condition": "羽毛蝙蝠飞过痒痒粉雾，5 秒内每次挠痒附带余痒",
+			"effects": [
+				{
+					"type": "dot",
+					"rate": 2,
+					"duration": 2
+				}
+			]
+		},
+		{
+			"id": "hand_heist",
+			"category": "怪+陷阱",
+			"condition": "被机关手抓着时怪物来挠：这次挠痒 ×1.5",
+			"effects": [
+				{
+					"type": "hit_multiplier",
+					"value": 1.5
+				}
+			]
+		}
+	]
+}

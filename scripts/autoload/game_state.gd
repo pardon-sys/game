@@ -14,6 +14,8 @@ signal emotion_changed(emotion: String)
 signal bubble_requested(kind: String)
 ## Non-blocking princess reaction captions; empty text clears the current caption.
 signal princess_reacted(text: String, duration: float)
+## 组合技触发（HUD 横幅）。
+signal combo_triggered(id: String, combo_name: String)
 
 # Source of truth shared with the art importer.
 var EMOTIONS: Array[String] = _load_emotions()

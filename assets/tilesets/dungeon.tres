@@ -1,8 +1,8 @@
-[gd_resource type="TileSet" format=3 uid="uid://bhdoosed26p3l"]
+[gd_resource type="TileSet" format=3]
 
-[ext_resource type="Texture2D" uid="uid://dq7d8q27ousof" path="res://assets/third_party/kenney_tiny_dungeon/tilemap_packed.png" id="1_u1w1y"]
-[ext_resource type="Texture2D" uid="uid://3vb1ehodv1r" path="res://assets/generated/walls.png" id="2_w7bgn"]
-[ext_resource type="Texture2D" uid="uid://csqjyi1aaeuq2" path="res://assets/generated/wall_faces.png" id="3_wnmmg"]
+[ext_resource type="Texture2D" path="res://assets/third_party/kenney_tiny_dungeon/tilemap_packed.png" id="1_u1w1y"]
+[ext_resource type="Texture2D" path="res://assets/generated/walls.png" id="2_w7bgn"]
+[ext_resource type="Texture2D" path="res://assets/generated/wall_faces.png" id="3_wnmmg"]
 
 [sub_resource type="OccluderPolygon2D" id="OccluderPolygon2D_vtnp3"]
 polygon = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)

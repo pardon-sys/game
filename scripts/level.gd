@@ -1,12 +1,15 @@
 extends Node2D
-## 关卡根节点：设置相机边界、播放开场对话。
+## 楼层根节点：载入本层对话、设置相机边界、播放开场对话。
 
+## 楼层 id（levels/<floor_id>/），由构建器写入。
+@export var floor_id := ""
 @export var intro_dialogue := "intro"
 
 @onready var walls: TileMapLayer = $Walls
 
 
 func _ready() -> void:
+	Dialogue.load_floor(floor_id)
 	var player := get_tree().get_first_node_in_group("player") as PlayableCharacter
 	if player:
 		var rect := walls.get_used_rect()
@@ -31,5 +34,7 @@ func _on_dialogue_finished(id: String) -> void:
 			GameState.set_flag("chapter1_clear")
 		"ending_2":
 			GameState.set_flag("chapter2_clear")
+		"ending_3":
+			GameState.set_flag("chapter3_clear")
 			GameState.emote("happy", 3.0)
-			GameState.notify("第二章通关！感谢游玩（Esc → 重新开始）")
+			GameState.notify("第三章通关！感谢游玩（Esc → 重新开始）")
