@@ -15,6 +15,8 @@ extends Actor
 enum State { WANDER, CHASE, HURT }
 
 const EXPOSED_CHASE_MULT := 1.3
+## 是否随机暴击（测试里需要精确数值时关掉；必暴击 / forced_specials 不受影响）。
+static var random_specials := true
 
 @export var stats: MonsterStats
 
@@ -33,6 +35,7 @@ var _stun_left := 0.0
 
 
 func _setup() -> void:
+	buffs_changed.connect(_refresh_buff_mark)
 	if stats == null:
 		stats = MonsterStats.new()
 	if health:
@@ -107,13 +110,61 @@ func attack(t: Node) -> bool:
 func tickle(t: Node) -> bool:
 	if not Contracts.is_tickleable(t):
 		return false
-	var ok: bool = t.receive_hit(HitData.make_tickle(self, _tickle_amount(t)))
+	var ok := deliver_tickle(t, _tickle_amount(t), _force_special(t))
 	if ok:
-		_action_cd = stats.tickle_cooldown
+		_action_cd = stats.tickle_cooldown * stat_mul("tickle_cd")
 		play_tickle_sound()
 		maybe_taunt()
 		_on_tickle_performed(t)
 	return ok
+
+
+# ------------------------------------------------------------------ 特殊挠痒（暴击）
+## 怪物所有的挠痒都从这里生成（普通挠痒、抓住后的持续挠痒、蛛丝连挠……）：
+## 暴击率 = stats.special_chance + 增益 special_chance；目标身上的 forced_specials 优先（必暴击）。
+func make_tickle(t: Node, amount: float, force_special := false, kb := 0.0) -> HitData:
+	var special := force_special
+	if not special and t is Actor and (t as Actor).forced_specials > 0:
+		(t as Actor).forced_specials -= 1
+		special = true
+	if not special and random_specials:
+		special = randf() < stats.special_chance + stat_add("special_chance")
+	var h := HitData.make_tickle(self, amount * (stats.special_mult if special else 1.0), kb)
+	h.special = special
+	h.fatigue_mult = stats.fatigue_mult
+	return h
+
+
+## 生成并送出一次挠痒；暴击时播放暴击表现。返回是否挠到。
+func deliver_tickle(t: Node, amount: float, force_special := false, kb := 0.0) -> bool:
+	var h := make_tickle(t, amount, force_special, kb)
+	var ok: bool = t.receive_hit(h)
+	if ok and h.special:
+		special_feedback(t)
+		_on_special_tickle(t)
+	return ok
+
+
+## 暴击的表现：水里果冻抖动的升调音效、目标头上金色「暴击！」、镜头轻震。陷阱的暴击也用它。
+static func special_feedback(t: Node) -> void:
+	Audio.play("tickle_special", -1.0, 0.04)
+	if t is Node2D:
+		var b := SpeechBubble.say(t, "暴击！", 36.0)
+		if b:
+			b.add_theme_color_override("font_color", Color(1.0, 0.86, 0.3))
+			b.add_theme_color_override("font_outline_color", Color(0.45, 0.12, 0.25))
+	if t is PlayableCharacter:
+		(t as PlayableCharacter).shake(0.18)
+
+
+## 子类钩子：这次普通挠痒是否必定暴击（幽灵手套成对时）。
+func _force_special(_t: Node) -> bool:
+	return false
+
+
+## 子类钩子：打出暴击后（刺猬、手套、狂热连击等）。
+func _on_special_tickle(_t: Node) -> void:
+	pass
 
 
 ## 按 stats.taunt_chance 概率在头顶冒出回嘴短句（台词在 princess_reactions.json 的 sources[key].taunts）。
@@ -167,6 +218,33 @@ func is_stunned() -> bool:
 	return _stun_left > 0.0
 
 
+## 头顶的增益标记：有增益时显示第一个增益的图标，上下浮动。
+func _refresh_buff_mark() -> void:
+	var mark := get_node_or_null("BuffMark") as Sprite2D
+	var shown := ""
+	for id in buffs:
+		if not (buffs[id] as Buff).is_debuff():
+			shown = id
+			break
+	if shown == "":
+		if mark:
+			mark.queue_free()
+		return
+	if mark == null:
+		mark = Sprite2D.new()
+		mark.name = "BuffMark"
+		mark.texture = preload("res://assets/generated/buff_icons.png")
+		mark.hframes = 6
+		mark.z_index = 10
+		mark.scale = Vector2(0.75, 0.75)
+		add_child(mark)
+		var tw := mark.create_tween().set_loops()
+		tw.tween_property(mark, "offset:y", -2.0, 0.4)
+		tw.tween_property(mark, "offset:y", 0.0, 0.4)
+	mark.frame = int(Buff.info(shown).get("icon", 0))
+	mark.position = Vector2(0, -24.0 * (sprite.scale.y if sprite else 1.0) - 6.0)
+
+
 ## 子类钩子：被僵直（例如松开抓住的公主）。
 func _on_stunned(_duration: float) -> void:
 	pass
@@ -201,7 +279,7 @@ func _perform(action: String, t: Actor) -> bool:
 
 ## 移动方式（子类可重写，例如史莱姆的跳跃）。
 func _move(dir: Vector2, speed: float, delta: float) -> void:
-	velocity = velocity.move_toward(dir * speed, 400.0 * delta)
+	velocity = velocity.move_toward(dir * speed * stat_mul("speed"), 400.0 * delta)
 
 
 func _animate(_delta: float) -> void:

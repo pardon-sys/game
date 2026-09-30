@@ -29,5 +29,11 @@ extends Resource
 @export_range(0.0, 1.0) var tickle_weight := 0.75
 ## 挠痒果冻音效的音高（1 = 原调，越小越低沉）。
 @export var tickle_pitch := 1.0
+## 特殊挠痒（暴击）概率：普通怪 0.12，Boss 0.20（增益 special_chance 可以再加）。
+@export_range(0.0, 1.0) var special_chance := 0.12
+## 暴击时挠痒量的倍数。
+@export var special_mult := 2.0
+## 这只怪物的挠痒给魔力疲倦的额外倍率（魔力水母 3）。
+@export var fatigue_mult := 1.0
 @export_group("掉落")
 @export var drops: Array[ItemDrop] = []

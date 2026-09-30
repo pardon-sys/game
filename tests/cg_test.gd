@@ -12,6 +12,8 @@ class Src extends Node2D:
 
 
 func _ready() -> void:
+	Monster.random_specials = false  # 这里要精确的挠痒数值；暴击在 floor4_test 里测
+	MagicFatigue.accumulate = false  # 同理，魔力疲倦的闷笑加成在 floor4_test 里测
 	main = load("res://scenes/main.tscn").instantiate()
 	add_child(main)
 	await _wait(1.0)
@@ -40,7 +42,7 @@ func _run_data() -> void:
 	for e in errors:
 		print("    ", e)
 	check("cgs.json 引用全部合法", errors.is_empty())
-	for key in ["slime", "bat", "ghost", "spider", "troll", "rat", "crab", "split_slime", "mimic", "fairy", "tentacle"]:
+	for key in MONSTER_SCENES:
 		var id := CG.death_cg_for(key)
 		check("怪物 %s 有专属笑倒 CG" % key, id == "death_" + key and CG.cgs().has(id))
 	check("陷阱致死用通用 CG", CG.death_cg_for("vent") == "death_generic" and CG.death_cg_for("") == "death_generic")
@@ -62,6 +64,21 @@ func _run_data() -> void:
 			print("    第三幕有问题：", key)
 		third_ok = third_ok and ok
 	check("11 段怪物 CG 都有第三幕（横版 CG 图 + 最多的剧情）", third_ok)
+	var new_ok := true
+	for key in ["mana_jelly", "bubble_fish", "glove", "hedgehog", "jelly_queen"]:
+		var steps: Array = CG.cgs()["death_" + key]["steps"]
+		var idx := -1
+		for i in steps.size():
+			if str(steps[i].get("portrait", "")) == key + "_3":
+				idx = i
+		var after: Array = steps.slice(maxi(idx, 0)).filter(func(st: Dictionary): return st.has("text"))
+		var info: Dictionary = CG.data["portraits"][key + "_3"]
+		var ok: bool = idx >= 0 and after.size() >= 6 and not CG.has_portrait_file(key + "_3") and not info.get("wide", false) \
+				and info.get("placeholder", "") == "helpless_2"
+		if not ok:
+			print("    新怪物第三幕有问题：", key)
+		new_ok = new_ok and ok
+	check("5 种新怪物的 CG 第三幕默认用失控 2 立绘占位（普通框）", new_ok)
 	check("通用 CG 没有第三幕", not CG.cgs()["death_generic"]["steps"].any(func(st: Dictionary): return str(st.get("portrait", "")).ends_with("_3")))
 	check("立绘缺素材时用失控 1 / 失控 2 占位", CG.portrait_texture("slime_1") == Dialogue.portrait_for("helpless_1")
 		and CG.portrait_texture("slime_2") == Dialogue.portrait_for("helpless_2") and not CG.has_portrait_file("slime_1"))
@@ -220,6 +237,8 @@ const MONSTER_SCENES := {
 	"slime": "slime", "bat": "feather_bat", "ghost": "tickle_ghost", "spider": "tickle_spider",
 	"troll": "tickle_troll", "rat": "foot_rat", "crab": "pincer_crab", "split_slime": "split_slime",
 	"mimic": "mimic", "fairy": "fairy_swarm", "tentacle": "tentacle_boss",
+	"mana_jelly": "mana_jelly", "bubble_fish": "bubble_fish", "glove": "ghost_glove", "hedgehog": "brush_hedgehog",
+	"jelly_queen": "jelly_queen",
 }
 
 
@@ -246,6 +265,10 @@ func _run_real_monsters() -> void:
 		await _wait(0.1)
 		if m is Mimic:
 			(m as Mimic).on_interact(player)
+		if m is JellyQueen:
+			(m as JellyQueen)._summon_cd = 999.0  # 不让召唤的小水母抢走最后一下
+		if m is BrushHedgehog:
+			m.global_position = spot + Vector2(60, 0)  # 同一行，滚过来
 		# 公主剩 1 点血、闷笑值接近满、已经失控：接下来无论是挠痒还是普通攻击让她倒下，都算笑倒
 		player.health.damage(player.health.hp - 1)
 		player.laugh.set_value(140.0)

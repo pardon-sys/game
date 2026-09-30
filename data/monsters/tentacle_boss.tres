@@ -4,6 +4,8 @@
 [ext_resource type="Script" path="res://scripts/items/item_drop.gd" id="2"]
 [ext_resource type="Resource" path="res://data/items/heart.tres" id="i0"]
 
+[ext_resource type="Resource" path="res://data/items/clear_dew.tres" id="dew"]
+
 [sub_resource type="Resource" id="d0"]
 script = ExtResource("2")
 item = ExtResource("i0")
@@ -11,12 +13,18 @@ chance = 1.0
 min_amount = 2
 max_amount = 2
 
+[sub_resource type="Resource" id="drop_dew"]
+script = ExtResource("2")
+item = ExtResource("dew")
+chance = 1.0
+
 [resource]
 script = ExtResource("1")
 display_name = "痒痒触手怪"
 reaction_key = "tentacle"
 taunt_chance = 0.45
 is_boss = true
+special_chance = 0.2
 max_hp = 20
 wander_speed = 0.0
 chase_speed = 0.0
@@ -30,4 +38,4 @@ tickle_amount = 8.0
 tickle_cooldown = 0.8
 tickle_weight = 0.9
 tickle_pitch = 0.7
-drops = Array[ExtResource("2")]([SubResource("d0")])
+drops = Array[ExtResource("2")]([SubResource("d0"), SubResource("drop_dew")])

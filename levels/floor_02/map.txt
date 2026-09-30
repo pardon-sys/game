@@ -52,7 +52,7 @@ L = lever target=nestfans
 v = trap type=vine
 N = gate group=arena_spider is_open=true
 M = arena group=arena_spider w=13 h=13
-W = trap type=conveyor dir=left len=14 push_speed=45.0 lever=belts2
+W = trap type=conveyor dir=left len=14 push_speed=75.0 lever=belts2
 K = lever target=belts2
 G = gate group=arena_troll is_open=true
 E = arena group=arena_troll w=11 h=13

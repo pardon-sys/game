@@ -1,0 +1,37 @@
+[gd_resource type="Resource" script_class="MonsterStats" format=3]
+
+[ext_resource type="Script" path="res://scripts/actors/monsters/monster_stats.gd" id="1"]
+[ext_resource type="Script" path="res://scripts/items/item_drop.gd" id="2"]
+[ext_resource type="Resource" path="res://data/items/heart.tres" id="i0"]
+[ext_resource type="Resource" path="res://data/items/coin.tres" id="i1"]
+
+[sub_resource type="Resource" id="d0"]
+script = ExtResource("2")
+item = ExtResource("i0")
+chance = 0.25
+min_amount = 1
+max_amount = 1
+
+[sub_resource type="Resource" id="d1"]
+script = ExtResource("2")
+item = ExtResource("i1")
+chance = 0.3
+min_amount = 1
+max_amount = 2
+
+[resource]
+script = ExtResource("1")
+reaction_key = "hedgehog"
+display_name = "刷刷刺猬"
+max_hp = 3
+wander_speed = 16.0
+chase_speed = 30.0
+detect_range = 130.0
+lose_range = 190.0
+attack_damage = 1
+attack_cooldown = 1.4
+tickle_amount = 6.0
+tickle_cooldown = 1.0
+tickle_weight = 0.85
+tickle_pitch = 1.1
+drops = Array[ExtResource("2")]([SubResource("d0"), SubResource("d1")])

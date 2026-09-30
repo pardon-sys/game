@@ -1,0 +1,23 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/combat/bubble_shot.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/generated/bubble_shot.png" id="2"]
+
+[sub_resource type="CircleShape2D" id="shape"]
+radius = 4.0
+
+[node name="BubbleShot" type="Area2D"]
+collision_layer = 0
+collision_mask = 3
+monitorable = false
+script = ExtResource("1")
+speed = 70.0
+lifetime = 1.75
+tickle = 3.0
+
+[node name="Sprite" type="Sprite2D" parent="."]
+texture = ExtResource("2")
+hframes = 2
+
+[node name="Shape" type="CollisionShape2D" parent="."]
+shape = SubResource("shape")

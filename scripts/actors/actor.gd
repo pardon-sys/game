@@ -13,12 +13,17 @@ extends CharacterBody2D
 ##   _on_damaged(hit)         受到攻击（已扣血）
 ##   _on_tickled(hit)         被挠痒（已加闷笑值）
 ##   _tickle_multiplier(hit)  受到的挠痒倍率（默认 1）
+##
+## 增益 / 减益（data/buffs.json）：add_buff / remove_buff / clear_buffs / has_buff / buff_stacks，
+## 属性修正 stat_add（相加类）、stat_mul（相乘类）、stat_flag（开关类）；变化时发出 buffs_changed。
 ##   _on_laugh_overflow()     闷笑值满（默认扣 1 点血）
 ##   _on_died()               死亡
 
 signal died(actor: Actor)
 ## 被挠痒（已加闷笑值；hit.tickle 是乘过倍率后的实际值）。组合技追踪等监听它。
 signal tickled(hit: HitData)
+## 增益 / 减益有变化（加上、叠层、到时、移除）。
+signal buffs_changed
 
 @export var faction := Faction.Type.NEUTRAL
 ## 受到攻击后的无敌时间（只挡攻击，不挡挠痒）。
@@ -45,6 +50,10 @@ var last_tickle: HitData
 var last_tickle_time := -INF
 ## 死前这么多秒内被挠过，也算"笑倒"（最后一下是普通攻击时）。
 const LAUGH_DEFEAT_WINDOW := 2.0
+## 身上的增益 / 减益：id -> Buff
+var buffs := {}
+## 接下来几次被怪物挠痒必定暴击（组合技 special_next 等）。
+var forced_specials := 0
 var _attack_invuln := 0.0
 var _full_invuln := 0.0
 var _dead := false
@@ -64,6 +73,7 @@ func _ready() -> void:
 func _physics_process(delta: float) -> void:
 	_attack_invuln = maxf(_attack_invuln - delta, 0.0)
 	_full_invuln = maxf(_full_invuln - delta, 0.0)
+	_tick_buffs(delta)
 	_tick(delta)
 
 
@@ -207,6 +217,7 @@ func is_laugh_defeat() -> bool:
 
 func revive() -> void:
 	_dead = false
+	clear_buffs(true)
 	died_from_laugh = false
 	last_tickle = null
 	last_tickle_time = -INF
@@ -243,9 +254,104 @@ func _on_tickled(_hit: HitData) -> void:
 	pass
 
 
-## 受到的挠痒倍率（易痒、弱点暴露等）。hit.tickle 会先乘上它再加到闷笑值。
+## 受到的挠痒倍率（易痒、弱点暴露、增益减益的 laugh_gain 等）。hit.tickle 会先乘上它再加到闷笑值。
 func _tickle_multiplier(_hit: HitData) -> float:
-	return status.tickle_multiplier() if status else 1.0
+	return (status.tickle_multiplier() if status else 1.0) * (1.0 + stat_add("laugh_gain"))
+
+
+# ------------------------------------------------------------------ 增益 / 减益
+## 加一个状态。duration < -1.5 表示用 buffs.json 里的默认时长；< 0 表示永久。已有同种状态时叠层并刷新时长。
+func add_buff(id: String, duration := -2.0, stacks := 1) -> void:
+	var info := Buff.info(id)
+	if info.is_empty():
+		push_warning("没有这种状态: " + id)
+		return
+	var d := float(info.get("duration", 5.0)) if duration < -1.5 else duration
+	var b: Buff = buffs.get(id)
+	if b == null:
+		b = Buff.new(id)
+		b.time_left = 0.0
+		buffs[id] = b
+	b.stacks = mini(b.stacks + stacks, int(info.get("max_stacks", 1)))
+	b.time_left = INF if d < 0.0 else maxf(b.time_left, d)
+	buffs_changed.emit()
+
+
+func remove_buff(id: String) -> void:
+	if buffs.erase(id):
+		buffs_changed.emit()
+
+
+## 清掉状态：only_timed = true 时保留永久状态（复活时用）。
+func clear_buffs(only_timed := true) -> void:
+	var before := buffs.size()
+	for id in buffs.keys():
+		if not only_timed or not (buffs[id] as Buff).is_permanent():
+			buffs.erase(id)
+	if buffs.size() != before:
+		buffs_changed.emit()
+
+
+func has_buff(id: String) -> bool:
+	return buffs.has(id)
+
+
+func buff_stacks(id: String) -> int:
+	return (buffs[id] as Buff).stacks if buffs.has(id) else 0
+
+
+## 相加类属性（laugh_gain、special_chance）：各状态数值 × 层数相加。
+func stat_add(stat: String) -> float:
+	var total := 0.0
+	for b in buffs.values():
+		var v: Variant = (b as Buff).modifier(stat)
+		if v != null:
+			total += float(v) * b.stacks
+	return total
+
+
+## 相乘类属性（tickle_cd、speed）：各状态数值的层数次方相乘。
+func stat_mul(stat: String) -> float:
+	var total := 1.0
+	for b in buffs.values():
+		var v: Variant = (b as Buff).modifier(stat)
+		if v != null:
+			total *= pow(float(v), b.stacks)
+	return total
+
+
+## 开关类属性（can_channel）：任何一个状态写 0 就是关。
+func stat_flag(stat: String) -> bool:
+	for b in buffs.values():
+		var v: Variant = (b as Buff).modifier(stat)
+		if v != null and float(v) == 0.0:
+			return false
+	return true
+
+
+## 永久状态（换层时保存）：id -> 层数。
+func permanent_buffs() -> Dictionary:
+	var out := {}
+	for id in buffs:
+		if (buffs[id] as Buff).is_permanent():
+			out[id] = buffs[id].stacks
+	return out
+
+
+func _tick_buffs(delta: float) -> void:
+	if buffs.is_empty() or GameState.in_dialogue:
+		return
+	var expired: Array = []
+	for id in buffs:
+		var b: Buff = buffs[id]
+		if not b.is_permanent():
+			b.time_left -= delta
+			if b.time_left <= 0.0:
+				expired.append(id)
+	for id in expired:
+		buffs.erase(id)
+	if not expired.is_empty():
+		buffs_changed.emit()
 
 
 ## 笑到脱力：默认扣 1 点血（半颗心）。

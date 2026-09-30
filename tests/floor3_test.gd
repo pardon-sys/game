@@ -9,6 +9,8 @@ var failures := 0
 
 
 func _ready() -> void:
+	Monster.random_specials = false  # 这里要精确的挠痒数值；暴击在 floor4_test 里测
+	MagicFatigue.accumulate = false  # 同理，魔力疲倦的闷笑加成在 floor4_test 里测
 	main = load("res://scenes/main.tscn").instantiate()
 	add_child(main)
 	await _wait(1.0)
@@ -35,8 +37,8 @@ func _ready() -> void:
 func _run_floors() -> void:
 	print("-- 楼层表")
 	var ids := Floors.ids()
-	check("floors.json 顺序", ids == ["floor_01", "floor_02", "floor_03"])
-	check("下一层", Floors.next_of("floor_01") == "floor_02" and Floors.next_of("floor_02") == "floor_03" and Floors.next_of("floor_03") == "")
+	check("floors.json 顺序", ids == ["floor_01", "floor_02", "floor_03", "floor_04"])
+	check("下一层", Floors.next_of("floor_01") == "floor_02" and Floors.next_of("floor_02") == "floor_03" and Floors.next_of("floor_03") == "floor_04" and Floors.next_of("floor_04") == "")
 	for id in ids:
 		check("%s 有地图、对话和场景" % id, FileAccess.file_exists(Floors.map_path(id))
 			and FileAccess.file_exists(Floors.dialogues_path(id)) and ResourceLoader.exists(Floors.scene(id)))
@@ -128,6 +130,8 @@ func _cast(hold_time: float) -> int:
 
 
 func _reset_magic() -> void:
+	if player.fatigue:
+		player.fatigue.clear()  # 魔力疲倦不会自己消散，会给闷笑积累加成；这里的数值检查要从 0 开始
 	if player.is_casting():  # 释放动作还没播完：直接结束，方便连续施法测试
 		player._set_state(PlayableCharacter.State.IDLE)
 	player._magic_cd = 0.0
@@ -136,6 +140,8 @@ func _reset_magic() -> void:
 	player.status.clear()
 	player._attack_invuln = 0.0
 	player._full_invuln = 0.0
+	player.clear_buffs(false)  # 组合技附带的易痒 / 黏黏 / 封魔等状态
+	player.forced_specials = 0
 
 
 var ctrl := ScriptedController.new()
@@ -778,7 +784,9 @@ func _run_floor3() -> void:
 	boss.health.damage(99)
 	await _wait(0.1)
 	check("打倒触手怪后 Boss 门打开", gate.is_open)
-	check("出口剧情触发器", _find("Trigger_44_5") != null and _find("Trigger_44_5").dialogue == "ending_3")
+	var exit: Node = _find("Exit_44_5")
+	check("出口楼梯通往第四层（带结尾剧情）", exit != null and exit.dialogue == "ending_3" and exit.target_level == "next"
+		and exit.resolve_target() == Floors.scene("floor_04"))
 	Dialogue.start("ending_3")
 	_finish_dialogue()
 	await _wait(0.2)

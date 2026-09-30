@@ -7,7 +7,7 @@ const SHEET := preload("res://assets/generated/conveyor.png")
 
 @export var dir := "right"
 @export var length := 4
-@export var push_speed := 40.0
+@export var push_speed := 70.0
 
 var belt := Vector2.RIGHT
 var _anim := 0.0

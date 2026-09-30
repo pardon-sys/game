@@ -16,6 +16,7 @@
 [ext_resource type="Script" uid="uid://dafg8gm880wsf" path="res://scripts/components/hitbox_component.gd" id="14"]
 [ext_resource type="Script" uid="uid://f2mmr41ijhtm" path="res://scripts/components/combo_tracker.gd" id="combo"]
 [ext_resource type="Script" uid="uid://q0bxqk8k5iuj" path="res://scripts/components/status_component.gd" id="status"]
+[ext_resource type="Script" path="res://scripts/components/magic_fatigue.gd" id="fatigue"]
 
 [sub_resource type="ShaderMaterial" id="flash_mat"]
 resource_local_to_scene = true
@@ -60,6 +61,9 @@ script = ExtResource("status")
 
 [node name="Combo" type="Node" parent="." unique_id=1491118183]
 script = ExtResource("combo")
+
+[node name="Fatigue" type="Node" parent="."]
+script = ExtResource("fatigue")
 
 [node name="Controller" type="Node" parent="." unique_id=1561724890]
 script = ExtResource("11")

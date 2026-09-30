@@ -139,7 +139,7 @@ func _update_grab(delta: float) -> void:
 	_grab_tick -= delta
 	if _grab_tick <= 0.0:
 		_grab_tick = grab_interval
-		if victim.receive_hit(HitData.make_tickle(self, grab_tickle)):
+		if deliver_tickle(victim, grab_tickle):
 			play_tickle_sound()
 			maybe_taunt()
 

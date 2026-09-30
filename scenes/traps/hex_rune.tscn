@@ -1,0 +1,30 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/traps/hex_rune.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/generated/hex_rune.png" id="tex"]
+
+[sub_resource type="RectangleShape2D" id="area"]
+size = Vector2(12, 12)
+
+[node name="HexRune" type="Area2D"]
+collision_layer = 0
+collision_mask = 2
+monitorable = false
+script = ExtResource("1")
+reaction_key = "rune"
+trigger_mode = 1
+hit_kind = 1
+damage = 0
+tickle = 2.0
+repeat_interval = 10.0
+tickle_pitch = 0.8
+warn_time = 0.0
+active_time = 0.1
+cooldown_time = 4.0
+
+[node name="Sprite" type="Sprite2D" parent="."]
+texture = ExtResource("tex")
+hframes = 3
+
+[node name="Shape" type="CollisionShape2D" parent="."]
+shape = SubResource("area")

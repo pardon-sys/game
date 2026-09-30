@@ -16,6 +16,8 @@ const TIERS := [
 	{"radius": 52.0, "damage": 3, "knockback": 190.0, "stun": 0.0},
 	{"radius": 72.0, "damage": 4, "knockback": 240.0, "stun": 1.5},
 ]
+## 魔力疲倦满时的自动爆发：满蓄力档的一半伤害、击退减半，不僵直，不触发 MagicReactive。
+const FATIGUE := {"radius": 72.0, "damage": 2, "knockback": 120.0, "stun": 0.0}
 ## 角色的身体半径：中心在这个距离内也算命中。
 const BODY_ALLOWANCE := 6.0
 
@@ -34,7 +36,18 @@ static func center_of(caster: Node2D) -> Vector2:
 
 
 static func cast(caster: Node2D, t: int) -> Array[Node]:
-	var p := params(t)
+	return cast_with(caster, params(t), t, "magic_%d" % t, true)
+
+
+## 疲倦爆发：满蓄力档的范围、一半伤害，紫色的爆发环、低沉的音效。
+static func cast_fatigue(caster: Node2D) -> Array[Node]:
+	return cast_with(caster, FATIGUE, 3, "fatigue_burst", false, Color(0.75, 0.55, 1.0), 0.7)
+
+
+## 通用：params = {radius, damage, knockback, stun}；visual_tier 决定爆发环的大小；reactive = 是否通知 MagicReactive。
+static func cast_with(caster: Node2D, p: Dictionary, visual_tier: int, tag: String, reactive: bool,
+		tint := Color.WHITE, pitch := 1.0) -> Array[Node]:
+	var t := visual_tier
 	var center := center_of(caster)
 	var radius: float = p["radius"]
 	var hit: Array[Node] = []
@@ -46,12 +59,12 @@ static func cast(caster: Node2D, t: int) -> Array[Node]:
 			continue
 		var h := HitData.make_attack(caster, p["damage"], p["knockback"])
 		h.origin = center
-		h.tag = "magic_%d" % t
+		h.tag = tag
 		a.receive_hit(h)
 		if p["stun"] > 0.0 and a.has_method("stun") and a.is_alive():
 			a.stun(p["stun"])
 		hit.append(a)
-	for n in caster.get_tree().get_nodes_in_group("magic_reactive"):
+	for n in (caster.get_tree().get_nodes_in_group("magic_reactive") if reactive else []):
 		if not (n is Node2D) or not Contracts.is_magic_reactive(n):
 			continue
 		var extra := float(n.get("magic_radius")) if n.get("magic_radius") != null else 0.0
@@ -61,9 +74,10 @@ static func cast(caster: Node2D, t: int) -> Array[Node]:
 				hit.append(n)
 	var fx := StarBurst.new()
 	fx.tier = t
+	fx.modulate = tint
 	caster.get_parent().add_child(fx)
 	fx.global_position = center
-	Audio.play("star_burst", -2.0, 0.04, 1.0 + (t - 1) * 0.08)
+	Audio.play("star_burst", -2.0, 0.04, pitch * (1.0 + (t - 1) * 0.08))
 	return hit
 
 

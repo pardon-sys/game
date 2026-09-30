@@ -1,0 +1,40 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/traps/frenzy_totem.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/generated/totem.png" id="tex"]
+[ext_resource type="Script" path="res://scripts/objects/hit_relay.gd" id="relay"]
+
+[sub_resource type="RectangleShape2D" id="body"]
+size = Vector2(10, 8)
+
+[sub_resource type="CircleShape2D" id="area"]
+radius = 64.0
+
+[node name="FrenzyTotem" type="Area2D"]
+collision_layer = 0
+collision_mask = 4
+monitorable = false
+script = ExtResource("1")
+reaction_key = "totem"
+trigger_mode = 3
+hit_kind = 1
+damage = 0
+affects_player = false
+affects_allies = false
+affects_enemies = true
+repeat_interval = 0.3
+
+[node name="Sprite" type="Sprite2D" parent="."]
+texture = ExtResource("tex")
+offset = Vector2(0, -4.0)
+hframes = 3
+
+[node name="Shape" type="CollisionShape2D" parent="."]
+shape = SubResource("area")
+
+[node name="Body" type="StaticBody2D" parent="."]
+script = ExtResource("relay")
+
+[node name="Shape" type="CollisionShape2D" parent="Body"]
+position = Vector2(0, 3)
+shape = SubResource("body")

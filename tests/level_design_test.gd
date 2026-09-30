@@ -17,11 +17,16 @@ const FORCED := [
 	["floor_03", "蟹池出口的传送带", Vector2i(50, 39), Vector2i(42, 33)],
 	["floor_03", "传送带工坊", Vector2i(41, 33), Vector2i(30, 27)],
 	["floor_03", "风洞走廊", Vector2i(30, 23), Vector2i(19, 18)],
+	["floor_04", "水母池出口的诅咒符文走廊", Vector2i(30, 46), Vector2i(44, 46)],
+	["floor_04", "泡泡水道的黏黏毛毯", Vector2i(45, 46), Vector2i(55, 39)],
+	["floor_04", "足枷长廊（羽毛臂 + 整宽足枷台）", Vector2i(55, 36), Vector2i(55, 20)],
+	["floor_04", "刺猬滚道的整高毛毯", Vector2i(54, 18), Vector2i(22, 18)],
 ]
 ## [楼层, 战斗房铁栅组]
 const ARENAS := [
 	["floor_01", "arena_guard"], ["floor_02", "arena_spider"], ["floor_02", "arena_troll"],
 	["floor_03", "arena_rats"], ["floor_03", "arena_hall"], ["floor_03", "arena_trial"], ["floor_03", "arena_boss"],
+	["floor_04", "arena_totem"], ["floor_04", "arena_gallery"], ["floor_04", "arena_boss"],
 ]
 
 var main: Node
@@ -31,6 +36,8 @@ var failures := 0
 
 
 func _ready() -> void:
+	Monster.random_specials = false  # 这里要精确的挠痒数值；暴击在 floor4_test 里测
+	MagicFatigue.accumulate = false  # 同理，魔力疲倦的闷笑加成在 floor4_test 里测
 	main = load("res://scenes/main.tscn").instantiate()
 	add_child(main)
 	await _wait(1.0)
@@ -69,6 +76,8 @@ func _run_forced(id: String) -> void:
 	if id == "floor_03":
 		# 对照：安全区里不碰陷阱也能走动（证明上面的检查不是恒成立）
 		check("对照：第三层落脚点里不踩陷阱也能走动", _reachable(Vector2i(10, 50), Vector2i(12, 45), hazards))
+	if id == "floor_04":
+		check("对照：刺猬滚道的毛毯之前不踩陷阱也能走动", _reachable(Vector2i(54, 18), Vector2i(44, 18), hazards))
 	check("%s：从起点能走到每一块地面（铁栅、门视为可通过）" % id, _reachable_all())
 
 
@@ -92,6 +101,17 @@ func hazard_cells() -> Dictionary:
 			var c0: Vector2i = cell_of.call(belt.global_position)
 			for i in belt.length:
 				cells[c0 + Vector2i(belt.belt) * i] = true
+		elif n is StickyCarpet:
+			var carpet := n as StickyCarpet
+			var c0: Vector2i = cell_of.call(carpet.global_position)
+			for dx in carpet.tiles_w:
+				for dy in carpet.tiles_h:
+					cells[c0 + Vector2i(dx, dy)] = true
+		elif n is FeatherArm:
+			var arm := n as FeatherArm
+			var wall_cell: Vector2i = cell_of.call(arm.global_position + Vector2(0, -8))
+			for i in arm.length:
+				cells[wall_cell + Vector2i(arm.lane) * (i + 1)] = true
 		elif n is GrabHand:
 			cells[cell_of.call((n as Node2D).global_position) + Vector2i(0, 1)] = true
 		elif n is Trap or (n.get_script() and str(n.get_script().resource_path).ends_with("pressure_plate.gd")):

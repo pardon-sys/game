@@ -1,0 +1,52 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/actors/monsters/bubble_fish.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/generated/bubble_fish.png" id="tex"]
+[ext_resource type="Shader" path="res://shaders/flash.gdshader" id="flash"]
+[ext_resource type="Script" path="res://scripts/components/health_component.gd" id="health"]
+[ext_resource type="Resource" path="res://data/monsters/bubble_fish.tres" id="stats"]
+
+[sub_resource type="ShaderMaterial" id="mat"]
+resource_local_to_scene = true
+shader = ExtResource("flash")
+shader_parameter/flash = 0.0
+shader_parameter/flash_color = Color(1, 1, 1, 1)
+
+[sub_resource type="RectangleShape2D" id="body"]
+size = Vector2(12, 6)
+
+[sub_resource type="CircleShape2D" id="hit"]
+radius = 8.0
+
+[node name="BubbleFish" type="CharacterBody2D"]
+collision_layer = 4
+collision_mask = 5
+motion_mode = 1
+script = ExtResource("1")
+stats = ExtResource("stats")
+faction = 3
+hurt_invuln_time = 0.1
+knockback_resist = 0.0
+flash_color = Color(1, 1, 1, 1)
+
+[node name="Sprite" type="Sprite2D" parent="."]
+material = SubResource("mat")
+texture = ExtResource("tex")
+offset = Vector2(0, -9.0)
+
+[node name="Shape" type="CollisionShape2D" parent="."]
+position = Vector2(0, -3)
+shape = SubResource("body")
+
+[node name="Health" type="Node" parent="."]
+script = ExtResource("health")
+max_hp = 3
+
+[node name="HitArea" type="Area2D" parent="."]
+position = Vector2(0, -5.0)
+collision_layer = 0
+collision_mask = 2
+monitorable = false
+
+[node name="Shape" type="CollisionShape2D" parent="HitArea"]
+shape = SubResource("hit")

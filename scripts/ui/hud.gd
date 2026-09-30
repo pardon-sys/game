@@ -4,6 +4,7 @@ extends CanvasLayer
 
 const HUD_TEX := preload("res://assets/generated/hud.png")
 const MAGIC_ICON := preload("res://assets/generated/magic_icon.png")
+const BUFF_ICONS := preload("res://assets/generated/buff_icons.png")
 
 @onready var hearts: HBoxContainer = $Hearts
 @onready var laugh_bar: LaughBar = $LaughRow/Bar
@@ -24,6 +25,11 @@ var _icon_cd: AtlasTexture
 var _blink := 0.0
 var combo_label: Label
 var _combo_tween: Tween
+## 公主身上的增益 / 减益图标（心形右边）
+var buff_row: HBoxContainer
+## 闷笑条下面的魔力疲倦条
+var fatigue_row: HBoxContainer
+var fatigue_bar: FatigueBar
 
 
 func _ready() -> void:
@@ -39,6 +45,25 @@ func _ready() -> void:
 	GameState.combo_triggered.connect(show_combo)
 	toast_label.modulate.a = 0.0
 	_build_magic_ui()
+	fatigue_row = HBoxContainer.new()
+	fatigue_row.name = "FatigueRow"
+	fatigue_row.position = Vector2(6, 35)
+	fatigue_row.add_theme_constant_override("separation", 4)
+	var fl := Label.new()
+	fl.text = "魔力"
+	fl.add_theme_color_override("font_color", Color(0.78, 0.66, 1.0))
+	fatigue_row.add_child(fl)
+	fatigue_bar = FatigueBar.new()
+	fatigue_bar.custom_minimum_size = Vector2(75, 5)
+	fatigue_bar.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	fatigue_row.add_child(fatigue_bar)
+	add_child(fatigue_row)
+	fatigue_row.hide()
+	buff_row = HBoxContainer.new()
+	buff_row.name = "Buffs"
+	buff_row.position = Vector2(92, 7)
+	buff_row.add_theme_constant_override("separation", 2)
+	add_child(buff_row)
 	if GameState.player:
 		_bind_player(GameState.player)
 	_refresh_inventory()
@@ -55,6 +80,40 @@ func _bind_player(p: PlayableCharacter) -> void:
 	$LaughRow.visible = p.laugh != null
 	if p.laugh:
 		laugh_bar.bind(p.laugh)
+	var f: MagicFatigue = p.get("fatigue")
+	fatigue_row.visible = f != null
+	if f:
+		fatigue_bar.bind(f)
+	p.buffs_changed.connect(_refresh_buffs)
+	_refresh_buffs()
+
+
+## 状态图标：每种一个，叠层的在右下角标层数；快到时的闪烁（见 _process）。
+func _refresh_buffs() -> void:
+	for c in buff_row.get_children():
+		c.queue_free()
+	if not is_instance_valid(_player):
+		return
+	for id in _player.buffs:
+		var b: Buff = _player.buffs[id]
+		var info := Buff.info(id)
+		var icon := TextureRect.new()
+		var at := AtlasTexture.new()
+		at.atlas = BUFF_ICONS
+		at.region = Rect2(int(info.get("icon", 0)) * 12, 0, 12, 12)
+		icon.texture = at
+		icon.custom_minimum_size = Vector2(12, 12)
+		icon.tooltip_text = str(info.get("name", id))
+		icon.set_meta("buff", id)
+		if b.stacks > 1:
+			var n := Label.new()
+			n.text = str(b.stacks)
+			n.position = Vector2(7, 2)
+			n.add_theme_font_size_override("font_size", 8)
+			n.add_theme_color_override("font_outline_color", Color.BLACK)
+			n.add_theme_constant_override("outline_size", 2)
+			icon.add_child(n)
+		buff_row.add_child(icon)
 
 
 func _build_magic_ui() -> void:
@@ -123,6 +182,9 @@ func _process(delta: float) -> void:
 		var cd := p.magic_cooldown_left()
 		magic_icon.texture = _icon_cd if cd > 0.0 or (p.laugh and p.laugh.is_helpless()) else _icon_ready
 		magic_label.text = "%d" % ceili(cd) if cd > 0.0 else "[L]"
+	for icon in buff_row.get_children():
+		var b: Buff = p.buffs.get(icon.get_meta("buff", ""))
+		icon.modulate.a = 0.4 if b and not b.is_permanent() and b.time_left < 2.0 and int(b.time_left * 6.0) % 2 == 0 else 1.0
 	exposed_label.visible = p.is_channeling()
 	if exposed_label.visible:
 		_blink += delta
@@ -162,7 +224,7 @@ func _refresh_inventory() -> void:
 		var label := Label.new()
 		label.text = "×%d" % GameState.inventory.count(it.id)
 		if it.category == ItemData.Category.CONSUMABLE:
-			label.text += " [Q]"
+			label.text += " [R]" if it.hotkey == "use_special" else " [Q]"
 		slot.add_child(label)
 		inventory_row.add_child(slot)
 

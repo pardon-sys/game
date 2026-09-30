@@ -16,6 +16,8 @@
   chime        小精灵铃声
   pop          史莱姆分裂："啵"
   combo        组合技提示音：两声上扬
+  puddle       魔力疲倦水液：啪嗒一声
+  tickle_special 特殊挠痒（暴击）：水里的果冻抖动——闷闷的啵叽 + 慢颤音 + 气泡，整体音高上扬约 5 度
 
 用法：python tools/art/gen_sfx.py
 在游戏里通过 Audio.play("tickle", 音量, 抖动, 音高) 播放，怪物用不同音高区分（巨魔低沉、蝙蝠尖细）。
@@ -110,6 +112,7 @@ def main():
     thump = np.sin(2 * np.pi * np.cumsum(90 * np.exp(-t / 0.2) + 40) / RATE) * env(t, 0.005, 0.08)
     save("grab", mix(thump, jelly(0.22, 300, 130, delay=0.05) * 0.5))
     gen_expansion_sfx()
+    gen_floor4_sfx()
     print("音效已生成：", sorted(p.name for p in OUT.glob("*.wav")))
 
 
@@ -137,7 +140,32 @@ def save_loop(name, sig, gain=0.8):
         w.writeframes(pcm.tobytes())
 
 
+def underwater_jelly():
+    """暴击音效：果冻啵叽（音高一路上扬）→ 低通变闷像在水里 → 慢颤音 → 两三个小气泡。"""
+    dur = 0.55
+    t = t_axis(dur)
+    base = 260.0 * (2 ** (7 / 12 * np.clip(t / 0.4, 0, 1)))        # 上扬约 5 度（7 个半音）
+    wob = 1 + 0.08 * np.sin(2 * np.pi * 7 * t) * np.exp(-t / 0.35)  # 果冻抖动
+    phase = 2 * np.pi * np.cumsum(base * wob) / RATE
+    tone = np.sin(phase) + 0.45 * np.sin(2 * phase) + 0.2 * np.sin(3 * phase)
+    am = 0.7 + 0.3 * np.sin(2 * np.pi * 11 * t)
+    sig = tone * am * env(t, 0.01, 0.22)
+    sig = lowpass(sig, 1500)                                        # 水里：闷
+    for k, (st, f) in enumerate(((0.12, 900), (0.24, 1300), (0.33, 1700))):
+        bt = t_axis(0.06)
+        bub = np.sin(2 * np.pi * np.cumsum(f * (1 + 2.5 * bt / 0.06)) / RATE) * env(bt, 0.002, 0.018) * 0.35
+        i = int(st * RATE)
+        sig[i:i + len(bub)] += bub
+    return sig
+
+
 def gen_expansion_sfx():
+    save("tickle_special", underwater_jelly(), 0.8)
+    # 水液啪嗒：低通噪声 + 下滑的小水声（不用 rng，避免改变后面音效的随机序列）
+    t = t_axis(0.35)
+    drop = np.sin(2 * np.pi * np.cumsum(900 * np.exp(-t / 0.06) + 180) / RATE) * env(t, 0.003, 0.08)
+    ripple = np.sin(2 * np.pi * 420 * t) * np.sin(2 * np.pi * 9 * t) * env(t, 0.05, 0.12) * 0.4
+    save("puddle", mix(drop, ripple), 0.6)
     # 吟唱：C 大三和弦 + 轻微颤音，1.2 秒循环
     t = t_axis(1.25)
     vib = 1 + 0.004 * np.sin(2 * np.pi * 5 * t)
@@ -186,6 +214,41 @@ def gen_expansion_sfx():
     save("pop", mix(jelly(0.14, 700, 300, wobble=40, wet=0.1), jelly(0.14, 600, 280, wobble=36, wet=0.1, delay=0.07)), 0.6)
     # 组合技提示
     save("combo", mix(tone([784, 1175], 0.3, 0.003, 0.08), np.concatenate([np.zeros(int(0.1 * RATE)), tone([1047, 1568], 0.4, 0.003, 0.14)])), 0.6)
+
+
+def gen_floor4_sfx():
+    """第四层：泡泡、刺猬滚动、足枷台、图腾、符文。用单独的随机数，不影响前面音效。"""
+    r4 = np.random.default_rng(44)
+    # 吐泡泡：上滑的"噗"
+    t = t_axis(0.22)
+    blub = np.sin(2 * np.pi * np.cumsum(300 + 900 * (t / 0.22) ** 1.5) / RATE) * env(t, 0.004, 0.06)
+    save("bubble", lowpass(blub, 2200), 0.6)
+    # 泡泡破：短促高"啵" + 细碎水花
+    t = t_axis(0.16)
+    pop = np.sin(2 * np.pi * np.cumsum(1400 * np.exp(-t / 0.03) + 500) / RATE) * env(t, 0.001, 0.03)
+    spray = highpass(r4.standard_normal(len(t)), 3500) * env(t, 0.002, 0.03) * 0.3
+    save("bubble_pop", mix(pop, spray), 0.6)
+    # 刺猬滚动：沙沙的刷毛 + 滚动的低鸣
+    t = t_axis(0.5)
+    brush = highpass(lowpass(r4.standard_normal(len(t)), 6000), 1500) * (0.6 + 0.4 * np.abs(np.sin(2 * np.pi * 14 * t)))
+    rumble = np.sin(2 * np.pi * 85 * t) * 0.3
+    save("roll", mix(brush, rumble) * env(t, 0.03, 0.2), 0.5)
+    # 足枷台合上：两声木头咔哒
+    t = t_axis(0.3)
+    knock = np.sin(2 * np.pi * np.cumsum(220 * np.exp(-t / 0.04) + 140) / RATE) * env(t, 0.001, 0.03)
+    clk = highpass(r4.standard_normal(len(t)), 2500) * env(t, 0.001, 0.01) * 0.5
+    one = mix(knock, clk)
+    two = np.concatenate([np.zeros(int(0.09 * RATE)), one[: len(t) - int(0.09 * RATE)] * 0.8])
+    save("stocks", mix(one, two), 0.8)
+    # 图腾嗡鸣：低音 + 五度，缓慢起伏
+    t = t_axis(0.8)
+    hum = (np.sin(2 * np.pi * 110 * t) + 0.5 * np.sin(2 * np.pi * 165 * t) + 0.2 * np.sin(2 * np.pi * 330 * t))
+    hum *= (0.6 + 0.4 * np.sin(2 * np.pi * 6 * t)) * env(t, 0.1, 0.3)
+    save("totem", hum, 0.5)
+    # 符文诅咒：下滑的闪光 + 低沉的"嗡"
+    t = t_axis(0.6)
+    shimmer = np.sin(2 * np.pi * np.cumsum(1800 * np.exp(-t / 0.25) + 300) / RATE) * (0.6 + 0.4 * np.sin(2 * np.pi * 18 * t))
+    save("rune", mix(shimmer * env(t, 0.01, 0.2), np.sin(2 * np.pi * 98 * t) * env(t, 0.05, 0.3) * 0.5), 0.55)
 
 
 if __name__ == "__main__":

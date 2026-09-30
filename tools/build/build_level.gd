@@ -52,6 +52,11 @@ const TYPED_SCENES := {
 		"mimic": "res://scenes/actors/monsters/mimic.tscn",
 		"fairy": "res://scenes/actors/monsters/fairy_swarm.tscn",
 		"tentacle": "res://scenes/actors/monsters/tentacle_boss.tscn",
+		"mana_jelly": "res://scenes/actors/monsters/mana_jelly.tscn",
+		"bubble_fish": "res://scenes/actors/monsters/bubble_fish.tscn",
+		"glove": "res://scenes/actors/monsters/ghost_glove.tscn",
+		"hedgehog": "res://scenes/actors/monsters/brush_hedgehog.tscn",
+		"jelly_queen": "res://scenes/actors/monsters/jelly_queen.tscn",
 	},
 	"ally": {"knight": "res://scenes/actors/allies/knight.tscn"},
 	"trap": {
@@ -62,9 +67,16 @@ const TYPED_SCENES := {
 		"vine": "res://scenes/traps/tickle_vine.tscn",
 		"fan": "res://scenes/traps/feather_fan.tscn",
 		"conveyor": "res://scenes/traps/tickle_conveyor.tscn",
+		"totem": "res://scenes/traps/frenzy_totem.tscn",
+		"rune": "res://scenes/traps/hex_rune.tscn",
+		"stocks": "res://scenes/traps/stocks.tscn",
+		"carpet": "res://scenes/traps/sticky_carpet.tscn",
 	},
 	## 装在墙面格上的陷阱
-	"walltrap": {"hand": "res://scenes/traps/grab_hand.tscn"},
+	"walltrap": {
+		"hand": "res://scenes/traps/grab_hand.tscn",
+		"arm": "res://scenes/traps/feather_arm.tscn",
+	},
 }
 ## 挂在墙上的类型：所在格仍是墙。
 const WALL_MOUNTED := ["torch", "face", "walltrap", "secret"]
@@ -343,7 +355,10 @@ func _spawn(kind: String, info: Dictionary, x: int, y: int) -> Node2D:
 				prop = "required_key"
 				value = ItemDB.get_item(value)
 			["trap", "speed"]: prop = "spin_speed"
-			["trap", "len"]: prop = "length"
+			["trap", "len"], ["walltrap", "len"]: prop = "length"
+			# 多格陷阱（黏黏毛毯）：从所在格向右 w 格、向下 h 格
+			["trap", "w"]: prop = "tiles_w"
+			["trap", "h"]: prop = "tiles_h"
 			["trap", "lever"], ["walltrap", "lever"]:
 				# 受哪个拉杆组控制：加入该组
 				inst.add_to_group(str(value), true)

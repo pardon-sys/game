@@ -44,9 +44,9 @@ script = ExtResource("2")
 
 [node name="Inventory" type="HBoxContainer" parent="."]
 offset_left = 6.0
-offset_top = 36.0
+offset_top = 48.0
 offset_right = 300.0
-offset_bottom = 52.0
+offset_bottom = 64.0
 theme_override_constants/separation = 6
 
 [node name="PortraitFrame" type="Panel" parent="."]
