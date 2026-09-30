@@ -33,6 +33,7 @@ func _ready() -> void:
 	await _run_monsters()
 	await _run_traps()
 	await _run_combos()
+	await _run_floor4()
 	print("\n==== %s (%d 项失败) ====" % ["全部通过" if failures == 0 else "有失败", failures])
 	get_tree().quit(1 if failures else 0)
 
@@ -607,6 +608,51 @@ func _run_combos() -> void:
 	player.clear_buffs(false)
 	f.clear()
 	_reset()
+
+
+# ------------------------------------------------------------------ 第四层「魔力回廊」
+func _run_floor4() -> void:
+	print("-- 第四层")
+	check("楼层表：第三层之后是第四层，第四层是最后一层", Floors.next_of("floor_03") == "floor_04" and Floors.next_of("floor_04") == ""
+		and Floors.display_name("floor_04") == "第四层·魔力回廊")
+	await _goto("floor_04")
+	check("第四层对话已载入", Dialogue.has_dialogue("intro_4") and Dialogue.has_dialogue("boss4_intro")
+		and Dialogue.has_dialogue("ending_4") and not Dialogue.has_dialogue("boss3_intro"))
+	var counts := {}
+	for n in level.find_children("*", "", true, false):
+		var k := ""
+		if n is Monster:
+			k = (n as Monster).stats.reaction_key
+		elif n is Trap:
+			k = str(n.get("reaction_key"))
+		if k != "":
+			counts[k] = int(counts.get(k, 0)) + 1
+	var types_ok := true
+	for k in ["mana_jelly", "bubble_fish", "glove", "hedgehog", "jelly_queen", "totem", "rune", "stocks", "carpet", "arm"]:
+		if not counts.has(k):
+			print("    第四层缺少：", k)
+			types_ok = false
+	check("第四层放了全部新怪物和新陷阱", types_ok and counts["jelly_queen"] == 1)
+	var gloves := level.find_children("*", "GhostGlove", true, false)
+	check("幽灵手套都成对（%d 只）" % gloves.size(), gloves.size() % 2 == 0 and gloves.all(func(g2): return g2.partner() != null))
+	var carpet := level.find_child("Carpet_48_42", true, false) as StickyCarpet
+	check("水道毛毯 5×2 盖住缺口", carpet != null and carpet.tiles_w == 5 and carpet.tiles_h == 2)
+	var arm := level.find_child("Arm_54_33", true, false) as FeatherArm
+	check("足枷长廊的羽毛臂朝走廊里扫", arm != null and arm.lane == Vector2.RIGHT and arm.length == 2)
+	var gate := level.find_child("Gate_31_5", true, false)
+	var queen := level.find_child("JellyQueen_20_4", true, false) as JellyQueen
+	check("Boss 门初始关闭", gate != null and not gate.is_open and queen != null and queen.open_on_death == "boss_gate")
+	queen.process_mode = Node.PROCESS_MODE_INHERIT
+	queen.health.damage(99)
+	await _wait(0.2)
+	check("打倒水母女王后 Boss 门打开", gate.is_open)
+	var trig := level.find_child("Trigger_36_5", true, false)
+	check("出口剧情触发器", trig != null and trig.dialogue == "ending_4")
+	Dialogue.start("ending_4")
+	_finish_dialogue()
+	await _wait(0.2)
+	check("第四章通关标记", GameState.has_flag("chapter4_clear"))
+	GameState.boss_changed.emit(null)
 
 
 func _freeze_group(g: String) -> void:

@@ -168,6 +168,66 @@
 			"file": "res://assets/cg/portraits/tentacle_3.png",
 			"placeholder": "helpless_2",
 			"wide": true
+		},
+		"mana_jelly_1": {
+			"file": "res://assets/cg/portraits/mana_jelly_1.png",
+			"placeholder": "helpless_1"
+		},
+		"mana_jelly_2": {
+			"file": "res://assets/cg/portraits/mana_jelly_2.png",
+			"placeholder": "helpless_2"
+		},
+		"mana_jelly_3": {
+			"file": "res://assets/cg/portraits/mana_jelly_3.png",
+			"placeholder": "helpless_2"
+		},
+		"bubble_fish_1": {
+			"file": "res://assets/cg/portraits/bubble_fish_1.png",
+			"placeholder": "helpless_1"
+		},
+		"bubble_fish_2": {
+			"file": "res://assets/cg/portraits/bubble_fish_2.png",
+			"placeholder": "helpless_2"
+		},
+		"bubble_fish_3": {
+			"file": "res://assets/cg/portraits/bubble_fish_3.png",
+			"placeholder": "helpless_2"
+		},
+		"glove_1": {
+			"file": "res://assets/cg/portraits/glove_1.png",
+			"placeholder": "helpless_1"
+		},
+		"glove_2": {
+			"file": "res://assets/cg/portraits/glove_2.png",
+			"placeholder": "helpless_2"
+		},
+		"glove_3": {
+			"file": "res://assets/cg/portraits/glove_3.png",
+			"placeholder": "helpless_2"
+		},
+		"hedgehog_1": {
+			"file": "res://assets/cg/portraits/hedgehog_1.png",
+			"placeholder": "helpless_1"
+		},
+		"hedgehog_2": {
+			"file": "res://assets/cg/portraits/hedgehog_2.png",
+			"placeholder": "helpless_2"
+		},
+		"hedgehog_3": {
+			"file": "res://assets/cg/portraits/hedgehog_3.png",
+			"placeholder": "helpless_2"
+		},
+		"jelly_queen_1": {
+			"file": "res://assets/cg/portraits/jelly_queen_1.png",
+			"placeholder": "helpless_1"
+		},
+		"jelly_queen_2": {
+			"file": "res://assets/cg/portraits/jelly_queen_2.png",
+			"placeholder": "helpless_2"
+		},
+		"jelly_queen_3": {
+			"file": "res://assets/cg/portraits/jelly_queen_3.png",
+			"placeholder": "helpless_2"
 		}
 	},
 	"actors": {
@@ -220,6 +280,36 @@
 			"sprite": {
 				"hframes": 2
 			}
+		},
+		"mana_jelly": {
+			"scene": "res://scenes/actors/monsters/mana_jelly.tscn",
+			"sprite": {
+				"hframes": 2
+			}
+		},
+		"bubble_fish": {
+			"scene": "res://scenes/actors/monsters/bubble_fish.tscn",
+			"sprite": {
+				"hframes": 2
+			}
+		},
+		"glove": {
+			"scene": "res://scenes/actors/monsters/ghost_glove.tscn",
+			"sprite": {
+				"hframes": 2
+			}
+		},
+		"hedgehog": {
+			"scene": "res://scenes/actors/monsters/brush_hedgehog.tscn",
+			"sprite": {
+				"hframes": 4
+			}
+		},
+		"jelly_queen": {
+			"scene": "res://scenes/actors/monsters/jelly_queen.tscn",
+			"sprite": {
+				"hframes": 2
+			}
 		}
 	},
 	"death": {
@@ -234,7 +324,12 @@
 			"split_slime": "death_split_slime",
 			"mimic": "death_mimic",
 			"fairy": "death_fairy",
-			"tentacle": "death_tentacle"
+			"tentacle": "death_tentacle",
+			"mana_jelly": "death_mana_jelly",
+			"bubble_fish": "death_bubble_fish",
+			"glove": "death_glove",
+			"hedgehog": "death_hedgehog",
+			"jelly_queen": "death_jelly_queen"
 		},
 		"default": "death_generic"
 	},
@@ -3533,6 +3628,1536 @@
 					"portrait": "wake",
 					"speaker": "公主",
 					"text": "……醒来了。那家伙还在大厅里等着……这次先用满蓄力的星光让它松手！"
+				}
+			]
+		},
+		"death_mana_jelly": {
+			"name": "软乎乎的魔力漩涡",
+			"cast": {
+				"princess": {
+					"kind": "princess",
+					"at": [
+						0,
+						8
+					],
+					"visual": "helpless_1",
+					"anim": "helpless",
+					"dir": "down"
+				},
+				"foe": {
+					"kind": "monster:mana_jelly",
+					"at": [
+						18,
+						-4
+					],
+					"dir": "left",
+					"hidden": true
+				},
+				"jelly2": {
+					"kind": "monster:mana_jelly",
+					"at": [
+						-20,
+						-2
+					],
+					"dir": "right",
+					"hidden": true
+				}
+			},
+			"steps": [
+				{
+					"actions": [
+						{
+							"do": "fade_in",
+							"time": 0.7
+						},
+						{
+							"do": "voice",
+							"state": "giggle"
+						}
+					],
+					"wait": 0.8
+				},
+				{
+					"portrait": "mana_jelly_1",
+					"speaker": "公主",
+					"text": "软、软乎乎的触须……缠上来了……",
+					"actions": [
+						{
+							"do": "enter",
+							"who": "foe",
+							"from": [
+								0,
+								-60
+							],
+							"time": 0.6
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "surprise"
+						},
+						{
+							"do": "enter",
+							"who": "jelly2",
+							"from": [
+								-80,
+								0
+							],
+							"time": 0.7
+						}
+					]
+				},
+				{
+					"speaker": "魔力水母",
+					"text": "噗噜噗噜～",
+					"actions": [
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "foe",
+							"repeat": 4,
+							"fx": "lines"
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						}
+					]
+				},
+				{
+					"portrait": "mana_jelly_2",
+					"speaker": "公主",
+					"text": "魔力被搅得乱七八糟……哈哈哈哈身体好敏感！",
+					"actions": [
+						{
+							"do": "pose",
+							"who": "princess",
+							"visual": "helpless_2"
+						},
+						{
+							"do": "voice",
+							"state": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "foe",
+							"repeat": 6,
+							"interval": 0.28,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "jelly2",
+							"repeat": 5,
+							"interval": 0.32,
+							"fx": "lines"
+						},
+						{
+							"do": "camera",
+							"zoom": 1.5,
+							"focus": "princess",
+							"time": 0.5
+						}
+					]
+				},
+				{
+					"speaker": "魔力水母",
+					"text": "魔力，好好吃～",
+					"actions": [
+						{
+							"do": "hop",
+							"who": "foe",
+							"count": 2
+						},
+						{
+							"do": "taunt",
+							"who": "foe"
+						}
+					]
+				},
+				{
+					"speaker": "",
+					"text": "（水母们飘下来，半透明的伞盖把公主整个罩住）",
+					"actions": [
+						{
+							"do": "flash",
+							"time": 0.5
+						},
+						{
+							"do": "camera",
+							"zoom": 1,
+							"focus": "princess",
+							"anchor": [
+								262,
+								112
+							],
+							"time": 0.4
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "foe",
+							"repeat": 5,
+							"interval": 0.3,
+							"fx": "lines"
+						}
+					],
+					"portrait": "mana_jelly_3"
+				},
+				{
+					"speaker": "公主",
+					"text": "里、里面全是魔力……身体在发抖……",
+					"actions": [
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "jelly2",
+							"repeat": 6,
+							"interval": 0.27999999999999997,
+							"fx": "lines"
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.4
+						}
+					]
+				},
+				{
+					"speaker": "魔力水母",
+					"text": "噗噜～触须一根一根钻进去～",
+					"actions": [
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "foe",
+							"repeat": 7,
+							"interval": 0.26,
+							"fx": "lines"
+						},
+						{
+							"do": "hop",
+							"who": "foe",
+							"count": 1
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "腋下、腰上……到处都软软地在挠——哈哈哈哈！",
+					"actions": [
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "jelly2",
+							"repeat": 8,
+							"interval": 0.24,
+							"fx": "lines"
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.4
+						}
+					]
+				},
+				{
+					"speaker": "魔力水母",
+					"text": "魔力越乱，笑得越开心～",
+					"actions": [
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "foe",
+							"repeat": 9,
+							"interval": 0.21999999999999997,
+							"fx": "lines"
+						},
+						{
+							"do": "hop",
+							"who": "foe",
+							"count": 1
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "……魔力……和力气……都没有了……哈哈……",
+					"actions": [
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "jelly2",
+							"repeat": 10,
+							"interval": 0.19999999999999998,
+							"fx": "lines"
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "dots"
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.4
+						}
+					]
+				},
+				{
+					"actions": [
+						{
+							"do": "fade_out",
+							"time": 0.9
+						},
+						{
+							"do": "voice",
+							"state": ""
+						}
+					],
+					"wait": 1.0
+				},
+				{
+					"portrait": "wake",
+					"speaker": "公主",
+					"text": "……醒来了。魔力还在晃……下次离那些水母远一点！"
+				}
+			]
+		},
+		"death_bubble_fish": {
+			"name": "泡泡里的笑声",
+			"cast": {
+				"princess": {
+					"kind": "princess",
+					"at": [
+						0,
+						8
+					],
+					"visual": "helpless_1",
+					"anim": "helpless",
+					"dir": "down"
+				},
+				"foe": {
+					"kind": "monster:bubble_fish",
+					"at": [
+						22,
+						0
+					],
+					"dir": "left",
+					"hidden": true
+				},
+				"fish2": {
+					"kind": "monster:bubble_fish",
+					"at": [
+						-22,
+						4
+					],
+					"dir": "right",
+					"hidden": true
+				}
+			},
+			"steps": [
+				{
+					"actions": [
+						{
+							"do": "fade_in",
+							"time": 0.7
+						},
+						{
+							"do": "voice",
+							"state": "giggle"
+						}
+					],
+					"wait": 0.8
+				},
+				{
+					"portrait": "bubble_fish_1",
+					"speaker": "公主",
+					"text": "又、又被关进泡泡里了……戳不破……",
+					"actions": [
+						{
+							"do": "enter",
+							"who": "foe",
+							"from": [
+								90,
+								0
+							],
+							"time": 0.6
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "surprise"
+						},
+						{
+							"do": "enter",
+							"who": "fish2",
+							"from": [
+								-80,
+								0
+							],
+							"time": 0.7
+						}
+					]
+				},
+				{
+					"speaker": "泡泡鱼",
+					"text": "咕噜咕噜～",
+					"actions": [
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "foe",
+							"repeat": 4,
+							"fx": "lines"
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						}
+					]
+				},
+				{
+					"portrait": "bubble_fish_2",
+					"speaker": "公主",
+					"text": "鳍在外面一下一下地扫……哈哈哈哈出不去！",
+					"actions": [
+						{
+							"do": "pose",
+							"who": "princess",
+							"visual": "helpless_2"
+						},
+						{
+							"do": "voice",
+							"state": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "foe",
+							"repeat": 6,
+							"interval": 0.28,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "fish2",
+							"repeat": 5,
+							"interval": 0.32,
+							"fx": "lines"
+						},
+						{
+							"do": "camera",
+							"zoom": 1.5,
+							"focus": "princess",
+							"time": 0.5
+						}
+					]
+				},
+				{
+					"speaker": "泡泡鱼",
+					"text": "泡泡牢笼～",
+					"actions": [
+						{
+							"do": "hop",
+							"who": "foe",
+							"count": 2
+						},
+						{
+							"do": "taunt",
+							"who": "foe"
+						}
+					]
+				},
+				{
+					"speaker": "",
+					"text": "（泡泡越吹越大，公主整个人飘在了泡泡中间）",
+					"actions": [
+						{
+							"do": "flash",
+							"time": 0.5
+						},
+						{
+							"do": "camera",
+							"zoom": 1,
+							"focus": "princess",
+							"anchor": [
+								262,
+								112
+							],
+							"time": 0.4
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "foe",
+							"repeat": 5,
+							"interval": 0.3,
+							"fx": "lines"
+						}
+					],
+					"portrait": "bubble_fish_3"
+				},
+				{
+					"speaker": "公主",
+					"text": "脚、脚够不到地面了！",
+					"actions": [
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "fish2",
+							"repeat": 6,
+							"interval": 0.27999999999999997,
+							"fx": "lines"
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.4
+						}
+					]
+				},
+				{
+					"speaker": "泡泡鱼",
+					"text": "咕噜～泡泡里的公主，最好挠了～",
+					"actions": [
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "foe",
+							"repeat": 7,
+							"interval": 0.26,
+							"fx": "lines"
+						},
+						{
+							"do": "hop",
+							"who": "foe",
+							"count": 1
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "从下面扫脚心——哈哈哈哈哈！",
+					"actions": [
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "fish2",
+							"repeat": 8,
+							"interval": 0.24,
+							"fx": "lines"
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.4
+						}
+					]
+				},
+				{
+					"speaker": "泡泡鱼",
+					"text": "再吹一个泡泡，把笑声也关起来～",
+					"actions": [
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "foe",
+							"repeat": 9,
+							"interval": 0.21999999999999997,
+							"fx": "lines"
+						},
+						{
+							"do": "hop",
+							"who": "foe",
+							"count": 1
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "……泡泡里……全是自己的笑声……哈哈……",
+					"actions": [
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "fish2",
+							"repeat": 10,
+							"interval": 0.19999999999999998,
+							"fx": "lines"
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "dots"
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.4
+						}
+					]
+				},
+				{
+					"actions": [
+						{
+							"do": "fade_out",
+							"time": 0.9
+						},
+						{
+							"do": "voice",
+							"state": ""
+						}
+					],
+					"wait": 1.0
+				},
+				{
+					"portrait": "wake",
+					"speaker": "公主",
+					"text": "……泡泡终于破了。醒来浑身湿漉漉的……"
+				}
+			]
+		},
+		"death_glove": {
+			"name": "十根手指",
+			"cast": {
+				"princess": {
+					"kind": "princess",
+					"at": [
+						0,
+						8
+					],
+					"visual": "helpless_1",
+					"anim": "helpless",
+					"dir": "down"
+				},
+				"foe": {
+					"kind": "monster:glove",
+					"at": [
+						20,
+						-2
+					],
+					"dir": "left",
+					"hidden": true
+				},
+				"glove2": {
+					"kind": "monster:glove",
+					"at": [
+						-20,
+						-2
+					],
+					"dir": "right",
+					"hidden": true
+				}
+			},
+			"steps": [
+				{
+					"actions": [
+						{
+							"do": "fade_in",
+							"time": 0.7
+						},
+						{
+							"do": "voice",
+							"state": "giggle"
+						}
+					],
+					"wait": 0.8
+				},
+				{
+					"portrait": "glove_1",
+					"speaker": "公主",
+					"text": "左边……右边……两只手套一起……",
+					"actions": [
+						{
+							"do": "enter",
+							"who": "foe",
+							"from": [
+								80,
+								-10
+							],
+							"time": 0.6
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "surprise"
+						},
+						{
+							"do": "enter",
+							"who": "glove2",
+							"from": [
+								-80,
+								0
+							],
+							"time": 0.7
+						}
+					]
+				},
+				{
+					"speaker": "幽灵手套",
+					"text": "左手～",
+					"actions": [
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "foe",
+							"repeat": 4,
+							"fx": "hand"
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						}
+					]
+				},
+				{
+					"portrait": "glove_2",
+					"speaker": "公主",
+					"text": "十根手指同时在挠——哈哈哈哈数不过来！",
+					"actions": [
+						{
+							"do": "pose",
+							"who": "princess",
+							"visual": "helpless_2"
+						},
+						{
+							"do": "voice",
+							"state": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "foe",
+							"repeat": 6,
+							"interval": 0.28,
+							"fx": "hand"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "glove2",
+							"repeat": 5,
+							"interval": 0.32,
+							"fx": "hand"
+						},
+						{
+							"do": "camera",
+							"zoom": 1.5,
+							"focus": "princess",
+							"time": 0.5
+						}
+					]
+				},
+				{
+					"speaker": "幽灵手套",
+					"text": "右手～",
+					"actions": [
+						{
+							"do": "hop",
+							"who": "foe",
+							"count": 2
+						},
+						{
+							"do": "taunt",
+							"who": "foe"
+						}
+					]
+				},
+				{
+					"speaker": "",
+					"text": "（两只手套一左一右，把公主夹在了中间）",
+					"actions": [
+						{
+							"do": "flash",
+							"time": 0.5
+						},
+						{
+							"do": "camera",
+							"zoom": 1,
+							"focus": "princess",
+							"anchor": [
+								262,
+								112
+							],
+							"time": 0.4
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "foe",
+							"repeat": 5,
+							"interval": 0.3,
+							"fx": "hand"
+						}
+					],
+					"portrait": "glove_3"
+				},
+				{
+					"speaker": "公主",
+					"text": "别、别从两边一起来！",
+					"actions": [
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "glove2",
+							"repeat": 6,
+							"interval": 0.27999999999999997,
+							"fx": "hand"
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.4
+						}
+					]
+				},
+				{
+					"speaker": "幽灵手套",
+					"text": "左手挠腰，右手挠脚心～",
+					"actions": [
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "foe",
+							"repeat": 7,
+							"interval": 0.26,
+							"fx": "hand"
+						},
+						{
+							"do": "hop",
+							"who": "foe",
+							"count": 1
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "配、配合得太好了——哈哈哈哈哈！",
+					"actions": [
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "glove2",
+							"repeat": 8,
+							"interval": 0.24,
+							"fx": "hand"
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.4
+						}
+					]
+				},
+				{
+					"speaker": "幽灵手套",
+					"text": "咯吱咯吱，换一边～",
+					"actions": [
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "foe",
+							"repeat": 9,
+							"interval": 0.21999999999999997,
+							"fx": "hand"
+						},
+						{
+							"do": "hop",
+							"who": "foe",
+							"count": 1
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "……两边……都……哈哈哈……投降……",
+					"actions": [
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "glove2",
+							"repeat": 10,
+							"interval": 0.19999999999999998,
+							"fx": "hand"
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "dots"
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.4
+						}
+					]
+				},
+				{
+					"actions": [
+						{
+							"do": "fade_out",
+							"time": 0.9
+						},
+						{
+							"do": "voice",
+							"state": ""
+						}
+					],
+					"wait": 1.0
+				},
+				{
+					"portrait": "wake",
+					"speaker": "公主",
+					"text": "……醒来了。那对手套……下次绝对不让它们凑到一起！"
+				}
+			]
+		},
+		"death_hedgehog": {
+			"name": "从头刷到脚",
+			"cast": {
+				"princess": {
+					"kind": "princess",
+					"at": [
+						0,
+						8
+					],
+					"visual": "helpless_1",
+					"anim": "helpless",
+					"dir": "down"
+				},
+				"foe": {
+					"kind": "monster:hedgehog",
+					"at": [
+						20,
+						10
+					],
+					"dir": "left",
+					"hidden": true
+				}
+			},
+			"steps": [
+				{
+					"actions": [
+						{
+							"do": "fade_in",
+							"time": 0.7
+						},
+						{
+							"do": "voice",
+							"state": "giggle"
+						}
+					],
+					"wait": 0.8
+				},
+				{
+					"portrait": "hedgehog_1",
+					"speaker": "公主",
+					"text": "刺猬……又滚过来了……躲不开……",
+					"actions": [
+						{
+							"do": "enter",
+							"who": "foe",
+							"from": [
+								90,
+								0
+							],
+							"time": 0.6
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "surprise"
+						}
+					]
+				},
+				{
+					"speaker": "刷刷刺猬",
+					"text": "咕噜咕噜～",
+					"actions": [
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "foe",
+							"repeat": 4,
+							"fx": "lines"
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						}
+					]
+				},
+				{
+					"portrait": "hedgehog_2",
+					"speaker": "公主",
+					"text": "刷毛从脚底一路刷上来——哈哈哈哈别滚了！",
+					"actions": [
+						{
+							"do": "pose",
+							"who": "princess",
+							"visual": "helpless_2"
+						},
+						{
+							"do": "voice",
+							"state": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "foe",
+							"repeat": 6,
+							"interval": 0.28,
+							"fx": "lines"
+						},
+						{
+							"do": "camera",
+							"zoom": 1.5,
+							"focus": "princess",
+							"time": 0.5
+						}
+					]
+				},
+				{
+					"speaker": "刷刷刺猬",
+					"text": "刷刷刷！",
+					"actions": [
+						{
+							"do": "hop",
+							"who": "foe",
+							"count": 2
+						},
+						{
+							"do": "taunt",
+							"who": "foe"
+						}
+					]
+				},
+				{
+					"speaker": "",
+					"text": "（刺猬蜷成一个球，在公主身上来来回回地滚）",
+					"actions": [
+						{
+							"do": "flash",
+							"time": 0.5
+						},
+						{
+							"do": "camera",
+							"zoom": 1,
+							"focus": "princess",
+							"anchor": [
+								262,
+								112
+							],
+							"time": 0.4
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "foe",
+							"repeat": 5,
+							"interval": 0.3,
+							"fx": "lines"
+						}
+					],
+					"portrait": "hedgehog_3"
+				},
+				{
+					"speaker": "公主",
+					"text": "从、从脚滚到腰了！",
+					"actions": [
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "foe",
+							"repeat": 6,
+							"interval": 0.27999999999999997,
+							"fx": "lines"
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.4
+						}
+					]
+				},
+				{
+					"speaker": "刷刷刺猬",
+					"text": "咕噜咕噜～刷毛全方位服务～",
+					"actions": [
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "foe",
+							"repeat": 7,
+							"interval": 0.26,
+							"fx": "lines"
+						},
+						{
+							"do": "hop",
+							"who": "foe",
+							"count": 1
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "每一根刷毛都在挠——哈哈哈哈！",
+					"actions": [
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "foe",
+							"repeat": 8,
+							"interval": 0.24,
+							"fx": "lines"
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.4
+						}
+					]
+				},
+				{
+					"speaker": "刷刷刺猬",
+					"text": "再来一趟！这次滚慢一点～",
+					"actions": [
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "foe",
+							"repeat": 9,
+							"interval": 0.21999999999999997,
+							"fx": "lines"
+						},
+						{
+							"do": "hop",
+							"who": "foe",
+							"count": 1
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "……慢、慢一点更痒……哈哈……",
+					"actions": [
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "foe",
+							"repeat": 10,
+							"interval": 0.19999999999999998,
+							"fx": "lines"
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "dots"
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.4
+						}
+					]
+				},
+				{
+					"actions": [
+						{
+							"do": "fade_out",
+							"time": 0.9
+						},
+						{
+							"do": "voice",
+							"state": ""
+						}
+					],
+					"wait": 1.0
+				},
+				{
+					"portrait": "wake",
+					"speaker": "公主",
+					"text": "……醒来了。浑身都是刷毛的痒意……下次躲进凹槽里！"
+				}
+			]
+		},
+		"death_jelly_queen": {
+			"name": "女王的魔力雨",
+			"cast": {
+				"princess": {
+					"kind": "princess",
+					"at": [
+						0,
+						8
+					],
+					"visual": "helpless_1",
+					"anim": "helpless",
+					"dir": "down"
+				},
+				"foe": {
+					"kind": "monster:jelly_queen",
+					"at": [
+						34,
+						2
+					],
+					"dir": "left",
+					"hidden": true
+				},
+				"jelly1": {
+					"kind": "monster:mana_jelly",
+					"at": [
+						-24,
+						-4
+					],
+					"dir": "right",
+					"hidden": true
+				},
+				"jelly2": {
+					"kind": "monster:mana_jelly",
+					"at": [
+						8,
+						-20
+					],
+					"dir": "left",
+					"hidden": true
+				}
+			},
+			"steps": [
+				{
+					"actions": [
+						{
+							"do": "fade_in",
+							"time": 0.7
+						},
+						{
+							"do": "voice",
+							"state": "giggle"
+						}
+					],
+					"wait": 0.8
+				},
+				{
+					"portrait": "jelly_queen_1",
+					"speaker": "公主",
+					"text": "女、女王……好多触须一起落下来……",
+					"actions": [
+						{
+							"do": "enter",
+							"who": "foe",
+							"from": [
+								60,
+								-20
+							],
+							"time": 0.6
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "surprise"
+						},
+						{
+							"do": "enter",
+							"who": "jelly1",
+							"from": [
+								-80,
+								0
+							],
+							"time": 0.7
+						},
+						{
+							"do": "enter",
+							"who": "jelly2",
+							"from": [
+								80,
+								0
+							],
+							"time": 0.7
+						}
+					]
+				},
+				{
+					"speaker": "魔力水母女王",
+					"text": "呵呵～小公主～",
+					"actions": [
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "foe",
+							"repeat": 4,
+							"fx": "lines"
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						}
+					]
+				},
+				{
+					"portrait": "jelly_queen_2",
+					"speaker": "公主",
+					"text": "魔力雨……身体越来越敏感——哈哈哈哈停不下来！",
+					"actions": [
+						{
+							"do": "pose",
+							"who": "princess",
+							"visual": "helpless_2"
+						},
+						{
+							"do": "voice",
+							"state": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "foe",
+							"repeat": 6,
+							"interval": 0.28,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "jelly1",
+							"repeat": 5,
+							"interval": 0.32,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "jelly2",
+							"repeat": 5,
+							"interval": 0.32,
+							"fx": "lines"
+						},
+						{
+							"do": "camera",
+							"zoom": 1.5,
+							"focus": "princess",
+							"time": 0.5
+						}
+					]
+				},
+				{
+					"speaker": "魔力水母女王",
+					"text": "在我的魔力里好好笑吧～",
+					"actions": [
+						{
+							"do": "hop",
+							"who": "foe",
+							"count": 2
+						},
+						{
+							"do": "taunt",
+							"who": "foe"
+						}
+					]
+				},
+				{
+					"speaker": "",
+					"text": "（女王张开伞盖，紫色的魔力雨淅淅沥沥地落在公主身上）",
+					"actions": [
+						{
+							"do": "flash",
+							"time": 0.5
+						},
+						{
+							"do": "camera",
+							"zoom": 1,
+							"focus": "princess",
+							"anchor": [
+								262,
+								112
+							],
+							"time": 0.4
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "foe",
+							"repeat": 5,
+							"interval": 0.3,
+							"fx": "lines"
+						}
+					],
+					"portrait": "jelly_queen_3"
+				},
+				{
+					"speaker": "公主",
+					"text": "雨、雨点碰到的地方都好痒……",
+					"actions": [
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "jelly1",
+							"repeat": 6,
+							"interval": 0.27999999999999997,
+							"fx": "lines"
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.4
+						}
+					]
+				},
+				{
+					"speaker": "魔力水母女王",
+					"text": "孩子们，一起来～",
+					"actions": [
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "jelly2",
+							"repeat": 7,
+							"interval": 0.26,
+							"fx": "lines"
+						},
+						{
+							"do": "hop",
+							"who": "jelly2",
+							"count": 1
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "大水母、小水母……全都在挠——哈哈哈哈哈！",
+					"actions": [
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "foe",
+							"repeat": 8,
+							"interval": 0.24,
+							"fx": "lines"
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.4
+						}
+					]
+				},
+				{
+					"speaker": "魔力水母女王",
+					"text": "呵呵～笑声真好听，再多笑一会儿～",
+					"actions": [
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "jelly1",
+							"repeat": 9,
+							"interval": 0.21999999999999997,
+							"fx": "lines"
+						},
+						{
+							"do": "hop",
+							"who": "jelly1",
+							"count": 1
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "……女王大人……饶、饶命……哈哈……",
+					"actions": [
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "jelly2",
+							"repeat": 10,
+							"interval": 0.19999999999999998,
+							"fx": "lines"
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "dots"
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.4
+						}
+					]
+				},
+				{
+					"actions": [
+						{
+							"do": "fade_out",
+							"time": 0.9
+						},
+						{
+							"do": "voice",
+							"state": ""
+						}
+					],
+					"wait": 1.0
+				},
+				{
+					"portrait": "wake",
+					"speaker": "公主",
+					"text": "……醒来了。魔力疲倦还沉甸甸的……先打碎图腾，再速战速决！"
 				}
 			]
 		}

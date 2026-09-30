@@ -15,12 +15,15 @@ var _sprite: Sprite2D
 
 
 ## 在 pos 处生成一滩水液。
+## 关卡里有 FloorObjects（地面物件层，在地面之上、角色之下）时放进那里，保证水液画在角色脚下。
 static func spawn(parent: Node, pos: Vector2, life := 30.0, r := 24.0) -> FatiguePuddle:
+	var floor_objs := parent.get_parent().get_node_or_null("FloorObjects") if parent.get_parent() else null
+	var host: Node = floor_objs if floor_objs else parent
 	var p := FatiguePuddle.new()
 	p.lifetime = life
 	p.radius = r
-	p.position = (parent as Node2D).to_local(pos) if parent is Node2D else pos
-	parent.add_child(p)
+	p.position = (host as Node2D).to_local(pos) if host is Node2D else pos
+	host.add_child(p)
 	return p
 
 
@@ -28,7 +31,6 @@ func _ready() -> void:
 	collision_layer = 0
 	collision_mask = 4          # 怪物层
 	monitorable = false
-	z_index = -1
 	add_to_group("fatigue_puddle")
 	var shape := CircleShape2D.new()
 	shape.radius = radius

@@ -94,6 +94,7 @@ func _spawn_drop(pos: Vector2) -> void:
 	var s := Sprite2D.new()
 	s.texture = DROP_TEX
 	s.z_index = 20
+	s.scale = Vector2(2, 2)
 	get_parent().add_child(s)
 	s.global_position = pos + Vector2(0, -24)
 	var tw := s.create_tween()

@@ -20,7 +20,6 @@ var _tiles: Array[Sprite2D] = []
 func _setup() -> void:
 	hit_kind = HitData.Kind.TICKLE
 	trigger_mode = TriggerMode.CONTINUOUS
-	z_index = -1
 	for y in tiles_h:
 		for x in tiles_w:
 			var s := Sprite2D.new()

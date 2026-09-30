@@ -1,0 +1,6 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://tests/capture_floor4.gd" id="1"]
+
+[node name="CaptureFloor4" type="Node"]
+script = ExtResource("1")

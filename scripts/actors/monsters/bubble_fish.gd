@@ -66,8 +66,24 @@ func trap(t: Node) -> bool:
 	var tw := _cage.create_tween().set_loops()
 	tw.tween_property(_cage, "scale", Vector2(1.06, 0.95), 0.3)
 	tw.tween_property(_cage, "scale", Vector2(0.95, 1.06), 0.3)
+	# 保险：泡泡鱼没走正常流程就消失（比如切换关卡）时，牢笼也会自己破掉
+	var safety := _cage.create_tween()
+	safety.tween_interval(trap_time + 1.0)
+	safety.tween_callback(BubbleFish._cleanup_cage.bind(_cage, a))
 	maybe_taunt(true)
 	return true
+
+
+## 牢笼的保险检查：被关的人已经不在泡泡鱼手里了，就把残留的牢笼清掉（静态函数，不依赖泡泡鱼还在）。
+static func _cleanup_cage(cage: Node, who: Node) -> void:
+	if not is_instance_valid(cage):
+		return
+	if not is_instance_valid(who) or not (who is Actor) or (who as Actor).status == null:
+		cage.queue_free()
+		return
+	var grabber: Variant = (who as Actor).status.grabber
+	if not is_instance_valid(grabber) or not (grabber is BubbleFish):
+		cage.queue_free()
 
 
 func is_trapping() -> bool:

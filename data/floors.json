@@ -14,6 +14,11 @@
 			"id": "floor_03",
 			"name": "第三层·痒痒工坊",
 			"scene": "res://levels/floor_03/floor.tscn"
+		},
+		{
+			"id": "floor_04",
+			"name": "第四层·魔力回廊",
+			"scene": "res://levels/floor_04/floor.tscn"
 		}
 	]
 }
