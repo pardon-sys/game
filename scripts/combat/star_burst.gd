@@ -46,6 +46,7 @@ static func cast(caster: Node2D, t: int) -> Array[Node]:
 			continue
 		var h := HitData.make_attack(caster, p["damage"], p["knockback"])
 		h.origin = center
+		h.tag = "magic_%d" % t
 		a.receive_hit(h)
 		if p["stun"] > 0.0 and a.has_method("stun") and a.is_alive():
 			a.stun(p["stun"])

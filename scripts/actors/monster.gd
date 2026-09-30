@@ -107,7 +107,7 @@ func attack(t: Node) -> bool:
 func tickle(t: Node) -> bool:
 	if not Contracts.is_tickleable(t):
 		return false
-	var ok: bool = t.receive_hit(HitData.make_tickle(self, stats.tickle_amount))
+	var ok: bool = t.receive_hit(HitData.make_tickle(self, _tickle_amount(t)))
 	if ok:
 		_action_cd = stats.tickle_cooldown
 		play_tickle_sound()
@@ -206,6 +206,11 @@ func _move(dir: Vector2, speed: float, delta: float) -> void:
 
 func _animate(_delta: float) -> void:
 	pass
+
+
+## 这次挠痒的量（子类可按目标状态调整，例如挠脚鼠对动不了的目标加倍）。
+func _tickle_amount(_t: Node) -> float:
+	return stats.tickle_amount
 
 
 func _on_attack_performed(_t: Node) -> void:

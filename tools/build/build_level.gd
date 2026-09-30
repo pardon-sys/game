@@ -45,6 +45,12 @@ const TYPED_SCENES := {
 		"ghost": "res://scenes/actors/monsters/tickle_ghost.tscn",
 		"spider": "res://scenes/actors/monsters/tickle_spider.tscn",
 		"troll": "res://scenes/actors/monsters/tickle_troll.tscn",
+		"rat": "res://scenes/actors/monsters/foot_rat.tscn",
+		"crab": "res://scenes/actors/monsters/pincer_crab.tscn",
+		"split_slime": "res://scenes/actors/monsters/split_slime.tscn",
+		"mimic": "res://scenes/actors/monsters/mimic.tscn",
+		"fairy": "res://scenes/actors/monsters/fairy_swarm.tscn",
+		"tentacle": "res://scenes/actors/monsters/tentacle_boss.tscn",
 	},
 	"ally": {"knight": "res://scenes/actors/allies/knight.tscn"},
 	"trap": {

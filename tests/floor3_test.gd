@@ -24,6 +24,7 @@ func _ready() -> void:
 	await _run_magic()
 	await _run_status_effects()
 	await _run_combos()
+	await _run_new_monsters()
 	print("\n==== %s (%d 项失败) ====" % ["全部通过" if failures == 0 else "有失败", failures])
 	get_tree().quit(1 if failures else 0)
 
@@ -444,6 +445,171 @@ func _run_combos() -> void:
 	check("扑粉蝙蝠冷却中仍然附带余痒", player.status._dots.size() >= 2)
 	bat.queue_free()
 	cloud.queue_free()
+	player.status.clear()
+	_reset_magic()
+
+
+# ------------------------------------------------------------------ 新怪物
+func _spawn_monster(file: String, offset: Vector2, active := false) -> Monster:
+	var m: Monster = load("res://scenes/actors/monsters/%s.tscn" % file).instantiate()
+	level.get_node("Entities").add_child(m)
+	m.global_position = player.global_position + offset
+	if not active:
+		m.process_mode = Node.PROCESS_MODE_DISABLED
+	return m
+
+
+func _count(cls_check: Callable) -> int:
+	var n := 0
+	for c in level.get_node("Entities").get_children():
+		if cls_check.call(c) and not c.is_queued_for_deletion():
+			n += 1
+	return n
+
+
+func _run_new_monsters() -> void:
+	print("-- 新怪物")
+	for key in ["rat", "crab", "split_slime", "mimic", "fairy", "tentacle", "vine", "fan", "conveyor"]:
+		var src := ReactionDB.source(key)
+		check("台词文件有 %s 的首次遭遇和分档台词" % key, not src.get("first_encounter", []).is_empty() and not src.get("giggle", []).is_empty())
+
+	# 挠脚鼠
+	_reset_magic()
+	var rat := _spawn_monster("foot_rat", Vector2(12, 0))
+	check("挠脚鼠：挠痒优先（90%）、血 1", rat.stats.tickle_weight >= 0.9 and rat.health.max_hp == 1 and rat.stats.reaction_key == "rat")
+	rat.tickle(player)
+	var normal := player.laugh.value
+	player.laugh.clear()
+	player.status.apply_root(1.0)
+	rat._action_cd = 0.0
+	rat.tickle(player)
+	check("挠脚鼠：公主动不了时挠痒 ×2", is_equal_approx(player.laugh.value, normal * 2.0) and normal > 0.0)
+	player.status.clear()
+	rat.receive_hit(HitData.make_attack(player, 1))
+	await _wait(0.05)
+	check("挠脚鼠一下就倒", not is_instance_valid(rat))
+
+	# 钳钳蟹
+	_reset_magic()
+	var crab := _spawn_monster("pincer_crab", Vector2(12, 0))
+	crab.tickle(player)
+	check("钳钳蟹：夹脚定身", player.status.is_rooted() and player.laugh.value > 0.0)
+	crab._move(Vector2(0.3, 1.0).normalized(), 40.0, 1.0)
+	check("钳钳蟹横着走", absf(crab.velocity.x) > absf(crab.velocity.y))
+	crab.queue_free()
+	player.status.clear()
+
+	# 分裂史莱姆
+	_reset_magic()
+	var is_split := func(c: Node): return c is SplitSlime
+	var before: int = _count(is_split)
+	var big := _spawn_monster("split_slime", Vector2(30, 0))
+	check("分裂史莱姆血 4", big.health.max_hp == 4)
+	big.receive_hit(HitData.make_attack(player, 4))
+	await _wait(0.1)
+	var minis: Array = level.get_node("Entities").get_children().filter(func(c: Node): return c is SplitSlime and c.is_mini and not c.is_queued_for_deletion())
+	check("被打倒后分裂成 2 只小史莱姆", minis.size() == 2 and _count(is_split) == before + 2)
+	check("小史莱姆血 1、挠痒 5", minis.size() > 0 and minis[0].health.max_hp == 1 and is_equal_approx(minis[0].stats.tickle_amount, 5.0))
+	for m in minis:
+		m.receive_hit(HitData.make_attack(player, 1))
+	await _wait(0.1)
+	check("小史莱姆不再分裂", _count(is_split) == before)
+	big = _spawn_monster("split_slime", Vector2(30, 0))
+	var h := HitData.make_attack(player, 4)
+	h.tag = "magic_3"
+	big.receive_hit(h)
+	await _wait(0.1)
+	check("被满蓄力星光打倒不分裂", _count(is_split) == before)
+
+	# 宝箱怪
+	_reset_magic()
+	var mimic: Mimic = _spawn_monster("mimic", Vector2(0, -16), true)
+	await _wait(0.1)
+	check("宝箱怪伪装成宝箱，可以交互", mimic.is_disguised() and mimic.interactable.enabled)
+	ctrl.hold(&"magic", true)
+	await _wait(0.1)
+	check("伪装时不被吟唱吸引", mimic.target == null)
+	ctrl.hold(&"magic", false)
+	await _wait(0.1)
+	_reset_magic()
+	mimic.on_interact(player)
+	check("打开宝箱：现形并抓住公主", not mimic.is_disguised() and player.status.is_grabbed_by(mimic))
+	await _wait(1.1)
+	check("被宝箱怪抓着持续挠痒", player.laugh.value >= 14.0)
+	for i in 8:
+		player.struggle()
+	await _wait(0.1)
+	check("连按 8 次挣脱，宝箱怪开始追击", not player.status.is_grabbed() and mimic.state == Monster.State.CHASE)
+	var drops: Array = mimic.stats.drops.filter(func(d: ItemDrop): return d.item.id == "mint" and d.chance >= 1.0 and d.min_amount == 2)
+	check("宝箱怪必掉 2 颗薄荷糖", drops.size() == 1)
+	mimic.queue_free()
+	var mimic2: Mimic = _spawn_monster("mimic", Vector2(40, 0))
+	mimic2.receive_hit(HitData.make_attack(player, 1))
+	check("被攻击也会现形", not mimic2.is_disguised())
+	mimic2.queue_free()
+	player.status.clear()
+
+	# 羽毛小精灵群
+	_reset_magic()
+	var fairy: FairySwarm = _spawn_monster("fairy_swarm", Vector2(20, 0))
+	check("小精灵群只挠痒", fairy.stats.tickle_weight >= 1.0 and fairy.stats.attack_damage == 0)
+	fairy.dodge_chance = 1.0
+	check("普通攻击会被闪开", not fairy.receive_hit(HitData.make_attack(player, 1)) and fairy.health.hp == 3)
+	StarBurst.cast(player, 1)
+	check("魔法必中", fairy.health.hp == 1)
+	fairy._attack_invuln = 0.0
+	var fairy2: FairySwarm = _spawn_monster("fairy_swarm", Vector2(-20, 0))
+	fairy2.health.max_hp = 50
+	fairy2.health.fill()
+	StarBurst.cast(player, 3)
+	await _wait(0.1)
+	check("满蓄力星光击散整群", not is_instance_valid(fairy2) and not is_instance_valid(fairy))
+
+	# 痒痒触手怪
+	_reset_magic()
+	await _wait(0.3)
+	var boss_seen := [null]
+	var on_boss := func(m: Node): boss_seen[0] = m
+	GameState.boss_changed.connect(on_boss)
+	var gate: Node = load("res://scenes/objects/gate.tscn").instantiate()
+	gate.group_name = "boss_test_gate"
+	level.get_node("Entities").add_child(gate)
+	gate.global_position = player.global_position + Vector2(200, 0)
+	var boss: TentacleBoss = _spawn_monster("tentacle_boss", Vector2(0, -80), true)
+	boss.open_on_death = "boss_test_gate"
+	boss.strike_interval = 0.3
+	boss._strike_cd = 0.1
+	await _wait(0.25)
+	check("触手怪出现 Boss 血条", boss_seen[0] == boss)
+	check("触手落点预警", boss.pending_strikes() == 1)
+	await _wait(0.7)
+	check("预警后抽中：抓住公主", player.status.is_grabbed_by(boss) and boss.is_grabbing())
+	var d0 := player.global_position.distance_to(boss.global_position)
+	await _wait(0.6)
+	check("把公主拉到身边并挠痒", player.global_position.distance_to(boss.global_position) < d0 and player.laugh.value > 0.0)
+	for i in 12:
+		player.struggle()
+	await _wait(0.1)
+	check("连按 12 次挣脱", not player.status.is_grabbed())
+	_reset_magic()
+	player.set_invulnerable(0.0)
+	boss._strike_cd = 0.0
+	await _wait(0.1)
+	boss.on_magic_burst(3, player)
+	check("满蓄力星光：收回触手并僵直", boss.pending_strikes() == 0 and boss.is_stunned())
+	boss._stun_left = 0.0
+	boss.health.hp = 9
+	boss._summon_cd = 0.0
+	var is_fairy := func(c: Node): return c is FairySwarm
+	await _wait(0.1)
+	check("血量低于一半召唤小精灵群", _count(is_fairy) >= 1)
+	boss.health.damage(99)
+	await _wait(0.1)
+	check("触手怪倒下后 Boss 血条消失", boss_seen[0] == null)
+	GameState.boss_changed.disconnect(on_boss)
+	check("召唤的小精灵随 Boss 消失", _count(is_fairy) == 0)
+	check("触手怪倒下打开 Boss 房的门", gate.is_open)
+	gate.queue_free()
 	player.status.clear()
 	_reset_magic()
 

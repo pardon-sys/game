@@ -35,6 +35,8 @@ signal tickled(hit: HitData)
 var facing := Vector2.DOWN
 ## 本帧累积的外力（风扇、传送带、拉扯），移动时叠加到速度上，然后清零。
 var _push := Vector2.ZERO
+## 最近一次成功生效的命中（死亡时可据此判断是被什么打死的）。
+var last_hit: HitData
 var _attack_invuln := 0.0
 var _full_invuln := 0.0
 var _dead := false
@@ -68,6 +70,7 @@ func receive_hit(hit: HitData) -> bool:
 			if laugh:
 				laugh.notify_attacked()
 			_attack_invuln = hurt_invuln_time
+			last_hit = hit
 			if hit.knockback > 0.0:
 				apply_knockback(hit.origin, hit.knockback)
 			flash(flash_color)

@@ -7,6 +7,11 @@
   star_burst.png    152x152 x 6帧 x 3行 星光爆发冲击环（行 = 档位 1~3，半径 36/52/72）
   sparkle.png       7x7 x 2    星光粒子
   magic_icon.png    16x16 x 2  HUD 魔法图标（可用 / 冷却中）
+  pink_slime.png    16x16      分裂史莱姆（Kenney #108 色相旋转成粉色）
+  fairy.png         8x8 x 2帧  羽毛小精灵（翅膀扇动）
+  tentacle_boss.png 32x32 x 2帧 痒痒触手怪本体（放大 2 倍显示）
+  tentacle.png      8x8 x 3    触手：节、尖端（带小羽毛）、吸盘节
+  strike_mark.png   16x8 x 2   触手落点预警
 其余第三层素材见本文件后续函数。
 
 用法：python tools/art/gen_expansion.py
@@ -201,6 +206,124 @@ def gen_magic():
     ic.save(OUT / "magic_icon.png")
 
 
+# ------------------------------------------------------------------ 第三层怪物
+FAIRY_SKIN = (255, 226, 214, 255)
+FAIRY_HAIR = (140, 230, 190, 255)
+FAIRY_WING = (190, 236, 255, 200)
+FAIRY_DRESS = (120, 200, 255, 255)
+TENT = (176, 96, 196, 255)
+TENT_L = (214, 140, 226, 255)
+TENT_D = (112, 56, 140, 255)
+SUCKER = (255, 180, 214, 255)
+EYE_W = (250, 248, 255, 255)
+EYE_P = (40, 24, 60, 255)
+
+
+def fairy(frame):
+    img, d = canvas(8, 8)
+    # 翅膀（两帧：张开 / 收拢）
+    if frame == 0:
+        d.polygon([(3, 3), (0, 1), (0, 4)], fill=FAIRY_WING)
+        d.polygon([(4, 3), (7, 1), (7, 4)], fill=FAIRY_WING)
+    else:
+        d.polygon([(3, 3), (1, 5), (2, 2)], fill=FAIRY_WING)
+        d.polygon([(4, 3), (6, 5), (5, 2)], fill=FAIRY_WING)
+    d.rectangle((3, 1, 4, 2), fill=FAIRY_SKIN)     # 头
+    d.point((3, 0), fill=FAIRY_HAIR)
+    d.point((4, 0), fill=FAIRY_HAIR)
+    d.rectangle((3, 3, 4, 5), fill=FAIRY_DRESS)    # 身体
+    d.point((3, 6), fill=FAIRY_SKIN)
+    d.point((4, 6), fill=FAIRY_SKIN)
+    return img
+
+
+def tentacle_boss(frame):
+    img, d = canvas(32, 32)
+    squash = 1 if frame else 0
+    # 身体：圆顶软体
+    d.ellipse((4, 4 + squash, 27, 27), fill=TENT)
+    d.ellipse((7, 6 + squash, 20, 15 + squash), fill=TENT_L)
+    # 底部短触手
+    for x in (5, 11, 17, 23):
+        d.ellipse((x, 23, x + 5, 30 - squash), fill=TENT_D)
+        d.point((x + 2, 27 - squash), fill=SUCKER)
+    # 眼睛
+    for ex in (10, 18):
+        d.ellipse((ex, 12 + squash, ex + 4, 17 + squash), fill=EYE_W)
+        d.rectangle((ex + 1 + frame, 14 + squash, ex + 2 + frame, 16 + squash), fill=EYE_P)
+    # 坏笑的嘴
+    d.arc((11, 16 + squash, 21, 23 + squash), 20, 160, fill=EYE_P)
+    # 吸盘斑点
+    for x, y in ((6, 19), (25, 17), (22, 8)):
+        d.point((x, y), fill=SUCKER)
+    return add_outline(img)
+
+
+def tentacle_parts():
+    img = blank(24, 8)
+    seg, d = canvas(8, 8)
+    d.ellipse((1, 1, 6, 6), fill=TENT)
+    d.point((3, 2), fill=TENT_L)
+    img.alpha_composite(add_outline(seg), (0, 0))
+    tip, d = canvas(8, 8)
+    d.ellipse((2, 2, 5, 5), fill=TENT_L)
+    d.line((4, 3, 7, 0), fill=WHITE_F)       # 尖端的小羽毛
+    d.point((6, 0), fill=SUCKER)
+    img.alpha_composite(add_outline(tip), (8, 0))
+    suck, d = canvas(8, 8)
+    d.ellipse((1, 1, 6, 6), fill=TENT_D)
+    d.point((3, 3), fill=SUCKER)
+    d.point((4, 4), fill=SUCKER)
+    img.alpha_composite(add_outline(suck), (16, 0))
+    return img
+
+
+def strike_mark(frame):
+    img, d = canvas(16, 8)
+    c = SUCKER if frame == 0 else (255, 110, 170, 255)
+    d.ellipse((0, 0, 15, 7), outline=c)
+    d.ellipse((4, 2, 11, 5), outline=c if frame else (255, 220, 236, 255))
+    return img
+
+
+WHITE_F = (250, 248, 255, 255)
+
+
+def pink_slime():
+    import colorsys
+    src = kenney(108)
+    px = src.load()
+    for y in range(16):
+        for x in range(16):
+            r, g, b, a = px[x, y]
+            if a == 0:
+                continue
+            h, l, sat = colorsys.rgb_to_hls(r / 255, g / 255, b / 255)
+            if sat > 0.15:
+                h = 0.92          # 粉色
+                l = min(1.0, l * 1.12 + 0.05)
+            r2, g2, b2 = colorsys.hls_to_rgb(h, l, sat)
+            px[x, y] = (round(r2 * 255), round(g2 * 255), round(b2 * 255), a)
+    return src
+
+
+def gen_monsters():
+    pink_slime().save(OUT / "pink_slime.png")
+    sheet = blank(16, 8)
+    for f in range(2):
+        sheet.alpha_composite(fairy(f), (f * 8, 0))
+    sheet.save(OUT / "fairy.png")
+    sheet = blank(64, 32)
+    for f in range(2):
+        sheet.alpha_composite(tentacle_boss(f), (f * 32, 0))
+    sheet.save(OUT / "tentacle_boss.png")
+    tentacle_parts().save(OUT / "tentacle.png")
+    sheet = blank(32, 8)
+    for f in range(2):
+        sheet.alpha_composite(strike_mark(f), (f * 16, 0))
+    sheet.save(OUT / "strike_mark.png")
+
+
 def gen_floor_expansion():
     weapon_rack().save(OUT / "weapon_rack.png")
     secret_crack().save(OUT / "secret_crack.png")
@@ -209,6 +332,7 @@ def gen_floor_expansion():
 def main():
     gen_floor_expansion()
     gen_magic()
+    gen_monsters()
 
 
 if __name__ == "__main__":
