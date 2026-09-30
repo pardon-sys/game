@@ -58,7 +58,7 @@ func _ready() -> void:
 	portrait_density = int(meta.get("density", 1))
 	head_size = int(meta.get("head", 32))
 	_portrait_order = meta["order"]
-	assert(_portrait_order == GameState.EMOTIONS, "Portrait order differs from visual registry")
+	assert(_portrait_order == GameState.VISUALS, "Portrait order differs from visual registry")
 	for i in _portrait_order.size():
 		_portraits.append(_atlas(PORTRAIT_SHEET, Rect2(Vector2(i * portrait_cell.x, 0), portrait_cell)))
 		_heads.append(_atlas(HEAD_SHEET, Rect2(i * head_size, 0, head_size, head_size)))

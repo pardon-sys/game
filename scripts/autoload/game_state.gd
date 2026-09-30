@@ -18,13 +18,18 @@ signal princess_reacted(text: String, duration: float)
 signal combo_triggered(id: String, combo_name: String)
 
 # Source of truth shared with the art importer.
-var EMOTIONS: Array[String] = _load_emotions()
+## 11 种表情 / 状态（剧情、事件可以请求的）。
+var EMOTIONS: Array[String] = _load_visuals("order")
+## 6 种魔法姿态（吟诵 / 释放 × 普通 / 战损 / 战损闷笑），只由 Princess.resolve_visual 在施法时选用。
+var MAGIC_VISUALS: Array[String] = _load_visuals("magic_order")
+## 全部视觉状态 = 立绘 / 头像的顺序。
+var VISUALS: Array[String] = EMOTIONS + MAGIC_VISUALS
 
 
-func _load_emotions() -> Array[String]:
+func _load_visuals(key: String) -> Array[String]:
 	var data: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://data/actors/princess_visuals.json"))
 	var names: Array[String] = []
-	names.assign(data["order"])
+	names.assign(data.get(key, []))
 	return names
 
 var player: PlayableCharacter

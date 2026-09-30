@@ -11,12 +11,17 @@ extends Resource
 ##     "directional": 是否按朝向偏移（默认 true）,
 ##     "row": 强制使用某个表情行（如 "normal"），省略则跟随当前表情,
 ##     "shake": 水平抖动幅度（像素，占位表现用）,
-##     "fallback": 该动画缺失素材时改用的动画名
+##     "fallback": 该动画缺失素材时改用的动画名,
+##     "sheet": 改用 sheets 里的另一张图集（如魔法姿态 48x48 图集）,
+##     "progress": true 时帧号由 SpriteSheetAnimator.progress（0~1，例如蓄力进度）决定，而不是时间
 ## }
+## sheets：图集名 -> {"texture": 路径, "hframes", "vframes", "offset": Vector2, "directions": {...}, "row_names": [...]}；
+##   行号按当前视觉状态名在该图集的 row_names 里查找。
 
 @export var row_names: Array[String] = ["normal", "happy", "laugh", "sad", "shy", "angry"]
 @export var directions := {"down": 0, "up": 12, "side": 24}
 @export var animations := {}
+@export var sheets := {}
 
 
 func has_animation(anim: String) -> bool:

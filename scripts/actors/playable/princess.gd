@@ -11,11 +11,25 @@ var _reaction_stage := ""
 
 
 ## Called by EmotionComponent; no action-state changes are made here.
-## 优先级：失控2 > 失控1 > 憋笑 > 事件表情（剧情/开箱等请求，requested 非空）> 战损 > 普通。
+## 优先级：魔法姿态（吟唱 / 释放中）> 失控2 > 失控1 > 憋笑 > 事件表情（剧情/开箱等请求，requested 非空）> 战损 > 普通。
 ## 事件结束（请求松开）后回到战损。
 func resolve_visual(requested: String) -> String:
 	if not is_alive():
 		return "damaged" if battle_damaged else "sad"
+	if state in [State.CHANNEL, State.CAST]:
+		return magic_visual(state == State.CAST)
+	return _resolve_normal(requested)
+
+
+## 魔法姿态：未战损只有一套（没有"未战损憋笑吟诵"的素材）；战损时按闷笑值 >50 区分闷笑版。
+func magic_visual(releasing: bool) -> String:
+	var pose := "burst" if releasing else "chant"
+	if not battle_damaged:
+		return pose
+	return ("damaged_giggle_" if laugh.value > laugh.giggle_threshold else "damaged_") + pose
+
+
+func _resolve_normal(requested: String) -> String:
 	if laugh.value > laugh.helpless_stage2_threshold:
 		return "helpless_2"
 	if laugh.value > laugh.helpless_threshold:
@@ -29,6 +43,7 @@ func resolve_visual(requested: String) -> String:
 
 func _setup() -> void:
 	super()
+	state_changed.connect(func(_s: State): emotion.refresh())
 	health.damaged.connect(func(_amount: int):
 		battle_damaged = true
 		emotion.refresh()
@@ -36,7 +51,7 @@ func _setup() -> void:
 	laugh.changed.connect(_on_laugh_value_changed)
 	# 关卡切换后恢复的闷笑值 / 战损需要立即反映到形象与语音
 	_on_laugh_value_changed(laugh.value, laugh.max_value)
-	animator.config.row_names.assign(GameState.EMOTIONS)
+	animator.config.row_names.assign(GameState.VISUALS)
 	GameState.enemy_defeated.connect(func(_e: Node): GameState.emote("happy", 1.5))
 	if status:
 		status.grabbed.connect(_on_grabbed)
