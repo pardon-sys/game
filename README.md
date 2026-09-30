@@ -33,6 +33,15 @@ Godot 4.7 · 2D 俯视角像素游戏。粉发蓝眼、头戴金色小皇冠的�
 - 第二层的怪物更爱挠痒：蝙蝠 90%、幽灵 100%、蜘蛛与巨魔 85%；挠痒时有合成的果冻"啵叽"声
 - 第三层：挠脚鼠 90%（公主动不了时挠痒加倍）、钳钳蟹 85%（夹住定身 1 秒）、分裂史莱姆 85%、宝箱怪 90%、小精灵群 100%、触手怪 90%
 
+## 笑倒 CG
+
+被挠到闷笑值满、把最后一点血笑没时，不会直接复活，而是先播一段笑倒 CG：画面切到一个小舞台，挠倒公主的那只怪物登场继续挠，配合对话、立绘切换和镜头，最后在检查点醒来。
+
+- 11 种怪物各有一段专属 CG；陷阱或来源不明时播通用 CG。被攻击打死不播 CG，照旧复活。
+- 每次笑倒都会播；看过的 CG 画面角落会提示「Esc 跳过」，第一次看不能跳过。
+- 所有 CG 写在一个文件 `data/cgs.json` 里（对话、演员、演绎指令、立绘都按步骤写），格式说明在文件开头和架构文档里。
+- **立绘接口**：CG 立绘现在用失控 1 / 失控 2 占位。正式素材按 id 命名放进 `assets/cg/portraits/`（如 `slime_1.png`）就会自动替换，见该目录的 README。
+
 ## 星光爆发（高风险高回报）
 
 - 按住 L 吟唱，**不能移动**；按住 0.6 秒一档、1.2 秒二档、2 秒满蓄力（自动释放），不到 0.6 秒松开会落空
@@ -124,10 +133,12 @@ Godot 4.7 · 2D 俯视角像素游戏。粉发蓝眼、头戴金色小皇冠的�
 Godot --headless --path . res://tests/smoke_test.tscn   # 检查交互、11状态、音频、战斗、物品和复活，退出码0为通过
 Godot --headless --path . res://tests/floor2_test.tscn  # 第二层：关卡切换、减速/抓取、新怪物、新陷阱、立绘密度
 Godot --headless --path . res://tests/floor3_test.tscn  # 楼层表与扩充房间、魔法、状态效果、组合技、第三层
+Godot --headless --path . res://tests/cg_test.tscn      # 笑倒 CG：数据校验、触发与选择、步骤切换、复活、跳过、立绘接口
 Godot --path . res://tests/capture.tscn                 # 11 种状态截图到 tools/.cache/shots/
 Godot --path . res://tests/capture_floor2.tscn          # 第二层各房间截图
 Godot --path . res://tests/capture_rooms.tscn           # 第一、二层扩充房间截图
 Godot --path . res://tests/capture_floor3.tscn          # 第三层各房间、魔法、组合技、Boss 截图
+Godot --path . res://tests/capture_cg.tscn              # 每段笑倒 CG 的第 2、4 步截图（-- only=death_slime 只截一段）
 ```
 
 ## 目录
@@ -136,7 +147,7 @@ Godot --path . res://tests/capture_floor3.tscn          # 第三层各房间、�
 levels/   floor_01/、floor_02/、floor_03/（每层的地图、对话、场景）
 scenes/   main.tscn、actors/{playable,monsters,allies}/、traps/、items/、objects/、ui/
 scripts/  core/、components/、controllers/、actors/、traps/、combat/、items/、objects/、autoload/、ui/、fx/、main.gd
-data/     floors.json、dialogues.json（通用对话）、combos.json、princess_reactions.json、items/、monsters/、allies/、actors/（数值与动画配置资源）
+data/     floors.json、dialogues.json（通用对话）、combos.json、cgs.json（笑倒 CG）、princess_reactions.json、items/、monsters/、allies/、actors/（数值与动画配置资源）
 docs/     ARCHITECTURE.md
 assets/   generated/（自绘）、third_party/（Kenney）、fonts/、tilesets/、lights/
 tools/    art/（Python 美术生成）、build/（关卡构建、工程设置脚本）

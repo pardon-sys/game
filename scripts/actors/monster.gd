@@ -236,6 +236,6 @@ func _on_died() -> void:
 	set_physics_process(false)
 	Audio.play("hit")
 	Fx.puff(get_parent(), global_position + Vector2(0, -6))
-	ItemDrop.roll(stats.drops, get_parent(), global_position)
+	ItemDrop.roll(stats.drops, get_parent(), global_position, stats.is_boss)
 	GameState.enemy_defeated.emit(self)
 	queue_free()

@@ -43,6 +43,8 @@ var _emotion := ""
 var _portrait_order: Array = []
 var _reaction_time := 0.0
 var _portrait_tween: Tween
+## CG 立绘接口：设置后常驻立绘显示这张图（按比例放进立绘框），公主表情变化不会覆盖它。
+var _portrait_override: Texture2D
 
 
 func _ready() -> void:
@@ -164,8 +166,33 @@ func _on_emotion_changed(emotion: String) -> void:
 	_show_portrait(emotion)
 
 
+## CG 用：替换常驻立绘（null = 恢复为公主当前状态的立绘）。
+func set_portrait_override(tex: Texture2D) -> void:
+	_portrait_override = tex
+	portrait.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED if tex else TextureRect.STRETCH_SCALE
+	var emotion := GameState.player.emotion.current if is_instance_valid(GameState.player) else "normal"
+	_emotion = ""  # 强制刷新（播放换图的小跳动）
+	_show_portrait(emotion)
+
+
+func has_portrait_override() -> bool:
+	return _portrait_override != null
+
+
+## 当前显示的立绘贴图（测试 / CG 用）。
+func current_portrait() -> Texture2D:
+	return portrait.texture if portrait.visible else null
+
+
+## 立刻结束当前对话（CG 跳过用），照常发出 finished。
+func close() -> void:
+	if _active:
+		_typing = false
+		_end()
+
+
 func _show_portrait(emotion: String) -> void:
-	portrait.texture = portrait_for(emotion)
+	portrait.texture = _portrait_override if _portrait_override else portrait_for(emotion)
 	var appearing := not portrait.visible
 	portrait.show()
 	if emotion == _emotion and not appearing:
@@ -280,5 +307,5 @@ func _end() -> void:
 	finished.emit(id)
 	# 稍等片刻再把控制权交还，避免同一次按键触发公主攻击/交互
 	await get_tree().create_timer(0.12).timeout
-	if not _active:
+	if not _active and not GameState.in_cutscene:
 		GameState.in_dialogue = false

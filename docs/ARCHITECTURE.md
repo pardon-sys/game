@@ -241,6 +241,35 @@ data/dialogues.json  只放通用对话（复活、上锁提示、钥匙、失�
 - 第二层 `floor_02`：落脚点 → 蝙蝠巢穴（东侧喷口回廊 → 蛛丝幽灵房）→ 幽灵长廊（点火把）→ 蜘蛛窝 → 机关走廊（北侧休息室；旋转刷、压力板 + 机关手）→ 巨魔大厅（Boss，掉落金钥匙）→ 金锁门 → 出口楼梯（通往第三层）。
 - 第三层 `floor_03`：落脚点（学会星光爆发）→ 鼠窝 → 藤蔓迷道 → 蟹池 → 传送带工坊（西侧可选的组合试炼间）→ 风洞走廊（东侧宝物间有宝箱怪）→ 史莱姆与精灵厅 → 触手怪大厅（Boss，倒下开门）→ 出口楼梯（第三章完）。
 
+## 笑倒 CG
+
+公主被挠到闷笑值溢出、生命值归零（`Actor.died_from_laugh`）时，`Princess._play_death_cutscene()` 接管死亡流程：倒下停 0.8 秒 → `CG.play_death(最后一次挠痒的来源键)` → `respawn()`（这次不播"复活"对话）。被攻击打死仍走原来的淡出复活。最后一次挠痒在 `Actor.receive_hit` 加闷笑值**之前**记录（`last_tickle`），所以致命的那一下也能查到来源。
+
+- **播放器**：Autoload `CG`（`scenes/ui/cg_player.tscn` + `scripts/cg/cg_player.gd`），CanvasLayer 第 15 层（HUD 10 之上、对话框 20 之下）。画面右上是一个独立的像素小舞台（`dungeon.tres` 铺的地牢房间 + 径向聚光 + 边框），基础放大 2 倍；对话和立绘沿用 `Dialogue`。
+- **冻结**：播放期间 `GameState.in_cutscene` 与 `in_dialogue` 都为真；`Dialogue._end()` 在 cutscene 中不交还控制权，所以一行行台词之间游戏不会动。
+- **演员**：`scripts/cg/cg_actor.gd`。公主用 `princess.png` + `SpriteSheetAnimator`（按视觉状态名选行）；怪物只复制怪物场景里的 `Sprite`（不带 AI），挠痒音高取该怪物 `MonsterStats.tickle_pitch`。
+- **跳过**：播完设剧情标记 `cg_seen_<id>`；再次播放时角落提示「Esc 跳过」，`CG._input` 先于暂停菜单截获 Esc。
+- **立绘接口**：`Dialogue.set_portrait_override(tex)` 替换常驻立绘（按比例放进立绘框，公主表情不会覆盖它，null 恢复）。`CG.portrait_texture(id)`：`portraits[id].file` 存在（导入过的资源或直接读 png）就用它，否则用 `placeholder` 指定的公主状态立绘。
+
+### `data/cgs.json` 格式（一个总文件）
+| 段 | 内容 |
+|---|---|
+| `portraits` | 立绘 id → `{file, placeholder}` |
+| `actors` | 来源键 → `{scene 怪物场景, sprite: {hframes, region [x,y,w,h], scale, offset, frame}}` |
+| `death` | `{by_source: {来源键: CG id}, default: CG id}` |
+| `cgs` | CG id → `{name, cast, steps}` |
+
+- `cast`：演员名 → `{kind, at [x,y], dir, hidden, scale, visual, anim}`；`kind` = `princess` / `monster:<来源键>` / `source`（致死的那只怪）。坐标以舞台地面中心为原点（像素）。
+- `steps` 每一步：`portrait`（立绘 id，保持到下次更换，`none` 隐藏）、`actions`（同时开始的演绎指令）、`speaker` / `text` / `emotion`（台词，等玩家推进；`auto` 秒后自动前进）、`wait`（无台词时停留秒数，默认等指令演完）、`await_actions`（先演完指令再出台词）。
+- 指令 `do`：`enter`（at, from, time）、`exit`、`move`（to, time）、`hop`（count, height）、`shake`、`face`（dir）、`pose`（公主 visual / anim / dir；怪物 style = idle / wiggle / bounce）、`tickle`（who, by, repeat, interval, fx = lines / feather / hand / heart）、`bubble`（kind）、`say`（text）、`taunt`（该怪物的随机回嘴）、`sfx`（sound, volume, pitch）、`voice`（laugh / giggle / 空）、`camera`（zoom 1 = 2 倍、1.5 = 3 倍、2 = 4 倍，focus 演员名或 [x,y]，time）、`flash`、`fade_in`、`fade_out`、`wait`。
+- `CG.validate()` 检查所有引用（立绘 id、演员、指令、音效、姿势状态、death 表），`tests/cg_test.gd` 会跑它。
+
+### 新增一段 CG
+1. 在 `cgs` 里加一段（可复制已有的改），在 `portraits` 里为它加立绘 id（先写 placeholder 占位）。
+2. 要按来源自动触发：在 `death.by_source` 里把来源键指到它；新怪物演员要在 `actors` 里登记场景。
+3. 跑 `cg_test` 检查引用，`capture_cg -- only=<id>` 看截图。
+4. 正式立绘：把 png 按立绘 id 命名放进 `assets/cg/portraits/`。
+
 ## 公主状态与换美术素材
 
 - **魔法姿态**：`princess_visuals.json` 的 `magic_order`（`chant / burst / damaged_chant / damaged_giggle_chant / damaged_burst / damaged_giggle_burst`）。`GameState.EMOTIONS` 仍是 11 种可请求的表情；`MAGIC_VISUALS` 只由 `Princess.resolve_visual()` 在 `CHANNEL`（吟唱）/ `CAST`（释放定住 `cast_time` 0.5 秒）状态下选用，优先级最高。选用规则：未战损 → 普通版；战损且闷笑值 ≤50 → 战损版；>50 → 战损闷笑版。`VISUALS = EMOTIONS + MAGIC_VISUALS` 是立绘、头像和 `EmotionComponent.row()` 的顺序。`magic_portrait_alias` 让战损闷笑释放借用战损释放的立绘。
@@ -282,6 +311,8 @@ data/                 楼层表、通用对话、组合技表、受挠台词、�
 tests/smoke_test.gd   冒烟测试（含11状态、音频生命周期与接口约定检查）
 tests/floor2_test.gd  第二层：关卡切换、减速/抓取、新怪物、新陷阱、立绘密度
 tests/floor3_test.gd  楼层表与扩充房间、魔法、状态效果、组合技、第三层怪物/陷阱、第三层流程
+tests/cg_test.gd      笑倒 CG：cgs.json 校验、触发与选择、步骤切换立绘/姿势、复活、跳过、立绘接口
+scripts/cg/           CGPlayer（Autoload CG）、CGActor
 tools/art/gen_sfx.py  合成果冻挠痒、吟唱、爆发、组合技等音效
 tools/art/gen_expansion.py  扩展内容占位图（魔法、第三层怪物与陷阱、暗墙、武器架）
 ```

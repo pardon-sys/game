@@ -21,8 +21,10 @@ static func spawn(parent: Node, pos: Vector2, it: ItemData, n := 1, pop := true)
 	w.item = it
 	w.amount = n
 	w.spawn_pop = pop
+	# 先定好位置再加进场景：_ready 里的弹出动画以当前位置为起点
+	# （之前先 add_child 再设位置，弹出动画会把掉落物拖回原点 (0,0)，落进地图左上角的墙里）
+	w.position = (parent as Node2D).to_local(pos) if parent is Node2D else pos
 	parent.add_child(w)
-	w.global_position = pos
 	return w
 
 

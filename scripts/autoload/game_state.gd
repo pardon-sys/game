@@ -37,6 +37,8 @@ var inventory := Inventory.new()
 var flags := {}
 var checkpoint := Vector2.ZERO
 var in_dialogue := false
+## 过场演出（笑倒 CG）进行中：对话一行行结束时不交还控制权，整个演出期间游戏保持冻结。
+var in_cutscene := false
 
 
 ## 关卡切换时暂存的公主状态（血量、闷笑值、战损）。
@@ -78,6 +80,7 @@ func reset() -> void:
 	inventory.clear()
 	flags = {}
 	in_dialogue = false
+	in_cutscene = false
 	checkpoint = Vector2.ZERO
 	carried_player_state = {}
 	player = null

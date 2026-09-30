@@ -1,15 +1,13 @@
-[gd_resource type="Resource" script_class="MonsterStats" format=3]
+[gd_resource type="Resource" script_class="MonsterStats" format=3 uid="uid://djpxqsg0ukdm"]
 
-[ext_resource type="Script" path="res://scripts/actors/monsters/monster_stats.gd" id="1"]
-[ext_resource type="Script" path="res://scripts/items/item_drop.gd" id="2"]
-[ext_resource type="Resource" path="res://data/items/coin.tres" id="i0"]
+[ext_resource type="Script" uid="uid://cw82hmbi4r236" path="res://scripts/actors/monsters/monster_stats.gd" id="1"]
+[ext_resource type="Script" uid="uid://da51r3q3bv1l4" path="res://scripts/items/item_drop.gd" id="2"]
+[ext_resource type="Resource" uid="uid://b5j80o3w850wi" path="res://data/items/coin.tres" id="i0"]
 
 [sub_resource type="Resource" id="d0"]
 script = ExtResource("2")
 item = ExtResource("i0")
 chance = 0.3
-min_amount = 1
-max_amount = 1
 
 [resource]
 script = ExtResource("1")
@@ -20,7 +18,6 @@ max_hp = 1
 wander_speed = 24.0
 chase_speed = 48.0
 detect_range = 110.0
-attack_damage = 1
 attack_cooldown = 1.6
 tickle_amount = 5.0
 tickle_cooldown = 0.5

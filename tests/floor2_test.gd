@@ -275,14 +275,37 @@ func _run_troll() -> void:
 	troll._mode_t = 0.01
 	await _wait(0.1)
 	check("巨魔重击扣 2 血", player.health.hp == hp - 2)
-	troll.health.damage(troll.health.max_hp)
-	await _wait(0.3)
-	var key_dropped := false
-	for c in level.get_node("Entities").get_children():
-		if c is WorldItem and c.item.id == "key_gold":
-			key_dropped = true
-	check("巨魔掉落金钥匙", key_dropped)
+	# 真实流程：用权杖一下下打倒巨魔（之前只用 health.damage 直接扣血，漏掉了拿不到金钥匙的 bug）
+	var keys_before := GameState.inventory.count("key_gold")
+	var swings := 0
+	var troll_pos := troll.global_position
+	while is_instance_valid(troll) and swings < 80:
+		_finish_dialogue()
+		player.revive()
+		player.set_invulnerable(0.6, true)
+		if player.status.is_grabbed():
+			player.status.release()
+		troll_pos = troll.global_position
+		player.global_position = troll_pos + Vector2(0, 16)
+		player.facing = Vector2.UP
+		troll._attack_invuln = 0.0
+		ctrl.press(&"attack")
+		swings += 1
+		await _wait(0.35)
+	check("用权杖打倒巨魔（%d 次挥杖）" % swings, not is_instance_valid(troll))
+	await _wait(0.5)
+	_finish_dialogue()
+	var near_hearts: Array = level.get_node("Entities").get_children().filter(
+		func(c: Node): return c is WorldItem and c.item.id == "heart" and c.global_position.distance_to(troll_pos) < 24.0)
+	check("掉落物落在巨魔倒下的位置附近（不会飞到地图原点）", not near_hearts.is_empty())
+	check("Boss 的金钥匙直接放进背包，不掉在地上", GameState.inventory.count("key_gold") == keys_before + 1
+		and not level.get_node("Entities").get_children().any(func(c: Node): return c is WorldItem and c.item.id == "key_gold"))
+	_finish_dialogue()
 	check("Boss 血条隐藏", not hud.get_node("BossBar").visible)
+	var gold_door: Node = _find("Door_22_44")
+	gold_door.on_interact(player)
+	_finish_dialogue()
+	check("金钥匙打开第二层金锁门", gold_door.is_open)
 
 
 # ------------------------------------------------------------------ 长对话滚动

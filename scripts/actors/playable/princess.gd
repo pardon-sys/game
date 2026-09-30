@@ -5,6 +5,10 @@ extends PlayableCharacter
 
 ## 受挠台词统一放在 data/princess_reactions.json（通过 ReactionDB 读取）。
 var battle_damaged := false
+## 最后一次挠到公主的来源键（选笑倒 CG 用；组合技、余痒这类没有来源键的挠痒不覆盖它）。
+var last_tickle_key := ""
+## 刚播完笑倒 CG：这次复活不再播"复活"对话。
+var _after_cg := false
 var _reaction_cooldown := 0.0
 var _last_reaction := ""
 var _reaction_stage := ""
@@ -43,6 +47,10 @@ func _resolve_normal(requested: String) -> String:
 
 func _setup() -> void:
 	super()
+	tickled.connect(func(hit: HitData):
+		var k := ReactionDB.key_of(hit.source)
+		if k != "":
+			last_tickle_key = k)
 	state_changed.connect(func(_s: State): emotion.refresh())
 	health.damaged.connect(func(_amount: int):
 		battle_damaged = true
@@ -114,7 +122,32 @@ func _on_laugh_value_changed(value: float, _maximum: float) -> void:
 
 
 func _on_respawned() -> void:
+	if _after_cg:
+		_after_cg = false
+		return
 	Dialogue.start("respawn")
+
+
+## 被挠到笑倒（闷笑值满把最后一点血扣光）：播笑倒 CG（data/cgs.json），然后在检查点复活。
+func _play_death_cutscene() -> bool:
+	var cg := get_node_or_null("/root/CG")
+	if not died_from_laugh or cg == null:
+		return false
+	if last_tickle and is_instance_valid(last_tickle.source):
+		var key := ReactionDB.key_of(last_tickle.source)
+		if key != "":
+			last_tickle_key = key
+	_death_cg(cg)
+	return true
+
+
+func _death_cg(cg: Node) -> void:
+	await get_tree().create_timer(0.8).timeout  # 先倒下停一会儿
+	if sprite:
+		sprite.modulate.a = 0.0
+	await cg.play_death(last_tickle_key)
+	_after_cg = true
+	respawn()
 
 
 func _tick(delta: float) -> void:

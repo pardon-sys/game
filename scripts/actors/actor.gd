@@ -37,6 +37,10 @@ var facing := Vector2.DOWN
 var _push := Vector2.ZERO
 ## 最近一次成功生效的命中（死亡时可据此判断是被什么打死的）。
 var last_hit: HitData
+## 这次死亡是笑到脱力（闷笑值满扣血）造成的。
+var died_from_laugh := false
+## 最近一次挠痒（在加闷笑值之前记录：致命的那一下也能查到是谁挠的）。
+var last_tickle: HitData
 var _attack_invuln := 0.0
 var _full_invuln := 0.0
 var _dead := false
@@ -84,6 +88,7 @@ func receive_hit(hit: HitData) -> bool:
 			if hit.knockback > 0.0:
 				apply_knockback(hit.origin, hit.knockback)
 			hit.tickle *= _tickle_multiplier(hit)
+			last_tickle = hit
 			laugh.add(hit.tickle)
 			if not _dead:
 				_on_tickled(hit)
@@ -185,6 +190,7 @@ func nearest_hostile(max_range := INF) -> Actor:
 
 func revive() -> void:
 	_dead = false
+	died_from_laugh = false
 	if status:
 		status.clear()
 	if health:
@@ -227,7 +233,10 @@ func _tickle_multiplier(_hit: HitData) -> float:
 func _on_laugh_overflow() -> void:
 	if health and not _dead:
 		flash(Color(1, 0.6, 0.85))
+		died_from_laugh = true
 		health.damage(1)
+		if not _dead:
+			died_from_laugh = false
 
 
 func _on_died() -> void:

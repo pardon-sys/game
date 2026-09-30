@@ -21,6 +21,7 @@ func _initialize() -> void:
 		"autoload/GameState": "*res://scripts/autoload/game_state.gd",
 		"autoload/Audio": "*res://scripts/autoload/audio.gd",
 		"autoload/Dialogue": "*res://scenes/ui/dialogue_box.tscn",
+		"autoload/CG": "*res://scenes/ui/cg_player.tscn",
 		"layer_names/2d_physics/layer_1": "world",
 		"layer_names/2d_physics/layer_2": "player_ally",
 		"layer_names/2d_physics/layer_3": "enemy",

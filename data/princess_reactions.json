@@ -1,5 +1,9 @@
 {
-	"_说明": "lines 是通用受挠台词（按闷笑阶段 calm / giggle / helpless_1 / helpless_2 / grabbed）。sources 按怪物/陷阱分组，键名对应 MonsterStats.reaction_key 或陷阱的 reaction_key：name 显示名；first_encounter 第一次被它挠痒时播放的对话（会暂停战斗）；各阶段台词缺省时回退到通用 lines；taunts 是怪物挠痒时头顶冒出的回嘴（陷阱不填）。",
+	"_说明": "lines 是通用受挠台词（按闷笑阶段 calm / giggle / helpless_1 / helpless_2 / grabbed）。
+	sources 按怪物/陷阱分组，键名对应 MonsterStats.reaction_key 或陷阱的 reaction_key：name 显示名；
+	first_encounter 第一次被它挠痒时播放的对话（会暂停战斗）；
+	各阶段台词缺省时回退到通用 lines；
+	taunts 是怪物挠痒时头顶冒出的回嘴d（陷阱不填）。",
 	"display_seconds": 2.4,
 	"cooldown_seconds": 1.6,
 	"lines": {
