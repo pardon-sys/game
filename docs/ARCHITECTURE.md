@@ -243,6 +243,9 @@ data/dialogues.json  只放通用对话（复活、上锁提示、钥匙、失�
 
 ## 公主状态与换美术素材
 
+- **魔法姿态**：`princess_visuals.json` 的 `magic_order`（`chant / burst / damaged_chant / damaged_giggle_chant / damaged_burst / damaged_giggle_burst`）。`GameState.EMOTIONS` 仍是 11 种可请求的表情；`MAGIC_VISUALS` 只由 `Princess.resolve_visual()` 在 `CHANNEL`（吟唱）/ `CAST`（释放定住 `cast_time` 0.5 秒）状态下选用，优先级最高。选用规则：未战损 → 普通版；战损且闷笑值 ≤50 → 战损版；>50 → 战损闷笑版。`VISUALS = EMOTIONS + MAGIC_VISUALS` 是立绘、头像和 `EmotionComponent.row()` 的顺序。`magic_portrait_alias` 让战损闷笑释放借用战损释放的立绘。
+- **多图集动画**：`SpriteSheetConfig.sheets` 定义额外图集（texture、hframes、vframes、offset、directions、row_names）。动画写 `"sheet": "magic"` 就换用该图集，行号按当前视觉状态名在它的 `row_names` 里找；不写 `sheet` 时恢复 Sprite 原来的图集。`"progress": true` 的动画帧号取 `SpriteSheetAnimator.progress`（0~1），吟唱时由 `PlayableCharacter` 设为蓄力进度。
+- 魔法图集 `princess_magic.png`：48×48，每行一种魔法姿态，列 = 下/左/右/上各 8 帧；Sprite offset (0, -24)，与 32 格行走帧 (0, -16) 的脚底对齐。
 - `data/actors/princess_visuals.json` 是11状态顺序的单一来源。Python导入器及 `GameState.EMOTIONS` 共同读取；对话按生成的 `portraits.json` 顺序寻址，并验证与注册表一致。
 - `Princess.battle_damaged` 在实际伤害或闷笑值超过80时置位；治疗不清除，`revive()` 清除。`resolve_visual(requested)` 依次解析失控2（>100）、失控1（>80）、憋笑（>50）、战损和剧情表情；死亡独立定格。
 - `EmotionComponent` 保留请求表情与时限，`current` 始终为解析后的最终状态，HUD和常驻左侧的公主立绘监听同一个变化信号。闷笑数值变化立即刷新，因此 100 边界无需新增行动等级。

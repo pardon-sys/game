@@ -77,6 +77,16 @@ Godot 4.7 · 2D 俯视角像素游戏。粉发蓝眼、头戴金色小皇冠的�
 - 对话脚本逐句指定：对话文件中每句的 `emotion` 字段。
 - 代码中调用：`GameState.emote("shy", 2.0)`（时长 ≤0 表示一直保持）。
 
+**魔法姿态**（6 种，施法时自动切换，优先于其它状态）：吟诵 / 释放 × 普通 / 战损 / 战损闷笑。
+
+| 时机 | 未战损 | 战损（闷笑值 ≤50） | 战损（闷笑值 >50） |
+|---|---|---|---|
+| 按住 L 吟唱 | 吟诵 | 战损吟诵 | 战损闷笑吟诵 |
+| 松开释放（原地定住约 0.5 秒） | 释放 | 战损释放 | 战损闷笑释放（立绘借用战损释放） |
+
+- 吟诵的 8 帧跟着蓄力进度推进：0→2 秒对应第 1→8 帧，满蓄力停在第 8 帧；释放 8 帧约 0.5 秒播完，期间受到攻击会中断。
+- 小人用 48×48 的魔法图集（保留原图花瓣光效，人物大小、脚底位置与行走帧一致），脚下程序画的魔法阵和星光粒子照常叠加。
+
 ## 修改内容
 
 - **楼层**：每层一个文件夹 `levels/floor_0N/`，里面是地图 `map.txt`、本层对话 `dialogues.json` 和构建出的 `floor.tscn`；楼层顺序在 `data/floors.json`。
@@ -96,6 +106,9 @@ Godot 4.7 · 2D 俯视角像素游戏。粉发蓝眼、头戴金色小皇冠的�
   python tools/art/import_princess2.py --preview
   ```
   预览输出到 `tools/.cache/p2/`；四张原图不会被覆盖。
+  - **魔法姿态**：源图放在 `assets/generated/additional_princess/`（`princess4.png` 普通版、`princess5.png` 战损版 + 战损闷笑版，每张表 = 蓄力吟诵 8 帧 + 魔法爆发 8 帧 × 下/左/右/上；`portraits4.png` 吟诵、释放，`portraits5.png` 战损吟诵、战损闷笑吟诵、战损释放）。同一个导入脚本输出 `princess_magic.png`（48×48，6 行 × 32 列），立绘和头像追加在 `portraits.png` / `portrait_heads.png` 末尾。
+  - 表格按表头的帧编号自动定位；吟诵、释放立绘的取景在 `princess_visuals.json` 的 `portrait_crops` 里调。这个文件夹有 `.gdignore`，Godot 不导入源图（其中两张其实是 JPEG 数据）。
+  - 预览：`magic48.png`（全部魔法帧）、`grid_princess4.png` / `grid_princess5.png`（切格框）。
 - **受挠台词**：全部在 `data/princess_reactions.json`（另有 `combos` 组合技台词、`magic` 魔法台词）。`lines` 是通用台词（平静、憋笑、失控1、失控2、被抓）；`sources` 按怪物/陷阱分别写：第一次被它挠痒时的剧情对话 `first_encounter`、各阶段专属台词（没写的阶段自动用通用台词）、怪物头顶的回嘴 `taunts`。台词出现在常驻立绘旁，不暂停战斗；同档 1.6 秒内不刷新，跨档立即更新，2.4 秒后消失。
 - **公主笑声**：轻笑使用 cicifyre 的CC0素材；闷笑值>80使用 moxobna 的CC0自然笑声，去除长停顿、交叉淡化接缝后连续循环。专用单通道避免叠音，降至80及以下、死亡或暂停停止，恢复游戏后仍处于失控则继续。来源与处理记录见两处音频目录中的 `License.txt`。
   - `assets/third_party/cicifyre_voice/`：轻笑及旧单次大笑素材。
