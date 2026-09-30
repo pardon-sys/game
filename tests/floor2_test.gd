@@ -139,7 +139,7 @@ func _run_monsters() -> void:
 	player.laugh.clear()
 
 	# 蝙蝠：只在俯冲时行动，行动后退开
-	var bat: FeatherBat = _find("Bat_8_15")
+	var bat: FeatherBat = _find("Bat_8_13")
 	bat.phase = FeatherBat.Phase.CIRCLE
 	bat._action_cd = 0.0
 	check("蝙蝠盘旋时不行动", not bat.can_act())
