@@ -169,7 +169,12 @@ func _run_visual_states() -> void:
 	player.health.set_hp(1)
 	player.laugh.add(150.0)
 	check("满值致死优先于憋笑", player.state == PlayableCharacter.State.DEAD and player.emotion.current == "damaged" and not Audio._voice.playing)
-	await _wait(2.0)
+	# 笑倒会先播笑倒 CG（来源不明 → 通用 CG），这里直接跳过
+	await _wait(1.2)
+	check("笑倒后播放笑倒 CG", CG.is_playing() and CG.current == "death_generic")
+	CG._can_skip = true
+	CG.skip()
+	await _wait(0.8)
 	check("满值致死后复活重置", not princess.battle_damaged and player.health.is_full() and player.laugh.value == 0.0)
 	_finish_dialogue()
 	await _wait(1.5)

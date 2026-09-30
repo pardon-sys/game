@@ -434,6 +434,8 @@ func _on_died() -> void:
 	_end_channel()
 	_set_state(State.DEAD)
 	_end_attack()
+	if _play_death_cutscene():
+		return
 	var tw := create_tween()
 	tw.tween_interval(respawn_delay)
 	if sprite:
@@ -458,6 +460,11 @@ func respawn() -> void:
 
 func _on_respawned() -> void:
 	pass
+
+
+## 子类钩子：死亡时要播过场就返回 true（由子类负责之后调用 respawn）。
+func _play_death_cutscene() -> bool:
+	return false
 
 
 # ------------------------------------------------------------------ 内部

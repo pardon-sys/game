@@ -420,6 +420,51 @@ def gen_traps():
     sheet.save(OUT / "conveyor.png")
 
 
+# ------------------------------------------------------------------ 笑倒 CG 特效
+def tickle_lines(frame):
+    """挠痒的"咯吱"线条：三道弯折短线，逐帧张开。"""
+    img, d = canvas()
+    spread = [2, 3, 4][frame]
+    for i, (x, y) in enumerate(((3, 4), (8, 2), (12, 5))):
+        pts = [(x, y + spread), (x - 1, y + spread - 2), (x + 1, y + spread - 4), (x, y + spread - 6)]
+        d.line(pts, fill=WHITE_F if i != 1 else PINK_F)
+    return img
+
+
+def cg_feather():
+    img, d = canvas()
+    d.line((3, 13, 12, 3), fill=WHITE_F)
+    for t in range(5, 12, 2):
+        d.point((t, 15 - t), fill=PINK_F)
+        d.point((t + 1, 14 - t - 1), fill=PINK_F)
+    d.point((12, 3), fill=PINK_F)
+    return add_outline(img)
+
+
+def cg_hand():
+    img, d = canvas()
+    d.rounded_rectangle((4, 7, 11, 13), radius=2, fill=WHITE_F)
+    for x in (4, 6, 8, 10):
+        d.line((x, 3 + (x % 4 == 0), x, 7), fill=WHITE_F)
+    d.line((12, 9, 13, 8), fill=WHITE_F)
+    return add_outline(img)
+
+
+def cg_heart():
+    img, d = canvas()
+    d.polygon([(8, 13), (3, 8), (3, 5), (5, 3), (8, 5), (11, 3), (13, 5), (13, 8)], fill=PINK_F)
+    d.point((5, 5), fill=WHITE_F)
+    return add_outline(img)
+
+
+def gen_cg_fx():
+    sheet = blank(96, 16)
+    frames = [tickle_lines(0), tickle_lines(1), tickle_lines(2), cg_feather(), cg_hand(), cg_heart()]
+    for i, f in enumerate(frames):
+        sheet.alpha_composite(f, (i * 16, 0))
+    sheet.save(OUT / "cg_fx.png")
+
+
 def gen_floor_expansion():
     weapon_rack().save(OUT / "weapon_rack.png")
     secret_crack().save(OUT / "secret_crack.png")
@@ -430,6 +475,7 @@ def main():
     gen_magic()
     gen_monsters()
     gen_traps()
+    gen_cg_fx()
 
 
 if __name__ == "__main__":

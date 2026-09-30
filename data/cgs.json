@@ -1,0 +1,2176 @@
+{
+	"_说明": [
+		"笑倒 CG 总文件：公主被挠到闷笑值溢出、生命值归零时播放（CG Autoload，scripts/cg/cg_player.gd）。",
+		"portraits：CG 立绘接口。id -> {file, placeholder}。file 放正式素材（推荐 228x304，与现有立绘同为 2 倍密度，其它尺寸按比例缩放），不存在时用 placeholder 指定的公主状态立绘占位。",
+		"actors：怪物演员。来源键 -> {scene 怪物场景, sprite 可覆盖 hframes / region [x,y,w,h] / scale / offset [x,y] / frame}。演员只复制场景里的 Sprite，不带 AI。",
+		"death：{by_source: {最后一次挠痒的来源键: CG id}, default: 找不到时（陷阱等）用的 CG id}。",
+		"cgs：CG id -> {name, cast, steps}。",
+		"cast：演员名 -> {kind, at [x,y], dir, hidden, scale, visual, anim}。kind = princess（公主）/ monster:<来源键> / source（致死的那只怪）。坐标以舞台地面中心为原点，单位像素。",
+		"steps：按顺序执行。每一步可写 portrait（立绘 id，一直保持到下次更换，none = 隐藏）、actions（演绎指令，同时开始）、",
+		"  speaker / text / emotion（台词，等玩家推进；auto 秒后自动前进）、wait（没有台词时停留的秒数，默认等指令演完）、await_actions（先演完指令再出台词）。",
+		"actions 的 do：enter（at, from 相对起点, time）/ exit / move（to, time）/ hop（count, height）/ shake（time）/ face（dir）/",
+		"  pose（公主：visual, anim, dir；怪物：style = idle / wiggle / bounce）/ tickle（who 被挠的, by 挠的, repeat, interval, fx = lines / feather / hand / heart）/",
+		"  bubble（kind = laugh / surprise / dots / sad / shy / angry / happy / question）/ say（text 头顶对白）/ taunt（随机一句该怪物的回嘴）/",
+		"  sfx（sound, volume, pitch）/ voice（state = laugh / giggle / 空）/ camera（zoom：1 = 基础 2 倍，1.5 = 3 倍，2 = 4 倍；focus 演员名或 [x,y]；time）/ flash / fade_in / fade_out（time）/ wait（time）。"
+	],
+	"portraits": {
+		"defeat_1": {
+			"file": "res://assets/cg/portraits/defeat_1.png",
+			"placeholder": "helpless_1"
+		},
+		"defeat_2": {
+			"file": "res://assets/cg/portraits/defeat_2.png",
+			"placeholder": "helpless_2"
+		},
+		"wake": {
+			"file": "res://assets/cg/portraits/wake.png",
+			"placeholder": "sad"
+		},
+		"slime_1": {
+			"file": "res://assets/cg/portraits/slime_1.png",
+			"placeholder": "helpless_1"
+		},
+		"slime_2": {
+			"file": "res://assets/cg/portraits/slime_2.png",
+			"placeholder": "helpless_2"
+		},
+		"bat_1": {
+			"file": "res://assets/cg/portraits/bat_1.png",
+			"placeholder": "helpless_1"
+		},
+		"bat_2": {
+			"file": "res://assets/cg/portraits/bat_2.png",
+			"placeholder": "helpless_2"
+		},
+		"ghost_1": {
+			"file": "res://assets/cg/portraits/ghost_1.png",
+			"placeholder": "helpless_1"
+		},
+		"ghost_2": {
+			"file": "res://assets/cg/portraits/ghost_2.png",
+			"placeholder": "helpless_2"
+		},
+		"spider_1": {
+			"file": "res://assets/cg/portraits/spider_1.png",
+			"placeholder": "helpless_1"
+		},
+		"spider_2": {
+			"file": "res://assets/cg/portraits/spider_2.png",
+			"placeholder": "helpless_2"
+		},
+		"troll_1": {
+			"file": "res://assets/cg/portraits/troll_1.png",
+			"placeholder": "helpless_1"
+		},
+		"troll_2": {
+			"file": "res://assets/cg/portraits/troll_2.png",
+			"placeholder": "helpless_2"
+		},
+		"rat_1": {
+			"file": "res://assets/cg/portraits/rat_1.png",
+			"placeholder": "helpless_1"
+		},
+		"rat_2": {
+			"file": "res://assets/cg/portraits/rat_2.png",
+			"placeholder": "helpless_2"
+		},
+		"crab_1": {
+			"file": "res://assets/cg/portraits/crab_1.png",
+			"placeholder": "helpless_1"
+		},
+		"crab_2": {
+			"file": "res://assets/cg/portraits/crab_2.png",
+			"placeholder": "helpless_2"
+		},
+		"split_slime_1": {
+			"file": "res://assets/cg/portraits/split_slime_1.png",
+			"placeholder": "helpless_1"
+		},
+		"split_slime_2": {
+			"file": "res://assets/cg/portraits/split_slime_2.png",
+			"placeholder": "helpless_2"
+		},
+		"mimic_1": {
+			"file": "res://assets/cg/portraits/mimic_1.png",
+			"placeholder": "helpless_1"
+		},
+		"mimic_2": {
+			"file": "res://assets/cg/portraits/mimic_2.png",
+			"placeholder": "helpless_2"
+		},
+		"fairy_1": {
+			"file": "res://assets/cg/portraits/fairy_1.png",
+			"placeholder": "helpless_1"
+		},
+		"fairy_2": {
+			"file": "res://assets/cg/portraits/fairy_2.png",
+			"placeholder": "helpless_2"
+		},
+		"tentacle_1": {
+			"file": "res://assets/cg/portraits/tentacle_1.png",
+			"placeholder": "helpless_1"
+		},
+		"tentacle_2": {
+			"file": "res://assets/cg/portraits/tentacle_2.png",
+			"placeholder": "helpless_2"
+		}
+	},
+	"actors": {
+		"slime": {
+			"scene": "res://scenes/actors/monsters/slime.tscn"
+		},
+		"bat": {
+			"scene": "res://scenes/actors/monsters/feather_bat.tscn"
+		},
+		"ghost": {
+			"scene": "res://scenes/actors/monsters/tickle_ghost.tscn"
+		},
+		"spider": {
+			"scene": "res://scenes/actors/monsters/tickle_spider.tscn"
+		},
+		"troll": {
+			"scene": "res://scenes/actors/monsters/tickle_troll.tscn"
+		},
+		"rat": {
+			"scene": "res://scenes/actors/monsters/foot_rat.tscn"
+		},
+		"crab": {
+			"scene": "res://scenes/actors/monsters/pincer_crab.tscn"
+		},
+		"split_slime": {
+			"scene": "res://scenes/actors/monsters/split_slime.tscn",
+			"sprite": {
+				"scale": 1.5
+			}
+		},
+		"mimic": {
+			"scene": "res://scenes/actors/monsters/mimic.tscn",
+			"sprite": {
+				"region": [
+					128,
+					112,
+					16,
+					16
+				]
+			}
+		},
+		"fairy": {
+			"scene": "res://scenes/actors/monsters/fairy_swarm.tscn",
+			"sprite": {
+				"hframes": 2
+			}
+		},
+		"tentacle": {
+			"scene": "res://scenes/actors/monsters/tentacle_boss.tscn",
+			"sprite": {
+				"hframes": 2
+			}
+		}
+	},
+	"death": {
+		"by_source": {
+			"slime": "death_slime",
+			"bat": "death_bat",
+			"ghost": "death_ghost",
+			"spider": "death_spider",
+			"troll": "death_troll",
+			"rat": "death_rat",
+			"crab": "death_crab",
+			"split_slime": "death_split_slime",
+			"mimic": "death_mimic",
+			"fairy": "death_fairy",
+			"tentacle": "death_tentacle"
+		},
+		"default": "death_generic"
+	},
+	"cgs": {
+		"death_generic": {
+			"name": "笑到脱力",
+			"cast": {
+				"princess": {
+					"kind": "princess",
+					"at": [
+						0,
+						8
+					],
+					"visual": "helpless_1",
+					"anim": "helpless",
+					"dir": "down"
+				}
+			},
+			"steps": [
+				{
+					"actions": [
+						{
+							"do": "fade_in",
+							"time": 0.7
+						},
+						{
+							"do": "voice",
+							"state": "giggle"
+						}
+					],
+					"wait": 0.8
+				},
+				{
+					"portrait": "defeat_1",
+					"speaker": "公主",
+					"text": "哈、哈哈……不行了……机关还在挠……",
+					"actions": [
+						{
+							"do": "tickle",
+							"who": "princess",
+							"repeat": 5,
+							"fx": "feather"
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						}
+					]
+				},
+				{
+					"portrait": "defeat_2",
+					"speaker": "公主",
+					"text": "停、停下来哈哈哈哈！脚心、腰上……到处都……！",
+					"actions": [
+						{
+							"do": "pose",
+							"who": "princess",
+							"visual": "helpless_2"
+						},
+						{
+							"do": "voice",
+							"state": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"repeat": 7,
+							"interval": 0.25,
+							"fx": "hand"
+						},
+						{
+							"do": "camera",
+							"zoom": 1.5,
+							"focus": "princess",
+							"time": 0.5
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "……笑、笑得……一点力气都没有了……",
+					"actions": [
+						{
+							"do": "camera",
+							"zoom": 1,
+							"time": 0.4
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "dots"
+						}
+					]
+				},
+				{
+					"actions": [
+						{
+							"do": "fade_out",
+							"time": 0.9
+						},
+						{
+							"do": "voice",
+							"state": ""
+						}
+					],
+					"wait": 1.0
+				},
+				{
+					"portrait": "wake",
+					"speaker": "公主",
+					"text": "……呜。在检查点醒过来了。下次一定要躲开那些机关……"
+				}
+			]
+		},
+		"death_slime": {
+			"name": "黏糊糊的胜利",
+			"cast": {
+				"princess": {
+					"kind": "princess",
+					"at": [
+						0,
+						8
+					],
+					"visual": "helpless_1",
+					"anim": "helpless",
+					"dir": "down"
+				},
+				"foe": {
+					"kind": "monster:slime",
+					"at": [
+						22,
+						8
+					],
+					"dir": "left",
+					"hidden": true
+				}
+			},
+			"steps": [
+				{
+					"actions": [
+						{
+							"do": "fade_in",
+							"time": 0.7
+						},
+						{
+							"do": "voice",
+							"state": "giggle"
+						}
+					],
+					"wait": 0.8
+				},
+				{
+					"portrait": "slime_1",
+					"speaker": "公主",
+					"text": "史、史莱姆……别过来……本公主已经笑不动了……",
+					"actions": [
+						{
+							"do": "enter",
+							"who": "foe",
+							"from": [
+								90,
+								0
+							],
+							"time": 0.6
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "surprise"
+						}
+					]
+				},
+				{
+					"speaker": "史莱姆",
+					"text": "噗叽～还要挠～",
+					"actions": [
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "foe",
+							"repeat": 4,
+							"fx": "lines"
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						}
+					]
+				},
+				{
+					"portrait": "slime_2",
+					"speaker": "公主",
+					"text": "凉凉的……黏在脚心上……哈哈哈哈别蹭了！",
+					"actions": [
+						{
+							"do": "pose",
+							"who": "princess",
+							"visual": "helpless_2"
+						},
+						{
+							"do": "voice",
+							"state": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "foe",
+							"repeat": 6,
+							"interval": 0.28,
+							"fx": "lines"
+						},
+						{
+							"do": "camera",
+							"zoom": 1.5,
+							"focus": "princess",
+							"time": 0.5
+						}
+					]
+				},
+				{
+					"speaker": "史莱姆",
+					"text": "噗叽噗叽～公主投降了吧～",
+					"actions": [
+						{
+							"do": "hop",
+							"who": "foe",
+							"count": 2
+						},
+						{
+							"do": "taunt",
+							"who": "foe"
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "……被一只史莱姆……打败了……",
+					"actions": [
+						{
+							"do": "camera",
+							"zoom": 1,
+							"time": 0.4
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "dots"
+						},
+						{
+							"do": "flash",
+							"time": 0.4
+						}
+					]
+				},
+				{
+					"actions": [
+						{
+							"do": "fade_out",
+							"time": 0.9
+						},
+						{
+							"do": "voice",
+							"state": ""
+						}
+					],
+					"wait": 1.0
+				},
+				{
+					"portrait": "wake",
+					"speaker": "公主",
+					"text": "……醒来了。身上还是黏黏的……那只史莱姆，给本公主记住！"
+				}
+			]
+		},
+		"death_bat": {
+			"name": "羽毛风暴",
+			"cast": {
+				"princess": {
+					"kind": "princess",
+					"at": [
+						0,
+						8
+					],
+					"visual": "helpless_1",
+					"anim": "helpless",
+					"dir": "down"
+				},
+				"foe": {
+					"kind": "monster:bat",
+					"at": [
+						18,
+						-6
+					],
+					"dir": "left",
+					"hidden": true
+				}
+			},
+			"steps": [
+				{
+					"actions": [
+						{
+							"do": "fade_in",
+							"time": 0.7
+						},
+						{
+							"do": "voice",
+							"state": "giggle"
+						}
+					],
+					"wait": 0.8
+				},
+				{
+					"portrait": "bat_1",
+					"speaker": "公主",
+					"text": "头上……全是扑扑的翅膀声……",
+					"actions": [
+						{
+							"do": "enter",
+							"who": "foe",
+							"from": [
+								0,
+								-70
+							],
+							"time": 0.6
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "surprise"
+						}
+					]
+				},
+				{
+					"speaker": "羽毛蝙蝠",
+					"text": "扑扑～痒不痒？",
+					"actions": [
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "foe",
+							"repeat": 4,
+							"fx": "feather"
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						}
+					]
+				},
+				{
+					"portrait": "bat_2",
+					"speaker": "公主",
+					"text": "翅膀上的羽毛……扫在脖子上哈哈哈！不要一直绕着转！",
+					"actions": [
+						{
+							"do": "pose",
+							"who": "princess",
+							"visual": "helpless_2"
+						},
+						{
+							"do": "voice",
+							"state": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "foe",
+							"repeat": 6,
+							"interval": 0.28,
+							"fx": "feather"
+						},
+						{
+							"do": "camera",
+							"zoom": 1.5,
+							"focus": "princess",
+							"time": 0.5
+						}
+					]
+				},
+				{
+					"speaker": "羽毛蝙蝠",
+					"text": "再来一圈～",
+					"actions": [
+						{
+							"do": "hop",
+							"who": "foe",
+							"count": 2
+						},
+						{
+							"do": "taunt",
+							"who": "foe"
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "……被蝙蝠扇得……笑晕过去了……",
+					"actions": [
+						{
+							"do": "camera",
+							"zoom": 1,
+							"time": 0.4
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "dots"
+						},
+						{
+							"do": "flash",
+							"time": 0.4
+						}
+					]
+				},
+				{
+					"actions": [
+						{
+							"do": "fade_out",
+							"time": 0.9
+						},
+						{
+							"do": "voice",
+							"state": ""
+						}
+					],
+					"wait": 1.0
+				},
+				{
+					"portrait": "wake",
+					"speaker": "公主",
+					"text": "……头发里还夹着羽毛。这次一定要打中它们！"
+				}
+			]
+		},
+		"death_ghost": {
+			"name": "看不见的手",
+			"cast": {
+				"princess": {
+					"kind": "princess",
+					"at": [
+						0,
+						8
+					],
+					"visual": "helpless_1",
+					"anim": "helpless",
+					"dir": "down"
+				},
+				"foe": {
+					"kind": "monster:ghost",
+					"at": [
+						24,
+						4
+					],
+					"dir": "left",
+					"hidden": true
+				}
+			},
+			"steps": [
+				{
+					"actions": [
+						{
+							"do": "fade_in",
+							"time": 0.7
+						},
+						{
+							"do": "voice",
+							"state": "giggle"
+						}
+					],
+					"wait": 0.8
+				},
+				{
+					"portrait": "ghost_1",
+					"speaker": "公主",
+					"text": "谁、谁在那里？！明明什么都看不见……",
+					"actions": [
+						{
+							"do": "enter",
+							"who": "foe",
+							"from": [
+								0,
+								0
+							],
+							"time": 0.6
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "surprise"
+						}
+					]
+				},
+				{
+					"speaker": "痒痒幽灵",
+					"text": "嘻嘻……在这里哦～",
+					"actions": [
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "foe",
+							"repeat": 4,
+							"fx": "lines"
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						}
+					]
+				},
+				{
+					"portrait": "ghost_2",
+					"speaker": "公主",
+					"text": "看不见的手在挠腰……哈哈哈哈这不公平！",
+					"actions": [
+						{
+							"do": "pose",
+							"who": "princess",
+							"visual": "helpless_2"
+						},
+						{
+							"do": "voice",
+							"state": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "foe",
+							"repeat": 6,
+							"interval": 0.28,
+							"fx": "lines"
+						},
+						{
+							"do": "camera",
+							"zoom": 1.5,
+							"focus": "princess",
+							"time": 0.5
+						}
+					]
+				},
+				{
+					"speaker": "痒痒幽灵",
+					"text": "看不见才更痒吧～",
+					"actions": [
+						{
+							"do": "hop",
+							"who": "foe",
+							"count": 2
+						},
+						{
+							"do": "taunt",
+							"who": "foe"
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "……连对手的样子都没看清……就……",
+					"actions": [
+						{
+							"do": "camera",
+							"zoom": 1,
+							"time": 0.4
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "dots"
+						},
+						{
+							"do": "flash",
+							"time": 0.4
+						}
+					]
+				},
+				{
+					"actions": [
+						{
+							"do": "fade_out",
+							"time": 0.9
+						},
+						{
+							"do": "voice",
+							"state": ""
+						}
+					],
+					"wait": 1.0
+				},
+				{
+					"portrait": "wake",
+					"speaker": "公主",
+					"text": "……醒来了。下次先把火把全部点亮再说！"
+				}
+			]
+		},
+		"death_spider": {
+			"name": "蛛丝陷阱",
+			"cast": {
+				"princess": {
+					"kind": "princess",
+					"at": [
+						0,
+						8
+					],
+					"visual": "helpless_1",
+					"anim": "helpless",
+					"dir": "down"
+				},
+				"foe": {
+					"kind": "monster:spider",
+					"at": [
+						20,
+						0
+					],
+					"dir": "left",
+					"hidden": true
+				}
+			},
+			"steps": [
+				{
+					"actions": [
+						{
+							"do": "fade_in",
+							"time": 0.7
+						},
+						{
+							"do": "voice",
+							"state": "giggle"
+						}
+					],
+					"wait": 0.8
+				},
+				{
+					"portrait": "spider_1",
+					"speaker": "公主",
+					"text": "脚、脚被蛛丝粘住了……动不了……",
+					"actions": [
+						{
+							"do": "enter",
+							"who": "foe",
+							"from": [
+								0,
+								-60
+							],
+							"time": 0.6
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "surprise"
+						}
+					]
+				},
+				{
+					"speaker": "挠痒蜘蛛",
+					"text": "粘住啦～慢慢挠～",
+					"actions": [
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "foe",
+							"repeat": 4,
+							"fx": "lines"
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						}
+					]
+				},
+				{
+					"portrait": "spider_2",
+					"speaker": "公主",
+					"text": "八只脚一起挠……哈哈哈哈数都数不过来！",
+					"actions": [
+						{
+							"do": "pose",
+							"who": "princess",
+							"visual": "helpless_2"
+						},
+						{
+							"do": "voice",
+							"state": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "foe",
+							"repeat": 6,
+							"interval": 0.28,
+							"fx": "lines"
+						},
+						{
+							"do": "camera",
+							"zoom": 1.5,
+							"focus": "princess",
+							"time": 0.5
+						}
+					]
+				},
+				{
+					"speaker": "挠痒蜘蛛",
+					"text": "八只脚可是很忙的～",
+					"actions": [
+						{
+							"do": "hop",
+							"who": "foe",
+							"count": 2
+						},
+						{
+							"do": "taunt",
+							"who": "foe"
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "……被裹成一团……笑到没力气了……",
+					"actions": [
+						{
+							"do": "camera",
+							"zoom": 1,
+							"time": 0.4
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "dots"
+						},
+						{
+							"do": "flash",
+							"time": 0.4
+						}
+					]
+				},
+				{
+					"actions": [
+						{
+							"do": "fade_out",
+							"time": 0.9
+						},
+						{
+							"do": "voice",
+							"state": ""
+						}
+					],
+					"wait": 1.0
+				},
+				{
+					"portrait": "wake",
+					"speaker": "公主",
+					"text": "……身上的蛛丝好不容易才扯掉。可恶的蜘蛛！"
+				}
+			]
+		},
+		"death_troll": {
+			"name": "巨人的手指",
+			"cast": {
+				"princess": {
+					"kind": "princess",
+					"at": [
+						0,
+						8
+					],
+					"visual": "helpless_1",
+					"anim": "helpless",
+					"dir": "down"
+				},
+				"foe": {
+					"kind": "monster:troll",
+					"at": [
+						26,
+						6
+					],
+					"dir": "left",
+					"hidden": true
+				}
+			},
+			"steps": [
+				{
+					"actions": [
+						{
+							"do": "fade_in",
+							"time": 0.7
+						},
+						{
+							"do": "voice",
+							"state": "giggle"
+						}
+					],
+					"wait": 0.8
+				},
+				{
+					"portrait": "troll_1",
+					"speaker": "公主",
+					"text": "放、放开……好大的手……",
+					"actions": [
+						{
+							"do": "enter",
+							"who": "foe",
+							"from": [
+								90,
+								0
+							],
+							"time": 0.6
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "surprise"
+						}
+					]
+				},
+				{
+					"speaker": "挠痒巨魔",
+					"text": "咕嘿嘿，挠你脚心！",
+					"actions": [
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "foe",
+							"repeat": 4,
+							"fx": "lines"
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						}
+					]
+				},
+				{
+					"portrait": "troll_2",
+					"speaker": "公主",
+					"text": "脚心！它专挑脚心！哈哈哈哈投降、投降啦！",
+					"actions": [
+						{
+							"do": "pose",
+							"who": "princess",
+							"visual": "helpless_2"
+						},
+						{
+							"do": "voice",
+							"state": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "foe",
+							"repeat": 6,
+							"interval": 0.28,
+							"fx": "lines"
+						},
+						{
+							"do": "camera",
+							"zoom": 1.5,
+							"focus": "princess",
+							"time": 0.5
+						}
+					]
+				},
+				{
+					"speaker": "挠痒巨魔",
+					"text": "跑不掉的，小公主～",
+					"actions": [
+						{
+							"do": "hop",
+							"who": "foe",
+							"count": 2
+						},
+						{
+							"do": "taunt",
+							"who": "foe"
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "……被举在半空中……笑到……",
+					"actions": [
+						{
+							"do": "camera",
+							"zoom": 1,
+							"time": 0.4
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "dots"
+						},
+						{
+							"do": "flash",
+							"time": 0.4
+						}
+					]
+				},
+				{
+					"actions": [
+						{
+							"do": "fade_out",
+							"time": 0.9
+						},
+						{
+							"do": "voice",
+							"state": ""
+						}
+					],
+					"wait": 1.0
+				},
+				{
+					"portrait": "wake",
+					"speaker": "公主",
+					"text": "……醒来了。那只巨魔还在大厅里等着吧……这次绝对不会再被抓住！"
+				}
+			]
+		},
+		"death_rat": {
+			"name": "脚心大合唱",
+			"cast": {
+				"princess": {
+					"kind": "princess",
+					"at": [
+						0,
+						8
+					],
+					"visual": "helpless_1",
+					"anim": "helpless",
+					"dir": "down"
+				},
+				"foe": {
+					"kind": "monster:rat",
+					"at": [
+						22,
+						8
+					],
+					"dir": "left",
+					"hidden": true
+				},
+				"rat2": {
+					"kind": "monster:rat",
+					"at": [
+						-22,
+						12
+					],
+					"dir": "right",
+					"hidden": true
+				},
+				"rat3": {
+					"kind": "monster:rat",
+					"at": [
+						4,
+						26
+					],
+					"dir": "left",
+					"hidden": true
+				}
+			},
+			"steps": [
+				{
+					"actions": [
+						{
+							"do": "fade_in",
+							"time": 0.7
+						},
+						{
+							"do": "voice",
+							"state": "giggle"
+						}
+					],
+					"wait": 0.8
+				},
+				{
+					"portrait": "rat_1",
+					"speaker": "公主",
+					"text": "一、二、三……好多只老鼠……",
+					"actions": [
+						{
+							"do": "enter",
+							"who": "foe",
+							"from": [
+								90,
+								0
+							],
+							"time": 0.6
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "surprise"
+						},
+						{
+							"do": "enter",
+							"who": "rat2",
+							"from": [
+								-80,
+								0
+							],
+							"time": 0.7
+						},
+						{
+							"do": "enter",
+							"who": "rat3",
+							"from": [
+								80,
+								0
+							],
+							"time": 0.7
+						}
+					]
+				},
+				{
+					"speaker": "挠脚鼠",
+					"text": "吱吱！脚心！",
+					"actions": [
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "foe",
+							"repeat": 4,
+							"fx": "hand"
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						}
+					]
+				},
+				{
+					"portrait": "rat_2",
+					"speaker": "公主",
+					"text": "全都在挠脚心——哈哈哈哈不行不行不行！",
+					"actions": [
+						{
+							"do": "pose",
+							"who": "princess",
+							"visual": "helpless_2"
+						},
+						{
+							"do": "voice",
+							"state": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "foe",
+							"repeat": 6,
+							"interval": 0.28,
+							"fx": "hand"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "rat2",
+							"repeat": 5,
+							"interval": 0.32,
+							"fx": "hand"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "rat3",
+							"repeat": 5,
+							"interval": 0.32,
+							"fx": "hand"
+						},
+						{
+							"do": "camera",
+							"zoom": 1.5,
+							"focus": "princess",
+							"time": 0.5
+						}
+					]
+				},
+				{
+					"speaker": "挠脚鼠",
+					"text": "大家一起上吱！",
+					"actions": [
+						{
+							"do": "hop",
+							"who": "foe",
+							"count": 2
+						},
+						{
+							"do": "taunt",
+							"who": "foe"
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "……被一群小老鼠……围着挠到……",
+					"actions": [
+						{
+							"do": "camera",
+							"zoom": 1,
+							"time": 0.4
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "dots"
+						},
+						{
+							"do": "flash",
+							"time": 0.4
+						}
+					]
+				},
+				{
+					"actions": [
+						{
+							"do": "fade_out",
+							"time": 0.9
+						},
+						{
+							"do": "voice",
+							"state": ""
+						}
+					],
+					"wait": 1.0
+				},
+				{
+					"portrait": "wake",
+					"speaker": "公主",
+					"text": "……鞋子都被扒掉了。挠脚鼠……本公主讨厌你们！"
+				}
+			]
+		},
+		"death_crab": {
+			"name": "夹住不放",
+			"cast": {
+				"princess": {
+					"kind": "princess",
+					"at": [
+						0,
+						8
+					],
+					"visual": "helpless_1",
+					"anim": "helpless",
+					"dir": "down"
+				},
+				"foe": {
+					"kind": "monster:crab",
+					"at": [
+						20,
+						14
+					],
+					"dir": "left",
+					"hidden": true
+				}
+			},
+			"steps": [
+				{
+					"actions": [
+						{
+							"do": "fade_in",
+							"time": 0.7
+						},
+						{
+							"do": "voice",
+							"state": "giggle"
+						}
+					],
+					"wait": 0.8
+				},
+				{
+					"portrait": "crab_1",
+					"speaker": "公主",
+					"text": "脚趾……被夹住了……动不了……",
+					"actions": [
+						{
+							"do": "enter",
+							"who": "foe",
+							"from": [
+								90,
+								0
+							],
+							"time": 0.6
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "surprise"
+						}
+					]
+				},
+				{
+					"speaker": "钳钳蟹",
+					"text": "咔嚓咔嚓！",
+					"actions": [
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "foe",
+							"repeat": 4,
+							"fx": "lines"
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						}
+					]
+				},
+				{
+					"portrait": "crab_2",
+					"speaker": "公主",
+					"text": "一边夹一边用钳子尖挠——哈哈哈哈放开！",
+					"actions": [
+						{
+							"do": "pose",
+							"who": "princess",
+							"visual": "helpless_2"
+						},
+						{
+							"do": "voice",
+							"state": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "foe",
+							"repeat": 6,
+							"interval": 0.28,
+							"fx": "lines"
+						},
+						{
+							"do": "camera",
+							"zoom": 1.5,
+							"focus": "princess",
+							"time": 0.5
+						}
+					]
+				},
+				{
+					"speaker": "钳钳蟹",
+					"text": "夹住啦～",
+					"actions": [
+						{
+							"do": "hop",
+							"who": "foe",
+							"count": 2
+						},
+						{
+							"do": "taunt",
+							"who": "foe"
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "……被一只螃蟹……笑倒了……",
+					"actions": [
+						{
+							"do": "camera",
+							"zoom": 1,
+							"time": 0.4
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "dots"
+						},
+						{
+							"do": "flash",
+							"time": 0.4
+						}
+					]
+				},
+				{
+					"actions": [
+						{
+							"do": "fade_out",
+							"time": 0.9
+						},
+						{
+							"do": "voice",
+							"state": ""
+						}
+					],
+					"wait": 1.0
+				},
+				{
+					"portrait": "wake",
+					"speaker": "公主",
+					"text": "……脚趾还红红的。离那些钳子远一点……"
+				}
+			]
+		},
+		"death_split_slime": {
+			"name": "越打越多",
+			"cast": {
+				"princess": {
+					"kind": "princess",
+					"at": [
+						0,
+						8
+					],
+					"visual": "helpless_1",
+					"anim": "helpless",
+					"dir": "down"
+				},
+				"foe": {
+					"kind": "monster:split_slime",
+					"at": [
+						22,
+						8
+					],
+					"dir": "left",
+					"hidden": true
+				},
+				"mini1": {
+					"kind": "monster:split_slime",
+					"at": [
+						-20,
+						14
+					],
+					"dir": "right",
+					"hidden": true,
+					"scale": 0.9
+				},
+				"mini2": {
+					"kind": "monster:split_slime",
+					"at": [
+						6,
+						28
+					],
+					"dir": "left",
+					"hidden": true,
+					"scale": 0.9
+				}
+			},
+			"steps": [
+				{
+					"actions": [
+						{
+							"do": "fade_in",
+							"time": 0.7
+						},
+						{
+							"do": "voice",
+							"state": "giggle"
+						}
+					],
+					"wait": 0.8
+				},
+				{
+					"portrait": "split_slime_1",
+					"speaker": "公主",
+					"text": "又、又分裂了……到底有几只……",
+					"actions": [
+						{
+							"do": "enter",
+							"who": "foe",
+							"from": [
+								90,
+								0
+							],
+							"time": 0.6
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "surprise"
+						},
+						{
+							"do": "enter",
+							"who": "mini1",
+							"from": [
+								-80,
+								0
+							],
+							"time": 0.7
+						},
+						{
+							"do": "enter",
+							"who": "mini2",
+							"from": [
+								80,
+								0
+							],
+							"time": 0.7
+						}
+					]
+				},
+				{
+					"speaker": "分裂史莱姆",
+					"text": "噗叽～分裂！",
+					"actions": [
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "foe",
+							"repeat": 4,
+							"fx": "lines"
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						}
+					]
+				},
+				{
+					"portrait": "split_slime_2",
+					"speaker": "公主",
+					"text": "四面八方都是凉凉的……哈哈哈哈别挤过来！",
+					"actions": [
+						{
+							"do": "pose",
+							"who": "princess",
+							"visual": "helpless_2"
+						},
+						{
+							"do": "voice",
+							"state": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "foe",
+							"repeat": 6,
+							"interval": 0.28,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "mini1",
+							"repeat": 5,
+							"interval": 0.32,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "mini2",
+							"repeat": 5,
+							"interval": 0.32,
+							"fx": "lines"
+						},
+						{
+							"do": "camera",
+							"zoom": 1.5,
+							"focus": "princess",
+							"time": 0.5
+						}
+					]
+				},
+				{
+					"speaker": "分裂史莱姆",
+					"text": "我们人多～",
+					"actions": [
+						{
+							"do": "hop",
+							"who": "foe",
+							"count": 2
+						},
+						{
+							"do": "taunt",
+							"who": "foe"
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "……被粉色的史莱姆……淹没了……",
+					"actions": [
+						{
+							"do": "camera",
+							"zoom": 1,
+							"time": 0.4
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "dots"
+						},
+						{
+							"do": "flash",
+							"time": 0.4
+						}
+					]
+				},
+				{
+					"actions": [
+						{
+							"do": "fade_out",
+							"time": 0.9
+						},
+						{
+							"do": "voice",
+							"state": ""
+						}
+					],
+					"wait": 1.0
+				},
+				{
+					"portrait": "wake",
+					"speaker": "公主",
+					"text": "……醒来了。下次一定用满蓄力的星光一口气解决！"
+				}
+			]
+		},
+		"death_mimic": {
+			"name": "被宝箱吞掉",
+			"cast": {
+				"princess": {
+					"kind": "princess",
+					"at": [
+						0,
+						8
+					],
+					"visual": "helpless_1",
+					"anim": "helpless",
+					"dir": "down"
+				},
+				"foe": {
+					"kind": "monster:mimic",
+					"at": [
+						0,
+						-6
+					],
+					"dir": "right",
+					"hidden": true
+				}
+			},
+			"steps": [
+				{
+					"actions": [
+						{
+							"do": "fade_in",
+							"time": 0.7
+						},
+						{
+							"do": "voice",
+							"state": "giggle"
+						}
+					],
+					"wait": 0.8
+				},
+				{
+					"portrait": "mimic_1",
+					"speaker": "公主",
+					"text": "宝、宝箱在动……放开本公主！",
+					"actions": [
+						{
+							"do": "enter",
+							"who": "foe",
+							"from": [
+								0,
+								0
+							],
+							"time": 0.6
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "surprise"
+						}
+					]
+				},
+				{
+					"speaker": "宝箱怪",
+					"text": "咔哒！上钩了～",
+					"actions": [
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "foe",
+							"repeat": 4,
+							"fx": "lines"
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						}
+					]
+				},
+				{
+					"portrait": "mimic_2",
+					"speaker": "公主",
+					"text": "舌头！它用舌头挠——哈哈哈哈好痒！",
+					"actions": [
+						{
+							"do": "pose",
+							"who": "princess",
+							"visual": "helpless_2"
+						},
+						{
+							"do": "voice",
+							"state": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "foe",
+							"repeat": 6,
+							"interval": 0.28,
+							"fx": "lines"
+						},
+						{
+							"do": "camera",
+							"zoom": 1.5,
+							"focus": "princess",
+							"time": 0.5
+						}
+					]
+				},
+				{
+					"speaker": "宝箱怪",
+					"text": "宝物就是你～",
+					"actions": [
+						{
+							"do": "hop",
+							"who": "foe",
+							"count": 2
+						},
+						{
+							"do": "taunt",
+							"who": "foe"
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "……以后……再也不乱开宝箱了……",
+					"actions": [
+						{
+							"do": "camera",
+							"zoom": 1,
+							"time": 0.4
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "dots"
+						},
+						{
+							"do": "flash",
+							"time": 0.4
+						}
+					]
+				},
+				{
+					"actions": [
+						{
+							"do": "fade_out",
+							"time": 0.9
+						},
+						{
+							"do": "voice",
+							"state": ""
+						}
+					],
+					"wait": 1.0
+				},
+				{
+					"portrait": "wake",
+					"speaker": "公主",
+					"text": "……醒来了。身上一股木头味……看到宝箱先敲一敲！"
+				}
+			]
+		},
+		"death_fairy": {
+			"name": "羽毛围攻",
+			"cast": {
+				"princess": {
+					"kind": "princess",
+					"at": [
+						0,
+						8
+					],
+					"visual": "helpless_1",
+					"anim": "helpless",
+					"dir": "down"
+				},
+				"foe": {
+					"kind": "monster:fairy",
+					"at": [
+						16,
+						-10
+					],
+					"dir": "left",
+					"hidden": true
+				}
+			},
+			"steps": [
+				{
+					"actions": [
+						{
+							"do": "fade_in",
+							"time": 0.7
+						},
+						{
+							"do": "voice",
+							"state": "giggle"
+						}
+					],
+					"wait": 0.8
+				},
+				{
+					"portrait": "fairy_1",
+					"speaker": "公主",
+					"text": "好多发光的小精灵……每个都拿着羽毛……",
+					"actions": [
+						{
+							"do": "enter",
+							"who": "foe",
+							"from": [
+								0,
+								-70
+							],
+							"time": 0.6
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "surprise"
+						}
+					]
+				},
+				{
+					"speaker": "羽毛小精灵群",
+					"text": "咯咯咯～",
+					"actions": [
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "foe",
+							"repeat": 4,
+							"fx": "feather"
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						}
+					]
+				},
+				{
+					"portrait": "fairy_2",
+					"speaker": "公主",
+					"text": "羽毛从四面八方扫过来——哈哈哈哈停不下来！",
+					"actions": [
+						{
+							"do": "pose",
+							"who": "princess",
+							"visual": "helpless_2"
+						},
+						{
+							"do": "voice",
+							"state": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "foe",
+							"repeat": 6,
+							"interval": 0.28,
+							"fx": "feather"
+						},
+						{
+							"do": "camera",
+							"zoom": 1.5,
+							"focus": "princess",
+							"time": 0.5
+						}
+					]
+				},
+				{
+					"speaker": "羽毛小精灵群",
+					"text": "挠挠挠～",
+					"actions": [
+						{
+							"do": "hop",
+							"who": "foe",
+							"count": 2
+						},
+						{
+							"do": "taunt",
+							"who": "foe"
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "……被小精灵们……挠到笑晕了……",
+					"actions": [
+						{
+							"do": "camera",
+							"zoom": 1,
+							"time": 0.4
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "dots"
+						},
+						{
+							"do": "flash",
+							"time": 0.4
+						}
+					]
+				},
+				{
+					"actions": [
+						{
+							"do": "fade_out",
+							"time": 0.9
+						},
+						{
+							"do": "voice",
+							"state": ""
+						}
+					],
+					"wait": 1.0
+				},
+				{
+					"portrait": "wake",
+					"speaker": "公主",
+					"text": "……醒来了。她们还在笑我吧……用魔法把她们全部吹走！"
+				}
+			]
+		},
+		"death_tentacle": {
+			"name": "触手的怀抱",
+			"cast": {
+				"princess": {
+					"kind": "princess",
+					"at": [
+						0,
+						8
+					],
+					"visual": "helpless_1",
+					"anim": "helpless",
+					"dir": "down"
+				},
+				"foe": {
+					"kind": "monster:tentacle",
+					"at": [
+						34,
+						6
+					],
+					"dir": "left",
+					"hidden": true
+				}
+			},
+			"steps": [
+				{
+					"actions": [
+						{
+							"do": "fade_in",
+							"time": 0.7
+						},
+						{
+							"do": "voice",
+							"state": "giggle"
+						}
+					],
+					"wait": 0.8
+				},
+				{
+					"portrait": "tentacle_1",
+					"speaker": "公主",
+					"text": "被、被卷住了……好多根触手……",
+					"actions": [
+						{
+							"do": "enter",
+							"who": "foe",
+							"from": [
+								60,
+								0
+							],
+							"time": 0.6
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "surprise"
+						}
+					]
+				},
+				{
+					"speaker": "痒痒触手怪",
+					"text": "咕噜噜～抓到了～",
+					"actions": [
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "foe",
+							"repeat": 4,
+							"fx": "lines"
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						}
+					]
+				},
+				{
+					"portrait": "tentacle_2",
+					"speaker": "公主",
+					"text": "每一根都在挠……腰、脚心、脖子——哈哈哈哈投降投降！",
+					"actions": [
+						{
+							"do": "pose",
+							"who": "princess",
+							"visual": "helpless_2"
+						},
+						{
+							"do": "voice",
+							"state": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "foe",
+							"repeat": 6,
+							"interval": 0.28,
+							"fx": "lines"
+						},
+						{
+							"do": "camera",
+							"zoom": 1.5,
+							"focus": "princess",
+							"time": 0.5
+						}
+					]
+				},
+				{
+					"speaker": "痒痒触手怪",
+					"text": "触手可是有很多根的哦～",
+					"actions": [
+						{
+							"do": "hop",
+							"who": "foe",
+							"count": 2
+						},
+						{
+							"do": "taunt",
+							"who": "foe"
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "……被触手……挠到……什么都想不起来了……",
+					"actions": [
+						{
+							"do": "camera",
+							"zoom": 1,
+							"time": 0.4
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "dots"
+						},
+						{
+							"do": "flash",
+							"time": 0.4
+						}
+					]
+				},
+				{
+					"actions": [
+						{
+							"do": "fade_out",
+							"time": 0.9
+						},
+						{
+							"do": "voice",
+							"state": ""
+						}
+					],
+					"wait": 1.0
+				},
+				{
+					"portrait": "wake",
+					"speaker": "公主",
+					"text": "……醒来了。那家伙还在大厅里等着……这次先用满蓄力的星光让它松手！"
+				}
+			]
+		}
+	}
+}
