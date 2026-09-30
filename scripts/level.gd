@@ -34,5 +34,7 @@ func _on_dialogue_finished(id: String) -> void:
 			GameState.set_flag("chapter1_clear")
 		"ending_2":
 			GameState.set_flag("chapter2_clear")
+		"ending_3":
+			GameState.set_flag("chapter3_clear")
 			GameState.emote("happy", 3.0)
-			GameState.notify("第二章通关！感谢游玩（Esc → 重新开始）")
+			GameState.notify("第三章通关！感谢游玩（Esc → 重新开始）")

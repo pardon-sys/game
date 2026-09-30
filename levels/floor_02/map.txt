@@ -35,7 +35,7 @@ r = trap type=brush speed=-1.4
 q = plate target=hand1
 Q = plate target=hand2
 U = trigger dialogue=troll_intro w=1 h=3
-Z = trigger dialogue=ending_2 w=5 h=1
+Z = exit target=next dialogue=ending_2 w=5 h=1
 [ = floor tile=36
 s = floor tile=37
 ] = floor tile=39

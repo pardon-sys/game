@@ -26,6 +26,7 @@ func _ready() -> void:
 	await _run_combos()
 	await _run_new_monsters()
 	await _run_new_traps()
+	await _run_floor3()
 	print("\n==== %s (%d 项失败) ====" % ["全部通过" if failures == 0 else "有失败", failures])
 	get_tree().quit(1 if failures else 0)
 
@@ -34,8 +35,8 @@ func _ready() -> void:
 func _run_floors() -> void:
 	print("-- 楼层表")
 	var ids := Floors.ids()
-	check("floors.json 顺序", ids.slice(0, 2) == ["floor_01", "floor_02"])
-	check("下一层", Floors.next_of("floor_01") == "floor_02")
+	check("floors.json 顺序", ids == ["floor_01", "floor_02", "floor_03"])
+	check("下一层", Floors.next_of("floor_01") == "floor_02" and Floors.next_of("floor_02") == "floor_03" and Floors.next_of("floor_03") == "")
 	for id in ids:
 		check("%s 有地图、对话和场景" % id, FileAccess.file_exists(Floors.map_path(id))
 			and FileAccess.file_exists(Floors.dialogues_path(id)) and ResourceLoader.exists(Floors.scene(id)))
@@ -725,6 +726,58 @@ func _run_new_traps() -> void:
 	check("拉杆能停下传送带", not conveyor.is_dangerous())
 	conveyor.queue_free()
 	_reset_magic()
+
+
+# ------------------------------------------------------------------ 第三层
+func _run_floor3() -> void:
+	print("-- 第三层")
+	var exits := level.find_children("Exit*", "", true, false)
+	check("第二层楼梯通往第三层", exits.size() == 1 and exits[0].resolve_target() == Floors.scene("floor_03"))
+	_reset_magic()
+	player.status.clear()
+	GameState.flags.erase("magic_unlocked")
+	var hp := player.health.hp
+	await _goto("floor_03")
+	check("切换到第三层", level.name == "Floor03" and level.get("floor_id") == "floor_03")
+	check("状态跨层保留", player.health.hp == hp)
+	check("第三层开场剧情教会星光爆发", player.is_magic_unlocked())
+	check("第三层对话已载入", Dialogue.has_dialogue("boss3_intro") and Dialogue.has_dialogue("ending_3") and not Dialogue.has_dialogue("troll_intro"))
+	for e in get_tree().get_nodes_in_group("enemy"):
+		e.process_mode = Node.PROCESS_MODE_DISABLED
+	check("第三层所有地面都能从起点走到", _unreachable_cells(true).is_empty())
+
+	var kinds := {}
+	for m in level.find_children("*", "Monster", true, false):
+		kinds[m.stats.reaction_key] = kinds.get(m.stats.reaction_key, 0) + 1
+	for k in ["rat", "crab", "split_slime", "mimic", "fairy", "tentacle"]:
+		check("第三层有 %s" % k, kinds.get(k, 0) > 0)
+	check("只有一只宝箱怪、一只触手怪", kinds.get("mimic", 0) == 1 and kinds.get("tentacle", 0) == 1)
+	check("落脚点有练手的小精灵", _find("Fairy_15_45") != null)
+	var trap_types := {}
+	for t in level.find_children("*", "Trap", true, false):
+		trap_types[t.get_script().get_global_name()] = true
+	for cls in ["TickleVine", "FeatherFan", "TickleConveyor", "PowderVent", "FeatherBrush"]:
+		check("第三层有陷阱 %s" % cls, trap_types.has(cls))
+
+	var fans := get_tree().get_nodes_in_group("fans")
+	check("风洞有 3 台风扇", fans.size() == 3)
+	_find("Lever_48_21").on_interact(player)
+	check("风洞拉杆关掉全部风扇", fans.all(func(f: Trap): return not f.active))
+	var belts := get_tree().get_nodes_in_group("belts")
+	_find("Lever_37_37").on_interact(player)
+	check("工坊拉杆停下两条传送带", belts.size() == 2 and belts.all(func(b: Trap): return not b.active))
+
+	var gate: Node = _find("Gate_39_6")
+	var boss: TentacleBoss = _find("Tentacle_25_4")
+	check("Boss 门初始关闭", not gate.is_open)
+	boss.health.damage(99)
+	await _wait(0.1)
+	check("打倒触手怪后 Boss 门打开", gate.is_open)
+	check("出口剧情触发器", _find("Trigger_44_5") != null and _find("Trigger_44_5").dialogue == "ending_3")
+	Dialogue.start("ending_3")
+	_finish_dialogue()
+	await _wait(0.2)
+	check("第三章通关标记", GameState.has_flag("chapter3_clear"))
 
 
 ## 从公主位置出发做 4 邻域洪泛：墙层有图块的格子不可走（暗墙可选视为可走），门、铁栅视为可走。
