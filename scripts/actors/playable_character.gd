@@ -7,6 +7,7 @@ extends Actor
 ## 魔法（星光爆发）：按住 magic 进入 CHANNEL 吟唱，不能移动；按住越久档位越高（channel_tiers），
 ##   松开释放 StarBurst。吟唱时弱点暴露：附近怪物锁定过来，受到的挠痒 ×exposed_tickle_mult。
 ##   闷笑值超过失控线不能开始；吟唱中进入失控、被抓住、受到攻击都会打断。
+##   释放（1 档及以上）后进入 CAST，原地定住 cast_time 秒播放释放动作（受到攻击 / 被抓 / 失控会中断）。
 ##
 ## 约定的子节点（除 Actor 的之外）：
 ##   Controller (CharacterController)  Emotion (EmotionComponent)  Animator (SpriteSheetAnimator)
@@ -19,7 +20,7 @@ signal state_changed(state: State)
 ## 魔法事件："channel" 开始吟唱、"tier" 升档、"burst" 释放、"fizzle" 蓄力不足落空、"interrupted" 被打断。
 signal magic_event(event: String, tier: int)
 
-enum State { IDLE, MOVE, ATTACK, DASH, HURT, HELPLESS, GRABBED, DEAD, CHANNEL }
+enum State { IDLE, MOVE, ATTACK, DASH, HURT, HELPLESS, GRABBED, DEAD, CHANNEL, CAST }
 
 @export_group("移动")
 @export var move_speed := 80.0
@@ -52,6 +53,8 @@ enum State { IDLE, MOVE, ATTACK, DASH, HURT, HELPLESS, GRABBED, DEAD, CHANNEL }
 @export var expose_radius := 180.0
 ## 吟唱时受到的挠痒倍率（弱点暴露）。
 @export var exposed_tickle_mult := 1.5
+## 释放后原地定住、播放释放动作的时间。
+@export var cast_time := 0.5
 @export_group("")
 @export var respawn_delay := 1.25
 ## 挣脱抓取后的全无敌时间。
@@ -120,7 +123,7 @@ func _tick(delta: float) -> void:
 		interrupt_channel()
 		_end_attack()
 		_set_state(State.GRABBED)
-	elif laugh and laugh.is_helpless() and state in [State.IDLE, State.MOVE, State.ATTACK, State.CHANNEL]:
+	elif laugh and laugh.is_helpless() and state in [State.IDLE, State.MOVE, State.ATTACK, State.CHANNEL, State.CAST]:
 		interrupt_channel()
 		_enter_helpless()
 
@@ -196,8 +199,14 @@ func _tick(delta: float) -> void:
 				if tier != _channel_tier:
 					_channel_tier = tier
 					_on_channel_tier(tier)
+				if animator:
+					animator.progress = _channel_time / channel_tiers[channel_tiers.size() - 1]
 				if _channel_time >= channel_tiers[channel_tiers.size() - 1] or not controller.is_action_pressed(&"magic"):
 					release_magic()
+		State.CAST:
+			velocity = velocity.move_toward(Vector2.ZERO, friction * delta)
+			if _state_time >= cast_time:
+				_set_state(State.IDLE)
 		State.DEAD:
 			velocity = Vector2.ZERO
 
@@ -342,8 +351,13 @@ func release_magic() -> int:
 	StarBurst.cast(self, tier)
 	_magic_cd = magic_cooldown
 	shake(0.06 * tier)
+	_set_state(State.CAST)
 	magic_event.emit("burst", tier)
 	return tier
+
+
+func is_casting() -> bool:
+	return state == State.CAST
 
 
 ## 吟唱被打断（失控、被抓、受到攻击）。不在吟唱时什么也不做。
@@ -388,7 +402,7 @@ func is_grabbed() -> bool:
 
 ## 动不了：被抓、定身、吟唱、失控（挠脚鼠此时挠痒加倍）。
 func is_immobile() -> bool:
-	return state in [State.GRABBED, State.HELPLESS, State.CHANNEL] or (status != null and status.is_immobile())
+	return state in [State.GRABBED, State.HELPLESS, State.CHANNEL, State.CAST] or (status != null and status.is_immobile())
 
 
 # ------------------------------------------------------------------ Actor 钩子
@@ -526,6 +540,7 @@ func _anim_name() -> String:
 		State.GRABBED: return "grabbed"
 		State.DEAD: return "faint"
 		State.CHANNEL: return "channel"
+		State.CAST: return "cast"
 	return "idle"
 
 

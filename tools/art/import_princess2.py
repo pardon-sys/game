@@ -5,6 +5,9 @@
   portraits.png       对话立绘，2 倍像素密度（每格 228x304，显示为 114x152）
   portrait_heads.png  HUD 头像，2 倍像素密度（每格 64x64，显示为 32x32）
   portraits.json      {"cell": [...], "head": 64, "density": 2, "order": [...]}
+  princess_magic.png  魔法姿态，48x48 每帧，6 行（magic_order）x 32 列（下/左/右/上 各 8 帧），
+                      源图 additional_princess/princess4.png（普通版）、princess5.png（战损版 + 战损闷笑版），
+                      立绘源图 portraits4.png（吟诵、释放）、portraits5.png（战损吟诵、战损闷笑吟诵、战损释放）
 
 用法：python tools/art/import_princess2.py [--preview]
   --preview 在 tools/.cache/p2/ 输出带标签的检查图（切格边界 + 结果）。
@@ -25,7 +28,8 @@ import sys
 from collections import deque
 
 import numpy as np
-from PIL import Image, ImageDraw, ImageFilter
+from PIL import Image, ImageDraw, ImageEnhance, ImageFilter
+from scipy import ndimage
 
 from palette import OUT, OUTLINE, ROOT, add_outline
 
@@ -34,6 +38,8 @@ META = json.loads(META_PATH.read_text())
 EMOTIONS = META["order"]
 BASE_STATES = EMOTIONS[:6]     # princess2 / portraits2 的行（普通 开心 生气 难过 惊讶 害羞）
 EXTRA_STATES = EMOTIONS[6:]    # princess3 / portraits3 的列（战损 憋笑 战损憋笑 失控1 失控2）
+MAGIC = META.get("magic_order", [])   # 魔法姿态（吟诵 / 释放 × 普通 / 战损 / 战损闷笑）
+VISUALS = EMOTIONS + MAGIC            # 立绘、头像的顺序
 PORTRAIT2_ORDER = ["normal", "happy", "sad", "surprise", "angry", "shy"]  # portraits2.png 从左到右
 FRAME = 32
 SPRITE_FIT = 28                # 精灵在 32 帧内的最大尺寸
@@ -50,6 +56,15 @@ FALLBACK = {
     "princess3": {"xs": [71, 366, 637, 903, 1179, 1445], "ys": [390, 525, 667, 812, 954]},
     "portraits2": [0, 365, 739, 1073, 1442, 1805, 2172],
     "portraits3": [0, 362, 764, 1148, 1643, 2172],
+    # 魔法表格：每张表 (帧边界 [吟诵块, 释放块], 行边界 下/左/右/上)
+    "princess4": [([[111, 243, 369, 491, 612, 732, 852, 970, 1102],
+                    [1102, 1242, 1370, 1494, 1617, 1747, 1882, 2018, 2160]], [57, 134, 208, 281, 357])],
+    "princess5": [([[118, 238, 358, 478, 599, 719, 839, 958, 1092],
+                    [1092, 1228, 1356, 1484, 1616, 1750, 1885, 2022, 2167]], [57, 135, 207, 278, 355]),
+                  ([[118, 238, 358, 478, 599, 719, 839, 958, 1092],
+                    [1092, 1228, 1356, 1484, 1616, 1750, 1885, 2022, 2167]], [417, 493, 562, 632, 718])],
+    "portraits4": [0, 836, 1672],
+    "portraits5": [0, 404, 800, 1293],
 }
 
 
@@ -412,11 +427,12 @@ class SpritePixelizer:
 
     EYE_THRESHOLD = {1: 0.08, 2: 0.10}
 
-    def __init__(self, cells, colors=48, eye_colors=8):
+    def __init__(self, cells, colors=48, eye_colors=8, face_boxes=None):
         eyes = []
-        for (name, _c), img in cells.items():
+        for key, img in cells.items():
             src = np.asarray(img.convert("RGB")).astype(np.int32)
-            cls = classify(src) * Pixelizer._face_mask(img, head_box(name))
+            box = face_boxes[key] if face_boxes is not None else head_box(key[0])
+            cls = classify(src) * Pixelizer._face_mask(img, box)
             eyes.append(src[(cls == 1) | (cls == 2)])
         self.colors = colors
         self.eye_px = np.concatenate(eyes).reshape(1, -1, 3).astype(np.uint8)
@@ -512,6 +528,187 @@ def build_sheet(cells):
     return sheet
 
 
+# ------------------------------------------------------------------ 魔法姿态
+MAGIC_DIR = OUT / "additional_princess"
+# (文件, 从上到下每张表的 (吟诵状态, 释放状态))；每张表 = 吟诵块 + 释放块，各 8 列 x 4 行（下/左/右/上）
+MAGIC_TABLES = [("princess4.png", [("chant", "burst")]),
+                ("princess5.png", [("damaged_chant", "damaged_burst"), ("damaged_giggle_chant", "damaged_giggle_burst")])]
+MAGIC_PORTRAITS = [("portraits4.png", ["chant", "burst"]),
+                   ("portraits5.png", ["damaged_chant", "damaged_giggle_chant", "damaged_burst"])]
+# 没有单独立绘的魔法姿态借用另一张（战损闷笑释放 → 战损释放）
+MAGIC_PORTRAIT_ALIAS = META.get("magic_portrait_alias", {})
+MAGIC_FRAMES = 8
+MAGIC_FRAME = 48
+
+
+def detect_magic_tables(path, n_tables):
+    """魔法表格：表头的粉色底里，帧编号数字是格线色的"空隙"，数字中心 = 帧中心；
+    块分隔线也是一个空隙，但它离两侧数字都只有半格，据此剔除。返回 [(帧边界 [块0, 块1], 行边界)]。"""
+    a = np.asarray(Image.open(path).convert("RGB")).astype(np.int32)
+    runs = _runs(_line_mask(a).mean(1), 0.5)
+    heads = [r for r in runs if r[1] - r[0] > 20][:n_tables]
+    lines = [(r[0] + r[1]) // 2 for r in runs if r[1] - r[0] <= 20]
+    tables = []
+    for h0, h1 in heads:
+        ys = [int(h1)] + [int(y) for y in lines if y > h1][:4]
+        band = a[h0 + (h1 - h0) * 11 // 20: h1 - 2]     # 表头下半部分 = 帧编号行
+        cruns = [r for r in _runs(_line_mask(band).mean(0), 0.8) if r[1] - r[0] >= 3]
+        label_end, right = int(cruns[0][0]), int(cruns[-1][1])
+        gaps = [(int(cruns[i][1]) + int(cruns[i + 1][0])) / 2 for i in range(len(cruns) - 1)]
+        d = np.diff(gaps)
+        med = np.median(d)
+        div = [k for k in range(1, len(gaps) - 1) if d[k - 1] < 0.75 * med and d[k] < 0.75 * med]
+        assert len(div) == 1 and len(gaps) == 2 * MAGIC_FRAMES + 1 and len(ys) == 5, (len(gaps), div, ys)
+        k = div[0]
+        blocks = []
+        for centers, lo, hi in ((gaps[:k], label_end, gaps[k]), (gaps[k + 1:], gaps[k], right)):
+            edges = [lo] + [(centers[i] + centers[i + 1]) / 2 for i in range(len(centers) - 1)] + [hi]
+            blocks.append([int(round(e)) for e in edges])
+        tables.append((blocks, ys))
+    return tables
+
+
+def extract_magic_cells():
+    cells, boxes = {}, []
+    for filename, variants in MAGIC_TABLES:
+        path = MAGIC_DIR / filename
+        try:
+            tables = detect_magic_tables(path, len(variants))
+        except (AssertionError, ValueError, IndexError) as e:
+            print(filename, "自动检测失败，使用固定坐标：", e)
+            tables = FALLBACK[path.stem]
+        image = Image.open(path)
+        for (blocks, ys), names in zip(tables, variants):
+            for name, edges in zip(names, blocks):
+                for direction in range(4):
+                    y0, y1 = ys[direction] + 3, ys[direction + 1] - 3
+                    for f in range(MAGIC_FRAMES):
+                        box = (edges[f] + 3, y0, edges[f + 1] - 3, y1)
+                        boxes.append((path.stem, box))
+                        cells[name, direction * MAGIC_FRAMES + f] = cut(image, box)
+    return cells, boxes
+
+
+def body_bbox(img):
+    """人物本体 = 最大的连通块（花瓣、光点这些分离的特效不算）。返回 (x0, y0, x1, y1)。"""
+    lab, n = ndimage.label(np.asarray(img.getchannel("A")) > 0, structure=np.ones((3, 3)))
+    if n == 0:
+        return (0, 0, img.width, img.height)
+    sizes = ndimage.sum(np.ones_like(lab), lab, range(1, n + 1))
+    ys, xs = np.where(lab == int(np.argmax(sizes)) + 1)
+    return (int(xs.min()), int(ys.min()), int(xs.max()) + 1, int(ys.max()) + 1)
+
+
+def _face_box_from_body(img, body):
+    x0, y0, x1, y1 = body
+    bw, bh = x1 - x0, y1 - y0
+    return [(x0 + 0.2 * bw) / img.width, y0 / img.height, (x0 + 0.8 * bw) / img.width, (y0 + 0.45 * bh) / img.height]
+
+
+def finish_magic(px, small):
+    """统一调色板；只给人物本体描边，花瓣、光点等特效不描边（否则缩小后全是带黑边的碎点），1 像素的碎点去掉。"""
+    rgb = Image.new("RGB", small.size, (255, 0, 255))
+    rgb.paste(small, (0, 0), small)
+    q = rgb.quantize(palette=px.pal_img, dither=Image.Dither.NONE).convert("RGBA")
+    q.putalpha(small.getchannel("A"))
+    arr = np.asarray(q).copy()
+    lab, n = ndimage.label(arr[..., 3] > 0, structure=np.ones((3, 3)))
+    body = np.zeros(arr.shape[:2], bool)
+    if n:
+        sizes = ndimage.sum(np.ones_like(lab), lab, range(1, n + 1))
+        body = lab == int(np.argmax(sizes)) + 1
+        for i, size in enumerate(sizes, 1):
+            if size < 2:
+                arr[lab == i] = 0
+    body_img = arr.copy()
+    body_img[~body] = 0
+    fx = arr.copy()
+    fx[body] = 0
+    big = Image.new("RGBA", (q.width + 2, q.height + 2), (0, 0, 0, 0))
+    big.paste(Image.fromarray(body_img, "RGBA"), (1, 1))
+    out = add_outline(big, OUTLINE)
+    fx_img = Image.new("RGBA", big.size, (0, 0, 0, 0))
+    fx_img.paste(Image.fromarray(fx, "RGBA"), (1, 1))
+    out.alpha_composite(fx_img)
+    return out
+
+
+def _clean_magic_source(img):
+    """魔法帧源图光效多：先中值滤波去掉细碎高光，再略提饱和度和对比度，缩小后不会发白、发糊，眼睛也更清楚。"""
+    a = img.getchannel("A")
+    rgb = img.convert("RGB").filter(ImageFilter.MedianFilter(3))
+    rgb = ImageEnhance.Contrast(ImageEnhance.Color(rgb).enhance(1.25)).enhance(1.1)
+    out = rgb.convert("RGBA")
+    out.putalpha(a)
+    return out
+
+
+def build_magic_sheet(cells, walk_sheet):
+    """所有魔法帧用同一缩放：普通吟诵正面第 1 帧的人物本体 = 行走帧人物高度；跪姿自然更矮。
+    人物本体底边对齐格子底边、水平居中（和 32 格行走帧脚底一致），格子外的特效裁掉。"""
+    alpha = np.asarray(walk_sheet.crop((0, 0, FRAME, FRAME)).getchannel("A"))
+    rows = np.where(alpha.any(1))[0]
+    target = rows[-1] - rows[0] + 1 - 2          # 去掉上下 1px 描边
+    ref = body_bbox(cells[MAGIC[0], 0])
+    scale = target / (ref[3] - ref[1])
+    bodies = {k: body_bbox(img) for k, img in cells.items()}
+    faces = {k: _face_box_from_body(img, bodies[k]) for k, img in cells.items()}
+    cells = {k: _clean_magic_source(img) for k, img in cells.items()}
+    px = SpritePixelizer(cells, colors=48, face_boxes=faces)
+    back = range(3 * MAGIC_FRAMES, 4 * MAGIC_FRAMES)  # 背面没有脸
+    smalls = {k: px.downscale(img, scale, None if k[1] in back else faces[k]) for k, img in cells.items()}
+    px.build_palette(list(smalls.values()))
+    sheet = Image.new("RGBA", (MAGIC_FRAME * 4 * MAGIC_FRAMES, MAGIC_FRAME * len(MAGIC)))
+    for row, name in enumerate(MAGIC):
+        for c in range(4 * MAGIC_FRAMES):
+            small = finish_magic(px, smalls[name, c])
+            x0, y0, x1, y1 = bodies[name, c]
+            cx = round((x0 + x1) / 2 * scale) + 1
+            bottom = round(y1 * scale) + 2
+            cell = Image.new("RGBA", (MAGIC_FRAME, MAGIC_FRAME))
+            cell.paste(small, (MAGIC_FRAME // 2 - cx, MAGIC_FRAME - bottom), small)  # 超出格子的部分自动裁掉
+            sheet.alpha_composite(cell, (c * MAGIC_FRAME, row * MAGIC_FRAME))
+    sheet.save(OUT / "princess_magic.png")
+    return sheet
+
+
+def _drop_border_fragments(img):
+    """裁切后被切断的特效碎片（碰到裁切边、又不是人物本体的连通块）去掉，避免立绘出现笔直的切边。"""
+    arr = np.asarray(img).copy()
+    lab, n = ndimage.label(arr[..., 3] > 0, structure=np.ones((3, 3)))
+    if n:
+        sizes = ndimage.sum(np.ones_like(lab), lab, range(1, n + 1))
+        body = int(np.argmax(sizes)) + 1
+        edge = set(np.unique(np.concatenate([lab[0], lab[-1], lab[:, 0], lab[:, -1]]))) - {0, body}
+        for i in edge:
+            arr[lab == i] = 0
+    out = Image.fromarray(arr, "RGBA")
+    return out.crop(out.getbbox())
+
+
+def magic_portrait_figures():
+    """魔法立绘：只保留人物本体附近（外扩一圈），四散的花瓣不参与缩放，人物大小和其它立绘一致。
+    魔法阵、光带和人物连在一起的（吟诵、释放）在 princess_visuals.json 的 portrait_crops 里手动指定取景（相对原人物图）。"""
+    figures = {}
+    for filename, names in MAGIC_PORTRAITS:
+        path = MAGIC_DIR / filename
+        edges = split_figures(path, len(names), FALLBACK[path.stem])
+        source = Image.open(path)
+        for i, name in enumerate(names):
+            f = cut(source, (edges[i], 0, edges[i + 1], source.height))
+            crop = META.get("portrait_crops", {}).get(name)
+            if crop:
+                f = f.crop(tuple(round(v * (f.width if j % 2 == 0 else f.height)) for j, v in enumerate(crop)))
+                figures[name] = _drop_border_fragments(f)
+                continue
+            x0, y0, x1, y1 = body_bbox(f)
+            m = round(0.04 * (y1 - y0))
+            figures[name] = f.crop((max(0, x0 - m), max(0, y0 - m), min(f.width, x1 + m), min(f.height, y1 + m)))
+    for name, src in MAGIC_PORTRAIT_ALIAS.items():
+        figures[name] = figures[src]
+    return figures
+
+
 def build_portraits():
     figures = {}
     for filename, names, key in (("portraits2.png", PORTRAIT2_ORDER, "portraits2"),
@@ -521,18 +718,28 @@ def build_portraits():
         source = Image.open(path)
         for i, name in enumerate(names):
             figures[name] = cut(source, (edges[i], 0, edges[i + 1], source.height))
-    names = list(EMOTIONS)
+    figures.update(magic_portrait_figures())
+    names = list(VISUALS)
     heads_src = {}
     for name in names:
         f = figures[name]
         hb = head_box(name)
         heads_src[name] = f.crop(tuple(round(v * (f.width if j % 2 == 0 else f.height)) for j, v in enumerate(hb)))
-    px = Pixelizer([figures[n] for n in names] + [heads_src[n] for n in names], 128,
-                   [head_box(n) for n in names] + [[0, 0, 1, 1]] * len(names))
+    # 原有 11 种与魔法姿态各用一套调色板：新增素材不会改变已有立绘的颜色
+    groups = [list(EMOTIONS), list(MAGIC)]
+    pxs = {}
+    for group in groups:
+        if not group:
+            continue
+        px = Pixelizer([figures[n] for n in group] + [heads_src[n] for n in group], 128,
+                       [head_box(n) for n in group] + [[0, 0, 1, 1]] * len(group))
+        for n in group:
+            pxs[n] = px
     cw, ch = PORTRAIT_CELL
     sheet = Image.new("RGBA", (cw * len(names), ch))
     heads = Image.new("RGBA", (HEAD * len(names), HEAD))
     for i, name in enumerate(names):
+        px = pxs[name]
         f = figures[name]
         small = px(f, min((ch - 4) / f.height, (cw - 4) / f.width), head_box(name), sharpen=(1.0, 60))
         sheet.alpha_composite(small, (i * cw + (cw - small.width) // 2, ch - small.height))
@@ -544,6 +751,31 @@ def build_portraits():
     (OUT / "portraits.json").write_text(json.dumps(
         {"cell": [cw, ch], "head": HEAD, "density": DENSITY, "order": names}))
     return sheet, heads
+
+
+def preview_magic(sheet, boxes):
+    PREVIEW.mkdir(parents=True, exist_ok=True)
+    n = 4 * MAGIC_FRAMES
+    out = Image.new("RGB", (n * 104 + 180, len(MAGIC) * 124 + 10), "#73818c")
+    draw = ImageDraw.Draw(out)
+    for row, name in enumerate(MAGIC):
+        draw.text((4, row * 124 + 50), name, fill="white")
+        for col in range(n):
+            x, y = 180 + col * 104, row * 124
+            frame = sheet.crop((col * MAGIC_FRAME, row * MAGIC_FRAME, (col + 1) * MAGIC_FRAME, (row + 1) * MAGIC_FRAME))
+            frame = frame.resize((96, 96), Image.Resampling.NEAREST)
+            draw.rectangle((x, y + 24, x + 95, y + 119), outline="#5c6a75")
+            out.paste(frame, (x, y + 24), frame)
+            draw.text((x, y + 5), f"{['down', 'left', 'right', 'up'][col // MAGIC_FRAMES]} {col % MAGIC_FRAMES + 1}", fill="white")
+    out.save(PREVIEW / "magic48.png")
+    for filename, _ in MAGIC_TABLES:
+        stem = filename[:-4]
+        img = Image.open(MAGIC_DIR / filename).convert("RGB")
+        d = ImageDraw.Draw(img)
+        for src, b in boxes:
+            if src == stem:
+                d.rectangle(b, outline=(0, 160, 255))
+        img.save(PREVIEW / f"grid_{stem}.png")
 
 
 def preview(sheet, portraits, heads, boxes):
@@ -559,10 +791,10 @@ def preview(sheet, portraits, heads, boxes):
             draw.text((x, y + 5), f"{['down', 'left', 'right', 'up'][col // 4]} {col % 4 + 1}", fill="white")
     out.save(PREVIEW / "cells32.png")
     cw, ch = PORTRAIT_CELL
-    out = Image.new("RGB", (cw * len(EMOTIONS), ch + 20 + HEAD + 10), "#73818c")
+    out = Image.new("RGB", (cw * len(VISUALS), ch + 20 + HEAD + 10), "#73818c")
     out.paste(portraits, (0, 20), portraits)
     draw = ImageDraw.Draw(out)
-    for i, name in enumerate(EMOTIONS):
+    for i, name in enumerate(VISUALS):
         draw.text((i * cw + 4, 3), name, fill="white")
         h = heads.crop((i * HEAD, 0, (i + 1) * HEAD, HEAD))
         out.paste(h, (i * cw + (cw - HEAD) // 2, ch + 25), h)
@@ -582,10 +814,14 @@ def main():
     if DERIVE_DAMAGED:
         derive_damaged(cells)
     sheet = build_sheet(cells)
+    magic_cells, magic_boxes = extract_magic_cells()
+    magic_sheet = build_magic_sheet(magic_cells, sheet)
     portraits, heads = build_portraits()
     if "--preview" in sys.argv:
         preview(sheet, portraits, heads, boxes)
-    print("生成", len(EMOTIONS), "种状态 /", len(cells), "帧；立绘密度", DENSITY)
+        preview_magic(magic_sheet, magic_boxes)
+    print("生成", len(EMOTIONS), "种状态 /", len(cells), "帧；魔法姿态", len(MAGIC), "种 /", len(magic_cells), "帧；立绘",
+          len(VISUALS), "张，密度", DENSITY)
 
 
 if __name__ == "__main__":

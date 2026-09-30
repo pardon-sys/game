@@ -67,8 +67,9 @@ func reset() -> void:
 	refresh()
 
 
+## 当前视觉状态在 GameState.VISUALS 里的下标（含魔法姿态）。
 func row() -> int:
-	return maxi(GameState.EMOTIONS.find(current), 0)
+	return maxi(GameState.VISUALS.find(current), 0)
 
 
 func show_bubble(kind: String) -> void:

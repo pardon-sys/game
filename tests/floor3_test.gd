@@ -128,6 +128,8 @@ func _cast(hold_time: float) -> int:
 
 
 func _reset_magic() -> void:
+	if player.is_casting():  # 释放动作还没播完：直接结束，方便连续施法测试
+		player._set_state(PlayableCharacter.State.IDLE)
 	player._magic_cd = 0.0
 	player.laugh.clear()
 	player.health.fill()
@@ -209,6 +211,9 @@ func _run_magic() -> void:
 	check("3 档吹散痒痒粉雾", not is_instance_valid(cloud) or cloud.blown)
 	for m in [near, mid, far]:
 		m.queue_free()
+
+	# 魔法姿态：小人图集、帧随蓄力推进、释放定住、对应的视觉状态
+	await _run_magic_visuals()
 
 	# 限制与打断
 	_reset_magic()
@@ -778,6 +783,73 @@ func _run_floor3() -> void:
 	_finish_dialogue()
 	await _wait(0.2)
 	check("第三章通关标记", GameState.has_flag("chapter3_clear"))
+
+
+func _magic_sheet_frame() -> Vector2i:
+	return player.sprite.frame_coords
+
+
+func _run_magic_visuals() -> void:
+	var princess := player as Princess
+	var walk_tex: Texture2D = player.animator._default["texture"]
+	_reset_magic()
+	princess.battle_damaged = false
+	player.facing = Vector2.DOWN
+	await _wait(0.1)
+	ctrl.hold(&"magic", true)
+	await _wait(0.1)
+	check("吟唱姿态：普通 → chant", princess.emotion.current == "chant")
+	check("吟唱时换成 48 格魔法图集", player.animator.sheet == "magic" and player.sprite.hframes == 32 and player.sprite.texture != walk_tex)
+	var early := _magic_sheet_frame().x
+	check("对话立绘 / HUD 头像有吟唱姿态", Dialogue.portrait_for("chant") != Dialogue.portrait_for("normal") and Dialogue.head_for("chant") != Dialogue.head_for("normal"))
+	await _wait(1.75)
+	var late := _magic_sheet_frame().x
+	check("吟唱帧随蓄力推进（正面第 1 帧 → 第 7~8 帧）", early <= 1 and late >= 6 and late <= 7)
+	check("魔法图集行 = 当前姿态", _magic_sheet_frame().y == 0)
+	ctrl.hold(&"magic", false)
+	await _wait(0.05)
+	check("释放：进入 CAST，姿态 burst", player.is_casting() and princess.emotion.current == "burst" and _magic_sheet_frame().y == 1)
+	var pos := player.global_position
+	ctrl.move = Vector2.RIGHT
+	await _wait(0.3)
+	check("释放动作期间原地定住", player.is_casting() and player.global_position.distance_to(pos) < 2.0 and player.is_immobile())
+	await _wait(0.3)
+	check("约 0.5 秒后恢复行动、换回行走图集", not player.is_casting() and player.animator.sheet == "" and player.sprite.texture == walk_tex)
+	ctrl.move = Vector2.ZERO
+	await _wait(0.1)
+
+	# 战损 / 战损闷笑
+	var cases := [[false, 0.0, "chant", "burst"], [true, 0.0, "damaged_chant", "damaged_burst"], [true, 60.0, "damaged_giggle_chant", "damaged_giggle_burst"]]
+	for c in cases:
+		_reset_magic()
+		princess.battle_damaged = c[0]
+		player.laugh.set_value(c[1])
+		await _wait(0.05)
+		ctrl.hold(&"magic", true)
+		await _wait(0.7)
+		check("吟唱姿态：战损=%s 闷笑=%d → %s" % [c[0], c[1], c[2]], princess.emotion.current == c[2])
+		ctrl.hold(&"magic", false)
+		await _wait(0.05)
+		check("释放姿态 → %s" % c[3], princess.emotion.current == c[3]
+			and _magic_sheet_frame().y == GameState.MAGIC_VISUALS.find(c[3]))
+		await _wait(0.6)
+	check("战损闷笑释放借用战损释放立绘", Dialogue.portrait_for("damaged_giggle_burst").region.size == Dialogue.portrait_for("damaged_burst").region.size)
+
+	# 释放动作中受到攻击 → 受伤
+	_reset_magic()
+	princess.battle_damaged = false
+	await _wait(0.05)
+	ctrl.hold(&"magic", true)
+	await _wait(0.7)
+	ctrl.hold(&"magic", false)
+	await _wait(0.05)
+	var foe := _spawn_dummy(Vector2(40, 0))
+	player.receive_hit(HitData.make_attack(foe, 1))
+	check("释放动作中受到攻击会中断（受伤）", player.state == PlayableCharacter.State.HURT)
+	foe.queue_free()
+	await _wait(0.4)
+	princess.battle_damaged = false
+	_reset_magic()
 
 
 ## 从公主位置出发做 4 邻域洪泛：墙层有图块的格子不可走（暗墙可选视为可走），门、铁栅视为可走。
