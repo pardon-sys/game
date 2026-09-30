@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="SpriteSheetConfig" format=3 uid="uid://13rxqv86bcmd"]
+
+[ext_resource type="Script" uid="uid://b48i2hkkpgsqn" path="res://scripts/components/sprite_sheet_config.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+directions = {"down": 0, "left": 4, "right": 8, "up": 12}
+animations = {
+"idle": {"fps": 1.0, "frames": [0]},
+"walk": {"fps": 9.0, "frames": [0, 1, 2, 3]},
+"giggle": {"fps": 6.0, "frames": [0, 1, 2, 3]},
+"helpless": {"fps": 6.0, "frames": [0, 1, 2, 3]},
+"grabbed": {"fps": 10.0, "frames": [0, 1, 2, 3], "shake": 1.0},
+"attack": {"fps": 10.0, "frames": [0, 1, 2], "loop": false},
+"dash": {"fps": 12.0, "frames": [1, 3]},
+"hurt": {"fps": 1.0, "frames": [0]},
+"faint": {"fps": 1.0, "frames": [0], "loop": false}
+}

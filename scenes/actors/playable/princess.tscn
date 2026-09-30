@@ -1,0 +1,128 @@
+[gd_scene format=3 uid="uid://do228vwioy5xu"]
+
+[ext_resource type="Script" uid="uid://bm3txkyd3b5u1" path="res://scripts/actors/playable/princess.gd" id="1"]
+[ext_resource type="Script" uid="uid://cmf42fj20742d" path="res://scripts/components/emotion_component.gd" id="2"]
+[ext_resource type="Texture2D" uid="uid://cjk7iy5mv2vs1" path="res://assets/generated/princess.png" id="3"]
+[ext_resource type="Texture2D" uid="uid://ce4rj85oiwhvg" path="res://assets/generated/emotes.png" id="4"]
+[ext_resource type="Texture2D" uid="uid://ol47didvtocq" path="res://assets/generated/fx.png" id="5"]
+[ext_resource type="Texture2D" uid="uid://xh3nsag5jpj5" path="res://assets/generated/items.png" id="6"]
+[ext_resource type="Shader" uid="uid://ck1j88ghv4g4d" path="res://shaders/flash.gdshader" id="7"]
+[ext_resource type="Texture2D" uid="uid://cfryukiwesn8l" path="res://assets/lights/light_soft.tres" id="8"]
+[ext_resource type="Script" uid="uid://cu620j4nfdooa" path="res://scripts/components/health_component.gd" id="9"]
+[ext_resource type="Script" uid="uid://dlxruuv0qli20" path="res://scripts/components/laugh_meter.gd" id="10"]
+[ext_resource type="Script" uid="uid://bt0kiys28j1ni" path="res://scripts/controllers/player_input_controller.gd" id="11"]
+[ext_resource type="Script" uid="uid://dhrk1eufmcb6l" path="res://scripts/components/sprite_sheet_animator.gd" id="12"]
+[ext_resource type="Resource" uid="uid://13rxqv86bcmd" path="res://data/actors/princess_sprites.tres" id="13"]
+[ext_resource type="Script" uid="uid://dafg8gm880wsf" path="res://scripts/components/hitbox_component.gd" id="14"]
+[ext_resource type="Script" path="res://scripts/components/status_component.gd" id="status"]
+
+[sub_resource type="ShaderMaterial" id="flash_mat"]
+resource_local_to_scene = true
+shader = ExtResource("7")
+shader_parameter/flash = 0.0
+shader_parameter/flash_color = Color(1, 1, 1, 1)
+
+[sub_resource type="RectangleShape2D" id="feet"]
+size = Vector2(10, 6)
+
+[sub_resource type="CircleShape2D" id="attack"]
+radius = 11.0
+
+[sub_resource type="RectangleShape2D" id="interact"]
+size = Vector2(16, 16)
+
+[node name="Princess" type="CharacterBody2D" unique_id=1573113520]
+collision_layer = 2
+motion_mode = 1
+script = ExtResource("1")
+faction = 1
+
+[node name="Sprite" type="Sprite2D" parent="." unique_id=1174290609]
+material = SubResource("flash_mat")
+texture = ExtResource("3")
+offset = Vector2(0, -16)
+hframes = 16
+vframes = 11
+
+[node name="Collision" type="CollisionShape2D" parent="." unique_id=1945683492]
+position = Vector2(0, -3)
+shape = SubResource("feet")
+
+[node name="Health" type="Node" parent="." unique_id=1022213034]
+script = ExtResource("9")
+
+[node name="Laugh" type="Node" parent="." unique_id=1489402879]
+script = ExtResource("10")
+max_value = 150.0
+helpless_stage2_threshold = 100.0
+overflow_reset_to = 100.0
+
+[node name="Status" type="Node" parent="."]
+script = ExtResource("status")
+
+[node name="Controller" type="Node" parent="." unique_id=1561724890]
+script = ExtResource("11")
+
+[node name="Animator" type="Node" parent="." unique_id=553124972]
+script = ExtResource("12")
+config = ExtResource("13")
+
+[node name="Hitbox" type="Area2D" parent="." unique_id=2035505888]
+position = Vector2(0, 6)
+collision_layer = 0
+collision_mask = 36
+script = ExtResource("14")
+
+[node name="Shape" type="CollisionShape2D" parent="Hitbox" unique_id=932596949]
+shape = SubResource("attack")
+
+[node name="InteractArea" type="Area2D" parent="." unique_id=2025931615]
+position = Vector2(0, 3)
+collision_layer = 0
+collision_mask = 8
+monitorable = false
+
+[node name="Shape" type="CollisionShape2D" parent="InteractArea" unique_id=2140860640]
+shape = SubResource("interact")
+
+[node name="Slash" type="Sprite2D" parent="." unique_id=797281967]
+visible = false
+z_index = 1
+position = Vector2(0, -10)
+texture = ExtResource("5")
+offset = Vector2(10, 0)
+hframes = 4
+region_enabled = true
+region_rect = Rect2(0, 0, 128, 32)
+
+[node name="Emotion" type="Node2D" parent="." unique_id=1232556040]
+script = ExtResource("2")
+
+[node name="Bubble" type="Sprite2D" parent="Emotion" unique_id=266224259]
+visible = false
+z_index = 10
+position = Vector2(11, -30)
+texture = ExtResource("4")
+offset = Vector2(0, -8)
+hframes = 8
+
+[node name="Prompt" type="Sprite2D" parent="." unique_id=8141195]
+visible = false
+top_level = true
+z_index = 10
+texture = ExtResource("6")
+hframes = 8
+frame = 7
+
+[node name="Light" type="PointLight2D" parent="." unique_id=1197963613]
+position = Vector2(0, -14)
+color = Color(1, 0.9, 0.95, 1)
+energy = 0.8
+shadow_enabled = true
+texture = ExtResource("8")
+texture_scale = 0.75
+
+[node name="Camera" type="Camera2D" parent="." unique_id=1309490763]
+position = Vector2(0, -12)
+position_smoothing_enabled = true
+position_smoothing_speed = 7.0

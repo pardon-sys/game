@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="AllyStats" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/actors/allies/ally_stats.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+max_hp = 6
+move_speed = 70.0
+follow_distance = 22.0
+engage_range = 90.0
+attack_range = 16.0
+attack_damage = 1
+attack_cooldown = 0.8
+assist_threshold = 50.0
+assist_amount = 25.0
+assist_cooldown = 1.2

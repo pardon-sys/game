@@ -1,0 +1,23 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/traps/spike_trap.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/generated/props.png" id="props"]
+
+[sub_resource type="RectangleShape2D" id="area"]
+size = Vector2(12, 12)
+
+[node name="SpikeTrap" type="Area2D"]
+collision_layer = 0
+collision_mask = 6
+monitorable = false
+script = ExtResource("1")
+reaction_key = "spike"
+
+[node name="Sprite" type="Sprite2D" parent="."]
+texture = ExtResource("props")
+hframes = 4
+vframes = 4
+frame = 8
+
+[node name="Shape" type="CollisionShape2D" parent="."]
+shape = SubResource("area")

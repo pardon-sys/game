@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="CurrencyItem" format=3 uid="uid://b5j80o3w850wi"]
+
+[ext_resource type="Script" uid="uid://curdjepqla5hq" path="res://scripts/items/currency_item.gd" id="1"]
+[ext_resource type="Texture2D" uid="uid://xh3nsag5jpj5" path="res://assets/generated/items.png" id="2"]
+
+[sub_resource type="AtlasTexture" id="icon"]
+atlas = ExtResource("2")
+region = Rect2(16, 0, 16, 16)
+
+[resource]
+script = ExtResource("1")
+id = "coin"
+display_name = "金币"
+description = "闪闪发亮的金币。"
+icon = SubResource("icon")
+category = 2
+max_stack = 999
+always_show = true
+pickup_sound = "coin"

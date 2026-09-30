@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="KeyItem" format=3 uid="uid://bk2c3880ox8kf"]
+
+[ext_resource type="Script" uid="uid://dw0eq06bmnjru" path="res://scripts/items/key_item.gd" id="1"]
+[ext_resource type="Texture2D" uid="uid://xh3nsag5jpj5" path="res://assets/generated/items.png" id="2"]
+
+[sub_resource type="AtlasTexture" id="icon"]
+atlas = ExtResource("2")
+region = Rect2(32, 0, 16, 16)
+
+[resource]
+script = ExtResource("1")
+id = "key_bronze"
+display_name = "铜钥匙"
+description = "能打开挂着铜锁的门。"
+icon = SubResource("icon")
+category = 1
+pickup_emotion = "happy"

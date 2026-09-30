@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="LaughReliefItem" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/items/laugh_relief_item.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/generated/item_mint.png" id="2"]
+
+[resource]
+script = ExtResource("1")
+icon = ExtResource("2")
+id = "mint"
+display_name = "薄荷糖"
+description = "清凉的薄荷糖，吃下后闷笑值降低 40。（Q 键使用）"
+category = 0
+max_stack = 9
+pickup_emotion = "happy"
+amount = 40.0

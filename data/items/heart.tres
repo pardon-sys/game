@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="HealItem" format=3 uid="uid://mbjn4sv4g3wl"]
+
+[ext_resource type="Script" uid="uid://cdm6g0g7tqon6" path="res://scripts/items/heal_item.gd" id="1"]
+[ext_resource type="Texture2D" uid="uid://xh3nsag5jpj5" path="res://assets/generated/items.png" id="2"]
+
+[sub_resource type="AtlasTexture" id="icon"]
+atlas = ExtResource("2")
+region = Rect2(0, 0, 16, 16)
+
+[resource]
+script = ExtResource("1")
+id = "heart"
+display_name = "心"
+description = "恢复一颗心。"
+icon = SubResource("icon")
+category = 3
+auto_use_on_pickup = true
+show_in_hud = false

@@ -1,0 +1,26 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/combat/web_shot.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/generated/new_props.png" id="2"]
+
+[sub_resource type="CircleShape2D" id="shape"]
+radius = 4.0
+
+[node name="WebShot" type="Area2D"]
+collision_layer = 0
+collision_mask = 3
+monitorable = false
+script = ExtResource("1")
+speed = 110.0
+lifetime = 1.6
+tickle = 3.0
+slow_multiplier = 0.5
+slow_duration = 2.0
+
+[node name="Sprite" type="Sprite2D" parent="."]
+texture = ExtResource("2")
+region_enabled = true
+region_rect = Rect2(0, 48, 16, 16)
+
+[node name="Shape" type="CollisionShape2D" parent="."]
+shape = SubResource("shape")

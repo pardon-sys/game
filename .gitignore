@@ -1,0 +1,9 @@
+# Godot 4+ specific ignores
+.godot/
+/android/
+
+# 下载缓存、开发截图与临时文件
+tools/.cache/
+.DS_Store
+*.tiff
+__pycache__/

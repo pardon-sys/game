@@ -1,0 +1,349 @@
+{
+  "_说明": "lines 是通用受挠台词（按闷笑阶段 calm / giggle / helpless_1 / helpless_2 / grabbed）。sources 按怪物/陷阱分组，键名对应 MonsterStats.reaction_key 或陷阱的 reaction_key：name 显示名；first_encounter 第一次被它挠痒时播放的对话（会暂停战斗）；各阶段台词缺省时回退到通用 lines；taunts 是怪物挠痒时头顶冒出的回嘴（陷阱不填）。",
+  "display_seconds": 2.4,
+  "cooldown_seconds": 1.6,
+  "lines": {
+	"calm": [
+	  "呀！好痒！",
+	  "别、别挠啦！",
+      "住手！本公主要反击了！"
+	],
+	"giggle": [
+	  "呵、呵……我忍得住！",
+	  "唔……不、不许再挠了！",
+      "嘿嘿……好痒，快停下！"
+	],
+	"helpless_1": [
+	  "哈哈哈哈！停、停一下！",
+	  "哈哈哈……笑得没力气了！",
+	  "哈哈哈……脚心不要哈哈哈",
+	  "哈哈哈……那里不行哈哈哈",
+      "哈、哈哈！让我喘口气！"
+	],
+	"helpless_2": [
+	  "哈哈哈哈哈哈！",
+	  "哈哈哈哈！停不下来了！",
+	  "哈哈哈哈……救、救命！",
+	  "哈哈哈哈嗯呐～哈哈哈",
+      "哈哈哈哈!别……别挠奇怪的位置！"
+	],
+	"grabbed": [
+	  "呀！放、放开我！",
+	  "不要抓着本公主挠！",
+      "唔……挣不开……哈哈！"
+	]
+  },
+  "hints": {
+	"first_tickled": "好、好痒！闷笑值超过 50 会变慢，超过 80 就动不了了！",
+	"helpless": "笑得动不了了！连按 J / E 挣扎！",
+	"overflow": "笑到脱力了……（-半颗心）",
+	"grabbed": "被抓住了！连按 J / E 挣脱！"
+  },
+  "sources": {
+	"slime": {
+	  "name": "史莱姆",
+	  "first_encounter": [
+		{
+		  "speaker": "公主",
+		  "emotion": "surprise",
+		  "text": "呀！凉、凉飕飕的……这团果冻在往身上爬？！"
+		},
+		{
+		  "speaker": "公主",
+		  "emotion": "shy",
+		  "text": "黏糊糊的好痒……不、不许钻进袖子里！"
+		},
+		{
+		  "speaker": "公主",
+		  "emotion": "angry",
+		  "text": "可恶的果冻，看本公主把你打扁！"
+		}
+	  ],
+	  "calm": [
+		"黏糊糊的！别蹭我！",
+        "凉凉的……好奇怪的感觉！"
+	  ],
+	  "giggle": [
+		"呵呵……别在脖子上滚来滚去……",
+        "嘻……果冻、果冻好痒……"
+	  ],
+	  "helpless_1": [
+		"哈哈哈！黏在腰上了哈哈哈！",
+        "哈哈……冰凉凉的别钻进去哈哈！"
+	  ],
+	  "helpless_2": [
+        "哈哈哈哈！全身都是果冻哈哈哈哈！"
+	  ],
+	  "taunts": [
+		"咕啪咕啪～",
+		"噗噜噜～",
+        "咕叽？"
+	  ]
+	},
+	"bat": {
+	  "name": "羽毛蝙蝠",
+	  "first_encounter": [
+		{
+		  "speaker": "公主",
+		  "emotion": "surprise",
+		  "text": "什么东西从头顶飞过去了……呀！"
+		},
+		{
+		  "speaker": "公主",
+		  "emotion": "shy",
+		  "text": "它、它用翅膀上的羽毛扫我的脖子！"
+		},
+		{
+		  "speaker": "公主",
+		  "emotion": "angry",
+		  "text": "给我站住！不许飞来飞去！"
+		}
+	  ],
+	  "calm": [
+		"呀！又是羽毛！",
+        "别扫我的脖子！"
+	  ],
+	  "giggle": [
+		"嘻嘻……耳朵后面好痒……",
+        "呵……别、别偷袭！"
+	  ],
+	  "helpless_1": [
+        "哈哈哈！翅膀别扇了哈哈！"
+	  ],
+	  "helpless_2": [
+        "哈哈哈哈！好多羽毛哈哈哈哈！"
+	  ],
+	  "taunts": [
+		"吱吱～",
+		"嘻吱！",
+        "扑扑扑～"
+	  ]
+	},
+	"ghost": {
+	  "name": "痒痒幽灵",
+	  "first_encounter": [
+		{
+		  "speaker": "公主",
+		  "emotion": "surprise",
+		  "text": "谁、谁在挠我？！明明一个人都没有……"
+		},
+		{
+		  "speaker": "公主",
+		  "emotion": "sad",
+		  "text": "冷冰冰的手指……好可怕……"
+		},
+		{
+		  "speaker": "公主",
+		  "emotion": "normal",
+		  "text": "对了，石碑说火光能让它现形！"
+		}
+	  ],
+	  "calm": [
+		"又是看不见的手指！",
+        "呀！后背凉飕飕的！"
+	  ],
+	  "giggle": [
+        "呵呵……看不见的手指最痒了……"
+	  ],
+	  "helpless_1": [
+        "哈哈哈！到底在哪里啊哈哈哈！"
+	  ],
+	  "helpless_2": [
+        "哈哈哈哈！隐身挠痒太狡猾了哈哈哈！"
+	  ],
+	  "taunts": [
+		"呜呼呼～",
+		"嘻嘻……找不到我～",
+        "痒吗～痒吗～"
+	  ]
+	},
+	"spider": {
+	  "name": "挠痒蜘蛛",
+	  "first_encounter": [
+		{
+		  "speaker": "公主",
+		  "emotion": "surprise",
+		  "text": "呀！被丝缠住了……黏黏的动不了！"
+		},
+		{
+		  "speaker": "公主",
+		  "emotion": "shy",
+		  "text": "等、等等，八条腿一起挠是犯规的！"
+		},
+		{
+		  "speaker": "公主",
+		  "emotion": "angry",
+		  "text": "可恶……看本公主把你赶跑！"
+		}
+	  ],
+	  "calm": [
+		"好多条腿！",
+        "别爬到身上来！"
+	  ],
+	  "giggle": [
+        "呵呵……腰、腰那里不行……"
+	  ],
+	  "helpless_1": [
+        "哈哈哈！八条腿一起哈哈哈哈！"
+	  ],
+	  "helpless_2": [
+        "哈哈哈哈！腿太多了数不过来哈哈哈！"
+	  ],
+	  "taunts": [
+		"嘶嘶～",
+		"八条腿～八倍痒～",
+        "沙沙沙～"
+	  ]
+	},
+	"troll": {
+	  "name": "挠痒巨魔",
+	  "first_encounter": [
+		{
+		  "speaker": "公主",
+		  "emotion": "surprise",
+		  "text": "放、放开！它的手好大！"
+		},
+		{
+		  "speaker": "公主",
+		  "emotion": "shy",
+		  "text": "它、它要挠脚心……不要啊！"
+		},
+		{
+		  "speaker": "公主",
+		  "emotion": "angry",
+		  "text": "连按挣脱！趁它发呆的时候反击！"
+		}
+	  ],
+	  "calm": [
+        "好大的手指！"
+	  ],
+	  "giggle": [
+        "呵呵……不、不要捏腰……"
+	  ],
+	  "helpless_1": [
+        "哈哈哈！脚心不行哈哈哈！"
+	  ],
+	  "helpless_2": [
+        "哈哈哈哈！投降、投降啦哈哈哈！"
+	  ],
+	  "grabbed": [
+		"放、放开本公主！",
+        "唔……好大的力气……"
+	  ],
+	  "taunts": [
+		"咕嘿嘿，挠你脚心！",
+		"笑吧笑吧～",
+        "跑不掉的，小公主～"
+	  ]
+	},
+	"feather": {
+	  "name": "羽毛陷阱",
+	  "first_encounter": [
+		{
+		  "speaker": "公主",
+		  "emotion": "surprise",
+		  "text": "呀！地板里弹出了羽毛！"
+		},
+		{
+		  "speaker": "公主",
+		  "emotion": "shy",
+		  "text": "扫、扫到脚心了……"
+		}
+	  ],
+	  "calm": [
+        "又踩到羽毛了！"
+	  ],
+	  "giggle": [
+        "嘻嘻……脚底痒痒的……"
+	  ],
+	  "helpless_1": [
+        "哈哈哈！脚心别扫哈哈哈！"
+	  ]
+	},
+	"vent": {
+	  "name": "痒痒粉喷口",
+	  "first_encounter": [
+		{
+		  "speaker": "公主",
+		  "emotion": "surprise",
+		  "text": "咳咳……这粉末是什么？"
+		},
+		{
+		  "speaker": "公主",
+		  "emotion": "shy",
+		  "text": "身、身上开始发痒了……是痒痒粉！"
+		},
+		{
+		  "speaker": "公主",
+		  "emotion": "angry",
+		  "text": "快离开粉雾！"
+		}
+	  ],
+	  "calm": [
+        "咳……粉末！"
+	  ],
+	  "giggle": [
+        "嘻嘻……全身都痒痒的……"
+	  ],
+	  "helpless_1": [
+        "哈哈哈！粉末钻进衣服里了哈哈！"
+	  ]
+	},
+	"brush": {
+	  "name": "旋转羽毛刷",
+	  "first_encounter": [
+		{
+		  "speaker": "公主",
+		  "emotion": "surprise",
+		  "text": "呀！被旋转的刷子扫到了！"
+		},
+		{
+		  "speaker": "公主",
+		  "emotion": "angry",
+		  "text": "看准时机再冲过去！"
+		}
+	  ],
+	  "calm": [
+        "刷、刷子！"
+	  ],
+	  "giggle": [
+        "呵呵……别刷了……"
+	  ],
+	  "helpless_1": [
+        "哈哈哈！转来转去哈哈哈！"
+	  ]
+	},
+	"hand": {
+	  "name": "机关手",
+	  "first_encounter": [
+		{
+		  "speaker": "公主",
+		  "emotion": "surprise",
+		  "text": "墙、墙里伸出了手！"
+		},
+		{
+		  "speaker": "公主",
+		  "emotion": "shy",
+		  "text": "不、不要挠腋下……！"
+		},
+		{
+		  "speaker": "公主",
+		  "emotion": "angry",
+		  "text": "连按挣脱！下次别踩压力板了！"
+		}
+	  ],
+	  "calm": [
+        "放开！"
+	  ],
+	  "giggle": [
+        "呵呵……机械手指好灵活……"
+	  ],
+	  "helpless_1": [
+        "哈哈哈！放开我哈哈哈！"
+	  ],
+	  "grabbed": [
+        "被抓住了……挣不开！"
+	  ]
+	}
+  }
+}

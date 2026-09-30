@@ -1,0 +1,18 @@
+Title: Free Voice Clips Pack - Bright Female
+Author: cicifyre
+License: CC0 1.0 Universal
+License URL: https://creativecommons.org/publicdomain/zero/1.0/
+Source: https://opengameart.org/content/voice-clip-packs-for-visual-novels-and-rpgs
+Original ZIP: https://opengameart.org/sites/default/files/Free%20Voice%20Clips%20Pack%20-%20Bright%20Female_0.zip
+Retrieved: 2026-09-29
+
+The source page labels this pack CC0; credit is appreciated, not required.
+Commercial use and modification are permitted under CC0.
+
+giggle.wav: derived from 02-laughter.wav
+laugh.wav: derived from 03-laughter.wav
+Only the nonverbal laughter recordings are included.
+Processing: trim leading/trailing silence with 80/120ms padding, convert to mono
+PCM16, normalize peak to -3dBFS, apply 10ms fades. Original pitch retained.
+Reproduction: python tools/art/import_voice.py tools/.cache/audio/bright.zip
+Runtime: dedicated voice channel at -8dB; no overlapping laughter.

@@ -1,0 +1,29 @@
+{
+  "order": [
+    "normal",
+    "happy",
+    "angry",
+    "sad",
+    "surprise",
+    "shy",
+    "damaged",
+    "giggle",
+    "damaged_giggle",
+    "helpless_1",
+    "helpless_2"
+  ],
+  "head_boxes": {
+    "helpless_1": [
+      0.2,
+      0,
+      0.78,
+      0.55
+    ],
+    "helpless_2": [
+      0.04,
+      0,
+      0.55,
+      0.65
+    ]
+  }
+}
