@@ -104,6 +104,7 @@ func _on_died() -> void:
 
 
 func revive() -> void:
+	last_tickle_key = ""
 	_reaction_cooldown = 0.0
 	_last_reaction = ""
 	_reaction_stage = ""
@@ -131,21 +132,30 @@ func _on_respawned() -> void:
 ## 被挠到笑倒（闷笑值满把最后一点血扣光）：播笑倒 CG（data/cgs.json），然后在检查点复活。
 func _play_death_cutscene() -> bool:
 	var cg := get_node_or_null("/root/CG")
-	if not died_from_laugh or cg == null:
+	if cg == null or not is_laugh_defeat():
 		return false
-	if last_tickle and is_instance_valid(last_tickle.source):
-		var key := ReactionDB.key_of(last_tickle.source)
-		if key != "":
-			last_tickle_key = key
-	_death_cg(cg)
+	_death_cg(cg, defeat_source_key())
 	return true
 
 
-func _death_cg(cg: Node) -> void:
+## 选笑倒 CG 用的来源键：最后一次挠痒的来源 → 本条命里记录的挠痒来源 → 致命一击的怪物。
+func defeat_source_key() -> String:
+	if last_tickle and is_instance_valid(last_tickle.source):
+		var key := ReactionDB.key_of(last_tickle.source)
+		if key != "":
+			return key
+	if last_tickle_key != "":
+		return last_tickle_key
+	if last_hit and is_instance_valid(last_hit.source):
+		return ReactionDB.key_of(last_hit.source)
+	return ""
+
+
+func _death_cg(cg: Node, key: String) -> void:
 	await get_tree().create_timer(0.8).timeout  # 先倒下停一会儿
 	if sprite:
 		sprite.modulate.a = 0.0
-	await cg.play_death(last_tickle_key)
+	await cg.play_death(key)
 	_after_cg = true
 	respawn()
 

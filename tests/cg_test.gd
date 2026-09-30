@@ -27,6 +27,7 @@ func _ready() -> void:
 	await _run_playback()
 	await _run_skip()
 	await _run_other_deaths()
+	await _run_real_monsters()
 	_run_portrait_interface()
 	print("\n==== %s (%d 项失败) ====" % ["全部通过" if failures == 0 else "有失败", failures])
 	get_tree().quit(1 if failures else 0)
@@ -48,6 +49,20 @@ func _run_data() -> void:
 		var texts: Array = CG.cgs()[id]["steps"].filter(func(s: Dictionary): return s.has("text"))
 		all_have_text = all_have_text and texts.size() >= 4
 	check("每段 CG 都有完整的对话过程", all_have_text)
+	var third_ok := true
+	for key in ["slime", "bat", "ghost", "spider", "troll", "rat", "crab", "split_slime", "mimic", "fairy", "tentacle"]:
+		var steps: Array = CG.cgs()["death_" + key]["steps"]
+		var idx := -1
+		for i in steps.size():
+			if str(steps[i].get("portrait", "")) == key + "_3":
+				idx = i
+		var after: Array = steps.slice(maxi(idx, 0)).filter(func(st: Dictionary): return st.has("text"))
+		var ok: bool = idx >= 0 and CG.has_portrait_file(key + "_3") and CG.data["portraits"][key + "_3"].get("wide", false) and after.size() >= 6
+		if not ok:
+			print("    第三幕有问题：", key)
+		third_ok = third_ok and ok
+	check("11 段怪物 CG 都有第三幕（横版 CG 图 + 最多的剧情）", third_ok)
+	check("通用 CG 没有第三幕", not CG.cgs()["death_generic"]["steps"].any(func(st: Dictionary): return str(st.get("portrait", "")).ends_with("_3")))
 	check("立绘缺素材时用失控 1 / 失控 2 占位", CG.portrait_texture("slime_1") == Dialogue.portrait_for("helpless_1")
 		and CG.portrait_texture("slime_2") == Dialogue.portrait_for("helpless_2") and not CG.has_portrait_file("slime_1"))
 
@@ -91,7 +106,7 @@ func _run_playback() -> void:
 	player.laugh.set_value(148.0)
 	slime._action_cd = 0.0
 	slime.tickle(player)
-	check("被史莱姆挠到笑倒", not player.is_alive() and player.died_from_laugh and player.last_tickle_key == "slime")
+	check("被史莱姆挠到笑倒", not player.is_alive() and player.died_from_laugh and player.defeat_source_key() == "slime")
 	check("开始播放史莱姆的笑倒 CG", await _wait_playing() and CG.current == "death_slime")
 	check("CG 期间游戏冻结", GameState.in_dialogue and GameState.in_cutscene)
 	check("舞台上有公主和史莱姆两个演员", CG.actors.has("princess") and CG.actors.has("foe") and CG.actors["foe"].reaction_key == "slime")
@@ -121,6 +136,19 @@ func _run_playback() -> void:
 				checks_done["pose2"] = CG.actors["princess"].visual == "helpless_2"
 				checks_done["zoom"] = CG.view.scale == Vector2(3, 3)
 				checks_done["voice"] = CG.voice.playing
+			elif i == 5:
+				await _wait(0.4)
+				var tex := CG.portrait_texture("slime_3")
+				checks_done["wide"] = Dialogue.is_portrait_wide() and Dialogue.current_portrait() == tex \
+					and Dialogue.portrait.size.is_equal_approx(Vector2(roundf(180.0 * tex.get_width() / tex.get_height()), 180.0))
+				checks_done["stage_right"] = CG.view.position.x > 200.0
+				# 挠痒时横版 CG 图抖动：采样一段时间内的位置，应该偏离过基准位置
+				var moved := false
+				for k in 20:
+					await get_tree().process_frame
+					if not Dialogue.portrait.position.is_equal_approx(Dialogue.WIDE_POS):
+						moved = true
+				checks_done["cg_shake"] = moved
 		if Dialogue.is_active():
 			Dialogue.advance()
 			Dialogue.advance()
@@ -128,11 +156,17 @@ func _run_playback() -> void:
 	check("第 2 步：立绘换成失控 1 占位、史莱姆登场", checks_done.get("p1", false) and checks_done.get("foe_in", false))
 	check("第 4 步：立绘换成失控 2 占位、公主姿势变失控 2", checks_done.get("p2", false) and checks_done.get("pose2", false))
 	check("第 4 步：镜头拉近、笑声响起", checks_done.get("zoom", false) and checks_done.get("voice", false))
+	check("第三幕：立绘框变成横版大框，显示史莱姆 CG 图（原比例）", checks_done.get("wide", false))
+	check("第三幕：舞台镜头移到右侧继续演", checks_done.get("stage_right", false))
+	check("第三幕：CG 图随挠痒抖动", checks_done.get("cg_shake", false))
 	check("CG 播完", not CG.is_playing() and seen.size() == CG.cgs()["death_slime"]["steps"].size())
 	await _wait(0.4)
 	check("CG 结束后在检查点复活", player.is_alive() and player.global_position.distance_to(checkpoint) < 4.0)
 	check("复活后满血、闷笑值清零", player.health.hp == player.health.max_hp and player.laugh.value == 0.0)
-	check("复活后恢复控制、立绘恢复", not GameState.in_dialogue and not GameState.in_cutscene and not Dialogue.has_portrait_override())
+	check("复活后恢复控制、立绘恢复", not GameState.in_dialogue and not GameState.in_cutscene and not Dialogue.has_portrait_override()
+		and not Dialogue.is_portrait_wide())
+	await _wait(0.3)
+	check("立绘框回到原位", Dialogue.portrait.position.is_equal_approx(Dialogue.PORTRAIT_RECT.position))
 	check("CG 后不再弹复活对话", not Dialogue.is_active())
 	check("记录为看过", GameState.has_flag("cg_seen_death_slime"))
 	slime.queue_free()
@@ -179,6 +213,78 @@ func _run_other_deaths() -> void:
 	check("照常复活并播复活对话", player.is_alive() and Dialogue.is_active())
 	_finish_dialogue()
 	foe.queue_free()
+
+
+# ------------------------------------------------------------------ 真实怪物 AI 挠到倒下
+const MONSTER_SCENES := {
+	"slime": "slime", "bat": "feather_bat", "ghost": "tickle_ghost", "spider": "tickle_spider",
+	"troll": "tickle_troll", "rat": "foot_rat", "crab": "pincer_crab", "split_slime": "split_slime",
+	"mimic": "mimic", "fairy": "fairy_swarm", "tentacle": "tentacle_boss",
+}
+
+
+func _skip_cg() -> void:
+	CG._can_skip = true
+	CG.skip()
+	await _wait(0.7)
+	_finish_dialogue()
+	await _wait(0.2)
+
+
+func _run_real_monsters() -> void:
+	print("-- 真实怪物 AI：每种怪物挠到公主倒下都播对应 CG")
+	var spot := Vector2(31 * 16 + 8, 23 * 16 + 12)   # 第一层守卫室中间，空间够大
+	for key in MONSTER_SCENES:
+		player.revive()
+		player.global_position = spot
+		player.camera.reset_smoothing()
+		player._full_invuln = 0.0
+		player._attack_invuln = 0.0
+		var m: Monster = load("res://scenes/actors/monsters/%s.tscn" % MONSTER_SCENES[key]).instantiate()
+		main.level.get_node("Entities").add_child(m)
+		m.global_position = spot + (Vector2(0, -60) if key == "tentacle" else Vector2(18, 0))
+		await _wait(0.1)
+		if m is Mimic:
+			(m as Mimic).on_interact(player)
+		# 公主剩 1 点血、闷笑值接近满、已经失控：接下来无论是挠痒还是普通攻击让她倒下，都算笑倒
+		player.health.damage(player.health.hp - 1)
+		player.laugh.set_value(140.0)
+		var t := 0.0
+		while player.is_alive() and t < 25.0:
+			await _wait(0.2)
+			t += 0.2
+			player._attack_invuln = 0.0
+			if player.is_alive() and player.laugh.value < 147.0:
+				player.laugh.set_value(147.0)  # 模拟一直被挠：下一下挠痒就会溢出，只看怪物自己的那一下能不能触发 CG
+		var playing := await _wait_playing(3.0)
+		check("%s 挠到倒下 → 播 %s 的 CG（实际：%s，%.1f 秒）" % [key, key, CG.current, t], playing and CG.current == "death_" + key)
+		if is_instance_valid(m):
+			m.queue_free()
+		for c in main.level.get_node("Entities").get_children():
+			if c is Monster and c.process_mode != Node.PROCESS_MODE_DISABLED:
+				c.queue_free()  # 分裂出来的小史莱姆、召唤的精灵
+		if CG.is_playing():
+			await _skip_cg()
+
+	print("-- 最后一下是普通攻击")
+	player.revive()
+	player.global_position = spot
+	var slime: Monster = load("res://scenes/actors/monsters/slime.tscn").instantiate()
+	main.level.get_node("Entities").add_child(slime)
+	slime.global_position = spot + Vector2(14, 0)
+	slime.process_mode = Node.PROCESS_MODE_DISABLED
+	player._full_invuln = 0.0
+	player._attack_invuln = 0.0
+	player.health.damage(player.health.hp - 1)
+	player.laugh.set_value(90.0)
+	slime.tickle(player)
+	player._attack_invuln = 0.0
+	slime._action_cd = 0.0
+	slime.attack(player)
+	check("失控时被普通攻击打倒", not player.is_alive() and not player.died_from_laugh and player.is_laugh_defeat())
+	check("仍然播史莱姆的笑倒 CG", await _wait_playing() and CG.current == "death_slime")
+	await _skip_cg()
+	slime.queue_free()
 
 
 func _run_portrait_interface() -> void:

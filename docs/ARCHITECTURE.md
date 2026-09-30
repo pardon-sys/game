@@ -243,12 +243,13 @@ data/dialogues.json  只放通用对话（复活、上锁提示、钥匙、失�
 
 ## 笑倒 CG
 
-公主被挠到闷笑值溢出、生命值归零（`Actor.died_from_laugh`）时，`Princess._play_death_cutscene()` 接管死亡流程：倒下停 0.8 秒 → `CG.play_death(最后一次挠痒的来源键)` → `respawn()`（这次不播"复活"对话）。被攻击打死仍走原来的淡出复活。最后一次挠痒在 `Actor.receive_hit` 加闷笑值**之前**记录（`last_tickle`），所以致命的那一下也能查到来源。
+公主"笑倒"（`Actor.is_laugh_defeat()`：闷笑值溢出致死 `died_from_laugh`，或死时失控 >80 / 被抓住 / `LAUGH_DEFEAT_WINDOW` 2 秒内被挠过）时，`Princess._play_death_cutscene()` 接管死亡流程：倒下停 0.8 秒 → `CG.play_death(Princess.defeat_source_key())`（最后一次挠痒来源 → 本条命记录的挠痒来源 → 致命一击的怪物）→ `respawn()`（这次不播"复活"对话）。被攻击打死仍走原来的淡出复活。最后一次挠痒在 `Actor.receive_hit` 加闷笑值**之前**记录（`last_tickle`），所以致命的那一下也能查到来源。
 
 - **播放器**：Autoload `CG`（`scenes/ui/cg_player.tscn` + `scripts/cg/cg_player.gd`），CanvasLayer 第 15 层（HUD 10 之上、对话框 20 之下）。画面右上是一个独立的像素小舞台（`dungeon.tres` 铺的地牢房间 + 径向聚光 + 边框），基础放大 2 倍；对话和立绘沿用 `Dialogue`。
 - **冻结**：播放期间 `GameState.in_cutscene` 与 `in_dialogue` 都为真；`Dialogue._end()` 在 cutscene 中不交还控制权，所以一行行台词之间游戏不会动。
 - **演员**：`scripts/cg/cg_actor.gd`。公主用 `princess.png` + `SpriteSheetAnimator`（按视觉状态名选行）；怪物只复制怪物场景里的 `Sprite`（不带 AI），挠痒音高取该怪物 `MonsterStats.tickle_pitch`。
 - **跳过**：播完设剧情标记 `cg_seen_<id>`；再次播放时角落提示「Esc 跳过」，`CG._input` 先于暂停菜单截获 Esc。
+- **横版 CG 图**：`portraits` 里写 `"wide": true` 的立绘（第三幕 `<来源键>_3`）用 `Dialogue.set_portrait_override(tex, true)` 显示：立绘框动画变成对话框上方左侧的横版大框（高 180、宽按图片比例），挠痒时 `Dialogue.shake_portrait()` 跟着抖；舞台用 `camera` 的 `anchor` 把演员移到右侧可见处。缺素材时退回占位立绘、不用大框。CG 图由 `tools/art/import_cg.py` 从 `assets/generated/CG/<来源键>.png` 生成（保持比例、高 360、每张单独调色板像素化）。
 - **立绘接口**：`Dialogue.set_portrait_override(tex)` 替换常驻立绘（按比例放进立绘框，公主表情不会覆盖它，null 恢复）。`CG.portrait_texture(id)`：`portraits[id].file` 存在（导入过的资源或直接读 png）就用它，否则用 `placeholder` 指定的公主状态立绘。
 
 ### `data/cgs.json` 格式（一个总文件）
@@ -269,6 +270,12 @@ data/dialogues.json  只放通用对话（复活、上锁提示、钥匙、失�
 2. 要按来源自动触发：在 `death.by_source` 里把来源键指到它；新怪物演员要在 `actors` 里登记场景。
 3. 跑 `cg_test` 检查引用，`capture_cg -- only=<id>` 看截图。
 4. 正式立绘：把 png 按立绘 id 命名放进 `assets/cg/portraits/`。
+
+## 关卡设计：强制遭遇与锁门战斗房
+
+- **锁门战斗房**：`scripts/objects/arena_zone.gd`（`ArenaZone`），图例 `X = arena group=<铁栅组> w=<格> h=<格>` 放在房间中央，铁栅用 `gate group=<同组> is_open=true`。触发范围比房间内部小一圈（保证公主已走过门口）；统计怪物时外扩 `margin`，战斗中新出现在范围里的怪物也要打倒。公主 `died` → 开门重置。检查点要放在战斗房外。
+- **强制遭遇的做法**：风扇风道 / 传送带铺满通道宽度把人送进陷阱区（拉杆放在危险区另一侧）；羽毛、藤蔓铺满通道宽度且长度超过冲刺距离（约 41 像素）；出口摆能打组合技的怪物。
+- **检查方法**：`tests/level_design_test.gd` 的 `FORCED` 表列出每个强制段的起点 / 终点格。`hazard_cells()` 从关卡里收集所有陷阱覆盖的格子（风扇 `in_lane` 的风道、传送带整条、机关手下方、压力板、其它陷阱所在格）。洪泛：允许踩危险格能走到、避开就走不到，才算"躲不开"。新增强制段时在 `FORCED` 里加一行。
 
 ## 公主状态与换美术素材
 
@@ -311,7 +318,9 @@ data/                 楼层表、通用对话、组合技表、受挠台词、�
 tests/smoke_test.gd   冒烟测试（含11状态、音频生命周期与接口约定检查）
 tests/floor2_test.gd  第二层：关卡切换、减速/抓取、新怪物、新陷阱、立绘密度
 tests/floor3_test.gd  楼层表与扩充房间、魔法、状态效果、组合技、第三层怪物/陷阱、第三层流程
-tests/cg_test.gd      笑倒 CG：cgs.json 校验、触发与选择、步骤切换立绘/姿势、复活、跳过、立绘接口
+tests/cg_test.gd      笑倒 CG：cgs.json 校验、11 种怪物真实 AI 触发、三幕切换（横版大框、抖动）、复活、跳过、立绘接口
+tests/level_design_test.gd  强制遭遇段绕不过去、锁门战斗房、各层连通
+tools/art/import_cg.py      CG 图像素化（第三幕）
 scripts/cg/           CGPlayer（Autoload CG）、CGActor
 tools/art/gen_sfx.py  合成果冻挠痒、吟唱、爆发、组合技等音效
 tools/art/gen_expansion.py  扩展内容占位图（魔法、第三层怪物与陷阱、暗墙、武器架）

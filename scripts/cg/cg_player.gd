@@ -210,6 +210,8 @@ func validate() -> Array[String]:
 					errors.append("%s: camera 聚焦不存在的演员 %s" % [where, a["focus"]])
 				if d == "sfx" and not Audio.SOUNDS.has(str(a.get("sound", ""))):
 					errors.append("%s: 音效不存在 %s" % [where, a.get("sound")])
+				if d == "camera" and a.has("anchor") and not (a["anchor"] is Array and a["anchor"].size() == 2):
+					errors.append("%s: camera 的 anchor 应为 [x, y]" % where)
 				if d == "pose" and a.has("visual") and not GameState.VISUALS.has(str(a["visual"])):
 					errors.append("%s: 姿势状态不存在 %s" % [where, a["visual"]])
 	return errors
@@ -338,7 +340,12 @@ func _apply_portrait(step: Dictionary) -> void:
 	if not step.has("portrait"):
 		return
 	var p := str(step["portrait"])
-	Dialogue.set_portrait_override(null if p == "none" else portrait_texture(p))
+	if p == "none":
+		Dialogue.set_portrait_override(null)
+		return
+	# 横版大图只有在正式素材存在时才用大框；缺素材时的占位是普通立绘
+	var wide: bool = data.get("portraits", {}).get(p, {}).get("wide", false) and has_portrait_file(p)
+	Dialogue.set_portrait_override(portrait_texture(p), wide)
 
 
 func _reset_view() -> void:
@@ -346,10 +353,10 @@ func _reset_view() -> void:
 	view.position = (ORIGIN - Vector2(0, -12) * BASE_ZOOM).round()
 
 
-## 镜头：zoom（相对基础倍数）聚焦到舞台坐标 focus。
-func _camera_target(zoom: float, focus: Vector2) -> Array:
+## 镜头：zoom（相对基础倍数）把舞台坐标 focus 对准舞台框里的 anchor 位置（默认舞台中心）。
+func _camera_target(zoom: float, focus: Vector2, anchor := ORIGIN) -> Array:
 	var s := maxf(1.0, roundf(BASE_ZOOM * zoom))
-	return [Vector2(s, s), (ORIGIN - focus * s).round()]
+	return [Vector2(s, s), (anchor - focus * s).round()]
 
 
 func _build_cast(cast: Dictionary) -> void:
@@ -427,6 +434,8 @@ func _act(a: Dictionary) -> float:
 		"shake":
 			t = t if t > 0.0 else 0.3
 			who.shake(t)
+			if who.kind == "princess":
+				Dialogue.shake_portrait(3.0, t)
 		"face":
 			who.set_dir(str(a.get("dir", "down")))
 		"pose":
@@ -449,6 +458,8 @@ func _act(a: Dictionary) -> float:
 						return
 					Audio.play("tickle", -3.0, 0.1, by.tickle_pitch if is_instance_valid(by) else 1.0)
 					who.shake(0.2)
+					if who.kind == "princess":
+						Dialogue.shake_portrait()  # 第三幕的横版 CG 图跟着挠痒一起抖
 					_spawn_fx(who, fx))
 				tw.tween_interval(every)
 			tw.tween_callback(func():
@@ -475,7 +486,7 @@ func _act(a: Dictionary) -> float:
 				focus = actors[a["focus"]].position + Vector2(0, -12)
 			elif a.has("focus"):
 				focus = _v(a["focus"])
-			var target := _camera_target(z, focus)
+			var target := _camera_target(z, focus, _v(a["anchor"]) if a.has("anchor") else ORIGIN)
 			if t > 0.0:
 				var tw := view.create_tween().set_parallel()
 				tw.tween_property(view, "scale", target[0], t)

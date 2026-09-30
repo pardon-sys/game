@@ -36,6 +36,7 @@ const SCENES := {
 	"item": "res://scenes/items/world_item.tscn",
 	"checkpoint": "res://scenes/objects/checkpoint.tscn",
 	"trigger": "res://scenes/objects/dialogue_trigger.tscn",
+	"arena": "res://scenes/objects/arena_zone.tscn",
 }
 ## 按 type 参数选择场景的类型：新增怪物/友军/陷阱时在这里注册。
 const TYPED_SCENES := {
@@ -70,7 +71,7 @@ const WALL_MOUNTED := ["torch", "face", "walltrap", "secret"]
 ## 看起来是墙、之后可能打开的格子：照常放墙块，下面再铺一层地面。
 const HIDDEN_PASSAGE := ["secret"]
 ## 放在地面层（总在角色下方）的类型。
-const FLOOR_LEVEL := ["trap", "checkpoint", "trigger", "plate", "exit"]
+const FLOOR_LEVEL := ["trap", "checkpoint", "trigger", "plate", "exit", "arena"]
 ## Kenney 图块中带碰撞的装饰（下半格碰撞）。
 const SOLID_DECOR := [63, 64, 65, 72, 73, 74, 75, 82]
 ## 当墙顶用的 Kenney 碎石图块（整格碰撞）。
@@ -178,7 +179,7 @@ func build(floor_id: String) -> int:
 				decor.set_cell(Vector2i(x, y), SRC_KENNEY, _kcoord(int(info["tile"])))
 			elif SCENES.has(kind) or TYPED_SCENES.has(kind):
 				var inst := _spawn(kind, info, x, y)
-				var parent: Node = triggers if kind in ["checkpoint", "trigger", "exit"] else (floor_objs if kind in FLOOR_LEVEL else ents)
+				var parent: Node = triggers if kind in ["checkpoint", "trigger", "exit", "arena"] else (floor_objs if kind in FLOOR_LEVEL else ents)
 				parent.add_child(inst)
 				inst.owner = root
 				if kind == "letter":
@@ -321,7 +322,7 @@ func _spawn(kind: String, info: Dictionary, x: int, y: int) -> Node2D:
 	match kind:
 		"player", "monster", "ally", "item":
 			inst.position = base - Vector2(0, 4)
-		"trap", "checkpoint", "trigger", "plate", "exit":
+		"trap", "checkpoint", "trigger", "plate", "exit", "arena":
 			inst.position = base - Vector2(0, TILE / 2.0)
 		"letter":
 			inst.position = base + Vector2(0, 0.5)
@@ -356,6 +357,12 @@ func _spawn(kind: String, info: Dictionary, x: int, y: int) -> Node2D:
 				inst.set("size", Vector2(float(info["w"]) * TILE, float(info.get("h", 1)) * TILE))
 				continue
 			["exit", "h"]:
+				continue
+			["arena", "group"]: prop = "group_name"
+			["arena", "w"]:
+				inst.set("size", Vector2(float(info["w"]) * TILE, float(info.get("h", 1)) * TILE))
+				continue
+			["arena", "h"]:
 				continue
 			["trigger", "w"]:
 				inst.set("size", Vector2(float(info["w"]) * TILE, float(info.get("h", 1)) * TILE))

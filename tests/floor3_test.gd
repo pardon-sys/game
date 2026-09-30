@@ -769,8 +769,8 @@ func _run_floor3() -> void:
 	_find("Lever_48_21").on_interact(player)
 	check("风洞拉杆关掉全部风扇", fans.all(func(f: Trap): return not f.active))
 	var belts := get_tree().get_nodes_in_group("belts")
-	_find("Lever_37_37").on_interact(player)
-	check("工坊拉杆停下两条传送带", belts.size() == 2 and belts.all(func(b: Trap): return not b.active))
+	_find("Lever_34_28").on_interact(player)
+	check("工坊拉杆停下全部传送带（3 条整宽 + 1 条）", belts.size() == 4 and belts.all(func(b: Trap): return not b.active))
 
 	var gate: Node = _find("Gate_39_6")
 	var boss: TentacleBoss = _find("Tentacle_25_4")
