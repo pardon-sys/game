@@ -106,6 +106,8 @@ const FLOOR_RANDOM := [[49, 0.07], [51, 0.04], [42, 0.03]]
 var rng := RandomNumberGenerator.new()
 var rows: PackedStringArray = []
 var legend := {}
+## 同一格叠放的其它实体：字符 -> [info, ...]（legend 里用 " + " 连接，例如 "K = trap type=stocks + trap type=vortex radius=3"）。
+var stacked := {}
 ## [level] 段：intro（开场对话 id）、ambient（环境光 r,g,b）
 var level_meta := {}
 var width := 0
@@ -201,13 +203,17 @@ func build(floor_id: String) -> int:
 			if kind == "decor":
 				decor.set_cell(Vector2i(x, y), SRC_KENNEY, _kcoord(int(info["tile"])))
 			elif SCENES.has(kind) or TYPED_SCENES.has(kind):
-				var inst := _spawn(kind, info, x, y)
-				var parent: Node = triggers if kind in ["checkpoint", "trigger", "exit", "arena"] else (floor_objs if kind in FLOOR_LEVEL else ents)
-				parent.add_child(inst)
-				inst.owner = root
-				if kind == "letter":
-					decor.set_cell(Vector2i(x, y), SRC_KENNEY, _kcoord(72))
-				counts[kind] = counts.get(kind, 0) + 1
+				for one in [info] + stacked.get(c, []):
+					var k: String = one["kind"]
+					if not (SCENES.has(k) or TYPED_SCENES.has(k)):
+						continue
+					var inst := _spawn(k, one, x, y)
+					var parent: Node = triggers if k in ["checkpoint", "trigger", "exit", "arena"] else (floor_objs if k in FLOOR_LEVEL else ents)
+					parent.add_child(inst)
+					inst.owner = root
+					if k == "letter":
+						decor.set_cell(Vector2i(x, y), SRC_KENNEY, _kcoord(72))
+					counts[k] = counts.get(k, 0) + 1
 
 	var ps := PackedScene.new()
 	var err := ps.pack(root)
@@ -239,15 +245,21 @@ func parse(path: String) -> bool:
 				level_meta[kv[0].strip_edges()] = kv[1].strip_edges()
 			continue
 		if section == "[legend]":
-			# 形如 "X = kind k=v ..."；其它行（空行、说明）忽略
+			# 形如 "X = kind k=v ..."；同一格叠放多个实体用 " + " 连接；其它行（空行、说明）忽略
 			if line.length() >= 5 and line.substr(1, 3) == " = ":
-				var parts := line.substr(4).split(" ", false)
-				var info := {"kind": parts[0]}
-				for p in parts.slice(1):
-					var kv := p.split("=", true, 1)
-					if kv.size() == 2:
-						info[kv[0]] = _value(kv[1])
-				legend[line[0]] = info
+				var specs := line.substr(4).split(" + ", false)
+				var infos: Array = []
+				for spec in specs:
+					var parts := spec.split(" ", false)
+					var info := {"kind": parts[0]}
+					for p in parts.slice(1):
+						var kv := p.split("=", true, 1)
+						if kv.size() == 2:
+							info[kv[0]] = _value(kv[1])
+					infos.append(info)
+				legend[line[0]] = infos[0]
+				if infos.size() > 1:
+					stacked[line[0]] = infos.slice(1)
 		elif section == "[map]" and line != "":
 			rows.append(line)
 	height = rows.size()
