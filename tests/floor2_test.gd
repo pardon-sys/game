@@ -212,7 +212,7 @@ func _run_traps() -> void:
 	_move_player_to(Vector2i(9, 36))
 	await _wait(2.8)
 
-	var brush: Trap = _find("Brush_40_33")
+	var brush: Trap = _find("Brush_40_32")
 	check("旋转刷是持续生效陷阱", brush.trigger_mode == Trap.TriggerMode.CONTINUOUS and brush.is_dangerous())
 	var r0 := brush.rotation
 	await _wait(0.2)
@@ -225,8 +225,8 @@ func _run_traps() -> void:
 	_move_player_to(Vector2i(56, 33))
 	await _wait(1.0)
 
-	var hand: GrabHand = _find("Hand_36_30")
-	var plate: Node = _find("Plate_36_31")
+	var hand: GrabHand = _find("Hand_34_30")
+	var plate: Node = _find("Plate_34_31")
 	check("压力板关联机关手", hand.is_in_group(plate.target))
 	_clear_invuln()
 	player.laugh.clear()
@@ -242,6 +242,23 @@ func _run_traps() -> void:
 	check("挣脱机关手", not player.status.is_grabbed())
 	await _wait(0.1)
 	check("机关手缩回冷却", hand.phase == Trap.Phase.COOLDOWN)
+	player.laugh.clear()
+	_move_player_to(Vector2i(56, 33))
+	await _wait(0.8)
+	# 流水线终点：传送带把人送到尽头的弹弹床，弹到机关手下方的压力板上被抓住
+	await _wait(hand.cooldown_time + 0.5)
+	_clear_invuln()
+	player.laugh.clear()
+	_move_player_to(Vector2i(44, 35))
+	var t := 0.0
+	while not player.status.is_grabbed() and t < 6.0:
+		await get_tree().physics_frame
+		t += 1.0 / 60.0
+	check("流水线：传送带 → 弹弹床 → 压力板，被机关手抓住（%.1f 秒）" % t, player.status.is_grabbed_by(hand))
+	for i in 10:
+		ctrl.press(&"interact")
+		await get_tree().physics_frame
+		await get_tree().physics_frame
 	player.laugh.clear()
 	_move_player_to(Vector2i(56, 33))
 	await _wait(0.8)
@@ -347,7 +364,7 @@ func _run_reactions() -> void:
 	check("能找到一只蝙蝠", bat != null)
 	check("台词来源识别（怪物 / 陷阱 / 粉雾 / 蛛丝）",
 		ReactionDB.key_of(bat) == "bat" and ReactionDB.key_of(_find("Vent_7_19")) == "vent"
-		and ReactionDB.key_of(_find("Hand_44_30")) == "hand")
+		and ReactionDB.key_of(_find("Hand_34_30")) == "hand")
 	var shot := WebShot.new()
 	shot.shooter = _find("Spider_55_21")
 	check("蛛丝台词算作蜘蛛", ReactionDB.key_of(shot) == "spider")

@@ -41,9 +41,15 @@ Trap（陷阱基类，Area2D）
 ├── HexRune           诅咒符文（ON_STEP：易痒 + 疲倦）
 ├── Stocks            足枷台（ON_STEP 抓取，滚轮挠脚心，超时最后一下必暴击）
 ├── StickyCarpet      黏黏毛毯（CONTINUOUS，多格 w×h：黏黏减速，站着不动被黏住）
-└── FeatherArm        伸缩羽毛臂（墙面 ON_STEP：预警后横扫前方 length 格）
+├── FeatherArm        伸缩羽毛臂（墙面 ON_STEP：预警后横扫前方 length 格）
+├── TickleVortex      吸痒漩涡（CONTINUOUS：半径内往中心吸，冲刺可挣开）
+├── BouncePad         弹弹床（ON_STEP：沿 dir 弹出 length 格，force_move bounce）
+└── SoapFloor         滑溜肥皂地板（CONTINUOUS 多格：force_move slide，滑到墙 / 地板尽头 / stops_slide 陷阱）
 
-Projectile（投射物基类，Area2D）
+MonsterNest（怪物巢穴基类，StaticBody2D：定时生成、吟唱联动、拖进巢穴）
+└── RatHole / FairyFlower / SlimePool / JellyEgg / ChestPile
+
+Projectile（投射物基类，Area2D；发射时记下 shooter_faction，发射者被释放后仍按它判断敌我）
 ├── WebShot           蛛丝（减速 + 少量挠痒）
 └── BubbleShot        泡泡（命中由泡泡鱼关进泡泡牢笼）
 TickleCloud（会停留的粉雾，Area2D；可被风吹动、被星光吹散）
@@ -240,14 +246,23 @@ HUD 背包栏会根据物品数据自动显示，不需要改 UI 代码。
 7. 装在墙上的陷阱（如机关手）在图例里用 `walltrap` 类型：`1 = walltrap type=hand group=hand1`，放在墙面格上（和火把一样）。
 8. 陷阱挠痒默认也播放果冻声，音高用 `tickle_pitch` 调。
 9. 多格陷阱：图例 `w=` / `h=` 映射到 `tiles_w` / `tiles_h`（黏黏毛毯，从所在格向右下铺）；`len=` 映射到 `length`（传送带、风扇、墙面羽毛臂），`dir=` 同名属性。
-10. 新陷阱如果覆盖多个格子，记得在 `tests/level_design_test.gd` 的 `hazard_cells()` 里补上覆盖范围，强制段检查才准。
+10. 新陷阱如果覆盖多个格子，记得在 `tests/level_design_test.gd` 的 `hazard_cells()` 和 `_trap_cover()` 里补上覆盖范围，强制段和三来源触发点的检查才准。
+11. 强制位移陷阱用 `PlayableCharacter.force_move(速度, 秒, kind)`：`bounce`（弹在空中，`is_airborne()`，`Trap._affects` 会跳过空中的目标）/ `slide`（撞墙停，`extend_forced_move` 续时，`end_forced_move` 结束）；期间不能操作、不能冲刺，被抓 / 定身 / 失控会打断。吸痒漩涡只用 `Actor.add_push`（冲刺中不吸）。会抓人 / 定身的陷阱设 `stops_slide = true`（加入 `slide_stopper` 组），滑行碰到就停。
+12. 同一格叠放多个实体：图例用 " + " 连接，例如 `7 = trap type=stocks + trap type=vortex radius=3`。
+
+### 怪物巢穴
+`MonsterNest`（`scripts/objects/monster_nest.gd`，StaticBody2D，墙层 + breakable 层）是可复用的基类：子类在 `_configure()` 里设 `kind`（过场 CG 用）、`monster_scene`、`sheet_row`（`nests.png` 的行），需要时重写 `_prepare(怪物)`（例如 `ChestPile` 让宝箱怪 `awake`）。场景放在 `scenes/objects/nests/`，在 `TYPED_SCENES["nest"]` 注册，图例 `X = nest type=rat`（`slime` 可加 `split=true`）。
+- 生成的怪物记 `Monster.home_nest`、加入 `nest_spawn` 组；吟唱额外生成的另加 `nest_extra` 组（`_update_surge`：`p.is_channeling()` 且在 `expose_radius` 内；`surge_start / surge_mult / surge_min / surge_max / surge_linger`）。
+- 拖进巢穴：失控 + 贴身（`contact_dist`）→ `status.grab(nest, 0, drag_presses)`，每帧 `move_and_collide` 往 `mouth()` 拖（拖动期间和巢穴有碰撞例外），拖人的怪物跟着平移；到 `swallow_dist` 内调 `Princess.dragged_into_nest(nest)` → `dragged_into = kind` → 倒下 → `_play_death_cutscene` 播 `CG.play_nest(kind)`（`cgs.json` 的 `nest` 表）→ 复活。
+- `receive_hit`（剑）扣血；`on_magic_burst`（MagicReactive）3 档直接 `smash()`、低档扣 2。`ArenaZone._collect` 也追踪没打碎的巢穴（`is_alive()`）。
 
 ### 组合技
 1. 时间窗口组合：在 `data/combos.json` 的 `combos` 里加一项 `{"id", "category", "keys": [[来源键…], [来源键…]], "effects": [...]}`。每个槽位可以写多个备选键，`"*"` 表示任意怪物、`"*trap"` 任意陷阱；写 3 个槽位就是三来源组合（`category` 写「怪+怪+怪」等，效果里加 `{"type": "focus"}`）。
 2. 在 `data/princess_reactions.json` 的 `combos` 段加同 id 的 `name`（横幅）、`description`、`lines`（公主台词）。
-3. 三来源组合：运行 `python tools/build/gen_combo_scenes.py` 生成小演出（手写的演出放进脚本的 `CUSTOM`）。
-4. 条件型组合：写 `"condition": "说明"`，在满足条件的代码里调用 `player.combo.trigger("id", 来源)`（冷却中也要施加效果时传 `force_effects = true`）。
-5. `tests/floor3_test.gd` 会自动为每个时间窗口组合跑一遍触发测试（其它组合先进冷却），并检查它有名称和台词。
+3. 三来源组合：在 `tools/build/gen_combo_scenes.py` 的 `SCENES` 里写 `(出场顺序, [阶段 1, 阶段 2, 阶段 3, 高潮 1..5])` 后运行它生成小演出。写法：开头旁白自动报组合名；阶段句是公主正被这一阶段的来源挠、边笑边说出它的手法（不说「XX 来了 / 加入了」，不直接点名）；高潮 5 句三种手法交替叠加，最后笑到说不完整（`floor4_test` 会检查句数和陈述词）。
+4. 在地图上给它一个「踩不开」的触发点，并在 `tests/level_design_test.gd` 的 `COMBO_SPOTS` 里登记（见「关卡设计」）。
+5. 条件型组合：写 `"condition": "说明"`，在满足条件的代码里调用 `player.combo.trigger("id", 来源)`（冷却中也要施加效果时传 `force_effects = true`）。
+6. `tests/floor3_test.gd` 会自动为每个时间窗口组合跑一遍触发测试（其它组合先进冷却），并检查它有名称和台词。
 
 ### 背包与快捷键
 - 背包界面 `Backpack`（`scenes/ui/backpack.tscn`，CanvasLayer 第 25 层，`PROCESS_MODE_ALWAYS`）：`GameState.has_backpack()`（剧情标记 `got_backpack`，`BackpackItem` 拾取即设置）之后输入 `backpack`（Tab / I / L3）打开并暂停；`_input` 先于暂停菜单截获 Esc。物品页 `use_selected()` / `assign_selected(hotkey)`，状态页读 `LaughMeter` / `MagicFatigue` / `Actor.buffs`（`buffs.json` 的 `desc`）/ `StatusComponent`。
@@ -255,8 +270,9 @@ HUD 背包栏会根据物品数据自动显示，不需要改 UI 代码。
 
 ### HUD 道具栏与立绘反馈
 - HUD 道具栏（`HUD._refresh_inventory`）：最多 `BAR_SLOTS`（3）格；`GameState.hotkeys` 绑定且有货的道具固定在前（`pinned_items`），其余进轮播（`carousel_items`，裁剪窗口里的长条每 `CAROUSEL_TIME` 秒滑一格，末尾补开头几格无缝循环）；新增 / 数量增加的道具直接转到窗口。`visible_item_ids()`、`more_count()` 给测试用。
+- 粉色光晕：`shaders/portrait_glow.gdshader` 挂在 `Dialogue.portrait` 上（`PortraitFx.setup` 创建 ShaderMaterial）。mode 0 在透明处沿 12 方向 × 4 圈采样周围像素的透明度画外发光，采样限制在 `region`（`PortraitFx.glow_region()`：AtlasTexture 的格子 UV 范围）内；mode 1（横版大框）在四边内侧画晕光。`PortraitFx._update_glow` 每帧设 `strength`（`glow_target()`：游戏中按闷笑在憋笑与失控 2 之间插值，CG 中按 `CG_GLOW[cg_level]`，平滑跟随）、`pulse`（失控 / CG 中呼吸）、`mode`、`region`。注意 fragment 里的 `COLOR` 已经乘过贴图颜色，顶点色用 varying 传进来。
 - 立绘反馈 `PortraitFx`（`scripts/ui/portrait_fx.gd`，`Dialogue.portrait_fx`）：`Dialogue` 在 `player_registered` 时连接 `tickled` / `died`，并监听 `GameState.combo_triggered`。`on_tickled(hit, laugh)`：`Dialogue.shake_portrait`（现在常驻立绘也会抖，幅度按 `LaughMeter.stage()`）、`self_modulate` 闪光、按 `HitFx.kind_of` 在立绘锚点放大播放命中特效、失控时飘字（`ReactionDB.portrait_words(来源键, 阶段)`：`sources[key].portrait_words` 数组或按阶段的字典，缺省回退顶层 `portrait_words[阶段]`）、暴击金色星环；`on_combo(triple)` 爆开 `particle_heart` 心形。游戏中笑倒 CG 播放时、横版大框时不处理；倒下 / 换层 / CG 换立绘时 `clear()`。
-- CG 里同一套反馈：`CGPlayer._play_cg` 调 `portrait_fx.begin_cg()`，结束时 `end_cg()`；强度 `set_cg_level`：每换一张 CG 立绘（醒来除外）+1，第二幕起切幕 `cg_crit()`（金色星环，横版图放在大框右上角）；组合演出从 1 开始，公主变成失控 2 时至少 2，`light all` 高潮时 3 并 `on_combo(true)` 爆开心形。`tickle` 指令每挠一下调 `cg_tickle(来源键, hit_fx)`：来源键和贴片种类取挠她的演员（`CGActor.reaction_key` / `hit_fx`：怪物来自 `MonsterStats.hit_fx`，陷阱来自 `trap_actors[key].hit_fx`），没有演员时用致死来源键和指令的 `fx`。横版 CG 图（`Dialogue.is_portrait_wide()`）用轻量版：不放贴片、泛粉很淡、飘字沿大框两边；CG 里飘字间隔 ×1.8。没写 `portrait` 的演出（组合演出）立绘跟着舞台上公主的 `pose` 走（`CGPlayer._follow_pose`，开始用 cast 里的 `visual`）。
+- CG 里同一套反馈：`CGPlayer._play_cg` 调 `portrait_fx.begin_cg()`，结束时 `end_cg()`；强度 `set_cg_level`：每换一张 CG 立绘（醒来除外）+1，第二幕起切幕 `cg_crit()`（金色星环，横版图放在大框右上角）；组合演出从 1 开始，公主变成失控 2 时至少 2，`light all` 高潮时 3 并 `on_combo(true)` 爆开心形。`tickle` 指令每挠一下调 `cg_tickle(来源键, hit_fx)`：来源键和贴片种类取挠她的演员（`CGActor.reaction_key` / `hit_fx`：怪物来自 `MonsterStats.hit_fx`，陷阱来自 `trap_actors[key].hit_fx`），没有演员时用致死来源键和指令的 `fx`。横版 CG 图（`Dialogue.is_portrait_wide()`）用轻量版：贴片放在图的四周（`_wide_point()`，离中心至少 `WIDE_STICKER_MARGIN`，放大 2.5 倍）、泛粉很淡、飘字沿大框两边；CG 里飘字间隔 ×1.8。没写 `portrait` 的演出（组合演出）立绘跟着舞台上公主的 `pose` 走（`CGPlayer._follow_pose`，开始用 cast 里的 `visual`）。
 
 ### 攻击特效
 - 命中特效 `HitFx.play(kind, parent, pos)`（`assets/generated/hit_fx.png`，10 种 × 6 帧）：`Actor.receive_hit` 生效后调用 `_play_hit_fx`——挠痒按来源选（`MonsterStats.hit_fx`、`Trap.hit_fx`，投射物看发射者），攻击一律 `slash`，暴击再叠 `crit`。新怪物 / 陷阱在 `.tres` / 场景里写 `hit_fx`。
@@ -308,7 +324,8 @@ data/dialogues.json  只放通用对话（复活、上锁提示、钥匙、失�
 - **演员**：`scripts/cg/cg_actor.gd`。公主用 `princess.png` + `SpriteSheetAnimator`（按视觉状态名选行）；怪物只复制怪物场景里的 `Sprite`（不带 AI），挠痒音高取该怪物 `MonsterStats.tickle_pitch`。
 - **跳过**：播完设剧情标记 `cg_seen_<id>`；再次播放时角落提示「Esc 跳过」，`CG._input` 先于暂停菜单截获 Esc。
 - **横版 CG 图**：`portraits` 里写 `"wide": true` 的立绘（第三幕 `<来源键>_3`，有第二张图时第四幕 `<来源键>_4`）用 `Dialogue.set_portrait_override(tex, true)` 显示：立绘框动画变成对话框上方左侧的横版大框（高 180、宽按图片比例），挠痒时 `Dialogue.shake_portrait()` 跟着抖；舞台用 `camera` 的 `anchor` 把演员移到右侧可见处。缺素材时退回占位立绘、不用大框。CG 图由 `tools/art/import_cg.py` 从 `assets/generated/CG/<来源键>.png`（或 `<来源键>_1` / `_2`）生成（保持比例、高 360、每张单独调色板像素化）。`data/cgs.json` 由 `tools/build/gen_cgs.py` 生成：CG 图文件存在时自动加 `wide`，有 `_4` 时多一幕。
-- **组合演出**：`data/combo_scenes.json`（`scenes`：组合 id → `{name, cast, steps}`，格式同 `cgs`）由 `CG.play_scene(id)` 播放，台词按键推进、随时可跳过；`CG.validate()` 一起检查。由 `tools/build/gen_combo_scenes.py` 生成（每个组合手写出场顺序和 5–6 句台词）。
+- **组合演出**：`data/combo_scenes.json`（`scenes`：组合 id → `{name, cast, steps}`，格式同 `cgs`）由 `CG.play_scene(id)` 播放，台词按键推进、随时可跳过；`CG.validate()` 一起检查。由 `tools/build/gen_combo_scenes.py` 生成（每个组合手写出场顺序和 8 句台词：三段各 1 句 + 高潮 5 句，开头一句旁白）。
+- **巢穴过场**：`cgs.json` 的 `nest` 表（巢穴种类 → `{cg, source}`），`CG.play_nest(kind)` 播放；`gen_cgs.py` 的 `add_nest()` 用 `standard(..., foe=怪物键)` 生成三幕，第三幕立绘 `nest_<种类>_3`。
 - **陷阱演员**：`cgs.json` 的 `trap_actors`（`gen_cgs.py` 生成）定义陷阱的贴图、待机 / 发动帧、`tiles` 多格、`spin` 旋转、`arm` 羽毛臂；cast 里 `kind = trap:<来源键>`（`CGActor.make_trap`）。`tickle` 指令的 `by` 指到陷阱演员时它 `activate()` 发动。舞台地面在 z 0，演员层 `cast_root` 在 z 2，铺在脚下的陷阱用相对 z -1。
 - **来源栏**：指令 `sources`（`list = [{kind, key, name}]`，舞台顶部三格先暗着）和 `light`（`index` 点亮第几格，`all` 三格一起闪）；`CG.source_lit(i)` 给测试用。
 - **立绘接口**：`Dialogue.set_portrait_override(tex)` 替换常驻立绘（按比例放进立绘框，公主表情不会覆盖它，null 恢复）。`CG.portrait_texture(id)`：`portraits[id].file` 存在（导入过的资源或直接读 png）就用它，否则用 `placeholder` 指定的公主状态立绘。
@@ -337,10 +354,11 @@ data/dialogues.json  只放通用对话（复活、上锁提示、钥匙、失�
 - **锁门战斗房**：`scripts/objects/arena_zone.gd`（`ArenaZone`），图例 `X = arena group=<铁栅组> w=<格> h=<格>` 放在房间中央，铁栅用 `gate group=<同组> is_open=true`。触发范围比房间内部小一圈（保证公主已走过门口）；统计怪物时外扩 `margin`，战斗中新出现在范围里的怪物也要打倒。公主 `died` → 开门重置。检查点要放在战斗房外。
 - **强制遭遇的做法**：风扇风道 / 传送带铺满通道宽度把人送进陷阱区（拉杆放在危险区另一侧）；羽毛、藤蔓铺满通道宽度且长度超过冲刺距离（约 41 像素）；出口摆能打组合技的怪物。
 - **检查方法**：`tests/level_design_test.gd` 的 `FORCED` 表列出每个强制段的起点 / 终点格。`hazard_cells()` 从关卡里收集所有陷阱覆盖的格子（风扇 `in_lane` 的风道、传送带整条、机关手下方、压力板、其它陷阱所在格）。洪泛：允许踩危险格能走到、避开就走不到，才算"躲不开"。新增强制段时在 `FORCED` 里加一行。
+- **三来源组合的触发点**：`COMBO_SPOTS` 每个三来源组合至少一行。通道型 `[楼层, 组合, 起点, 终点, 中心]`：组合里每一种陷阱单独都必须绕不开——`_route_ok` 在格子图上 BFS，`_moves` 按强制位移建边（踩弹弹床直接到落点、飞过的不算碰到；踩肥皂地板沿方向滑到离开地板 / 撞墙 / `slide_stopper`，滑过的都算碰到），禁止碰到该陷阱的覆盖格（`_trap_cover`：风道、整条传送带、毛毯、羽毛臂扫的格、机关手下方、旋转刷 3×3……）后从起点走不到终点才算；需要的怪物在中心 `SPOT_RADIUS`（8）格内，巢穴按生成的怪物、触手怪 / 巨魔 / 水母女王按召唤的小怪算，`*` 只看数量。战斗房型 `[楼层, 组合, "arena:<组>"]`：陷阱覆盖格和怪物在 `room_rect()` 里；有足枷台的组合要求房里有漩涡中心 / 弹弹床落点 / 肥皂地板滑到的地方是足枷台。最后检查每个三来源组合都登记了。
 
 ## 公主状态与换美术素材
 
-- **魔法姿态**：`princess_visuals.json` 的 `magic_order`（`chant / burst / damaged_chant / damaged_giggle_chant / damaged_burst / damaged_giggle_burst`）。`GameState.EMOTIONS` 仍是 11 种可请求的表情；`MAGIC_VISUALS` 只由 `Princess.resolve_visual()` 在 `CHANNEL`（吟唱）/ `CAST`（释放定住 `cast_time` 0.5 秒）状态下选用，优先级最高。选用规则：未战损 → 普通版；战损且闷笑值 ≤50 → 战损版；>50 → 战损闷笑版。`VISUALS = EMOTIONS + MAGIC_VISUALS` 是立绘、头像和 `EmotionComponent.row()` 的顺序。`magic_portrait_alias` 让战损闷笑释放借用战损释放的立绘。
+- **魔法姿态**：`princess_visuals.json` 的 `magic_order`（`chant / burst / damaged_chant / damaged_giggle_chant / damaged_burst / damaged_giggle_burst`）。`GameState.EMOTIONS` 仍是 11 种可请求的表情；`MAGIC_VISUALS` 只由 `Princess.resolve_visual()` 在 `CHANNEL`（吟唱）/ `CAST`（释放定住 `cast_time` 0.5 秒）状态下选用，优先级最高。选用规则（`Princess.magic_visual`）：闷笑值超过憋笑阈值（35%）→ 战损闷笑版（不管有没有战损，没有未战损的闷笑素材）；否则战损 → 战损版、未战损 → 普通版。吟唱中闷笑变化会 `emotion.refresh()` 立即切换。`VISUALS = EMOTIONS + MAGIC_VISUALS` 是立绘、头像和 `EmotionComponent.row()` 的顺序。`magic_portrait_alias` 让战损闷笑释放借用战损释放的立绘。
 - **多图集动画**：`SpriteSheetConfig.sheets` 定义额外图集（texture、hframes、vframes、offset、directions、row_names）。动画写 `"sheet": "magic"` 就换用该图集，行号按当前视觉状态名在它的 `row_names` 里找；不写 `sheet` 时恢复 Sprite 原来的图集。`"progress": true` 的动画帧号取 `SpriteSheetAnimator.progress`（0~1），吟唱时由 `PlayableCharacter` 设为蓄力进度。
 - 魔法图集 `princess_magic.png`：48×48，每行一种魔法姿态，列 = 下/左/右/上各 8 帧；Sprite offset (0, -24)，与 32 格行走帧 (0, -16) 的脚底对齐。
 - `data/actors/princess_visuals.json` 是11状态顺序的单一来源。Python导入器及 `GameState.EMOTIONS` 共同读取；对话按生成的 `portraits.json` 顺序寻址，并验证与注册表一致。
@@ -364,7 +382,7 @@ data/dialogues.json  只放通用对话（复活、上锁提示、钥匙、失�
 ## 目录
 
 ```
-scripts/core/         HitData、Faction、Contracts、ReactionDB、Floors
+scripts/core/         HitData、Faction、Contracts、ReactionDB、Floors（Faction / Contracts / ReactionDB.key_of / HitFx.kind_of 的参数不标类型、先判 is_instance_valid：可能传入已释放的对象，例如投射物的发射者）
 scripts/components/   各组件
 scripts/controllers/  输入来源
 scripts/actors/       Actor、PlayableCharacter、Monster、Ally 及具体角色

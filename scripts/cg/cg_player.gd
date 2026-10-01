@@ -182,6 +182,19 @@ func death_cg_for(key: String) -> String:
 	return str(death.get("by_source", {}).get(key, death.get("default", "")))
 
 
+## 被拖进巢穴的过场 CG id（data/cgs.json 的 nest 表：巢穴种类 -> {cg, source}）。
+func nest_cg_for(nest_kind: String) -> String:
+	return str(data.get("nest", {}).get(nest_kind, {}).get("cg", ""))
+
+
+func play_nest(nest_kind: String) -> void:
+	var info: Dictionary = data.get("nest", {}).get(nest_kind, {})
+	if info.is_empty():
+		await play_death("")
+		return
+	await play(str(info["cg"]), str(info.get("source", "")))
+
+
 ## CG 立绘接口：素材文件存在就用它（导入过的资源或直接读 png），否则用 placeholder 指定的公主状态立绘。
 func portrait_texture(id: String) -> Texture2D:
 	var info: Dictionary = data.get("portraits", {}).get(id, {})
@@ -208,6 +221,10 @@ func validate() -> Array[String]:
 	for id in [death.get("default", "")] + death.get("by_source", {}).values():
 		if not cgs().has(id):
 			errors.append("death 指向不存在的 CG: %s" % id)
+	var nests: Dictionary = data.get("nest", {})
+	for nk in nests:
+		if not cgs().has(str(nests[nk].get("cg", ""))):
+			errors.append("nest 指向不存在的 CG: %s" % nk)
 	var portraits: Dictionary = data.get("portraits", {})
 	for pid in portraits:
 		if not GameState.VISUALS.has(str(portraits[pid].get("placeholder", ""))):

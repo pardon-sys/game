@@ -67,7 +67,8 @@ static func taunts(key: String) -> Array:
 	return source(key).get("taunts", [])
 
 
-static func key_of(node: Object) -> String:
+## 参数不标类型：挠痒来源可能已经被释放（投射物的发射者、打倒的怪物）。
+static func key_of(node: Variant) -> String:
 	if node == null or not is_instance_valid(node):
 		return ""
 	var k: Variant = node.get("reaction_key")

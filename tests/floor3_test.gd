@@ -835,7 +835,8 @@ func _run_magic_visuals() -> void:
 	await _wait(0.1)
 
 	# 战损 / 战损闷笑
-	var cases := [[false, 0.0, "chant", "burst"], [true, 0.0, "damaged_chant", "damaged_burst"], [true, 70.0, "damaged_giggle_chant", "damaged_giggle_burst"]]
+	var cases := [[false, 0.0, "chant", "burst"], [true, 0.0, "damaged_chant", "damaged_burst"], [true, 70.0, "damaged_giggle_chant", "damaged_giggle_burst"],
+		[false, 70.0, "damaged_giggle_chant", "damaged_giggle_burst"]]
 	for c in cases:
 		_reset_magic()
 		princess.battle_damaged = c[0]
@@ -849,6 +850,20 @@ func _run_magic_visuals() -> void:
 		check("释放姿态 → %s" % c[3], princess.emotion.current == c[3]
 			and _magic_sheet_frame().y == GameState.MAGIC_VISUALS.find(c[3]))
 		await _wait(0.6)
+	# 吟唱中闷笑升到憋笑：立刻切到闷笑吟诵
+	_reset_magic()
+	princess.battle_damaged = false
+	player.laugh.clear()
+	await _wait(0.05)
+	ctrl.hold(&"magic", true)
+	await _wait(0.3)
+	var before_giggle := princess.emotion.current
+	player.laugh.set_value(70.0)
+	await _wait(0.05)
+	check("吟唱中闷笑升到憋笑：吟诵 → 闷笑吟诵", before_giggle == "chant" and princess.emotion.current == "damaged_giggle_chant"
+		and Dialogue.portrait.texture == Dialogue.portrait_for("damaged_giggle_chant"))
+	ctrl.hold(&"magic", false)
+	await _wait(0.7)
 	check("战损闷笑释放借用战损释放立绘", Dialogue.portrait_for("damaged_giggle_burst").region.size == Dialogue.portrait_for("damaged_burst").region.size)
 
 	# 释放动作中受到攻击 → 受伤

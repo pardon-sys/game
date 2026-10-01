@@ -34,6 +34,8 @@ func _ready() -> void:
 	await _run_fatigue()
 	await _run_monsters()
 	await _run_traps()
+	await _run_displacement()
+	await _run_nests()
 	await _run_combos()
 	await _run_combos3()
 	await _run_backpack()
@@ -151,6 +153,7 @@ func _run_special() -> void:
 
 	_reset()
 	var troll: TickleTroll = _spawn("tickle_troll", Vector2(12, 0), true)
+	troll.max_bats = 0  # 只测抓取暴击，不召唤蝙蝠
 	troll.stats = troll.stats.duplicate()
 	troll.stats.special_chance = 1.0
 	await _wait(0.1)
@@ -305,6 +308,16 @@ func _run_monsters() -> void:
 	check("连按 5 次戳破泡泡", not player.status.is_grabbed() and not fish.is_trapping()
 		and not player.get_children().any(func(c): return c is Sprite2D and c.texture == BubbleFish.CAGE_TEX))
 	fish.queue_free()
+
+	# 发射者在泡泡飞行中被打倒：泡泡照常命中 / 消失，不报错
+	_reset()
+	var fish2: BubbleFish = _spawn("bubble_fish", Vector2(60, 0))
+	fish2.target = player
+	fish2.shoot_bubble()
+	fish2.free()
+	await _wait(1.0)
+	check("泡泡鱼被释放后泡泡碰到公主：不报错、泡泡消失", get_tree().get_nodes_in_group("x").is_empty()
+		and level.get_node("Entities").get_children().all(func(n): return not (n is BubbleShot)) and not player.status.is_grabbed())
 
 	# 幽灵手套（成对）
 	_reset()
@@ -508,6 +521,319 @@ func _run_traps() -> void:
 	_reset()
 
 
+# ------------------------------------------------------------------ 强制位移陷阱
+func _wall(offset: Vector2) -> StaticBody2D:
+	var w := StaticBody2D.new()
+	w.collision_layer = 1
+	var cs := CollisionShape2D.new()
+	var r := RectangleShape2D.new()
+	r.size = Vector2(16, 48)
+	cs.shape = r
+	w.add_child(cs)
+	level.get_node("Entities").add_child(w)
+	w.global_position = player.global_position + offset
+	return w
+
+
+func _run_displacement() -> void:
+	print("-- 强制位移陷阱")
+	var home := player.global_position
+	# 吸痒漩涡
+	_reset()
+	ctrl.move = Vector2.ZERO
+	var vortex: TickleVortex = _trap("tickle_vortex", Vector2(40, 0), {"radius": 3})
+	await _wait(0.6)
+	var d0 := player.global_position.distance_to(vortex.global_position)
+	check("吸痒漩涡：半径内被往中心吸（40 → %.0f）" % d0, d0 < 30.0)
+	player.global_position = vortex.global_position + Vector2(-8, 0)
+	ctrl.move = Vector2.LEFT
+	await _wait(0.6)
+	check("靠近中心：往外走也走不出去", player.global_position.distance_to(vortex.global_position) < 20.0)
+	player._dash_cd = 0.0
+	ctrl.press(&"dash")
+	await _wait(0.25)
+	var d1 := player.global_position.distance_to(vortex.global_position)
+	await _wait(0.6)
+	check("冲刺可以挣开漩涡，挣到外圈后走得出去（%.0f → %.0f）" % [d1, player.global_position.distance_to(vortex.global_position)],
+		d1 > 40.0 and player.global_position.distance_to(vortex.global_position) > d1)
+	ctrl.move = Vector2.ZERO
+	var vstocks: Stocks = _trap("stocks", Vector2.ZERO)
+	vstocks.global_position = vortex.global_position
+	player.global_position = vortex.global_position + Vector2(-30, 0)
+	await _wait(1.5)
+	check("漩涡中心放足枷台：被吸进去锁住", player.status.is_grabbed_by(vstocks))
+	var held_at := player.global_position
+	await _wait(0.3)
+	check("被锁住时不再被吸动", player.global_position.distance_to(held_at) < 1.0)
+	vortex.set_active(true)  # 拉杆通电 = 关掉漩涡
+	check("漩涡可接拉杆关闭", not vortex.is_dangerous())
+	player.status.release(true)
+	vstocks.queue_free()
+	vortex.queue_free()
+	await _wait(0.2)
+
+	# 弹弹床
+	_reset()
+	player.global_position = home
+	player.laugh.clear()
+	await _wait(0.1)  # 传送后等物理更新，新放的陷阱不会碰到上一个位置
+	var pad: BouncePad = _trap("bounce_pad", Vector2(16, 0), {"dir": "right", "length": 3})
+	var mid: FeatherTrap = _trap("feather_trap", Vector2(48, 0))
+	var land := pad.landing_point()
+	ctrl.move = Vector2.RIGHT
+	var t := 0.0
+	while not player.is_airborne() and t < 1.0:
+		await get_tree().physics_frame
+		t += 1.0 / 60.0
+	check("弹弹床：踩上去被弹到空中", player.is_airborne())
+	ctrl.move = Vector2.UP
+	player._dash_cd = 0.0
+	ctrl.press(&"dash")
+	await get_tree().physics_frame
+	check("飞行中不能冲刺、不能换方向", not player.is_dashing() and player.forced_velocity().y == 0.0 and player.sprite.position.y < 0.0)
+	ctrl.move = Vector2.ZERO
+	await _wait(0.6)
+	check("落点正好在 3 格外（误差 %.1f）" % player.global_position.distance_to(land), player.global_position.distance_to(land) < 3.0
+		and not player.is_airborne() and player.sprite.position.y == 0.0)
+	check("飞过的陷阱不触发", mid.phase == Trap.Phase.IDLE and (player.last_tickle == null or player.last_tickle.source != mid))
+	mid.queue_free()
+	pad.queue_free()
+	await _wait(0.2)
+	_reset()
+	player.global_position = home
+	await _wait(0.1)  # 传送后等物理更新，新放的陷阱不会碰到上一个位置
+	var pad2: BouncePad = _trap("bounce_pad", Vector2(16, 0), {"dir": "right", "length": 2})
+	var lstocks: Stocks = _trap("stocks", Vector2(48, 0))
+	ctrl.move = Vector2.RIGHT
+	await _wait(0.2)
+	ctrl.move = Vector2.ZERO
+	await _wait(0.8)
+	check("落点是足枷台：落地就被锁住", player.status.is_grabbed_by(lstocks))
+	player.status.release(true)
+	lstocks.queue_free()
+	pad2.queue_free()
+	await _wait(0.3)
+
+	# 滑溜肥皂地板
+	_reset()
+	player.global_position = home
+	await _wait(0.1)  # 传送后等物理更新，新放的陷阱不会碰到上一个位置
+	var soap: SoapFloor = _trap("soap_floor", Vector2(16, 0), {"tiles_w": 4, "tiles_h": 1})
+	ctrl.move = Vector2.RIGHT
+	t = 0.0
+	while not player.is_force_moving() and t < 1.0:
+		await get_tree().physics_frame
+		t += 1.0 / 60.0
+	check("肥皂地板：踩上去开始滑", player.is_force_moving() and player.forced_kind == "slide")
+	var y0 := player.global_position.y
+	ctrl.move = Vector2.UP
+	await _wait(0.15)
+	check("滑行中不能换方向", absf(player.global_position.y - y0) < 1.0 and player.forced_velocity().x > 0.0)
+	ctrl.move = Vector2.ZERO
+	await _wait(0.8)
+	var soap_end := soap.global_position.x + 3 * 16 + 8
+	check("松开方向键也一直滑到地板尽头才停", not player.is_force_moving() and player.global_position.x >= soap_end - 2.0
+		and player.global_position.x < soap_end + 24.0)
+	soap.queue_free()
+	await _wait(0.2)
+	_reset()
+	player.global_position = home
+	await _wait(0.1)  # 传送后等物理更新，新放的陷阱不会碰到上一个位置
+	var soap2: SoapFloor = _trap("soap_floor", Vector2(16, 0), {"tiles_w": 6, "tiles_h": 1})
+	var wall := _wall(Vector2(16 * 5, 0))
+	ctrl.move = Vector2.RIGHT
+	await _wait(0.2)
+	ctrl.move = Vector2.ZERO
+	await _wait(0.8)
+	check("滑到墙边停下", not player.is_force_moving() and absf(player.global_position.x - (wall.global_position.x - 8.0)) < 10.0)
+	ctrl.move = Vector2.RIGHT
+	await _wait(0.3)
+	check("贴着墙往墙上推不会反复滑", not player.is_force_moving())
+	ctrl.move = Vector2.ZERO
+	wall.queue_free()
+	soap2.queue_free()
+	await _wait(0.2)
+	_reset()
+	player.global_position = home
+	await _wait(0.1)  # 传送后等物理更新，新放的陷阱不会碰到上一个位置
+	var soap3: SoapFloor = _trap("soap_floor", Vector2(16, 0), {"tiles_w": 6, "tiles_h": 1})
+	var sstocks: Stocks = _trap("stocks", Vector2(16 * 4, 0))
+	ctrl.move = Vector2.RIGHT
+	await _wait(0.2)
+	ctrl.move = Vector2.ZERO
+	await _wait(0.8)
+	check("滑到足枷台停下并被锁住", player.status.is_grabbed_by(sstocks) and not player.is_force_moving())
+	player.status.release(true)
+	sstocks.queue_free()
+	soap3.queue_free()
+	await _wait(0.3)
+	_reset()
+	player.global_position = home
+
+
+# ------------------------------------------------------------------ 怪物巢穴 / Boss 开局召唤
+func _nest(file: String, offset: Vector2) -> MonsterNest:
+	var n: MonsterNest = load("res://scenes/objects/nests/%s.tscn" % file).instantiate()
+	level.get_node("Entities").add_child(n)
+	n.global_position = player.global_position + offset
+	return n
+
+
+func _freeze(ms: Array) -> void:
+	for m in ms:
+		if is_instance_valid(m):
+			(m as Node).process_mode = Node.PROCESS_MODE_DISABLED
+
+
+func _run_nests() -> void:
+	print("-- 怪物巢穴")
+	var home := player.global_position
+	_reset()
+	player.laugh.clear()
+	await _wait(0.1)
+	var nest := _nest("rat_hole", Vector2(100, 0))
+	check("巢穴基类 + 子类：鼠洞生成挠脚鼠", nest is MonsterNest and nest is RatHole and nest.kind == "rat_hole"
+		and nest.monster_scene.ends_with("foot_rat.tscn") and nest.collision_layer & 33 == 33)
+	nest.spawn_interval = 0.3
+	await _wait(1.8)
+	var regular := nest.regular_alive()
+	_freeze(regular)
+	check("公主在附近：定时生成，同时最多 2 只（%d）" % regular.size(), regular.size() == 2
+		and regular.all(func(m): return m.home_nest == nest and m.is_in_group("nest_spawn") and m is FootRat))
+	nest.spawn_interval = 99.0
+	# 吟唱联动
+	player._magic_cd = 0.0
+	ctrl.hold(&"magic", true)
+	var counts: Array[int] = []
+	var t := 0.0
+	while t < 1.45:
+		await get_tree().physics_frame
+		t += 1.0 / 60.0
+		_freeze(nest.extras_alive())
+		if counts.is_empty() or counts[counts.size() - 1] != nest.extras_alive().size():
+			counts.append(nest.extras_alive().size())
+	var ex := nest.extras_alive().size()
+	check("吟唱时巢穴额外生成怪物，越来越快（1.45 秒 %d 只）" % ex, ex >= 5 and ex <= nest.surge_max and nest._surge_gap < 0.2)
+	check("额外生成不占普通上限", nest.regular_alive().size() == 2)
+	check("额外生成的怪物一出来就锁定公主", nest.extras_alive().all(func(m): return m.target == player))
+	player.interrupt_channel()
+	ctrl.hold(&"magic", false)
+	await _wait(1.5)
+	check("吟唱结束后额外怪物先留着", nest.extras_alive().size() == ex)
+	await _wait(2.2)
+	check("吟唱结束 3 秒后额外怪物缩回巢穴，普通怪物还在", nest.extras_alive().is_empty() and nest.regular_alive().size() == 2
+		and get_tree().get_nodes_in_group("nest_extra").is_empty())
+
+	# 拖进巢穴
+	var rats := nest.regular_alive()
+	for m in rats:
+		m.global_position = player.global_position + Vector2(4, 0)
+	player.laugh.set_value(player.laugh.max_value * 0.8)
+	await _wait(0.2)
+	check("失控时贴身的巢穴怪物抓住公主往巢穴拖", player.status.is_grabbed_by(nest) and nest.draggers.size() == 2)
+	var d0 := player.global_position.distance_to(nest.mouth())
+	await _wait(0.5)
+	var d1 := player.global_position.distance_to(nest.mouth())
+	check("两只一起拖：25 + 15 = 40 像素/秒（%.0f → %.0f）" % [d0, d1], d0 - d1 > 15.0 and d0 - d1 < 25.0
+		and rats.all(func(m): return m.global_position.distance_to(player.global_position) < 20.0))
+	for i in nest.drag_presses:
+		ctrl.press(&"attack")
+		await get_tree().physics_frame
+		await get_tree().physics_frame
+	await _wait(0.1)
+	var d2 := player.global_position.distance_to(nest.mouth())
+	await _wait(0.4)
+	check("连按 10 次挣脱，短时间内不会被再抓", not player.status.is_grabbed() and nest._regrab_cd > 0.0
+		and absf(player.global_position.distance_to(nest.mouth()) - d2) < 1.0)
+	player.laugh.set_value(player.laugh.max_value * 0.4)
+	nest._regrab_cd = 0.0
+	await _wait(0.3)
+	check("闷笑在失控以下不会被抓", not player.status.is_grabbed())
+	# 拖到巢穴口：倒下、播巢穴过场、复活
+	player.laugh.set_value(player.laugh.max_value * 0.8)
+	player.global_position = nest.mouth() + Vector2(-30, 0)
+	for m in rats:
+		m.global_position = player.global_position + Vector2(4, 0)
+	player._full_invuln = 0.0
+	t = 0.0
+	while player.is_alive() and t < 3.0:
+		await get_tree().physics_frame
+		t += 1.0 / 60.0
+		player.laugh.set_value(player.laugh.max_value * 0.8)
+	check("拖到巢穴口：公主倒下", not player.is_alive())
+	t = 0.0
+	while not CG.is_playing() and t < 2.0:
+		await _wait(0.05)
+		t += 0.05
+	check("播放这种巢穴的过场 CG（nest_rat_hole）", CG.is_playing() and CG.current == "nest_rat_hole" and CG.current == CG.nest_cg_for("rat_hole"))
+	CG._can_skip = true
+	CG.skip()
+	await _wait(1.0)
+	_finish_dialogue()
+	await _wait(0.3)
+	check("过场后在检查点复活", player.is_alive() and not CG.is_playing() and player.global_position.distance_to(GameState.checkpoint) < 2.0)
+	player.global_position = home
+	await _wait(0.1)
+
+	# 打碎
+	_reset()
+	player.laugh.clear()
+	var nest2 := _nest("slime_pool", Vector2(40, 0))
+	nest2.spawn_interval = 0.2
+	await _wait(1.3)
+	_freeze(nest2.regular_alive())
+	var before := nest2.regular_alive().size()
+	for i in 3:
+		nest2.receive_hit(HitData.make_attack(player, 1))
+	check("权杖打 3 下还没碎（血 4）", not nest2.broken and nest2.hp == 1)
+	StarBurst.cast(player, 3)
+	check("满蓄力星光爆发直接打碎", nest2.broken and nest2.collision_layer == 0 and not nest2.is_alive())
+	for m in nest2.regular_alive():
+		m.queue_free()
+	await _wait(1.0)
+	check("打碎后不再生成", nest2.regular_alive().is_empty())
+	var nest3 := _nest("rat_hole", Vector2(40, 0))
+	StarBurst.cast(player, 1)
+	check("低档星光爆发扣 2 血", not nest3.broken and nest3.hp == 2)
+	nest3.queue_free()
+	var pile := _nest("chest_pile", Vector2(60, 0))
+	var mimic := pile.spawn(false) as Mimic
+	_freeze([mimic])
+	check("宝箱堆生成的宝箱怪是醒着的（不伪装、直接扑人）", mimic != null and not mimic.is_disguised() and mimic.target == player)
+	var kinds_ok := true
+	for f in ["rat_hole", "fairy_flower", "slime_pool", "jelly_egg", "chest_pile"]:
+		var n := _nest(f, Vector2(0, 200))
+		kinds_ok = kinds_ok and n.kind == f and CG.cgs().has(CG.nest_cg_for(f)) and ResourceLoader.exists(n.monster_scene)
+		n.queue_free()
+	check("五种巢穴都有对应的怪物和过场 CG", kinds_ok)
+	for m in nest.spawned_alive() + nest2.spawned_alive() + pile.spawned_alive():
+		m.queue_free()
+	nest.queue_free()
+	nest2.queue_free()
+	pile.queue_free()
+
+	# Boss 开局召唤
+	_reset()
+	await _wait(0.2)
+	var boss: TentacleBoss = _spawn("tentacle_boss", Vector2(0, -80), true)
+	await _wait(0.4)
+	check("触手怪一开战（满血）就召唤小精灵群", boss.health.hp == boss.health.max_hp and get_tree().get_nodes_in_group("summoned_fairy").size() >= 1)
+	boss.health.damage(999)
+	await _wait(0.3)
+	var troll: TickleTroll = _spawn("tickle_troll", Vector2(60, 0), true)
+	troll.state = Monster.State.CHASE
+	troll.target = player
+	await _wait(0.3)
+	check("巨魔一开战就召唤 2 只羽毛蝙蝠", get_tree().get_nodes_in_group("summoned_bat").size() == 2)
+	troll.health.damage(999)
+	await _wait(0.3)
+	check("巨魔倒下时召唤的蝙蝠一起散掉", get_tree().get_nodes_in_group("summoned_bat").filter(func(b): return b.is_alive()).is_empty())
+	await _wait(0.5)
+	_reset()
+	player.laugh.clear()
+	player.global_position = home
+
+
 # ------------------------------------------------------------------ 组合技扩充
 func _run_combos() -> void:
 	print("-- 组合技扩充")
@@ -648,22 +974,33 @@ func _run_combos3() -> void:
 	check("每个三来源组合都有小演出（单独文件）", scenes_ok and CG.validate().is_empty())
 	var lines_ok := true
 	var traps_ok := true
+	var narrator_ok := true
+	var stage_ok := true
 	for id in CG.scenes:
 		var sc: Dictionary = CG.scenes[id]
-		var said := 0
+		var said: Array[String] = []
+		var narrated := 0
 		for st in sc["steps"]:
 			if st.get("speaker", "") == "公主":
-				said += 1
+				said.append(str(st["text"]))
+			elif st.has("text"):
+				narrated += 1
 			if st.has("auto"):
 				lines_ok = false
-		lines_ok = lines_ok and said >= 5
+		lines_ok = lines_ok and said.size() == 8
+		narrator_ok = narrator_ok and narrated == 1
+		# 阶段句：边笑边说手法，不陈述谁来了 / 加入了
+		for i in mini(3, said.size()):
+			stage_ok = stage_ok and said[i].contains("哈") and not (said[i].contains("来了") or said[i].contains("加入") or said[i].contains("也来"))
 		for k in ComboTracker.combo_def(id)["keys"]:
 			if ComboTracker.group("trap").has(k[0]):
 				var has_actor := false
 				for w in sc["cast"]:
 					has_actor = has_actor or str(sc["cast"][w]["kind"]) == "trap:" + str(k[0])
 				traps_ok = traps_ok and has_actor
-	check("演出：公主至少 5 句（三段递进 + 高潮），每句等按键推进", lines_ok)
+	check("演出：公主 8 句（三段各 1 句 + 高潮 5 句），每句等按键推进", lines_ok)
+	check("演出：开头保留 1 句旁白报组合名", narrator_ok)
+	check("演出：阶段句是边笑边说手法，不陈述谁来了 / 加入了", stage_ok)
 	check("演出：陷阱来源都作为陷阱演员上台", traps_ok)
 
 	# 优先级：指定来源 > 通配符
@@ -952,9 +1289,23 @@ func _run_hud_portrait() -> void:
 	player.receive_hit(HitData.make_tickle(_src(""), 2.0))
 	await get_tree().process_frame
 	check("没有来源（余痒、组合技）只抖不贴片", fx.sticker_count() == 0)
+	player.laugh.clear()
+	await _wait(0.6)
+	var mat := fx.glow_material()
+	check("立绘挂着轮廓发光 shader；平静时不发光", Dialogue.portrait.material == mat and mat.shader.resource_path.ends_with("portrait_glow.gdshader")
+		and fx.glow_target() == 0.0 and fx.glow_strength < 0.05)
+	player.laugh.set_value(player.laugh.max_value * 0.45)
+	await _wait(0.6)
+	var giggle_glow := fx.glow_strength
 	player.laugh.set_value(player.laugh.max_value * 0.9)
 	await _wait(1.0)
-	check("立绘背后没有粉色蒙层", Dialogue.find_children("PortraitGlow*", "", true, false).is_empty())
+	check("闷笑越高光晕越强（憋笑起亮，失控 2 最亮，失控时呼吸）", giggle_glow > 0.1 and fx.glow_strength > giggle_glow
+		and float(mat.get_shader_parameter("strength")) > 0.9 and float(mat.get_shader_parameter("pulse")) > 0.0
+		and int(mat.get_shader_parameter("mode")) == 0)
+	var reg: Vector4 = mat.get_shader_parameter("region")
+	check("光晕采样限制在图集里这张立绘的范围", reg == PortraitFx.glow_region(Dialogue.portrait.texture) and reg.z - reg.x < 0.5)
+	check("立绘背后没有粉色蒙层（光晕由 shader 沿轮廓画）", Dialogue.find_children("PortraitGlow*", "", true, false).is_empty()
+		and not Dialogue.find_children("*", "ColorRect", true, false).any(func(c): return c.visible and c.color.r > 0.8 and c.color.b > 0.5 and c.color.g < 0.7))
 	await _wait(0.4)
 	player.receive_hit(HitData.make_tickle(_src("rat"), 1.0))
 	await get_tree().process_frame

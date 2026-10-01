@@ -13,6 +13,8 @@ const MIMIC_REGION := Rect2(128, 112, 16, 16)
 @export var grab_max_time := 6.0
 @export var grab_presses := 8
 @export var twitch_interval := Vector2(4.0, 6.0)
+## 醒着（宝箱堆生成的）：一出来就不伪装，直接扑向公主。
+@export var awake := false
 
 var disguised := true
 var victim: Actor
@@ -26,6 +28,8 @@ func _setup() -> void:
 	super()
 	_twitch = randf_range(twitch_interval.x, twitch_interval.y)
 	sprite.region_rect = CHEST_REGION
+	if awake:
+		_reveal()
 
 
 func _tick(delta: float) -> void:

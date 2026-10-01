@@ -16,6 +16,8 @@ extends Area2D
 
 var direction := Vector2.RIGHT
 var shooter: Node = null
+## 发射时记下的阵营：发射者在投射物飞行中被打倒（释放）后仍然按它判断敌我。
+var shooter_faction := Faction.Type.NEUTRAL
 var _age := 0.0
 var _done := false
 
@@ -24,6 +26,7 @@ static func fire(scene: PackedScene, parent: Node, from: Vector2, dir: Vector2, 
 	var p: Projectile = scene.instantiate()
 	p.direction = dir.normalized()
 	p.shooter = src
+	p.shooter_faction = Faction.of(src)
 	parent.add_child(p)
 	p.global_position = from
 	p.rotation = p.direction.angle()
@@ -46,10 +49,12 @@ func _physics_process(delta: float) -> void:
 
 
 func _on_body_entered(body: Node) -> void:
-	if _done or body == shooter:
+	var alive := is_instance_valid(shooter)
+	if _done or (alive and body == shooter):
 		return
 	if Contracts.is_damageable(body):
-		if Faction.of(body) == Faction.Type.NEUTRAL or Faction.are_hostile(shooter, body):
+		var hostile := Faction.are_hostile(shooter, body) if alive else Faction.is_hostile(shooter_faction, Faction.of(body))
+		if Faction.of(body) == Faction.Type.NEUTRAL or hostile:
 			_on_hit(body)
 			_expire()
 	elif body is TileMapLayer or body is StaticBody2D:

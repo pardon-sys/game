@@ -1,5 +1,6 @@
 extends Node
-## 关卡设计测试：强制遭遇段绕不过去、锁门战斗房的上锁 / 解锁 / 倒下重置、各层从起点能走到出口。
+## 关卡设计测试：强制遭遇段绕不过去、锁门战斗房的上锁 / 解锁 / 倒下重置、各层从起点能走到出口、
+## 每个三来源组合都有「踩不开」的触发点。
 ## 用法：Godot --headless --path . res://tests/level_design_test.tscn   （退出码 0 = 全部通过）
 ##
 ## "危险格" = 关卡里所有陷阱覆盖的格子（风扇风道、整条传送带、机关手下方、压力板、羽毛 / 藤蔓 / 喷口 / 尖刺 / 旋转刷所在格）。
@@ -23,6 +24,40 @@ const FORCED := [
 	["floor_04", "刺猬滚道的整高毛毯 + 顶墙羽毛臂", Vector2i(49, 17), Vector2i(21, 17)],
 	["floor_04", "诅咒回廊（符文 + 毛毯 + 羽毛臂）", Vector2i(32, 18), Vector2i(32, 27)],
 ]
+## 三来源组合的触发点（每个三来源组合至少一处）：
+##   通道型 [楼层, 组合 id, 起点格, 终点格, 中心格]：组合里的每一种陷阱单独都绕不开（避开它就从起点走不到终点；
+##     弹弹床按落点、滑溜肥皂地板按滑到的地方算——见 _moves），需要的每种怪物都在中心格 SPOT_RADIUS 格内。
+##   战斗房型 [楼层, 组合 id, "arena:<铁栅组>"]：陷阱和怪物都在锁门战斗房里；有足枷台的组合，房里要有把人送进足枷台的
+##     强制位移陷阱（漩涡中心 / 弹弹床落点 / 肥皂地板滑到的地方是足枷台）。
+## 怪物算：地图上的怪物、会生成它的巢穴、会召唤它的 Boss。
+const COMBO_SPOTS := [
+	["floor_02", "line_end", Vector2i(50, 33), Vector2i(31, 33), Vector2i(34, 31)],
+	["floor_02", "three_hands", Vector2i(50, 33), Vector2i(31, 33), Vector2i(34, 31)],
+	["floor_02", "sticky_ghost", Vector2i(17, 7), Vector2i(52, 9), Vector2i(30, 5)],
+	["floor_02", "wind_bubble", Vector2i(9, 22), Vector2i(17, 9), Vector2i(12, 16)],
+	["floor_02", "night_trio", "arena:arena_spider"],
+	["floor_02", "troll_stocks3", "arena:arena_troll"],
+	["floor_03", "tentacle_feather", "arena:arena_boss"],
+	["floor_03", "vault_trap", "arena:arena_boss"],
+	["floor_03", "vine_stocks", "arena:arena_rats"],
+	["floor_03", "jelly_sole_party", Vector2i(50, 39), Vector2i(42, 33), Vector2i(51, 33)],
+	["floor_03", "sticky_belt", Vector2i(50, 39), Vector2i(42, 33), Vector2i(44, 33)],
+	["floor_04", "queen_feast", "arena:arena_boss"],
+	["floor_04", "queen_stocks3", "arena:arena_boss"],
+	["floor_04", "sole_party", "arena:arena_plaza"],
+	["floor_04", "sole_mobilize", "arena:arena_plaza"],
+	["floor_04", "thousand_feather", "arena:arena_plaza"],
+	["floor_04", "jelly_sole", "arena:arena_plaza"],
+	["floor_04", "full_scrub", Vector2i(49, 17), Vector2i(20, 17), Vector2i(27, 17)],
+	["floor_04", "brush_line", Vector2i(49, 17), Vector2i(20, 17), Vector2i(35, 17)],
+	["floor_04", "curse_hall", Vector2i(25, 17), Vector2i(18, 17), Vector2i(21, 17)],
+	["floor_04", "bubble_spa", Vector2i(53, 53), Vector2i(62, 44), Vector2i(58, 48)],
+	["floor_04", "mob_curse", Vector2i(38, 52), Vector2i(52, 52), Vector2i(45, 51)],
+	["floor_04", "ultimate_stocks", Vector2i(64, 40), Vector2i(64, 24), Vector2i(64, 32)],
+	["floor_04", "auto_stocks", Vector2i(64, 40), Vector2i(64, 24), Vector2i(64, 32)],
+	["floor_04", "curse_chain", Vector2i(64, 40), Vector2i(64, 24), Vector2i(64, 32)],
+]
+const SPOT_RADIUS := 8
 ## [楼层, 战斗房铁栅组]
 const ARENAS := [
 	["floor_01", "arena_guard"], ["floor_02", "arena_spider"], ["floor_02", "arena_troll"],
@@ -60,7 +95,16 @@ func _ready() -> void:
 			e.process_mode = Node.PROCESS_MODE_DISABLED
 		print("-- ", id)
 		_run_forced(id)
+		_run_combo_spots(id)
 		await _run_arenas(id)
+	var covered := {}
+	for sp in COMBO_SPOTS:
+		covered[sp[1]] = true
+	var missing: Array = []
+	for c in ComboTracker.data().get("combos", []):
+		if c.get("keys", []).size() >= 3 and not covered.has(c["id"]):
+			missing.append(c["id"])
+	check("每个三来源组合都有触发点（缺：%s）" % [missing], missing.is_empty())
 	print("\n==== %s (%d 项失败) ====" % ["全部通过" if failures == 0 else "有失败", failures])
 	get_tree().quit(1 if failures else 0)
 
@@ -157,6 +201,215 @@ func _reachable_all() -> bool:
 	return missing == 0 or (level.get("floor_id") == "floor_01" and missing <= 60)
 
 
+# ------------------------------------------------------------------ 三来源组合的触发点
+func _run_combo_spots(id: String) -> void:
+	var walls: TileMapLayer = level.get_node("Walls")
+	for sp in COMBO_SPOTS:
+		if sp[0] != id:
+			continue
+		var combo: Dictionary = ComboTracker.combo_def(sp[1])
+		var name := str(ReactionDB.combo(sp[1]).get("name", sp[1]))
+		var trap_slots: Array = []
+		var monster_slots: Array = []
+		for slot in combo["keys"]:
+			if ComboTracker.group("trap").has(slot[0]):
+				trap_slots.append(slot)
+			else:
+				monster_slots.append(slot)
+		var problems: Array[String] = []
+		if sp[2] is String:
+			var arena := _arena(str(sp[2]).trim_prefix("arena:"))
+			if arena == null:
+				problems.append("没有战斗房 " + sp[2])
+			else:
+				var rect := arena.room_rect()
+				for slot in trap_slots:
+					if not _cells_of(slot).keys().any(func(c): return rect.has_point(walls.to_global(walls.map_to_local(c)))):
+						problems.append("房里没有陷阱 %s" % [slot])
+				if trap_slots.any(func(slot): return slot.has("stocks")) and not _delivers_to_stocks(rect):
+					problems.append("房里没有把人送进足枷台的强制位移陷阱")
+				problems.append_array(_missing_monsters(monster_slots, func(p: Vector2): return rect.has_point(p)))
+		else:
+			var start: Vector2i = sp[2]
+			var goal: Vector2i = sp[3]
+			var center: Vector2 = walls.to_global(walls.map_to_local(sp[4]))
+			if not _route_ok(start, goal, {}):
+				problems.append("起点走不到终点")
+			for slot in trap_slots:
+				var cells := _cells_of(slot)
+				if _route_ok(start, goal, cells):
+					problems.append("陷阱 %s 绕得开" % [slot])
+				if not cells.keys().any(func(c): return walls.to_global(walls.map_to_local(c)).distance_to(center) <= SPOT_RADIUS * 16.0):
+					problems.append("陷阱 %s 不在中心附近" % [slot])
+			problems.append_array(_missing_monsters(monster_slots, func(p: Vector2): return p.distance_to(center) <= SPOT_RADIUS * 16.0))
+		check("三来源触发点「%s」%s" % [name, ("" if problems.is_empty() else "：" + "；".join(problems))], problems.is_empty())
+
+
+## 某个组合槽位（可选来源键列表）对应的陷阱覆盖的格子。
+func _cells_of(slot: Array) -> Dictionary:
+	var out := {}
+	for n in level.find_children("*", "", true, false):
+		if n is Trap and slot.has(str(n.get("reaction_key"))):
+			for c in _trap_cover(n as Trap):
+				out[c] = true
+	return out
+
+
+## 单个陷阱覆盖的格子（和 hazard_cells 同样的规则；旋转刷按刷臂扫到的 3x3）。
+func _trap_cover(n: Trap) -> Array[Vector2i]:
+	var walls: TileMapLayer = level.get_node("Walls")
+	var c0 := walls.local_to_map(walls.to_local(n.global_position))
+	var out: Array[Vector2i] = []
+	if n is FeatherFan:
+		var fan := n as FeatherFan
+		for dx in range(-fan.length - 2, fan.length + 3):
+			for dy in range(-fan.length - 2, fan.length + 3):
+				var c := c0 + Vector2i(dx, dy)
+				if fan.in_lane(walls.to_global(walls.map_to_local(c))):
+					out.append(c)
+	elif n is TickleConveyor:
+		for i in (n as TickleConveyor).length:
+			out.append(c0 + Vector2i((n as TickleConveyor).belt) * i)
+	elif n is StickyCarpet:
+		for dx in (n as StickyCarpet).tiles_w:
+			for dy in (n as StickyCarpet).tiles_h:
+				out.append(c0 + Vector2i(dx, dy))
+	elif n is FeatherArm:
+		var wall_cell := walls.local_to_map(walls.to_local(n.global_position + Vector2(0, -8)))
+		for i in (n as FeatherArm).length:
+			out.append(wall_cell + Vector2i((n as FeatherArm).lane) * (i + 1))
+	elif n is GrabHand:
+		# 装在墙上：抓的是墙格下面那一格
+		out.append(walls.local_to_map(walls.to_local(n.global_position + Vector2(0, -8))) + Vector2i(0, 1))
+	elif n is FeatherBrush:
+		for dx in range(-1, 2):
+			for dy in range(-1, 2):
+				out.append(c0 + Vector2i(dx, dy))
+	else:
+		out.append(c0)
+	return out
+
+
+## 强制位移：弹弹床格 -> 落点格；肥皂地板格；滑行停下的格（会抓人 / 定身的陷阱）。
+func _forced_maps() -> Dictionary:
+	var walls: TileMapLayer = level.get_node("Walls")
+	var pads := {}
+	var soap := {}
+	var stoppers := {}
+	for n in level.find_children("*", "", true, false):
+		if n is BouncePad:
+			pads[walls.local_to_map(walls.to_local((n as BouncePad).global_position))] = walls.local_to_map(walls.to_local((n as BouncePad).landing_point()))
+		elif n is SoapFloor:
+			var s := n as SoapFloor
+			var c0 := walls.local_to_map(walls.to_local(s.global_position))
+			for dx in s.tiles_w:
+				for dy in s.tiles_h:
+					soap[c0 + Vector2i(dx, dy)] = true
+		elif n is Trap and (n as Trap).stops_slide:
+			for c in _trap_cover(n as Trap):
+				stoppers[c] = true
+	return {"pads": pads, "soap": soap, "stoppers": stoppers}
+
+
+## 从 c 出发的一步：[到达的格, 碰到的格]。踩上弹弹床直接飞到落点（飞过的不算碰到）；
+## 踩上肥皂地板沿这个方向一直滑到离开地板、撞墙或停在会抓人 / 定身的陷阱上（滑过的格都算碰到）。
+func _moves(c: Vector2i, fm: Dictionary) -> Array:
+	var out: Array = []
+	for d in [Vector2i.LEFT, Vector2i.RIGHT, Vector2i.UP, Vector2i.DOWN]:
+		var n: Vector2i = c + d
+		if not _walkable(n, {}):
+			continue
+		if fm["pads"].has(n):
+			var land: Vector2i = fm["pads"][n]
+			if _walkable(land, {}):
+				out.append([land, [land]])
+		elif fm["soap"].has(n):
+			var cur := n
+			var touched: Array = [n]
+			while fm["soap"].has(cur) and not fm["stoppers"].has(cur) and _walkable(cur + d, {}):
+				cur += d
+				touched.append(cur)
+			out.append([cur, touched])
+		else:
+			out.append([n, [n]])
+	return out
+
+
+## 不碰 forbidden 里的格子能不能从 start 走到 goal（按强制位移的规则）。
+func _route_ok(start: Vector2i, goal: Vector2i, forbidden: Dictionary) -> bool:
+	var fm := _forced_maps()
+	var seen := {start: true}
+	var queue: Array[Vector2i] = [start]
+	while not queue.is_empty():
+		var c: Vector2i = queue.pop_back()
+		if c == goal:
+			return true
+		for mv in _moves(c, fm):
+			var to: Vector2i = mv[0]
+			if seen.has(to) or (mv[1] as Array).any(func(t): return forbidden.has(t)):
+				continue
+			seen[to] = true
+			queue.append(to)
+	return false
+
+
+## 战斗房里有没有把人送进足枷台的强制位移陷阱。
+func _delivers_to_stocks(rect: Rect2) -> bool:
+	var walls: TileMapLayer = level.get_node("Walls")
+	var stocks := _cells_of(["stocks"])
+	var fm := _forced_maps()
+	for n in level.find_children("*", "", true, false):
+		if not (n is Trap) or not rect.has_point((n as Node2D).global_position + Vector2(0, 4)) and not (n is SoapFloor):
+			continue
+		var c0 := walls.local_to_map(walls.to_local((n as Node2D).global_position))
+		if n is TickleVortex and stocks.has(c0):
+			return true
+		if n is BouncePad and stocks.has(fm["pads"][c0]):
+			return true
+		if n is SoapFloor:
+			for sc in fm["soap"]:
+				if not rect.has_point(walls.to_global(walls.map_to_local(sc))):
+					continue
+				for mv in _moves(sc - Vector2i.LEFT, fm) + _moves(sc - Vector2i.RIGHT, fm) + _moves(sc - Vector2i.UP, fm) + _moves(sc - Vector2i.DOWN, fm):
+					if stocks.has(mv[0]) and (mv[1] as Array).has(sc):
+						return true
+	return false
+
+
+## 按范围找组合需要的怪物，返回缺少的槽位说明。
+func _missing_monsters(slots: Array, in_range: Callable) -> Array[String]:
+	var have := {}
+	var total := 0
+	for n in level.find_children("*", "", true, false):
+		var keys: Array[String] = []
+		if n is Monster and in_range.call((n as Node2D).global_position):
+			keys.append((n as Monster).stats.reaction_key)
+			# Boss 会召唤的怪物
+			if n is TentacleBoss:
+				keys.append("fairy")
+			elif n is TickleTroll:
+				keys.append("bat")
+			elif n is JellyQueen:
+				keys.append("mana_jelly")
+		elif n is MonsterNest and in_range.call((n as Node2D).global_position):
+			var m: Monster = load((n as MonsterNest).monster_scene).instantiate()
+			keys.append(m.stats.reaction_key)
+			m.free()
+		for k in keys:
+			have[k] = int(have.get(k, 0)) + 1
+			total += 1
+	var out: Array[String] = []
+	var wild := 0
+	for slot in slots:
+		if slot.has("*"):
+			wild += 1
+		elif not slot.any(func(k): return have.has(k)):
+			out.append("缺怪物 %s" % [slot])
+	if total < wild + (slots.size() - wild):
+		out.append("怪物不够（需要 %d 只，只有 %d）" % [slots.size(), total])
+	return out
+
+
 # ------------------------------------------------------------------ 锁门战斗房
 func _gates(group: String) -> Array:
 	return get_tree().get_nodes_in_group(group).filter(func(n: Node): return n is StaticBody2D and n.has_method("set_open"))
@@ -193,7 +446,10 @@ func _run_arenas(id: String) -> void:
 			check("%s：再次进入重新上锁" % group, arena.active and gates.all(func(g: Node): return not g.is_open))
 		for m in arena._tracked:
 			if is_instance_valid(m) and m.is_alive():
-				m.health.damage(999)
+				if m is MonsterNest:
+					(m as MonsterNest).smash()  # 巢穴要打碎
+				else:
+					m.health.damage(999)
 		await _wait(0.4)
 		for m in get_tree().get_nodes_in_group("enemy"):  # 分裂出来 / 召唤出来的
 			if arena.room_rect().has_point(m.global_position) and m.is_alive():

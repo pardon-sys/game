@@ -24,6 +24,8 @@ static var random_specials := true
 
 var state := State.WANDER
 var target: Actor
+## 巢穴生成的怪物记住自己的巢穴（MonsterNest）。
+var home_nest: Node
 var _home := Vector2.ZERO
 var _wander_dir := Vector2.ZERO
 var _think := 0.0
