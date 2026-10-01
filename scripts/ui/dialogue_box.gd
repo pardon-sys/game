@@ -53,6 +53,8 @@ var _shake_tween: Tween
 ## 横版大框的基准位置（抖动围绕它进行）。
 var _wide_rect := Rect2()
 const PORTRAIT_RECT := Rect2(2, 114, 114, 152)
+## 常驻立绘的被挠反馈（抖动、来源贴片、闪光、光晕、「哈哈」飘字、暴击爆闪、组合技心形）。
+var portrait_fx: PortraitFx
 const WIDE_POS := Vector2(4, 6)
 const WIDE_HEIGHT := 180.0
 
@@ -63,7 +65,9 @@ func _ready() -> void:
 	_style_scrollbar()
 	GameState.emotion_changed.connect(_on_emotion_changed)
 	GameState.princess_reacted.connect(show_reaction)
-	GameState.player_registered.connect(func(_player: PlayableCharacter): _show_portrait("normal"))
+	GameState.player_registered.connect(_on_player_registered)
+	GameState.combo_triggered.connect(func(id: String, _n: String):
+		portrait_fx.on_combo(ComboTracker.is_triple(ComboTracker.combo_def(id))))
 	# 立绘与头像是高密度纹理（density 倍像素），显示在固定的逻辑尺寸里（画面 stretch 为 canvas_items）
 	var meta: Variant = JSON.parse_string(FileAccess.get_file_as_string(PORTRAIT_META))
 	portrait_cell = Vector2(meta["cell"][0], meta["cell"][1])
@@ -75,8 +79,24 @@ func _ready() -> void:
 		_portraits.append(_atlas(PORTRAIT_SHEET, Rect2(Vector2(i * portrait_cell.x, 0), portrait_cell)))
 		_heads.append(_atlas(HEAD_SHEET, Rect2(i * head_size, 0, head_size, head_size)))
 	_show_portrait("normal")
+	portrait_fx = PortraitFx.new()
+	add_child(portrait_fx)
+	portrait_fx.setup(portrait)
 	_common = _read_json(DATA_PATH)
 	_data = _common.duplicate()
+
+
+func _on_player_registered(p: PlayableCharacter) -> void:
+	_show_portrait("normal")
+	portrait_fx.clear()
+	if not p.tickled.is_connected(_on_player_tickled):
+		p.tickled.connect(_on_player_tickled)
+		p.died.connect(func(_a: Actor): portrait_fx.clear())
+
+
+func _on_player_tickled(hit: HitData) -> void:
+	var p := GameState.player
+	portrait_fx.on_tickled(hit, p.laugh if is_instance_valid(p) else null)
 
 
 func _read_json(path: String) -> Dictionary:
@@ -180,6 +200,8 @@ func _on_emotion_changed(emotion: String) -> void:
 ## wide = true：横版大图，立绘框变成高 180、宽度按图片比例的大框（原比例填满），带粉色边框。
 func set_portrait_override(tex: Texture2D, wide := false) -> void:
 	_portrait_override = tex
+	if tex:
+		portrait_fx.clear()
 	portrait.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED if tex else TextureRect.STRETCH_SCALE
 	var want_wide := wide and tex != null
 	if want_wide != _wide or want_wide:
@@ -193,15 +215,15 @@ func is_portrait_wide() -> bool:
 	return _wide
 
 
-## 横版 CG 图随挠痒抖动（大框和图片一起，几个像素的来回晃动，结束后回到原位）。
+## 立绘随挠痒抖动（几个像素的来回晃动，结束后回到原位）：横版 CG 图连大框一起抖；常驻立绘围绕立绘框位置抖。
 func shake_portrait(strength := 2.0, time := 0.2) -> void:
-	if not _wide:
-		return
 	if _frame_tween and _frame_tween.is_running():
 		return  # 大框正在展开，展开完再抖
+	if not _wide and (_portrait_tween and _portrait_tween.is_running() or not portrait.visible):
+		return  # 立绘正在滑入 / 换表情
 	if _shake_tween:
 		_shake_tween.kill()
-	var base := _wide_rect.position
+	var base := _wide_rect.position if _wide else PORTRAIT_RECT.position
 	_shake_tween = create_tween()
 	var steps := maxi(2, int(time / 0.04))
 	for i in steps:
@@ -210,11 +232,18 @@ func shake_portrait(strength := 2.0, time := 0.2) -> void:
 		off = off.round()
 		_shake_tween.tween_callback(func():
 			portrait.position = base + off
-			_wide_frame.position = base + off - Vector2(2, 2))
+			if _wide:
+				_wide_frame.position = base + off - Vector2(2, 2))
 		_shake_tween.tween_interval(0.04)
 	_shake_tween.tween_callback(func():
 		portrait.position = base
-		_wide_frame.position = base - Vector2(2, 2))
+		if _wide:
+			_wide_frame.position = base - Vector2(2, 2))
+
+
+## 立绘是否正在抖（测试用）。
+func is_portrait_shaking() -> bool:
+	return _shake_tween != null and _shake_tween.is_running()
 
 
 func _set_wide(on: bool, tex: Texture2D) -> void:

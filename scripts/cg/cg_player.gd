@@ -27,7 +27,7 @@ const ORIGIN := Vector2(176, 100)
 ## 舞台基础放大倍数：camera 的 zoom 1 = 2 倍，1.5 = 3 倍，2 = 4 倍（始终取整数倍，保持像素清晰）。
 const BASE_ZOOM := 2.0
 const ACTIONS := ["enter", "exit", "move", "hop", "shake", "face", "pose", "tickle", "bubble", "say", "taunt",
-	"sfx", "voice", "camera", "flash", "fade_in", "fade_out", "wait"]
+	"sfx", "voice", "camera", "flash", "fade_in", "fade_out", "wait", "sources", "light"]
 const FX_FRAMES := {"lines": [0, 1, 2], "feather": [3], "hand": [4], "heart": [5]}
 
 var data := {}
@@ -50,6 +50,8 @@ var curtain: ColorRect
 var flash_rect: ColorRect
 var skip_label: Label
 var voice: AudioStreamPlayer
+## 舞台顶部的来源栏（组合演出：三个来源的图标 + 名字，加入时点亮）。
+var source_bar: HBoxContainer
 
 
 func _ready() -> void:
@@ -101,6 +103,7 @@ func _build() -> void:
 			floor.set_cell(Vector2i(x, y), 0, Vector2i(tile % 12, tile / 12))
 	cast_root = Node2D.new()
 	cast_root.y_sort_enabled = true
+	cast_root.z_index = 2  # 铺在脚下的陷阱演员（相对 z -1）也要画在地面之上
 	view.add_child(cast_root)
 	fx_root = Node2D.new()
 	fx_root.z_index = 5
@@ -143,6 +146,13 @@ func _build() -> void:
 	border.size = FRAME_RECT.size + Vector2(4, 4)
 	border.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(border)
+	source_bar = HBoxContainer.new()
+	source_bar.name = "Sources"
+	source_bar.position = FRAME_RECT.position + Vector2(8, 6)
+	source_bar.add_theme_constant_override("separation", 6)
+	source_bar.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	source_bar.z_index = 30  # 盖过舞台上的表情气泡（z 10）
+	add_child(source_bar)
 	skip_label = Label.new()
 	skip_label.text = "Esc 跳过"
 	skip_label.position = FRAME_RECT.position + Vector2(FRAME_RECT.size.x - 64, 4)
@@ -201,7 +211,8 @@ func validate() -> Array[String]:
 		var cast: Dictionary = cg.get("cast", {})
 		for who in cast:
 			var k := str(cast[who].get("kind", ""))
-			if not (k == "princess" or k == "source" or (k.begins_with("monster:") and data.get("actors", {}).has(k.substr(8)))):
+			if not (k == "princess" or k == "source" or (k.begins_with("monster:") and data.get("actors", {}).has(k.substr(8))) \
+					or (k.begins_with("trap:") and data.get("trap_actors", {}).has(k.substr(5)))):
 				errors.append("%s: 演员 %s 的 kind 无效: %s" % [id, who, k])
 		for i in cg.get("steps", []).size():
 			var step: Dictionary = cg["steps"][i]
@@ -321,6 +332,7 @@ func _finish() -> void:
 	voice.stop()
 	for a in actors.values():
 		a.queue_free()
+	_clear_sources()
 	actors.clear()
 	for c in fx_root.get_children():
 		c.queue_free()
@@ -390,6 +402,8 @@ func _build_cast(cast: Dictionary) -> void:
 		if k == "princess":
 			a = CGActor.make_princess(who)
 			a.set_pose(str(info.get("visual", "helpless_1")), str(info.get("anim", "helpless")), str(info.get("dir", "down")))
+		elif k.begins_with("trap:"):
+			a = CGActor.make_trap(who, k.substr(5), data.get("trap_actors", {}).get(k.substr(5), {}))
 		else:
 			var key := source_key if k == "source" else k.substr(8)
 			var actor_info: Dictionary = data.get("actors", {}).get(key, data.get("actors", {}).get("slime", {}))
@@ -402,6 +416,93 @@ func _build_cast(cast: Dictionary) -> void:
 		a.visible = not info.get("hidden", false)
 		cast_root.add_child(a)
 		actors[who] = a
+
+
+# ------------------------------------------------------------------ 来源栏
+## sources 指令：list = [{kind: monster / trap, key, name}]，全部先暗着显示。
+func _set_sources(list: Array) -> void:
+	_clear_sources()
+	for e in list:
+		var cell := PanelContainer.new()
+		var sb := StyleBoxFlat.new()
+		sb.bg_color = Color(0.1, 0.05, 0.12, 0.85)
+		sb.border_color = Color(0.95, 0.72, 0.84)
+		sb.set_border_width_all(1)
+		sb.set_corner_radius_all(2)
+		sb.content_margin_left = 3
+		sb.content_margin_right = 4
+		cell.add_theme_stylebox_override("panel", sb)
+		var row := HBoxContainer.new()
+		row.add_theme_constant_override("separation", 2)
+		var icon := TextureRect.new()
+		icon.texture = _icon_for(str(e.get("kind", "monster")), str(e.get("key", "")))
+		icon.custom_minimum_size = Vector2(16, 16)
+		icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		row.add_child(icon)
+		var l := Label.new()
+		l.text = str(e.get("name", ""))
+		l.add_theme_color_override("font_color", Color(1, 0.88, 0.95))
+		row.add_child(l)
+		cell.add_child(row)
+		cell.modulate = Color(0.35, 0.3, 0.4, 0.8)
+		source_bar.add_child(cell)
+
+
+## light 指令：点亮第 index 格（all = true 时三格一起闪）。
+func _light(index: int, all := false) -> void:
+	for i in source_bar.get_child_count():
+		var cell := source_bar.get_child(i) as Control
+		if not all and i != index:
+			continue
+		cell.modulate = Color(1.6, 1.4, 1.5) if all else Color.WHITE
+		cell.pivot_offset = cell.size / 2.0
+		var tw := cell.create_tween()
+		tw.tween_property(cell, "scale", Vector2(1.2, 1.2), 0.08)
+		tw.tween_property(cell, "scale", Vector2.ONE, 0.12)
+		tw.parallel().tween_property(cell, "modulate", Color.WHITE, 0.3)
+
+
+## 第 index 格是否已点亮（测试用）。
+func source_lit(index: int) -> bool:
+	if index >= source_bar.get_child_count():
+		return false
+	return (source_bar.get_child(index) as Control).modulate.r > 0.9
+
+
+func _clear_sources() -> void:
+	if source_bar == null:
+		return
+	for c in source_bar.get_children():
+		source_bar.remove_child(c)
+		c.queue_free()
+
+
+## 来源图标：怪物取演员贴图的第一帧，陷阱取 trap_actors 的待机帧（羽毛臂取羽毛尖）。
+func _icon_for(kind: String, key: String) -> Texture2D:
+	var at := AtlasTexture.new()
+	if kind == "trap":
+		var info: Dictionary = data.get("trap_actors", {}).get(key, {})
+		if info.is_empty():
+			return null
+		var tex: Texture2D = load(str(info["texture"]))
+		var hf := int(info.get("hframes", 1))
+		var w := tex.get_width() / hf
+		var f := 3 if info.get("arm", false) else int(info.get("idle", [0])[0])
+		at.atlas = tex
+		at.region = Rect2(f * w, 0, w, tex.get_height())
+		return at
+	var a := CGActor.make_monster("icon", key, data.get("actors", {}).get(key, {}))
+	var sp := a.sprite
+	at.atlas = sp.texture
+	if sp.region_enabled:
+		at.region = sp.region_rect
+	else:
+		var w2 := sp.texture.get_width() / maxi(sp.hframes, 1)
+		var h2 := sp.texture.get_height() / maxi(sp.vframes, 1)
+		at.region = Rect2(0, 0, w2, h2)
+	a.free()
+	return at
 
 
 func _v(p: Variant) -> Vector2:
@@ -466,6 +567,11 @@ func _act(a: Dictionary) -> float:
 				who.set_pose(str(a.get("visual", "")), str(a.get("anim", "")), str(a.get("dir", "")))
 			else:
 				who.style = str(a.get("style", "idle"))
+		"sources":
+			_set_sources(a.get("list", []))
+		"light":
+			_light(int(a.get("index", 0)), a.get("all", false))
+			Audio.play("chime", -10.0, 0.05, 1.3)
 		"tickle":
 			var by: CGActor = actors.get(str(a.get("by", "")))
 			var n := int(a.get("repeat", 3))
@@ -474,6 +580,8 @@ func _act(a: Dictionary) -> float:
 			t = n * every
 			if by:
 				by.style = "wiggle"
+				if by.kind == "trap":
+					by.activate(t + 0.2)
 			var tw := create_tween()
 			# 用弱引用：CG 结束（演员被释放）后剩下的回调直接跳过，不会捕获到已释放的对象
 			var who_ref: WeakRef = weakref(who)

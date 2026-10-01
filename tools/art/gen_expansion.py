@@ -986,6 +986,12 @@ def particle(kind):
         img, d = canvas(3, 2)
         d.rectangle((0, 0, 2, 1), fill=WOOD_L)
         d.point((2, 1), fill=WOOD_D)
+    elif kind == "heart":
+        img, d = canvas(5, 5)
+        pk = (255, 120, 170, 255)
+        for x, y in ((1, 0), (3, 0), (0, 1), (1, 1), (2, 1), (3, 1), (4, 1), (0, 2), (1, 2), (2, 2), (3, 2), (4, 2), (1, 3), (2, 3), (3, 3), (2, 4)):
+            d.point((x, y), fill=pk)
+        d.point((1, 1), fill=(255, 220, 235, 255))
     else:   # drop：紫色水花
         img, d = canvas(3, 3)
         d.point((1, 0), fill=JELLY_L)
@@ -1001,7 +1007,7 @@ def gen_hit_fx():
         for f in range(6):
             sheet.alpha_composite(hit_fx(k, f), (f * 24, row * 24))
     sheet.save(OUT / "hit_fx.png")
-    for k in ("ember", "goo", "dust", "chip", "drop"):
+    for k in ("ember", "goo", "dust", "chip", "drop", "heart"):
         particle(k).save(OUT / ("particle_%s.png" % k))
 
 
