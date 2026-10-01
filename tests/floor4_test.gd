@@ -769,7 +769,8 @@ func _run_combos3() -> void:
 	for k in ["rune", "carpet", "arm"]:
 		_tk(k)
 	await get_tree().process_frame
-	await get_tree().process_frame
+	check("小演出先等大字标题演完", not CG.is_playing())
+	await _wait(ComboTracker.SCENE_DELAY + 0.2)
 	check("第一次触发诅咒回廊：播放小演出", CG.is_playing() and CG.current == "combo:curse_hall" and CG.can_skip())
 	CG.skip()
 	await _wait(0.8)
@@ -778,8 +779,7 @@ func _run_combos3() -> void:
 	c.reset()
 	for k in ["rune", "carpet", "arm"]:
 		_tk(k)
-	await get_tree().process_frame
-	await get_tree().process_frame
+	await _wait(ComboTracker.SCENE_DELAY + 0.2)
 	check("第二次不再播", not CG.is_playing())
 	ComboTracker.play_scenes = false
 

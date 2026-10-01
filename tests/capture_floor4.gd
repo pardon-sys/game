@@ -106,7 +106,25 @@ func _ready() -> void:
 	queen.health.damage(13)
 	await _wait(1.5)
 	await _shot("f4_16_queen_rain")
+	queen.process_mode = Node.PROCESS_MODE_DISABLED
+	await _capture_triple()
 	get_tree().quit()
+
+
+## 三来源组合：HUD 大字标题（慢动作中）和第一次触发的小演出。
+func _capture_triple() -> void:
+	player.revive()
+	player.combo.reset()
+	_place(Vector2i(32, 21))
+	await _wait(0.3)
+	GameState.flags.erase("combo_scene_curse_hall")
+	for n in ["Rune_32_20", "Carpet_32_22", "Arm_34_21"]:
+		player.receive_hit(HitData.make_tickle(level_find(n), 1.0))
+	await get_tree().create_timer(0.15, true, false, true).timeout
+	await _shot("f4_19_triple_title")
+	await _wait(2.6)
+	await _shot("f4_20_combo_scene")
+	_finish()
 
 
 ## 背包两页。

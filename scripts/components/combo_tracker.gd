@@ -22,6 +22,8 @@ const CHAIN_WINDOW := 10.0
 const CHAIN_BONUS := 0.2
 const TRIPLE_WINDOW := 2.5
 const TRIPLE_COOLDOWN := 8.0
+## 三来源组合触发后多久开始播小演出（秒）。
+const SCENE_DELAY := 1.2
 ## 抬起期间的余痒（每秒）。
 const LIFT_DOT := 4.0
 ## 抬起是本节点抓住公主：挣脱次数设得很大 = 挣扎无效。
@@ -264,7 +266,8 @@ func _fire(c: Dictionary, source: Node, upgraded := false) -> void:
 		GameState.set_flag("combo_scene_" + id)
 		var cg := get_node_or_null("/root/CG")
 		if cg and cg.has_method("play_scene"):
-			cg.play_scene.call_deferred(id)
+			# 先让 HUD 的大字标题和慢动作演完，再切到小演出
+			get_tree().create_timer(SCENE_DELAY, false).timeout.connect(cg.play_scene.bind(id))
 
 
 func _apply_effects(c: Dictionary, source: Node) -> void:
