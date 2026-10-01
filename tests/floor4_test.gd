@@ -956,7 +956,16 @@ func _run_hud_portrait() -> void:
 	await _wait(0.4)
 	player.receive_hit(HitData.make_tickle(_src("rat"), 1.0))
 	await get_tree().process_frame
+	var stage := player.laugh.stage()
 	check("失控时立绘旁飘出「哈哈」", fx.haha_count() >= 1)
+	check("飘字用挠脚鼠自己配置的 portrait_words", fx.haha_texts().all(func(t): return ReactionDB.portrait_words("rat", stage).has(t))
+		and ReactionDB.portrait_words("rat", stage) != ReactionDB.data()["portrait_words"][stage])
+	fx.clear()
+	await _wait(0.4)
+	player.receive_hit(HitData.make_tickle(_src("vine"), 1.0))
+	await get_tree().process_frame
+	check("没配置的来源用全局默认飘字", fx.haha_count() >= 1
+		and fx.haha_texts().all(func(t): return ReactionDB.data()["portrait_words"][stage].has(t)))
 	fx.clear()
 	await _wait(0.2)
 	var crit := HitData.make_tickle(_src("crab"), 1.0)

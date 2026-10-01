@@ -4,12 +4,14 @@ extends Control
 ##   抖动        Dialogue.shake_portrait，幅度按闷笑阶段：平静 1、憋笑 2、失控 1 3、失控 2 4 像素；暴击再 +2
 ##   来源贴片    按挠痒来源（HitFx.kind_of）在立绘的脚心 / 腰侧 / 腋下 / 脖子随机位置播放命中特效（放大 2 倍）
 ##   粉色闪光    被挠瞬间立绘泛粉；立绘下面的粉色光晕随闷笑比例变浓（0% 不显示，100% 时 0.55）
-##   「哈哈」飘字 失控后被挠时旁边冒出「哈哈」「嘻嘻」小字往上飘
+##   「哈哈」飘字 失控后被挠时旁边冒出小字往上飘：文字在 data/princess_reactions.json 的 portrait_words
+##               （全局默认，各来源可以单独配置，ReactionDB.portrait_words）
 ##   暴击爆闪    暴击时金色星环（放大 3 倍）+ 白闪；组合技触发时爆开粉色心形（三来源更多）
 ## 笑倒 CG 播放中、立绘被 CG 接管（横版大框）时不处理。
 
 const ANCHORS := [Vector2(0.36, 0.93), Vector2(0.62, 0.93), Vector2(0.3, 0.56), Vector2(0.7, 0.56),
 	Vector2(0.27, 0.42), Vector2(0.73, 0.42), Vector2(0.5, 0.3)]
+## data 里一个字都没配置时的兜底。
 const HAHA := ["哈哈", "哈哈哈", "嘻嘻", "哈哈~", "~"]
 const SHAKE_BY_STAGE := {"calm": 1.0, "giggle": 2.0, "helpless_1": 3.0, "helpless_2": 4.0}
 const MAX_STICKERS := 3
@@ -73,7 +75,7 @@ func on_tickled(hit: HitData, laugh: LaughMeter) -> void:
 		var gap := 0.22 if stage == "helpless_2" else 0.35
 		if _since_haha >= gap:
 			_since_haha = 0.0
-			_haha(stage == "helpless_2")
+			_haha(stage == "helpless_2", ReactionDB.key_of(hit.source), stage)
 
 
 ## 组合技：立绘周围爆开粉色心形。
@@ -149,9 +151,10 @@ func _flash(col: Color, time: float) -> void:
 	_flash_tween.tween_property(portrait, "self_modulate", Color.WHITE, time)
 
 
-func _haha(big: bool) -> void:
+func _haha(big: bool, key := "", stage := "helpless_1") -> void:
+	var words := ReactionDB.portrait_words(key, stage)
 	var l := Label.new()
-	l.text = HAHA.pick_random()
+	l.text = str(words.pick_random()) if not words.is_empty() else HAHA.pick_random()
 	l.add_theme_color_override("font_color", Color(1, 0.6, 0.8))
 	l.add_theme_color_override("font_outline_color", Color(0.35, 0.06, 0.22))
 	l.add_theme_constant_override("outline_size", 4)
@@ -172,3 +175,8 @@ func _haha(big: bool) -> void:
 ## 正在飘的「哈哈」数量（测试用）。
 func haha_count() -> int:
 	return get_children().filter(func(c): return c is Label).size()
+
+
+## 正在飘的「哈哈」文字（测试用）。
+func haha_texts() -> Array:
+	return get_children().filter(func(c): return c is Label).map(func(c): return (c as Label).text)

@@ -4,6 +4,8 @@ extends RefCounted
 ##   lines(key, stage)      公主台词：先找 sources[key][stage]，没有则回退到通用 lines[stage]
 ##   first_encounter(key)   第一次被该来源挠痒时的剧情对话（对话行数组，格式同 dialogues.json）
 ##   taunts(key)            怪物回嘴短句
+##   portrait_words(key, stage)  失控后被挠时立绘旁飘出的小字：先找 sources[key].portrait_words（数组 = 各阶段通用，
+##                          或按阶段的字典），没有则用顶层 portrait_words[stage]
 ##   key_of(node)           由挠痒来源节点得到键：reaction_key 属性 / MonsterStats.reaction_key / 投射物的发射者
 
 const PATH := "res://data/princess_reactions.json"
@@ -42,6 +44,19 @@ static func magic(event: String) -> Array:
 static func lines(key: String, stage: String) -> Array:
 	var own: Array = source(key).get(stage, [])
 	return own if not own.is_empty() else data().get("lines", {}).get(stage, [])
+
+
+## 立绘飘字（PortraitFx）：stage = helpless_1 / helpless_2。
+static func portrait_words(key: String, stage: String) -> Array:
+	var own: Variant = source(key).get("portrait_words", null)
+	if own is Array and not own.is_empty():
+		return own
+	if own is Dictionary and not own.get(stage, []).is_empty():
+		return own[stage]
+	var global: Variant = data().get("portrait_words", {})
+	if global is Dictionary:
+		return global.get(stage, global.get("helpless_1", []))
+	return global if global is Array else []
 
 
 static func first_encounter(key: String) -> Array:
