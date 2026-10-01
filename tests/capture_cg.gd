@@ -1,9 +1,8 @@
 extends Node
 ## 笑倒 CG 截图（开发用）：Godot --path . res://tests/capture_cg.tscn → tools/.cache/shots/cg_<id>_<步>.png
-## 每段 CG 截第 2 步（第一幕）、第 4 步（第二幕：失控 2 + 镜头拉近）、第 6 步（第三幕：横版 CG 图）；可传 -- only=death_slime 只截一段。
+## 每段 CG 在每次换立绘的那一步截一张（第一幕、第二幕、第三幕 CG 图、第四幕 CG 图……）；可传 -- only=death_slime 只截一段。
 
 const OUT := "res://tools/.cache/shots/"
-const SHOT_STEPS := [1, 3, 5]
 
 
 func _ready() -> void:
@@ -22,6 +21,11 @@ func _ready() -> void:
 		if only != "" and id != only:
 			continue
 		var key: String = id.trim_prefix("death_")
+		var shot_steps: Array = []
+		var steps: Array = CG.cgs()[id]["steps"]
+		for si in steps.size():
+			if steps[si].has("portrait") and steps[si]["portrait"] != "wake":
+				shot_steps.append(si)
 		CG.play(id, key)
 		await get_tree().process_frame
 		var shot := {}
@@ -29,13 +33,13 @@ func _ready() -> void:
 		while CG.is_playing() and guard < 400:
 			guard += 1
 			var i: int = CG.step_index
-			if i in SHOT_STEPS and not shot.has(i):
+			if i in shot_steps and not shot.has(i):
 				shot[i] = true
 				await _wait(1.3)
 				await RenderingServer.frame_post_draw
 				get_viewport().get_texture().get_image().save_png(ProjectSettings.globalize_path("%scg_%s_%d.png" % [OUT, id, i + 1]))
 				print("shot ", id, " ", i + 1)
-			if Dialogue.is_active() and not (i in SHOT_STEPS and not shot.has(i)):
+			if Dialogue.is_active() and not (i in shot_steps and not shot.has(i)):
 				Dialogue.advance()
 				Dialogue.advance()
 			await _wait(0.05)

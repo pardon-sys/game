@@ -52,7 +52,7 @@ func _run_data() -> void:
 		all_have_text = all_have_text and texts.size() >= 4
 	check("每段 CG 都有完整的对话过程", all_have_text)
 	var third_ok := true
-	for key in ["slime", "bat", "ghost", "spider", "troll", "rat", "crab", "split_slime", "mimic", "fairy", "tentacle"]:
+	for key in MONSTER_SCENES:
 		var steps: Array = CG.cgs()["death_" + key]["steps"]
 		var idx := -1
 		for i in steps.size():
@@ -63,22 +63,25 @@ func _run_data() -> void:
 		if not ok:
 			print("    第三幕有问题：", key)
 		third_ok = third_ok and ok
-	check("11 段怪物 CG 都有第三幕（横版 CG 图 + 最多的剧情）", third_ok)
-	var new_ok := true
-	for key in ["mana_jelly", "bubble_fish", "glove", "hedgehog", "jelly_queen"]:
+	check("16 段怪物 CG 都有第三幕（横版 CG 图 + 最多的剧情）", third_ok)
+	var fourth_ok := true
+	for key in ["bubble_fish", "jelly_queen"]:
 		var steps: Array = CG.cgs()["death_" + key]["steps"]
-		var idx := -1
+		var i3 := -1
+		var i4 := -1
 		for i in steps.size():
-			if str(steps[i].get("portrait", "")) == key + "_3":
-				idx = i
-		var after: Array = steps.slice(maxi(idx, 0)).filter(func(st: Dictionary): return st.has("text"))
-		var info: Dictionary = CG.data["portraits"][key + "_3"]
-		var ok: bool = idx >= 0 and after.size() >= 6 and not CG.has_portrait_file(key + "_3") and not info.get("wide", false) \
-				and info.get("placeholder", "") == "helpless_2"
+			var pid := str(steps[i].get("portrait", ""))
+			if pid == key + "_3":
+				i3 = i
+			elif pid == key + "_4":
+				i4 = i
+		var act4: Array = steps.slice(maxi(i4, 0)).filter(func(st: Dictionary): return st.has("text"))
+		var ok: bool = i3 >= 0 and i4 > i3 and CG.has_portrait_file(key + "_4") and CG.data["portraits"][key + "_4"].get("wide", false) \
+				and act4.size() >= 6
 		if not ok:
-			print("    新怪物第三幕有问题：", key)
-		new_ok = new_ok and ok
-	check("5 种新怪物的 CG 第三幕默认用失控 2 立绘占位（普通框）", new_ok)
+			print("    第四幕有问题：", key)
+		fourth_ok = fourth_ok and ok
+	check("两张 CG 图的怪物（泡泡鱼、水母女王）有第四幕", fourth_ok and not CG.data["portraits"].has("slime_4"))
 	check("通用 CG 没有第三幕", not CG.cgs()["death_generic"]["steps"].any(func(st: Dictionary): return str(st.get("portrait", "")).ends_with("_3")))
 	check("立绘缺素材时用失控 1 / 失控 2 占位", CG.portrait_texture("slime_1") == Dialogue.portrait_for("helpless_1")
 		and CG.portrait_texture("slime_2") == Dialogue.portrait_for("helpless_2") and not CG.has_portrait_file("slime_1"))

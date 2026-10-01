@@ -452,19 +452,26 @@ func _act(a: Dictionary) -> float:
 			if by:
 				by.style = "wiggle"
 			var tw := create_tween()
+			# 用弱引用：CG 结束（演员被释放）后剩下的回调直接跳过，不会捕获到已释放的对象
+			var who_ref: WeakRef = weakref(who)
+			var by_ref: WeakRef = weakref(by) if by else null
+			var after := str(a.get("after", "idle"))
 			for i in n:
 				tw.tween_callback(func():
-					if not is_instance_valid(who):
+					var w: CGActor = who_ref.get_ref()
+					if w == null:
 						return
-					Audio.play("tickle", -3.0, 0.1, by.tickle_pitch if is_instance_valid(by) else 1.0)
-					who.shake(0.2)
-					if who.kind == "princess":
+					var b: CGActor = by_ref.get_ref() if by_ref else null
+					Audio.play("tickle", -3.0, 0.1, b.tickle_pitch if b else 1.0)
+					w.shake(0.2)
+					if w.kind == "princess":
 						Dialogue.shake_portrait()  # 第三幕的横版 CG 图跟着挠痒一起抖
-					_spawn_fx(who, fx))
+					_spawn_fx(w, fx))
 				tw.tween_interval(every)
 			tw.tween_callback(func():
-				if is_instance_valid(by):
-					by.style = str(a.get("after", "idle")))
+				var b: CGActor = by_ref.get_ref() if by_ref else null
+				if b:
+					b.style = after)
 		"bubble":
 			t = t if t > 0.0 else 1.4
 			who.bubble(str(a.get("kind", "laugh")), t)
