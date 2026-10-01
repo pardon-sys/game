@@ -17,16 +17,17 @@ const FORCED := [
 	["floor_03", "蟹池出口的传送带", Vector2i(50, 39), Vector2i(42, 33)],
 	["floor_03", "传送带工坊", Vector2i(41, 33), Vector2i(30, 27)],
 	["floor_03", "风洞走廊", Vector2i(30, 23), Vector2i(19, 18)],
-	["floor_04", "水母池出口的诅咒符文走廊", Vector2i(30, 46), Vector2i(44, 46)],
-	["floor_04", "泡泡水道的黏黏毛毯", Vector2i(45, 46), Vector2i(55, 39)],
-	["floor_04", "足枷长廊（羽毛臂 + 整宽足枷台）", Vector2i(55, 36), Vector2i(55, 20)],
-	["floor_04", "刺猬滚道的整高毛毯", Vector2i(54, 18), Vector2i(22, 18)],
+	["floor_04", "水母池出口的诅咒符文走廊", Vector2i(38, 52), Vector2i(52, 52)],
+	["floor_04", "泡泡水道的黏黏毛毯", Vector2i(53, 53), Vector2i(62, 44)],
+	["floor_04", "足枷长廊（毛毯 + 整宽足枷台 + 符文 + 羽毛臂）", Vector2i(64, 40), Vector2i(64, 24)],
+	["floor_04", "刺猬滚道的整高毛毯 + 顶墙羽毛臂", Vector2i(49, 17), Vector2i(21, 17)],
+	["floor_04", "诅咒回廊（符文 + 毛毯 + 羽毛臂）", Vector2i(32, 18), Vector2i(32, 27)],
 ]
 ## [楼层, 战斗房铁栅组]
 const ARENAS := [
 	["floor_01", "arena_guard"], ["floor_02", "arena_spider"], ["floor_02", "arena_troll"],
 	["floor_03", "arena_rats"], ["floor_03", "arena_hall"], ["floor_03", "arena_trial"], ["floor_03", "arena_boss"],
-	["floor_04", "arena_totem"], ["floor_04", "arena_gallery"], ["floor_04", "arena_boss"],
+	["floor_04", "arena_plaza"], ["floor_04", "arena_totem"], ["floor_04", "arena_gallery"], ["floor_04", "arena_boss"],
 ]
 
 var main: Node
@@ -79,7 +80,7 @@ func _run_forced(id: String) -> void:
 		# 对照：安全区里不碰陷阱也能走动（证明上面的检查不是恒成立）
 		check("对照：第三层落脚点里不踩陷阱也能走动", _reachable(Vector2i(10, 50), Vector2i(12, 45), hazards))
 	if id == "floor_04":
-		check("对照：刺猬滚道的毛毯之前不踩陷阱也能走动", _reachable(Vector2i(54, 18), Vector2i(44, 18), hazards))
+		check("对照：刺猬滚道的毛毯之前不踩陷阱也能走动", _reachable(Vector2i(48, 17), Vector2i(43, 17), hazards))
 	check("%s：从起点能走到每一块地面（铁栅、门视为可通过）" % id, _reachable_all())
 
 

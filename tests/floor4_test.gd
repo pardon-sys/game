@@ -897,20 +897,33 @@ func _run_floor4() -> void:
 			print("    第四层缺少：", k)
 			types_ok = false
 	check("第四层放了全部新怪物和新陷阱", types_ok and counts["jelly_queen"] == 1)
+	var bag := level.find_child("Chest_19_49", true, false)
+	check("落脚点旁的储藏室宝箱里是冒险背包", bag != null and bag.item != null and bag.item.id == "backpack")
+	var plaza: ArenaZone = null
+	for a in get_tree().get_nodes_in_group("arena"):
+		if a.group_name == "arena_plaza":
+			plaza = a
+	check("新增刑台广场战斗房", plaza != null)
+	var star := 0
+	for ch in level.find_children("Chest_*", "", true, false):
+		if ch.item and ch.item.id == "star_candy":
+			star += 1
+	check("两个宝箱里有星光糖", star == 2)
+	check("检查点减到 4 个", level.find_children("Checkpoint_*", "", true, false).size() == 4)
 	var gloves := level.find_children("*", "GhostGlove", true, false)
 	check("幽灵手套都成对（%d 只）" % gloves.size(), gloves.size() % 2 == 0 and gloves.all(func(g2): return g2.partner() != null))
-	var carpet := level.find_child("Carpet_48_42", true, false) as StickyCarpet
+	var carpet := level.find_child("Carpet_56_48", true, false) as StickyCarpet
 	check("水道毛毯 5×2 盖住缺口", carpet != null and carpet.tiles_w == 5 and carpet.tiles_h == 2)
-	var arm := level.find_child("Arm_54_33", true, false) as FeatherArm
+	var arm := level.find_child("Arm_63_37", true, false) as FeatherArm
 	check("足枷长廊的羽毛臂朝走廊里扫", arm != null and arm.lane == Vector2.RIGHT and arm.length == 2)
-	var gate := level.find_child("Gate_31_5", true, false)
-	var queen := level.find_child("JellyQueen_20_4", true, false) as JellyQueen
+	var gate := level.find_child("Gate_39_5", true, false)
+	var queen := level.find_child("JellyQueen_22_4", true, false) as JellyQueen
 	check("Boss 门初始关闭", gate != null and not gate.is_open and queen != null and queen.open_on_death == "boss_gate")
 	queen.process_mode = Node.PROCESS_MODE_INHERIT
 	queen.health.damage(99)
 	await _wait(0.2)
 	check("打倒水母女王后 Boss 门打开", gate.is_open)
-	var trig := level.find_child("Trigger_36_5", true, false)
+	var trig := level.find_child("Trigger_44_5", true, false)
 	check("出口剧情触发器", trig != null and trig.dialogue == "ending_4")
 	Dialogue.start("ending_4")
 	_finish_dialogue()

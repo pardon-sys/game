@@ -770,7 +770,7 @@ func _run_floor3() -> void:
 		kinds[m.stats.reaction_key] = kinds.get(m.stats.reaction_key, 0) + 1
 	for k in ["rat", "crab", "split_slime", "mimic", "fairy", "tentacle"]:
 		check("第三层有 %s" % k, kinds.get(k, 0) > 0)
-	check("只有一只宝箱怪、一只触手怪", kinds.get("mimic", 0) == 1 and kinds.get("tentacle", 0) == 1)
+	check("两只宝箱怪（宝物间 + 触手怪大厅角落）、一只触手怪", kinds.get("mimic", 0) == 2 and kinds.get("tentacle", 0) == 1)
 	check("落脚点有练手的小精灵", _find("Fairy_15_45") != null)
 	var trap_types := {}
 	for t in level.find_children("*", "Trap", true, false):
