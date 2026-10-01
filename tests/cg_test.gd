@@ -101,6 +101,20 @@ func _run_data() -> void:
 			print("    巢穴过场有问题：", nk)
 		nest_ok = nest_ok and ok
 	check("五种巢穴各有一段三幕过场 CG（第三幕先用失控 2 占位）", nest_ok and CG.validate().is_empty())
+	var nest_file: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://data/nest_cgs.json"))
+	var main_file: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://data/cgs.json"))
+	check("巢穴过场在单独的文件 data/nest_cgs.json 里", nest_file.get("cgs", {}).size() == 5 and nest_file.has("nest")
+		and not main_file.get("cgs", {}).keys().any(func(k): return str(k).begins_with("nest_")) and not main_file.has("nest"))
+	var crowd_ok := true
+	for nk in CG.data.get("nest", {}):
+		var cg: Dictionary = CG.cgs()[CG.nest_cg_for(nk)]
+		var steps: Array = cg["steps"]
+		var i3 := steps.find(steps.filter(func(st): return str(st.get("portrait", "")).ends_with("_3"))[0])
+		var entering: Array = steps[i3]["actions"].filter(func(a): return a["do"] == "enter" and str(a["who"]).begins_with("crowd"))
+		var kind_ok: bool = cg["cast"].keys().filter(func(w): return str(w).begins_with("crowd")).all(
+			func(w): return cg["cast"][w]["kind"] == "monster:" + str(CG.data["nest"][nk]["source"]))
+		crowd_ok = crowd_ok and entering.size() >= 8 and kind_ok
+	check("巢穴过场第三幕：大批同类怪物涌上来（每段 ≥ 8 只）", crowd_ok)
 	check("通用 CG 没有第三幕", not CG.cgs()["death_generic"]["steps"].any(func(st: Dictionary): return str(st.get("portrait", "")).ends_with("_3")))
 	check("立绘缺素材时用失控 1 / 失控 2 占位", CG.portrait_texture("slime_1") == Dialogue.portrait_for("helpless_1")
 		and CG.portrait_texture("slime_2") == Dialogue.portrait_for("helpless_2") and not CG.has_portrait_file("slime_1"))
