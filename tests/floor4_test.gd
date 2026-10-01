@@ -658,22 +658,33 @@ func _run_combos3() -> void:
 	check("每个三来源组合都有小演出（单独文件）", scenes_ok and CG.validate().is_empty())
 	var lines_ok := true
 	var traps_ok := true
+	var narrator_ok := true
+	var stage_ok := true
 	for id in CG.scenes:
 		var sc: Dictionary = CG.scenes[id]
-		var said := 0
+		var said: Array[String] = []
+		var narrated := 0
 		for st in sc["steps"]:
 			if st.get("speaker", "") == "公主":
-				said += 1
+				said.append(str(st["text"]))
+			elif st.has("text"):
+				narrated += 1
 			if st.has("auto"):
 				lines_ok = false
-		lines_ok = lines_ok and said >= 5
+		lines_ok = lines_ok and said.size() == 8
+		narrator_ok = narrator_ok and narrated == 1
+		# 阶段句：边笑边说手法，不陈述谁来了 / 加入了
+		for i in mini(3, said.size()):
+			stage_ok = stage_ok and said[i].contains("哈") and not (said[i].contains("来了") or said[i].contains("加入") or said[i].contains("也来"))
 		for k in ComboTracker.combo_def(id)["keys"]:
 			if ComboTracker.group("trap").has(k[0]):
 				var has_actor := false
 				for w in sc["cast"]:
 					has_actor = has_actor or str(sc["cast"][w]["kind"]) == "trap:" + str(k[0])
 				traps_ok = traps_ok and has_actor
-	check("演出：公主至少 5 句（三段递进 + 高潮），每句等按键推进", lines_ok)
+	check("演出：公主 8 句（三段各 1 句 + 高潮 5 句），每句等按键推进", lines_ok)
+	check("演出：开头保留 1 句旁白报组合名", narrator_ok)
+	check("演出：阶段句是边笑边说手法，不陈述谁来了 / 加入了", stage_ok)
 	check("演出：陷阱来源都作为陷阱演员上台", traps_ok)
 
 	# 优先级：指定来源 > 通配符
@@ -962,9 +973,23 @@ func _run_hud_portrait() -> void:
 	player.receive_hit(HitData.make_tickle(_src(""), 2.0))
 	await get_tree().process_frame
 	check("没有来源（余痒、组合技）只抖不贴片", fx.sticker_count() == 0)
+	player.laugh.clear()
+	await _wait(0.6)
+	var mat := fx.glow_material()
+	check("立绘挂着轮廓发光 shader；平静时不发光", Dialogue.portrait.material == mat and mat.shader.resource_path.ends_with("portrait_glow.gdshader")
+		and fx.glow_target() == 0.0 and fx.glow_strength < 0.05)
+	player.laugh.set_value(player.laugh.max_value * 0.45)
+	await _wait(0.6)
+	var giggle_glow := fx.glow_strength
 	player.laugh.set_value(player.laugh.max_value * 0.9)
 	await _wait(1.0)
-	check("立绘背后没有粉色蒙层", Dialogue.find_children("PortraitGlow*", "", true, false).is_empty())
+	check("闷笑越高光晕越强（憋笑起亮，失控 2 最亮，失控时呼吸）", giggle_glow > 0.1 and fx.glow_strength > giggle_glow
+		and float(mat.get_shader_parameter("strength")) > 0.9 and float(mat.get_shader_parameter("pulse")) > 0.0
+		and int(mat.get_shader_parameter("mode")) == 0)
+	var reg: Vector4 = mat.get_shader_parameter("region")
+	check("光晕采样限制在图集里这张立绘的范围", reg == PortraitFx.glow_region(Dialogue.portrait.texture) and reg.z - reg.x < 0.5)
+	check("立绘背后没有粉色蒙层（光晕由 shader 沿轮廓画）", Dialogue.find_children("PortraitGlow*", "", true, false).is_empty()
+		and not Dialogue.find_children("*", "ColorRect", true, false).any(func(c): return c.visible and c.color.r > 0.8 and c.color.b > 0.5 and c.color.g < 0.7))
 	await _wait(0.4)
 	player.receive_hit(HitData.make_tickle(_src("rat"), 1.0))
 	await get_tree().process_frame

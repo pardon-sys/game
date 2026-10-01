@@ -355,6 +355,8 @@ func _run_cg_portrait_fx() -> void:
 	check("播放 CG 时立绘反馈进入 CG 模式", fx.cg_mode)
 	await _advance_to(_step_with_portrait(id, "bubble_fish_1"))
 	check("第一幕：强度 1（失控 1）", fx.cg_level == 1 and fx.cg_stage() == "helpless_1")
+	await _wait(0.6)
+	check("CG 第一幕：立绘轮廓光晕按幕亮起（0.35）", absf(fx.glow_strength - 0.35) < 0.05 and int(fx.glow_material().get_shader_parameter("mode")) == 0)
 	await _advance_to(_step_with_portrait(id, "bubble_fish_1") + 1)  # 下一句开始挠
 	var t := 0.0
 	while fx.sticker_count() == 0 and t < 2.5:
@@ -372,7 +374,20 @@ func _run_cg_portrait_fx() -> void:
 	check("切到第二幕：强度 2，金色星环", fx.cg_level == 2 and fx.crit_count() >= 1)
 	await _advance_to(_step_with_portrait(id, "bubble_fish_3"))
 	await _wait(1.6)
-	check("第三幕横版 CG 图：轻量版，不放来源贴片", Dialogue.is_portrait_wide() and fx.cg_level == 3 and fx.sticker_count() == 0)
+	check("第三幕横版 CG 图：光晕改为大框内侧晕光，强度更高", Dialogue.is_portrait_wide() and fx.cg_level == 3
+		and int(fx.glow_material().get_shader_parameter("mode")) == 1 and fx.glow_strength > 0.6
+		and fx.glow_material().get_shader_parameter("region") == Vector4(0, 0, 1, 1))
+	await _advance_to(_step_with_portrait(id, "bubble_fish_3") + 1)  # 下一句继续挠
+	t = 0.0
+	while fx.sticker_count() == 0 and t < 2.5:
+		await _wait(0.05)
+		t += 0.05
+	var wr := fx.portrait_rect()
+	var off_center := fx.sticker_count() >= 1
+	for p in fx.sticker_positions():
+		var n: Vector2 = (p - wr.get_center()) / wr.size
+		off_center = off_center and (absf(n.x) >= PortraitFx.WIDE_STICKER_MARGIN - 0.01 or absf(n.y) >= PortraitFx.WIDE_STICKER_MARGIN - 0.01)
+	check("第三幕横版 CG 图：出现挠痒来源贴片，放在图的四周不挡中心", off_center)
 	t = 0.0
 	while fx.haha_count() == 0 and t < 2.5:
 		await _wait(0.1)

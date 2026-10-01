@@ -7,9 +7,11 @@ extends Control
 ##   飘字        失控后被挠时旁边冒出小字往上飘：文字在 data/princess_reactions.json 的 portrait_words
 ##               （全局默认，各来源可以单独配置，ReactionDB.portrait_words）
 ##   暴击爆闪    暴击时金色星环（放大 3 倍）+ 白闪；组合技触发时爆开粉色心形（三来源更多）
+##   粉色光晕    shaders/portrait_glow.gdshader：普通立绘沿人物轮廓向外发光，横版 CG 图在大框内侧四周晕光；
+##               强度游戏中按闷笑（憋笑起亮、失控 2 最亮），CG 中按幕；失控时轻轻呼吸
 ## 游戏中：Dialogue 把公主的 tickled / 组合技转给 on_tickled / on_combo（笑倒 CG 播放中不处理）。
 ## CG 中：CGPlayer 调 begin_cg / set_cg_level / cg_tickle / cg_crit / on_combo / end_cg。强度按幕递进（cg_level 1–4），
-##   横版 CG 图上用轻量版：抖动、轻泛粉、沿大框两边飘字，不放来源贴片（不挡画面）。
+##   横版 CG 图上用轻量版：抖动、轻泛粉、沿大框两边飘字；来源贴片放在图的四周（不挡画面中心）。
 
 const ANCHORS := [Vector2(0.36, 0.93), Vector2(0.62, 0.93), Vector2(0.3, 0.56), Vector2(0.7, 0.56),
 	Vector2(0.27, 0.42), Vector2(0.73, 0.42), Vector2(0.5, 0.3)]
@@ -24,6 +26,13 @@ const STICKER_GAP := 0.15
 const FLASH_GAP := 0.3
 ## CG 里挠得很密，飘字间隔放大这么多倍。
 const CG_HAHA_K := 1.8
+const GLOW_SHADER := preload("res://shaders/portrait_glow.gdshader")
+## CG 各级的光晕强度（下标 = cg_level）。
+const CG_GLOW := [0.0, 0.35, 0.6, 0.85, 1.0]
+## 失控时光晕的呼吸幅度。
+const GLOW_PULSE := 0.3
+## 横版 CG 图上的贴片离中心至少这么远（占宽 / 高的比例）。
+const WIDE_STICKER_MARGIN := 0.3
 
 var portrait: TextureRect
 ## CG 模式：由 CGPlayer 控制强度，横版图也处理。
@@ -34,6 +43,9 @@ var _since_sticker := INF
 var _since_haha := INF
 var _since_flash := INF
 var _flash_tween: Tween
+var _glow: ShaderMaterial
+## 当前光晕强度（平滑跟随目标值）。
+var glow_strength := 0.0
 
 
 func setup(p: TextureRect) -> void:
@@ -41,6 +53,9 @@ func setup(p: TextureRect) -> void:
 	name = "PortraitFx"
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
 	set_anchors_preset(Control.PRESET_FULL_RECT)
+	_glow = ShaderMaterial.new()
+	_glow.shader = GLOW_SHADER
+	portrait.material = _glow
 
 
 ## 是否处理（游戏中：不在 CG、不是横版大框；CG 模式：立绘可见就处理）。
@@ -124,9 +139,12 @@ func _tickle_core(key: String, kind: String, stage: String, special: bool, extra
 	elif _since_flash >= FLASH_GAP:
 		# 横版 CG 图只轻轻泛一下，不把整张画染粉
 		_flash(Color(1.1, 0.96, 1.04) if is_wide() else Color(1.35, 0.85, 1.1), 0.1 if is_wide() else 0.12)
-	if kind != "" and not is_wide() and _since_sticker >= STICKER_GAP:
+	if kind != "" and _since_sticker >= STICKER_GAP:
 		_since_sticker = 0.0
-		_sticker(kind, _anchor_point(), 2.0)
+		if is_wide():
+			_sticker(kind, _wide_point(), 2.5)
+		else:
+			_sticker(kind, _anchor_point(), 2.0)
 	if special:
 		_sticker("crit", portrait_rect().get_center(), 3.0, true)
 	if stage.begins_with("helpless"):
@@ -170,12 +188,82 @@ func _process(delta: float) -> void:
 	_since_flash += delta
 	if portrait == null:
 		return
+	_update_glow(delta)
+
+
+## 光晕目标强度：CG 中按幕；游戏中按闷笑（憋笑以下 0，憋笑起 0.25，到失控 2 时 1）。
+func glow_target() -> float:
+	if not active():
+		return 0.0
+	if cg_mode:
+		return CG_GLOW[clampi(cg_level, 0, CG_MAX_LEVEL)]
+	var p := GameState.player
+	if not is_instance_valid(p) or p.laugh == null:
+		return 0.0
+	var lm: LaughMeter = p.laugh
+	if lm.value <= lm.giggle_threshold:
+		return 0.0
+	var t := (lm.value - lm.giggle_threshold) / maxf(lm.helpless_stage2_threshold - lm.giggle_threshold, 0.001)
+	return lerpf(0.25, 1.0, clampf(t, 0.0, 1.0))
+
+
+## 是否在呼吸（失控 / CG 中）。
+func glow_pulsing() -> bool:
+	if cg_mode:
+		return cg_level >= 1
+	var p := GameState.player
+	return is_instance_valid(p) and p.laugh != null and p.laugh.stage().begins_with("helpless")
+
+
+func _update_glow(delta: float) -> void:
+	glow_strength = move_toward(glow_strength, glow_target(), delta * 2.0)
+	_glow.set_shader_parameter("strength", glow_strength)
+	_glow.set_shader_parameter("pulse", GLOW_PULSE if glow_pulsing() else 0.0)
+	_glow.set_shader_parameter("mode", 1 if is_wide() else 0)
+	_glow.set_shader_parameter("region", glow_region(portrait.texture))
+
+
+## 立绘在贴图里的 UV 范围（图集里的一格；普通贴图为整张）。
+static func glow_region(tex: Texture2D) -> Vector4:
+	if tex is AtlasTexture and (tex as AtlasTexture).atlas:
+		var at := tex as AtlasTexture
+		var size := at.atlas.get_size()
+		var r := at.region
+		return Vector4(r.position.x / size.x, r.position.y / size.y, r.end.x / size.x, r.end.y / size.y)
+	return Vector4(0, 0, 1, 1)
+
+
+## 光晕材质（测试用）。
+func glow_material() -> ShaderMaterial:
+	return _glow
 
 
 func _anchor_point() -> Vector2:
 	var r := portrait_rect()
 	var a: Vector2 = ANCHORS.pick_random()
 	return r.position + r.size * a + Vector2(randf_range(-4, 4), randf_range(-4, 4))
+
+
+## 横版 CG 图上的贴片位置：图的四周一圈（离中心至少 WIDE_STICKER_MARGIN），不挡画面中心。
+func _wide_point() -> Vector2:
+	var r := portrait_rect()
+	var n := Vector2(randf_range(-0.42, 0.42), randf_range(-0.4, 0.4))
+	if absf(n.x) < WIDE_STICKER_MARGIN and absf(n.y) < WIDE_STICKER_MARGIN:
+		if randf() < 0.5:
+			n.x = signf(n.x if n.x != 0.0 else 1.0) * randf_range(WIDE_STICKER_MARGIN, 0.42)
+		else:
+			n.y = signf(n.y if n.y != 0.0 else 1.0) * randf_range(WIDE_STICKER_MARGIN, 0.4)
+	return r.get_center() + r.size * n
+
+
+## 正在播放的来源贴片位置（测试用）。
+func sticker_positions() -> Array:
+	var crit_row := HitFx.KINDS.find("crit")
+	var out := []
+	for s in _stickers:
+		if is_instance_valid(s) and (s as HitFx).frame_coords.y != crit_row:
+			out.append((s as HitFx).global_position)
+	return out
 
 
 func _sticker(kind: String, pos: Vector2, scale_k: float, force := false) -> void:
