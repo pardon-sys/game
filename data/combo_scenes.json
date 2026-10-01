@@ -1,0 +1,3631 @@
+{
+	"_说明": [
+		"三来源组合第一次触发时的小演出（CG.play_scene(组合 id)，随时可以按 Esc 跳过）。",
+		"scenes：组合 id -> {name, cast, steps}，格式和 data/cgs.json 的 cgs 一样；怪物演员沿用 cgs.json 的 actors。",
+		"由 tools/build/gen_combo_scenes.py 生成；手写的演出可以写进脚本的 CUSTOM，或直接改这里（重新生成会覆盖）。"
+	],
+	"scenes": {
+		"queen_feast": {
+			"name": "女王的盛宴",
+			"cast": {
+				"princess": {
+					"kind": "princess",
+					"at": [
+						0,
+						8
+					],
+					"visual": "helpless_1",
+					"anim": "helpless",
+					"dir": "down"
+				},
+				"src1": {
+					"kind": "monster:jelly_queen",
+					"at": [
+						-30,
+						2
+					],
+					"dir": "right",
+					"hidden": true
+				},
+				"src2": {
+					"kind": "monster:mana_jelly",
+					"at": [
+						30,
+						2
+					],
+					"dir": "left",
+					"hidden": true
+				},
+				"src3": {
+					"kind": "monster:bubble_fish",
+					"at": [
+						0,
+						-26
+					],
+					"dir": "right",
+					"hidden": true
+				}
+			},
+			"steps": [
+				{
+					"actions": [
+						{
+							"do": "fade_in",
+							"time": 0.4
+						},
+						{
+							"do": "voice",
+							"state": "giggle"
+						}
+					],
+					"wait": 0.4
+				},
+				{
+					"speaker": "",
+					"text": "【怪+怪+怪】女王的盛宴——女王带着小水母和泡泡鱼一起围上来，把公主举到半空。",
+					"auto": 2.2,
+					"actions": [
+						{
+							"do": "enter",
+							"who": "src1",
+							"from": [
+								-80,
+								0
+							],
+							"time": 0.5
+						},
+						{
+							"do": "enter",
+							"who": "src2",
+							"from": [
+								80,
+								0
+							],
+							"time": 0.5
+						},
+						{
+							"do": "enter",
+							"who": "src3",
+							"from": [
+								0,
+								-70
+							],
+							"time": 0.5
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "surprise"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 5,
+							"interval": 0.26,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "被、被举起来了——大家一起哈哈哈哈！",
+					"auto": 2.2,
+					"actions": [
+						{
+							"do": "pose",
+							"who": "princess",
+							"visual": "helpless_2"
+						},
+						{
+							"do": "voice",
+							"state": "laugh"
+						},
+						{
+							"do": "camera",
+							"zoom": 1.5,
+							"focus": "princess",
+							"time": 0.4
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.5
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 5,
+							"interval": 0.26,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 5,
+							"interval": 0.26,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 5,
+							"interval": 0.26,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"actions": [
+						{
+							"do": "fade_out",
+							"time": 0.5
+						},
+						{
+							"do": "voice",
+							"state": ""
+						}
+					],
+					"wait": 0.6
+				}
+			]
+		},
+		"full_scrub": {
+			"name": "全身大扫除",
+			"cast": {
+				"princess": {
+					"kind": "princess",
+					"at": [
+						0,
+						8
+					],
+					"visual": "helpless_1",
+					"anim": "helpless",
+					"dir": "down"
+				},
+				"src1": {
+					"kind": "monster:hedgehog",
+					"at": [
+						-30,
+						2
+					],
+					"dir": "right",
+					"hidden": true
+				},
+				"src2": {
+					"kind": "monster:glove",
+					"at": [
+						30,
+						2
+					],
+					"dir": "left",
+					"hidden": true
+				},
+				"src3": {
+					"kind": "monster:bubble_fish",
+					"at": [
+						0,
+						-26
+					],
+					"dir": "right",
+					"hidden": true
+				}
+			},
+			"steps": [
+				{
+					"actions": [
+						{
+							"do": "fade_in",
+							"time": 0.4
+						},
+						{
+							"do": "voice",
+							"state": "giggle"
+						}
+					],
+					"wait": 0.4
+				},
+				{
+					"speaker": "",
+					"text": "【怪+怪+怪】全身大扫除——刺猬刷、手套搓、泡泡冲——从头到脚洗一遍。",
+					"auto": 2.2,
+					"actions": [
+						{
+							"do": "enter",
+							"who": "src1",
+							"from": [
+								-80,
+								0
+							],
+							"time": 0.5
+						},
+						{
+							"do": "enter",
+							"who": "src2",
+							"from": [
+								80,
+								0
+							],
+							"time": 0.5
+						},
+						{
+							"do": "enter",
+							"who": "src3",
+							"from": [
+								0,
+								-70
+							],
+							"time": 0.5
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "surprise"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 5,
+							"interval": 0.26,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "刷、搓、冲……全身都——哈哈哈哈！",
+					"auto": 2.2,
+					"actions": [
+						{
+							"do": "pose",
+							"who": "princess",
+							"visual": "helpless_2"
+						},
+						{
+							"do": "voice",
+							"state": "laugh"
+						},
+						{
+							"do": "camera",
+							"zoom": 1.5,
+							"focus": "princess",
+							"time": 0.4
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.5
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 5,
+							"interval": 0.26,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 5,
+							"interval": 0.26,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 5,
+							"interval": 0.26,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"actions": [
+						{
+							"do": "fade_out",
+							"time": 0.5
+						},
+						{
+							"do": "voice",
+							"state": ""
+						}
+					],
+					"wait": 0.6
+				}
+			]
+		},
+		"sole_party": {
+			"name": "脚底大派对",
+			"cast": {
+				"princess": {
+					"kind": "princess",
+					"at": [
+						0,
+						8
+					],
+					"visual": "helpless_1",
+					"anim": "helpless",
+					"dir": "down"
+				},
+				"src1": {
+					"kind": "monster:rat",
+					"at": [
+						-30,
+						2
+					],
+					"dir": "right",
+					"hidden": true
+				},
+				"src2": {
+					"kind": "monster:crab",
+					"at": [
+						30,
+						2
+					],
+					"dir": "left",
+					"hidden": true
+				},
+				"src3": {
+					"kind": "monster:spider",
+					"at": [
+						0,
+						-26
+					],
+					"dir": "right",
+					"hidden": true
+				}
+			},
+			"steps": [
+				{
+					"actions": [
+						{
+							"do": "fade_in",
+							"time": 0.4
+						},
+						{
+							"do": "voice",
+							"state": "giggle"
+						}
+					],
+					"wait": 0.4
+				},
+				{
+					"speaker": "",
+					"text": "【怪+怪+怪】脚底大派对——老鼠、螃蟹、蜘蛛一起在脚底开派对。",
+					"auto": 2.2,
+					"actions": [
+						{
+							"do": "enter",
+							"who": "src1",
+							"from": [
+								-80,
+								0
+							],
+							"time": 0.5
+						},
+						{
+							"do": "enter",
+							"who": "src2",
+							"from": [
+								80,
+								0
+							],
+							"time": 0.5
+						},
+						{
+							"do": "enter",
+							"who": "src3",
+							"from": [
+								0,
+								-70
+							],
+							"time": 0.5
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "surprise"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 5,
+							"interval": 0.26,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "脚、脚底开派对了——哈哈哈哈！",
+					"auto": 2.2,
+					"actions": [
+						{
+							"do": "pose",
+							"who": "princess",
+							"visual": "helpless_2"
+						},
+						{
+							"do": "voice",
+							"state": "laugh"
+						},
+						{
+							"do": "camera",
+							"zoom": 1.5,
+							"focus": "princess",
+							"time": 0.4
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.5
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 5,
+							"interval": 0.26,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 5,
+							"interval": 0.26,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 5,
+							"interval": 0.26,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"actions": [
+						{
+							"do": "fade_out",
+							"time": 0.5
+						},
+						{
+							"do": "voice",
+							"state": ""
+						}
+					],
+					"wait": 0.6
+				}
+			]
+		},
+		"sole_mobilize": {
+			"name": "脚心总动员",
+			"cast": {
+				"princess": {
+					"kind": "princess",
+					"at": [
+						0,
+						8
+					],
+					"visual": "helpless_1",
+					"anim": "helpless",
+					"dir": "down"
+				},
+				"src1": {
+					"kind": "monster:rat",
+					"at": [
+						-30,
+						2
+					],
+					"dir": "right",
+					"hidden": true
+				},
+				"src2": {
+					"kind": "monster:crab",
+					"at": [
+						30,
+						2
+					],
+					"dir": "left",
+					"hidden": true
+				}
+			},
+			"steps": [
+				{
+					"actions": [
+						{
+							"do": "fade_in",
+							"time": 0.4
+						},
+						{
+							"do": "voice",
+							"state": "giggle"
+						}
+					],
+					"wait": 0.4
+				},
+				{
+					"speaker": "",
+					"text": "【怪+怪+陷阱】脚心总动员——脚锁在足枷里，挠脚鼠和钳钳蟹全体出动。",
+					"auto": 2.2,
+					"actions": [
+						{
+							"do": "enter",
+							"who": "src1",
+							"from": [
+								-80,
+								0
+							],
+							"time": 0.5
+						},
+						{
+							"do": "enter",
+							"who": "src2",
+							"from": [
+								80,
+								0
+							],
+							"time": 0.5
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "surprise"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 5,
+							"interval": 0.26,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "脚心……脚趾……全被占领了哈哈哈哈！",
+					"auto": 2.2,
+					"actions": [
+						{
+							"do": "pose",
+							"who": "princess",
+							"visual": "helpless_2"
+						},
+						{
+							"do": "voice",
+							"state": "laugh"
+						},
+						{
+							"do": "camera",
+							"zoom": 1.5,
+							"focus": "princess",
+							"time": 0.4
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.5
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 5,
+							"interval": 0.26,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 5,
+							"interval": 0.26,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"repeat": 5,
+							"interval": 0.3,
+							"fx": "feather"
+						}
+					]
+				},
+				{
+					"actions": [
+						{
+							"do": "fade_out",
+							"time": 0.5
+						},
+						{
+							"do": "voice",
+							"state": ""
+						}
+					],
+					"wait": 0.6
+				}
+			]
+		},
+		"bubble_spa": {
+			"name": "泡泡浴场",
+			"cast": {
+				"princess": {
+					"kind": "princess",
+					"at": [
+						0,
+						8
+					],
+					"visual": "helpless_1",
+					"anim": "helpless",
+					"dir": "down"
+				},
+				"src1": {
+					"kind": "monster:bubble_fish",
+					"at": [
+						-30,
+						2
+					],
+					"dir": "right",
+					"hidden": true
+				},
+				"src2": {
+					"kind": "monster:mana_jelly",
+					"at": [
+						30,
+						2
+					],
+					"dir": "left",
+					"hidden": true
+				}
+			},
+			"steps": [
+				{
+					"actions": [
+						{
+							"do": "fade_in",
+							"time": 0.4
+						},
+						{
+							"do": "voice",
+							"state": "giggle"
+						}
+					],
+					"wait": 0.4
+				},
+				{
+					"speaker": "",
+					"text": "【怪+怪+陷阱】泡泡浴场——泡泡黏在毛毯上，水母钻进来，转得晕头转向。",
+					"auto": 2.2,
+					"actions": [
+						{
+							"do": "enter",
+							"who": "src1",
+							"from": [
+								-80,
+								0
+							],
+							"time": 0.5
+						},
+						{
+							"do": "enter",
+							"who": "src2",
+							"from": [
+								80,
+								0
+							],
+							"time": 0.5
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "surprise"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 5,
+							"interval": 0.26,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "泡、泡泡浴……头好晕哈哈哈！",
+					"auto": 2.2,
+					"actions": [
+						{
+							"do": "pose",
+							"who": "princess",
+							"visual": "helpless_2"
+						},
+						{
+							"do": "voice",
+							"state": "laugh"
+						},
+						{
+							"do": "camera",
+							"zoom": 1.5,
+							"focus": "princess",
+							"time": 0.4
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.5
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 5,
+							"interval": 0.26,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 5,
+							"interval": 0.26,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"repeat": 5,
+							"interval": 0.3,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"actions": [
+						{
+							"do": "fade_out",
+							"time": 0.5
+						},
+						{
+							"do": "voice",
+							"state": ""
+						}
+					],
+					"wait": 0.6
+				}
+			]
+		},
+		"mob_curse": {
+			"name": "群魔诅咒",
+			"cast": {
+				"princess": {
+					"kind": "princess",
+					"at": [
+						0,
+						8
+					],
+					"visual": "helpless_1",
+					"anim": "helpless",
+					"dir": "down"
+				},
+				"src1": {
+					"kind": "monster:slime",
+					"at": [
+						-30,
+						2
+					],
+					"dir": "right",
+					"hidden": true
+				},
+				"src2": {
+					"kind": "monster:slime",
+					"at": [
+						30,
+						2
+					],
+					"dir": "left",
+					"hidden": true
+				}
+			},
+			"steps": [
+				{
+					"actions": [
+						{
+							"do": "fade_in",
+							"time": 0.4
+						},
+						{
+							"do": "voice",
+							"state": "giggle"
+						}
+					],
+					"wait": 0.4
+				},
+				{
+					"speaker": "",
+					"text": "【怪+怪+陷阱】群魔诅咒——诅咒的光把附近的怪物全都招了过来。",
+					"auto": 2.2,
+					"actions": [
+						{
+							"do": "enter",
+							"who": "src1",
+							"from": [
+								-80,
+								0
+							],
+							"time": 0.5
+						},
+						{
+							"do": "enter",
+							"who": "src2",
+							"from": [
+								80,
+								0
+							],
+							"time": 0.5
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "surprise"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 5,
+							"interval": 0.26,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "符文一亮……怪物全过来了！",
+					"auto": 2.2,
+					"actions": [
+						{
+							"do": "pose",
+							"who": "princess",
+							"visual": "helpless_2"
+						},
+						{
+							"do": "voice",
+							"state": "laugh"
+						},
+						{
+							"do": "camera",
+							"zoom": 1.5,
+							"focus": "princess",
+							"time": 0.4
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.5
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 5,
+							"interval": 0.26,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 5,
+							"interval": 0.26,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"repeat": 5,
+							"interval": 0.3,
+							"fx": "heart"
+						}
+					]
+				},
+				{
+					"actions": [
+						{
+							"do": "fade_out",
+							"time": 0.5
+						},
+						{
+							"do": "voice",
+							"state": ""
+						}
+					],
+					"wait": 0.6
+				}
+			]
+		},
+		"ultimate_stocks": {
+			"name": "终极刑台",
+			"cast": {
+				"princess": {
+					"kind": "princess",
+					"at": [
+						0,
+						8
+					],
+					"visual": "helpless_1",
+					"anim": "helpless",
+					"dir": "down"
+				},
+				"src1": {
+					"kind": "monster:glove",
+					"at": [
+						-30,
+						2
+					],
+					"dir": "right",
+					"hidden": true
+				}
+			},
+			"steps": [
+				{
+					"actions": [
+						{
+							"do": "fade_in",
+							"time": 0.4
+						},
+						{
+							"do": "voice",
+							"state": "giggle"
+						}
+					],
+					"wait": 0.4
+				},
+				{
+					"speaker": "",
+					"text": "【怪+陷阱+陷阱】终极刑台——诅咒加身、脚锁足枷，手套一左一右——每一下都是暴击。",
+					"auto": 2.2,
+					"actions": [
+						{
+							"do": "enter",
+							"who": "src1",
+							"from": [
+								-80,
+								0
+							],
+							"time": 0.5
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "surprise"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 5,
+							"interval": 0.26,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "每、每一下都——哈哈哈哈哈！",
+					"auto": 2.2,
+					"actions": [
+						{
+							"do": "pose",
+							"who": "princess",
+							"visual": "helpless_2"
+						},
+						{
+							"do": "voice",
+							"state": "laugh"
+						},
+						{
+							"do": "camera",
+							"zoom": 1.5,
+							"focus": "princess",
+							"time": 0.4
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.5
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 5,
+							"interval": 0.26,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"repeat": 5,
+							"interval": 0.3,
+							"fx": "feather"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"repeat": 5,
+							"interval": 0.3,
+							"fx": "heart"
+						}
+					]
+				},
+				{
+					"actions": [
+						{
+							"do": "fade_out",
+							"time": 0.5
+						},
+						{
+							"do": "voice",
+							"state": ""
+						}
+					],
+					"wait": 0.6
+				}
+			]
+		},
+		"brush_line": {
+			"name": "刷刷流水线",
+			"cast": {
+				"princess": {
+					"kind": "princess",
+					"at": [
+						0,
+						8
+					],
+					"visual": "helpless_1",
+					"anim": "helpless",
+					"dir": "down"
+				},
+				"src1": {
+					"kind": "monster:hedgehog",
+					"at": [
+						-30,
+						2
+					],
+					"dir": "right",
+					"hidden": true
+				}
+			},
+			"steps": [
+				{
+					"actions": [
+						{
+							"do": "fade_in",
+							"time": 0.4
+						},
+						{
+							"do": "voice",
+							"state": "giggle"
+						}
+					],
+					"wait": 0.4
+				},
+				{
+					"speaker": "",
+					"text": "【怪+陷阱+陷阱】刷刷流水线——黏在毛毯上，刺猬滚过来、羽毛臂扫过去。",
+					"auto": 2.2,
+					"actions": [
+						{
+							"do": "enter",
+							"who": "src1",
+							"from": [
+								-80,
+								0
+							],
+							"time": 0.5
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "surprise"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 5,
+							"interval": 0.26,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "一、一道一道刷过来了哈哈哈！",
+					"auto": 2.2,
+					"actions": [
+						{
+							"do": "pose",
+							"who": "princess",
+							"visual": "helpless_2"
+						},
+						{
+							"do": "voice",
+							"state": "laugh"
+						},
+						{
+							"do": "camera",
+							"zoom": 1.5,
+							"focus": "princess",
+							"time": 0.4
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.5
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 5,
+							"interval": 0.26,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"repeat": 5,
+							"interval": 0.3,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"repeat": 5,
+							"interval": 0.3,
+							"fx": "feather"
+						}
+					]
+				},
+				{
+					"actions": [
+						{
+							"do": "fade_out",
+							"time": 0.5
+						},
+						{
+							"do": "voice",
+							"state": ""
+						}
+					],
+					"wait": 0.6
+				}
+			]
+		},
+		"curse_chain": {
+			"name": "诅咒连环",
+			"cast": {
+				"princess": {
+					"kind": "princess",
+					"at": [
+						0,
+						8
+					],
+					"visual": "helpless_1",
+					"anim": "helpless",
+					"dir": "down"
+				},
+				"src1": {
+					"kind": "monster:slime",
+					"at": [
+						-30,
+						2
+					],
+					"dir": "right",
+					"hidden": true
+				}
+			},
+			"steps": [
+				{
+					"actions": [
+						{
+							"do": "fade_in",
+							"time": 0.4
+						},
+						{
+							"do": "voice",
+							"state": "giggle"
+						}
+					],
+					"wait": 0.4
+				},
+				{
+					"speaker": "",
+					"text": "【怪+陷阱+陷阱】诅咒连环——诅咒、羽毛臂、怪物，一环扣一环。",
+					"auto": 2.2,
+					"actions": [
+						{
+							"do": "enter",
+							"who": "src1",
+							"from": [
+								-80,
+								0
+							],
+							"time": 0.5
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "surprise"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 5,
+							"interval": 0.26,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "一环接一环……停不下来哈哈哈！",
+					"auto": 2.2,
+					"actions": [
+						{
+							"do": "pose",
+							"who": "princess",
+							"visual": "helpless_2"
+						},
+						{
+							"do": "voice",
+							"state": "laugh"
+						},
+						{
+							"do": "camera",
+							"zoom": 1.5,
+							"focus": "princess",
+							"time": 0.4
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.5
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 5,
+							"interval": 0.26,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"repeat": 5,
+							"interval": 0.3,
+							"fx": "heart"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"repeat": 5,
+							"interval": 0.3,
+							"fx": "feather"
+						}
+					]
+				},
+				{
+					"actions": [
+						{
+							"do": "fade_out",
+							"time": 0.5
+						},
+						{
+							"do": "voice",
+							"state": ""
+						}
+					],
+					"wait": 0.6
+				}
+			]
+		},
+		"auto_stocks": {
+			"name": "全自动刑台",
+			"cast": {
+				"princess": {
+					"kind": "princess",
+					"at": [
+						0,
+						8
+					],
+					"visual": "helpless_1",
+					"anim": "helpless",
+					"dir": "down"
+				}
+			},
+			"steps": [
+				{
+					"actions": [
+						{
+							"do": "fade_in",
+							"time": 0.4
+						},
+						{
+							"do": "voice",
+							"state": "giggle"
+						}
+					],
+					"wait": 0.4
+				},
+				{
+					"speaker": "",
+					"text": "【陷阱+陷阱+陷阱】全自动刑台——锁脚、扫脚、黏脚，一条龙全自动。",
+					"auto": 2.2,
+					"actions": [
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "surprise"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"repeat": 5,
+							"interval": 0.3,
+							"fx": "feather"
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "全、全自动的吗——哈哈哈哈！",
+					"auto": 2.2,
+					"actions": [
+						{
+							"do": "pose",
+							"who": "princess",
+							"visual": "helpless_2"
+						},
+						{
+							"do": "voice",
+							"state": "laugh"
+						},
+						{
+							"do": "camera",
+							"zoom": 1.5,
+							"focus": "princess",
+							"time": 0.4
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.5
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"repeat": 5,
+							"interval": 0.3,
+							"fx": "feather"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"repeat": 5,
+							"interval": 0.3,
+							"fx": "feather"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"repeat": 5,
+							"interval": 0.3,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"actions": [
+						{
+							"do": "fade_out",
+							"time": 0.5
+						},
+						{
+							"do": "voice",
+							"state": ""
+						}
+					],
+					"wait": 0.6
+				}
+			]
+		},
+		"curse_hall": {
+			"name": "诅咒回廊",
+			"cast": {
+				"princess": {
+					"kind": "princess",
+					"at": [
+						0,
+						8
+					],
+					"visual": "helpless_1",
+					"anim": "helpless",
+					"dir": "down"
+				}
+			},
+			"steps": [
+				{
+					"actions": [
+						{
+							"do": "fade_in",
+							"time": 0.4
+						},
+						{
+							"do": "voice",
+							"state": "giggle"
+						}
+					],
+					"wait": 0.4
+				},
+				{
+					"speaker": "",
+					"text": "【陷阱+陷阱+陷阱】诅咒回廊——走廊里的诅咒、绒毛和羽毛一起发作。",
+					"auto": 2.2,
+					"actions": [
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "surprise"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"repeat": 5,
+							"interval": 0.3,
+							"fx": "heart"
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "整条走廊都在挠——哈哈哈！",
+					"auto": 2.2,
+					"actions": [
+						{
+							"do": "pose",
+							"who": "princess",
+							"visual": "helpless_2"
+						},
+						{
+							"do": "voice",
+							"state": "laugh"
+						},
+						{
+							"do": "camera",
+							"zoom": 1.5,
+							"focus": "princess",
+							"time": 0.4
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.5
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"repeat": 5,
+							"interval": 0.3,
+							"fx": "heart"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"repeat": 5,
+							"interval": 0.3,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"repeat": 5,
+							"interval": 0.3,
+							"fx": "feather"
+						}
+					]
+				},
+				{
+					"actions": [
+						{
+							"do": "fade_out",
+							"time": 0.5
+						},
+						{
+							"do": "voice",
+							"state": ""
+						}
+					],
+					"wait": 0.6
+				}
+			]
+		},
+		"line_end": {
+			"name": "流水线终点",
+			"cast": {
+				"princess": {
+					"kind": "princess",
+					"at": [
+						0,
+						8
+					],
+					"visual": "helpless_1",
+					"anim": "helpless",
+					"dir": "down"
+				}
+			},
+			"steps": [
+				{
+					"actions": [
+						{
+							"do": "fade_in",
+							"time": 0.4
+						},
+						{
+							"do": "voice",
+							"state": "giggle"
+						}
+					],
+					"wait": 0.4
+				},
+				{
+					"speaker": "",
+					"text": "【陷阱+陷阱+陷阱】流水线终点——被传送带送到终点：旋转刷刷完，机关手接着挠。",
+					"auto": 2.2,
+					"actions": [
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "surprise"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"repeat": 5,
+							"interval": 0.3,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "终、终点站是这里吗哈哈哈！",
+					"auto": 2.2,
+					"actions": [
+						{
+							"do": "pose",
+							"who": "princess",
+							"visual": "helpless_2"
+						},
+						{
+							"do": "voice",
+							"state": "laugh"
+						},
+						{
+							"do": "camera",
+							"zoom": 1.5,
+							"focus": "princess",
+							"time": 0.4
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.5
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"repeat": 5,
+							"interval": 0.3,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"repeat": 5,
+							"interval": 0.3,
+							"fx": "feather"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"repeat": 5,
+							"interval": 0.3,
+							"fx": "hand"
+						}
+					]
+				},
+				{
+					"actions": [
+						{
+							"do": "fade_out",
+							"time": 0.5
+						},
+						{
+							"do": "voice",
+							"state": ""
+						}
+					],
+					"wait": 0.6
+				}
+			]
+		},
+		"thousand_feather": {
+			"name": "千手羽毛刑",
+			"cast": {
+				"princess": {
+					"kind": "princess",
+					"at": [
+						0,
+						8
+					],
+					"visual": "helpless_1",
+					"anim": "helpless",
+					"dir": "down"
+				},
+				"src2": {
+					"kind": "monster:fairy",
+					"at": [
+						30,
+						2
+					],
+					"dir": "left",
+					"hidden": true
+				},
+				"src3": {
+					"kind": "monster:glove",
+					"at": [
+						0,
+						-26
+					],
+					"dir": "right",
+					"hidden": true
+				}
+			},
+			"steps": [
+				{
+					"actions": [
+						{
+							"do": "fade_in",
+							"time": 0.4
+						},
+						{
+							"do": "voice",
+							"state": "giggle"
+						}
+					],
+					"wait": 0.4
+				},
+				{
+					"speaker": "",
+					"text": "【怪+怪+陷阱】千手羽毛刑——足枷锁脚，小精灵拿羽毛、手套托起整个人。",
+					"auto": 2.2,
+					"actions": [
+						{
+							"do": "enter",
+							"who": "src2",
+							"from": [
+								80,
+								0
+							],
+							"time": 0.5
+						},
+						{
+							"do": "enter",
+							"who": "src3",
+							"from": [
+								0,
+								-70
+							],
+							"time": 0.5
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "surprise"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"repeat": 5,
+							"interval": 0.3,
+							"fx": "feather"
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "被托起来了——羽毛和手指一起哈哈哈哈！",
+					"auto": 2.2,
+					"actions": [
+						{
+							"do": "pose",
+							"who": "princess",
+							"visual": "helpless_2"
+						},
+						{
+							"do": "voice",
+							"state": "laugh"
+						},
+						{
+							"do": "camera",
+							"zoom": 1.5,
+							"focus": "princess",
+							"time": 0.4
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.5
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"repeat": 5,
+							"interval": 0.3,
+							"fx": "feather"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 5,
+							"interval": 0.26,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 5,
+							"interval": 0.26,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"actions": [
+						{
+							"do": "fade_out",
+							"time": 0.5
+						},
+						{
+							"do": "voice",
+							"state": ""
+						}
+					],
+					"wait": 0.6
+				}
+			]
+		},
+		"jelly_sole": {
+			"name": "果冻脚心刑",
+			"cast": {
+				"princess": {
+					"kind": "princess",
+					"at": [
+						0,
+						8
+					],
+					"visual": "helpless_1",
+					"anim": "helpless",
+					"dir": "down"
+				},
+				"src2": {
+					"kind": "monster:slime",
+					"at": [
+						30,
+						2
+					],
+					"dir": "left",
+					"hidden": true
+				},
+				"src3": {
+					"kind": "monster:rat",
+					"at": [
+						0,
+						-26
+					],
+					"dir": "right",
+					"hidden": true
+				}
+			},
+			"steps": [
+				{
+					"actions": [
+						{
+							"do": "fade_in",
+							"time": 0.4
+						},
+						{
+							"do": "voice",
+							"state": "giggle"
+						}
+					],
+					"wait": 0.4
+				},
+				{
+					"speaker": "",
+					"text": "【怪+怪+陷阱】果冻脚心刑——史莱姆糊住脚心，老鼠在上面打滚。",
+					"auto": 2.2,
+					"actions": [
+						{
+							"do": "enter",
+							"who": "src2",
+							"from": [
+								80,
+								0
+							],
+							"time": 0.5
+						},
+						{
+							"do": "enter",
+							"who": "src3",
+							"from": [
+								0,
+								-70
+							],
+							"time": 0.5
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "surprise"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"repeat": 5,
+							"interval": 0.3,
+							"fx": "feather"
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "果冻上面还有老鼠——哈哈哈哈！",
+					"auto": 2.2,
+					"actions": [
+						{
+							"do": "pose",
+							"who": "princess",
+							"visual": "helpless_2"
+						},
+						{
+							"do": "voice",
+							"state": "laugh"
+						},
+						{
+							"do": "camera",
+							"zoom": 1.5,
+							"focus": "princess",
+							"time": 0.4
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.5
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"repeat": 5,
+							"interval": 0.3,
+							"fx": "feather"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 5,
+							"interval": 0.26,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 5,
+							"interval": 0.26,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"actions": [
+						{
+							"do": "fade_out",
+							"time": 0.5
+						},
+						{
+							"do": "voice",
+							"state": ""
+						}
+					],
+					"wait": 0.6
+				}
+			]
+		},
+		"queen_stocks3": {
+			"name": "女王的刑台",
+			"cast": {
+				"princess": {
+					"kind": "princess",
+					"at": [
+						0,
+						8
+					],
+					"visual": "helpless_1",
+					"anim": "helpless",
+					"dir": "down"
+				},
+				"src2": {
+					"kind": "monster:jelly_queen",
+					"at": [
+						30,
+						2
+					],
+					"dir": "left",
+					"hidden": true
+				},
+				"src3": {
+					"kind": "monster:mana_jelly",
+					"at": [
+						0,
+						-26
+					],
+					"dir": "right",
+					"hidden": true
+				}
+			},
+			"steps": [
+				{
+					"actions": [
+						{
+							"do": "fade_in",
+							"time": 0.4
+						},
+						{
+							"do": "voice",
+							"state": "giggle"
+						}
+					],
+					"wait": 0.4
+				},
+				{
+					"speaker": "",
+					"text": "【怪+怪+陷阱】女王的刑台——女王坐上审判席，小水母们轮流行刑。",
+					"auto": 2.2,
+					"actions": [
+						{
+							"do": "enter",
+							"who": "src2",
+							"from": [
+								80,
+								0
+							],
+							"time": 0.5
+						},
+						{
+							"do": "enter",
+							"who": "src3",
+							"from": [
+								0,
+								-70
+							],
+							"time": 0.5
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "surprise"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"repeat": 5,
+							"interval": 0.3,
+							"fx": "feather"
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "女王的刑台……每下都是暴击哈哈哈！",
+					"auto": 2.2,
+					"actions": [
+						{
+							"do": "pose",
+							"who": "princess",
+							"visual": "helpless_2"
+						},
+						{
+							"do": "voice",
+							"state": "laugh"
+						},
+						{
+							"do": "camera",
+							"zoom": 1.5,
+							"focus": "princess",
+							"time": 0.4
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.5
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"repeat": 5,
+							"interval": 0.3,
+							"fx": "feather"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 5,
+							"interval": 0.26,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 5,
+							"interval": 0.26,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"actions": [
+						{
+							"do": "fade_out",
+							"time": 0.5
+						},
+						{
+							"do": "voice",
+							"state": ""
+						}
+					],
+					"wait": 0.6
+				}
+			]
+		},
+		"troll_stocks3": {
+			"name": "巨魔的刑场",
+			"cast": {
+				"princess": {
+					"kind": "princess",
+					"at": [
+						0,
+						8
+					],
+					"visual": "helpless_1",
+					"anim": "helpless",
+					"dir": "down"
+				},
+				"src2": {
+					"kind": "monster:troll",
+					"at": [
+						30,
+						2
+					],
+					"dir": "left",
+					"hidden": true
+				},
+				"src3": {
+					"kind": "monster:bat",
+					"at": [
+						0,
+						-26
+					],
+					"dir": "right",
+					"hidden": true
+				}
+			},
+			"steps": [
+				{
+					"actions": [
+						{
+							"do": "fade_in",
+							"time": 0.4
+						},
+						{
+							"do": "voice",
+							"state": "giggle"
+						}
+					],
+					"wait": 0.4
+				},
+				{
+					"speaker": "",
+					"text": "【怪+怪+陷阱】巨魔的刑场——巨魔按住足枷，蝙蝠在脚边扑腾。",
+					"auto": 2.2,
+					"actions": [
+						{
+							"do": "enter",
+							"who": "src2",
+							"from": [
+								80,
+								0
+							],
+							"time": 0.5
+						},
+						{
+							"do": "enter",
+							"who": "src3",
+							"from": [
+								0,
+								-70
+							],
+							"time": 0.5
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "surprise"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"repeat": 5,
+							"interval": 0.3,
+							"fx": "feather"
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "巨魔和蝙蝠一起——哈哈哈哈！",
+					"auto": 2.2,
+					"actions": [
+						{
+							"do": "pose",
+							"who": "princess",
+							"visual": "helpless_2"
+						},
+						{
+							"do": "voice",
+							"state": "laugh"
+						},
+						{
+							"do": "camera",
+							"zoom": 1.5,
+							"focus": "princess",
+							"time": 0.4
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.5
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"repeat": 5,
+							"interval": 0.3,
+							"fx": "feather"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 5,
+							"interval": 0.26,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 5,
+							"interval": 0.26,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"actions": [
+						{
+							"do": "fade_out",
+							"time": 0.5
+						},
+						{
+							"do": "voice",
+							"state": ""
+						}
+					],
+					"wait": 0.6
+				}
+			]
+		},
+		"tentacle_feather": {
+			"name": "触手羽毛刑",
+			"cast": {
+				"princess": {
+					"kind": "princess",
+					"at": [
+						0,
+						8
+					],
+					"visual": "helpless_1",
+					"anim": "helpless",
+					"dir": "down"
+				},
+				"src2": {
+					"kind": "monster:tentacle",
+					"at": [
+						30,
+						2
+					],
+					"dir": "left",
+					"hidden": true
+				},
+				"src3": {
+					"kind": "monster:fairy",
+					"at": [
+						0,
+						-26
+					],
+					"dir": "right",
+					"hidden": true
+				}
+			},
+			"steps": [
+				{
+					"actions": [
+						{
+							"do": "fade_in",
+							"time": 0.4
+						},
+						{
+							"do": "voice",
+							"state": "giggle"
+						}
+					],
+					"wait": 0.4
+				},
+				{
+					"speaker": "",
+					"text": "【怪+怪+陷阱】触手羽毛刑——触手把人举起来，小精灵在下面挠脚心。",
+					"auto": 2.2,
+					"actions": [
+						{
+							"do": "enter",
+							"who": "src2",
+							"from": [
+								80,
+								0
+							],
+							"time": 0.5
+						},
+						{
+							"do": "enter",
+							"who": "src3",
+							"from": [
+								0,
+								-70
+							],
+							"time": 0.5
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "surprise"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"repeat": 5,
+							"interval": 0.3,
+							"fx": "feather"
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "被触手举起来了——脚心朝下哈哈哈！",
+					"auto": 2.2,
+					"actions": [
+						{
+							"do": "pose",
+							"who": "princess",
+							"visual": "helpless_2"
+						},
+						{
+							"do": "voice",
+							"state": "laugh"
+						},
+						{
+							"do": "camera",
+							"zoom": 1.5,
+							"focus": "princess",
+							"time": 0.4
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.5
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"repeat": 5,
+							"interval": 0.3,
+							"fx": "feather"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 5,
+							"interval": 0.26,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 5,
+							"interval": 0.26,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"actions": [
+						{
+							"do": "fade_out",
+							"time": 0.5
+						},
+						{
+							"do": "voice",
+							"state": ""
+						}
+					],
+					"wait": 0.6
+				}
+			]
+		},
+		"sticky_ghost": {
+			"name": "黏黏幽灵羽毛",
+			"cast": {
+				"princess": {
+					"kind": "princess",
+					"at": [
+						0,
+						8
+					],
+					"visual": "helpless_1",
+					"anim": "helpless",
+					"dir": "down"
+				},
+				"src1": {
+					"kind": "monster:slime",
+					"at": [
+						-30,
+						2
+					],
+					"dir": "right",
+					"hidden": true
+				},
+				"src2": {
+					"kind": "monster:bat",
+					"at": [
+						30,
+						2
+					],
+					"dir": "left",
+					"hidden": true
+				},
+				"src3": {
+					"kind": "monster:ghost",
+					"at": [
+						0,
+						-26
+					],
+					"dir": "right",
+					"hidden": true
+				}
+			},
+			"steps": [
+				{
+					"actions": [
+						{
+							"do": "fade_in",
+							"time": 0.4
+						},
+						{
+							"do": "voice",
+							"state": "giggle"
+						}
+					],
+					"wait": 0.4
+				},
+				{
+					"speaker": "",
+					"text": "【怪+怪+怪】黏黏幽灵羽毛——黏黏的史莱姆、扑扑的蝙蝠、看不见的手。",
+					"auto": 2.2,
+					"actions": [
+						{
+							"do": "enter",
+							"who": "src1",
+							"from": [
+								-80,
+								0
+							],
+							"time": 0.5
+						},
+						{
+							"do": "enter",
+							"who": "src2",
+							"from": [
+								80,
+								0
+							],
+							"time": 0.5
+						},
+						{
+							"do": "enter",
+							"who": "src3",
+							"from": [
+								0,
+								-70
+							],
+							"time": 0.5
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "surprise"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 5,
+							"interval": 0.26,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "黏的、扑的、看不见的……全来了！",
+					"auto": 2.2,
+					"actions": [
+						{
+							"do": "pose",
+							"who": "princess",
+							"visual": "helpless_2"
+						},
+						{
+							"do": "voice",
+							"state": "laugh"
+						},
+						{
+							"do": "camera",
+							"zoom": 1.5,
+							"focus": "princess",
+							"time": 0.4
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.5
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 5,
+							"interval": 0.26,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 5,
+							"interval": 0.26,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 5,
+							"interval": 0.26,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"actions": [
+						{
+							"do": "fade_out",
+							"time": 0.5
+						},
+						{
+							"do": "voice",
+							"state": ""
+						}
+					],
+					"wait": 0.6
+				}
+			]
+		},
+		"night_trio": {
+			"name": "夜行三重奏",
+			"cast": {
+				"princess": {
+					"kind": "princess",
+					"at": [
+						0,
+						8
+					],
+					"visual": "helpless_1",
+					"anim": "helpless",
+					"dir": "down"
+				},
+				"src1": {
+					"kind": "monster:spider",
+					"at": [
+						-30,
+						2
+					],
+					"dir": "right",
+					"hidden": true
+				},
+				"src2": {
+					"kind": "monster:ghost",
+					"at": [
+						30,
+						2
+					],
+					"dir": "left",
+					"hidden": true
+				},
+				"src3": {
+					"kind": "monster:bat",
+					"at": [
+						0,
+						-26
+					],
+					"dir": "right",
+					"hidden": true
+				}
+			},
+			"steps": [
+				{
+					"actions": [
+						{
+							"do": "fade_in",
+							"time": 0.4
+						},
+						{
+							"do": "voice",
+							"state": "giggle"
+						}
+					],
+					"wait": 0.4
+				},
+				{
+					"speaker": "",
+					"text": "【怪+怪+怪】夜行三重奏——黑暗里的三种怪物一起奏响挠痒三重奏。",
+					"auto": 2.2,
+					"actions": [
+						{
+							"do": "enter",
+							"who": "src1",
+							"from": [
+								-80,
+								0
+							],
+							"time": 0.5
+						},
+						{
+							"do": "enter",
+							"who": "src2",
+							"from": [
+								80,
+								0
+							],
+							"time": 0.5
+						},
+						{
+							"do": "enter",
+							"who": "src3",
+							"from": [
+								0,
+								-70
+							],
+							"time": 0.5
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "surprise"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 5,
+							"interval": 0.26,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "黑、黑暗里有好多只手和脚——！",
+					"auto": 2.2,
+					"actions": [
+						{
+							"do": "pose",
+							"who": "princess",
+							"visual": "helpless_2"
+						},
+						{
+							"do": "voice",
+							"state": "laugh"
+						},
+						{
+							"do": "camera",
+							"zoom": 1.5,
+							"focus": "princess",
+							"time": 0.4
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.5
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 5,
+							"interval": 0.26,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 5,
+							"interval": 0.26,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 5,
+							"interval": 0.26,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"actions": [
+						{
+							"do": "fade_out",
+							"time": 0.5
+						},
+						{
+							"do": "voice",
+							"state": ""
+						}
+					],
+					"wait": 0.6
+				}
+			]
+		},
+		"jelly_sole_party": {
+			"name": "脚底果冻派对",
+			"cast": {
+				"princess": {
+					"kind": "princess",
+					"at": [
+						0,
+						8
+					],
+					"visual": "helpless_1",
+					"anim": "helpless",
+					"dir": "down"
+				},
+				"src1": {
+					"kind": "monster:rat",
+					"at": [
+						-30,
+						2
+					],
+					"dir": "right",
+					"hidden": true
+				},
+				"src2": {
+					"kind": "monster:crab",
+					"at": [
+						30,
+						2
+					],
+					"dir": "left",
+					"hidden": true
+				},
+				"src3": {
+					"kind": "monster:split_slime",
+					"at": [
+						0,
+						-26
+					],
+					"dir": "right",
+					"hidden": true
+				}
+			},
+			"steps": [
+				{
+					"actions": [
+						{
+							"do": "fade_in",
+							"time": 0.4
+						},
+						{
+							"do": "voice",
+							"state": "giggle"
+						}
+					],
+					"wait": 0.4
+				},
+				{
+					"speaker": "",
+					"text": "【怪+怪+怪】脚底果冻派对——老鼠和螃蟹在分裂史莱姆的果冻上开派对。",
+					"auto": 2.2,
+					"actions": [
+						{
+							"do": "enter",
+							"who": "src1",
+							"from": [
+								-80,
+								0
+							],
+							"time": 0.5
+						},
+						{
+							"do": "enter",
+							"who": "src2",
+							"from": [
+								80,
+								0
+							],
+							"time": 0.5
+						},
+						{
+							"do": "enter",
+							"who": "src3",
+							"from": [
+								0,
+								-70
+							],
+							"time": 0.5
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "surprise"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 5,
+							"interval": 0.26,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "果冻上开派对——在、在我脚底！",
+					"auto": 2.2,
+					"actions": [
+						{
+							"do": "pose",
+							"who": "princess",
+							"visual": "helpless_2"
+						},
+						{
+							"do": "voice",
+							"state": "laugh"
+						},
+						{
+							"do": "camera",
+							"zoom": 1.5,
+							"focus": "princess",
+							"time": 0.4
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.5
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 5,
+							"interval": 0.26,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 5,
+							"interval": 0.26,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 5,
+							"interval": 0.26,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"actions": [
+						{
+							"do": "fade_out",
+							"time": 0.5
+						},
+						{
+							"do": "voice",
+							"state": ""
+						}
+					],
+					"wait": 0.6
+				}
+			]
+		},
+		"vault_trap": {
+			"name": "宝库的陷阱",
+			"cast": {
+				"princess": {
+					"kind": "princess",
+					"at": [
+						0,
+						8
+					],
+					"visual": "helpless_1",
+					"anim": "helpless",
+					"dir": "down"
+				},
+				"src1": {
+					"kind": "monster:fairy",
+					"at": [
+						-30,
+						2
+					],
+					"dir": "right",
+					"hidden": true
+				},
+				"src2": {
+					"kind": "monster:mimic",
+					"at": [
+						30,
+						2
+					],
+					"dir": "left",
+					"hidden": true
+				},
+				"src3": {
+					"kind": "monster:tentacle",
+					"at": [
+						0,
+						-26
+					],
+					"dir": "right",
+					"hidden": true
+				}
+			},
+			"steps": [
+				{
+					"actions": [
+						{
+							"do": "fade_in",
+							"time": 0.4
+						},
+						{
+							"do": "voice",
+							"state": "giggle"
+						}
+					],
+					"wait": 0.4
+				},
+				{
+					"speaker": "",
+					"text": "【怪+怪+怪】宝库的陷阱——宝箱怪、触手怪和小精灵守着最后的宝库。",
+					"auto": 2.2,
+					"actions": [
+						{
+							"do": "enter",
+							"who": "src1",
+							"from": [
+								-80,
+								0
+							],
+							"time": 0.5
+						},
+						{
+							"do": "enter",
+							"who": "src2",
+							"from": [
+								80,
+								0
+							],
+							"time": 0.5
+						},
+						{
+							"do": "enter",
+							"who": "src3",
+							"from": [
+								0,
+								-70
+							],
+							"time": 0.5
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "surprise"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 5,
+							"interval": 0.26,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "宝、宝库是陷阱——哈哈哈哈！",
+					"auto": 2.2,
+					"actions": [
+						{
+							"do": "pose",
+							"who": "princess",
+							"visual": "helpless_2"
+						},
+						{
+							"do": "voice",
+							"state": "laugh"
+						},
+						{
+							"do": "camera",
+							"zoom": 1.5,
+							"focus": "princess",
+							"time": 0.4
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.5
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 5,
+							"interval": 0.26,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 5,
+							"interval": 0.26,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 5,
+							"interval": 0.26,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"actions": [
+						{
+							"do": "fade_out",
+							"time": 0.5
+						},
+						{
+							"do": "voice",
+							"state": ""
+						}
+					],
+					"wait": 0.6
+				}
+			]
+		},
+		"vine_stocks": {
+			"name": "藤蔓刑台",
+			"cast": {
+				"princess": {
+					"kind": "princess",
+					"at": [
+						0,
+						8
+					],
+					"visual": "helpless_1",
+					"anim": "helpless",
+					"dir": "down"
+				},
+				"src1": {
+					"kind": "monster:rat",
+					"at": [
+						-30,
+						2
+					],
+					"dir": "right",
+					"hidden": true
+				}
+			},
+			"steps": [
+				{
+					"actions": [
+						{
+							"do": "fade_in",
+							"time": 0.4
+						},
+						{
+							"do": "voice",
+							"state": "giggle"
+						}
+					],
+					"wait": 0.4
+				},
+				{
+					"speaker": "",
+					"text": "【怪+陷阱+陷阱】藤蔓刑台——藤蔓缠腿、足枷锁脚，挠脚鼠慢慢挠。",
+					"auto": 2.2,
+					"actions": [
+						{
+							"do": "enter",
+							"who": "src1",
+							"from": [
+								-80,
+								0
+							],
+							"time": 0.5
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "surprise"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 5,
+							"interval": 0.26,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "缠住又锁住——脚心交给老鼠了哈哈哈！",
+					"auto": 2.2,
+					"actions": [
+						{
+							"do": "pose",
+							"who": "princess",
+							"visual": "helpless_2"
+						},
+						{
+							"do": "voice",
+							"state": "laugh"
+						},
+						{
+							"do": "camera",
+							"zoom": 1.5,
+							"focus": "princess",
+							"time": 0.4
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.5
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 5,
+							"interval": 0.26,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"repeat": 5,
+							"interval": 0.3,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"repeat": 5,
+							"interval": 0.3,
+							"fx": "feather"
+						}
+					]
+				},
+				{
+					"actions": [
+						{
+							"do": "fade_out",
+							"time": 0.5
+						},
+						{
+							"do": "voice",
+							"state": ""
+						}
+					],
+					"wait": 0.6
+				}
+			]
+		},
+		"sticky_belt": {
+			"name": "黏黏输送带",
+			"cast": {
+				"princess": {
+					"kind": "princess",
+					"at": [
+						0,
+						8
+					],
+					"visual": "helpless_1",
+					"anim": "helpless",
+					"dir": "down"
+				},
+				"src1": {
+					"kind": "monster:crab",
+					"at": [
+						-30,
+						2
+					],
+					"dir": "right",
+					"hidden": true
+				}
+			},
+			"steps": [
+				{
+					"actions": [
+						{
+							"do": "fade_in",
+							"time": 0.4
+						},
+						{
+							"do": "voice",
+							"state": "giggle"
+						}
+					],
+					"wait": 0.4
+				},
+				{
+					"speaker": "",
+					"text": "【怪+陷阱+陷阱】黏黏输送带——被传送带送到毛毯上黏住，螃蟹在终点等着。",
+					"auto": 2.2,
+					"actions": [
+						{
+							"do": "enter",
+							"who": "src1",
+							"from": [
+								-80,
+								0
+							],
+							"time": 0.5
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "surprise"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 5,
+							"interval": 0.26,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "送、送到螃蟹面前了——！",
+					"auto": 2.2,
+					"actions": [
+						{
+							"do": "pose",
+							"who": "princess",
+							"visual": "helpless_2"
+						},
+						{
+							"do": "voice",
+							"state": "laugh"
+						},
+						{
+							"do": "camera",
+							"zoom": 1.5,
+							"focus": "princess",
+							"time": 0.4
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.5
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 5,
+							"interval": 0.26,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"repeat": 5,
+							"interval": 0.3,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"repeat": 5,
+							"interval": 0.3,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"actions": [
+						{
+							"do": "fade_out",
+							"time": 0.5
+						},
+						{
+							"do": "voice",
+							"state": ""
+						}
+					],
+					"wait": 0.6
+				}
+			]
+		},
+		"three_hands": {
+			"name": "三只看不见的手",
+			"cast": {
+				"princess": {
+					"kind": "princess",
+					"at": [
+						0,
+						8
+					],
+					"visual": "helpless_1",
+					"anim": "helpless",
+					"dir": "down"
+				},
+				"src1": {
+					"kind": "monster:ghost",
+					"at": [
+						-30,
+						2
+					],
+					"dir": "right",
+					"hidden": true
+				}
+			},
+			"steps": [
+				{
+					"actions": [
+						{
+							"do": "fade_in",
+							"time": 0.4
+						},
+						{
+							"do": "voice",
+							"state": "giggle"
+						}
+					],
+					"wait": 0.4
+				},
+				{
+					"speaker": "",
+					"text": "【怪+陷阱+陷阱】三只看不见的手——幽灵、羽毛臂、机关手——三只手把人举了起来。",
+					"auto": 2.2,
+					"actions": [
+						{
+							"do": "enter",
+							"who": "src1",
+							"from": [
+								-80,
+								0
+							],
+							"time": 0.5
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "surprise"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 5,
+							"interval": 0.26,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "被、被举起来了——三只手一起哈哈哈！",
+					"auto": 2.2,
+					"actions": [
+						{
+							"do": "pose",
+							"who": "princess",
+							"visual": "helpless_2"
+						},
+						{
+							"do": "voice",
+							"state": "laugh"
+						},
+						{
+							"do": "camera",
+							"zoom": 1.5,
+							"focus": "princess",
+							"time": 0.4
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.5
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 5,
+							"interval": 0.26,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"repeat": 5,
+							"interval": 0.3,
+							"fx": "feather"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"repeat": 5,
+							"interval": 0.3,
+							"fx": "hand"
+						}
+					]
+				},
+				{
+					"actions": [
+						{
+							"do": "fade_out",
+							"time": 0.5
+						},
+						{
+							"do": "voice",
+							"state": ""
+						}
+					],
+					"wait": 0.6
+				}
+			]
+		},
+		"wind_bubble": {
+			"name": "顺风泡泡",
+			"cast": {
+				"princess": {
+					"kind": "princess",
+					"at": [
+						0,
+						8
+					],
+					"visual": "helpless_1",
+					"anim": "helpless",
+					"dir": "down"
+				},
+				"src1": {
+					"kind": "monster:bat",
+					"at": [
+						-30,
+						2
+					],
+					"dir": "right",
+					"hidden": true
+				},
+				"src3": {
+					"kind": "monster:bubble_fish",
+					"at": [
+						0,
+						-26
+					],
+					"dir": "right",
+					"hidden": true
+				}
+			},
+			"steps": [
+				{
+					"actions": [
+						{
+							"do": "fade_in",
+							"time": 0.4
+						},
+						{
+							"do": "voice",
+							"state": "giggle"
+						}
+					],
+					"wait": 0.4
+				},
+				{
+					"speaker": "",
+					"text": "【怪+陷阱+陷阱】顺风泡泡——泡泡被风吹着转圈，蝙蝠顺风扑上来。",
+					"auto": 2.2,
+					"actions": [
+						{
+							"do": "enter",
+							"who": "src1",
+							"from": [
+								-80,
+								0
+							],
+							"time": 0.5
+						},
+						{
+							"do": "enter",
+							"who": "src3",
+							"from": [
+								0,
+								-70
+							],
+							"time": 0.5
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "surprise"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 5,
+							"interval": 0.26,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "泡泡在风里转——好晕哈哈哈！",
+					"auto": 2.2,
+					"actions": [
+						{
+							"do": "pose",
+							"who": "princess",
+							"visual": "helpless_2"
+						},
+						{
+							"do": "voice",
+							"state": "laugh"
+						},
+						{
+							"do": "camera",
+							"zoom": 1.5,
+							"focus": "princess",
+							"time": 0.4
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.5
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 5,
+							"interval": 0.26,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"repeat": 5,
+							"interval": 0.3,
+							"fx": "feather"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 5,
+							"interval": 0.26,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"actions": [
+						{
+							"do": "fade_out",
+							"time": 0.5
+						},
+						{
+							"do": "voice",
+							"state": ""
+						}
+					],
+					"wait": 0.6
+				}
+			]
+		}
+	}
+}

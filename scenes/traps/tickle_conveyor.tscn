@@ -7,6 +7,7 @@ collision_layer = 0
 collision_mask = 6
 monitorable = false
 script = ExtResource("1")
+hit_fx = "brush"
 reaction_key = "conveyor"
 trigger_mode = 3
 hit_kind = 1

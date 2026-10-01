@@ -22,6 +22,7 @@ max_amount = 2
 [resource]
 script = ExtResource("1")
 reaction_key = "hedgehog"
+hit_fx = "brush"
 display_name = "刷刷刺猬"
 max_hp = 3
 wander_speed = 16.0

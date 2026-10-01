@@ -15,6 +15,7 @@ max_amount = 1
 script = ExtResource("1")
 display_name = "分裂史莱姆"
 reaction_key = "split_slime"
+hit_fx = "goo"
 max_hp = 4
 wander_speed = 16.0
 chase_speed = 34.0

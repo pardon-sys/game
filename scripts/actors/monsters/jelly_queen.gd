@@ -3,7 +3,7 @@ extends Monster
 ## 魔力水母女王（第四层 Boss）：慢慢飘着追，近身用触须蛰挠（暴击率 stats.special_chance = 0.35）。
 ##   每 summon_interval 秒召唤 summon_count 只魔力水母（场上最多 max_jellies 只）。
 ##   每 puddle_interval 秒在身下留一滩疲倦水液（怪物踩到获得「力量」）。
-##   血量低于一半：「魔力雨」——战斗中公主每秒 +rain_fatigue 魔力疲倦，场上飘着紫色雨滴。
+##   血量低于一半：「魔力雨」——战斗中公主每秒 +rain_percent% 魔力疲倦，场上飘着紫色雨滴。
 ##   死亡时打开 open_on_death 组的 Switchable（Boss 房的门），召唤出的水母一起散掉。
 
 const JELLY_SCENE := "res://scenes/actors/monsters/mana_jelly.tscn"
@@ -14,7 +14,7 @@ const DROP_TEX := preload("res://assets/generated/mana_drop.png")
 @export var max_jellies := 4
 @export var puddle_interval := 6.0
 @export var puddle_life := 14.0
-@export var rain_fatigue := 3.0
+@export var rain_percent := 0.6
 @export var open_on_death := ""
 
 var raining := false
@@ -83,7 +83,7 @@ func _update_rain(delta: float) -> void:
 	if not is_instance_valid(p) or not p.is_alive() or global_position.distance_to(p.global_position) > stats.lose_range:
 		return
 	if p.fatigue and MagicFatigue.accumulate:
-		p.fatigue.add(rain_fatigue * delta)
+		p.fatigue.add_percent(rain_percent * delta)
 	_drop_t -= delta
 	if _drop_t <= 0.0:
 		_drop_t = 0.08
@@ -100,6 +100,7 @@ func _spawn_drop(pos: Vector2) -> void:
 	var tw := s.create_tween()
 	tw.tween_property(s, "global_position:y", pos.y, 0.35)
 	tw.parallel().tween_property(s, "modulate:a", 0.2, 0.35)
+	tw.tween_callback(func(): Fx.burst(s.get_parent(), pos, "drop", 3, 18.0, 0.3, Vector2(0, 60)))
 	tw.tween_callback(s.queue_free)
 
 

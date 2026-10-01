@@ -124,6 +124,10 @@ func _tick(delta: float) -> void:
 	_magic_cd = maxf(_magic_cd - delta, 0.0)
 	var can_control := not GameState.in_dialogue and state != State.DEAD
 	var input := controller.get_move_vector() if can_control else Vector2.ZERO
+	if stat_add("invert_controls") > 0.0:
+		input = -input  # 晕头转向：方向颠倒
+	_update_lift(delta)
+	_update_focus()
 	if status and status.is_grabbed() and state not in [State.GRABBED, State.DEAD]:
 		interrupt_channel()
 		_end_attack()
@@ -266,7 +270,7 @@ func interact() -> void:
 func use_item(hotkey := "use_item") -> bool:
 	if state == State.DEAD:
 		return false
-	var used := GameState.inventory.use_first_usable(self, hotkey)
+	var used := GameState.inventory.use_hotkey(self, hotkey)
 	if not used:
 		Audio.play("locked", -8.0)
 	return used
@@ -298,6 +302,11 @@ func is_magic_unlocked() -> bool:
 
 func is_channeling() -> bool:
 	return state == State.CHANNEL
+
+
+## 星光糖：魔法冷却立即清零。
+func reset_magic_cooldown() -> void:
+	_magic_cd = 0.0
 
 
 func magic_cooldown_left() -> float:
@@ -466,6 +475,9 @@ func respawn() -> void:
 	set_invulnerable(1.5, true)
 	_set_state(State.IDLE)
 	if camera:
+		if _focus_base != Vector2.ZERO:
+			camera.zoom = _focus_base
+			_focus_base = Vector2.ZERO
 		camera.reset_smoothing()
 	_on_respawned()
 
@@ -500,6 +512,49 @@ func fatigue_burst() -> void:
 ## 子类钩子：死亡时要播过场就返回 true（由子类负责之后调用 respawn）。
 func _play_death_cutscene() -> bool:
 	return false
+
+
+# ------------------------------------------------------------------ 组合技表现：抬起、镜头聚焦
+var _lift_t := 0.0
+var _focus_base := Vector2.ZERO
+var _focus_since := 0.0
+
+
+## 抬起：被举在半空（buff lifted），小人上浮晃动。
+func _update_lift(delta: float) -> void:
+	if sprite == null:
+		return
+	if has_buff("lifted"):
+		_lift_t += delta
+		sprite.position.y = -6.0 + roundf(sin(_lift_t * 7.0) * 1.5)
+	elif sprite.position.y != 0.0:
+		_lift_t = 0.0
+		sprite.position.y = 0.0
+
+
+## 镜头聚焦（三来源组合）：放大对准自己；停止被挠 1 秒后还原。
+func focus_camera(mult := 1.5) -> void:
+	if camera == null:
+		return
+	if _focus_base == Vector2.ZERO:
+		_focus_base = camera.zoom
+	_focus_since = Time.get_ticks_msec() / 1000.0
+	var tw := camera.create_tween()
+	tw.tween_property(camera, "zoom", _focus_base * mult, 0.25)
+
+
+func is_camera_focused() -> bool:
+	return _focus_base != Vector2.ZERO
+
+
+func _update_focus() -> void:
+	if _focus_base == Vector2.ZERO or camera == null:
+		return
+	var now := Time.get_ticks_msec() / 1000.0
+	if now - maxf(last_tickle_time, _focus_since) >= 1.0:
+		var base := _focus_base
+		_focus_base = Vector2.ZERO
+		camera.create_tween().tween_property(camera, "zoom", base, 0.4)
 
 
 # ------------------------------------------------------------------ 内部

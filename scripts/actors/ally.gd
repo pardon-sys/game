@@ -50,7 +50,7 @@ func _tick(delta: float) -> void:
 
 
 func _choose_behavior() -> Behavior:
-	if leader and leader.is_alive() and leader.laugh and leader.laugh.value > stats.assist_threshold:
+	if leader and leader.is_alive() and leader.laugh and leader.laugh.ratio() > stats.assist_threshold_ratio:
 		return Behavior.ASSIST
 	var center := leader.global_position if leader else global_position
 	enemy = null
@@ -90,7 +90,7 @@ func assist(target: Actor, _delta: float) -> void:
 		velocity = Vector2.ZERO
 		if _assist_cd <= 0.0:
 			_assist_cd = stats.assist_cooldown
-			target.laugh.reduce(stats.assist_amount)
+			target.laugh.reduce_ratio(stats.assist_ratio)
 			assisted.emit(target)
 			_on_assist_performed(target)
 

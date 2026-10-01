@@ -26,6 +26,7 @@ chance = 1.0
 [resource]
 script = ExtResource("1")
 reaction_key = "troll"
+hit_fx = "hand"
 display_name = "挠痒巨魔"
 is_boss = true
 special_chance = 0.2

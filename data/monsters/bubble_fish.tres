@@ -22,6 +22,7 @@ max_amount = 1
 [resource]
 script = ExtResource("1")
 reaction_key = "bubble_fish"
+hit_fx = "bubble"
 display_name = "泡泡鱼"
 max_hp = 3
 wander_speed = 18.0

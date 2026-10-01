@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="BackpackItem" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/items/backpack_item.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/generated/item_backpack.png" id="2"]
+
+[resource]
+script = ExtResource("1")
+icon = ExtResource("2")
+id = "backpack"
+display_name = "冒险背包"
+description = "前人留下的旧背包，结实又能装。可以查看所有物品、设定快捷键、看清自己现在的状态。（Tab / I 打开）"
+category = 3
+stackable = false
+max_stack = 1
+auto_use_on_pickup = true
+show_in_hud = false
+pickup_emotion = "happy"

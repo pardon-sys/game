@@ -13,6 +13,8 @@ var failures := 0
 
 
 func _ready() -> void:
+	ComboTracker.play_scenes = false  # 三来源组合的小演出会暂停战斗；需要时在专门的测试里打开
+	HUD.slow_motion = false
 	Monster.random_specials = false  # 这里要精确的挠痒数值；暴击在 floor4_test 里测
 	MagicFatigue.accumulate = false  # 同理，魔力疲倦的闷笑加成在 floor4_test 里测
 	main = load("res://scenes/main.tscn").instantiate()
@@ -413,7 +415,7 @@ func _run_data() -> void:
 	var sheet := load("res://assets/generated/princess.png") as Texture2D
 	check("精灵表 11 行 x 16 列 32px", sheet.get_width() == 512 and sheet.get_height() == 352)
 	check("挠痒果冻音效已加载", Audio._streams.get("tickle", []).size() == 4)
-	check("闷笑上限 150 / 失控 2 阈值 100", is_equal_approx(player.laugh.max_value, 150.0) and is_equal_approx(player.laugh.helpless_stage2_threshold, 100.0))
+	check("闷笑上限 150 / 失控 2 阈值 70%", is_equal_approx(player.laugh.max_value, 150.0) and is_equal_approx(player.laugh.helpless_stage2_threshold, 105.0))
 
 
 # ------------------------------------------------------------------ 工具

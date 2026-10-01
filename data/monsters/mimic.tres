@@ -23,6 +23,7 @@ max_amount = 10
 script = ExtResource("1")
 display_name = "宝箱怪"
 reaction_key = "mimic"
+hit_fx = "goo"
 taunt_chance = 0.4
 max_hp = 5
 wander_speed = 14.0

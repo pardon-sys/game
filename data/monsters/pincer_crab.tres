@@ -15,6 +15,7 @@ max_amount = 1
 script = ExtResource("1")
 display_name = "钳钳蟹"
 reaction_key = "crab"
+hit_fx = "pinch"
 max_hp = 3
 wander_speed = 20.0
 chase_speed = 38.0

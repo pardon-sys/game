@@ -1,8 +1,8 @@
 class_name LaughReliefItem
 extends ItemData
-## 降低闷笑值（例如薄荷糖）。
+## 降低闷笑值（例如薄荷糖）：按闷笑上限的比例降低。
 
-@export var amount := 40.0
+@export_range(0.0, 1.0) var ratio := 0.27
 
 
 func can_use(user: Node) -> bool:
@@ -12,7 +12,7 @@ func can_use(user: Node) -> bool:
 func use(user: Node) -> bool:
 	if not can_use(user):
 		return false
-	user.laugh.reduce(amount)
+	user.laugh.reduce_ratio(ratio)
 	Audio.play("pickup")
 	GameState.notify("吃了%s，清凉的感觉让人冷静下来。" % display_name)
 	return true

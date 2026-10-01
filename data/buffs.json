@@ -4,14 +4,17 @@
 		"duration 默认秒数（-1 = 永久，复活和换层都保留）, max_stacks 最多叠几层, modifiers {属性: 数值}}。",
 		"stat_kinds 规定属性的合并方式：add = 各层数值相加（Actor.stat_add）；mul = 各层数值相乘（Actor.stat_mul）；",
 		"flag = 任何一个状态写 0 就是关（Actor.stat_flag）。",
-		"属性：laugh_gain 闷笑积累加成（+0.3 = +30%）、special_chance 暴击率加成、tickle_cd 挠痒冷却倍率、speed 移动速度倍率、can_channel 能否吟唱。"
+		"属性：laugh_gain 闷笑积累加成（+0.3 = +30%）、special_chance 暴击率加成、tickle_cd 挠痒冷却倍率、speed 移动速度倍率、can_channel 能否吟唱。",
+		"desc：背包状态页里显示的效果说明。新属性：invert_controls 方向颠倒（>0 时）、crit_all 所有挠痒都算暴击（>0 时）。"
 	],
 	"stat_kinds": {
 		"laugh_gain": "add",
 		"special_chance": "add",
 		"tickle_cd": "mul",
 		"speed": "mul",
-		"can_channel": "flag"
+		"can_channel": "flag",
+		"invert_controls": "add",
+		"crit_all": "add"
 	},
 	"buffs": {
 		"strength": {
@@ -22,7 +25,8 @@
 			"max_stacks": 1,
 			"modifiers": {
 				"tickle_cd": 0.6
-			}
+			},
+			"desc": "挠痒冷却缩短到 60%，挠得更勤快。"
 		},
 		"frenzy": {
 			"name": "狂热",
@@ -33,7 +37,8 @@
 			"modifiers": {
 				"special_chance": 0.2,
 				"tickle_cd": 0.8
-			}
+			},
+			"desc": "暴击率 +20%，挠痒冷却 ×0.8。"
 		},
 		"ticklish": {
 			"name": "易痒诅咒",
@@ -43,7 +48,8 @@
 			"max_stacks": 1,
 			"modifiers": {
 				"laugh_gain": 0.3
-			}
+			},
+			"desc": "皮肤变敏感：闷笑积累 +30%。"
 		},
 		"sticky": {
 			"name": "黏黏",
@@ -53,7 +59,8 @@
 			"max_stacks": 1,
 			"modifiers": {
 				"speed": 0.4
-			}
+			},
+			"desc": "脚底黏黏的：移动速度只剩 40%。"
 		},
 		"sealed": {
 			"name": "封魔",
@@ -63,7 +70,8 @@
 			"max_stacks": 1,
 			"modifiers": {
 				"can_channel": 0
-			}
+			},
+			"desc": "魔力被封住：不能吟唱星光爆发。"
 		},
 		"fatigue_scar": {
 			"name": "疲倦印记",
@@ -73,6 +81,38 @@
 			"max_stacks": 999,
 			"modifiers": {
 				"laugh_gain": 0.01
+			},
+			"desc": "每层闷笑积累 +1%，永久；清心花露可以清除。"
+		},
+		"lifted": {
+			"name": "抬起",
+			"icon": 6,
+			"debuff": true,
+			"duration": 2,
+			"max_stacks": 1,
+			"desc": "被举到半空：动不了，挣扎也没用，还在被一直挠。",
+			"modifiers": {}
+		},
+		"dizzy": {
+			"name": "晕头转向",
+			"icon": 7,
+			"debuff": true,
+			"duration": 3,
+			"max_stacks": 1,
+			"desc": "转得头晕：方向键全部颠倒。",
+			"modifiers": {
+				"invert_controls": 1
+			}
+		},
+		"crit_storm": {
+			"name": "全场暴击",
+			"icon": 8,
+			"debuff": true,
+			"duration": 3,
+			"max_stacks": 1,
+			"desc": "身体敏感到极点：受到的每一下挠痒都算暴击。",
+			"modifiers": {
+				"crit_all": 1
 			}
 		}
 	}

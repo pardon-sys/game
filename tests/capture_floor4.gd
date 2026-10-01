@@ -4,15 +4,18 @@ extends Node
 
 const OUT := "res://tools/.cache/shots/"
 const ROOMS := [
-	[Vector2i(8, 45), "f4_01_landing"],
-	[Vector2i(26, 44), "f4_02_jelly_pool"],
-	[Vector2i(50, 44), "f4_03_bubble_waterway"],
-	[Vector2i(55, 30), "f4_04_stocks_corridor"],
-	[Vector2i(40, 18), "f4_05_hedgehog_lane"],
-	[Vector2i(11, 19), "f4_06_totem_hall"],
-	[Vector2i(32, 26), "f4_07_glove_gallery"],
-	[Vector2i(17, 6), "f4_08_queen_hall"],
-	[Vector2i(38, 7), "f4_09_stairs"],
+	[Vector2i(8, 52), "f4_01_landing"],
+	[Vector2i(19, 51), "f4_01b_storage"],
+	[Vector2i(31, 50), "f4_02_jelly_pool"],
+	[Vector2i(58, 50), "f4_03_bubble_waterway"],
+	[Vector2i(64, 33), "f4_04_stocks_corridor"],
+	[Vector2i(60, 16), "f4_04b_plaza"],
+	[Vector2i(36, 17), "f4_05_hedgehog_lane"],
+	[Vector2i(32, 22), "f4_05b_curse_hall"],
+	[Vector2i(11, 18), "f4_06_totem_hall"],
+	[Vector2i(32, 30), "f4_07_glove_gallery"],
+	[Vector2i(21, 6), "f4_08_queen_hall"],
+	[Vector2i(46, 7), "f4_09_stairs"],
 ]
 
 var main: Node
@@ -39,18 +42,19 @@ func _ready() -> void:
 	var enemies := get_tree().get_nodes_in_group("enemy")
 	for e in enemies:
 		e.process_mode = Node.PROCESS_MODE_DISABLED
+	await _capture_backpack()
 	for r in ROOMS:
 		_place(r[0])
 		await _wait(0.9)
 		await _shot(r[1])
 		_finish()
 	# HUD：疲倦条、状态图标、暴击
-	_place(Vector2i(8, 45))
+	_place(Vector2i(8, 52))
 	player.fatigue.set_value(420.0)
 	player.add_buff("fatigue_scar", -1.0, 3)
 	player.add_buff("ticklish", 8.0)
 	player.add_buff("sticky", 5.0)
-	var jelly := level_find("ManaJelly_22_42") as Monster
+	var jelly := level_find("ManaJelly_28_47") as Monster
 	jelly.global_position = player.global_position + Vector2(14, 0)
 	jelly.add_buff("strength", 10.0)
 	player.forced_specials = 1
@@ -68,8 +72,8 @@ func _ready() -> void:
 	# 泡泡牢笼
 	player.revive()
 	player.clear_buffs(false)
-	var fish := level_find("BubbleFish_46_45") as BubbleFish
-	_place(Vector2i(50, 46))
+	var fish := level_find("BubbleFish_53_51") as BubbleFish
+	_place(Vector2i(58, 52))
 	fish.global_position = player.global_position + Vector2(-50, 0)
 	fish.target = player
 	fish.shoot_bubble()
@@ -77,7 +81,7 @@ func _ready() -> void:
 	await _shot("f4_13_bubble_cage")
 	player.status.release(true)
 	# 足枷台 + 羽毛臂
-	_place(Vector2i(55, 31))
+	_place(Vector2i(64, 33))
 	await _wait(0.2)
 	player.global_position.y -= 16.0
 	await _wait(0.6)
@@ -85,8 +89,8 @@ func _ready() -> void:
 	player.status.release(true)
 	# 刺猬滚动
 	player.revive()
-	var hog := level_find("Hedgehog_47_18") as BrushHedgehog
-	_place(Vector2i(44, 18))
+	var hog := level_find("Hedgehog_45_17") as BrushHedgehog
+	_place(Vector2i(44, 17))
 	player.global_position.x += 40.0
 	hog.global_position = player.global_position + Vector2(-70, 0)
 	hog.begin_curl(Vector2.RIGHT)
@@ -96,13 +100,60 @@ func _ready() -> void:
 	hog.process_mode = Node.PROCESS_MODE_DISABLED
 	# 水母女王的魔力雨
 	player.revive()
-	var queen := level_find("JellyQueen_20_4") as JellyQueen
-	_place(Vector2i(20, 8))
+	var queen := level_find("JellyQueen_22_4") as JellyQueen
+	_place(Vector2i(22, 8))
 	queen.process_mode = Node.PROCESS_MODE_INHERIT
 	queen.health.damage(13)
 	await _wait(1.5)
 	await _shot("f4_16_queen_rain")
+	queen.process_mode = Node.PROCESS_MODE_DISABLED
+	await _capture_triple()
 	get_tree().quit()
+
+
+## 三来源组合：HUD 大字标题（慢动作中）和第一次触发的小演出。
+func _capture_triple() -> void:
+	player.revive()
+	player.combo.reset()
+	_place(Vector2i(32, 21))
+	await _wait(0.3)
+	GameState.flags.erase("combo_scene_curse_hall")
+	for n in ["Rune_32_20", "Carpet_32_22", "Arm_34_21"]:
+		player.receive_hit(HitData.make_tickle(level_find(n), 1.0))
+	await get_tree().create_timer(0.15, true, false, true).timeout
+	await _shot("f4_19_triple_title")
+	await _wait(2.6)
+	await _shot("f4_20_combo_scene")
+	_finish()
+
+
+## 背包两页。
+func _capture_backpack() -> void:
+	GameState.give_item(ItemDB.get_item("backpack"), 1, player)
+	_finish()
+	for id in ["mint", "clear_dew", "star_candy", "coin", "key_bronze"]:
+		GameState.give_item(ItemDB.get_item(id), 2, player)
+	GameState.set_hotkey("use_special", "star_candy")
+	player.laugh.set_value(70.0)
+	player.fatigue.set_value(330.0)
+	player.add_buff("ticklish", 6.0)
+	player.add_buff("fatigue_scar", -1.0, 2)
+	player.add_buff("dizzy", 3.0)
+	var bp: Backpack = main.get_node("Backpack")
+	bp.open()
+	bp.selected = 2
+	bp._refresh()
+	await _wait(0.2)
+	await _shot("f4_17_backpack_items")
+	bp.set_page(1)
+	await _wait(0.2)
+	await _shot("f4_18_backpack_status")
+	bp.close()
+	player.clear_buffs(false)
+	player.laugh.clear()
+	player.fatigue.clear()
+	GameState.hotkeys = GameState.DEFAULT_HOTKEYS.duplicate()
+	GameState.hotkeys_changed.emit()
 
 
 func level_find(n: String) -> Node:

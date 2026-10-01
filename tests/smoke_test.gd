@@ -13,6 +13,8 @@ var failures := 0
 
 
 func _ready() -> void:
+	ComboTracker.play_scenes = false  # 三来源组合的小演出会暂停战斗；需要时在专门的测试里打开
+	HUD.slow_motion = false
 	Monster.random_specials = false  # 这里要精确的挠痒数值；暴击在 floor4_test 里测
 	MagicFatigue.accumulate = false  # 同理，魔力疲倦的闷笑加成在 floor4_test 里测
 	var main: Node = load("res://scenes/main.tscn").instantiate()
@@ -115,9 +117,13 @@ func _run_visual_states() -> void:
 		var i := GameState.EMOTIONS.find(e)
 		check("立绘与HUD映射 " + e, Dialogue.portrait_for(e).region.position.x == i * Dialogue.portrait_cell.x and Dialogue.head_for(e).region.position.x == i * Dialogue.head_size)
 	GameState.emote("happy", 0.0, false)
-	for sample in [[50.0, "happy"], [50.01, "giggle"], [80.0, "giggle"],
-		[80.01, "helpless_1"], [100.0, "helpless_1"], [100.01, "helpless_2"],
-		[100.0, "helpless_1"], [80.0, "damaged_giggle"], [50.0, "happy"]]:
+	var lg := player.laugh.giggle_threshold
+	var lh := player.laugh.helpless_threshold
+	var l2 := player.laugh.helpless_stage2_threshold
+	check("闷笑阶段按百分比：憋笑 35%、失控 1 55%、失控 2 70%", is_equal_approx(lg, 52.5) and is_equal_approx(lh, 82.5) and is_equal_approx(l2, 105.0))
+	for sample in [[lg, "happy"], [lg + 0.01, "giggle"], [lh, "giggle"],
+		[lh + 0.01, "helpless_1"], [l2, "helpless_1"], [l2 + 0.01, "helpless_2"],
+		[l2, "helpless_1"], [lh, "damaged_giggle"], [lg, "happy"]]:
 		player.laugh.set_value(sample[0])
 		check("阈值 %.2f → %s" % sample, player.emotion.current == sample[1])
 	GameState.emote("", 0.05, false)  # 事件表情结束
@@ -141,7 +147,7 @@ func _run_visual_states() -> void:
 	princess.revive()
 	check("复活清除异常并回普通", not princess.battle_damaged and player.emotion.current == "normal")
 	player.laugh.add(150.0)
-	check("一次跨越所有阈值扣血回落到 100", player.health.hp == player.health.max_hp - 1 and player.laugh.value == 100.0 and player.emotion.current == "helpless_1")
+	check("一次跨越所有阈值扣血回落到 70%", player.health.hp == player.health.max_hp - 1 and is_equal_approx(player.laugh.value, player.laugh.overflow_reset_to) and player.emotion.current == "helpless_1")
 	check("轻笑和大笑音频已加载", not Audio._streams["giggle"].is_empty() and not Audio._streams["laugh"].is_empty())
 	player.laugh.set_value(60.0)  # 回到憋笑段，语音切到轻笑
 	Audio.play_voice("giggle")
@@ -210,7 +216,7 @@ func _run_reactions() -> void:
 	await _wait(0.2)
 	ctrl.move = Vector2.ZERO
 	check("显示台词时可以移动", player.position.x > x0)
-	player.laugh.set_value(50.0)
+	player.laugh.set_value(player.laugh.giggle_threshold - 0.5)
 	player.receive_hit(HitData.make_tickle(null, 1.0))
 	check("跨档立即更新憋笑台词", Dialogue.reaction_text.text in ReactionDB.lines("", "giggle"))
 	GameState.emote("shy", 0.0, false)
@@ -224,8 +230,8 @@ func _run_reactions() -> void:
 	player.receive_hit(HitData.make_tickle(null, 1.0))
 	await _wait(2.5)
 	check("台词到时消失而立绘保留", not Dialogue.reaction_panel.visible and Dialogue.portrait.visible)
-	var old_decay := player.laugh.decay_rate
-	player.laugh.decay_rate = 0.0
+	var old_decay := player.laugh.decay_ratio
+	player.laugh.decay_ratio = 0.0
 	player.laugh.set_value(85.0)
 	check("高闷笑立即连续播放", Audio._voice.playing and (Audio._voice.stream as AudioStreamWAV).loop_mode == AudioStreamWAV.LOOP_FORWARD)
 	var finished_count := [0]
@@ -244,7 +250,7 @@ func _run_reactions() -> void:
 	check("解除暂停继续大笑", Audio._voice.playing)
 	player.laugh.set_value(80.0)
 	check("降至80停止连续大笑", not Audio._voice.playing and Audio._voice_state == "giggle")
-	player.laugh.decay_rate = old_decay
+	player.laugh.decay_ratio = old_decay
 	player.laugh.clear()
 	if player.fatigue:
 		player.fatigue.clear()
@@ -404,7 +410,7 @@ func _run_laugh() -> void:
 	var hp := player.health.hp
 	player.receive_hit(HitData.make_tickle(null, 10.0))
 	check("闷笑满 150 扣半颗心", player.health.hp == hp - 1)
-	check("满值后回落到 100", is_equal_approx(m.value, 100.0))
+	check("满值后回落到 70%", is_equal_approx(m.value, m.overflow_reset_to))
 	m.set_value(110.0)
 	await get_tree().physics_frame
 	await get_tree().physics_frame
@@ -429,7 +435,7 @@ func _run_items() -> void:
 	ctrl.press(&"use_item")
 	await get_tree().physics_frame
 	await get_tree().physics_frame
-	check("Q 使用薄荷糖降低 40 闷笑值", is_equal_approx(player.laugh.value, 30.0))
+	check("Q 使用薄荷糖降低 27% 闷笑值", is_equal_approx(player.laugh.value, 70.0 - 0.27 * player.laugh.max_value))
 	check("使用后薄荷糖被消耗", inv.count("mint") == 0)
 	check("没有闷笑值时不能使用薄荷糖", not mint.can_use(player) or player.laugh.value > 0.0)
 	player.laugh.clear()

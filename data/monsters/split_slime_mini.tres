@@ -13,6 +13,7 @@ chance = 0.3
 script = ExtResource("1")
 display_name = "小分裂史莱姆"
 reaction_key = "split_slime"
+hit_fx = "goo"
 taunt_chance = 0.2
 max_hp = 1
 wander_speed = 24.0

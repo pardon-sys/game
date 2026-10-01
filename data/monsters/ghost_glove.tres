@@ -14,6 +14,7 @@ max_amount = 1
 [resource]
 script = ExtResource("1")
 reaction_key = "glove"
+hit_fx = "hand"
 display_name = "幽灵手套"
 max_hp = 2
 wander_speed = 20.0

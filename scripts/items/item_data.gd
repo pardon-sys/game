@@ -21,7 +21,8 @@ enum Category { CONSUMABLE, KEY, CURRENCY, INSTANT }
 @export var pickup_sound := "pickup"
 ## 获得时公主的表情（留空不做表情）。
 @export var pickup_emotion := ""
-## 用哪个按键使用：use_item（Q，薄荷糖）/ use_special（R，清心花露）。
+## 默认用哪个按键使用：use_item（Q，薄荷糖）/ use_special（R，清心花露）/ 空（需要在背包里设定）。
+## 实际绑定在 GameState.hotkeys（默认值 GameState.DEFAULT_HOTKEYS），拿到背包后可以改。
 @export var hotkey := "use_item"
 
 

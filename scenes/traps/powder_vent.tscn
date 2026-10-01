@@ -11,6 +11,7 @@ collision_layer = 0
 collision_mask = 6
 monitorable = false
 script = ExtResource("1")
+hit_fx = "sting"
 reaction_key = "vent"
 hit_kind = 1
 damage = 0

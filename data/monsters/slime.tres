@@ -12,4 +12,5 @@ chance = 0.4
 [resource]
 script = ExtResource("1")
 reaction_key = "slime"
+hit_fx = "goo"
 drops = Array[ExtResource("2")]([SubResource("drop_heart")])

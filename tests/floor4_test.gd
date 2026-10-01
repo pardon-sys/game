@@ -14,6 +14,8 @@ class Src extends Node2D:
 
 
 func _ready() -> void:
+	ComboTracker.play_scenes = false  # 三来源组合的小演出会暂停战斗；需要时在专门的测试里打开
+	HUD.slow_motion = false
 	main = load("res://scenes/main.tscn").instantiate()
 	add_child(main)
 	await _wait(1.0)
@@ -33,6 +35,8 @@ func _ready() -> void:
 	await _run_monsters()
 	await _run_traps()
 	await _run_combos()
+	await _run_combos3()
+	await _run_backpack()
 	await _run_floor4()
 	print("\n==== %s (%d 项失败) ====" % ["全部通过" if failures == 0 else "有失败", failures])
 	get_tree().quit(1 if failures else 0)
@@ -600,13 +604,273 @@ func _run_combos() -> void:
 		if str(ReactionDB.combo(id).get("name", "")) == "" or ReactionDB.combo(id).get("lines", []).is_empty():
 			print("    缺名称 / 台词：", id)
 			named = false
-	check("21 个组合技都有名称和台词", named and ComboTracker.ids().size() == 21)
+	check("63 个组合技都有名称和台词", named and ComboTracker.ids().size() == 63)
 	c.triggered.disconnect(on_fired)
 	slime.queue_free()
 	_clear_puddles()
 	Monster.random_specials = true
 	player.clear_buffs(false)
 	f.clear()
+	_reset()
+
+
+# ------------------------------------------------------------------ 组合技第三批：三来源、连锁、新效果
+func _tk(key: String, amount := 1.0) -> void:
+	player.receive_hit(HitData.make_tickle(_src(key), amount))
+
+
+func _run_combos3() -> void:
+	print("-- 组合技：三来源、连锁、新效果")
+	Monster.random_specials = false
+	var c: ComboTracker = player.combo
+	var hud: HUD = main.get_node("HUD")
+	var fired: Array = []
+	var on_fired := func(id: String): fired.append(id)
+	c.triggered.connect(on_fired)
+
+	var triples: Array = ComboTracker.data()["combos"].filter(func(x: Dictionary): return ComboTracker.is_triple(x))
+	var cats := {}
+	for t in triples:
+		cats[t["category"]] = true
+	check("25 个三来源组合，四种搭配都有", triples.size() == 25 and cats.has("怪+怪+怪") and cats.has("怪+怪+陷阱")
+		and cats.has("怪+陷阱+陷阱") and cats.has("陷阱+陷阱+陷阱"))
+	var rules_ok := true
+	var scenes_ok := true
+	for t in triples:
+		var has_focus := false
+		for e in t["effects"]:
+			has_focus = has_focus or e["type"] == "focus"
+		rules_ok = rules_ok and has_focus and is_equal_approx(ComboTracker.combo_window(t), 2.5) \
+				and is_equal_approx(ComboTracker.combo_cooldown(t), 8.0)
+		scenes_ok = scenes_ok and CG.scenes.has(t["id"])
+	check("三来源组合：窗口 2.5 秒、冷却 8 秒，都带镜头聚焦", rules_ok)
+	check("每个三来源组合都有小演出（单独文件）", scenes_ok and CG.validate().is_empty())
+
+	# 优先级：指定来源 > 通配符
+	_reset()
+	fired.clear()
+	_tk("glove")
+	_tk("stocks")
+	check("手套 + 足枷台 → 枷锁手套（指定来源优先于「枷锁围攻」）", fired == ["stocks_glove"])
+	_reset()
+	fired.clear()
+	_tk("slime")
+	_tk("stocks")
+	check("史莱姆 + 足枷台 → 果冻枷锁", fired == ["slime_stocks"])
+	_reset()
+	fired.clear()
+	_tk("bat")
+	_tk("stocks")
+	check("蝙蝠 + 足枷台 → 枷锁围攻（通配任意怪物）", fired == ["stocks_mob"])
+	_reset()
+	fired.clear()
+	_tk("bubble_fish")
+	_tk("carpet")
+	check("泡泡鱼 + 黏黏毛毯 → 黏黏泡泡", fired == ["bubble_carpet"])
+
+	# 连锁升级：两来源 → 三来源
+	_reset()
+	fired.clear()
+	_tk("rat")
+	_tk("crab")
+	check("挠脚鼠 + 钳钳蟹 先打出脚心双重奏", fired == ["sole_duet"] and c.chain == 1)
+	await _wait(0.3)
+	_tk("stocks")
+	check("再被足枷台挠到 → 连锁升级成三来源「脚心总动员」", fired.has("sole_mobilize") and c.last_upgraded and c.chain >= 2)
+	check("HUD：三重组合大字标题、连锁升级横幅、连锁数", hud.combo_title.text.contains("脚心总动员") and hud.combo_label.text.contains("连锁升级")
+		and hud.chain_label.text.begins_with("连锁 ×"))
+	check("全场暴击：之后怪物 / 陷阱的每一下都是暴击", player.has_buff("crit_storm"))
+	player.laugh.clear()
+	_tk("vine", 4.0)
+	check("全场暴击中普通挠痒变成暴击（4 → 8）", player.last_tickle.special and absf(player.laugh.value - 8.0) < 0.3)
+	await _wait(0.3)
+	check("镜头聚焦：放大", player.is_camera_focused() and player.camera.zoom.x > 1.01 * player._focus_base.x)
+	await _wait(1.6)
+	check("停止被挠 1 秒后镜头还原", not player.is_camera_focused())
+
+	# 陷阱三连
+	_reset()
+	fired.clear()
+	for k in ["stocks", "arm", "carpet"]:
+		_tk(k)
+	check("陷阱 + 陷阱 + 陷阱：全自动刑台", fired.has("auto_stocks"))
+	check("晕头转向：方向颠倒", player.has_buff("dizzy"))
+	var x0 := player.global_position.x
+	ctrl.move = Vector2.RIGHT
+	await _wait(0.4)
+	ctrl.move = Vector2.ZERO
+	check("晕头转向时按右往左走", player.global_position.x < x0 - 2.0)
+
+	# 抬起
+	_reset()
+	fired.clear()
+	for k in ["hedgehog", "glove", "bubble_fish"]:
+		_tk(k)
+	check("怪 + 怪 + 怪：全身大扫除", fired.has("full_scrub"))
+	check("抬起：被举到半空、被组合抓住", player.has_buff("lifted") and player.status.is_grabbed_by(c))
+	for i in 20:
+		player.status.struggle()
+	check("抬起时挣扎无效", player.status.is_grabbed_by(c))
+	await _wait(0.2)
+	check("抬起时小人上浮", player.sprite.position.y < -2.0)
+	await _wait(2.2)
+	check("2 秒后放下", not player.status.is_grabbed() and not player.has_buff("lifted"))
+
+	# 召集
+	_reset()
+	fired.clear()
+	var far := _spawn("slime", Vector2(120, 0), true)
+	far.stats = far.stats.duplicate()
+	far.stats.detect_range = 0.0
+	await _wait(0.1)
+	for k in ["rat", "crab", "spider"]:
+		_tk(k)
+	check("召集：远处怪物锁定公主", fired.has("sole_party") and far.target == player and far.state == Monster.State.CHASE)
+	far.queue_free()
+
+	# 抓取延长 / 挣脱次数 / 挣脱后定身
+	_reset()
+	var holder := _src("hand")
+	player.status.grab(holder, 1.0, 4)
+	await get_tree().physics_frame
+	var left := player.status.grab_time_left()
+	player.status.extend_grab(1.5, 3)
+	check("抓取延长 1.5 秒、挣脱多 3 次", absf(player.status.grab_time_left() - left - 1.5) < 0.05 and player.status.presses_left() == 7)
+	player.status.root_after_release(1.5)
+	for i in 7:
+		player.status.struggle()
+	check("挣脱后再定身 1.5 秒", not player.status.is_grabbed() and player.status.root_time_left() > 1.4)
+
+	# 牢笼里的暴击
+	_reset()
+	fired.clear()
+	player.status.grab(holder, 2.0, 10)
+	await get_tree().physics_frame
+	left = player.status.grab_time_left()
+	var crit := HitData.make_tickle(_src("slime"), 2.0)
+	crit.special = true
+	player.receive_hit(crit)
+	check("被困住时被暴击 → 牢笼里的暴击（+1 秒、+2 次）", fired.has("cage_crit") and player.status.grab_time_left() > left + 0.9
+		and player.status.presses_left() == 12)
+	player.status.release(true)
+
+	# 连锁加成
+	_reset()
+	player.laugh.clear()
+	c.chain = 2
+	c._last_fire = c._time
+	c.trigger("sole_duet")
+	check("连锁 ×3：额外挠痒 ×1.4（15 → 21）", c.chain == 3 and absf(player.laugh.value - 21.0) < 0.3)
+
+	# 小演出：三来源组合第一次触发时播放，可跳过，第二次不播
+	_reset()
+	ComboTracker.play_scenes = true
+	GameState.flags.erase("combo_scene_curse_hall")
+	for k in ["rune", "carpet", "arm"]:
+		_tk(k)
+	await get_tree().process_frame
+	check("小演出先等大字标题演完", not CG.is_playing())
+	await _wait(ComboTracker.SCENE_DELAY + 0.2)
+	check("第一次触发诅咒回廊：播放小演出", CG.is_playing() and CG.current == "combo:curse_hall" and CG.can_skip())
+	CG.skip()
+	await _wait(0.8)
+	_finish_dialogue()
+	check("小演出可以跳过", not CG.is_playing())
+	c.reset()
+	for k in ["rune", "carpet", "arm"]:
+		_tk(k)
+	await _wait(ComboTracker.SCENE_DELAY + 0.2)
+	check("第二次不再播", not CG.is_playing())
+	ComboTracker.play_scenes = false
+
+	c.triggered.disconnect(on_fired)
+	await _wait(0.2)
+	Monster.random_specials = true
+	player.fatigue.clear()
+	_reset()
+
+
+# ------------------------------------------------------------------ 背包
+func _press(action: String) -> void:
+	var ev := InputEventAction.new()
+	ev.action = action
+	ev.pressed = true
+	Input.parse_input_event(ev)
+	await get_tree().process_frame
+	await get_tree().process_frame
+	var up := InputEventAction.new()
+	up.action = action
+	up.pressed = false
+	Input.parse_input_event(up)
+	await get_tree().process_frame
+
+
+func _texts(n: Node) -> String:
+	var out := ""
+	for c in n.find_children("*", "Label", true, false):
+		out += (c as Label).text + "\n"
+	return out
+
+
+func _run_backpack() -> void:
+	print("-- 背包")
+	_reset()
+	var bp: Backpack = main.get_node("Backpack")
+	GameState.flags.erase(GameState.BACKPACK_FLAG)
+	await _press("backpack")
+	check("没拿到背包时按 Tab 打不开", not bp.is_open() and not get_tree().paused)
+	GameState.give_item(ItemDB.get_item("backpack"), 1, player)
+	_finish_dialogue()
+	check("拿到冒险背包（拾取即生效，不占背包格）", GameState.has_backpack() and GameState.inventory.count("backpack") == 0)
+	for id in ["mint", "clear_dew", "star_candy", "coin"]:
+		GameState.give_item(ItemDB.get_item(id), 2, player)
+	await _press("backpack")
+	check("按 Tab 打开背包，游戏暂停", bp.is_open() and get_tree().paused and bp.page == 0)
+	check("物品页列出所有物品", bp._items.any(func(it): return it.id == "star_candy") and bp.grid.get_child_count() == bp._items.size())
+	bp.selected = bp._items.find(ItemDB.get_item("star_candy"))
+	bp._refresh()
+	check("选中显示名称和说明", bp.detail_name.text.contains("星光糖") and bp.detail_desc.text.contains("冷却"))
+	await _press("use_item")
+	check("选中星光糖按 Q：设为 Q 键（薄荷糖让出 Q）", GameState.hotkey_item("use_item") == "star_candy" and GameState.hotkey_of("mint") == ""
+		and GameState.hotkey_item("use_special") == "clear_dew")
+	bp.selected = bp._items.find(ItemDB.get_item("mint"))
+	bp._refresh()
+	await _press("use_special")
+	check("选中薄荷糖按 R：设为 R 键", GameState.hotkey_item("use_special") == "mint" and GameState.hotkey_of("clear_dew") == "")
+	check("背包里显示当前快捷键", bp.hotkey_label.text.contains("Q：星光糖") and bp.hotkey_label.text.contains("R：薄荷糖"))
+	bp.selected = bp._items.find(ItemDB.get_item("star_candy"))
+	bp._refresh()
+	player._magic_cd = 5.0
+	check("背包里直接使用星光糖：魔法冷却清零", bp.use_selected() and player.magic_cooldown_left() == 0.0
+		and GameState.inventory.count("star_candy") == 1)
+	player.laugh.set_value(90.0)
+	player.fatigue.set_value(320.0)
+	player.add_buff("ticklish", 6.0)
+	player.add_buff("fatigue_scar", -1.0, 2)
+	await _press("backpack")
+	var txt := _texts(bp.status_page)
+	check("Tab 翻到状态页", bp.page == 1 and bp.status_page.visible and not bp.items_page.visible)
+	check("状态页：闷笑值百分比和阶段", txt.contains("闷笑值 60%") and txt.contains("失控 1"))
+	check("状态页：魔力疲倦百分比、加成和下一档", txt.contains("魔力疲倦 64%") and txt.contains("下一档：80%"))
+	check("状态页：每个状态的名称、剩余时间 / 层数和效果", txt.contains("易痒诅咒") and txt.contains("2 层") and txt.contains("闷笑积累 +30%"))
+	await _press("pause")
+	check("Esc 关闭背包、恢复游戏（不会打开暂停菜单）", not bp.is_open() and not get_tree().paused
+		and not main.get_node("PauseMenu").root.visible)
+	player.laugh.clear()
+	await _wait(0.2)
+	player._magic_cd = 5.0
+	ctrl.press(&"use_item")
+	await get_tree().physics_frame
+	await get_tree().physics_frame
+	check("回到游戏按 Q：用掉星光糖（按新的绑定）", GameState.inventory.count("star_candy") == 0 and player.magic_cooldown_left() == 0.0)
+	await _wait(0.1)
+	check("HUD 背包栏按绑定显示 [Q] / [R]", _texts(main.get_node("HUD").inventory_row).contains("[R]"))
+	GameState.hotkeys = GameState.DEFAULT_HOTKEYS.duplicate()
+	GameState.hotkeys_changed.emit()
+	for id in ["mint", "clear_dew", "coin"]:
+		GameState.inventory.remove(id, GameState.inventory.count(id))
+	player.laugh.clear()
+	player.fatigue.clear()
 	_reset()
 
 
@@ -633,20 +897,33 @@ func _run_floor4() -> void:
 			print("    第四层缺少：", k)
 			types_ok = false
 	check("第四层放了全部新怪物和新陷阱", types_ok and counts["jelly_queen"] == 1)
+	var bag := level.find_child("Chest_19_49", true, false)
+	check("落脚点旁的储藏室宝箱里是冒险背包", bag != null and bag.item != null and bag.item.id == "backpack")
+	var plaza: ArenaZone = null
+	for a in get_tree().get_nodes_in_group("arena"):
+		if a.group_name == "arena_plaza":
+			plaza = a
+	check("新增刑台广场战斗房", plaza != null)
+	var star := 0
+	for ch in level.find_children("Chest_*", "", true, false):
+		if ch.item and ch.item.id == "star_candy":
+			star += 1
+	check("两个宝箱里有星光糖", star == 2)
+	check("检查点减到 4 个", level.find_children("Checkpoint_*", "", true, false).size() == 4)
 	var gloves := level.find_children("*", "GhostGlove", true, false)
 	check("幽灵手套都成对（%d 只）" % gloves.size(), gloves.size() % 2 == 0 and gloves.all(func(g2): return g2.partner() != null))
-	var carpet := level.find_child("Carpet_48_42", true, false) as StickyCarpet
+	var carpet := level.find_child("Carpet_56_48", true, false) as StickyCarpet
 	check("水道毛毯 5×2 盖住缺口", carpet != null and carpet.tiles_w == 5 and carpet.tiles_h == 2)
-	var arm := level.find_child("Arm_54_33", true, false) as FeatherArm
+	var arm := level.find_child("Arm_63_37", true, false) as FeatherArm
 	check("足枷长廊的羽毛臂朝走廊里扫", arm != null and arm.lane == Vector2.RIGHT and arm.length == 2)
-	var gate := level.find_child("Gate_31_5", true, false)
-	var queen := level.find_child("JellyQueen_20_4", true, false) as JellyQueen
+	var gate := level.find_child("Gate_39_5", true, false)
+	var queen := level.find_child("JellyQueen_22_4", true, false) as JellyQueen
 	check("Boss 门初始关闭", gate != null and not gate.is_open and queen != null and queen.open_on_death == "boss_gate")
 	queen.process_mode = Node.PROCESS_MODE_INHERIT
 	queen.health.damage(99)
 	await _wait(0.2)
 	check("打倒水母女王后 Boss 门打开", gate.is_open)
-	var trig := level.find_child("Trigger_36_5", true, false)
+	var trig := level.find_child("Trigger_44_5", true, false)
 	check("出口剧情触发器", trig != null and trig.dialogue == "ending_4")
 	Dialogue.start("ending_4")
 	_finish_dialogue()
@@ -700,6 +977,9 @@ func _src(key: String) -> Src:
 
 func _reset() -> void:
 	player.revive()
+	player._set_state(PlayableCharacter.State.IDLE)
+	player.combo.reset()
+	player.forced_specials = 0
 	player.clear_buffs(false)
 	if player.fatigue:
 		player.fatigue.clear()

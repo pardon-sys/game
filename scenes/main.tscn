@@ -4,6 +4,7 @@
 [ext_resource type="PackedScene" path="res://scenes/ui/hud.tscn" id="2"]
 [ext_resource type="PackedScene" path="res://scenes/ui/pause_menu.tscn" id="3"]
 [ext_resource type="Script" uid="uid://b5r3eep5uwl8w" path="res://scripts/main.gd" id="4"]
+[ext_resource type="PackedScene" path="res://scenes/ui/backpack.tscn" id="5"]
 
 [node name="Main" type="Node" unique_id=1696820938]
 script = ExtResource("4")
@@ -13,3 +14,5 @@ script = ExtResource("4")
 [node name="HUD" parent="." unique_id=723963875 instance=ExtResource("2")]
 
 [node name="PauseMenu" parent="." unique_id=149625063 instance=ExtResource("3")]
+
+[node name="Backpack" parent="." unique_id=1873301296 instance=ExtResource("5")]

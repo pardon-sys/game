@@ -16,6 +16,14 @@ signal bubble_requested(kind: String)
 signal princess_reacted(text: String, duration: float)
 ## 组合技触发（HUD 横幅）。
 signal combo_triggered(id: String, combo_name: String)
+## Q / R 快捷键绑定的物品改变（HUD 背包栏、背包界面）。
+signal hotkeys_changed
+
+## 拿到冒险背包的剧情标记（第四层落脚点旁的储藏室）。
+const BACKPACK_FLAG := "got_backpack"
+## 快捷键默认绑定：Q 薄荷糖、R 清心花露。拿到背包后可以在背包里改。
+const DEFAULT_HOTKEYS := {"use_item": "mint", "use_special": "clear_dew"}
+const HOTKEY_LABELS := {"use_item": "Q", "use_special": "R"}
 
 # Source of truth shared with the art importer.
 ## 11 种表情 / 状态（剧情、事件可以请求的）。
@@ -34,6 +42,8 @@ func _load_visuals(key: String) -> Array[String]:
 
 var player: PlayableCharacter
 var inventory := Inventory.new()
+## 快捷键 -> 物品 id（use_item = Q，use_special = R）。跨层保留，重新开始时恢复默认。
+var hotkeys := DEFAULT_HOTKEYS.duplicate()
 var flags := {}
 var checkpoint := Vector2.ZERO
 var in_dialogue := false
@@ -84,12 +94,43 @@ func reset() -> void:
 	Audio.set_voice_state("")
 	princess_reacted.emit("", 0.0)
 	inventory.clear()
+	hotkeys = DEFAULT_HOTKEYS.duplicate()
+	hotkeys_changed.emit()
 	flags = {}
 	in_dialogue = false
 	in_cutscene = false
 	checkpoint = Vector2.ZERO
 	carried_player_state = {}
 	player = null
+
+
+func has_backpack() -> bool:
+	return has_flag(BACKPACK_FLAG)
+
+
+## 快捷键绑定的物品 id（没有绑定返回 ""）。
+func hotkey_item(hotkey: String) -> String:
+	return str(hotkeys.get(hotkey, ""))
+
+
+## 物品绑定在哪个快捷键上："Q" / "R" / ""。
+func hotkey_of(id: String) -> String:
+	for hk in hotkeys:
+		if hotkeys[hk] == id:
+			return HOTKEY_LABELS.get(hk, "")
+	return ""
+
+
+## 把物品设到快捷键上；它原来在另一个键上时两边交换。
+func set_hotkey(hotkey: String, id: String) -> void:
+	if not HOTKEY_LABELS.has(hotkey):
+		return
+	var old := hotkey_item(hotkey)
+	for hk in hotkeys:
+		if hk != hotkey and hotkeys[hk] == id:
+			hotkeys[hk] = old
+	hotkeys[hotkey] = id
+	hotkeys_changed.emit()
 
 
 ## 把物品交给角色：auto_use_on_pickup 的立即使用，其余放入背包。announce 时弹提示。

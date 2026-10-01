@@ -13,8 +13,10 @@ extends Resource
 @export var attack_knockback := 150.0
 @export var attack_cooldown := 0.8
 ## 领队闷笑值超过此值时去帮忙。
-@export var assist_threshold := 50.0
+## 领队闷笑值超过上限的这个比例时去帮忙。
+@export_range(0.0, 1.0) var assist_threshold_ratio := 0.35
 @export var assist_range := 18.0
 ## 每次帮忙降低的闷笑值。
-@export var assist_amount := 25.0
+## 帮忙时降低领队闷笑值的比例（25 / 150）。
+@export_range(0.0, 1.0) var assist_ratio := 0.17
 @export var assist_cooldown := 1.2

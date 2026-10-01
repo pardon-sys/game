@@ -4,6 +4,8 @@
 宽度按比例（3:2 → 540，4:3 → 480，16:9 → 640）。原图不动（CG/ 目录有 .gdignore，Godot 不导入原图）。
 
 做法：面积平均缩小 → 轻度锐化 → 每张图单独中位切分调色板（不抖动）→ 1px 深色描边当画框。
+一个怪物有两张 CG 图时命名为 <来源键>_1.png / <来源键>_2.png，分别输出 <来源键>_3（第三幕）和 <来源键>_4（第四幕）。
+扩展名大小写都可以（.png / .PNG）。
 用法：python tools/art/import_cg.py [--preview]
   --preview 在 tools/.cache/cg/ 输出原图与像素化结果的对比图
 """
@@ -31,14 +33,21 @@ def pixelize(img: Image.Image) -> Image.Image:
     return q
 
 
+def target_key(stem: str) -> str:
+    """bat → bat_3；bubble_fish_1 → bubble_fish_3；bubble_fish_2 → bubble_fish_4。"""
+    if stem.endswith("_1") or stem.endswith("_2"):
+        return stem[:-2] + ("_3" if stem.endswith("_1") else "_4")
+    return stem + "_3"
+
+
 def main():
     DST.mkdir(parents=True, exist_ok=True)
     done = []
-    for path in sorted(SRC.glob("*.png")):
-        key = path.stem
+    for path in sorted(p for p in SRC.iterdir() if p.suffix.lower() == ".png"):
+        out_key = target_key(path.stem)
         out = pixelize(Image.open(path))
-        out.save(DST / f"{key}_3.png")
-        done.append((key, path, out))
+        out.save(DST / f"{out_key}.png")
+        done.append((out_key, path, out))
     if "--preview" in sys.argv:
         PREVIEW.mkdir(parents=True, exist_ok=True)
         for key, path, out in done:

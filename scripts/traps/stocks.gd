@@ -27,6 +27,8 @@ func _physics_process(delta: float) -> void:
 		_unlock()
 		return
 	victim.global_position = global_position + Vector2(0, 4)
+	# 组合技可能延长了锁定时间：锁着的时候 ACTIVE 阶段不能先结束
+	active_time = maxf(active_time, _t + victim.status.grab_time_left() + 0.5)
 	if GameState.in_dialogue:
 		return
 	_roll_t -= delta
@@ -48,6 +50,7 @@ func _apply_effect(target: Node) -> bool:
 	a.status.released.connect(_on_released, CONNECT_ONE_SHOT)
 	sprite.frame = 1
 	Audio.play("stocks", -2.0, 0.05)
+	Fx.burst(get_parent(), global_position + Vector2(0, -4), "chip", 8, 45.0, 0.45)
 	return true
 
 

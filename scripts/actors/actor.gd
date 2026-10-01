@@ -92,6 +92,7 @@ func receive_hit(hit: HitData) -> bool:
 			if hit.knockback > 0.0:
 				apply_knockback(hit.origin, hit.knockback)
 			flash(flash_color)
+			_play_hit_fx(hit, "slash", true)
 			health.damage(hit.damage)
 			if not _dead:
 				_on_damaged(hit)
@@ -101,15 +102,35 @@ func receive_hit(hit: HitData) -> bool:
 				return false
 			if hit.knockback > 0.0:
 				apply_knockback(hit.origin, hit.knockback)
+			# 全场暴击（三来源组合的减益）：怪物和陷阱的每一下都算暴击
+			if not hit.special and stat_add("crit_all") > 0.0 and ReactionDB.key_of(hit.source) != "":
+				hit.special = true
+				hit.tickle *= 2.0
+				Monster.special_feedback(self)
 			hit.tickle *= _tickle_multiplier(hit)
 			last_tickle = hit
 			last_tickle_time = Time.get_ticks_msec() / 1000.0
+			_play_hit_fx(hit, "")
 			laugh.add(hit.tickle)
 			if not _dead:
 				_on_tickled(hit)
 				tickled.emit(hit)
 			return true
 	return false
+
+
+## 命中特效：挠痒按来源选（HitFx.kind_of），找不到时用 fallback；攻击（force）一律用刀光；暴击额外叠金色星环。
+func _play_hit_fx(hit: HitData, fallback: String, force := false) -> void:
+	var kind := fallback if force else HitFx.kind_of(hit.source)
+	if kind == "":
+		kind = fallback
+	if kind == "" or not is_inside_tree():
+		return
+	var at := global_position + Vector2(randf_range(-4.0, 4.0), -12.0 + randf_range(-3.0, 3.0))
+	var parent := get_parent()
+	HitFx.play(kind, parent, at, is_instance_valid(hit.source) and hit.source is Node2D and (hit.source as Node2D).global_position.x > global_position.x)
+	if hit.special:
+		HitFx.play("crit", parent, global_position + Vector2(0, -12))
 
 
 # ------------------------------------------------------------------ 通用能力

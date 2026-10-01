@@ -1,10 +1,10 @@
-[gd_scene format=3]
+[gd_scene format=3 uid="uid://dkd7ri0hwkvtl"]
 
-[ext_resource type="Script" path="res://scripts/actors/allies/knight.gd" id="1"]
-[ext_resource type="Texture2D" path="res://assets/third_party/kenney_tiny_dungeon/tilemap_packed.png" id="tex"]
-[ext_resource type="Shader" path="res://shaders/flash.gdshader" id="flash"]
-[ext_resource type="Script" path="res://scripts/components/health_component.gd" id="health"]
+[ext_resource type="Script" uid="uid://fej4s0lnswyh" path="res://scripts/actors/allies/knight.gd" id="1"]
+[ext_resource type="Shader" uid="uid://ck1j88ghv4g4d" path="res://shaders/flash.gdshader" id="flash"]
+[ext_resource type="Script" uid="uid://cu620j4nfdooa" path="res://scripts/components/health_component.gd" id="health"]
 [ext_resource type="Resource" path="res://data/allies/knight.tres" id="stats"]
+[ext_resource type="Texture2D" uid="uid://dq7d8q27ousof" path="res://assets/third_party/kenney_tiny_dungeon/tilemap_packed.png" id="tex"]
 
 [sub_resource type="ShaderMaterial" id="mat"]
 resource_local_to_scene = true
@@ -15,26 +15,25 @@ shader_parameter/flash_color = Color(1, 1, 1, 1)
 [sub_resource type="RectangleShape2D" id="body"]
 size = Vector2(10, 6)
 
-[node name="Knight" type="CharacterBody2D"]
+[node name="Knight" type="CharacterBody2D" unique_id=428756942]
 collision_layer = 2
-collision_mask = 1
 motion_mode = 1
 script = ExtResource("1")
 stats = ExtResource("stats")
 faction = 2
 hurt_invuln_time = 0.6
 
-[node name="Sprite" type="Sprite2D" parent="."]
+[node name="Sprite" type="Sprite2D" parent="." unique_id=868430230]
 material = SubResource("mat")
 texture = ExtResource("tex")
 offset = Vector2(0, -8)
 region_enabled = true
 region_rect = Rect2(0, 128, 16, 16)
 
-[node name="Shape" type="CollisionShape2D" parent="."]
+[node name="Shape" type="CollisionShape2D" parent="." unique_id=1159423291]
 position = Vector2(0, -3)
 shape = SubResource("body")
 
-[node name="Health" type="Node" parent="."]
+[node name="Health" type="Node" parent="." unique_id=308253951]
 script = ExtResource("health")
 max_hp = 6
