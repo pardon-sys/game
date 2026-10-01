@@ -32,7 +32,7 @@ static func play(kind: String, parent: Node, pos: Vector2, flip := false) -> Hit
 	return s
 
 
-static func kind_of(source: Object) -> String:
+static func kind_of(source: Variant) -> String:
 	if source == null or not is_instance_valid(source):
 		return ""
 	if source is Monster:

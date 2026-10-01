@@ -8,8 +8,9 @@ enum Type { NEUTRAL, PLAYER, ALLY, ENEMY }
 const GROUPS := {Type.PLAYER: "player", Type.ALLY: "ally", Type.ENEMY: "enemy"}
 
 
-static func of(node: Object) -> Type:
-	if node == null:
+## 参数不标类型：传进来的可能是已经释放的对象（例如投射物的发射者），先判有效再取。
+static func of(node: Variant) -> Type:
+	if node == null or not is_instance_valid(node):
 		return Type.NEUTRAL
 	var f: Variant = node.get("faction")
 	return f if f is int else Type.NEUTRAL
@@ -21,5 +22,5 @@ static func is_hostile(a: Type, b: Type) -> bool:
 	return (a == Type.ENEMY) != (b == Type.ENEMY)
 
 
-static func are_hostile(a: Object, b: Object) -> bool:
+static func are_hostile(a: Variant, b: Variant) -> bool:
 	return is_hostile(of(a), of(b))

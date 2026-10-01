@@ -27,12 +27,13 @@ func resolve_visual(requested: String) -> String:
 	return _resolve_normal(requested)
 
 
-## 魔法姿态：未战损只有一套（没有"未战损憋笑吟诵"的素材）；战损时按闷笑值 >50 区分闷笑版。
+## 魔法姿态：憋笑以上（闷笑 > 35%）不管有没有战损都用「战损闷笑吟诵 / 释放」（没有未战损的闷笑版素材）；
+## 没在憋笑时按战损区分普通 / 战损版。
 func magic_visual(releasing: bool) -> String:
 	var pose := "burst" if releasing else "chant"
-	if not battle_damaged:
-		return pose
-	return ("damaged_giggle_" if laugh.value > laugh.giggle_threshold else "damaged_") + pose
+	if laugh.value > laugh.giggle_threshold:
+		return "damaged_giggle_" + pose
+	return ("damaged_" if battle_damaged else "") + pose
 
 
 func _resolve_normal(requested: String) -> String:

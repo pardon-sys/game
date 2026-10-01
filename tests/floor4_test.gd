@@ -306,6 +306,16 @@ func _run_monsters() -> void:
 		and not player.get_children().any(func(c): return c is Sprite2D and c.texture == BubbleFish.CAGE_TEX))
 	fish.queue_free()
 
+	# 发射者在泡泡飞行中被打倒：泡泡照常命中 / 消失，不报错
+	_reset()
+	var fish2: BubbleFish = _spawn("bubble_fish", Vector2(60, 0))
+	fish2.target = player
+	fish2.shoot_bubble()
+	fish2.free()
+	await _wait(1.0)
+	check("泡泡鱼被释放后泡泡碰到公主：不报错、泡泡消失", get_tree().get_nodes_in_group("x").is_empty()
+		and level.get_node("Entities").get_children().all(func(n): return not (n is BubbleShot)) and not player.status.is_grabbed())
+
 	# 幽灵手套（成对）
 	_reset()
 	var g1 := _spawn("ghost_glove", Vector2(10, 0), false, {"pair": "t"}) as GhostGlove

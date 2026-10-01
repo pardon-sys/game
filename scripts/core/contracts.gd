@@ -23,29 +23,31 @@ const ITEM: Array[StringName] = [&"can_use", &"use"]
 const MAGIC_REACTIVE: Array[StringName] = [&"on_magic_burst"]
 
 
-static func missing(obj: Object, methods: Array[StringName]) -> Array[StringName]:
+## 这些检查的参数都不标类型：可能收到已经释放的对象，先判 is_instance_valid。
+static func missing(obj: Variant, methods: Array[StringName]) -> Array[StringName]:
 	var out: Array[StringName] = []
+	var ok: bool = obj != null and is_instance_valid(obj)
 	for m in methods:
-		if obj == null or not obj.has_method(m):
+		if not ok or not obj.has_method(m):
 			out.append(m)
 	return out
 
 
-static func implements(obj: Object, methods: Array[StringName]) -> bool:
+static func implements(obj: Variant, methods: Array[StringName]) -> bool:
 	return missing(obj, methods).is_empty()
 
 
-static func is_damageable(obj: Object) -> bool:
+static func is_damageable(obj: Variant) -> bool:
 	return obj != null and is_instance_valid(obj) and obj.has_method(&"receive_hit")
 
 
-static func is_magic_reactive(obj: Object) -> bool:
+static func is_magic_reactive(obj: Variant) -> bool:
 	return obj != null and is_instance_valid(obj) and obj.has_method(&"on_magic_burst")
 
 
-static func is_tickleable(obj: Object) -> bool:
-	return obj is Actor and (obj as Actor).laugh != null
+static func is_tickleable(obj: Variant) -> bool:
+	return obj != null and is_instance_valid(obj) and obj is Actor and (obj as Actor).laugh != null
 
 
-static func is_switchable(obj: Object) -> bool:
-	return obj != null and obj.has_method(&"set_active")
+static func is_switchable(obj: Variant) -> bool:
+	return obj != null and is_instance_valid(obj) and obj.has_method(&"set_active")
