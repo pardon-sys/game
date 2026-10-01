@@ -37,6 +37,7 @@ func _ready() -> void:
 	await _run_combos()
 	await _run_combos3()
 	await _run_backpack()
+	await _run_hud_portrait()
 	await _run_floor4()
 	print("\n==== %s (%d 项失败) ====" % ["全部通过" if failures == 0 else "有失败", failures])
 	get_tree().quit(1 if failures else 0)
@@ -645,6 +646,25 @@ func _run_combos3() -> void:
 		scenes_ok = scenes_ok and CG.scenes.has(t["id"])
 	check("三来源组合：窗口 2.5 秒、冷却 8 秒，都带镜头聚焦", rules_ok)
 	check("每个三来源组合都有小演出（单独文件）", scenes_ok and CG.validate().is_empty())
+	var lines_ok := true
+	var traps_ok := true
+	for id in CG.scenes:
+		var sc: Dictionary = CG.scenes[id]
+		var said := 0
+		for st in sc["steps"]:
+			if st.get("speaker", "") == "公主":
+				said += 1
+			if st.has("auto"):
+				lines_ok = false
+		lines_ok = lines_ok and said >= 5
+		for k in ComboTracker.combo_def(id)["keys"]:
+			if ComboTracker.group("trap").has(k[0]):
+				var has_actor := false
+				for w in sc["cast"]:
+					has_actor = has_actor or str(sc["cast"][w]["kind"]) == "trap:" + str(k[0])
+				traps_ok = traps_ok and has_actor
+	check("演出：公主至少 5 句（三段递进 + 高潮），每句等按键推进", lines_ok)
+	check("演出：陷阱来源都作为陷阱演员上台", traps_ok)
 
 	# 优先级：指定来源 > 通配符
 	_reset()
@@ -772,6 +792,16 @@ func _run_combos3() -> void:
 	check("小演出先等大字标题演完", not CG.is_playing())
 	await _wait(ComboTracker.SCENE_DELAY + 0.2)
 	check("第一次触发诅咒回廊：播放小演出", CG.is_playing() and CG.current == "combo:curse_hall" and CG.can_skip())
+	check("来源栏三格，开始时都暗着", CG.source_bar.get_child_count() == 3 and not CG.source_lit(0))
+	var lit_guard := 0
+	while CG.step_index < 4 and lit_guard < 40:
+		lit_guard += 1
+		Dialogue.advance()
+		Dialogue.advance()
+		await _wait(0.1)
+	await _wait(0.4)
+	check("三个来源依次加入后来源栏全部点亮，陷阱演员在台上发动", CG.source_lit(0) and CG.source_lit(1) and CG.source_lit(2)
+		and CG.actors.values().any(func(a): return a.kind == "trap" and a.is_active_trap()))
 	CG.skip()
 	await _wait(0.8)
 	_finish_dialogue()
@@ -872,6 +902,82 @@ func _run_backpack() -> void:
 	player.laugh.clear()
 	player.fatigue.clear()
 	_reset()
+
+
+# ------------------------------------------------------------------ HUD 道具栏轮播与立绘反馈
+func _run_hud_portrait() -> void:
+	print("-- HUD 道具栏轮播与立绘反馈")
+	_reset()
+	var hud: HUD = main.get_node("HUD")
+	for id in ["mint", "clear_dew", "star_candy", "coin", "key_bronze", "key_gold"]:
+		GameState.inventory.remove(id, GameState.inventory.count(id))
+	GameState.hotkeys = GameState.DEFAULT_HOTKEYS.duplicate()
+	GameState.give_item(ItemDB.get_item("mint"), 1, player)
+	GameState.give_item(ItemDB.get_item("coin"), 1, player)
+	await get_tree().process_frame
+	check("道具不超过 3 个时静态全部显示", hud.carousel_items.is_empty() and hud.visible_item_ids().size() == 2)
+	for id in ["clear_dew", "star_candy", "key_bronze", "key_gold"]:
+		GameState.give_item(ItemDB.get_item(id), 1, player)
+	await get_tree().process_frame
+	var vis := hud.visible_item_ids()
+	check("超过 3 个只显示 3 格，Q / R 的道具固定在前面", vis.size() == 3 and vis[0] == "mint" and vis[1] == "clear_dew")
+	check("「+N」显示还有几个没露出来", hud.more_count() == hud.carousel_items.size() - 1 and hud.more_count() == 3)
+	var before: String = vis[2]
+	await _wait(HUD.CAROUSEL_TIME + 0.4)
+	check("轮播窗口每 2.5 秒换一个道具", hud.visible_item_ids()[2] != before)
+	var newest := hud.carousel_items[(hud.carousel_index + 2) % hud.carousel_items.size()]
+	GameState.give_item(newest, 1, player)
+	await get_tree().process_frame
+	check("刚拿到的道具立刻转到窗口里", hud.visible_item_ids()[2] == newest.id)
+	for id in ["star_candy", "key_bronze", "key_gold", "coin"]:
+		GameState.inventory.remove(id, GameState.inventory.count(id))
+
+	# 立绘反馈
+	var fx: PortraitFx = Dialogue.portrait_fx
+	fx.clear()
+	await _wait(0.4)
+	var base := Dialogue.portrait.position
+	player.laugh.clear()
+	var slime_src := _spawn("slime", Vector2(300, 0))   # 真实怪物当来源（有 hit_fx）
+	player.receive_hit(HitData.make_tickle(slime_src, 2.0))
+	await get_tree().process_frame
+	await get_tree().process_frame
+	check("被挠时立绘抖动", Dialogue.is_portrait_shaking())
+	check("有来源：立绘上出现该来源的特效贴片", fx.sticker_count() >= 1)
+	await _wait(0.5)
+	check("抖完回到原位", Dialogue.portrait.position == base and not Dialogue.is_portrait_shaking())
+	fx.clear()
+	player.receive_hit(HitData.make_tickle(_src(""), 2.0))
+	await get_tree().process_frame
+	check("没有来源（余痒、组合技）只抖不贴片", fx.sticker_count() == 0)
+	player.laugh.set_value(player.laugh.max_value * 0.9)
+	await _wait(1.0)
+	check("闷笑越高，立绘下的粉色光晕越浓", fx.glow.modulate.a > 0.3)
+	await _wait(0.4)
+	player.receive_hit(HitData.make_tickle(_src("rat"), 1.0))
+	await get_tree().process_frame
+	check("失控时立绘旁飘出「哈哈」", fx.haha_count() >= 1)
+	fx.clear()
+	await _wait(0.2)
+	var crit := HitData.make_tickle(_src("crab"), 1.0)
+	crit.special = true
+	player.receive_hit(crit)
+	await get_tree().process_frame
+	var crit_shown := false
+	for c in fx.get_children():
+		crit_shown = crit_shown or (c is HitFx and (c as HitFx).frame_coords.y == HitFx.KINDS.find("crit") and c.scale.x > 2.5)
+	check("暴击：立绘上金色星环（放大 3 倍）", crit_shown)
+	GameState.combo_triggered.emit("sole_duet", "脚心双重奏")
+	await get_tree().process_frame
+	check("组合技：立绘周围爆开心形", fx.get_children().any(func(c): return c is CPUParticles2D))
+	player.health.damage(99)
+	await get_tree().process_frame
+	check("倒下后立绘特效清空", fx.sticker_count() == 0 and fx.haha_count() == 0)
+	slime_src.queue_free()
+	await _wait(0.5)
+	_finish_dialogue()
+	_reset()
+	player.laugh.clear()
 
 
 # ------------------------------------------------------------------ 第四层「魔力回廊」

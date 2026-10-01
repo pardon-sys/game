@@ -280,6 +280,7 @@ func _show_title(title: String, category: String) -> void:
 
 
 func _process(delta: float) -> void:
+	_update_carousel(delta)
 	var p := _player
 	if not is_instance_valid(p):
 		return
@@ -312,28 +313,149 @@ func _on_hp_changed(hp: int, max_hp: int) -> void:
 		r.visible = i < count
 
 
+# ------------------------------------------------------------------ 道具栏：固定 Q / R + 自动轮播
+## 最多显示 BAR_SLOTS 格：Q / R 绑定的道具（背包里有时）固定在最前，其余道具在轮播窗口里每 CAROUSEL_TIME 秒滑一格；
+## 窗口两侧有 < > 箭头和「+N」（还有几个没显示）。新拿到 / 数量增加的道具会立刻转到窗口里并闪一下。
+const BAR_SLOTS := 3
+const CAROUSEL_TIME := 2.5
+const CAROUSEL_SLOT_W := 40.0
+
+## 轮播里的道具（测试用）。
+var carousel_items: Array[ItemData] = []
+var carousel_index := 0
+var pinned_items: Array[ItemData] = []
+var _carousel_slots := 0
+var _carousel_t := 0.0
+var _carousel_strip: HBoxContainer
+var _more_label: Label
+var _counts := {}
+
+
 func _refresh_inventory() -> void:
 	for c in inventory_row.get_children():
+		inventory_row.remove_child(c)
 		c.queue_free()
+	_carousel_strip = null
+	_more_label = null
 	var shown: Array[ItemData] = []
 	for id in ItemDB.all_ids():
 		var it := ItemDB.get_item(id)
 		if it and it.show_in_hud and (it.always_show or GameState.inventory.has(id)):
 			shown.append(it)
+	# 这次新增或数量增加的道具
+	var grown := ""
 	for it in shown:
-		var slot := HBoxContainer.new()
-		slot.add_theme_constant_override("separation", 0)
-		var icon := TextureRect.new()
-		icon.texture = it.icon
-		icon.custom_minimum_size = Vector2(16, 16)
-		slot.add_child(icon)
-		var label := Label.new()
-		label.text = "×%d" % GameState.inventory.count(it.id)
-		var hk := GameState.hotkey_of(it.id)
-		if hk != "":
-			label.text += " [%s]" % hk
-		slot.add_child(label)
-		inventory_row.add_child(slot)
+		var n := GameState.inventory.count(it.id)
+		if n > int(_counts.get(it.id, 0)):
+			grown = it.id
+		_counts[it.id] = n
+	pinned_items = []
+	for hk in GameState.HOTKEY_LABELS:
+		var bound := GameState.hotkey_item(hk)
+		var it: ItemData = ItemDB.get_item(bound) if bound != "" else null
+		if it and shown.has(it) and GameState.inventory.has(it.id):
+			pinned_items.append(it)
+	var others: Array[ItemData] = []
+	for it in shown:
+		if not pinned_items.has(it):
+			others.append(it)
+	carousel_items = []
+	_carousel_slots = 0
+	if shown.size() <= BAR_SLOTS:
+		for it in pinned_items + others:
+			inventory_row.add_child(_item_slot(it))
+		return
+	for it in pinned_items:
+		inventory_row.add_child(_item_slot(it))
+	carousel_items = others
+	_carousel_slots = BAR_SLOTS - pinned_items.size()
+	var at := carousel_items.map(func(x): return x.id).find(grown)
+	if at >= 0:
+		carousel_index = at
+	carousel_index = posmod(carousel_index, carousel_items.size())
+	_carousel_t = 0.0
+	inventory_row.add_child(_arrow("<"))
+	var window := Control.new()
+	window.name = "Carousel"
+	window.clip_contents = true
+	window.custom_minimum_size = Vector2(CAROUSEL_SLOT_W * _carousel_slots, 16)
+	_carousel_strip = HBoxContainer.new()
+	_carousel_strip.add_theme_constant_override("separation", 0)
+	# 末尾补上开头几格，循环时无缝接上
+	for i in carousel_items.size() + _carousel_slots:
+		var slot := _item_slot(carousel_items[i % carousel_items.size()])
+		slot.custom_minimum_size.x = CAROUSEL_SLOT_W
+		_carousel_strip.add_child(slot)
+	_carousel_strip.position.x = -carousel_index * CAROUSEL_SLOT_W
+	window.add_child(_carousel_strip)
+	inventory_row.add_child(window)
+	inventory_row.add_child(_arrow(">"))
+	_more_label = _arrow("+%d" % (carousel_items.size() - _carousel_slots))
+	inventory_row.add_child(_more_label)
+	if at >= 0:
+		var flash := _carousel_strip.get_child(carousel_index) as Control
+		flash.modulate = Color(2.0, 1.6, 1.8)
+		create_tween().tween_property(flash, "modulate", Color.WHITE, 0.5)
+
+
+## 现在道具栏上能看到的道具 id（固定格 + 轮播窗口；测试用）。
+func visible_item_ids() -> Array:
+	if carousel_items.is_empty():
+		var all: Array = []
+		for c in inventory_row.get_children():
+			if c.has_meta("item"):
+				all.append(c.get_meta("item"))
+		return all
+	var ids: Array = pinned_items.map(func(x): return x.id)
+	for i in _carousel_slots:
+		ids.append(carousel_items[(carousel_index + i) % carousel_items.size()].id)
+	return ids
+
+
+func more_count() -> int:
+	return maxi(carousel_items.size() - _carousel_slots, 0)
+
+
+func _update_carousel(delta: float) -> void:
+	if _carousel_strip == null or carousel_items.size() <= _carousel_slots:
+		return
+	_carousel_t += delta
+	if _carousel_t < CAROUSEL_TIME:
+		return
+	_carousel_t = 0.0
+	carousel_index += 1
+	var strip := _carousel_strip
+	var tw := create_tween()
+	tw.tween_property(strip, "position:x", -carousel_index * CAROUSEL_SLOT_W, 0.3).set_trans(Tween.TRANS_QUAD)
+	if carousel_index >= carousel_items.size():
+		carousel_index = 0
+		tw.tween_callback(func():
+			if is_instance_valid(strip):
+				strip.position.x = 0.0)
+
+
+func _item_slot(it: ItemData) -> HBoxContainer:
+	var slot := HBoxContainer.new()
+	slot.set_meta("item", it.id)
+	slot.add_theme_constant_override("separation", 0)
+	var icon := TextureRect.new()
+	icon.texture = it.icon
+	icon.custom_minimum_size = Vector2(16, 16)
+	slot.add_child(icon)
+	var label := Label.new()
+	label.text = "×%d" % GameState.inventory.count(it.id)
+	var hk := GameState.hotkey_of(it.id)
+	if hk != "":
+		label.text += " [%s]" % hk
+	slot.add_child(label)
+	return slot
+
+
+func _arrow(text: String) -> Label:
+	var l := Label.new()
+	l.text = text
+	l.add_theme_color_override("font_color", Color(1, 0.8, 0.9, 0.8))
+	return l
 
 
 func _on_emotion_changed(emotion: String) -> void:

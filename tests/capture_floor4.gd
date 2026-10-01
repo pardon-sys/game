@@ -108,7 +108,33 @@ func _ready() -> void:
 	await _shot("f4_16_queen_rain")
 	queen.process_mode = Node.PROCESS_MODE_DISABLED
 	await _capture_triple()
+	await _capture_portrait()
 	get_tree().quit()
+
+
+## 道具栏轮播 + 立绘被挠反馈（失控时被挠、暴击）。
+func _capture_portrait() -> void:
+	_finish()
+	_place(Vector2i(8, 52))
+	for id in ["mint", "clear_dew", "star_candy", "coin", "key_bronze", "key_gold"]:
+		GameState.give_item(ItemDB.get_item(id), 1, player)
+	await _wait(0.5)
+	await _shot("f4_23_item_bar_a")
+	await _wait(2.9)
+	await _shot("f4_24_item_bar_b")
+	var src := level_find("ManaJelly_28_47")
+	player.laugh.set_value(player.laugh.max_value * 0.8)
+	for i in 4:
+		player.receive_hit(HitData.make_tickle(src, 1.0))
+		await _wait(0.18)
+	await _shot("f4_25_portrait_helpless")
+	await _wait(0.5)
+	var crit := HitData.make_tickle(src, 1.0)
+	crit.special = true
+	player.receive_hit(crit)
+	GameState.combo_triggered.emit("queen_feast", "女王的盛宴")
+	await _wait(0.12)
+	await _shot("f4_26_portrait_crit")
 
 
 ## 三来源组合：HUD 大字标题（慢动作中）和第一次触发的小演出。
@@ -122,8 +148,21 @@ func _capture_triple() -> void:
 		player.receive_hit(HitData.make_tickle(level_find(n), 1.0))
 	await get_tree().create_timer(0.15, true, false, true).timeout
 	await _shot("f4_19_triple_title")
-	await _wait(2.6)
-	await _shot("f4_20_combo_scene")
+	await _wait(1.4)
+	# 小演出：逐句推进，截第一个来源、第三个来源加入、高潮
+	var shots := {2: "f4_20_scene_first", 4: "f4_21_scene_third", 5: "f4_22_scene_climax"}
+	var guard := 0
+	while CG.is_playing() and guard < 200:
+		guard += 1
+		var i: int = CG.step_index
+		if shots.has(i):
+			await _wait(1.2)
+			await _shot(shots[i])
+			shots.erase(i)
+		if Dialogue.is_active():
+			Dialogue.advance()
+			Dialogue.advance()
+		await _wait(0.1)
 	_finish()
 
 

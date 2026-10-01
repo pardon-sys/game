@@ -25,6 +25,8 @@ func add(item: ItemData, n := 1) -> int:
 
 
 func remove(id: String, n := 1) -> bool:
+	if n <= 0:
+		return true
 	if count(id) < n:
 		return false
 	_counts[id] -= n
