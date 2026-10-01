@@ -16,6 +16,7 @@ var _roll_t := 0.0
 
 
 func _setup() -> void:
+	stops_slide = true
 	hit_kind = HitData.Kind.TICKLE
 
 

@@ -128,6 +128,8 @@ func _tick(delta: float) -> void:
 		input = -input  # 晕头转向：方向颠倒
 	_update_lift(delta)
 	_update_focus()
+	if _forced_time > 0.0 and state not in [State.IDLE, State.MOVE]:
+		end_forced_move()  # 被抓住 / 笑到失控等打断了强制位移
 	if status and status.is_grabbed() and state not in [State.GRABBED, State.DEAD]:
 		interrupt_channel()
 		_end_attack()
@@ -138,36 +140,39 @@ func _tick(delta: float) -> void:
 
 	match state:
 		State.IDLE, State.MOVE:
-			var speed := move_speed * (laugh.speed_multiplier() if laugh else 1.0) \
-					* (status.speed_multiplier() if status else 1.0) * stat_mul("speed")
-			var rooted := status != null and status.is_rooted()
-			if rooted:
-				# 定身：原地挣动，只能转向和攻击
-				if input != Vector2.ZERO:
-					facing = input.normalized()
-				velocity = velocity.move_toward(Vector2.ZERO, friction * delta)
-				_set_state(State.IDLE)
-			elif input != Vector2.ZERO:
-				facing = input.normalized()
-				velocity = velocity.move_toward(input.limit_length(1.0) * speed, accel * delta)
-				_set_state(State.MOVE)
-				_footsteps(delta)
+			if is_force_moving():
+				_tick_forced(delta)
 			else:
-				velocity = velocity.move_toward(Vector2.ZERO, friction * delta)
-				_set_state(State.IDLE)
-			if can_control:
-				if controller.is_action_just_pressed(&"attack"):
-					attack()
-				elif controller.is_action_just_pressed(&"dash") and not rooted:
-					dash(input)
-				elif controller.is_action_just_pressed(&"magic"):
-					begin_channel()
-				elif controller.is_action_just_pressed(&"interact"):
-					interact()
-				elif controller.is_action_just_pressed(&"use_item"):
-					use_item()
-				elif controller.is_action_just_pressed(&"use_special"):
-					use_item("use_special")
+				var speed := move_speed * (laugh.speed_multiplier() if laugh else 1.0) \
+						* (status.speed_multiplier() if status else 1.0) * stat_mul("speed")
+				var rooted := status != null and status.is_rooted()
+				if rooted:
+					# 定身：原地挣动，只能转向和攻击
+					if input != Vector2.ZERO:
+						facing = input.normalized()
+					velocity = velocity.move_toward(Vector2.ZERO, friction * delta)
+					_set_state(State.IDLE)
+				elif input != Vector2.ZERO:
+					facing = input.normalized()
+					velocity = velocity.move_toward(input.limit_length(1.0) * speed, accel * delta)
+					_set_state(State.MOVE)
+					_footsteps(delta)
+				else:
+					velocity = velocity.move_toward(Vector2.ZERO, friction * delta)
+					_set_state(State.IDLE)
+				if can_control:
+					if controller.is_action_just_pressed(&"attack"):
+						attack()
+					elif controller.is_action_just_pressed(&"dash") and not rooted:
+						dash(input)
+					elif controller.is_action_just_pressed(&"magic"):
+						begin_channel()
+					elif controller.is_action_just_pressed(&"interact"):
+						interact()
+					elif controller.is_action_just_pressed(&"use_item"):
+						use_item()
+					elif controller.is_action_just_pressed(&"use_special"):
+						use_item("use_special")
 		State.ATTACK:
 			velocity = velocity.move_toward(Vector2.ZERO, friction * delta)
 			if hitbox and _state_time >= attack_active_from and _state_time <= attack_active_to:
@@ -223,6 +228,8 @@ func _tick(delta: float) -> void:
 			velocity = Vector2.ZERO
 
 	move_with_push()
+	if forced_kind == "slide" and _forced_time > 0.0 and get_slide_collision_count() > 0:
+		end_forced_move()  # 滑到墙边停下
 	_update_laughing(delta)
 	_update_interact_target()
 	_update_animation(delta)
@@ -516,6 +523,13 @@ func _play_death_cutscene() -> bool:
 
 # ------------------------------------------------------------------ 组合技表现：抬起、镜头聚焦
 var _lift_t := 0.0
+## 强制位移（弹弹床 bounce / 滑溜肥皂地板 slide）：期间不能操作、不能冲刺。
+var forced_kind := ""
+var _forced_vel := Vector2.ZERO
+var _forced_time := 0.0
+var _forced_total := 0.0
+## 弹飞时小人抬高的最大像素。
+const BOUNCE_HEIGHT := 12.0
 var _focus_base := Vector2.ZERO
 var _focus_since := 0.0
 
@@ -558,6 +572,73 @@ func _update_focus() -> void:
 
 
 # ------------------------------------------------------------------ 内部
+# ------------------------------------------------------------------ 强制位移
+## 开始强制位移：time 秒内按 v 移动。kind = "bounce"（弹在空中：脚下陷阱不生效）/ "slide"（滑行：撞墙停）。
+## 被抓住、失控、倒下时不能开始；吟唱、攻击会被打断。
+func force_move(v: Vector2, time: float, kind: String) -> bool:
+	if state in [State.GRABBED, State.HELPLESS, State.DEAD] or (status and status.is_grabbed()):
+		return false
+	interrupt_channel()
+	_end_attack()
+	if state not in [State.IDLE, State.MOVE]:
+		_set_state(State.IDLE)
+	forced_kind = kind
+	_forced_vel = v
+	_forced_time = time
+	_forced_total = time
+	if v != Vector2.ZERO:
+		facing = v.normalized()
+	return true
+
+
+## 延长当前的强制位移（滑行时每帧续上）。
+func extend_forced_move(time: float) -> void:
+	_forced_time = maxf(_forced_time, time)
+
+
+func end_forced_move() -> void:
+	if _forced_time <= 0.0 and forced_kind == "":
+		return
+	var was := forced_kind
+	_forced_time = 0.0
+	forced_kind = ""
+	velocity = _forced_vel * 0.15 if was == "bounce" else Vector2.ZERO
+	_forced_vel = Vector2.ZERO
+	if sprite and not has_buff("lifted"):
+		sprite.position.y = 0.0
+	if was == "bounce" and is_inside_tree():
+		Fx.burst(get_parent(), global_position, "dust", 6, 30.0, 0.35)
+		Audio.play("step", -4.0, 0.1, 0.8)
+
+
+func is_force_moving() -> bool:
+	return _forced_time > 0.0 and state in [State.IDLE, State.MOVE]
+
+
+func forced_velocity() -> Vector2:
+	return _forced_vel if is_force_moving() else Vector2.ZERO
+
+
+## 被弹弹床弹在空中（脚下的陷阱不生效）。
+func is_airborne() -> bool:
+	return is_force_moving() and forced_kind == "bounce"
+
+
+func is_dashing() -> bool:
+	return state == State.DASH
+
+
+func _tick_forced(delta: float) -> void:
+	_forced_time -= delta
+	velocity = _forced_vel
+	_set_state(State.MOVE if forced_kind == "slide" else State.IDLE)
+	if forced_kind == "bounce" and sprite:
+		var k := clampf(1.0 - _forced_time / maxf(_forced_total, 0.001), 0.0, 1.0)
+		sprite.position.y = -roundf(sin(PI * k) * BOUNCE_HEIGHT)
+	if (status and (status.is_grabbed() or status.is_rooted())) or _forced_time <= 0.0:
+		end_forced_move()
+
+
 func _set_state(s: State) -> void:
 	if s != state:
 		state = s

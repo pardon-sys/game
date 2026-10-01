@@ -18,6 +18,7 @@ var _tiles: Array[Sprite2D] = []
 
 
 func _setup() -> void:
+	stops_slide = true
 	hit_kind = HitData.Kind.TICKLE
 	trigger_mode = TriggerMode.CONTINUOUS
 	for y in tiles_h:

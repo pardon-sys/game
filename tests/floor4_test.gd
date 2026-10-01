@@ -34,6 +34,7 @@ func _ready() -> void:
 	await _run_fatigue()
 	await _run_monsters()
 	await _run_traps()
+	await _run_displacement()
 	await _run_combos()
 	await _run_combos3()
 	await _run_backpack()
@@ -516,6 +517,156 @@ func _run_traps() -> void:
 	f.clear()
 	await _wait(0.3)
 	_reset()
+
+
+# ------------------------------------------------------------------ 强制位移陷阱
+func _wall(offset: Vector2) -> StaticBody2D:
+	var w := StaticBody2D.new()
+	w.collision_layer = 1
+	var cs := CollisionShape2D.new()
+	var r := RectangleShape2D.new()
+	r.size = Vector2(16, 48)
+	cs.shape = r
+	w.add_child(cs)
+	level.get_node("Entities").add_child(w)
+	w.global_position = player.global_position + offset
+	return w
+
+
+func _run_displacement() -> void:
+	print("-- 强制位移陷阱")
+	var home := player.global_position
+	# 吸痒漩涡
+	_reset()
+	ctrl.move = Vector2.ZERO
+	var vortex: TickleVortex = _trap("tickle_vortex", Vector2(40, 0), {"radius": 3})
+	await _wait(0.6)
+	var d0 := player.global_position.distance_to(vortex.global_position)
+	check("吸痒漩涡：半径内被往中心吸（40 → %.0f）" % d0, d0 < 30.0)
+	player.global_position = vortex.global_position + Vector2(-8, 0)
+	ctrl.move = Vector2.LEFT
+	await _wait(0.6)
+	check("靠近中心：往外走也走不出去", player.global_position.distance_to(vortex.global_position) < 20.0)
+	player._dash_cd = 0.0
+	ctrl.press(&"dash")
+	await _wait(0.25)
+	var d1 := player.global_position.distance_to(vortex.global_position)
+	await _wait(0.6)
+	check("冲刺可以挣开漩涡，挣到外圈后走得出去（%.0f → %.0f）" % [d1, player.global_position.distance_to(vortex.global_position)],
+		d1 > 40.0 and player.global_position.distance_to(vortex.global_position) > d1)
+	ctrl.move = Vector2.ZERO
+	var vstocks: Stocks = _trap("stocks", Vector2.ZERO)
+	vstocks.global_position = vortex.global_position
+	player.global_position = vortex.global_position + Vector2(-30, 0)
+	await _wait(1.5)
+	check("漩涡中心放足枷台：被吸进去锁住", player.status.is_grabbed_by(vstocks))
+	var held_at := player.global_position
+	await _wait(0.3)
+	check("被锁住时不再被吸动", player.global_position.distance_to(held_at) < 1.0)
+	vortex.set_active(true)  # 拉杆通电 = 关掉漩涡
+	check("漩涡可接拉杆关闭", not vortex.is_dangerous())
+	player.status.release(true)
+	vstocks.queue_free()
+	vortex.queue_free()
+	await _wait(0.2)
+
+	# 弹弹床
+	_reset()
+	player.global_position = home
+	player.laugh.clear()
+	await _wait(0.1)  # 传送后等物理更新，新放的陷阱不会碰到上一个位置
+	var pad: BouncePad = _trap("bounce_pad", Vector2(16, 0), {"dir": "right", "length": 3})
+	var mid: FeatherTrap = _trap("feather_trap", Vector2(48, 0))
+	var land := pad.landing_point()
+	ctrl.move = Vector2.RIGHT
+	var t := 0.0
+	while not player.is_airborne() and t < 1.0:
+		await get_tree().physics_frame
+		t += 1.0 / 60.0
+	check("弹弹床：踩上去被弹到空中", player.is_airborne())
+	ctrl.move = Vector2.UP
+	player._dash_cd = 0.0
+	ctrl.press(&"dash")
+	await get_tree().physics_frame
+	check("飞行中不能冲刺、不能换方向", not player.is_dashing() and player.forced_velocity().y == 0.0 and player.sprite.position.y < 0.0)
+	ctrl.move = Vector2.ZERO
+	await _wait(0.6)
+	check("落点正好在 3 格外（误差 %.1f）" % player.global_position.distance_to(land), player.global_position.distance_to(land) < 3.0
+		and not player.is_airborne() and player.sprite.position.y == 0.0)
+	check("飞过的陷阱不触发", mid.phase == Trap.Phase.IDLE and (player.last_tickle == null or player.last_tickle.source != mid))
+	mid.queue_free()
+	pad.queue_free()
+	await _wait(0.2)
+	_reset()
+	player.global_position = home
+	await _wait(0.1)  # 传送后等物理更新，新放的陷阱不会碰到上一个位置
+	var pad2: BouncePad = _trap("bounce_pad", Vector2(16, 0), {"dir": "right", "length": 2})
+	var lstocks: Stocks = _trap("stocks", Vector2(48, 0))
+	ctrl.move = Vector2.RIGHT
+	await _wait(0.2)
+	ctrl.move = Vector2.ZERO
+	await _wait(0.8)
+	check("落点是足枷台：落地就被锁住", player.status.is_grabbed_by(lstocks))
+	player.status.release(true)
+	lstocks.queue_free()
+	pad2.queue_free()
+	await _wait(0.3)
+
+	# 滑溜肥皂地板
+	_reset()
+	player.global_position = home
+	await _wait(0.1)  # 传送后等物理更新，新放的陷阱不会碰到上一个位置
+	var soap: SoapFloor = _trap("soap_floor", Vector2(16, 0), {"tiles_w": 4, "tiles_h": 1})
+	ctrl.move = Vector2.RIGHT
+	t = 0.0
+	while not player.is_force_moving() and t < 1.0:
+		await get_tree().physics_frame
+		t += 1.0 / 60.0
+	check("肥皂地板：踩上去开始滑", player.is_force_moving() and player.forced_kind == "slide")
+	var y0 := player.global_position.y
+	ctrl.move = Vector2.UP
+	await _wait(0.15)
+	check("滑行中不能换方向", absf(player.global_position.y - y0) < 1.0 and player.forced_velocity().x > 0.0)
+	ctrl.move = Vector2.ZERO
+	await _wait(0.8)
+	var soap_end := soap.global_position.x + 3 * 16 + 8
+	check("松开方向键也一直滑到地板尽头才停", not player.is_force_moving() and player.global_position.x >= soap_end - 2.0
+		and player.global_position.x < soap_end + 24.0)
+	soap.queue_free()
+	await _wait(0.2)
+	_reset()
+	player.global_position = home
+	await _wait(0.1)  # 传送后等物理更新，新放的陷阱不会碰到上一个位置
+	var soap2: SoapFloor = _trap("soap_floor", Vector2(16, 0), {"tiles_w": 6, "tiles_h": 1})
+	var wall := _wall(Vector2(16 * 5, 0))
+	ctrl.move = Vector2.RIGHT
+	await _wait(0.2)
+	ctrl.move = Vector2.ZERO
+	await _wait(0.8)
+	check("滑到墙边停下", not player.is_force_moving() and absf(player.global_position.x - (wall.global_position.x - 8.0)) < 10.0)
+	ctrl.move = Vector2.RIGHT
+	await _wait(0.3)
+	check("贴着墙往墙上推不会反复滑", not player.is_force_moving())
+	ctrl.move = Vector2.ZERO
+	wall.queue_free()
+	soap2.queue_free()
+	await _wait(0.2)
+	_reset()
+	player.global_position = home
+	await _wait(0.1)  # 传送后等物理更新，新放的陷阱不会碰到上一个位置
+	var soap3: SoapFloor = _trap("soap_floor", Vector2(16, 0), {"tiles_w": 6, "tiles_h": 1})
+	var sstocks: Stocks = _trap("stocks", Vector2(16 * 4, 0))
+	ctrl.move = Vector2.RIGHT
+	await _wait(0.2)
+	ctrl.move = Vector2.ZERO
+	await _wait(0.8)
+	check("滑到足枷台停下并被锁住", player.status.is_grabbed_by(sstocks) and not player.is_force_moving())
+	player.status.release(true)
+	sstocks.queue_free()
+	soap3.queue_free()
+	await _wait(0.3)
+	_reset()
+	player.global_position = home
 
 
 # ------------------------------------------------------------------ 组合技扩充

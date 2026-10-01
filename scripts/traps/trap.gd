@@ -39,6 +39,8 @@ enum Phase { IDLE, WARN, ACTIVE, COOLDOWN }
 @export var tickle_pitch := 1.1
 ## 挠到 / 打到目标时的命中特效（HitFx.KINDS）。
 @export var hit_fx := "feather"
+## 会抓人 / 定身的陷阱：在滑溜肥皂地板上滑行时碰到它就停下（加入 slide_stopper 组）。
+@export var stops_slide := false
 @export_group("时间")
 @export var idle_time := 1.4
 @export var warn_time := 0.35
@@ -56,6 +58,8 @@ func _ready() -> void:
 	collision_layer = 0
 	monitorable = false
 	_setup()
+	if stops_slide:
+		add_to_group("slide_stopper")
 	_enter(Phase.ACTIVE if trigger_mode == TriggerMode.CONTINUOUS else Phase.IDLE)
 	_t = phase_offset
 
@@ -124,6 +128,8 @@ func _victims() -> Array:
 
 
 func _affects(body: Node) -> bool:
+	if body.has_method("is_airborne") and body.is_airborne():
+		return false  # 被弹弹床弹在空中：飞过的陷阱不生效
 	match Faction.of(body):
 		Faction.Type.PLAYER: return affects_player
 		Faction.Type.ALLY: return affects_allies

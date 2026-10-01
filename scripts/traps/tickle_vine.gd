@@ -15,6 +15,7 @@ var _rooted := {}
 
 
 func _setup() -> void:
+	stops_slide = true
 	hit_kind = HitData.Kind.TICKLE
 	add_to_group("magic_reactive")
 

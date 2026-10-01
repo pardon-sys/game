@@ -71,6 +71,9 @@ const TYPED_SCENES := {
 		"rune": "res://scenes/traps/hex_rune.tscn",
 		"stocks": "res://scenes/traps/stocks.tscn",
 		"carpet": "res://scenes/traps/sticky_carpet.tscn",
+		"vortex": "res://scenes/traps/tickle_vortex.tscn",
+		"bounce": "res://scenes/traps/bounce_pad.tscn",
+		"soap": "res://scenes/traps/soap_floor.tscn",
 	},
 	## 装在墙面格上的陷阱
 	"walltrap": {
