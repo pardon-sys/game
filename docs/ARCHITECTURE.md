@@ -255,7 +255,7 @@ HUD 背包栏会根据物品数据自动显示，不需要改 UI 代码。
 
 ### HUD 道具栏与立绘反馈
 - HUD 道具栏（`HUD._refresh_inventory`）：最多 `BAR_SLOTS`（3）格；`GameState.hotkeys` 绑定且有货的道具固定在前（`pinned_items`），其余进轮播（`carousel_items`，裁剪窗口里的长条每 `CAROUSEL_TIME` 秒滑一格，末尾补开头几格无缝循环）；新增 / 数量增加的道具直接转到窗口。`visible_item_ids()`、`more_count()` 给测试用。
-- 立绘反馈 `PortraitFx`（`scripts/ui/portrait_fx.gd`，`Dialogue.portrait_fx`）：`Dialogue` 在 `player_registered` 时连接 `tickled` / `died`，并监听 `GameState.combo_triggered`。`on_tickled(hit, laugh)`：`Dialogue.shake_portrait`（现在常驻立绘也会抖，幅度按 `LaughMeter.stage()`）、`self_modulate` 闪光、按 `HitFx.kind_of` 在立绘锚点放大播放命中特效、失控时「哈哈」飘字、暴击金色星环；`on_combo(triple)` 爆开 `particle_heart` 心形；`_process` 让立绘下的径向渐变光晕跟着闷笑比例变浓。笑倒 CG 中、横版大框时不处理；倒下 / 换层 / CG 接管时 `clear()`。
+- 立绘反馈 `PortraitFx`（`scripts/ui/portrait_fx.gd`，`Dialogue.portrait_fx`）：`Dialogue` 在 `player_registered` 时连接 `tickled` / `died`，并监听 `GameState.combo_triggered`。`on_tickled(hit, laugh)`：`Dialogue.shake_portrait`（现在常驻立绘也会抖，幅度按 `LaughMeter.stage()`）、`self_modulate` 闪光、按 `HitFx.kind_of` 在立绘锚点放大播放命中特效、失控时飘字（`ReactionDB.portrait_words(来源键, 阶段)`：`sources[key].portrait_words` 数组或按阶段的字典，缺省回退顶层 `portrait_words[阶段]`）、暴击金色星环；`on_combo(triple)` 爆开 `particle_heart` 心形；`_process` 让立绘下的径向渐变光晕跟着闷笑比例变浓。笑倒 CG 中、横版大框时不处理；倒下 / 换层 / CG 接管时 `clear()`。
 
 ### 攻击特效
 - 命中特效 `HitFx.play(kind, parent, pos)`（`assets/generated/hit_fx.png`，10 种 × 6 帧）：`Actor.receive_hit` 生效后调用 `_play_hit_fx`——挠痒按来源选（`MonsterStats.hit_fx`、`Trap.hit_fx`，投射物看发射者），攻击一律 `slash`，暴击再叠 `crit`。新怪物 / 陷阱在 `.tres` / 场景里写 `hit_fx`。
