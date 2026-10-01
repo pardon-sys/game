@@ -3,36 +3,29 @@ extends Control
 ## 立绘（左下角常驻立绘 / CG 里的立绘和横版 CG 图）的被挠反馈，挂在 Dialogue 下（Dialogue.portrait_fx）：
 ##   抖动        Dialogue.shake_portrait，幅度按阶段：平静 1、憋笑 2、失控 1 3、失控 2 4 像素；暴击 / 高潮再加
 ##   来源贴片    按挠痒来源的命中特效（hit_fx）在立绘的脚心 / 腰侧 / 腋下 / 脖子随机位置播放（放大 2 倍）
-##   粉色闪光    被挠瞬间立绘泛粉；立绘下面的粉色光晕随闷笑比例（CG 里按幕）变浓
+##   粉色闪光    被挠瞬间立绘泛粉（连续挠时限频）
 ##   飘字        失控后被挠时旁边冒出小字往上飘：文字在 data/princess_reactions.json 的 portrait_words
 ##               （全局默认，各来源可以单独配置，ReactionDB.portrait_words）
 ##   暴击爆闪    暴击时金色星环（放大 3 倍）+ 白闪；组合技触发时爆开粉色心形（三来源更多）
 ## 游戏中：Dialogue 把公主的 tickled / 组合技转给 on_tickled / on_combo（笑倒 CG 播放中不处理）。
 ## CG 中：CGPlayer 调 begin_cg / set_cg_level / cg_tickle / cg_crit / on_combo / end_cg。强度按幕递进（cg_level 1–4），
-##   横版 CG 图上用轻量版：抖动、泛粉、沿大框两边飘字、大框底部光晕，不放来源贴片（不挡画面）。
+##   横版 CG 图上用轻量版：抖动、轻泛粉、沿大框两边飘字，不放来源贴片（不挡画面）。
 
 const ANCHORS := [Vector2(0.36, 0.93), Vector2(0.62, 0.93), Vector2(0.3, 0.56), Vector2(0.7, 0.56),
 	Vector2(0.27, 0.42), Vector2(0.73, 0.42), Vector2(0.5, 0.3)]
 ## data 里一个字都没配置时的兜底。
 const HAHA := ["哈哈", "哈哈哈", "嘻嘻", "哈哈~", "~"]
 const SHAKE_BY_STAGE := {"calm": 1.0, "giggle": 2.0, "helpless_1": 3.0, "helpless_2": 4.0}
-## CG 每一级强度的光晕透明度（0 级 = 没开始）。
-const CG_GLOW := [0.0, 0.25, 0.4, 0.55, 0.6]
+## CG 强度的最高级。
+const CG_MAX_LEVEL := 4
 const MAX_STICKERS := 3
 const STICKER_GAP := 0.15
-const GLOW_MAX := 0.55
-## 横版 CG 图上光晕的透明度系数（大图不透明，光晕盖在图上要淡一些）。
-const WIDE_GLOW_K := 0.4
 ## 两次泛粉闪光的最短间隔（连续挠的时候不要一直泛粉）。
 const FLASH_GAP := 0.3
 ## CG 里挠得很密，飘字间隔放大这么多倍。
 const CG_HAHA_K := 1.8
 
 var portrait: TextureRect
-## 立绘下面的光晕（普通立绘）。
-var glow: TextureRect
-## 盖在横版 CG 图底部的光晕（横版图不透明，光晕要画在图上面）。
-var glow_top: TextureRect
 ## CG 模式：由 CGPlayer 控制强度，横版图也处理。
 var cg_mode := false
 var cg_level := 0
@@ -40,7 +33,6 @@ var _stickers: Array[Node] = []
 var _since_sticker := INF
 var _since_haha := INF
 var _since_flash := INF
-var _glow_target := 0.0
 var _flash_tween: Tween
 
 
@@ -49,32 +41,6 @@ func setup(p: TextureRect) -> void:
 	name = "PortraitFx"
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
 	set_anchors_preset(Control.PRESET_FULL_RECT)
-	glow = _glow_rect("PortraitGlow", Vector2(0.5, 0.75), Vector2(0.5, 0.0))
-	var host := portrait.get_parent()
-	host.add_child(glow)
-	host.move_child(glow, portrait.get_index())  # 画在立绘下面
-	glow_top = _glow_rect("PortraitGlowTop", Vector2(0.5, 1.0), Vector2(0.5, 0.0))
-	add_child(glow_top)
-
-
-func _glow_rect(n: String, from: Vector2, to: Vector2) -> TextureRect:
-	var r := TextureRect.new()
-	r.name = n
-	r.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	var grad := Gradient.new()
-	grad.set_color(0, Color(1.0, 0.45, 0.7, 1.0))
-	grad.set_color(1, Color(1.0, 0.45, 0.7, 0.0))
-	var tex := GradientTexture2D.new()
-	tex.gradient = grad
-	tex.fill = GradientTexture2D.FILL_RADIAL
-	tex.fill_from = from
-	tex.fill_to = to
-	tex.width = 64
-	tex.height = 64
-	r.texture = tex
-	r.stretch_mode = TextureRect.STRETCH_SCALE
-	r.modulate.a = 0.0
-	return r
 
 
 ## 是否处理（游戏中：不在 CG、不是横版大框；CG 模式：立绘可见就处理）。
@@ -124,7 +90,7 @@ func end_cg() -> void:
 
 ## CG 强度（按幕递进）：1 = 失控 1，2 = 失控 2，3 / 4 = 第三 / 四幕或组合演出高潮。
 func set_cg_level(level: int) -> void:
-	cg_level = clampi(level, 0, CG_GLOW.size() - 1)
+	cg_level = clampi(level, 0, CG_MAX_LEVEL)
 
 
 func cg_stage() -> String:
@@ -176,13 +142,7 @@ func clear() -> void:
 			s.queue_free()
 	_stickers.clear()
 	for c in get_children():
-		if c != glow_top:
-			c.queue_free()
-	_glow_target = 0.0
-	if glow:
-		glow.modulate.a = 0.0
-	if glow_top:
-		glow_top.modulate.a = 0.0
+		c.queue_free()
 	if portrait:
 		portrait.self_modulate = Color.WHITE
 
@@ -210,30 +170,6 @@ func _process(delta: float) -> void:
 	_since_flash += delta
 	if portrait == null:
 		return
-	_glow_target = 0.0
-	if cg_mode:
-		_glow_target = CG_GLOW[cg_level] if active() else 0.0
-	else:
-		var p := GameState.player
-		if active() and is_instance_valid(p) and p.laugh and p.is_alive():
-			_glow_target = clampf(p.laugh.ratio(), 0.0, 1.0) * GLOW_MAX
-	var wide := is_wide()
-	var shown := glow_top if wide else glow
-	var hidden := glow if wide else glow_top
-	shown.modulate.a = move_toward(shown.modulate.a, _glow_target * (WIDE_GLOW_K if wide else 1.0), delta * 0.8)
-	hidden.modulate.a = move_toward(hidden.modulate.a, 0.0, delta * 2.0)
-	glow.visible = glow.modulate.a > 0.01
-	glow_top.visible = glow_top.modulate.a > 0.01
-	var r := portrait_rect()
-	glow.position = r.position + Vector2(-8, r.size.y * 0.25)
-	glow.size = Vector2(r.size.x + 16, r.size.y * 0.8)
-	glow_top.position = Vector2(r.position.x, r.end.y - r.size.y * 0.45)
-	glow_top.size = Vector2(r.size.x, r.size.y * 0.45)
-
-
-## 当前在显示的光晕透明度（测试用）。
-func glow_alpha() -> float:
-	return maxf(glow.modulate.a, glow_top.modulate.a)
 
 
 func _anchor_point() -> Vector2:

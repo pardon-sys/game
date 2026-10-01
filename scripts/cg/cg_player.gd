@@ -57,6 +57,8 @@ var voice: AudioStreamPlayer
 var source_bar: HBoxContainer
 ## 立绘反馈的强度（第几幕）。
 var _fx_act := 0
+## 这段演出没有写 portrait（组合演出）：立绘跟着舞台上公主的姿势走（失控 1 → 失控 2）。
+var _auto_portrait := false
 ## CG 指令 fx（lines / feather / hand / heart）→ 立绘贴片种类（没有挠痒演员时用）。
 const FX_TO_HIT := {"feather": "feather", "hand": "hand"}
 
@@ -282,6 +284,13 @@ func _play_cg(cg: Dictionary, id: String, source: String, skippable: bool, fx_le
 	_fx_act = fx_level
 	Dialogue.portrait_fx.begin_cg()
 	Dialogue.portrait_fx.set_cg_level(fx_level)
+	_auto_portrait = not cg.get("steps", []).any(func(st): return st is Dictionary and st.has("portrait"))
+	if _auto_portrait:
+		var princess_info: Dictionary = {}
+		for who in cg.get("cast", {}):
+			if str(cg["cast"][who].get("kind", "")) == "princess":
+				princess_info = cg["cast"][who]
+		_follow_pose(str(princess_info.get("visual", "helpless_1")))
 	_skip = false
 	current = id
 	source_key = source
@@ -401,6 +410,12 @@ func _apply_portrait(step: Dictionary) -> void:
 	Dialogue.portrait_fx.set_cg_level(_fx_act)
 	if _fx_act > 1:
 		get_tree().create_timer(0.32).timeout.connect(Dialogue.portrait_fx.cg_crit)
+
+
+## 立绘换成公主当前姿势对应的状态立绘（没写 portrait 的演出用）。
+func _follow_pose(visual: String) -> void:
+	if GameState.VISUALS.has(visual):
+		Dialogue.set_portrait_override(Dialogue.portrait_for(visual))
 
 
 func _reset_view() -> void:
@@ -585,6 +600,8 @@ func _act(a: Dictionary) -> float:
 		"pose":
 			if who.kind == "princess":
 				who.set_pose(str(a.get("visual", "")), str(a.get("anim", "")), str(a.get("dir", "")))
+				if _auto_portrait and str(a.get("visual", "")) != "":
+					_follow_pose(str(a["visual"]))
 				if str(a.get("visual", "")) == "helpless_2" and _fx_act < 2:
 					_fx_act = 2
 					Dialogue.portrait_fx.set_cg_level(2)
