@@ -325,7 +325,7 @@ data/dialogues.json  只放通用对话（复活、上锁提示、钥匙、失�
 - **跳过**：播完设剧情标记 `cg_seen_<id>`；再次播放时角落提示「Esc 跳过」，`CG._input` 先于暂停菜单截获 Esc。
 - **横版 CG 图**：`portraits` 里写 `"wide": true` 的立绘（第三幕 `<来源键>_3`，有第二张图时第四幕 `<来源键>_4`）用 `Dialogue.set_portrait_override(tex, true)` 显示：立绘框动画变成对话框上方左侧的横版大框（高 180、宽按图片比例），挠痒时 `Dialogue.shake_portrait()` 跟着抖；舞台用 `camera` 的 `anchor` 把演员移到右侧可见处。缺素材时退回占位立绘、不用大框。CG 图由 `tools/art/import_cg.py` 从 `assets/generated/CG/<来源键>.png`（或 `<来源键>_1` / `_2`）生成（保持比例、高 360、每张单独调色板像素化）。`data/cgs.json` 由 `tools/build/gen_cgs.py` 生成：CG 图文件存在时自动加 `wide`，有 `_4` 时多一幕。
 - **组合演出**：`data/combo_scenes.json`（`scenes`：组合 id → `{name, cast, steps}`，格式同 `cgs`）由 `CG.play_scene(id)` 播放，台词按键推进、随时可跳过；`CG.validate()` 一起检查。由 `tools/build/gen_combo_scenes.py` 生成（每个组合手写出场顺序和 8 句台词：三段各 1 句 + 高潮 5 句，开头一句旁白）。
-- **巢穴过场**：`cgs.json` 的 `nest` 表（巢穴种类 → `{cg, source}`），`CG.play_nest(kind)` 播放；`gen_cgs.py` 的 `add_nest()` 用 `standard(..., foe=怪物键)` 生成三幕，第三幕立绘 `nest_<种类>_3`。
+- **巢穴过场**：单独的文件 `data/nest_cgs.json`（`portraits` / `cgs` / `nest` 表：巢穴种类 → `{cg, source}`），`CGPlayer._load` 把它合并进 `data`，`CG.play_nest(kind)` 播放。由 `tools/build/gen_nest_cgs.py` 生成：它 import `gen_cgs.py`（写文件在 `main()` 里，import 时不会覆盖 cgs.json）的 `standard(..., foe=怪物键)` 生成三幕，`add_crowd()` 让第三幕 10 只同类怪物从两边涌上来、之后每句 3 只一起挠；第三幕立绘 `nest_<种类>_3`。
 - **陷阱演员**：`cgs.json` 的 `trap_actors`（`gen_cgs.py` 生成）定义陷阱的贴图、待机 / 发动帧、`tiles` 多格、`spin` 旋转、`arm` 羽毛臂；cast 里 `kind = trap:<来源键>`（`CGActor.make_trap`）。`tickle` 指令的 `by` 指到陷阱演员时它 `activate()` 发动。舞台地面在 z 0，演员层 `cast_root` 在 z 2，铺在脚下的陷阱用相对 z -1。
 - **来源栏**：指令 `sources`（`list = [{kind, key, name}]`，舞台顶部三格先暗着）和 `light`（`index` 点亮第几格，`all` 三格一起闪）；`CG.source_lit(i)` 给测试用。
 - **立绘接口**：`Dialogue.set_portrait_override(tex)` 替换常驻立绘（按比例放进立绘框，公主表情不会覆盖它，null 恢复）。`CG.portrait_texture(id)`：`portraits[id].file` 存在（导入过的资源或直接读 png）就用它，否则用 `placeholder` 指定的公主状态立绘。
@@ -355,6 +355,7 @@ data/dialogues.json  只放通用对话（复活、上锁提示、钥匙、失�
 - **强制遭遇的做法**：风扇风道 / 传送带铺满通道宽度把人送进陷阱区（拉杆放在危险区另一侧）；羽毛、藤蔓铺满通道宽度且长度超过冲刺距离（约 41 像素）；出口摆能打组合技的怪物。
 - **检查方法**：`tests/level_design_test.gd` 的 `FORCED` 表列出每个强制段的起点 / 终点格。`hazard_cells()` 从关卡里收集所有陷阱覆盖的格子（风扇 `in_lane` 的风道、传送带整条、机关手下方、压力板、其它陷阱所在格）。洪泛：允许踩危险格能走到、避开就走不到，才算"躲不开"。新增强制段时在 `FORCED` 里加一行。
 - **三来源组合的触发点**：`COMBO_SPOTS` 每个三来源组合至少一行。通道型 `[楼层, 组合, 起点, 终点, 中心]`：组合里每一种陷阱单独都必须绕不开——`_route_ok` 在格子图上 BFS，`_moves` 按强制位移建边（踩弹弹床直接到落点、飞过的不算碰到；踩肥皂地板沿方向滑到离开地板 / 撞墙 / `slide_stopper`，滑过的都算碰到），禁止碰到该陷阱的覆盖格（`_trap_cover`：风道、整条传送带、毛毯、羽毛臂扫的格、机关手下方、旋转刷 3×3……）后从起点走不到终点才算；需要的怪物在中心 `SPOT_RADIUS`（8）格内，巢穴按生成的怪物、触手怪 / 巨魔 / 水母女王按召唤的小怪算，`*` 只看数量。战斗房型 `[楼层, 组合, "arena:<组>"]`：陷阱覆盖格和怪物在 `room_rect()` 里；有足枷台的组合要求房里有漩涡中心 / 弹弹床落点 / 肥皂地板滑到的地方是足枷台。最后检查每个三来源组合都登记了。
+- **新机制的介绍石碑**：`MECHANIC_SIGNS` 列出 `[机制, 第一次出现的楼层, 石碑对话 id]`。逐层检查：机制第一次出现的楼层要对得上，石碑对话第一句以「【机制名】」开头，从楼层起点按步数（`_distances`）石碑比机制先走到，且相差不超过 `MECHANIC_SIGN_STEPS`。新增机制时在这里加一行并在地图上放石碑（`X = sign dialogue=<id>`，对话写在该层的 `dialogues.json`）。
 
 ## 公主状态与换美术素材
 

@@ -58,6 +58,16 @@ const COMBO_SPOTS := [
 	["floor_04", "curse_chain", Vector2i(64, 40), Vector2i(64, 24), Vector2i(64, 32)],
 ]
 const SPOT_RADIUS := 8
+## 新机制第一次出现的楼层要有介绍石碑：[机制, 楼层, 石碑对话 id]。石碑要比机制先走到（从楼层起点按步数算），
+## 而且离它不远（MECHANIC_SIGN_STEPS 步以内）。
+const MECHANIC_SIGNS := [
+	["怪物巢穴", "floor_02", "sign2_nest"],
+	["弹弹床", "floor_02", "sign2_bounce"],
+	["吸痒漩涡", "floor_02", "sign2_vortex"],
+	["滑溜肥皂地板", "floor_03", "sign3_soap"],
+]
+const MECHANIC_SIGN_STEPS := 14
+var _seen_mechanics := {}
 ## [楼层, 战斗房铁栅组]
 const ARENAS := [
 	["floor_01", "arena_guard"], ["floor_02", "arena_spider"], ["floor_02", "arena_troll"],
@@ -96,6 +106,7 @@ func _ready() -> void:
 		print("-- ", id)
 		_run_forced(id)
 		_run_combo_spots(id)
+		_run_mechanic_signs(id)
 		await _run_arenas(id)
 	var covered := {}
 	for sp in COMBO_SPOTS:
@@ -105,6 +116,7 @@ func _ready() -> void:
 		if c.get("keys", []).size() >= 3 and not covered.has(c["id"]):
 			missing.append(c["id"])
 	check("每个三来源组合都有触发点（缺：%s）" % [missing], missing.is_empty())
+	check("新机制都在地图里出现过并检查了石碑", MECHANIC_SIGNS.all(func(ms): return _seen_mechanics.has(ms[0])))
 	print("\n==== %s (%d 项失败) ====" % ["全部通过" if failures == 0 else "有失败", failures])
 	get_tree().quit(1 if failures else 0)
 
@@ -199,6 +211,73 @@ func _reachable_all() -> bool:
 			missing += 1
 	# 第一层的秘密储物间要推倒暗墙才进得去
 	return missing == 0 or (level.get("floor_id") == "floor_01" and missing <= 60)
+
+
+# ------------------------------------------------------------------ 新机制的介绍石碑
+func _run_mechanic_signs(id: String) -> void:
+	var walls: TileMapLayer = level.get_node("Walls")
+	var dist := _distances(walls.local_to_map(walls.to_local(player.global_position)))
+	for ms in MECHANIC_SIGNS:
+		var cells := _mechanic_cells(str(ms[0]))
+		if cells.is_empty() or _seen_mechanics.has(ms[0]):
+			continue
+		_seen_mechanics[ms[0]] = id
+		var first := INF
+		for c in cells:
+			first = minf(first, float(dist.get(c, INF)))
+		var sign_d := INF
+		for n in level.find_children("*", "", true, false):
+			if n.get("dialogue") == ms[2] and n is Node2D:
+				# 石碑的位置在格子底边上：取它所在的那一格
+				sign_d = float(dist.get(walls.local_to_map(walls.to_local((n as Node2D).global_position + Vector2(0, -8))), INF))
+		var lines: Array = Dialogue._data.get(ms[2], []) if Dialogue.has_dialogue(ms[2]) else []
+		var text_ok := not lines.is_empty() and str(lines[0].get("text", "")).begins_with("【%s】" % ms[0])
+		check("新机制「%s」第一次出现在 %s，前面有介绍石碑（石碑 %s 步，机制 %s 步）" % [ms[0], id, sign_d, first],
+			id == ms[1] and text_ok and sign_d < first and first - sign_d <= MECHANIC_SIGN_STEPS)
+
+
+## 本层这种机制占的格子。
+func _mechanic_cells(mech: String) -> Array[Vector2i]:
+	var walls: TileMapLayer = level.get_node("Walls")
+	var out: Array[Vector2i] = []
+	for n in level.find_children("*", "", true, false):
+		var c0 := walls.local_to_map(walls.to_local((n as Node2D).global_position)) if n is Node2D else Vector2i.ZERO
+		match mech:
+			"怪物巢穴":
+				if n is MonsterNest:
+					out.append(c0)
+			"弹弹床":
+				if n is BouncePad:
+					out.append(c0)
+			"滑溜肥皂地板":
+				if n is SoapFloor:
+					for dx in (n as SoapFloor).tiles_w:
+						for dy in (n as SoapFloor).tiles_h:
+							out.append(c0 + Vector2i(dx, dy))
+			"吸痒漩涡":
+				if n is TickleVortex:
+					var r: int = (n as TickleVortex).radius
+					for dx in range(-r, r + 1):
+						for dy in range(-r, r + 1):
+							if Vector2(dx, dy).length() <= r:
+								out.append(c0 + Vector2i(dx, dy))
+	return out
+
+
+## 从 start 出发到每一格的步数（铁栅、门、陷阱都当作能走）。
+func _distances(start: Vector2i) -> Dictionary:
+	var dist := {start: 0}
+	var queue: Array[Vector2i] = [start]
+	var head := 0
+	while head < queue.size():
+		var c: Vector2i = queue[head]
+		head += 1
+		for d in [Vector2i.LEFT, Vector2i.RIGHT, Vector2i.UP, Vector2i.DOWN]:
+			var nc: Vector2i = c + d
+			if not dist.has(nc) and _walkable(nc, {}):
+				dist[nc] = int(dist[c]) + 1
+				queue.append(nc)
+	return dist
 
 
 # ------------------------------------------------------------------ 三来源组合的触发点
