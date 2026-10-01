@@ -114,17 +114,18 @@ target.receive_hit(HitData.make_tickle(self, 10.0))        # 闷笑值 +10
 - 受到攻击后有 1 秒无敌，但只挡攻击，不挡挠痒。挠痒的频率由怪物自己的冷却控制。
 - 冲刺时的无敌攻击和挠痒都挡。
 
-**闷笑值**（`LaughMeter`，所有数值都可在检查器里调）
-- 超过 50：进入 GIGGLING，移动速度 ×0.5，每隔 1–2.5 秒发出一次笑声（音效 `giggle` + 气泡）。
-- 超过 80：进入 HELPLESS（失控 1），不能移动、攻击或交互，音效 `laugh` 在独立通道原生循环。超过 100 时切为失控 2 姿势，仍属 HELPLESS；降回 100 以下切回失控 1。
-  - 连按攻击键或交互键挣扎，每按一次 -3。
-- 满 150：笑到脱力，扣 1 点血（半颗心），闷笑值回落到 100。
-- 受到任何攻击或挠痒后，2 秒内闷笑值不下降；之后每秒 -10。
-- 薄荷糖（Q 键使用）一次 -40；友军骑士帮忙时每次 -25。
+**闷笑值**（`LaughMeter`，所有数值都可在检查器里调）。阶段和恢复量都是**上限 `max_value` 的比例**（`giggle_ratio` / `helpless_ratio` / `stage2_ratio` / `overflow_reset_ratio` / `decay_ratio` / `struggle_ratio`），旧名字 `giggle_threshold` 等是按比例算出的只读属性；以后提高上限只改 `max_value`。`percent()`、`stage()`、`stage_name()`、`stage_desc()` 给背包状态页用。
+- 超过 35%：进入 GIGGLING，移动速度 ×0.5，每隔 1–2.5 秒发出一次笑声（音效 `giggle` + 气泡）。
+- 超过 55%：进入 HELPLESS（失控 1），不能移动、攻击或交互，音效 `laugh` 在独立通道原生循环。超过 70% 时切为失控 2 姿势，仍属 HELPLESS；降回 70% 以下切回失控 1。
+  - 连按攻击键或交互键挣扎，每按一次 -2%。
+- 满 100%：笑到脱力，扣 1 点血（半颗心），闷笑值回落到 70%。
+- 受到任何攻击或挠痒后，2 秒内闷笑值不下降；之后每秒 -6.7%。
+- 薄荷糖一次 -27%（`LaughReliefItem.ratio`，`LaughMeter.reduce_ratio`）；友军骑士帮忙时每次 -17%（`AllyStats.assist_ratio`），领队超过 35% 时出手。怪物挠痒量是固定值。
 
 **减速与抓取**（`StatusComponent`）
 - 减速：`apply_slow(倍率, 秒)`，与闷笑倍率相乘。蛛丝减速 50% 持续 2 秒。
-- 抓取：`grab(抓人者, 最长秒数, 挣脱次数)`。被抓时 PlayableCharacter 进入 `GRABBED`，不能行动；连按 J/E 同时计入挣脱次数和 `struggle()`（-3 闷笑值）。挣脱或超时后 0.6 秒全无敌；松开时闷笑值仍超过 80 则直接进入失控。冲刺无敌时抓不住。
+- 抓取：`grab(抓人者, 最长秒数, 挣脱次数)`。被抓时 PlayableCharacter 进入 `GRABBED`，不能行动；连按 J/E 同时计入挣脱次数和 `struggle()`（-2% 闷笑值）。挣脱或超时后 0.6 秒全无敌；松开时仍在失控则直接进入失控。冲刺无敌时抓不住。
+- `extend_grab(秒, 次数)`：当前抓取延长 / 挣脱多按几次（组合技 `grab_extend` / `grab_presses`）；`grab_time_left()`；`root_after_release(秒)`：被抓着时等松开后再定身（足枷台的锁定 ACTIVE 阶段会跟着延长）。
 - 抓人者负责持续挠痒（巨魔每 0.5 秒 8，机关手每 0.5 秒 6），被抓期间形象、台词、笑声照常按闷笑值切到失控 1 / 2。
 
 **定身、余痒、易痒、拉扯、外力**（`StatusComponent` / `Actor`）
@@ -139,15 +140,18 @@ target.receive_hit(HitData.make_tickle(self, 10.0))        # 闷笑值 +10
 - 按住 `magic`（L / 鼠标右键 / 手柄 LB）吟唱：不能移动、冲刺。按住 0.6 / 1.2 / 2.0 秒分别到 1 / 2 / 3 档，满 2 秒自动释放；不到 0.6 秒松开 = 落空。
 - 1 档半径 36 伤害 2；2 档半径 52 伤害 3；3 档半径 72 伤害 4，并让怪物僵直 1.5 秒（`Monster.stun`），对 MagicReactive 生效（吹散粉雾、清除藤蔓、击散小精灵、触手怪收触手僵直 2 秒）。
 - 弱点暴露：吟唱时 180px 内的怪物立即锁定公主、追击 ×1.3；公主受到的挠痒 ×1.5（`_tickle_multiplier`，陷阱也算）。HUD 显示"弱点暴露！"。
-- 限制：闷笑值 >80 不能开始；吟唱中进入失控、被抓、受到攻击都会打断（`interrupt_channel`）；80 以下被挠痒不打断。释放后冷却 6 秒，落空/打断 1.5 秒。
+- 限制：失控（闷笑值 >55%）不能开始；吟唱中进入失控、被抓、受到攻击都会打断（`interrupt_channel`）；失控以下被挠痒不打断。星光糖（`MagicResetItem`）调用 `reset_magic_cooldown()`。释放后冷却 6 秒，落空/打断 1.5 秒。
 - 解锁：剧情标记 `magic_unlocked`（第三层开场对话的 `set_flag`）。数值都是 `PlayableCharacter` 的导出参数（`channel_tiers`、`magic_cooldown` …），档位半径伤害在 `StarBurst.TIERS`。
 - 事件信号 `magic_event(event, tier)`：`channel / tier / burst / fizzle / interrupted`，公主据此说 `princess_reactions.json` 的 `magic` 段台词。
 
-**组合技**（`ComboTracker`，公主的 `Combo` 节点）
-- 监听 `Actor.tickled(hit)`，记录 1.5 秒内挠到公主的来源键（`ReactionDB.key_of`）。来源不分先后，同一来源只算一次；`"*"` 匹配 `groups.monster` 里的任意怪物。
-- 匹配到 `data/combos.json` 中的组合就触发：施加效果、HUD 横幅（`GameState.combo_triggered`）、组合技提示音、公主说该组合的台词。同一组合 4 秒冷却。
-- 效果类型：`burst` 额外挠痒、`dot` 余痒、`root` 定身（`extend` 延长）、`multiplier` 易痒、`slow` 减速、`pull` 拉向来源、`hit_multiplier` 本次挠痒倍率；`fatigue` 魔力疲倦 +amount、`debuff` 给公主加状态（buff、duration）、`seal` 封魔、`special_next` 接下来 count 次挠痒必暴击、`buff_monsters` 给 radius 内的怪物加增益、`puddle` 在脚下生成疲倦水液。
-- 条件型组合（有 `condition` 字段）由代码触发 `combo.trigger(id, 来源, force_effects)`：扑粉蝙蝠（`FeatherBat` 飞过粉雾）、粉末旋风（`FeatherFan` 卷起的粉雾挠到公主）、趁手打劫（`ComboTracker.hit_multiplier`：被机关手抓着时怪物挠痒 ×1.5）、狂热连击（`ComboTracker._on_tickled`：暴击来自带狂热 / 力量的怪物）、魔力反噬（`PlayableCharacter.fatigue_burst`：爆发时身边有怪物）。
+**组合技**（`ComboTracker`，公主的 `Combo` 节点；63 个组合，其中 25 个三来源）
+- 监听 `Actor.tickled(hit)`，记录最近挠到公主的来源键（`ReactionDB.key_of`）。来源不分先后，同一来源只算一次；`"*"` 匹配 `groups.monster` 里的任意怪物，`"*trap"` 匹配 `groups.trap` 里的任意陷阱。
+- `keys` 可以有 2 个或 3 个槽位。两来源默认窗口 1.5 秒、冷却 4 秒；三来源默认窗口 2.5 秒、冷却 8 秒；每个组合可以写自己的 `window` / `cooldown`。
+- 匹配顺序（`sorted_combos()`）：三来源 > 指定来源的两来源 > 带通配的两来源。两来源组合用过的记录标成 `chained`：不能再凑两来源，但能和新来源凑成三来源（`last_upgraded`，横幅显示「连锁升级」）。三来源用过的记录直接删掉。
+- 连锁：上一个组合 `CHAIN_WINDOW`（10 秒）内再触发，`chain` +1；`burst` / `dot` 按 `chain_mult()` = 1 + 0.2 ×(chain − 1) 加强。
+- 匹配到就触发：施加效果、HUD 横幅（`GameState.combo_triggered`；HUD 读 `combo.chain` / `last_upgraded` 显示连锁数和升级，三来源加大字标题、全屏闪光和 0.3 秒慢动作 `HUD.slow_motion`）、提示音、公主台词。三来源第一次触发时 `CG.play_scene(id)` 播 `data/combo_scenes.json` 里的小演出（`ComboTracker.play_scenes` 可关，测试里关掉）。
+- 效果类型：`burst` 额外挠痒、`dot` 余痒、`root` 定身（`extend` 延长、`after_release` 挣脱后再定身）、`multiplier` 易痒、`slow` 减速、`pull` 拉向来源、`hit_multiplier` 本次挠痒倍率；`fatigue` 魔力疲倦 +percent%、`debuff` 给公主加状态（buff、duration）、`seal` 封魔、`special_next` 接下来 count 次挠痒必暴击、`buff_monsters` 给 radius 内的怪物加增益、`puddle` 在脚下生成疲倦水液；`grab_extend` 抓取延长、`grab_presses` 挣脱多按几次；三来源专属的 `lift` 抬起（本节点抓住公主、挣脱次数 9999、加 `lifted` 状态和余痒，小人上浮）、`confuse` 晕头转向（`dizzy` 状态，`invert_controls`）、`crit_storm` 全场暴击（`crit_storm` 状态，`Actor.receive_hit` 里把有来源键的挠痒都变成暴击）、`rally` 召集（`Monster.rally_to`）、`focus` 镜头聚焦（`PlayableCharacter.focus_camera`，停止被挠 1 秒后还原）。
+- 条件型组合（有 `condition` 字段）由代码触发 `combo.trigger(id, 来源, force_effects)`：扑粉蝙蝠（`FeatherBat` 飞过粉雾）、粉末旋风（`FeatherFan` 卷起的粉雾挠到公主）、趁手打劫（`ComboTracker.hit_multiplier`：被机关手抓着时怪物挠痒 ×1.5）、狂热连击（`ComboTracker._on_tickled`：暴击来自带狂热 / 力量的怪物）、牢笼里的暴击（`_on_tickled`：被抓着时被暴击）、魔力反噬（`PlayableCharacter.fatigue_burst`：爆发时身边有怪物）。
 
 **增益 / 减益**（`Actor` 基类 + `Buff` + `data/buffs.json`）
 - `buffs.json`：`stat_kinds` 定义每种属性的合成方式（`add` 相加 / `mul` 相乘 / `flag` 开关，取最小值）；`buffs` 定义每种状态 `{name, icon, debuff, duration, max_stacks, modifiers}`，`duration = -1` 表示永久。
@@ -163,8 +167,8 @@ target.receive_hit(HitData.make_tickle(self, 10.0))        # 闷笑值 +10
 - 公主按 `ReactionDB.special(来源键)` 说暴击台词。测试需要精确数值时设 `Monster.random_specials = false`。
 
 **魔力疲倦**（`MagicFatigue`，公主的 `Fatigue` 节点）
-- 每次被挠：`挠痒量 × (暴击 ? special_rate 2 : normal_rate 0.5) × hit.fatigue_mult`（魔力水母 3）；其它来源直接 `add()`。不随时间、复活消散。
-- 闷笑加成 `laugh_bonus()`：`curve` 数据点之间线性插值，由 `PlayableCharacter._tickle_multiplier` 乘上。
+- 每次被挠：`挠痒量 × (暴击 ? special_rate 2 : normal_rate 0.5) × hit.fatigue_mult`（魔力水母 3）；符文、魔力雨、组合技按上限的百分比 `add_percent()`。不随时间、复活消散。
+- 闷笑加成 `laugh_bonus()`：`curve`（疲倦比例 → 加成）数据点之间线性插值，由 `PlayableCharacter._tickle_multiplier` 乘上；`next_tier()` 给状态页；超过 `warn_ratio`（90%）提醒。
 - 满值发 `full` → `PlayableCharacter.fatigue_burst()`：`StarBurst.cast_fatigue`（`StarBurst.FATIGUE` 档，不触发 MagicReactive）、`FatiguePuddle.spawn`、`fatigue_scar` 永久减益、`magic_event("fatigue_burst")`；台词在 `data/princess_fatigue.json`（`ReactionDB.fatigue(段)`）。
 - `FatiguePuddle`：生成在关卡的 `FloorObjects` 层；怪物在里面持续获得 `strength`。测试需要精确数值时设 `MagicFatigue.accumulate = false`。
 - 组合技自己造成的挠痒来源是 `ComboTracker`（`reaction_key` 为空），不会被再次记录。
@@ -239,10 +243,19 @@ HUD 背包栏会根据物品数据自动显示，不需要改 UI 代码。
 10. 新陷阱如果覆盖多个格子，记得在 `tests/level_design_test.gd` 的 `hazard_cells()` 里补上覆盖范围，强制段检查才准。
 
 ### 组合技
-1. 时间窗口组合：在 `data/combos.json` 的 `combos` 里加一项 `{"id", "category", "keys": [[来源键…], [来源键…]], "effects": [...]}`。每个槽位可以写多个备选键，`"*"` 表示任意怪物。
+1. 时间窗口组合：在 `data/combos.json` 的 `combos` 里加一项 `{"id", "category", "keys": [[来源键…], [来源键…]], "effects": [...]}`。每个槽位可以写多个备选键，`"*"` 表示任意怪物、`"*trap"` 任意陷阱；写 3 个槽位就是三来源组合（`category` 写「怪+怪+怪」等，效果里加 `{"type": "focus"}`）。
 2. 在 `data/princess_reactions.json` 的 `combos` 段加同 id 的 `name`（横幅）、`description`、`lines`（公主台词）。
-3. 条件型组合：写 `"condition": "说明"`，在满足条件的代码里调用 `player.combo.trigger("id", 来源)`（冷却中也要施加效果时传 `force_effects = true`）。
-4. `tests/floor3_test.gd` 会自动为每个时间窗口组合跑一遍触发测试，并检查它有名称和台词。
+3. 三来源组合：运行 `python tools/build/gen_combo_scenes.py` 生成小演出（手写的演出放进脚本的 `CUSTOM`）。
+4. 条件型组合：写 `"condition": "说明"`，在满足条件的代码里调用 `player.combo.trigger("id", 来源)`（冷却中也要施加效果时传 `force_effects = true`）。
+5. `tests/floor3_test.gd` 会自动为每个时间窗口组合跑一遍触发测试（其它组合先进冷却），并检查它有名称和台词。
+
+### 背包与快捷键
+- 背包界面 `Backpack`（`scenes/ui/backpack.tscn`，CanvasLayer 第 25 层，`PROCESS_MODE_ALWAYS`）：`GameState.has_backpack()`（剧情标记 `got_backpack`，`BackpackItem` 拾取即设置）之后输入 `backpack`（Tab / I / L3）打开并暂停；`_input` 先于暂停菜单截获 Esc。物品页 `use_selected()` / `assign_selected(hotkey)`，状态页读 `LaughMeter` / `MagicFatigue` / `Actor.buffs`（`buffs.json` 的 `desc`）/ `StatusComponent`。
+- 快捷键绑定在 `GameState.hotkeys`（`use_item` = Q、`use_special` = R，默认 `DEFAULT_HOTKEYS`，`set_hotkey` 冲突时交换，信号 `hotkeys_changed`）；`PlayableCharacter.use_item(hotkey)` → `Inventory.use_hotkey`。`ItemData.hotkey` 只是默认值说明。
+
+### 攻击特效
+- 命中特效 `HitFx.play(kind, parent, pos)`（`assets/generated/hit_fx.png`，10 种 × 6 帧）：`Actor.receive_hit` 生效后调用 `_play_hit_fx`——挠痒按来源选（`MonsterStats.hit_fx`、`Trap.hit_fx`，投射物看发射者），攻击一律 `slash`，暴击再叠 `crit`。新怪物 / 陷阱在 `.tres` / 场景里写 `hit_fx`。
+- 粒子：`Fx.emitter(parent, kind, amount, lifetime, opts)` 持续发射（跟着父节点），`Fx.burst(parent, pos, kind, …)` 一次性爆开后自动删除；粒子贴图 `particle_{ember,goo,dust,chip,drop}.png`。
 
 ### 增益 / 减益状态
 1. 在 `data/buffs.json` 的 `buffs` 里加一项，`modifiers` 只能用 `stat_kinds` 里有的属性；新属性要先在 `stat_kinds` 声明，再在读取它的代码里用 `stat_add / stat_mul / stat_flag`。
@@ -279,7 +292,7 @@ data/dialogues.json  只放通用对话（复活、上锁提示、钥匙、失�
 - 第一层 `floor_01`：牢房 → 火把走廊 → 守卫室（旁边兵器库）→ 储藏室 → 书房（火把照出暗墙 → 秘密储物间）→ 尖刺走廊 → 宝库 → 出口；走廊南侧有拉杆谜题间。
 - 第二层 `floor_02`：落脚点 → 蝙蝠巢穴（东侧喷口回廊 → 蛛丝幽灵房）→ 幽灵长廊（点火把）→ 蜘蛛窝 → 机关走廊（北侧休息室；旋转刷、压力板 + 机关手）→ 巨魔大厅（Boss，掉落金钥匙）→ 金锁门 → 出口楼梯（通往第三层）。
 - 第三层 `floor_03`：落脚点（学会星光爆发）→ 鼠窝 → 藤蔓迷道 → 蟹池 → 传送带工坊（西侧可选的组合试炼间）→ 风洞走廊（东侧宝物间有宝箱怪）→ 史莱姆与精灵厅 → 触手怪大厅（Boss，倒下开门）→ 出口楼梯（通往第四层）。
-- 第四层 `floor_04`：落脚点（石碑讲暴击 / 疲倦）→ 水母池 → 诅咒符文走廊 → 泡泡水道（毛毯路）→ 足枷长廊 → 刺猬滚道（南侧可选的手套展厅）→ 图腾大厅 → 魔力水母女王大厅（Boss，倒下开门）→ 出口楼梯（第四章完，`chapter4_clear`）。
+- 第四层 `floor_04`（地图由临时脚本生成，强制段都对应组合技）：落脚点（石碑讲暴击 / 疲倦 / 三重组合）→ 储藏室（背包）→ 水母池 → 诅咒符文走廊 → 泡泡水道（毛毯路）→ 足枷长廊 → 刑台广场（战斗房）→ 刺猬滚道（南边诅咒回廊通往可选的手套展厅）→ 图腾大厅 → 魔力水母女王大厅（Boss，倒下开门）→ 出口楼梯（第四章完，`chapter4_clear`）。
 
 ## 笑倒 CG
 
@@ -289,7 +302,8 @@ data/dialogues.json  只放通用对话（复活、上锁提示、钥匙、失�
 - **冻结**：播放期间 `GameState.in_cutscene` 与 `in_dialogue` 都为真；`Dialogue._end()` 在 cutscene 中不交还控制权，所以一行行台词之间游戏不会动。
 - **演员**：`scripts/cg/cg_actor.gd`。公主用 `princess.png` + `SpriteSheetAnimator`（按视觉状态名选行）；怪物只复制怪物场景里的 `Sprite`（不带 AI），挠痒音高取该怪物 `MonsterStats.tickle_pitch`。
 - **跳过**：播完设剧情标记 `cg_seen_<id>`；再次播放时角落提示「Esc 跳过」，`CG._input` 先于暂停菜单截获 Esc。
-- **横版 CG 图**：`portraits` 里写 `"wide": true` 的立绘（第三幕 `<来源键>_3`）用 `Dialogue.set_portrait_override(tex, true)` 显示：立绘框动画变成对话框上方左侧的横版大框（高 180、宽按图片比例），挠痒时 `Dialogue.shake_portrait()` 跟着抖；舞台用 `camera` 的 `anchor` 把演员移到右侧可见处。缺素材时退回占位立绘、不用大框。CG 图由 `tools/art/import_cg.py` 从 `assets/generated/CG/<来源键>.png` 生成（保持比例、高 360、每张单独调色板像素化）。
+- **横版 CG 图**：`portraits` 里写 `"wide": true` 的立绘（第三幕 `<来源键>_3`，有第二张图时第四幕 `<来源键>_4`）用 `Dialogue.set_portrait_override(tex, true)` 显示：立绘框动画变成对话框上方左侧的横版大框（高 180、宽按图片比例），挠痒时 `Dialogue.shake_portrait()` 跟着抖；舞台用 `camera` 的 `anchor` 把演员移到右侧可见处。缺素材时退回占位立绘、不用大框。CG 图由 `tools/art/import_cg.py` 从 `assets/generated/CG/<来源键>.png`（或 `<来源键>_1` / `_2`）生成（保持比例、高 360、每张单独调色板像素化）。`data/cgs.json` 由 `tools/build/gen_cgs.py` 生成：CG 图文件存在时自动加 `wide`，有 `_4` 时多一幕。
+- **组合演出**：`data/combo_scenes.json`（`scenes`：组合 id → `{name, cast, steps}`，格式同 `cgs`）由 `CG.play_scene(id)` 播放，随时可跳过；`CG.validate()` 一起检查。
 - **立绘接口**：`Dialogue.set_portrait_override(tex)` 替换常驻立绘（按比例放进立绘框，公主表情不会覆盖它，null 恢复）。`CG.portrait_texture(id)`：`portraits[id].file` 存在（导入过的资源或直接读 png）就用它，否则用 `placeholder` 指定的公主状态立绘。
 
 ### `data/cgs.json` 格式（一个总文件）
@@ -306,7 +320,7 @@ data/dialogues.json  只放通用对话（复活、上锁提示、钥匙、失�
 - `CG.validate()` 检查所有引用（立绘 id、演员、指令、音效、姿势状态、death 表），`tests/cg_test.gd` 会跑它。
 
 ### 新增一段 CG
-1. 在 `cgs` 里加一段（可复制已有的改），在 `portraits` 里为它加立绘 id（先写 placeholder 占位）。
+1. 在 `tools/build/gen_cgs.py` 里加一段（`add(...)`，两张 CG 图时传 `act4`），运行它重新生成 `data/cgs.json`；立绘 id 会自动登记（先用 placeholder 占位）。
 2. 要按来源自动触发：在 `death.by_source` 里把来源键指到它；新怪物演员要在 `actors` 里登记场景。
 3. 跑 `cg_test` 检查引用，`capture_cg -- only=<id>` 看截图。
 4. 正式立绘：把 png 按立绘 id 命名放进 `assets/cg/portraits/`。
@@ -360,7 +374,7 @@ tests/floor2_test.gd  第二层：关卡切换、减速/抓取、新怪物、新
 tests/floor3_test.gd  楼层表与扩充房间、魔法、状态效果、组合技、第三层怪物/陷阱、第三层流程
 tests/cg_test.gd      笑倒 CG：cgs.json 校验、16 种怪物真实 AI 触发、三幕切换（横版大框、抖动）、复活、跳过、立绘接口
 tests/level_design_test.gd  强制遭遇段绕不过去、锁门战斗房、各层连通
-tests/floor4_test.gd  增益减益、暴击、魔力疲倦、第四层怪物 / 陷阱、组合技扩充、第四层流程
+tests/floor4_test.gd  增益减益、暴击、魔力疲倦、第四层怪物 / 陷阱、组合技（三来源 / 连锁 / 新效果 / 演出）、背包、第四层流程
 tools/art/import_cg.py      CG 图像素化（第三幕）
 scripts/cg/           CGPlayer（Autoload CG）、CGActor
 tools/art/gen_sfx.py  合成果冻挠痒、吟唱、爆发、组合技等音效
