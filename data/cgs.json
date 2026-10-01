@@ -2,7 +2,7 @@
 	"_说明": [
 		"笑倒 CG 总文件：公主被挠到闷笑值溢出、生命值归零时播放（CG Autoload，scripts/cg/cg_player.gd）。",
 		"portraits：CG 立绘接口。id -> {file, placeholder, wide}。wide = 横版 CG 图（第三幕），立绘框变成高 180、按图片比例的大框；file 放正式素材（推荐 228x304，与现有立绘同为 2 倍密度，其它尺寸按比例缩放），不存在时用 placeholder 指定的公主状态立绘占位。",
-		"trap_actors：陷阱演员（组合演出用）。来源键 -> {texture, hframes, idle / active 帧列表, fps, tiles [宽,高], spin 每秒圈数, arm 羽毛臂, length, dir, z, offset, pitch}；cast 里写 kind = trap:<来源键>，被 tickle 的 by 指到时发动。",
+		"trap_actors：陷阱演员（组合演出用）。来源键 -> {texture, hframes, idle / active 帧列表, fps, tiles [宽,高], spin 每秒圈数, arm 羽毛臂, length, dir, z, offset, pitch}；hit_fx 立绘贴片种类；cast 里写 kind = trap:<来源键>，被 tickle 的 by 指到时发动。",
 		"actors：怪物演员。来源键 -> {scene 怪物场景, sprite 可覆盖 hframes / region [x,y,w,h] / scale / offset [x,y] / frame}。演员只复制场景里的 Sprite，不带 AI。",
 		"death：{by_source: {最后一次挠痒的来源键: CG id}, default: 找不到时（陷阱等）用的 CG id}。",
 		"cgs：CG id -> {name, cast, steps}。",
@@ -330,6 +330,7 @@
 	},
 	"trap_actors": {
 		"stocks": {
+			"hit_fx": "feather",
 			"texture": "res://assets/generated/stocks.png",
 			"hframes": 2,
 			"idle": [
@@ -342,6 +343,7 @@
 			"pitch": 1.3
 		},
 		"carpet": {
+			"hit_fx": "goo",
 			"texture": "res://assets/generated/carpet.png",
 			"hframes": 2,
 			"idle": [
@@ -361,6 +363,7 @@
 			"pitch": 1.5
 		},
 		"rune": {
+			"hit_fx": "curse",
 			"texture": "res://assets/generated/hex_rune.png",
 			"hframes": 3,
 			"idle": [
@@ -375,6 +378,7 @@
 			"pitch": 0.8
 		},
 		"arm": {
+			"hit_fx": "feather",
 			"texture": "res://assets/generated/feather_arm.png",
 			"hframes": 4,
 			"arm": true,
@@ -384,6 +388,7 @@
 			"pitch": 1.2
 		},
 		"conveyor": {
+			"hit_fx": "brush",
 			"texture": "res://assets/generated/conveyor.png",
 			"hframes": 4,
 			"idle": [
@@ -403,6 +408,7 @@
 			"z": -1
 		},
 		"brush": {
+			"hit_fx": "brush",
 			"texture": "res://assets/generated/feather_brush.png",
 			"hframes": 1,
 			"idle": [
@@ -418,6 +424,7 @@
 			]
 		},
 		"hand": {
+			"hit_fx": "hand",
 			"texture": "res://assets/generated/grab_hand.png",
 			"hframes": 3,
 			"idle": [
@@ -431,6 +438,7 @@
 			"z": 2
 		},
 		"vine": {
+			"hit_fx": "brush",
 			"texture": "res://assets/generated/vine.png",
 			"hframes": 3,
 			"idle": [
@@ -443,6 +451,7 @@
 			"pitch": 0.9
 		},
 		"fan": {
+			"hit_fx": "feather",
 			"texture": "res://assets/generated/fan.png",
 			"hframes": 2,
 			"idle": [
@@ -455,6 +464,7 @@
 			"fps": 14
 		},
 		"feather": {
+			"hit_fx": "feather",
 			"texture": "res://assets/generated/feather_arm.png",
 			"hframes": 4,
 			"idle": [

@@ -32,16 +32,16 @@ actors = {
 # 陷阱演员（组合演出用）：贴图、待机 / 发动帧、铺几格、旋转、羽毛臂。舞台上的摆放位置在 gen_combo_scenes.py。
 T = "res://assets/generated/%s.png"
 trap_actors = {
-    "stocks": {"texture": T % "stocks", "hframes": 2, "idle": [0], "active": [1], "z": 1, "pitch": 1.3},
-    "carpet": {"texture": T % "carpet", "hframes": 2, "idle": [0, 1], "active": [0, 1], "fps": 3, "tiles": [3, 2], "z": -1, "pitch": 1.5},
-    "rune": {"texture": T % "hex_rune", "hframes": 3, "idle": [0], "active": [1, 1, 0], "z": -1, "pitch": 0.8},
-    "arm": {"texture": T % "feather_arm", "hframes": 4, "arm": True, "length": 2, "dir": "left", "z": 2, "pitch": 1.2},
-    "conveyor": {"texture": T % "conveyor", "hframes": 4, "idle": [0], "active": [0, 1, 2, 3], "fps": 10, "tiles": [3, 1], "z": -1},
-    "brush": {"texture": T % "feather_brush", "hframes": 1, "idle": [0], "active": [0], "spin": 0.6, "offset": [-8, -8]},
-    "hand": {"texture": T % "grab_hand", "hframes": 3, "idle": [0], "active": [2, 1], "fps": 6, "z": 2},
-    "vine": {"texture": T % "vine", "hframes": 3, "idle": [0], "active": [1], "z": 1, "pitch": 0.9},
-    "fan": {"texture": T % "fan", "hframes": 2, "idle": [0], "active": [0, 1], "fps": 14},
-    "feather": {"texture": T % "feather_arm", "hframes": 4, "idle": [3], "active": [3], "spin": 0.3},
+    "stocks": {"hit_fx": "feather", "texture": T % "stocks", "hframes": 2, "idle": [0], "active": [1], "z": 1, "pitch": 1.3},
+    "carpet": {"hit_fx": "goo", "texture": T % "carpet", "hframes": 2, "idle": [0, 1], "active": [0, 1], "fps": 3, "tiles": [3, 2], "z": -1, "pitch": 1.5},
+    "rune": {"hit_fx": "curse", "texture": T % "hex_rune", "hframes": 3, "idle": [0], "active": [1, 1, 0], "z": -1, "pitch": 0.8},
+    "arm": {"hit_fx": "feather", "texture": T % "feather_arm", "hframes": 4, "arm": True, "length": 2, "dir": "left", "z": 2, "pitch": 1.2},
+    "conveyor": {"hit_fx": "brush", "texture": T % "conveyor", "hframes": 4, "idle": [0], "active": [0, 1, 2, 3], "fps": 10, "tiles": [3, 1], "z": -1},
+    "brush": {"hit_fx": "brush", "texture": T % "feather_brush", "hframes": 1, "idle": [0], "active": [0], "spin": 0.6, "offset": [-8, -8]},
+    "hand": {"hit_fx": "hand", "texture": T % "grab_hand", "hframes": 3, "idle": [0], "active": [2, 1], "fps": 6, "z": 2},
+    "vine": {"hit_fx": "brush", "texture": T % "vine", "hframes": 3, "idle": [0], "active": [1], "z": 1, "pitch": 0.9},
+    "fan": {"hit_fx": "feather", "texture": T % "fan", "hframes": 2, "idle": [0], "active": [0, 1], "fps": 14},
+    "feather": {"hit_fx": "feather", "texture": T % "feather_arm", "hframes": 4, "idle": [3], "active": [3], "spin": 0.3},
 }
 P = "公主"
 portraits = {
@@ -394,7 +394,7 @@ data = {
     "_说明": [
         "笑倒 CG 总文件：公主被挠到闷笑值溢出、生命值归零时播放（CG Autoload，scripts/cg/cg_player.gd）。",
         "portraits：CG 立绘接口。id -> {file, placeholder, wide}。wide = 横版 CG 图（第三幕），立绘框变成高 180、按图片比例的大框；file 放正式素材（推荐 228x304，与现有立绘同为 2 倍密度，其它尺寸按比例缩放），不存在时用 placeholder 指定的公主状态立绘占位。",
-        "trap_actors：陷阱演员（组合演出用）。来源键 -> {texture, hframes, idle / active 帧列表, fps, tiles [宽,高], spin 每秒圈数, arm 羽毛臂, length, dir, z, offset, pitch}；cast 里写 kind = trap:<来源键>，被 tickle 的 by 指到时发动。",
+        "trap_actors：陷阱演员（组合演出用）。来源键 -> {texture, hframes, idle / active 帧列表, fps, tiles [宽,高], spin 每秒圈数, arm 羽毛臂, length, dir, z, offset, pitch}；hit_fx 立绘贴片种类；cast 里写 kind = trap:<来源键>，被 tickle 的 by 指到时发动。",
         "actors：怪物演员。来源键 -> {scene 怪物场景, sprite 可覆盖 hframes / region [x,y,w,h] / scale / offset [x,y] / frame}。演员只复制场景里的 Sprite，不带 AI。",
         "death：{by_source: {最后一次挠痒的来源键: CG id}, default: 找不到时（陷阱等）用的 CG id}。",
         "cgs：CG id -> {name, cast, steps}。",

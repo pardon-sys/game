@@ -14,6 +14,8 @@ var kind := ""
 ## 怪物的挠痒音高、回嘴用的来源键。
 var reaction_key := ""
 var tickle_pitch := 1.0
+## 挠公主时立绘上的命中特效种类（怪物取 MonsterStats.hit_fx，陷阱取 trap_actors 的 hit_fx）。
+var hit_fx := ""
 var sprite: Sprite2D
 var animator: SpriteSheetAnimator
 var visual := "helpless_1"
@@ -69,6 +71,7 @@ static func make_monster(actor_id: String, key: String, info: Dictionary) -> CGA
 	var stats: MonsterStats = inst.get("stats")
 	if stats:
 		a.tickle_pitch = stats.tickle_pitch
+		a.hit_fx = stats.hit_fx
 	inst.free()
 	var over: Dictionary = info.get("sprite", {})
 	if over.has("hframes"):
@@ -96,6 +99,7 @@ static func make_trap(actor_id: String, key: String, info: Dictionary) -> CGActo
 	a.reaction_key = key
 	a.trap_info = info
 	a.tickle_pitch = float(info.get("pitch", 1.1))
+	a.hit_fx = str(info.get("hit_fx", "feather"))
 	a.z_index = int(info.get("z", 0))
 	var tex: Texture2D = load(str(info["texture"]))
 	var hf := int(info.get("hframes", 1))

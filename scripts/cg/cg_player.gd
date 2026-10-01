@@ -9,6 +9,9 @@ extends CanvasLayer
 ##        wait 无台词步骤的时长；auto 台词自动前进秒数；await_actions 先演完再出台词。
 ## 演出在画面右上的独立小舞台里进行（地牢地面 + 聚光），对话框与立绘沿用 Dialogue。
 ## 看过的 CG（剧情标记 cg_seen_<id>）可以按 Esc 跳过。
+## 立绘反馈：播放期间 Dialogue.portrait_fx 进入 CG 模式（begin_cg / end_cg），强度按幕递进（每换一张 CG 立绘 +1，
+## 切幕时金色星环；组合演出里公主变成失控 2 时至少 2 级，来源栏全亮的高潮 3 级并爆开心形），
+## 每次挠公主都调 cg_tickle（来源键用挠她的演员，飘字用该来源的 portrait_words）。
 ## 另一个文件 data/combo_scenes.json 是三来源组合第一次触发时的小演出（同样的 cast / steps / actions 格式），
 ## 用 play_scene(组合 id) 播放，随时可以跳过；舞台演员表沿用 cgs.json 的 actors。
 
@@ -52,6 +55,10 @@ var skip_label: Label
 var voice: AudioStreamPlayer
 ## 舞台顶部的来源栏（组合演出：三个来源的图标 + 名字，加入时点亮）。
 var source_bar: HBoxContainer
+## 立绘反馈的强度（第几幕）。
+var _fx_act := 0
+## CG 指令 fx（lines / feather / hand / heart）→ 立绘贴片种类（没有挠痒演员时用）。
+const FX_TO_HIT := {"feather": "feather", "hand": "hand"}
 
 
 func _ready() -> void:
@@ -265,13 +272,16 @@ func play_scene(combo_id: String) -> void:
 	var sc: Dictionary = scenes.get(combo_id, {})
 	if sc.is_empty() or _playing:
 		return
-	await _play_cg(sc, "combo:" + combo_id, "", true)
+	await _play_cg(sc, "combo:" + combo_id, "", true, 1)
 
 
-func _play_cg(cg: Dictionary, id: String, source: String, skippable: bool) -> void:
+func _play_cg(cg: Dictionary, id: String, source: String, skippable: bool, fx_level := 0) -> void:
 	if _playing:
 		return
 	_playing = true
+	_fx_act = fx_level
+	Dialogue.portrait_fx.begin_cg()
+	Dialogue.portrait_fx.set_cg_level(fx_level)
 	_skip = false
 	current = id
 	source_key = source
@@ -333,6 +343,7 @@ func _finish() -> void:
 	for a in actors.values():
 		a.queue_free()
 	_clear_sources()
+	Dialogue.portrait_fx.end_cg()
 	actors.clear()
 	for c in fx_root.get_children():
 		c.queue_free()
@@ -381,6 +392,15 @@ func _apply_portrait(step: Dictionary) -> void:
 	# 横版大图只有在正式素材存在时才用大框；缺素材时的占位是普通立绘
 	var wide: bool = data.get("portraits", {}).get(p, {}).get("wide", false) and has_portrait_file(p)
 	Dialogue.set_portrait_override(portrait_texture(p), wide)
+	# 立绘反馈按幕递进；醒来时归零。第二幕起切幕有金色星环（等大框展开完）
+	if p == "wake":
+		_fx_act = 0
+		Dialogue.portrait_fx.set_cg_level(0)
+		return
+	_fx_act += 1
+	Dialogue.portrait_fx.set_cg_level(_fx_act)
+	if _fx_act > 1:
+		get_tree().create_timer(0.32).timeout.connect(Dialogue.portrait_fx.cg_crit)
 
 
 func _reset_view() -> void:
@@ -565,6 +585,9 @@ func _act(a: Dictionary) -> float:
 		"pose":
 			if who.kind == "princess":
 				who.set_pose(str(a.get("visual", "")), str(a.get("anim", "")), str(a.get("dir", "")))
+				if str(a.get("visual", "")) == "helpless_2" and _fx_act < 2:
+					_fx_act = 2
+					Dialogue.portrait_fx.set_cg_level(2)
 			else:
 				who.style = str(a.get("style", "idle"))
 		"sources":
@@ -572,6 +595,11 @@ func _act(a: Dictionary) -> float:
 		"light":
 			_light(int(a.get("index", 0)), a.get("all", false))
 			Audio.play("chime", -10.0, 0.05, 1.3)
+			if a.get("all", false):
+				# 组合演出的高潮：三个来源一起挠
+				_fx_act = maxi(_fx_act, 3)
+				Dialogue.portrait_fx.set_cg_level(_fx_act)
+				Dialogue.portrait_fx.on_combo(true)
 		"tickle":
 			var by: CGActor = actors.get(str(a.get("by", "")))
 			var n := int(a.get("repeat", 3))
@@ -596,7 +624,9 @@ func _act(a: Dictionary) -> float:
 					Audio.play("tickle", -3.0, 0.1, b.tickle_pitch if b else 1.0)
 					w.shake(0.2)
 					if w.kind == "princess":
-						Dialogue.shake_portrait()  # 第三幕的横版 CG 图跟着挠痒一起抖
+						# 立绘反馈（抖动、泛粉、贴片、飘字、光晕）；没有挠痒演员时按指令的 fx 和致死来源
+						Dialogue.portrait_fx.cg_tickle(b.reaction_key if b else source_key,
+								b.hit_fx if b else str(FX_TO_HIT.get(fx, "")))
 					_spawn_fx(w, fx))
 				tw.tween_interval(every)
 			tw.tween_callback(func():
