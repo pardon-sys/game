@@ -33,6 +33,7 @@ func _ready() -> void:
 	await _run_other_deaths()
 	await _run_real_monsters()
 	_run_portrait_interface()
+	await _run_cg_portrait_fx()
 	print("\n==== %s (%d 项失败) ====" % ["全部通过" if failures == 0 else "有失败", failures])
 	get_tree().quit(1 if failures else 0)
 
@@ -322,6 +323,92 @@ func _run_portrait_interface() -> void:
 	info["file"] = "res://assets/generated/cg_fx.png"
 	check("立绘文件存在时用正式素材", CG.has_portrait_file("slime_1") and CG.portrait_texture("slime_1") == load("res://assets/generated/cg_fx.png"))
 	info["file"] = old
+
+
+
+# ------------------------------------------------------------------ CG 里的立绘反馈
+## 一直推进台词，直到演到第 step 步（或演完）。
+func _advance_to(step: int) -> void:
+	var guard := 0
+	while CG.is_playing() and CG.step_index < step and guard < 300:
+		guard += 1
+		if Dialogue.is_active():
+			Dialogue.advance()
+			Dialogue.advance()
+		await _wait(0.05)
+
+
+func _step_with_portrait(id: String, portrait: String) -> int:
+	var steps: Array = CG.cgs()[id]["steps"]
+	for i in steps.size():
+		if str(steps[i].get("portrait", "")) == portrait:
+			return i
+	return -1
+
+
+func _run_cg_portrait_fx() -> void:
+	print("-- CG 里的立绘反馈")
+	var fx: PortraitFx = Dialogue.portrait_fx
+	var id := "death_bubble_fish"
+	CG.play(id, "bubble_fish")
+	await _wait_playing()
+	check("播放 CG 时立绘反馈进入 CG 模式", fx.cg_mode)
+	await _advance_to(_step_with_portrait(id, "bubble_fish_1"))
+	check("第一幕：强度 1（失控 1）", fx.cg_level == 1 and fx.cg_stage() == "helpless_1")
+	await _advance_to(_step_with_portrait(id, "bubble_fish_1") + 1)  # 下一句开始挠
+	var t := 0.0
+	while fx.sticker_count() == 0 and t < 2.5:
+		await _wait(0.1)
+		t += 0.1
+	check("第一幕被挠：普通立绘上出现泡泡鱼的贴片", fx.sticker_count() >= 1)
+	t = 0.0
+	while fx.haha_count() == 0 and t < 2.5:
+		await _wait(0.1)
+		t += 0.1
+	check("飘字用泡泡鱼自己配置的 portrait_words", fx.haha_count() >= 1
+		and fx.haha_texts().all(func(w): return ReactionDB.portrait_words("bubble_fish", "helpless_1").has(w)))
+	await _advance_to(_step_with_portrait(id, "bubble_fish_2"))
+	await _wait(0.45)
+	check("切到第二幕：强度 2，金色星环", fx.cg_level == 2 and fx.crit_count() >= 1)
+	await _advance_to(_step_with_portrait(id, "bubble_fish_3"))
+	await _wait(1.6)
+	check("第三幕横版 CG 图：轻量版，不放来源贴片", Dialogue.is_portrait_wide() and fx.cg_level == 3 and fx.sticker_count() == 0)
+	t = 0.0
+	while fx.haha_count() == 0 and t < 2.5:
+		await _wait(0.1)
+		t += 0.1
+	var r := fx.portrait_rect()
+	var edge_ok := fx.haha_count() >= 1
+	for c in fx.get_children():
+		if c is Label:
+			var cx: float = c.position.x + c.get_minimum_size().x / 2.0
+			edge_ok = edge_ok and (cx < r.position.x + r.size.x * 0.35 or cx > r.position.x + r.size.x * 0.65)
+	check("横版图上飘字沿大框两边，不挡中心", edge_ok)
+	check("横版图底部有粉色光晕", fx.glow_top.modulate.a > 0.05)
+	CG._can_skip = true
+	CG.skip()
+	await _wait(0.8)
+	_finish_dialogue()
+	check("CG 结束：退出 CG 模式并清空", not fx.cg_mode and fx.sticker_count() == 0 and fx.haha_count() == 0)
+
+	# 组合演出：高潮时心形
+	GameState.flags.erase("cg_seen_combo:curse_hall")
+	CG.play_scene("curse_hall")
+	await _wait_playing()
+	check("组合演出从强度 1 开始", fx.cg_mode and fx.cg_level == 1)
+	var climax := -1
+	var steps: Array = CG.scenes["curse_hall"]["steps"]
+	for i in steps.size():
+		for a in steps[i].get("actions", []):
+			if a.get("do", "") == "light" and a.get("all", false) and climax < 0:
+				climax = i
+	await _advance_to(climax)
+	await get_tree().process_frame
+	check("组合演出高潮：强度 3，立绘爆开心形", fx.cg_level >= 3 and fx.get_children().any(func(c): return c is CPUParticles2D))
+	CG.skip()
+	await _wait(0.8)
+	_finish_dialogue()
+	check("组合演出结束后退出 CG 模式", not fx.cg_mode)
 
 
 # ------------------------------------------------------------------ 工具
