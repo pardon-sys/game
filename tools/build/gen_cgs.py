@@ -1,6 +1,7 @@
 """生成笑倒 CG 总文件 data/cgs.json（格式说明见生成结果开头的 _说明 和 docs/ARCHITECTURE.md）。
 
 每种怪物一段：失控 1 立绘 → 失控 2 立绘 → CG 图（第三幕）[→ 第二张 CG 图（第四幕）] → 醒来。
+每种怪物巢穴一段（被巢穴怪物拖进巢穴时播放，nest 表）：被拖进巢穴口 → 巢穴里一群一起挠 → CG 图（第三幕）→ 醒来。
 CG 图由 tools/art/import_cg.py 生成到 assets/cg/portraits/<来源键>_3.png（第二张为 _4.png）；
 文件存在时自动标成横版大框（wide），不存在时用失控 2 立绘占位。
 用法：python tools/build/gen_cgs.py
@@ -86,14 +87,14 @@ def ending(wake_text):
     ]
 
 
-def standard(key, name, lines, taunts, act3, fx="lines", enter_from=(90, 0), stand=(22, 8), extras=None, cam=True, act4=None):
+def standard(key, name, lines, taunts, act3, fx="lines", enter_from=(90, 0), stand=(22, 8), extras=None, cam=True, act4=None, foe=None):
     """三幕：
     第一幕（失控 1 立绘）：怪物登场、挠痒——公主 1 句 + 怪物 1 句
     第二幕（失控 2 立绘）：失控 2 姿势、镜头拉近——公主 1 句 + 怪物 1 句
     第三幕（横版 CG 图）：画面切到 CG 图，舞台移到右侧继续演——act3 的 5~7 句（最多）
     最后淡出、醒来。"""
     p1, p2, p3 = pt(key)
-    cast = {"princess": princess(), "foe": monster(key, stand, "left" if stand[0] > 0 else "right")}
+    cast = {"princess": princess(), "foe": monster(foe or key, stand, "left" if stand[0] > 0 else "right")}
     cast.update(extras or {})
     extra_names = list((extras or {}).keys())
     enter_extras = [{"do": "enter", "who": n, "from": [(-1 if cast[n]["at"][0] < 0 else 1) * 80, 0], "time": 0.7} for n in extra_names]
@@ -390,6 +391,85 @@ add("jelly_queen", "魔力水母女王", "女王的花之海",
           ("M", "在花海里笑吧，小公主～笑到魔力全部变成我的～"),
           ("P", "……女王大人……饶、饶命……哈哈哈……")])
 
+# ------------------------------------------------------------------ 怪物巢穴的过场
+nests = {}
+
+
+def add_nest(kind, foe, name, title, lines, taunts, act3, **kw):
+    key = "nest_" + kind
+    cg = standard(key, name, lines, taunts, act3, foe=foe, **kw)
+    cg["name"] = title
+    cgs[key] = cg
+    nests[kind] = {"cg": key, "source": foe}
+
+
+add_nest("rat_hole", "rat", "挠脚鼠", "鼠洞里的脚心宴",
+         ["被、被拖进洞里了……好黑……好多吱吱声……",
+          "鞋子被扒掉了——一整窝老鼠在挠脚心——哈哈哈哈！", "",
+          "……醒来了。脚心还麻麻的……看到鼠洞先把它敲碎！"],
+         ["吱吱！拖进来啦！", "全家都来挠吱！"],
+         [("N", "（洞里铺满了干草，几十只挠脚鼠排着队，把公主的两只脚架在了草堆上）"),
+          ("P", "放、放开脚！你们要干什么——"),
+          ("M", "吱！脚心宴会，开始！"),
+          ("N", "（胡子扫过脚心，小爪子挠着脚趾缝，一只接一只地轮流上阵）"),
+          ("P", "哈哈哈哈！一、一只挠完又换一只——停不下来啊！"),
+          ("M", "吱吱～脚趾缝最好吃～"),
+          ("P", "……鼠、鼠窝……再也不靠近了……哈哈……")],
+         fx="hand", extras={"rat2": monster("rat", (-22, 12), "right"), "rat3": monster("rat", (4, 26), "left")})
+add_nest("fairy_flower", "fairy", "羽毛小精灵群", "花心里的羽毛摇篮",
+         ["花、花瓣合起来了……被关进花里了……",
+          "花蕊里全是小精灵——每个都拿着羽毛——哈哈哈哈！", "",
+          "……醒来了。身上一股花香……那朵花一定要打碎！"],
+         ["咯咯～欢迎来花里玩～", "羽毛准备好啦～"],
+         [("N", "（巨大的花朵把公主整个包了进去，花蕊里飞出一群又一群小精灵）"),
+          ("P", "好、好香……不对，好多羽毛……"),
+          ("M", "咯咯咯～花粉加羽毛，双倍痒痒～"),
+          ("N", "（花粉落在皮肤上，痒意一下子放大了好几倍，羽毛再从上面轻轻扫过）"),
+          ("P", "花、花粉——哈哈哈哈比平时痒好多！"),
+          ("M", "挠挠大作战，第二回合～"),
+          ("P", "腋、腋下也……哈哈哈哈哈！"),
+          ("P", "……花里……出不去……哈哈……")],
+         fx="feather", enter_from=(0, -70), stand=(16, -10), extras={"fairy2": monster("fairy", (-18, -8), "right")})
+add_nest("slime_pool", "slime", "史莱姆", "果冻池的深处",
+         ["脚、脚被拖进池子里了……凉凉的……",
+          "整个人陷进果冻里了——到处都在蠕动——哈哈哈哈！", "",
+          "……醒来了。头发上还挂着果冻……下次先打碎那个池子！"],
+         ["噗叽～欢迎回家～", "大家一起，噗叽噗叽～"],
+         [("N", "（公主一点一点陷进了史莱姆池，只剩脖子以上露在外面）"),
+          ("P", "陷、陷进去了……出不来……"),
+          ("M", "噗叽～池子里好暖和吧～"),
+          ("N", "（果冻在池底轻轻翻涌，一下一下地揉着脚心、挤着腰）"),
+          ("P", "里面在动——哈哈哈哈不要揉腰！"),
+          ("M", "噗叽噗叽～再多泡一会儿～"),
+          ("P", "……要、要被果冻泡化了……哈哈……")],
+         extras={"slime2": monster("slime", (-20, 10), "right")})
+add_nest("jelly_egg", "mana_jelly", "魔力水母", "水母卵的孵化场",
+         ["卵、卵在发光……一只只小水母钻出来了……",
+          "刚孵出来的小水母全缠上来了——哈哈哈哈魔力好乱！", "",
+          "……醒来了。魔力还在身体里晃……那堆卵一定要打碎！"],
+         ["噗噜～妈妈说要抓住公主～", "孵出来啦～一起挠～"],
+         [("N", "（一颗颗水母卵接连裂开，半透明的小水母像气泡一样飘了出来）"),
+          ("P", "好、好多……全都朝这边飘过来了！"),
+          ("M", "噗噜噗噜～第一口魔力，好甜～"),
+          ("N", "（细细的触须缠满了手腕和脚踝，魔力被搅得一阵一阵发麻）"),
+          ("P", "麻、麻麻的又好痒——哈哈哈哈停不下来！"),
+          ("M", "大家排好队，一只挠一下～"),
+          ("P", "……孵、孵化场……不要再孵了……哈哈……")],
+         enter_from=(0, -60), stand=(18, -4), extras={"jelly2": monster("mana_jelly", (-20, -2), "right")})
+add_nest("chest_pile", "mimic", "宝箱怪", "宝箱山的肚子里",
+         ["宝、宝箱堆在动……被拖进去了！",
+          "好几个宝箱一起咬住——舌头在挠脚心——哈哈哈哈！", "",
+          "……醒来了。身上一股木头味……那堆宝箱一定有问题！"],
+         ["咔哒！新宝物入库～", "大家一起收藏～"],
+         [("N", "（宝箱堆一个接一个张开了嘴，公主被一路传进了最里面的大箱子）"),
+          ("P", "好黑！放我出去！"),
+          ("M", "咔哒～宝物要一层一层收好～"),
+          ("N", "（每个箱盖里都伸出长长的舌头，从脚心一路舔到腰）"),
+          ("P", "舌、舌头好多——哈哈哈哈好痒！"),
+          ("M", "露在外面的脚，咔哒咔哒～"),
+          ("P", "……再、再也不碰宝箱了……哈哈……")],
+         enter_from=(0, 0), stand=(0, -6), extras={"mimic2": monster("mimic", (22, 6), "left")})
+
 data = {
     "_说明": [
         "笑倒 CG 总文件：公主被挠到闷笑值溢出、生命值归零时播放（CG Autoload，scripts/cg/cg_player.gd）。",
@@ -397,6 +477,7 @@ data = {
         "trap_actors：陷阱演员（组合演出用）。来源键 -> {texture, hframes, idle / active 帧列表, fps, tiles [宽,高], spin 每秒圈数, arm 羽毛臂, length, dir, z, offset, pitch}；hit_fx 立绘贴片种类；cast 里写 kind = trap:<来源键>，被 tickle 的 by 指到时发动。",
         "actors：怪物演员。来源键 -> {scene 怪物场景, sprite 可覆盖 hframes / region [x,y,w,h] / scale / offset [x,y] / frame}。演员只复制场景里的 Sprite，不带 AI。",
         "death：{by_source: {最后一次挠痒的来源键: CG id}, default: 找不到时（陷阱等）用的 CG id}。",
+        "nest：巢穴种类（MonsterNest.kind）-> {cg: 被拖进巢穴时播的 CG id, source: 演员来源键}。第三幕立绘 nest_<种类>_3：把横版 CG 图放进 assets/cg/portraits/nest_<种类>_3.png 就会换成大框。",
         "cgs：CG id -> {name, cast, steps}。",
         "cast：演员名 -> {kind, at [x,y], dir, hidden, scale, visual, anim}。kind = princess（公主）/ monster:<来源键> / source（致死的那只怪）。坐标以舞台地面中心为原点，单位像素。",
         "steps：按顺序执行。每一步可写 portrait（立绘 id，一直保持到下次更换，none = 隐藏）、actions（演绎指令，同时开始）、",
@@ -410,6 +491,7 @@ data = {
     "actors": actors,
     "trap_actors": trap_actors,
     "death": {"by_source": {k: "death_" + k for k in actors}, "default": "death_generic"},
+    "nest": nests,
     "cgs": cgs,
 }
 open("data/cgs.json", "w").write(json.dumps(data, ensure_ascii=False, indent="\t") + "\n")

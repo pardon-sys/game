@@ -75,6 +75,14 @@ const TYPED_SCENES := {
 		"bounce": "res://scenes/traps/bounce_pad.tscn",
 		"soap": "res://scenes/traps/soap_floor.tscn",
 	},
+	## 怪物巢穴（MonsterNest 的子类）
+	"nest": {
+		"rat": "res://scenes/objects/nests/rat_hole.tscn",
+		"fairy": "res://scenes/objects/nests/fairy_flower.tscn",
+		"slime": "res://scenes/objects/nests/slime_pool.tscn",
+		"jelly": "res://scenes/objects/nests/jelly_egg.tscn",
+		"chest": "res://scenes/objects/nests/chest_pile.tscn",
+	},
 	## 装在墙面格上的陷阱
 	"walltrap": {
 		"hand": "res://scenes/traps/grab_hand.tscn",

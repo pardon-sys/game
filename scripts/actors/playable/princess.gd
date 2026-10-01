@@ -9,6 +9,8 @@ var battle_damaged := false
 var last_tickle_key := ""
 ## 刚播完笑倒 CG：这次复活不再播"复活"对话。
 var _after_cg := false
+## 被拖进了哪种巢穴（MonsterNest.kind；倒下时播这种巢穴的过场 CG）。
+var dragged_into := ""
 var _reaction_cooldown := 0.0
 var _last_reaction := ""
 var _reaction_stage := ""
@@ -145,12 +147,39 @@ func _on_respawned() -> void:
 
 
 ## 被挠到笑倒（闷笑值满把最后一点血扣光）：播笑倒 CG（data/cgs.json），然后在检查点复活。
+## 被拖进怪物巢穴：播这种巢穴的过场 CG（data/cgs.json 的 nest 表），然后在检查点复活。
 func _play_death_cutscene() -> bool:
 	var cg := get_node_or_null("/root/CG")
+	if cg != null and dragged_into != "":
+		var nest_kind := dragged_into
+		dragged_into = ""
+		_nest_cg(cg, nest_kind)
+		return true
+	dragged_into = ""
 	if cg == null or not is_laugh_defeat():
 		return false
 	_death_cg(cg, defeat_source_key())
 	return true
+
+
+## 被巢穴怪物拖进巢穴（MonsterNest._swallow 调用）：倒下并播巢穴过场。
+func dragged_into_nest(nest: MonsterNest) -> void:
+	if not is_alive():
+		return
+	dragged_into = nest.kind
+	if sprite:
+		var tw := create_tween()
+		tw.tween_property(sprite, "modulate:a", 0.0, 0.3)
+	health.damage(health.hp)
+
+
+func _nest_cg(cg: Node, nest_kind: String) -> void:
+	await get_tree().create_timer(0.6).timeout
+	if sprite:
+		sprite.modulate.a = 0.0
+	await cg.play_nest(nest_kind)
+	_after_cg = true
+	respawn()
 
 
 ## 选笑倒 CG 用的来源键：最后一次挠痒的来源 → 本条命里记录的挠痒来源 → 致命一击的怪物。

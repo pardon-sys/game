@@ -66,6 +66,11 @@ func _collect() -> void:
 		var m := n as Monster
 		if m and m.is_alive() and not _tracked.has(m) and rect.has_point(m.global_position):
 			_tracked.append(m)
+	# 没打碎的怪物巢穴也要清掉（不然怪物会一直生成）
+	for n in get_tree().get_nodes_in_group("monster_nest"):
+		var nest := n as MonsterNest
+		if nest and nest.is_alive() and not _tracked.has(nest) and rect.has_point(nest.global_position):
+			_tracked.append(nest)
 
 
 func _physics_process(_delta: float) -> void:

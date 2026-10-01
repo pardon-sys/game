@@ -85,6 +85,22 @@ func _run_data() -> void:
 			print("    第四幕有问题：", key)
 		fourth_ok = fourth_ok and ok
 	check("两张 CG 图的怪物（泡泡鱼、水母女王）有第四幕", fourth_ok and not CG.data["portraits"].has("slime_4"))
+	var nest_ok: bool = CG.data.get("nest", {}).size() == 5
+	for nk in CG.data.get("nest", {}):
+		var nid := CG.nest_cg_for(nk)
+		var pids: Array = []
+		var lines := 0
+		for st in CG.cgs().get(nid, {}).get("steps", []):
+			if st.has("portrait"):
+				pids.append(str(st["portrait"]))
+			if st.has("text"):
+				lines += 1
+		var ok: bool = nid == "nest_" + nk and pids.has(nid + "_1") and pids.has(nid + "_2") and pids.has(nid + "_3") \
+				and CG.portrait_texture(nid + "_3") == Dialogue.portrait_for("helpless_2") and lines >= 10
+		if not ok:
+			print("    巢穴过场有问题：", nk)
+		nest_ok = nest_ok and ok
+	check("五种巢穴各有一段三幕过场 CG（第三幕先用失控 2 占位）", nest_ok and CG.validate().is_empty())
 	check("通用 CG 没有第三幕", not CG.cgs()["death_generic"]["steps"].any(func(st: Dictionary): return str(st.get("portrait", "")).ends_with("_3")))
 	check("立绘缺素材时用失控 1 / 失控 2 占位", CG.portrait_texture("slime_1") == Dialogue.portrait_for("helpless_1")
 		and CG.portrait_texture("slime_2") == Dialogue.portrait_for("helpless_2") and not CG.has_portrait_file("slime_1"))
@@ -266,6 +282,11 @@ func _run_real_monsters() -> void:
 		player._full_invuln = 0.0
 		player._attack_invuln = 0.0
 		var m: Monster = load("res://scenes/actors/monsters/%s.tscn" % MONSTER_SCENES[key]).instantiate()
+		# 只看这只怪物自己挠倒：Boss 开局召唤的小怪会抢最后一下
+		if m is TentacleBoss:
+			(m as TentacleBoss).max_fairies = 0
+		elif m is TickleTroll:
+			(m as TickleTroll).max_bats = 0
 		main.level.get_node("Entities").add_child(m)
 		m.global_position = spot + (Vector2(0, -60) if key == "tentacle" else Vector2(18, 0))
 		await _wait(0.1)
@@ -379,15 +400,18 @@ func _run_cg_portrait_fx() -> void:
 		and fx.glow_material().get_shader_parameter("region") == Vector4(0, 0, 1, 1))
 	await _advance_to(_step_with_portrait(id, "bubble_fish_3") + 1)  # 下一句继续挠
 	t = 0.0
-	while fx.sticker_count() == 0 and t < 2.5:
+	while fx.sticker_count() == 0 and t < 4.0:
 		await _wait(0.05)
 		t += 0.05
+		if is_equal_approx(t, 2.0):
+			await _advance_to(_step_with_portrait(id, "bubble_fish_3") + 2)  # 还没挠到就再推一句
 	var wr := fx.portrait_rect()
 	var off_center := fx.sticker_count() >= 1
 	for p in fx.sticker_positions():
 		var n: Vector2 = (p - wr.get_center()) / wr.size
 		off_center = off_center and (absf(n.x) >= PortraitFx.WIDE_STICKER_MARGIN - 0.01 or absf(n.y) >= PortraitFx.WIDE_STICKER_MARGIN - 0.01)
-	check("第三幕横版 CG 图：出现挠痒来源贴片，放在图的四周不挡中心", off_center)
+	var offs := fx.sticker_positions().map(func(p): return ((p - wr.get_center()) / wr.size).snapped(Vector2(0.01, 0.01)))
+	check("第三幕横版 CG 图：出现挠痒来源贴片，放在图的四周不挡中心（%d 个 %s）" % [fx.sticker_count(), offs], off_center)
 	t = 0.0
 	while fx.haha_count() == 0 and t < 2.5:
 		await _wait(0.1)

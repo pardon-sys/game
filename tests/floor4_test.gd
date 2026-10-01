@@ -35,6 +35,7 @@ func _ready() -> void:
 	await _run_monsters()
 	await _run_traps()
 	await _run_displacement()
+	await _run_nests()
 	await _run_combos()
 	await _run_combos3()
 	await _run_backpack()
@@ -152,6 +153,7 @@ func _run_special() -> void:
 
 	_reset()
 	var troll: TickleTroll = _spawn("tickle_troll", Vector2(12, 0), true)
+	troll.max_bats = 0  # 只测抓取暴击，不召唤蝙蝠
 	troll.stats = troll.stats.duplicate()
 	troll.stats.special_chance = 1.0
 	await _wait(0.1)
@@ -666,6 +668,169 @@ func _run_displacement() -> void:
 	soap3.queue_free()
 	await _wait(0.3)
 	_reset()
+	player.global_position = home
+
+
+# ------------------------------------------------------------------ 怪物巢穴 / Boss 开局召唤
+func _nest(file: String, offset: Vector2) -> MonsterNest:
+	var n: MonsterNest = load("res://scenes/objects/nests/%s.tscn" % file).instantiate()
+	level.get_node("Entities").add_child(n)
+	n.global_position = player.global_position + offset
+	return n
+
+
+func _freeze(ms: Array) -> void:
+	for m in ms:
+		if is_instance_valid(m):
+			(m as Node).process_mode = Node.PROCESS_MODE_DISABLED
+
+
+func _run_nests() -> void:
+	print("-- 怪物巢穴")
+	var home := player.global_position
+	_reset()
+	player.laugh.clear()
+	await _wait(0.1)
+	var nest := _nest("rat_hole", Vector2(100, 0))
+	check("巢穴基类 + 子类：鼠洞生成挠脚鼠", nest is MonsterNest and nest is RatHole and nest.kind == "rat_hole"
+		and nest.monster_scene.ends_with("foot_rat.tscn") and nest.collision_layer & 33 == 33)
+	nest.spawn_interval = 0.3
+	await _wait(1.8)
+	var regular := nest.regular_alive()
+	_freeze(regular)
+	check("公主在附近：定时生成，同时最多 2 只（%d）" % regular.size(), regular.size() == 2
+		and regular.all(func(m): return m.home_nest == nest and m.is_in_group("nest_spawn") and m is FootRat))
+	nest.spawn_interval = 99.0
+	# 吟唱联动
+	player._magic_cd = 0.0
+	ctrl.hold(&"magic", true)
+	var counts: Array[int] = []
+	var t := 0.0
+	while t < 1.45:
+		await get_tree().physics_frame
+		t += 1.0 / 60.0
+		_freeze(nest.extras_alive())
+		if counts.is_empty() or counts[counts.size() - 1] != nest.extras_alive().size():
+			counts.append(nest.extras_alive().size())
+	var ex := nest.extras_alive().size()
+	check("吟唱时巢穴额外生成怪物，越来越快（1.45 秒 %d 只）" % ex, ex >= 5 and ex <= nest.surge_max and nest._surge_gap < 0.2)
+	check("额外生成不占普通上限", nest.regular_alive().size() == 2)
+	check("额外生成的怪物一出来就锁定公主", nest.extras_alive().all(func(m): return m.target == player))
+	player.interrupt_channel()
+	ctrl.hold(&"magic", false)
+	await _wait(1.5)
+	check("吟唱结束后额外怪物先留着", nest.extras_alive().size() == ex)
+	await _wait(2.2)
+	check("吟唱结束 3 秒后额外怪物缩回巢穴，普通怪物还在", nest.extras_alive().is_empty() and nest.regular_alive().size() == 2
+		and get_tree().get_nodes_in_group("nest_extra").is_empty())
+
+	# 拖进巢穴
+	var rats := nest.regular_alive()
+	for m in rats:
+		m.global_position = player.global_position + Vector2(4, 0)
+	player.laugh.set_value(player.laugh.max_value * 0.8)
+	await _wait(0.2)
+	check("失控时贴身的巢穴怪物抓住公主往巢穴拖", player.status.is_grabbed_by(nest) and nest.draggers.size() == 2)
+	var d0 := player.global_position.distance_to(nest.mouth())
+	await _wait(0.5)
+	var d1 := player.global_position.distance_to(nest.mouth())
+	check("两只一起拖：25 + 15 = 40 像素/秒（%.0f → %.0f）" % [d0, d1], d0 - d1 > 15.0 and d0 - d1 < 25.0
+		and rats.all(func(m): return m.global_position.distance_to(player.global_position) < 20.0))
+	for i in nest.drag_presses:
+		ctrl.press(&"attack")
+		await get_tree().physics_frame
+		await get_tree().physics_frame
+	await _wait(0.1)
+	var d2 := player.global_position.distance_to(nest.mouth())
+	await _wait(0.4)
+	check("连按 10 次挣脱，短时间内不会被再抓", not player.status.is_grabbed() and nest._regrab_cd > 0.0
+		and absf(player.global_position.distance_to(nest.mouth()) - d2) < 1.0)
+	player.laugh.set_value(player.laugh.max_value * 0.4)
+	nest._regrab_cd = 0.0
+	await _wait(0.3)
+	check("闷笑在失控以下不会被抓", not player.status.is_grabbed())
+	# 拖到巢穴口：倒下、播巢穴过场、复活
+	player.laugh.set_value(player.laugh.max_value * 0.8)
+	player.global_position = nest.mouth() + Vector2(-30, 0)
+	for m in rats:
+		m.global_position = player.global_position + Vector2(4, 0)
+	player._full_invuln = 0.0
+	t = 0.0
+	while player.is_alive() and t < 3.0:
+		await get_tree().physics_frame
+		t += 1.0 / 60.0
+		player.laugh.set_value(player.laugh.max_value * 0.8)
+	check("拖到巢穴口：公主倒下", not player.is_alive())
+	t = 0.0
+	while not CG.is_playing() and t < 2.0:
+		await _wait(0.05)
+		t += 0.05
+	check("播放这种巢穴的过场 CG（nest_rat_hole）", CG.is_playing() and CG.current == "nest_rat_hole" and CG.current == CG.nest_cg_for("rat_hole"))
+	CG._can_skip = true
+	CG.skip()
+	await _wait(1.0)
+	_finish_dialogue()
+	await _wait(0.3)
+	check("过场后在检查点复活", player.is_alive() and not CG.is_playing() and player.global_position.distance_to(GameState.checkpoint) < 2.0)
+	player.global_position = home
+	await _wait(0.1)
+
+	# 打碎
+	_reset()
+	player.laugh.clear()
+	var nest2 := _nest("slime_pool", Vector2(40, 0))
+	nest2.spawn_interval = 0.2
+	await _wait(1.3)
+	_freeze(nest2.regular_alive())
+	var before := nest2.regular_alive().size()
+	for i in 3:
+		nest2.receive_hit(HitData.make_attack(player, 1))
+	check("权杖打 3 下还没碎（血 4）", not nest2.broken and nest2.hp == 1)
+	StarBurst.cast(player, 3)
+	check("满蓄力星光爆发直接打碎", nest2.broken and nest2.collision_layer == 0 and not nest2.is_alive())
+	for m in nest2.regular_alive():
+		m.queue_free()
+	await _wait(1.0)
+	check("打碎后不再生成", nest2.regular_alive().is_empty())
+	var nest3 := _nest("rat_hole", Vector2(40, 0))
+	StarBurst.cast(player, 1)
+	check("低档星光爆发扣 2 血", not nest3.broken and nest3.hp == 2)
+	nest3.queue_free()
+	var pile := _nest("chest_pile", Vector2(60, 0))
+	var mimic := pile.spawn(false) as Mimic
+	_freeze([mimic])
+	check("宝箱堆生成的宝箱怪是醒着的（不伪装、直接扑人）", mimic != null and not mimic.is_disguised() and mimic.target == player)
+	var kinds_ok := true
+	for f in ["rat_hole", "fairy_flower", "slime_pool", "jelly_egg", "chest_pile"]:
+		var n := _nest(f, Vector2(0, 200))
+		kinds_ok = kinds_ok and n.kind == f and CG.cgs().has(CG.nest_cg_for(f)) and ResourceLoader.exists(n.monster_scene)
+		n.queue_free()
+	check("五种巢穴都有对应的怪物和过场 CG", kinds_ok)
+	for m in nest.spawned_alive() + nest2.spawned_alive() + pile.spawned_alive():
+		m.queue_free()
+	nest.queue_free()
+	nest2.queue_free()
+	pile.queue_free()
+
+	# Boss 开局召唤
+	_reset()
+	await _wait(0.2)
+	var boss: TentacleBoss = _spawn("tentacle_boss", Vector2(0, -80), true)
+	await _wait(0.4)
+	check("触手怪一开战（满血）就召唤小精灵群", boss.health.hp == boss.health.max_hp and get_tree().get_nodes_in_group("summoned_fairy").size() >= 1)
+	boss.health.damage(999)
+	await _wait(0.3)
+	var troll: TickleTroll = _spawn("tickle_troll", Vector2(60, 0), true)
+	troll.state = Monster.State.CHASE
+	troll.target = player
+	await _wait(0.3)
+	check("巨魔一开战就召唤 2 只羽毛蝙蝠", get_tree().get_nodes_in_group("summoned_bat").size() == 2)
+	troll.health.damage(999)
+	await _wait(0.3)
+	check("巨魔倒下时召唤的蝙蝠一起散掉", get_tree().get_nodes_in_group("summoned_bat").filter(func(b): return b.is_alive()).is_empty())
+	await _wait(0.5)
+	_reset()
+	player.laugh.clear()
 	player.global_position = home
 
 

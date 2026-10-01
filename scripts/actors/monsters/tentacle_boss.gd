@@ -4,7 +4,7 @@ extends Monster
 ##   触手抽打：目标在 strike_range 内时，每 strike_interval 秒在她脚下标出落点，预警 strike_warn 秒后抽下；
 ##            打中就抓住并把她拉到身边，多根触手一起挠（每 grab_interval 秒 grab_tickle），连按 grab_presses 次挣脱。
 ##   满蓄力星光爆发（3 档）：收回所有触手、松手并僵直 magic_stun 秒（MagicReactive）。
-##   血量低于一半：召唤羽毛小精灵群（最多同时 max_fairies 群）。
+##   一开战就召唤羽毛小精灵群，之后每 summon_interval 秒补充（最多同时 max_fairies 群）。
 ##   死亡时打开 open_on_death 组的 Switchable（Boss 房的门）。
 
 const TENTACLE_TEX := preload("res://assets/generated/tentacle.png")
@@ -178,8 +178,6 @@ func _on_stunned(_duration: float) -> void:
 
 
 func _update_summon(delta: float) -> void:
-	if health.hp > health.max_hp / 2:
-		return
 	_summon_cd -= delta
 	if _summon_cd > 0.0:
 		return
