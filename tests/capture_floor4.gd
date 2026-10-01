@@ -39,6 +39,7 @@ func _ready() -> void:
 	var enemies := get_tree().get_nodes_in_group("enemy")
 	for e in enemies:
 		e.process_mode = Node.PROCESS_MODE_DISABLED
+	await _capture_backpack()
 	for r in ROOMS:
 		_place(r[0])
 		await _wait(0.9)
@@ -103,6 +104,35 @@ func _ready() -> void:
 	await _wait(1.5)
 	await _shot("f4_16_queen_rain")
 	get_tree().quit()
+
+
+## 背包两页。
+func _capture_backpack() -> void:
+	GameState.give_item(ItemDB.get_item("backpack"), 1, player)
+	_finish()
+	for id in ["mint", "clear_dew", "star_candy", "coin", "key_bronze"]:
+		GameState.give_item(ItemDB.get_item(id), 2, player)
+	GameState.set_hotkey("use_special", "star_candy")
+	player.laugh.set_value(70.0)
+	player.fatigue.set_value(330.0)
+	player.add_buff("ticklish", 6.0)
+	player.add_buff("fatigue_scar", -1.0, 2)
+	player.add_buff("dizzy", 3.0)
+	var bp: Backpack = main.get_node("Backpack")
+	bp.open()
+	bp.selected = 2
+	bp._refresh()
+	await _wait(0.2)
+	await _shot("f4_17_backpack_items")
+	bp.set_page(1)
+	await _wait(0.2)
+	await _shot("f4_18_backpack_status")
+	bp.close()
+	player.clear_buffs(false)
+	player.laugh.clear()
+	player.fatigue.clear()
+	GameState.hotkeys = GameState.DEFAULT_HOTKEYS.duplicate()
+	GameState.hotkeys_changed.emit()
 
 
 func level_find(n: String) -> Node:

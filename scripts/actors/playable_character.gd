@@ -270,7 +270,7 @@ func interact() -> void:
 func use_item(hotkey := "use_item") -> bool:
 	if state == State.DEAD:
 		return false
-	var used := GameState.inventory.use_first_usable(self, hotkey)
+	var used := GameState.inventory.use_hotkey(self, hotkey)
 	if not used:
 		Audio.play("locked", -8.0)
 	return used
@@ -302,6 +302,11 @@ func is_magic_unlocked() -> bool:
 
 func is_channeling() -> bool:
 	return state == State.CHANNEL
+
+
+## 星光糖：魔法冷却立即清零。
+func reset_magic_cooldown() -> void:
+	_magic_cd = 0.0
 
 
 func magic_cooldown_left() -> float:

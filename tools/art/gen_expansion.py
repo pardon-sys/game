@@ -21,6 +21,8 @@
   ghost_glove.png   16x16 x 2  幽灵手套               hedgehog.png 16x16 x 4 刷刷刺猬（走 2 帧 / 蜷缩 / 滚动）
   mana_drop.png     4x6        魔力雨滴
   totem.png 16x24 x 3（亮 2 帧 / 碎）  hex_rune.png 16x16 x 3（待机 / 发光 / 冷却）  stocks.png 16x16 x 2（开 / 合）
+  hit_fx.png 24x24 x 6 帧 x 10 行（命中特效：羽毛 / 手指 / 果冻 / 触须 / 泡泡 / 刷毛 / 钳子 / 刀光 / 暴击 / 符咒）
+  particle_*.png         持续特效粒子（火星、黏液泡、扬尘、木屑、紫色水花）
   carpet.png 16x16 x 2 黏黏毛毯       feather_arm.png 16x16 x 4（装置 / 预警 / 手臂节 / 羽毛尖，朝右）
 
 用法：python tools/art/gen_expansion.py
@@ -561,12 +563,34 @@ def clear_dew():
     return add_outline(img)
 
 
+def star_candy():
+    img, d = canvas()
+    d.polygon([(1, 6), (3, 8), (1, 10)], fill=(255, 170, 214, 255))      # 糖纸两端
+    d.polygon([(14, 6), (12, 8), (14, 10)], fill=(255, 170, 214, 255))
+    d.ellipse((3, 4, 12, 12), fill=(120, 110, 230, 255))                  # 夜空色糖球
+    d.polygon([(7, 5), (8, 7), (10, 7), (8, 9), (9, 11), (7, 9), (5, 11), (6, 9), (4, 7), (6, 7)], fill=STAR)
+    d.point((5, 5), fill=(255, 255, 255, 255))
+    return add_outline(img)
+
+
+def backpack_icon():
+    img, d = canvas()
+    d.rounded_rectangle((3, 4, 12, 14), radius=2, fill=(214, 120, 150, 255))  # 粉色背包
+    d.rounded_rectangle((4, 8, 11, 13), radius=1, fill=(240, 160, 190, 255))  # 口袋
+    d.arc((5, 1, 10, 7), 180, 360, fill=WOOD_D)                              # 提手
+    d.rectangle((7, 9, 8, 10), fill=STAR)                                       # 扣子
+    d.line((3, 7, 12, 7), fill=(170, 80, 120, 255))
+    return add_outline(img)
+
+
 def gen_fatigue_art():
     sheet = blank(144, 24)
     for f in range(3):
         sheet.alpha_composite(fatigue_puddle(f), (f * 48, 0))
     sheet.save(OUT / "fatigue_puddle.png")
     clear_dew().save(OUT / "item_clear_dew.png")
+    star_candy().save(OUT / "item_star_candy.png")
+    backpack_icon().save(OUT / "item_backpack.png")
 
 
 # ------------------------------------------------------------------ 第四层怪物
@@ -854,6 +878,133 @@ def gen_floor4_traps():
     feather_arm().save(OUT / "feather_arm.png")
 
 
+# ------------------------------------------------------------------ 命中特效 / 粒子
+HIT_KINDS = ["feather", "hand", "goo", "sting", "bubble", "brush", "pinch", "slash", "crit", "curse"]
+
+
+def _fade(c, f, n=6):
+    return c[:3] + (max(40, int(c[3] * (1.0 - f / (n + 1)))),)
+
+
+def hit_fx(kind, f):
+    import math
+    img, d = canvas(24, 24)
+    cx, cy = 12, 12
+    t = f / 5.0
+    if kind == "feather":       # 一根羽毛扫过，留下弧线
+        a = math.radians(-60 + 120 * t)
+        x0, y0 = cx + math.cos(a) * 7, cy + math.sin(a) * 7
+        x1, y1 = cx - math.cos(a) * 7, cy - math.sin(a) * 7
+        d.line((x0, y0, x1, y1), fill=_fade(WHITE_F, f))
+        d.line((x0, y0 + 1, (x0 + x1) / 2, (y0 + y1) / 2 + 1), fill=_fade(PINK_F, f))
+        if f > 0:
+            d.arc((3, 3, 20, 20), -60, -60 + 120 * t, fill=_fade((255, 230, 245, 200), f))
+    elif kind == "hand":        # 一只小手套：手指交替弯曲挠动 + 两侧动作线
+        palm = _fade(WHITE_F, f)
+        d.rectangle((8, 11, 15, 16), fill=palm)
+        for i, x in enumerate((8, 10, 12, 14)):
+            top = 6 + ((i + f) % 2) * 2
+            d.line((x, top, x, 11), fill=palm)
+        d.line((16, 13, 18, 11), fill=palm)
+        d.line((8, 17, 15, 17), fill=_fade((255, 190, 220, 255), f))
+        for i, (x, y) in enumerate(((4, 8), (19, 7), (4, 15), (20, 16))):
+            if (i + f) % 2 == 0:
+                d.line((x, y, x + (2 if x < 12 else -2), y - 1), fill=_fade((255, 210, 230, 255), f))
+    elif kind == "goo":         # 果冻溅开的水滴
+        r = 2 + f * 1.6
+        for i in range(6):
+            a = math.radians(i * 60 + 15)
+            x, y = cx + math.cos(a) * r, cy + math.sin(a) * r
+            d.ellipse((x - 1, y - 1, x + 1, y + 1), fill=_fade((255, 150, 210, 230), f))
+        if f < 2:
+            d.ellipse((cx - 3, cy - 3, cx + 3, cy + 3), fill=(255, 190, 230, 220))
+    elif kind == "sting":       # 触须蛰：之字形电光
+        for i in range(4):
+            a = math.radians(i * 90 + 45 + f * 15)
+            pts = []
+            for k in range(4):
+                rr = 2 + k * (2 + t * 2)
+                off = (1 if k % 2 else -1) * 1.5
+                pts.append((cx + math.cos(a) * rr - math.sin(a) * off, cy + math.sin(a) * rr + math.cos(a) * off))
+            d.line(pts, fill=_fade((210, 170, 255, 255), f))
+        d.point((cx, cy), fill=_fade((255, 255, 255, 255), f))
+    elif kind == "bubble":      # 泡泡变大后破成水珠
+        if f < 3:
+            r = 3 + f * 2
+            d.ellipse((cx - r, cy - r, cx + r, cy + r), outline=(220, 240, 255, 230))
+            d.point((cx - r // 2, cy - r // 2), fill=(255, 255, 255, 255))
+        else:
+            r = 7 + (f - 3) * 2
+            for i in range(8):
+                a = math.radians(i * 45)
+                d.point((cx + math.cos(a) * r, cy + math.sin(a) * r), fill=_fade((200, 235, 255, 255), f))
+    elif kind == "brush":       # 一排刷毛刷过
+        x = 7 + f * 2.5
+        for i in range(5):
+            d.line((x, 6 + i * 3, x - 4, 6 + i * 3 + 1), fill=_fade(BRISTLE, f))
+        d.line((x + 1, 5, x + 1, 19), fill=_fade(HEDGE_L, f))
+    elif kind == "pinch":       # 两只钳子合上
+        gap = max(0, 5 - f * 2)
+        d.arc((3, 4 - gap, 15, 14 - gap), 200, 340, fill=_fade((255, 120, 90, 255), f))
+        d.arc((3, 10 + gap, 15, 20 + gap), 20, 160, fill=_fade((255, 120, 90, 255), f))
+        if gap == 0:
+            d.point((17, 12), fill=(255, 255, 255, 255))
+            d.point((19, 11), fill=(255, 255, 255, 200))
+    elif kind == "slash":       # 普通攻击：白色月牙刀光
+        d.arc((2, 2, 21, 21), -100 + f * 25, -10 + f * 25, fill=_fade((255, 255, 255, 255), f))
+        d.arc((4, 4, 19, 19), -90 + f * 25, -20 + f * 25, fill=_fade((255, 240, 200, 220), f))
+    elif kind == "crit":        # 暴击：金色星环 + 8 道光芒
+        r = 3 + f * 1.2
+        d.ellipse((cx - r, cy - r, cx + r, cy + r), outline=_fade(STAR, f))
+        for i in range(8):
+            a = math.radians(i * 45 + 22)
+            r0, r1 = r + 1, r + 3 + (i % 2) * 2
+            d.line((cx + math.cos(a) * r0, cy + math.sin(a) * r0, cx + math.cos(a) * r1, cy + math.sin(a) * r1), fill=_fade((255, 240, 150, 255), f))
+    else:                       # curse：紫色符咒收缩旋转
+        r = 10 - f * 1.2
+        d.ellipse((cx - r, cy - r, cx + r, cy + r), outline=_fade(RUNE, f))
+        a = math.radians(f * 30)
+        pts = [(cx + math.cos(a + k * 2.094) * r * 0.7, cy + math.sin(a + k * 2.094) * r * 0.7) for k in range(3)]
+        d.polygon(pts, outline=_fade(RUNE_L, f))
+    return img
+
+
+def particle(kind):
+    if kind == "ember":
+        img, d = canvas(3, 3)
+        d.point((1, 1), fill=(255, 230, 120, 255))
+        d.point((0, 1), fill=(255, 140, 60, 200))
+        d.point((1, 0), fill=(255, 140, 60, 200))
+    elif kind == "goo":
+        img, d = canvas(4, 4)
+        d.ellipse((0, 0, 3, 3), fill=(255, 190, 225, 230))
+        d.point((1, 1), fill=(255, 255, 255, 255))
+    elif kind == "dust":
+        img, d = canvas(3, 3)
+        d.ellipse((0, 0, 2, 2), fill=(220, 200, 180, 200))
+    elif kind == "chip":
+        img, d = canvas(3, 2)
+        d.rectangle((0, 0, 2, 1), fill=WOOD_L)
+        d.point((2, 1), fill=WOOD_D)
+    else:   # drop：紫色水花
+        img, d = canvas(3, 3)
+        d.point((1, 0), fill=JELLY_L)
+        d.point((0, 1), fill=JELLY)
+        d.point((2, 1), fill=JELLY)
+        d.point((1, 2), fill=JELLY_D)
+    return img
+
+
+def gen_hit_fx():
+    sheet = blank(24 * 6, 24 * len(HIT_KINDS))
+    for row, k in enumerate(HIT_KINDS):
+        for f in range(6):
+            sheet.alpha_composite(hit_fx(k, f), (f * 24, row * 24))
+    sheet.save(OUT / "hit_fx.png")
+    for k in ("ember", "goo", "dust", "chip", "drop"):
+        particle(k).save(OUT / ("particle_%s.png" % k))
+
+
 def gen_floor_expansion():
     weapon_rack().save(OUT / "weapon_rack.png")
     secret_crack().save(OUT / "secret_crack.png")
@@ -869,6 +1020,7 @@ def main():
     gen_fatigue_art()
     gen_floor4_monsters()
     gen_floor4_traps()
+    gen_hit_fx()
 
 
 if __name__ == "__main__":

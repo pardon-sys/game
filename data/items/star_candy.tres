@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="MagicResetItem" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/items/magic_reset_item.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/generated/item_star_candy.png" id="2"]
+
+[resource]
+script = ExtResource("1")
+icon = ExtResource("2")
+id = "star_candy"
+display_name = "星光糖"
+description = "包着星星碎屑的糖果，吃下后星光爆发的冷却立即清零。（在背包里设为 Q 或 R 键使用）"
+category = 0
+max_stack = 9
+pickup_emotion = "happy"
+hotkey = ""

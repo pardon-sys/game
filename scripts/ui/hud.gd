@@ -52,6 +52,7 @@ func _ready() -> void:
 		_heart_tex.append(at)
 	GameState.player_registered.connect(_bind_player)
 	GameState.inventory.changed.connect(_refresh_inventory)
+	GameState.hotkeys_changed.connect(_refresh_inventory)
 	GameState.emotion_changed.connect(_on_emotion_changed)
 	GameState.toast.connect(show_toast)
 	GameState.combo_triggered.connect(show_combo)
@@ -328,8 +329,9 @@ func _refresh_inventory() -> void:
 		slot.add_child(icon)
 		var label := Label.new()
 		label.text = "×%d" % GameState.inventory.count(it.id)
-		if it.category == ItemData.Category.CONSUMABLE:
-			label.text += " [R]" if it.hotkey == "use_special" else " [Q]"
+		var hk := GameState.hotkey_of(it.id)
+		if hk != "":
+			label.text += " [%s]" % hk
 		slot.add_child(label)
 		inventory_row.add_child(slot)
 

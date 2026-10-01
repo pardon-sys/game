@@ -64,12 +64,10 @@ func use(id: String, user: Node) -> bool:
 	return false
 
 
-## 使用第一个可用的消耗品（快捷键 use_item）。
-func use_first_usable(user: Node, hotkey := "use_item") -> bool:
-	for it in items():
-		if it.category == ItemData.Category.CONSUMABLE and it.hotkey == hotkey and it.can_use(user):
-			return use(it.id, user)
-	return false
+## 使用快捷键（use_item = Q / use_special = R）绑定的物品（GameState.hotkeys，背包里可以改）。
+func use_hotkey(user: Node, hotkey := "use_item") -> bool:
+	var id := GameState.hotkey_item(hotkey)
+	return id != "" and use(id, user)
 
 
 func clear() -> void:

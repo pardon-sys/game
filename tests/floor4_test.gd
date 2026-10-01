@@ -36,6 +36,7 @@ func _ready() -> void:
 	await _run_traps()
 	await _run_combos()
 	await _run_combos3()
+	await _run_backpack()
 	await _run_floor4()
 	print("\n==== %s (%d 项失败) ====" % ["全部通过" if failures == 0 else "有失败", failures])
 	get_tree().quit(1 if failures else 0)
@@ -785,6 +786,90 @@ func _run_combos3() -> void:
 	c.triggered.disconnect(on_fired)
 	await _wait(0.2)
 	Monster.random_specials = true
+	player.fatigue.clear()
+	_reset()
+
+
+# ------------------------------------------------------------------ 背包
+func _press(action: String) -> void:
+	var ev := InputEventAction.new()
+	ev.action = action
+	ev.pressed = true
+	Input.parse_input_event(ev)
+	await get_tree().process_frame
+	await get_tree().process_frame
+	var up := InputEventAction.new()
+	up.action = action
+	up.pressed = false
+	Input.parse_input_event(up)
+	await get_tree().process_frame
+
+
+func _texts(n: Node) -> String:
+	var out := ""
+	for c in n.find_children("*", "Label", true, false):
+		out += (c as Label).text + "\n"
+	return out
+
+
+func _run_backpack() -> void:
+	print("-- 背包")
+	_reset()
+	var bp: Backpack = main.get_node("Backpack")
+	GameState.flags.erase(GameState.BACKPACK_FLAG)
+	await _press("backpack")
+	check("没拿到背包时按 Tab 打不开", not bp.is_open() and not get_tree().paused)
+	GameState.give_item(ItemDB.get_item("backpack"), 1, player)
+	_finish_dialogue()
+	check("拿到冒险背包（拾取即生效，不占背包格）", GameState.has_backpack() and GameState.inventory.count("backpack") == 0)
+	for id in ["mint", "clear_dew", "star_candy", "coin"]:
+		GameState.give_item(ItemDB.get_item(id), 2, player)
+	await _press("backpack")
+	check("按 Tab 打开背包，游戏暂停", bp.is_open() and get_tree().paused and bp.page == 0)
+	check("物品页列出所有物品", bp._items.any(func(it): return it.id == "star_candy") and bp.grid.get_child_count() == bp._items.size())
+	bp.selected = bp._items.find(ItemDB.get_item("star_candy"))
+	bp._refresh()
+	check("选中显示名称和说明", bp.detail_name.text.contains("星光糖") and bp.detail_desc.text.contains("冷却"))
+	await _press("use_item")
+	check("选中星光糖按 Q：设为 Q 键（薄荷糖让出 Q）", GameState.hotkey_item("use_item") == "star_candy" and GameState.hotkey_of("mint") == ""
+		and GameState.hotkey_item("use_special") == "clear_dew")
+	bp.selected = bp._items.find(ItemDB.get_item("mint"))
+	bp._refresh()
+	await _press("use_special")
+	check("选中薄荷糖按 R：设为 R 键", GameState.hotkey_item("use_special") == "mint" and GameState.hotkey_of("clear_dew") == "")
+	check("背包里显示当前快捷键", bp.hotkey_label.text.contains("Q：星光糖") and bp.hotkey_label.text.contains("R：薄荷糖"))
+	bp.selected = bp._items.find(ItemDB.get_item("star_candy"))
+	bp._refresh()
+	player._magic_cd = 5.0
+	check("背包里直接使用星光糖：魔法冷却清零", bp.use_selected() and player.magic_cooldown_left() == 0.0
+		and GameState.inventory.count("star_candy") == 1)
+	player.laugh.set_value(90.0)
+	player.fatigue.set_value(320.0)
+	player.add_buff("ticklish", 6.0)
+	player.add_buff("fatigue_scar", -1.0, 2)
+	await _press("backpack")
+	var txt := _texts(bp.status_page)
+	check("Tab 翻到状态页", bp.page == 1 and bp.status_page.visible and not bp.items_page.visible)
+	check("状态页：闷笑值百分比和阶段", txt.contains("闷笑值 60%") and txt.contains("失控 1"))
+	check("状态页：魔力疲倦百分比、加成和下一档", txt.contains("魔力疲倦 64%") and txt.contains("下一档：80%"))
+	check("状态页：每个状态的名称、剩余时间 / 层数和效果", txt.contains("易痒诅咒") and txt.contains("2 层") and txt.contains("闷笑积累 +30%"))
+	await _press("pause")
+	check("Esc 关闭背包、恢复游戏（不会打开暂停菜单）", not bp.is_open() and not get_tree().paused
+		and not main.get_node("PauseMenu").root.visible)
+	player.laugh.clear()
+	await _wait(0.2)
+	player._magic_cd = 5.0
+	ctrl.press(&"use_item")
+	await get_tree().physics_frame
+	await get_tree().physics_frame
+	check("回到游戏按 Q：用掉星光糖（按新的绑定）", GameState.inventory.count("star_candy") == 0 and player.magic_cooldown_left() == 0.0)
+	await _wait(0.1)
+	check("HUD 背包栏按绑定显示 [Q] / [R]", _texts(main.get_node("HUD").inventory_row).contains("[R]"))
+	GameState.hotkeys = GameState.DEFAULT_HOTKEYS.duplicate()
+	GameState.hotkeys_changed.emit()
+	for id in ["mint", "clear_dew", "coin"]:
+		GameState.inventory.remove(id, GameState.inventory.count(id))
+	player.laugh.clear()
 	player.fatigue.clear()
 	_reset()
 
