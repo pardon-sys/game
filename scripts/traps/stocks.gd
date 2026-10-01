@@ -27,6 +27,8 @@ func _physics_process(delta: float) -> void:
 		_unlock()
 		return
 	victim.global_position = global_position + Vector2(0, 4)
+	# 组合技可能延长了锁定时间：锁着的时候 ACTIVE 阶段不能先结束
+	active_time = maxf(active_time, _t + victim.status.grab_time_left() + 0.5)
 	if GameState.in_dialogue:
 		return
 	_roll_t -= delta

@@ -3,6 +3,8 @@ extends Node
 ## 状态效果组件（节点名 "Status"，挂在 Actor 下）。
 ##   apply_slow(multiplier, duration)          减速（取最强的效果）
 ##   grab(source, max_time, break_presses)     被抓住：不能行动；连按挣扎 break_presses 次或 max_time 秒后松开
+##   extend_grab(秒, 次数)                     当前抓取延长 / 挣脱多按几次（组合技）
+##   root_after_release(秒)                    被抓着时：松开后再定身；没被抓时立即定身
 ##   apply_root(duration)                      定身：不能移动、冲刺，仍可攻击（藤蔓、钳钳蟹）
 ##   add_dot(tickle_per_sec, duration, source) 余痒：持续挠痒，每 DOT_INTERVAL 秒结算一次
 ##   add_tickle_multiplier(k, duration)        易痒：受到的挠痒 ×k（多个同时生效取最大）
@@ -24,6 +26,7 @@ var _slow_time := 0.0
 var _grab_time := 0.0
 var _grab_max := 0.0
 var _presses_left := 0
+var _root_on_release := 0.0
 var _root_time := 0.0
 ## [{rate, time, source, tick}]
 var _dots: Array[Dictionary] = []
@@ -114,7 +117,34 @@ func release(broke_free := false) -> void:
 		return
 	var src := grabber
 	grabber = null
+	if _root_on_release > 0.0:
+		apply_root(_root_on_release)
+		_root_on_release = 0.0
 	released.emit(src, broke_free)
+
+
+## 延长当前抓取（秒）、挣脱多按 presses 次。没被抓时返回 false。
+func extend_grab(seconds: float, presses := 0) -> bool:
+	if not is_grabbed():
+		return false
+	if _grab_max > 0.0:
+		_grab_max += seconds
+	_presses_left += presses
+	return true
+
+
+## 剩余被抓时间（秒，没有上限时为 INF）。
+func grab_time_left() -> float:
+	if not is_grabbed():
+		return 0.0
+	return INF if _grab_max <= 0.0 else maxf(_grab_max - _grab_time, 0.0)
+
+
+func root_after_release(duration: float) -> void:
+	if is_grabbed():
+		_root_on_release = maxf(_root_on_release, duration)
+	else:
+		apply_root(duration)
 
 
 # ------------------------------------------------------------------ 定身 / 余痒 / 易痒 / 拉扯
@@ -193,4 +223,5 @@ func clear() -> void:
 	_dots.clear()
 	_mults.clear()
 	_pull_time = 0.0
+	_root_on_release = 0.0
 	release(false)

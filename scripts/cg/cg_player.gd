@@ -9,12 +9,15 @@ extends CanvasLayer
 ##        wait 无台词步骤的时长；auto 台词自动前进秒数；await_actions 先演完再出台词。
 ## 演出在画面右上的独立小舞台里进行（地牢地面 + 聚光），对话框与立绘沿用 Dialogue。
 ## 看过的 CG（剧情标记 cg_seen_<id>）可以按 Esc 跳过。
+## 另一个文件 data/combo_scenes.json 是三来源组合第一次触发时的小演出（同样的 cast / steps / actions 格式），
+## 用 play_scene(组合 id) 播放，随时可以跳过；舞台演员表沿用 cgs.json 的 actors。
 
 signal started(id: String)
 signal step_started(index: int, step: Dictionary)
 signal finished(id: String)
 
 const PATH := "res://data/cgs.json"
+const SCENES_PATH := "res://data/combo_scenes.json"
 const FX_TEX := preload("res://assets/generated/cg_fx.png")
 const TILESET := preload("res://assets/tilesets/dungeon.tres")
 ## 舞台框（屏幕坐标）：立绘右边、对话框上面。
@@ -28,6 +31,8 @@ const ACTIONS := ["enter", "exit", "move", "hop", "shake", "face", "pose", "tick
 const FX_FRAMES := {"lines": [0, 1, 2], "feather": [3], "hand": [4], "heart": [5]}
 
 var data := {}
+## 组合技小演出：组合 id -> {cast, steps}
+var scenes := {}
 var current := ""
 var step_index := -1
 var actors := {}
@@ -51,6 +56,8 @@ func _ready() -> void:
 	layer = 15
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	data = _load()
+	var parsed: Variant = JSON.parse_string(FileAccess.get_file_as_string(SCENES_PATH)) if FileAccess.file_exists(SCENES_PATH) else {}
+	scenes = parsed.get("scenes", {}) if parsed is Dictionary else {}
 	_build()
 	hide()
 
@@ -186,8 +193,11 @@ func validate() -> Array[String]:
 	for pid in portraits:
 		if not GameState.VISUALS.has(str(portraits[pid].get("placeholder", ""))):
 			errors.append("立绘 %s 的 placeholder 不是公主的状态" % pid)
-	for id in cgs():
-		var cg: Dictionary = cgs()[id]
+	var all := cgs().duplicate()
+	for sid in scenes:
+		all["combo:" + sid] = scenes[sid]
+	for id in all:
+		var cg: Dictionary = all[id]
 		var cast: Dictionary = cg.get("cast", {})
 		for who in cast:
 			var k := str(cast[who].get("kind", ""))
@@ -233,16 +243,29 @@ func play_death(key: String) -> void:
 
 func play(id: String, source := "") -> void:
 	var cg: Dictionary = cgs().get(id, {})
-	if _playing or cg.is_empty():
-		if cg.is_empty():
-			push_warning("没有 CG: " + id)
+	if cg.is_empty():
+		push_warning("没有 CG: " + id)
+		return
+	await _play_cg(cg, id, source, GameState.has_flag("cg_seen_" + id))
+
+
+## 组合技小演出（data/combo_scenes.json）。正在播 CG 时不播。
+func play_scene(combo_id: String) -> void:
+	var sc: Dictionary = scenes.get(combo_id, {})
+	if sc.is_empty() or _playing:
+		return
+	await _play_cg(sc, "combo:" + combo_id, "", true)
+
+
+func _play_cg(cg: Dictionary, id: String, source: String, skippable: bool) -> void:
+	if _playing:
 		return
 	_playing = true
 	_skip = false
 	current = id
 	source_key = source
 	step_index = -1
-	_can_skip = GameState.has_flag("cg_seen_" + id)
+	_can_skip = skippable
 	GameState.in_cutscene = true
 	GameState.in_dialogue = true
 	GameState.princess_reacted.emit("", 0.0)

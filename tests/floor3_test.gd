@@ -9,6 +9,8 @@ var failures := 0
 
 
 func _ready() -> void:
+	ComboTracker.play_scenes = false  # 三来源组合的小演出会暂停战斗；需要时在专门的测试里打开
+	HUD.slow_motion = false
 	Monster.random_specials = false  # 这里要精确的挠痒数值；暴击在 floor4_test 里测
 	MagicFatigue.accumulate = false  # 同理，魔力疲倦的闷笑加成在 floor4_test 里测
 	main = load("res://scenes/main.tscn").instantiate()
@@ -142,6 +144,8 @@ func _reset_magic() -> void:
 	player._full_invuln = 0.0
 	player.clear_buffs(false)  # 组合技附带的易痒 / 黏黏 / 封魔等状态
 	player.forced_specials = 0
+	if player.state == PlayableCharacter.State.GRABBED:
+		player._set_state(PlayableCharacter.State.IDLE)  # 抬起（三来源组合）松开后不要再给挣脱无敌
 
 
 var ctrl := ScriptedController.new()
@@ -366,8 +370,8 @@ func _combo_keys(c: Dictionary) -> Array:
 	var keys: Array = []
 	for slot in c["keys"]:
 		var k: String = slot[0]
-		if k == "*":
-			for m in ComboTracker.group("monster"):
+		if k == "*" or k == "*trap":
+			for m in ComboTracker.group("monster" if k == "*" else "trap"):
 				if not keys.has(m) and not c["keys"].any(func(sl: Array): return sl.has(m)):
 					k = m
 					break
@@ -389,6 +393,10 @@ func _run_combos() -> void:
 		_reset_magic()
 		player.combo.reset()
 		fired.clear()
+		# 只让这一个组合可以触发：其它组合都先进冷却（否则更高优先级的组合、或者三来源之前的两来源组合会先触发）
+		for other in ComboTracker.ids():
+			if other != id:
+				player.combo._ready_at[other] = 1.0e9
 		var keys := _combo_keys(c)
 		keys.reverse()  # 顺序无关
 		for k in keys:

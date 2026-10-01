@@ -214,6 +214,15 @@ func stun(duration: float) -> void:
 	_on_stunned(duration)
 
 
+## 召集（组合技）：立刻锁定目标、追过去。
+func rally_to(t: Actor) -> void:
+	if _dead or not is_instance_valid(t) or not Faction.are_hostile(self, t):
+		return
+	target = t
+	if state != State.HURT:
+		state = State.CHASE
+
+
 func is_stunned() -> bool:
 	return _stun_left > 0.0
 
@@ -234,7 +243,7 @@ func _refresh_buff_mark() -> void:
 		mark = Sprite2D.new()
 		mark.name = "BuffMark"
 		mark.texture = preload("res://assets/generated/buff_icons.png")
-		mark.hframes = 6
+		mark.hframes = 9
 		mark.z_index = 10
 		mark.scale = Vector2(0.75, 0.75)
 		add_child(mark)

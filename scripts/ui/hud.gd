@@ -1,3 +1,4 @@
+class_name HUD
 extends CanvasLayer
 ## HUD：左上血量、闷笑值条、背包栏（按物品数据自动生成），右上表情头像，屏幕上方提示消息。
 ## 魔法：闷笑条右边的魔法图标（学会后显示，冷却时变灰并显示剩余秒数），吟唱时屏幕上方闪"弱点暴露！"。
@@ -25,6 +26,14 @@ var _icon_cd: AtlasTexture
 var _blink := 0.0
 var combo_label: Label
 var _combo_tween: Tween
+## 组合技专属画面特效：全屏闪光、连锁数、三来源大字标题
+var combo_flash: ColorRect
+var chain_label: Label
+var combo_title: Label
+var combo_sub: Label
+var _title_tween: Tween
+## 三来源组合的慢动作（测试里可以关掉）。
+static var slow_motion := true
 ## 公主身上的增益 / 减益图标（心形右边）
 var buff_row: HBoxContainer
 ## 闷笑条下面的魔力疲倦条
@@ -177,11 +186,65 @@ func _build_magic_ui() -> void:
 	combo_label.add_theme_constant_override("outline_size", 5)
 	combo_label.modulate.a = 0.0
 	add_child(combo_label)
+	combo_flash = ColorRect.new()
+	combo_flash.name = "ComboFlash"
+	combo_flash.color = Color(1.0, 0.55, 0.8, 0.0)
+	combo_flash.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	combo_flash.set_anchors_preset(Control.PRESET_FULL_RECT)
+	add_child(combo_flash)
+	move_child(combo_flash, 0)
+	chain_label = Label.new()
+	chain_label.name = "Chain"
+	chain_label.position = Vector2(330, 52)
+	chain_label.add_theme_color_override("font_color", Color(1, 0.5, 0.75))
+	chain_label.add_theme_color_override("font_outline_color", Color(0.3, 0.05, 0.2))
+	chain_label.add_theme_constant_override("outline_size", 4)
+	chain_label.modulate.a = 0.0
+	add_child(chain_label)
+	combo_title = Label.new()
+	combo_title.name = "ComboTitle"
+	combo_title.position = Vector2(40, 100)
+	combo_title.size = Vector2(400, 30)
+	combo_title.pivot_offset = Vector2(200, 15)
+	combo_title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	combo_title.add_theme_font_size_override("font_size", 24)
+	combo_title.add_theme_color_override("font_color", Color(1, 0.9, 0.45))
+	combo_title.add_theme_color_override("font_outline_color", Color(0.5, 0.08, 0.3))
+	combo_title.add_theme_constant_override("outline_size", 8)
+	combo_title.modulate.a = 0.0
+	add_child(combo_title)
+	combo_sub = Label.new()
+	combo_sub.name = "ComboSub"
+	combo_sub.position = Vector2(40, 132)
+	combo_sub.size = Vector2(400, 16)
+	combo_sub.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	combo_sub.add_theme_color_override("font_color", Color(1, 0.8, 0.92))
+	combo_sub.add_theme_color_override("font_outline_color", Color(0.3, 0.05, 0.2))
+	combo_sub.add_theme_constant_override("outline_size", 4)
+	combo_sub.modulate.a = 0.0
+	add_child(combo_sub)
 
 
-## 组合技横幅：弹一下，停留后淡出。
-func show_combo(_id: String, combo_name: String) -> void:
-	combo_label.text = "【组合技】%s！" % combo_name
+## 组合技横幅：弹一下，停留后淡出。全屏粉色闪光；连锁时显示「连锁 ×N」；
+## 三来源组合额外在屏幕中间显示大字标题和搭配类别，并慢动作 0.3 秒。
+func show_combo(id: String, combo_name: String) -> void:
+	var c := ComboTracker.combo_def(id)
+	var triple := ComboTracker.is_triple(c)
+	var tracker: ComboTracker = _player.combo if is_instance_valid(_player) else null
+	var upgraded := tracker != null and tracker.last_upgraded
+	combo_label.text = ("【连锁升级】" if upgraded else ("【三重组合】" if triple else "【组合技】")) + "%s！" % combo_name
+	_flash(0.45 if triple else 0.28)
+	var n := tracker.chain if tracker else 0
+	if n >= 2:
+		chain_label.text = "连锁 ×%d" % n
+		chain_label.modulate.a = 1.0
+		chain_label.scale = Vector2(1.4, 1.4)
+		var ct := create_tween()
+		ct.tween_property(chain_label, "scale", Vector2.ONE, 0.15)
+		ct.tween_interval(2.0)
+		ct.tween_property(chain_label, "modulate:a", 0.0, 0.5)
+	if triple:
+		_show_title(combo_name, str(c.get("category", "")))
 	if _combo_tween:
 		_combo_tween.kill()
 	combo_label.modulate.a = 1.0
@@ -190,6 +253,29 @@ func show_combo(_id: String, combo_name: String) -> void:
 	_combo_tween.tween_property(combo_label, "scale", Vector2.ONE, 0.15)
 	_combo_tween.tween_interval(1.6)
 	_combo_tween.tween_property(combo_label, "modulate:a", 0.0, 0.4)
+
+
+func _flash(alpha: float) -> void:
+	combo_flash.color.a = alpha
+	create_tween().tween_property(combo_flash, "color:a", 0.0, 0.3)
+
+
+func _show_title(title: String, category: String) -> void:
+	combo_title.text = "%s！" % title
+	combo_sub.text = category
+	if _title_tween:
+		_title_tween.kill()
+	combo_title.modulate.a = 1.0
+	combo_sub.modulate.a = 1.0
+	combo_title.scale = Vector2(2.0, 2.0)
+	_title_tween = create_tween().set_ignore_time_scale()
+	_title_tween.tween_property(combo_title, "scale", Vector2.ONE, 0.18)
+	_title_tween.tween_interval(1.2)
+	_title_tween.tween_property(combo_title, "modulate:a", 0.0, 0.4)
+	_title_tween.parallel().tween_property(combo_sub, "modulate:a", 0.0, 0.4)
+	if slow_motion:
+		Engine.time_scale = 0.4
+		get_tree().create_timer(0.3, true, false, true).timeout.connect(func(): Engine.time_scale = 1.0)
 
 
 func _process(delta: float) -> void:

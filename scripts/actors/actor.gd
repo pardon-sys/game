@@ -101,6 +101,11 @@ func receive_hit(hit: HitData) -> bool:
 				return false
 			if hit.knockback > 0.0:
 				apply_knockback(hit.origin, hit.knockback)
+			# 全场暴击（三来源组合的减益）：怪物和陷阱的每一下都算暴击
+			if not hit.special and stat_add("crit_all") > 0.0 and ReactionDB.key_of(hit.source) != "":
+				hit.special = true
+				hit.tickle *= 2.0
+				Monster.special_feedback(self)
 			hit.tickle *= _tickle_multiplier(hit)
 			last_tickle = hit
 			last_tickle_time = Time.get_ticks_msec() / 1000.0

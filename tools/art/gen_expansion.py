@@ -495,15 +495,35 @@ def buff_icon(kind):
     elif kind == 4:    # 封魔：星星被划掉
         d.polygon([(6, 2), (7, 5), (10, 5), (7, 7), (8, 10), (6, 8), (4, 10), (5, 7), (2, 5), (5, 5)], fill=STAR)
         d.line((2, 2, 10, 10), fill=(255, 80, 100, 255))
-    else:              # 疲倦印记：紫色水滴
+    elif kind == 5:    # 疲倦印记：紫色水滴
         d.polygon([(6, 2), (9, 7), (6, 10), (3, 7)], fill=(170, 120, 255, 255))
         d.point((5, 6), fill=(230, 210, 255, 255))
+    elif kind == 6:    # 抬起：向上的双箭头 + 小人
+        for y0 in (2, 5):
+            d.line((3, y0 + 3, 6, y0), fill=(255, 220, 120, 255))
+            d.line((6, y0, 9, y0 + 3), fill=(255, 220, 120, 255))
+        d.point((6, 10), fill=WHITE_F)
+        d.point((6, 9), fill=PINK_F)
+    elif kind == 7:    # 晕头转向：螺旋
+        d.arc((2, 2, 9, 9), 0, 300, fill=(150, 220, 255, 255))
+        d.arc((4, 4, 7, 7), 90, 360, fill=(150, 220, 255, 255))
+    else:              # 全场暴击：金色星环
+        d.ellipse((2, 2, 9, 9), outline=STAR)
+        d.point((6, 1), fill=STAR)
+        d.point((6, 10), fill=STAR)
+        d.point((1, 6), fill=STAR)
+        d.point((10, 6), fill=STAR)
+        d.point((5, 5), fill=(255, 140, 60, 255))
+        d.point((6, 6), fill=(255, 140, 60, 255))
     return img
 
 
+BUFF_ICON_COUNT = 9
+
+
 def gen_buff_icons():
-    sheet = blank(72, 12)
-    for i in range(6):
+    sheet = blank(12 * BUFF_ICON_COUNT, 12)
+    for i in range(BUFF_ICON_COUNT):
         sheet.alpha_composite(buff_icon(i), (i * 12, 0))
     sheet.save(OUT / "buff_icons.png")
 

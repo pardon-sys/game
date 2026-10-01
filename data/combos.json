@@ -1,13 +1,19 @@
 {
 	"_说明": [
 		"组合技表。keys：每个槽位列出可以填的挠痒来源键（ReactionDB 的 reaction_key），window 秒内这些来源都挠到公主就触发；",
-		"来源不分先后，同一次挠痒只能填一个槽位；\"*\" = groups.monster 里任意一种怪物（不能和其它槽位重复）。",
+		"来源不分先后，同一次挠痒只能填一个槽位；\"*\" = groups.monster 里任意一种怪物，\"*trap\" = groups.trap 里任意一种陷阱。",
+		"槽位可以有 2 个或 3 个。三来源组合默认 window 2.5 秒、cooldown 8 秒；两来源默认用顶层的 window / cooldown。",
+		"匹配优先级：三来源 > 指定来源的两来源 > 带通配符的两来源。两来源组合用过的挠痒记录还能继续凑成三来源组合（连锁升级）。",
 		"condition：条件型组合（不看时间窗口），由代码在特定情况下调用 ComboTracker.trigger(id)。",
-		"effects：burst 额外挠痒 amount；dot 余痒 rate/秒持续 duration；root 定身 duration（extend=true 为延长）；",
+		"effects：burst 额外挠痒 amount；dot 余痒 rate/秒持续 duration；root 定身 duration（extend=true 为延长，after_release=true 为挣脱后再定身）；",
 		"multiplier 易痒 value 倍持续 duration；slow 减速到 value 倍持续 duration；pull 拉向来源 speed 持续 duration；",
-		"hit_multiplier 本次挠痒 ×value（条件型用）；fatigue 魔力疲倦 +percent%（按上限的百分比）；debuff 给公主加状态 buff（data/buffs.json）持续 duration；",
+		"hit_multiplier 本次挠痒 ×value（条件型用）；fatigue 魔力疲倦 +percent%（按上限的百分比）；debuff 给公主加状态 buff 持续 duration；",
 		"seal 封魔 duration 秒；special_next 接下来 count 次挠痒必定暴击；buff_monsters 给 radius 内的怪物加增益 buff 持续 duration；",
-		"puddle 在公主脚下生成疲倦水液（life 秒）。名称、说明和公主台词在 princess_reactions.json 的 combos 段。"
+		"puddle 在公主脚下生成疲倦水液（life 秒）；grab_extend 当前抓取 / 足枷 / 泡泡延长 seconds 秒；grab_presses 挣脱多按 count 次；",
+		"lift 抬到半空 duration 秒（动不了、挣扎无效、持续挠痒）；confuse 方向颠倒 duration 秒；crit_storm duration 秒内所有挠痒都是暴击；",
+		"rally radius 内的怪物锁定公主、向她聚拢；focus 镜头放大对准公主，停止被挠后 1 秒还原。",
+		"连锁：上一个组合后 10 秒内再触发组合，连锁数 +1，burst / dot 按 ×(1 + 0.2 ×(连锁数 − 1)) 加强。",
+		"名称、说明和公主台词在 princess_reactions.json 的 combos 段；三来源组合第一次触发时的小演出在 data/combo_scenes.json。"
 	],
 	"window": 1.5,
 	"cooldown": 4.0,
@@ -510,6 +516,1283 @@
 					"type": "debuff",
 					"buff": "ticklish",
 					"duration": 5
+				}
+			]
+		},
+		{
+			"id": "stocks_mob",
+			"category": "怪+陷阱",
+			"keys": [
+				[
+					"stocks"
+				],
+				[
+					"*"
+				]
+			],
+			"effects": [
+				{
+					"type": "grab_extend",
+					"seconds": 1.0
+				},
+				{
+					"type": "special_next",
+					"count": 1
+				}
+			]
+		},
+		{
+			"id": "stocks_arm",
+			"category": "陷阱+陷阱",
+			"keys": [
+				[
+					"stocks"
+				],
+				[
+					"arm"
+				]
+			],
+			"effects": [
+				{
+					"type": "burst",
+					"amount": 12
+				},
+				{
+					"type": "debuff",
+					"buff": "ticklish",
+					"duration": 4
+				}
+			]
+		},
+		{
+			"id": "stocks_carpet",
+			"category": "陷阱+陷阱",
+			"keys": [
+				[
+					"stocks"
+				],
+				[
+					"carpet"
+				]
+			],
+			"effects": [
+				{
+					"type": "root",
+					"duration": 1.5,
+					"after_release": true
+				},
+				{
+					"type": "debuff",
+					"buff": "sticky",
+					"duration": 4
+				}
+			]
+		},
+		{
+			"id": "stocks_rune",
+			"category": "陷阱+陷阱",
+			"keys": [
+				[
+					"stocks"
+				],
+				[
+					"rune"
+				]
+			],
+			"effects": [
+				{
+					"type": "grab_presses",
+					"count": 3
+				},
+				{
+					"type": "fatigue",
+					"percent": 3
+				}
+			]
+		},
+		{
+			"id": "bubble_carpet",
+			"category": "怪+陷阱",
+			"keys": [
+				[
+					"bubble_fish"
+				],
+				[
+					"carpet"
+				]
+			],
+			"effects": [
+				{
+					"type": "grab_extend",
+					"seconds": 1.5
+				},
+				{
+					"type": "grab_presses",
+					"count": 3
+				},
+				{
+					"type": "dot",
+					"rate": 3,
+					"duration": 3
+				}
+			]
+		},
+		{
+			"id": "rat_stocks",
+			"category": "怪+陷阱",
+			"keys": [
+				[
+					"rat"
+				],
+				[
+					"stocks"
+				]
+			],
+			"effects": [
+				{
+					"type": "burst",
+					"amount": 18
+				},
+				{
+					"type": "grab_extend",
+					"seconds": 1.0
+				}
+			]
+		},
+		{
+			"id": "crab_carpet",
+			"category": "怪+陷阱",
+			"keys": [
+				[
+					"crab"
+				],
+				[
+					"carpet"
+				]
+			],
+			"effects": [
+				{
+					"type": "root",
+					"duration": 1.5
+				},
+				{
+					"type": "debuff",
+					"buff": "sticky",
+					"duration": 3
+				}
+			]
+		},
+		{
+			"id": "slime_bubble",
+			"category": "怪+怪",
+			"keys": [
+				[
+					"slime",
+					"split_slime"
+				],
+				[
+					"bubble_fish"
+				]
+			],
+			"effects": [
+				{
+					"type": "dot",
+					"rate": 3,
+					"duration": 3
+				},
+				{
+					"type": "slow",
+					"value": 0.6,
+					"duration": 2
+				}
+			]
+		},
+		{
+			"id": "spider_stocks",
+			"category": "怪+陷阱",
+			"keys": [
+				[
+					"spider"
+				],
+				[
+					"stocks"
+				]
+			],
+			"effects": [
+				{
+					"type": "grab_presses",
+					"count": 3
+				},
+				{
+					"type": "slow",
+					"value": 0.5,
+					"duration": 3
+				}
+			]
+		},
+		{
+			"id": "ghost_arm",
+			"category": "怪+陷阱",
+			"keys": [
+				[
+					"ghost"
+				],
+				[
+					"arm"
+				]
+			],
+			"effects": [
+				{
+					"type": "burst",
+					"amount": 10
+				},
+				{
+					"type": "debuff",
+					"buff": "ticklish",
+					"duration": 5
+				}
+			]
+		},
+		{
+			"id": "bat_bubble",
+			"category": "怪+怪",
+			"keys": [
+				[
+					"bat"
+				],
+				[
+					"bubble_fish"
+				]
+			],
+			"effects": [
+				{
+					"type": "dot",
+					"rate": 4,
+					"duration": 2
+				}
+			]
+		},
+		{
+			"id": "slime_stocks",
+			"category": "怪+陷阱",
+			"keys": [
+				[
+					"slime",
+					"split_slime"
+				],
+				[
+					"stocks"
+				]
+			],
+			"effects": [
+				{
+					"type": "dot",
+					"rate": 3,
+					"duration": 3
+				},
+				{
+					"type": "grab_extend",
+					"seconds": 1.0
+				}
+			]
+		},
+		{
+			"id": "fairy_stocks",
+			"category": "怪+陷阱",
+			"keys": [
+				[
+					"fairy"
+				],
+				[
+					"stocks"
+				]
+			],
+			"effects": [
+				{
+					"type": "burst",
+					"amount": 12
+				},
+				{
+					"type": "grab_presses",
+					"count": 2
+				}
+			]
+		},
+		{
+			"id": "queen_stocks",
+			"category": "怪+陷阱",
+			"keys": [
+				[
+					"jelly_queen"
+				],
+				[
+					"stocks"
+				]
+			],
+			"effects": [
+				{
+					"type": "fatigue",
+					"percent": 6
+				},
+				{
+					"type": "grab_extend",
+					"seconds": 1.5
+				}
+			]
+		},
+		{
+			"id": "troll_stocks",
+			"category": "怪+陷阱",
+			"keys": [
+				[
+					"troll"
+				],
+				[
+					"stocks"
+				]
+			],
+			"effects": [
+				{
+					"type": "burst",
+					"amount": 18
+				},
+				{
+					"type": "grab_extend",
+					"seconds": 1.0
+				}
+			]
+		},
+		{
+			"id": "tentacle_stocks",
+			"category": "怪+陷阱",
+			"keys": [
+				[
+					"tentacle"
+				],
+				[
+					"stocks"
+				]
+			],
+			"effects": [
+				{
+					"type": "special_next",
+					"count": 1
+				},
+				{
+					"type": "grab_extend",
+					"seconds": 1.5
+				}
+			]
+		},
+		{
+			"id": "queen_feast",
+			"category": "怪+怪+怪",
+			"keys": [
+				[
+					"jelly_queen"
+				],
+				[
+					"mana_jelly"
+				],
+				[
+					"bubble_fish"
+				]
+			],
+			"window": 2.5,
+			"cooldown": 8.0,
+			"effects": [
+				{
+					"type": "puddle",
+					"life": 12
+				},
+				{
+					"type": "debuff",
+					"buff": "ticklish",
+					"duration": 8
+				},
+				{
+					"type": "fatigue",
+					"percent": 10
+				},
+				{
+					"type": "lift",
+					"duration": 2.0
+				},
+				{
+					"type": "rally",
+					"radius": 160
+				},
+				{
+					"type": "focus"
+				}
+			]
+		},
+		{
+			"id": "full_scrub",
+			"category": "怪+怪+怪",
+			"keys": [
+				[
+					"hedgehog"
+				],
+				[
+					"glove"
+				],
+				[
+					"bubble_fish"
+				]
+			],
+			"window": 2.5,
+			"cooldown": 8.0,
+			"effects": [
+				{
+					"type": "burst",
+					"amount": 25
+				},
+				{
+					"type": "special_next",
+					"count": 2
+				},
+				{
+					"type": "lift",
+					"duration": 2.0
+				},
+				{
+					"type": "focus"
+				}
+			]
+		},
+		{
+			"id": "sole_party",
+			"category": "怪+怪+怪",
+			"keys": [
+				[
+					"rat"
+				],
+				[
+					"crab"
+				],
+				[
+					"spider"
+				]
+			],
+			"window": 2.5,
+			"cooldown": 8.0,
+			"effects": [
+				{
+					"type": "burst",
+					"amount": 20
+				},
+				{
+					"type": "root",
+					"duration": 1.5
+				},
+				{
+					"type": "dot",
+					"rate": 4,
+					"duration": 3
+				},
+				{
+					"type": "rally",
+					"radius": 160
+				},
+				{
+					"type": "focus"
+				}
+			]
+		},
+		{
+			"id": "sole_mobilize",
+			"category": "怪+怪+陷阱",
+			"keys": [
+				[
+					"rat"
+				],
+				[
+					"crab"
+				],
+				[
+					"stocks"
+				]
+			],
+			"window": 2.5,
+			"cooldown": 8.0,
+			"effects": [
+				{
+					"type": "burst",
+					"amount": 25
+				},
+				{
+					"type": "special_next",
+					"count": 2
+				},
+				{
+					"type": "grab_extend",
+					"seconds": 1.0
+				},
+				{
+					"type": "crit_storm",
+					"duration": 3.0
+				},
+				{
+					"type": "focus"
+				}
+			]
+		},
+		{
+			"id": "bubble_spa",
+			"category": "怪+怪+陷阱",
+			"keys": [
+				[
+					"bubble_fish"
+				],
+				[
+					"mana_jelly"
+				],
+				[
+					"carpet"
+				]
+			],
+			"window": 2.5,
+			"cooldown": 8.0,
+			"effects": [
+				{
+					"type": "grab_extend",
+					"seconds": 1.5
+				},
+				{
+					"type": "dot",
+					"rate": 4,
+					"duration": 4
+				},
+				{
+					"type": "fatigue",
+					"percent": 6
+				},
+				{
+					"type": "confuse",
+					"duration": 3.0
+				},
+				{
+					"type": "focus"
+				}
+			]
+		},
+		{
+			"id": "mob_curse",
+			"category": "怪+怪+陷阱",
+			"keys": [
+				[
+					"*"
+				],
+				[
+					"*"
+				],
+				[
+					"rune"
+				]
+			],
+			"window": 2.5,
+			"cooldown": 8.0,
+			"effects": [
+				{
+					"type": "debuff",
+					"buff": "ticklish",
+					"duration": 8
+				},
+				{
+					"type": "buff_monsters",
+					"buff": "frenzy",
+					"duration": 5,
+					"radius": 96
+				},
+				{
+					"type": "rally",
+					"radius": 160
+				},
+				{
+					"type": "focus"
+				}
+			]
+		},
+		{
+			"id": "ultimate_stocks",
+			"category": "怪+陷阱+陷阱",
+			"keys": [
+				[
+					"glove"
+				],
+				[
+					"stocks"
+				],
+				[
+					"rune"
+				]
+			],
+			"window": 2.5,
+			"cooldown": 8.0,
+			"effects": [
+				{
+					"type": "special_next",
+					"count": 3
+				},
+				{
+					"type": "grab_extend",
+					"seconds": 1.5
+				},
+				{
+					"type": "fatigue",
+					"percent": 8
+				},
+				{
+					"type": "crit_storm",
+					"duration": 3.0
+				},
+				{
+					"type": "focus"
+				}
+			]
+		},
+		{
+			"id": "brush_line",
+			"category": "怪+陷阱+陷阱",
+			"keys": [
+				[
+					"hedgehog"
+				],
+				[
+					"carpet"
+				],
+				[
+					"arm"
+				]
+			],
+			"window": 2.5,
+			"cooldown": 8.0,
+			"effects": [
+				{
+					"type": "burst",
+					"amount": 25
+				},
+				{
+					"type": "root",
+					"duration": 1.5
+				},
+				{
+					"type": "debuff",
+					"buff": "sticky",
+					"duration": 4
+				},
+				{
+					"type": "confuse",
+					"duration": 3.0
+				},
+				{
+					"type": "focus"
+				}
+			]
+		},
+		{
+			"id": "curse_chain",
+			"category": "怪+陷阱+陷阱",
+			"keys": [
+				[
+					"*"
+				],
+				[
+					"rune"
+				],
+				[
+					"arm"
+				]
+			],
+			"window": 2.5,
+			"cooldown": 8.0,
+			"effects": [
+				{
+					"type": "debuff",
+					"buff": "ticklish",
+					"duration": 10
+				},
+				{
+					"type": "seal",
+					"duration": 4
+				},
+				{
+					"type": "special_next",
+					"count": 1
+				},
+				{
+					"type": "crit_storm",
+					"duration": 3.0
+				},
+				{
+					"type": "focus"
+				}
+			]
+		},
+		{
+			"id": "auto_stocks",
+			"category": "陷阱+陷阱+陷阱",
+			"keys": [
+				[
+					"stocks"
+				],
+				[
+					"arm"
+				],
+				[
+					"carpet"
+				]
+			],
+			"window": 2.5,
+			"cooldown": 8.0,
+			"effects": [
+				{
+					"type": "burst",
+					"amount": 20
+				},
+				{
+					"type": "grab_extend",
+					"seconds": 1.0
+				},
+				{
+					"type": "debuff",
+					"buff": "sticky",
+					"duration": 4
+				},
+				{
+					"type": "confuse",
+					"duration": 3.0
+				},
+				{
+					"type": "focus"
+				}
+			]
+		},
+		{
+			"id": "curse_hall",
+			"category": "陷阱+陷阱+陷阱",
+			"keys": [
+				[
+					"rune"
+				],
+				[
+					"carpet"
+				],
+				[
+					"arm"
+				]
+			],
+			"window": 2.5,
+			"cooldown": 8.0,
+			"effects": [
+				{
+					"type": "debuff",
+					"buff": "ticklish",
+					"duration": 10
+				},
+				{
+					"type": "fatigue",
+					"percent": 6
+				},
+				{
+					"type": "slow",
+					"value": 0.6,
+					"duration": 3
+				},
+				{
+					"type": "crit_storm",
+					"duration": 3.0
+				},
+				{
+					"type": "focus"
+				}
+			]
+		},
+		{
+			"id": "line_end",
+			"category": "陷阱+陷阱+陷阱",
+			"keys": [
+				[
+					"conveyor"
+				],
+				[
+					"brush"
+				],
+				[
+					"hand"
+				]
+			],
+			"window": 2.5,
+			"cooldown": 8.0,
+			"effects": [
+				{
+					"type": "burst",
+					"amount": 20
+				},
+				{
+					"type": "dot",
+					"rate": 3,
+					"duration": 3
+				},
+				{
+					"type": "focus"
+				}
+			]
+		},
+		{
+			"id": "thousand_feather",
+			"category": "怪+怪+陷阱",
+			"keys": [
+				[
+					"stocks"
+				],
+				[
+					"fairy"
+				],
+				[
+					"glove"
+				]
+			],
+			"window": 2.5,
+			"cooldown": 8.0,
+			"effects": [
+				{
+					"type": "special_next",
+					"count": 2
+				},
+				{
+					"type": "grab_extend",
+					"seconds": 1.5
+				},
+				{
+					"type": "dot",
+					"rate": 4,
+					"duration": 3
+				},
+				{
+					"type": "lift",
+					"duration": 2.0
+				},
+				{
+					"type": "focus"
+				}
+			]
+		},
+		{
+			"id": "jelly_sole",
+			"category": "怪+怪+陷阱",
+			"keys": [
+				[
+					"stocks"
+				],
+				[
+					"slime",
+					"split_slime"
+				],
+				[
+					"rat"
+				]
+			],
+			"window": 2.5,
+			"cooldown": 8.0,
+			"effects": [
+				{
+					"type": "burst",
+					"amount": 22
+				},
+				{
+					"type": "grab_extend",
+					"seconds": 1.0
+				},
+				{
+					"type": "focus"
+				}
+			]
+		},
+		{
+			"id": "queen_stocks3",
+			"category": "怪+怪+陷阱",
+			"keys": [
+				[
+					"stocks"
+				],
+				[
+					"jelly_queen"
+				],
+				[
+					"mana_jelly"
+				]
+			],
+			"window": 2.5,
+			"cooldown": 8.0,
+			"effects": [
+				{
+					"type": "fatigue",
+					"percent": 10
+				},
+				{
+					"type": "grab_extend",
+					"seconds": 1.5
+				},
+				{
+					"type": "puddle",
+					"life": 12
+				},
+				{
+					"type": "crit_storm",
+					"duration": 3.0
+				},
+				{
+					"type": "focus"
+				}
+			]
+		},
+		{
+			"id": "troll_stocks3",
+			"category": "怪+怪+陷阱",
+			"keys": [
+				[
+					"stocks"
+				],
+				[
+					"troll"
+				],
+				[
+					"bat"
+				]
+			],
+			"window": 2.5,
+			"cooldown": 8.0,
+			"effects": [
+				{
+					"type": "burst",
+					"amount": 25
+				},
+				{
+					"type": "grab_extend",
+					"seconds": 1.0
+				},
+				{
+					"type": "focus"
+				}
+			]
+		},
+		{
+			"id": "tentacle_feather",
+			"category": "怪+怪+陷阱",
+			"keys": [
+				[
+					"stocks"
+				],
+				[
+					"tentacle"
+				],
+				[
+					"fairy"
+				]
+			],
+			"window": 2.5,
+			"cooldown": 8.0,
+			"effects": [
+				{
+					"type": "special_next",
+					"count": 2
+				},
+				{
+					"type": "grab_extend",
+					"seconds": 1.5
+				},
+				{
+					"type": "lift",
+					"duration": 2.0
+				},
+				{
+					"type": "focus"
+				}
+			]
+		},
+		{
+			"id": "sticky_ghost",
+			"category": "怪+怪+怪",
+			"keys": [
+				[
+					"slime",
+					"split_slime"
+				],
+				[
+					"bat"
+				],
+				[
+					"ghost"
+				]
+			],
+			"window": 2.5,
+			"cooldown": 8.0,
+			"effects": [
+				{
+					"type": "dot",
+					"rate": 4,
+					"duration": 3
+				},
+				{
+					"type": "debuff",
+					"buff": "ticklish",
+					"duration": 5
+				},
+				{
+					"type": "focus"
+				}
+			]
+		},
+		{
+			"id": "night_trio",
+			"category": "怪+怪+怪",
+			"keys": [
+				[
+					"spider"
+				],
+				[
+					"ghost"
+				],
+				[
+					"bat"
+				]
+			],
+			"window": 2.5,
+			"cooldown": 8.0,
+			"effects": [
+				{
+					"type": "root",
+					"duration": 1.2
+				},
+				{
+					"type": "dot",
+					"rate": 4,
+					"duration": 3
+				},
+				{
+					"type": "confuse",
+					"duration": 3.0
+				},
+				{
+					"type": "focus"
+				}
+			]
+		},
+		{
+			"id": "jelly_sole_party",
+			"category": "怪+怪+怪",
+			"keys": [
+				[
+					"rat"
+				],
+				[
+					"crab"
+				],
+				[
+					"split_slime"
+				]
+			],
+			"window": 2.5,
+			"cooldown": 8.0,
+			"effects": [
+				{
+					"type": "burst",
+					"amount": 20
+				},
+				{
+					"type": "slow",
+					"value": 0.5,
+					"duration": 3
+				},
+				{
+					"type": "rally",
+					"radius": 160
+				},
+				{
+					"type": "focus"
+				}
+			]
+		},
+		{
+			"id": "vault_trap",
+			"category": "怪+怪+怪",
+			"keys": [
+				[
+					"fairy"
+				],
+				[
+					"mimic"
+				],
+				[
+					"tentacle"
+				]
+			],
+			"window": 2.5,
+			"cooldown": 8.0,
+			"effects": [
+				{
+					"type": "burst",
+					"amount": 22
+				},
+				{
+					"type": "debuff",
+					"buff": "ticklish",
+					"duration": 6
+				},
+				{
+					"type": "rally",
+					"radius": 160
+				},
+				{
+					"type": "focus"
+				}
+			]
+		},
+		{
+			"id": "vine_stocks",
+			"category": "怪+陷阱+陷阱",
+			"keys": [
+				[
+					"rat"
+				],
+				[
+					"vine"
+				],
+				[
+					"stocks"
+				]
+			],
+			"window": 2.5,
+			"cooldown": 8.0,
+			"effects": [
+				{
+					"type": "burst",
+					"amount": 18
+				},
+				{
+					"type": "grab_extend",
+					"seconds": 1.0
+				},
+				{
+					"type": "root",
+					"duration": 1.0,
+					"extend": true
+				},
+				{
+					"type": "focus"
+				}
+			]
+		},
+		{
+			"id": "sticky_belt",
+			"category": "怪+陷阱+陷阱",
+			"keys": [
+				[
+					"crab"
+				],
+				[
+					"conveyor"
+				],
+				[
+					"carpet"
+				]
+			],
+			"window": 2.5,
+			"cooldown": 8.0,
+			"effects": [
+				{
+					"type": "burst",
+					"amount": 15
+				},
+				{
+					"type": "root",
+					"duration": 1.5
+				},
+				{
+					"type": "debuff",
+					"buff": "sticky",
+					"duration": 4
+				},
+				{
+					"type": "focus"
+				}
+			]
+		},
+		{
+			"id": "three_hands",
+			"category": "怪+陷阱+陷阱",
+			"keys": [
+				[
+					"ghost"
+				],
+				[
+					"arm"
+				],
+				[
+					"hand"
+				]
+			],
+			"window": 2.5,
+			"cooldown": 8.0,
+			"effects": [
+				{
+					"type": "burst",
+					"amount": 15
+				},
+				{
+					"type": "lift",
+					"duration": 2.0
+				},
+				{
+					"type": "focus"
+				}
+			]
+		},
+		{
+			"id": "wind_bubble",
+			"category": "怪+陷阱+陷阱",
+			"keys": [
+				[
+					"bat"
+				],
+				[
+					"fan"
+				],
+				[
+					"bubble_fish"
+				]
+			],
+			"window": 2.5,
+			"cooldown": 8.0,
+			"effects": [
+				{
+					"type": "dot",
+					"rate": 4,
+					"duration": 3
+				},
+				{
+					"type": "confuse",
+					"duration": 3.0
+				},
+				{
+					"type": "focus"
+				}
+			]
+		},
+		{
+			"id": "cage_crit",
+			"category": "条件",
+			"condition": "被足枷台、泡泡牢笼或抓取困住时被暴击",
+			"effects": [
+				{
+					"type": "grab_extend",
+					"seconds": 1.0
+				},
+				{
+					"type": "grab_presses",
+					"count": 2
 				}
 			]
 		}
