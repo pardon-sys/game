@@ -21,6 +21,8 @@ signal finished(id: String)
 
 const PATH := "res://data/cgs.json"
 const SCENES_PATH := "res://data/combo_scenes.json"
+## 怪物巢穴的过场（单独的文件，载入时把 portraits / cgs / nest 合并进 data）。
+const NEST_PATH := "res://data/nest_cgs.json"
 const FX_TEX := preload("res://assets/generated/cg_fx.png")
 const TILESET := preload("res://assets/tilesets/dungeon.tres")
 ## 舞台框（屏幕坐标）：立绘右边、对话框上面。
@@ -78,7 +80,17 @@ func _load() -> Dictionary:
 	if not parsed is Dictionary:
 		push_error("cgs.json 解析失败")
 		return {}
-	return parsed
+	var out: Dictionary = parsed
+	var nest: Variant = JSON.parse_string(FileAccess.get_file_as_string(NEST_PATH)) if FileAccess.file_exists(NEST_PATH) else null
+	if nest is Dictionary:
+		for k in ["portraits", "cgs"]:
+			var merged: Dictionary = out.get(k, {})
+			merged.merge(nest.get(k, {}))
+			out[k] = merged
+		out["nest"] = nest.get("nest", {})
+	else:
+		push_error("nest_cgs.json 解析失败")
+	return out
 
 
 # ------------------------------------------------------------------ 舞台

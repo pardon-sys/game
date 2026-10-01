@@ -268,6 +268,9 @@ func _run_traps() -> void:
 func _run_troll() -> void:
 	print("-- 挠痒巨魔")
 	var troll: TickleTroll = _find("Troll_22_34")
+	# 这里只测巨魔本身：关掉大厅的吸痒漩涡和开局召唤（召唤在 floor4_test 里测）
+	troll.max_bats = 0
+	(_find("Vortex_25_39") as TickleVortex).set_active(true)
 	var hud := main.get_node("HUD")
 	_clear_invuln()
 	player.laugh.clear()

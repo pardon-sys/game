@@ -1,0 +1,3738 @@
+{
+	"_说明": [
+		"怪物巢穴的过场：被巢穴怪物拖进巢穴时播放（MonsterNest._swallow → Princess.dragged_into_nest → CG.play_nest(种类)）。",
+		"格式同 data/cgs.json（portraits / cgs），载入时合并进 cgs.json 的数据；演员用 cgs.json 的 actors。",
+		"nest：巢穴种类（MonsterNest.kind）-> {cg: CG id, source: 演员来源键}。",
+		"由 tools/build/gen_nest_cgs.py 生成（台词写在脚本里），直接改这里会被重新生成覆盖。"
+	],
+	"portraits": {
+		"nest_rat_hole_1": {
+			"file": "res://assets/cg/portraits/nest_rat_hole_1.png",
+			"placeholder": "helpless_1"
+		},
+		"nest_rat_hole_2": {
+			"file": "res://assets/cg/portraits/nest_rat_hole_2.png",
+			"placeholder": "helpless_2"
+		},
+		"nest_rat_hole_3": {
+			"file": "res://assets/cg/portraits/nest_rat_hole_3.png",
+			"placeholder": "helpless_2"
+		},
+		"nest_fairy_flower_1": {
+			"file": "res://assets/cg/portraits/nest_fairy_flower_1.png",
+			"placeholder": "helpless_1"
+		},
+		"nest_fairy_flower_2": {
+			"file": "res://assets/cg/portraits/nest_fairy_flower_2.png",
+			"placeholder": "helpless_2"
+		},
+		"nest_fairy_flower_3": {
+			"file": "res://assets/cg/portraits/nest_fairy_flower_3.png",
+			"placeholder": "helpless_2"
+		},
+		"nest_slime_pool_1": {
+			"file": "res://assets/cg/portraits/nest_slime_pool_1.png",
+			"placeholder": "helpless_1"
+		},
+		"nest_slime_pool_2": {
+			"file": "res://assets/cg/portraits/nest_slime_pool_2.png",
+			"placeholder": "helpless_2"
+		},
+		"nest_slime_pool_3": {
+			"file": "res://assets/cg/portraits/nest_slime_pool_3.png",
+			"placeholder": "helpless_2"
+		},
+		"nest_jelly_egg_1": {
+			"file": "res://assets/cg/portraits/nest_jelly_egg_1.png",
+			"placeholder": "helpless_1"
+		},
+		"nest_jelly_egg_2": {
+			"file": "res://assets/cg/portraits/nest_jelly_egg_2.png",
+			"placeholder": "helpless_2"
+		},
+		"nest_jelly_egg_3": {
+			"file": "res://assets/cg/portraits/nest_jelly_egg_3.png",
+			"placeholder": "helpless_2"
+		},
+		"nest_chest_pile_1": {
+			"file": "res://assets/cg/portraits/nest_chest_pile_1.png",
+			"placeholder": "helpless_1"
+		},
+		"nest_chest_pile_2": {
+			"file": "res://assets/cg/portraits/nest_chest_pile_2.png",
+			"placeholder": "helpless_2"
+		},
+		"nest_chest_pile_3": {
+			"file": "res://assets/cg/portraits/nest_chest_pile_3.png",
+			"placeholder": "helpless_2"
+		}
+	},
+	"nest": {
+		"rat_hole": {
+			"cg": "nest_rat_hole",
+			"source": "rat"
+		},
+		"fairy_flower": {
+			"cg": "nest_fairy_flower",
+			"source": "fairy"
+		},
+		"slime_pool": {
+			"cg": "nest_slime_pool",
+			"source": "slime"
+		},
+		"jelly_egg": {
+			"cg": "nest_jelly_egg",
+			"source": "mana_jelly"
+		},
+		"chest_pile": {
+			"cg": "nest_chest_pile",
+			"source": "mimic"
+		}
+	},
+	"cgs": {
+		"nest_rat_hole": {
+			"name": "鼠洞里的脚心宴",
+			"cast": {
+				"princess": {
+					"kind": "princess",
+					"at": [
+						0,
+						8
+					],
+					"visual": "helpless_1",
+					"anim": "helpless",
+					"dir": "down"
+				},
+				"foe": {
+					"kind": "monster:rat",
+					"at": [
+						22,
+						8
+					],
+					"dir": "left",
+					"hidden": true
+				},
+				"rat2": {
+					"kind": "monster:rat",
+					"at": [
+						-22,
+						12
+					],
+					"dir": "right",
+					"hidden": true
+				},
+				"rat3": {
+					"kind": "monster:rat",
+					"at": [
+						4,
+						26
+					],
+					"dir": "left",
+					"hidden": true
+				},
+				"crowd1": {
+					"kind": "monster:rat",
+					"at": [
+						-30,
+						6
+					],
+					"dir": "right",
+					"hidden": true,
+					"scale": 0.85
+				},
+				"crowd2": {
+					"kind": "monster:rat",
+					"at": [
+						30,
+						8
+					],
+					"dir": "left",
+					"hidden": true,
+					"scale": 0.85
+				},
+				"crowd3": {
+					"kind": "monster:rat",
+					"at": [
+						-22,
+						-10
+					],
+					"dir": "right",
+					"hidden": true,
+					"scale": 0.85
+				},
+				"crowd4": {
+					"kind": "monster:rat",
+					"at": [
+						22,
+						-12
+					],
+					"dir": "left",
+					"hidden": true,
+					"scale": 0.85
+				},
+				"crowd5": {
+					"kind": "monster:rat",
+					"at": [
+						-12,
+						24
+					],
+					"dir": "right",
+					"hidden": true,
+					"scale": 0.85
+				},
+				"crowd6": {
+					"kind": "monster:rat",
+					"at": [
+						14,
+						26
+					],
+					"dir": "left",
+					"hidden": true,
+					"scale": 0.85
+				},
+				"crowd7": {
+					"kind": "monster:rat",
+					"at": [
+						-40,
+						18
+					],
+					"dir": "right",
+					"hidden": true,
+					"scale": 0.85
+				},
+				"crowd8": {
+					"kind": "monster:rat",
+					"at": [
+						40,
+						16
+					],
+					"dir": "left",
+					"hidden": true,
+					"scale": 0.85
+				},
+				"crowd9": {
+					"kind": "monster:rat",
+					"at": [
+						-6,
+						-20
+					],
+					"dir": "right",
+					"hidden": true,
+					"scale": 0.85
+				},
+				"crowd10": {
+					"kind": "monster:rat",
+					"at": [
+						8,
+						-22
+					],
+					"dir": "left",
+					"hidden": true,
+					"scale": 0.85
+				}
+			},
+			"steps": [
+				{
+					"actions": [
+						{
+							"do": "fade_in",
+							"time": 0.7
+						},
+						{
+							"do": "voice",
+							"state": "giggle"
+						}
+					],
+					"wait": 0.8
+				},
+				{
+					"portrait": "nest_rat_hole_1",
+					"speaker": "公主",
+					"text": "被、被拖进洞里了……好黑……好多吱吱声……",
+					"actions": [
+						{
+							"do": "enter",
+							"who": "foe",
+							"from": [
+								90,
+								0
+							],
+							"time": 0.6
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "surprise"
+						},
+						{
+							"do": "enter",
+							"who": "rat2",
+							"from": [
+								-80,
+								0
+							],
+							"time": 0.7
+						},
+						{
+							"do": "enter",
+							"who": "rat3",
+							"from": [
+								80,
+								0
+							],
+							"time": 0.7
+						}
+					]
+				},
+				{
+					"speaker": "挠脚鼠",
+					"text": "吱吱！拖进来啦！",
+					"actions": [
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "foe",
+							"repeat": 4,
+							"fx": "hand"
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						}
+					]
+				},
+				{
+					"portrait": "nest_rat_hole_2",
+					"speaker": "公主",
+					"text": "鞋子被扒掉了——一整窝老鼠在挠脚心——哈哈哈哈！",
+					"actions": [
+						{
+							"do": "pose",
+							"who": "princess",
+							"visual": "helpless_2"
+						},
+						{
+							"do": "voice",
+							"state": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "foe",
+							"repeat": 6,
+							"interval": 0.28,
+							"fx": "hand"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "rat2",
+							"repeat": 5,
+							"interval": 0.32,
+							"fx": "hand"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "rat3",
+							"repeat": 5,
+							"interval": 0.32,
+							"fx": "hand"
+						},
+						{
+							"do": "camera",
+							"zoom": 1.5,
+							"focus": "princess",
+							"time": 0.5
+						}
+					]
+				},
+				{
+					"speaker": "挠脚鼠",
+					"text": "全家都来挠吱！",
+					"actions": [
+						{
+							"do": "hop",
+							"who": "foe",
+							"count": 2
+						},
+						{
+							"do": "taunt",
+							"who": "foe"
+						}
+					]
+				},
+				{
+					"speaker": "",
+					"text": "（洞里铺满了干草，几十只挠脚鼠排着队，把公主的两只脚架在了草堆上）",
+					"actions": [
+						{
+							"do": "flash",
+							"time": 0.5
+						},
+						{
+							"do": "camera",
+							"zoom": 1,
+							"focus": "princess",
+							"anchor": [
+								262,
+								112
+							],
+							"time": 0.4
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "foe",
+							"repeat": 5,
+							"interval": 0.3,
+							"fx": "hand"
+						},
+						{
+							"do": "enter",
+							"who": "crowd1",
+							"from": [
+								-90,
+								0
+							],
+							"time": 0.5
+						},
+						{
+							"do": "enter",
+							"who": "crowd2",
+							"from": [
+								90,
+								0
+							],
+							"time": 0.5700000000000001
+						},
+						{
+							"do": "enter",
+							"who": "crowd3",
+							"from": [
+								-90,
+								0
+							],
+							"time": 0.64
+						},
+						{
+							"do": "enter",
+							"who": "crowd4",
+							"from": [
+								90,
+								0
+							],
+							"time": 0.71
+						},
+						{
+							"do": "enter",
+							"who": "crowd5",
+							"from": [
+								-90,
+								0
+							],
+							"time": 0.78
+						},
+						{
+							"do": "enter",
+							"who": "crowd6",
+							"from": [
+								90,
+								0
+							],
+							"time": 0.8500000000000001
+						},
+						{
+							"do": "enter",
+							"who": "crowd7",
+							"from": [
+								-90,
+								0
+							],
+							"time": 0.92
+						},
+						{
+							"do": "enter",
+							"who": "crowd8",
+							"from": [
+								90,
+								0
+							],
+							"time": 0.99
+						},
+						{
+							"do": "enter",
+							"who": "crowd9",
+							"from": [
+								-90,
+								0
+							],
+							"time": 1.06
+						},
+						{
+							"do": "enter",
+							"who": "crowd10",
+							"from": [
+								90,
+								0
+							],
+							"time": 1.1300000000000001
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "crowd1",
+							"repeat": 4,
+							"interval": 0.22,
+							"fx": "hand"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "crowd2",
+							"repeat": 4,
+							"interval": 0.22,
+							"fx": "hand"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "crowd3",
+							"repeat": 4,
+							"interval": 0.22,
+							"fx": "hand"
+						},
+						{
+							"do": "hop",
+							"who": "crowd5",
+							"count": 1
+						}
+					],
+					"portrait": "nest_rat_hole_3"
+				},
+				{
+					"speaker": "公主",
+					"text": "放、放开脚！你们要干什么——",
+					"actions": [
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "rat2",
+							"repeat": 6,
+							"interval": 0.27999999999999997,
+							"fx": "hand"
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.4
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "crowd4",
+							"repeat": 4,
+							"interval": 0.22,
+							"fx": "hand"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "crowd5",
+							"repeat": 4,
+							"interval": 0.22,
+							"fx": "hand"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "crowd6",
+							"repeat": 4,
+							"interval": 0.22,
+							"fx": "hand"
+						},
+						{
+							"do": "hop",
+							"who": "crowd8",
+							"count": 1
+						}
+					]
+				},
+				{
+					"speaker": "挠脚鼠",
+					"text": "吱！脚心宴会，开始！",
+					"actions": [
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "rat3",
+							"repeat": 7,
+							"interval": 0.26,
+							"fx": "hand"
+						},
+						{
+							"do": "hop",
+							"who": "rat3",
+							"count": 1
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "crowd7",
+							"repeat": 4,
+							"interval": 0.22,
+							"fx": "hand"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "crowd8",
+							"repeat": 4,
+							"interval": 0.22,
+							"fx": "hand"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "crowd9",
+							"repeat": 4,
+							"interval": 0.22,
+							"fx": "hand"
+						},
+						{
+							"do": "hop",
+							"who": "crowd1",
+							"count": 1
+						}
+					]
+				},
+				{
+					"speaker": "",
+					"text": "（小爪子挠过脚心，又钻进脚趾缝里抓，一只接一只地轮流上阵）",
+					"actions": [
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "foe",
+							"repeat": 8,
+							"interval": 0.24,
+							"fx": "hand"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "crowd10",
+							"repeat": 4,
+							"interval": 0.22,
+							"fx": "hand"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "crowd1",
+							"repeat": 4,
+							"interval": 0.22,
+							"fx": "hand"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "crowd2",
+							"repeat": 4,
+							"interval": 0.22,
+							"fx": "hand"
+						},
+						{
+							"do": "hop",
+							"who": "crowd4",
+							"count": 1
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "哈哈哈哈！一、一只挠完又换一只——停不下来啊！",
+					"actions": [
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "rat2",
+							"repeat": 9,
+							"interval": 0.21999999999999997,
+							"fx": "hand"
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.4
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "crowd3",
+							"repeat": 4,
+							"interval": 0.22,
+							"fx": "hand"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "crowd4",
+							"repeat": 4,
+							"interval": 0.22,
+							"fx": "hand"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "crowd5",
+							"repeat": 4,
+							"interval": 0.22,
+							"fx": "hand"
+						},
+						{
+							"do": "hop",
+							"who": "crowd7",
+							"count": 1
+						}
+					]
+				},
+				{
+					"speaker": "挠脚鼠",
+					"text": "吱吱～脚趾缝最好吃～",
+					"actions": [
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "rat3",
+							"repeat": 10,
+							"interval": 0.19999999999999998,
+							"fx": "hand"
+						},
+						{
+							"do": "hop",
+							"who": "rat3",
+							"count": 1
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "crowd6",
+							"repeat": 4,
+							"interval": 0.22,
+							"fx": "hand"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "crowd7",
+							"repeat": 4,
+							"interval": 0.22,
+							"fx": "hand"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "crowd8",
+							"repeat": 4,
+							"interval": 0.22,
+							"fx": "hand"
+						},
+						{
+							"do": "hop",
+							"who": "crowd10",
+							"count": 1
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "……鼠、鼠窝……再也不靠近了……哈哈……",
+					"actions": [
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "foe",
+							"repeat": 11,
+							"interval": 0.18,
+							"fx": "hand"
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "dots"
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.4
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "crowd9",
+							"repeat": 4,
+							"interval": 0.22,
+							"fx": "hand"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "crowd10",
+							"repeat": 4,
+							"interval": 0.22,
+							"fx": "hand"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "crowd1",
+							"repeat": 4,
+							"interval": 0.22,
+							"fx": "hand"
+						},
+						{
+							"do": "hop",
+							"who": "crowd3",
+							"count": 1
+						}
+					]
+				},
+				{
+					"actions": [
+						{
+							"do": "fade_out",
+							"time": 0.9
+						},
+						{
+							"do": "voice",
+							"state": ""
+						}
+					],
+					"wait": 1.0
+				},
+				{
+					"portrait": "wake",
+					"speaker": "公主",
+					"text": "……醒来了。脚心还麻麻的……看到鼠洞先把它敲碎！"
+				}
+			]
+		},
+		"nest_fairy_flower": {
+			"name": "花心里的羽毛摇篮",
+			"cast": {
+				"princess": {
+					"kind": "princess",
+					"at": [
+						0,
+						8
+					],
+					"visual": "helpless_1",
+					"anim": "helpless",
+					"dir": "down"
+				},
+				"foe": {
+					"kind": "monster:fairy",
+					"at": [
+						16,
+						-10
+					],
+					"dir": "left",
+					"hidden": true
+				},
+				"fairy2": {
+					"kind": "monster:fairy",
+					"at": [
+						-18,
+						-8
+					],
+					"dir": "right",
+					"hidden": true
+				},
+				"crowd1": {
+					"kind": "monster:fairy",
+					"at": [
+						-30,
+						6
+					],
+					"dir": "right",
+					"hidden": true,
+					"scale": 0.85
+				},
+				"crowd2": {
+					"kind": "monster:fairy",
+					"at": [
+						30,
+						8
+					],
+					"dir": "left",
+					"hidden": true,
+					"scale": 0.85
+				},
+				"crowd3": {
+					"kind": "monster:fairy",
+					"at": [
+						-22,
+						-10
+					],
+					"dir": "right",
+					"hidden": true,
+					"scale": 0.85
+				},
+				"crowd4": {
+					"kind": "monster:fairy",
+					"at": [
+						22,
+						-12
+					],
+					"dir": "left",
+					"hidden": true,
+					"scale": 0.85
+				},
+				"crowd5": {
+					"kind": "monster:fairy",
+					"at": [
+						-12,
+						24
+					],
+					"dir": "right",
+					"hidden": true,
+					"scale": 0.85
+				},
+				"crowd6": {
+					"kind": "monster:fairy",
+					"at": [
+						14,
+						26
+					],
+					"dir": "left",
+					"hidden": true,
+					"scale": 0.85
+				},
+				"crowd7": {
+					"kind": "monster:fairy",
+					"at": [
+						-40,
+						18
+					],
+					"dir": "right",
+					"hidden": true,
+					"scale": 0.85
+				},
+				"crowd8": {
+					"kind": "monster:fairy",
+					"at": [
+						40,
+						16
+					],
+					"dir": "left",
+					"hidden": true,
+					"scale": 0.85
+				},
+				"crowd9": {
+					"kind": "monster:fairy",
+					"at": [
+						-6,
+						-20
+					],
+					"dir": "right",
+					"hidden": true,
+					"scale": 0.85
+				},
+				"crowd10": {
+					"kind": "monster:fairy",
+					"at": [
+						8,
+						-22
+					],
+					"dir": "left",
+					"hidden": true,
+					"scale": 0.85
+				}
+			},
+			"steps": [
+				{
+					"actions": [
+						{
+							"do": "fade_in",
+							"time": 0.7
+						},
+						{
+							"do": "voice",
+							"state": "giggle"
+						}
+					],
+					"wait": 0.8
+				},
+				{
+					"portrait": "nest_fairy_flower_1",
+					"speaker": "公主",
+					"text": "花、花瓣合起来了……被关进花里了……",
+					"actions": [
+						{
+							"do": "enter",
+							"who": "foe",
+							"from": [
+								0,
+								-70
+							],
+							"time": 0.6
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "surprise"
+						},
+						{
+							"do": "enter",
+							"who": "fairy2",
+							"from": [
+								-80,
+								0
+							],
+							"time": 0.7
+						}
+					]
+				},
+				{
+					"speaker": "羽毛小精灵群",
+					"text": "咯咯～欢迎来花里玩～",
+					"actions": [
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "foe",
+							"repeat": 4,
+							"fx": "feather"
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						}
+					]
+				},
+				{
+					"portrait": "nest_fairy_flower_2",
+					"speaker": "公主",
+					"text": "花蕊里全是小精灵——每个都拿着羽毛——哈哈哈哈！",
+					"actions": [
+						{
+							"do": "pose",
+							"who": "princess",
+							"visual": "helpless_2"
+						},
+						{
+							"do": "voice",
+							"state": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "foe",
+							"repeat": 6,
+							"interval": 0.28,
+							"fx": "feather"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "fairy2",
+							"repeat": 5,
+							"interval": 0.32,
+							"fx": "feather"
+						},
+						{
+							"do": "camera",
+							"zoom": 1.5,
+							"focus": "princess",
+							"time": 0.5
+						}
+					]
+				},
+				{
+					"speaker": "羽毛小精灵群",
+					"text": "羽毛准备好啦～",
+					"actions": [
+						{
+							"do": "hop",
+							"who": "foe",
+							"count": 2
+						},
+						{
+							"do": "taunt",
+							"who": "foe"
+						}
+					]
+				},
+				{
+					"speaker": "",
+					"text": "（巨大的花朵把公主整个包了进去，花蕊里飞出一群又一群小精灵）",
+					"actions": [
+						{
+							"do": "flash",
+							"time": 0.5
+						},
+						{
+							"do": "camera",
+							"zoom": 1,
+							"focus": "princess",
+							"anchor": [
+								262,
+								112
+							],
+							"time": 0.4
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "foe",
+							"repeat": 5,
+							"interval": 0.3,
+							"fx": "feather"
+						},
+						{
+							"do": "enter",
+							"who": "crowd1",
+							"from": [
+								-90,
+								0
+							],
+							"time": 0.5
+						},
+						{
+							"do": "enter",
+							"who": "crowd2",
+							"from": [
+								90,
+								0
+							],
+							"time": 0.5700000000000001
+						},
+						{
+							"do": "enter",
+							"who": "crowd3",
+							"from": [
+								-90,
+								0
+							],
+							"time": 0.64
+						},
+						{
+							"do": "enter",
+							"who": "crowd4",
+							"from": [
+								90,
+								0
+							],
+							"time": 0.71
+						},
+						{
+							"do": "enter",
+							"who": "crowd5",
+							"from": [
+								-90,
+								0
+							],
+							"time": 0.78
+						},
+						{
+							"do": "enter",
+							"who": "crowd6",
+							"from": [
+								90,
+								0
+							],
+							"time": 0.8500000000000001
+						},
+						{
+							"do": "enter",
+							"who": "crowd7",
+							"from": [
+								-90,
+								0
+							],
+							"time": 0.92
+						},
+						{
+							"do": "enter",
+							"who": "crowd8",
+							"from": [
+								90,
+								0
+							],
+							"time": 0.99
+						},
+						{
+							"do": "enter",
+							"who": "crowd9",
+							"from": [
+								-90,
+								0
+							],
+							"time": 1.06
+						},
+						{
+							"do": "enter",
+							"who": "crowd10",
+							"from": [
+								90,
+								0
+							],
+							"time": 1.1300000000000001
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "crowd1",
+							"repeat": 4,
+							"interval": 0.22,
+							"fx": "feather"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "crowd2",
+							"repeat": 4,
+							"interval": 0.22,
+							"fx": "feather"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "crowd3",
+							"repeat": 4,
+							"interval": 0.22,
+							"fx": "feather"
+						},
+						{
+							"do": "hop",
+							"who": "crowd5",
+							"count": 1
+						}
+					],
+					"portrait": "nest_fairy_flower_3"
+				},
+				{
+					"speaker": "公主",
+					"text": "好、好香……不对，好多羽毛……",
+					"actions": [
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "fairy2",
+							"repeat": 6,
+							"interval": 0.27999999999999997,
+							"fx": "feather"
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.4
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "crowd4",
+							"repeat": 4,
+							"interval": 0.22,
+							"fx": "feather"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "crowd5",
+							"repeat": 4,
+							"interval": 0.22,
+							"fx": "feather"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "crowd6",
+							"repeat": 4,
+							"interval": 0.22,
+							"fx": "feather"
+						},
+						{
+							"do": "hop",
+							"who": "crowd8",
+							"count": 1
+						}
+					]
+				},
+				{
+					"speaker": "羽毛小精灵群",
+					"text": "咯咯咯～花粉加羽毛，双倍痒痒～",
+					"actions": [
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "foe",
+							"repeat": 7,
+							"interval": 0.26,
+							"fx": "feather"
+						},
+						{
+							"do": "hop",
+							"who": "foe",
+							"count": 1
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "crowd7",
+							"repeat": 4,
+							"interval": 0.22,
+							"fx": "feather"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "crowd8",
+							"repeat": 4,
+							"interval": 0.22,
+							"fx": "feather"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "crowd9",
+							"repeat": 4,
+							"interval": 0.22,
+							"fx": "feather"
+						},
+						{
+							"do": "hop",
+							"who": "crowd1",
+							"count": 1
+						}
+					]
+				},
+				{
+					"speaker": "",
+					"text": "（花粉落在皮肤上，痒意一下子放大了好几倍，羽毛再从上面轻轻扫过）",
+					"actions": [
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "fairy2",
+							"repeat": 8,
+							"interval": 0.24,
+							"fx": "feather"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "crowd10",
+							"repeat": 4,
+							"interval": 0.22,
+							"fx": "feather"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "crowd1",
+							"repeat": 4,
+							"interval": 0.22,
+							"fx": "feather"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "crowd2",
+							"repeat": 4,
+							"interval": 0.22,
+							"fx": "feather"
+						},
+						{
+							"do": "hop",
+							"who": "crowd4",
+							"count": 1
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "花、花粉——哈哈哈哈比平时痒好多！",
+					"actions": [
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "foe",
+							"repeat": 9,
+							"interval": 0.21999999999999997,
+							"fx": "feather"
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.4
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "crowd3",
+							"repeat": 4,
+							"interval": 0.22,
+							"fx": "feather"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "crowd4",
+							"repeat": 4,
+							"interval": 0.22,
+							"fx": "feather"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "crowd5",
+							"repeat": 4,
+							"interval": 0.22,
+							"fx": "feather"
+						},
+						{
+							"do": "hop",
+							"who": "crowd7",
+							"count": 1
+						}
+					]
+				},
+				{
+					"speaker": "羽毛小精灵群",
+					"text": "挠挠大作战，第二回合～",
+					"actions": [
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "fairy2",
+							"repeat": 10,
+							"interval": 0.19999999999999998,
+							"fx": "feather"
+						},
+						{
+							"do": "hop",
+							"who": "fairy2",
+							"count": 1
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "crowd6",
+							"repeat": 4,
+							"interval": 0.22,
+							"fx": "feather"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "crowd7",
+							"repeat": 4,
+							"interval": 0.22,
+							"fx": "feather"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "crowd8",
+							"repeat": 4,
+							"interval": 0.22,
+							"fx": "feather"
+						},
+						{
+							"do": "hop",
+							"who": "crowd10",
+							"count": 1
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "腋、腋下也……哈哈哈哈哈！",
+					"actions": [
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "foe",
+							"repeat": 11,
+							"interval": 0.18,
+							"fx": "feather"
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.4
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "crowd9",
+							"repeat": 4,
+							"interval": 0.22,
+							"fx": "feather"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "crowd10",
+							"repeat": 4,
+							"interval": 0.22,
+							"fx": "feather"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "crowd1",
+							"repeat": 4,
+							"interval": 0.22,
+							"fx": "feather"
+						},
+						{
+							"do": "hop",
+							"who": "crowd3",
+							"count": 1
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "……花里……出不去……哈哈……",
+					"actions": [
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "fairy2",
+							"repeat": 12,
+							"interval": 0.18,
+							"fx": "feather"
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "dots"
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.4
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "crowd2",
+							"repeat": 4,
+							"interval": 0.22,
+							"fx": "feather"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "crowd3",
+							"repeat": 4,
+							"interval": 0.22,
+							"fx": "feather"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "crowd4",
+							"repeat": 4,
+							"interval": 0.22,
+							"fx": "feather"
+						},
+						{
+							"do": "hop",
+							"who": "crowd6",
+							"count": 1
+						}
+					]
+				},
+				{
+					"actions": [
+						{
+							"do": "fade_out",
+							"time": 0.9
+						},
+						{
+							"do": "voice",
+							"state": ""
+						}
+					],
+					"wait": 1.0
+				},
+				{
+					"portrait": "wake",
+					"speaker": "公主",
+					"text": "……醒来了。身上一股花香……那朵花一定要打碎！"
+				}
+			]
+		},
+		"nest_slime_pool": {
+			"name": "果冻池的深处",
+			"cast": {
+				"princess": {
+					"kind": "princess",
+					"at": [
+						0,
+						8
+					],
+					"visual": "helpless_1",
+					"anim": "helpless",
+					"dir": "down"
+				},
+				"foe": {
+					"kind": "monster:slime",
+					"at": [
+						22,
+						8
+					],
+					"dir": "left",
+					"hidden": true
+				},
+				"slime2": {
+					"kind": "monster:slime",
+					"at": [
+						-20,
+						10
+					],
+					"dir": "right",
+					"hidden": true
+				},
+				"crowd1": {
+					"kind": "monster:slime",
+					"at": [
+						-30,
+						6
+					],
+					"dir": "right",
+					"hidden": true,
+					"scale": 0.85
+				},
+				"crowd2": {
+					"kind": "monster:slime",
+					"at": [
+						30,
+						8
+					],
+					"dir": "left",
+					"hidden": true,
+					"scale": 0.85
+				},
+				"crowd3": {
+					"kind": "monster:slime",
+					"at": [
+						-22,
+						-10
+					],
+					"dir": "right",
+					"hidden": true,
+					"scale": 0.85
+				},
+				"crowd4": {
+					"kind": "monster:slime",
+					"at": [
+						22,
+						-12
+					],
+					"dir": "left",
+					"hidden": true,
+					"scale": 0.85
+				},
+				"crowd5": {
+					"kind": "monster:slime",
+					"at": [
+						-12,
+						24
+					],
+					"dir": "right",
+					"hidden": true,
+					"scale": 0.85
+				},
+				"crowd6": {
+					"kind": "monster:slime",
+					"at": [
+						14,
+						26
+					],
+					"dir": "left",
+					"hidden": true,
+					"scale": 0.85
+				},
+				"crowd7": {
+					"kind": "monster:slime",
+					"at": [
+						-40,
+						18
+					],
+					"dir": "right",
+					"hidden": true,
+					"scale": 0.85
+				},
+				"crowd8": {
+					"kind": "monster:slime",
+					"at": [
+						40,
+						16
+					],
+					"dir": "left",
+					"hidden": true,
+					"scale": 0.85
+				},
+				"crowd9": {
+					"kind": "monster:slime",
+					"at": [
+						-6,
+						-20
+					],
+					"dir": "right",
+					"hidden": true,
+					"scale": 0.85
+				},
+				"crowd10": {
+					"kind": "monster:slime",
+					"at": [
+						8,
+						-22
+					],
+					"dir": "left",
+					"hidden": true,
+					"scale": 0.85
+				}
+			},
+			"steps": [
+				{
+					"actions": [
+						{
+							"do": "fade_in",
+							"time": 0.7
+						},
+						{
+							"do": "voice",
+							"state": "giggle"
+						}
+					],
+					"wait": 0.8
+				},
+				{
+					"portrait": "nest_slime_pool_1",
+					"speaker": "公主",
+					"text": "脚、脚被拖进池子里了……凉凉的……",
+					"actions": [
+						{
+							"do": "enter",
+							"who": "foe",
+							"from": [
+								90,
+								0
+							],
+							"time": 0.6
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "surprise"
+						},
+						{
+							"do": "enter",
+							"who": "slime2",
+							"from": [
+								-80,
+								0
+							],
+							"time": 0.7
+						}
+					]
+				},
+				{
+					"speaker": "史莱姆",
+					"text": "噗叽～欢迎回家～",
+					"actions": [
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "foe",
+							"repeat": 4,
+							"fx": "lines"
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						}
+					]
+				},
+				{
+					"portrait": "nest_slime_pool_2",
+					"speaker": "公主",
+					"text": "整个人陷进果冻里了——到处都在蠕动——哈哈哈哈！",
+					"actions": [
+						{
+							"do": "pose",
+							"who": "princess",
+							"visual": "helpless_2"
+						},
+						{
+							"do": "voice",
+							"state": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "foe",
+							"repeat": 6,
+							"interval": 0.28,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "slime2",
+							"repeat": 5,
+							"interval": 0.32,
+							"fx": "lines"
+						},
+						{
+							"do": "camera",
+							"zoom": 1.5,
+							"focus": "princess",
+							"time": 0.5
+						}
+					]
+				},
+				{
+					"speaker": "史莱姆",
+					"text": "大家一起，噗叽噗叽～",
+					"actions": [
+						{
+							"do": "hop",
+							"who": "foe",
+							"count": 2
+						},
+						{
+							"do": "taunt",
+							"who": "foe"
+						}
+					]
+				},
+				{
+					"speaker": "",
+					"text": "（公主一点一点陷进了史莱姆池，只剩脖子以上露在外面）",
+					"actions": [
+						{
+							"do": "flash",
+							"time": 0.5
+						},
+						{
+							"do": "camera",
+							"zoom": 1,
+							"focus": "princess",
+							"anchor": [
+								262,
+								112
+							],
+							"time": 0.4
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "foe",
+							"repeat": 5,
+							"interval": 0.3,
+							"fx": "lines"
+						},
+						{
+							"do": "enter",
+							"who": "crowd1",
+							"from": [
+								-90,
+								0
+							],
+							"time": 0.5
+						},
+						{
+							"do": "enter",
+							"who": "crowd2",
+							"from": [
+								90,
+								0
+							],
+							"time": 0.5700000000000001
+						},
+						{
+							"do": "enter",
+							"who": "crowd3",
+							"from": [
+								-90,
+								0
+							],
+							"time": 0.64
+						},
+						{
+							"do": "enter",
+							"who": "crowd4",
+							"from": [
+								90,
+								0
+							],
+							"time": 0.71
+						},
+						{
+							"do": "enter",
+							"who": "crowd5",
+							"from": [
+								-90,
+								0
+							],
+							"time": 0.78
+						},
+						{
+							"do": "enter",
+							"who": "crowd6",
+							"from": [
+								90,
+								0
+							],
+							"time": 0.8500000000000001
+						},
+						{
+							"do": "enter",
+							"who": "crowd7",
+							"from": [
+								-90,
+								0
+							],
+							"time": 0.92
+						},
+						{
+							"do": "enter",
+							"who": "crowd8",
+							"from": [
+								90,
+								0
+							],
+							"time": 0.99
+						},
+						{
+							"do": "enter",
+							"who": "crowd9",
+							"from": [
+								-90,
+								0
+							],
+							"time": 1.06
+						},
+						{
+							"do": "enter",
+							"who": "crowd10",
+							"from": [
+								90,
+								0
+							],
+							"time": 1.1300000000000001
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "crowd1",
+							"repeat": 4,
+							"interval": 0.22,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "crowd2",
+							"repeat": 4,
+							"interval": 0.22,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "crowd3",
+							"repeat": 4,
+							"interval": 0.22,
+							"fx": "lines"
+						},
+						{
+							"do": "hop",
+							"who": "crowd5",
+							"count": 1
+						}
+					],
+					"portrait": "nest_slime_pool_3"
+				},
+				{
+					"speaker": "公主",
+					"text": "陷、陷进去了……出不来……",
+					"actions": [
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "slime2",
+							"repeat": 6,
+							"interval": 0.27999999999999997,
+							"fx": "lines"
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.4
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "crowd4",
+							"repeat": 4,
+							"interval": 0.22,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "crowd5",
+							"repeat": 4,
+							"interval": 0.22,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "crowd6",
+							"repeat": 4,
+							"interval": 0.22,
+							"fx": "lines"
+						},
+						{
+							"do": "hop",
+							"who": "crowd8",
+							"count": 1
+						}
+					]
+				},
+				{
+					"speaker": "史莱姆",
+					"text": "噗叽～池子里好暖和吧～",
+					"actions": [
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "foe",
+							"repeat": 7,
+							"interval": 0.26,
+							"fx": "lines"
+						},
+						{
+							"do": "hop",
+							"who": "foe",
+							"count": 1
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "crowd7",
+							"repeat": 4,
+							"interval": 0.22,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "crowd8",
+							"repeat": 4,
+							"interval": 0.22,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "crowd9",
+							"repeat": 4,
+							"interval": 0.22,
+							"fx": "lines"
+						},
+						{
+							"do": "hop",
+							"who": "crowd1",
+							"count": 1
+						}
+					]
+				},
+				{
+					"speaker": "",
+					"text": "（果冻在池底轻轻翻涌，一下一下地揉着脚心、挤着腰）",
+					"actions": [
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "slime2",
+							"repeat": 8,
+							"interval": 0.24,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "crowd10",
+							"repeat": 4,
+							"interval": 0.22,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "crowd1",
+							"repeat": 4,
+							"interval": 0.22,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "crowd2",
+							"repeat": 4,
+							"interval": 0.22,
+							"fx": "lines"
+						},
+						{
+							"do": "hop",
+							"who": "crowd4",
+							"count": 1
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "里面在动——哈哈哈哈不要揉腰！",
+					"actions": [
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "foe",
+							"repeat": 9,
+							"interval": 0.21999999999999997,
+							"fx": "lines"
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.4
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "crowd3",
+							"repeat": 4,
+							"interval": 0.22,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "crowd4",
+							"repeat": 4,
+							"interval": 0.22,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "crowd5",
+							"repeat": 4,
+							"interval": 0.22,
+							"fx": "lines"
+						},
+						{
+							"do": "hop",
+							"who": "crowd7",
+							"count": 1
+						}
+					]
+				},
+				{
+					"speaker": "史莱姆",
+					"text": "噗叽噗叽～再多泡一会儿～",
+					"actions": [
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "slime2",
+							"repeat": 10,
+							"interval": 0.19999999999999998,
+							"fx": "lines"
+						},
+						{
+							"do": "hop",
+							"who": "slime2",
+							"count": 1
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "crowd6",
+							"repeat": 4,
+							"interval": 0.22,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "crowd7",
+							"repeat": 4,
+							"interval": 0.22,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "crowd8",
+							"repeat": 4,
+							"interval": 0.22,
+							"fx": "lines"
+						},
+						{
+							"do": "hop",
+							"who": "crowd10",
+							"count": 1
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "……要、要被果冻泡化了……哈哈……",
+					"actions": [
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "foe",
+							"repeat": 11,
+							"interval": 0.18,
+							"fx": "lines"
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "dots"
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.4
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "crowd9",
+							"repeat": 4,
+							"interval": 0.22,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "crowd10",
+							"repeat": 4,
+							"interval": 0.22,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "crowd1",
+							"repeat": 4,
+							"interval": 0.22,
+							"fx": "lines"
+						},
+						{
+							"do": "hop",
+							"who": "crowd3",
+							"count": 1
+						}
+					]
+				},
+				{
+					"actions": [
+						{
+							"do": "fade_out",
+							"time": 0.9
+						},
+						{
+							"do": "voice",
+							"state": ""
+						}
+					],
+					"wait": 1.0
+				},
+				{
+					"portrait": "wake",
+					"speaker": "公主",
+					"text": "……醒来了。头发上还挂着果冻……下次先打碎那个池子！"
+				}
+			]
+		},
+		"nest_jelly_egg": {
+			"name": "水母卵的孵化场",
+			"cast": {
+				"princess": {
+					"kind": "princess",
+					"at": [
+						0,
+						8
+					],
+					"visual": "helpless_1",
+					"anim": "helpless",
+					"dir": "down"
+				},
+				"foe": {
+					"kind": "monster:mana_jelly",
+					"at": [
+						18,
+						-4
+					],
+					"dir": "left",
+					"hidden": true
+				},
+				"jelly2": {
+					"kind": "monster:mana_jelly",
+					"at": [
+						-20,
+						-2
+					],
+					"dir": "right",
+					"hidden": true
+				},
+				"crowd1": {
+					"kind": "monster:mana_jelly",
+					"at": [
+						-30,
+						6
+					],
+					"dir": "right",
+					"hidden": true,
+					"scale": 0.85
+				},
+				"crowd2": {
+					"kind": "monster:mana_jelly",
+					"at": [
+						30,
+						8
+					],
+					"dir": "left",
+					"hidden": true,
+					"scale": 0.85
+				},
+				"crowd3": {
+					"kind": "monster:mana_jelly",
+					"at": [
+						-22,
+						-10
+					],
+					"dir": "right",
+					"hidden": true,
+					"scale": 0.85
+				},
+				"crowd4": {
+					"kind": "monster:mana_jelly",
+					"at": [
+						22,
+						-12
+					],
+					"dir": "left",
+					"hidden": true,
+					"scale": 0.85
+				},
+				"crowd5": {
+					"kind": "monster:mana_jelly",
+					"at": [
+						-12,
+						24
+					],
+					"dir": "right",
+					"hidden": true,
+					"scale": 0.85
+				},
+				"crowd6": {
+					"kind": "monster:mana_jelly",
+					"at": [
+						14,
+						26
+					],
+					"dir": "left",
+					"hidden": true,
+					"scale": 0.85
+				},
+				"crowd7": {
+					"kind": "monster:mana_jelly",
+					"at": [
+						-40,
+						18
+					],
+					"dir": "right",
+					"hidden": true,
+					"scale": 0.85
+				},
+				"crowd8": {
+					"kind": "monster:mana_jelly",
+					"at": [
+						40,
+						16
+					],
+					"dir": "left",
+					"hidden": true,
+					"scale": 0.85
+				},
+				"crowd9": {
+					"kind": "monster:mana_jelly",
+					"at": [
+						-6,
+						-20
+					],
+					"dir": "right",
+					"hidden": true,
+					"scale": 0.85
+				},
+				"crowd10": {
+					"kind": "monster:mana_jelly",
+					"at": [
+						8,
+						-22
+					],
+					"dir": "left",
+					"hidden": true,
+					"scale": 0.85
+				}
+			},
+			"steps": [
+				{
+					"actions": [
+						{
+							"do": "fade_in",
+							"time": 0.7
+						},
+						{
+							"do": "voice",
+							"state": "giggle"
+						}
+					],
+					"wait": 0.8
+				},
+				{
+					"portrait": "nest_jelly_egg_1",
+					"speaker": "公主",
+					"text": "卵、卵在发光……一只只小水母钻出来了……",
+					"actions": [
+						{
+							"do": "enter",
+							"who": "foe",
+							"from": [
+								0,
+								-60
+							],
+							"time": 0.6
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "surprise"
+						},
+						{
+							"do": "enter",
+							"who": "jelly2",
+							"from": [
+								-80,
+								0
+							],
+							"time": 0.7
+						}
+					]
+				},
+				{
+					"speaker": "魔力水母",
+					"text": "噗噜～妈妈说要抓住公主～",
+					"actions": [
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "foe",
+							"repeat": 4,
+							"fx": "lines"
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						}
+					]
+				},
+				{
+					"portrait": "nest_jelly_egg_2",
+					"speaker": "公主",
+					"text": "刚孵出来的小水母全缠上来了——哈哈哈哈魔力好乱！",
+					"actions": [
+						{
+							"do": "pose",
+							"who": "princess",
+							"visual": "helpless_2"
+						},
+						{
+							"do": "voice",
+							"state": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "foe",
+							"repeat": 6,
+							"interval": 0.28,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "jelly2",
+							"repeat": 5,
+							"interval": 0.32,
+							"fx": "lines"
+						},
+						{
+							"do": "camera",
+							"zoom": 1.5,
+							"focus": "princess",
+							"time": 0.5
+						}
+					]
+				},
+				{
+					"speaker": "魔力水母",
+					"text": "孵出来啦～一起挠～",
+					"actions": [
+						{
+							"do": "hop",
+							"who": "foe",
+							"count": 2
+						},
+						{
+							"do": "taunt",
+							"who": "foe"
+						}
+					]
+				},
+				{
+					"speaker": "",
+					"text": "（一颗颗水母卵接连裂开，半透明的小水母像气泡一样飘了出来）",
+					"actions": [
+						{
+							"do": "flash",
+							"time": 0.5
+						},
+						{
+							"do": "camera",
+							"zoom": 1,
+							"focus": "princess",
+							"anchor": [
+								262,
+								112
+							],
+							"time": 0.4
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "foe",
+							"repeat": 5,
+							"interval": 0.3,
+							"fx": "lines"
+						},
+						{
+							"do": "enter",
+							"who": "crowd1",
+							"from": [
+								-90,
+								0
+							],
+							"time": 0.5
+						},
+						{
+							"do": "enter",
+							"who": "crowd2",
+							"from": [
+								90,
+								0
+							],
+							"time": 0.5700000000000001
+						},
+						{
+							"do": "enter",
+							"who": "crowd3",
+							"from": [
+								-90,
+								0
+							],
+							"time": 0.64
+						},
+						{
+							"do": "enter",
+							"who": "crowd4",
+							"from": [
+								90,
+								0
+							],
+							"time": 0.71
+						},
+						{
+							"do": "enter",
+							"who": "crowd5",
+							"from": [
+								-90,
+								0
+							],
+							"time": 0.78
+						},
+						{
+							"do": "enter",
+							"who": "crowd6",
+							"from": [
+								90,
+								0
+							],
+							"time": 0.8500000000000001
+						},
+						{
+							"do": "enter",
+							"who": "crowd7",
+							"from": [
+								-90,
+								0
+							],
+							"time": 0.92
+						},
+						{
+							"do": "enter",
+							"who": "crowd8",
+							"from": [
+								90,
+								0
+							],
+							"time": 0.99
+						},
+						{
+							"do": "enter",
+							"who": "crowd9",
+							"from": [
+								-90,
+								0
+							],
+							"time": 1.06
+						},
+						{
+							"do": "enter",
+							"who": "crowd10",
+							"from": [
+								90,
+								0
+							],
+							"time": 1.1300000000000001
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "crowd1",
+							"repeat": 4,
+							"interval": 0.22,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "crowd2",
+							"repeat": 4,
+							"interval": 0.22,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "crowd3",
+							"repeat": 4,
+							"interval": 0.22,
+							"fx": "lines"
+						},
+						{
+							"do": "hop",
+							"who": "crowd5",
+							"count": 1
+						}
+					],
+					"portrait": "nest_jelly_egg_3"
+				},
+				{
+					"speaker": "公主",
+					"text": "好、好多……全都朝这边飘过来了！",
+					"actions": [
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "jelly2",
+							"repeat": 6,
+							"interval": 0.27999999999999997,
+							"fx": "lines"
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.4
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "crowd4",
+							"repeat": 4,
+							"interval": 0.22,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "crowd5",
+							"repeat": 4,
+							"interval": 0.22,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "crowd6",
+							"repeat": 4,
+							"interval": 0.22,
+							"fx": "lines"
+						},
+						{
+							"do": "hop",
+							"who": "crowd8",
+							"count": 1
+						}
+					]
+				},
+				{
+					"speaker": "魔力水母",
+					"text": "噗噜噗噜～第一口魔力，好甜～",
+					"actions": [
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "foe",
+							"repeat": 7,
+							"interval": 0.26,
+							"fx": "lines"
+						},
+						{
+							"do": "hop",
+							"who": "foe",
+							"count": 1
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "crowd7",
+							"repeat": 4,
+							"interval": 0.22,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "crowd8",
+							"repeat": 4,
+							"interval": 0.22,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "crowd9",
+							"repeat": 4,
+							"interval": 0.22,
+							"fx": "lines"
+						},
+						{
+							"do": "hop",
+							"who": "crowd1",
+							"count": 1
+						}
+					]
+				},
+				{
+					"speaker": "",
+					"text": "（细细的触须缠满了手腕和脚踝，魔力被搅得一阵一阵发麻）",
+					"actions": [
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "jelly2",
+							"repeat": 8,
+							"interval": 0.24,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "crowd10",
+							"repeat": 4,
+							"interval": 0.22,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "crowd1",
+							"repeat": 4,
+							"interval": 0.22,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "crowd2",
+							"repeat": 4,
+							"interval": 0.22,
+							"fx": "lines"
+						},
+						{
+							"do": "hop",
+							"who": "crowd4",
+							"count": 1
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "麻、麻麻的又好痒——哈哈哈哈停不下来！",
+					"actions": [
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "foe",
+							"repeat": 9,
+							"interval": 0.21999999999999997,
+							"fx": "lines"
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.4
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "crowd3",
+							"repeat": 4,
+							"interval": 0.22,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "crowd4",
+							"repeat": 4,
+							"interval": 0.22,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "crowd5",
+							"repeat": 4,
+							"interval": 0.22,
+							"fx": "lines"
+						},
+						{
+							"do": "hop",
+							"who": "crowd7",
+							"count": 1
+						}
+					]
+				},
+				{
+					"speaker": "魔力水母",
+					"text": "大家排好队，一只挠一下～",
+					"actions": [
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "jelly2",
+							"repeat": 10,
+							"interval": 0.19999999999999998,
+							"fx": "lines"
+						},
+						{
+							"do": "hop",
+							"who": "jelly2",
+							"count": 1
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "crowd6",
+							"repeat": 4,
+							"interval": 0.22,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "crowd7",
+							"repeat": 4,
+							"interval": 0.22,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "crowd8",
+							"repeat": 4,
+							"interval": 0.22,
+							"fx": "lines"
+						},
+						{
+							"do": "hop",
+							"who": "crowd10",
+							"count": 1
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "……孵、孵化场……不要再孵了……哈哈……",
+					"actions": [
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "foe",
+							"repeat": 11,
+							"interval": 0.18,
+							"fx": "lines"
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "dots"
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.4
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "crowd9",
+							"repeat": 4,
+							"interval": 0.22,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "crowd10",
+							"repeat": 4,
+							"interval": 0.22,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "crowd1",
+							"repeat": 4,
+							"interval": 0.22,
+							"fx": "lines"
+						},
+						{
+							"do": "hop",
+							"who": "crowd3",
+							"count": 1
+						}
+					]
+				},
+				{
+					"actions": [
+						{
+							"do": "fade_out",
+							"time": 0.9
+						},
+						{
+							"do": "voice",
+							"state": ""
+						}
+					],
+					"wait": 1.0
+				},
+				{
+					"portrait": "wake",
+					"speaker": "公主",
+					"text": "……醒来了。魔力还在身体里晃……那堆卵一定要打碎！"
+				}
+			]
+		},
+		"nest_chest_pile": {
+			"name": "宝箱山的肚子里",
+			"cast": {
+				"princess": {
+					"kind": "princess",
+					"at": [
+						0,
+						8
+					],
+					"visual": "helpless_1",
+					"anim": "helpless",
+					"dir": "down"
+				},
+				"foe": {
+					"kind": "monster:mimic",
+					"at": [
+						0,
+						-6
+					],
+					"dir": "right",
+					"hidden": true
+				},
+				"mimic2": {
+					"kind": "monster:mimic",
+					"at": [
+						22,
+						6
+					],
+					"dir": "left",
+					"hidden": true
+				},
+				"crowd1": {
+					"kind": "monster:mimic",
+					"at": [
+						-30,
+						6
+					],
+					"dir": "right",
+					"hidden": true,
+					"scale": 0.85
+				},
+				"crowd2": {
+					"kind": "monster:mimic",
+					"at": [
+						30,
+						8
+					],
+					"dir": "left",
+					"hidden": true,
+					"scale": 0.85
+				},
+				"crowd3": {
+					"kind": "monster:mimic",
+					"at": [
+						-22,
+						-10
+					],
+					"dir": "right",
+					"hidden": true,
+					"scale": 0.85
+				},
+				"crowd4": {
+					"kind": "monster:mimic",
+					"at": [
+						22,
+						-12
+					],
+					"dir": "left",
+					"hidden": true,
+					"scale": 0.85
+				},
+				"crowd5": {
+					"kind": "monster:mimic",
+					"at": [
+						-12,
+						24
+					],
+					"dir": "right",
+					"hidden": true,
+					"scale": 0.85
+				},
+				"crowd6": {
+					"kind": "monster:mimic",
+					"at": [
+						14,
+						26
+					],
+					"dir": "left",
+					"hidden": true,
+					"scale": 0.85
+				},
+				"crowd7": {
+					"kind": "monster:mimic",
+					"at": [
+						-40,
+						18
+					],
+					"dir": "right",
+					"hidden": true,
+					"scale": 0.85
+				},
+				"crowd8": {
+					"kind": "monster:mimic",
+					"at": [
+						40,
+						16
+					],
+					"dir": "left",
+					"hidden": true,
+					"scale": 0.85
+				},
+				"crowd9": {
+					"kind": "monster:mimic",
+					"at": [
+						-6,
+						-20
+					],
+					"dir": "right",
+					"hidden": true,
+					"scale": 0.85
+				},
+				"crowd10": {
+					"kind": "monster:mimic",
+					"at": [
+						8,
+						-22
+					],
+					"dir": "left",
+					"hidden": true,
+					"scale": 0.85
+				}
+			},
+			"steps": [
+				{
+					"actions": [
+						{
+							"do": "fade_in",
+							"time": 0.7
+						},
+						{
+							"do": "voice",
+							"state": "giggle"
+						}
+					],
+					"wait": 0.8
+				},
+				{
+					"portrait": "nest_chest_pile_1",
+					"speaker": "公主",
+					"text": "宝、宝箱堆在动……被拖进去了！",
+					"actions": [
+						{
+							"do": "enter",
+							"who": "foe",
+							"from": [
+								0,
+								0
+							],
+							"time": 0.6
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "surprise"
+						},
+						{
+							"do": "enter",
+							"who": "mimic2",
+							"from": [
+								80,
+								0
+							],
+							"time": 0.7
+						}
+					]
+				},
+				{
+					"speaker": "宝箱怪",
+					"text": "咔哒！新宝物入库～",
+					"actions": [
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "foe",
+							"repeat": 4,
+							"fx": "lines"
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						}
+					]
+				},
+				{
+					"portrait": "nest_chest_pile_2",
+					"speaker": "公主",
+					"text": "好几个宝箱一起咬住——舌头在挠脚心——哈哈哈哈！",
+					"actions": [
+						{
+							"do": "pose",
+							"who": "princess",
+							"visual": "helpless_2"
+						},
+						{
+							"do": "voice",
+							"state": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "foe",
+							"repeat": 6,
+							"interval": 0.28,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "mimic2",
+							"repeat": 5,
+							"interval": 0.32,
+							"fx": "lines"
+						},
+						{
+							"do": "camera",
+							"zoom": 1.5,
+							"focus": "princess",
+							"time": 0.5
+						}
+					]
+				},
+				{
+					"speaker": "宝箱怪",
+					"text": "大家一起收藏～",
+					"actions": [
+						{
+							"do": "hop",
+							"who": "foe",
+							"count": 2
+						},
+						{
+							"do": "taunt",
+							"who": "foe"
+						}
+					]
+				},
+				{
+					"speaker": "",
+					"text": "（宝箱堆一个接一个张开了嘴，公主被一路传进了最里面的大箱子）",
+					"actions": [
+						{
+							"do": "flash",
+							"time": 0.5
+						},
+						{
+							"do": "camera",
+							"zoom": 1,
+							"focus": "princess",
+							"anchor": [
+								262,
+								112
+							],
+							"time": 0.4
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "foe",
+							"repeat": 5,
+							"interval": 0.3,
+							"fx": "lines"
+						},
+						{
+							"do": "enter",
+							"who": "crowd1",
+							"from": [
+								-90,
+								0
+							],
+							"time": 0.5
+						},
+						{
+							"do": "enter",
+							"who": "crowd2",
+							"from": [
+								90,
+								0
+							],
+							"time": 0.5700000000000001
+						},
+						{
+							"do": "enter",
+							"who": "crowd3",
+							"from": [
+								-90,
+								0
+							],
+							"time": 0.64
+						},
+						{
+							"do": "enter",
+							"who": "crowd4",
+							"from": [
+								90,
+								0
+							],
+							"time": 0.71
+						},
+						{
+							"do": "enter",
+							"who": "crowd5",
+							"from": [
+								-90,
+								0
+							],
+							"time": 0.78
+						},
+						{
+							"do": "enter",
+							"who": "crowd6",
+							"from": [
+								90,
+								0
+							],
+							"time": 0.8500000000000001
+						},
+						{
+							"do": "enter",
+							"who": "crowd7",
+							"from": [
+								-90,
+								0
+							],
+							"time": 0.92
+						},
+						{
+							"do": "enter",
+							"who": "crowd8",
+							"from": [
+								90,
+								0
+							],
+							"time": 0.99
+						},
+						{
+							"do": "enter",
+							"who": "crowd9",
+							"from": [
+								-90,
+								0
+							],
+							"time": 1.06
+						},
+						{
+							"do": "enter",
+							"who": "crowd10",
+							"from": [
+								90,
+								0
+							],
+							"time": 1.1300000000000001
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "crowd1",
+							"repeat": 4,
+							"interval": 0.22,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "crowd2",
+							"repeat": 4,
+							"interval": 0.22,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "crowd3",
+							"repeat": 4,
+							"interval": 0.22,
+							"fx": "lines"
+						},
+						{
+							"do": "hop",
+							"who": "crowd5",
+							"count": 1
+						}
+					],
+					"portrait": "nest_chest_pile_3"
+				},
+				{
+					"speaker": "公主",
+					"text": "好黑！放我出去！",
+					"actions": [
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "mimic2",
+							"repeat": 6,
+							"interval": 0.27999999999999997,
+							"fx": "lines"
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.4
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "crowd4",
+							"repeat": 4,
+							"interval": 0.22,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "crowd5",
+							"repeat": 4,
+							"interval": 0.22,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "crowd6",
+							"repeat": 4,
+							"interval": 0.22,
+							"fx": "lines"
+						},
+						{
+							"do": "hop",
+							"who": "crowd8",
+							"count": 1
+						}
+					]
+				},
+				{
+					"speaker": "宝箱怪",
+					"text": "咔哒～宝物要一层一层收好～",
+					"actions": [
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "foe",
+							"repeat": 7,
+							"interval": 0.26,
+							"fx": "lines"
+						},
+						{
+							"do": "hop",
+							"who": "foe",
+							"count": 1
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "crowd7",
+							"repeat": 4,
+							"interval": 0.22,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "crowd8",
+							"repeat": 4,
+							"interval": 0.22,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "crowd9",
+							"repeat": 4,
+							"interval": 0.22,
+							"fx": "lines"
+						},
+						{
+							"do": "hop",
+							"who": "crowd1",
+							"count": 1
+						}
+					]
+				},
+				{
+					"speaker": "",
+					"text": "（每个箱盖里都伸出长长的舌头，从脚心一路舔到腰）",
+					"actions": [
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "mimic2",
+							"repeat": 8,
+							"interval": 0.24,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "crowd10",
+							"repeat": 4,
+							"interval": 0.22,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "crowd1",
+							"repeat": 4,
+							"interval": 0.22,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "crowd2",
+							"repeat": 4,
+							"interval": 0.22,
+							"fx": "lines"
+						},
+						{
+							"do": "hop",
+							"who": "crowd4",
+							"count": 1
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "舌、舌头好多——哈哈哈哈好痒！",
+					"actions": [
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "foe",
+							"repeat": 9,
+							"interval": 0.21999999999999997,
+							"fx": "lines"
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.4
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "crowd3",
+							"repeat": 4,
+							"interval": 0.22,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "crowd4",
+							"repeat": 4,
+							"interval": 0.22,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "crowd5",
+							"repeat": 4,
+							"interval": 0.22,
+							"fx": "lines"
+						},
+						{
+							"do": "hop",
+							"who": "crowd7",
+							"count": 1
+						}
+					]
+				},
+				{
+					"speaker": "宝箱怪",
+					"text": "露在外面的脚，咔哒咔哒～",
+					"actions": [
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "mimic2",
+							"repeat": 10,
+							"interval": 0.19999999999999998,
+							"fx": "lines"
+						},
+						{
+							"do": "hop",
+							"who": "mimic2",
+							"count": 1
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "crowd6",
+							"repeat": 4,
+							"interval": 0.22,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "crowd7",
+							"repeat": 4,
+							"interval": 0.22,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "crowd8",
+							"repeat": 4,
+							"interval": 0.22,
+							"fx": "lines"
+						},
+						{
+							"do": "hop",
+							"who": "crowd10",
+							"count": 1
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "……再、再也不碰宝箱了……哈哈……",
+					"actions": [
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "foe",
+							"repeat": 11,
+							"interval": 0.18,
+							"fx": "lines"
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "dots"
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.4
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "crowd9",
+							"repeat": 4,
+							"interval": 0.22,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "crowd10",
+							"repeat": 4,
+							"interval": 0.22,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "crowd1",
+							"repeat": 4,
+							"interval": 0.22,
+							"fx": "lines"
+						},
+						{
+							"do": "hop",
+							"who": "crowd3",
+							"count": 1
+						}
+					]
+				},
+				{
+					"actions": [
+						{
+							"do": "fade_out",
+							"time": 0.9
+						},
+						{
+							"do": "voice",
+							"state": ""
+						}
+					],
+					"wait": 1.0
+				},
+				{
+					"portrait": "wake",
+					"speaker": "公主",
+					"text": "……醒来了。身上一股木头味……那堆宝箱一定有问题！"
+				}
+			]
+		}
+	}
+}
