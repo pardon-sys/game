@@ -30,6 +30,9 @@ var buff_row: HBoxContainer
 ## 闷笑条下面的魔力疲倦条
 var fatigue_row: HBoxContainer
 var fatigue_bar: FatigueBar
+## 两条的百分比数字
+var laugh_pct: Label
+var fatigue_pct: Label
 
 
 func _ready() -> void:
@@ -57,7 +60,11 @@ func _ready() -> void:
 	fatigue_bar.custom_minimum_size = Vector2(75, 5)
 	fatigue_bar.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	fatigue_row.add_child(fatigue_bar)
+	fatigue_pct = _pct_label(Color(0.78, 0.66, 1.0))
+	fatigue_row.add_child(fatigue_pct)
 	add_child(fatigue_row)
+	laugh_pct = _pct_label(Color(1, 0.72, 0.86))
+	$LaughRow.add_child(laugh_pct)
 	fatigue_row.hide()
 	buff_row = HBoxContainer.new()
 	buff_row.name = "Buffs"
@@ -80,12 +87,24 @@ func _bind_player(p: PlayableCharacter) -> void:
 	$LaughRow.visible = p.laugh != null
 	if p.laugh:
 		laugh_bar.bind(p.laugh)
+		p.laugh.changed.connect(func(v: float, m: float): laugh_pct.text = "%d%%" % roundi(v / m * 100.0))
+		laugh_pct.text = "%d%%" % roundi(p.laugh.percent())
 	var f: MagicFatigue = p.get("fatigue")
 	fatigue_row.visible = f != null
 	if f:
 		fatigue_bar.bind(f)
+		f.changed.connect(func(v: float, m: float): fatigue_pct.text = "%d%%" % roundi(v / m * 100.0))
+		fatigue_pct.text = "%d%%" % roundi(f.percent())
 	p.buffs_changed.connect(_refresh_buffs)
 	_refresh_buffs()
+
+
+func _pct_label(col: Color) -> Label:
+	var l := Label.new()
+	l.text = "0%"
+	l.custom_minimum_size = Vector2(26, 0)
+	l.add_theme_color_override("font_color", col)
+	return l
 
 
 ## 状态图标：每种一个，叠层的在右下角标层数；快到时的闪烁（见 _process）。
@@ -125,7 +144,7 @@ func _build_magic_ui() -> void:
 	_icon_cd.region = Rect2(16, 0, 16, 16)
 	magic_slot = HBoxContainer.new()
 	magic_slot.name = "Magic"
-	magic_slot.position = Vector2(124, 20)
+	magic_slot.position = Vector2(140, 20)
 	magic_slot.add_theme_constant_override("separation", 1)
 	add_child(magic_slot)
 	magic_icon = TextureRect.new()

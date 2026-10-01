@@ -827,7 +827,7 @@ func _run_magic_visuals() -> void:
 	await _wait(0.1)
 
 	# 战损 / 战损闷笑
-	var cases := [[false, 0.0, "chant", "burst"], [true, 0.0, "damaged_chant", "damaged_burst"], [true, 60.0, "damaged_giggle_chant", "damaged_giggle_burst"]]
+	var cases := [[false, 0.0, "chant", "burst"], [true, 0.0, "damaged_chant", "damaged_burst"], [true, 70.0, "damaged_giggle_chant", "damaged_giggle_burst"]]
 	for c in cases:
 		_reset_magic()
 		princess.battle_damaged = c[0]

@@ -5,7 +5,7 @@
 		"condition：条件型组合（不看时间窗口），由代码在特定情况下调用 ComboTracker.trigger(id)。",
 		"effects：burst 额外挠痒 amount；dot 余痒 rate/秒持续 duration；root 定身 duration（extend=true 为延长）；",
 		"multiplier 易痒 value 倍持续 duration；slow 减速到 value 倍持续 duration；pull 拉向来源 speed 持续 duration；",
-		"hit_multiplier 本次挠痒 ×value（条件型用）；fatigue 魔力疲倦 +amount；debuff 给公主加状态 buff（data/buffs.json）持续 duration；",
+		"hit_multiplier 本次挠痒 ×value（条件型用）；fatigue 魔力疲倦 +percent%（按上限的百分比）；debuff 给公主加状态 buff（data/buffs.json）持续 duration；",
 		"seal 封魔 duration 秒；special_next 接下来 count 次挠痒必定暴击；buff_monsters 给 radius 内的怪物加增益 buff 持续 duration；",
 		"puddle 在公主脚下生成疲倦水液（life 秒）。名称、说明和公主台词在 princess_reactions.json 的 combos 段。"
 	],
@@ -167,7 +167,7 @@
 				},
 				{
 					"type": "fatigue",
-					"amount": 20
+					"percent": 4.0
 				}
 			]
 		},
@@ -190,7 +190,7 @@
 				},
 				{
 					"type": "fatigue",
-					"amount": 15
+					"percent": 3.0
 				}
 			]
 		},
@@ -325,7 +325,7 @@
 				},
 				{
 					"type": "fatigue",
-					"amount": 10
+					"percent": 2.0
 				}
 			]
 		},
@@ -340,7 +340,7 @@
 				},
 				{
 					"type": "fatigue",
-					"amount": 10
+					"percent": 2.0
 				}
 			]
 		},
@@ -359,7 +359,7 @@
 			"effects": [
 				{
 					"type": "fatigue",
-					"amount": 40
+					"percent": 8.0
 				},
 				{
 					"type": "debuff",
@@ -433,7 +433,7 @@
 				},
 				{
 					"type": "fatigue",
-					"amount": 20
+					"percent": 4.0
 				}
 			]
 		},
@@ -485,7 +485,7 @@
 			"effects": [
 				{
 					"type": "fatigue",
-					"amount": 30
+					"percent": 6.0
 				},
 				{
 					"type": "buff_monsters",

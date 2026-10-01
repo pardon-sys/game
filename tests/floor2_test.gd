@@ -413,7 +413,7 @@ func _run_data() -> void:
 	var sheet := load("res://assets/generated/princess.png") as Texture2D
 	check("精灵表 11 行 x 16 列 32px", sheet.get_width() == 512 and sheet.get_height() == 352)
 	check("挠痒果冻音效已加载", Audio._streams.get("tickle", []).size() == 4)
-	check("闷笑上限 150 / 失控 2 阈值 100", is_equal_approx(player.laugh.max_value, 150.0) and is_equal_approx(player.laugh.helpless_stage2_threshold, 100.0))
+	check("闷笑上限 150 / 失控 2 阈值 70%", is_equal_approx(player.laugh.max_value, 150.0) and is_equal_approx(player.laugh.helpless_stage2_threshold, 105.0))
 
 
 # ------------------------------------------------------------------ 工具

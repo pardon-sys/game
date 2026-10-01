@@ -204,7 +204,7 @@ func _apply_effects(c: Dictionary, source: Node) -> void:
 			"fatigue":
 				var pc := _actor as PlayableCharacter
 				if pc and pc.fatigue and MagicFatigue.accumulate:
-					pc.fatigue.add(float(e["amount"]))
+					pc.fatigue.add_percent(float(e["percent"]))
 			"debuff":
 				_actor.add_buff(str(e["buff"]), float(e.get("duration", -2.0)))
 			"seal":

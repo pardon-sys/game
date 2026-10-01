@@ -251,8 +251,8 @@ func _on_magic_event(event: String, tier: int) -> void:
 var _fatigue_warned := false
 
 
-func _on_fatigue_changed(value: float, _max: float) -> void:
-	if value >= 450.0 and not _fatigue_warned and is_alive():
+func _on_fatigue_changed(_value: float, _max: float) -> void:
+	if fatigue.is_near_full() and not _fatigue_warned and is_alive():
 		_fatigue_warned = true
 		_say(ReactionDB.fatigue("warning"), "fatigue")
 
