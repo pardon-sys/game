@@ -42,6 +42,8 @@ func _ready() -> void:
 	_sprite.hframes = 3
 	_sprite.scale = Vector2.ONE * (radius / 24.0)
 	add_child(_sprite)
+	Fx.emitter(self, "goo", 4, 1.2, {"extents": Vector2(radius * 0.6, radius * 0.25), "speed": [3.0, 6.0],
+			"spread": 15.0, "color": Color(0.8, 0.65, 1.0), "z": 1})
 	Audio.play("puddle", -4.0)
 
 

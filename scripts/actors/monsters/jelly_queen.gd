@@ -100,6 +100,7 @@ func _spawn_drop(pos: Vector2) -> void:
 	var tw := s.create_tween()
 	tw.tween_property(s, "global_position:y", pos.y, 0.35)
 	tw.parallel().tween_property(s, "modulate:a", 0.2, 0.35)
+	tw.tween_callback(func(): Fx.burst(s.get_parent(), pos, "drop", 3, 18.0, 0.3, Vector2(0, 60)))
 	tw.tween_callback(s.queue_free)
 
 

@@ -35,5 +35,7 @@ extends Resource
 @export var special_mult := 2.0
 ## 这只怪物的挠痒给魔力疲倦的额外倍率（魔力水母 3）。
 @export var fatigue_mult := 1.0
+## 挠到目标时的命中特效（HitFx.KINDS：feather / hand / goo / sting / bubble / brush / pinch / curse）。
+@export var hit_fx := "hand"
 @export_group("掉落")
 @export var drops: Array[ItemDrop] = []

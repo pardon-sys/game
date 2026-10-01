@@ -14,6 +14,7 @@ max_amount = 2
 [resource]
 script = ExtResource("1")
 reaction_key = "mana_jelly"
+hit_fx = "sting"
 display_name = "魔力水母"
 max_hp = 3
 wander_speed = 12.0

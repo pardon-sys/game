@@ -33,6 +33,8 @@ func _on_idle() -> void:
 
 func _on_activate() -> void:
 	sprite.frame = 1
+	HitFx.play("curse", get_parent(), global_position + Vector2(0, -2))
+	Fx.burst(get_parent(), global_position, "drop", 10, 35.0, 0.45, Vector2(0, -20))
 	var tw := create_tween()
 	tw.tween_property(sprite, "scale", Vector2(1.25, 1.25), 0.08)
 	tw.tween_property(sprite, "scale", Vector2.ONE, 0.15)

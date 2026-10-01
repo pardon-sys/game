@@ -13,6 +13,7 @@ max_amount = 1
 [resource]
 script = ExtResource("1")
 reaction_key = "bat"
+hit_fx = "feather"
 display_name = "羽毛蝙蝠"
 max_hp = 1
 wander_speed = 30.0

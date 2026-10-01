@@ -21,11 +21,15 @@ var roll_state := Roll.NONE
 var _roll_t := 0.0
 var _roll_dir := Vector2.ZERO
 var _roll_cd := 1.0
+var _dust: CPUParticles2D
 
 
 func _setup() -> void:
 	super()
 	sprite.hframes = 4
+	_dust = Fx.emitter(self, "dust", 10, 0.45, {"offset": Vector2(0, -2), "spread": 60.0, "speed": [10.0, 25.0],
+			"gravity": Vector2(0, -10), "z": -1})
+	_dust.emitting = false
 
 
 func _tick(delta: float) -> void:
@@ -141,6 +145,9 @@ func _on_stunned(_duration: float) -> void:
 
 
 func _animate(_delta: float) -> void:
+	_dust.emitting = roll_state == Roll.ROLL
+	if _dust.emitting:
+		_dust.direction = -_roll_dir
 	match roll_state:
 		Roll.CURL:
 			sprite.frame = 2

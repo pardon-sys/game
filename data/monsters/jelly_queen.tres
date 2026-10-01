@@ -22,6 +22,7 @@ max_amount = 1
 [resource]
 script = ExtResource("1")
 reaction_key = "jelly_queen"
+hit_fx = "sting"
 display_name = "魔力水母女王"
 max_hp = 24
 taunt_chance = 0.45

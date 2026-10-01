@@ -37,6 +37,8 @@ enum Phase { IDLE, WARN, ACTIVE, COOLDOWN }
 @export var reaction_key := ""
 ## 挠痒果冻音效音高。
 @export var tickle_pitch := 1.1
+## 挠到 / 打到目标时的命中特效（HitFx.KINDS）。
+@export var hit_fx := "feather"
 @export_group("时间")
 @export var idle_time := 1.4
 @export var warn_time := 0.35

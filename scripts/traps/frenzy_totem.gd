@@ -11,6 +11,7 @@ var hp := 3
 var broken := false
 var magic_radius := 8.0
 var _anim := 0.0
+var _embers: CPUParticles2D
 
 @onready var sprite: Sprite2D = $Sprite
 
@@ -27,6 +28,8 @@ func _setup() -> void:
 	circle.radius = aura_radius
 	($Shape as CollisionShape2D).shape = circle
 	($Body as StaticBody2D).collision_layer = 33
+	_embers = Fx.emitter(self, "ember", 6, 0.9, {"offset": Vector2(0, -18), "spread": 25.0, "speed": [8.0, 18.0],
+			"extents": Vector2(3, 1), "z": 3})
 
 
 func _process(delta: float) -> void:
@@ -93,6 +96,8 @@ func smash() -> void:
 	active = false
 	_enter(Phase.IDLE)
 	sprite.frame = 2
+	_embers.emitting = false
+	Fx.burst(get_parent(), global_position + Vector2(0, -10), "chip", 10, 50.0, 0.5)
 	($Body as StaticBody2D).collision_layer = 0
 	Fx.puff(get_parent(), global_position + Vector2(0, -8))
 	Audio.play("break", -2.0, 0.05)

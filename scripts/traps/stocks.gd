@@ -50,6 +50,7 @@ func _apply_effect(target: Node) -> bool:
 	a.status.released.connect(_on_released, CONNECT_ONE_SHOT)
 	sprite.frame = 1
 	Audio.play("stocks", -2.0, 0.05)
+	Fx.burst(get_parent(), global_position + Vector2(0, -4), "chip", 8, 45.0, 0.45)
 	return true
 
 

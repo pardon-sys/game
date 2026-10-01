@@ -34,6 +34,8 @@ func _setup() -> void:
 	var shape := $Shape as CollisionShape2D
 	shape.shape = rect
 	shape.position = Vector2(tiles_w - 1, tiles_h - 1) * 8.0
+	Fx.emitter(self, "goo", 2 * tiles_w * tiles_h, 1.4, {"offset": shape.position, "extents": rect.size / 2.0 - Vector2(2, 2),
+			"speed": [2.0, 5.0], "spread": 20.0, "z": 0})
 
 
 func _physics_process(delta: float) -> void:

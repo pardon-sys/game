@@ -76,9 +76,29 @@ func _on_activate() -> void:
 		tw.tween_interval(i * 0.03)
 		tw.tween_property(s, "scale", Vector2.ONE, 0.06)
 	var tip := _arm[-1]
+	for k in 3:
+		get_tree().create_timer(0.05 + k * 0.05, false).timeout.connect(_afterimage.bind(tip))
 	var sweep := tip.create_tween().set_loops(3)
 	sweep.tween_property(tip, "rotation", lane.angle() + 0.5, 0.05)
 	sweep.tween_property(tip, "rotation", lane.angle() - 0.5, 0.05)
+
+
+## 羽毛尖的残影：复制一份当前姿势，淡出。
+func _afterimage(tip: Sprite2D) -> void:
+	if not is_instance_valid(tip) or not tip.visible:
+		return
+	var g := Sprite2D.new()
+	g.texture = tip.texture
+	g.hframes = tip.hframes
+	g.frame = tip.frame
+	g.rotation = tip.rotation
+	g.position = tip.position
+	g.z_index = tip.z_index - 1
+	g.modulate = Color(1, 0.8, 0.95, 0.6)
+	add_child(g)
+	var tw := g.create_tween()
+	tw.tween_property(g, "modulate:a", 0.0, 0.2)
+	tw.tween_callback(g.queue_free)
 
 
 func _on_cooldown() -> void:

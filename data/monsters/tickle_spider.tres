@@ -13,6 +13,7 @@ max_amount = 1
 [resource]
 script = ExtResource("1")
 reaction_key = "spider"
+hit_fx = "brush"
 display_name = "挠痒蜘蛛"
 max_hp = 3
 wander_speed = 20.0

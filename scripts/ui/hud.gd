@@ -178,7 +178,7 @@ func _build_magic_ui() -> void:
 	add_child(exposed_label)
 	combo_label = Label.new()
 	combo_label.name = "Combo"
-	combo_label.position = Vector2(90, 38)
+	combo_label.position = Vector2(90, 76)
 	combo_label.size = Vector2(300, 16)
 	combo_label.pivot_offset = Vector2(150, 8)
 	combo_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
@@ -196,7 +196,7 @@ func _build_magic_ui() -> void:
 	move_child(combo_flash, 0)
 	chain_label = Label.new()
 	chain_label.name = "Chain"
-	chain_label.position = Vector2(330, 52)
+	chain_label.position = Vector2(330, 90)
 	chain_label.add_theme_color_override("font_color", Color(1, 0.5, 0.75))
 	chain_label.add_theme_color_override("font_outline_color", Color(0.3, 0.05, 0.2))
 	chain_label.add_theme_constant_override("outline_size", 4)

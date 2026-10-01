@@ -11,6 +11,7 @@ collision_layer = 0
 collision_mask = 2
 monitorable = false
 script = ExtResource("1")
+hit_fx = "feather"
 reaction_key = "stocks"
 trigger_mode = 1
 hit_kind = 1

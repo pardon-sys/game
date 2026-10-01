@@ -15,6 +15,7 @@ max_amount = 1
 script = ExtResource("1")
 display_name = "挠脚鼠"
 reaction_key = "rat"
+hit_fx = "brush"
 taunt_chance = 0.25
 max_hp = 1
 wander_speed = 30.0
