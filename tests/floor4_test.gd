@@ -793,6 +793,7 @@ func _run_combos3() -> void:
 	await _wait(ComboTracker.SCENE_DELAY + 0.2)
 	check("第一次触发诅咒回廊：播放小演出", CG.is_playing() and CG.current == "combo:curse_hall" and CG.can_skip())
 	check("来源栏三格，开始时都暗着", CG.source_bar.get_child_count() == 3 and not CG.source_lit(0))
+	check("演出开始时立绘是失控 1", Dialogue.current_portrait() == Dialogue.portrait_for("helpless_1"))
 	var lit_guard := 0
 	while CG.step_index < 4 and lit_guard < 40:
 		lit_guard += 1
@@ -800,6 +801,7 @@ func _run_combos3() -> void:
 		Dialogue.advance()
 		await _wait(0.1)
 	await _wait(0.4)
+	check("第三个来源加入后立绘变成失控 2", Dialogue.current_portrait() == Dialogue.portrait_for("helpless_2"))
 	check("三个来源依次加入后来源栏全部点亮，陷阱演员在台上发动", CG.source_lit(0) and CG.source_lit(1) and CG.source_lit(2)
 		and CG.actors.values().any(func(a): return a.kind == "trap" and a.is_active_trap()))
 	CG.skip()
@@ -952,7 +954,7 @@ func _run_hud_portrait() -> void:
 	check("没有来源（余痒、组合技）只抖不贴片", fx.sticker_count() == 0)
 	player.laugh.set_value(player.laugh.max_value * 0.9)
 	await _wait(1.0)
-	check("闷笑越高，立绘下的粉色光晕越浓", fx.glow.modulate.a > 0.3)
+	check("立绘背后没有粉色蒙层", Dialogue.find_children("PortraitGlow*", "", true, false).is_empty())
 	await _wait(0.4)
 	player.receive_hit(HitData.make_tickle(_src("rat"), 1.0))
 	await get_tree().process_frame

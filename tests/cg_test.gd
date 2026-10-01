@@ -384,7 +384,6 @@ func _run_cg_portrait_fx() -> void:
 			var cx: float = c.position.x + c.get_minimum_size().x / 2.0
 			edge_ok = edge_ok and (cx < r.position.x + r.size.x * 0.35 or cx > r.position.x + r.size.x * 0.65)
 	check("横版图上飘字沿大框两边，不挡中心", edge_ok)
-	check("横版图底部有粉色光晕", fx.glow_top.modulate.a > 0.05)
 	CG._can_skip = true
 	CG.skip()
 	await _wait(0.8)
@@ -395,7 +394,8 @@ func _run_cg_portrait_fx() -> void:
 	GameState.flags.erase("cg_seen_combo:curse_hall")
 	CG.play_scene("curse_hall")
 	await _wait_playing()
-	check("组合演出从强度 1 开始", fx.cg_mode and fx.cg_level == 1)
+	check("组合演出从强度 1 开始，立绘是失控 1", fx.cg_mode and fx.cg_level == 1
+		and Dialogue.current_portrait() == Dialogue.portrait_for("helpless_1"))
 	var climax := -1
 	var steps: Array = CG.scenes["curse_hall"]["steps"]
 	for i in steps.size():
@@ -404,11 +404,12 @@ func _run_cg_portrait_fx() -> void:
 				climax = i
 	await _advance_to(climax)
 	await get_tree().process_frame
-	check("组合演出高潮：强度 3，立绘爆开心形", fx.cg_level >= 3 and fx.get_children().any(func(c): return c is CPUParticles2D))
+	check("组合演出高潮：强度 3，立绘是失控 2 并爆开心形", fx.cg_level >= 3 and fx.get_children().any(func(c): return c is CPUParticles2D)
+		and Dialogue.current_portrait() == Dialogue.portrait_for("helpless_2"))
 	CG.skip()
 	await _wait(0.8)
 	_finish_dialogue()
-	check("组合演出结束后退出 CG 模式", not fx.cg_mode)
+	check("组合演出结束后退出 CG 模式，立绘恢复", not fx.cg_mode and not Dialogue.has_portrait_override())
 
 
 # ------------------------------------------------------------------ 工具
