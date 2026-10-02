@@ -8,7 +8,11 @@ CG 图由 tools/art/import_cg.py 生成到 assets/cg/portraits/<来源键>_3.png
 """
 import json
 import os
+import sys
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import burst_lines as BL  # noqa: E402
 
 os.chdir(Path(__file__).resolve().parents[2])
 M = "res://scenes/actors/monsters/%s.tscn"
@@ -77,6 +81,8 @@ portraits = {
     "defeat_1": {"file": "res://assets/cg/portraits/defeat_1.png", "placeholder": "helpless_1"},
     "defeat_2": {"file": "res://assets/cg/portraits/defeat_2.png", "placeholder": "helpless_2"},
     "wake": {"file": "res://assets/cg/portraits/wake.png", "placeholder": "sad"},
+    # 最后一幕「魔力疲倦满了 → 爆发 → 继续被挠」：战损魔力释放立绘（tools/build/burst_lines.py）
+    BL.PORTRAIT: BL.PORTRAIT_INFO,
 }
 
 
@@ -115,11 +121,12 @@ def ending(wake_text):
     ]
 
 
-def standard(key, name, lines, taunts, act3, fx="lines", enter_from=(90, 0), stand=(22, 8), extras=None, cam=True, act4=None, foe=None):
+def standard(key, name, lines, taunts, act3, fx="lines", enter_from=(90, 0), stand=(22, 8), extras=None, cam=True, act4=None, foe=None, burst=None):
     """三幕：
     第一幕（失控 1 立绘）：怪物登场、挠痒——公主 1 句 + 怪物 1 句
     第二幕（失控 2 立绘）：失控 2 姿势、镜头拉近——公主 1 句 + 怪物 1 句
     第三幕（横版 CG 图）：画面切到 CG 图，舞台移到右侧继续演——act3 的 5~7 句（最多）
+    最后一幕（burst，有第四幕的接在它后面）：魔力疲倦满了 → 爆发 → 释放后的畅快 → 怪物又回来、身体更敏感 → 笑到力竭（burst_lines.py）。
     最后淡出、醒来。"""
     p1, p2, p3 = pt(key)
     cast = {"princess": princess(), "foe": monster(foe or key, stand, "left" if stand[0] > 0 else "right")}
@@ -150,6 +157,9 @@ def standard(key, name, lines, taunts, act3, fx="lines", enter_from=(90, 0), sta
     steps += _act(act3, p3, name, everyone, fx, True)
     if act4:
         steps += _act(act4, key + "_4", name, everyone, fx, False)
+    if burst:
+        movers = [(n, cast[n]["at"]) for n in everyone]
+        steps += BL.burst_steps(burst, name, movers, fx)
     return {"name": "", "cast": cast, "steps": steps + ending(lines[3])}
 
 
@@ -195,11 +205,11 @@ cgs["death_generic"] = {
                      {"do": "camera", "zoom": 1.5, "focus": "princess", "time": 0.5}]},
         {"speaker": P, "text": "……笑、笑得……一点力气都没有了……",
          "actions": [{"do": "camera", "zoom": 1, "time": 0.4}, {"do": "bubble", "who": "princess", "kind": "dots"}]},
-    ] + ending("……呜。在检查点醒过来了。下次一定要躲开那些机关……"),
+    ] + BL.burst_steps(BL.DEATH["generic"], "", [], "feather") + ending("……呜。在检查点醒过来了。下次一定要躲开那些机关……"),
 }
 
 def add(key, name, title, lines, taunts, act3, **kw):
-    cg = standard(key, name, lines, taunts, act3, **kw)
+    cg = standard(key, name, lines, taunts, act3, burst=BL.DEATH[key], **kw)
     cg["name"] = title
     cgs["death_" + key] = cg
 

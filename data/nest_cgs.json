@@ -810,6 +810,385 @@
 					]
 				},
 				{
+					"act": "burst",
+					"speaker": "",
+					"text": "（鼠洞里的挠脚鼠一只接一只涌出来，魔力在笑声里涨满了）",
+					"actions": [
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.8
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "surprise"
+						},
+						{
+							"do": "voice",
+							"state": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "foe",
+							"repeat": 6,
+							"interval": 0.24,
+							"fx": "hand"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "rat2",
+							"repeat": 6,
+							"interval": 0.24,
+							"fx": "hand"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "rat3",
+							"repeat": 6,
+							"interval": 0.24,
+							"fx": "hand"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "crowd2",
+							"repeat": 4,
+							"interval": 0.22,
+							"fx": "hand"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "crowd3",
+							"repeat": 4,
+							"interval": 0.22,
+							"fx": "hand"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "crowd4",
+							"repeat": 4,
+							"interval": 0.22,
+							"fx": "hand"
+						},
+						{
+							"do": "hop",
+							"who": "crowd6",
+							"count": 1
+						}
+					]
+				},
+				{
+					"act": "burst",
+					"speaker": "公主",
+					"text": "魔力……要满了……要冲出鼠洞了——！",
+					"actions": [
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 1.2
+						},
+						{
+							"do": "camera",
+							"zoom": 1.5,
+							"focus": "princess",
+							"time": 0.4
+						},
+						{
+							"do": "flash",
+							"time": 0.2
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "crowd5",
+							"repeat": 4,
+							"interval": 0.22,
+							"fx": "hand"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "crowd6",
+							"repeat": 4,
+							"interval": 0.22,
+							"fx": "hand"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "crowd7",
+							"repeat": 4,
+							"interval": 0.22,
+							"fx": "hand"
+						},
+						{
+							"do": "hop",
+							"who": "crowd9",
+							"count": 1
+						}
+					]
+				},
+				{
+					"act": "burst",
+					"portrait": "fatigue_burst",
+					"actions": [
+						{
+							"do": "flash",
+							"time": 0.8
+						},
+						{
+							"do": "sfx",
+							"sound": "star_burst",
+							"volume": -1.0
+						},
+						{
+							"do": "sfx",
+							"sound": "water_release",
+							"volume": -2.0
+						},
+						{
+							"do": "voice",
+							"state": ""
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.5
+						},
+						{
+							"do": "camera",
+							"zoom": 1,
+							"focus": "princess",
+							"time": 0.5
+						},
+						{
+							"do": "move",
+							"who": "foe",
+							"to": [
+								82,
+								2
+							],
+							"time": 0.25
+						},
+						{
+							"do": "move",
+							"who": "rat2",
+							"to": [
+								-82,
+								6
+							],
+							"time": 0.25
+						},
+						{
+							"do": "move",
+							"who": "rat3",
+							"to": [
+								64,
+								20
+							],
+							"time": 0.25
+						}
+					],
+					"wait": 1.1
+				},
+				{
+					"act": "burst",
+					"speaker": "公主",
+					"text": "哈啊……魔力把老鼠们全冲飞了……全身暖洋洋的，好畅快……",
+					"actions": [
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "shy"
+						}
+					]
+				},
+				{
+					"act": "burst",
+					"speaker": "挠脚鼠",
+					"text": "吱吱吱！洞里还有好多～大家出来～",
+					"actions": [
+						{
+							"do": "move",
+							"who": "foe",
+							"to": [
+								22,
+								8
+							],
+							"time": 0.6
+						},
+						{
+							"do": "move",
+							"who": "rat2",
+							"to": [
+								-22,
+								12
+							],
+							"time": 0.6
+						},
+						{
+							"do": "move",
+							"who": "rat3",
+							"to": [
+								4,
+								26
+							],
+							"time": 0.6
+						},
+						{
+							"do": "voice",
+							"state": "giggle"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "foe",
+							"repeat": 4,
+							"interval": 0.3,
+							"fx": "hand"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "rat2",
+							"repeat": 4,
+							"interval": 0.3,
+							"fx": "hand"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "rat3",
+							"repeat": 4,
+							"interval": 0.3,
+							"fx": "hand"
+						}
+					]
+				},
+				{
+					"act": "burst",
+					"speaker": "公主",
+					"text": "咿哈哈哈！放完魔力脚心好敏感——这么多小爪子一起痒死了哈哈哈哈！",
+					"actions": [
+						{
+							"do": "voice",
+							"state": "laugh"
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.8
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "foe",
+							"repeat": 10,
+							"interval": 0.16,
+							"fx": "hand"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "rat2",
+							"repeat": 10,
+							"interval": 0.16,
+							"fx": "hand"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "rat3",
+							"repeat": 10,
+							"interval": 0.16,
+							"fx": "hand"
+						}
+					]
+				},
+				{
+					"act": "burst",
+					"speaker": "挠脚鼠",
+					"text": "吱～排好队一只挠一下～",
+					"actions": [
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.6
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "foe",
+							"repeat": 10,
+							"interval": 0.15,
+							"fx": "hand"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "rat2",
+							"repeat": 10,
+							"interval": 0.15,
+							"fx": "hand"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "rat3",
+							"repeat": 10,
+							"interval": 0.15,
+							"fx": "hand"
+						}
+					]
+				},
+				{
+					"act": "burst",
+					"speaker": "公主",
+					"text": "……小、小爪子……哈哈……没完没了……",
+					"actions": [
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "dots"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "foe",
+							"repeat": 6,
+							"interval": 0.22,
+							"fx": "hand"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "rat2",
+							"repeat": 6,
+							"interval": 0.22,
+							"fx": "hand"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "rat3",
+							"repeat": 6,
+							"interval": 0.22,
+							"fx": "hand"
+						}
+					]
+				},
+				{
 					"actions": [
 						{
 							"do": "fade_out",
@@ -1576,6 +1955,327 @@
 					]
 				},
 				{
+					"act": "burst",
+					"speaker": "",
+					"text": "（精灵花里飞出一群又一群小精灵，羽毛把公主团团围住，魔力满了）",
+					"actions": [
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.8
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "surprise"
+						},
+						{
+							"do": "voice",
+							"state": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "foe",
+							"repeat": 6,
+							"interval": 0.24,
+							"fx": "feather"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "fairy2",
+							"repeat": 6,
+							"interval": 0.24,
+							"fx": "feather"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "crowd5",
+							"repeat": 4,
+							"interval": 0.22,
+							"fx": "feather"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "crowd6",
+							"repeat": 4,
+							"interval": 0.22,
+							"fx": "feather"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "crowd7",
+							"repeat": 4,
+							"interval": 0.22,
+							"fx": "feather"
+						},
+						{
+							"do": "hop",
+							"who": "crowd9",
+							"count": 1
+						}
+					]
+				},
+				{
+					"act": "burst",
+					"speaker": "公主",
+					"text": "魔力……要从花里冲出去了——！",
+					"actions": [
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 1.2
+						},
+						{
+							"do": "camera",
+							"zoom": 1.5,
+							"focus": "princess",
+							"time": 0.4
+						},
+						{
+							"do": "flash",
+							"time": 0.2
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "crowd8",
+							"repeat": 4,
+							"interval": 0.22,
+							"fx": "feather"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "crowd9",
+							"repeat": 4,
+							"interval": 0.22,
+							"fx": "feather"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "crowd10",
+							"repeat": 4,
+							"interval": 0.22,
+							"fx": "feather"
+						},
+						{
+							"do": "hop",
+							"who": "crowd2",
+							"count": 1
+						}
+					]
+				},
+				{
+					"act": "burst",
+					"portrait": "fatigue_burst",
+					"actions": [
+						{
+							"do": "flash",
+							"time": 0.8
+						},
+						{
+							"do": "sfx",
+							"sound": "star_burst",
+							"volume": -1.0
+						},
+						{
+							"do": "sfx",
+							"sound": "water_release",
+							"volume": -2.0
+						},
+						{
+							"do": "voice",
+							"state": ""
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.5
+						},
+						{
+							"do": "camera",
+							"zoom": 1,
+							"focus": "princess",
+							"time": 0.5
+						},
+						{
+							"do": "move",
+							"who": "foe",
+							"to": [
+								76,
+								-16
+							],
+							"time": 0.25
+						},
+						{
+							"do": "move",
+							"who": "fairy2",
+							"to": [
+								-78,
+								-14
+							],
+							"time": 0.25
+						}
+					],
+					"wait": 1.1
+				},
+				{
+					"act": "burst",
+					"speaker": "公主",
+					"text": "哈……魔力像花粉一样散开了……身体轻轻的，好畅快……",
+					"actions": [
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "shy"
+						}
+					]
+				},
+				{
+					"act": "burst",
+					"speaker": "羽毛小精灵群",
+					"text": "咯咯咯～花又开了～大家再来～",
+					"actions": [
+						{
+							"do": "move",
+							"who": "foe",
+							"to": [
+								16,
+								-10
+							],
+							"time": 0.6
+						},
+						{
+							"do": "move",
+							"who": "fairy2",
+							"to": [
+								-18,
+								-8
+							],
+							"time": 0.6
+						},
+						{
+							"do": "voice",
+							"state": "giggle"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "foe",
+							"repeat": 4,
+							"interval": 0.3,
+							"fx": "feather"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "fairy2",
+							"repeat": 4,
+							"interval": 0.3,
+							"fx": "feather"
+						}
+					]
+				},
+				{
+					"act": "burst",
+					"speaker": "公主",
+					"text": "呀哈哈哈！放完魔力身体好敏感，羽毛一扫就痒得在花瓣里打滚哈哈哈！",
+					"actions": [
+						{
+							"do": "voice",
+							"state": "laugh"
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.8
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "foe",
+							"repeat": 10,
+							"interval": 0.16,
+							"fx": "feather"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "fairy2",
+							"repeat": 10,
+							"interval": 0.16,
+							"fx": "feather"
+						}
+					]
+				},
+				{
+					"act": "burst",
+					"speaker": "羽毛小精灵群",
+					"text": "咯咯～羽毛雨～",
+					"actions": [
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.6
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "foe",
+							"repeat": 10,
+							"interval": 0.15,
+							"fx": "feather"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "fairy2",
+							"repeat": 10,
+							"interval": 0.15,
+							"fx": "feather"
+						}
+					]
+				},
+				{
+					"act": "burst",
+					"speaker": "公主",
+					"text": "……羽、羽毛……哈哈……花、花里全是……",
+					"actions": [
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "dots"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "foe",
+							"repeat": 6,
+							"interval": 0.22,
+							"fx": "feather"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "fairy2",
+							"repeat": 6,
+							"interval": 0.22,
+							"fx": "feather"
+						}
+					]
+				},
+				{
 					"actions": [
 						{
 							"do": "fade_out",
@@ -2285,6 +2985,327 @@
 							"do": "hop",
 							"who": "crowd3",
 							"count": 1
+						}
+					]
+				},
+				{
+					"act": "burst",
+					"speaker": "",
+					"text": "（史莱姆池里冒出一只又一只史莱姆，凉凉的果冻糊满全身，魔力满了）",
+					"actions": [
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.8
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "surprise"
+						},
+						{
+							"do": "voice",
+							"state": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "foe",
+							"repeat": 6,
+							"interval": 0.24,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "slime2",
+							"repeat": 6,
+							"interval": 0.24,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "crowd2",
+							"repeat": 4,
+							"interval": 0.22,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "crowd3",
+							"repeat": 4,
+							"interval": 0.22,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "crowd4",
+							"repeat": 4,
+							"interval": 0.22,
+							"fx": "lines"
+						},
+						{
+							"do": "hop",
+							"who": "crowd6",
+							"count": 1
+						}
+					]
+				},
+				{
+					"act": "burst",
+					"speaker": "公主",
+					"text": "魔力……要把池子掀翻了——！",
+					"actions": [
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 1.2
+						},
+						{
+							"do": "camera",
+							"zoom": 1.5,
+							"focus": "princess",
+							"time": 0.4
+						},
+						{
+							"do": "flash",
+							"time": 0.2
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "crowd5",
+							"repeat": 4,
+							"interval": 0.22,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "crowd6",
+							"repeat": 4,
+							"interval": 0.22,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "crowd7",
+							"repeat": 4,
+							"interval": 0.22,
+							"fx": "lines"
+						},
+						{
+							"do": "hop",
+							"who": "crowd9",
+							"count": 1
+						}
+					]
+				},
+				{
+					"act": "burst",
+					"portrait": "fatigue_burst",
+					"actions": [
+						{
+							"do": "flash",
+							"time": 0.8
+						},
+						{
+							"do": "sfx",
+							"sound": "star_burst",
+							"volume": -1.0
+						},
+						{
+							"do": "sfx",
+							"sound": "water_release",
+							"volume": -2.0
+						},
+						{
+							"do": "voice",
+							"state": ""
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.5
+						},
+						{
+							"do": "camera",
+							"zoom": 1,
+							"focus": "princess",
+							"time": 0.5
+						},
+						{
+							"do": "move",
+							"who": "foe",
+							"to": [
+								82,
+								2
+							],
+							"time": 0.25
+						},
+						{
+							"do": "move",
+							"who": "slime2",
+							"to": [
+								-80,
+								4
+							],
+							"time": 0.25
+						}
+					],
+					"wait": 1.1
+				},
+				{
+					"act": "burst",
+					"speaker": "公主",
+					"text": "呼啊……魔力把池水都冲开了……全身清清凉凉，好畅快……",
+					"actions": [
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "shy"
+						}
+					]
+				},
+				{
+					"act": "burst",
+					"speaker": "史莱姆",
+					"text": "噗叽噗叽～池子里还有～",
+					"actions": [
+						{
+							"do": "move",
+							"who": "foe",
+							"to": [
+								22,
+								8
+							],
+							"time": 0.6
+						},
+						{
+							"do": "move",
+							"who": "slime2",
+							"to": [
+								-20,
+								10
+							],
+							"time": 0.6
+						},
+						{
+							"do": "voice",
+							"state": "giggle"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "foe",
+							"repeat": 4,
+							"interval": 0.3,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "slime2",
+							"repeat": 4,
+							"interval": 0.3,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"act": "burst",
+					"speaker": "公主",
+					"text": "咿哈哈哈！放完魔力好敏感……果冻一贴上脚心就痒得滑来滑去哈哈哈哈！",
+					"actions": [
+						{
+							"do": "voice",
+							"state": "laugh"
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.8
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "foe",
+							"repeat": 10,
+							"interval": 0.16,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "slime2",
+							"repeat": 10,
+							"interval": 0.16,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"act": "burst",
+					"speaker": "史莱姆",
+					"text": "噗叽～一起泡澡～",
+					"actions": [
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.6
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "foe",
+							"repeat": 10,
+							"interval": 0.15,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "slime2",
+							"repeat": 10,
+							"interval": 0.15,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"act": "burst",
+					"speaker": "公主",
+					"text": "……果、果冻池……哈哈……爬不出去……",
+					"actions": [
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "dots"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "foe",
+							"repeat": 6,
+							"interval": 0.22,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "slime2",
+							"repeat": 6,
+							"interval": 0.22,
+							"fx": "lines"
 						}
 					]
 				},
@@ -3002,6 +4023,327 @@
 					]
 				},
 				{
+					"act": "burst",
+					"speaker": "",
+					"text": "（水母卵一颗颗孵开，魔力水母的触须一边挠一边吸，魔力还是满了）",
+					"actions": [
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.8
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "surprise"
+						},
+						{
+							"do": "voice",
+							"state": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "foe",
+							"repeat": 6,
+							"interval": 0.24,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "jelly2",
+							"repeat": 6,
+							"interval": 0.24,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "crowd2",
+							"repeat": 4,
+							"interval": 0.22,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "crowd3",
+							"repeat": 4,
+							"interval": 0.22,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "crowd4",
+							"repeat": 4,
+							"interval": 0.22,
+							"fx": "lines"
+						},
+						{
+							"do": "hop",
+							"who": "crowd6",
+							"count": 1
+						}
+					]
+				},
+				{
+					"act": "burst",
+					"speaker": "公主",
+					"text": "魔力……吸都吸不完……要溢出来了——！",
+					"actions": [
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 1.2
+						},
+						{
+							"do": "camera",
+							"zoom": 1.5,
+							"focus": "princess",
+							"time": 0.4
+						},
+						{
+							"do": "flash",
+							"time": 0.2
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "crowd5",
+							"repeat": 4,
+							"interval": 0.22,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "crowd6",
+							"repeat": 4,
+							"interval": 0.22,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "crowd7",
+							"repeat": 4,
+							"interval": 0.22,
+							"fx": "lines"
+						},
+						{
+							"do": "hop",
+							"who": "crowd9",
+							"count": 1
+						}
+					]
+				},
+				{
+					"act": "burst",
+					"portrait": "fatigue_burst",
+					"actions": [
+						{
+							"do": "flash",
+							"time": 0.8
+						},
+						{
+							"do": "sfx",
+							"sound": "star_burst",
+							"volume": -1.0
+						},
+						{
+							"do": "sfx",
+							"sound": "water_release",
+							"volume": -2.0
+						},
+						{
+							"do": "voice",
+							"state": ""
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.5
+						},
+						{
+							"do": "camera",
+							"zoom": 1,
+							"focus": "princess",
+							"time": 0.5
+						},
+						{
+							"do": "move",
+							"who": "foe",
+							"to": [
+								78,
+								-10
+							],
+							"time": 0.25
+						},
+						{
+							"do": "move",
+							"who": "jelly2",
+							"to": [
+								-80,
+								-8
+							],
+							"time": 0.25
+						}
+					],
+					"wait": 1.1
+				},
+				{
+					"act": "burst",
+					"speaker": "公主",
+					"text": "哈啊……魔力像水流一样涌出去……身体里清清爽爽，好畅快……",
+					"actions": [
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "shy"
+						}
+					]
+				},
+				{
+					"act": "burst",
+					"speaker": "魔力水母",
+					"text": "咕嘟～新孵出来的宝宝也饿了～",
+					"actions": [
+						{
+							"do": "move",
+							"who": "foe",
+							"to": [
+								18,
+								-4
+							],
+							"time": 0.6
+						},
+						{
+							"do": "move",
+							"who": "jelly2",
+							"to": [
+								-20,
+								-2
+							],
+							"time": 0.6
+						},
+						{
+							"do": "voice",
+							"state": "giggle"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "foe",
+							"repeat": 4,
+							"interval": 0.3,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "jelly2",
+							"repeat": 4,
+							"interval": 0.3,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"act": "burst",
+					"speaker": "公主",
+					"text": "呀哈哈哈！放完魔力身体好敏感——小触须一碰就麻麻痒痒的哈哈哈！",
+					"actions": [
+						{
+							"do": "voice",
+							"state": "laugh"
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.8
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "foe",
+							"repeat": 10,
+							"interval": 0.16,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "jelly2",
+							"repeat": 10,
+							"interval": 0.16,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"act": "burst",
+					"speaker": "魔力水母",
+					"text": "咕嘟咕嘟～再挠出来一点～",
+					"actions": [
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.6
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "foe",
+							"repeat": 10,
+							"interval": 0.15,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "jelly2",
+							"repeat": 10,
+							"interval": 0.15,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"act": "burst",
+					"speaker": "公主",
+					"text": "……麻、麻麻的……哈哈……又满了……",
+					"actions": [
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "dots"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "foe",
+							"repeat": 6,
+							"interval": 0.22,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "jelly2",
+							"repeat": 6,
+							"interval": 0.22,
+							"fx": "lines"
+						}
+					]
+				},
+				{
 					"actions": [
 						{
 							"do": "fade_out",
@@ -3711,6 +5053,327 @@
 							"do": "hop",
 							"who": "crowd3",
 							"count": 1
+						}
+					]
+				},
+				{
+					"act": "burst",
+					"speaker": "",
+					"text": "（宝箱堆里的宝箱怪一个接一个张开嘴，舌头和小手挠个不停，魔力满了）",
+					"actions": [
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.8
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "surprise"
+						},
+						{
+							"do": "voice",
+							"state": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "foe",
+							"repeat": 6,
+							"interval": 0.24,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "mimic2",
+							"repeat": 6,
+							"interval": 0.24,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "crowd2",
+							"repeat": 4,
+							"interval": 0.22,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "crowd3",
+							"repeat": 4,
+							"interval": 0.22,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "crowd4",
+							"repeat": 4,
+							"interval": 0.22,
+							"fx": "lines"
+						},
+						{
+							"do": "hop",
+							"who": "crowd6",
+							"count": 1
+						}
+					]
+				},
+				{
+					"act": "burst",
+					"speaker": "公主",
+					"text": "魔力……要把宝箱都震开了——！",
+					"actions": [
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 1.2
+						},
+						{
+							"do": "camera",
+							"zoom": 1.5,
+							"focus": "princess",
+							"time": 0.4
+						},
+						{
+							"do": "flash",
+							"time": 0.2
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "crowd5",
+							"repeat": 4,
+							"interval": 0.22,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "crowd6",
+							"repeat": 4,
+							"interval": 0.22,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "crowd7",
+							"repeat": 4,
+							"interval": 0.22,
+							"fx": "lines"
+						},
+						{
+							"do": "hop",
+							"who": "crowd9",
+							"count": 1
+						}
+					]
+				},
+				{
+					"act": "burst",
+					"portrait": "fatigue_burst",
+					"actions": [
+						{
+							"do": "flash",
+							"time": 0.8
+						},
+						{
+							"do": "sfx",
+							"sound": "star_burst",
+							"volume": -1.0
+						},
+						{
+							"do": "sfx",
+							"sound": "water_release",
+							"volume": -2.0
+						},
+						{
+							"do": "voice",
+							"state": ""
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.5
+						},
+						{
+							"do": "camera",
+							"zoom": 1,
+							"focus": "princess",
+							"time": 0.5
+						},
+						{
+							"do": "move",
+							"who": "foe",
+							"to": [
+								60,
+								-12
+							],
+							"time": 0.25
+						},
+						{
+							"do": "move",
+							"who": "mimic2",
+							"to": [
+								82,
+								0
+							],
+							"time": 0.25
+						}
+					],
+					"wait": 1.1
+				},
+				{
+					"act": "burst",
+					"speaker": "公主",
+					"text": "哈……魔力把箱盖全冲开了……全身一下子透了气，好畅快……",
+					"actions": [
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "shy"
+						}
+					]
+				},
+				{
+					"act": "burst",
+					"speaker": "宝箱怪",
+					"text": "咔哒咔哒～盖子又合上咯～",
+					"actions": [
+						{
+							"do": "move",
+							"who": "foe",
+							"to": [
+								0,
+								-6
+							],
+							"time": 0.6
+						},
+						{
+							"do": "move",
+							"who": "mimic2",
+							"to": [
+								22,
+								6
+							],
+							"time": 0.6
+						},
+						{
+							"do": "voice",
+							"state": "giggle"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "foe",
+							"repeat": 4,
+							"interval": 0.3,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "mimic2",
+							"repeat": 4,
+							"interval": 0.3,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"act": "burst",
+					"speaker": "公主",
+					"text": "噫哈哈哈！放完魔力好敏感……舌头一舔就痒到在箱子里滚来滚去哈哈哈！",
+					"actions": [
+						{
+							"do": "voice",
+							"state": "laugh"
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.8
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "foe",
+							"repeat": 10,
+							"interval": 0.16,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "mimic2",
+							"repeat": 10,
+							"interval": 0.16,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"act": "burst",
+					"speaker": "宝箱怪",
+					"text": "咔哒～这里还有一个空箱子～",
+					"actions": [
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.6
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "foe",
+							"repeat": 10,
+							"interval": 0.15,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "mimic2",
+							"repeat": 10,
+							"interval": 0.15,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"act": "burst",
+					"speaker": "公主",
+					"text": "……宝、宝箱……哈哈……全是宝箱……",
+					"actions": [
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "dots"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "foe",
+							"repeat": 6,
+							"interval": 0.22,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "mimic2",
+							"repeat": 6,
+							"interval": 0.22,
+							"fx": "lines"
 						}
 					]
 				},

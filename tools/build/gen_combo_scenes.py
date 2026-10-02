@@ -5,7 +5,9 @@
   → 第一个来源登场开始挠（点亮第 1 格），公主第 1 句
   → 第二个来源一起挠（点亮第 2 格），公主第 2 句
   → 第三个来源一起挠（点亮第 3 格），失控 2 姿势、大笑、镜头拉近，公主第 3 句
-  → 高潮：三个来源一起挠（三格一起闪），公主 5 句 → 淡出。
+  → 高潮：三个来源一起挠（三格一起闪），公主 5 句
+  → 最后一幕（burst_lines.py 的 COMBO）：魔力疲倦满了 → 爆发（立绘换成战损魔力释放）→ 畅快 → 它们又回来、身体更敏感 → 笑到力竭 → 淡出。
+  这一幕的步骤都标了 "act": "burst"；前面的阶段句 / 高潮句规则只管不带 act 的步骤。
 每个阶段公主的台词都是正被这一阶段的来源挠、边笑边漏出它的手法（不陈述谁来了，不直接点名）；
 高潮 5 句三种手法交替叠加，越笑越厉害，最后一两句笑到说不完整。
 怪物用 cgs.json 的 actors 演员，陷阱用 trap_actors 演员（摆在公主身边，挠的时候发动）。
@@ -14,7 +16,11 @@
 """
 import json
 import os
+import sys
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import burst_lines as BL  # noqa: E402
 
 os.chdir(Path(__file__).resolve().parents[2])
 
@@ -514,6 +520,14 @@ def scene(c):
                                   {"do": "shake", "who": "princess", "time": 0.6},
                                   {"do": "bubble", "who": "princess", "kind": "dots" if j == len(lines) - 4 else "laugh"}]
                                  + tickle(order, 10 + j * 2, max(0.14, 0.2 - j * 0.03))})
+    movers = [(who_of[k], cast[who_of[k]]["at"]) for k in order if not _is_trap(k)]
+    burst = BL.burst_steps(BL.COMBO[cid], "", movers, "lines")
+    for st in burst:
+        if st.get("portrait") == BL.PORTRAIT:
+            st["actions"].append({"do": "light", "all": True})
+        elif "text" in st:
+            st["actions"] += [a for a in tickle(order, 4, 0.2) if a["by"] not in dict(movers)]  # 机关也接着挠
+    steps += burst
     steps.append({"actions": [{"do": "fade_out", "time": 0.5}, {"do": "voice", "state": ""}], "wait": 0.6})
     return {"name": name, "cast": cast, "steps": steps}
 

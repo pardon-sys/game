@@ -44,7 +44,7 @@ def add_crowd(cg, key, foe, fx, n):
 
 def add_nest(kind, foe, name, title, lines, taunts, act3, crowd=10, **kw):
     key = "nest_" + kind
-    cg = G.standard(key, name, lines, taunts, act3, foe=foe, **kw)
+    cg = G.standard(key, name, lines, taunts, act3, foe=foe, burst=G.BL.NEST[kind], **kw)
     cg["name"] = title
     add_crowd(cg, key, foe, kw.get("fx", "lines"), crowd)
     cgs[key] = cg

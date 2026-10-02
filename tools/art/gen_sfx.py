@@ -18,6 +18,7 @@
   combo        组合技提示音：两声上扬
   puddle       魔力疲倦水液：啪嗒一声
   tickle_special 特殊挠痒（暴击）：水里的果冻抖动——闷闷的啵叽 + 慢颤音 + 气泡，整体音高上扬约 5 度
+  water_release 魔力释放的水声：一股水「哗——」地涌出（低沉的冲水噪声先涌起再退去）+ 一串气泡 + 几滴回落的水珠
 
 用法：python tools/art/gen_sfx.py
 在游戏里通过 Audio.play("tickle", 音量, 抖动, 音高) 播放，怪物用不同音高区分（巨魔低沉、蝙蝠尖细）。
@@ -251,5 +252,39 @@ def gen_floor4_sfx():
     save("rune", mix(shimmer * env(t, 0.01, 0.2), np.sin(2 * np.pi * 98 * t) * env(t, 0.05, 0.3) * 0.5), 0.55)
 
 
+
+def gen_release_sfx():
+    """魔力释放的水声（星光爆发、疲倦爆发、CG 里的魔力爆发都会播）。用单独的随机数，不影响前面的音效。"""
+    r = np.random.default_rng(23)
+    dur = 1.3
+    t = t_axis(dur)
+    # 涌出的水流：低通噪声，很快涌起、慢慢退去；带一点流动的起伏
+    gush_env = np.minimum(t / 0.06, 1.0) * np.exp(-np.maximum(t - 0.06, 0) / 0.45)
+    flow = lowpass(r.standard_normal(len(t)), 700) * (0.75 + 0.25 * np.sin(2 * np.pi * 11 * t)) * gush_env
+    hiss = highpass(lowpass(r.standard_normal(len(t)), 4500), 1200) * gush_env * 0.25
+    # 冲出那一下的「哗」：下滑的低音
+    whoosh = np.sin(2 * np.pi * np.cumsum(260 * np.exp(-t / 0.18) + 70) / RATE) * env(t, 0.01, 0.2) * 0.5
+    # 一串气泡：短促的上扬小音，越来越稀
+    bubbles = np.zeros(len(t))
+    times = np.cumsum(r.uniform(0.025, 0.07, 22)) + 0.05
+    for k, at in enumerate(times):
+        if at >= dur - 0.1:
+            break
+        bt = t_axis(0.05)
+        f = r.uniform(500, 1100)
+        b = np.sin(2 * np.pi * np.cumsum(f + 900 * (bt / 0.05)) / RATE) * env(bt, 0.002, 0.015) * (1.0 - k / 26) * 0.35
+        i = int(at * RATE)
+        bubbles[i:i + len(b)] += b[: len(bubbles) - i]
+    # 回落的水珠
+    drops = np.zeros(len(t))
+    for at, f in ((0.55, 820), (0.72, 640), (0.9, 900), (1.05, 700)):
+        dt = t_axis(0.12)
+        d = np.sin(2 * np.pi * np.cumsum(f * np.exp(-dt / 0.05) + 200) / RATE) * env(dt, 0.002, 0.04) * 0.3
+        i = int(at * RATE)
+        drops[i:i + len(d)] += d[: len(drops) - i]
+    save("water_release", mix(flow * 1.4, hiss, whoosh, bubbles, drops), 0.75)
+
+
 if __name__ == "__main__":
     main()
+    gen_release_sfx()

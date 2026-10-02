@@ -31,6 +31,7 @@ const SOUNDS := {
 	"grab": ["res://assets/generated/sfx/grab.wav"],
 	"chant": ["res://assets/generated/sfx/chant.wav"],
 	"star_burst": ["res://assets/generated/sfx/star_burst.wav"],
+	"water_release": ["res://assets/generated/sfx/water_release.wav"],
 	"fizzle": ["res://assets/generated/sfx/fizzle.wav"],
 	"pinch": ["res://assets/generated/sfx/pinch.wav"],
 	"vine": ["res://assets/generated/sfx/vine.wav"],

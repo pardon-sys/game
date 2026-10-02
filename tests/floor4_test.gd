@@ -14,6 +14,7 @@ class Src extends Node2D:
 
 
 func _ready() -> void:
+	DevConfig.override = false  # 不受本地 dev_config.json 的测试模式开关影响
 	TickleZones.enabled = false  # 部位与敏感值会让挠痒数值随机变化；在 floor5_test 里测
 	ComboTracker.play_scenes = false  # 三来源组合的小演出会暂停战斗；需要时在专门的测试里打开
 	HUD.slow_motion = false
@@ -982,6 +983,8 @@ func _run_combos3() -> void:
 		var said: Array[String] = []
 		var narrated := 0
 		for st in sc["steps"]:
+			if st.get("act", "") == "burst":
+				continue  # 最后一幕魔力爆发另外检查（fixes_test）
 			if st.get("speaker", "") == "公主":
 				said.append(str(st["text"]))
 			elif st.has("text"):
