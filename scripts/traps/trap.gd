@@ -39,6 +39,8 @@ enum Phase { IDLE, WARN, ACTIVE, COOLDOWN }
 @export var tickle_pitch := 1.1
 ## 挠到 / 打到目标时的命中特效（HitFx.KINDS）。
 @export var hit_fx := "feather"
+## 单个陷阱覆盖 data/tickle_zones.json 的部位权重（{部位: 权重}；图例写 zones=sole:2,armpit:1）。
+@export var tickle_zones := {}
 ## 会抓人 / 定身的陷阱：在滑溜肥皂地板上滑行时碰到它就停下（加入 slide_stopper 组）。
 @export var stops_slide := false
 @export_group("时间")

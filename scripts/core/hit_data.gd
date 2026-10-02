@@ -20,6 +20,8 @@ var tag := ""
 var special := false
 ## 魔力疲倦的额外倍率（魔力水母为 3）。
 var fatigue_mult := 1.0
+## 挠到的部位（TickleZones 的部位 id；没有来源键的挠痒为空）。
+var zone := ""
 
 
 func is_magic() -> bool:

@@ -18,6 +18,8 @@ signal princess_reacted(text: String, duration: float)
 signal combo_triggered(id: String, combo_name: String)
 ## Q / R 快捷键绑定的物品改变（HUD 背包栏、背包界面）。
 signal hotkeys_changed
+## 获得或升级了被动技能（level = 新等级）。
+signal passive_changed(id: String, level: int)
 
 ## 拿到冒险背包的剧情标记（第四层落脚点旁的储藏室）。
 const BACKPACK_FLAG := "got_backpack"
@@ -45,6 +47,8 @@ var inventory := Inventory.new()
 ## 快捷键 -> 物品 id（use_item = Q，use_special = R）。跨层保留，重新开始时恢复默认。
 var hotkeys := DEFAULT_HOTKEYS.duplicate()
 var flags := {}
+## 人物被动技能：{id: 等级}（data/passives/passives.json；换层保留，重新开始清空）。
+var passives := {}
 var checkpoint := Vector2.ZERO
 var in_dialogue := false
 ## 过场演出（笑倒 CG）进行中：对话一行行结束时不交还控制权，整个演出期间游戏保持冻结。
@@ -97,6 +101,7 @@ func reset() -> void:
 	hotkeys = DEFAULT_HOTKEYS.duplicate()
 	hotkeys_changed.emit()
 	flags = {}
+	passives = {}
 	in_dialogue = false
 	in_cutscene = false
 	checkpoint = Vector2.ZERO
@@ -168,3 +173,32 @@ func show_bubble(kind: String) -> void:
 
 func notify(text: String) -> void:
 	toast.emit(text)
+
+
+# ------------------------------------------------------------------ 被动技能
+func passive_level(id: String) -> int:
+	return int(passives.get(id, 0))
+
+
+## 获得被动技能（已有时不变）。返回是否新获得。
+func grant_passive(id: String, silent := false) -> bool:
+	if PassiveDB.info(id).is_empty() or passives.has(id):
+		return false
+	passives[id] = 1
+	passive_changed.emit(id, 1)
+	if not silent:
+		notify("获得被动技能：%s" % PassiveDB.name(id))
+	return true
+
+
+## 升级被动技能（没有时先获得 1 级；满级不变）。返回是否升级了。
+func upgrade_passive(id: String) -> bool:
+	if not passives.has(id):
+		return grant_passive(id)
+	var lv := passive_level(id)
+	if lv >= PassiveDB.max_level(id):
+		return false
+	passives[id] = lv + 1
+	passive_changed.emit(id, lv + 1)
+	notify("被动技能升级：%s Lv.%d" % [PassiveDB.name(id), lv + 1])
+	return true

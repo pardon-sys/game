@@ -19,6 +19,11 @@
 			"id": "floor_04",
 			"name": "第四层·魔力回廊",
 			"scene": "res://levels/floor_04/floor.tscn"
+		},
+		{
+			"id": "floor_05",
+			"name": "第五层·机关迷城",
+			"scene": "res://levels/floor_05/floor.tscn"
 		}
 	]
 }

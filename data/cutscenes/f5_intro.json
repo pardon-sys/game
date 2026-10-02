@@ -1,0 +1,19 @@
+{
+	"name": "机关迷城",
+	"skippable": true,
+	"hide_hud": true,
+	"steps": [
+		{"actions": [{"do": "camera", "to": [12, 82], "time": 0.6}, {"do": "pose", "emotion": "surprise"}], "wait": 0.6},
+		{"speaker": "公主", "emotion": "surprise", "text": "楼梯尽头……又是一层？这里的空气里全是齿轮的声音……"},
+		{"actions": [{"do": "camera", "to": [30, 82], "time": 1.4}], "wait": 1.4},
+		{"actions": [{"do": "trap", "who": "Cage_23_80", "time": 0.8}, {"do": "trap", "who": "Cage_26_81", "time": 0.8}, {"do": "sfx", "sound": "gate", "pitch": 1.3}],
+			"speaker": "公主", "emotion": "sad", "text": "笼、笼子从天花板上掉下来了……地上全是影子……"},
+		{"actions": [{"do": "camera", "to": [60, 66], "time": 1.6}], "wait": 1.6},
+		{"actions": [{"do": "trap", "who": "Snare_58_70", "time": 1.0}, {"do": "trap", "who": "Cuffs_53_62", "time": 1.0}, {"do": "trap", "who": "Teaser_54_64", "time": 1.0}],
+			"speaker": "", "text": "（绳套、传送带、弹弹床、铐柱……一个机关的出口，正好是下一个机关的入口）"},
+		{"actions": [{"do": "camera", "to": [64, 64], "time": 0.6}, {"do": "say", "who": "Imp_68_64", "text": "嘿嘿，新客人～"}],
+			"speaker": "公主", "emotion": "angry", "text": "那些戴护目镜的小家伙……就是它们在开机关吗！"},
+		{"actions": [{"do": "camera", "reset": true, "time": 1.0}], "wait": 1.0},
+		{"speaker": "公主", "emotion": "angry", "text": "中了一个就会被一路送下去……不行，每一步都要看准了再走！"}
+	]
+}

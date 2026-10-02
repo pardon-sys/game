@@ -57,7 +57,7 @@ Y = chest item=heart
 X = chest item=mint amount=2
 G = gate group=boss_gate
 U = trigger dialogue=boss4_intro w=4 h=1
-Z = trigger dialogue=ending_4 w=5 h=3
+Z = exit target=next dialogue=ending_4 w=5 h=1
 [ = floor tile=36
 s = floor tile=37
 ] = floor tile=39

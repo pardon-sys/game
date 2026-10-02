@@ -56,7 +56,15 @@ const COMBO_SPOTS := [
 	["floor_04", "ultimate_stocks", Vector2i(64, 40), Vector2i(64, 24), Vector2i(64, 32)],
 	["floor_04", "auto_stocks", Vector2i(64, 40), Vector2i(64, 24), Vector2i(64, 32)],
 	["floor_04", "curse_chain", Vector2i(64, 40), Vector2i(64, 24), Vector2i(64, 32)],
+	["floor_05", "armpit_hands", "arena:arena_f5a"],
+	["floor_05", "armpit_rain", "arena:arena_f5a"],
+	["floor_05", "snare_sole_feast", "arena:arena_f5a"],
+	["floor_05", "imp_fitting", "arena:arena_f5b"],
+	["floor_05", "feather_cocoon", "arena:arena_f5b"],
 ]
+## 有 levels/<楼层>/design.json 的楼层（第五层）：combo_areas 里的组合按区域检查（陷阱和怪物都在区域里），
+## chains 检查「可躲」（存在不碰静态束缚 / 位移陷阱的路）和「中招就连锁」（从前一个束缚陷阱放开后，
+## 按强制位移——传送带、弹弹床、风扇、漩涡——会被送进下一个）。
 const SPOT_RADIUS := 8
 ## 新机制第一次出现的楼层要有介绍石碑：[机制, 楼层, 石碑对话 id]。石碑要比机制先走到（从楼层起点按步数算），
 ## 而且离它不远（MECHANIC_SIGN_STEPS 步以内）。
@@ -65,6 +73,18 @@ const MECHANIC_SIGNS := [
 	["弹弹床", "floor_02", "sign2_bounce"],
 	["吸痒漩涡", "floor_02", "sign2_vortex"],
 	["滑溜肥皂地板", "floor_03", "sign3_soap"],
+	["落笼", "floor_05", "sign5_cage"],
+	["绊线", "floor_05", "sign5_tripwire"],
+	["机关小工匠", "floor_05", "sign5_imp"],
+	["倒吊绳套", "floor_05", "sign5_snare"],
+	["配套挠痒机关", "floor_05", "sign5_teaser"],
+	["举手铐柱", "floor_05", "sign5_cuffs"],
+	["挠痒衣柜", "floor_05", "sign5_wardrobe"],
+	["夹腿枷台", "floor_05", "sign5_clamp"],
+	["痒痒泥沼", "floor_05", "sign5_mud"],
+	["单腿吊环", "floor_05", "sign5_legloop"],
+	["痒痒长靴", "floor_05", "sign5_boots"],
+	["羽毛绑腿", "floor_05", "sign5_binding"],
 ]
 const MECHANIC_SIGN_STEPS := 14
 var _seen_mechanics := {}
@@ -73,6 +93,7 @@ const ARENAS := [
 	["floor_01", "arena_guard"], ["floor_02", "arena_spider"], ["floor_02", "arena_troll"],
 	["floor_03", "arena_rats"], ["floor_03", "arena_hall"], ["floor_03", "arena_trial"], ["floor_03", "arena_boss"],
 	["floor_04", "arena_plaza"], ["floor_04", "arena_totem"], ["floor_04", "arena_gallery"], ["floor_04", "arena_boss"],
+	["floor_05", "arena_f5a"], ["floor_05", "arena_f5b"],
 ]
 
 var main: Node
@@ -82,6 +103,7 @@ var failures := 0
 
 
 func _ready() -> void:
+	TickleZones.enabled = false  # 部位与敏感值会让挠痒数值随机变化；在 floor5_test 里测
 	ComboTracker.play_scenes = false  # 三来源组合的小演出会暂停战斗；需要时在专门的测试里打开
 	HUD.slow_motion = false
 	Monster.random_specials = false  # 这里要精确的挠痒数值；暴击在 floor4_test 里测
@@ -106,11 +128,14 @@ func _ready() -> void:
 		print("-- ", id)
 		_run_forced(id)
 		_run_combo_spots(id)
+		_run_design(id)
 		_run_mechanic_signs(id)
 		await _run_arenas(id)
 	var covered := {}
 	for sp in COMBO_SPOTS:
 		covered[sp[1]] = true
+	for k in _area_combos:
+		covered[k] = true
 	var missing: Array = []
 	for c in ComboTracker.data().get("combos", []):
 		if c.get("keys", []).size() >= 3 and not covered.has(c["id"]):
@@ -213,6 +238,105 @@ func _reachable_all() -> bool:
 	return missing == 0 or (level.get("floor_id") == "floor_01" and missing <= 60)
 
 
+# ------------------------------------------------------------------ 第五层：组合区域 + 连锁段（design.json）
+func _run_design(id: String) -> void:
+	var path := "res://levels/%s/design.json" % id
+	if not FileAccess.file_exists(path):
+		return
+	var design: Dictionary = JSON.parse_string(FileAccess.get_file_as_string(path))
+	var walls: TileMapLayer = level.get_node("Walls")
+	for area in design.get("combo_areas", []):
+		var r: Array = area["rect"]
+		var cell_rect := Rect2i(int(r[0]), int(r[1]), int(r[2]) - int(r[0]) + 1, int(r[3]) - int(r[1]) + 1)
+		var in_rect := func(p: Vector2) -> bool: return cell_rect.has_point(walls.local_to_map(walls.to_local(p)))
+		var combo: Dictionary = ComboTracker.combo_def(str(area["combo"]))
+		var problems: Array[String] = []
+		var monster_slots: Array = []
+		for slot in combo["keys"]:
+			if ComboTracker.group("trap").has(slot[0]):
+				if not _cells_of(slot).keys().any(func(c): return cell_rect.has_point(c)):
+					problems.append("区域里没有陷阱 %s" % [slot])
+			else:
+				monster_slots.append(slot)
+		problems.append_array(_missing_monsters(monster_slots, in_rect))
+		check("三来源组合区域「%s」%s" % [ReactionDB.combo(str(area["combo"])).get("name", area["combo"]),
+			("" if problems.is_empty() else "：" + "；".join(problems))], problems.is_empty())
+		_area_combos[str(area["combo"])] = true
+	var static_cells := _static_hazards()
+	for ch in design.get("chains", []):
+		var start := Vector2i(int(ch["start"][0]), int(ch["start"][1]))
+		var goal := Vector2i(int(ch["goal"][0]), int(ch["goal"][1]))
+		var links: Array = ch["links"]
+		var safe := _route_ok(start, goal, static_cells)
+		var flow_ok := true
+		var bad := ""
+		for i in links.size() - 1:
+			var a := Vector2i(int(links[i][0]), int(links[i][1]))
+			var b := Vector2i(int(links[i + 1][0]), int(links[i + 1][1]))
+			if not _flow(a).has(b):
+				flow_ok = false
+				bad = "%s → %s" % [a, b]
+		check("连锁段「%s」：有一条不碰束缚 / 位移陷阱的路（可躲）" % ch["name"], safe)
+		check("连锁段「%s」：中了一个就被送进下一个（%d 环）%s" % [ch["name"], links.size(), "" if flow_ok else "，断在 " + bad], flow_ok)
+
+
+var _area_combos := {}
+
+
+## 静态的束缚 / 位移陷阱覆盖的格子（连锁段「可躲」检查要避开的；落笼、绊线、喷口、逗弄器、转轮、羽毛臂这类靠时机躲的不算）。
+func _static_hazards() -> Dictionary:
+	var out := {}
+	for n in level.find_children("*", "", true, false):
+		if n is RestraintTrap or n is TickleConveyor or n is BouncePad or n is SoapFloor or n is TickleVortex or n is FeatherFan \
+				or n is Stocks or n is StickyCarpet or n is HexRune or n is TickleVine:
+			for c in _trap_cover(n as Trap):
+				out[c] = true
+		if n is SoapFloor:
+			for c in _forced_maps()["soap"]:
+				out[c] = true
+	return out
+
+
+## 从 start 出发只受强制位移（弹弹床 → 落点、传送带 → 顺着走、风扇风道 → 顺风、漩涡范围 → 中心）会经过的格子。
+func _flow(start: Vector2i) -> Dictionary:
+	var walls: TileMapLayer = level.get_node("Walls")
+	var fm := _forced_maps()
+	var belts := {}
+	var fans := {}
+	var vortices: Array = []
+	for n in level.find_children("*", "", true, false):
+		if n is TickleConveyor:
+			var belt := n as TickleConveyor
+			var c0 := walls.local_to_map(walls.to_local(belt.global_position))
+			for i in belt.length:
+				belts[c0 + Vector2i(belt.belt) * i] = Vector2i(belt.belt)
+		elif n is FeatherFan:
+			for c in _trap_cover(n as Trap):
+				fans[c] = Vector2i((n as FeatherFan).wind)
+		elif n is TickleVortex:
+			vortices.append([walls.local_to_map(walls.to_local((n as Node2D).global_position)), (n as TickleVortex).radius])
+	var visited := {start: true}
+	var c := start
+	for step in 120:
+		var nxt := c
+		if fm["pads"].has(c):
+			nxt = fm["pads"][c]
+		elif belts.has(c):
+			nxt = c + belts[c]
+		elif fans.has(c):
+			nxt = c + fans[c]
+		else:
+			for v in vortices:
+				if c != v[0] and Vector2(c - v[0]).length() <= float(v[1]):
+					nxt = v[0]
+					break
+		if nxt == c or not _walkable(nxt, {}):
+			break
+		visited[nxt] = true
+		c = nxt
+	return visited
+
+
 # ------------------------------------------------------------------ 新机制的介绍石碑
 func _run_mechanic_signs(id: String) -> void:
 	var walls: TileMapLayer = level.get_node("Walls")
@@ -254,6 +378,42 @@ func _mechanic_cells(mech: String) -> Array[Vector2i]:
 					for dx in (n as SoapFloor).tiles_w:
 						for dy in (n as SoapFloor).tiles_h:
 							out.append(c0 + Vector2i(dx, dy))
+			"落笼":
+				if n is CageTrap:
+					out.append(c0)
+			"绊线":
+				if n is TripwireTrap:
+					out.append_array(_trap_cover(n as Trap))
+			"机关小工匠":
+				if n is MachineImp:
+					out.append(c0)
+			"倒吊绳套":
+				if n is SnareTrap:
+					out.append(c0)
+			"配套挠痒机关":
+				if n is TeaserTrap or n is WheelTrap or n is ShowerTrap:
+					out.append(c0)
+			"举手铐柱":
+				if n is CuffsTrap:
+					out.append(c0)
+			"挠痒衣柜":
+				if n is WardrobeTrap:
+					out.append(c0)
+			"夹腿枷台":
+				if n is ClampTrap:
+					out.append(c0)
+			"痒痒泥沼":
+				if n is MudTrap:
+					out.append_array(_trap_cover(n as Trap))
+			"单腿吊环":
+				if n is LegLoopTrap:
+					out.append(c0)
+			"痒痒长靴":
+				if n is BootsTrap:
+					out.append(c0)
+			"羽毛绑腿":
+				if n is BindingTrap:
+					out.append(c0)
 			"吸痒漩涡":
 				if n is TickleVortex:
 					var r: int = (n as TickleVortex).radius
@@ -364,6 +524,24 @@ func _trap_cover(n: Trap) -> Array[Vector2i]:
 		for dx in range(-1, 2):
 			for dy in range(-1, 2):
 				out.append(c0 + Vector2i(dx, dy))
+	elif n is MudTrap:
+		for dx in (n as MudTrap).tiles_w:
+			for dy in (n as MudTrap).tiles_h:
+				out.append(c0 + Vector2i(dx, dy))
+	elif n is TripwireTrap:
+		var tw := n as TripwireTrap
+		for i in tw.tiles_w:
+			out.append(c0 + (Vector2i(0, i) if tw.vertical else Vector2i(i, 0)))
+	elif n is ShowerTrap:
+		for dx in range(-1, 2):
+			for dy in range(-1, 2):
+				out.append(c0 + Vector2i(dx, dy))
+	elif n is TickleVortex:
+		var r := (n as TickleVortex).radius
+		for dx in range(-r, r + 1):
+			for dy in range(-r, r + 1):
+				if Vector2(dx, dy).length() <= r:
+					out.append(c0 + Vector2i(dx, dy))
 	else:
 		out.append(c0)
 	return out
@@ -470,6 +648,8 @@ func _missing_monsters(slots: Array, in_range: Callable) -> Array[String]:
 				keys.append("bat")
 			elif n is JellyQueen:
 				keys.append("mana_jelly")
+		elif n is CageTrap and (n as CageTrap).content != "feather" and in_range.call((n as Node2D).global_position):
+			keys.append("slime" if (n as CageTrap).content == "slime" else "tentacle")  # 落笼放出来的怪物
 		elif n is MonsterNest and in_range.call((n as Node2D).global_position):
 			var m: Monster = load((n as MonsterNest).monster_scene).instantiate()
 			keys.append(m.stats.reaction_key)

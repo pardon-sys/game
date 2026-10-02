@@ -37,6 +37,7 @@ const SCENES := {
 	"checkpoint": "res://scenes/objects/checkpoint.tscn",
 	"trigger": "res://scenes/objects/dialogue_trigger.tscn",
 	"arena": "res://scenes/objects/arena_zone.tscn",
+	"traproom": "res://scenes/objects/trap_room_zone.tscn",
 }
 ## 按 type 参数选择场景的类型：新增怪物/友军/陷阱时在这里注册。
 const TYPED_SCENES := {
@@ -57,6 +58,8 @@ const TYPED_SCENES := {
 		"glove": "res://scenes/actors/monsters/ghost_glove.tscn",
 		"hedgehog": "res://scenes/actors/monsters/brush_hedgehog.tscn",
 		"jelly_queen": "res://scenes/actors/monsters/jelly_queen.tscn",
+		"imp": "res://scenes/actors/monsters/machine_imp.tscn",
+		"mini_tentacle": "res://scenes/actors/monsters/mini_tentacle.tscn",
 	},
 	"ally": {"knight": "res://scenes/actors/allies/knight.tscn"},
 	"trap": {
@@ -74,6 +77,18 @@ const TYPED_SCENES := {
 		"vortex": "res://scenes/traps/tickle_vortex.tscn",
 		"bounce": "res://scenes/traps/bounce_pad.tscn",
 		"soap": "res://scenes/traps/soap_floor.tscn",
+		"snare": "res://scenes/traps/snare.tscn",
+		"cuffs": "res://scenes/traps/cuffs.tscn",
+		"clamp": "res://scenes/traps/clamp.tscn",
+		"legloop": "res://scenes/traps/legloop.tscn",
+		"mud": "res://scenes/traps/mud.tscn",
+		"boots": "res://scenes/traps/boots.tscn",
+		"binding": "res://scenes/traps/binding.tscn",
+		"teaser": "res://scenes/traps/teaser.tscn",
+		"wheel": "res://scenes/traps/wheel.tscn",
+		"shower": "res://scenes/traps/shower.tscn",
+		"cage": "res://scenes/traps/cage.tscn",
+		"tripwire": "res://scenes/traps/tripwire.tscn",
 	},
 	## 怪物巢穴（MonsterNest 的子类）
 	"nest": {
@@ -87,6 +102,7 @@ const TYPED_SCENES := {
 	"walltrap": {
 		"hand": "res://scenes/traps/grab_hand.tscn",
 		"arm": "res://scenes/traps/feather_arm.tscn",
+		"wardrobe": "res://scenes/traps/wardrobe.tscn",
 	},
 }
 ## 挂在墙上的类型：所在格仍是墙。
@@ -94,7 +110,7 @@ const WALL_MOUNTED := ["torch", "face", "walltrap", "secret"]
 ## 看起来是墙、之后可能打开的格子：照常放墙块，下面再铺一层地面。
 const HIDDEN_PASSAGE := ["secret"]
 ## 放在地面层（总在角色下方）的类型。
-const FLOOR_LEVEL := ["trap", "checkpoint", "trigger", "plate", "exit", "arena"]
+const FLOOR_LEVEL := ["trap", "checkpoint", "trigger", "plate", "exit", "arena", "traproom"]
 ## Kenney 图块中带碰撞的装饰（下半格碰撞）。
 const SOLID_DECOR := [63, 64, 65, 72, 73, 74, 75, 82]
 ## 当墙顶用的 Kenney 碎石图块（整格碰撞）。
@@ -154,6 +170,7 @@ func build(floor_id: String) -> int:
 	root.set_script(load("res://scripts/level.gd"))
 	root.set("floor_id", floor_id)
 	root.set("intro_dialogue", level_meta.get("intro", "intro"))
+	root.set("intro_cutscene", level_meta.get("intro_cutscene", ""))
 
 	var cm := CanvasModulate.new()
 	cm.name = "Darkness"
@@ -208,7 +225,7 @@ func build(floor_id: String) -> int:
 					if not (SCENES.has(k) or TYPED_SCENES.has(k)):
 						continue
 					var inst := _spawn(k, one, x, y)
-					var parent: Node = triggers if k in ["checkpoint", "trigger", "exit", "arena"] else (floor_objs if k in FLOOR_LEVEL else ents)
+					var parent: Node = triggers if k in ["checkpoint", "trigger", "exit", "arena", "traproom"] else (floor_objs if k in FLOOR_LEVEL else ents)
 					parent.add_child(inst)
 					inst.owner = root
 					if k == "letter":
@@ -266,6 +283,16 @@ func parse(path: String) -> bool:
 	for r in rows:
 		width = maxi(width, r.length())
 	return height > 0
+
+
+## "sole:1.5,thigh:1.3" -> {"sole": 1.5, "thigh": 1.3}（图例里的部位倍率 / 部位权重）。
+func _dict(v: Variant) -> Dictionary:
+	var out := {}
+	for part in str(v).split(",", false):
+		var kv := part.split(":", true, 1)
+		if kv.size() == 2:
+			out[kv[0].strip_edges()] = kv[1].to_float()
+	return out
 
 
 func _value(s: String) -> Variant:
@@ -357,7 +384,7 @@ func _spawn(kind: String, info: Dictionary, x: int, y: int) -> Node2D:
 	match kind:
 		"player", "monster", "ally", "item":
 			inst.position = base - Vector2(0, 4)
-		"trap", "checkpoint", "trigger", "plate", "exit", "arena":
+		"trap", "checkpoint", "trigger", "plate", "exit", "arena", "traproom":
 			inst.position = base - Vector2(0, TILE / 2.0)
 		"letter":
 			inst.position = base + Vector2(0, 0.5)
@@ -382,6 +409,12 @@ func _spawn(kind: String, info: Dictionary, x: int, y: int) -> Node2D:
 			# 多格陷阱（黏黏毛毯）：从所在格向右 w 格、向下 h 格
 			["trap", "w"]: prop = "tiles_w"
 			["trap", "h"]: prop = "tiles_h"
+			["trap", "group"]: prop = "group_name"
+			[_, "zones"]:
+				prop = "tickle_zones"
+				value = _dict(value)
+			[_, "exposed"]:
+				value = _dict(value)
 			["trap", "lever"], ["walltrap", "lever"]:
 				# 受哪个拉杆组控制：加入该组
 				inst.add_to_group(str(value), true)
@@ -396,7 +429,12 @@ func _spawn(kind: String, info: Dictionary, x: int, y: int) -> Node2D:
 				continue
 			["exit", "h"]:
 				continue
-			["arena", "group"]: prop = "group_name"
+			["arena", "group"], ["traproom", "group"]: prop = "group_name"
+			["traproom", "w"]:
+				inst.set("size", Vector2(float(info["w"]) * TILE, float(info.get("h", 1)) * TILE))
+				continue
+			["traproom", "h"]:
+				continue
 			["arena", "w"]:
 				inst.set("size", Vector2(float(info["w"]) * TILE, float(info.get("h", 1)) * TILE))
 				continue

@@ -14,6 +14,7 @@ class Src extends Node2D:
 
 
 func _ready() -> void:
+	TickleZones.enabled = false  # 部位与敏感值会让挠痒数值随机变化；在 floor5_test 里测
 	ComboTracker.play_scenes = false  # 三来源组合的小演出会暂停战斗；需要时在专门的测试里打开
 	HUD.slow_motion = false
 	main = load("res://scenes/main.tscn").instantiate()
@@ -931,7 +932,7 @@ func _run_combos() -> void:
 		if str(ReactionDB.combo(id).get("name", "")) == "" or ReactionDB.combo(id).get("lines", []).is_empty():
 			print("    缺名称 / 台词：", id)
 			named = false
-	check("63 个组合技都有名称和台词", named and ComboTracker.ids().size() == 63)
+	check("76 个组合技都有名称和台词", named and ComboTracker.ids().size() == 76)
 	c.triggered.disconnect(on_fired)
 	slime.queue_free()
 	_clear_puddles()
@@ -959,7 +960,7 @@ func _run_combos3() -> void:
 	var cats := {}
 	for t in triples:
 		cats[t["category"]] = true
-	check("25 个三来源组合，四种搭配都有", triples.size() == 25 and cats.has("怪+怪+怪") and cats.has("怪+怪+陷阱")
+	check("38 个三来源组合，四种搭配都有", triples.size() == 38 and cats.has("怪+怪+怪") and cats.has("怪+怪+陷阱")
 		and cats.has("怪+陷阱+陷阱") and cats.has("陷阱+陷阱+陷阱"))
 	var rules_ok := true
 	var scenes_ok := true
@@ -1217,8 +1218,10 @@ func _run_backpack() -> void:
 	player.add_buff("ticklish", 6.0)
 	player.add_buff("fatigue_scar", -1.0, 2)
 	await _press("backpack")
+	check("Tab 翻到被动技能页", bp.page == Backpack.PAGE_PASSIVES and bp.passives_page.visible and not bp.items_page.visible)
+	await _press("backpack")
 	var txt := _texts(bp.status_page)
-	check("Tab 翻到状态页", bp.page == 1 and bp.status_page.visible and not bp.items_page.visible)
+	check("再按 Tab 翻到状态页", bp.page == Backpack.PAGE_STATUS and bp.status_page.visible and not bp.passives_page.visible)
 	check("状态页：闷笑值百分比和阶段", txt.contains("闷笑值 60%") and txt.contains("失控 1"))
 	check("状态页：魔力疲倦百分比、加成和下一档", txt.contains("魔力疲倦 64%") and txt.contains("下一档：80%"))
 	check("状态页：每个状态的名称、剩余时间 / 层数和效果", txt.contains("易痒诅咒") and txt.contains("2 层") and txt.contains("闷笑积累 +30%"))
@@ -1345,7 +1348,7 @@ func _run_hud_portrait() -> void:
 # ------------------------------------------------------------------ 第四层「魔力回廊」
 func _run_floor4() -> void:
 	print("-- 第四层")
-	check("楼层表：第三层之后是第四层，第四层是最后一层", Floors.next_of("floor_03") == "floor_04" and Floors.next_of("floor_04") == ""
+	check("楼层表：第三层之后是第四层，第四层之后是第五层", Floors.next_of("floor_03") == "floor_04" and Floors.next_of("floor_04") == "floor_05"
 		and Floors.display_name("floor_04") == "第四层·魔力回廊")
 	await _goto("floor_04")
 	check("第四层对话已载入", Dialogue.has_dialogue("intro_4") and Dialogue.has_dialogue("boss4_intro")
@@ -1391,8 +1394,8 @@ func _run_floor4() -> void:
 	queen.health.damage(99)
 	await _wait(0.2)
 	check("打倒水母女王后 Boss 门打开", gate.is_open)
-	var trig := level.find_child("Trigger_44_5", true, false)
-	check("出口剧情触发器", trig != null and trig.dialogue == "ending_4")
+	var trig := level.find_child("Exit_44_5", true, false)
+	check("出口：播完结尾对话后通往第五层", trig != null and trig.dialogue == "ending_4" and trig.target_level == "next")
 	Dialogue.start("ending_4")
 	_finish_dialogue()
 	await _wait(0.2)

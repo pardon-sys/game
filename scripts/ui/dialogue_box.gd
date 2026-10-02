@@ -173,6 +173,9 @@ func _show_line() -> void:
 	# 对话行可以顺带设置剧情标记（如 "set_flag": "magic_unlocked"）
 	if line.has("set_flag"):
 		GameState.set_flag(str(line["set_flag"]))
+	# 也可以顺带获得被动技能（如 "grant_passive": "struggle_plus"）
+	if line.has("grant_passive"):
+		GameState.grant_passive(str(line["grant_passive"]))
 	var speaker: String = line.get("speaker", "")
 	var emotion: String = line.get("emotion", "")
 	var is_princess := speaker == PRINCESS

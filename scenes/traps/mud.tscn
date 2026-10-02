@@ -1,0 +1,28 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/traps/mud.gd" id="1"]
+
+[sub_resource type="RectangleShape2D" id="area"]
+size = Vector2(10, 10)
+
+[node name="Mud" type="Area2D"]
+collision_layer = 0
+collision_mask = 2
+monitorable = false
+script = ExtResource("1")
+reaction_key = "mud"
+hit_fx = "goo"
+hit_kind = 1
+damage = 0
+trigger_mode = 3
+exposed = {"sole": 1.3, "thigh": 1.3}
+lock_time = 2.5
+presses = 6
+self_tickle = 2.0
+self_interval = 0.5
+pose_offset = Vector2(0, 5)
+regrab_delay = 2.0
+
+[node name="Shape" type="CollisionShape2D" parent="."]
+position = Vector2(0, 0)
+shape = SubResource("area")

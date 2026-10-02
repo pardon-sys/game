@@ -9,6 +9,7 @@ var failures := 0
 
 
 func _ready() -> void:
+	TickleZones.enabled = false  # 部位与敏感值会让挠痒数值随机变化；在 floor5_test 里测
 	ComboTracker.play_scenes = false  # 三来源组合的小演出会暂停战斗；需要时在专门的测试里打开
 	HUD.slow_motion = false
 	Monster.random_specials = false  # 这里要精确的挠痒数值；暴击在 floor4_test 里测
@@ -39,8 +40,9 @@ func _ready() -> void:
 func _run_floors() -> void:
 	print("-- 楼层表")
 	var ids := Floors.ids()
-	check("floors.json 顺序", ids == ["floor_01", "floor_02", "floor_03", "floor_04"])
-	check("下一层", Floors.next_of("floor_01") == "floor_02" and Floors.next_of("floor_02") == "floor_03" and Floors.next_of("floor_03") == "floor_04" and Floors.next_of("floor_04") == "")
+	check("floors.json 顺序", ids == ["floor_01", "floor_02", "floor_03", "floor_04", "floor_05"])
+	check("下一层", Floors.next_of("floor_01") == "floor_02" and Floors.next_of("floor_02") == "floor_03" and Floors.next_of("floor_03") == "floor_04"
+		and Floors.next_of("floor_04") == "floor_05" and Floors.next_of("floor_05") == "")
 	for id in ids:
 		check("%s 有地图、对话和场景" % id, FileAccess.file_exists(Floors.map_path(id))
 			and FileAccess.file_exists(Floors.dialogues_path(id)) and ResourceLoader.exists(Floors.scene(id)))

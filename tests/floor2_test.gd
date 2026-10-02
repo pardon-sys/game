@@ -13,6 +13,7 @@ var failures := 0
 
 
 func _ready() -> void:
+	TickleZones.enabled = false  # 部位与敏感值会让挠痒数值随机变化；在 floor5_test 里测
 	ComboTracker.play_scenes = false  # 三来源组合的小演出会暂停战斗；需要时在专门的测试里打开
 	HUD.slow_motion = false
 	Monster.random_specials = false  # 这里要精确的挠痒数值；暴击在 floor4_test 里测
@@ -401,6 +402,8 @@ func _run_reactions() -> void:
 	check("怪物头顶冒出回嘴", speech != null and speech.text in ReactionDB.taunts("bat"))
 	var ok := true
 	for key in ReactionDB.source_keys():
+		if ReactionDB.source(key).get("no_tickle", false):
+			continue  # 不挠痒的来源（绊线）没有受挠台词
 		ok = ok and not ReactionDB.first_encounter(key).is_empty() and not ReactionDB.lines(key, "calm").is_empty()
 	check("每个来源都有首次剧情与台词（%d 个）" % ReactionDB.source_keys().size(), ok)
 	player.laugh.clear()

@@ -72,6 +72,16 @@ enum State { IDLE, MOVE, ATTACK, DASH, HURT, HELPLESS, GRABBED, DEAD, CHANNEL, C
 @onready var fatigue: MagicFatigue = get_node_or_null("Fatigue")
 ## 正在进行疲倦爆发（CAST 期间用战损释放姿势）。
 var fatigue_bursting := false
+## 挠痒敏感状态（部位、连续加成、露出部位、战损）：data/actors/princess_ticklish.json。
+var sensitivity := Sensitivity.new()
+## 过场动画里被脚本移动时播走路动画（Cutscene 的 move 动作设置）。
+var puppet_walking := false
+## 束缚陷阱给小人摆的姿势（倒吊、坐下、陷进泥里……）：精灵的偏移和旋转，_update_lift 里应用。
+var pose_offset := Vector2.ZERO
+## 藏起小人（被拉进挠痒衣柜里）。
+var sprite_hidden := false
+var pose_rotation := 0.0
+var _pose_rot_applied := false
 
 var state := State.IDLE
 var _state_time := 0.0
@@ -100,6 +110,7 @@ func _setup() -> void:
 			GameState.checkpoint = global_position
 	if laugh:
 		laugh.level_changed.connect(_on_laugh_level_changed)
+	sensitivity.weak_point.connect(_on_weak_point)
 	if health:
 		health.changed.connect(func(_hp: int, _max: int): _refresh_emotion())
 	if slash:
@@ -120,6 +131,7 @@ func set_controller(c: CharacterController) -> void:
 
 func _tick(delta: float) -> void:
 	_state_time += delta
+	sensitivity.tick(delta)
 	_dash_cd = maxf(_dash_cd - delta, 0.0)
 	_magic_cd = maxf(_magic_cd - delta, 0.0)
 	var can_control := not GameState.in_dialogue and state != State.DEAD
@@ -146,6 +158,9 @@ func _tick(delta: float) -> void:
 				var speed := move_speed * (laugh.speed_multiplier() if laugh else 1.0) \
 						* (status.speed_multiplier() if status else 1.0) * stat_mul("speed")
 				var rooted := status != null and status.is_rooted()
+				var hobbled := status != null and status.is_hobbled()
+				if hobbled:
+					speed *= status.hobble_speed()
 				if rooted:
 					# 定身：原地挣动，只能转向和攻击
 					if input != Vector2.ZERO:
@@ -159,8 +174,10 @@ func _tick(delta: float) -> void:
 					_footsteps(delta)
 				else:
 					velocity = velocity.move_toward(Vector2.ZERO, friction * delta)
-					_set_state(State.IDLE)
-				if can_control:
+					_set_state(State.MOVE if puppet_walking else State.IDLE)
+				if can_control and hobbled and (controller.is_action_just_pressed(&"attack") or controller.is_action_just_pressed(&"interact")):
+					struggle()  # 绊住时攻击 / 交互键用来挣扎
+				elif can_control:
 					if controller.is_action_just_pressed(&"attack"):
 						attack()
 					elif controller.is_action_just_pressed(&"dash") and not rooted:
@@ -258,7 +275,7 @@ func attack() -> void:
 
 
 func dash(input := Vector2.ZERO) -> void:
-	if not can_act() or _dash_cd > 0.0 or (status and status.is_rooted()):
+	if not can_act() or _dash_cd > 0.0 or (status and (status.is_rooted() or status.is_hobbled())):
 		return
 	_dash_dir = input.normalized() if input != Vector2.ZERO else facing
 	_dash_cd = dash_cooldown
@@ -286,9 +303,12 @@ func use_item(hotkey := "use_item") -> bool:
 ## 笑瘫 / 被抓时挣扎一次：降闷笑值，被抓时同时计入挣脱次数。
 func struggle() -> void:
 	if laugh:
-		laugh.struggle()
+		# 被动「挣脱强化」：每下多降 value 倍
+		laugh.reduce_ratio(laugh.struggle_ratio * (1.0 + PassiveDB.value("struggle_plus")))
 	if status and status.is_grabbed():
 		status.struggle()
+	elif status and status.is_hobbled():
+		status.struggle_hobble()
 	_shake = maxf(_shake, 0.05)
 	if sprite:
 		sprite.position.x = [-1.0, 1.0].pick_random()
@@ -415,11 +435,36 @@ func _on_channel_tier(tier: int) -> void:
 	magic_event.emit("tier", tier)
 
 
-## 受到的挠痒倍率：状态（易痒、增益减益）× 吟唱时弱点暴露 × 魔力疲倦加成。
+## 受到的挠痒倍率：部位与敏感值（TickleZones / Sensitivity）× 状态（易痒、增益减益）× 吟唱时弱点暴露 × 魔力疲倦加成。
 func _tickle_multiplier(hit: HitData) -> float:
 	var k := super(hit) * (exposed_tickle_mult if state == State.CHANNEL else 1.0)
+	if TickleZones.enabled:
+		k *= sensitivity.apply(hit, self)
 	k *= 1.0 + (fatigue.laugh_bonus() if fatigue else 0.0)
 	return k * (combo.hit_multiplier(hit) if combo else 1.0)
+
+
+func revive() -> void:
+	super()
+	sensitivity.reset()
+	pose_offset = Vector2.ZERO
+	pose_rotation = 0.0
+	sprite_hidden = false
+
+
+var _weak_cd := 0.0
+
+
+## 挠到被束缚露出的部位：头上跳「弱点！」（限频）。
+func _on_weak_point(zone: String) -> void:
+	var now := Time.get_ticks_msec() / 1000.0
+	if now < _weak_cd:
+		return
+	_weak_cd = now + 0.6
+	var b := SpeechBubble.say(self, "弱点！%s" % TickleZones.zone_name(zone), 30.0)
+	if b:
+		b.add_theme_color_override("font_color", Color(1.0, 0.55, 0.8))
+		b.add_theme_color_override("font_outline_color", Color(0.4, 0.08, 0.25))
 
 
 func is_grabbed() -> bool:
@@ -540,10 +585,14 @@ func _update_lift(delta: float) -> void:
 		return
 	if has_buff("lifted"):
 		_lift_t += delta
-		sprite.position.y = -6.0 + roundf(sin(_lift_t * 7.0) * 1.5)
-	elif sprite.position.y != 0.0:
+		sprite.position.y = -6.0 + roundf(sin(_lift_t * 7.0) * 1.5) + pose_offset.y
+	elif sprite.position.y != pose_offset.y:
 		_lift_t = 0.0
-		sprite.position.y = 0.0
+		sprite.position.y = pose_offset.y
+	sprite.position.x = pose_offset.x
+	if pose_rotation != 0.0 or _pose_rot_applied:
+		sprite.rotation = pose_rotation
+		_pose_rot_applied = pose_rotation != 0.0
 
 
 ## 镜头聚焦（三来源组合）：放大对准自己；停止被挠 1 秒后还原。
@@ -732,7 +781,9 @@ func _update_animation(delta: float) -> void:
 func _update_effects(delta: float) -> void:
 	if sprite:
 		# 受攻击无敌时闪烁（冲刺无敌不闪）
-		if _attack_invuln > 0.0 and state not in [State.DASH, State.DEAD, State.GRABBED]:
+		if sprite_hidden:
+			sprite.visible = false
+		elif _attack_invuln > 0.0 and state not in [State.DASH, State.DEAD, State.GRABBED]:
 			sprite.visible = int(_attack_invuln * 20.0) % 2 == 0
 		else:
 			sprite.visible = true
