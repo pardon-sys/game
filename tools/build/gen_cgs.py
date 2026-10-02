@@ -29,6 +29,7 @@ actors = {
     "glove": {"scene": M % "ghost_glove", "sprite": {"hframes": 2}},
     "hedgehog": {"scene": M % "brush_hedgehog", "sprite": {"hframes": 4}},
     "jelly_queen": {"scene": M % "jelly_queen", "sprite": {"hframes": 2}},
+    "imp": {"scene": M % "machine_imp", "sprite": {"hframes": 4}},
 }
 # 陷阱演员（组合演出用）：贴图、待机 / 发动帧、铺几格、旋转、羽毛臂。舞台上的摆放位置在 gen_combo_scenes.py。
 T = "res://assets/generated/%s.png"
@@ -43,6 +44,19 @@ trap_actors = {
     "vine": {"hit_fx": "brush", "texture": T % "vine", "hframes": 3, "idle": [0], "active": [1], "z": 1, "pitch": 0.9},
     "fan": {"hit_fx": "feather", "texture": T % "fan", "hframes": 2, "idle": [0], "active": [0, 1], "fps": 14},
     "feather": {"hit_fx": "feather", "texture": T % "feather_arm", "hframes": 4, "idle": [3], "active": [3], "spin": 0.3},
+    # 第五层
+    "snare": {"hit_fx": "feather", "texture": T % "snare", "hframes": 2, "idle": [0], "active": [1], "z": -1, "pitch": 1.2},
+    "cuffs": {"hit_fx": "hand", "texture": T % "cuffs", "hframes": 2, "idle": [0], "active": [1], "z": -1, "offset": [0, -8]},
+    "clamp": {"hit_fx": "feather", "texture": T % "clamp", "hframes": 2, "idle": [0], "active": [1], "z": -1, "pitch": 1.3},
+    "wardrobe": {"hit_fx": "hand", "texture": T % "wardrobe", "hframes": 3, "idle": [0], "active": [2], "z": -1, "offset": [0, -16]},
+    "legloop": {"hit_fx": "feather", "texture": T % "legloop", "hframes": 2, "idle": [0], "active": [1], "z": -1},
+    "mud": {"hit_fx": "goo", "texture": T % "mud", "hframes": 2, "idle": [0, 1], "active": [0, 1], "fps": 3, "tiles": [3, 2], "z": -1, "pitch": 0.7},
+    "boots": {"hit_fx": "feather", "texture": T % "boots", "hframes": 2, "idle": [0], "active": [0, 1], "fps": 8, "z": 1, "pitch": 1.4},
+    "binding": {"hit_fx": "feather", "texture": T % "binding", "hframes": 2, "idle": [0], "active": [1], "z": 1},
+    "teaser": {"hit_fx": "feather", "texture": T % "teaser", "hframes": 2, "vframes": 4, "idle": [0], "active": [1, 0], "fps": 8},
+    "wheel": {"hit_fx": "brush", "texture": T % "wheel", "hframes": 3, "idle": [0], "active": [0, 1, 2], "fps": 4},
+    "shower": {"hit_fx": "feather", "texture": T % "shower", "hframes": 2, "idle": [0], "active": [1]},
+    "cage": {"hit_fx": "feather", "texture": T % "cage", "hframes": 4, "idle": [0], "active": [0], "z": 2, "offset": [0, -10]},
 }
 P = "公主"
 portraits = {
@@ -390,6 +404,21 @@ add("jelly_queen", "魔力水母女王", "女王的花之海",
           ("P", "哈哈哈哈哈！花瓣……花瓣也在挠——哈哈哈哈！"),
           ("M", "在花海里笑吧，小公主～笑到魔力全部变成我的～"),
           ("P", "……女王大人……饶、饶命……哈哈哈……")])
+
+add("imp", "机关小工匠", "工匠的调试台",
+    ["那、那个戴护目镜的小家伙……拿着羽毛和本子……",
+     "它在记录——记录哪里最痒——哈哈哈哈别写了！", "",
+     "……醒来了。好像被当成机关调试了一整遍……下次先把小工匠打倒！"],
+    ["嘿嘿，开始调试～", "这里反应最大，记下来～"],
+    [("N", "（小工匠们推来一张满是齿轮和羽毛的调试台，把公主放了上去）"),
+     ("P", "这、这是什么台子……放开我！"),
+     ("M", "第一项：脚心灵敏度测试～"),
+     ("N", "（几根装在机械臂上的羽毛对准脚心，按小工匠拨动的旋钮一下快一下慢地扫）"),
+     ("P", "快、快慢不一样——哈哈哈哈更痒了！"),
+     ("M", "第二项：腋下……嘿嘿～"),
+     ("P", "……调、调试结束了吧……哈哈……")],
+    stand=(22, 6), extras={"imp2": monster("imp", (-22, 8), "right")})
+
 
 def main():
     data = {

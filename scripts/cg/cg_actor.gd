@@ -126,6 +126,7 @@ static func make_trap(actor_id: String, key: String, info: Dictionary) -> CGActo
 				var sp := Sprite2D.new()
 				sp.texture = tex
 				sp.hframes = hf
+				sp.vframes = int(info.get("vframes", 1))
 				sp.position = Vector2(x, y) * 16.0
 				if info.has("offset"):
 					sp.offset = Vector2(info["offset"][0], info["offset"][1])

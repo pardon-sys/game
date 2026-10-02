@@ -932,7 +932,7 @@ func _run_combos() -> void:
 		if str(ReactionDB.combo(id).get("name", "")) == "" or ReactionDB.combo(id).get("lines", []).is_empty():
 			print("    缺名称 / 台词：", id)
 			named = false
-	check("63 个组合技都有名称和台词", named and ComboTracker.ids().size() == 63)
+	check("76 个组合技都有名称和台词", named and ComboTracker.ids().size() == 76)
 	c.triggered.disconnect(on_fired)
 	slime.queue_free()
 	_clear_puddles()
@@ -960,7 +960,7 @@ func _run_combos3() -> void:
 	var cats := {}
 	for t in triples:
 		cats[t["category"]] = true
-	check("25 个三来源组合，四种搭配都有", triples.size() == 25 and cats.has("怪+怪+怪") and cats.has("怪+怪+陷阱")
+	check("38 个三来源组合，四种搭配都有", triples.size() == 38 and cats.has("怪+怪+怪") and cats.has("怪+怪+陷阱")
 		and cats.has("怪+陷阱+陷阱") and cats.has("陷阱+陷阱+陷阱"))
 	var rules_ok := true
 	var scenes_ok := true

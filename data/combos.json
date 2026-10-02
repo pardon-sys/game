@@ -34,7 +34,8 @@
 			"bubble_fish",
 			"glove",
 			"hedgehog",
-			"jelly_queen"
+			"jelly_queen",
+			"imp"
 		],
 		"trap": [
 			"feather",
@@ -47,7 +48,19 @@
 			"rune",
 			"stocks",
 			"carpet",
-			"arm"
+			"arm",
+			"snare",
+			"cuffs",
+			"clamp",
+			"wardrobe",
+			"legloop",
+			"mud",
+			"boots",
+			"binding",
+			"teaser",
+			"wheel",
+			"shower",
+			"cage"
 		]
 	},
 	"combos": [
@@ -1793,6 +1806,450 @@
 				{
 					"type": "grab_presses",
 					"count": 2
+				}
+			]
+		},
+		{
+			"id": "snare_sole_feast",
+			"category": "怪+怪+陷阱",
+			"keys": [
+				[
+					"snare"
+				],
+				[
+					"rat"
+				],
+				[
+					"crab"
+				]
+			],
+			"window": 2.5,
+			"cooldown": 8.0,
+			"effects": [
+				{
+					"type": "burst",
+					"amount": 22
+				},
+				{
+					"type": "grab_extend",
+					"seconds": 1.0
+				},
+				{
+					"type": "crit_storm",
+					"duration": 3.0
+				},
+				{
+					"type": "focus"
+				}
+			]
+		},
+		{
+			"id": "snare_sweep",
+			"category": "陷阱+陷阱+陷阱",
+			"keys": [
+				[
+					"snare"
+				],
+				[
+					"arm"
+				],
+				[
+					"brush"
+				]
+			],
+			"window": 2.5,
+			"cooldown": 8.0,
+			"effects": [
+				{
+					"type": "burst",
+					"amount": 18
+				},
+				{
+					"type": "grab_extend",
+					"seconds": 1.0
+				},
+				{
+					"type": "confuse",
+					"duration": 3.0
+				},
+				{
+					"type": "focus"
+				}
+			]
+		},
+		{
+			"id": "armpit_hands",
+			"category": "怪+怪+陷阱",
+			"keys": [
+				[
+					"cuffs"
+				],
+				[
+					"glove"
+				],
+				[
+					"fairy"
+				]
+			],
+			"window": 2.5,
+			"cooldown": 8.0,
+			"effects": [
+				{
+					"type": "burst",
+					"amount": 20
+				},
+				{
+					"type": "grab_extend",
+					"seconds": 1.0
+				},
+				{
+					"type": "lift",
+					"duration": 2.0
+				},
+				{
+					"type": "focus"
+				}
+			]
+		},
+		{
+			"id": "wardrobe_inout",
+			"category": "怪+怪+陷阱",
+			"keys": [
+				[
+					"wardrobe"
+				],
+				[
+					"rat"
+				],
+				[
+					"slime",
+					"split_slime"
+				]
+			],
+			"window": 2.5,
+			"cooldown": 8.0,
+			"effects": [
+				{
+					"type": "burst",
+					"amount": 18
+				},
+				{
+					"type": "grab_extend",
+					"seconds": 1.5
+				},
+				{
+					"type": "rally",
+					"radius": 160
+				},
+				{
+					"type": "focus"
+				}
+			]
+		},
+		{
+			"id": "machine_armpit",
+			"category": "陷阱+陷阱+陷阱",
+			"keys": [
+				[
+					"cuffs"
+				],
+				[
+					"arm"
+				],
+				[
+					"hand"
+				]
+			],
+			"window": 2.5,
+			"cooldown": 8.0,
+			"effects": [
+				{
+					"type": "burst",
+					"amount": 22
+				},
+				{
+					"type": "grab_extend",
+					"seconds": 1.0
+				},
+				{
+					"type": "crit_storm",
+					"duration": 3.0
+				},
+				{
+					"type": "focus"
+				}
+			]
+		},
+		{
+			"id": "jelly_cage",
+			"category": "怪+陷阱+陷阱",
+			"keys": [
+				[
+					"cage"
+				],
+				[
+					"slime",
+					"split_slime"
+				],
+				[
+					"rune"
+				]
+			],
+			"window": 2.5,
+			"cooldown": 8.0,
+			"effects": [
+				{
+					"type": "burst",
+					"amount": 16
+				},
+				{
+					"type": "dot",
+					"rate": 4,
+					"duration": 3
+				},
+				{
+					"type": "confuse",
+					"duration": 3.0
+				},
+				{
+					"type": "focus"
+				}
+			]
+		},
+		{
+			"id": "tentacle_cage",
+			"category": "怪+陷阱+陷阱",
+			"keys": [
+				[
+					"cage"
+				],
+				[
+					"tentacle"
+				],
+				[
+					"snare",
+					"stocks"
+				]
+			],
+			"window": 2.5,
+			"cooldown": 8.0,
+			"effects": [
+				{
+					"type": "burst",
+					"amount": 20
+				},
+				{
+					"type": "grab_extend",
+					"seconds": 1.0
+				},
+				{
+					"type": "lift",
+					"duration": 2.0
+				},
+				{
+					"type": "focus"
+				}
+			]
+		},
+		{
+			"id": "thigh_torture",
+			"category": "陷阱+陷阱+陷阱",
+			"keys": [
+				[
+					"clamp"
+				],
+				[
+					"teaser"
+				],
+				[
+					"wheel"
+				]
+			],
+			"window": 2.5,
+			"cooldown": 8.0,
+			"effects": [
+				{
+					"type": "burst",
+					"amount": 22
+				},
+				{
+					"type": "grab_extend",
+					"seconds": 1.0
+				},
+				{
+					"type": "crit_storm",
+					"duration": 3.0
+				},
+				{
+					"type": "focus"
+				}
+			]
+		},
+		{
+			"id": "armpit_rain",
+			"category": "怪+陷阱+陷阱",
+			"keys": [
+				[
+					"cuffs"
+				],
+				[
+					"shower"
+				],
+				[
+					"fairy"
+				]
+			],
+			"window": 2.5,
+			"cooldown": 8.0,
+			"effects": [
+				{
+					"type": "burst",
+					"amount": 18
+				},
+				{
+					"type": "dot",
+					"rate": 3,
+					"duration": 3
+				},
+				{
+					"type": "rally",
+					"radius": 160
+				},
+				{
+					"type": "focus"
+				}
+			]
+		},
+		{
+			"id": "mud_sink",
+			"category": "怪+怪+陷阱",
+			"keys": [
+				[
+					"mud"
+				],
+				[
+					"rat"
+				],
+				[
+					"slime",
+					"split_slime"
+				]
+			],
+			"window": 2.5,
+			"cooldown": 8.0,
+			"effects": [
+				{
+					"type": "burst",
+					"amount": 18
+				},
+				{
+					"type": "grab_extend",
+					"seconds": 1.0
+				},
+				{
+					"type": "confuse",
+					"duration": 3.0
+				},
+				{
+					"type": "focus"
+				}
+			]
+		},
+		{
+			"id": "imp_fitting",
+			"category": "怪+陷阱+陷阱",
+			"keys": [
+				[
+					"boots"
+				],
+				[
+					"teaser"
+				],
+				[
+					"imp"
+				]
+			],
+			"window": 2.5,
+			"cooldown": 8.0,
+			"effects": [
+				{
+					"type": "burst",
+					"amount": 20
+				},
+				{
+					"type": "special_next",
+					"count": 2
+				},
+				{
+					"type": "crit_storm",
+					"duration": 3.0
+				},
+				{
+					"type": "focus"
+				}
+			]
+		},
+		{
+			"id": "feather_cocoon",
+			"category": "怪+陷阱+陷阱",
+			"keys": [
+				[
+					"binding"
+				],
+				[
+					"shower"
+				],
+				[
+					"fairy"
+				]
+			],
+			"window": 2.5,
+			"cooldown": 8.0,
+			"effects": [
+				{
+					"type": "burst",
+					"amount": 18
+				},
+				{
+					"type": "lift",
+					"duration": 2.0
+				},
+				{
+					"type": "focus"
+				}
+			]
+		},
+		{
+			"id": "one_leg_show",
+			"category": "怪+陷阱+陷阱",
+			"keys": [
+				[
+					"legloop"
+				],
+				[
+					"rat"
+				],
+				[
+					"wheel"
+				]
+			],
+			"window": 2.5,
+			"cooldown": 8.0,
+			"effects": [
+				{
+					"type": "burst",
+					"amount": 18
+				},
+				{
+					"type": "grab_extend",
+					"seconds": 1.0
+				},
+				{
+					"type": "rally",
+					"radius": 160
+				},
+				{
+					"type": "focus"
 				}
 			]
 		}

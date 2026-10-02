@@ -245,6 +245,18 @@
 			"file": "res://assets/cg/portraits/jelly_queen_4.png",
 			"placeholder": "helpless_2",
 			"wide": true
+		},
+		"imp_1": {
+			"file": "res://assets/cg/portraits/imp_1.png",
+			"placeholder": "helpless_1"
+		},
+		"imp_2": {
+			"file": "res://assets/cg/portraits/imp_2.png",
+			"placeholder": "helpless_2"
+		},
+		"imp_3": {
+			"file": "res://assets/cg/portraits/imp_3.png",
+			"placeholder": "helpless_2"
 		}
 	},
 	"actors": {
@@ -326,6 +338,12 @@
 			"scene": "res://scenes/actors/monsters/jelly_queen.tscn",
 			"sprite": {
 				"hframes": 2
+			}
+		},
+		"imp": {
+			"scene": "res://scenes/actors/monsters/machine_imp.tscn",
+			"sprite": {
+				"hframes": 4
 			}
 		}
 	},
@@ -475,6 +493,178 @@
 				3
 			],
 			"spin": 0.3
+		},
+		"snare": {
+			"hit_fx": "feather",
+			"texture": "res://assets/generated/snare.png",
+			"hframes": 2,
+			"idle": [
+				0
+			],
+			"active": [
+				1
+			],
+			"z": -1,
+			"pitch": 1.2
+		},
+		"cuffs": {
+			"hit_fx": "hand",
+			"texture": "res://assets/generated/cuffs.png",
+			"hframes": 2,
+			"idle": [
+				0
+			],
+			"active": [
+				1
+			],
+			"z": -1,
+			"offset": [
+				0,
+				-8
+			]
+		},
+		"clamp": {
+			"hit_fx": "feather",
+			"texture": "res://assets/generated/clamp.png",
+			"hframes": 2,
+			"idle": [
+				0
+			],
+			"active": [
+				1
+			],
+			"z": -1,
+			"pitch": 1.3
+		},
+		"wardrobe": {
+			"hit_fx": "hand",
+			"texture": "res://assets/generated/wardrobe.png",
+			"hframes": 3,
+			"idle": [
+				0
+			],
+			"active": [
+				2
+			],
+			"z": -1,
+			"offset": [
+				0,
+				-16
+			]
+		},
+		"legloop": {
+			"hit_fx": "feather",
+			"texture": "res://assets/generated/legloop.png",
+			"hframes": 2,
+			"idle": [
+				0
+			],
+			"active": [
+				1
+			],
+			"z": -1
+		},
+		"mud": {
+			"hit_fx": "goo",
+			"texture": "res://assets/generated/mud.png",
+			"hframes": 2,
+			"idle": [
+				0,
+				1
+			],
+			"active": [
+				0,
+				1
+			],
+			"fps": 3,
+			"tiles": [
+				3,
+				2
+			],
+			"z": -1,
+			"pitch": 0.7
+		},
+		"boots": {
+			"hit_fx": "feather",
+			"texture": "res://assets/generated/boots.png",
+			"hframes": 2,
+			"idle": [
+				0
+			],
+			"active": [
+				0,
+				1
+			],
+			"fps": 8,
+			"z": 1,
+			"pitch": 1.4
+		},
+		"binding": {
+			"hit_fx": "feather",
+			"texture": "res://assets/generated/binding.png",
+			"hframes": 2,
+			"idle": [
+				0
+			],
+			"active": [
+				1
+			],
+			"z": 1
+		},
+		"teaser": {
+			"hit_fx": "feather",
+			"texture": "res://assets/generated/teaser.png",
+			"hframes": 2,
+			"vframes": 4,
+			"idle": [
+				0
+			],
+			"active": [
+				1,
+				0
+			],
+			"fps": 8
+		},
+		"wheel": {
+			"hit_fx": "brush",
+			"texture": "res://assets/generated/wheel.png",
+			"hframes": 3,
+			"idle": [
+				0
+			],
+			"active": [
+				0,
+				1,
+				2
+			],
+			"fps": 4
+		},
+		"shower": {
+			"hit_fx": "feather",
+			"texture": "res://assets/generated/shower.png",
+			"hframes": 2,
+			"idle": [
+				0
+			],
+			"active": [
+				1
+			]
+		},
+		"cage": {
+			"hit_fx": "feather",
+			"texture": "res://assets/generated/cage.png",
+			"hframes": 4,
+			"idle": [
+				0
+			],
+			"active": [
+				0
+			],
+			"z": 2,
+			"offset": [
+				0,
+				-10
+			]
 		}
 	},
 	"death": {
@@ -494,7 +684,8 @@
 			"bubble_fish": "death_bubble_fish",
 			"glove": "death_glove",
 			"hedgehog": "death_hedgehog",
-			"jelly_queen": "death_jelly_queen"
+			"jelly_queen": "death_jelly_queen",
+			"imp": "death_imp"
 		},
 		"default": "death_generic"
 	},
@@ -5731,6 +5922,326 @@
 					"portrait": "wake",
 					"speaker": "公主",
 					"text": "……醒来了。好像还能闻到樱花的味道……这次先打碎图腾，速战速决！"
+				}
+			]
+		},
+		"death_imp": {
+			"name": "工匠的调试台",
+			"cast": {
+				"princess": {
+					"kind": "princess",
+					"at": [
+						0,
+						8
+					],
+					"visual": "helpless_1",
+					"anim": "helpless",
+					"dir": "down"
+				},
+				"foe": {
+					"kind": "monster:imp",
+					"at": [
+						22,
+						6
+					],
+					"dir": "left",
+					"hidden": true
+				},
+				"imp2": {
+					"kind": "monster:imp",
+					"at": [
+						-22,
+						8
+					],
+					"dir": "right",
+					"hidden": true
+				}
+			},
+			"steps": [
+				{
+					"actions": [
+						{
+							"do": "fade_in",
+							"time": 0.7
+						},
+						{
+							"do": "voice",
+							"state": "giggle"
+						}
+					],
+					"wait": 0.8
+				},
+				{
+					"portrait": "imp_1",
+					"speaker": "公主",
+					"text": "那、那个戴护目镜的小家伙……拿着羽毛和本子……",
+					"actions": [
+						{
+							"do": "enter",
+							"who": "foe",
+							"from": [
+								90,
+								0
+							],
+							"time": 0.6
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "surprise"
+						},
+						{
+							"do": "enter",
+							"who": "imp2",
+							"from": [
+								-80,
+								0
+							],
+							"time": 0.7
+						}
+					]
+				},
+				{
+					"speaker": "机关小工匠",
+					"text": "嘿嘿，开始调试～",
+					"actions": [
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "foe",
+							"repeat": 4,
+							"fx": "lines"
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						}
+					]
+				},
+				{
+					"portrait": "imp_2",
+					"speaker": "公主",
+					"text": "它在记录——记录哪里最痒——哈哈哈哈别写了！",
+					"actions": [
+						{
+							"do": "pose",
+							"who": "princess",
+							"visual": "helpless_2"
+						},
+						{
+							"do": "voice",
+							"state": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "foe",
+							"repeat": 6,
+							"interval": 0.28,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "imp2",
+							"repeat": 5,
+							"interval": 0.32,
+							"fx": "lines"
+						},
+						{
+							"do": "camera",
+							"zoom": 1.5,
+							"focus": "princess",
+							"time": 0.5
+						}
+					]
+				},
+				{
+					"speaker": "机关小工匠",
+					"text": "这里反应最大，记下来～",
+					"actions": [
+						{
+							"do": "hop",
+							"who": "foe",
+							"count": 2
+						},
+						{
+							"do": "taunt",
+							"who": "foe"
+						}
+					]
+				},
+				{
+					"speaker": "",
+					"text": "（小工匠们推来一张满是齿轮和羽毛的调试台，把公主放了上去）",
+					"actions": [
+						{
+							"do": "flash",
+							"time": 0.5
+						},
+						{
+							"do": "camera",
+							"zoom": 1,
+							"focus": "princess",
+							"anchor": [
+								262,
+								112
+							],
+							"time": 0.4
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "foe",
+							"repeat": 5,
+							"interval": 0.3,
+							"fx": "lines"
+						}
+					],
+					"portrait": "imp_3"
+				},
+				{
+					"speaker": "公主",
+					"text": "这、这是什么台子……放开我！",
+					"actions": [
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "imp2",
+							"repeat": 6,
+							"interval": 0.27999999999999997,
+							"fx": "lines"
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.4
+						}
+					]
+				},
+				{
+					"speaker": "机关小工匠",
+					"text": "第一项：脚心灵敏度测试～",
+					"actions": [
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "foe",
+							"repeat": 7,
+							"interval": 0.26,
+							"fx": "lines"
+						},
+						{
+							"do": "hop",
+							"who": "foe",
+							"count": 1
+						}
+					]
+				},
+				{
+					"speaker": "",
+					"text": "（几根装在机械臂上的羽毛对准脚心，按小工匠拨动的旋钮一下快一下慢地扫）",
+					"actions": [
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "imp2",
+							"repeat": 8,
+							"interval": 0.24,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "快、快慢不一样——哈哈哈哈更痒了！",
+					"actions": [
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "foe",
+							"repeat": 9,
+							"interval": 0.21999999999999997,
+							"fx": "lines"
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.4
+						}
+					]
+				},
+				{
+					"speaker": "机关小工匠",
+					"text": "第二项：腋下……嘿嘿～",
+					"actions": [
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "imp2",
+							"repeat": 10,
+							"interval": 0.19999999999999998,
+							"fx": "lines"
+						},
+						{
+							"do": "hop",
+							"who": "imp2",
+							"count": 1
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "……调、调试结束了吧……哈哈……",
+					"actions": [
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "foe",
+							"repeat": 11,
+							"interval": 0.18,
+							"fx": "lines"
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "dots"
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.4
+						}
+					]
+				},
+				{
+					"actions": [
+						{
+							"do": "fade_out",
+							"time": 0.9
+						},
+						{
+							"do": "voice",
+							"state": ""
+						}
+					],
+					"wait": 1.0
+				},
+				{
+					"portrait": "wake",
+					"speaker": "公主",
+					"text": "……醒来了。好像被当成机关调试了一整遍……下次先把小工匠打倒！"
 				}
 			]
 		}
