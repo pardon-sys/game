@@ -250,6 +250,30 @@ HUD 背包栏会根据物品数据自动显示，不需要改 UI 代码。
 11. 强制位移陷阱用 `PlayableCharacter.force_move(速度, 秒, kind)`：`bounce`（弹在空中，`is_airborne()`，`Trap._affects` 会跳过空中的目标）/ `slide`（撞墙停，`extend_forced_move` 续时，`end_forced_move` 结束）；期间不能操作、不能冲刺，被抓 / 定身 / 失控会打断。吸痒漩涡只用 `Actor.add_push`（冲刺中不吸）。会抓人 / 定身的陷阱设 `stops_slide = true`（加入 `slide_stopper` 组），滑行碰到就停。
 12. 同一格叠放多个实体：图例用 " + " 连接，例如 `7 = trap type=stocks + trap type=vortex radius=3`。
 
+### 部位挠痒与敏感值（数据驱动）
+- **部位表** `data/actors/princess_ticklish.json`：`base_sensitivity`、`by_stage`（越笑越敏感）、`streak`（同部位连续加成）、`damaged`（战损），`zones` 每个部位 `{name, sensitivity, chance, anchor, words, icon}`。**新增部位只改这里**，代码里不写死部位 id。
+- **来源 → 部位** `data/tickle_zones.json`：`sources.<来源键>` 是 `{部位: 权重}`，`follow_exposed` 的来源（逗弄器、转轮）总是挠露出的部位。单个怪物 / 陷阱可以用导出属性 `tickle_zones` 覆盖（图例 `zones=sole:2,armpit:1`）；都没写时按部位表的 `chance`。
+- `TickleZones`（`scripts/core/tickle_zones.gd`，静态）：`pick(来源, 露出部位)`、`zone_multiplier`（含 `modifier(部位)`：被动的 `zone_sensitivity` 加减）、`body_multiplier(阶段, 战损)`、`anchor` / `words`、`validate()`（smoke 测试检查；`tools/build/check_zones.py` 列出没分配部位的来源）。`TickleZones.enabled = false` 关掉（旧测试要精确数值）。
+- `Sensitivity`（`PlayableCharacter.sensitivity`）：连续加成、露出部位（`expose(来源, {部位: 倍率})` / `unexpose`，同时挂通用状态 `exposed`，`Buff.display()` 按部位动态显示名字和图标）、战损；`apply(hit, actor)` 在 `PlayableCharacter._tickle_multiplier` 里抽部位写进 `hit.zone` 并返回倍率；挠到露出部位发 `weak_point`（头上跳「弱点！」）。复活 `reset()`。
+- `PortraitFx` 按 `hit.zone` 放贴片（部位 anchor），飘字 `ReactionDB.portrait_words(来源, 阶段, 部位)`：来源按部位写的 → 来源自己的 → 部位默认 → 全局。
+
+### 被动技能
+- 数据 `data/passives/passives.json`：`id → {name, icon（passive_icons.png 的格）, max_level, levels: [{value, desc, ...}]}`；`PassiveDB.value(id)` / `value_dict(id, 字段)` 读当前等级。
+- 等级存在 `GameState.passives`（换层保留、重新开始清空）；`GameState.grant_passive(id)` / `upgrade_passive(id)`，信号 `passive_changed`；对话行写 `"grant_passive": "<id>"` 也能获得。
+- 「挣脱强化」`struggle_plus`：`PlayableCharacter.struggle()` 降闷笑 ×(1 + value)。背包 `Backpack.PAGES = 物品 / 被动技能 / 状态`（`PAGE_*` 常量）。
+
+### 地图内过场动画
+- Autoload `Cutscene`（`scripts/cutscene/cutscene_player.gd`，CanvasLayer 12；章节结束画面在 30 层）。数据 `data/cutscenes/<id>.json`：`{name, skippable, hide_hud, steps}`，步骤格式同 CG。演员：`princess`、关卡节点名（构建器命名为 `<类型>_<x>_<y>`，如 `Snare_10_7`、`Imp_68_64`）、`spawn` 生成的临时演员（`shadow` = 公主精灵蒙黑）。动作列表见脚本开头的注释；`validate(id)` 检查动作名。
+- 播放时 `GameState.in_cutscene` + `in_dialogue` 为真（对话框不会在过场中途清掉 `in_dialogue`），所有用 `in_dialogue` 判断暂停的陷阱 / 怪物 / 状态自动暂停；公主被 `move` 时 `puppet_walking` 播走路动画。镜头动的是公主身上的 Camera2D（结束时还原到原位置和缩放）。
+- 跳过：看过的过场按 Esc，剩下步骤里的 `set_flag / chapter_end / spawn / despawn / move / carry / pose / face` 立即生效。
+- 触发：关卡 `[level]` `intro_cutscene`（`Level._ready`）、`DialogueTrigger.cutscene`（图例 `trigger cutscene=<id>`）、`TrapRoomZone.cutscene`、`Cutscene.play(id)` / `play_data(id, 数据)`。
+
+### 束缚陷阱与第五层机关
+- `RestraintTrap`（`scripts/traps/restraint_trap.gd`）：`mode = grab`（`StatusComponent.grab`）或 `hobble`（`StatusComponent.hobble`：可以慢慢走、不能冲刺、攻击 / 交互键挣扎）；`exposed`（露出部位）、`self_tickle`、`group_name`（配套机关同组）、`pose_offset / pose_rotation`（`PlayableCharacter` 的姿势，`_update_lift` 里应用）、`regrab_delay`。子类：`SnareTrap`、`CuffsTrap`、`ClampTrap`、`WardrobeTrap`（墙面，`sprite_hidden`）、`LegLoopTrap`、`MudTrap`（多格、越陷越慢）、`BootsTrap`、`BindingTrap`。
+- 配套：`TeaserTrap`（content 四种）、`WheelTrap`、`ShowerTrap`（MANUAL，同组束缚困人时自动触发）。它们实现 `extra_combo_keys()`，`ComboTracker` 把这些键也记进最近挠痒（一次挠痒可以同时算多个来源）。
+- 触发：`CageTrap`（PERIODIC 或加入 group 后 MANUAL；aim 跟着公主；slime / tentacle 放出 `Slime` / `MiniTentacle`）、`TripwireTrap`（公主或怪物碰到触发 targets 组；冲刺 / 空中不触发）、`PressurePlate.by_monsters`。绊线和怪物压力板在 `monster_switch` 组，`MachineImp` 会跑去踩；拉杆管的组里有被关掉的陷阱时它会去拨回来；被打就逃向拉杆。
+- 构建器：图例字典参数 `exposed=sole:1.5`、`zones=...`；`trap group=` → `group_name`；`traproom`（`TrapRoomZone`）。
+
 ### 怪物巢穴
 `MonsterNest`（`scripts/objects/monster_nest.gd`，StaticBody2D，墙层 + breakable 层）是可复用的基类：子类在 `_configure()` 里设 `kind`（过场 CG 用）、`monster_scene`、`sheet_row`（`nests.png` 的行），需要时重写 `_prepare(怪物)`（例如 `ChestPile` 让宝箱怪 `awake`）。场景放在 `scenes/objects/nests/`，在 `TYPED_SCENES["nest"]` 注册，图例 `X = nest type=rat`（`slime` 可加 `split=true`）。
 - 生成的怪物记 `Monster.home_nest`、加入 `nest_spawn` 组；吟唱额外生成的另加 `nest_extra` 组（`_update_surge`：`p.is_channeling()` 且在 `expose_radius` 内；`surge_start / surge_mult / surge_min / surge_max / surge_linger`）。
@@ -292,6 +316,8 @@ HUD 背包栏会根据物品数据自动显示，不需要改 UI 代码。
    - 以后也可以接 AI 或第二玩家
 
 ## 楼层与切换
+
+- 第五层 `floor_05`（`tools/build/gen_floor05.py` 生成地图、对话和 design.json，再运行 `build_level.gd -- floor=floor_05`）目前是最后一层：结局过场的 `chapter_end` 显示「未完待续」并设 `chapter5_clear`。以后加第六层：在 `data/floors.json` 末尾加 `floor_06`，给第五层留一个 `exit target=next`（或在结局过场后调用 `main.change_level`）即可接上。
 
 每层一个文件夹，改某一层只需动这一个文件夹：
 
@@ -355,6 +381,7 @@ data/dialogues.json  只放通用对话（复活、上锁提示、钥匙、失�
 - **强制遭遇的做法**：风扇风道 / 传送带铺满通道宽度把人送进陷阱区（拉杆放在危险区另一侧）；羽毛、藤蔓铺满通道宽度且长度超过冲刺距离（约 41 像素）；出口摆能打组合技的怪物。
 - **检查方法**：`tests/level_design_test.gd` 的 `FORCED` 表列出每个强制段的起点 / 终点格。`hazard_cells()` 从关卡里收集所有陷阱覆盖的格子（风扇 `in_lane` 的风道、传送带整条、机关手下方、压力板、其它陷阱所在格）。洪泛：允许踩危险格能走到、避开就走不到，才算"躲不开"。新增强制段时在 `FORCED` 里加一行。
 - **三来源组合的触发点**：`COMBO_SPOTS` 每个三来源组合至少一行。通道型 `[楼层, 组合, 起点, 终点, 中心]`：组合里每一种陷阱单独都必须绕不开——`_route_ok` 在格子图上 BFS，`_moves` 按强制位移建边（踩弹弹床直接到落点、飞过的不算碰到；踩肥皂地板沿方向滑到离开地板 / 撞墙 / `slide_stopper`，滑过的都算碰到），禁止碰到该陷阱的覆盖格（`_trap_cover`：风道、整条传送带、毛毯、羽毛臂扫的格、机关手下方、旋转刷 3×3……）后从起点走不到终点才算；需要的怪物在中心 `SPOT_RADIUS`（8）格内，巢穴按生成的怪物、触手怪 / 巨魔 / 水母女王按召唤的小怪算，`*` 只看数量。战斗房型 `[楼层, 组合, "arena:<组>"]`：陷阱覆盖格和怪物在 `room_rect()` 里；有足枷台的组合要求房里有漩涡中心 / 弹弹床落点 / 肥皂地板滑到的地方是足枷台。最后检查每个三来源组合都登记了。
+- **第五层的 design.json**：`tools/build/gen_floor05.py` 生成 `levels/floor_05/design.json`。`combo_areas`：组合区域里要有组合的每种陷阱和怪物（落笼的 slime / tentacle 内容算对应怪物）；`chains`：`start → goal` 存在不碰静态束缚 / 位移陷阱（`_static_hazards`：束缚、传送带、弹弹床、肥皂、漩涡、风扇、足枷、毛毯、符文、藤蔓）的路（可躲），`links` 依次是束缚陷阱格，`_flow`（弹弹床落点、传送带、风道、漩涡中心）从前一个能到下一个（中招就连锁）。
 - **新机制的介绍石碑**：`MECHANIC_SIGNS` 列出 `[机制, 第一次出现的楼层, 石碑对话 id]`。逐层检查：机制第一次出现的楼层要对得上，石碑对话第一句以「【机制名】」开头，从楼层起点按步数（`_distances`）石碑比机制先走到，且相差不超过 `MECHANIC_SIGN_STEPS`。新增机制时在这里加一行并在地图上放石碑（`X = sign dialogue=<id>`，对话写在该层的 `dialogues.json`）。
 
 ## 公主状态与换美术素材
