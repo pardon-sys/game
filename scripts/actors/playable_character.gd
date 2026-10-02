@@ -74,6 +74,8 @@ enum State { IDLE, MOVE, ATTACK, DASH, HURT, HELPLESS, GRABBED, DEAD, CHANNEL, C
 var fatigue_bursting := false
 ## 挠痒敏感状态（部位、连续加成、露出部位、战损）：data/actors/princess_ticklish.json。
 var sensitivity := Sensitivity.new()
+## 过场动画里被脚本移动时播走路动画（Cutscene 的 move 动作设置）。
+var puppet_walking := false
 
 var state := State.IDLE
 var _state_time := 0.0
@@ -163,7 +165,7 @@ func _tick(delta: float) -> void:
 					_footsteps(delta)
 				else:
 					velocity = velocity.move_toward(Vector2.ZERO, friction * delta)
-					_set_state(State.IDLE)
+					_set_state(State.MOVE if puppet_walking else State.IDLE)
 				if can_control:
 					if controller.is_action_just_pressed(&"attack"):
 						attack()

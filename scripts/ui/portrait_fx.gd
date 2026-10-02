@@ -64,7 +64,7 @@ func active() -> bool:
 		return false
 	if cg_mode:
 		return true
-	return not GameState.in_cutscene and not Dialogue.is_portrait_wide()
+	return (not GameState.in_cutscene or Cutscene.is_playing()) and not Dialogue.is_portrait_wide()
 
 
 func is_wide() -> bool:

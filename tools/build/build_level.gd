@@ -154,6 +154,7 @@ func build(floor_id: String) -> int:
 	root.set_script(load("res://scripts/level.gd"))
 	root.set("floor_id", floor_id)
 	root.set("intro_dialogue", level_meta.get("intro", "intro"))
+	root.set("intro_cutscene", level_meta.get("intro_cutscene", ""))
 
 	var cm := CanvasModulate.new()
 	cm.name = "Darkness"

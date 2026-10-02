@@ -33,6 +33,7 @@ func _ready() -> void:
 	player.global_position = Vector2(31 * 16 + 8, 23 * 16 + 12)
 	await _run_zones()
 	await _run_passives()
+	await _run_cutscene()
 	print("\n==== %s (%d 项失败) ====" % ["全部通过" if failures == 0 else "有失败", failures])
 	get_tree().quit(1 if failures else 0)
 
@@ -147,6 +148,78 @@ func _run_passives() -> void:
 	bp.close()
 	GameState.passives.clear()
 	await _wait(0.1)
+
+
+# ------------------------------------------------------------------ 地图内过场动画
+func _run_cutscene() -> void:
+	print("-- 地图内过场动画")
+	_reset()
+	var hud: CanvasLayer = main.get_node("HUD")
+	var start := player.global_position
+	var cell := Vector2i(int(start.x) / 16, int(start.y) / 16)
+	var feather: Trap = load("res://scenes/traps/feather_trap.tscn").instantiate()
+	level.get_node("Entities").add_child(feather)
+	feather.global_position = Vector2((cell.x + 1) * 16 + 8, cell.y * 16 + 8)
+	var cs := {"name": "测试", "steps": [
+		{"actions": [{"do": "move", "who": "princess", "to": [cell.x + 3, cell.y], "time": 0.5},
+				{"do": "camera", "to": [cell.x + 6, cell.y], "time": 0.3}], "wait": 0.6},
+		{"speaker": "公主", "text": "过场里的一句台词。", "auto": 0.3,
+			"actions": [{"do": "spawn", "id": "shadow", "kind": "shadow", "at": [cell.x + 5, cell.y]}, {"do": "pose", "laugh": 60}]},
+		{"actions": [{"do": "carry", "who": "shadow", "on": true}, {"do": "move", "who": "shadow", "to": [cell.x + 5, cell.y + 1], "time": 0.3},
+				{"do": "trap", "who": feather.name, "time": 0.3}, {"do": "set_flag", "flag": "test_cutscene_flag"}], "wait": 0.4},
+		{"actions": [{"do": "carry", "on": false}, {"do": "despawn", "who": "shadow"}], "wait": 0.1},
+	]}
+	check("过场数据校验：认识所有动作", Cutscene.validate("f5_intro").size() <= 1)
+	ctrl.move = Vector2.LEFT
+	Cutscene.play_data("test_demo", cs)
+	await _wait(0.5)
+	check("过场开始：上下黑框滑入、HUD 隐藏、剧情状态", Cutscene.is_playing() and Cutscene.is_letterboxed() and not hud.visible
+		and GameState.in_cutscene and GameState.in_dialogue)
+	check("过场中按方向键不能操作，公主被脚本移动并播走路动画", player.global_position.x > start.x + 8.0 and player.state == PlayableCharacter.State.MOVE)
+	check("过场中陷阱暂停（羽毛陷阱没有被踩发）", feather.phase == Trap.Phase.IDLE and player.last_tickle == null)
+	var t := 0.0
+	while Cutscene.step_index < 1 and t < 3.0:
+		await _wait(0.05)
+		t += 0.05
+	check("镜头移到指定的格子（%.0f）" % player.camera.position.x, player.camera.position.x > 40.0)
+	await _wait(0.05)
+	check("台词用对话框显示", Dialogue.is_active())
+	t = 0.0
+	while Cutscene.step_index < 2 and t < 3.0:
+		await _wait(0.05)
+		t += 0.05
+	await _wait(0.15)
+	var shadow: Node2D = Cutscene.spawned.get("shadow")
+	check("生成黑影（公主精灵蒙黑）并抱着公主走", shadow != null and shadow.has_meta("shadow")
+		and (shadow.get_node("Sprite") as Sprite2D).modulate.v < 0.2 and player.global_position.distance_to(shadow.global_position + Vector2(0, -8)) < 1.0)
+	check("陷阱演一次发动（只有表现）", feather.phase == Trap.Phase.ACTIVE and player.last_tickle == null)
+	check("pose 设置闷笑值（失控的表现）", player.laugh.percent() > 55.0)
+	t = 0.0
+	while Cutscene.is_playing() and t < 4.0:
+		await _wait(0.05)
+		t += 0.05
+	await _wait(0.4)
+	check("过场结束：黑框收起、HUD 恢复、可以操作、镜头回到公主", not Cutscene.is_playing() and not Cutscene.is_letterboxed() and hud.visible
+		and not GameState.in_cutscene and not GameState.in_dialogue and player.camera.position.distance_to(Vector2(0, -12)) < 1.0)
+	check("过场里的 set_flag 生效、黑影已移除", GameState.has_flag("test_cutscene_flag") and not is_instance_valid(shadow))
+	# 看过的可以跳过：跳过时剩下的 set_flag 仍然生效
+	GameState.flags.erase("test_cutscene_flag")
+	Cutscene.play_data("test_demo", cs)
+	await _wait(0.5)
+	var ev := InputEventAction.new()
+	ev.action = &"pause"
+	ev.pressed = true
+	Input.parse_input_event(ev)
+	t = 0.0
+	while Cutscene.is_playing() and t < 3.0:
+		await _wait(0.05)
+		t += 0.05
+	check("看过的过场按 Esc 跳过，剩下的 set_flag 照样生效（%.1f 秒）" % t, not Cutscene.is_playing() and t < 1.5 and GameState.has_flag("test_cutscene_flag"))
+	ctrl.move = Vector2.ZERO
+	feather.queue_free()
+	_finish_dialogue()
+	_reset()
+	await _wait(0.3)
 
 
 # ------------------------------------------------------------------ 工具

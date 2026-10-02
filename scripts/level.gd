@@ -4,6 +4,8 @@ extends Node2D
 ## 楼层 id（levels/<floor_id>/），由构建器写入。
 @export var floor_id := ""
 @export var intro_dialogue := "intro"
+## 开场过场动画（data/cutscenes/<id>.json）；写了就代替开场对话。
+@export var intro_cutscene := ""
 
 @onready var walls: TileMapLayer = $Walls
 
@@ -21,6 +23,13 @@ func _ready() -> void:
 		cam.limit_bottom = rect.end.y * ts.y
 		cam.reset_smoothing()
 	Dialogue.finished.connect(_on_dialogue_finished)
+	if intro_cutscene != "":
+		var cflag := "intro_done_" + intro_cutscene
+		if not GameState.has_flag(cflag):
+			GameState.set_flag(cflag)
+			await get_tree().create_timer(0.6).timeout
+			Cutscene.play(intro_cutscene)
+		return
 	var flag := "intro_done_" + intro_dialogue
 	if intro_dialogue != "" and not GameState.has_flag(flag):
 		GameState.set_flag(flag)

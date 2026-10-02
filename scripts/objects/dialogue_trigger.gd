@@ -4,6 +4,8 @@ extends Area2D
 signal triggered
 
 @export var dialogue := ""
+## 播放地图内过场动画（data/cutscenes/<id>.json）；写了就不播对话。
+@export var cutscene := ""
 @export var once := true
 ## 触发区域大小（像素）。
 @export var size := Vector2(16, 16)
@@ -21,6 +23,10 @@ func _on_body_entered(body: Node) -> void:
 		return
 	if once:
 		set_deferred("monitoring", false)
-	GameState.set_flag("seen_" + dialogue)
 	triggered.emit()
+	if cutscene != "":
+		GameState.set_flag("seen_cutscene_" + cutscene)
+		Cutscene.play(cutscene)
+		return
+	GameState.set_flag("seen_" + dialogue)
 	Dialogue.start(dialogue)

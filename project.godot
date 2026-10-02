@@ -21,6 +21,7 @@ GameState="*res://scripts/autoload/game_state.gd"
 Audio="*res://scripts/autoload/audio.gd"
 Dialogue="*res://scenes/ui/dialogue_box.tscn"
 CG="*res://scenes/ui/cg_player.tscn"
+Cutscene="*res://scripts/cutscene/cutscene_player.gd"
 
 [display]
 
