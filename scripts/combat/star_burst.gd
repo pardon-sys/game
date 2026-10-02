@@ -78,6 +78,8 @@ static func cast_with(caster: Node2D, p: Dictionary, visual_tier: int, tag: Stri
 	caster.get_parent().add_child(fx)
 	fx.global_position = center
 	Audio.play("star_burst", -2.0, 0.04, pitch * (1.0 + (t - 1) * 0.08))
+	# 魔力释放的水声：档位越高越响、越低沉
+	Audio.play("water_release", -8.0 + t * 2.0, 0.05, pitch * (1.05 - (t - 1) * 0.06))
 	return hit
 
 

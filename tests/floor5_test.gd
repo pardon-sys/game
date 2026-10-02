@@ -15,6 +15,7 @@ class Src extends Node2D:
 
 
 func _ready() -> void:
+	DevConfig.override = false  # 不受本地 dev_config.json 的测试模式开关影响
 	ComboTracker.play_scenes = false
 	HUD.slow_motion = false
 	Monster.random_specials = false

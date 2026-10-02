@@ -44,6 +44,7 @@ func _ready() -> void:
 	await _run_helpless_move()
 	await _run_dev_mode()
 	await _run_trap_room()
+	_run_burst_acts()
 	print("\n==== %s (%d 项失败) ====" % ["全部通过" if failures == 0 else "有失败", failures])
 	get_tree().quit(1 if failures else 0)
 
@@ -205,8 +206,8 @@ func _make_helpless() -> void:
 # ------------------------------------------------------------------ 测试模式
 func _run_dev_mode() -> void:
 	print("-- 测试模式（dev_config.json）")
-	check("配置文件读得到，默认关闭，有跳关点和各层奖励", FileAccess.file_exists(DevConfig.PATH) and DevConfig.skip_points().size() >= 6
-		and not bool(DevConfig.data().get("dev_mode", true)))
+	check("配置文件读得到：有 dev_mode 开关、跳关点和各层奖励", FileAccess.file_exists(DevConfig.PATH) and DevConfig.skip_points().size() >= 6
+		and DevConfig.data().has("dev_mode") and DevConfig.data().has("floor_rewards"))
 	var pm: Node = main.get_node("PauseMenu")
 	pm.toggle()
 	check("测试模式关闭：暂停菜单没有「测试：跳关」", not pm.skip_button.visible)
@@ -282,6 +283,38 @@ func _run_trap_room() -> void:
 	ctrl.move = Vector2.ZERO
 	player.combo.triggered.disconnect(on_fired)
 	check("一进无解房间就连续触发三来源组合（%.0f 秒内 %d 种：%s）" % [t, fired.size(), fired.keys()], fired.size() >= 4)
+
+
+# ------------------------------------------------------------------ CG 最后一幕：魔力爆发后继续被挠
+func _run_burst_acts() -> void:
+	print("-- CG / 组合演出的最后一幕：魔力爆发")
+	var all := {}
+	for id in CG.cgs():
+		all[id] = CG.cgs()[id]
+	for id in CG.scenes:
+		all["combo:" + id] = CG.scenes[id]
+	var bad: Array = []
+	for id in all:
+		var steps: Array = all[id]["steps"]
+		var burst := steps.filter(func(st): return st.get("act", "") == "burst")
+		var said := burst.filter(func(st): return st.get("speaker", "") == "公主").map(func(st): return str(st["text"]))
+		var has_portrait := burst.any(func(st): return st.get("portrait", "") == "fatigue_burst")
+		var has_sound := burst.any(func(st): return st.get("actions", []).any(func(a): return a.get("sound", "") == "water_release"))
+		var last_burst := -1
+		var first_burst := steps.size()
+		for i in steps.size():
+			if steps[i].get("act", "") == "burst":
+				last_burst = i
+				first_burst = mini(first_burst, i)
+		var at_end := last_burst >= 0 and steps.slice(last_burst + 1).all(func(st): return not st.has("text") or st.get("portrait", "") == "wake")
+		if burst.size() < 7 or not has_portrait or not has_sound or not at_end \
+				or not said.any(func(t): return t.contains("畅快")) or not said.any(func(t): return t.contains("敏感")):
+			bad.append(id)
+	check("全部 %d 段 CG / 组合演出最后都有魔力爆发这一幕（战损释放立绘、释放水声、有「畅快」和「敏感」两句）%s" % [all.size(), bad.slice(0, 4)],
+		bad.is_empty() and all.size() == 73)
+	var portrait_ok: bool = CG.data["portraits"].has("fatigue_burst") and str(CG.data["portraits"]["fatigue_burst"]["placeholder"]) == "damaged_burst"
+	check("这一幕的立绘是战损魔力释放", portrait_ok)
+	check("魔力释放的水声文件存在", ResourceLoader.exists("res://assets/generated/sfx/water_release.wav"))
 
 
 # ------------------------------------------------------------------ 工具

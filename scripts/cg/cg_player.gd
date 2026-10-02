@@ -59,7 +59,7 @@ var voice: AudioStreamPlayer
 var source_bar: HBoxContainer
 ## 立绘反馈的强度（第几幕）。
 var _fx_act := 0
-## 这段演出没有写 portrait（组合演出）：立绘跟着舞台上公主的姿势走（失控 1 → 失控 2）。
+## 这段演出没有写 portrait（组合演出）：立绘跟着舞台上公主的姿势走（失控 1 → 失控 2），直到最后一幕魔力爆发换成战损释放立绘。
 var _auto_portrait := false
 ## CG 指令 fx（lines / feather / hand / heart）→ 立绘贴片种类（没有挠痒演员时用）。
 const FX_TO_HIT := {"feather": "feather", "hand": "hand"}
@@ -352,7 +352,8 @@ func _play_cg(cg: Dictionary, id: String, source: String, skippable: bool, fx_le
 	_fx_act = fx_level
 	Dialogue.portrait_fx.begin_cg()
 	Dialogue.portrait_fx.set_cg_level(fx_level)
-	_auto_portrait = not cg.get("steps", []).any(func(st): return st is Dictionary and st.has("portrait"))
+	# 没写 portrait 的演出（组合演出）立绘跟着舞台上的姿势走；最后一幕魔力爆发（act = burst）的立绘不算
+	_auto_portrait = not cg.get("steps", []).any(func(st): return st is Dictionary and st.has("portrait") and st.get("act", "") != "burst")
 	if _auto_portrait:
 		var princess_info: Dictionary = {}
 		for who in cg.get("cast", {}):
@@ -463,6 +464,7 @@ func _apply_portrait(step: Dictionary) -> void:
 	if not step.has("portrait"):
 		return
 	var p := str(step["portrait"])
+	_auto_portrait = false  # 写了立绘之后就不再跟着姿势换
 	if p == "none":
 		Dialogue.set_portrait_override(null)
 		return
