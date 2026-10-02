@@ -114,6 +114,15 @@
 			"modifiers": {
 				"crit_all": 1
 			}
+		},
+		"exposed": {
+			"name": "露出部位",
+			"icon": 9,
+			"debuff": true,
+			"duration": 99,
+			"max_stacks": 1,
+			"modifiers": {},
+			"desc": "被束缚陷阱困住，部位露在外面：挠到这些部位时闷笑增加更多。"
 		}
 	}
 }

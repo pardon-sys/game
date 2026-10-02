@@ -14,6 +14,7 @@ class Src extends Node2D:
 
 
 func _ready() -> void:
+	TickleZones.enabled = false  # 部位与敏感值会让挠痒数值随机变化；在 floor5_test 里测
 	ComboTracker.play_scenes = false  # 三来源组合的小演出会暂停战斗；需要时在专门的测试里打开
 	HUD.slow_motion = false
 	main = load("res://scenes/main.tscn").instantiate()
@@ -1217,8 +1218,10 @@ func _run_backpack() -> void:
 	player.add_buff("ticklish", 6.0)
 	player.add_buff("fatigue_scar", -1.0, 2)
 	await _press("backpack")
+	check("Tab 翻到被动技能页", bp.page == Backpack.PAGE_PASSIVES and bp.passives_page.visible and not bp.items_page.visible)
+	await _press("backpack")
 	var txt := _texts(bp.status_page)
-	check("Tab 翻到状态页", bp.page == 1 and bp.status_page.visible and not bp.items_page.visible)
+	check("再按 Tab 翻到状态页", bp.page == Backpack.PAGE_STATUS and bp.status_page.visible and not bp.passives_page.visible)
 	check("状态页：闷笑值百分比和阶段", txt.contains("闷笑值 60%") and txt.contains("失控 1"))
 	check("状态页：魔力疲倦百分比、加成和下一档", txt.contains("魔力疲倦 64%") and txt.contains("下一档：80%"))
 	check("状态页：每个状态的名称、剩余时间 / 层数和效果", txt.contains("易痒诅咒") and txt.contains("2 层") and txt.contains("闷笑积累 +30%"))

@@ -1,0 +1,19 @@
+{
+	"_说明": [
+		"人物被动技能（背包「被动技能」页显示）。id -> {name 名字, icon passive_icons.png 的格, max_level 最高等级, levels [每级 {value 数值, desc 说明}]}。",
+		"levels 里还可以写别的效果字段（例如 zone_sensitivity: {部位: 敏感值加减}），代码用 PassiveDB.value(id) / value_dict(id, 字段) 读当前等级的值。",
+		"获得：GameState.grant_passive(id)；升级：GameState.upgrade_passive(id)。等级存在 GameState.passives（换层保留）。"
+	],
+	"passives": {
+		"struggle_plus": {
+			"name": "挣脱强化",
+			"icon": 0,
+			"max_level": 3,
+			"levels": [
+				{"value": 0.3, "desc": "连按 J / E 挣扎时，闷笑值多降 30%。"},
+				{"value": 0.5, "desc": "连按 J / E 挣扎时，闷笑值多降 50%。"},
+				{"value": 0.75, "desc": "连按 J / E 挣扎时，闷笑值多降 75%。"}
+			]
+		}
+	}
+}

@@ -125,7 +125,7 @@ func _refresh_buffs() -> void:
 		return
 	for id in _player.buffs:
 		var b: Buff = _player.buffs[id]
-		var info := Buff.info(id)
+		var info := Buff.display(id, _player)
 		var icon := TextureRect.new()
 		var at := AtlasTexture.new()
 		at.atlas = BUFF_ICONS

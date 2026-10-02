@@ -77,7 +77,7 @@ func on_tickled(hit: HitData, laugh: LaughMeter) -> void:
 	if cg_mode or not active():
 		return
 	var stage := laugh.stage() if laugh else "calm"
-	_tickle_core(ReactionDB.key_of(hit.source), HitFx.kind_of(hit.source), stage, hit.special, 0.0)
+	_tickle_core(ReactionDB.key_of(hit.source), HitFx.kind_of(hit.source), stage, hit.special, 0.0, hit.zone)
 
 
 ## 组合技（以及 CG 里组合演出的高潮）：立绘周围爆开粉色心形。
@@ -131,7 +131,7 @@ func cg_crit() -> void:
 
 
 # ------------------------------------------------------------------ 共用
-func _tickle_core(key: String, kind: String, stage: String, special: bool, extra_shake: float) -> void:
+func _tickle_core(key: String, kind: String, stage: String, special: bool, extra_shake: float, zone := "") -> void:
 	var strength := float(SHAKE_BY_STAGE.get(stage, 1.0)) + (2.0 if special else 0.0) + extra_shake
 	Dialogue.shake_portrait(strength, 0.24 if special else 0.18)
 	if special:
@@ -144,14 +144,14 @@ func _tickle_core(key: String, kind: String, stage: String, special: bool, extra
 		if is_wide():
 			_sticker(kind, _wide_point(), 2.5)
 		else:
-			_sticker(kind, _anchor_point(), 2.0)
+			_sticker(kind, _anchor_point(zone), 2.0)
 	if special:
 		_sticker("crit", portrait_rect().get_center(), 3.0, true)
 	if stage.begins_with("helpless"):
 		var gap := (0.22 if stage == "helpless_2" else 0.35) * (CG_HAHA_K if cg_mode else 1.0)
 		if _since_haha >= gap:
 			_since_haha = 0.0
-			_haha(stage == "helpless_2", key, stage)
+			_haha(stage == "helpless_2", key, stage, zone)
 
 
 func clear() -> void:
@@ -238,9 +238,11 @@ func glow_material() -> ShaderMaterial:
 	return _glow
 
 
-func _anchor_point() -> Vector2:
+## 立绘上的贴片位置：有部位时用部位的 anchor（princess_ticklish.json），否则随机一个锚点。
+func _anchor_point(zone := "") -> Vector2:
 	var r := portrait_rect()
-	var a: Vector2 = ANCHORS.pick_random()
+	var za: Variant = TickleZones.anchor(zone) if zone != "" else null
+	var a: Vector2 = za if za is Vector2 else ANCHORS.pick_random()
 	return r.position + r.size * a + Vector2(randf_range(-4, 4), randf_range(-4, 4))
 
 
@@ -285,8 +287,8 @@ func _flash(col: Color, time: float) -> void:
 	_flash_tween.tween_property(portrait, "self_modulate", Color.WHITE, time)
 
 
-func _haha(big: bool, key := "", stage := "helpless_1") -> void:
-	var words := ReactionDB.portrait_words(key, stage)
+func _haha(big: bool, key := "", stage := "helpless_1", zone := "") -> void:
+	var words := ReactionDB.portrait_words(key, stage, zone)
 	var l := Label.new()
 	l.text = str(words.pick_random()) if not words.is_empty() else HAHA.pick_random()
 	l.add_theme_color_override("font_color", Color(1, 0.6, 0.8))

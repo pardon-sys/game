@@ -520,13 +520,47 @@ def buff_icon(kind):
     return img
 
 
-BUFF_ICON_COUNT = 9
+SKIN = (255, 226, 214, 255)
+SKIN_D = (226, 170, 160, 255)
+
+
+def zone_icon(kind):
+    """露出部位（9 脚心 / 10 腋下 / 11 腰 / 12 脖子 / 13 大腿）：粉框里画部位剪影 + 小叹号。"""
+    img, d = canvas(12, 12)
+    d.rounded_rectangle((0, 0, 11, 11), radius=2, fill=(110, 40, 80, 255))
+    d.rounded_rectangle((0, 0, 11, 11), radius=2, outline=(255, 150, 200, 255))
+    if kind == 9:      # 脚心：脚底轮廓 + 脚趾
+        d.ellipse((3, 4, 7, 10), fill=SKIN)
+        for x in (3, 5, 7):
+            d.point((x, 2), fill=SKIN)
+        d.point((5, 7), fill=SKIN_D)
+    elif kind == 10:   # 腋下：举起的手臂
+        d.line((2, 9, 4, 2), fill=SKIN, width=2)
+        d.ellipse((4, 6, 8, 10), fill=SKIN)
+        d.point((5, 6), fill=SKIN_D)
+    elif kind == 11:   # 腰：腰线曲线
+        d.line((3, 2, 4, 6), fill=SKIN)
+        d.line((4, 6, 3, 10), fill=SKIN)
+        d.line((8, 2, 7, 6), fill=SKIN)
+        d.line((7, 6, 8, 10), fill=SKIN)
+    elif kind == 12:   # 脖子：头 + 脖子
+        d.ellipse((3, 1, 8, 6), fill=SKIN)
+        d.rectangle((5, 6, 6, 10), fill=SKIN)
+    elif kind == 13:   # 大腿：一条腿
+        d.line((4, 2, 5, 7), fill=SKIN, width=3)
+        d.line((5, 7, 5, 10), fill=SKIN, width=2)
+    d.line((9, 2, 9, 5), fill=(255, 230, 120, 255))
+    d.point((9, 7), fill=(255, 230, 120, 255))
+    return img
+
+
+BUFF_ICON_COUNT = 14
 
 
 def gen_buff_icons():
     sheet = blank(12 * BUFF_ICON_COUNT, 12)
     for i in range(BUFF_ICON_COUNT):
-        sheet.alpha_composite(buff_icon(i), (i * 12, 0))
+        sheet.alpha_composite(buff_icon(i) if i < 9 else zone_icon(i), (i * 12, 0))
     sheet.save(OUT / "buff_icons.png")
 
 

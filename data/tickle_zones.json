@@ -1,0 +1,38 @@
+{
+	"_说明": [
+		"挠痒来源会挠到哪些部位：sources 的来源键 -> {部位 id: 权重}。每挠一下按权重抽一个部位（部位表在 data/actors/princess_ticklish.json）。",
+		"没写的来源按部位表的 chance 抽；单个怪物 / 陷阱可以用导出属性 tickle_zones 覆盖（图例写 zones=sole:2,armpit:1）。",
+		"被束缚陷阱露出部位时，优先在来源能挠到的部位里选露出的部位；follow_exposed 里的来源（逗弄器等）总是挠露出的部位。",
+		"用 python tools/build/check_zones.py 列出还没分配部位的来源。"
+	],
+	"follow_exposed": [],
+	"sources": {
+		"slime": {"sole": 2, "waist": 1},
+		"split_slime": {"sole": 2, "waist": 1},
+		"bat": {"neck": 2, "armpit": 1},
+		"ghost": {"waist": 2, "armpit": 1, "neck": 1},
+		"spider": {"sole": 1, "waist": 1, "thigh": 1},
+		"troll": {"sole": 3, "waist": 1},
+		"feather": {"sole": 1, "thigh": 1},
+		"vent": {"neck": 1, "armpit": 1, "waist": 1},
+		"brush": {"sole": 1, "waist": 1, "thigh": 1},
+		"hand": {"armpit": 2, "waist": 2},
+		"rat": {"sole": 1},
+		"crab": {"sole": 2, "thigh": 1},
+		"mimic": {"sole": 2, "waist": 1},
+		"fairy": {"armpit": 1, "neck": 1, "sole": 1},
+		"tentacle": {"waist": 2, "armpit": 1, "sole": 1},
+		"vine": {"thigh": 2, "sole": 1},
+		"fan": {"neck": 1, "armpit": 1},
+		"conveyor": {"sole": 1},
+		"mana_jelly": {"thigh": 1, "sole": 1, "waist": 1},
+		"bubble_fish": {"sole": 2, "waist": 1},
+		"glove": {"armpit": 2, "waist": 1},
+		"hedgehog": {"sole": 1, "waist": 1},
+		"jelly_queen": {"waist": 1, "thigh": 1, "armpit": 1},
+		"rune": {"waist": 1},
+		"stocks": {"sole": 1},
+		"carpet": {"sole": 2, "thigh": 1},
+		"arm": {"sole": 1, "armpit": 1}
+	}
+}

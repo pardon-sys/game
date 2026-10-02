@@ -184,7 +184,7 @@ func _capture_backpack() -> void:
 	bp._refresh()
 	await _wait(0.2)
 	await _shot("f4_17_backpack_items")
-	bp.set_page(1)
+	bp.set_page(Backpack.PAGE_STATUS)
 	await _wait(0.2)
 	await _shot("f4_18_backpack_status")
 	bp.close()

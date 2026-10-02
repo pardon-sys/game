@@ -9,7 +9,10 @@ signal opened
 signal closed
 
 const BUFF_ICONS := preload("res://assets/generated/buff_icons.png")
-const PAGES := ["物品", "状态"]
+const PAGES := ["物品", "被动技能", "状态"]
+const PAGE_ITEMS := 0
+const PAGE_PASSIVES := 1
+const PAGE_STATUS := 2
 const COLUMNS := 8
 const CATEGORY_NAMES := {
 	ItemData.Category.CONSUMABLE: "消耗品", ItemData.Category.KEY: "钥匙",
@@ -33,6 +36,12 @@ var detail_name: Label
 var detail_desc: Label
 var hotkey_label: Label
 var status_page: VBoxContainer
+var passives_page: Control
+var passive_grid: GridContainer
+var passive_name: Label
+var passive_desc: Label
+var passive_selected := 0
+var _passive_ids: Array = []
 var hint_label: Label
 
 
@@ -42,6 +51,7 @@ func _ready() -> void:
 	_build()
 	root.hide()
 	GameState.hotkeys_changed.connect(func(): if is_open(): _refresh())
+	GameState.passive_changed.connect(func(_id: String, _lv: int): if is_open(): _refresh())
 
 
 func is_open() -> bool:
@@ -121,14 +131,19 @@ func set_page(p: int) -> void:
 
 
 func move_selection(d: int) -> void:
-	if page != 0 or _items.is_empty():
+	if page == PAGE_PASSIVES:
+		if not _passive_ids.is_empty():
+			passive_selected = clampi(passive_selected + d, 0, _passive_ids.size() - 1)
+			_refresh()
+		return
+	if page != PAGE_ITEMS or _items.is_empty():
 		return
 	selected = clampi(selected + d, 0, _items.size() - 1)
 	_refresh()
 
 
 func selected_item() -> ItemData:
-	return _items[selected] if page == 0 and selected < _items.size() else null
+	return _items[selected] if page == PAGE_ITEMS and selected < _items.size() else null
 
 
 ## 使用选中的物品（消耗品）。
@@ -202,6 +217,24 @@ func _build() -> void:
 	hotkey_label = _label(PINK)
 	hotkey_label.position = Vector2(0, 166)
 	items_page.add_child(hotkey_label)
+	# 被动技能页
+	passives_page = Control.new()
+	passives_page.position = Vector2(12, 26)
+	passives_page.size = Vector2(396, 190)
+	panel.add_child(passives_page)
+	passive_grid = GridContainer.new()
+	passive_grid.columns = COLUMNS
+	passive_grid.add_theme_constant_override("h_separation", 4)
+	passive_grid.add_theme_constant_override("v_separation", 4)
+	passives_page.add_child(passive_grid)
+	passive_name = _label(GOLD)
+	passive_name.position = Vector2(0, 92)
+	passives_page.add_child(passive_name)
+	passive_desc = _label(TEXT)
+	passive_desc.position = Vector2(0, 110)
+	passive_desc.size = Vector2(396, 70)
+	passive_desc.autowrap_mode = TextServer.AUTOWRAP_ARBITRARY
+	passives_page.add_child(passive_desc)
 	# 状态页
 	status_page = VBoxContainer.new()
 	status_page.position = Vector2(12, 26)
@@ -224,14 +257,62 @@ func _refresh() -> void:
 	for i in PAGES.size():
 		parts.append(("【%s】" if i == page else " %s ") % PAGES[i])
 	tabs_label.text = "冒险背包　" + "  ".join(parts)
-	items_page.visible = page == 0
-	status_page.visible = page == 1
-	if page == 0:
+	items_page.visible = page == PAGE_ITEMS
+	passives_page.visible = page == PAGE_PASSIVES
+	status_page.visible = page == PAGE_STATUS
+	if page == PAGE_ITEMS:
 		_refresh_items()
-		hint_label.text = "方向键 选择　E 使用　Q / R 设为快捷键　Tab 状态页　Esc 关闭"
+		hint_label.text = "方向键 选择　E 使用　Q / R 设为快捷键　Tab 下一页　Esc 关闭"
+	elif page == PAGE_PASSIVES:
+		_refresh_passives()
+		hint_label.text = "方向键 选择　Tab 下一页　Esc 关闭"
 	else:
 		_refresh_status()
 		hint_label.text = "Tab / Esc 关闭"
+
+
+## 被动技能页：图标网格（右下角等级）+ 选中技能的当前效果和下一级效果。
+func _refresh_passives() -> void:
+	_passive_ids = PassiveDB.ids().filter(func(id): return GameState.passives.has(id))
+	passive_selected = clampi(passive_selected, 0, maxi(_passive_ids.size() - 1, 0))
+	for c in passive_grid.get_children():
+		c.queue_free()
+	for i in _passive_ids.size():
+		passive_grid.add_child(_passive_slot(_passive_ids[i], i == passive_selected))
+	if _passive_ids.is_empty():
+		passive_name.text = "还没有被动技能。"
+		passive_desc.text = "冒险中会学会新的被动技能，学会后显示在这里；以后还能升级。"
+		return
+	var id: String = _passive_ids[passive_selected]
+	var lv := GameState.passive_level(id)
+	var mx := PassiveDB.max_level(id)
+	passive_name.text = "%s　Lv.%d / %d" % [PassiveDB.name(id), lv, mx]
+	var text := "当前：" + str(PassiveDB.level_info(id, lv).get("desc", ""))
+	text += "\n下一级：" + str(PassiveDB.level_info(id, lv + 1).get("desc", "")) if lv < mx else "\n已经满级。"
+	passive_desc.text = text
+
+
+func _passive_slot(id: String, active: bool) -> Control:
+	var p := Panel.new()
+	p.custom_minimum_size = Vector2(40, 40)
+	var sb := StyleBoxFlat.new()
+	sb.bg_color = Color(0.22, 0.14, 0.26) if active else Color(0.17, 0.11, 0.2)
+	sb.border_color = GOLD if active else Color(0.4, 0.28, 0.45)
+	sb.set_border_width_all(2 if active else 1)
+	sb.set_corner_radius_all(3)
+	p.add_theme_stylebox_override("panel", sb)
+	var icon := TextureRect.new()
+	icon.texture = PassiveDB.icon(id)
+	icon.position = Vector2(4, 4)
+	icon.size = Vector2(32, 32)
+	icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	icon.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	p.add_child(icon)
+	var n := _label(GOLD)
+	n.text = "Lv%d" % GameState.passive_level(id)
+	n.position = Vector2(16, 22)
+	p.add_child(n)
+	return p
 
 
 func _refresh_items() -> void:
@@ -300,6 +381,15 @@ func _refresh_status() -> void:
 	if p.laugh:
 		_line("闷笑值 %d%%　%s" % [roundi(p.laugh.percent()), p.laugh.stage_name()], PINK)
 		_line("　" + p.laugh.stage_desc(), TEXT)
+	var sens: Sensitivity = p.get("sensitivity")
+	if sens and p.laugh:
+		var body := TickleZones.body_multiplier(p.laugh.stage(), sens.damaged)
+		_line("敏感度　全身 ×%.2f%s" % [body, "（战损）" if sens.damaged else ""], Color(1, 0.7, 0.85))
+		var parts: Array[String] = []
+		for z in TickleZones.zone_ids():
+			var mark := "↑" if sens.streak_of(z) > 0.0 else ""
+			parts.append("%s ×%.2f%s" % [TickleZones.zone_name(z), sens.zone_total(z), mark])
+		_line("　" + "　".join(parts), TEXT)
 	var f: MagicFatigue = p.get("fatigue")
 	if f:
 		var bonus := roundi(f.laugh_bonus() * 100.0)
@@ -314,7 +404,7 @@ func _refresh_status() -> void:
 	var any := false
 	for id in p.buffs:
 		any = true
-		_buff_line(id, p.buffs[id])
+		_buff_line(id, p.buffs[id], p)
 	for s in _situations(p):
 		any = true
 		_line("· " + s, TEXT)
@@ -346,8 +436,8 @@ func _situations(p: PlayableCharacter) -> Array[String]:
 	return out
 
 
-func _buff_line(id: String, b: Buff) -> void:
-	var info := Buff.info(id)
+func _buff_line(id: String, b: Buff, p: Object = null) -> void:
+	var info := Buff.display(id, p)
 	var row := HBoxContainer.new()
 	row.add_theme_constant_override("separation", 4)
 	var icon := TextureRect.new()

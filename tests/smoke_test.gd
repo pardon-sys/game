@@ -13,6 +13,7 @@ var failures := 0
 
 
 func _ready() -> void:
+	TickleZones.enabled = false  # 部位与敏感值会让挠痒数值随机变化；在 floor5_test 里测
 	ComboTracker.play_scenes = false  # 三来源组合的小演出会暂停战斗；需要时在专门的测试里打开
 	HUD.slow_motion = false
 	Monster.random_specials = false  # 这里要精确的挠痒数值；暴击在 floor4_test 里测
@@ -586,6 +587,8 @@ func _run_contracts() -> void:
 		var it := ItemDB.get_item(id)
 		ok = ok and it != null and it.id == id and Contracts.implements(it, Contracts.ITEM) and it.icon != null
 	check("所有物品数据有效", ok)
+	var zone_errors := TickleZones.validate()
+	check("部位挠痒配置校验通过（%s）" % ["；".join(zone_errors)], zone_errors.is_empty())
 
 
 # ------------------------------------------------------------------ 工具

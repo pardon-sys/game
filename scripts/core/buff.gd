@@ -28,6 +28,21 @@ static func info(buff_id: String) -> Dictionary:
 	return data().get("buffs", {}).get(buff_id, {})
 
 
+## 显示用的信息：通用状态 exposed 按角色当前露出的部位动态显示名字、图标和倍率。
+static func display(buff_id: String, actor: Object) -> Dictionary:
+	var out := info(buff_id).duplicate()
+	if buff_id == "exposed" and actor != null and actor.get("sensitivity") is Sensitivity:
+		var sens: Sensitivity = actor.get("sensitivity")
+		out["name"] = sens.exposed_label()
+		out["icon"] = sens.exposed_icon()
+		var parts: Array[String] = []
+		var ex := sens.exposed()
+		for z in ex:
+			parts.append("%s ×%.1f" % [TickleZones.zone_name(z), float(ex[z])])
+		out["desc"] = "被束缚陷阱困住，部位露在外面：%s。" % "、".join(parts)
+	return out
+
+
 static func stat_kind(stat: String) -> String:
 	return str(data().get("stat_kinds", {}).get(stat, "add"))
 

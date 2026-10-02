@@ -47,12 +47,23 @@ static func lines(key: String, stage: String) -> Array:
 
 
 ## 立绘飘字（PortraitFx）：stage = helpless_1 / helpless_2。
-static func portrait_words(key: String, stage: String) -> Array:
+## 立绘飘字。查找顺序：来源按部位写的 → 来源自己的 → 部位默认（princess_ticklish.json）→ 全局。
+static func portrait_words(key: String, stage: String, zone := "") -> Array:
 	var own: Variant = source(key).get("portrait_words", null)
+	if zone != "" and own is Dictionary and own.has(zone):
+		var zw: Variant = own[zone]
+		if zw is Array and not zw.is_empty():
+			return zw
+		if zw is Dictionary and not zw.get(stage, []).is_empty():
+			return zw[stage]
 	if own is Array and not own.is_empty():
 		return own
-	if own is Dictionary and not own.get(stage, []).is_empty():
+	if own is Dictionary and own.get(stage, []) is Array and not own.get(stage, []).is_empty():
 		return own[stage]
+	if zone != "":
+		var w := TickleZones.words(zone, stage)
+		if not w.is_empty():
+			return w
 	var global: Variant = data().get("portrait_words", {})
 	if global is Dictionary:
 		return global.get(stage, global.get("helpless_1", []))

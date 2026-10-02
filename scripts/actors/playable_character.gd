@@ -72,6 +72,8 @@ enum State { IDLE, MOVE, ATTACK, DASH, HURT, HELPLESS, GRABBED, DEAD, CHANNEL, C
 @onready var fatigue: MagicFatigue = get_node_or_null("Fatigue")
 ## 正在进行疲倦爆发（CAST 期间用战损释放姿势）。
 var fatigue_bursting := false
+## 挠痒敏感状态（部位、连续加成、露出部位、战损）：data/actors/princess_ticklish.json。
+var sensitivity := Sensitivity.new()
 
 var state := State.IDLE
 var _state_time := 0.0
@@ -100,6 +102,7 @@ func _setup() -> void:
 			GameState.checkpoint = global_position
 	if laugh:
 		laugh.level_changed.connect(_on_laugh_level_changed)
+	sensitivity.weak_point.connect(_on_weak_point)
 	if health:
 		health.changed.connect(func(_hp: int, _max: int): _refresh_emotion())
 	if slash:
@@ -120,6 +123,7 @@ func set_controller(c: CharacterController) -> void:
 
 func _tick(delta: float) -> void:
 	_state_time += delta
+	sensitivity.tick(delta)
 	_dash_cd = maxf(_dash_cd - delta, 0.0)
 	_magic_cd = maxf(_magic_cd - delta, 0.0)
 	var can_control := not GameState.in_dialogue and state != State.DEAD
@@ -286,7 +290,8 @@ func use_item(hotkey := "use_item") -> bool:
 ## 笑瘫 / 被抓时挣扎一次：降闷笑值，被抓时同时计入挣脱次数。
 func struggle() -> void:
 	if laugh:
-		laugh.struggle()
+		# 被动「挣脱强化」：每下多降 value 倍
+		laugh.reduce_ratio(laugh.struggle_ratio * (1.0 + PassiveDB.value("struggle_plus")))
 	if status and status.is_grabbed():
 		status.struggle()
 	_shake = maxf(_shake, 0.05)
@@ -415,11 +420,33 @@ func _on_channel_tier(tier: int) -> void:
 	magic_event.emit("tier", tier)
 
 
-## 受到的挠痒倍率：状态（易痒、增益减益）× 吟唱时弱点暴露 × 魔力疲倦加成。
+## 受到的挠痒倍率：部位与敏感值（TickleZones / Sensitivity）× 状态（易痒、增益减益）× 吟唱时弱点暴露 × 魔力疲倦加成。
 func _tickle_multiplier(hit: HitData) -> float:
 	var k := super(hit) * (exposed_tickle_mult if state == State.CHANNEL else 1.0)
+	if TickleZones.enabled:
+		k *= sensitivity.apply(hit, self)
 	k *= 1.0 + (fatigue.laugh_bonus() if fatigue else 0.0)
 	return k * (combo.hit_multiplier(hit) if combo else 1.0)
+
+
+func revive() -> void:
+	super()
+	sensitivity.reset()
+
+
+var _weak_cd := 0.0
+
+
+## 挠到被束缚露出的部位：头上跳「弱点！」（限频）。
+func _on_weak_point(zone: String) -> void:
+	var now := Time.get_ticks_msec() / 1000.0
+	if now < _weak_cd:
+		return
+	_weak_cd = now + 0.6
+	var b := SpeechBubble.say(self, "弱点！%s" % TickleZones.zone_name(zone), 30.0)
+	if b:
+		b.add_theme_color_override("font_color", Color(1.0, 0.55, 0.8))
+		b.add_theme_color_override("font_outline_color", Color(0.4, 0.08, 0.25))
 
 
 func is_grabbed() -> bool:
