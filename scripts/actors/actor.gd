@@ -119,8 +119,11 @@ func receive_hit(hit: HitData) -> bool:
 	return false
 
 
-## 命中特效：挠痒按来源选（HitFx.kind_of），找不到时用 fallback；攻击（force）一律用刀光；暴击额外叠金色星环。
+## 命中特效：挠痒按来源选（HitFx.kind_of），找不到时用 fallback；攻击（force）一律用刀光；暴击额外叠金色星环；
+## 挠到了某个部位时再叠一个部位专属特效（ZoneFx，弱点放大变亮）。
 func _play_hit_fx(hit: HitData, fallback: String, force := false) -> void:
+	if not force and hit.zone != "" and is_inside_tree():
+		ZoneFx.play(hit.zone, get_parent(), ZoneFx.body_point(self, hit.zone), 1.0, hit.weak)
 	var kind := fallback if force else HitFx.kind_of(hit.source)
 	if kind == "":
 		kind = fallback

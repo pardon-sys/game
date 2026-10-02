@@ -1,13 +1,13 @@
 class_name HitFx
 extends Sprite2D
-## 命中特效：assets/generated/hit_fx.png（24x24 × 6 帧，每行一种）。
+## 命中特效：assets/generated/hit_fx.png（24x24 × 6 帧，每行一种）。部位专属特效另见 ZoneFx。
 ##   HitFx.play(kind, parent, pos)   播放一次后自动删除
 ##   HitFx.kind_of(source)           按挠痒 / 攻击来源选特效：怪物看 MonsterStats.hit_fx，陷阱看 Trap.hit_fx，
 ##                                   投射物看发射者；组合技、余痒这类没有来源键的不播
 ## Actor.receive_hit 在挠痒 / 攻击生效后统一调用；暴击时额外叠一个 crit。
 
 const SHEET := preload("res://assets/generated/hit_fx.png")
-const KINDS := ["feather", "hand", "goo", "sting", "bubble", "brush", "pinch", "slash", "crit", "curse"]
+const KINDS := ["feather", "hand", "goo", "sting", "bubble", "brush", "pinch", "slash", "crit", "curse", "suck", "crawl"]
 const FPS := 16.0
 
 ## 测试 / 性能需要时可以关掉。

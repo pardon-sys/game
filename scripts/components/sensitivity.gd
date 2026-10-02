@@ -100,5 +100,6 @@ func apply(hit: HitData, actor: Actor) -> float:
 		streak[zone] = minf(streak_of(zone) + float(rule.get("step", 0.03)), float(rule.get("max", 0.3)))
 	_last[zone] = _time
 	if ex.has(zone):
+		hit.weak = true
 		weak_point.emit(zone)
 	return k

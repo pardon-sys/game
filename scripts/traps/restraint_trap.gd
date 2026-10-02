@@ -110,7 +110,7 @@ func _apply_effect(target: Node) -> bool:
 		pc.pose_offset = pose_offset
 		pc.pose_rotation = pose_rotation
 	if sprite and sprite.hframes > 1:
-		sprite.frame = 1
+		sprite.frame_coords.x = 1
 	_on_restrain(a)
 	restrained.emit(a)
 	if not GameState.has_flag("hint_restraint"):
@@ -121,6 +121,12 @@ func _apply_effect(target: Node) -> bool:
 
 func is_holding() -> bool:
 	return victim != null and is_instance_valid(victim)
+
+
+## 现在踩上来会不会被困住（滑梯据此决定滑到这里停下，还是刚放开的人继续往下滑）。
+func would_grab(a: Node) -> bool:
+	return active and victim == null and phase == Phase.IDLE \
+			and Time.get_ticks_msec() / 1000.0 >= float(_immune.get(a.get_instance_id(), -INF))
 
 
 func _free() -> void:
@@ -140,7 +146,7 @@ func _free() -> void:
 		_on_free(a)
 		freed.emit(a)
 	if sprite and sprite.hframes > 1:
-		sprite.frame = 0
+		sprite.frame_coords.x = 0
 	if trigger_mode == TriggerMode.CONTINUOUS:
 		_enter(Phase.ACTIVE)
 	else:
@@ -188,5 +194,5 @@ func _while_held(_delta: float) -> void:
 ## 过场里演一次（只有表现）：合上一会儿再打开。
 func play_show(time: float) -> void:
 	if sprite and sprite.hframes > 1:
-		sprite.frame = 1
-		get_tree().create_timer(time).timeout.connect(func(): if is_instance_valid(sprite): sprite.frame = 0)
+		sprite.frame_coords.x = 1
+		get_tree().create_timer(time).timeout.connect(func(): if is_instance_valid(sprite): sprite.frame_coords.x = 0)

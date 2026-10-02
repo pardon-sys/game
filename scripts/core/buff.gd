@@ -28,7 +28,7 @@ static func info(buff_id: String) -> Dictionary:
 	return data().get("buffs", {}).get(buff_id, {})
 
 
-## 显示用的信息：通用状态 exposed 按角色当前露出的部位动态显示名字、图标和倍率。
+## 显示用的信息：通用状态 exposed 按角色当前露出的部位动态显示名字、图标和倍率；latched 显示吸着的怪物。
 static func display(buff_id: String, actor: Object) -> Dictionary:
 	var out := info(buff_id).duplicate()
 	if buff_id == "exposed" and actor != null and actor.get("sensitivity") is Sensitivity:
@@ -40,6 +40,8 @@ static func display(buff_id: String, actor: Object) -> Dictionary:
 		for z in ex:
 			parts.append("%s ×%.1f" % [TickleZones.zone_name(z), float(ex[z])])
 		out["desc"] = "被束缚陷阱困住，部位露在外面：%s。" % "、".join(parts)
+	elif buff_id == "latched" and actor != null and actor.has_method("latch_label"):
+		out["name"] = actor.latch_label()
 	return out
 
 

@@ -21,7 +21,7 @@ tickle = 2.5
 [node name="Sprite" type="Sprite2D" parent="."]
 texture = ExtResource("tex")
 hframes = 2
-vframes = 4
+vframes = 5
 offset = Vector2(0, 0)
 
 [node name="Shape" type="CollisionShape2D" parent="."]

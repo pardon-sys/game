@@ -247,7 +247,7 @@ func _refresh_buff_mark() -> void:
 		mark = Sprite2D.new()
 		mark.name = "BuffMark"
 		mark.texture = preload("res://assets/generated/buff_icons.png")
-		mark.hframes = 9
+		mark.hframes = mark.texture.get_width() / 12
 		mark.z_index = 10
 		mark.scale = Vector2(0.75, 0.75)
 		add_child(mark)

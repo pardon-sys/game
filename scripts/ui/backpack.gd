@@ -389,7 +389,9 @@ func _refresh_status() -> void:
 		for z in TickleZones.zone_ids():
 			var mark := "↑" if sens.streak_of(z) > 0.0 else ""
 			parts.append("%s ×%.2f%s" % [TickleZones.zone_name(z), sens.zone_total(z), mark])
-		_line("　" + "　".join(parts), TEXT)
+		# 每行 4 个部位（部位多了也排得下）
+		for i in range(0, parts.size(), 4):
+			_line("　" + "　".join(parts.slice(i, i + 4)), TEXT)
 	var f: MagicFatigue = p.get("fatigue")
 	if f:
 		var bonus := roundi(f.laugh_bonus() * 100.0)

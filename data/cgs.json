@@ -257,6 +257,66 @@
 		"imp_3": {
 			"file": "res://assets/cg/portraits/imp_3.png",
 			"placeholder": "helpless_2"
+		},
+		"frog_1": {
+			"file": "res://assets/cg/portraits/frog_1.png",
+			"placeholder": "helpless_1"
+		},
+		"frog_2": {
+			"file": "res://assets/cg/portraits/frog_2.png",
+			"placeholder": "helpless_2"
+		},
+		"frog_3": {
+			"file": "res://assets/cg/portraits/frog_3.png",
+			"placeholder": "helpless_2"
+		},
+		"squirrel_1": {
+			"file": "res://assets/cg/portraits/squirrel_1.png",
+			"placeholder": "helpless_1"
+		},
+		"squirrel_2": {
+			"file": "res://assets/cg/portraits/squirrel_2.png",
+			"placeholder": "helpless_2"
+		},
+		"squirrel_3": {
+			"file": "res://assets/cg/portraits/squirrel_3.png",
+			"placeholder": "helpless_2"
+		},
+		"octopus_1": {
+			"file": "res://assets/cg/portraits/octopus_1.png",
+			"placeholder": "helpless_1"
+		},
+		"octopus_2": {
+			"file": "res://assets/cg/portraits/octopus_2.png",
+			"placeholder": "helpless_2"
+		},
+		"octopus_3": {
+			"file": "res://assets/cg/portraits/octopus_3.png",
+			"placeholder": "helpless_2"
+		},
+		"caterpillar_1": {
+			"file": "res://assets/cg/portraits/caterpillar_1.png",
+			"placeholder": "helpless_1"
+		},
+		"caterpillar_2": {
+			"file": "res://assets/cg/portraits/caterpillar_2.png",
+			"placeholder": "helpless_2"
+		},
+		"caterpillar_3": {
+			"file": "res://assets/cg/portraits/caterpillar_3.png",
+			"placeholder": "helpless_2"
+		},
+		"barnacle_1": {
+			"file": "res://assets/cg/portraits/barnacle_1.png",
+			"placeholder": "helpless_1"
+		},
+		"barnacle_2": {
+			"file": "res://assets/cg/portraits/barnacle_2.png",
+			"placeholder": "helpless_2"
+		},
+		"barnacle_3": {
+			"file": "res://assets/cg/portraits/barnacle_3.png",
+			"placeholder": "helpless_2"
 		}
 	},
 	"actors": {
@@ -344,6 +404,37 @@
 			"scene": "res://scenes/actors/monsters/machine_imp.tscn",
 			"sprite": {
 				"hframes": 4
+			}
+		},
+		"frog": {
+			"scene": "res://scenes/actors/monsters/tongue_frog.tscn",
+			"sprite": {
+				"hframes": 4
+			}
+		},
+		"squirrel": {
+			"scene": "res://scenes/actors/monsters/brush_squirrel.tscn",
+			"sprite": {
+				"hframes": 4
+			}
+		},
+		"octopus": {
+			"scene": "res://scenes/actors/monsters/suction_octopus.tscn",
+			"sprite": {
+				"hframes": 3
+			}
+		},
+		"caterpillar": {
+			"scene": "res://scenes/actors/monsters/caterpillar.tscn",
+			"sprite": {
+				"hframes": 2
+			}
+		},
+		"barnacle": {
+			"scene": "res://scenes/actors/monsters/barnacle.tscn",
+			"sprite": {
+				"hframes": 3,
+				"frame": 1
 			}
 		}
 	},
@@ -665,6 +756,127 @@
 				0,
 				-10
 			]
+		},
+		"supine": {
+			"hit_fx": "feather",
+			"texture": "res://assets/generated/supine.png",
+			"hframes": 2,
+			"idle": [
+				0
+			],
+			"active": [
+				1
+			],
+			"z": -1,
+			"pitch": 1.3
+		},
+		"cushion": {
+			"hit_fx": "brush",
+			"texture": "res://assets/generated/cushion.png",
+			"hframes": 2,
+			"idle": [
+				0
+			],
+			"active": [
+				1
+			],
+			"z": -1,
+			"pitch": 1.4
+		},
+		"prone": {
+			"hit_fx": "feather",
+			"texture": "res://assets/generated/prone.png",
+			"hframes": 2,
+			"idle": [
+				0
+			],
+			"active": [
+				1
+			],
+			"z": -1,
+			"pitch": 1.2
+		},
+		"pit": {
+			"hit_fx": "hand",
+			"texture": "res://assets/generated/pit.png",
+			"hframes": 2,
+			"vframes": 4,
+			"idle": [
+				0
+			],
+			"active": [
+				1
+			],
+			"z": -1
+		},
+		"spinwheel": {
+			"hit_fx": "brush",
+			"texture": "res://assets/generated/spinwheel.png",
+			"hframes": 2,
+			"idle": [
+				0
+			],
+			"active": [
+				1
+			],
+			"spin": 0.8,
+			"z": -1,
+			"offset": [
+				0,
+				-14
+			]
+		},
+		"vest": {
+			"hit_fx": "feather",
+			"texture": "res://assets/generated/vest.png",
+			"hframes": 2,
+			"idle": [
+				0
+			],
+			"active": [
+				0,
+				1
+			],
+			"fps": 8,
+			"z": 1,
+			"offset": [
+				0,
+				-14
+			],
+			"pitch": 1.5
+		},
+		"chute": {
+			"hit_fx": "brush",
+			"texture": "res://assets/generated/chute.png",
+			"hframes": 2,
+			"idle": [
+				0,
+				1
+			],
+			"active": [
+				0,
+				1
+			],
+			"fps": 6,
+			"tiles": [
+				3,
+				1
+			],
+			"z": -1,
+			"pitch": 1.3
+		},
+		"duster": {
+			"hit_fx": "feather",
+			"texture": "res://assets/generated/duster.png",
+			"hframes": 3,
+			"idle": [
+				0
+			],
+			"active": [
+				2
+			],
+			"z": 2,
+			"pitch": 1.3
 		}
 	},
 	"death": {
@@ -685,7 +897,12 @@
 			"glove": "death_glove",
 			"hedgehog": "death_hedgehog",
 			"jelly_queen": "death_jelly_queen",
-			"imp": "death_imp"
+			"imp": "death_imp",
+			"frog": "death_frog",
+			"squirrel": "death_squirrel",
+			"octopus": "death_octopus",
+			"caterpillar": "death_caterpillar",
+			"barnacle": "death_barnacle"
 		},
 		"default": "death_generic"
 	},
@@ -6242,6 +6459,1528 @@
 					"portrait": "wake",
 					"speaker": "公主",
 					"text": "……醒来了。好像被当成机关调试了一整遍……下次先把小工匠打倒！"
+				}
+			]
+		},
+		"death_frog": {
+			"name": "舌头的盛宴",
+			"cast": {
+				"princess": {
+					"kind": "princess",
+					"at": [
+						0,
+						8
+					],
+					"visual": "helpless_1",
+					"anim": "helpless",
+					"dir": "down"
+				},
+				"foe": {
+					"kind": "monster:frog",
+					"at": [
+						22,
+						8
+					],
+					"dir": "left",
+					"hidden": true
+				},
+				"frog2": {
+					"kind": "monster:frog",
+					"at": [
+						-22,
+						8
+					],
+					"dir": "right",
+					"hidden": true
+				}
+			},
+			"steps": [
+				{
+					"actions": [
+						{
+							"do": "fade_in",
+							"time": 0.7
+						},
+						{
+							"do": "voice",
+							"state": "giggle"
+						}
+					],
+					"wait": 0.8
+				},
+				{
+					"portrait": "frog_1",
+					"speaker": "公主",
+					"text": "长、长舌蛙……嘴又鼓起来了……躲不开了……",
+					"actions": [
+						{
+							"do": "enter",
+							"who": "foe",
+							"from": [
+								90,
+								0
+							],
+							"time": 0.6
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "surprise"
+						},
+						{
+							"do": "enter",
+							"who": "frog2",
+							"from": [
+								-80,
+								0
+							],
+							"time": 0.7
+						}
+					]
+				},
+				{
+					"speaker": "长舌蛙",
+					"text": "呱～肚子露出来了～",
+					"actions": [
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "foe",
+							"repeat": 4,
+							"fx": "lines"
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						}
+					]
+				},
+				{
+					"portrait": "frog_2",
+					"speaker": "公主",
+					"text": "舌头一下一下舔肚子——哈哈哈哈别舔肚脐！",
+					"actions": [
+						{
+							"do": "pose",
+							"who": "princess",
+							"visual": "helpless_2"
+						},
+						{
+							"do": "voice",
+							"state": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "foe",
+							"repeat": 6,
+							"interval": 0.28,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "frog2",
+							"repeat": 5,
+							"interval": 0.32,
+							"fx": "lines"
+						},
+						{
+							"do": "camera",
+							"zoom": 1.5,
+							"focus": "princess",
+							"time": 0.5
+						}
+					]
+				},
+				{
+					"speaker": "长舌蛙",
+					"text": "呱呱！再舔一下～",
+					"actions": [
+						{
+							"do": "hop",
+							"who": "foe",
+							"count": 2
+						},
+						{
+							"do": "taunt",
+							"who": "foe"
+						}
+					]
+				},
+				{
+					"speaker": "",
+					"text": "（池塘边的长舌蛙越聚越多，一只只鼓起了嘴巴）",
+					"actions": [
+						{
+							"do": "flash",
+							"time": 0.5
+						},
+						{
+							"do": "camera",
+							"zoom": 1,
+							"focus": "princess",
+							"anchor": [
+								262,
+								112
+							],
+							"time": 0.4
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "foe",
+							"repeat": 5,
+							"interval": 0.3,
+							"fx": "lines"
+						}
+					],
+					"portrait": "frog_3"
+				},
+				{
+					"speaker": "公主",
+					"text": "等、等等……你们排着队干什么……",
+					"actions": [
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "frog2",
+							"repeat": 6,
+							"interval": 0.27999999999999997,
+							"fx": "lines"
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.4
+						}
+					]
+				},
+				{
+					"speaker": "长舌蛙",
+					"text": "呱～一只舔一下，轮流来～",
+					"actions": [
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "foe",
+							"repeat": 7,
+							"interval": 0.26,
+							"fx": "lines"
+						},
+						{
+							"do": "hop",
+							"who": "foe",
+							"count": 1
+						}
+					]
+				},
+				{
+					"speaker": "",
+					"text": "（一条条粉色的长舌头从四面八方伸过来，在肚子和腰上舔来舔去）",
+					"actions": [
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "frog2",
+							"repeat": 8,
+							"interval": 0.24,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "肚脐——哈哈哈哈！舌尖钻进肚脐了！",
+					"actions": [
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "foe",
+							"repeat": 9,
+							"interval": 0.21999999999999997,
+							"fx": "lines"
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.4
+						}
+					]
+				},
+				{
+					"speaker": "长舌蛙",
+					"text": "呱呱～这里最甜～",
+					"actions": [
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "frog2",
+							"repeat": 10,
+							"interval": 0.19999999999999998,
+							"fx": "lines"
+						},
+						{
+							"do": "hop",
+							"who": "frog2",
+							"count": 1
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "……肚子……笑得好酸……哈哈……",
+					"actions": [
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "foe",
+							"repeat": 11,
+							"interval": 0.18,
+							"fx": "lines"
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "dots"
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.4
+						}
+					]
+				},
+				{
+					"actions": [
+						{
+							"do": "fade_out",
+							"time": 0.9
+						},
+						{
+							"do": "voice",
+							"state": ""
+						}
+					],
+					"wait": 1.0
+				},
+				{
+					"portrait": "wake",
+					"speaker": "公主",
+					"text": "……醒来了。肚子上还湿湿的……下次看到它鼓嘴，一定往旁边躲！"
+				}
+			]
+		},
+		"death_squirrel": {
+			"name": "尾巴扫除",
+			"cast": {
+				"princess": {
+					"kind": "princess",
+					"at": [
+						0,
+						8
+					],
+					"visual": "helpless_1",
+					"anim": "helpless",
+					"dir": "down"
+				},
+				"foe": {
+					"kind": "monster:squirrel",
+					"at": [
+						22,
+						8
+					],
+					"dir": "left",
+					"hidden": true
+				},
+				"squirrel2": {
+					"kind": "monster:squirrel",
+					"at": [
+						-22,
+						8
+					],
+					"dir": "right",
+					"hidden": true
+				}
+			},
+			"steps": [
+				{
+					"actions": [
+						{
+							"do": "fade_in",
+							"time": 0.7
+						},
+						{
+							"do": "voice",
+							"state": "giggle"
+						}
+					],
+					"wait": 0.8
+				},
+				{
+					"portrait": "squirrel_1",
+					"speaker": "公主",
+					"text": "又、又从后面……转身也来不及了……",
+					"actions": [
+						{
+							"do": "enter",
+							"who": "foe",
+							"from": [
+								90,
+								0
+							],
+							"time": 0.6
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "surprise"
+						},
+						{
+							"do": "enter",
+							"who": "squirrel2",
+							"from": [
+								-80,
+								0
+							],
+							"time": 0.7
+						}
+					]
+				},
+				{
+					"speaker": "刷尾松鼠",
+					"text": "吱～后面空着哦～",
+					"actions": [
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "foe",
+							"repeat": 4,
+							"fx": "lines"
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						}
+					]
+				},
+				{
+					"portrait": "squirrel_2",
+					"speaker": "公主",
+					"text": "大尾巴刷过来刷过去——哈哈哈哈屁股好痒！",
+					"actions": [
+						{
+							"do": "pose",
+							"who": "princess",
+							"visual": "helpless_2"
+						},
+						{
+							"do": "voice",
+							"state": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "foe",
+							"repeat": 6,
+							"interval": 0.28,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "squirrel2",
+							"repeat": 5,
+							"interval": 0.32,
+							"fx": "lines"
+						},
+						{
+							"do": "camera",
+							"zoom": 1.5,
+							"focus": "princess",
+							"time": 0.5
+						}
+					]
+				},
+				{
+					"speaker": "刷尾松鼠",
+					"text": "刷刷刷～大扫除～",
+					"actions": [
+						{
+							"do": "hop",
+							"who": "foe",
+							"count": 2
+						},
+						{
+							"do": "taunt",
+							"who": "foe"
+						}
+					]
+				},
+				{
+					"speaker": "",
+					"text": "（一群刷尾松鼠围成一圈，把蓬松的大尾巴举了起来）",
+					"actions": [
+						{
+							"do": "flash",
+							"time": 0.5
+						},
+						{
+							"do": "camera",
+							"zoom": 1,
+							"focus": "princess",
+							"anchor": [
+								262,
+								112
+							],
+							"time": 0.4
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "foe",
+							"repeat": 5,
+							"interval": 0.3,
+							"fx": "lines"
+						}
+					],
+					"portrait": "squirrel_3"
+				},
+				{
+					"speaker": "公主",
+					"text": "别、别围着我转圈……",
+					"actions": [
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "squirrel2",
+							"repeat": 6,
+							"interval": 0.27999999999999997,
+							"fx": "lines"
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.4
+						}
+					]
+				},
+				{
+					"speaker": "刷尾松鼠",
+					"text": "吱～大扫除开始～",
+					"actions": [
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "foe",
+							"repeat": 7,
+							"interval": 0.26,
+							"fx": "lines"
+						},
+						{
+							"do": "hop",
+							"who": "foe",
+							"count": 1
+						}
+					]
+				},
+				{
+					"speaker": "",
+					"text": "（尾巴一条接一条扫过屁股和大腿，像一排软软的鸡毛掸子）",
+					"actions": [
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "squirrel2",
+							"repeat": 8,
+							"interval": 0.24,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "哈哈哈哈！一条刚扫完又来一条——！",
+					"actions": [
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "foe",
+							"repeat": 9,
+							"interval": 0.21999999999999997,
+							"fx": "lines"
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.4
+						}
+					]
+				},
+				{
+					"speaker": "刷尾松鼠",
+					"text": "这边也要扫干净吱～",
+					"actions": [
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "squirrel2",
+							"repeat": 10,
+							"interval": 0.19999999999999998,
+							"fx": "lines"
+						},
+						{
+							"do": "hop",
+							"who": "squirrel2",
+							"count": 1
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "……扫、扫干净了吧……哈哈……",
+					"actions": [
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "foe",
+							"repeat": 11,
+							"interval": 0.18,
+							"fx": "lines"
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "dots"
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.4
+						}
+					]
+				},
+				{
+					"actions": [
+						{
+							"do": "fade_out",
+							"time": 0.9
+						},
+						{
+							"do": "voice",
+							"state": ""
+						}
+					],
+					"wait": 1.0
+				},
+				{
+					"portrait": "wake",
+					"speaker": "公主",
+					"text": "……醒来了。屁股上还毛毛的……下次一定面朝着它们！"
+				}
+			]
+		},
+		"death_octopus": {
+			"name": "八只小手",
+			"cast": {
+				"princess": {
+					"kind": "princess",
+					"at": [
+						0,
+						8
+					],
+					"visual": "helpless_1",
+					"anim": "helpless",
+					"dir": "down"
+				},
+				"foe": {
+					"kind": "monster:octopus",
+					"at": [
+						22,
+						8
+					],
+					"dir": "left",
+					"hidden": true
+				}
+			},
+			"steps": [
+				{
+					"actions": [
+						{
+							"do": "fade_in",
+							"time": 0.7
+						},
+						{
+							"do": "voice",
+							"state": "giggle"
+						}
+					],
+					"wait": 0.8
+				},
+				{
+					"portrait": "octopus_1",
+					"speaker": "公主",
+					"text": "章鱼宝宝……又吸上来了……抖不掉……",
+					"actions": [
+						{
+							"do": "enter",
+							"who": "foe",
+							"from": [
+								90,
+								0
+							],
+							"time": 0.6
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "surprise"
+						}
+					]
+				},
+				{
+					"speaker": "章鱼宝宝",
+					"text": "啵～吸住啦～",
+					"actions": [
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "foe",
+							"repeat": 4,
+							"fx": "lines"
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						}
+					]
+				},
+				{
+					"portrait": "octopus_2",
+					"speaker": "公主",
+					"text": "八条小腕一起在肋骨上——哈哈哈哈数不过来了！",
+					"actions": [
+						{
+							"do": "pose",
+							"who": "princess",
+							"visual": "helpless_2"
+						},
+						{
+							"do": "voice",
+							"state": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "foe",
+							"repeat": 6,
+							"interval": 0.28,
+							"fx": "lines"
+						},
+						{
+							"do": "camera",
+							"zoom": 1.5,
+							"focus": "princess",
+							"time": 0.5
+						}
+					]
+				},
+				{
+					"speaker": "章鱼宝宝",
+					"text": "八只手一起挠～",
+					"actions": [
+						{
+							"do": "hop",
+							"who": "foe",
+							"count": 2
+						},
+						{
+							"do": "taunt",
+							"who": "foe"
+						}
+					]
+				},
+				{
+					"speaker": "",
+					"text": "（更多章鱼宝宝从水里冒出来，一只接一只吸了上来）",
+					"actions": [
+						{
+							"do": "flash",
+							"time": 0.5
+						},
+						{
+							"do": "camera",
+							"zoom": 1,
+							"focus": "princess",
+							"anchor": [
+								262,
+								112
+							],
+							"time": 0.4
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "foe",
+							"repeat": 5,
+							"interval": 0.3,
+							"fx": "lines"
+						}
+					],
+					"portrait": "octopus_3"
+				},
+				{
+					"speaker": "公主",
+					"text": "又、又来了一只……胳膊上也有……",
+					"actions": [
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "foe",
+							"repeat": 6,
+							"interval": 0.27999999999999997,
+							"fx": "lines"
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.4
+						}
+					]
+				},
+				{
+					"speaker": "章鱼宝宝",
+					"text": "啵～大家一起～",
+					"actions": [
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "foe",
+							"repeat": 7,
+							"interval": 0.26,
+							"fx": "lines"
+						},
+						{
+							"do": "hop",
+							"who": "foe",
+							"count": 1
+						}
+					]
+				},
+				{
+					"speaker": "",
+					"text": "（小腕一根根绕过肋骨、钻进腋下，吸盘一吸一放）",
+					"actions": [
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "foe",
+							"repeat": 8,
+							"interval": 0.24,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "肋骨——哈哈哈哈一根一根被按着！",
+					"actions": [
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "foe",
+							"repeat": 9,
+							"interval": 0.21999999999999997,
+							"fx": "lines"
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.4
+						}
+					]
+				},
+				{
+					"speaker": "章鱼宝宝",
+					"text": "啵啵～这里最怕痒～",
+					"actions": [
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "foe",
+							"repeat": 10,
+							"interval": 0.19999999999999998,
+							"fx": "lines"
+						},
+						{
+							"do": "hop",
+							"who": "foe",
+							"count": 1
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "……吸、吸盘……哈哈……",
+					"actions": [
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "foe",
+							"repeat": 11,
+							"interval": 0.18,
+							"fx": "lines"
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "dots"
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.4
+						}
+					]
+				},
+				{
+					"actions": [
+						{
+							"do": "fade_out",
+							"time": 0.9
+						},
+						{
+							"do": "voice",
+							"state": ""
+						}
+					],
+					"wait": 1.0
+				},
+				{
+					"portrait": "wake",
+					"speaker": "公主",
+					"text": "……醒来了。身上还留着一圈圈的吸盘印……下次一定先把它们抖下来！"
+				}
+			]
+		},
+		"death_caterpillar": {
+			"name": "攀登锁骨",
+			"cast": {
+				"princess": {
+					"kind": "princess",
+					"at": [
+						0,
+						8
+					],
+					"visual": "helpless_1",
+					"anim": "helpless",
+					"dir": "down"
+				},
+				"foe": {
+					"kind": "monster:caterpillar",
+					"at": [
+						20,
+						10
+					],
+					"dir": "left",
+					"hidden": true
+				}
+			},
+			"steps": [
+				{
+					"actions": [
+						{
+							"do": "fade_in",
+							"time": 0.7
+						},
+						{
+							"do": "voice",
+							"state": "giggle"
+						}
+					],
+					"wait": 0.8
+				},
+				{
+					"portrait": "caterpillar_1",
+					"speaker": "公主",
+					"text": "毛毛虫……爬到肋骨上了……",
+					"actions": [
+						{
+							"do": "enter",
+							"who": "foe",
+							"from": [
+								90,
+								0
+							],
+							"time": 0.6
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "surprise"
+						}
+					]
+				},
+				{
+					"speaker": "毛毛虫",
+					"text": "蠕～蠕～往上爬～",
+					"actions": [
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "foe",
+							"repeat": 4,
+							"fx": "lines"
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						}
+					]
+				},
+				{
+					"portrait": "caterpillar_2",
+					"speaker": "公主",
+					"text": "小脚一步一步往上走——哈哈哈哈锁骨不行！",
+					"actions": [
+						{
+							"do": "pose",
+							"who": "princess",
+							"visual": "helpless_2"
+						},
+						{
+							"do": "voice",
+							"state": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "foe",
+							"repeat": 6,
+							"interval": 0.28,
+							"fx": "lines"
+						},
+						{
+							"do": "camera",
+							"zoom": 1.5,
+							"focus": "princess",
+							"time": 0.5
+						}
+					]
+				},
+				{
+					"speaker": "毛毛虫",
+					"text": "终点：锁骨～",
+					"actions": [
+						{
+							"do": "hop",
+							"who": "foe",
+							"count": 2
+						},
+						{
+							"do": "taunt",
+							"who": "foe"
+						}
+					]
+				},
+				{
+					"speaker": "",
+					"text": "（一队毛毛虫排着队从脚尖开始往上爬）",
+					"actions": [
+						{
+							"do": "flash",
+							"time": 0.5
+						},
+						{
+							"do": "camera",
+							"zoom": 1,
+							"focus": "princess",
+							"anchor": [
+								262,
+								112
+							],
+							"time": 0.4
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "foe",
+							"repeat": 5,
+							"interval": 0.3,
+							"fx": "lines"
+						}
+					],
+					"portrait": "caterpillar_3"
+				},
+				{
+					"speaker": "公主",
+					"text": "排、排着队爬上来了……",
+					"actions": [
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "foe",
+							"repeat": 6,
+							"interval": 0.27999999999999997,
+							"fx": "lines"
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.4
+						}
+					]
+				},
+				{
+					"speaker": "毛毛虫",
+					"text": "第一站：脚心～",
+					"actions": [
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "foe",
+							"repeat": 7,
+							"interval": 0.26,
+							"fx": "lines"
+						},
+						{
+							"do": "hop",
+							"who": "foe",
+							"count": 1
+						}
+					]
+				},
+				{
+					"speaker": "",
+					"text": "（几十只小脚一路从脚心走到大腿、爬过肋骨，在锁骨上停下来晃来晃去）",
+					"actions": [
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "foe",
+							"repeat": 8,
+							"interval": 0.24,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "锁、锁骨——哈哈哈哈哈好多只脚！",
+					"actions": [
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "foe",
+							"repeat": 9,
+							"interval": 0.21999999999999997,
+							"fx": "lines"
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.4
+						}
+					]
+				},
+				{
+					"speaker": "毛毛虫",
+					"text": "终点到啦～在这里蠕一蠕～",
+					"actions": [
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "foe",
+							"repeat": 10,
+							"interval": 0.19999999999999998,
+							"fx": "lines"
+						},
+						{
+							"do": "hop",
+							"who": "foe",
+							"count": 1
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "……全、全身都被走过一遍……哈哈……",
+					"actions": [
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "foe",
+							"repeat": 11,
+							"interval": 0.18,
+							"fx": "lines"
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "dots"
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.4
+						}
+					]
+				},
+				{
+					"actions": [
+						{
+							"do": "fade_out",
+							"time": 0.9
+						},
+						{
+							"do": "voice",
+							"state": ""
+						}
+					],
+					"wait": 1.0
+				},
+				{
+					"portrait": "wake",
+					"speaker": "公主",
+					"text": "……醒来了。好像还有东西在身上爬……下次在它爬到脚上时就抖掉！"
+				}
+			]
+		},
+		"death_barnacle": {
+			"name": "贝壳盔甲",
+			"cast": {
+				"princess": {
+					"kind": "princess",
+					"at": [
+						0,
+						8
+					],
+					"visual": "helpless_1",
+					"anim": "helpless",
+					"dir": "down"
+				},
+				"foe": {
+					"kind": "monster:barnacle",
+					"at": [
+						20,
+						10
+					],
+					"dir": "left",
+					"hidden": true
+				}
+			},
+			"steps": [
+				{
+					"actions": [
+						{
+							"do": "fade_in",
+							"time": 0.7
+						},
+						{
+							"do": "voice",
+							"state": "giggle"
+						}
+					],
+					"wait": 0.8
+				},
+				{
+					"portrait": "barnacle_1",
+					"speaker": "公主",
+					"text": "藤壶贝……粘了一身……",
+					"actions": [
+						{
+							"do": "enter",
+							"who": "foe",
+							"from": [
+								90,
+								0
+							],
+							"time": 0.6
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "surprise"
+						}
+					]
+				},
+				{
+					"speaker": "藤壶贝",
+					"text": "咔哒～粘住了～",
+					"actions": [
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "foe",
+							"repeat": 4,
+							"fx": "lines"
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						}
+					]
+				},
+				{
+					"portrait": "barnacle_2",
+					"speaker": "公主",
+					"text": "贝壳里的软毛一起伸出来——哈哈哈哈肋骨好痒！",
+					"actions": [
+						{
+							"do": "pose",
+							"who": "princess",
+							"visual": "helpless_2"
+						},
+						{
+							"do": "voice",
+							"state": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "foe",
+							"repeat": 6,
+							"interval": 0.28,
+							"fx": "lines"
+						},
+						{
+							"do": "camera",
+							"zoom": 1.5,
+							"focus": "princess",
+							"time": 0.5
+						}
+					]
+				},
+				{
+					"speaker": "藤壶贝",
+					"text": "张开～挠挠～",
+					"actions": [
+						{
+							"do": "hop",
+							"who": "foe",
+							"count": 2
+						},
+						{
+							"do": "taunt",
+							"who": "foe"
+						}
+					]
+				},
+				{
+					"speaker": "",
+					"text": "（地上的藤壶贝一个接一个弹起来，粘满了公主的身子）",
+					"actions": [
+						{
+							"do": "flash",
+							"time": 0.5
+						},
+						{
+							"do": "camera",
+							"zoom": 1,
+							"focus": "princess",
+							"anchor": [
+								262,
+								112
+							],
+							"time": 0.4
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "foe",
+							"repeat": 5,
+							"interval": 0.3,
+							"fx": "lines"
+						}
+					],
+					"portrait": "barnacle_3"
+				},
+				{
+					"speaker": "公主",
+					"text": "像、像穿了一身贝壳盔甲……",
+					"actions": [
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "foe",
+							"repeat": 6,
+							"interval": 0.27999999999999997,
+							"fx": "lines"
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.4
+						}
+					]
+				},
+				{
+					"speaker": "藤壶贝",
+					"text": "咔哒咔哒～一起张开～",
+					"actions": [
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "foe",
+							"repeat": 7,
+							"interval": 0.26,
+							"fx": "lines"
+						},
+						{
+							"do": "hop",
+							"who": "foe",
+							"count": 1
+						}
+					]
+				},
+				{
+					"speaker": "",
+					"text": "（所有贝壳同时张开，纤毛扫过肋骨和腰侧）",
+					"actions": [
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "foe",
+							"repeat": 8,
+							"interval": 0.24,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "哈哈哈哈哈！到处都在扫——！",
+					"actions": [
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "foe",
+							"repeat": 9,
+							"interval": 0.21999999999999997,
+							"fx": "lines"
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.4
+						}
+					]
+				},
+				{
+					"speaker": "藤壶贝",
+					"text": "咔哒～不掉下来～",
+					"actions": [
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "foe",
+							"repeat": 10,
+							"interval": 0.19999999999999998,
+							"fx": "lines"
+						},
+						{
+							"do": "hop",
+							"who": "foe",
+							"count": 1
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "……盔、盔甲好重……哈哈……",
+					"actions": [
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "foe",
+							"repeat": 11,
+							"interval": 0.18,
+							"fx": "lines"
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "dots"
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.4
+						}
+					]
+				},
+				{
+					"actions": [
+						{
+							"do": "fade_out",
+							"time": 0.9
+						},
+						{
+							"do": "voice",
+							"state": ""
+						}
+					],
+					"wait": 1.0
+				},
+				{
+					"portrait": "wake",
+					"speaker": "公主",
+					"text": "……醒来了。还好贝壳都掉了……下次一定绕远一点走！"
 				}
 			]
 		}

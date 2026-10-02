@@ -22,6 +22,8 @@ var special := false
 var fatigue_mult := 1.0
 ## 挠到的部位（TickleZones 的部位 id；没有来源键的挠痒为空）。
 var zone := ""
+## 挠到的是被束缚露出的部位（弱点）。
+var weak := false
 
 
 func is_magic() -> bool:

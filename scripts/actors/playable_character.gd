@@ -4,6 +4,8 @@ extends Actor
 ## 能力：8 方向移动、近战攻击、冲刺（全无敌）、与前方物体交互、使用背包物品。
 ## 闷笑值：GIGGLING 移动变慢并时不时发笑；HELPLESS 无法行动、持续大笑，连按攻击/交互键挣扎。
 ## 状态效果（Status 组件）：减速；被抓住（GRABBED）时不能行动，连按挣扎同时挣脱并降闷笑值。
+## 吸附类怪物（LatchMonster）：吸在身上（latchers，最多 MAX_LATCHERS 只）时移速变慢、攻击 / 交互键变成挣扎（同时把它们抖下来），
+##   冲刺有 latch_dash_chance 的几率甩掉一只，满蓄力星光爆发 / 疲倦爆发全部震飞，被抓住 / 倒下时全部松开。
 ## 魔法（星光爆发）：按住 magic 进入 CHANNEL 吟唱，不能移动；按住越久档位越高（channel_tiers），
 ##   松开释放 StarBurst。吟唱时弱点暴露：附近怪物锁定过来，受到的挠痒 ×exposed_tickle_mult。
 ##   闷笑值超过失控线不能开始；吟唱中进入失控、被抓住、受到攻击都会打断。
@@ -82,6 +84,11 @@ var pose_offset := Vector2.ZERO
 var sprite_hidden := false
 var pose_rotation := 0.0
 var _pose_rot_applied := false
+## 吸在身上的吸附类怪物（LatchMonster）。
+var latchers: Array[Node] = []
+const MAX_LATCHERS := 3
+## 冲刺甩掉一只吸附怪物的几率（测试里可以改成 1）。
+static var latch_dash_chance := 0.4
 
 var state := State.IDLE
 var _state_time := 0.0
@@ -143,6 +150,7 @@ func _tick(delta: float) -> void:
 	if _forced_time > 0.0 and state not in [State.IDLE, State.MOVE]:
 		end_forced_move()  # 被抓住 / 笑到失控等打断了强制位移
 	if status and status.is_grabbed() and state not in [State.GRABBED, State.DEAD]:
+		drop_latchers()
 		interrupt_channel()
 		_end_attack()
 		_set_state(State.GRABBED)
@@ -156,7 +164,7 @@ func _tick(delta: float) -> void:
 				_tick_forced(delta)
 			else:
 				var speed := move_speed * (laugh.speed_multiplier() if laugh else 1.0) \
-						* (status.speed_multiplier() if status else 1.0) * stat_mul("speed")
+						* (status.speed_multiplier() if status else 1.0) * stat_mul("speed") * latch_speed_mult()
 				var rooted := status != null and status.is_rooted()
 				var hobbled := status != null and status.is_hobbled()
 				if hobbled:
@@ -175,8 +183,8 @@ func _tick(delta: float) -> void:
 				else:
 					velocity = velocity.move_toward(Vector2.ZERO, friction * delta)
 					_set_state(State.MOVE if puppet_walking else State.IDLE)
-				if can_control and hobbled and (controller.is_action_just_pressed(&"attack") or controller.is_action_just_pressed(&"interact")):
-					struggle()  # 绊住时攻击 / 交互键用来挣扎
+				if can_control and (hobbled or latch_count() > 0) and (controller.is_action_just_pressed(&"attack") or controller.is_action_just_pressed(&"interact")):
+					struggle()  # 绊住 / 有东西吸着时攻击 / 交互键用来挣扎
 				elif can_control:
 					if controller.is_action_just_pressed(&"attack"):
 						attack()
@@ -283,6 +291,9 @@ func dash(input := Vector2.ZERO) -> void:
 	_ghost_time = 0.0
 	_set_state(State.DASH)
 	Audio.play("dash", -6.0)
+	if latch_count() > 0 and randf() < latch_dash_chance:
+		var m: LatchMonster = latchers[0]
+		m.detach(-_dash_dir, m.shaken_stun)
 
 
 func interact() -> void:
@@ -309,6 +320,7 @@ func struggle() -> void:
 		status.struggle()
 	elif status and status.is_hobbled():
 		status.struggle_hobble()
+	shake_latchers()
 	_shake = maxf(_shake, 0.05)
 	if sprite:
 		sprite.position.x = [-1.0, 1.0].pick_random()
@@ -394,6 +406,8 @@ func release_magic() -> int:
 		magic_event.emit("fizzle", 0)
 		return 0
 	StarBurst.cast(self, tier)
+	if tier >= channel_tiers.size():
+		fling_latchers()  # 满蓄力：全部震飞
 	_magic_cd = magic_cooldown
 	shake(0.06 * tier)
 	_set_state(State.CAST)
@@ -445,11 +459,86 @@ func _tickle_multiplier(hit: HitData) -> float:
 
 
 func revive() -> void:
+	drop_latchers()
+	end_forced_move()
 	super()
 	sensitivity.reset()
 	pose_offset = Vector2.ZERO
 	pose_rotation = 0.0
 	sprite_hidden = false
+
+
+# ------------------------------------------------------------------ 吸附类怪物
+## 现在能不能被吸住：活着、没被抓、没在冲刺无敌、身上还没满。
+func can_be_latched() -> bool:
+	return is_alive() and state not in [State.GRABBED, State.DEAD] and not is_fully_invulnerable() \
+			and not (status and status.is_grabbed()) and latch_count() < MAX_LATCHERS
+
+
+func add_latcher(m: Node) -> void:
+	if not latchers.has(m):
+		latchers.append(m)
+	add_buff("latched", 999.0)
+	buffs_changed.emit()
+
+
+func remove_latcher(m: Node) -> void:
+	latchers.erase(m)
+	if latch_count() == 0:
+		remove_buff("latched")
+	else:
+		buffs_changed.emit()
+
+
+func latch_count() -> int:
+	latchers.assign(latchers.filter(func(m): return is_instance_valid(m) and (m as LatchMonster).host == self))
+	return latchers.size()
+
+
+## 吸着时的移速倍率（每只相乘）。
+func latch_speed_mult() -> float:
+	var k := 1.0
+	for m in latchers:
+		if is_instance_valid(m):
+			k *= (m as LatchMonster).host_slow
+	return k
+
+
+## 挣扎一下：每只吸着的怪物都计一次抖。
+func shake_latchers() -> void:
+	for m in latchers.duplicate():
+		if is_instance_valid(m):
+			(m as LatchMonster).shake_once()
+
+
+## 全部震飞（向四周弹开并晕住）。
+func fling_latchers() -> void:
+	for m in latchers.duplicate():
+		if is_instance_valid(m):
+			var lm := m as LatchMonster
+			lm.detach(Vector2.from_angle(randf() * TAU), lm.shaken_stun * 1.5)
+
+
+## 全部松开（被抓住、倒下、复活）。
+func drop_latchers() -> void:
+	for m in latchers.duplicate():
+		if is_instance_valid(m):
+			(m as LatchMonster).detach()
+	latchers.clear()
+	remove_buff("latched")
+
+
+## 「吸着」状态的显示名，例如「吸着：章鱼宝宝 ×1、毛毛虫 ×1」。
+func latch_label() -> String:
+	var counts := {}
+	for m in latchers:
+		if is_instance_valid(m):
+			var n := (m as Monster).stats.display_name
+			counts[n] = int(counts.get(n, 0)) + 1
+	var parts: Array[String] = []
+	for n in counts:
+		parts.append("%s ×%d" % [n, counts[n]])
+	return "吸着：" + "、".join(parts) if not parts.is_empty() else "吸着"
 
 
 var _weak_cd := 0.0
@@ -503,6 +592,7 @@ func _on_laugh_overflow() -> void:
 
 
 func _on_died() -> void:
+	drop_latchers()
 	Audio.set_voice_state("")
 	_end_channel()
 	_set_state(State.DEAD)
@@ -552,6 +642,7 @@ func fatigue_burst() -> void:
 	fatigue_bursting = true
 	_set_state(State.CAST)
 	StarBurst.cast_fatigue(self)
+	fling_latchers()
 	FatiguePuddle.spawn(get_parent(), global_position)
 	add_buff("fatigue_scar", -1.0)
 	shake(0.3)
