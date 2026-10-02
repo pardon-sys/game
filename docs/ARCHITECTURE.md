@@ -258,12 +258,18 @@ HUD 背包栏会根据物品数据自动显示，不需要改 UI 代码。
 - `Sensitivity`（`PlayableCharacter.sensitivity`）：连续加成、露出部位（`expose(来源, {部位: 倍率})` / `unexpose`，同时挂通用状态 `exposed`，`Buff.display()` 按部位动态显示名字和图标）、战损；`apply(hit, actor)` 在 `PlayableCharacter._tickle_multiplier` 里抽部位写进 `hit.zone` 并返回倍率；挠到露出部位发 `weak_point`（头上跳「弱点！」）。复活 `reset()`。
 - **部位专属特效** `ZoneFx`（`scripts/fx/zone_fx.gd`，`zone_fx.png` 每行一个部位，行号 = 部位表 `fx`）：`Actor._play_hit_fx` 在 `hit.zone` 不为空时于身上 `body` 偏移处播放，`PortraitFx._zone_sticker` 在立绘 anchor 处播放（×2）；`hit.weak`（`Sensitivity.apply` 挠到露出部位时设置）时再 ×1.5、变亮。
 - `TickleZones.pick` 先看来源的 `zone_focus`（部位列表：挑第一个露出的，都没露出就用最后一个；肚脐羽毛钻 `["belly", "waist"]`），再看 `follow_exposed` 和权重。
+- 台词：`ReactionDB.lines(来源, 阶段, variant)`，variant 是来源的 `reaction_variant()`（落穴洞洞里的怪物，查 `sources[key].lines_by_content`）。束缚类来源的台词由 `tools/build/gen_trap_lines.py` 生成（被困时是挠痒反应，不写「放开 / 站不起来」这类陈述）。
 - `PortraitFx` 按 `hit.zone` 放贴片（部位 anchor），飘字 `ReactionDB.portrait_words(来源, 阶段, 部位)`：来源按部位写的 → 来源自己的 → 部位默认 → 全局。
 
 ### 被动技能
 - 数据 `data/passives/passives.json`：`id → {name, icon（passive_icons.png 的格）, max_level, levels: [{value, desc, ...}]}`；`PassiveDB.value(id)` / `value_dict(id, 字段)` 读当前等级。
 - 等级存在 `GameState.passives`（换层保留、重新开始清空）；`GameState.grant_passive(id)` / `upgrade_passive(id)`，信号 `passive_changed`；对话行写 `"grant_passive": "<id>"` 也能获得。
 - 「挣脱强化」`struggle_plus`：`PlayableCharacter.struggle()` 降闷笑 ×(1 + value)。背包 `Backpack.PAGES = 物品 / 被动技能 / 状态`（`PAGE_*` 常量）。
+
+### 测试模式
+- `dev_config.json`（项目根目录）+ `DevConfig`（`scripts/core/dev_config.gd`，静态）：`enabled()`（`DevConfig.override` 可在测试里强制开关）、`skip_points()`、`rewards_for(跳关点)`（`floor_rewards` 里排在目标楼层前面的各层，`rewards_through` 连这一层）、`skip_to(跳关点)`（补奖励 → `main.change_level` → 有 `cell` 时放到那一格并设检查点）。
+- 暂停菜单（`scripts/ui/pause_menu.gd`）测试模式下显示 `skip_button`，展开 `skip_box` 列表。
+- 背包 `PAGE_GALLERY`：`Backpack.gallery_entries()`（`death_*`、`nest_*` CG 和 `CG.scenes`）、`gallery_unlocked(条目)`（测试模式或看过：`cg_seen_<播放 id>`）、`play_selected()`。
 
 ### 地图内过场动画
 - Autoload `Cutscene`（`scripts/cutscene/cutscene_player.gd`，CanvasLayer 12；章节结束画面在 30 层）。数据 `data/cutscenes/<id>.json`：`{name, skippable, hide_hud, steps}`，步骤格式同 CG。演员：`princess`、关卡节点名（构建器命名为 `<类型>_<x>_<y>`，如 `Snare_10_7`、`Imp_68_64`）、`spawn` 生成的临时演员（`shadow` = 公主精灵蒙黑）。动作列表见脚本开头的注释；`validate(id)` 检查动作名。
@@ -364,6 +370,7 @@ data/dialogues.json  只放通用对话（复活、上锁提示、钥匙、失�
 - **跳过**：播完设剧情标记 `cg_seen_<id>`；再次播放时角落提示「Esc 跳过」，`CG._input` 先于暂停菜单截获 Esc。
 - **横版 CG 图**：`portraits` 里写 `"wide": true` 的立绘（第三幕 `<来源键>_3`，有第二张图时第四幕 `<来源键>_4`）用 `Dialogue.set_portrait_override(tex, true)` 显示：立绘框动画变成对话框上方左侧的横版大框（高 180、宽按图片比例），挠痒时 `Dialogue.shake_portrait()` 跟着抖；舞台用 `camera` 的 `anchor` 把演员移到右侧可见处。缺素材时退回占位立绘、不用大框。CG 图由 `tools/art/import_cg.py` 从 `assets/generated/CG/<来源键>.png`（或 `<来源键>_1` / `_2`）生成（保持比例、高 360、每张单独调色板像素化）。`data/cgs.json` 由 `tools/build/gen_cgs.py` 生成：CG 图文件存在时自动加 `wide`，有 `_4` 时多一幕。
 - **组合演出**：`data/combo_scenes.json`（`scenes`：组合 id → `{name, cast, steps}`，格式同 `cgs`）由 `CG.play_scene(id)` 播放，台词按键推进、随时可跳过；`CG.validate()` 一起检查。由 `tools/build/gen_combo_scenes.py` 生成（每个组合手写出场顺序和 8 句台词：三段各 1 句 + 高潮 5 句，开头一句旁白）。
+- **播放队列**：`play` / `play_death` / `play_nest` / `play_scene` 在已经有 CG 在播时排进 `_queue`（`_request` 等到轮到并播完才返回），播完一段接下一段；笑倒 CG（`play_death`）插到队首，组合演出同一段不会重复排队；`combo_scene_<id>` 标记在真正开始播时才设（`_run`）。`is_busy()` / `queued()`。
 - **巢穴过场**：单独的文件 `data/nest_cgs.json`（`portraits` / `cgs` / `nest` 表：巢穴种类 → `{cg, source}`），`CGPlayer._load` 把它合并进 `data`，`CG.play_nest(kind)` 播放。由 `tools/build/gen_nest_cgs.py` 生成：它 import `gen_cgs.py`（写文件在 `main()` 里，import 时不会覆盖 cgs.json）的 `standard(..., foe=怪物键)` 生成三幕，`add_crowd()` 让第三幕 10 只同类怪物从两边涌上来、之后每句 3 只一起挠；第三幕立绘 `nest_<种类>_3`。
 - **陷阱演员**：`cgs.json` 的 `trap_actors`（`gen_cgs.py` 生成）定义陷阱的贴图、待机 / 发动帧、`tiles` 多格、`spin` 旋转、`arm` 羽毛臂；cast 里 `kind = trap:<来源键>`（`CGActor.make_trap`）。`tickle` 指令的 `by` 指到陷阱演员时它 `activate()` 发动。舞台地面在 z 0，演员层 `cast_root` 在 z 2，铺在脚下的陷阱用相对 z -1。
 - **来源栏**：指令 `sources`（`list = [{kind, key, name}]`，舞台顶部三格先暗着）和 `light`（`index` 点亮第几格，`all` 三格一起闪）；`CG.source_lit(i)` 给测试用。

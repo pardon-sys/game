@@ -62,7 +62,7 @@ func _physics_process(delta: float) -> void:
 	_fling_wait -= delta
 	if not is_instance_valid(_fling_target) or _fling_wait <= 0.0:
 		_fling_target = null
-	elif _fling_target.can_act():
+	elif _fling_target.can_be_moved():
 		var pc := _fling_target
 		_fling_target = null
 		pc.global_position = global_position

@@ -74,8 +74,12 @@ room(17, 80, 19, 82)
 room(20, 79, 56, 85)
 for x in (24, 32, 40, 48):
     torch(x, 78)
-for (x, y, off) in ((23, 80, 0.0), (23, 83, 1.2), (26, 81, 0.6), (26, 84, 1.8), (29, 79, 0.3), (29, 82, 1.5)):
+for (x, y, off) in ((23, 80, 0.0), (26, 81, 0.6), (29, 84, 1.8)):  # Cage_23_80 / Cage_26_81 在开场过场里
     put(x, y, CAGE % off)
+# 落笼之间的空档换成羽毛陷阱和粉雾
+put(23, 83, "trap type=feather")
+put(26, 84, "trap type=vent idle_time=2.0 cloud_duration=1.2 offset=0.6")
+put(29, 81, "trap type=feather")
 sign(31, 81, "sign5_tripwire")
 put(33, 79, "trap type=tripwire tiles_w=7 vertical=true targets=c2a")
 put(36, 82, "trap type=cage group=c2a aim=true")
@@ -371,26 +375,92 @@ put(17, 7, "trigger dialogue=prep_passive w=3 h=3")
 sign(18, 4, "sign5_trap_room")
 put(19, 11, "barrel")
 
-# ================================================================ R15 无解陷阱房
+# ================================================================ R15 无解陷阱房（三来源组合房）
+# 进门的上半部分是一簇簇三来源组合（结局过场用到的 Snare_10_7 / Cuffs_10_5 / Legloop_8_7 / Teaser_9_6 / Wheel_9_8 / Cage_6_6 位置不变），
+# 束缚陷阱下面的传送带把人一个接一个往下送：铐柱 → 绳套 → 吊环 → 夹腿枷台也送进吊环 → 往下进滑梯圈；
+# 下半部分是一圈首尾相接的滑梯，四个拐角各一个束缚陷阱：放开后接着滑进下一个，一圈一圈停不下来。
 room(12, 6, 13, 8)
 for y in (6, 7, 8):
     put(13, y, "gate group=trap_room is_open=true")
-room(2, 2, 11, 12)
+room(2, 2, 11, 22)
 for x in (5, 9):
     torch(x, 1)
-put(6, 7, "traproom group=trap_room w=8 h=9 cutscene=f5_ending")
+for y in (12, 18):
+    torch(12, y)
+put(6, 12, "traproom group=trap_room w=10 h=21 cutscene=f5_ending")
 ROOM_TRAPS = [
-    (10, 7, "trap type=snare group=tr1"), (10, 5, "trap type=cuffs group=tr2 + trap type=shower group=tr2"),
-    (10, 9, "trap type=clamp group=tr3"), (9, 6, "trap type=teaser group=tr2"), (9, 8, "trap type=wheel group=tr3"),
-    (8, 7, "trap type=legloop group=tr4 + trap type=vortex radius=3"), (8, 4, "trap type=cuffs group=tr5"),
-    (8, 10, "trap type=snare group=tr6"), (7, 5, "trap type=teaser group=tr5 content=tentacle"),
-    (7, 9, "trap type=teaser group=tr6 content=slime"), (5, 3, "trap type=mud w=3 h=2"), (5, 11, "trap type=mud w=3 h=2"),
-    (4, 7, "trap type=clamp group=tr7"), (5, 7, "trap type=wheel group=tr7"), (3, 5, "trap type=snare group=tr8"),
-    (3, 9, "trap type=cuffs group=tr9"), (6, 6, "trap type=cage idle_time=2.0 offset=0.4"),
-    (6, 8, "trap type=cage idle_time=2.2 offset=1.3 content=tentacle"), (2, 7, "trap type=binding group=tr10"),
+    # 倒吊扫荡：倒吊绳套 + 上墙羽毛臂 + 旋转刷
+    (10, 7, "trap type=snare group=tr1 + trap type=conveyor dir=left len=2"), (10, 1, "walltrap type=arm dir=down len=6"),
+    (11, 8, "trap type=brush speed=1.5"),
+    # 腋下羽毛雨：举手铐柱 + 喷口 + 小精灵（精灵花）
+    (10, 5, "trap type=cuffs group=tr2 + trap type=shower group=tr2 + trap type=conveyor dir=down len=2"), (9, 6, "trap type=teaser group=tr2"),
+    (8, 3, "monster type=fairy"),
+    # 单脚示众：单腿吊环（漩涡中心）+ 转轮 + 挠脚鼠
+    (8, 7, "trap type=legloop group=tr4 + trap type=conveyor dir=down len=6"), (9, 8, "trap type=wheel group=tr4"), (6, 10, "monster type=rat"), (7, 11, "monster type=rat"),
+    (6, 6, "trap type=cage idle_time=2.6 offset=0.4"),
+    # 张臂大转盘：张臂转盘（甩下去）+ 上墙羽毛臂 + 章鱼宝宝
+    (6, 2, "trap type=spinwheel dir=down fling=3"), (6, 1, "walltrap type=arm dir=down len=2"), (4, 4, "monster type=octopus"),
+    # 夹腿痒刑：夹腿枷台 + 逗弄器 + 转轮
+    (4, 7, "trap type=clamp group=tr7 + trap type=conveyor dir=right len=4"), (5, 8, "trap type=wheel group=tr7"), (4, 6, "trap type=teaser group=tr7"),
+    # 泥沼深陷：泥沼 + 挠脚鼠 + 史莱姆（房里不放巢穴：免得被拖进巢穴）
+    (3, 9, "trap type=mud w=3 h=2"), (2, 11, "monster type=slime"),
+    (3, 4, "trap type=snare group=tr8"), (10, 10, "trap type=pit content=rat"),
+    # 下半部分：一圈滑梯（上边往右 → 右边往下 → 下边往左 → 左边往上），拐角的束缚陷阱
+    (3, 13, "trap type=chute w=7 dir=right"),
+    (9, 13, "trap type=supine group=tr6"), (9, 12, "trap type=teaser group=tr6 content=drill"), (7, 15, "monster type=frog"),
+    (10, 13, "trap type=chute h=8 dir=down"),
+    (10, 20, "trap type=cuffs group=tr9"), (11, 20, "trap type=wheel group=tr9"), (8, 18, "monster type=octopus"),
+    (4, 21, "trap type=prone group=tr11 + trap type=chute w=7 dir=left"), (4, 22, "trap type=wheel group=tr11"), (7, 20, "monster type=squirrel"),
+    (3, 14, "trap type=clamp group=tr12 + trap type=chute h=8 dir=up"), (2, 14, "trap type=teaser group=tr12"), (2, 16, "trap type=wheel group=tr12"),
+    # 圈里：吸附大集合（章鱼宝宝 + 毛毛虫 + 藤壶贝）、落穴洞
+    (6, 16, "monster type=caterpillar"), (6, 14, "monster type=barnacle"), (5, 18, "trap type=pit content=tentacle"),
+    (9, 16, "monster type=frog"),
+    (6, 19, "trap type=feather"), (2, 19, "trap type=binding group=tr10"),
 ]
 for (x, y, spec) in ROOM_TRAPS:
+    if spec.startswith("walltrap"):
+        assert g[y][x] == "#", (x, y)
     put(x, y, spec)
+TRAP_ROOM_COMBOS = [
+    ("snare_sweep", [9, 1, 12, 9]), ("armpit_rain", [7, 2, 11, 7]), ("one_leg_show", [5, 5, 10, 11]),
+    ("spin_suction", [3, 1, 8, 5]), ("thigh_torture", [2, 5, 6, 8]), ("mud_sink", [2, 8, 8, 12]),
+    ("supine_navel", [6, 11, 11, 16]), ("cuffs_suction", [7, 16, 11, 21]), ("prone_full", [2, 17, 9, 22]),
+    ("latch_party", [4, 13, 9, 20]),
+]
+trap_room = {"combos": [{"combo": c, "rect": r} for c, r in TRAP_ROOM_COMBOS],
+             "loop": [[10, 5], [10, 7], [8, 7], [9, 13], [10, 20], [4, 21], [3, 14], [9, 13]],
+             "feeds": [[4, 7], [8, 7]]}
+
+
+# ================================================================ 填满空地
+def _free(x, y, r=1):
+    return all(0 <= y + j < H and 0 <= x + i < W and g[y + j][x + i] == "." for i in range(-r, r + 1) for j in range(-r, r + 1))
+
+
+def fill(x0, y0, x1, y1, specs, step=4):
+    """在矩形里按交错网格（每 step 格）把空地放上陷阱：周围一格都是空地才放（不贴墙、不挤着别的东西）。"""
+    i = 0
+    for row, y in enumerate(range(y0, y1 + 1, step)):
+        for x in range(x0 + (row % 2) * (step // 2), x1 + 1, step):
+            if _free(x, y):
+                put(x, y, specs[i % len(specs)])
+                i += 1
+
+
+FEATHER = "trap type=feather"
+VENT = "trap type=vent idle_time=2.2 cloud_duration=1.2 offset=%s"
+BRUSH = "trap type=brush speed=%s"
+OLD = [FEATHER, VENT % "0.0", BRUSH % "1.2", FEATHER, VENT % "1.1", BRUSH % "-1.3"]
+# 各区域按第一次出现的顺序只放已经介绍过的机关
+fill(53, 53, 81, 72, OLD + ["trap type=teaser", "trap type=wheel"])              # 束缚工坊
+fill(21, 55, 46, 70, OLD + ["trap type=wheel", "trap type=cushion"])            # 滑梯坡道
+fill(45, 35, 66, 47, OLD + ["trap type=teaser content=brush", "trap type=pit content=rat"])  # 腿刑长廊
+fill(23, 35, 38, 47, OLD + ["trap type=wheel", "trap type=teaser"], step=3)              # 小精灵温室
+fill(38, 17, 56, 29, OLD + ["trap type=pit content=slime"])                      # 转轮工坊
+fill(62, 15, 78, 29, OLD + ["trap type=teaser content=slime"])                   # 泥沼地窖
+fill(61, 3, 91, 10, OLD + ["trap type=boots", "trap type=wheel"], step=3)                # 工匠车间
+fill(21, 79, 55, 85, OLD)                                                        # 落笼回廊
+
 
 LEVEL = """[level]
 # 第五层：机关迷城（tools/build/gen_floor05.py 生成，不要直接改）
@@ -413,9 +483,15 @@ out.mkdir(parents=True, exist_ok=True)
 (out / "design.json").write_text(json.dumps({
     "_说明": ["第五层的关卡设计数据（tools/build/gen_floor05.py 生成），tests/level_design_test.gd 读取：",
               "combo_areas：三来源组合的区域 [x0, y0, x1, y1]（陷阱覆盖格和怪物 / 巢穴 / 落笼放出的怪物都在区域里）；",
-              "chains：连锁段——start→goal 存在不碰静态束缚 / 位移陷阱的路（可躲）；links 依次是束缚陷阱的格子，从前一个放开后按强制位移（传送带、弹弹床、风扇、漩涡）会被送进下一个。"],
+              "chains：连锁段——start→goal 存在不碰静态束缚 / 位移陷阱的路（可躲）；links 依次是束缚陷阱的格子，从前一个放开后按强制位移（传送带、弹弹床、风扇、漩涡）会被送进下一个。",
+              "trap_room：无解房间里的三来源组合区域（combos，同 combo_areas）和滑梯圈（loop：拐角的束缚陷阱，前一个放开后会被送进下一个）。",
+              "safe_rooms / min_trap_density：除了这些安全房间，地面格里离陷阱 ≤ 2 格的比例至少 min_trap_density（堆满陷阱）。"],
     "combo_areas": combo_areas,
     "chains": chains,
+    "trap_room": trap_room,
+    # 检查点房间、落脚点和准备间（不要求堆满陷阱）
+    "safe_rooms": [[3, 77, 16, 87], [60, 78, 70, 86], [76, 40, 88, 47], [24, 25, 34, 29], [81, 18, 90, 26], [14, 3, 19, 11]],
+    "min_trap_density": 0.75,
 }, ensure_ascii=False, indent="\t") + "\n")
 
 S, G = "石碑", "公主"

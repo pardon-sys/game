@@ -1,6 +1,6 @@
 class_name GrabHand
 extends Trap
-## 机关手：装在墙面上，由压力板触发（MANUAL，Triggerable）。
+## 机关手：装在墙面上，由压力板触发（MANUAL，Triggerable）；有人自己走到它下方那一格也会触发。
 ## 伸出后抓住前方一格内的目标，每 grab_interval 秒挠痒 grab_tickle；目标连按挣扎或超时后松开，缩回并冷却。
 
 ## 压力板的 target 与此相同即可触发。
@@ -24,6 +24,8 @@ func _setup() -> void:
 
 func _physics_process(delta: float) -> void:
 	super(delta)
+	if active and phase == Phase.IDLE and not GameState.in_dialogue and not _victims().is_empty():
+		trigger()
 	if victim == null:
 		return
 	if not is_instance_valid(victim) or not victim.is_alive() or not victim.status.is_grabbed_by(self):

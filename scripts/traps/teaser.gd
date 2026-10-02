@@ -5,6 +5,7 @@ extends Trap
 ##   feather 羽毛（轻）/ brush 刷子（重，额外算「旋转刷」来源）/ slime 史莱姆（附带黏黏减速，额外算「史莱姆」）/
 ##   tentacle 小触手（附带短暂定身，额外算「触手」）/
 ##   drill 肚脐羽毛钻（转着圈的羽毛尖，只钻肚子：露出肚子就钻肚子，没露出就挠腰——zone_focus）。
+## 没有同组困人时，有人走到 poke_range 以内它也会自己伸出来戳（间隔 interval × 1.5）。
 
 const CONTENT := {
 	"feather": {"tickle": 2.5, "fx": "feather", "extra": [], "row": 0},
@@ -19,6 +20,8 @@ const CONTENT := {
 @export var interval := 0.35
 ## 最远够得着多远的人（像素）。
 @export var reach := 40.0
+## 没人被困时，走到这么近就自己戳过来（像素）。
+@export var poke_range := 20.0
 
 ## 专挑的部位（TickleZones.pick 用；drill 为 ["belly", "waist"]）。
 var zone_focus: Array = []
@@ -64,9 +67,21 @@ func _apply_effect(_target: Node) -> bool:
 	return false
 
 
+## 走到旁边的人（没有同组困人时自己戳她）。
+func standalone_victim() -> Actor:
+	var p := GameState.player
+	if is_instance_valid(p) and p.is_alive() and _affects(p) and p.global_position.distance_to(global_position) <= poke_range:
+		return p
+	return null
+
+
 func _physics_process(delta: float) -> void:
 	super(delta)
 	var v := held_victim() if active else null
+	var alone := false
+	if v == null and active:
+		v = standalone_victim()
+		alone = v != null
 	_arm.visible = v != null
 	sprite.frame_coords.x = 1 if v != null else 0
 	if v == null or GameState.in_dialogue:
@@ -78,7 +93,7 @@ func _physics_process(delta: float) -> void:
 	_cd -= delta
 	if _cd > 0.0:
 		return
-	_cd = interval
+	_cd = interval * (1.5 if alone else 1.0)
 	if v.receive_hit(make_hit()):
 		Audio.play("tickle", -7.0, 0.15, tickle_pitch)
 		match content:

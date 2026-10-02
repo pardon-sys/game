@@ -32,7 +32,7 @@ func _setup() -> void:
 			s.position = Vector2(x, y) * 16.0
 			s.frame = (x + y) % 2
 			s.rotation = lane.angle() if lane.x == 0.0 else 0.0
-			s.z_index = -1
+			s.z_index = 0  # 不能小于 0：会画到地板图块下面
 			add_child(s)
 			_tiles.append(s)
 	var rect := RectangleShape2D.new()
@@ -70,7 +70,7 @@ func _physics_process(delta: float) -> void:
 				pc.force_move(v, 0.1, "slide")
 			else:
 				pc.extend_forced_move(0.1)
-		elif pc.can_act():
+		elif pc.can_be_moved():
 			if not pc.force_move(v, 0.1, "slide"):
 				continue
 			Audio.play("swish", -10.0, 0.1, 0.8)

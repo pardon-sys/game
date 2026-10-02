@@ -147,8 +147,8 @@ func _tick(delta: float) -> void:
 		input = -input  # 晕头转向：方向颠倒
 	_update_lift(delta)
 	_update_focus()
-	if _forced_time > 0.0 and state not in [State.IDLE, State.MOVE]:
-		end_forced_move()  # 被抓住 / 笑到失控等打断了强制位移
+	if _forced_time > 0.0 and state not in [State.IDLE, State.MOVE, State.HELPLESS]:
+		end_forced_move()  # 被抓住 / 倒下等打断了强制位移（失控时照样被带走）
 	if status and status.is_grabbed() and state not in [State.GRABBED, State.DEAD]:
 		drop_latchers()
 		interrupt_channel()
@@ -220,7 +220,10 @@ func _tick(delta: float) -> void:
 			if _state_time >= hurt_time:
 				_set_state(State.IDLE)
 		State.HELPLESS:
-			velocity = velocity.move_toward(Vector2.ZERO, friction * delta)
+			if is_force_moving():
+				_tick_forced(delta)
+			else:
+				velocity = velocity.move_toward(Vector2.ZERO, friction * delta)
 			if can_control and (controller.is_action_just_pressed(&"attack") or controller.is_action_just_pressed(&"interact")):
 				struggle()
 			if not (laugh and laugh.is_helpless()):
@@ -714,13 +717,13 @@ func _update_focus() -> void:
 # ------------------------------------------------------------------ 内部
 # ------------------------------------------------------------------ 强制位移
 ## 开始强制位移：time 秒内按 v 移动。kind = "bounce"（弹在空中：脚下陷阱不生效）/ "slide"（滑行：撞墙停）。
-## 被抓住、失控、倒下时不能开始；吟唱、攻击会被打断。
+## 被抓住、倒下时不能开始（失控时可以：笑瘫了也会被弹走、滑走）；吟唱、攻击会被打断。
 func force_move(v: Vector2, time: float, kind: String) -> bool:
-	if state in [State.GRABBED, State.HELPLESS, State.DEAD] or (status and status.is_grabbed()):
+	if state in [State.GRABBED, State.DEAD] or (status and status.is_grabbed()):
 		return false
 	interrupt_channel()
 	_end_attack()
-	if state not in [State.IDLE, State.MOVE]:
+	if state not in [State.IDLE, State.MOVE, State.HELPLESS]:
 		_set_state(State.IDLE)
 	forced_kind = kind
 	_forced_vel = v
@@ -752,7 +755,12 @@ func end_forced_move() -> void:
 
 
 func is_force_moving() -> bool:
-	return _forced_time > 0.0 and state in [State.IDLE, State.MOVE]
+	return _forced_time > 0.0 and state in [State.IDLE, State.MOVE, State.HELPLESS]
+
+
+## 位移陷阱能不能带走她：能行动或笑到失控（被抓住、倒下、冲刺、吟唱时不行）。
+func can_be_moved() -> bool:
+	return state in [State.IDLE, State.MOVE, State.HELPLESS]
 
 
 func forced_velocity() -> Vector2:
@@ -771,7 +779,8 @@ func is_dashing() -> bool:
 func _tick_forced(delta: float) -> void:
 	_forced_time -= delta
 	velocity = _forced_vel
-	_set_state(State.MOVE if forced_kind == "slide" else State.IDLE)
+	if state != State.HELPLESS:
+		_set_state(State.MOVE if forced_kind == "slide" else State.IDLE)
 	if forced_kind == "bounce" and sprite:
 		var k := clampf(1.0 - _forced_time / maxf(_forced_total, 0.001), 0.0, 1.0)
 		sprite.position.y = -roundf(sin(PI * k) * BOUNCE_HEIGHT)

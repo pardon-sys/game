@@ -53,8 +53,9 @@ func _physics_process(delta: float) -> void:
 				pc.end_forced_move()
 			else:
 				pc.extend_forced_move(0.1)
-		elif pc.can_act() and pc.velocity.length() >= start_speed and not on_stopper(pc):
-			var v := pc.velocity
+		elif pc.can_be_moved() and pc.get_real_velocity().length() >= start_speed and not on_stopper(pc):
+			# 按实际移动方向（含传送带 / 风扇的推力：笑瘫了被推上来也会滑）
+			var v := pc.get_real_velocity()
 			var d := Vector2(signf(v.x), 0.0) if absf(v.x) >= absf(v.y) else Vector2(0.0, signf(v.y))
 			if pc.test_move(pc.global_transform, d * 2.0):
 				continue  # 贴着墙往墙上推：不滑

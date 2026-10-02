@@ -3,16 +3,21 @@ extends CanvasLayer
 ## 背包界面（场景 scenes/ui/backpack.tscn，挂在 main 下）。拿到冒险背包（GameState.has_backpack）之后按 Tab / I 打开，打开时暂停游戏。
 ##   物品页：所有物品的格子；选中显示名称、数量、说明；E 使用，Q / R 把消耗品设为对应快捷键（GameState.set_hotkey）。
 ##   状态页：闷笑值 / 魔力疲倦百分比和当前阶段说明、魔法冷却、所有增益 / 减益（data/buffs.json 的 desc）、被抓 / 定身等情况。
-## 操作：方向键选择，E 使用，Q / R 设快捷键，Tab / I 翻到下一页（状态页再按就关闭），Esc 关闭。
+##   CG 图鉴页：笑倒 CG、巢穴过场、三来源组合演出；看过的可以重看（测试模式下全部可看），E 播放。
+## 操作：方向键选择，E 使用 / 播放，Q / R 设快捷键，Tab / I 翻到下一页（最后一页再按就关闭），Esc 关闭。
+## 测试模式（DevConfig.enabled）下没拿到背包也能打开。
 
 signal opened
 signal closed
 
 const BUFF_ICONS := preload("res://assets/generated/buff_icons.png")
-const PAGES := ["物品", "被动技能", "状态"]
+const PAGES := ["物品", "被动技能", "状态", "CG 图鉴"]
 const PAGE_ITEMS := 0
 const PAGE_PASSIVES := 1
 const PAGE_STATUS := 2
+const PAGE_GALLERY := 3
+## CG 图鉴一屏显示的行数。
+const GALLERY_ROWS := 9
 const COLUMNS := 8
 const CATEGORY_NAMES := {
 	ItemData.Category.CONSUMABLE: "消耗品", ItemData.Category.KEY: "钥匙",
@@ -43,6 +48,10 @@ var passive_desc: Label
 var passive_selected := 0
 var _passive_ids: Array = []
 var hint_label: Label
+var gallery_page: VBoxContainer
+var gallery_selected := 0
+## 图鉴条目：{kind: "cg" / "scene", id（播放用）, flag（看过的标记）, group（分类）, name}
+var _gallery: Array[Dictionary] = []
 
 
 func _ready() -> void:
@@ -88,7 +97,7 @@ func _unhandled_input(event: InputEvent) -> void:
 	get_viewport().set_input_as_handled()
 	if get_tree().paused or GameState.in_dialogue or not is_instance_valid(GameState.player) or not GameState.player.is_alive():
 		return
-	if not GameState.has_backpack():
+	if not GameState.has_backpack() and not DevConfig.enabled():
 		GameState.notify("还没有背包……")
 		return
 	open()
@@ -131,6 +140,13 @@ func set_page(p: int) -> void:
 
 
 func move_selection(d: int) -> void:
+	if page == PAGE_GALLERY:
+		if not _gallery.is_empty():
+			# 左右（±1）翻一页，上下（±COLUMNS）走一行
+			var step := (1 if d > 0 else -1) * (GALLERY_ROWS if absi(d) == 1 else 1)
+			gallery_selected = clampi(gallery_selected + step, 0, _gallery.size() - 1)
+			_refresh()
+		return
 	if page == PAGE_PASSIVES:
 		if not _passive_ids.is_empty():
 			passive_selected = clampi(passive_selected + d, 0, _passive_ids.size() - 1)
@@ -146,8 +162,10 @@ func selected_item() -> ItemData:
 	return _items[selected] if page == PAGE_ITEMS and selected < _items.size() else null
 
 
-## 使用选中的物品（消耗品）。
+## 使用选中的物品（消耗品）；图鉴页播放选中的 CG。
 func use_selected() -> bool:
+	if page == PAGE_GALLERY:
+		return play_selected()
 	var it := selected_item()
 	var p := GameState.player
 	if it == null or not is_instance_valid(p):
@@ -241,6 +259,12 @@ func _build() -> void:
 	status_page.size = Vector2(396, 190)
 	status_page.add_theme_constant_override("separation", 2)
 	panel.add_child(status_page)
+	# CG 图鉴页
+	gallery_page = VBoxContainer.new()
+	gallery_page.position = Vector2(12, 26)
+	gallery_page.size = Vector2(396, 190)
+	gallery_page.add_theme_constant_override("separation", 1)
+	panel.add_child(gallery_page)
 	hint_label = _label(DIM)
 	hint_label.position = Vector2(12, 222)
 	panel.add_child(hint_label)
@@ -260,7 +284,11 @@ func _refresh() -> void:
 	items_page.visible = page == PAGE_ITEMS
 	passives_page.visible = page == PAGE_PASSIVES
 	status_page.visible = page == PAGE_STATUS
-	if page == PAGE_ITEMS:
+	gallery_page.visible = page == PAGE_GALLERY
+	if page == PAGE_GALLERY:
+		_refresh_gallery()
+		hint_label.text = "上下 选择　左右 翻页　E 播放　Tab / Esc 关闭"
+	elif page == PAGE_ITEMS:
 		_refresh_items()
 		hint_label.text = "方向键 选择　E 使用　Q / R 设为快捷键　Tab 下一页　Esc 关闭"
 	elif page == PAGE_PASSIVES:
@@ -268,7 +296,72 @@ func _refresh() -> void:
 		hint_label.text = "方向键 选择　Tab 下一页　Esc 关闭"
 	else:
 		_refresh_status()
-		hint_label.text = "Tab / Esc 关闭"
+		hint_label.text = "Tab 下一页　Esc 关闭"
+
+
+# ------------------------------------------------------------------ CG 图鉴
+## 所有条目（按分类：笑倒 → 巢穴 → 组合演出）。
+static func gallery_entries() -> Array[Dictionary]:
+	var out: Array[Dictionary] = []
+	var cg: Node = (Engine.get_main_loop() as SceneTree).root.get_node_or_null("/root/CG")
+	if cg == null:
+		return out
+	var groups := {"death_": "笑倒", "nest_": "巢穴"}
+	for prefix in groups:
+		for id in cg.cgs():
+			if str(id).begins_with(prefix):
+				out.append({"kind": "cg", "id": id, "flag": "cg_seen_" + id, "group": groups[prefix],
+					"name": str(cg.cgs()[id].get("name", id))})
+	for id in cg.scenes:
+		out.append({"kind": "scene", "id": id, "flag": "cg_seen_combo:" + id, "group": "组合",
+			"name": str(cg.scenes[id].get("name", id))})
+	return out
+
+
+## 这一条能不能看：测试模式全部，平时看过的。
+static func gallery_unlocked(e: Dictionary) -> bool:
+	return DevConfig.enabled() or GameState.has_flag(str(e["flag"]))
+
+
+func _refresh_gallery() -> void:
+	_gallery = gallery_entries()
+	gallery_selected = clampi(gallery_selected, 0, maxi(_gallery.size() - 1, 0))
+	for c in gallery_page.get_children():
+		gallery_page.remove_child(c)
+		c.queue_free()
+	var seen := _gallery.filter(func(e): return gallery_unlocked(e)).size()
+	var head := _label(GOLD)
+	head.text = "已解锁 %d / %d%s" % [seen, _gallery.size(), "　（测试模式：全部可看）" if DevConfig.enabled() else ""]
+	gallery_page.add_child(head)
+	var first := clampi(gallery_selected - GALLERY_ROWS / 2, 0, maxi(_gallery.size() - GALLERY_ROWS, 0))
+	for i in range(first, mini(first + GALLERY_ROWS, _gallery.size())):
+		var e := _gallery[i]
+		var open_ := gallery_unlocked(e)
+		var l := _label(PINK if i == gallery_selected else (TEXT if open_ else DIM))
+		l.text = "%s【%s】%s" % ["▶ " if i == gallery_selected else "　 ", e["group"], e["name"] if open_ else "？？？"]
+		gallery_page.add_child(l)
+
+
+## 播放选中的 CG：关掉背包、解除暂停后播放（播完回到游戏）。
+func play_selected() -> bool:
+	if _gallery.is_empty() or not gallery_unlocked(_gallery[gallery_selected]):
+		Audio.play("locked", -8.0)
+		return false
+	var e := _gallery[gallery_selected]
+	var cg := get_node_or_null("/root/CG")
+	if cg == null or cg.is_busy():
+		return false
+	close()
+	if e["kind"] == "scene":
+		cg.play_scene(str(e["id"]))
+	else:
+		var id := str(e["id"])
+		var source := id.trim_prefix("death_") if id.begins_with("death_") else ""
+		for kind in cg.data.get("nest", {}):
+			if str(cg.data["nest"][kind].get("cg", "")) == id:
+				source = str(cg.data["nest"][kind].get("source", ""))
+		cg.play(id, source)
+	return true
 
 
 ## 被动技能页：图标网格（右下角等级）+ 选中技能的当前效果和下一级效果。

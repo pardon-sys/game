@@ -26,6 +26,11 @@ func _restraint_setup() -> void:
 		sprite.frame_coords = Vector2i(0, int(c["row"]))
 
 
+## 公主台词按洞里住的怪物换（princess_reactions.json 的 lines_by_content）。
+func reaction_variant() -> String:
+	return content
+
+
 func extra_combo_keys() -> Array:
 	return [CONTENT.get(content, CONTENT["rat"])["extra"]]
 

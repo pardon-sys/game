@@ -3,12 +3,15 @@ extends Trap
 ## 落笼：地上先出现影子（预警 warn_time 秒），然后天花板落下痒痒笼子罩住那一格，困住 lock_time 秒（连按 presses 次挣脱）。
 ##   content = feather  笼里的羽毛自己挠
 ##   content = slime / tentacle  落下时笼里放出一只真的史莱姆 / 小触手（它们挠就算对应的怪物，笼子升起后留在场上；同时最多 max_spawn 只）
-##   PERIODIC（默认，定时落）或 MANUAL（被压力板 / 绊线触发，加入 group_name 组）；aim = true 时影子跟着公主走，落在她身上。
+##   PERIODIC（默认，定时落）或 MANUAL（被压力板 / 绊线触发，加入 group_name 组；有人自己走到落点格也会触发）；
+##   aim = true 时影子跟着公主走，落在她身上。不对准的落笼平时就在落点显示淡淡的影子，预警时变深变大。
 
 const SHEET := preload("res://assets/generated/cage.png")
 const ROWS := {"feather": 0, "slime": 1, "tentacle": 2}
 const SPAWN := {"slime": "res://scenes/actors/monsters/slime.tscn", "tentacle": "res://scenes/actors/monsters/mini_tentacle.tscn"}
 const CATCH_DIST := 10.0
+## 平时影子的不透明度（不对准的落笼）。
+const IDLE_SHADOW := 0.35
 
 @export var content := "feather"
 @export var group_name := ""
@@ -41,8 +44,9 @@ func _setup() -> void:
 	_shadow.region_enabled = true
 	_shadow.region_rect = Rect2(48, 0, 16, 8)
 	_shadow.top_level = true
-	_shadow.visible = false
-	_shadow.z_index = -1
+	_shadow.visible = not aim
+	_shadow.modulate.a = IDLE_SHADOW
+	_shadow.z_index = 0  # 不能小于 0：会画到地板图块下面
 	add_child(_shadow)
 	_cage = Sprite2D.new()
 	_cage.texture = SHEET
@@ -54,6 +58,7 @@ func _setup() -> void:
 	_cage.z_index = 4
 	add_child(_cage)
 	drop_point = global_position
+	_shadow.global_position = drop_point
 
 
 func _target_point() -> Vector2:
@@ -65,12 +70,19 @@ func _on_warn() -> void:
 	drop_point = _target_point()
 	_shadow.global_position = drop_point
 	_shadow.visible = true
+	_shadow.modulate.a = 1.0
 	_shadow.scale = Vector2(0.4, 0.4)
 	create_tween().tween_property(_shadow, "scale", Vector2.ONE, warn_time)
 
 
 func _physics_process(delta: float) -> void:
 	super(delta)
+	if trigger_mode == TriggerMode.MANUAL and phase == Phase.IDLE and active and not GameState.in_dialogue:
+		var p := GameState.player
+		if is_instance_valid(p) and p.is_alive() and not p.is_airborne() and p.global_position.distance_to(global_position) <= CATCH_DIST:
+			trigger()  # 自己走到落点格
+	if phase == Phase.IDLE and not aim and _shadow.visible:
+		_shadow.global_position = global_position
 	if phase == Phase.WARN and aim:
 		drop_point = _target_point()
 		_shadow.global_position = drop_point
@@ -146,7 +158,22 @@ func _on_idle() -> void:
 func _lift() -> void:
 	var tw := create_tween()
 	tw.tween_property(_cage, "global_position", drop_point + Vector2(0, -48), 0.25)
-	tw.tween_callback(func(): _cage.visible = false)
+	tw.tween_callback(func():
+		_cage.visible = false
+		_idle_shadow())
+
+
+## 平时的淡影子（不对准的落笼）。
+func _idle_shadow() -> void:
+	_shadow.visible = not aim
+	_shadow.modulate.a = IDLE_SHADOW
+	_shadow.scale = Vector2.ONE
+	_shadow.global_position = global_position
+
+
+## 平时 / 预警时地上影子是否可见（测试用）。
+func shadow_visible() -> bool:
+	return _shadow.visible and _shadow.z_index >= 0
 
 
 func is_holding() -> bool:

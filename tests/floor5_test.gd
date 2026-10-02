@@ -297,6 +297,7 @@ func _run_restraints() -> void:
 	player.tickled.disconnect(on_hit)
 	check("同组的逗弄器专挠露出的部位（腋下：%s）" % [teaser_zones], not teaser_zones.is_empty() and teaser_zones.all(func(z): return z == "armpit"))
 	await _struggle(cuffs.presses)
+	player.global_position = teaser.global_position + Vector2(0, 40)  # 走开（逗弄器旁边 poke_range 内会自己戳）
 	await _wait(0.5)
 	var lv := player.laugh.value
 	await _wait(0.5)

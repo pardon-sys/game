@@ -41,7 +41,12 @@ static func magic(event: String) -> Array:
 	return data().get("magic", {}).get(event, [])
 
 
-static func lines(key: String, stage: String) -> Array:
+## 某来源某阶段的公主台词。variant：来源的变体（落穴洞洞里住的怪物，sources[key].lines_by_content），有就优先。
+static func lines(key: String, stage: String, variant := "") -> Array:
+	if variant != "":
+		var v: Variant = source(key).get("lines_by_content", {}).get(variant, {})
+		if v is Dictionary and not v.get(stage, []).is_empty():
+			return v[stage]
 	var own: Array = source(key).get(stage, [])
 	return own if not own.is_empty() else data().get("lines", {}).get(stage, [])
 
