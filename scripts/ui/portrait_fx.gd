@@ -3,6 +3,7 @@ extends Control
 ## 立绘（左下角常驻立绘 / CG 里的立绘和横版 CG 图）的被挠反馈，挂在 Dialogue 下（Dialogue.portrait_fx）：
 ##   抖动        Dialogue.shake_portrait，幅度按阶段：平静 1、憋笑 2、失控 1 3、失控 2 4 像素；暴击 / 高潮再加
 ##   来源贴片    按挠痒来源的命中特效（hit_fx）在立绘的脚心 / 腰侧 / 腋下 / 脖子随机位置播放（放大 2 倍）
+##   部位特效    挠到某个部位时，在立绘那个部位的位置（部位表 anchor）播部位专属特效 ZoneFx（放大 2 倍，弱点再放大变亮）
 ##   粉色闪光    被挠瞬间立绘泛粉（连续挠时限频）
 ##   飘字        失控后被挠时旁边冒出小字往上飘：文字在 data/princess_reactions.json 的 portrait_words
 ##               （全局默认，各来源可以单独配置，ReactionDB.portrait_words）
@@ -39,6 +40,7 @@ var portrait: TextureRect
 var cg_mode := false
 var cg_level := 0
 var _stickers: Array[Node] = []
+var _zone_stickers: Array[Node] = []
 var _since_sticker := INF
 var _since_haha := INF
 var _since_flash := INF
@@ -77,7 +79,7 @@ func on_tickled(hit: HitData, laugh: LaughMeter) -> void:
 	if cg_mode or not active():
 		return
 	var stage := laugh.stage() if laugh else "calm"
-	_tickle_core(ReactionDB.key_of(hit.source), HitFx.kind_of(hit.source), stage, hit.special, 0.0, hit.zone)
+	_tickle_core(ReactionDB.key_of(hit.source), HitFx.kind_of(hit.source), stage, hit.special, 0.0, hit.zone, hit.weak)
 
 
 ## 组合技（以及 CG 里组合演出的高潮）：立绘周围爆开粉色心形。
@@ -131,7 +133,7 @@ func cg_crit() -> void:
 
 
 # ------------------------------------------------------------------ 共用
-func _tickle_core(key: String, kind: String, stage: String, special: bool, extra_shake: float, zone := "") -> void:
+func _tickle_core(key: String, kind: String, stage: String, special: bool, extra_shake: float, zone := "", weak := false) -> void:
 	var strength := float(SHAKE_BY_STAGE.get(stage, 1.0)) + (2.0 if special else 0.0) + extra_shake
 	Dialogue.shake_portrait(strength, 0.24 if special else 0.18)
 	if special:
@@ -145,6 +147,8 @@ func _tickle_core(key: String, kind: String, stage: String, special: bool, extra
 			_sticker(kind, _wide_point(), 2.5)
 		else:
 			_sticker(kind, _anchor_point(zone), 2.0)
+	if zone != "" and not is_wide():
+		_zone_sticker(zone, weak)
 	if special:
 		_sticker("crit", portrait_rect().get_center(), 3.0, true)
 	if stage.begins_with("helpless"):
@@ -159,6 +163,7 @@ func clear() -> void:
 		if is_instance_valid(s):
 			s.queue_free()
 	_stickers.clear()
+	_zone_stickers.clear()
 	for c in get_children():
 		c.queue_free()
 	if portrait:
@@ -276,6 +281,23 @@ func _sticker(kind: String, pos: Vector2, scale_k: float, force := false) -> voi
 		s.scale = Vector2.ONE * scale_k
 		s.z_index = 2
 		_stickers.append(s)
+
+
+## 部位专属特效贴在立绘的部位位置（同一时间最多 MAX_STICKERS 个）。
+func _zone_sticker(zone: String, weak: bool) -> void:
+	_zone_stickers = _zone_stickers.filter(func(s): return is_instance_valid(s))
+	if _zone_stickers.size() >= MAX_STICKERS:
+		return
+	var s := ZoneFx.play(zone, self, _anchor_point(zone), 2.0, weak)
+	if s:
+		s.z_index = 3
+		_zone_stickers.append(s)
+
+
+## 正在播放的部位特效（测试用）。
+func zone_stickers() -> Array:
+	_zone_stickers = _zone_stickers.filter(func(s): return is_instance_valid(s))
+	return _zone_stickers.duplicate()
 
 
 func _flash(col: Color, time: float) -> void:

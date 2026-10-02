@@ -61,6 +61,9 @@ const COMBO_SPOTS := [
 	["floor_05", "snare_sole_feast", "arena:arena_f5a"],
 	["floor_05", "imp_fitting", "arena:arena_f5b"],
 	["floor_05", "feather_cocoon", "arena:arena_f5b"],
+	["floor_05", "frog_squirrel", "arena:arena_f5a"],
+	["floor_05", "vest_caterpillar", "arena:arena_f5a"],
+	["floor_05", "latch_party", "arena:arena_f5b"],
 ]
 ## 有 levels/<楼层>/design.json 的楼层（第五层）：combo_areas 里的组合按区域检查（陷阱和怪物都在区域里），
 ## chains 检查「可躲」（存在不碰静态束缚 / 位移陷阱的路）和「中招就连锁」（从前一个束缚陷阱放开后，
@@ -85,6 +88,20 @@ const MECHANIC_SIGNS := [
 	["单腿吊环", "floor_05", "sign5_legloop"],
 	["痒痒长靴", "floor_05", "sign5_boots"],
 	["羽毛绑腿", "floor_05", "sign5_binding"],
+	["藤壶贝", "floor_05", "sign5_barnacle"],
+	["掸子墙", "floor_05", "sign5_duster"],
+	["落穴洞", "floor_05", "sign5_pit"],
+	["仰卧刑床", "floor_05", "sign5_supine"],
+	["肚脐羽毛钻", "floor_05", "sign5_drill"],
+	["长舌蛙", "floor_05", "sign5_frog"],
+	["吸盘章鱼宝宝", "floor_05", "sign5_octopus"],
+	["痒痒滑梯", "floor_05", "sign5_chute"],
+	["俯卧刑凳", "floor_05", "sign5_prone"],
+	["刷尾松鼠", "floor_05", "sign5_squirrel"],
+	["痒痒坐垫", "floor_05", "sign5_cushion"],
+	["毛毛虫", "floor_05", "sign5_caterpillar"],
+	["羽毛背心", "floor_05", "sign5_vest"],
+	["张臂转盘", "floor_05", "sign5_spinwheel"],
 ]
 const MECHANIC_SIGN_STEPS := 14
 var _seen_mechanics := {}
@@ -287,7 +304,7 @@ var _area_combos := {}
 func _static_hazards() -> Dictionary:
 	var out := {}
 	for n in level.find_children("*", "", true, false):
-		if n is RestraintTrap or n is TickleConveyor or n is BouncePad or n is SoapFloor or n is TickleVortex or n is FeatherFan \
+		if n is RestraintTrap or n is TickleConveyor or n is BouncePad or n is SoapFloor or n is TickleVortex or n is FeatherFan or n is ChuteTrap \
 				or n is Stocks or n is StickyCarpet or n is HexRune or n is TickleVine:
 			for c in _trap_cover(n as Trap):
 				out[c] = true
@@ -297,7 +314,7 @@ func _static_hazards() -> Dictionary:
 	return out
 
 
-## 从 start 出发只受强制位移（弹弹床 → 落点、传送带 → 顺着走、风扇风道 → 顺风、漩涡范围 → 中心）会经过的格子。
+## 从 start 出发只受强制位移（弹弹床 → 落点、传送带 → 顺着走、滑梯 → 顺着滑、风扇风道 → 顺风、漩涡范围 → 中心）会经过的格子。
 func _flow(start: Vector2i) -> Dictionary:
 	var walls: TileMapLayer = level.get_node("Walls")
 	var fm := _forced_maps()
@@ -323,6 +340,8 @@ func _flow(start: Vector2i) -> Dictionary:
 			nxt = fm["pads"][c]
 		elif belts.has(c):
 			nxt = c + belts[c]
+		elif fm["chute"].has(c):
+			nxt = c + fm["chute"][c]
 		elif fans.has(c):
 			nxt = c + fans[c]
 		else:
@@ -413,6 +432,48 @@ func _mechanic_cells(mech: String) -> Array[Vector2i]:
 					out.append(c0)
 			"羽毛绑腿":
 				if n is BindingTrap:
+					out.append(c0)
+			"藤壶贝":
+				if n is Barnacle:
+					out.append(c0)
+			"掸子墙":
+				if n is DusterWall:
+					out.append_array(_trap_cover(n as Trap))
+			"落穴洞":
+				if n is PitTrap:
+					out.append(c0)
+			"仰卧刑床":
+				if n is SupineTrap:
+					out.append(c0)
+			"肚脐羽毛钻":
+				if n is TeaserTrap and (n as TeaserTrap).content == "drill":
+					out.append(c0)
+			"长舌蛙":
+				if n is TongueFrog:
+					out.append(c0)
+			"吸盘章鱼宝宝":
+				if n is SuctionOctopus:
+					out.append(c0)
+			"痒痒滑梯":
+				if n is ChuteTrap:
+					out.append_array(_trap_cover(n as Trap))
+			"俯卧刑凳":
+				if n is ProneTrap:
+					out.append(c0)
+			"刷尾松鼠":
+				if n is BrushSquirrel:
+					out.append(c0)
+			"痒痒坐垫":
+				if n is CushionTrap:
+					out.append(c0)
+			"毛毛虫":
+				if n is Caterpillar:
+					out.append(c0)
+			"羽毛背心":
+				if n is VestTrap:
+					out.append(c0)
+			"张臂转盘":
+				if n is SpinWheelTrap:
 					out.append(c0)
 			"吸痒漩涡":
 				if n is TickleVortex:
@@ -528,6 +589,15 @@ func _trap_cover(n: Trap) -> Array[Vector2i]:
 		for dx in (n as MudTrap).tiles_w:
 			for dy in (n as MudTrap).tiles_h:
 				out.append(c0 + Vector2i(dx, dy))
+	elif n is ChuteTrap:
+		for dx in (n as ChuteTrap).tiles_w:
+			for dy in (n as ChuteTrap).tiles_h:
+				out.append(c0 + Vector2i(dx, dy))
+	elif n is DusterWall:
+		var d := n as DusterWall
+		var wall0 := walls.local_to_map(walls.to_local(n.global_position + Vector2(0, -8)))
+		for i in d.length:
+			out.append(wall0 + Vector2i(d.lane) + Vector2i(d.along) * i)
 	elif n is TripwireTrap:
 		var tw := n as TripwireTrap
 		for i in tw.tiles_w:
@@ -547,11 +617,12 @@ func _trap_cover(n: Trap) -> Array[Vector2i]:
 	return out
 
 
-## 强制位移：弹弹床格 -> 落点格；肥皂地板格；滑行停下的格（会抓人 / 定身的陷阱）。
+## 强制位移：弹弹床格 -> 落点格；肥皂地板格；滑梯格 -> 滑的方向；滑行停下的格（会抓人 / 定身的陷阱）。
 func _forced_maps() -> Dictionary:
 	var walls: TileMapLayer = level.get_node("Walls")
 	var pads := {}
 	var soap := {}
+	var chute := {}
 	var stoppers := {}
 	for n in level.find_children("*", "", true, false):
 		if n is BouncePad:
@@ -562,14 +633,18 @@ func _forced_maps() -> Dictionary:
 			for dx in s.tiles_w:
 				for dy in s.tiles_h:
 					soap[c0 + Vector2i(dx, dy)] = true
-		elif n is Trap and (n as Trap).stops_slide:
+		elif n is ChuteTrap:
+			for c in _trap_cover(n as Trap):
+				chute[c] = Vector2i((n as ChuteTrap).lane)
+		if n is Trap and (n as Trap).stops_slide:
 			for c in _trap_cover(n as Trap):
 				stoppers[c] = true
-	return {"pads": pads, "soap": soap, "stoppers": stoppers}
+	return {"pads": pads, "soap": soap, "chute": chute, "stoppers": stoppers}
 
 
 ## 从 c 出发的一步：[到达的格, 碰到的格]。踩上弹弹床直接飞到落点（飞过的不算碰到）；
-## 踩上肥皂地板沿这个方向一直滑到离开地板、撞墙或停在会抓人 / 定身的陷阱上（滑过的格都算碰到）。
+## 踩上肥皂地板沿这个方向一直滑到离开地板、撞墙或停在会抓人 / 定身的陷阱上（滑过的格都算碰到）；
+## 踩上滑梯沿滑梯的方向（拐角跟着下一段）滑到离开滑梯、撞墙或停在束缚陷阱上。
 func _moves(c: Vector2i, fm: Dictionary) -> Array:
 	var out: Array = []
 	for d in [Vector2i.LEFT, Vector2i.RIGHT, Vector2i.UP, Vector2i.DOWN]:
@@ -585,6 +660,13 @@ func _moves(c: Vector2i, fm: Dictionary) -> Array:
 			var touched: Array = [n]
 			while fm["soap"].has(cur) and not fm["stoppers"].has(cur) and _walkable(cur + d, {}):
 				cur += d
+				touched.append(cur)
+			out.append([cur, touched])
+		elif fm["chute"].has(n):
+			var cur := n
+			var touched: Array = [n]
+			while fm["chute"].has(cur) and not fm["stoppers"].has(cur) and _walkable(cur + fm["chute"][cur], {}) and touched.size() < 64:
+				cur += fm["chute"][cur]
 				touched.append(cur)
 			out.append([cur, touched])
 		else:

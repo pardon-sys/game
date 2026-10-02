@@ -35,7 +35,12 @@
 			"glove",
 			"hedgehog",
 			"jelly_queen",
-			"imp"
+			"imp",
+			"frog",
+			"squirrel",
+			"octopus",
+			"caterpillar",
+			"barnacle"
 		],
 		"trap": [
 			"feather",
@@ -60,7 +65,15 @@
 			"teaser",
 			"wheel",
 			"shower",
-			"cage"
+			"cage",
+			"supine",
+			"cushion",
+			"prone",
+			"pit",
+			"spinwheel",
+			"vest",
+			"chute",
+			"duster"
 		]
 	},
 	"combos": [
@@ -2228,6 +2241,242 @@
 				],
 				[
 					"rat"
+				],
+				[
+					"wheel"
+				]
+			],
+			"window": 2.5,
+			"cooldown": 8.0,
+			"effects": [
+				{
+					"type": "burst",
+					"amount": 18
+				},
+				{
+					"type": "grab_extend",
+					"seconds": 1.0
+				},
+				{
+					"type": "rally",
+					"radius": 160
+				},
+				{
+					"type": "focus"
+				}
+			]
+		},
+		{
+			"id": "supine_navel",
+			"category": "怪+陷阱+陷阱",
+			"keys": [
+				[
+					"supine"
+				],
+				[
+					"teaser"
+				],
+				[
+					"frog"
+				]
+			],
+			"window": 2.5,
+			"cooldown": 8.0,
+			"effects": [
+				{
+					"type": "burst",
+					"amount": 20
+				},
+				{
+					"type": "grab_extend",
+					"seconds": 1.0
+				},
+				{
+					"type": "crit_storm",
+					"duration": 3.0
+				},
+				{
+					"type": "focus"
+				}
+			]
+		},
+		{
+			"id": "prone_full",
+			"category": "怪+陷阱+陷阱",
+			"keys": [
+				[
+					"prone"
+				],
+				[
+					"squirrel"
+				],
+				[
+					"wheel"
+				]
+			],
+			"window": 2.5,
+			"cooldown": 8.0,
+			"effects": [
+				{
+					"type": "burst",
+					"amount": 18
+				},
+				{
+					"type": "grab_extend",
+					"seconds": 1.0
+				},
+				{
+					"type": "confuse",
+					"duration": 3.0
+				},
+				{
+					"type": "focus"
+				}
+			]
+		},
+		{
+			"id": "frog_squirrel",
+			"category": "怪+怪+怪",
+			"keys": [
+				[
+					"frog"
+				],
+				[
+					"squirrel"
+				],
+				[
+					"fairy"
+				]
+			],
+			"window": 2.5,
+			"cooldown": 8.0,
+			"effects": [
+				{
+					"type": "burst",
+					"amount": 18
+				},
+				{
+					"type": "lift",
+					"duration": 2.0
+				},
+				{
+					"type": "focus"
+				}
+			]
+		},
+		{
+			"id": "spin_suction",
+			"category": "怪+陷阱+陷阱",
+			"keys": [
+				[
+					"spinwheel"
+				],
+				[
+					"octopus"
+				],
+				[
+					"arm"
+				]
+			],
+			"window": 2.5,
+			"cooldown": 8.0,
+			"effects": [
+				{
+					"type": "burst",
+					"amount": 20
+				},
+				{
+					"type": "grab_extend",
+					"seconds": 1.0
+				},
+				{
+					"type": "crit_storm",
+					"duration": 3.0
+				},
+				{
+					"type": "focus"
+				}
+			]
+		},
+		{
+			"id": "vest_caterpillar",
+			"category": "怪+怪+陷阱",
+			"keys": [
+				[
+					"vest"
+				],
+				[
+					"caterpillar"
+				],
+				[
+					"fairy"
+				]
+			],
+			"window": 2.5,
+			"cooldown": 8.0,
+			"effects": [
+				{
+					"type": "burst",
+					"amount": 16
+				},
+				{
+					"type": "dot",
+					"rate": 3,
+					"duration": 3
+				},
+				{
+					"type": "lift",
+					"duration": 2.0
+				},
+				{
+					"type": "focus"
+				}
+			]
+		},
+		{
+			"id": "latch_party",
+			"category": "怪+怪+怪",
+			"keys": [
+				[
+					"octopus"
+				],
+				[
+					"caterpillar"
+				],
+				[
+					"barnacle"
+				]
+			],
+			"window": 2.5,
+			"cooldown": 8.0,
+			"effects": [
+				{
+					"type": "burst",
+					"amount": 18
+				},
+				{
+					"type": "slow",
+					"value": 0.6,
+					"duration": 3
+				},
+				{
+					"type": "confuse",
+					"duration": 3.0
+				},
+				{
+					"type": "focus"
+				}
+			]
+		},
+		{
+			"id": "cuffs_suction",
+			"category": "怪+陷阱+陷阱",
+			"keys": [
+				[
+					"cuffs"
+				],
+				[
+					"octopus"
 				],
 				[
 					"wheel"

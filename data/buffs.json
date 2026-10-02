@@ -123,6 +123,15 @@
 			"max_stacks": 1,
 			"modifiers": {},
 			"desc": "被束缚陷阱困住，部位露在外面：挠到这些部位时闷笑增加更多。"
+		},
+		"latched": {
+			"name": "吸着",
+			"icon": 17,
+			"debuff": true,
+			"duration": 99,
+			"max_stacks": 1,
+			"modifiers": {},
+			"desc": "吸附类怪物吸在身上：移动变慢、一直被挠。连按攻击 / 交互键抖掉，冲刺有几率甩掉一只，满蓄力星光爆发全部震飞。"
 		}
 	}
 }

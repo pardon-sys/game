@@ -60,6 +60,11 @@ const TYPED_SCENES := {
 		"jelly_queen": "res://scenes/actors/monsters/jelly_queen.tscn",
 		"imp": "res://scenes/actors/monsters/machine_imp.tscn",
 		"mini_tentacle": "res://scenes/actors/monsters/mini_tentacle.tscn",
+		"frog": "res://scenes/actors/monsters/tongue_frog.tscn",
+		"squirrel": "res://scenes/actors/monsters/brush_squirrel.tscn",
+		"octopus": "res://scenes/actors/monsters/suction_octopus.tscn",
+		"caterpillar": "res://scenes/actors/monsters/caterpillar.tscn",
+		"barnacle": "res://scenes/actors/monsters/barnacle.tscn",
 	},
 	"ally": {"knight": "res://scenes/actors/allies/knight.tscn"},
 	"trap": {
@@ -89,6 +94,13 @@ const TYPED_SCENES := {
 		"shower": "res://scenes/traps/shower.tscn",
 		"cage": "res://scenes/traps/cage.tscn",
 		"tripwire": "res://scenes/traps/tripwire.tscn",
+		"supine": "res://scenes/traps/supine.tscn",
+		"cushion": "res://scenes/traps/cushion.tscn",
+		"prone": "res://scenes/traps/prone.tscn",
+		"pit": "res://scenes/traps/pit.tscn",
+		"spinwheel": "res://scenes/traps/spinwheel.tscn",
+		"vest": "res://scenes/traps/vest.tscn",
+		"chute": "res://scenes/traps/chute.tscn",
 	},
 	## 怪物巢穴（MonsterNest 的子类）
 	"nest": {
@@ -103,6 +115,7 @@ const TYPED_SCENES := {
 		"hand": "res://scenes/traps/grab_hand.tscn",
 		"arm": "res://scenes/traps/feather_arm.tscn",
 		"wardrobe": "res://scenes/traps/wardrobe.tscn",
+		"duster": "res://scenes/traps/duster.tscn",
 	},
 }
 ## 挂在墙上的类型：所在格仍是墙。

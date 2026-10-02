@@ -12,29 +12,35 @@
 	"sources": {
 		"slime": {
 			"sole": 2,
-			"waist": 1
+			"waist": 1,
+			"belly": 1
 		},
 		"split_slime": {
 			"sole": 2,
-			"waist": 1
+			"waist": 1,
+			"belly": 1
 		},
 		"bat": {
 			"neck": 2,
-			"armpit": 1
+			"armpit": 1,
+			"chest": 1
 		},
 		"ghost": {
 			"waist": 2,
 			"armpit": 1,
-			"neck": 1
+			"neck": 1,
+			"belly": 1
 		},
 		"spider": {
 			"sole": 1,
 			"waist": 1,
-			"thigh": 1
+			"thigh": 1,
+			"butt": 1
 		},
 		"troll": {
 			"sole": 3,
-			"waist": 1
+			"waist": 1,
+			"butt": 1
 		},
 		"feather": {
 			"sole": 1,
@@ -48,11 +54,13 @@
 		"brush": {
 			"sole": 1,
 			"waist": 1,
-			"thigh": 1
+			"thigh": 1,
+			"butt": 1
 		},
 		"hand": {
 			"armpit": 2,
-			"waist": 2
+			"waist": 2,
+			"chest": 1
 		},
 		"rat": {
 			"sole": 1
@@ -63,17 +71,20 @@
 		},
 		"mimic": {
 			"sole": 2,
-			"waist": 1
+			"waist": 1,
+			"butt": 1
 		},
 		"fairy": {
 			"armpit": 1,
 			"neck": 1,
-			"sole": 1
+			"sole": 1,
+			"chest": 1
 		},
 		"tentacle": {
 			"waist": 2,
 			"armpit": 1,
-			"sole": 1
+			"sole": 1,
+			"chest": 1
 		},
 		"vine": {
 			"thigh": 2,
@@ -84,57 +95,69 @@
 			"armpit": 1
 		},
 		"conveyor": {
-			"sole": 1
+			"sole": 1,
+			"butt": 1
 		},
 		"mana_jelly": {
 			"thigh": 1,
 			"sole": 1,
-			"waist": 1
+			"waist": 1,
+			"belly": 1
 		},
 		"bubble_fish": {
 			"sole": 2,
-			"waist": 1
+			"waist": 1,
+			"belly": 1
 		},
 		"glove": {
 			"armpit": 2,
-			"waist": 1
+			"waist": 1,
+			"chest": 1
 		},
 		"hedgehog": {
 			"sole": 1,
-			"waist": 1
+			"waist": 1,
+			"butt": 1
 		},
 		"jelly_queen": {
 			"waist": 1,
 			"thigh": 1,
-			"armpit": 1
+			"armpit": 1,
+			"belly": 1
 		},
 		"rune": {
-			"waist": 1
+			"waist": 1,
+			"belly": 1
 		},
 		"stocks": {
 			"sole": 1
 		},
 		"carpet": {
 			"sole": 2,
-			"thigh": 1
+			"thigh": 1,
+			"butt": 1
 		},
 		"arm": {
 			"sole": 1,
-			"armpit": 1
+			"armpit": 1,
+			"butt": 1
 		},
 		"snare": {
 			"sole": 1
 		},
 		"cuffs": {
 			"armpit": 2,
-			"waist": 1
+			"waist": 1,
+			"chest": 1
 		},
 		"clamp": {
-			"thigh": 1
+			"thigh": 1,
+			"butt": 1
 		},
 		"wardrobe": {
 			"waist": 2,
-			"armpit": 1
+			"armpit": 1,
+			"belly": 1
 		},
 		"legloop": {
 			"sole": 1,
@@ -153,26 +176,83 @@
 		"teaser": {
 			"sole": 1,
 			"armpit": 1,
-			"waist": 1
+			"waist": 1,
+			"belly": 1
 		},
 		"wheel": {
 			"sole": 1,
 			"armpit": 1,
-			"waist": 1
+			"waist": 1,
+			"chest": 1
 		},
 		"shower": {
 			"neck": 2,
 			"armpit": 1,
-			"waist": 1
+			"waist": 1,
+			"chest": 1
 		},
 		"cage": {
 			"sole": 1,
 			"waist": 1,
-			"neck": 1
+			"neck": 1,
+			"butt": 1
 		},
 		"imp": {
 			"waist": 2,
-			"neck": 1
+			"neck": 1,
+			"chest": 1
+		},
+		"frog": {
+			"belly": 3,
+			"waist": 1
+		},
+		"squirrel": {
+			"butt": 3,
+			"waist": 1,
+			"thigh": 1
+		},
+		"octopus": {
+			"chest": 3,
+			"armpit": 1
+		},
+		"caterpillar": {
+			"sole": 2,
+			"thigh": 1,
+			"chest": 1
+		},
+		"barnacle": {
+			"chest": 3,
+			"waist": 1
+		},
+		"supine": {
+			"belly": 2,
+			"waist": 1
+		},
+		"cushion": {
+			"butt": 2,
+			"thigh": 1
+		},
+		"prone": {
+			"butt": 1,
+			"sole": 1
+		},
+		"pit": {
+			"butt": 2,
+			"sole": 1
+		},
+		"spinwheel": {
+			"chest": 3,
+			"armpit": 1
+		},
+		"vest": {
+			"chest": 3
+		},
+		"chute": {
+			"butt": 3
+		},
+		"duster": {
+			"butt": 2,
+			"thigh": 1
 		}
 	}
 }

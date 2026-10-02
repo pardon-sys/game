@@ -3,7 +3,8 @@ extends RefCounted
 ## 部位挠痒：部位表 data/actors/princess_ticklish.json（敏感值），来源 -> 部位权重 data/tickle_zones.json。
 ## 全部数据驱动，代码里不写死部位 id：新增部位只改部位表，给来源分配部位只改 tickle_zones.json
 ## （或单个怪物 / 陷阱的导出属性 tickle_zones）。
-##   pick(来源节点, 露出部位)   按权重抽一个部位（露出的部位优先；follow_exposed 的来源只挠露出的部位）
+##   pick(来源节点, 露出部位)   按权重抽一个部位（露出的部位优先；follow_exposed 的来源只挠露出的部位；
+##                             来源有 zone_focus（部位列表）时专挑第一个露出的，都没露出就挠列表最后一个——肚脐羽毛钻）
 ##   zone_multiplier(部位)      部位 sensitivity × modifier（被动等）
 ##   body_multiplier(阶段, 战损) base_sensitivity × by_stage × damaged
 ## 每个角色的连续部位加成、露出部位在 Sensitivity（PlayableCharacter.sensitivity）里。
@@ -73,6 +74,12 @@ static func follows_exposed(source: Variant) -> bool:
 
 ## 抽一个部位。exposed = {部位: 倍率}（被束缚露出的部位）。
 static func pick(source: Variant, exposed := {}) -> String:
+	var focus := focus_of(source)
+	if not focus.is_empty():
+		for z in focus:
+			if exposed.has(z):
+				return str(z)
+		return str(focus.back())
 	var w := weights_for(source)
 	if not exposed.is_empty():
 		if follows_exposed(source):
@@ -87,6 +94,14 @@ static func pick(source: Variant, exposed := {}) -> String:
 			if not both.is_empty():
 				w = both
 	return _weighted(w)
+
+
+## 来源的专挑部位（导出属性 zone_focus，没有时为空）。
+static func focus_of(source: Variant) -> Array:
+	if source == null or not is_instance_valid(source):
+		return []
+	var f: Variant = source.get("zone_focus")
+	return (f as Array).filter(func(z): return zones().has(z)) if f is Array else []
 
 
 static func _weighted(w: Dictionary) -> String:

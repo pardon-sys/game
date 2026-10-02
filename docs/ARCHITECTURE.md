@@ -251,10 +251,13 @@ HUD 背包栏会根据物品数据自动显示，不需要改 UI 代码。
 12. 同一格叠放多个实体：图例用 " + " 连接，例如 `7 = trap type=stocks + trap type=vortex radius=3`。
 
 ### 部位挠痒与敏感值（数据驱动）
-- **部位表** `data/actors/princess_ticklish.json`：`base_sensitivity`、`by_stage`（越笑越敏感）、`streak`（同部位连续加成）、`damaged`（战损），`zones` 每个部位 `{name, sensitivity, chance, anchor, words, icon}`。**新增部位只改这里**，代码里不写死部位 id。
+- **部位表** `data/actors/princess_ticklish.json`：`base_sensitivity`、`by_stage`（越笑越敏感）、`streak`（同部位连续加成）、`damaged`（战损），`zones` 每个部位 `{name, sensitivity, chance, anchor, words, icon, fx, body}`。**新增部位只改这里**，代码里不写死部位 id。现在 8 个：脚心、腋下、腰、脖子、大腿、肚子、屁股、胸。
+- **新增一个部位的步骤**：① 部位表加一项；② 露出图标画在 `tools/art/gen_expansion.py` 的 `zone_icon`（`BUFF_ICON_COUNT` +1），专属特效画在 `tools/art/gen_zone_art.py` 的 `ZONE_FX`（`ZoneFx.ROWS` +1），部位表写 `icon` / `fx` / `body`；③ `data/tickle_zones.json` 给来源分配；④ 需要的话给来源写 `portrait_words.<部位>`；⑤ 跑 `tools/build/check_zones.py`。
 - **来源 → 部位** `data/tickle_zones.json`：`sources.<来源键>` 是 `{部位: 权重}`，`follow_exposed` 的来源（逗弄器、转轮）总是挠露出的部位。单个怪物 / 陷阱可以用导出属性 `tickle_zones` 覆盖（图例 `zones=sole:2,armpit:1`）；都没写时按部位表的 `chance`。
 - `TickleZones`（`scripts/core/tickle_zones.gd`，静态）：`pick(来源, 露出部位)`、`zone_multiplier`（含 `modifier(部位)`：被动的 `zone_sensitivity` 加减）、`body_multiplier(阶段, 战损)`、`anchor` / `words`、`validate()`（smoke 测试检查；`tools/build/check_zones.py` 列出没分配部位的来源）。`TickleZones.enabled = false` 关掉（旧测试要精确数值）。
 - `Sensitivity`（`PlayableCharacter.sensitivity`）：连续加成、露出部位（`expose(来源, {部位: 倍率})` / `unexpose`，同时挂通用状态 `exposed`，`Buff.display()` 按部位动态显示名字和图标）、战损；`apply(hit, actor)` 在 `PlayableCharacter._tickle_multiplier` 里抽部位写进 `hit.zone` 并返回倍率；挠到露出部位发 `weak_point`（头上跳「弱点！」）。复活 `reset()`。
+- **部位专属特效** `ZoneFx`（`scripts/fx/zone_fx.gd`，`zone_fx.png` 每行一个部位，行号 = 部位表 `fx`）：`Actor._play_hit_fx` 在 `hit.zone` 不为空时于身上 `body` 偏移处播放，`PortraitFx._zone_sticker` 在立绘 anchor 处播放（×2）；`hit.weak`（`Sensitivity.apply` 挠到露出部位时设置）时再 ×1.5、变亮。
+- `TickleZones.pick` 先看来源的 `zone_focus`（部位列表：挑第一个露出的，都没露出就用最后一个；肚脐羽毛钻 `["belly", "waist"]`），再看 `follow_exposed` 和权重。
 - `PortraitFx` 按 `hit.zone` 放贴片（部位 anchor），飘字 `ReactionDB.portrait_words(来源, 阶段, 部位)`：来源按部位写的 → 来源自己的 → 部位默认 → 全局。
 
 ### 被动技能
@@ -269,10 +272,20 @@ HUD 背包栏会根据物品数据自动显示，不需要改 UI 代码。
 - 触发：关卡 `[level]` `intro_cutscene`（`Level._ready`）、`DialogueTrigger.cutscene`（图例 `trigger cutscene=<id>`）、`TrapRoomZone.cutscene`、`Cutscene.play(id)` / `play_data(id, 数据)`。
 
 ### 束缚陷阱与第五层机关
-- `RestraintTrap`（`scripts/traps/restraint_trap.gd`）：`mode = grab`（`StatusComponent.grab`）或 `hobble`（`StatusComponent.hobble`：可以慢慢走、不能冲刺、攻击 / 交互键挣扎）；`exposed`（露出部位）、`self_tickle`、`group_name`（配套机关同组）、`pose_offset / pose_rotation`（`PlayableCharacter` 的姿势，`_update_lift` 里应用）、`regrab_delay`。子类：`SnareTrap`、`CuffsTrap`、`ClampTrap`、`WardrobeTrap`（墙面，`sprite_hidden`）、`LegLoopTrap`、`MudTrap`（多格、越陷越慢）、`BootsTrap`、`BindingTrap`。
-- 配套：`TeaserTrap`（content 四种）、`WheelTrap`、`ShowerTrap`（MANUAL，同组束缚困人时自动触发）。它们实现 `extra_combo_keys()`，`ComboTracker` 把这些键也记进最近挠痒（一次挠痒可以同时算多个来源）。
+- `RestraintTrap`（`scripts/traps/restraint_trap.gd`）：`mode = grab`（`StatusComponent.grab`）或 `hobble`（`StatusComponent.hobble`：可以慢慢走、不能冲刺、攻击 / 交互键挣扎）；`exposed`（露出部位）、`self_tickle`、`group_name`（配套机关同组）、`pose_offset / pose_rotation`（`PlayableCharacter` 的姿势，`_update_lift` 里应用）、`regrab_delay`。子类：`SnareTrap`、`CuffsTrap`、`ClampTrap`、`WardrobeTrap`（墙面，`sprite_hidden`）、`LegLoopTrap`、`MudTrap`（多格、越陷越慢）、`BootsTrap`、`BindingTrap`；新部位：`SupineTrap`（仰卧，`pose_rotation` −90°）、`CushionTrap`、`ProneTrap`、`PitTrap`（`content` 洞里的怪物，`extra_combo_keys` 算那种怪物）、`SpinWheelTrap`（每 `spin_time` 扫一次；放开后等她能行动时 `force_move(..., "bounce")` 甩出 `fling` 格，`landing_point()`）、`VestTrap`（hobble）。`would_grab(人)`：现在踩上来会不会被困（空闲、没在冷却、不在 regrab 免疫里）。
+- 位移 / 墙面：`ChuteTrap`（痒痒滑梯，多格 + `dir`；按人的脚底位置判断在哪一段，每帧 `force_move(..., "slide")` / 延长，拐角由下一段改方向；站在 `would_grab` 的束缚陷阱上停下，刚放开的继续滑；滑行中每 `brush_interval` 秒挠一下）、`DusterWall`（墙面，探测区是墙前一行 `length` 格，`_on_warn` 按人进来的那端定 `order`，每 `step_time` 秒伸出一个掸子，扫到她所在格就挠）。关卡测试里 `_forced_maps()["chute"]` 让 `_moves` / `_flow` 顺着滑梯走。
+- 配套：`TeaserTrap`（content 五种，`drill` 有 `zone_focus`）、`WheelTrap`、`ShowerTrap`（MANUAL，同组束缚困人时自动触发）。它们实现 `extra_combo_keys()`，`ComboTracker` 把这些键也记进最近挠痒（一次挠痒可以同时算多个来源）。
 - 触发：`CageTrap`（PERIODIC 或加入 group 后 MANUAL；aim 跟着公主；slime / tentacle 放出 `Slime` / `MiniTentacle`）、`TripwireTrap`（公主或怪物碰到触发 targets 组；冲刺 / 空中不触发）、`PressurePlate.by_monsters`。绊线和怪物压力板在 `monster_switch` 组，`MachineImp` 会跑去踩；拉杆管的组里有被关掉的陷阱时它会去拨回来；被打就逃向拉杆。
 - 构建器：图例字典参数 `exposed=sole:1.5`、`zones=...`；`trap group=` → `group_name`；`traproom`（`TrapRoomZone`）。
+
+### 吸附类怪物
+- `LatchMonster extends Monster`（`scripts/actors/monsters/latch_monster.gd`）：自由 → 扑上（`lunge_range` 内冲刺 `lunge_time`，碰到就 `latch`）→ 吸住（`host`）。吸住时关碰撞、每帧摆到 `host` 脚下（精灵挪到 `_latch_sprite_pos()`），每 `latch_interval` 秒 `deliver_tickle(host, _latch_amount())`。`shake_once()` 计抖，够 `shake_presses` 次 `detach(方向, 晕)`；`detach()` 不带参数就是松开不晕。`anchored`：不追人、`_move` 爬回 `_home`（第一帧记下）。
+- 子类：`SuctionOctopus`、`Caterpillar`（`CLIMB` 路线每 `climb_time` 换部位，靠改 `tickle_zones` 实现）、`Barnacle`（anchored）。
+- 公主一侧（`PlayableCharacter`）：`latchers`、`can_be_latched()`、`add_latcher / remove_latcher`（挂 / 摘通用状态 `latched`，`Buff.display` 显示 `latch_label()`）、`latch_speed_mult()`（移速相乘）、`struggle()` 里 `shake_latchers()`（有东西吸着时攻击 / 交互键就是挣扎）、`dash()` 按 `latch_dash_chance` 甩一只、满蓄力 `release_magic` 和 `fatigue_burst` 调 `fling_latchers()`、被抓 / 倒下 / 复活 `drop_latchers()`。
+
+### 长舌蛙、刷尾松鼠
+- `TongueFrog`：`Lick` 状态 NONE → CHARGE（蓄力时锁定方向 `lick_dir`）→ OUT（`Line2D` 舌头伸出再缩回，`Geometry2D.get_closest_point_to_segment` 判定，舔中 `force_move(..., "pull")` 拉近）。
+- `BrushSquirrel`：追击时目标点是 `behind_point(公主)`（在前面 / 侧面时先绕到侧面），`is_behind` 且贴身就 `_brush`，然后 `hop_time` 秒跳开。
 
 ### 怪物巢穴
 `MonsterNest`（`scripts/objects/monster_nest.gd`，StaticBody2D，墙层 + breakable 层）是可复用的基类：子类在 `_configure()` 里设 `kind`（过场 CG 用）、`monster_scene`、`sheet_row`（`nests.png` 的行），需要时重写 `_prepare(怪物)`（例如 `ChestPile` 让宝箱怪 `awake`）。场景放在 `scenes/objects/nests/`，在 `TYPED_SCENES["nest"]` 注册，图例 `X = nest type=rat`（`slime` 可加 `split=true`）。

@@ -21,7 +21,7 @@
   ghost_glove.png   16x16 x 2  幽灵手套               hedgehog.png 16x16 x 4 刷刷刺猬（走 2 帧 / 蜷缩 / 滚动）
   mana_drop.png     4x6        魔力雨滴
   totem.png 16x24 x 3（亮 2 帧 / 碎）  hex_rune.png 16x16 x 3（待机 / 发光 / 冷却）  stocks.png 16x16 x 2（开 / 合）
-  hit_fx.png 24x24 x 6 帧 x 10 行（命中特效：羽毛 / 手指 / 果冻 / 触须 / 泡泡 / 刷毛 / 钳子 / 刀光 / 暴击 / 符咒）
+  hit_fx.png 24x24 x 6 帧 x 12 行（命中特效：羽毛 / 手指 / 果冻 / 触须 / 泡泡 / 刷毛 / 钳子 / 刀光 / 暴击 / 符咒 / 吸盘 / 毛虫小脚）
   particle_*.png         持续特效粒子（火星、黏液泡、扬尘、木屑、紫色水花）
   carpet.png 16x16 x 2 黏黏毛毯       feather_arm.png 16x16 x 4（装置 / 预警 / 手臂节 / 羽毛尖，朝右）
 
@@ -525,7 +525,8 @@ SKIN_D = (226, 170, 160, 255)
 
 
 def zone_icon(kind):
-    """露出部位（9 脚心 / 10 腋下 / 11 腰 / 12 脖子 / 13 大腿）：粉框里画部位剪影 + 小叹号。"""
+    """露出部位（9 脚心 / 10 腋下 / 11 腰 / 12 脖子 / 13 大腿 / 14 肚子 / 15 屁股 / 16 胸）：粉框里画部位剪影 + 小叹号；
+    17 是「吸着」状态（吸附类怪物）：紫色吸盘。"""
     img, d = canvas(12, 12)
     d.rounded_rectangle((0, 0, 11, 11), radius=2, fill=(110, 40, 80, 255))
     d.rounded_rectangle((0, 0, 11, 11), radius=2, outline=(255, 150, 200, 255))
@@ -549,12 +550,32 @@ def zone_icon(kind):
     elif kind == 13:   # 大腿：一条腿
         d.line((4, 2, 5, 7), fill=SKIN, width=3)
         d.line((5, 7, 5, 10), fill=SKIN, width=2)
+    elif kind == 14:   # 肚子：圆肚皮 + 肚脐
+        d.ellipse((2, 3, 8, 10), fill=SKIN)
+        d.point((5, 7), fill=SKIN_D)
+    elif kind == 15:   # 屁股：两瓣圆
+        d.ellipse((1, 4, 5, 9), fill=SKIN)
+        d.ellipse((5, 4, 9, 9), fill=SKIN)
+        d.line((5, 5, 5, 8), fill=SKIN_D)
+    elif kind == 16:   # 胸：一排肋骨弧线
+        for y in (3, 5, 7, 9):
+            d.line((2, y, 4, y + 1), fill=SKIN)
+            d.line((8, y, 6, y + 1), fill=SKIN)
+        d.line((5, 2, 5, 9), fill=SKIN_D)
+    elif kind == 17:   # 吸着：紫色吸盘
+        img, d = canvas(12, 12)
+        d.rounded_rectangle((0, 0, 11, 11), radius=2, fill=(60, 30, 90, 255))
+        d.rounded_rectangle((0, 0, 11, 11), radius=2, outline=(200, 150, 255, 255))
+        d.ellipse((2, 2, 9, 9), fill=(190, 130, 230, 255))
+        d.ellipse((4, 4, 7, 7), fill=(110, 60, 160, 255))
+        d.point((5, 5), fill=(255, 220, 250, 255))
+        return img
     d.line((9, 2, 9, 5), fill=(255, 230, 120, 255))
     d.point((9, 7), fill=(255, 230, 120, 255))
     return img
 
 
-BUFF_ICON_COUNT = 14
+BUFF_ICON_COUNT = 18
 
 
 def gen_buff_icons():
@@ -913,7 +934,7 @@ def gen_floor4_traps():
 
 
 # ------------------------------------------------------------------ 命中特效 / 粒子
-HIT_KINDS = ["feather", "hand", "goo", "sting", "bubble", "brush", "pinch", "slash", "crit", "curse"]
+HIT_KINDS = ["feather", "hand", "goo", "sting", "bubble", "brush", "pinch", "slash", "crit", "curse", "suck", "crawl"]
 
 
 def _fade(c, f, n=6):
@@ -994,6 +1015,20 @@ def hit_fx(kind, f):
             a = math.radians(i * 45 + 22)
             r0, r1 = r + 1, r + 3 + (i % 2) * 2
             d.line((cx + math.cos(a) * r0, cy + math.sin(a) * r0, cx + math.cos(a) * r1, cy + math.sin(a) * r1), fill=_fade((255, 240, 150, 255), f))
+    elif kind == "suck":        # 吸盘：一圈紫色吸盘一吸一放，中间冒小泡
+        r = 3 + (f % 3)
+        d.ellipse((cx - r, cy - r, cx + r, cy + r), outline=_fade((200, 140, 240, 255), f))
+        d.ellipse((cx - 1, cy - 1, cx + 1, cy + 1), fill=_fade((255, 210, 250, 255), f))
+        for i in range(4):
+            a = math.radians(i * 90 + 45 + f * 10)
+            d.point((cx + math.cos(a) * (r + 2), cy + math.sin(a) * (r + 2)), fill=_fade((230, 190, 255, 255), f))
+    elif kind == "crawl":       # 毛虫小脚：一排小脚印从左到右爬过
+        for i in range(6):
+            x = 3 + i * 3
+            if i <= f + 1:
+                y = cy + (2 if i % 2 else -2)
+                d.point((x, y), fill=_fade((170, 230, 140, 255), f))
+                d.point((x + 1, y), fill=_fade((120, 190, 100, 255), f))
     else:                       # curse：紫色符咒收缩旋转
         r = 10 - f * 1.2
         d.ellipse((cx - r, cy - r, cx + r, cy + r), outline=_fade(RUNE, f))

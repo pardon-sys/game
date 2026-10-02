@@ -6,7 +6,7 @@
   clamp.png 16x16×2 夹腿枷台（张开 / 合拢）           wardrobe.png 16x32×3 挠痒衣柜（关 / 开 / 关着露出两只脚）
   mud.png 16x16×2 痒痒泥沼                           boots.png 16x16×2 痒痒长靴（立着 / 跳动）
   binding.png 16x16×2 羽毛绑腿（盘着 / 飘起）          legloop.png 16x16×2 单腿吊环（地上的绳环影子 / 收紧）
-  teaser.png 16x16 × 2 帧 × 4 行 逗弄器（行 = 羽毛 / 刷子 / 史莱姆 / 小触手；帧 = 收着 / 伸出）
+  teaser.png 16x16 × 2 帧 × 5 行 逗弄器（行 = 羽毛 / 刷子 / 史莱姆 / 小触手 / 肚脐羽毛钻；帧 = 收着 / 伸出）
   wheel.png 16x16×3 痒痒转轮（羽毛面 / 刷子面 / 手面）  shower.png 16x16×2 羽毛雨喷口（关 / 喷）
   cage.png 64x24 落笼（羽毛笼 / 史莱姆笼 / 触手笼 16x24 + 影子 16x8）
   machine_imp.png 16x16×4 机关小工匠（走 2 帧 / 跑 2 帧）  mini_tentacle.png 16x16×2 小触手
@@ -211,7 +211,7 @@ def legloop(frame):
     return img
 
 
-TEASER_TIPS = ["feather", "brush", "slime", "tentacle"]
+TEASER_TIPS = ["feather", "brush", "slime", "tentacle", "drill"]
 
 
 def teaser(row, frame):
@@ -233,6 +233,11 @@ def teaser(row, frame):
     elif kind == "slime":
         d.ellipse((tx - 3, ty - 5, tx + 3, ty + 1), fill=SLIME)
         d.point((tx - 1, ty - 3), fill=SLIME_L)
+    elif kind == "drill":
+        # 肚脐羽毛钻：螺旋状的羽毛尖
+        d.polygon([(tx - 3, ty), (tx + 3, ty), (tx, ty - 7)], fill=FEATHER)
+        for k in range(3):
+            d.line((tx - 2 + k, ty - 1 - k * 2, tx + 2 - k, ty - 2 - k * 2), fill=PINK)
     else:
         d.line((tx, ty, tx - 2, ty - 3), fill=TENT, width=2)
         d.line((tx - 2, ty - 3, tx + 1, ty - 6), fill=TENT, width=2)
@@ -340,8 +345,8 @@ def gen_traps():
     _strip([boots(f) for f in range(2)], 16, 16).save(OUT / "boots.png")
     _strip([binding(f) for f in range(2)], 16, 16).save(OUT / "binding.png")
     _strip([legloop(f) for f in range(2)], 16, 16).save(OUT / "legloop.png")
-    t = blank(32, 64)
-    for row in range(4):
+    t = blank(32, 16 * len(TEASER_TIPS))
+    for row in range(len(TEASER_TIPS)):
         for f in range(2):
             t.alpha_composite(teaser(row, f), (f * 16, row * 16))
     t.save(OUT / "teaser.png")

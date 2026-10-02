@@ -2,6 +2,7 @@
 
 陷阱为主、怪物为辅；五段「环环相扣」的连锁（中了一个束缚陷阱，放开后被传送带 / 弹弹床 / 风扇 / 漩涡送进下一个），
 每段连锁都留着一条不碰束缚陷阱的路（看准落笼影子、冲刺跳过绊线才能走过去）。
+新部位（肚子 / 屁股 / 胸）的怪物和陷阱分散在各区，束缚工坊西边另有一段「滑梯坡道」（连锁⑥：滑梯 → 俯卧刑凳 → 滑梯 → 痒痒坐垫 → 滑梯 → 仰卧刑床）。
 图例字符由 E(spec) 自动分配（同一个 spec 用同一个字符；同一格叠放多个实体用 " + " 连接）。
 design.json 给 tests/level_design_test.gd 用：combo_areas（三来源组合的区域）、chains（连锁段）。
 用法：python tools/build/gen_floor05.py，然后 build_level.gd -- floor=floor_05
@@ -16,6 +17,7 @@ g = [["#"] * W for _ in range(H)]
 # 字符不够用时用希腊字母和汉字（构建器按字符索引地图，Unicode 也可以）
 POOL = list("ACDEFGHIJKLMNOQRSTUVWXYZabcdefghijklmnopqrsuvwyz0123456789!?$&*+-/:;<>@^_|~()'=,`{}\"")
 POOL += list("αβγδεζηθικλμνξοπρστυφχψωΓΔΘΛΞΠΣΦΨΩ") + list("甲乙丙丁戊己庚辛壬癸子丑寅卯辰巳午未申酉戌亥金木水火土日月山川")
+POOL += list("风花雪云雨雷电天人口手足心目耳鼻舌身春夏秋冬东南西北左右中多少高低长短")
 FIXED = {"player": "P", "checkpoint": "x", "torch lit=true": "t", "barrel": "B"}
 specs = {}
 
@@ -91,6 +93,14 @@ for y in range(79, 84):
 put(54, 80, "nest type=slime")
 put(53, 84, "monster type=slime")
 combo_areas.append({"combo": "jelly_cage", "rect": [46, 79, 56, 85]})
+# 新部位：藤壶贝（吸附）、下墙的掸子墙、洞里住着挠脚鼠的落穴洞
+sign(21, 79, "sign5_barnacle")
+put(31, 79, "monster type=barnacle")
+put(41, 84, "monster type=barnacle")
+sign(20, 85, "sign5_duster")
+put(28, 86, "walltrap type=duster dir=up len=4")
+sign(35, 85, "sign5_pit")
+put(39, 84, "trap type=pit content=rat")
 room(57, 81, 59, 83)
 
 # ================================================================ R3 检查点
@@ -139,7 +149,43 @@ put(68, 64, "monster type=imp")
 put(72, 62, "plate target=w4 by_monsters=true")
 put(66, 60, "trap type=shower group=w4 aim=true")
 put(75, 70, "monster type=rat")
+# 仰卧肚脐刑：仰卧刑床 + 肚脐羽毛钻（同组）+ 长舌蛙
+sign(74, 63, "sign5_supine")
+sign(75, 63, "sign5_drill")
+sign(76, 63, "sign5_frog")
+put(77, 56, "trap type=supine group=s1")
+put(78, 55, "trap type=teaser group=s1 content=drill")
+put(79, 58, "monster type=frog")
+combo_areas.append({"combo": "supine_navel", "rect": [75, 53, 81, 60]})
+# 铐柱吸盘：举手铐柱旁的转轮（同组 w1）+ 吸盘章鱼宝宝
+sign(58, 66, "sign5_octopus")
+put(55, 61, "trap type=wheel group=w1")
+put(56, 59, "monster type=octopus")
+combo_areas.append({"combo": "cuffs_suction", "rect": [51, 58, 57, 64]})
 room(78, 48, 80, 51)
+
+# ================================================================ R4b 滑梯坡道（连锁⑥，从束缚工坊西墙进去）
+room(48, 66, 51, 67)
+room(20, 54, 47, 71)
+for x in (26, 36, 44):
+    torch(x, 53)
+sign(52, 65, "sign5_chute")
+sign(46, 63, "sign5_prone")
+sign(46, 70, "sign5_squirrel")
+sign(44, 61, "sign5_cushion")
+# 往左的滑梯 → 俯卧刑凳（转轮 + 刷尾松鼠：俯卧全套）→ 往上的滑梯 → 痒痒坐垫 → 往左的滑梯 → 仰卧刑床（+ 肚脐羽毛钻）
+put(41, 66, "trap type=prone group=p1 + trap type=chute w=4 dir=left")
+put(42, 68, "trap type=wheel group=p1")
+put(38, 69, "monster type=squirrel")
+combo_areas.append({"combo": "prone_full", "rect": [36, 63, 45, 70]})
+put(40, 60, "trap type=cushion + trap type=chute h=7 dir=up")
+put(34, 59, "trap type=supine group=s2 + trap type=chute w=7 dir=left")
+put(34, 58, "trap type=teaser group=s2 content=drill")
+chains.append({"name": "滑梯坡道", "start": [47, 66], "goal": [22, 57], "links": [[41, 66], [40, 60], [34, 59]]})
+put(28, 64, "trap type=chute w=5 dir=right")
+put(21, 56, "chest item=heart")
+put(20, 71, "item id=mint")
+put(47, 54, "barrel")
 
 # ================================================================ R5 检查点
 room(76, 40, 88, 47)
@@ -170,6 +216,12 @@ put(53, 41, "trap type=legloop group=l1 + trap type=vortex radius=4")
 put(53, 44, "trap type=wheel group=l1")
 put(48, 38, "nest type=rat")
 combo_areas.append({"combo": "one_leg_show", "rect": [47, 36, 58, 46]})
+# 新部位：毛毛虫、上墙的掸子墙、痒痒坐垫
+sign(66, 40, "sign5_caterpillar")
+put(60, 36, "monster type=caterpillar")
+put(58, 33, "walltrap type=duster dir=down len=4")
+put(47, 46, "trap type=cushion")
+sign(44, 39, "sign5_vest")
 chains.append({"name": "腿刑长廊", "start": [67, 43], "goal": [43, 41], "links": [[63, 41], [57, 41], [53, 41]]})
 room(40, 40, 43, 42)
 
@@ -191,6 +243,11 @@ put(36, 36, "nest type=rat")
 put(33, 42, "monster type=crab")
 put(24, 46, "monster type=crab")
 put(38, 47, "item id=heart")
+# 蛙舌松尾（刷尾松鼠 + 长舌蛙 + 小精灵）、背心毛毛虫（羽毛背心 + 毛毛虫 + 小精灵）
+put(37, 41, "monster type=squirrel")
+put(24, 43, "monster type=frog")
+put(37, 43, "trap type=vest")
+put(29, 47, "monster type=caterpillar")
 for x in (28, 29, 30):
     put(x, 33, "gate group=arena_f5a is_open=true")
 room(28, 30, 30, 32)
@@ -236,6 +293,8 @@ put(71, 13, "walltrap type=wardrobe")
 put(75, 25, "nest type=rat")
 put(66, 28, "monster type=slime")
 put(77, 17, "monster type=rat")
+put(76, 28, "trap type=pit content=slime")
+put(68, 16, "monster type=barnacle")
 chains.append({"name": "泥沼地窖", "start": [61, 27], "goal": [80, 22], "links": [[64, 22], [71, 22], [71, 14]]})
 room(80, 21, 80, 23)
 
@@ -269,6 +328,11 @@ put(73, 3, "plate target=sh12 by_monsters=true")
 put(68, 6, "trap type=shower group=sh12 aim=true")
 put(84, 4, "trap type=shower group=sh12 aim=true content=brush")
 put(64, 9, "chest item=heart")
+# 吸附大集合：章鱼宝宝 + 毛毛虫 + 藤壶贝；刷尾松鼠
+put(74, 7, "monster type=octopus")
+put(86, 6, "monster type=caterpillar")
+put(62, 4, "monster type=barnacle")
+put(70, 4, "monster type=squirrel")
 for y in (6, 7, 8):
     put(59, y, "gate group=arena_f5b is_open=true")
 
@@ -289,6 +353,13 @@ put(38, 9, "nest type=rat")
 put(34, 9, "monster type=slime")
 put(35, 7, "trap type=legloop group=f3")
 put(32, 9, "trap type=wheel group=f3")
+# 张臂大转盘：张臂转盘（甩进下面的夹腿枷台）+ 上墙的羽毛臂 + 章鱼宝宝；洞里住着小触手的落穴洞
+sign(57, 4, "sign5_spinwheel")
+put(45, 4, "trap type=spinwheel dir=down fling=3")
+put(45, 3, "walltrap type=arm dir=down len=2")
+put(48, 5, "monster type=octopus")
+combo_areas.append({"combo": "spin_suction", "rect": [43, 3, 50, 8]})
+put(27, 4, "trap type=pit content=tentacle")
 chains.append({"name": "最终连锁长廊", "start": [58, 4], "goal": [23, 7], "links": [[56, 7], [45, 7], [40, 7], [35, 7]]})
 room(20, 6, 23, 8)
 
@@ -351,7 +422,7 @@ S, G = "石碑", "公主"
 D = {
     "sign5_zones": [
         {"speaker": S, "text": "【机关迷城】这一层几乎全是机关。机关小工匠们把每个机关都连在一起——中了一个，就会被送进下一个。"},
-        {"speaker": S, "text": "【部位与弱点】每一下挠痒都会落在某个部位：脚心、腋下、腰、脖子、大腿，各部位敏感程度不同。\n被束缚机关困住时，露出来的部位挠起来更痒（头上会跳「弱点！」），同一个部位被连续挠也会越来越敏感。"},
+        {"speaker": S, "text": "【部位与弱点】每一下挠痒都会落在某个部位：脚心、腋下、腰、脖子、大腿、肚子、屁股、胸，各部位敏感程度不同。\n被束缚机关困住时，露出来的部位挠起来更痒（头上会跳「弱点！」），同一个部位被连续挠也会越来越敏感。"},
         {"speaker": G, "emotion": "sad", "text": "……本公主的脚心，今天一定会很辛苦吧……"},
     ],
     "sign5_cage": [
@@ -400,6 +471,48 @@ D = {
         {"speaker": G, "emotion": "angry", "text": "好！最后一个房间——本公主来了！"},
     ],
     "intro": [{"speaker": G, "emotion": "surprise", "text": "这里是……到处都是机关的城……"}],
+    "sign5_barnacle": [
+        {"speaker": S, "text": "【藤壶贝】地上的小贝壳不会走，但从它旁边经过就会弹到身上粘住，伸出纤毛挠肋骨。\n有东西吸在身上时连按攻击键抖掉，冲刺有机会甩开，满蓄力星光爆发能全部震飞。"},
+    ],
+    "sign5_duster": [
+        {"speaker": S, "text": "【掸子墙】墙里藏着一排鸡毛掸子。贴着墙走过，掸子会从你进来的那一端一个接一个扫过来（屁股、大腿）。\n掸子比走路快，看准它缩回去再冲过去。"},
+    ],
+    "sign5_pit": [
+        {"speaker": S, "text": "【落穴洞】地上的洞。踩中会一屁股坐进去卡住，两条腿翘在外面（屁股 ×1.5、脚心 ×1.3）。\n洞里住着小怪物，会从下面挠——看到洞里的眼睛就绕开。"},
+    ],
+    "sign5_supine": [
+        {"speaker": S, "text": "【仰卧刑床】踩上去会被放倒仰躺、皮带扣住，肚子整个朝上（肚子 ×1.5）。"},
+    ],
+    "sign5_drill": [
+        {"speaker": S, "text": "【肚脐羽毛钻】装在刑床旁边的逗弄器，转着圈的羽毛尖只钻肚子——露出肚子的时候钻肚脐，没露出就挠腰。"},
+    ],
+    "sign5_frog": [
+        {"speaker": S, "text": "【长舌蛙】粉色的青蛙。嘴巴鼓起来就是要吐舌头了：舌头直直地伸过来舔肚子，还会把人拉过去。\n看到它鼓嘴就往旁边躲。"},
+    ],
+    "sign5_octopus": [
+        {"speaker": S, "text": "【吸盘章鱼宝宝】会扑上来吸在胸口，小腕绕到肋骨和腋下挠，吸着时走得慢。\n连按攻击键抖 4 下才掉；被铐住的时候它最喜欢凑过来。"},
+    ],
+    "sign5_chute": [
+        {"speaker": S, "text": "【痒痒滑梯】前面的房间里是一段段滑梯：踩上去就会坐着沿箭头一直滑，刷毛一路刷屁股。\n滑梯尽头接着下一个机关，放开后脚下又是滑梯……绕着箭头走！"},
+    ],
+    "sign5_prone": [
+        {"speaker": S, "text": "【俯卧刑凳】被按趴在长凳上、双脚翘起，看不见后面（屁股、脚心 ×1.3）。"},
+    ],
+    "sign5_squirrel": [
+        {"speaker": S, "text": "【刷尾松鼠】跑得很快，专门绕到背后用大尾巴刷屁股，刷完就跳开。\n转身面对它，它就不好下手。"},
+    ],
+    "sign5_cushion": [
+        {"speaker": S, "text": "【痒痒坐垫】软软的坐垫，踩上去会被拉坐下扣住，刷毛在下面来回刷（屁股 ×1.5）。"},
+    ],
+    "sign5_caterpillar": [
+        {"speaker": S, "text": "【毛毛虫】吸在脚上以后会一路往上爬：脚心 → 大腿 → 肋骨 → 锁骨，越往上越痒。\n趁它还在脚上赶快抖下来（3 下）。"},
+    ],
+    "sign5_vest": [
+        {"speaker": S, "text": "【羽毛背心】前面房里地上叠着小背心，一碰就套到身上：走不快、不能冲刺，羽毛一直挠肋骨和锁骨（胸 ×1.3）。\n连按攻击键脱掉。"},
+    ],
+    "sign5_spinwheel": [
+        {"speaker": S, "text": "【张臂转盘】走到转盘前会被扣住手腕、双臂张开（胸 ×1.5、腋下 ×1.3），每转一圈刷子扫一次肋骨。\n放开的时候会被甩出去——下面就是夹腿枷台。"},
+    ],
 }
 (out / "dialogues.json").write_text(json.dumps(D, ensure_ascii=False, indent="\t") + "\n")
 print("第五层：%dx%d，图例 %d 种，组合区域 %d，连锁 %d" % (W, H, len(specs), len(combo_areas), len(chains)))

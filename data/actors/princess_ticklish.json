@@ -1,8 +1,8 @@
 {
 	"_说明": [
 		"主角可挠痒配置（部位与敏感值）。挠痒的闷笑增加 = 挠痒值 × 暴击 × base_sensitivity × 部位 sensitivity × by_stage × 连续部位加成 × damaged × 露出部位倍率 × 其它倍率（易痒、弱点暴露、疲倦、组合）。",
-		"zones：部位 id -> {name 名字, sensitivity 部位敏感倍率, chance 来源没分配部位时的默认命中权重, anchor 立绘上的位置（0~1 比例坐标，可写多个随机取一个）, words 失控时立绘旁的飘字（helpless_1 / helpless_2）, icon 露出状态用的 buff_icons.png 格（可选）}。",
-		"新增部位：在 zones 里加一项即可；给怪物 / 陷阱分配部位在 data/tickle_zones.json。",
+		"zones：部位 id -> {name 名字, sensitivity 部位敏感倍率, chance 来源没分配部位时的默认命中权重, anchor 立绘上的位置（0~1 比例坐标，可写多个随机取一个）, words 失控时立绘旁的飘字（helpless_1 / helpless_2）, icon 露出状态用的 buff_icons.png 格（可选）, fx 部位专属挠痒特效 zone_fx.png 的行（可选）, body 公主小人身上的位置（相对脚底的像素偏移 [x,y]，x 会随机左右翻转；可选）}。",
+		"新增部位：在 zones 里加一项即可（要专属特效就在 tools/art/gen_zone_art.py 的 ZONE_FX 里加一行、写 fx 行号）；给怪物 / 陷阱分配部位在 data/tickle_zones.json。",
 		"by_stage：越笑越敏感（闷笑阶段 -> 倍率）。streak：同一部位 window 秒内连续被挠，每次 +step，最多 +max，停下后每秒恢复 recover。damaged：战损（本条命里失控过）后的倍率，复活重置。"
 	],
 	"base_sensitivity": 1.0,
@@ -11,29 +11,44 @@
 	"damaged": 1.1,
 	"zones": {
 		"sole": {
-			"name": "脚心", "sensitivity": 1.2, "chance": 3, "icon": 9,
+			"name": "脚心", "sensitivity": 1.2, "chance": 3, "icon": 9, "fx": 0, "body": [0, -2],
 			"anchor": [[0.36, 0.93], [0.62, 0.93]],
 			"words": {"helpless_1": ["脚心——！", "那里不行哈哈", "脚、脚心！"], "helpless_2": ["脚心哈哈哈哈！", "脚趾——哈哈哈", "别碰脚心啦哈哈哈"]}
 		},
 		"armpit": {
-			"name": "腋下", "sensitivity": 1.15, "chance": 2, "icon": 10,
+			"name": "腋下", "sensitivity": 1.15, "chance": 2, "icon": 10, "fx": 1, "body": [4, -19],
 			"anchor": [[0.27, 0.42], [0.73, 0.42]],
 			"words": {"helpless_1": ["腋、腋下！", "胳肢窝不要", "嘻嘻嘻——"], "helpless_2": ["腋下哈哈哈哈！", "手放不下来哈哈", "胳肢窝哈哈哈哈"]}
 		},
 		"waist": {
-			"name": "腰", "sensitivity": 1.0, "chance": 3, "icon": 11,
+			"name": "腰", "sensitivity": 1.0, "chance": 3, "icon": 11, "fx": 2, "body": [4, -13],
 			"anchor": [[0.3, 0.56], [0.7, 0.56]],
 			"words": {"helpless_1": ["腰、腰上！", "噫——", "别戳腰"], "helpless_2": ["腰哈哈哈哈！", "肚子痒哈哈哈", "扭、扭不开哈哈"]}
 		},
 		"neck": {
-			"name": "脖子", "sensitivity": 0.9, "chance": 1, "icon": 12,
+			"name": "脖子", "sensitivity": 0.9, "chance": 1, "icon": 12, "fx": 3, "body": [0, -23],
 			"anchor": [[0.5, 0.3]],
 			"words": {"helpless_1": ["脖、脖子", "痒痒的……", "噫嘻嘻"], "helpless_2": ["脖子哈哈哈！", "耳朵边上哈哈", "缩、缩不起来哈哈"]}
 		},
 		"thigh": {
-			"name": "大腿", "sensitivity": 0.9, "chance": 1, "icon": 13,
+			"name": "大腿", "sensitivity": 0.9, "chance": 1, "icon": 13, "fx": 4, "body": [2, -8],
 			"anchor": [[0.42, 0.75], [0.58, 0.75]],
 			"words": {"helpless_1": ["大、大腿", "膝盖不要", "嘻嘻——"], "helpless_2": ["大腿哈哈哈哈！", "膝窝哈哈哈", "腿软了哈哈哈"]}
+		},
+		"belly": {
+			"name": "肚子", "sensitivity": 1.1, "chance": 2, "icon": 14, "fx": 5, "body": [0, -14],
+			"anchor": [[0.5, 0.6]],
+			"words": {"helpless_1": ["肚、肚脐不要！", "肚子痒——", "噗嘻嘻"], "helpless_2": ["肚皮哈哈哈哈！", "肚脐眼哈哈哈", "肚子要笑破了哈哈"]}
+		},
+		"butt": {
+			"name": "屁股", "sensitivity": 1.05, "chance": 1, "icon": 15, "fx": 6, "body": [3, -10],
+			"anchor": [[0.4, 0.72], [0.6, 0.72]],
+			"words": {"helpless_1": ["屁、屁股！", "别碰屁股", "噫嘻嘻——"], "helpless_2": ["屁股哈哈哈哈！", "坐、坐不住了哈哈", "别刷了哈哈哈"]}
+		},
+		"chest": {
+			"name": "胸", "sensitivity": 1.2, "chance": 2, "icon": 16, "fx": 7, "body": [3, -18],
+			"anchor": [[0.42, 0.4], [0.58, 0.4], [0.5, 0.34]],
+			"words": {"helpless_1": ["肋、肋骨——", "锁骨痒哈哈", "一根一根的……"], "helpless_2": ["肋骨哈哈哈哈！", "锁骨哈哈哈", "别戳胸口哈哈哈"]}
 		}
 	}
 }

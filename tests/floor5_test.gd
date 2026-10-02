@@ -47,7 +47,7 @@ func _run_zones() -> void:
 	print("-- 部位挠痒与敏感值")
 	TickleZones.enabled = true
 	check("部位表和来源分配校验通过", TickleZones.validate().is_empty())
-	check("部位全来自配置（5 个部位，名字和敏感倍率）", TickleZones.zone_ids().size() == 5
+	check("部位全来自配置（8 个部位，名字和敏感倍率）", TickleZones.zone_ids().size() == 8
 		and TickleZones.zone_name("sole") == "脚心" and is_equal_approx(TickleZones.zone_multiplier("sole"), 1.2))
 	# 抽部位：挠脚鼠只挠脚心；没分配的来源按默认 chance；实例覆盖优先
 	var rat := _src("rat")
@@ -59,7 +59,7 @@ func _run_zones() -> void:
 	var seen := {}
 	for i in 200:
 		seen[TickleZones.pick(odd)] = true
-	check("没分配部位的来源按部位表的 chance 随机落在各部位", seen.size() == 5)
+	check("没分配部位的来源按部位表的 chance 随机落在各部位", seen.size() == 8)
 	var custom := _src("rat")
 	custom.tickle_zones = {"armpit": 1}
 	check("单个实例的 tickle_zones 覆盖来源表", TickleZones.pick(custom) == "armpit")
