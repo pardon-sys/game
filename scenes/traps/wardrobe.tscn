@@ -1,0 +1,33 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/traps/wardrobe.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/generated/wardrobe.png" id="tex"]
+
+[sub_resource type="RectangleShape2D" id="area"]
+size = Vector2(12, 10)
+
+[node name="Wardrobe" type="Area2D"]
+collision_layer = 0
+collision_mask = 2
+monitorable = false
+script = ExtResource("1")
+reaction_key = "wardrobe"
+hit_fx = "hand"
+hit_kind = 1
+damage = 0
+exposed = {"sole": 1.3}
+lock_time = 3.5
+presses = 6
+self_tickle = 2.5
+self_interval = 0.45
+cooldown_time = 2.0
+
+[node name="Sprite" type="Sprite2D" parent="."]
+texture = ExtResource("tex")
+hframes = 3
+vframes = 1
+offset = Vector2(0, -16)
+
+[node name="Shape" type="CollisionShape2D" parent="."]
+position = Vector2(0, 8)
+shape = SubResource("area")

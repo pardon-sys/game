@@ -57,6 +57,8 @@ const TYPED_SCENES := {
 		"glove": "res://scenes/actors/monsters/ghost_glove.tscn",
 		"hedgehog": "res://scenes/actors/monsters/brush_hedgehog.tscn",
 		"jelly_queen": "res://scenes/actors/monsters/jelly_queen.tscn",
+		"imp": "res://scenes/actors/monsters/machine_imp.tscn",
+		"mini_tentacle": "res://scenes/actors/monsters/mini_tentacle.tscn",
 	},
 	"ally": {"knight": "res://scenes/actors/allies/knight.tscn"},
 	"trap": {
@@ -74,6 +76,18 @@ const TYPED_SCENES := {
 		"vortex": "res://scenes/traps/tickle_vortex.tscn",
 		"bounce": "res://scenes/traps/bounce_pad.tscn",
 		"soap": "res://scenes/traps/soap_floor.tscn",
+		"snare": "res://scenes/traps/snare.tscn",
+		"cuffs": "res://scenes/traps/cuffs.tscn",
+		"clamp": "res://scenes/traps/clamp.tscn",
+		"legloop": "res://scenes/traps/legloop.tscn",
+		"mud": "res://scenes/traps/mud.tscn",
+		"boots": "res://scenes/traps/boots.tscn",
+		"binding": "res://scenes/traps/binding.tscn",
+		"teaser": "res://scenes/traps/teaser.tscn",
+		"wheel": "res://scenes/traps/wheel.tscn",
+		"shower": "res://scenes/traps/shower.tscn",
+		"cage": "res://scenes/traps/cage.tscn",
+		"tripwire": "res://scenes/traps/tripwire.tscn",
 	},
 	## 怪物巢穴（MonsterNest 的子类）
 	"nest": {
@@ -87,6 +101,7 @@ const TYPED_SCENES := {
 	"walltrap": {
 		"hand": "res://scenes/traps/grab_hand.tscn",
 		"arm": "res://scenes/traps/feather_arm.tscn",
+		"wardrobe": "res://scenes/traps/wardrobe.tscn",
 	},
 }
 ## 挂在墙上的类型：所在格仍是墙。
@@ -269,6 +284,16 @@ func parse(path: String) -> bool:
 	return height > 0
 
 
+## "sole:1.5,thigh:1.3" -> {"sole": 1.5, "thigh": 1.3}（图例里的部位倍率 / 部位权重）。
+func _dict(v: Variant) -> Dictionary:
+	var out := {}
+	for part in str(v).split(",", false):
+		var kv := part.split(":", true, 1)
+		if kv.size() == 2:
+			out[kv[0].strip_edges()] = kv[1].to_float()
+	return out
+
+
 func _value(s: String) -> Variant:
 	if s == "true":
 		return true
@@ -383,6 +408,12 @@ func _spawn(kind: String, info: Dictionary, x: int, y: int) -> Node2D:
 			# 多格陷阱（黏黏毛毯）：从所在格向右 w 格、向下 h 格
 			["trap", "w"]: prop = "tiles_w"
 			["trap", "h"]: prop = "tiles_h"
+			["trap", "group"]: prop = "group_name"
+			[_, "zones"]:
+				prop = "tickle_zones"
+				value = _dict(value)
+			[_, "exposed"]:
+				value = _dict(value)
 			["trap", "lever"], ["walltrap", "lever"]:
 				# 受哪个拉杆组控制：加入该组
 				inst.add_to_group(str(value), true)

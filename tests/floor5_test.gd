@@ -34,6 +34,9 @@ func _ready() -> void:
 	await _run_zones()
 	await _run_passives()
 	await _run_cutscene()
+	await _run_restraints()
+	await _run_trigger_traps()
+	await _run_imp()
 	print("\n==== %s (%d 项失败) ====" % ["全部通过" if failures == 0 else "有失败", failures])
 	get_tree().quit(1 if failures else 0)
 
@@ -220,6 +223,337 @@ func _run_cutscene() -> void:
 	_finish_dialogue()
 	_reset()
 	await _wait(0.3)
+
+
+# ------------------------------------------------------------------ 束缚陷阱 + 配套挠痒
+func _trap(file: String, offset: Vector2, props := {}) -> Node2D:
+	var t: Node2D = load("res://scenes/traps/%s.tscn" % file).instantiate()
+	for k in props:
+		t.set(k, props[k])
+	level.get_node("Entities").add_child(t)
+	t.global_position = player.global_position + offset
+	return t
+
+
+func _spawn(file: String, offset: Vector2, active := false) -> Monster:
+	var m: Monster = load("res://scenes/actors/monsters/%s.tscn" % file).instantiate()
+	level.get_node("Entities").add_child(m)
+	m.global_position = player.global_position + offset
+	if not active:
+		m.process_mode = Node.PROCESS_MODE_DISABLED
+	return m
+
+
+func _struggle(n: int) -> void:
+	for i in n:
+		ctrl.press(&"attack")
+		await get_tree().physics_frame
+		await get_tree().physics_frame
+
+
+## 把公主放到陷阱上（等物理更新）。
+func _step_on(t: Node2D, offset := Vector2(0, 2)) -> void:
+	player.global_position = t.global_position + offset
+	await _wait(0.15)
+
+
+func _run_restraints() -> void:
+	print("-- 束缚陷阱与配套挠痒")
+	TickleZones.enabled = true
+	var home := player.global_position
+	# 倒吊绳套
+	_reset()
+	player.laugh.clear()
+	await _wait(0.1)
+	var snare: SnareTrap = _trap("snare", Vector2(32, 0))
+	await _step_on(snare)
+	check("倒吊绳套：踩中被倒吊（抓住、露出脚心 ×1.5、小人倒过来）", player.status.is_grabbed_by(snare)
+		and player.sensitivity.exposed() == {"sole": 1.5} and is_equal_approx(player.pose_rotation, PI) and player.has_buff("exposed"))
+	await _wait(0.1)
+	check("倒吊时有绳子连到天花板", snare.get_node_or_null("Rope") != null and snare.get_node("Rope").visible)
+	var rat := _src("rat")
+	player.laugh.clear()
+	player.receive_hit(HitData.make_tickle(rat, 10.0))
+	check("倒吊时挠脚心 ×1.5（%.1f）" % player.laugh.value, absf(player.laugh.value - 10.0 * 1.2 * 1.5) < 0.1)
+	await _struggle(snare.presses)
+	await _wait(0.05)
+	check("连按 8 次挣脱：露出部位、姿势恢复", not player.status.is_grabbed() and not player.has_buff("exposed")
+		and player.pose_rotation == 0.0 and not snare.is_holding())
+	snare.queue_free()
+	# 举手铐柱 + 羽毛逗弄器（同组）
+	_reset()
+	player.global_position = home
+	player.laugh.clear()
+	await _wait(0.1)
+	var cuffs: CuffsTrap = _trap("cuffs", Vector2(32, 0), {"group_name": "rg1"})
+	var teaser: TeaserTrap = _trap("teaser", Vector2(48, 0), {"group_name": "rg1"})
+	await _step_on(cuffs)
+	check("举手铐柱：铐住，露出腋下", player.status.is_grabbed_by(cuffs) and player.sensitivity.exposed().has("armpit"))
+	await _wait(0.8)
+	check("同组的逗弄器专挠露出的部位（腋下）", player.last_tickle != null and player.last_tickle.source == teaser
+		and player.last_tickle.zone == "armpit" and player.laugh.value > 0.0)
+	await _struggle(cuffs.presses)
+	await _wait(0.5)
+	var lv := player.laugh.value
+	await _wait(0.5)
+	check("放开后逗弄器不再挠", player.last_tickle.source != teaser or absf(player.laugh.value - lv) < 0.01 or player.laugh.value < lv)
+	cuffs.queue_free()
+	teaser.queue_free()
+	# 夹腿枷台 + 痒痒转轮
+	_reset()
+	player.global_position = home
+	player.laugh.clear()
+	await _wait(0.1)
+	var clamp: ClampTrap = _trap("clamp", Vector2(32, 0), {"group_name": "rg2"})
+	var wheel: WheelTrap = _trap("wheel", Vector2(32, -24), {"group_name": "rg2"})
+	await _step_on(clamp)
+	check("夹腿枷台：夹住，露出大腿", player.status.is_grabbed_by(clamp) and player.sensitivity.exposed().has("thigh"))
+	var faces := {}
+	for i in 12:
+		await _wait(0.25)
+		faces[wheel.current_face()] = true
+	check("夹腿枷台自己的绒毛挠大腿", player.combo._recent.any(func(e): return e["key"] == "clamp"))
+	check("痒痒转轮轮流换面（羽毛 / 刷子 / 手），挠痒额外算当前那面的来源", faces.size() == 3
+		and player.combo._recent.any(func(e): return e["key"] == "wheel") and player.combo._recent.any(func(e): return e["key"] in ["feather", "brush", "hand"]))
+	await _struggle(clamp.presses)
+	clamp.queue_free()
+	wheel.queue_free()
+	await _wait(0.2)
+	# 刷子版逗弄器：额外算旋转刷来源
+	_reset()
+	player.global_position = home
+	await _wait(0.1)
+	var legloop: LegLoopTrap = _trap("legloop", Vector2(32, 0), {"group_name": "rg3"})
+	var brush_t: TeaserTrap = _trap("teaser", Vector2(48, 0), {"group_name": "rg3", "content": "brush"})
+	await _step_on(legloop)
+	check("单腿吊环：吊住，露出脚心和大腿", player.status.is_grabbed_by(legloop) and player.sensitivity.exposed().has("sole")
+		and player.sensitivity.exposed().has("thigh"))
+	await _wait(0.6)
+	check("刷子版逗弄器：挠痒同时算「旋转刷」来源（%s）" % [player.combo._recent.map(func(e): return e["key"])],
+		player.combo._recent.any(func(e): return e["key"] == "brush") and player.combo._recent.any(func(e): return e["key"] == "teaser"))
+	await _struggle(legloop.presses)
+	legloop.queue_free()
+	brush_t.queue_free()
+	await _wait(0.2)
+	# 挠痒衣柜（墙面）
+	_reset()
+	player.global_position = home
+	player.laugh.clear()
+	await _wait(0.1)
+	var wardrobe: WardrobeTrap = _trap("wardrobe", Vector2(32, -8))
+	await _step_on(wardrobe, Vector2(0, 10))
+	check("挠痒衣柜：走过门口被拉进去，只露出脚（公主精灵隐藏），露出脚心", player.status.is_grabbed_by(wardrobe)
+		and not player.sprite.visible and player.sensitivity.exposed().has("sole") and wardrobe.sprite.frame == 2)
+	await _wait(0.6)
+	check("衣柜里的手挠腰 / 腋下", player.last_tickle != null and player.last_tickle.source == wardrobe and player.last_tickle.zone in ["waist", "armpit"])
+	await _struggle(wardrobe.presses)
+	await _wait(0.05)
+	check("挣脱后出来，精灵恢复", not player.status.is_grabbed() and player.sprite.visible)
+	wardrobe.queue_free()
+	# 痒痒泥沼
+	_reset()
+	player.global_position = home
+	await _wait(0.1)
+	var mud: MudTrap = _trap("mud", Vector2(24, 0), {"tiles_w": 3, "tiles_h": 1})
+	player.global_position = mud.global_position + Vector2(8, 2)
+	await _wait(0.5)
+	check("泥沼：越陷越慢，还没被困住", not player.status.is_grabbed() and player.status.speed_multiplier() < 0.8)
+	await _wait(0.8)
+	check("陷到膝盖被困住（露出脚心和大腿，小人下沉）", player.status.is_grabbed_by(mud) and player.pose_offset.y > 0.0)
+	await _struggle(mud.presses)
+	await _wait(0.6)
+	check("挣脱后一会儿内不会马上又陷住", not player.status.is_grabbed())
+	mud.queue_free()
+	# 痒痒长靴（绊住）
+	_reset()
+	player.global_position = home
+	await _wait(0.1)
+	var boots: BootsTrap = _trap("boots", Vector2(32, 0))
+	await _step_on(boots)
+	check("痒痒长靴：套上脚（绊住，不是抓住）", player.status.is_hobbled_by(boots) and not player.status.is_grabbed())
+	player._dash_cd = 0.0
+	ctrl.move = Vector2.RIGHT
+	var x0 := player.global_position.x
+	await _wait(0.4)
+	ctrl.press(&"dash")
+	await get_tree().physics_frame
+	var walked := player.global_position.x - x0
+	check("穿着长靴走得慢（0.4 秒 %.0f 像素）、不能冲刺" % walked, walked < 80.0 * 0.4 * 0.75 and not player.is_dashing())
+	ctrl.move = Vector2.ZERO
+	await _wait(0.5)
+	check("靴子跟着脚、靴里的羽毛挠脚心", boots.sprite.global_position.distance_to(player.global_position) < 4.0
+		and player.last_tickle != null and player.last_tickle.source == boots and player.last_tickle.zone == "sole")
+	await _wait(boots.lock_time)
+	check("时间到靴子自己掉下来", not player.status.is_hobbled())
+	boots.queue_free()
+	# 羽毛绑腿：攻击键挣扎
+	_reset()
+	player.global_position = home
+	await _wait(0.1)
+	var bind: BindingTrap = _trap("binding", Vector2(32, 0))
+	await _step_on(bind)
+	check("羽毛绑腿：绊住，露出大腿", player.status.is_hobbled_by(bind) and player.sensitivity.exposed().has("thigh"))
+	await _struggle(bind.presses)
+	await _wait(0.05)
+	check("绊住时连按攻击键挣脱（不会挥杖）", not player.status.is_hobbled() and player.state != PlayableCharacter.State.ATTACK)
+	bind.queue_free()
+	TickleZones.enabled = false
+	_reset()
+	player.global_position = home
+	await _wait(0.2)
+
+
+# ------------------------------------------------------------------ 触发类陷阱
+func _run_trigger_traps() -> void:
+	print("-- 落笼 / 绊线 / 喷口 / 怪物压力板")
+	var home := player.global_position
+	_reset()
+	await _wait(0.1)
+	# 对准公主的落笼（被绊线触发）
+	var cage: CageTrap = _trap("cage", Vector2(64, 0), {"group_name": "ct1", "aim": true})
+	var wire: TripwireTrap = _trap("tripwire", Vector2(32, -16), {"tiles_w": 1, "vertical": true, "targets": "ct1"})
+	check("落笼加入组后变成被触发（MANUAL）", cage.trigger_mode == Trap.TriggerMode.MANUAL)
+	player.global_position = wire.global_position + Vector2(0, 2)
+	await _wait(0.1)
+	check("公主走过绊线：触发同组的落笼（影子预警）", wire.fired_count == 1 and cage.phase == Trap.Phase.WARN)
+	player.global_position += Vector2(10, 0)
+	await _wait(0.3)
+	check("影子跟着公主走", cage.drop_point.distance_to(player.global_position) < 2.0)
+	await _wait(0.5)
+	check("落笼落在公主身上，关住", player.status.is_grabbed_by(cage) and cage.is_holding())
+	await _wait(0.6)
+	check("羽毛笼自己挠", player.last_tickle != null and player.last_tickle.source == cage)
+	await _struggle(cage.presses)
+	await _wait(0.6)
+	check("挣脱后笼子升起", not player.status.is_grabbed() and not cage.is_holding())
+	# 冲刺跳过绊线
+	await _wait(wire.rearm)
+	player.global_position = wire.global_position + Vector2(-24, 2)
+	await _wait(0.1)
+	player._dash_cd = 0.0
+	ctrl.move = Vector2.RIGHT
+	ctrl.press(&"dash")
+	await _wait(0.25)
+	ctrl.move = Vector2.ZERO
+	check("冲刺可以跳过绊线", wire.fired_count == 1)
+	# 怪物碰到绊线
+	await _wait(0.3)
+	player.global_position = home
+	var rat := _spawn("foot_rat", Vector2.ZERO, true)
+	rat.global_position = wire.global_position + Vector2(0, 2)
+	await _wait(0.1)
+	check("怪物碰到绊线也会触发（作用到公主身上）", wire.fired_count == 2)
+	rat.queue_free()
+	wire.queue_free()
+	await _wait(1.5)
+	cage.queue_free()
+	# 史莱姆笼 / 触手笼：放出真的怪物
+	_reset()
+	player.global_position = home
+	await _wait(0.1)
+	var scage: CageTrap = _trap("cage", Vector2(80, 0), {"content": "slime", "group_name": "ct2"})
+	var tcage: CageTrap = _trap("cage", Vector2(80, 32), {"content": "tentacle", "group_name": "ct2"})
+	scage.trigger()
+	tcage.trigger()
+	await _wait(1.0)
+	var sm: Array = scage.spawned_monsters()
+	var tm: Array = tcage.spawned_monsters()
+	check("史莱姆笼落下时放出一只真的史莱姆", sm.size() == 1 and sm[0] is Slime)
+	check("触手笼放出小触手（算触手来源）", tm.size() == 1 and tm[0] is MiniTentacle and ReactionDB.key_of(tm[0]) == "tentacle")
+	for m in sm + tm:
+		m.queue_free()
+	scage.queue_free()
+	tcage.queue_free()
+	# 羽毛雨喷口（被压力板触发、史莱姆版附带黏黏）
+	_reset()
+	player.global_position = home
+	await _wait(0.1)
+	var shower: ShowerTrap = _trap("shower", Vector2(0, 0), {"group_name": "sh1", "content": "slime", "aim": true})
+	var plate: PressurePlate = load("res://scenes/objects/pressure_plate.tscn").instantiate()
+	plate.target = "sh1"
+	level.get_node("Entities").add_child(plate)
+	plate.global_position = player.global_position + Vector2(-40, 0)
+	player.global_position = plate.global_position
+	await _wait(0.1)
+	check("踩压力板触发喷口（预警方框在公主所在处）", shower.phase in [Trap.Phase.WARN, Trap.Phase.ACTIVE]
+		and shower.rain_center.distance_to(player.global_position) < 8.0)
+	await _wait(0.9)
+	check("雨里挠痒，史莱姆版附带黏黏", player.last_tickle != null and player.last_tickle.source == shower and player.has_buff("sticky"))
+	shower.queue_free()
+	plate.queue_free()
+	# 怪物也能踩的压力板
+	await _wait(0.2)
+	var cage3: CageTrap = _trap("cage", Vector2(60, 40), {"group_name": "ct3"})
+	var mplate: PressurePlate = load("res://scenes/objects/pressure_plate.tscn").instantiate()
+	mplate.target = "ct3"
+	mplate.by_monsters = true
+	level.get_node("Entities").add_child(mplate)
+	mplate.global_position = player.global_position + Vector2(60, 0)
+	var crab := _spawn("pincer_crab", Vector2.ZERO, true)
+	crab.global_position = mplate.global_position
+	await _wait(0.1)
+	check("by_monsters 的压力板：怪物踩上去也会触发", cage3.phase != Trap.Phase.IDLE and mplate.is_in_group("monster_switch"))
+	crab.queue_free()
+	await _wait(1.6)
+	cage3.queue_free()
+	mplate.queue_free()
+	_reset()
+	player.global_position = home
+	await _wait(0.2)
+
+
+# ------------------------------------------------------------------ 机关小工匠
+func _run_imp() -> void:
+	print("-- 机关小工匠")
+	var home := player.global_position
+	_reset()
+	await _wait(0.1)
+	var cage: CageTrap = _trap("cage", Vector2(0, 0), {"group_name": "ic1", "aim": true})
+	var plate: PressurePlate = load("res://scenes/objects/pressure_plate.tscn").instantiate()
+	plate.target = "ic1"
+	plate.by_monsters = true
+	level.get_node("Entities").add_child(plate)
+	plate.global_position = player.global_position + Vector2(70, -30)
+	var imp: MachineImp = _spawn("machine_imp", Vector2(40, 0), true)
+	var t := 0.0
+	while cage.phase == Trap.Phase.IDLE and t < 4.0:
+		await _wait(0.1)
+		t += 0.1
+	check("看到公主就跑去踩怪物压力板，落笼对准公主（%.1f 秒）" % t, cage.phase != Trap.Phase.IDLE)
+	await _wait(1.0)
+	if player.status.is_grabbed():
+		await _struggle(cage.presses)
+	plate.queue_free()
+	cage.queue_free()
+	# 修复：拉杆关掉的风扇
+	var fan: FeatherFan = _trap("feather_fan", Vector2(-60, 40), {"dir": "left", "length": 2})
+	fan.add_to_group("imp_fans", true)
+	var lever: Node2D = load("res://scenes/objects/lever.tscn").instantiate()
+	lever.set("target", "imp_fans")
+	level.get_node("Entities").add_child(lever)
+	lever.global_position = player.global_position + Vector2(60, 30)
+	lever.on_interact(player)
+	check("拉杆关掉风扇", not fan.active)
+	t = 0.0
+	while not fan.active and t < 5.0:
+		await _wait(0.1)
+		t += 0.1
+	check("小工匠跑去把拉杆拨回来，风扇重新转（%.1f 秒）" % t, fan.active)
+	# 被打就逃向拉杆
+	var fan_on := fan.active
+	imp.receive_hit(HitData.make_attack(player, 1))
+	t = 0.0
+	while fan.active == fan_on and t < 3.0:
+		await _wait(0.1)
+		t += 0.1
+	check("被打一下就逃去拨拉杆（%.1f 秒）" % t, imp.is_alive() and fan.active != fan_on)
+	check("血 2：一下打不死", imp.health.hp == 1)
+	imp.queue_free()
+	fan.queue_free()
+	lever.queue_free()
+	_reset()
+	player.global_position = home
+	await _wait(0.2)
 
 
 # ------------------------------------------------------------------ 工具

@@ -9,6 +9,8 @@ extends Node
 ##   add_dot(tickle_per_sec, duration, source) 余痒：持续挠痒，每 DOT_INTERVAL 秒结算一次
 ##   add_tickle_multiplier(k, duration)        易痒：受到的挠痒 ×k（多个同时生效取最大）
 ##   add_pull(source, speed, duration)         拉扯：持续被拉向 source（触手）
+##   hobble(source, max_time, presses, speed)  绊住（长靴、绑腿）：还能慢慢走（×speed）但不能冲刺，
+##                                             攻击 / 交互键变成挣扎，挣扎 presses 次（0 = 只能等）或 max_time 秒后松开
 ##   is_immobile()                             被抓或定身
 ## 被抓期间谁来挠痒由抓人者（怪物 / 机关手）决定，本组件只管状态本身。
 ## 外力推动（风扇、传送带）不在这里，见 Actor.add_push。
@@ -17,6 +19,7 @@ signal grabbed(source: Node)
 signal released(source: Node, broke_free: bool)
 signal slowed(multiplier: float, duration: float)
 signal rooted(duration: float)
+signal hobble_released(source: Node, broke_free: bool)
 
 const DOT_INTERVAL := 0.5
 
@@ -35,6 +38,11 @@ var _mults: Array[Dictionary] = []
 var _pull_src: Node2D = null
 var _pull_speed := 0.0
 var _pull_time := 0.0
+var hobbler: Node = null
+var _hobble_time := 0.0
+var _hobble_max := 0.0
+var _hobble_presses := 0
+var _hobble_speed := 1.0
 
 
 func _process(delta: float) -> void:
@@ -58,6 +66,10 @@ func _process(delta: float) -> void:
 				owner_actor.add_push(to.normalized() * _pull_speed)
 		else:
 			_pull_time = 0.0
+	if hobbler != null:
+		_hobble_time += delta
+		if not is_instance_valid(hobbler) or (_hobble_max > 0.0 and _hobble_time >= _hobble_max):
+			release_hobble(false)
 	if grabber != null:
 		_grab_time += delta
 		if not is_instance_valid(grabber) or (_grab_max > 0.0 and _grab_time >= _grab_max):
@@ -216,6 +228,53 @@ func is_pulled() -> bool:
 	return _pull_time > 0.0
 
 
+# ------------------------------------------------------------------ 绊住
+func hobble(source: Node, max_time := 4.0, presses := 6, speed := 0.5) -> bool:
+	if is_grabbed() or is_hobbled():
+		return false
+	hobbler = source
+	_hobble_time = 0.0
+	_hobble_max = max_time
+	_hobble_presses = presses
+	_hobble_speed = speed
+	return true
+
+
+func is_hobbled() -> bool:
+	return hobbler != null and is_instance_valid(hobbler)
+
+
+func is_hobbled_by(source: Node) -> bool:
+	return is_hobbled() and hobbler == source
+
+
+func hobble_speed() -> float:
+	return _hobble_speed if is_hobbled() else 1.0
+
+
+func hobble_presses_left() -> int:
+	return _hobble_presses
+
+
+## 绊住时挣扎一次（presses = 0 的绊住只能等时间）。返回是否挣脱。
+func struggle_hobble() -> bool:
+	if not is_hobbled() or _hobble_presses <= 0:
+		return false
+	_hobble_presses -= 1
+	if _hobble_presses <= 0:
+		release_hobble(true)
+		return true
+	return false
+
+
+func release_hobble(broke_free := false) -> void:
+	if hobbler == null:
+		return
+	var src := hobbler
+	hobbler = null
+	hobble_released.emit(src, broke_free)
+
+
 func clear() -> void:
 	_slow_mult = 1.0
 	_slow_time = 0.0
@@ -225,3 +284,4 @@ func clear() -> void:
 	_pull_time = 0.0
 	_root_on_release = 0.0
 	release(false)
+	release_hobble(false)

@@ -19,6 +19,8 @@ const EXPOSED_CHASE_MULT := 1.3
 static var random_specials := true
 
 @export var stats: MonsterStats
+## 单个怪物覆盖 data/tickle_zones.json 的部位权重（{部位: 权重}；图例写 zones=sole:2,armpit:1）。
+@export var tickle_zones := {}
 
 @onready var hit_area: Area2D = get_node_or_null("HitArea")
 

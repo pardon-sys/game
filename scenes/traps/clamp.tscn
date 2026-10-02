@@ -1,0 +1,34 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/traps/clamp.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/generated/clamp.png" id="tex"]
+
+[sub_resource type="RectangleShape2D" id="area"]
+size = Vector2(10, 10)
+
+[node name="Clamp" type="Area2D"]
+collision_layer = 0
+collision_mask = 2
+monitorable = false
+script = ExtResource("1")
+reaction_key = "clamp"
+hit_fx = "feather"
+hit_kind = 1
+damage = 0
+exposed = {"thigh": 1.5}
+lock_time = 3.0
+presses = 6
+self_tickle = 1.5
+self_interval = 0.5
+pose_offset = Vector2(0, 2)
+cooldown_time = 1.5
+
+[node name="Sprite" type="Sprite2D" parent="."]
+texture = ExtResource("tex")
+hframes = 2
+vframes = 1
+offset = Vector2(0, 0)
+
+[node name="Shape" type="CollisionShape2D" parent="."]
+position = Vector2(0, 0)
+shape = SubResource("area")

@@ -402,6 +402,8 @@ func _run_reactions() -> void:
 	check("怪物头顶冒出回嘴", speech != null and speech.text in ReactionDB.taunts("bat"))
 	var ok := true
 	for key in ReactionDB.source_keys():
+		if ReactionDB.source(key).get("no_tickle", false):
+			continue  # 不挠痒的来源（绊线）没有受挠台词
 		ok = ok and not ReactionDB.first_encounter(key).is_empty() and not ReactionDB.lines(key, "calm").is_empty()
 	check("每个来源都有首次剧情与台词（%d 个）" % ReactionDB.source_keys().size(), ok)
 	player.laugh.clear()

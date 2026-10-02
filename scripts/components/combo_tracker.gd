@@ -156,10 +156,22 @@ func _on_tickled(hit: HitData) -> void:
 			trigger("frenzy_strike", hit.source)
 		if _actor.status and _actor.status.is_grabbed():
 			trigger("cage_crit", hit.source)
-	_recent.append({"key": key, "time": _time, "source": hit.source, "chained": false})
+	# 来源还可以额外算作别的来源（痒痒转轮当前的面、刷子 / 史莱姆 / 小触手版的逗弄器和喷口）
+	var keys: Array[String] = [key]
+	if is_instance_valid(hit.source) and hit.source.has_method("extra_combo_keys"):
+		for k in hit.source.extra_combo_keys():
+			if not keys.has(str(k)):
+				keys.append(str(k))
+	var added: Array[Dictionary] = []
+	for k in keys:
+		var e := {"key": k, "time": _time, "source": hit.source, "chained": false}
+		_recent.append(e)
+		added.append(e)
 	var since := _time - _max_window()
 	_recent = _recent.filter(func(e: Dictionary): return e["time"] >= since)
-	_check(_recent.back())
+	for e in added:
+		if _recent.has(e):
+			_check(e)
 
 
 func _check(newest: Dictionary) -> void:

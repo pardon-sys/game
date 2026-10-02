@@ -76,6 +76,12 @@ var fatigue_bursting := false
 var sensitivity := Sensitivity.new()
 ## 过场动画里被脚本移动时播走路动画（Cutscene 的 move 动作设置）。
 var puppet_walking := false
+## 束缚陷阱给小人摆的姿势（倒吊、坐下、陷进泥里……）：精灵的偏移和旋转，_update_lift 里应用。
+var pose_offset := Vector2.ZERO
+## 藏起小人（被拉进挠痒衣柜里）。
+var sprite_hidden := false
+var pose_rotation := 0.0
+var _pose_rot_applied := false
 
 var state := State.IDLE
 var _state_time := 0.0
@@ -152,6 +158,9 @@ func _tick(delta: float) -> void:
 				var speed := move_speed * (laugh.speed_multiplier() if laugh else 1.0) \
 						* (status.speed_multiplier() if status else 1.0) * stat_mul("speed")
 				var rooted := status != null and status.is_rooted()
+				var hobbled := status != null and status.is_hobbled()
+				if hobbled:
+					speed *= status.hobble_speed()
 				if rooted:
 					# 定身：原地挣动，只能转向和攻击
 					if input != Vector2.ZERO:
@@ -166,7 +175,9 @@ func _tick(delta: float) -> void:
 				else:
 					velocity = velocity.move_toward(Vector2.ZERO, friction * delta)
 					_set_state(State.MOVE if puppet_walking else State.IDLE)
-				if can_control:
+				if can_control and hobbled and (controller.is_action_just_pressed(&"attack") or controller.is_action_just_pressed(&"interact")):
+					struggle()  # 绊住时攻击 / 交互键用来挣扎
+				elif can_control:
 					if controller.is_action_just_pressed(&"attack"):
 						attack()
 					elif controller.is_action_just_pressed(&"dash") and not rooted:
@@ -264,7 +275,7 @@ func attack() -> void:
 
 
 func dash(input := Vector2.ZERO) -> void:
-	if not can_act() or _dash_cd > 0.0 or (status and status.is_rooted()):
+	if not can_act() or _dash_cd > 0.0 or (status and (status.is_rooted() or status.is_hobbled())):
 		return
 	_dash_dir = input.normalized() if input != Vector2.ZERO else facing
 	_dash_cd = dash_cooldown
@@ -296,6 +307,8 @@ func struggle() -> void:
 		laugh.reduce_ratio(laugh.struggle_ratio * (1.0 + PassiveDB.value("struggle_plus")))
 	if status and status.is_grabbed():
 		status.struggle()
+	elif status and status.is_hobbled():
+		status.struggle_hobble()
 	_shake = maxf(_shake, 0.05)
 	if sprite:
 		sprite.position.x = [-1.0, 1.0].pick_random()
@@ -434,6 +447,9 @@ func _tickle_multiplier(hit: HitData) -> float:
 func revive() -> void:
 	super()
 	sensitivity.reset()
+	pose_offset = Vector2.ZERO
+	pose_rotation = 0.0
+	sprite_hidden = false
 
 
 var _weak_cd := 0.0
@@ -569,10 +585,14 @@ func _update_lift(delta: float) -> void:
 		return
 	if has_buff("lifted"):
 		_lift_t += delta
-		sprite.position.y = -6.0 + roundf(sin(_lift_t * 7.0) * 1.5)
-	elif sprite.position.y != 0.0:
+		sprite.position.y = -6.0 + roundf(sin(_lift_t * 7.0) * 1.5) + pose_offset.y
+	elif sprite.position.y != pose_offset.y:
 		_lift_t = 0.0
-		sprite.position.y = 0.0
+		sprite.position.y = pose_offset.y
+	sprite.position.x = pose_offset.x
+	if pose_rotation != 0.0 or _pose_rot_applied:
+		sprite.rotation = pose_rotation
+		_pose_rot_applied = pose_rotation != 0.0
 
 
 ## 镜头聚焦（三来源组合）：放大对准自己；停止被挠 1 秒后还原。
@@ -761,7 +781,9 @@ func _update_animation(delta: float) -> void:
 func _update_effects(delta: float) -> void:
 	if sprite:
 		# 受攻击无敌时闪烁（冲刺无敌不闪）
-		if _attack_invuln > 0.0 and state not in [State.DASH, State.DEAD, State.GRABBED]:
+		if sprite_hidden:
+			sprite.visible = false
+		elif _attack_invuln > 0.0 and state not in [State.DASH, State.DEAD, State.GRABBED]:
 			sprite.visible = int(_attack_invuln * 20.0) % 2 == 0
 		else:
 			sprite.visible = true
