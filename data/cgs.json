@@ -268,7 +268,13 @@
 		},
 		"frog_3": {
 			"file": "res://assets/cg/portraits/frog_3.png",
-			"placeholder": "helpless_2"
+			"placeholder": "helpless_2",
+			"wide": true
+		},
+		"frog_4": {
+			"file": "res://assets/cg/portraits/frog_4.png",
+			"placeholder": "helpless_2",
+			"wide": true
 		},
 		"squirrel_1": {
 			"file": "res://assets/cg/portraits/squirrel_1.png",
@@ -280,7 +286,8 @@
 		},
 		"squirrel_3": {
 			"file": "res://assets/cg/portraits/squirrel_3.png",
-			"placeholder": "helpless_2"
+			"placeholder": "helpless_2",
+			"wide": true
 		},
 		"octopus_1": {
 			"file": "res://assets/cg/portraits/octopus_1.png",
@@ -292,7 +299,8 @@
 		},
 		"octopus_3": {
 			"file": "res://assets/cg/portraits/octopus_3.png",
-			"placeholder": "helpless_2"
+			"placeholder": "helpless_2",
+			"wide": true
 		},
 		"caterpillar_1": {
 			"file": "res://assets/cg/portraits/caterpillar_1.png",
@@ -304,7 +312,8 @@
 		},
 		"caterpillar_3": {
 			"file": "res://assets/cg/portraits/caterpillar_3.png",
-			"placeholder": "helpless_2"
+			"placeholder": "helpless_2",
+			"wide": true
 		},
 		"barnacle_1": {
 			"file": "res://assets/cg/portraits/barnacle_1.png",
@@ -316,7 +325,8 @@
 		},
 		"barnacle_3": {
 			"file": "res://assets/cg/portraits/barnacle_3.png",
-			"placeholder": "helpless_2"
+			"placeholder": "helpless_2",
+			"wide": true
 		}
 	},
 	"actors": {
@@ -6463,7 +6473,7 @@
 			]
 		},
 		"death_frog": {
-			"name": "舌头的盛宴",
+			"name": "青蛙的花瓣池",
 			"cast": {
 				"princess": {
 					"kind": "princess",
@@ -6611,7 +6621,7 @@
 				},
 				{
 					"speaker": "",
-					"text": "（池塘边的长舌蛙越聚越多，一只只鼓起了嘴巴）",
+					"text": "（公主仰面倒在一地花瓣里，一圈绿油油的青蛙围了上来）",
 					"actions": [
 						{
 							"do": "flash",
@@ -6640,7 +6650,7 @@
 				},
 				{
 					"speaker": "公主",
-					"text": "等、等等……你们排着队干什么……",
+					"text": "等、等等……怎么有这么多只……",
 					"actions": [
 						{
 							"do": "tickle",
@@ -6664,7 +6674,7 @@
 				},
 				{
 					"speaker": "长舌蛙",
-					"text": "呱～一只舔一下，轮流来～",
+					"text": "呱～一只舔一个地方～",
 					"actions": [
 						{
 							"do": "tickle",
@@ -6683,7 +6693,7 @@
 				},
 				{
 					"speaker": "",
-					"text": "（一条条粉色的长舌头从四面八方伸过来，在肚子和腰上舔来舔去）",
+					"text": "（两只青蛙抱住抬起的脚，长舌头一下一下舔着脚心；旁边的舌头伸向肚子和胳肢窝）",
 					"actions": [
 						{
 							"do": "tickle",
@@ -6697,7 +6707,7 @@
 				},
 				{
 					"speaker": "公主",
-					"text": "肚脐——哈哈哈哈！舌尖钻进肚脐了！",
+					"text": "脚、脚心——哈哈哈哈！肚子也……全是舌头哈哈哈哈！",
 					"actions": [
 						{
 							"do": "tickle",
@@ -6721,7 +6731,7 @@
 				},
 				{
 					"speaker": "长舌蛙",
-					"text": "呱呱～这里最甜～",
+					"text": "呱呱～脚心最甜～",
 					"actions": [
 						{
 							"do": "tickle",
@@ -6740,7 +6750,159 @@
 				},
 				{
 					"speaker": "公主",
-					"text": "……肚子……笑得好酸……哈哈……",
+					"text": "脚、脚放不下来……哈哈哈哈被抱住了！",
+					"actions": [
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "foe",
+							"repeat": 11,
+							"interval": 0.18,
+							"fx": "lines"
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "dots"
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.4
+						}
+					]
+				},
+				{
+					"speaker": "",
+					"text": "（呱呱的叫声越来越响——四面八方的青蛙一只接一只跳了过来）",
+					"actions": [
+						{
+							"do": "flash",
+							"time": 0.5
+						},
+						{
+							"do": "voice",
+							"state": "laugh"
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.6
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "foe",
+							"repeat": 5,
+							"interval": 0.3,
+							"fx": "lines"
+						}
+					],
+					"portrait": "frog_4"
+				},
+				{
+					"speaker": "公主",
+					"text": "还、还有？！不要再跳过来了——",
+					"actions": [
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "frog2",
+							"repeat": 6,
+							"interval": 0.27999999999999997,
+							"fx": "lines"
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.4
+						}
+					]
+				},
+				{
+					"speaker": "长舌蛙",
+					"text": "呱～大家一起来～",
+					"actions": [
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "foe",
+							"repeat": 7,
+							"interval": 0.26,
+							"fx": "lines"
+						},
+						{
+							"do": "hop",
+							"who": "foe",
+							"count": 1
+						}
+					]
+				},
+				{
+					"speaker": "",
+					"text": "（公主整个人陷进了青蛙堆里，舌头和小手从每一个方向伸过来）",
+					"actions": [
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "frog2",
+							"repeat": 8,
+							"interval": 0.24,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "哈哈哈哈哈！到处都是——哈哈哈哈数、数不过来了！",
+					"actions": [
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "foe",
+							"repeat": 9,
+							"interval": 0.21999999999999997,
+							"fx": "lines"
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.4
+						}
+					]
+				},
+				{
+					"speaker": "长舌蛙",
+					"text": "呱呱呱～青蛙池最舒服啦～",
+					"actions": [
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "frog2",
+							"repeat": 10,
+							"interval": 0.19999999999999998,
+							"fx": "lines"
+						},
+						{
+							"do": "hop",
+							"who": "frog2",
+							"count": 1
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "……呱、呱呱……哈哈……变成青蛙池了……",
 					"actions": [
 						{
 							"do": "tickle",
@@ -6778,12 +6940,12 @@
 				{
 					"portrait": "wake",
 					"speaker": "公主",
-					"text": "……醒来了。肚子上还湿湿的……下次看到它鼓嘴，一定往旁边躲！"
+					"text": "……醒来了。身上沾满了花瓣，肚子和脚心还湿湿的……下次看到它鼓嘴，一定往旁边躲！"
 				}
 			]
 		},
 		"death_squirrel": {
-			"name": "尾巴扫除",
+			"name": "大尾巴被窝",
 			"cast": {
 				"princess": {
 					"kind": "princess",
@@ -6802,15 +6964,6 @@
 						8
 					],
 					"dir": "left",
-					"hidden": true
-				},
-				"squirrel2": {
-					"kind": "monster:squirrel",
-					"at": [
-						-22,
-						8
-					],
-					"dir": "right",
 					"hidden": true
 				}
 			},
@@ -6846,15 +6999,6 @@
 							"do": "bubble",
 							"who": "princess",
 							"kind": "surprise"
-						},
-						{
-							"do": "enter",
-							"who": "squirrel2",
-							"from": [
-								-80,
-								0
-							],
-							"time": 0.7
 						}
 					]
 				},
@@ -6899,14 +7043,6 @@
 							"fx": "lines"
 						},
 						{
-							"do": "tickle",
-							"who": "princess",
-							"by": "squirrel2",
-							"repeat": 5,
-							"interval": 0.32,
-							"fx": "lines"
-						},
-						{
 							"do": "camera",
 							"zoom": 1.5,
 							"focus": "princess",
@@ -6931,7 +7067,7 @@
 				},
 				{
 					"speaker": "",
-					"text": "（一群刷尾松鼠围成一圈，把蓬松的大尾巴举了起来）",
+					"text": "（一只比公主还大的松鼠慢悠悠走过来，蜷起身子把她整个圈了起来）",
 					"actions": [
 						{
 							"do": "flash",
@@ -6960,12 +7096,12 @@
 				},
 				{
 					"speaker": "公主",
-					"text": "别、别围着我转圈……",
+					"text": "好、好大的松鼠……要干什么……",
 					"actions": [
 						{
 							"do": "tickle",
 							"who": "princess",
-							"by": "squirrel2",
+							"by": "foe",
 							"repeat": 6,
 							"interval": 0.27999999999999997,
 							"fx": "lines"
@@ -6984,7 +7120,7 @@
 				},
 				{
 					"speaker": "刷尾松鼠",
-					"text": "吱～大扫除开始～",
+					"text": "吱～盖被子咯～",
 					"actions": [
 						{
 							"do": "tickle",
@@ -7003,12 +7139,12 @@
 				},
 				{
 					"speaker": "",
-					"text": "（尾巴一条接一条扫过屁股和大腿，像一排软软的鸡毛掸子）",
+					"text": "（蓬松的大尾巴盖在身上，从肩膀一路扫到屁股和大腿，毛尖一根根蹭着）",
 					"actions": [
 						{
 							"do": "tickle",
 							"who": "princess",
-							"by": "squirrel2",
+							"by": "foe",
 							"repeat": 8,
 							"interval": 0.24,
 							"fx": "lines"
@@ -7017,7 +7153,7 @@
 				},
 				{
 					"speaker": "公主",
-					"text": "哈哈哈哈！一条刚扫完又来一条——！",
+					"text": "毛、毛茸茸的——哈哈哈哈尾巴在动！",
 					"actions": [
 						{
 							"do": "tickle",
@@ -7041,26 +7177,26 @@
 				},
 				{
 					"speaker": "刷尾松鼠",
-					"text": "这边也要扫干净吱～",
+					"text": "吱～蹭蹭头～再扫一遍～",
 					"actions": [
 						{
 							"do": "tickle",
 							"who": "princess",
-							"by": "squirrel2",
+							"by": "foe",
 							"repeat": 10,
 							"interval": 0.19999999999999998,
 							"fx": "lines"
 						},
 						{
 							"do": "hop",
-							"who": "squirrel2",
+							"who": "foe",
 							"count": 1
 						}
 					]
 				},
 				{
 					"speaker": "公主",
-					"text": "……扫、扫干净了吧……哈哈……",
+					"text": "……被、被窝在挠人……哈哈……",
 					"actions": [
 						{
 							"do": "tickle",
@@ -7098,12 +7234,12 @@
 				{
 					"portrait": "wake",
 					"speaker": "公主",
-					"text": "……醒来了。屁股上还毛毛的……下次一定面朝着它们！"
+					"text": "……醒来了。好像在毛茸茸的被窝里睡了一觉……可是全身都还痒痒的！"
 				}
 			]
 		},
 		"death_octopus": {
-			"name": "八只小手",
+			"name": "章鱼宝宝山",
 			"cast": {
 				"princess": {
 					"kind": "princess",
@@ -7225,7 +7361,7 @@
 				},
 				{
 					"speaker": "",
-					"text": "（更多章鱼宝宝从水里冒出来，一只接一只吸了上来）",
+					"text": "（粉色、蓝色、紫色的章鱼宝宝从水里一只只冒出来，堆成了一座软软的小山）",
 					"actions": [
 						{
 							"do": "flash",
@@ -7254,7 +7390,7 @@
 				},
 				{
 					"speaker": "公主",
-					"text": "又、又来了一只……胳膊上也有……",
+					"text": "好、好多……把我埋进去了……",
 					"actions": [
 						{
 							"do": "tickle",
@@ -7278,7 +7414,7 @@
 				},
 				{
 					"speaker": "章鱼宝宝",
-					"text": "啵～大家一起～",
+					"text": "啵～大家一起抱抱～",
 					"actions": [
 						{
 							"do": "tickle",
@@ -7297,7 +7433,7 @@
 				},
 				{
 					"speaker": "",
-					"text": "（小腕一根根绕过肋骨、钻进腋下，吸盘一吸一放）",
+					"text": "（小腕缠住手腕、绕上脚踝，吸盘一吸一放地按在肋骨和腋下）",
 					"actions": [
 						{
 							"do": "tickle",
@@ -7311,7 +7447,7 @@
 				},
 				{
 					"speaker": "公主",
-					"text": "肋骨——哈哈哈哈一根一根被按着！",
+					"text": "肋骨——哈哈哈哈一根一根被按着！脚踝也缠住了！",
 					"actions": [
 						{
 							"do": "tickle",
@@ -7397,7 +7533,7 @@
 			]
 		},
 		"death_caterpillar": {
-			"name": "攀登锁骨",
+			"name": "毛毛虫抱枕",
 			"cast": {
 				"princess": {
 					"kind": "princess",
@@ -7519,7 +7655,7 @@
 				},
 				{
 					"speaker": "",
-					"text": "（一队毛毛虫排着队从脚尖开始往上爬）",
+					"text": "（一条比公主还长的大毛毛虫爬了过来，软乎乎的身子把她整个圈住）",
 					"actions": [
 						{
 							"do": "flash",
@@ -7548,7 +7684,7 @@
 				},
 				{
 					"speaker": "公主",
-					"text": "排、排着队爬上来了……",
+					"text": "好、好大……毛茸茸的……抱、抱住了！",
 					"actions": [
 						{
 							"do": "tickle",
@@ -7572,7 +7708,7 @@
 				},
 				{
 					"speaker": "毛毛虫",
-					"text": "第一站：脚心～",
+					"text": "蠕～大抱枕～",
 					"actions": [
 						{
 							"do": "tickle",
@@ -7591,7 +7727,7 @@
 				},
 				{
 					"speaker": "",
-					"text": "（几十只小脚一路从脚心走到大腿、爬过肋骨，在锁骨上停下来晃来晃去）",
+					"text": "（大毛毛虫一节一节地蠕动，一排排小脚蹭过腰和肚子；小毛毛虫们爬上了脚背）",
 					"actions": [
 						{
 							"do": "tickle",
@@ -7605,7 +7741,7 @@
 				},
 				{
 					"speaker": "公主",
-					"text": "锁、锁骨——哈哈哈哈哈好多只脚！",
+					"text": "小、小脚一起走——哈哈哈哈哈好多只脚！",
 					"actions": [
 						{
 							"do": "tickle",
@@ -7629,7 +7765,7 @@
 				},
 				{
 					"speaker": "毛毛虫",
-					"text": "终点到啦～在这里蠕一蠕～",
+					"text": "小家伙们，往锁骨爬～",
 					"actions": [
 						{
 							"do": "tickle",
@@ -7686,12 +7822,12 @@
 				{
 					"portrait": "wake",
 					"speaker": "公主",
-					"text": "……醒来了。好像还有东西在身上爬……下次在它爬到脚上时就抖掉！"
+					"text": "……醒来了。好像还有东西在身上爬……下次在它爬到脚上时就抖下来！"
 				}
 			]
 		},
 		"death_barnacle": {
-			"name": "贝壳盔甲",
+			"name": "贝壳珍珠床",
 			"cast": {
 				"princess": {
 					"kind": "princess",
@@ -7813,7 +7949,7 @@
 				},
 				{
 					"speaker": "",
-					"text": "（地上的藤壶贝一个接一个弹起来，粘满了公主的身子）",
+					"text": "（公主沉进了海底，躺在一张铺满贝壳和珍珠的床上，泡泡一串串往上飘）",
 					"actions": [
 						{
 							"do": "flash",
@@ -7842,7 +7978,7 @@
 				},
 				{
 					"speaker": "公主",
-					"text": "像、像穿了一身贝壳盔甲……",
+					"text": "这、这里是海底……贝壳全都在动……",
 					"actions": [
 						{
 							"do": "tickle",
@@ -7885,7 +8021,7 @@
 				},
 				{
 					"speaker": "",
-					"text": "（所有贝壳同时张开，纤毛扫过肋骨和腰侧）",
+					"text": "（身边的贝壳一张一合，纤毛扫过腰侧和肋骨，珍珠在脚心下面滚来滚去）",
 					"actions": [
 						{
 							"do": "tickle",
@@ -7899,7 +8035,7 @@
 				},
 				{
 					"speaker": "公主",
-					"text": "哈哈哈哈哈！到处都在扫——！",
+					"text": "哈哈哈哈哈！珍、珍珠在脚底滚——！",
 					"actions": [
 						{
 							"do": "tickle",
@@ -7923,7 +8059,7 @@
 				},
 				{
 					"speaker": "藤壶贝",
-					"text": "咔哒～不掉下来～",
+					"text": "咔哒～不放你走～",
 					"actions": [
 						{
 							"do": "tickle",
@@ -7942,7 +8078,7 @@
 				},
 				{
 					"speaker": "公主",
-					"text": "……盔、盔甲好重……哈哈……",
+					"text": "……贝、贝壳床……哈哈……",
 					"actions": [
 						{
 							"do": "tickle",
@@ -7980,7 +8116,7 @@
 				{
 					"portrait": "wake",
 					"speaker": "公主",
-					"text": "……醒来了。还好贝壳都掉了……下次一定绕远一点走！"
+					"text": "……醒来了。头发里还有几颗珍珠……下次一定绕远一点走！"
 				}
 			]
 		}
