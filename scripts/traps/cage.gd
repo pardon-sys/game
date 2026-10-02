@@ -103,8 +103,10 @@ func _land() -> void:
 	Audio.play("gate", -2.0, 0.05, 1.3)
 	Fx.burst(get_parent(), drop_point, "dust", 8, 40.0, 0.4)
 	var p := GameState.player
-	if is_instance_valid(p) and p.is_alive() and not p.is_airborne() and p.global_position.distance_to(drop_point) <= CATCH_DIST \
-			and p.can_be_grabbed() and p.status.grab(self, lock_time, presses):
+	var under := is_instance_valid(p) and p.is_alive() and not p.is_airborne() and p.global_position.distance_to(drop_point) <= CATCH_DIST
+	if under:
+		p.receive_hit(make_hit())  # 落下砸中那一下（不论能不能关住，都算「落笼」来源）
+	if under and p.can_be_grabbed() and p.status.grab(self, lock_time, presses):
 		victim = p
 		_tick = 0.2
 		active_time = lock_time + 0.8

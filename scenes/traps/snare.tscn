@@ -21,6 +21,8 @@ presses = 8
 pose_offset = Vector2(0, -10)
 pose_rotation = 3.14159
 cooldown_time = 1.5
+self_tickle = 1.2
+self_interval = 0.6
 
 [node name="Sprite" type="Sprite2D" parent="."]
 texture = ExtResource("tex")

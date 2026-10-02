@@ -1348,7 +1348,7 @@ func _run_hud_portrait() -> void:
 # ------------------------------------------------------------------ 第四层「魔力回廊」
 func _run_floor4() -> void:
 	print("-- 第四层")
-	check("楼层表：第三层之后是第四层，第四层是最后一层", Floors.next_of("floor_03") == "floor_04" and Floors.next_of("floor_04") == ""
+	check("楼层表：第三层之后是第四层，第四层之后是第五层", Floors.next_of("floor_03") == "floor_04" and Floors.next_of("floor_04") == "floor_05"
 		and Floors.display_name("floor_04") == "第四层·魔力回廊")
 	await _goto("floor_04")
 	check("第四层对话已载入", Dialogue.has_dialogue("intro_4") and Dialogue.has_dialogue("boss4_intro")
@@ -1394,8 +1394,8 @@ func _run_floor4() -> void:
 	queen.health.damage(99)
 	await _wait(0.2)
 	check("打倒水母女王后 Boss 门打开", gate.is_open)
-	var trig := level.find_child("Trigger_44_5", true, false)
-	check("出口剧情触发器", trig != null and trig.dialogue == "ending_4")
+	var trig := level.find_child("Exit_44_5", true, false)
+	check("出口：播完结尾对话后通往第五层", trig != null and trig.dialogue == "ending_4" and trig.target_level == "next")
 	Dialogue.start("ending_4")
 	_finish_dialogue()
 	await _wait(0.2)

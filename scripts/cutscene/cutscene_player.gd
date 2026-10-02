@@ -93,7 +93,11 @@ func _build() -> void:
 	chapter_sub.position = Vector2(0, 146)
 	chapter_screen.add_child(chapter_sub)
 	chapter_screen.hide()
-	add_child(chapter_screen)
+	# 章节结束画面放在最上层（盖住常驻立绘和对话框）
+	var top := CanvasLayer.new()
+	top.layer = 30
+	add_child(top)
+	top.add_child(chapter_screen)
 
 
 func _rect(col: Color, parent: Node = null) -> ColorRect:

@@ -37,6 +37,7 @@ func _ready() -> void:
 	await _run_restraints()
 	await _run_trigger_traps()
 	await _run_imp()
+	await _run_floor5()
 	print("\n==== %s (%d 项失败) ====" % ["全部通过" if failures == 0 else "有失败", failures])
 	get_tree().quit(1 if failures else 0)
 
@@ -289,9 +290,12 @@ func _run_restraints() -> void:
 	var teaser: TeaserTrap = _trap("teaser", Vector2(48, 0), {"group_name": "rg1"})
 	await _step_on(cuffs)
 	check("举手铐柱：铐住，露出腋下", player.status.is_grabbed_by(cuffs) and player.sensitivity.exposed().has("armpit"))
+	var teaser_zones: Array = []
+	var on_hit := func(h: HitData): if h.source == teaser: teaser_zones.append(h.zone)
+	player.tickled.connect(on_hit)
 	await _wait(0.8)
-	check("同组的逗弄器专挠露出的部位（腋下）", player.last_tickle != null and player.last_tickle.source == teaser
-		and player.last_tickle.zone == "armpit" and player.laugh.value > 0.0)
+	player.tickled.disconnect(on_hit)
+	check("同组的逗弄器专挠露出的部位（腋下：%s）" % [teaser_zones], not teaser_zones.is_empty() and teaser_zones.all(func(z): return z == "armpit"))
 	await _struggle(cuffs.presses)
 	await _wait(0.5)
 	var lv := player.laugh.value
@@ -554,6 +558,122 @@ func _run_imp() -> void:
 	_reset()
 	player.global_position = home
 	await _wait(0.2)
+
+
+# ------------------------------------------------------------------ 第五层地图、准备间、无解房间结局
+func _goto(floor_id: String) -> void:
+	main.change_level(Floors.scene(floor_id))
+	await _wait(1.4)
+	_refresh()
+	ctrl = ScriptedController.new()
+	player.set_controller(ctrl)
+
+
+## 把正在播的过场推完（台词逐句推进）。
+func _play_through(max_time := 60.0) -> float:
+	var t := 0.0
+	while Cutscene.is_playing() and t < max_time:
+		if Dialogue.is_active():
+			Dialogue.advance()
+			Dialogue.advance()
+		await _wait(0.1)
+		t += 0.1
+	return t
+
+
+func _cutscene_actors_ok(id: String) -> Array[String]:
+	var missing: Array[String] = []
+	var spawned := {}
+	for st in Cutscene.load_cutscene(id).get("steps", []):
+		for a in st.get("actions", []):
+			if a.get("do", "") == "spawn":
+				spawned[str(a["id"])] = true
+			var who := str(a.get("who", ""))
+			if who != "" and who != "princess" and not spawned.has(who) and level.find_child(who, true, false) == null:
+				missing.append(who)
+	return missing
+
+
+func _run_floor5() -> void:
+	print("-- 第五层·机关迷城")
+	check("楼层表：第四层之后是第五层，第五层是最后一层", Floors.next_of("floor_04") == "floor_05" and Floors.next_of("floor_05") == ""
+		and Floors.display_name("floor_05") == "第五层·机关迷城")
+	await _goto("floor_05")
+	await _wait(0.6)
+	check("进入第五层播开场过场（黑框）", Cutscene.is_playing() and Cutscene.current == "f5_intro" and Cutscene.is_letterboxed())
+	check("开场 / 结局过场里的演员在地图上都找得到", _cutscene_actors_ok("f5_intro").is_empty() and _cutscene_actors_ok("f5_ending").is_empty()
+		and Cutscene.validate("f5_intro").is_empty() and Cutscene.validate("f5_ending").is_empty())
+	var t := await _play_through()
+	await _wait(0.5)
+	check("开场过场播完（%.0f 秒），恢复操作" % t, not Cutscene.is_playing() and not GameState.in_cutscene)
+	for e in get_tree().get_nodes_in_group("enemy"):
+		e.process_mode = Node.PROCESS_MODE_DISABLED
+	for n in get_tree().get_nodes_in_group("monster_nest"):
+		n.process_mode = Node.PROCESS_MODE_DISABLED
+	check("6 个检查点、2 个锁门战斗房、1 个无解陷阱房", level.find_children("Checkpoint_*", "", true, false).size() == 6
+		and get_tree().get_nodes_in_group("arena").size() == 2 and get_tree().get_nodes_in_group("trap_room_zone").size() == 1)
+	var kinds := {}
+	for n in level.find_children("*", "", true, false):
+		if n is Trap:
+			kinds[str(n.get("reaction_key"))] = true
+		elif n is MachineImp:
+			kinds["imp"] = true
+	var all_new := true
+	for k in ["snare", "cuffs", "clamp", "wardrobe", "legloop", "mud", "boots", "binding", "teaser", "wheel", "shower", "cage", "tripwire", "imp"]:
+		if not kinds.has(k):
+			print("    缺少：", k)
+			all_new = false
+	check("第五层放了全部新陷阱和机关小工匠", all_new)
+	# 准备间：自动获得被动
+	GameState.passives.clear()
+	Dialogue.start("prep_passive")
+	_finish_dialogue()
+	await _wait(0.1)
+	check("准备间的剧情里获得被动技能「挣脱强化」", GameState.passive_level("struggle_plus") == 1)
+	# 无解陷阱房：在房里倒下 4 次，第 4 次复活后播结局过场
+	var room: TrapRoomZone = get_tree().get_nodes_in_group("trap_room_zone")[0]
+	var cp := level.find_child("Checkpoint_16_9", true, false) as Node2D
+	GameState.checkpoint = cp.global_position
+	player.global_position = cp.global_position
+	await _wait(0.2)
+	for i in 4:
+		_reset()
+		player.global_position = room.global_position + Vector2(48, 0)
+		await _wait(0.3)
+		if i == 0:
+			var gates := get_tree().get_nodes_in_group("trap_room").filter(func(n): return n is StaticBody2D and n.has_method("set_open"))
+			check("走进无解陷阱房：铁栅落下", room.active and gates.all(func(g: Node): return not g.is_open))
+		player.health.damage(99)
+		t = 0.0
+		await _wait(0.5)
+		while (not player.is_alive() or CG.is_playing()) and t < 20.0:
+			if CG.is_playing():
+				CG._can_skip = true  # 笑倒 CG 第一次不能跳过，测试里直接跳
+				CG.skip()
+			_finish_dialogue()
+			await _wait(0.1)
+			t += 0.1
+		await _wait(0.3)
+		if i < 3:
+			check("第 %d 次倒下：开门、在门口检查点复活、还没播结局" % (i + 1), room.deaths() == i + 1 and not room.active
+				and not Cutscene.is_playing() and player.global_position.distance_to(cp.global_position) < 4.0)
+	await _wait(0.3)
+	check("第 4 次复活后立即播结局过场", room.deaths() == 4 and Cutscene.is_playing() and Cutscene.current == "f5_ending")
+	await _wait(1.5)
+	var saw_shadow := false
+	t = 0.0
+	while Cutscene.is_playing() and t < 60.0:
+		saw_shadow = saw_shadow or Cutscene.spawned.has("shadow") and is_instance_valid(Cutscene.spawned["shadow"])
+		if Dialogue.is_active():
+			Dialogue.advance()
+			Dialogue.advance()
+		await _wait(0.1)
+		t += 0.1
+	await _wait(0.5)
+	check("结局：黑影出现把昏迷的公主带走", saw_shadow and player.has_meta("fainted"))
+	check("第五章完：章节结束画面「未完待续」、标记 chapter5_clear", Cutscene.chapter_screen.visible
+		and Cutscene.chapter_sub.text.contains("未完待续") and GameState.has_flag("chapter5_clear"))
+	Cutscene.chapter_screen.hide()
 
 
 # ------------------------------------------------------------------ 工具
