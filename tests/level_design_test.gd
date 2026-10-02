@@ -279,6 +279,38 @@ func _run_design(id: String) -> void:
 		check("三来源组合区域「%s」%s" % [ReactionDB.combo(str(area["combo"])).get("name", area["combo"]),
 			("" if problems.is_empty() else "：" + "；".join(problems))], problems.is_empty())
 		_area_combos[str(area["combo"])] = true
+	# 无解房间：三来源组合区域 + 滑梯圈
+	var tr: Dictionary = design.get("trap_room", {})
+	for area in tr.get("combos", []):
+		var r: Array = area["rect"]
+		var cell_rect := Rect2i(int(r[0]), int(r[1]), int(r[2]) - int(r[0]) + 1, int(r[3]) - int(r[1]) + 1)
+		var in_rect := func(p: Vector2) -> bool: return cell_rect.has_point(walls.local_to_map(walls.to_local(p)))
+		var combo: Dictionary = ComboTracker.combo_def(str(area["combo"]))
+		var problems: Array[String] = []
+		var monster_slots: Array = []
+		for slot in combo["keys"]:
+			if ComboTracker.group("trap").has(slot[0]):
+				if not _cells_of(slot).keys().any(func(c): return cell_rect.has_point(c)):
+					problems.append("区域里没有陷阱 %s" % [slot])
+			else:
+				monster_slots.append(slot)
+		problems.append_array(_missing_monsters(monster_slots, in_rect))
+		check("无解房间的三来源组合「%s」%s" % [ReactionDB.combo(str(area["combo"])).get("name", area["combo"]),
+			("" if problems.is_empty() else "：" + "；".join(problems))], problems.is_empty())
+	var loop: Array = tr.get("loop", [])
+	for i in loop.size() - 1:
+		var a := Vector2i(int(loop[i][0]), int(loop[i][1]))
+		var b := Vector2i(int(loop[i + 1][0]), int(loop[i + 1][1]))
+		check("无解房间的连锁：%s 放开后被送进 %s" % [a, b], _flow(a).has(b))
+	var feeds: Array = tr.get("feeds", [])
+	for i in feeds.size() - 1:
+		var a := Vector2i(int(feeds[i][0]), int(feeds[i][1]))
+		var b := Vector2i(int(feeds[i + 1][0]), int(feeds[i + 1][1]))
+		check("无解房间的连锁：%s 放开后也被送进 %s" % [a, b], _flow(a).has(b))
+	if design.has("min_trap_density"):
+		var d := _trap_density(design.get("safe_rooms", []))
+		check("堆满陷阱：安全房间以外的地面格离陷阱 ≤ 2 格的比例 %.1f%%（至少 %.0f%%）" % [d * 100.0, float(design["min_trap_density"]) * 100.0],
+			d >= float(design["min_trap_density"]))
 	var static_cells := _static_hazards()
 	for ch in design.get("chains", []):
 		var start := Vector2i(int(ch["start"][0]), int(ch["start"][1]))
@@ -298,6 +330,32 @@ func _run_design(id: String) -> void:
 
 
 var _area_combos := {}
+
+
+## 安全房间以外的地面格里，离任意陷阱覆盖格 ≤ 2 格（切比雪夫距离）的比例。
+func _trap_density(safe_rooms: Array) -> float:
+	var walls: TileMapLayer = level.get_node("Walls")
+	var floor_layer: TileMapLayer = level.get_node("Floor")
+	var trap_cells := {}
+	for n in level.find_children("*", "", true, false):
+		if n is Trap:
+			for c in _trap_cover(n as Trap):
+				trap_cells[c] = true
+	var total := 0
+	var near := 0
+	for c in floor_layer.get_used_cells():
+		if walls.get_cell_source_id(c) != -1:
+			continue
+		if safe_rooms.any(func(r): return c.x >= int(r[0]) and c.y >= int(r[1]) and c.x <= int(r[2]) and c.y <= int(r[3])):
+			continue
+		total += 1
+		var hit := false
+		for dx in range(-2, 3):
+			for dy in range(-2, 3):
+				hit = hit or trap_cells.has(c + Vector2i(dx, dy))
+		if hit:
+			near += 1
+	return float(near) / maxf(total, 1.0)
 
 
 ## 静态的束缚 / 位移陷阱覆盖的格子（连锁段「可躲」检查要避开的；落笼、绊线、喷口、逗弄器、转轮、羽毛臂这类靠时机躲的不算）。

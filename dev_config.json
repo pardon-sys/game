@@ -1,0 +1,22 @@
+{
+	"_说明": [
+		"测试模式配置（scripts/core/dev_config.gd 读取）。dev_mode 改成 true 打开，false 关闭。",
+		"打开后：暂停菜单（Esc）多一项「测试：跳关」，背包不用先拿到也能打开，背包「CG 图鉴」页所有 CG 都能直接播放。",
+		"skip_points：跳关点。floor 楼层 id；cell 可选，跳到这一格（并设为检查点）；rewards_through 可选，连这一层的流程奖励也一起给。",
+		"floor_rewards：各层流程里拿到的东西。跳到某层时，前面各层的都会补上：flags 剧情标记、items 物品 {id: 数量}、passives 被动技能。"
+	],
+	"dev_mode": false,
+	"skip_points": [
+		{"name": "第一层·地牢", "floor": "floor_01"},
+		{"name": "第二层·痒痒地牢", "floor": "floor_02"},
+		{"name": "第三层·痒痒工坊", "floor": "floor_03"},
+		{"name": "第四层·魔力回廊", "floor": "floor_04"},
+		{"name": "第五层·机关迷城", "floor": "floor_05"},
+		{"name": "第五层·准备间（无解房间前）", "floor": "floor_05", "cell": [16, 9], "rewards_through": "floor_05"}
+	],
+	"floor_rewards": {
+		"floor_03": {"flags": ["magic_unlocked"]},
+		"floor_04": {"flags": ["got_backpack"], "items": {"star_candy": 1}},
+		"floor_05": {"passives": ["struggle_plus"]}
+	}
+}

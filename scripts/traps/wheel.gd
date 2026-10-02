@@ -2,6 +2,7 @@ class_name WheelTrap
 extends Trap
 ## 痒痒转轮（配套挠痒）：放在束缚陷阱对面（同 group_name），有人被困住时每 turn_time 秒转一面挠一下，
 ## 每面换一种：羽毛 → 旋转刷 → 机关手。这一下额外算当前那一面对应的陷阱来源（一台就能凑齐多种来源）。
+## 没有同组困人时，有人站上转轮那一格它也会自己转着挠（standalone_victim）。
 
 const FACES := ["feather", "brush", "hand"]
 const FACE_FX := {"feather": "feather", "brush": "brush", "hand": "hand"}
@@ -43,9 +44,20 @@ func _apply_effect(_target: Node) -> bool:
 	return false
 
 
+## 站在转轮格上的人（没有同组困人时自己挠她）。
+func standalone_victim() -> Actor:
+	for b in _victims():
+		var a := b as Actor
+		if a and a.is_alive():
+			return a
+	return null
+
+
 func _physics_process(delta: float) -> void:
 	super(delta)
 	var v := held_victim() if active else null
+	if v == null and active:
+		v = standalone_victim()
 	if v == null or GameState.in_dialogue:
 		return
 	_cd -= delta

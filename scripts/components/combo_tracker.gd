@@ -275,7 +275,7 @@ func _fire(c: Dictionary, source: Node, upgraded := false) -> void:
 	if _actor and _actor.has_method("say_combo"):
 		_actor.say_combo(id)
 	if play_scenes and is_triple(c) and not GameState.has_flag("combo_scene_" + id):
-		GameState.set_flag("combo_scene_" + id)
+		# 标记由 CG 在真正开始播时设置；正在播别的就排队，不会被吞掉
 		var cg := get_node_or_null("/root/CG")
 		if cg and cg.has_method("play_scene"):
 			# 先让 HUD 的大字标题和慢动作演完，再切到小演出

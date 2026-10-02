@@ -15,243 +15,257 @@ A = item id=mint
 C = sign dialogue=sign5_zones
 D = sign dialogue=sign5_cage
 E = trap type=cage idle_time=2.4 offset=0.0
-F = trap type=cage idle_time=2.4 offset=1.2
-G = trap type=cage idle_time=2.4 offset=0.6
-H = trap type=cage idle_time=2.4 offset=1.8
-I = trap type=cage idle_time=2.4 offset=0.3
-J = trap type=cage idle_time=2.4 offset=1.5
-K = sign dialogue=sign5_tripwire
-L = trap type=tripwire tiles_w=7 vertical=true targets=c2a
-M = trap type=cage group=c2a aim=true
-N = sign dialogue=sign5_imp
-O = monster type=imp
-Q = plate target=c2a by_monsters=true
-R = trap type=tripwire tiles_w=7 vertical=true targets=c2b
-S = trap type=cage group=c2b aim=true content=slime
-T = trap type=rune
-U = nest type=slime
-V = monster type=slime
-W = sign dialogue=sign5_barnacle
-X = monster type=barnacle
-Y = sign dialogue=sign5_duster
-Z = walltrap type=duster dir=up len=4
-a = sign dialogue=sign5_pit
-b = trap type=pit content=rat
-c = item id=heart
-d = sign dialogue=sign5_snare
-e = sign dialogue=sign5_teaser
-f = trap type=snare group=w0 + trap type=conveyor dir=left len=5
-g = trap type=bounce dir=up len=8
-h = sign dialogue=sign5_cuffs
-i = trap type=cuffs group=w1 + plate target=hw1 + trap type=conveyor dir=right len=6
-j = walltrap type=arm dir=right len=2
-k = walltrap type=hand group=hw1
-l = trap type=teaser group=w1
-m = trap type=bounce dir=up len=10
-n = sign dialogue=sign5_wardrobe
-o = walltrap type=wardrobe
-p = nest type=rat
-q = trap type=snare group=w2 + trap type=cage content=tentacle idle_time=3.0
-r = trap type=snare group=w3
-s = walltrap type=arm dir=left len=2
-u = trap type=brush speed=1.5
-v = plate target=w4 by_monsters=true
-w = trap type=shower group=w4 aim=true
-y = monster type=rat
-z = sign dialogue=sign5_supine
-0 = sign dialogue=sign5_drill
-1 = sign dialogue=sign5_frog
-2 = trap type=supine group=s1
-3 = trap type=teaser group=s1 content=drill
-4 = monster type=frog
-5 = sign dialogue=sign5_octopus
-6 = trap type=wheel group=w1
-7 = monster type=octopus
-8 = sign dialogue=sign5_chute
-9 = sign dialogue=sign5_prone
-! = sign dialogue=sign5_squirrel
-? = sign dialogue=sign5_cushion
-$ = trap type=prone group=p1 + trap type=chute w=4 dir=left
-& = trap type=wheel group=p1
-* = monster type=squirrel
-+ = trap type=cushion + trap type=chute h=7 dir=up
-- = trap type=supine group=s2 + trap type=chute w=7 dir=left
-/ = trap type=teaser group=s2 content=drill
-: = trap type=chute w=5 dir=right
-; = chest item=heart
-< = sign dialogue=sign5_clamp
-> = trap type=clamp group=k1 + trap type=conveyor dir=left len=6
-@ = trap type=teaser group=k1
-^ = trap type=wheel group=k1
-_ = sign dialogue=sign5_mud
-| = trap type=mud w=3 h=5
-~ = sign dialogue=sign5_legloop
-( = trap type=legloop group=l1 + trap type=vortex radius=4
-) = trap type=wheel group=l1
-' = sign dialogue=sign5_caterpillar
-= = monster type=caterpillar
-, = walltrap type=duster dir=down len=4
-` = trap type=cushion
-{ = sign dialogue=sign5_vest
-} = gate group=arena_f5a is_open=true
-" = arena group=arena_f5a w=14 h=11
-α = trap type=cuffs group=a1 + trap type=shower group=a1
-β = trap type=teaser group=a1
-γ = monster type=glove pair=g51
-δ = monster type=fairy
-ε = nest type=fairy
-ζ = trap type=snare group=a2
-η = monster type=crab
-θ = trap type=vest
-ι = trap type=clamp group=k2 + trap type=conveyor dir=right len=7
-κ = trap type=wheel group=k2
-λ = trap type=teaser group=k2 content=brush
-μ = trap type=cuffs group=c3 + trap type=shower group=c3
-ν = trap type=tripwire tiles_w=15 vertical=true targets=c9
-ξ = trap type=cage group=c9 aim=true content=slime
-ο = trap type=cage group=c9 aim=true
-π = plate target=c9 by_monsters=true
-ρ = trap type=fan dir=right len=8 push_speed=60.0
-σ = trap type=mud w=4 h=5
-τ = trap type=legloop group=l2 + trap type=conveyor dir=up len=8
-υ = trap type=wheel group=l2
-φ = trap type=pit content=slime
-χ = sign dialogue=sign5_boots
-ψ = gate group=arena_f5b is_open=true
-ω = arena group=arena_f5b w=30 h=8
-Γ = sign dialogue=sign5_binding
-Δ = trap type=boots group=b1
-Θ = trap type=teaser group=b1
-Λ = trap type=binding group=bd1 + trap type=shower group=bd1
-Ξ = plate target=sh12 by_monsters=true
-Π = trap type=shower group=sh12 aim=true
-Σ = trap type=shower group=sh12 aim=true content=brush
-Φ = trap type=snare group=f1 + trap type=conveyor dir=left len=6
-Ψ = walltrap type=arm dir=down len=4
-Ω = trap type=brush speed=1.6
-甲 = trap type=bounce dir=left len=5
-乙 = trap type=clamp group=f2 + trap type=conveyor dir=left len=4
-丙 = trap type=fan dir=left len=6 push_speed=60.0
-丁 = trap type=teaser group=f2
-戊 = trap type=wheel group=f2
-己 = trap type=mud w=4 h=4
-庚 = trap type=legloop group=f3
-辛 = trap type=wheel group=f3
-壬 = sign dialogue=sign5_spinwheel
-癸 = trap type=spinwheel dir=down fling=3
-子 = walltrap type=arm dir=down len=2
-丑 = trap type=pit content=tentacle
-寅 = trigger dialogue=prep_passive w=3 h=3
-卯 = sign dialogue=sign5_trap_room
-辰 = gate group=trap_room is_open=true
-巳 = traproom group=trap_room w=8 h=9 cutscene=f5_ending
-午 = trap type=snare group=tr1
-未 = trap type=cuffs group=tr2 + trap type=shower group=tr2
-申 = trap type=clamp group=tr3
-酉 = trap type=teaser group=tr2
-戌 = trap type=wheel group=tr3
-亥 = trap type=legloop group=tr4 + trap type=vortex radius=3
-金 = trap type=cuffs group=tr5
-木 = trap type=snare group=tr6
-水 = trap type=teaser group=tr5 content=tentacle
-火 = trap type=teaser group=tr6 content=slime
-土 = trap type=mud w=3 h=2
-日 = trap type=clamp group=tr7
-月 = trap type=wheel group=tr7
-山 = trap type=snare group=tr8
-川 = trap type=cuffs group=tr9
-风 = trap type=cage idle_time=2.0 offset=0.4
-花 = trap type=cage idle_time=2.2 offset=1.3 content=tentacle
-雪 = trap type=binding group=tr10
+F = trap type=cage idle_time=2.4 offset=0.6
+G = trap type=cage idle_time=2.4 offset=1.8
+H = trap type=feather
+I = trap type=vent idle_time=2.0 cloud_duration=1.2 offset=0.6
+J = sign dialogue=sign5_tripwire
+K = trap type=tripwire tiles_w=7 vertical=true targets=c2a
+L = trap type=cage group=c2a aim=true
+M = sign dialogue=sign5_imp
+N = monster type=imp
+O = plate target=c2a by_monsters=true
+Q = trap type=tripwire tiles_w=7 vertical=true targets=c2b
+R = trap type=cage group=c2b aim=true content=slime
+S = trap type=rune
+T = nest type=slime
+U = monster type=slime
+V = sign dialogue=sign5_barnacle
+W = monster type=barnacle
+X = sign dialogue=sign5_duster
+Y = walltrap type=duster dir=up len=4
+Z = sign dialogue=sign5_pit
+a = trap type=pit content=rat
+b = item id=heart
+c = sign dialogue=sign5_snare
+d = sign dialogue=sign5_teaser
+e = trap type=snare group=w0 + trap type=conveyor dir=left len=5
+f = trap type=bounce dir=up len=8
+g = sign dialogue=sign5_cuffs
+h = trap type=cuffs group=w1 + plate target=hw1 + trap type=conveyor dir=right len=6
+i = walltrap type=arm dir=right len=2
+j = walltrap type=hand group=hw1
+k = trap type=teaser group=w1
+l = trap type=bounce dir=up len=10
+m = sign dialogue=sign5_wardrobe
+n = walltrap type=wardrobe
+o = nest type=rat
+p = trap type=snare group=w2 + trap type=cage content=tentacle idle_time=3.0
+q = trap type=snare group=w3
+r = walltrap type=arm dir=left len=2
+s = trap type=brush speed=1.5
+u = plate target=w4 by_monsters=true
+v = trap type=shower group=w4 aim=true
+w = monster type=rat
+y = sign dialogue=sign5_supine
+z = sign dialogue=sign5_drill
+0 = sign dialogue=sign5_frog
+1 = trap type=supine group=s1
+2 = trap type=teaser group=s1 content=drill
+3 = monster type=frog
+4 = sign dialogue=sign5_octopus
+5 = trap type=wheel group=w1
+6 = monster type=octopus
+7 = sign dialogue=sign5_chute
+8 = sign dialogue=sign5_prone
+9 = sign dialogue=sign5_squirrel
+! = sign dialogue=sign5_cushion
+? = trap type=prone group=p1 + trap type=chute w=4 dir=left
+$ = trap type=wheel group=p1
+& = monster type=squirrel
+* = trap type=cushion + trap type=chute h=7 dir=up
++ = trap type=supine group=s2 + trap type=chute w=7 dir=left
+- = trap type=teaser group=s2 content=drill
+/ = trap type=chute w=5 dir=right
+: = chest item=heart
+; = sign dialogue=sign5_clamp
+< = trap type=clamp group=k1 + trap type=conveyor dir=left len=6
+> = trap type=teaser group=k1
+@ = trap type=wheel group=k1
+^ = sign dialogue=sign5_mud
+_ = trap type=mud w=3 h=5
+| = sign dialogue=sign5_legloop
+~ = trap type=legloop group=l1 + trap type=vortex radius=4
+( = trap type=wheel group=l1
+) = sign dialogue=sign5_caterpillar
+' = monster type=caterpillar
+= = walltrap type=duster dir=down len=4
+, = trap type=cushion
+` = sign dialogue=sign5_vest
+{ = gate group=arena_f5a is_open=true
+} = arena group=arena_f5a w=14 h=11
+" = trap type=cuffs group=a1 + trap type=shower group=a1
+α = trap type=teaser group=a1
+β = monster type=glove pair=g51
+γ = monster type=fairy
+δ = nest type=fairy
+ε = trap type=snare group=a2
+ζ = monster type=crab
+η = trap type=vest
+θ = trap type=clamp group=k2 + trap type=conveyor dir=right len=7
+ι = trap type=wheel group=k2
+κ = trap type=teaser group=k2 content=brush
+λ = trap type=cuffs group=c3 + trap type=shower group=c3
+μ = trap type=tripwire tiles_w=15 vertical=true targets=c9
+ν = trap type=cage group=c9 aim=true content=slime
+ξ = trap type=cage group=c9 aim=true
+ο = plate target=c9 by_monsters=true
+π = trap type=fan dir=right len=8 push_speed=60.0
+ρ = trap type=mud w=4 h=5
+σ = trap type=legloop group=l2 + trap type=conveyor dir=up len=8
+τ = trap type=wheel group=l2
+υ = trap type=pit content=slime
+φ = sign dialogue=sign5_boots
+χ = gate group=arena_f5b is_open=true
+ψ = arena group=arena_f5b w=30 h=8
+ω = sign dialogue=sign5_binding
+Γ = trap type=boots group=b1
+Δ = trap type=teaser group=b1
+Θ = trap type=binding group=bd1 + trap type=shower group=bd1
+Λ = plate target=sh12 by_monsters=true
+Ξ = trap type=shower group=sh12 aim=true
+Π = trap type=shower group=sh12 aim=true content=brush
+Σ = trap type=snare group=f1 + trap type=conveyor dir=left len=6
+Φ = walltrap type=arm dir=down len=4
+Ψ = trap type=brush speed=1.6
+Ω = trap type=bounce dir=left len=5
+甲 = trap type=clamp group=f2 + trap type=conveyor dir=left len=4
+乙 = trap type=fan dir=left len=6 push_speed=60.0
+丙 = trap type=teaser group=f2
+丁 = trap type=wheel group=f2
+戊 = trap type=mud w=4 h=4
+己 = trap type=legloop group=f3
+庚 = trap type=wheel group=f3
+辛 = sign dialogue=sign5_spinwheel
+壬 = trap type=spinwheel dir=down fling=3
+癸 = walltrap type=arm dir=down len=2
+子 = trap type=pit content=tentacle
+丑 = trigger dialogue=prep_passive w=3 h=3
+寅 = sign dialogue=sign5_trap_room
+卯 = gate group=trap_room is_open=true
+辰 = traproom group=trap_room w=10 h=21 cutscene=f5_ending
+巳 = trap type=snare group=tr1 + trap type=conveyor dir=left len=2
+午 = walltrap type=arm dir=down len=6
+未 = trap type=cuffs group=tr2 + trap type=shower group=tr2 + trap type=conveyor dir=down len=2
+申 = trap type=teaser group=tr2
+酉 = trap type=legloop group=tr4 + trap type=conveyor dir=down len=6
+戌 = trap type=wheel group=tr4
+亥 = trap type=cage idle_time=2.6 offset=0.4
+金 = trap type=clamp group=tr7 + trap type=conveyor dir=right len=4
+木 = trap type=wheel group=tr7
+水 = trap type=teaser group=tr7
+火 = trap type=mud w=3 h=2
+土 = trap type=snare group=tr8
+日 = trap type=chute w=7 dir=right
+月 = trap type=supine group=tr6
+山 = trap type=teaser group=tr6 content=drill
+川 = trap type=chute h=8 dir=down
+风 = trap type=cuffs group=tr9
+花 = trap type=wheel group=tr9
+雪 = trap type=prone group=tr11 + trap type=chute w=7 dir=left
+云 = trap type=wheel group=tr11
+雨 = trap type=clamp group=tr12 + trap type=chute h=8 dir=up
+雷 = trap type=teaser group=tr12
+电 = trap type=wheel group=tr12
+天 = trap type=binding group=tr10
+人 = trap type=vent idle_time=2.2 cloud_duration=1.2 offset=0.0
+口 = trap type=brush speed=1.2
+手 = trap type=vent idle_time=2.2 cloud_duration=1.2 offset=1.1
+足 = trap type=brush speed=-1.3
+心 = trap type=teaser
+目 = trap type=wheel
+耳 = trap type=teaser content=brush
+鼻 = trap type=teaser content=slime
+舌 = trap type=boots
 
 [map]
 ####################################################################################################
-#####t###t########################################################t#########t###########t###########
-##..........####t###########################################.................................#######
-##...土......##......##########t###########t##子######t###Ψ###.............Ξ................ε..#######
-##......金...##....卯.####...丑.................癸...........壬.#..X.......*.......O.δ...Σ........#######
-##.山...水..未.##......####.............己.......丁..7..........#.................................#######
-##....风..酉...辰.............................................ψ........Π.......ω.........=......#######
-##雪.日月巳.亥.午..辰...寅.................庚.....丙...乙....甲.....Φ..ψ..............7..................#######
-##....花..戌...辰.........................................Ω...ψ..........O............Θ....O....#######
-##.川...火..申.##..x...####........辛.V...p.......戊............#....;..............Λ..Δ..........#######
-##......木...##......########################################................δ..........Γ.....#######
-##...土......##.....B########################################.................................#######
-##..........########################################################################ψψψ#############
-#################################################################t#####o###t########...#############
-#############################################################...................####...#############
-#########################################t#######t###########...................####...#############
-#####################################........π......ν.....###.......X...........####χ..#############
-#####################################.......O.............###................y..###t...#t###########
-#####################################.....................###...................#..........#########
-#####################################.....................###...................#..........#########
-#####################################..........μ..........###..σ................#..........#########
-#####################################.................ξ...###..............................#########
-#####################################............δ............ρ........τ.............x.....#########
-#####################################....................................υ.................#########
+#####t癸##t午#######################################################t#########t###########t###########
+##....壬.....####t###########################################.................................#######
+##......γ...##......##########t###########t##癸######t###Φ###....H..人.....Λ..口.....H.....手.δ..#######
+##.土6.......##....寅.####...子.................壬...........辛.#..W.......&.......N.γ...Π........#######
+##........未.##......####.............戊.......丙..6..........#.................................#######
+##..水.亥..申...卯.............................................χ..足..舌..Ξ..目....ψ...H..人..'..口...#######
+##..金...酉.巳..卯...丑.................己.....乙...甲....Ω.....Σ..χ..............6..................#######
+##...木...戌.s.卯.........................................Ψ...χ..........N............Δ....N....#######
+##.火........##..x...####........庚.U...o.......丁............#.H..:..手.....足.....Θ..Γ..舌.....目.#######
+##....w...a.##......########################################................γ..........ω.....#######
+##U....w....##.....B########################################.................................#######
+##....辰..山..t#######################################################################χχχ#############
+##.日.....月川.#####################################################t#####n###t########...#############
+##雷雨..W.....#################################################...................####...#############
+##.....3....#############################t#######t###########.H...人...口...H...手.####...#############
+##电...'..3..#########################........ο......μ.....###.......W...........####φ..#############
+##..........#########################.H...人.N.....口...H...###................w..###t...#t###########
+##...子..6...t########################.....................###...................#..........#########
+##天...H.....#########################.....................###.......足...鼻...H...#..........#########
+##.....&..风花#########################..........λ..........###..ρ................#..........#########
+##..雪.......#########################...手...足.......υ.ν.H.###..............................#########
+##..云.......#########################............γ............π........σ.............x.....#########
+#####################################.............................人......τ....口............#########
 ##########################t#####t####...........................................#..........#########
-########################...........##.....................###..............p....#........A.#########
-########################................κ.................###...................#.........B#########
-########################.....x.........................ο..###...................####################
-########################................ι......g..........###.....V.........φ...####################
-########################B..........##.....................###...................####################
-############################...######....λ................###...................####################
+########################...........##.人...口...H...手...足...###..............o....#........A.#########
+########################................ι.................###...................#.........B#########
+########################.....x.........................ξ..###...H...手...足.......####################
+########################................θ......f..........###.....U.........υ...####################
+########################B..........##.......υ.......H...人.###...................####################
+############################...######....κ................###...................####################
 ############################...#####################################################################
 ############################...#####################################################################
-##########################t#}}}###t#############t#######t#,#####t###################################
+##########################t#{{{###t#############t#######t#=#####t###################################
 ######################..................####........................################################
-######################..................####........................################################
-######################..............p...####........p.......=.......################################
-######################......αβ..........####........................################################
-######################............ζ.....####....p...................################################
-######################..................####{..........|.......@....###########t#####t##############
-######################...γ.....γ........}.........................'.########.............###########
-######################........"......*..}............(.........>....########...........A.###########
-######################...........η......}...............................<................###########
-######################..4............θ..####....................^........................###########
-######################.....δ............####.........)...................................###########
-######################.............ε....####........................########......x......###########
-######################..η...............####...`............._......########.............###########
-######################.......=........c.####........V.....~.........########............B###########
+######################.H..人..口..H.....手.####.H...人.......口.......H..################################
+######################..............o...####........o.......'.......################################
+######################......"α..........####........................################################
+######################..足.........ε.目...####....o...................################################
+######################..................####`......手..._...足...>....###########t#####t##############
+######################...β.....β........{.........................).########.............###########
+######################.心......}....H.&..{............~.........<....########...........A.###########
+######################...........ζ......{...............................;................###########
+######################..3............η..####.耳...a.......H...人..@........................###########
+######################.....γ..人..口......####.........(...................................###########
+######################.............δ....####........................########......x......###########
+######################..ζ...............####...,.............^......########.............###########
+######################....H..'..手..足..b.####........U..口..|....H....########............B###########
 ######################..................####........................##########...###################
 ##############################################################################...###################
 ##############################################################################...###################
-########################################################t##o####t#######t#####...###################
+########################################################t##n####t#######t#####...###################
 ####################################################...............................#################
-##########################t#########t#######t#######..........V....................#################
-####################...........................B####....p..........................#################
-####################............................####.........n................3....#################
-####################.;..........................####.........................2.....#################
-####################............................####...............................#################
-####################............../.............####..................q........4...#################
-####################..............-.............####....7..........................#################
-####################....................+.......####..............w................#################
-####################........................?...####.k.6...........................#################
-####################............................###j.i.....m............v..........#################
-####################..........................9.####......................z01......#################
-####################........:...................####..l.............O..............#################
-####################............................####8..............................#################
-####################.....................$...............h5......................r.s################
-####################............................................................u..#################
-####################......................&.....####...............................#################
-####################..................*.........####...............................#################
-####################..........................!.####.g....f................y.......#################
+##########################t#########t#######t#######.H........U..人...口...H...手...足.#################
+####################...........................B####....o..........................#################
+####################.....H...人...口...H...手...足..####.........m................2....#################
+####################.:..........................####.........................1.....#################
+####################............................####...心...目...H...人.......口.......#################
+####################..............-.............####..................p........3...#################
+####################...目...,...H..+........人....####....6..........................#################
+####################....................*.......####..............v................#################
+####################........................!...####.j.5.H...手.......足.......心...目.#################
+####################............................###i.h.....l............u..........#################
+####################.口...H.......手...足...目....8.####......................yz0......#################
+####################......../...................####..k.............N..............#################
+####################............................####7..........H.......人...口...H...#################
+####################.....................?...............g4......................q.r################
+####################...,...H...人...口...H........................................s..#################
+####################......................$.....####...............................#################
+####################..................&.........####.........手...足...心...目...H...人.#################
+####################..........................9.####.f....e................w.......#################
 ####################A...........................####...............................#################
-####################################################............d.e................#################
+####################################################............c.d................#################
 ####################################################...............................#################
 ################################################################...#################################
 ################################################################...#################################
 ######t#####t###################################################...#################################
 ###..............############################################t##...##t##############################
 ###..C...........#######t#######t#######t#######t###########...........#############################
-###............D.###.W.......I.X.L........Q....R..T......###...........#############################
-###...x................E..............M...........T.S.U..###...........#############################
-###.......................G....K..................T....................#############################
-###..........................J......M......O.....ST....................#############################
-###..............###...F..........................T....................#############################
-###..............###......H..........N.b.X...M.......V...###....x......#############################
-###......P.......###Y..............a.....................###.........c.#############################
-###............A.###########Z###############################B..........#############################
+###............D.###.V.........W.K........O....Q..S......###...........#############################
+###...x................E..............L...........S.R.T..###...........#############################
+###.......................F..H.J..................S....................#############################
+###.................................L......N.....RS....................#############################
+###..............###...H.......H...............人..S....口...............#############################
+###..............###......I..G.......M.a.W...L.......U...###....x......#############################
+###......P.......###X..............Z.....................###.........b.#############################
+###............A.###########Y###############################B..........#############################
 ###B............B###################################################################################
 ####################################################################################################
 ####################################################################################################

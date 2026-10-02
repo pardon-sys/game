@@ -3,6 +3,7 @@ extends Trap
 ## 羽毛雨喷口（配套挠痒 / 触发类）：天花板的喷口，被压力板 / 绊线触发（MANUAL，加入 group_name 组），
 ## 或同组的束缚陷阱困住人时，对 3×3 区域落 active_time 秒「雨」，每 rain_interval 秒挠区域里的人一下。
 ## aim = true：落在触发那一刻公主所在的位置。content 同逗弄器：feather / brush / slime / tentacle。
+## 有人自己走进喷口正下方的 3×3 也会触发（不用压力板 / 绊线 / 束缚陷阱）。
 
 const FEATHER := preload("res://assets/generated/wind_feather.png")
 const CONTENT := {
@@ -57,7 +58,7 @@ func _setup() -> void:
 	add_child(_rain)
 	_mark = Node2D.new()
 	_mark.top_level = true
-	_mark.z_index = -1
+	_mark.z_index = 0  # 不能小于 0：会画到地板图块下面
 	_mark.draw.connect(func(): _mark.draw_rect(Rect2(-HALF, -HALF, HALF * 2, HALF * 2), Color(1, 0.6, 0.85, 0.18)))
 	_mark.visible = false
 	add_child(_mark)
@@ -119,6 +120,12 @@ func _physics_process(delta: float) -> void:
 			if r and r.is_holding():
 				trigger()
 				break
+	# 自己走进喷口下方
+	if phase == Phase.IDLE:
+		var p := GameState.player
+		if is_instance_valid(p) and p.is_alive() and _affects(p) \
+				and absf(p.global_position.x - global_position.x) <= HALF and absf(p.global_position.y - global_position.y) <= HALF:
+			trigger()
 	if phase != Phase.ACTIVE:
 		return
 	_cd -= delta

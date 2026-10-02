@@ -285,25 +285,64 @@ func can_skip() -> bool:
 	return _can_skip
 
 
-## 笑倒：按最后一次挠痒的来源键选 CG 并播放（await 到结束）。
+## 笑倒：按最后一次挠痒的来源键选 CG 并播放（await 到结束）。正在播别的时插到队首，当前这段播完马上播。
 func play_death(key: String) -> void:
-	await play(death_cg_for(key), key)
+	await play(death_cg_for(key), key, true)
 
 
-func play(id: String, source := "") -> void:
+## 播放笑倒 CG / 巢穴过场（await 到播完）。正在播别的时排队（priority = true 插到队首）。
+func play(id: String, source := "", priority := false) -> void:
 	var cg: Dictionary = cgs().get(id, {})
 	if cg.is_empty():
 		push_warning("没有 CG: " + id)
 		return
-	await _play_cg(cg, id, source, GameState.has_flag("cg_seen_" + id))
+	await _request({"cg": cg, "id": id, "source": source, "skippable": GameState.has_flag("cg_seen_" + id), "fx": 0}, priority)
 
 
-## 组合技小演出（data/combo_scenes.json）。正在播 CG 时不播。
+## 组合技小演出（data/combo_scenes.json）。正在播 CG 时排队，按触发顺序依次播；同一段不会重复排队。
+## 真正开始播时才设 combo_scene_<id> 标记（ComboTracker 据此判断是不是第一次）。
 func play_scene(combo_id: String) -> void:
 	var sc: Dictionary = scenes.get(combo_id, {})
-	if sc.is_empty() or _playing:
+	var id := "combo:" + combo_id
+	if sc.is_empty() or current == id or _queue.any(func(r): return r["id"] == id):
 		return
-	await _play_cg(sc, "combo:" + combo_id, "", true, 1)
+	await _request({"cg": sc, "id": id, "source": "", "skippable": true, "fx": 1, "combo": combo_id}, false)
+
+
+## 播放队列（正在播的不在里面）。每项 {cg, id, source, skippable, fx, combo?, done}。
+var _queue: Array[Dictionary] = []
+
+
+## 排队中的 CG id（测试 / 调试用）。
+func queued() -> Array:
+	return _queue.map(func(r): return r["id"])
+
+
+## 正在播或还有排队的。
+func is_busy() -> bool:
+	return _playing or not _queue.is_empty()
+
+
+func _request(req: Dictionary, priority: bool) -> void:
+	req["done"] = false
+	if not is_busy():
+		await _run(req)
+		return
+	if priority:
+		_queue.push_front(req)
+	else:
+		_queue.append(req)
+	while not req["done"]:
+		await get_tree().process_frame
+
+
+func _run(req: Dictionary) -> void:
+	if req.has("combo"):
+		GameState.set_flag("combo_scene_" + str(req["combo"]))
+	await _play_cg(req["cg"], req["id"], req["source"], req["skippable"], req["fx"])
+	req["done"] = true
+	if not _queue.is_empty():
+		_run(_queue.pop_front())
 
 
 func _play_cg(cg: Dictionary, id: String, source: String, skippable: bool, fx_level := 0) -> void:

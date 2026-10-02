@@ -80,7 +80,7 @@ func _begin_strike(pos: Vector2) -> void:
 	var mark := Sprite2D.new()
 	mark.texture = MARK_TEX
 	mark.hframes = 2
-	mark.z_index = -1
+	mark.z_index = 0  # 不能小于 0：会画到地板图块下面
 	get_parent().add_child(mark)
 	mark.global_position = pos
 	_strikes.append({"pos": pos, "time": strike_warn, "mark": mark})
