@@ -143,6 +143,31 @@ func _run_dialogue_modes() -> void:
 	await _drive()
 	check("满足条件后秘密选项出现（一次性选项已经不在了）", asked.size() > 0 and "秘密选项" in asked[0] and not "只能问一次" in asked[0])
 	r.node_entered.disconnect(on_node)
+	# 弹出选项时公主不能动：按上下键只换选项
+	r._cache["test/move"] = {"name": "测试员", "entries": [{"node": "a"}], "nodes": {"a": {"lines": [{"text": "选吧。"}],
+		"choices": [{"text": "一", "next": ""}, {"text": "二", "next": ""}, {"text": "三", "next": ""}]}}}
+	r.talk("test/move")
+	var cm: ChoiceMenu = r.choice_menu
+	for i in 60:
+		if cm.is_open():
+			break
+		Dialogue.advance()
+		Dialogue.advance()
+		await _wait(0.05)
+	var p0 := player.global_position
+	var ev := InputEventAction.new()
+	ev.action = "move_down"
+	ev.pressed = true
+	Input.parse_input_event(ev)
+	Input.action_press("move_down")
+	await _wait(0.4)
+	Input.action_release("move_down")
+	check("弹出选项时：剧情状态、公主不跟着上下键走，按下键换选项", cm.is_open() and GameState.in_dialogue
+		and player.global_position.distance_to(p0) < 1.0 and cm.selected == 1)
+	cm.choose(cm.selected)
+	await _drive()
+	await _wait(0.3)
+	check("对话结束后交还控制权", not GameState.in_dialogue)
 	# 说话人默认是人物名字；人物表里的人显示右侧立绘
 	r._cache["test/cap"] = {"name": "保卫队队长", "npc": "captain", "entries": [{"node": "a"}], "nodes": {"a": {"lines": [{"text": "站住。"}]}}}
 	r.talk("test/cap")
@@ -271,6 +296,21 @@ func _run_slot_menu_and_save_point() -> void:
 	menu.cancel()
 	await _wait(0.05)
 	check("取消返回 -1", result[0] == -1)
+	# 主界面读档：按 E 确定后菜单马上离开场景树（换场景），不能再碰 get_viewport()
+	result[0] = 0
+	run = func(): result[0] = await menu.choose("load")
+	run.call()
+	await _wait(0.05)
+	var gone := func(_s: int): menu.get_parent().remove_child(menu)
+	menu.done.connect(gone, CONNECT_ONE_SHOT)
+	menu.selected = 2
+	var ok_ev := InputEventAction.new()
+	ok_ev.action = "interact"
+	ok_ev.pressed = true
+	Input.parse_input_event(ok_ev)
+	await _wait(0.1)
+	check("读档界面按 E：选中存档位，菜单离开场景树也不报错", result[0] == 2 and not menu.is_inside_tree())
+	get_tree().paused = false
 	menu.queue_free()
 	# 存档点
 	var sp: Node2D = load("res://scenes/objects/save_point.tscn").instantiate()

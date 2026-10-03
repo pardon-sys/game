@@ -534,5 +534,6 @@ func _end() -> void:
 	finished.emit(id)
 	# 稍等片刻再把控制权交还，避免同一次按键触发公主攻击/交互
 	await get_tree().create_timer(0.12).timeout
-	if not _active and not GameState.in_cutscene:
+	# 人物对话还在进行（接下来是选项或下一个节点）时不交还控制权：选项用上下键，公主不能跟着走
+	if not _active and not GameState.in_cutscene and not runner.is_running():
 		GameState.in_dialogue = false

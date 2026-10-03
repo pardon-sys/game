@@ -64,8 +64,9 @@ func choose(m: String) -> int:
 	get_tree().paused = true
 	_refresh()
 	var s: int = await done
+	# 选完后主界面可能马上换场景（菜单已离开场景树），用主循环取场景树
 	if _paused_by_me:
-		get_tree().paused = false
+		(Engine.get_main_loop() as SceneTree).paused = false
 	return s
 
 
@@ -112,20 +113,31 @@ func _refresh() -> void:
 
 
 func _input(event: InputEvent) -> void:
-	if not event.is_pressed() or event.is_echo():
+	if not event.is_pressed() or event.is_echo() or not is_inside_tree():
 		return
+	var act := ""
 	if event.is_action("move_up") or event.is_action("ui_up"):
-		selected = (selected - 2 + SaveSystem.SLOTS) % SaveSystem.SLOTS + 1
-		confirm = false
-		_refresh()
+		act = "up"
 	elif event.is_action("move_down") or event.is_action("ui_down"):
-		selected = selected % SaveSystem.SLOTS + 1
-		confirm = false
-		_refresh()
+		act = "down"
 	elif event.is_action("interact") or event.is_action("ui_accept"):
-		pick(selected)
+		act = "ok"
 	elif event.is_action("pause") or event.is_action("ui_cancel"):
-		cancel()
+		act = "cancel"
 	else:
 		return
+	# 先吃掉输入：选定存档位后主界面会马上换场景，这个菜单随之离开场景树（get_viewport() 变成 null）
 	get_viewport().set_input_as_handled()
+	match act:
+		"up":
+			selected = (selected - 2 + SaveSystem.SLOTS) % SaveSystem.SLOTS + 1
+			confirm = false
+			_refresh()
+		"down":
+			selected = selected % SaveSystem.SLOTS + 1
+			confirm = false
+			_refresh()
+		"ok":
+			pick(selected)
+		"cancel":
+			cancel()

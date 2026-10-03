@@ -90,6 +90,15 @@ func _run_maps() -> void:
 # ------------------------------------------------------------------ 开场
 func _run_opening() -> void:
 	print("-- 开场：营地地牢")
+	var wake := FileAccess.get_file_as_string("res://data/cutscenes/floor_06/f6_wake.json")
+	var words_ok := true
+	for w in ["脚心", "肚子", "大腿", "屁股", "腋下"]:
+		words_ok = words_ok and wake.contains(w)
+	for att in ["honest", "defiant", "beg"]:
+		var th := FileAccess.get_file_as_string("res://data/theater/floor_06/f6_punish_%s.json" % att)
+		words_ok = words_ok and th.contains("屁股") and th.contains("腋下") and th.contains("\"zone\"")
+	check("开场台词说出每样刑具挠的地方（刑床挠肚子、足枷挠脚心、夹腿枷台蹭大腿、坐垫刷屁股、铐柱露腋下），挠痒带部位", words_ok
+		and wake.contains("\"zone\""))
 	var lines_by_att := {}
 	for att_i in 3:
 		var att: String = ["honest", "defiant", "beg"][att_i]

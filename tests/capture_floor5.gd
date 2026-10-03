@@ -6,11 +6,12 @@ const OUT := "res://tools/.cache/shots/"
 const ROOMS := [
 	[Vector2i(9, 84), "f5_01_landing"],
 	[Vector2i(30, 82), "f5_02_cage_corridor"],
-	[Vector2i(60, 66), "f5_03_workshop"],
-	[Vector2i(56, 42), "f5_04_leg_corridor"],
+	[Vector2i(60, 60), "f5_03_workshop"],
+	[Vector2i(61, 42), "f5_04_leg_corridor"],
 	[Vector2i(30, 41), "f5_05_greenhouse"],
-	[Vector2i(46, 23), "f5_06_wheel_workshop"],
-	[Vector2i(68, 22), "f5_07_mud_cellar"],
+	[Vector2i(42, 24), "f5_06_wheel_workshop"],
+	[Vector2i(69, 19), "f5_07_mud_cellar"],
+	[Vector2i(40, 65), "f5_07b_chute_slope"],
 	[Vector2i(78, 7), "f5_08_imp_workshop"],
 	[Vector2i(44, 6), "f5_09_final_chain"],
 	[Vector2i(9, 7), "f5_10_trap_room"],
@@ -51,20 +52,23 @@ func _ready() -> void:
 		await _wait(0.9)
 		await _shot(r[1])
 		_finish()
-	# 倒吊绳套 + 弱点
+	# 倒吊绳套 + 弱点（迷宫是生成的：现找一个绳套和一只怪物当挠痒来源）
 	TickleZones.enabled = true
-	var snare := main.level.find_child("Snare_81_66", true, false) as Node2D
-	_place(Vector2i(81, 66))
+	var walls: TileMapLayer = main.level.get_node("Walls")
+	var all_nodes: Array = main.level.find_children("*", "", true, false)
+	var snare: Node2D = all_nodes.filter(func(n): return n is SnareTrap).front()
+	var rat: Monster = all_nodes.filter(func(n): return n is Monster).front()
+	_place(walls.local_to_map(walls.to_local(snare.global_position)))
 	await _wait(0.5)
-	var rat := main.level.find_child("Rat_75_70", true, false) as Monster
 	for i in 3:
 		player.receive_hit(HitData.make_tickle(rat, 4.0))
 		await _wait(0.15)
 	await _shot("f5_11_snare_weak_point")
 	player.status.release(true)
 	await _wait(0.5)
-	# 举手铐柱 + 逗弄器
-	_place(Vector2i(53, 62))
+	# 举手铐柱：束缚工坊第一个连锁小厅（机关腰腋刑）
+	var cuffs: Node2D = main.level.find_children("*", "", true, false).filter(func(n): return n is CuffsTrap).front()
+	_place(walls.local_to_map(walls.to_local(cuffs.global_position)) + Vector2i(-1, 0))
 	await _wait(1.2)
 	await _shot("f5_12_cuffs_teaser")
 	player.status.release(true)

@@ -82,14 +82,23 @@ func _refresh() -> void:
 func _input(event: InputEvent) -> void:
 	if not is_open() or not event.is_pressed() or event.is_echo():
 		return
+	var act := ""
 	if event.is_action("move_up") or event.is_action("ui_up"):
-		selected = (selected - 1 + options.size()) % options.size()
-		_refresh()
+		act = "up"
 	elif event.is_action("move_down") or event.is_action("ui_down"):
-		selected = (selected + 1) % options.size()
-		_refresh()
+		act = "down"
 	elif event.is_action("interact") or event.is_action("ui_accept") or event.is_action("attack"):
-		choose(selected)
+		act = "ok"
 	else:
 		return
+	# 先吃掉输入：确定之后对话可能结束、菜单可能离开场景树
 	get_viewport().set_input_as_handled()
+	match act:
+		"up":
+			selected = (selected - 1 + options.size()) % options.size()
+			_refresh()
+		"down":
+			selected = (selected + 1) % options.size()
+			_refresh()
+		"ok":
+			choose(selected)

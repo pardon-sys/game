@@ -326,8 +326,26 @@ func _run_design(id: String) -> void:
 			var ar: Array = a["rect"]
 			if int(ar[0]) >= int(r[0]) - 1 and int(ar[1]) >= int(r[1]) - 1 and int(ar[2]) <= int(r[2]) + 1 and int(ar[3]) <= int(r[3]) + 1:
 				inside += 1
-		check("迷宫房间「%s」：墙占 %.0f%%，小厅里 %d 组三来源组合" % [mz["name"], 100.0 * wall / total, inside],
+		check("迷宫房间「%s」：墙占 %.0f%%，%d 组三来源组合" % [mz["name"], 100.0 * wall / total, inside],
 			float(wall) / total >= 0.2 and inside >= 2 and inside <= 3)
+		# 主路上的连锁小厅都是必经的：堵上任何一个小厅，入口就到不了出口
+		var door_in := Vector2i(int(mz["door_in"][0]), int(mz["door_in"][1]))
+		var goal := Vector2i(int(mz["goal"][0]), int(mz["goal"][1]))
+		var must := _reachable(door_in, goal, {})
+		for h in mz["halls"]:
+			var blocked := {}
+			for x in range(int(h[0]), int(h[2]) + 1):
+				for y in range(int(h[1]), int(h[3]) + 1):
+					blocked[Vector2i(x, y)] = true
+			must = must and not _reachable(door_in, goal, blocked)
+		check("迷宫房间「%s」：%d 个连锁小厅都在必经之路上" % [mz["name"], mz["halls"].size()], must and mz["halls"].size() >= 2)
+		var chests := 0
+		for n in level.find_children("*", "", true, false):
+			if n.get_script() == load("res://scripts/objects/chest.gd"):
+				var cc := walls.local_to_map(walls.to_local((n as Node2D).global_position + Vector2(0, -8)))
+				if cc.x >= int(r[0]) and cc.y >= int(r[1]) and cc.x <= int(r[2]) and cc.y <= int(r[3]):
+					chests += 1
+		check("迷宫房间「%s」：死胡同里有宝箱（%d 个）" % [mz["name"], chests], chests >= 1)
 	if design.has("min_trap_density"):
 		var skip: Array = design.get("safe_rooms", []).duplicate()
 		for mz in design.get("maze_rooms", []):
@@ -340,7 +358,10 @@ func _run_design(id: String) -> void:
 		var start := Vector2i(int(ch["start"][0]), int(ch["start"][1]))
 		var goal := Vector2i(int(ch["goal"][0]), int(ch["goal"][1]))
 		var links: Array = ch["links"]
-		var safe := _route_ok(start, goal, static_cells)
+		if ch.get("unavoidable", false):
+			# 必经连锁：入口到出口的每条路都要经过束缚陷阱的触发范围（多一格的那一圈也算）
+			check("连锁段「%s」：躲不开（每条路都经过束缚陷阱的触发范围）" % ch["name"], not _route_ok(start, goal, _restraint_reach()))
+		var safe: bool = ch.get("unavoidable", false) or _route_ok(start, goal, static_cells)
 		var flow_ok := true
 		var bad := ""
 		for i in links.size() - 1:
@@ -349,7 +370,8 @@ func _run_design(id: String) -> void:
 			if not _flow(a).has(b):
 				flow_ok = false
 				bad = "%s → %s" % [a, b]
-		check("连锁段「%s」：有一条不碰束缚 / 位移陷阱的路（可躲）" % ch["name"], safe)
+		if not ch.get("unavoidable", false):
+			check("连锁段「%s」：有一条不碰束缚 / 位移陷阱的路（可躲）" % ch["name"], safe)
 		check("连锁段「%s」：中了一个就被送进下一个（%d 环）%s" % [ch["name"], links.size(), "" if flow_ok else "，断在 " + bad], flow_ok)
 
 
@@ -380,6 +402,46 @@ func _trap_density(safe_rooms: Array) -> float:
 		if hit:
 			near += 1
 	return float(near) / maxf(total, 1.0)
+
+
+## 束缚陷阱（含足枷台）的触发范围覆盖的格子：触发区（多一格的那一圈）里的格子。
+func _restraint_reach() -> Dictionary:
+	var walls: TileMapLayer = level.get_node("Walls")
+	var out := {}
+	for n in level.find_children("*", "", true, false):
+		if not (n is RestraintTrap or n is Stocks) or not (n as Trap).active:
+			continue
+		var cs := n.get_node_or_null("Shape") as CollisionShape2D
+		if cs == null or not cs.shape is RectangleShape2D:
+			continue
+		var size := (cs.shape as RectangleShape2D).size
+		var rect := Rect2(cs.global_position - size / 2.0, size).grow(3.0)
+		var a := walls.local_to_map(walls.to_local(rect.position))
+		var b := walls.local_to_map(walls.to_local(rect.end))
+		for x in range(a.x, b.x + 1):
+			for y in range(a.y, b.y + 1):
+				var c := Vector2i(x, y)
+				if rect.has_point(walls.to_global(walls.map_to_local(c))):
+					out[c] = true
+	return out
+
+
+## 石碑（实心）不能放的格子：陷阱覆盖格（传送带 / 滑梯 / 风扇风道 / 漩涡 / 束缚……）、弹弹床落点、传送带出口、束缚陷阱的拉人范围。
+func _sign_forbidden() -> Dictionary:
+	var walls: TileMapLayer = level.get_node("Walls")
+	var out := _static_hazards()
+	out.merge(_restraint_reach())
+	var fm := _forced_maps()
+	for land in fm["pads"].values():
+		out[land] = true
+	for n in level.find_children("*", "", true, false):
+		if n is TickleConveyor:
+			var belt := n as TickleConveyor
+			out[walls.local_to_map(walls.to_local(belt.global_position)) + Vector2i(belt.belt) * belt.length] = true
+		elif n is ChuteTrap:
+			for c in _trap_cover(n as Trap):
+				out[c + Vector2i((n as ChuteTrap).lane)] = true
+	return out
 
 
 ## 静态的束缚 / 位移陷阱覆盖的格子（连锁段「可躲」检查要避开的；落笼、绊线、喷口、逗弄器、转轮、羽毛臂这类靠时机躲的不算）。
@@ -441,6 +503,15 @@ func _flow(start: Vector2i) -> Dictionary:
 # ------------------------------------------------------------------ 新机制的介绍石碑
 func _run_mechanic_signs(id: String) -> void:
 	var walls: TileMapLayer = level.get_node("Walls")
+	if FileAccess.file_exists("res://levels/%s/design.json" % id):
+		var forbidden := _sign_forbidden()
+		var bad: Array = []
+		for n in level.find_children("*", "", true, false):
+			if n.scene_file_path == "res://scenes/objects/sign.tscn":
+				var sc := walls.local_to_map(walls.to_local((n as Node2D).global_position + Vector2(0, -8)))
+				if forbidden.has(sc):
+					bad.append(sc)
+		check("石碑不挡强制位移 / 不在陷阱和拉人范围上（%s）" % [bad], bad.is_empty())
 	var dist := _distances(walls.local_to_map(walls.to_local(player.global_position)))
 	for ms in MECHANIC_SIGNS:
 		var cells := _mechanic_cells(str(ms[0]))

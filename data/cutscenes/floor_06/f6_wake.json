@@ -48,6 +48,7 @@
 					"repeat": 4,
 					"interval": 0.4,
 					"fx": "feather",
+					"zone": "sole",
 					"do": "tickle"
 				},
 				{
@@ -74,6 +75,7 @@
 					"interval": 0.3,
 					"fx": "feather",
 					"add": 20,
+					"zone": "sole",
 					"do": "tickle"
 				},
 				{
@@ -85,7 +87,7 @@
 		},
 		{
 			"speaker": "公主",
-			"text": "唔……哈、哈哈……谁、谁在挠我的脚……",
+			"text": "唔……哈、哈哈……谁、谁在挠我的脚心……",
 			"emotion": "giggle",
 			"actions": [
 				{
@@ -101,7 +103,7 @@
 		},
 		{
 			"speaker": "公主",
-			"text": "这、这里是哪里？我被……锁在床上了？脚也被足枷扣着，腿也被夹住了……",
+			"text": "这、这里是哪里？我被绑在一张床上……脚扣在床尾的足枷里，旁边的羽毛一下一下扫着脚心……",
 			"emotion": "surprise",
 			"actions": [
 				{
@@ -115,13 +117,46 @@
 					"interval": 0.3,
 					"fx": "feather",
 					"add": 10,
+					"zone": "sole",
 					"do": "tickle"
 				}
 			]
 		},
 		{
 			"speaker": "公主",
-			"text": "哈哈哈……别、别挠了！我记得……我在那座机关城里笑晕过去，然后……",
+			"text": "哈、哈哈……床板上的羽毛还在挠肚子……肚脐那里不行……！",
+			"emotion": "giggle",
+			"actions": [
+				{
+					"who": "princess",
+					"repeat": 5,
+					"interval": 0.28,
+					"fx": "feather",
+					"add": 10,
+					"zone": "belly",
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "大、大腿也被两块木板夹住了……木板上的绒毛蹭着大腿内侧……哈哈哈哈！",
+			"emotion": "helpless_1",
+			"actions": [
+				{
+					"who": "princess",
+					"repeat": 5,
+					"interval": 0.28,
+					"fx": "brush",
+					"add": 10,
+					"zone": "thigh",
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "别、别挠了！我记得……我在那座机关城里笑晕过去，然后……",
 			"emotion": "helpless_1",
 			"actions": [
 				{
@@ -134,7 +169,8 @@
 					"repeat": 6,
 					"interval": 0.25,
 					"fx": "feather",
-					"add": 15,
+					"add": 10,
+					"zone": "sole",
 					"do": "tickle"
 				}
 			]
@@ -225,7 +261,7 @@
 		},
 		{
 			"speaker": "保卫队队长",
-			"text": "醒了？笑得挺精神嘛。",
+			"text": "醒了？刑床挠肚子、足枷挠脚心、夹腿枷台蹭大腿——一样不落，还笑得挺精神嘛。",
 			"actions": [
 				{
 					"who": "captain",
@@ -382,13 +418,62 @@
 		},
 		{
 			"speaker": "公主",
-			"text": "等、等一下！为什么要换到这个坐垫上……手、手也被铐上去了……",
+			"text": "等、等一下！为什么要换到这个坐垫上……",
 			"emotion": "shy",
 			"actions": [
 				{
 					"who": "princess",
 					"kind": "surprise",
 					"do": "bubble"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "呀啊！坐垫里的刷毛……在屁股底下来回刷……哈哈哈，好痒！",
+			"emotion": "helpless_1",
+			"actions": [
+				{
+					"who": "princess",
+					"repeat": 6,
+					"interval": 0.25,
+					"fx": "brush",
+					"add": 10,
+					"zone": "butt",
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "手、手也被铐在柱子上举起来了……腋下全都露出来了……不、不要碰那里……",
+			"emotion": "shy",
+			"actions": [
+				{
+					"who": "guard_a",
+					"to": [
+						20,
+						14
+					],
+					"time": 0.4,
+					"do": "move"
+				},
+				{
+					"who": "guard_b",
+					"to": [
+						22,
+						14
+					],
+					"time": 0.4,
+					"do": "move"
+				},
+				{
+					"who": "princess",
+					"repeat": 3,
+					"interval": 0.35,
+					"fx": "brush",
+					"zone": "butt",
+					"do": "tickle"
 				}
 			]
 		},
@@ -407,6 +492,7 @@
 					"interval": 0.22,
 					"fx": "hand",
 					"add": 15,
+					"zone": "armpit",
 					"do": "tickle"
 				},
 				{
@@ -423,7 +509,7 @@
 		},
 		{
 			"speaker": "公主",
-			"text": "哈哈哈哈哈！停、停下来……真的、真的不知道啊哈哈哈！",
+			"text": "哈哈哈哈哈！腋下、腰……屁股底下的刷子也不停……真、真的不知道啊哈哈哈！",
 			"emotion": "helpless_2",
 			"actions": [
 				{
@@ -432,6 +518,7 @@
 					"repeat": 6,
 					"interval": 0.22,
 					"fx": "hand",
+					"zone": "waist",
 					"do": "tickle"
 				},
 				{

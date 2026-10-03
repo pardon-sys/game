@@ -41,6 +41,7 @@ func _ready() -> void:
 	await _run_lines()
 	await _run_cg_queue()
 	await _run_standalone()
+	await _run_reach()
 	await _run_helpless_move()
 	await _run_dev_mode()
 	await _run_trap_room()
@@ -163,6 +164,69 @@ func _run_standalone() -> void:
 	cage.queue_free()
 	_reset()
 	await _wait(0.2)
+
+
+# ------------------------------------------------------------------ 束缚陷阱多一格范围、把人拉过去
+func _held_by(t: Node) -> bool:
+	return player.status.is_grabbed_by(t) or player.status.is_hobbled_by(t)
+
+
+func _run_reach() -> void:
+	print("-- 束缚陷阱：多一格触发范围，把人拉过去")
+	for spec in [["pit", "落穴洞"], ["boots", "长靴"], ["cushion", "痒痒坐垫"], ["snare", "倒吊绳套"], ["stocks", "足枷台"], ["binding", "绑腿"]]:
+		_reset()
+		player.global_position = home
+		await _wait(0.1)
+		var t: Trap = _trap(spec[0], Vector2(48, 0))
+		await _wait(0.05)
+		player.global_position = t.global_position + Vector2(-16, 0)   # 相邻一格
+		var waited := await _until(func(): return _held_by(t), 1.5)
+		var caught := _held_by(t)
+		await _wait(0.35)
+		var target: Vector2 = t.call("_pull_target") if t.has_method("_pull_target") else t.global_position + Vector2(0, 4)
+		check("%s：站在相邻一格被拉过去扣住（%.2f 秒，离陷阱 %.0f 像素）" % [spec[1], waited, player.global_position.distance_to(target)],
+			caught and player.global_position.distance_to(target) < 6.0)
+		if player.status.is_grabbed():
+			await _struggle(12)
+		if player.status.is_hobbled():
+			player.status.release_hobble(false)
+		t.queue_free()
+		await _wait(0.1)
+	# 隔两格不会触发
+	_reset()
+	player.global_position = home
+	var far: Trap = _trap("pit", Vector2(48, 0))
+	await _wait(0.05)
+	player.global_position = far.global_position + Vector2(-34, 0)
+	await _wait(0.5)
+	check("隔两格不会被拉", not _held_by(far))
+	far.queue_free()
+	# 隔着墙不会被拉：找一块左右都是地面的墙
+	var walls: TileMapLayer = level.get_node("Walls")
+	var floor_layer: TileMapLayer = level.get_node("Floor")
+	var spot := Vector2i(-1, -1)
+	for c in walls.get_used_cells():
+		var l := c + Vector2i.LEFT
+		var r := c + Vector2i.RIGHT
+		if floor_layer.get_cell_source_id(l) != -1 and walls.get_cell_source_id(l) == -1 \
+				and floor_layer.get_cell_source_id(r) != -1 and walls.get_cell_source_id(r) == -1 \
+				and walls.get_cell_source_id(c + Vector2i.UP) != -1 and walls.get_cell_source_id(c + Vector2i.DOWN) != -1:
+			spot = c
+			break
+	if spot != Vector2i(-1, -1):
+		_reset()
+		var wt: Trap = load("res://scenes/traps/pit.tscn").instantiate()
+		level.get_node("Entities").add_child(wt)
+		wt.global_position = walls.to_global(walls.map_to_local(spot + Vector2i.RIGHT)) + Vector2(0, 4)
+		player.global_position = walls.to_global(walls.map_to_local(spot + Vector2i.LEFT)) + Vector2(0, 4)
+		await _wait(0.5)
+		check("隔着墙不会被拉过去", not _held_by(wt))
+		wt.queue_free()
+	else:
+		check("找到测试用的薄墙", false)
+	_reset()
+	player.global_position = home
+	await _wait(0.3)
 
 
 # ------------------------------------------------------------------ 失控时被位移陷阱带走
