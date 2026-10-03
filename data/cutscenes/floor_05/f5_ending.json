@@ -1,0 +1,356 @@
+{
+	"name": "无解的房间",
+	"skippable": true,
+	"hide_hud": true,
+	"steps": [
+		{
+			"actions": [
+				{
+					"do": "move",
+					"who": "princess",
+					"to": [
+						15,
+						7
+					],
+					"time": 0
+				},
+				{
+					"do": "face",
+					"who": "princess",
+					"dir": "left"
+				},
+				{
+					"do": "camera",
+					"to": [
+						10,
+						7
+					],
+					"time": 1.0
+				},
+				{
+					"do": "pose",
+					"emotion": "sad"
+				}
+			],
+			"wait": 1.0
+		},
+		{
+			"speaker": "公主",
+			"emotion": "sad",
+			"text": "……第五次了。这个房间……真的有出口吗……"
+		},
+		{
+			"speaker": "公主",
+			"emotion": "angry",
+			"text": "不管了！这次一口气冲过去！"
+		},
+		{
+			"actions": [
+				{
+					"do": "camera",
+					"who": "princess",
+					"time": 0.8
+				},
+				{
+					"do": "move",
+					"who": "princess",
+					"to": [
+						13,
+						7
+					],
+					"speed": 55
+				}
+			],
+			"wait": 0.8
+		},
+		{
+			"actions": [
+				{
+					"do": "move",
+					"who": "princess",
+					"to": [
+						10,
+						7
+					],
+					"speed": 55
+				},
+				{
+					"do": "camera",
+					"to": [
+						8,
+						7
+					],
+					"time": 0.6
+				}
+			],
+			"wait": 0.6
+		},
+		{
+			"actions": [
+				{
+					"do": "trap",
+					"who": "Snare_10_7",
+					"time": 1.6
+				},
+				{
+					"do": "pose",
+					"laugh": 40,
+					"emotion": "surprise"
+				},
+				{
+					"do": "shake",
+					"time": 0.3
+				},
+				{
+					"do": "tickle",
+					"who": "princess",
+					"repeat": 5,
+					"interval": 0.28,
+					"fx": "feather"
+				},
+				{
+					"do": "voice",
+					"state": "giggle"
+				}
+			],
+			"speaker": "公主",
+			"emotion": "surprise",
+			"text": "呀——绳、绳套！脚心朝天了——嘻嘻嘻！"
+		},
+		{
+			"actions": [
+				{
+					"do": "move",
+					"who": "princess",
+					"to": [
+						8,
+						7
+					],
+					"time": 0.5
+				},
+				{
+					"do": "trap",
+					"who": "Legloop_8_7",
+					"time": 2.0
+				},
+				{
+					"do": "trap",
+					"who": "Teaser_9_6",
+					"time": 2.0
+				},
+				{
+					"do": "trap",
+					"who": "Wheel_9_8",
+					"time": 2.0
+				},
+				{
+					"do": "tickle",
+					"who": "princess",
+					"repeat": 7,
+					"interval": 0.24,
+					"fx": "hand",
+					"add": 4
+				},
+				{
+					"do": "voice",
+					"state": "laugh"
+				}
+			],
+			"speaker": "公主",
+			"emotion": "helpless_1",
+			"text": "哈哈哈哈！放开就被吸进去——吊环、逗弄器、转轮——全都连在一起哈哈哈哈！"
+		},
+		{
+			"actions": [
+				{
+					"do": "trap",
+					"who": "Cage_6_6",
+					"time": 2.4
+				},
+				{
+					"do": "trap",
+					"who": "Cuffs_10_5",
+					"time": 2.4
+				},
+				{
+					"do": "flash",
+					"time": 0.3
+				},
+				{
+					"do": "pose",
+					"laugh": 90
+				},
+				{
+					"do": "shake",
+					"time": 0.5
+				},
+				{
+					"do": "tickle",
+					"who": "princess",
+					"repeat": 9,
+					"interval": 0.2,
+					"fx": "feather"
+				}
+			],
+			"speaker": "公主",
+			"emotion": "helpless_2",
+			"text": "笼子也——哈哈哈哈哈！脚心、腋下、大腿……全、全都……哈哈哈哈哈哈！"
+		},
+		{
+			"actions": [
+				{
+					"do": "tickle",
+					"who": "princess",
+					"repeat": 8,
+					"interval": 0.18,
+					"fx": "hand"
+				}
+			],
+			"speaker": "公主",
+			"emotion": "helpless_2",
+			"text": "……哈……哈哈……已经……笑不动了……"
+		},
+		{
+			"actions": [
+				{
+					"do": "pose",
+					"faint": true,
+					"laugh": 0
+				},
+				{
+					"do": "voice",
+					"state": ""
+				},
+				{
+					"do": "fade_out",
+					"time": 0.8
+				}
+			],
+			"wait": 1.0
+		},
+		{
+			"actions": [
+				{
+					"do": "fade_in",
+					"time": 1.0
+				}
+			],
+			"speaker": "",
+			"text": "（公主笑得一点力气都没有了，昏倒在陷阱房的中央。机关一个接一个地停了下来）"
+		},
+		{
+			"actions": [
+				{
+					"do": "spawn",
+					"id": "shadow",
+					"kind": "shadow",
+					"at": [
+						13,
+						7
+					],
+					"dir": "left"
+				},
+				{
+					"do": "camera",
+					"to": [
+						11,
+						7
+					],
+					"time": 0.8
+				},
+				{
+					"do": "sfx",
+					"sound": "door",
+					"pitch": 0.6
+				}
+			],
+			"wait": 1.0
+		},
+		{
+			"actions": [
+				{
+					"do": "move",
+					"who": "shadow",
+					"to": [
+						9,
+						7
+					],
+					"time": 1.6
+				}
+			],
+			"speaker": "",
+			"text": "（一个黑色的人影从门口走了进来。机关在它脚下一动也不动）"
+		},
+		{
+			"actions": [
+				{
+					"do": "carry",
+					"who": "shadow",
+					"on": true
+				},
+				{
+					"do": "say",
+					"who": "shadow",
+					"text": "……"
+				}
+			],
+			"speaker": "",
+			"text": "（人影俯下身，把昏迷的公主轻轻抱了起来）"
+		},
+		{
+			"actions": [
+				{
+					"do": "move",
+					"who": "shadow",
+					"to": [
+						13,
+						7
+					],
+					"time": 1.4
+				},
+				{
+					"do": "camera",
+					"to": [
+						15,
+						7
+					],
+					"time": 1.4
+				}
+			],
+			"wait": 1.4
+		},
+		{
+			"actions": [
+				{
+					"do": "move",
+					"who": "shadow",
+					"to": [
+						19,
+						7
+					],
+					"time": 1.6
+				},
+				{
+					"do": "fade_out",
+					"time": 1.6
+				}
+			],
+			"wait": 1.8
+		},
+		{
+			"actions": [
+				{
+					"do": "set_flag",
+					"flag": "chapter5_clear"
+				},
+				{
+					"do": "chapter_end",
+					"title": "第五章　机关迷城　完",
+					"subtitle": "—— 公主被神秘的黑影带走了…… ——",
+					"next": "floor_06_prison"
+				}
+			],
+			"wait": 2.0
+		}
+	]
+}

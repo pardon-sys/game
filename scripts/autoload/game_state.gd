@@ -20,6 +20,10 @@ signal combo_triggered(id: String, combo_name: String)
 signal hotkeys_changed
 ## 获得或升级了被动技能（level = 新等级）。
 signal passive_changed(id: String, level: int)
+## 复活点变了（检查点据此亮 / 暗）。
+signal checkpoint_changed(pos: Vector2)
+## 剧情标记变了（居民按剧情出现 / 消失等）。
+signal flag_changed(flag: String)
 
 ## 拿到冒险背包的剧情标记（第四层落脚点旁的储藏室）。
 const BACKPACK_FLAG := "got_backpack"
@@ -47,6 +51,14 @@ var inventory := Inventory.new()
 ## 快捷键 -> 物品 id（use_item = Q，use_special = R）。跨层保留，重新开始时恢复默认。
 var hotkeys := DEFAULT_HOTKEYS.duplicate()
 var flags := {}
+## 对话选择记下的变量（选择记忆，如 f6_attitude = "defiant"）；随存档保存。DialogueRunner 的条件 / 效果读写它。
+var vars := {}
+## 换地图后要站到的到达点（楼梯 LevelExit.spawn → Level 里同名的 SpawnPoint）。
+var pending_spawn := ""
+## 主界面选了「继续 / 读取」：main 场景准备好后读这个存档位（SaveSystem.load_slot）。
+var pending_load := 0
+## 游戏时长（秒，存档显示用；对话、过场中也计时，暂停时不计）。
+var play_time := 0.0
 ## 人物被动技能：{id: 等级}（data/passives/passives.json；换层保留，重新开始清空）。
 var passives := {}
 var checkpoint := Vector2.ZERO
@@ -101,6 +113,8 @@ func reset() -> void:
 	hotkeys = DEFAULT_HOTKEYS.duplicate()
 	hotkeys_changed.emit()
 	flags = {}
+	vars = {}
+	play_time = 0.0
 	passives = {}
 	in_dialogue = false
 	in_cutscene = false
@@ -155,8 +169,24 @@ func give_item(item: ItemData, amount := 1, user: Node = null, announce := false
 		emote(item.pickup_emotion)
 
 
+## 设复活点（检查点、存档读取、跳关都用它，检查点图标跟着亮暗）。
+func set_checkpoint(pos: Vector2) -> void:
+	checkpoint = pos
+	checkpoint_changed.emit(pos)
+
+
+func set_var(key: String, value: Variant) -> void:
+	vars[key] = value
+
+
+func _process(delta: float) -> void:
+	if is_instance_valid(player) and not get_tree().paused:
+		play_time += delta
+
+
 func set_flag(flag: String, value: Variant = true) -> void:
 	flags[flag] = value
+	flag_changed.emit(flag)
 
 
 func has_flag(flag: String) -> bool:

@@ -24,6 +24,30 @@
 			"id": "floor_05",
 			"name": "第五层·机关迷城",
 			"scene": "res://levels/floor_05/floor.tscn"
+		},
+		{
+			"id": "floor_06_prison",
+			"name": "第六层·营地地牢",
+			"scene": "res://levels/floor_06_prison/floor.tscn",
+			"group": "floor_06"
+		},
+		{
+			"id": "floor_06_upper",
+			"name": "第六层·地下小镇",
+			"scene": "res://levels/floor_06_upper/floor.tscn",
+			"group": "floor_06"
+		},
+		{
+			"id": "floor_06_camp",
+			"name": "第六层·保卫队营地",
+			"scene": "res://levels/floor_06_camp/floor.tscn",
+			"group": "floor_06"
+		},
+		{
+			"id": "floor_06_mine",
+			"name": "第六层·矿道",
+			"scene": "res://levels/floor_06_mine/floor.tscn",
+			"group": "floor_06"
 		}
 	]
 }

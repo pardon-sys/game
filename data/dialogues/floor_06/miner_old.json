@@ -1,0 +1,71 @@
+{
+	"name": "老矿工",
+	"entries": [
+		{
+			"node": "hello"
+		}
+	],
+	"nodes": {
+		"hello": {
+			"goto": [
+				{
+					"if": {
+						"eq": {
+							"f6_attitude": "honest"
+						}
+					},
+					"node": "hello_honest"
+				},
+				{
+					"if": {
+						"eq": {
+							"f6_attitude": "defiant"
+						}
+					},
+					"node": "hello_defiant"
+				},
+				{
+					"if": {
+						"eq": {
+							"f6_attitude": "beg"
+						}
+					},
+					"node": "hello_beg"
+				},
+				{
+					"node": "hello_honest"
+				}
+			]
+		},
+		"hello_honest": {
+			"lines": [
+				{
+					"text": "咳咳……年轻人，别往矿道深处走。"
+				},
+				{
+					"text": "你也见过那个黑影？……唉，我就说不是我眼花。"
+				}
+			]
+		},
+		"hello_defiant": {
+			"lines": [
+				{
+					"text": "咳咳……年轻人，别往矿道深处走。"
+				},
+				{
+					"text": "嘴硬没用。矿道深处的东西，可不听你讲道理。"
+				}
+			]
+		},
+		"hello_beg": {
+			"lines": [
+				{
+					"text": "咳咳……年轻人，别往矿道深处走。"
+				},
+				{
+					"text": "爱笑好啊。在矿道里，笑声能把害怕赶跑。"
+				}
+			]
+		}
+	}
+}

@@ -308,9 +308,9 @@ func _run_burst_acts() -> void:
 				first_burst = mini(first_burst, i)
 		var at_end := last_burst >= 0 and steps.slice(last_burst + 1).all(func(st): return not st.has("text") or st.get("portrait", "") == "wake")
 		if burst.size() < 7 or not has_portrait or not has_sound or not at_end \
-				or not said.any(func(t): return t.contains("畅快")) or not said.any(func(t): return t.contains("敏感")):
+				or not said.any(func(t): return t.contains("舒服")) or not said.any(func(t): return t.contains("敏感")):
 			bad.append(id)
-	check("全部 %d 段 CG / 组合演出最后都有魔力爆发这一幕（战损释放立绘、释放水声、有「畅快」和「敏感」两句）%s" % [all.size(), bad.slice(0, 4)],
+	check("全部 %d 段 CG / 组合演出最后都有魔力爆发这一幕（战损释放立绘、释放水声、有「舒服」和「敏感」两句）%s" % [all.size(), bad.slice(0, 4)],
 		bad.is_empty() and all.size() == 73)
 	var portrait_ok: bool = CG.data["portraits"].has("fatigue_burst") and str(CG.data["portraits"]["fatigue_burst"]["placeholder"]) == "damaged_burst"
 	check("这一幕的立绘是战损魔力释放", portrait_ok)

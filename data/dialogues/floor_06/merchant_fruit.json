@@ -1,0 +1,40 @@
+{
+	"name": "水果摊的商贩",
+	"entries": [
+		{
+			"node": "hello"
+		}
+	],
+	"nodes": {
+		"hello": {
+			"lines": [
+				{
+					"text": "新鲜的地底蘑菇果！甜得很！"
+				}
+			],
+			"choices": [
+				{
+					"text": "看看商品",
+					"next": "shop",
+					"return": true
+				},
+				{
+					"text": "再见",
+					"next": "bye"
+				}
+			]
+		},
+		"shop": {
+			"set": {
+				"call": "open_shop"
+			}
+		},
+		"bye": {
+			"lines": [
+				{
+					"text": "慢走！"
+				}
+			]
+		}
+	}
+}

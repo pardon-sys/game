@@ -1,0 +1,71 @@
+{
+	"name": "矿工朵特",
+	"entries": [
+		{
+			"node": "hello"
+		}
+	],
+	"nodes": {
+		"hello": {
+			"goto": [
+				{
+					"if": {
+						"eq": {
+							"f6_attitude": "honest"
+						}
+					},
+					"node": "hello_honest"
+				},
+				{
+					"if": {
+						"eq": {
+							"f6_attitude": "defiant"
+						}
+					},
+					"node": "hello_defiant"
+				},
+				{
+					"if": {
+						"eq": {
+							"f6_attitude": "beg"
+						}
+					},
+					"node": "hello_beg"
+				},
+				{
+					"node": "hello_honest"
+				}
+			]
+		},
+		"hello_honest": {
+			"lines": [
+				{
+					"text": "哈啊……今天的矿石真沉。"
+				},
+				{
+					"text": "你说的黑影，是不是穿着斗篷，走路没有声音？……我好像也见过。"
+				}
+			]
+		},
+		"hello_defiant": {
+			"lines": [
+				{
+					"text": "哈啊……今天的矿石真沉。"
+				},
+				{
+					"text": "听说你跟队长吵架了？哈哈，干得好，他早该被人顶一顶了。"
+				}
+			]
+		},
+		"hello_beg": {
+			"lines": [
+				{
+					"text": "哈啊……今天的矿石真沉。"
+				},
+				{
+					"text": "你就是那个「爱笑的公主」？嘿嘿，笑一个嘛。"
+				}
+			]
+		}
+	}
+}

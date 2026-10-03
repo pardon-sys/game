@@ -74,6 +74,6 @@ static func skip_to(point: Dictionary) -> void:
 		var p := GameState.player
 		if is_instance_valid(p):
 			p.global_position = Vector2(float(c[0]) * 16.0 + 8.0, float(c[1]) * 16.0 + 12.0)
-			GameState.checkpoint = p.global_position
+			GameState.set_checkpoint(p.global_position)
 			if p.camera:
 				p.camera.reset_smoothing()

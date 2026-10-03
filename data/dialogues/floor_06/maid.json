@@ -1,0 +1,71 @@
+{
+	"name": "女仆",
+	"entries": [
+		{
+			"node": "hello"
+		}
+	],
+	"nodes": {
+		"hello": {
+			"goto": [
+				{
+					"if": {
+						"eq": {
+							"f6_attitude": "honest"
+						}
+					},
+					"node": "hello_honest"
+				},
+				{
+					"if": {
+						"eq": {
+							"f6_attitude": "defiant"
+						}
+					},
+					"node": "hello_defiant"
+				},
+				{
+					"if": {
+						"eq": {
+							"f6_attitude": "beg"
+						}
+					},
+					"node": "hello_beg"
+				},
+				{
+					"node": "hello_honest"
+				}
+			]
+		},
+		"hello_honest": {
+			"lines": [
+				{
+					"text": "……您好。"
+				},
+				{
+					"text": "蓝色的大人吩咐过，要好好照顾您。有什么需要请告诉我。"
+				}
+			]
+		},
+		"hello_defiant": {
+			"lines": [
+				{
+					"text": "……您好。"
+				},
+				{
+					"text": "队长回营地时一直在叹气……是因为您吧。"
+				}
+			]
+		},
+		"hello_beg": {
+			"lines": [
+				{
+					"text": "……您好。"
+				},
+				{
+					"text": "那、那天地牢里的笑声……原来是您呀。"
+				}
+			]
+		}
+	}
+}

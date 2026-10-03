@@ -89,6 +89,33 @@ static func make_monster(actor_id: String, key: String, info: Dictionary) -> CGA
 	return a
 
 
+## 人物演员（小剧场）：info = data/actors/npcs.json 的人物。用公主行走图格式的（蓝色公主）沿用公主演员换贴图；
+## 普通人物用 32x32 × 4 帧 × 4 行的行走图（行 = 下 / 左 / 右 / 上）。
+static func make_npc(actor_id: String, npc_id: String, info: Dictionary) -> CGActor:
+	var a: CGActor
+	if info.get("princess_sheet", false):
+		a = make_princess(actor_id)
+		if ResourceLoader.exists(str(info.get("sprite", ""))):
+			a.sprite.texture = load(str(info["sprite"]))
+		a.kind = "npc_princess"
+		a.reaction_key = npc_id
+		return a
+	a = CGActor.new()
+	a.id = actor_id
+	a.kind = "monster"
+	a.reaction_key = npc_id
+	a.sprite = Sprite2D.new()
+	a.sprite.name = "Sprite"
+	if ResourceLoader.exists(str(info.get("sprite", ""))):
+		a.sprite.texture = load(str(info["sprite"]))
+		a.sprite.hframes = 4
+		a.sprite.vframes = 4
+	a.sprite.offset = Vector2(0, -14)
+	a.hit_fx = "hand"
+	a.add_child(a.sprite)
+	return a
+
+
 ## 陷阱演员：info = cgs.json 的 trap_actors[key]。
 ##   texture / hframes、idle / active（帧列表，按 fps 循环）、tiles [宽, 高]（铺成多格）、offset、z、
 ##   spin（每秒转几圈，发动时加快）、arm（羽毛臂：装置 + length 节手臂 + 羽毛尖，朝 dir 伸出，发动时伸出并来回扫）。

@@ -1,0 +1,688 @@
+{
+	"name": "第六层开场：营地地牢里被痒醒",
+	"letterbox": true,
+	"skippable": false,
+	"steps": [
+		{
+			"actions": [
+				{
+					"time": 0,
+					"do": "fade_out"
+				},
+				{
+					"who": "Supine_16_12",
+					"do": "hold"
+				},
+				{
+					"who": "Stocks_17_12",
+					"place": false,
+					"do": "hold"
+				},
+				{
+					"who": "Clamp_16_13",
+					"place": false,
+					"do": "hold"
+				},
+				{
+					"emotion": "sad",
+					"laugh": 10,
+					"do": "pose"
+				},
+				{
+					"to": [
+						17,
+						12
+					],
+					"time": 0,
+					"do": "camera"
+				}
+			],
+			"wait": 0.6
+		},
+		{
+			"speaker": "",
+			"text": "（……黑暗里，脚心传来一阵一阵的痒……）",
+			"actions": [
+				{
+					"who": "princess",
+					"repeat": 4,
+					"interval": 0.4,
+					"fx": "feather",
+					"do": "tickle"
+				},
+				{
+					"who": "Teaser_17_11",
+					"time": 1.6,
+					"do": "trap"
+				}
+			]
+		},
+		{
+			"actions": [
+				{
+					"time": 1.2,
+					"do": "fade_in"
+				},
+				{
+					"who": "Teaser_17_11",
+					"time": 2.0,
+					"do": "trap"
+				},
+				{
+					"who": "princess",
+					"repeat": 5,
+					"interval": 0.3,
+					"fx": "feather",
+					"add": 20,
+					"do": "tickle"
+				},
+				{
+					"state": "giggle",
+					"do": "voice"
+				}
+			],
+			"wait": 1.2
+		},
+		{
+			"speaker": "公主",
+			"text": "唔……哈、哈哈……谁、谁在挠我的脚……",
+			"emotion": "giggle",
+			"actions": [
+				{
+					"who": "princess",
+					"kind": "surprise",
+					"do": "bubble"
+				},
+				{
+					"time": 0.3,
+					"do": "shake"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "这、这里是哪里？我被……锁在床上了？脚也被足枷扣着，腿也被夹住了……",
+			"emotion": "surprise",
+			"actions": [
+				{
+					"who": "Teaser_17_11",
+					"time": 1.6,
+					"do": "trap"
+				},
+				{
+					"who": "princess",
+					"repeat": 4,
+					"interval": 0.3,
+					"fx": "feather",
+					"add": 10,
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "哈哈哈……别、别挠了！我记得……我在那座机关城里笑晕过去，然后……",
+			"emotion": "helpless_1",
+			"actions": [
+				{
+					"who": "Teaser_17_11",
+					"time": 1.8,
+					"do": "trap"
+				},
+				{
+					"who": "princess",
+					"repeat": 6,
+					"interval": 0.25,
+					"fx": "feather",
+					"add": 15,
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"actions": [
+				{
+					"sound": "door",
+					"pitch": 0.8,
+					"do": "sfx"
+				},
+				{
+					"id": "captain",
+					"kind": "npc:captain",
+					"at": [
+						3,
+						13
+					],
+					"dir": "right",
+					"do": "spawn"
+				},
+				{
+					"id": "guard_a",
+					"kind": "npc:guard",
+					"at": [
+						2,
+						12
+					],
+					"dir": "right",
+					"do": "spawn"
+				},
+				{
+					"id": "guard_b",
+					"kind": "npc:guard",
+					"at": [
+						2,
+						14
+					],
+					"dir": "right",
+					"do": "spawn"
+				},
+				{
+					"to": [
+						13,
+						12
+					],
+					"time": 0.8,
+					"do": "camera"
+				}
+			],
+			"wait": 0.4
+		},
+		{
+			"actions": [
+				{
+					"who": "captain",
+					"to": [
+						14,
+						13
+					],
+					"speed": 40,
+					"do": "move"
+				},
+				{
+					"who": "guard_a",
+					"to": [
+						13,
+						11
+					],
+					"speed": 40,
+					"do": "move"
+				},
+				{
+					"who": "guard_b",
+					"to": [
+						13,
+						15
+					],
+					"speed": 40,
+					"do": "move"
+				},
+				{
+					"state": "",
+					"do": "voice"
+				}
+			],
+			"wait": 2.8
+		},
+		{
+			"speaker": "保卫队队长",
+			"text": "醒了？笑得挺精神嘛。",
+			"actions": [
+				{
+					"who": "captain",
+					"dir": "right",
+					"do": "face"
+				}
+			]
+		},
+		{
+			"speaker": "保卫队队长",
+			"text": "你知道矿道口外面有多危险吗？保卫队找了你一整夜——居然一个人跑到外面去！",
+			"actions": [
+				{
+					"who": "captain",
+					"kind": "angry",
+					"do": "bubble"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "外、外面？我不知道你在说什么……我是突然出现在这里的！",
+			"emotion": "surprise"
+		},
+		{
+			"speaker": "保卫队队长",
+			"text": "突然出现？……每个乱跑被抓回来的人，都是这么说的。"
+		},
+		{
+			"talk": {
+				"file": "floor_06/captain",
+				"node": "opening_question"
+			}
+		},
+		{
+			"talk": {
+				"file": "floor_06/captain",
+				"node": "punish"
+			}
+		},
+		{
+			"actions": [
+				{
+					"who": "guard_a",
+					"to": [
+						16,
+						11
+					],
+					"time": 0.6,
+					"do": "move"
+				},
+				{
+					"who": "guard_b",
+					"to": [
+						17,
+						13
+					],
+					"time": 0.6,
+					"do": "move"
+				}
+			],
+			"wait": 0.6
+		},
+		{
+			"actions": [
+				{
+					"who": "Supine_16_12",
+					"on": false,
+					"do": "hold"
+				},
+				{
+					"who": "Stocks_17_12",
+					"on": false,
+					"do": "hold"
+				},
+				{
+					"who": "Clamp_16_13",
+					"on": false,
+					"do": "hold"
+				},
+				{
+					"sound": "stocks",
+					"do": "sfx"
+				},
+				{
+					"time": 0.4,
+					"do": "fade_out"
+				}
+			],
+			"wait": 0.5
+		},
+		{
+			"actions": [
+				{
+					"who": "Cushion_21_15",
+					"do": "hold"
+				},
+				{
+					"who": "Cuffs_21_14",
+					"place": false,
+					"do": "hold"
+				},
+				{
+					"who": "guard_a",
+					"to": [
+						20,
+						15
+					],
+					"time": 0,
+					"do": "move"
+				},
+				{
+					"who": "guard_b",
+					"to": [
+						22,
+						15
+					],
+					"time": 0,
+					"do": "move"
+				},
+				{
+					"who": "guard_a",
+					"dir": "right",
+					"do": "face"
+				},
+				{
+					"who": "guard_b",
+					"dir": "left",
+					"do": "face"
+				},
+				{
+					"who": "captain",
+					"to": [
+						19,
+						13
+					],
+					"time": 0,
+					"do": "move"
+				},
+				{
+					"to": [
+						21,
+						14
+					],
+					"time": 0,
+					"do": "camera"
+				},
+				{
+					"time": 0.5,
+					"do": "fade_in"
+				}
+			],
+			"wait": 0.6
+		},
+		{
+			"speaker": "公主",
+			"text": "等、等一下！为什么要换到这个坐垫上……手、手也被铐上去了……",
+			"emotion": "shy",
+			"actions": [
+				{
+					"who": "princess",
+					"kind": "surprise",
+					"do": "bubble"
+				}
+			]
+		},
+		{
+			"talk": {
+				"file": "floor_06/captain",
+				"node": "punish_scene"
+			}
+		},
+		{
+			"actions": [
+				{
+					"who": "princess",
+					"by": "guard_a",
+					"repeat": 6,
+					"interval": 0.22,
+					"fx": "hand",
+					"add": 15,
+					"do": "tickle"
+				},
+				{
+					"state": "laugh",
+					"do": "voice"
+				},
+				{
+					"emotion": "helpless_2",
+					"laugh": 85,
+					"do": "pose"
+				}
+			],
+			"wait": 0.6
+		},
+		{
+			"speaker": "公主",
+			"text": "哈哈哈哈哈！停、停下来……真的、真的不知道啊哈哈哈！",
+			"emotion": "helpless_2",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "guard_b",
+					"repeat": 6,
+					"interval": 0.22,
+					"fx": "hand",
+					"do": "tickle"
+				},
+				{
+					"time": 0.4,
+					"do": "shake"
+				}
+			]
+		},
+		{
+			"actions": [
+				{
+					"id": "blue",
+					"kind": "npc:blue_princess",
+					"at": [
+						3,
+						13
+					],
+					"dir": "right",
+					"do": "spawn"
+				},
+				{
+					"sound": "door",
+					"pitch": 1.1,
+					"do": "sfx"
+				}
+			],
+			"wait": 0.2
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "——住手。",
+			"actions": [
+				{
+					"to": [
+						12,
+						13
+					],
+					"time": 0.8,
+					"do": "camera"
+				},
+				{
+					"state": "giggle",
+					"do": "voice"
+				}
+			]
+		},
+		{
+			"actions": [
+				{
+					"who": "blue",
+					"to": [
+						17,
+						14
+					],
+					"speed": 45,
+					"do": "move"
+				},
+				{
+					"who": "captain",
+					"dir": "left",
+					"do": "face"
+				},
+				{
+					"who": "guard_a",
+					"dir": "left",
+					"do": "face"
+				},
+				{
+					"who": "captain",
+					"kind": "surprise",
+					"do": "bubble"
+				}
+			],
+			"wait": 3.0
+		},
+		{
+			"speaker": "公主",
+			"text": "……诶？她、她和我……长得好像……只是是蓝色的……",
+			"emotion": "surprise",
+			"actions": [
+				{
+					"who": "princess",
+					"kind": "surprise",
+					"do": "bubble"
+				}
+			]
+		},
+		{
+			"talk": {
+				"file": "floor_06/blue_princess",
+				"node": "rescue"
+			}
+		},
+		{
+			"actions": [
+				{
+					"who": "Cushion_21_15",
+					"on": false,
+					"do": "hold"
+				},
+				{
+					"who": "Cuffs_21_14",
+					"on": false,
+					"do": "hold"
+				},
+				{
+					"sound": "stocks",
+					"do": "sfx"
+				},
+				{
+					"emotion": "sad",
+					"laugh": 30,
+					"do": "pose"
+				},
+				{
+					"who": "princess",
+					"to": [
+						20,
+						13
+					],
+					"time": 0.4,
+					"do": "move"
+				},
+				{
+					"state": "",
+					"do": "voice"
+				}
+			],
+			"wait": 0.6
+		},
+		{
+			"speaker": "保卫队队长",
+			"text": "……放了她。你们几个，回岗位去。",
+			"actions": [
+				{
+					"who": "guard_a",
+					"to": [
+						3,
+						13
+					],
+					"speed": 50,
+					"do": "move"
+				},
+				{
+					"who": "guard_b",
+					"to": [
+						3,
+						14
+					],
+					"speed": 50,
+					"do": "move"
+				}
+			]
+		},
+		{
+			"speaker": "保卫队队长",
+			"text": "下次别让我在矿道口再看到你。",
+			"actions": [
+				{
+					"who": "captain",
+					"dir": "right",
+					"do": "face"
+				}
+			]
+		},
+		{
+			"actions": [
+				{
+					"who": "captain",
+					"to": [
+						3,
+						13
+					],
+					"speed": 45,
+					"do": "move"
+				},
+				{
+					"who": "guard_a",
+					"do": "despawn"
+				},
+				{
+					"who": "guard_b",
+					"do": "despawn"
+				}
+			],
+			"wait": 1.2
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "没事了。……这里是地下小镇，保卫队营地的地牢。",
+			"actions": [
+				{
+					"who": "blue",
+					"dir": "right",
+					"do": "face"
+				}
+			]
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "上去看看吧。我在楼上的广场等你——有很多话想问你。"
+		},
+		{
+			"actions": [
+				{
+					"who": "blue",
+					"to": [
+						3,
+						13
+					],
+					"speed": 50,
+					"do": "move"
+				},
+				{
+					"who": "captain",
+					"do": "despawn"
+				},
+				{
+					"who": "princess",
+					"time": 0.8,
+					"do": "camera"
+				}
+			],
+			"wait": 1.6
+		},
+		{
+			"actions": [
+				{
+					"who": "blue",
+					"do": "despawn"
+				},
+				{
+					"emotion": "happy",
+					"laugh": 0,
+					"do": "pose"
+				},
+				{
+					"flag": "f6_opening_done",
+					"do": "set_flag"
+				},
+				{
+					"text": "可以自由活动了：沿走廊的楼梯上到保卫队营地",
+					"do": "notify"
+				}
+			],
+			"wait": 0.3
+		},
+		{
+			"speaker": "公主",
+			"text": "……好不容易才喘过气来。先上去看看吧。",
+			"emotion": "sad"
+		}
+	]
+}

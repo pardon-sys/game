@@ -1,17 +1,23 @@
 extends CanvasLayer
-## 对话框（Autoload 名为 Dialogue）。通用对话来自 data/dialogues.json，
-## 楼层专属对话来自 levels/<id>/dialogues.json（进入楼层时 load_floor 合并）。
+## 对话框（Autoload 名为 Dialogue）。对话全部在 data/dialogues/（总文件夹）：
+##   common.json                通用对话
+##   <楼层组>/*.json            每层一个文件夹：石碑 signs.json、剧情 story.json……（进入楼层时 load_floor 合并）；
+##                              人物对话（每个人物一个文件，带 nodes：选项、条件、演绎）由 talk(文件) 播放（DialogueRunner）
 ## 公主立绘常驻左侧；正式对话和不阻断操作的受挠台词分别显示。
 
 signal finished(id: String)
 
-const DATA_PATH := "res://data/dialogues.json"
+const DATA_PATH := "res://data/dialogues/common.json"
 const PRINCESS := "公主"
 const CHARS_PER_SEC := 30.0
 const PORTRAIT_SHEET := preload("res://assets/generated/portraits.png")
 const PORTRAIT_META := "res://assets/generated/portraits.json"
 const HEAD_SHEET := preload("res://assets/generated/portrait_heads.png")
 const TEXT_LEFT_WITH_PORTRAIT := 112.0
+## 人物表（立绘、名字、行走图）：data/actors/npcs.json。
+const NPCS_PATH := "res://data/actors/npcs.json"
+## 右边人物立绘占的宽度（正文让出来）。
+const NPC_PORTRAIT_W := 110.0
 ## 手动滚动一行的像素数（12px 字体 + 行距）。
 const LINE_STEP := 13.0
 
@@ -29,6 +35,11 @@ var head_size := 32
 
 var _data := {}
 var _common := {}
+## 人物表 id -> {name, portrait, portrait_region?, sprite...}
+var npcs := {}
+var npc_portrait: TextureRect
+var runner: DialogueRunner
+var _npc_tex := {}
 var floor_id := ""
 var _lines: Array = []
 var _index := 0
@@ -84,6 +95,22 @@ func _ready() -> void:
 	portrait_fx.setup(portrait)
 	_common = _read_json(DATA_PATH)
 	_data = _common.duplicate()
+	npcs = _read_json(NPCS_PATH).get("npcs", {})
+	npc_portrait = TextureRect.new()
+	npc_portrait.name = "NpcPortrait"
+	npc_portrait.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	npc_portrait.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	npc_portrait.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	npc_portrait.position = Vector2(364, 114)
+	npc_portrait.size = Vector2(114, 152)
+	npc_portrait.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	npc_portrait.hide()
+	add_child(npc_portrait)
+	move_child(npc_portrait, portrait.get_index())
+	runner = DialogueRunner.new()
+	runner.name = "Runner"
+	runner.handler = self
+	add_child(runner)
 
 
 func _on_player_registered(p: PlayableCharacter) -> void:
@@ -109,18 +136,27 @@ func _read_json(path: String) -> Dictionary:
 	return {}
 
 
-## 通用对话 + 该楼层的对话。对话 id 全局唯一，和通用对话重名时报错并保留通用版本。
+## 通用对话 + 该楼层（楼层组）文件夹里的普通对话。对话 id 全局唯一，和通用对话重名时报错并保留通用版本。
+## 人物对话文件（有 nodes 的）不合并，由 talk() 按文件播放。
 func load_floor(id: String) -> void:
 	floor_id = id
 	_data = _common.duplicate()
 	if id == "":
 		return
-	var own := _read_json(Floors.dialogues_path(id))
-	for key in own:
-		if _data.has(key):
-			push_error("楼层 %s 的对话 id 与通用对话冲突: %s" % [id, key])
+	var dir := Floors.dialogue_dir(id)
+	for f in DirAccess.get_files_at(dir):
+		if not f.ends_with(".json"):
 			continue
-		_data[key] = own[key]
+		var own := _read_json(dir + f)
+		if own.has("nodes"):
+			continue
+		for key in own:
+			if str(key).begins_with("_"):
+				continue
+			if _data.has(key):
+				push_error("楼层 %s 的对话 id 与已有对话冲突: %s" % [id, key])
+				continue
+			_data[key] = own[key]
 
 
 func _atlas(tex: Texture2D, region: Rect2) -> AtlasTexture:
@@ -180,9 +216,18 @@ func _show_line() -> void:
 	var emotion: String = line.get("emotion", "")
 	var is_princess := speaker == PRINCESS
 	var left := TEXT_LEFT_WITH_PORTRAIT
+	var npc := npc_of(line)
+	if npc != "":
+		_show_npc(npc)
+	elif not is_princess and speaker != "":
+		npc_portrait.hide()  # 没有立绘的人物（普通居民）说话：右边不显示
+	var right_gap := NPC_PORTRAIT_W if npc_portrait.visible else 0.0
 	name_label.position.x = left
 	text_label.position.x = left
-	text_label.size.x = panel.size.x - left - 10.0
+	text_label.size.x = panel.size.x - left - 10.0 - right_gap
+	# 人物说话时公主立绘变暗，公主说话时人物立绘变暗
+	portrait.modulate = Color(0.55, 0.5, 0.6) if npc != "" else Color.WHITE
+	npc_portrait.modulate = Color(0.55, 0.5, 0.6) if is_princess else Color.WHITE
 	if is_princess:
 		GameState.emote(emotion if emotion != "" else "normal", 0.0, true)
 		_show_portrait(GameState.player.emotion.current if is_instance_valid(GameState.player) else "normal")
@@ -193,6 +238,69 @@ func _show_line() -> void:
 	_chars = 0.0
 	_typing = true
 	arrow.visible = false
+
+
+# ------------------------------------------------------------------ 人物对话 / 人物立绘
+## 播放人物对话文件（data/dialogues/<楼层组>/<人物>.json，带选项、条件、演绎），await 到结束。
+func talk(file: String, node := "") -> void:
+	await runner.talk(file, node)
+
+
+## 人物对话里的 call 效果（小镇设施）。
+func open_shop() -> void:
+	await Town.open_shop("market")
+
+
+func open_training() -> void:
+	Town.open_training()
+
+
+func rest() -> void:
+	Town.rest(GameState.player)
+
+
+## 这行台词是哪个人物说的（line.npc，或说话人名字和人物表里的名字一样）。
+func npc_of(line: Dictionary) -> String:
+	if line.has("npc"):
+		return str(line["npc"])
+	var speaker := str(line.get("speaker", ""))
+	if speaker == "" or speaker == PRINCESS:
+		return ""
+	for id in npcs:
+		if str(npcs[id].get("name", "")) == speaker:
+			return str(id)
+	return ""
+
+
+func npc_texture(id: String) -> Texture2D:
+	if _npc_tex.has(id):
+		return _npc_tex[id]
+	var info: Dictionary = npcs.get(id, {})
+	var file := str(info.get("portrait", ""))
+	var tex: Texture2D = null
+	if file != "" and ResourceLoader.exists(file):
+		tex = load(file)
+		if info.has("portrait_region"):
+			var r: Array = info["portrait_region"]
+			tex = _atlas(tex, Rect2(r[0], r[1], r[2], r[3]))
+	_npc_tex[id] = tex
+	return tex
+
+
+func _show_npc(id: String) -> void:
+	var tex := npc_texture(id)
+	if tex == null:
+		npc_portrait.hide()
+		return
+	var appearing := not npc_portrait.visible or npc_portrait.texture != tex
+	npc_portrait.texture = tex
+	npc_portrait.show()
+	if appearing:
+		npc_portrait.position.x = 394.0
+		npc_portrait.modulate.a = 0.0
+		var tw := create_tween().set_parallel()
+		tw.tween_property(npc_portrait, "position:x", 364.0, 0.18).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+		tw.tween_property(npc_portrait, "modulate:a", 1.0, 0.18)
 
 
 func _on_emotion_changed(emotion: String) -> void:
@@ -419,6 +527,8 @@ func advance() -> void:
 func _end() -> void:
 	_active = false
 	panel.hide()
+	npc_portrait.hide()
+	portrait.modulate = Color.WHITE
 	GameState.emote("", 1.2, false)  # 松开对话中保持的表情，1.2 秒后回到默认
 	var id := _id
 	finished.emit(id)

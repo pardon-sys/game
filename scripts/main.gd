@@ -23,13 +23,21 @@ func _ready() -> void:
 	_fade.set_anchors_preset(Control.PRESET_FULL_RECT)
 	_fade.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	layer.add_child(_fade)
+	# 主界面选了「继续 / 读取存档」：读档（换到存档的关卡、站到存档位置）
+	if GameState.pending_load > 0:
+		var slot := GameState.pending_load
+		GameState.pending_load = 0
+		_fade.color.a = 1.0
+		SaveSystem.load_slot.call_deferred(slot)
 
 
-func change_level(path: String) -> void:
+## keep_state：不把当前公主的状态带过去（读档时已经从存档设好了）。
+func change_level(path: String, keep_state := false) -> void:
 	if _busy:
 		return
 	_busy = true
-	GameState.save_player_state()
+	if not keep_state:
+		GameState.save_player_state()
 	var tw := create_tween()
 	tw.tween_property(_fade, "color:a", 1.0, 0.35)
 	await tw.finished

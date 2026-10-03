@@ -272,10 +272,46 @@ HUD 背包栏会根据物品数据自动显示，不需要改 UI 代码。
 - 背包 `PAGE_GALLERY`：`Backpack.gallery_entries()`（`death_*`、`nest_*` CG 和 `CG.scenes`）、`gallery_unlocked(条目)`（测试模式或看过：`cg_seen_<播放 id>`）、`play_selected()`。
 
 ### 地图内过场动画
-- Autoload `Cutscene`（`scripts/cutscene/cutscene_player.gd`，CanvasLayer 12；章节结束画面在 30 层）。数据 `data/cutscenes/<id>.json`：`{name, skippable, hide_hud, steps}`，步骤格式同 CG。演员：`princess`、关卡节点名（构建器命名为 `<类型>_<x>_<y>`，如 `Snare_10_7`、`Imp_68_64`）、`spawn` 生成的临时演员（`shadow` = 公主精灵蒙黑）。动作列表见脚本开头的注释；`validate(id)` 检查动作名。
+- Autoload `Cutscene`（`scripts/cutscene/cutscene_player.gd`，CanvasLayer 12；章节结束画面在 30 层）。数据 `data/cutscenes/<楼层组>/<id>.json`（启动时递归建 `id → 路径` 索引，id 就是文件名，全局唯一）：`{name, skippable, hide_hud, steps}`，步骤格式同 CG；步骤还可以写 `"talk": {"file", "node"}`（await 人物对话，可以带选项）和 `"theater": id`（await 小剧场）。动作 `hold`（`who` 刑具，`on`、`place`）：合上刑具、把公主放上去、摆刑具的 `pose_offset / pose_rotation`、强制播被困动画（`PlayableCharacter.puppet_anim`），直到 `on=false`；`spawn kind=npc:<人物>` 生成一个不溜达的居民当演员；`chapter_end` 带 `next` 时结束画面显示「按 E 继续」（`continue_chapter()` 换到那一层）。演员：`princess`、关卡节点名（构建器命名为 `<类型>_<x>_<y>`，如 `Snare_10_7`、`Imp_68_64`）、`spawn` 生成的临时演员（`shadow` = 公主精灵蒙黑）。动作列表见脚本开头的注释；`validate(id)` 检查动作名。
 - 播放时 `GameState.in_cutscene` + `in_dialogue` 为真（对话框不会在过场中途清掉 `in_dialogue`），所有用 `in_dialogue` 判断暂停的陷阱 / 怪物 / 状态自动暂停；公主被 `move` 时 `puppet_walking` 播走路动画。镜头动的是公主身上的 Camera2D（结束时还原到原位置和缩放）。
 - 跳过：看过的过场按 Esc，剩下步骤里的 `set_flag / chapter_end / spawn / despawn / move / carry / pose / face` 立即生效。
 - 触发：关卡 `[level]` `intro_cutscene`（`Level._ready`）、`DialogueTrigger.cutscene`（图例 `trigger cutscene=<id>`）、`TrapRoomZone.cutscene`、`Cutscene.play(id)` / `play_data(id, 数据)`。
+
+### 人物对话（DialogueRunner）
+- `DialogueRunner`（`scripts/dialogue/dialogue_runner.gd`）挂在 `Dialogue` 下：`await Dialogue.talk("floor_06/captain"[, 起始节点])`。台词复用对话框（`Dialogue.start_lines`），选项用 `ChoiceMenu`（`scripts/ui/choice_menu.gd`，`await ask(选项文本, 提示) -> 序号`）。
+- 文件 `data/dialogues/<楼层组>/<人物>.json`（每个人物一个文件；`Dialogue.load_floor` 合并普通对话时跳过带 `nodes` 的文件）：
+  ```json
+  {"name": "保卫队队长", "npc": "captain",
+   "entries": [{"if": {"not": "f6_opening_done"}, "node": "opening_question"}, {"if": {"eq": {"f6_attitude": "beg"}}, "node": "hello_beg"}, {"node": "hello_honest"}],
+   "nodes": {
+     "hub": {"lines": [...], "prompt": "要聊什么？", "choices": [
+       {"text": "营地是做什么的？", "next": "camp", "return": true},
+       {"text": "……你还在生气吗？", "next": "still_angry", "return": true, "if": {"eq": {"f6_attitude": "defiant"}}, "once": true},
+       {"text": "没事了，再见", "next": "bye"}]},
+     "camp": {"lines": [...], "cutscene": "f6_camp_tour"},
+     "punish": {"goto": [{"if": {"eq": {"f6_attitude": "defiant"}}, "node": "punish_defiant"}, {"node": "punish_honest"}]}
+   }}
+  ```
+  - 选项 `return: true` = 这个分支演完回到选项页；没有 = 一路 `next` 走到结束。`if` 不满足不显示；`once` 选过一次就不再显示。
+  - 节点：`lines`（`speaker` 省略 = 这个人物，`"公主"`、`""` 旁白）、`set` 效果、`cutscene` / `theater` 演绎（`perform_before` 在台词前播）、`choices`、`next`、`goto` 条件跳转。
+  - 条件：`flag`、`not`、`eq {变量: 值}`、`var {变量: [">=", 数]}`、`seen "文件:节点"`、`any [...]`。效果：`flags`、`vars`、`add`、`give_item`、`coins`、`passive`、`call`（await `Dialogue` 上的 `open_shop / open_training / rest`）。
+  - **选择记忆**：关键选择写进 `GameState.vars`（随存档保存），别的人物用 `entries` / `goto` / 选项的 `if` 读它。看过的节点记 `dlg_<文件>_<节点>`，选过的选项记 `dlg_<文件>_<节点>_<序号>`。
+  - 检查：`python tools/build/check_dialogues.py`（节点跳转、过场 / 小剧场引用、`call` 名、读了没人写的变量；列出每个选择变量被哪些人物读取）。
+- 人物表 `data/actors/npcs.json`：`{id: {name, sprite（4×4 的 32px 行走图：下 / 左 / 右 / 上）, portrait（半身立绘）, portrait_region?, princess_sheet?（用公主的行走图布局，如蓝色的公主）}}`。说话人名字和人物表里的名字一样（或台词带 `npc`）时，对话框右边显示半身立绘，左边公主立绘变暗；没有立绘的普通居民只显示名字。
+- 小剧场 `data/theater/<楼层组>/<id>.json`：CG 舞台格式（`cast` + `steps`），演员 `kind` 可以写 `npc:<人物>`；`CG.play_theater(id)`，看过的可以跳过（`cg_seen_theater:<id>`）。
+
+### 存档与主界面
+- `SaveSystem`（`scripts/core/save_system.gd`，静态）：`user://saves/slot_<1~3>.json`。`save(存档位, 地点)`、`info / latest / delete`、`load_slot(存档位)`（`apply_state` 放回 GameState → `main.change_level(场景, keep_state = true)` → 站到存档位置）。测试里改 `SaveSystem.dir`。
+- 主界面 `scenes/title.tscn`（`run/main_scene`）：新游戏 → `GameState.reset()` 后进 `main.tscn`；继续 / 读取 → `GameState.pending_load = 存档位` 后进 `main.tscn`，`main._ready` 黑屏读档（关卡见 `pending_load` 不播开场）。
+- 存档点 `scenes/objects/save_point.tscn`（图例 `savepoint place=<地点名>`）：交互 → `SlotMenu`（`scripts/ui/slot_menu.gd`，`await choose("save"/"load") -> 存档位 / -1`，覆盖要确认）→ 保存 + 回满生命。暂停菜单 `to_title()` 回主界面。
+- `GameState.play_time`（有公主且没暂停时累加）、`vars`（对话选择）、`flag_changed` 信号。
+
+### 小镇：居民、道具、楼梯
+- `Resident`（`scripts/actors/allies/resident.gd`，继承 Actor，友军，不打不挠）：图例 `npc id=<人物> dialogue=<楼层组>/<文件> wander=<格> dir=<朝向> show_flag=… hidden_flag=…`。在出生点 `wander` 格内溜达，按 E `talk()`：停下、转向公主、`Dialogue.talk(dialogue)`。`show_flag / hidden_flag` 按剧情标记出现 / 消失（监听 `GameState.flag_changed`）。
+- `Prop`（`scripts/objects/prop.gd`，图例 `prop type=<种类> action=…`）：种类在 `assets/generated/town_props.json`（贴图区域、碰撞、灯光、动画）；`action`：`heal`（`Town.rest`）、`shop:<商店>`（`Town.open_shop`）、`training`（`Town.open_training`）、`talk:<文件>`、`read:<对话 id>`。
+- `Town`（`scripts/core/town.gd`）：`rest(公主)`、`open_shop(id)`（`ShopUI`，`data/shop/<id>.json`，金币，库存记在 `vars["shop_<商店>_<物品>"]`）、`open_training()`（`TrainingDB`：`data/training/trainings.json`，小游戏场景 `scenes/training/<id>.tscn` 存在时 `start(id)` 返回它，现在都「还没开放」；过关奖励 `grant(id)`）。
+- 楼梯 `scenes/objects/stairs.tscn`（`LevelExit` + 楼梯外观；图例 `stairs target=<楼层 id> spawn=<到达点> down=true/false`）：走进去 → `GameState.pending_spawn` → 目标关卡 `Level._ready` 把公主放到同名的 `SpawnPoint`（图例 `spawn id=…`）并设为检查点。`exit … locked=true` 是封住的入口（只播对话）。
+- 楼层组：`data/floors.json` 的 `group`（`Floors.group(id)`）；同组地图共用 `data/dialogues/<组>/`（`Floors.dialogue_dir`）。
 
 ### 束缚陷阱与第五层机关
 - `RestraintTrap`（`scripts/traps/restraint_trap.gd`）：`mode = grab`（`StatusComponent.grab`）或 `hobble`（`StatusComponent.hobble`：可以慢慢走、不能冲刺、攻击 / 交互键挣扎）；`exposed`（露出部位）、`self_tickle`、`group_name`（配套机关同组）、`pose_offset / pose_rotation`（`PlayableCharacter` 的姿势，`_update_lift` 里应用）、`regrab_delay`。子类：`SnareTrap`、`CuffsTrap`、`ClampTrap`、`WardrobeTrap`（墙面，`sprite_hidden`）、`LegLoopTrap`、`MudTrap`（多格、越陷越慢）、`BootsTrap`、`BindingTrap`；新部位：`SupineTrap`（仰卧，`pose_rotation` −90°）、`CushionTrap`、`ProneTrap`、`PitTrap`（`content` 洞里的怪物，`extra_combo_keys` 算那种怪物）、`SpinWheelTrap`（每 `spin_time` 扫一次；放开后等她能行动时 `force_move(..., "bounce")` 甩出 `fling` 格，`landing_point()`）、`VestTrap`（hobble）。`would_grab(人)`：现在踩上来会不会被困（空闲、没在冷却、不在 regrab 免疫里）。
@@ -336,23 +372,26 @@ HUD 背包栏会根据物品数据自动显示，不需要改 UI 代码。
 
 ## 楼层与切换
 
-- 第五层 `floor_05`（`tools/build/gen_floor05.py` 生成地图、对话和 design.json，再运行 `build_level.gd -- floor=floor_05`）目前是最后一层：结局过场的 `chapter_end` 显示「未完待续」并设 `chapter5_clear`。以后加第六层：在 `data/floors.json` 末尾加 `floor_06`，给第五层留一个 `exit target=next`（或在结局过场后调用 `main.change_level`）即可接上。
+- 第五层 `floor_05`（`tools/build/gen_floor05.py` 生成地图、对话和 design.json，再运行 `build_level.gd -- floor=floor_05`）：结局过场的 `chapter_end` 设 `chapter5_clear`，带 `next: floor_06_prison`，按 E 进入第六层。
+- 第六层 `floor_06_prison / upper / camp / mine`（同属 `floor_06` 组；`tools/build/gen_floor06.py` 生成四张地图、人物对话、过场、小剧场，再分别构建）：开场过场 `f6_wake`（营地地牢），之后是可以长期往返的小镇，没有敌人。
 
 每层一个文件夹，改某一层只需动这一个文件夹：
 
 ```
-levels/floor_01/  map.txt  dialogues.json  floor.tscn
+levels/floor_01/  map.txt  floor.tscn
 levels/floor_02/  ...
-data/floors.json  楼层顺序 [{id, name, scene}]（读取入口 scripts/core/floors.gd：Floors.ids / scene / next_of）
-data/dialogues.json  只放通用对话（复活、上锁提示、钥匙、失控恢复、铁栅门）
+data/floors.json  楼层顺序 [{id, name, scene, group?}]（读取入口 scripts/core/floors.gd：Floors.ids / scene / next_of / group / dialogue_dir）
+data/dialogues/common.json          通用对话（复活、上锁提示、钥匙、失控恢复、铁栅门）
+data/dialogues/<楼层组>/signs.json  石碑；story.json 剧情；<人物>.json 人物对话（DialogueRunner）
+data/cutscenes/<楼层组>/  地图内过场；data/theater/<楼层组>/  小剧场
 ```
 
 - `map.txt`：可选的 `[level]` 段（`intro` 开场对话、`ambient` 环境光）、`[legend]` 图例、`[map]` 地图。
 - 构建：`build_level.gd -- floor=floor_02` 构建一层，`-- all` 构建 floors.json 里的全部楼层；产物 `floor.tscn` 的根节点名为 `Floor02`，并记录 `floor_id`。
-- 对话：楼层根节点（`scripts/level.gd`）进入时调用 `Dialogue.load_floor(floor_id)`，把本层 `dialogues.json` 合并到通用对话上；离开后上一层的专属对话卸载。对话 id 全局唯一，与通用对话重名会报错。
+- 对话：楼层根节点（`scripts/level.gd`）进入时调用 `Dialogue.load_floor(floor_id)`，把 `data/dialogues/<楼层组>/` 里的普通对话文件合并到通用对话上；离开后上一层的专属对话卸载。对话 id 全局唯一，与通用对话重名会报错。
 - `scripts/main.gd`（主场景，组名 `main`）提供 `change_level(path)`：淡出 → 保存公主状态（`GameState.save_player_state()`：血量、闷笑值、战损）→ 换关卡 → 新关卡的公主注册时恢复 → 淡入。背包与剧情标记本来就在 GameState 中。
 - 图例 `exit target=next dialogue=… w=… h=…` 放置 `LevelExit`：走进去先播对话，再切换到 floors.json 中的下一层（`target=floor_03` 可直接指定楼层）。
-- 新增一层：建 `levels/floor_0N/` 的 `map.txt` 和 `dialogues.json`，在 `data/floors.json` 追加一项，运行构建器。
+- 新增一层：建 `levels/floor_0N/map.txt` 和 `data/dialogues/floor_0N/`，在 `data/floors.json` 追加一项，运行构建器。
 - 图例常用参数：陷阱 `dir=left/right/up/down`、`len=格数`、`lever=组名`（加入拉杆组）；拉杆 `target=组1,组2`；铁栅 `inverted=true`（通电关、断电开）；火把 `target=组名`（点亮时激活该组，如暗墙 `secret`）；怪物 `open_on_death=组名`。
 - 对话行可以带 `"set_flag": "标记"`，显示这一行时设置剧情标记。
 - 第一层 `floor_01`：牢房 → 火把走廊 → 守卫室（旁边兵器库）→ 储藏室 → 书房（火把照出暗墙 → 秘密储物间）→ 尖刺走廊 → 宝库 → 出口；走廊南侧有拉杆谜题间。
@@ -441,7 +480,16 @@ scripts/fx/           Fx、MagicCircle
 scripts/items/        ItemData 体系、Inventory、ItemDB、WorldItem、ItemDrop
 scripts/objects/      宝箱、门、铁栅门、拉杆、火把、木桶、石碑、检查点、对话触发、暗墙、HitRelay
 scripts/autoload/     GameState（玩家引用、背包、标记、事件总线）、Audio
-levels/floor_0N/      每层的地图、对话、场景
+levels/<楼层>/        每张地图的 map.txt 和场景
+scripts/dialogue/     DialogueRunner（人物对话、选项、条件、选择记忆）
+scripts/training/     TrainingDB（训练小游戏接口）
+scripts/core/         …… SaveSystem（存档）、Town（小镇设施）
+scripts/ui/           …… ChoiceMenu、SlotMenu、ShopUI、TitleScreen
+tests/systems_test.gd 人物对话、选择记忆、存档读档、存档点、主界面、文件迁移
+tests/floor6_test.gd  第六层地图、楼梯、居民、设施、开场三种选择、第五层 → 第六层
+tools/build/gen_floor06.py  第六层地图、对话、过场、小剧场
+tools/build/check_dialogues.py  人物对话检查
+tools/art/gen_town_art.py  小镇道具、居民、关键人物立绘、蓝色的公主、检查点、存档点
 data/                 楼层表、通用对话、组合技表、增益减益表、受挠台词、疲倦爆发台词、物品、怪物/友军数值、动画配置
 tests/smoke_test.gd   冒烟测试（含11状态、音频生命周期与接口约定检查）
 tests/floor2_test.gd  第二层：关卡切换、减速/抓取、新怪物、新陷阱、立绘密度

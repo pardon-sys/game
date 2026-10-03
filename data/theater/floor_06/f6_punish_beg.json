@@ -1,0 +1,218 @@
+{
+	"name": "营地地牢的惩罚（笑着求饶）",
+	"cast": {
+		"princess": {
+			"kind": "princess",
+			"at": [
+				0,
+				8
+			],
+			"visual": "helpless_1",
+			"anim": "helpless",
+			"dir": "down"
+		},
+		"cushion": {
+			"kind": "trap:cushion",
+			"at": [
+				0,
+				11
+			]
+		},
+		"cuffs": {
+			"kind": "trap:cuffs",
+			"at": [
+				0,
+				-2
+			]
+		},
+		"g1": {
+			"kind": "npc:guard",
+			"at": [
+				-30,
+				4
+			],
+			"dir": "right"
+		},
+		"g2": {
+			"kind": "npc:guard",
+			"at": [
+				30,
+				4
+			],
+			"dir": "left"
+		},
+		"g3": {
+			"kind": "npc:guard",
+			"at": [
+				-60,
+				6
+			],
+			"dir": "right",
+			"hidden": true
+		},
+		"cap": {
+			"kind": "npc:captain",
+			"at": [
+				62,
+				0
+			],
+			"dir": "left"
+		}
+	},
+	"steps": [
+		{
+			"actions": [
+				{
+					"time": 0.6,
+					"do": "fade_in"
+				},
+				{
+					"state": "giggle",
+					"do": "voice"
+				}
+			],
+			"wait": 0.7
+		},
+		{
+			"speaker": "保卫队队长",
+			"text": "这么爱笑，就让你笑个够。……轻点挠，别弄伤了她。",
+			"actions": [
+				{
+					"who": "cap",
+					"dir": "left",
+					"do": "face"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "哈哈哈哈……我错了我错了！轻、轻点也很痒啊哈哈哈！",
+			"portrait": "defeat_1",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "g1",
+					"repeat": 6,
+					"interval": 0.25,
+					"fx": "hand",
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"by": "g2",
+					"repeat": 6,
+					"interval": 0.3,
+					"fx": "feather",
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"kind": "laugh",
+					"do": "bubble"
+				},
+				{
+					"state": "laugh",
+					"do": "voice"
+				}
+			]
+		},
+		{
+			"speaker": "保卫队员",
+			"text": "噗……队长，她笑得好开心啊。",
+			"actions": [
+				{
+					"who": "g1",
+					"count": 1,
+					"do": "hop"
+				}
+			]
+		},
+		{
+			"speaker": "保卫队队长",
+			"text": "……别笑。继续挠。",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "g1",
+					"repeat": 8,
+					"interval": 0.2,
+					"fx": "hand",
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"by": "g2",
+					"repeat": 8,
+					"interval": 0.22,
+					"fx": "hand",
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"portrait": "defeat_2",
+			"speaker": "公主",
+			"text": "哈哈哈哈哈……我会乖乖的……再也不乱跑了哈哈哈哈！",
+			"actions": [
+				{
+					"who": "princess",
+					"visual": "helpless_2",
+					"do": "pose"
+				},
+				{
+					"who": "princess",
+					"time": 0.6,
+					"do": "shake"
+				},
+				{
+					"who": "princess",
+					"by": "g1",
+					"repeat": 8,
+					"interval": 0.18,
+					"fx": "hand",
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"by": "g2",
+					"repeat": 8,
+					"interval": 0.2,
+					"fx": "hand",
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "",
+			"text": "（保卫队员们轮流挠了好一阵子，地牢里只剩下公主断断续续的笑声）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "g2",
+					"repeat": 6,
+					"interval": 0.3,
+					"fx": "feather",
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"kind": "dots",
+					"do": "bubble"
+				}
+			]
+		},
+		{
+			"actions": [
+				{
+					"time": 0.6,
+					"do": "fade_out"
+				},
+				{
+					"state": "",
+					"do": "voice"
+				}
+			],
+			"wait": 0.7
+		}
+	]
+}

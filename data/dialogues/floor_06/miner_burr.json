@@ -1,0 +1,48 @@
+{
+	"name": "矿工伯尔",
+	"entries": [
+		{
+			"node": "hello"
+		}
+	],
+	"nodes": {
+		"hello": {
+			"lines": [
+				{
+					"text": "矿车别乱推啊！"
+				}
+			],
+			"next": "hub"
+		},
+		"hub": {
+			"choices": [
+				{
+					"text": "深处那扇门是什么？",
+					"next": "door",
+					"return": true
+				},
+				{
+					"text": "再见",
+					"next": "bye"
+				}
+			]
+		},
+		"door": {
+			"lines": [
+				{
+					"text": "那扇门？我爷爷那辈就封着了。"
+				},
+				{
+					"text": "偶尔能听到门后面有……笑声？不知道是不是听错了。"
+				}
+			]
+		},
+		"bye": {
+			"lines": [
+				{
+					"text": "小心脚下。"
+				}
+			]
+		}
+	}
+}

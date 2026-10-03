@@ -78,6 +78,8 @@ var fatigue_bursting := false
 var sensitivity := Sensitivity.new()
 ## 过场动画里被脚本移动时播走路动画（Cutscene 的 move 动作设置）。
 var puppet_walking := false
+## 过场里强制播的动画（如被刑具固定时的 "grabbed"；空 = 正常）。
+var puppet_anim := ""
 ## 束缚陷阱给小人摆的姿势（倒吊、坐下、陷进泥里……）：精灵的偏移和旋转，_update_lift 里应用。
 var pose_offset := Vector2.ZERO
 ## 藏起小人（被拉进挠痒衣柜里）。
@@ -114,7 +116,7 @@ func _setup() -> void:
 	if faction == Faction.Type.PLAYER:
 		GameState.register_player(self)
 		if GameState.checkpoint == Vector2.ZERO:
-			GameState.checkpoint = global_position
+			GameState.set_checkpoint(global_position)
 	if laugh:
 		laugh.level_changed.connect(_on_laugh_level_changed)
 	sensitivity.weak_point.connect(_on_weak_point)
@@ -855,6 +857,8 @@ func _update_interact_target() -> void:
 
 
 func _anim_name() -> String:
+	if puppet_anim != "":
+		return puppet_anim
 	if state == State.IDLE and status and status.is_rooted():
 		return "grabbed"
 	match state:

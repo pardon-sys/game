@@ -1,0 +1,60 @@
+{
+	"intro_2": [
+		{
+			"speaker": "公主",
+			"emotion": "surprise",
+			"text": "这里是……第二层？空气里有股甜甜的粉末味。"
+		},
+		{
+			"speaker": "公主",
+			"emotion": "shy",
+			"text": "总觉得……这一层的家伙们特别喜欢挠人痒痒……"
+		},
+		{
+			"speaker": "公主",
+			"emotion": "angry",
+			"text": "不、不管了！本公主一定要找到出口！"
+		}
+	],
+	"troll_intro": [
+		{
+			"speaker": "挠痒巨魔",
+			"text": "咕嘿嘿……又来了一个怕痒的小公主……"
+		},
+		{
+			"speaker": "公主",
+			"emotion": "surprise",
+			"text": "好、好大的家伙！"
+		},
+		{
+			"speaker": "挠痒巨魔",
+			"text": "让俺抓住你，挠到你笑到站不起来！"
+		},
+		{
+			"speaker": "公主",
+			"emotion": "angry",
+			"text": "休想！被抓住的话就拼命挣脱，趁它发呆的时候打它！"
+		}
+	],
+	"ending_2": [
+		{
+			"speaker": "公主",
+			"emotion": "happy",
+			"text": "呼……终于摆脱那个巨魔了！楼梯就在前面！"
+		},
+		{
+			"speaker": "公主",
+			"emotion": "shy",
+			"text": "……今天笑得比一辈子加起来还多。"
+		},
+		{
+			"speaker": "公主",
+			"emotion": "surprise",
+			"text": "下面好像还有一层……传来咔哒咔哒的机器声。"
+		},
+		{
+			"speaker": "",
+			"text": "—— 第二章　完 ——"
+		}
+	]
+}

@@ -1,0 +1,11 @@
+{
+	"_说明": ["集贸市场的商品（ShopUI 读取）：id 物品、price 金币价格、stock 每次进货的库存（-1 不限）。"],
+	"name": "集贸市场",
+	"keeper": "supervisor",
+	"items": [
+		{"id": "mint", "price": 3, "stock": -1},
+		{"id": "clear_dew", "price": 5, "stock": -1},
+		{"id": "heart", "price": 6, "stock": 5},
+		{"id": "star_candy", "price": 12, "stock": 2}
+	]
+}

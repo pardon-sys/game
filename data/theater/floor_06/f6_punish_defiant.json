@@ -1,0 +1,240 @@
+{
+	"name": "营地地牢的惩罚（顶嘴反驳）",
+	"cast": {
+		"princess": {
+			"kind": "princess",
+			"at": [
+				0,
+				8
+			],
+			"visual": "helpless_1",
+			"anim": "helpless",
+			"dir": "down"
+		},
+		"cushion": {
+			"kind": "trap:cushion",
+			"at": [
+				0,
+				11
+			]
+		},
+		"cuffs": {
+			"kind": "trap:cuffs",
+			"at": [
+				0,
+				-2
+			]
+		},
+		"g1": {
+			"kind": "npc:guard",
+			"at": [
+				-30,
+				4
+			],
+			"dir": "right"
+		},
+		"g2": {
+			"kind": "npc:guard",
+			"at": [
+				30,
+				4
+			],
+			"dir": "left"
+		},
+		"g3": {
+			"kind": "npc:guard",
+			"at": [
+				-60,
+				6
+			],
+			"dir": "right",
+			"hidden": true
+		},
+		"cap": {
+			"kind": "npc:captain",
+			"at": [
+				62,
+				0
+			],
+			"dir": "left"
+		}
+	},
+	"steps": [
+		{
+			"actions": [
+				{
+					"time": 0.6,
+					"do": "fade_in"
+				},
+				{
+					"state": "giggle",
+					"do": "voice"
+				}
+			],
+			"wait": 0.7
+		},
+		{
+			"speaker": "保卫队队长",
+			"text": "不是很能说吗？再说一句「我可是公主」听听。",
+			"actions": [
+				{
+					"who": "cap",
+					"dir": "left",
+					"do": "face"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "我、我就是公主哈哈哈哈！你们……等着——哈哈哈哈，腰、腰不行！",
+			"portrait": "defeat_1",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "g1",
+					"repeat": 6,
+					"interval": 0.25,
+					"fx": "hand",
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"by": "g2",
+					"repeat": 6,
+					"interval": 0.3,
+					"fx": "feather",
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"kind": "laugh",
+					"do": "bubble"
+				},
+				{
+					"state": "laugh",
+					"do": "voice"
+				}
+			]
+		},
+		{
+			"speaker": "保卫队员",
+			"text": "队长，她还在嘴硬！",
+			"actions": [
+				{
+					"who": "g1",
+					"count": 1,
+					"do": "hop"
+				}
+			]
+		},
+		{
+			"actions": [
+				{
+					"who": "g3",
+					"at": [
+						-44,
+						12
+					],
+					"time": 0.4,
+					"do": "enter"
+				}
+			],
+			"wait": 0.4
+		},
+		{
+			"speaker": "保卫队队长",
+			"text": "第三个人也上。脚心、腋下、腰，一起来。",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "g1",
+					"repeat": 8,
+					"interval": 0.2,
+					"fx": "hand",
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"by": "g2",
+					"repeat": 8,
+					"interval": 0.22,
+					"fx": "hand",
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"by": "g3",
+					"repeat": 8,
+					"interval": 0.24,
+					"fx": "feather",
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"portrait": "defeat_2",
+			"speaker": "公主",
+			"text": "哈哈哈哈哈！三、三个人太犯规了……不行了不行了哈哈哈！",
+			"actions": [
+				{
+					"who": "princess",
+					"visual": "helpless_2",
+					"do": "pose"
+				},
+				{
+					"who": "princess",
+					"time": 0.6,
+					"do": "shake"
+				},
+				{
+					"who": "princess",
+					"by": "g1",
+					"repeat": 8,
+					"interval": 0.18,
+					"fx": "hand",
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"by": "g2",
+					"repeat": 8,
+					"interval": 0.2,
+					"fx": "hand",
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "",
+			"text": "（保卫队员们轮流挠了好一阵子，地牢里只剩下公主断断续续的笑声）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "g2",
+					"repeat": 6,
+					"interval": 0.3,
+					"fx": "feather",
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"kind": "dots",
+					"do": "bubble"
+				}
+			]
+		},
+		{
+			"actions": [
+				{
+					"time": 0.6,
+					"do": "fade_out"
+				},
+				{
+					"state": "",
+					"do": "voice"
+				}
+			],
+			"wait": 0.7
+		}
+	]
+}

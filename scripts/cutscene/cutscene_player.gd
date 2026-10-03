@@ -1,7 +1,7 @@
 extends CanvasLayer
 ## 地图内过场动画（Autoload：Cutscene）。和笑倒 CG 不同，直接在当前地图里演：上下滑入黑框（电影感），
 ## 镜头在地图上移动，演员是公主、关卡里的节点（按节点名）和临时生成的演员。
-## 数据：data/cutscenes/<id>.json —— {name, skippable, hide_hud, steps}，steps 格式同 data/cgs.json：
+## 数据：data/cutscenes/<楼层组>/<id>.json（每层一个文件夹，id 是文件名，全局唯一）—— {name, skippable, hide_hud, steps}，steps 格式同 data/cgs.json：
 ##   每一步可写 actions（同时开始）、speaker / text / emotion（台词，等玩家推进；auto 秒后自动前进）、wait（没有台词时停留秒数）。
 ## 播放期间 GameState.in_cutscene / in_dialogue 为真：陷阱、怪物、巢穴、组合都暂停，公主不能操作；动作只做表现，不走真实效果。
 ## 看过的过场按 Esc 跳过（跳过时剩下步骤里的 set_flag / chapter_end / spawn / despawn / move / carry 照样生效）。
@@ -21,7 +21,7 @@ signal finished(id: String)
 const DIR := "res://data/cutscenes/"
 const BAR_H := 28.0
 const ACTIONS := ["move", "face", "pose", "camera", "shake", "fade_out", "fade_in", "flash", "bubble", "say", "tickle", "trap",
-	"spawn", "despawn", "carry", "wait", "sfx", "voice", "set_flag", "notify", "chapter_end"]
+	"spawn", "despawn", "carry", "wait", "sfx", "voice", "set_flag", "notify", "chapter_end", "hold"]
 const BUBBLE_TEXT := {"surprise": "！", "question": "？", "laugh": "哈哈哈", "dots": "……", "sad": "呜……", "angry": "哼！", "shy": "///", "happy": "♪"}
 ## 黑影的颜色（复制公主的精灵后蒙上）。
 const SHADOW_COLOR := Color(0.07, 0.03, 0.1, 0.95)
@@ -46,6 +46,9 @@ var curtain: ColorRect
 var flash_rect: ColorRect
 var skip_label: Label
 var chapter_screen: Control
+var chapter_hint: Label
+## 章节结束画面按 E 后进入的楼层（chapter_end 的 next，空 = 停在结束画面）。
+var chapter_next := ""
 var chapter_title: Label
 var chapter_sub: Label
 
@@ -92,6 +95,14 @@ func _build() -> void:
 	chapter_sub.size = Vector2(vs.x, 30)
 	chapter_sub.position = Vector2(0, 146)
 	chapter_screen.add_child(chapter_sub)
+	chapter_hint = Label.new()
+	chapter_hint.add_theme_color_override("font_color", Color(1, 0.86, 0.4))
+	chapter_hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	chapter_hint.size = Vector2(vs.x, 20)
+	chapter_hint.position = Vector2(0, 210)
+	chapter_hint.text = "按 E 继续"
+	chapter_hint.hide()
+	chapter_screen.add_child(chapter_hint)
 	chapter_screen.hide()
 	# 章节结束画面放在最上层（盖住常驻立绘和对话框）
 	var top := CanvasLayer.new()
@@ -109,23 +120,40 @@ func _rect(col: Color, parent: Node = null) -> ColorRect:
 
 
 # ------------------------------------------------------------------ 公共接口
+var _index := {}
+
+
+## id -> 文件路径（递归扫描 data/cutscenes/ 下各层的文件夹）。
+func index() -> Dictionary:
+	if _index.is_empty():
+		_scan(DIR)
+	return _index
+
+
+func _scan(dir: String) -> void:
+	for f in DirAccess.get_files_at(dir):
+		if f.ends_with(".json"):
+			_index[f.get_basename()] = dir + f
+	for sub in DirAccess.get_directories_at(dir):
+		_scan(dir + sub + "/")
+
+
 func has_cutscene(id: String) -> bool:
-	return FileAccess.file_exists(DIR + id + ".json")
+	return index().has(id)
 
 
 func load_cutscene(id: String) -> Dictionary:
 	if not has_cutscene(id):
 		return {}
-	var parsed: Variant = JSON.parse_string(FileAccess.get_file_as_string(DIR + id + ".json"))
+	var parsed: Variant = JSON.parse_string(FileAccess.get_file_as_string(index()[id]))
 	return parsed if parsed is Dictionary else {}
 
 
-## 所有过场 id（data/cutscenes/ 下的文件）。
+## 所有过场 id。
 func ids() -> Array[String]:
 	var out: Array[String] = []
-	for f in DirAccess.get_files_at(DIR):
-		if f.ends_with(".json"):
-			out.append(f.get_basename())
+	for id in index():
+		out.append(str(id))
 	return out
 
 
@@ -197,10 +225,18 @@ func _run_step(st: Dictionary) -> void:
 	var longest := 0.0
 	for a in st.get("actions", []):
 		longest = maxf(longest, _do(a, false))
+	# 过场里接人物对话（带选项，选择记忆）或小剧场：演完再往下走
+	if st.has("talk"):
+		var tk: Dictionary = st["talk"]
+		await Dialogue.talk(str(tk.get("file", "")), str(tk.get("node", "")))
+	if st.has("theater"):
+		await CG.play_theater(str(st["theater"]))
 	if st.has("text"):
 		var line := {"speaker": st.get("speaker", ""), "text": st["text"]}
 		if st.has("emotion"):
 			line["emotion"] = st["emotion"]
+		if st.has("npc"):
+			line["npc"] = st["npc"]
 		Dialogue.start_lines([line], "cutscene:" + current)
 		if st.has("auto"):
 			await _wait(float(st["auto"]))
@@ -249,7 +285,29 @@ func _finish(id: String, cs: Dictionary) -> void:
 	finished.emit(id)
 
 
+## 章节结束画面：按 E 进入下一章（chapter_end 写了 next）。
+func continue_chapter() -> void:
+	if chapter_next == "" or not chapter_screen.visible:
+		return
+	var next := chapter_next
+	chapter_next = ""
+	chapter_hint.hide()
+	var main := get_tree().get_first_node_in_group("main")
+	if main:
+		await main.change_level(Floors.scene(next))
+	chapter_screen.hide()
+	curtain.color.a = 0.0
+	var hud := _hud()
+	if hud:
+		hud.show()
+
+
 func _input(event: InputEvent) -> void:
+	if chapter_screen.visible and chapter_next != "" and not _playing and event.is_pressed() and not event.is_echo() \
+			and (event.is_action("interact") or event.is_action("ui_accept") or event.is_action("attack")):
+		get_viewport().set_input_as_handled()
+		continue_chapter()
+		return
 	if not _playing or not _can_skip or not event.is_pressed() or event.is_echo():
 		return
 	if event.is_action("pause") or event.is_action("ui_cancel"):
@@ -287,12 +345,14 @@ func _do(a: Dictionary, instant: bool) -> float:
 				who.global_position = to
 				return 0.0
 			_face(who, (to - who.global_position).normalized())
-			if who == GameState.player:
+			var walks := "puppet_walking" in who
+			if walks:
 				who.set("puppet_walking", true)
-			var tw := create_tween()
+			# 演员的 tween（演员被 despawn 时跟着停）
+			var tw := who.create_tween()
 			tw.tween_property(who, "global_position", to, dur)
-			if who == GameState.player:
-				tw.tween_callback(func(): if is_instance_valid(who): who.set("puppet_walking", false))
+			if walks:
+				tw.tween_callback(who.set.bind("puppet_walking", false))
 			return dur
 		"face":
 			if who:
@@ -307,6 +367,16 @@ func _do(a: Dictionary, instant: bool) -> float:
 				p.laugh.set_value(p.laugh.max_value * float(a["laugh"]) / 100.0)
 			if a.has("faint"):
 				_faint(p, bool(a["faint"]))
+			# 被刑具固定的姿势：restrain = {rotation 弧度, offset [x, y]}，false = 恢复
+			if a.has("restrain"):
+				var r: Variant = a["restrain"]
+				if r is Dictionary:
+					p.pose_rotation = float(r.get("rotation", 0.0))
+					var o: Array = r.get("offset", [0, 0])
+					p.pose_offset = Vector2(float(o[0]), float(o[1]))
+				else:
+					p.pose_rotation = 0.0
+					p.pose_offset = Vector2.ZERO
 		"camera":
 			return _camera(a, t)
 		"shake":
@@ -334,12 +404,17 @@ func _do(a: Dictionary, instant: bool) -> float:
 		"trap":
 			if who is Trap:
 				_trap_show(who as Trap, float(a.get("time", 0.8)))
+		"hold":
+			_hold(who, bool(a.get("on", true)), bool(a.get("place", true)))
 		"spawn":
 			_spawn(a)
 		"despawn":
 			if who and who != GameState.player:
 				spawned.erase(str(a.get("who", "")))
-				who.queue_free()
+				# 淡出再删掉（走到一半离场也不突兀）
+				var tw := who.create_tween()
+				tw.tween_property(who, "modulate:a", 0.0, 0.0 if instant else 0.3)
+				tw.tween_callback(who.queue_free)
 		"carry":
 			_carrier = who if bool(a.get("on", true)) else null
 			if _carrier:
@@ -359,6 +434,8 @@ func _do(a: Dictionary, instant: bool) -> float:
 		"chapter_end":
 			chapter_title.text = str(a.get("title", "完"))
 			chapter_sub.text = str(a.get("subtitle", ""))
+			chapter_next = str(a.get("next", ""))
+			chapter_hint.visible = chapter_next != ""
 			chapter_screen.modulate.a = 0.0 if not instant else 1.0
 			chapter_screen.show()
 			if not instant:
@@ -437,17 +514,16 @@ func _camera(a: Dictionary, t: float) -> float:
 	elif a.has("who") and _actor(str(a["who"])):
 		target = _actor(str(a["who"])).global_position
 	var offset := target - p.global_position + Vector2(0, _cam_base.y)
-	_cam_tween = create_tween().set_parallel()
 	if t <= 0.0:
+		_cam_tween = null
 		cam.position = offset
-	else:
-		_cam_tween.tween_property(cam, "position", offset, t).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+		if a.has("zoom"):
+			cam.zoom = Vector2.ONE * 2.0 * float(a["zoom"])
+		return 0.0
+	_cam_tween = create_tween().set_parallel()
+	_cam_tween.tween_property(cam, "position", offset, t).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
 	if a.has("zoom"):
-		var z := Vector2.ONE * 2.0 * float(a["zoom"])
-		if t <= 0.0:
-			cam.zoom = z
-		else:
-			_cam_tween.tween_property(cam, "zoom", z, t)
+		_cam_tween.tween_property(cam, "zoom", Vector2.ONE * 2.0 * float(a["zoom"]), t)
 	return t
 
 
@@ -503,6 +579,27 @@ func _tickle(a: Dictionary, instant: bool) -> float:
 	return n * every
 
 
+## 刑具一直扣着公主（只有表现，直到 hold on=false）：合上刑具、把公主放到刑具上（place）、摆刑具的姿势、播被困动画。
+func _hold(trap: Node, on: bool, place: bool) -> void:
+	var p := GameState.player
+	if not (trap is Trap) or not is_instance_valid(p):
+		return
+	var spr: Sprite2D = trap.get("sprite")
+	if spr and spr.hframes > 1:
+		spr.frame_coords.x = 1 if on else 0
+	if on:
+		if place:
+			p.global_position = trap.call("_hold_point") if trap.has_method("_hold_point") else (trap as Node2D).global_position
+			p.pose_offset = trap.get("pose_offset") if trap.get("pose_offset") != null else Vector2.ZERO
+			p.pose_rotation = float(trap.get("pose_rotation")) if trap.get("pose_rotation") != null else 0.0
+		p.set("puppet_anim", "grabbed")
+		Audio.play("stocks", -4.0, 0.08)
+	else:
+		p.pose_offset = Vector2.ZERO
+		p.pose_rotation = 0.0
+		p.set("puppet_anim", "")
+
+
 ## 陷阱演一次发动（只有表现：GameState.in_dialogue 期间陷阱不会真的生效）。
 func _trap_show(trap: Trap, time: float) -> void:
 	if trap.has_method("play_show"):
@@ -528,6 +625,11 @@ func _spawn(a: Dictionary) -> void:
 	var n: Node2D
 	if kind == "shadow":
 		n = make_shadow()
+	elif kind.begins_with("npc:"):
+		var r: Node2D = load("res://scenes/actors/allies/resident.tscn").instantiate()
+		r.set("npc_id", kind.trim_prefix("npc:"))
+		r.set("wander", 0.0)
+		n = r
 	elif kind.begins_with("monster:"):
 		var path := str(CG.data.get("actors", {}).get(kind.trim_prefix("monster:"), {}).get("scene", ""))
 		if path == "" or not ResourceLoader.exists(path):

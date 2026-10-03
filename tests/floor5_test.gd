@@ -598,7 +598,7 @@ func _cutscene_actors_ok(id: String) -> Array[String]:
 
 func _run_floor5() -> void:
 	print("-- 第五层·机关迷城")
-	check("楼层表：第四层之后是第五层，第五层是最后一层", Floors.next_of("floor_04") == "floor_05" and Floors.next_of("floor_05") == ""
+	check("楼层表：第四层之后是第五层，第五层之后是第六层（营地地牢）", Floors.next_of("floor_04") == "floor_05" and Floors.next_of("floor_05") == "floor_06_prison"
 		and Floors.display_name("floor_05") == "第五层·机关迷城")
 	await _goto("floor_05")
 	await _wait(0.6)
@@ -673,8 +673,9 @@ func _run_floor5() -> void:
 		t += 0.1
 	await _wait(0.5)
 	check("结局：黑影出现把昏迷的公主带走", saw_shadow and player.has_meta("fainted"))
-	check("第五章完：章节结束画面「未完待续」、标记 chapter5_clear", Cutscene.chapter_screen.visible
-		and Cutscene.chapter_sub.text.contains("未完待续") and GameState.has_flag("chapter5_clear"))
+	check("第五章完：章节结束画面（黑影带走公主）、「按 E 继续」进第六层、标记 chapter5_clear", Cutscene.chapter_screen.visible
+		and Cutscene.chapter_sub.text.contains("黑影") and Cutscene.chapter_next == "floor_06_prison" and Cutscene.chapter_hint.visible
+		and GameState.has_flag("chapter5_clear"))
 	Cutscene.chapter_screen.hide()
 
 

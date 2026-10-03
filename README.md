@@ -24,6 +24,13 @@ Godot 4.7 · 2D 俯视角像素游戏。粉发蓝眼、头戴金色小皇冠的�
 - **第四层·魔力回廊**（更难：检查点只有 4 个，每段强制段都对应组合技）：落脚点（石碑讲暴击、魔力疲倦、疲倦爆发、三重组合）→ **储藏室**（宝箱里是冒险背包）→ 水母池 → 诅咒符文走廊 → 泡泡水道（中间只有一条黏黏毛毯路）→ 足枷长廊（毛毯、整宽足枷台、符文、墙上羽毛臂，出口一对幽灵手套）→ **刑台广场**（战斗房：足枷台阵 + 老鼠、螃蟹、蜘蛛、史莱姆、小精灵、手套）→ 刺猬滚道（整高毛毯 + 顶墙羽毛臂，凹槽可躲；南边**诅咒回廊**通往可选的**手套展厅**战斗房）→ 图腾大厅（战斗房）→ 魔力水母女王大厅（Boss）→ 出口楼梯（第四章完，通往第五层）。
 - **第五层·机关迷城**（陷阱为主、怪物为辅，约第四层的 2 倍大，6 个检查点）：开场过场（镜头扫过机关）→ 落笼回廊（看影子躲落笼、冲刺跳过绊线、小工匠踩机关）→ 束缚工坊（连锁①：倒吊绳套 → 传送带 → 弹弹床 → 举手铐柱 → 弹弹床 → 挠痒衣柜；仰卧刑床 + 肚脐羽毛钻 + 长舌蛙）→ 西边的**滑梯坡道**（连锁⑥：滑梯 → 俯卧刑凳 → 滑梯 → 痒痒坐垫 → 滑梯 → 仰卧刑床，尽头有宝箱）→ 腿刑长廊（连锁②：夹腿枷台 → 泥沼 → 吸痒漩涡里的单腿吊环）→ **小精灵温室**（战斗房）→ 转轮工坊（连锁③）→ 泥沼地窖（连锁④：泥沼 → 风扇 → 吊环 → 衣柜）→ **工匠车间**（战斗房：一群小工匠、长靴、绑腿）→ 最终连锁长廊（连锁⑤：倒吊 → 夹腿 → 泥沼 → 吊环）→ 准备间（自动获得被动技能「挣脱强化」）→ **无解陷阱房**（满屋三来源组合：门口一簇簇组合用传送带一个接一个往下送，下半部分是一圈首尾相接的滑梯、四个拐角各一个束缚陷阱，一进去就连着触发组合；进去出不来，第 4 次倒下复活后播结局过场，公主昏迷后被一个黑影带走——第五章完，未完待续）。这一层的空地都铺满了陷阱（检查点房间除外）。
   每段连锁都留着一条不碰束缚机关的路，看准时机就能躲开；可一旦中了第一个，放开后就会被传送带、弹弹床、风扇、漩涡一路送进下一个。
+  五个大房间（束缚工坊、滑梯坡道、腿刑长廊、转轮工坊、泥沼地窖）是 2 格宽走廊的迷宫，每间留 2~3 组三来源组合放在路口的小厅里。检查点是地上的粉色魔法阵 + 漂浮的水晶：当前复活点的水晶发光旋转，其它的变暗。第五章结束画面按 E 继续，进入第六层。
+- **第六层·地下小镇**（可以随时回来的大地图，没有敌人；四张地图用楼梯上下）：
+  - **营地地牢**（开场）：公主在保卫队营地下面的地牢里被痒醒——仰躺在刑床上、脚扣在足枷里、腿被夹腿枷台夹着。保卫队队长指责她独自跑到外面去，公主说自己什么都不知道。**关键选择**：老实解释 / 顶嘴反驳 / 笑着求饶。队长不信，把她换到挠痒坐垫 + 举手铐柱上，叫队员一起挠（小剧场，台词随选择不同），直到一位**蓝色调的公主**出来叫停。之后自由活动。
+  - **集市层**：集贸市场（摊位和市场监督，用金币买东西）、篝火派对广场（篝火回满生命、清空闷笑；篝火派对的主人会教你跳舞）、居民区、**存档点**（小镇里唯一的一个）、封住的地牢入口。
+  - **营地层**：保卫队营地（帐篷、哨塔、队长的指挥帐篷）、训练场（训练小游戏以后接入，现在显示「还在整修」）。
+  - **矿道层**：矿车、矿工、封住的深处大门（以后通往新的地牢）。
+  - 15 个会溜达的居民（友军）+ 4 个关键人物（保卫队队长、市场监督、篝火派对的主人、蓝色的公主），走近按 E 对话。
 
 ## 闷笑值
 
@@ -98,7 +105,7 @@ HUD 闷笑条下方紫色的「魔力」条（上限 500，刻度 40% / 60% / 80
 - **算笑倒**：闷笑值满把最后一点血笑没；或者倒下时正在失控（闷笑值 >55%）、正被抓住、2 秒内刚被挠过（最后一下是普通攻击也算）。不在挠痒状态时被打死不播 CG，照旧复活。
 - 16 种怪物各有一段专属 CG（按最后挠她的怪物选；来源不明时按打倒她的怪物），陷阱致死播通用 CG。
 - 怪物 CG 分三幕：失控 1 立绘 → 失控 2 立绘 → **CG 图**（剧情最多）。有两张 CG 图的怪物（泡泡鱼、魔力水母女王）多一幕：第三幕第一张图、第四幕第二张图。CG 图阶段立绘框变成对话框上方的横版大框（保持原图比例），并随挠痒抖动；右边的小舞台继续演。
-- **最后一幕：魔力爆发**（所有笑倒 CG、巢穴过场和三来源组合演出都有，有第四幕的接在第四幕后面）：被挠到魔力疲倦满了 → 白光一闪、星光爆发和魔力释放的水声，怪物被震开，立绘换成**战损魔力释放** → 公主说出释放后全身的畅快感 → 怪物又回来了，释放后身体变得更敏感，痒得更厉害 → 笑到力竭。台词每段单独写，在 `tools/build/burst_lines.py`；以后放了 `assets/cg/portraits/fatigue_burst.png` 就换成正式立绘。
+- **最后一幕：魔力爆发**（所有笑倒 CG、巢穴过场和三来源组合演出都有，有第四幕的接在第四幕后面）：被挠到魔力疲倦满了 → 白光一闪、星光爆发和魔力释放的水声，怪物被震开，立绘换成**战损魔力释放** → 公主说出释放后全身好舒服 → 怪物又回来了，释放后身体变得更敏感，痒得更厉害 → 笑到力竭。台词每段单独写，在 `tools/build/burst_lines.py`；以后放了 `assets/cg/portraits/fatigue_burst.png` 就换成正式立绘。
 - 每次笑倒都会播；看过的 CG 画面角落会提示「Esc 跳过」，第一次看不能跳过。
 - **被拖进巢穴**：五种巢穴各有一段三幕过场（被拖进巢穴口 → 巢穴里一群一起挠 → CG 图，第三幕大批同类怪物从四周涌上来一起挠），写在单独的文件 `data/nest_cgs.json`（由 `tools/build/gen_nest_cgs.py` 生成，台词在脚本里改）。第三幕的 CG 图现在用失控 2 占位；把图放进 `assets/cg/portraits/nest_<种类>_3.png`（如 `nest_rat_hole_3.png`）后重新运行 `gen_nest_cgs.py` 就会换成横版大框。
 - 所有 CG 写在一个文件 `data/cgs.json` 里（对话、演员、演绎指令、立绘都按步骤写），格式说明在文件开头和架构文档里。
@@ -152,7 +159,17 @@ HUD 闷笑条下方紫色的「魔力」条（上限 500，刻度 40% / 60% / 80
 
 ## 地图内过场动画
 
-和笑倒 CG（另一个小舞台）不同，过场动画直接在当前地图里演：上下滑入黑框，镜头在地图上移动，公主和关卡里的机关、怪物就是演员（还可以临时生成演员，比如蒙黑的人影）。播放时机关和怪物都暂停，公主不能操作；看过的过场按 Esc 跳过。每段过场一个文件：`data/cutscenes/<id>.json`（格式和 CG 的步骤一样），关卡 `[level]` 段写 `intro_cutscene = <id>` 当开场，或用图例 `trigger cutscene=<id>` 走到某处触发。第五层的开场和结局都是过场。
+和笑倒 CG（另一个小舞台）不同，过场动画直接在当前地图里演：上下滑入黑框，镜头在地图上移动，公主和关卡里的机关、怪物就是演员（还可以临时生成演员，比如蒙黑的人影）。播放时机关和怪物都暂停，公主不能操作；看过的过场按 Esc 跳过。每段过场一个文件：`data/cutscenes/<楼层组>/<id>.json`（格式和 CG 的步骤一样；步骤里可以写 `talk` 打开人物对话、`theater` 播小剧场，动作 `hold` 让刑具一直扣着公主），关卡 `[level]` 段写 `intro_cutscene = <id>` 当开场，或用图例 `trigger cutscene=<id>` 走到某处触发。第五层的开场和结局都是过场。
+
+## 对话选项与选择记忆
+
+和人物说话时会弹出选项（上下选、E 确定）。选项有两种：**选完一路说到结束**，和**这段演完回到选项页**（「聊聊营地」「你是谁」这类可以一个个问的）。条件不满足的选项不显示，有的选项只能选一次。
+对话里还能演一段**地图内过场**（比如队长带你看营地）或**小剧场**（CG 那样的小舞台，比如篝火派对的舞）。关键人物说话时，对话框右边显示对方的半身像素立绘。
+**选择记忆**：关键选择会记下来（比如开场的态度 `f6_attitude`），之后其他人物的打招呼、台词和可选的选项都会跟着变。比如顶嘴之后队员会学你喊「我可是公主」，市场监督会多一个「队长说我坏话了吗？」的选项；求饶之后全镇都叫你「爱笑的公主」。第六层有 16 个人物会对开场的选择有反馈。
+
+## 主界面与存档
+
+启动先进主界面：新游戏 / 继续（最近一次存档）/ 读取存档（3 个存档位，显示楼层、地点、时间、游戏时长）/ 退出。**只能在地图上的存档点存档**（发光的日记本，按 E 选存档位，覆盖要再确认一次，存档时顺便回满生命）。存档保存：所在关卡和位置、检查点、公主状态、剧情标记、对话选择、物品、快捷键、被动技能、游戏时长。暂停菜单可以「返回主界面」（没存的进度会丢）。
 
 ## 星光爆发（高风险高回报）
 
@@ -325,12 +342,18 @@ HUD 闷笑条下方紫色的「魔力」条（上限 500，刻度 40% / 60% / 80
 
 ## 修改内容
 
-- **楼层**：每层一个文件夹 `levels/floor_0N/`，里面是地图 `map.txt`、本层对话 `dialogues.json` 和构建出的 `floor.tscn`；楼层顺序在 `data/floors.json`。
-- **对话**：本层剧情写在该层的 `dialogues.json`；复活、上锁提示等通用对话写在 `data/dialogues.json`。
+- **楼层**：每张地图一个文件夹 `levels/<楼层>/`，里面是地图 `map.txt` 和构建出的 `floor.tscn`；楼层顺序在 `data/floors.json`。一层有多张地图时用 `group` 归到同一个楼层组（第六层四张地图都是 `floor_06`），楼梯 `stairs target=<地图> spawn=<到达点>` 连到目标地图里同名的 `spawn id=<到达点>`。
+- **对话**（`data/dialogues/` 是总文件夹，每层一个子文件夹）：
+  - `common.json`：复活、上锁提示等通用对话。
+  - `<楼层组>/signs.json`、`story.json`：本层的石碑和剧情对话。
+  - `<楼层组>/<人物>.json`：**每个人物一个文件**，带选项、条件、演绎（格式见 docs/ARCHITECTURE.md 的「人物对话」）。人物表（名字、行走图、半身立绘）在 `data/actors/npcs.json`。
+  - 第六层的对话、过场、小剧场由 `tools/build/gen_floor06.py` 生成；改完运行 `python tools/build/check_dialogues.py` 检查节点跳转、引用的过场 / 小剧场、选择变量有没有人写。
+- **过场 / 小剧场**：`data/cutscenes/<楼层组>/<id>.json`（地图内过场）、`data/theater/<楼层组>/<id>.json`（小剧场，CG 舞台格式，演员可以写 `npc:<人物>`）。
+- **商店 / 训练**：商品表 `data/shop/market.json`（物品、金币价格、库存）；训练项目 `data/training/trainings.json`，小游戏场景以后放 `scenes/training/<训练 id>.tscn`（接口 `TrainingDB`）。
 - **地图**：编辑 `levels/floor_01/map.txt`（`[legend]` 定义字符含义，`[map]` 为地图），然后重新构建：
   ```
   Godot --headless --path . --script res://tools/build/build_level.gd -- floor=floor_01
-  Godot --headless --path . --script res://tools/build/build_level.gd -- all   # 全部楼层
+  Godot --headless --path . --script res://tools/build/build_level.gd -- floor=floor_06_upper   # 第六层的一张地图
   ```
   也可以直接在编辑器里打开 `levels/floor_01/floor.tscn` 修改（注意重新构建会覆盖编辑器里的改动）。
 - **公主精灵与立绘**：保留原始 `princess2.png` / `princess3.png` / `portraits2.png` / `portraits3.png`。`tools/art/import_princess2.py` 去除白底、表格和标签，输出 `princess.png`（32×32，11行×16列）、`portraits.png`（113×152每格）和 `portrait_heads.png`（32×32每格）。图集顺序由 `data/actors/princess_visuals.json` 统一定义，运行时与导入器共同读取。
@@ -360,7 +383,7 @@ HUD 闷笑条下方紫色的「魔力」条（上限 500，刻度 40% / 60% / 80
 
 项目根目录的 `dev_config.json`：把 `"dev_mode"` 改成 `true` 打开，`false` 关闭。打开后：
 
-- **跳关**：Esc 暂停菜单多一项「测试：跳关」，可以跳到第一~五层的起点，或者「第五层·准备间」（直接测无解房间）。跳过去时补齐前面各层的流程奖励：第三层的魔法、第四层的背包和星光糖、第五层准备间的挣脱强化。跳关点和奖励都在这个文件里改。
+- **跳关**：Esc 暂停菜单多一项「测试：跳关」，可以跳到第一~五层的起点、「第五层·准备间」（直接测无解房间）、第六层开场，或者开场后的地下小镇 / 保卫队营地。跳过去时补齐前面各层的流程奖励：第三层的魔法、第四层的背包和星光糖、第五层准备间的挣脱强化。跳关点和奖励都在这个文件里改。
 - **CG 快速预览**：背包「CG 图鉴」页所有 CG 都能直接播放；没拿到背包也能按 Tab 打开背包。
 
 ## 测试
@@ -375,6 +398,8 @@ Godot --headless --path . res://tests/floor4_test.tscn  # 增益减益、暴击�
 Godot --headless --path . res://tests/floor5_test.tscn  # 部位与敏感值、被动技能、地图内过场、第五层新陷阱和小工匠、第五层与无解房间结局
 Godot --headless --path . res://tests/fixes_test.tscn   # 被困台词、演出排队、配套机关自己触发、落笼影子、失控时位移、测试模式、无解房间连续触发组合
 Godot --headless --path . res://tests/zones_test.tscn   # 新部位（肚子 / 屁股 / 胸）、部位专属特效、吸附类怪物、长舌蛙、刷尾松鼠、新陷阱、滑梯、掸子墙、7 个新组合
+Godot --headless --path . res://tests/systems_test.tscn # 人物对话（两种选项模式、条件、效果、演绎）、选择记忆、存档读档、存档点、主界面、文件迁移
+Godot --headless --path . res://tests/floor6_test.tscn  # 第六层：四张地图和楼梯、居民、篝火 / 市场 / 训练接口、开场三种选择、第五层结局 → 第六层
 Godot --path . res://tests/capture.tscn                 # 11 种状态截图到 tools/.cache/shots/
 Godot --path . res://tests/capture_floor2.tscn          # 第二层各房间截图
 Godot --path . res://tests/capture_rooms.tscn           # 第一、二层扩充房间截图
@@ -383,15 +408,16 @@ Godot --path . res://tests/capture_cg.tscn              # 每段笑倒 CG 三幕
 Godot --path . res://tests/capture_levels.tscn          # 每个强制段和战斗房的截图
 Godot --path . res://tests/capture_floor4.tscn          # 第四层各房间、背包两页、HUD 疲倦条、暴击、疲倦爆发、泡泡、足枷、魔力雨
 Godot --path . res://tests/capture_floor5.tscn          # 第五层开场黑框、各区域、弱点、背包被动页、结局黑影、章节结束画面
+Godot --path . res://tests/capture_floor6.tscn          # 第六层开场各阶段、小镇各层、NPC 立绘对话、商店、存档界面、主界面
 ```
 
 ## 目录
 
 ```
-levels/   floor_01/ ~ floor_04/（每层的地图、对话、场景）
-scenes/   main.tscn、actors/{playable,monsters,allies}/、traps/、items/、objects/、ui/
+levels/   floor_01/ ~ floor_05/、floor_06_{prison,upper,camp,mine}/（每张地图的 map.txt 和场景）
+scenes/   title.tscn（主界面）、main.tscn、actors/{playable,monsters,allies}/、traps/、items/、objects/、ui/、training/（训练小游戏，待接入）
 scripts/  core/、components/、controllers/、actors/、traps/、combat/、items/、objects/、autoload/、ui/、fx/、main.gd
-data/     floors.json、dialogues.json（通用对话）、combos.json、combo_scenes.json（三来源组合演出）、cgs.json（笑倒 CG）、buffs.json（增益减益）、princess_reactions.json、princess_fatigue.json（疲倦爆发台词）、items/、monsters/、allies/、actors/（数值与动画配置资源）
+data/     floors.json、dialogues/（common.json + 每层文件夹：石碑、剧情、每个人物一个文件）、cutscenes/（每层文件夹）、theater/（小剧场，每层文件夹）、shop/、training/、combos.json、combo_scenes.json（三来源组合演出）、cgs.json（笑倒 CG）、buffs.json（增益减益）、princess_reactions.json、princess_fatigue.json（疲倦爆发台词）、items/、monsters/、allies/、actors/（数值与动画配置资源）
 docs/     ARCHITECTURE.md
 assets/   generated/（自绘）、third_party/（Kenney）、fonts/、tilesets/、lights/
 tools/    art/（Python 美术生成）、build/（关卡构建、工程设置、CG / 组合演出生成脚本）
@@ -405,4 +431,5 @@ tests/    冒烟测试与截图脚本
 - 公主小人与立绘：项目作者提供（princess2/3.png / portraits2/3.png）
 - 公主笑声：cicifyre / moxobna，CC0，详见各自目录随附 License.txt
 - 表情气泡、道具、机关、墙体拼接图块、第二/三层机关与怪物占位图、魔法特效：本项目用 Python 生成
+- 小镇居民和关键人物的行走图与半身立绘、蓝色调的公主、小镇道具（房屋、摊位、篝火、帐篷……）、检查点魔法阵、存档日记本：本项目用 Python 生成（tools/art/gen_town_art.py）
 - 挠痒果冻声等音效：本项目用 Python 合成（tools/art/gen_sfx.py）

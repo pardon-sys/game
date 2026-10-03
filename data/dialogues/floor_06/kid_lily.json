@@ -1,0 +1,71 @@
+{
+	"name": "小莉莉",
+	"entries": [
+		{
+			"node": "hello"
+		}
+	],
+	"nodes": {
+		"hello": {
+			"goto": [
+				{
+					"if": {
+						"eq": {
+							"f6_attitude": "honest"
+						}
+					},
+					"node": "hello_honest"
+				},
+				{
+					"if": {
+						"eq": {
+							"f6_attitude": "defiant"
+						}
+					},
+					"node": "hello_defiant"
+				},
+				{
+					"if": {
+						"eq": {
+							"f6_attitude": "beg"
+						}
+					},
+					"node": "hello_beg"
+				},
+				{
+					"node": "hello_honest"
+				}
+			]
+		},
+		"hello_honest": {
+			"lines": [
+				{
+					"text": "姐姐，你的头发是粉色的！"
+				},
+				{
+					"text": "蓝色的姐姐说，你是好人。"
+				}
+			]
+		},
+		"hello_defiant": {
+			"lines": [
+				{
+					"text": "姐姐，你的头发是粉色的！"
+				},
+				{
+					"text": "姐姐好凶……可是也好帅。"
+				}
+			]
+		},
+		"hello_beg": {
+			"lines": [
+				{
+					"text": "姐姐，你的头发是粉色的！"
+				},
+				{
+					"text": "姐姐笑起来好可爱！再笑一次给我听嘛！"
+				}
+			]
+		}
+	}
+}

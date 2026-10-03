@@ -1,0 +1,71 @@
+{
+	"name": "织毛衣的婆婆",
+	"entries": [
+		{
+			"node": "hello"
+		}
+	],
+	"nodes": {
+		"hello": {
+			"goto": [
+				{
+					"if": {
+						"eq": {
+							"f6_attitude": "honest"
+						}
+					},
+					"node": "hello_honest"
+				},
+				{
+					"if": {
+						"eq": {
+							"f6_attitude": "defiant"
+						}
+					},
+					"node": "hello_defiant"
+				},
+				{
+					"if": {
+						"eq": {
+							"f6_attitude": "beg"
+						}
+					},
+					"node": "hello_beg"
+				},
+				{
+					"node": "hello_honest"
+				}
+			]
+		},
+		"hello_honest": {
+			"lines": [
+				{
+					"text": "哎，坐下歇歇吧，孩子。"
+				},
+				{
+					"text": "记不得过去也没关系，在这儿重新开始就好。"
+				}
+			]
+		},
+		"hello_defiant": {
+			"lines": [
+				{
+					"text": "哎，坐下歇歇吧，孩子。"
+				},
+				{
+					"text": "脾气倔的孩子啊，心眼都不坏。"
+				}
+			]
+		},
+		"hello_beg": {
+			"lines": [
+				{
+					"text": "哎，坐下歇歇吧，孩子。"
+				},
+				{
+					"text": "笑得出来的孩子有福气。婆婆给你织条围巾吧。"
+				}
+			]
+		}
+	}
+}
