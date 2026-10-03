@@ -4,7 +4,7 @@ extends Area2D
 signal triggered
 
 @export var dialogue := ""
-## 播放地图内过场动画（data/cutscenes/<id>.json）；写了就不播对话。
+## 播放地图内过场动画（data/cutscenes/<楼层组>/<id>.json）；写了就不播对话。
 @export var cutscene := ""
 @export var once := true
 ## 触发区域大小（像素）。

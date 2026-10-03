@@ -14,6 +14,12 @@ func _ready() -> void:
 	$Root/Box/Resume.pressed.connect(toggle)
 	$Root/Box/Restart.pressed.connect(_restart)
 	$Root/Box/Quit.pressed.connect(func(): get_tree().quit())
+	var title_button := Button.new()
+	title_button.name = "ToTitle"
+	title_button.text = "返回主界面"
+	title_button.pressed.connect(to_title)
+	box.add_child(title_button)
+	box.move_child(title_button, box.get_child_count() - 2)
 	skip_button = Button.new()
 	skip_button.name = "DevSkip"
 	skip_button.text = "测试：跳关"
@@ -80,6 +86,13 @@ func skip_to(point: Dictionary) -> void:
 	root.hide()
 	hide_skip_list()
 	DevConfig.skip_to(point)
+
+
+## 回主界面（没存的进度会丢）。
+func to_title() -> void:
+	get_tree().paused = false
+	GameState.reset()
+	get_tree().change_scene_to_file("res://scenes/title.tscn")
 
 
 func _restart() -> void:

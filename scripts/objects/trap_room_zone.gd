@@ -2,7 +2,7 @@ class_name TrapRoomZone
 extends Area2D
 ## 无解陷阱房（第五层最后）：公主走进范围 → 同组（group_name）的铁栅关上，满屋束缚陷阱，出不去；
 ## 在房里倒下就开门重置（在门口的检查点复活），倒下次数记在剧情标记 <group_name>_deaths。
-## 第 ending_after 次倒下复活后立即播过场 ending_cutscene（data/cutscenes/<id>.json）。
+## 第 ending_after 次倒下复活后立即播过场 ending_cutscene（data/cutscenes/<楼层组>/<id>.json）。
 ## 地图图例：X = traproom group=<铁栅组> w=<格> h=<格> cutscene=<过场 id>（放在房间中央）。
 
 signal locked

@@ -346,7 +346,8 @@
 				{
 					"do": "chapter_end",
 					"title": "第五章　机关迷城　完",
-					"subtitle": "—— 公主被神秘的黑影带走了……未完待续 ——"
+					"subtitle": "—— 公主被神秘的黑影带走了…… ——",
+					"next": "floor_06_prison"
 				}
 			],
 			"wait": 2.0

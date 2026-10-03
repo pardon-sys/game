@@ -1,0 +1,13 @@
+{
+	"_说明": [
+		"保卫队训练（scripts/training/training_db.gd 读取）。每种训练以后是一个单独的小游戏：场景放在 scenes/training/<id>.tscn。",
+		"status：preparing = 还没开放（显示 closed_message）。reward：过关奖励 {passive: 新被动} / {upgrade: 升级被动}。",
+		"价格 price 是金币，cost_up 每升一级多收多少。"
+	],
+	"closed_message": "队员：「训练场还在整修，过几天再来吧！」",
+	"trainings": [
+		{"id": "endure", "name": "忍痒训练", "desc": "在队员挠痒下强撑。", "status": "preparing", "price": 10, "cost_up": 5, "reward": {"passive": "endure"}},
+		{"id": "escape", "name": "挣脱训练", "desc": "被训练用的足枷锁住，限时内挣脱。", "status": "preparing", "price": 10, "cost_up": 5, "reward": {"upgrade": "struggle_plus"}},
+		{"id": "dodge", "name": "闪避训练", "desc": "躲开依次发动的羽毛臂和落笼。", "status": "preparing", "price": 10, "cost_up": 5, "reward": {"passive": "stamina"}}
+	]
+}

@@ -4,7 +4,7 @@ extends Node2D
 ## 楼层 id（levels/<floor_id>/），由构建器写入。
 @export var floor_id := ""
 @export var intro_dialogue := "intro"
-## 开场过场动画（data/cutscenes/<id>.json）；写了就代替开场对话。
+## 开场过场动画（data/cutscenes/<楼层组>/<id>.json）；写了就代替开场对话。
 @export var intro_cutscene := ""
 
 @onready var walls: TileMapLayer = $Walls
@@ -13,6 +13,14 @@ extends Node2D
 func _ready() -> void:
 	Dialogue.load_floor(floor_id)
 	var player := get_tree().get_first_node_in_group("player") as PlayableCharacter
+	# 从楼梯过来：站到同名的到达点上
+	if player and GameState.pending_spawn != "":
+		for sp in get_tree().get_nodes_in_group("spawn_point"):
+			if str(sp.get("id")) == GameState.pending_spawn and is_ancestor_of(sp):
+				player.global_position = (sp as Node2D).global_position
+				GameState.set_checkpoint(player.global_position)
+				break
+		GameState.pending_spawn = ""
 	if player:
 		var rect := walls.get_used_rect()
 		var ts := walls.tile_set.tile_size
@@ -23,6 +31,8 @@ func _ready() -> void:
 		cam.limit_bottom = rect.end.y * ts.y
 		cam.reset_smoothing()
 	Dialogue.finished.connect(_on_dialogue_finished)
+	if GameState.pending_load > 0:
+		return  # 马上要读档换关卡：不播开场
 	if intro_cutscene != "":
 		var cflag := "intro_done_" + intro_cutscene
 		if not GameState.has_flag(cflag):

@@ -97,30 +97,6 @@
 			"text": "……都、都到这里了。本公主一定要过去！"
 		}
 	],
-	"prep_passive": [
-		{
-			"speaker": "公主",
-			"emotion": "surprise",
-			"text": "……一路被挠过来，好像……身体记住了怎么挣扎了？"
-		},
-		{
-			"speaker": "",
-			"text": "【获得被动技能：挣脱强化】连按 J / E 挣扎时，闷笑值会多降一些。（背包「被动技能」页可以查看）",
-			"grant_passive": "struggle_plus"
-		},
-		{
-			"speaker": "公主",
-			"emotion": "angry",
-			"text": "好！最后一个房间——本公主来了！"
-		}
-	],
-	"intro": [
-		{
-			"speaker": "公主",
-			"emotion": "surprise",
-			"text": "这里是……到处都是机关的城……"
-		}
-	],
 	"sign5_barnacle": [
 		{
 			"speaker": "石碑",

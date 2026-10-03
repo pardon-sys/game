@@ -1,4 +1,4 @@
-"""生成第五层「机关迷城」：levels/floor_05/map.txt、dialogues.json、design.json。
+"""生成第五层「机关迷城」：levels/floor_05/map.txt、design.json 和 data/dialogues/floor_05/（signs.json、story.json）。
 
 陷阱为主、怪物为辅；五段「环环相扣」的连锁（中了一个束缚陷阱，放开后被传送带 / 弹弹床 / 风扇 / 漩涡送进下一个），
 每段连锁都留着一条不碰束缚陷阱的路（看准落笼影子、冲刺跳过绊线才能走过去）。
@@ -822,7 +822,11 @@ D = {
         {"speaker": S, "text": "【张臂转盘】走到转盘前会被扣住手腕、双臂张开（胸 ×1.5、腋下 ×1.3），每转一圈刷子扫一次肋骨。\n放开的时候会被甩出去——下面就是夹腿枷台。"},
     ],
 }
-(out / "dialogues.json").write_text(json.dumps(D, ensure_ascii=False, indent="\t") + "\n")
+# 对话：data/dialogues/floor_05/（石碑 signs.json，其余剧情 story.json）
+dlg_dir = Path("data/dialogues/floor_05")
+dlg_dir.mkdir(parents=True, exist_ok=True)
+(dlg_dir / "signs.json").write_text(json.dumps({k: v for k, v in D.items() if k.startswith("sign")}, ensure_ascii=False, indent="\t") + "\n")
+(dlg_dir / "story.json").write_text(json.dumps({k: v for k, v in D.items() if not k.startswith("sign")}, ensure_ascii=False, indent="\t") + "\n")
 print("第五层：%dx%d，图例 %d 种，组合区域 %d，连锁 %d" % (W, H, len(specs), len(combo_areas), len(chains)))
 for y, r in enumerate(g):
     print("%2d %s" % (y, "".join(r)))

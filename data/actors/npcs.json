@@ -1,0 +1,19 @@
+{
+	"_说明": [
+		"人物表（第六层起的居民和关键人物）：id -> {name 名字, sprite 行走图, portrait 半身立绘（可选）, portrait_region 立绘在图集里的区域（可选）, princess_sheet 用公主行走图格式（蓝色公主）}。",
+		"对话框：台词的 npc 字段或说话人名字和这里的 name 一样时，右边显示 portrait；没有 portrait 的只显示名字。",
+		"小剧场：cast 里写 kind = npc:<id>。立绘和行走图由 tools/art/gen_town_art.py 生成，换成正式素材时直接覆盖同名文件即可。"
+	],
+	"npcs": {
+		"captain": {"name": "保卫队队长", "sprite": "res://assets/generated/npcs/captain.png", "portrait": "res://assets/generated/npc_portraits/captain.png"},
+		"supervisor": {"name": "市场监督", "sprite": "res://assets/generated/npcs/supervisor.png", "portrait": "res://assets/generated/npc_portraits/supervisor.png"},
+		"bonfire_host": {"name": "篝火派对的主人", "sprite": "res://assets/generated/npcs/bonfire_host.png", "portrait": "res://assets/generated/npc_portraits/bonfire_host.png"},
+		"blue_princess": {"name": "蓝色的公主", "sprite": "res://assets/generated/princess_blue.png", "portrait": "res://assets/generated/portraits_blue.png", "portrait_region": [0, 0, 228, 304], "princess_sheet": true},
+		"guard": {"name": "保卫队员", "sprite": "res://assets/generated/npcs/guard.png"},
+		"granny": {"name": "老奶奶", "sprite": "res://assets/generated/npcs/granny.png"},
+		"kid": {"name": "小孩", "sprite": "res://assets/generated/npcs/kid.png"},
+		"merchant": {"name": "商贩", "sprite": "res://assets/generated/npcs/merchant.png"},
+		"miner": {"name": "矿工", "sprite": "res://assets/generated/npcs/miner.png"},
+		"maid": {"name": "女仆", "sprite": "res://assets/generated/npcs/maid.png"}
+	}
+}

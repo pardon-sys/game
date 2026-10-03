@@ -72,6 +72,23 @@ func use_hotkey(user: Node, hotkey := "use_item") -> bool:
 	return id != "" and use(id, user)
 
 
+## 存档用：{物品 id: 数量}（按获得顺序）。
+func to_dict() -> Dictionary:
+	var out := {}
+	for id in _order:
+		out[id] = _counts[id]
+	return out
+
+
+func from_dict(d: Dictionary) -> void:
+	_counts.clear()
+	_order.clear()
+	for id in d:
+		_order.append(str(id))
+		_counts[str(id)] = int(d[id])
+	changed.emit()
+
+
 func clear() -> void:
 	_counts.clear()
 	_order.clear()

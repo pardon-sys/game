@@ -309,6 +309,41 @@ func play_scene(combo_id: String) -> void:
 	await _request({"cg": sc, "id": id, "source": "", "skippable": true, "fx": 1, "combo": combo_id}, false)
 
 
+# ------------------------------------------------------------------ 小剧场
+## 小剧场（剧情演绎的舞台形式）：data/theater/<楼层组>/<id>.json，格式同笑倒 CG（cast / steps）；演员可以用 npc:<人物 id>。
+const THEATER_DIR := "res://data/theater/"
+var _theater_index := {}
+
+
+func theater_index() -> Dictionary:
+	if _theater_index.is_empty():
+		_scan_theater(THEATER_DIR)
+	return _theater_index
+
+
+func _scan_theater(dir: String) -> void:
+	for f in DirAccess.get_files_at(dir):
+		if f.ends_with(".json"):
+			_theater_index[f.get_basename()] = dir + f
+	for sub in DirAccess.get_directories_at(dir):
+		_scan_theater(dir + sub + "/")
+
+
+func has_theater(id: String) -> bool:
+	return theater_index().has(id)
+
+
+## 播放一段小剧场（await 到播完；正在播别的就排队）。看过的可以按 Esc 跳过。
+func play_theater(id: String) -> void:
+	if not has_theater(id):
+		push_warning("没有小剧场: " + id)
+		return
+	var parsed: Variant = JSON.parse_string(FileAccess.get_file_as_string(theater_index()[id]))
+	if not parsed is Dictionary:
+		return
+	await _request({"cg": parsed, "id": "theater:" + id, "source": "", "skippable": GameState.has_flag("cg_seen_theater:" + id), "fx": 0}, false)
+
+
 ## 播放队列（正在播的不在里面）。每项 {cg, id, source, skippable, fx, combo?, done}。
 var _queue: Array[Dictionary] = []
 
@@ -509,6 +544,10 @@ func _build_cast(cast: Dictionary) -> void:
 			a.set_pose(str(info.get("visual", "helpless_1")), str(info.get("anim", "helpless")), str(info.get("dir", "down")))
 		elif k.begins_with("trap:"):
 			a = CGActor.make_trap(who, k.substr(5), data.get("trap_actors", {}).get(k.substr(5), {}))
+		elif k.begins_with("npc:"):
+			a = CGActor.make_npc(who, k.substr(4), Dialogue.npcs.get(k.substr(4), {}))
+			if info.has("dir"):
+				a.set_dir(str(info["dir"]))
 		else:
 			var key := source_key if k == "source" else k.substr(8)
 			var actor_info: Dictionary = data.get("actors", {}).get(key, data.get("actors", {}).get("slime", {}))
