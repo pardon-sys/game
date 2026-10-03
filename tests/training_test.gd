@@ -489,6 +489,14 @@ func _run_resist() -> void:
 	r.successes = 60
 	check("越练绿区越窄（%.2f → %.2f）、扫得越快、假动作越多" % [w0, r.zone_width()], r.zone_width() < w0 and r.sweep_time() < 1.2 and r.fake_chance() > 0.1)
 	r.successes = 1
+	var bad_json: Array = []
+	for id in CG.theater_index():
+		if JSON.parse_string(FileAccess.get_file_as_string(CG.theater_index()[id])) == null:
+			bad_json.append(id)
+	var zd := CG.theater_data("train_zone_punish_1", r.theater_subs())
+	var dev_at: Array = zd.get("cast", {}).get("device", {}).get("at", [])
+	check("小剧场文件都是合法 JSON（%s），部位训练的惩罚代入后刑具是本轮的、坐标是数字（%s）" % [bad_json, dev_at], bad_json.is_empty()
+		and str(zd["cast"]["device"]["kind"]) == "trap:" + r.device_key and dev_at.size() == 2 and dev_at.all(func(v): return v is float or v is int))
 	await _punish_check(r, "laugh", "train_zone_punish_")
 	var res := await _end_training(out)
 	check("Esc 结束：成功 1 次，脚心耐笑 0.001", res.get("successes", 0) == 1 and is_equal_approx(TrainingStats.value("train_resist_sole"), 0.001)

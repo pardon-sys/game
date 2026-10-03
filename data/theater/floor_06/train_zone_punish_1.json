@@ -14,8 +14,8 @@
 		"device": {
 			"kind": "trap:{device}",
 			"at": [
-				{device_x},
-				{device_y}
+				"{device_x}",
+				"{device_y}"
 			]
 		},
 		"g1": {
