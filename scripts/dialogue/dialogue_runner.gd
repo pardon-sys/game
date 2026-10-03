@@ -75,11 +75,16 @@ func talk(file: String, start := "") -> void:
 		return
 	_running = true
 	current_file = file
+	# 整段人物对话期间（包括台词和选项之间、弹出选项时）公主和居民都不动
+	GameState.in_dialogue = true
 	talk_started.emit(file)
 	await _run(file, d, start if start != "" else entry_of(file))
 	_running = false
 	current_file = ""
 	talk_finished.emit(file)
+	await get_tree().create_timer(0.12).timeout  # 同一次确认键不触发公主攻击 / 交互
+	if not _running and not Dialogue.is_active() and not GameState.in_cutscene:
+		GameState.in_dialogue = false
 
 
 func _run(file: String, d: Dictionary, id: String) -> void:

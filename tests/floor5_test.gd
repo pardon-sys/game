@@ -351,7 +351,8 @@ func _run_restraints() -> void:
 	check("挠痒衣柜：走过门口被拉进去，只露出脚（公主精灵隐藏），露出脚心", player.status.is_grabbed_by(wardrobe)
 		and not player.sprite.visible and player.sensitivity.exposed().has("sole") and wardrobe.sprite.frame == 2)
 	await _wait(0.6)
-	check("衣柜里的手挠腰 / 腋下", player.last_tickle != null and player.last_tickle.source == wardrobe and player.last_tickle.zone in ["waist", "armpit"])
+	check("衣柜里的手挠腰 / 腋下 / 肚子（部位表里衣柜能挠的）", player.last_tickle != null and player.last_tickle.source == wardrobe
+		and TickleZones.weights_for(wardrobe).has(player.last_tickle.zone))
 	await _struggle(wardrobe.presses)
 	await _wait(0.05)
 	check("挣脱后出来，精灵恢复", not player.status.is_grabbed() and player.sprite.visible)

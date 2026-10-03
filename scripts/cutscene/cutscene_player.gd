@@ -564,6 +564,8 @@ func _tickle(a: Dictionary, instant: bool) -> float:
 	var every := float(a.get("interval", 0.3))
 	var fx := str(a.get("fx", HitFx.kind_of(by) if by else "feather"))
 	var add := float(a.get("add", 0.0))
+	# zone：挠的部位（部位专属特效、立绘上的部位贴片和飘字）
+	var zone := str(a.get("zone", ""))
 	var tw := create_tween()
 	for i in n:
 		tw.tween_callback(func():
@@ -572,7 +574,11 @@ func _tickle(a: Dictionary, instant: bool) -> float:
 			p.shake(0.2)
 			Audio.play("tickle", -3.0, 0.1)
 			HitFx.play(fx if fx != "" else "feather", p.get_parent(), p.global_position + Vector2(randf_range(-6, 6), -10))
-			Dialogue.shake_portrait(3.0, 0.18)
+			if zone != "":
+				ZoneFx.play(zone, p.get_parent(), ZoneFx.body_point(p, zone), 1.0, true)
+				Dialogue.portrait_fx.cutscene_tickle(fx, zone)
+			else:
+				Dialogue.shake_portrait(3.0, 0.18)
 			if add > 0.0 and p.laugh:
 				p.laugh.set_value(minf(p.laugh.value + p.laugh.max_value * add / 100.0, p.laugh.max_value * 0.99)))
 		tw.tween_interval(every)

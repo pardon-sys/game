@@ -284,14 +284,15 @@ HUD 背包栏会根据物品数据自动显示，不需要改 UI 代码。
   {"name": "保卫队队长", "npc": "captain",
    "entries": [{"if": {"not": "f6_opening_done"}, "node": "opening_question"}, {"if": {"eq": {"f6_attitude": "beg"}}, "node": "hello_beg"}, {"node": "hello_honest"}],
    "nodes": {
-     "hub": {"lines": [...], "prompt": "要聊什么？", "choices": [
-       {"text": "营地是做什么的？", "next": "camp", "return": true},
-       {"text": "……你还在生气吗？", "next": "still_angry", "return": true, "if": {"eq": {"f6_attitude": "defiant"}}, "once": true},
-       {"text": "没事了，再见", "next": "bye"}]},
-     "camp": {"lines": [...], "cutscene": "f6_camp_tour"},
-     "punish": {"goto": [{"if": {"eq": {"f6_attitude": "defiant"}}, "node": "punish_defiant"}, {"node": "punish_honest"}]}
+	 "hub": {"lines": [...], "prompt": "要聊什么？", "choices": [
+	   {"text": "营地是做什么的？", "next": "camp", "return": true},
+	   {"text": "……你还在生气吗？", "next": "still_angry", "return": true, "if": {"eq": {"f6_attitude": "defiant"}}, "once": true},
+	   {"text": "没事了，再见", "next": "bye"}]},
+	 "camp": {"lines": [...], "cutscene": "f6_camp_tour"},
+	 "punish": {"goto": [{"if": {"eq": {"f6_attitude": "defiant"}}, "node": "punish_defiant"}, {"node": "punish_honest"}]}
    }}
   ```
+  - 整段 `talk()` 期间 `GameState.in_dialogue` 保持为真（台词和选项之间、弹出选项时公主和居民都不动），结束 0.12 秒后交还控制权。
   - 选项 `return: true` = 这个分支演完回到选项页；没有 = 一路 `next` 走到结束。`if` 不满足不显示；`once` 选过一次就不再显示。
   - 节点：`lines`（`speaker` 省略 = 这个人物，`"公主"`、`""` 旁白）、`set` 效果、`cutscene` / `theater` 演绎（`perform_before` 在台词前播）、`choices`、`next`、`goto` 条件跳转。
   - 条件：`flag`、`not`、`eq {变量: 值}`、`var {变量: [">=", 数]}`、`seen "文件:节点"`、`any [...]`。效果：`flags`、`vars`、`add`、`give_item`、`coins`、`passive`、`call`（await `Dialogue` 上的 `open_shop / open_training / rest`）。
@@ -314,11 +315,12 @@ HUD 背包栏会根据物品数据自动显示，不需要改 UI 代码。
 - 楼层组：`data/floors.json` 的 `group`（`Floors.group(id)`）；同组地图共用 `data/dialogues/<组>/`（`Floors.dialogue_dir`）。
 
 ### 束缚陷阱与第五层机关
-- `RestraintTrap`（`scripts/traps/restraint_trap.gd`）：`mode = grab`（`StatusComponent.grab`）或 `hobble`（`StatusComponent.hobble`：可以慢慢走、不能冲刺、攻击 / 交互键挣扎）；`exposed`（露出部位）、`self_tickle`、`group_name`（配套机关同组）、`pose_offset / pose_rotation`（`PlayableCharacter` 的姿势，`_update_lift` 里应用）、`regrab_delay`。子类：`SnareTrap`、`CuffsTrap`、`ClampTrap`、`WardrobeTrap`（墙面，`sprite_hidden`）、`LegLoopTrap`、`MudTrap`（多格、越陷越慢）、`BootsTrap`、`BindingTrap`；新部位：`SupineTrap`（仰卧，`pose_rotation` −90°）、`CushionTrap`、`ProneTrap`、`PitTrap`（`content` 洞里的怪物，`extra_combo_keys` 算那种怪物）、`SpinWheelTrap`（每 `spin_time` 扫一次；放开后等她能行动时 `force_move(..., "bounce")` 甩出 `fling` 格，`landing_point()`）、`VestTrap`（hobble）。`would_grab(人)`：现在踩上来会不会被困（空闲、没在冷却、不在 regrab 免疫里）。
+- `RestraintTrap`（`scripts/traps/restraint_trap.gd`）：`mode = grab`（`StatusComponent.grab`）或 `hobble`（`StatusComponent.hobble`：可以慢慢走、不能冲刺、攻击 / 交互键挣扎）；`exposed`（露出部位）、`self_tickle`、`group_name`（配套机关同组）、`pose_offset / pose_rotation`（`PlayableCharacter` 的姿势，`_update_lift` 里应用）、`regrab_delay`、`reach`（默认 1：触发区每边外扩 1 格，外扩那一圈要看得见——中间没墙；扣住时 `TrapReach.pull` 把人拉到 `_pull_target()`，grab 拉到扣住的位置、hobble 拉到陷阱格上；`Stocks` 同样用 `TrapReach`，并有 `regrab_delay`）。子类：`SnareTrap`、`CuffsTrap`、`ClampTrap`、`WardrobeTrap`（墙面，`sprite_hidden`）、`LegLoopTrap`、`MudTrap`（多格、越陷越慢）、`BootsTrap`、`BindingTrap`；新部位：`SupineTrap`（仰卧，`pose_rotation` −90°）、`CushionTrap`、`ProneTrap`、`PitTrap`（`content` 洞里的怪物，`extra_combo_keys` 算那种怪物）、`SpinWheelTrap`（每 `spin_time` 扫一次；放开后等她能行动时 `force_move(..., "bounce")` 甩出 `fling` 格，`landing_point()`）、`VestTrap`（hobble）。`would_grab(人)`：现在踩上来会不会被困（空闲、没在冷却、不在 regrab 免疫里）。
 - 位移 / 墙面：`ChuteTrap`（痒痒滑梯，多格 + `dir`；按人的脚底位置判断在哪一段，每帧 `force_move(..., "slide")` / 延长，拐角由下一段改方向；站在 `would_grab` 的束缚陷阱上停下，刚放开的继续滑；滑行中每 `brush_interval` 秒挠一下）、`DusterWall`（墙面，探测区是墙前一行 `length` 格，`_on_warn` 按人进来的那端定 `order`，每 `step_time` 秒伸出一个掸子，扫到她所在格就挠）。关卡测试里 `_forced_maps()["chute"]` 让 `_moves` / `_flow` 顺着滑梯走。
 - 配套：`TeaserTrap`（content 五种，`drill` 有 `zone_focus`）、`WheelTrap`、`ShowerTrap`（MANUAL，同组束缚困人时自动触发）。它们实现 `extra_combo_keys()`，`ComboTracker` 把这些键也记进最近挠痒（一次挠痒可以同时算多个来源）。
 - 触发：`CageTrap`（PERIODIC 或加入 group 后 MANUAL；aim 跟着公主；slime / tentacle 放出 `Slime` / `MiniTentacle`）、`TripwireTrap`（公主或怪物碰到触发 targets 组；冲刺 / 空中不触发）、`PressurePlate.by_monsters`。绊线和怪物压力板在 `monster_switch` 组，`MachineImp` 会跑去踩；拉杆管的组里有被关掉的陷阱时它会去拨回来；被打就逃向拉杆。
 - 构建器：图例字典参数 `exposed=sole:1.5`、`zones=...`；`trap group=` → `group_name`；`traproom`（`TrapRoomZone`）。
+- 第五层迷宫（`gen_floor05.py` 的 `maze_room`）：3 格网格上的树形迷宫，主干 = 入口门 → 连锁小厅串（`hall_specs` 模板：束缚陷阱在小厅出口角，叠一条长 6 格的传送带送到下一个小厅的束缚陷阱旁边）→ 出口门（支线房间是主路尽头的宝箱）；其余节点长成死胡同，最深的放宝箱；挨着门口的其它节点不挖，免得绕开小厅。`design.json` 的 `maze_rooms`（`halls`、`door_in`、`goal`）和 `chains`（`unavoidable: true`）给关卡测试检查「小厅必经」「躲不开」「中招就连锁」。石碑由 `place_signs` 放在到新机制最短路上 SIGN_GAP 步附近，避开 `_hazard_cells()`（陷阱覆盖格、位移通道和落点、漩涡、束缚陷阱的拉人范围）和小厅车道。
 
 ### 吸附类怪物
 - `LatchMonster extends Monster`（`scripts/actors/monsters/latch_monster.gd`）：自由 → 扑上（`lunge_range` 内冲刺 `lunge_time`，碰到就 `latch`）→ 吸住（`host`）。吸住时关碰撞、每帧摆到 `host` 脚下（精灵挪到 `_latch_sprite_pos()`），每 `latch_interval` 秒 `deliver_tickle(host, _latch_amount())`。`shake_once()` 计抖，够 `shake_presses` 次 `detach(方向, 晕)`；`detach()` 不带参数就是松开不晕。`anchored`：不追人、`_move` 爬回 `_home`（第一帧记下）。

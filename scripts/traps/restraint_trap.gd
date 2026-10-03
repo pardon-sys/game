@@ -6,6 +6,7 @@ extends Trap
 ##   mode = "hobble"  绊住：还能慢慢走（×hobble_speed）、不能冲刺，攻击 / 交互键挣扎（长靴、绑腿）
 ## 子类改导出参数、重写 _on_restrain(victim) / _on_free(victim) / _hold_point() 做表现；
 ## 需要自己挠痒时设 self_tickle / self_interval（挠痒来源是陷阱自己，部位按 tickle_zones.json）。
+## 触发范围比陷阱本身多 reach 格（默认 1）：走到相邻格就被拉过去扣住，隔着墙不会（TrapReach）。
 
 signal restrained(victim: Actor)
 signal freed(victim: Actor)
@@ -26,10 +27,14 @@ signal freed(victim: Actor)
 @export var pose_rotation := 0.0
 ## 松开后多久内同一个人不会再被困（给她走开的时间）。
 @export var regrab_delay := 1.5
+## 多出来的触发范围（格）：在这一圈里就被拉到陷阱上（0 = 只有踩上去才触发）。
+@export var reach := 1
 
 var victim: Actor
 var _tick_t := 0.0
 var _immune := {}
+## 正在把人拉到陷阱上（拉到了才锁定位置）。
+var _pulling := false
 
 @onready var sprite: Sprite2D = get_node_or_null("Sprite")
 
@@ -44,6 +49,7 @@ func _setup() -> void:
 		add_to_group(group_name)
 	add_to_group("restraint")
 	_restraint_setup()
+	TrapReach.expand(self, reach)
 
 
 ## 子类钩子：额外设置。
@@ -58,7 +64,9 @@ func _physics_process(delta: float) -> void:
 	if not is_instance_valid(victim) or not victim.is_alive() or not _still_held():
 		_free()
 		return
-	if mode == "grab":
+	if _pulling:
+		_pulling = not TrapReach.pull(victim, _pull_target(), delta)
+	elif mode == "grab":
 		victim.global_position = _hold_point()
 	# 困着的时候 ACTIVE 阶段不能先结束
 	active_time = maxf(active_time, _t + 0.5)
@@ -83,6 +91,16 @@ func make_hit() -> HitData:
 	return HitData.make_tickle(self, self_tickle)
 
 
+## 被拉过去的落点：grab 拉到扣住的位置；hobble（长靴、绑腿）拉到陷阱那一格上。
+func _pull_target() -> Vector2:
+	return _hold_point() if mode == "grab" else TrapReach.core_center(self) + Vector2(0, 4)
+
+
+## 只算够得着的（外扩那一圈要看得见，隔墙不算）。
+func _victims() -> Array:
+	return super().filter(func(b): return TrapReach.can_reach(self, b))
+
+
 ## 困住时公主被摆在哪（世界坐标）。
 func _hold_point() -> Vector2:
 	return global_position + Vector2(0, 4)
@@ -104,6 +122,9 @@ func _apply_effect(target: Node) -> bool:
 	victim = a
 	_tick_t = 0.25
 	active_time = lock_time + 1.0
+	_pulling = a.global_position.distance_to(_pull_target()) > 3.0
+	if _pulling:
+		TrapReach.pull_fx(self, a)
 	if a is PlayableCharacter:
 		var pc := a as PlayableCharacter
 		pc.sensitivity.expose(self, exposed, pc)
@@ -132,6 +153,7 @@ func would_grab(a: Node) -> bool:
 func _free() -> void:
 	var a := victim
 	victim = null
+	_pulling = false
 	if is_instance_valid(a):
 		if mode == "grab" and a.status.is_grabbed_by(self):
 			a.status.release(false)

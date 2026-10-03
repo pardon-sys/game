@@ -115,10 +115,19 @@ func cg_stage() -> String:
 
 
 ## CG 的挠痒：key = 挠痒来源键（飘字用它的 portrait_words），kind = 命中特效种类（空 = 不放贴片）。
-func cg_tickle(key: String, kind: String) -> void:
+func cg_tickle(key: String, kind: String, zone := "") -> void:
 	if not cg_mode or not active():
 		return
-	_tickle_core(key, kind, cg_stage(), false, 1.0 if cg_level >= 3 else 0.0)
+	_tickle_core(key, kind, cg_stage(), false, 1.0 if cg_level >= 3 else 0.0, zone, zone != "")
+
+
+## 地图内过场里挠到某个部位（Cutscene 的 tickle zone=…）：立绘抖动 + 部位特效 + 部位飘字。
+func cutscene_tickle(kind: String, zone: String) -> void:
+	if cg_mode or not active():
+		return
+	var p := GameState.player as PlayableCharacter
+	var stage := p.laugh.stage() if p and p.laugh else "giggle"
+	_tickle_core("", kind, stage, false, 0.0, zone, true)
 
 
 ## 切幕：金色星环 + 白闪（横版图上星环放在大框右上角，不挡画面中心）。

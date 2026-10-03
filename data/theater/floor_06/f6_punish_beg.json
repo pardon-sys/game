@@ -86,7 +86,7 @@
 		},
 		{
 			"speaker": "公主",
-			"text": "哈哈哈哈……我错了我错了！轻、轻点也很痒啊哈哈哈！",
+			"text": "哈哈哈哈……我错了我错了！轻、轻点也很痒啊……腋下、腋下被羽毛扫……！",
 			"portrait": "defeat_1",
 			"actions": [
 				{
@@ -95,14 +95,16 @@
 					"repeat": 6,
 					"interval": 0.25,
 					"fx": "hand",
+					"zone": "armpit",
 					"do": "tickle"
 				},
 				{
 					"who": "princess",
-					"by": "g2",
+					"by": "cushion",
 					"repeat": 6,
 					"interval": 0.3,
-					"fx": "feather",
+					"fx": "lines",
+					"zone": "butt",
 					"do": "tickle"
 				},
 				{
@@ -118,7 +120,7 @@
 		},
 		{
 			"speaker": "保卫队员",
-			"text": "噗……队长，她笑得好开心啊。",
+			"text": "噗……队长，她笑得好开心啊。坐垫都把她刷得扭来扭去的。",
 			"actions": [
 				{
 					"who": "g1",
@@ -137,6 +139,7 @@
 					"repeat": 8,
 					"interval": 0.2,
 					"fx": "hand",
+					"zone": "armpit",
 					"do": "tickle"
 				},
 				{
@@ -145,6 +148,7 @@
 					"repeat": 8,
 					"interval": 0.22,
 					"fx": "hand",
+					"zone": "waist",
 					"do": "tickle"
 				}
 			]
@@ -152,7 +156,7 @@
 		{
 			"portrait": "defeat_2",
 			"speaker": "公主",
-			"text": "哈哈哈哈哈……我会乖乖的……再也不乱跑了哈哈哈哈！",
+			"text": "哈哈哈哈哈……屁股底下的刷子还在刷……我会乖乖的……再也不乱跑了哈哈哈哈！",
 			"actions": [
 				{
 					"who": "princess",
@@ -170,28 +174,40 @@
 					"repeat": 8,
 					"interval": 0.18,
 					"fx": "hand",
+					"zone": "armpit",
 					"do": "tickle"
 				},
 				{
 					"who": "princess",
-					"by": "g2",
+					"by": "cushion",
 					"repeat": 8,
 					"interval": 0.2,
-					"fx": "hand",
+					"fx": "lines",
+					"zone": "butt",
 					"do": "tickle"
 				}
 			]
 		},
 		{
 			"speaker": "",
-			"text": "（保卫队员们轮流挠了好一阵子，地牢里只剩下公主断断续续的笑声）",
+			"text": "（坐垫里的刷毛一刻不停地刷着屁股，举在柱子上的双手放不下来，队员们轮流挠着腋下和腰——地牢里只剩下公主断断续续的笑声）",
 			"actions": [
 				{
 					"who": "princess",
 					"by": "g2",
 					"repeat": 6,
 					"interval": 0.3,
-					"fx": "feather",
+					"fx": "hand",
+					"zone": "waist",
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"by": "cushion",
+					"repeat": 6,
+					"interval": 0.3,
+					"fx": "lines",
+					"zone": "butt",
 					"do": "tickle"
 				},
 				{

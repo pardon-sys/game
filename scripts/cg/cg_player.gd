@@ -741,6 +741,7 @@ func _act(a: Dictionary) -> float:
 			var who_ref: WeakRef = weakref(who)
 			var by_ref: WeakRef = weakref(by) if by else null
 			var after := str(a.get("after", "idle"))
+			var zone := str(a.get("zone", ""))
 			for i in n:
 				tw.tween_callback(func():
 					var w: CGActor = who_ref.get_ref()
@@ -752,7 +753,7 @@ func _act(a: Dictionary) -> float:
 					if w.kind == "princess":
 						# 立绘反馈（抖动、泛粉、贴片、飘字、光晕）；没有挠痒演员时按指令的 fx 和致死来源
 						Dialogue.portrait_fx.cg_tickle(b.reaction_key if b else source_key,
-								b.hit_fx if b else str(FX_TO_HIT.get(fx, "")))
+								b.hit_fx if b else str(FX_TO_HIT.get(fx, "")), zone)
 					_spawn_fx(w, fx))
 				tw.tween_interval(every)
 			tw.tween_callback(func():

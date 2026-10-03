@@ -81,7 +81,7 @@ func open(id: String) -> void:
 
 func close() -> void:
 	if _paused_by_me:
-		get_tree().paused = false
+		(Engine.get_main_loop() as SceneTree).paused = false
 	_paused_by_me = false
 	closed.emit()
 
@@ -149,18 +149,29 @@ func _refresh() -> void:
 
 
 func _input(event: InputEvent) -> void:
-	if not event.is_pressed() or event.is_echo() or shop.is_empty():
+	if not event.is_pressed() or event.is_echo() or shop.is_empty() or not is_inside_tree():
 		return
+	var act := ""
 	if event.is_action("move_up") or event.is_action("ui_up"):
-		selected = (selected - 1 + items().size()) % items().size()
-		_refresh()
+		act = "up"
 	elif event.is_action("move_down") or event.is_action("ui_down"):
-		selected = (selected + 1) % items().size()
-		_refresh()
+		act = "down"
 	elif event.is_action("interact") or event.is_action("ui_accept"):
-		buy(selected)
+		act = "buy"
 	elif event.is_action("pause") or event.is_action("ui_cancel") or event.is_action("backpack"):
-		close()
+		act = "close"
 	else:
 		return
+	# 先吃掉输入：关掉商店后这个界面会被释放
 	get_viewport().set_input_as_handled()
+	match act:
+		"up":
+			selected = (selected - 1 + items().size()) % items().size()
+			_refresh()
+		"down":
+			selected = (selected + 1) % items().size()
+			_refresh()
+		"buy":
+			buy(selected)
+		"close":
+			close()
