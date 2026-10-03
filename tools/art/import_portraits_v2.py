@@ -31,11 +31,12 @@ BLUE_SOURCES = [
 # 魔法 6 种 ← 第三张的 5 张（全是战损魔法；普通吟诵 / 释放用战损吟诵 / 第二种战损释放）
 BLUE_MAGIC = {"chant": "b3_chant", "burst": "b3_burst2", "damaged_chant": "b3_chant", "damaged_burst": "b3_burst",
               "damaged_giggle_chant": "b3_giggle_chant", "damaged_giggle_burst": "b3_giggle_burst"}
-# NPC：源图、半身取到人物高度的多少（头到腰）、横向中心偏移（相对取景宽度）
+# NPC：源图、半身取到人物高度的多少（头到腰）、横向中心偏移（相对取景宽度）；
+# cx 写了就直接用它当取景中心（占原图宽度的比例）——篝火派对的主人举着的灯笼会把自动算的头部中心拉偏到右边
 NPCS = {
     "captain": {"src": "npc_portraits/银白圣徽骑士统帅.png", "waist": 0.40, "dx": 0.0},
     "supervisor": {"src": "npc_portraits/猩红秘典与羽饰贵妇.png", "waist": 0.40, "dx": 0.0},
-    "bonfire_host": {"src": "npc_portraits/火焰灯笼祭典少女.png", "waist": 0.42, "dx": 0.0},
+    "bonfire_host": {"src": "npc_portraits/火焰灯笼祭典少女.png", "waist": 0.42, "dx": 0.0, "cx": 0.44},
 }
 
 
@@ -120,6 +121,8 @@ def build_npcs():
         # 横向以头部为中心（人物最上面 12% 的不透明像素的平均位置）
         a = np.asarray(full.getchannel("A"))[y0:y0 + round(0.12 * bh)] > 0
         cx = int(np.where(a)[1].mean()) if a.any() else (x0 + x1) // 2
+        if "cx" in cfg:
+            cx = round(cfg["cx"] * full.width)
         w = round((bottom - top) * cw / ch)
         cx += round(cfg["dx"] * w)
         left = max(0, min(full.width - w, cx - w // 2))

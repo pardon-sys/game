@@ -9,7 +9,9 @@
   blue_princess/princess_blue2.png       战损 11 / 憋笑 11（各方向混在一行）/ 战损憋笑 7 / 失控一 7 / 失控二 6
   blue_princess/princess_blue3.png       战损魔法 5 行：战损吟诵 9 / 战损释放 8 / 战损憋笑吟诵 9 / 战损释放（第二种）9 / 战损憋笑释放 7
 输出（assets/generated/，格式和第一版一样）：
-  princess.png / princess_blue.png              32px 一帧，11 行（princess_visuals.json 的 order）x 16 列（下 / 左 / 右 / 上 各 4 帧）
+  princess.png / princess_blue.png              32px 一帧，11 行（princess_visuals.json 的 order）x 16 列（下 / 左 / 右 / 上 各 4 帧）；
+                                                公主的正常 / 战损行走状态沿用第一版精灵图（additional_princess/princess_v1_sheet.png），
+                                                只有失控一 / 失控二用新画的
   princess_magic.png / princess_blue_magic.png  48px 一帧，6 行（magic_order）x 6 列（只有正面，不分方向）
 切帧：去白底后按「已知的行数 / 每行帧数」均分，切线挪到附近最空的那一列 / 行（人物的头发互相挨着时投影切不开）；
 每个格子只留最大的人物块和挨着它的特效（爱心、汗滴），伸进格子的邻居碎片去掉。
@@ -270,16 +272,27 @@ def prepare(img):
     return out
 
 
-def build_walk(mapping, out_name):
+# 公主：正常 / 战损这些行走状态继续用第一版精灵图（原来的小人），只有失控一 / 失控二换成新画的
+V1_SHEET = "additional_princess/princess_v1_sheet.png"
+PINK_V1_ROWS = [n for n in EMOTIONS if n not in ("helpless_1", "helpless_2")]
+# 躺着 / 坐着的宽姿势：整个放进格子里（缩小一点，不裁边）
+NO_CROP = ("helpless_1", "helpless_2")
+
+
+def build_walk(mapping, out_name, v1_rows=()):
+    """v1_rows 里的状态直接从第一版精灵图（V1_SHEET）拷贝整行，其余状态从新精灵表生成。"""
     cells = {}
     for name in EMOTIONS:
+        if name in v1_rows:
+            continue
         for d, frames in enumerate(WALK_DIRS):
             for f, ref in enumerate(mapping[name][frames]):
                 cells[name, d * 4 + f] = prepare(get_frame(ref))
     faces = {k: (None if k[1] >= 12 else _face_box_from_body(img, body_bbox(img))) for k, img in cells.items()}
     px = V2Pixelizer(cells, colors=56, face_boxes={k: (v or [0, 0, 1, 1]) for k, v in faces.items()})
     # 同一方向里来源不同的帧（蓝色公主正面第 0 帧是第 1 行的表情帧，画得更大）：缩放到同方向其它帧的高度
-    for name in EMOTIONS:
+    new_rows = [n for n in EMOTIONS if n not in v1_rows]
+    for name in new_rows:
         for d in range(4):
             refs = mapping[name][WALK_DIRS[d]]
             srcs = [r[:2] for r in refs]
@@ -290,16 +303,22 @@ def build_walk(mapping, out_name):
                     img = cells[name, d * 4 + f]
                     h = heights[len(heights) // 2]
                     cells[name, d * 4 + f] = img.resize((max(1, round(img.width * h / img.height)), h), Image.LANCZOS)
-    # 同一种状态统一缩放（帧之间不忽大忽小）：最高的一帧刚好 SPRITE_FIT 高；太宽的（蓝色公主的发髻）允许略超出、两边裁掉
+    # 同一种状态统一缩放（帧之间不忽大忽小）：最高的一帧刚好 SPRITE_FIT 高；太宽的（蓝色公主的发髻）允许略超出、两边裁掉；
+    # 失控一 / 失控二的宽姿势整个放进格子（描边占 2 像素）
     smalls = {}
-    for name in EMOTIONS:
+    for name in new_rows:
         group = [cells[name, c] for c in range(16)]
-        scale = min(SPRITE_FIT / max(p.height for p in group), (FRAME + 6) / max(p.width for p in group))
+        max_w = (FRAME - 6) if name in NO_CROP else (FRAME + 6)
+        scale = min(SPRITE_FIT / max(p.height for p in group), max_w / max(p.width for p in group))
         for c in range(16):
             smalls[name, c] = px.downscale(cells[name, c], scale, faces[name, c])
     px.build_palette(list(smalls.values()))
     out = Image.new("RGBA", (FRAME * 16, FRAME * len(EMOTIONS)))
+    v1 = Image.open(OUT / V1_SHEET).convert("RGBA") if v1_rows else None
     for row, name in enumerate(EMOTIONS):
+        if name in v1_rows:
+            out.alpha_composite(v1.crop((0, row * FRAME, FRAME * 16, row * FRAME + FRAME)), (0, row * FRAME))
+            continue
         for c in range(16):
             small = px.finish(smalls[name, c])
             if small.width > FRAME or small.height > FRAME:
@@ -377,7 +396,7 @@ def preview():
 
 
 def main():
-    walk, _ = build_walk(PINK, "princess.png")
+    walk, _ = build_walk(PINK, "princess.png", PINK_V1_ROWS)
     build_magic("np4", PINK_MAGIC, walk, "princess_magic.png")
     bwalk, _ = build_walk(BLUE, "princess_blue.png")
     build_magic("b3", BLUE_MAGIC, bwalk, "princess_blue_magic.png")
