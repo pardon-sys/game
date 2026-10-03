@@ -11,6 +11,8 @@ extends RestraintTrap
 ##   bubbles                     困住时冒泡泡（足浴盆、坐浴）
 ## 精灵帧：0 = 平时，1 = 困住；有节奏的陷阱 2 = 合上（不抓人的那半拍）。
 ## lock_zone(部位)：训练营用，只挠这个部位（不再轮流）。
+## 特效钩子（子类重写，用 TrapFx 画）：_fx_restrain(人) 困住时、_fx_free(人) 松开时、_fx_cycle(部位) 换部位时、
+## _fx_struggle(次数) 挣扎变快时、_fx_tick(delta) 困住期间每帧、_fx_close() 有节奏的陷阱合上的那一下。
 
 @export var zone_cycle: Array[Dictionary] = []
 @export var cycle_time := 0.0
@@ -35,6 +37,7 @@ var _base_interval := 0.5
 var _hold_t := 0.0
 var _bubble_fx: CPUParticles2D
 var _locked_zone := ""
+var _was_armed := true
 
 
 func _restraint_setup() -> void:
@@ -82,6 +85,10 @@ func _physics_process(delta: float) -> void:
 		_rhythm_t += delta
 		if sprite and sprite.hframes > 2:
 			sprite.frame_coords.x = 0 if is_armed() else 2
+		var armed := is_armed()
+		if _was_armed and not armed:
+			_fx_close()
+		_was_armed = armed
 
 
 func _on_restrain(a: Actor) -> void:
@@ -95,9 +102,11 @@ func _on_restrain(a: Actor) -> void:
 	if _bubble_fx:
 		_bubble_fx.emitting = true
 	Audio.play("stocks", -3.0, 0.08, 1.1)
+	_fx_restrain(a)
 
 
-func _on_free(_a: Actor) -> void:
+func _on_free(a: Actor) -> void:
+	_fx_free(a)
 	self_interval = _base_interval
 	if not zone_cycle.is_empty() and _locked_zone == "":
 		tickle_zones = zone_cycle[0].duplicate()
@@ -118,6 +127,8 @@ func _while_held(delta: float) -> void:
 				_cycle_len = maxf(0.15, _cycle_len * pow(1.0 - struggle_speedup, n))
 			if struggle_extend > 0.0:
 				victim.status.extend_grab(struggle_extend * n)
+			if struggle_speedup > 0.0:
+				_fx_struggle(n)
 		_last_presses = victim.status.presses_left()
 	if ramp > 0.0:
 		self_interval = maxf(min_interval, self_interval * (1.0 - ramp * delta))
@@ -129,6 +140,7 @@ func _while_held(delta: float) -> void:
 			_zone_i = (_zone_i + 1) % zone_cycle.size()
 			tickle_zones = zone_cycle[_zone_i].duplicate()
 			Audio.play("swish", -10.0, 0.1, 1.3)
+			_fx_cycle(current_zone())
 	# 姿势
 	if victim is PlayableCharacter:
 		var pc := victim as PlayableCharacter
@@ -137,3 +149,42 @@ func _while_held(delta: float) -> void:
 			pc.pose_rotation = sin(_hold_t * (5.0 + struggles * 0.4)) * amp
 		if lift > 0.0 or bob > 0.0:
 			pc.pose_offset = pose_offset + Vector2(0, -lift + roundf(sin(_hold_t * 14.0) * bob))
+	_fx_tick(delta)
+
+
+# ------------------------------------------------------------------ 特效钩子（子类重写）
+func _fx_restrain(_a: Actor) -> void:
+	pass
+
+
+func _fx_free(_a: Actor) -> void:
+	pass
+
+
+func _fx_cycle(_zone: String) -> void:
+	pass
+
+
+func _fx_struggle(_n: int) -> void:
+	pass
+
+
+func _fx_tick(_delta: float) -> void:
+	pass
+
+
+func _fx_close() -> void:
+	pass
+
+
+## 特效挂在哪（陷阱的父节点，用世界坐标）。
+func fx_parent() -> Node:
+	return get_parent()
+
+
+## 被困的人身上某个部位的位置（世界坐标）。
+func body_point(zone: String) -> Vector2:
+	var who: Node2D = victim if victim else self
+	var b: Variant = TickleZones.info(zone).get("body", [0, -12])
+	return who.global_position + (Vector2(float(b[0]), float(b[1])) if b is Array and b.size() == 2 else Vector2(0, -12))
+

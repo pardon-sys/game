@@ -790,50 +790,113 @@ ENDURE_CAST = {
     "g2": {"kind": "npc:guard", "at": [34, 10], "dir": "left"},
     "g3": {"kind": "npc:guard", "at": [-64, 6], "dir": "right", "hidden": True},
 }
-ENDURE_LINES = [
-    [line(G, "魔力放出来了！——就是现在，放完魔力的身体最敏感，加练！"),
-     line(P, "等、等一下！刚放完……哈哈哈哈！脚心、脚心不行哈哈哈哈！", portrait="defeat_1"),
-     line(G, "大腿内侧也别闲着。这是训练，忍住！"),
-     line(P, "哈哈哈哈哈！忍、忍不住啊——刷子和手一起……哈哈哈哈！", portrait="defeat_2"),
-     line(NARR, "（足枷里的脚心被工具来回刷，夹板夹着的大腿内侧被手指一下下戳——训练场上满是公主的笑声）")],
-    [line(G, "疲倦撑满了啊。按规矩，撑不住的要多挨一轮。"),
-     line(P, "规、规矩？！哈哈哈……脚趾缝不行——！", portrait="defeat_1"),
-     line(G, "第三个人也来，坐垫开到最大。"),
-     line(P, "哈哈哈哈哈！屁股底下也……三、三个地方一起哈哈哈哈哈！", portrait="defeat_2"),
-     line(NARR, "（坐垫的刷毛嗡嗡地转，三把特制的挠痒工具在脚心和大腿之间轮流——等公主笑到喘不上气，才停下来）")],
-    [line(G, "放完魔力了？好，那就趁热——两只脚心一起。"),
-     line(P, "哈哈哈哈！一起太犯规了……左、左边右边都……！", portrait="defeat_1"),
-     line(G, "下一轮能多撑几次，这一轮就少挠几下。记住这个感觉。"),
-     line(P, "记、记住了哈哈哈哈！大腿里面也……哈哈哈哈哈——！", portrait="defeat_2"),
-     line(NARR, "（刑床上的公主扭来扭去，可脚踝和大腿都被牢牢锁住——卫兵们一直挠到她的魔力重新安静下来）")],
+# 每段分阶段：魔力释放 → 趁敏感加练 / 换工具（刷子 → 羽毛 → 手指）→ 加人 → 刑具全开 → 笑到迷糊收尾。{successes} = 这一轮成功抵抗的次数
+CAPN = "保卫队队长"
+
+
+def T(by, zone, fx="hand", n=8, iv=0.2):
+    return A("tickle", who="princess", by=by, repeat=n, interval=iv, fx=fx, zone=zone)
+
+
+def burst_open(text):
+    return [{"actions": [A("fade_in", time=0.5), A("voice", state="laugh")], "wait": 0.5},
+            {"portrait": "fatigue_burst", "speaker": P, "text": text,
+             "actions": [A("flash", time=0.5), A("sfx", sound="water_release"), A("shake", who="princess", time=0.6)]}]
+
+
+ENDURE = [
+    ("趁热加练", [], burst_open("魔、魔力……冲出来了——！哈啊……全身一下子松开了……") + [
+        line(G, "放出来了！——就是现在。放完魔力的身体最敏感，趁热加练！", actions=[A("hop", who="g1", count=1), A("hop", who="g2", count=1)]),
+        line(P, "等、等一下！刚放完……一碰就……哈哈哈哈！脚心、脚心不行！", portrait="defeat_1", actions=[T("g1", "sole", "lines", 8, 0.2), A("bubble", who="princess", kind="laugh")]),
+        line(G, "先用刷子。刚才抵抗了 {successes} 次，不错——那这一轮就从脚心刷起。", actions=[T("g1", "sole", "lines", 8, 0.22), T("stocks", "sole", "lines", 6, 0.3)]),
+        line(P, "哈哈哈哈！刷、刷毛钻进脚趾缝了……左边右边都……哈哈哈！", actions=[T("g2", "sole", "lines", 8, 0.2)]),
+        line(G, "换羽毛。大腿内侧，慢慢地、一下一下地扫。", actions=[T("g2", "thigh", "feather", 8, 0.28), A("face", who="g2", dir="left")]),
+        line(P, "呜哈哈……羽、羽毛最坏了……慢慢扫比快的还痒——！", actions=[T("g2", "thigh", "feather", 8, 0.3), T("clamp", "thigh", "lines", 6, 0.3)]),
+        line(G, "最后用手。……膝盖窝也算大腿哦。", actions=[T("g1", "thigh", "hand", 10, 0.18), T("g2", "sole", "hand", 10, 0.18)]),
+        line(P, "哈哈哈哈哈！手、手指最不行了！膝盖窝不算大腿啦哈哈哈哈！", portrait="defeat_2", actions=[A("pose", who="princess", visual="helpless_2"), A("shake", who="princess", time=0.5)]),
+        line(G, "刑具也开到最大。坐垫、刑床、足枷——一起来。", actions=[T("cushion", "butt", "lines", 10, 0.2), T("supine", "waist", "feather", 10, 0.22), T("stocks", "sole", "lines", 10, 0.2)]),
+        line(P, "哈哈哈哈哈哈！屁、屁股底下和腰也……全身都在被挠——哈哈哈哈！", actions=[T("g1", "sole", "hand", 10, 0.16), T("g2", "thigh", "hand", 10, 0.17)]),
+        line(NARR, "（刷子、羽毛、手指轮番上阵，刑具嗡嗡地转——公主的笑声一阵高过一阵，渐渐变得断断续续）", actions=[T("cushion", "butt", "lines", 6, 0.3), A("bubble", who="princess", kind="dots")]),
+        line(P, "……哈……哈……刷子……羽毛……手指……排、排好队了……嘿嘿……"),
+        line(G, "……好像笑迷糊了。今天先到这儿——魔力也安静下来了。"),
+        {"actions": [A("fade_out", time=0.6), A("voice", state="")], "wait": 0.7},
+    ]),
+    ("规矩：三人轮流", ["g3"], burst_open("魔力……满出来了——！呼啊……") + [
+        line(G, "疲倦撑满了啊。按规矩，撑不住的要多挨一轮。"),
+        line(P, "规、规矩？！什么时候有这种规矩的……", "surprise"),
+        line(G, "现在有了。——喂，过来帮忙！", actions=[A("enter", who="g3", at=[-56, 14], time=0.4)]),
+        line("保卫队员（第三位）", "来了来了。我负责哪儿？", actions=[A("hop", who="g3", count=1)]),
+        line(G, "三个人轮流：一个脚心、一个大腿、一个腰。喊「换」就换位置。", actions=[T("g1", "sole", "hand", 8, 0.2), T("g2", "thigh", "hand", 8, 0.2), T("g3", "waist", "hand", 8, 0.2)]),
+        line(P, "哈哈哈哈哈！三、三个地方一起——哪、哪儿都躲不开哈哈哈！", portrait="defeat_1", actions=[A("bubble", who="princess", kind="laugh")]),
+        line(G, "换！", actions=[T("g1", "thigh", "hand", 8, 0.18), T("g2", "waist", "hand", 8, 0.18), T("g3", "sole", "feather", 8, 0.2)]),
+        line(P, "噫哈哈哈！换了手更痒——刚、刚适应一点又换了哈哈哈哈！"),
+        line(G, "再换！这次坐垫也开到最大。", actions=[T("g1", "waist", "hand", 10, 0.16), T("g2", "sole", "lines", 10, 0.16), T("g3", "thigh", "hand", 10, 0.17), T("cushion", "butt", "lines", 10, 0.2)]),
+        line(P, "哈哈哈哈哈哈！屁股底下也……四、四个地方了——不公平哈哈哈哈！", portrait="defeat_2", actions=[A("pose", who="princess", visual="helpless_2"), A("shake", who="princess", time=0.6)]),
+        line("保卫队员（第三位）", "她脚趾缩成一团了。……脚趾缝要不要也刷一下？", actions=[T("g3", "sole", "lines", 10, 0.16)]),
+        line(P, "不要问啊哈哈哈哈！脚趾缝、脚趾缝不行——！", actions=[T("stocks", "sole", "lines", 8, 0.2)]),
+        line(NARR, "（三个人一圈一圈地换位置，每换一次都正好挠在她刚放松的地方——直到她连「换」都听不清了）", actions=[A("bubble", who="princess", kind="dots")]),
+        line(P, "……换……换到哪儿了……嘿……哪儿都……是手……"),
+        {"actions": [A("fade_out", time=0.6), A("voice", state="")], "wait": 0.7},
+    ]),
+    ("两只脚心同时", [], burst_open("脚、脚底……魔力从脚底冲出去了——！") + [
+        line(G, "魔力是从脚底放出去的？那脚心现在一定最敏感。"),
+        line(P, "别、别分析了……脚底还麻麻的……", "shy"),
+        line(G, "两只脚一起。我左边，你右边——数到三。一、二……", actions=[A("face", who="g1", dir="right"), A("face", who="g2", dir="left")]),
+        line(P, "等一下等一下——哈哈哈哈哈哈！三还没数呢哈哈哈！", portrait="defeat_1", actions=[T("g1", "sole", "hand", 10, 0.16), T("g2", "sole", "hand", 10, 0.16), A("bubble", who="princess", kind="laugh")]),
+        line(G, "足枷锁着，脚趾张开一点……对，就这样。", actions=[T("stocks", "sole", "lines", 8, 0.22), T("g1", "sole", "feather", 8, 0.22)]),
+        line(P, "哈哈哈哈！脚、脚趾被扒开了……羽毛从中间穿过去——哈哈哈哈！"),
+        line(P, "大、大腿也可以！换、换大腿吧……脚心真的不行了哈哈哈！"),
+        line(G, "大腿？好啊。——夹板，开。", actions=[T("clamp", "thigh", "lines", 10, 0.2), T("g2", "sole", "hand", 10, 0.18)]),
+        line(P, "不是「也」啊哈哈哈哈！大腿和脚心一起——比刚才还痒哈哈哈哈！", portrait="defeat_2", actions=[A("pose", who="princess", visual="helpless_2"), A("shake", who="princess", time=0.6)]),
+        line(G, "左边脚跟、右边脚弓、中间脚趾——一个都不放过。", actions=[T("g1", "sole", "hand", 10, 0.15), T("g2", "sole", "lines", 10, 0.16), T("stocks", "sole", "lines", 10, 0.2)]),
+        line(P, "哈哈哈哈哈哈！脚、脚要化掉了……左右都、都分不清了——！"),
+        line(NARR, "（两只被锁住的脚心同时被挠，脚趾张开又蜷起来，蜷起来又被扒开——笑声里渐渐带上了哭腔）", actions=[T("g1", "sole", "hand", 6, 0.3), A("bubble", who="princess", kind="dots")]),
+        line(P, "……左……右……哪只是我的脚……嘿嘿……都、都不是了……"),
+        {"actions": [A("fade_out", time=0.6), A("voice", state="")], "wait": 0.7},
+    ]),
+    ("队长亲自示范", ["cap"], burst_open("魔力……忍、忍不住了——！呼……放出来了……") + [
+        line(CAPN, "……让开。挠痒也是有技巧的，我示范一次。", actions=[A("enter", who="cap", at=[60, 2], time=0.5), A("face", who="cap", dir="left")]),
+        line(P, "队、队长？！不、不用亲自来的……", "surprise"),
+        line(CAPN, "刚才抵抗了 {successes} 次……还差得远。看好了——不是用力，是轻。", actions=[A("move", who="cap", to=[24, 6], time=0.6)]),
+        line(P, "……噗、噗哈哈……只、只是指尖碰了一下……为什么会这么痒……", portrait="defeat_1", actions=[T("cap", "sole", "feather", 6, 0.4)]),
+        line(CAPN, "沿着脚弓画圈。快了她会绷紧，慢了她才会笑出来。", actions=[T("cap", "sole", "hand", 8, 0.35)]),
+        line(P, "哈哈哈……慢、慢慢地画圈……好坏……哈哈哈哈！"),
+        line(G, "原来如此……那大腿内侧呢，队长？", actions=[A("hop", who="g1", count=1)]),
+        line(CAPN, "膝盖往上一掌的地方。你们试试。", actions=[T("g1", "thigh", "hand", 8, 0.3), T("g2", "thigh", "hand", 8, 0.32)]),
+        line(P, "哈哈哈哈哈！就、就是那里——队长不要教他们啊哈哈哈哈！", portrait="defeat_2", actions=[A("pose", who="princess", visual="helpless_2"), A("shake", who="princess", time=0.5)]),
+        line(CAPN, "学会了就一起来。刑具也开着——让她记住这个感觉，下次才忍得住。", actions=[T("cap", "sole", "hand", 10, 0.2), T("g1", "thigh", "hand", 10, 0.18), T("g2", "thigh", "hand", 10, 0.2), T("cushion", "butt", "lines", 10, 0.2)]),
+        line(P, "哈哈哈哈哈哈！一、一下子全学会了——三个人都好会挠哈哈哈哈！"),
+        line(NARR, "（队长的「技巧」一传十，十传百——训练场上，三双手都学会了最痒的挠法）", actions=[A("bubble", who="princess", kind="dots")]),
+        line(P, "……画、画圈……一圈……两圈……嘿嘿……队长的手……好轻……"),
+        line(CAPN, "……今天就到这里。让她缓一缓。"),
+        {"actions": [A("fade_out", time=0.6), A("voice", state="")], "wait": 0.7},
+    ]),
+    ("数数惩罚", [], burst_open("魔力……又满了——！哈啊……放、放完了……") + [
+        line(G, "撑不住的人要受「数数」惩罚：挠一下，你就报一个数。报错了从头来。"),
+        line(P, "报数……？好、好吧，这个我可以……", "shy"),
+        line(G, "开始。", actions=[T("g1", "sole", "hand", 1, 0.2)]),
+        line(P, "一！……噗。", actions=[T("g2", "thigh", "hand", 1, 0.2)]),
+        line(P, "二！……三——哈哈！四、四……", portrait="defeat_1", actions=[T("g1", "sole", "hand", 4, 0.3)]),
+        line(G, "你刚才报了两次「四」。重来。", actions=[A("hop", who="g1", count=1)]),
+        line(P, "诶？！我、我没有……一！二！三哈哈哈……", actions=[T("g1", "sole", "hand", 6, 0.25), T("g2", "thigh", "hand", 6, 0.25)]),
+        line(G, "这次加快一点。坐垫也一起，它挠一下也要算一个数。", actions=[T("cushion", "butt", "lines", 8, 0.2), T("g1", "sole", "hand", 8, 0.18)]),
+        line(P, "七、八——九哈哈哈哈！十、十——坐垫那下算不算——哈哈哈哈！", portrait="defeat_2", actions=[A("pose", who="princess", visual="helpless_2"), A("shake", who="princess", time=0.5)]),
+        line(G, "算。所以你又数错了。重来。", actions=[T("g2", "thigh", "hand", 10, 0.16), T("stocks", "sole", "lines", 10, 0.18)]),
+        line(P, "哈哈哈哈哈哈！一、一……一后面是什么来着……哈哈哈哈！"),
+        line(NARR, "（每次快数到二十，总会有一下挠在意想不到的地方——数字一个接一个地从她嘴里滑走）", actions=[T("g1", "sole", "hand", 8, 0.25), T("cushion", "butt", "lines", 8, 0.25), A("bubble", who="princess", kind="dots")]),
+        line(P, "……一……一百……嘿嘿……数、数完了吧……可以……可以睡了吗……"),
+        line(G, "……她从一直接跳到一百了。好吧，这次算你过。"),
+        {"actions": [A("fade_out", time=0.6), A("voice", state="")], "wait": 0.7},
+    ]),
 ]
 
 
 def endure_punish(i):
-    ls = ENDURE_LINES[i]
-    steps = [
-        {"actions": [A("fade_in", time=0.5), A("voice", state="laugh")], "wait": 0.5},
-        dict(ls[0], actions=[A("hop", who="g1", count=1), A("face", who="g2", dir="left")]),
-        dict(ls[1], actions=[A("tickle", who="princess", by="g1", repeat=8, interval=0.2, fx="hand", zone="sole"),
-                             A("tickle", who="princess", by="stocks", repeat=6, interval=0.3, fx="feather", zone="sole"),
-                             A("bubble", who="princess", kind="laugh")]),
-    ]
-    if i == 1:
-        steps.append({"actions": [A("enter", who="g3", at=[-50, 14], time=0.4)], "wait": 0.4})
-    steps += [
-        dict(ls[2], actions=[A("tickle", who="princess", by="g2", repeat=8, interval=0.2, fx="hand", zone="thigh"),
-                             A("tickle", who="princess", by="clamp", repeat=6, interval=0.3, fx="lines", zone="thigh")]),
-        dict(ls[3], actions=[A("pose", who="princess", visual="helpless_2"), A("shake", who="princess", time=0.6),
-                             A("tickle", who="princess", by="g1", repeat=10, interval=0.16, fx="hand", zone="sole"),
-                             A("tickle", who="princess", by="g2", repeat=10, interval=0.17, fx="hand", zone="thigh"),
-                             A("tickle", who="princess", by="cushion", repeat=8, interval=0.2, fx="lines", zone="butt")]
-             + ([A("tickle", who="princess", by="g3", repeat=10, interval=0.18, fx="feather", zone="sole")] if i == 1 else [])),
-        dict(ls[4], actions=[A("tickle", who="princess", by="g1", repeat=6, interval=0.3, fx="hand", zone="sole"),
-                             A("tickle", who="princess", by="g2", repeat=6, interval=0.3, fx="hand", zone="thigh"),
-                             A("bubble", who="princess", kind="dots")]),
-        {"actions": [A("fade_out", time=0.6), A("voice", state="")], "wait": 0.7},
-    ]
-    return {"name": "魔力疲倦忍耐训练的惩罚（%d）" % (i + 1), "cast": ENDURE_CAST, "steps": steps}
+    name, extra, steps = ENDURE[i]
+    cast = dict(ENDURE_CAST)
+    if "cap" in extra:
+        cast["cap"] = {"kind": "npc:captain", "at": [90, 2], "dir": "left", "hidden": True}
+    return {"name": "魔力疲倦忍耐训练的惩罚（%s）" % name, "cast": cast, "steps": steps}
 
 
 # 训练三、四（部位训练）：闷笑满了笑倒之后的加练。{zone} / {zone_name} / {device} / {device_x} / {device_y} 由训练小游戏换成本轮的
@@ -953,8 +1016,8 @@ def devotion(cid, srcs, name, l1, l3):
 
 for cid, srcs, name, l1, l3 in DEVOTION:
     (TH / ("train_release_%s.json" % cid)).write_text(_theater_json(devotion(cid, srcs, name, l1, l3)))
-for i in range(3):
+for i in range(len(ENDURE)):
     (TH / ("train_endure_punish_%d.json" % (i + 1))).write_text(_theater_json(endure_punish(i)))
 for i in range(2):
     (TH / ("train_zone_punish_%d.json" % (i + 1))).write_text(_theater_json(zone_punish(i)))
-print("过场 2 段，小剧场 %d 段" % (9 + len(DEVOTION)))
+print("过场 2 段，小剧场 %d 段" % (6 + len(ENDURE) + len(DEVOTION)))

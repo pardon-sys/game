@@ -10,6 +10,8 @@ const PARTICLES := {
 	"chip": preload("res://assets/generated/particle_chip.png"),
 	"drop": preload("res://assets/generated/particle_drop.png"),
 	"heart": preload("res://assets/generated/particle_heart.png"),
+	"feather": preload("res://assets/generated/particle_feather.png"),
+	"bristle": preload("res://assets/generated/particle_bristle.png"),
 }
 
 

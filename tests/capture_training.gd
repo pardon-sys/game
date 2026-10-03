@@ -1,12 +1,24 @@
 extends Node
 ## 保卫队训练营截图（开发用）：Godot --path . res://tests/capture_training.tscn → tools/.cache/shots/training_*.png
-## 营地训练场的过场、训练菜单、训练一 / 三 / 四的小游戏画面、惩罚小剧场。
+## 营地训练场的过场、训练菜单、训练一 / 三 / 四的小游戏画面、惩罚小剧场、训练迷宫、背包状态页、新陷阱特效。
+## 截图要真的画出来，所以不能用 --headless；窗口会置顶（被挡住时 macOS 会停止绘制、整个流程就卡住）。
+## 防卡死：每一步等待最多 WAIT_LIMIT 秒（等不到就打印「跳过」接着走），整段超过 TOTAL_LIMIT 秒直接退出并打印卡在哪一步。
+## 功能是否正确由 tests/training_test.tscn（headless）检查；这个脚本只用来看画面。
 
 const OUT := "res://tools/.cache/shots/"
+const WAIT_LIMIT := 30.0
+const TOTAL_LIMIT := 300.0
+
+var _step := "启动"
 
 
 func _ready() -> void:
 	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path(OUT))
+	get_window().always_on_top = true
+	OS.low_processor_usage_mode = false
+	get_tree().create_timer(TOTAL_LIMIT, true, false, true).timeout.connect(func():
+		push_error("截图超时（%d 秒），卡在：%s" % [TOTAL_LIMIT, _step])
+		get_tree().quit(1))
 	var main: Node = load("res://scenes/main.tscn").instantiate()
 	add_child(main)
 	await _wait(1.0)
@@ -142,6 +154,32 @@ func _ready() -> void:
 	await _until(func(): return TrainingDB.current == null, true)
 	await _wait(0.5)
 	await _shot("maze_back")
+	# 背包状态页（滚动面板）
+	TrainingStats.add("train_resist_sole", 0.05)
+	TrainingStats.add("train_burst_power", 5)
+	var bp: Backpack = get_tree().get_first_node_in_group("main").get_node("Backpack")
+	bp.open()
+	bp.set_page(Backpack.PAGE_STATUS)
+	await _wait(0.3)
+	await _shot("backpack_status")
+	bp.close()
+	# 新陷阱特效（先把第一次的对话都标成看过，不挡画面）
+	for k in ReactionDB.source_keys():
+		GameState.set_flag("met_" + k)
+	for f in ["hint_restraint", "hint_grabbed", "hint_tickled"]:
+		GameState.set_flag(f)
+	GameState.player.global_position = Cutscene.cell_to_world([38, 22])
+	for key in ["thigh_brush_ring", "spring_seat", "scissor_stand"]:
+		var pl := GameState.player
+		var t: Node2D = load("res://scenes/traps/%s.tscn" % key).instantiate()
+		get_tree().get_first_node_in_group("main").level.get_node("Entities").add_child(t)
+		t.global_position = pl.global_position + Vector2(16, 0)
+		await _until(func(): return pl.status.is_grabbed(), true)
+		await _wait(0.08 if key == "scissor_stand" else 0.6)
+		await _shot("fx_" + key)
+		pl.status.release(true)
+		t.queue_free()
+		await _wait(1.6)
 	get_tree().quit()
 
 
@@ -158,16 +196,19 @@ func _until_playing() -> void:
 
 
 func _until(cond: Callable, advance := false) -> void:
-	var g := 0
-	while not cond.call() and g < 600:
+	var t := 0.0
+	while not cond.call() and t < WAIT_LIMIT:
 		if advance and Dialogue.is_active():
 			Dialogue.advance()
 			Dialogue.advance()
 		await _wait(0.05)
-		g += 1
+		t += 0.05
+	if not cond.call():
+		print("跳过：等太久了（%s）" % _step)
 
 
 func _shot(name: String) -> void:
+	_step = "截图 " + name
 	await RenderingServer.frame_post_draw
 	get_viewport().get_texture().get_image().save_png(ProjectSettings.globalize_path(OUT + "training_" + name + ".png"))
 	print("shot ", name)

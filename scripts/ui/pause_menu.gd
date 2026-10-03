@@ -50,15 +50,7 @@ func _ready() -> void:
 
 ## 细的像素风滚动条（和对话框的一样）。
 func _style_scrollbar(bar: VScrollBar) -> void:
-	var track := StyleBoxFlat.new()
-	track.bg_color = Color(0.2, 0.13, 0.2, 0.85)
-	var grab := StyleBoxFlat.new()
-	grab.bg_color = Color(0.95, 0.72, 0.8)
-	bar.add_theme_stylebox_override("scroll", track)
-	bar.add_theme_stylebox_override("grabber", grab)
-	bar.add_theme_stylebox_override("grabber_highlight", grab)
-	bar.add_theme_stylebox_override("grabber_pressed", grab)
-	bar.custom_minimum_size.x = 4.0
+	ScrollTextBox.style_scrollbar(bar)
 
 
 func _unhandled_input(event: InputEvent) -> void:

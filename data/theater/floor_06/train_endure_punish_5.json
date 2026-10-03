@@ -1,0 +1,312 @@
+{
+	"name": "魔力疲倦忍耐训练的惩罚（数数惩罚）",
+	"cast": {
+		"princess": {
+			"kind": "princess",
+			"at": [
+				0,
+				8
+			],
+			"visual": "helpless_2",
+			"anim": "helpless",
+			"dir": "down"
+		},
+		"supine": {
+			"kind": "trap:supine",
+			"at": [
+				0,
+				18
+			]
+		},
+		"cushion": {
+			"kind": "trap:cushion",
+			"at": [
+				0,
+				14
+			]
+		},
+		"clamp": {
+			"kind": "trap:clamp",
+			"at": [
+				0,
+				17
+			]
+		},
+		"stocks": {
+			"kind": "trap:stocks",
+			"at": [
+				0,
+				23
+			]
+		},
+		"g1": {
+			"kind": "npc:guard",
+			"at": [
+				-34,
+				10
+			],
+			"dir": "right"
+		},
+		"g2": {
+			"kind": "npc:guard",
+			"at": [
+				34,
+				10
+			],
+			"dir": "left"
+		},
+		"g3": {
+			"kind": "npc:guard",
+			"at": [
+				-64,
+				6
+			],
+			"dir": "right",
+			"hidden": true
+		}
+	},
+	"steps": [
+		{
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "fade_in"
+				},
+				{
+					"state": "laugh",
+					"do": "voice"
+				}
+			],
+			"wait": 0.5
+		},
+		{
+			"portrait": "fatigue_burst",
+			"speaker": "公主",
+			"text": "魔力……又满了——！哈啊……放、放完了……",
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "flash"
+				},
+				{
+					"sound": "water_release",
+					"do": "sfx"
+				},
+				{
+					"who": "princess",
+					"time": 0.6,
+					"do": "shake"
+				}
+			]
+		},
+		{
+			"speaker": "保卫队员",
+			"text": "撑不住的人要受「数数」惩罚：挠一下，你就报一个数。报错了从头来。"
+		},
+		{
+			"speaker": "公主",
+			"text": "报数……？好、好吧，这个我可以……",
+			"emotion": "shy"
+		},
+		{
+			"speaker": "保卫队员",
+			"text": "开始。",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "g1",
+					"repeat": 1,
+					"interval": 0.2,
+					"fx": "hand",
+					"zone": "sole",
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "一！……噗。",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "g2",
+					"repeat": 1,
+					"interval": 0.2,
+					"fx": "hand",
+					"zone": "thigh",
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "二！……三——哈哈！四、四……",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "g1",
+					"repeat": 4,
+					"interval": 0.3,
+					"fx": "hand",
+					"zone": "sole",
+					"do": "tickle"
+				}
+			],
+			"portrait": "defeat_1"
+		},
+		{
+			"speaker": "保卫队员",
+			"text": "你刚才报了两次「四」。重来。",
+			"actions": [
+				{
+					"who": "g1",
+					"count": 1,
+					"do": "hop"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "诶？！我、我没有……一！二！三哈哈哈……",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "g1",
+					"repeat": 6,
+					"interval": 0.25,
+					"fx": "hand",
+					"zone": "sole",
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"by": "g2",
+					"repeat": 6,
+					"interval": 0.25,
+					"fx": "hand",
+					"zone": "thigh",
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "保卫队员",
+			"text": "这次加快一点。坐垫也一起，它挠一下也要算一个数。",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "cushion",
+					"repeat": 8,
+					"interval": 0.2,
+					"fx": "lines",
+					"zone": "butt",
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"by": "g1",
+					"repeat": 8,
+					"interval": 0.18,
+					"fx": "hand",
+					"zone": "sole",
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "七、八——九哈哈哈哈！十、十——坐垫那下算不算——哈哈哈哈！",
+			"actions": [
+				{
+					"who": "princess",
+					"visual": "helpless_2",
+					"do": "pose"
+				},
+				{
+					"who": "princess",
+					"time": 0.5,
+					"do": "shake"
+				}
+			],
+			"portrait": "defeat_2"
+		},
+		{
+			"speaker": "保卫队员",
+			"text": "算。所以你又数错了。重来。",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "g2",
+					"repeat": 10,
+					"interval": 0.16,
+					"fx": "hand",
+					"zone": "thigh",
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"by": "stocks",
+					"repeat": 10,
+					"interval": 0.18,
+					"fx": "lines",
+					"zone": "sole",
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "哈哈哈哈哈哈！一、一……一后面是什么来着……哈哈哈哈！"
+		},
+		{
+			"speaker": "",
+			"text": "（每次快数到二十，总会有一下挠在意想不到的地方——数字一个接一个地从她嘴里滑走）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "g1",
+					"repeat": 8,
+					"interval": 0.25,
+					"fx": "hand",
+					"zone": "sole",
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"by": "cushion",
+					"repeat": 8,
+					"interval": 0.25,
+					"fx": "lines",
+					"zone": "butt",
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"kind": "dots",
+					"do": "bubble"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "……一……一百……嘿嘿……数、数完了吧……可以……可以睡了吗……"
+		},
+		{
+			"speaker": "保卫队员",
+			"text": "……她从一直接跳到一百了。好吧，这次算你过。"
+		},
+		{
+			"actions": [
+				{
+					"time": 0.6,
+					"do": "fade_out"
+				},
+				{
+					"state": "",
+					"do": "voice"
+				}
+			],
+			"wait": 0.7
+		}
+	]
+}

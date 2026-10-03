@@ -40,7 +40,10 @@ var grid: GridContainer
 var detail_name: Label
 var detail_desc: Label
 var hotkey_label: Label
-var status_page: VBoxContainer
+## 状态页（ScrollTextBox：自动换行、↑↓ 滚动）。
+var status_page: ScrollTextBox
+var detail_box: ScrollTextBox
+var passive_box: ScrollTextBox
 var passives_page: Control
 var passive_grid: GridContainer
 var passive_name: Label
@@ -118,6 +121,10 @@ func _input(event: InputEvent) -> void:
 		move_selection(-1)
 	elif event.is_action("move_right") or event.is_action("ui_right"):
 		move_selection(1)
+	elif (event.is_action("move_up") or event.is_action("ui_up")) and page == PAGE_STATUS:
+		status_page.scroll_by(-1)
+	elif (event.is_action("move_down") or event.is_action("ui_down")) and page == PAGE_STATUS:
+		status_page.scroll_by(1)
 	elif event.is_action("move_up") or event.is_action("ui_up"):
 		move_selection(-COLUMNS)
 	elif event.is_action("move_down") or event.is_action("ui_down"):
@@ -136,6 +143,7 @@ func _input(event: InputEvent) -> void:
 
 func set_page(p: int) -> void:
 	page = clampi(p, 0, PAGES.size() - 1)
+	status_page.scroll_to_top()
 	_refresh()
 
 
@@ -227,11 +235,9 @@ func _build() -> void:
 	detail_name = _label(GOLD)
 	detail_name.position = Vector2(0, 92)
 	items_page.add_child(detail_name)
-	detail_desc = _label(TEXT)
-	detail_desc.position = Vector2(0, 110)
-	detail_desc.size = Vector2(396, 48)
-	detail_desc.autowrap_mode = TextServer.AUTOWRAP_ARBITRARY
-	items_page.add_child(detail_desc)
+	detail_box = ScrollTextBox.make(Rect2(0, 108, 396, 54))
+	items_page.add_child(detail_box)
+	detail_desc = detail_box.add_line("", TEXT)
 	hotkey_label = _label(PINK)
 	hotkey_label.position = Vector2(0, 166)
 	items_page.add_child(hotkey_label)
@@ -248,16 +254,11 @@ func _build() -> void:
 	passive_name = _label(GOLD)
 	passive_name.position = Vector2(0, 92)
 	passives_page.add_child(passive_name)
-	passive_desc = _label(TEXT)
-	passive_desc.position = Vector2(0, 110)
-	passive_desc.size = Vector2(396, 70)
-	passive_desc.autowrap_mode = TextServer.AUTOWRAP_ARBITRARY
-	passives_page.add_child(passive_desc)
+	passive_box = ScrollTextBox.make(Rect2(0, 108, 396, 84))
+	passives_page.add_child(passive_box)
+	passive_desc = passive_box.add_line("", TEXT)
 	# 状态页
-	status_page = VBoxContainer.new()
-	status_page.position = Vector2(12, 26)
-	status_page.size = Vector2(396, 190)
-	status_page.add_theme_constant_override("separation", 2)
+	status_page = ScrollTextBox.make(Rect2(12, 26, 396, 192))
 	panel.add_child(status_page)
 	# CG 图鉴页
 	gallery_page = VBoxContainer.new()
@@ -296,7 +297,7 @@ func _refresh() -> void:
 		hint_label.text = "方向键 选择　Tab 下一页　Esc 关闭"
 	else:
 		_refresh_status()
-		hint_label.text = "Tab 下一页　Esc 关闭"
+		hint_label.text = "↑↓ 滚动　Tab 下一页　Esc 关闭"
 
 
 # ------------------------------------------------------------------ CG 图鉴
@@ -383,6 +384,7 @@ func _refresh_passives() -> void:
 	var text := "当前：" + str(PassiveDB.level_info(id, lv).get("desc", ""))
 	text += "\n下一级：" + str(PassiveDB.level_info(id, lv + 1).get("desc", "")) if lv < mx else "\n已经满级。"
 	passive_desc.text = text
+	passive_box.scroll_to_top()
 
 
 func _passive_slot(id: String, active: bool) -> Control:
@@ -421,6 +423,7 @@ func _refresh_items() -> void:
 		detail_name.text = "%s ×%d　（%s）%s" % [it.display_name, GameState.inventory.count(it.id),
 				CATEGORY_NAMES.get(it.category, ""), ("　[%s]" % hk) if hk != "" else ""]
 		detail_desc.text = it.description
+		detail_box.scroll_to_top()
 	else:
 		detail_name.text = "背包是空的。"
 		detail_desc.text = ""
@@ -466,8 +469,9 @@ func _slot(it: ItemData, active: bool) -> Control:
 
 
 func _refresh_status() -> void:
-	for c in status_page.get_children():
-		c.queue_free()
+	var keep := status_page.scroll_vertical
+	status_page.clear()
+	status_page.set_deferred("scroll_vertical", keep)
 	var p := GameState.player
 	if not is_instance_valid(p):
 		return
@@ -538,26 +542,18 @@ func _situations(p: PlayableCharacter) -> Array[String]:
 
 func _buff_line(id: String, b: Buff, p: Object = null) -> void:
 	var info := Buff.display(id, p)
-	var row := HBoxContainer.new()
-	row.add_theme_constant_override("separation", 4)
 	var icon := TextureRect.new()
 	var at := AtlasTexture.new()
 	at.atlas = BUFF_ICONS
 	at.region = Rect2(int(info.get("icon", 0)) * 12, 0, 12, 12)
 	icon.texture = at
 	icon.custom_minimum_size = Vector2(12, 12)
-	icon.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-	row.add_child(icon)
 	var time := "永久" if b.is_permanent() else "%.1f 秒" % b.time_left
 	if b.stacks > 1:
 		time = "%d 层，%s" % [b.stacks, time]
-	var l := _label(Color(1, 0.6, 0.65) if b.is_debuff() else Color(0.6, 1, 0.7))
-	l.text = "%s（%s）%s" % [info.get("name", id), time, info.get("desc", "")]
-	row.add_child(l)
-	status_page.add_child(row)
+	status_page.add_row(icon, "%s（%s）%s" % [info.get("name", id), time, info.get("desc", "")],
+		Color(1, 0.6, 0.65) if b.is_debuff() else Color(0.6, 1, 0.7))
 
 
 func _line(text: String, col: Color) -> void:
-	var l := _label(col)
-	l.text = text
-	status_page.add_child(l)
+	status_page.add_line(text, col)

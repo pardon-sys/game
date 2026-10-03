@@ -62,6 +62,8 @@ func _enter_game() -> void:
 	super()
 	_text = _label(TEXT, 8)
 	_text.position = Vector2(0, 0)
+	_text.size = Vector2(panel_body.size.x, 14)
+	_text.autowrap_mode = TextServer.AUTOWRAP_ARBITRARY
 	panel_body.add_child(_text)
 	_arrow = _label(GOLD, 24)
 	_arrow.position = Vector2(30, 14)

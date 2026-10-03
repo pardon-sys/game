@@ -37,12 +37,14 @@ func _ready() -> void:
 	await _run_stats()
 	await _run_menu()
 	await _run_esc_list()
+	await _run_scroll_box()
 	await _run_traps()
 	await _run_combos()
 	await _run_endure()
 	await _run_resist()
 	await _run_sensitize()
 	await _run_maze()
+	await _run_dialogue_entry()
 	print("\n==== %s (%d 项失败) ====" % ["全部通过" if failures == 0 else "有失败", failures])
 	get_tree().quit(1 if failures else 0)
 
@@ -116,6 +118,10 @@ func _run_menu() -> void:
 	menu.cancel()
 	await _wait(0.05)
 	check("Esc 从选部位回到训练列表", menu.page == "list")
+	var sm := TrainingDB.summary_text(TrainingDB.info("fatigue_release"), {"successes": 3, "gained": {"train_fatigue_down": 5.0, "train_burst_power": 2.5}})
+	var sz := TrainingDB.summary_text(TrainingDB.info("zone_resist"), {"successes": 2, "gained": {"train_resist_sole": 0.002}})
+	check("结算提示用玩家看得懂的说法（%s／%s）" % [sm, sz], sm.contains("魔力疲倦上限 -5") and sm.contains("释放强度 +2.5%")
+		and sz.contains("脚心倍率 -0.002") and not (sm + sz).contains("train_"))
 	menu.pick(3)
 	menu.pick(1)
 	await _wait(0.05)
@@ -146,6 +152,61 @@ func _run_esc_list() -> void:
 	pm.toggle()
 	DevConfig.override = false
 	await _wait(0.1)
+
+
+# ------------------------------------------------------------------ 滚动文字面板
+func _run_scroll_box() -> void:
+	print("-- 滚动文字面板（ScrollTextBox）")
+	var box := ScrollTextBox.make(Rect2(0, 0, 120, 40))
+	get_tree().root.add_child(box)
+	var l := box.add_line("很长的一段说明文字，".repeat(12))
+	await get_tree().process_frame
+	await get_tree().process_frame
+	check("长文字自动换行、不超出面板宽度，比面板高时可以滚动", l.size.x <= box.size.x and l.size.y > 30.0 and box.is_scrollable())
+	box.scroll_by(1)
+	await get_tree().process_frame
+	check("scroll_by 一次滚一行", box.scroll_vertical > 0)
+	box.queue_free()
+	# 训练菜单：说明在提示行上面，最长的说明也不重叠
+	GameState.give_item(ItemDB.get_item("coin"), 10)
+	var menu := TrainingMenu.new()
+	get_tree().root.add_child(menu)
+	menu.choose()
+	await _wait(0.05)
+	var longest := 0
+	for i in TrainingDB.list().size():
+		if str(TrainingDB.list()[i]["desc"]).length() > str(TrainingDB.list()[longest]["desc"]).length():
+			longest = i
+	menu.selected = longest
+	menu._refresh()
+	await _wait(0.05)
+	var db := menu.desc_box
+	check("训练菜单：说明是滚动面板，在提示行上方、宽度不超框（最长的说明 %d 字）" % str(TrainingDB.list()[longest]["desc"]).length(),
+		db.position.y + db.size.y <= menu.hint.position.y and menu.desc.size.x <= db.size.x
+		and menu.list_box.position.y + menu.list_box.size.y <= db.position.y)
+	var before := db.scroll_vertical
+	var ev := InputEventAction.new()
+	ev.action = "move_right"
+	ev.pressed = true
+	menu._input(ev)
+	await _wait(0.05)
+	check("←→ 翻看说明（内容超出时）", not db.is_scrollable() or db.scroll_vertical > before)
+	menu.cancel()
+	menu.queue_free()
+	get_tree().paused = false
+	# 背包状态页：长行自动换行
+	TrainingStats.add("train_burst_power", 10)
+	TrainingStats.add("train_resist_sole", 0.05)
+	var bp: Backpack = main.get_node("Backpack")
+	bp.open()
+	bp.set_page(Backpack.PAGE_STATUS)
+	await _wait(0.1)
+	var sp := bp.status_page
+	var labels := sp.find_children("*", "Label", true, false)
+	check("背包状态页：滚动面板，每一行都不超出宽度（%d 行）" % labels.size(), sp is ScrollTextBox and not labels.is_empty()
+		and labels.all(func(x): return x.size.x <= sp.size.x + 0.5 and x.get_global_rect().end.x <= sp.get_global_rect().end.x + 0.5))
+	bp.close()
+	_clear_training()
 
 
 # ------------------------------------------------------------------ 新陷阱
@@ -179,9 +240,15 @@ func _trap(file: String, offset: Vector2) -> LegTrap:
 
 func _run_traps() -> void:
 	print("-- 训练营的新陷阱（脚 / 大腿 / 屁股）")
+	const FX_OF := {"thigh_pincer": "TrapSnap", "scissor_stand": "TrapSnap", "spring_seat": "TrapBoing", "thigh_brush_ring": "BristleRing",
+		"feather_swing": "TrapArc", "foot_thigh_rack": "TrapStroke", "saddle_bench": "TrapStroke"}
+	var fx_seen: Array = []
+	var on_child := func(n: Node): fx_seen.append(str(n.name))
+	main.level.get_node("Entities").child_entered_tree.connect(on_child)
 	for key in LEG_TRAPS:
 		_reset()
 		await _wait(0.1)
+		fx_seen.clear()
 		var t := _trap(key, Vector2(48, 0))
 		await _wait(0.05)
 		var zones_hit := {}
@@ -220,11 +287,15 @@ func _run_traps() -> void:
 			check("羽毛秋千：把人吊起来（双脚离地）", player.pose_offset.y < -2.0)
 		if key in ["foot_bath", "sitz_bath"]:
 			check("%s：困住时冒泡泡" % ReactionDB.source(key)["name"], t._bubble_fx != null and t._bubble_fx.emitting)
+		if FX_OF.has(key):
+			check("%s：困住时有专属特效（%s）" % [ReactionDB.source(key)["name"], FX_OF[key]],
+				fx_seen.any(func(nm): return str(nm).begins_with(FX_OF[key])))
 		player.tickled.disconnect(on_tickle)
 		if player.status.is_grabbed():
 			player.status.release(true)
 		t.queue_free()
 		await _wait(0.1)
+	main.level.get_node("Entities").child_entered_tree.disconnect(on_child)
 	# 训练营：锁定部位
 	var rack := _trap("foot_thigh_rack", Vector2(48, 0))
 	rack.lock_zone("sole")
@@ -361,6 +432,10 @@ func _run_endure() -> void:
 	r._tick(1.0)
 	check("刑具一直在挠：魔力疲倦缓慢上涨", player.fatigue.value > f1)
 	r._render()
+	var ids: Array = TrainingStats.stage(TrainingDB.info("fatigue_endure")).get("punish", [])
+	var lens := ids.map(func(id): return (JSON.parse_string(FileAccess.get_file_as_string(CG.theater_index().get(id, ""))) as Dictionary).get("steps", []).filter(func(st): return st.has("text")).size() if CG.has_theater(id) else 0)
+	check("训练一的惩罚小剧场 5 段、每段 ≥ 12 句台词（%s），台词里代入这一轮的成功次数" % [lens], ids.size() == 5
+		and lens.all(func(n): return n >= 12) and r.theater_subs().get("successes") == r.successes)
 	await _punish_check(r, "fatigue", "train_endure_punish_")
 	var res := await _end_training(out)
 	check("Esc 结束：结果 成功 %d 次、+%s；公主被放开，刑具和卫兵撤走" % [res.get("successes", 0), res.get("gained", {})],
@@ -558,6 +633,60 @@ func _run_maze() -> void:
 		and player.global_position.distance_to(Cutscene.cell_to_world([46, 20])) < 24.0 and ComboTracker.play_scenes == false)
 	check("魔力疲倦上限 500 - 6 = 494，释放强度 ×%.3f" % TrainingStats.burst_mult(), player.fatigue.max_value == 494.0
 		and is_equal_approx(TrainingStats.burst_mult(), 1.03))
+
+
+## 从人物对话（莫丝「我想训练」）进入训练：训练里读石碑、新陷阱第一次对话结束后都能继续动。
+func _run_dialogue_entry() -> void:
+	print("-- 从对话进入训练（读石碑 / 新陷阱第一次对话后不卡）")
+	_clear_training()
+	GameState.give_item(ItemDB.get_item("coin"), 10)
+	player = GameState.player as Princess
+	ctrl = ScriptedController.new()
+	player.set_controller(ctrl)
+	Dialogue.talk("floor_06/guard_moss")
+	var g := 0
+	while g < 900 and not (TrainingDB.current != null and TrainingDB.current.playing):
+		g += 1
+		var cm: ChoiceMenu = Dialogue.runner.choice_menu
+		var menus := get_tree().root.get_children().filter(func(n): return n is TrainingMenu)
+		if not menus.is_empty():
+			menus[0].pick(1)   # 魔力疲倦释放（训练迷宫）
+		elif cm.is_open():
+			cm.choose(maxi(cm.options.find("我想训练"), 0))
+		elif Dialogue.is_active():
+			Dialogue.advance()
+			Dialogue.advance()
+		await _wait(0.03)
+	var r = TrainingDB.current
+	check("对话里选了训练：对话先结束，再开始训练（runner 不再占着）", r != null and r.playing and not Dialogue.runner.is_running())
+	if r == null:
+		return
+	r.time_scale = 0.0
+	player = GameState.player as Princess
+	Dialogue.start("sign6_maze")
+	await _advance_until(func(): return not Dialogue.is_active(), 5.0)
+	await _wait(0.3)
+	check("训练中读石碑：读完能继续动", not GameState.in_dialogue)
+	GameState.flags.erase("met_foot_bath")
+	var bath: Node2D = load("res://scenes/traps/foot_bath.tscn").instantiate()
+	main.level.get_node("Entities").add_child(bath)
+	bath.global_position = player.global_position + Vector2(16, 0)
+	await _advance_until(func(): return GameState.has_flag("met_foot_bath"), 6.0)   # 第一次被挠时播放对话
+	await _advance_until(func(): return not Dialogue.is_active(), 6.0)
+	await _wait(0.4)
+	var hits := [0]
+	var on_hit := func(h: HitData): if h.source == bath: hits[0] += 1
+	player.tickled.connect(on_hit)
+	await _wait(1.0)
+	player.tickled.disconnect(on_hit)
+	check("训练中被新陷阱第一次挠（播放第一次的对话）：对话结束后陷阱照常挠（1 秒 %d 下）、地图不卡" % hits[0], not GameState.in_dialogue
+		and GameState.has_flag("met_foot_bath") and hits[0] >= 1)
+	if player.status.is_grabbed():
+		player.status.release(true)
+	bath.queue_free()
+	r.quit("esc")
+	await _advance_until(func(): return TrainingDB.current == null, 30.0)
+	check("这一轮正常结束", TrainingDB.current == null and not GameState.in_dialogue)
 
 
 ## 墙图块上的连通格（不管门）。
