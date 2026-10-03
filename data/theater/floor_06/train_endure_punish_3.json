@@ -1,5 +1,5 @@
 {
-	"name": "魔力疲倦忍耐训练的惩罚（3）",
+	"name": "魔力疲倦忍耐训练的惩罚（两只脚心同时）",
 	"cast": {
 		"princess": {
 			"kind": "princess",
@@ -80,13 +80,42 @@
 			"wait": 0.5
 		},
 		{
+			"portrait": "fatigue_burst",
+			"speaker": "公主",
+			"text": "脚、脚底……魔力从脚底冲出去了——！",
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "flash"
+				},
+				{
+					"sound": "water_release",
+					"do": "sfx"
+				},
+				{
+					"who": "princess",
+					"time": 0.6,
+					"do": "shake"
+				}
+			]
+		},
+		{
 			"speaker": "保卫队员",
-			"text": "放完魔力了？好，那就趁热——两只脚心一起。",
+			"text": "魔力是从脚底放出去的？那脚心现在一定最敏感。"
+		},
+		{
+			"speaker": "公主",
+			"text": "别、别分析了……脚底还麻麻的……",
+			"emotion": "shy"
+		},
+		{
+			"speaker": "保卫队员",
+			"text": "两只脚一起。我左边，你右边——数到三。一、二……",
 			"actions": [
 				{
 					"who": "g1",
-					"count": 1,
-					"do": "hop"
+					"dir": "right",
+					"do": "face"
 				},
 				{
 					"who": "g2",
@@ -97,73 +126,8 @@
 		},
 		{
 			"speaker": "公主",
-			"text": "哈哈哈哈！一起太犯规了……左、左边右边都……！",
-			"portrait": "defeat_1",
+			"text": "等一下等一下——哈哈哈哈哈哈！三还没数呢哈哈哈！",
 			"actions": [
-				{
-					"who": "princess",
-					"by": "g1",
-					"repeat": 8,
-					"interval": 0.2,
-					"fx": "hand",
-					"zone": "sole",
-					"do": "tickle"
-				},
-				{
-					"who": "princess",
-					"by": "stocks",
-					"repeat": 6,
-					"interval": 0.3,
-					"fx": "feather",
-					"zone": "sole",
-					"do": "tickle"
-				},
-				{
-					"who": "princess",
-					"kind": "laugh",
-					"do": "bubble"
-				}
-			]
-		},
-		{
-			"speaker": "保卫队员",
-			"text": "下一轮能多撑几次，这一轮就少挠几下。记住这个感觉。",
-			"actions": [
-				{
-					"who": "princess",
-					"by": "g2",
-					"repeat": 8,
-					"interval": 0.2,
-					"fx": "hand",
-					"zone": "thigh",
-					"do": "tickle"
-				},
-				{
-					"who": "princess",
-					"by": "clamp",
-					"repeat": 6,
-					"interval": 0.3,
-					"fx": "lines",
-					"zone": "thigh",
-					"do": "tickle"
-				}
-			]
-		},
-		{
-			"speaker": "公主",
-			"text": "记、记住了哈哈哈哈！大腿里面也……哈哈哈哈哈——！",
-			"portrait": "defeat_2",
-			"actions": [
-				{
-					"who": "princess",
-					"visual": "helpless_2",
-					"do": "pose"
-				},
-				{
-					"who": "princess",
-					"time": 0.6,
-					"do": "shake"
-				},
 				{
 					"who": "princess",
 					"by": "g1",
@@ -177,25 +141,132 @@
 					"who": "princess",
 					"by": "g2",
 					"repeat": 10,
-					"interval": 0.17,
+					"interval": 0.16,
 					"fx": "hand",
-					"zone": "thigh",
+					"zone": "sole",
 					"do": "tickle"
 				},
 				{
 					"who": "princess",
-					"by": "cushion",
+					"kind": "laugh",
+					"do": "bubble"
+				}
+			],
+			"portrait": "defeat_1"
+		},
+		{
+			"speaker": "保卫队员",
+			"text": "足枷锁着，脚趾张开一点……对，就这样。",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "stocks",
 					"repeat": 8,
-					"interval": 0.2,
+					"interval": 0.22,
 					"fx": "lines",
-					"zone": "butt",
+					"zone": "sole",
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"by": "g1",
+					"repeat": 8,
+					"interval": 0.22,
+					"fx": "feather",
+					"zone": "sole",
 					"do": "tickle"
 				}
 			]
 		},
 		{
+			"speaker": "公主",
+			"text": "哈哈哈哈！脚、脚趾被扒开了……羽毛从中间穿过去——哈哈哈哈！"
+		},
+		{
+			"speaker": "公主",
+			"text": "大、大腿也可以！换、换大腿吧……脚心真的不行了哈哈哈！"
+		},
+		{
+			"speaker": "保卫队员",
+			"text": "大腿？好啊。——夹板，开。",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "clamp",
+					"repeat": 10,
+					"interval": 0.2,
+					"fx": "lines",
+					"zone": "thigh",
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"by": "g2",
+					"repeat": 10,
+					"interval": 0.18,
+					"fx": "hand",
+					"zone": "sole",
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "不是「也」啊哈哈哈哈！大腿和脚心一起——比刚才还痒哈哈哈哈！",
+			"actions": [
+				{
+					"who": "princess",
+					"visual": "helpless_2",
+					"do": "pose"
+				},
+				{
+					"who": "princess",
+					"time": 0.6,
+					"do": "shake"
+				}
+			],
+			"portrait": "defeat_2"
+		},
+		{
+			"speaker": "保卫队员",
+			"text": "左边脚跟、右边脚弓、中间脚趾——一个都不放过。",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "g1",
+					"repeat": 10,
+					"interval": 0.15,
+					"fx": "hand",
+					"zone": "sole",
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"by": "g2",
+					"repeat": 10,
+					"interval": 0.16,
+					"fx": "lines",
+					"zone": "sole",
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"by": "stocks",
+					"repeat": 10,
+					"interval": 0.2,
+					"fx": "lines",
+					"zone": "sole",
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "哈哈哈哈哈哈！脚、脚要化掉了……左右都、都分不清了——！"
+		},
+		{
 			"speaker": "",
-			"text": "（刑床上的公主扭来扭去，可脚踝和大腿都被牢牢锁住——卫兵们一直挠到她的魔力重新安静下来）",
+			"text": "（两只被锁住的脚心同时被挠，脚趾张开又蜷起来，蜷起来又被扒开——笑声里渐渐带上了哭腔）",
 			"actions": [
 				{
 					"who": "princess",
@@ -208,19 +279,14 @@
 				},
 				{
 					"who": "princess",
-					"by": "g2",
-					"repeat": 6,
-					"interval": 0.3,
-					"fx": "hand",
-					"zone": "thigh",
-					"do": "tickle"
-				},
-				{
-					"who": "princess",
 					"kind": "dots",
 					"do": "bubble"
 				}
 			]
+		},
+		{
+			"speaker": "公主",
+			"text": "……左……右……哪只是我的脚……嘿嘿……都、都不是了……"
 		},
 		{
 			"actions": [

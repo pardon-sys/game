@@ -12,3 +12,24 @@ func _while_held(delta: float) -> void:
 func _on_free(a: Actor) -> void:
 	super(a)
 	_hide_rope()
+
+
+var _extreme := -1
+
+
+## 每荡到最高点：一道弧形轨迹 + 飘下一片羽毛。
+func _fx_tick(_delta: float) -> void:
+	if victim == null:
+		return
+	var phase := _hold_t * (5.0 + struggles * 0.4)
+	var k := int(floor((phase - PI / 2.0) / PI))
+	if k != _extreme:
+		_extreme = k
+		var amp := swing * (1.0 + 0.12 * struggles)
+		var dir := 1.0 if sin(phase) > 0.0 else -1.0
+		TrapFx.arc_trail(fx_parent(), victim.global_position + Vector2(0, -34), 34.0, -amp * dir, amp * dir)
+		TrapFx.feather_puff(fx_parent(), victim.global_position + Vector2(0, 2), 1)
+
+
+func _fx_free(_a: Actor) -> void:
+	_extreme = -1

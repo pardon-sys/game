@@ -376,6 +376,14 @@ func _run_burst_acts() -> void:
 			bad.append(id)
 	check("全部 %d 段 CG / 组合演出最后都有魔力爆发这一幕（战损释放立绘、释放水声、有「舒服」和「敏感」两句）%s" % [all.size(), bad.slice(0, 4)],
 		bad.is_empty() and all.size() == 85)
+	# 最后一句是笑到快昏过去时的话，不再是「……X、X……哈哈……」的固定格式
+	var stutter := RegEx.create_from_string("^……(.)、\\1")
+	var old_fmt: Array = []
+	for id in all:
+		var said: Array = (all[id]["steps"] as Array).filter(func(st): return st.get("act", "") == "burst" and st.get("speaker", "") == "公主")
+		if not said.is_empty() and stutter.search(str(said[-1]["text"])) != null:
+			old_fmt.append(id)
+	check("爆发一幕的最后一句是笑迷糊时的话（不是「……X、X……哈哈……」）%s" % [old_fmt.slice(0, 4)], old_fmt.is_empty())
 	var portrait_ok: bool = CG.data["portraits"].has("fatigue_burst") and str(CG.data["portraits"]["fatigue_burst"]["placeholder"]) == "damaged_burst"
 	check("这一幕的立绘是战损魔力释放", portrait_ok)
 	check("魔力释放的水声文件存在", ResourceLoader.exists("res://assets/generated/sfx/water_release.wav"))

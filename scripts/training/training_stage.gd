@@ -5,7 +5,7 @@ extends CanvasLayer
 ##   1. 地图过场：公主走到营地训练场的训练位置（不在营地时就地），刑具（演出版，active = false）把她固定，卫兵走到两边。
 ##   2. 小游戏画面（盖住地图）：右边小舞台（CGActor 的公主、刑具、卫兵），左上面板（按键队列 / 忍笑条 / 方向冲动，子类画），
 ##      下面是魔力疲倦 / 闷笑条、成功次数和本轮收获。左下角沿用 Dialogue 的常驻立绘（挠到部位时有立绘反馈）。
-##   3. 魔力疲倦满（训练一）或闷笑满（训练三、四）→ 惩罚小剧场（阶段表的 punish 里随机一段，{zone} / {zone_name} / {device} 换成本轮的）→ 继续。
+##   3. 魔力疲倦满（训练一）或闷笑满（训练三、四）→ 惩罚小剧场（阶段表的 punish 里随机一段，{zone} / {zone_name} / {device} / {successes} 换成本轮的）→ 继续。
 ##   4. Esc 结束：地图过场放开公主、卫兵离开，返回 {successes, gained}。疲倦 / 闷笑恢复到训练前。
 ## 子类实现：world_devices() / stage_cast() / intro_lines() / panel_title()、_tick(delta)、_on_key(键名)、_after_punish(种类)。
 ## 每成功一次调 succeed(数值键, 量)（立刻记上，到上限为止）。测试可以直接调 press(键名) / quit()，time_scale 加速。
@@ -381,7 +381,7 @@ func theater_subs() -> Dictionary:
 	var dev := device_key if device_key != "" else "stocks"
 	var at := device_at(dev)
 	return {"zone": zone if zone != "" else "sole", "zone_name": TickleZones.zone_name(zone) if zone != "" else "脚心", "device": dev,
-		"device_x": at[0], "device_y": at[1]}
+		"device_x": at[0], "device_y": at[1], "successes": successes}
 
 
 func _sleep(sec: float) -> void:

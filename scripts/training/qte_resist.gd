@@ -70,6 +70,8 @@ func _enter_game() -> void:
 	super()
 	_state_label = _label(TEXT, 8)
 	_state_label.position = Vector2(0, 0)
+	_state_label.size = Vector2(panel_body.size.x, 26)
+	_state_label.autowrap_mode = TextServer.AUTOWRAP_ARBITRARY   # 长一点的提示换行，不超出面板
 	panel_body.add_child(_state_label)
 	_bar_bg = ColorRect.new()
 	_bar_bg.color = Color(0.22, 0.15, 0.28)

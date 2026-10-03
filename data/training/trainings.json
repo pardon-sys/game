@@ -13,7 +13,7 @@
 			"desc": "被固定在训练架上，两名卫兵用特制工具挠脚心和大腿内侧。听清卫兵喊的部位，按对应的键抵抗（A 左脚心、D 右脚心、Q/J 左大腿、E/K 右大腿）。成功抵抗一次，魔力疲倦上限 +1。",
 			"per_success": {"train_fatigue_up": 1},
 			"stages": [
-				{"unlocked": true, "caps": {"train_fatigue_up": 100}, "guards": 2, "start_time": 1.2, "min_time": 0.35, "punish": ["train_endure_punish_1", "train_endure_punish_2", "train_endure_punish_3"]},
+				{"unlocked": true, "caps": {"train_fatigue_up": 100}, "guards": 2, "start_time": 1.2, "min_time": 0.35, "punish": ["train_endure_punish_1", "train_endure_punish_2", "train_endure_punish_3", "train_endure_punish_4", "train_endure_punish_5"]},
 				{"unlocked": false, "caps": {"train_fatigue_up": 200}},
 				{"unlocked": false, "caps": {"train_fatigue_up": 300}}
 			]

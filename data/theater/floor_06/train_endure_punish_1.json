@@ -1,5 +1,5 @@
 {
-	"name": "魔力疲倦忍耐训练的惩罚（1）",
+	"name": "魔力疲倦忍耐训练的惩罚（趁热加练）",
 	"cast": {
 		"princess": {
 			"kind": "princess",
@@ -80,13 +80,113 @@
 			"wait": 0.5
 		},
 		{
+			"portrait": "fatigue_burst",
+			"speaker": "公主",
+			"text": "魔、魔力……冲出来了——！哈啊……全身一下子松开了……",
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "flash"
+				},
+				{
+					"sound": "water_release",
+					"do": "sfx"
+				},
+				{
+					"who": "princess",
+					"time": 0.6,
+					"do": "shake"
+				}
+			]
+		},
+		{
 			"speaker": "保卫队员",
-			"text": "魔力放出来了！——就是现在，放完魔力的身体最敏感，加练！",
+			"text": "放出来了！——就是现在。放完魔力的身体最敏感，趁热加练！",
 			"actions": [
 				{
 					"who": "g1",
 					"count": 1,
 					"do": "hop"
+				},
+				{
+					"who": "g2",
+					"count": 1,
+					"do": "hop"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "等、等一下！刚放完……一碰就……哈哈哈哈！脚心、脚心不行！",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "g1",
+					"repeat": 8,
+					"interval": 0.2,
+					"fx": "lines",
+					"zone": "sole",
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"kind": "laugh",
+					"do": "bubble"
+				}
+			],
+			"portrait": "defeat_1"
+		},
+		{
+			"speaker": "保卫队员",
+			"text": "先用刷子。刚才抵抗了 {successes} 次，不错——那这一轮就从脚心刷起。",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "g1",
+					"repeat": 8,
+					"interval": 0.22,
+					"fx": "lines",
+					"zone": "sole",
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"by": "stocks",
+					"repeat": 6,
+					"interval": 0.3,
+					"fx": "lines",
+					"zone": "sole",
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "哈哈哈哈！刷、刷毛钻进脚趾缝了……左边右边都……哈哈哈！",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "g2",
+					"repeat": 8,
+					"interval": 0.2,
+					"fx": "lines",
+					"zone": "sole",
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "保卫队员",
+			"text": "换羽毛。大腿内侧，慢慢地、一下一下地扫。",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "g2",
+					"repeat": 8,
+					"interval": 0.28,
+					"fx": "feather",
+					"zone": "thigh",
+					"do": "tickle"
 				},
 				{
 					"who": "g2",
@@ -97,44 +197,14 @@
 		},
 		{
 			"speaker": "公主",
-			"text": "等、等一下！刚放完……哈哈哈哈！脚心、脚心不行哈哈哈哈！",
-			"portrait": "defeat_1",
-			"actions": [
-				{
-					"who": "princess",
-					"by": "g1",
-					"repeat": 8,
-					"interval": 0.2,
-					"fx": "hand",
-					"zone": "sole",
-					"do": "tickle"
-				},
-				{
-					"who": "princess",
-					"by": "stocks",
-					"repeat": 6,
-					"interval": 0.3,
-					"fx": "feather",
-					"zone": "sole",
-					"do": "tickle"
-				},
-				{
-					"who": "princess",
-					"kind": "laugh",
-					"do": "bubble"
-				}
-			]
-		},
-		{
-			"speaker": "保卫队员",
-			"text": "大腿内侧也别闲着。这是训练，忍住！",
+			"text": "呜哈哈……羽、羽毛最坏了……慢慢扫比快的还痒——！",
 			"actions": [
 				{
 					"who": "princess",
 					"by": "g2",
 					"repeat": 8,
-					"interval": 0.2,
-					"fx": "hand",
+					"interval": 0.3,
+					"fx": "feather",
 					"zone": "thigh",
 					"do": "tickle"
 				},
@@ -150,9 +220,32 @@
 			]
 		},
 		{
+			"speaker": "保卫队员",
+			"text": "最后用手。……膝盖窝也算大腿哦。",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "g1",
+					"repeat": 10,
+					"interval": 0.18,
+					"fx": "hand",
+					"zone": "thigh",
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"by": "g2",
+					"repeat": 10,
+					"interval": 0.18,
+					"fx": "hand",
+					"zone": "sole",
+					"do": "tickle"
+				}
+			]
+		},
+		{
 			"speaker": "公主",
-			"text": "哈哈哈哈哈！忍、忍不住啊——刷子和手一起……哈哈哈哈！",
-			"portrait": "defeat_2",
+			"text": "哈哈哈哈哈！手、手指最不行了！膝盖窝不算大腿啦哈哈哈哈！",
 			"actions": [
 				{
 					"who": "princess",
@@ -161,9 +254,49 @@
 				},
 				{
 					"who": "princess",
-					"time": 0.6,
+					"time": 0.5,
 					"do": "shake"
+				}
+			],
+			"portrait": "defeat_2"
+		},
+		{
+			"speaker": "保卫队员",
+			"text": "刑具也开到最大。坐垫、刑床、足枷——一起来。",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "cushion",
+					"repeat": 10,
+					"interval": 0.2,
+					"fx": "lines",
+					"zone": "butt",
+					"do": "tickle"
 				},
+				{
+					"who": "princess",
+					"by": "supine",
+					"repeat": 10,
+					"interval": 0.22,
+					"fx": "feather",
+					"zone": "waist",
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"by": "stocks",
+					"repeat": 10,
+					"interval": 0.2,
+					"fx": "lines",
+					"zone": "sole",
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "哈哈哈哈哈哈！屁、屁股底下和腰也……全身都在被挠——哈哈哈哈！",
+			"actions": [
 				{
 					"who": "princess",
 					"by": "g1",
@@ -181,38 +314,20 @@
 					"fx": "hand",
 					"zone": "thigh",
 					"do": "tickle"
-				},
-				{
-					"who": "princess",
-					"by": "cushion",
-					"repeat": 8,
-					"interval": 0.2,
-					"fx": "lines",
-					"zone": "butt",
-					"do": "tickle"
 				}
 			]
 		},
 		{
 			"speaker": "",
-			"text": "（足枷里的脚心被工具来回刷，夹板夹着的大腿内侧被手指一下下戳——训练场上满是公主的笑声）",
+			"text": "（刷子、羽毛、手指轮番上阵，刑具嗡嗡地转——公主的笑声一阵高过一阵，渐渐变得断断续续）",
 			"actions": [
 				{
 					"who": "princess",
-					"by": "g1",
+					"by": "cushion",
 					"repeat": 6,
 					"interval": 0.3,
-					"fx": "hand",
-					"zone": "sole",
-					"do": "tickle"
-				},
-				{
-					"who": "princess",
-					"by": "g2",
-					"repeat": 6,
-					"interval": 0.3,
-					"fx": "hand",
-					"zone": "thigh",
+					"fx": "lines",
+					"zone": "butt",
 					"do": "tickle"
 				},
 				{
@@ -221,6 +336,14 @@
 					"do": "bubble"
 				}
 			]
+		},
+		{
+			"speaker": "公主",
+			"text": "……哈……哈……刷子……羽毛……手指……排、排好队了……嘿嘿……"
+		},
+		{
+			"speaker": "保卫队员",
+			"text": "……好像笑迷糊了。今天先到这儿——魔力也安静下来了。"
 		},
 		{
 			"actions": [

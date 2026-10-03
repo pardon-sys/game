@@ -1,7 +1,8 @@
 class_name TrainingMenu
 extends CanvasLayer
 ## 保卫队训练菜单（营地训练台）：列出各项训练（说明、进度 / 上限、阶段、费用），部位类训练再选部位。
-## await choose() 返回 {id, zone}（取消返回 {}）。上下选、E 确定、Esc 返回 / 关闭。打开时暂停游戏。
+## await choose() 返回 {id, zone}（取消返回 {}）。上下选、E 确定、←→ 翻看说明、Esc 返回 / 关闭。打开时暂停游戏。
+## 列表和说明都是 ScrollTextBox（自动换行、超出时出现滚动条，不会和提示行重叠）。
 ## 测试 / 脚本可以直接调 pick(序号) 和 cancel()。
 
 signal done(result: Dictionary)
@@ -17,7 +18,10 @@ var selected := 0
 var chosen := {}
 var panel: Panel
 var title: Label
+## 列表（ScrollTextBox）和它里面的行容器（测试用 rows.get_child_count()）。
+var list_box: ScrollTextBox
 var rows: VBoxContainer
+var desc_box: ScrollTextBox
 var desc: Label
 var hint: Label
 var _paused_by_me := false
@@ -43,15 +47,16 @@ func _ready() -> void:
 	title = _label(GOLD)
 	title.position = Vector2(12, 6)
 	panel.add_child(title)
-	rows = VBoxContainer.new()
-	rows.position = Vector2(12, 26)
-	rows.add_theme_constant_override("separation", 1)
-	panel.add_child(rows)
-	desc = _label(TEXT)
-	desc.position = Vector2(12, 150)
-	desc.size = Vector2(356, 66)
-	desc.autowrap_mode = TextServer.AUTOWRAP_ARBITRARY
-	panel.add_child(desc)
+	list_box = ScrollTextBox.make(Rect2(12, 24, 356, 116), 1)
+	panel.add_child(list_box)
+	rows = list_box.box
+	var sep := ColorRect.new()
+	sep.color = Color(GOLD, 0.35)
+	sep.position = Vector2(12, 143)
+	sep.size = Vector2(356, 1)
+	panel.add_child(sep)
+	desc_box = ScrollTextBox.make(Rect2(12, 147, 356, 68), 1)
+	panel.add_child(desc_box)
 	hint = _label(DIM)
 	hint.position = Vector2(12, 218)
 	panel.add_child(hint)
@@ -165,9 +170,8 @@ func _count() -> int:
 
 
 func _refresh() -> void:
-	for c in rows.get_children():
-		rows.remove_child(c)
-		c.queue_free()
+	list_box.clear()
+	var chosen_label: Label
 	if page == "list":
 		title.text = "保卫队训练营　　金币 ×%d　（每轮 %d 金币）" % [GameState.inventory.count("coin"), cost()]
 		var list := trainings()
@@ -175,24 +179,27 @@ func _refresh() -> void:
 			var t: Dictionary = list[i]
 			var st := TrainingStats.stage(t)
 			var stage_name := "第 %d 阶段" % (TrainingStats.stage_index(t) + 1)
-			var l := _label(PINK if i == selected else TEXT)
-			l.text = "%s%s　%s　%s" % ["▶ " if i == selected else "　 ", t["name"], stage_name,
-				("（部位）" if t.get("per_zone", false) else progress_text(t)) if st.get("unlocked", false) else "未解锁"]
-			rows.add_child(l)
+			var l := list_box.add_line("%s%s　%s　%s" % ["▶ " if i == selected else "　 ", t["name"], stage_name,
+				("（部位）" if t.get("per_zone", false) else progress_text(t)) if st.get("unlocked", false) else "未解锁"],
+				PINK if i == selected else TEXT)
+			if i == selected:
+				chosen_label = l
 		if not list.is_empty():
-			desc.text = str(list[selected].get("desc", ""))
-		hint.text = "上下 选择　E 开始　Esc 离开"
+			desc = desc_box.set_text(str(list[selected].get("desc", "")), TEXT)
+		hint.text = "上下 选择　←→ 翻看说明　E 开始　Esc 离开"
 	else:
 		title.text = "%s：选择部位" % chosen["name"]
 		var zones := TickleZones.zone_ids()
 		for i in zones.size():
 			var z := str(zones[i])
-			var l := _label(PINK if i == selected else TEXT)
-			l.text = "%s%s　%s　（倍率 %.2f）" % ["▶ " if i == selected else "　 ", TickleZones.zone_name(z), progress_text(chosen, z),
-				TickleZones.zone_multiplier(z)]
-			rows.add_child(l)
-		desc.text = str(chosen.get("desc", ""))
-		hint.text = "上下 选择　E 开始　Esc 返回"
+			var l := list_box.add_line("%s%s　%s　（倍率 %.2f）" % ["▶ " if i == selected else "　 ", TickleZones.zone_name(z),
+				progress_text(chosen, z), TickleZones.zone_multiplier(z)], PINK if i == selected else TEXT)
+			if i == selected:
+				chosen_label = l
+		desc = desc_box.set_text(str(chosen.get("desc", "")), TEXT)
+		hint.text = "上下 选择　←→ 翻看说明　E 开始　Esc 返回"
+	if chosen_label:
+		list_box.ensure_control_visible.call_deferred(chosen_label)
 
 
 func _input(event: InputEvent) -> void:
@@ -203,6 +210,10 @@ func _input(event: InputEvent) -> void:
 		act = "up"
 	elif event.is_action("move_down") or event.is_action("ui_down"):
 		act = "down"
+	elif event.is_action("move_left") or event.is_action("ui_left"):
+		act = "left"
+	elif event.is_action("move_right") or event.is_action("ui_right"):
+		act = "right"
 	elif event.is_action("interact") or event.is_action("ui_accept"):
 		act = "ok"
 	elif event.is_action("pause") or event.is_action("ui_cancel"):
@@ -217,6 +228,8 @@ func _input(event: InputEvent) -> void:
 		"down":
 			selected = (selected + 1) % _count()
 			_refresh()
+		"left", "right":
+			desc_box.scroll_by(-1 if act == "left" else 1)
 		"ok":
 			pick(selected)
 		"cancel":

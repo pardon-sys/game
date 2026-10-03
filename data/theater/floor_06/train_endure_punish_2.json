@@ -1,5 +1,5 @@
 {
-	"name": "魔力疲倦忍耐训练的惩罚（2）",
+	"name": "魔力疲倦忍耐训练的惩罚（规矩：三人轮流）",
 	"cast": {
 		"princess": {
 			"kind": "princess",
@@ -80,25 +80,63 @@
 			"wait": 0.5
 		},
 		{
-			"speaker": "保卫队员",
-			"text": "疲倦撑满了啊。按规矩，撑不住的要多挨一轮。",
+			"portrait": "fatigue_burst",
+			"speaker": "公主",
+			"text": "魔力……满出来了——！呼啊……",
 			"actions": [
 				{
-					"who": "g1",
-					"count": 1,
-					"do": "hop"
+					"time": 0.5,
+					"do": "flash"
 				},
 				{
-					"who": "g2",
-					"dir": "left",
-					"do": "face"
+					"sound": "water_release",
+					"do": "sfx"
+				},
+				{
+					"who": "princess",
+					"time": 0.6,
+					"do": "shake"
 				}
 			]
 		},
 		{
+			"speaker": "保卫队员",
+			"text": "疲倦撑满了啊。按规矩，撑不住的要多挨一轮。"
+		},
+		{
 			"speaker": "公主",
-			"text": "规、规矩？！哈哈哈……脚趾缝不行——！",
-			"portrait": "defeat_1",
+			"text": "规、规矩？！什么时候有这种规矩的……",
+			"emotion": "surprise"
+		},
+		{
+			"speaker": "保卫队员",
+			"text": "现在有了。——喂，过来帮忙！",
+			"actions": [
+				{
+					"who": "g3",
+					"at": [
+						-56,
+						14
+					],
+					"time": 0.4,
+					"do": "enter"
+				}
+			]
+		},
+		{
+			"speaker": "保卫队员（第三位）",
+			"text": "来了来了。我负责哪儿？",
+			"actions": [
+				{
+					"who": "g3",
+					"count": 1,
+					"do": "hop"
+				}
+			]
+		},
+		{
+			"speaker": "保卫队员",
+			"text": "三个人轮流：一个脚心、一个大腿、一个腰。喊「换」就换位置。",
 			"actions": [
 				{
 					"who": "princess",
@@ -111,40 +149,6 @@
 				},
 				{
 					"who": "princess",
-					"by": "stocks",
-					"repeat": 6,
-					"interval": 0.3,
-					"fx": "feather",
-					"zone": "sole",
-					"do": "tickle"
-				},
-				{
-					"who": "princess",
-					"kind": "laugh",
-					"do": "bubble"
-				}
-			]
-		},
-		{
-			"actions": [
-				{
-					"who": "g3",
-					"at": [
-						-50,
-						14
-					],
-					"time": 0.4,
-					"do": "enter"
-				}
-			],
-			"wait": 0.4
-		},
-		{
-			"speaker": "保卫队员",
-			"text": "第三个人也来，坐垫开到最大。",
-			"actions": [
-				{
-					"who": "princess",
 					"by": "g2",
 					"repeat": 8,
 					"interval": 0.2,
@@ -154,19 +158,109 @@
 				},
 				{
 					"who": "princess",
-					"by": "clamp",
-					"repeat": 6,
-					"interval": 0.3,
-					"fx": "lines",
-					"zone": "thigh",
+					"by": "g3",
+					"repeat": 8,
+					"interval": 0.2,
+					"fx": "hand",
+					"zone": "waist",
 					"do": "tickle"
 				}
 			]
 		},
 		{
 			"speaker": "公主",
-			"text": "哈哈哈哈哈！屁股底下也……三、三个地方一起哈哈哈哈哈！",
-			"portrait": "defeat_2",
+			"text": "哈哈哈哈哈！三、三个地方一起——哪、哪儿都躲不开哈哈哈！",
+			"actions": [
+				{
+					"who": "princess",
+					"kind": "laugh",
+					"do": "bubble"
+				}
+			],
+			"portrait": "defeat_1"
+		},
+		{
+			"speaker": "保卫队员",
+			"text": "换！",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "g1",
+					"repeat": 8,
+					"interval": 0.18,
+					"fx": "hand",
+					"zone": "thigh",
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"by": "g2",
+					"repeat": 8,
+					"interval": 0.18,
+					"fx": "hand",
+					"zone": "waist",
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"by": "g3",
+					"repeat": 8,
+					"interval": 0.2,
+					"fx": "feather",
+					"zone": "sole",
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "噫哈哈哈！换了手更痒——刚、刚适应一点又换了哈哈哈哈！"
+		},
+		{
+			"speaker": "保卫队员",
+			"text": "再换！这次坐垫也开到最大。",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "g1",
+					"repeat": 10,
+					"interval": 0.16,
+					"fx": "hand",
+					"zone": "waist",
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"by": "g2",
+					"repeat": 10,
+					"interval": 0.16,
+					"fx": "lines",
+					"zone": "sole",
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"by": "g3",
+					"repeat": 10,
+					"interval": 0.17,
+					"fx": "hand",
+					"zone": "thigh",
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"by": "cushion",
+					"repeat": 10,
+					"interval": 0.2,
+					"fx": "lines",
+					"zone": "butt",
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "哈哈哈哈哈哈！屁股底下也……四、四个地方了——不公平哈哈哈哈！",
 			"actions": [
 				{
 					"who": "princess",
@@ -177,40 +271,35 @@
 					"who": "princess",
 					"time": 0.6,
 					"do": "shake"
-				},
-				{
-					"who": "princess",
-					"by": "g1",
-					"repeat": 10,
-					"interval": 0.16,
-					"fx": "hand",
-					"zone": "sole",
-					"do": "tickle"
-				},
-				{
-					"who": "princess",
-					"by": "g2",
-					"repeat": 10,
-					"interval": 0.17,
-					"fx": "hand",
-					"zone": "thigh",
-					"do": "tickle"
-				},
-				{
-					"who": "princess",
-					"by": "cushion",
-					"repeat": 8,
-					"interval": 0.2,
-					"fx": "lines",
-					"zone": "butt",
-					"do": "tickle"
-				},
+				}
+			],
+			"portrait": "defeat_2"
+		},
+		{
+			"speaker": "保卫队员（第三位）",
+			"text": "她脚趾缩成一团了。……脚趾缝要不要也刷一下？",
+			"actions": [
 				{
 					"who": "princess",
 					"by": "g3",
 					"repeat": 10,
-					"interval": 0.18,
-					"fx": "feather",
+					"interval": 0.16,
+					"fx": "lines",
+					"zone": "sole",
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "不要问啊哈哈哈哈！脚趾缝、脚趾缝不行——！",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "stocks",
+					"repeat": 8,
+					"interval": 0.2,
+					"fx": "lines",
 					"zone": "sole",
 					"do": "tickle"
 				}
@@ -218,32 +307,18 @@
 		},
 		{
 			"speaker": "",
-			"text": "（坐垫的刷毛嗡嗡地转，三把特制的挠痒工具在脚心和大腿之间轮流——等公主笑到喘不上气，才停下来）",
+			"text": "（三个人一圈一圈地换位置，每换一次都正好挠在她刚放松的地方——直到她连「换」都听不清了）",
 			"actions": [
-				{
-					"who": "princess",
-					"by": "g1",
-					"repeat": 6,
-					"interval": 0.3,
-					"fx": "hand",
-					"zone": "sole",
-					"do": "tickle"
-				},
-				{
-					"who": "princess",
-					"by": "g2",
-					"repeat": 6,
-					"interval": 0.3,
-					"fx": "hand",
-					"zone": "thigh",
-					"do": "tickle"
-				},
 				{
 					"who": "princess",
 					"kind": "dots",
 					"do": "bubble"
 				}
 			]
+		},
+		{
+			"speaker": "公主",
+			"text": "……换……换到哪儿了……嘿……哪儿都……是手……"
 		},
 		{
 			"actions": [

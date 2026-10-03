@@ -22,7 +22,7 @@
   mana_drop.png     4x6        魔力雨滴
   totem.png 16x24 x 3（亮 2 帧 / 碎）  hex_rune.png 16x16 x 3（待机 / 发光 / 冷却）  stocks.png 16x16 x 2（开 / 合）
   hit_fx.png 24x24 x 6 帧 x 12 行（命中特效：羽毛 / 手指 / 果冻 / 触须 / 泡泡 / 刷毛 / 钳子 / 刀光 / 暴击 / 符咒 / 吸盘 / 毛虫小脚）
-  particle_*.png         持续特效粒子（火星、黏液泡、扬尘、木屑、紫色水花）
+  particle_*.png         持续特效粒子（火星、黏液泡、扬尘、木屑、紫色水花、爱心、小羽毛、短刷毛）
   carpet.png 16x16 x 2 黏黏毛毯       feather_arm.png 16x16 x 4（装置 / 预警 / 手臂节 / 羽毛尖，朝右）
 
 用法：python tools/art/gen_expansion.py
@@ -1061,6 +1061,15 @@ def particle(kind):
         for x, y in ((1, 0), (3, 0), (0, 1), (1, 1), (2, 1), (3, 1), (4, 1), (0, 2), (1, 2), (2, 2), (3, 2), (4, 2), (1, 3), (2, 3), (3, 3), (2, 4)):
             d.point((x, y), fill=pk)
         d.point((1, 1), fill=(255, 220, 235, 255))
+    elif kind == "feather":   # 白色小羽毛（夹腿羽毛钳、羽毛秋千）
+        img, d = canvas(5, 5)
+        d.line((0, 4, 4, 0), fill=(200, 190, 210, 255))
+        for x, y in ((1, 2), (2, 1), (2, 2), (3, 1), (1, 3), (2, 3), (3, 2)):
+            d.point((x, y), fill=(255, 250, 255, 255))
+    elif kind == "bristle":   # 短刷毛（大腿刷环、刑架、骑马刷凳）
+        img, d = canvas(4, 4)
+        d.line((0, 3, 3, 0), fill=(240, 205, 120, 255))
+        d.point((1, 2), fill=(255, 240, 190, 255))
     else:   # drop：紫色水花
         img, d = canvas(3, 3)
         d.point((1, 0), fill=JELLY_L)
@@ -1076,7 +1085,7 @@ def gen_hit_fx():
         for f in range(6):
             sheet.alpha_composite(hit_fx(k, f), (f * 24, row * 24))
     sheet.save(OUT / "hit_fx.png")
-    for k in ("ember", "goo", "dust", "chip", "drop", "heart"):
+    for k in ("ember", "goo", "dust", "chip", "drop", "heart", "feather", "bristle"):
         particle(k).save(OUT / ("particle_%s.png" % k))
 
 

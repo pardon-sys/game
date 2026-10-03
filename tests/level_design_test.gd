@@ -538,6 +538,9 @@ func _mechanic_cells(mech: String) -> Array[Vector2i]:
 	var out: Array[Vector2i] = []
 	for n in level.find_children("*", "", true, false):
 		var c0 := walls.local_to_map(walls.to_local((n as Node2D).global_position)) if n is Node2D else Vector2i.ZERO
+		# 怪物按出生点算（关卡刚载入的那一会儿怪物会走动，不按当时的位置）
+		if n is Monster and (n as Monster)._home != Vector2.ZERO:
+			c0 = walls.local_to_map(walls.to_local((n as Monster)._home))
 		match mech:
 			"怪物巢穴":
 				if n is MonsterNest:

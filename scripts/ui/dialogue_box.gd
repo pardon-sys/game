@@ -279,8 +279,12 @@ func open_shop() -> void:
 	await Town.open_shop("market")
 
 
+## 对话里只选训练项目；训练本身等这段对话结束后再开始（Town.start_training_later，不 await）。
 func open_training() -> void:
-	await Town.open_training()
+	var r := await Town.choose_training()
+	if not r.is_empty():
+		runner.end_conversation()   # 选好了就结束对话（不回到选项页），对话收尾后马上开始训练
+		Town.start_training_later(r)
 
 
 func rest() -> void:
@@ -499,18 +503,7 @@ func _process(delta: float) -> void:
 
 ## 细的像素风滚动条（内容超出对话框时才出现）。
 func _style_scrollbar() -> void:
-	var bar := text_label.get_v_scroll_bar()
-	var track := StyleBoxFlat.new()
-	track.bg_color = Color(0.2, 0.13, 0.2, 0.8)
-	track.content_margin_left = 1.0
-	track.content_margin_right = 1.0
-	var grab := StyleBoxFlat.new()
-	grab.bg_color = Color(0.95, 0.72, 0.8)
-	bar.add_theme_stylebox_override("scroll", track)
-	bar.add_theme_stylebox_override("grabber", grab)
-	bar.add_theme_stylebox_override("grabber_highlight", grab)
-	bar.add_theme_stylebox_override("grabber_pressed", grab)
-	bar.custom_minimum_size.x = 3.0
+	ScrollTextBox.style_scrollbar(text_label.get_v_scroll_bar(), 3.0)
 
 
 ## 按行滚动对话文本（dir = -1 向上，1 向下）。

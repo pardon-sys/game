@@ -31,6 +31,7 @@ var choice_menu: ChoiceMenu
 var handler: Object
 var _cache := {}
 var _running := false
+var _end_requested := false
 var current_file := ""
 
 
@@ -60,6 +61,12 @@ func is_running() -> bool:
 	return _running
 
 
+## 当前节点演完后直接结束这段人物对话（不再回到选项页）：比如对话里选好了训练，要马上去训练。
+func end_conversation() -> void:
+	if _running:
+		_end_requested = true
+
+
 ## 这个人物现在会从哪个节点开始（第一个满足条件的 entry）。
 func entry_of(file: String) -> String:
 	var d := load_file(file)
@@ -74,6 +81,7 @@ func talk(file: String, start := "") -> void:
 	if d.is_empty() or _running:
 		return
 	_running = true
+	_end_requested = false
 	current_file = file
 	# 整段人物对话期间（包括台词和选项之间、弹出选项时）公主和居民都不动
 	GameState.in_dialogue = true
@@ -89,7 +97,7 @@ func talk(file: String, start := "") -> void:
 
 func _run(file: String, d: Dictionary, id: String) -> void:
 	var guard := 0
-	while id != "" and guard < 200:
+	while id != "" and guard < 200 and not _end_requested:
 		guard += 1
 		var n: Dictionary = d.get("nodes", {}).get(id, {})
 		if n.is_empty():
@@ -107,6 +115,8 @@ func _run(file: String, d: Dictionary, id: String) -> void:
 		node_entered.emit(file, id)
 		apply(n.get("set", {}))
 		await _call(n.get("set", {}))
+		if _end_requested:
+			return
 		if n.get("perform_before", false):
 			await _perform(n)
 		if not n.get("lines", []).is_empty():
@@ -135,9 +145,13 @@ func _run(file: String, d: Dictionary, id: String) -> void:
 			GameState.set_flag("dlg_%s_%s_%d" % [file, id, ci])
 			apply(c.get("set", {}))
 			await _call(c.get("set", {}))
+			if _end_requested:
+				return
 			if c.get("return", false):
 				if str(c.get("next", "")) != "":
 					await _run(file, d, str(c["next"]))
+				if _end_requested:
+					return
 				continue
 			next = str(c.get("next", ""))
 			break
