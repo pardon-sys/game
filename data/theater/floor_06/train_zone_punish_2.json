@@ -1,0 +1,192 @@
+{
+	"name": "部位训练的惩罚（2）",
+	"cast": {
+		"princess": {
+			"kind": "princess",
+			"at": [
+				0,
+				8
+			],
+			"visual": "helpless_2",
+			"anim": "helpless",
+			"dir": "down"
+		},
+		"device": {
+			"kind": "trap:{device}",
+			"at": [
+				{device_x},
+				{device_y}
+			]
+		},
+		"g1": {
+			"kind": "npc:guard",
+			"at": [
+				-30,
+				6
+			],
+			"dir": "right"
+		},
+		"g2": {
+			"kind": "npc:guard",
+			"at": [
+				30,
+				6
+			],
+			"dir": "left",
+			"hidden": true
+		}
+	},
+	"steps": [
+		{
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "fade_in"
+				},
+				{
+					"state": "laugh",
+					"do": "voice"
+				}
+			],
+			"wait": 0.5
+		},
+		{
+			"speaker": "保卫队员",
+			"text": "叫人来帮忙。两个人一起挠{zone_name}，看她还憋不憋得住。",
+			"actions": [
+				{
+					"who": "g1",
+					"count": 1,
+					"do": "hop"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "两、两个人？！哈哈哈……{zone_name}要坏掉了……！",
+			"portrait": "defeat_1",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "g1",
+					"repeat": 8,
+					"interval": 0.2,
+					"fx": "hand",
+					"zone": "{zone}",
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"kind": "laugh",
+					"do": "bubble"
+				}
+			]
+		},
+		{
+			"actions": [
+				{
+					"who": "g2",
+					"at": [
+						30,
+						6
+					],
+					"time": 0.4,
+					"do": "enter"
+				}
+			],
+			"wait": 0.4
+		},
+		{
+			"speaker": "保卫队员",
+			"text": "这就是训练。笑够了，身体才记得住。",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "device",
+					"repeat": 8,
+					"interval": 0.25,
+					"fx": "lines",
+					"zone": "{zone}",
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"by": "g2",
+					"repeat": 8,
+					"interval": 0.22,
+					"fx": "hand",
+					"zone": "{zone}",
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "哈哈哈哈哈！记、记住了……真的记住了哈哈哈哈——！",
+			"portrait": "defeat_2",
+			"actions": [
+				{
+					"who": "princess",
+					"visual": "helpless_2",
+					"do": "pose"
+				},
+				{
+					"who": "princess",
+					"time": 0.6,
+					"do": "shake"
+				},
+				{
+					"who": "princess",
+					"by": "g1",
+					"repeat": 10,
+					"interval": 0.16,
+					"fx": "hand",
+					"zone": "{zone}",
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"by": "device",
+					"repeat": 8,
+					"interval": 0.2,
+					"fx": "lines",
+					"zone": "{zone}",
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "",
+			"text": "（两个卫兵一左一右，专挑{zone_name}挠个不停——训练场上的笑声好久才停下来）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "g1",
+					"repeat": 6,
+					"interval": 0.3,
+					"fx": "hand",
+					"zone": "{zone}",
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"kind": "dots",
+					"do": "bubble"
+				}
+			]
+		},
+		{
+			"actions": [
+				{
+					"time": 0.6,
+					"do": "fade_out"
+				},
+				{
+					"state": "",
+					"do": "voice"
+				}
+			],
+			"wait": 0.7
+		}
+	]
+}

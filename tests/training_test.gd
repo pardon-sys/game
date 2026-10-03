@@ -39,6 +39,10 @@ func _ready() -> void:
 	await _run_esc_list()
 	await _run_traps()
 	await _run_combos()
+	await _run_endure()
+	await _run_resist()
+	await _run_sensitize()
+	await _run_maze()
 	print("\n==== %s (%d 项失败) ====" % ["全部通过" if failures == 0 else "有失败", failures])
 	get_tree().quit(1 if failures else 0)
 
@@ -153,6 +157,7 @@ const LEG_TRAPS := {
 
 
 func _reset() -> void:
+	_finish()   # 关卡开场的对话会晚几秒才出来：先推掉，不然 in_dialogue 会让陷阱停住
 	player.revive()
 	player._set_state(PlayableCharacter.State.IDLE)
 	player.combo.reset()
@@ -253,6 +258,320 @@ func _run_combos() -> void:
 		await _wait(0.1)
 	player.combo.triggered.disconnect(on_fired)
 	_reset()
+
+
+# ------------------------------------------------------------------ 训练小游戏
+## 开始一轮训练（不 await），推进开场过场直到小游戏开始；返回 [训练节点, 结果容器]。
+func _start_training(id: String, zone := "") -> Array:
+	_reset()
+	_clear_training()
+	GameState.give_item(ItemDB.get_item("coin"), 10)
+	var out := [null, {}]
+	var coins := GameState.inventory.count("coin")
+	var go := func(): out[1] = await TrainingDB.run(id, zone)
+	go.call()
+	await _advance_until(func(): return TrainingDB.current != null and TrainingDB.current.playing, 30.0)
+	out[0] = TrainingDB.current
+	check("「%s」：扣 %d 金币，过场后进入小游戏" % [TrainingDB.info(id)["name"], TrainingMenu.cost()],
+		out[0] != null and out[0].playing and GameState.inventory.count("coin") == coins - TrainingMenu.cost())
+	if out[0]:
+		out[0].time_scale = 0.0   # 测试里手动推进
+	return out
+
+
+## 每帧推进对话（过场 / 小剧场的台词），直到条件成立。
+func _advance_until(cond: Callable, max_time: float) -> float:
+	var t := 0.0
+	while not cond.call() and t < max_time:
+		if Dialogue.is_active():
+			Dialogue.advance()
+			Dialogue.advance()
+		await get_tree().process_frame
+		t += get_process_delta_time()
+	return t
+
+
+## Esc 结束这一轮，推进结束过场；返回结果。
+func _end_training(out: Array) -> Dictionary:
+	var r: TrainingStage = out[0]
+	var ev := InputEventKey.new()
+	ev.keycode = KEY_ESCAPE
+	ev.pressed = true
+	Input.parse_input_event(ev)
+	await _advance_until(func(): return not out[1].is_empty(), 20.0)
+	return out[1]
+
+
+func _punish_check(r: TrainingStage, kind: String, prefix: String) -> void:
+	var seen := [""]
+	var on_start := func(id: String): seen[0] = id
+	CG.started.connect(on_start)
+	var n0 := r.punish_count
+	if kind == "fatigue":
+		r.add_fatigue(player.fatigue.max_value)
+	else:
+		r.add_laugh(player.laugh.max_value)
+	await _advance_until(func(): return r.punish_count > n0 and not r.busy, 30.0)
+	CG.started.disconnect(on_start)
+	check("%s满了 → 惩罚小剧场（%s）→ 清空后继续训练" % ["魔力疲倦" if kind == "fatigue" else "闷笑", seen[0]],
+		str(seen[0]).begins_with("theater:" + prefix) and r.playing and not r.busy and GameState.in_dialogue
+		and (player.fatigue.value == 0.0 if kind == "fatigue" else player.laugh.value == 0.0))
+
+
+func _run_endure() -> void:
+	print("-- 训练一：魔力疲倦忍耐（QTE）")
+	var out := await _start_training("fatigue_endure")
+	var r = out[0]
+	if r == null:
+		return
+	check("地图上摆出足枷台、夹腿枷台、刑床、坐垫，公主被固定，两名卫兵就位",
+		r.devices.size() == 4 and player.get("puppet_anim") == "grabbed" and Cutscene.spawned.has("train_g1") and Cutscene.spawned.has("train_g2"))
+	check("小舞台：公主、两名卫兵、四种刑具", r.actors.has("princess") and r.actors.has("g1") and r.actors.has("g2")
+		and ["stocks", "clamp", "supine", "cushion"].all(func(k): return r.actors.has(k)))
+	r._call("ls")
+	r.press("A")
+	check("卫兵喊左脚心，按 A → 抵抗成功，魔力疲倦上限 +1（立刻记上）", r.successes == 1 and TrainingStats.value("train_fatigue_up") == 1.0)
+	var f0: float = player.fatigue.value
+	r._call("rt")
+	r.press("A")
+	check("喊右大腿却按 A → 失败，暴击，魔力疲倦大涨", r.fails == 1 and player.fatigue.value - f0 >= player.fatigue.max_value * 0.06
+		and r.queue.is_empty())
+	r._call("ls")
+	r._call("rt")
+	r._call("lt")
+	check("连着喊三个：左边面板排成队列", r.queue.size() == 3 and r._rows.get_child_count() == 3)
+	r.press("A")
+	r.press("K")
+	r.press("Q")
+	check("按顺序按对（A、K、Q；大腿也能用 J / K）→ 三次都成功", r.successes == 4 and r.fails == 1)
+	r._call("lt")
+	r._call("rs")
+	r.press("D")
+	check("顺序不对（先按了第二个）→ 第一个算失败", r.fails == 2 and r.queue.size() == 1)
+	r.queue.clear()
+	r._call("rs")
+	r._tick(2.0)
+	check("超时没按 → 失败", r.fails == 3 and r.queue.is_empty())
+	var slow: float = r.item_time()
+	r.successes = 40
+	check("成功越多：限时变短（%.2f → %.2f 秒）、卫兵喊得更快、一次最多喊 4 个" % [slow, r.item_time()],
+		r.item_time() < slow and r.item_time() >= 0.35 and r.call_gap() < 0.45 and range(30).map(func(_i): return r.burst_len()).max() == 4)
+	r.successes = 4
+	var f1: float = player.fatigue.value
+	r._tick(1.0)
+	check("刑具一直在挠：魔力疲倦缓慢上涨", player.fatigue.value > f1)
+	r._render()
+	await _punish_check(r, "fatigue", "train_endure_punish_")
+	var res := await _end_training(out)
+	check("Esc 结束：结果 成功 %d 次、+%s；公主被放开，刑具和卫兵撤走" % [res.get("successes", 0), res.get("gained", {})],
+		res.get("successes", 0) == 4 and is_equal_approx(float(res.get("gained", {}).get("train_fatigue_up", 0)), 4.0)
+		and player.get("puppet_anim") == "" and main.level.find_children("TrainDevice*", "", true, false).is_empty() and not Cutscene.spawned.has("train_g1")
+		and not GameState.in_dialogue and TrainingDB.current == null)
+	check("训练结束后魔力疲倦上限 = 500 + 4", player.fatigue.max_value == 504.0)
+
+
+func _run_resist() -> void:
+	print("-- 训练三：耐笑部位（忍笑节奏条）")
+	var out := await _start_training("zone_resist", "sole")
+	var r = out[0]
+	if r == null:
+		return
+	check("脚心：刑具从候选里挑（%s），舞台上一名卫兵" % r.device_key, TrainingDB.devices_for("sole").has(r.device_key)
+		and r.actors.has("device") and r.actors["device"].reaction_key == r.device_key and r.actors.has("g1"))
+	r._set_phase("windup", 5.0)
+	r.fake = false
+	r._set_phase("sweep", r.sweep_time())
+	r.pointer = r.green_c
+	r.press("J")
+	check("指针在绿区按 J → 憋住，脚心耐笑 +0.001", r.successes == 1 and is_equal_approx(TrainingStats.value("train_resist_sole"), 0.001))
+	var l0: float = player.laugh.value
+	r._set_phase("windup", 5.0)
+	r.press("SPACE")
+	check("卫兵还在举工具就按 → 按早了，闷笑大涨", r.fails == 1 and player.laugh.value > l0 + player.laugh.max_value * 0.1)
+	r._set_phase("windup", 5.0)
+	r.fake = false
+	r._set_phase("sweep", r.sweep_time())
+	r.pointer = clampf(r.green_c + r.green_w, 0.0, 1.0) if r.green_c + r.green_w <= 1.0 else 0.0
+	r.press("J")
+	check("指针不在绿区 → 失败", r.fails == 2)
+	r._set_phase("windup", 5.0)
+	r.fake = true
+	r._set_phase("sweep", r.sweep_time())
+	r.pointer = r.green_c
+	r.press("J")
+	check("假动作（红区）按了 → 上当，失败", r.fails == 3)
+	r._set_phase("windup", 5.0)
+	r.fake = true
+	r._set_phase("sweep", 0.1)
+	r._tick(0.2)
+	check("假动作忍住不按 → 看穿，不算失败", r.fails == 3 and r.feints_seen == 1)
+	r._set_phase("windup", 5.0)
+	r.fake = false
+	r._set_phase("sweep", 0.1)
+	r._tick(0.2)
+	check("真的挠过来却没按 → 失败", r.fails == 4)
+	var w0: float = r.zone_width()
+	r.successes = 60
+	check("越练绿区越窄（%.2f → %.2f）、扫得越快、假动作越多" % [w0, r.zone_width()], r.zone_width() < w0 and r.sweep_time() < 1.2 and r.fake_chance() > 0.1)
+	r.successes = 1
+	await _punish_check(r, "laugh", "train_zone_punish_")
+	var res := await _end_training(out)
+	check("Esc 结束：成功 1 次，脚心耐笑 0.001", res.get("successes", 0) == 1 and is_equal_approx(TrainingStats.value("train_resist_sole"), 0.001)
+		and player.get("puppet_anim") == "")
+
+
+func _run_sensitize() -> void:
+	print("-- 训练四：敏感部位强化（反射克制）")
+	var out := await _start_training("zone_sensitize", "thigh")
+	var r = out[0]
+	if r == null:
+		return
+	check("大腿：刑具从候选里挑（%s）" % r.device_key, TrainingDB.devices_for("thigh").has(r.device_key))
+	var seg := func(dirs: Array):
+		r.rest_t = 0.0
+		r.current = {}
+		r.pending.clear()
+		for d in dirs:
+			r.pending.append({"dir": d, "at": 0.0})
+		r._seg_total = dirs.size()
+		r._seg_done = 0
+		r.seg_t = 0.0
+		r._tick(0.01)
+	seg.call(["LEFT"])
+	check("冲动「想往左边躲」出现", not r.current.is_empty() and r._arrow.text == "←")
+	r.press("RIGHT")
+	r._tick(0.01)
+	check("按反方向 → → 按住，这一段成功，大腿敏感 +0.003", r.successes == 1 and is_equal_approx(TrainingStats.value("train_sens_thigh"), 0.003))
+	seg.call(["UP", "RIGHT", "DOWN"])
+	r.press("S")
+	r._tick(0.01)
+	r.press("A")
+	r._tick(0.01)
+	r.press("W")
+	r._tick(0.01)
+	check("一段里连着三个冲动（↑ → ↓），WASD 也能按 → 全按住才算一次成功", r.successes == 2)
+	var l0: float = player.laugh.value
+	seg.call(["LEFT"])
+	r.press("LEFT")
+	check("按成冲动的同方向 → 躲开了，失败，闷笑上涨", r.fails == 1 and player.laugh.value > l0)
+	seg.call(["DOWN"])
+	r._tick(2.0)
+	check("超时 → 失败", r.fails == 2)
+	var l1: float = player.laugh.value
+	r.rest_t = 5.0
+	r._tick(1.0)
+	check("卫兵一直在挠：闷笑持续上涨", player.laugh.value > l1)
+	var it0: float = r.impulse_time()
+	r.successes = 50
+	check("越练限时越短（%.2f → %.2f 秒）、一段冲动越多" % [it0, r.impulse_time()], r.impulse_time() < it0
+		and range(30).map(func(_i): return r.impulses_per_segment()).max() == 4)
+	r.successes = 2
+	await _punish_check(r, "laugh", "train_zone_punish_")
+	var res := await _end_training(out)
+	check("Esc 结束：成功 2 次，大腿敏感 0.006", res.get("successes", 0) == 2 and is_equal_approx(TrainingStats.value("train_sens_thigh"), 0.006))
+
+
+func _run_maze() -> void:
+	print("-- 训练二：魔力疲倦释放（训练迷宫）")
+	await main.change_level(Floors.scene("floor_06_camp"))
+	await _wait(0.6)
+	_finish()
+	player = GameState.player as Princess
+	ctrl = ScriptedController.new()   # 换地图后旧公主（连同控制器）已经释放
+	player.set_controller(ctrl)
+	home = Cutscene.cell_to_world([40, 21])
+	var out := await _start_training("fatigue_release")
+	var r = out[0]
+	if r == null:
+		return
+	player = GameState.player as Princess
+	var lv: Node = main.level
+	check("营地走到迷宫入口 → 换到训练迷宫，站在起点，出口找到了，训练中不播组合小演出",
+		lv.scene_file_path == Floors.scene("floor_06_training") and r.exit_pos != Vector2.ZERO
+		and player.global_position.distance_to(Cutscene.cell_to_world([25, 39])) < 24.0 and not ComboTracker.play_scenes)
+	var doors := lv.find_children("*", "StaticBody2D", true, false).filter(func(n): return n.scene_file_path.ends_with("door.tscn"))
+	check("迷宫 12 个房间，门都关着", doors.size() == 12 and doors.all(func(d): return not d.is_open))
+	var design: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://levels/floor_06_training/design.json"))
+	var areas: Array = design.get("combo_areas", [])
+	var walls: TileMapLayer = lv.get_node("Walls")
+	var start := walls.local_to_map(walls.to_local(player.global_position))
+	var reach := _flood(walls, start)
+	check("12 个房间各一组迷宫组合，从起点都走得到（开门后）", areas.size() == 12
+		and areas.map(func(a): return a["combo"]).all(func(c): return r.COMBOS.has(c))
+		and areas.all(func(a): return reach.has(Vector2i(int(a["rect"][0]) + 4, int(a["rect"][1]) + 4))))
+	var stairs := lv.find_children("*", "Area2D", true, false).filter(func(n): return n.scene_file_path.ends_with("stairs.tscn"))
+	check("训练中出口楼梯不直接换地图（由训练判定逃离）", not stairs.is_empty() and stairs.all(func(s): return s.get("_used")))
+	# 触发组合
+	player.combo.triggered.emit("sole_party")
+	check("迷宫外的组合不算", r.successes == 0)
+	player.combo.triggered.emit("foot_bubble")
+	check("触发「足浴泡泡」→ 魔力疲倦上限 -1、释放强度 +0.5%（立刻记上）", r.successes == 1
+		and TrainingStats.value("train_fatigue_down") == 1.0 and is_equal_approx(TrainingStats.value("train_burst_power"), 0.5))
+	var seen := [""]
+	var on_start := func(id: String): seen[0] = id
+	CG.started.connect(on_start)
+	player.magic_event.emit("fatigue_burst", 0)
+	await _advance_until(func(): return seen[0] != "" and not CG.is_busy(), 30.0)
+	CG.started.disconnect(on_start)
+	check("组合里魔力疲倦满了释放 → 这次提升 ×5（上限 -5、强度 +2.5%%），播奉献小剧场（%s）" % seen[0],
+		TrainingStats.value("train_fatigue_down") == 5.0 and is_equal_approx(TrainingStats.value("train_burst_power"), 2.5)
+		and seen[0] == "theater:train_release_foot_bubble" and r.devotions == 1)
+	r._clock += 10.0
+	player.combo.triggered.emit("bath_trio")
+	r._clock += 10.0
+	player.magic_event.emit("fatigue_burst", 0)
+	check("组合触发很久之后才释放 → 不算 ×5", TrainingStats.value("train_fatigue_down") == 6.0 and r.devotions == 1)
+	GameState.in_dialogue = false
+	# 逃离冲动
+	var d0: float = player.global_position.distance_to(r.exit_pos)
+	var own_ctrl: CharacterController = player.controller
+	r.start_escape()
+	check("逃离冲动：控制权被抢走", player.controller == r.escape_ctrl and player.controller is WanderController and r.escaping)
+	await _wait(1.2)
+	var d1: float = player.global_position.distance_to(r.exit_pos)
+	check("沿最短路往出口跑（离出口 %.0f → %.0f）" % [d0, d1], d1 < d0 - 8.0)
+	var p0: float = r.pace_now()
+	for i in 5:
+		r.mash()
+	r.tick(0.01)
+	check("连按空格拖慢她（速度 %.2f → %.2f）" % [p0, r.pace_now()], r.pace_now() < p0 * 0.35 and is_equal_approx(r.escape_ctrl.pace, r.pace_now()))
+	r.stop_escape()
+	check("冲动过去：控制权还给玩家", player.controller == own_ctrl and is_instance_valid(own_ctrl) and not r.escaping)
+	var s0 := {"dur": r.urge_duration(), "pace": r.base_pace(), "delay": range(20).map(func(_i): return r._urge_delay()).max()}
+	r.successes = 10
+	check("触发越多：冲动越频繁（最长间隔 %.1f → %.1f 秒）、持续越久、跑得越快" % [s0["delay"], range(20).map(func(_i): return r._urge_delay()).max()],
+		r.urge_duration() > s0["dur"] and r.base_pace() > s0["pace"] and range(20).map(func(_i): return r._urge_delay()).max() < s0["delay"])
+	r.successes = 2
+	r.urge_t = 0.01
+	r.tick(0.05)
+	check("间隔到了自己发作", r.escaping)
+	r.stop_escape()
+	# 逃到出口 = 失败
+	player.global_position = r.exit_pos
+	r.tick(0.01)
+	await _advance_until(func(): return not out[1].is_empty(), 30.0)
+	var res: Dictionary = out[1]
+	player = GameState.player as Princess
+	check("逃到出口 → 这一轮结束（失败），已经拿到的保留：触发 %d 次、%s" % [res.get("successes", 0), res.get("gained", {})],
+		res.get("reason", "") == "escaped" and res.get("successes", 0) == 2 and is_equal_approx(float(res.get("gained", {}).get("train_fatigue_down", 0)), 6.0))
+	check("回到营地的迷宫入口旁，组合小演出恢复", main.level.scene_file_path == Floors.scene("floor_06_camp")
+		and player.global_position.distance_to(Cutscene.cell_to_world([46, 20])) < 24.0 and ComboTracker.play_scenes == false)
+	check("魔力疲倦上限 500 - 6 = 494，释放强度 ×%.3f" % TrainingStats.burst_mult(), player.fatigue.max_value == 494.0
+		and is_equal_approx(TrainingStats.burst_mult(), 1.03))
+
+
+## 墙图块上的连通格（不管门）。
+func _flood(walls: TileMapLayer, start: Vector2i) -> Dictionary:
+	var seen := {start: true}
+	var todo: Array[Vector2i] = [start]
+	while not todo.is_empty():
+		var c: Vector2i = todo.pop_back()
+		for d in [Vector2i.LEFT, Vector2i.RIGHT, Vector2i.UP, Vector2i.DOWN]:
+			var n: Vector2i = c + d
+			if not seen.has(n) and walls.get_cell_source_id(n) == -1 and n.x >= 0 and n.y >= 0 and n.x < 60 and n.y < 60:
+				seen[n] = true
+				todo.append(n)
+	return seen
 
 
 # ------------------------------------------------------------------ 工具

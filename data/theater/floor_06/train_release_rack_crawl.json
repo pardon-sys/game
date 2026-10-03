@@ -1,0 +1,212 @@
+{
+	"name": "训练迷宫的坚持（刑架爬腿）",
+	"cast": {
+		"princess": {
+			"kind": "princess",
+			"at": [
+				0,
+				8
+			],
+			"visual": "helpless_2",
+			"anim": "helpless",
+			"dir": "down"
+		},
+		"foot_thigh_rack": {
+			"kind": "trap:foot_thigh_rack",
+			"at": [
+				0,
+				18
+			]
+		},
+		"thigh_pincer": {
+			"kind": "trap:thigh_pincer",
+			"at": [
+				0,
+				2
+			]
+		},
+		"caterpillar": {
+			"kind": "monster:caterpillar",
+			"at": [
+				-32,
+				8
+			],
+			"dir": "right"
+		},
+		"g1": {
+			"kind": "npc:guard",
+			"at": [
+				-66,
+				2
+			],
+			"dir": "right"
+		}
+	},
+	"steps": [
+		{
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "fade_in"
+				},
+				{
+					"state": "laugh",
+					"do": "voice"
+				}
+			],
+			"wait": 0.5
+		},
+		{
+			"speaker": "",
+			"text": "（魔力释放之后，「刑架爬腿」并没有停下——身体比刚才敏感得多，可公主没有往出口跑）"
+		},
+		{
+			"speaker": "公主",
+			"text": "刷子换得好快……哈哈哈……越挣扎越快，那我就……不挣扎……！",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "foot_thigh_rack",
+					"repeat": 6,
+					"interval": 0.3,
+					"fx": "lines",
+					"zone": "sole",
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"by": "thigh_pincer",
+					"repeat": 6,
+					"interval": 0.32,
+					"fx": "lines",
+					"zone": "thigh",
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"kind": "laugh",
+					"do": "bubble"
+				}
+			],
+			"portrait": "defeat_1"
+		},
+		{
+			"speaker": "保卫队员",
+			"text": "公主殿下……不跑吗？刚放完魔力，现在是最痒的时候哦。",
+			"actions": [
+				{
+					"who": "g1",
+					"count": 1,
+					"do": "hop"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "不、不跑……哈哈……保卫队的大家每天都这么练……我、我也要变强……！",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "caterpillar",
+					"repeat": 6,
+					"interval": 0.3,
+					"fx": "hand",
+					"zone": "thigh",
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "毛毛虫爬到钳子中间了……哈哈哈哈！好、好痒……可是我要坚持！",
+			"actions": [
+				{
+					"who": "princess",
+					"visual": "helpless_2",
+					"do": "pose"
+				},
+				{
+					"who": "princess",
+					"time": 0.6,
+					"do": "shake"
+				},
+				{
+					"who": "princess",
+					"by": "foot_thigh_rack",
+					"repeat": 10,
+					"interval": 0.16,
+					"fx": "lines",
+					"zone": "sole",
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"by": "thigh_pincer",
+					"repeat": 10,
+					"interval": 0.17,
+					"fx": "lines",
+					"zone": "thigh",
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"by": "caterpillar",
+					"repeat": 10,
+					"interval": 0.18,
+					"fx": "hand",
+					"zone": "thigh",
+					"do": "tickle"
+				}
+			],
+			"portrait": "defeat_2"
+		},
+		{
+			"speaker": "公主",
+			"text": "哈哈哈……魔力……放出来的感觉……越来越清楚了……这、这就是训练的成果……！",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "caterpillar",
+					"repeat": 6,
+					"interval": 0.3,
+					"fx": "hand",
+					"zone": "thigh",
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "",
+			"text": "（她咬着牙留在机关里，一边笑一边感受魔力流过全身——这一次的训练效果，是平时的五倍）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "foot_thigh_rack",
+					"repeat": 6,
+					"interval": 0.3,
+					"fx": "lines",
+					"zone": "sole",
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"kind": "dots",
+					"do": "bubble"
+				}
+			]
+		},
+		{
+			"actions": [
+				{
+					"time": 0.6,
+					"do": "fade_out"
+				},
+				{
+					"state": "",
+					"do": "voice"
+				}
+			],
+			"wait": 0.7
+		}
+	]
+}

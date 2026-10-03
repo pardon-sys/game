@@ -1,6 +1,6 @@
 {
 	"_说明": [
-		"保卫队训练（scripts/training/training_db.gd / training_stats.gd 读取）。每项训练是一个小游戏（kind），场景在 scenes/training/。",
+		"保卫队训练（scripts/training/training_db.gd / training_stats.gd 读取）。每项训练是一个小游戏（kind），脚本在 scripts/training/<kind>.gd。",
 		"stages：阶段表，按顺序解锁（unlocked = false 的阶段还没开放）。caps = 这一阶段各项数值的累计上限（部位类是每个部位的上限）。",
 		"per_success：每成功一次加多少（部位类按选定部位）。加成 bonus：训练进度换来的闷笑上限 / 生命（HP，1 颗心 = 2）/ 近战强度，按部位均分。",
 		"zone_devices：训练三、四按部位挑刑具（每轮随机一个），值是陷阱场景名（scenes/traps/<名>.tscn）。cost：每轮费用（金币）。"

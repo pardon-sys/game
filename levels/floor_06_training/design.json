@@ -1,0 +1,116 @@
+{
+	"_说明": [
+		"训练迷宫（gen_floor06.py 生成）：combo_areas = 每个房间的三来源组合区域（格，含上墙，左上 → 右下）。",
+		"level_design_test 检查区域里有组合需要的陷阱和怪物；training_test 检查 12 个房间都走得到、门都关着。"
+	],
+	"combo_areas": [
+		{
+			"combo": "boots_clamp_crawl",
+			"rect": [
+				2,
+				1,
+				10,
+				9
+			]
+		},
+		{
+			"combo": "legloop_lick",
+			"rect": [
+				15,
+				1,
+				23,
+				9
+			]
+		},
+		{
+			"combo": "foot_thigh_lock",
+			"rect": [
+				28,
+				1,
+				36,
+				9
+			]
+		},
+		{
+			"combo": "pincer_stocks",
+			"rect": [
+				41,
+				1,
+				49,
+				9
+			]
+		},
+		{
+			"combo": "rack_crawl",
+			"rect": [
+				2,
+				13,
+				10,
+				21
+			]
+		},
+		{
+			"combo": "swing_frenzy",
+			"rect": [
+				15,
+				13,
+				23,
+				21
+			]
+		},
+		{
+			"combo": "ring_binding",
+			"rect": [
+				28,
+				13,
+				36,
+				21
+			]
+		},
+		{
+			"combo": "foot_bubble",
+			"rect": [
+				41,
+				13,
+				49,
+				21
+			]
+		},
+		{
+			"combo": "bath_trio",
+			"rect": [
+				2,
+				25,
+				10,
+				33
+			]
+		},
+		{
+			"combo": "spring_feather",
+			"rect": [
+				15,
+				25,
+				23,
+				33
+			]
+		},
+		{
+			"combo": "saddle_brush",
+			"rect": [
+				28,
+				25,
+				36,
+				33
+			]
+		},
+		{
+			"combo": "scissor_brush",
+			"rect": [
+				41,
+				25,
+				49,
+				33
+			]
+		}
+	]
+}

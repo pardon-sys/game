@@ -310,9 +310,22 @@ HUD 背包栏会根据物品数据自动显示，不需要改 UI 代码。
 ### 小镇：居民、道具、楼梯
 - `Resident`（`scripts/actors/allies/resident.gd`，继承 Actor，友军，不打不挠）：图例 `npc id=<人物> dialogue=<楼层组>/<文件> wander=<格> dir=<朝向> show_flag=… hidden_flag=…`。在出生点 `wander` 格内溜达，按 E `talk()`：停下、转向公主、`Dialogue.talk(dialogue)`。`show_flag / hidden_flag` 按剧情标记出现 / 消失（监听 `GameState.flag_changed`）。
 - `Prop`（`scripts/objects/prop.gd`，图例 `prop type=<种类> action=…`）：种类在 `assets/generated/town_props.json`（贴图区域、碰撞、灯光、动画）；`action`：`heal`（`Town.rest`）、`shop:<商店>`（`Town.open_shop`）、`training`（`Town.open_training`）、`talk:<文件>`、`read:<对话 id>`。
-- `Town`（`scripts/core/town.gd`）：`rest(公主)`、`open_shop(id)`（`ShopUI`，`data/shop/<id>.json`，金币，库存记在 `vars["shop_<商店>_<物品>"]`）、`open_training()`（`TrainingDB`：`data/training/trainings.json`，小游戏场景 `scenes/training/<id>.tscn` 存在时 `start(id)` 返回它，现在都「还没开放」；过关奖励 `grant(id)`）。
+- `Town`（`scripts/core/town.gd`）：`rest(公主)`、`open_shop(id)`（`ShopUI`，`data/shop/<id>.json`，金币，库存记在 `vars["shop_<商店>_<物品>"]`）、`open_training()`（`TrainingMenu` 选项目 / 部位 → `await TrainingDB.run(id, 部位)`，见下面「保卫队训练营」）。
 - 楼梯 `scenes/objects/stairs.tscn`（`LevelExit` + 楼梯外观；图例 `stairs target=<楼层 id> spawn=<到达点> down=true/false`）：走进去 → `GameState.pending_spawn` → 目标关卡 `Level._ready` 把公主放到同名的 `SpawnPoint`（图例 `spawn id=…`）并设为检查点。`exit … locked=true` 是封住的入口（只播对话）。
 - 楼层组：`data/floors.json` 的 `group`（`Floors.group(id)`）；同组地图共用 `data/dialogues/<组>/`（`Floors.dialogue_dir`）。
+
+### 保卫队训练营
+- 数据 `data/training/trainings.json`：`cost`（每轮金币）、`trainings[]`（`id / name / kind / desc / per_zone / per_success / bonus / stages[]`）、`zone_devices`（部位 → 刑具场景名）。`stages[i]`：`unlocked`、`caps`（这一阶段各数值的累计上限，部位类是每个部位的上限）和演出参数（训练一的 `guards / start_time / min_time`，`punish` 惩罚小剧场列表）。
+- `TrainingStats`（`scripts/training/training_stats.gd`，静态）：数值存在 `GameState.vars`（`train_fatigue_up / train_fatigue_down / train_burst_power / train_resist_<部位> / train_sens_<部位>`）。`add(键, 量)` 截到当前阶段上限并返回实际加了多少；`zone_modifier(部位)`（`TickleZones.modifier` 里加上）、`laugh_bonus / hp_bonus / melee_bonus`（按 `TickleZones.zone_ids()` 均分）、`melee_damage(基础)`（`HitboxComponent`）、`fatigue_max()`、`burst_mult()`（`StarBurst.cast_fatigue`）；`apply(公主)` 套上疲倦 / 闷笑 / 生命上限（`Princess._setup` 和每轮结算调用）。
+- `TrainingMenu`（`scripts/ui/training_menu.gd`）：`await choose() -> {id, zone}`，部位类先选部位；`blocked_reason(训练, 部位)`（未开放 / 金币不够 / 练满）。
+- `TrainingDB.run(id, 部位)`：扣金币 → 创建 `scripts/training/<kind>.gd`（挂在 root 下，`TrainingDB.current`）→ `await run(训练, 部位) -> {successes, gained}` → `TrainingStats.apply` → 提示收获。
+- `TrainingStage`（`scripts/training/training_stage.gd`，CanvasLayer 14）：训练一 / 三 / 四的基类。地图过场（`Cutscene.play_data`：走到营地训练位置、刑具演出版 `active = false` 摆在地图上、`hold` 固定、生成两名卫兵）→ 小游戏画面（右边 CGActor 小舞台，左上面板，下面疲倦 / 闷笑条；舞台上的台词 / 飘字在不缩放的 overlay 层）→ 数值满了 `_punish`：`CG.play_theater_subst(id, {zone, zone_name, device, device_x, device_y})` → Esc `quit()` → 结束过场，疲倦 / 闷笑恢复到训练前。训练中 `GameState.in_dialogue = true`（地图暂停），数值用 `set_value` 直接改（不触发真正的疲倦爆发 / 笑倒）。子类：`world_devices / stage_cast / intro_lines / _tick / _on_key / _after_punish / mood_ratio`；测试用 `press(键名)`、`time_scale`。
+  - `qte_endure.gd`（训练一）：`PARTS`（部位 → 键）、`queue`（只有队首倒计时）、`to_call`（卫兵连喊）；`item_time / call_gap / burst_len` 随成功次数变化。
+  - `qte_resist.gd`（训练三）：阶段 `rest → windup → sweep → result`，`pointer / green_c / green_w / fake`。
+  - `qte_sensitize.gd`（训练四）：一段 `pending` 冲动，`current` 处理中，`DIRS[方向].opposite`。
+- `maze_release.gd`（训练二，CanvasLayer 12，不继承 TrainingStage）：营地走到迷宫入口 → `GameState.pending_spawn = "maze_start"` 换到 `floor_06_training`（出口楼梯 `_used = true`，由训练判断逃离）→ `ComboTracker.play_scenes = false`，监听 `combo.triggered`（`COMBOS` 里的才算）、`magic_event("fatigue_burst")`（`DEVOTION_WINDOW` 秒内 → 再补 4 份并播 `train_release_<组合>`）、`died`。逃离冲动：`EscapeController`（继承 `WanderController`，BFS 跑向 `maze_exit` 到达点，`pace` 由 `pace_now()` 按最近 1 秒的空格次数打折，方向键加拽力），直接换 `player.controller`（不经过 `set_controller`，原控制器不释放）。结束后 `pending_spawn = "from_training"` 回营地。
+- 新陷阱 `LegTrap`（`scripts/traps/leg_trap.gd`，继承 RestraintTrap）：`zone_cycle + cycle_time` 轮流挠几个部位、`struggle_speedup / struggle_extend`（轮询 `status.presses_left()` 算挣扎次数）、`ramp`、`rhythm_on / rhythm_off`（`is_armed()` 为假时 `_victims()` 为空）、`swing / lift / bob` 姿势、`bubbles`；`lock_zone(部位)` 训练用。九个子类只改导出参数（羽毛秋千加绳子、大腿刷环换帧）。
+- 训练迷宫 `levels/floor_06_training/`（`gen_floor06.py` 生成，`design.json` 的 `combo_areas` 给 level_design_test）；小剧场 `data/theater/floor_06/train_endure_punish_1~3 / train_zone_punish_1~2 / train_release_<组合>`（也是 `gen_floor06.py` 生成）。
 
 ### 束缚陷阱与第五层机关
 - `RestraintTrap`（`scripts/traps/restraint_trap.gd`）：`mode = grab`（`StatusComponent.grab`）或 `hobble`（`StatusComponent.hobble`：可以慢慢走、不能冲刺、攻击 / 交互键挣扎）；`exposed`（露出部位）、`self_tickle`、`group_name`（配套机关同组）、`pose_offset / pose_rotation`（`PlayableCharacter` 的姿势，`_update_lift` 里应用）、`regrab_delay`、`reach`（默认 1：触发区每边外扩 1 格，外扩那一圈要看得见——中间没墙；扣住时 `TrapReach.pull` 把人拉到 `_pull_target()`，grab 拉到扣住的位置、hobble 拉到陷阱格上；`Stocks` 同样用 `TrapReach`，并有 `regrab_delay`）。子类：`SnareTrap`、`CuffsTrap`、`ClampTrap`、`WardrobeTrap`（墙面，`sprite_hidden`）、`LegLoopTrap`、`MudTrap`（多格、越陷越慢）、`BootsTrap`、`BindingTrap`；新部位：`SupineTrap`（仰卧，`pose_rotation` −90°）、`CushionTrap`、`ProneTrap`、`PitTrap`（`content` 洞里的怪物，`extra_combo_keys` 算那种怪物）、`SpinWheelTrap`（每 `spin_time` 扫一次；放开后等她能行动时 `force_move(..., "bounce")` 甩出 `fling` 格，`landing_point()`）、`VestTrap`（hobble）。`would_grab(人)`：现在踩上来会不会被困（空闲、没在冷却、不在 regrab 免疫里）。
@@ -488,11 +501,12 @@ scripts/objects/      宝箱、门、铁栅门、拉杆、火把、木桶、石�
 scripts/autoload/     GameState（玩家引用、背包、标记、事件总线）、Audio
 levels/<楼层>/        每张地图的 map.txt 和场景
 scripts/dialogue/     DialogueRunner（人物对话、选项、条件、选择记忆）
-scripts/training/     TrainingDB（训练小游戏接口）
+scripts/training/     TrainingDB、TrainingStats、TrainingStage（训练一 / 三 / 四的基类）、qte_endure / qte_resist / qte_sensitize / maze_release
 scripts/core/         …… SaveSystem（存档）、Town（小镇设施）
 scripts/ui/           …… ChoiceMenu、SlotMenu、ShopUI、TitleScreen
 tests/systems_test.gd 人物对话、选择记忆、存档读档、存档点、主界面、文件迁移
 tests/floor6_test.gd  第六层地图、楼梯、居民、设施、开场三种选择、第五层 → 第六层
+tests/training_test.gd 训练数值与上限、菜单、Esc 跳关列表、新陷阱和组合、四项训练、训练迷宫
 tools/build/gen_floor06.py  第六层地图、对话、过场、小剧场
 tools/build/check_dialogues.py  人物对话检查
 tools/art/gen_town_art.py  小镇道具、居民和三个关键人物的地图行走图、检查点、存档点
