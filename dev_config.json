@@ -3,9 +3,11 @@
 		"测试模式配置（scripts/core/dev_config.gd 读取）。dev_mode 改成 true 打开，false 关闭。",
 		"打开后：暂停菜单（Esc）多一项「测试：跳关」，背包不用先拿到也能打开，背包「CG 图鉴」页所有 CG 都能直接播放。",
 		"skip_points：跳关点。floor 楼层 id；cell 可选，跳到这一格（并设为检查点）；rewards_through 可选，连这一层的流程奖励也一起给。",
-		"floor_rewards：各层流程里拿到的东西。跳到某层时，前面各层的都会补上：flags 剧情标记、items 物品 {id: 数量}、passives 被动技能。"
+		"floor_rewards：各层流程里拿到的东西。跳到某层时，前面各层的都会补上：flags 剧情标记、items 物品 {id: 数量}、passives 被动技能。",
+		"dev_data_dir：调试数据（存档等）的隔离目录名。在编辑器里运行、或 dev_mode 打开时，存档写到 user://<dev_data_dir>/saves/；导出的正式游戏用 user://saves/，两边互不影响。留空 \"\" = 不隔离。"
 	],
 	"dev_mode": false,
+	"dev_data_dir": "dev",
 	"skip_points": [
 		{"name": "第一层·地牢", "floor": "floor_01"},
 		{"name": "第二层·痒痒地牢", "floor": "floor_02"},

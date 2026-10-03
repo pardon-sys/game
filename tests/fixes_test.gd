@@ -270,6 +270,27 @@ func _make_helpless() -> void:
 # ------------------------------------------------------------------ 测试模式
 func _run_dev_mode() -> void:
 	print("-- 测试模式（dev_config.json）")
+	var sub_dir := str(DevConfig.data().get("dev_data_dir", ""))
+	check("调试数据隔离：dev_data_dir = \"%s\"，编辑器里运行存档在 %s，导出的正式游戏在 %s" % [sub_dir, DevConfig.root_for(true) + "saves/", DevConfig.root_for(false) + "saves/"],
+		sub_dir != "" and DevConfig.root_for(true) == "user://%s/" % sub_dir and DevConfig.root_for(false) == "user://"
+		and SaveSystem.default_dir() == DevConfig.root_for(true) + "saves/" and DevConfig.is_dev_run())
+	var src := "user://test_copy_from/"
+	var dst := "user://test_copy_to/"
+	for d in [src, dst]:
+		if DirAccess.dir_exists_absolute(d):
+			for f in DirAccess.get_files_at(d):
+				DirAccess.remove_absolute(d + f)
+			DirAccess.remove_absolute(d)
+	DirAccess.make_dir_recursive_absolute(src)
+	FileAccess.open(src + "slot_1.json", FileAccess.WRITE).store_string("{}")
+	var copied := SaveSystem.copy_old_saves(src, dst)
+	var again := SaveSystem.copy_old_saves(src, dst)
+	check("第一次隔离时把以前的存档复制一份到调试目录（只复制一次，原来的不删）", copied == 1 and again == 0
+		and FileAccess.file_exists(dst + "slot_1.json") and FileAccess.file_exists(src + "slot_1.json"))
+	for d in [src, dst]:
+		for f in DirAccess.get_files_at(d):
+			DirAccess.remove_absolute(d + f)
+		DirAccess.remove_absolute(d)
 	check("配置文件读得到：有 dev_mode 开关、跳关点和各层奖励", FileAccess.file_exists(DevConfig.PATH) and DevConfig.skip_points().size() >= 6
 		and DevConfig.data().has("dev_mode") and DevConfig.data().has("floor_rewards"))
 	var pm: Node = main.get_node("PauseMenu")

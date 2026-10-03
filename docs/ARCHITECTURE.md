@@ -302,7 +302,7 @@ HUD 背包栏会根据物品数据自动显示，不需要改 UI 代码。
 - 小剧场 `data/theater/<楼层组>/<id>.json`：CG 舞台格式（`cast` + `steps`），演员 `kind` 可以写 `npc:<人物>`；`CG.play_theater(id)`，看过的可以跳过（`cg_seen_theater:<id>`）。
 
 ### 存档与主界面
-- `SaveSystem`（`scripts/core/save_system.gd`，静态）：`user://saves/slot_<1~3>.json`。`save(存档位, 地点)`、`info / latest / delete`、`load_slot(存档位)`（`apply_state` 放回 GameState → `main.change_level(场景, keep_state = true)` → 站到存档位置）。测试里改 `SaveSystem.dir`。
+- `SaveSystem`（`scripts/core/save_system.gd`，静态）：`<数据根目录>saves/slot_<1~3>.json`。数据根目录 `DevConfig.data_root()`：导出的正式游戏 `user://`，在编辑器里运行 / 测试模式 `user://<dev_config.json 的 dev_data_dir>/`（隔离调试存档；以后别的玩家数据也放这下面）。`save(存档位, 地点)`、`info / latest / delete`、`load_slot(存档位)`（`apply_state` 放回 GameState → `main.change_level(场景, keep_state = true)` → 站到存档位置）。测试里改 `SaveSystem.dir`。
 - 主界面 `scenes/title.tscn`（`run/main_scene`）：新游戏 → `GameState.reset()` 后进 `main.tscn`；继续 / 读取 → `GameState.pending_load = 存档位` 后进 `main.tscn`，`main._ready` 黑屏读档（关卡见 `pending_load` 不播开场）。
 - 存档点 `scenes/objects/save_point.tscn`（图例 `savepoint place=<地点名>`）：交互 → `SlotMenu`（`scripts/ui/slot_menu.gd`，`await choose("save"/"load") -> 存档位 / -1`，覆盖要确认）→ 保存 + 回满生命。暂停菜单 `to_title()` 回主界面。
 - `GameState.play_time`（有公主且没暂停时累加）、`vars`（对话选择）、`flag_changed` 信号。
