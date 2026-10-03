@@ -6,6 +6,9 @@ extends RefCounted
 ##   rewards_for(跳关点)     跳到这里要补上的流程奖励（前面各层的；rewards_through 连这一层也给）
 ##   skip_to(跳关点)         补奖励 → 解除暂停 → 换楼层 → 放到指定格
 ## 打开后背包不需要先拿到也能打开，背包「CG 图鉴」里所有 CG 都能播放。
+##   data_root()            玩家数据（存档等）的根目录：调试运行（编辑器里运行 / 测试模式）用 user://<dev_data_dir>/，
+##                          导出的正式游戏用 user://——Godot 的 user:// 在编辑器和导出游戏里是同一个文件夹，不隔离的话调试存档会混进正式游戏。
+##                          以后要存别的数据（设置、图鉴进度……）也放在 data_root() 下。
 
 const PATH := "res://dev_config.json"
 
@@ -19,6 +22,23 @@ static func data() -> Dictionary:
 		var parsed: Variant = JSON.parse_string(FileAccess.get_file_as_string(PATH))
 		_data = parsed if parsed is Dictionary else {}
 	return _data
+
+
+## 调试运行：在编辑器里运行（包括 headless 测试），或者打开了测试模式。
+static func is_dev_run() -> bool:
+	return OS.has_feature("editor") or enabled()
+
+
+## 玩家数据的根目录（以 / 结尾）。
+static func data_root() -> String:
+	return root_for(is_dev_run())
+
+
+static func root_for(dev_run: bool) -> String:
+	var sub := str(data().get("dev_data_dir", "")).strip_edges().trim_prefix("/").trim_suffix("/")
+	if not dev_run or sub == "":
+		return "user://"
+	return "user://%s/" % sub
 
 
 static func enabled() -> bool:
