@@ -32,10 +32,42 @@ func _ready() -> void:
 
 
 ## keep_state：不把当前公主的状态带过去（读档时已经从存档设好了）。
+## 测试模式：F2 在公主和蓝色公主（同一关卡里的其它可操作角色）之间切换操控。
+func _unhandled_input(event: InputEvent) -> void:
+	if event.is_action_pressed("switch_character") and DevConfig.enabled() and not GameState.in_dialogue:
+		switch_character()
+		get_viewport().set_input_as_handled()
+
+
+func switch_character() -> bool:
+	if level == null:
+		return false
+	var others: Array = []
+	for n in level.find_children("*", "", true, false):
+		if n is PlayableCharacter and n != GameState.player and n.visible and n.is_alive():
+			others.append(n)
+	if others.is_empty():
+		GameState.notify("这里没有可以切换的角色")
+		return false
+	GameState.switch_control(others[0])
+	GameState.notify("现在操控：%s" % (others[0].call("display_name") if others[0].has_method("display_name") else "公主"))
+	return true
+
+
+## 换关卡前换回公主（关卡之间只带公主的状态）。
+func _restore_main_character() -> void:
+	if GameState.player is BluePrincess and level:
+		for n in level.find_children("*", "", true, false):
+			if n is Princess and not (n is BluePrincess):
+				GameState.switch_control(n)
+				return
+
+
 func change_level(path: String, keep_state := false) -> void:
 	if _busy:
 		return
 	_busy = true
+	_restore_main_character()
 	if not keep_state:
 		GameState.save_player_state()
 	var tw := create_tween()

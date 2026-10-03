@@ -9,7 +9,8 @@
                       源图 additional_princess/princess4.png（普通版）、princess5.png（战损版 + 战损闷笑版），
                       立绘源图 portraits4.png（吟诵、释放）、portraits5.png（战损吟诵、战损闷笑吟诵、战损释放）
 
-用法：python tools/art/import_princess2.py [--preview]
+现在默认只生成立绘和头像；行走精灵图 / 魔法图由 import_sprites_v2.py 生成（--old-sprites 才用这里的旧表格）。
+用法：python tools/art/import_princess2.py [--preview] [--old-sprites]
   --preview 在 tools/.cache/p2/ 输出带标签的检查图（切格边界 + 结果）。
 
 表格位置自动检测：用表格的粉色格线找方向/状态分块和行，块内的帧用空白间隙切分；
@@ -810,18 +811,20 @@ def preview(sheet, portraits, heads, boxes):
 
 
 def main():
-    cells, boxes = extract_cells()
-    if DERIVE_DAMAGED:
-        derive_damaged(cells)
-    sheet = build_sheet(cells)
-    magic_cells, magic_boxes = extract_magic_cells()
-    magic_sheet = build_magic_sheet(magic_cells, sheet)
+    """现在只生成立绘和头像：行走精灵图和魔法图改由 import_sprites_v2.py 从用户重画的新精灵图生成。
+    加 --old-sprites 才会用旧表格（princess2/3、princess4/5）重新生成精灵图（会覆盖新图）。"""
     portraits, heads = build_portraits()
-    if "--preview" in sys.argv:
-        preview(sheet, portraits, heads, boxes)
-        preview_magic(magic_sheet, magic_boxes)
-    print("生成", len(EMOTIONS), "种状态 /", len(cells), "帧；魔法姿态", len(MAGIC), "种 /", len(magic_cells), "帧；立绘",
-          len(VISUALS), "张，密度", DENSITY)
+    if "--old-sprites" in sys.argv:
+        cells, boxes = extract_cells()
+        if DERIVE_DAMAGED:
+            derive_damaged(cells)
+        sheet = build_sheet(cells)
+        magic_cells, magic_boxes = extract_magic_cells()
+        magic_sheet = build_magic_sheet(magic_cells, sheet)
+        if "--preview" in sys.argv:
+            preview(sheet, portraits, heads, boxes)
+            preview_magic(magic_sheet, magic_boxes)
+    print("生成立绘", len(VISUALS), "张，密度", DENSITY, "（精灵图见 import_sprites_v2.py）")
 
 
 if __name__ == "__main__":

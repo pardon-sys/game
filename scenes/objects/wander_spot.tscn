@@ -1,0 +1,6 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/objects/wander_spot.gd" id="1"]
+
+[node name="WanderSpot" type="Marker2D"]
+script = ExtResource("1")

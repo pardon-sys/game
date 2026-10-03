@@ -1,0 +1,32 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/actors/playable/princess.tscn" id="1"]
+[ext_resource type="Script" path="res://scripts/actors/playable/blue_princess.gd" id="2"]
+[ext_resource type="Texture2D" path="res://assets/generated/princess_blue.png" id="3"]
+[ext_resource type="Script" path="res://scripts/components/interactable.gd" id="int"]
+
+[sub_resource type="RectangleShape2D" id="talk"]
+size = Vector2(20, 20)
+
+[node name="BluePrincess" instance=ExtResource("1")]
+script = ExtResource("2")
+faction = 2
+
+[node name="Sprite" parent="."]
+texture = ExtResource("3")
+
+[node name="Animator" parent="."]
+texture_overrides = {"magic": "res://assets/generated/princess_blue_magic.png"}
+
+[node name="Camera" parent="."]
+enabled = false
+
+[node name="Talk" type="Area2D" parent="."]
+position = Vector2(0, -8)
+collision_layer = 0
+collision_mask = 0
+script = ExtResource("int")
+prompt_offset = Vector2(0, -26)
+
+[node name="Shape" type="CollisionShape2D" parent="Talk"]
+shape = SubResource("talk")

@@ -55,6 +55,8 @@ func _run_maps() -> void:
 				spawns[id].append(n.id)
 			elif n.get_script() == load("res://scripts/objects/level_exit.gd") and n.find_child("Look", false, false):
 				stairs.append([id, n.target_level, n.spawn])
+			elif n is BluePrincess:
+				keys["blue_princess"] = id
 			elif n is Resident:
 				if KEY_NPCS.has(n.npc_id):
 					keys[n.npc_id] = id
@@ -183,8 +185,24 @@ func _run_town() -> void:
 		await _wait(0.15)
 		moved = moved or kid.global_position.distance_to(start) > 4.0
 	check("居民会在附近溜达", moved and kid.global_position.distance_to(kid._home) <= kid.wander * 16.0 + 12.0)
-	var blue: Resident = _find_resident("blue_princess")
+	var blue: BluePrincess = null
+	for n in main.level.find_children("*", "", true, false):
+		if n is BluePrincess:
+			blue = n
 	check("开场后蓝色公主出现在广场（show_flag）", blue != null and blue.visible)
+	check("蓝色公主是可操作角色（PlayableCharacter），平时 AI 控制：友军、不是玩家、相机关着",
+		blue is PlayableCharacter and blue.faction == Faction.Type.ALLY and GameState.player != blue
+		and blue.controller is WanderController and not blue.camera.enabled and blue.portrait_set == "blue")
+	check("蓝色公主用自己的精灵图和魔法图", blue.sprite.texture.resource_path.ends_with("princess_blue.png")
+		and blue.animator.texture_overrides.get("magic", "").ends_with("princess_blue_magic.png"))
+	# 自由行动：几秒内走到别的溜达点
+	var b0 := blue.global_position
+	var walked := false
+	for i in 60:
+		await _wait(0.15)
+		walked = walked or blue.global_position.distance_to(b0) > 24.0
+	check("蓝色公主在小镇里自己走动（溜达点之间，%.0f 像素）" % blue.global_position.distance_to(b0), walked
+		and get_tree().get_nodes_in_group("wander_spot").size() >= 5)
 	# 和居民说话：停下、转向公主、台词按态度不同
 	player.global_position = kid.global_position + Vector2(14, 0)
 	var nodes: Array = []
@@ -199,12 +217,37 @@ func _run_town() -> void:
 	nodes.clear()
 	picks = [0, 5]
 	asked.clear()
+	player.global_position = blue.global_position + Vector2(14, 0)
 	blue.talk(player)
 	await _wait(0.3)
-	check("关键人物对话显示右侧立绘（蓝色调的公主）", Dialogue.npc_portrait.visible)
+	check("和蓝色公主说话：右侧显示她的立绘（蓝色那一套），她停下转向公主", Dialogue.npc_portrait.visible
+		and (blue.controller as WanderController).paused and blue.facing.x > 0.5
+		and (Dialogue.npc_portrait.texture as AtlasTexture).atlas.resource_path.ends_with("portraits_blue.png"))
 	await _drive()
 	check("蓝色公主：问完「你是谁」回到选项页，再选「先这样吧」结束", asked.size() == 2 and nodes.has("who") and nodes.has("bye"))
 	Dialogue.runner.node_entered.disconnect(on_node)
+	await _wait(0.3)
+	check("说完话蓝色公主接着溜达", not (blue.controller as WanderController).paused and not blue.talking)
+	# 测试模式：F2 切换操控
+	DevConfig.override = true
+	var pink := player
+	main.switch_character()
+	await _wait(0.2)
+	check("测试模式切换操控：玩家变成蓝色公主（阵营 / 相机 / 输入跟着换），公主交给 AI", GameState.player == blue
+		and blue.faction == Faction.Type.PLAYER and blue.camera.enabled and blue.controller is PlayerInputController
+		and pink.faction == Faction.Type.ALLY and not pink.camera.enabled and Dialogue.active_set() == "blue")
+	var bp := blue.global_position
+	Input.action_press("move_right")
+	await _wait(0.4)
+	Input.action_release("move_right")
+	check("切换后方向键操控蓝色公主", blue.global_position.x > bp.x + 8.0)
+	main.switch_character()
+	await _wait(0.2)
+	check("再按一次切回公主，蓝色公主回到 AI 溜达", GameState.player == pink and pink.camera.enabled and blue.controller is WanderController
+		and blue.faction == Faction.Type.ALLY and not blue.camera.enabled and Dialogue.active_set() == "pink")
+	DevConfig.override = false
+	player = GameState.player as Princess
+	player.set_controller(ScriptedController.new())
 	# 篝火
 	var fire := _find_prop("heal")
 	player.health.damage(2)

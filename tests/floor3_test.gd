@@ -820,12 +820,12 @@ func _run_magic_visuals() -> void:
 	ctrl.hold(&"magic", true)
 	await _wait(0.1)
 	check("吟唱姿态：普通 → chant", princess.emotion.current == "chant")
-	check("吟唱时换成 48 格魔法图集", player.animator.sheet == "magic" and player.sprite.hframes == 32 and player.sprite.texture != walk_tex)
+	check("吟唱时换成 48 格魔法图集（6 帧，只有正面）", player.animator.sheet == "magic" and player.sprite.hframes == 6 and player.sprite.texture != walk_tex)
 	var early := _magic_sheet_frame().x
 	check("对话立绘 / HUD 头像有吟唱姿态", Dialogue.portrait_for("chant") != Dialogue.portrait_for("normal") and Dialogue.head_for("chant") != Dialogue.head_for("normal"))
 	await _wait(1.75)
 	var late := _magic_sheet_frame().x
-	check("吟唱帧随蓄力推进（正面第 1 帧 → 第 7~8 帧）", early <= 1 and late >= 6 and late <= 7)
+	check("吟唱帧随蓄力推进（第 1 帧 → 第 5~6 帧）", early <= 1 and late >= 4 and late <= 5)
 	check("魔法图集行 = 当前姿态", _magic_sheet_frame().y == 0)
 	ctrl.hold(&"magic", false)
 	await _wait(0.05)

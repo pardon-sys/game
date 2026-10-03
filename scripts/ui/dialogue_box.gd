@@ -13,6 +13,11 @@ const CHARS_PER_SEC := 30.0
 const PORTRAIT_SHEET := preload("res://assets/generated/portraits.png")
 const PORTRAIT_META := "res://assets/generated/portraits.json"
 const HEAD_SHEET := preload("res://assets/generated/portrait_heads.png")
+## 立绘套装：公主 / 蓝色公主（同样的格子和顺序）。常驻立绘和 HUD 头像用当前操控角色的 portrait_set。
+const PORTRAIT_SETS := {
+	"pink": ["res://assets/generated/portraits.png", "res://assets/generated/portrait_heads.png"],
+	"blue": ["res://assets/generated/portraits_blue.png", "res://assets/generated/portrait_heads_blue.png"],
+}
 const TEXT_LEFT_WITH_PORTRAIT := 112.0
 ## 人物表（立绘、名字、行走图）：data/actors/npcs.json。
 const NPCS_PATH := "res://data/actors/npcs.json"
@@ -48,6 +53,8 @@ var _active := false
 var _typing := false
 var _chars := 0.0
 var _blink := 0.0
+## 立绘套装名 -> {portraits, heads}
+var _sets := {}
 var _portraits: Array[AtlasTexture] = []
 var _heads: Array[AtlasTexture] = []
 var _emotion := ""
@@ -89,6 +96,18 @@ func _ready() -> void:
 	for i in _portrait_order.size():
 		_portraits.append(_atlas(PORTRAIT_SHEET, Rect2(Vector2(i * portrait_cell.x, 0), portrait_cell)))
 		_heads.append(_atlas(HEAD_SHEET, Rect2(i * head_size, 0, head_size, head_size)))
+	_sets["pink"] = {"portraits": _portraits, "heads": _heads}
+	for set_name in PORTRAIT_SETS:
+		if set_name == "pink" or not ResourceLoader.exists(PORTRAIT_SETS[set_name][0]):
+			continue
+		var ptex: Texture2D = load(PORTRAIT_SETS[set_name][0])
+		var htex: Texture2D = load(PORTRAIT_SETS[set_name][1])
+		var ps: Array[AtlasTexture] = []
+		var hs: Array[AtlasTexture] = []
+		for i in _portrait_order.size():
+			ps.append(_atlas(ptex, Rect2(Vector2(i * portrait_cell.x, 0), portrait_cell)))
+			hs.append(_atlas(htex, Rect2(i * head_size, 0, head_size, head_size)))
+		_sets[set_name] = {"portraits": ps, "heads": hs}
 	_show_portrait("normal")
 	portrait_fx = PortraitFx.new()
 	add_child(portrait_fx)
@@ -166,14 +185,23 @@ func _atlas(tex: Texture2D, region: Rect2) -> AtlasTexture:
 	return at
 
 
-## 全身立绘（对话框用）。
-func portrait_for(emotion: String) -> AtlasTexture:
-	return _portraits[maxi(_portrait_order.find(emotion), 0)]
+## 当前操控角色的立绘套装（公主 "pink" / 蓝色公主 "blue"）。
+func active_set() -> String:
+	var p := GameState.player
+	var s := str(p.get("portrait_set")) if is_instance_valid(p) and p.get("portrait_set") != null else "pink"
+	return s if _sets.has(s) else "pink"
+
+
+## 全身立绘（对话框用）。set_name 为空 = 当前操控角色的那一套。
+func portrait_for(emotion: String, set_name := "") -> AtlasTexture:
+	var arr: Array = _sets[set_name if _sets.has(set_name) else active_set()]["portraits"]
+	return arr[maxi(_portrait_order.find(emotion), 0)]
 
 
 ## 头像（HUD 用）。
-func head_for(emotion: String) -> AtlasTexture:
-	return _heads[maxi(_portrait_order.find(emotion), 0)]
+func head_for(emotion: String, set_name := "") -> AtlasTexture:
+	var arr: Array = _sets[set_name if _sets.has(set_name) else active_set()]["heads"]
+	return arr[maxi(_portrait_order.find(emotion), 0)]
 
 
 func has_dialogue(id: String) -> bool:
@@ -218,7 +246,7 @@ func _show_line() -> void:
 	var left := TEXT_LEFT_WITH_PORTRAIT
 	var npc := npc_of(line)
 	if npc != "":
-		_show_npc(npc)
+		_show_npc(npc, emotion)
 	elif not is_princess and speaker != "":
 		npc_portrait.hide()  # 没有立绘的人物（普通居民）说话：右边不显示
 	var right_gap := NPC_PORTRAIT_W if npc_portrait.visible else 0.0
@@ -272,10 +300,13 @@ func npc_of(line: Dictionary) -> String:
 	return ""
 
 
-func npc_texture(id: String) -> Texture2D:
+## 人物的立绘：有 portrait_set 的（蓝色公主）按台词的 emotion 取那一套里的格子，其它人物只有一张。
+func npc_texture(id: String, emotion := "") -> Texture2D:
+	var info: Dictionary = npcs.get(id, {})
+	if info.has("portrait_set") and _sets.has(str(info["portrait_set"])):
+		return portrait_for(emotion if emotion != "" else "normal", str(info["portrait_set"]))
 	if _npc_tex.has(id):
 		return _npc_tex[id]
-	var info: Dictionary = npcs.get(id, {})
 	var file := str(info.get("portrait", ""))
 	var tex: Texture2D = null
 	if file != "" and ResourceLoader.exists(file):
@@ -287,8 +318,8 @@ func npc_texture(id: String) -> Texture2D:
 	return tex
 
 
-func _show_npc(id: String) -> void:
-	var tex := npc_texture(id)
+func _show_npc(id: String, emotion := "") -> void:
+	var tex := npc_texture(id, emotion)
 	if tex == null:
 		npc_portrait.hide()
 		return

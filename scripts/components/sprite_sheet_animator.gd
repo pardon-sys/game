@@ -5,6 +5,8 @@ extends Node
 
 @export var config: SpriteSheetConfig
 @export var sprite_path := NodePath("../Sprite")
+## 按图集名换贴图（同一份配置给不同角色用，例如蓝色公主的魔法图集）：{图集名: 贴图路径}
+@export var texture_overrides := {}
 
 var sprite: Sprite2D
 var current := ""
@@ -86,7 +88,7 @@ func _use_sheet(name: String) -> Dictionary:
 			sprite.offset = _default["offset"]
 		else:
 			if not _textures.has(name):
-				_textures[name] = load(str(info["texture"]))
+				_textures[name] = load(str(texture_overrides.get(name, info["texture"])))
 			sprite.texture = _textures[name]
 			sprite.hframes = int(info["hframes"])
 			sprite.vframes = int(info["vframes"])

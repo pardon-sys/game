@@ -77,6 +77,32 @@ func register_player(p: PlayableCharacter) -> void:
 	player_registered.emit(p)
 
 
+## 测试模式：改为操控另一个可操作角色（如蓝色公主），原来的那个交给它自己的 AI（make_ai_controller）。
+## 不搬运状态（每个角色保留自己的血量 / 闷笑），相机跟着新角色，HUD / 对话框通过 player_registered 重新绑定。
+func switch_control(to: PlayableCharacter) -> void:
+	var from := player
+	if not is_instance_valid(to) or to == from:
+		return
+	if is_instance_valid(from):
+		from.set_faction(Faction.Type.ALLY)
+		from.set_controller(from.make_ai_controller())
+		if from.camera:
+			from.camera.enabled = false
+	to.set_faction(Faction.Type.PLAYER)
+	to.set_controller(PlayerInputController.new())
+	if to.camera:
+		to.camera.enabled = true
+		to.camera.make_current()
+		to.camera.reset_smoothing()
+	player = to
+	player_registered.emit(to)
+	for c in [from, to]:
+		if is_instance_valid(c) and c.emotion:
+			c.emotion.refresh()
+	if to.emotion:
+		emotion_changed.emit(to.emotion.current)
+
+
 func save_player_state() -> void:
 	if not is_instance_valid(player):
 		return

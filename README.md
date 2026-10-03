@@ -32,6 +32,7 @@ Godot 4.7 · 2D 俯视角像素游戏。粉发蓝眼、头戴金色小皇冠的�
   - **营地层**：保卫队营地（帐篷、哨塔、队长的指挥帐篷）、训练场（训练小游戏以后接入，现在显示「还在整修」）。
   - **矿道层**：矿车、矿工、封住的深处大门（以后通往新的地牢）。
   - 15 个会溜达的居民（友军）+ 4 个关键人物（保卫队队长、市场监督、篝火派对的主人、蓝色的公主），走近按 E 对话。
+  - **蓝色的公主**是和公主同一套的可操作角色（行走、表情、受挠、失控、魔法，用她自己的精灵图和立绘），平时由 AI 控制，在广场、市场、篝火、水井、居民区之间自由走动；测试模式下按 **F2** 可以切换成你来操控她，再按一次切回公主。
 
 ## 闷笑值
 
@@ -357,7 +358,12 @@ HUD 闷笑条下方紫色的「魔力」条（上限 500，刻度 40% / 60% / 80
   Godot --headless --path . --script res://tools/build/build_level.gd -- floor=floor_06_upper   # 第六层的一张地图
   ```
   也可以直接在编辑器里打开 `levels/floor_01/floor.tscn` 修改（注意重新构建会覆盖编辑器里的改动）。
-- **公主精灵与立绘**：保留原始 `princess2.png` / `princess3.png` / `portraits2.png` / `portraits3.png`。`tools/art/import_princess2.py` 去除白底、表格和标签，输出 `princess.png`（32×32，11行×16列）、`portraits.png`（113×152每格）和 `portrait_heads.png`（32×32每格）。图集顺序由 `data/actors/princess_visuals.json` 统一定义，运行时与导入器共同读取。
+- **公主 / 蓝色公主的精灵图（第二版）**：用户重画的白底精灵图 `additional_princess/new_princess2/3/4.png`（公主）、`blue_princess/princess_blue1/2/3.png`（蓝色公主）由 `tools/art/import_sprites_v2.py` 导入，输出 `princess.png` / `princess_blue.png`（32×32，11 行 × 16 列，布局不变）和 `princess_magic.png` / `princess_blue_magic.png`（48×48，6 行 × 6 帧，只有正面）。
+  - 切帧按已知的行数 / 每行帧数均分，切线挪到最空的列；哪一帧当哪个状态、哪个方向写在脚本开头的 PINK / BLUE 映射里（缺的方向用镜像，5 帧的走路挑 4 帧）。
+  - 蓝色公主站着时正面显示表情帧（`princess_blue1` 第 1 行），走路时是走路循环；战损魔法 5 张对应 6 种魔法姿态（普通吟诵 / 释放用战损的代替）。
+  - `python tools/art/import_sprites_v2.py --preview`：切帧框和放大的结果图在 `tools/.cache/sprites_v2/`。
+- **蓝色公主立绘、关键人物立绘**：`tools/art/import_portraits_v2.py` 把 `blue_princess/portraits_blue1/2/3.png` 做成 `portraits_blue.png` / `portrait_heads_blue.png`（和公主同样的 17 格），把三张全身插画（`npc_portraits/银白圣徽骑士统帅.png` 等）裁成半身、像素化成 `npc_portraits/captain.png` / `supervisor.png` / `bonfire_host.png`（228×304）。头像框在 `data/actors/blue_visuals.json`，半身取景在脚本的 NPCS 表里调。
+- **公主立绘（第一版素材）**：保留原始 `princess2.png` / `princess3.png` / `portraits2.png` / `portraits3.png`。`tools/art/import_princess2.py` 现在只生成立绘 `portraits.png`（113×152每格）和头像 `portrait_heads.png`（32×32每格）；加 `--old-sprites` 才会用旧表格重新生成精灵图（会覆盖第二版）。图集顺序由 `data/actors/princess_visuals.json` 统一定义，运行时与导入器共同读取。
   - 每行依次为下、左、右、上，每方向4帧；左右使用独立素材。失控2原图每方向只有两幅宽姿势，按1、2、1、2重复为四帧，完整保留横卧身体。
   - 攻击/冲刺复用状态帧与既有刀光/残影；受击闪白，死亡定格淡出，没有新增绘画素材。
   - 立绘和头像按姿势取景，预览包含状态、方向和帧编号。
@@ -386,6 +392,7 @@ HUD 闷笑条下方紫色的「魔力」条（上限 500，刻度 40% / 60% / 80
 
 - **跳关**：Esc 暂停菜单多一项「测试：跳关」，可以跳到第一~五层的起点、「第五层·准备间」（直接测无解房间）、第六层开场，或者开场后的地下小镇 / 保卫队营地。跳过去时补齐前面各层的流程奖励：第三层的魔法、第四层的背包和星光糖、第五层准备间的挣脱强化。跳关点和奖励都在这个文件里改。
 - **CG 快速预览**：背包「CG 图鉴」页所有 CG 都能直接播放；没拿到背包也能按 Tab 打开背包。
+- **切换角色**：F2 在公主和同一关卡里的蓝色公主之间切换操控（换关卡前自动切回公主）。
 
 ## 测试
 
@@ -432,5 +439,6 @@ tests/    冒烟测试与截图脚本
 - 公主小人与立绘：项目作者提供（princess2/3.png / portraits2/3.png）
 - 公主笑声：cicifyre / moxobna，CC0，详见各自目录随附 License.txt
 - 表情气泡、道具、机关、墙体拼接图块、第二/三层机关与怪物占位图、魔法特效：本项目用 Python 生成
-- 小镇居民和关键人物的行走图与半身立绘、蓝色调的公主、小镇道具（房屋、摊位、篝火、帐篷……）、检查点魔法阵、存档日记本：本项目用 Python 生成（tools/art/gen_town_art.py）
+- 公主的第二版精灵图、蓝色公主的精灵图和立绘、保卫队队长 / 市场监督 / 篝火派对的主人的立绘：项目作者提供（additional_princess/new_princess*.png、blue_princess/、npc_portraits/ 的中文名插画），由 tools/art/import_sprites_v2.py、import_portraits_v2.py 像素化
+- 小镇居民和三个关键人物的地图行走图、小镇道具（房屋、摊位、篝火、帐篷……）、检查点魔法阵、存档日记本：本项目用 Python 生成（tools/art/gen_town_art.py）
 - 挠痒果冻声等音效：本项目用 Python 合成（tools/art/gen_sfx.py）

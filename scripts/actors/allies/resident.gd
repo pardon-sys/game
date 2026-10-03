@@ -43,6 +43,16 @@ func _setup() -> void:
 			sprite.hframes = 4
 			sprite.vframes = 4
 			sprite.offset = Vector2(0, -14)
+	if info.has("light"):
+		# 身上带灯（篝火派对的主人的灯笼）
+		var c: Array = info["light"]
+		var light := PointLight2D.new()
+		light.texture = preload("res://assets/lights/light_soft.tres")
+		light.color = Color(float(c[0]), float(c[1]), float(c[2]))
+		light.energy = 0.55
+		light.texture_scale = 0.6
+		light.position = Vector2(9, -22)
+		add_child(light)
 	var it := get_node_or_null("Interactable") as Interactable
 	if it:
 		it.interacted.connect(func(p: Node): talk(p))

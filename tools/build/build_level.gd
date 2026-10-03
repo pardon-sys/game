@@ -44,6 +44,8 @@ const SCENES := {
 	"stairs": "res://scenes/objects/stairs.tscn",
 	"spawn": "res://scenes/objects/spawn_point.tscn",
 	"savepoint": "res://scenes/objects/save_point.tscn",
+	"blue_princess": "res://scenes/actors/playable/blue_princess.tscn",
+	"spot": "res://scenes/objects/wander_spot.tscn",
 }
 ## 按 type 参数选择场景的类型：新增怪物/友军/陷阱时在这里注册。
 const TYPED_SCENES := {
@@ -129,7 +131,7 @@ const WALL_MOUNTED := ["torch", "face", "walltrap", "secret"]
 ## 看起来是墙、之后可能打开的格子：照常放墙块，下面再铺一层地面。
 const HIDDEN_PASSAGE := ["secret"]
 ## 放在地面层（总在角色下方）的类型。
-const FLOOR_LEVEL := ["trap", "checkpoint", "trigger", "plate", "exit", "arena", "traproom", "stairs", "spawn"]
+const FLOOR_LEVEL := ["trap", "checkpoint", "trigger", "plate", "exit", "arena", "traproom", "stairs", "spawn", "spot"]
 ## Kenney 图块中带碰撞的装饰（下半格碰撞）。
 const SOLID_DECOR := [63, 64, 65, 72, 73, 74, 75, 82]
 ## 当墙顶用的 Kenney 碎石图块（整格碰撞）。
@@ -401,7 +403,7 @@ func _spawn(kind: String, info: Dictionary, x: int, y: int) -> Node2D:
 	inst.name = "%s_%d_%d" % [label.to_pascal_case(), x, y]
 	var base := Vector2(x * TILE + TILE / 2.0, y * TILE + TILE)
 	match kind:
-		"player", "monster", "ally", "item", "npc", "spawn":
+		"player", "monster", "ally", "item", "npc", "spawn", "blue_princess", "spot":
 			inst.position = base - Vector2(0, 4)
 		"stairs":
 			inst.position = base - Vector2(0, TILE / 2.0)

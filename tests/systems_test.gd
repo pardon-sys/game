@@ -175,6 +175,19 @@ func _run_dialogue_modes() -> void:
 	check("关键人物说话：右侧显示半身立绘，名字是人物名", Dialogue.npc_portrait.visible and Dialogue.npc_portrait.texture != null)
 	await _drive()
 	check("对话结束后右侧立绘收起", not Dialogue.npc_portrait.visible)
+	# 蓝色公主的立绘按台词表情换格子；关键人物的新立绘（像素化的半身像，透明背景）
+	var bh := Dialogue.npc_texture("blue_princess", "happy") as AtlasTexture
+	var bn := Dialogue.npc_texture("blue_princess", "normal") as AtlasTexture
+	check("蓝色公主说话时立绘随表情变（portraits_blue 里的不同格子）", bh != null and bn != null and bh.region != bn.region
+		and bh.atlas.resource_path.ends_with("portraits_blue.png"))
+	var npc_ok := true
+	for id in ["captain", "supervisor", "bonfire_host"]:
+		var img := (load("res://assets/generated/npc_portraits/%s.png" % id) as Texture2D).get_image()
+		npc_ok = npc_ok and img.get_size() == Vector2i(228, 304) and img.get_pixel(0, 0).a == 0.0 and img.get_used_rect().size.y > 250
+	check("三个关键人物的新立绘：228x304、透明背景、半身像占满格子", npc_ok)
+	var pb := (load("res://assets/generated/portraits_blue.png") as Texture2D).get_image()
+	check("蓝色公主立绘 17 格（11 种状态 + 6 种魔法），和公主同样的格子", pb.get_width() == Dialogue.portrait_cell.x * 17
+		and pb.get_height() == Dialogue.portrait_cell.y)
 
 
 # ------------------------------------------------------------------ 选择记忆（第六层真实数据）

@@ -298,7 +298,7 @@ HUD 背包栏会根据物品数据自动显示，不需要改 UI 代码。
   - 条件：`flag`、`not`、`eq {变量: 值}`、`var {变量: [">=", 数]}`、`seen "文件:节点"`、`any [...]`。效果：`flags`、`vars`、`add`、`give_item`、`coins`、`passive`、`call`（await `Dialogue` 上的 `open_shop / open_training / rest`）。
   - **选择记忆**：关键选择写进 `GameState.vars`（随存档保存），别的人物用 `entries` / `goto` / 选项的 `if` 读它。看过的节点记 `dlg_<文件>_<节点>`，选过的选项记 `dlg_<文件>_<节点>_<序号>`。
   - 检查：`python tools/build/check_dialogues.py`（节点跳转、过场 / 小剧场引用、`call` 名、读了没人写的变量；列出每个选择变量被哪些人物读取）。
-- 人物表 `data/actors/npcs.json`：`{id: {name, sprite（4×4 的 32px 行走图：下 / 左 / 右 / 上）, portrait（半身立绘）, portrait_region?, princess_sheet?（用公主的行走图布局，如蓝色的公主）}}`。说话人名字和人物表里的名字一样（或台词带 `npc`）时，对话框右边显示半身立绘，左边公主立绘变暗；没有立绘的普通居民只显示名字。
+- 人物表 `data/actors/npcs.json`：`{id: {name, sprite（4×4 的 32px 行走图：下 / 左 / 右 / 上）, portrait（半身立绘）, portrait_region?, portrait_set?（立绘套装，按表情取格子）, princess_sheet?（用公主的行走图布局，如蓝色的公主）, light?（身上的灯光颜色）, scene?（可操作角色的场景）}}`。说话人名字和人物表里的名字一样（或台词带 `npc`）时，对话框右边显示半身立绘，左边公主立绘变暗；没有立绘的普通居民只显示名字。
 - 小剧场 `data/theater/<楼层组>/<id>.json`：CG 舞台格式（`cast` + `steps`），演员 `kind` 可以写 `npc:<人物>`；`CG.play_theater(id)`，看过的可以跳过（`cg_seen_theater:<id>`）。
 
 ### 存档与主界面
@@ -370,7 +370,11 @@ HUD 背包栏会根据物品数据自动显示，不需要改 UI 代码。
 3. 换一种控制方式：用 `set_controller(...)` 传入一个 CharacterController 子类。
    - `PlayerInputController`：键盘和手柄
    - `ScriptedController`：测试和过场动画
-   - 以后也可以接 AI 或第二玩家
+   - `WanderController`：AI，在关卡 `wander_spot` 组的点（图例 `spot`）之间溜达（Walls + 静态物体的格子 BFS 寻路，卡住换点，到点停一会儿、偶尔做表情，公主在旁边时看她；`paused` / 对话 / 过场时不动）
+4. **蓝色公主**（`BluePrincess extends Princess`，场景 `blue_princess.tscn` 继承 `princess.tscn`）：精灵图换成 `princess_blue.png`，魔法图通过 Animator 的 `texture_overrides`（`{"magic": 路径}`）换成 `princess_blue_magic.png`，`portrait_set = "blue"`；默认阵营 ALLY、相机关闭、`WanderController`；`Talk` 交互区按 E 对话；`show_flag` 控制出现；`ai = false` 时是过场演员（`spawn kind=npc:blue_princess` 生成，人物表里写了 `scene`）。
+   - 场景里同时有两个可操作角色时，只有 `GameState.player` 那个是「玩家」：`Princess.is_controlled()` 为假的一方不触发台词气泡、提示、语音、剧情对话；`EmotionComponent.is_global()` 只让玩家那一个响应 `GameState.emote` 并广播 `emotion_changed`。
+   - `GameState.switch_control(to)`（测试模式 F2，`main.switch_character()`）：两边交换阵营（`Actor.set_faction` 同时换节点组）、控制器（原来的那个用 `make_ai_controller()`）、相机，`player_registered` 让 HUD / 对话框重新绑定；不搬运血量 / 闷笑。换关卡前自动切回公主。
+   - 立绘套装：`Dialogue.PORTRAIT_SETS`（pink / blue），`portrait_for(表情, 套装)` / `head_for`；不写套装时用当前玩家的 `portrait_set`。人物表里写了 `portrait_set` 的人物（蓝色公主）说话时，右侧立绘按台词的 `emotion` 取格子。
 
 ## 楼层与切换
 
@@ -491,7 +495,11 @@ tests/systems_test.gd 人物对话、选择记忆、存档读档、存档点、�
 tests/floor6_test.gd  第六层地图、楼梯、居民、设施、开场三种选择、第五层 → 第六层
 tools/build/gen_floor06.py  第六层地图、对话、过场、小剧场
 tools/build/check_dialogues.py  人物对话检查
-tools/art/gen_town_art.py  小镇道具、居民、关键人物立绘、蓝色的公主、检查点、存档点
+tools/art/gen_town_art.py  小镇道具、居民和三个关键人物的地图行走图、检查点、存档点
+tools/art/import_sprites_v2.py    公主 / 蓝色公主第二版精灵图和魔法图（白底精灵表 → 32px / 48px 图集）
+tools/art/import_portraits_v2.py  蓝色公主立绘 / 头像、三个关键人物的半身像素立绘
+scripts/controllers/wander_controller.gd  AI 溜达（蓝色公主）
+scripts/actors/playable/blue_princess.gd  蓝色公主（可操作角色）
 data/                 楼层表、通用对话、组合技表、增益减益表、受挠台词、疲倦爆发台词、物品、怪物/友军数值、动画配置
 tests/smoke_test.gd   冒烟测试（含11状态、音频生命周期与接口约定检查）
 tests/floor2_test.gd  第二层：关卡切换、减速/抓取、新怪物、新陷阱、立绘密度
