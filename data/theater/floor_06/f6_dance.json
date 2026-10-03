@@ -1,0 +1,136 @@
+{
+	"name": "篝火派对的舞",
+	"cast": {
+		"princess": {
+			"kind": "princess",
+			"at": [
+				-14,
+				6
+			],
+			"visual": "happy",
+			"anim": "idle",
+			"dir": "down"
+		},
+		"host": {
+			"kind": "npc:bonfire_host",
+			"at": [
+				14,
+				6
+			],
+			"dir": "down"
+		},
+		"kid": {
+			"kind": "npc:kid",
+			"at": [
+				-46,
+				2
+			],
+			"dir": "right"
+		},
+		"granny": {
+			"kind": "npc:granny",
+			"at": [
+				46,
+				2
+			],
+			"dir": "left"
+		}
+	},
+	"steps": [
+		{
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "fade_in"
+				}
+			],
+			"wait": 0.5
+		},
+		{
+			"speaker": "篝火派对的主人",
+			"text": "跟着我——左脚、右脚、转一圈！",
+			"actions": [
+				{
+					"who": "host",
+					"count": 2,
+					"do": "hop"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "左、左脚……右脚……哇，转、转晕了……",
+			"emotion": "happy",
+			"actions": [
+				{
+					"who": "princess",
+					"count": 2,
+					"do": "hop"
+				},
+				{
+					"who": "princess",
+					"dir": "left",
+					"do": "face"
+				}
+			]
+		},
+		{
+			"speaker": "小孩",
+			"text": "姐姐跳得好好笑！",
+			"actions": [
+				{
+					"who": "kid",
+					"count": 3,
+					"do": "hop"
+				},
+				{
+					"who": "kid",
+					"kind": "laugh",
+					"do": "bubble"
+				}
+			]
+		},
+		{
+			"speaker": "篝火派对的主人",
+			"text": "哈哈，第一次就跳成这样，很不错啦！",
+			"actions": [
+				{
+					"who": "host",
+					"count": 1,
+					"do": "hop"
+				},
+				{
+					"who": "granny",
+					"count": 1,
+					"do": "hop"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "……嘿嘿。好久没这么开心过了。",
+			"emotion": "happy",
+			"actions": [
+				{
+					"who": "princess",
+					"dir": "down",
+					"do": "face"
+				},
+				{
+					"who": "princess",
+					"kind": "happy",
+					"do": "bubble"
+				}
+			]
+		},
+		{
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "fade_out"
+				}
+			],
+			"wait": 0.5
+		}
+	]
+}

@@ -1,0 +1,34 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/actors/allies/resident.gd" id="1"]
+[ext_resource type="Script" path="res://scripts/components/interactable.gd" id="int"]
+
+[sub_resource type="RectangleShape2D" id="body"]
+size = Vector2(10, 6)
+
+[sub_resource type="RectangleShape2D" id="area"]
+size = Vector2(20, 20)
+
+[node name="Resident" type="CharacterBody2D"]
+collision_layer = 0
+collision_mask = 1
+motion_mode = 1
+script = ExtResource("1")
+faction = 2
+
+[node name="Sprite" type="Sprite2D" parent="."]
+offset = Vector2(0, -14)
+hframes = 4
+vframes = 4
+
+[node name="Shape" type="CollisionShape2D" parent="."]
+position = Vector2(0, -3)
+shape = SubResource("body")
+
+[node name="Interactable" type="Area2D" parent="."]
+position = Vector2(0, -8)
+script = ExtResource("int")
+prompt_offset = Vector2(0, -24)
+
+[node name="Shape" type="CollisionShape2D" parent="Interactable"]
+shape = SubResource("area")

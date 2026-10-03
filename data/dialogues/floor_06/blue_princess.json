@@ -1,0 +1,328 @@
+{
+	"name": "蓝色的公主",
+	"npc": "blue_princess",
+	"entries": [
+		{
+			"if": {
+				"not": "f6_opening_done"
+			},
+			"node": "rescue"
+		},
+		{
+			"if": {
+				"not": "dlg_floor_06/blue_princess_first"
+			},
+			"node": "first"
+		},
+		{
+			"if": {
+				"eq": {
+					"f6_attitude": "honest"
+				}
+			},
+			"node": "hello_honest"
+		},
+		{
+			"if": {
+				"eq": {
+					"f6_attitude": "defiant"
+				}
+			},
+			"node": "hello_defiant"
+		},
+		{
+			"if": {
+				"eq": {
+					"f6_attitude": "beg"
+				}
+			},
+			"node": "hello_beg"
+		},
+		{
+			"node": "hello_honest"
+		}
+	],
+	"nodes": {
+		"rescue": {
+			"goto": [
+				{
+					"if": {
+						"eq": {
+							"f6_attitude": "honest"
+						}
+					},
+					"node": "rescue_honest"
+				},
+				{
+					"if": {
+						"eq": {
+							"f6_attitude": "defiant"
+						}
+					},
+					"node": "rescue_defiant"
+				},
+				{
+					"if": {
+						"eq": {
+							"f6_attitude": "beg"
+						}
+					},
+					"node": "rescue_beg"
+				},
+				{
+					"node": "rescue_honest"
+				}
+			]
+		},
+		"rescue_honest": {
+			"lines": [
+				{
+					"text": "住手。她说的是真的——至少，她自己是这么相信的。"
+				},
+				{
+					"text": "……您说了算。",
+					"speaker": "保卫队队长"
+				},
+				{
+					"text": "把她放下来吧。她不是你们要找的人。"
+				}
+			]
+		},
+		"rescue_defiant": {
+			"lines": [
+				{
+					"text": "够了。她再顶嘴，你们也挠不出别的答案来。"
+				},
+				{
+					"text": "……哼。看在您的面子上。",
+					"speaker": "保卫队队长"
+				},
+				{
+					"text": "放开她。嘴硬的人，我见得多了。"
+				}
+			]
+		},
+		"rescue_beg": {
+			"lines": [
+				{
+					"text": "好了好了，她都笑成这样了。"
+				},
+				{
+					"text": "……您总是心软。",
+					"speaker": "保卫队队长"
+				},
+				{
+					"text": "放了她吧。笑成这样的人，能坏到哪里去呢。"
+				}
+			]
+		},
+		"first": {
+			"lines": [
+				{
+					"text": "你上来了。……这里就是地下小镇。"
+				},
+				{
+					"text": "我第一次见到长得和自己这么像的人呢。"
+				}
+			],
+			"next": "hub_att"
+		},
+		"hub_att": {
+			"goto": [
+				{
+					"if": {
+						"eq": {
+							"f6_attitude": "honest"
+						}
+					},
+					"node": "hello_honest"
+				},
+				{
+					"if": {
+						"eq": {
+							"f6_attitude": "defiant"
+						}
+					},
+					"node": "hello_defiant"
+				},
+				{
+					"if": {
+						"eq": {
+							"f6_attitude": "beg"
+						}
+					},
+					"node": "hello_beg"
+				},
+				{
+					"node": "hello_honest"
+				}
+			]
+		},
+		"hello_honest": {
+			"lines": [
+				{
+					"text": "你那天说的黑影……我相信你。"
+				}
+			],
+			"next": "hub"
+		},
+		"hello_defiant": {
+			"lines": [
+				{
+					"text": "被锁着还敢跟队长顶嘴的人，你是第一个。"
+				},
+				{
+					"text": "我挺喜欢的。"
+				}
+			],
+			"next": "hub"
+		},
+		"hello_beg": {
+			"lines": [
+				{
+					"text": "你笑起来的声音，整个地牢都听得到呢。"
+				},
+				{
+					"text": "……我没有取笑你的意思。"
+				}
+			],
+			"next": "hub"
+		},
+		"hub": {
+			"prompt": "要问她什么？",
+			"choices": [
+				{
+					"text": "你是谁？",
+					"next": "who",
+					"return": true
+				},
+				{
+					"text": "谢谢你救了我",
+					"next": "thanks",
+					"return": true,
+					"once": true
+				},
+				{
+					"text": "这里是哪里？",
+					"next": "where",
+					"return": true
+				},
+				{
+					"text": "你为什么要帮我？",
+					"next": "why",
+					"return": true
+				},
+				{
+					"text": "我要怎么回去？",
+					"next": "home",
+					"return": true
+				},
+				{
+					"text": "先这样吧",
+					"next": "bye"
+				}
+			]
+		},
+		"who": {
+			"lines": [
+				{
+					"text": "我？……一个住在这里的人。"
+				},
+				{
+					"text": "名字的话——等你再信任我一点，我再告诉你。"
+				}
+			]
+		},
+		"thanks": {
+			"lines": [
+				{
+					"text": "不用谢。……我也有我的理由。"
+				}
+			],
+			"set": {
+				"vars": {
+					"blue_thanked": 1
+				}
+			}
+		},
+		"where": {
+			"lines": [
+				{
+					"text": "地面下面的小镇。上面是集市，下面是保卫队的营地，再往下是矿道。"
+				},
+				{
+					"text": "矿道最深处的门一直封着。……听说门后面，和你醒来之前待过的地方很像。"
+				}
+			]
+		},
+		"why": {
+			"goto": [
+				{
+					"if": {
+						"eq": {
+							"f6_attitude": "honest"
+						}
+					},
+					"node": "why_honest"
+				},
+				{
+					"if": {
+						"eq": {
+							"f6_attitude": "defiant"
+						}
+					},
+					"node": "why_defiant"
+				},
+				{
+					"if": {
+						"eq": {
+							"f6_attitude": "beg"
+						}
+					},
+					"node": "why_beg"
+				},
+				{
+					"node": "why_honest"
+				}
+			]
+		},
+		"why_honest": {
+			"lines": [
+				{
+					"text": "因为你说的黑影——我也见过。"
+				}
+			]
+		},
+		"why_defiant": {
+			"lines": [
+				{
+					"text": "因为你不肯低头。这样的人，不该被锁在那种地方。"
+				}
+			]
+		},
+		"why_beg": {
+			"lines": [
+				{
+					"text": "因为……你笑的时候，看起来一点都不害怕。我很羡慕。"
+				}
+			]
+		},
+		"home": {
+			"lines": [
+				{
+					"text": "回去的路……我也在找。"
+				},
+				{
+					"text": "等矿道深处的门打开，也许就有答案了。"
+				}
+			]
+		},
+		"bye": {
+			"lines": [
+				{
+					"text": "有事就来广场找我。"
+				}
+			]
+		}
+	}
+}

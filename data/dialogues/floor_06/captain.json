@@ -1,0 +1,365 @@
+{
+	"name": "保卫队队长",
+	"npc": "captain",
+	"entries": [
+		{
+			"if": {
+				"not": "f6_opening_done"
+			},
+			"node": "opening_question"
+		},
+		{
+			"if": {
+				"eq": {
+					"f6_attitude": "honest"
+				}
+			},
+			"node": "hello_honest"
+		},
+		{
+			"if": {
+				"eq": {
+					"f6_attitude": "defiant"
+				}
+			},
+			"node": "hello_defiant"
+		},
+		{
+			"if": {
+				"eq": {
+					"f6_attitude": "beg"
+				}
+			},
+			"node": "hello_beg"
+		},
+		{
+			"node": "hello_honest"
+		}
+	],
+	"nodes": {
+		"opening_question": {
+			"lines": [
+				{
+					"text": "说吧。为什么一个人跑到外面去？"
+				}
+			],
+			"prompt": "怎么回答？",
+			"choices": [
+				{
+					"text": "老老实实解释：我真的什么都不记得了",
+					"next": "ans_honest",
+					"set": {
+						"vars": {
+							"f6_attitude": "honest"
+						}
+					}
+				},
+				{
+					"text": "顶嘴：凭什么一上来就把人锁起来！",
+					"next": "ans_defiant",
+					"set": {
+						"vars": {
+							"f6_attitude": "defiant"
+						}
+					}
+				},
+				{
+					"text": "笑着求饶：先、先把羽毛停下来好不好……",
+					"next": "ans_beg",
+					"set": {
+						"vars": {
+							"f6_attitude": "beg"
+						}
+					}
+				}
+			]
+		},
+		"ans_honest": {
+			"lines": [
+				{
+					"text": "我、我是真的不记得……一睁眼就在一个到处是机关的城里，后来好像被一个黑影带走了……",
+					"speaker": "公主",
+					"emotion": "sad"
+				},
+				{
+					"text": "……黑影？"
+				},
+				{
+					"text": "编得倒挺像。矿道口离这儿可不近，你一个人是怎么过去的？"
+				}
+			]
+		},
+		"ans_defiant": {
+			"lines": [
+				{
+					"text": "你们凭什么把人锁起来！我可是公主！放、放开我——哈哈哈！",
+					"speaker": "公主",
+					"emotion": "angry"
+				},
+				{
+					"text": "公主？在这座镇子里，规矩比头衔管用。"
+				},
+				{
+					"text": "嘴这么硬……看来得多挠一会儿，你才肯说实话。"
+				}
+			]
+		},
+		"ans_beg": {
+			"lines": [
+				{
+					"text": "哈、哈哈……好啦好啦，我错了还不行嘛……先把羽毛停下来……",
+					"speaker": "公主",
+					"emotion": "shy"
+				},
+				{
+					"text": "……"
+				},
+				{
+					"text": "（叹气）笑成这样，倒不像会骗人的样子。——可规矩还是规矩。"
+				}
+			]
+		},
+		"punish": {
+			"goto": [
+				{
+					"if": {
+						"eq": {
+							"f6_attitude": "honest"
+						}
+					},
+					"node": "punish_honest"
+				},
+				{
+					"if": {
+						"eq": {
+							"f6_attitude": "defiant"
+						}
+					},
+					"node": "punish_defiant"
+				},
+				{
+					"if": {
+						"eq": {
+							"f6_attitude": "beg"
+						}
+					},
+					"node": "punish_beg"
+				},
+				{
+					"node": "punish_honest"
+				}
+			]
+		},
+		"punish_honest": {
+			"lines": [
+				{
+					"text": "我不信什么突然出现。来人——把她换到坐垫上，让她好好想想，下次还敢不敢一个人乱跑。"
+				}
+			]
+		},
+		"punish_defiant": {
+			"lines": [
+				{
+					"text": "把她换到坐垫上，手铐起来。你们几个，一起来——挠到她不顶嘴为止。"
+				}
+			]
+		},
+		"punish_beg": {
+			"lines": [
+				{
+					"text": "……既然这么爱笑，那就让她笑个够。把她换到坐垫上，来人，轻一点——但别停。"
+				}
+			]
+		},
+		"punish_scene": {
+			"goto": [
+				{
+					"if": {
+						"eq": {
+							"f6_attitude": "honest"
+						}
+					},
+					"node": "punish_scene_honest"
+				},
+				{
+					"if": {
+						"eq": {
+							"f6_attitude": "defiant"
+						}
+					},
+					"node": "punish_scene_defiant"
+				},
+				{
+					"if": {
+						"eq": {
+							"f6_attitude": "beg"
+						}
+					},
+					"node": "punish_scene_beg"
+				},
+				{
+					"node": "punish_scene_honest"
+				}
+			]
+		},
+		"punish_scene_honest": {
+			"theater": "f6_punish_honest"
+		},
+		"punish_scene_defiant": {
+			"theater": "f6_punish_defiant"
+		},
+		"punish_scene_beg": {
+			"theater": "f6_punish_beg"
+		},
+		"hello_honest": {
+			"lines": [
+				{
+					"text": "是你啊。……矿道口的事，我后来又想了想。"
+				},
+				{
+					"text": "你说的那个黑影——要是真的，就不是小事。"
+				}
+			],
+			"next": "hub"
+		},
+		"hello_defiant": {
+			"lines": [
+				{
+					"text": "……又是你。这回不顶嘴了？"
+				},
+				{
+					"text": "营地里的事别乱碰，有话就说。"
+				}
+			],
+			"next": "hub"
+		},
+		"hello_beg": {
+			"lines": [
+				{
+					"text": "哦，是那个很爱笑的公主。"
+				},
+				{
+					"text": "别紧张，今天不挠你。……有事吗？"
+				}
+			],
+			"next": "hub"
+		},
+		"hub": {
+			"prompt": "要聊什么？",
+			"choices": [
+				{
+					"text": "营地是做什么的？",
+					"next": "camp",
+					"return": true
+				},
+				{
+					"text": "我想变强一点（训练）",
+					"next": "training",
+					"return": true
+				},
+				{
+					"text": "那个黑影，你知道些什么？",
+					"next": "shadow",
+					"return": true,
+					"if": {
+						"eq": {
+							"f6_attitude": "honest"
+						}
+					}
+				},
+				{
+					"text": "……你还在生气吗？",
+					"next": "still_angry",
+					"return": true,
+					"if": {
+						"eq": {
+							"f6_attitude": "defiant"
+						}
+					},
+					"once": true
+				},
+				{
+					"text": "你好像没那么凶了？",
+					"next": "softer",
+					"return": true,
+					"if": {
+						"eq": {
+							"f6_attitude": "beg"
+						}
+					},
+					"once": true
+				},
+				{
+					"text": "没事了，再见",
+					"next": "bye"
+				}
+			]
+		},
+		"camp": {
+			"lines": [
+				{
+					"text": "保卫队守着整座小镇。地面上的东西进不来，下面的东西也上不去——都是我们挡着。"
+				},
+				{
+					"text": "跟我来，带你看一圈。"
+				}
+			],
+			"cutscene": "f6_camp_tour"
+		},
+		"training": {
+			"lines": [
+				{
+					"text": "训练场在东南边，木头假人那里。"
+				},
+				{
+					"text": "想练就去找队员。……不过现在场地在整修。"
+				}
+			],
+			"set": {
+				"call": "open_training"
+			}
+		},
+		"shadow": {
+			"lines": [
+				{
+					"text": "矿道深处这阵子不太平。有人说看到过影子一样的东西，可谁也没追上过。"
+				},
+				{
+					"text": "……你要是再想起什么，第一个告诉我。"
+				}
+			],
+			"set": {
+				"vars": {
+					"captain_trust": 1
+				}
+			}
+		},
+		"still_angry": {
+			"lines": [
+				{
+					"text": "生气？我是保卫队长，不是小孩子。"
+				},
+				{
+					"text": "……不过你那天确实挺能笑的。队员们到现在还拿这个开玩笑。"
+				}
+			]
+		},
+		"softer": {
+			"lines": [
+				{
+					"text": "你笑成那样，谁还凶得起来。"
+				},
+				{
+					"text": "……别告诉别人我这么说过。"
+				}
+			]
+		},
+		"bye": {
+			"lines": [
+				{
+					"text": "别再一个人往矿道跑了。"
+				}
+			]
+		}
+	}
+}

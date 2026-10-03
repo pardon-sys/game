@@ -1,0 +1,71 @@
+{
+	"name": "巡逻的队员",
+	"entries": [
+		{
+			"node": "hello"
+		}
+	],
+	"nodes": {
+		"hello": {
+			"goto": [
+				{
+					"if": {
+						"eq": {
+							"f6_attitude": "honest"
+						}
+					},
+					"node": "hello_honest"
+				},
+				{
+					"if": {
+						"eq": {
+							"f6_attitude": "defiant"
+						}
+					},
+					"node": "hello_defiant"
+				},
+				{
+					"if": {
+						"eq": {
+							"f6_attitude": "beg"
+						}
+					},
+					"node": "hello_beg"
+				},
+				{
+					"node": "hello_honest"
+				}
+			]
+		},
+		"hello_honest": {
+			"lines": [
+				{
+					"text": "小镇巡逻中。"
+				},
+				{
+					"text": "黑影的事，队长让我们巡逻时多留意。你也小心。"
+				}
+			]
+		},
+		"hello_defiant": {
+			"lines": [
+				{
+					"text": "小镇巡逻中。"
+				},
+				{
+					"text": "在镇上可别跟人吵架啊，「我可是公主」。"
+				}
+			]
+		},
+		"hello_beg": {
+			"lines": [
+				{
+					"text": "小镇巡逻中。"
+				},
+				{
+					"text": "哈，是你。今天心情不错吧？笑一个？"
+				}
+			]
+		}
+	}
+}

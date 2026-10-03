@@ -1,0 +1,71 @@
+{
+	"name": "保卫队员芬",
+	"entries": [
+		{
+			"node": "hello"
+		}
+	],
+	"nodes": {
+		"hello": {
+			"goto": [
+				{
+					"if": {
+						"eq": {
+							"f6_attitude": "honest"
+						}
+					},
+					"node": "hello_honest"
+				},
+				{
+					"if": {
+						"eq": {
+							"f6_attitude": "defiant"
+						}
+					},
+					"node": "hello_defiant"
+				},
+				{
+					"if": {
+						"eq": {
+							"f6_attitude": "beg"
+						}
+					},
+					"node": "hello_beg"
+				},
+				{
+					"node": "hello_honest"
+				}
+			]
+		},
+		"hello_honest": {
+			"lines": [
+				{
+					"text": "……"
+				},
+				{
+					"text": "你说的话，我信一半。"
+				}
+			]
+		},
+		"hello_defiant": {
+			"lines": [
+				{
+					"text": "……"
+				},
+				{
+					"text": "下次再顶嘴，可就不只是坐垫了。"
+				}
+			]
+		},
+		"hello_beg": {
+			"lines": [
+				{
+					"text": "……"
+				},
+				{
+					"text": "……那天你笑得我都不忍心了。"
+				}
+			]
+		}
+	}
+}

@@ -1,0 +1,104 @@
+{
+	"name": "面包店的奶奶",
+	"entries": [
+		{
+			"node": "hello"
+		}
+	],
+	"nodes": {
+		"hello": {
+			"goto": [
+				{
+					"if": {
+						"eq": {
+							"f6_attitude": "honest"
+						}
+					},
+					"node": "hello_honest"
+				},
+				{
+					"if": {
+						"eq": {
+							"f6_attitude": "defiant"
+						}
+					},
+					"node": "hello_defiant"
+				},
+				{
+					"if": {
+						"eq": {
+							"f6_attitude": "beg"
+						}
+					},
+					"node": "hello_beg"
+				},
+				{
+					"node": "hello_honest"
+				}
+			]
+		},
+		"hello_honest": {
+			"lines": [
+				{
+					"text": "哎呀，是新来的孩子。"
+				},
+				{
+					"text": "听说你什么都不记得了？可怜的孩子……来，奶奶的点心分你一块。"
+				}
+			],
+			"next": "hub"
+		},
+		"hello_defiant": {
+			"lines": [
+				{
+					"text": "哎呀，是新来的孩子。"
+				},
+				{
+					"text": "呵呵，跟队长顶嘴的就是你吧？奶奶年轻的时候也这样。"
+				}
+			],
+			"next": "hub"
+		},
+		"hello_beg": {
+			"lines": [
+				{
+					"text": "哎呀，是新来的孩子。"
+				},
+				{
+					"text": "哎哟，就是你呀，笑得整条街都听得见。年轻真好。"
+				}
+			],
+			"next": "hub"
+		},
+		"hub": {
+			"choices": [
+				{
+					"text": "小镇的事",
+					"next": "town",
+					"return": true
+				},
+				{
+					"text": "再见",
+					"next": "bye"
+				}
+			]
+		},
+		"town": {
+			"lines": [
+				{
+					"text": "这镇子啊，建在地底下好几十年了。"
+				},
+				{
+					"text": "太阳是没有的，可大家心里都暖和。"
+				}
+			]
+		},
+		"bye": {
+			"lines": [
+				{
+					"text": "饿了就来找奶奶。"
+				}
+			]
+		}
+	}
+}

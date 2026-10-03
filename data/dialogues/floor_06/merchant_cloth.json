@@ -1,0 +1,71 @@
+{
+	"name": "布店的商贩",
+	"entries": [
+		{
+			"node": "hello"
+		}
+	],
+	"nodes": {
+		"hello": {
+			"goto": [
+				{
+					"if": {
+						"eq": {
+							"f6_attitude": "honest"
+						}
+					},
+					"node": "hello_honest"
+				},
+				{
+					"if": {
+						"eq": {
+							"f6_attitude": "defiant"
+						}
+					},
+					"node": "hello_defiant"
+				},
+				{
+					"if": {
+						"eq": {
+							"f6_attitude": "beg"
+						}
+					},
+					"node": "hello_beg"
+				},
+				{
+					"node": "hello_honest"
+				}
+			]
+		},
+		"hello_honest": {
+			"lines": [
+				{
+					"text": "要不要看看布料？矿道里的蚕吐的丝，可软了。"
+				},
+				{
+					"text": "公主殿下，您的裙子……是地面上的料子吧？真好看。"
+				}
+			]
+		},
+		"hello_defiant": {
+			"lines": [
+				{
+					"text": "要不要看看布料？矿道里的蚕吐的丝，可软了。"
+				},
+				{
+					"text": "哟，顶嘴公主。放心，我卖东西不看脾气。"
+				}
+			]
+		},
+		"hello_beg": {
+			"lines": [
+				{
+					"text": "要不要看看布料？矿道里的蚕吐的丝，可软了。"
+				},
+				{
+					"text": "爱笑的公主！给你做件笑起来更好看的裙子吧！"
+				}
+			]
+		}
+	}
+}

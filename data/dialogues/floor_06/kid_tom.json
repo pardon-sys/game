@@ -1,0 +1,71 @@
+{
+	"name": "小汤姆",
+	"entries": [
+		{
+			"node": "hello"
+		}
+	],
+	"nodes": {
+		"hello": {
+			"goto": [
+				{
+					"if": {
+						"eq": {
+							"f6_attitude": "honest"
+						}
+					},
+					"node": "hello_honest"
+				},
+				{
+					"if": {
+						"eq": {
+							"f6_attitude": "defiant"
+						}
+					},
+					"node": "hello_defiant"
+				},
+				{
+					"if": {
+						"eq": {
+							"f6_attitude": "beg"
+						}
+					},
+					"node": "hello_beg"
+				},
+				{
+					"node": "hello_honest"
+				}
+			]
+		},
+		"hello_honest": {
+			"lines": [
+				{
+					"text": "你就是那个公主？"
+				},
+				{
+					"text": "你真的不记得自己从哪来的吗？好酷！像故事书里一样！"
+				}
+			]
+		},
+		"hello_defiant": {
+			"lines": [
+				{
+					"text": "你就是那个公主？"
+				},
+				{
+					"text": "你敢跟队长吵架！我们都在学你喊「我可是公主」！"
+				}
+			]
+		},
+		"hello_beg": {
+			"lines": [
+				{
+					"text": "你就是那个公主？"
+				},
+				{
+					"text": "嘻嘻……我学给你听——「哈哈哈，先把羽毛停下来嘛」！"
+				}
+			]
+		}
+	}
+}

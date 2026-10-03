@@ -1,0 +1,199 @@
+{
+	"name": "篝火派对的主人",
+	"npc": "bonfire_host",
+	"entries": [
+		{
+			"if": {
+				"eq": {
+					"f6_attitude": "honest"
+				}
+			},
+			"node": "hello_honest"
+		},
+		{
+			"if": {
+				"eq": {
+					"f6_attitude": "defiant"
+				}
+			},
+			"node": "hello_defiant"
+		},
+		{
+			"if": {
+				"eq": {
+					"f6_attitude": "beg"
+				}
+			},
+			"node": "hello_beg"
+		},
+		{
+			"node": "hello_honest"
+		}
+	],
+	"nodes": {
+		"hello_honest": {
+			"lines": [
+				{
+					"text": "哎呀，新面孔！来来来，烤烤火——在地底下，篝火就是太阳。"
+				}
+			],
+			"next": "hub"
+		},
+		"hello_defiant": {
+			"lines": [
+				{
+					"text": "哟，是那个跟队长吵架的小公主！胆子真大，我喜欢。"
+				},
+				{
+					"text": "来烤烤火，消消气。"
+				}
+			],
+			"next": "hub"
+		},
+		"hello_beg": {
+			"lines": [
+				{
+					"text": "啊！是那个笑声特别好听的公主！"
+				},
+				{
+					"text": "今晚派对你一定要来，大家都想听你笑。"
+				}
+			],
+			"next": "hub"
+		},
+		"hub": {
+			"prompt": "要做什么？",
+			"choices": [
+				{
+					"text": "在篝火旁休息一下",
+					"next": "rest",
+					"return": true
+				},
+				{
+					"text": "篝火派对是什么？",
+					"next": "party",
+					"return": true
+				},
+				{
+					"text": "大家是不是在议论我？",
+					"next": "gossip",
+					"return": true
+				},
+				{
+					"text": "（求饶后）……大家真的想听我笑？",
+					"next": "laugh_party",
+					"return": true,
+					"if": {
+						"eq": {
+							"f6_attitude": "beg"
+						}
+					},
+					"once": true
+				},
+				{
+					"text": "再见",
+					"next": "bye"
+				}
+			]
+		},
+		"rest": {
+			"lines": [
+				{
+					"text": "坐吧，坐吧。"
+				}
+			],
+			"set": {
+				"call": "rest"
+			}
+		},
+		"party": {
+			"lines": [
+				{
+					"text": "每天收工以后，大家都来这里唱歌、跳舞、讲故事。"
+				},
+				{
+					"text": "来，我教你！"
+				}
+			],
+			"theater": "f6_dance"
+		},
+		"gossip": {
+			"goto": [
+				{
+					"if": {
+						"eq": {
+							"f6_attitude": "honest"
+						}
+					},
+					"node": "gossip_honest"
+				},
+				{
+					"if": {
+						"eq": {
+							"f6_attitude": "defiant"
+						}
+					},
+					"node": "gossip_defiant"
+				},
+				{
+					"if": {
+						"eq": {
+							"f6_attitude": "beg"
+						}
+					},
+					"node": "gossip_beg"
+				},
+				{
+					"node": "gossip_honest"
+				}
+			]
+		},
+		"gossip_honest": {
+			"lines": [
+				{
+					"text": "议论？大家只是好奇你从哪来的。"
+				},
+				{
+					"text": "……还有那个黑影。矿工们讲得可吓人了。"
+				}
+			]
+		},
+		"gossip_defiant": {
+			"lines": [
+				{
+					"text": "是啊！大家都说，好久没看到有人敢跟队长顶嘴了。"
+				},
+				{
+					"text": "年轻的队员们都偷偷佩服你呢。"
+				}
+			]
+		},
+		"gossip_beg": {
+			"lines": [
+				{
+					"text": "说你笑起来像小铃铛一样。"
+				},
+				{
+					"text": "嘿嘿，我也想听听。"
+				}
+			]
+		},
+		"laugh_party": {
+			"lines": [
+				{
+					"text": "当然啦！下次派对的「挠痒大赛」，你来当嘉宾吧！"
+				},
+				{
+					"text": "……开玩笑的。大概。"
+				}
+			]
+		},
+		"bye": {
+			"lines": [
+				{
+					"text": "冷了就回来烤火！"
+				}
+			]
+		}
+	}
+}

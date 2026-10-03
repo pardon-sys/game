@@ -41,12 +41,14 @@ func _ready() -> void:
 func _run_floors() -> void:
 	print("-- 楼层表")
 	var ids := Floors.ids()
-	check("floors.json 顺序", ids == ["floor_01", "floor_02", "floor_03", "floor_04", "floor_05"])
+	check("floors.json 顺序", ids == ["floor_01", "floor_02", "floor_03", "floor_04", "floor_05", "floor_06_prison", "floor_06_upper", "floor_06_camp", "floor_06_mine"])
 	check("下一层", Floors.next_of("floor_01") == "floor_02" and Floors.next_of("floor_02") == "floor_03" and Floors.next_of("floor_03") == "floor_04"
-		and Floors.next_of("floor_04") == "floor_05" and Floors.next_of("floor_05") == "")
+		and Floors.next_of("floor_04") == "floor_05" and Floors.next_of("floor_05") == "floor_06_prison")
+	check("第六层四张地图同属 floor_06 组，共用对话文件夹", ["floor_06_prison", "floor_06_upper", "floor_06_camp", "floor_06_mine"].all(
+		func(f): return Floors.group(f) == "floor_06" and Floors.dialogue_dir(f) == "res://data/dialogues/floor_06/"))
 	for id in ids:
 		check("%s 有地图、对话和场景" % id, FileAccess.file_exists(Floors.map_path(id))
-			and FileAccess.file_exists(Floors.dialogues_path(id)) and ResourceLoader.exists(Floors.scene(id)))
+			and DirAccess.dir_exists_absolute(Floors.dialogue_dir(id)) and ResourceLoader.exists(Floors.scene(id)))
 	check("第一层根节点记录 floor_id", level.get("floor_id") == "floor_01")
 
 

@@ -1,0 +1,71 @@
+{
+	"name": "保卫队员鲁克",
+	"entries": [
+		{
+			"node": "hello"
+		}
+	],
+	"nodes": {
+		"hello": {
+			"goto": [
+				{
+					"if": {
+						"eq": {
+							"f6_attitude": "honest"
+						}
+					},
+					"node": "hello_honest"
+				},
+				{
+					"if": {
+						"eq": {
+							"f6_attitude": "defiant"
+						}
+					},
+					"node": "hello_defiant"
+				},
+				{
+					"if": {
+						"eq": {
+							"f6_attitude": "beg"
+						}
+					},
+					"node": "hello_beg"
+				},
+				{
+					"node": "hello_honest"
+				}
+			]
+		},
+		"hello_honest": {
+			"lines": [
+				{
+					"text": "站住。……哦，是你。"
+				},
+				{
+					"text": "队长说你可能没撒谎。我们这几天在矿道口加了岗。"
+				}
+			]
+		},
+		"hello_defiant": {
+			"lines": [
+				{
+					"text": "站住。……哦，是你。"
+				},
+				{
+					"text": "哟，「我可是公主」来了！……开玩笑的，别生气。"
+				}
+			]
+		},
+		"hello_beg": {
+			"lines": [
+				{
+					"text": "站住。……哦，是你。"
+				},
+				{
+					"text": "那天挠你的人里有我……抱歉啦，命令就是命令。你笑得真的很厉害。"
+				}
+			]
+		}
+	}
+}

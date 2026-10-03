@@ -1,0 +1,51 @@
+[level]
+# 第六层·地下小镇（tools/build/gen_floor06.py 生成，不要直接改）
+intro =
+intro_cutscene = f6_wake
+ambient = 0.42,0.36,0.44
+[legend]
+# = wall
+. = floor
+P = player
+t = torch lit=true
+A = gate group=cells is_open=false
+C = spawn id=from_camp
+D = stairs target=floor_06_camp spawn=from_prison down=false
+E = trap type=supine active=false
+F = trap type=stocks active=false
+G = trap type=clamp active=false
+H = trap type=cushion active=false
+I = trap type=cuffs active=false
+J = trap type=teaser active=false
+K = trap type=wheel active=false
+L = barrel
+M = sign dialogue=sign6_prison
+N = npc id=guard dialogue=floor_06/guard_jailer wander=1 show_flag=f6_opening_done
+
+[map]
+####################################
+######t########t########t###########
+####............................####
+####............................####
+####....A...A.......A...A...A...####
+####............................####
+################...#################
+#############t##...###t#############
+##########................##########
+##########.L..........N...##########
+##########..............K.##########
+##########.......J........##########
+##..............EF........##########
+##.D.C..........G..P......##########
+##...................I....##########
+##########...........H....##########
+##########..M.............##########
+##########.L............L.##########
+##########................##########
+####################################
+####################################
+####################################
+####################################
+####################################
+####################################
+####################################

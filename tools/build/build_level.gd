@@ -38,6 +38,12 @@ const SCENES := {
 	"trigger": "res://scenes/objects/dialogue_trigger.tscn",
 	"arena": "res://scenes/objects/arena_zone.tscn",
 	"traproom": "res://scenes/objects/trap_room_zone.tscn",
+	# 第六层地下小镇
+	"npc": "res://scenes/actors/allies/resident.tscn",
+	"prop": "res://scenes/objects/prop.tscn",
+	"stairs": "res://scenes/objects/stairs.tscn",
+	"spawn": "res://scenes/objects/spawn_point.tscn",
+	"savepoint": "res://scenes/objects/save_point.tscn",
 }
 ## 按 type 参数选择场景的类型：新增怪物/友军/陷阱时在这里注册。
 const TYPED_SCENES := {
@@ -123,7 +129,7 @@ const WALL_MOUNTED := ["torch", "face", "walltrap", "secret"]
 ## 看起来是墙、之后可能打开的格子：照常放墙块，下面再铺一层地面。
 const HIDDEN_PASSAGE := ["secret"]
 ## 放在地面层（总在角色下方）的类型。
-const FLOOR_LEVEL := ["trap", "checkpoint", "trigger", "plate", "exit", "arena", "traproom"]
+const FLOOR_LEVEL := ["trap", "checkpoint", "trigger", "plate", "exit", "arena", "traproom", "stairs", "spawn"]
 ## Kenney 图块中带碰撞的装饰（下半格碰撞）。
 const SOLID_DECOR := [63, 64, 65, 72, 73, 74, 75, 82]
 ## 当墙顶用的 Kenney 碎石图块（整格碰撞）。
@@ -391,18 +397,22 @@ func _spawn(kind: String, info: Dictionary, x: int, y: int) -> Node2D:
 		push_error("(%d,%d) 未注册的类型: %s %s" % [x, y, kind, info])
 		return Node2D.new()
 	var inst: Node2D = load(path).instantiate()
-	var label: String = info.get("type", kind)
+	var label: String = info.get("type", info.get("id", kind)) if kind in ["prop", "npc"] else info.get("type", kind)
 	inst.name = "%s_%d_%d" % [label.to_pascal_case(), x, y]
 	var base := Vector2(x * TILE + TILE / 2.0, y * TILE + TILE)
 	match kind:
-		"player", "monster", "ally", "item":
+		"player", "monster", "ally", "item", "npc", "spawn":
 			inst.position = base - Vector2(0, 4)
+		"stairs":
+			inst.position = base - Vector2(0, TILE / 2.0)
 		"trap", "checkpoint", "trigger", "plate", "exit", "arena", "traproom":
 			inst.position = base - Vector2(0, TILE / 2.0)
 		"letter":
 			inst.position = base + Vector2(0, 0.5)
 		_:
 			inst.position = base
+	if kind == "prop":
+		inst.set("kind", info.get("type", "crate"))
 	for key in info:
 		if key in ["kind", "type"]:
 			continue
@@ -433,6 +443,10 @@ func _spawn(kind: String, info: Dictionary, x: int, y: int) -> Node2D:
 				inst.add_to_group(str(value), true)
 				continue
 			["walltrap", "group"]: prop = "group_name"
+			["npc", "id"]: prop = "npc_id"
+			["stairs", "target"]:
+				prop = "target_level"
+				value = Floors.scene(value)
 			["exit", "target"]:
 				prop = "target_level"
 				# next = 下一层（运行时按 data/floors.json 解析）；也可以直接写楼层 id

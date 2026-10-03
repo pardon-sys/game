@@ -134,6 +134,8 @@ func _ready() -> void:
 		GameState.set_flag("met_" + key)
 	GameState.set_flag("seen_laugh_recover")
 	for id in Floors.ids():
+		if Floors.group(id) == "floor_06":
+			continue  # 地下小镇没有陷阱 / 怪物（floor6_test 检查）
 		if id != "floor_01":
 			main.change_level(Floors.scene(id))
 			await _wait(1.4)

@@ -1,0 +1,48 @@
+{
+	"name": "保卫队员莫丝",
+	"entries": [
+		{
+			"node": "hello"
+		}
+	],
+	"nodes": {
+		"hello": {
+			"lines": [
+				{
+					"text": "训练场在整修，别乱跑。"
+				}
+			],
+			"next": "hub"
+		},
+		"hub": {
+			"choices": [
+				{
+					"text": "训练什么时候开？",
+					"next": "when",
+					"return": true
+				},
+				{
+					"text": "再见",
+					"next": "bye"
+				}
+			]
+		},
+		"when": {
+			"lines": [
+				{
+					"text": "等假人都换新的。到时候忍痒、挣脱、闪避都能练。"
+				}
+			],
+			"set": {
+				"call": "open_training"
+			}
+		},
+		"bye": {
+			"lines": [
+				{
+					"text": "嗯。"
+				}
+			]
+		}
+	}
+}
