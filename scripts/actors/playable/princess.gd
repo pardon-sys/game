@@ -59,6 +59,9 @@ func _resolve_normal(requested: String) -> String:
 
 
 func _setup() -> void:
+	# 训练成果（疲倦 / 闷笑 / 生命上限）先套上，再由 super 里的 register_player 恢复换层前的状态（不会被旧上限截掉）
+	if portrait_set == "pink":
+		TrainingStats.apply(self)
 	super()
 	if fatigue:
 		fatigue.changed.connect(_on_fatigue_changed)

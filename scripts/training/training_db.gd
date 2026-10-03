@@ -1,13 +1,17 @@
 class_name TrainingDB
 extends RefCounted
-## 保卫队训练（接口）：训练项目在 data/training/trainings.json，每种训练以后各自是一个小游戏，
-## 场景放在 scenes/training/<训练 id>.tscn（根节点实现 start() 并在结束时发 finished(过关: bool)）。
-##   list()        训练项目列表 [{id, name, desc, status}]
-##   start(id)     开始训练：现在都还没开放，返回 {ok: false, message}；以后找到对应场景就加载小游戏
-## 训练成功后的奖励（升级被动等）写在训练项目的 reward 里，由小游戏系统调用 grant(id)。
+## 保卫队训练：训练表 data/training/trainings.json（阶段、上限、每次成功加多少、部位类训练的刑具候选）。
+##   list() / info(id)        训练项目
+##   run(id, 部位)            开始一轮训练（await 到结束）：扣金币 → 训练小游戏（scripts/training/<kind>.gd，
+##                            它负责走到训练位置的过场、小游戏本身、结束后回到训练台）→ TrainingStats.apply → 提示本轮收获
+##   devices_for(部位)        训练三、四这个部位可以用的刑具
+## 训练成果的数值和上限见 TrainingStats。
 
 const PATH := "res://data/training/trainings.json"
-const SCENE_DIR := "res://scenes/training/"
+const SCRIPT_DIR := "res://scripts/training/"
+
+## 正在进行的训练（小游戏节点），测试用。
+static var current: Node
 
 
 static func data() -> Dictionary:
@@ -26,21 +30,51 @@ static func info(id: String) -> Dictionary:
 	return {}
 
 
-static func scene_of(id: String) -> String:
-	return SCENE_DIR + id + ".tscn"
+static func devices_for(zone: String) -> Array:
+	return data().get("zone_devices", {}).get(zone, [])
 
 
-## 开始训练（id 为空 = 打开训练菜单）。小游戏场景还没有时返回「还没开放」。
+static func script_of(t: Dictionary) -> String:
+	return SCRIPT_DIR + str(t.get("kind", "")) + ".gd"
+
+
+## 兼容旧接口：能不能开始（不扣钱）。
 static func start(id: String) -> Dictionary:
-	if id != "" and ResourceLoader.exists(scene_of(id)):
-		return {"ok": true, "scene": scene_of(id)}
-	return {"ok": false, "message": str(data().get("closed_message", "训练场还在准备中……"))}
+	var t := info(id)
+	if t.is_empty():
+		return {"ok": false, "message": str(data().get("closed_message", "训练场还在准备中……"))}
+	var why := TrainingMenu.blocked_reason(t)
+	return {"ok": why == "", "message": why}
 
 
-## 训练过关的奖励（小游戏系统调用）：reward = {passive: id} / {upgrade: id} / {max_hp: n}
-static func grant(id: String) -> void:
-	var r: Dictionary = info(id).get("reward", {})
-	if r.has("passive"):
-		GameState.grant_passive(str(r["passive"]))
-	if r.has("upgrade"):
-		GameState.upgrade_passive(str(r["upgrade"]))
+static func run(id: String, zone := "") -> Dictionary:
+	var t := info(id)
+	var why := TrainingMenu.blocked_reason(t, zone) if not t.is_empty() else "没有这项训练"
+	if why != "":
+		GameState.notify(why)
+		return {}
+	if not ResourceLoader.exists(script_of(t)):
+		GameState.notify(str(data().get("closed_message", "训练场还在准备中……")))
+		return {}
+	GameState.inventory.remove("coin", TrainingMenu.cost())
+	var tree := Engine.get_main_loop() as SceneTree
+	var runner: Node = load(script_of(t)).new()
+	runner.name = "Training"
+	tree.root.add_child(runner)
+	current = runner
+	var result: Dictionary = await runner.run(t, zone)
+	current = null
+	if is_instance_valid(runner):
+		runner.queue_free()
+	TrainingStats.apply(GameState.player)
+	GameState.notify(summary_text(t, result))
+	return result
+
+
+static func summary_text(t: Dictionary, result: Dictionary) -> String:
+	var gained: Dictionary = result.get("gained", {})
+	var parts: Array = []
+	for k in gained:
+		if float(gained[k]) > 0.0:
+			parts.append("%s +%s" % [k, ("%.3f" % gained[k]) if float(gained[k]) < 1.0 else str(snappedf(float(gained[k]), 0.1))])
+	return "%s结束：成功 %d 次。%s" % [t.get("name", "训练"), int(result.get("successes", 0)), "　".join(parts)]

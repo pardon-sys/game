@@ -280,7 +280,7 @@ func open_shop() -> void:
 
 
 func open_training() -> void:
-	Town.open_training()
+	await Town.open_training()
 
 
 func rest() -> void:

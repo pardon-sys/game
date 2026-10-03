@@ -40,8 +40,15 @@ static func cast(caster: Node2D, t: int) -> Array[Node]:
 
 
 ## 疲倦爆发：满蓄力档的范围、一半伤害，紫色的爆发环、低沉的音效。
+## 疲倦爆发：魔力疲倦释放训练提高强度（伤害、击退 ×倍率，范围 ×(1 + 一半加成)）。
 static func cast_fatigue(caster: Node2D) -> Array[Node]:
-	return cast_with(caster, FATIGUE, 3, "fatigue_burst", false, Color(0.75, 0.55, 1.0), 0.7)
+	var p := FATIGUE.duplicate()
+	var m := TrainingStats.burst_mult() if caster == GameState.player else 1.0
+	if m > 1.0:
+		p["damage"] = int(round(float(FATIGUE["damage"]) * m))
+		p["knockback"] = float(FATIGUE["knockback"]) * m
+		p["radius"] = float(FATIGUE["radius"]) * (1.0 + (m - 1.0) * 0.5)
+	return cast_with(caster, p, 3, "fatigue_burst", false, Color(0.75, 0.55, 1.0), 0.7)
 
 
 ## 通用：params = {radius, damage, knockback, stun}；visual_tier 决定爆发环的大小；reactive = 是否通知 MagicReactive。
