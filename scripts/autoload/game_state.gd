@@ -20,6 +20,8 @@ signal combo_triggered(id: String, combo_name: String)
 signal hotkeys_changed
 ## 获得或升级了被动技能（level = 新等级）。
 signal passive_changed(id: String, level: int)
+## 复活点变了（检查点据此亮 / 暗）。
+signal checkpoint_changed(pos: Vector2)
 
 ## 拿到冒险背包的剧情标记（第四层落脚点旁的储藏室）。
 const BACKPACK_FLAG := "got_backpack"
@@ -153,6 +155,12 @@ func give_item(item: ItemData, amount := 1, user: Node = null, announce := false
 		notify("获得了%s%s！" % [item.display_name, " ×%d" % amount if amount > 1 else ""])
 	if item.pickup_emotion != "":
 		emote(item.pickup_emotion)
+
+
+## 设复活点（检查点、存档读取、跳关都用它，检查点图标跟着亮暗）。
+func set_checkpoint(pos: Vector2) -> void:
+	checkpoint = pos
+	checkpoint_changed.emit(pos)
 
 
 func set_flag(flag: String, value: Variant = true) -> void:

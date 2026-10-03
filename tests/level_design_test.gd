@@ -298,6 +298,7 @@ func _run_design(id: String) -> void:
 		problems.append_array(_missing_monsters(monster_slots, in_rect))
 		check("无解房间的三来源组合「%s」%s" % [ReactionDB.combo(str(area["combo"])).get("name", area["combo"]),
 			("" if problems.is_empty() else "：" + "；".join(problems))], problems.is_empty())
+		_area_combos[str(area["combo"])] = true
 	var loop: Array = tr.get("loop", [])
 	for i in loop.size() - 1:
 		var a := Vector2i(int(loop[i][0]), int(loop[i][1]))
@@ -308,8 +309,28 @@ func _run_design(id: String) -> void:
 		var a := Vector2i(int(feeds[i][0]), int(feeds[i][1]))
 		var b := Vector2i(int(feeds[i + 1][0]), int(feeds[i + 1][1]))
 		check("无解房间的连锁：%s 放开后也被送进 %s" % [a, b], _flow(a).has(b))
+	# 迷宫房间：墙够多（是迷宫不是空地），小厅里放 2–3 组三来源组合
+	for mz in design.get("maze_rooms", []):
+		var r: Array = mz["rect"]
+		var total := 0
+		var wall := 0
+		for x in range(int(r[0]), int(r[2]) + 1):
+			for y in range(int(r[1]), int(r[3]) + 1):
+				total += 1
+				if not _walkable(Vector2i(x, y), {}):
+					wall += 1
+		var inside := 0
+		for a in design.get("combo_areas", []):
+			var ar: Array = a["rect"]
+			if int(ar[0]) >= int(r[0]) - 1 and int(ar[1]) >= int(r[1]) - 1 and int(ar[2]) <= int(r[2]) + 1 and int(ar[3]) <= int(r[3]) + 1:
+				inside += 1
+		check("迷宫房间「%s」：墙占 %.0f%%，小厅里 %d 组三来源组合" % [mz["name"], 100.0 * wall / total, inside],
+			float(wall) / total >= 0.2 and inside >= 2 and inside <= 3)
 	if design.has("min_trap_density"):
-		var d := _trap_density(design.get("safe_rooms", []))
+		var skip: Array = design.get("safe_rooms", []).duplicate()
+		for mz in design.get("maze_rooms", []):
+			skip.append(mz["rect"])
+		var d := _trap_density(skip)
 		check("堆满陷阱：安全房间以外的地面格离陷阱 ≤ 2 格的比例 %.1f%%（至少 %.0f%%）" % [d * 100.0, float(design["min_trap_density"]) * 100.0],
 			d >= float(design["min_trap_density"]))
 	var static_cells := _static_hazards()

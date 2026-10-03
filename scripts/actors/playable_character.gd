@@ -114,7 +114,7 @@ func _setup() -> void:
 	if faction == Faction.Type.PLAYER:
 		GameState.register_player(self)
 		if GameState.checkpoint == Vector2.ZERO:
-			GameState.checkpoint = global_position
+			GameState.set_checkpoint(global_position)
 	if laugh:
 		laugh.level_changed.connect(_on_laugh_level_changed)
 	sensitivity.weak_point.connect(_on_weak_point)

@@ -9,6 +9,7 @@ design.json 给 tests/level_design_test.gd 用：combo_areas（三来源组合�
 """
 import json
 import os
+import random
 from pathlib import Path
 
 os.chdir(Path(__file__).resolve().parents[2])
@@ -123,10 +124,10 @@ for x in (56, 64, 72, 80):
 sign(64, 72, "sign5_snare")
 sign(66, 72, "sign5_teaser")
 # 倒吊绳套 + 往左的传送带 → 弹弹床 → 举手铐柱（机关腰腋刑：左墙羽毛臂 + 上方机关手 + 逗弄器）
-put(58, 70, "trap type=snare group=w0 + trap type=conveyor dir=left len=5")
+put(58, 70, "trap type=snare group=w0")
 put(53, 70, "trap type=bounce dir=up len=8")
 sign(57, 66, "sign5_cuffs")
-put(53, 62, "trap type=cuffs group=w1 + plate target=hw1 + trap type=conveyor dir=right len=6")
+put(53, 62, "trap type=cuffs group=w1 + plate target=hw1")
 put(51, 62, "walltrap type=arm dir=right len=2")
 wall(53, 61)
 put(53, 61, "walltrap type=hand group=hw1")
@@ -432,6 +433,143 @@ trap_room = {"combos": [{"combo": c, "rect": r} for c, r in TRAP_ROOM_COMBOS],
              "feeds": [[4, 7], [8, 7]]}
 
 
+# ================================================================ 五个大房间改成迷宫
+# 房间里只留 2–3 个「小厅」（三来源组合陷阱），其余铺满墙，再用固定种子挖出 2 格宽的走廊迷宫（有岔路、死胡同、少量回环）；
+# 石碑、门口和单独留下的机关格保持畅通，挖完后把和入口不连通的空地接到迷宫上。
+MAZE_ROOMS = []
+
+
+def _flood(start, x0, y0, x1, y1):
+    seen = {start}
+    stack = [start]
+    while stack:
+        x, y = stack.pop()
+        for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1)):
+            n = (x + dx, y + dy)
+            if n not in seen and x0 <= n[0] <= x1 and y0 <= n[1] <= y1 and g[n[1]][n[0]] != "#":
+                seen.add(n)
+                stack.append(n)
+    return seen
+
+
+def maze_room(name, x0, y0, x1, y1, halls, keep, doors, seed):
+    saved = [row[:] for row in g]
+    rng = random.Random(seed)
+    for y in range(y0, y1 + 1):
+        for x in range(x0, x1 + 1):
+            g[y][x] = "#"
+    nodes = [(x, y) for y in range(y0, y1, 3) for x in range(x0, x1, 3) if x + 1 <= x1 and y + 1 <= y1]
+    nset = set(nodes)
+    for (x, y) in nodes:
+        for i in (0, 1):
+            for j in (0, 1):
+                g[y + j][x + i] = "."
+
+    def link(a, b):
+        (ax, ay), (bx, by) = a, b
+        if ay == by:
+            for j in (0, 1):
+                g[ay + j][min(ax, bx) + 2] = "."
+        else:
+            for i in (0, 1):
+                g[min(ay, by) + 2][ax + i] = "."
+
+    def nbrs(n):
+        return [m for m in ((n[0] + 3, n[1]), (n[0] - 3, n[1]), (n[0], n[1] + 3), (n[0], n[1] - 3)) if m in nset]
+
+    start = nodes[rng.randrange(len(nodes))]
+    seen = {start}
+    stack = [start]
+    while stack:
+        cur = stack[-1]
+        options = [m for m in nbrs(cur) if m not in seen]
+        if not options:
+            stack.pop()
+            continue
+        nxt = rng.choice(options)
+        link(cur, nxt)
+        seen.add(nxt)
+        stack.append(nxt)
+    for n in nodes:  # 少量回环
+        if rng.random() < 0.12:
+            link(n, rng.choice(nbrs(n)))
+    # 小厅、单独留下的格子、门口：恢复原样
+    for (a, b, c, d) in halls:
+        for y in range(b, d + 1):
+            for x in range(a, c + 1):
+                g[y][x] = saved[y][x]
+    for (x, y) in list(keep) + list(doors):
+        g[y][x] = saved[y][x] if saved[y][x] != "#" else "."
+        for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1)):
+            nx, ny = x + dx, y + dy
+            if x0 <= nx <= x1 and y0 <= ny <= y1 and g[ny][nx] == "#" and saved[ny][nx] == ".":
+                g[ny][nx] = "."
+    # 不连通的空地接到入口所在的连通块上
+    for _ in range(200):
+        reach = _flood(doors[0], x0, y0, x1, y1)
+        lost = [(x, y) for y in range(y0, y1 + 1) for x in range(x0, x1 + 1) if g[y][x] != "#" and (x, y) not in reach]
+        if not lost:
+            break
+        c = lost[0]
+        r = min(reach, key=lambda p: abs(p[0] - c[0]) + abs(p[1] - c[1]))
+        x, y = c
+        while x != r[0]:
+            x += 1 if r[0] > x else -1
+            if g[y][x] == "#":
+                g[y][x] = "."
+        while y != r[1]:
+            y += 1 if r[1] > y else -1
+            if g[y][x] == "#":
+                g[y][x] = "."
+    MAZE_ROOMS.append({"name": name, "rect": [x0, y0, x1, y1], "halls": [list(h) for h in halls]})
+
+
+# 束缚工坊：铐柱小厅（机关腰腋刑）、衣柜小厅（衣柜里外）、刑床小厅（仰卧肚脐刑）；入口旁留一个倒吊绳套，开场过场里的小工匠留在原处
+maze_room("束缚工坊", 52, 52, 82, 73,
+          halls=[(52, 59, 57, 64), (55, 52, 63, 56), (75, 54, 80, 59)],
+          keep=[(58, 70), (64, 72), (66, 72), (57, 66), (58, 66), (61, 55), (74, 63), (75, 63), (76, 63), (52, 65), (68, 64)],
+          doors=[(65, 73), (64, 73), (66, 73), (79, 52), (78, 52), (80, 52), (52, 66), (52, 67)], seed=51)
+# 滑梯坡道：滑梯连锁小厅（俯卧全套）、宝箱小厅（黏黏输送带）
+maze_room("滑梯坡道", 20, 54, 47, 71,
+          halls=[(40, 65, 45, 69), (39, 58, 41, 66), (33, 57, 41, 60), (37, 68, 39, 70), (20, 54, 26, 59)],
+          keep=[(46, 63), (46, 70), (44, 61)],
+          doors=[(47, 66), (47, 67)], seed=52)
+put(25, 57, "trap type=conveyor dir=left len=3")
+put(22, 57, "trap type=carpet w=1 h=2")
+put(24, 59, "monster type=crab")
+combo_areas.append({"combo": "sticky_belt", "rect": [20, 54, 27, 60]})
+# 腿刑长廊：夹腿枷台小厅（夹腿痒刑）、泥沼和吊环的大厅（泥沼深陷 + 单脚示众）
+maze_room("腿刑长廊", 44, 34, 67, 48,
+          halls=[(58, 40, 64, 43), (52, 38, 57, 44)],
+          keep=[(61, 46), (58, 47), (66, 40), (60, 36), (44, 39), (52, 47), (48, 38), (52, 36), (63, 39), (64, 43)],
+          doors=[(67, 42), (67, 43), (67, 44), (44, 40), (44, 41), (44, 42)], seed=53)
+# 转轮工坊：夹腿枷台小厅（夹腿痒刑）、铐柱小厅（腋下羽毛雨）；绊线和落笼留在原处
+maze_room("转轮工坊", 37, 16, 57, 30,
+          halls=[(39, 26, 46, 30), (44, 17, 50, 22)],
+          keep=[(52, 16), (54, 21), (55, 27), (45, 16)],
+          doors=[(37, 26), (37, 27), (37, 28), (57, 22), (57, 23), (57, 24)], seed=54)
+combo_areas.append({"combo": "thigh_torture", "rect": [38, 25, 46, 30]})
+combo_areas.append({"combo": "armpit_rain", "rect": [43, 16, 51, 23]})
+# 泥沼地窖：泥沼小厅（泥沼深陷）、吊环小厅（单脚示众，传送带往上送进衣柜）、触手笼小厅（触手囚笼）
+maze_room("泥沼地窖", 61, 14, 79, 30,
+          halls=[(62, 20, 67, 24), (70, 15, 73, 24), (73, 26, 77, 29)],
+          keep=[(75, 25), (62, 25), (67, 25)],
+          doors=[(61, 22), (61, 23), (61, 24), (79, 21), (79, 22), (79, 23)], seed=55)
+put(62, 26, "monster type=rat")
+put(67, 26, "monster type=slime")
+put(73, 27, "trap type=pit content=slime")
+put(75, 28, "trap type=snare group=t10 + trap type=cage content=tentacle idle_time=3.0")
+combo_areas.append({"combo": "mud_sink", "rect": [61, 19, 68, 27]})
+combo_areas.append({"combo": "one_leg_show", "rect": [69, 14, 75, 26]})
+combo_areas.append({"combo": "tentacle_cage", "rect": [72, 26, 78, 29]})
+# 迷宫房间里原来的连锁和组合区域：只留还在小厅里的
+combo_areas[:] = [a for a in combo_areas if a["combo"] not in ("tentacle_cage", "snare_sweep", "cuffs_suction") or a["rect"] == [72, 26, 78, 29]]
+chains[:] = [c for c in chains if c["name"] in ("最终连锁长廊", "滑梯坡道")]
+for c in chains:
+    if c["name"] == "滑梯坡道":
+        c["goal"] = [24, 55]
+
+
 # ================================================================ 填满空地
 def _free(x, y, r=1):
     return all(0 <= y + j < H and 0 <= x + i < W and g[y + j][x + i] == "." for i in range(-r, r + 1) for j in range(-r, r + 1))
@@ -452,14 +590,105 @@ VENT = "trap type=vent idle_time=2.2 cloud_duration=1.2 offset=%s"
 BRUSH = "trap type=brush speed=%s"
 OLD = [FEATHER, VENT % "0.0", BRUSH % "1.2", FEATHER, VENT % "1.1", BRUSH % "-1.3"]
 # 各区域按第一次出现的顺序只放已经介绍过的机关
-fill(53, 53, 81, 72, OLD + ["trap type=teaser", "trap type=wheel"])              # 束缚工坊
-fill(21, 55, 46, 70, OLD + ["trap type=wheel", "trap type=cushion"])            # 滑梯坡道
-fill(45, 35, 66, 47, OLD + ["trap type=teaser content=brush", "trap type=pit content=rat"])  # 腿刑长廊
 fill(23, 35, 38, 47, OLD + ["trap type=wheel", "trap type=teaser"], step=3)              # 小精灵温室
-fill(38, 17, 56, 29, OLD + ["trap type=pit content=slime"])                      # 转轮工坊
-fill(62, 15, 78, 29, OLD + ["trap type=teaser content=slime"])                   # 泥沼地窖
 fill(61, 3, 91, 10, OLD + ["trap type=boots", "trap type=wheel"], step=3)                # 工匠车间
 fill(21, 79, 55, 85, OLD)                                                        # 落笼回廊
+
+
+# ================================================================ 新机制石碑自动摆放
+# 迷宫让路线变长：每种新机制的石碑放在「从起点到它第一次出现的最短路」上、离它 SIGN_GAP 步的空地上（先拿掉原来的石碑）。
+SIGN_MECH = {
+    "sign5_cage": ["type=cage"], "sign5_tripwire": ["type=tripwire"], "sign5_imp": ["type=imp"], "sign5_snare": ["type=snare"],
+    "sign5_teaser": ["type=teaser", "type=wheel", "type=shower"], "sign5_cuffs": ["type=cuffs"], "sign5_wardrobe": ["type=wardrobe"],
+    "sign5_clamp": ["type=clamp"], "sign5_mud": ["type=mud"], "sign5_legloop": ["type=legloop"], "sign5_boots": ["type=boots"],
+    "sign5_binding": ["type=binding"], "sign5_barnacle": ["type=barnacle"], "sign5_duster": ["type=duster"], "sign5_pit": ["type=pit"],
+    "sign5_supine": ["type=supine"], "sign5_drill": ["content=drill"], "sign5_frog": ["type=frog"], "sign5_octopus": ["type=octopus"],
+    "sign5_chute": ["type=chute"], "sign5_prone": ["type=prone"], "sign5_squirrel": ["type=squirrel"], "sign5_cushion": ["type=cushion"],
+    "sign5_caterpillar": ["type=caterpillar"], "sign5_vest": ["type=vest"], "sign5_spinwheel": ["type=spinwheel"],
+}
+SIGN_GAP = (5, 4, 6, 3, 7, 8, 9, 10, 11, 12)
+
+
+def _spec_of(c):
+    for spec, ch in specs.items():
+        if ch == c:
+            return spec
+    return ""
+
+
+def _blocked(x, y):
+    c = g[y][x]
+    return c == "#" or c in ("t",) or _spec_of(c).startswith(("walltrap", "torch", "barrel", "sign", "chest", "nest"))
+
+
+def _bfs(start):
+    from collections import deque
+    dist, prev = {start: 0}, {start: None}
+    q = deque([start])
+    while q:
+        x, y = q.popleft()
+        for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1)):
+            n = (x + dx, y + dy)
+            if 0 <= n[0] < W and 0 <= n[1] < H and n not in dist and g[n[1]][n[0]] != "#":
+                dist[n] = dist[(x, y)] + 1
+                prev[n] = (x, y)
+                q.append(n)
+    return dist, prev
+
+
+def _mech_cells(keys):
+    out = []
+    for y in range(H):
+        for x in range(W):
+            spec = _spec_of(g[y][x])
+            if not spec:
+                continue
+            for part in spec.split(" + "):
+                if any(k in part for k in keys) and ("walltrap" in part or "trap" in part or "monster" in part):
+                    if part.startswith("walltrap"):
+                        d = dict(kv.split("=") for kv in part.split()[1:] if "=" in kv)
+                        lane = {"up": (0, -1), "down": (0, 1), "left": (-1, 0), "right": (1, 0)}[d.get("dir", "down")]
+                        out.append((x + lane[0], y + lane[1]))
+                    else:
+                        d = dict(kv.split("=") for kv in part.split()[1:] if "=" in kv)
+                        for i in range(int(d.get("w", 1))):
+                            for j in range(int(d.get("h", 1))):
+                                out.append((x + i, y + j))
+    return out
+
+
+def place_signs():
+    start = next((x, y) for y in range(H) for x in range(W) if g[y][x] == "P")
+    for sid, keys in SIGN_MECH.items():
+        ch = specs.get("sign dialogue=" + sid)
+        if ch:
+            for y in range(H):
+                for x in range(W):
+                    if g[y][x] == ch:
+                        g[y][x] = "."
+    for sid, keys in SIGN_MECH.items():
+        dist, prev = _bfs(start)
+        cells = [c for c in _mech_cells(keys) if c in dist]
+        if not cells:
+            continue
+        target = min(cells, key=lambda c: dist[c])
+        path = []
+        c = target
+        while c is not None:
+            path.append(c)
+            c = prev[c]
+        for gap in SIGN_GAP:
+            if gap >= len(path):
+                continue
+            x, y = path[gap]
+            # 石碑是实心的：只放在周围至少 3 格是空地的地方（不堵 1 格宽的路）
+            open_n = sum(1 for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1)) if g[y + dy][x + dx] == ".")
+            if g[y][x] == "." and open_n >= 3 and not any(g[y + j][x + i] in ("P",) for i in (-1, 0, 1) for j in (-1, 0, 1)):
+                put(x, y, "sign dialogue=" + sid)
+                break
+
+
+place_signs()
 
 
 LEVEL = """[level]
@@ -485,12 +714,15 @@ out.mkdir(parents=True, exist_ok=True)
               "combo_areas：三来源组合的区域 [x0, y0, x1, y1]（陷阱覆盖格和怪物 / 巢穴 / 落笼放出的怪物都在区域里）；",
               "chains：连锁段——start→goal 存在不碰静态束缚 / 位移陷阱的路（可躲）；links 依次是束缚陷阱的格子，从前一个放开后按强制位移（传送带、弹弹床、风扇、漩涡）会被送进下一个。",
               "trap_room：无解房间里的三来源组合区域（combos，同 combo_areas）和滑梯圈（loop：拐角的束缚陷阱，前一个放开后会被送进下一个）。",
-              "safe_rooms / min_trap_density：除了这些安全房间，地面格里离陷阱 ≤ 2 格的比例至少 min_trap_density（堆满陷阱）。"],
+              "safe_rooms / min_trap_density：除了这些安全房间和迷宫房间，地面格里离陷阱 ≤ 2 格的比例至少 min_trap_density（堆满陷阱）。",
+              "maze_rooms：改成迷宫的房间 {name, rect, halls}：halls 是放三来源组合的小厅，其余是 2 格宽的走廊迷宫。"],
     "combo_areas": combo_areas,
     "chains": chains,
     "trap_room": trap_room,
     # 检查点房间、落脚点和准备间（不要求堆满陷阱）
     "safe_rooms": [[3, 77, 16, 87], [60, 78, 70, 86], [76, 40, 88, 47], [24, 25, 34, 29], [81, 18, 90, 26], [14, 3, 19, 11]],
+    # 改成迷宫的房间（不算陷阱密度；level_design_test 检查墙的比例、小厅里的组合数）
+    "maze_rooms": MAZE_ROOMS,
     "min_trap_density": 0.75,
 }, ensure_ascii=False, indent="\t") + "\n")
 
