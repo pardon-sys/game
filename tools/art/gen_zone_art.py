@@ -9,6 +9,8 @@
   frog.png 16x16×4 长舌蛙（蹲 / 跳 / 鼓嘴 / 张嘴）   squirrel.png 16x16×4 刷尾松鼠（跑 2 帧 / 甩尾刷 / 跳开）
   octopus.png 16x16×3 吸盘章鱼宝宝（游 2 帧 / 吸住） caterpillar.png 16x16×2 毛毛虫（爬 2 帧）
   barnacle.png 16x16×3 藤壶贝（合着 / 张开伸纤毛 2 帧）
+  训练营的脚 / 大腿 / 屁股陷阱（16x16，帧 0 平时 / 1 困住 / 2 合上）：thigh_pincer、foot_thigh_rack、feather_swing、thigh_brush_ring、
+  foot_bath、sitz_bath、spring_seat、saddle_bench、scissor_stand
 
 用法：python tools/art/gen_zone_art.py
 """
@@ -441,6 +443,159 @@ def gen_traps():
     _strip([duster(f) for f in range(3)], 16, 16).save(OUT / "duster.png")
 
 
+# ------------------------------------------------------------------ 训练营的脚 / 大腿 / 屁股陷阱（scripts/traps/leg_trap.gd 的子类）
+WATER = (120, 190, 240, 255)
+WATER_L = (200, 236, 255, 255)
+PORCELAIN = (236, 236, 244, 255)
+PORCELAIN_D = (170, 172, 190, 255)
+PINK_WATER = (250, 170, 210, 255)
+
+
+def thigh_pincer(frame):
+    """墙上的夹腿羽毛钳：墙上的铜板 + 两条钳臂（帧 0 张开等着、1 夹住、2 缩回合上）。"""
+    img, d = canvas()
+    d.rectangle((3, 0, 12, 4), fill=BRASS_D)
+    d.rectangle((4, 1, 11, 3), fill=BRASS)
+    d.point((7, 2), fill=(255, 90, 110, 255) if frame == 0 else DARK)
+    if frame == 2:
+        d.rectangle((5, 4, 10, 6), fill=STEEL_D)
+        return add_outline(img)
+    spread = 4 if frame == 0 else 1
+    for side in (-1, 1):
+        x = 8 + side * spread
+        d.line((8 + side, 4, x, 10), fill=STEEL)
+        d.line((x, 10, x - side, 13), fill=STEEL_D)
+        d.polygon([(x - 1, 12), (x + 1, 12), (x, 15)], fill=FEATHER)
+    return add_outline(img)
+
+
+def foot_thigh_rack(frame):
+    """足腿刑架：木架，底下横板上两个脚洞，上面软垫杆；两侧羽毛刷（帧 1 锁上，刷子换位置）。"""
+    img, d = canvas()
+    d.rectangle((1, 3, 2, 15), fill=WOOD_D)
+    d.rectangle((13, 3, 14, 15), fill=WOOD_D)
+    d.rectangle((1, 3, 14, 5), fill=PINK_L)
+    d.line((1, 5, 14, 5), fill=PINK_D)
+    d.rectangle((1, 11, 14, 13), fill=WOOD)
+    d.line((1, 11, 14, 11), fill=WOOD_L)
+    for x in (5, 10):
+        d.ellipse((x - 1, 11, x + 1, 13), fill=DARK if frame == 0 else PINK)
+    by = 13 if frame == 0 else 6
+    for x in (0, 15):
+        d.line((x, by - 2, x, by + 1), fill=BRISTLE)
+    return add_outline(img)
+
+
+def feather_swing(frame):
+    """羽毛秋千：两根绳吊着的木座板，座板下面一簇羽毛（帧 1 坐着往前摆）。"""
+    img, d = canvas()
+    tilt = 1 if frame else 0
+    d.line((3, 0, 3 + tilt, 9), fill=WOOD_L)
+    d.line((12, 0, 12 + tilt, 9), fill=WOOD_L)
+    d.rectangle((2 + tilt, 9, 13 + tilt, 11), fill=WOOD)
+    d.line((2 + tilt, 9, 13 + tilt, 9), fill=WOOD_L)
+    for x in range(4, 13, 3):
+        d.polygon([(x + tilt, 12), (x + 2 + tilt, 12), (x + 1 + tilt, 15)], fill=FEATHER)
+    return add_outline(img)
+
+
+def thigh_brush_ring(frame):
+    """大腿刷环：地上一圈带刷毛的圆环（帧 1、2 升起来转，刷毛位置交替）。"""
+    img, d = canvas()
+    top = 9 if frame == 0 else 5
+    d.ellipse((1, top, 14, top + 6), outline=BRASS, width=2)
+    for i in range(8):
+        ang = math.radians(i * 45 + (22 if frame == 2 else 0))
+        x = 7.5 + math.cos(ang) * 6
+        y = top + 3 + math.sin(ang) * 2.5
+        d.point((round(x), round(y) - 1), fill=BRISTLE)
+    if frame:
+        d.line((1, top + 3, 1, 15), fill=BRASS_D)
+        d.line((14, top + 3, 14, 15), fill=BRASS_D)
+    return add_outline(img)
+
+
+def foot_bath(frame):
+    """泡泡足浴盆：木桶里一盆冒泡的水（帧 1 泡泡更多）。"""
+    img, d = canvas()
+    d.ellipse((1, 6, 14, 15), fill=WOOD_D)
+    d.ellipse((2, 6, 13, 13), fill=WOOD)
+    d.ellipse((3, 7, 12, 11), fill=WATER)
+    for (x, y) in ((5, 8), (9, 9), (7, 7)) + (((4, 6), (11, 7), (8, 5)) if frame else ()):
+        d.point((x, y), fill=WATER_L)
+    return add_outline(img)
+
+
+def sitz_bath(frame):
+    """泡泡坐浴：白瓷浴缸里粉色的泡泡水（帧 1 泡泡冒得更高）。"""
+    img, d = canvas()
+    d.rounded_rectangle((0, 6, 15, 14), 3, fill=PORCELAIN_D)
+    d.rounded_rectangle((0, 6, 15, 12), 3, fill=PORCELAIN)
+    d.rectangle((2, 7, 13, 10), fill=PINK_WATER)
+    for (x, y) in ((4, 7), (8, 6), (12, 7)) + (((3, 4), (7, 3), (11, 4), (9, 5)) if frame else ()):
+        d.ellipse((x - 1, y - 1, x + 1, y + 1), fill=WATER_L)
+    d.line((2, 15, 3, 15), fill=BRASS)
+    d.line((12, 15, 13, 15), fill=BRASS)
+    return add_outline(img)
+
+
+def spring_seat(frame):
+    """弹簧刷座：帧 0 地上的翻板；帧 1 弹出带刷毛凳面的矮凳（下面露出弹簧）。"""
+    img, d = canvas()
+    if frame == 0:
+        d.rectangle((2, 10, 13, 13), fill=WOOD_D)
+        d.rectangle((3, 10, 12, 12), fill=WOOD)
+        d.line((3, 11, 12, 11), fill=WOOD_L)
+        return add_outline(img)
+    for y in range(9, 15, 2):
+        d.line((6, y, 9, y + 1), fill=STEEL)
+    d.rectangle((2, 5, 13, 8), fill=PINK_D)
+    d.rectangle((2, 5, 13, 7), fill=PINK)
+    for x in range(3, 13, 2):
+        d.point((x, 4), fill=BRISTLE)
+    return add_outline(img)
+
+
+def saddle_bench(frame):
+    """骑马刷凳：长木凳中间一个马鞍形皮垫，两侧刷条（帧 1 刷条推出来）。"""
+    img, d = canvas()
+    for x in (1, 14):
+        d.line((x, 10, x, 15), fill=WOOD_D)
+    d.rectangle((0, 8, 15, 10), fill=WOOD)
+    d.line((0, 8, 15, 8), fill=WOOD_L)
+    d.chord((4, 4, 11, 12), 180, 360, fill=LEATHER)
+    d.point((7, 5), fill=(170, 100, 110, 255))
+    off = 2 if frame else 0
+    d.line((2 - off // 2, 11, 5, 11 + off), fill=BRISTLE)
+    d.line((13 + off // 2, 11, 10, 11 + off), fill=BRISTLE)
+    return add_outline(img)
+
+
+def scissor_stand(frame):
+    """剪刀刷台：底座 + 两块带刷毛的台板（帧 0 张开、1 合拢夹住、2 缩回），中间下方一根刷杆。"""
+    img, d = canvas()
+    d.rectangle((1, 13, 14, 15), fill=STONE_D)
+    d.rectangle((1, 13, 14, 14), fill=STONE)
+    gap = {0: 6, 1: 2, 2: 7}[frame]
+    h = 4 if frame == 2 else 0
+    for side in (-1, 1):
+        x0 = 8 + side * gap
+        xa, xb = (x0 - 3, x0) if side < 0 else (x0, x0 + 3)
+        d.rectangle((xa, 5 + h, xb, 12), fill=WOOD)
+        bx = xb if side < 0 else xa
+        for y in range(6 + h, 12, 2):
+            d.point((bx, y), fill=BRISTLE)
+    d.line((5, 12, 10, 12), fill=BRASS)
+    return add_outline(img)
+
+
+def gen_leg_traps():
+    for name, fn, n in (("thigh_pincer", thigh_pincer, 3), ("foot_thigh_rack", foot_thigh_rack, 2), ("feather_swing", feather_swing, 2),
+                        ("thigh_brush_ring", thigh_brush_ring, 3), ("foot_bath", foot_bath, 2), ("sitz_bath", sitz_bath, 2),
+                        ("spring_seat", spring_seat, 2), ("saddle_bench", saddle_bench, 2), ("scissor_stand", scissor_stand, 3)):
+        _strip([fn(f) for f in range(n)], 16, 16).save(OUT / (name + ".png"))
+
+
 def gen_monsters():
     _strip([frog(f) for f in range(4)], 16, 16).save(OUT / "frog.png")
     _strip([squirrel(f) for f in range(4)], 16, 16).save(OUT / "squirrel.png")
@@ -452,6 +607,7 @@ def gen_monsters():
 def main():
     gen_zone_fx()
     gen_traps()
+    gen_leg_traps()
     gen_monsters()
     print("新部位像素图已生成")
 

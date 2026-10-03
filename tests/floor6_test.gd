@@ -277,8 +277,8 @@ func _run_town() -> void:
 		await _wait(0.1)
 		check("关掉商店取消暂停", not get_tree().paused)
 	# 训练接口
-	check("训练接口：3 个训练项目（以后各自是小游戏），现在都还没开放", TrainingDB.list().size() == 3
-		and not TrainingDB.start("endure").get("ok", true) and str(TrainingDB.start("").get("message", "")) != ""
+	check("训练营：4 项训练（详细见 training_test）", TrainingDB.list().size() >= 4
+		and not TrainingDB.start("no_such").get("ok", true) and str(TrainingDB.start("no_such").get("message", "")) != ""
 		and DirAccess.dir_exists_absolute("res://scenes/training"))
 	# 存档点
 	var sp: Node = null

@@ -1,13 +1,61 @@
 {
 	"_说明": [
-		"保卫队训练（scripts/training/training_db.gd 读取）。每种训练以后是一个单独的小游戏：场景放在 scenes/training/<id>.tscn。",
-		"status：preparing = 还没开放（显示 closed_message）。reward：过关奖励 {passive: 新被动} / {upgrade: 升级被动}。",
-		"价格 price 是金币，cost_up 每升一级多收多少。"
+		"保卫队训练（scripts/training/training_db.gd / training_stats.gd 读取）。每项训练是一个小游戏（kind），脚本在 scripts/training/<kind>.gd。",
+		"stages：阶段表，按顺序解锁（unlocked = false 的阶段还没开放）。caps = 这一阶段各项数值的累计上限（部位类是每个部位的上限）。",
+		"per_success：每成功一次加多少（部位类按选定部位）。加成 bonus：训练进度换来的闷笑上限 / 生命（HP，1 颗心 = 2）/ 近战强度，按部位均分。",
+		"zone_devices：训练三、四按部位挑刑具（每轮随机一个），值是陷阱场景名（scenes/traps/<名>.tscn）。cost：每轮费用（金币）。"
 	],
-	"closed_message": "队员：「训练场还在整修，过几天再来吧！」",
+	"cost": 5,
+	"closed_message": "队员：「这一阶段还没开放，下次再来吧！」",
 	"trainings": [
-		{"id": "endure", "name": "忍痒训练", "desc": "在队员挠痒下强撑。", "status": "preparing", "price": 10, "cost_up": 5, "reward": {"passive": "endure"}},
-		{"id": "escape", "name": "挣脱训练", "desc": "被训练用的足枷锁住，限时内挣脱。", "status": "preparing", "price": 10, "cost_up": 5, "reward": {"upgrade": "struggle_plus"}},
-		{"id": "dodge", "name": "闪避训练", "desc": "躲开依次发动的羽毛臂和落笼。", "status": "preparing", "price": 10, "cost_up": 5, "reward": {"passive": "stamina"}}
-	]
+		{
+			"id": "fatigue_endure", "name": "魔力疲倦忍耐训练", "kind": "qte_endure",
+			"desc": "被固定在训练架上，两名卫兵用特制工具挠脚心和大腿内侧。听清卫兵喊的部位，按对应的键抵抗（A 左脚心、D 右脚心、Q/J 左大腿、E/K 右大腿）。成功抵抗一次，魔力疲倦上限 +1。",
+			"per_success": {"train_fatigue_up": 1},
+			"stages": [
+				{"unlocked": true, "caps": {"train_fatigue_up": 100}, "guards": 2, "start_time": 1.2, "min_time": 0.35, "punish": ["train_endure_punish_1", "train_endure_punish_2", "train_endure_punish_3"]},
+				{"unlocked": false, "caps": {"train_fatigue_up": 200}},
+				{"unlocked": false, "caps": {"train_fatigue_up": 300}}
+			]
+		},
+		{
+			"id": "fatigue_release", "name": "魔力疲倦释放训练", "kind": "maze_release",
+			"desc": "训练迷宫里的每个房间都有一组脚 / 大腿 / 屁股的组合机关。主动去触发它们；公主会忍不住想逃，连按空格拖住她。每触发一次，魔力疲倦上限 -1、疲倦释放强度 +0.5%；在组合里疲倦爆发时这次的提升 ×5。",
+			"per_success": {"train_fatigue_down": 1, "train_burst_power": 0.5},
+			"stages": [
+				{"unlocked": true, "caps": {"train_fatigue_down": 100, "train_burst_power": 50}},
+				{"unlocked": false, "caps": {"train_fatigue_down": 150, "train_burst_power": 75}},
+				{"unlocked": false, "caps": {"train_fatigue_down": 200, "train_burst_power": 100}}
+			]
+		},
+		{
+			"id": "zone_resist", "name": "耐笑部位训练", "kind": "qte_resist", "per_zone": true,
+			"desc": "选一个部位，卫兵专挠那里。指针落进绿色「憋住」区时按 J / 空格把笑意压住（小心假动作）。练得越多，这个部位越不容易笑；还会增加闷笑上限、近战强度和生命。",
+			"per_success": {"train_resist": 0.001},
+			"bonus": {"laugh_max": 25, "melee": 0.5, "hp": 2},
+			"stages": [
+				{"unlocked": true, "caps": {"train_resist": 0.1}, "punish": ["train_zone_punish_1", "train_zone_punish_2"]},
+				{"unlocked": false, "caps": {"train_resist": 0.2}},
+				{"unlocked": false, "caps": {"train_resist": 0.3}}
+			]
+		},
+		{
+			"id": "zone_sensitize", "name": "敏感部位强化训练", "kind": "qte_sensitize", "per_zone": true,
+			"desc": "选一个部位，卫兵一直挠那里。公主会本能地想躲（屏幕上弹出方向），按相反的方向键把身体按住。这个部位会更敏感，但闷笑上限和生命会增加。",
+			"per_success": {"train_sens": 0.003},
+			"bonus": {"laugh_max": 50, "hp": 4},
+			"stages": [
+				{"unlocked": true, "caps": {"train_sens": 0.3}, "punish": ["train_zone_punish_1", "train_zone_punish_2"]},
+				{"unlocked": false, "caps": {"train_sens": 0.6}},
+				{"unlocked": false, "caps": {"train_sens": 0.9}}
+			]
+		}
+	],
+	"zone_devices": {
+		"sole": ["foot_thigh_rack", "foot_bath", "feather_swing", "stocks"],
+		"thigh": ["thigh_brush_ring", "scissor_stand", "saddle_bench", "thigh_pincer", "clamp"],
+		"butt": ["spring_seat", "sitz_bath", "saddle_bench", "cushion"],
+		"armpit": ["cuffs"], "chest": ["cuffs"], "neck": ["cuffs"],
+		"belly": ["supine"], "waist": ["supine"]
+	}
 }

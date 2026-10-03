@@ -75,6 +75,16 @@ trap_actors = {
     "vest": {"hit_fx": "feather", "texture": T % "vest", "hframes": 2, "idle": [0], "active": [0, 1], "fps": 8, "z": 1, "offset": [0, -14], "pitch": 1.5},
     "chute": {"hit_fx": "brush", "texture": T % "chute", "hframes": 2, "idle": [0, 1], "active": [0, 1], "fps": 6, "tiles": [3, 1], "z": -1, "pitch": 1.3},
     "duster": {"hit_fx": "feather", "texture": T % "duster", "hframes": 3, "idle": [0], "active": [2], "z": 2, "pitch": 1.3},
+    # 训练营：脚 / 大腿 / 屁股陷阱
+    "thigh_pincer": {"hit_fx": "feather", "texture": T % "thigh_pincer", "hframes": 3, "idle": [0], "active": [1, 0], "fps": 6, "z": 2, "offset": [0, -10], "pitch": 1.3},
+    "foot_thigh_rack": {"hit_fx": "brush", "texture": T % "foot_thigh_rack", "hframes": 2, "idle": [0], "active": [1], "z": -1, "pitch": 1.2},
+    "feather_swing": {"hit_fx": "feather", "texture": T % "feather_swing", "hframes": 2, "idle": [0], "active": [0, 1], "fps": 4, "z": -1, "offset": [0, -6]},
+    "thigh_brush_ring": {"hit_fx": "brush", "texture": T % "thigh_brush_ring", "hframes": 3, "idle": [0], "active": [1, 2], "fps": 8, "z": -1, "pitch": 1.4},
+    "foot_bath": {"hit_fx": "bubble", "texture": T % "foot_bath", "hframes": 2, "idle": [0], "active": [0, 1], "fps": 6, "z": -1, "pitch": 1.5},
+    "sitz_bath": {"hit_fx": "bubble", "texture": T % "sitz_bath", "hframes": 2, "idle": [0], "active": [0, 1], "fps": 6, "z": -1, "pitch": 1.4},
+    "spring_seat": {"hit_fx": "brush", "texture": T % "spring_seat", "hframes": 2, "idle": [0], "active": [1], "z": -1, "pitch": 1.3},
+    "saddle_bench": {"hit_fx": "brush", "texture": T % "saddle_bench", "hframes": 2, "idle": [0], "active": [0, 1], "fps": 6, "z": -1, "pitch": 1.2},
+    "scissor_stand": {"hit_fx": "brush", "texture": T % "scissor_stand", "hframes": 3, "idle": [0], "active": [1, 0], "fps": 5, "z": -1, "pitch": 1.3},
 }
 P = "公主"
 portraits = {

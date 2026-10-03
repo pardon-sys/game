@@ -3,7 +3,7 @@ extends RefCounted
 ## 第六层地下小镇的设施入口（道具交互、人物对话的 call 效果都走这里）：
 ##   rest(公主)          篝火：恢复满生命、闷笑清零、魔力疲倦清零
 ##   open_shop(商店 id)  集贸市场：data/shop/<id>.json，用金币买东西（await 到关掉商店）
-##   open_training()     保卫队训练：TrainingDB（小游戏以后接，现在提示还没开放）
+##   open_training()     保卫队训练：训练菜单（TrainingMenu）→ TrainingDB.run（训练小游戏）
 
 
 static func rest(player: Node) -> void:
@@ -29,6 +29,13 @@ static func open_shop(id := "market") -> void:
 	ui.queue_free()
 
 
+## 训练台：训练菜单 → 选好的训练（扣金币、过场、小游戏，await 到这一轮结束）。
 static func open_training() -> void:
-	var r := TrainingDB.start("")
-	GameState.notify(str(r.get("message", "")))
+	var tree := Engine.get_main_loop() as SceneTree
+	var menu := TrainingMenu.new()
+	tree.root.add_child(menu)
+	var r: Dictionary = await menu.choose()
+	menu.queue_free()
+	if r.is_empty():
+		return
+	await TrainingDB.run(str(r["id"]), str(r.get("zone", "")))

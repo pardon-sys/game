@@ -15,7 +15,9 @@
 		{"name": "第五层·准备间（无解房间前）", "floor": "floor_05", "cell": [16, 9], "rewards_through": "floor_05"},
 		{"name": "第六层·开场（营地地牢）", "floor": "floor_06_prison", "rewards_through": "floor_05"},
 		{"name": "第六层·地下小镇（开场后）", "floor": "floor_06_upper", "rewards_through": "floor_06_upper"},
-		{"name": "第六层·保卫队营地（开场后）", "floor": "floor_06_camp", "rewards_through": "floor_06_upper"}
+		{"name": "第六层·保卫队营地（开场后）", "floor": "floor_06_camp", "rewards_through": "floor_06_upper"},
+		{"name": "第六层·训练营（训练台旁）", "floor": "floor_06_camp", "cell": [32, 20], "rewards_through": "floor_06_upper"},
+		{"name": "第六层·训练迷宫（只逛迷宫，不算训练）", "floor": "floor_06_training", "rewards_through": "floor_06_upper"}
 	],
 	"floor_rewards": {
 		"floor_03": {"flags": ["magic_unlocked"]},

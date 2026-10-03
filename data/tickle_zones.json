@@ -253,6 +253,38 @@
 		"duster": {
 			"butt": 2,
 			"thigh": 1
+		},
+		"thigh_pincer": {
+			"thigh": 1
+		},
+		"foot_thigh_rack": {
+			"sole": 1,
+			"thigh": 1
+		},
+		"feather_swing": {
+			"sole": 1,
+			"thigh": 1
+		},
+		"thigh_brush_ring": {
+			"thigh": 1
+		},
+		"foot_bath": {
+			"sole": 1
+		},
+		"sitz_bath": {
+			"butt": 2,
+			"thigh": 1
+		},
+		"spring_seat": {
+			"butt": 1
+		},
+		"saddle_bench": {
+			"butt": 1,
+			"thigh": 1
+		},
+		"scissor_stand": {
+			"thigh": 1,
+			"butt": 1
 		}
 	}
 }

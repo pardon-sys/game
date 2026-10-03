@@ -128,9 +128,10 @@ static func zone_multiplier(zone: String) -> float:
 	return maxf(float(info(zone).get("sensitivity", 1.0)) + modifier(zone), 0.0)
 
 
-## 以后的被动 / 道具对部位敏感值的修正（加减）。被动数据里写 {"zone_sensitivity": {"sole": -0.1}}。
+## 被动 / 训练对部位敏感值的修正（加减）。被动数据里写 {"zone_sensitivity": {"sole": -0.1}}；
+## 训练：耐笑部位训练降、敏感部位强化训练升（TrainingStats.zone_modifier）。
 static func modifier(zone: String) -> float:
-	var total := 0.0
+	var total := TrainingStats.zone_modifier(zone)
 	for id in GameState.passives:
 		var v: Variant = PassiveDB.value_dict(id, "zone_sensitivity")
 		if v is Dictionary:

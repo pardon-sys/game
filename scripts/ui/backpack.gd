@@ -493,6 +493,11 @@ func _refresh_status() -> void:
 		_line("魔力疲倦 %d%%　闷笑积累 +%d%%%s" % [roundi(f.percent()), bonus, tail], Color(0.78, 0.66, 1.0))
 		if f.is_near_full():
 			_line("　快满了！满了会疲倦爆发，留下一层疲倦印记。", TEXT)
+	# 训练成果（练过才显示）
+	if GameState.vars.keys().any(func(k): return str(k).begins_with("train_") and float(GameState.vars[k]) > 0.0):
+		_line("训练成果：疲倦上限 %d　释放强度 +%.1f%%　闷笑上限 +%.1f　生命 +%s 颗心　近战 +%.1f%%" % [TrainingStats.fatigue_max(),
+			TrainingStats.value("train_burst_power"), TrainingStats.laugh_bonus(), str(TrainingStats.hp_bonus() / 2.0),
+			TrainingStats.melee_bonus() * 100.0], Color(0.6, 0.9, 1.0))
 	if p.is_magic_unlocked():
 		var cd := p.magic_cooldown_left()
 		_line("星光爆发：" + ("冷却中 %.1f 秒" % cd if cd > 0.0 else "可以使用（按住 L 吟唱）"), GOLD)

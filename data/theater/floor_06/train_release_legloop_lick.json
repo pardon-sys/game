@@ -1,0 +1,213 @@
+{
+	"name": "训练迷宫的坚持（吊环舔脚）",
+	"cast": {
+		"princess": {
+			"kind": "princess",
+			"at": [
+				0,
+				8
+			],
+			"visual": "helpless_2",
+			"anim": "helpless",
+			"dir": "down"
+		},
+		"legloop": {
+			"kind": "trap:legloop",
+			"at": [
+				0,
+				18
+			]
+		},
+		"frog": {
+			"kind": "monster:frog",
+			"at": [
+				-32,
+				8
+			],
+			"dir": "right"
+		},
+		"rat": {
+			"kind": "monster:rat",
+			"at": [
+				32,
+				8
+			],
+			"dir": "left"
+		},
+		"g1": {
+			"kind": "npc:guard",
+			"at": [
+				-66,
+				2
+			],
+			"dir": "right"
+		}
+	},
+	"steps": [
+		{
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "fade_in"
+				},
+				{
+					"state": "laugh",
+					"do": "voice"
+				}
+			],
+			"wait": 0.5
+		},
+		{
+			"speaker": "",
+			"text": "（魔力释放之后，「吊环舔脚」并没有停下——身体比刚才敏感得多，可公主没有往出口跑）"
+		},
+		{
+			"speaker": "公主",
+			"text": "吊着的脚又被舔了……哈哈哈……站着的那只也……我、我不跑……！",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "legloop",
+					"repeat": 6,
+					"interval": 0.3,
+					"fx": "lines",
+					"zone": "sole",
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"by": "frog",
+					"repeat": 6,
+					"interval": 0.32,
+					"fx": "hand",
+					"zone": "sole",
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"kind": "laugh",
+					"do": "bubble"
+				}
+			],
+			"portrait": "defeat_1"
+		},
+		{
+			"speaker": "保卫队员",
+			"text": "公主殿下……不跑吗？刚放完魔力，现在是最痒的时候哦。",
+			"actions": [
+				{
+					"who": "g1",
+					"count": 1,
+					"do": "hop"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "不、不跑……哈哈……保卫队的大家每天都这么练……我、我也要变强……！",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "rat",
+					"repeat": 6,
+					"interval": 0.3,
+					"fx": "hand",
+					"zone": "sole",
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "两只脚都……哈哈哈哈！舌头和爪子……再来几下我也撑得住！",
+			"actions": [
+				{
+					"who": "princess",
+					"visual": "helpless_2",
+					"do": "pose"
+				},
+				{
+					"who": "princess",
+					"time": 0.6,
+					"do": "shake"
+				},
+				{
+					"who": "princess",
+					"by": "legloop",
+					"repeat": 10,
+					"interval": 0.16,
+					"fx": "lines",
+					"zone": "sole",
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"by": "frog",
+					"repeat": 10,
+					"interval": 0.17,
+					"fx": "hand",
+					"zone": "sole",
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"by": "rat",
+					"repeat": 10,
+					"interval": 0.18,
+					"fx": "hand",
+					"zone": "sole",
+					"do": "tickle"
+				}
+			],
+			"portrait": "defeat_2"
+		},
+		{
+			"speaker": "公主",
+			"text": "哈哈哈……魔力……放出来的感觉……越来越清楚了……这、这就是训练的成果……！",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "rat",
+					"repeat": 6,
+					"interval": 0.3,
+					"fx": "hand",
+					"zone": "sole",
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "",
+			"text": "（她咬着牙留在机关里，一边笑一边感受魔力流过全身——这一次的训练效果，是平时的五倍）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "legloop",
+					"repeat": 6,
+					"interval": 0.3,
+					"fx": "lines",
+					"zone": "sole",
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"kind": "dots",
+					"do": "bubble"
+				}
+			]
+		},
+		{
+			"actions": [
+				{
+					"time": 0.6,
+					"do": "fade_out"
+				},
+				{
+					"state": "",
+					"do": "voice"
+				}
+			],
+			"wait": 0.7
+		}
+	]
+}

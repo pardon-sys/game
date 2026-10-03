@@ -5,6 +5,8 @@
   floor_06_camp   营地层：保卫队营地（帐篷、哨塔、训练场）、去集市 / 地牢 / 矿道的楼梯
   floor_06_prison 营地地牢：开场的刑具房（刑床 + 足枷 + 夹腿枷台 → 挠痒坐垫 + 举手铐柱）、牢房、上楼梯
   floor_06_mine   矿道层：矿道、矿车、矿工、封住的深层入口（以后通往新的地牢）
+  floor_06_training 训练迷宫（魔力疲倦释放训练，scripts/training/maze_release.gd）：12 个带门的房间各放一组脚 / 大腿 / 屁股的三来源组合，
+                  走廊里有几段堵住的死路；起点和出口都在南边的大厅（levels/floor_06_training/design.json 记录每个房间的组合区域）
 对话：data/dialogues/floor_06/<人物>.json（每个人物一个文件）+ signs.json / story.json
 过场：data/cutscenes/floor_06/；小剧场：data/theater/floor_06/
 选择记忆：开场队长审问时的态度写进变量 f6_attitude（honest 老实解释 / defiant 顶嘴反驳 / beg 笑着求饶），
@@ -136,6 +138,9 @@ camp.put(25, 3, "stairs target=floor_06_upper spawn=from_camp down=false")
 camp.put(8, 28, "spawn id=from_prison")
 camp.put(5, 28, "stairs target=floor_06_prison spawn=from_camp down=true")
 camp.put(42, 29, "spawn id=from_mine")
+# 训练迷宫的入口（训练场东边；魔力疲倦释放训练的过场走到这里）
+prop(camp, 46, 18, "dungeon_gate")
+camp.put(46, 20, "spawn id=from_training")
 camp.put(45, 29, "stairs target=floor_06_mine spawn=from_camp down=true")
 camp.put(23, 8, "sign dialogue=sign6_camp")
 for i, x in enumerate((8, 14, 20)):
@@ -218,6 +223,84 @@ npc(mine, 30, 15, "miner", "miner_burr", 3)
 npc(mine, 14, 26, "miner", "miner_dot", 2)
 mine.write()
 
+# ================================================================ 训练迷宫
+# 4 列 × 3 行房间（内部 9×8），房间之间是 2 格宽的走廊；每个房间的门在下墙正中，通向下面的横走廊。
+# 门一开始关着（按 E 打开）。横 / 竖走廊有几段堵死，走起来要绕。南边的大厅是起点，出口（回营地的楼梯）就在起点旁边。
+MAZE_W, MAZE_H = 51, 43
+COL_X = [2 + i * 13 for i in range(4)]
+ROW_Y = [2 + j * 12 for j in range(3)]
+# 每个房间：组合 id、内容 [(相对房间左上角的 dx, dy, 图例)]（dy = -1 是房间的上墙，装墙上的夹腿羽毛钳）
+MAZE_ROOMS = [
+    ("boots_clamp_crawl", [(4, 5, "trap type=boots"), (4, 3, "trap type=clamp"), (2, 2, "monster type=caterpillar")]),
+    ("legloop_lick", [(4, 3, "trap type=legloop"), (2, 2, "monster type=frog"), (6, 2, "monster type=rat")]),
+    ("foot_thigh_lock", [(4, 3, "trap type=stocks"), (5, 3, "trap type=clamp"), (2, 2, "monster type=squirrel")]),
+    ("pincer_stocks", [(4, -1, "walltrap type=thigh_pincer"), (4, 1, "trap type=stocks"), (2, 3, "monster type=hedgehog")]),
+    ("rack_crawl", [(4, -1, "walltrap type=thigh_pincer"), (4, 1, "trap type=foot_thigh_rack"), (6, 3, "monster type=caterpillar")]),
+    ("swing_frenzy", [(4, 3, "trap type=feather_swing"), (2, 2, "monster type=squirrel"), (6, 2, "monster type=rat")]),
+    ("ring_binding", [(4, 5, "trap type=binding"), (4, 3, "trap type=thigh_brush_ring"), (2, 2, "monster type=fairy")]),
+    ("foot_bubble", [(4, 3, "trap type=foot_bath"), (2, 2, "monster type=bubble_fish"), (6, 2, "monster type=slime")]),
+    ("bath_trio", [(4, 3, "trap type=sitz_bath"), (2, 2, "monster type=bubble_fish"), (6, 2, "monster type=fairy")]),
+    ("spring_feather", [(4, 3, "trap type=spring_seat group=sf1"), (5, 3, "trap type=teaser group=sf1"), (2, 2, "monster type=rat")]),
+    ("saddle_brush", [(4, 3, "trap type=saddle_bench"), (2, 2, "monster type=squirrel"), (6, 2, "monster type=caterpillar")]),
+    ("scissor_brush", [(4, 3, "trap type=scissor_stand"), (5, 3, "trap type=cushion"), (2, 5, "monster type=hedgehog")]),
+]
+LEG_TRAP_SIGNS = ["thigh_pincer", "foot_thigh_rack", "feather_swing", "thigh_brush_ring", "foot_bath", "sitz_bath", "spring_seat",
+                  "saddle_bench", "scissor_stand"]
+maze = Map("floor_06_training", MAZE_W, MAZE_H, "intro =\nambient = 0.45,0.4,0.5")
+for j, y0 in enumerate(ROW_Y):
+    for i, x0 in enumerate(COL_X):
+        maze.room(x0, y0, x0 + 8, y0 + 7)
+    maze.room(2, y0 + 9, 49, y0 + 10)            # 横走廊（房间下面）
+for x0 in COL_X[:3]:
+    maze.room(x0 + 10, 2, x0 + 11, ROW_Y[2] + 10)  # 竖走廊（两列房间之间）
+maze.room(2, 38, 49, 41)                           # 南边的大厅
+for x in (12, 13, 38, 39):
+    maze.g[37][x] = "."                            # 大厅通向迷宫的两个口
+# 堵住的走廊段（死路）
+for (x, y) in ((16, 11), (16, 12), (29, 23), (29, 24), (22, 35), (22, 36), (25, 30), (26, 30)):
+    maze.g[y][x] = "#"
+design_areas = []
+for n, (combo, items) in enumerate(MAZE_ROOMS):
+    x0, y0 = COL_X[n % 4], ROW_Y[n // 4]
+    maze.put(x0 + 4, y0 + 8, "door")
+    for dx, dy, spec in items:
+        maze.put(x0 + dx, y0 + dy, spec)
+    maze.torch(x0 + 1, y0 - 1)
+    maze.torch(x0 + 7, y0 - 1)
+    design_areas.append({"combo": combo, "rect": [x0, y0 - 1, x0 + 8, y0 + 7]})
+maze.put(25, 40, "player")
+maze.put(25, 39, "spawn id=maze_start")
+maze.put(19, 40, "spawn id=maze_exit")
+maze.put(18, 40, "stairs target=floor_06_camp spawn=from_training down=false")
+maze.put(23, 38, "sign dialogue=sign6_maze")
+for k, x in enumerate((3, 5, 7, 9, 41, 43, 45, 47, 30)):
+    maze.put(x, 38, "sign dialogue=sign6_trap_" + LEG_TRAP_SIGNS[k])
+for x in (6, 20, 32, 45):
+    maze.torch(x, 42)
+
+
+def _maze_reachable(g, start):
+    seen, todo = {start}, [start]
+    while todo:
+        x, y = todo.pop()
+        for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1)):
+            c = (x + dx, y + dy)
+            if 0 <= c[0] < MAZE_W and 0 <= c[1] < MAZE_H and c not in seen and g[c[1]][c[0]] != "#":
+                seen.add(c)
+                todo.append(c)
+    return seen
+
+
+_reach = _maze_reachable(maze.g, (25, 40))
+for a in design_areas:
+    x0, y0 = a["rect"][0], a["rect"][1] + 1
+    assert (x0 + 4, y0 + 4) in _reach, ("迷宫房间走不到", a["combo"])
+maze.write()
+Path("levels/floor_06_training/design.json").write_text(json.dumps({
+    "_说明": ["训练迷宫（gen_floor06.py 生成）：combo_areas = 每个房间的三来源组合区域（格，含上墙，左上 → 右下）。",
+              "level_design_test 检查区域里有组合需要的陷阱和怪物；training_test 检查 12 个房间都走得到、门都关着。"],
+    "combo_areas": design_areas}, ensure_ascii=False, indent="\t") + "\n")
+
 
 # ================================================================ 人物对话
 P = "公主"
@@ -291,7 +374,7 @@ D["captain"] = {
             {"text": "没事了，再见", "next": "bye"}]},
         "camp": {"lines": [L("保卫队守着整座小镇。地面上的东西进不来，下面的东西也上不去——都是我们挡着。"),
                            L("跟我来，带你看一圈。")], "cutscene": "f6_camp_tour"},
-        "training": {"lines": [L("训练场在东南边，木头假人那里。"), L("想练就去找队员。……不过现在场地在整修。")],
+        "training": {"lines": [L("训练场在东南边，木头假人旁边的训练台。"), L("每轮五个金币。忍痒、耐笑、练敏感……练出来的本事会一直跟着你。")],
                      "set": {"call": "open_training"}},
         "shadow": {"lines": [L("矿道深处这阵子不太平。有人说看到过影子一样的东西，可谁也没追上过。"),
                              L("……你要是再想起什么，第一个告诉我。")], "set": {"vars": {"captain_trust": 1}}},
@@ -464,9 +547,9 @@ D["guard_rook"] = chat([L("站住。……哦，是你。")], {
     "honest": [L("队长说你可能没撒谎。我们这几天在矿道口加了岗。")],
     "defiant": [L("哟，「我可是公主」来了！……开玩笑的，别生气。")],
     "beg": [L("那天挠你的人里有我……抱歉啦，命令就是命令。你笑得真的很厉害。")]}, name="保卫队员鲁克")
-D["guard_moss"] = chat([L("训练场在整修，别乱跑。")], name="保卫队员莫丝",
-    choices=[{"text": "训练什么时候开？", "next": "when", "return": True}, {"text": "再见", "next": "bye"}],
-    extra_nodes={"when": {"lines": [L("等假人都换新的。到时候忍痒、挣脱、闪避都能练。")], "set": {"call": "open_training"}},
+D["guard_moss"] = chat([L("训练场开张啦！我负责带训练——想练就跟我说。")], name="保卫队员莫丝",
+    choices=[{"text": "我想训练", "next": "when", "return": True}, {"text": "再见", "next": "bye"}],
+    extra_nodes={"when": {"lines": [L("好！每轮五个金币。挑一项吧——放心，我们下手有分寸的。")], "set": {"call": "open_training"}},
                  "bye": {"lines": [L("嗯。")]}})
 D["guard_fern"] = chat([L("……")], {
     "honest": [L("你说的话，我信一半。")],
@@ -488,9 +571,20 @@ SIGNS = {
     "sign6_market": [{"speaker": S, "text": "【集贸市场】用金币买东西。摊位、市场监督都可以交易。"}],
     "sign6_gate": [{"speaker": S, "text": "【地牢入口】厚重的铁门锁着。门上刻着一行字：「通往地面的路，暂时封闭」。"}],
     "sign6_camp": [{"speaker": S, "text": "【保卫队营地】守护小镇的保卫队驻扎在这里。东南边是训练场，北边楼梯上去是集市。"}],
-    "sign6_training": [{"speaker": S, "text": "【训练场】在这里可以训练：忍痒、挣脱、闪避……（训练场正在整修）"}],
+    "sign6_training": [{"speaker": S, "text": "【训练场】在训练台报名（每轮 5 金币）：魔力疲倦忍耐、魔力疲倦释放、耐笑部位、敏感部位强化。练出来的数值会一直保留。"}],
     "sign6_prison": [{"speaker": S, "text": "【营地地牢】关押违反规矩的人。刑具都收起来了……暂时。"}],
     "sign6_deep": [{"speaker": S, "text": "【矿道深处】封住的大门。门缝里吹出带着甜味的风……门后面好像还有机关在转动的声音。"}],
+    "sign6_maze": [{"speaker": S, "text": "【训练迷宫】十二个房间，每间都有一组脚 / 大腿 / 屁股的机关。主动去触发它们——"
+                                             "身体会忍不住想逃回出口，连按空格拖住自己。逃到出口，这一轮就结束了。"}],
+    "sign6_trap_thigh_pincer": [{"speaker": S, "text": "【夹腿羽毛钳】装在墙上，按节奏伸出带羽毛的钳臂夹住大腿，钳口的羽毛扫大腿内侧。看准它缩回去的时候再过。"}],
+    "sign6_trap_foot_thigh_rack": [{"speaker": S, "text": "【足腿刑架】锁住脚踝、分开大腿，两组刷子轮流刷脚心和大腿内侧。越挣扎刷子换得越快，还会多困一会儿。"}],
+    "sign6_trap_feather_swing": [{"speaker": S, "text": "【羽毛秋千】把人吊起来坐上秋千：往前荡羽毛扫脚心，往回荡刷子刷大腿。挣扎会荡得更高、挠得更重。"}],
+    "sign6_trap_thigh_brush_ring": [{"speaker": S, "text": "【大腿刷环】踩到中心时刷环升起套住双腿，边转边刷大腿内侧——困得越久转得越快。"}],
+    "sign6_trap_foot_bath": [{"speaker": S, "text": "【泡泡足浴盆】踩进去双脚就被吸住，泡泡和水流一直挠脚心。"}],
+    "sign6_trap_sitz_bath": [{"speaker": S, "text": "【泡泡坐浴】被按坐进泡泡浴缸，水泡从底下一串串挠屁股和大腿。"}],
+    "sign6_trap_spring_seat": [{"speaker": S, "text": "【弹簧刷座】地上的翻板一弹，矮凳把人「坐」住、双脚悬空，凳面的刷毛上下弹着刷屁股。"}],
+    "sign6_trap_saddle_bench": [{"speaker": S, "text": "【骑马刷凳】跨坐在马鞍凳上、双腿分开，刷条来回推，同时刷屁股和大腿内侧。挣扎会让凳子晃、刷得更快。"}],
+    "sign6_trap_scissor_stand": [{"speaker": S, "text": "【剪刀刷台】两块刷毛台板一开一合，夹住大腿内侧，下面的刷杆来回扫屁股。合上的那半拍不抓人。"}],
 }
 (DLG / "signs.json").write_text(json.dumps(SIGNS, ensure_ascii=False, indent="\t") + "\n")
 print("对话：%d 个人物文件" % len(D))
@@ -682,4 +776,185 @@ TH.mkdir(parents=True, exist_ok=True)
 for att in ATT:
     (TH / ("f6_punish_%s.json" % att)).write_text(json.dumps(punish(att), ensure_ascii=False, indent="\t") + "\n")
 (TH / "f6_dance.json").write_text(json.dumps(DANCE, ensure_ascii=False, indent="\t") + "\n")
-print("过场 2 段，小剧场 4 段")
+
+# —— 训练营的惩罚小剧场（scripts/training/training_stage.gd 播放）——
+# 训练一（魔力疲倦忍耐）：疲倦满了释放之后，卫兵们趁着身体最敏感的时候一起挠脚心和大腿内侧
+G = "保卫队员"
+ENDURE_CAST = {
+    "princess": {"kind": "princess", "at": [0, 8], "visual": "helpless_2", "anim": "helpless", "dir": "down"},
+    "supine": {"kind": "trap:supine", "at": [0, 18]},
+    "cushion": {"kind": "trap:cushion", "at": [0, 14]},
+    "clamp": {"kind": "trap:clamp", "at": [0, 17]},
+    "stocks": {"kind": "trap:stocks", "at": [0, 23]},
+    "g1": {"kind": "npc:guard", "at": [-34, 10], "dir": "right"},
+    "g2": {"kind": "npc:guard", "at": [34, 10], "dir": "left"},
+    "g3": {"kind": "npc:guard", "at": [-64, 6], "dir": "right", "hidden": True},
+}
+ENDURE_LINES = [
+    [line(G, "魔力放出来了！——就是现在，放完魔力的身体最敏感，加练！"),
+     line(P, "等、等一下！刚放完……哈哈哈哈！脚心、脚心不行哈哈哈哈！", portrait="defeat_1"),
+     line(G, "大腿内侧也别闲着。这是训练，忍住！"),
+     line(P, "哈哈哈哈哈！忍、忍不住啊——刷子和手一起……哈哈哈哈！", portrait="defeat_2"),
+     line(NARR, "（足枷里的脚心被工具来回刷，夹板夹着的大腿内侧被手指一下下戳——训练场上满是公主的笑声）")],
+    [line(G, "疲倦撑满了啊。按规矩，撑不住的要多挨一轮。"),
+     line(P, "规、规矩？！哈哈哈……脚趾缝不行——！", portrait="defeat_1"),
+     line(G, "第三个人也来，坐垫开到最大。"),
+     line(P, "哈哈哈哈哈！屁股底下也……三、三个地方一起哈哈哈哈哈！", portrait="defeat_2"),
+     line(NARR, "（坐垫的刷毛嗡嗡地转，三把特制的挠痒工具在脚心和大腿之间轮流——等公主笑到喘不上气，才停下来）")],
+    [line(G, "放完魔力了？好，那就趁热——两只脚心一起。"),
+     line(P, "哈哈哈哈！一起太犯规了……左、左边右边都……！", portrait="defeat_1"),
+     line(G, "下一轮能多撑几次，这一轮就少挠几下。记住这个感觉。"),
+     line(P, "记、记住了哈哈哈哈！大腿里面也……哈哈哈哈哈——！", portrait="defeat_2"),
+     line(NARR, "（刑床上的公主扭来扭去，可脚踝和大腿都被牢牢锁住——卫兵们一直挠到她的魔力重新安静下来）")],
+]
+
+
+def endure_punish(i):
+    ls = ENDURE_LINES[i]
+    steps = [
+        {"actions": [A("fade_in", time=0.5), A("voice", state="laugh")], "wait": 0.5},
+        dict(ls[0], actions=[A("hop", who="g1", count=1), A("face", who="g2", dir="left")]),
+        dict(ls[1], actions=[A("tickle", who="princess", by="g1", repeat=8, interval=0.2, fx="hand", zone="sole"),
+                             A("tickle", who="princess", by="stocks", repeat=6, interval=0.3, fx="feather", zone="sole"),
+                             A("bubble", who="princess", kind="laugh")]),
+    ]
+    if i == 1:
+        steps.append({"actions": [A("enter", who="g3", at=[-50, 14], time=0.4)], "wait": 0.4})
+    steps += [
+        dict(ls[2], actions=[A("tickle", who="princess", by="g2", repeat=8, interval=0.2, fx="hand", zone="thigh"),
+                             A("tickle", who="princess", by="clamp", repeat=6, interval=0.3, fx="lines", zone="thigh")]),
+        dict(ls[3], actions=[A("pose", who="princess", visual="helpless_2"), A("shake", who="princess", time=0.6),
+                             A("tickle", who="princess", by="g1", repeat=10, interval=0.16, fx="hand", zone="sole"),
+                             A("tickle", who="princess", by="g2", repeat=10, interval=0.17, fx="hand", zone="thigh"),
+                             A("tickle", who="princess", by="cushion", repeat=8, interval=0.2, fx="lines", zone="butt")]
+             + ([A("tickle", who="princess", by="g3", repeat=10, interval=0.18, fx="feather", zone="sole")] if i == 1 else [])),
+        dict(ls[4], actions=[A("tickle", who="princess", by="g1", repeat=6, interval=0.3, fx="hand", zone="sole"),
+                             A("tickle", who="princess", by="g2", repeat=6, interval=0.3, fx="hand", zone="thigh"),
+                             A("bubble", who="princess", kind="dots")]),
+        {"actions": [A("fade_out", time=0.6), A("voice", state="")], "wait": 0.7},
+    ]
+    return {"name": "魔力疲倦忍耐训练的惩罚（%d）" % (i + 1), "cast": ENDURE_CAST, "steps": steps}
+
+
+# 训练三、四（部位训练）：闷笑满了笑倒之后的加练。{zone} / {zone_name} / {device} / {device_x} / {device_y} 由训练小游戏换成本轮的
+ZONE_CAST = {
+    "princess": {"kind": "princess", "at": [0, 8], "visual": "helpless_2", "anim": "helpless", "dir": "down"},
+    "device": {"kind": "trap:{device}", "at": ["{device_x}", "{device_y}"]},
+    "g1": {"kind": "npc:guard", "at": [-30, 6], "dir": "right"},
+    "g2": {"kind": "npc:guard", "at": [30, 6], "dir": "left", "hidden": True},
+}
+ZONE_LINES = [
+    [line(G, "笑倒了？那就再来一轮——{zone_name}还没练够呢。"),
+     line(P, "哈哈哈哈……{zone_name}、{zone_name}已经不行了……！", portrait="defeat_1"),
+     line(G, "刑具也别停。专挠{zone_name}，一下都不许躲。"),
+     line(P, "哈哈哈哈哈！只、只挠这一个地方……更、更痒了哈哈哈哈！", portrait="defeat_2"),
+     line(NARR, "（刑具和工具都对准了{zone_name}，一下接一下——直到公主连笑声都变得断断续续）")],
+    [line(G, "叫人来帮忙。两个人一起挠{zone_name}，看她还憋不憋得住。"),
+     line(P, "两、两个人？！哈哈哈……{zone_name}要坏掉了……！", portrait="defeat_1"),
+     line(G, "这就是训练。笑够了，身体才记得住。"),
+     line(P, "哈哈哈哈哈！记、记住了……真的记住了哈哈哈哈——！", portrait="defeat_2"),
+     line(NARR, "（两个卫兵一左一右，专挑{zone_name}挠个不停——训练场上的笑声好久才停下来）")],
+]
+
+
+def zone_punish(i):
+    ls = ZONE_LINES[i]
+    steps = [
+        {"actions": [A("fade_in", time=0.5), A("voice", state="laugh")], "wait": 0.5},
+        dict(ls[0], actions=[A("hop", who="g1", count=1)]),
+        dict(ls[1], actions=[A("tickle", who="princess", by="g1", repeat=8, interval=0.2, fx="hand", zone="{zone}"),
+                             A("bubble", who="princess", kind="laugh")]),
+    ]
+    if i == 1:
+        steps.append({"actions": [A("enter", who="g2", at=[30, 6], time=0.4)], "wait": 0.4})
+    steps += [
+        dict(ls[2], actions=[A("tickle", who="princess", by="device", repeat=8, interval=0.25, fx="lines", zone="{zone}")]
+             + ([A("tickle", who="princess", by="g2", repeat=8, interval=0.22, fx="hand", zone="{zone}")] if i == 1 else [])),
+        dict(ls[3], actions=[A("pose", who="princess", visual="helpless_2"), A("shake", who="princess", time=0.6),
+                             A("tickle", who="princess", by="g1", repeat=10, interval=0.16, fx="hand", zone="{zone}"),
+                             A("tickle", who="princess", by="device", repeat=8, interval=0.2, fx="lines", zone="{zone}")]),
+        dict(ls[4], actions=[A("tickle", who="princess", by="g1", repeat=6, interval=0.3, fx="hand", zone="{zone}"),
+                             A("bubble", who="princess", kind="dots")]),
+        {"actions": [A("fade_out", time=0.6), A("voice", state="")], "wait": 0.7},
+    ]
+    return {"name": "部位训练的惩罚（%d）" % (i + 1), "cast": ZONE_CAST, "steps": steps}
+
+
+def _theater_json(d):
+    # 占位的坐标写成 "{device_x}"，替换后要变成数字：去掉引号
+    return json.dumps(d, ensure_ascii=False, indent="\t").replace('"{device_x}"', "{device_x}").replace('"{device_y}"', "{device_y}") + "\n"
+
+
+# 训练二（魔力疲倦释放）：在组合里疲倦满了释放之后，公主没有逃——为了训练留在机关里（每个组合一段）
+STAGE_AT = {"boots": [0, 18], "clamp": [0, 18], "legloop": [0, 18], "stocks": [0, 19], "thigh_pincer": [0, 2], "foot_thigh_rack": [0, 18],
+            "feather_swing": [0, 16], "binding": [0, 17], "thigh_brush_ring": [0, 17], "foot_bath": [0, 18], "sitz_bath": [0, 18],
+            "spring_seat": [0, 18], "teaser": [22, 14], "saddle_bench": [0, 18], "scissor_stand": [0, 18], "cushion": [0, 18]}
+SRC_ZONE = {"boots": "sole", "clamp": "thigh", "legloop": "sole", "stocks": "sole", "thigh_pincer": "thigh", "foot_thigh_rack": "sole",
+            "feather_swing": "sole", "binding": "thigh", "thigh_brush_ring": "thigh", "foot_bath": "sole", "sitz_bath": "butt",
+            "spring_seat": "butt", "teaser": "sole", "saddle_bench": "butt", "scissor_stand": "thigh", "cushion": "butt",
+            "caterpillar": "thigh", "frog": "sole", "rat": "sole", "squirrel": "thigh", "hedgehog": "sole", "fairy": "thigh",
+            "bubble_fish": "sole", "slime": "sole"}
+MONSTER_KEYS = {"caterpillar", "frog", "rat", "squirrel", "hedgehog", "fairy", "bubble_fish", "slime"}
+# (组合 id, 三个来源, 组合名, 第一句, 高潮那句)
+DEVOTION = [
+    ("boots_clamp_crawl", ["boots", "clamp", "caterpillar"], "长靴夹腿毛毛虫",
+     "哈哈哈……靴、靴子里还在扫……毛毛虫又爬上来了……可、可是我不脱……！", "从脚心一路爬到大腿……哈哈哈哈！再爬一遍也、也没关系……！"),
+    ("legloop_lick", ["legloop", "frog", "rat"], "吊环舔脚",
+     "吊着的脚又被舔了……哈哈哈……站着的那只也……我、我不跑……！", "两只脚都……哈哈哈哈！舌头和爪子……再来几下我也撑得住！"),
+    ("foot_thigh_lock", ["stocks", "clamp", "squirrel"], "脚腿双锁",
+     "锁着就锁着……哈哈哈……尾巴扫脚心的时候……我、我不挣了……！", "脚心、大腿、脚心……哈哈哈哈！就、就这样一直练……！"),
+    ("pincer_stocks", ["thigh_pincer", "stocks", "hedgehog"], "羽毛钳足枷",
+     "钳子又夹上来了……哈哈哈……刺猬也……我会好好待在这里的……！", "大腿和脚底一起……哈哈哈哈！魔力……魔力在变顺……！"),
+    ("rack_crawl", ["foot_thigh_rack", "thigh_pincer", "caterpillar"], "刑架爬腿",
+     "刷子换得好快……哈哈哈……越挣扎越快，那我就……不挣扎……！", "毛毛虫爬到钳子中间了……哈哈哈哈！好、好痒……可是我要坚持！"),
+    ("swing_frenzy", ["feather_swing", "squirrel", "rat"], "秋千乱挠",
+     "又、又荡起来了……哈哈哈……荡过去荡回来都痒……我不下来……！", "荡、荡高一点也可以……哈哈哈哈！为了训练……再荡几下……！"),
+    ("ring_binding", ["thigh_brush_ring", "binding", "fairy"], "刷环绑腿",
+     "刷环还在转……哈哈哈……绑着的腿也……我、我站在这里不动……！", "越转越快了……哈哈哈哈！精灵也一起……全、全都接下来……！"),
+    ("foot_bubble", ["foot_bath", "bubble_fish", "slime"], "足浴泡泡",
+     "脚还泡在盆里……哈哈哈……泡泡又冲上来了……我不拔出来……！", "泡泡、鱼、黏黏的……哈哈哈哈！脚心都……都交给训练了……！"),
+    ("bath_trio", ["sitz_bath", "bubble_fish", "fairy"], "泡浴三重奏",
+     "坐着……哈哈哈……水泡又从底下冒……我、我不起来……！", "屁股底下全是泡泡……哈哈哈哈！再泡一会儿……我能忍……！"),
+    ("spring_feather", ["spring_seat", "teaser", "rat"], "弹座羽脚",
+     "凳子又弹了……哈哈哈……悬着的脚也被扫……我不下去……！", "一弹一扫……哈哈哈哈！好、好痒……可是这是训练……！"),
+    ("saddle_brush", ["saddle_bench", "squirrel", "caterpillar"], "骑凳三刷",
+     "刷条又推过来了……哈哈哈……腿分开也没关系……我、我骑稳……！", "三层刷……哈哈哈哈！凳子晃就晃吧……我不会下来的……！"),
+    ("scissor_brush", ["scissor_stand", "cushion", "hedgehog"], "剪刀刷",
+     "台板又合上了……哈哈哈……下面也在刷……我、我站着不躲……！", "上上下下全是刷毛……哈哈哈哈！再、再夹几下……我撑得住……！"),
+]
+
+
+def devotion(cid, srcs, name, l1, l3):
+    cast = {"princess": {"kind": "princess", "at": [0, 8], "visual": "helpless_2", "anim": "helpless", "dir": "down"}}
+    mx = [-32, 32]
+    for s in srcs:
+        if s in MONSTER_KEYS:
+            x = mx.pop(0)
+            cast[s] = {"kind": "monster:" + s, "at": [x, 8], "dir": "right" if x < 0 else "left"}
+        else:
+            cast[s] = {"kind": "trap:" + s, "at": STAGE_AT.get(s, [0, 18])}
+    cast["g1"] = {"kind": "npc:guard", "at": [-66, 2], "dir": "right"}
+    tk = lambda s, n, iv: A("tickle", who="princess", by=s, repeat=n, interval=iv, fx="hand" if s in MONSTER_KEYS else "lines", zone=SRC_ZONE.get(s, "sole"))
+    steps = [
+        {"actions": [A("fade_in", time=0.5), A("voice", state="laugh")], "wait": 0.5},
+        line(NARR, "（魔力释放之后，「%s」并没有停下——身体比刚才敏感得多，可公主没有往出口跑）" % name),
+        line(P, l1, actions=[tk(srcs[0], 6, 0.3), tk(srcs[1], 6, 0.32), A("bubble", who="princess", kind="laugh")], portrait="defeat_1"),
+        line(G, "公主殿下……不跑吗？刚放完魔力，现在是最痒的时候哦。", actions=[A("hop", who="g1", count=1)]),
+        line(P, "不、不跑……哈哈……保卫队的大家每天都这么练……我、我也要变强……！", actions=[tk(srcs[2], 6, 0.3)]),
+        line(P, l3, actions=[A("pose", who="princess", visual="helpless_2"), A("shake", who="princess", time=0.6),
+                             tk(srcs[0], 10, 0.16), tk(srcs[1], 10, 0.17), tk(srcs[2], 10, 0.18)], portrait="defeat_2"),
+        line(P, "哈哈哈……魔力……放出来的感觉……越来越清楚了……这、这就是训练的成果……！", actions=[tk(srcs[2], 6, 0.3)]),
+        line(NARR, "（她咬着牙留在机关里，一边笑一边感受魔力流过全身——这一次的训练效果，是平时的五倍）",
+             actions=[tk(srcs[0], 6, 0.3), A("bubble", who="princess", kind="dots")]),
+        {"actions": [A("fade_out", time=0.6), A("voice", state="")], "wait": 0.7},
+    ]
+    return {"name": "训练迷宫的坚持（%s）" % name, "cast": cast, "steps": steps}
+
+
+for cid, srcs, name, l1, l3 in DEVOTION:
+    (TH / ("train_release_%s.json" % cid)).write_text(_theater_json(devotion(cid, srcs, name, l1, l3)))
+for i in range(3):
+    (TH / ("train_endure_punish_%d.json" % (i + 1))).write_text(_theater_json(endure_punish(i)))
+for i in range(2):
+    (TH / ("train_zone_punish_%d.json" % (i + 1))).write_text(_theater_json(zone_punish(i)))
+print("过场 2 段，小剧场 %d 段" % (9 + len(DEVOTION)))

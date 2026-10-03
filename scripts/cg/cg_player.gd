@@ -344,6 +344,20 @@ func play_theater(id: String) -> void:
 	await _request({"cg": parsed, "id": "theater:" + id, "source": "", "skippable": GameState.has_flag("cg_seen_theater:" + id), "fx": 0}, false)
 
 
+## 播放一段小剧场的文本（JSON），文本里的 {键} 先换成 subs 的值（训练营的惩罚小剧场：{zone} 部位 id、{zone_name} 部位名、{device} 刑具）。
+func play_theater_subst(id: String, subs: Dictionary) -> void:
+	if not has_theater(id):
+		push_warning("没有小剧场: " + id)
+		return
+	var text := FileAccess.get_file_as_string(theater_index()[id])
+	for k in subs:
+		text = text.replace("{%s}" % k, str(subs[k]))
+	var parsed: Variant = JSON.parse_string(text)
+	if not parsed is Dictionary:
+		return
+	await _request({"cg": parsed, "id": "theater:" + id, "source": "", "skippable": GameState.has_flag("cg_seen_theater:" + id), "fx": 0}, false)
+
+
 ## 播放队列（正在播的不在里面）。每项 {cg, id, source, skippable, fx, combo?, done}。
 var _queue: Array[Dictionary] = []
 

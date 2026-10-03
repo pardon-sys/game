@@ -34,7 +34,10 @@ func scan() -> void:
 		if f != Faction.Type.NEUTRAL and not Faction.is_hostile(Faction.of(attacker), f):
 			continue
 		_hit.append(body)
-		var hit := HitData.make_tickle(attacker, tickle, knockback) if tickle > 0.0 else HitData.make_attack(attacker, damage, knockback)
+		var dmg := damage
+		if tickle <= 0.0 and attacker == GameState.player:
+			dmg = TrainingStats.melee_damage(damage)   # 耐笑部位训练加的近战强度
+		var hit := HitData.make_tickle(attacker, tickle, knockback) if tickle > 0.0 else HitData.make_attack(attacker, dmg, knockback)
 		if body.receive_hit(hit):
 			hit_landed.emit(body)
 
