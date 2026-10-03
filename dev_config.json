@@ -12,11 +12,15 @@
 		{"name": "第三层·痒痒工坊", "floor": "floor_03"},
 		{"name": "第四层·魔力回廊", "floor": "floor_04"},
 		{"name": "第五层·机关迷城", "floor": "floor_05"},
-		{"name": "第五层·准备间（无解房间前）", "floor": "floor_05", "cell": [16, 9], "rewards_through": "floor_05"}
+		{"name": "第五层·准备间（无解房间前）", "floor": "floor_05", "cell": [16, 9], "rewards_through": "floor_05"},
+		{"name": "第六层·开场（营地地牢）", "floor": "floor_06_prison", "rewards_through": "floor_05"},
+		{"name": "第六层·地下小镇（开场后）", "floor": "floor_06_upper", "rewards_through": "floor_06_upper"},
+		{"name": "第六层·保卫队营地（开场后）", "floor": "floor_06_camp", "rewards_through": "floor_06_upper"}
 	],
 	"floor_rewards": {
 		"floor_03": {"flags": ["magic_unlocked"]},
 		"floor_04": {"flags": ["got_backpack"], "items": {"star_candy": 1}},
-		"floor_05": {"passives": ["struggle_plus"]}
+		"floor_05": {"passives": ["struggle_plus"], "flags": ["chapter5_clear"]},
+		"floor_06_upper": {"flags": ["f6_opening_done", "intro_done_f6_wake"], "items": {"coin": 20}}
 	}
 }
