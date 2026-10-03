@@ -109,6 +109,15 @@ const TYPED_SCENES := {
 		"spinwheel": "res://scenes/traps/spinwheel.tscn",
 		"vest": "res://scenes/traps/vest.tscn",
 		"chute": "res://scenes/traps/chute.tscn",
+		# 训练营：脚 / 大腿 / 屁股陷阱
+		"foot_thigh_rack": "res://scenes/traps/foot_thigh_rack.tscn",
+		"feather_swing": "res://scenes/traps/feather_swing.tscn",
+		"thigh_brush_ring": "res://scenes/traps/thigh_brush_ring.tscn",
+		"foot_bath": "res://scenes/traps/foot_bath.tscn",
+		"sitz_bath": "res://scenes/traps/sitz_bath.tscn",
+		"spring_seat": "res://scenes/traps/spring_seat.tscn",
+		"saddle_bench": "res://scenes/traps/saddle_bench.tscn",
+		"scissor_stand": "res://scenes/traps/scissor_stand.tscn",
 	},
 	## 怪物巢穴（MonsterNest 的子类）
 	"nest": {
@@ -124,6 +133,7 @@ const TYPED_SCENES := {
 		"arm": "res://scenes/traps/feather_arm.tscn",
 		"wardrobe": "res://scenes/traps/wardrobe.tscn",
 		"duster": "res://scenes/traps/duster.tscn",
+		"thigh_pincer": "res://scenes/traps/thigh_pincer.tscn",
 	},
 }
 ## 挂在墙上的类型：所在格仍是墙。

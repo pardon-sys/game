@@ -1,0 +1,38 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/traps/foot_thigh_rack.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/generated/foot_thigh_rack.png" id="tex"]
+
+[sub_resource type="RectangleShape2D" id="area"]
+size = Vector2(10, 10)
+
+[node name="FootThighRack" type="Area2D"]
+collision_layer = 0
+collision_mask = 2
+monitorable = false
+script = ExtResource("1")
+reaction_key = "foot_thigh_rack"
+hit_fx = "brush"
+hit_kind = 1
+damage = 0
+exposed = {"sole": 1.4, "thigh": 1.4}
+zone_cycle = Array[Dictionary]([{"sole": 1.0}, {"thigh": 1.0}])
+cycle_time = 1.0
+struggle_speedup = 0.08
+struggle_extend = 0.2
+self_tickle = 1.5
+self_interval = 0.45
+lock_time = 3.5
+presses = 8
+cooldown_time = 1.5
+pose_offset = Vector2(0, 2)
+
+[node name="Sprite" type="Sprite2D" parent="."]
+texture = ExtResource("tex")
+hframes = 2
+vframes = 1
+offset = Vector2(0, 0)
+
+[node name="Shape" type="CollisionShape2D" parent="."]
+position = Vector2(0, 0)
+shape = SubResource("area")

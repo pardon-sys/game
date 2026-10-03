@@ -6,6 +6,13 @@ extends Node
 var main: Node
 var player: Princess
 var failures := 0
+var home := Vector2.ZERO
+var ctrl := ScriptedController.new()
+
+
+class Src extends Node2D:
+	var reaction_key := ""
+	var tickle_zones := {}
 
 
 func _ready() -> void:
@@ -18,10 +25,20 @@ func _ready() -> void:
 	await _wait(1.0)
 	_finish()
 	player = GameState.player as Princess
-	player.set_controller(ScriptedController.new())
+	player.set_controller(ctrl)
+	for key in ReactionDB.source_keys():
+		GameState.set_flag("met_" + key)
+	for f in ["seen_laugh_recover", "hint_latch", "hint_restraint", "hint_cage", "hint_grabbed", "hint_tickled"]:
+		GameState.set_flag(f)
+	for e in get_tree().get_nodes_in_group("enemy"):
+		e.process_mode = Node.PROCESS_MODE_DISABLED
+	home = Vector2(31 * 16 + 8, 23 * 16 + 12)
+	player.global_position = home
 	await _run_stats()
 	await _run_menu()
 	await _run_esc_list()
+	await _run_traps()
+	await _run_combos()
 	print("\n==== %s (%d 项失败) ====" % ["全部通过" if failures == 0 else "有失败", failures])
 	get_tree().quit(1 if failures else 0)
 
@@ -127,7 +144,126 @@ func _run_esc_list() -> void:
 	await _wait(0.1)
 
 
+# ------------------------------------------------------------------ 新陷阱
+const LEG_TRAPS := {
+	"thigh_pincer": ["thigh"], "foot_thigh_rack": ["sole", "thigh"], "feather_swing": ["sole", "thigh"], "thigh_brush_ring": ["thigh"],
+	"foot_bath": ["sole"], "sitz_bath": ["butt", "thigh"], "spring_seat": ["butt"], "saddle_bench": ["butt", "thigh"],
+	"scissor_stand": ["thigh", "butt"],
+}
+
+
+func _reset() -> void:
+	player.revive()
+	player._set_state(PlayableCharacter.State.IDLE)
+	player.combo.reset()
+	player.clear_buffs(false)
+	player.laugh.clear()
+	if player.fatigue:
+		player.fatigue.clear()
+	player._full_invuln = 0.0
+	player._attack_invuln = 0.0
+	player.global_position = home
+
+
+func _trap(file: String, offset: Vector2) -> LegTrap:
+	var t: LegTrap = load("res://scenes/traps/%s.tscn" % file).instantiate()
+	main.level.get_node("Entities").add_child(t)
+	t.global_position = home + offset
+	return t
+
+
+func _run_traps() -> void:
+	print("-- 训练营的新陷阱（脚 / 大腿 / 屁股）")
+	for key in LEG_TRAPS:
+		_reset()
+		await _wait(0.1)
+		var t := _trap(key, Vector2(48, 0))
+		await _wait(0.05)
+		var zones_hit := {}
+		var on_tickle := func(h: HitData): if h.source == t: zones_hit[h.zone] = true
+		player.tickled.connect(on_tickle)
+		if t.rhythm_on > 0.0:
+			t._rhythm_t = t.rhythm_on + 0.05   # 合上的那半拍
+			player.global_position = t.call("_pull_target")
+			await _wait(0.15)
+			check("%s：合上的那半拍不抓人" % ReactionDB.source(key)["name"], not player.status.is_grabbed_by(t))
+			t._rhythm_t = 0.0
+		player.global_position = t.call("_pull_target")
+		var w := await _until(func(): return player.status.is_grabbed_by(t), 2.0)
+		var held := player.status.is_grabbed_by(t)
+		var exposed := player.sensitivity.exposed()
+		check("%s：困住（%.2f 秒），露出 %s" % [ReactionDB.source(key)["name"], w, LEG_TRAPS[key]], held
+			and LEG_TRAPS[key].all(func(z): return exposed.has(z)))
+		var i0 := t.self_interval
+		var p0 := player.status.presses_left()
+		var g0 := player.status.grab_time_left()
+		if t.struggle_speedup > 0.0 or t.struggle_extend > 0.0:
+			for i in 2:
+				ctrl.press(&"attack")
+				await get_tree().physics_frame
+				await get_tree().physics_frame
+			await _wait(0.05)
+			check("%s：挣扎 2 下后挠得更快%s" % [ReactionDB.source(key)["name"], "、多困一会儿" if t.struggle_extend > 0.0 else ""],
+				t.struggles >= 1 and t.self_interval < i0 and (t.struggle_extend <= 0.0 or player.status.grab_time_left() > g0 - 0.3))
+		await _wait(2.2)
+		check("%s：自己挠的部位 %s（这一轮挠到 %s）" % [ReactionDB.source(key)["name"], LEG_TRAPS[key], zones_hit.keys()],
+			not zones_hit.is_empty() and zones_hit.keys().all(func(z): return LEG_TRAPS[key].has(z))
+			and (t.zone_cycle.size() < 2 or zones_hit.size() >= 2))
+		if key == "thigh_brush_ring":
+			check("大腿刷环：困得越久转得越快", t.self_interval < i0 - 0.05)
+		if key == "feather_swing":
+			check("羽毛秋千：把人吊起来（双脚离地）", player.pose_offset.y < -2.0)
+		if key in ["foot_bath", "sitz_bath"]:
+			check("%s：困住时冒泡泡" % ReactionDB.source(key)["name"], t._bubble_fx != null and t._bubble_fx.emitting)
+		player.tickled.disconnect(on_tickle)
+		if player.status.is_grabbed():
+			player.status.release(true)
+		t.queue_free()
+		await _wait(0.1)
+	# 训练营：锁定部位
+	var rack := _trap("foot_thigh_rack", Vector2(48, 0))
+	rack.lock_zone("sole")
+	check("lock_zone：训练时只挠选定的部位", rack.tickle_zones.keys() == ["sole"] and rack.current_zone() == "sole")
+	rack.queue_free()
+	_reset()
+
+
+func _run_combos() -> void:
+	print("-- 新的三来源组合（训练二的迷宫）")
+	var fired: Array = []
+	var on_fired := func(id: String): fired.append(id)
+	player.combo.triggered.connect(on_fired)
+	var specs := [["boots_clamp_crawl", ["boots", "clamp", "caterpillar"]], ["legloop_lick", ["legloop", "frog", "rat"]],
+		["foot_thigh_lock", ["stocks", "clamp", "squirrel"]], ["pincer_stocks", ["thigh_pincer", "stocks", "hedgehog"]],
+		["rack_crawl", ["foot_thigh_rack", "thigh_pincer", "caterpillar"]], ["swing_frenzy", ["feather_swing", "squirrel", "rat"]],
+		["ring_binding", ["thigh_brush_ring", "binding", "fairy"]], ["foot_bubble", ["foot_bath", "bubble_fish", "slime"]],
+		["bath_trio", ["sitz_bath", "bubble_fish", "fairy"]], ["spring_feather", ["spring_seat", "teaser", "rat"]],
+		["saddle_brush", ["saddle_bench", "squirrel", "caterpillar"]], ["scissor_brush", ["scissor_stand", "cushion", "hedgehog"]]]
+	for spec in specs:
+		_reset()
+		fired.clear()
+		for k in spec[1]:
+			var s := Src.new()
+			s.reaction_key = k
+			main.level.get_node("Entities").add_child(s)
+			s.global_position = home + Vector2(20, 0)
+			player.receive_hit(HitData.make_tickle(s, 1.0))
+		check("「%s」：%s 一起挠就触发，有组合演出" % [ReactionDB.combo(spec[0]).get("name", spec[0]), "、".join(spec[1].map(func(k): return ReactionDB.source(k).get("name", k)))],
+			fired.has(spec[0]) and CG.scenes.has(spec[0]))
+		await _wait(0.1)
+	player.combo.triggered.disconnect(on_fired)
+	_reset()
+
+
 # ------------------------------------------------------------------ 工具
+func _until(cond: Callable, max_time: float) -> float:
+	var t := 0.0
+	while not cond.call() and t < max_time:
+		await get_tree().physics_frame
+		t += get_physics_process_delta_time()
+	return t
+
+
 func check(label: String, ok: bool) -> void:
 	print(("  [通过] " if ok else "  [失败] ") + label)
 	if not ok:

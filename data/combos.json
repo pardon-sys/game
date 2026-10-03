@@ -73,7 +73,16 @@
 			"spinwheel",
 			"vest",
 			"chute",
-			"duster"
+			"duster",
+			"thigh_pincer",
+			"foot_thigh_rack",
+			"feather_swing",
+			"thigh_brush_ring",
+			"foot_bath",
+			"sitz_bath",
+			"spring_seat",
+			"saddle_bench",
+			"scissor_stand"
 		]
 	},
 	"combos": [
@@ -2496,6 +2505,415 @@
 				{
 					"type": "rally",
 					"radius": 160
+				},
+				{
+					"type": "focus"
+				}
+			]
+		},
+		{
+			"id": "boots_clamp_crawl",
+			"category": "训练营·脚 / 大腿 / 屁股",
+			"keys": [
+				[
+					"boots"
+				],
+				[
+					"clamp"
+				],
+				[
+					"caterpillar"
+				]
+			],
+			"window": 2.5,
+			"cooldown": 8.0,
+			"effects": [
+				{
+					"type": "burst",
+					"amount": 20
+				},
+				{
+					"type": "grab_extend",
+					"seconds": 1.0
+				},
+				{
+					"type": "crit_storm",
+					"duration": 3.0
+				},
+				{
+					"type": "focus"
+				}
+			]
+		},
+		{
+			"id": "legloop_lick",
+			"category": "训练营·脚 / 大腿 / 屁股",
+			"keys": [
+				[
+					"legloop"
+				],
+				[
+					"frog"
+				],
+				[
+					"rat"
+				]
+			],
+			"window": 2.5,
+			"cooldown": 8.0,
+			"effects": [
+				{
+					"type": "burst",
+					"amount": 20
+				},
+				{
+					"type": "grab_extend",
+					"seconds": 1.0
+				},
+				{
+					"type": "crit_storm",
+					"duration": 3.0
+				},
+				{
+					"type": "focus"
+				}
+			]
+		},
+		{
+			"id": "foot_thigh_lock",
+			"category": "训练营·脚 / 大腿 / 屁股",
+			"keys": [
+				[
+					"stocks"
+				],
+				[
+					"clamp"
+				],
+				[
+					"squirrel"
+				]
+			],
+			"window": 2.5,
+			"cooldown": 8.0,
+			"effects": [
+				{
+					"type": "burst",
+					"amount": 20
+				},
+				{
+					"type": "grab_extend",
+					"seconds": 1.0
+				},
+				{
+					"type": "crit_storm",
+					"duration": 3.0
+				},
+				{
+					"type": "focus"
+				}
+			]
+		},
+		{
+			"id": "pincer_stocks",
+			"category": "训练营·脚 / 大腿 / 屁股",
+			"keys": [
+				[
+					"thigh_pincer"
+				],
+				[
+					"stocks"
+				],
+				[
+					"hedgehog"
+				]
+			],
+			"window": 2.5,
+			"cooldown": 8.0,
+			"effects": [
+				{
+					"type": "burst",
+					"amount": 20
+				},
+				{
+					"type": "grab_extend",
+					"seconds": 1.0
+				},
+				{
+					"type": "crit_storm",
+					"duration": 3.0
+				},
+				{
+					"type": "focus"
+				}
+			]
+		},
+		{
+			"id": "rack_crawl",
+			"category": "训练营·脚 / 大腿 / 屁股",
+			"keys": [
+				[
+					"foot_thigh_rack"
+				],
+				[
+					"thigh_pincer"
+				],
+				[
+					"caterpillar"
+				]
+			],
+			"window": 2.5,
+			"cooldown": 8.0,
+			"effects": [
+				{
+					"type": "burst",
+					"amount": 20
+				},
+				{
+					"type": "grab_extend",
+					"seconds": 1.0
+				},
+				{
+					"type": "crit_storm",
+					"duration": 3.0
+				},
+				{
+					"type": "focus"
+				}
+			]
+		},
+		{
+			"id": "swing_frenzy",
+			"category": "训练营·脚 / 大腿 / 屁股",
+			"keys": [
+				[
+					"feather_swing"
+				],
+				[
+					"squirrel"
+				],
+				[
+					"rat"
+				]
+			],
+			"window": 2.5,
+			"cooldown": 8.0,
+			"effects": [
+				{
+					"type": "burst",
+					"amount": 20
+				},
+				{
+					"type": "grab_extend",
+					"seconds": 1.0
+				},
+				{
+					"type": "crit_storm",
+					"duration": 3.0
+				},
+				{
+					"type": "focus"
+				}
+			]
+		},
+		{
+			"id": "ring_binding",
+			"category": "训练营·脚 / 大腿 / 屁股",
+			"keys": [
+				[
+					"thigh_brush_ring"
+				],
+				[
+					"binding"
+				],
+				[
+					"fairy"
+				]
+			],
+			"window": 2.5,
+			"cooldown": 8.0,
+			"effects": [
+				{
+					"type": "burst",
+					"amount": 20
+				},
+				{
+					"type": "grab_extend",
+					"seconds": 1.0
+				},
+				{
+					"type": "crit_storm",
+					"duration": 3.0
+				},
+				{
+					"type": "focus"
+				}
+			]
+		},
+		{
+			"id": "foot_bubble",
+			"category": "训练营·脚 / 大腿 / 屁股",
+			"keys": [
+				[
+					"foot_bath"
+				],
+				[
+					"bubble_fish"
+				],
+				[
+					"slime",
+					"split_slime"
+				]
+			],
+			"window": 2.5,
+			"cooldown": 8.0,
+			"effects": [
+				{
+					"type": "burst",
+					"amount": 20
+				},
+				{
+					"type": "grab_extend",
+					"seconds": 1.0
+				},
+				{
+					"type": "crit_storm",
+					"duration": 3.0
+				},
+				{
+					"type": "focus"
+				}
+			]
+		},
+		{
+			"id": "bath_trio",
+			"category": "训练营·脚 / 大腿 / 屁股",
+			"keys": [
+				[
+					"sitz_bath"
+				],
+				[
+					"bubble_fish"
+				],
+				[
+					"fairy"
+				]
+			],
+			"window": 2.5,
+			"cooldown": 8.0,
+			"effects": [
+				{
+					"type": "burst",
+					"amount": 20
+				},
+				{
+					"type": "grab_extend",
+					"seconds": 1.0
+				},
+				{
+					"type": "crit_storm",
+					"duration": 3.0
+				},
+				{
+					"type": "focus"
+				}
+			]
+		},
+		{
+			"id": "spring_feather",
+			"category": "训练营·脚 / 大腿 / 屁股",
+			"keys": [
+				[
+					"spring_seat"
+				],
+				[
+					"teaser"
+				],
+				[
+					"rat"
+				]
+			],
+			"window": 2.5,
+			"cooldown": 8.0,
+			"effects": [
+				{
+					"type": "burst",
+					"amount": 20
+				},
+				{
+					"type": "grab_extend",
+					"seconds": 1.0
+				},
+				{
+					"type": "crit_storm",
+					"duration": 3.0
+				},
+				{
+					"type": "focus"
+				}
+			]
+		},
+		{
+			"id": "saddle_brush",
+			"category": "训练营·脚 / 大腿 / 屁股",
+			"keys": [
+				[
+					"saddle_bench"
+				],
+				[
+					"squirrel"
+				],
+				[
+					"caterpillar"
+				]
+			],
+			"window": 2.5,
+			"cooldown": 8.0,
+			"effects": [
+				{
+					"type": "burst",
+					"amount": 20
+				},
+				{
+					"type": "grab_extend",
+					"seconds": 1.0
+				},
+				{
+					"type": "crit_storm",
+					"duration": 3.0
+				},
+				{
+					"type": "focus"
+				}
+			]
+		},
+		{
+			"id": "scissor_brush",
+			"category": "训练营·脚 / 大腿 / 屁股",
+			"keys": [
+				[
+					"scissor_stand"
+				],
+				[
+					"cushion"
+				],
+				[
+					"hedgehog"
+				]
+			],
+			"window": 2.5,
+			"cooldown": 8.0,
+			"effects": [
+				{
+					"type": "burst",
+					"amount": 20
+				},
+				{
+					"type": "grab_extend",
+					"seconds": 1.0
+				},
+				{
+					"type": "crit_storm",
+					"duration": 3.0
 				},
 				{
 					"type": "focus"
