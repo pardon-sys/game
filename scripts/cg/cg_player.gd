@@ -345,17 +345,29 @@ func play_theater(id: String) -> void:
 
 
 ## 播放一段小剧场的文本（JSON），文本里的 {键} 先换成 subs 的值（训练营的惩罚小剧场：{zone} 部位 id、{zone_name} 部位名、{device} 刑具）。
+## 数字值：整个字符串 "{键}"（比如坐标 "{device_x}"）换成数字本身，文件里照样是合法的 JSON。
 func play_theater_subst(id: String, subs: Dictionary) -> void:
 	if not has_theater(id):
 		push_warning("没有小剧场: " + id)
 		return
-	var text := FileAccess.get_file_as_string(theater_index()[id])
-	for k in subs:
-		text = text.replace("{%s}" % k, str(subs[k]))
-	var parsed: Variant = JSON.parse_string(text)
-	if not parsed is Dictionary:
+	var parsed := theater_data(id, subs)
+	if parsed.is_empty():
 		return
 	await _request({"cg": parsed, "id": "theater:" + id, "source": "", "skippable": GameState.has_flag("cg_seen_theater:" + id), "fx": 0}, false)
+
+
+## 小剧场数据（代入 subs 之后）；没有这段或解析失败返回 {}。
+func theater_data(id: String, subs := {}) -> Dictionary:
+	if not has_theater(id):
+		return {}
+	var text := FileAccess.get_file_as_string(theater_index()[id])
+	for k in subs:
+		var v: Variant = subs[k]
+		if v is int or v is float:
+			text = text.replace("\"{%s}\"" % k, str(v))
+		text = text.replace("{%s}" % k, str(v))
+	var parsed: Variant = JSON.parse_string(text)
+	return parsed if parsed is Dictionary else {}
 
 
 ## 播放队列（正在播的不在里面）。每项 {cg, id, source, skippable, fx, combo?, done}。

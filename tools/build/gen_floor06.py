@@ -944,8 +944,9 @@ def zone_punish(i):
 
 
 def _theater_json(d):
-    # 占位的坐标写成 "{device_x}"，替换后要变成数字：去掉引号
-    return json.dumps(d, ensure_ascii=False, indent="\t").replace('"{device_x}"', "{device_x}").replace('"{device_y}"', "{device_y}") + "\n"
+    # 文件本身要是合法的 JSON（编辑器会解析 .json）：占位的坐标写成字符串 "{device_x}"，
+    # 播放时 CG.play_theater_subst 把整个 "{键}" 换成数字
+    return json.dumps(d, ensure_ascii=False, indent="\t") + "\n"
 
 
 # 训练二（魔力疲倦释放）：在组合里疲倦满了释放之后，公主没有逃——为了训练留在机关里（每个组合一段）
