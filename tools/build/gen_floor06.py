@@ -107,7 +107,10 @@ for x in (51, 57):
 # 关键人物
 npc(up, 12, 23, "supervisor", "supervisor", 0, AFTER + " dir=down")
 npc(up, 46, 24, "bonfire_host", "bonfire_host", 1)
-npc(up, 32, 27, "blue_princess", "blue_princess", 0, AFTER + " dir=down")
+# 蓝色的公主：可操作角色（平时 AI 在下面这些点之间溜达），开场之后才出现
+up.put(32, 27, "blue_princess dialogue=floor_06/blue_princess show_flag=f6_opening_done")
+for (x, y) in ((30, 25), (14, 22), (44, 28), (33, 18), (20, 12), (40, 36), (26, 33)):
+    up.put(x, y, "spot")
 # 居民
 npc(up, 24, 14, "granny", "granny", 2)
 npc(up, 36, 18, "kid", "kid_tom", 4)

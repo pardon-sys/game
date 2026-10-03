@@ -4,8 +4,7 @@
   checkpoint.png   32x16 × 2 帧（地上的魔法阵：暗 / 亮）+ crystal.png 8x12 × 4 帧（漂浮的小水晶，旋转）
   save_point.png   16x16 × 2 帧（发光的日记本：合着 / 翻开发光）
   npcs/<id>.png    居民和关键人物的行走图：32x32 × 4 帧 × 4 行（行 = 下 / 左 / 右 / 上，帧 = 站 / 迈步 / 站 / 迈步）
-  npc_portraits/<id>.png  关键人物的半身立绘（228x304，2 倍密度，和公主立绘一样大）
-  princess_blue.png / portraits_blue.png / portrait_heads_blue.png  蓝色公主：公主的行走图、立绘、头像换成蓝色调
+  （关键人物的立绘由 tools/art/import_portraits_v2.py 从用户的插画生成）
   town_props.png + town_props.json  小镇道具图集（房屋、摊位、篝火、帐篷、哨塔、栅栏、训练假人、路灯、木箱、矿车、井、楼梯、封住的地牢门……）
 
 用法：python tools/art/gen_town_art.py
@@ -230,120 +229,186 @@ def npc_frame(look, row, col):
     return add_outline(img)
 
 
+# ------------------------------------------------------------------ 三个关键人物（按用户给的立绘重画）
+SILVER, SILVER_D, SILVER_L = (205, 210, 222, 255), (140, 146, 165, 255), (240, 243, 250, 255)
+GOLD, GOLD_D = (226, 186, 84, 255), (170, 128, 50, 255)
+NAVY, NAVY_D = (44, 56, 120, 255), (28, 34, 82, 255)
+CREAM = (238, 232, 214, 255)
+ROSE, ROSE_D = (214, 122, 124, 255), (160, 82, 90, 255)
+CRIMSON, CRIMSON_D = (150, 34, 44, 255), (100, 22, 34, 255)
+AUBURN, AUBURN_D = (160, 64, 60, 255), (112, 40, 42, 255)
+LEATHER = (110, 72, 46, 255)
+PEACH, PEACH_D = (250, 178, 140, 255), (222, 130, 96, 255)
+FLAME, FLAME_D, FLAME_L = (240, 108, 54, 255), (196, 56, 40, 255), (255, 196, 92, 255)
+
+
+def _head(d, row, hy, hair, hair_d, eye=EYE, long_hair=False):
+    """头和头发（row 0 下 / 1 左 / 2 右 / 3 上）。"""
+    d.ellipse((11, hy - 5, 20, hy + 4), fill=SKIN)
+    if row == 3:
+        d.ellipse((10, hy - 6, 21, hy + 4), fill=hair)
+        if long_hair:
+            d.rectangle((10, hy, 21, hy + 10), fill=hair)
+            d.line((15, hy + 1, 15, hy + 10), fill=hair_d)
+        return
+    d.chord((10, hy - 7, 21, hy + 3), 180, 360, fill=hair)
+    if row == 0:
+        d.rectangle((10, hy - 3, 11, hy + (8 if long_hair else 2)), fill=hair)
+        d.rectangle((20, hy - 3, 21, hy + (8 if long_hair else 2)), fill=hair)
+        d.point((13, hy), fill=eye)
+        d.point((18, hy), fill=eye)
+        d.point((12, hy + 2), fill=(255, 170, 170, 255))
+        d.point((19, hy + 2), fill=(255, 170, 170, 255))
+    else:
+        back = (16, 21) if row == 1 else (10, 15)
+        d.rectangle((back[0], hy - 4, back[1], hy + (9 if long_hair else 2)), fill=hair)
+        d.point((12 if row == 1 else 19, hy), fill=eye)
+    d.line((12, hy - 4, 19, hy - 4), fill=hair_d)
+
+
+def _legs(d, row, swing, y0, y1, color):
+    if row in (0, 3):
+        d.rectangle((12, y0, 14, y1 - (1 if swing > 0 else 0)), fill=color)
+        d.rectangle((17, y0, 19, y1 - (1 if swing < 0 else 0)), fill=color)
+    else:
+        d.rectangle((14 + swing, y0, 16 + swing, y1), fill=color)
+        d.rectangle((15 - swing, y0, 17 - swing, y1), fill=_c(color[:3], 0.75))
+
+
+def captain_frame(row, col):
+    """保卫队队长：银白铠甲 + 金边，深蓝披风（米白里衬、金边），粉红短发低马尾，手按长剑。"""
+    img, d = canvas(32, 32)
+    swing = (1 if col == 1 else -1) if col in (1, 3) else 0
+    hy = 8
+    # 披风（身后）
+    if row == 3:
+        d.polygon([(8, 14), (23, 14), (25, 29), (6, 29)], fill=NAVY)
+        d.line((6, 29, 25, 29), fill=GOLD)
+        d.line((15, 15, 15, 28), fill=NAVY_D)
+    else:
+        d.polygon([(8, 14), (23, 14), (24, 28), (7, 28)], fill=NAVY_D)
+        d.line((7, 28, 24, 28), fill=GOLD_D)
+    _legs(d, row, swing, 24, 29, SILVER_D)
+    # 铠甲
+    d.rectangle((11, 14, 20, 24), fill=SILVER)
+    d.line((11, 18, 20, 18), fill=GOLD)
+    d.rectangle((11, 21, 20, 22), fill=LEATHER)
+    if row == 0:
+        d.point((15, 16), fill=GOLD)
+        d.point((16, 16), fill=GOLD)
+        d.line((13, 15, 13, 17), fill=SILVER_L)
+        # 披风前襟（米白里衬）
+        d.line((10, 14, 10, 25), fill=CREAM)
+        d.line((21, 14, 21, 25), fill=CREAM)
+    # 肩甲
+    d.ellipse((8, 13, 13, 17), fill=SILVER)
+    d.ellipse((18, 13, 23, 17), fill=SILVER)
+    d.point((10, 14), fill=GOLD)
+    d.point((21, 14), fill=GOLD)
+    # 手臂 + 长剑（剑尖朝下，在身侧）
+    if row != 3:
+        sx = 24 if row in (0, 2) else 7
+        d.line((sx, 15, sx, 29), fill=SILVER_L)
+        d.line((sx - 1, 16, sx + 1, 16), fill=GOLD)
+        d.point((sx, 14), fill=GOLD_D)
+        d.rectangle((sx - 2 if sx > 15 else sx + 1, 16, sx - 1 if sx > 15 else sx + 2, 20), fill=SILVER_D)
+    _head(d, row, hy, ROSE, ROSE_D)
+    if row != 0:
+        tail = 21 if row == 1 else 10
+        d.rectangle((tail - 1 if row == 1 else tail, hy + 1, tail if row == 1 else tail + 1, hy + 6), fill=ROSE)
+    else:
+        d.line((12, hy - 1, 14, hy - 2), fill=ROSE_D)   # 皱着的眉
+        d.line((17, hy - 2, 19, hy - 1), fill=ROSE_D)
+    return add_outline(img)
+
+
+def supervisor_frame(row, col):
+    """市场监督：深红长外套（金色花纹）、白色荷叶边衬衫、棕色束腰，红棕色长卷发，左手抱厚书、右手拿羽毛笔。"""
+    img, d = canvas(32, 32)
+    swing = (1 if col == 1 else -1) if col in (1, 3) else 0
+    hy = 9
+    _legs(d, row, swing, 26, 29, (70, 50, 46, 255))
+    # 长外套 + 白裙
+    d.polygon([(10, 15), (21, 15), (23, 27), (8, 27)], fill=CRIMSON)
+    d.line((8, 27, 23, 27), fill=GOLD_D)
+    if row == 0:
+        d.polygon([(13, 15), (18, 15), (19, 27), (12, 27)], fill=CREAM)
+        d.rectangle((13, 19, 18, 21), fill=LEATHER)
+        d.point((15, 16), fill=GOLD)
+        d.point((16, 16), fill=GOLD)
+        d.line((12, 15, 13, 15), fill=WHITE)
+        d.line((18, 15, 19, 15), fill=WHITE)
+    elif row in (1, 2):
+        fx = 18 if row == 2 else 11
+        d.line((fx, 16, fx, 27), fill=CREAM)
+        d.rectangle((12, 19, 19, 20), fill=LEATHER)
+    else:
+        d.line((15, 16, 15, 27), fill=CRIMSON_D)
+    # 袖口荷叶边
+    d.point((9, 22), fill=WHITE)
+    d.point((22, 22), fill=WHITE)
+    # 书和羽毛笔
+    if row in (0, 1):
+        d.rectangle((6, 17, 10, 22), fill=(110, 66, 40, 255), outline=(70, 40, 26, 255))
+        d.line((7, 19, 9, 19), fill=GOLD)
+    if row in (0, 2):
+        d.line((23, 11, 21, 17), fill=CREAM)
+        d.point((24, 10), fill=CREAM)
+        d.point((22, 12), fill=(210, 200, 180, 255))
+    _head(d, row, hy, AUBURN, AUBURN_D, eye=(120, 70, 40, 255), long_hair=True)
+    # 发饰（深蓝丝带）
+    d.point((19 if row != 2 else 12, hy - 5), fill=NAVY)
+    return add_outline(img)
+
+
+def host_frame(row, col):
+    """篝火派对的主人：桃橙色长发 + 红金花冠，橙红火焰裙（白色荷叶边），举着发光的灯笼杖。"""
+    img, d = canvas(32, 32)
+    swing = (1 if col == 1 else -1) if col in (1, 3) else 0
+    hy = 9
+    _legs(d, row, swing, 25, 29, SKIN)
+    d.point((12 + (1 if row else 0), 29), fill=FLAME_D)
+    d.point((18, 29), fill=FLAME_D)
+    # 火焰裙
+    d.polygon([(11, 15), (20, 15), (24, 26), (7, 26)], fill=FLAME)
+    for x in range(8, 24, 3):
+        d.polygon([(x, 26), (x + 2, 26), (x + 1, 23)], fill=FLAME_L)
+    d.line((8, 26, 23, 26), fill=WHITE)
+    if row != 3:
+        d.rectangle((12, 15, 19, 17), fill=FLAME_D)
+        d.point((15, 16), fill=FLAME_L)
+        d.point((16, 16), fill=FLAME_L)
+    # 灯笼杖（右手举高）
+    if row != 1:
+        lx = 25 if row != 3 else 6
+        d.line((lx, 9, lx, 24), fill=GOLD_D)
+        d.rectangle((lx - 2, 4, lx + 2, 9), fill=GOLD)
+        d.rectangle((lx - 1, 5, lx + 1, 8), fill=(255, 240, 150, 255))
+        d.point((lx, 3), fill=FLAME_D)
+    _head(d, row, hy, PEACH, PEACH_D, eye=(200, 70, 50, 255), long_hair=True)
+    # 花冠
+    for i, x in enumerate(range(11, 21, 2)):
+        d.point((x, hy - 6), fill=(230, 50, 60, 255) if i % 2 == 0 else GOLD)
+    return add_outline(img)
+
+
+KEY_NPCS = {"captain": captain_frame, "supervisor": supervisor_frame, "bonfire_host": host_frame}
+
+
+def key_npc_sheet(nid):
+    sheet = blank(32 * 4, 32 * 4)
+    for row in range(4):
+        for col in range(4):
+            sheet.alpha_composite(KEY_NPCS[nid](row, col), (col * 32, row * 32))
+    return sheet
+
+
 def npc_sheet(look):
     sheet = blank(32 * 4, 32 * 4)
     for row in range(4):
         for col in range(4):
             sheet.alpha_composite(npc_frame(look, row, col), (col * 32, row * 32))
     return sheet
-
-
-def npc_portrait(look):
-    """半身立绘（先画 114x152，再放大 2 倍成 228x304）。"""
-    from PIL import ImageDraw
-    img = blank(114, 152)
-    d = ImageDraw.Draw(img)
-    st = look["style"]
-    hair, hair_d = _c(look["hair"]), _c(look["hair"], 0.72)
-    out, out_d = _c(look["outfit"]), _c(look["outfit"], 0.7)
-    acc = _c(look["accent"])
-    # 身体
-    d.polygon([(22, 152), (30, 108), (84, 108), (92, 152)], fill=out)
-    d.line((57, 112, 57, 152), fill=out_d)
-    if st in ("guard", "captain"):
-        d.polygon([(26, 112), (88, 112), (86, 126), (28, 126)], fill=STEEL)
-        d.line((28, 126, 86, 126), fill=STEEL_D)
-        if st == "captain":
-            d.polygon([(18, 152), (24, 110), (30, 108), (30, 152)], fill=_c(look["outfit"], 0.8))
-            d.polygon([(96, 152), (90, 110), (84, 108), (84, 152)], fill=_c(look["outfit"], 0.8))
-            d.ellipse((50, 116, 64, 128), fill=acc)
-    if st == "supervisor":
-        d.polygon([(46, 108), (68, 108), (66, 152), (48, 152)], fill=acc)
-        d.rectangle((70, 124, 90, 150), fill=(245, 236, 210, 255), outline=(150, 120, 90, 255))
-        for y in range(130, 148, 4):
-            d.line((73, y, 87, y), fill=(160, 150, 140, 255))
-    if st == "host":
-        d.ellipse((40, 112, 52, 124), fill=(255, 200, 90, 255))
-        d.ellipse((62, 114, 74, 126), fill=(255, 150, 190, 255))
-    # 脖子和头
-    d.rectangle((50, 96, 64, 110), fill=SKIN_D)
-    d.ellipse((25, 24, 89, 98), fill=SKIN)
-    # 头发
-    d.chord((21, 18, 93, 84), 180, 360, fill=hair)
-    d.polygon([(21, 52), (30, 40), (34, 78), (24, 86)], fill=hair)
-    d.polygon([(93, 52), (84, 40), (80, 78), (90, 86)], fill=hair)
-    for x in range(34, 82, 12):
-        d.polygon([(x, 44), (x + 12, 44), (x + 6, 58)], fill=hair)
-    d.arc((21, 18, 93, 84), 200, 340, fill=hair_d)
-    if st in ("granny",):
-        d.ellipse((44, 4, 70, 26), fill=hair)
-    if st == "host":
-        for i, x in enumerate(range(26, 92, 9)):
-            d.ellipse((x, 20 + (i % 2) * 3, x + 8, 28 + (i % 2) * 3), fill=(255, 220, 100, 255) if i % 2 else (255, 140, 180, 255))
-    # 头盔 / 帽子
-    if st in ("guard", "captain"):
-        d.chord((18, 12, 96, 70), 180, 360, fill=STEEL)
-        d.line((18, 41, 96, 41), fill=STEEL_D)
-        if st == "captain":
-            d.polygon([(57, 12), (70, 0), (80, 4), (62, 16)], fill=(220, 50, 70, 255))
-    if st == "merchant":
-        d.rectangle((18, 30, 96, 36), fill=_c(look["accent"], 0.55))
-        d.rectangle((32, 10, 82, 32), fill=_c(look["accent"], 0.55))
-    if st == "miner":
-        d.chord((18, 14, 96, 68), 180, 360, fill=(230, 180, 60, 255))
-        d.ellipse((50, 18, 64, 30), fill=(255, 250, 200, 255))
-    if st == "maid":
-        d.rectangle((30, 38, 84, 44), fill=WHITE)
-    # 眼睛
-    for ex in (42, 72):
-        d.ellipse((ex - 7, 60, ex + 7, 76), fill=WHITE)
-        d.ellipse((ex - 5, 62, ex + 5, 76), fill=_c(look["hair"], 0.5))
-        d.ellipse((ex - 2, 66, ex + 2, 72), fill=EYE)
-        d.point((ex - 3, 64), fill=WHITE)
-        d.line((ex - 8, 58, ex + 6, 56 if ex < 57 else 58), fill=hair_d)
-    if st == "supervisor":
-        d.rectangle((33, 59, 51, 77), outline=(70, 70, 80, 255))
-        d.rectangle((63, 59, 81, 77), outline=(70, 70, 80, 255))
-        d.line((51, 66, 63, 66), fill=(70, 70, 80, 255))
-    if st == "captain":
-        d.line((34, 54, 50, 58), fill=hair_d, width=2)
-        d.line((80, 54, 64, 58), fill=hair_d, width=2)
-    # 嘴和腮红
-    d.arc((50, 80, 64, 90), 20, 160, fill=(190, 90, 100, 255))
-    d.ellipse((30, 78, 40, 84), fill=(255, 180, 180, 160))
-    d.ellipse((74, 78, 84, 84), fill=(255, 180, 180, 160))
-    img = add_outline(img)
-    return img.resize((228, 304), resample=0)
-
-
-# ------------------------------------------------------------------ 蓝色公主
-def _blue(img):
-    """粉色 / 红色系（色相 300°~20°、饱和度够高）换成蓝色系；皮肤、白裙、金色不动。"""
-    import colorsys
-    px = img.load()
-    w, h = img.size
-    out = img.copy()
-    po = out.load()
-    for y in range(h):
-        for x in range(w):
-            r, g, b, a = px[x, y]
-            if a == 0:
-                continue
-            hh, ss, vv = colorsys.rgb_to_hsv(r / 255, g / 255, b / 255)
-            deg = hh * 360
-            if ss > 0.22 and (deg >= 290 or deg <= 18):
-                nh = (deg + 230) % 360 / 360  # 粉 (~335°) → 蓝 (~205°)
-                nr, ng, nb = colorsys.hsv_to_rgb(nh, min(ss * 1.05, 1.0), vv)
-                po[x, y] = (int(nr * 255), int(ng * 255), int(nb * 255), a)
-    return out
-
-
-def gen_blue_princess():
-    from PIL import Image
-    for name in ("princess", "portraits", "portrait_heads", "princess_magic"):
-        src = OUT / (name + ".png")
-        if src.exists():
-            _blue(Image.open(src).convert("RGBA")).save(OUT / (name + "_blue.png"))
 
 
 # ------------------------------------------------------------------ 小镇道具
@@ -539,20 +604,18 @@ def gen_props():
 
 
 def gen_npcs():
+    """普通居民用程序外观；三个关键人物按立绘单独画（立绘由 import_portraits_v2.py 从用户的插画生成）。"""
     (OUT / "npcs").mkdir(exist_ok=True)
-    (OUT / "npc_portraits").mkdir(exist_ok=True)
     for nid, look in LOOKS.items():
-        npc_sheet(look).save(OUT / "npcs" / (nid + ".png"))
-        if nid in ("captain", "supervisor", "bonfire_host"):
-            npc_portrait(look).save(OUT / "npc_portraits" / (nid + ".png"))
+        sheet = key_npc_sheet(nid) if nid in KEY_NPCS else npc_sheet(look)
+        sheet.save(OUT / "npcs" / (nid + ".png"))
 
 
 def main():
     gen_markers()
     gen_npcs()
-    gen_blue_princess()
     gen_props()
-    print("检查点 / 存档点 / 居民 / 蓝色公主 / 小镇道具像素图已生成")
+    print("检查点 / 存档点 / 居民 / 小镇道具像素图已生成")
 
 
 if __name__ == "__main__":

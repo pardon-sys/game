@@ -632,10 +632,18 @@ func _spawn(a: Dictionary) -> void:
 	if kind == "shadow":
 		n = make_shadow()
 	elif kind.begins_with("npc:"):
-		var r: Node2D = load("res://scenes/actors/allies/resident.tscn").instantiate()
-		r.set("npc_id", kind.trim_prefix("npc:"))
-		r.set("wander", 0.0)
-		n = r
+		var npc_id := kind.trim_prefix("npc:")
+		var scene_path := str(Dialogue.npcs.get(npc_id, {}).get("scene", ""))
+		if scene_path != "" and ResourceLoader.exists(scene_path):
+			# 可操作角色（蓝色公主）：生成过场演员（不溜达、不显示对话提示）
+			n = load(scene_path).instantiate()
+			n.set("ai", false)
+			n.set("dialogue", "")
+		else:
+			var r: Node2D = load("res://scenes/actors/allies/resident.tscn").instantiate()
+			r.set("npc_id", npc_id)
+			r.set("wander", 0.0)
+			n = r
 	elif kind.begins_with("monster:"):
 		var path := str(CG.data.get("actors", {}).get(kind.trim_prefix("monster:"), {}).get("scene", ""))
 		if path == "" or not ResourceLoader.exists(path):

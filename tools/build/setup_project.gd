@@ -45,6 +45,7 @@ func _initialize() -> void:
 	_action("magic", [_key(KEY_L), _mouse(MOUSE_BUTTON_RIGHT), _btn(JOY_BUTTON_LEFT_SHOULDER)])
 	_action("pause", [_key(KEY_ESCAPE), _btn(JOY_BUTTON_START)])
 	_action("backpack", [_key(KEY_TAB), _key(KEY_I), _btn(JOY_BUTTON_LEFT_STICK)])
+	_action("switch_character", [_key(KEY_F2)])   # 测试模式：切换操控公主 / 蓝色公主
 	var err := ProjectSettings.save()
 	print("project.godot 已更新: ", err)
 	quit(err)

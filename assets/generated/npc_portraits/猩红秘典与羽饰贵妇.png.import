@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dtx80mfjvusif"
-path="res://.godot/imported/princess_magic_blue.png-3a783b69d97966769a9bf9c2092ae4c2.ctex"
+uid="uid://b55t7hqovpl3j"
+path="res://.godot/imported/猩红秘典与羽饰贵妇.png-9eb9a6b1099547cffa7363b521040853.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/generated/princess_magic_blue.png"
-dest_files=["res://.godot/imported/princess_magic_blue.png-3a783b69d97966769a9bf9c2092ae4c2.ctex"]
+source_file="res://assets/generated/npc_portraits/猩红秘典与羽饰贵妇.png"
+dest_files=["res://.godot/imported/猩红秘典与羽饰贵妇.png-9eb9a6b1099547cffa7363b521040853.ctex"]
 
 [params]
 

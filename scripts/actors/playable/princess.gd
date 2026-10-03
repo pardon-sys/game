@@ -14,6 +14,14 @@ var dragged_into := ""
 var _reaction_cooldown := 0.0
 var _last_reaction := ""
 var _reaction_stage := ""
+## 立绘套装（Dialogue.PORTRAIT_SETS 的名字）：公主 "pink"，蓝色公主 "blue"。
+var portrait_set := "pink"
+
+
+## 是不是玩家正在操控的那一个（GameState.player）。AI 控制的（蓝色公主）只保留小人的动画和表情，
+## 不触发台词气泡、提示、语音、剧情对话这些属于玩家的反馈。
+func is_controlled() -> bool:
+	return GameState.player == self
 
 
 ## Called by EmotionComponent; no action-state changes are made here.
@@ -67,7 +75,7 @@ func _setup() -> void:
 	# 关卡切换后恢复的闷笑值 / 战损需要立即反映到形象与语音
 	_on_laugh_value_changed(laugh.value, laugh.max_value)
 	animator.config.row_names.assign(GameState.VISUALS)
-	GameState.enemy_defeated.connect(func(_e: Node): GameState.emote("happy", 1.5))
+	GameState.enemy_defeated.connect(func(_e: Node): if is_controlled(): GameState.emote("happy", 1.5))
 	if status:
 		status.grabbed.connect(_on_grabbed)
 	magic_event.connect(_on_magic_event)
@@ -80,7 +88,7 @@ func _on_damaged(hit: HitData) -> void:
 
 func _on_tickled(hit: HitData) -> void:
 	super(hit)
-	if fatigue_bursting:
+	if fatigue_bursting or not is_controlled():
 		return  # 这一下挠痒把疲倦挠满、刚刚爆发：说疲倦爆发的台词，不说普通受挠台词
 	var key := ReactionDB.key_of(hit.source)
 	if _play_first_encounter(key):
@@ -101,6 +109,8 @@ func _on_tickled(hit: HitData) -> void:
 
 func _on_laugh_level_changed(level: LaughMeter.Level) -> void:
 	super(level)
+	if not is_controlled():
+		return
 	if level == LaughMeter.Level.HELPLESS:
 		GameState.set_flag("was_helpless")
 		GameState.notify(ReactionDB.hint("helpless"))
@@ -111,13 +121,16 @@ func _on_laugh_level_changed(level: LaughMeter.Level) -> void:
 
 func _on_laugh_overflow() -> void:
 	super()
-	GameState.notify(ReactionDB.hint("overflow"))
+	if is_controlled():
+		GameState.notify(ReactionDB.hint("overflow"))
 
 
 func _on_died() -> void:
-	GameState.princess_reacted.emit("", 0.0)
+	if is_controlled():
+		GameState.princess_reacted.emit("", 0.0)
 	super()
-	GameState.emote("sad", 0.0)
+	if is_controlled():
+		GameState.emote("sad", 0.0)
 
 
 func revive() -> void:
@@ -136,10 +149,13 @@ func _on_laugh_value_changed(value: float, _maximum: float) -> void:
 		battle_damaged = true
 	emotion.refresh()
 	var voice := "laugh" if value > laugh.helpless_threshold else ("giggle" if value > laugh.giggle_threshold else "")
-	Audio.set_voice_state(voice if is_alive() else "")
+	if is_controlled():
+		Audio.set_voice_state(voice if is_alive() else "")
 
 
 func _on_respawned() -> void:
+	if not is_controlled():
+		return
 	if _after_cg:
 		_after_cg = false
 		return
@@ -264,7 +280,7 @@ func _say(candidates_in: Array, stage: String) -> void:
 
 
 func _on_magic_event(event: String, tier: int) -> void:
-	if GameState.in_dialogue:
+	if GameState.in_dialogue or not is_controlled():
 		return
 	match event:
 		"fatigue_burst":
@@ -289,7 +305,7 @@ var _fatigue_warned := false
 
 
 func _on_fatigue_changed(_value: float, _max: float) -> void:
-	if fatigue.is_near_full() and not _fatigue_warned and is_alive():
+	if fatigue.is_near_full() and not _fatigue_warned and is_alive() and is_controlled():
 		_fatigue_warned = true
 		_say(ReactionDB.fatigue("warning"), "fatigue")
 
@@ -312,13 +328,15 @@ func _on_fatigue_burst() -> void:
 
 ## 组合技触发时由 ComboTracker 调用。
 func say_combo(id: String) -> void:
-	if GameState.in_dialogue:
+	if GameState.in_dialogue or not is_controlled():
 		return
 	GameState.emote("surprise", 1.0)
 	_say(ReactionDB.combo(id).get("lines", []), "combo")
 
 
 func _on_grabbed(source: Node) -> void:
+	if not is_controlled():
+		return
 	if not GameState.has_flag("hint_grabbed"):
 		GameState.set_flag("hint_grabbed")
 		GameState.notify(ReactionDB.hint("grabbed"))

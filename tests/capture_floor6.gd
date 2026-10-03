@@ -99,6 +99,26 @@ func _ready() -> void:
 		Dialogue.advance()
 		Dialogue.advance()
 		await _wait(0.1)
+	# 蓝色公主：溜达、对话立绘
+	var blue: BluePrincess = null
+	for n in main.level.find_children("*", "", true, false):
+		if n is BluePrincess:
+			blue = n
+	if blue:
+		await _wait(3.0)
+		player.global_position = blue.global_position + Vector2(-20, 6)
+		player.camera.reset_smoothing()
+		await _wait(0.4)
+		await _shot("f6_43_blue_wander")
+		blue.talk(player)
+		await _wait(1.0)
+		await _shot("f6_44_blue_talk")
+		while Dialogue.runner.is_running():
+			if Dialogue.runner.choice_menu.is_open():
+				Dialogue.runner.choice_menu.choose(Dialogue.runner.choice_menu.options.size() - 1)
+			Dialogue.advance()
+			Dialogue.advance()
+			await _wait(0.1)
 	SaveSystem.save(1, "集市广场")
 	var menu := SlotMenu.new()
 	get_tree().root.add_child(menu)

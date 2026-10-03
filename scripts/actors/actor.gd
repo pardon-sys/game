@@ -70,6 +70,15 @@ func _ready() -> void:
 	_setup()
 
 
+## 换阵营（同时换节点组）：可操作角色在玩家 / 同伴之间切换时用。
+func set_faction(f: Faction.Type) -> void:
+	if Faction.GROUPS.has(faction):
+		remove_from_group(Faction.GROUPS[faction])
+	faction = f
+	if Faction.GROUPS.has(faction):
+		add_to_group(Faction.GROUPS[faction])
+
+
 func _physics_process(delta: float) -> void:
 	_attack_invuln = maxf(_attack_invuln - delta, 0.0)
 	_full_invuln = maxf(_full_invuln - delta, 0.0)

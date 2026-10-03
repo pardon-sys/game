@@ -111,7 +111,7 @@ func _run_visual_states() -> void:
 	var pmeta: Variant = JSON.parse_string(FileAccess.get_file_as_string("res://assets/generated/portraits.json"))
 	check("立绘顺序 = 视觉状态顺序", pmeta["order"] == GameState.VISUALS)
 	var magic_tex: Texture2D = load("res://assets/generated/princess_magic.png")
-	check("魔法图集 48 格 × 32 列 × 6 行", magic_tex.get_size() == Vector2(1536, 288))
+	check("魔法图集 48 格 × 6 帧 × 6 行（只有正面）", magic_tex.get_size() == Vector2(288, 288))
 	check("11行16列动画图集", player.sprite.hframes == 16 and player.sprite.vframes == 11)
 	for e in GameState.EMOTIONS.slice(0, 6):
 		GameState.emote(e, 0.0, false)

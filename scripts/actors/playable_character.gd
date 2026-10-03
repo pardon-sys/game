@@ -128,6 +128,11 @@ func _setup() -> void:
 		prompt.hide()
 
 
+## 不被玩家操控时用的 AI 控制器（切换操控时 GameState.switch_control 调用）；默认站着不动。
+func make_ai_controller() -> CharacterController:
+	return ScriptedController.new()
+
+
 ## 更换输入来源（Controllable 接口）。
 func set_controller(c: CharacterController) -> void:
 	if controller and controller != c:
