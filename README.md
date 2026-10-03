@@ -360,6 +360,7 @@ HUD 闷笑条下方紫色的「魔力」条（上限 500，刻度 40% / 60% / 80
   也可以直接在编辑器里打开 `levels/floor_01/floor.tscn` 修改（注意重新构建会覆盖编辑器里的改动）。
 - **公主 / 蓝色公主的精灵图（第二版）**：用户重画的白底精灵图 `additional_princess/new_princess2/3/4.png`（公主）、`blue_princess/princess_blue1/2/3.png`（蓝色公主）由 `tools/art/import_sprites_v2.py` 导入，输出 `princess.png` / `princess_blue.png`（32×32，11 行 × 16 列，布局不变）和 `princess_magic.png` / `princess_blue_magic.png`（48×48，6 行 × 6 帧，只有正面）。
   - 切帧按已知的行数 / 每行帧数均分，切线挪到最空的列；哪一帧当哪个状态、哪个方向写在脚本开头的 PINK / BLUE 映射里（缺的方向用镜像，5 帧的走路挑 4 帧）。
+  - 公主的正常 / 战损行走状态（普通、开心、生气、难过、惊讶、害羞、战损、憋笑、战损憋笑）沿用第一版精灵图（存在 `additional_princess/princess_v1_sheet.png`），只有失控一 / 失控二和魔法姿态用新画的；失控一 / 失控二的宽姿势整个缩进 32 格里，不裁边。
   - 蓝色公主站着时正面显示表情帧（`princess_blue1` 第 1 行），走路时是走路循环；战损魔法 5 张对应 6 种魔法姿态（普通吟诵 / 释放用战损的代替）。
   - `python tools/art/import_sprites_v2.py --preview`：切帧框和放大的结果图在 `tools/.cache/sprites_v2/`。
 - **蓝色公主立绘、关键人物立绘**：`tools/art/import_portraits_v2.py` 把 `blue_princess/portraits_blue1/2/3.png` 做成 `portraits_blue.png` / `portrait_heads_blue.png`（和公主同样的 17 格），把三张全身插画（`npc_portraits/银白圣徽骑士统帅.png` 等）裁成半身、像素化成 `npc_portraits/captain.png` / `supervisor.png` / `bonfire_host.png`（228×304）。头像框在 `data/actors/blue_visuals.json`，半身取景在脚本的 NPCS 表里调。
