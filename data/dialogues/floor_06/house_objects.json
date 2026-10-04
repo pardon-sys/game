@@ -10,6 +10,12 @@
 			"goto": [
 				{
 					"if": {
+						"flag": "blue_is_hero"
+					},
+					"node": "bed_as_blue"
+				},
+				{
+					"if": {
 						"flag": "f6_key"
 					},
 					"node": "bed_sleep"
@@ -62,6 +68,14 @@
 					"speaker": "公主",
 					"emotion": "surprise"
 				}
+			],
+			"goto": [
+				{
+					"if": {
+						"flag": "blue_is_hero"
+					},
+					"node": "wardrobe_as_blue"
+				}
 			]
 		},
 		"bookshelf": {
@@ -75,6 +89,14 @@
 					"speaker": "公主",
 					"emotion": "shy"
 				}
+			],
+			"goto": [
+				{
+					"if": {
+						"flag": "blue_is_hero"
+					},
+					"node": "bookshelf_as_blue"
+				}
 			]
 		},
 		"dresser": {
@@ -83,6 +105,14 @@
 					"text": "梳妆台的镜子擦得亮亮的。……头发乱糟糟的，今天被挠了好多次。",
 					"speaker": "公主",
 					"emotion": "shy"
+				}
+			],
+			"goto": [
+				{
+					"if": {
+						"flag": "blue_is_hero"
+					},
+					"node": "dresser_as_blue"
 				}
 			]
 		},
@@ -98,6 +128,14 @@
 					"speaker": "公主",
 					"emotion": "happy"
 				}
+			],
+			"goto": [
+				{
+					"if": {
+						"flag": "blue_is_hero"
+					},
+					"node": "tea_as_blue"
+				}
 			]
 		},
 		"plant": {
@@ -106,10 +144,24 @@
 					"text": "盆栽的叶子绿油油的。地底下也能长得这么好啊。",
 					"speaker": "公主"
 				}
+			],
+			"goto": [
+				{
+					"if": {
+						"flag": "blue_is_hero"
+					},
+					"node": "plant_as_blue"
+				}
 			]
 		},
 		"window": {
 			"goto": [
+				{
+					"if": {
+						"flag": "blue_is_hero"
+					},
+					"node": "window_as_blue"
+				},
 				{
 					"if": {
 						"flag": "night"
@@ -145,10 +197,24 @@
 					"speaker": "公主",
 					"emotion": "sad"
 				}
+			],
+			"goto": [
+				{
+					"if": {
+						"flag": "blue_is_hero"
+					},
+					"node": "painting_as_blue"
+				}
 			]
 		},
 		"saddle": {
 			"goto": [
+				{
+					"if": {
+						"flag": "blue_is_hero"
+					},
+					"node": "saddle_as_blue"
+				},
 				{
 					"if": {
 						"flag": "f6_key"
@@ -195,6 +261,94 @@
 					"text": "……再也不坐了。绝对不坐了。",
 					"speaker": "公主",
 					"emotion": "angry"
+				}
+			]
+		},
+		"bed_as_blue": {
+			"lines": [
+				{
+					"text": "……她睡过的床。被子没叠。",
+					"speaker": "蓝色的公主"
+				},
+				{
+					"text": "……枕头上还有一根粉色的头发。",
+					"speaker": "蓝色的公主"
+				}
+			]
+		},
+		"wardrobe_as_blue": {
+			"lines": [
+				{
+					"text": "……给她准备的裙子。只穿了一件。",
+					"speaker": "蓝色的公主"
+				}
+			]
+		},
+		"bookshelf_as_blue": {
+			"lines": [
+				{
+					"text": "……《地面上的童话》不在书架上。",
+					"speaker": "蓝色的公主"
+				},
+				{
+					"text": "……她带走了。",
+					"speaker": "蓝色的公主"
+				}
+			]
+		},
+		"dresser_as_blue": {
+			"lines": [
+				{
+					"text": "……镜子里只有我。",
+					"speaker": "蓝色的公主"
+				}
+			]
+		},
+		"tea_as_blue": {
+			"lines": [
+				{
+					"text": "……茶凉了。",
+					"speaker": "蓝色的公主"
+				},
+				{
+					"text": "……她说过，很好喝。",
+					"speaker": "蓝色的公主"
+				}
+			]
+		},
+		"plant_as_blue": {
+			"lines": [
+				{
+					"text": "……要记得浇水。",
+					"speaker": "蓝色的公主"
+				}
+			]
+		},
+		"window_as_blue": {
+			"lines": [
+				{
+					"text": "……矿道口的方向。",
+					"speaker": "蓝色的公主"
+				}
+			]
+		},
+		"painting_as_blue": {
+			"lines": [
+				{
+					"text": "……地面上的草地。……她想回去的地方。",
+					"speaker": "蓝色的公主"
+				}
+			]
+		},
+		"saddle_as_blue": {
+			"lines": [
+				{
+					"text": "……那张凳子。",
+					"speaker": "蓝色的公主"
+				},
+				{
+					"text": "……不坐。",
+					"speaker": "蓝色的公主"
 				}
 			]
 		}

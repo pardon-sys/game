@@ -1,77 +1,187 @@
 {
 	"_说明": [
-		"第七层（gen_floor07.py 生成）：combo_areas = 每组新组合所在的区域（格，含上墙，左上 → 右下），level_design_test 检查区域里有组合需要的陷阱和怪物。"
+		"第七层（gen_floor07.py 生成）：combo_areas = 每组组合所在的房间（格，含上墙，左上 → 右下），level_design_test 检查区域里有组合需要的陷阱和怪物。",
+		"checkpoints = 检查点数量（塔底的日记本是唯一的存档点）。"
 	],
+	"checkpoints": 4,
 	"combo_areas": [
 		{
-			"combo": "spider_binding_brush",
+			"combo": "snare_sole_feast",
 			"rect": [
-				3,
-				70,
-				14,
-				79
+				25,
+				83,
+				34,
+				92
+			]
+		},
+		{
+			"combo": "mud_sink",
+			"rect": [
+				36,
+				83,
+				45,
+				92
 			]
 		},
 		{
 			"combo": "octopus_vest",
 			"rect": [
-				33,
+				36,
 				70,
-				44,
+				45,
 				79
 			]
 		},
 		{
-			"combo": "wardrobe_ghost",
+			"combo": "thigh_torture",
 			"rect": [
-				3,
-				44,
-				15,
-				53
+				25,
+				70,
+				34,
+				79
+			]
+		},
+		{
+			"combo": "armpit_rain",
+			"rect": [
+				14,
+				70,
+				23,
+				79
+			]
+		},
+		{
+			"combo": "spider_binding_brush",
+			"rect": [
+				2,
+				70,
+				12,
+				79
+			]
+		},
+		{
+			"combo": "prone_full",
+			"rect": [
+				2,
+				57,
+				12,
+				66
+			]
+		},
+		{
+			"combo": "one_leg_show",
+			"rect": [
+				36,
+				57,
+				45,
+				66
 			]
 		},
 		{
 			"combo": "mud_frog_dance",
 			"rect": [
-				33,
+				36,
 				44,
+				45,
+				53
+			]
+		},
+		{
+			"combo": "cuffs_shower_slime",
+			"rect": [
+				25,
 				44,
+				34,
+				53
+			]
+		},
+		{
+			"combo": "wardrobe_ghost",
+			"rect": [
+				2,
+				44,
+				12,
 				53
 			]
 		},
 		{
 			"combo": "supine_jelly",
 			"rect": [
-				3,
+				2,
 				31,
+				12,
+				40
+			]
+		},
+		{
+			"combo": "loop_rack",
+			"rect": [
 				14,
+				31,
+				23,
+				40
+			]
+		},
+		{
+			"combo": "wardrobe_inout",
+			"rect": [
+				25,
+				31,
+				34,
 				40
 			]
 		},
 		{
 			"combo": "cushion_cage",
 			"rect": [
-				33,
+				36,
 				31,
-				44,
+				45,
 				40
+			]
+		},
+		{
+			"combo": "rune_wings",
+			"rect": [
+				14,
+				18,
+				21,
+				27
 			]
 		},
 		{
 			"combo": "spin_barnacle",
 			"rect": [
-				3,
+				2,
 				18,
-				14,
+				12,
 				27
+			]
+		},
+		{
+			"combo": "supine_navel",
+			"rect": [
+				2,
+				5,
+				12,
+				14
+			]
+		},
+		{
+			"combo": "prone_wheel_crawl",
+			"rect": [
+				14,
+				5,
+				23,
+				14
 			]
 		},
 		{
 			"combo": "legloop_glove",
 			"rect": [
-				31,
+				36,
 				5,
-				44,
+				45,
 				14
 			]
 		}

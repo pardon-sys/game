@@ -59,6 +59,10 @@ func _process(delta: float) -> void:
 ## 被挠痒：累积闷笑值。
 func add(amount: float) -> void:
 	notify_attacked()
+	# 冰晶守护（蓝色公主的冰晶结界）期间：挠痒、组合爆发、余痒都不涨
+	var who := get_parent()
+	if amount > 0.0 and who and who.has_method("has_buff") and who.has_buff("frost_guard"):
+		return
 	_set_value(value + amount)
 	if value >= max_value:
 		overflow.emit()

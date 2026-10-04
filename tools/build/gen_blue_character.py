@@ -28,6 +28,10 @@ CALM = ["……嗯。", "……唔。", "……不痒。", "……别碰。", "�
         "……哼。", "……还好。", "……{z}？……不怕。", "……走开。"]
 GIGGLE = ["……噗。……刚才是咳嗽。", "……唔、嗯……", "……{n}……别、别……", "……哈。……没笑。", "……嗯唔……不、不痒……",
           "……噗嗤。……忘掉它。", "……{z}……不行……嗯……", "……呜。……别挠{z}。", "……忍得住。……嗯、嗯……"]
+# 失控一：已经憋不住、笑出声了，但还在努力（比失控二短）
+H1 = ["……噗、哈哈……不、不是……", "哈、哈哈……憋、憋不住……", "……哈哈……{z}……别、别碰那里……",
+      "噗哈……！刚、刚才那个不算……哈哈……", "……呜、哈哈……{n}……停、停一下……", "哈哈……明明忍得住的……哈哈哈……",
+      "……哈、哈哈……{z}……为、为什么……"]
 BREAK = ["……哈、哈哈……不、不行……{z}……那里……哈哈哈哈……忍、忍不住了……！",
          "哈哈哈……停、停下……{n}……停下来……哈哈哈哈……我、我投降……！",
          "……不、不要了……哈哈哈哈……{z}也、也不行……为什么偏偏是那里……哈哈哈……！",
@@ -43,8 +47,16 @@ DAZED = ["……嗯……天花板……在转……", "……{n}……软软的
 WAKE = ["……醒了。……刚才的事，忘掉。", "……下次。不会再输。", "……{n}。记住了。", "……没笑。……一次都没有。"]
 GRABBED = ["……放开。", "……抓得真紧。……别挠。", "……啧。……挣开就好。", "……被抓住了。……麻烦。"]
 SPECIAL = ["……！？哈、哈哈哈——不、不算……刚才不算……！", "……呜！？{z}……哈哈哈哈……！", "……！……那、那里……哈哈哈……！"]
-WORDS = {"helpless_1": ["……噗", "唔", "……哈", "嗯…", "……"], "helpless_2": ["哈哈哈", "不、不行", "哈哈哈哈", "……别看", "哈…哈…"]}
-ZONE_WORDS = {"helpless_1": ["……{z}", "{z}……唔", "……别碰{z}"], "helpless_2": ["{z}不行哈哈", "{z}哈哈哈", "……{z}……！"]}
+WORDS = {"helpless_1": ["噗、哈哈", "憋…不住", "……哈哈", "哈、哈哈", "噗哈"],
+         "helpless_2": ["哈哈哈哈", "不、不行哈哈", "别看哈哈哈", "哈哈…哈哈哈", "停、停下哈哈"]}
+ZONE_WORDS = {"helpless_1": ["{z}…哈哈", "噗、{z}……", "别碰{z}哈哈"], "helpless_2": ["{z}不行哈哈哈", "{z}哈哈哈哈", "……{z}……哈哈！"]}
+MAGIC = {
+    "channel": ["……冰晶。回应我。", "……别动。结界要成形了。", "……集中。……不许挠。"],
+    "interrupted": ["……啧。断了。", "……念到一半……被挠……", "……再来一次。"],
+    "fizzle": ["……太快了。", "……冰没结起来。"],
+    "burst": ["……冻住。", "……结界，展开。"],
+    "burst_full": ["……全部，冻住。", "……这一圈，谁也别想动。"],
+}
 
 
 def pick(pool, seed, **kw):
@@ -103,7 +115,7 @@ rx = json.loads(json.dumps(pink))
 rx["_说明"] = "蓝色公主的受挠台词（tools/build/gen_blue_character.py 从粉色公主的数据转换）：平时只有短拟声词，失控后才变多。结构同 data/princess_reactions.json。"
 rx["lines"] = {
     "calm": picks(CALM, "g_calm", 5, n="……", z="腰"), "giggle": picks(GIGGLE, "g_gig", 5, n="……", z="腰"),
-    "helpless_1": picks(GIGGLE, "g_h1", 3, n="……", z="大腿") + picks(BREAK, "g_h1b", 2, n="……", z="大腿"),
+    "helpless_1": picks(H1, "g_h1", 5, n="……", z="大腿"),
     "helpless_2": picks(BREAK, "g_h2", 5, n="……", z="屁股"), "grabbed": GRABBED[:3], "special": picks(SPECIAL, "g_sp", 3, z="大腿"),
 }
 rx["portrait_words"] = WORDS
@@ -115,7 +127,7 @@ for key, s in rx.get("sources", {}).items():
                             {"speaker": BLUE, "emotion": "shy", "text": pick(["……被它碰到的地方，有点痒。……不，没什么。", "……%s……会挠人。……麻烦。" % n,
                                                                               "……%s附近……别、别碰。" % z], key)},
                             {"speaker": BLUE, "emotion": "angry", "text": pick(["……别靠近我。", "……打掉就好。", "……挣开就好。……很简单。"], key + "x")}]
-    for stage, pool, k in (("calm", CALM, 2), ("giggle", GIGGLE, 2), ("helpless_1", GIGGLE, 2), ("helpless_2", BREAK, 2)):
+    for stage, pool, k in (("calm", CALM, 2), ("giggle", GIGGLE, 2), ("helpless_1", H1, 2), ("helpless_2", BREAK, 2)):
         if stage in s:
             s[stage] = picks(pool, key + stage, k, n=n, z=z)
     if "grabbed" in s:
@@ -123,10 +135,10 @@ for key, s in rx.get("sources", {}).items():
     if "special" in s:
         s["special"] = picks(SPECIAL, key + "sp", 2, z=z)
     if "portrait_words" in s:
-        s["portrait_words"] = {"helpless_1": ["……%s" % n[:2], "……噗", "唔"], "helpless_2": ["%s……哈哈" % n[:2], "哈哈哈", "不、不行"]}
+        s["portrait_words"] = {"helpless_1": ["%s…哈哈" % n, "噗、哈哈", "憋…不住"], "helpless_2": ["%s……哈哈哈" % n, "哈哈哈哈", "不、不行哈哈"]}
     if "lines_by_content" in s:
         for _c, v in s["lines_by_content"].items():
-            for stage, pool in (("calm", CALM), ("giggle", GIGGLE), ("helpless_1", GIGGLE), ("helpless_2", BREAK)):
+            for stage, pool in (("calm", CALM), ("giggle", GIGGLE), ("helpless_1", H1), ("helpless_2", BREAK)):
                 if stage in v:
                     v[stage] = picks(pool, key + _c + stage, 2, n=n, z=z)
 for cid, c in rx.get("combos", {}).items():
@@ -141,8 +153,8 @@ def no_ben(t):
     return t.replace("本公主", "我")
 
 
-for ev, ls in rx.get("magic", {}).items():
-    rx["magic"][ev] = [no_ben(x) if isinstance(x, str) else x for x in ls]
+# 她的魔法是冰晶结界（scripts/combat/ice_barrier.gd）
+rx["magic"] = dict(MAGIC, _说明="蓝色公主的冰晶结界：channel 开始吟唱、interrupted 被打断、fizzle 蓄力不足、burst 1~2 档、burst_full 满蓄力")
 (OUT / "reactions.json").write_text(json.dumps(rx, ensure_ascii=False, indent="\t") + "\n")
 
 # ------------------------------------------------------------------ 疲倦爆发
@@ -188,7 +200,8 @@ def convert_steps(cid, steps, noun, zone):
                 ha = t.count("哈")
                 # 越往后越憋不住：后 40% 的句子只要原句在笑就失控
                 late = plain_idx.index(i) >= len(plain_idx) * 0.6 if i in plain_idx else False
-                pool = CALM if ha == 0 else (BREAK if ha >= 6 or (late and ha >= 2) else GIGGLE)
+                # 憋着（短）→ 失控一就破功（笑出声）→ 后段完全崩溃
+                pool = CALM if ha == 0 else (GIGGLE if ha <= 2 and not late else (BREAK if late and ha >= 4 else H1))
                 st["text"] = pick_new(pool, seed, used, n=noun, z=zone)
             st["speaker"] = BLUE
         elif st.get("speaker", "") == "" and "text" in st:

@@ -267,12 +267,32 @@ def _head(d, row, hy, hair, hair_d, eye=EYE, long_hair=False):
 
 
 def _legs(d, row, swing, y0, y1, color):
+    """腿：正面 / 背面抬脚的那条短 2 像素（脚离地），侧面前后迈开 ±2 像素。"""
     if row in (0, 3):
-        d.rectangle((12, y0, 14, y1 - (1 if swing > 0 else 0)), fill=color)
-        d.rectangle((17, y0, 19, y1 - (1 if swing < 0 else 0)), fill=color)
+        d.rectangle((12, y0, 14, y1 - (2 if swing > 0 else 0)), fill=color)
+        d.rectangle((17, y0, 19, y1 - (2 if swing < 0 else 0)), fill=color)
     else:
-        d.rectangle((14 + swing, y0, 16 + swing, y1), fill=color)
-        d.rectangle((15 - swing, y0, 17 - swing, y1), fill=_c(color[:3], 0.75))
+        d.rectangle((14 + swing * 2, y0, 16 + swing * 2, y1), fill=color)
+        d.rectangle((15 - swing * 2, y0, 17 - swing * 2, y1 - (1 if swing else 0)), fill=_c(color[:3], 0.75))
+
+
+def _walk_fx(img, col, hem_y0, hem_y1, leg_y0):
+    """走路的整体动作（三个关键人物共用）：迈步的两帧（1、3）身体往上起伏 1 像素，下摆（裙子 / 披风）左右晃 1 像素。"""
+    from PIL import Image
+    if col not in (1, 3):
+        return img
+    out = Image.new("RGBA", img.size)
+    w, h = img.size
+    # 腿以上整体上移 1 像素（头发、手里的东西跟着一起动）
+    out.alpha_composite(img.crop((0, 0, w, leg_y0)), (0, -1))
+    out.alpha_composite(img.crop((0, leg_y0, w, h)), (0, leg_y0))
+    # 下摆晃动：迈左脚往右晃，迈右脚往左晃
+    dx = 1 if col == 1 else -1
+    band = out.crop((0, hem_y0 - 1, w, hem_y1))
+    clear = Image.new("RGBA", (w, hem_y1 - hem_y0 + 1))
+    out.paste(clear, (0, hem_y0 - 1))
+    out.alpha_composite(band, (dx, hem_y0 - 1))
+    return out
 
 
 def captain_frame(row, col):
@@ -308,10 +328,15 @@ def captain_frame(row, col):
     # 手臂 + 长剑（剑尖朝下，在身侧）
     if row != 3:
         sx = 24 if row in (0, 2) else 7
-        d.line((sx, 15, sx, 29), fill=SILVER_L)
-        d.line((sx - 1, 16, sx + 1, 16), fill=GOLD)
-        d.point((sx, 14), fill=GOLD_D)
-        d.rectangle((sx - 2 if sx > 15 else sx + 1, 16, sx - 1 if sx > 15 else sx + 2, 20), fill=SILVER_D)
+        sy = swing if row == 0 else 0           # 正面走路时剑跟着手上下晃
+        sx += swing if row in (1, 2) else 0     # 侧面走路时剑前后摆
+        d.line((sx, 15 + sy, sx, 29), fill=SILVER_L)
+        d.line((sx - 1, 16 + sy, sx + 1, 16 + sy), fill=GOLD)
+        d.point((sx, 14 + sy), fill=GOLD_D)
+        d.rectangle((sx - 2 if sx > 15 else sx + 1, 16 + sy, sx - 1 if sx > 15 else sx + 2, 20 + sy), fill=SILVER_D)
+        # 另一只手（空着）前后摆
+        hx = 8 if sx > 15 else 23
+        d.rectangle((hx, 19 - swing, hx + 1, 21 - swing), fill=SILVER_D)
     _head(d, row, hy, ROSE, ROSE_D)
     if row != 0:
         tail = 21 if row == 1 else 10
@@ -319,7 +344,7 @@ def captain_frame(row, col):
     else:
         d.line((12, hy - 1, 14, hy - 2), fill=ROSE_D)   # 皱着的眉
         d.line((17, hy - 2, 19, hy - 1), fill=ROSE_D)
-    return add_outline(img)
+    return add_outline(_walk_fx(img, col, 25, 29, 24))
 
 
 def supervisor_frame(row, col):
@@ -348,17 +373,24 @@ def supervisor_frame(row, col):
     d.point((9, 22), fill=WHITE)
     d.point((22, 22), fill=WHITE)
     # 书和羽毛笔
+    by = swing if row == 0 else 0
+    bx = -swing if row == 1 else 0
     if row in (0, 1):
-        d.rectangle((6, 17, 10, 22), fill=(110, 66, 40, 255), outline=(70, 40, 26, 255))
-        d.line((7, 19, 9, 19), fill=GOLD)
+        d.rectangle((6 + bx, 17 + by, 10 + bx, 22 + by), fill=(110, 66, 40, 255), outline=(70, 40, 26, 255))
+        d.line((7 + bx, 19 + by, 9 + bx, 19 + by), fill=GOLD)
     if row in (0, 2):
-        d.line((23, 11, 21, 17), fill=CREAM)
-        d.point((24, 10), fill=CREAM)
-        d.point((22, 12), fill=(210, 200, 180, 255))
+        qx = swing if row == 2 else 0
+        d.line((23 + qx, 11 - by, 21 + qx, 17 - by), fill=CREAM)
+        d.point((24 + qx, 10 - by), fill=CREAM)
+        d.point((22 + qx, 12 - by), fill=(210, 200, 180, 255))
+    if row == 3:
+        # 背面：两只袖子前后摆
+        d.rectangle((8, 19 + swing, 9, 22 + swing), fill=CRIMSON_D)
+        d.rectangle((22, 19 - swing, 23, 22 - swing), fill=CRIMSON_D)
     _head(d, row, hy, AUBURN, AUBURN_D, eye=(120, 70, 40, 255), long_hair=True)
     # 发饰（深蓝丝带）
     d.point((19 if row != 2 else 12, hy - 5), fill=NAVY)
-    return add_outline(img)
+    return add_outline(_walk_fx(img, col, 23, 28, 26))
 
 
 def host_frame(row, col):
@@ -379,17 +411,25 @@ def host_frame(row, col):
         d.point((15, 16), fill=FLAME_L)
         d.point((16, 16), fill=FLAME_L)
     # 灯笼杖（右手举高）
+    ly = -abs(swing)          # 迈步时灯笼杖跟着一抬一抬
     if row != 1:
-        lx = 25 if row != 3 else 6
-        d.line((lx, 9, lx, 24), fill=GOLD_D)
-        d.rectangle((lx - 2, 4, lx + 2, 9), fill=GOLD)
-        d.rectangle((lx - 1, 5, lx + 1, 8), fill=(255, 240, 150, 255))
-        d.point((lx, 3), fill=FLAME_D)
+        lx = (25 if row != 3 else 6) + (swing if row == 2 else 0)
+        d.line((lx, 9 + ly, lx, 24 + ly), fill=GOLD_D)
+        d.rectangle((lx - 2, 4 + ly, lx + 2, 9 + ly), fill=GOLD)
+        d.rectangle((lx - 1, 5 + ly, lx + 1, 8 + ly), fill=(255, 240, 150, 255))
+        d.point((lx + swing, 3 + ly), fill=FLAME_D)     # 火苗往后飘
+    else:
+        # 朝左：灯笼杖在身后，露出杖尖和灯笼的一角
+        d.rectangle((21 - swing, 6, 23 - swing, 10), fill=GOLD)
+        d.point((22 - swing, 8), fill=(255, 240, 150, 255))
+    # 空着的手前后摆
+    if row in (0, 3):
+        d.rectangle((8, 18 + swing, 9, 20 + swing), fill=SKIN)
     _head(d, row, hy, PEACH, PEACH_D, eye=(200, 70, 50, 255), long_hair=True)
     # 花冠
     for i, x in enumerate(range(11, 21, 2)):
         d.point((x, hy - 6), fill=(230, 50, 60, 255) if i % 2 == 0 else GOLD)
-    return add_outline(img)
+    return add_outline(_walk_fx(img, col, 22, 27, 25))
 
 
 KEY_NPCS = {"captain": captain_frame, "supervisor": supervisor_frame, "bonfire_host": host_frame}

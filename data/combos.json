@@ -3,7 +3,7 @@
 		"组合技表。keys：每个槽位列出可以填的挠痒来源键（ReactionDB 的 reaction_key），window 秒内这些来源都挠到公主就触发；",
 		"来源不分先后，同一次挠痒只能填一个槽位；\"*\" = groups.monster 里任意一种怪物，\"*trap\" = groups.trap 里任意一种陷阱。",
 		"槽位可以有 2 个或 3 个。三来源组合默认 window 2.5 秒、cooldown 8 秒；两来源默认用顶层的 window / cooldown。",
-		"匹配优先级：三来源 > 指定来源的两来源 > 带通配符的两来源。两来源组合用过的挠痒记录还能继续凑成三来源组合（连锁升级）。",
+		"匹配优先级：指定来源的三来源 > 带通配符的三来源 > 指定来源的两来源 > 带通配符的两来源。两来源组合用过的挠痒记录还能继续凑成三来源组合（连锁升级）。",
 		"condition：条件型组合（不看时间窗口），由代码在特定情况下调用 ComboTracker.trigger(id)。",
 		"effects：burst 额外挠痒 amount；dot 余痒 rate/秒持续 duration；root 定身 duration（extend=true 为延长，after_release=true 为挣脱后再定身）；",
 		"multiplier 易痒 value 倍持续 duration；slow 减速到 value 倍持续 duration；pull 拉向来源 speed 持续 duration；",
@@ -3186,6 +3186,145 @@
 				{
 					"type": "crit_storm",
 					"duration": 3.0
+				},
+				{
+					"type": "focus"
+				}
+			]
+		},
+		{
+			"id": "loop_rack",
+			"category": "第七层·升天回廊",
+			"keys": [
+				[
+					"legloop"
+				],
+				[
+					"supine"
+				],
+				[
+					"frog"
+				]
+			],
+			"window": 2.5,
+			"cooldown": 8.0,
+			"effects": [
+				{
+					"type": "burst",
+					"amount": 22
+				},
+				{
+					"type": "lift",
+					"duration": 1.5
+				},
+				{
+					"type": "grab_extend",
+					"seconds": 1.0
+				},
+				{
+					"type": "focus"
+				}
+			]
+		},
+		{
+			"id": "prone_wheel_crawl",
+			"category": "第七层·升天回廊",
+			"keys": [
+				[
+					"prone"
+				],
+				[
+					"wheel"
+				],
+				[
+					"caterpillar"
+				]
+			],
+			"window": 2.5,
+			"cooldown": 8.0,
+			"effects": [
+				{
+					"type": "burst",
+					"amount": 20
+				},
+				{
+					"type": "grab_extend",
+					"seconds": 1.5
+				},
+				{
+					"type": "dot",
+					"rate": 3,
+					"duration": 3
+				},
+				{
+					"type": "focus"
+				}
+			]
+		},
+		{
+			"id": "cuffs_shower_slime",
+			"category": "第七层·升天回廊",
+			"keys": [
+				[
+					"cuffs"
+				],
+				[
+					"shower"
+				],
+				[
+					"slime",
+					"split_slime"
+				]
+			],
+			"window": 2.5,
+			"cooldown": 8.0,
+			"effects": [
+				{
+					"type": "burst",
+					"amount": 18
+				},
+				{
+					"type": "debuff",
+					"buff": "sticky",
+					"duration": 4
+				},
+				{
+					"type": "grab_presses",
+					"count": 2
+				},
+				{
+					"type": "focus"
+				}
+			]
+		},
+		{
+			"id": "rune_wings",
+			"category": "第七层·升天回廊",
+			"keys": [
+				[
+					"rune"
+				],
+				[
+					"bat"
+				],
+				[
+					"fairy"
+				]
+			],
+			"window": 2.5,
+			"cooldown": 8.0,
+			"effects": [
+				{
+					"type": "burst",
+					"amount": 18
+				},
+				{
+					"type": "seal",
+					"duration": 3
+				},
+				{
+					"type": "crit_storm",
+					"duration": 2.0
 				},
 				{
 					"type": "focus"

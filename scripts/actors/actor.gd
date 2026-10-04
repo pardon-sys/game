@@ -289,7 +289,7 @@ func _on_tickled(_hit: HitData) -> void:
 
 ## 受到的挠痒倍率（易痒、弱点暴露、增益减益的 laugh_gain 等）。hit.tickle 会先乘上它再加到闷笑值。
 func _tickle_multiplier(_hit: HitData) -> float:
-	return (status.tickle_multiplier() if status else 1.0) * (1.0 + stat_add("laugh_gain"))
+	return (status.tickle_multiplier() if status else 1.0) * maxf(0.0, 1.0 + stat_add("laugh_gain"))
 
 
 # ------------------------------------------------------------------ 增益 / 减益

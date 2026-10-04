@@ -1126,6 +1126,21 @@ HO = {"name": "", "entries": [{"node": "bed"}], "nodes": {
                     "lines": [L("（获得了「神秘的钥匙」）", "N")]},
     "saddle_after": {"lines": [L("……再也不坐了。绝对不坐了。", "P", "angry")]},
 }}
+# 蓝色公主当主角时调查楼下的东西：她自己的口吻（剧情标记 blue_is_hero → <家具>_blue）
+HO_BLUE = {
+    "bed": [L("……她睡过的床。被子没叠。", BLUE), L("……枕头上还有一根粉色的头发。", BLUE)],
+    "wardrobe": [L("……给她准备的裙子。只穿了一件。", BLUE)],
+    "bookshelf": [L("……《地面上的童话》不在书架上。", BLUE), L("……她带走了。", BLUE)],
+    "dresser": [L("……镜子里只有我。", BLUE)],
+    "tea": [L("……茶凉了。", BLUE), L("……她说过，很好喝。", BLUE)],
+    "plant": [L("……要记得浇水。", BLUE)],
+    "window": [L("……矿道口的方向。", BLUE)],
+    "painting": [L("……地面上的草地。……她想回去的地方。", BLUE)],
+    "saddle": [L("……那张凳子。", BLUE), L("……不坐。", BLUE)],
+}
+for k, lines in HO_BLUE.items():
+    HO["nodes"][k + "_as_blue"] = {"lines": lines}
+    HO["nodes"][k]["goto"] = [{"if": {"flag": "blue_is_hero"}, "node": k + "_as_blue"}] + HO["nodes"][k].get("goto", [])
 (DLG / "house_objects.json").write_text(json.dumps(HO, ensure_ascii=False, indent="\t") + "\n")
 
 # —— 剧情过场 ——

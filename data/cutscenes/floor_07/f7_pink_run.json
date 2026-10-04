@@ -52,7 +52,7 @@
 				{
 					"who": "princess",
 					"to": [
-						42,
+						8,
 						88
 					],
 					"speed": 110,
@@ -62,6 +62,19 @@
 					"who": "princess",
 					"time": 0.6,
 					"do": "camera"
+				}
+			]
+		},
+		{
+			"actions": [
+				{
+					"who": "princess",
+					"to": [
+						42,
+						88
+					],
+					"speed": 110,
+					"do": "move"
 				}
 			]
 		},

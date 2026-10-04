@@ -4,6 +4,7 @@ extends Node2D
 ##   警觉值 alert（0~1）：被巡逻士兵看见时按距离上涨，看不见时慢慢回落；满了 = 被发现 → caught 信号 + 剧情处理（on_caught）。
 ##   躲藏：木箱 / 矿车（prop action=hide）按 E 躲进去（看不见、不能动），再按 E 出来。士兵经过时有几率检查。
 ##   丢石子：按 F（输入动作 throw，没有就自动加上）往面朝方向丢，落点附近的士兵会去查看。
+##   脚步声：走动时每 STEP_INTERVAL 秒一下（STEP_RADIUS 内的士兵过来查看，冲刺时 DASH_RADIUS），站着不动没有声音；脚下冒一圈淡淡的波纹。
 ##   暗处：离光源（地图里的 PointLight2D：灯、火把、蜡烛）远的地方，士兵的视野只有一半（VisionCone.lights）。
 ## 图例：X = stealth [active_flag=f6_escape] [on_caught=f6]
 
@@ -11,6 +12,9 @@ signal caught(by: Node)
 
 const STONE_RANGE := 72.0
 const NOISE_RADIUS := 150.0
+const STEP_INTERVAL := 0.5
+const STEP_RADIUS := 64.0
+const DASH_RADIUS := 128.0
 
 static var current: StealthDirector
 
@@ -24,6 +28,7 @@ var alert := 0.0
 var caught_done := false
 var hidden_in: Node2D
 var _stone_cd := 0.0
+var _step_t := 0.0
 var _hud: CanvasLayer
 var _bar: ColorRect
 var _bar_bg: ColorRect
@@ -151,13 +156,17 @@ func throw_stone() -> bool:
 	return true
 
 
-## 某处发出声音：附近的士兵去查看。返回被吸引过去的士兵数。
-func noise(pos: Vector2) -> int:
-	Audio.play("pop", -4.0, 0.1, 0.8)
-	Fx.puff(get_parent(), pos)
+## 某处发出声音：radius 内的士兵去查看。返回被吸引过去的士兵数。footstep = 脚步声（只画波纹，声音小）。
+func noise(pos: Vector2, radius := NOISE_RADIUS, footstep := false) -> int:
+	if footstep:
+		Audio.play("step", -14.0, 0.15, 0.9)
+		_step_ring(pos + Vector2(0, 2), radius)
+	else:
+		Audio.play("pop", -4.0, 0.1, 0.8)
+		Fx.puff(get_parent(), pos)
 	var n := 0
 	for g in get_tree().get_nodes_in_group("patrol_guard"):
-		if is_ancestor_of_level(g) and (g as Node2D).global_position.distance_to(pos) <= NOISE_RADIUS and g.visible:
+		if is_ancestor_of_level(g) and (g as Node2D).global_position.distance_to(pos) <= radius and g.visible:
 			g.investigate(pos)
 			n += 1
 	return n
@@ -173,6 +182,7 @@ func _physics_process(delta: float) -> void:
 	var p := GameState.player
 	if hidden_in and is_instance_valid(p):
 		p.global_position = hidden_in.global_position + Vector2(0, 2)
+	_footsteps(p, delta)
 	var seen := 0.0
 	for g in get_tree().get_nodes_in_group("patrol_guard"):
 		if not is_ancestor_of_level(g):
@@ -187,6 +197,36 @@ func _physics_process(delta: float) -> void:
 	_update_hud()
 	if alert >= 1.0:
 		_caught(null)
+
+
+## 脚步声的波纹：从脚下扩散到声音范围的四分之一，不受暗处影响（看得清声音传多远）。
+func _step_ring(pos: Vector2, radius: float) -> void:
+	var l := Line2D.new()
+	l.name = "StepRing"
+	l.width = 1.5
+	l.default_color = Color(1.0, 0.95, 0.8, 0.8)
+	var mat := CanvasItemMaterial.new()
+	mat.light_mode = CanvasItemMaterial.LIGHT_MODE_UNSHADED
+	l.material = mat
+	l.points = IceBarrier.ring_points(4.0, 24)
+	l.z_index = 4
+	get_parent().add_child(l)
+	l.global_position = pos
+	var tw := l.create_tween().set_parallel()
+	tw.tween_method(func(r: float): l.points = IceBarrier.ring_points(r, 24), 4.0, radius * 0.25, 0.5).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_QUAD)
+	tw.tween_property(l, "modulate:a", 0.0, 0.5).set_ease(Tween.EASE_IN)
+	tw.chain().tween_callback(l.queue_free)
+
+
+## 走动发出脚步声（站着不动、躲着时没有）。
+func _footsteps(p: PlayableCharacter, delta: float) -> void:
+	if not is_instance_valid(p) or hidden_in or p.velocity.length() < 8.0:
+		_step_t = minf(_step_t, 0.15)   # 一迈步很快就有第一声
+		return
+	_step_t -= delta
+	if _step_t <= 0.0:
+		_step_t = STEP_INTERVAL
+		noise(p.global_position, DASH_RADIUS if p.is_dashing() else STEP_RADIUS, true)
 
 
 ## 士兵检查躲藏点时找到了人。

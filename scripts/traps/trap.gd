@@ -59,6 +59,7 @@ var _last_hit := {}
 func _ready() -> void:
 	collision_layer = 0
 	monitorable = false
+	add_to_group("trap")
 	_setup()
 	if stops_slide:
 		add_to_group("slide_stopper")

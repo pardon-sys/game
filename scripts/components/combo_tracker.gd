@@ -4,7 +4,7 @@ extends Node
 ## 监听父节点的 tickled(hit)，记录最近挠到她的来源（ReactionDB.key_of），
 ## 与 data/combos.json 的 keys 匹配后触发：施加效果、HUD 横幅（GameState.combo_triggered）、公主说组合技台词。
 ##   两来源 / 三来源：keys 有 2 个或 3 个槽位；三来源默认 window 2.5 秒、cooldown 8 秒（每个组合可单独写）。
-##   匹配优先级：三来源 > 指定来源的两来源 > 带通配符（"*" 任意怪物 / "*trap" 任意陷阱）的两来源。
+##   匹配优先级：指定来源的三来源 > 带通配符的三来源 > 指定来源的两来源 > 带通配符（"*" 任意怪物 / "*trap" 任意陷阱）的两来源。
 ##   连锁升级：两来源组合用过的挠痒记录标成 chained，不能再凑两来源组合，但还能和新来源凑成三来源组合。
 ##   连锁加成：上一个组合 CHAIN_WINDOW 秒内再触发组合，chain +1，burst / dot 按 ×(1 + 0.2 ×(chain − 1)) 加强。
 ##   trigger(id, source, force_effects)   条件型组合技由代码直接触发；冷却中返回 false，
@@ -88,8 +88,8 @@ static func sorted_combos() -> Array:
 	if _sorted.is_empty():
 		var keyed: Array = _data.get("combos", []).filter(func(c: Dictionary): return c.has("keys") and not c.has("condition"))
 		var rank := func(c: Dictionary) -> int:
-			return 0 if is_triple(c) else (2 if has_wildcard(c) else 1)
-		for r in 3:
+			return (0 if is_triple(c) else 2) + (1 if has_wildcard(c) else 0)
+		for r in 4:
 			_sorted += keyed.filter(func(c: Dictionary): return rank.call(c) == r)
 	return _sorted
 
