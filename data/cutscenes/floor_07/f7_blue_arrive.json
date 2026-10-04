@@ -1,0 +1,49 @@
+{
+	"name": "第七层：她往上去了",
+	"letterbox": true,
+	"skippable": true,
+	"steps": [
+		{
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "fade_in"
+				}
+			],
+			"wait": 0.5
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……塔。"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……地上有她的脚印。往上去了。",
+			"actions": [
+				{
+					"to": [
+						42,
+						86
+					],
+					"time": 1.0,
+					"do": "camera"
+				}
+			]
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……等我。",
+			"actions": [
+				{
+					"who": "princess",
+					"time": 0.6,
+					"do": "camera"
+				},
+				{
+					"text": "目标：在升天回廊里寻找粉色的公主（塔底的日记本可以存档）",
+					"do": "notify"
+				}
+			]
+		}
+	]
+}

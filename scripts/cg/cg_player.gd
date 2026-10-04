@@ -35,9 +35,29 @@ const ACTIONS := ["enter", "exit", "move", "hop", "shake", "face", "pose", "tick
 	"sfx", "voice", "camera", "flash", "fade_in", "fade_out", "wait", "sources", "light"]
 const FX_FRAMES := {"lines": [0, 1, 2], "feather": [3], "hand": [4], "heart": [5]}
 
-var data := {}
+## CG 数据（cgs.json + nest_cgs.json）和组合演出（combo_scenes.json）按当前操控的角色选（Characters：蓝色公主用
+## data/characters/blue/ 下转换过的版本）。data / scenes 是属性，读的时候按角色取缓存。
+var _data_by := {}
+var _scenes_by := {}
+var data: Dictionary:
+	get:
+		var who := Characters.current()
+		if not _data_by.has(who):
+			_data_by[who] = _load(who)
+		return _data_by[who]
+	set(v):
+		_data_by[Characters.current()] = v
 ## 组合技小演出：组合 id -> {cast, steps}
-var scenes := {}
+var scenes: Dictionary:
+	get:
+		var who := Characters.current()
+		if not _scenes_by.has(who):
+			var p := Characters.path("combo_scenes.json", SCENES_PATH, who)
+			var parsed: Variant = JSON.parse_string(FileAccess.get_file_as_string(p)) if FileAccess.file_exists(p) else {}
+			_scenes_by[who] = parsed.get("scenes", {}) if parsed is Dictionary else {}
+		return _scenes_by[who]
+	set(v):
+		_scenes_by[Characters.current()] = v
 var current := ""
 var step_index := -1
 var actors := {}
@@ -68,20 +88,18 @@ const FX_TO_HIT := {"feather": "feather", "hand": "hand"}
 func _ready() -> void:
 	layer = 15
 	process_mode = Node.PROCESS_MODE_ALWAYS
-	data = _load()
-	var parsed: Variant = JSON.parse_string(FileAccess.get_file_as_string(SCENES_PATH)) if FileAccess.file_exists(SCENES_PATH) else {}
-	scenes = parsed.get("scenes", {}) if parsed is Dictionary else {}
 	_build()
 	hide()
 
 
-func _load() -> Dictionary:
-	var parsed: Variant = JSON.parse_string(FileAccess.get_file_as_string(PATH))
+func _load(who := "pink") -> Dictionary:
+	var parsed: Variant = JSON.parse_string(FileAccess.get_file_as_string(Characters.path("cgs.json", PATH, who)))
 	if not parsed is Dictionary:
 		push_error("cgs.json 解析失败")
 		return {}
 	var out: Dictionary = parsed
-	var nest: Variant = JSON.parse_string(FileAccess.get_file_as_string(NEST_PATH)) if FileAccess.file_exists(NEST_PATH) else null
+	var nest_path := Characters.path("nest_cgs.json", NEST_PATH, who)
+	var nest: Variant = JSON.parse_string(FileAccess.get_file_as_string(nest_path)) if FileAccess.file_exists(nest_path) else null
 	if nest is Dictionary:
 		for k in ["portraits", "cgs"]:
 			var merged: Dictionary = out.get(k, {})

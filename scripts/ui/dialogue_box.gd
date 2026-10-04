@@ -287,6 +287,12 @@ func open_training() -> void:
 		Town.start_training_later(r)
 
 
+## 对话里选择睡觉（床）：结束这段对话，等它收尾后再睡（Sleep），早上的过场按剧情选。
+func sleep() -> void:
+	runner.end_conversation()
+	Sleep.sleep_later(F6Story.morning_cutscene())
+
+
 func rest() -> void:
 	Town.rest(GameState.player)
 
@@ -484,7 +490,27 @@ func show_reaction(text: String, duration: float) -> void:
 	reaction_panel.visible = text != "" and _reaction_time > 0.0
 
 
+## 立绘避让：操控的角色走到左下角立绘的位置时，常驻立绘变半透明（self_modulate，和说话时的变暗互不影响）。
+const PORTRAIT_FADE_ALPHA := 0.5
+
+
+## 操控角色在屏幕上占的矩形是否和常驻立绘重叠。
+func player_behind_portrait() -> bool:
+	var p := GameState.player
+	if not is_instance_valid(p) or not p.is_inside_tree() or _wide or not portrait.visible:
+		return false
+	var c := p.get_global_transform_with_canvas().origin
+	var body := Rect2(c + Vector2(-8, -26), Vector2(16, 28))
+	return body.intersects(Rect2(portrait.global_position, portrait.size))
+
+
+func _update_portrait_fade(delta: float) -> void:
+	var target := PORTRAIT_FADE_ALPHA if (not _active and player_behind_portrait()) else 1.0
+	portrait.self_modulate.a = move_toward(portrait.self_modulate.a, target, delta * 3.0)
+
+
 func _process(delta: float) -> void:
+	_update_portrait_fade(delta)
 	if _reaction_time > 0.0:
 		_reaction_time = maxf(0.0, _reaction_time - delta)
 		if _reaction_time == 0.0:

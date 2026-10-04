@@ -1,0 +1,462 @@
+{
+	"name": "蓝色小屋：骑马刷凳",
+	"cast": {
+		"princess": {
+			"kind": "princess",
+			"at": [
+				0,
+				8
+			],
+			"visual": "normal",
+			"anim": "idle",
+			"dir": "down"
+		},
+		"saddle": {
+			"kind": "trap:saddle_bench",
+			"at": [
+				0,
+				18
+			]
+		}
+	},
+	"steps": [
+		{
+			"actions": [
+				{
+					"time": 0.6,
+					"do": "fade_in"
+				}
+			],
+			"wait": 0.6
+		},
+		{
+			"speaker": "公主",
+			"text": "嘿咻……跨上来了。像骑小马一样……有一点点好玩。",
+			"emotion": "happy",
+			"actions": [
+				{
+					"who": "princess",
+					"count": 1,
+					"do": "hop"
+				}
+			]
+		},
+		{
+			"actions": [
+				{
+					"sound": "stocks",
+					"do": "sfx"
+				},
+				{
+					"who": "princess",
+					"time": 0.3,
+					"do": "shake"
+				},
+				{
+					"who": "princess",
+					"visual": "surprise",
+					"do": "pose"
+				}
+			],
+			"wait": 0.5
+		},
+		{
+			"speaker": "公主",
+			"text": "……咔哒？诶、诶？腿两边的板子合上了……下、下不来了！",
+			"emotion": "surprise",
+			"actions": [
+				{
+					"who": "princess",
+					"kind": "surprise",
+					"do": "bubble"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "没关系没关系，冷静……找找有没有开关……",
+			"emotion": "shy"
+		},
+		{
+			"actions": [
+				{
+					"who": "princess",
+					"by": "saddle",
+					"repeat": 3,
+					"interval": 0.5,
+					"fx": "lines",
+					"zone": "butt",
+					"do": "tickle"
+				},
+				{
+					"sound": "swish",
+					"do": "sfx"
+				}
+			],
+			"wait": 1.4
+		},
+		{
+			"speaker": "公主",
+			"text": "噗！？刷、刷条动起来了……从屁股底下推过去……",
+			"emotion": "giggle",
+			"actions": [
+				{
+					"who": "princess",
+					"visual": "giggle",
+					"do": "pose"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "不行不行，这里是别人家……而且已经是晚上了，要小声……",
+			"emotion": "shy",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "saddle",
+					"repeat": 4,
+					"interval": 0.45,
+					"fx": "lines",
+					"zone": "butt",
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "……嗯、嗯唔……忍住……只要不出声就好……",
+			"emotion": "giggle",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "saddle",
+					"repeat": 4,
+					"interval": 0.45,
+					"fx": "lines",
+					"zone": "thigh",
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "",
+			"text": "（刷条一来一回，慢慢地推过屁股，再从两边扫过分开的大腿内侧）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "saddle",
+					"repeat": 6,
+					"interval": 0.35,
+					"fx": "lines",
+					"zone": "butt",
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"by": "saddle",
+					"repeat": 6,
+					"interval": 0.38,
+					"fx": "lines",
+					"zone": "thigh",
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "噗、噗呼……大、大腿里面也……唔嗯嗯……",
+			"emotion": "giggle",
+			"actions": [
+				{
+					"who": "princess",
+					"time": 0.3,
+					"do": "shake"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "（捂住嘴）……嗯——！嗯嗯——！",
+			"emotion": "giggle",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "saddle",
+					"repeat": 6,
+					"interval": 0.3,
+					"fx": "lines",
+					"zone": "thigh",
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "……刷、刷毛钻到裙子底下了……嗯唔……腿合不上……夹板把大腿分得开开的……",
+			"emotion": "giggle",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "saddle",
+					"repeat": 6,
+					"interval": 0.32,
+					"fx": "lines",
+					"zone": "thigh",
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"actions": [
+				{
+					"who": "princess",
+					"by": "saddle",
+					"repeat": 8,
+					"interval": 0.25,
+					"fx": "lines",
+					"zone": "butt",
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"by": "saddle",
+					"repeat": 8,
+					"interval": 0.27,
+					"fx": "lines",
+					"zone": "thigh",
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"visual": "helpless_1",
+					"do": "pose"
+				}
+			],
+			"wait": 2.0
+		},
+		{
+			"speaker": "公主",
+			"text": "噗哈……！不、不行……越来越快了……哈、哈哈……",
+			"emotion": "helpless_1",
+			"actions": [
+				{
+					"who": "princess",
+					"kind": "laugh",
+					"do": "bubble"
+				},
+				{
+					"state": "giggle",
+					"do": "voice"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "一挣扎凳子就晃……一晃刷得更快……哈哈……这、这是什么坏凳子啊……！",
+			"emotion": "helpless_1",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "saddle",
+					"repeat": 8,
+					"interval": 0.22,
+					"fx": "lines",
+					"zone": "butt",
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "小声……要小声……哈、哈哈哈……小声不了啦……！",
+			"emotion": "helpless_1",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "saddle",
+					"repeat": 8,
+					"interval": 0.22,
+					"fx": "lines",
+					"zone": "thigh",
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"time": 0.4,
+					"do": "shake"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "楼、楼上……会不会被听见……哈哈……要是被她看到这个样子……哈哈哈……",
+			"emotion": "helpless_1",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "saddle",
+					"repeat": 8,
+					"interval": 0.22,
+					"fx": "lines",
+					"zone": "butt",
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "",
+			"text": "（安静的夜里，只剩下刷条吱呀吱呀的声音，和努力压低却越来越大的笑声）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "saddle",
+					"repeat": 8,
+					"interval": 0.25,
+					"fx": "lines",
+					"zone": "butt",
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"by": "saddle",
+					"repeat": 8,
+					"interval": 0.25,
+					"fx": "lines",
+					"zone": "thigh",
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"actions": [
+				{
+					"who": "princess",
+					"visual": "helpless_2",
+					"do": "pose"
+				},
+				{
+					"state": "laugh",
+					"do": "voice"
+				},
+				{
+					"who": "princess",
+					"by": "saddle",
+					"repeat": 10,
+					"interval": 0.18,
+					"fx": "lines",
+					"zone": "butt",
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"by": "saddle",
+					"repeat": 10,
+					"interval": 0.2,
+					"fx": "lines",
+					"zone": "thigh",
+					"do": "tickle"
+				}
+			],
+			"wait": 2.0
+		},
+		{
+			"speaker": "公主",
+			"text": "哈哈哈哈哈！屁、屁股和大腿一起……放、放我下来哈哈哈哈！",
+			"emotion": "helpless_2",
+			"actions": [
+				{
+					"who": "princess",
+					"time": 0.6,
+					"do": "shake"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "开关在哪里啊哈哈哈哈——！救、救命……不对，不能叫……哈哈哈哈！",
+			"emotion": "helpless_2",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "saddle",
+					"repeat": 10,
+					"interval": 0.18,
+					"fx": "lines",
+					"zone": "thigh",
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "屁、屁股要被刷平了哈哈哈哈！大腿里面也……一来一回……数、数不清了哈哈哈！",
+			"emotion": "helpless_2",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "saddle",
+					"repeat": 10,
+					"interval": 0.18,
+					"fx": "lines",
+					"zone": "butt",
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"by": "saddle",
+					"repeat": 10,
+					"interval": 0.2,
+					"fx": "lines",
+					"zone": "thigh",
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "哈哈……哈……刷条……一来一回……一来……一回……",
+			"emotion": "helpless_2",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "saddle",
+					"repeat": 8,
+					"interval": 0.3,
+					"fx": "lines",
+					"zone": "butt",
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "",
+			"text": "（不知道过了多久，刷条终于慢了下来。公主伏在凳子上，肩膀还在一抖一抖）",
+			"actions": [
+				{
+					"who": "princess",
+					"kind": "dots",
+					"do": "bubble"
+				},
+				{
+					"state": "",
+					"do": "voice"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "……嘿嘿……小马……跑完了吗……下一站……是哪儿……",
+			"emotion": "helpless_1"
+		},
+		{
+			"actions": [
+				{
+					"time": 0.8,
+					"do": "fade_out"
+				}
+			],
+			"wait": 0.9
+		}
+	]
+}

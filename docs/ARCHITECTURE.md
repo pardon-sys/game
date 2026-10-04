@@ -314,6 +314,16 @@ HUD 背包栏会根据物品数据自动显示，不需要改 UI 代码。
 - 楼梯 `scenes/objects/stairs.tscn`（`LevelExit` + 楼梯外观；图例 `stairs target=<楼层 id> spawn=<到达点> down=true/false`）：走进去 → `GameState.pending_spawn` → 目标关卡 `Level._ready` 把公主放到同名的 `SpawnPoint`（图例 `spawn id=…`）并设为检查点。`exit … locked=true` 是封住的入口（只播对话）。
 - 楼层组：`data/floors.json` 的 `group`（`Floors.group(id)`）；同组地图共用 `data/dialogues/<组>/`（`Floors.dialogue_dir`）。
 
+### 剧情调度、睡觉、潜入、角色档案
+- `StoryDirector`（`scripts/story/story_director.gd`，main.gd 创建）：监听人物对话结束、过场结束、换地图，交给各层剧情脚本（`F6Story`）。`run_sequence([{level, spawn, cutscene, flag, keep_state}, …])`：跨地图的过场序列。
+- `F6Story`（`scripts/story/f6_story.gd`）：话题问完 → 参观（`f6_tour_*` 过场）→ 小屋（`night`）→ 家具对话 `floor_06/house_objects`（骑马刷凳 → `f6_house_saddle` 小剧场 → `f6_blue_quiet` → 钥匙）→ 床 `call: sleep` → 早上 `f6_escape`；`on_caught()`（`StealthDirector.on_caught = f6`）→ 地牢惩罚 → 回小屋 → `Sleep`；`f7_pink_run` 结束 → `start_blue_arc()`（`blue_is_hero`）→ 出门 `f7_blue_argue` → 第七层。
+- `Sleep`（`scripts/story/sleep.gd`）：`sleep(早上的过场)` / `sleep_later(…)`（对话里用）；`vars.day`、关掉 `night`、回满状态。对话 handler `sleep()`。
+- 潜入（`scripts/stealth/`）：`VisionCone`（`sees(目标)`、墙 = 碰撞层 1、`lights` 暗处视野减半、扇形用射线截断）、`PatrolGuard`（图例 `guard_patrol path=x,y;… loop wait speed view_range view_angle`；`investigate(位置)` 用 `GridPath` 寻路）、`StealthDirector`（图例 `stealth active_flag on_caught`；`alert`、`toggle_hide`（`prop action=hide`）、`throw_stone`（输入动作 `throw`，运行时加上，F 键）、`noise(位置)`、`caught` 信号）。
+- 出口 `LevelExit` 的 `lock_flag / unlock_flag / locked_dialogue / open_dialogue`；关卡 `night_ambient`（`[level]` 段，剧情标记 `night` 时换上）；`Prop` 的 `talk:<文件>#<节点>`、`hide`、`lift`（挂墙的东西）、地面道具（`floor`）挪到 FloorObjects（`under` 铺最底下）。
+- 角色档案 `Characters`（`scripts/core/characters.gd`）：按当前操控角色的 `character_id` 选数据文件——`ReactionDB`（reactions / fatigue）、`TickleZones`（ticklish）、`CG.data / CG.scenes`（cgs / nest_cgs / combo_scenes，属性按角色缓存）；`CGActor.make_princess` 在蓝色公主当主角时用她的精灵图。蓝色公主的数据在 `data/characters/blue/`（`gen_blue_character.py` 生成）。
+- 蓝色公主当主角：剧情标记 `blue_is_hero`；`level.gd` 载入时把粉色公主换成 `hero = true` 的 `BluePrincess`（玩家操控、相机、没有对话提示）；`main._restore_main_character` 不再切回；`Princess.fatigue_burst_visual()`（她是 `damaged_giggle_burst`）；`TrainingStats.zone_modifier` 只对粉色公主生效。
+- 第七层 `tools/build/gen_floor07.py`：之字形高塔、`design.json` 的 8 组组合区域、两个战斗房、`f7_pink_run / f7_blue_arrive` 过场；小屋楼上 `floor_06_house_up` 和 `f7_blue_wake / f7_blue_argue` 在 `gen_floor06.py`。
+
 ### 滚动文字面板
 - `ScrollTextBox`（`scripts/ui/scroll_text_box.gd`，ScrollContainer）：`make(Rect2)` 固定大小、只竖向滚动；`add_line / add_row(图标, 文字) / set_text / clear`（Label 自动换行，宽度 = 面板宽 − 滚动条）、`scroll_by(方向) / scroll_to_top / is_scrollable`。静态 `style_scrollbar(滚动条)` 是统一的像素风滚动条（对话框、暂停菜单的跳关列表也用它）。用在训练菜单（列表 + 说明，←→ 翻说明）、背包状态页（↑↓）、物品 / 被动说明。
 - `DialogueRunner.end_conversation()`：当前节点演完就结束这段人物对话（不回到选项页）。
@@ -513,6 +523,7 @@ scripts/ui/           …… ChoiceMenu、SlotMenu、ShopUI、TitleScreen、Trai
 tests/systems_test.gd 人物对话、选择记忆、存档读档、存档点、主界面、文件迁移
 tests/floor6_test.gd  第六层地图、楼梯、居民、设施、开场三种选择、第五层 → 第六层
 tests/training_test.gd 训练数值与上限、菜单、Esc 跳关列表、新陷阱和组合、四项训练、训练迷宫
+tests/story_test.gd   立绘避让、第六层后续剧情、潜入、蓝色公主当主角、第七层
 tools/build/gen_floor06.py  第六层地图、对话、过场、小剧场
 tools/build/check_dialogues.py  人物对话检查
 tools/art/gen_town_art.py  小镇道具、居民和三个关键人物的地图行走图、检查点、存档点

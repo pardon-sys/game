@@ -78,6 +78,9 @@ static func grant(rewards: Array[Dictionary]) -> void:
 				GameState.give_item(ItemDB.get_item(str(id)), int(items[id]) - have)
 		for p in r.get("passives", []):
 			GameState.grant_passive(str(p), true)
+		var vs: Dictionary = r.get("vars", {})
+		for k in vs:
+			GameState.vars[str(k)] = vs[k]
 
 
 ## 跳关：补奖励 → 解除暂停 → 换楼层 → 有 cell 时放到那一格并设为检查点。
@@ -87,6 +90,8 @@ static func skip_to(point: Dictionary) -> void:
 	if main == null:
 		return
 	grant(rewards_for(point))
+	# 跳关点自己也可以带剧情标记 / 物品 / 变量（flags / items / vars，同 floor_rewards 的写法）
+	grant([point])
 	tree.paused = false
 	await main.change_level(Floors.scene(str(point["floor"])))
 	if point.has("cell"):

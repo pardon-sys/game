@@ -116,6 +116,21 @@ func _after_punish(_kind: String) -> void:
 	pass
 
 
+## 提速倍率（阶段表的 ramp，默认 1.6）：每成功一次变难的幅度 × 这个倍率。
+func ramp() -> float:
+	return float(stage_info.get("ramp", 1.6))
+
+
+## 随成功次数衰减：base_rate 是原始的每次系数（如 0.975），按 ramp 放大衰减幅度后取 successes 次方。
+func decay(base_rate: float) -> float:
+	return pow(maxf(1.0 - (1.0 - base_rate) * ramp(), 0.5), successes)
+
+
+## 随成功次数递增的整数（如连喊个数）：successes × ramp / every。
+func grow(every: float) -> int:
+	return int(successes * ramp() / every)
+
+
 ## 立绘表情跟着哪个数值走（0~1）：默认闷笑，训练一是魔力疲倦。
 func mood_ratio() -> float:
 	return player.laugh.ratio() if is_instance_valid(player) and player.laugh else 0.0

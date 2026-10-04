@@ -1,0 +1,107 @@
+{
+	"name": "参观小镇：营地层",
+	"letterbox": true,
+	"steps": [
+		{
+			"actions": [
+				{
+					"id": "blue",
+					"kind": "npc:blue_princess",
+					"at": [
+						26,
+						6
+					],
+					"dir": "left",
+					"do": "spawn"
+				},
+				{
+					"time": 0.5,
+					"do": "fade_in"
+				}
+			],
+			"wait": 0.5
+		},
+		{
+			"actions": [
+				{
+					"to": [
+						26,
+						13
+					],
+					"time": 1.0,
+					"do": "camera"
+				}
+			],
+			"wait": 1.0
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "指挥帐篷。队长在那里。……他嘴上凶，人不坏。"
+		},
+		{
+			"actions": [
+				{
+					"to": [
+						37,
+						20
+					],
+					"time": 1.0,
+					"do": "camera"
+				}
+			],
+			"wait": 1.0
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "训练营。花五个金币就能练——忍痒、耐笑……练出来的本事会一直跟着你。东边那扇门后面是训练迷宫。"
+		},
+		{
+			"speaker": "公主",
+			"text": "练、练忍痒……听起来好可怕。",
+			"emotion": "shy"
+		},
+		{
+			"actions": [
+				{
+					"to": [
+						5,
+						28
+					],
+					"time": 1.0,
+					"do": "camera"
+				}
+			],
+			"wait": 1.0
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "西南角的楼梯下去是地牢。……你醒来的地方。"
+		},
+		{
+			"actions": [
+				{
+					"to": [
+						45,
+						29
+					],
+					"time": 1.0,
+					"do": "camera"
+				}
+			],
+			"wait": 1.0
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "东南角下去是矿道。……再往下看看。"
+		},
+		{
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "fade_out"
+				}
+			],
+			"wait": 0.5
+		}
+	]
+}

@@ -2919,6 +2919,278 @@
 					"type": "focus"
 				}
 			]
+		},
+		{
+			"id": "spider_binding_brush",
+			"category": "第七层·升天回廊",
+			"keys": [
+				[
+					"spider"
+				],
+				[
+					"binding"
+				],
+				[
+					"hedgehog"
+				]
+			],
+			"window": 2.5,
+			"cooldown": 8.0,
+			"effects": [
+				{
+					"type": "burst",
+					"amount": 20
+				},
+				{
+					"type": "grab_extend",
+					"seconds": 1.0
+				},
+				{
+					"type": "crit_storm",
+					"duration": 3.0
+				},
+				{
+					"type": "focus"
+				}
+			]
+		},
+		{
+			"id": "octopus_vest",
+			"category": "第七层·升天回廊",
+			"keys": [
+				[
+					"octopus"
+				],
+				[
+					"vest"
+				],
+				[
+					"fairy"
+				]
+			],
+			"window": 2.5,
+			"cooldown": 8.0,
+			"effects": [
+				{
+					"type": "burst",
+					"amount": 20
+				},
+				{
+					"type": "grab_extend",
+					"seconds": 1.0
+				},
+				{
+					"type": "crit_storm",
+					"duration": 3.0
+				},
+				{
+					"type": "focus"
+				}
+			]
+		},
+		{
+			"id": "wardrobe_ghost",
+			"category": "第七层·升天回廊",
+			"keys": [
+				[
+					"ghost"
+				],
+				[
+					"glove"
+				],
+				[
+					"wardrobe"
+				]
+			],
+			"window": 2.5,
+			"cooldown": 8.0,
+			"effects": [
+				{
+					"type": "burst",
+					"amount": 20
+				},
+				{
+					"type": "grab_extend",
+					"seconds": 1.0
+				},
+				{
+					"type": "crit_storm",
+					"duration": 3.0
+				},
+				{
+					"type": "focus"
+				}
+			]
+		},
+		{
+			"id": "mud_frog_dance",
+			"category": "第七层·升天回廊",
+			"keys": [
+				[
+					"mud"
+				],
+				[
+					"frog"
+				],
+				[
+					"caterpillar"
+				]
+			],
+			"window": 2.5,
+			"cooldown": 8.0,
+			"effects": [
+				{
+					"type": "burst",
+					"amount": 20
+				},
+				{
+					"type": "grab_extend",
+					"seconds": 1.0
+				},
+				{
+					"type": "crit_storm",
+					"duration": 3.0
+				},
+				{
+					"type": "focus"
+				}
+			]
+		},
+		{
+			"id": "supine_jelly",
+			"category": "第七层·升天回廊",
+			"keys": [
+				[
+					"supine"
+				],
+				[
+					"mana_jelly"
+				],
+				[
+					"bubble_fish"
+				]
+			],
+			"window": 2.5,
+			"cooldown": 8.0,
+			"effects": [
+				{
+					"type": "burst",
+					"amount": 20
+				},
+				{
+					"type": "grab_extend",
+					"seconds": 1.0
+				},
+				{
+					"type": "crit_storm",
+					"duration": 3.0
+				},
+				{
+					"type": "focus"
+				}
+			]
+		},
+		{
+			"id": "cushion_cage",
+			"category": "第七层·升天回廊",
+			"keys": [
+				[
+					"cushion"
+				],
+				[
+					"cage"
+				],
+				[
+					"rat"
+				]
+			],
+			"window": 2.5,
+			"cooldown": 8.0,
+			"effects": [
+				{
+					"type": "burst",
+					"amount": 20
+				},
+				{
+					"type": "grab_extend",
+					"seconds": 1.0
+				},
+				{
+					"type": "crit_storm",
+					"duration": 3.0
+				},
+				{
+					"type": "focus"
+				}
+			]
+		},
+		{
+			"id": "spin_barnacle",
+			"category": "第七层·升天回廊",
+			"keys": [
+				[
+					"spinwheel"
+				],
+				[
+					"barnacle"
+				],
+				[
+					"squirrel"
+				]
+			],
+			"window": 2.5,
+			"cooldown": 8.0,
+			"effects": [
+				{
+					"type": "burst",
+					"amount": 20
+				},
+				{
+					"type": "grab_extend",
+					"seconds": 1.0
+				},
+				{
+					"type": "crit_storm",
+					"duration": 3.0
+				},
+				{
+					"type": "focus"
+				}
+			]
+		},
+		{
+			"id": "legloop_glove",
+			"category": "第七层·升天回廊",
+			"keys": [
+				[
+					"legloop"
+				],
+				[
+					"teaser"
+				],
+				[
+					"glove"
+				]
+			],
+			"window": 2.5,
+			"cooldown": 8.0,
+			"effects": [
+				{
+					"type": "burst",
+					"amount": 20
+				},
+				{
+					"type": "grab_extend",
+					"seconds": 1.0
+				},
+				{
+					"type": "crit_storm",
+					"duration": 3.0
+				},
+				{
+					"type": "focus"
+				}
+			]
 		}
 	]
 }

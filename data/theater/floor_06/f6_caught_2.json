@@ -1,0 +1,292 @@
+{
+	"name": "潜入失败的惩罚（第 2 次）",
+	"cast": {
+		"princess": {
+			"kind": "princess",
+			"at": [
+				0,
+				8
+			],
+			"visual": "helpless_1",
+			"anim": "helpless",
+			"dir": "down"
+		},
+		"stocks": {
+			"kind": "trap:stocks",
+			"at": [
+				0,
+				19
+			]
+		},
+		"clamp": {
+			"kind": "trap:clamp",
+			"at": [
+				0,
+				18
+			]
+		},
+		"g1": {
+			"kind": "npc:guard",
+			"at": [
+				-30,
+				6
+			],
+			"dir": "right"
+		},
+		"g2": {
+			"kind": "npc:guard",
+			"at": [
+				30,
+				6
+			],
+			"dir": "left"
+		},
+		"g3": {
+			"kind": "npc:guard",
+			"at": [
+				-60,
+				4
+			],
+			"dir": "right"
+		},
+		"cap": {
+			"kind": "npc:captain",
+			"at": [
+				64,
+				0
+			],
+			"dir": "left"
+		}
+	},
+	"steps": [
+		{
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "fade_in"
+				},
+				{
+					"state": "laugh",
+					"do": "voice"
+				}
+			],
+			"wait": 0.5
+		},
+		{
+			"speaker": "保卫队员",
+			"text": "又是你啊。昨天才笑哭了，今天又跑去矿道。"
+		},
+		{
+			"speaker": "保卫队队长",
+			"text": "这次换足枷。……脚心朝外，鞋脱掉。"
+		},
+		{
+			"speaker": "公主",
+			"text": "脚、脚心不行！哪里都可以，脚心不——噗哈哈哈哈！",
+			"portrait": "defeat_1",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "g1",
+					"repeat": 8,
+					"interval": 0.2,
+					"fx": "hand",
+					"zone": "thigh",
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"by": "clamp",
+					"repeat": 6,
+					"interval": 0.28,
+					"fx": "lines",
+					"zone": "thigh",
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "保卫队员",
+			"text": "夹腿枷台也夹上。大腿内侧刚好够得着。"
+		},
+		{
+			"speaker": "公主",
+			"text": "哈哈哈哈！大腿也——上、上下一起太过分了哈哈哈哈！",
+			"portrait": "defeat_1",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "g1",
+					"repeat": 8,
+					"interval": 0.2,
+					"fx": "hand",
+					"zone": "thigh",
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"by": "clamp",
+					"repeat": 6,
+					"interval": 0.28,
+					"fx": "lines",
+					"zone": "thigh",
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "保卫队队长",
+			"text": "钥匙是从哪里来的？"
+		},
+		{
+			"speaker": "公主",
+			"text": "钥、钥匙？哈哈哈……捡、捡到的……凳子底下……哈哈哈！",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "g1",
+					"repeat": 8,
+					"interval": 0.2,
+					"fx": "hand",
+					"zone": "thigh",
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"by": "clamp",
+					"repeat": 6,
+					"interval": 0.28,
+					"fx": "lines",
+					"zone": "thigh",
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "保卫队队长",
+			"text": "……凳子？"
+		},
+		{
+			"speaker": "保卫队员",
+			"text": "队长，第三个人也来了。脚趾缝我负责。",
+			"actions": [
+				{
+					"who": "g3",
+					"at": [
+						-44,
+						12
+					],
+					"time": 0.4,
+					"do": "enter"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "哈哈哈哈哈！脚、脚趾缝不行——三、三个人……！",
+			"portrait": "defeat_2",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "g1",
+					"repeat": 8,
+					"interval": 0.2,
+					"fx": "hand",
+					"zone": "sole",
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"by": "stocks",
+					"repeat": 6,
+					"interval": 0.28,
+					"fx": "lines",
+					"zone": "sole",
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"by": "g2",
+					"repeat": 8,
+					"interval": 0.18,
+					"fx": "hand",
+					"zone": "waist",
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"visual": "helpless_2",
+					"do": "pose"
+				}
+			]
+		},
+		{
+			"speaker": "保卫队队长",
+			"text": "……钥匙先让你拿着。反正你打不开那扇门——过了那扇门，就不是我们能保护的地方了。"
+		},
+		{
+			"speaker": "公主",
+			"text": "哈哈哈……保、保护……？我才不要被保护……我要回家……哈哈哈哈！",
+			"portrait": "defeat_2",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "g1",
+					"repeat": 8,
+					"interval": 0.2,
+					"fx": "hand",
+					"zone": "sole",
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"by": "stocks",
+					"repeat": 6,
+					"interval": 0.28,
+					"fx": "lines",
+					"zone": "sole",
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"by": "g2",
+					"repeat": 8,
+					"interval": 0.18,
+					"fx": "hand",
+					"zone": "waist",
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"visual": "helpless_2",
+					"do": "pose"
+				}
+			]
+		},
+		{
+			"speaker": "保卫队队长",
+			"text": "……继续。"
+		},
+		{
+			"speaker": "",
+			"text": "（脚心被羽毛和手指来回扫，大腿内侧被夹板的绒毛蹭着——公主的脚趾一会儿蜷起来、一会儿张开，笑声越来越哑）"
+		},
+		{
+			"speaker": "公主",
+			"text": "……哈……脚……脚心……是我的吗……嘿嘿……"
+		},
+		{
+			"actions": [
+				{
+					"time": 0.6,
+					"do": "fade_out"
+				},
+				{
+					"state": "",
+					"do": "voice"
+				}
+			],
+			"wait": 0.7
+		}
+	]
+}

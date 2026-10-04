@@ -396,7 +396,7 @@ func _run_burst_acts() -> void:
 				or not said.any(func(t): return t.contains("舒服")) or not said.any(func(t): return t.contains("敏感")):
 			bad.append(id)
 	check("全部 %d 段 CG / 组合演出最后都有魔力爆发这一幕（战损释放立绘、释放水声、有「舒服」和「敏感」两句）%s" % [all.size(), bad.slice(0, 4)],
-		bad.is_empty() and all.size() == 85)
+		bad.is_empty() and all.size() == 93)
 	# 最后一句是笑到快昏过去时的话，不再是「……X、X……哈哈……」的固定格式
 	var stutter := RegEx.create_from_string("^……(.)、\\1")
 	var old_fmt: Array = []

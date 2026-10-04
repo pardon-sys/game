@@ -427,6 +427,9 @@ func _run_endure() -> void:
 	r.successes = 40
 	check("成功越多：限时变短（%.2f → %.2f 秒）、卫兵喊得更快、一次最多喊 4 个" % [slow, r.item_time()],
 		r.item_time() < slow and r.item_time() >= 0.35 and r.call_gap() < 0.45 and range(30).map(func(_i): return r.burst_len()).max() == 4)
+	r.successes = 20
+	check("提速倍率 ramp %.1f：20 次后的限时 %.2f 秒，比原来（%.2f 秒）更短" % [r.ramp(), r.item_time(), 1.2 * pow(0.975, 20)],
+		r.ramp() > 1.0 and r.item_time() < 1.2 * pow(0.975, 20))
 	r.successes = 4
 	var f1: float = player.fatigue.value
 	r._tick(1.0)
@@ -488,6 +491,9 @@ func _run_resist() -> void:
 	var w0: float = r.zone_width()
 	r.successes = 60
 	check("越练绿区越窄（%.2f → %.2f）、扫得越快、假动作越多" % [w0, r.zone_width()], r.zone_width() < w0 and r.sweep_time() < 1.2 and r.fake_chance() > 0.1)
+	r.successes = 20
+	check("绿区和扫过速度同步提速：20 次后宽 %.3f（原来 %.3f）、扫过 %.2f 秒（原来 %.2f）" % [r.zone_width(), 0.3 * pow(0.985, 20), r.sweep_time(), 1.2 * pow(0.98, 20)],
+		r.zone_width() < 0.3 * pow(0.985, 20) and r.sweep_time() < 1.2 * pow(0.98, 20))
 	r.successes = 1
 	var bad_json: Array = []
 	for id in CG.theater_index():
@@ -545,6 +551,8 @@ func _run_sensitize() -> void:
 	r._tick(1.0)
 	check("卫兵一直在挠：闷笑持续上涨", player.laugh.value > l1)
 	var it0: float = r.impulse_time()
+	r.successes = 50
+	check("提速更快：20 次后限时比原来短", (func(): r.successes = 20; return r.impulse_time() < 1.1 * pow(0.98, 20)).call())
 	r.successes = 50
 	check("越练限时越短（%.2f → %.2f 秒）、一段冲动越多" % [it0, r.impulse_time()], r.impulse_time() < it0
 		and range(30).map(func(_i): return r.impulses_per_segment()).max() == 4)
@@ -624,6 +632,7 @@ func _run_maze() -> void:
 	r.successes = 10
 	check("触发越多：冲动越频繁（最长间隔 %.1f → %.1f 秒）、持续越久、跑得越快" % [s0["delay"], range(20).map(func(_i): return r._urge_delay()).max()],
 		r.urge_duration() > s0["dur"] and r.base_pace() > s0["pace"] and range(20).map(func(_i): return r._urge_delay()).max() < s0["delay"])
+	check("提速更快：触发 10 次后冲动持续 %.1f 秒（原来 %.1f）" % [r.urge_duration(), 2.5 + 10 * 0.25], r.urge_duration() > 2.5 + 10 * 0.25)
 	r.successes = 2
 	r.urge_t = 0.01
 	r.tick(0.05)

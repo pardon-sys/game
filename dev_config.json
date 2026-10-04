@@ -2,7 +2,7 @@
 	"_说明": [
 		"测试模式配置（scripts/core/dev_config.gd 读取）。dev_mode 改成 true 打开，false 关闭。",
 		"打开后：暂停菜单（Esc）多一项「测试：跳关」，背包不用先拿到也能打开，背包「CG 图鉴」页所有 CG 都能直接播放。",
-		"skip_points：跳关点。floor 楼层 id；cell 可选，跳到这一格（并设为检查点）；rewards_through 可选，连这一层的流程奖励也一起给。",
+		"skip_points：跳关点。floor 楼层 id；cell 可选，跳到这一格（并设为检查点）；rewards_through 可选，连这一层的流程奖励也一起给；flags / items / vars 可选，跳过去时额外设上的剧情标记 / 物品 / 变量。",
 		"floor_rewards：各层流程里拿到的东西。跳到某层时，前面各层的都会补上：flags 剧情标记、items 物品 {id: 数量}、passives 被动技能。",
 		"dev_data_dir：调试数据（存档等）的隔离目录名。在编辑器里运行、或 dev_mode 打开时，存档写到 user://<dev_data_dir>/saves/；导出的正式游戏用 user://saves/，两边互不影响。留空 \"\" = 不隔离。"
 	],
@@ -19,7 +19,12 @@
 		{"name": "第六层·地下小镇（开场后）", "floor": "floor_06_upper", "rewards_through": "floor_06_upper"},
 		{"name": "第六层·保卫队营地（开场后）", "floor": "floor_06_camp", "rewards_through": "floor_06_upper"},
 		{"name": "第六层·训练营（训练台旁）", "floor": "floor_06_camp", "cell": [32, 20], "rewards_through": "floor_06_upper"},
-		{"name": "第六层·训练迷宫（只逛迷宫，不算训练）", "floor": "floor_06_training", "rewards_through": "floor_06_upper"}
+		{"name": "第六层·训练迷宫（只逛迷宫，不算训练）", "floor": "floor_06_training", "rewards_through": "floor_06_upper"},
+		{"name": "第六层·参观小镇前（再问蓝色公主一个话题）", "floor": "floor_06_upper", "rewards_through": "floor_06_upper", "flags": ["dlg_floor_06/blue_princess_hub_0", "dlg_floor_06/blue_princess_hub_1", "dlg_floor_06/blue_princess_hub_2", "dlg_floor_06/blue_princess_hub_3"]},
+		{"name": "第六层·蓝色小屋（第一个晚上）", "floor": "floor_06_house", "rewards_through": "floor_06_upper", "flags": ["f6_tour_started", "f6_house_open", "night"]},
+		{"name": "第六层·第二天（潜入矿道）", "floor": "floor_06_mine", "cell": [6, 26], "rewards_through": "floor_06_upper", "flags": ["f6_tour_started", "f6_house_open", "f6_key", "f6_escape"], "items": {"mystery_key": 1}, "vars": {"day": 2}},
+		{"name": "第七层·开场（粉色公主）", "floor": "floor_07", "rewards_through": "floor_06_upper", "flags": ["f6_tour_started", "f6_house_open", "f6_key", "f6_escape"], "items": {"mystery_key": 1}, "vars": {"day": 2}},
+		{"name": "第七层·蓝色公主（塔底）", "floor": "floor_07", "cell": [10, 90], "rewards_through": "floor_06_upper", "flags": ["f6_tour_started", "f6_house_open", "f6_key", "f6_escape", "f7_pink_ran", "blue_is_hero", "f7_blue_awake", "f7_argue_done", "intro_done_f7_pink_run"], "vars": {"day": 2}}
 	],
 	"floor_rewards": {
 		"floor_03": {"flags": ["magic_unlocked"]},

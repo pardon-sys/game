@@ -1,0 +1,79 @@
+{
+	"_说明": [
+		"第七层（gen_floor07.py 生成）：combo_areas = 每组新组合所在的区域（格，含上墙，左上 → 右下），level_design_test 检查区域里有组合需要的陷阱和怪物。"
+	],
+	"combo_areas": [
+		{
+			"combo": "spider_binding_brush",
+			"rect": [
+				3,
+				70,
+				14,
+				79
+			]
+		},
+		{
+			"combo": "octopus_vest",
+			"rect": [
+				33,
+				70,
+				44,
+				79
+			]
+		},
+		{
+			"combo": "wardrobe_ghost",
+			"rect": [
+				3,
+				44,
+				15,
+				53
+			]
+		},
+		{
+			"combo": "mud_frog_dance",
+			"rect": [
+				33,
+				44,
+				44,
+				53
+			]
+		},
+		{
+			"combo": "supine_jelly",
+			"rect": [
+				3,
+				31,
+				14,
+				40
+			]
+		},
+		{
+			"combo": "cushion_cage",
+			"rect": [
+				33,
+				31,
+				44,
+				40
+			]
+		},
+		{
+			"combo": "spin_barnacle",
+			"rect": [
+				3,
+				18,
+				14,
+				27
+			]
+		},
+		{
+			"combo": "legloop_glove",
+			"rect": [
+				31,
+				5,
+				44,
+				14
+			]
+		}
+	]
+}

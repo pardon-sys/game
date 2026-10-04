@@ -18,11 +18,12 @@ static var _ticklish := {}
 static var _table := {}
 
 
+## 部位表按当前操控的角色选（蓝色公主：data/characters/blue/ticklish.json）。
 static func ticklish() -> Dictionary:
-	if _ticklish.is_empty():
-		var parsed: Variant = JSON.parse_string(FileAccess.get_file_as_string(TICKLISH_PATH))
-		_ticklish = parsed if parsed is Dictionary else {}
-	return _ticklish
+	var who := Characters.current()
+	if not _ticklish.has(who):
+		_ticklish[who] = Characters.load_json("ticklish.json", TICKLISH_PATH, who)
+	return _ticklish[who]
 
 
 static func table() -> Dictionary:

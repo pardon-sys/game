@@ -54,6 +54,23 @@
 			"name": "第六层·训练迷宫",
 			"scene": "res://levels/floor_06_training/floor.tscn",
 			"group": "floor_06"
+		},
+		{
+			"id": "floor_06_house",
+			"name": "第六层·蓝色小屋",
+			"scene": "res://levels/floor_06_house/floor.tscn",
+			"group": "floor_06"
+		},
+		{
+			"id": "floor_06_house_up",
+			"name": "第六层·蓝色小屋（楼上）",
+			"scene": "res://levels/floor_06_house_up/floor.tscn",
+			"group": "floor_06"
+		},
+		{
+			"id": "floor_07",
+			"name": "第七层·升天回廊",
+			"scene": "res://levels/floor_07/floor.tscn"
 		}
 	]
 }

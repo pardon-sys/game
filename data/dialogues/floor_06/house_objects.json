@@ -1,0 +1,202 @@
+{
+	"name": "",
+	"entries": [
+		{
+			"node": "bed"
+		}
+	],
+	"nodes": {
+		"bed": {
+			"goto": [
+				{
+					"if": {
+						"flag": "f6_key"
+					},
+					"node": "bed_sleep"
+				},
+				{
+					"if": {
+						"flag": "night"
+					},
+					"node": "bed_not_yet"
+				},
+				{
+					"node": "bed_day"
+				}
+			]
+		},
+		"bed_day": {
+			"lines": [
+				{
+					"text": "带帷幔的公主床，被子软乎乎的。现在还不困。",
+					"speaker": "公主",
+					"emotion": "happy"
+				}
+			]
+		},
+		"bed_not_yet": {
+			"lines": [
+				{
+					"text": "……还睡不着。房间里好像还有什么在意的东西……",
+					"speaker": "公主",
+					"emotion": "shy"
+				}
+			]
+		},
+		"bed_sleep": {
+			"lines": [
+				{
+					"text": "……呼啊。好困……今天就睡吧。",
+					"speaker": "公主",
+					"emotion": "shy"
+				}
+			],
+			"set": {
+				"call": "sleep"
+			}
+		},
+		"wardrobe": {
+			"lines": [
+				{
+					"text": "衣柜里挂着几件洗得干干净净的裙子……尺寸刚好是我的？她连这个都准备好了。",
+					"speaker": "公主",
+					"emotion": "surprise"
+				}
+			]
+		},
+		"bookshelf": {
+			"lines": [
+				{
+					"text": "《地下小镇的历史》《矿道安全守则》《保卫队训练手册》……还有一本《地面上的童话》。",
+					"speaker": "公主"
+				},
+				{
+					"text": "……童话书的书角都翻卷了。她经常看吧。",
+					"speaker": "公主",
+					"emotion": "shy"
+				}
+			]
+		},
+		"dresser": {
+			"lines": [
+				{
+					"text": "梳妆台的镜子擦得亮亮的。……头发乱糟糟的，今天被挠了好多次。",
+					"speaker": "公主",
+					"emotion": "shy"
+				}
+			]
+		},
+		"tea": {
+			"lines": [
+				{
+					"text": "小圆桌上放着还温热的茶和一碟饼干。",
+					"speaker": "公主",
+					"emotion": "happy"
+				},
+				{
+					"text": "……好吃！她泡的茶，有一点点花香。",
+					"speaker": "公主",
+					"emotion": "happy"
+				}
+			]
+		},
+		"plant": {
+			"lines": [
+				{
+					"text": "盆栽的叶子绿油油的。地底下也能长得这么好啊。",
+					"speaker": "公主"
+				}
+			]
+		},
+		"window": {
+			"goto": [
+				{
+					"if": {
+						"flag": "night"
+					},
+					"node": "window_night"
+				},
+				{
+					"node": "window_day"
+				}
+			]
+		},
+		"window_night": {
+			"lines": [
+				{
+					"text": "窗外是小镇的夜色。……地底下也有月亮？原来是矿道顶上发光的石头。",
+					"speaker": "公主",
+					"emotion": "surprise"
+				}
+			]
+		},
+		"window_day": {
+			"lines": [
+				{
+					"text": "窗外，小镇已经醒了。远处的矿道口有队员在站岗。",
+					"speaker": "公主"
+				}
+			]
+		},
+		"painting": {
+			"lines": [
+				{
+					"text": "画里是一片开满花的草地，天空蓝蓝的。……是地面上的风景。",
+					"speaker": "公主",
+					"emotion": "sad"
+				}
+			]
+		},
+		"saddle": {
+			"goto": [
+				{
+					"if": {
+						"flag": "f6_key"
+					},
+					"node": "saddle_after"
+				}
+			],
+			"lines": [
+				{
+					"text": "……房间角落里，怎么会有一张骑马的凳子？凳面上全是刷毛……",
+					"speaker": "公主",
+					"emotion": "surprise"
+				},
+				{
+					"text": "好像有点像训练营里的那个……只是坐一下的话，应该没关系吧？",
+					"speaker": "公主",
+					"emotion": "shy"
+				}
+			],
+			"theater": "f6_house_saddle",
+			"next": "saddle_blue"
+		},
+		"saddle_blue": {
+			"cutscene": "f6_blue_quiet",
+			"perform_before": true,
+			"set": {
+				"give_item": {
+					"mystery_key": 1
+				},
+				"flags": [
+					"f6_key"
+				]
+			},
+			"lines": [
+				{
+					"text": "（获得了「神秘的钥匙」）",
+					"speaker": ""
+				}
+			]
+		},
+		"saddle_after": {
+			"lines": [
+				{
+					"text": "……再也不坐了。绝对不坐了。",
+					"speaker": "公主",
+					"emotion": "angry"
+				}
+			]
+		}
+	}
+}

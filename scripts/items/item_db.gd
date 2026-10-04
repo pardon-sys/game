@@ -11,6 +11,7 @@ const PATHS := {
 	"clear_dew": "res://data/items/clear_dew.tres",
 	"star_candy": "res://data/items/star_candy.tres",
 	"backpack": "res://data/items/backpack.tres",
+	"mystery_key": "res://data/items/mystery_key.tres",
 }
 
 static var _cache := {}

@@ -1,0 +1,168 @@
+{
+	"name": "参观小镇：集市层",
+	"letterbox": true,
+	"steps": [
+		{
+			"actions": [
+				{
+					"time": 0.4,
+					"do": "fade_out"
+				}
+			],
+			"wait": 0.4
+		},
+		{
+			"actions": [
+				{
+					"who": "princess",
+					"to": [
+						30,
+						25
+					],
+					"do": "move"
+				},
+				{
+					"id": "blue",
+					"kind": "npc:blue_princess",
+					"at": [
+						32,
+						25
+					],
+					"dir": "left",
+					"do": "spawn"
+				},
+				{
+					"who": "princess",
+					"dir": "right",
+					"do": "face"
+				},
+				{
+					"to": [
+						31,
+						25
+					],
+					"do": "camera"
+				},
+				{
+					"time": 0.5,
+					"do": "fade_in"
+				}
+			],
+			"wait": 0.5
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……都问完了？……那，我带你转转。"
+		},
+		{
+			"actions": [
+				{
+					"to": [
+						11,
+						23
+					],
+					"time": 1.0,
+					"do": "camera"
+				}
+			],
+			"wait": 1.0
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "集贸市场。摊位和市场监督那里，可以用金币买东西。……薄荷糖很好用。"
+		},
+		{
+			"actions": [
+				{
+					"to": [
+						44,
+						24
+					],
+					"time": 1.0,
+					"do": "camera"
+				}
+			],
+			"wait": 1.0
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "篝火广场。在火边坐一会儿，伤会好，笑也会停下来。……主人很爱跳舞，别被拉进去。"
+		},
+		{
+			"actions": [
+				{
+					"to": [
+						30,
+						30
+					],
+					"time": 0.8,
+					"do": "camera"
+				}
+			],
+			"wait": 0.8
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "那本日记本可以记下你走到哪里了。……整个小镇只有那一本。"
+		},
+		{
+			"actions": [
+				{
+					"to": [
+						54,
+						5
+					],
+					"time": 1.0,
+					"do": "camera"
+				}
+			],
+			"wait": 1.0
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "北边的铁门通往地面。……一直锁着。"
+		},
+		{
+			"speaker": "公主",
+			"text": "通往地面……！",
+			"emotion": "surprise",
+			"actions": [
+				{
+					"who": "princess",
+					"kind": "surprise",
+					"do": "bubble"
+				}
+			]
+		},
+		{
+			"actions": [
+				{
+					"who": "princess",
+					"time": 0.8,
+					"do": "camera"
+				}
+			],
+			"wait": 0.8
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……下面是保卫队营地。走吧。",
+			"actions": [
+				{
+					"who": "blue",
+					"dir": "down",
+					"do": "face"
+				}
+			]
+		},
+		{
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "fade_out"
+				}
+			],
+			"wait": 0.5
+		}
+	]
+}

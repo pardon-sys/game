@@ -84,6 +84,12 @@ for i, x in enumerate((8, 16, 24, 32)):
     prop(up, x - 2, 10, "flowers")
 for x in (12, 20, 28):
     prop(up, x, 11, "lamp")
+# 蓝色公主的小屋（居民区东头）：参观小镇的最后一站，进去之后是主角住的楼下
+prop(up, 42, 8, "house_blue")
+prop(up, 40, 10, "flowers")
+prop(up, 44, 10, "flowers")
+up.put(42, 9, "exit target=floor_06_house spawn=from_upper unlock_flag=f6_house_open locked_dialogue=sign6_house_locked")
+up.put(42, 10, "spawn id=from_house")
 # 集贸市场（西边两排摊位）
 for row, y in enumerate((19, 26)):
     for i, x in enumerate((7, 11, 15)):
@@ -211,16 +217,31 @@ for x in (28, 36, 42):
 mine.put(6, 27, "player")
 mine.put(6, 26, "spawn id=from_camp")
 mine.put(3, 27, "stairs target=floor_06_camp spawn=from_mine down=false")
+# 矿车和木箱：潜入模式里可以躲进去（action=hide，平时按 E 只提示「没必要躲」）
 for (x, y) in ((12, 26), (22, 20), (30, 12), (40, 15), (14, 8)):
-    prop(mine, x, y, "cart")
+    prop(mine, x, y, "cart", "hide")
 for (x, y) in ((16, 24), (25, 16), (34, 9), (20, 9)):
-    prop(mine, x, y, "crate")
+    prop(mine, x, y, "crate", "hide")
 for (x, y) in ((10, 24), (22, 26), (28, 10), (38, 10), (16, 10)):
     prop(mine, x, y, "lamp")
 prop(mine, 40, 7, "dungeon_gate")
-mine.put(40, 8, "exit target=floor_06_upper locked=true dialogue=sign6_deep")
-npc(mine, 30, 15, "miner", "miner_burr", 3)
-npc(mine, 14, 26, "miner", "miner_dot", 2)
+# 最深处的门：有神秘的钥匙才打开，通往第七层
+mine.put(40, 8, "exit target=floor_07 unlock_flag=f6_key locked_dialogue=sign6_deep open_dialogue=f6_gate_open")
+npc(mine, 30, 15, "miner", "miner_burr", 3, "hidden_flag=f6_escape")
+npc(mine, 14, 26, "miner", "miner_dot", 2, "hidden_flag=f6_escape")
+# —— 潜入模式（第二天早上 f6_escape 之后）：巡逻的保卫队员，被看见警觉值就涨，满了被抓（scripts/stealth/）——
+mine.put(4, 24, "stealth active_flag=f6_escape on_caught=f6")
+for path, extra in (
+        ("8,23;17,23", ""),                      # 入口大厅上排来回
+        ("15,28;15,25", " wait=1.6"),            # 入口大厅竖着来回
+        ("22,28;22,15", ""),                     # 中间竖走廊
+        ("26,11;43,11", ""),                     # 北大厅横着来回
+        ("33,7;33,17", " wait=1.0"),             # 北大厅竖着来回
+        ("38,14;44,14;44,17;38,17", " loop=true"),  # 大门前绕圈
+        ("8,8;20,8", ""),                        # 西北的储藏间
+        ("30,16;30,15", " wait=3.0"),            # 北大厅入口站岗张望
+):
+    mine.put(int(path.split(";")[0].split(",")[0]), int(path.split(";")[0].split(",")[1]), "guard_patrol path=" + path + extra)
 mine.write()
 
 # ================================================================ 训练迷宫
@@ -574,6 +595,10 @@ SIGNS = {
     "sign6_training": [{"speaker": S, "text": "【训练场】在训练台报名（每轮 5 金币）：魔力疲倦忍耐、魔力疲倦释放、耐笑部位、敏感部位强化。练出来的数值会一直保留。"}],
     "sign6_prison": [{"speaker": S, "text": "【营地地牢】关押违反规矩的人。刑具都收起来了……暂时。"}],
     "sign6_deep": [{"speaker": S, "text": "【矿道深处】封住的大门。门缝里吹出带着甜味的风……门后面好像还有机关在转动的声音。"}],
+    "f6_gate_open": [{"speaker": P, "text": "钥匙插进锁孔……咔哒。开、开了！门后面是往下的楼梯……"}],
+    "sign6_house_locked": [{"speaker": S, "text": "【蓝色的小屋】门锁着。门牌上写着一个蓝色的花体字母。"}],
+    "sign6_house_up": [{"speaker": P, "text": "楼上是她的房间……不好随便上去。"}],
+    "f6_house_door_night": [{"speaker": P, "text": "外面已经黑透了……门也锁上了，出不去。还是在房间里待着吧。"}],
     "sign6_maze": [{"speaker": S, "text": "【训练迷宫】十二个房间，每间都有一组脚 / 大腿 / 屁股的机关。主动去触发它们——"
                                              "身体会忍不住想逃回出口，连按空格拖住自己。逃到出口，这一轮就结束了。"}],
     "sign6_trap_thigh_pincer": [{"speaker": S, "text": "【夹腿羽毛钳】装在墙上，按节奏伸出带羽毛的钳臂夹住大腿，钳口的羽毛扫大腿内侧。看准它缩回去的时候再过。"}],
@@ -1022,3 +1047,421 @@ for i in range(len(ENDURE)):
 for i in range(2):
     (TH / ("train_zone_punish_%d.json" % (i + 1))).write_text(_theater_json(zone_punish(i)))
 print("过场 2 段，小剧场 %d 段" % (6 + len(ENDURE) + len(DEVOTION)))
+
+
+# ================================================================ 第六层后续剧情：参观小镇 → 蓝色小屋 → 夜晚 → 钥匙 → 第二天
+# 剧情脚本见 scripts/story/f6_story.gd；睡觉组件 scripts/story/sleep.gd。
+class Stack:
+    """一格叠放多个实体（木地板铺满房间，上面再放家具）：最后用 " + " 连起来写进地图。"""
+
+    def __init__(self, m):
+        self.m, self.cells = m, {}
+
+    def add(self, x, y, spec):
+        self.cells.setdefault((x, y), []).append(spec)
+
+    def write(self):
+        for (x, y), specs in self.cells.items():
+            self.m.put(x, y, " + ".join(specs))
+        self.m.write()
+
+
+HOUSE_OBJ = "talk:floor_06/house_objects#"
+house = Map("floor_06_house", 20, 14, "intro =\nambient = 0.9,0.82,0.76\nnight_ambient = 0.36,0.34,0.56")
+house.room(2, 2, 17, 11)
+hs = Stack(house)
+for y in range(2, 12):
+    for x in range(2, 18):
+        hs.add(x, y, "prop type=wood_floor")
+for x in (5, 14):
+    house.torch(x, 1)
+hs.add(6, 2, "prop type=window action=" + HOUSE_OBJ + "window")
+hs.add(13, 2, "prop type=window action=" + HOUSE_OBJ + "window")
+hs.add(10, 2, "prop type=painting action=" + HOUSE_OBJ + "painting")
+hs.add(16, 2, "prop type=stairs_up")
+hs.add(16, 3, "exit target=floor_06_house_up spawn=from_down unlock_flag=blue_is_hero locked_dialogue=sign6_house_up")
+hs.add(15, 4, "spawn id=from_up")
+hs.add(4, 4, "prop type=princess_bed action=" + HOUSE_OBJ + "bed")
+hs.add(8, 3, "prop type=wardrobe action=" + HOUSE_OBJ + "wardrobe")
+hs.add(12, 3, "prop type=bookshelf action=" + HOUSE_OBJ + "bookshelf")
+hs.add(14, 5, "prop type=dresser action=" + HOUSE_OBJ + "dresser")
+hs.add(9, 7, "prop type=rug")
+hs.add(9, 7, "prop type=tea_table action=" + HOUSE_OBJ + "tea")
+hs.add(8, 7, "prop type=chair")
+hs.add(10, 7, "prop type=chair")
+hs.add(3, 10, "prop type=plant action=" + HOUSE_OBJ + "plant")
+hs.add(16, 10, "prop type=plant action=" + HOUSE_OBJ + "plant")
+hs.add(6, 6, "prop type=candle")
+hs.add(13, 9, "prop type=candle")
+hs.add(15, 8, "trap type=saddle_bench active=false")
+hs.add(15, 8, "prop type=hotspot action=" + HOUSE_OBJ + "saddle")
+hs.add(9, 11, "exit target=floor_06_upper spawn=from_house lock_flag=night locked_dialogue=f6_house_door_night")
+hs.add(9, 10, "spawn id=from_upper")
+hs.add(9, 9, "player")
+hs.write()
+
+# —— 家具的调查对话（一个文件，每件家具一个节点；Prop 的 talk:<文件>#<节点>）——
+HO = {"name": "", "entries": [{"node": "bed"}], "nodes": {
+    "bed": {"goto": [{"if": {"flag": "f6_key"}, "node": "bed_sleep"}, {"if": {"flag": "night"}, "node": "bed_not_yet"}, {"node": "bed_day"}]},
+    "bed_day": {"lines": [L("带帷幔的公主床，被子软乎乎的。现在还不困。", "P", "happy")]},
+    "bed_not_yet": {"lines": [L("……还睡不着。房间里好像还有什么在意的东西……", "P", "shy")]},
+    "bed_sleep": {"lines": [L("……呼啊。好困……今天就睡吧。", "P", "shy")], "set": {"call": "sleep"}},
+    "wardrobe": {"lines": [L("衣柜里挂着几件洗得干干净净的裙子……尺寸刚好是我的？她连这个都准备好了。", "P", "surprise")]},
+    "bookshelf": {"lines": [L("《地下小镇的历史》《矿道安全守则》《保卫队训练手册》……还有一本《地面上的童话》。", "P"),
+                            L("……童话书的书角都翻卷了。她经常看吧。", "P", "shy")]},
+    "dresser": {"lines": [L("梳妆台的镜子擦得亮亮的。……头发乱糟糟的，今天被挠了好多次。", "P", "shy")]},
+    "tea": {"lines": [L("小圆桌上放着还温热的茶和一碟饼干。", "P", "happy"), L("……好吃！她泡的茶，有一点点花香。", "P", "happy")]},
+    "plant": {"lines": [L("盆栽的叶子绿油油的。地底下也能长得这么好啊。", "P")]},
+    "window": {"goto": [{"if": {"flag": "night"}, "node": "window_night"}, {"node": "window_day"}]},
+    "window_night": {"lines": [L("窗外是小镇的夜色。……地底下也有月亮？原来是矿道顶上发光的石头。", "P", "surprise")]},
+    "window_day": {"lines": [L("窗外，小镇已经醒了。远处的矿道口有队员在站岗。", "P")]},
+    "painting": {"lines": [L("画里是一片开满花的草地，天空蓝蓝的。……是地面上的风景。", "P", "sad")]},
+    # 骑马刷凳：第一次 → 长的小剧场 → 蓝色公主下楼 → 掉出钥匙
+    "saddle": {"goto": [{"if": {"flag": "f6_key"}, "node": "saddle_after"}],
+               "lines": [L("……房间角落里，怎么会有一张骑马的凳子？凳面上全是刷毛……", "P", "surprise"),
+                         L("好像有点像训练营里的那个……只是坐一下的话，应该没关系吧？", "P", "shy")],
+               "theater": "f6_house_saddle", "next": "saddle_blue"},
+    "saddle_blue": {"cutscene": "f6_blue_quiet", "perform_before": True,
+                    "set": {"give_item": {"mystery_key": 1}, "flags": ["f6_key"]},
+                    "lines": [L("（获得了「神秘的钥匙」）", "N")]},
+    "saddle_after": {"lines": [L("……再也不坐了。绝对不坐了。", "P", "angry")]},
+}}
+(DLG / "house_objects.json").write_text(json.dumps(HO, ensure_ascii=False, indent="\t") + "\n")
+
+# —— 剧情过场 ——
+BLUE_HELLO = "……都问完了？……那，我带你转转。"
+TOUR_UPPER = {"name": "参观小镇：集市层", "letterbox": True, "steps": [
+    {"actions": [A("fade_out", time=0.4)], "wait": 0.4},
+    {"actions": [A("move", who="princess", to=[30, 25]), A("spawn", id="blue", kind="npc:blue_princess", at=[32, 25], dir="left"),
+                 A("face", who="princess", dir="right"), A("camera", to=[31, 25]), A("fade_in", time=0.5)], "wait": 0.5},
+    line(BLUE, BLUE_HELLO),
+    {"actions": [A("camera", to=[11, 23], time=1.0)], "wait": 1.0},
+    line(BLUE, "集贸市场。摊位和市场监督那里，可以用金币买东西。……薄荷糖很好用。"),
+    {"actions": [A("camera", to=[44, 24], time=1.0)], "wait": 1.0},
+    line(BLUE, "篝火广场。在火边坐一会儿，伤会好，笑也会停下来。……主人很爱跳舞，别被拉进去。"),
+    {"actions": [A("camera", to=[30, 30], time=0.8)], "wait": 0.8},
+    line(BLUE, "那本日记本可以记下你走到哪里了。……整个小镇只有那一本。"),
+    {"actions": [A("camera", to=[54, 5], time=1.0)], "wait": 1.0},
+    line(BLUE, "北边的铁门通往地面。……一直锁着。"),
+    line(P, "通往地面……！", "surprise", [A("bubble", who="princess", kind="surprise")]),
+    {"actions": [A("camera", who="princess", time=0.8)], "wait": 0.8},
+    line(BLUE, "……下面是保卫队营地。走吧。", actions=[A("face", who="blue", dir="down")]),
+    {"actions": [A("fade_out", time=0.5)], "wait": 0.5},
+]}
+TOUR_CAMP = {"name": "参观小镇：营地层", "letterbox": True, "steps": [
+    {"actions": [A("spawn", id="blue", kind="npc:blue_princess", at=[26, 6], dir="left"), A("fade_in", time=0.5)], "wait": 0.5},
+    {"actions": [A("camera", to=[26, 13], time=1.0)], "wait": 1.0},
+    line(BLUE, "指挥帐篷。队长在那里。……他嘴上凶，人不坏。"),
+    {"actions": [A("camera", to=[37, 20], time=1.0)], "wait": 1.0},
+    line(BLUE, "训练营。花五个金币就能练——忍痒、耐笑……练出来的本事会一直跟着你。东边那扇门后面是训练迷宫。"),
+    line(P, "练、练忍痒……听起来好可怕。", "shy"),
+    {"actions": [A("camera", to=[5, 28], time=1.0)], "wait": 1.0},
+    line(BLUE, "西南角的楼梯下去是地牢。……你醒来的地方。"),
+    {"actions": [A("camera", to=[45, 29], time=1.0)], "wait": 1.0},
+    line(BLUE, "东南角下去是矿道。……再往下看看。"),
+    {"actions": [A("fade_out", time=0.5)], "wait": 0.5},
+]}
+TOUR_MINE = {"name": "参观小镇：矿道层", "letterbox": True, "steps": [
+    {"actions": [A("spawn", id="blue", kind="npc:blue_princess", at=[7, 27], dir="left"), A("fade_in", time=0.5)], "wait": 0.5},
+    {"actions": [A("camera", to=[13, 26], time=1.0)], "wait": 1.0},
+    line(BLUE, "矿道。小镇的灯、矿车、……你吃的饼干，都靠这里。"),
+    {"actions": [A("camera", to=[40, 8], time=1.4)], "wait": 1.4},
+    line(BLUE, "……最深处那扇门。谁也打不开。", actions=[A("face", who="blue", dir="up")]),
+    line(P, "那扇门后面有什么？", "question"),
+    line(BLUE, "……别靠近它。", actions=[A("bubble", who="blue", kind="dots")]),
+    {"actions": [A("camera", who="princess", time=0.8)], "wait": 0.8},
+    line(BLUE, "……最后一个地方。跟我来。"),
+    {"actions": [A("fade_out", time=0.5)], "wait": 0.5},
+]}
+TOUR_HOME = {"name": "参观小镇：她的小屋", "letterbox": True, "steps": [
+    {"actions": [A("move", who="princess", to=[41, 11]), A("spawn", id="blue", kind="npc:blue_princess", at=[43, 11], dir="up"),
+                 A("face", who="princess", dir="up"), A("camera", to=[42, 9]), A("fade_in", time=0.5)], "wait": 0.5},
+    line(BLUE, "……到了。我住的地方。"),
+    line(P, "好可爱的房子！蓝色的屋顶……和你一样。", "happy", [A("bubble", who="princess", kind="happy")]),
+    line(BLUE, "……楼下空着。今晚开始，你住那里。", actions=[A("face", who="blue", dir="left")]),
+    line(P, "诶？可、可以吗？", "surprise"),
+    line(BLUE, "……嗯。进来吧。", actions=[A("move", who="blue", to=[42, 9], speed=40)]),
+    {"actions": [A("fade_out", time=0.5)], "wait": 0.6},
+]}
+HOUSE_ENTER = {"name": "蓝色小屋：第一个晚上", "letterbox": True, "steps": [
+    {"actions": [A("spawn", id="blue", kind="npc:blue_princess", at=[10, 9], dir="left"), A("face", who="princess", dir="right"),
+                 A("fade_in", time=0.6)], "wait": 0.6},
+    line(P, "哇……帷幔的床、梳妆台、还有书架……这里真的是给我住的？", "surprise", [A("bubble", who="princess", kind="surprise")]),
+    line(BLUE, "……以前也有人住过。收拾了一下。"),
+    line(P, "……谢谢你。救了我，带我逛了小镇，还给我地方住……", "sad"),
+    line(P, "我、我一定会报答你的！等我回到地面上——", "happy"),
+    line(BLUE, "……不用。", actions=[A("face", who="blue", dir="up")]),
+    line(BLUE, "楼上是我的房间。……别上来。早点睡。"),
+    {"actions": [A("move", who="blue", to=[16, 3], speed=40)], "wait": 1.0},
+    {"actions": [A("despawn", who="blue"), A("sfx", sound="door_close"), A("set_flag", flag="night")], "wait": 1.4},
+    line(P, "……天黑了。外面一下子安静下来。", "sad"),
+    line(P, "还睡不着……先在房间里看看吧。", "shy",
+         [A("notify", text="夜晚：门锁上了。可以调查房间里的东西（靠近按 E），床可以睡觉。")]),
+]}
+BLUE_QUIET = {"name": "蓝色小屋：小点声", "letterbox": True, "steps": [
+    {"actions": [A("pose", emotion="helpless_1", laugh=60), A("spawn", id="blue", kind="npc:blue_princess", at=[16, 3], dir="down"),
+                 A("sfx", sound="door")], "wait": 0.6},
+    line(BLUE, "……小点声。", actions=[A("move", who="blue", to=[14, 7], speed=40)]),
+    line(P, "呀啊！？对、对不起……我只是好奇坐了一下，它就把我锁住了……", "surprise", [A("bubble", who="princess", kind="surprise")]),
+    line(BLUE, "……整栋楼都听见了。", actions=[A("face", who="blue", dir="right")]),
+    line(P, "呜……", "shy", [A("pose", emotion="shy", laugh=20)]),
+    line(BLUE, "……那张凳子。原来还在这里。", actions=[A("bubble", who="blue", kind="dots")]),
+    {"actions": [A("sfx", sound="unlock"), A("shake", time=0.2, strength=1.0), A("bubble", who="princess", kind="question")], "wait": 0.6},
+    line(P, "咦？凳子底下的暗格……掉出来一把钥匙。上面刻着……矿道的标记？", "question"),
+    line(BLUE, "……", actions=[A("face", who="blue", dir="down")]),
+    line(BLUE, "……没什么。早点睡吧。", actions=[A("move", who="blue", to=[16, 3], speed=45)]),
+    {"actions": [A("despawn", who="blue")], "wait": 0.8},
+    line(P, "……她刚才的表情，好像知道这把钥匙是什么。", "sad"),
+]}
+MORNING_ESCAPE = {"name": "第二天早上：我要逃离这里", "letterbox": True, "steps": [
+    {"actions": [A("pose", emotion="normal", laugh=0)], "wait": 0.3},
+    line(P, "……嗯——睡得好香。被子软软的……", "happy"),
+    line(P, "……她已经出门了啊。桌上留着早饭。", "shy"),
+    line(P, "……", "sad", [A("bubble", who="princess", kind="dots")]),
+    line(P, "大家都对我很好。可是……我是公主，我要回到地面上去。", "sad"),
+    line(P, "这把钥匙一定能打开矿道最深处那扇门。只要趁巡逻的队员不注意……", "angry"),
+    line(P, "……决定了。我要逃离这里！", "angry", [A("set_flag", flag="f6_escape"),
+         A("notify", text="目标：去矿道层，避开巡逻队员的视线，用钥匙打开最深处的门")]),
+]}
+for name, c in (("f6_tour_upper", TOUR_UPPER), ("f6_tour_camp", TOUR_CAMP), ("f6_tour_mine", TOUR_MINE), ("f6_tour_home", TOUR_HOME),
+                ("f6_house_enter", HOUSE_ENTER), ("f6_blue_quiet", BLUE_QUIET), ("f6_morning_escape", MORNING_ESCAPE)):
+    (CUT / (name + ".json")).write_text(json.dumps(c, ensure_ascii=False, indent="\t") + "\n")
+
+# —— 小剧场：骑马刷凳（主角一个人，长）——
+SADDLE_CAST = {
+    "princess": {"kind": "princess", "at": [0, 8], "visual": "normal", "anim": "idle", "dir": "down"},
+    "saddle": {"kind": "trap:saddle_bench", "at": [0, 18]},
+}
+
+
+def T2(zone, n=6, iv=0.3, fx="lines"):
+    return A("tickle", who="princess", by="saddle", repeat=n, interval=iv, fx=fx, zone=zone)
+
+
+SADDLE = {"name": "蓝色小屋：骑马刷凳", "cast": SADDLE_CAST, "steps": [
+    {"actions": [A("fade_in", time=0.6)], "wait": 0.6},
+    line(P, "嘿咻……跨上来了。像骑小马一样……有一点点好玩。", "happy", [A("hop", who="princess", count=1)]),
+    {"actions": [A("sfx", sound="stocks"), A("shake", who="princess", time=0.3), A("pose", who="princess", visual="surprise")], "wait": 0.5},
+    line(P, "……咔哒？诶、诶？腿两边的板子合上了……下、下不来了！", "surprise", [A("bubble", who="princess", kind="surprise")]),
+    line(P, "没关系没关系，冷静……找找有没有开关……", "shy"),
+    {"actions": [T2("butt", 3, 0.5), A("sfx", sound="swish")], "wait": 1.4},
+    line(P, "噗！？刷、刷条动起来了……从屁股底下推过去……", "giggle", [A("pose", who="princess", visual="giggle")]),
+    line(P, "不行不行，这里是别人家……而且已经是晚上了，要小声……", "shy", [T2("butt", 4, 0.45)]),
+    line(P, "……嗯、嗯唔……忍住……只要不出声就好……", "giggle", [T2("thigh", 4, 0.45)]),
+    line(NARR, "（刷条一来一回，慢慢地推过屁股，再从两边扫过分开的大腿内侧）", actions=[T2("butt", 6, 0.35), T2("thigh", 6, 0.38)]),
+    line(P, "噗、噗呼……大、大腿里面也……唔嗯嗯……", "giggle", [A("shake", who="princess", time=0.3)]),
+    line(P, "（捂住嘴）……嗯——！嗯嗯——！", "giggle", [T2("thigh", 6, 0.3)]),
+    line(P, "……刷、刷毛钻到裙子底下了……嗯唔……腿合不上……夹板把大腿分得开开的……", "giggle", [T2("thigh", 6, 0.32)]),
+    {"actions": [T2("butt", 8, 0.25), T2("thigh", 8, 0.27), A("pose", who="princess", visual="helpless_1")], "wait": 2.0},
+    line(P, "噗哈……！不、不行……越来越快了……哈、哈哈……", "helpless_1", [A("bubble", who="princess", kind="laugh"), A("voice", state="giggle")]),
+    line(P, "一挣扎凳子就晃……一晃刷得更快……哈哈……这、这是什么坏凳子啊……！", "helpless_1", [T2("butt", 8, 0.22)]),
+    line(P, "小声……要小声……哈、哈哈哈……小声不了啦……！", "helpless_1", [T2("thigh", 8, 0.22), A("shake", who="princess", time=0.4)]),
+    line(P, "楼、楼上……会不会被听见……哈哈……要是被她看到这个样子……哈哈哈……", "helpless_1", [T2("butt", 8, 0.22)]),
+    line(NARR, "（安静的夜里，只剩下刷条吱呀吱呀的声音，和努力压低却越来越大的笑声）", actions=[T2("butt", 8, 0.25), T2("thigh", 8, 0.25)]),
+    {"actions": [A("pose", who="princess", visual="helpless_2"), A("voice", state="laugh"), T2("butt", 10, 0.18), T2("thigh", 10, 0.2)], "wait": 2.0},
+    line(P, "哈哈哈哈哈！屁、屁股和大腿一起……放、放我下来哈哈哈哈！", "helpless_2", [A("shake", who="princess", time=0.6)]),
+    line(P, "开关在哪里啊哈哈哈哈——！救、救命……不对，不能叫……哈哈哈哈！", "helpless_2", [T2("thigh", 10, 0.18)]),
+    line(P, "屁、屁股要被刷平了哈哈哈哈！大腿里面也……一来一回……数、数不清了哈哈哈！", "helpless_2", [T2("butt", 10, 0.18), T2("thigh", 10, 0.2)]),
+    line(P, "哈哈……哈……刷条……一来一回……一来……一回……", "helpless_2", [T2("butt", 8, 0.3)]),
+    line(NARR, "（不知道过了多久，刷条终于慢了下来。公主伏在凳子上，肩膀还在一抖一抖）", actions=[A("bubble", who="princess", kind="dots"), A("voice", state="")]),
+    line(P, "……嘿嘿……小马……跑完了吗……下一站……是哪儿……", "helpless_1"),
+    {"actions": [A("fade_out", time=0.8)], "wait": 0.9},
+]}
+(TH / "f6_house_saddle.json").write_text(_theater_json(SADDLE))
+print("第六层后续剧情：小屋地图、家具对话、7 段过场、骑马刷凳小剧场")
+
+
+# —— 潜入失败：营地地牢的惩罚小剧场（按被抓次数 3 种，越来越重）、蓝色公主来领人、回小屋 ——
+def caught_theater(n):
+    G1 = G2 = G3 = "保卫队员"
+    if n == 1:
+        cast = {"princess": {"kind": "princess", "at": [0, 8], "visual": "helpless_1", "anim": "helpless", "dir": "down"},
+                "cushion": {"kind": "trap:cushion", "at": [0, 18]}, "cuffs": {"kind": "trap:cuffs", "at": [0, 12]},
+                "g1": {"kind": "npc:guard", "at": [-30, 6], "dir": "right"}, "g2": {"kind": "npc:guard", "at": [30, 6], "dir": "left"},
+                "cap": {"kind": "npc:captain", "at": [64, 0], "dir": "left"}}
+        devs = ("cushion", "butt", "cuffs", "armpit")
+        lines = [
+            line(CAP, "一大早跑到矿道最深处。……想干什么？"),
+            line(P, "我、我只是散步……散步！", "shy"),
+            line(CAP, "散步需要躲进矿车里？……挠。挠到她说实话为止。"),
+            line(P, "等一下等一下——噗哈哈！腋、腋下……举着手放不下来……！", portrait="defeat_1"),
+            line(G1, "坐垫也开了。屁股底下的刷子会一直刷哦。"),
+            line(P, "哈哈哈哈！我说、我说！我想打开那扇门……回地面上去……！", portrait="defeat_1"),
+            line(CAP, "……那扇门后面不是地面。是比这里更深的地方。"),
+            line(P, "更、更深……？哈哈哈……那、那也要去……！"),
+            line(CAP, "……倔。继续。腋下和腰，别停。"),
+            line(P, "哈哈哈哈哈！腰、腰也……我、我错了……今天先不去了……哈哈哈哈！", portrait="defeat_2"),
+            line(G2, "队长，她说「今天」先不去。"),
+            line(CAP, "……再加五分钟。"),
+            line(P, "哈哈哈哈哈——！不、不是那个意思啊哈哈哈哈！", portrait="defeat_2"),
+            line(NARR, "（举手铐柱把双手吊在头顶，坐垫的刷毛不停地刷，两个队员一左一右挠着腋下和腰——地牢里的笑声持续了很久）"),
+            line(P, "……哈……哈……散、散步……真的只是散步……"),
+        ]
+    elif n == 2:
+        cast = {"princess": {"kind": "princess", "at": [0, 8], "visual": "helpless_1", "anim": "helpless", "dir": "down"},
+                "stocks": {"kind": "trap:stocks", "at": [0, 19]}, "clamp": {"kind": "trap:clamp", "at": [0, 18]},
+                "g1": {"kind": "npc:guard", "at": [-30, 6], "dir": "right"}, "g2": {"kind": "npc:guard", "at": [30, 6], "dir": "left"},
+                "g3": {"kind": "npc:guard", "at": [-60, 4], "dir": "right"}, "cap": {"kind": "npc:captain", "at": [64, 0], "dir": "left"}}
+        devs = ("stocks", "sole", "clamp", "thigh")
+        lines = [
+            line(G1, "又是你啊。昨天才笑哭了，今天又跑去矿道。"),
+            line(CAP, "这次换足枷。……脚心朝外，鞋脱掉。"),
+            line(P, "脚、脚心不行！哪里都可以，脚心不——噗哈哈哈哈！", portrait="defeat_1"),
+            line(G2, "夹腿枷台也夹上。大腿内侧刚好够得着。"),
+            line(P, "哈哈哈哈！大腿也——上、上下一起太过分了哈哈哈哈！", portrait="defeat_1"),
+            line(CAP, "钥匙是从哪里来的？"),
+            line(P, "钥、钥匙？哈哈哈……捡、捡到的……凳子底下……哈哈哈！"),
+            line(CAP, "……凳子？"),
+            line(G3, "队长，第三个人也来了。脚趾缝我负责。", actions=[A("enter", who="g3", at=[-44, 12], time=0.4)]),
+            line(P, "哈哈哈哈哈！脚、脚趾缝不行——三、三个人……！", portrait="defeat_2"),
+            line(CAP, "……钥匙先让你拿着。反正你打不开那扇门——过了那扇门，就不是我们能保护的地方了。"),
+            line(P, "哈哈哈……保、保护……？我才不要被保护……我要回家……哈哈哈哈！", portrait="defeat_2"),
+            line(CAP, "……继续。"),
+            line(NARR, "（脚心被羽毛和手指来回扫，大腿内侧被夹板的绒毛蹭着——公主的脚趾一会儿蜷起来、一会儿张开，笑声越来越哑）"),
+            line(P, "……哈……脚……脚心……是我的吗……嘿嘿……"),
+        ]
+    else:
+        cast = {"princess": {"kind": "princess", "at": [0, 8], "visual": "helpless_2", "anim": "helpless", "dir": "down"},
+                "supine": {"kind": "trap:supine", "at": [0, 18]}, "stocks": {"kind": "trap:stocks", "at": [0, 23]},
+                "cushion": {"kind": "trap:cushion", "at": [0, 14]},
+                "g1": {"kind": "npc:guard", "at": [-30, 6], "dir": "right"}, "g2": {"kind": "npc:guard", "at": [30, 6], "dir": "left"},
+                "g3": {"kind": "npc:guard", "at": [-60, 4], "dir": "right"}, "cap": {"kind": "npc:captain", "at": [64, 0], "dir": "left"}}
+        devs = ("stocks", "sole", "supine", "waist")
+        lines = [
+            line(CAP, "第三次了。……你还真是一点都不长记性。"),
+            line(P, "这、这次只差一点点了！再有一点点就……", "angry"),
+            line(CAP, "刑床、足枷、坐垫，全部用上。……今天我亲自来。"),
+            line(P, "队、队长亲自……？等一下，我们可以谈谈——噗哈哈哈哈！", portrait="defeat_1"),
+            line(CAP, "腰。……这里最怕吧。", actions=[A("move", who="cap", to=[24, 6], time=0.6)]),
+            line(P, "哈哈哈哈哈！最、最怕的地方……为什么会知道啊哈哈哈哈！", portrait="defeat_1"),
+            line(G1, "脚心这边也开始了。"),
+            line(G2, "坐垫开到最大。"),
+            line(P, "哈哈哈哈哈哈！全、全部一起——不行了不行了不行了哈哈哈哈！", portrait="defeat_2"),
+            line(CAP, "……为什么非要出去不可？在这里不好吗？"),
+            line(P, "哈哈哈……因、因为……我是公主……哈哈……外面……有在等我的人……哈哈哈哈！", portrait="defeat_2"),
+            line(CAP, "……"),
+            line(CAP, "……停一下。", actions=[A("face", who="cap", dir="left")]),
+            line(G3, "队长？"),
+            line(CAP, "……今天就到这里。把她送回去。"),
+            line(NARR, "（刷子停了下来。公主瘫在刑床上大口喘气，眼角还挂着笑出来的泪）"),
+            line(P, "……哈……哈……等、等我的人……嘿嘿……"),
+        ]
+    d1, z1, d2, z2 = devs
+    steps = [{"actions": [A("fade_in", time=0.5), A("voice", state="laugh")], "wait": 0.5}]
+    for i, ln in enumerate(lines):
+        acts = list(ln.get("actions", []))
+        if ln.get("speaker") == P and i < len(lines) - 1:
+            acts += [A("tickle", who="princess", by="g1", repeat=8, interval=0.2, fx="hand", zone=z1 if i % 2 else z2),
+                     A("tickle", who="princess", by=d1 if i % 2 else d2, repeat=6, interval=0.28, fx="lines", zone=z1 if i % 2 else z2)]
+            if i > len(lines) // 2:
+                acts.append(A("tickle", who="princess", by="g2", repeat=8, interval=0.18, fx="hand", zone="waist"))
+                acts.append(A("pose", who="princess", visual="helpless_2"))
+        steps.append(dict(ln, actions=acts) if acts else ln)
+    steps.append({"actions": [A("fade_out", time=0.6), A("voice", state="")], "wait": 0.7})
+    return {"name": "潜入失败的惩罚（第 %d 次）" % n, "cast": cast, "steps": steps}
+
+
+for n in (1, 2, 3):
+    (TH / ("f6_caught_%d.json" % n)).write_text(_theater_json(caught_theater(n)))
+
+FETCH = {1: "……我来接她。", 2: "……又来接她了。", 3: "……最后一次。我来接她。"}
+for n in (1, 2, 3):
+    cs = {"name": "营地地牢：被抓之后（第 %d 次）" % n, "letterbox": True, "skippable": True, "steps": [
+        {"actions": [A("fade_in", time=0.4)], "wait": 0.4},
+        {"theater": "f6_caught_%d" % n},
+        {"actions": [A("pose", emotion="sad", laugh=30), A("spawn", id="blue", kind="npc:blue_princess", at=[5, 13], dir="right"),
+                     A("sfx", sound="door")], "wait": 0.4},
+        line(BLUE, FETCH[n], actions=[A("move", who="blue", to=[17, 13], speed=50)]),
+        line("保卫队员", "啊，是您……队长说可以放人了。"),
+        line(BLUE, "……走吧。", actions=[A("face", who="blue", dir="left")]),
+        {"actions": [A("fade_out", time=0.6)], "wait": 0.6},
+    ]}
+    (CUT / ("f6_caught_prison_%d.json" % n)).write_text(json.dumps(cs, ensure_ascii=False, indent="\t") + "\n")
+
+CAUGHT_HOME = {"name": "被领回小屋", "letterbox": True, "skippable": True, "steps": [
+    {"actions": [A("set_flag", flag="night"), A("spawn", id="blue", kind="npc:blue_princess", at=[10, 9], dir="left"),
+                 A("face", who="princess", dir="right"), A("fade_in", time=0.6)], "wait": 0.6},
+    line(P, "……对不起。又给你添麻烦了。", "sad"),
+    line(BLUE, "……"),
+    line(BLUE, "……矿道里，灯照不到的地方，他们看不太清。", actions=[A("face", who="blue", dir="up")]),
+    line(P, "诶？", "surprise", [A("bubble", who="princess", kind="question")]),
+    line(BLUE, "……矿车和木箱里，也能躲。……我什么都没说。早点睡。", actions=[A("move", who="blue", to=[16, 3], speed=45)]),
+    {"actions": [A("despawn", who="blue")], "wait": 0.6},
+    line(P, "……她是在帮我吗？", "shy"),
+]}
+MORNING_RETRY = {"name": "第二天早上：再试一次", "letterbox": True, "steps": [
+    {"actions": [A("pose", emotion="normal", laugh=0)], "wait": 0.3},
+    line(P, "……身上还有点痒痒的。昨天被挠得好惨……", "shy"),
+    line(P, "不过——躲在暗处、躲进矿车、丢石子引开他们……这次一定行！", "angry",
+         [A("notify", text="目标：去矿道层，避开巡逻队员的视线，用钥匙打开最深处的门（F 丢石子，木箱 / 矿车按 E 躲进去）")]),
+]}
+for name, c in (("f6_caught_home", CAUGHT_HOME), ("f6_morning_retry", MORNING_RETRY)):
+    (CUT / (name + ".json")).write_text(json.dumps(c, ensure_ascii=False, indent="\t") + "\n")
+print("潜入失败：惩罚小剧场 3 段、地牢过场 3 段、回小屋、再试一次")
+
+
+# ================================================================ 第七层前奏：蓝色公主的房间（楼上）、她醒来、出门和队长争吵
+# 剧情：粉色公主进了第七层（f7_pink_run）→ 主角换成蓝色公主（blue_is_hero）→ 楼上醒来（f7_blue_wake）→ 出门（f7_blue_argue）→ 第七层
+HOUSE_UP_OBJ = "talk:floor_06/house_up_objects#"
+hu = Map("floor_06_house_up", 16, 12, "intro =\nintro_cutscene = f7_blue_wake\nambient = 0.82,0.84,0.95\nnight_ambient = 0.34,0.34,0.58")
+hu.room(2, 2, 13, 9)
+hus = Stack(hu)
+for y in range(2, 10):
+    for x in range(2, 14):
+        hus.add(x, y, "prop type=wood_floor")
+hu.torch(8, 1)
+hus.add(5, 2, "prop type=window action=" + HOUSE_UP_OBJ + "window")
+hus.add(4, 4, "prop type=blue_bed action=" + HOUSE_UP_OBJ + "bed")
+hus.add(9, 3, "prop type=bookshelf action=" + HOUSE_UP_OBJ + "bookshelf")
+hus.add(8, 7, "prop type=rug")
+hus.add(11, 8, "prop type=desk action=" + HOUSE_UP_OBJ + "desk")
+hus.add(3, 9, "prop type=plant")
+hus.add(7, 5, "prop type=candle")
+hus.add(13, 2, "prop type=stairs_down")
+hus.add(13, 3, "exit target=floor_06_house spawn=from_up")
+hus.add(12, 4, "spawn id=from_down")
+hus.add(6, 6, "spawn id=start")
+hus.add(6, 6, "player")
+hus.write()
+
+HUO = {"name": "", "entries": [{"node": "bed"}], "nodes": {
+    "bed": {"lines": [L("……蓝色的被子。叠好了。", BLUE)]},
+    "window": {"lines": [L("……矿道口。守门的队员换岗了。", BLUE)]},
+    "bookshelf": {"lines": [L("……《地面上的童话》。", BLUE), L("……她也读过这本吗。", BLUE)]},
+    "desk": {"lines": [L("……写了一半的信。……不寄了。", BLUE)]},
+}}
+(DLG / "house_up_objects.json").write_text(json.dumps(HUO, ensure_ascii=False, indent="\t") + "\n")
+
+BLUE_WAKE = {"name": "蓝色公主：楼下没有人", "letterbox": True, "skippable": True, "steps": [
+    {"actions": [A("pose", emotion="normal", laugh=0), A("fade_in", time=0.6)], "wait": 0.6},
+    line(BLUE, "……天亮了。"),
+    line(BLUE, "……楼下，太安静了。", actions=[A("face", who="princess", dir="right")]),
+    {"actions": [A("fade_out", time=0.5)], "wait": 0.6},
+    line(NARR, "（楼下的茶桌上压着一张纸条——「谢谢你这几天的照顾。茶很好喝。我要回地面上去了。——粉色的公主」）"),
+    {"actions": [A("fade_in", time=0.5)], "wait": 0.5},
+    line(BLUE, "……", actions=[A("bubble", who="princess", kind="dots")]),
+    line(BLUE, "……笨蛋。那扇门后面，不是地面。"),
+    line(BLUE, "……去找她。", actions=[A("set_flag", flag="f7_blue_awake"),
+         A("notify", text="现在操控：蓝色的公主。目标：出门，去矿道最深处")]),
+]}
+BLUE_ARGUE = {"name": "蓝色公主和队长", "letterbox": True, "skippable": True, "steps": [
+    {"actions": [A("spawn", id="cap", kind="npc:captain", at=[42, 17], dir="up"), A("camera", to=[42, 12], time=0.6)], "wait": 0.6},
+    {"actions": [A("move", who="cap", to=[42, 12], speed=70)]},
+    line(CAP, "……您在这里。矿道深处的门被打开了。守门的队员说，看见那个粉色的姑娘往下去了。"),
+    line(BLUE, "……我知道。"),
+    line(CAP, "您要去？那下面不是您该去的地方。上一次您从那里回来的时候——"),
+    line(BLUE, "……队长。"),
+    line(CAP, "我是保卫队的队长。保护这个小镇，也包括保护您。……我不能让您下去。", actions=[A("face", who="cap", dir="up")]),
+    line(BLUE, "……她一个人。", actions=[A("bubble", who="princess", kind="angry")]),
+    line(CAP, "她是自己选择离开的！"),
+    line(BLUE, "……所以，我也自己选择。……让开。", actions=[A("move", who="princess", to=[43, 13], time=0.5)]),
+    line(CAP, "……", actions=[A("bubble", who="cap", kind="dots")]),
+    line(CAP, "……您从小就是这样。说一不二。", actions=[A("face", who="cap", dir="left")]),
+    line(CAP, "至少……答应我，一定要回来。两个人一起。"),
+    line(BLUE, "……嗯。", actions=[A("move", who="princess", to=[43, 20], speed=60)]),
+    {"actions": [A("fade_out", time=0.8), A("set_flag", flag="f7_argue_done")], "wait": 0.9},
+]}
+for name, c in (("f7_blue_wake", BLUE_WAKE), ("f7_blue_argue", BLUE_ARGUE)):
+    (CUT / (name + ".json")).write_text(json.dumps(c, ensure_ascii=False, indent="\t") + "\n")
+print("第七层前奏：蓝色公主的房间、醒来、和队长争吵")
+

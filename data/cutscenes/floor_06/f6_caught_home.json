@@ -1,0 +1,96 @@
+{
+	"name": "被领回小屋",
+	"letterbox": true,
+	"skippable": true,
+	"steps": [
+		{
+			"actions": [
+				{
+					"flag": "night",
+					"do": "set_flag"
+				},
+				{
+					"id": "blue",
+					"kind": "npc:blue_princess",
+					"at": [
+						10,
+						9
+					],
+					"dir": "left",
+					"do": "spawn"
+				},
+				{
+					"who": "princess",
+					"dir": "right",
+					"do": "face"
+				},
+				{
+					"time": 0.6,
+					"do": "fade_in"
+				}
+			],
+			"wait": 0.6
+		},
+		{
+			"speaker": "公主",
+			"text": "……对不起。又给你添麻烦了。",
+			"emotion": "sad"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……矿道里，灯照不到的地方，他们看不太清。",
+			"actions": [
+				{
+					"who": "blue",
+					"dir": "up",
+					"do": "face"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "诶？",
+			"emotion": "surprise",
+			"actions": [
+				{
+					"who": "princess",
+					"kind": "question",
+					"do": "bubble"
+				}
+			]
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……矿车和木箱里，也能躲。……我什么都没说。早点睡。",
+			"actions": [
+				{
+					"who": "blue",
+					"to": [
+						16,
+						3
+					],
+					"speed": 45,
+					"do": "move"
+				}
+			]
+		},
+		{
+			"actions": [
+				{
+					"who": "blue",
+					"do": "despawn"
+				}
+			],
+			"wait": 0.6
+		},
+		{
+			"speaker": "公主",
+			"text": "……她是在帮我吗？",
+			"emotion": "shy"
+		}
+	]
+}

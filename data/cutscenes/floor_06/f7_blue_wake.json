@@ -1,0 +1,87 @@
+{
+	"name": "蓝色公主：楼下没有人",
+	"letterbox": true,
+	"skippable": true,
+	"steps": [
+		{
+			"actions": [
+				{
+					"emotion": "normal",
+					"laugh": 0,
+					"do": "pose"
+				},
+				{
+					"time": 0.6,
+					"do": "fade_in"
+				}
+			],
+			"wait": 0.6
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……天亮了。"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……楼下，太安静了。",
+			"actions": [
+				{
+					"who": "princess",
+					"dir": "right",
+					"do": "face"
+				}
+			]
+		},
+		{
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "fade_out"
+				}
+			],
+			"wait": 0.6
+		},
+		{
+			"speaker": "",
+			"text": "（楼下的茶桌上压着一张纸条——「谢谢你这几天的照顾。茶很好喝。我要回地面上去了。——粉色的公主」）"
+		},
+		{
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "fade_in"
+				}
+			],
+			"wait": 0.5
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……",
+			"actions": [
+				{
+					"who": "princess",
+					"kind": "dots",
+					"do": "bubble"
+				}
+			]
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……笨蛋。那扇门后面，不是地面。"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……去找她。",
+			"actions": [
+				{
+					"flag": "f7_blue_awake",
+					"do": "set_flag"
+				},
+				{
+					"text": "现在操控：蓝色的公主。目标：出门，去矿道最深处",
+					"do": "notify"
+				}
+			]
+		}
+	]
+}

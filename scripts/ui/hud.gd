@@ -91,6 +91,9 @@ func _bind_player(p: PlayableCharacter) -> void:
 	if _player == p:
 		return
 	_player = p
+	# 换了操控的角色（蓝色公主当主角）：头像马上换成她那一套
+	if p.emotion:
+		_on_emotion_changed(p.emotion.current)
 	if p.health:
 		p.health.changed.connect(_on_hp_changed)
 		_on_hp_changed(p.health.hp, p.health.max_hp)

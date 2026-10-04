@@ -1,7 +1,7 @@
 {
 	"_说明": [
 		"保卫队训练（scripts/training/training_db.gd / training_stats.gd 读取）。每项训练是一个小游戏（kind），脚本在 scripts/training/<kind>.gd。",
-		"stages：阶段表，按顺序解锁（unlocked = false 的阶段还没开放）。caps = 这一阶段各项数值的累计上限（部位类是每个部位的上限）。",
+		"stages：阶段表，按顺序解锁（unlocked = false 的阶段还没开放）。caps = 这一阶段各项数值的累计上限（部位类是每个部位的上限）。ramp = 随成功次数提速的倍率（1 = 原始速度，越大越快变难）。",
 		"per_success：每成功一次加多少（部位类按选定部位）。加成 bonus：训练进度换来的闷笑上限 / 生命（HP，1 颗心 = 2）/ 近战强度，按部位均分。",
 		"zone_devices：训练三、四按部位挑刑具（每轮随机一个），值是陷阱场景名（scenes/traps/<名>.tscn）。cost：每轮费用（金币）。"
 	],
@@ -13,7 +13,7 @@
 			"desc": "被固定在训练架上，两名卫兵用特制工具挠脚心和大腿内侧。听清卫兵喊的部位，按对应的键抵抗（A 左脚心、D 右脚心、Q/J 左大腿、E/K 右大腿）。成功抵抗一次，魔力疲倦上限 +1。",
 			"per_success": {"train_fatigue_up": 1},
 			"stages": [
-				{"unlocked": true, "caps": {"train_fatigue_up": 100}, "guards": 2, "start_time": 1.2, "min_time": 0.35, "punish": ["train_endure_punish_1", "train_endure_punish_2", "train_endure_punish_3", "train_endure_punish_4", "train_endure_punish_5"]},
+				{"unlocked": true, "ramp": 1.6, "caps": {"train_fatigue_up": 100}, "guards": 2, "start_time": 1.2, "min_time": 0.35, "punish": ["train_endure_punish_1", "train_endure_punish_2", "train_endure_punish_3", "train_endure_punish_4", "train_endure_punish_5"]},
 				{"unlocked": false, "caps": {"train_fatigue_up": 200}},
 				{"unlocked": false, "caps": {"train_fatigue_up": 300}}
 			]
@@ -23,7 +23,7 @@
 			"desc": "训练迷宫里的每个房间都有一组脚 / 大腿 / 屁股的组合机关。主动去触发它们；公主会忍不住想逃，连按空格拖住她。每触发一次，魔力疲倦上限 -1、疲倦释放强度 +0.5%；在组合里疲倦爆发时这次的提升 ×5。",
 			"per_success": {"train_fatigue_down": 1, "train_burst_power": 0.5},
 			"stages": [
-				{"unlocked": true, "caps": {"train_fatigue_down": 100, "train_burst_power": 50}},
+				{"unlocked": true, "ramp": 1.6, "caps": {"train_fatigue_down": 100, "train_burst_power": 50}},
 				{"unlocked": false, "caps": {"train_fatigue_down": 150, "train_burst_power": 75}},
 				{"unlocked": false, "caps": {"train_fatigue_down": 200, "train_burst_power": 100}}
 			]
@@ -34,7 +34,7 @@
 			"per_success": {"train_resist": 0.001},
 			"bonus": {"laugh_max": 25, "melee": 0.5, "hp": 2},
 			"stages": [
-				{"unlocked": true, "caps": {"train_resist": 0.1}, "punish": ["train_zone_punish_1", "train_zone_punish_2"]},
+				{"unlocked": true, "ramp": 1.6, "caps": {"train_resist": 0.1}, "punish": ["train_zone_punish_1", "train_zone_punish_2"]},
 				{"unlocked": false, "caps": {"train_resist": 0.2}},
 				{"unlocked": false, "caps": {"train_resist": 0.3}}
 			]
@@ -45,7 +45,7 @@
 			"per_success": {"train_sens": 0.003},
 			"bonus": {"laugh_max": 50, "hp": 4},
 			"stages": [
-				{"unlocked": true, "caps": {"train_sens": 0.3}, "punish": ["train_zone_punish_1", "train_zone_punish_2"]},
+				{"unlocked": true, "ramp": 1.6, "caps": {"train_sens": 0.3}, "punish": ["train_zone_punish_1", "train_zone_punish_2"]},
 				{"unlocked": false, "caps": {"train_sens": 0.6}},
 				{"unlocked": false, "caps": {"train_sens": 0.9}}
 			]

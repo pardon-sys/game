@@ -77,6 +77,8 @@ static func zone_progress(prefix: String, zone: String) -> float:
 
 ## 部位倍率修正：耐笑训练降、强化训练升（TickleZones.modifier 里加上）。
 static func zone_modifier(zone: String) -> float:
+	if Characters.current() != "pink":
+		return 0.0   # 训练成果是粉色公主的
 	return -value(zone_key("train_resist", zone)) + value(zone_key("train_sens", zone))
 
 

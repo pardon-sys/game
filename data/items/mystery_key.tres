@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="KeyItem" format=3]
+
+[ext_resource type="Script" path="res://scripts/items/key_item.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/generated/items.png" id="2"]
+
+[sub_resource type="AtlasTexture" id="icon"]
+atlas = ExtResource("2")
+region = Rect2(48, 0, 16, 16)
+
+[resource]
+script = ExtResource("1")
+key_type = "mystery"
+id = "mystery_key"
+display_name = "神秘的钥匙"
+description = "骑马刷凳的暗格里掉出来的旧钥匙，上面刻着矿道的标记。好像能打开矿道最深处那扇门。"
+icon = SubResource("icon")
+category = 1
+pickup_emotion = "surprise"

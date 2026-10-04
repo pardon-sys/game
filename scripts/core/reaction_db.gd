@@ -1,6 +1,6 @@
 class_name ReactionDB
 extends RefCounted
-## 受挠台词数据（data/princess_reactions.json）的读取入口。
+## 受挠台词数据（data/princess_reactions.json）的读取入口。按当前操控的角色选文件（Characters：蓝色公主用 data/characters/blue/reactions.json）。
 ##   lines(key, stage)      公主台词：先找 sources[key][stage]，没有则回退到通用 lines[stage]
 ##   first_encounter(key)   第一次被该来源挠痒时的剧情对话（对话行数组，格式同 dialogues.json）
 ##   taunts(key)            怪物回嘴短句
@@ -10,14 +10,15 @@ extends RefCounted
 
 const PATH := "res://data/princess_reactions.json"
 
+## 角色 id -> 台词数据。
 static var _data := {}
 
 
 static func data() -> Dictionary:
-	if _data.is_empty():
-		var parsed: Variant = JSON.parse_string(FileAccess.get_file_as_string(PATH))
-		_data = parsed if parsed is Dictionary else {}
-	return _data
+	var who := Characters.current()
+	if not _data.has(who):
+		_data[who] = Characters.load_json("reactions.json", PATH, who)
+	return _data[who]
 
 
 static func setting(name: String, fallback: Variant) -> Variant:
@@ -103,10 +104,10 @@ static var _fatigue := {}
 
 ## 魔力疲倦爆发的台词（单独文件 data/princess_fatigue.json）：burst / after / warning 为句子数组，first 为剧情对话行。
 static func fatigue(section: String) -> Array:
-	if _fatigue.is_empty():
-		var parsed: Variant = JSON.parse_string(FileAccess.get_file_as_string(FATIGUE_PATH))
-		_fatigue = parsed if parsed is Dictionary else {}
-	return _fatigue.get(section, [])
+	var who := Characters.current()
+	if not _fatigue.has(who):
+		_fatigue[who] = Characters.load_json("fatigue.json", FATIGUE_PATH, who)
+	return _fatigue[who].get(section, [])
 
 
 ## 特殊挠痒（暴击）时公主的台词：sources[key].special，没有则用通用 lines.special。

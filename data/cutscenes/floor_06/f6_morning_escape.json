@@ -1,0 +1,63 @@
+{
+	"name": "第二天早上：我要逃离这里",
+	"letterbox": true,
+	"steps": [
+		{
+			"actions": [
+				{
+					"emotion": "normal",
+					"laugh": 0,
+					"do": "pose"
+				}
+			],
+			"wait": 0.3
+		},
+		{
+			"speaker": "公主",
+			"text": "……嗯——睡得好香。被子软软的……",
+			"emotion": "happy"
+		},
+		{
+			"speaker": "公主",
+			"text": "……她已经出门了啊。桌上留着早饭。",
+			"emotion": "shy"
+		},
+		{
+			"speaker": "公主",
+			"text": "……",
+			"emotion": "sad",
+			"actions": [
+				{
+					"who": "princess",
+					"kind": "dots",
+					"do": "bubble"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "大家都对我很好。可是……我是公主，我要回到地面上去。",
+			"emotion": "sad"
+		},
+		{
+			"speaker": "公主",
+			"text": "这把钥匙一定能打开矿道最深处那扇门。只要趁巡逻的队员不注意……",
+			"emotion": "angry"
+		},
+		{
+			"speaker": "公主",
+			"text": "……决定了。我要逃离这里！",
+			"emotion": "angry",
+			"actions": [
+				{
+					"flag": "f6_escape",
+					"do": "set_flag"
+				},
+				{
+					"text": "目标：去矿道层，避开巡逻队员的视线，用钥匙打开最深处的门",
+					"do": "notify"
+				}
+			]
+		}
+	]
+}

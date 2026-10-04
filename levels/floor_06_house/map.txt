@@ -1,0 +1,44 @@
+[level]
+# 第六层·地下小镇（tools/build/gen_floor06.py 生成，不要直接改）
+intro =
+ambient = 0.9,0.82,0.76
+night_ambient = 0.36,0.34,0.56
+[legend]
+# = wall
+. = floor
+P = player
+t = torch lit=true
+A = prop type=wood_floor
+C = prop type=wood_floor + prop type=window action=talk:floor_06/house_objects#window
+D = prop type=wood_floor + prop type=painting action=talk:floor_06/house_objects#painting
+E = prop type=wood_floor + prop type=stairs_up
+F = prop type=wood_floor + prop type=wardrobe action=talk:floor_06/house_objects#wardrobe
+G = prop type=wood_floor + prop type=bookshelf action=talk:floor_06/house_objects#bookshelf
+H = prop type=wood_floor + exit target=floor_06_house_up spawn=from_down unlock_flag=blue_is_hero locked_dialogue=sign6_house_up
+I = prop type=wood_floor + prop type=princess_bed action=talk:floor_06/house_objects#bed
+J = prop type=wood_floor + spawn id=from_up
+K = prop type=wood_floor + prop type=dresser action=talk:floor_06/house_objects#dresser
+L = prop type=wood_floor + prop type=candle
+M = prop type=wood_floor + prop type=chair
+N = prop type=wood_floor + prop type=rug + prop type=tea_table action=talk:floor_06/house_objects#tea
+O = prop type=wood_floor + trap type=saddle_bench active=false + prop type=hotspot action=talk:floor_06/house_objects#saddle
+Q = prop type=wood_floor + player
+R = prop type=wood_floor + prop type=plant action=talk:floor_06/house_objects#plant
+S = prop type=wood_floor + spawn id=from_upper
+T = prop type=wood_floor + exit target=floor_06_upper spawn=from_house lock_flag=night locked_dialogue=f6_house_door_night
+
+[map]
+####################
+#####t########t#####
+##AAAACAAADAACAAEA##
+##AAAAAAFAAAGAAAHA##
+##AAIAAAAAAAAAAJAA##
+##AAAAAAAAAAAAKAAA##
+##AAAALAAAAAAAAAAA##
+##AAAAAAMNMAAAAAAA##
+##AAAAAAAAAAAAAOAA##
+##AAAAAAAQAAALAAAA##
+##ARAAAAASAAAAAARA##
+##AAAAAAATAAAAAAAA##
+####################
+####################

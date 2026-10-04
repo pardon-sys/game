@@ -558,6 +558,185 @@ def p_gate():
     return img
 
 
+# ------------------------------------------------------------------ 蓝色小屋（第六层后续剧情）：外观 + 室内家具
+BLUE = (110, 150, 220, 255)
+BLUE_D = (60, 90, 160, 255)
+BLUE_L = (190, 215, 250, 255)
+CLOTH = (255, 200, 225, 255)
+CLOTH_D = (220, 140, 185, 255)
+LEAF = (90, 160, 100, 255)
+LEAF_D = (55, 110, 70, 255)
+GLASS = (120, 150, 210, 255)
+
+
+def p_house_blue():
+    """蓝色小屋：蓝屋顶两层小楼，二楼有小阳台窗，门边挂一盏灯笼。"""
+    img, d = canvas(48, 48)
+    d.rectangle((5, 14, 42, 46), fill=(225, 232, 245, 255))
+    d.line((5, 46, 42, 46), fill=STONE_D)
+    d.line((5, 30, 42, 30), fill=(190, 200, 225, 255))
+    d.polygon([(1, 16), (24, 1), (46, 16)], fill=BLUE)
+    for y in range(5, 16, 3):
+        d.line((24 - (y - 1) * 23 // 15, y, 24 + (y - 1) * 23 // 15, y), fill=BLUE_D)
+    # 二楼窗户 + 小阳台
+    d.rectangle((18, 18, 29, 26), fill=(255, 225, 150, 255))
+    d.line((23, 18, 23, 26), fill=WOOD_D)
+    d.rectangle((16, 27, 31, 28), fill=WOOD_D)
+    for x in range(17, 31, 3):
+        d.line((x, 25, x, 27), fill=WOOD_D)
+    # 一楼窗户和门
+    for wx in (8, 34):
+        d.rectangle((wx, 33, wx + 5, 39), fill=(255, 225, 150, 255))
+        d.line((wx, 36, wx + 5, 36), fill=WOOD_D)
+    d.rectangle((19, 34, 28, 46), fill=BLUE_D)
+    d.rectangle((20, 35, 27, 46), fill=BLUE)
+    d.point((26, 40), fill=GOLD)
+    # 灯笼
+    d.line((31, 32, 31, 35), fill=WOOD_D)
+    d.rectangle((30, 35, 32, 38), fill=(255, 200, 110, 255))
+    return add_outline(img)
+
+
+def p_interior(kind):
+    if kind == "wood_floor":
+        img, d = canvas(16, 16)
+        d.rectangle((0, 0, 15, 15), fill=(176, 120, 82, 255))
+        for y in (3, 7, 11, 15):
+            d.line((0, y, 15, y), fill=(140, 92, 62, 255))
+        for x, y in ((5, 0), (12, 4), (3, 8), (10, 12)):
+            d.line((x, y, x, y + 3), fill=(140, 92, 62, 255))
+        d.point((8, 2), fill=(196, 140, 98, 255))
+        return img
+    if kind == "rug":
+        img, d = canvas(48, 32)
+        d.rounded_rectangle((0, 0, 47, 31), 6, fill=CLOTH_D)
+        d.rounded_rectangle((3, 3, 44, 28), 4, fill=CLOTH)
+        d.ellipse((16, 8, 31, 23), outline=CLOTH_D, width=2)
+        d.ellipse((21, 13, 26, 18), fill=(255, 235, 245, 255))
+        for x in range(4, 46, 4):
+            d.point((x, 0), fill=GOLD)
+            d.point((x, 31), fill=GOLD)
+        return img
+    if kind in ("princess_bed", "blue_bed"):
+        cloth, cloth_d = (CLOTH, CLOTH_D) if kind == "princess_bed" else (BLUE_L, BLUE)
+        img, d = canvas(32, 32)
+        d.rectangle((2, 2, 3, 31), fill=WOOD_D)
+        d.rectangle((28, 2, 29, 31), fill=WOOD_D)
+        d.polygon([(1, 2), (30, 2), (27, 9), (4, 9)], fill=cloth_d)       # 帷幔顶
+        d.rectangle((4, 9, 6, 22), fill=cloth)                              # 两边垂下的帷幔
+        d.rectangle((25, 9, 27, 22), fill=cloth)
+        d.rectangle((5, 12, 26, 15), fill=(255, 255, 255, 255))            # 枕头
+        d.rectangle((4, 16, 27, 29), fill=cloth)                            # 被子
+        d.line((4, 20, 27, 20), fill=cloth_d)
+        d.rectangle((3, 28, 28, 31), fill=WOOD)
+        return add_outline(img)
+    if kind == "wardrobe":
+        img, d = canvas(16, 32)
+        d.rectangle((1, 2, 14, 31), fill=WOOD)
+        d.rectangle((1, 2, 14, 4), fill=WOOD_D)
+        d.line((7, 5, 7, 30), fill=WOOD_D)
+        d.point((6, 17), fill=GOLD)
+        d.point((9, 17), fill=GOLD)
+        d.rectangle((3, 7, 5, 12), fill=WOOD_L)
+        d.rectangle((10, 7, 12, 12), fill=WOOD_L)
+        return add_outline(img)
+    if kind == "dresser":
+        img, d = canvas(32, 32)
+        d.ellipse((9, 1, 22, 16), fill=GOLD_D)
+        d.ellipse((11, 3, 20, 14), fill=(200, 225, 245, 255))             # 镜子
+        d.line((13, 5, 15, 8), fill=(255, 255, 255, 255))
+        d.rectangle((3, 16, 28, 29), fill=(250, 240, 245, 255))
+        d.rectangle((3, 16, 28, 17), fill=CLOTH_D)
+        for y in (21, 25):
+            d.line((5, y, 26, y), fill=(220, 200, 210, 255))
+            d.point((15, y + 2), fill=GOLD)
+        d.rectangle((6, 13, 8, 16), fill=PINK)                              # 小香水瓶
+        d.rectangle((23, 14, 25, 16), fill=CRYSTAL)
+        d.line((4, 30, 4, 31), fill=WOOD_D)
+        d.line((27, 30, 27, 31), fill=WOOD_D)
+        return add_outline(img)
+    if kind == "bookshelf":
+        img, d = canvas(32, 32)
+        d.rectangle((1, 1, 30, 31), fill=WOOD_D)
+        d.rectangle((3, 3, 28, 29), fill=(90, 58, 40, 255))
+        cols = [(200, 80, 90), (90, 130, 190), (110, 160, 100), (220, 180, 80), (170, 110, 190), (240, 240, 230)]
+        for row, y in enumerate((4, 13, 22)):
+            d.line((3, y + 8, 28, y + 8), fill=WOOD)
+            x = 4
+            i = row
+            while x < 27:
+                w = 2 + (i * 7) % 3
+                d.rectangle((x, y + 1 + (i % 2), x + w - 1, y + 7), fill=cols[i % len(cols)] + (255,))
+                x += w + 1
+                i += 1
+        return add_outline(img)
+    if kind == "tea_table":
+        img, d = canvas(16, 16)
+        d.ellipse((1, 3, 14, 10), fill=(250, 245, 240, 255))
+        d.ellipse((1, 3, 14, 10), outline=(210, 190, 190, 255))
+        d.line((7, 10, 7, 15), fill=WOOD_D)
+        d.line((4, 15, 11, 15), fill=WOOD_D)
+        d.rectangle((4, 4, 6, 6), fill=PINK)                                # 茶杯
+        d.rectangle((9, 3, 11, 6), fill=(255, 255, 255, 255))               # 茶壶
+        d.point((12, 4), fill=(255, 255, 255, 255))
+        return add_outline(img)
+    if kind == "chair":
+        img, d = canvas(16, 16)
+        d.rectangle((4, 1, 11, 7), fill=WOOD)
+        d.rectangle((5, 2, 10, 6), fill=CLOTH)
+        d.rectangle((3, 8, 12, 10), fill=CLOTH_D)
+        for x in (4, 11):
+            d.line((x, 10, x, 15), fill=WOOD_D)
+        return add_outline(img)
+    if kind == "window":
+        img, d = canvas(32, 24)
+        d.rectangle((2, 0, 29, 21), fill=WOOD_D)
+        d.rectangle((4, 2, 27, 19), fill=(40, 50, 100, 255))
+        for x, y in ((8, 5), (20, 4), (14, 9), (24, 12)):
+            d.point((x, y), fill=(255, 250, 200, 255))
+        d.ellipse((17, 6, 22, 11), fill=(250, 240, 190, 255))               # 月亮
+        d.line((15, 2, 15, 19), fill=WOOD_D)
+        d.line((4, 10, 27, 10), fill=WOOD_D)
+        d.polygon([(0, 0), (6, 0), (4, 22), (0, 23)], fill=CLOTH)           # 窗帘
+        d.polygon([(31, 0), (25, 0), (27, 22), (31, 23)], fill=CLOTH)
+        return add_outline(img)
+    if kind == "painting":
+        img, d = canvas(16, 16)
+        d.rectangle((1, 1, 14, 13), fill=GOLD_D)
+        d.rectangle((3, 3, 12, 11), fill=(170, 210, 240, 255))
+        d.polygon([(3, 11), (7, 6), (10, 9), (12, 7), (12, 11)], fill=LEAF)
+        d.ellipse((9, 4, 11, 6), fill=(255, 230, 120, 255))
+        return add_outline(img)
+    if kind == "plant":
+        img, d = canvas(16, 24)
+        d.polygon([(4, 16), (11, 16), (10, 23), (5, 23)], fill=(200, 120, 90, 255))
+        for (x0, y0, x1, y1) in ((7, 16, 2, 6), (8, 16, 13, 4), (7, 16, 7, 1), (8, 16, 11, 9), (7, 16, 4, 10)):
+            d.line((x0, y0, x1, y1), fill=LEAF_D)
+            d.ellipse((x1 - 2, y1 - 2, x1 + 2, y1 + 2), fill=LEAF)
+        return add_outline(img)
+    if kind == "candle":
+        img, d = canvas(16, 16)
+        d.rectangle((5, 12, 10, 15), fill=GOLD_D)
+        d.rectangle((7, 6, 8, 12), fill=(250, 245, 230, 255))
+        d.ellipse((6, 2, 9, 6), fill=(255, 200, 90, 255))
+        d.point((7, 3), fill=(255, 250, 220, 255))
+        return add_outline(img)
+    if kind == "desk":
+        img, d = canvas(32, 24)
+        d.rectangle((1, 8, 30, 12), fill=WOOD)
+        d.line((1, 8, 30, 8), fill=WOOD_L)
+        for x in (3, 28):
+            d.line((x, 12, x, 23), fill=WOOD_D)
+        d.rectangle((8, 5, 15, 8), fill=PAPER)                              # 纸条
+        d.line((9, 6, 14, 6), fill=(150, 140, 150, 255))
+        d.rectangle((20, 3, 23, 8), fill=BLUE)                              # 墨水瓶
+        d.line((24, 1, 22, 6), fill=(255, 255, 255, 255))                    # 羽毛笔
+        return add_outline(img)
+    # hotspot：看不见的调查点（和陷阱 / 别的东西放在同一格，让它也能按 E 调查）
+    img, d = canvas(16, 16)
+    return img
+
+
 PROPS = {}
 
 
@@ -583,6 +762,23 @@ def gen_props():
     items.append(("stairs_down", p_simple("stairs_down"), {"floor": True}))
     items.append(("stairs_up", p_simple("stairs_up"), {"floor": True}))
     items.append(("dungeon_gate", p_gate(), {"body": [32, 12], "body_y": -6}))
+    # 蓝色小屋（外观 + 室内家具）——加在最后，前面道具的图集位置不变
+    items.append(("house_blue", p_house_blue(), {"body": [40, 16], "body_y": -8}))
+    items.append(("wood_floor", p_interior("wood_floor"), {"floor": True, "under": True}))
+    items.append(("rug", p_interior("rug"), {"floor": True}))
+    items.append(("princess_bed", p_interior("princess_bed"), {"body": [28, 12], "body_y": -6}))
+    items.append(("blue_bed", p_interior("blue_bed"), {"body": [28, 12], "body_y": -6}))
+    items.append(("wardrobe", p_interior("wardrobe"), {"body": [14, 8], "body_y": -4}))
+    items.append(("dresser", p_interior("dresser"), {"body": [26, 8], "body_y": -4}))
+    items.append(("bookshelf", p_interior("bookshelf"), {"body": [30, 8], "body_y": -4}))
+    items.append(("tea_table", p_interior("tea_table"), {"body": [12, 6], "body_y": -3}))
+    items.append(("chair", p_interior("chair"), {}))
+    items.append(("window", p_interior("window"), {"lift": 10}))
+    items.append(("painting", p_interior("painting"), {"lift": 12}))
+    items.append(("plant", p_interior("plant"), {"body": [10, 6], "body_y": -3}))
+    items.append(("candle", p_interior("candle"), {"light": [1.0, 0.8, 0.5]}))
+    items.append(("desk", p_interior("desk"), {"body": [28, 8], "body_y": -4}))
+    items.append(("hotspot", p_interior("hotspot"), {}))
     # 简单地按行排进 256 宽的图集
     x = y = row_h = 0
     meta = {}

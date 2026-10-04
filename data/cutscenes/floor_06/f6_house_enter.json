@@ -1,0 +1,118 @@
+{
+	"name": "蓝色小屋：第一个晚上",
+	"letterbox": true,
+	"steps": [
+		{
+			"actions": [
+				{
+					"id": "blue",
+					"kind": "npc:blue_princess",
+					"at": [
+						10,
+						9
+					],
+					"dir": "left",
+					"do": "spawn"
+				},
+				{
+					"who": "princess",
+					"dir": "right",
+					"do": "face"
+				},
+				{
+					"time": 0.6,
+					"do": "fade_in"
+				}
+			],
+			"wait": 0.6
+		},
+		{
+			"speaker": "公主",
+			"text": "哇……帷幔的床、梳妆台、还有书架……这里真的是给我住的？",
+			"emotion": "surprise",
+			"actions": [
+				{
+					"who": "princess",
+					"kind": "surprise",
+					"do": "bubble"
+				}
+			]
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……以前也有人住过。收拾了一下。"
+		},
+		{
+			"speaker": "公主",
+			"text": "……谢谢你。救了我，带我逛了小镇，还给我地方住……",
+			"emotion": "sad"
+		},
+		{
+			"speaker": "公主",
+			"text": "我、我一定会报答你的！等我回到地面上——",
+			"emotion": "happy"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……不用。",
+			"actions": [
+				{
+					"who": "blue",
+					"dir": "up",
+					"do": "face"
+				}
+			]
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "楼上是我的房间。……别上来。早点睡。"
+		},
+		{
+			"actions": [
+				{
+					"who": "blue",
+					"to": [
+						16,
+						3
+					],
+					"speed": 40,
+					"do": "move"
+				}
+			],
+			"wait": 1.0
+		},
+		{
+			"actions": [
+				{
+					"who": "blue",
+					"do": "despawn"
+				},
+				{
+					"sound": "door_close",
+					"do": "sfx"
+				},
+				{
+					"flag": "night",
+					"do": "set_flag"
+				}
+			],
+			"wait": 1.4
+		},
+		{
+			"speaker": "公主",
+			"text": "……天黑了。外面一下子安静下来。",
+			"emotion": "sad"
+		},
+		{
+			"speaker": "公主",
+			"text": "还睡不着……先在房间里看看吧。",
+			"emotion": "shy",
+			"actions": [
+				{
+					"text": "夜晚：门锁上了。可以调查房间里的东西（靠近按 E），床可以睡觉。",
+					"do": "notify"
+				}
+			]
+		}
+	]
+}
