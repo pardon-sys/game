@@ -87,10 +87,10 @@ def _blue_base(name):
 
 
 def _b2(row):
-    """princess_blue2 前两行（11 帧）：0-1 正面、2-4 侧身（3/4）、5 背面、6-10 朝左走。右边用朝左的镜像。"""
-    left = [("b2", row, 0, i) for i in (6, 7, 8, 9)]
-    return {"down": [("b2", row, 0, i) for i in (0, 1, 0, 1)], "left": left,
-            "right": [k + ("m",) for k in left], "up": [("b2", row, 0, 5)] * 4}
+    """princess_blue2 前两行（11 帧）：0-1 正面、2-4 侧身（3/4）、5 背面、6-10 侧面走（原图朝右）。朝左用它的镜像。"""
+    right = [("b2", row, 0, i) for i in (6, 7, 8, 9)]
+    return {"down": [("b2", row, 0, i) for i in (0, 1, 0, 1)], "left": [k + ("m",) for k in right],
+            "right": right, "up": [("b2", row, 0, 5)] * 4}
 
 
 BLUE = {name: _blue_base(name) for name in B1_EXPR}

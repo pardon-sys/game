@@ -4,6 +4,8 @@
   blue_princess/portraits_blue1.png  普通 开心 哭泣 惊讶 生气 害羞
   blue_princess/portraits_blue2.png  战损 憋笑 战损憋笑 失控一 失控二
   blue_princess/portraits_blue3.png  战损魔法：战损吟诵 战损释放 战损憋笑吟诵 战损释放（第二种）战损憋笑释放
+  blue_princess/战损.png、普通憋笑.png、战损憋笑.png、失控1.png、失控2.png、魔法吟诵.png、魔法释放.png、战损魔法吟诵.png、
+    战损魔法憋笑吟诵.png、战损魔法释放.png  后来单独给的立绘，覆盖上面图集里的同名状态（BLUE_SINGLE）
   npc_portraits/银白圣徽骑士统帅.png / 猩红秘典与羽饰贵妇.png / 火焰灯笼祭典少女.png  队长 / 市场监督 / 篝火派对的主人（全身）
 输出（assets/generated/）：
   portraits_blue.png / portrait_heads_blue.png  和公主的 portraits.png / portrait_heads.png 同样的 17 格顺序（11 种状态 + 6 种魔法）
@@ -28,6 +30,10 @@ BLUE_SOURCES = [
     ("blue_princess/portraits_blue2.png", ["damaged", "giggle", "damaged_giggle", "helpless_1", "helpless_2"]),
     ("blue_princess/portraits_blue3.png", ["b3_chant", "b3_burst", "b3_giggle_chant", "b3_burst2", "b3_giggle_burst"]),
 ]
+# 用户后来单独给的立绘（每张一个人，白底），覆盖图集里的同名状态
+BLUE_SINGLE = {"damaged": "战损.png", "giggle": "普通憋笑.png", "damaged_giggle": "战损憋笑.png", "helpless_1": "失控1.png",
+               "helpless_2": "失控2.png", "chant": "魔法吟诵.png", "burst": "魔法释放.png", "damaged_chant": "战损魔法吟诵.png",
+               "damaged_giggle_chant": "战损魔法憋笑吟诵.png", "damaged_burst": "战损魔法释放.png"}
 # 魔法 6 种 ← 第三张的 5 张（全是战损魔法；普通吟诵 / 释放用战损吟诵 / 第二种战损释放）
 BLUE_MAGIC = {"chant": "b3_chant", "burst": "b3_burst2", "damaged_chant": "b3_chant", "damaged_burst": "b3_burst",
               "damaged_giggle_chant": "b3_giggle_chant", "damaged_giggle_burst": "b3_giggle_burst"}
@@ -72,6 +78,15 @@ def split_figures(path, n):
     return figs
 
 
+def single_figure(path):
+    """单张立绘：白底抠掉，按人物外框裁好（四周留一点边）。"""
+    rgb = np.asarray(Image.open(OUT / path).convert("RGB")).astype(np.uint8)
+    full = key_white(rgb)
+    x0, y0, x1, y1 = body_bbox(full)
+    m = round(0.03 * (y1 - y0))
+    return full.crop((max(0, x0 - m), max(0, y0 - m), min(full.width, x1 + m), min(full.height, y1 + m)))
+
+
 def head_box(name):
     return BLUE_META.get("head_boxes", {}).get(name, [0.18, 0.0, 0.82, 0.42])
 
@@ -83,6 +98,8 @@ def build_blue():
             figures[name] = f
     for name, src in BLUE_MAGIC.items():
         figures[name] = figures[src]
+    for name, f in BLUE_SINGLE.items():
+        figures[name] = single_figure("blue_princess/" + f)
     heads_src = {}
     for name in VISUALS:
         f = figures[name]

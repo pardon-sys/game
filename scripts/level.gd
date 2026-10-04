@@ -18,6 +18,8 @@ func _ready() -> void:
 	if GameState.has_flag("blue_is_hero"):
 		_swap_hero()
 	Dialogue.load_floor(floor_id)
+	if floor_id != "":
+		Audio.play_music(Audio.music_for_floor(floor_id))
 	var dark := get_node_or_null("Darkness") as CanvasModulate
 	if dark:
 		_day_ambient = dark.color

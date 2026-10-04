@@ -3,74 +3,87 @@
 		{
 			"id": "floor_01",
 			"name": "第一层·地牢",
-			"scene": "res://levels/floor_01/floor.tscn"
+			"scene": "res://levels/floor_01/floor.tscn",
+			"music": "dungeon"
 		},
 		{
 			"id": "floor_02",
 			"name": "第二层·痒痒地牢",
-			"scene": "res://levels/floor_02/floor.tscn"
+			"scene": "res://levels/floor_02/floor.tscn",
+			"music": "dungeon"
 		},
 		{
 			"id": "floor_03",
 			"name": "第三层·痒痒工坊",
-			"scene": "res://levels/floor_03/floor.tscn"
+			"scene": "res://levels/floor_03/floor.tscn",
+			"music": "dungeon"
 		},
 		{
 			"id": "floor_04",
 			"name": "第四层·魔力回廊",
-			"scene": "res://levels/floor_04/floor.tscn"
+			"scene": "res://levels/floor_04/floor.tscn",
+			"music": "dungeon"
 		},
 		{
 			"id": "floor_05",
 			"name": "第五层·机关迷城",
-			"scene": "res://levels/floor_05/floor.tscn"
+			"scene": "res://levels/floor_05/floor.tscn",
+			"music": "dungeon"
 		},
 		{
 			"id": "floor_06_prison",
 			"name": "第六层·营地地牢",
 			"scene": "res://levels/floor_06_prison/floor.tscn",
-			"group": "floor_06"
+			"group": "floor_06",
+			"music": "dungeon"
 		},
 		{
 			"id": "floor_06_upper",
 			"name": "第六层·地下小镇",
 			"scene": "res://levels/floor_06_upper/floor.tscn",
-			"group": "floor_06"
+			"group": "floor_06",
+			"music": "town"
 		},
 		{
 			"id": "floor_06_camp",
 			"name": "第六层·保卫队营地",
 			"scene": "res://levels/floor_06_camp/floor.tscn",
-			"group": "floor_06"
+			"group": "floor_06",
+			"music": "town"
 		},
 		{
 			"id": "floor_06_mine",
 			"name": "第六层·矿道",
 			"scene": "res://levels/floor_06_mine/floor.tscn",
-			"group": "floor_06"
+			"group": "floor_06",
+			"music": "dungeon"
 		},
 		{
 			"id": "floor_06_training",
 			"name": "第六层·训练迷宫",
 			"scene": "res://levels/floor_06_training/floor.tscn",
-			"group": "floor_06"
+			"group": "floor_06",
+			"music": "dungeon"
 		},
 		{
 			"id": "floor_06_house",
 			"name": "第六层·蓝色小屋",
 			"scene": "res://levels/floor_06_house/floor.tscn",
-			"group": "floor_06"
+			"group": "floor_06",
+			"music": "town"
 		},
 		{
 			"id": "floor_06_house_up",
 			"name": "第六层·蓝色小屋（楼上）",
 			"scene": "res://levels/floor_06_house_up/floor.tscn",
-			"group": "floor_06"
+			"group": "floor_06",
+			"music": "town"
 		},
 		{
 			"id": "floor_07",
 			"name": "第七层·升天回廊",
-			"scene": "res://levels/floor_07/floor.tscn"
+			"scene": "res://levels/floor_07/floor.tscn",
+			"music": "dungeon"
 		}
 	]
 }

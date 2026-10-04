@@ -12,7 +12,7 @@ from collections import defaultdict
 from pathlib import Path
 
 os.chdir(Path(__file__).resolve().parents[2])
-CALLS = {"open_shop", "open_training", "rest"}
+CALLS = {"open_shop", "open_training", "rest", "sleep"}
 
 
 def ids_in(folder):

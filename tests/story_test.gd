@@ -192,6 +192,25 @@ func _run_stealth() -> void:
 		and player.process_mode == Node.PROCESS_MODE_DISABLED)
 	StealthDirector.toggle_hide(player, crate)
 	check("再按一次出来", not d.is_player_hidden() and player.visible)
+	# 脚步声：站着不动没声音；走动时 4 格内（背后看不见的）士兵过来查看，远处的听不见
+	g.process_mode = Node.PROCESS_MODE_INHERIT
+	g.state = "walk"
+	player.global_position = g.global_position + Vector2(-50, 0)
+	player.velocity = Vector2.ZERO
+	d._footsteps(player, 1.0)
+	d._footsteps(player, 1.0)
+	var still_quiet := g.state != "investigate"
+	player.global_position = g.global_position + Vector2(-100, 0)
+	player.velocity = Vector2(60, 0)
+	d._step_t = 0.0
+	d._footsteps(player, 0.1)
+	var far_quiet := g.state != "investigate"
+	player.global_position = g.global_position + Vector2(-50, 0)
+	d._step_t = 0.0
+	d._footsteps(player, 0.1)
+	check("脚步声：站着不动不会引来士兵，走动时附近的士兵过来查看（远处的听不见）",
+		still_quiet and far_quiet and g.state == "investigate" and g.sees(player) == 0.0)
+	player.velocity = Vector2.ZERO
 	# 丢石子
 	g.process_mode = Node.PROCESS_MODE_INHERIT
 	var n := d.noise(g.global_position + Vector2(40, 0))
@@ -237,10 +256,30 @@ func _run_blue_arc() -> void:
 		TickleZones.info("thigh")["sensitivity"] >= 1.4 and TickleZones.info("butt")["sensitivity"] >= 1.4 and TickleZones.info("sole")["sensitivity"] < 1.0)
 	var slime_cg: Dictionary = CG.cgs().get("death_slime", {})
 	check("她的笑倒 CG / 组合演出是转换过的蓝色版（说话人、立绘），魔力疲倦爆发立绘是最后一格",
-		slime_cg.get("steps", []).any(func(st): return st.get("speaker", "") == "蓝色的公主") and CG.scenes.size() == 65
+		slime_cg.get("steps", []).any(func(st): return st.get("speaker", "") == "蓝色的公主") and CG.scenes.size() == 69
 		and str(CG.data["portraits"]["fatigue_burst"]["placeholder"]) == "damaged_giggle_burst" and hero.fatigue_burst_visual() == "damaged_giggle_burst"
 		and GameState.VISUALS.find("damaged_giggle_burst") == GameState.VISUALS.size() - 1)
 	check("训练成果只算粉色公主（换成她之后部位修正为 0）", TrainingStats.zone_modifier("sole") == 0.0)
+	# 她说话时右边不再重复显示她的立绘（左边的主角立绘换表情）
+	Dialogue.start_lines([{"speaker": "蓝色的公主", "text": "……嗯。", "emotion": "giggle"}])
+	await get_tree().process_frame
+	check("蓝色公主当主角时她说话：右边没有她的立绘、左边立绘不变暗", Dialogue.is_active() and not Dialogue.npc_portrait.visible
+		and Dialogue.portrait.visible and Dialogue.portrait.modulate == Color.WHITE)
+	_finish()
+	Dialogue.talk("floor_06/house_objects", "bed")
+	await _wait(0.2)
+	check("她调查小屋楼下的东西：是她自己的台词（%s）" % Dialogue.text_label.text, Dialogue.text_label.text.contains("她睡过的床"))
+	_finish()
+	await _wait(0.2)
+	check("她的笑声是自己的（%s / %s）" % [Audio.voice_key("giggle"), Audio.voice_key("laugh")],
+		Audio.voice_key("giggle") == "blue_giggle" and Audio.voice_key("laugh") == "blue_laugh"
+		and Audio.loop_stream("laugh") is AudioStreamMP3 and (Audio.loop_stream("laugh") as AudioStreamMP3).loop)
+	var h1: Array = ReactionDB.lines("slime", "helpless_1")
+	var w1 = ReactionDB.portrait_words("slime", "helpless_1", "")
+	check("失控一就憋不住笑了（%s），立绘飘字也是她的（%s）" % [h1[0], w1],
+		h1.all(func(t): return str(t).contains("哈")) and w1 is Array and not (w1 as Array).is_empty()
+		and (w1 as Array).all(func(t): return str(t).contains("哈") or str(t).contains("憋")))
+	check("小镇放小镇的配乐（%s）" % Audio.music_id, Audio.music_id == "town")
 	# 出门 → 和队长争吵 → 第七层
 	seen.clear()
 	GameState.pending_spawn = "from_house"
@@ -259,7 +298,9 @@ func _run_blue_arc() -> void:
 	for spec in [["spider_binding_brush", ["spider", "binding", "hedgehog"]], ["octopus_vest", ["octopus", "vest", "fairy"]],
 			["wardrobe_ghost", ["ghost", "glove", "wardrobe"]], ["mud_frog_dance", ["mud", "frog", "caterpillar"]],
 			["supine_jelly", ["supine", "mana_jelly", "bubble_fish"]], ["cushion_cage", ["cushion", "cage", "rat"]],
-			["spin_barnacle", ["spinwheel", "barnacle", "squirrel"]], ["legloop_glove", ["legloop", "teaser", "glove"]]]:
+			["spin_barnacle", ["spinwheel", "barnacle", "squirrel"]], ["legloop_glove", ["legloop", "teaser", "glove"]],
+			["loop_rack", ["legloop", "supine", "frog"]], ["prone_wheel_crawl", ["prone", "wheel", "caterpillar"]],
+			["cuffs_shower_slime", ["cuffs", "shower", "slime"]], ["rune_wings", ["rune", "bat", "fairy"]]]:
 		hero.combo.reset()
 		hero._full_invuln = 0.0
 		for k in spec[1]:
@@ -270,9 +311,46 @@ func _run_blue_arc() -> void:
 			hero.receive_hit(HitData.make_tickle(s, 1.0))
 		await _wait(0.1)
 	hero.combo.triggered.disconnect(on_fired)
-	var want := ["spider_binding_brush", "octopus_vest", "wardrobe_ghost", "mud_frog_dance", "supine_jelly", "cushion_cage", "spin_barnacle", "legloop_glove"]
-	check("第七层 8 组新组合都能触发，有组合台词和（蓝色版的）组合演出（%s）" % [want.filter(func(c): return not fired.has(c))],
+	var want := ["spider_binding_brush", "octopus_vest", "wardrobe_ghost", "mud_frog_dance", "supine_jelly", "cushion_cage", "spin_barnacle", "legloop_glove",
+		"loop_rack", "prone_wheel_crawl", "cuffs_shower_slime", "rune_wings"]
+	check("第七层 12 组新组合都能触发，有组合台词和（蓝色版的）组合演出（%s）" % [want.filter(func(c): return not fired.has(c))],
 		want.all(func(c): return fired.has(c) and CG.scenes.has(c) and ReactionDB.combo(c).get("name", "") != ""))
+	var cps: Array = main.level.find_children("*", "", true, false).filter(func(n): return n.scene_file_path.ends_with("checkpoint.tscn"))
+	check("第七层：4 个检查点、地牢配乐（%d / %s）" % [cps.size(), Audio.music_id], cps.size() == 4 and Audio.music_id == "dungeon")
+	await _run_ice_barrier(hero)
+
+
+## 蓝色公主的冰晶结界：冻住范围内的怪物和陷阱，期间她的闷笑不涨；到时间陷阱恢复。
+func _run_ice_barrier(hero: BluePrincess) -> void:
+	print("-- 蓝色公主的冰晶结界")
+	var lv: Node = main.level
+	var mon: Monster = load("res://scenes/actors/monsters/slime.tscn").instantiate()
+	lv.get_node("Entities").add_child(mon)
+	mon.global_position = hero.global_position + Vector2(30, 0)
+	var far: Monster = load("res://scenes/actors/monsters/slime.tscn").instantiate()
+	lv.get_node("Entities").add_child(far)
+	far.global_position = hero.global_position + Vector2(160, 0)
+	var trap: Trap = load("res://scenes/traps/feather_trap.tscn").instantiate()
+	lv.add_child(trap)
+	trap.global_position = hero.global_position + Vector2(-30, 0)
+	await get_tree().physics_frame
+	var hit := IceBarrier.cast(hero, 1)
+	check("冰晶结界（1 档 48 像素）：范围内的怪物冻住、陷阱停住，远处的不受影响",
+		hit.has(mon) and hit.has(trap) and not hit.has(far) and mon._stun_left > 1.5 and not trap.active and far._stun_left <= 0.0)
+	hero.laugh.value = 0.0
+	hero._full_invuln = 0.0
+	hero.combo.reset()
+	var s := Src.new()
+	s.reaction_key = "slime"
+	lv.get_node("Entities").add_child(s)
+	s.global_position = hero.global_position + Vector2(20, 0)
+	hero.receive_hit(HitData.make_tickle(s, 5.0))
+	check("冰晶守护期间被挠闷笑不涨（%.1f）" % hero.laugh.value, hero.has_buff("frost_guard") and hero.laugh.value == 0.0)
+	await _wait(2.3)
+	check("2 秒后陷阱恢复", trap.active and trap.modulate == Color.WHITE)
+	check("她的魔法台词是冰晶结界的", str(ReactionDB.magic("burst")).contains("冻") or str(ReactionDB.magic("burst")).contains("结界"))
+	for n in [mon, far, trap, s]:
+		n.queue_free()
 
 
 # ------------------------------------------------------------------ 工具

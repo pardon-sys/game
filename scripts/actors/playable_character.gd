@@ -404,6 +404,11 @@ func begin_channel() -> bool:
 	return true
 
 
+## 释放魔法本身（按档位）：默认是星光爆发；蓝色公主重写成冰晶结界。
+func cast_magic(tier: int) -> void:
+	StarBurst.cast(self, tier)
+
+
 ## 松开：按当前档位释放；不到 1 档算落空。返回释放的档位（0 = 落空）。
 func release_magic() -> int:
 	if state != State.CHANNEL:
@@ -415,7 +420,7 @@ func release_magic() -> int:
 		Audio.play("fizzle", -4.0)
 		magic_event.emit("fizzle", 0)
 		return 0
-	StarBurst.cast(self, tier)
+	cast_magic(tier)
 	if tier >= channel_tiers.size():
 		fling_latchers()  # 满蓄力：全部震飞
 	_magic_cd = magic_cooldown

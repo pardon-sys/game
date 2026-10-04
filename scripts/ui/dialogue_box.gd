@@ -245,6 +245,11 @@ func _show_line() -> void:
 	var is_princess := speaker == PRINCESS
 	var left := TEXT_LEFT_WITH_PORTRAIT
 	var npc := npc_of(line)
+	# 说话的是当前操控的角色本人（蓝色公主当主角时）：当成主角的台词——左边立绘换表情，右边不再重复显示她
+	if (npc != "" and npc == hero_npc()) or (speaker != "" and speaker == hero_speaker()):
+		npc = ""
+		is_princess = true
+		npc_portrait.hide()
 	if npc != "":
 		_show_npc(npc, emotion)
 	elif not is_princess and speaker != "":
@@ -298,6 +303,16 @@ func rest() -> void:
 
 
 ## 这行台词是哪个人物说的（line.npc，或说话人名字和人物表里的名字一样）。
+## 当前操控角色在人物表里的 id（蓝色公主当主角时是 blue_princess；粉色公主不在人物表里，返回 ""）。
+func hero_npc() -> String:
+	return "blue_princess" if Characters.current() == "blue" else ""
+
+
+## 当前主角在台词里的名字（蓝色公主当主角时是「蓝色的公主」；有的楼层的人物表里没有她，按名字认）。
+func hero_speaker() -> String:
+	return "蓝色的公主" if Characters.current() == "blue" else ""
+
+
 func npc_of(line: Dictionary) -> String:
 	if line.has("npc"):
 		return str(line["npc"])

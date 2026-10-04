@@ -50,6 +50,11 @@ func _setup() -> void:
 	_refresh_visibility()
 
 
+## 她的魔法是冰晶结界（冻住范围内的怪物和陷阱，期间自己不涨闷笑），不是星光爆发。
+func cast_magic(tier: int) -> void:
+	IceBarrier.cast(self, tier)
+
+
 ## 她的魔力疲倦爆发立绘是立绘图的最后一格（战损憋笑释放）。
 func fatigue_burst_visual() -> String:
 	return "damaged_giggle_burst"

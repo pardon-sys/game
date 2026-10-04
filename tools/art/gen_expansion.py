@@ -575,13 +575,25 @@ def zone_icon(kind):
     return img
 
 
-BUFF_ICON_COUNT = 18
+BUFF_ICON_COUNT = 19
+
+
+def frost_icon():
+    """冰晶守护（蓝色公主的冰晶结界）：绿底的雪花。"""
+    img, d = canvas(12, 12)
+    d.rounded_rectangle((0, 0, 11, 11), radius=2, fill=(40, 90, 60, 255))
+    d.rounded_rectangle((0, 0, 11, 11), radius=2, outline=(120, 230, 150, 255))
+    c = (190, 230, 255, 255)
+    for a, b in (((6, 2), (6, 10)), ((2, 6), (10, 6)), ((3, 3), (9, 9)), ((9, 3), (3, 9))):
+        d.line((a, b), fill=c)
+    d.point((6, 6), fill=(255, 255, 255, 255))
+    return img
 
 
 def gen_buff_icons():
     sheet = blank(12 * BUFF_ICON_COUNT, 12)
     for i in range(BUFF_ICON_COUNT):
-        sheet.alpha_composite(buff_icon(i) if i < 9 else zone_icon(i), (i * 12, 0))
+        sheet.alpha_composite(buff_icon(i) if i < 9 else (zone_icon(i) if i < 18 else frost_icon()), (i * 12, 0))
     sheet.save(OUT / "buff_icons.png")
 
 
@@ -1066,6 +1078,19 @@ def particle(kind):
         d.line((0, 4, 4, 0), fill=(200, 190, 210, 255))
         for x, y in ((1, 2), (2, 1), (2, 2), (3, 1), (1, 3), (2, 3), (3, 2)):
             d.point((x, y), fill=(255, 250, 255, 255))
+    elif kind == "snow":   # 小雪花（蓝色公主的冰晶结界）
+        img, d = canvas(5, 5)
+        c = (220, 240, 255, 255)
+        d.line((2, 0, 2, 4), fill=c)
+        d.line((0, 2, 4, 2), fill=c)
+        d.point((1, 1), fill=c)
+        d.point((3, 3), fill=c)
+        d.point((3, 1), fill=c)
+        d.point((1, 3), fill=c)
+    elif kind == "crystal":   # 冰晶碎片
+        img, d = canvas(4, 6)
+        d.polygon([(2, 0), (3, 2), (2, 5), (1, 2)], fill=(150, 210, 255, 255))
+        d.line((2, 1, 2, 3), fill=(240, 250, 255, 255))
     elif kind == "bristle":   # 短刷毛（大腿刷环、刑架、骑马刷凳）
         img, d = canvas(4, 4)
         d.line((0, 3, 3, 0), fill=(240, 205, 120, 255))
@@ -1085,7 +1110,7 @@ def gen_hit_fx():
         for f in range(6):
             sheet.alpha_composite(hit_fx(k, f), (f * 24, row * 24))
     sheet.save(OUT / "hit_fx.png")
-    for k in ("ember", "goo", "dust", "chip", "drop", "heart", "feather", "bristle"):
+    for k in ("ember", "goo", "dust", "chip", "drop", "heart", "feather", "bristle", "snow", "crystal"):
         particle(k).save(OUT / ("particle_%s.png" % k))
 
 

@@ -12,6 +12,8 @@ const PARTICLES := {
 	"heart": preload("res://assets/generated/particle_heart.png"),
 	"feather": preload("res://assets/generated/particle_feather.png"),
 	"bristle": preload("res://assets/generated/particle_bristle.png"),
+	"snow": preload("res://assets/generated/particle_snow.png"),
+	"crystal": preload("res://assets/generated/particle_crystal.png"),
 }
 
 

@@ -6,6 +6,8 @@ extends CanvasLayer
 @onready var box: VBoxContainer = $Root/Box
 
 var skip_button: Button
+## 音乐音量（Audio.music_volume，左右键调）。
+var music_slider: HSlider
 var skip_box: VBoxContainer
 var skip_scroll: ScrollContainer
 ## 跳关列表可见的最大高度（超过就出现滚动条）。
@@ -24,6 +26,25 @@ func _ready() -> void:
 	title_button.pressed.connect(to_title)
 	box.add_child(title_button)
 	box.move_child(title_button, box.get_child_count() - 2)
+	var music_row := HBoxContainer.new()
+	music_row.name = "MusicRow"
+	var music_label := Label.new()
+	music_label.text = "音乐"
+	music_row.add_child(music_label)
+	music_slider = HSlider.new()
+	music_slider.name = "MusicVolume"
+	music_slider.min_value = 0.0
+	music_slider.max_value = 1.0
+	music_slider.step = 0.1
+	music_slider.custom_minimum_size = Vector2(70, 12)
+	music_slider.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	music_slider.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	music_slider.focus_mode = Control.FOCUS_ALL
+	music_slider.value = Audio.music_volume
+	music_slider.value_changed.connect(Audio.set_music_volume)
+	music_row.add_child(music_slider)
+	box.add_child(music_row)
+	box.move_child(music_row, box.get_child_count() - 2)
 	skip_button = Button.new()
 	skip_button.name = "DevSkip"
 	skip_button.text = "测试：跳关"
@@ -69,6 +90,7 @@ func toggle() -> void:
 	if paused:
 		Audio.stop_voice()
 		skip_button.visible = DevConfig.enabled()
+		music_slider.set_value_no_signal(Audio.music_volume)
 		hide_skip_list()
 		$Root/Box/Resume.grab_focus()
 

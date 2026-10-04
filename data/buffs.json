@@ -132,6 +132,17 @@
 			"max_stacks": 1,
 			"modifiers": {},
 			"desc": "吸附类怪物吸在身上：移动变慢、一直被挠。连按攻击 / 交互键抖掉，冲刺有几率甩掉一只，满蓄力星光爆发全部震飞。"
+		},
+		"frost_guard": {
+			"name": "冰晶守护",
+			"icon": 18,
+			"debuff": false,
+			"duration": 3,
+			"max_stacks": 1,
+			"modifiers": {
+				"laugh_gain": -1.0
+			},
+			"desc": "冰晶结界展开期间：怎么挠都不会涨闷笑。"
 		}
 	}
 }

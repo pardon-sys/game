@@ -46,8 +46,15 @@ func _ready() -> void:
 		var floor_layer := get_parent().get_parent().get_node_or_null("FloorObjects") if get_parent() and get_parent().name == "Entities" else null
 		if floor_layer:
 			_move_to.call_deferred(floor_layer, info.get("under", false))
-	# lift：挂在墙上的东西（窗户、画）往上抬，看起来贴在上面那面墙上
-	sprite.offset.y -= float(info.get("lift", 0))
+	# lift：挂在墙上的东西（窗户、画）往上抬，看起来贴在上面那面墙上；
+	# 节点本身挪到墙那一格之上（y 排序排在墙上火把之前 = 火把画在它前面），精灵和交互范围反向补回
+	var lift := float(info.get("lift", 0))
+	sprite.offset.y -= lift
+	var sort_shift := 0.0
+	if lift > 0.0:
+		sort_shift = lift + 10.0
+		position.y -= sort_shift
+		sprite.offset.y += sort_shift
 	add_child(sprite)
 	if info.has("anim"):
 		var r2: Array = meta()[str(info["anim"])]["region"]
@@ -78,12 +85,12 @@ func _ready() -> void:
 	if action != "":
 		var it := Interactable.new()
 		it.name = "Interactable"
-		it.prompt_offset = Vector2(0, -float(r[3]) - 4.0)
+		it.prompt_offset = Vector2(0, -float(r[3]) - 4.0 + sort_shift)
 		var shape := CollisionShape2D.new()
 		var rect := RectangleShape2D.new()
 		rect.size = Vector2(maxf(float(r[2]), 18.0), 20)
 		shape.shape = rect
-		shape.position = Vector2(0, -6)
+		shape.position = Vector2(0, -6 + sort_shift)
 		it.add_child(shape)
 		add_child(it)
 
