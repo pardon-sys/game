@@ -73,9 +73,10 @@ var _voice_state := ""
 const MUSIC := {
 	"dungeon": "res://assets/audio/music/dungeon_loop.wav",
 	"town": "res://assets/audio/music/town_loop.wav",
+	"boss": "res://assets/audio/music/boss_loop.wav",
 }
 const MUSIC_DB := -12.0
-const DUCK_DB := -12.0
+const DUCK_DB := -6.0
 const MUSIC_FADE := 1.2
 var music_volume := 0.7
 var music_id := ""

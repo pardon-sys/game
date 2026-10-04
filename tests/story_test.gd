@@ -192,7 +192,7 @@ func _run_stealth() -> void:
 		and player.process_mode == Node.PROCESS_MODE_DISABLED)
 	StealthDirector.toggle_hide(player, crate)
 	check("再按一次出来", not d.is_player_hidden() and player.visible)
-	# 脚步声：站着不动没声音；走动时 4 格内（背后看不见的）士兵过来查看，远处的听不见
+	# 脚步声：站着不动没声音；走动时 7 格内（背后看不见的）士兵过来查看，再远的听不见
 	g.process_mode = Node.PROCESS_MODE_INHERIT
 	g.state = "walk"
 	player.global_position = g.global_position + Vector2(-50, 0)
@@ -200,16 +200,16 @@ func _run_stealth() -> void:
 	d._footsteps(player, 1.0)
 	d._footsteps(player, 1.0)
 	var still_quiet := g.state != "investigate"
-	player.global_position = g.global_position + Vector2(-100, 0)
+	player.global_position = g.global_position + Vector2(-140, 0)
 	player.velocity = Vector2(60, 0)
 	d._step_t = 0.0
 	d._footsteps(player, 0.1)
 	var far_quiet := g.state != "investigate"
-	player.global_position = g.global_position + Vector2(-50, 0)
+	player.global_position = g.global_position + Vector2(-100, 0)
 	d._step_t = 0.0
 	d._footsteps(player, 0.1)
-	check("脚步声：站着不动不会引来士兵，走动时附近的士兵过来查看（远处的听不见）",
-		still_quiet and far_quiet and g.state == "investigate" and g.sees(player) == 0.0)
+	check("脚步声：站着不动不会引来士兵，走动时 7 格内的士兵过来查看（再远的听不见），查看时走得快（%d → %d）" % [g.speed, g.investigate_speed],
+		still_quiet and far_quiet and g.state == "investigate" and g.sees(player) == 0.0 and g.investigate_speed > g.speed * 1.5)
 	player.velocity = Vector2.ZERO
 	# 丢石子
 	g.process_mode = Node.PROCESS_MODE_INHERIT
@@ -349,6 +349,15 @@ func _run_ice_barrier(hero: BluePrincess) -> void:
 	await _wait(2.3)
 	check("2 秒后陷阱恢复", trap.active and trap.modulate == Color.WHITE)
 	check("她的魔法台词是冰晶结界的", str(ReactionDB.magic("burst")).contains("冻") or str(ReactionDB.magic("burst")).contains("结界"))
+	# 疲倦爆发：带满蓄力范围、一半时间的冰晶控制
+	await _wait(2.5)
+	var m2: Monster = load("res://scenes/actors/monsters/slime.tscn").instantiate()
+	lv.get_node("Entities").add_child(m2)
+	m2.global_position = hero.global_position + Vector2(80, 0)
+	await get_tree().physics_frame
+	hero.fatigue_burst()
+	check("疲倦爆发也冻住范围内的怪物（满蓄力范围 96、冻 %.1f 秒）" % m2._stun_left, m2._stun_left > 1.5 and m2._stun_left <= 2.01)
+	m2.queue_free()
 	for n in [mon, far, trap, s]:
 		n.queue_free()
 

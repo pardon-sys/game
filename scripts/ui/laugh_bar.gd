@@ -18,16 +18,30 @@ var level := LaughMeter.Level.CALM
 var _t := 0.0
 
 
+## 换绑定（切换操控的角色）时断开上一个闷笑值组件。
+var _meter: LaughMeter
+
+
+func _on_changed(v: float, m: float) -> void:
+	value = v
+	max_value = m
+	queue_redraw()
+
+
+func _on_level(l: LaughMeter.Level) -> void:
+	level = l
+	queue_redraw()
+
+
 func bind(meter: LaughMeter) -> void:
+	if is_instance_valid(_meter) and _meter.changed.is_connected(_on_changed):
+		_meter.changed.disconnect(_on_changed)
+		_meter.level_changed.disconnect(_on_level)
+	_meter = meter
 	marks = [meter.giggle_threshold, meter.helpless_threshold, meter.helpless_stage2_threshold]
 	stage2 = meter.helpless_stage2_threshold
-	meter.changed.connect(func(v: float, m: float):
-		value = v
-		max_value = m
-		queue_redraw())
-	meter.level_changed.connect(func(l: LaughMeter.Level):
-		level = l
-		queue_redraw())
+	meter.changed.connect(_on_changed)
+	meter.level_changed.connect(_on_level)
 	value = meter.value
 	max_value = meter.max_value
 	level = meter.level

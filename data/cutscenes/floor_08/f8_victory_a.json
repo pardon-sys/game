@@ -1,0 +1,39 @@
+{
+	"name": "第八层：恼怒",
+	"letterbox": true,
+	"skippable": true,
+	"steps": [
+		{
+			"actions": [
+				{
+					"to": [
+						18,
+						12
+					],
+					"time": 0.8,
+					"do": "camera"
+				}
+			],
+			"wait": 0.8
+		},
+		{
+			"speaker": "千手痒痒魔",
+			"text": "……为……什么……"
+		},
+		{
+			"speaker": "公主",
+			"text": "赢、赢了……？"
+		},
+		{
+			"speaker": "千手痒痒魔",
+			"text": "……走开……全部……走开——！",
+			"actions": [
+				{
+					"time": 1.0,
+					"strength": 5.0,
+					"do": "shake"
+				}
+			]
+		}
+	]
+}

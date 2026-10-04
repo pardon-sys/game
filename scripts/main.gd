@@ -37,9 +37,14 @@ func _ready() -> void:
 ## keep_state：不把当前公主的状态带过去（读档时已经从存档设好了）。
 ## 测试模式：F2 在公主和蓝色公主（同一关卡里的其它可操作角色）之间切换操控。
 func _unhandled_input(event: InputEvent) -> void:
-	if event.is_action_pressed("switch_character") and DevConfig.enabled() and not GameState.in_dialogue:
-		switch_character()
-		get_viewport().set_input_as_handled()
+	if event.is_action_pressed("switch_character") and not GameState.in_dialogue:
+		if Duo.active:
+			if Duo.can_switch():
+				switch_character()
+			get_viewport().set_input_as_handled()
+		elif DevConfig.enabled():
+			switch_character()
+			get_viewport().set_input_as_handled()
 
 
 func switch_character() -> bool:
@@ -47,7 +52,7 @@ func switch_character() -> bool:
 		return false
 	var others: Array = []
 	for n in level.find_children("*", "", true, false):
-		if n is PlayableCharacter and n != GameState.player and n.visible and n.is_alive():
+		if n is PlayableCharacter and n != GameState.player and n.visible and n.is_alive() and not Downed.is_downed(n):
 			others.append(n)
 	if others.is_empty():
 		GameState.notify("这里没有可以切换的角色")

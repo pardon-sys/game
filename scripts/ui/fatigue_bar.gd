@@ -16,11 +16,21 @@ var max_value := 500.0
 var _t := 0.0
 
 
+## 换绑定（切换操控的角色）时断开上一个魔力疲倦组件。
+var _fatigue: MagicFatigue
+
+
+func _on_changed(v: float, m: float) -> void:
+	value = v
+	max_value = m
+	queue_redraw()
+
+
 func bind(f: MagicFatigue) -> void:
-	f.changed.connect(func(v: float, m: float):
-		value = v
-		max_value = m
-		queue_redraw())
+	if is_instance_valid(_fatigue) and _fatigue.changed.is_connected(_on_changed):
+		_fatigue.changed.disconnect(_on_changed)
+	_fatigue = f
+	f.changed.connect(_on_changed)
 	value = f.value
 	max_value = f.max_value
 	queue_redraw()

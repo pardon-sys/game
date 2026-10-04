@@ -5,6 +5,7 @@ extends Node2D
 ##   躲藏：木箱 / 矿车（prop action=hide）按 E 躲进去（看不见、不能动），再按 E 出来。士兵经过时有几率检查。
 ##   丢石子：按 F（输入动作 throw，没有就自动加上）往面朝方向丢，落点附近的士兵会去查看。
 ##   脚步声：走动时每 STEP_INTERVAL 秒一下（STEP_RADIUS 内的士兵过来查看，冲刺时 DASH_RADIUS），站着不动没有声音；脚下冒一圈淡淡的波纹。
+##   被看见时按 K 闪避（冲刺）警觉涨得更快（DASH_EXPOSE 倍）。
 ##   暗处：离光源（地图里的 PointLight2D：灯、火把、蜡烛）远的地方，士兵的视野只有一半（VisionCone.lights）。
 ## 图例：X = stealth [active_flag=f6_escape] [on_caught=f6]
 
@@ -13,15 +14,17 @@ signal caught(by: Node)
 const STONE_RANGE := 72.0
 const NOISE_RADIUS := 150.0
 const STEP_INTERVAL := 0.5
-const STEP_RADIUS := 64.0
-const DASH_RADIUS := 128.0
+const STEP_RADIUS := 112.0
+const DASH_RADIUS := 208.0
+## 在士兵视野里闪避（冲刺）时警觉上涨的倍率。
+const DASH_EXPOSE := 1.8
 
 static var current: StealthDirector
 
 @export var active_flag := ""
 ## 被发现后交给谁处理：f6 = F6Story.on_caught()。
 @export var on_caught := ""
-@export var alert_rate := 1.4
+@export var alert_rate := 2.6
 @export var alert_decay := 0.3
 
 var alert := 0.0
@@ -191,7 +194,8 @@ func _physics_process(delta: float) -> void:
 		g.cone.alerting = s > 0.0
 		seen = maxf(seen, s)
 	if seen > 0.0:
-		alert = minf(1.0, alert + seen * alert_rate * delta)
+		var k := DASH_EXPOSE if is_instance_valid(p) and p.is_dashing() else 1.0
+		alert = minf(1.0, alert + seen * alert_rate * k * delta)
 	else:
 		alert = maxf(0.0, alert - alert_decay * delta)
 	_update_hud()

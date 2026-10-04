@@ -72,6 +72,8 @@ enum State { IDLE, MOVE, ATTACK, DASH, HURT, HELPLESS, GRABBED, DEAD, CHANNEL, C
 @onready var camera: Camera2D = get_node_or_null("Camera")
 @onready var combo: ComboTracker = get_node_or_null("Combo")
 @onready var fatigue: MagicFatigue = get_node_or_null("Fatigue")
+## 数据档案（Characters）：受挠台词、部位表、CG 都按这个选（粉色公主 pink、蓝色公主 blue）。
+var character_id := "pink"
 ## 正在进行疲倦爆发（CAST 期间用战损释放姿势）。
 var fatigue_bursting := false
 ## 挠痒敏感状态（部位、连续加成、露出部位、战损）：data/actors/princess_ticklish.json。
@@ -128,8 +130,15 @@ func _setup() -> void:
 		prompt.hide()
 
 
-## 不被玩家操控时用的 AI 控制器（切换操控时 GameState.switch_control 调用）；默认站着不动。
+## 显示用的名字（切换操控的提示、倒地提示）；蓝色公主重写。
+func display_name() -> String:
+	return "公主"
+
+
+## 不被玩家操控时用的 AI 控制器（切换操控时 GameState.switch_control 调用）；默认站着不动，双人模式里是 AI 搭档。
 func make_ai_controller() -> CharacterController:
+	if Duo.active:
+		return CompanionController.new()
 	return ScriptedController.new()
 
 
@@ -141,6 +150,20 @@ func set_controller(c: CharacterController) -> void:
 	if c.get_parent() == null:
 		add_child(c)
 	controller = c
+
+
+## 每个角色用自己的数据档案处理这一帧和受到的挠痒（两个可操作角色同场时，AI 控制的那个也拿对自己的台词 / 部位表）。
+func _physics_process(delta: float) -> void:
+	Characters.scope(character_id)
+	super(delta)
+	Characters.unscope()
+
+
+func receive_hit(hit: HitData) -> bool:
+	Characters.scope(character_id)
+	var r := super(hit)
+	Characters.unscope()
+	return r
 
 
 func _tick(delta: float) -> void:
@@ -404,6 +427,11 @@ func begin_channel() -> bool:
 	return true
 
 
+## 魔力疲倦满时的爆发本身：默认是疲倦星光爆发；蓝色公主再加上一半的冰晶结界。
+func cast_fatigue_burst() -> void:
+	StarBurst.cast_fatigue(self)
+
+
 ## 释放魔法本身（按档位）：默认是星光爆发；蓝色公主重写成冰晶结界。
 func cast_magic(tier: int) -> void:
 	StarBurst.cast(self, tier)
@@ -612,6 +640,10 @@ func _on_died() -> void:
 	_end_channel()
 	_set_state(State.DEAD)
 	_end_attack()
+	# 双人模式（第八层）：不放笑倒 CG，倒地等搭档来救
+	if Duo.active and Duo.members.has(self):
+		Downed.start(self)
+		return
 	if _play_death_cutscene():
 		return
 	var tw := create_tween()
@@ -656,7 +688,7 @@ func fatigue_burst() -> void:
 	_end_attack()
 	fatigue_bursting = true
 	_set_state(State.CAST)
-	StarBurst.cast_fatigue(self)
+	cast_fatigue_burst()
 	fling_latchers()
 	FatiguePuddle.spawn(get_parent(), global_position)
 	add_buff("fatigue_scar", -1.0)

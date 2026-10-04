@@ -12,6 +12,8 @@ const DIR_ROW := {"down": 0, "left": 1, "right": 2, "up": 3}
 @export var loop := false
 @export var wait := 1.2
 @export var speed := 34.0
+## 听到动静去查看 / 查看完回去时走得快。
+@export var investigate_speed := 64.0
 @export var view_range := 88.0
 @export var view_angle := 70.0
 ## 经过躲藏点时去检查的几率。
@@ -105,7 +107,7 @@ func _physics_process(delta: float) -> void:
 					_look_base = facing
 				else:
 					state = "walk"
-			elif _move_to(route[0], delta):
+			elif _move_to(route[0], delta, investigate_speed):
 				route.pop_front()
 		"look":
 			_timer -= delta
@@ -118,13 +120,14 @@ func _physics_process(delta: float) -> void:
 
 
 ## 走向 target，到了返回 true。
-func _move_to(target: Vector2, delta: float) -> bool:
+func _move_to(target: Vector2, delta: float, spd := -1.0) -> bool:
+	var v := speed if spd < 0.0 else spd
 	var to := target - global_position
-	if to.length() <= speed * delta + 0.5:
+	if to.length() <= v * delta + 0.5:
 		global_position = target
 		return true
 	_set_facing(to)
-	global_position += to.normalized() * speed * delta
+	global_position += to.normalized() * v * delta
 	_anim += delta
 	return false
 

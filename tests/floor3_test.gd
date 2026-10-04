@@ -41,7 +41,7 @@ func _ready() -> void:
 func _run_floors() -> void:
 	print("-- 楼层表")
 	var ids := Floors.ids()
-	check("floors.json 顺序", ids == ["floor_01", "floor_02", "floor_03", "floor_04", "floor_05", "floor_06_prison", "floor_06_upper", "floor_06_camp", "floor_06_mine", "floor_06_training", "floor_06_house", "floor_06_house_up", "floor_07"])
+	check("floors.json 顺序", ids == ["floor_01", "floor_02", "floor_03", "floor_04", "floor_05", "floor_06_prison", "floor_06_upper", "floor_06_camp", "floor_06_mine", "floor_06_training", "floor_06_house", "floor_06_house_up", "floor_07", "floor_08", "floor_08_chase"])
 	check("下一层", Floors.next_of("floor_01") == "floor_02" and Floors.next_of("floor_02") == "floor_03" and Floors.next_of("floor_03") == "floor_04"
 		and Floors.next_of("floor_04") == "floor_05" and Floors.next_of("floor_05") == "floor_06_prison")
 	check("第六层四张地图同属 floor_06 组，共用对话文件夹", ["floor_06_prison", "floor_06_upper", "floor_06_camp", "floor_06_mine"].all(

@@ -55,6 +55,17 @@
 		"maid": {
 			"name": "女仆",
 			"sprite": "res://assets/generated/npcs/maid.png"
+		},
+		"pink_princess": {
+			"name": "公主",
+			"sprite": "res://assets/generated/princess.png",
+			"portrait_set": "pink",
+			"princess_sheet": true,
+			"scene": "res://scenes/actors/playable/princess.tscn"
+		},
+		"thousand_hand": {
+			"name": "千手痒痒魔",
+			"portrait": "res://assets/generated/thousand_hand_portrait.png"
 		}
 	}
 }

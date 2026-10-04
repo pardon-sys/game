@@ -80,6 +80,13 @@
 			"sole": 1,
 			"chest": 1
 		},
+		"thousand_hand": {
+			"armpit": 2,
+			"waist": 2,
+			"thigh": 2,
+			"sole": 1,
+			"belly": 1
+		},
 		"tentacle": {
 			"waist": 2,
 			"armpit": 1,

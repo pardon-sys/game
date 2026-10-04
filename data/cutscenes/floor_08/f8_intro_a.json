@@ -1,0 +1,111 @@
+{
+	"name": "第八层：千手之间",
+	"letterbox": true,
+	"skippable": true,
+	"steps": [
+		{
+			"actions": [
+				{
+					"time": 0.6,
+					"do": "fade_in"
+				},
+				{
+					"who": "princess",
+					"time": 0.0,
+					"do": "camera"
+				}
+			],
+			"wait": 0.6
+		},
+		{
+			"actions": [
+				{
+					"who": "princess",
+					"to": [
+						18,
+						22
+					],
+					"speed": 60,
+					"do": "move"
+				},
+				{
+					"who": "princess",
+					"time": 0.8,
+					"do": "camera"
+				}
+			]
+		},
+		{
+			"actions": [
+				{
+					"who": "princess",
+					"kind": "surprise",
+					"do": "bubble"
+				},
+				{
+					"to": [
+						18,
+						13
+					],
+					"time": 1.0,
+					"do": "camera"
+				},
+				{
+					"time": 0.4,
+					"strength": 2.0,
+					"do": "shake"
+				}
+			],
+			"wait": 1.0
+		},
+		{
+			"speaker": "公主",
+			"text": "哈哈哈哈！放、放我下来——哈哈哈！手、手太多了哈哈哈哈！",
+			"actions": [
+				{
+					"who": "Pink",
+					"emotion": "helpless_2",
+					"hold": true,
+					"do": "pose"
+				}
+			]
+		},
+		{
+			"speaker": "千手痒痒魔",
+			"text": "……嘻……嘻嘻……笑……再笑……"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……原来，你在这里。",
+			"emotion": "sad"
+		},
+		{
+			"speaker": "公主",
+			"text": "诶？蓝、蓝色的……你怎么会……哈哈哈哈！别、别挠那里——！"
+		},
+		{
+			"speaker": "千手痒痒魔",
+			"text": "……？……你……"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……别动。",
+			"emotion": "angry",
+			"actions": [
+				{
+					"sound": "chant",
+					"do": "sfx"
+				},
+				{
+					"who": "princess",
+					"time": 0.6,
+					"do": "camera"
+				}
+			]
+		}
+	]
+}

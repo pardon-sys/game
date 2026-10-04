@@ -251,8 +251,14 @@ func _reachable_all() -> bool:
 	var start := walls.local_to_map(walls.to_local(player.global_position))
 	var seen := _flood(start, {})
 	var missing := 0
+	# design.json 的 isolated：故意走不到的区域（第八层千手的巢穴、追逐战另一条跑道）
+	var isolated: Array[Rect2i] = []
+	var dpath := "res://levels/%s/design.json" % level.get("floor_id")
+	if FileAccess.file_exists(dpath):
+		for r in (JSON.parse_string(FileAccess.get_file_as_string(dpath)) as Dictionary).get("isolated", []):
+			isolated.append(Rect2i(int(r[0]), int(r[1]), int(r[2]) - int(r[0]) + 1, int(r[3]) - int(r[1]) + 1))
 	for c in (level.get_node("Floor") as TileMapLayer).get_used_cells():
-		if _walkable(c, {}) and not seen.has(c):
+		if _walkable(c, {}) and not seen.has(c) and not isolated.any(func(r: Rect2i): return r.has_point(c)):
 			missing += 1
 	# 第一层的秘密储物间要推倒暗墙才进得去
 	return missing == 0 or (level.get("floor_id") == "floor_01" and missing <= 60)
@@ -311,6 +317,23 @@ func _run_design(id: String) -> void:
 		var a := Vector2i(int(feeds[i][0]), int(feeds[i][1]))
 		var b := Vector2i(int(feeds[i + 1][0]), int(feeds[i + 1][1]))
 		check("无解房间的连锁：%s 放开后也被送进 %s" % [a, b], _flow(a).has(b))
+	# 强制位移陷阱的配合（第七层）：风道尽头是落笼、漩涡中心是束缚陷阱、风扇吹上传送带再送进目标
+	var at := _trap_cells()
+	for dp in design.get("displacement", []):
+		var ok := false
+		var cell := func(v: Array) -> Vector2i: return Vector2i(int(v[0]), int(v[1]))
+		match str(dp["kind"]):
+			"fan_cage":
+				ok = at.get(cell.call(dp["fan"]), []).has("fan") and at.get(cell.call(dp["target"]), []).has("cage")
+			"vortex_bind":
+				var c: Array = at.get(cell.call(dp["center"]), [])
+				ok = c.has("vortex") and c.has(str(dp["target_type"]))
+			"fan_conveyor":
+				var t: Vector2i = cell.call(dp["target"])
+				var tt := str(dp["target_type"])
+				ok = at.get(cell.call(dp["fan"]), []).has("fan") and at.get(cell.call(dp["conveyor"]), []).has("conveyor") \
+					and (at.get(t, []).has(tt) or at.get(t + Vector2i.UP, []).has(tt) or _cells_of([tt]).has(t))
+		check("强制位移配合 %s（%s → %s）" % [dp["kind"], dp.get("fan", dp.get("center")), dp["target_type"]], ok)
 	# 迷宫房间：墙够多（是迷宫不是空地），小厅里放 2–3 组三来源组合
 	for mz in design.get("maze_rooms", []):
 		var r: Array = mz["rect"]
@@ -702,6 +725,19 @@ func _run_combo_spots(id: String) -> void:
 
 
 ## 某个组合槽位（可选来源键列表）对应的陷阱覆盖的格子。
+## 每格上的陷阱（按陷阱节点所在的格，值是 reaction_key 列表；挂墙的衣柜等也算）。
+func _trap_cells() -> Dictionary:
+	var walls: TileMapLayer = level.get_node("Walls")
+	var out := {}
+	for n in level.find_children("*", "", true, false):
+		if n is Trap:
+			var c := walls.local_to_map(walls.to_local((n as Node2D).global_position))
+			if not out.has(c):
+				out[c] = []
+			(out[c] as Array).append(str(n.get("reaction_key")))
+	return out
+
+
 func _cells_of(slot: Array) -> Dictionary:
 	var out := {}
 	for n in level.find_children("*", "", true, false):

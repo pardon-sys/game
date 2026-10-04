@@ -1,0 +1,52 @@
+{
+	"name": "第八层：崩塌",
+	"letterbox": true,
+	"skippable": true,
+	"steps": [
+		{
+			"speaker": "公主",
+			"text": "天花板塌下来了！快跑——！",
+			"emotion": "surprise",
+			"actions": [
+				{
+					"time": 0.6,
+					"strength": 4.0,
+					"do": "shake"
+				}
+			]
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……再见。",
+			"emotion": "sad",
+			"actions": [
+				{
+					"to": [
+						18,
+						12
+					],
+					"time": 0.8,
+					"do": "camera"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "蓝色的公主！快点！",
+			"emotion": "angry"
+		},
+		{
+			"actions": [
+				{
+					"time": 0.8,
+					"do": "fade_out"
+				}
+			],
+			"wait": 0.9
+		}
+	]
+}

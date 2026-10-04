@@ -16,8 +16,6 @@ var _last_reaction := ""
 var _reaction_stage := ""
 ## 立绘套装（Dialogue.PORTRAIT_SETS 的名字）：公主 "pink"，蓝色公主 "blue"。
 var portrait_set := "pink"
-## 数据档案（Characters）：受挠台词、部位表、CG 都按这个选。
-var character_id := "pink"
 
 
 ## 是不是玩家正在操控的那一个（GameState.player）。AI 控制的（蓝色公主）只保留小人的动画和表情，

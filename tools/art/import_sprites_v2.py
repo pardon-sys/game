@@ -94,8 +94,11 @@ def _b2(row):
 
 
 BLUE = {name: _blue_base(name) for name in B1_EXPR}
-BLUE.update({"damaged": _b2(0), "giggle": _b2(1),
-             "damaged_giggle": _same([("b2", 2, 0, i) for i in (0, 2, 4, 6)]),
+# princess_blue2：第 1 行战损（赤脚、破衣），第 2 行战损憋笑（赤脚、带爱心），两行都有左右走路帧；
+# 普通憋笑没有单独的走路素材：用基础走路，站着时换成第一行闭眼笑的那帧
+_GIGGLE = {k: list(v) for k, v in B_WALK.items()}
+_GIGGLE["down"][0] = ("b1", 0, 0, B1_EXPR["happy"])
+BLUE.update({"damaged": _b2(0), "giggle": _GIGGLE, "damaged_giggle": _b2(1),
              "helpless_1": _same([("b2", 3, 0, i) for i in (0, 2, 4, 6)]),
              "helpless_2": _same([("b2", 4, 0, i) for i in (1, 2, 3, 4)])})
 # 战损魔法（princess_blue3）：普通吟诵 / 释放没有素材，用战损吟诵 / 第二种战损释放；
