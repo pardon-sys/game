@@ -126,6 +126,41 @@ def area(k, room):
 
 
 design = []
+displacement = []
+
+
+def fan_cage(k, x, dy, dirn, length, content):
+    """风扇 → 落笼：风道（风扇后面 length 格）尽头是落笼，被吹进去正好罩住（有人走到落点格就落）。"""
+    y0 = hall_top(k)
+    d = {"right": (1, 0), "left": (-1, 0), "down": (0, 1), "up": (0, -1)}[dirn]
+    end = (x + d[0] * length, y0 + dy + d[1] * length)
+    m.put(x, y0 + dy, "trap type=fan dir=%s len=%d push_speed=75.0" % (dirn, length))
+    m.put(end[0], end[1], "trap type=cage group=f7fc%d content=%s" % (len(displacement), content))
+    displacement.append({"kind": "fan_cage", "fan": [x, y0 + dy], "dir": dirn, "len": length, "target": list(end), "target_type": "cage"})
+
+
+def vortex_bind(k, x, dy, bind, radius=2):
+    """漩涡中心放束缚陷阱：吸进中心就被锁（只能冲刺挣开吸力）。"""
+    y0 = hall_top(k)
+    m.put(x, y0 + dy, "trap type=vortex radius=%d + trap type=%s" % (radius, bind))
+    displacement.append({"kind": "vortex_bind", "center": [x, y0 + dy], "radius": radius, "target_type": bind})
+
+
+def fan_conveyor(k, fx, fdy, fdir, flen, cdir, clen, target_spec, target_type):
+    """风扇 + 传送带连推：风扇把人吹上传送带，传送带再送进目标（泥沼 / 衣柜…）。"""
+    y0 = hall_top(k)
+    v = {"right": (1, 0), "left": (-1, 0), "down": (0, 1), "up": (0, -1)}
+    a, b = v[fdir], v[cdir]
+    c = (fx + a[0] * (flen + 1), y0 + fdy + a[1] * (flen + 1))
+    t = (c[0] + b[0] * clen, c[1] + b[1] * clen)
+    m.put(fx, y0 + fdy, "trap type=fan dir=%s len=%d push_speed=75.0" % (fdir, flen))
+    m.put(c[0], c[1], "trap type=conveyor dir=%s len=%d" % (cdir, clen))
+    if target_spec.startswith("walltrap"):
+        m.put(t[0], t[1] - 1, target_spec)
+    else:
+        m.put(t[0], t[1], target_spec)
+    displacement.append({"kind": "fan_conveyor", "fan": [fx, y0 + fdy], "conveyor": list(c), "conveyor_dir": cdir, "conveyor_len": clen,
+                         "target": list(t), "target_type": target_type})
 
 
 def combo(cid, k, room, *items):
@@ -150,7 +185,8 @@ m.put(7, y + 4, "savepoint place=升天回廊·塔底")
 m.put(10, y + 6, "spawn id=blue_start")
 m.put(11, y + 2, "sign dialogue=sign7_tower")
 pillar(0, 18, 1); pillar(0, 18, 7); pillar(0, 30, 1); pillar(0, 30, 7)
-put_all(0, ((16, 6, "monster type=slime"), (21, 2, "monster type=rat"), (20, 7, "trap type=feather")))
+put_all(0, ((16, 6, "monster type=slime"), (21, 1, "monster type=rat"), (20, 7, "trap type=feather")))
+fan_cage(0, 15, 2, "right", 4, "feather")
 nook(0, 22, "heart", top=False)
 combo("snare_sole_feast", 0, "C", (4, 6, "trap type=snare group=f7s"), (2, 2, "monster type=rat"), (7, 7, "monster type=crab"))
 combo("mud_sink", 0, "D", (1, 6, "trap type=mud w=3 h=2"), (8, 6, "monster type=rat"), (3, 1, "monster type=slime"))
@@ -178,7 +214,8 @@ for x in range(W - 7, W - 4):
     m.put(x, y - 1, "gate group=arena_f7a is_open=true")
 pillar(2, 18, 2); pillar(2, 29, 2); pillar(2, 18, 6); pillar(2, 29, 6)
 put_all(2, ((20, 3, "monster type=glove pair=g7a"), (27, 3, "monster type=glove pair=g7a"), (22, 6, "monster type=frog"),
-            (26, 6, "monster type=squirrel"), (24, 4, "monster type=fairy"), (16, 4, "trap type=feather"), (31, 4, "trap type=feather")))
+            (26, 6, "monster type=squirrel"), (24, 4, "monster type=fairy"), (16, 4, "trap type=feather")))
+fan_conveyor(2, 30, 1, "down", 2, "right", 2, "trap type=mud w=2 h=2", "mud")
 combo("one_leg_show", 2, "D", (2, 6, "trap type=legloop group=f7l"), (3, 7, "trap type=wheel group=f7l"), (7, 2, "monster type=rat"))
 
 # —— 第 3 层：从右（D）进来，往左 ——
@@ -188,8 +225,8 @@ combo("mud_frog_dance", 3, "D", (1, 2, "trap type=mud w=3 h=2"), (6, 2, "monster
 combo("cuffs_shower_slime", 3, "C", (4, 4, "trap type=cuffs group=f7w + trap type=shower group=f7w"), (1, 7, "monster type=slime"),
       (8, 1, "monster type=split_slime"))
 pillar(3, 16, 4); pillar(3, 21, 4)
-put_all(3, ((18, 1, "nest type=fairy"), (19, 6, "trap type=vent idle_time=2.0 cloud_duration=1.2 offset=0.6"),
-            (15, 7, "monster type=bubble_fish")))
+put_all(3, ((18, 1, "nest type=fairy"), (15, 7, "monster type=bubble_fish")))
+vortex_bind(3, 19, 5, "supine")
 nook(3, 22, "mint", top=False)
 combo("wardrobe_ghost", 3, "A", (7, -1, "walltrap type=wardrobe"), (5, 3, "monster type=ghost"), (9, 3, "monster type=glove pair=g7b"),
       (9, 6, "monster type=glove pair=g7b"))
@@ -200,7 +237,8 @@ combo("supine_jelly", 4, "A", (6, 5, "trap type=supine"), (8, 2, "monster type=m
 # 吊环刑床：被吊环吊住、挣脱后脚下的传送带把人送上刑床（连锁）
 combo("loop_rack", 4, "B", (2, 4, "trap type=legloop group=f7r + trap type=conveyor dir=right len=3"), (5, 4, "trap type=supine group=f7r2"),
       (5, 3, "trap type=teaser group=f7r2"), (8, 7, "monster type=frog"))
-combo("wardrobe_inout", 4, "C", (6, -1, "walltrap type=wardrobe"), (2, 5, "monster type=rat"), (8, 6, "monster type=slime"))
+combo("wardrobe_inout", 4, "C", (2, 6, "monster type=rat"), (8, 6, "monster type=slime"))
+fan_conveyor(4, 28, 4, "right", 2, "up", 4, "walltrap type=wardrobe", "wardrobe")
 pillar(4, 27, 3); pillar(4, 32, 3)
 combo("cushion_cage", 4, "D", (3, 5, "trap type=cushion + trap type=cage idle_time=2.4 offset=0.6"), (8, 7, "monster type=rat"),
       (1, 1, "nest type=rat"))
@@ -215,7 +253,8 @@ for x in range(W - 7, W - 4):
 for x in range(4, 7):
     m.put(x, y - 1, "gate group=arena_f7b is_open=true")
 pillar(5, 27, 2); pillar(5, 36, 2); pillar(5, 27, 6); pillar(5, 36, 6)
-put_all(5, ((29, 3, "monster type=hedgehog"), (34, 5, "monster type=imp"), (32, 2, "monster type=ghost"), (31, 7, "monster type=mini_tentacle")))
+put_all(5, ((29, 2, "monster type=hedgehog"), (34, 5, "monster type=imp"), (32, 2, "monster type=ghost"), (31, 7, "monster type=mini_tentacle")))
+fan_cage(5, 25, 4, "right", 4, "slime")
 combo("rune_wings", 5, (14, 21), (3, 4, "trap type=rune"), (2, 1, "monster type=bat"), (6, 7, "monster type=fairy"))
 combo("spin_barnacle", 5, "A", (6, 4, "trap type=spinwheel"), (9, 2, "monster type=barnacle"), (2, 6, "monster type=squirrel"))
 
@@ -225,11 +264,12 @@ m.put(5, y + 7, "checkpoint")
 combo("supine_navel", 6, "A", (8, 3, "trap type=teaser group=f7n"), (8, 4, "trap type=supine group=f7n"), (3, 1, "monster type=frog"))
 combo("prone_wheel_crawl", 6, "B", (4, 6, "trap type=prone group=f7q + trap type=conveyor dir=left len=2"), (5, 7, "trap type=wheel group=f7q"),
       (8, 2, "monster type=caterpillar"))
-m.put(29, y + 2, "sign dialogue=sign7_top")
+m.put(27, y + 1, "sign dialogue=sign7_top")
 m.g[y - 1][30] = "."
-m.put(30, y - 1, "exit target=floor_07 locked=true dialogue=sign7_sealed")
-pillar(6, 27, 5); pillar(6, 33, 5)
-put_all(6, ((30, 6, "monster type=caterpillar"), (26, 3, "trap type=rune")))
+m.put(30, y - 1, "exit target=floor_08 down=false dialogue=sign7_sealed")
+pillar(6, 26, 6); pillar(6, 34, 6)
+put_all(6, ((33, 2, "monster type=caterpillar"), (26, 3, "trap type=rune")))
+vortex_bind(6, 30, 5, "stocks")
 combo("legloop_glove", 6, "D", (4, 4, "trap type=legloop"), (5, 4, "trap type=teaser"), (2, 2, "monster type=glove pair=g7c"),
       (8, 6, "monster type=glove pair=g7c"))
 nook(6, 44, "star_candy")
@@ -258,8 +298,10 @@ check_reachable()
 m.write()
 Path("levels/floor_07/design.json").write_text(json.dumps({
     "_说明": ["第七层（gen_floor07.py 生成）：combo_areas = 每组组合所在的房间（格，含上墙，左上 → 右下），level_design_test 检查区域里有组合需要的陷阱和怪物。",
-             "checkpoints = 检查点数量（塔底的日记本是唯一的存档点）。"],
+             "checkpoints = 检查点数量（塔底的日记本是唯一的存档点）。",
+             "displacement = 强制位移陷阱的配合：fan_cage 风道尽头是落笼、vortex_bind 漩涡中心是束缚陷阱、fan_conveyor 风扇吹上传送带再送进目标。"],
     "checkpoints": 4,
+    "displacement": displacement,
     "combo_areas": design}, ensure_ascii=False, indent="\t") + "\n")
 
 # ================================================================ 对话 / 过场
@@ -268,8 +310,8 @@ DLG = Path("data/dialogues/floor_07")
 DLG.mkdir(parents=True, exist_ok=True)
 SIGNS = {
     "sign7_tower": [{"speaker": S, "text": "【升天回廊】一层一层往上盘的高塔。坡道左右交替，越往上机关和怪物越多。\n塔底的日记本是这一层唯一能存档的地方。"}],
-    "sign7_top": [{"speaker": S, "text": "【回廊顶层】再往上，是封住的门。"}],
-    "sign7_sealed": [{"speaker": BLUE, "text": "……门封住了。门那边……有她的气息。"}],
+    "sign7_top": [{"speaker": S, "text": "【回廊顶层】再往上，是「千手之间」。"}],
+    "sign7_sealed": [{"speaker": BLUE, "text": "……门那边，有她的笑声。"}, {"speaker": BLUE, "text": "……还有，另一个……很久没听到的声音。"}],
 }
 (DLG / "signs.json").write_text(json.dumps(SIGNS, ensure_ascii=False, indent="\t") + "\n")
 

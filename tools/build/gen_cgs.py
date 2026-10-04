@@ -39,6 +39,7 @@ actors = {
     "octopus": {"scene": M % "suction_octopus", "sprite": {"hframes": 3}},
     "caterpillar": {"scene": M % "caterpillar", "sprite": {"hframes": 2}},
     "barnacle": {"scene": M % "barnacle", "sprite": {"hframes": 3, "frame": 1}},
+    "thousand_hand": {"scene": M % "thousand_hand", "sprite": {"hframes": 6, "offset": [0, -48]}},
 }
 # 陷阱演员（组合演出用）：贴图、待机 / 发动帧、铺几格、旋转、羽毛臂。舞台上的摆放位置在 gen_combo_scenes.py。
 T = "res://assets/generated/%s.png"
@@ -548,7 +549,8 @@ def main():
         "portraits": portraits,
         "actors": actors,
         "trap_actors": trap_actors,
-        "death": {"by_source": {k: "death_" + k for k in actors}, "default": "death_generic"},
+        # 千手痒痒魔只在第八层双人模式里出现（倒下是倒地 + 战败小剧场），没有笑倒 CG
+        "death": {"by_source": {k: "death_" + k for k in actors if k != "thousand_hand"}, "default": "death_generic"},
         "cgs": cgs,
     }
     open("data/cgs.json", "w").write(json.dumps(data, ensure_ascii=False, indent="\t") + "\n")

@@ -141,6 +141,20 @@ for key, s in rx.get("sources", {}).items():
             for stage, pool in (("calm", CALM), ("giggle", GIGGLE), ("helpless_1", H1), ("helpless_2", BREAK)):
                 if stage in v:
                     v[stage] = picks(pool, key + _c + stage, 2, n=n, z=z)
+# 千手痒痒魔：她认识它（不点明）。被它挠时的台词带着惋惜和自责，和别的来源不一样。
+BOSS_LINES = {
+    "first_encounter": [{"speaker": BLUE, "emotion": "sad", "text": "……原来，你在这里。"},
+                        {"speaker": BLUE, "emotion": "sad", "text": "……你的手，变多了。"},
+                        {"speaker": BLUE, "emotion": "angry", "text": "……对不起。……但我不会让你再挠她了。"}],
+    "calm": ["……别这样。", "……你以前不会这样的。", "……是你。"],
+    "giggle": ["……这招……以前是用来逗我的……", "……还、还记得……我哪里怕……"],
+    "helpless_1": ["……哈、哈哈……你还是……从右边来……哈哈……", "噗、哈哈……别……别像以前那样……哈哈……"],
+    "helpless_2": ["哈哈哈……对、对不起……哈哈哈……都是我……哈哈哈哈……！", "哈哈哈哈……停、停下……我不想……这样见到你……哈哈哈……！"],
+    "grabbed": ["……你的手，还是这么凉。", "……放开。……求你了。"],
+    "portrait_words": {"helpless_1": ["……对不起", "噗、哈哈", "别…这样"], "helpless_2": ["对不起哈哈", "哈哈哈哈", "停下…哈哈"]},
+}
+if isinstance(rx.get("sources", {}).get("thousand_hand"), dict):
+    rx["sources"]["thousand_hand"].update(json.loads(json.dumps(BOSS_LINES)))
 for cid, c in rx.get("combos", {}).items():
     if not isinstance(c, dict):
         continue

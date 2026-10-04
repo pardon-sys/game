@@ -8,8 +8,22 @@ extends RefCounted
 
 const DIR := "res://data/characters/%s/"
 
+## 两个可操作角色同场时（第八层），每个角色处理自己的受挠 / 反应时临时把「当前角色」换成自己（scope / unscope 成对用）。
+static var _scope: Array[String] = []
+
+
+static func scope(id: String) -> void:
+	_scope.append(id)
+
+
+static func unscope() -> void:
+	if not _scope.is_empty():
+		_scope.pop_back()
+
 
 static func current() -> String:
+	if not _scope.is_empty() and _scope[-1] != "":
+		return _scope[-1]
 	var p := GameState.player
 	if is_instance_valid(p) and p.get("character_id") != null:
 		return str(p.get("character_id"))

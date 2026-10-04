@@ -62,6 +62,36 @@ def key_white(rgb):
     return Image.fromarray(np.dstack([rgb, alpha]).astype(np.uint8), "RGBA")
 
 
+EDGE_NAVY = np.array([38, 44, 104], dtype=np.float32)
+
+
+def crisp_edges(img, min_speck=3, strength=0.85):
+    """像素化之后让轮廓清楚（蓝色公主：浅色头发 / 白裙子贴着白底，边缘容易发虚）：
+    1) alpha 二值化；2) 去掉 min_speck 像素以下的孤立碎点；
+    3) 外轮廓上偏亮的像素往深蓝混合（strength），像粉色公主立绘那样有一圈深色的边；
+    4) 再往里一圈（像素化自带的深色描边里面那圈浅色头发 / 白裙子）也压暗一些（ring2），边缘不再发虚。"""
+    a = np.asarray(img).astype(np.float32)
+    mask = a[..., 3] >= 110
+    lab, n = ndimage.label(mask, structure=np.ones((3, 3)))
+    if n:
+        sizes = ndimage.sum(np.ones_like(lab), lab, range(1, n + 1))
+        for i, s in enumerate(sizes, 1):
+            if s < min_speck:
+                mask[lab == i] = False
+    cross = [[0, 1, 0], [1, 1, 1], [0, 1, 0]]
+    er1 = ndimage.binary_erosion(mask, structure=cross, border_value=0)
+    inner = mask & ~er1
+    ring2 = er1 & ~ndimage.binary_erosion(er1, structure=cross, border_value=0)
+    rgb = a[..., :3]
+    lum = rgb @ np.array([0.299, 0.587, 0.114], dtype=np.float32)
+    k1 = np.clip((lum - 70.0) / 110.0, 0.0, 1.0) * strength
+    k2 = np.clip((lum - 150.0) / 80.0, 0.0, 1.0) * 0.45
+    k = np.where(inner, k1, np.where(ring2, k2, 0.0))[..., None]
+    rgb = rgb * (1.0 - k) + EDGE_NAVY * k
+    out = np.dstack([rgb, np.where(mask, 255.0, 0.0)])
+    return Image.fromarray(np.clip(out, 0, 255).astype(np.uint8), "RGBA")
+
+
 def split_figures(path, n):
     img = Image.open(OUT / path).convert("RGB")
     rgb = np.asarray(img).astype(np.int32)
@@ -116,10 +146,10 @@ def build_blue():
     heads = Image.new("RGBA", (HEAD * len(VISUALS), HEAD))
     for i, name in enumerate(VISUALS):
         px, f = pxs[name], figures[name]
-        small = px(f, min((ch - 4) / f.height, (cw - 4) / f.width), head_box(name), sharpen=(1.0, 60))
+        small = crisp_edges(px(f, min((ch - 4) / f.height, (cw - 4) / f.width), head_box(name), sharpen=(1.0, 60)))
         sheet.alpha_composite(small, (i * cw + (cw - small.width) // 2, ch - small.height))
         hs = heads_src[name]
-        h = px(hs, min((HEAD - 4) / hs.width, (HEAD - 4) / hs.height), [0, 0, 1, 1], sharpen=(1.0, 60))
+        h = crisp_edges(px(hs, min((HEAD - 4) / hs.width, (HEAD - 4) / hs.height), [0, 0, 1, 1], sharpen=(1.0, 60)))
         heads.alpha_composite(h, (i * HEAD + (HEAD - h.width) // 2, (HEAD - h.height) // 2))
     sheet.save(OUT / "portraits_blue.png")
     heads.save(OUT / "portrait_heads_blue.png")

@@ -413,6 +413,16 @@
 				"hframes": 3,
 				"frame": 1
 			}
+		},
+		"thousand_hand": {
+			"scene": "res://scenes/actors/monsters/thousand_hand.tscn",
+			"sprite": {
+				"hframes": 6,
+				"offset": [
+					0,
+					-48
+				]
+			}
 		}
 	},
 	"trap_actors": {

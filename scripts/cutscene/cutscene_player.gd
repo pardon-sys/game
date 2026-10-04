@@ -359,6 +359,14 @@ func _do(a: Dictionary, instant: bool) -> float:
 				_face(who, Trap.dir_vector(str(a.get("dir", "down"))))
 		"pose":
 			var p := GameState.player
+			# who = 另一个可操作角色（第八层两人同场时的搭档）：只换她自己的表情 / 闷笑
+			if who is PlayableCharacter and who != p:
+				var other := who as PlayableCharacter
+				if a.has("emotion") and other.emotion:
+					other.emotion.request(str(a["emotion"]), 999.0 if bool(a.get("hold", false)) else 2.5, false)
+				if a.has("laugh") and other.laugh:
+					other.laugh.set_value(other.laugh.max_value * float(a["laugh"]) / 100.0)
+				return 0.0
 			if not is_instance_valid(p):
 				return 0.0
 			if a.has("emotion"):

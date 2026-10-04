@@ -1,0 +1,84 @@
+{
+	"name": "第八层：不再下来",
+	"letterbox": true,
+	"skippable": true,
+	"steps": [
+		{
+			"actions": [
+				{
+					"time": 0.8,
+					"strength": 4.0,
+					"do": "shake"
+				},
+				{
+					"to": [
+						18,
+						12
+					],
+					"time": 0.8,
+					"do": "camera"
+				}
+			],
+			"wait": 0.8
+		},
+		{
+			"speaker": "千手痒痒魔",
+			"text": "……不……下去了……再也……不下去了……"
+		},
+		{
+			"speaker": "公主",
+			"text": "它把手全收起来了……这样根本打不到！",
+			"emotion": "surprise"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……中间的光圈。走进去的人，会被它抓上去。"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……它挠人的时候，手会伸下来。……那时候打。"
+		},
+		{
+			"speaker": "公主",
+			"text": "那、那谁去……",
+			"emotion": "sad"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……我去。……这是我欠它的。",
+			"emotion": "sad"
+		},
+		{
+			"speaker": "公主",
+			"text": "不行！……我们轮流！谁撑不住了就换人！",
+			"emotion": "angry"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……嗯。"
+		},
+		{
+			"actions": [
+				{
+					"who": "princess",
+					"time": 0.6,
+					"do": "camera"
+				},
+				{
+					"text": "走进光圈的人会被抓进巢穴（右边小窗：← → 交替连按挣扎），另一个人打下来的手臂",
+					"do": "notify"
+				}
+			],
+			"wait": 0.4
+		},
+		{
+			"actions": [
+				{
+					"text": "阶段三：任何一人倒下都会战败！",
+					"do": "notify"
+				}
+			],
+			"wait": 0.3
+		}
+	]
+}

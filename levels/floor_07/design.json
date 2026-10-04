@@ -1,9 +1,94 @@
 {
 	"_说明": [
 		"第七层（gen_floor07.py 生成）：combo_areas = 每组组合所在的房间（格，含上墙，左上 → 右下），level_design_test 检查区域里有组合需要的陷阱和怪物。",
-		"checkpoints = 检查点数量（塔底的日记本是唯一的存档点）。"
+		"checkpoints = 检查点数量（塔底的日记本是唯一的存档点）。",
+		"displacement = 强制位移陷阱的配合：fan_cage 风道尽头是落笼、vortex_bind 漩涡中心是束缚陷阱、fan_conveyor 风扇吹上传送带再送进目标。"
 	],
 	"checkpoints": 4,
+	"displacement": [
+		{
+			"kind": "fan_cage",
+			"fan": [
+				15,
+				86
+			],
+			"dir": "right",
+			"len": 4,
+			"target": [
+				19,
+				86
+			],
+			"target_type": "cage"
+		},
+		{
+			"kind": "fan_conveyor",
+			"fan": [
+				30,
+				59
+			],
+			"conveyor": [
+				30,
+				62
+			],
+			"conveyor_dir": "right",
+			"conveyor_len": 2,
+			"target": [
+				32,
+				62
+			],
+			"target_type": "mud"
+		},
+		{
+			"kind": "vortex_bind",
+			"center": [
+				19,
+				50
+			],
+			"radius": 2,
+			"target_type": "supine"
+		},
+		{
+			"kind": "fan_conveyor",
+			"fan": [
+				28,
+				36
+			],
+			"conveyor": [
+				31,
+				36
+			],
+			"conveyor_dir": "up",
+			"conveyor_len": 4,
+			"target": [
+				31,
+				32
+			],
+			"target_type": "wardrobe"
+		},
+		{
+			"kind": "fan_cage",
+			"fan": [
+				25,
+				23
+			],
+			"dir": "right",
+			"len": 4,
+			"target": [
+				29,
+				23
+			],
+			"target_type": "cage"
+		},
+		{
+			"kind": "vortex_bind",
+			"center": [
+				30,
+				11
+			],
+			"radius": 2,
+			"target_type": "stocks"
+		}
+	],
 	"combo_areas": [
 		{
 			"combo": "snare_sole_feast",

@@ -1,0 +1,380 @@
+{
+	"name": "千手之间·战败（阶段二）",
+	"cast": {
+		"pink": {
+			"kind": "npc:pink_princess",
+			"at": [
+				-24,
+				10
+			],
+			"visual": "helpless_1",
+			"anim": "helpless",
+			"dir": "down"
+		},
+		"blue": {
+			"kind": "npc:blue_princess",
+			"at": [
+				24,
+				10
+			],
+			"visual": "helpless_1",
+			"anim": "helpless",
+			"dir": "down"
+		},
+		"boss": {
+			"kind": "monster:thousand_hand",
+			"at": [
+				0,
+				-16
+			],
+			"scale": 0.5
+		}
+	},
+	"steps": [
+		{
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "fade_in"
+				},
+				{
+					"state": "laugh",
+					"do": "voice"
+				}
+			],
+			"wait": 0.5
+		},
+		{
+			"speaker": "",
+			"text": "（锁链没能拉下它。两个人被吊上了半空）"
+		},
+		{
+			"speaker": "千手痒痒魔",
+			"text": "……上来……陪我……",
+			"actions": [
+				{
+					"who": "pink",
+					"by": "boss",
+					"repeat": 8,
+					"interval": 0.2,
+					"fx": "hand",
+					"zone": "armpit",
+					"do": "tickle"
+				},
+				{
+					"who": "blue",
+					"by": "boss",
+					"repeat": 8,
+					"interval": 0.2,
+					"fx": "brush",
+					"zone": "thigh",
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "好、好高！放我下去——哈哈哈！",
+			"actions": [
+				{
+					"who": "pink",
+					"by": "boss",
+					"repeat": 8,
+					"interval": 0.2,
+					"fx": "feather",
+					"zone": "waist",
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……板子……没、没站稳……噗、哈哈……",
+			"actions": [
+				{
+					"who": "blue",
+					"by": "boss",
+					"repeat": 8,
+					"interval": 0.2,
+					"fx": "hand",
+					"zone": "waist",
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "千手痒痒魔",
+			"text": "……地上……都是……我的……",
+			"actions": [
+				{
+					"who": "pink",
+					"by": "boss",
+					"repeat": 8,
+					"interval": 0.2,
+					"fx": "hand",
+					"zone": "thigh",
+					"do": "tickle"
+				},
+				{
+					"who": "blue",
+					"by": "boss",
+					"repeat": 8,
+					"interval": 0.2,
+					"fx": "brush",
+					"zone": "thigh",
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "刷子手！刷子手在刷脚心哈哈哈哈！",
+			"actions": [
+				{
+					"who": "pink",
+					"by": "boss",
+					"repeat": 8,
+					"interval": 0.2,
+					"fx": "hand",
+					"zone": "belly",
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……哈、哈哈……大腿……别刷大腿……",
+			"actions": [
+				{
+					"who": "blue",
+					"by": "boss",
+					"repeat": 8,
+					"interval": 0.2,
+					"fx": "brush",
+					"zone": "waist",
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "千手痒痒魔",
+			"text": "……你……最怕……这里……",
+			"actions": [
+				{
+					"who": "pink",
+					"by": "boss",
+					"repeat": 8,
+					"interval": 0.2,
+					"fx": "hand",
+					"zone": "armpit",
+					"do": "tickle"
+				},
+				{
+					"who": "blue",
+					"by": "boss",
+					"repeat": 8,
+					"interval": 0.2,
+					"fx": "brush",
+					"zone": "thigh",
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……！……哈哈哈……为、为什么还记得……哈哈哈哈……",
+			"actions": [
+				{
+					"who": "blue",
+					"by": "boss",
+					"repeat": 8,
+					"interval": 0.2,
+					"fx": "brush",
+					"zone": "butt",
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "哈哈哈！它、它到底是谁啊——！",
+			"actions": [
+				{
+					"who": "pink",
+					"by": "boss",
+					"repeat": 8,
+					"interval": 0.2,
+					"fx": "hand",
+					"zone": "sole",
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……哈哈……别、别问……哈哈哈……",
+			"actions": [
+				{
+					"who": "blue",
+					"by": "boss",
+					"repeat": 8,
+					"interval": 0.2,
+					"fx": "brush",
+					"zone": "thigh",
+					"do": "tickle"
+				},
+				{
+					"who": "blue",
+					"visual": "helpless_2",
+					"anim": "helpless",
+					"do": "pose"
+				}
+			]
+		},
+		{
+			"speaker": "千手痒痒魔",
+			"text": "……不……放……",
+			"actions": [
+				{
+					"who": "pink",
+					"by": "boss",
+					"repeat": 8,
+					"interval": 0.2,
+					"fx": "hand",
+					"zone": "belly",
+					"do": "tickle"
+				},
+				{
+					"who": "blue",
+					"by": "boss",
+					"repeat": 8,
+					"interval": 0.2,
+					"fx": "brush",
+					"zone": "thigh",
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "哈哈哈哈哈！投降！投降了哈哈哈哈！",
+			"actions": [
+				{
+					"who": "pink",
+					"by": "boss",
+					"repeat": 8,
+					"interval": 0.2,
+					"fx": "feather",
+					"zone": "butt",
+					"do": "tickle"
+				},
+				{
+					"who": "pink",
+					"visual": "helpless_2",
+					"anim": "helpless",
+					"do": "pose"
+				}
+			]
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "哈哈哈哈……停、停下……我不想……这样见到你……",
+			"actions": [
+				{
+					"who": "blue",
+					"by": "boss",
+					"repeat": 8,
+					"interval": 0.2,
+					"fx": "hand",
+					"zone": "thigh",
+					"do": "tickle"
+				},
+				{
+					"who": "blue",
+					"visual": "helpless_2",
+					"anim": "helpless",
+					"do": "pose"
+				}
+			]
+		},
+		{
+			"speaker": "千手痒痒魔",
+			"text": "……一起……",
+			"actions": [
+				{
+					"who": "pink",
+					"by": "boss",
+					"repeat": 8,
+					"interval": 0.2,
+					"fx": "hand",
+					"zone": "waist",
+					"do": "tickle"
+				},
+				{
+					"who": "blue",
+					"by": "boss",
+					"repeat": 8,
+					"interval": 0.2,
+					"fx": "brush",
+					"zone": "thigh",
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "……哈……哈……锁、锁链……下次……一起拉……",
+			"actions": [
+				{
+					"who": "pink",
+					"by": "boss",
+					"repeat": 8,
+					"interval": 0.2,
+					"fx": "hand",
+					"zone": "sole",
+					"do": "tickle"
+				},
+				{
+					"who": "pink",
+					"visual": "helpless_2",
+					"anim": "helpless",
+					"do": "pose"
+				}
+			]
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……嗯……哈、哈哈……",
+			"actions": [
+				{
+					"who": "blue",
+					"by": "boss",
+					"repeat": 8,
+					"interval": 0.2,
+					"fx": "brush",
+					"zone": "thigh",
+					"do": "tickle"
+				},
+				{
+					"who": "blue",
+					"visual": "helpless_2",
+					"anim": "helpless",
+					"do": "pose"
+				}
+			]
+		},
+		{
+			"actions": [
+				{
+					"state": "",
+					"do": "voice"
+				},
+				{
+					"time": 0.8,
+					"do": "fade_out"
+				}
+			],
+			"wait": 0.9
+		}
+	]
+}

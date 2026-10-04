@@ -84,6 +84,20 @@
 			"name": "第七层·升天回廊",
 			"scene": "res://levels/floor_07/floor.tscn",
 			"music": "dungeon"
+		},
+		{
+			"id": "floor_08",
+			"name": "第八层·千手之间",
+			"scene": "res://levels/floor_08/floor.tscn",
+			"group": "floor_08",
+			"music": "dungeon"
+		},
+		{
+			"id": "floor_08_chase",
+			"name": "第八层·崩塌的回廊",
+			"scene": "res://levels/floor_08_chase/floor.tscn",
+			"group": "floor_08",
+			"music": "boss"
 		}
 	]
 }

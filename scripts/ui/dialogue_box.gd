@@ -245,6 +245,10 @@ func _show_line() -> void:
 	var is_princess := speaker == PRINCESS
 	var left := TEXT_LEFT_WITH_PORTRAIT
 	var npc := npc_of(line)
+	# 蓝色公主当主角时，「公主」（粉色公主）说话：她是右边的人物（第八层两人同场）
+	if is_princess and hero_speaker() != "" and not line.has("npc"):
+		is_princess = false
+		npc = "pink_princess"
 	# 说话的是当前操控的角色本人（蓝色公主当主角时）：当成主角的台词——左边立绘换表情，右边不再重复显示她
 	if (npc != "" and npc == hero_npc()) or (speaker != "" and speaker == hero_speaker()):
 		npc = ""

@@ -1,0 +1,94 @@
+{
+	"name": "第八层：并肩",
+	"letterbox": true,
+	"skippable": true,
+	"steps": [
+		{
+			"actions": [
+				{
+					"time": 0.4,
+					"do": "flash"
+				},
+				{
+					"time": 0.5,
+					"strength": 3.0,
+					"do": "shake"
+				}
+			],
+			"wait": 0.5
+		},
+		{
+			"speaker": "公主",
+			"text": "掉、掉下来了……！呼……呼……得救了……",
+			"actions": [
+				{
+					"who": "Pink",
+					"emotion": "surprise",
+					"do": "pose"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "你……是追着我来的？明明我丢下你，自己跑了……",
+			"actions": [
+				{
+					"who": "Pink",
+					"emotion": "sad",
+					"do": "pose"
+				}
+			]
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……之后再说。"
+		},
+		{
+			"speaker": "千手痒痒魔",
+			"text": "……一起……玩……？"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……对不起。……但我不会让你再挠她了。",
+			"emotion": "sad"
+		},
+		{
+			"speaker": "公主",
+			"text": "你……认识这个怪物吗？",
+			"actions": [
+				{
+					"who": "Pink",
+					"emotion": "surprise",
+					"do": "pose"
+				}
+			]
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……来了。",
+			"emotion": "angry"
+		},
+		{
+			"actions": [
+				{
+					"text": "两人一起战斗！Tab 切换操控，没操控的那个会自己战斗",
+					"do": "notify"
+				},
+				{
+					"flag": "f8_fight_started",
+					"do": "set_flag"
+				}
+			],
+			"wait": 0.3
+		},
+		{
+			"actions": [
+				{
+					"text": "倒下的人：走到旁边按住 E 3 秒救起。地上的圆圈 / 红线是千手的攻击，快躲开",
+					"do": "notify"
+				}
+			],
+			"wait": 0.3
+		}
+	]
+}

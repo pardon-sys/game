@@ -25,8 +25,11 @@ static func params(t: int) -> Dictionary:
 ## 释放：返回被冻住的角色和陷阱。
 static func cast(caster: Node2D, t: int) -> Array[Node]:
 	var p := params(t)
-	var r: float = p["radius"]
-	var time: float = p["time"]
+	return cast_with(caster, p["radius"], p["time"], t)
+
+
+## 通用：半径 r、冻 time 秒（疲倦爆发用满蓄力范围、一半时间）。tier 传给会魔法反应的东西。
+static func cast_with(caster: Node2D, r: float, time: float, t := 3) -> Array[Node]:
 	var center := caster.global_position + Vector2(0, -6)
 	var hit: Array[Node] = []
 	var tree := caster.get_tree()

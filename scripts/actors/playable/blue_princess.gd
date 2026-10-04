@@ -55,12 +55,21 @@ func cast_magic(tier: int) -> void:
 	IceBarrier.cast(self, tier)
 
 
+## 疲倦爆发：原来的疲倦星光爆发 + 冰晶结界的一半控制（满蓄力的范围、冻一半的时间）。
+func cast_fatigue_burst() -> void:
+	StarBurst.cast_fatigue(self)
+	var full := IceBarrier.params(IceBarrier.TIERS.size() - 1)
+	IceBarrier.cast_with(self, full["radius"], full["time"] * 0.5)
+
+
 ## 她的魔力疲倦爆发立绘是立绘图的最后一格（战损憋笑释放）。
 func fatigue_burst_visual() -> String:
 	return "damaged_giggle_burst"
 
 
 func make_ai_controller() -> CharacterController:
+	if Duo.active:
+		return CompanionController.new()
 	return WanderController.new() if ai else ScriptedController.new()
 
 

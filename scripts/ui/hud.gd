@@ -87,28 +87,41 @@ func _ready() -> void:
 	_on_emotion_changed(GameState.player.emotion.current if is_instance_valid(GameState.player) else "normal")
 
 
+## 切换操控时先断开上一个角色的信号（不然换回来会重复连接，搭档的血量变化也会显示在 HUD 上）。
+var _links: Array = []
+
+
+func _link(sig: Signal, cb: Callable) -> void:
+	sig.connect(cb)
+	_links.append([sig, cb])
+
+
 func _bind_player(p: PlayableCharacter) -> void:
 	if _player == p:
 		return
+	for l in _links:
+		if (l[0] as Signal).is_connected(l[1]):
+			(l[0] as Signal).disconnect(l[1])
+	_links.clear()
 	_player = p
 	# 换了操控的角色（蓝色公主当主角）：头像马上换成她那一套
 	if p.emotion:
 		_on_emotion_changed(p.emotion.current)
 	if p.health:
-		p.health.changed.connect(_on_hp_changed)
+		_link(p.health.changed, _on_hp_changed)
 		_on_hp_changed(p.health.hp, p.health.max_hp)
 	$LaughRow.visible = p.laugh != null
 	if p.laugh:
 		laugh_bar.bind(p.laugh)
-		p.laugh.changed.connect(func(v: float, m: float): laugh_pct.text = "%d%%" % roundi(v / m * 100.0))
+		_link(p.laugh.changed, func(v: float, m: float): laugh_pct.text = "%d%%" % roundi(v / m * 100.0))
 		laugh_pct.text = "%d%%" % roundi(p.laugh.percent())
 	var f: MagicFatigue = p.get("fatigue")
 	fatigue_row.visible = f != null
 	if f:
 		fatigue_bar.bind(f)
-		f.changed.connect(func(v: float, m: float): fatigue_pct.text = "%d%%" % roundi(v / m * 100.0))
+		_link(f.changed, func(v: float, m: float): fatigue_pct.text = "%d%%" % roundi(v / m * 100.0))
 		fatigue_pct.text = "%d%%" % roundi(f.percent())
-	p.buffs_changed.connect(_refresh_buffs)
+	_link(p.buffs_changed, _refresh_buffs)
 	_refresh_buffs()
 
 

@@ -1,0 +1,61 @@
+{
+	"name": "第八层：它缩上去了",
+	"letterbox": true,
+	"skippable": true,
+	"steps": [
+		{
+			"actions": [
+				{
+					"time": 0.6,
+					"strength": 3.0,
+					"do": "shake"
+				},
+				{
+					"to": [
+						18,
+						12
+					],
+					"time": 0.8,
+					"do": "camera"
+				}
+			],
+			"wait": 0.8
+		},
+		{
+			"speaker": "千手痒痒魔",
+			"text": "……痛……好痛……"
+		},
+		{
+			"speaker": "公主",
+			"text": "它、它缩到天花板上去了！这样打不到了！"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……你以前不会这样的。",
+			"emotion": "sad"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……地上有两块板子。一个人站一块。……锁链会把它拉下来。"
+		},
+		{
+			"speaker": "公主",
+			"text": "两个人一起站上去……好！",
+			"emotion": "angry"
+		},
+		{
+			"actions": [
+				{
+					"who": "princess",
+					"time": 0.6,
+					"do": "camera"
+				},
+				{
+					"text": "两块压力板同时站上人，锁链就会把千手拽下来——那时攻击本体！地形会不停变化",
+					"do": "notify"
+				}
+			],
+			"wait": 0.6
+		}
+	]
+}

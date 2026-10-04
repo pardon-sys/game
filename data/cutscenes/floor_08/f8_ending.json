@@ -1,0 +1,64 @@
+{
+	"name": "第八层：逃出来",
+	"letterbox": true,
+	"skippable": true,
+	"steps": [
+		{
+			"actions": [
+				{
+					"time": 0.6,
+					"strength": 3.0,
+					"do": "shake"
+				}
+			],
+			"wait": 0.5
+		},
+		{
+			"speaker": "公主",
+			"text": "出、出来了……！我们逃出来了！",
+			"emotion": "happy"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……嗯。"
+		},
+		{
+			"speaker": "公主",
+			"text": "……刚才那个怪物。你认识它，对吧？",
+			"emotion": "sad"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……很久以前的事了。"
+		},
+		{
+			"speaker": "公主",
+			"text": "……嗯。那我不问了。",
+			"emotion": "shy"
+		},
+		{
+			"speaker": "公主",
+			"text": "下次……换我陪你去。不管是哪里。",
+			"emotion": "happy"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……嗯。……谢谢。",
+			"emotion": "shy"
+		},
+		{
+			"actions": [
+				{
+					"title": "第八章 · 千手之间",
+					"subtitle": "—— 待续 ——",
+					"do": "chapter_end"
+				}
+			],
+			"wait": 1.4
+		}
+	]
+}
