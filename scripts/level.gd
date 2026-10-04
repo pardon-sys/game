@@ -6,12 +6,21 @@ extends Node2D
 @export var intro_dialogue := "intro"
 ## 开场过场动画（data/cutscenes/<楼层组>/<id>.json）；写了就代替开场对话。
 @export var intro_cutscene := ""
+## 夜晚的环境光（a = 0 表示这张地图没有昼夜之分）；剧情标记 night 打开时换上，关掉时换回白天的。
+@export var night_ambient := Color(0, 0, 0, 0)
+
+var _day_ambient := Color.WHITE
 
 @onready var walls: TileMapLayer = $Walls
 
 
 func _ready() -> void:
 	Dialogue.load_floor(floor_id)
+	var dark := get_node_or_null("Darkness") as CanvasModulate
+	if dark:
+		_day_ambient = dark.color
+	_apply_time_of_day()
+	GameState.flag_changed.connect(_on_flag_changed)
 	var player := get_tree().get_first_node_in_group("player") as PlayableCharacter
 	# 从楼梯过来：站到同名的到达点上
 	if player and GameState.pending_spawn != "":
@@ -45,6 +54,23 @@ func _ready() -> void:
 		GameState.set_flag(flag)
 		await get_tree().create_timer(0.8).timeout
 		Dialogue.start(intro_dialogue)
+
+
+func _on_flag_changed(f: String) -> void:
+	if f == "night":
+		_apply_time_of_day()
+
+
+## 昼夜：有 night_ambient 的地图在剧情标记 night 时变暗。
+func _apply_time_of_day() -> void:
+	var dark := get_node_or_null("Darkness") as CanvasModulate
+	if dark == null or night_ambient.a <= 0.0:
+		return
+	var target := night_ambient if GameState.has_flag("night") else _day_ambient
+	if is_inside_tree() and dark.color != target:
+		create_tween().tween_property(dark, "color", target, 1.2)
+	else:
+		dark.color = target
 
 
 func _on_dialogue_finished(id: String) -> void:

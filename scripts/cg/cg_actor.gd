@@ -43,6 +43,11 @@ static func make_princess(actor_id: String) -> CGActor:
 	a.sprite = Sprite2D.new()
 	a.sprite.name = "Sprite"
 	a.sprite.texture = PRINCESS_TEX
+	# 操控的是蓝色公主时，演出里的「公主」用她的精灵图（同样的行列格式）
+	if Characters.current() == "blue":
+		var blue_sheet := str(Dialogue.npcs.get("blue_princess", {}).get("sprite", ""))
+		if ResourceLoader.exists(blue_sheet):
+			a.sprite.texture = load(blue_sheet)
 	a.sprite.hframes = 16
 	a.sprite.vframes = GameState.EMOTIONS.size()
 	a.sprite.offset = Vector2(0, -16)

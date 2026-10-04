@@ -5,7 +5,8 @@ extends Node2D
 ##   action = heal          交互：恢复满生命、闷笑清零（篝火）
 ##   action = shop:<商店>    交互：打开商店（data/shop/<商店>.json）
 ##   action = training      交互：保卫队训练（TrainingDB，小游戏以后接）
-##   action = talk:<文件>    交互：人物对话（data/dialogues/<文件>.json）
+##   action = talk:<文件>[#节点]  交互：人物对话（data/dialogues/<文件>.json，可以指定从哪个节点开始——房间里的家具共用一个文件）
+##   action = hide          交互：躲进去 / 出来（潜入模式的木箱、矿车，见 StealthDirector）
 ##   action = read:<对话 id> 交互：读一段普通对话（像石碑）
 
 const SHEET := preload("res://assets/generated/town_props.png")
@@ -41,7 +42,12 @@ func _ready() -> void:
 	sprite.offset = Vector2(0, -float(r[3]) / 2.0)
 	if info.get("floor", false):
 		sprite.offset = Vector2(0, -8)
-		sprite.z_index = -1 if false else 0
+		# 地面上的东西（楼梯、木地板、地毯）挪到不参与 y 排序的地面层，不会盖住走在上面的人
+		var floor_layer := get_parent().get_parent().get_node_or_null("FloorObjects") if get_parent() and get_parent().name == "Entities" else null
+		if floor_layer:
+			_move_to.call_deferred(floor_layer, info.get("under", false))
+	# lift：挂在墙上的东西（窗户、画）往上抬，看起来贴在上面那面墙上
+	sprite.offset.y -= float(info.get("lift", 0))
 	add_child(sprite)
 	if info.has("anim"):
 		var r2: Array = meta()[str(info["anim"])]["region"]
@@ -82,6 +88,16 @@ func _ready() -> void:
 		add_child(it)
 
 
+## under：铺在最底下（木地板），其它地面上的东西（地毯、楼梯、陷阱）画在它上面。
+func _move_to(layer: Node, under := false) -> void:
+	var gp := global_position
+	get_parent().remove_child(self)
+	layer.add_child(self)
+	if under:
+		layer.move_child(self, 0)
+	global_position = gp
+
+
 func _process(delta: float) -> void:
 	if _frames.is_empty():
 		return
@@ -99,7 +115,10 @@ func on_interact(player: Node) -> void:
 		"training":
 			Town.open_training()
 		"talk":
-			Dialogue.talk(parts[1])
+			var tk := parts[1].split("#", true, 1)
+			Dialogue.talk(tk[0], tk[1] if tk.size() > 1 else "")
+		"hide":
+			StealthDirector.toggle_hide(player, self)
 		"read":
 			Audio.play("book", -4.0)
 			Dialogue.start(parts[1])

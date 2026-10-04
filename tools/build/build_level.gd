@@ -46,6 +46,9 @@ const SCENES := {
 	"savepoint": "res://scenes/objects/save_point.tscn",
 	"blue_princess": "res://scenes/actors/playable/blue_princess.tscn",
 	"spot": "res://scenes/objects/wander_spot.tscn",
+	# 潜入模式（scripts/stealth/）
+	"stealth": "res://scenes/stealth/stealth_director.tscn",
+	"guard_patrol": "res://scenes/stealth/patrol_guard.tscn",
 }
 ## 按 type 参数选择场景的类型：新增怪物/友军/陷阱时在这里注册。
 const TYPED_SCENES := {
@@ -155,7 +158,7 @@ var rows: PackedStringArray = []
 var legend := {}
 ## 同一格叠放的其它实体：字符 -> [info, ...]（legend 里用 " + " 连接，例如 "K = trap type=stocks + trap type=vortex radius=3"）。
 var stacked := {}
-## [level] 段：intro（开场对话 id）、ambient（环境光 r,g,b）
+## [level] 段：intro（开场对话 id）、ambient（环境光 r,g,b）、night_ambient（夜晚的环境光，剧情标记 night 时用）
 var level_meta := {}
 var width := 0
 var height := 0
@@ -209,6 +212,10 @@ func build(floor_id: String) -> int:
 	if level_meta.has("ambient"):
 		var c: PackedStringArray = str(level_meta["ambient"]).split(",")
 		cm.color = Color(float(c[0]), float(c[1]), float(c[2]))
+	# 夜晚的环境光（剧情标记 night 时用）：[level] 段 night_ambient = r,g,b
+	if level_meta.has("night_ambient"):
+		var nc: PackedStringArray = str(level_meta["night_ambient"]).split(",")
+		root.set("night_ambient", Color(float(nc[0]), float(nc[1]), float(nc[2])))
 	var floor_layer := _layer("Floor", ts)
 	var walls_layer := _layer("Walls", ts)
 	var floor_objs := Node2D.new()

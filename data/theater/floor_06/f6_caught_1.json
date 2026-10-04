@@ -1,0 +1,294 @@
+{
+	"name": "潜入失败的惩罚（第 1 次）",
+	"cast": {
+		"princess": {
+			"kind": "princess",
+			"at": [
+				0,
+				8
+			],
+			"visual": "helpless_1",
+			"anim": "helpless",
+			"dir": "down"
+		},
+		"cushion": {
+			"kind": "trap:cushion",
+			"at": [
+				0,
+				18
+			]
+		},
+		"cuffs": {
+			"kind": "trap:cuffs",
+			"at": [
+				0,
+				12
+			]
+		},
+		"g1": {
+			"kind": "npc:guard",
+			"at": [
+				-30,
+				6
+			],
+			"dir": "right"
+		},
+		"g2": {
+			"kind": "npc:guard",
+			"at": [
+				30,
+				6
+			],
+			"dir": "left"
+		},
+		"cap": {
+			"kind": "npc:captain",
+			"at": [
+				64,
+				0
+			],
+			"dir": "left"
+		}
+	},
+	"steps": [
+		{
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "fade_in"
+				},
+				{
+					"state": "laugh",
+					"do": "voice"
+				}
+			],
+			"wait": 0.5
+		},
+		{
+			"speaker": "保卫队队长",
+			"text": "一大早跑到矿道最深处。……想干什么？"
+		},
+		{
+			"speaker": "公主",
+			"text": "我、我只是散步……散步！",
+			"emotion": "shy",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "g1",
+					"repeat": 8,
+					"interval": 0.2,
+					"fx": "hand",
+					"zone": "butt",
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"by": "cushion",
+					"repeat": 6,
+					"interval": 0.28,
+					"fx": "lines",
+					"zone": "butt",
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "保卫队队长",
+			"text": "散步需要躲进矿车里？……挠。挠到她说实话为止。"
+		},
+		{
+			"speaker": "公主",
+			"text": "等一下等一下——噗哈哈！腋、腋下……举着手放不下来……！",
+			"portrait": "defeat_1",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "g1",
+					"repeat": 8,
+					"interval": 0.2,
+					"fx": "hand",
+					"zone": "butt",
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"by": "cushion",
+					"repeat": 6,
+					"interval": 0.28,
+					"fx": "lines",
+					"zone": "butt",
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "保卫队员",
+			"text": "坐垫也开了。屁股底下的刷子会一直刷哦。"
+		},
+		{
+			"speaker": "公主",
+			"text": "哈哈哈哈！我说、我说！我想打开那扇门……回地面上去……！",
+			"portrait": "defeat_1",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "g1",
+					"repeat": 8,
+					"interval": 0.2,
+					"fx": "hand",
+					"zone": "butt",
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"by": "cushion",
+					"repeat": 6,
+					"interval": 0.28,
+					"fx": "lines",
+					"zone": "butt",
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "保卫队队长",
+			"text": "……那扇门后面不是地面。是比这里更深的地方。"
+		},
+		{
+			"speaker": "公主",
+			"text": "更、更深……？哈哈哈……那、那也要去……！",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "g1",
+					"repeat": 8,
+					"interval": 0.2,
+					"fx": "hand",
+					"zone": "butt",
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"by": "cushion",
+					"repeat": 6,
+					"interval": 0.28,
+					"fx": "lines",
+					"zone": "butt",
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "保卫队队长",
+			"text": "……倔。继续。腋下和腰，别停。"
+		},
+		{
+			"speaker": "公主",
+			"text": "哈哈哈哈哈！腰、腰也……我、我错了……今天先不去了……哈哈哈哈！",
+			"portrait": "defeat_2",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "g1",
+					"repeat": 8,
+					"interval": 0.2,
+					"fx": "hand",
+					"zone": "butt",
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"by": "cushion",
+					"repeat": 6,
+					"interval": 0.28,
+					"fx": "lines",
+					"zone": "butt",
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"by": "g2",
+					"repeat": 8,
+					"interval": 0.18,
+					"fx": "hand",
+					"zone": "waist",
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"visual": "helpless_2",
+					"do": "pose"
+				}
+			]
+		},
+		{
+			"speaker": "保卫队员",
+			"text": "队长，她说「今天」先不去。"
+		},
+		{
+			"speaker": "保卫队队长",
+			"text": "……再加五分钟。"
+		},
+		{
+			"speaker": "公主",
+			"text": "哈哈哈哈哈——！不、不是那个意思啊哈哈哈哈！",
+			"portrait": "defeat_2",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "g1",
+					"repeat": 8,
+					"interval": 0.2,
+					"fx": "hand",
+					"zone": "armpit",
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"by": "cuffs",
+					"repeat": 6,
+					"interval": 0.28,
+					"fx": "lines",
+					"zone": "armpit",
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"by": "g2",
+					"repeat": 8,
+					"interval": 0.18,
+					"fx": "hand",
+					"zone": "waist",
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"visual": "helpless_2",
+					"do": "pose"
+				}
+			]
+		},
+		{
+			"speaker": "",
+			"text": "（举手铐柱把双手吊在头顶，坐垫的刷毛不停地刷，两个队员一左一右挠着腋下和腰——地牢里的笑声持续了很久）"
+		},
+		{
+			"speaker": "公主",
+			"text": "……哈……哈……散、散步……真的只是散步……"
+		},
+		{
+			"actions": [
+				{
+					"time": 0.6,
+					"do": "fade_out"
+				},
+				{
+					"state": "",
+					"do": "voice"
+				}
+			],
+			"wait": 0.7
+		}
+	]
+}

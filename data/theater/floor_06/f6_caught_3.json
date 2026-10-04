@@ -1,0 +1,301 @@
+{
+	"name": "潜入失败的惩罚（第 3 次）",
+	"cast": {
+		"princess": {
+			"kind": "princess",
+			"at": [
+				0,
+				8
+			],
+			"visual": "helpless_2",
+			"anim": "helpless",
+			"dir": "down"
+		},
+		"supine": {
+			"kind": "trap:supine",
+			"at": [
+				0,
+				18
+			]
+		},
+		"stocks": {
+			"kind": "trap:stocks",
+			"at": [
+				0,
+				23
+			]
+		},
+		"cushion": {
+			"kind": "trap:cushion",
+			"at": [
+				0,
+				14
+			]
+		},
+		"g1": {
+			"kind": "npc:guard",
+			"at": [
+				-30,
+				6
+			],
+			"dir": "right"
+		},
+		"g2": {
+			"kind": "npc:guard",
+			"at": [
+				30,
+				6
+			],
+			"dir": "left"
+		},
+		"g3": {
+			"kind": "npc:guard",
+			"at": [
+				-60,
+				4
+			],
+			"dir": "right"
+		},
+		"cap": {
+			"kind": "npc:captain",
+			"at": [
+				64,
+				0
+			],
+			"dir": "left"
+		}
+	},
+	"steps": [
+		{
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "fade_in"
+				},
+				{
+					"state": "laugh",
+					"do": "voice"
+				}
+			],
+			"wait": 0.5
+		},
+		{
+			"speaker": "保卫队队长",
+			"text": "第三次了。……你还真是一点都不长记性。"
+		},
+		{
+			"speaker": "公主",
+			"text": "这、这次只差一点点了！再有一点点就……",
+			"emotion": "angry",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "g1",
+					"repeat": 8,
+					"interval": 0.2,
+					"fx": "hand",
+					"zone": "sole",
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"by": "stocks",
+					"repeat": 6,
+					"interval": 0.28,
+					"fx": "lines",
+					"zone": "sole",
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "保卫队队长",
+			"text": "刑床、足枷、坐垫，全部用上。……今天我亲自来。"
+		},
+		{
+			"speaker": "公主",
+			"text": "队、队长亲自……？等一下，我们可以谈谈——噗哈哈哈哈！",
+			"portrait": "defeat_1",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "g1",
+					"repeat": 8,
+					"interval": 0.2,
+					"fx": "hand",
+					"zone": "sole",
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"by": "stocks",
+					"repeat": 6,
+					"interval": 0.28,
+					"fx": "lines",
+					"zone": "sole",
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "保卫队队长",
+			"text": "腰。……这里最怕吧。",
+			"actions": [
+				{
+					"who": "cap",
+					"to": [
+						24,
+						6
+					],
+					"time": 0.6,
+					"do": "move"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "哈哈哈哈哈！最、最怕的地方……为什么会知道啊哈哈哈哈！",
+			"portrait": "defeat_1",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "g1",
+					"repeat": 8,
+					"interval": 0.2,
+					"fx": "hand",
+					"zone": "sole",
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"by": "stocks",
+					"repeat": 6,
+					"interval": 0.28,
+					"fx": "lines",
+					"zone": "sole",
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "保卫队员",
+			"text": "脚心这边也开始了。"
+		},
+		{
+			"speaker": "保卫队员",
+			"text": "坐垫开到最大。"
+		},
+		{
+			"speaker": "公主",
+			"text": "哈哈哈哈哈哈！全、全部一起——不行了不行了不行了哈哈哈哈！",
+			"portrait": "defeat_2",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "g1",
+					"repeat": 8,
+					"interval": 0.2,
+					"fx": "hand",
+					"zone": "waist",
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"by": "supine",
+					"repeat": 6,
+					"interval": 0.28,
+					"fx": "lines",
+					"zone": "waist",
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "保卫队队长",
+			"text": "……为什么非要出去不可？在这里不好吗？"
+		},
+		{
+			"speaker": "公主",
+			"text": "哈哈哈……因、因为……我是公主……哈哈……外面……有在等我的人……哈哈哈哈！",
+			"portrait": "defeat_2",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "g1",
+					"repeat": 8,
+					"interval": 0.2,
+					"fx": "hand",
+					"zone": "waist",
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"by": "supine",
+					"repeat": 6,
+					"interval": 0.28,
+					"fx": "lines",
+					"zone": "waist",
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"by": "g2",
+					"repeat": 8,
+					"interval": 0.18,
+					"fx": "hand",
+					"zone": "waist",
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"visual": "helpless_2",
+					"do": "pose"
+				}
+			]
+		},
+		{
+			"speaker": "保卫队队长",
+			"text": "……"
+		},
+		{
+			"speaker": "保卫队队长",
+			"text": "……停一下。",
+			"actions": [
+				{
+					"who": "cap",
+					"dir": "left",
+					"do": "face"
+				}
+			]
+		},
+		{
+			"speaker": "保卫队员",
+			"text": "队长？"
+		},
+		{
+			"speaker": "保卫队队长",
+			"text": "……今天就到这里。把她送回去。"
+		},
+		{
+			"speaker": "",
+			"text": "（刷子停了下来。公主瘫在刑床上大口喘气，眼角还挂着笑出来的泪）"
+		},
+		{
+			"speaker": "公主",
+			"text": "……哈……哈……等、等我的人……嘿嘿……"
+		},
+		{
+			"actions": [
+				{
+					"time": 0.6,
+					"do": "fade_out"
+				},
+				{
+					"state": "",
+					"do": "voice"
+				}
+			],
+			"wait": 0.7
+		}
+	]
+}

@@ -16,6 +16,8 @@ var _last_reaction := ""
 var _reaction_stage := ""
 ## 立绘套装（Dialogue.PORTRAIT_SETS 的名字）：公主 "pink"，蓝色公主 "blue"。
 var portrait_set := "pink"
+## 数据档案（Characters）：受挠台词、部位表、CG 都按这个选。
+var character_id := "pink"
 
 
 ## 是不是玩家正在操控的那一个（GameState.player）。AI 控制的（蓝色公主）只保留小人的动画和表情，
@@ -31,10 +33,15 @@ func resolve_visual(requested: String) -> String:
 	if not is_alive():
 		return "damaged" if battle_damaged else "sad"
 	if state == State.CAST and fatigue_bursting:
-		return "damaged_burst"  # 疲倦爆发复用战损释放
+		return fatigue_burst_visual()
 	if state in [State.CHANNEL, State.CAST]:
 		return magic_visual(state == State.CAST)
 	return _resolve_normal(requested)
+
+
+## 魔力疲倦爆发（被动释放）的姿态：粉色公主复用战损释放；蓝色公主用立绘最后一格（战损憋笑释放）。
+func fatigue_burst_visual() -> String:
+	return "damaged_burst"
 
 
 ## 魔法姿态：憋笑以上（闷笑 > 35%）不管有没有战损都用「战损闷笑吟诵 / 释放」（没有未战损的闷笑版素材）；

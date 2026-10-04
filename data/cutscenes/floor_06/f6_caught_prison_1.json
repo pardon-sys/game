@@ -1,0 +1,82 @@
+{
+	"name": "营地地牢：被抓之后（第 1 次）",
+	"letterbox": true,
+	"skippable": true,
+	"steps": [
+		{
+			"actions": [
+				{
+					"time": 0.4,
+					"do": "fade_in"
+				}
+			],
+			"wait": 0.4
+		},
+		{
+			"theater": "f6_caught_1"
+		},
+		{
+			"actions": [
+				{
+					"emotion": "sad",
+					"laugh": 30,
+					"do": "pose"
+				},
+				{
+					"id": "blue",
+					"kind": "npc:blue_princess",
+					"at": [
+						5,
+						13
+					],
+					"dir": "right",
+					"do": "spawn"
+				},
+				{
+					"sound": "door",
+					"do": "sfx"
+				}
+			],
+			"wait": 0.4
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……我来接她。",
+			"actions": [
+				{
+					"who": "blue",
+					"to": [
+						17,
+						13
+					],
+					"speed": 50,
+					"do": "move"
+				}
+			]
+		},
+		{
+			"speaker": "保卫队员",
+			"text": "啊，是您……队长说可以放人了。"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……走吧。",
+			"actions": [
+				{
+					"who": "blue",
+					"dir": "left",
+					"do": "face"
+				}
+			]
+		},
+		{
+			"actions": [
+				{
+					"time": 0.6,
+					"do": "fade_out"
+				}
+			],
+			"wait": 0.6
+		}
+	]
+}

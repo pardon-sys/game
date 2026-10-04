@@ -1,0 +1,105 @@
+{
+	"name": "参观小镇：矿道层",
+	"letterbox": true,
+	"steps": [
+		{
+			"actions": [
+				{
+					"id": "blue",
+					"kind": "npc:blue_princess",
+					"at": [
+						7,
+						27
+					],
+					"dir": "left",
+					"do": "spawn"
+				},
+				{
+					"time": 0.5,
+					"do": "fade_in"
+				}
+			],
+			"wait": 0.5
+		},
+		{
+			"actions": [
+				{
+					"to": [
+						13,
+						26
+					],
+					"time": 1.0,
+					"do": "camera"
+				}
+			],
+			"wait": 1.0
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "矿道。小镇的灯、矿车、……你吃的饼干，都靠这里。"
+		},
+		{
+			"actions": [
+				{
+					"to": [
+						40,
+						8
+					],
+					"time": 1.4,
+					"do": "camera"
+				}
+			],
+			"wait": 1.4
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……最深处那扇门。谁也打不开。",
+			"actions": [
+				{
+					"who": "blue",
+					"dir": "up",
+					"do": "face"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "那扇门后面有什么？",
+			"emotion": "question"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……别靠近它。",
+			"actions": [
+				{
+					"who": "blue",
+					"kind": "dots",
+					"do": "bubble"
+				}
+			]
+		},
+		{
+			"actions": [
+				{
+					"who": "princess",
+					"time": 0.8,
+					"do": "camera"
+				}
+			],
+			"wait": 0.8
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……最后一个地方。跟我来。"
+		},
+		{
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "fade_out"
+				}
+			],
+			"wait": 0.5
+		}
+	]
+}

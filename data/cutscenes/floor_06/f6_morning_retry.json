@@ -1,0 +1,32 @@
+{
+	"name": "第二天早上：再试一次",
+	"letterbox": true,
+	"steps": [
+		{
+			"actions": [
+				{
+					"emotion": "normal",
+					"laugh": 0,
+					"do": "pose"
+				}
+			],
+			"wait": 0.3
+		},
+		{
+			"speaker": "公主",
+			"text": "……身上还有点痒痒的。昨天被挠得好惨……",
+			"emotion": "shy"
+		},
+		{
+			"speaker": "公主",
+			"text": "不过——躲在暗处、躲进矿车、丢石子引开他们……这次一定行！",
+			"emotion": "angry",
+			"actions": [
+				{
+					"text": "目标：去矿道层，避开巡逻队员的视线，用钥匙打开最深处的门（F 丢石子，木箱 / 矿车按 E 躲进去）",
+					"do": "notify"
+				}
+			]
+		}
+	]
+}

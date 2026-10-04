@@ -11,6 +11,9 @@ var _busy := false
 
 func _ready() -> void:
 	add_to_group("main")
+	var director := StoryDirector.new()
+	director.name = "StoryDirector"
+	add_child(director)
 	for c in get_children():
 		if c.has_node("Walls"):
 			level = c

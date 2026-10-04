@@ -1,0 +1,101 @@
+{
+	"name": "参观小镇：她的小屋",
+	"letterbox": true,
+	"steps": [
+		{
+			"actions": [
+				{
+					"who": "princess",
+					"to": [
+						41,
+						11
+					],
+					"do": "move"
+				},
+				{
+					"id": "blue",
+					"kind": "npc:blue_princess",
+					"at": [
+						43,
+						11
+					],
+					"dir": "up",
+					"do": "spawn"
+				},
+				{
+					"who": "princess",
+					"dir": "up",
+					"do": "face"
+				},
+				{
+					"to": [
+						42,
+						9
+					],
+					"do": "camera"
+				},
+				{
+					"time": 0.5,
+					"do": "fade_in"
+				}
+			],
+			"wait": 0.5
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……到了。我住的地方。"
+		},
+		{
+			"speaker": "公主",
+			"text": "好可爱的房子！蓝色的屋顶……和你一样。",
+			"emotion": "happy",
+			"actions": [
+				{
+					"who": "princess",
+					"kind": "happy",
+					"do": "bubble"
+				}
+			]
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……楼下空着。今晚开始，你住那里。",
+			"actions": [
+				{
+					"who": "blue",
+					"dir": "left",
+					"do": "face"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "诶？可、可以吗？",
+			"emotion": "surprise"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……嗯。进来吧。",
+			"actions": [
+				{
+					"who": "blue",
+					"to": [
+						42,
+						9
+					],
+					"speed": 40,
+					"do": "move"
+				}
+			]
+		},
+		{
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "fade_out"
+				}
+			],
+			"wait": 0.6
+		}
+	]
+}

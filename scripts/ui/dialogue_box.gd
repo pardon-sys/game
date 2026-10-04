@@ -287,6 +287,12 @@ func open_training() -> void:
 		Town.start_training_later(r)
 
 
+## 对话里选择睡觉（床）：结束这段对话，等它收尾后再睡（Sleep），早上的过场按剧情选。
+func sleep() -> void:
+	runner.end_conversation()
+	Sleep.sleep_later(F6Story.morning_cutscene())
+
+
 func rest() -> void:
 	Town.rest(GameState.player)
 

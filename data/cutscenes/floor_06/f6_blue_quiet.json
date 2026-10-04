@@ -1,0 +1,155 @@
+{
+	"name": "蓝色小屋：小点声",
+	"letterbox": true,
+	"steps": [
+		{
+			"actions": [
+				{
+					"emotion": "helpless_1",
+					"laugh": 60,
+					"do": "pose"
+				},
+				{
+					"id": "blue",
+					"kind": "npc:blue_princess",
+					"at": [
+						16,
+						3
+					],
+					"dir": "down",
+					"do": "spawn"
+				},
+				{
+					"sound": "door",
+					"do": "sfx"
+				}
+			],
+			"wait": 0.6
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……小点声。",
+			"actions": [
+				{
+					"who": "blue",
+					"to": [
+						14,
+						7
+					],
+					"speed": 40,
+					"do": "move"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "呀啊！？对、对不起……我只是好奇坐了一下，它就把我锁住了……",
+			"emotion": "surprise",
+			"actions": [
+				{
+					"who": "princess",
+					"kind": "surprise",
+					"do": "bubble"
+				}
+			]
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……整栋楼都听见了。",
+			"actions": [
+				{
+					"who": "blue",
+					"dir": "right",
+					"do": "face"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "呜……",
+			"emotion": "shy",
+			"actions": [
+				{
+					"emotion": "shy",
+					"laugh": 20,
+					"do": "pose"
+				}
+			]
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……那张凳子。原来还在这里。",
+			"actions": [
+				{
+					"who": "blue",
+					"kind": "dots",
+					"do": "bubble"
+				}
+			]
+		},
+		{
+			"actions": [
+				{
+					"sound": "unlock",
+					"do": "sfx"
+				},
+				{
+					"time": 0.2,
+					"strength": 1.0,
+					"do": "shake"
+				},
+				{
+					"who": "princess",
+					"kind": "question",
+					"do": "bubble"
+				}
+			],
+			"wait": 0.6
+		},
+		{
+			"speaker": "公主",
+			"text": "咦？凳子底下的暗格……掉出来一把钥匙。上面刻着……矿道的标记？",
+			"emotion": "question"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……",
+			"actions": [
+				{
+					"who": "blue",
+					"dir": "down",
+					"do": "face"
+				}
+			]
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……没什么。早点睡吧。",
+			"actions": [
+				{
+					"who": "blue",
+					"to": [
+						16,
+						3
+					],
+					"speed": 45,
+					"do": "move"
+				}
+			]
+		},
+		{
+			"actions": [
+				{
+					"who": "blue",
+					"do": "despawn"
+				}
+			],
+			"wait": 0.8
+		},
+		{
+			"speaker": "公主",
+			"text": "……她刚才的表情，好像知道这把钥匙是什么。",
+			"emotion": "sad"
+		}
+	]
+}
