@@ -51,11 +51,11 @@ func key_hint() -> String:
 
 
 func impulse_time() -> float:
-	return maxf(0.45, 1.1 * pow(0.98, successes))
+	return maxf(0.45, 1.1 * decay(0.98))
 
 
 func impulses_per_segment() -> int:
-	return rng.randi_range(1, mini(4, 1 + successes / 5))
+	return rng.randi_range(1, mini(4, 1 + grow(5.0)))
 
 
 func _enter_game() -> void:
@@ -177,7 +177,7 @@ func _segment_success() -> void:
 	Audio.play("chime", -8.0, 0.05, 1.0 + minf(successes, 40) * 0.01)
 	succeed(TrainingStats.zone_key("train_sens", zone), float(t.get("per_success", {}).get("train_sens", 0.003)))
 	_show_idle()
-	rest_t = maxf(0.3, 0.9 * pow(0.97, successes))
+	rest_t = maxf(0.3, 0.9 * decay(0.97))
 
 
 func _fail(why: String) -> void:

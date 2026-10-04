@@ -67,20 +67,20 @@ func mood_ratio() -> float:
 
 
 func item_time() -> float:
-	return maxf(float(stage_info.get("min_time", 0.35)), float(stage_info.get("start_time", 1.2)) * pow(0.975, successes))
+	return maxf(float(stage_info.get("min_time", 0.35)), float(stage_info.get("start_time", 1.2)) * decay(0.975))
 
 
 func call_gap() -> float:
-	return maxf(0.12, 0.45 * pow(0.98, successes))
+	return maxf(0.12, 0.45 * decay(0.98))
 
 
 func rest_time() -> float:
-	return maxf(0.25, 1.4 * pow(0.97, successes))
+	return maxf(0.25, 1.4 * decay(0.97))
 
 
-## 一次连喊几个：1 ~ (1 + 成功次数 / 6)，最多 4 个。
+## 一次连喊几个：1 ~ (1 + 成功次数 × ramp / 6)，最多 4 个。
 func burst_len() -> int:
-	return rng.randi_range(1, mini(4, 1 + successes / 6))
+	return rng.randi_range(1, mini(4, 1 + grow(6.0)))
 
 
 func _enter_game() -> void:

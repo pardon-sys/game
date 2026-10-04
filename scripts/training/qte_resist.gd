@@ -47,23 +47,24 @@ func key_hint() -> String:
 
 
 func sweep_time() -> float:
-	return maxf(0.45, 1.2 * pow(0.98, successes))
+	return maxf(0.45, 1.2 * decay(0.98))
 
 
+## 绿区宽度和扫过速度同步按 ramp 缩小。
 func zone_width() -> float:
-	return maxf(0.08, 0.3 * pow(0.985, successes))
+	return maxf(0.08, 0.3 * decay(0.985))
 
 
 func fake_chance() -> float:
-	return minf(0.35, 0.1 + successes * 0.01)
+	return minf(0.35, 0.1 + successes * 0.01 * ramp())
 
 
 func windup_time() -> float:
-	return rng.randf_range(0.5, 1.0) * maxf(0.5, pow(0.985, successes))
+	return rng.randf_range(0.5, 1.0) * maxf(0.5, decay(0.985))
 
 
 func rest_time() -> float:
-	return maxf(0.25, 1.0 * pow(0.97, successes))
+	return maxf(0.25, 1.0 * decay(0.97))
 
 
 func _enter_game() -> void:

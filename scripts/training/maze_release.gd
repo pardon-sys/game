@@ -199,16 +199,21 @@ func _end() -> void:
 
 
 # ------------------------------------------------------------------ 规则
+## 提速倍率（阶段表的 ramp，默认 1.6）。
+func ramp() -> float:
+	return float(stage_info.get("ramp", 1.6))
+
+
 func _urge_delay() -> float:
-	return maxf(3.0, rng.randf_range(7.0, 12.0) * pow(0.93, successes))
+	return maxf(3.0, rng.randf_range(7.0, 12.0) * pow(maxf(1.0 - 0.07 * ramp(), 0.5), successes))
 
 
 func urge_duration() -> float:
-	return minf(6.0, 2.5 + successes * 0.25)
+	return minf(6.0, 2.5 + successes * 0.22 * ramp())
 
 
 func base_pace() -> float:
-	return minf(1.0, 0.55 + successes * 0.04)
+	return minf(1.0, 0.55 + successes * 0.038 * ramp())
 
 
 ## 最近 1 秒连按空格的次数 → 速度打折（每下 -16%，最低 12%）。
