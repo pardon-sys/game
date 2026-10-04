@@ -45338,6 +45338,6344 @@
 					"wait": 0.6
 				}
 			]
+		},
+		"spider_binding_brush": {
+			"name": "蜘蛛绑腿刷",
+			"cast": {
+				"princess": {
+					"kind": "princess",
+					"at": [
+						0,
+						8
+					],
+					"visual": "helpless_1",
+					"anim": "helpless",
+					"dir": "down"
+				},
+				"src1": {
+					"kind": "trap:binding",
+					"at": [
+						0,
+						9
+					],
+					"hidden": true
+				},
+				"src2": {
+					"kind": "monster:spider",
+					"at": [
+						-30,
+						2
+					],
+					"dir": "right",
+					"hidden": true
+				},
+				"src3": {
+					"kind": "monster:hedgehog",
+					"at": [
+						30,
+						2
+					],
+					"dir": "left",
+					"hidden": true
+				}
+			},
+			"steps": [
+				{
+					"actions": [
+						{
+							"do": "fade_in",
+							"time": 0.4
+						},
+						{
+							"do": "voice",
+							"state": "giggle"
+						},
+						{
+							"do": "sources",
+							"list": [
+								{
+									"kind": "trap",
+									"key": "binding",
+									"name": "羽毛绑腿"
+								},
+								{
+									"kind": "monster",
+									"key": "spider",
+									"name": "挠痒蜘蛛"
+								},
+								{
+									"kind": "monster",
+									"key": "hedgehog",
+									"name": "刷刷刺猬"
+								}
+							]
+						}
+					],
+					"wait": 0.4
+				},
+				{
+					"speaker": "",
+					"text": "【第七层·升天回廊】蜘蛛绑腿刷——腿被羽毛绑腿缠住、走不快，挠痒蜘蛛吐丝把脚绑在一起，刷刷刺猬滚过来刷脚底。",
+					"actions": [
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "surprise"
+						}
+					]
+				},
+				{
+					"speaker": "蓝色的公主",
+					"text": "……嗯唔……不、不痒……",
+					"actions": [
+						{
+							"do": "enter",
+							"who": "src1",
+							"from": [
+								0,
+								-6
+							],
+							"time": 0.3
+						},
+						{
+							"do": "light",
+							"index": 0
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 6,
+							"interval": 0.32,
+							"fx": "feather"
+						}
+					]
+				},
+				{
+					"speaker": "蓝色的公主",
+					"text": "……不、不要了……哈哈哈哈……大腿也、也不行……为什么偏偏是那里……哈哈哈……！",
+					"actions": [
+						{
+							"do": "enter",
+							"who": "src2",
+							"from": [
+								-80,
+								0
+							],
+							"time": 0.5
+						},
+						{
+							"do": "light",
+							"index": 1
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 7,
+							"interval": 0.28,
+							"fx": "feather"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 7,
+							"interval": 0.28,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"speaker": "蓝色的公主",
+					"text": "哈哈哈哈哈……！不、不算……这次不算……大腿……哈哈哈哈……！",
+					"actions": [
+						{
+							"do": "enter",
+							"who": "src3",
+							"from": [
+								80,
+								0
+							],
+							"time": 0.5
+						},
+						{
+							"do": "light",
+							"index": 2
+						},
+						{
+							"do": "pose",
+							"who": "princess",
+							"visual": "helpless_2"
+						},
+						{
+							"do": "voice",
+							"state": "laugh"
+						},
+						{
+							"do": "camera",
+							"zoom": 1.5,
+							"focus": "princess",
+							"time": 0.4
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.5
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 8,
+							"interval": 0.24,
+							"fx": "feather"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 8,
+							"interval": 0.24,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 8,
+							"interval": 0.24,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"speaker": "蓝色的公主",
+					"text": "……噗。……刚才是咳嗽。",
+					"actions": [
+						{
+							"do": "light",
+							"all": true
+						},
+						{
+							"do": "flash",
+							"time": 0.25
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.6
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 10,
+							"interval": 0.2,
+							"fx": "feather"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 10,
+							"interval": 0.2,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 10,
+							"interval": 0.2,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"speaker": "蓝色的公主",
+					"text": "……大腿……不行……嗯……",
+					"actions": [
+						{
+							"do": "light",
+							"all": true
+						},
+						{
+							"do": "flash",
+							"time": 0.25
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.6
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 12,
+							"interval": 0.17,
+							"fx": "feather"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 12,
+							"interval": 0.17,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 12,
+							"interval": 0.17,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"speaker": "蓝色的公主",
+					"text": "哈哈哈……停、停下……蜘蛛绑腿刷……停下来……哈哈哈哈……我、我投降……！",
+					"actions": [
+						{
+							"do": "light",
+							"all": true
+						},
+						{
+							"do": "flash",
+							"time": 0.25
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.6
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 14,
+							"interval": 0.14,
+							"fx": "feather"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 14,
+							"interval": 0.14,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 14,
+							"interval": 0.14,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"speaker": "蓝色的公主",
+					"text": "……哈、哈哈……不、不行……大腿……那里……哈哈哈哈……忍、忍不住了……！",
+					"actions": [
+						{
+							"do": "light",
+							"all": true
+						},
+						{
+							"do": "flash",
+							"time": 0.25
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.6
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 16,
+							"interval": 0.14,
+							"fx": "feather"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 16,
+							"interval": 0.14,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 16,
+							"interval": 0.14,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"speaker": "蓝色的公主",
+					"text": "……呜、哈哈哈……大腿……会坏掉的……哈哈哈哈……别看……别看我这样……！",
+					"actions": [
+						{
+							"do": "light",
+							"all": true
+						},
+						{
+							"do": "flash",
+							"time": 0.25
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.6
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "dots"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 18,
+							"interval": 0.14,
+							"fx": "feather"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 18,
+							"interval": 0.14,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 18,
+							"interval": 0.14,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"act": "burst",
+					"speaker": "",
+					"text": "（绑腿、蛛丝和刺猬一起，魔力被挠得满满的）",
+					"actions": [
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.8
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "surprise"
+						},
+						{
+							"do": "voice",
+							"state": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 6,
+							"interval": 0.24,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 6,
+							"interval": 0.24,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "feather"
+						}
+					]
+				},
+				{
+					"act": "burst",
+					"speaker": "蓝色的公主",
+					"text": "……不行……魔力……压不住了。",
+					"actions": [
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 1.2
+						},
+						{
+							"do": "camera",
+							"zoom": 1.5,
+							"focus": "princess",
+							"time": 0.4
+						},
+						{
+							"do": "flash",
+							"time": 0.2
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "feather"
+						}
+					]
+				},
+				{
+					"act": "burst",
+					"portrait": "fatigue_burst",
+					"actions": [
+						{
+							"do": "flash",
+							"time": 0.8
+						},
+						{
+							"do": "sfx",
+							"sound": "star_burst",
+							"volume": -1.0
+						},
+						{
+							"do": "sfx",
+							"sound": "water_release",
+							"volume": -2.0
+						},
+						{
+							"do": "voice",
+							"state": ""
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.5
+						},
+						{
+							"do": "camera",
+							"zoom": 1,
+							"focus": "princess",
+							"time": 0.5
+						},
+						{
+							"do": "move",
+							"who": "src2",
+							"to": [
+								-90,
+								-4
+							],
+							"time": 0.25
+						},
+						{
+							"do": "move",
+							"who": "src3",
+							"to": [
+								90,
+								-4
+							],
+							"time": 0.25
+						},
+						{
+							"do": "light",
+							"all": true
+						}
+					],
+					"wait": 1.1
+				},
+				{
+					"act": "burst",
+					"speaker": "蓝色的公主",
+					"text": "……哈。……全部放出去了。……舒服。",
+					"actions": [
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "shy"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "feather"
+						}
+					]
+				},
+				{
+					"act": "burst",
+					"speaker": "",
+					"text": "（蛛丝又一圈圈缠了上来，刺猬也滚了回来）",
+					"actions": [
+						{
+							"do": "move",
+							"who": "src2",
+							"to": [
+								-30,
+								2
+							],
+							"time": 0.6
+						},
+						{
+							"do": "move",
+							"who": "src3",
+							"to": [
+								30,
+								2
+							],
+							"time": 0.6
+						},
+						{
+							"do": "voice",
+							"state": "giggle"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 4,
+							"interval": 0.3,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 4,
+							"interval": 0.3,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "feather"
+						}
+					]
+				},
+				{
+					"act": "burst",
+					"speaker": "蓝色的公主",
+					"text": "……放完之后……好敏感……蜘蛛绑腿刷……哈、哈哈哈……停下……！",
+					"actions": [
+						{
+							"do": "voice",
+							"state": "laugh"
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.8
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 10,
+							"interval": 0.16,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 10,
+							"interval": 0.16,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "feather"
+						}
+					]
+				},
+				{
+					"act": "burst",
+					"speaker": "蓝色的公主",
+					"text": "哈哈哈哈……忍、忍不住……明明一直忍着的……蜘蛛绑腿刷……哈哈哈哈哈……！",
+					"actions": [
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.6
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 10,
+							"interval": 0.15,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 10,
+							"interval": 0.15,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "feather"
+						}
+					]
+				},
+				{
+					"act": "burst",
+					"speaker": "蓝色的公主",
+					"text": "……嗯……天花板……在转……",
+					"actions": [
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "dots"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 6,
+							"interval": 0.22,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 6,
+							"interval": 0.22,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "feather"
+						}
+					]
+				},
+				{
+					"actions": [
+						{
+							"do": "fade_out",
+							"time": 0.5
+						},
+						{
+							"do": "voice",
+							"state": ""
+						}
+					],
+					"wait": 0.6
+				}
+			]
+		},
+		"octopus_vest": {
+			"name": "章鱼背心",
+			"cast": {
+				"princess": {
+					"kind": "princess",
+					"at": [
+						0,
+						8
+					],
+					"visual": "helpless_1",
+					"anim": "helpless",
+					"dir": "down"
+				},
+				"src1": {
+					"kind": "trap:vest",
+					"at": [
+						0,
+						8
+					],
+					"hidden": true
+				},
+				"src2": {
+					"kind": "monster:octopus",
+					"at": [
+						-30,
+						2
+					],
+					"dir": "right",
+					"hidden": true
+				},
+				"src3": {
+					"kind": "monster:fairy",
+					"at": [
+						30,
+						2
+					],
+					"dir": "left",
+					"hidden": true
+				}
+			},
+			"steps": [
+				{
+					"actions": [
+						{
+							"do": "fade_in",
+							"time": 0.4
+						},
+						{
+							"do": "voice",
+							"state": "giggle"
+						},
+						{
+							"do": "sources",
+							"list": [
+								{
+									"kind": "trap",
+									"key": "vest",
+									"name": "羽毛背心"
+								},
+								{
+									"kind": "monster",
+									"key": "octopus",
+									"name": "章鱼宝宝"
+								},
+								{
+									"kind": "monster",
+									"key": "fairy",
+									"name": "羽毛小精灵群"
+								}
+							]
+						}
+					],
+					"wait": 0.4
+				},
+				{
+					"speaker": "",
+					"text": "【第七层·升天回廊】章鱼背心——羽毛背心套在身上，章鱼宝宝吸在胸口，小精灵钻进背心的缝里挠。",
+					"actions": [
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "surprise"
+						}
+					]
+				},
+				{
+					"speaker": "蓝色的公主",
+					"text": "……呜。……别挠胸。",
+					"actions": [
+						{
+							"do": "enter",
+							"who": "src1",
+							"from": [
+								0,
+								-6
+							],
+							"time": 0.3
+						},
+						{
+							"do": "light",
+							"index": 0
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 6,
+							"interval": 0.32,
+							"fx": "feather"
+						}
+					]
+				},
+				{
+					"speaker": "蓝色的公主",
+					"text": "哈哈哈哈……忍、忍不住……明明一直忍着的……章鱼背心……哈哈哈哈哈……！",
+					"actions": [
+						{
+							"do": "enter",
+							"who": "src2",
+							"from": [
+								-80,
+								0
+							],
+							"time": 0.5
+						},
+						{
+							"do": "light",
+							"index": 1
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 7,
+							"interval": 0.28,
+							"fx": "feather"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 7,
+							"interval": 0.28,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"speaker": "蓝色的公主",
+					"text": "……哈、哈哈……不、不行……胸……那里……哈哈哈哈……忍、忍不住了……！",
+					"actions": [
+						{
+							"do": "enter",
+							"who": "src3",
+							"from": [
+								80,
+								0
+							],
+							"time": 0.5
+						},
+						{
+							"do": "light",
+							"index": 2
+						},
+						{
+							"do": "pose",
+							"who": "princess",
+							"visual": "helpless_2"
+						},
+						{
+							"do": "voice",
+							"state": "laugh"
+						},
+						{
+							"do": "camera",
+							"zoom": 1.5,
+							"focus": "princess",
+							"time": 0.4
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.5
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 8,
+							"interval": 0.24,
+							"fx": "feather"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 8,
+							"interval": 0.24,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 8,
+							"interval": 0.24,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"speaker": "蓝色的公主",
+					"text": "……忍得住。……嗯、嗯……",
+					"actions": [
+						{
+							"do": "light",
+							"all": true
+						},
+						{
+							"do": "flash",
+							"time": 0.25
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.6
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 10,
+							"interval": 0.2,
+							"fx": "feather"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 10,
+							"interval": 0.2,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 10,
+							"interval": 0.2,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"speaker": "蓝色的公主",
+					"text": "……噗。……刚才是咳嗽。",
+					"actions": [
+						{
+							"do": "light",
+							"all": true
+						},
+						{
+							"do": "flash",
+							"time": 0.25
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.6
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 12,
+							"interval": 0.17,
+							"fx": "feather"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 12,
+							"interval": 0.17,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 12,
+							"interval": 0.17,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"speaker": "蓝色的公主",
+					"text": "哈哈哈哈哈……！不、不算……这次不算……胸……哈哈哈哈……！",
+					"actions": [
+						{
+							"do": "light",
+							"all": true
+						},
+						{
+							"do": "flash",
+							"time": 0.25
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.6
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 14,
+							"interval": 0.14,
+							"fx": "feather"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 14,
+							"interval": 0.14,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 14,
+							"interval": 0.14,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"speaker": "蓝色的公主",
+					"text": "……不、不要了……哈哈哈哈……胸也、也不行……为什么偏偏是那里……哈哈哈……！",
+					"actions": [
+						{
+							"do": "light",
+							"all": true
+						},
+						{
+							"do": "flash",
+							"time": 0.25
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.6
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 16,
+							"interval": 0.14,
+							"fx": "feather"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 16,
+							"interval": 0.14,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 16,
+							"interval": 0.14,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"speaker": "蓝色的公主",
+					"text": "哈哈哈……停、停下……章鱼背心……停下来……哈哈哈哈……我、我投降……！",
+					"actions": [
+						{
+							"do": "light",
+							"all": true
+						},
+						{
+							"do": "flash",
+							"time": 0.25
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.6
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "dots"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 18,
+							"interval": 0.14,
+							"fx": "feather"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 18,
+							"interval": 0.14,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 18,
+							"interval": 0.14,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"act": "burst",
+					"speaker": "",
+					"text": "（背心里的羽毛、吸盘和小手一起，魔力满了）",
+					"actions": [
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.8
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "surprise"
+						},
+						{
+							"do": "voice",
+							"state": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 6,
+							"interval": 0.24,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 6,
+							"interval": 0.24,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "feather"
+						}
+					]
+				},
+				{
+					"act": "burst",
+					"speaker": "蓝色的公主",
+					"text": "……魔力……要满出来了。",
+					"actions": [
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 1.2
+						},
+						{
+							"do": "camera",
+							"zoom": 1.5,
+							"focus": "princess",
+							"time": 0.4
+						},
+						{
+							"do": "flash",
+							"time": 0.2
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "feather"
+						}
+					]
+				},
+				{
+					"act": "burst",
+					"portrait": "fatigue_burst",
+					"actions": [
+						{
+							"do": "flash",
+							"time": 0.8
+						},
+						{
+							"do": "sfx",
+							"sound": "star_burst",
+							"volume": -1.0
+						},
+						{
+							"do": "sfx",
+							"sound": "water_release",
+							"volume": -2.0
+						},
+						{
+							"do": "voice",
+							"state": ""
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.5
+						},
+						{
+							"do": "camera",
+							"zoom": 1,
+							"focus": "princess",
+							"time": 0.5
+						},
+						{
+							"do": "move",
+							"who": "src2",
+							"to": [
+								-90,
+								-4
+							],
+							"time": 0.25
+						},
+						{
+							"do": "move",
+							"who": "src3",
+							"to": [
+								90,
+								-4
+							],
+							"time": 0.25
+						},
+						{
+							"do": "light",
+							"all": true
+						}
+					],
+					"wait": 1.1
+				},
+				{
+					"act": "burst",
+					"speaker": "蓝色的公主",
+					"text": "……呼……魔力走了……身体很轻。……舒服。",
+					"actions": [
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "shy"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "feather"
+						}
+					]
+				},
+				{
+					"act": "burst",
+					"speaker": "",
+					"text": "（吸盘又吸了上来，精灵也钻回了背心）",
+					"actions": [
+						{
+							"do": "move",
+							"who": "src2",
+							"to": [
+								-30,
+								2
+							],
+							"time": 0.6
+						},
+						{
+							"do": "move",
+							"who": "src3",
+							"to": [
+								30,
+								2
+							],
+							"time": 0.6
+						},
+						{
+							"do": "voice",
+							"state": "giggle"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 4,
+							"interval": 0.3,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 4,
+							"interval": 0.3,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "feather"
+						}
+					]
+				},
+				{
+					"act": "burst",
+					"speaker": "蓝色的公主",
+					"text": "……放完之后……好敏感……章鱼背心……哈、哈哈哈……停下……！",
+					"actions": [
+						{
+							"do": "voice",
+							"state": "laugh"
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.8
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 10,
+							"interval": 0.16,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 10,
+							"interval": 0.16,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "feather"
+						}
+					]
+				},
+				{
+					"act": "burst",
+					"speaker": "蓝色的公主",
+					"text": "……呜、哈哈哈……胸……会坏掉的……哈哈哈哈……别看……别看我这样……！",
+					"actions": [
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.6
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 10,
+							"interval": 0.15,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 10,
+							"interval": 0.15,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "feather"
+						}
+					]
+				},
+				{
+					"act": "burst",
+					"speaker": "蓝色的公主",
+					"text": "……再、再一下……就忍住了……",
+					"actions": [
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "dots"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 6,
+							"interval": 0.22,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 6,
+							"interval": 0.22,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "feather"
+						}
+					]
+				},
+				{
+					"actions": [
+						{
+							"do": "fade_out",
+							"time": 0.5
+						},
+						{
+							"do": "voice",
+							"state": ""
+						}
+					],
+					"wait": 0.6
+				}
+			]
+		},
+		"wardrobe_ghost": {
+			"name": "衣柜幽灵手",
+			"cast": {
+				"princess": {
+					"kind": "princess",
+					"at": [
+						0,
+						8
+					],
+					"visual": "helpless_1",
+					"anim": "helpless",
+					"dir": "down"
+				},
+				"src1": {
+					"kind": "trap:wardrobe",
+					"at": [
+						0,
+						2
+					],
+					"hidden": true
+				},
+				"src2": {
+					"kind": "monster:ghost",
+					"at": [
+						-30,
+						2
+					],
+					"dir": "right",
+					"hidden": true
+				},
+				"src3": {
+					"kind": "monster:glove",
+					"at": [
+						30,
+						2
+					],
+					"dir": "left",
+					"hidden": true
+				}
+			},
+			"steps": [
+				{
+					"actions": [
+						{
+							"do": "fade_in",
+							"time": 0.4
+						},
+						{
+							"do": "voice",
+							"state": "giggle"
+						},
+						{
+							"do": "sources",
+							"list": [
+								{
+									"kind": "trap",
+									"key": "wardrobe",
+									"name": "挠痒衣柜"
+								},
+								{
+									"kind": "monster",
+									"key": "ghost",
+									"name": "痒痒幽灵"
+								},
+								{
+									"kind": "monster",
+									"key": "glove",
+									"name": "幽灵手套"
+								}
+							]
+						}
+					],
+					"wait": 0.4
+				},
+				{
+					"speaker": "",
+					"text": "【第七层·升天回廊】衣柜幽灵手——被拉进痒痒衣柜，幽灵从衣柜里穿出来，幽灵手套隔着柜门挠。",
+					"actions": [
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "surprise"
+						}
+					]
+				},
+				{
+					"speaker": "蓝色的公主",
+					"text": "……噗。……刚才是咳嗽。",
+					"actions": [
+						{
+							"do": "enter",
+							"who": "src1",
+							"from": [
+								0,
+								-6
+							],
+							"time": 0.3
+						},
+						{
+							"do": "light",
+							"index": 0
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 6,
+							"interval": 0.32,
+							"fx": "hand"
+						}
+					]
+				},
+				{
+					"speaker": "蓝色的公主",
+					"text": "哈哈哈哈哈……！不、不算……这次不算……腰……哈哈哈哈……！",
+					"actions": [
+						{
+							"do": "enter",
+							"who": "src2",
+							"from": [
+								-80,
+								0
+							],
+							"time": 0.5
+						},
+						{
+							"do": "light",
+							"index": 1
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 7,
+							"interval": 0.28,
+							"fx": "hand"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 7,
+							"interval": 0.28,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"speaker": "蓝色的公主",
+					"text": "哈哈哈……停、停下……衣柜幽灵手……停下来……哈哈哈哈……我、我投降……！",
+					"actions": [
+						{
+							"do": "enter",
+							"who": "src3",
+							"from": [
+								80,
+								0
+							],
+							"time": 0.5
+						},
+						{
+							"do": "light",
+							"index": 2
+						},
+						{
+							"do": "pose",
+							"who": "princess",
+							"visual": "helpless_2"
+						},
+						{
+							"do": "voice",
+							"state": "laugh"
+						},
+						{
+							"do": "camera",
+							"zoom": 1.5,
+							"focus": "princess",
+							"time": 0.4
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.5
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 8,
+							"interval": 0.24,
+							"fx": "hand"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 8,
+							"interval": 0.24,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 8,
+							"interval": 0.24,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"speaker": "蓝色的公主",
+					"text": "……衣柜幽灵手……别、别……",
+					"actions": [
+						{
+							"do": "light",
+							"all": true
+						},
+						{
+							"do": "flash",
+							"time": 0.25
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.6
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 10,
+							"interval": 0.2,
+							"fx": "hand"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 10,
+							"interval": 0.2,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 10,
+							"interval": 0.2,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"speaker": "蓝色的公主",
+					"text": "……腰……不行……嗯……",
+					"actions": [
+						{
+							"do": "light",
+							"all": true
+						},
+						{
+							"do": "flash",
+							"time": 0.25
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.6
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 12,
+							"interval": 0.17,
+							"fx": "hand"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 12,
+							"interval": 0.17,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 12,
+							"interval": 0.17,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"speaker": "蓝色的公主",
+					"text": "……哈、哈哈……不、不行……腰……那里……哈哈哈哈……忍、忍不住了……！",
+					"actions": [
+						{
+							"do": "light",
+							"all": true
+						},
+						{
+							"do": "flash",
+							"time": 0.25
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.6
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 14,
+							"interval": 0.14,
+							"fx": "hand"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 14,
+							"interval": 0.14,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 14,
+							"interval": 0.14,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"speaker": "蓝色的公主",
+					"text": "……不、不要了……哈哈哈哈……腰也、也不行……为什么偏偏是那里……哈哈哈……！",
+					"actions": [
+						{
+							"do": "light",
+							"all": true
+						},
+						{
+							"do": "flash",
+							"time": 0.25
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.6
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 16,
+							"interval": 0.14,
+							"fx": "hand"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 16,
+							"interval": 0.14,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 16,
+							"interval": 0.14,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"speaker": "蓝色的公主",
+					"text": "哈哈哈哈……忍、忍不住……明明一直忍着的……衣柜幽灵手……哈哈哈哈哈……！",
+					"actions": [
+						{
+							"do": "light",
+							"all": true
+						},
+						{
+							"do": "flash",
+							"time": 0.25
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.6
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "dots"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 18,
+							"interval": 0.14,
+							"fx": "hand"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 18,
+							"interval": 0.14,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 18,
+							"interval": 0.14,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"act": "burst",
+					"speaker": "",
+					"text": "（衣柜里外的手一起挠，魔力满了）",
+					"actions": [
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.8
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "surprise"
+						},
+						{
+							"do": "voice",
+							"state": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 6,
+							"interval": 0.24,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 6,
+							"interval": 0.24,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "hand"
+						}
+					]
+				},
+				{
+					"act": "burst",
+					"speaker": "蓝色的公主",
+					"text": "……不行……魔力……压不住了。",
+					"actions": [
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 1.2
+						},
+						{
+							"do": "camera",
+							"zoom": 1.5,
+							"focus": "princess",
+							"time": 0.4
+						},
+						{
+							"do": "flash",
+							"time": 0.2
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "hand"
+						}
+					]
+				},
+				{
+					"act": "burst",
+					"portrait": "fatigue_burst",
+					"actions": [
+						{
+							"do": "flash",
+							"time": 0.8
+						},
+						{
+							"do": "sfx",
+							"sound": "star_burst",
+							"volume": -1.0
+						},
+						{
+							"do": "sfx",
+							"sound": "water_release",
+							"volume": -2.0
+						},
+						{
+							"do": "voice",
+							"state": ""
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.5
+						},
+						{
+							"do": "camera",
+							"zoom": 1,
+							"focus": "princess",
+							"time": 0.5
+						},
+						{
+							"do": "move",
+							"who": "src2",
+							"to": [
+								-90,
+								-4
+							],
+							"time": 0.25
+						},
+						{
+							"do": "move",
+							"who": "src3",
+							"to": [
+								90,
+								-4
+							],
+							"time": 0.25
+						},
+						{
+							"do": "light",
+							"all": true
+						}
+					],
+					"wait": 1.1
+				},
+				{
+					"act": "burst",
+					"speaker": "蓝色的公主",
+					"text": "……呼……魔力走了……身体很轻。……舒服。",
+					"actions": [
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "shy"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "hand"
+						}
+					]
+				},
+				{
+					"act": "burst",
+					"speaker": "",
+					"text": "（柜门没有开，冰凉的手又穿了进来）",
+					"actions": [
+						{
+							"do": "move",
+							"who": "src2",
+							"to": [
+								-30,
+								2
+							],
+							"time": 0.6
+						},
+						{
+							"do": "move",
+							"who": "src3",
+							"to": [
+								30,
+								2
+							],
+							"time": 0.6
+						},
+						{
+							"do": "voice",
+							"state": "giggle"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 4,
+							"interval": 0.3,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 4,
+							"interval": 0.3,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "hand"
+						}
+					]
+				},
+				{
+					"act": "burst",
+					"speaker": "蓝色的公主",
+					"text": "……刚放完……身体好敏感……哈、哈哈……不、不要现在挠……！",
+					"actions": [
+						{
+							"do": "voice",
+							"state": "laugh"
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.8
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 10,
+							"interval": 0.16,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 10,
+							"interval": 0.16,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "hand"
+						}
+					]
+				},
+				{
+					"act": "burst",
+					"speaker": "蓝色的公主",
+					"text": "……呜、哈哈哈……腰……会坏掉的……哈哈哈哈……别看……别看我这样……！",
+					"actions": [
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.6
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 10,
+							"interval": 0.15,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 10,
+							"interval": 0.15,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "hand"
+						}
+					]
+				},
+				{
+					"act": "burst",
+					"speaker": "蓝色的公主",
+					"text": "……数到一百……就不痒了……一、二……",
+					"actions": [
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "dots"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 6,
+							"interval": 0.22,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 6,
+							"interval": 0.22,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "hand"
+						}
+					]
+				},
+				{
+					"actions": [
+						{
+							"do": "fade_out",
+							"time": 0.5
+						},
+						{
+							"do": "voice",
+							"state": ""
+						}
+					],
+					"wait": 0.6
+				}
+			]
+		},
+		"mud_frog_dance": {
+			"name": "泥沼蛙舞",
+			"cast": {
+				"princess": {
+					"kind": "princess",
+					"at": [
+						0,
+						8
+					],
+					"visual": "helpless_1",
+					"anim": "helpless",
+					"dir": "down"
+				},
+				"src1": {
+					"kind": "trap:mud",
+					"at": [
+						-16,
+						4
+					],
+					"hidden": true
+				},
+				"src2": {
+					"kind": "monster:frog",
+					"at": [
+						-30,
+						2
+					],
+					"dir": "right",
+					"hidden": true
+				},
+				"src3": {
+					"kind": "monster:caterpillar",
+					"at": [
+						30,
+						2
+					],
+					"dir": "left",
+					"hidden": true
+				}
+			},
+			"steps": [
+				{
+					"actions": [
+						{
+							"do": "fade_in",
+							"time": 0.4
+						},
+						{
+							"do": "voice",
+							"state": "giggle"
+						},
+						{
+							"do": "sources",
+							"list": [
+								{
+									"kind": "trap",
+									"key": "mud",
+									"name": "痒痒泥沼"
+								},
+								{
+									"kind": "monster",
+									"key": "frog",
+									"name": "长舌蛙"
+								},
+								{
+									"kind": "monster",
+									"key": "caterpillar",
+									"name": "毛毛虫"
+								}
+							]
+						}
+					],
+					"wait": 0.4
+				},
+				{
+					"speaker": "",
+					"text": "【第七层·升天回廊】泥沼蛙舞——陷在痒痒泥沼里，长舌蛙在泥边舔，毛毛虫从泥里爬上腿。",
+					"actions": [
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "surprise"
+						}
+					]
+				},
+				{
+					"speaker": "蓝色的公主",
+					"text": "……哈。……没笑。",
+					"actions": [
+						{
+							"do": "enter",
+							"who": "src1",
+							"from": [
+								0,
+								-6
+							],
+							"time": 0.3
+						},
+						{
+							"do": "light",
+							"index": 0
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 6,
+							"interval": 0.32,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"speaker": "蓝色的公主",
+					"text": "……不、不要了……哈哈哈哈……脚心也、也不行……为什么偏偏是那里……哈哈哈……！",
+					"actions": [
+						{
+							"do": "enter",
+							"who": "src2",
+							"from": [
+								-80,
+								0
+							],
+							"time": 0.5
+						},
+						{
+							"do": "light",
+							"index": 1
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 7,
+							"interval": 0.28,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 7,
+							"interval": 0.28,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"speaker": "蓝色的公主",
+					"text": "……呜、哈哈哈……脚心……会坏掉的……哈哈哈哈……别看……别看我这样……！",
+					"actions": [
+						{
+							"do": "enter",
+							"who": "src3",
+							"from": [
+								80,
+								0
+							],
+							"time": 0.5
+						},
+						{
+							"do": "light",
+							"index": 2
+						},
+						{
+							"do": "pose",
+							"who": "princess",
+							"visual": "helpless_2"
+						},
+						{
+							"do": "voice",
+							"state": "laugh"
+						},
+						{
+							"do": "camera",
+							"zoom": 1.5,
+							"focus": "princess",
+							"time": 0.4
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.5
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 8,
+							"interval": 0.24,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 8,
+							"interval": 0.24,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 8,
+							"interval": 0.24,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"speaker": "蓝色的公主",
+					"text": "……呜。……别挠脚心。",
+					"actions": [
+						{
+							"do": "light",
+							"all": true
+						},
+						{
+							"do": "flash",
+							"time": 0.25
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.6
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 10,
+							"interval": 0.2,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 10,
+							"interval": 0.2,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 10,
+							"interval": 0.2,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"speaker": "蓝色的公主",
+					"text": "……嗯唔……不、不痒……",
+					"actions": [
+						{
+							"do": "light",
+							"all": true
+						},
+						{
+							"do": "flash",
+							"time": 0.25
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.6
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 12,
+							"interval": 0.17,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 12,
+							"interval": 0.17,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 12,
+							"interval": 0.17,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"speaker": "蓝色的公主",
+					"text": "哈哈哈哈……忍、忍不住……明明一直忍着的……泥沼蛙舞……哈哈哈哈哈……！",
+					"actions": [
+						{
+							"do": "light",
+							"all": true
+						},
+						{
+							"do": "flash",
+							"time": 0.25
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.6
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 14,
+							"interval": 0.14,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 14,
+							"interval": 0.14,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 14,
+							"interval": 0.14,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"speaker": "蓝色的公主",
+					"text": "哈哈哈……停、停下……泥沼蛙舞……停下来……哈哈哈哈……我、我投降……！",
+					"actions": [
+						{
+							"do": "light",
+							"all": true
+						},
+						{
+							"do": "flash",
+							"time": 0.25
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.6
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 16,
+							"interval": 0.14,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 16,
+							"interval": 0.14,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 16,
+							"interval": 0.14,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"speaker": "蓝色的公主",
+					"text": "哈哈哈哈哈……！不、不算……这次不算……脚心……哈哈哈哈……！",
+					"actions": [
+						{
+							"do": "light",
+							"all": true
+						},
+						{
+							"do": "flash",
+							"time": 0.25
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.6
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "dots"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 18,
+							"interval": 0.14,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 18,
+							"interval": 0.14,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 18,
+							"interval": 0.14,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"act": "burst",
+					"speaker": "",
+					"text": "（泥、舌头和毛毛虫一起，魔力被挠得满满的）",
+					"actions": [
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.8
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "surprise"
+						},
+						{
+							"do": "voice",
+							"state": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 6,
+							"interval": 0.24,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 6,
+							"interval": 0.24,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"act": "burst",
+					"speaker": "蓝色的公主",
+					"text": "……不行……魔力……压不住了。",
+					"actions": [
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 1.2
+						},
+						{
+							"do": "camera",
+							"zoom": 1.5,
+							"focus": "princess",
+							"time": 0.4
+						},
+						{
+							"do": "flash",
+							"time": 0.2
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"act": "burst",
+					"portrait": "fatigue_burst",
+					"actions": [
+						{
+							"do": "flash",
+							"time": 0.8
+						},
+						{
+							"do": "sfx",
+							"sound": "star_burst",
+							"volume": -1.0
+						},
+						{
+							"do": "sfx",
+							"sound": "water_release",
+							"volume": -2.0
+						},
+						{
+							"do": "voice",
+							"state": ""
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.5
+						},
+						{
+							"do": "camera",
+							"zoom": 1,
+							"focus": "princess",
+							"time": 0.5
+						},
+						{
+							"do": "move",
+							"who": "src2",
+							"to": [
+								-90,
+								-4
+							],
+							"time": 0.25
+						},
+						{
+							"do": "move",
+							"who": "src3",
+							"to": [
+								90,
+								-4
+							],
+							"time": 0.25
+						},
+						{
+							"do": "light",
+							"all": true
+						}
+					],
+					"wait": 1.1
+				},
+				{
+					"act": "burst",
+					"speaker": "蓝色的公主",
+					"text": "……嗯……放出来了……有点……舒服。",
+					"actions": [
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "shy"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"act": "burst",
+					"speaker": "",
+					"text": "（泥又慢慢合了上来，舌头和毛毛虫也回来了）",
+					"actions": [
+						{
+							"do": "move",
+							"who": "src2",
+							"to": [
+								-30,
+								2
+							],
+							"time": 0.6
+						},
+						{
+							"do": "move",
+							"who": "src3",
+							"to": [
+								30,
+								2
+							],
+							"time": 0.6
+						},
+						{
+							"do": "voice",
+							"state": "giggle"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 4,
+							"interval": 0.3,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 4,
+							"interval": 0.3,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"act": "burst",
+					"speaker": "蓝色的公主",
+					"text": "……刚放完……身体好敏感……哈、哈哈……不、不要现在挠……！",
+					"actions": [
+						{
+							"do": "voice",
+							"state": "laugh"
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.8
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 10,
+							"interval": 0.16,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 10,
+							"interval": 0.16,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"act": "burst",
+					"speaker": "蓝色的公主",
+					"text": "……哈、哈哈……不、不行……脚心……那里……哈哈哈哈……忍、忍不住了……！",
+					"actions": [
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.6
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 10,
+							"interval": 0.15,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 10,
+							"interval": 0.15,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"act": "burst",
+					"speaker": "蓝色的公主",
+					"text": "……没、没笑……一次都……没笑……嘿……",
+					"actions": [
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "dots"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 6,
+							"interval": 0.22,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 6,
+							"interval": 0.22,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"actions": [
+						{
+							"do": "fade_out",
+							"time": 0.5
+						},
+						{
+							"do": "voice",
+							"state": ""
+						}
+					],
+					"wait": 0.6
+				}
+			]
+		},
+		"supine_jelly": {
+			"name": "刑床水母",
+			"cast": {
+				"princess": {
+					"kind": "princess",
+					"at": [
+						0,
+						8
+					],
+					"visual": "helpless_1",
+					"anim": "helpless",
+					"dir": "down"
+				},
+				"src1": {
+					"kind": "trap:supine",
+					"at": [
+						0,
+						10
+					],
+					"hidden": true
+				},
+				"src2": {
+					"kind": "monster:mana_jelly",
+					"at": [
+						-30,
+						2
+					],
+					"dir": "right",
+					"hidden": true
+				},
+				"src3": {
+					"kind": "monster:bubble_fish",
+					"at": [
+						30,
+						2
+					],
+					"dir": "left",
+					"hidden": true
+				}
+			},
+			"steps": [
+				{
+					"actions": [
+						{
+							"do": "fade_in",
+							"time": 0.4
+						},
+						{
+							"do": "voice",
+							"state": "giggle"
+						},
+						{
+							"do": "sources",
+							"list": [
+								{
+									"kind": "trap",
+									"key": "supine",
+									"name": "仰卧刑床"
+								},
+								{
+									"kind": "monster",
+									"key": "mana_jelly",
+									"name": "魔力水母"
+								},
+								{
+									"kind": "monster",
+									"key": "bubble_fish",
+									"name": "泡泡鱼"
+								}
+							]
+						}
+					],
+					"wait": 0.4
+				},
+				{
+					"speaker": "",
+					"text": "【第七层·升天回廊】刑床水母——仰躺在刑床上，魔力水母的触须挠肚子，泡泡鱼吐泡泡把手脚关住。",
+					"actions": [
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "surprise"
+						}
+					]
+				},
+				{
+					"speaker": "蓝色的公主",
+					"text": "……噗嗤。……忘掉它。",
+					"actions": [
+						{
+							"do": "enter",
+							"who": "src1",
+							"from": [
+								0,
+								-6
+							],
+							"time": 0.3
+						},
+						{
+							"do": "light",
+							"index": 0
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 6,
+							"interval": 0.32,
+							"fx": "feather"
+						}
+					]
+				},
+				{
+					"speaker": "蓝色的公主",
+					"text": "哈哈哈哈哈……！不、不算……这次不算……肚子……哈哈哈哈……！",
+					"actions": [
+						{
+							"do": "enter",
+							"who": "src2",
+							"from": [
+								-80,
+								0
+							],
+							"time": 0.5
+						},
+						{
+							"do": "light",
+							"index": 1
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 7,
+							"interval": 0.28,
+							"fx": "feather"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 7,
+							"interval": 0.28,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"speaker": "蓝色的公主",
+					"text": "哈哈哈哈……忍、忍不住……明明一直忍着的……刑床水母……哈哈哈哈哈……！",
+					"actions": [
+						{
+							"do": "enter",
+							"who": "src3",
+							"from": [
+								80,
+								0
+							],
+							"time": 0.5
+						},
+						{
+							"do": "light",
+							"index": 2
+						},
+						{
+							"do": "pose",
+							"who": "princess",
+							"visual": "helpless_2"
+						},
+						{
+							"do": "voice",
+							"state": "laugh"
+						},
+						{
+							"do": "camera",
+							"zoom": 1.5,
+							"focus": "princess",
+							"time": 0.4
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.5
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 8,
+							"interval": 0.24,
+							"fx": "feather"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 8,
+							"interval": 0.24,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 8,
+							"interval": 0.24,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"speaker": "蓝色的公主",
+					"text": "……刑床水母……别、别……",
+					"actions": [
+						{
+							"do": "light",
+							"all": true
+						},
+						{
+							"do": "flash",
+							"time": 0.25
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.6
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 10,
+							"interval": 0.2,
+							"fx": "feather"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 10,
+							"interval": 0.2,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 10,
+							"interval": 0.2,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"speaker": "蓝色的公主",
+					"text": "……唔、嗯……",
+					"actions": [
+						{
+							"do": "light",
+							"all": true
+						},
+						{
+							"do": "flash",
+							"time": 0.25
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.6
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 12,
+							"interval": 0.17,
+							"fx": "feather"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 12,
+							"interval": 0.17,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 12,
+							"interval": 0.17,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"speaker": "蓝色的公主",
+					"text": "……呜、哈哈哈……肚子……会坏掉的……哈哈哈哈……别看……别看我这样……！",
+					"actions": [
+						{
+							"do": "light",
+							"all": true
+						},
+						{
+							"do": "flash",
+							"time": 0.25
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.6
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 14,
+							"interval": 0.14,
+							"fx": "feather"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 14,
+							"interval": 0.14,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 14,
+							"interval": 0.14,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"speaker": "蓝色的公主",
+					"text": "……哈、哈哈……不、不行……肚子……那里……哈哈哈哈……忍、忍不住了……！",
+					"actions": [
+						{
+							"do": "light",
+							"all": true
+						},
+						{
+							"do": "flash",
+							"time": 0.25
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.6
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 16,
+							"interval": 0.14,
+							"fx": "feather"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 16,
+							"interval": 0.14,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 16,
+							"interval": 0.14,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"speaker": "蓝色的公主",
+					"text": "……不、不要了……哈哈哈哈……肚子也、也不行……为什么偏偏是那里……哈哈哈……！",
+					"actions": [
+						{
+							"do": "light",
+							"all": true
+						},
+						{
+							"do": "flash",
+							"time": 0.25
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.6
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "dots"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 18,
+							"interval": 0.14,
+							"fx": "feather"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 18,
+							"interval": 0.14,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 18,
+							"interval": 0.14,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"act": "burst",
+					"speaker": "",
+					"text": "（刑床、触须和泡泡一起，魔力满了）",
+					"actions": [
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.8
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "surprise"
+						},
+						{
+							"do": "voice",
+							"state": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 6,
+							"interval": 0.24,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 6,
+							"interval": 0.24,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "feather"
+						}
+					]
+				},
+				{
+					"act": "burst",
+					"speaker": "蓝色的公主",
+					"text": "……魔力……要满出来了。",
+					"actions": [
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 1.2
+						},
+						{
+							"do": "camera",
+							"zoom": 1.5,
+							"focus": "princess",
+							"time": 0.4
+						},
+						{
+							"do": "flash",
+							"time": 0.2
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "feather"
+						}
+					]
+				},
+				{
+					"act": "burst",
+					"portrait": "fatigue_burst",
+					"actions": [
+						{
+							"do": "flash",
+							"time": 0.8
+						},
+						{
+							"do": "sfx",
+							"sound": "star_burst",
+							"volume": -1.0
+						},
+						{
+							"do": "sfx",
+							"sound": "water_release",
+							"volume": -2.0
+						},
+						{
+							"do": "voice",
+							"state": ""
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.5
+						},
+						{
+							"do": "camera",
+							"zoom": 1,
+							"focus": "princess",
+							"time": 0.5
+						},
+						{
+							"do": "move",
+							"who": "src2",
+							"to": [
+								-90,
+								-4
+							],
+							"time": 0.25
+						},
+						{
+							"do": "move",
+							"who": "src3",
+							"to": [
+								90,
+								-4
+							],
+							"time": 0.25
+						},
+						{
+							"do": "light",
+							"all": true
+						}
+					],
+					"wait": 1.1
+				},
+				{
+					"act": "burst",
+					"speaker": "蓝色的公主",
+					"text": "……嗯……放出来了……有点……舒服。",
+					"actions": [
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "shy"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "feather"
+						}
+					]
+				},
+				{
+					"act": "burst",
+					"speaker": "",
+					"text": "（触须又垂了下来，泡泡一个个罩了回来）",
+					"actions": [
+						{
+							"do": "move",
+							"who": "src2",
+							"to": [
+								-30,
+								2
+							],
+							"time": 0.6
+						},
+						{
+							"do": "move",
+							"who": "src3",
+							"to": [
+								30,
+								2
+							],
+							"time": 0.6
+						},
+						{
+							"do": "voice",
+							"state": "giggle"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 4,
+							"interval": 0.3,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 4,
+							"interval": 0.3,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "feather"
+						}
+					]
+				},
+				{
+					"act": "burst",
+					"speaker": "蓝色的公主",
+					"text": "……敏感……全身都变得好敏感……肚子……哈哈哈哈……！",
+					"actions": [
+						{
+							"do": "voice",
+							"state": "laugh"
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.8
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 10,
+							"interval": 0.16,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 10,
+							"interval": 0.16,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "feather"
+						}
+					]
+				},
+				{
+					"act": "burst",
+					"speaker": "蓝色的公主",
+					"text": "哈哈哈……停、停下……刑床水母……停下来……哈哈哈哈……我、我投降……！",
+					"actions": [
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.6
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 10,
+							"interval": 0.15,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 10,
+							"interval": 0.15,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "feather"
+						}
+					]
+				},
+				{
+					"act": "burst",
+					"speaker": "蓝色的公主",
+					"text": "……没、没笑……一次都……没笑……嘿……",
+					"actions": [
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "dots"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 6,
+							"interval": 0.22,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 6,
+							"interval": 0.22,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "feather"
+						}
+					]
+				},
+				{
+					"actions": [
+						{
+							"do": "fade_out",
+							"time": 0.5
+						},
+						{
+							"do": "voice",
+							"state": ""
+						}
+					],
+					"wait": 0.6
+				}
+			]
+		},
+		"cushion_cage": {
+			"name": "坐垫落笼",
+			"cast": {
+				"princess": {
+					"kind": "princess",
+					"at": [
+						0,
+						8
+					],
+					"visual": "helpless_1",
+					"anim": "helpless",
+					"dir": "down"
+				},
+				"src1": {
+					"kind": "trap:cushion",
+					"at": [
+						0,
+						10
+					],
+					"hidden": true
+				},
+				"src2": {
+					"kind": "trap:cage",
+					"at": [
+						0,
+						9
+					],
+					"hidden": true
+				},
+				"src3": {
+					"kind": "monster:rat",
+					"at": [
+						-30,
+						2
+					],
+					"dir": "right",
+					"hidden": true
+				}
+			},
+			"steps": [
+				{
+					"actions": [
+						{
+							"do": "fade_in",
+							"time": 0.4
+						},
+						{
+							"do": "voice",
+							"state": "giggle"
+						},
+						{
+							"do": "sources",
+							"list": [
+								{
+									"kind": "trap",
+									"key": "cushion",
+									"name": "痒痒坐垫"
+								},
+								{
+									"kind": "trap",
+									"key": "cage",
+									"name": "落笼"
+								},
+								{
+									"kind": "monster",
+									"key": "rat",
+									"name": "挠脚鼠"
+								}
+							]
+						}
+					],
+					"wait": 0.4
+				},
+				{
+					"speaker": "",
+					"text": "【第七层·升天回廊】坐垫落笼——被痒痒坐垫拉坐下，落笼从头顶罩下来，笼子里的挠脚鼠钻出来挠。",
+					"actions": [
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "surprise"
+						}
+					]
+				},
+				{
+					"speaker": "蓝色的公主",
+					"text": "……忍得住。……嗯、嗯……",
+					"actions": [
+						{
+							"do": "enter",
+							"who": "src1",
+							"from": [
+								0,
+								-6
+							],
+							"time": 0.3
+						},
+						{
+							"do": "light",
+							"index": 0
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 6,
+							"interval": 0.32,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"speaker": "蓝色的公主",
+					"text": "哈哈哈……停、停下……坐垫落笼……停下来……哈哈哈哈……我、我投降……！",
+					"actions": [
+						{
+							"do": "enter",
+							"who": "src2",
+							"from": [
+								0,
+								-6
+							],
+							"time": 0.3
+						},
+						{
+							"do": "light",
+							"index": 1
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 7,
+							"interval": 0.28,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 7,
+							"interval": 0.28,
+							"fx": "feather"
+						}
+					]
+				},
+				{
+					"speaker": "蓝色的公主",
+					"text": "……呜、哈哈哈……屁股……会坏掉的……哈哈哈哈……别看……别看我这样……！",
+					"actions": [
+						{
+							"do": "enter",
+							"who": "src3",
+							"from": [
+								-80,
+								0
+							],
+							"time": 0.5
+						},
+						{
+							"do": "light",
+							"index": 2
+						},
+						{
+							"do": "pose",
+							"who": "princess",
+							"visual": "helpless_2"
+						},
+						{
+							"do": "voice",
+							"state": "laugh"
+						},
+						{
+							"do": "camera",
+							"zoom": 1.5,
+							"focus": "princess",
+							"time": 0.4
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.5
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 8,
+							"interval": 0.24,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 8,
+							"interval": 0.24,
+							"fx": "feather"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 8,
+							"interval": 0.24,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"speaker": "蓝色的公主",
+					"text": "……噗嗤。……忘掉它。",
+					"actions": [
+						{
+							"do": "light",
+							"all": true
+						},
+						{
+							"do": "flash",
+							"time": 0.25
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.6
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 10,
+							"interval": 0.2,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 10,
+							"interval": 0.2,
+							"fx": "feather"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 10,
+							"interval": 0.2,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"speaker": "蓝色的公主",
+					"text": "……噗。……刚才是咳嗽。",
+					"actions": [
+						{
+							"do": "light",
+							"all": true
+						},
+						{
+							"do": "flash",
+							"time": 0.25
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.6
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 12,
+							"interval": 0.17,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 12,
+							"interval": 0.17,
+							"fx": "feather"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 12,
+							"interval": 0.17,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"speaker": "蓝色的公主",
+					"text": "哈哈哈哈……忍、忍不住……明明一直忍着的……坐垫落笼……哈哈哈哈哈……！",
+					"actions": [
+						{
+							"do": "light",
+							"all": true
+						},
+						{
+							"do": "flash",
+							"time": 0.25
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.6
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 14,
+							"interval": 0.14,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 14,
+							"interval": 0.14,
+							"fx": "feather"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 14,
+							"interval": 0.14,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"speaker": "蓝色的公主",
+					"text": "哈哈哈哈哈……！不、不算……这次不算……屁股……哈哈哈哈……！",
+					"actions": [
+						{
+							"do": "light",
+							"all": true
+						},
+						{
+							"do": "flash",
+							"time": 0.25
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.6
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 16,
+							"interval": 0.14,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 16,
+							"interval": 0.14,
+							"fx": "feather"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 16,
+							"interval": 0.14,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"speaker": "蓝色的公主",
+					"text": "……哈、哈哈……不、不行……屁股……那里……哈哈哈哈……忍、忍不住了……！",
+					"actions": [
+						{
+							"do": "light",
+							"all": true
+						},
+						{
+							"do": "flash",
+							"time": 0.25
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.6
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "dots"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 18,
+							"interval": 0.14,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 18,
+							"interval": 0.14,
+							"fx": "feather"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 18,
+							"interval": 0.14,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"act": "burst",
+					"speaker": "",
+					"text": "（坐垫、笼子和小爪子一起，魔力满了）",
+					"actions": [
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.8
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "surprise"
+						},
+						{
+							"do": "voice",
+							"state": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 6,
+							"interval": 0.24,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "feather"
+						}
+					]
+				},
+				{
+					"act": "burst",
+					"speaker": "蓝色的公主",
+					"text": "……魔力……要满出来了。",
+					"actions": [
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 1.2
+						},
+						{
+							"do": "camera",
+							"zoom": 1.5,
+							"focus": "princess",
+							"time": 0.4
+						},
+						{
+							"do": "flash",
+							"time": 0.2
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "feather"
+						}
+					]
+				},
+				{
+					"act": "burst",
+					"portrait": "fatigue_burst",
+					"actions": [
+						{
+							"do": "flash",
+							"time": 0.8
+						},
+						{
+							"do": "sfx",
+							"sound": "star_burst",
+							"volume": -1.0
+						},
+						{
+							"do": "sfx",
+							"sound": "water_release",
+							"volume": -2.0
+						},
+						{
+							"do": "voice",
+							"state": ""
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.5
+						},
+						{
+							"do": "camera",
+							"zoom": 1,
+							"focus": "princess",
+							"time": 0.5
+						},
+						{
+							"do": "move",
+							"who": "src3",
+							"to": [
+								-90,
+								-4
+							],
+							"time": 0.25
+						},
+						{
+							"do": "light",
+							"all": true
+						}
+					],
+					"wait": 1.1
+				},
+				{
+					"act": "burst",
+					"speaker": "蓝色的公主",
+					"text": "……嗯……放出来了……有点……舒服。",
+					"actions": [
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "shy"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "feather"
+						}
+					]
+				},
+				{
+					"act": "burst",
+					"speaker": "",
+					"text": "（笼子没有开，小爪子又爬了上来）",
+					"actions": [
+						{
+							"do": "move",
+							"who": "src3",
+							"to": [
+								-30,
+								2
+							],
+							"time": 0.6
+						},
+						{
+							"do": "voice",
+							"state": "giggle"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 4,
+							"interval": 0.3,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "feather"
+						}
+					]
+				},
+				{
+					"act": "burst",
+					"speaker": "蓝色的公主",
+					"text": "……刚放完……身体好敏感……哈、哈哈……不、不要现在挠……！",
+					"actions": [
+						{
+							"do": "voice",
+							"state": "laugh"
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.8
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 10,
+							"interval": 0.16,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "feather"
+						}
+					]
+				},
+				{
+					"act": "burst",
+					"speaker": "蓝色的公主",
+					"text": "……哈、哈哈……不、不行……屁股……那里……哈哈哈哈……忍、忍不住了……！",
+					"actions": [
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.6
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 10,
+							"interval": 0.15,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "feather"
+						}
+					]
+				},
+				{
+					"act": "burst",
+					"speaker": "蓝色的公主",
+					"text": "……数到一百……就不痒了……一、二……",
+					"actions": [
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "dots"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 6,
+							"interval": 0.22,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "feather"
+						}
+					]
+				},
+				{
+					"actions": [
+						{
+							"do": "fade_out",
+							"time": 0.5
+						},
+						{
+							"do": "voice",
+							"state": ""
+						}
+					],
+					"wait": 0.6
+				}
+			]
+		},
+		"spin_barnacle": {
+			"name": "转盘藤壶",
+			"cast": {
+				"princess": {
+					"kind": "princess",
+					"at": [
+						0,
+						8
+					],
+					"visual": "helpless_1",
+					"anim": "helpless",
+					"dir": "down"
+				},
+				"src1": {
+					"kind": "trap:spinwheel",
+					"at": [
+						0,
+						6
+					],
+					"hidden": true
+				},
+				"src2": {
+					"kind": "monster:barnacle",
+					"at": [
+						-30,
+						2
+					],
+					"dir": "right",
+					"hidden": true
+				},
+				"src3": {
+					"kind": "monster:squirrel",
+					"at": [
+						30,
+						2
+					],
+					"dir": "left",
+					"hidden": true
+				}
+			},
+			"steps": [
+				{
+					"actions": [
+						{
+							"do": "fade_in",
+							"time": 0.4
+						},
+						{
+							"do": "voice",
+							"state": "giggle"
+						},
+						{
+							"do": "sources",
+							"list": [
+								{
+									"kind": "trap",
+									"key": "spinwheel",
+									"name": "张臂转盘"
+								},
+								{
+									"kind": "monster",
+									"key": "barnacle",
+									"name": "藤壶贝"
+								},
+								{
+									"kind": "monster",
+									"key": "squirrel",
+									"name": "刷尾松鼠"
+								}
+							]
+						}
+					],
+					"wait": 0.4
+				},
+				{
+					"speaker": "",
+					"text": "【第七层·升天回廊】转盘藤壶——绑在张臂转盘上转，藤壶贝弹上身吸住，刷尾松鼠每转一圈刷一下。",
+					"actions": [
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "surprise"
+						}
+					]
+				},
+				{
+					"speaker": "蓝色的公主",
+					"text": "……噗嗤。……忘掉它。",
+					"actions": [
+						{
+							"do": "enter",
+							"who": "src1",
+							"from": [
+								0,
+								-6
+							],
+							"time": 0.3
+						},
+						{
+							"do": "light",
+							"index": 0
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 6,
+							"interval": 0.32,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"speaker": "蓝色的公主",
+					"text": "……呜、哈哈哈……胸……会坏掉的……哈哈哈哈……别看……别看我这样……！",
+					"actions": [
+						{
+							"do": "enter",
+							"who": "src2",
+							"from": [
+								-80,
+								0
+							],
+							"time": 0.5
+						},
+						{
+							"do": "light",
+							"index": 1
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 7,
+							"interval": 0.28,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 7,
+							"interval": 0.28,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"speaker": "蓝色的公主",
+					"text": "哈哈哈……停、停下……转盘藤壶……停下来……哈哈哈哈……我、我投降……！",
+					"actions": [
+						{
+							"do": "enter",
+							"who": "src3",
+							"from": [
+								80,
+								0
+							],
+							"time": 0.5
+						},
+						{
+							"do": "light",
+							"index": 2
+						},
+						{
+							"do": "pose",
+							"who": "princess",
+							"visual": "helpless_2"
+						},
+						{
+							"do": "voice",
+							"state": "laugh"
+						},
+						{
+							"do": "camera",
+							"zoom": 1.5,
+							"focus": "princess",
+							"time": 0.4
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.5
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 8,
+							"interval": 0.24,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 8,
+							"interval": 0.24,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 8,
+							"interval": 0.24,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"speaker": "蓝色的公主",
+					"text": "……转盘藤壶……别、别……",
+					"actions": [
+						{
+							"do": "light",
+							"all": true
+						},
+						{
+							"do": "flash",
+							"time": 0.25
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.6
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 10,
+							"interval": 0.2,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 10,
+							"interval": 0.2,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 10,
+							"interval": 0.2,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"speaker": "蓝色的公主",
+					"text": "……嗯唔……不、不痒……",
+					"actions": [
+						{
+							"do": "light",
+							"all": true
+						},
+						{
+							"do": "flash",
+							"time": 0.25
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.6
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 12,
+							"interval": 0.17,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 12,
+							"interval": 0.17,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 12,
+							"interval": 0.17,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"speaker": "蓝色的公主",
+					"text": "哈哈哈哈哈……！不、不算……这次不算……胸……哈哈哈哈……！",
+					"actions": [
+						{
+							"do": "light",
+							"all": true
+						},
+						{
+							"do": "flash",
+							"time": 0.25
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.6
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 14,
+							"interval": 0.14,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 14,
+							"interval": 0.14,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 14,
+							"interval": 0.14,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"speaker": "蓝色的公主",
+					"text": "哈哈哈哈……忍、忍不住……明明一直忍着的……转盘藤壶……哈哈哈哈哈……！",
+					"actions": [
+						{
+							"do": "light",
+							"all": true
+						},
+						{
+							"do": "flash",
+							"time": 0.25
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.6
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 16,
+							"interval": 0.14,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 16,
+							"interval": 0.14,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 16,
+							"interval": 0.14,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"speaker": "蓝色的公主",
+					"text": "……哈、哈哈……不、不行……胸……那里……哈哈哈哈……忍、忍不住了……！",
+					"actions": [
+						{
+							"do": "light",
+							"all": true
+						},
+						{
+							"do": "flash",
+							"time": 0.25
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.6
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "dots"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 18,
+							"interval": 0.14,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 18,
+							"interval": 0.14,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 18,
+							"interval": 0.14,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"act": "burst",
+					"speaker": "",
+					"text": "（转盘、藤壶和尾巴一起，魔力被转得满满的）",
+					"actions": [
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.8
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "surprise"
+						},
+						{
+							"do": "voice",
+							"state": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 6,
+							"interval": 0.24,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 6,
+							"interval": 0.24,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"act": "burst",
+					"speaker": "蓝色的公主",
+					"text": "……不行……魔力……压不住了。",
+					"actions": [
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 1.2
+						},
+						{
+							"do": "camera",
+							"zoom": 1.5,
+							"focus": "princess",
+							"time": 0.4
+						},
+						{
+							"do": "flash",
+							"time": 0.2
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"act": "burst",
+					"portrait": "fatigue_burst",
+					"actions": [
+						{
+							"do": "flash",
+							"time": 0.8
+						},
+						{
+							"do": "sfx",
+							"sound": "star_burst",
+							"volume": -1.0
+						},
+						{
+							"do": "sfx",
+							"sound": "water_release",
+							"volume": -2.0
+						},
+						{
+							"do": "voice",
+							"state": ""
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.5
+						},
+						{
+							"do": "camera",
+							"zoom": 1,
+							"focus": "princess",
+							"time": 0.5
+						},
+						{
+							"do": "move",
+							"who": "src2",
+							"to": [
+								-90,
+								-4
+							],
+							"time": 0.25
+						},
+						{
+							"do": "move",
+							"who": "src3",
+							"to": [
+								90,
+								-4
+							],
+							"time": 0.25
+						},
+						{
+							"do": "light",
+							"all": true
+						}
+					],
+					"wait": 1.1
+				},
+				{
+					"act": "burst",
+					"speaker": "蓝色的公主",
+					"text": "……哈。……全部放出去了。……舒服。",
+					"actions": [
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "shy"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"act": "burst",
+					"speaker": "",
+					"text": "（转盘还在转，尾巴又刷了过来）",
+					"actions": [
+						{
+							"do": "move",
+							"who": "src2",
+							"to": [
+								-30,
+								2
+							],
+							"time": 0.6
+						},
+						{
+							"do": "move",
+							"who": "src3",
+							"to": [
+								30,
+								2
+							],
+							"time": 0.6
+						},
+						{
+							"do": "voice",
+							"state": "giggle"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 4,
+							"interval": 0.3,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 4,
+							"interval": 0.3,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"act": "burst",
+					"speaker": "蓝色的公主",
+					"text": "……放完之后……好敏感……转盘藤壶……哈、哈哈哈……停下……！",
+					"actions": [
+						{
+							"do": "voice",
+							"state": "laugh"
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.8
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 10,
+							"interval": 0.16,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 10,
+							"interval": 0.16,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"act": "burst",
+					"speaker": "蓝色的公主",
+					"text": "……不、不要了……哈哈哈哈……胸也、也不行……为什么偏偏是那里……哈哈哈……！",
+					"actions": [
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.6
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 10,
+							"interval": 0.15,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 10,
+							"interval": 0.15,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"act": "burst",
+					"speaker": "蓝色的公主",
+					"text": "……没、没笑……一次都……没笑……嘿……",
+					"actions": [
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "dots"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 6,
+							"interval": 0.22,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 6,
+							"interval": 0.22,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"actions": [
+						{
+							"do": "fade_out",
+							"time": 0.5
+						},
+						{
+							"do": "voice",
+							"state": ""
+						}
+					],
+					"wait": 0.6
+				}
+			]
+		},
+		"legloop_glove": {
+			"name": "吊环手套",
+			"cast": {
+				"princess": {
+					"kind": "princess",
+					"at": [
+						0,
+						8
+					],
+					"visual": "helpless_1",
+					"anim": "helpless",
+					"dir": "down"
+				},
+				"src1": {
+					"kind": "trap:legloop",
+					"at": [
+						0,
+						10
+					],
+					"hidden": true
+				},
+				"src2": {
+					"kind": "trap:teaser",
+					"at": [
+						22,
+						6
+					],
+					"hidden": true
+				},
+				"src3": {
+					"kind": "monster:glove",
+					"at": [
+						-30,
+						2
+					],
+					"dir": "right",
+					"hidden": true
+				}
+			},
+			"steps": [
+				{
+					"actions": [
+						{
+							"do": "fade_in",
+							"time": 0.4
+						},
+						{
+							"do": "voice",
+							"state": "giggle"
+						},
+						{
+							"do": "sources",
+							"list": [
+								{
+									"kind": "trap",
+									"key": "legloop",
+									"name": "单腿吊环"
+								},
+								{
+									"kind": "trap",
+									"key": "teaser",
+									"name": "羽毛逗弄器"
+								},
+								{
+									"kind": "monster",
+									"key": "glove",
+									"name": "幽灵手套"
+								}
+							]
+						}
+					],
+					"wait": 0.4
+				},
+				{
+					"speaker": "",
+					"text": "【第七层·升天回廊】吊环手套——一只脚被单腿吊环吊起，羽毛逗弄器扫吊着的脚心，幽灵手套挠站着的那条腿。",
+					"actions": [
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "surprise"
+						}
+					]
+				},
+				{
+					"speaker": "蓝色的公主",
+					"text": "……呜。……别挠脚心。",
+					"actions": [
+						{
+							"do": "enter",
+							"who": "src1",
+							"from": [
+								0,
+								-6
+							],
+							"time": 0.3
+						},
+						{
+							"do": "light",
+							"index": 0
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 6,
+							"interval": 0.32,
+							"fx": "feather"
+						}
+					]
+				},
+				{
+					"speaker": "蓝色的公主",
+					"text": "哈哈哈哈……忍、忍不住……明明一直忍着的……吊环手套……哈哈哈哈哈……！",
+					"actions": [
+						{
+							"do": "enter",
+							"who": "src2",
+							"from": [
+								0,
+								-6
+							],
+							"time": 0.3
+						},
+						{
+							"do": "light",
+							"index": 1
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 7,
+							"interval": 0.28,
+							"fx": "feather"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 7,
+							"interval": 0.28,
+							"fx": "feather"
+						}
+					]
+				},
+				{
+					"speaker": "蓝色的公主",
+					"text": "……哈、哈哈……不、不行……脚心……那里……哈哈哈哈……忍、忍不住了……！",
+					"actions": [
+						{
+							"do": "enter",
+							"who": "src3",
+							"from": [
+								-80,
+								0
+							],
+							"time": 0.5
+						},
+						{
+							"do": "light",
+							"index": 2
+						},
+						{
+							"do": "pose",
+							"who": "princess",
+							"visual": "helpless_2"
+						},
+						{
+							"do": "voice",
+							"state": "laugh"
+						},
+						{
+							"do": "camera",
+							"zoom": 1.5,
+							"focus": "princess",
+							"time": 0.4
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.5
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 8,
+							"interval": 0.24,
+							"fx": "feather"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 8,
+							"interval": 0.24,
+							"fx": "feather"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 8,
+							"interval": 0.24,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"speaker": "蓝色的公主",
+					"text": "……吊环手套……别、别……",
+					"actions": [
+						{
+							"do": "light",
+							"all": true
+						},
+						{
+							"do": "flash",
+							"time": 0.25
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.6
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 10,
+							"interval": 0.2,
+							"fx": "feather"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 10,
+							"interval": 0.2,
+							"fx": "feather"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 10,
+							"interval": 0.2,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"speaker": "蓝色的公主",
+					"text": "……脚心……不行……嗯……",
+					"actions": [
+						{
+							"do": "light",
+							"all": true
+						},
+						{
+							"do": "flash",
+							"time": 0.25
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.6
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 12,
+							"interval": 0.17,
+							"fx": "feather"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 12,
+							"interval": 0.17,
+							"fx": "feather"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 12,
+							"interval": 0.17,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"speaker": "蓝色的公主",
+					"text": "哈哈哈……停、停下……吊环手套……停下来……哈哈哈哈……我、我投降……！",
+					"actions": [
+						{
+							"do": "light",
+							"all": true
+						},
+						{
+							"do": "flash",
+							"time": 0.25
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.6
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 14,
+							"interval": 0.14,
+							"fx": "feather"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 14,
+							"interval": 0.14,
+							"fx": "feather"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 14,
+							"interval": 0.14,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"speaker": "蓝色的公主",
+					"text": "……不、不要了……哈哈哈哈……脚心也、也不行……为什么偏偏是那里……哈哈哈……！",
+					"actions": [
+						{
+							"do": "light",
+							"all": true
+						},
+						{
+							"do": "flash",
+							"time": 0.25
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.6
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 16,
+							"interval": 0.14,
+							"fx": "feather"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 16,
+							"interval": 0.14,
+							"fx": "feather"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 16,
+							"interval": 0.14,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"speaker": "蓝色的公主",
+					"text": "哈哈哈哈哈……！不、不算……这次不算……脚心……哈哈哈哈……！",
+					"actions": [
+						{
+							"do": "light",
+							"all": true
+						},
+						{
+							"do": "flash",
+							"time": 0.25
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.6
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "dots"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 18,
+							"interval": 0.14,
+							"fx": "feather"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 18,
+							"interval": 0.14,
+							"fx": "feather"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 18,
+							"interval": 0.14,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"act": "burst",
+					"speaker": "",
+					"text": "（吊环、羽毛和手套一起，魔力满了）",
+					"actions": [
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.8
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "surprise"
+						},
+						{
+							"do": "voice",
+							"state": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 6,
+							"interval": 0.24,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "feather"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "feather"
+						}
+					]
+				},
+				{
+					"act": "burst",
+					"speaker": "蓝色的公主",
+					"text": "……魔力……要满出来了。",
+					"actions": [
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 1.2
+						},
+						{
+							"do": "camera",
+							"zoom": 1.5,
+							"focus": "princess",
+							"time": 0.4
+						},
+						{
+							"do": "flash",
+							"time": 0.2
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "feather"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "feather"
+						}
+					]
+				},
+				{
+					"act": "burst",
+					"portrait": "fatigue_burst",
+					"actions": [
+						{
+							"do": "flash",
+							"time": 0.8
+						},
+						{
+							"do": "sfx",
+							"sound": "star_burst",
+							"volume": -1.0
+						},
+						{
+							"do": "sfx",
+							"sound": "water_release",
+							"volume": -2.0
+						},
+						{
+							"do": "voice",
+							"state": ""
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.5
+						},
+						{
+							"do": "camera",
+							"zoom": 1,
+							"focus": "princess",
+							"time": 0.5
+						},
+						{
+							"do": "move",
+							"who": "src3",
+							"to": [
+								-90,
+								-4
+							],
+							"time": 0.25
+						},
+						{
+							"do": "light",
+							"all": true
+						}
+					],
+					"wait": 1.1
+				},
+				{
+					"act": "burst",
+					"speaker": "蓝色的公主",
+					"text": "……呼……魔力走了……身体很轻。……舒服。",
+					"actions": [
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "shy"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "feather"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "feather"
+						}
+					]
+				},
+				{
+					"act": "burst",
+					"speaker": "",
+					"text": "（吊环没有松开，羽毛和手套又凑了上来）",
+					"actions": [
+						{
+							"do": "move",
+							"who": "src3",
+							"to": [
+								-30,
+								2
+							],
+							"time": 0.6
+						},
+						{
+							"do": "voice",
+							"state": "giggle"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 4,
+							"interval": 0.3,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "feather"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "feather"
+						}
+					]
+				},
+				{
+					"act": "burst",
+					"speaker": "蓝色的公主",
+					"text": "……敏感……全身都变得好敏感……脚心……哈哈哈哈……！",
+					"actions": [
+						{
+							"do": "voice",
+							"state": "laugh"
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.8
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 10,
+							"interval": 0.16,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "feather"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "feather"
+						}
+					]
+				},
+				{
+					"act": "burst",
+					"speaker": "蓝色的公主",
+					"text": "……呜、哈哈哈……脚心……会坏掉的……哈哈哈哈……别看……别看我这样……！",
+					"actions": [
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.6
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 10,
+							"interval": 0.15,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "feather"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "feather"
+						}
+					]
+				},
+				{
+					"act": "burst",
+					"speaker": "蓝色的公主",
+					"text": "……嗯……天花板……在转……",
+					"actions": [
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "dots"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 6,
+							"interval": 0.22,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "feather"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "feather"
+						}
+					]
+				},
+				{
+					"actions": [
+						{
+							"do": "fade_out",
+							"time": 0.5
+						},
+						{
+							"do": "voice",
+							"state": ""
+						}
+					],
+					"wait": 0.6
+				}
+			]
 		}
 	}
 }

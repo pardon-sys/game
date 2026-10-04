@@ -59,6 +59,8 @@ func switch_character() -> bool:
 
 ## 换关卡前换回公主（关卡之间只带公主的状态）。
 func _restore_main_character() -> void:
+	if GameState.has_flag("blue_is_hero"):
+		return   # 蓝色公主是主角了：不切回粉色公主
 	if GameState.player is BluePrincess and level:
 		for n in level.find_children("*", "", true, false):
 			if n is Princess and not (n is BluePrincess):

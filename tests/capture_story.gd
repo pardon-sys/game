@@ -42,6 +42,17 @@ func _ready() -> void:
 	GameState.player.global_position = Vector2(22 * 16 + 8, 20 * 16 + 12)
 	await _wait(1.0)
 	await _shot("mine_stealth_mid")
+	# 第七层：蓝色公主在塔底（跳过粉色公主的开场）
+	for f in ["intro_done_f7_pink_run", "f7_pink_ran", "blue_is_hero", "f7_argue_done"]:
+		GameState.set_flag(f)
+	GameState.pending_spawn = "blue_start"
+	await main.change_level(Floors.scene("floor_07"))
+	await _wait(1.5)
+	_finish()
+	await _shot("f7_blue_start")
+	GameState.player.global_position = Vector2(38 * 16 + 8, (95 - 2 - 9 - 13) * 16 + 4 * 16)
+	await _wait(1.2)
+	await _shot("f7_storey1")
 	get_tree().quit()
 
 

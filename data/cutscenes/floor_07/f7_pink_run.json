@@ -1,0 +1,95 @@
+{
+	"name": "第七层：一路向上",
+	"letterbox": true,
+	"skippable": true,
+	"steps": [
+		{
+			"actions": [
+				{
+					"emotion": "normal",
+					"laugh": 0,
+					"do": "pose"
+				}
+			],
+			"wait": 0.5
+		},
+		{
+			"speaker": "公主",
+			"text": "……终于下来了。门后面……是一座往上的塔？",
+			"emotion": "surprise",
+			"actions": [
+				{
+					"who": "princess",
+					"kind": "surprise",
+					"do": "bubble"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "往上……一直往上，就能回到地面了吧。",
+			"emotion": "sad"
+		},
+		{
+			"speaker": "公主",
+			"text": "小镇的大家、队长……还有她。……对不起。",
+			"emotion": "sad",
+			"actions": [
+				{
+					"who": "princess",
+					"kind": "dots",
+					"do": "bubble"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "可是我不会再被抓回去了。……我一定要逃出去！",
+			"emotion": "angry"
+		},
+		{
+			"actions": [
+				{
+					"who": "princess",
+					"to": [
+						42,
+						88
+					],
+					"speed": 110,
+					"do": "move"
+				},
+				{
+					"who": "princess",
+					"time": 0.6,
+					"do": "camera"
+				}
+			]
+		},
+		{
+			"actions": [
+				{
+					"who": "princess",
+					"to": [
+						42,
+						80
+					],
+					"speed": 110,
+					"do": "move"
+				}
+			]
+		},
+		{
+			"actions": [
+				{
+					"time": 0.8,
+					"do": "fade_out"
+				},
+				{
+					"flag": "f7_pink_ran",
+					"do": "set_flag"
+				}
+			],
+			"wait": 0.9
+		}
+	]
+}

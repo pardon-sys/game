@@ -1,0 +1,154 @@
+{
+	"name": "蓝色公主和队长",
+	"letterbox": true,
+	"skippable": true,
+	"steps": [
+		{
+			"actions": [
+				{
+					"id": "cap",
+					"kind": "npc:captain",
+					"at": [
+						42,
+						17
+					],
+					"dir": "up",
+					"do": "spawn"
+				},
+				{
+					"to": [
+						42,
+						12
+					],
+					"time": 0.6,
+					"do": "camera"
+				}
+			],
+			"wait": 0.6
+		},
+		{
+			"actions": [
+				{
+					"who": "cap",
+					"to": [
+						42,
+						12
+					],
+					"speed": 70,
+					"do": "move"
+				}
+			]
+		},
+		{
+			"speaker": "保卫队队长",
+			"text": "……您在这里。矿道深处的门被打开了。守门的队员说，看见那个粉色的姑娘往下去了。"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……我知道。"
+		},
+		{
+			"speaker": "保卫队队长",
+			"text": "您要去？那下面不是您该去的地方。上一次您从那里回来的时候——"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……队长。"
+		},
+		{
+			"speaker": "保卫队队长",
+			"text": "我是保卫队的队长。保护这个小镇，也包括保护您。……我不能让您下去。",
+			"actions": [
+				{
+					"who": "cap",
+					"dir": "up",
+					"do": "face"
+				}
+			]
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……她一个人。",
+			"actions": [
+				{
+					"who": "princess",
+					"kind": "angry",
+					"do": "bubble"
+				}
+			]
+		},
+		{
+			"speaker": "保卫队队长",
+			"text": "她是自己选择离开的！"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……所以，我也自己选择。……让开。",
+			"actions": [
+				{
+					"who": "princess",
+					"to": [
+						43,
+						13
+					],
+					"time": 0.5,
+					"do": "move"
+				}
+			]
+		},
+		{
+			"speaker": "保卫队队长",
+			"text": "……",
+			"actions": [
+				{
+					"who": "cap",
+					"kind": "dots",
+					"do": "bubble"
+				}
+			]
+		},
+		{
+			"speaker": "保卫队队长",
+			"text": "……您从小就是这样。说一不二。",
+			"actions": [
+				{
+					"who": "cap",
+					"dir": "left",
+					"do": "face"
+				}
+			]
+		},
+		{
+			"speaker": "保卫队队长",
+			"text": "至少……答应我，一定要回来。两个人一起。"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……嗯。",
+			"actions": [
+				{
+					"who": "princess",
+					"to": [
+						43,
+						20
+					],
+					"speed": 60,
+					"do": "move"
+				}
+			]
+		},
+		{
+			"actions": [
+				{
+					"time": 0.8,
+					"do": "fade_out"
+				},
+				{
+					"flag": "f7_argue_done",
+					"do": "set_flag"
+				}
+			],
+			"wait": 0.9
+		}
+	]
+}

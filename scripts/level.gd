@@ -15,6 +15,8 @@ var _day_ambient := Color.WHITE
 
 
 func _ready() -> void:
+	if GameState.has_flag("blue_is_hero"):
+		_swap_hero()
 	Dialogue.load_floor(floor_id)
 	var dark := get_node_or_null("Darkness") as CanvasModulate
 	if dark:
@@ -54,6 +56,22 @@ func _ready() -> void:
 		GameState.set_flag(flag)
 		await get_tree().create_timer(0.8).timeout
 		Dialogue.start(intro_dialogue)
+
+
+## 蓝色公主当主角（剧情标记 blue_is_hero）：把关卡里的粉色公主换成玩家操控的蓝色公主（同一个位置）。
+## 关卡里本来就有的蓝色公主（小镇里溜达的那个）这时不出现（BluePrincess.hide_flags）。
+func _swap_hero() -> void:
+	for n in get_tree().get_nodes_in_group("player"):
+		if n is Princess and not (n is BluePrincess) and is_ancestor_of(n):
+			var pink := n as Princess
+			var blue: BluePrincess = load("res://scenes/actors/playable/blue_princess.tscn").instantiate()
+			blue.hero = true
+			blue.name = "BlueHero"
+			pink.remove_from_group("player")
+			pink.get_parent().add_child(blue)
+			blue.global_position = pink.global_position
+			pink.queue_free()
+			return
 
 
 func _on_flag_changed(f: String) -> void:

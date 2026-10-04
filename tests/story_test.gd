@@ -7,6 +7,11 @@ var player: Princess
 var failures := 0
 
 
+class Src extends Node2D:
+	var reaction_key := ""
+	var tickle_zones := {}
+
+
 func _ready() -> void:
 	DevConfig.override = false
 	ComboTracker.play_scenes = false
@@ -19,6 +24,7 @@ func _ready() -> void:
 	await _run_portrait_fade()
 	await _run_tour_and_house()
 	await _run_stealth()
+	await _run_blue_arc()
 	print("\n==== %s (%d 项失败) ====" % ["全部通过" if failures == 0 else "有失败", failures])
 	get_tree().quit(1 if failures else 0)
 
@@ -207,6 +213,66 @@ func _run_stealth() -> void:
 		and GameState.has_flag("cutscene_seen_f6_morning_retry"))
 	var th: Array = [1, 2, 3].map(func(i): return (JSON.parse_string(FileAccess.get_file_as_string("res://data/theater/floor_06/f6_caught_%d.json" % i)) as Dictionary)["steps"].filter(func(st): return st.has("text")).size())
 	check("被抓的惩罚按次数 3 种，每段都长（%s 句）" % [th], th.all(func(x): return x >= 14))
+
+
+# ------------------------------------------------------------------ 第七层：粉色公主往上冲 → 主角换成蓝色公主
+func _run_blue_arc() -> void:
+	print("-- 第七层：粉色公主进塔 → 蓝色公主当主角 → 和队长争吵 → 升天回廊")
+	var seen := []
+	var on_cut := func(id: String): seen.append(id)
+	Cutscene.started.connect(on_cut)
+	await main.change_level(Floors.scene("floor_07"))
+	await _advance_until(func(): return _level_id() == "floor_06_house_up" and not Cutscene.is_playing() and GameState.has_flag("f7_blue_awake"), 60.0)
+	var hero = GameState.player
+	check("粉色公主走进第七层（过场 f7_pink_run）→ 主角换成蓝色公主，在小屋楼上醒来（%s）" % [seen],
+		seen.has("f7_pink_run") and seen.has("f7_blue_wake") and hero is BluePrincess and hero.hero and GameState.has_flag("blue_is_hero"))
+	check("蓝色公主：玩家操控、相机跟着她、用她的立绘套装和角色档案", hero.faction == Faction.Type.PLAYER and hero.camera.is_current()
+		and hero.portrait_set == "blue" and Characters.current() == "blue" and hero.controller is PlayerInputController)
+	var calm: Array = ReactionDB.lines("slime", "calm")
+	var h2: Array = ReactionDB.lines("slime", "helpless_2")
+	check("她的受挠台词是三无风格：平时很短（%s），失控后变长（%s）" % [calm[0], h2[0]],
+		calm.all(func(t): return str(t).length() <= 14 and str(t).begins_with("……")) and h2.all(func(t): return str(t).length() > 20)
+		and not str(ReactionDB.lines("", "calm")).contains("本公主"))
+	check("她的部位表：大腿和屁股最怕（大腿 ×%.2f、屁股 ×%.2f、脚心 ×%.2f）" % [TickleZones.info("thigh")["sensitivity"], TickleZones.info("butt")["sensitivity"], TickleZones.info("sole")["sensitivity"]],
+		TickleZones.info("thigh")["sensitivity"] >= 1.4 and TickleZones.info("butt")["sensitivity"] >= 1.4 and TickleZones.info("sole")["sensitivity"] < 1.0)
+	var slime_cg: Dictionary = CG.cgs().get("death_slime", {})
+	check("她的笑倒 CG / 组合演出是转换过的蓝色版（说话人、立绘），魔力疲倦爆发立绘是最后一格",
+		slime_cg.get("steps", []).any(func(st): return st.get("speaker", "") == "蓝色的公主") and CG.scenes.size() == 65
+		and str(CG.data["portraits"]["fatigue_burst"]["placeholder"]) == "damaged_giggle_burst" and hero.fatigue_burst_visual() == "damaged_giggle_burst"
+		and GameState.VISUALS.find("damaged_giggle_burst") == GameState.VISUALS.size() - 1)
+	check("训练成果只算粉色公主（换成她之后部位修正为 0）", TrainingStats.zone_modifier("sole") == 0.0)
+	# 出门 → 和队长争吵 → 第七层
+	seen.clear()
+	GameState.pending_spawn = "from_house"
+	await main.change_level(Floors.scene("floor_06_upper"))
+	await _advance_until(func(): return _level_id() == "floor_07" and not Cutscene.is_playing() and GameState.has_flag("cutscene_seen_f7_blue_arrive"), 90.0)
+	Cutscene.started.disconnect(on_cut)
+	hero = GameState.player
+	var saves: Array = main.level.find_children("*", "", true, false).filter(func(n): return n.scene_file_path.ends_with("save_point.tscn"))
+	check("走出小屋 → 和队长争吵 → 第七层（%s），蓝色公主站在塔底、旁边是本层唯一的存档点" % [seen],
+		seen == ["f7_blue_argue", "f7_blue_arrive"] and hero is BluePrincess and saves.size() == 1
+		and hero.global_position.distance_to((saves[0] as Node2D).global_position) < 80.0)
+	# 第七层的新组合
+	var fired := []
+	var on_fired := func(id: String): fired.append(id)
+	hero.combo.triggered.connect(on_fired)
+	for spec in [["spider_binding_brush", ["spider", "binding", "hedgehog"]], ["octopus_vest", ["octopus", "vest", "fairy"]],
+			["wardrobe_ghost", ["ghost", "glove", "wardrobe"]], ["mud_frog_dance", ["mud", "frog", "caterpillar"]],
+			["supine_jelly", ["supine", "mana_jelly", "bubble_fish"]], ["cushion_cage", ["cushion", "cage", "rat"]],
+			["spin_barnacle", ["spinwheel", "barnacle", "squirrel"]], ["legloop_glove", ["legloop", "teaser", "glove"]]]:
+		hero.combo.reset()
+		hero._full_invuln = 0.0
+		for k in spec[1]:
+			var s := Src.new()
+			s.reaction_key = k
+			main.level.get_node("Entities").add_child(s)
+			s.global_position = hero.global_position + Vector2(20, 0)
+			hero.receive_hit(HitData.make_tickle(s, 1.0))
+		await _wait(0.1)
+	hero.combo.triggered.disconnect(on_fired)
+	var want := ["spider_binding_brush", "octopus_vest", "wardrobe_ghost", "mud_frog_dance", "supine_jelly", "cushion_cage", "spin_barnacle", "legloop_glove"]
+	check("第七层 8 组新组合都能触发，有组合台词和（蓝色版的）组合演出（%s）" % [want.filter(func(c): return not fired.has(c))],
+		want.all(func(c): return fired.has(c) and CG.scenes.has(c) and ReactionDB.combo(c).get("name", "") != ""))
 
 
 # ------------------------------------------------------------------ 工具

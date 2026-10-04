@@ -12,6 +12,8 @@ extends Princess
 @export var hide_flags: Array[String] = ["f6_touring", "night", "blue_is_hero"]
 ## false = 过场演员：不溜达，位置由过场控制。
 @export var ai := true
+## true = 她是主角（第七层起，剧情标记 blue_is_hero）：玩家操控、相机跟着她、没有对话提示。关卡载入时由 level.gd 换上。
+@export var hero := false
 
 var talking := false
 
@@ -19,6 +21,22 @@ var talking := false
 func _setup() -> void:
 	portrait_set = "blue"
 	character_id = "blue"
+	if hero:
+		ai = false
+		dialogue = ""
+		show_flag = ""
+		hide_flags.clear()
+		set_faction(Faction.Type.PLAYER)
+		if not (controller is PlayerInputController or controller is ScriptedController):
+			set_controller(PlayerInputController.new())
+		super()
+		if camera:
+			camera.enabled = true
+			camera.make_current()
+		var talk_area := get_node_or_null("Talk") as Interactable
+		if talk_area:
+			talk_area.enabled = false
+		return
 	# 场景里自带的是玩家输入：换成 AI（过场演员换成脚本控制）
 	if not (controller is WanderController or controller is ScriptedController):
 		set_controller(make_ai_controller())

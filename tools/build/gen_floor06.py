@@ -1079,7 +1079,8 @@ hs.add(6, 2, "prop type=window action=" + HOUSE_OBJ + "window")
 hs.add(13, 2, "prop type=window action=" + HOUSE_OBJ + "window")
 hs.add(10, 2, "prop type=painting action=" + HOUSE_OBJ + "painting")
 hs.add(16, 2, "prop type=stairs_up")
-hs.add(16, 3, "exit target=floor_06_house_up locked=true dialogue=sign6_house_up")
+hs.add(16, 3, "exit target=floor_06_house_up spawn=from_down unlock_flag=blue_is_hero locked_dialogue=sign6_house_up")
+hs.add(15, 4, "spawn id=from_up")
 hs.add(4, 4, "prop type=princess_bed action=" + HOUSE_OBJ + "bed")
 hs.add(8, 3, "prop type=wardrobe action=" + HOUSE_OBJ + "wardrobe")
 hs.add(12, 3, "prop type=bookshelf action=" + HOUSE_OBJ + "bookshelf")
@@ -1397,4 +1398,70 @@ MORNING_RETRY = {"name": "第二天早上：再试一次", "letterbox": True, "s
 for name, c in (("f6_caught_home", CAUGHT_HOME), ("f6_morning_retry", MORNING_RETRY)):
     (CUT / (name + ".json")).write_text(json.dumps(c, ensure_ascii=False, indent="\t") + "\n")
 print("潜入失败：惩罚小剧场 3 段、地牢过场 3 段、回小屋、再试一次")
+
+
+# ================================================================ 第七层前奏：蓝色公主的房间（楼上）、她醒来、出门和队长争吵
+# 剧情：粉色公主进了第七层（f7_pink_run）→ 主角换成蓝色公主（blue_is_hero）→ 楼上醒来（f7_blue_wake）→ 出门（f7_blue_argue）→ 第七层
+HOUSE_UP_OBJ = "talk:floor_06/house_up_objects#"
+hu = Map("floor_06_house_up", 16, 12, "intro =\nintro_cutscene = f7_blue_wake\nambient = 0.82,0.84,0.95\nnight_ambient = 0.34,0.34,0.58")
+hu.room(2, 2, 13, 9)
+hus = Stack(hu)
+for y in range(2, 10):
+    for x in range(2, 14):
+        hus.add(x, y, "prop type=wood_floor")
+hu.torch(8, 1)
+hus.add(5, 2, "prop type=window action=" + HOUSE_UP_OBJ + "window")
+hus.add(4, 4, "prop type=blue_bed action=" + HOUSE_UP_OBJ + "bed")
+hus.add(9, 3, "prop type=bookshelf action=" + HOUSE_UP_OBJ + "bookshelf")
+hus.add(8, 7, "prop type=rug")
+hus.add(11, 8, "prop type=desk action=" + HOUSE_UP_OBJ + "desk")
+hus.add(3, 9, "prop type=plant")
+hus.add(7, 5, "prop type=candle")
+hus.add(13, 2, "prop type=stairs_down")
+hus.add(13, 3, "exit target=floor_06_house spawn=from_up")
+hus.add(12, 4, "spawn id=from_down")
+hus.add(6, 6, "spawn id=start")
+hus.add(6, 6, "player")
+hus.write()
+
+HUO = {"name": "", "entries": [{"node": "bed"}], "nodes": {
+    "bed": {"lines": [L("……蓝色的被子。叠好了。", BLUE)]},
+    "window": {"lines": [L("……矿道口。守门的队员换岗了。", BLUE)]},
+    "bookshelf": {"lines": [L("……《地面上的童话》。", BLUE), L("……她也读过这本吗。", BLUE)]},
+    "desk": {"lines": [L("……写了一半的信。……不寄了。", BLUE)]},
+}}
+(DLG / "house_up_objects.json").write_text(json.dumps(HUO, ensure_ascii=False, indent="\t") + "\n")
+
+BLUE_WAKE = {"name": "蓝色公主：楼下没有人", "letterbox": True, "skippable": True, "steps": [
+    {"actions": [A("pose", emotion="normal", laugh=0), A("fade_in", time=0.6)], "wait": 0.6},
+    line(BLUE, "……天亮了。"),
+    line(BLUE, "……楼下，太安静了。", actions=[A("face", who="princess", dir="right")]),
+    {"actions": [A("fade_out", time=0.5)], "wait": 0.6},
+    line(NARR, "（楼下的茶桌上压着一张纸条——「谢谢你这几天的照顾。茶很好喝。我要回地面上去了。——粉色的公主」）"),
+    {"actions": [A("fade_in", time=0.5)], "wait": 0.5},
+    line(BLUE, "……", actions=[A("bubble", who="princess", kind="dots")]),
+    line(BLUE, "……笨蛋。那扇门后面，不是地面。"),
+    line(BLUE, "……去找她。", actions=[A("set_flag", flag="f7_blue_awake"),
+         A("notify", text="现在操控：蓝色的公主。目标：出门，去矿道最深处")]),
+]}
+BLUE_ARGUE = {"name": "蓝色公主和队长", "letterbox": True, "skippable": True, "steps": [
+    {"actions": [A("spawn", id="cap", kind="npc:captain", at=[42, 17], dir="up"), A("camera", to=[42, 12], time=0.6)], "wait": 0.6},
+    {"actions": [A("move", who="cap", to=[42, 12], speed=70)]},
+    line(CAP, "……您在这里。矿道深处的门被打开了。守门的队员说，看见那个粉色的姑娘往下去了。"),
+    line(BLUE, "……我知道。"),
+    line(CAP, "您要去？那下面不是您该去的地方。上一次您从那里回来的时候——"),
+    line(BLUE, "……队长。"),
+    line(CAP, "我是保卫队的队长。保护这个小镇，也包括保护您。……我不能让您下去。", actions=[A("face", who="cap", dir="up")]),
+    line(BLUE, "……她一个人。", actions=[A("bubble", who="princess", kind="angry")]),
+    line(CAP, "她是自己选择离开的！"),
+    line(BLUE, "……所以，我也自己选择。……让开。", actions=[A("move", who="princess", to=[43, 13], time=0.5)]),
+    line(CAP, "……", actions=[A("bubble", who="cap", kind="dots")]),
+    line(CAP, "……您从小就是这样。说一不二。", actions=[A("face", who="cap", dir="left")]),
+    line(CAP, "至少……答应我，一定要回来。两个人一起。"),
+    line(BLUE, "……嗯。", actions=[A("move", who="princess", to=[43, 20], speed=60)]),
+    {"actions": [A("fade_out", time=0.8), A("set_flag", flag="f7_argue_done")], "wait": 0.9},
+]}
+for name, c in (("f7_blue_wake", BLUE_WAKE), ("f7_blue_argue", BLUE_ARGUE)):
+    (CUT / (name + ".json")).write_text(json.dumps(c, ensure_ascii=False, indent="\t") + "\n")
+print("第七层前奏：蓝色公主的房间、醒来、和队长争吵")
 

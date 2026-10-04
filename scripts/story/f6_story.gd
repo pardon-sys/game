@@ -5,7 +5,9 @@ extends RefCounted
 ##      → 夜晚降临（剧情标记 night，小屋的门锁住）→ 自由活动：家具都能调查（floor_06/house_objects）、骑马刷凳的小剧场、
 ##      蓝色公主下楼让她小声点、拿到神秘的钥匙（f6_key）→ 床：Sleep 睡到第二天 → 早上「我要逃离这里」（f6_escape）
 ##   2. f6_escape 之后矿道层变成潜入模式（StealthDirector）；被抓 → 营地地牢惩罚 → 蓝色公主领回小屋 → 睡一觉再来（vars.f6_caught 次数）
-## 剧情标记：f6_tour_started / f6_touring（参观中）/ f6_house_open / night / f6_key / f6_escape。
+##   3. 粉色公主走进第七层（过场 f7_pink_run）→ 主角换成蓝色公主（blue_is_hero）→ 她在小屋楼上醒来（f7_blue_wake）
+##      → 出门时和保卫队队长争吵（f7_blue_argue）→ 去第七层（f7_blue_arrive，塔底有唯一的存档点）
+## 剧情标记：f6_tour_started / f6_touring（参观中）/ f6_house_open / night / f6_key / f6_escape / blue_is_hero / f7_argue_done。
 
 const BLUE_FILE := "floor_06/blue_princess"
 const TOPICS := 5
@@ -26,8 +28,28 @@ static func on_talk_finished(file: String) -> void:
 		start_tour()
 
 
-static func on_level_entered(_floor_id: String) -> void:
-	pass
+static func on_level_entered(floor_id: String) -> void:
+	# 蓝色公主第一次走出小屋：和队长争吵，然后去第七层
+	if floor_id == "floor_06_upper" and GameState.has_flag("blue_is_hero") and not GameState.has_flag("f7_argue_done") and StoryDirector.instance:
+		await TrainingDB.wait_dialogue_free()
+		await Cutscene.play("f7_blue_argue")
+		GameState.set_flag("f7_argue_done")
+		await StoryDirector.instance.run_sequence([{"level": "floor_07", "spawn": "blue_start", "cutscene": "f7_blue_arrive"}])
+
+
+static func on_cutscene_finished(id: String) -> void:
+	if id == "f7_pink_run" and not GameState.has_flag("blue_is_hero"):
+		start_blue_arc()
+
+
+## 主角换成蓝色公主：从她房间（小屋楼上）开始，状态不带粉色公主的。
+static func start_blue_arc() -> void:
+	if StoryDirector.instance == null:
+		return
+	GameState.set_flag("blue_is_hero")
+	GameState.set_flag("night", false)
+	GameState.carried_player_state = {}
+	await StoryDirector.instance.run_sequence([{"level": "floor_06_house_up", "spawn": "start", "keep_state": true}])
 
 
 ## 参观小镇：跨地图的过场序列，最后进小屋、天黑。
