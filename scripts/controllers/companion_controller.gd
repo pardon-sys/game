@@ -2,10 +2,10 @@ class_name CompanionController
 extends CharacterController
 ## AI 搭档（双人模式里没被操控的那个公主）。每帧按优先级决定：
 ##   1. 被抓 / 失控 / 被吸附 / 被绊住：连按挣扎
-##   2. 脚下有预警（danger 组：手臂砸地的圈、扫击的线）：往外冲刺躲开
+##   2. 导演说有安全圈（Boss 大招）：跑进最近的安全圈；脚下有预警（danger 组：手臂砸地的圈、扫击 / 俯冲的通道）：往外冲刺躲开
 ##   3. 搭档倒地：跑过去按住 E 救她（附近小怪太多时先打）
 ##   4. 导演要她去站压力板（director.plate_for(她)）：走过去站着
-##   5. 身边敌人 ≥ 3 个且魔法冷却好了：蓄力 2 档放魔法
+##   5. 魔法冷却好了且（身边敌人 ≥ 3 个，或蓝色公主够得着 Boss 本体——冻住它）：蓄力 2 档放魔法
 ##   6. 打范围内最近的敌人（导演说本体 / 手臂能打时优先打它：director.priority_target()）
 ##   7. 跟在玩家操控的角色身边（2~4 格）
 
@@ -66,7 +66,7 @@ func _physics_process(delta: float) -> void:
 			_channel = 0.0
 		return
 	_held.erase(&"interact")
-	if _struggle(me) or _dodge(me) or _revive(me) or _plate(me) or _magic(me) or _attack(me):
+	if _struggle(me) or _safe(me) or _dodge(me) or _revive(me) or _plate(me) or _magic(me) or _attack(me):
 		return
 	_follow(me)
 
@@ -95,6 +95,22 @@ static func danger_at(tree: SceneTree, pos: Vector2) -> Node2D:
 		elif pos.distance_to(n.global_position) <= float(n.get_meta("radius", 14.0)) + 6.0:
 			return n
 	return null
+
+
+func _safe(me: PlayableCharacter) -> bool:
+	if Duo.director == null or not Duo.director.has_method("safe_spot_for"):
+		return false
+	var s: Variant = Duo.director.safe_spot_for(me)
+	if not (s is Vector2):
+		return false
+	intent = "dodge"
+	var to: Vector2 = (s as Vector2) - me.global_position
+	if to.length() > 6.0:
+		_move = to.normalized()
+		if to.length() > 60.0 and _dash_cd <= 0.0:
+			_dash_cd = 0.8
+			_pressed[&"dash"] = true
+	return true
 
 
 func _dodge(me: PlayableCharacter) -> bool:
@@ -150,7 +166,12 @@ func _plate(me: PlayableCharacter) -> bool:
 func _magic(me: PlayableCharacter) -> bool:
 	if not me.is_magic_unlocked() or me.magic_cooldown_left() > 0.0:
 		return false
-	if _enemies_near(me, 64.0) < 3:
+	var freeze_boss := false
+	if me.character_id == "blue" and Duo.director and Duo.director.get("boss") != null:
+		var b: Node = Duo.director.boss
+		if is_instance_valid(b) and b.get("fighting") == true and not b.call("is_frozen") and b.has_method("aim_point"):
+			freeze_boss = (b.call("aim_point") as Vector2).distance_to(me.global_position) < 72.0 + float(b.get_meta("body_radius", 0.0))
+	if _enemies_near(me, 64.0) < 3 and not freeze_boss:
 		return false
 	intent = "magic"
 	_held[&"magic"] = true
@@ -163,12 +184,19 @@ func _attack(me: PlayableCharacter) -> bool:
 	if t == null:
 		return false
 	intent = "attack"
-	var to := t.global_position - me.global_position
+	# 大型 Boss：走到本体正下方贴近打（本体碰撞形状在节点上方）
+	var aim := t.global_position
+	if t.has_method("aim_point"):
+		aim = t.global_position + Vector2(clampf(me.global_position.x - t.global_position.x, -40.0, 40.0), 14.0)
+	var to := aim - me.global_position
 	var reach := ATTACK_RANGE + float(t.get_meta("hit_radius", 0.0))
+	if t.has_method("aim_point"):
+		reach = 6.0
 	if to.length() > reach:
 		_move = to.normalized()
 	else:
-		_move = to.normalized() * 0.15   # 慢慢贴过去（转向它）
+		var face := (t.global_position - me.global_position) if t.has_method("aim_point") else to
+		_move = face.normalized() * 0.15   # 慢慢贴过去（转向它）
 		if _attack_cd <= 0.0:
 			_attack_cd = ATTACK_INTERVAL
 			_pressed[&"attack"] = true

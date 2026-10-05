@@ -64,8 +64,8 @@ static func _bind_tab() -> void:
 	if not InputMap.has_action("switch_character"):
 		InputMap.add_action("switch_character")
 	for ev in InputMap.action_get_events("switch_character"):
-		if ev is InputEventKey and (ev as InputEventKey).physical_keycode == KEY_TAB:
+		if ev is InputEventKey and (ev as InputEventKey).physical_keycode == KEY_C:
 			return
-	var tab := InputEventKey.new()
-	tab.physical_keycode = KEY_TAB
-	InputMap.action_add_event("switch_character", tab)
+	var c := InputEventKey.new()
+	c.physical_keycode = KEY_C
+	InputMap.action_add_event("switch_character", c)

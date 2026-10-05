@@ -48,8 +48,8 @@ const SCENES := {
 	"spot": "res://scenes/objects/wander_spot.tscn",
 	# 潜入模式（scripts/stealth/）
 	"stealth": "res://scenes/stealth/stealth_director.tscn",
-	"f8director": "res://scenes/story/floor8_director.tscn",
-	"f8chase": "res://scenes/minigame/chase_run.tscn",
+	"f8director": "res://levels/floor_08/scenes/floor8_director.tscn",
+	"f8chase": "res://levels/floor_08/scenes/chase_run.tscn",
 	"guard_patrol": "res://scenes/stealth/patrol_guard.tscn",
 }
 ## 按 type 参数选择场景的类型：新增怪物/友军/陷阱时在这里注册。

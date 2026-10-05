@@ -17,6 +17,13 @@ const ARM := preload("res://assets/generated/thousand_hand_arm.png")
 const MARK_TEX := preload("res://assets/generated/strike_mark.png")
 const PHASE_FLOOR := {1: 0.7, 2: 0.35, 3: 0.0}
 const PULLED_MULT := 1.5
+## 阶段二起手臂砸地（不抓人）的一口闷笑。
+const SLAM_TICKLE := 14.0
+## 召唤上限（同时在场）和每次召唤的数量。
+const SUMMON_CAP := {1: 7, 2: 4, 3: 7}
+const SUMMON_COUNT := {1: 4, 2: 2, 3: 4}
+const HEART := preload("res://data/items/heart.tres")
+const CANDY := preload("res://data/items/star_candy.tres")
 const RAISE_Y := -72.0
 const SUMMONS := {
 	1: [["squirrel", "hedgehog"], ["caterpillar", "octopus"]],
@@ -60,6 +67,13 @@ var _flashes: Array[Dictionary] = []
 var _sweep_hand := {}
 var _arm_layer: Node2D
 var _rage := false
+## 冰晶结界冻住的剩余秒数（期间不出招、手臂停住、本体蒙冰）
+var _frozen_left := 0.0
+var _ice_fx := 0.0
+## 手臂动画用的时间（冻住时不走）
+var _arm_t := 0.0
+## 新技能（俯冲 / 手臂雨 / 羽毛风暴 / 千手乱舞），见 boss_skills.gd
+var skills: BossSkills
 
 
 func _setup() -> void:
@@ -74,7 +88,39 @@ func _setup() -> void:
 	_arm_layer.z_index = 3
 	add_child(_arm_layer)
 	_arm_layer.draw.connect(_draw_arms)
-	set_meta("hit_radius", 34.0)
+	set_meta("hit_radius", 4.0)      # AI 搭档贴多近才打（本体碰撞形状的下沿）
+	set_meta("body_radius", 44.0)    # 冰晶结界算范围时的身体半径
+	skills = BossSkills.new()
+	skills.name = "Skills"
+	skills.boss = self
+	add_child(skills)
+
+
+## 本体中心（冰晶结界算范围用；缩到天花板时跟着上去）。
+func aim_point() -> Vector2:
+	return global_position + Vector2(0, -40 + sprite.position.y)
+
+
+## 冰晶结界冻住：sec 秒不出招、手臂停住、本体蒙冰蓝色、冒冰晶碎片。
+func freeze(sec: float) -> void:
+	if _dead:
+		return
+	_frozen_left = maxf(_frozen_left, sec)
+	cancel_attacks()
+	skills.cancel()
+	sprite.modulate = IceBarrier.ICE
+	Fx.burst(get_parent(), aim_point(), "crystal", 12, 60.0, 0.6, Vector2(0, 50), Color(0.85, 0.95, 1.0))
+	SpeechBubble.say(self, "……！", 70.0)
+
+
+func is_frozen() -> bool:
+	return _frozen_left > 0.0
+
+
+## 受击闪白（开场冰晶结界命中时等）。
+func hurt_flash(sec: float) -> void:
+	_hurt_flash = maxf(_hurt_flash, sec)
+	flash(Color.WHITE)
 
 
 # ------------------------------------------------------------------ 受伤（阶段下限、拽下来时加倍）
@@ -166,16 +212,28 @@ func _tick(delta: float) -> void:
 		if f["life"] <= 0.0:
 			_flashes.erase(f)
 	var frozen := GameState.in_dialogue
+	if _frozen_left > 0.0 and not frozen:
+		_frozen_left -= delta
+		_ice_fx -= delta
+		if _ice_fx <= 0.0:
+			_ice_fx = 0.35
+			Fx.burst(get_parent(), aim_point() + Vector2(randf_range(-40, 40), randf_range(-20, 20)), "crystal", 3, 30.0, 0.5, Vector2(0, 40),
+				Color(0.85, 0.95, 1.0))
+		if _frozen_left <= 0.0:
+			sprite.modulate = Color.WHITE
+	else:
+		_arm_t += delta
 	if _pulled_left > 0.0 and not frozen:
 		_pulled_left -= delta
 		if _pulled_left <= 0.0 and phase >= 2:
 			set_raised(true)
-	if fighting and not frozen and not _dead:
+	if fighting and not frozen and not _dead and _frozen_left <= 0.0:
 		_update_pending(delta)
 		_update_grab(delta)
 		_update_sweep(delta)
-		if _pulled_left <= 0.0:
+		if _pulled_left <= 0.0 and not skills.busy():
 			_think_attacks(delta)
+			skills.think(delta)
 	_animate(delta)
 	_arm_layer.queue_redraw()
 
@@ -262,6 +320,13 @@ func _slam(pos: Vector2) -> void:
 	_flashes.append({"from": _arm_root(pos), "to": pos, "hand": 2, "life": 0.25})
 	Audio.play("swish", -2.0, 0.05, 0.7)
 	Fx.burst(get_parent(), pos, "dust", 6, 40.0, 0.4, Vector2(0, 30))
+	# 阶段二起：手臂砸地不抓人（不打断操作），砸中积累一大口闷笑 + 轻微击退
+	if phase >= 2:
+		for m in _targets():
+			if m.global_position.distance_to(pos) <= 16.0:
+				deliver_tickle(m, SLAM_TICKLE, false, 60.0)
+				play_tickle_sound()
+		return
 	if victim != null:
 		return
 	for m in _targets():
@@ -311,6 +376,13 @@ func _update_sweep(delta: float) -> void:
 		_sweep_hand = {}
 
 
+## 战败 / 阶段切换：连大技能一起停掉。
+func cancel_all() -> void:
+	cancel_attacks()
+	if skills:
+		skills.cancel()
+
+
 func cancel_attacks() -> void:
 	for s in _pending:
 		if is_instance_valid(s["node"]):
@@ -332,8 +404,14 @@ func summon() -> void:
 	if groups.is_empty() or summon_points.is_empty():
 		return
 	var alive := get_tree().get_nodes_in_group("f8_summon").filter(func(n): return n is Actor and n.is_alive()).size()
-	var cap := 6 if phase == 3 else 4
-	var group: Array = groups.pick_random() if phase < 3 else groups[randi() % groups.size()]
+	var cap: int = SUMMON_CAP.get(phase, 4)
+	# 一组（2~3 种）再随机补到 SUMMON_COUNT 只
+	var group: Array = (groups.pick_random() as Array).duplicate()
+	var pool: Array = []
+	for g in groups:
+		pool.append_array(g)
+	while group.size() < int(SUMMON_COUNT.get(phase, 2)):
+		group.append(pool.pick_random())
 	for key in group:
 		if alive >= cap:
 			break
@@ -342,10 +420,23 @@ func summon() -> void:
 		get_parent().add_child(m)
 		m.global_position = summon_points.pick_random() + Vector2(randf_range(-12, 12), randf_range(-8, 8))
 		m.rally_to(_targets().pick_random() if not _targets().is_empty() else GameState.player)
+		if m.health:
+			m.health.died.connect(drop_loot.bind(m))
 		Fx.burst(get_parent(), m.global_position, "dust", 5, 30.0, 0.4)
 		alive += 1
 	Audio.play("chime", -4.0, 0.0, 0.6)
 	maybe_taunt(true)
+
+
+## 召唤的小怪被打倒时掉东西：爱心 30%、星星糖 25%（掉在原地）。
+func drop_loot(m: Node2D) -> void:
+	if not is_instance_valid(m) or not is_inside_tree():
+		return
+	var pos := m.global_position
+	if randf() < 0.30:
+		WorldItem.spawn(get_parent(), pos, HEART)
+	if randf() < 0.25:
+		WorldItem.spawn(get_parent(), pos + Vector2(6, 0), CANDY)
 
 
 func clear_summons() -> void:
@@ -354,14 +445,15 @@ func clear_summons() -> void:
 
 
 # ------------------------------------------------------------------ 献祭（阶段三）
-## 把 c 抓到巢穴（lair_pos）里：她动不了，由导演的 SacrificeStruggle 管挣扎。
-func sacrifice_grab(c: PlayableCharacter, lair_pos: Vector2) -> void:
+## 把 c 在 at（光圈）那里吊起来挠：她动不了，由导演的 SacrificeStruggle 管挣扎。
+func sacrifice_grab(c: PlayableCharacter, at: Vector2) -> void:
 	sacrificed = c
 	if c.status.is_grabbed():
 		c.status.release(false)
 	c.status.grab(self, 9999.0, 99999)
 	_flashes.append({"from": _arm_root(c.global_position), "to": c.global_position, "hand": 2, "life": 0.4})
-	c.global_position = lair_pos
+	c.global_position = at
+	c.pose_offset = Vector2(0, -10)   # 被吊起来一点
 	Audio.play("grab", -1.0, 0.0, 0.6)
 	maybe_taunt(true)
 
@@ -371,6 +463,7 @@ func sacrifice_release(c: PlayableCharacter, drop_pos: Vector2) -> void:
 		c.status.release(true)
 	if is_instance_valid(c):
 		c.global_position = drop_pos
+		c.pose_offset = Vector2.ZERO
 		c.set_invulnerable(1.5, true)
 	sacrificed = null
 
@@ -382,6 +475,8 @@ func _arm_root(to: Vector2) -> Vector2:
 
 
 func _animate(_delta: float) -> void:
+	if _frozen_left > 0.0:
+		return   # 冻住：停在当前这一帧
 	if _hurt_flash > 0.0:
 		sprite.frame = 2
 	elif _pulled_left > 0.0:
@@ -404,9 +499,9 @@ func _chain(from: Vector2, to: Vector2, hand_idx: int, wiggle := 0.0) -> void:
 	var n := maxi(2, int(a.distance_to(b) / 9.0))
 	for i in n:
 		var f := float(i) / n
-		var p := a.lerp(b, f) + Vector2(sin(_t * 3.0 + f * 6.0) * wiggle * f, 0)
+		var p := a.lerp(b, f) + Vector2(sin(_arm_t * 3.0 + f * 6.0) * wiggle * f, 0)
 		_arm_layer.draw_texture_rect_region(ARM, Rect2(p - Vector2(12, 12), Vector2(24, 24)), _arm_part(i % 2))
-	var frame := hand_idx + (int(_t * 8.0) % 2)
+	var frame := hand_idx + (int(_arm_t * 8.0) % 2)
 	_arm_layer.draw_texture_rect_region(ARM, Rect2(b - Vector2(12, 14), Vector2(24, 24)), _arm_part(frame))
 
 
@@ -416,12 +511,14 @@ func _draw_arms() -> void:
 	if not raised or phase < 3:
 		for i in 4:
 			var x := -45.0 + i * 30.0
-			var dangle := 22.0 + 6.0 * sin(_t * 1.7 + i)
-			_chain(top + Vector2(x, 0), top + Vector2(x + sin(_t * 1.3 + i * 1.7) * 6.0, dangle), [2, 4, 6, 2][i], 3.0)
+			var dangle := 22.0 + 6.0 * sin(_arm_t * 1.7 + i)
+			_chain(top + Vector2(x, 0), top + Vector2(x + sin(_arm_t * 1.3 + i * 1.7) * 6.0, dangle), [2, 4, 6, 2][i], 3.0)
 	for f in _flashes:
 		_chain(f["from"], f["to"], f["hand"])
 	if is_instance_valid(victim):
-		_chain(_arm_root(victim.global_position), victim.global_position + Vector2(sin(_t * 9.0) * 4.0, -10), 2, 2.0)
+		_chain(_arm_root(victim.global_position), victim.global_position + Vector2(sin(_arm_t * 9.0) * 4.0, -10), 2, 2.0)
+	if is_instance_valid(sacrificed):
+		_chain(_arm_root(sacrificed.global_position), sacrificed.global_position + Vector2(0, -26), 2, 1.0)
 	if not _sweep_hand.is_empty():
 		var r: Rect2 = _sweep_hand["rect"]
 		var p := Vector2(_sweep_hand["x"], r.get_center().y)

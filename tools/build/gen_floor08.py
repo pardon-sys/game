@@ -1,10 +1,9 @@
 """生成第八层「千手之间」：Boss 房（levels/floor_08）、巨石追逐（levels/floor_08_chase）、过场、战败小剧场、石碑。
 
-floor_08（36x34）：下面是入口走廊（存档点，本层唯一），上面是 30x18 的 Boss 房（千手痒痒魔盘在上沿）；
-  左上角另有一间封住的小屋 = 千手的巢穴（阶段三献祭时被抓进去，右边小窗拍那里）。
-  到达点（spawn id=…，Floor8Director 用）：boss、pink、lair、circle、plate_a1/a2/b1/b2/c1/c2、summon1~4、limb1~4、
+floor_08（36x34）：下面是入口走廊（存档点，本层唯一），上面是 30x18 的 Boss 房（千手痒痒魔盘在上沿）。
+  到达点（spawn id=…，Floor8Director 用）：boss、pink、circle、plate_a1/a2/b1/b2/c1/c2、summon1~4、limb1~4、
   blue_fight、pink_fight、arena_tl、arena_br。入口的门（gate group=f8_gate）开战时关上。
-floor_08_chase（30x74）：两条竖直跑道（lane_a / lane_b = 第 0 格的中心），ChaseRun 控制。
+floor_08_chase：一间底板小屋，无限滚动的跑道由 ChaseRun 自己画。
 过场 data/cutscenes/floor_08/：f8_intro_a / f8_intro_b（开场）、f8_phase2 / f8_phase3（阶段切换）、f8_victory_a / f8_victory_b（胜利）、f8_ending（逃出来）。
 小剧场 data/theater/floor_08/：f8_defeat_<阶段>_<1|2>（每阶段两种，第二次起换第二种）、f8_chase_fail。
 蓝色公主的台词：她和千手是旧识，带着惋惜和自责，但从不说出它是谁。
@@ -65,12 +64,11 @@ AX0, AY0, AX1, AY1 = 3, 7, 32, 24          # Boss 房（含）
 m = Map("floor_08", W, H, "intro =\nintro_cutscene =\nambient = 0.42,0.36,0.55", "第八层·千手之间")
 m.room(AX0, AY0, AX1, AY1)
 m.room(16, AY1 + 1, 19, 32)                # 入口走廊
-m.room(2, 1, 8, 4)                         # 巢穴（封住的小屋）
 for x in (6, 12, 24, 29):
     m.torch(x, AY0 - 1)
-for y in (12, 19):
-    m.torch(AX0 - 1, y)
-    m.torch(AX1 + 1, y)
+# 两侧竖墙上的火把照不到地面：改成场地四角和两侧中间的落地灯（灯光道具）
+for (x, y) in ((AX0, AY0 + 1), (AX1, AY0 + 1), (AX0, AY1), (AX1, AY1), (AX0, 16), (AX1, 16)):
+    m.put(x, y, "prop type=lamp")
 m.torch(15, 29)
 m.torch(20, 29)
 # 入口（开战时关上）
@@ -81,7 +79,7 @@ m.put(17, 29, "savepoint place=千手之间·入口")
 m.put(18, 27, "sign dialogue=sign8_door")
 m.put(19, 31, "f8director")
 MARKS = {
-    "boss": (18, 10), "pink": (18, 13), "lair": (5, 3), "circle": (18, 17),
+    "boss": (18, 10), "pink": (18, 13), "circle": (18, 17),
     "plate_a1": (5, 15), "plate_a2": (30, 15), "plate_b1": (8, 22), "plate_b2": (27, 11),
     "plate_c1": (9, 11), "plate_c2": (26, 22),
     "summon1": (4, 9), "summon2": (31, 9), "summon3": (4, 23), "summon4": (31, 23),
@@ -90,34 +88,24 @@ MARKS = {
 }
 for k, (x, y) in MARKS.items():
     m.put(x, y, "spawn id=%s" % k)
-# 巢穴里的装饰（羽毛、刷子）
-m.put(3, 2, "decor tile=74")
-m.put(7, 4, "decor tile=73")
 m.write()
 Path("levels/floor_08/design.json").write_text(json.dumps({
-    "_说明": ["第八层（gen_floor08.py 生成）：isolated = 故意走不到的区域（千手的巢穴：阶段三献祭时被抓进去，右边小窗拍那里）。"],
-    "isolated": [[2, 1, 8, 4]]}, ensure_ascii=False, indent="\t") + "\n")
+    "_说明": ["第八层（gen_floor08.py 生成）：boss_combos = 千手痒痒魔和它召唤的小怪凑的三来源组合（小怪是战斗中召唤的，不在地图上；",
+             "level_design_test 检查组合的每个来源都是千手或它会召唤的小怪）。"],
+    "boss_combos": ["th_brush_feast", "th_bubble_web", "th_feather_swarm", "th_latch_crawl"]}, ensure_ascii=False, indent="\t") + "\n")
 
 # ================================================================ 巨石追逐
-CW, CH = 30, 74
-CELLS, CELL_T = 10, 6                       # 10 格，每格 6 个图块（ChaseRun.CELL_PX = 96）
-LANE_TOP = 6
-c = Map("floor_08_chase", CW, CH, "intro =\nintro_cutscene =\nambient = 0.5,0.42,0.55", "第八层·崩塌的回廊")
-c.room(3, 2, 9, LANE_TOP + CELLS * CELL_T + 4)
-c.room(20, 2, 26, LANE_TOP + CELLS * CELL_T + 4)
-for y in range(8, CH - 6, 9):
-    c.torch(2, y)
-    c.torch(10, y)
-    c.torch(19, y)
-    c.torch(27, y)
-c.put(6, LANE_TOP, "spawn id=lane_a")
-c.put(23, LANE_TOP, "spawn id=lane_b")
-c.put(6, LANE_TOP + 3, "player")
-c.put(8, 3, "f8chase")
+# 跑道由 ChaseRun 自己画（无限滚动），这里只是一间底板小屋（level.gd 需要地板 / 墙 / 玩家出生点）。
+c = Map("floor_08_chase", 20, 12, "intro =\nintro_cutscene =\nambient = 0.5,0.42,0.55", "第八层·崩塌的回廊")
+c.room(2, 2, 17, 9)
+for x in (5, 10, 15):
+    c.torch(x, 1)
+c.put(9, 6, "player")
+c.put(11, 6, "f8chase")
 c.write()
 Path("levels/floor_08_chase/design.json").write_text(json.dumps({
-    "_说明": ["追逐战（gen_floor08.py 生成）：两条跑道互不相通，isolated = 另一条跑道（小窗里的那个人跑的）。"],
-    "isolated": [[20, 2, 26, LANE_TOP + CELLS * CELL_T + 4]]}, ensure_ascii=False, indent="\t") + "\n")
+    "_说明": ["追逐战（gen_floor08.py 生成）：这间小屋只是底板，两个人在 ChaseRun 画的无限跑道上跑（不在这间屋里），不做走遍地面的检查。"],
+    "no_reachability": True}, ensure_ascii=False, indent="\t") + "\n")
 
 # ================================================================ 对话 / 过场 / 小剧场
 P, BLUE, BOSS, S, N = "公主", "蓝色的公主", "千手痒痒魔", "石碑", ""
@@ -159,7 +147,7 @@ CUTS = {
         line(BLUE, "……原来，你在这里。", "sad"),
         line(P, "诶？蓝、蓝色的……你怎么会……哈哈哈哈！别、别挠那里——！"),
         line(BOSS, "……？……你……"),
-        line(BLUE, "……别动。", "angry", [A("sfx", sound="chant"), A("camera", who="princess", time=0.6)]),
+        line(BLUE, "……别动。", "angry", [A("sfx", sound="chime", pitch=1.6), A("camera", who="princess", time=0.6)]),
     ]),
     "f8_intro_b": cut("第八层：并肩", [
         {"actions": [A("flash", time=0.4), A("shake", time=0.5, strength=3.0)], "wait": 0.5},
@@ -187,15 +175,15 @@ CUTS = {
         {"actions": [A("shake", time=0.8, strength=4.0), A("camera", to=[18, 12], time=0.8)], "wait": 0.8},
         line(BOSS, "……不……下去了……再也……不下去了……"),
         line(P, "它把手全收起来了……这样根本打不到！", "surprise"),
-        line(BLUE, "……中间的光圈。走进去的人，会被它抓上去。"),
+        line(BLUE, "……中间的光圈。走进去的人，会被它吊起来。"),
         line(BLUE, "……它挠人的时候，手会伸下来。……那时候打。"),
         line(P, "那、那谁去……", "sad"),
         line(BLUE, "……我去。……这是我欠它的。", "sad"),
         line(P, "不行！……我们轮流！谁撑不住了就换人！", "angry"),
         line(BLUE, "……嗯。"),
         {"actions": [A("camera", who="princess", time=0.6),
-                     A("notify", text="走进光圈的人会被抓进巢穴（右边小窗：← → 交替连按挣扎），另一个人打下来的手臂")], "wait": 0.4},
-        {"actions": [A("notify", text="阶段三：任何一人倒下都会战败！")], "wait": 0.3},
+                     A("notify", text="走进光圈的人会被吊起来挠（右边小窗：连按空格挣扎），另一个人打下来的手臂；打她也能帮她降闷笑")], "wait": 0.4},
+        {"actions": [A("notify", text="阶段三：千手会用上全部力气——小心全屏的大招，躲进发光的安全圈！")], "wait": 0.3},
     ]),
     "f8_victory_a": cut("第八层：恼怒", [
         {"actions": [A("camera", to=[18, 12], time=0.8)], "wait": 0.8},
@@ -238,11 +226,49 @@ def pose(who, visual):
     return A("pose", who=who, visual=visual, anim="helpless")
 
 
-def theater(name, lines, intro_n=""):
+# 每段战败小剧场分四幕：第一幕开场；第二、三、四幕各以一句旁白开头并换立绘（defeat_1 → defeat_2 → defeat_2），
+# 第四幕是每段自己写的结尾（笑到快昏过去）。
+ACT_NOTES = {
+    1: ["（手指一根根从大手里伸出来，挠得越来越熟练——像是早就知道她们哪里最怕）",
+        "（召唤来的小怪也围了上来，刷子尾巴、软刺、吸盘一起加入）",
+        "（两个人笑得喘不过气，千手却一点也没有停下的意思）"],
+    2: ["（锁链在头顶晃荡，千手把两个人举得更高，脚尖够不着地面）",
+        "（地面又变了形，泥沼和传送带把她们往手臂底下送）",
+        "（笑声在大厅里回荡，连墙上的火光都跟着一抖一抖）"],
+    3: ["（千手的身体里伸出更多手臂，像一张网一样把两个人裹住）",
+        "（红色的光一明一暗，像心跳——每跳一下，手指就多一根）",
+        "（两个人的笑声越来越哑，眼角全是笑出来的泪）"],
+    0: ["（碎石缝里伸出的手越来越多，抓住脚踝不放）",
+        "（巨石在背后轰隆作响，可手指一点也不着急）",
+        "（两个人靠在一起，笑得一点力气都没有了）"],
+}
+PORTRAITS = ["defeat_1", "defeat_2", "defeat_2"]
+
+
+def theater(name, lines, intro_n="", finale=(), phase=1):
     steps = [{"actions": [A("fade_in", time=0.5), A("voice", state="laugh")], "wait": 0.5}]
     if intro_n:
         steps.append({"speaker": N, "text": intro_n})
     zones = ["armpit", "waist", "sole", "thigh", "belly", "butt"]
+    notes = ACT_NOTES.get(phase, ACT_NOTES[1])
+    body = list(lines)
+    third = max(1, len(body) // 3)
+    breaks = {third: 0, third * 2: 1}
+    full = []
+    for i, ln in enumerate(body):
+        if i in breaks:
+            full.append(("__act__", breaks[i]))
+        full.append(ln)
+    full.append(("__act__", 2))
+    full.extend(finale)
+    lines = []
+    for item in full:
+        if item[0] == "__act__":
+            k = item[1]
+            steps.append({"speaker": N, "text": notes[k], "portrait": PORTRAITS[k],
+                          "actions": [tk("pink", "boss", zones[k], "feather"), tk("blue", "boss", "thigh", "brush")]})
+            continue
+        lines.append(item)
     for i, (sp, text) in enumerate(lines):
         acts = []
         z = zones[i % len(zones)]
@@ -306,8 +332,8 @@ DEFEAT = {
         (BLUE, "……哈哈哈……对不起……是我……没回来……"), (P, "回、回来什么——哈哈哈哈！"),
         (BOSS, "……笑……"), (P, "……哈……下、下次……一定拉下来……"),
     ]),
-    (3, 1): ("千手之间·战败（阶段三）", "（光圈里的那个撑不住了。另一个也被手臂拖了上去）", [
-        (BOSS, "……都……上来……了……"), (P, "巢、巢穴里……全是手——哈哈哈！"),
+    (3, 1): ("千手之间·战败（阶段三）", "（光圈里的那个撑不住了。另一个也被手臂吊了起来）", [
+        (BOSS, "……都……上来……了……"), (P, "吊、吊在半空……全是手——哈哈哈！"),
         (BLUE, "……撑、撑不住了……噗、哈哈……"), (BOSS, "……不……放……永远……"),
         (P, "永、永远不行啦哈哈哈哈！"), (BLUE, "……哈哈……大腿……屁股……全、全部……"),
         (BOSS, "……你……回来了……"), (BLUE, "……哈哈哈……我……我回来了……哈哈哈……可是……"),
@@ -316,7 +342,7 @@ DEFEAT = {
         (BLUE, "……哈哈哈……对不起……对不起……"), (BOSS, "……笑……一直……"),
         (P, "……哈……哈……轮、轮流……下次……早点换人……"), (BLUE, "……嗯……哈……"),
     ]),
-    (3, 2): ("千手之间·战败（阶段三·又一次）", "（又一次被拖进巢穴。手指好像认得她们哪里最怕）", [
+    (3, 2): ("千手之间·战败（阶段三·又一次）", "（又一次被吊了起来。手指好像认得她们哪里最怕）", [
         (BOSS, "……又……来……了……"), (P, "这、这次一上来就是脚心——哈哈哈！"),
         (BLUE, "……噗……别、别从右边……"), (BOSS, "……右边……你……喜欢……"),
         (BLUE, "……哈、哈哈……才、才不喜欢……哈哈哈……"), (P, "你们到底什么关系啦哈哈哈！"),
@@ -329,8 +355,36 @@ DEFEAT = {
 }
 TH = Path("data/theater/floor_08")
 TH.mkdir(parents=True, exist_ok=True)
+# 第四幕：每段自己的结尾
+FINALE = {
+    (1, 1): [(P, "哈、哈……数、数不清了……到底有几只手……"), (BLUE, "……哈哈……一千……只……哈哈哈……"),
+             (BOSS, "……再……一起……"), (P, "不、不要一起了——哈哈哈哈哈！"), (BLUE, "……对不起……是我……带你来的……哈……"),
+             (P, "笨蛋……哈哈……是我自己跑来的……"), (N, "（手指终于慢了下来。两个人软软地挂在半空，连笑声都只剩下喘气）"),
+             (P, "……下次……一定……打赢……"), (BLUE, "……嗯。")],
+    (1, 2): [(P, "哈……哈……你、你刚才说……「记得」……"), (BLUE, "……哈哈……别、别问……"),
+             (BOSS, "……记得……你……笑起来……"), (BLUE, "……！……哈哈哈……别、别说了……"),
+             (P, "它好像……很喜欢你……哈哈哈……"), (BLUE, "……那是……以前……哈……"),
+             (N, "（千手的手指停在蓝色公主的脚心上，迟迟没有落下——过了好久，才又轻轻挠了一下）"),
+             (BLUE, "……哈……够了……"), (P, "……我们……再来……")],
+    (2, 1): [(P, "锁、锁链……刚才明明差一点……哈哈……"), (BLUE, "……板子……要一起踩……"),
+             (BOSS, "……不……下去……"), (P, "哈哈哈哈！又、又被举高了——！"), (BLUE, "……哈哈……下面……下面的路……全变了……"),
+             (P, "地面会动……太狡猾了哈哈哈……"), (N, "（锁链叮当作响，两个人在半空晃来晃去，直到笑得没有一点力气）"),
+             (P, "……下次……我先去踩……"), (BLUE, "……我守另一块。")],
+    (2, 2): [(P, "泥、泥巴里……也有手……哈哈哈……"), (BLUE, "……哈哈……往、往下拉……"),
+             (BOSS, "……留……下……"), (BLUE, "……哈哈哈……不能……留下……"), (P, "对、对啊……我们要出去……哈哈哈哈！"),
+             (BOSS, "……出去……也……带上……我……"), (BLUE, "……！……"),
+             (N, "（蓝色公主没有回答。泥沼慢慢合拢，只剩下两个人沙哑的笑声）"), (P, "……再来一次……")],
+    (3, 1): [(P, "哈……哈……被、被吊得好高……"), (BLUE, "……哈哈……抓、抓紧我……"),
+             (BOSS, "……都……是……我的……"), (P, "才、才不是——哈哈哈哈哈！"), (BLUE, "……哈哈哈……我们……是彼此的……哈……"),
+             (BOSS, "……彼……此……"), (N, "（千手的手臂一下子僵住了，像是想起了什么——然后又更用力地挠了起来）"),
+             (P, "……哈……下次……换人要快……"), (BLUE, "……嗯……我撑得住。")],
+    (3, 2): [(P, "它、它又学你说话……哈哈哈……"), (BLUE, "……哈哈……它……一直……这样……"),
+             (BOSS, "……一直……一起……"), (BLUE, "……哈哈哈……一直……是不可能的……"), (P, "蓝色的公主……？"),
+             (BLUE, "……哈……没、没什么……"), (N, "（红光一明一暗，手指一根接一根——两个人笑到连自己的名字都快想不起来）"),
+             (P, "……下次……"), (BLUE, "……一起。")],
+}
 for (ph, k), (name, intro, lines) in DEFEAT.items():
-    (TH / ("f8_defeat_%d_%d.json" % (ph, k))).write_text(json.dumps(theater(name, lines, intro), ensure_ascii=False, indent="\t") + "\n")
+    (TH / ("f8_defeat_%d_%d.json" % (ph, k))).write_text(json.dumps(theater(name, lines, intro, FINALE[(ph, k)], ph), ensure_ascii=False, indent="\t") + "\n")
 CHASE_FAIL = ("崩塌的回廊·没逃掉", "（巨石堵住了路。千手的残臂从碎石缝里伸了出来）", [
     (P, "路、路被堵住了——！"), (BOSS, "……别……走……"),
     (BLUE, "……它……还没放弃……"), (P, "手、手从石头缝里伸出来了——哈哈哈！"),
@@ -340,5 +394,8 @@ CHASE_FAIL = ("崩塌的回廊·没逃掉", "（巨石堵住了路。千手的�
     (BOSS, "……笑……"), (P, "哈哈哈哈！好、好啦好啦——再来一次！"),
     (BLUE, "……哈……嗯。……再来。"), (P, "……一、二、三……跑！"),
 ])
-(TH / "f8_chase_fail.json").write_text(json.dumps(theater(CHASE_FAIL[0], CHASE_FAIL[2], CHASE_FAIL[1]), ensure_ascii=False, indent="\t") + "\n")
+CHASE_FINALE = [(P, "巨、巨石……还在后面……哈哈哈……"), (BLUE, "……哈……手……放开脚……"),
+                (BOSS, "……别……走……"), (BLUE, "……对不起。……我们要走。"), (P, "哈哈哈……用、用力——挣开了！"),
+                (N, "（两个人互相拉着，从碎石里爬了出来）"), (P, "……再跑一次！这次跑在一起！"), (BLUE, "……嗯。")]
+(TH / "f8_chase_fail.json").write_text(json.dumps(theater(CHASE_FAIL[0], CHASE_FAIL[2], CHASE_FAIL[1], CHASE_FINALE, 0), ensure_ascii=False, indent="\t") + "\n")
 print("第八层：%d 段过场、%d 段战败小剧场 + 追逐失败" % (len(CUTS), len(DEFEAT)))

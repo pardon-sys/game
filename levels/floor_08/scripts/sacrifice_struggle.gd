@@ -1,8 +1,9 @@
 class_name SacrificeStruggle
 extends Node
-## 献祭挣扎（第八层阶段三，被抓进巢穴的那个人）：挂在她身上，玩家在右边小窗里按 ← → 交替连按挣扎。
+## 献祭挣扎（第八层阶段三，在光圈里被手臂吊起来的那个人）：挂在她身上，玩家连按空格挣扎（右边小窗对准她）。
+## 另一个人的攻击打到她（在她身边挥一下）也能帮她降闷笑（每下 −PRESS）。
 ##   闷笑值（她自己的 LaughMeter）按时间上涨，被抓越久涨得越快：每秒 BASE_RATE × (1 + ACCEL × 被抓秒数)。
-##   ← → 交替按一次降 PRESS（同一个键连按不算）。
+##   空格按一次降 PRESS。
 ##   降到憋笑以下（giggle_threshold）→ escaped（挣脱）；涨满（max_value）→ broke（她笑倒，阶段三直接战败）。
 ##   开始时闷笑值至少是憋笑线 + START_MARGIN（一被抓就在憋笑段里）。
 ## overlay() 返回小窗里叠的界面：三段条（闷笑 / 失控 1 / 失控 2）+ 按键提示。
@@ -12,7 +13,7 @@ signal broke
 
 const BASE_RATE := 5.0
 const ACCEL := 0.08
-const PRESS := 2.6
+const PRESS := 5
 const START_MARGIN := 12.0
 
 var who: PlayableCharacter
@@ -21,6 +22,13 @@ var presses := 0
 var _last_dir := 0
 var _prev_l := false
 var _prev_r := false
+
+var _prev_sp := false
+## 搭档帮忙（打到她）的次数；搭档上一帧是不是正在她身边攻击
+var assists := 0
+var _partner_was_attacking := false
+const ASSIST_RANGE := 30.0
+
 var _fx := 0.0
 var _done := false
 var _bar: Control
@@ -41,10 +49,19 @@ func _ready() -> void:
 
 
 ## 一次挣扎输入：dir = -1（←）或 1（→）。和上一次方向相同不算。测试也直接调它。
-func press(dir: int) -> bool:
-	if _done or dir == _last_dir or dir == 0:
+#func press(dir: int) -> bool:
+	#if _done or dir == _last_dir or dir == 0:
+		#return false
+	#_last_dir = dir
+	#presses += 1
+	#who.laugh.set_value(who.laugh.value - PRESS)
+	#who.shake(0.05)
+	#return true
+	
+	## 一次挣扎输入：连按空格，每按一下都算。测试也直接调它。
+func press() -> bool:
+	if _done:
 		return false
-	_last_dir = dir
 	presses += 1
 	who.laugh.set_value(who.laugh.value - PRESS)
 	who.shake(0.05)
@@ -59,14 +76,27 @@ func _process(delta: float) -> void:
 	if _done or not is_instance_valid(who) or GameState.in_dialogue or get_tree().paused:
 		return
 	held_time += delta
-	var l := Input.is_physical_key_pressed(KEY_LEFT)
-	var r := Input.is_physical_key_pressed(KEY_RIGHT)
-	if l and not _prev_l:
-		press(-1)
-	if r and not _prev_r:
-		press(1)
-	_prev_l = l
-	_prev_r = r
+	#var l := Input.is_physical_key_pressed(KEY_LEFT)
+	#var r := Input.is_physical_key_pressed(KEY_RIGHT)
+	#if l and not _prev_l:
+		#press(-1)
+	#if r and not _prev_r:
+		#press(1)
+	#_prev_l = l
+	#_prev_r = r
+	var sp := Input.is_physical_key_pressed(KEY_SPACE)
+	if sp and not _prev_sp:
+		press()
+	_prev_sp = sp
+	# 搭档在她身边挥一下：帮她降闷笑
+	var other := Duo.partner_of(who) if Duo.active else null
+	var hitting := other != null and other.state == PlayableCharacter.State.ATTACK \
+		and other.global_position.distance_to(who.global_position) < ASSIST_RANGE
+	if hitting and not _partner_was_attacking:
+		press()
+		assists += 1
+		SpeechBubble.say(other, "醒醒！", 26.0)
+	_partner_was_attacking = hitting
 	var lm := who.laugh
 	lm.notify_attacked()   # 一直在被挠：不自然回落
 	var v := lm.value + rate() * delta

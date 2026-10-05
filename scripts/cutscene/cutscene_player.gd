@@ -157,6 +157,12 @@ func ids() -> Array[String]:
 	return out
 
 
+## 过场以 fade_out 结束、之后没有换关卡时，用它把黑幕淡掉。
+func curtain_clear(t := 0.5) -> void:
+	if curtain and curtain.color.a > 0.0:
+		create_tween().tween_property(curtain, "color:a", 0.0, t)
+
+
 func is_playing() -> bool:
 	return _playing
 

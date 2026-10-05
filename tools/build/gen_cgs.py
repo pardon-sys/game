@@ -39,7 +39,7 @@ actors = {
     "octopus": {"scene": M % "suction_octopus", "sprite": {"hframes": 3}},
     "caterpillar": {"scene": M % "caterpillar", "sprite": {"hframes": 2}},
     "barnacle": {"scene": M % "barnacle", "sprite": {"hframes": 3, "frame": 1}},
-    "thousand_hand": {"scene": M % "thousand_hand", "sprite": {"hframes": 6, "offset": [0, -48]}},
+    "thousand_hand": {"scene": "res://levels/floor_08/scenes/thousand_hand.tscn", "sprite": {"hframes": 6, "offset": [0, -48]}},
 }
 # 陷阱演员（组合演出用）：贴图、待机 / 发动帧、铺几格、旋转、羽毛臂。舞台上的摆放位置在 gen_combo_scenes.py。
 T = "res://assets/generated/%s.png"

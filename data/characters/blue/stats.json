@@ -1,0 +1,6 @@
+{
+	"_说明": "蓝色公主自己的基础数值（Princess.apply_base_stats 读；粉色公主用场景默认值）：三无更能忍——闷笑上限更高、移动稍慢、魔法冷却稍长。生命同粉色公主。",
+	"laugh_max": 165.0,
+	"speed_mult": 0.95,
+	"magic_cooldown": 7.0
+}

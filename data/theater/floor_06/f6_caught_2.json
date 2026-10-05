@@ -74,11 +74,40 @@
 		},
 		{
 			"speaker": "保卫队员",
-			"text": "又是你啊。昨天才笑哭了，今天又跑去矿道。"
+			"text": "……又是你啊。这次是在木箱里找到的。"
+		},
+		{
+			"speaker": "保卫队员",
+			"text": "箱子里还有半块面包。她是打算在里面住下吗？"
+		},
+		{
+			"speaker": "公主",
+			"text": "那、那是储备粮！潜入是很辛苦的！",
+			"emotion": "shy",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "g1",
+					"repeat": 8,
+					"interval": 0.2,
+					"fx": "hand",
+					"zone": "thigh",
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"by": "clamp",
+					"repeat": 6,
+					"interval": 0.28,
+					"fx": "lines",
+					"zone": "thigh",
+					"do": "tickle"
+				}
+			]
 		},
 		{
 			"speaker": "保卫队队长",
-			"text": "这次换足枷。……脚心朝外，鞋脱掉。"
+			"text": "……足枷。脚心朝外，鞋脱掉。"
 		},
 		{
 			"speaker": "公主",
@@ -136,11 +165,11 @@
 		},
 		{
 			"speaker": "保卫队队长",
-			"text": "钥匙是从哪里来的？"
+			"text": "钥匙，还在你身上吧。"
 		},
 		{
 			"speaker": "公主",
-			"text": "钥、钥匙？哈哈哈……捡、捡到的……凳子底下……哈哈哈！",
+			"text": "哈哈哈……不、不给……这是我的……哈哈哈！",
 			"actions": [
 				{
 					"who": "princess",
@@ -159,12 +188,22 @@
 					"fx": "lines",
 					"zone": "thigh",
 					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"by": "g2",
+					"repeat": 8,
+					"interval": 0.18,
+					"fx": "hand",
+					"zone": "waist",
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"visual": "helpless_2",
+					"do": "pose"
 				}
 			]
-		},
-		{
-			"speaker": "保卫队队长",
-			"text": "……凳子？"
 		},
 		{
 			"speaker": "保卫队员",
@@ -192,16 +231,16 @@
 					"repeat": 8,
 					"interval": 0.2,
 					"fx": "hand",
-					"zone": "sole",
+					"zone": "thigh",
 					"do": "tickle"
 				},
 				{
 					"who": "princess",
-					"by": "stocks",
+					"by": "clamp",
 					"repeat": 6,
 					"interval": 0.28,
 					"fx": "lines",
-					"zone": "sole",
+					"zone": "thigh",
 					"do": "tickle"
 				},
 				{
@@ -222,7 +261,7 @@
 		},
 		{
 			"speaker": "保卫队队长",
-			"text": "……钥匙先让你拿着。反正你打不开那扇门——过了那扇门，就不是我们能保护的地方了。"
+			"text": "……钥匙先让你拿着。过了那扇门，就不是我们能保护的地方了。"
 		},
 		{
 			"speaker": "公主",
@@ -235,16 +274,16 @@
 					"repeat": 8,
 					"interval": 0.2,
 					"fx": "hand",
-					"zone": "sole",
+					"zone": "thigh",
 					"do": "tickle"
 				},
 				{
 					"who": "princess",
-					"by": "stocks",
+					"by": "clamp",
 					"repeat": 6,
 					"interval": 0.28,
 					"fx": "lines",
-					"zone": "sole",
+					"zone": "thigh",
 					"do": "tickle"
 				},
 				{
@@ -264,16 +303,12 @@
 			]
 		},
 		{
-			"speaker": "保卫队队长",
-			"text": "……继续。"
-		},
-		{
 			"speaker": "",
 			"text": "（脚心被羽毛和手指来回扫，大腿内侧被夹板的绒毛蹭着——公主的脚趾一会儿蜷起来、一会儿张开，笑声越来越哑）"
 		},
 		{
 			"speaker": "公主",
-			"text": "……哈……脚……脚心……是我的吗……嘿嘿……"
+			"text": "……哈……面、面包……还在箱子里……"
 		},
 		{
 			"actions": [

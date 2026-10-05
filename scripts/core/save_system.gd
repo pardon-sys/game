@@ -114,7 +114,11 @@ static func apply_state(d: Dictionary) -> void:
 	GameState.hotkeys = d.get("hotkeys", GameState.DEFAULT_HOTKEYS).duplicate()
 	GameState.hotkeys_changed.emit()
 	GameState.passives = d.get("passives", {}).duplicate()
-	GameState.carried_player_state = d.get("player", {}).duplicate(true)
+	var ps: Dictionary = d.get("player", {}).duplicate(true)
+	# 旧存档：只有一个人的状态（扁平的 {hp, laugh, …}）→ 算粉色公主的
+	if ps.has("hp"):
+		ps = {"pink": ps}
+	GameState.carried_player_state = ps
 	GameState.play_time = float(d.get("play_time", 0.0))
 
 

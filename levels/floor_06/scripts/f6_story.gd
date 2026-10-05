@@ -70,19 +70,42 @@ static func start_tour() -> void:
 	touring = false
 
 
-## 潜入时被发现（StealthDirector on_caught = f6）：士兵围上来 → 营地地牢的惩罚小剧场（按被抓次数，最多 3 种）
+## 潜入时被发现（StealthDirector on_caught = f6）：士兵围上来 → 营地地牢的惩罚小剧场（按被抓次数，3 种）
 ## → 蓝色公主把她领回小屋 → 睡一觉 → 第二天早上可以再试。
+## 第 4 次起：统一播 f6_caught_again（象征性地挠一下），直接在矿道入口重新开始，不回小屋、不睡觉。
 static func on_caught() -> void:
 	if StoryDirector.instance == null:
 		return
 	var n := int(GameState.vars.get("f6_caught", 0)) + 1
 	GameState.vars["f6_caught"] = n
 	await Cutscene.play_data("f6_caught_grab", grab_cutscene())
+	if n > 3:
+		await Cutscene.play("f6_caught_again")
+		retry_in_mine()
+		return
 	await StoryDirector.instance.run_sequence([
 		{"level": "floor_06_prison", "spawn": "from_camp", "cutscene": "f6_caught_prison_%d" % mini(n, 3)},
 		{"level": "floor_06_house", "spawn": "from_upper", "cutscene": "f6_caught_home"},
 	])
 	await Sleep.sleep(morning_cutscene())
+
+
+## 被抓第 4 次起：回到矿道入口（from_camp），潜入状态和巡逻全部重置。
+static func retry_in_mine() -> void:
+	var p := GameState.player
+	var d := StealthDirector.current
+	if d:
+		d.reset()
+		for sp in d.get_tree().get_nodes_in_group("spawn_point"):
+			if str(sp.get("id")) == "from_camp" and d.is_ancestor_of_level(sp) and is_instance_valid(p):
+				p.global_position = (sp as Node2D).global_position
+	if is_instance_valid(p):
+		p.revive()
+		p.set_invulnerable(1.0, true)
+		if p.camera:
+			p.camera.reset_smoothing()
+	Cutscene.curtain_clear()
+	GameState.notify("回到了矿道入口。……这次小心点。")
 
 
 ## 被发现的那一刻：两个士兵从左右围上来（按公主现在站的格子现场生成）。

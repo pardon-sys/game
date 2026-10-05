@@ -1,12 +1,12 @@
 class_name Downed
 extends Node2D
-## 倒地（双人模式）：笑倒的人躺在地上（失控二），头顶一圈倒计时（TIME 秒）；附近的小怪围过来挠，倒计时走得更快。
+## 倒地（双人模式）：笑倒的人躺在地上（失控二），头顶一圈倒计时（TIME = 45 秒）；附近的小怪围过来挠，倒计时走得更快。
 ## 搭档走到旁边按住 E（interact）REVIVE_TIME 秒救起（进度圈；搭档被打 / 被抓就重来），救起后半血、闷笑清空、短暂无敌。
 ## 倒计时到了、或者两个人都倒下 → Duo.director.on_defeat("downed")。玩家正在操控的人倒下时自动切到搭档。
 ## 挂在角色下面（节点名 Downed），Downed.start(角色) 开始。
 
-const TIME := 25.0
-const REVIVE_TIME := 3.0
+const TIME := 45.0
+const REVIVE_TIME := 2.0
 const REVIVE_RANGE := 22.0
 const MOB_RANGE := 40.0
 

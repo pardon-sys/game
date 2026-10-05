@@ -17,6 +17,7 @@ func _ready() -> void:
 	DevConfig.override = false
 	ComboTracker.play_scenes = false
 	HUD.slow_motion = false
+	TutorialBoard.enabled = false
 	Monster.random_specials = false
 	SaveSystem.dir = "user://test_saves_f6/"
 	main = load("res://scenes/main.tscn").instantiate()

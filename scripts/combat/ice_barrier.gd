@@ -1,7 +1,7 @@
 class_name IceBarrier
 extends Node2D
 ## 蓝色公主的魔法：冰晶结界（和粉色公主的星光爆发同样按住 L 吟唱、松开释放，档位越高范围越大、冻得越久）。
-##   范围内的敌对角色冻住（Monster.stun：定身、不能挠，身上泛冰蓝色）；范围内的陷阱暂停（active = false，到时间恢复）；
+##   范围内的敌对角色冻住（Monster.stun：定身、不能挠，身上泛冰蓝色；有 freeze() 的 Boss 用它，按 aim_point 和 meta body_radius 算范围）；范围内的陷阱暂停（active = false，到时间恢复）；
 ##   她自己被困 / 被吸附的状态解除，并得到「冰晶守护」（frost_guard：期间闷笑不涨）。
 ##   会魔法反应的东西（MagicReactive）同样收到一次 on_magic_burst（和星光爆发一样能解谜）。
 ##   特效：冰蓝色的圆环扩散 + 冰晶 / 雪花粒子，冻住的陷阱也蒙上冰色。
@@ -15,7 +15,10 @@ const TIERS := [
 const ICE := Color(0.7, 0.88, 1.35)
 
 var radius := 48.0
+## 结界留在原地的时间（= 冻结时间），到时间再淡出。
+var duration := 2.0
 var _ring: Line2D
+var _t := 0.0
 
 
 static func params(t: int) -> Dictionary:
@@ -37,9 +40,13 @@ static func cast_with(caster: Node2D, r: float, time: float, t := 3) -> Array[No
 		var a := n as Actor
 		if a == null or a == caster or not a.is_alive() or not Faction.are_hostile(caster, a):
 			continue
-		if a.global_position.distance_to(center) > r + StarBurst.BODY_ALLOWANCE:
+		# 大型 Boss：按本体中心（aim_point）和身体半径（meta hit_radius）算；会冻结的（freeze）冻住，其它的僵直
+		var pt: Vector2 = a.call("aim_point") if a.has_method("aim_point") else a.global_position
+		if pt.distance_to(center) > r + StarBurst.BODY_ALLOWANCE + float(a.get_meta("body_radius", 0.0)):
 			continue
-		if a.has_method("stun"):
+		if a.has_method("freeze"):
+			a.freeze(time)
+		elif a.has_method("stun"):
 			a.stun(time)
 		hit.append(a)
 	for n in tree.get_nodes_in_group("trap"):
@@ -60,6 +67,7 @@ static func cast_with(caster: Node2D, r: float, time: float, t := 3) -> Array[No
 		pc.add_buff("frost_guard", time)
 	var fx := IceBarrier.new()
 	fx.radius = r
+	fx.duration = time
 	caster.get_parent().add_child(fx)
 	fx.global_position = center
 	Audio.play("chime", -2.0, 0.03, 1.6)
@@ -113,8 +121,19 @@ func _ready() -> void:
 		_ring.points = IceBarrier.ring_points(r)
 		fill.polygon = IceBarrier.ring_points(r), 4.0, radius, 0.35).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
 	tw.tween_method(func(r: float): inner.points = IceBarrier.ring_points(r), 4.0, radius * 0.75, 0.45).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
-	tw.tween_property(self, "modulate:a", 0.0, 0.5).set_delay(0.6)
+	# 展开后结界留在原地直到冻结结束（轻轻脉动、飘雪），最后 0.5 秒淡出
+	tw.chain().tween_interval(maxf(0.0, duration - 0.45 - 0.5))
+	tw.chain().tween_property(self, "modulate:a", 0.0, 0.5)
 	tw.chain().tween_callback(queue_free)
 	# 冰晶和雪花：从中心往外飞，雪花慢慢飘落
 	Fx.burst(get_parent(), global_position, "crystal", 14, radius * 1.6, 0.5, Vector2(0, 40), Color(0.85, 0.95, 1.0))
 	Fx.burst(get_parent(), global_position, "snow", 10, radius * 0.8, 1.1, Vector2(0, 18))
+	var snow := Fx.emitter(self, "snow", 6, 1.4, {"extents": Vector2(radius * 0.8, radius * 0.4), "gravity": Vector2(0, 14)})
+	if snow:
+		snow.position = Vector2(0, -radius * 0.3)
+
+
+func _process(delta: float) -> void:
+	_t += delta
+	if _t > 0.45 and is_instance_valid(_ring):
+		_ring.default_color.a = 0.6 + 0.3 * sin(_t * 5.0)

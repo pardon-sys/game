@@ -14,7 +14,7 @@ signal caught(by: Node)
 const STONE_RANGE := 72.0
 const NOISE_RADIUS := 150.0
 const STEP_INTERVAL := 0.5
-const STEP_RADIUS := 112.0
+const STEP_RADIUS := 64.0
 const DASH_RADIUS := 208.0
 ## 在士兵视野里闪避（冲刺）时警觉上涨的倍率。
 const DASH_EXPOSE := 1.8
@@ -24,7 +24,7 @@ static var current: StealthDirector
 @export var active_flag := ""
 ## 被发现后交给谁处理：f6 = F6Story.on_caught()。
 @export var on_caught := ""
-@export var alert_rate := 2.6
+@export var alert_rate := 1.6
 @export var alert_decay := 0.3
 
 var alert := 0.0
@@ -32,6 +32,9 @@ var caught_done := false
 var hidden_in: Node2D
 var _stone_cd := 0.0
 var _step_t := 0.0
+## 重新开始后的保护时间：这段时间里被看见警觉也不涨（刚回到入口就被看见不公平）
+var grace := 0.0
+const RESET_GRACE := 2.0
 var _hud: CanvasLayer
 var _bar: ColorRect
 var _bar_bg: ColorRect
@@ -193,7 +196,8 @@ func _physics_process(delta: float) -> void:
 		var s: float = g.sees(p) if is_instance_valid(p) and not hidden_in else 0.0
 		g.cone.alerting = s > 0.0
 		seen = maxf(seen, s)
-	if seen > 0.0:
+	grace = maxf(0.0, grace - delta)
+	if seen > 0.0 and grace <= 0.0:
 		var k := DASH_EXPOSE if is_instance_valid(p) and p.is_dashing() else 1.0
 		alert = minf(1.0, alert + seen * alert_rate * k * delta)
 	else:
@@ -231,6 +235,19 @@ func _footsteps(p: PlayableCharacter, delta: float) -> void:
 	if _step_t <= 0.0:
 		_step_t = STEP_INTERVAL
 		noise(p.global_position, DASH_RADIUS if p.is_dashing() else STEP_RADIUS, true)
+
+
+## 重新开始潜入（被抓第 4 次起放回矿道入口）：警觉清零，所有士兵回到路线起点。
+func reset() -> void:
+	if hidden_in:
+		_unhide()
+	alert = 0.0
+	caught_done = false
+	grace = RESET_GRACE
+	for g in get_tree().get_nodes_in_group("patrol_guard"):
+		if is_ancestor_of_level(g):
+			g.reset_route()
+	_update_hud()
 
 
 ## 士兵检查躲藏点时找到了人。

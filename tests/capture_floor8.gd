@@ -15,7 +15,7 @@ func _ready() -> void:
 	var main: Node = load("res://scenes/main.tscn").instantiate()
 	add_child(main)
 	await _wait(1.0)
-	for f in ["blue_is_hero", "f7_argue_done", "f7_pink_ran", "f7_blue_awake", "magic_unlocked"]:
+	for f in ["blue_is_hero", "f7_argue_done", "f7_pink_ran", "f7_blue_awake", "magic_unlocked", "intro_blue_magic"]:
 		GameState.set_flag(f)
 	for k in ReactionDB.source_keys():
 		GameState.set_flag("met_" + k)
@@ -38,6 +38,12 @@ func _ready() -> void:
 		m.set_invulnerable(9999.0, true)
 	await _wait(5.0)
 	await _shot("phase1")
+	dir.boss.skills.use("dash")
+	await _wait(0.5)
+	await _shot("dash_warn")
+	await _wait(0.75)
+	await _shot("dash_run")
+	await _wait(2.0)
 	dir.boss.fighting = true
 	dir.boss.health.set_hp(int(ceil(dir.boss.health.max_hp * 0.7)) + 1)
 	dir.boss._attack_invuln = 0.0
@@ -73,6 +79,11 @@ func _ready() -> void:
 	await _wait(1.5)
 	await _shot("phase3_sacrifice")
 	dir.end_sacrifice(true)
+	await _wait(0.5)
+	dir.boss.skills.use("dance")
+	await _wait(1.0)
+	await _shot("phase3_dance")
+	await _wait(3.0)
 	dir.boss.health.set_hp(2)
 	dir.boss._attack_invuln = 0.0
 	dir.boss.fighting = true

@@ -13,7 +13,7 @@ const DIR_ROW := {"down": 0, "left": 1, "right": 2, "up": 3}
 @export var wait := 1.2
 @export var speed := 34.0
 ## 听到动静去查看 / 查看完回去时走得快。
-@export var investigate_speed := 64.0
+@export var investigate_speed := 51.0
 @export var view_range := 88.0
 @export var view_angle := 70.0
 ## 经过躲藏点时去检查的几率。
@@ -132,6 +132,18 @@ func _move_to(target: Vector2, delta: float, spd := -1.0) -> bool:
 	return false
 
 
+## 回到路线起点重新巡逻。
+func reset_route() -> void:
+	route.clear()
+	idx = 0
+	step_dir = 1
+	state = "walk"
+	_checked.clear()
+	_checking = null
+	if not points.is_empty():
+		global_position = points[0]
+
+
 func _next_point() -> void:
 	if points.size() < 2:
 		return
@@ -170,6 +182,24 @@ func _check_hiding(d: StealthDirector) -> void:
 	if global_position.distance_to(spot.global_position) < 22.0:
 		_checked[spot.get_instance_id()] = true
 		if randf() < check_chance:
-			d.found_hidden(self)
+			_begin_check(d, spot)
 		else:
 			SpeechBubble.say(self, "……错觉吗。", 26.0)
+
+
+## 检查之前先飘一句提示、停 CHECK_DELAY 秒（给躲着的人反应时间：还没被翻开就能出来跑）。
+const CHECK_LINES := ["……那个箱子里有声音？", "……嗯？刚才是不是动了一下？", "……这里面，好像有人。", "……我看看。"]
+const CHECK_DELAY := 1.0
+var _checking: Node2D
+
+
+func _begin_check(d: StealthDirector, spot: Node2D) -> void:
+	_checking = spot
+	state = "look"
+	_timer = CHECK_DELAY + 0.6
+	_look_base = (spot.global_position - global_position).normalized()
+	SpeechBubble.say(self, CHECK_LINES.pick_random(), 26.0)
+	await get_tree().create_timer(CHECK_DELAY, false).timeout
+	if _checking == spot and is_instance_valid(spot) and d.hidden_in == spot and not d.caught_done:
+		d.found_hidden(self)
+	_checking = null

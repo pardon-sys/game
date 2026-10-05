@@ -75,6 +75,25 @@ func register_player(p: PlayableCharacter) -> void:
 	player = p
 	restore_player_state(p)
 	player_registered.emit(p)
+	_character_intro(p)
+
+
+## 第一次操控蓝色公主：介绍她的魔法（介绍板只出现一次）。
+const BLUE_INTRO := [
+	"蓝色公主的魔法是「冰晶结界」，和粉色公主的星光爆发不一样：",
+	"· 按住 L 吟唱，松开展开结界。按得越久档位越高：范围 48 / 72 / 96，冻结 2 / 3 / 4 秒。",
+	"· 结界里的怪物和陷阱会被冻住（不能动、不能挠），被抓 / 被吸住的状态也会解开。",
+	"· 结界持续期间她得到「冰晶守护」：怎么挠都不涨闷笑。",
+	"· 冻结也对 Boss 有效。",
+	"· 魔力疲倦满时自动爆发，同样带一半的冰冻（满蓄力的范围，冻 2 秒）。",
+	"· 吟唱时弱点暴露，附近的怪物会冲过来——找好时机再用。",
+	"她的身体数值也和粉色公主不同：闷笑上限更高（更能忍），移动稍慢，魔法冷却 7 秒；训练成果各算各的。",
+]
+
+
+func _character_intro(p: PlayableCharacter) -> void:
+	if is_instance_valid(p) and str(p.get("character_id")) == "blue" and not has_flag("intro_blue_magic"):
+		TutorialBoard.show_once("intro_blue_magic", "蓝色公主 · 冰晶结界", BLUE_INTRO)
 
 
 ## 测试模式：改为操控另一个可操作角色（如蓝色公主），原来的那个交给它自己的 AI（make_ai_controller）。
@@ -96,6 +115,7 @@ func switch_control(to: PlayableCharacter) -> void:
 		to.camera.reset_smoothing()
 	player = to
 	player_registered.emit(to)
+	_character_intro(to)
 	for c in [from, to]:
 		if is_instance_valid(c) and c.emotion:
 			c.emotion.refresh()
@@ -103,10 +123,11 @@ func switch_control(to: PlayableCharacter) -> void:
 		emotion_changed.emit(to.emotion.current)
 
 
+## 换关卡时带过去的状态，按角色分开存（carried_player_state[角色] = {...}），蓝色公主和粉色公主互不覆盖。
 func save_player_state() -> void:
 	if not is_instance_valid(player):
 		return
-	carried_player_state = {
+	carried_player_state[str(player.get("character_id"))] = {
 		"hp": player.health.hp if player.health else 0,
 		"laugh": player.laugh.value if player.laugh else 0.0,
 		"battle_damaged": player.get("battle_damaged") == true,
@@ -116,10 +137,11 @@ func save_player_state() -> void:
 
 
 func restore_player_state(p: PlayableCharacter) -> void:
-	if carried_player_state.is_empty():
+	var who := str(p.get("character_id"))
+	if not carried_player_state.has(who) or not carried_player_state[who] is Dictionary:
 		return
-	var s := carried_player_state
-	carried_player_state = {}
+	var s: Dictionary = carried_player_state[who]
+	carried_player_state.erase(who)
 	if p.health:
 		p.health.set_hp(s["hp"])
 	if p.laugh:

@@ -47,7 +47,7 @@ enum State { IDLE, MOVE, ATTACK, DASH, HURT, HELPLESS, GRABBED, DEAD, CHANNEL, C
 ## 学会魔法的剧情标记（空 = 一开始就会）。
 @export var magic_flag := "magic_unlocked"
 ## 升到 1/2/3 档所需的吟唱时间；到最后一档自动释放。
-@export var channel_tiers := PackedFloat32Array([0.6, 1.2, 2.0])
+@export var channel_tiers := PackedFloat32Array([0.5, 1.0, 1.6])
 @export var magic_cooldown := 6.0
 ## 落空或被打断后的短冷却。
 @export var fizzle_cooldown := 1.5
