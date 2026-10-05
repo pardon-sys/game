@@ -300,6 +300,9 @@ func begin_sweep(y: float) -> void:
 
 func _update_pending(delta: float) -> void:
 	for s in _pending.duplicate():
+		# 砸中人时可能连锁触发 cancel_attacks()（冻住 / 阶段切换），之后剩下的预警都已作废
+		if not _pending.has(s) or not fighting or _frozen_left > 0.0:
+			continue
 		s["time"] -= delta
 		var n: Node = s["node"]
 		if n is Sprite2D and is_instance_valid(n):
@@ -362,16 +365,22 @@ func _start_sweep(r: Rect2) -> void:
 func _update_sweep(delta: float) -> void:
 	if _sweep_hand.is_empty():
 		return
-	var r: Rect2 = _sweep_hand["rect"]
-	_sweep_hand["x"] += _sweep_hand["dir"] * r.size.x / 0.55 * delta
-	var x: float = _sweep_hand["x"]
+	# 用局部引用：挠到人时可能连锁触发组合 / 疲倦爆发（冰晶冻住 Boss）/ 阶段切换，
+	# 它们会 cancel_attacks() 把 _sweep_hand 清空——清空之后这一轮就不再继续
+	var hand: Dictionary = _sweep_hand
+	var r: Rect2 = hand["rect"]
+	hand["x"] += hand["dir"] * r.size.x / 0.55 * delta
+	var x: float = hand["x"]
+	var hit: Array = hand["hit"]
 	for m in _targets():
-		if m in _sweep_hand["hit"]:
+		if m in hit:
 			continue
 		if absf(m.global_position.x - x) < 14.0 and r.grow(2.0).has_point(m.global_position):
-			_sweep_hand["hit"].append(m)
+			hit.append(m)
 			deliver_tickle(m, 9.0, false, 160.0)
 			play_tickle_sound()
+			if not is_same(_sweep_hand, hand):
+				return
 	if x < r.position.x - 10.0 or x > r.end.x + 10.0:
 		_sweep_hand = {}
 
