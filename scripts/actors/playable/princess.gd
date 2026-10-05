@@ -63,10 +63,29 @@ func _resolve_normal(requested: String) -> String:
 	return "damaged" if battle_damaged else "normal"
 
 
+## 角色的基础数值（粉色公主用场景里的默认值；别的角色读 data/characters/<角色>/stats.json）：
+##   laugh_max 闷笑上限、hp 生命上限、speed_mult 移动速度倍率、magic_cooldown 魔法冷却。只套一次。
+func apply_base_stats() -> void:
+	if character_id == "pink" or has_meta("base_stats_done"):
+		return
+	set_meta("base_stats_done", true)
+	var s := Characters.load_json("stats.json", "", character_id)
+	if laugh and s.has("laugh_max"):
+		laugh.max_value = float(s["laugh_max"])
+	if health and s.has("hp"):
+		health.max_hp = int(s["hp"])
+		health.fill()
+	if s.has("speed_mult"):
+		move_speed *= float(s["speed_mult"])
+	if s.has("magic_cooldown"):
+		magic_cooldown = float(s["magic_cooldown"])
+
+
 func _setup() -> void:
-	# 训练成果（疲倦 / 闷笑 / 生命上限）先套上，再由 super 里的 register_player 恢复换层前的状态（不会被旧上限截掉）
-	if portrait_set == "pink":
-		TrainingStats.apply(self)
+	# 角色自己的基础数值（data/characters/<角色>/stats.json）和训练成果（疲倦 / 闷笑 / 生命上限，按角色分开）先套上，
+	# 再由 super 里的 register_player 恢复换层前的状态（不会被旧上限截掉）
+	apply_base_stats()
+	TrainingStats.apply(self)
 	super()
 	if fatigue:
 		fatigue.changed.connect(_on_fatigue_changed)

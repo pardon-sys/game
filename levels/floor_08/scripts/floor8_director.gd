@@ -3,21 +3,29 @@ extends Node2D
 ## 第八层「千手之间」的导演（地图里放一个：X = f8director）。管：
 ##   开场：蓝色公主走进来 → 粉色公主被千手的手臂吊着挠 → 冰晶结界冻住手臂救下她 → 两人并肩（双人模式 Duo 开始）
 ##   三个阶段（ThousandHand 打到血量下限 → 过场 → 下一阶段）：
-##     阶段二：两块压力板（两个人同时站上去 PLATE_HOLD 秒 → 锁链把 Boss 拽下来 PULL_TIME 秒），每 TERRAIN_EVERY 秒改一次地形
-##     阶段三：场地中央的光圈，谁走进去谁被抓进巢穴（右边小窗 + 献祭挣扎），另一个人打下来的手臂；地形照样变
-##   战败：倒地超时 / 两人都倒下 / 阶段三有人倒下 / 献祭笑满 → 本阶段的战败小剧场 → 从本阶段开头重来
+##     阶段一：Boss 能打，召唤小怪（小怪和 Boss 能凑三来源组合），俯冲撞墙
+##     阶段二：两块压力板（站上去按下，人离开后还保持 PLATE_LATCH 秒；两块同时按下 PLATE_HOLD 秒 → 锁链把 Boss 拽下来 PULL_TIME 秒）；
+##             地形持续变化：每 TERRAIN_STEP 秒在玩家附近长出一段石墙 / 泥沼 / 传送带 / 挠痒漩涡（TERRAIN_LIFE 秒后消失，
+##             不会把压力板完全堵死）；手臂砸地不抓人、积累闷笑
+##     阶段三：场地中央的光圈，谁走进去谁就在原地被手臂吊起来挠（右边小窗对准她，连按空格挣扎；另一个人打她也能帮她降闷笑），
+##             另一个人打下来的手臂；红色脉动暗角 + 飘羽毛 + 阶段三配乐
+##   战败：两个人都倒下 / 倒地超时 → 本阶段的战败小剧场 → 从本阶段开头重来（献祭的人笑满只是倒地）
 ##   胜利：Boss 恼怒、乱砸墙壁、巨石滚下来 → 进追逐战（floor_08_chase）
-## 位置都用地图里的到达点（spawn id=…）：boss、pink、lair、circle、plate_a1 / a2 / b1 / b2 / c1 / c2、summon1~4、limb1~4、blue_fight、pink_fight。
+## 位置都用地图里的到达点（spawn id=…）：boss、pink、circle、plate_a1 / a2 / b1 / b2 / c1 / c2、summon1~4、limb1~4、blue_fight、pink_fight。
 
-const BOSS_SCENE := "res://scenes/actors/monsters/thousand_hand.tscn"
+const BOSS_SCENE := "res://levels/floor_08/scenes/thousand_hand.tscn"
 const PINK_SCENE := "res://scenes/actors/playable/princess.tscn"
 const PLATE_TEX := preload("res://assets/generated/duo_plate.png")
 const CIRCLE_TEX := preload("res://assets/generated/sacrifice_circle.png")
 const BOULDER_TEX := preload("res://assets/generated/boulder.png")
 const ARM := preload("res://assets/generated/thousand_hand_arm.png")
 const PLATE_HOLD := 1.0
+const PLATE_LATCH := 3.0
 const PULL_TIME := 6.0
 const TERRAIN_EVERY := 15.0
+const TERRAIN_STEP := {2: 3.5, 3: 5.0}
+const TERRAIN_LIFE := 12.0
+const TERRAIN_MAX := 8
 const CIRCLE_HOLD := 0.25
 
 static var instance: Floor8Director
@@ -39,6 +47,14 @@ var plates_lit := false
 var _plate_pair := 0
 var _plate_hold := 0.0
 var _plate_wait := 0.0
+## 两块板各自还要保持按下多少秒（人离开后慢慢弹起）
+var latch: Array[float] = [0.0, 0.0]
+var _plate_rings: Array[Line2D] = []
+var plate_ui: Label
+var _plate_ui_layer: CanvasLayer
+## 阶段三的持续特效（红色脉动暗角、飘羽毛）
+var _p3_vignette: ScreenFx
+var _p3_feathers: CPUParticles2D
 var circle: Sprite2D
 var _circle_cd := 0.0
 var _circle_hold := 0.0
@@ -84,6 +100,9 @@ func _ready() -> void:
 func _exit_tree() -> void:
 	if instance == self:
 		instance = null
+	_phase3_fx(false)
+	if is_instance_valid(_plate_ui_layer):
+		_plate_ui_layer.queue_free()
 	if SideWindow.is_open():
 		SideWindow.current.close(true)
 	Duo.stop()
@@ -140,11 +159,20 @@ func run_intro() -> void:
 	if pink.emotion:
 		pink.emotion.request("helpless_1", 999.0, false)
 	await Cutscene.play("f8_intro_a")
-	# 冰晶结界：冻住手臂，粉色公主掉下来
+	# 冰晶结界：冻住手臂（Boss 受击闪白、震屏、冰晶四溅），粉色公主被甩下来（抛物线落地 + 尘土 + 星星）
+	GameState.in_dialogue = true
 	IceBarrier.cast_with(blue, 96.0, 1.5)
+	boss.hurt_flash(0.5)
+	boss.freeze(1.2)
+	Fx.burst(_level(), boss.global_position + Vector2(0, -40), "crystal", 18, 90.0, 0.7, Vector2(0, 60), Color(0.85, 0.95, 1.0))
+	for m in [blue, pink]:
+		m.shake(0.35)
+	Audio.play("break", -2.0, 0.0, 1.4)
+	await get_tree().create_timer(0.35).timeout
 	boss.cancel_attacks()
 	pink.status.release(true)
-	pink.global_position = marks.get("pink_fight", pink.global_position)
+	await throw_down(pink, marks.get("pink_fight", pink.global_position))
+	GameState.in_dialogue = false
 	if pink.emotion:
 		pink.emotion.request("surprise", 1.5, false)
 	Audio.play_music("boss")
@@ -153,7 +181,25 @@ func run_intro() -> void:
 	start_fight()
 
 
+## 被手臂甩下来：抛物线飞到 to，落地尘土 + 头上转星星 + 一声「呀！」。
+func throw_down(c: PlayableCharacter, to: Vector2) -> void:
+	var from := c.global_position
+	var tw := create_tween()
+	tw.tween_method(func(f: float):
+		c.global_position = from.lerp(to, f) + Vector2(0, -sin(f * PI) * 40.0), 0.0, 1.0, 0.55).set_trans(Tween.TRANS_SINE)
+	SpeechBubble.say(c, "呀——！", 30.0)
+	await tw.finished
+	Fx.burst(_level(), to, "dust", 12, 60.0, 0.5, Vector2(0, 30))
+	Fx.burst(_level(), to + Vector2(0, -26), "ember", 6, 24.0, 0.8, Vector2.ZERO, Color(1, 0.95, 0.5))
+	c.shake(0.3)
+	Audio.play("drop", -2.0, 0.0, 0.8)
+	await get_tree().create_timer(0.4).timeout
+
+
 func start_fight() -> void:
+	# 第八层两个人都会用魔法（AI 也会放）
+	if pink.magic_flag != "":
+		GameState.set_flag(pink.magic_flag)
 	Duo.start([blue, pink], self)
 	if panel == null:
 		panel = PartnerPanel.new()
@@ -169,17 +215,39 @@ func start_fight() -> void:
 
 func start_phase(p: int) -> void:
 	phase = p
-	instant_defeat = p >= 3
+	instant_defeat = false
 	boss.set_phase(p)
+	boss.skills.reset_cooldowns()
 	boss.fighting = true
 	busy = false
 	_plate_pair = 0
 	_plate_hold = 0.0
 	_plate_wait = 0.0
+	latch = [0.0, 0.0]
 	_set_plates(p == 2)
 	_circle_cd = 3.0 if p == 3 else INF
-	_terrain_cd = 4.0 if p >= 2 else INF
+	_terrain_cd = 3.0 if p >= 2 else INF
 	circle.visible = false
+	_phase3_fx(p >= 3)
+	Audio.play_music("boss3" if p >= 3 else "boss", 2.0)
+
+
+## 阶段三的持续特效：红色脉动暗角 + 场地上一直飘羽毛。
+func _phase3_fx(on: bool) -> void:
+	if on and not is_instance_valid(_p3_vignette):
+		_p3_vignette = ScreenFx.vignette(Color(0.9, 0.08, 0.18), 0.45, true)
+		var a := boss.arena
+		_p3_feathers = Fx.emitter(_level(), "feather", 14, 3.0, {"extents": Vector2(a.size.x * 0.5, 8), "dir": Vector2.DOWN,
+			"spread": 25.0, "speed": [12.0, 26.0], "gravity": Vector2(6, 10), "z": 5, "color": Color(1, 0.85, 0.9)})
+		if _p3_feathers:
+			_p3_feathers.global_position = Vector2(a.get_center().x, a.position.y)
+	elif not on:
+		if is_instance_valid(_p3_vignette):
+			_p3_vignette.fade_out(0.6)
+		_p3_vignette = null
+		if is_instance_valid(_p3_feathers):
+			_p3_feathers.queue_free()
+		_p3_feathers = null
 
 
 # ------------------------------------------------------------------ 每帧：压力板、地形、光圈
@@ -194,8 +262,8 @@ func _process(delta: float) -> void:
 	if phase >= 2:
 		_terrain_cd -= delta
 		if _terrain_cd <= 0.0:
-			_terrain_cd = TERRAIN_EVERY
-			shift_terrain()
+			_terrain_cd = float(TERRAIN_STEP.get(phase, 4.0))
+			grow_terrain()
 	if phase == 3 and sacrifice.is_empty():
 		_update_circle(delta)
 
@@ -209,6 +277,32 @@ func _make_plates() -> void:
 		s.visible = false
 		_level().add_child(s)
 		plates.append(s)
+		var ring := Line2D.new()
+		ring.width = 2.0
+		ring.default_color = Color(1, 0.85, 0.3)
+		var mat := CanvasItemMaterial.new()
+		mat.light_mode = CanvasItemMaterial.LIGHT_MODE_UNSHADED
+		ring.material = mat
+		ring.z_index = 1
+		s.add_child(ring)
+		_plate_rings.append(ring)
+	# 屏幕上方：两块板的状态
+	_plate_ui_layer = CanvasLayer.new()
+	_plate_ui_layer.layer = 9
+	add_child(_plate_ui_layer)
+	plate_ui = Label.new()
+	plate_ui.add_theme_font_size_override("font_size", 10)
+	plate_ui.add_theme_color_override("font_color", Color(1, 0.92, 0.6))
+	plate_ui.add_theme_color_override("font_outline_color", Color(0.1, 0.05, 0.1))
+	plate_ui.add_theme_constant_override("outline_size", 3)
+	plate_ui.position = Vector2(150, 34)   # Boss 血条下面
+	plate_ui.visible = false
+	_plate_ui_layer.add_child(plate_ui)
+
+
+## 第 i 块板现在是不是按下的（有人站着，或人离开后还在保持时间里）。
+func plate_pressed(i: int) -> bool:
+	return plate_occupant(i) != null or latch[i] > 0.0
 
 
 func _plate_positions(pair: int) -> Array:
@@ -237,15 +331,30 @@ func plate_occupant(i: int) -> PlayableCharacter:
 
 
 func _update_plates(delta: float) -> void:
+	plate_ui.visible = phase == 2
 	if not plates_lit:
 		_plate_wait -= delta
+		plate_ui.text = "锁链拽住了它！" if boss.is_pulled() else "压力板重新亮起……"
+		for r in _plate_rings:
+			r.points = PackedVector2Array()
 		if _plate_wait <= 0.0 and not boss.is_pulled():
 			_plate_pair += 1
 			_set_plates(true)
 		return
-	var a := plate_occupant(0)
-	var b := plate_occupant(1)
-	if a and b and a != b:
+	for i in plates.size():
+		if plate_occupant(i) != null:
+			latch[i] = PLATE_LATCH
+		else:
+			latch[i] = maxf(0.0, latch[i] - delta)
+		# 按下：板子压扁一点、周围一圈进度（保持时间）
+		var pressed := plate_pressed(i)
+		plates[i].scale = Vector2(1.0, 0.8 if pressed else 1.0)
+		_plate_rings[i].points = Downed._arc(14.0, latch[i] / PLATE_LATCH) if pressed else PackedVector2Array()
+	var states := []
+	for i in plates.size():
+		states.append(("■ 按下（%.1f）" % latch[i]) if plate_pressed(i) else "□ 没人")
+	plate_ui.text = "压力板　左 %s　右 %s" % states
+	if plate_pressed(0) and plate_pressed(1):
 		_plate_hold += delta
 		if _plate_hold >= PLATE_HOLD:
 			_plate_hold = 0.0
@@ -256,6 +365,7 @@ func _update_plates(delta: float) -> void:
 
 func pull_boss() -> void:
 	boss.pull_down(PULL_TIME)
+	latch = [0.0, 0.0]
 	_set_plates(false)
 	_plate_wait = PULL_TIME + 2.0
 	GameState.notify("锁链把它拽下来了！快攻击本体！")
@@ -316,6 +426,84 @@ func shift_terrain() -> void:
 				shifter.spawn_field("pit", c, {"content": ["squirrel", "rat"].pick_random()})
 			GameState.notify("地上塌出了洞！")
 	_terrain_i += 1
+
+
+## 阶段二 / 三的持续地形：在玩家附近（她前进方向的前面、或她和要去的压力板之间）长出一样东西，TERRAIN_LIFE 秒后消失。
+## 石墙长出来之后检查两个人还能走到两块压力板（阶段二）/ 光圈（阶段三），不能就收回。
+func grow_terrain() -> void:
+	if shifter.active_count() >= TERRAIN_MAX:
+		return
+	var p := GameState.player
+	if not is_instance_valid(p):
+		return
+	var keep := _keep_cells()
+	var pc := _cell_of(p.global_position)
+	var dir := p.velocity.normalized() if p.velocity.length() > 10.0 else Vector2.ZERO
+	if dir == Vector2.ZERO and phase == 2 and plates_lit:
+		var goal: Vector2 = plates[0].global_position if p.global_position.distance_to(plates[0].global_position) > p.global_position.distance_to(plates[1].global_position) else plates[1].global_position
+		dir = (goal - p.global_position).normalized()
+	if dir == Vector2.ZERO:
+		dir = Vector2.from_angle(randf() * TAU)
+	var ahead := pc + Vector2i(roundi(dir.x * 3.0), roundi(dir.y * 3.0))
+	var r := arena_cells
+	ahead.x = clampi(ahead.x, r.position.x + 2, r.end.x - 3)
+	ahead.y = clampi(ahead.y, r.position.y + 4, r.end.y - 3)
+	var kinds := ["wall", "wall", "mud", "conveyor", "vortex"]
+	match kinds.pick_random():
+		"wall":
+			# 横在她前面的一段墙（和前进方向垂直，3~4 格）
+			var perp := Vector2i(0, 1) if absf(dir.x) > absf(dir.y) else Vector2i(1, 0)
+			var cells: Array = []
+			var n := randi_range(3, 4)
+			for k in n:
+				var c: Vector2i = ahead + perp * (k - n / 2)
+				if r.has_point(c) and not keep.has(c):
+					cells.append(c)
+			if cells.is_empty():
+				return
+			shifter.raise_walls(cells, TERRAIN_LIFE)
+			if not _still_reachable():
+				shifter.lower_cells(cells)
+		"mud":
+			if not keep.has(ahead):
+				shifter.spawn_field("mud", ahead, {"w": 2, "h": 2}, TERRAIN_LIFE)
+		"conveyor":
+			var d: String = ["left", "right", "up", "down"].pick_random()
+			if not keep.has(ahead):
+				shifter.spawn_field("conveyor", ahead, {"dir": d, "len": 3}, TERRAIN_LIFE)
+		"vortex":
+			var v := ahead + Vector2i(roundi(dir.x), roundi(dir.y))
+			if not keep.has(v):
+				shifter.spawn_field("vortex", v, {"radius": 2}, TERRAIN_LIFE * 0.7)
+
+
+## 两个人都还能走到要去的地方（阶段二：两块压力板；阶段三：光圈）。
+func _still_reachable() -> bool:
+	var goals: Array[Vector2] = []
+	if phase == 2:
+		for pl in plates:
+			goals.append(pl.global_position + Vector2(0, 4))
+	elif circle:
+		goals.append(circle.global_position)
+	var lv := _level()
+	for m in Duo.members:
+		if not is_instance_valid(m) or Downed.is_downed(m):
+			continue
+		for g in goals:
+			if _cell_of(m.global_position) != _cell_of(g) and GridPath.find(lv, m.global_position, g, 6000).is_empty():
+				return false
+	return true
+
+
+## AI 搭档：千手乱舞时去最近的安全圈（没有就返回 null）。
+func safe_spot_for(ai: PlayableCharacter) -> Variant:
+	if boss == null or boss.skills == null or boss.skills.safe_spots.is_empty():
+		return null
+	var best: Vector2 = boss.skills.safe_spots[0]
+	for s in boss.skills.safe_spots:
+		if s.distance_to(ai.global_position) < best.distance_to(ai.global_position):
+			best = s
+	return best
 
 
 ## 场地里随机挑 count 个不压住 keep、彼此不重叠的格子（w×h 的一片，返回左上角）。
@@ -398,13 +586,13 @@ func begin_sacrifice(c: PlayableCharacter) -> void:
 	if c == GameState.player:
 		GameState.switch_control(other)
 	c.set_controller(ScriptedController.new())
-	boss.sacrifice_grab(c, marks.get("lair", c.global_position))
-	PlayerInputController.wasd_only = true
-	var win := SideWindow.open(c, {"title": "千手的巢穴 · %s" % c.display_name(), "hint": "← → 交替连按挣扎", "zoom": 1.5})
+	# 就在光圈那里被手臂吊起来挠（不再传送到别的房间）
+	boss.sacrifice_grab(c, circle.global_position)
+	var win := SideWindow.open(c, {"title": "献祭 · %s" % c.display_name(), "hint": "连按 空格 挣扎", "zoom": 1.5})
 	var st := SacrificeStruggle.start(c)
 	win.set_overlay(st.overlay())
 	st.escaped.connect(func(): end_sacrifice(true))
-	st.broke.connect(func(): on_defeat("sacrifice"))
+	st.broke.connect(func(): _sacrifice_broke(c))
 	var limbs: Array = []
 	var keys := ["limb1", "limb2", "limb3", "limb4"]
 	keys.shuffle()
@@ -419,8 +607,17 @@ func begin_sacrifice(c: PlayableCharacter) -> void:
 	hands.target = c
 	_level().add_child(hands)
 	sacrifice = {"victim": c, "struggle": st, "window": win, "limbs": limbs, "hands": hands}
-	GameState.notify("主画面：打下来的手臂！   小窗：← → 交替连按挣扎")
+	GameState.notify("打下来的手臂！被吊着的人连按空格挣扎；打她也能帮她降闷笑")
 	SpeechBubble.say(other, "……撑住！" if other.character_id == "blue" else "等我！我马上打下来！", 30.0)
+
+
+## 献祭的人笑满：她倒地（不直接战败；两个人都倒下才算输）。
+func _sacrifice_broke(c: PlayableCharacter) -> void:
+	end_sacrifice(false)
+	if is_instance_valid(c) and c.is_alive():
+		c.set_invulnerable(0.0)
+		c._full_invuln = 0.0
+		c.health.damage(c.health.hp)
 
 
 func end_sacrifice(escaped: bool) -> void:
@@ -443,7 +640,6 @@ func end_sacrifice(escaped: bool) -> void:
 		if escaped:
 			SpeechBubble.say(c, "……挣开了。" if c.character_id == "blue" else "呼……逃出来了！", 30.0)
 	Duo.sacrifice_lock = false
-	PlayerInputController.wasd_only = false
 	sacrifice = {}
 	_circle_cd = 5.0
 	_circle_who = null
@@ -458,6 +654,8 @@ func _on_threshold(p: int) -> void:
 		victory()
 		return
 	await get_tree().create_timer(0.4).timeout
+	if p + 1 >= 3:
+		Audio.play_music("boss3", 2.0)   # 进入阶段三的过场里交叉淡入阶段三配乐
 	await Cutscene.play("f8_phase%d" % (p + 1))
 	_regroup()
 	start_phase(p + 1)
@@ -466,7 +664,10 @@ func _on_threshold(p: int) -> void:
 func _cleanup_field() -> void:
 	shifter.clear()
 	boss.clear_summons()
-	boss.cancel_attacks()
+	boss.cancel_all()
+	_phase3_fx(false)
+	if plate_ui:
+		plate_ui.visible = false
 	_set_plates(false)
 	circle.visible = false
 	for m in Duo.members:

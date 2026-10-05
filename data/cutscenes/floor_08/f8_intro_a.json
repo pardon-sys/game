@@ -97,7 +97,8 @@
 			"emotion": "angry",
 			"actions": [
 				{
-					"sound": "chant",
+					"sound": "chime",
+					"pitch": 1.6,
 					"do": "sfx"
 				},
 				{

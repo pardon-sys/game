@@ -3330,6 +3330,145 @@
 					"type": "focus"
 				}
 			]
+		},
+		{
+			"id": "th_brush_feast",
+			"category": "第八层·千手之间",
+			"keys": [
+				[
+					"thousand_hand"
+				],
+				[
+					"squirrel"
+				],
+				[
+					"hedgehog"
+				]
+			],
+			"window": 2.5,
+			"cooldown": 8.0,
+			"effects": [
+				{
+					"type": "burst",
+					"amount": 22
+				},
+				{
+					"type": "root",
+					"duration": 1.2
+				},
+				{
+					"type": "crit_storm",
+					"duration": 2.0
+				},
+				{
+					"type": "focus"
+				}
+			]
+		},
+		{
+			"id": "th_bubble_web",
+			"category": "第八层·千手之间",
+			"keys": [
+				[
+					"thousand_hand"
+				],
+				[
+					"bubble_fish"
+				],
+				[
+					"spider"
+				]
+			],
+			"window": 2.5,
+			"cooldown": 8.0,
+			"effects": [
+				{
+					"type": "burst",
+					"amount": 20
+				},
+				{
+					"type": "slow",
+					"value": 0.5,
+					"duration": 4
+				},
+				{
+					"type": "grab_extend",
+					"seconds": 1.5
+				},
+				{
+					"type": "focus"
+				}
+			]
+		},
+		{
+			"id": "th_feather_swarm",
+			"category": "第八层·千手之间",
+			"keys": [
+				[
+					"thousand_hand"
+				],
+				[
+					"fairy"
+				],
+				[
+					"squirrel"
+				]
+			],
+			"window": 2.5,
+			"cooldown": 8.0,
+			"effects": [
+				{
+					"type": "burst",
+					"amount": 20
+				},
+				{
+					"type": "dot",
+					"rate": 3,
+					"duration": 4
+				},
+				{
+					"type": "rally",
+					"radius": 160
+				},
+				{
+					"type": "focus"
+				}
+			]
+		},
+		{
+			"id": "th_latch_crawl",
+			"category": "第八层·千手之间",
+			"keys": [
+				[
+					"thousand_hand"
+				],
+				[
+					"caterpillar"
+				],
+				[
+					"octopus"
+				]
+			],
+			"window": 2.5,
+			"cooldown": 8.0,
+			"effects": [
+				{
+					"type": "burst",
+					"amount": 22
+				},
+				{
+					"type": "debuff",
+					"buff": "ticklish",
+					"duration": 5
+				},
+				{
+					"type": "grab_presses",
+					"count": 2
+				},
+				{
+					"type": "focus"
+				}
+			]
 		}
 	]
 }

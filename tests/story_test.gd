@@ -205,11 +205,27 @@ func _run_stealth() -> void:
 	d._step_t = 0.0
 	d._footsteps(player, 0.1)
 	var far_quiet := g.state != "investigate"
-	player.global_position = g.global_position + Vector2(-100, 0)
+	player.global_position = g.global_position + Vector2(-50, 0)
 	d._step_t = 0.0
 	d._footsteps(player, 0.1)
-	check("脚步声：站着不动不会引来士兵，走动时 7 格内的士兵过来查看（再远的听不见），查看时走得快（%d → %d）" % [g.speed, g.investigate_speed],
-		still_quiet and far_quiet and g.state == "investigate" and g.sees(player) == 0.0 and g.investigate_speed > g.speed * 1.5)
+	check("脚步声：站着不动不会引来士兵，走动时 %d 像素内的士兵过来查看（再远的听不见），查看时走得快（%d → %d）" % [StealthDirector.STEP_RADIUS, g.speed, g.investigate_speed],
+		still_quiet and far_quiet and g.state == "investigate" and g.sees(player) == 0.0 and g.investigate_speed > g.speed)
+	# 士兵检查躲藏点：先飘一句提示、停 1 秒——这 1 秒里出来就不会被抓
+	g.state = "walk"
+	var crate2: Node2D = main.level.find_children("*", "", true, false).filter(func(n): return n.get("action") == "hide")[0]
+	StealthDirector.toggle_hide(player, crate2)
+	g._begin_check(d, crate2)
+	var warned: bool = g._checking == crate2 and not d.caught_done and g.state == "look"
+	StealthDirector.toggle_hide(player, crate2)
+	await _wait(PatrolGuard.CHECK_DELAY + 0.2)
+	check("士兵检查木箱前先飘提示、停 1 秒；这 1 秒里出来就没被抓", warned and not d.caught_done)
+	# 系统提示太长时自动换行、不出屏幕
+	GameState.notify("这是一条很长很长的系统提示，用来检查黄色的提示文字会不会自动换行，而不是一直延伸到屏幕外面去。再加一点点字，确保它一定会换行。")
+	await get_tree().process_frame
+	var hud: HUD = get_tree().root.find_children("*", "", true, false).filter(func(n): return n is HUD)[0]
+	var vw := get_viewport().get_visible_rect().size.x
+	check("黄色系统提示自动换行（%d 行）、不超出屏幕" % hud.toast_label.get_line_count(),
+		hud.toast_label.get_line_count() >= 2 and hud.toast_label.position.x >= 0.0 and hud.toast_label.position.x + hud.toast_label.size.x <= vw)
 	player.velocity = Vector2.ZERO
 	# 丢石子
 	g.process_mode = Node.PROCESS_MODE_INHERIT
@@ -232,6 +248,33 @@ func _run_stealth() -> void:
 		and GameState.has_flag("cutscene_seen_f6_morning_retry"))
 	var th: Array = [1, 2, 3].map(func(i): return (JSON.parse_string(FileAccess.get_file_as_string("res://data/theater/floor_06/f6_caught_%d.json" % i)) as Dictionary)["steps"].filter(func(st): return st.has("text")).size())
 	check("被抓的惩罚按次数 3 种，每段都长（%s 句）" % [th], th.all(func(x): return x >= 14))
+	var prison: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://data/cutscenes/floor_06/f6_caught_prison_1.json"))
+	check("地牢过场里公主关在保卫处下面的牢房里（不在楼梯口）",
+		prison["steps"][0]["actions"].any(func(a): return a.get("do") == "move" and a.get("who") == "princess" and int(a.get("to", [0, 0])[0]) == 12 and int(a.get("to", [0, 0])[1]) == 3))
+	# 第 4 次起：直接放回矿道入口
+	GameState.vars["f6_caught"] = 3
+	GameState.pending_spawn = "from_camp"
+	await main.change_level(Floors.scene("floor_06_mine"))
+	await _wait(0.6)
+	_finish()
+	player = GameState.player as Princess
+	player.set_controller(ScriptedController.new())
+	var spawn_pos := Vector2.ZERO
+	for sp in get_tree().get_nodes_in_group("spawn_point"):
+		if str(sp.get("id")) == "from_camp" and main.level.is_ancestor_of(sp):
+			spawn_pos = (sp as Node2D).global_position
+	player.global_position = spawn_pos + Vector2(200, 60)
+	var seen4 := []
+	var on_cut4 := func(id: String): seen4.append(id)
+	Cutscene.started.connect(on_cut4)
+	F6Story.on_caught()
+	await _advance_until(func(): return seen4.has("f6_caught_again") and not Cutscene.is_playing(), 60.0)
+	await _wait(0.3)
+	Cutscene.started.disconnect(on_cut4)
+	check("被抓第 4 次：统一的短过场（%s）→ 直接在矿道入口重新开始（不回小屋）（%s、第 %d 次、离入口 %.0f、警觉 %.2f、%s）" % [seen4, _level_id(),
+		int(GameState.vars["f6_caught"]), player.global_position.distance_to(spawn_pos), StealthDirector.current.alert, StealthDirector.current.caught_done],
+		seen4.has("f6_caught_again") and _level_id() == "floor_06_mine" and int(GameState.vars["f6_caught"]) == 4
+		and player.global_position.distance_to(spawn_pos) < 20.0 and not StealthDirector.current.caught_done and StealthDirector.current.alert == 0.0)
 
 
 # ------------------------------------------------------------------ 第七层：粉色公主往上冲 → 主角换成蓝色公主
@@ -245,6 +288,20 @@ func _run_blue_arc() -> void:
 	var hero = GameState.player
 	check("粉色公主走进第七层（过场 f7_pink_run）→ 主角换成蓝色公主，在小屋楼上醒来（%s）" % [seen],
 		seen.has("f7_pink_run") and seen.has("f7_blue_wake") and hero is BluePrincess and hero.hero and GameState.has_flag("blue_is_hero"))
+	await _advance_until(func(): return TutorialBoard.is_open(), 8.0)
+	var board_ok := TutorialBoard.is_open() and get_tree().paused
+	if TutorialBoard.is_open():
+		TutorialBoard.current.close()
+	check("第一次操控蓝色公主：弹出冰晶结界的介绍板（游戏暂停），关掉后继续", board_ok and not get_tree().paused and GameState.has_flag("intro_blue_magic"))
+	# 她自己的基础数值和训练记录
+	GameState.vars["train_fatigue_up"] = 60.0
+	var blue_train := TrainingStats.value("train_fatigue_up")
+	Characters.scope("pink")
+	var pink_train := TrainingStats.value("train_fatigue_up")
+	Characters.unscope()
+	check("蓝色公主有自己的训练记录（粉色公主的 %d，她的 %d）和基础数值（闷笑上限 %d、魔法冷却 %.0f 秒）" % [pink_train, blue_train, hero.laugh.max_value, hero.magic_cooldown],
+		pink_train == 60.0 and blue_train == 0.0 and is_equal_approx(hero.laugh.max_value, 165.0) and is_equal_approx(hero.magic_cooldown, 7.0))
+	GameState.vars.erase("train_fatigue_up")
 	check("蓝色公主：玩家操控、相机跟着她、用她的立绘套装和角色档案", hero.faction == Faction.Type.PLAYER and hero.camera.is_current()
 		and hero.portrait_set == "blue" and Characters.current() == "blue" and hero.controller is PlayerInputController)
 	var calm: Array = ReactionDB.lines("slime", "calm")
@@ -256,7 +313,7 @@ func _run_blue_arc() -> void:
 		TickleZones.info("thigh")["sensitivity"] >= 1.4 and TickleZones.info("butt")["sensitivity"] >= 1.4 and TickleZones.info("sole")["sensitivity"] < 1.0)
 	var slime_cg: Dictionary = CG.cgs().get("death_slime", {})
 	check("她的笑倒 CG / 组合演出是转换过的蓝色版（说话人、立绘），魔力疲倦爆发立绘是最后一格",
-		slime_cg.get("steps", []).any(func(st): return st.get("speaker", "") == "蓝色的公主") and CG.scenes.size() == 69
+		slime_cg.get("steps", []).any(func(st): return st.get("speaker", "") == "蓝色的公主") and CG.scenes.size() == 73
 		and str(CG.data["portraits"]["fatigue_burst"]["placeholder"]) == "damaged_giggle_burst" and hero.fatigue_burst_visual() == "damaged_giggle_burst"
 		and GameState.VISUALS.find("damaged_giggle_burst") == GameState.VISUALS.size() - 1)
 	check("训练成果只算粉色公主（换成她之后部位修正为 0）", TrainingStats.zone_modifier("sole") == 0.0)
@@ -346,8 +403,10 @@ func _run_ice_barrier(hero: BluePrincess) -> void:
 	s.global_position = hero.global_position + Vector2(20, 0)
 	hero.receive_hit(HitData.make_tickle(s, 5.0))
 	check("冰晶守护期间被挠闷笑不涨（%.1f）" % hero.laugh.value, hero.has_buff("frost_guard") and hero.laugh.value == 0.0)
-	await _wait(2.3)
-	check("2 秒后陷阱恢复", trap.active and trap.modulate == Color.WHITE)
+	await _wait(1.2)
+	var fx_mid := lv.find_children("*", "", true, false).filter(func(n): return n is IceBarrier).size()
+	await _wait(1.1)
+	check("2 秒后陷阱恢复；冰晶结界的特效一直留到冻结结束（1.2 秒时还在：%d 个）" % fx_mid, trap.active and trap.modulate == Color.WHITE and fx_mid >= 1)
 	check("她的魔法台词是冰晶结界的", str(ReactionDB.magic("burst")).contains("冻") or str(ReactionDB.magic("burst")).contains("结界"))
 	# 疲倦爆发：带满蓄力范围、一半时间的冰晶控制
 	await _wait(2.5)

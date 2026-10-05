@@ -81,7 +81,7 @@
 		},
 		{
 			"speaker": "保卫队队长",
-			"text": "第三次了。……你还真是一点都不长记性。"
+			"text": "第三次了。……巡逻的人都认得你的脚步声了。"
 		},
 		{
 			"speaker": "公主",
@@ -109,6 +109,10 @@
 			]
 		},
 		{
+			"speaker": "保卫队员",
+			"text": "她每次都差一点点。"
+		},
+		{
 			"speaker": "保卫队队长",
 			"text": "刑床、足枷、坐垫，全部用上。……今天我亲自来。"
 		},
@@ -123,16 +127,16 @@
 					"repeat": 8,
 					"interval": 0.2,
 					"fx": "hand",
-					"zone": "sole",
+					"zone": "waist",
 					"do": "tickle"
 				},
 				{
 					"who": "princess",
-					"by": "stocks",
+					"by": "supine",
 					"repeat": 6,
 					"interval": 0.28,
 					"fx": "lines",
-					"zone": "sole",
+					"zone": "waist",
 					"do": "tickle"
 				}
 			]
@@ -163,23 +167,19 @@
 					"repeat": 8,
 					"interval": 0.2,
 					"fx": "hand",
-					"zone": "sole",
+					"zone": "waist",
 					"do": "tickle"
 				},
 				{
 					"who": "princess",
-					"by": "stocks",
+					"by": "supine",
 					"repeat": 6,
 					"interval": 0.28,
 					"fx": "lines",
-					"zone": "sole",
+					"zone": "waist",
 					"do": "tickle"
 				}
 			]
-		},
-		{
-			"speaker": "保卫队员",
-			"text": "脚心这边也开始了。"
 		},
 		{
 			"speaker": "保卫队员",
@@ -274,7 +274,7 @@
 		},
 		{
 			"speaker": "保卫队队长",
-			"text": "……今天就到这里。把她送回去。"
+			"text": "……以后再被抓到，就直接放回矿道。……我们也挠累了。"
 		},
 		{
 			"speaker": "",
@@ -282,7 +282,7 @@
 		},
 		{
 			"speaker": "公主",
-			"text": "……哈……哈……等、等我的人……嘿嘿……"
+			"text": "……哈……哈……挠、挠累了……嘿嘿……"
 		},
 		{
 			"actions": [

@@ -5,7 +5,7 @@ API key 从项目根目录的 .env 读（ELEVENLABS=...，.env 不进版本库�
 首尾相连：生成的曲子结尾常有淡出 / 静音，所以先找循环点 T（find_loop_end：在淡出之前、节奏和开头最像的位置），
 把 T 之前 CROSSFADE 秒和开头交叉淡化（等功率），T 之后的尾声丢掉——循环播放时无缝接回开头。
 原始音频存在 tools/.cache/music/（不进版本库）。
-用法：python tools/audio/gen_music.py [dungeon] [town] [boss]（不写就全部生成；已经生成过的跳过，加 --force 重新生成）
+用法：python tools/audio/gen_music.py [dungeon] [town] [boss] [boss3]（不写就全部生成；已经生成过的跳过，加 --force 重新生成）
 """
 import json
 import os
@@ -45,6 +45,14 @@ TRACKS = {
              "contrabass, ticking clockwork and gear percussion with heavy taiko hits, wordless choir-like pads swelling with a fateful, "
              "bittersweet motif. Tempo around 110 BPM, minor key. No vocals or lyrics. Loop-friendly: steady high energy throughout, end "
              "on the same chord and groove the piece begins with so it can loop seamlessly."),
+    "boss3": ("Instrumental video game final-phase boss battle music, continuing the same piece as the previous boss theme: same tempo "
+              "of 110 BPM, same minor key, same instruments (music box, pizzicato and staccato strings, low cello and contrabass, "
+              "clockwork and gear percussion, taiko, wordless choir pads). Two princesses face a giant many-handed tickle monster that "
+              "was once someone dear, now in its desperate final form. Mood: childlike motifs twisted into something extremely "
+              "dangerous, fierce and intense battle energy, overwhelming sense of fate and sorrow. Faster rhythmic drive with double-time "
+              "percussion and driving string ostinatos, the music box melody played higher and more frantic, the choir swelling in "
+              "fateful bittersweet chords, heavy low brass-like stabs. No vocals or lyrics. Loop-friendly: constant high intensity, end on "
+              "the same chord and groove it begins with so it can loop seamlessly."),
 }
 
 

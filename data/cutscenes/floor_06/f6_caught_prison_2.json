@@ -6,6 +6,20 @@
 		{
 			"actions": [
 				{
+					"who": "princess",
+					"to": [
+						12,
+						3
+					],
+					"time": 0.0,
+					"do": "move"
+				},
+				{
+					"who": "princess",
+					"dir": "down",
+					"do": "face"
+				},
+				{
 					"time": 0.4,
 					"do": "fade_in"
 				}
@@ -17,6 +31,15 @@
 		},
 		{
 			"actions": [
+				{
+					"who": "princess",
+					"to": [
+						12,
+						3
+					],
+					"time": 0.0,
+					"do": "move"
+				},
 				{
 					"emotion": "sad",
 					"laugh": 30,
@@ -40,32 +63,63 @@
 			"wait": 0.4
 		},
 		{
-			"speaker": "蓝色的公主",
-			"text": "……又来接她了。",
 			"actions": [
 				{
 					"who": "blue",
 					"to": [
-						17,
-						13
+						12,
+						5
 					],
-					"speed": 50,
+					"speed": 55,
 					"do": "move"
 				}
 			]
 		},
 		{
-			"speaker": "保卫队员",
-			"text": "啊，是您……队长说可以放人了。"
-		},
-		{
-			"speaker": "蓝色的公主",
-			"text": "……走吧。",
 			"actions": [
 				{
 					"who": "blue",
-					"dir": "left",
+					"dir": "up",
 					"do": "face"
+				},
+				{
+					"sound": "gate",
+					"do": "sfx"
+				}
+			],
+			"wait": 0.3
+		},
+		{
+			"speaker": "保卫队员",
+			"text": "啊，又是您。……她刚笑完，腿还软着。"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……又来接她了。"
+		},
+		{
+			"speaker": "公主",
+			"text": "……我、我还能走……",
+			"emotion": "shy"
+		},
+		{
+			"speaker": "保卫队员",
+			"text": "钥匙队长没收，说让她拿着。……您劝劝她吧。"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……劝不动。"
+		},
+		{
+			"actions": [
+				{
+					"who": "princess",
+					"to": [
+						12,
+						5
+					],
+					"speed": 40,
+					"do": "move"
 				}
 			]
 		},

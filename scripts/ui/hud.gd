@@ -482,11 +482,23 @@ func _on_emotion_changed(emotion: String) -> void:
 	tw.tween_property(portrait_frame, "scale", Vector2.ONE, 0.1)
 
 
+## 屏幕上方的黄色提示：太长时自动换行（宽度不超过屏幕宽 − 40，居中，按行数往下长），不会跑出屏幕。
+const TOAST_MARGIN := 20.0
+
+
 func show_toast(text: String) -> void:
+	var vw := get_viewport().get_visible_rect().size.x
+	toast_label.autowrap_mode = TextServer.AUTOWRAP_ARBITRARY
+	toast_label.size = Vector2(vw - TOAST_MARGIN * 2.0, 0.0)
+	toast_label.position.x = TOAST_MARGIN
 	toast_label.text = text
+	toast_label.reset_size()
+	toast_label.size.x = vw - TOAST_MARGIN * 2.0
+	# 时间按长度略加长，长句子来得及看完
+	var hold := clampf(2.4 + text.length() * 0.03, 2.4, 5.0)
 	if _toast_tween:
 		_toast_tween.kill()
 	toast_label.modulate.a = 1.0
 	_toast_tween = create_tween()
-	_toast_tween.tween_interval(2.4)
+	_toast_tween.tween_interval(hold)
 	_toast_tween.tween_property(toast_label, "modulate:a", 0.0, 0.4)

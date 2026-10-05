@@ -6,6 +6,7 @@ extends CanvasLayer
 ##   w.set_overlay(control)   在小窗里叠一层界面（挣扎条等），铺满小窗
 ##   w.retarget(node)         换跟随的目标
 ##   w.close()                关闭（淡出）
+##   opts.half = true：占右半屏、全高（和主画面并列一样大，巨石追逐战用），没有标题栏，只有一条细分隔线。
 ## 第八层的献祭挣扎、巨石追逐战都用它。CG / 过场播放时自动隐藏。同时只开一个（再开会先关掉旧的）。
 
 const LAYER := 12
@@ -23,6 +24,7 @@ var title_label: Label
 var hint_label: Label
 var overlay_root: Control
 var _size := Vector2(176, 180)
+var half := false
 
 
 static func open(t: Node2D, opts := {}) -> SideWindow:
@@ -32,6 +34,7 @@ static func open(t: Node2D, opts := {}) -> SideWindow:
 	w.target = t
 	w.zoom = float(opts.get("zoom", 2.0))
 	w._size = opts.get("size", Vector2(176, 180))
+	w.half = bool(opts.get("half", false))
 	if opts.has("offset"):
 		w.cam_offset = opts["offset"]
 	var tree := Engine.get_main_loop() as SceneTree
@@ -50,6 +53,8 @@ func _ready() -> void:
 	layer = LAYER
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	var vp_size := get_viewport().get_visible_rect().size
+	if half:
+		_size = Vector2(floorf(vp_size.x / 2.0), vp_size.y)
 	frame = Panel.new()
 	frame.name = "Frame"
 	var sb := StyleBoxFlat.new()
@@ -60,6 +65,11 @@ func _ready() -> void:
 	frame.add_theme_stylebox_override("panel", sb)
 	frame.size = _size + Vector2(4, 18)
 	frame.position = Vector2(vp_size.x - frame.size.x - MARGIN, 66.0)   # 右上角表情头像的下面
+	if half:
+		sb.set_border_width_all(0)
+		sb.border_width_left = 2
+		frame.size = _size
+		frame.position = Vector2(vp_size.x - _size.x, 0)
 	add_child(frame)
 	title_label = Label.new()
 	title_label.position = Vector2(6, 1)
@@ -67,7 +77,9 @@ func _ready() -> void:
 	title_label.add_theme_color_override("font_color", Color(1, 0.85, 0.95))
 	frame.add_child(title_label)
 	var holder := SubViewportContainer.new()
-	holder.position = Vector2(2, 16)
+	holder.position = Vector2(2, 0) if half else Vector2(2, 16)
+	if half:
+		title_label.visible = false
 	holder.size = _size
 	holder.stretch = true
 	frame.add_child(holder)
@@ -96,10 +108,12 @@ func _ready() -> void:
 	hint_label.size = Vector2(_size.x, 14)
 	overlay_root.add_child(hint_label)
 	frame.modulate.a = 0.0
-	frame.position.x += 30.0
+	if not half:
+		frame.position.x += 30.0
 	var tw := create_tween().set_parallel()
 	tw.tween_property(frame, "modulate:a", 1.0, 0.2)
-	tw.tween_property(frame, "position:x", frame.position.x - 30.0, 0.2).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	if not half:
+		tw.tween_property(frame, "position:x", frame.position.x - 30.0, 0.2).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
 	_follow()
 
 

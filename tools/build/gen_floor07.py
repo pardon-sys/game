@@ -255,7 +255,7 @@ for x in range(4, 7):
 pillar(5, 27, 2); pillar(5, 36, 2); pillar(5, 27, 6); pillar(5, 36, 6)
 put_all(5, ((29, 2, "monster type=hedgehog"), (34, 5, "monster type=imp"), (32, 2, "monster type=ghost"), (31, 7, "monster type=mini_tentacle")))
 fan_cage(5, 25, 4, "right", 4, "slime")
-combo("rune_wings", 5, (14, 21), (3, 4, "trap type=rune"), (2, 1, "monster type=bat"), (6, 7, "monster type=fairy"))
+combo("rune_wings", 5, (14, 21), (3, 4, "trap type=rune"), (2, 1, "monster type=bat"), (4, 6, "monster type=fairy"))
 combo("spin_barnacle", 5, "A", (6, 4, "trap type=spinwheel"), (9, 2, "monster type=barnacle"), (2, 6, "monster type=squirrel"))
 
 # —— 第 6 层（最上）：从左（A）进来；C 房是封住的出口 ——
@@ -265,8 +265,8 @@ combo("supine_navel", 6, "A", (8, 3, "trap type=teaser group=f7n"), (8, 4, "trap
 combo("prone_wheel_crawl", 6, "B", (4, 6, "trap type=prone group=f7q + trap type=conveyor dir=left len=2"), (5, 7, "trap type=wheel group=f7q"),
       (8, 2, "monster type=caterpillar"))
 m.put(27, y + 1, "sign dialogue=sign7_top")
-m.g[y - 1][30] = "."
-m.put(30, y - 1, "exit target=floor_08 down=false dialogue=sign7_sealed")
+# 通往第八层：大厅最上面一行放一个看得见的上楼楼梯（出口就在楼梯上）
+m.put(30, y, "prop type=stairs_up + exit target=floor_08 down=false dialogue=sign7_sealed")
 pillar(6, 26, 6); pillar(6, 34, 6)
 put_all(6, ((33, 2, "monster type=caterpillar"), (26, 3, "trap type=rune")))
 vortex_bind(6, 30, 5, "stocks")

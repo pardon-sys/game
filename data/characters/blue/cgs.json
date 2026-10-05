@@ -415,7 +415,7 @@
 			}
 		},
 		"thousand_hand": {
-			"scene": "res://scenes/actors/monsters/thousand_hand.tscn",
+			"scene": "res://levels/floor_08/scenes/thousand_hand.tscn",
 			"sprite": {
 				"hframes": 6,
 				"offset": [

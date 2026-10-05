@@ -9,12 +9,20 @@ extends RefCounted
 ## 上限按 data/training/trainings.json 当前解锁阶段的 caps（部位类的 key 去掉部位后缀查）。
 ## 训练三、四的进度（已练量 / 上限）换来闷笑上限、生命、近战强度，按部位均分（部位数动态，以后加部位自动重算）。
 ## apply(公主) 把这些套到公主的组件上：开局、换关卡（公主 _setup）和每次训练结算时调用。
+## 每个可操作角色有自己的一份训练记录（按 Characters.current()）：粉色公主用上面的键（兼容旧存档），
+## 别的角色在键后面加「@角色」（蓝色公主 train_fatigue_up@blue …），从 0 开始，互不复用。
 
 const BASE_FATIGUE := 500.0
 
 
+## 当前角色的存储键。
+static func var_key(key: String, who := "") -> String:
+	var c := who if who != "" else Characters.current()
+	return key if c == "" or c == "pink" else "%s@%s" % [key, c]
+
+
 static func value(key: String) -> float:
-	return float(GameState.vars.get(key, 0.0))
+	return float(GameState.vars.get(var_key(key), 0.0))
 
 
 ## 某项数值属于哪项训练（部位类去掉后缀）。
@@ -57,7 +65,7 @@ static func cap(key: String) -> float:
 static func add(key: String, amount: float) -> float:
 	var before := value(key)
 	var after := clampf(before + amount, 0.0, cap(key))
-	GameState.set_var(key, after)
+	GameState.set_var(var_key(key), after)
 	return after - before
 
 
@@ -77,8 +85,6 @@ static func zone_progress(prefix: String, zone: String) -> float:
 
 ## 部位倍率修正：耐笑训练降、强化训练升（TickleZones.modifier 里加上）。
 static func zone_modifier(zone: String) -> float:
-	if Characters.current() != "pink":
-		return 0.0   # 训练成果是粉色公主的
 	return -value(zone_key("train_resist", zone)) + value(zone_key("train_sens", zone))
 
 
@@ -128,6 +134,12 @@ static func burst_mult() -> float:
 static func apply(p: Node) -> void:
 	if p == null or not is_instance_valid(p):
 		return
+	Characters.scope(str(p.get("character_id")) if p.get("character_id") != null else "pink")
+	_apply(p)
+	Characters.unscope()
+
+
+static func _apply(p: Node) -> void:
 	var fatigue: MagicFatigue = p.get("fatigue")
 	if fatigue:
 		fatigue.max_value = fatigue_max()

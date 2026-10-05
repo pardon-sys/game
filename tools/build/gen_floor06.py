@@ -1050,7 +1050,7 @@ print("过场 2 段，小剧场 %d 段" % (6 + len(ENDURE) + len(DEVOTION)))
 
 
 # ================================================================ 第六层后续剧情：参观小镇 → 蓝色小屋 → 夜晚 → 钥匙 → 第二天
-# 剧情脚本见 scripts/story/f6_story.gd；睡觉组件 scripts/story/sleep.gd。
+# 剧情脚本见 levels/floor_06/scripts/f6_story.gd；睡觉组件 scripts/story/sleep.gd。
 class Stack:
     """一格叠放多个实体（木地板铺满房间，上面再放家具）：最后用 " + " 连起来写进地图。"""
 
@@ -1296,21 +1296,20 @@ def caught_theater(n):
                 "cap": {"kind": "npc:captain", "at": [64, 0], "dir": "left"}}
         devs = ("cushion", "butt", "cuffs", "armpit")
         lines = [
-            line(CAP, "一大早跑到矿道最深处。……想干什么？"),
-            line(P, "我、我只是散步……散步！", "shy"),
-            line(CAP, "散步需要躲进矿车里？……挠。挠到她说实话为止。"),
+            line(G1, "队长，矿道最深处抓到的。躲在矿车里，脚还露在外面。"),
+            line(CAP, "……露在外面。"),
+            line(P, "那、那是因为矿车太小了！不是我躲得不好！", "angry"),
+            line(CAP, "嗯。那就从露在外面的地方开始。……先把手铐上。"),
             line(P, "等一下等一下——噗哈哈！腋、腋下……举着手放不下来……！", portrait="defeat_1"),
             line(G1, "坐垫也开了。屁股底下的刷子会一直刷哦。"),
-            line(P, "哈哈哈哈！我说、我说！我想打开那扇门……回地面上去……！", portrait="defeat_1"),
+            line(P, "哈哈哈哈！我、我说！我只是想看看那扇门后面……！", portrait="defeat_1"),
             line(CAP, "……那扇门后面不是地面。是比这里更深的地方。"),
             line(P, "更、更深……？哈哈哈……那、那也要去……！"),
-            line(CAP, "……倔。继续。腋下和腰，别停。"),
-            line(P, "哈哈哈哈哈！腰、腰也……我、我错了……今天先不去了……哈哈哈哈！", portrait="defeat_2"),
-            line(G2, "队长，她说「今天」先不去。"),
-            line(CAP, "……再加五分钟。"),
+            line(G2, "队长，她好像越挠越有精神了。"),
+            line(CAP, "……那就挠到没精神为止。"),
             line(P, "哈哈哈哈哈——！不、不是那个意思啊哈哈哈哈！", portrait="defeat_2"),
             line(NARR, "（举手铐柱把双手吊在头顶，坐垫的刷毛不停地刷，两个队员一左一右挠着腋下和腰——地牢里的笑声持续了很久）"),
-            line(P, "……哈……哈……散、散步……真的只是散步……"),
+            line(P, "……哈……哈……下次……下次一定躲好……"),
         ]
     elif n == 2:
         cast = {"princess": {"kind": "princess", "at": [0, 8], "visual": "helpless_1", "anim": "helpless", "dir": "down"},
@@ -1319,21 +1318,21 @@ def caught_theater(n):
                 "g3": {"kind": "npc:guard", "at": [-60, 4], "dir": "right"}, "cap": {"kind": "npc:captain", "at": [64, 0], "dir": "left"}}
         devs = ("stocks", "sole", "clamp", "thigh")
         lines = [
-            line(G1, "又是你啊。昨天才笑哭了，今天又跑去矿道。"),
-            line(CAP, "这次换足枷。……脚心朝外，鞋脱掉。"),
+            line(G1, "……又是你啊。这次是在木箱里找到的。"),
+            line(G2, "箱子里还有半块面包。她是打算在里面住下吗？"),
+            line(P, "那、那是储备粮！潜入是很辛苦的！", "shy"),
+            line(CAP, "……足枷。脚心朝外，鞋脱掉。"),
             line(P, "脚、脚心不行！哪里都可以，脚心不——噗哈哈哈哈！", portrait="defeat_1"),
             line(G2, "夹腿枷台也夹上。大腿内侧刚好够得着。"),
             line(P, "哈哈哈哈！大腿也——上、上下一起太过分了哈哈哈哈！", portrait="defeat_1"),
-            line(CAP, "钥匙是从哪里来的？"),
-            line(P, "钥、钥匙？哈哈哈……捡、捡到的……凳子底下……哈哈哈！"),
-            line(CAP, "……凳子？"),
+            line(CAP, "钥匙，还在你身上吧。"),
+            line(P, "哈哈哈……不、不给……这是我的……哈哈哈！"),
             line(G3, "队长，第三个人也来了。脚趾缝我负责。", actions=[A("enter", who="g3", at=[-44, 12], time=0.4)]),
             line(P, "哈哈哈哈哈！脚、脚趾缝不行——三、三个人……！", portrait="defeat_2"),
-            line(CAP, "……钥匙先让你拿着。反正你打不开那扇门——过了那扇门，就不是我们能保护的地方了。"),
+            line(CAP, "……钥匙先让你拿着。过了那扇门，就不是我们能保护的地方了。"),
             line(P, "哈哈哈……保、保护……？我才不要被保护……我要回家……哈哈哈哈！", portrait="defeat_2"),
-            line(CAP, "……继续。"),
             line(NARR, "（脚心被羽毛和手指来回扫，大腿内侧被夹板的绒毛蹭着——公主的脚趾一会儿蜷起来、一会儿张开，笑声越来越哑）"),
-            line(P, "……哈……脚……脚心……是我的吗……嘿嘿……"),
+            line(P, "……哈……面、面包……还在箱子里……"),
         ]
     else:
         cast = {"princess": {"kind": "princess", "at": [0, 8], "visual": "helpless_2", "anim": "helpless", "dir": "down"},
@@ -1343,13 +1342,13 @@ def caught_theater(n):
                 "g3": {"kind": "npc:guard", "at": [-60, 4], "dir": "right"}, "cap": {"kind": "npc:captain", "at": [64, 0], "dir": "left"}}
         devs = ("stocks", "sole", "supine", "waist")
         lines = [
-            line(CAP, "第三次了。……你还真是一点都不长记性。"),
+            line(CAP, "第三次了。……巡逻的人都认得你的脚步声了。"),
             line(P, "这、这次只差一点点了！再有一点点就……", "angry"),
+            line(G1, "她每次都差一点点。"),
             line(CAP, "刑床、足枷、坐垫，全部用上。……今天我亲自来。"),
             line(P, "队、队长亲自……？等一下，我们可以谈谈——噗哈哈哈哈！", portrait="defeat_1"),
             line(CAP, "腰。……这里最怕吧。", actions=[A("move", who="cap", to=[24, 6], time=0.6)]),
             line(P, "哈哈哈哈哈！最、最怕的地方……为什么会知道啊哈哈哈哈！", portrait="defeat_1"),
-            line(G1, "脚心这边也开始了。"),
             line(G2, "坐垫开到最大。"),
             line(P, "哈哈哈哈哈哈！全、全部一起——不行了不行了不行了哈哈哈哈！", portrait="defeat_2"),
             line(CAP, "……为什么非要出去不可？在这里不好吗？"),
@@ -1357,9 +1356,9 @@ def caught_theater(n):
             line(CAP, "……"),
             line(CAP, "……停一下。", actions=[A("face", who="cap", dir="left")]),
             line(G3, "队长？"),
-            line(CAP, "……今天就到这里。把她送回去。"),
+            line(CAP, "……以后再被抓到，就直接放回矿道。……我们也挠累了。"),
             line(NARR, "（刷子停了下来。公主瘫在刑床上大口喘气，眼角还挂着笑出来的泪）"),
-            line(P, "……哈……哈……等、等我的人……嘿嘿……"),
+            line(P, "……哈……哈……挠、挠累了……嘿嘿……"),
         ]
     d1, z1, d2, z2 = devs
     steps = [{"actions": [A("fade_in", time=0.5), A("voice", state="laugh")], "wait": 0.5}]
@@ -1379,19 +1378,40 @@ def caught_theater(n):
 for n in (1, 2, 3):
     (TH / ("f6_caught_%d.json" % n)).write_text(_theater_json(caught_theater(n)))
 
-FETCH = {1: "……我来接她。", 2: "……又来接她了。", 3: "……最后一次。我来接她。"}
+# 惩罚之后：公主关在保卫处下面的牢房里（地图上方一排牢房，铁栅在第 4 行），蓝色公主来领人
+CELL = [12, 3]
+AFTER = {
+    1: [("保卫队员", "……你家的。在里面关着呢。"), (BLUE, "……我来接她。"), ("保卫队员", "队长说，下次再跑出去，就加量。"),
+        (BLUE, "……知道了。"), (P, "（小声）……加、加量……", "sad")],
+    2: [("保卫队员", "啊，又是您。……她刚笑完，腿还软着。"), (BLUE, "……又来接她了。"), (P, "……我、我还能走……", "shy"),
+        ("保卫队员", "钥匙队长没收，说让她拿着。……您劝劝她吧。"), (BLUE, "……劝不动。")],
+    3: [("保卫队员", "……队长说，以后抓到她就直接放回矿道，不用送来这里了。"), (BLUE, "……最后一次。我来接她。"),
+        (P, "最、最后一次……是说他们放弃了吗？", "surprise"), (BLUE, "……是说他们挠累了。")],
+}
 for n in (1, 2, 3):
-    cs = {"name": "营地地牢：被抓之后（第 %d 次）" % n, "letterbox": True, "skippable": True, "steps": [
-        {"actions": [A("fade_in", time=0.4)], "wait": 0.4},
-        {"theater": "f6_caught_%d" % n},
-        {"actions": [A("pose", emotion="sad", laugh=30), A("spawn", id="blue", kind="npc:blue_princess", at=[5, 13], dir="right"),
-                     A("sfx", sound="door")], "wait": 0.4},
-        line(BLUE, FETCH[n], actions=[A("move", who="blue", to=[17, 13], speed=50)]),
-        line("保卫队员", "啊，是您……队长说可以放人了。"),
-        line(BLUE, "……走吧。", actions=[A("face", who="blue", dir="left")]),
-        {"actions": [A("fade_out", time=0.6)], "wait": 0.6},
-    ]}
+    steps = [{"actions": [A("move", who="princess", to=CELL, time=0.0), A("face", who="princess", dir="down"), A("fade_in", time=0.4)], "wait": 0.4},
+             {"theater": "f6_caught_%d" % n},
+             {"actions": [A("move", who="princess", to=CELL, time=0.0), A("pose", emotion="sad", laugh=30),
+                          A("spawn", id="blue", kind="npc:blue_princess", at=[5, 13], dir="right"), A("sfx", sound="door")], "wait": 0.4},
+             {"actions": [A("move", who="blue", to=[12, 5], speed=55)]},
+             {"actions": [A("face", who="blue", dir="up"), A("sfx", sound="gate")], "wait": 0.3}]
+    for ln in AFTER[n]:
+        steps.append(line(ln[0], ln[1], ln[2] if len(ln) > 2 else None))
+    steps += [{"actions": [A("move", who="princess", to=[12, 5], speed=40)]},
+              {"actions": [A("fade_out", time=0.6)], "wait": 0.6}]
+    cs = {"name": "营地地牢：被抓之后（第 %d 次）" % n, "letterbox": True, "skippable": True, "steps": steps}
     (CUT / ("f6_caught_prison_%d.json" % n)).write_text(json.dumps(cs, ensure_ascii=False, indent="\t") + "\n")
+
+# 第 4 次起：不再关进地牢，士兵象征性地挠一下，直接放回矿道入口（F6Story.on_caught）
+CAUGHT_AGAIN = {"name": "矿道：又被抓到了", "letterbox": True, "skippable": True, "steps": [
+    line("保卫队员", "……又是你。"),
+    line(P, "呜……这次真的只差一点点……", "sad"),
+    line("保卫队员", "队长说了，抓到你就放回去。……不过规矩是规矩。", actions=[A("tickle", who="princess", repeat=8, interval=0.2, fx="hand", zone="waist")]),
+    line(P, "噗哈哈！腰、腰——好啦好啦我回去就是了哈哈哈！", "giggle", [A("tickle", who="princess", repeat=6, interval=0.2, fx="hand", zone="armpit")]),
+    line("保卫队员", "……从入口重新来吧。别再被我看到了。"),
+    {"actions": [A("fade_out", time=0.5)], "wait": 0.5},
+]}
+(CUT / "f6_caught_again.json").write_text(json.dumps(CAUGHT_AGAIN, ensure_ascii=False, indent="\t") + "\n")
 
 CAUGHT_HOME = {"name": "被领回小屋", "letterbox": True, "skippable": True, "steps": [
     {"actions": [A("set_flag", flag="night"), A("spawn", id="blue", kind="npc:blue_princess", at=[10, 9], dir="left"),

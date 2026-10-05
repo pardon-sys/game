@@ -97,7 +97,7 @@
 			"name": "第八层·崩塌的回廊",
 			"scene": "res://levels/floor_08_chase/floor.tscn",
 			"group": "floor_08",
-			"music": "boss"
+			"music": "boss3"
 		}
 	]
 }

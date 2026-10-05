@@ -1,0 +1,58 @@
+{
+	"name": "矿道：又被抓到了",
+	"letterbox": true,
+	"skippable": true,
+	"steps": [
+		{
+			"speaker": "保卫队员",
+			"text": "……又是你。"
+		},
+		{
+			"speaker": "公主",
+			"text": "呜……这次真的只差一点点……",
+			"emotion": "sad"
+		},
+		{
+			"speaker": "保卫队员",
+			"text": "队长说了，抓到你就放回去。……不过规矩是规矩。",
+			"actions": [
+				{
+					"who": "princess",
+					"repeat": 8,
+					"interval": 0.2,
+					"fx": "hand",
+					"zone": "waist",
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "噗哈哈！腰、腰——好啦好啦我回去就是了哈哈哈！",
+			"emotion": "giggle",
+			"actions": [
+				{
+					"who": "princess",
+					"repeat": 6,
+					"interval": 0.2,
+					"fx": "hand",
+					"zone": "armpit",
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "保卫队员",
+			"text": "……从入口重新来吧。别再被我看到了。"
+		},
+		{
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "fade_out"
+				}
+			],
+			"wait": 0.5
+		}
+	]
+}

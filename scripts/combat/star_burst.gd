@@ -12,12 +12,12 @@ const FRAMES := 6
 const FPS := 16.0
 const TIERS := [
 	{},
-	{"radius": 36.0, "damage": 2, "knockback": 140.0, "stun": 0.0},
-	{"radius": 52.0, "damage": 3, "knockback": 190.0, "stun": 0.0},
-	{"radius": 72.0, "damage": 4, "knockback": 240.0, "stun": 1.5},
+	{"radius": 42.0, "damage": 2, "knockback": 140.0, "stun": 0.0},
+	{"radius": 60.0, "damage": 3, "knockback": 190.0, "stun": 0.0},
+	{"radius": 84.0, "damage": 4, "knockback": 240.0, "stun": 1.5},
 ]
-## 魔力疲倦满时的自动爆发：满蓄力档的一半伤害、击退减半，不僵直，不触发 MagicReactive。
-const FATIGUE := {"radius": 72.0, "damage": 2, "knockback": 120.0, "stun": 0.0}
+## 魔力疲倦满时的自动爆发：满蓄力档的范围、一半伤害、击退减半，范围内的怪物僵直 0.5 秒，不触发 MagicReactive。
+const FATIGUE := {"radius": 84.0, "damage": 2, "knockback": 120.0, "stun": 0.5}
 ## 角色的身体半径：中心在这个距离内也算命中。
 const BODY_ALLOWANCE := 6.0
 

@@ -1,6 +1,6 @@
 [gd_scene format=3]
 
-[ext_resource type="Script" path="res://scripts/actors/monsters/thousand_hand.gd" id="1"]
+[ext_resource type="Script" path="res://levels/floor_08/scripts/thousand_hand.gd" id="1"]
 [ext_resource type="Texture2D" path="res://assets/generated/thousand_hand.png" id="tex"]
 [ext_resource type="Shader" path="res://shaders/flash.gdshader" id="flash"]
 [ext_resource type="Script" path="res://scripts/components/health_component.gd" id="health"]

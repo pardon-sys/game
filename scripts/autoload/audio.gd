@@ -74,6 +74,7 @@ const MUSIC := {
 	"dungeon": "res://assets/audio/music/dungeon_loop.wav",
 	"town": "res://assets/audio/music/town_loop.wav",
 	"boss": "res://assets/audio/music/boss_loop.wav",
+	"boss3": "res://assets/audio/music/boss3_loop.wav",
 }
 const MUSIC_DB := -12.0
 const DUCK_DB := -6.0
@@ -98,14 +99,26 @@ func set_music_volume(v: float) -> void:
 
 
 ## 播放 id 的配乐（循环）；id 为空就淡出停掉。已经在放同一首时什么都不做。
-func play_music(id: String) -> void:
-	if id == music_id:
+## 换曲时两个播放器交替用。每个播放器同时只留一个淡入 / 淡出补间：
+## 连着换两次曲（读档：先放地牢曲、马上换 Boss 曲）时，旧的淡出补间不能在新曲开始后把播放器停掉。
+var _music_tw: Array[Tween] = [null, null]
+
+
+func _music_tween(i: int) -> Tween:
+	if _music_tw[i] and _music_tw[i].is_valid():
+		_music_tw[i].kill()
+	_music_tw[i] = _music[i].create_tween()
+	return _music_tw[i]
+
+
+func play_music(id: String, fade := MUSIC_FADE) -> void:
+	if id == music_id and (id == "" or _music[_music_cur].playing):
 		return
 	music_id = id
 	var old := _music[_music_cur]
 	if old.playing:
-		var tw := old.create_tween()
-		tw.tween_property(old, "volume_db", -60.0, MUSIC_FADE)
+		var tw := _music_tween(_music_cur)
+		tw.tween_property(old, "volume_db", -60.0, fade)
 		tw.tween_callback(old.stop)
 	if id == "" or not MUSIC.has(id) or not ResourceLoader.exists(MUSIC[id]):
 		return
@@ -120,11 +133,16 @@ func play_music(id: String) -> void:
 		s.set("loop", true)
 	_music_cur = 1 - _music_cur
 	var p := _music[_music_cur]
+	var tw := _music_tween(_music_cur)
 	p.stream = s
 	p.volume_db = -60.0
 	p.play()
-	var tw := p.create_tween()
-	tw.tween_property(p, "volume_db", _music_target_db(), MUSIC_FADE)
+	tw.tween_property(p, "volume_db", _music_target_db(), fade)
+
+
+## 停掉配乐（淡出），music_id 清空——之后 play_music 同一首也会重新放。
+func stop_music() -> void:
+	play_music("")
 
 
 ## 楼层的配乐（floors.json 的 music；没写的地牢层默认 dungeon）。
