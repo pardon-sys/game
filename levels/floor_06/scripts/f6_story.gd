@@ -7,6 +7,7 @@ extends RefCounted
 ##   2. f6_escape 之后矿道层变成潜入模式（StealthDirector）；被抓 → 营地地牢惩罚 → 蓝色公主领回小屋 → 睡一觉再来（vars.f6_caught 次数）
 ##   3. 粉色公主走进第七层（过场 f7_pink_run）→ 主角换成蓝色公主（blue_is_hero）→ 她在小屋楼上醒来（f7_blue_wake）
 ##      → 出门时和保卫队队长争吵（f7_blue_argue）→ 去第七层（f7_blue_arrive，塔底有唯一的存档点）
+##      → 过场放完、开始自由活动时弹出蓝色公主的魔法介绍板（只一次）
 ## 剧情标记：f6_tour_started / f6_touring（参观中）/ f6_house_open / night / f6_key / f6_escape / blue_is_hero / f7_argue_done。
 
 const BLUE_FILE := "floor_06/blue_princess"
@@ -29,6 +30,9 @@ static func on_talk_finished(file: String) -> void:
 
 
 static func on_level_entered(floor_id: String) -> void:
+	# 蓝色公主到了第七层：塔底的过场放完、开始自由活动时，弹出一次她的魔法介绍板（介绍板自己等过场 / 换关卡都结束）
+	if floor_id == "floor_07" and GameState.has_flag("blue_is_hero"):
+		GameState.show_blue_intro()
 	# 蓝色公主第一次走出小屋：和队长争吵，然后去第七层
 	if floor_id == "floor_06_upper" and GameState.has_flag("blue_is_hero") and not GameState.has_flag("f7_argue_done") and StoryDirector.instance:
 		await TrainingDB.wait_dialogue_free()

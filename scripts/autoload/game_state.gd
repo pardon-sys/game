@@ -75,10 +75,9 @@ func register_player(p: PlayableCharacter) -> void:
 	player = p
 	restore_player_state(p)
 	player_registered.emit(p)
-	_character_intro(p)
 
 
-## 第一次操控蓝色公主：介绍她的魔法（介绍板只出现一次）。
+## 蓝色公主的介绍板（F6Story：第七层她到达塔底、过场放完开始自由活动时弹出一次）。
 const BLUE_INTRO := [
 	"蓝色公主的魔法是「冰晶结界」，和粉色公主的星光爆发不一样：",
 	"· 按住 L 吟唱，松开展开结界。按得越久档位越高：范围 48 / 72 / 96，冻结 2 / 3 / 4 秒。",
@@ -91,8 +90,8 @@ const BLUE_INTRO := [
 ]
 
 
-func _character_intro(p: PlayableCharacter) -> void:
-	if is_instance_valid(p) and str(p.get("character_id")) == "blue" and not has_flag("intro_blue_magic"):
+func show_blue_intro() -> void:
+	if not has_flag("intro_blue_magic"):
 		TutorialBoard.show_once("intro_blue_magic", "蓝色公主 · 冰晶结界", BLUE_INTRO)
 
 
@@ -115,7 +114,6 @@ func switch_control(to: PlayableCharacter) -> void:
 		to.camera.reset_smoothing()
 	player = to
 	player_registered.emit(to)
-	_character_intro(to)
 	for c in [from, to]:
 		if is_instance_valid(c) and c.emotion:
 			c.emotion.refresh()
