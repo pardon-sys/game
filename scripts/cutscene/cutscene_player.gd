@@ -344,19 +344,36 @@ func _do(a: Dictionary, instant: bool) -> float:
 			if who == null:
 				return 0.0
 			var to := cell_to_world(a["to"]) if a.has("to") else who.global_position
+			# 不穿墙：直线上有墙时沿地图走（GridPath），路线按格子拐弯
+			var route: Array[Vector2] = [to]
+			if not instant:
+				route = _route(who.global_position, to)
+			var length := 0.0
+			var prev := who.global_position
+			for p in route:
+				length += prev.distance_to(p)
+				prev = p
 			var dur := t
 			if a.has("speed") and not instant:
-				dur = who.global_position.distance_to(to) / maxf(float(a["speed"]), 1.0)
-			if dur <= 0.0:
+				dur = length / maxf(float(a["speed"]), 1.0)
+			if dur <= 0.0 or length <= 0.0:
 				who.global_position = to
 				return 0.0
-			_face(who, (to - who.global_position).normalized())
+			_face(who, (route[0] - who.global_position).normalized())
 			var walks := "puppet_walking" in who
 			if walks:
 				who.set("puppet_walking", true)
 			# 演员的 tween（演员被 despawn 时跟着停）
 			var tw := who.create_tween()
-			tw.tween_property(who, "global_position", to, dur)
+			prev = who.global_position
+			for p in route:
+				var seg := prev.distance_to(p)
+				if seg <= 0.01:
+					continue
+				var dir := (p - prev).normalized()
+				tw.tween_callback(func(): if is_instance_valid(who): _face(who, dir))
+				tw.tween_property(who, "global_position", p, dur * seg / length)
+				prev = p
 			if walks:
 				tw.tween_callback(who.set.bind("puppet_walking", false))
 			return dur
@@ -456,6 +473,43 @@ func _do(a: Dictionary, instant: bool) -> float:
 				create_tween().tween_property(chapter_screen, "modulate:a", 1.0, 1.2)
 				return 1.2
 	return t
+
+
+## 走过去的路线（世界坐标的点，最后一个是 to）：直线上没有墙就直接走；有墙就用 GridPath 沿地面绕过去（走不到也直线）。
+func _route(from: Vector2, to: Vector2) -> Array[Vector2]:
+	var straight: Array[Vector2] = [to]
+	var lv := _level()
+	if lv == null or not lv.has_node("Walls") or from.distance_to(to) < 8.0:
+		return straight
+	if not _blocked(lv, from, to):
+		return straight
+	var path := GridPath.find(lv, from, to, 6000)
+	if path.is_empty():
+		return straight
+	path[path.size() - 1] = to
+	# 能直线看到的拐点就跳过（路线不那么一格一格地拐）
+	var out: Array[Vector2] = []
+	var cur := from
+	var i := 0
+	while i < path.size():
+		var j := path.size() - 1
+		while j > i and _blocked(lv, cur, path[j]):
+			j -= 1
+		out.append(path[j])
+		cur = path[j]
+		i = j + 1
+	return out
+
+
+## 两点之间的直线（按 4 像素一步采样）有没有穿过墙格。
+func _blocked(lv: Node, a: Vector2, b: Vector2) -> bool:
+	var walls: TileMapLayer = lv.get_node("Walls")
+	var n := maxi(1, int(a.distance_to(b) / 4.0))
+	for k in n + 1:
+		var p := a.lerp(b, float(k) / n) + Vector2(0, -4)
+		if walls.get_cell_source_id(walls.local_to_map(walls.to_local(p))) != -1:
+			return true
+	return false
 
 
 ## 格子 -> 世界坐标（角色脚下：格子中心往下 4 像素，和构建器放角色的位置一致）。

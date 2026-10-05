@@ -92,6 +92,12 @@ static func on_caught() -> void:
 
 ## 被抓第 4 次起：回到矿道入口（from_camp），潜入状态和巡逻全部重置。
 static func retry_in_mine() -> void:
+	# 抓人过场里生成的士兵（cg1 / cg2）不留在矿道里
+	for id in ["cg1", "cg2"]:
+		var n: Node = Cutscene.spawned.get(id)
+		if is_instance_valid(n):
+			n.queue_free()
+		Cutscene.spawned.erase(id)
 	var p := GameState.player
 	var d := StealthDirector.current
 	if d:

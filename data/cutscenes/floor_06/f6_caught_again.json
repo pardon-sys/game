@@ -53,6 +53,19 @@
 				}
 			],
 			"wait": 0.5
+		},
+		{
+			"actions": [
+				{
+					"who": "cg1",
+					"do": "despawn"
+				},
+				{
+					"who": "cg2",
+					"do": "despawn"
+				}
+			],
+			"wait": 0.1
 		}
 	]
 }

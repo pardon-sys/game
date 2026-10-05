@@ -23,7 +23,8 @@ func _ready() -> void:
 	add_child(main)
 	await _wait(1.0)
 	_finish()
-	for f in ["blue_is_hero", "f7_argue_done", "f7_pink_ran", "f7_blue_awake", "magic_unlocked", "intro_done_f7_pink_run", "intro_blue_magic"]:
+	# 不设 blue_is_hero：粉色公主当主角走进第八层时，第八层自己换成蓝色公主（之前的 bug）
+	for f in ["f7_argue_done", "f7_pink_ran", "f7_blue_awake", "magic_unlocked", "intro_done_f7_pink_run", "intro_blue_magic"]:
 		GameState.set_flag(f)
 	await _run_intro()
 	await _run_duo()
@@ -65,7 +66,7 @@ func _run_intro() -> void:
 	dir = Floor8Director.instance
 	check("开场过场（%s）→ 冰晶结界救下粉色公主 → 双人模式开始，阶段一" % [seen],
 		seen.has("f8_intro_a") and seen.has("f8_intro_b") and Duo.active and dir.phase == 1 and dir.boss.fighting and not dir.pink.status.is_grabbed())
-	check("两个人：玩家操控蓝色公主，粉色公主是 AI 搭档；Boss 战配乐（%s）" % Audio.music_id,
+	check("粉色公主当主角进来也会换成蓝色公主上场；两个人：玩家操控蓝色公主，粉色公主是 AI 搭档；Boss 战配乐（%s）" % Audio.music_id,
 		GameState.player is BluePrincess and dir.pink.controller is CompanionController and dir.pink.faction == Faction.Type.ALLY
 		and Audio.music_id == "boss" and Audio.MUSIC.has("boss") and ResourceLoader.exists(Audio.MUSIC["boss"]))
 
