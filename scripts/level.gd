@@ -35,14 +35,7 @@ func _ready() -> void:
 				break
 		GameState.pending_spawn = ""
 	if player:
-		var rect := walls.get_used_rect()
-		var ts := walls.tile_set.tile_size
-		var cam := player.camera
-		cam.limit_left = rect.position.x * ts.x
-		cam.limit_top = rect.position.y * ts.y
-		cam.limit_right = rect.end.x * ts.x
-		cam.limit_bottom = rect.end.y * ts.y
-		cam.reset_smoothing()
+		apply_camera_limits(player)
 	Dialogue.finished.connect(_on_dialogue_finished)
 	if GameState.pending_load > 0:
 		return  # 马上要读档换关卡：不播开场
@@ -58,6 +51,20 @@ func _ready() -> void:
 		GameState.set_flag(flag)
 		await get_tree().create_timer(0.8).timeout
 		Dialogue.start(intro_dialogue)
+
+
+## 相机边界 = 地图范围（关卡载入时；中途换了主角时也调它）。
+func apply_camera_limits(player: PlayableCharacter) -> void:
+	if player == null or player.camera == null:
+		return
+	var rect := walls.get_used_rect()
+	var ts := walls.tile_set.tile_size
+	var cam := player.camera
+	cam.limit_left = rect.position.x * ts.x
+	cam.limit_top = rect.position.y * ts.y
+	cam.limit_right = rect.end.x * ts.x
+	cam.limit_bottom = rect.end.y * ts.y
+	cam.reset_smoothing()
 
 
 ## 蓝色公主当主角（剧情标记 blue_is_hero）：把关卡里的粉色公主换成玩家操控的蓝色公主（同一个位置）。

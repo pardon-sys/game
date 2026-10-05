@@ -1378,8 +1378,8 @@ def caught_theater(n):
 for n in (1, 2, 3):
     (TH / ("f6_caught_%d.json" % n)).write_text(_theater_json(caught_theater(n)))
 
-# 惩罚之后：公主关在保卫处下面的牢房里（地图上方一排牢房，铁栅在第 4 行），蓝色公主来领人
-CELL = [12, 3]
+# 惩罚之后：公主关在保卫处下面的大牢房里（第六章开头她醒来的那间，摆着刑具），蓝色公主从楼梯下来领人
+CELL = [19, 13]
 AFTER = {
     1: [("保卫队员", "……你家的。在里面关着呢。"), (BLUE, "……我来接她。"), ("保卫队员", "队长说，下次再跑出去，就加量。"),
         (BLUE, "……知道了。"), (P, "（小声）……加、加量……", "sad")],
@@ -1393,11 +1393,11 @@ for n in (1, 2, 3):
              {"theater": "f6_caught_%d" % n},
              {"actions": [A("move", who="princess", to=CELL, time=0.0), A("pose", emotion="sad", laugh=30),
                           A("spawn", id="blue", kind="npc:blue_princess", at=[5, 13], dir="right"), A("sfx", sound="door")], "wait": 0.4},
-             {"actions": [A("move", who="blue", to=[12, 5], speed=55)]},
-             {"actions": [A("face", who="blue", dir="up"), A("sfx", sound="gate")], "wait": 0.3}]
+             {"actions": [A("move", who="blue", to=[16, 13], speed=55)]},
+             {"actions": [A("face", who="blue", dir="right"), A("face", who="princess", dir="left")], "wait": 0.3}]
     for ln in AFTER[n]:
         steps.append(line(ln[0], ln[1], ln[2] if len(ln) > 2 else None))
-    steps += [{"actions": [A("move", who="princess", to=[12, 5], speed=40)]},
+    steps += [{"actions": [A("move", who="princess", to=[17, 13], speed=40)]},
               {"actions": [A("fade_out", time=0.6)], "wait": 0.6}]
     cs = {"name": "营地地牢：被抓之后（第 %d 次）" % n, "letterbox": True, "skippable": True, "steps": steps}
     (CUT / ("f6_caught_prison_%d.json" % n)).write_text(json.dumps(cs, ensure_ascii=False, indent="\t") + "\n")
@@ -1410,6 +1410,8 @@ CAUGHT_AGAIN = {"name": "矿道：又被抓到了", "letterbox": True, "skippabl
     line(P, "噗哈哈！腰、腰——好啦好啦我回去就是了哈哈哈！", "giggle", [A("tickle", who="princess", repeat=6, interval=0.2, fx="hand", zone="armpit")]),
     line("保卫队员", "……从入口重新来吧。别再被我看到了。"),
     {"actions": [A("fade_out", time=0.5)], "wait": 0.5},
+    # 围上来的两个士兵（f6_caught_grab 生成的 cg1 / cg2）离场
+    {"actions": [A("despawn", who="cg1"), A("despawn", who="cg2")], "wait": 0.1},
 ]}
 (CUT / "f6_caught_again.json").write_text(json.dumps(CAUGHT_AGAIN, ensure_ascii=False, indent="\t") + "\n")
 

@@ -8,8 +8,8 @@
 				{
 					"who": "princess",
 					"to": [
-						12,
-						3
+						19,
+						13
 					],
 					"time": 0.0,
 					"do": "move"
@@ -34,8 +34,8 @@
 				{
 					"who": "princess",
 					"to": [
-						12,
-						3
+						19,
+						13
 					],
 					"time": 0.0,
 					"do": "move"
@@ -67,8 +67,8 @@
 				{
 					"who": "blue",
 					"to": [
-						12,
-						5
+						16,
+						13
 					],
 					"speed": 55,
 					"do": "move"
@@ -79,12 +79,13 @@
 			"actions": [
 				{
 					"who": "blue",
-					"dir": "up",
+					"dir": "right",
 					"do": "face"
 				},
 				{
-					"sound": "gate",
-					"do": "sfx"
+					"who": "princess",
+					"dir": "left",
+					"do": "face"
 				}
 			],
 			"wait": 0.3
@@ -115,8 +116,8 @@
 				{
 					"who": "princess",
 					"to": [
-						12,
-						5
+						17,
+						13
 					],
 					"speed": 40,
 					"do": "move"

@@ -77,6 +77,13 @@ func _ready() -> void:
 	add_child(shifter)
 	var lv := _level()
 	shifter.setup(lv, Vector2i(arena_cells.position.x - 1, arena_cells.position.y + 2))
+	# 第八层由蓝色公主上来（粉色公主是被抓住的那个）：粉色公主当主角进来时（旧存档、跳过了第七层的交接）换成蓝色公主
+	if not (GameState.player is BluePrincess):
+		GameState.set_flag("blue_is_hero")
+		lv.call("_swap_hero")
+		await get_tree().process_frame
+		await get_tree().process_frame
+		lv.call("apply_camera_limits", GameState.player)
 	blue = GameState.player
 	boss = load(BOSS_SCENE).instantiate()
 	boss.name = "Boss"

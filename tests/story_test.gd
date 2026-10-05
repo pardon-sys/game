@@ -249,8 +249,8 @@ func _run_stealth() -> void:
 	var th: Array = [1, 2, 3].map(func(i): return (JSON.parse_string(FileAccess.get_file_as_string("res://data/theater/floor_06/f6_caught_%d.json" % i)) as Dictionary)["steps"].filter(func(st): return st.has("text")).size())
 	check("被抓的惩罚按次数 3 种，每段都长（%s 句）" % [th], th.all(func(x): return x >= 14))
 	var prison: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://data/cutscenes/floor_06/f6_caught_prison_1.json"))
-	check("地牢过场里公主关在保卫处下面的牢房里（不在楼梯口）",
-		prison["steps"][0]["actions"].any(func(a): return a.get("do") == "move" and a.get("who") == "princess" and int(a.get("to", [0, 0])[0]) == 12 and int(a.get("to", [0, 0])[1]) == 3))
+	check("地牢过场里公主在保卫处下面的大牢房里（第六章开头那间，不在楼梯口）",
+		prison["steps"][0]["actions"].any(func(a): return a.get("do") == "move" and a.get("who") == "princess" and int(a.get("to", [0, 0])[0]) == 19 and int(a.get("to", [0, 0])[1]) == 13))
 	# 第 4 次起：直接放回矿道入口
 	GameState.vars["f6_caught"] = 3
 	GameState.pending_spawn = "from_camp"
@@ -271,6 +271,29 @@ func _run_stealth() -> void:
 	await _advance_until(func(): return seen4.has("f6_caught_again") and not Cutscene.is_playing(), 60.0)
 	await _wait(0.3)
 	Cutscene.started.disconnect(on_cut4)
+	var leftover: int = main.level.find_children("Cutscene_cg*", "", true, false).filter(func(n): return is_instance_valid(n) and not n.is_queued_for_deletion()).size()
+	check("被抓第 4 次之后围上来的士兵离场了（还剩 %d 个）" % leftover, leftover == 0 and not Cutscene.spawned.has("cg1") and not Cutscene.spawned.has("cg2"))
+	# 过场里走路不穿墙：直线上有墙时沿地面绕过去
+	# 找一块直线过去会穿墙、但沿地面走得到的地方
+	var far := spawn_pos
+	var floor_layer: TileMapLayer = main.level.get_node("Floor")
+	var walls_layer: TileMapLayer = main.level.get_node("Walls")
+	for c in floor_layer.get_used_cells():
+		if walls_layer.get_cell_source_id(c) != -1 or (c.x + c.y) % 3 != 0:
+			continue
+		var p := Cutscene.cell_to_world([c.x, c.y])
+		if p.distance_to(spawn_pos) > 120.0 and Cutscene._blocked(main.level, spawn_pos, p) and not GridPath.find(main.level, spawn_pos, p, 6000).is_empty():
+			far = p
+			break
+	var route: Array[Vector2] = Cutscene._route(spawn_pos, far)
+	var prev := spawn_pos
+	var clear := true
+	for p in route:
+		clear = clear and not Cutscene._blocked(main.level, prev, p)
+		prev = p
+	check("过场里走路不穿墙：矿道入口走到墙后面的地方，路线 %d 段，每段都不穿过墙（直线有墙 %s、格子路 %d 步、距离 %.0f）" % [route.size(),
+		Cutscene._blocked(main.level, spawn_pos, far), GridPath.find(main.level, spawn_pos, far, 6000).size(), spawn_pos.distance_to(far)],
+		Cutscene._blocked(main.level, spawn_pos, far) and route.size() > 1 and clear)
 	check("被抓第 4 次：统一的短过场（%s）→ 直接在矿道入口重新开始（不回小屋）（%s、第 %d 次、离入口 %.0f、警觉 %.2f、%s）" % [seen4, _level_id(),
 		int(GameState.vars["f6_caught"]), player.global_position.distance_to(spawn_pos), StealthDirector.current.alert, StealthDirector.current.caught_done],
 		seen4.has("f6_caught_again") and _level_id() == "floor_06_mine" and int(GameState.vars["f6_caught"]) == 4
