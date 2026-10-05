@@ -13,6 +13,7 @@ extends Node
 const DASH_WARN := 1.0
 const DASH_TIME := 0.5
 const DASH_TICKLE := 16.0
+const DAZE_TIME := 1.5
 const RAIN_GAP := 0.14
 const STORM_TIME := 3.0
 const STORM_PUSH := 62.0
@@ -47,6 +48,13 @@ func busy() -> bool:
 func cancel() -> void:
 	_serial += 1
 	current = ""
+	# 俯冲到一半被打断（冻住 / 转阶段 / 战败）：本体直接回到原位
+	if _dash_tw and _dash_tw.is_valid():
+		_dash_tw.kill()
+	if _dash_home != Vector2.INF and is_instance_valid(boss):
+		boss.return_home(_dash_home, _dash_raised, true)
+		boss.sprite.flip_h = false
+	_dash_home = Vector2.INF
 	safe_spots.clear()
 	for n in _nodes:
 		if is_instance_valid(n):
@@ -120,10 +128,18 @@ func _wait(sec: float) -> void:
 	await get_tree().create_timer(sec, false).timeout
 
 
-# ------------------------------------------------------------------ 俯冲撞墙
+# ------------------------------------------------------------------ 俯冲撞墙（本体真的冲出去）
+var _dash_home := Vector2.INF
+var _dash_raised := false
+var _dash_tw: Tween
+
+
 func _dash(times: int) -> void:
 	current = "dash"
 	var serial := _serial
+	_dash_home = boss.global_position
+	_dash_raised = boss.raised
+	boss.begin_dash()
 	for i in times:
 		var ts := _targets()
 		if ts.is_empty():
@@ -139,62 +155,72 @@ func _dash(times: int) -> void:
 		while tt < DASH_WARN:
 			if not _alive(serial):
 				return
-			(warn.get_child(0) as ColorRect).color.a = 0.18 + 0.22 * (0.5 + 0.5 * sin(tt * 26.0))
+			if is_instance_valid(warn):
+				(warn.get_child(0) as ColorRect).color.a = 0.18 + 0.22 * (0.5 + 0.5 * sin(tt * 26.0))
 			await get_tree().process_frame
 			tt += get_process_delta_time()
-		warn.queue_free()
+		if is_instance_valid(warn):
+			warn.queue_free()
 		await _dash_run(lane, horizontal, serial)
 		if not _alive(serial):
 			return
 		_wall_impact(lane, horizontal)
-		await _wait(0.5)
-	current = ""
+		# 撞墙撞晕：DAZE_TIME 秒里能打本体
+		boss.daze(DAZE_TIME)
+		await _wait(DAZE_TIME)
+		if not _alive(serial):
+			return
+	var home := _dash_home
+	_dash_home = Vector2.INF
+	await boss.return_home(home, _dash_raised)
+	if serial == _serial:
+		current = ""
 
 
-## 本体（缩小的身影）沿通道冲过去：残影 + 速度线 + 尘土拖尾，撞到的人挠一大口并击飞。
+## 本体从现在的位置飞到通道一头，再沿通道冲过去：残影 + 速度线 + 尘土拖尾，撞到的人挠一大口并击飞。
 func _dash_run(lane: Rect2, horizontal: bool, serial: int) -> void:
-	var body := Sprite2D.new()
-	body.texture = BODY_TEX
-	body.hframes = 6
-	body.frame = 4
-	body.scale = Vector2(0.55, 0.55)
-	body.z_index = 4
-	_parent().add_child(body)
-	_nodes.append(body)
-	var from := Vector2(lane.position.x, lane.get_center().y) if horizontal else Vector2(lane.get_center().x, lane.position.y)
-	var to := Vector2(lane.end.x, lane.get_center().y) if horizontal else Vector2(lane.get_center().x, lane.end.y)
-	if randf() < 0.5:
+	var from := Vector2(lane.position.x + 20.0, lane.get_center().y) if horizontal else Vector2(lane.get_center().x, lane.position.y + 40.0)
+	var to := Vector2(lane.end.x - 20.0, lane.get_center().y) if horizontal else Vector2(lane.get_center().x, lane.end.y - 4.0)
+	# 从离自己近的那一头开始冲
+	if boss.global_position.distance_to(to) < boss.global_position.distance_to(from):
 		var tmp := from
 		from = to
 		to = tmp
+	var off := Vector2(0, 30)   # 节点在本体脚下：本体中心对准通道中线
+	_dash_tw = boss.create_tween()
+	_dash_tw.tween_property(boss, "global_position", from + off, 0.3).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	await _dash_tw.finished
+	if serial != _serial:
+		return
 	var dir := (to - from).normalized()
-	body.flip_h = dir.x < 0.0
+	boss.sprite.flip_h = dir.x < 0.0
 	var hit: Array = []
 	var tt := 0.0
 	var ghost_t := 0.0
 	Audio.play("wind", -4.0, 0.0, 1.6)
 	while tt < DASH_TIME:
-		if serial != _serial:
-			body.queue_free()
+		if serial != _serial or not is_instance_valid(boss):
 			return
-		tt += get_process_delta_time()
-		body.global_position = from.lerp(to, clampf(tt / DASH_TIME, 0.0, 1.0)) + Vector2(0, -18)
-		ghost_t -= get_process_delta_time()
+		var d := get_process_delta_time()
+		tt += d
+		boss.global_position = from.lerp(to, clampf(tt / DASH_TIME, 0.0, 1.0)) + off
+		ghost_t -= d
+		var body_center := boss.global_position + Vector2(0, -40)
 		if ghost_t <= 0.0:
 			ghost_t = 0.04
-			_afterimage(body)
-			Fx.burst(_parent(), body.global_position + Vector2(0, 18), "dust", 2, 20.0, 0.4, Vector2(0, 10))
-			_speed_line(body.global_position, dir)
+			_afterimage(boss.sprite)
+			Fx.burst(_parent(), boss.global_position, "dust", 2, 20.0, 0.4, Vector2(0, 10))
+			_speed_line(body_center, dir)
 		for m in _targets():
 			if m in hit:
 				continue
-			if m.global_position.distance_to(body.global_position + Vector2(0, 18)) < 26.0:
+			if m.global_position.distance_to(body_center + Vector2(0, 24)) < 40.0:
 				hit.append(m)
-				boss.deliver_tickle(m, DASH_TICKLE, false, 220.0)
+				boss.deliver_tickle(m, DASH_TICKLE, false, 240.0)
 				boss.play_tickle_sound()
 				m.shake(0.3)
 		await get_tree().process_frame
-	body.queue_free()
+	boss.sprite.flip_h = false
 
 
 func _afterimage(src: Sprite2D) -> void:
@@ -204,6 +230,7 @@ func _afterimage(src: Sprite2D) -> void:
 	g.frame = src.frame
 	g.scale = src.scale
 	g.flip_h = src.flip_h
+	g.offset = src.offset
 	g.modulate = Color(0.9, 0.6, 1.0, 0.5)
 	g.z_index = 3
 	_parent().add_child(g)

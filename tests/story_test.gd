@@ -47,8 +47,8 @@ func _run_portrait_fade() -> void:
 	var cam_base := cam.position
 	cam.position = cam_base + Vector2(170, -50)
 	await _wait(1.0)
-	check("公主走到立绘的位置：立绘变半透明（%.2f）" % Dialogue.portrait.self_modulate.a, Dialogue.player_behind_portrait()
-		and absf(Dialogue.portrait.self_modulate.a - Dialogue.PORTRAIT_FADE_ALPHA) < 0.05)
+	check("公主走到立绘的位置：立绘变成 30%% 透明度（%.2f）" % Dialogue.portrait.self_modulate.a, Dialogue.player_behind_portrait()
+		and Dialogue.PORTRAIT_FADE_ALPHA == 0.3 and absf(Dialogue.portrait.self_modulate.a - Dialogue.PORTRAIT_FADE_ALPHA) < 0.05)
 	cam.position = cam_base
 	await _wait(1.0)
 	check("走开后恢复不透明", Dialogue.portrait.self_modulate.a > 0.95)
@@ -442,6 +442,24 @@ func _run_ice_barrier(hero: BluePrincess) -> void:
 	await _wait(1.1)
 	check("2 秒后陷阱恢复；冰晶结界的特效一直留到冻结结束（1.2 秒时还在：%d 个）" % fx_mid, trap.active and trap.modulate == Color.WHITE and fx_mid >= 1)
 	check("她的魔法台词是冰晶结界的", str(ReactionDB.magic("burst")).contains("冻") or str(ReactionDB.magic("burst")).contains("结界"))
+	# 组合台词：不念组合名，说手法和感受；碰到大腿 / 屁股的明显更崩
+	var named := []
+	var weak_ok := true
+	var rx: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://data/characters/blue/reactions.json"))
+	for cid in rx.get("combos", {}):
+		var c = rx["combos"][cid]
+		if not c is Dictionary:
+			continue
+		var lines: Array = c.get("lines", [])
+		for l in lines:
+			if str(c.get("name", "~")) in str(l):
+				named.append(cid)
+		var first := str(lines[0]) if not lines.is_empty() else ""
+		if (first.contains("大腿") or first.contains("屁股")) and not str(lines).contains("哈哈哈"):
+			weak_ok = false
+	check("蓝色公主的组合台词不念组合名（%s），碰到大腿 / 屁股的那些笑到崩" % [named.slice(0, 3)], named.is_empty() and weak_ok)
+	var th: Array = rx["combos"]["th_brush_feast"]["lines"]
+	check("三来源组合（%s）也是说手法：带「屁股」「哈哈哈」" % [th[0]], str(th).contains("屁股") and str(th).contains("哈哈哈"))
 	# 疲倦爆发：带满蓄力范围、一半时间的冰晶控制
 	await _wait(2.5)
 	var m2: Monster = load("res://scenes/actors/monsters/slime.tscn").instantiate()

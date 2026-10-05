@@ -7,6 +7,7 @@
 中位切分会把小面积的颜色并进大色块（例如大片绿色青蛙里公主的蓝眼睛变成绿色）：鲜艳像素里色相偏了 40° 以上的
 占比超过 HUE_BAD_RATIO 时，改用八叉树调色板（色相偏差更小才换）。
 一个怪物有两张 CG 图时命名为 <来源键>_1.png / <来源键>_2.png，分别输出 <来源键>_3（第三幕）和 <来源键>_4（第四幕）。
+第八层的战败 CG 在 assets/generated/BOSS_CG/（中文原图名，按 BOSS_KEYS 输出 boss8_*.png），给第八层的战败小剧场用。
 扩展名大小写都可以（.png / .PNG）。
 用法：python tools/art/import_cg.py [--preview]
   --preview 在 tools/.cache/cg/ 输出原图与像素化结果的对比图
@@ -65,6 +66,18 @@ def target_key(stem: str) -> str:
     return stem + "_3"
 
 
+# 第八层千手痒痒魔的战败 CG（assets/generated/BOSS_CG/，同样有 .gdignore）：中文原图名 → 输出的英文键
+BOSS_SRC = OUT / "BOSS_CG"
+BOSS_KEYS = {
+    "boss阶段2战败": "boss8_p2",
+    "boss阶段3战败双人1": "boss8_duo_1", "boss阶段3战败双人2": "boss8_duo_2", "boss阶段3战败双人3": "boss8_duo_3",
+    "boss阶段3战败蓝色公主抵抗1": "boss8_resist_1", "boss阶段3战败蓝色公主抵抗2": "boss8_resist_2",
+    "boss阶段3战败蓝色公弱点特攻1": "boss8_weak_1", "boss阶段3战败蓝色公弱点特攻2": "boss8_weak_2",
+    "boss阶段3战败群怪蓝色公主": "boss8_mob",
+    "巨石追逐战": "boss8_chase",
+}
+
+
 def main():
     DST.mkdir(parents=True, exist_ok=True)
     done = []
@@ -73,6 +86,15 @@ def main():
         out = pixelize(Image.open(path))
         out.save(DST / f"{out_key}.png")
         done.append((out_key, path, out))
+    if BOSS_SRC.exists():
+        for path in sorted(p for p in BOSS_SRC.iterdir() if p.suffix.lower() == ".png"):
+            out_key = BOSS_KEYS.get(path.stem)
+            if out_key is None:
+                print("没有对应键的 BOSS_CG 图（跳过）：", path.name)
+                continue
+            out = pixelize(Image.open(path))
+            out.save(DST / f"{out_key}.png")
+            done.append((out_key, path, out))
     if "--preview" in sys.argv:
         PREVIEW.mkdir(parents=True, exist_ok=True)
         for key, path, out in done:

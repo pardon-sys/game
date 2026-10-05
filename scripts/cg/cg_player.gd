@@ -746,13 +746,19 @@ func _act(a: Dictionary) -> float:
 		"shake":
 			t = t if t > 0.0 else 0.3
 			who.shake(t)
-			if who.kind == "princess":
+			if _is_hero_actor(who):
 				Dialogue.shake_portrait(3.0, t)
+			elif who.kind == "npc_princess":
+				Dialogue.shake_npc_portrait(3.0, t)
 		"face":
 			who.set_dir(str(a.get("dir", "down")))
 		"pose":
-			if who.kind == "princess":
+			# 公主演员和公主行走图的人物演员（第八层小剧场里的两个公主）都能换姿势
+			if who.kind == "npc_princess":
 				who.set_pose(str(a.get("visual", "")), str(a.get("anim", "")), str(a.get("dir", "")))
+			if _is_hero_actor(who):
+				if who.kind == "princess":
+					who.set_pose(str(a.get("visual", "")), str(a.get("anim", "")), str(a.get("dir", "")))
 				if _auto_portrait and str(a.get("visual", "")) != "":
 					_follow_pose(str(a["visual"]))
 				if str(a.get("visual", "")) == "helpless_2" and _fx_act < 2:
@@ -794,7 +800,9 @@ func _act(a: Dictionary) -> float:
 					var b: CGActor = by_ref.get_ref() if by_ref else null
 					Audio.play("tickle", -3.0, 0.1, b.tickle_pitch if b else 1.0)
 					w.shake(0.2)
-					if w.kind == "princess":
+					if not _is_hero_actor(w) and w.kind == "npc_princess":
+						Dialogue.shake_npc_portrait(2.5, 0.18)   # 另一个公主：右边的立绘跟着抖
+					if _is_hero_actor(w):
 						# 立绘反馈（抖动、泛粉、贴片、飘字、光晕）；没有挠痒演员时按指令的 fx 和致死来源
 						Dialogue.portrait_fx.cg_tickle(b.reaction_key if b else source_key,
 								b.hit_fx if b else str(FX_TO_HIT.get(fx, "")), zone)
@@ -875,3 +883,14 @@ func _set_voice(state: String) -> void:
 	if stream and (voice.stream != stream or not voice.playing):
 		voice.stream = stream
 		voice.play()
+
+
+## 这个演员是不是「当前操控的公主」本人：公主演员，或者是她的人物演员（蓝色公主当主角时的 npc:blue_princess）。
+## 她挨挠时左边立绘有反馈；另一个公主的人物演员挨挠时右边的人物立绘抖。
+func _is_hero_actor(w: CGActor) -> bool:
+	if w == null:
+		return false
+	if w.kind == "princess":
+		return true
+	var hero_id := "blue_princess" if Characters.current() == "blue" else "pink_princess"
+	return w.kind == "npc_princess" and w.reaction_key == hero_id

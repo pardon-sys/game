@@ -61,6 +61,36 @@ static func cap(key: String) -> float:
 	return float(stage(training_of(key)).get("caps", {}).get(base_key(key), 0.0))
 
 
+## 所有阶段里最高的上限（测试页调训练度用）。
+static func max_cap(key: String) -> float:
+	var m := 0.0
+	for st in training_of(key).get("stages", []):
+		m = maxf(m, float(st.get("caps", {}).get(base_key(key), 0.0)))
+	return m
+
+
+## 测试页可以调的全部训练项：[[key, 名字]]（部位类每个部位两项）。
+static func all_keys() -> Array:
+	var out: Array = [["train_fatigue_up", "疲倦上限 +（忍耐）"], ["train_fatigue_down", "疲倦上限 −（释放）"], ["train_burst_power", "释放强度 %"]]
+	for z in TickleZones.zone_ids():
+		out.append([zone_key("train_resist", z), "%s 耐笑" % TickleZones.zone_name(z)])
+		out.append([zone_key("train_sens", z), "%s 强化" % TickleZones.zone_name(z)])
+	return out
+
+
+## 测试页：直接设某个角色的某项训练值（截到所有阶段的最高上限），然后套到这个角色身上。
+static func dev_set(who: String, key: String, v: float) -> void:
+	GameState.set_var(var_key(key, who), clampf(v, 0.0, max_cap(key)))
+	var tree := Engine.get_main_loop() as SceneTree
+	for n in tree.get_nodes_in_group("actor"):
+		if n is PlayableCharacter and str(n.get("character_id")) == who:
+			apply(n)
+
+
+static func dev_value(who: String, key: String) -> float:
+	return float(GameState.vars.get(var_key(key, who), 0.0))
+
+
 ## 加数值，截到当前阶段上限；返回实际加了多少。
 static func add(key: String, amount: float) -> float:
 	var before := value(key)

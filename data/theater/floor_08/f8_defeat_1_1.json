@@ -46,11 +46,11 @@
 		},
 		{
 			"speaker": "",
-			"text": "（两个人都被手臂卷了起来，吊在千手的身前）"
+			"text": "（两个人都被手臂卷了起来，吊在千手的身前。几十根手指在空中慢慢张开）"
 		},
 		{
 			"speaker": "",
-			"text": "（手指一根根从大手里伸出来，挠得越来越熟练——像是早就知道她们哪里最怕）",
+			"text": "（手指先落在粉色公主的腋下——轻轻地、一根一根地划）",
 			"portrait": "defeat_1",
 			"actions": [
 				{
@@ -74,56 +74,6 @@
 			]
 		},
 		{
-			"speaker": "",
-			"text": "（召唤来的小怪也围了上来，刷子尾巴、软刺、吸盘一起加入）",
-			"portrait": "defeat_2",
-			"actions": [
-				{
-					"who": "pink",
-					"by": "boss",
-					"repeat": 8,
-					"interval": 0.2,
-					"fx": "feather",
-					"zone": "waist",
-					"do": "tickle"
-				},
-				{
-					"who": "blue",
-					"by": "boss",
-					"repeat": 8,
-					"interval": 0.2,
-					"fx": "brush",
-					"zone": "thigh",
-					"do": "tickle"
-				}
-			]
-		},
-		{
-			"speaker": "",
-			"text": "（两个人笑得喘不过气，千手却一点也没有停下的意思）",
-			"portrait": "defeat_2",
-			"actions": [
-				{
-					"who": "pink",
-					"by": "boss",
-					"repeat": 8,
-					"interval": 0.2,
-					"fx": "feather",
-					"zone": "sole",
-					"do": "tickle"
-				},
-				{
-					"who": "blue",
-					"by": "boss",
-					"repeat": 8,
-					"interval": 0.2,
-					"fx": "brush",
-					"zone": "thigh",
-					"do": "tickle"
-				}
-			]
-		},
-		{
 			"speaker": "千手痒痒魔",
 			"text": "……抓到……了……两个……",
 			"actions": [
@@ -133,7 +83,7 @@
 					"repeat": 8,
 					"interval": 0.2,
 					"fx": "hand",
-					"zone": "armpit",
+					"zone": "waist",
 					"do": "tickle"
 				},
 				{
@@ -142,7 +92,7 @@
 					"repeat": 8,
 					"interval": 0.2,
 					"fx": "brush",
-					"zone": "thigh",
+					"zone": "butt",
 					"do": "tickle"
 				}
 			]
@@ -156,15 +106,32 @@
 					"by": "boss",
 					"repeat": 8,
 					"interval": 0.2,
-					"fx": "feather",
-					"zone": "waist",
+					"fx": "hand",
+					"zone": "sole",
 					"do": "tickle"
 				}
-			]
+			],
+			"emotion": "helpless_1"
+		},
+		{
+			"speaker": "公主",
+			"text": "手指一根一根地划下来……好、好慢……慢得更痒啦哈哈哈！",
+			"actions": [
+				{
+					"who": "pink",
+					"by": "boss",
+					"repeat": 8,
+					"interval": 0.2,
+					"fx": "feather",
+					"zone": "neck",
+					"do": "tickle"
+				}
+			],
+			"emotion": "helpless_1"
 		},
 		{
 			"speaker": "蓝色的公主",
-			"text": "……唔。……大腿……别、别碰……",
+			"text": "……吵。……忍住就好。",
 			"actions": [
 				{
 					"who": "blue",
@@ -172,14 +139,31 @@
 					"repeat": 8,
 					"interval": 0.2,
 					"fx": "hand",
-					"zone": "waist",
+					"zone": "butt",
 					"do": "tickle"
 				}
-			]
+			],
+			"emotion": "shy"
 		},
 		{
-			"speaker": "千手痒痒魔",
-			"text": "……笑……一起……笑……",
+			"speaker": "公主",
+			"text": "你说得轻松——哈哈哈！你倒是看看你那边！",
+			"actions": [
+				{
+					"who": "pink",
+					"by": "boss",
+					"repeat": 8,
+					"interval": 0.2,
+					"fx": "feather",
+					"zone": "armpit",
+					"do": "tickle"
+				}
+			],
+			"emotion": "helpless_1"
+		},
+		{
+			"speaker": "",
+			"text": "（另一只手停在蓝色公主的膝盖上，没有挠，只是轻轻搭着）",
 			"actions": [
 				{
 					"who": "pink",
@@ -187,7 +171,200 @@
 					"repeat": 8,
 					"interval": 0.2,
 					"fx": "hand",
+					"zone": "waist",
+					"do": "tickle"
+				},
+				{
+					"who": "blue",
+					"by": "boss",
+					"repeat": 8,
+					"interval": 0.2,
+					"fx": "brush",
+					"zone": "butt",
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……唔。……别。……别往上。",
+			"actions": [
+				{
+					"who": "blue",
+					"by": "boss",
+					"repeat": 8,
+					"interval": 0.2,
+					"fx": "brush",
 					"zone": "thigh",
+					"do": "tickle"
+				}
+			],
+			"emotion": "shy"
+		},
+		{
+			"speaker": "千手痒痒魔",
+			"text": "……往……上……",
+			"actions": [
+				{
+					"who": "pink",
+					"by": "boss",
+					"repeat": 8,
+					"interval": 0.2,
+					"fx": "hand",
+					"zone": "neck",
+					"do": "tickle"
+				},
+				{
+					"who": "blue",
+					"by": "boss",
+					"repeat": 8,
+					"interval": 0.2,
+					"fx": "brush",
+					"zone": "waist",
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……！……嗯、嗯唔……大腿……不……",
+			"actions": [
+				{
+					"who": "blue",
+					"by": "boss",
+					"repeat": 8,
+					"interval": 0.2,
+					"fx": "brush",
+					"zone": "butt",
+					"do": "tickle"
+				}
+			],
+			"emotion": "helpless_1"
+		},
+		{
+			"speaker": "公主",
+			"text": "诶？你刚才是不是抖了一下？哈哈哈……",
+			"actions": [
+				{
+					"who": "pink",
+					"by": "boss",
+					"repeat": 8,
+					"interval": 0.2,
+					"fx": "hand",
+					"zone": "armpit",
+					"do": "tickle"
+				}
+			],
+			"emotion": "helpless_1"
+		},
+		{
+			"speaker": "",
+			"text": "（召唤来的刷尾松鼠也爬了上来，蓬松的尾巴在两个人的腰上扫来扫去）",
+			"portrait": "defeat_1",
+			"actions": [
+				{
+					"who": "pink",
+					"by": "boss",
+					"repeat": 8,
+					"interval": 0.2,
+					"fx": "feather",
+					"zone": "waist",
+					"do": "tickle"
+				},
+				{
+					"who": "blue",
+					"by": "boss",
+					"repeat": 8,
+					"interval": 0.2,
+					"fx": "brush",
+					"zone": "butt",
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "尾、尾巴！毛茸茸的在腰上扫——哈哈哈哈！",
+			"actions": [
+				{
+					"who": "pink",
+					"by": "boss",
+					"repeat": 8,
+					"interval": 0.2,
+					"fx": "feather",
+					"zone": "waist",
+					"do": "tickle"
+				}
+			],
+			"emotion": "helpless_1"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……噗。……刚才是咳嗽。",
+			"actions": [
+				{
+					"who": "blue",
+					"by": "boss",
+					"repeat": 8,
+					"interval": 0.2,
+					"fx": "hand",
+					"zone": "thigh",
+					"do": "tickle"
+				}
+			],
+			"emotion": "helpless_1"
+		},
+		{
+			"speaker": "公主",
+			"text": "骗人哈哈哈！你明明笑了！",
+			"actions": [
+				{
+					"who": "pink",
+					"by": "boss",
+					"repeat": 8,
+					"interval": 0.2,
+					"fx": "feather",
+					"zone": "neck",
+					"do": "tickle"
+				}
+			],
+			"emotion": "helpless_1"
+		},
+		{
+			"speaker": "千手痒痒魔",
+			"text": "……这里……你……最……",
+			"actions": [
+				{
+					"who": "pink",
+					"by": "boss",
+					"repeat": 8,
+					"interval": 0.2,
+					"fx": "hand",
+					"zone": "belly",
+					"do": "tickle"
+				},
+				{
+					"who": "blue",
+					"by": "boss",
+					"repeat": 8,
+					"interval": 0.2,
+					"fx": "brush",
+					"zone": "butt",
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "",
+			"text": "（一根手指在蓝色公主的大腿外侧画了个小圈——一圈，又一圈，不快也不慢）",
+			"actions": [
+				{
+					"who": "pink",
+					"by": "boss",
+					"repeat": 8,
+					"interval": 0.2,
+					"fx": "hand",
+					"zone": "armpit",
 					"do": "tickle"
 				},
 				{
@@ -202,8 +379,56 @@
 			]
 		},
 		{
+			"speaker": "蓝色的公主",
+			"text": "……哈、哈哈……别、别画圈……这个节奏……",
+			"actions": [
+				{
+					"who": "blue",
+					"by": "boss",
+					"repeat": 8,
+					"interval": 0.2,
+					"fx": "hand",
+					"zone": "butt",
+					"do": "tickle"
+				}
+			],
+			"emotion": "helpless_1"
+		},
+		{
 			"speaker": "公主",
-			"text": "哈哈哈！好多只手——数、数不过来哈哈哈！",
+			"text": "节奏？什么节奏？哈哈哈你怎么知道它要画圈？",
+			"actions": [
+				{
+					"who": "pink",
+					"by": "boss",
+					"repeat": 8,
+					"interval": 0.2,
+					"fx": "feather",
+					"zone": "sole",
+					"do": "tickle"
+				}
+			],
+			"emotion": "helpless_1"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……不、不知道……哈……哈哈哈……",
+			"actions": [
+				{
+					"who": "blue",
+					"by": "boss",
+					"repeat": 8,
+					"interval": 0.2,
+					"fx": "hand",
+					"zone": "waist",
+					"do": "tickle"
+				}
+			],
+			"emotion": "helpless_1"
+		},
+		{
+			"speaker": "千手痒痒魔",
+			"text": "……一直……知道……",
 			"actions": [
 				{
 					"who": "pink",
@@ -213,43 +438,7 @@
 					"fx": "hand",
 					"zone": "belly",
 					"do": "tickle"
-				}
-			]
-		},
-		{
-			"speaker": "蓝色的公主",
-			"text": "……噗、哈哈……你、你还是……从右边来……",
-			"actions": [
-				{
-					"who": "blue",
-					"by": "boss",
-					"repeat": 8,
-					"interval": 0.2,
-					"fx": "brush",
-					"zone": "waist",
-					"do": "tickle"
-				}
-			]
-		},
-		{
-			"speaker": "公主",
-			"text": "蓝色的公主？！你、你在笑吗？哈哈哈哈——",
-			"actions": [
-				{
-					"who": "pink",
-					"by": "boss",
-					"repeat": 8,
-					"interval": 0.2,
-					"fx": "hand",
-					"zone": "armpit",
-					"do": "tickle"
-				}
-			]
-		},
-		{
-			"speaker": "蓝色的公主",
-			"text": "哈、哈哈……别、别看……",
-			"actions": [
+				},
 				{
 					"who": "blue",
 					"by": "boss",
@@ -262,15 +451,16 @@
 			]
 		},
 		{
-			"speaker": "千手痒痒魔",
-			"text": "……嘻嘻……脚……也……",
+			"speaker": "",
+			"text": "（手指越来越多。粉色公主的脚心被刷子手来回刷，蓝色公主的屁股上落下了好几根轻飘飘的指尖）",
+			"portrait": "defeat_2",
 			"actions": [
 				{
 					"who": "pink",
 					"by": "boss",
 					"repeat": 8,
 					"interval": 0.2,
-					"fx": "hand",
+					"fx": "feather",
 					"zone": "sole",
 					"do": "tickle"
 				},
@@ -282,57 +472,24 @@
 					"fx": "brush",
 					"zone": "thigh",
 					"do": "tickle"
-				}
-			]
-		},
-		{
-			"speaker": "公主",
-			"text": "脚、脚心也——哈哈哈哈！不行不行不行！",
-			"actions": [
+				},
 				{
 					"who": "pink",
-					"by": "boss",
-					"repeat": 8,
-					"interval": 0.2,
-					"fx": "feather",
-					"zone": "thigh",
-					"do": "tickle"
-				}
-			]
-		},
-		{
-			"speaker": "蓝色的公主",
-			"text": "哈哈哈……对、对不起……都是我……哈哈哈……",
-			"actions": [
+					"visual": "helpless_2",
+					"anim": "helpless",
+					"do": "pose"
+				},
 				{
 					"who": "blue",
-					"by": "boss",
-					"repeat": 8,
-					"interval": 0.2,
-					"fx": "hand",
-					"zone": "butt",
-					"do": "tickle"
+					"visual": "helpless_2",
+					"anim": "helpless",
+					"do": "pose"
 				}
 			]
 		},
 		{
 			"speaker": "公主",
-			"text": "什么都是你啦哈哈哈！先、先想办法哈哈哈！",
-			"actions": [
-				{
-					"who": "pink",
-					"by": "boss",
-					"repeat": 8,
-					"interval": 0.2,
-					"fx": "feather",
-					"zone": "butt",
-					"do": "tickle"
-				}
-			]
-		},
-		{
-			"speaker": "千手痒痒魔",
-			"text": "……再……多……笑……",
+			"text": "脚、脚心也——哈哈哈哈！不行不行不行！刷子来回刷——哈哈哈哈！",
 			"actions": [
 				{
 					"who": "pink",
@@ -342,7 +499,86 @@
 					"fx": "hand",
 					"zone": "armpit",
 					"do": "tickle"
+				}
+			],
+			"emotion": "helpless_2"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……哈哈……那里……那里不可以……哈哈哈……！",
+			"actions": [
+				{
+					"who": "blue",
+					"by": "boss",
+					"repeat": 8,
+					"interval": 0.2,
+					"fx": "brush",
+					"zone": "butt",
+					"do": "tickle"
+				}
+			],
+			"emotion": "helpless_2"
+		},
+		{
+			"speaker": "公主",
+			"text": "噗哈哈哈……你、你原来最怕的是那里？",
+			"actions": [
+				{
+					"who": "pink",
+					"by": "boss",
+					"repeat": 8,
+					"interval": 0.2,
+					"fx": "hand",
+					"zone": "sole",
+					"do": "tickle"
+				}
+			],
+			"emotion": "helpless_2"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……忘、忘掉……哈哈哈……全部忘掉……！",
+			"actions": [
+				{
+					"who": "blue",
+					"by": "boss",
+					"repeat": 8,
+					"interval": 0.2,
+					"fx": "brush",
+					"zone": "waist",
+					"do": "tickle"
+				}
+			],
+			"emotion": "helpless_2"
+		},
+		{
+			"speaker": "千手痒痒魔",
+			"text": "……忘……不了……",
+			"actions": [
+				{
+					"who": "pink",
+					"by": "boss",
+					"repeat": 8,
+					"interval": 0.2,
+					"fx": "hand",
+					"zone": "belly",
+					"do": "tickle"
 				},
+				{
+					"who": "blue",
+					"by": "boss",
+					"repeat": 8,
+					"interval": 0.2,
+					"fx": "brush",
+					"zone": "butt",
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……哈哈哈……你、你还记得……哈哈……！",
+			"actions": [
 				{
 					"who": "blue",
 					"by": "boss",
@@ -352,53 +588,45 @@
 					"zone": "thigh",
 					"do": "tickle"
 				}
-			]
+			],
+			"emotion": "helpless_2"
 		},
 		{
 			"speaker": "公主",
-			"text": "哈哈哈哈哈……投降……投降哈哈哈哈……",
+			"text": "记得什么啦哈哈哈！你们认识吗？！",
 			"actions": [
 				{
 					"who": "pink",
-					"by": "boss",
-					"repeat": 8,
-					"interval": 0.2,
-					"fx": "feather",
-					"zone": "waist",
-					"do": "tickle"
-				},
-				{
-					"who": "pink",
-					"visual": "helpless_2",
-					"anim": "helpless",
-					"do": "pose"
-				}
-			]
-		},
-		{
-			"speaker": "蓝色的公主",
-			"text": "……哈、哈哈……再、再来一次……下次……一定……",
-			"actions": [
-				{
-					"who": "blue",
 					"by": "boss",
 					"repeat": 8,
 					"interval": 0.2,
 					"fx": "hand",
 					"zone": "waist",
 					"do": "tickle"
-				},
-				{
-					"who": "blue",
-					"visual": "helpless_2",
-					"anim": "helpless",
-					"do": "pose"
 				}
-			]
+			],
+			"emotion": "helpless_2"
 		},
 		{
-			"speaker": "公主",
-			"text": "……哈……哈……眼、眼前……全是手指……",
+			"speaker": "蓝色的公主",
+			"text": "……没、没有……哈哈哈哈……！",
+			"actions": [
+				{
+					"who": "blue",
+					"by": "boss",
+					"repeat": 8,
+					"interval": 0.2,
+					"fx": "brush",
+					"zone": "thigh",
+					"do": "tickle"
+				}
+			],
+			"emotion": "helpless_2"
+		},
+		{
+			"speaker": "",
+			"text": "（两个人笑得喘不过气，千手却一点也没有停下的意思）",
+			"portrait": "defeat_2",
 			"actions": [
 				{
 					"who": "pink",
@@ -406,11 +634,26 @@
 					"repeat": 8,
 					"interval": 0.2,
 					"fx": "feather",
-					"zone": "thigh",
+					"zone": "neck",
+					"do": "tickle"
+				},
+				{
+					"who": "blue",
+					"by": "boss",
+					"repeat": 8,
+					"interval": 0.2,
+					"fx": "brush",
+					"zone": "waist",
 					"do": "tickle"
 				},
 				{
 					"who": "pink",
+					"visual": "helpless_2",
+					"anim": "helpless",
+					"do": "pose"
+				},
+				{
+					"who": "blue",
 					"visual": "helpless_2",
 					"anim": "helpless",
 					"do": "pose"
@@ -427,16 +670,11 @@
 					"repeat": 8,
 					"interval": 0.2,
 					"fx": "hand",
-					"zone": "belly",
+					"zone": "neck",
 					"do": "tickle"
-				},
-				{
-					"who": "pink",
-					"visual": "helpless_2",
-					"anim": "helpless",
-					"do": "pose"
 				}
-			]
+			],
+			"emotion": "helpless_2"
 		},
 		{
 			"speaker": "蓝色的公主",
@@ -448,16 +686,11 @@
 					"repeat": 8,
 					"interval": 0.2,
 					"fx": "brush",
-					"zone": "waist",
+					"zone": "butt",
 					"do": "tickle"
-				},
-				{
-					"who": "blue",
-					"visual": "helpless_2",
-					"anim": "helpless",
-					"do": "pose"
 				}
-			]
+			],
+			"emotion": "helpless_2"
 		},
 		{
 			"speaker": "千手痒痒魔",
@@ -495,14 +728,9 @@
 					"fx": "feather",
 					"zone": "waist",
 					"do": "tickle"
-				},
-				{
-					"who": "pink",
-					"visual": "helpless_2",
-					"anim": "helpless",
-					"do": "pose"
 				}
-			]
+			],
+			"emotion": "helpless_2"
 		},
 		{
 			"speaker": "蓝色的公主",
@@ -514,16 +742,11 @@
 					"repeat": 8,
 					"interval": 0.2,
 					"fx": "hand",
-					"zone": "waist",
+					"zone": "thigh",
 					"do": "tickle"
-				},
-				{
-					"who": "blue",
-					"visual": "helpless_2",
-					"anim": "helpless",
-					"do": "pose"
 				}
-			]
+			],
+			"emotion": "helpless_2"
 		},
 		{
 			"speaker": "公主",
@@ -535,16 +758,43 @@
 					"repeat": 8,
 					"interval": 0.2,
 					"fx": "feather",
-					"zone": "thigh",
+					"zone": "neck",
 					"do": "tickle"
-				},
+				}
+			],
+			"emotion": "helpless_2"
+		},
+		{
+			"speaker": "公主",
+			"text": "不过……等出去了……你得告诉我……它为什么那么懂你……",
+			"actions": [
 				{
 					"who": "pink",
-					"visual": "helpless_2",
-					"anim": "helpless",
-					"do": "pose"
+					"by": "boss",
+					"repeat": 8,
+					"interval": 0.2,
+					"fx": "hand",
+					"zone": "belly",
+					"do": "tickle"
 				}
-			]
+			],
+			"emotion": "helpless_2"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……哈……不告诉你。",
+			"actions": [
+				{
+					"who": "blue",
+					"by": "boss",
+					"repeat": 8,
+					"interval": 0.2,
+					"fx": "brush",
+					"zone": "thigh",
+					"do": "tickle"
+				}
+			],
+			"emotion": "helpless_2"
 		},
 		{
 			"speaker": "",
@@ -556,7 +806,7 @@
 					"repeat": 8,
 					"interval": 0.2,
 					"fx": "hand",
-					"zone": "belly",
+					"zone": "waist",
 					"do": "tickle"
 				},
 				{
@@ -565,7 +815,7 @@
 					"repeat": 8,
 					"interval": 0.2,
 					"fx": "brush",
-					"zone": "thigh",
+					"zone": "butt",
 					"do": "tickle"
 				}
 			]
@@ -580,16 +830,11 @@
 					"repeat": 8,
 					"interval": 0.2,
 					"fx": "feather",
-					"zone": "butt",
+					"zone": "sole",
 					"do": "tickle"
-				},
-				{
-					"who": "pink",
-					"visual": "helpless_2",
-					"anim": "helpless",
-					"do": "pose"
 				}
-			]
+			],
+			"emotion": "helpless_2"
 		},
 		{
 			"speaker": "蓝色的公主",
@@ -601,16 +846,11 @@
 					"repeat": 8,
 					"interval": 0.2,
 					"fx": "hand",
-					"zone": "thigh",
+					"zone": "waist",
 					"do": "tickle"
-				},
-				{
-					"who": "blue",
-					"visual": "helpless_2",
-					"anim": "helpless",
-					"do": "pose"
 				}
-			]
+			],
+			"emotion": "helpless_2"
 		},
 		{
 			"actions": [

@@ -1,10 +1,11 @@
 class_name ChaseRun
 extends Node2D
 ## 巨石追逐（第八层打赢 Boss 之后的小游戏，地图里放一个：X = f8chase；第八层专属）。
-##   画面：主画面和右边的小窗（SideWindow half 模式）并列、一样大，镜头不放大。主画面里是玩家操控的人（A / D 左右），
-##         小窗里是另一个（← / → 左右）。
-##   无限延伸：两个人固定在画面上方三分之一处一直往下跑，跑道（地板、两边的墙和火把）和障碍以 SPEED 的速度往上滚，
+##   画面：主画面和右边的小窗（SideWindow half 模式）并列、一样大，镜头不放大。主画面里是玩家操控的人（A / D 或 ← / →），
+##         小窗里是另一个（AI 控制：看前方的障碍往空的地方让，反应有快有慢）。按 C 切换操控（主画面和小窗跟着换人）。
+##   无限延伸：两个人在画面上方三分之一处一直往下跑，跑道（地板、两边的墙和火把）和障碍以 SPEED 的速度往上滚，
 ##         障碍在画面下方不停生成（像神庙逃亡），两条跑道各自随机。
+##         进度越往后，人在画面里越往下（最多 DRIFT）；巨石也往下，移得比人多（BOULDER_DRIFT），但始终在人上方、画在人后面。
 ##   进度 0 ~ CELLS 格：两人从 START 格出发，每 STEP_TIME 秒前进一格；巨石从第 0 格开始，每 BOULDER_TIME 秒往前滚一格
 ##         （画面上：巨石在两人身后，离得越近越大越震）。屏幕上方有进度条。
 ##   碰到障碍：后退一格 + 被对应来源挠的反馈（她自己的反应、表情、笑声、特效），短暂无敌。
@@ -23,7 +24,15 @@ const SIDE_SPEED := 95.0
 const INVULN := 1.0
 ## 障碍生成的间隔（秒，每条跑道）：一屏（约 1.8 秒）4~6 个
 const SPAWN_GAP := Vector2(0.3, 0.45)
-const RUN_Y := 90.0        # 人在画面里的高度（离画面顶）
+const RUN_Y := 90.0        # 人在画面里的高度（离画面顶，起点时）
+const DRIFT := 36.0        # 从起点跑到终点，人在画面里往下移多少
+const BOULDER_DRIFT := 60.0
+## 巨石底边离人的脚至少这么远（盖到头顶为止，画在人后面）
+const BOULDER_CLEAR := 20.0
+## AI：往前看多远的障碍、多久重新决定一次往哪让（秒）、偶尔反应慢的几率
+const AI_LOOK := 100.0
+const AI_REACT := Vector2(0.15, 0.32)
+const AI_SLOW := 0.15
 const VIEW_H := 270.0
 const PINK_SCENE := "res://scenes/actors/playable/princess.tscn"
 const BOULDER_TEX := preload("res://assets/generated/boulder.png")
@@ -68,6 +77,12 @@ var _bar: Control
 var _bar_layer: CanvasLayer
 var _t := 0.0
 var _rng := RandomNumberGenerator.new()
+## 玩家操控的是哪条跑道（a = 一开始的主角，b = 另一个）；另一条 AI 控制
+var player_lane := "a"
+var _ai_rng := RandomNumberGenerator.new()
+var _ai_target := 0.0
+var _ai_t := 0.0
+var _drift := {"a": 0.0, "b": 0.0}
 
 
 func _ready() -> void:
@@ -84,12 +99,15 @@ func _ready() -> void:
 	if b.camera:
 		b.camera.enabled = false
 	a.set_controller(ScriptedController.new())
+	# 人画在巨石和障碍上面
+	for c in [a, b]:
+		c.z_index = 2
 	for lane in ["a", "b"]:
 		_tracks[lane] = _make_track(lane)
 		var s := Sprite2D.new()
 		s.texture = BOULDER_TEX
 		s.hframes = 4
-		s.z_index = 4
+		s.z_index = 1
 		add_child(s)
 		_boulders[lane] = s
 	_make_bar()
@@ -197,21 +215,13 @@ func start() -> void:
 		c.revive()
 		c._set_state(PlayableCharacter.State.IDLE)
 		c.facing = Vector2.DOWN
+	_drift = {"a": 0.0, "b": 0.0}
+	_ai_rng.seed = _rng.seed + 7
+	_ai_target = 0.0
 	_place()
-	var vp := get_viewport().get_visible_rect().size
-	if a.camera:
-		a.camera.zoom = Vector2.ONE
-		a.camera.limit_left = -100000
-		a.camera.limit_top = -100000
-		a.camera.limit_right = 100000
-		a.camera.limit_bottom = 100000
-		# 主画面只露出左半边：镜头往右偏 1/4 屏，人在左半屏中间；往下偏，人在画面上方三分之一
-		# （用镜头的 position 偏移：offset 会被震屏改写）
-		a.camera.position = Vector2(vp.x / 4.0, VIEW_H / 2.0 - RUN_Y)
-		a.camera.position_smoothing_enabled = false
-		a.camera.reset_smoothing()
 	if not is_instance_valid(window):
-		window = SideWindow.open(b, {"half": true, "zoom": 1.0, "offset": Vector2(0, VIEW_H / 2.0 - RUN_Y), "hint": "%s：← →" % b.display_name()})
+		window = SideWindow.open(ai_char(), {"half": true, "zoom": 1.0, "offset": Vector2(0, VIEW_H / 2.0 - RUN_Y)})
+	_setup_views()
 	PlayerInputController.wasd_only = true
 	if countdown:
 		for n in ["3", "2", "1", "跑！"]:
@@ -233,7 +243,114 @@ func _spawn_obstacle(lane: String, y: float) -> void:
 
 
 func run_pos(lane: String) -> Vector2:
-	return LANE_ORIGIN[lane] + Vector2(xa if lane == "a" else xb, 0)
+	return LANE_ORIGIN[lane] + Vector2(xa if lane == "a" else xb, _drift[lane])
+
+
+func char_of(lane: String) -> PlayableCharacter:
+	return a if lane == "a" else b
+
+
+func ai_lane() -> String:
+	return "b" if player_lane == "a" else "a"
+
+
+func player_char() -> PlayableCharacter:
+	return char_of(player_lane)
+
+
+func ai_char() -> PlayableCharacter:
+	return char_of(ai_lane())
+
+
+# ------------------------------------------------------------------ 操控 / 镜头 / 切换
+## 主画面跟着玩家操控的人，小窗跟着 AI 控制的人。
+func _setup_views() -> void:
+	var main := player_char()
+	for c in [a, b]:
+		if c.camera:
+			c.camera.enabled = c == main
+	if main.camera:
+		var cam := main.camera
+		cam.zoom = Vector2.ONE
+		cam.limit_left = -100000
+		cam.limit_top = -100000
+		cam.limit_right = 100000
+		cam.limit_bottom = 100000
+		# 主画面只露出左半边：镜头往右偏 1/4 屏，人在左半屏中间；往下偏，人在画面上方三分之一
+		# （用镜头的 position 偏移：offset 会被震屏改写）
+		cam.position_smoothing_enabled = false
+		cam.make_current()
+		_update_cams()
+		cam.reset_smoothing()
+	if is_instance_valid(window):
+		window.target = ai_char()
+		window.set_hint("%s（AI）　[C] 切换" % ai_char().display_name())
+
+
+## 镜头跟着画面里的位置：人往下移（drift）时镜头不跟，看起来人在画面里往下跑。
+func _update_cams() -> void:
+	var vp := get_viewport().get_visible_rect().size
+	var main := player_char()
+	if main.camera:
+		main.camera.position = Vector2(vp.x / 4.0, VIEW_H / 2.0 - RUN_Y - _drift[player_lane])
+	if is_instance_valid(window):
+		window.cam_offset = Vector2(0, VIEW_H / 2.0 - RUN_Y - _drift[ai_lane()])
+
+
+## 按 C：切换操控的人（主画面、小窗、HUD 跟着换）。
+func switch_lane() -> void:
+	player_lane = ai_lane()
+	_ai_target = xa if ai_lane() == "a" else xb
+	GameState.switch_control(player_char())
+	# 跑的时候两个人的位置都由这里控制（不吃普通的移动输入，免得转向）
+	for c in [a, b]:
+		c.set_controller(ScriptedController.new())
+	_setup_views()
+	GameState.notify("操控：%s" % player_char().display_name())
+
+
+func _unhandled_input(event: InputEvent) -> void:
+	if not running or GameState.in_dialogue:
+		return
+	var k := event as InputEventKey
+	if (k and k.pressed and not k.echo and k.physical_keycode == KEY_C) or event.is_action_pressed("switch_character"):
+		get_viewport().set_input_as_handled()
+		switch_lane()
+
+
+## AI：每隔一小会儿看一眼前方 AI_LOOK 内的障碍，挑一个离障碍最远、又不用挪太远的位置；偶尔反应慢（不重新看）。
+func ai_input(delta: float) -> float:
+	var lane := ai_lane()
+	var x := xa if lane == "a" else xb
+	_ai_t -= delta
+	if _ai_t <= 0.0:
+		_ai_t = _ai_rng.randf_range(AI_REACT.x, AI_REACT.y)
+		if _ai_rng.randf() >= AI_SLOW:
+			_ai_target = ai_pick_x(lane, x)
+	var diff := _ai_target - x
+	return 0.0 if absf(diff) < 2.0 else clampf(diff / 8.0, -1.0, 1.0)
+
+
+func ai_pick_x(lane: String, x: float) -> float:
+	var best := x
+	var best_cost := INF
+	var cx := -LANE_HALF
+	while cx <= LANE_HALF:
+		var cost := absf(cx - x) * 0.02
+		for o in obstacles:
+			if o["lane"] != lane or o["hit"]:
+				continue
+			var ahead: float = o["y"] - _drift[lane]
+			if ahead < -6.0 or ahead > AI_LOOK:
+				continue
+			var dx := absf(o["x"] - cx)
+			if dx < 18.0:
+				cost += (18.0 - dx) * (1.0 + (AI_LOOK - ahead) / AI_LOOK * 3.0)
+		if cost < best_cost:
+			best_cost = cost
+			best = cx
+		cx += 4.0
+	return best
 
 
 func _place() -> void:
@@ -246,10 +363,25 @@ func _place() -> void:
 		var p := pa if lane == "a" else pb
 		var gap := clampf(p - boulder, 0.0, 6.0)
 		var s: Sprite2D = _boulders[lane]
-		# 巨石在身后（画面上方）：差一格约 14 像素，越近越大
-		s.global_position = LANE_ORIGIN[lane] + Vector2(0, -26.0 - gap * 12.0)
 		s.scale = Vector2.ONE * lerpf(2.6, 1.6, gap / 6.0)
+		# 巨石在身后（画面上方）：差一格约 12 像素，越近越大；随进度往下移得比人多，但底边不超过人的头顶
+		var y := -26.0 - gap * 12.0 + clampf(boulder / CELLS, 0.0, 1.0) * BOULDER_DRIFT
+		y = minf(y, boulder_max_y(lane, s.scale.y))
+		s.global_position = LANE_ORIGIN[lane] + Vector2(0, y)
 		s.frame = int(_t * 10.0) % 4
+
+
+## 巨石中心最低能到哪（相对跑道原点）：底边离人的脚 BOULDER_CLEAR。
+func boulder_max_y(lane: String, scale_y: float) -> float:
+	var half := BOULDER_TEX.get_height() * scale_y / 2.0
+	return _drift[lane] - BOULDER_CLEAR - half
+
+
+func _update_drift(delta: float) -> void:
+	for lane in ["a", "b"]:
+		var p := pa if lane == "a" else pb
+		var want := clampf((p - START) / (CELLS - START), 0.0, 1.0) * DRIFT
+		_drift[lane] = move_toward(_drift[lane], want, 30.0 * delta)
 
 
 # ------------------------------------------------------------------ 每帧
@@ -257,9 +389,14 @@ func _physics_process(delta: float) -> void:
 	_t += delta
 	if not running or GameState.in_dialogue:
 		return
-	var da := float(Input.is_physical_key_pressed(KEY_D)) - float(Input.is_physical_key_pressed(KEY_A))
-	var db := float(Input.is_physical_key_pressed(KEY_RIGHT)) - float(Input.is_physical_key_pressed(KEY_LEFT))
-	move(da, db, delta)
+	var right := Input.is_physical_key_pressed(KEY_D) or Input.is_physical_key_pressed(KEY_RIGHT)
+	var left := Input.is_physical_key_pressed(KEY_A) or Input.is_physical_key_pressed(KEY_LEFT)
+	var d := float(right) - float(left)
+	var ai := ai_input(delta)
+	if player_lane == "a":
+		move(d, ai, delta)
+	else:
+		move(ai, d, delta)
 	advance(delta)
 
 
@@ -298,12 +435,14 @@ func advance(delta: float) -> void:
 		if o["hit"]:
 			continue
 		var x := xa if o["lane"] == "a" else xb
-		if absf(o["y"]) < 9.0 and absf(o["x"] - x) < 13.0 and _inv[o["lane"]] <= 0.0:
+		if absf(o["y"] - _drift[o["lane"]]) < 9.0 and absf(o["x"] - x) < 13.0 and _inv[o["lane"]] <= 0.0:
 			hit(o)
 	for c in [a, b]:
 		c.puppet_walking = true
 		c.facing = Vector2.DOWN
+	_update_drift(delta)
 	_place()
+	_update_cams()
 	_bar.queue_redraw()
 	check_end()
 
@@ -335,8 +474,9 @@ func hit(o: Dictionary) -> void:
 	Characters.unscope()
 	if not lines.is_empty():
 		SpeechBubble.say(c, str(lines.pick_random()).left(14), 28.0)
+	# 表情只换成闷笑（还在往下跑）；失控的姿势是坐倒的，跑的时候不用
 	if c.emotion:
-		c.emotion.request("helpless_1", 0.9, false)
+		c.emotion.request("giggle", 0.9, false)
 	Audio.play(Audio.voice_key("giggle") if c == GameState.player else "tickle", -4.0, 0.05)
 	var n: Node2D = o["node"]
 	if is_instance_valid(n):
@@ -365,8 +505,16 @@ func end(ok: bool, reason: String) -> void:
 		if is_instance_valid(window):
 			window.close()
 		PlayerInputController.wasd_only = false
-		if a.camera:
-			a.camera.position = Vector2.ZERO
+		# 结局过场按一开始的主角来：操控换回去
+		if player_lane != "a":
+			player_lane = "a"
+			GameState.switch_control(a)
+			a.set_controller(ScriptedController.new())
+			b.set_controller(ScriptedController.new())
+		for c in [a, b]:
+			c.z_index = 0
+			if c.camera:
+				c.camera.position = Vector2.ZERO
 		GameState.set_flag("f8_done")
 		await Cutscene.play("f8_ending")
 		return

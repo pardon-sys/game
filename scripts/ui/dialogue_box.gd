@@ -256,6 +256,9 @@ func _show_line() -> void:
 		npc_portrait.hide()
 	if npc != "":
 		_show_npc(npc, emotion)
+		if emotion in ["helpless_1", "helpless_2"]:
+			# 等滑入（0.18 秒）结束再抖
+			get_tree().create_timer(0.2).timeout.connect(shake_npc_portrait.bind(3.0 if emotion == "helpless_2" else 2.0, 0.3))
 	elif not is_princess and speaker != "":
 		npc_portrait.hide()  # 没有立绘的人物（普通居民）说话：右边不显示
 	var right_gap := NPC_PORTRAIT_W if npc_portrait.visible else 0.0
@@ -412,6 +415,28 @@ func shake_portrait(strength := 2.0, time := 0.2) -> void:
 			_wide_frame.position = base - Vector2(2, 2))
 
 
+## 右边人物立绘抖一下（小剧场里另一个公主被挠时）。
+var _npc_shake_tween: Tween
+var npc_shakes := 0
+
+
+func shake_npc_portrait(strength := 2.5, time := 0.2) -> void:
+	if not npc_portrait.visible:
+		return
+	if _npc_shake_tween:
+		_npc_shake_tween.kill()
+	npc_shakes += 1
+	var base := Vector2(364.0, npc_portrait.position.y)
+	_npc_shake_tween = create_tween()
+	var steps := maxi(2, int(time / 0.04))
+	for i in steps:
+		var fade := 1.0 - float(i) / steps
+		var off := (Vector2(randf_range(-1, 1), randf_range(-1, 1)).normalized() * strength * fade).round()
+		_npc_shake_tween.tween_callback(func(): npc_portrait.position = base + off)
+		_npc_shake_tween.tween_interval(0.04)
+	_npc_shake_tween.tween_callback(func(): npc_portrait.position = base)
+
+
 ## 立绘是否正在抖（测试用）。
 func is_portrait_shaking() -> bool:
 	return _shake_tween != null and _shake_tween.is_running()
@@ -510,7 +535,7 @@ func show_reaction(text: String, duration: float) -> void:
 
 
 ## 立绘避让：操控的角色走到左下角立绘的位置时，常驻立绘变半透明（self_modulate，和说话时的变暗互不影响）。
-const PORTRAIT_FADE_ALPHA := 0.5
+const PORTRAIT_FADE_ALPHA := 0.3
 
 
 ## 操控角色在屏幕上占的矩形是否和常驻立绘重叠。

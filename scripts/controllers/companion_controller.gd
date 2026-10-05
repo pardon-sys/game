@@ -5,7 +5,9 @@ extends CharacterController
 ##   2. 导演说有安全圈（Boss 大招）：跑进最近的安全圈；脚下有预警（danger 组：手臂砸地的圈、扫击 / 俯冲的通道）：往外冲刺躲开
 ##   3. 搭档倒地：跑过去按住 E 救她（附近小怪太多时先打）
 ##   4. 导演要她去站压力板（director.plate_for(她)）：走过去站着
-##   5. 魔法冷却好了且（身边敌人 ≥ 3 个，或蓝色公主够得着 Boss 本体——冻住它）：蓄力 2 档放魔法
+##   5. 魔法冷却好了且（身边敌人 ≥ 3 个，或蓝色公主够得着 Boss 本体——冻住它；玩家在吟唱时有 JOIN_CHANCE 几率一起）：
+##      先往离敌人远的方向退到安全距离（SAFE_GAP 内没有敌人，最多 RETREAT_MAX 秒），再吟唱到 2 档松开；
+##      吟唱被打断时强制放出当前档位（PlayableCharacter.interrupt_channel 里处理）
 ##   6. 打范围内最近的敌人（导演说本体 / 手臂能打时优先打它：director.priority_target()）
 ##   7. 跟在玩家操控的角色身边（2~4 格）
 
@@ -15,7 +17,10 @@ const FOLLOW_NEAR := 30.0
 const FOLLOW_FAR := 60.0
 const ATTACK_INTERVAL := 0.3
 const STRUGGLE_INTERVAL := 0.1
-const CHANNEL_TIME := 1.3
+const CHANNEL_TIME := 1.1
+const SAFE_GAP := 48.0
+const RETREAT_MAX := 1.5
+const JOIN_CHANCE := 0.4
 
 var _move := Vector2.ZERO
 var _pressed := {}
@@ -24,6 +29,10 @@ var _attack_cd := 0.0
 var _struggle_cd := 0.0
 var _channel := 0.0
 var _dash_cd := 0.0
+## 准备放魔法：先退开的剩余时间（>0 = 正在退）
+var _retreat := 0.0
+## 玩家这次吟唱我们有没有决定过要不要一起
+var _joined_decided := false
 ## 最近一次做的决定（测试 / 调试用）：struggle / dodge / revive / plate / magic / attack / follow / idle
 var intent := "idle"
 
@@ -165,7 +174,30 @@ func _plate(me: PlayableCharacter) -> bool:
 
 func _magic(me: PlayableCharacter) -> bool:
 	if not me.is_magic_unlocked() or me.magic_cooldown_left() > 0.0:
+		_retreat = 0.0
 		return false
+	# 正在退到安全距离：退够了（或时间到）就开始吟唱
+	if _retreat > 0.0:
+		_retreat -= get_physics_process_delta_time()
+		var near := _nearest_enemy(me, SAFE_GAP)
+		if near == null or _retreat <= 0.0:
+			_retreat = 0.0
+			_start_channel()
+		else:
+			_move = (me.global_position - near.global_position).normalized()
+		intent = "magic"
+		return true
+	# 玩家在吟唱：有几率一起吟唱（每次玩家吟唱只决定一次）
+	var lead := GameState.player
+	var lead_channeling := is_instance_valid(lead) and lead != me and lead.is_channeling()
+	if not lead_channeling:
+		_joined_decided = false
+	elif not _joined_decided:
+		_joined_decided = true
+		if randf() < JOIN_CHANCE:
+			intent = "magic"
+			_start_channel()
+			return true
 	var freeze_boss := false
 	if me.character_id == "blue" and Duo.director and Duo.director.get("boss") != null:
 		var b: Node = Duo.director.boss
@@ -174,9 +206,31 @@ func _magic(me: PlayableCharacter) -> bool:
 	if _enemies_near(me, 64.0) < 3 and not freeze_boss:
 		return false
 	intent = "magic"
+	# 冻 Boss 不用退（要够得着它）；被小怪围着时先退开
+	if freeze_boss or _nearest_enemy(me, SAFE_GAP) == null:
+		_start_channel()
+	else:
+		_retreat = RETREAT_MAX
+	return true
+
+
+func _start_channel() -> void:
+	# 角色在「刚按下」时开始吟唱，按住期间蓄力
+	_pressed[&"magic"] = true
 	_held[&"magic"] = true
 	_channel = CHANNEL_TIME
-	return true
+
+
+func _nearest_enemy(me: PlayableCharacter, r: float) -> Node2D:
+	var best: Node2D = null
+	var best_d := r
+	for e in get_tree().get_nodes_in_group("enemy"):
+		if e is Actor and e.is_alive() and e.get("attackable") != false:
+			var d := (e as Node2D).global_position.distance_to(me.global_position)
+			if d <= best_d:
+				best_d = d
+				best = e
+	return best
 
 
 func _attack(me: PlayableCharacter) -> bool:

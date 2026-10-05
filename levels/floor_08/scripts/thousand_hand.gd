@@ -74,6 +74,12 @@ var _ice_fx := 0.0
 var _arm_t := 0.0
 ## 新技能（俯冲 / 手臂雨 / 羽毛风暴 / 千手乱舞），见 boss_skills.gd
 var skills: BossSkills
+## 俯冲中（本体离开原位冲出去）；撞墙后晕的剩余秒数（晕的时候能打）
+var dashing := false
+var _dazed_left := 0.0
+## 阶段三被冰晶结界命中：不冻住，改成迟缓（出招 / 技能冷却按一半速度走）的剩余秒数
+var _slow_left := 0.0
+const SLOW_RATE := 0.5
 
 
 func _setup() -> void:
@@ -105,6 +111,13 @@ func aim_point() -> Vector2:
 func freeze(sec: float) -> void:
 	if _dead:
 		return
+	# 阶段三：冻不住它，只能让它迟缓（出招频率减半）
+	if phase >= 3:
+		_slow_left = maxf(_slow_left, sec)
+		sprite.modulate = IceBarrier.ICE
+		Fx.burst(get_parent(), aim_point(), "crystal", 10, 50.0, 0.6, Vector2(0, 50), Color(0.85, 0.95, 1.0))
+		SpeechBubble.say(self, "……冷……", 70.0)
+		return
 	_frozen_left = maxf(_frozen_left, sec)
 	cancel_attacks()
 	skills.cancel()
@@ -115,6 +128,52 @@ func freeze(sec: float) -> void:
 
 func is_frozen() -> bool:
 	return _frozen_left > 0.0
+
+
+func is_slowed() -> bool:
+	return _slow_left > 0.0
+
+
+# ------------------------------------------------------------------ 俯冲（boss_skills.gd 调用）：本体真的冲出去
+## 开始俯冲：本体从高台 / 天花板落到地面高度（冲的时候不能打）。
+func begin_dash() -> void:
+	dashing = true
+	cancel_attacks()
+	attackable = false
+	var shape := get_node_or_null("Shape") as CollisionShape2D
+	if shape:
+		shape.set_deferred("disabled", true)
+	sprite.position.y = 0.0
+
+
+## 撞墙撞晕 sec 秒：这时候能打。
+func daze(sec: float) -> void:
+	_dazed_left = sec
+	attackable = true
+	var shape := get_node_or_null("Shape") as CollisionShape2D
+	if shape:
+		shape.set_deferred("disabled", false)
+	SpeechBubble.say(self, "……晕……", 60.0)
+
+
+func is_dazed() -> bool:
+	return _dazed_left > 0.0
+
+
+## 飞回原位（俯冲结束）；raised_after = 回去后是不是缩回天花板。
+func return_home(home: Vector2, raised_after: bool, instant := false) -> void:
+	_dazed_left = 0.0
+	if instant:
+		global_position = home
+	else:
+		var tw := create_tween()
+		tw.tween_property(self, "global_position", home, 0.5).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN_OUT)
+		await tw.finished
+	dashing = false
+	if is_pulled():
+		attackable = true
+		return
+	set_raised(raised_after)
 
 
 ## 受击闪白（开场冰晶结界命中时等）。
@@ -212,6 +271,17 @@ func _tick(delta: float) -> void:
 		if f["life"] <= 0.0:
 			_flashes.erase(f)
 	var frozen := GameState.in_dialogue
+	if _dazed_left > 0.0 and not frozen:
+		_dazed_left = maxf(0.0, _dazed_left - delta)
+	if _slow_left > 0.0 and not frozen:
+		_slow_left -= delta
+		_ice_fx -= delta
+		if _ice_fx <= 0.0:
+			_ice_fx = 0.5
+			Fx.burst(get_parent(), aim_point() + Vector2(randf_range(-40, 40), randf_range(-20, 20)), "crystal", 2, 30.0, 0.5, Vector2(0, 40),
+				Color(0.85, 0.95, 1.0))
+		if _slow_left <= 0.0 and _frozen_left <= 0.0:
+			sprite.modulate = Color.WHITE
 	if _frozen_left > 0.0 and not frozen:
 		_frozen_left -= delta
 		_ice_fx -= delta
@@ -231,9 +301,10 @@ func _tick(delta: float) -> void:
 		_update_pending(delta)
 		_update_grab(delta)
 		_update_sweep(delta)
-		if _pulled_left <= 0.0 and not skills.busy():
-			_think_attacks(delta)
-			skills.think(delta)
+		if _pulled_left <= 0.0 and not skills.busy() and not dashing:
+			var d := delta * (SLOW_RATE if _slow_left > 0.0 else 1.0)
+			_think_attacks(d)
+			skills.think(d)
 	_animate(delta)
 	_arm_layer.queue_redraw()
 
@@ -486,11 +557,15 @@ func _arm_root(to: Vector2) -> Vector2:
 func _animate(_delta: float) -> void:
 	if _frozen_left > 0.0:
 		return   # 冻住：停在当前这一帧
+	if _dazed_left > 0.0:
+		sprite.frame = 2
+		sprite.position.x = sin(_t * 30.0) * 1.5
+		return
 	if _hurt_flash > 0.0:
 		sprite.frame = 2
 	elif _pulled_left > 0.0:
 		sprite.frame = 3
-	elif _rage:
+	elif _rage or dashing:
 		sprite.frame = 4 + int(_t * 6.0) % 2
 	else:
 		sprite.frame = int(_t * 1.6) % 2
