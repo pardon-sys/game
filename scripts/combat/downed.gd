@@ -43,8 +43,12 @@ func _ready() -> void:
 	SpeechBubble.say(who, "……", 26.0)
 	var other := Duo.partner_of(who)
 	if who == GameState.player and other and other.is_alive() and not Downed.is_downed(other):
-		GameState.switch_control(other)
-		GameState.notify("%s倒下了！走到旁边按住 E 救她" % _name_of(who))
+		# 搭档正被吊着献祭：先让她挣脱（闷笑大降），挣开后再由玩家操控
+		if Duo.director and Duo.director.has_method("is_sacrificed") and Duo.director.is_sacrificed(other):
+			Duo.director.on_partner_down_while_sacrificed(other, who)
+		else:
+			GameState.switch_control(other)
+			GameState.notify("%s倒下了！走到旁边按住 E 救她" % _name_of(who))
 	if Duo.all_down() or (Duo.director and Duo.director.get("instant_defeat") == true):
 		_fail()
 

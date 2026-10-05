@@ -19,6 +19,46 @@
 			"file": "",
 			"placeholder": "damaged_giggle_burst"
 		},
+		"boss8_p2": {
+			"file": "",
+			"placeholder": "helpless_2"
+		},
+		"boss8_duo_1": {
+			"file": "",
+			"placeholder": "helpless_2"
+		},
+		"boss8_duo_2": {
+			"file": "",
+			"placeholder": "helpless_2"
+		},
+		"boss8_duo_3": {
+			"file": "",
+			"placeholder": "helpless_2"
+		},
+		"boss8_resist_1": {
+			"file": "",
+			"placeholder": "helpless_2"
+		},
+		"boss8_resist_2": {
+			"file": "",
+			"placeholder": "helpless_2"
+		},
+		"boss8_weak_1": {
+			"file": "",
+			"placeholder": "helpless_2"
+		},
+		"boss8_weak_2": {
+			"file": "",
+			"placeholder": "helpless_2"
+		},
+		"boss8_mob": {
+			"file": "",
+			"placeholder": "helpless_2"
+		},
+		"boss8_chase": {
+			"file": "",
+			"placeholder": "helpless_2"
+		},
 		"slime_1": {
 			"file": "",
 			"placeholder": "helpless_1"

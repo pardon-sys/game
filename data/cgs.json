@@ -32,6 +32,56 @@
 			"file": "res://assets/cg/portraits/fatigue_burst.png",
 			"placeholder": "damaged_burst"
 		},
+		"boss8_p2": {
+			"file": "res://assets/cg/portraits/boss8_p2.png",
+			"placeholder": "helpless_2",
+			"wide": true
+		},
+		"boss8_duo_1": {
+			"file": "res://assets/cg/portraits/boss8_duo_1.png",
+			"placeholder": "helpless_2",
+			"wide": true
+		},
+		"boss8_duo_2": {
+			"file": "res://assets/cg/portraits/boss8_duo_2.png",
+			"placeholder": "helpless_2",
+			"wide": true
+		},
+		"boss8_duo_3": {
+			"file": "res://assets/cg/portraits/boss8_duo_3.png",
+			"placeholder": "helpless_2",
+			"wide": true
+		},
+		"boss8_resist_1": {
+			"file": "res://assets/cg/portraits/boss8_resist_1.png",
+			"placeholder": "helpless_2",
+			"wide": true
+		},
+		"boss8_resist_2": {
+			"file": "res://assets/cg/portraits/boss8_resist_2.png",
+			"placeholder": "helpless_2",
+			"wide": true
+		},
+		"boss8_weak_1": {
+			"file": "res://assets/cg/portraits/boss8_weak_1.png",
+			"placeholder": "helpless_2",
+			"wide": true
+		},
+		"boss8_weak_2": {
+			"file": "res://assets/cg/portraits/boss8_weak_2.png",
+			"placeholder": "helpless_2",
+			"wide": true
+		},
+		"boss8_mob": {
+			"file": "res://assets/cg/portraits/boss8_mob.png",
+			"placeholder": "helpless_2",
+			"wide": true
+		},
+		"boss8_chase": {
+			"file": "res://assets/cg/portraits/boss8_chase.png",
+			"placeholder": "helpless_2",
+			"wide": true
+		},
 		"slime_1": {
 			"file": "res://assets/cg/portraits/slime_1.png",
 			"placeholder": "helpless_1"

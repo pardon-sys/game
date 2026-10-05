@@ -2,7 +2,7 @@ class_name IceBarrier
 extends Node2D
 ## 蓝色公主的魔法：冰晶结界（和粉色公主的星光爆发同样按住 L 吟唱、松开释放，档位越高范围越大、冻得越久）。
 ##   范围内的敌对角色冻住（Monster.stun：定身、不能挠，身上泛冰蓝色；有 freeze() 的 Boss 用它，按 aim_point 和 meta body_radius 算范围）；范围内的陷阱暂停（active = false，到时间恢复）；
-##   她自己被困 / 被吸附的状态解除，并得到「冰晶守护」（frost_guard：期间闷笑不涨）。
+##   她自己被困 / 被吸附的状态解除；她和范围内的友军都得到「冰晶守护」（frost_guard：期间闷笑不涨）。
 ##   会魔法反应的东西（MagicReactive）同样收到一次 on_magic_burst（和星光爆发一样能解谜）。
 ##   特效：冰蓝色的圆环扩散 + 冰晶 / 雪花粒子，冻住的陷阱也蒙上冰色。
 
@@ -65,6 +65,13 @@ static func cast_with(caster: Node2D, r: float, time: float, t := 3) -> Array[No
 			pc.status.release(true)
 		pc.fling_latchers()
 		pc.add_buff("frost_guard", time)
+	# 范围内的友军（双人模式里的另一个公主等）也得到冰晶守护：闷笑不涨（疲倦爆发那次也算）
+	for n in tree.get_nodes_in_group("actor"):
+		var ally := n as Actor
+		if ally == null or ally == caster or not ally.is_alive() or Faction.are_hostile(caster, ally) or Faction.of(ally) == Faction.Type.NEUTRAL:
+			continue
+		if ally.laugh and ally.global_position.distance_to(center) <= r + StarBurst.BODY_ALLOWANCE:
+			ally.add_buff("frost_guard", time)
 	var fx := IceBarrier.new()
 	fx.radius = r
 	fx.duration = time

@@ -466,6 +466,11 @@ func is_casting() -> bool:
 func interrupt_channel() -> void:
 	if state != State.CHANNEL:
 		return
+	# AI 控制（双人模式的搭档）：吟唱被打断时强制放出当前档位（不到 1 档就放 1 档）；玩家照旧落空
+	if controller is CompanionController:
+		_channel_tier = maxi(1, _channel_tier)
+		release_magic()
+		return
 	_end_channel()
 	_magic_cd = fizzle_cooldown
 	Audio.play("fizzle", -4.0)

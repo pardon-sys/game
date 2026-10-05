@@ -618,6 +618,24 @@ func begin_sacrifice(c: PlayableCharacter) -> void:
 	SpeechBubble.say(other, "……撑住！" if other.character_id == "blue" else "等我！我马上打下来！", 30.0)
 
 
+## 正在被献祭的是不是 c。
+func is_sacrificed(c: Node) -> bool:
+	return not sacrifice.is_empty() and sacrifice.get("victim") == c
+
+
+## 玩家操控的人倒下了，而搭档正被吊着献祭：搭档的闷笑大降（降到憋笑段中间）、对倒下的人说一句，挣脱后由玩家操控。
+var _control_after_escape: PlayableCharacter
+
+
+func on_partner_down_while_sacrificed(victim: PlayableCharacter, fallen: PlayableCharacter) -> void:
+	var lm := victim.laugh
+	if lm:
+		lm.set_value(minf(lm.value, (lm.giggle_threshold + lm.helpless_threshold) / 2.0))
+	SpeechBubble.say(victim, "……等我。马上就去。" if victim.character_id == "blue" else "等我！我、我马上挣开！", 32.0)
+	_control_after_escape = victim
+	GameState.notify("%s倒下了！连按空格挣脱，挣开后操控%s去救她" % [fallen.display_name(), victim.display_name()])
+
+
 ## 献祭的人笑满：她倒地（不直接战败；两个人都倒下才算输）。
 func _sacrifice_broke(c: PlayableCharacter) -> void:
 	end_sacrifice(false)
@@ -644,9 +662,13 @@ func end_sacrifice(escaped: bool) -> void:
 	if is_instance_valid(c):
 		c.set_faction(Faction.Type.ALLY)
 		c.set_controller(CompanionController.new())
+		# 搭档倒下时她正在献祭：挣开之后由玩家操控
+		if escaped and _control_after_escape == c:
+			GameState.switch_control(c)
 		if escaped:
 			SpeechBubble.say(c, "……挣开了。" if c.character_id == "blue" else "呼……逃出来了！", 30.0)
 	Duo.sacrifice_lock = false
+	_control_after_escape = null
 	sacrifice = {}
 	_circle_cd = 5.0
 	_circle_who = null
@@ -657,6 +679,7 @@ func _on_threshold(p: int) -> void:
 	busy = true
 	end_sacrifice(false)
 	_cleanup_field()
+	_reset_sensitivity()
 	if p >= 3:
 		victory()
 		return
@@ -708,12 +731,29 @@ func on_defeat(reason: String) -> void:
 	GameState.vars[key] = n
 	print("第八层战败：阶段 %d（%s），第 %d 次" % [phase, reason, n])
 	await get_tree().create_timer(0.6).timeout
-	await CG.play_theater("f8_defeat_%d_%d" % [phase, mini(n, 2)])
+	await CG.play_theater(defeat_theater(phase, n))
 	await reset_phase()
+
+
+## 转阶段 / 战败重来时：两个人身上积累的敏感度（连续挠痒加成、弱点暴露等）清掉。
+func _reset_sensitivity() -> void:
+	for m in Duo.members:
+		if is_instance_valid(m) and m.sensitivity:
+			m.sensitivity.reset()
+
+
+## 第 n 次在这个阶段战败播哪段小剧场：按次数轮流（阶段一、二各两段，阶段三三段）。
+const DEFEAT_VARIANTS := {1: 2, 2: 2, 3: 3}
+
+
+static func defeat_theater(ph: int, n: int) -> String:
+	var count: int = DEFEAT_VARIANTS.get(ph, 2)
+	return "f8_defeat_%d_%d" % [ph, (n - 1) % count + 1]
 
 
 ## 从本阶段开头重来：两人满血回到起点，Boss 回到阶段开始的血量。
 func reset_phase() -> void:
+	_reset_sensitivity()
 	for m in Duo.members:
 		if is_instance_valid(m):
 			var d := m.get_node_or_null("Downed")

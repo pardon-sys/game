@@ -125,6 +125,64 @@ func _run_ai() -> void:
 	await _wait(1.2)
 	check("AI 被抓住会自己连按挣脱", not pink.status.is_grabbed())
 	await _wait(0.3)
+	# AI 吟唱被打断：强制放出当前档位（不落空）
+	var evs := []
+	var on_ev := func(kind: String, _tier: int): evs.append(kind)
+	pink.magic_event.connect(on_ev)
+	pink._magic_cd = 0.0
+	ai._start_channel()
+	await _wait(0.25)
+	var was_ch := pink.is_channeling()
+	pink.interrupt_channel()
+	await get_tree().process_frame
+	check("AI 吟唱被打断 → 强制放出当前档位（%s）" % [evs], was_ch and evs.has("burst") and not evs.has("interrupted"))
+	ai._held[&"magic"] = false
+	ai._channel = 0.0
+	# 敌人多：先退到安全距离再吟唱
+	await _wait(0.5)
+	evs.clear()
+	pink._magic_cd = 0.0
+	var mobs: Array[Monster] = []
+	for off in [Vector2(14, 0), Vector2(-12, 6), Vector2(2, 14)]:
+		var s: Monster = load("res://scenes/actors/monsters/slime.tscn").instantiate()
+		lv.get_node("Entities").add_child(s)
+		s.global_position = pink.global_position + off
+		mobs.append(s)
+	await get_tree().physics_frame
+	for s in mobs:
+		s.stun(5.0)
+	var center := pink.global_position
+	await _wait(0.2)
+	var retreating := ai._retreat > 0.0
+	await _advance_until(func(): return evs.has("channel"), 2.5)
+	check("身边小怪多：AI 先退开（离小怪 %.0f 像素）再吟唱（%s）" % [pink.global_position.distance_to(center), evs],
+		retreating and evs.has("channel") and pink.global_position.distance_to(center) > 10.0)
+	await _wait(1.4)
+	for s in mobs:
+		if is_instance_valid(s):
+			s.queue_free()
+	pink.magic_event.disconnect(on_ev)
+	# 玩家吟唱时 AI 有几率一起吟唱
+	seed(4)
+	var joined := 0
+	var blue := dir.blue
+	for i in 8:
+		blue._magic_cd = 0.0
+		pink._magic_cd = 0.0
+		ai._retreat = 0.0
+		Input.action_press("magic")
+		await _wait(0.2)
+		if ai._held.get(&"magic", false):
+			joined += 1
+		Input.action_release("magic")
+		ai._held[&"magic"] = false
+		ai._channel = 0.0
+		await _wait(0.1)
+		if pink.is_channeling():
+			pink._end_channel()
+		await _wait(0.3)
+	check("玩家吟唱时 AI 有几率一起吟唱（8 次里一起了 %d 次）" % joined, joined >= 1 and joined <= 7)
+	blue._magic_cd = 0.0
 
 
 # ------------------------------------------------------------------ 倒地救援 / 战败重来
@@ -184,13 +242,35 @@ func _run_phase1_extras() -> void:
 	var b := dir.boss
 	_protect()
 	b.fighting = true
+	var home := b.global_position
 	b.skills.use("dash")
 	await _wait(0.2)
 	var warned := _danger_count() > 0
 	var cages0 := get_tree().get_nodes_in_group("f8_dash_cage").size()
-	await _advance_until(func(): return not b.skills.busy(), 6.0)
-	check("俯冲撞墙：先亮整条通道的预警（进 danger 组），冲过去撞墙后掉落笼（%d 个）" % get_tree().get_nodes_in_group("f8_dash_cage").size(),
-		warned and cages0 == 0 and get_tree().get_nodes_in_group("f8_dash_cage").size() >= 2)
+	var far := 0.0
+	var dazed_hit := false
+	var t := 0.0
+	while b.skills.busy() and t < 8.0:
+		far = maxf(far, b.global_position.distance_to(home))
+		if b.is_dazed() and not dazed_hit:
+			var hp0 := b.health.hp
+			b._attack_invuln = 0.0
+			b.apply_hit(HitData.make_attack(dir.blue, 1, 0.0))
+			dazed_hit = b.health.hp < hp0
+		await get_tree().process_frame
+		t += get_process_delta_time()
+	check("俯冲撞墙：先亮整条通道的预警（进 danger 组），本体真的冲出去（离原位 %.0f 像素），撞墙后掉落笼（%d 个）" % [far,
+		get_tree().get_nodes_in_group("f8_dash_cage").size()],
+		warned and cages0 == 0 and far > 60.0 and get_tree().get_nodes_in_group("f8_dash_cage").size() >= 2)
+	check("撞墙后晕 %.1f 秒，晕的时候能打本体；之后飞回原位（差 %.0f 像素）" % [BossSkills.DAZE_TIME, b.global_position.distance_to(home)],
+		dazed_hit and b.global_position.distance_to(home) < 2.0 and not b.dashing)
+	# 冲到一半被取消（转阶段 / 战败）：本体直接回原位，不报错
+	b.skills.use("dash")
+	await _wait(BossSkills.DASH_WARN + 0.15)
+	b.skills.cancel()
+	await _wait(0.2)
+	check("俯冲中途被取消：本体回到原位", b.global_position.distance_to(home) < 2.0 and not b.dashing)
+	b.health.set_hp(b.health.max_hp)
 	# 小怪掉落
 	var items0: int = main.level.find_children("*", "", true, false).filter(func(n): return n is WorldItem).size()
 	var m: Node2D = load("res://scenes/actors/monsters/slime.tscn").instantiate()
@@ -233,6 +313,15 @@ func _run_phase1_extras() -> void:
 		and b.sprite.modulate == IceBarrier.ICE)
 	b._frozen_left = 0.0
 	b.sprite.modulate = Color.WHITE
+	# 冰晶守护给范围内的友军（包括另一个可操作的公主）
+	dir.pink.remove_buff("frost_guard")
+	dir.pink.global_position = dir.blue.global_position + Vector2(20, 0)
+	IceBarrier.cast_with(dir.blue, 60.0, 2.0)
+	check("冰晶结界：范围内的另一个公主也得到冰晶守护（闷笑不涨）", dir.pink.has_buff("frost_guard") and dir.blue.has_buff("frost_guard"))
+	b._frozen_left = 0.0
+	b.sprite.modulate = Color.WHITE
+	dir.pink.remove_buff("frost_guard")
+	dir.blue.remove_buff("frost_guard")
 	# 连着换两次曲（读档时先地牢曲、马上 Boss 曲）不会没声音
 	Audio.play_music("dungeon")
 	Audio.play_music("boss")
@@ -248,9 +337,12 @@ func _run_phase2() -> void:
 	var seen := []
 	var on_cut := func(id: String): seen.append(id)
 	Cutscene.started.connect(on_cut)
+	dir.blue.sensitivity.streak["thigh"] = 6.0
+	dir.pink.sensitivity.streak["sole"] = 4.0
 	_hit_to_floor()
 	await _advance_until(func(): return dir.phase == 2 and not dir.busy and not Cutscene.is_playing(), 60.0)
 	Cutscene.started.disconnect(on_cut)
+	check("转阶段：两个人积累的敏感度清零", dir.blue.sensitivity.streak_of("thigh") == 0.0 and dir.pink.sensitivity.streak_of("sole") == 0.0)
 	var b := dir.boss
 	check("打到 70%% → 过场（%s）→ 阶段二：Boss 缩到天花板打不到，两块压力板亮起" % [seen],
 		seen.has("f8_phase2") and dir.phase == 2 and b.raised and not b.attackable and dir.plates_lit and dir.plates[0].visible)
@@ -378,6 +470,67 @@ func _run_phase3() -> void:
 	check("两个人都倒下 → 阶段三战败小剧场（%s，四幕）→ 从阶段三开头重来" % [cg_seen],
 		cg_seen.has("theater:f8_defeat_3_1") and dir.phase == 3 and pink.is_alive() and blue.is_alive() and not Downed.is_downed(pink)
 		and b.health.hp == b.phase_start_hp(3))
+	# 冰晶结界对阶段三的 Boss：冻不住，出招变慢
+	IceBarrier.cast_with(blue, 300.0, 2.0)
+	check("阶段三的 Boss 被冰晶命中：不冻住，改成迟缓（出招频率减半）", b.is_slowed() and not b.is_frozen())
+	b._slow_left = 0.0
+	b.sprite.modulate = Color.WHITE
+	blue.remove_buff("frost_guard")
+	pink.remove_buff("frost_guard")
+	# 搭档正在献祭时玩家操控的人倒下：搭档闷笑大降、说一句，挣开后由玩家操控
+	await _wait(0.3)
+	dir._circle_cd = 0.0
+	if GameState.player != blue:
+		GameState.switch_control(blue)
+		pink.set_controller(CompanionController.new())
+	pink.global_position = dir.circle.global_position
+	await _wait(0.6)
+	var sac2: bool = dir.sacrifice.get("victim") == pink
+	if sac2:
+		pink.laugh.set_value(pink.laugh.max_value - 2.0)
+	var lv0 := pink.laugh.value
+	blue.set_invulnerable(0.0)
+	blue._full_invuln = 0.0
+	blue.health.damage(99)
+	await get_tree().process_frame
+	check("搭档正在献祭时操控的人倒下：搭档闷笑大降（%.0f → %.0f），先不切换" % [lv0, pink.laugh.value],
+		sac2 and Downed.is_downed(blue) and pink.laugh.value < lv0 * 0.7 and not pink.laugh.is_helpless() and dir.sacrifice.get("victim") == pink)
+	for i in 40:
+		if dir.sacrifice.is_empty():
+			break
+		(dir.sacrifice["struggle"] as SacrificeStruggle).press()
+	await _wait(0.3)
+	check("挣脱献祭后由玩家操控她", dir.sacrifice.is_empty() and GameState.player == pink)
+	(blue.get_node("Downed") as Downed)._revive()
+	await _wait(0.2)
+	_protect()
+	check("战败小剧场按次数轮流：阶段三 1→2→3→1，阶段一 / 二 1→2→1",
+		Floor8Director.defeat_theater(3, 2) == "f8_defeat_3_2" and Floor8Director.defeat_theater(3, 3) == "f8_defeat_3_3"
+		and Floor8Director.defeat_theater(3, 4) == "f8_defeat_3_1" and Floor8Director.defeat_theater(1, 3) == "f8_defeat_1_1")
+	var th_ok := true
+	var th_bad := []
+	for id in ["f8_defeat_1_1", "f8_defeat_1_2", "f8_defeat_2_1", "f8_defeat_2_2", "f8_defeat_3_1", "f8_defeat_3_2", "f8_defeat_3_3", "f8_chase_fail"]:
+		var d: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://data/theater/floor_08/%s.json" % id))
+		var steps: Array = d.get("steps", [])
+		var acts := steps.filter(func(s): return s.has("portrait")).size()
+		var lines := steps.filter(func(s): return s.has("text")).size()
+		var emo := steps.filter(func(s): return s.has("emotion")).size()
+		if acts < 4 or lines < 36 or emo < 10:
+			th_ok = false
+			th_bad.append("%s 幕 %d 句 %d" % [id, acts, lines])
+	check("战败 / 追逐失败小剧场都 ≥ 4 幕、≥ 36 句，台词带另一个人的立绘状态（%s）" % [th_bad], th_ok)
+	var cg_of := func(id: String) -> Array:
+		var d: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://data/theater/floor_08/%s.json" % id))
+		var out := []
+		for s in d["steps"]:
+			if str(s.get("portrait", "")).begins_with("boss8_") and not out.has(s["portrait"]):
+				out.append(s["portrait"])
+		return out
+	check("BOSS_CG 按阶段放进小剧场：阶段二 boss8_p2、阶段三 双人 1→3 / 抵抗→弱点特攻 / 群怪、追逐失败 巨石",
+		cg_of.call("f8_defeat_2_1") == ["boss8_p2"] and cg_of.call("f8_defeat_3_1") == ["boss8_duo_1", "boss8_duo_2", "boss8_duo_3"]
+		and cg_of.call("f8_defeat_3_2") == ["boss8_resist_1", "boss8_resist_2", "boss8_weak_1", "boss8_weak_2"]
+		and cg_of.call("f8_defeat_3_3") == ["boss8_mob"] and cg_of.call("f8_chase_fail") == ["boss8_chase"]
+		and cg_of.call("f8_defeat_1_1").is_empty() and CG.has_portrait_file("boss8_duo_1"))
 	# 羽毛风暴：全场往一侧推
 	b.fighting = true
 	var p0 := pink.global_position
@@ -431,7 +584,39 @@ func _run_victory_and_chase() -> void:
 	check("追逐：主画面和右半屏的小窗并列一样大、镜头不放大，小窗跟着粉色公主；两人从第 3 格出发",
 		SideWindow.is_open() and SideWindow.current.half and SideWindow.current.target == run.b and run.a == GameState.player
 		and run.a.camera.zoom == Vector2.ONE and run.pa < ChaseRun.START + 0.2 and run.boulder == 0.0)
+	check("追逐：两个人都朝下跑、画在巨石上面", run.a.dir_name() == "down" and run.b.dir_name() == "down"
+		and run.a.z_index > (run._boulders["a"] as Sprite2D).z_index and run.b.z_index > (run._boulders["b"] as Sprite2D).z_index)
+	# 按 C 切换：主画面、小窗、HUD 跟着换人
+	run.switch_lane()
+	check("按 C 切换：玩家操控另一个，主画面跟着她、小窗跟着 AI 控制的那个",
+		GameState.player == run.b and run.ai_lane() == "a" and SideWindow.current.target == run.a and run.b.camera.is_current())
+	run.switch_lane()
+	check("再按 C 切回来", GameState.player == run.a and SideWindow.current.target == run.b and run.a.camera.is_current())
 	run.running = false
+	# AI 躲障碍：正前方有障碍时往旁边让
+	for x in run.obstacles:
+		x["hit"] = true
+	var o_ai := {"lane": "b", "y": 40.0, "x": 0.0, "base_x": 0.0, "node": null, "kind": "slime", "hit": false, "phase": 0.0}
+	run.obstacles.append(o_ai)
+	run.xb = 0.0
+	var tx := run.ai_pick_x("b", 0.0)
+	run.obstacles.erase(o_ai)
+	check("AI 看到正前方的障碍会往旁边让（目标 x = %.0f）" % tx, absf(tx) >= 16.0)
+	# 进度越往后，人在画面里越往下；巨石往下移得更多，但不盖住人
+	run.pa = ChaseRun.CELLS - 0.5
+	run.pb = ChaseRun.CELLS - 0.5
+	run.boulder = ChaseRun.CELLS - 1.0
+	for i in 60:
+		run._update_drift(0.1)
+	run._place()
+	var s_a: Sprite2D = run._boulders["a"]
+	var bottom := s_a.global_position.y + ChaseRun.BOULDER_TEX.get_height() * s_a.scale.y / 2.0
+	check("进度靠后：人往下移了 %.0f 像素（巨石最多 %.0f），巨石底边在人脚上方 %.0f 像素" % [run._drift["a"], ChaseRun.BOULDER_DRIFT,
+		run.a.global_position.y - bottom],
+		run._drift["a"] > 20.0 and run._drift["a"] < ChaseRun.BOULDER_DRIFT and bottom <= run.a.global_position.y - ChaseRun.BOULDER_CLEAR + 0.5)
+	run.pa = ChaseRun.START
+	run.pb = ChaseRun.START
+	run.boulder = 0.0
 	# 无限延伸：一直跑，障碍不断生成、跑道一直滚
 	var spawned0 := run.spawned
 	var always := true
@@ -447,7 +632,7 @@ func _run_victory_and_chase() -> void:
 	run.running = true
 	# 碰障碍退一格
 	var o: Dictionary = run.obstacles.filter(func(x): return x["lane"] == "a" and not x["hit"])[0]
-	o["y"] = 0.0
+	o["y"] = run._drift["a"]
 	run.xa = o["x"]
 	run._inv["a"] = 0.0
 	run.pa = 5.0
