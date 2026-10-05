@@ -307,15 +307,18 @@ func _run_blue_arc() -> void:
 	var on_cut := func(id: String): seen.append(id)
 	Cutscene.started.connect(on_cut)
 	await main.change_level(Floors.scene("floor_07"))
+	# 交接过程中（换关卡、过场、黑幕）介绍板不能弹出来——之前会在换关卡的空隙里弹出、暂停游戏，卡在黑屏
+	var bad_board := [0]
+	var watch := func():
+		if TutorialBoard.is_open() and (main.get("_busy") == true or Cutscene.is_playing() or Cutscene.curtain.color.a > 0.05):
+			bad_board[0] += 1
+	get_tree().process_frame.connect(watch)
 	await _advance_until(func(): return _level_id() == "floor_06_house_up" and not Cutscene.is_playing() and GameState.has_flag("f7_blue_awake"), 60.0)
 	var hero = GameState.player
 	check("粉色公主走进第七层（过场 f7_pink_run）→ 主角换成蓝色公主，在小屋楼上醒来（%s）" % [seen],
 		seen.has("f7_pink_run") and seen.has("f7_blue_wake") and hero is BluePrincess and hero.hero and GameState.has_flag("blue_is_hero"))
-	await _advance_until(func(): return TutorialBoard.is_open(), 8.0)
-	var board_ok := TutorialBoard.is_open() and get_tree().paused
-	if TutorialBoard.is_open():
-		TutorialBoard.current.close()
-	check("第一次操控蓝色公主：弹出冰晶结界的介绍板（游戏暂停），关掉后继续", board_ok and not get_tree().paused and GameState.has_flag("intro_blue_magic"))
+	await _wait(1.6)
+	check("在小屋楼上醒来时不弹介绍板（交接不卡住）", not TutorialBoard.is_open() and not get_tree().paused and not GameState.has_flag("intro_blue_magic"))
 	# 她自己的基础数值和训练记录
 	GameState.vars["train_fatigue_up"] = 60.0
 	var blue_train := TrainingStats.value("train_fatigue_up")
@@ -371,6 +374,14 @@ func _run_blue_arc() -> void:
 	check("走出小屋 → 和队长争吵 → 第七层（%s），蓝色公主站在塔底、旁边是本层唯一的存档点" % [seen],
 		seen == ["f7_blue_argue", "f7_blue_arrive"] and hero is BluePrincess and saves.size() == 1
 		and hero.global_position.distance_to((saves[0] as Node2D).global_position) < 80.0)
+	# 第七层塔底的过场放完、开始自由活动时弹出她的魔法介绍板
+	await _advance_until(func(): return TutorialBoard.is_open(), 8.0)
+	get_tree().process_frame.disconnect(watch)
+	var board_ok: bool = TutorialBoard.is_open() and get_tree().paused and bad_board[0] == 0 and TutorialBoard.current.layer > 50 and _level_id() == "floor_07"
+	if TutorialBoard.is_open():
+		TutorialBoard.current.close()
+	check("第七层塔底的过场放完、开始自由活动时才弹出冰晶结界的介绍板（盖在黑幕上面，游戏暂停），关掉后继续（换关卡 / 过场中弹出 %d 次）" % bad_board[0],
+		board_ok and not get_tree().paused and GameState.has_flag("intro_blue_magic"))
 	# 第七层的新组合
 	var fired := []
 	var on_fired := func(id: String): fired.append(id)

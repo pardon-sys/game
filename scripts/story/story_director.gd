@@ -38,7 +38,12 @@ func _on_level_changed(level: Node) -> void:
 
 ## 跨地图的过场序列。level 是楼层 id（和当前地图一样就不换），spawn 是到达点 id，cutscene 是过场 id（data/cutscenes/）。
 ## 每一段之前等对话 / 过场都结束。keep_state = true：不把当前角色的状态带过去（换主角时用）。
+## 正在跑跨地图的剧情序列（介绍板等要等它跑完再弹）。
+var sequence_running := false
+
+
 func run_sequence(segments: Array) -> void:
+	sequence_running = true
 	for seg in segments:
 		await TrainingDB.wait_dialogue_free()
 		var lid := str(seg.get("level", ""))
@@ -51,3 +56,4 @@ func run_sequence(segments: Array) -> void:
 			await Cutscene.play(str(seg["cutscene"]))
 		if seg.has("flag"):
 			GameState.set_flag(str(seg["flag"]))
+	sequence_running = false
