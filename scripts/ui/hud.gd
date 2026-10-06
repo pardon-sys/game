@@ -3,7 +3,6 @@ extends CanvasLayer
 ## HUD：左上血量、闷笑值条、背包栏（按物品数据自动生成），右上表情头像，屏幕上方提示消息。
 ## 魔法：闷笑条右边的魔法图标（学会后显示，冷却时变灰并显示剩余秒数），吟唱时屏幕上方闪"弱点暴露！"。
 
-const HUD_TEX := preload("res://assets/generated/hud.png")
 const MAGIC_ICON := preload("res://assets/generated/magic_icon.png")
 const BUFF_ICONS := preload("res://assets/generated/buff_icons.png")
 
@@ -14,7 +13,6 @@ const BUFF_ICONS := preload("res://assets/generated/buff_icons.png")
 @onready var portrait_frame: Control = $PortraitFrame
 @onready var toast_label: Label = $Toast
 
-var _heart_tex: Array[AtlasTexture] = []
 var _toast_tween: Tween
 var _player: PlayableCharacter
 var magic_slot: Control
@@ -45,11 +43,6 @@ var fatigue_pct: Label
 
 
 func _ready() -> void:
-	for i in 3:
-		var at := AtlasTexture.new()
-		at.atlas = HUD_TEX
-		at.region = Rect2(i * 16, 0, 16, 16)
-		_heart_tex.append(at)
 	GameState.player_registered.connect(_bind_player)
 	GameState.inventory.changed.connect(_refresh_inventory)
 	GameState.hotkeys_changed.connect(_refresh_inventory)
@@ -316,17 +309,9 @@ func _process(delta: float) -> void:
 		_blink = 0.0
 
 
+## 超过 5 颗心：多的心是盖在前 5 格上的金色一层（HeartRow）。
 func _on_hp_changed(hp: int, max_hp: int) -> void:
-	var count := int(ceil(max_hp / 2.0))
-	while hearts.get_child_count() < count:
-		var r := TextureRect.new()
-		r.custom_minimum_size = Vector2(16, 16)
-		hearts.add_child(r)
-	for i in hearts.get_child_count():
-		var r := hearts.get_child(i) as TextureRect
-		var v := hp - i * 2
-		r.texture = _heart_tex[0 if v >= 2 else (1 if v == 1 else 2)]
-		r.visible = i < count
+	HeartRow.update(hearts, hp, max_hp, 16.0)
 
 
 # ------------------------------------------------------------------ 道具栏：固定 Q / R + 自动轮播

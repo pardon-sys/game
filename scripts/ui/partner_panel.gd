@@ -4,7 +4,6 @@ extends CanvasLayer
 ## （攻击中 / 被抓住了 / 笑到失控 / 倒地 xx 秒 / 献祭中），右下角「[C]切换」。
 ## 切换操控时自动换成另一个人（显示的总是没被操控的那个）。
 
-const HUD_TEX := preload("res://assets/generated/hud.png")
 const W := 132.0
 const H := 60.0
 const BAR_W := 56.0
@@ -18,16 +17,10 @@ var fatigue_bar: ColorRect
 var fatigue_pct: Label
 var state_label: Label
 var box: Panel
-var _heart_tex: Array[AtlasTexture] = []
 
 
 func _ready() -> void:
 	layer = 9
-	for i in 3:
-		var at := AtlasTexture.new()
-		at.atlas = HUD_TEX
-		at.region = Rect2(i * 16, 0, 16, 16)
-		_heart_tex.append(at)
 	box = Panel.new()
 	var sb := StyleBoxFlat.new()
 	sb.bg_color = Color(0.08, 0.05, 0.12, 0.88)
@@ -118,17 +111,7 @@ func _process(_delta: float) -> void:
 	head.texture = Dialogue.head_for(emo, str(p.get("portrait_set")))
 	name_label.text = p.display_name()
 	if p.health:
-		var n := int(ceil(p.health.max_hp / 2.0))
-		while hearts.get_child_count() < n:
-			var r := TextureRect.new()
-			r.custom_minimum_size = Vector2(10, 10)
-			r.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-			hearts.add_child(r)
-		for i in hearts.get_child_count():
-			var v := p.health.hp - i * 2
-			var r := hearts.get_child(i) as TextureRect
-			r.visible = i < n
-			r.texture = _heart_tex[0 if v >= 2 else (1 if v == 1 else 2)]
+		HeartRow.update(hearts, p.health.hp, p.health.max_hp, 10.0)
 	if p.laugh:
 		laugh_bar.size.x = roundf(BAR_W * p.laugh.ratio())
 		laugh_bar.color = Color(1, 0.6, 0.85) if not p.laugh.is_helpless() else Color(1, 0.3, 0.4)
