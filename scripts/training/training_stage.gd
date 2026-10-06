@@ -399,6 +399,13 @@ func theater_subs() -> Dictionary:
 		"device_x": at[0], "device_y": at[1], "successes": successes}
 
 
+## CG 图鉴重看训练惩罚小剧场时的默认代入值（脚心、足枷台、成功 3 次）。
+static func gallery_subs() -> Dictionary:
+	var o: Array = STAGE_AT.get("stocks", [0, 10])
+	return {"zone": "sole", "zone_name": "脚心", "device": "stocks", "device_x": PRINCESS_AT.x + o[0], "device_y": PRINCESS_AT.y + o[1],
+		"successes": 3}
+
+
 func _sleep(sec: float) -> void:
 	await get_tree().create_timer(sec / time_scale if time_scale > 0.0 else sec).timeout
 
