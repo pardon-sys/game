@@ -1,21 +1,19 @@
-[gd_resource type="Resource" script_class="MonsterStats" format=3]
+[gd_resource type="Resource" script_class="MonsterStats" format=3 uid="uid://4vwi5fl510yp"]
 
-[ext_resource type="Script" path="res://scripts/actors/monsters/monster_stats.gd" id="1"]
-[ext_resource type="Script" path="res://scripts/items/item_drop.gd" id="2"]
-[ext_resource type="Resource" path="res://data/items/coin.tres" id="i0"]
+[ext_resource type="Script" uid="uid://cw82hmbi4r236" path="res://scripts/actors/monsters/monster_stats.gd" id="1"]
+[ext_resource type="Script" uid="uid://da51r3q3bv1l4" path="res://scripts/items/item_drop.gd" id="2"]
+[ext_resource type="Resource" uid="uid://b5j80o3w850wi" path="res://data/items/coin.tres" id="i0"]
 
 [sub_resource type="Resource" id="d0"]
 script = ExtResource("2")
 item = ExtResource("i0")
 chance = 0.6
-min_amount = 1
 max_amount = 2
 
 [resource]
 script = ExtResource("1")
 display_name = "章鱼宝宝"
 reaction_key = "octopus"
-hit_fx = "suck"
 taunt_chance = 0.3
 max_hp = 2
 wander_speed = 16.0
@@ -28,4 +26,5 @@ tickle_amount = 2.5
 tickle_cooldown = 0.8
 tickle_weight = 0.95
 tickle_pitch = 1.1
+hit_fx = "suck"
 drops = Array[ExtResource("2")]([SubResource("d0")])

@@ -3,7 +3,8 @@
 输出到 assets/generated/：
   emotes.png   16x16 x 8   (happy, laugh, sad, shy, angry, question, surprise, dots)
   items.png    16x16 x 8   (heart, coin, key_bronze, key_gold, letter, lock_bronze, lock_gold, prompt_e)
-  hud.png      16x16 x 3   (heart_full, heart_half, heart_empty)
+  hud.png      16x16 x 6   (heart_full, heart_half, heart_empty, gold_full, gold_half, gold_empty)
+               金色的三帧盖在红心上（第 6~10 颗心）：满 = 整颗金心、半 = 只有左半边（右半边透出底下的红心）、空 = 只有金色轮廓
   props.png    16x16       行0: torch_unlit, torch_lit1..3；行1: lever_off, lever_on；行2: spikes_down, spikes_mid, spikes_up
   fx.png       32x32 x 4   挥击弧光；行1: 16x16 烟雾 x 4
   walls.png    16x16 x 256 墙顶自动拼接（mask = 8 方向"非墙顶"位）
@@ -121,12 +122,43 @@ def gen_items():
         sheet.alpha_composite(sprite(rows), (i * 16, 0))
     sheet.save(OUT / "items.png")
 
-    hud = blank(48, 16)
+    hud = blank(96, 16)
     full = heart()
     half = [r[:8] + r[8:].replace("a", "z") for r in heart()]
     empty = heart("z")
     for i, rows in enumerate([full, half, empty]):
         hud.alpha_composite(sprite(rows), (i * 16, 0))
+    # 金色的心（超过 5 颗时，第 6~10 颗盖在第 1~5 颗上面）
+    gold_full = sprite(heart("c"))
+    gpx = gold_full.load()
+    # 右下半边加深一点，像红心那样有立体感
+    for y in range(16):
+        for x in range(9, 16):
+            if gpx[x, y][3] and gpx[x, y][:3] == (255, 214, 72):
+                gpx[x, y] = (230, 170, 50, 255)
+    # 和红心一样的白色高光
+    red_px = sprite(full).load()
+    for y in range(16):
+        for x in range(16):
+            if red_px[x, y] == (255, 255, 255, 255):
+                gpx[x, y] = (255, 255, 255, 255)
+    gold_half = gold_full.copy()
+    hpx = gold_half.load()
+    for y in range(16):
+        for x in range(8, 16):
+            hpx[x, y] = (0, 0, 0, 0)
+    gold_empty = blank(16, 16)
+    epx = gold_empty.load()
+    for y in range(16):
+        for x in range(16):
+            if gpx[x, y][3] == 0:
+                continue
+            edge = any(not (0 <= x + dx < 16 and 0 <= y + dy < 16) or gpx[x + dx, y + dy][3] == 0
+                       for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1)))
+            if edge:
+                epx[x, y] = (214, 150, 36, 255)
+    for i, img in enumerate([gold_full, gold_half, gold_empty]):
+        hud.alpha_composite(img, ((3 + i) * 16, 0))
     hud.save(OUT / "hud.png")
     sprite(MINT).save(OUT / "item_mint.png")
 

@@ -1,29 +1,26 @@
-[gd_resource type="Resource" script_class="MonsterStats" format=3]
+[gd_resource type="Resource" script_class="MonsterStats" format=3 uid="uid://bciiy8opdhelf"]
 
-[ext_resource type="Script" path="res://scripts/actors/monsters/monster_stats.gd" id="1"]
-[ext_resource type="Script" path="res://scripts/items/item_drop.gd" id="2"]
-[ext_resource type="Resource" path="res://data/items/heart.tres" id="3"]
+[ext_resource type="Script" uid="uid://cw82hmbi4r236" path="res://scripts/actors/monsters/monster_stats.gd" id="1"]
+[ext_resource type="Script" uid="uid://da51r3q3bv1l4" path="res://scripts/items/item_drop.gd" id="2"]
+[ext_resource type="Resource" uid="uid://mbjn4sv4g3wl" path="res://data/items/heart.tres" id="3"]
 
 [sub_resource type="Resource" id="drop"]
 script = ExtResource("2")
 item = ExtResource("3")
 chance = 0.3
-max_amount = 1
 
 [resource]
 script = ExtResource("1")
-reaction_key = "spider"
-hit_fx = "brush"
 display_name = "挠痒蜘蛛"
-max_hp = 3
+reaction_key = "spider"
 wander_speed = 20.0
 chase_speed = 38.0
 detect_range = 120.0
 lose_range = 180.0
-attack_damage = 1
 attack_cooldown = 1.5
 tickle_amount = 6.0
 tickle_cooldown = 1.4
 tickle_weight = 0.85
 tickle_pitch = 1.2
+hit_fx = "brush"
 drops = Array[ExtResource("2")]([SubResource("drop")])

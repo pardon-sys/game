@@ -1,29 +1,26 @@
-[gd_resource type="Resource" script_class="MonsterStats" format=3]
+[gd_resource type="Resource" script_class="MonsterStats" format=3 uid="uid://c1mcp35ep6n4r"]
 
-[ext_resource type="Script" path="res://scripts/actors/monsters/monster_stats.gd" id="1"]
-[ext_resource type="Script" path="res://scripts/items/item_drop.gd" id="2"]
-[ext_resource type="Resource" path="res://data/items/heart.tres" id="3"]
+[ext_resource type="Script" uid="uid://cw82hmbi4r236" path="res://scripts/actors/monsters/monster_stats.gd" id="1"]
+[ext_resource type="Script" uid="uid://da51r3q3bv1l4" path="res://scripts/items/item_drop.gd" id="2"]
+[ext_resource type="Resource" uid="uid://mbjn4sv4g3wl" path="res://data/items/heart.tres" id="3"]
 
 [sub_resource type="Resource" id="drop"]
 script = ExtResource("2")
 item = ExtResource("3")
 chance = 0.2
-max_amount = 1
 
 [resource]
 script = ExtResource("1")
-reaction_key = "bat"
-hit_fx = "feather"
 display_name = "羽毛蝙蝠"
+reaction_key = "bat"
 max_hp = 1
 wander_speed = 30.0
 chase_speed = 70.0
 detect_range = 110.0
 lose_range = 170.0
-attack_damage = 1
-attack_cooldown = 1.2
 tickle_amount = 6.0
 tickle_cooldown = 0.5
 tickle_weight = 0.9
 tickle_pitch = 1.5
+hit_fx = "feather"
 drops = Array[ExtResource("2")]([SubResource("drop")])

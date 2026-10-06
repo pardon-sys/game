@@ -1,21 +1,19 @@
-[gd_resource type="Resource" script_class="MonsterStats" format=3]
+[gd_resource type="Resource" script_class="MonsterStats" format=3 uid="uid://c3wtu033apl1b"]
 
-[ext_resource type="Script" path="res://scripts/actors/monsters/monster_stats.gd" id="1"]
-[ext_resource type="Script" path="res://scripts/items/item_drop.gd" id="2"]
-[ext_resource type="Resource" path="res://data/items/coin.tres" id="i0"]
+[ext_resource type="Script" uid="uid://cw82hmbi4r236" path="res://scripts/actors/monsters/monster_stats.gd" id="1"]
+[ext_resource type="Script" uid="uid://da51r3q3bv1l4" path="res://scripts/items/item_drop.gd" id="2"]
+[ext_resource type="Resource" uid="uid://b5j80o3w850wi" path="res://data/items/coin.tres" id="i0"]
 
 [sub_resource type="Resource" id="d0"]
 script = ExtResource("2")
 item = ExtResource("i0")
 chance = 0.6
-min_amount = 1
 max_amount = 2
 
 [resource]
 script = ExtResource("1")
 display_name = "机关小工匠"
 reaction_key = "imp"
-hit_fx = "feather"
 taunt_chance = 0.3
 max_hp = 2
 wander_speed = 25.0
@@ -23,10 +21,10 @@ chase_speed = 45.0
 detect_range = 110.0
 lose_range = 200.0
 hurt_time = 0.25
-attack_damage = 1
 attack_cooldown = 1.5
 tickle_amount = 2.5
 tickle_cooldown = 1.0
 tickle_weight = 0.9
 tickle_pitch = 1.6
+hit_fx = "feather"
 drops = Array[ExtResource("2")]([SubResource("d0")])

@@ -1,50 +1,32 @@
-[gd_scene format=4]
+[gd_scene format=4 uid="uid://d3yt55gibp2yq"]
 
-[ext_resource type="Script" path="res://scripts/level.gd" id="1_mhg1o"]
-[ext_resource type="TileSet" path="res://assets/tilesets/dungeon.tres" id="2_agff1"]
+[ext_resource type="Script" uid="uid://r3atinp5pqy8" path="res://scripts/level.gd" id="1_mhg1o"]
+[ext_resource type="TileSet" uid="uid://fry6lhagneh5" path="res://assets/tilesets/dungeon.tres" id="2_agff1"]
 [ext_resource type="PackedScene" path="res://scenes/traps/spike_trap.tscn" id="3_l53ub"]
-[ext_resource type="Script" path="res://scripts/traps/spike_trap.gd" id="4_gmdvs"]
 [ext_resource type="PackedScene" path="res://scenes/traps/feather_trap.tscn" id="5_3jnju"]
-[ext_resource type="Script" path="res://scripts/traps/feather_trap.gd" id="6_uaom7"]
 [ext_resource type="PackedScene" path="res://scenes/traps/tickle_conveyor.tscn" id="7_tpm26"]
-[ext_resource type="Script" path="res://scripts/traps/tickle_conveyor.gd" id="8_03dtu"]
 [ext_resource type="PackedScene" path="res://scenes/objects/torch.tscn" id="9_yq8uh"]
-[ext_resource type="Script" path="res://scripts/objects/torch.gd" id="10_4jr8h"]
 [ext_resource type="PackedScene" path="res://scenes/objects/sign.tscn" id="11_sv5hb"]
-[ext_resource type="Script" path="res://scripts/objects/readable.gd" id="12_5lph8"]
 [ext_resource type="PackedScene" path="res://scenes/items/world_item.tscn" id="13_7sk2x"]
-[ext_resource type="Script" path="res://scripts/items/world_item.gd" id="14_s6xif"]
-[ext_resource type="Resource" path="res://data/items/heart.tres" id="15_4egtg"]
+[ext_resource type="Resource" uid="uid://mbjn4sv4g3wl" path="res://data/items/heart.tres" id="15_4egtg"]
 [ext_resource type="PackedScene" path="res://scenes/objects/gate.tscn" id="16_smqw2"]
-[ext_resource type="Script" path="res://scripts/objects/gate.gd" id="17_ordu6"]
 [ext_resource type="PackedScene" path="res://scenes/objects/door.tscn" id="18_6404w"]
-[ext_resource type="Script" path="res://scripts/objects/door.gd" id="19_ly7f1"]
-[ext_resource type="Resource" path="res://data/items/key_bronze.tres" id="20_5qv5b"]
+[ext_resource type="Resource" uid="uid://bk2c3880ox8kf" path="res://data/items/key_bronze.tres" id="20_5qv5b"]
 [ext_resource type="PackedScene" path="res://scenes/objects/chest.tscn" id="21_q2dkg"]
-[ext_resource type="Script" path="res://scripts/objects/chest.gd" id="22_3h2rk"]
-[ext_resource type="Resource" path="res://data/items/coin.tres" id="23_t8fka"]
-[ext_resource type="Resource" path="res://data/items/key_gold.tres" id="24_7iifi"]
+[ext_resource type="Resource" uid="uid://b5j80o3w850wi" path="res://data/items/coin.tres" id="23_t8fka"]
+[ext_resource type="Resource" uid="uid://cf772ik2xq1gk" path="res://data/items/key_gold.tres" id="24_7iifi"]
 [ext_resource type="PackedScene" path="res://scenes/objects/letter.tscn" id="25_lci6e"]
 [ext_resource type="PackedScene" path="res://scenes/objects/secret_wall.tscn" id="26_icpo6"]
-[ext_resource type="Script" path="res://scripts/objects/secret_wall.gd" id="27_wj3jk"]
 [ext_resource type="Resource" path="res://data/items/mint.tres" id="28_uktui"]
 [ext_resource type="PackedScene" path="res://scenes/objects/lever.tscn" id="29_iakd1"]
-[ext_resource type="Script" path="res://scripts/objects/lever.gd" id="30_2d0gl"]
 [ext_resource type="PackedScene" path="res://scenes/actors/monsters/slime.tscn" id="31_ltdhh"]
-[ext_resource type="Script" path="res://scripts/actors/monsters/slime.gd" id="32_evndt"]
-[ext_resource type="Resource" path="res://data/monsters/slime.tres" id="33_5r4r7"]
 [ext_resource type="PackedScene" path="res://scenes/objects/barrel.tscn" id="34_pst4k"]
-[ext_resource type="Script" path="res://scripts/objects/breakable.gd" id="35_pc7qq"]
-[ext_resource type="Script" path="res://scripts/items/item_drop.gd" id="36_jhfqb"]
+[ext_resource type="Script" uid="uid://da51r3q3bv1l4" path="res://scripts/items/item_drop.gd" id="36_jhfqb"]
 [ext_resource type="PackedScene" path="res://scenes/objects/weapon_rack.tscn" id="37_vvpkx"]
-[ext_resource type="PackedScene" path="res://scenes/actors/playable/princess.tscn" id="38_3ua0n"]
-[ext_resource type="Script" path="res://scripts/actors/playable/princess.gd" id="39_lk8k3"]
+[ext_resource type="PackedScene" uid="uid://do228vwioy5xu" path="res://scenes/actors/playable/princess.tscn" id="38_3ua0n"]
 [ext_resource type="PackedScene" path="res://scenes/objects/checkpoint.tscn" id="40_gtwwc"]
-[ext_resource type="Script" path="res://scripts/objects/checkpoint.gd" id="41_783re"]
 [ext_resource type="PackedScene" path="res://scenes/objects/level_exit.tscn" id="42_4w6mb"]
-[ext_resource type="Script" path="res://scripts/objects/level_exit.gd" id="43_58ojn"]
 [ext_resource type="PackedScene" path="res://scenes/objects/arena_zone.tscn" id="44_djhad"]
-[ext_resource type="Script" path="res://scripts/objects/arena_zone.gd" id="45_lvaha"]
 
 [sub_resource type="Resource" id="d_heart"]
 script = ExtResource("36_jhfqb")
@@ -93,1011 +75,283 @@ tile_set = ExtResource("2_agff1")
 
 [node name="FloorObjects" type="Node2D" parent="." unique_id=96922007]
 
-[node name="Spike_16_3" type="Area2D" parent="FloorObjects" unique_id=1539691788 instance=ExtResource("3_l53ub")]
+[node name="Spike_16_3" parent="FloorObjects" unique_id=1539691788 instance=ExtResource("3_l53ub")]
 position = Vector2(264, 56)
-collision_layer = 0
-collision_mask = 6
-monitorable = false
-script = ExtResource("4_gmdvs")
-reaction_key = "spike"
 
-[node name="Spike_17_3" type="Area2D" parent="FloorObjects" unique_id=1652132370 instance=ExtResource("3_l53ub")]
+[node name="Spike_17_3" parent="FloorObjects" unique_id=1652132370 instance=ExtResource("3_l53ub")]
 position = Vector2(280, 56)
-collision_layer = 0
-collision_mask = 6
-monitorable = false
-script = ExtResource("4_gmdvs")
-reaction_key = "spike"
 
-[node name="Spike_18_3" type="Area2D" parent="FloorObjects" unique_id=1817547057 instance=ExtResource("3_l53ub")]
+[node name="Spike_18_3" parent="FloorObjects" unique_id=1817547057 instance=ExtResource("3_l53ub")]
 position = Vector2(296, 56)
-collision_layer = 0
-collision_mask = 6
-monitorable = false
-script = ExtResource("4_gmdvs")
-reaction_key = "spike"
 
-[node name="Spike_19_3" type="Area2D" parent="FloorObjects" unique_id=84751041 instance=ExtResource("3_l53ub")]
+[node name="Spike_19_3" parent="FloorObjects" unique_id=84751041 instance=ExtResource("3_l53ub")]
 position = Vector2(312, 56)
-collision_layer = 0
-collision_mask = 6
-monitorable = false
-script = ExtResource("4_gmdvs")
-reaction_key = "spike"
 
-[node name="Feather_21_3" type="Area2D" parent="FloorObjects" unique_id=1695856874 instance=ExtResource("5_3jnju")]
+[node name="Feather_21_3" parent="FloorObjects" unique_id=1695856874 instance=ExtResource("5_3jnju")]
 position = Vector2(344, 56)
-collision_layer = 0
-collision_mask = 6
-monitorable = false
-script = ExtResource("6_uaom7")
-trigger_mode = 1
-hit_kind = 1
-damage = 0
-tickle = 20.0
-repeat_interval = 10.0
-reaction_key = "feather"
-warn_time = 0.15
-active_time = 0.5
-cooldown_time = 1.5
 
-[node name="Feather_22_3" type="Area2D" parent="FloorObjects" unique_id=1710944945 instance=ExtResource("5_3jnju")]
+[node name="Feather_22_3" parent="FloorObjects" unique_id=1710944945 instance=ExtResource("5_3jnju")]
 position = Vector2(360, 56)
-collision_layer = 0
-collision_mask = 6
-monitorable = false
-script = ExtResource("6_uaom7")
-trigger_mode = 1
-hit_kind = 1
-damage = 0
-tickle = 20.0
-repeat_interval = 10.0
-reaction_key = "feather"
-warn_time = 0.15
-active_time = 0.5
-cooldown_time = 1.5
 
-[node name="Spike_25_3" type="Area2D" parent="FloorObjects" unique_id=1492230898 instance=ExtResource("3_l53ub")]
+[node name="Spike_25_3" parent="FloorObjects" unique_id=1492230898 instance=ExtResource("3_l53ub")]
 position = Vector2(408, 56)
-collision_layer = 0
-collision_mask = 6
-monitorable = false
-script = ExtResource("4_gmdvs")
-reaction_key = "spike"
 phase_offset = 1.2
 
-[node name="Spike_26_3" type="Area2D" parent="FloorObjects" unique_id=1010256930 instance=ExtResource("3_l53ub")]
+[node name="Spike_26_3" parent="FloorObjects" unique_id=1010256930 instance=ExtResource("3_l53ub")]
 position = Vector2(424, 56)
-collision_layer = 0
-collision_mask = 6
-monitorable = false
-script = ExtResource("4_gmdvs")
-reaction_key = "spike"
 phase_offset = 1.2
 
-[node name="Spike_27_3" type="Area2D" parent="FloorObjects" unique_id=1998920014 instance=ExtResource("3_l53ub")]
+[node name="Spike_27_3" parent="FloorObjects" unique_id=1998920014 instance=ExtResource("3_l53ub")]
 position = Vector2(440, 56)
-collision_layer = 0
-collision_mask = 6
-monitorable = false
-script = ExtResource("4_gmdvs")
-reaction_key = "spike"
 phase_offset = 1.2
 
-[node name="Spike_28_3" type="Area2D" parent="FloorObjects" unique_id=575988323 instance=ExtResource("3_l53ub")]
+[node name="Spike_28_3" parent="FloorObjects" unique_id=575988323 instance=ExtResource("3_l53ub")]
 position = Vector2(456, 56)
-collision_layer = 0
-collision_mask = 6
-monitorable = false
-script = ExtResource("4_gmdvs")
-reaction_key = "spike"
 phase_offset = 1.2
 
-[node name="Spike_34_3" type="Area2D" parent="FloorObjects" unique_id=1383441378 instance=ExtResource("3_l53ub")]
+[node name="Spike_34_3" parent="FloorObjects" unique_id=1383441378 instance=ExtResource("3_l53ub")]
 position = Vector2(552, 56)
-collision_layer = 0
-collision_mask = 6
-monitorable = false
-script = ExtResource("4_gmdvs")
-reaction_key = "spike"
 
-[node name="Spike_35_3" type="Area2D" parent="FloorObjects" unique_id=2129161817 instance=ExtResource("3_l53ub")]
+[node name="Spike_35_3" parent="FloorObjects" unique_id=2129161817 instance=ExtResource("3_l53ub")]
 position = Vector2(568, 56)
-collision_layer = 0
-collision_mask = 6
-monitorable = false
-script = ExtResource("4_gmdvs")
-reaction_key = "spike"
 
-[node name="Spike_36_3" type="Area2D" parent="FloorObjects" unique_id=727145729 instance=ExtResource("3_l53ub")]
+[node name="Spike_36_3" parent="FloorObjects" unique_id=727145729 instance=ExtResource("3_l53ub")]
 position = Vector2(584, 56)
-collision_layer = 0
-collision_mask = 6
-monitorable = false
-script = ExtResource("4_gmdvs")
-reaction_key = "spike"
 
-[node name="Spike_37_3" type="Area2D" parent="FloorObjects" unique_id=1823060910 instance=ExtResource("3_l53ub")]
+[node name="Spike_37_3" parent="FloorObjects" unique_id=1823060910 instance=ExtResource("3_l53ub")]
 position = Vector2(600, 56)
-collision_layer = 0
-collision_mask = 6
-monitorable = false
-script = ExtResource("4_gmdvs")
-reaction_key = "spike"
 
-[node name="Feather_38_3" type="Area2D" parent="FloorObjects" unique_id=1967753419 instance=ExtResource("5_3jnju")]
+[node name="Feather_38_3" parent="FloorObjects" unique_id=1967753419 instance=ExtResource("5_3jnju")]
 position = Vector2(616, 56)
-collision_layer = 0
-collision_mask = 6
-monitorable = false
-script = ExtResource("6_uaom7")
-trigger_mode = 1
-hit_kind = 1
-damage = 0
-tickle = 20.0
-repeat_interval = 10.0
-reaction_key = "feather"
-warn_time = 0.15
-active_time = 0.5
-cooldown_time = 1.5
 
-[node name="Feather_39_3" type="Area2D" parent="FloorObjects" unique_id=1491322029 instance=ExtResource("5_3jnju")]
+[node name="Feather_39_3" parent="FloorObjects" unique_id=1491322029 instance=ExtResource("5_3jnju")]
 position = Vector2(632, 56)
-collision_layer = 0
-collision_mask = 6
-monitorable = false
-script = ExtResource("6_uaom7")
-trigger_mode = 1
-hit_kind = 1
-damage = 0
-tickle = 20.0
-repeat_interval = 10.0
-reaction_key = "feather"
-warn_time = 0.15
-active_time = 0.5
-cooldown_time = 1.5
 
-[node name="Spike_41_3" type="Area2D" parent="FloorObjects" unique_id=195888423 instance=ExtResource("3_l53ub")]
+[node name="Spike_41_3" parent="FloorObjects" unique_id=195888423 instance=ExtResource("3_l53ub")]
 position = Vector2(664, 56)
-collision_layer = 0
-collision_mask = 6
-monitorable = false
-script = ExtResource("4_gmdvs")
-reaction_key = "spike"
 phase_offset = 1.2
 
-[node name="Spike_42_3" type="Area2D" parent="FloorObjects" unique_id=1414740794 instance=ExtResource("3_l53ub")]
+[node name="Spike_42_3" parent="FloorObjects" unique_id=1414740794 instance=ExtResource("3_l53ub")]
 position = Vector2(680, 56)
-collision_layer = 0
-collision_mask = 6
-monitorable = false
-script = ExtResource("4_gmdvs")
-reaction_key = "spike"
 phase_offset = 1.2
 
-[node name="Spike_43_3" type="Area2D" parent="FloorObjects" unique_id=354476369 instance=ExtResource("3_l53ub")]
+[node name="Spike_43_3" parent="FloorObjects" unique_id=354476369 instance=ExtResource("3_l53ub")]
 position = Vector2(696, 56)
-collision_layer = 0
-collision_mask = 6
-monitorable = false
-script = ExtResource("4_gmdvs")
-reaction_key = "spike"
 phase_offset = 1.2
 
-[node name="Spike_16_4" type="Area2D" parent="FloorObjects" unique_id=36140446 instance=ExtResource("3_l53ub")]
+[node name="Spike_16_4" parent="FloorObjects" unique_id=36140446 instance=ExtResource("3_l53ub")]
 position = Vector2(264, 72)
-collision_layer = 0
-collision_mask = 6
-monitorable = false
-script = ExtResource("4_gmdvs")
-reaction_key = "spike"
 
-[node name="Spike_17_4" type="Area2D" parent="FloorObjects" unique_id=1903859287 instance=ExtResource("3_l53ub")]
+[node name="Spike_17_4" parent="FloorObjects" unique_id=1903859287 instance=ExtResource("3_l53ub")]
 position = Vector2(280, 72)
-collision_layer = 0
-collision_mask = 6
-monitorable = false
-script = ExtResource("4_gmdvs")
-reaction_key = "spike"
 
-[node name="Spike_18_4" type="Area2D" parent="FloorObjects" unique_id=1739704348 instance=ExtResource("3_l53ub")]
+[node name="Spike_18_4" parent="FloorObjects" unique_id=1739704348 instance=ExtResource("3_l53ub")]
 position = Vector2(296, 72)
-collision_layer = 0
-collision_mask = 6
-monitorable = false
-script = ExtResource("4_gmdvs")
-reaction_key = "spike"
 
-[node name="Spike_19_4" type="Area2D" parent="FloorObjects" unique_id=1767919402 instance=ExtResource("3_l53ub")]
+[node name="Spike_19_4" parent="FloorObjects" unique_id=1767919402 instance=ExtResource("3_l53ub")]
 position = Vector2(312, 72)
-collision_layer = 0
-collision_mask = 6
-monitorable = false
-script = ExtResource("4_gmdvs")
-reaction_key = "spike"
 
-[node name="Feather_21_4" type="Area2D" parent="FloorObjects" unique_id=639305369 instance=ExtResource("5_3jnju")]
+[node name="Feather_21_4" parent="FloorObjects" unique_id=639305369 instance=ExtResource("5_3jnju")]
 position = Vector2(344, 72)
-collision_layer = 0
-collision_mask = 6
-monitorable = false
-script = ExtResource("6_uaom7")
-trigger_mode = 1
-hit_kind = 1
-damage = 0
-tickle = 20.0
-repeat_interval = 10.0
-reaction_key = "feather"
-warn_time = 0.15
-active_time = 0.5
-cooldown_time = 1.5
 
-[node name="Feather_22_4" type="Area2D" parent="FloorObjects" unique_id=1462620268 instance=ExtResource("5_3jnju")]
+[node name="Feather_22_4" parent="FloorObjects" unique_id=1462620268 instance=ExtResource("5_3jnju")]
 position = Vector2(360, 72)
-collision_layer = 0
-collision_mask = 6
-monitorable = false
-script = ExtResource("6_uaom7")
-trigger_mode = 1
-hit_kind = 1
-damage = 0
-tickle = 20.0
-repeat_interval = 10.0
-reaction_key = "feather"
-warn_time = 0.15
-active_time = 0.5
-cooldown_time = 1.5
 
-[node name="Spike_25_4" type="Area2D" parent="FloorObjects" unique_id=680180223 instance=ExtResource("3_l53ub")]
+[node name="Spike_25_4" parent="FloorObjects" unique_id=680180223 instance=ExtResource("3_l53ub")]
 position = Vector2(408, 72)
-collision_layer = 0
-collision_mask = 6
-monitorable = false
-script = ExtResource("4_gmdvs")
-reaction_key = "spike"
 phase_offset = 1.2
 
-[node name="Spike_26_4" type="Area2D" parent="FloorObjects" unique_id=372043513 instance=ExtResource("3_l53ub")]
+[node name="Spike_26_4" parent="FloorObjects" unique_id=372043513 instance=ExtResource("3_l53ub")]
 position = Vector2(424, 72)
-collision_layer = 0
-collision_mask = 6
-monitorable = false
-script = ExtResource("4_gmdvs")
-reaction_key = "spike"
 phase_offset = 1.2
 
-[node name="Spike_27_4" type="Area2D" parent="FloorObjects" unique_id=1657518629 instance=ExtResource("3_l53ub")]
+[node name="Spike_27_4" parent="FloorObjects" unique_id=1657518629 instance=ExtResource("3_l53ub")]
 position = Vector2(440, 72)
-collision_layer = 0
-collision_mask = 6
-monitorable = false
-script = ExtResource("4_gmdvs")
-reaction_key = "spike"
 phase_offset = 1.2
 
-[node name="Spike_28_4" type="Area2D" parent="FloorObjects" unique_id=1850553946 instance=ExtResource("3_l53ub")]
+[node name="Spike_28_4" parent="FloorObjects" unique_id=1850553946 instance=ExtResource("3_l53ub")]
 position = Vector2(456, 72)
-collision_layer = 0
-collision_mask = 6
-monitorable = false
-script = ExtResource("4_gmdvs")
-reaction_key = "spike"
 phase_offset = 1.2
 
-[node name="Spike_34_4" type="Area2D" parent="FloorObjects" unique_id=2132032688 instance=ExtResource("3_l53ub")]
+[node name="Spike_34_4" parent="FloorObjects" unique_id=2132032688 instance=ExtResource("3_l53ub")]
 position = Vector2(552, 72)
-collision_layer = 0
-collision_mask = 6
-monitorable = false
-script = ExtResource("4_gmdvs")
-reaction_key = "spike"
 
-[node name="Spike_35_4" type="Area2D" parent="FloorObjects" unique_id=2090993424 instance=ExtResource("3_l53ub")]
+[node name="Spike_35_4" parent="FloorObjects" unique_id=2090993424 instance=ExtResource("3_l53ub")]
 position = Vector2(568, 72)
-collision_layer = 0
-collision_mask = 6
-monitorable = false
-script = ExtResource("4_gmdvs")
-reaction_key = "spike"
 
-[node name="Spike_36_4" type="Area2D" parent="FloorObjects" unique_id=1480957850 instance=ExtResource("3_l53ub")]
+[node name="Spike_36_4" parent="FloorObjects" unique_id=1480957850 instance=ExtResource("3_l53ub")]
 position = Vector2(584, 72)
-collision_layer = 0
-collision_mask = 6
-monitorable = false
-script = ExtResource("4_gmdvs")
-reaction_key = "spike"
 
-[node name="Spike_37_4" type="Area2D" parent="FloorObjects" unique_id=1067585051 instance=ExtResource("3_l53ub")]
+[node name="Spike_37_4" parent="FloorObjects" unique_id=1067585051 instance=ExtResource("3_l53ub")]
 position = Vector2(600, 72)
-collision_layer = 0
-collision_mask = 6
-monitorable = false
-script = ExtResource("4_gmdvs")
-reaction_key = "spike"
 
-[node name="Feather_38_4" type="Area2D" parent="FloorObjects" unique_id=698332004 instance=ExtResource("5_3jnju")]
+[node name="Feather_38_4" parent="FloorObjects" unique_id=698332004 instance=ExtResource("5_3jnju")]
 position = Vector2(616, 72)
-collision_layer = 0
-collision_mask = 6
-monitorable = false
-script = ExtResource("6_uaom7")
-trigger_mode = 1
-hit_kind = 1
-damage = 0
-tickle = 20.0
-repeat_interval = 10.0
-reaction_key = "feather"
-warn_time = 0.15
-active_time = 0.5
-cooldown_time = 1.5
 
-[node name="Feather_39_4" type="Area2D" parent="FloorObjects" unique_id=1235124901 instance=ExtResource("5_3jnju")]
+[node name="Feather_39_4" parent="FloorObjects" unique_id=1235124901 instance=ExtResource("5_3jnju")]
 position = Vector2(632, 72)
-collision_layer = 0
-collision_mask = 6
-monitorable = false
-script = ExtResource("6_uaom7")
-trigger_mode = 1
-hit_kind = 1
-damage = 0
-tickle = 20.0
-repeat_interval = 10.0
-reaction_key = "feather"
-warn_time = 0.15
-active_time = 0.5
-cooldown_time = 1.5
 
-[node name="Spike_41_4" type="Area2D" parent="FloorObjects" unique_id=759745150 instance=ExtResource("3_l53ub")]
+[node name="Spike_41_4" parent="FloorObjects" unique_id=759745150 instance=ExtResource("3_l53ub")]
 position = Vector2(664, 72)
-collision_layer = 0
-collision_mask = 6
-monitorable = false
-script = ExtResource("4_gmdvs")
-reaction_key = "spike"
 phase_offset = 1.2
 
-[node name="Spike_42_4" type="Area2D" parent="FloorObjects" unique_id=1307759421 instance=ExtResource("3_l53ub")]
+[node name="Spike_42_4" parent="FloorObjects" unique_id=1307759421 instance=ExtResource("3_l53ub")]
 position = Vector2(680, 72)
-collision_layer = 0
-collision_mask = 6
-monitorable = false
-script = ExtResource("4_gmdvs")
-reaction_key = "spike"
 phase_offset = 1.2
 
-[node name="Spike_43_4" type="Area2D" parent="FloorObjects" unique_id=1803006951 instance=ExtResource("3_l53ub")]
+[node name="Spike_43_4" parent="FloorObjects" unique_id=1803006951 instance=ExtResource("3_l53ub")]
 position = Vector2(696, 72)
-collision_layer = 0
-collision_mask = 6
-monitorable = false
-script = ExtResource("4_gmdvs")
-reaction_key = "spike"
 phase_offset = 1.2
 
-[node name="Spike_16_5" type="Area2D" parent="FloorObjects" unique_id=471660928 instance=ExtResource("3_l53ub")]
+[node name="Spike_16_5" parent="FloorObjects" unique_id=471660928 instance=ExtResource("3_l53ub")]
 position = Vector2(264, 88)
-collision_layer = 0
-collision_mask = 6
-monitorable = false
-script = ExtResource("4_gmdvs")
-reaction_key = "spike"
 
-[node name="Spike_17_5" type="Area2D" parent="FloorObjects" unique_id=552640686 instance=ExtResource("3_l53ub")]
+[node name="Spike_17_5" parent="FloorObjects" unique_id=552640686 instance=ExtResource("3_l53ub")]
 position = Vector2(280, 88)
-collision_layer = 0
-collision_mask = 6
-monitorable = false
-script = ExtResource("4_gmdvs")
-reaction_key = "spike"
 
-[node name="Spike_18_5" type="Area2D" parent="FloorObjects" unique_id=537535375 instance=ExtResource("3_l53ub")]
+[node name="Spike_18_5" parent="FloorObjects" unique_id=537535375 instance=ExtResource("3_l53ub")]
 position = Vector2(296, 88)
-collision_layer = 0
-collision_mask = 6
-monitorable = false
-script = ExtResource("4_gmdvs")
-reaction_key = "spike"
 
-[node name="Spike_19_5" type="Area2D" parent="FloorObjects" unique_id=1090838029 instance=ExtResource("3_l53ub")]
+[node name="Spike_19_5" parent="FloorObjects" unique_id=1090838029 instance=ExtResource("3_l53ub")]
 position = Vector2(312, 88)
-collision_layer = 0
-collision_mask = 6
-monitorable = false
-script = ExtResource("4_gmdvs")
-reaction_key = "spike"
 
-[node name="Feather_21_5" type="Area2D" parent="FloorObjects" unique_id=430866801 instance=ExtResource("5_3jnju")]
+[node name="Feather_21_5" parent="FloorObjects" unique_id=430866801 instance=ExtResource("5_3jnju")]
 position = Vector2(344, 88)
-collision_layer = 0
-collision_mask = 6
-monitorable = false
-script = ExtResource("6_uaom7")
-trigger_mode = 1
-hit_kind = 1
-damage = 0
-tickle = 20.0
-repeat_interval = 10.0
-reaction_key = "feather"
-warn_time = 0.15
-active_time = 0.5
-cooldown_time = 1.5
 
-[node name="Feather_22_5" type="Area2D" parent="FloorObjects" unique_id=833645495 instance=ExtResource("5_3jnju")]
+[node name="Feather_22_5" parent="FloorObjects" unique_id=833645495 instance=ExtResource("5_3jnju")]
 position = Vector2(360, 88)
-collision_layer = 0
-collision_mask = 6
-monitorable = false
-script = ExtResource("6_uaom7")
-trigger_mode = 1
-hit_kind = 1
-damage = 0
-tickle = 20.0
-repeat_interval = 10.0
-reaction_key = "feather"
-warn_time = 0.15
-active_time = 0.5
-cooldown_time = 1.5
 
-[node name="Spike_25_5" type="Area2D" parent="FloorObjects" unique_id=670958440 instance=ExtResource("3_l53ub")]
+[node name="Spike_25_5" parent="FloorObjects" unique_id=670958440 instance=ExtResource("3_l53ub")]
 position = Vector2(408, 88)
-collision_layer = 0
-collision_mask = 6
-monitorable = false
-script = ExtResource("4_gmdvs")
-reaction_key = "spike"
 phase_offset = 1.2
 
-[node name="Spike_26_5" type="Area2D" parent="FloorObjects" unique_id=1856078320 instance=ExtResource("3_l53ub")]
+[node name="Spike_26_5" parent="FloorObjects" unique_id=1856078320 instance=ExtResource("3_l53ub")]
 position = Vector2(424, 88)
-collision_layer = 0
-collision_mask = 6
-monitorable = false
-script = ExtResource("4_gmdvs")
-reaction_key = "spike"
 phase_offset = 1.2
 
-[node name="Spike_27_5" type="Area2D" parent="FloorObjects" unique_id=851679429 instance=ExtResource("3_l53ub")]
+[node name="Spike_27_5" parent="FloorObjects" unique_id=851679429 instance=ExtResource("3_l53ub")]
 position = Vector2(440, 88)
-collision_layer = 0
-collision_mask = 6
-monitorable = false
-script = ExtResource("4_gmdvs")
-reaction_key = "spike"
 phase_offset = 1.2
 
-[node name="Spike_28_5" type="Area2D" parent="FloorObjects" unique_id=451614927 instance=ExtResource("3_l53ub")]
+[node name="Spike_28_5" parent="FloorObjects" unique_id=451614927 instance=ExtResource("3_l53ub")]
 position = Vector2(456, 88)
-collision_layer = 0
-collision_mask = 6
-monitorable = false
-script = ExtResource("4_gmdvs")
-reaction_key = "spike"
 phase_offset = 1.2
 
-[node name="Spike_34_5" type="Area2D" parent="FloorObjects" unique_id=1562503768 instance=ExtResource("3_l53ub")]
+[node name="Spike_34_5" parent="FloorObjects" unique_id=1562503768 instance=ExtResource("3_l53ub")]
 position = Vector2(552, 88)
-collision_layer = 0
-collision_mask = 6
-monitorable = false
-script = ExtResource("4_gmdvs")
-reaction_key = "spike"
 
-[node name="Spike_35_5" type="Area2D" parent="FloorObjects" unique_id=1145411321 instance=ExtResource("3_l53ub")]
+[node name="Spike_35_5" parent="FloorObjects" unique_id=1145411321 instance=ExtResource("3_l53ub")]
 position = Vector2(568, 88)
-collision_layer = 0
-collision_mask = 6
-monitorable = false
-script = ExtResource("4_gmdvs")
-reaction_key = "spike"
 
-[node name="Spike_36_5" type="Area2D" parent="FloorObjects" unique_id=863000780 instance=ExtResource("3_l53ub")]
+[node name="Spike_36_5" parent="FloorObjects" unique_id=863000780 instance=ExtResource("3_l53ub")]
 position = Vector2(584, 88)
-collision_layer = 0
-collision_mask = 6
-monitorable = false
-script = ExtResource("4_gmdvs")
-reaction_key = "spike"
 
-[node name="Spike_37_5" type="Area2D" parent="FloorObjects" unique_id=1508929555 instance=ExtResource("3_l53ub")]
+[node name="Spike_37_5" parent="FloorObjects" unique_id=1508929555 instance=ExtResource("3_l53ub")]
 position = Vector2(600, 88)
-collision_layer = 0
-collision_mask = 6
-monitorable = false
-script = ExtResource("4_gmdvs")
-reaction_key = "spike"
 
-[node name="Feather_38_5" type="Area2D" parent="FloorObjects" unique_id=499744626 instance=ExtResource("5_3jnju")]
+[node name="Feather_38_5" parent="FloorObjects" unique_id=499744626 instance=ExtResource("5_3jnju")]
 position = Vector2(616, 88)
-collision_layer = 0
-collision_mask = 6
-monitorable = false
-script = ExtResource("6_uaom7")
-trigger_mode = 1
-hit_kind = 1
-damage = 0
-tickle = 20.0
-repeat_interval = 10.0
-reaction_key = "feather"
-warn_time = 0.15
-active_time = 0.5
-cooldown_time = 1.5
 
-[node name="Feather_39_5" type="Area2D" parent="FloorObjects" unique_id=1315121681 instance=ExtResource("5_3jnju")]
+[node name="Feather_39_5" parent="FloorObjects" unique_id=1315121681 instance=ExtResource("5_3jnju")]
 position = Vector2(632, 88)
-collision_layer = 0
-collision_mask = 6
-monitorable = false
-script = ExtResource("6_uaom7")
-trigger_mode = 1
-hit_kind = 1
-damage = 0
-tickle = 20.0
-repeat_interval = 10.0
-reaction_key = "feather"
-warn_time = 0.15
-active_time = 0.5
-cooldown_time = 1.5
 
-[node name="Spike_41_5" type="Area2D" parent="FloorObjects" unique_id=655779309 instance=ExtResource("3_l53ub")]
+[node name="Spike_41_5" parent="FloorObjects" unique_id=655779309 instance=ExtResource("3_l53ub")]
 position = Vector2(664, 88)
-collision_layer = 0
-collision_mask = 6
-monitorable = false
-script = ExtResource("4_gmdvs")
-reaction_key = "spike"
 phase_offset = 1.2
 
-[node name="Spike_42_5" type="Area2D" parent="FloorObjects" unique_id=1581145608 instance=ExtResource("3_l53ub")]
+[node name="Spike_42_5" parent="FloorObjects" unique_id=1581145608 instance=ExtResource("3_l53ub")]
 position = Vector2(680, 88)
-collision_layer = 0
-collision_mask = 6
-monitorable = false
-script = ExtResource("4_gmdvs")
-reaction_key = "spike"
 phase_offset = 1.2
 
-[node name="Spike_43_5" type="Area2D" parent="FloorObjects" unique_id=562778209 instance=ExtResource("3_l53ub")]
+[node name="Spike_43_5" parent="FloorObjects" unique_id=562778209 instance=ExtResource("3_l53ub")]
 position = Vector2(696, 88)
-collision_layer = 0
-collision_mask = 6
-monitorable = false
-script = ExtResource("4_gmdvs")
-reaction_key = "spike"
 phase_offset = 1.2
 
-[node name="Conveyor_58_12" type="Area2D" parent="FloorObjects" unique_id=766051653 groups=["belt1"] instance=ExtResource("7_tpm26")]
+[node name="Conveyor_58_12" parent="FloorObjects" unique_id=766051653 groups=["belt1"] instance=ExtResource("7_tpm26")]
 position = Vector2(936, 200)
-collision_layer = 0
-collision_mask = 6
-monitorable = false
-script = ExtResource("8_03dtu")
 dir = "left"
 length = 13
 push_speed = 55.0
-trigger_mode = 3
-hit_kind = 1
-damage = 0
-tickle = 2.0
-repeat_interval = 0.6
-reaction_key = "conveyor"
-tickle_pitch = 1.0
 
-[node name="Feather_46_13" type="Area2D" parent="FloorObjects" unique_id=1990039062 instance=ExtResource("5_3jnju")]
+[node name="Feather_46_13" parent="FloorObjects" unique_id=1990039062 instance=ExtResource("5_3jnju")]
 position = Vector2(744, 216)
-collision_layer = 0
-collision_mask = 6
-monitorable = false
-script = ExtResource("6_uaom7")
-trigger_mode = 1
-hit_kind = 1
-damage = 0
-tickle = 20.0
-repeat_interval = 10.0
-reaction_key = "feather"
-warn_time = 0.15
-active_time = 0.5
-cooldown_time = 1.5
 
-[node name="Feather_47_13" type="Area2D" parent="FloorObjects" unique_id=926663666 instance=ExtResource("5_3jnju")]
+[node name="Feather_47_13" parent="FloorObjects" unique_id=926663666 instance=ExtResource("5_3jnju")]
 position = Vector2(760, 216)
-collision_layer = 0
-collision_mask = 6
-monitorable = false
-script = ExtResource("6_uaom7")
-trigger_mode = 1
-hit_kind = 1
-damage = 0
-tickle = 20.0
-repeat_interval = 10.0
-reaction_key = "feather"
-warn_time = 0.15
-active_time = 0.5
-cooldown_time = 1.5
 
-[node name="Feather_48_13" type="Area2D" parent="FloorObjects" unique_id=1907321979 instance=ExtResource("5_3jnju")]
+[node name="Feather_48_13" parent="FloorObjects" unique_id=1907321979 instance=ExtResource("5_3jnju")]
 position = Vector2(776, 216)
-collision_layer = 0
-collision_mask = 6
-monitorable = false
-script = ExtResource("6_uaom7")
-trigger_mode = 1
-hit_kind = 1
-damage = 0
-tickle = 20.0
-repeat_interval = 10.0
-reaction_key = "feather"
-warn_time = 0.15
-active_time = 0.5
-cooldown_time = 1.5
 
-[node name="Feather_49_13" type="Area2D" parent="FloorObjects" unique_id=1204895358 instance=ExtResource("5_3jnju")]
+[node name="Feather_49_13" parent="FloorObjects" unique_id=1204895358 instance=ExtResource("5_3jnju")]
 position = Vector2(792, 216)
-collision_layer = 0
-collision_mask = 6
-monitorable = false
-script = ExtResource("6_uaom7")
-trigger_mode = 1
-hit_kind = 1
-damage = 0
-tickle = 20.0
-repeat_interval = 10.0
-reaction_key = "feather"
-warn_time = 0.15
-active_time = 0.5
-cooldown_time = 1.5
 
-[node name="Feather_50_13" type="Area2D" parent="FloorObjects" unique_id=1300021354 instance=ExtResource("5_3jnju")]
+[node name="Feather_50_13" parent="FloorObjects" unique_id=1300021354 instance=ExtResource("5_3jnju")]
 position = Vector2(808, 216)
-collision_layer = 0
-collision_mask = 6
-monitorable = false
-script = ExtResource("6_uaom7")
-trigger_mode = 1
-hit_kind = 1
-damage = 0
-tickle = 20.0
-repeat_interval = 10.0
-reaction_key = "feather"
-warn_time = 0.15
-active_time = 0.5
-cooldown_time = 1.5
 
-[node name="Feather_51_13" type="Area2D" parent="FloorObjects" unique_id=819996936 instance=ExtResource("5_3jnju")]
+[node name="Feather_51_13" parent="FloorObjects" unique_id=819996936 instance=ExtResource("5_3jnju")]
 position = Vector2(824, 216)
-collision_layer = 0
-collision_mask = 6
-monitorable = false
-script = ExtResource("6_uaom7")
-trigger_mode = 1
-hit_kind = 1
-damage = 0
-tickle = 20.0
-repeat_interval = 10.0
-reaction_key = "feather"
-warn_time = 0.15
-active_time = 0.5
-cooldown_time = 1.5
 
-[node name="Feather_52_13" type="Area2D" parent="FloorObjects" unique_id=2122715266 instance=ExtResource("5_3jnju")]
+[node name="Feather_52_13" parent="FloorObjects" unique_id=2122715266 instance=ExtResource("5_3jnju")]
 position = Vector2(840, 216)
-collision_layer = 0
-collision_mask = 6
-monitorable = false
-script = ExtResource("6_uaom7")
-trigger_mode = 1
-hit_kind = 1
-damage = 0
-tickle = 20.0
-repeat_interval = 10.0
-reaction_key = "feather"
-warn_time = 0.15
-active_time = 0.5
-cooldown_time = 1.5
 
-[node name="Feather_53_13" type="Area2D" parent="FloorObjects" unique_id=1560183065 instance=ExtResource("5_3jnju")]
+[node name="Feather_53_13" parent="FloorObjects" unique_id=1560183065 instance=ExtResource("5_3jnju")]
 position = Vector2(856, 216)
-collision_layer = 0
-collision_mask = 6
-monitorable = false
-script = ExtResource("6_uaom7")
-trigger_mode = 1
-hit_kind = 1
-damage = 0
-tickle = 20.0
-repeat_interval = 10.0
-reaction_key = "feather"
-warn_time = 0.15
-active_time = 0.5
-cooldown_time = 1.5
 
-[node name="Feather_54_13" type="Area2D" parent="FloorObjects" unique_id=429492898 instance=ExtResource("5_3jnju")]
+[node name="Feather_54_13" parent="FloorObjects" unique_id=429492898 instance=ExtResource("5_3jnju")]
 position = Vector2(872, 216)
-collision_layer = 0
-collision_mask = 6
-monitorable = false
-script = ExtResource("6_uaom7")
-trigger_mode = 1
-hit_kind = 1
-damage = 0
-tickle = 20.0
-repeat_interval = 10.0
-reaction_key = "feather"
-warn_time = 0.15
-active_time = 0.5
-cooldown_time = 1.5
 
-[node name="Feather_55_13" type="Area2D" parent="FloorObjects" unique_id=2105642867 instance=ExtResource("5_3jnju")]
+[node name="Feather_55_13" parent="FloorObjects" unique_id=2105642867 instance=ExtResource("5_3jnju")]
 position = Vector2(888, 216)
-collision_layer = 0
-collision_mask = 6
-monitorable = false
-script = ExtResource("6_uaom7")
-trigger_mode = 1
-hit_kind = 1
-damage = 0
-tickle = 20.0
-repeat_interval = 10.0
-reaction_key = "feather"
-warn_time = 0.15
-active_time = 0.5
-cooldown_time = 1.5
 
-[node name="Feather_56_13" type="Area2D" parent="FloorObjects" unique_id=55680649 instance=ExtResource("5_3jnju")]
+[node name="Feather_56_13" parent="FloorObjects" unique_id=55680649 instance=ExtResource("5_3jnju")]
 position = Vector2(904, 216)
-collision_layer = 0
-collision_mask = 6
-monitorable = false
-script = ExtResource("6_uaom7")
-trigger_mode = 1
-hit_kind = 1
-damage = 0
-tickle = 20.0
-repeat_interval = 10.0
-reaction_key = "feather"
-warn_time = 0.15
-active_time = 0.5
-cooldown_time = 1.5
 
-[node name="Feather_57_13" type="Area2D" parent="FloorObjects" unique_id=209384021 instance=ExtResource("5_3jnju")]
+[node name="Feather_57_13" parent="FloorObjects" unique_id=209384021 instance=ExtResource("5_3jnju")]
 position = Vector2(920, 216)
-collision_layer = 0
-collision_mask = 6
-monitorable = false
-script = ExtResource("6_uaom7")
-trigger_mode = 1
-hit_kind = 1
-damage = 0
-tickle = 20.0
-repeat_interval = 10.0
-reaction_key = "feather"
-warn_time = 0.15
-active_time = 0.5
-cooldown_time = 1.5
 
-[node name="Feather_58_13" type="Area2D" parent="FloorObjects" unique_id=1321514603 instance=ExtResource("5_3jnju")]
+[node name="Feather_58_13" parent="FloorObjects" unique_id=1321514603 instance=ExtResource("5_3jnju")]
 position = Vector2(936, 216)
-collision_layer = 0
-collision_mask = 6
-monitorable = false
-script = ExtResource("6_uaom7")
-trigger_mode = 1
-hit_kind = 1
-damage = 0
-tickle = 20.0
-repeat_interval = 10.0
-reaction_key = "feather"
-warn_time = 0.15
-active_time = 0.5
-cooldown_time = 1.5
 
-[node name="Conveyor_46_14" type="Area2D" parent="FloorObjects" unique_id=1823696081 groups=["belt1"] instance=ExtResource("7_tpm26")]
+[node name="Conveyor_46_14" parent="FloorObjects" unique_id=1823696081 groups=["belt1"] instance=ExtResource("7_tpm26")]
 position = Vector2(744, 232)
-collision_layer = 0
-collision_mask = 6
-monitorable = false
-script = ExtResource("8_03dtu")
 length = 13
 push_speed = 55.0
-trigger_mode = 3
-hit_kind = 1
-damage = 0
-tickle = 2.0
-repeat_interval = 0.6
-reaction_key = "conveyor"
-tickle_pitch = 1.0
 
-[node name="Feather_44_30" type="Area2D" parent="FloorObjects" unique_id=133212436 instance=ExtResource("5_3jnju")]
+[node name="Feather_44_30" parent="FloorObjects" unique_id=133212436 instance=ExtResource("5_3jnju")]
 position = Vector2(712, 488)
-collision_layer = 0
-collision_mask = 6
-monitorable = false
-script = ExtResource("6_uaom7")
-trigger_mode = 1
-hit_kind = 1
-damage = 0
-tickle = 20.0
-repeat_interval = 10.0
-reaction_key = "feather"
-warn_time = 0.15
-active_time = 0.5
-cooldown_time = 1.5
 
-[node name="Feather_46_31" type="Area2D" parent="FloorObjects" unique_id=968378053 instance=ExtResource("5_3jnju")]
+[node name="Feather_46_31" parent="FloorObjects" unique_id=968378053 instance=ExtResource("5_3jnju")]
 position = Vector2(744, 504)
-collision_layer = 0
-collision_mask = 6
-monitorable = false
-script = ExtResource("6_uaom7")
-trigger_mode = 1
-hit_kind = 1
-damage = 0
-tickle = 20.0
-repeat_interval = 10.0
-reaction_key = "feather"
-warn_time = 0.15
-active_time = 0.5
-cooldown_time = 1.5
 
-[node name="Feather_29_32" type="Area2D" parent="FloorObjects" unique_id=936823112 instance=ExtResource("5_3jnju")]
+[node name="Feather_29_32" parent="FloorObjects" unique_id=936823112 instance=ExtResource("5_3jnju")]
 position = Vector2(472, 520)
-collision_layer = 0
-collision_mask = 6
-monitorable = false
-script = ExtResource("6_uaom7")
-trigger_mode = 1
-hit_kind = 1
-damage = 0
-tickle = 20.0
-repeat_interval = 10.0
-reaction_key = "feather"
-warn_time = 0.15
-active_time = 0.5
-cooldown_time = 1.5
 
-[node name="Feather_30_32" type="Area2D" parent="FloorObjects" unique_id=472997718 instance=ExtResource("5_3jnju")]
+[node name="Feather_30_32" parent="FloorObjects" unique_id=472997718 instance=ExtResource("5_3jnju")]
 position = Vector2(488, 520)
-collision_layer = 0
-collision_mask = 6
-monitorable = false
-script = ExtResource("6_uaom7")
-trigger_mode = 1
-hit_kind = 1
-damage = 0
-tickle = 20.0
-repeat_interval = 10.0
-reaction_key = "feather"
-warn_time = 0.15
-active_time = 0.5
-cooldown_time = 1.5
 
-[node name="Feather_31_32" type="Area2D" parent="FloorObjects" unique_id=794286256 instance=ExtResource("5_3jnju")]
+[node name="Feather_31_32" parent="FloorObjects" unique_id=794286256 instance=ExtResource("5_3jnju")]
 position = Vector2(504, 520)
-collision_layer = 0
-collision_mask = 6
-monitorable = false
-script = ExtResource("6_uaom7")
-trigger_mode = 1
-hit_kind = 1
-damage = 0
-tickle = 20.0
-repeat_interval = 10.0
-reaction_key = "feather"
-warn_time = 0.15
-active_time = 0.5
-cooldown_time = 1.5
 
-[node name="Feather_32_32" type="Area2D" parent="FloorObjects" unique_id=1706195466 instance=ExtResource("5_3jnju")]
+[node name="Feather_32_32" parent="FloorObjects" unique_id=1706195466 instance=ExtResource("5_3jnju")]
 position = Vector2(520, 520)
-collision_layer = 0
-collision_mask = 6
-monitorable = false
-script = ExtResource("6_uaom7")
-trigger_mode = 1
-hit_kind = 1
-damage = 0
-tickle = 20.0
-repeat_interval = 10.0
-reaction_key = "feather"
-warn_time = 0.15
-active_time = 0.5
-cooldown_time = 1.5
 
-[node name="Feather_33_32" type="Area2D" parent="FloorObjects" unique_id=346919163 instance=ExtResource("5_3jnju")]
+[node name="Feather_33_32" parent="FloorObjects" unique_id=346919163 instance=ExtResource("5_3jnju")]
 position = Vector2(536, 520)
-collision_layer = 0
-collision_mask = 6
-monitorable = false
-script = ExtResource("6_uaom7")
-trigger_mode = 1
-hit_kind = 1
-damage = 0
-tickle = 20.0
-repeat_interval = 10.0
-reaction_key = "feather"
-warn_time = 0.15
-active_time = 0.5
-cooldown_time = 1.5
 
-[node name="Feather_29_33" type="Area2D" parent="FloorObjects" unique_id=483334137 instance=ExtResource("5_3jnju")]
+[node name="Feather_29_33" parent="FloorObjects" unique_id=483334137 instance=ExtResource("5_3jnju")]
 position = Vector2(472, 536)
-collision_layer = 0
-collision_mask = 6
-monitorable = false
-script = ExtResource("6_uaom7")
-trigger_mode = 1
-hit_kind = 1
-damage = 0
-tickle = 20.0
-repeat_interval = 10.0
-reaction_key = "feather"
-warn_time = 0.15
-active_time = 0.5
-cooldown_time = 1.5
 
-[node name="Feather_30_33" type="Area2D" parent="FloorObjects" unique_id=1566174011 instance=ExtResource("5_3jnju")]
+[node name="Feather_30_33" parent="FloorObjects" unique_id=1566174011 instance=ExtResource("5_3jnju")]
 position = Vector2(488, 536)
-collision_layer = 0
-collision_mask = 6
-monitorable = false
-script = ExtResource("6_uaom7")
-trigger_mode = 1
-hit_kind = 1
-damage = 0
-tickle = 20.0
-repeat_interval = 10.0
-reaction_key = "feather"
-warn_time = 0.15
-active_time = 0.5
-cooldown_time = 1.5
 
-[node name="Feather_31_33" type="Area2D" parent="FloorObjects" unique_id=1191600646 instance=ExtResource("5_3jnju")]
+[node name="Feather_31_33" parent="FloorObjects" unique_id=1191600646 instance=ExtResource("5_3jnju")]
 position = Vector2(504, 536)
-collision_layer = 0
-collision_mask = 6
-monitorable = false
-script = ExtResource("6_uaom7")
-trigger_mode = 1
-hit_kind = 1
-damage = 0
-tickle = 20.0
-repeat_interval = 10.0
-reaction_key = "feather"
-warn_time = 0.15
-active_time = 0.5
-cooldown_time = 1.5
 
-[node name="Feather_32_33" type="Area2D" parent="FloorObjects" unique_id=766905313 instance=ExtResource("5_3jnju")]
+[node name="Feather_32_33" parent="FloorObjects" unique_id=766905313 instance=ExtResource("5_3jnju")]
 position = Vector2(520, 536)
-collision_layer = 0
-collision_mask = 6
-monitorable = false
-script = ExtResource("6_uaom7")
-trigger_mode = 1
-hit_kind = 1
-damage = 0
-tickle = 20.0
-repeat_interval = 10.0
-reaction_key = "feather"
-warn_time = 0.15
-active_time = 0.5
-cooldown_time = 1.5
 
-[node name="Feather_33_33" type="Area2D" parent="FloorObjects" unique_id=1985783011 instance=ExtResource("5_3jnju")]
+[node name="Feather_33_33" parent="FloorObjects" unique_id=1985783011 instance=ExtResource("5_3jnju")]
 position = Vector2(536, 536)
-collision_layer = 0
-collision_mask = 6
-monitorable = false
-script = ExtResource("6_uaom7")
-trigger_mode = 1
-hit_kind = 1
-damage = 0
-tickle = 20.0
-repeat_interval = 10.0
-reaction_key = "feather"
-warn_time = 0.15
-active_time = 0.5
-cooldown_time = 1.5
 
 [node name="Entities" type="Node2D" parent="." unique_id=732725934]
 y_sort_enabled = true
@@ -1107,693 +361,423 @@ y_sort_enabled = true
 tile_map_data = PackedByteArray("AAAEAAgAAAADAAYAAAAFAAgAAAADAAYAAAAGAAgAAAADAAYAAAAHAAgAAAADAAYAAAANAAgAAAADAAYAAAAOAAgAAAADAAYAAAAPAAgAAAADAAYAAAAQAAgAAAADAAYAAAARAAgAAAADAAYAAAASAAgAAAADAAYAAAAWAAkAAAABAAYAAAANAAwAAAABAAYAAAAOAAwAAAAAAAYAAAAPAAwAAAABAAYAAAAUAA8AAAAAAAYAAAAaAA8AAAABAAYAAAAIABMAAAADAAYAAAANABMAAAADAAYAAAAXABQAAAACAAYAAAAaABQAAAAAAAYAAAAdACkAAAABAAYAAAAqACoAAAACAAYAAAA=")
 tile_set = ExtResource("2_agff1")
 
-[node name="Torch_14_2" type="Node2D" parent="Entities" unique_id=1875419576 instance=ExtResource("9_yq8uh")]
+[node name="Torch_14_2" parent="Entities" unique_id=1875419576 instance=ExtResource("9_yq8uh")]
 position = Vector2(232, 48)
-script = ExtResource("10_4jr8h")
 lit = true
 
-[node name="Torch_30_2" type="Node2D" parent="Entities" unique_id=58416518 instance=ExtResource("9_yq8uh")]
+[node name="Torch_30_2" parent="Entities" unique_id=58416518 instance=ExtResource("9_yq8uh")]
 position = Vector2(488, 48)
-script = ExtResource("10_4jr8h")
 lit = true
 
-[node name="Torch_46_2" type="Node2D" parent="Entities" unique_id=190943505 instance=ExtResource("9_yq8uh")]
+[node name="Torch_46_2" parent="Entities" unique_id=190943505 instance=ExtResource("9_yq8uh")]
 position = Vector2(744, 48)
-script = ExtResource("10_4jr8h")
 lit = true
 
-[node name="Sign_7_4" type="Node2D" parent="Entities" unique_id=1328812525 instance=ExtResource("11_sv5hb")]
+[node name="Sign_7_4" parent="Entities" unique_id=1328812525 instance=ExtResource("11_sv5hb")]
 position = Vector2(120, 80)
-script = ExtResource("12_5lph8")
 dialogue = "sign_spikes"
 
-[node name="Item_31_4" type="Area2D" parent="Entities" unique_id=2052271419 instance=ExtResource("13_7sk2x")]
+[node name="Item_31_4" parent="Entities" unique_id=2052271419 instance=ExtResource("13_7sk2x")]
 position = Vector2(504, 76)
-collision_layer = 0
-collision_mask = 2
-monitorable = false
-script = ExtResource("14_s6xif")
 item = ExtResource("15_4egtg")
 
-[node name="Torch_7_7" type="Node2D" parent="Entities" unique_id=1981239348 instance=ExtResource("9_yq8uh")]
+[node name="Torch_7_7" parent="Entities" unique_id=1981239348 instance=ExtResource("9_yq8uh")]
 position = Vector2(120, 128)
-script = ExtResource("10_4jr8h")
 lit = true
 
-[node name="Gate_10_7" type="StaticBody2D" parent="Entities" unique_id=964671059 instance=ExtResource("16_smqw2")]
+[node name="Gate_10_7" parent="Entities" unique_id=964671059 instance=ExtResource("16_smqw2")]
 position = Vector2(168, 128)
-script = ExtResource("17_ordu6")
 group_name = "gate2"
 
-[node name="Torch_15_7" type="Node2D" parent="Entities" unique_id=333592480 instance=ExtResource("9_yq8uh")]
+[node name="Torch_15_7" parent="Entities" unique_id=333592480 instance=ExtResource("9_yq8uh")]
 position = Vector2(248, 128)
-script = ExtResource("10_4jr8h")
 lit = true
 
-[node name="Torch_17_7" type="Node2D" parent="Entities" unique_id=2012699767 instance=ExtResource("9_yq8uh")]
+[node name="Torch_17_7" parent="Entities" unique_id=2012699767 instance=ExtResource("9_yq8uh")]
 position = Vector2(280, 128)
-script = ExtResource("10_4jr8h")
 target = "secret1"
 
-[node name="Torch_48_7" type="Node2D" parent="Entities" unique_id=120958039 instance=ExtResource("9_yq8uh")]
+[node name="Torch_48_7" parent="Entities" unique_id=120958039 instance=ExtResource("9_yq8uh")]
 position = Vector2(776, 128)
-script = ExtResource("10_4jr8h")
 lit = true
 
-[node name="Door_52_7" type="StaticBody2D" parent="Entities" unique_id=1097472182 instance=ExtResource("18_6404w")]
+[node name="Door_52_7" parent="Entities" unique_id=1097472182 instance=ExtResource("18_6404w")]
 position = Vector2(840, 128)
-script = ExtResource("19_ly7f1")
 required_key = ExtResource("20_5qv5b")
 
-[node name="Torch_56_7" type="Node2D" parent="Entities" unique_id=1021719619 instance=ExtResource("9_yq8uh")]
+[node name="Torch_56_7" parent="Entities" unique_id=1021719619 instance=ExtResource("9_yq8uh")]
 position = Vector2(904, 128)
-script = ExtResource("10_4jr8h")
 lit = true
 
-[node name="Torch_23_8" type="Node2D" parent="Entities" unique_id=918180308 instance=ExtResource("9_yq8uh")]
+[node name="Torch_23_8" parent="Entities" unique_id=918180308 instance=ExtResource("9_yq8uh")]
 position = Vector2(376, 144)
-script = ExtResource("10_4jr8h")
 lit = true
 
-[node name="Chest_57_9" type="StaticBody2D" parent="Entities" unique_id=425472951 instance=ExtResource("21_q2dkg")]
+[node name="Chest_57_9" parent="Entities" unique_id=425472951 instance=ExtResource("21_q2dkg")]
 position = Vector2(920, 160)
-script = ExtResource("22_3h2rk")
 item = ExtResource("23_t8fka")
 amount = 10
 
-[node name="Chest_52_10" type="StaticBody2D" parent="Entities" unique_id=2025064359 instance=ExtResource("21_q2dkg")]
+[node name="Chest_52_10" parent="Entities" unique_id=2025064359 instance=ExtResource("21_q2dkg")]
 position = Vector2(840, 176)
-script = ExtResource("22_3h2rk")
 item = ExtResource("24_7iifi")
 dialogue = "got_gold_key"
 
-[node name="Sign_23_11" type="Node2D" parent="Entities" unique_id=1565904110 instance=ExtResource("11_sv5hb")]
+[node name="Sign_23_11" parent="Entities" unique_id=1565904110 instance=ExtResource("11_sv5hb")]
 position = Vector2(376, 192)
-script = ExtResource("12_5lph8")
 dialogue = "sign_knight_note"
 
-[node name="Letter_14_12" type="Node2D" parent="Entities" unique_id=703948611 instance=ExtResource("25_lci6e")]
+[node name="Letter_14_12" parent="Entities" unique_id=703948611 instance=ExtResource("25_lci6e")]
 position = Vector2(232, 208.5)
-script = ExtResource("12_5lph8")
 dialogue = "letter"
 
-[node name="Secret_19_13" type="Node2D" parent="Entities" unique_id=1525599938 instance=ExtResource("26_icpo6")]
+[node name="Secret_19_13" parent="Entities" unique_id=1525599938 instance=ExtResource("26_icpo6")]
 position = Vector2(312, 224)
-script = ExtResource("27_wj3jk")
 
-[node name="Item_26_14" type="Area2D" parent="Entities" unique_id=598662402 instance=ExtResource("13_7sk2x")]
+[node name="Item_26_14" parent="Entities" unique_id=598662402 instance=ExtResource("13_7sk2x")]
 position = Vector2(424, 236)
-collision_layer = 0
-collision_mask = 2
-monitorable = false
-script = ExtResource("14_s6xif")
 item = ExtResource("28_uktui")
 
-[node name="Lever_5_15" type="Node2D" parent="Entities" unique_id=1103269761 instance=ExtResource("29_iakd1")]
+[node name="Lever_5_15" parent="Entities" unique_id=1103269761 instance=ExtResource("29_iakd1")]
 position = Vector2(88, 256)
-script = ExtResource("30_2d0gl")
 target = "gate2"
 
-[node name="Slime_48_15" type="CharacterBody2D" parent="Entities" unique_id=971431982 instance=ExtResource("31_ltdhh")]
+[node name="Slime_48_15" parent="Entities" unique_id=971431982 instance=ExtResource("31_ltdhh")]
 position = Vector2(776, 252)
-collision_layer = 4
-collision_mask = 5
-motion_mode = 1
-script = ExtResource("32_evndt")
-stats = ExtResource("33_5r4r7")
-faction = 3
-hurt_invuln_time = 0.1
-flash_color = Color(1, 1, 1, 1)
 
-[node name="Slime_56_15" type="CharacterBody2D" parent="Entities" unique_id=1298964390 instance=ExtResource("31_ltdhh")]
+[node name="Slime_56_15" parent="Entities" unique_id=1298964390 instance=ExtResource("31_ltdhh")]
 position = Vector2(904, 252)
-collision_layer = 4
-collision_mask = 5
-motion_mode = 1
-script = ExtResource("32_evndt")
-stats = ExtResource("33_5r4r7")
-faction = 3
-hurt_invuln_time = 0.1
-flash_color = Color(1, 1, 1, 1)
 
-[node name="Lever_47_16" type="Node2D" parent="Entities" unique_id=95567114 instance=ExtResource("29_iakd1")]
+[node name="Lever_47_16" parent="Entities" unique_id=95567114 instance=ExtResource("29_iakd1")]
 position = Vector2(760, 272)
-script = ExtResource("30_2d0gl")
 target = "belt1"
 
-[node name="Door_10_18" type="StaticBody2D" parent="Entities" unique_id=2000607706 instance=ExtResource("18_6404w")]
+[node name="Door_10_18" parent="Entities" unique_id=2000607706 instance=ExtResource("18_6404w")]
 position = Vector2(168, 304)
-script = ExtResource("19_ly7f1")
 
-[node name="Torch_13_18" type="Node2D" parent="Entities" unique_id=540547206 instance=ExtResource("9_yq8uh")]
+[node name="Torch_13_18" parent="Entities" unique_id=540547206 instance=ExtResource("9_yq8uh")]
 position = Vector2(216, 304)
-script = ExtResource("10_4jr8h")
 lit = true
 
-[node name="Torch_25_18" type="Node2D" parent="Entities" unique_id=1119115450 instance=ExtResource("9_yq8uh")]
+[node name="Torch_25_18" parent="Entities" unique_id=1119115450 instance=ExtResource("9_yq8uh")]
 position = Vector2(408, 304)
-script = ExtResource("10_4jr8h")
 lit = true
 
-[node name="Torch_37_18" type="Node2D" parent="Entities" unique_id=1715055652 instance=ExtResource("9_yq8uh")]
+[node name="Torch_37_18" parent="Entities" unique_id=1715055652 instance=ExtResource("9_yq8uh")]
 position = Vector2(600, 304)
-script = ExtResource("10_4jr8h")
 lit = true
 
-[node name="Torch_49_18" type="Node2D" parent="Entities" unique_id=1965070360 instance=ExtResource("9_yq8uh")]
+[node name="Torch_49_18" parent="Entities" unique_id=1965070360 instance=ExtResource("9_yq8uh")]
 position = Vector2(792, 304)
-script = ExtResource("10_4jr8h")
 lit = true
 
-[node name="Door_52_18" type="StaticBody2D" parent="Entities" unique_id=377034456 instance=ExtResource("18_6404w")]
+[node name="Door_52_18" parent="Entities" unique_id=377034456 instance=ExtResource("18_6404w")]
 position = Vector2(840, 304)
-script = ExtResource("19_ly7f1")
 required_key = ExtResource("24_7iifi")
 
-[node name="Torch_55_18" type="Node2D" parent="Entities" unique_id=765330948 instance=ExtResource("9_yq8uh")]
+[node name="Torch_55_18" parent="Entities" unique_id=765330948 instance=ExtResource("9_yq8uh")]
 position = Vector2(888, 304)
-script = ExtResource("10_4jr8h")
 lit = true
 
-[node name="Barrel_5_20" type="StaticBody2D" parent="Entities" unique_id=1476491925 instance=ExtResource("34_pst4k")]
+[node name="Barrel_5_20" parent="Entities" unique_id=1476491925 instance=ExtResource("34_pst4k")]
 position = Vector2(88, 336)
-collision_layer = 33
-collision_mask = 0
-script = ExtResource("35_pc7qq")
 drops = Array[ExtResource("36_jhfqb")]([SubResource("d_heart"), SubResource("d_coin"), SubResource("d_mint")])
 
-[node name="Barrel_6_20" type="StaticBody2D" parent="Entities" unique_id=1238595150 instance=ExtResource("34_pst4k")]
+[node name="Barrel_6_20" parent="Entities" unique_id=1238595150 instance=ExtResource("34_pst4k")]
 position = Vector2(104, 336)
-collision_layer = 33
-collision_mask = 0
-script = ExtResource("35_pc7qq")
 drops = Array[ExtResource("36_jhfqb")]([SubResource("d_heart"), SubResource("d_coin"), SubResource("d_mint")])
 
-[node name="Barrel_16_20" type="StaticBody2D" parent="Entities" unique_id=765504473 instance=ExtResource("34_pst4k")]
+[node name="Barrel_16_20" parent="Entities" unique_id=765504473 instance=ExtResource("34_pst4k")]
 position = Vector2(264, 336)
-collision_layer = 33
-collision_mask = 0
-script = ExtResource("35_pc7qq")
 drops = Array[ExtResource("36_jhfqb")]([SubResource("d_heart"), SubResource("d_coin"), SubResource("d_mint")])
 
-[node name="Barrel_17_20" type="StaticBody2D" parent="Entities" unique_id=152877928 instance=ExtResource("34_pst4k")]
+[node name="Barrel_17_20" parent="Entities" unique_id=152877928 instance=ExtResource("34_pst4k")]
 position = Vector2(280, 336)
-collision_layer = 33
-collision_mask = 0
-script = ExtResource("35_pc7qq")
 drops = Array[ExtResource("36_jhfqb")]([SubResource("d_heart"), SubResource("d_coin"), SubResource("d_mint")])
 
-[node name="Chest_38_20" type="StaticBody2D" parent="Entities" unique_id=746651684 instance=ExtResource("21_q2dkg")]
+[node name="Chest_38_20" parent="Entities" unique_id=746651684 instance=ExtResource("21_q2dkg")]
 position = Vector2(616, 336)
-script = ExtResource("22_3h2rk")
 item = ExtResource("20_5qv5b")
 dialogue = "got_bronze_key"
 
-[node name="Barrel_5_21" type="StaticBody2D" parent="Entities" unique_id=1661386359 instance=ExtResource("34_pst4k")]
+[node name="Barrel_5_21" parent="Entities" unique_id=1661386359 instance=ExtResource("34_pst4k")]
 position = Vector2(88, 352)
-collision_layer = 33
-collision_mask = 0
-script = ExtResource("35_pc7qq")
 drops = Array[ExtResource("36_jhfqb")]([SubResource("d_heart"), SubResource("d_coin"), SubResource("d_mint")])
 
-[node name="Barrel_17_21" type="StaticBody2D" parent="Entities" unique_id=507564010 instance=ExtResource("34_pst4k")]
+[node name="Barrel_17_21" parent="Entities" unique_id=507564010 instance=ExtResource("34_pst4k")]
 position = Vector2(280, 352)
-collision_layer = 33
-collision_mask = 0
-script = ExtResource("35_pc7qq")
 drops = Array[ExtResource("36_jhfqb")]([SubResource("d_heart"), SubResource("d_coin"), SubResource("d_mint")])
 
-[node name="Slime_27_22" type="CharacterBody2D" parent="Entities" unique_id=666461949 instance=ExtResource("31_ltdhh")]
+[node name="Slime_27_22" parent="Entities" unique_id=666461949 instance=ExtResource("31_ltdhh")]
 position = Vector2(440, 364)
-collision_layer = 4
-collision_mask = 5
-motion_mode = 1
-script = ExtResource("32_evndt")
-stats = ExtResource("33_5r4r7")
-faction = 3
-hurt_invuln_time = 0.1
-flash_color = Color(1, 1, 1, 1)
 
-[node name="Gate_20_23" type="StaticBody2D" parent="Entities" unique_id=41137584 instance=ExtResource("16_smqw2")]
+[node name="Gate_20_23" parent="Entities" unique_id=41137584 instance=ExtResource("16_smqw2")]
 position = Vector2(328, 384)
-script = ExtResource("17_ordu6")
 group_name = "arena_guard"
 is_open = true
 
-[node name="Slime_35_23" type="CharacterBody2D" parent="Entities" unique_id=1426554699 instance=ExtResource("31_ltdhh")]
+[node name="Slime_35_23" parent="Entities" unique_id=1426554699 instance=ExtResource("31_ltdhh")]
 position = Vector2(568, 380)
-collision_layer = 4
-collision_mask = 5
-motion_mode = 1
-script = ExtResource("32_evndt")
-stats = ExtResource("33_5r4r7")
-faction = 3
-hurt_invuln_time = 0.1
-flash_color = Color(1, 1, 1, 1)
 
-[node name="Sign_8_24" type="Node2D" parent="Entities" unique_id=222348310 instance=ExtResource("11_sv5hb")]
+[node name="Sign_8_24" parent="Entities" unique_id=222348310 instance=ExtResource("11_sv5hb")]
 position = Vector2(136, 400)
-script = ExtResource("12_5lph8")
 dialogue = "sign_storage"
 
-[node name="Item_15_24" type="Area2D" parent="Entities" unique_id=2009577396 instance=ExtResource("13_7sk2x")]
+[node name="Item_15_24" parent="Entities" unique_id=2009577396 instance=ExtResource("13_7sk2x")]
 position = Vector2(248, 396)
-collision_layer = 0
-collision_mask = 2
-monitorable = false
-script = ExtResource("14_s6xif")
 item = ExtResource("28_uktui")
 
-[node name="Gate_20_24" type="StaticBody2D" parent="Entities" unique_id=1932991827 instance=ExtResource("16_smqw2")]
+[node name="Gate_20_24" parent="Entities" unique_id=1932991827 instance=ExtResource("16_smqw2")]
 position = Vector2(328, 400)
-script = ExtResource("17_ordu6")
 group_name = "arena_guard"
 is_open = true
 
-[node name="Slime_12_25" type="CharacterBody2D" parent="Entities" unique_id=2081775707 instance=ExtResource("31_ltdhh")]
+[node name="Slime_12_25" parent="Entities" unique_id=2081775707 instance=ExtResource("31_ltdhh")]
 position = Vector2(200, 412)
-collision_layer = 4
-collision_mask = 5
-motion_mode = 1
-script = ExtResource("32_evndt")
-stats = ExtResource("33_5r4r7")
-faction = 3
-hurt_invuln_time = 0.1
-flash_color = Color(1, 1, 1, 1)
 
-[node name="Gate_20_25" type="StaticBody2D" parent="Entities" unique_id=1838034693 instance=ExtResource("16_smqw2")]
+[node name="Gate_20_25" parent="Entities" unique_id=1838034693 instance=ExtResource("16_smqw2")]
 position = Vector2(328, 416)
-script = ExtResource("17_ordu6")
 group_name = "arena_guard"
 is_open = true
 
-[node name="Slime_31_26" type="CharacterBody2D" parent="Entities" unique_id=1057953444 instance=ExtResource("31_ltdhh")]
+[node name="Slime_31_26" parent="Entities" unique_id=1057953444 instance=ExtResource("31_ltdhh")]
 position = Vector2(504, 428)
-collision_layer = 4
-collision_mask = 5
-motion_mode = 1
-script = ExtResource("32_evndt")
-stats = ExtResource("33_5r4r7")
-faction = 3
-hurt_invuln_time = 0.1
-flash_color = Color(1, 1, 1, 1)
 
-[node name="Barrel_17_27" type="StaticBody2D" parent="Entities" unique_id=1418180731 instance=ExtResource("34_pst4k")]
+[node name="Barrel_17_27" parent="Entities" unique_id=1418180731 instance=ExtResource("34_pst4k")]
 position = Vector2(280, 448)
-collision_layer = 33
-collision_mask = 0
-script = ExtResource("35_pc7qq")
 drops = Array[ExtResource("36_jhfqb")]([SubResource("d_heart"), SubResource("d_coin"), SubResource("d_mint")])
 
-[node name="Barrel_5_28" type="StaticBody2D" parent="Entities" unique_id=399809513 instance=ExtResource("34_pst4k")]
+[node name="Barrel_5_28" parent="Entities" unique_id=399809513 instance=ExtResource("34_pst4k")]
 position = Vector2(88, 464)
-collision_layer = 33
-collision_mask = 0
-script = ExtResource("35_pc7qq")
 drops = Array[ExtResource("36_jhfqb")]([SubResource("d_heart"), SubResource("d_coin"), SubResource("d_mint")])
 
-[node name="Barrel_6_28" type="StaticBody2D" parent="Entities" unique_id=510671045 instance=ExtResource("34_pst4k")]
+[node name="Barrel_6_28" parent="Entities" unique_id=510671045 instance=ExtResource("34_pst4k")]
 position = Vector2(104, 464)
-collision_layer = 33
-collision_mask = 0
-script = ExtResource("35_pc7qq")
 drops = Array[ExtResource("36_jhfqb")]([SubResource("d_heart"), SubResource("d_coin"), SubResource("d_mint")])
 
-[node name="Barrel_16_28" type="StaticBody2D" parent="Entities" unique_id=1941172891 instance=ExtResource("34_pst4k")]
+[node name="Barrel_16_28" parent="Entities" unique_id=1941172891 instance=ExtResource("34_pst4k")]
 position = Vector2(264, 464)
-collision_layer = 33
-collision_mask = 0
-script = ExtResource("35_pc7qq")
 drops = Array[ExtResource("36_jhfqb")]([SubResource("d_heart"), SubResource("d_coin"), SubResource("d_mint")])
 
-[node name="Sign_28_28" type="Node2D" parent="Entities" unique_id=598581836 instance=ExtResource("11_sv5hb")]
+[node name="Sign_28_28" parent="Entities" unique_id=598581836 instance=ExtResource("11_sv5hb")]
 position = Vector2(456, 464)
-script = ExtResource("12_5lph8")
 dialogue = "sign_guard"
 
-[node name="Item_39_28" type="Area2D" parent="Entities" unique_id=2041626832 instance=ExtResource("13_7sk2x")]
+[node name="Item_39_28" parent="Entities" unique_id=2041626832 instance=ExtResource("13_7sk2x")]
 position = Vector2(632, 460)
-collision_layer = 0
-collision_mask = 2
-monitorable = false
-script = ExtResource("14_s6xif")
 item = ExtResource("15_4egtg")
 
-[node name="Barrel_43_28" type="StaticBody2D" parent="Entities" unique_id=2088806058 instance=ExtResource("34_pst4k")]
+[node name="Barrel_43_28" parent="Entities" unique_id=2088806058 instance=ExtResource("34_pst4k")]
 position = Vector2(696, 464)
-collision_layer = 33
-collision_mask = 0
-script = ExtResource("35_pc7qq")
 drops = Array[ExtResource("36_jhfqb")]([SubResource("d_heart"), SubResource("d_coin"), SubResource("d_mint")])
 
-[node name="Chest_46_28" type="StaticBody2D" parent="Entities" unique_id=1603104325 instance=ExtResource("21_q2dkg")]
+[node name="Chest_46_28" parent="Entities" unique_id=1603104325 instance=ExtResource("21_q2dkg")]
 position = Vector2(744, 464)
-script = ExtResource("22_3h2rk")
 item = ExtResource("28_uktui")
 amount = 2
 
-[node name="Item_47_29" type="Area2D" parent="Entities" unique_id=628009301 instance=ExtResource("13_7sk2x")]
+[node name="Item_47_29" parent="Entities" unique_id=628009301 instance=ExtResource("13_7sk2x")]
 position = Vector2(760, 476)
-collision_layer = 0
-collision_mask = 2
-monitorable = false
-script = ExtResource("14_s6xif")
 item = ExtResource("28_uktui")
 
-[node name="Gate_31_30" type="StaticBody2D" parent="Entities" unique_id=1611808025 instance=ExtResource("16_smqw2")]
+[node name="Gate_31_30" parent="Entities" unique_id=1611808025 instance=ExtResource("16_smqw2")]
 position = Vector2(504, 496)
-script = ExtResource("17_ordu6")
 group_name = "arena_guard"
 is_open = true
 
-[node name="Slime_45_30" type="CharacterBody2D" parent="Entities" unique_id=1645023432 instance=ExtResource("31_ltdhh")]
+[node name="Slime_45_30" parent="Entities" unique_id=1645023432 instance=ExtResource("31_ltdhh")]
 position = Vector2(728, 492)
-collision_layer = 4
-collision_mask = 5
-motion_mode = 1
-script = ExtResource("32_evndt")
-stats = ExtResource("33_5r4r7")
-faction = 3
-hurt_invuln_time = 0.1
-flash_color = Color(1, 1, 1, 1)
 
-[node name="Torch_18_31" type="Node2D" parent="Entities" unique_id=5825835 instance=ExtResource("9_yq8uh")]
+[node name="Torch_18_31" parent="Entities" unique_id=5825835 instance=ExtResource("9_yq8uh")]
 position = Vector2(296, 512)
-script = ExtResource("10_4jr8h")
 
-[node name="Torch_24_31" type="Node2D" parent="Entities" unique_id=755894782 instance=ExtResource("9_yq8uh")]
+[node name="Torch_24_31" parent="Entities" unique_id=755894782 instance=ExtResource("9_yq8uh")]
 position = Vector2(392, 512)
-script = ExtResource("10_4jr8h")
 
-[node name="Door_31_31" type="StaticBody2D" parent="Entities" unique_id=1915679651 instance=ExtResource("18_6404w")]
+[node name="Door_31_31" parent="Entities" unique_id=1915679651 instance=ExtResource("18_6404w")]
 position = Vector2(504, 512)
-script = ExtResource("19_ly7f1")
 
-[node name="Torch_38_31" type="Node2D" parent="Entities" unique_id=1643157968 instance=ExtResource("9_yq8uh")]
+[node name="Torch_38_31" parent="Entities" unique_id=1643157968 instance=ExtResource("9_yq8uh")]
 position = Vector2(616, 512)
-script = ExtResource("10_4jr8h")
 
-[node name="Barrel_47_31" type="StaticBody2D" parent="Entities" unique_id=1656794990 instance=ExtResource("34_pst4k")]
+[node name="Barrel_47_31" parent="Entities" unique_id=1656794990 instance=ExtResource("34_pst4k")]
 position = Vector2(760, 512)
-collision_layer = 33
-collision_mask = 0
-script = ExtResource("35_pc7qq")
 drops = Array[ExtResource("36_jhfqb")]([SubResource("d_heart"), SubResource("d_coin"), SubResource("d_mint")])
 
-[node name="Barrel_14_32" type="StaticBody2D" parent="Entities" unique_id=1632812004 instance=ExtResource("34_pst4k")]
+[node name="Barrel_14_32" parent="Entities" unique_id=1632812004 instance=ExtResource("34_pst4k")]
 position = Vector2(232, 528)
-collision_layer = 33
-collision_mask = 0
-script = ExtResource("35_pc7qq")
 drops = Array[ExtResource("36_jhfqb")]([SubResource("d_heart"), SubResource("d_coin"), SubResource("d_mint")])
 
-[node name="Barrel_15_32" type="StaticBody2D" parent="Entities" unique_id=191874510 instance=ExtResource("34_pst4k")]
+[node name="Barrel_15_32" parent="Entities" unique_id=191874510 instance=ExtResource("34_pst4k")]
 position = Vector2(248, 528)
-collision_layer = 33
-collision_mask = 0
-script = ExtResource("35_pc7qq")
 drops = Array[ExtResource("36_jhfqb")]([SubResource("d_heart"), SubResource("d_coin"), SubResource("d_mint")])
 
-[node name="Item_16_33" type="Area2D" parent="Entities" unique_id=975382039 instance=ExtResource("13_7sk2x")]
+[node name="Item_16_33" parent="Entities" unique_id=975382039 instance=ExtResource("13_7sk2x")]
 position = Vector2(264, 540)
-collision_layer = 0
-collision_mask = 2
-monitorable = false
-script = ExtResource("14_s6xif")
 item = ExtResource("23_t8fka")
 
-[node name="Sign_36_33" type="Node2D" parent="Entities" unique_id=1089871511 instance=ExtResource("11_sv5hb")]
+[node name="Sign_36_33" parent="Entities" unique_id=1089871511 instance=ExtResource("11_sv5hb")]
 position = Vector2(584, 544)
-script = ExtResource("12_5lph8")
 dialogue = "sign_corridor"
 
-[node name="Barrel_14_34" type="StaticBody2D" parent="Entities" unique_id=462381832 instance=ExtResource("34_pst4k")]
+[node name="Barrel_14_34" parent="Entities" unique_id=462381832 instance=ExtResource("34_pst4k")]
 position = Vector2(232, 560)
-collision_layer = 33
-collision_mask = 0
-script = ExtResource("35_pc7qq")
 drops = Array[ExtResource("36_jhfqb")]([SubResource("d_heart"), SubResource("d_coin"), SubResource("d_mint")])
 
-[node name="Torch_16_36" type="Node2D" parent="Entities" unique_id=1318343303 instance=ExtResource("9_yq8uh")]
+[node name="Torch_16_36" parent="Entities" unique_id=1318343303 instance=ExtResource("9_yq8uh")]
 position = Vector2(264, 592)
-script = ExtResource("10_4jr8h")
 lit = true
 
-[node name="Torch_23_36" type="Node2D" parent="Entities" unique_id=1022797254 instance=ExtResource("9_yq8uh")]
+[node name="Torch_23_36" parent="Entities" unique_id=1022797254 instance=ExtResource("9_yq8uh")]
 position = Vector2(376, 592)
-script = ExtResource("10_4jr8h")
 lit = true
 
-[node name="Gate_31_36" type="StaticBody2D" parent="Entities" unique_id=163370290 instance=ExtResource("16_smqw2")]
+[node name="Gate_31_36" parent="Entities" unique_id=163370290 instance=ExtResource("16_smqw2")]
 position = Vector2(504, 592)
-script = ExtResource("17_ordu6")
 
-[node name="Torch_33_36" type="Node2D" parent="Entities" unique_id=791588788 instance=ExtResource("9_yq8uh")]
+[node name="Torch_33_36" parent="Entities" unique_id=791588788 instance=ExtResource("9_yq8uh")]
 position = Vector2(536, 592)
-script = ExtResource("10_4jr8h")
 lit = true
 
-[node name="Torch_40_36" type="Node2D" parent="Entities" unique_id=93633468 instance=ExtResource("9_yq8uh")]
+[node name="Torch_40_36" parent="Entities" unique_id=93633468 instance=ExtResource("9_yq8uh")]
 position = Vector2(648, 592)
-script = ExtResource("10_4jr8h")
 lit = true
 
-[node name="Door_44_36" type="StaticBody2D" parent="Entities" unique_id=2138616526 instance=ExtResource("18_6404w")]
+[node name="Door_44_36" parent="Entities" unique_id=2138616526 instance=ExtResource("18_6404w")]
 position = Vector2(712, 592)
-script = ExtResource("19_ly7f1")
 
-[node name="Torch_48_36" type="Node2D" parent="Entities" unique_id=604049356 instance=ExtResource("9_yq8uh")]
+[node name="Torch_48_36" parent="Entities" unique_id=604049356 instance=ExtResource("9_yq8uh")]
 position = Vector2(776, 592)
-script = ExtResource("10_4jr8h")
 lit = true
 
-[node name="Rack_38_37" type="StaticBody2D" parent="Entities" unique_id=2081464104 instance=ExtResource("37_vvpkx")]
+[node name="Rack_38_37" parent="Entities" unique_id=2081464104 instance=ExtResource("37_vvpkx")]
 position = Vector2(616, 608)
-collision_layer = 33
-collision_mask = 0
-script = ExtResource("35_pc7qq")
 drops = Array[ExtResource("36_jhfqb")]([SubResource("Resource_ydf0h"), SubResource("Resource_muuti"), SubResource("Resource_cmdnb")])
 
-[node name="Rack_40_37" type="StaticBody2D" parent="Entities" unique_id=1928230478 instance=ExtResource("37_vvpkx")]
+[node name="Rack_40_37" parent="Entities" unique_id=1928230478 instance=ExtResource("37_vvpkx")]
 position = Vector2(648, 608)
-collision_layer = 33
-collision_mask = 0
-script = ExtResource("35_pc7qq")
 drops = Array[ExtResource("36_jhfqb")]([SubResource("Resource_ydf0h"), SubResource("Resource_muuti"), SubResource("Resource_cmdnb")])
 
-[node name="Rack_42_37" type="StaticBody2D" parent="Entities" unique_id=102595073 instance=ExtResource("37_vvpkx")]
+[node name="Rack_42_37" parent="Entities" unique_id=102595073 instance=ExtResource("37_vvpkx")]
 position = Vector2(680, 608)
-collision_layer = 33
-collision_mask = 0
-script = ExtResource("35_pc7qq")
 drops = Array[ExtResource("36_jhfqb")]([SubResource("Resource_ydf0h"), SubResource("Resource_muuti"), SubResource("Resource_cmdnb")])
 
-[node name="Rack_46_37" type="StaticBody2D" parent="Entities" unique_id=1187700100 instance=ExtResource("37_vvpkx")]
+[node name="Rack_46_37" parent="Entities" unique_id=1187700100 instance=ExtResource("37_vvpkx")]
 position = Vector2(744, 608)
-collision_layer = 33
-collision_mask = 0
-script = ExtResource("35_pc7qq")
 drops = Array[ExtResource("36_jhfqb")]([SubResource("Resource_ydf0h"), SubResource("Resource_muuti"), SubResource("Resource_cmdnb")])
 
-[node name="Rack_48_37" type="StaticBody2D" parent="Entities" unique_id=1403132195 instance=ExtResource("37_vvpkx")]
+[node name="Rack_48_37" parent="Entities" unique_id=1403132195 instance=ExtResource("37_vvpkx")]
 position = Vector2(776, 608)
-collision_layer = 33
-collision_mask = 0
-script = ExtResource("35_pc7qq")
 drops = Array[ExtResource("36_jhfqb")]([SubResource("Resource_ydf0h"), SubResource("Resource_muuti"), SubResource("Resource_cmdnb")])
 
-[node name="Rack_50_37" type="StaticBody2D" parent="Entities" unique_id=1089121434 instance=ExtResource("37_vvpkx")]
+[node name="Rack_50_37" parent="Entities" unique_id=1089121434 instance=ExtResource("37_vvpkx")]
 position = Vector2(808, 608)
-collision_layer = 33
-collision_mask = 0
-script = ExtResource("35_pc7qq")
 drops = Array[ExtResource("36_jhfqb")]([SubResource("Resource_ydf0h"), SubResource("Resource_muuti"), SubResource("Resource_cmdnb")])
 
-[node name="Item_12_38" type="Area2D" parent="Entities" unique_id=2111650118 instance=ExtResource("13_7sk2x")]
+[node name="Item_12_38" parent="Entities" unique_id=2111650118 instance=ExtResource("13_7sk2x")]
 position = Vector2(200, 620)
-collision_layer = 0
-collision_mask = 2
-monitorable = false
-script = ExtResource("14_s6xif")
 item = ExtResource("28_uktui")
 
-[node name="Lever_16_38" type="Node2D" parent="Entities" unique_id=644524300 instance=ExtResource("29_iakd1")]
+[node name="Lever_16_38" parent="Entities" unique_id=644524300 instance=ExtResource("29_iakd1")]
 position = Vector2(264, 624)
-script = ExtResource("30_2d0gl")
 target = "pB"
 on = true
 
-[node name="Sign_22_38" type="Node2D" parent="Entities" unique_id=1605894453 instance=ExtResource("11_sv5hb")]
+[node name="Sign_22_38" parent="Entities" unique_id=1605894453 instance=ExtResource("11_sv5hb")]
 position = Vector2(360, 624)
-script = ExtResource("12_5lph8")
 dialogue = "sign_levers"
 
-[node name="Sign_29_38" type="Node2D" parent="Entities" unique_id=1248586031 instance=ExtResource("11_sv5hb")]
+[node name="Sign_29_38" parent="Entities" unique_id=1248586031 instance=ExtResource("11_sv5hb")]
 position = Vector2(472, 624)
-script = ExtResource("12_5lph8")
 dialogue = "sign_cell"
 
-[node name="Slime_41_39" type="CharacterBody2D" parent="Entities" unique_id=2119145862 instance=ExtResource("31_ltdhh")]
+[node name="Slime_41_39" parent="Entities" unique_id=2119145862 instance=ExtResource("31_ltdhh")]
 position = Vector2(664, 636)
-collision_layer = 4
-collision_mask = 5
-motion_mode = 1
-script = ExtResource("32_evndt")
-stats = ExtResource("33_5r4r7")
-faction = 3
-hurt_invuln_time = 0.1
-flash_color = Color(1, 1, 1, 1)
 
-[node name="Sign_47_39" type="Node2D" parent="Entities" unique_id=883308031 instance=ExtResource("11_sv5hb")]
+[node name="Sign_47_39" parent="Entities" unique_id=883308031 instance=ExtResource("11_sv5hb")]
 position = Vector2(760, 640)
-script = ExtResource("12_5lph8")
 dialogue = "sign_armory"
 
-[node name="Gate_14_40" type="StaticBody2D" parent="Entities" unique_id=1595202742 instance=ExtResource("16_smqw2")]
+[node name="Gate_14_40" parent="Entities" unique_id=1595202742 instance=ExtResource("16_smqw2")]
 position = Vector2(232, 656)
-script = ExtResource("17_ordu6")
 group_name = "pB"
 is_open = true
 inverted = true
 
-[node name="Gate_18_40" type="StaticBody2D" parent="Entities" unique_id=173659997 instance=ExtResource("16_smqw2")]
+[node name="Gate_18_40" parent="Entities" unique_id=173659997 instance=ExtResource("16_smqw2")]
 position = Vector2(296, 656)
-script = ExtResource("17_ordu6")
 group_name = "pA"
 
-[node name="Lever_24_40" type="Node2D" parent="Entities" unique_id=1152088337 instance=ExtResource("29_iakd1")]
+[node name="Lever_24_40" parent="Entities" unique_id=1152088337 instance=ExtResource("29_iakd1")]
 position = Vector2(392, 656)
-script = ExtResource("30_2d0gl")
 target = "pA,pB"
 
-[node name="Player_31_40" type="CharacterBody2D" parent="Entities" unique_id=1573113520 instance=ExtResource("38_3ua0n")]
+[node name="Player_31_40" parent="Entities" unique_id=1573113520 instance=ExtResource("38_3ua0n")]
 position = Vector2(504, 652)
-collision_layer = 2
-motion_mode = 1
-script = ExtResource("39_lk8k3")
 channel_tiers = PackedFloat32Array(0.6, 1.2, 2)
-faction = 1
 
-[node name="Slime_47_40" type="CharacterBody2D" parent="Entities" unique_id=943624356 instance=ExtResource("31_ltdhh")]
+[node name="Slime_47_40" parent="Entities" unique_id=943624356 instance=ExtResource("31_ltdhh")]
 position = Vector2(760, 652)
-collision_layer = 4
-collision_mask = 5
-motion_mode = 1
-script = ExtResource("32_evndt")
-stats = ExtResource("33_5r4r7")
-faction = 3
-hurt_invuln_time = 0.1
-flash_color = Color(1, 1, 1, 1)
 
-[node name="Chest_12_41" type="StaticBody2D" parent="Entities" unique_id=1863020254 instance=ExtResource("21_q2dkg")]
+[node name="Chest_12_41" parent="Entities" unique_id=1863020254 instance=ExtResource("21_q2dkg")]
 position = Vector2(200, 672)
-script = ExtResource("22_3h2rk")
 item = ExtResource("23_t8fka")
 amount = 15
 
-[node name="Lever_34_41" type="Node2D" parent="Entities" unique_id=1423238590 instance=ExtResource("29_iakd1")]
+[node name="Lever_34_41" parent="Entities" unique_id=1423238590 instance=ExtResource("29_iakd1")]
 position = Vector2(552, 672)
-script = ExtResource("30_2d0gl")
 
-[node name="Barrel_38_41" type="StaticBody2D" parent="Entities" unique_id=1096765273 instance=ExtResource("34_pst4k")]
+[node name="Barrel_38_41" parent="Entities" unique_id=1096765273 instance=ExtResource("34_pst4k")]
 position = Vector2(616, 672)
-collision_layer = 33
-collision_mask = 0
-script = ExtResource("35_pc7qq")
 drops = Array[ExtResource("36_jhfqb")]([SubResource("d_heart"), SubResource("d_coin"), SubResource("d_mint")])
 
-[node name="Barrel_50_41" type="StaticBody2D" parent="Entities" unique_id=1575583835 instance=ExtResource("34_pst4k")]
+[node name="Barrel_50_41" parent="Entities" unique_id=1575583835 instance=ExtResource("34_pst4k")]
 position = Vector2(808, 672)
-collision_layer = 33
-collision_mask = 0
-script = ExtResource("35_pc7qq")
 drops = Array[ExtResource("36_jhfqb")]([SubResource("d_heart"), SubResource("d_coin"), SubResource("d_mint")])
 
-[node name="Barrel_38_42" type="StaticBody2D" parent="Entities" unique_id=292690231 instance=ExtResource("34_pst4k")]
+[node name="Barrel_38_42" parent="Entities" unique_id=292690231 instance=ExtResource("34_pst4k")]
 position = Vector2(616, 688)
-collision_layer = 33
-collision_mask = 0
-script = ExtResource("35_pc7qq")
 drops = Array[ExtResource("36_jhfqb")]([SubResource("d_heart"), SubResource("d_coin"), SubResource("d_mint")])
 
-[node name="Barrel_39_42" type="StaticBody2D" parent="Entities" unique_id=881070094 instance=ExtResource("34_pst4k")]
+[node name="Barrel_39_42" parent="Entities" unique_id=881070094 instance=ExtResource("34_pst4k")]
 position = Vector2(632, 688)
-collision_layer = 33
-collision_mask = 0
-script = ExtResource("35_pc7qq")
 drops = Array[ExtResource("36_jhfqb")]([SubResource("d_heart"), SubResource("d_coin"), SubResource("d_mint")])
 
-[node name="Chest_48_42" type="StaticBody2D" parent="Entities" unique_id=2004966904 instance=ExtResource("21_q2dkg")]
+[node name="Chest_48_42" parent="Entities" unique_id=2004966904 instance=ExtResource("21_q2dkg")]
 position = Vector2(776, 688)
-script = ExtResource("22_3h2rk")
 item = ExtResource("15_4egtg")
 
-[node name="Barrel_50_42" type="StaticBody2D" parent="Entities" unique_id=1356366170 instance=ExtResource("34_pst4k")]
+[node name="Barrel_50_42" parent="Entities" unique_id=1356366170 instance=ExtResource("34_pst4k")]
 position = Vector2(808, 688)
-collision_layer = 33
-collision_mask = 0
-script = ExtResource("35_pc7qq")
 drops = Array[ExtResource("36_jhfqb")]([SubResource("d_heart"), SubResource("d_coin"), SubResource("d_mint")])
 
 [node name="Triggers" type="Node2D" parent="." unique_id=995191987]
 
-[node name="Checkpoint_10_4" type="Area2D" parent="Triggers" unique_id=1472879134 instance=ExtResource("40_gtwwc")]
+[node name="Checkpoint_10_4" parent="Triggers" unique_id=1472879134 instance=ExtResource("40_gtwwc")]
 position = Vector2(168, 72)
-collision_layer = 0
-collision_mask = 2
-monitorable = false
-script = ExtResource("41_783re")
 
-[node name="Checkpoint_51_9" type="Area2D" parent="Triggers" unique_id=572272448 instance=ExtResource("40_gtwwc")]
+[node name="Checkpoint_51_9" parent="Triggers" unique_id=572272448 instance=ExtResource("40_gtwwc")]
 position = Vector2(824, 152)
-collision_layer = 0
-collision_mask = 2
-monitorable = false
-script = ExtResource("41_783re")
 
-[node name="Checkpoint_10_15" type="Area2D" parent="Triggers" unique_id=1585993609 instance=ExtResource("40_gtwwc")]
+[node name="Checkpoint_10_15" parent="Triggers" unique_id=1585993609 instance=ExtResource("40_gtwwc")]
 position = Vector2(168, 248)
-collision_layer = 0
-collision_mask = 2
-monitorable = false
-script = ExtResource("41_783re")
 
-[node name="Checkpoint_52_20" type="Area2D" parent="Triggers" unique_id=812945372 instance=ExtResource("40_gtwwc")]
+[node name="Checkpoint_52_20" parent="Triggers" unique_id=812945372 instance=ExtResource("40_gtwwc")]
 position = Vector2(840, 328)
-collision_layer = 0
-collision_mask = 2
-monitorable = false
-script = ExtResource("41_783re")
 
-[node name="Checkpoint_11_21" type="Area2D" parent="Triggers" unique_id=650335207 instance=ExtResource("40_gtwwc")]
+[node name="Checkpoint_11_21" parent="Triggers" unique_id=650335207 instance=ExtResource("40_gtwwc")]
 position = Vector2(184, 344)
-collision_layer = 0
-collision_mask = 2
-monitorable = false
-script = ExtResource("41_783re")
 
-[node name="Exit_52_23" type="Area2D" parent="Triggers" unique_id=2061305737 instance=ExtResource("42_4w6mb")]
+[node name="Exit_52_23" parent="Triggers" unique_id=2061305737 instance=ExtResource("42_4w6mb")]
 position = Vector2(840, 376)
-collision_layer = 0
-collision_mask = 2
-monitorable = false
-script = ExtResource("43_58ojn")
 target_level = "next"
 dialogue = "ending"
 size = Vector2(112, 16)
 
-[node name="Arena_31_24" type="Area2D" parent="Triggers" unique_id=241956473 instance=ExtResource("44_djhad")]
+[node name="Arena_31_24" parent="Triggers" unique_id=241956473 instance=ExtResource("44_djhad")]
 position = Vector2(504, 392)
-collision_layer = 0
-collision_mask = 2
-monitorable = false
-script = ExtResource("45_lvaha")
 group_name = "arena_guard"
 size = Vector2(272, 144)
 
-[node name="Checkpoint_26_34" type="Area2D" parent="Triggers" unique_id=1323032970 instance=ExtResource("40_gtwwc")]
+[node name="Checkpoint_26_34" parent="Triggers" unique_id=1323032970 instance=ExtResource("40_gtwwc")]
 position = Vector2(424, 552)
-collision_layer = 0
-collision_mask = 2
-monitorable = false
-script = ExtResource("41_783re")

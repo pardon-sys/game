@@ -7,3 +7,4 @@ tools/.cache/
 .DS_Store
 *.tiff
 __pycache__/
+.env

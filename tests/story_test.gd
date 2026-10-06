@@ -22,11 +22,33 @@ func _ready() -> void:
 	player = GameState.player as Princess
 	player.set_controller(ScriptedController.new())
 	await _run_portrait_fade()
+	_run_hearts()
 	await _run_tour_and_house()
 	await _run_stealth()
 	await _run_blue_arc()
 	print("\n==== %s (%d 项失败) ====" % ["全部通过" if failures == 0 else "有失败", failures])
 	get_tree().quit(1 if failures else 0)
+
+
+# ------------------------------------------------------------------ 血量的心：超过 5 颗时多的心是金色一层
+func _run_hearts() -> void:
+	print("-- 超过 5 颗心")
+	var box := HBoxContainer.new()
+	add_child(box)
+	HeartRow.update(box, 14, 14)   # 7 颗心，满血
+	var gold0 := box.get_child(0).get_node("Gold") as TextureRect
+	var gold2 := box.get_child(2).get_node("Gold") as TextureRect
+	var shown := box.get_children().filter(func(c): return (c as Control).visible).size()
+	check("7 颗心：只占 5 格，第 1~2 格盖着满的金心，第 3 格没有金色", shown == 5 and gold0.visible and gold0.texture == HeartRow.tex(3)
+		and gold2.visible == false and (box.get_child(4) as TextureRect).texture == HeartRow.tex(0))
+	HeartRow.update(box, 11, 14)   # 掉到 5.5 颗
+	check("掉血先掉金心：第 1 格金心剩一半、第 2 格只剩金色轮廓，红心还是满的",
+		gold0.texture == HeartRow.tex(4) and (box.get_child(1).get_node("Gold") as TextureRect).texture == HeartRow.tex(5)
+		and (box.get_child(0) as TextureRect).texture == HeartRow.tex(0))
+	HeartRow.update(box, 6, 8)   # 4 颗心：和原来一样
+	check("不超过 5 颗心时和原来一样（没有金色）", box.get_children().filter(func(c): return (c as Control).visible).size() == 4
+		and not gold0.visible and (box.get_child(3) as TextureRect).texture == HeartRow.tex(2))
+	box.queue_free()
 
 
 # ------------------------------------------------------------------ 立绘避让
