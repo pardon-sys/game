@@ -271,6 +271,25 @@ func _run_phase1_extras() -> void:
 	await _wait(0.2)
 	check("俯冲中途被取消：本体回到原位", b.global_position.distance_to(home) < 2.0 and not b.dashing)
 	b.health.set_hp(b.health.max_hp)
+	# 被俯冲的本体撞到：闷笑直接加一半
+	var victim := dir.pink
+	victim.set_invulnerable(0.0)
+	victim._full_invuln = 0.0
+	victim._attack_invuln = 0.0
+	victim.remove_buff("frost_guard")
+	victim.laugh.set_value(0.0)
+	victim.set_controller(ScriptedController.new())   # 站着不动（AI 会走开）
+	var lane := Rect2(b.arena.position.x, victim.global_position.y - 16.0, b.arena.size.x, 30.0)
+	var raised0 := b.raised
+	b.begin_dash()
+	await b.skills._dash_run(lane, true, b.skills._serial)
+	var got := victim.laugh.value
+	await b.return_home(home, raised0, true)
+	victim.set_controller(CompanionController.new())
+	_protect()
+	check("被俯冲的本体撞到：闷笑直接加最大值的一半（%.0f / %.0f）" % [got, victim.laugh.max_value],
+		got >= victim.laugh.max_value * BossSkills.DASH_LAUGH - 2.0)
+	victim.laugh.set_value(0.0)
 	# 小怪掉落
 	var items0: int = main.level.find_children("*", "", true, false).filter(func(n): return n is WorldItem).size()
 	var m: Node2D = load("res://scenes/actors/monsters/slime.tscn").instantiate()
@@ -347,6 +366,45 @@ func _run_phase2() -> void:
 	check("打到 70%% → 过场（%s）→ 阶段二：Boss 缩到天花板打不到，两块压力板亮起" % [seen],
 		seen.has("f8_phase2") and dir.phase == 2 and b.raised and not b.attackable and dir.plates_lit and dir.plates[0].visible)
 	check("AI 会去站玩家没站的那块板", dir.plate_for(dir.pink) is Vector2)
+	# 变化地形：强制位移 + 束缚类陷阱（阶段二、三共用一个池子），收回时放开抓着的人
+	var placed := []
+	var ar := dir.arena_cells
+	var cell := ar.position + Vector2i(4, 6)
+	for kind in TerrainShifter.DISPLACE + TerrainShifter.RESTRAIN:
+		var node: Node = dir.place_trap(kind, cell, 0.0, {})
+		if node:
+			placed.append(kind)
+		cell.x += 3
+		if cell.x > ar.end.x - 5:
+			cell = Vector2i(ar.position.x + 4, cell.y + 4)
+	check("变化地形能放出全部强制位移 / 束缚陷阱（%d / %d：%s）" % [placed.size(), TerrainShifter.DISPLACE.size() + TerrainShifter.RESTRAIN.size(), placed],
+		placed.size() == TerrainShifter.DISPLACE.size() + TerrainShifter.RESTRAIN.size())
+	var holder: Node = dir.shifter.fields.filter(func(f): return f is RestraintTrap)[0]
+	dir.pink.status.grab(holder, 10.0, 99)
+	dir.shifter.clear()
+	check("收回地形陷阱时，被它抓着的人放开", not dir.pink.status.is_grabbed())
+	var seen_kinds := {}
+	# 玩家在场地中间往一侧走、搭档在另一边（她前面的格子不在压力板 / 人的保护范围里）
+	var mid := dir._cell_pos(ar.position + ar.size / 2)
+	var lead := GameState.player
+	var other := Duo.partner_of(lead)
+	var lead_pos := lead.global_position
+	var other_pos := other.global_position
+	lead.global_position = mid + Vector2(-40, 0)
+	other.global_position = mid + Vector2(0, 60)
+	for i in 40:
+		lead.velocity = Vector2(80, 0) if i % 2 == 0 else Vector2(0, -80)
+		dir.grow_terrain()
+		for f in dir.shifter.fields:
+			if is_instance_valid(f):
+				seen_kinds[f.scene_file_path.get_file().get_basename()] = true
+		dir.shifter.clear()
+	check("持续地形会长出强制位移 / 束缚类陷阱（%s），两个人仍走得到压力板" % [seen_kinds.keys()],
+		seen_kinds.keys().any(func(k): return k in ["bounce_pad", "soap_floor", "feather_fan", "chute", "tickle_vortex", "tickle_conveyor"])
+		and seen_kinds.keys().any(func(k): return k in ["snare", "legloop", "binding", "cuffs", "stocks", "tickle_vine"]) and dir._still_reachable())
+	lead.velocity = Vector2.ZERO
+	lead.global_position = lead_pos
+	other.global_position = other_pos
 	# 手臂砸地不抓人，积累闷笑（先关掉过场后可能还开着的对话：对话中挠痒和机关都不算）
 	_finish()
 	await get_tree().process_frame
@@ -478,6 +536,11 @@ func _run_phase3() -> void:
 	blue.remove_buff("frost_guard")
 	pink.remove_buff("frost_guard")
 	# 搭档正在献祭时玩家操控的人倒下：搭档闷笑大降、说一句，挣开后由玩家操控
+	# （先收掉持续地形、暂停生长：束缚陷阱可能在她走进光圈前把她抓住）
+	dir.shifter.clear()
+	dir._terrain_cd = 999.0
+	if pink.status.is_grabbed():
+		pink.status.release(false)
 	await _wait(0.3)
 	dir._circle_cd = 0.0
 	if GameState.player != blue:
@@ -502,14 +565,52 @@ func _run_phase3() -> void:
 	await _wait(0.3)
 	check("挣脱献祭后由玩家操控她", dir.sacrifice.is_empty() and GameState.player == pink)
 	(blue.get_node("Downed") as Downed)._revive()
+	dir._terrain_cd = 3.0
 	await _wait(0.2)
 	_protect()
-	check("战败小剧场按次数轮流：阶段三 1→2→3→1，阶段一 / 二 1→2→1",
+	check("战败小剧场顺序：阶段三 1→2→3→4，之后一直是 4（叠在一起）；阶段一 / 二 1→2→1",
 		Floor8Director.defeat_theater(3, 2) == "f8_defeat_3_2" and Floor8Director.defeat_theater(3, 3) == "f8_defeat_3_3"
-		and Floor8Director.defeat_theater(3, 4) == "f8_defeat_3_1" and Floor8Director.defeat_theater(1, 3) == "f8_defeat_1_1")
+		and Floor8Director.defeat_theater(3, 4) == "f8_defeat_3_4" and Floor8Director.defeat_theater(3, 5) == "f8_defeat_3_4"
+		and Floor8Director.defeat_theater(3, 9) == "f8_defeat_3_4" and Floor8Director.defeat_theater(1, 3) == "f8_defeat_1_1")
+	var bursts_ok := true
+	var burst_bad := []
+	for id in ["f8_defeat_1_1", "f8_defeat_1_2", "f8_defeat_2_1", "f8_defeat_2_2", "f8_defeat_3_1", "f8_defeat_3_2", "f8_defeat_3_3", "f8_defeat_3_4", "f8_chase_fail"]:
+		var d: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://data/theater/floor_08/%s.json" % id))
+		var booms: int = d["steps"].filter(func(s): return s.get("act", "") == "burst" and s.has("portrait")).size()
+		var praise := false
+		for s in d["steps"]:
+			if s.get("act", "") == "burst" and str(s.get("speaker", "")) == "千手痒痒魔" and (str(s["text"]).contains("可爱") or str(s["text"]).contains("好")):
+				praise = true
+		if booms != (2 if id == "f8_defeat_3_4" else 1) or not praise:
+			bursts_ok = false
+			burst_bad.append(id)
+	check("每段战败 / 追逐失败剧场结尾都有两人魔力疲倦爆发、千手夸她（叠在一起那段爆发两次）（%s）" % [burst_bad], bursts_ok)
+	# 蓝色公主操控时战败大图正常显示
+	var shows := true
+	for who in ["blue", "pink"]:
+		Characters.scope(who)
+		var tex := CG.portrait_texture("boss8_duo_1")
+		shows = shows and CG.has_portrait_file("boss8_duo_1") and tex != null and tex.get_width() > 300
+		Characters.unscope()
+	check("蓝色 / 粉色公主操控时，战败剧场的大图都能正常显示", shows)
+	# 阶段三召唤：手臂从上面伸下来，小怪落在场地中线附近左右（不在墙角）
+	b.clear_summons()
+	b.fighting = true
+	b.summon()
+	await get_tree().process_frame
+	var arms := get_tree().get_nodes_in_group("f8_summon_arm").size()
+	await _wait(0.8)
+	var center := dir._cell_pos(dir.arena_cells.position + dir.arena_cells.size / 2)
+	var mobs := get_tree().get_nodes_in_group("f8_summon").filter(func(n): return n is Monster)
+	var near_mid := mobs.all(func(m): return absf(m.global_position.x - center.x) <= 130.0 and absf(m.global_position.y - center.y) <= 56.0)
+	check("阶段三召唤：手臂伸下来放下小怪（%d 只手臂），小怪在中线附近左右（%d 只）" % [arms, mobs.size()],
+		arms >= 1 and mobs.size() >= 1 and near_mid)
+	b.clear_summons()
+	b.fighting = false
 	var th_ok := true
 	var th_bad := []
-	for id in ["f8_defeat_1_1", "f8_defeat_1_2", "f8_defeat_2_1", "f8_defeat_2_2", "f8_defeat_3_1", "f8_defeat_3_2", "f8_defeat_3_3", "f8_chase_fail"]:
+	for id in ["f8_defeat_1_1", "f8_defeat_1_2", "f8_defeat_2_1", "f8_defeat_2_2", "f8_defeat_3_1", "f8_defeat_3_2", "f8_defeat_3_3", "f8_defeat_3_4",
+			"f8_chase_fail"]:
 		var d: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://data/theater/floor_08/%s.json" % id))
 		var steps: Array = d.get("steps", [])
 		var acts := steps.filter(func(s): return s.has("portrait")).size()
@@ -530,7 +631,7 @@ func _run_phase3() -> void:
 		cg_of.call("f8_defeat_2_1") == ["boss8_p2"] and cg_of.call("f8_defeat_3_1") == ["boss8_duo_1", "boss8_duo_2", "boss8_duo_3"]
 		and cg_of.call("f8_defeat_3_2") == ["boss8_resist_1", "boss8_resist_2", "boss8_weak_1", "boss8_weak_2"]
 		and cg_of.call("f8_defeat_3_3") == ["boss8_mob"] and cg_of.call("f8_chase_fail") == ["boss8_chase"]
-		and cg_of.call("f8_defeat_1_1").is_empty() and CG.has_portrait_file("boss8_duo_1"))
+		and cg_of.call("f8_defeat_1_1").is_empty() and cg_of.call("f8_defeat_3_4").is_empty() and CG.has_portrait_file("boss8_duo_1"))
 	# 羽毛风暴：全场往一侧推
 	b.fighting = true
 	var p0 := pink.global_position
@@ -617,6 +718,28 @@ func _run_victory_and_chase() -> void:
 	run.pa = ChaseRun.START
 	run.pb = ChaseRun.START
 	run.boulder = 0.0
+	# 离太远的提示：≥ 2.5 格出现，< 1.5 格消失
+	run.pa = 6.0
+	run.pb = 3.4
+	run._update_warning(0.01)
+	var warn_on := run.warning
+	run.pb = 4.2
+	run._update_warning(0.01)
+	var still := run.warning
+	run.pb = 4.6
+	run._update_warning(0.01)
+	check("两人相差 ≥ 2.5 格出现「离得太远了」提示，回到 1.5 格以内才消失", warn_on and still and not run.warning)
+	run.pa = ChaseRun.START
+	run.pb = ChaseRun.START
+	var fails0: int = int(GameState.vars.get("f8_chase_fail", 0))
+	GameState.vars["f8_chase_fail"] = 9
+	var t9 := run.boulder_time()
+	GameState.vars["f8_chase_fail"] = 10
+	var t10 := run.boulder_time()
+	GameState.vars["f8_chase_fail"] = 20
+	var t20 := run.boulder_time()
+	GameState.vars["f8_chase_fail"] = fails0
+	check("追逐失败 10 次以上滚石变慢（%.1f → %.1f → %.1f 秒一格）" % [t9, t10, t20], t10 > t9 and t20 > t10)
 	# 无限延伸：一直跑，障碍不断生成、跑道一直滚
 	var spawned0 := run.spawned
 	var always := true

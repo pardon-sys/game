@@ -773,6 +773,463 @@
 			"emotion": "helpless_2"
 		},
 		{
+			"act": "burst",
+			"speaker": "公主",
+			"text": "魔、魔力条……满了……！",
+			"actions": [
+				{
+					"who": "pink",
+					"time": 0.8,
+					"do": "shake"
+				},
+				{
+					"who": "blue",
+					"time": 0.8,
+					"do": "shake"
+				},
+				{
+					"who": "blue",
+					"kind": "surprise",
+					"do": "bubble"
+				},
+				{
+					"state": "laugh",
+					"do": "voice"
+				},
+				{
+					"who": "pink",
+					"by": "boss",
+					"repeat": 5,
+					"interval": 0.24,
+					"fx": "feather",
+					"zone": "sole",
+					"do": "tickle"
+				},
+				{
+					"who": "blue",
+					"by": "boss",
+					"repeat": 5,
+					"interval": 0.24,
+					"fx": "brush",
+					"zone": "thigh",
+					"do": "tickle"
+				}
+			],
+			"emotion": "helpless_2"
+		},
+		{
+			"act": "burst",
+			"speaker": "蓝色的公主",
+			"text": "……我也……唔……要、要溢出来了……",
+			"actions": [
+				{
+					"who": "pink",
+					"time": 0.8,
+					"do": "shake"
+				},
+				{
+					"who": "blue",
+					"time": 0.8,
+					"do": "shake"
+				},
+				{
+					"who": "blue",
+					"kind": "surprise",
+					"do": "bubble"
+				},
+				{
+					"state": "laugh",
+					"do": "voice"
+				},
+				{
+					"who": "pink",
+					"by": "boss",
+					"repeat": 5,
+					"interval": 0.24,
+					"fx": "feather",
+					"zone": "sole",
+					"do": "tickle"
+				},
+				{
+					"who": "blue",
+					"by": "boss",
+					"repeat": 5,
+					"interval": 0.24,
+					"fx": "brush",
+					"zone": "thigh",
+					"do": "tickle"
+				}
+			],
+			"emotion": "helpless_2"
+		},
+		{
+			"act": "burst",
+			"portrait": "fatigue_burst",
+			"actions": [
+				{
+					"time": 0.8,
+					"do": "flash"
+				},
+				{
+					"sound": "star_burst",
+					"volume": -1.0,
+					"do": "sfx"
+				},
+				{
+					"sound": "water_release",
+					"volume": -2.0,
+					"do": "sfx"
+				},
+				{
+					"state": "",
+					"do": "voice"
+				},
+				{
+					"who": "pink",
+					"time": 0.5,
+					"do": "shake"
+				},
+				{
+					"who": "blue",
+					"time": 0.5,
+					"do": "shake"
+				},
+				{
+					"who": "boss",
+					"to": [
+						0,
+						-46
+					],
+					"time": 0.25,
+					"do": "move"
+				}
+			],
+			"wait": 1.1
+		},
+		{
+			"act": "burst",
+			"speaker": "公主",
+			"text": "哈……好、好舒服……",
+			"actions": [
+				{
+					"who": "pink",
+					"kind": "shy",
+					"do": "bubble"
+				}
+			],
+			"emotion": "burst"
+		},
+		{
+			"act": "burst",
+			"speaker": "蓝色的公主",
+			"text": "……嗯。……还、还可以。",
+			"actions": [
+				{
+					"who": "blue",
+					"kind": "shy",
+					"do": "bubble"
+				}
+			],
+			"emotion": "burst"
+		},
+		{
+			"act": "burst",
+			"speaker": "千手痒痒魔",
+			"text": "……再……来……",
+			"actions": [
+				{
+					"who": "boss",
+					"to": [
+						0,
+						-16
+					],
+					"time": 0.6,
+					"do": "move"
+				},
+				{
+					"state": "giggle",
+					"do": "voice"
+				},
+				{
+					"who": "pink",
+					"by": "boss",
+					"repeat": 4,
+					"interval": 0.3,
+					"fx": "feather",
+					"zone": "sole",
+					"do": "tickle"
+				},
+				{
+					"who": "blue",
+					"by": "boss",
+					"repeat": 4,
+					"interval": 0.3,
+					"fx": "brush",
+					"zone": "thigh",
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"act": "burst",
+			"speaker": "蓝色的公主",
+			"text": "哈哈哈哈……！放、放完再挠……犯规……大腿……哈哈哈哈！",
+			"actions": [
+				{
+					"state": "laugh",
+					"do": "voice"
+				},
+				{
+					"who": "blue",
+					"time": 0.6,
+					"do": "shake"
+				},
+				{
+					"who": "pink",
+					"time": 0.6,
+					"do": "shake"
+				},
+				{
+					"who": "pink",
+					"visual": "helpless_2",
+					"anim": "helpless",
+					"do": "pose"
+				},
+				{
+					"who": "blue",
+					"visual": "helpless_2",
+					"anim": "helpless",
+					"do": "pose"
+				},
+				{
+					"who": "pink",
+					"by": "boss",
+					"repeat": 10,
+					"interval": 0.15,
+					"fx": "feather",
+					"zone": "sole",
+					"do": "tickle"
+				},
+				{
+					"who": "blue",
+					"by": "boss",
+					"repeat": 10,
+					"interval": 0.15,
+					"fx": "brush",
+					"zone": "butt",
+					"do": "tickle"
+				}
+			],
+			"emotion": "helpless_2"
+		},
+		{
+			"act": "burst",
+			"speaker": "公主",
+			"text": "哈哈哈哈！它、它专门等我们放完才挠的吧——！",
+			"actions": [
+				{
+					"state": "laugh",
+					"do": "voice"
+				},
+				{
+					"who": "blue",
+					"time": 0.6,
+					"do": "shake"
+				},
+				{
+					"who": "pink",
+					"time": 0.6,
+					"do": "shake"
+				},
+				{
+					"who": "pink",
+					"visual": "helpless_2",
+					"anim": "helpless",
+					"do": "pose"
+				},
+				{
+					"who": "blue",
+					"visual": "helpless_2",
+					"anim": "helpless",
+					"do": "pose"
+				},
+				{
+					"who": "pink",
+					"by": "boss",
+					"repeat": 10,
+					"interval": 0.15,
+					"fx": "feather",
+					"zone": "waist",
+					"do": "tickle"
+				},
+				{
+					"who": "blue",
+					"by": "boss",
+					"repeat": 10,
+					"interval": 0.15,
+					"fx": "brush",
+					"zone": "thigh",
+					"do": "tickle"
+				}
+			],
+			"emotion": "helpless_2"
+		},
+		{
+			"act": "burst",
+			"speaker": "千手痒痒魔",
+			"text": "……你……这样……最……好看……",
+			"actions": [
+				{
+					"state": "laugh",
+					"do": "voice"
+				},
+				{
+					"who": "blue",
+					"time": 0.6,
+					"do": "shake"
+				},
+				{
+					"who": "pink",
+					"time": 0.6,
+					"do": "shake"
+				},
+				{
+					"who": "pink",
+					"visual": "helpless_2",
+					"anim": "helpless",
+					"do": "pose"
+				},
+				{
+					"who": "blue",
+					"visual": "helpless_2",
+					"anim": "helpless",
+					"do": "pose"
+				},
+				{
+					"who": "pink",
+					"by": "boss",
+					"repeat": 10,
+					"interval": 0.15,
+					"fx": "feather",
+					"zone": "armpit",
+					"do": "tickle"
+				},
+				{
+					"who": "blue",
+					"by": "boss",
+					"repeat": 10,
+					"interval": 0.15,
+					"fx": "brush",
+					"zone": "butt",
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"act": "burst",
+			"speaker": "蓝色的公主",
+			"text": "……哈哈……谁、谁要你说好看……哈哈哈哈哈……！",
+			"actions": [
+				{
+					"state": "laugh",
+					"do": "voice"
+				},
+				{
+					"who": "blue",
+					"time": 0.6,
+					"do": "shake"
+				},
+				{
+					"who": "pink",
+					"time": 0.6,
+					"do": "shake"
+				},
+				{
+					"who": "pink",
+					"visual": "helpless_2",
+					"anim": "helpless",
+					"do": "pose"
+				},
+				{
+					"who": "blue",
+					"visual": "helpless_2",
+					"anim": "helpless",
+					"do": "pose"
+				},
+				{
+					"who": "pink",
+					"by": "boss",
+					"repeat": 10,
+					"interval": 0.15,
+					"fx": "feather",
+					"zone": "sole",
+					"do": "tickle"
+				},
+				{
+					"who": "blue",
+					"by": "boss",
+					"repeat": 10,
+					"interval": 0.15,
+					"fx": "brush",
+					"zone": "thigh",
+					"do": "tickle"
+				}
+			],
+			"emotion": "helpless_2"
+		},
+		{
+			"act": "burst",
+			"speaker": "公主",
+			"text": "「还可以」呢？刚才不是说「还可以」吗哈哈哈！",
+			"actions": [
+				{
+					"state": "laugh",
+					"do": "voice"
+				},
+				{
+					"who": "blue",
+					"time": 0.6,
+					"do": "shake"
+				},
+				{
+					"who": "pink",
+					"time": 0.6,
+					"do": "shake"
+				},
+				{
+					"who": "pink",
+					"visual": "helpless_2",
+					"anim": "helpless",
+					"do": "pose"
+				},
+				{
+					"who": "blue",
+					"visual": "helpless_2",
+					"anim": "helpless",
+					"do": "pose"
+				},
+				{
+					"who": "pink",
+					"by": "boss",
+					"repeat": 10,
+					"interval": 0.15,
+					"fx": "feather",
+					"zone": "waist",
+					"do": "tickle"
+				},
+				{
+					"who": "blue",
+					"by": "boss",
+					"repeat": 10,
+					"interval": 0.15,
+					"fx": "brush",
+					"zone": "butt",
+					"do": "tickle"
+				}
+			],
+			"emotion": "helpless_2"
+		},
+		{
 			"actions": [
 				{
 					"state": "",

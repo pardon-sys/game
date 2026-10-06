@@ -6,6 +6,8 @@ extends Node
 ##   clear()               收回所有石墙和临时陷阱
 ##   life > 0 时（raise_walls / spawn_field 的最后一个参数）到时间自己收回——第八层阶段二的「持续变化」用它。
 ##   vortex（opts.radius）：挠痒漩涡（强制位移）。
+##   强制位移：bounce_pad（opts.dir / len）、soap_floor（opts.w / h）、feather_fan（opts.dir / len）、chute（opts.dir / w / h）；
+##   束缚：snare、legloop、binding、cuffs、stocks、vine（藤蔓）。收回（到时间 / clear）时先放开它正抓着的人。
 ## 墙块用 ref_cell 那一格的墙图块（关卡里本来就有的墙）。
 
 const TRAPS := {
@@ -14,7 +16,20 @@ const TRAPS := {
 	"pit": "res://scenes/traps/pit.tscn",
 	"feather": "res://scenes/traps/feather_trap.tscn",
 	"vortex": "res://scenes/traps/tickle_vortex.tscn",
+	"bounce_pad": "res://scenes/traps/bounce_pad.tscn",
+	"soap_floor": "res://scenes/traps/soap_floor.tscn",
+	"feather_fan": "res://scenes/traps/feather_fan.tscn",
+	"chute": "res://scenes/traps/chute.tscn",
+	"snare": "res://scenes/traps/snare.tscn",
+	"legloop": "res://scenes/traps/legloop.tscn",
+	"binding": "res://scenes/traps/binding.tscn",
+	"cuffs": "res://scenes/traps/cuffs.tscn",
+	"stocks": "res://scenes/traps/stocks.tscn",
+	"vine": "res://scenes/traps/tickle_vine.tscn",
 }
+## 强制位移类 / 束缚类（第八层持续地形按类抽）
+const DISPLACE := ["bounce_pad", "soap_floor", "feather_fan", "chute", "vortex", "conveyor"]
+const RESTRAIN := ["snare", "legloop", "binding", "cuffs", "stocks", "vine"]
 
 var level: Node2D
 var walls: TileMapLayer
@@ -96,6 +111,16 @@ func spawn_field(kind: String, cell: Vector2i, opts := {}, life := 0.0) -> Node:
 			t.set("content", str(opts.get("content", "squirrel")))
 		"vortex":
 			t.set("radius", int(opts.get("radius", 2)))
+		"bounce_pad", "feather_fan":
+			t.set("dir", str(opts.get("dir", "right")))
+			t.set("length", int(opts.get("len", 3)))
+		"soap_floor":
+			t.set("tiles_w", int(opts.get("w", 2)))
+			t.set("tiles_h", int(opts.get("h", 2)))
+		"chute":
+			t.set("dir", str(opts.get("dir", "right")))
+			t.set("tiles_w", int(opts.get("w", 3)))
+			t.set("tiles_h", int(opts.get("h", 1)))
 	var parent := level.get_node_or_null("FloorObjects")
 	(parent if parent else level).add_child(t)
 	t.global_position = cell_center(cell) + Vector2(0, 0)
@@ -118,6 +143,7 @@ func _process(delta: float) -> void:
 		elif is_instance_valid(e["node"]):
 			var n: Node2D = e["node"]
 			fields.erase(n)
+			release_from(n)
 			var tw := n.create_tween()
 			tw.tween_property(n, "modulate:a", 0.0, 0.4)
 			tw.tween_callback(n.queue_free)
@@ -128,10 +154,27 @@ func active_count() -> int:
 	return _timed.size()
 
 
+## 收回一样临时陷阱前：它正抓着 / 锁着 / 绊着的人先放开。
+func release_from(n: Node) -> void:
+	if n is RestraintTrap and is_instance_valid((n as RestraintTrap).victim):
+		(n as RestraintTrap)._free()
+	if n is Stocks and (n as Stocks).is_locking():
+		(n as Stocks)._unlock()
+	for a in get_tree().get_nodes_in_group("actor"):
+		var st: StatusComponent = a.get("status")
+		if st == null:
+			continue
+		if st.is_grabbed_by(n):
+			st.release(false)
+		if st.is_hobbled_by(n):
+			st.release_hobble(false)
+
+
 func clear() -> void:
 	lower_walls()
 	for f in fields:
 		if is_instance_valid(f):
+			release_from(f)
 			f.queue_free()
 	fields.clear()
 	_timed.clear()

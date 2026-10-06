@@ -1,0 +1,67 @@
+{
+	"_说明": "蓝色公主版的通用对话（gen_blue_character.py 生成）：铁栅栏、钥匙、锁、笑完恢复、复活等。",
+	"got_bronze_key": [
+		{
+			"speaker": "蓝色的公主",
+			"emotion": "happy",
+			"text": "……铜钥匙。……收好了。"
+		}
+	],
+	"got_gold_key": [
+		{
+			"speaker": "蓝色的公主",
+			"emotion": "happy",
+			"text": "……金钥匙。……出口，应该就在前面。"
+		}
+	],
+	"locked_bronze": [
+		{
+			"speaker": "蓝色的公主",
+			"emotion": "sad",
+			"text": "……锁着。……要铜钥匙。"
+		}
+	],
+	"locked_gold": [
+		{
+			"speaker": "蓝色的公主",
+			"emotion": "sad",
+			"text": "……金锁。……先找金钥匙。"
+		}
+	],
+	"gate_closed": [
+		{
+			"speaker": "蓝色的公主",
+			"emotion": "angry",
+			"text": "……铁栅栏。……推不动。"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"emotion": "normal",
+			"text": "……附近应该有拉杆。……找找看。"
+		}
+	],
+	"laugh_recover": [
+		{
+			"speaker": "蓝色的公主",
+			"emotion": "sad",
+			"text": "……哈……哈……停、停下来了……"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"emotion": "angry",
+			"text": "……刚才的，不算。……没笑。……一次都没有。"
+		}
+	],
+	"respawn": [
+		{
+			"speaker": "蓝色的公主",
+			"emotion": "sad",
+			"text": "……唔。"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"emotion": "angry",
+			"text": "……再来。这次不会输。"
+		}
+	]
+}

@@ -156,6 +156,69 @@ BOSS_LINES = {
 }
 if isinstance(rx.get("sources", {}).get("thousand_hand"), dict):
     rx["sources"]["thousand_hand"].update(json.loads(json.dumps(BOSS_LINES)))
+# ------------------------------------------------------------------ 组合演出的台词：按这个组合的来源（手法 / 部位 / 怪物还是陷阱）生成
+# 每个来源的短手法（填进句子里）；陷阱类说「动不了」，怪物类说「别过来」。
+SHORT = {
+    "arm": "羽毛臂扫", "barnacle": "小吸盘嘬", "bat": "翅膀尖扑", "binding": "缎带里的羽毛蹭", "boots": "靴子里的软毛蹭",
+    "brush": "转个不停的刷子", "bubble_fish": "泡泡炸开", "cage": "笼缝里伸进来的东西", "carpet": "黏黏的绒毛", "caterpillar": "一排小脚爬",
+    "clamp": "夹着腿挠", "conveyor": "一排排毛刷", "crab": "钳子一夹一挠", "cuffs": "举着手被挠", "cushion": "坐垫里的软毛",
+    "fairy": "一群小翅膀", "fan": "风里的羽毛", "feather": "羽毛慢慢划", "feather_swing": "荡一下扫一下", "foot_bath": "咕嘟咕嘟的泡泡",
+    "foot_thigh_rack": "从脚心刷到腿", "frog": "长舌头舔", "ghost": "凉凉的手指", "glove": "空手套抓挠", "hand": "机关手的指尖",
+    "hedgehog": "硬刷毛来回刷", "imp": "小刷子比划", "jelly_queen": "软触须缠", "legloop": "吊着的腿被挠", "mana_jelly": "黏糊糊的触须",
+    "mimic": "箱子里的舌头", "mud": "泥里的气泡", "octopus": "八只小吸盘", "prone": "趴着被刷", "rat": "小爪子抠",
+    "rune": "符文的光", "saddle_bench": "跨着的刷子", "scissor_stand": "交叉的刷子", "shower": "羽毛雨", "sitz_bath": "往上冒的泡泡",
+    "slime": "黏液慢慢爬", "snare": "倒吊着被挠", "spider": "八条细腿踩", "spinwheel": "转一圈扫一下", "split_slime": "小史莱姆挤",
+    "spring_seat": "一颠一颠的刷毛", "squirrel": "蓬松的尾巴扫", "stocks": "锁着脚被挠", "supine": "仰躺着被画圈", "teaser": "点一下又退开",
+    "tentacle": "软触手打转", "thigh_brush_ring": "刷环一圈圈转", "thigh_pincer": "羽毛钳轻轻拧", "thousand_hand": "好多手指一起",
+    "troll": "大手指用力挠", "vest": "背心里的羽毛", "vine": "藤蔓嫩芽缠", "wardrobe": "柜子里的手", "wheel": "转轮上的羽毛",
+}
+MONSTERS = {"barnacle", "bat", "bubble_fish", "caterpillar", "crab", "fairy", "frog", "ghost", "glove", "hedgehog", "imp", "jelly_queen",
+            "mana_jelly", "mimic", "octopus", "rat", "slime", "spider", "split_slime", "squirrel", "tentacle", "thousand_hand", "troll"}
+KIND_SAY = {"monster": ["别、别过来……", "小、小东西……走开……", "一、一只就够了……"],
+            "trap": ["动、动不了……", "机、机关……停下……", "挣、挣不开……"]}
+# {s}/{z}：这一句挑中的来源的手法 / 部位；{s2}/{z2}：下一个来源的；{k}：怪物 / 陷阱的说法
+CALM_T = ["……{s}。……不痒。", "……{z}……没、没感觉。", "……唔。……{s}……而已。", "……{z}那里……别碰。", "……啧。……{s}……",
+          "……这、这种程度……{z}……忍得住。", "……{s}……慢、慢一点……不，没什么。", "……嗯。……{z}……还好。", "……{k}"]
+GIGGLE_T = ["……噗。……{s}……犯规……", "……唔、嗯……{z}……别、别一直……", "……哈。……刚才……{s}……不算……", "……嗯唔……{z}和{z2}……一起……",
+            "……{s}……又、又来……噗……", "……哈、哈……{z}……为、为什么……", "……别、别笑……我没笑……{s}……", "……噗、噗哈……{s2}也……",
+            "……噗……{k}"]
+H1_T = ["……哈、哈哈……{z}……{s}……为、为什么……", "哈哈……{s}……停、停一下……哈哈……", "噗哈哈……{s}……{z}……不、不行……哈哈……",
+        "哈哈哈……{s}，还有{s2}……太、太多了……", "……哈哈……明、明明忍得住的……{s}……哈哈哈……", "哈哈……{s2}……{z2}也……别、别一起……哈哈哈……",
+        "哈、哈哈……{s}……那、那个节奏……哈哈……", "……呜、哈哈……{s}……{k}哈哈……"]
+BREAK_T = ["哈哈哈哈……忍、忍不住……明明一直忍着的……{s}……哈哈哈哈哈……！", "哈哈哈……{s}……{z}……{z}不行……停、停下……哈哈哈哈……！",
+           "哈哈哈哈哈……！{s}和{s2}……一起……我、我投降……！", "哈哈哈……{s2}……{k}哈哈哈哈哈……！", "哈哈哈哈……！{s}……{z}……真、真的……不行……哈哈哈……！",
+           "哈哈哈……停、停下来……{s}……停下来……哈哈哈哈……！", "……哈哈哈哈……{s}……对、对不起……{z}……认输……哈哈哈哈……！",
+           "哈哈哈哈……！{s2}……还、还在……哈哈哈……！"]
+# 部位是大腿 / 屁股（她最怕）时额外的、更崩的句子
+WEAK_H1 = ["……哈、哈哈……{z}……为、为什么……偏偏是{z}……", "噗哈哈哈……！{z}、{z}不可以……哈哈……"]
+WEAK_BREAK = ["哈哈哈哈哈……！{z}……那里……真的……不行……哈哈哈哈哈……！", "哈哈哈……{s}……一直在{z}上……我、我投降……哈哈哈哈……！"]
+BURST_START_T = ["……魔力……要满出来了。……{s}……别再……", "……不行……{z}被挠得……魔力……压不住了。", "……身体里……在发烫。……都是{s}……害的。",
+                 "……{z}……被{s}……好烫……魔力……要出来了。"]
+BURST_COMFY_T = ["……嗯……放出来了……{z}……有点……舒服。", "……呼……{z}……轻、轻松了……", "……魔力走了……{s}……也停了……吗。",
+                 "……哈……身体很轻……刚才{s}的……不算。", "……{z}……不、不烫了……嗯……舒服。"]
+DAZED_T = ["……嗯……天花板……在转……{s}……", "……{s}……软软的……是云吗……", "……没、没笑……{z}……一次都……没笑……嘿……",
+           "……数到一百……{z}就不痒了……一、二……", "……再、再一下……{s}……就忍住了……", "……好困……谁在……挠我的{z}……"]
+BURST_SENS_T = ["……刚放完……{z}……好敏感……{s}……不、不要现在……哈哈……！", "哈哈哈……！{s}……刚放完就……犯规……哈哈哈哈！",
+                "……碰、碰哪里都痒……{z}……尤其……哈哈哈哈……！", "哈哈……{s2}……回、回来了……哈哈哈哈……！"]
+
+
+def combo_voice(keys):
+    """组合的来源 → [(短手法, 部位, 怪物 / 陷阱)]；部位用她最怕的（blue_zone）。"""
+    out = []
+    for k in keys:
+        if k in SHORT:
+            out.append((SHORT[k], blue_zone(k), "monster" if k in MONSTERS else "trap"))
+    return out
+
+
+def voice_line(pool, voice, seed, used, slot):
+    """从模板池挑一句（同一段不重复），填入第 slot 个来源（轮流）和下一个来源的手法 / 部位。"""
+    s, z, kind = voice[slot % len(voice)]
+    s2, z2, _ = voice[(slot + 1) % len(voice)]
+    k = pick(KIND_SAY[kind], seed + "k")
+    return pick_new(pool, seed, used, s=s, z=z, s2=s2, z2=z2 if z2 != z else "别的地方", k=k)
+
+
 # ------------------------------------------------------------------ 组合台词：不念组合名，说手法和感受
 # 每个来源怎么挠（{z} = 挠的部位）；她最怕大腿和屁股，碰到这两处的组合台词明显更崩。
 TECH = {
@@ -205,17 +268,24 @@ def combo_lines(cid, keys, desc):
         parts = [desc.rstrip("。！")]
     weak = [z for z in zones if z in WEAK]
     method = "……" + "，".join(parts[:3]) + "……"
+    shorts = [SHORT[k] for k in keys if k in SHORT] or ["它们"]
+    s = pick(shorts, cid + "s")
     if weak:
         z = weak[0]
         a = pick(["%s嗯、唔……哈……！" % method, "%s不、不行……哈哈……！" % method], cid + "m")
-        b = pick(["……%s、%s不行……哈哈哈……那里……真的不行……哈哈哈哈……！" % (z, z),
-                  "哈哈哈……！别、别碰%s……忍、忍不住……哈哈哈哈……！" % z,
-                  "……一直、一直在%s上……哈哈哈……我、我投降……哈哈哈……！" % z], cid + "w")
-        c = pick(["……明明……忍得住的……偏偏是%s……哈哈哈哈……！" % z, "哈哈哈……为、为什么……都知道我%s怕……哈哈哈……！" % z], cid + "x")
+        b = pick(["……%s、%s不行……哈哈哈……%s……真的不行……哈哈哈哈……！" % (z, z, s),
+                  "哈哈哈……！别、别在%s上%s……忍、忍不住……哈哈哈哈……！" % (z, s),
+                  "……一直、一直在%s上……%s……哈哈哈……我、我投降……哈哈哈……！" % (z, s),
+                  "噗哈哈哈……%s……专、专挑%s……哈哈哈哈……！" % (s, z)], cid + "w")
+        c = pick(["……明明……忍得住的……偏偏是%s……%s……哈哈哈哈……！" % (z, s),
+                  "哈哈哈……为、为什么……都知道我%s怕……%s……哈哈哈……！" % (z, s),
+                  "……%s……%s……不、不行了……哈哈哈哈哈……！" % (s, z)], cid + "x")
     else:
         a = pick(["%s嗯。" % method, "%s唔……" % method], cid + "m")
-        b = pick(["……忍、忍得住……嗯、嗯唔……哈……！", "……一、一起来……太狡猾了……哈、哈哈……", "……噗。……没、没笑……哈……"], cid + "w")
-        c = pick(["……哈、哈哈……别、别一起……！", "……还、还好……没碰大腿……哈……"], cid + "x")
+        b = pick(["……忍、忍得住……%s……嗯、嗯唔……哈……！" % s, "……%s……一、一起来……太狡猾了……哈、哈哈……" % s,
+                  "……噗。……%s……没、没笑……哈……" % s], cid + "w")
+        c = pick(["……哈、哈哈……%s……别、别一起……！" % s, "……还、还好……没碰大腿……%s……哈……" % s,
+                  "……%s……%s……够、够了……哈哈……" % (s, zones[0] if zones else "那里")], cid + "x")
     return [a, b, c]
 
 
@@ -248,7 +318,8 @@ fat = {
 
 
 # ------------------------------------------------------------------ CG / 巢穴 CG / 组合演出
-def convert_steps(cid, steps, noun, zone, method_lines=None):
+def convert_steps(cid, steps, noun, zone, method_lines=None, voice=None):
+    """voice（组合演出用）：这个组合的来源 [(短手法, 部位, 怪物 / 陷阱)]，句子按它生成（每个组合不一样）；没有就用通用的池子。"""
     said_idx = [i for i, st in enumerate(steps) if st.get("speaker") == PINK_SPEAKER and "text" in st]
     burst_idx = [i for i in said_idx if steps[i].get("act") == "burst"]
     plain_idx = [i for i in said_idx if steps[i].get("act") != "burst" and steps[i].get("portrait") != "wake"]
@@ -260,11 +331,15 @@ def convert_steps(cid, steps, noun, zone, method_lines=None):
         if st.get("speaker") == PINK_SPEAKER and "text" in st:
             t = st["text"]
             seed = "%s:%d" % (cid, i)
+            slot = said_idx.index(i)
             if st.get("portrait") == "wake":
                 st["text"] = pick_new(WAKE, seed, used, n=noun)
             elif st.get("act") == "burst":
                 if i == last_burst:
-                    st["text"] = pick_new(DAZED, seed, used, n=noun, z=zone)
+                    st["text"] = voice_line(DAZED_T, voice, seed, used, slot) if voice else pick_new(DAZED, seed, used, n=noun, z=zone)
+                elif voice:
+                    pool = BURST_COMFY_T if "舒服" in t else (BURST_SENS_T if "敏感" in t else (BURST_START_T if i == burst_idx[0] else BREAK_T))
+                    st["text"] = voice_line(pool, voice, seed, used, slot)
                 elif "舒服" in t:
                     st["text"] = pick_new(BURST_COMFY, seed, used)
                 elif "敏感" in t:
@@ -278,11 +353,19 @@ def convert_steps(cid, steps, noun, zone, method_lines=None):
                 # 越往后越憋不住：后 40% 的句子只要原句在笑就失控
                 late = plain_idx.index(i) >= len(plain_idx) * 0.6 if i in plain_idx else False
                 # 憋着（短）→ 失控一就破功（笑出声）→ 后段完全崩溃
-                pool = CALM if ha == 0 else (GIGGLE if ha <= 2 and not late else (BREAK if late and ha >= 4 else H1))
-                st["text"] = pick_new(pool, seed, used, n=noun, z=zone)
-                # 组合演出：每隔几句换成说手法和感受的句子（组合台词）
-                if method_lines and i in plain_idx and plain_idx.index(i) % 3 == 1:
-                    st["text"] = method_lines[(plain_idx.index(i) // 3) % len(method_lines)]
+                tier = 0 if ha == 0 else (1 if ha <= 2 and not late else (3 if late and ha >= 4 else 2))
+                if voice:
+                    pool = [CALM_T, GIGGLE_T, H1_T, BREAK_T][tier]
+                    vz = voice[slot % len(voice)][1]
+                    if tier >= 2 and vz in WEAK:
+                        pool = pool + (WEAK_H1 if tier == 2 else WEAK_BREAK)
+                    st["text"] = voice_line(pool, voice, seed, used, slot)
+                else:
+                    st["text"] = pick_new([CALM, GIGGLE, H1, BREAK][tier], seed, used, n=noun, z=zone)
+                # 组合演出：第 2、5、8 句换成说手法和感受的整句（组合台词，各用一次）
+                k = plain_idx.index(i) if i in plain_idx else -1
+                if method_lines and k in (1, 4, 7) and k // 3 < len(method_lines):
+                    st["text"] = method_lines[k // 3]
             st["speaker"] = BLUE
         elif st.get("speaker", "") == "" and "text" in st:
             st["text"] = no_ben(st["text"]).replace("公主", BLUE)
@@ -295,6 +378,10 @@ def convert_steps(cid, steps, noun, zone, method_lines=None):
 def convert_portraits(portraits):
     out = {}
     for pid, info in portraits.items():
+        # 第八层的战败大图两个公主同框（谁操控都一样）：保留原图
+        if pid.startswith("boss8_"):
+            out[pid] = dict(info)
+            continue
         ph = info.get("placeholder", "helpless_1")
         if pid == "fatigue_burst":
             ph = "damaged_giggle_burst"
@@ -326,7 +413,31 @@ for cid, c in sc.get("scenes", {}).items():
         if kind.startswith("monster:") or kind.startswith("trap:"):
             keys.append(kind.split(":", 1)[1])
     weak = [blue_zone(k) for k in keys if blue_zone(k) in WEAK]
-    c["steps"] = convert_steps(cid, c.get("steps", []), "它们", weak[0] if weak else (blue_zone(keys[0]) if keys else "腰"), ml)
+    # 按条件触发的组合（没有具体来源）：用 combos.json 里的来源键（不含 *）
+    vkeys = keys or COMBO_KEYS.get(cid, [])
+    voice = combo_voice(vkeys) or [("它们", weak[0] if weak else "腰", "monster")]
+    c["steps"] = convert_steps(cid, c.get("steps", []), "它们", weak[0] if weak else (blue_zone(keys[0]) if keys else "腰"), ml, voice)
 (OUT / "combo_scenes.json").write_text(json.dumps(sc, ensure_ascii=False, indent="\t") + "\n")
+# ------------------------------------------------------------------ 常见物品 / 通用对话（data/dialogues/common.json 的她的版本）
+# Dialogue.start(id) 先查当前角色的 dialogues.json，有同 id 的就用她的。
+def bl(emotion, text):
+    return {"speaker": BLUE, "emotion": emotion, "text": text}
+
+
+COMMON = {
+    "got_bronze_key": [bl("happy", "……铜钥匙。……收好了。")],
+    "got_gold_key": [bl("happy", "……金钥匙。……出口，应该就在前面。")],
+    "locked_bronze": [bl("sad", "……锁着。……要铜钥匙。")],
+    "locked_gold": [bl("sad", "……金锁。……先找金钥匙。")],
+    "gate_closed": [bl("angry", "……铁栅栏。……推不动。"), bl("normal", "……附近应该有拉杆。……找找看。")],
+    "laugh_recover": [bl("sad", "……哈……哈……停、停下来了……"), bl("angry", "……刚才的，不算。……没笑。……一次都没有。")],
+    "respawn": [bl("sad", "……唔。"), bl("angry", "……再来。这次不会输。")],
+}
+common = json.loads(Path("data/dialogues/common.json").read_text())
+missing = [k for k in common if not k.startswith("_") and k not in COMMON]
+assert not missing, "common.json 里这些对话还没有蓝色公主的版本：%s" % missing
+(OUT / "dialogues.json").write_text(json.dumps(dict({"_说明": "蓝色公主版的通用对话（gen_blue_character.py 生成）：铁栅栏、钥匙、锁、笑完恢复、复活等。"}, **COMMON),
+                                               ensure_ascii=False, indent="\t") + "\n")
+
 print("蓝色公主数据：%d 个来源、%d 组组合、%d 段 CG、%d 段巢穴 CG、%d 段组合演出" % (
     len(rx.get("sources", {})), len(rx.get("combos", {})), len(cgs.get("cgs", {})), len(nest.get("cgs", {})), len(sc.get("scenes", {}))))

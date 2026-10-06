@@ -2,7 +2,8 @@ class_name BossSkills
 extends Node
 ## 千手痒痒魔的大技能（挂在 ThousandHand 下面，节点名 Skills；第八层专属）：
 ##   俯冲撞墙 dash   阶段一起（阶段三连续两次）：整条横 / 竖通道先亮红色预警带 DASH_WARN 秒，本体沿通道冲过去，
-##                   撞到的人挠一大口并击飞；冲到墙边撞墙：全屏大震 + 白闪 + 落石，随机掉 2~3 个落笼（先有影子）。
+##                   撞到的人击飞、闷笑直接加一半（DASH_LAUGH）；冲到墙边撞墙：全屏大震 + 白闪 + 落石，随机掉 2~3 个落笼（先有影子），
+##                   本体撞晕 DAZE_TIME 秒（能打），然后飞回原位。
 ##                   特效：速度线 + 残影 + 尘土拖尾。
 ##   手臂雨 rain     阶段二起：6~8 个砸地圈按十字 / 圆环 / 追人的队形陆续落下（阶段二起不抓人，砸中积累闷笑）。
 ##   羽毛风暴 storm  阶段三：屏幕边上先出风向箭头 1 秒，然后全场往一侧推 STORM_TIME 秒（推向漩涡 / 落笼），风里的羽毛轻挠。
@@ -12,8 +13,9 @@ extends Node
 
 const DASH_WARN := 1.0
 const DASH_TIME := 0.5
-const DASH_TICKLE := 16.0
 const DAZE_TIME := 1.5
+## 被俯冲的本体撞到：闷笑直接加最大值的这个比例
+const DASH_LAUGH := 0.5
 const RAIN_GAP := 0.14
 const STORM_TIME := 3.0
 const STORM_PUSH := 62.0
@@ -216,7 +218,10 @@ func _dash_run(lane: Rect2, horizontal: bool, serial: int) -> void:
 				continue
 			if m.global_position.distance_to(body_center + Vector2(0, 24)) < 40.0:
 				hit.append(m)
-				boss.deliver_tickle(m, DASH_TICKLE, false, 240.0)
+				# 被本体撞倒：击飞，闷笑直接加最大值的 DASH_LAUGH（无敌 / 冰晶守护时不加，和别的挠痒一样）
+				if boss.deliver_tickle(m, 1.0, false, 240.0) and m.laugh:
+					m.laugh.add(m.laugh.max_value * DASH_LAUGH)
+					SpeechBubble.say(m, "被撞倒了！", 34.0)
 				boss.play_tickle_sound()
 				m.shake(0.3)
 		await get_tree().process_frame
