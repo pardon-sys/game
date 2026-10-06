@@ -6,7 +6,7 @@
 		"floor_rewards：各层流程里拿到的东西。跳到某层时，前面各层的都会补上：flags 剧情标记、items 物品 {id: 数量}、passives 被动技能。",
 		"dev_data_dir：调试数据（存档等）的隔离目录名。在编辑器里运行、或 dev_mode 打开时，存档写到 user://<dev_data_dir>/saves/；导出的正式游戏用 user://saves/，两边互不影响。留空 \"\" = 不隔离。"
 	],
-	"dev_mode": true,
+	"dev_mode": false,
 	"dev_data_dir": "dev",
 	"skip_points": [
 		{"name": "第一层·地牢", "floor": "floor_01"},
