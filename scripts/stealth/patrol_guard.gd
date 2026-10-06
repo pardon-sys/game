@@ -13,7 +13,7 @@ const DIR_ROW := {"down": 0, "left": 1, "right": 2, "up": 3}
 @export var wait := 1.2
 @export var speed := 34.0
 ## 听到动静去查看 / 查看完回去时走得快。
-@export var investigate_speed := 51.0
+@export var investigate_speed := 64.0
 @export var view_range := 88.0
 @export var view_angle := 70.0
 ## 经过躲藏点时去检查的几率。

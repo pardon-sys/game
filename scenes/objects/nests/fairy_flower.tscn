@@ -1,10 +1,10 @@
-[gd_scene format=3]
+[gd_scene format=3 uid="uid://b8gw7moqulkrs"]
 
-[ext_resource type="Script" path="res://scripts/objects/nests/fairy_flower.gd" id="1"]
-[ext_resource type="Script" path="res://scripts/items/item_drop.gd" id="drop"]
+[ext_resource type="Script" uid="uid://uqdkyxbnugfk" path="res://scripts/objects/nests/fairy_flower.gd" id="1"]
+[ext_resource type="Resource" uid="uid://b5j80o3w850wi" path="res://data/items/coin.tres" id="coin"]
+[ext_resource type="Script" uid="uid://da51r3q3bv1l4" path="res://scripts/items/item_drop.gd" id="drop"]
+[ext_resource type="Resource" uid="uid://mbjn4sv4g3wl" path="res://data/items/heart.tres" id="heart"]
 [ext_resource type="Resource" path="res://data/items/mint.tres" id="mint"]
-[ext_resource type="Resource" path="res://data/items/heart.tres" id="heart"]
-[ext_resource type="Resource" path="res://data/items/coin.tres" id="coin"]
 
 [sub_resource type="Resource" id="d_mint"]
 script = ExtResource("drop")
@@ -22,6 +22,6 @@ item = ExtResource("coin")
 chance = 0.6
 max_amount = 3
 
-[node name="FairyFlower" type="StaticBody2D"]
+[node name="FairyFlower" type="StaticBody2D" unique_id=512867977]
 script = ExtResource("1")
 drops = Array[ExtResource("drop")]([SubResource("d_mint"), SubResource("d_heart"), SubResource("d_coin")])

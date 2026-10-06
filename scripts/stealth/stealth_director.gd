@@ -14,17 +14,17 @@ signal caught(by: Node)
 const STONE_RANGE := 72.0
 const NOISE_RADIUS := 150.0
 const STEP_INTERVAL := 0.5
-const STEP_RADIUS := 64.0
-const DASH_RADIUS := 208.0
+const STEP_RADIUS := 80.0
+const DASH_RADIUS := 256.0
 ## 在士兵视野里闪避（冲刺）时警觉上涨的倍率。
-const DASH_EXPOSE := 1.8
+const DASH_EXPOSE := 4.0
 
 static var current: StealthDirector
 
 @export var active_flag := ""
 ## 被发现后交给谁处理：f6 = F6Story.on_caught()。
 @export var on_caught := ""
-@export var alert_rate := 1.6
+@export var alert_rate := 2.6
 @export var alert_decay := 0.3
 
 var alert := 0.0

@@ -1,38 +1,31 @@
-[gd_resource type="Resource" script_class="MonsterStats" format=3]
+[gd_resource type="Resource" script_class="MonsterStats" format=3 uid="uid://submcyhxh1qw"]
 
-[ext_resource type="Script" path="res://scripts/actors/monsters/monster_stats.gd" id="1"]
-[ext_resource type="Script" path="res://scripts/items/item_drop.gd" id="2"]
-[ext_resource type="Resource" path="res://data/items/heart.tres" id="i0"]
-[ext_resource type="Resource" path="res://data/items/coin.tres" id="i1"]
+[ext_resource type="Script" uid="uid://cw82hmbi4r236" path="res://scripts/actors/monsters/monster_stats.gd" id="1"]
+[ext_resource type="Script" uid="uid://da51r3q3bv1l4" path="res://scripts/items/item_drop.gd" id="2"]
+[ext_resource type="Resource" uid="uid://mbjn4sv4g3wl" path="res://data/items/heart.tres" id="i0"]
+[ext_resource type="Resource" uid="uid://b5j80o3w850wi" path="res://data/items/coin.tres" id="i1"]
 
 [sub_resource type="Resource" id="d0"]
 script = ExtResource("2")
 item = ExtResource("i0")
 chance = 0.25
-min_amount = 1
-max_amount = 1
 
 [sub_resource type="Resource" id="d1"]
 script = ExtResource("2")
 item = ExtResource("i1")
 chance = 0.3
-min_amount = 1
-max_amount = 1
 
 [resource]
 script = ExtResource("1")
-reaction_key = "bubble_fish"
-hit_fx = "bubble"
 display_name = "泡泡鱼"
-max_hp = 3
-wander_speed = 18.0
+reaction_key = "bubble_fish"
 chase_speed = 36.0
 detect_range = 130.0
 lose_range = 190.0
-attack_damage = 1
 attack_cooldown = 1.5
 tickle_amount = 5.0
 tickle_cooldown = 1.0
 tickle_weight = 0.8
 tickle_pitch = 1.3
+hit_fx = "bubble"
 drops = Array[ExtResource("2")]([SubResource("d0"), SubResource("d1")])
