@@ -458,6 +458,38 @@ func _run_ice_barrier(hero: BluePrincess) -> void:
 		if (first.contains("大腿") or first.contains("屁股")) and not str(lines).contains("哈哈哈"):
 			weak_ok = false
 	check("蓝色公主的组合台词不念组合名（%s），碰到大腿 / 屁股的那些笑到崩" % [named.slice(0, 3)], named.is_empty() and weak_ok)
+	# 组合演出：按来源生成，不重复
+	var sc: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://data/characters/blue/combo_scenes.json"))
+	var counts := {}
+	var total := 0
+	for cid in sc["scenes"]:
+		for st in sc["scenes"][cid]["steps"]:
+			if str(st.get("speaker", "")) == "蓝色的公主" and st.has("text"):
+				counts[st["text"]] = int(counts.get(st["text"], 0)) + 1
+				total += 1
+	var most := 0
+	for t in counts:
+		most = maxi(most, counts[t])
+	check("蓝色公主的组合演出台词多样（%d 句里 %d 种，最多重复 %d 次）" % [total, counts.size(), most], counts.size() >= total * 0.6 and most <= 8)
+	# 常见物品：她自己的台词
+	Characters.scope("blue")
+	var gate_b: Array = Dialogue.lines_for("gate_closed")
+	Characters.unscope()
+	Characters.scope("pink")
+	var gate_p: Array = Dialogue.lines_for("gate_closed")
+	Characters.unscope()
+	check("铁栅栏等常见物品：蓝色公主有自己的台词（%s）" % [gate_b[0]["text"] if not gate_b.is_empty() else ""],
+		not gate_b.is_empty() and gate_b[0]["speaker"] == "蓝色的公主" and gate_p[0]["speaker"] == "公主")
+	# 反应黑框：字多时自动往上滚（对话中不显示，先关掉对话）
+	_finish()
+	await get_tree().process_frame
+	Dialogue.show_reaction("哈哈哈哈……不、不行……大腿……那里……真的不行……为什么偏偏是那里……哈哈哈哈……忍、忍不住……明明一直忍着的……刷子和羽毛一起……我、我投降……哈哈哈哈哈……！", 1.0)
+	var over := Dialogue.reaction_overflow()
+	Dialogue._scroll_reaction(1.6)   # 直接推进（等待期间可能又被挠、换了反应）
+	var scrolled := Dialogue.reaction_scroll()
+	check("反应黑框字多时自动往上滚（超出 %.0f 像素，滚了 %.0f）" % [over, scrolled], over > 0.0 and scrolled > 0.0)
+	Dialogue.show_reaction("……嗯。", 0.5)
+	check("字少时不滚", Dialogue.reaction_overflow() == 0.0 and Dialogue.reaction_scroll() == 0.0)
 	var th: Array = rx["combos"]["th_brush_feast"]["lines"]
 	check("三来源组合（%s）也是说手法：带「屁股」「哈哈哈」" % [th[0]], str(th).contains("屁股") and str(th).contains("哈哈哈"))
 	# 疲倦爆发：带满蓄力范围、一半时间的冰晶控制

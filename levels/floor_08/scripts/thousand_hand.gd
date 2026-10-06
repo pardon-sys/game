@@ -495,17 +495,41 @@ func summon() -> void:
 	for key in group:
 		if alive >= cap:
 			break
-		var m: Monster = load(MONSTER_SCENES[key]).instantiate()
-		m.add_to_group("f8_summon")
-		get_parent().add_child(m)
-		m.global_position = summon_points.pick_random() + Vector2(randf_range(-12, 12), randf_range(-8, 8))
-		m.rally_to(_targets().pick_random() if not _targets().is_empty() else GameState.player)
-		if m.health:
-			m.health.died.connect(drop_loot.bind(m))
-		Fx.burst(get_parent(), m.global_position, "dust", 5, 30.0, 0.4)
+		# 阶段三：落在场地中线附近左右（手臂从上面伸下来放下）；别的阶段：墙角的召唤点
+		var spot := Vector2.INF
+		if phase >= 3 and Duo.director and Duo.director.has_method("summon_spot"):
+			spot = Duo.director.summon_spot()
+		if spot == Vector2.INF:
+			_spawn_summon(key, summon_points.pick_random() + Vector2(randf_range(-12, 12), randf_range(-8, 8)))
+		else:
+			_drop_summon(key, spot)
 		alive += 1
 	Audio.play("chime", -4.0, 0.0, 0.6)
 	maybe_taunt(true)
+
+
+func _spawn_summon(key: String, pos: Vector2) -> Monster:
+	var m: Monster = load(MONSTER_SCENES[key]).instantiate()
+	m.add_to_group("f8_summon")
+	get_parent().add_child(m)
+	m.global_position = pos
+	m.rally_to(_targets().pick_random() if not _targets().is_empty() else GameState.player)
+	if m.health:
+		m.health.died.connect(drop_loot.bind(m))
+	Fx.burst(get_parent(), m.global_position, "dust", 5, 30.0, 0.4)
+	return m
+
+
+## 手臂从画面上方垂下来，落地时放下小怪。
+func _drop_summon(key: String, pos: Vector2) -> void:
+	var arm := SummonArm.new()
+	get_parent().add_child(arm)
+	arm.global_position = pos
+	await arm.landed
+	if not is_instance_valid(self) or not is_inside_tree() or _dead or not fighting:
+		return
+	_spawn_summon(key, pos)
+	Audio.play("drop", -6.0, 0.1, 0.9)
 
 
 ## 召唤的小怪被打倒时掉东西：爱心 30%、星星糖 25%（掉在原地）。
@@ -520,7 +544,7 @@ func drop_loot(m: Node2D) -> void:
 
 
 func clear_summons() -> void:
-	for n in get_tree().get_nodes_in_group("f8_summon"):
+	for n in get_tree().get_nodes_in_group("f8_summon") + get_tree().get_nodes_in_group("f8_summon_arm"):
 		n.queue_free()
 
 

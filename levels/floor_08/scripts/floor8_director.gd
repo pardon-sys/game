@@ -428,10 +428,14 @@ func shift_terrain() -> void:
 			shifter.spawn_field("conveyor", Vector2i(r.position.x + 2, cy - 2), {"dir": "right", "len": 6})
 			shifter.spawn_field("conveyor", Vector2i(r.end.x - 3, cy + 3), {"dir": "left", "len": 6})
 			GameState.notify("地面变成了泥沼和传送带！")
-		2:   # 羽毛坑（落穴洞）
-			for c in _free_cells(keep, 5, 2, 2):
-				shifter.spawn_field("pit", c, {"content": ["squirrel", "rat"].pick_random()})
-			GameState.notify("地上塌出了洞！")
+		2:   # 一组强制位移 + 束缚陷阱
+			var cells := _free_cells(keep, 5, 3, 3)
+			for i in cells.size():
+				var pool: Array = TerrainShifter.DISPLACE if i % 2 == 0 else TerrainShifter.RESTRAIN
+				place_trap(str(pool.pick_random()), cells[i] + Vector2i(1, 1), 0.0, keep)
+			if not _still_reachable():
+				shifter.clear()
+			GameState.notify("地面冒出了好多机关！")
 	_terrain_i += 1
 
 
@@ -455,8 +459,16 @@ func grow_terrain() -> void:
 	var r := arena_cells
 	ahead.x = clampi(ahead.x, r.position.x + 2, r.end.x - 3)
 	ahead.y = clampi(ahead.y, r.position.y + 4, r.end.y - 3)
-	var kinds := ["wall", "wall", "mud", "conveyor", "vortex"]
+	# 阶段二、三共用一个池子：石墙、泥沼、羽毛坑，加强制位移类和束缚类陷阱（束缚类少一点）
+	var kinds := ["wall", "wall", "mud", "pit", "displace", "displace", "displace", "restrain"]
 	match kinds.pick_random():
+		"displace":
+			place_trap(str(TerrainShifter.DISPLACE.pick_random()), ahead, TERRAIN_LIFE, keep)
+		"restrain":
+			place_trap(str(TerrainShifter.RESTRAIN.pick_random()), ahead, TERRAIN_LIFE * 0.8, keep)
+		"pit":
+			if not keep.has(ahead):
+				shifter.spawn_field("pit", ahead, {"content": ["squirrel", "rat"].pick_random()}, TERRAIN_LIFE)
 		"wall":
 			# 横在她前面的一段墙（和前进方向垂直，3~4 格）
 			var perp := Vector2i(0, 1) if absf(dir.x) > absf(dir.y) else Vector2i(1, 0)
@@ -474,14 +486,43 @@ func grow_terrain() -> void:
 		"mud":
 			if not keep.has(ahead):
 				shifter.spawn_field("mud", ahead, {"w": 2, "h": 2}, TERRAIN_LIFE)
+
+
+## 在 cell 放一样临时陷阱（TerrainShifter 的 kind）：方向朝场地里面；多格的陷阱不压住 keep。返回放下的节点（没放就 null）。
+func place_trap(kind: String, cell: Vector2i, life: float, keep: Dictionary) -> Node:
+	var r := arena_cells
+	var to_center := Vector2(r.get_center()) - Vector2(cell)
+	var horiz := absf(to_center.x) >= absf(to_center.y)
+	var d := ("right" if to_center.x >= 0.0 else "left") if horiz else ("down" if to_center.y >= 0.0 else "up")
+	var opts := {"dir": d}
+	var size := Vector2i.ONE
+	match kind:
+		"bounce_pad":
+			opts["len"] = 3
+		"feather_fan":
+			opts["len"] = 4
 		"conveyor":
-			var d: String = ["left", "right", "up", "down"].pick_random()
-			if not keep.has(ahead):
-				shifter.spawn_field("conveyor", ahead, {"dir": d, "len": 3}, TERRAIN_LIFE)
+			opts["len"] = 3
+		"soap_floor":
+			opts["w"] = 2
+			opts["h"] = 2
+			size = Vector2i(2, 2)
+		"chute":
+			opts["w"] = 3 if horiz else 1
+			opts["h"] = 1 if horiz else 3
+			size = Vector2i(opts["w"], opts["h"])
+		"mud":
+			opts["w"] = 2
+			opts["h"] = 2
+			size = Vector2i(2, 2)
 		"vortex":
-			var v := ahead + Vector2i(roundi(dir.x), roundi(dir.y))
-			if not keep.has(v):
-				shifter.spawn_field("vortex", v, {"radius": 2}, TERRAIN_LIFE * 0.7)
+			opts["radius"] = 2
+	for dx in size.x:
+		for dy in size.y:
+			var c := cell + Vector2i(dx, dy)
+			if keep.has(c) or not r.grow(-1).has_point(c):
+				return null
+	return shifter.spawn_field(kind, cell, opts, life)
 
 
 ## 两个人都还能走到要去的地方（阶段二：两块压力板；阶段三：光圈）。
@@ -500,6 +541,31 @@ func _still_reachable() -> bool:
 			if _cell_of(m.global_position) != _cell_of(g) and GridPath.find(lv, m.global_position, g, 6000).is_empty():
 				return false
 	return true
+
+
+## 阶段三召唤的小怪落点：场地中线附近、左右随机（横向离中心 SUMMON_X、纵向 ±SUMMON_Y），
+## 不落在墙 / 升起的石墙 / 光圈上；找不到返回 Vector2.INF（退回墙角的召唤点）。
+const SUMMON_X := Vector2(40.0, 120.0)
+const SUMMON_Y := 40.0
+
+
+func summon_spot() -> Vector2:
+	var r := arena_cells
+	if r.size == Vector2i.ZERO:
+		return Vector2.INF
+	var center := _cell_pos(r.position + r.size / 2)
+	var circle_cell := _cell_of(circle.global_position) if circle else Vector2i(-9999, -9999)
+	var walls: TileMapLayer = shifter.walls if shifter else null
+	for attempt in 30:
+		var side := -1.0 if randf() < 0.5 else 1.0
+		var p := center + Vector2(side * randf_range(SUMMON_X.x, SUMMON_X.y), randf_range(-SUMMON_Y, SUMMON_Y))
+		var c := _cell_of(p)
+		if not r.grow(-1).has_point(c) or (c - circle_cell).length() < 2.5:
+			continue
+		if walls and walls.get_cell_source_id(c) != -1:
+			continue
+		return _cell_pos(c) + Vector2(randf_range(-4, 4), randf_range(-3, 3))
+	return Vector2.INF
 
 
 ## AI 搭档：千手乱舞时去最近的安全圈（没有就返回 null）。
@@ -742,12 +808,14 @@ func _reset_sensitivity() -> void:
 			m.sensitivity.reset()
 
 
-## 第 n 次在这个阶段战败播哪段小剧场：按次数轮流（阶段一、二各两段，阶段三三段）。
-const DEFEAT_VARIANTS := {1: 2, 2: 2, 3: 3}
+## 第 n 次在这个阶段战败播哪段小剧场：阶段一、二各两段按次数轮流；阶段三 1→2→3→4，之后一直是第 4 段（叠在一起）。
+const DEFEAT_VARIANTS := {1: 2, 2: 2, 3: 4}
 
 
 static func defeat_theater(ph: int, n: int) -> String:
 	var count: int = DEFEAT_VARIANTS.get(ph, 2)
+	if ph >= 3:
+		return "f8_defeat_%d_%d" % [ph, clampi(n, 1, count)]
 	return "f8_defeat_%d_%d" % [ph, (n - 1) % count + 1]
 
 

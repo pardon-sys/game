@@ -80,6 +80,7 @@ const WIDE_HEIGHT := 180.0
 func _ready() -> void:
 	panel.hide()
 	reaction_panel.hide()
+	_setup_reaction_clip()
 	_style_scrollbar()
 	GameState.emotion_changed.connect(_on_emotion_changed)
 	GameState.princess_reacted.connect(show_reaction)
@@ -213,10 +214,27 @@ func is_active() -> bool:
 
 
 func start(id: String) -> void:
-	if not _data.has(id):
+	var lines := lines_for(id)
+	if lines.is_empty():
 		push_warning("没有对话: " + id)
 		return
-	start_lines(_data[id], id)
+	start_lines(lines, id)
+
+
+## 角色自己的通用对话（data/characters/<角色>/dialogues.json，如蓝色公主的铁栅栏、钥匙台词）。
+var _char_lines := {}
+
+
+## 对话 id 的台词：当前操控的角色有自己的版本就用她的，否则用通用 / 楼层的。
+func lines_for(id: String) -> Array:
+	var who := Characters.current()
+	if who != "pink" and who != "":
+		if not _char_lines.has(who):
+			_char_lines[who] = Characters.load_json("dialogues.json", "", who)
+		var own: Dictionary = _char_lines[who]
+		if own.get(id) is Array:
+			return own[id]
+	return _data.get(id, [])
 
 
 func start_lines(lines: Array, id := "") -> void:
@@ -528,10 +546,62 @@ func _show_portrait(emotion: String) -> void:
 		tw.tween_property(portrait, "scale", Vector2.ONE, 0.06)
 
 
+## 被挠时下面的反应黑框：字多到超出框时自动往上滚（停一下 → 滚到底 → 停一下 → 回到顶，循环）。
+const REACT_SCROLL_SPEED := 12.0
+const REACT_PAUSE := 0.6
+var _react_clip: Control
+var _react_overflow := 0.0
+var _react_t := 0.0
+
+
+func _setup_reaction_clip() -> void:
+	_react_clip = Control.new()
+	_react_clip.name = "Clip"
+	_react_clip.clip_contents = true
+	_react_clip.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_react_clip.position = reaction_text.position
+	_react_clip.size = reaction_text.size
+	reaction_panel.add_child(_react_clip)
+	reaction_text.reparent(_react_clip, false)
+	reaction_text.position = Vector2.ZERO
+
+
 func show_reaction(text: String, duration: float) -> void:
-	_reaction_time = duration if not _active else 0.0
 	reaction_text.text = text
+	_react_t = 0.0
+	var box_h := _react_clip.size.y if _react_clip else reaction_text.size.y
+	reaction_text.size = Vector2(reaction_text.size.x, box_h)
+	reaction_text.position = Vector2.ZERO
+	var text_h := float(reaction_text.get_line_count() * reaction_text.get_line_height())
+	_react_overflow = maxf(0.0, text_h - box_h)
+	if _react_overflow > 0.0:
+		# 字太多：顶端对齐、按全文高度排，显示时间至少够滚完一遍
+		reaction_text.vertical_alignment = VERTICAL_ALIGNMENT_TOP
+		reaction_text.size.y = text_h
+		duration = maxf(duration, REACT_PAUSE * 2.0 + _react_overflow / REACT_SCROLL_SPEED + 0.6)
+	else:
+		reaction_text.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	_reaction_time = duration if not _active else 0.0
 	reaction_panel.visible = text != "" and _reaction_time > 0.0
+
+
+## 反应框里的文字现在往上滚了多少像素（测试用）。
+func reaction_scroll() -> float:
+	return -reaction_text.position.y
+
+
+func reaction_overflow() -> float:
+	return _react_overflow
+
+
+func _scroll_reaction(delta: float) -> void:
+	if _react_overflow <= 0.0 or not reaction_panel.visible:
+		return
+	_react_t += delta
+	var travel := _react_overflow / REACT_SCROLL_SPEED
+	if _react_t > REACT_PAUSE * 2.0 + travel:
+		_react_t = 0.0
+	reaction_text.position.y = -roundf(clampf((_react_t - REACT_PAUSE) * REACT_SCROLL_SPEED, 0.0, _react_overflow))
 
 
 ## 立绘避让：操控的角色走到左下角立绘的位置时，常驻立绘变半透明（self_modulate，和说话时的变暗互不影响）。
@@ -555,6 +625,7 @@ func _update_portrait_fade(delta: float) -> void:
 
 func _process(delta: float) -> void:
 	_update_portrait_fade(delta)
+	_scroll_reaction(delta)
 	if _reaction_time > 0.0:
 		_reaction_time = maxf(0.0, _reaction_time - delta)
 		if _reaction_time == 0.0:

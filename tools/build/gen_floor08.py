@@ -5,13 +5,18 @@ floor_08（36x34）：下面是入口走廊（存档点，本层唯一），上�
   blue_fight、pink_fight、arena_tl、arena_br。入口的门（gate group=f8_gate）开战时关上。
 floor_08_chase：一间底板小屋，无限滚动的跑道由 ChaseRun 自己画。
 过场 data/cutscenes/floor_08/：f8_intro_a / f8_intro_b（开场）、f8_phase2 / f8_phase3（阶段切换）、f8_victory_a / f8_victory_b（胜利）、f8_ending（逃出来）。
-小剧场 data/theater/floor_08/：f8_defeat_<阶段>_<n>（阶段一、二各两段，阶段三三段，按战败次数轮流；BOSS_CG 的大图按幕换上）、f8_chase_fail。
+小剧场 data/theater/floor_08/：f8_defeat_<阶段>_<n>（阶段一、二各两段按战败次数轮流；阶段三 1→2→3→4，之后一直是第 4 段「叠在一起」；
+BOSS_CG 的大图按幕换上；每段结尾都有两个人魔力疲倦爆发的一幕）、f8_chase_fail。
 蓝色公主的台词：她和千手是旧识，带着惋惜和自责，但从不说出它是谁。
 用法：python tools/build/gen_floor08.py，然后 build_level.gd -- floor=floor_08、floor=floor_08_chase
 """
 import json
 import os
+import sys
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import burst_lines as BL  # noqa: E402
 
 os.chdir(Path(__file__).resolve().parents[2])
 
@@ -232,14 +237,66 @@ def pose(who, visual):
 EMO_BY_ACT = ["helpless_1", "helpless_1", "helpless_2", "helpless_2", "helpless_2"]
 
 
-def theater(name, intro, acts, mob=False):
+# ---------------------------------------------------------------- 魔力疲倦爆发的一幕（每段战败剧场的结尾；叠在一起的那段中间也有一次）
+# lines：前两句「满了」，然后爆发（白光 + 星光 + 释放的水声，千手被震开、立绘换成魔力释放），
+#        第 3 句舒服、第 5 句千手回来，之后挠得更密、笑得更大声（蓝色公主嘴硬 → 破防，千手夸她，粉色公主吐槽）。
+def burst_act(lines, boss_at=(0, -16), mob=False):
+    def both_tk(repeat, interval, z_p="sole", z_b="thigh"):
+        out = [tk("pink", "boss", z_p, "feather", repeat), tk("blue", "boss", z_b, "brush", repeat)]
+        for t in out:
+            t["interval"] = interval
+        if mob:
+            out.append(A("tickle", who="blue", by="m1", repeat=repeat, interval=interval, fx="brush", zone="butt"))
+            out.append(A("tickle", who="pink", by="m2", repeat=repeat, interval=interval, fx="feather", zone="sole"))
+        return out
+
+    def say(ln, actions, emo):
+        st = {"act": "burst", "speaker": ln[0], "text": ln[1], "actions": actions}
+        if ln[0] in (P, BLUE):
+            st["emotion"] = ln[2] if len(ln) > 2 else emo
+        return st
+
+    steps = []
+    for ln in lines[:2]:
+        steps.append(say(ln, [A("shake", who="pink", time=0.8), A("shake", who="blue", time=0.8), A("bubble", who="blue", kind="surprise"),
+                              A("voice", state="laugh")] + both_tk(5, 0.24), "helpless_2"))
+    boom = [A("flash", time=0.8), A("sfx", sound="star_burst", volume=-1.0), A("sfx", sound="water_release", volume=-2.0), A("voice", state=""),
+            A("shake", who="pink", time=0.5), A("shake", who="blue", time=0.5), A("move", who="boss", to=[boss_at[0], boss_at[1] - 30], time=0.25)]
+    if mob:
+        boom += [A("move", who="m1", to=[80, 18], time=0.25), A("move", who="m2", to=[-70, 20], time=0.25)]
+    steps.append({"act": "burst", "portrait": BL.PORTRAIT, "actions": boom, "wait": 1.1})
+    for i, ln in enumerate(lines[2:]):
+        if i < 2:
+            acts = [A("bubble", who="blue" if ln[0] == BLUE else "pink", kind="shy")]
+            emo = "burst"
+        elif i == 2:
+            acts = [A("move", who="boss", to=list(boss_at), time=0.6), A("voice", state="giggle")] + both_tk(4, 0.3)
+            if mob:
+                acts += [A("move", who="m1", to=[40, 22], time=0.6), A("move", who="m2", to=[8, 24], time=0.6)]
+            emo = "helpless_1"
+        else:
+            acts = [A("voice", state="laugh"), A("shake", who="blue", time=0.6), A("shake", who="pink", time=0.6),
+                    pose("pink", "helpless_2"), pose("blue", "helpless_2")] + both_tk(10, 0.15, ["sole", "waist", "armpit"][i % 3],
+                                                                                     ["thigh", "butt"][i % 2])
+            emo = "helpless_2"
+        steps.append(say(ln, acts, emo))
+    return steps
+
+
+def theater(name, intro, acts, mob=False, cast_at=None):
     steps = [{"actions": [A("fade_in", time=0.5), A("voice", state="laugh")], "wait": 0.5}]
     if intro:
         steps.append({"speaker": N, "text": intro})
     pz = ["armpit", "waist", "sole", "neck", "belly"]
     bz = ["thigh", "butt", "thigh", "waist", "butt"]
     li = 0
-    for k, act in enumerate(acts):
+    k = -1
+    for act in acts:
+        if "burst" in act:
+            boss_at = (cast_at or {}).get("boss", [0, -16])
+            steps.extend(burst_act(act["burst"], tuple(boss_at), mob))
+            continue
+        k += 1
         emo = dict({P: EMO_BY_ACT[k], BLUE: EMO_BY_ACT[k]}, **act.get("emo", {}))
         portrait = act.get("cg") or ("defeat_1" if k < 2 else "defeat_2")
         first = [tk("pink", "boss", pz[k % 5], "feather"), tk("blue", "boss", bz[k % 5], "brush")]
@@ -271,6 +328,8 @@ def theater(name, intro, acts, mob=False):
     if mob:
         cast["m1"] = {"kind": "monster:hedgehog", "at": [40, 22]}
         cast["m2"] = {"kind": "monster:squirrel", "at": [8, 24]}
+    for who, at in (cast_at or {}).items():
+        cast[who]["at"] = at
     return {"name": name, "cast": cast, "steps": steps}
 
 
@@ -462,11 +521,91 @@ DEFEAT = {
             (BLUE, "哈哈哈哈……！又、又来……！"), (P, "……下次……先清小怪……")]},
     ]),
 }
-DEFEAT_VARIANTS = {1: 2, 2: 2, 3: 3}
+# 每段剧场结尾的魔力疲倦爆发（各不相同）：两人满了 → 爆发 → 舒服 → 千手回来 → 更敏感、笑得更大声；
+# 蓝色公主嘴硬（「才没有觉得舒服」）下一句就笑崩，千手夸她，粉色公主吐槽。
+BURSTS = {
+    (1, 1): [(BLUE, "……魔、魔力……满了……压、压不住……"), (P, "我、我也是……身体里好烫……要、要出来了——！"),
+             (BLUE, "……哈……全部……放出去了……嗯……"), (P, "呼……好、好舒服……"), (BOSS, "……回……来……了……"),
+             (P, "呀哈哈哈哈！刚、刚放完……碰哪里都痒——！"), (BLUE, "哈哈哈哈哈……！才、才没有……觉得舒服……哈哈哈哈……！"),
+             (BOSS, "……这样……好……笑起来……很……可爱……"), (BLUE, "……！闭、闭嘴……哈哈哈……不准夸……哈哈哈哈！"),
+             (P, "你、你脸红了！哈哈哈……原来你也会这样！"), (N, "（两个人的笑声比刚才大了一倍，在千手之间里回荡了好久）")],
+    (1, 2): [(P, "魔、魔力条……满了……！"), (BLUE, "……我也……唔……要、要溢出来了……"),
+             (P, "哈……好、好舒服……"), (BLUE, "……嗯。……还、还可以。"), (BOSS, "……再……来……"),
+             (BLUE, "哈哈哈哈……！放、放完再挠……犯规……大腿……哈哈哈哈！"), (P, "哈哈哈哈！它、它专门等我们放完才挠的吧——！"),
+             (BOSS, "……你……这样……最……好看……"), (BLUE, "……哈哈……谁、谁要你说好看……哈哈哈哈哈……！"),
+             (P, "「还可以」呢？刚才不是说「还可以」吗哈哈哈！")],
+    (2, 1): [(BLUE, "……花、花瓣里……魔力……满了……"), (P, "我、我也……刺猬再蹭一下就……呀——！"),
+             (P, "……啊……花瓣全飞起来了……好舒服……"), (BLUE, "……嗯……身体……轻轻的……"), (BOSS, "……刺猬……回来……"),
+             (P, "哈哈哈哈！回、回来了！刚放完的脚心——哈哈哈不行！"),
+             (BLUE, "哈哈哈……！才、才不是舒服……是、是魔力的关系……哈哈哈哈哈！"), (BOSS, "……嘴硬……也……可爱……"),
+             (BLUE, "……！……哈哈哈哈……别、别说可爱……！"), (P, "它说得对……你嘴硬的样子好可爱哈哈哈！")],
+    (2, 2): [(P, "泥、泥巴里……魔力……满到喉咙了……"), (BLUE, "……我……也……忍、忍不住……"),
+             (BLUE, "……哈……泥沼……被冲开了……"), (P, "呼……好、好舒服……"), (BOSS, "……没……用……"),
+             (P, "哈哈哈哈！手、手又从泥里伸出来了——！"), (BLUE, "哈哈哈哈哈……！屁、屁股……刚放完……不行……哈哈哈哈！"),
+             (BOSS, "……笑……大声……一点……好……"), (BLUE, "……哈哈哈……才、才不会……照你说的……哈哈哈哈哈哈！"),
+             (P, "你、你明明笑得更大声了啦哈哈哈！")],
+    (3, 1): [(P, "……魔、魔力……要满了……"), (BLUE, "……一起……要、要一起爆了……"),
+             (P, "……哈……手、手都被弹开了……"), (BLUE, "……嗯……舒、舒服……"), (BOSS, "……没……关系……再……来……"),
+             (P, "哈哈哈哈哈！全、全部又回来了！数、数不清——！"), (BLUE, "哈哈哈哈……！刚、刚才说舒服的……不算……哈哈哈哈哈！"),
+             (BOSS, "……算……很……可爱……"), (BLUE, "……哈哈哈……可、可爱也不算……哈哈哈哈！"), (P, "哈哈哈……它记得比你还清楚呢！")],
+    (3, 2): [(BLUE, "……魔、魔力……满了……忍、忍不住了……"), (P, "哈、哈……我这边……也……满了……！"),
+             (BLUE, "……哈……嗯……身、身体……软了……"), (P, "你、你的表情……好舒服的样子……"), (BOSS, "……再……画……圈……"),
+             (BLUE, "哈哈哈哈哈……！放、放完了还画……大腿……更、更痒了……哈哈哈哈！"),
+             (BLUE, "……才、才没有……喜欢……这样……哈哈哈哈哈哈！"), (BOSS, "……没……变……还是……这样……好……"),
+             (BLUE, "……哈哈……「还是」什么……别、别说下去……哈哈哈哈！"), (P, "你、你们果然……哈哈哈……我、我不问了……先笑完再说……")],
+    (3, 3): [(BLUE, "……毛、毛茸茸的……魔力……满了……"), (P, "我、我这边松鼠也……要、要爆了——！"),
+             (P, "……哈……小怪全被吹飞了……"), (BLUE, "……嗯……舒、舒服……一点点……"), (BOSS, "……大家……回来……"),
+             (BLUE, "哈哈哈哈……！回、回来了……一起滚……哈哈哈哈哈！"), (P, "哈哈哈哈！我这边的尾巴也——刚放完不行啦！"),
+             (BOSS, "……笑……这样……好……乖……"), (BLUE, "……哈哈……谁、谁乖了……哈哈哈哈哈……！"),
+             (P, "「一点点」舒服？我都听到你哼了一声哈哈哈！")],
+    "chase": [(P, "魔、魔力……要满了……巨石还在后面……！"), (BLUE, "……我……也……一起……"),
+              (P, "……哈……石、石头缝里的手……被弹开了……"), (BLUE, "……嗯……舒服……"), (BOSS, "……别……走……"),
+              (P, "哈哈哈哈！又、又抓住脚了！刚放完——哈哈哈哈！"), (BLUE, "哈哈哈……！不、不是舒服……是累了……哈哈哈哈哈！"),
+              (BOSS, "……累……也……可爱……"), (BLUE, "……哈哈哈……都、都说了别夸……哈哈哈哈！"), (P, "跑、跑之前……先笑完……哈哈哈……")],
+}
+# 阶段三第 4 段（第 4 次起每次都播）：两个人被叠在一起，上面的蓝色公主被专挠大腿和屁股、下面的粉色公主被专挠脚心；
+# 中间、结尾各爆发一次。只用立绘（没有大图）。蓝色公主傲娇到破防，粉色公主天然呆吐槽。
+STACK = ("千手之间·战败（阶段三·叠在一起）", "（千手的手臂一抬，小怪们把两个人推到一起——蓝色公主被压在上面，粉色公主垫在下面）", [
+    {"note": "（两个人被手臂叠在一起，绑得紧紧的。上面那个的大腿和屁股朝着外面，下面那个的脚心朝着天）", "emo": {BLUE: "angry", P: "surprise"},
+     "lines": [
+        (BOSS, "……叠……起来……"), (P, "重、重死了！你、你压到我了！"), (BLUE, "……是它们推的。……不是我。"),
+        (P, "我们现在……像不像叠起来的点心……哈哈……"), (BLUE, "……这种时候……别说傻话。"),
+        (N, "（刷刷刺猬爬上来，刷毛贴着蓝色公主的大腿；另一只羽毛手，停在粉色公主朝天的脚心上）"),
+        (BLUE, "……唔。……不痒。", "shy"), (P, "脚、脚心——呀哈哈哈！痒痒痒！", "helpless_1"),
+        (BLUE, "……别、别乱动……你一笑……我也跟着晃……", "helpless_1")]},
+    {"note": "（刷子在大腿上来回、羽毛在脚心上画圈——两边的节奏一模一样）", "lines": [
+        (P, "哈哈哈哈！羽、羽毛在脚心画圈——不行不行！"), (BLUE, "……嗯、嗯唔……大、大腿……刷、刷子……别……"),
+        (BOSS, "……你……最怕……这里……她……最怕……那里……"), (P, "它、它连我怕脚心都知道？！哈哈哈……你们到底交流了什么啊！"),
+        (BLUE, "……没、没交流……哈、哈哈……"), (N, "（松鼠们钻到了上面，蓬松的尾巴一下一下扫过蓝色公主的屁股）"),
+        (BLUE, "……！……哈哈……哈哈哈……屁、屁股……不、不行……"), (P, "上面笑得在抖——我、我在下面也跟着抖哈哈哈哈！")]},
+    {"burst": [(BLUE, "……魔、魔力……满了……"), (P, "我、我也是……一、一起……！"),
+               (BLUE, "……哈……嗯……身体……好轻……"), (P, "……呼……好舒服……"), (BOSS, "……第……一……次……"),
+               (BLUE, "……刚、刚才那个不算……我、我还能忍……", "angry"), (BOSS, "……那……再……来……"),
+               (BLUE, "哈哈哈哈……！放、放完再刷大腿……更、更……哈哈哈哈哈！"), (P, "你、你自己说还能忍的哈哈哈哈！"),
+               (N, "（刚放完魔力的身体敏感得不得了，两个人一起笑得直抖）")]},
+    {"note": "（手指、刷子、尾巴越来越多。魔力条又在一点一点涨上去）", "lines": [
+        (P, "脚、脚心……刷子和羽毛轮流……哈哈哈哈哈！"), (BLUE, "哈哈哈……大腿……屁股……一起……不、不准一起……哈哈哈哈！"),
+        (BOSS, "……你……小时候……也……这样……说……"), (BLUE, "……！……哈哈哈哈……那、那个不准说……哈哈哈……！"),
+        (P, "小时候？！哈哈哈……你、你小时候也被这样挠过？！"), (BLUE, "……没、没有……哈哈哈哈……忘、忘掉……！"),
+        (P, "我、我记住了哈哈哈……出去以后要问清楚！"), (BOSS, "……又……要……满……了……")]},
+    {"note": "（第二次了。两个人的魔力条一起闪着光，刷子和羽毛一刻也没有停）", "lines": [
+        (P, "又、又要满了……好、好快……哈哈哈……"), (BLUE, "……这、这次……一定……忍住……"),
+        (BOSS, "……忍……不住……的……"), (BLUE, "……哈……哈哈……别、别看着我……")]},
+    {"burst": [(BLUE, "……又、又满了……不、不行……这次……压不住……"), (P, "我、我也……第二次了……呜哇——！"),
+               (BLUE, "……哈……哈……全、全部……没了……"), (P, "……软、软软的……像云……"), (BOSS, "……现在……最……敏感……"),
+               (BLUE, "哈哈哈哈哈哈……！不、不行……全、全身都……哈哈哈哈哈哈哈！"),
+               (BLUE, "……我、我投降……哈哈哈……我承认……很、很痒……哈哈哈哈哈！"), (BOSS, "……这样……的……你……最……好……"),
+               (P, "哈哈哈……她、她终于说投降了！我、我要记下来！"), (BLUE, "……哈哈……不、不准记……哈哈哈哈……！"),
+               (N, "（两个人叠在一起，笑声一个比一个大，一直笑到再也发不出声音）")]},
+])
+STACK_AT = {"pink": [0, 16], "blue": [0, 6]}
+DEFEAT_VARIANTS = {1: 2, 2: 2, 3: 4}
 TH = Path("data/theater/floor_08")
 TH.mkdir(parents=True, exist_ok=True)
 for (ph, k), (name, intro, acts) in DEFEAT.items():
-    (TH / ("f8_defeat_%d_%d.json" % (ph, k))).write_text(json.dumps(theater(name, intro, acts, mob=(ph, k) == (3, 3)), ensure_ascii=False, indent="\t") + "\n")
+    (TH / ("f8_defeat_%d_%d.json" % (ph, k))).write_text(json.dumps(theater(name, intro, acts + [{"burst": BURSTS[(ph, k)]}], mob=(ph, k) == (3, 3)),
+                                                                   ensure_ascii=False, indent="\t") + "\n")
+(TH / "f8_defeat_3_4.json").write_text(json.dumps(theater(STACK[0], STACK[1], STACK[2], mob=True, cast_at=STACK_AT), ensure_ascii=False, indent="\t") + "\n")
 CHASE_FAIL = ("崩塌的回廊·没逃掉", "（巨石堵住了路。千手的残臂从碎石缝里伸了出来）", [
     {"note": "（碎石缝里伸出的手越来越多，抓住了两个人的脚踝）", "emo": {BLUE: "surprise", P: "surprise"}, "lines": [
         (P, "路、路被堵住了——！"), (BOSS, "……别……走……"), (BLUE, "……它……还没放弃……"),
@@ -491,5 +630,6 @@ CHASE_FAIL = ("崩塌的回廊·没逃掉", "（巨石堵住了路。千手的�
         (P, "哈哈哈……用、用力——挣开了！"), (N, "（两个人互相拉着，从碎石里爬了出来）"),
         (P, "……再跑一次！这次跑在一起！"), (BLUE, "……嗯。……再来。", "normal")]},
 ])
-(TH / "f8_chase_fail.json").write_text(json.dumps(theater(*CHASE_FAIL), ensure_ascii=False, indent="\t") + "\n")
-print("第八层：%d 段过场、%d 段战败小剧场 + 追逐失败" % (len(CUTS), len(DEFEAT)))
+(TH / "f8_chase_fail.json").write_text(json.dumps(theater(CHASE_FAIL[0], CHASE_FAIL[1], CHASE_FAIL[2] + [{"burst": BURSTS["chase"]}]),
+                                                 ensure_ascii=False, indent="\t") + "\n")
+print("第八层：%d 段过场、%d 段战败小剧场 + 追逐失败" % (len(CUTS), len(DEFEAT) + 1))

@@ -10,6 +10,8 @@ extends Node2D
 ##         （画面上：巨石在两人身后，离得越近越大越震）。屏幕上方有进度条。
 ##   碰到障碍：后退一格 + 被对应来源挠的反馈（她自己的反应、表情、笑声、特效），短暂无敌。
 ##   失败：巨石追上任何一人，或两人相差超过 MAX_GAP 格 → 追逐失败小剧场 → 从头再来。成功：两人都到第 CELLS 格 → 结局过场。
+##   两人相差 ≥ WARN_ON 格时屏幕中间闪「离得太远了！」、进度条上两人之间画红线、落后的那个喊「等等我！」，回到 < WARN_OFF 格消失。
+##   失败 10 次以上滚石变慢（boulder_time）。
 
 signal finished(ok: bool)
 
@@ -18,6 +20,8 @@ const START := 3.0
 const STEP_TIME := 2.2
 const BOULDER_TIME := 3.0
 const MAX_GAP := 4.0
+const WARN_ON := 2.5
+const WARN_OFF := 1.5
 const SPEED := 150.0
 const LANE_HALF := 38.0
 const SIDE_SPEED := 95.0
@@ -77,6 +81,10 @@ var _bar: Control
 var _bar_layer: CanvasLayer
 var _t := 0.0
 var _rng := RandomNumberGenerator.new()
+## 离太远的提示
+var warning := false
+var _warn_label: Label
+var _wait_cd := 0.0
 ## 玩家操控的是哪条跑道（a = 一开始的主角，b = 另一个）；另一条 AI 控制
 var player_lane := "a"
 var _ai_rng := RandomNumberGenerator.new()
@@ -223,6 +231,9 @@ func start() -> void:
 		window = SideWindow.open(ai_char(), {"half": true, "zoom": 1.0, "offset": Vector2(0, VIEW_H / 2.0 - RUN_Y)})
 	_setup_views()
 	PlayerInputController.wasd_only = true
+	warning = false
+	if int(GameState.vars.get("f8_chase_fail", 0)) >= 10:
+		GameState.notify("巨石好像滚得慢了一点……")
 	if countdown:
 		for n in ["3", "2", "1", "跑！"]:
 			GameState.notify(n)
@@ -420,9 +431,10 @@ func advance(delta: float) -> void:
 	pa = minf(CELLS, pa + delta / STEP_TIME)
 	pb = minf(CELLS, pb + delta / STEP_TIME)
 	_boulder_t += delta
-	if _boulder_t >= BOULDER_TIME:
-		_boulder_t -= BOULDER_TIME
+	if _boulder_t >= boulder_time():
+		_boulder_t -= boulder_time()
 		roll_boulder()
+	_update_warning(delta)
 	for o in obstacles.duplicate():
 		o["y"] -= SPEED * delta
 		if OBSTACLES[o["kind"]].get("moving", false):
@@ -445,6 +457,28 @@ func advance(delta: float) -> void:
 	_update_cams()
 	_bar.queue_redraw()
 	check_end()
+
+
+## 滚石每格的时间：失败 10 次以上慢一些（×1.3），20 次以上再慢（×1.5）。
+func boulder_time() -> float:
+	var fails := int(GameState.vars.get("f8_chase_fail", 0))
+	return BOULDER_TIME * (1.5 if fails >= 20 else (1.3 if fails >= 10 else 1.0))
+
+
+## 离太远的提示：≥ WARN_ON 格出现，< WARN_OFF 格消失。
+func _update_warning(delta: float) -> void:
+	var gap := absf(pa - pb)
+	if not warning and gap >= WARN_ON:
+		warning = true
+		_wait_cd = 0.0
+	elif warning and gap < WARN_OFF:
+		warning = false
+	_warn_label.visible = warning and int(_t * 4.0) % 2 == 0
+	if warning:
+		_wait_cd -= delta
+		if _wait_cd <= 0.0:
+			_wait_cd = 2.0
+			SpeechBubble.say(a if pa < pb else b, "等、等等我！", 28.0)
 
 
 func roll_boulder() -> void:
@@ -534,12 +568,27 @@ func _make_bar() -> void:
 	_bar.size = Vector2(200, 16)
 	_bar.draw.connect(_draw_bar)
 	_bar_layer.add_child(_bar)
+	_warn_label = Label.new()
+	_warn_label.text = "离得太远了！靠近一点！"
+	_warn_label.add_theme_font_size_override("font_size", 14)
+	_warn_label.add_theme_color_override("font_color", Color(1.0, 0.35, 0.4))
+	_warn_label.add_theme_color_override("font_outline_color", Color(0.15, 0.02, 0.05))
+	_warn_label.add_theme_constant_override("outline_size", 4)
+	_warn_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_warn_label.position = Vector2(0, 40)
+	_warn_label.size = Vector2(get_viewport().get_visible_rect().size.x, 20)
+	_warn_label.hide()
+	_bar_layer.add_child(_warn_label)
 
 
 func _draw_bar() -> void:
 	var w := _bar.size.x
 	_bar.draw_rect(Rect2(0, 6, w, 5), Color(0.15, 0.1, 0.2, 0.9))
 	_bar.draw_rect(Rect2(w - 3, 2, 3, 13), Color(1, 0.9, 0.4))
+	if warning:
+		var x0 := clampf(minf(pa, pb) / CELLS, 0.0, 1.0) * w
+		var x1 := clampf(maxf(pa, pb) / CELLS, 0.0, 1.0) * w
+		_bar.draw_rect(Rect2(x0, 7, x1 - x0, 3), Color(1.0, 0.25, 0.3, 0.6 + 0.4 * sin(_t * 12.0)))
 	var font := ThemeDB.fallback_font
 	for item in [[boulder, Color(0.7, 0.66, 0.72), "石"], [pa, Color(0.75, 0.85, 1.0), "蓝" if a.character_id == "blue" else "粉"],
 			[pb, Color(1, 0.6, 0.8), "粉" if b.character_id == "pink" else "蓝"]]:
