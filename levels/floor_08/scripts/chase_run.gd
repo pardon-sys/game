@@ -9,7 +9,8 @@ extends Node2D
 ##   进度 0 ~ CELLS 格：两人从 START 格出发，每 STEP_TIME 秒前进一格；巨石从第 0 格开始，每 BOULDER_TIME 秒往前滚一格
 ##         （画面上：巨石在两人身后，离得越近越大越震）。屏幕上方有进度条。
 ##   碰到障碍：后退一格 + 被对应来源挠的反馈（她自己的反应、表情、笑声、特效），短暂无敌。
-##   失败：巨石追上任何一人，或两人相差超过 MAX_GAP 格 → 追逐失败小剧场 → 从头再来。成功：两人都到第 CELLS 格 → 结局过场。
+##   失败：巨石追上任何一人，或两人相差超过 MAX_GAP 格 → 追逐失败小剧场 → 从头再来。
+##   成功：两人都到第 CELLS 格 → 结局过场 → 第八层的小房间（floor_08_shelter，主角换回粉色公主）。
 ##   两人相差 ≥ WARN_ON 格时屏幕中间闪「离得太远了！」、进度条上两人之间画红线、落后的那个喊「等等我！」，回到 < WARN_OFF 格消失。
 ##   失败 10 次以上滚石变慢（boulder_time）。
 
@@ -551,6 +552,11 @@ func end(ok: bool, reason: String) -> void:
 				c.camera.position = Vector2.ZERO
 		GameState.set_flag("f8_done")
 		await Cutscene.play("f8_ending")
+		# 逃出来了 → 第八层的小房间过夜：主角换回粉色公主（不能切换）
+		GameState.set_flag("blue_is_hero", false)
+		var main := get_tree().get_first_node_in_group("main")
+		if main and main.has_method("change_level"):
+			main.change_level(Floors.scene("floor_08_shelter"))
 		return
 	GameState.vars["f8_chase_fail"] = int(GameState.vars.get("f8_chase_fail", 0)) + 1
 	await get_tree().create_timer(0.5).timeout

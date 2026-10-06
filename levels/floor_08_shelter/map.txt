@@ -1,0 +1,42 @@
+[level]
+# 第八层·小房间（tools/build/gen_floor08.py 生成，不要直接改）
+intro =
+intro_cutscene = f8_shelter_intro
+ambient = 0.42,0.38,0.58
+no_switch = true
+[legend]
+# = wall
+. = floor
+P = player
+t = torch lit=true
+A = prop type=wood_floor + prop type=cobweb
+C = prop type=wood_floor
+D = prop type=wood_floor + prop type=crayon_drawing action=talk:floor_08/shelter_objects#drawing
+E = prop type=wood_floor + prop type=window action=talk:floor_08/shelter_objects#window
+F = prop type=wood_floor + prop type=wardrobe action=talk:floor_08/shelter_objects#wardrobe
+G = prop type=wood_floor + prop type=bookshelf action=talk:floor_08/shelter_objects#bookshelf
+H = prop type=wood_floor + prop type=old_bed action=talk:floor_08/shelter_objects#bed
+I = prop type=wood_floor + blue_princess dialogue=floor_08/shelter_blue ai=false
+J = prop type=wood_floor + prop type=candle
+K = prop type=wood_floor + prop type=chair
+L = prop type=wood_floor + prop type=rug + prop type=old_tea action=talk:floor_08/shelter_objects#tea
+M = prop type=wood_floor + prop type=old_dresser action=talk:floor_08/shelter_objects#dresser
+N = prop type=wood_floor + prop type=music_box action=talk:floor_08/shelter_objects#music_box
+O = prop type=wood_floor + player
+Q = prop type=wood_floor + prop type=height_marks action=talk:floor_08/shelter_objects#marks
+R = prop type=wood_floor + exit target=floor_08 locked=true dialogue=f8s_door
+S = prop type=wood_floor + savepoint place=第八层·小房间
+
+[map]
+################
+################
+##ACCCCCDCCCEA##
+##CCCCFCCCGCCC##
+##CHCCCCCCCCIC##
+##CCCJCCCCCCCC##
+##CCCCCKLKCCCC##
+##CCCCCCCCCCCC##
+##CMCNCOCCCCJC##
+##CCCCQRCCCSCC##
+################
+################

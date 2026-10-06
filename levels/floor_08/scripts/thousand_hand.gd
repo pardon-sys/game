@@ -511,6 +511,11 @@ func summon() -> void:
 func _spawn_summon(key: String, pos: Vector2) -> Monster:
 	var m: Monster = load(MONSTER_SCENES[key]).instantiate()
 	m.add_to_group("f8_summon")
+	# 没目标时：阶段三在场地中间一带晃，别的阶段在召唤点附近（先设好家，生成时 _setup 不会把家记成 (0, 0)）
+	if phase >= 3:
+		m.set_home(arena.get_center(), 70.0)
+	else:
+		m.set_home(pos, 40.0)
 	get_parent().add_child(m)
 	m.global_position = pos
 	m.rally_to(_targets().pick_random() if not _targets().is_empty() else GameState.player)

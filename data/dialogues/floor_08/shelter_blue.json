@@ -1,0 +1,287 @@
+{
+	"name": "蓝色的公主",
+	"npc": "blue_princess",
+	"entries": [
+		{
+			"if": {
+				"flag": "f8s_seen_drawing",
+				"not": "f8s_t_drawing"
+			},
+			"node": "drawing"
+		},
+		{
+			"if": {
+				"flag": "f8s_seen_music_box",
+				"not": "f8s_t_music_box"
+			},
+			"node": "music_box"
+		},
+		{
+			"if": {
+				"flag": "f8s_seen_hairpin",
+				"not": "f8s_t_hairpin"
+			},
+			"node": "hairpin"
+		},
+		{
+			"if": {
+				"flag": "f8s_seen_marks",
+				"not": "f8s_t_marks"
+			},
+			"node": "marks"
+		},
+		{
+			"if": {
+				"var": {
+					"f8s_talk": [
+						"<",
+						1
+					]
+				}
+			},
+			"node": "t1"
+		},
+		{
+			"if": {
+				"var": {
+					"f8s_talk": [
+						"<",
+						2
+					]
+				}
+			},
+			"node": "t2"
+		},
+		{
+			"if": {
+				"var": {
+					"f8s_talk": [
+						"<",
+						3
+					]
+				}
+			},
+			"node": "t3"
+		},
+		{
+			"if": {
+				"var": {
+					"f8s_talk": [
+						"<",
+						4
+					]
+				}
+			},
+			"node": "t4"
+		},
+		{
+			"node": "last"
+		}
+	],
+	"nodes": {
+		"t1": {
+			"lines": [
+				{
+					"speaker": "公主",
+					"text": "你冷不冷？这里除了那床被子，什么都没有诶。"
+				},
+				{
+					"speaker": "蓝色的公主",
+					"text": "……不冷。习惯了。"
+				},
+				{
+					"speaker": "蓝色的公主",
+					"text": "……你冷的话，被子给你。",
+					"emotion": "shy"
+				}
+			],
+			"set": {
+				"add": {
+					"f8s_talk": 1
+				}
+			}
+		},
+		"t2": {
+			"lines": [
+				{
+					"speaker": "公主",
+					"text": "说起来，今天你被挠的时候，笑得好大声哦。",
+					"emotion": "happy"
+				},
+				{
+					"speaker": "蓝色的公主",
+					"text": "……没有。",
+					"emotion": "angry"
+				},
+				{
+					"speaker": "公主",
+					"text": "有！「才、才没有觉得舒服——」哈哈哈……",
+					"emotion": "happy"
+				},
+				{
+					"speaker": "蓝色的公主",
+					"text": "……再学一遍，就把你冻住。",
+					"emotion": "angry"
+				}
+			],
+			"set": {
+				"add": {
+					"f8s_talk": 1
+				}
+			}
+		},
+		"t3": {
+			"lines": [
+				{
+					"speaker": "公主",
+					"text": "床只有一张诶……要不要一起睡？",
+					"emotion": "happy"
+				},
+				{
+					"speaker": "蓝色的公主",
+					"text": "……！",
+					"emotion": "surprise"
+				},
+				{
+					"speaker": "蓝色的公主",
+					"text": "……我、我睡椅子就好。",
+					"emotion": "shy"
+				},
+				{
+					"speaker": "公主",
+					"text": "椅子会腰痛的啦！"
+				},
+				{
+					"speaker": "蓝色的公主",
+					"text": "……再、再说吧。",
+					"emotion": "shy"
+				}
+			],
+			"set": {
+				"add": {
+					"f8s_talk": 1
+				}
+			}
+		},
+		"t4": {
+			"lines": [
+				{
+					"speaker": "公主",
+					"text": "你不睡吗？"
+				},
+				{
+					"speaker": "蓝色的公主",
+					"text": "……你先睡。"
+				},
+				{
+					"speaker": "蓝色的公主",
+					"text": "……我守一会儿。外面……不放心。",
+					"emotion": "sad"
+				}
+			],
+			"set": {
+				"add": {
+					"f8s_talk": 1
+				}
+			}
+		},
+		"last": {
+			"lines": [
+				{
+					"speaker": "蓝色的公主",
+					"text": "……早点睡。明天还要走很远。"
+				}
+			]
+		},
+		"drawing": {
+			"lines": [
+				{
+					"speaker": "公主",
+					"text": "墙上那张蜡笔画……是谁画的呀？"
+				},
+				{
+					"speaker": "蓝色的公主",
+					"text": "……不知道。"
+				},
+				{
+					"speaker": "蓝色的公主",
+					"text": "……很久以前的东西了。别在意。",
+					"emotion": "sad"
+				}
+			],
+			"set": {
+				"flags": [
+					"f8s_t_drawing"
+				]
+			}
+		},
+		"music_box": {
+			"lines": [
+				{
+					"speaker": "公主",
+					"text": "那个八音盒，你会拧吗？声音好好听。",
+					"emotion": "happy"
+				},
+				{
+					"speaker": "蓝色的公主",
+					"text": "……以前……",
+					"emotion": "sad"
+				},
+				{
+					"speaker": "蓝色的公主",
+					"text": "……没什么。……睡吧。"
+				}
+			],
+			"set": {
+				"flags": [
+					"f8s_t_music_box"
+				]
+			}
+		},
+		"hairpin": {
+			"lines": [
+				{
+					"speaker": "公主",
+					"text": "梳妆台上那个雪花发夹，和你的一模一样诶。",
+					"emotion": "surprise"
+				},
+				{
+					"speaker": "蓝色的公主",
+					"text": "……巧合。"
+				},
+				{
+					"speaker": "蓝色的公主",
+					"text": "……雪花的发夹，很常见。"
+				}
+			],
+			"set": {
+				"flags": [
+					"f8s_t_hairpin"
+				]
+			}
+		},
+		"marks": {
+			"lines": [
+				{
+					"speaker": "公主",
+					"text": "门框上的身高刻痕，到我胸口就停了……那个孩子后来怎么了呢？",
+					"emotion": "sad"
+				},
+				{
+					"speaker": "蓝色的公主",
+					"text": "……"
+				},
+				{
+					"speaker": "蓝色的公主",
+					"text": "……长大了吧。",
+					"emotion": "sad"
+				}
+			],
+			"set": {
+				"flags": [
+					"f8s_t_marks"
+				]
+			}
+		}
+	}
+}

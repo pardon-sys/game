@@ -1,0 +1,182 @@
+{
+	"name": "",
+	"entries": [
+		{
+			"node": "bed"
+		}
+	],
+	"nodes": {
+		"bed": {
+			"lines": [
+				{
+					"speaker": "公主",
+					"text": "落了一层灰的床，帷幔是淡淡的蓝色……被子比我的床小一圈。",
+					"emotion": "surprise"
+				},
+				{
+					"speaker": "公主",
+					"text": "……今天就在这里过夜吧。",
+					"emotion": "shy"
+				}
+			],
+			"set": {
+				"flags": [
+					"f8s_seen_bed"
+				]
+			}
+		},
+		"wardrobe": {
+			"lines": [
+				{
+					"speaker": "公主",
+					"text": "衣柜里挂着几件蓝色的小裙子……好小，像是给小孩子穿的。",
+					"emotion": "surprise"
+				},
+				{
+					"speaker": "公主",
+					"text": "裙摆上缝着雪花形状的花边。……做得好仔细。"
+				},
+				{
+					"speaker": "蓝色的公主",
+					"text": "……别乱翻。"
+				}
+			]
+		},
+		"drawing": {
+			"lines": [
+				{
+					"speaker": "公主",
+					"text": "墙上贴着一张褪色的蜡笔画。一个蓝头发的小女孩……旁边是，好多只手？",
+					"emotion": "surprise"
+				},
+				{
+					"speaker": "公主",
+					"text": "大家都在笑……是在玩什么游戏吗？"
+				},
+				{
+					"speaker": "蓝色的公主",
+					"text": "……别看了。……很旧了。",
+					"emotion": "sad"
+				}
+			],
+			"set": {
+				"flags": [
+					"f8s_seen_drawing"
+				]
+			}
+		},
+		"dresser": {
+			"lines": [
+				{
+					"speaker": "公主",
+					"text": "梳妆台的镜子裂了一道缝。台面上放着一枚雪花形状的小发夹。"
+				},
+				{
+					"speaker": "公主",
+					"text": "……和她头上的那个，好像。",
+					"emotion": "surprise"
+				},
+				{
+					"speaker": "蓝色的公主",
+					"text": "……放回去吧。"
+				}
+			],
+			"set": {
+				"flags": [
+					"f8s_seen_hairpin"
+				]
+			}
+		},
+		"tea": {
+			"lines": [
+				{
+					"speaker": "公主",
+					"text": "小圆桌上摆着两个茶杯，一个蓝的，一个白的……杯底都积了灰。"
+				},
+				{
+					"speaker": "公主",
+					"text": "以前，有两个人在这里喝茶吧。",
+					"emotion": "sad"
+				}
+			]
+		},
+		"bookshelf": {
+			"lines": [
+				{
+					"speaker": "公主",
+					"text": "书架上都是童话书……《会挠痒的森林》《雪花公主》……书角都翻卷了。"
+				},
+				{
+					"speaker": "公主",
+					"text": "……最上面一格少了一本，只留下一个空位。",
+					"emotion": "surprise"
+				}
+			]
+		},
+		"music_box": {
+			"lines": [
+				{
+					"speaker": "",
+					"text": "（拧了拧发条——盒子里传出一段断断续续的旋律）",
+					"sfx": "music_box"
+				},
+				{
+					"speaker": "公主",
+					"text": "……好好听。有点……寂寞的调子。",
+					"emotion": "sad"
+				},
+				{
+					"speaker": "蓝色的公主",
+					"text": "……"
+				},
+				{
+					"speaker": "蓝色的公主",
+					"text": "……它还会响啊。",
+					"emotion": "sad"
+				}
+			],
+			"set": {
+				"flags": [
+					"f8s_seen_music_box"
+				]
+			}
+		},
+		"marks": {
+			"lines": [
+				{
+					"speaker": "公主",
+					"text": "门框上刻着一道道小刻痕……是在量身高吧？",
+					"emotion": "surprise"
+				},
+				{
+					"speaker": "公主",
+					"text": "最高的那道，才到我的胸口……之后就没有了。",
+					"emotion": "sad"
+				},
+				{
+					"speaker": "蓝色的公主",
+					"text": "……那个，是别人的。"
+				}
+			],
+			"set": {
+				"flags": [
+					"f8s_seen_marks"
+				]
+			}
+		},
+		"window": {
+			"lines": [
+				{
+					"speaker": "公主",
+					"text": "窗外黑漆漆的，远处好像还有手臂的影子在晃……",
+					"emotion": "surprise"
+				},
+				{
+					"speaker": "公主",
+					"text": "……今晚确实别出去了。",
+					"emotion": "sad"
+				}
+			]
+		}
+	}
+}

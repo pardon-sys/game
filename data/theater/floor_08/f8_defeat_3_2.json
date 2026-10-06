@@ -396,7 +396,7 @@
 		},
 		{
 			"speaker": "公主",
-			"text": "停、停了？……不对……这个安静……好可怕……",
+			"text": "哈……哈……停、停了？……不对……这个安静……好可怕……",
 			"actions": [
 				{
 					"who": "pink",
@@ -571,7 +571,7 @@
 		},
 		{
 			"speaker": "公主",
-			"text": "「这个画法」？！你们以前到底在干嘛啊？！",
+			"text": "哈哈……「这个画法」？！你、你们以前到底在干嘛啊哈哈哈！",
 			"actions": [
 				{
 					"who": "pink",
@@ -690,7 +690,7 @@
 		},
 		{
 			"speaker": "公主",
-			"text": "它对你的弱点……熟到吓人……你们……该不会是……",
+			"text": "哈哈……它对你的弱点……熟到吓人……你们……该不会是……哈哈哈……",
 			"actions": [
 				{
 					"who": "pink",
@@ -786,7 +786,7 @@
 		},
 		{
 			"speaker": "公主",
-			"text": "……下次……我来引开它……",
+			"text": "……哈……哈……下次……我来引开它……",
 			"actions": [
 				{
 					"who": "pink",
@@ -961,12 +961,12 @@
 					"do": "bubble"
 				}
 			],
-			"emotion": "burst"
+			"emotion": "fatigue_burst"
 		},
 		{
 			"act": "burst",
 			"speaker": "公主",
-			"text": "你、你的表情……好舒服的样子……",
+			"text": "哈哈……你、你的表情……好舒服的样子……",
 			"actions": [
 				{
 					"who": "pink",
@@ -974,7 +974,7 @@
 					"do": "bubble"
 				}
 			],
-			"emotion": "burst"
+			"emotion": "fatigue_burst"
 		},
 		{
 			"act": "burst",
@@ -1064,7 +1064,7 @@
 					"do": "tickle"
 				}
 			],
-			"emotion": "helpless_2"
+			"emotion": "fatigue_burst"
 		},
 		{
 			"act": "burst",
@@ -1116,7 +1116,7 @@
 					"do": "tickle"
 				}
 			],
-			"emotion": "helpless_2"
+			"emotion": "fatigue_burst"
 		},
 		{
 			"act": "burst",
@@ -1219,7 +1219,7 @@
 					"do": "tickle"
 				}
 			],
-			"emotion": "helpless_2"
+			"emotion": "fatigue_burst"
 		},
 		{
 			"act": "burst",
@@ -1271,7 +1271,7 @@
 					"do": "tickle"
 				}
 			],
-			"emotion": "helpless_2"
+			"emotion": "fatigue_burst"
 		},
 		{
 			"actions": [

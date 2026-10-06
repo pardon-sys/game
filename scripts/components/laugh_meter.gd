@@ -50,19 +50,31 @@ var level := Level.CALM
 var _since_attacked := INF
 
 
+## 冰晶守护（蓝色公主的冰晶结界）期间：闷笑自然消减快 FROST_DECAY 倍，而且不用等「最近被挠后的延迟」。
+const FROST_DECAY := 3.0
+
+
+func _frost_guarded() -> bool:
+	var who := get_parent()
+	return who != null and who.has_method("has_buff") and who.has_buff("frost_guard")
+
+
 func _process(delta: float) -> void:
 	_since_attacked += delta
-	if value > 0.0 and _since_attacked >= decay_delay:
+	if value <= 0.0:
+		return
+	if _frost_guarded():
+		_set_value(value - decay_ratio * FROST_DECAY * max_value * delta)
+	elif _since_attacked >= decay_delay:
 		_set_value(value - decay_ratio * max_value * delta)
 
 
 ## 被挠痒：累积闷笑值。
 func add(amount: float) -> void:
-	notify_attacked()
-	# 冰晶守护（蓝色公主的冰晶结界）期间：挠痒、组合爆发、余痒都不涨
-	var who := get_parent()
-	if amount > 0.0 and who and who.has_method("has_buff") and who.has_buff("frost_guard"):
+	# 冰晶守护（蓝色公主的冰晶结界）期间：挠痒、组合爆发、余痒都不涨，也不打断消减
+	if amount > 0.0 and _frost_guarded():
 		return
+	notify_attacked()
 	_set_value(value + amount)
 	if value >= max_value:
 		overflow.emit()

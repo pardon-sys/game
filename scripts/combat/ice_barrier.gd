@@ -2,7 +2,8 @@ class_name IceBarrier
 extends Node2D
 ## 蓝色公主的魔法：冰晶结界（和粉色公主的星光爆发同样按住 L 吟唱、松开释放，档位越高范围越大、冻得越久）。
 ##   范围内的敌对角色冻住（Monster.stun：定身、不能挠，身上泛冰蓝色；有 freeze() 的 Boss 用它，按 aim_point 和 meta body_radius 算范围）；范围内的陷阱暂停（active = false，到时间恢复）；
-##   她自己被困 / 被吸附的状态解除；她和范围内的友军都得到「冰晶守护」（frost_guard：期间闷笑不涨）。
+##   她自己被困 / 被吸附的状态解除；她和范围内的友军都得到「冰晶守护」（frost_guard：期间闷笑不涨，
+##   而且自然消减快 LaughMeter.FROST_DECAY 倍、不用等被挠后的延迟）。
 ##   会魔法反应的东西（MagicReactive）同样收到一次 on_magic_burst（和星光爆发一样能解谜）。
 ##   特效：冰蓝色的圆环扩散 + 冰晶 / 雪花粒子，冻住的陷阱也蒙上冰色。
 

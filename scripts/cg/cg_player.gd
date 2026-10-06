@@ -75,6 +75,8 @@ var curtain: ColorRect
 var flash_rect: ColorRect
 var skip_label: Label
 var voice: AudioStreamPlayer
+## 另一个公主的笑声（舞台上两个公主都在时：第八层战败剧场），比主角低 3 dB
+var voice2: AudioStreamPlayer
 ## 舞台顶部的来源栏（组合演出：三个来源的图标 + 名字，加入时点亮）。
 var source_bar: HBoxContainer
 ## 立绘反馈的强度（第几幕）。
@@ -200,6 +202,9 @@ func _build() -> void:
 	voice = AudioStreamPlayer.new()
 	voice.volume_db = -8.0
 	add_child(voice)
+	voice2 = AudioStreamPlayer.new()
+	voice2.volume_db = -11.0
+	add_child(voice2)
 
 
 # ------------------------------------------------------------------ 数据
@@ -236,7 +241,8 @@ func portrait_texture(id: String) -> Texture2D:
 			var img := Image.load_from_file(file)
 			if img:
 				return ImageTexture.create_from_image(img)
-	return Dialogue.portrait_for(str(info.get("placeholder", "helpless_1")))
+	# 占位立绘用「当前角色」那一套（Characters.scope 临时换成别人时也对：第八层剧场里另一个公主的爆发立绘）
+	return Dialogue.portrait_for(str(info.get("placeholder", "helpless_1")), Characters.current())
 
 
 func has_portrait_file(id: String) -> bool:
@@ -497,6 +503,7 @@ func _finish() -> void:
 	Dialogue.close()
 	Dialogue.set_portrait_override(null)
 	voice.stop()
+	voice2.stop()
 	for a in actors.values():
 		a.queue_free()
 	_clear_sources()
@@ -878,11 +885,32 @@ func _spawn_fx(target: CGActor, kind: String) -> void:
 func _set_voice(state: String) -> void:
 	if state == "":
 		voice.stop()
+		voice2.stop()
 		return
 	var stream := Audio.loop_stream(state)
 	if stream and (voice.stream != stream or not voice.playing):
 		voice.stream = stream
 		voice.play()
+	# 另一个公主也在舞台上：她用自己的笑声一起笑
+	var other := partner_character()
+	if other == "":
+		voice2.stop()
+		return
+	Characters.scope(other)
+	var s2 := Audio.loop_stream(state)
+	Characters.unscope()
+	if s2 and (voice2.stream != s2 or not voice2.playing):
+		voice2.stream = s2
+		voice2.play()
+
+
+## 舞台上另一个公主（不是当前操控的那个）的角色 id；没有就是 ""。
+func partner_character() -> String:
+	for a in actors.values():
+		var w := a as CGActor
+		if w and w.kind == "npc_princess" and not _is_hero_actor(w):
+			return "blue" if w.reaction_key == "blue_princess" else "pink"
+	return ""
 
 
 ## 这个演员是不是「当前操控的公主」本人：公主演员，或者是她的人物演员（蓝色公主当主角时的 npc:blue_princess）。

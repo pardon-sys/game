@@ -29,6 +29,9 @@ var target: Actor
 ## 巢穴生成的怪物记住自己的巢穴（MonsterNest）。
 var home_nest: Node
 var _home := Vector2.ZERO
+var _home_set := false
+## 没目标时在家附近多远内晃（超出就往家走）
+var wander_radius := 40.0
 var _wander_dir := Vector2.ZERO
 var _think := 0.0
 var _state_time := 0.0
@@ -45,7 +48,8 @@ func _setup() -> void:
 	if health:
 		health.max_hp = stats.max_hp
 		health.fill()
-	_home = global_position
+	if not _home_set:
+		_home = global_position
 	_t = randf() * TAU
 
 
@@ -69,7 +73,7 @@ func _tick(delta: float) -> void:
 			if _think <= 0.0:
 				_think = randf_range(0.8, 2.0)
 				_wander_dir = Vector2.ZERO if randf() < 0.35 else Vector2.from_angle(randf() * TAU)
-				if global_position.distance_to(_home) > 40.0:
+				if global_position.distance_to(_home) > wander_radius:
 					_wander_dir = global_position.direction_to(_home)
 			_move(_wander_dir, stats.wander_speed, delta)
 			if not frozen:
@@ -216,6 +220,13 @@ func stun(duration: float) -> void:
 	if sprite:
 		sprite.modulate = Color(0.75, 0.85, 1.35)
 	_on_stunned(duration)
+
+
+## 设定「家」：没有目标时在 pos 附近 radius 内晃（召唤出来的怪：生成时还不在位置上，要显式设）。
+func set_home(pos: Vector2, radius := 40.0) -> void:
+	_home = pos
+	_home_set = true
+	wander_radius = radius
 
 
 ## 召集（组合技）：立刻锁定目标、追过去。

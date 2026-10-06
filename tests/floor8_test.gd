@@ -34,6 +34,7 @@ func _ready() -> void:
 	await _run_phase2()
 	await _run_phase3()
 	await _run_victory_and_chase()
+	await _run_shelter()
 	_run_side_window()
 	print("\n==== %s (%d 项失败) ====" % ["全部通过" if failures == 0 else "有失败", failures])
 	get_tree().quit(1 if failures else 0)
@@ -121,6 +122,20 @@ func _run_ai() -> void:
 	await _wait(0.5)
 	check("AI 会躲开脚下的预警圈（移动了 %.0f 像素）" % pink.global_position.distance_to(p0), pink.global_position.distance_to(p0) > 14.0)
 	mark.queue_free()
+	# 冲过来的危险（meta velocity）：还没碰到就往旁边闪
+	var rush := Node2D.new()
+	rush.add_to_group("danger")
+	rush.set_meta("radius", 30.0)
+	rush.set_meta("velocity", Vector2(240, 0))
+	lv.add_child(rush)
+	rush.global_position = pink.global_position + Vector2(-90, 0)
+	var py0 := pink.global_position.y
+	await _wait(0.35)
+	check("AI 预判闪避：东西朝她冲过来时提前往旁边闪（偏开 %.0f 像素）" % absf(pink.global_position.y - py0),
+		absf(pink.global_position.y - py0) > 10.0)
+	rush.queue_free()
+	check("AI 组件：通过 BattleAIHooks 读导演提示（第八层是 Floor8AIHooks），行为可开关",
+		Duo.hooks is Floor8AIHooks and ai.behaviours == CompanionController.ALL_BEHAVIOURS and ai._hooks() == Duo.hooks)
 	pink.status.grab(dir.boss, 6.0, 6)
 	await _wait(1.2)
 	check("AI 被抓住会自己连按挣脱", not pink.status.is_grabbed())
@@ -262,7 +277,7 @@ func _run_phase1_extras() -> void:
 	check("俯冲撞墙：先亮整条通道的预警（进 danger 组），本体真的冲出去（离原位 %.0f 像素），撞墙后掉落笼（%d 个）" % [far,
 		get_tree().get_nodes_in_group("f8_dash_cage").size()],
 		warned and cages0 == 0 and far > 60.0 and get_tree().get_nodes_in_group("f8_dash_cage").size() >= 2)
-	check("撞墙后晕 %.1f 秒，晕的时候能打本体；之后飞回原位（差 %.0f 像素）" % [BossSkills.DAZE_TIME, b.global_position.distance_to(home)],
+	check("撞墙后晕 %.1f 秒，晕的时候能打本体；之后飞回原位（差 %.0f 像素）" % [b.skills.daze_time(), b.global_position.distance_to(home)],
 		dazed_hit and b.global_position.distance_to(home) < 2.0 and not b.dashing)
 	# 冲到一半被取消（转阶段 / 战败）：本体直接回原位，不报错
 	b.skills.use("dash")
@@ -332,6 +347,20 @@ func _run_phase1_extras() -> void:
 		and b.sprite.modulate == IceBarrier.ICE)
 	b._frozen_left = 0.0
 	b.sprite.modulate = Color.WHITE
+	# 冰晶守护：闷笑自然消减更快、不用等被挠后的延迟
+	var lp := dir.pink.laugh
+	lp.set_value(60.0)
+	lp.notify_attacked()
+	dir.pink.add_buff("frost_guard", 2.0)
+	await _wait(1.0)
+	var fast := 60.0 - lp.value
+	dir.pink.remove_buff("frost_guard")
+	lp.set_value(60.0)
+	lp.notify_attacked()
+	await _wait(1.0)
+	var slow := 60.0 - lp.value
+	check("冰晶守护期间闷笑自然消减更快（1 秒降 %.1f，没有守护降 %.1f）" % [fast, slow], fast > slow + 3.0)
+	lp.set_value(0.0)
 	# 冰晶守护给范围内的友军（包括另一个可操作的公主）
 	dir.pink.remove_buff("frost_guard")
 	dir.pink.global_position = dir.blue.global_position + Vector2(20, 0)
@@ -341,6 +370,36 @@ func _run_phase1_extras() -> void:
 	b.sprite.modulate = Color.WHITE
 	dir.pink.remove_buff("frost_guard")
 	dir.blue.remove_buff("frost_guard")
+	# 战败剧场：两个公主的笑声都有；爆发后另一个公主的立绘是她自己的魔力疲倦爆发立绘
+	CG.play_theater("f8_defeat_1_2")
+	await _wait(1.2)
+	var both_laugh: bool = CG.voice.playing and CG.voice2.playing and CG.voice.stream != CG.voice2.stream
+	CG.skip()
+	await _advance_until(func(): return not CG.is_busy(), 60.0)
+	check("战败剧场：两个公主的笑声一起放（各用自己的）", both_laugh)
+	var d12: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://data/theater/floor_08/f8_defeat_1_2.json"))
+	var after_boom := false
+	var burst_emo := true
+	var pink_laugh := true
+	for st in d12["steps"]:
+		if st.get("act", "") == "burst" and st.has("portrait"):
+			after_boom = true
+		if after_boom and st.get("act", "") == "burst" and st.has("emotion") and st["emotion"] != "fatigue_burst":
+			burst_emo = false
+	for id in ["f8_defeat_1_1", "f8_defeat_2_1", "f8_defeat_3_2", "f8_defeat_3_4", "f8_chase_fail"]:
+		var dd: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://data/theater/floor_08/%s.json" % id))
+		for st in dd["steps"]:
+			if str(st.get("speaker", "")) == "公主" and not str(st["text"]).contains("哈"):
+				pink_laugh = false
+	Characters.scope("blue")
+	var blue_burst: Texture2D = CG.portrait_texture("fatigue_burst")
+	Characters.unscope()
+	Characters.scope("pink")
+	var pink_burst: Texture2D = CG.portrait_texture("fatigue_burst")
+	Characters.unscope()
+	check("爆发后另一个公主的立绘 = 她组合演出里的魔力疲倦爆发立绘；粉色公主的台词都边笑边说",
+		burst_emo and after_boom and blue_burst != pink_burst and Dialogue.npc_texture("blue_princess", "fatigue_burst") == blue_burst
+		and Dialogue.npc_texture("pink_princess", "fatigue_burst") == pink_burst and pink_laugh)
 	# 连着换两次曲（读档时先地牢曲、马上 Boss 曲）不会没声音
 	Audio.play_music("dungeon")
 	Audio.play_music("boss")
@@ -605,6 +664,12 @@ func _run_phase3() -> void:
 	var near_mid := mobs.all(func(m): return absf(m.global_position.x - center.x) <= 130.0 and absf(m.global_position.y - center.y) <= 56.0)
 	check("阶段三召唤：手臂伸下来放下小怪（%d 只手臂），小怪在中线附近左右（%d 只）" % [arms, mobs.size()],
 		arms >= 1 and mobs.size() >= 1 and near_mid)
+	var homes_mid := true
+	for m in mobs:
+		if (m as Monster)._home.distance_to(b.arena.get_center()) >= 1.0 or (m as Monster).wander_radius < 60.0:
+			homes_mid = false
+	check("阶段三召唤的小怪没目标时在场地中间晃（家在场地中心），撞墙只晕 %.1f 秒" % b.skills.daze_time(),
+		homes_mid and is_equal_approx(b.skills.daze_time(), 0.5))
 	b.clear_summons()
 	b.fighting = false
 	var th_ok := true
@@ -790,6 +855,71 @@ func _run_victory_and_chase() -> void:
 	await _advance_until(func(): return seen.has("f8_ending") and not Cutscene.is_playing(), 60.0)
 	Cutscene.started.disconnect(on_cut)
 	check("两人一起到第 10 格 → 逃出来的结局过场（%s）" % [seen], GameState.has_flag("f8_done") and seen.has("f8_ending") and not SideWindow.is_open())
+
+
+# ------------------------------------------------------------------ 小房间（追逐逃出来后过夜）
+func _talk_through(trigger: Callable) -> Array:
+	var said := []
+	var on_line := func(_i: int, line: Dictionary): said.append(str(line.get("text", "")))
+	if Dialogue.has_signal("line_shown"):
+		Dialogue.line_shown.connect(on_line)
+	trigger.call()
+	await get_tree().process_frame
+	var g := 0
+	while (Dialogue.is_active() or Dialogue.runner.is_running()) and g < 400:
+		if Dialogue.is_active():
+			said.append(Dialogue.text_label.text)
+			Dialogue.advance()
+			Dialogue.advance()
+		await get_tree().process_frame
+		g += 1
+	if Dialogue.has_signal("line_shown"):
+		Dialogue.line_shown.disconnect(on_line)
+	return said
+
+
+func _shelter_ready() -> bool:
+	return _level_id() == "floor_08_shelter" and GameState.has_flag("intro_done_f8_shelter_intro") and not Cutscene.is_playing() \
+		and not Dialogue.is_active()
+
+
+func _run_shelter() -> void:
+	print("-- 小房间")
+	await _advance_until(_shelter_ready, 60.0)
+	var p := GameState.player
+	check("逃出来 → 第八层的小房间：开场过场播完，配乐 night_room，操控粉色公主",
+		_level_id() == "floor_08_shelter" and not GameState.has_flag("blue_is_hero") and p is Princess and not (p is BluePrincess)
+		and Audio.music_id == "night_room")
+	var ev := InputEventAction.new()
+	ev.action = "switch_character"
+	ev.pressed = true
+	main._unhandled_input(ev)
+	await get_tree().process_frame
+	check("小房间里不能切换操控", GameState.player == p and main.level.get("no_switch") == true and not Duo.active)
+	var nodes: Array = main.level.find_children("*", "", true, false)
+	var saves: Array = nodes.filter(func(n): return n.get("place") != null and str(n.get("place")).contains("小房间"))
+	var door: Array = nodes.filter(func(n): return n.get("target_level") != null)
+	check("有存档点；门锁着（外面危险）", saves.size() == 1 and door.size() == 1 and door[0].get("locked") == true)
+	var props: Array = nodes.filter(func(n): return n.has_method("on_interact") and str(n.get("action")).begins_with("talk:floor_08/shelter_objects"))
+	var all_talk := true
+	var blue_cut_in := false
+	for pr in props:
+		var said := await _talk_through(func(): pr.on_interact(p))
+		if said.is_empty():
+			all_talk = false
+		if str(pr.get("kind")) == "crayon_drawing":
+			blue_cut_in = said.any(func(t): return str(t).contains("别看了"))
+	check("房间里的东西都能调查（%d 件），调查蜡笔画时蓝色公主插话" % props.size(), props.size() >= 8 and all_talk and blue_cut_in)
+	check("床：现在只说一句、不睡觉", GameState.has_flag("f8s_seen_bed") and not Sleep.sleeping and Sleep.day() == 1)
+	var blue: Array = nodes.filter(func(n): return n is BluePrincess)
+	var topics := []
+	for i in 6:
+		var said := await _talk_through(func(): blue[0].talk(p))
+		topics.append(said[0] if not said.is_empty() else "")
+		await _wait(0.2)   # 她的 talk() 结束、talking 复位
+	check("和窗边的蓝色公主说话：先聊调查过的东西（她岔开），再按顺序聊小话题，最后重复一句（%s）" % [topics.slice(0, 3)],
+		blue.size() == 1 and GameState.has_flag("f8s_t_drawing") and int(GameState.vars.get("f8s_talk", 0)) >= 1
+		and topics.any(func(t): return str(t).contains("蜡笔画")))
 
 
 # ------------------------------------------------------------------ 小窗组件

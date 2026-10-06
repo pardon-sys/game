@@ -98,6 +98,13 @@
 			"scene": "res://levels/floor_08_chase/floor.tscn",
 			"group": "floor_08",
 			"music": "boss3"
+		},
+		{
+			"id": "floor_08_shelter",
+			"name": "第八层·小房间",
+			"scene": "res://levels/floor_08_shelter/floor.tscn",
+			"group": "floor_08",
+			"music": "night_room"
 		}
 	]
 }

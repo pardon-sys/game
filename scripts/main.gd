@@ -38,7 +38,10 @@ func _ready() -> void:
 ## 测试模式：F2 在公主和蓝色公主（同一关卡里的其它可操作角色）之间切换操控。
 func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("switch_character") and not GameState.in_dialogue:
-		if Duo.active:
+		if level and level.get("no_switch") == true:
+			GameState.notify("现在不能切换")
+			get_viewport().set_input_as_handled()
+		elif Duo.active:
 			if Duo.can_switch():
 				switch_character()
 			get_viewport().set_input_as_handled()

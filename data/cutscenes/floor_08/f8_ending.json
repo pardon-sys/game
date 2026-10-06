@@ -51,14 +51,17 @@
 			"emotion": "shy"
 		},
 		{
+			"speaker": "蓝色的公主",
+			"text": "……天快黑了。先找个地方躲一下。"
+		},
+		{
 			"actions": [
 				{
-					"title": "第八章 · 千手之间",
-					"subtitle": "—— 待续 ——",
-					"do": "chapter_end"
+					"time": 0.8,
+					"do": "fade_out"
 				}
 			],
-			"wait": 1.4
+			"wait": 0.9
 		}
 	]
 }

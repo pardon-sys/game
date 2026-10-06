@@ -11,6 +11,8 @@
 """
 import math
 
+from PIL import ImageDraw
+
 from gen_expansion import _strip, blank, canvas
 from palette import OUT, add_outline
 
@@ -772,7 +774,111 @@ def p_interior(kind):
         d.rectangle((20, 3, 23, 8), fill=BLUE)                              # 墨水瓶
         d.line((24, 1, 22, 6), fill=(255, 255, 255, 255))                    # 羽毛笔
         return add_outline(img)
+    if kind in OLD_ROOM:
+        return p_old_room(kind)
     # hotspot：看不见的调查点（和陷阱 / 别的东西放在同一格，让它也能按 E 调查）
+    img, d = canvas(16, 16)
+    return img
+
+
+# —— 第八层的小房间：很久没人住的、小女孩的房间（落灰、蛛网、褪色）——
+OLD_ROOM = ("old_bed", "old_dresser", "old_tea", "music_box", "crayon_drawing", "height_marks", "cobweb")
+DUST = (150, 140, 150, 255)
+DUST_L = (200, 192, 196, 255)
+
+
+def _dusty(img, k=0.45, seed=3):
+    """褪色 + 积灰：往灰色混一点，再撒些灰点。"""
+    import random
+    rnd = random.Random(seed)
+    px = img.load()
+    w, h = img.size
+    for y in range(h):
+        for x in range(w):
+            r, g, b, a = px[x, y]
+            if a == 0:
+                continue
+            gray = (r + g + b) // 3
+            px[x, y] = (int(r + (gray - r) * k), int(g + (gray - g) * k), int(b + (gray - b) * k), a)
+            if rnd.random() < 0.05:
+                px[x, y] = DUST_L[:3] + (a,)
+    return img
+
+
+def p_old_room(kind):
+    if kind == "old_bed":
+        img = _dusty(p_interior("blue_bed").copy(), 0.5)
+        d = ImageDraw.Draw(img)
+        # 床角的蛛网
+        for i in range(4):
+            d.line((26 - i * 2, 2, 30, 2 + i * 2), fill=DUST_L)
+        d.line((26, 2, 30, 8), fill=DUST_L)
+        return img
+    if kind == "old_dresser":
+        img = _dusty(p_interior("dresser").copy(), 0.5, 5)
+        d = ImageDraw.Draw(img)
+        d.line((12, 5, 18, 12), fill=(90, 100, 120, 255))                  # 镜子的裂纹
+        d.line((15, 8, 19, 6), fill=(90, 100, 120, 255))
+        # 雪花发夹
+        cx, cy = 15, 14
+        for dx, dy in ((0, -2), (0, 2), (-2, 0), (2, 0), (-1, -1), (1, 1), (-1, 1), (1, -1)):
+            d.point((cx + dx, cy + dy), fill=CRYSTAL)
+        d.point((cx, cy), fill=CRYSTAL_L)
+        return img
+    if kind == "old_tea":
+        img, d = canvas(16, 16)
+        d.ellipse((1, 3, 14, 10), fill=(225, 220, 215, 255))
+        d.line((7, 10, 7, 15), fill=WOOD_D)
+        d.line((4, 15, 11, 15), fill=WOOD_D)
+        d.rectangle((3, 4, 5, 6), fill=(150, 175, 205, 255))                # 两只小茶杯（蓝 / 白）
+        d.rectangle((10, 4, 12, 6), fill=(235, 235, 240, 255))
+        d.point((7, 5), fill=DUST)
+        d.point((9, 7), fill=DUST)
+        return _dusty(add_outline(img), 0.35, 7)
+    if kind == "music_box":
+        img, d = canvas(16, 16)
+        d.rectangle((2, 7, 13, 14), fill=(110, 140, 200, 255))              # 蓝色的盒子
+        d.rectangle((2, 7, 13, 8), fill=GOLD_D)
+        d.rectangle((2, 13, 13, 14), fill=GOLD_D)
+        d.point((7, 11), fill=GOLD)
+        d.line((14, 10, 15, 10), fill=GOLD_D)                                # 发条把手
+        d.line((15, 9, 15, 11), fill=GOLD_D)
+        d.line((7, 3, 7, 6), fill=GOLD_D)                                    # 盒盖上转圈的小人
+        d.ellipse((6, 1, 8, 3), fill=(235, 240, 255, 255))
+        d.polygon([(5, 6), (9, 6), (7, 4)], fill=CRYSTAL)
+        return _dusty(add_outline(img), 0.3, 9)
+    if kind == "crayon_drawing":
+        img, d = canvas(16, 16)
+        d.rectangle((1, 1, 14, 13), fill=(235, 228, 210, 255))              # 发黄的纸
+        d.point((1, 1), fill=(0, 0, 0, 0))
+        d.point((14, 13), fill=(0, 0, 0, 0))
+        d.ellipse((10, 2, 12, 4), fill=(240, 200, 90, 255))                 # 太阳
+        d.ellipse((3, 5, 5, 7), fill=(240, 220, 200, 255))                  # 小女孩的头
+        d.line((3, 5, 2, 9), fill=(110, 150, 230, 255))                      # 蓝头发
+        d.line((5, 5, 6, 9), fill=(110, 150, 230, 255))
+        d.polygon([(3, 8), (5, 8), (6, 11), (2, 11)], fill=(120, 160, 230, 255))
+        for hx, hy in ((8, 7), (10, 6), (12, 7), (9, 10), (12, 10)):         # 好多只紫色的手
+            d.line((hx, hy, hx, hy + 2), fill=(170, 120, 200, 255))
+            d.point((hx - 1, hy), fill=(170, 120, 200, 255))
+            d.point((hx + 1, hy), fill=(170, 120, 200, 255))
+        d.point((4, 6), fill=(200, 80, 90, 255))                             # 笑着的嘴
+        return _dusty(add_outline(img), 0.35, 11)
+    if kind == "height_marks":
+        img, d = canvas(16, 24)
+        d.rectangle((6, 0, 9, 23), fill=WOOD)                                # 门框的一段
+        d.line((6, 0, 6, 23), fill=WOOD_D)
+        for i, y in enumerate((20, 17, 15, 12)):                             # 一道道刻痕，刻到小孩的高度就停了
+            d.line((7, y, 10 + (i % 2), y), fill=(90, 50, 35, 255))
+        d.point((11, 12), fill=(90, 50, 35, 255))
+        return add_outline(img)
+    if kind == "cobweb":
+        img, d = canvas(16, 16)
+        for i in range(0, 15, 3):
+            d.line((0, i, 15 - i, 0), fill=(220, 215, 225, 170))
+        d.line((0, 0, 15, 15), fill=(220, 215, 225, 140))
+        d.line((0, 0, 7, 15), fill=(220, 215, 225, 140))
+        d.line((0, 0, 15, 7), fill=(220, 215, 225, 140))
+        return img
     img, d = canvas(16, 16)
     return img
 
@@ -819,6 +925,14 @@ def gen_props():
     items.append(("candle", p_interior("candle"), {"light": [1.0, 0.8, 0.5]}))
     items.append(("desk", p_interior("desk"), {"body": [28, 8], "body_y": -4}))
     items.append(("hotspot", p_interior("hotspot"), {}))
+    # 第八层的小房间（加在最后，前面道具的图集位置不变）
+    items.append(("old_bed", p_interior("old_bed"), {"body": [28, 12], "body_y": -6}))
+    items.append(("old_dresser", p_interior("old_dresser"), {"body": [26, 8], "body_y": -4}))
+    items.append(("old_tea", p_interior("old_tea"), {"body": [12, 6], "body_y": -3}))
+    items.append(("music_box", p_interior("music_box"), {}))
+    items.append(("crayon_drawing", p_interior("crayon_drawing"), {"lift": 12}))
+    items.append(("height_marks", p_interior("height_marks"), {"lift": 8}))
+    items.append(("cobweb", p_interior("cobweb"), {"lift": 12}))
     # 简单地按行排进 256 宽的图集
     x = y = row_h = 0
     meta = {}

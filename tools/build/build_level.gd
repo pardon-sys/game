@@ -160,7 +160,7 @@ var rows: PackedStringArray = []
 var legend := {}
 ## 同一格叠放的其它实体：字符 -> [info, ...]（legend 里用 " + " 连接，例如 "K = trap type=stocks + trap type=vortex radius=3"）。
 var stacked := {}
-## [level] 段：intro（开场对话 id）、ambient（环境光 r,g,b）、night_ambient（夜晚的环境光，剧情标记 night 时用）
+## [level] 段：intro（开场对话 id）、ambient（环境光 r,g,b）、night_ambient（夜晚的环境光，剧情标记 night 时用）、no_switch = true（不能切换操控角色）
 var level_meta := {}
 var width := 0
 var height := 0
@@ -207,6 +207,7 @@ func build(floor_id: String) -> int:
 	root.set("floor_id", floor_id)
 	root.set("intro_dialogue", level_meta.get("intro", "intro"))
 	root.set("intro_cutscene", level_meta.get("intro_cutscene", ""))
+	root.set("no_switch", str(level_meta.get("no_switch", "")) == "true")
 
 	var cm := CanvasModulate.new()
 	cm.name = "Darkness"

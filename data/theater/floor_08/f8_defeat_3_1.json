@@ -99,7 +99,7 @@
 		},
 		{
 			"speaker": "公主",
-			"text": "好、好多手……像丝带一样……缠、缠在腿上了！",
+			"text": "好、好多手……像丝带一样……缠、缠在腿上了！哈、哈哈……好痒！",
 			"actions": [
 				{
 					"who": "pink",
@@ -807,7 +807,7 @@
 		{
 			"act": "burst",
 			"speaker": "公主",
-			"text": "……魔、魔力……要满了……",
+			"text": "哈……哈哈……魔、魔力……要满了……",
 			"actions": [
 				{
 					"who": "pink",
@@ -949,7 +949,7 @@
 					"do": "bubble"
 				}
 			],
-			"emotion": "burst"
+			"emotion": "fatigue_burst"
 		},
 		{
 			"act": "burst",
@@ -962,7 +962,7 @@
 					"do": "bubble"
 				}
 			],
-			"emotion": "burst"
+			"emotion": "fatigue_burst"
 		},
 		{
 			"act": "burst",
@@ -1052,7 +1052,7 @@
 					"do": "tickle"
 				}
 			],
-			"emotion": "helpless_2"
+			"emotion": "fatigue_burst"
 		},
 		{
 			"act": "burst",
@@ -1104,7 +1104,7 @@
 					"do": "tickle"
 				}
 			],
-			"emotion": "helpless_2"
+			"emotion": "fatigue_burst"
 		},
 		{
 			"act": "burst",
@@ -1207,7 +1207,7 @@
 					"do": "tickle"
 				}
 			],
-			"emotion": "helpless_2"
+			"emotion": "fatigue_burst"
 		},
 		{
 			"act": "burst",
@@ -1259,7 +1259,7 @@
 					"do": "tickle"
 				}
 			],
-			"emotion": "helpless_2"
+			"emotion": "fatigue_burst"
 		},
 		{
 			"actions": [

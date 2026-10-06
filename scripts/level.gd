@@ -8,6 +8,8 @@ extends Node2D
 @export var intro_cutscene := ""
 ## 夜晚的环境光（a = 0 表示这张地图没有昼夜之分）；剧情标记 night 打开时换上，关掉时换回白天的。
 @export var night_ambient := Color(0, 0, 0, 0)
+## 这一关不能切换操控的角色（[level] 段 no_switch = true；第八层的小房间）
+@export var no_switch := false
 
 var _day_ambient := Color.WHITE
 

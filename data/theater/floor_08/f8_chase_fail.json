@@ -75,7 +75,7 @@
 		},
 		{
 			"speaker": "公主",
-			"text": "路、路被堵住了——！",
+			"text": "哈……哈……路、路被堵住了——！笑、笑得腿都软了还要跑……！",
 			"actions": [
 				{
 					"who": "pink",
@@ -131,7 +131,7 @@
 		},
 		{
 			"speaker": "公主",
-			"text": "手、手从石头缝里伸出来了——呀！抓、抓住脚了！",
+			"text": "手、手从石头缝里伸出来了——呀哈哈！抓、抓住脚了哈哈！",
 			"actions": [
 				{
 					"who": "pink",
@@ -702,7 +702,7 @@
 		},
 		{
 			"speaker": "公主",
-			"text": "……再跑一次！这次跑在一起！",
+			"text": "哈……哈……再跑一次！这次跑在一起！",
 			"actions": [
 				{
 					"who": "pink",
@@ -735,7 +735,7 @@
 		{
 			"act": "burst",
 			"speaker": "公主",
-			"text": "魔、魔力……要满了……巨石还在后面……！",
+			"text": "哈哈哈……魔、魔力……要满了……巨石还在后面哈哈……！",
 			"actions": [
 				{
 					"who": "pink",
@@ -877,7 +877,7 @@
 					"do": "bubble"
 				}
 			],
-			"emotion": "burst"
+			"emotion": "fatigue_burst"
 		},
 		{
 			"act": "burst",
@@ -890,7 +890,7 @@
 					"do": "bubble"
 				}
 			],
-			"emotion": "burst"
+			"emotion": "fatigue_burst"
 		},
 		{
 			"act": "burst",
@@ -980,7 +980,7 @@
 					"do": "tickle"
 				}
 			],
-			"emotion": "helpless_2"
+			"emotion": "fatigue_burst"
 		},
 		{
 			"act": "burst",
@@ -1032,7 +1032,7 @@
 					"do": "tickle"
 				}
 			],
-			"emotion": "helpless_2"
+			"emotion": "fatigue_burst"
 		},
 		{
 			"act": "burst",
@@ -1135,7 +1135,7 @@
 					"do": "tickle"
 				}
 			],
-			"emotion": "helpless_2"
+			"emotion": "fatigue_burst"
 		},
 		{
 			"act": "burst",
@@ -1187,7 +1187,7 @@
 					"do": "tickle"
 				}
 			],
-			"emotion": "helpless_2"
+			"emotion": "fatigue_burst"
 		},
 		{
 			"actions": [

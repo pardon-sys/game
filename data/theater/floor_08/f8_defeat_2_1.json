@@ -750,7 +750,7 @@
 		},
 		{
 			"speaker": "公主",
-			"text": "……下次……我先去踩……",
+			"text": "哈……哈……下次……我先去踩……",
 			"actions": [
 				{
 					"who": "pink",
@@ -828,7 +828,7 @@
 		{
 			"act": "burst",
 			"speaker": "公主",
-			"text": "我、我也……刺猬再蹭一下就……呀——！",
+			"text": "哈哈哈……我、我也……刺猬再蹭一下就……呀——！",
 			"actions": [
 				{
 					"who": "pink",
@@ -917,7 +917,7 @@
 		{
 			"act": "burst",
 			"speaker": "公主",
-			"text": "……啊……花瓣全飞起来了……好舒服……",
+			"text": "……哈……啊……花瓣全飞起来了……好舒服……",
 			"actions": [
 				{
 					"who": "pink",
@@ -925,7 +925,7 @@
 					"do": "bubble"
 				}
 			],
-			"emotion": "burst"
+			"emotion": "fatigue_burst"
 		},
 		{
 			"act": "burst",
@@ -938,7 +938,7 @@
 					"do": "bubble"
 				}
 			],
-			"emotion": "burst"
+			"emotion": "fatigue_burst"
 		},
 		{
 			"act": "burst",
@@ -1028,7 +1028,7 @@
 					"do": "tickle"
 				}
 			],
-			"emotion": "helpless_2"
+			"emotion": "fatigue_burst"
 		},
 		{
 			"act": "burst",
@@ -1080,7 +1080,7 @@
 					"do": "tickle"
 				}
 			],
-			"emotion": "helpless_2"
+			"emotion": "fatigue_burst"
 		},
 		{
 			"act": "burst",
@@ -1183,7 +1183,7 @@
 					"do": "tickle"
 				}
 			],
-			"emotion": "helpless_2"
+			"emotion": "fatigue_burst"
 		},
 		{
 			"act": "burst",
@@ -1235,7 +1235,7 @@
 					"do": "tickle"
 				}
 			],
-			"emotion": "helpless_2"
+			"emotion": "fatigue_burst"
 		},
 		{
 			"actions": [
