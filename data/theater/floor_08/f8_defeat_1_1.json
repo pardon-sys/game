@@ -766,7 +766,7 @@
 		},
 		{
 			"speaker": "公主",
-			"text": "不过……等出去了……你得告诉我……它为什么那么懂你……",
+			"text": "哈哈……不过……等出去了……你得告诉我……它为什么那么懂你……哈哈……",
 			"actions": [
 				{
 					"who": "pink",
@@ -822,7 +822,7 @@
 		},
 		{
 			"speaker": "公主",
-			"text": "……下次……一定……打赢……",
+			"text": "……哈……哈……下次……一定……打赢……",
 			"actions": [
 				{
 					"who": "pink",
@@ -900,7 +900,7 @@
 		{
 			"act": "burst",
 			"speaker": "公主",
-			"text": "我、我也是……身体里好烫……要、要出来了——！",
+			"text": "哈哈……我、我也是……身体里好烫……要、要出来了——！",
 			"actions": [
 				{
 					"who": "pink",
@@ -997,12 +997,12 @@
 					"do": "bubble"
 				}
 			],
-			"emotion": "burst"
+			"emotion": "fatigue_burst"
 		},
 		{
 			"act": "burst",
 			"speaker": "公主",
-			"text": "呼……好、好舒服……",
+			"text": "呼……哈……好、好舒服……",
 			"actions": [
 				{
 					"who": "pink",
@@ -1010,7 +1010,7 @@
 					"do": "bubble"
 				}
 			],
-			"emotion": "burst"
+			"emotion": "fatigue_burst"
 		},
 		{
 			"act": "burst",
@@ -1100,7 +1100,7 @@
 					"do": "tickle"
 				}
 			],
-			"emotion": "helpless_2"
+			"emotion": "fatigue_burst"
 		},
 		{
 			"act": "burst",
@@ -1152,7 +1152,7 @@
 					"do": "tickle"
 				}
 			],
-			"emotion": "helpless_2"
+			"emotion": "fatigue_burst"
 		},
 		{
 			"act": "burst",
@@ -1255,7 +1255,7 @@
 					"do": "tickle"
 				}
 			],
-			"emotion": "helpless_2"
+			"emotion": "fatigue_burst"
 		},
 		{
 			"act": "burst",
@@ -1307,7 +1307,7 @@
 					"do": "tickle"
 				}
 			],
-			"emotion": "helpless_2"
+			"emotion": "fatigue_burst"
 		},
 		{
 			"act": "burst",

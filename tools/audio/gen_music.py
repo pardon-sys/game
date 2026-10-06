@@ -5,7 +5,7 @@ API key 从项目根目录的 .env 读（ELEVENLABS=...，.env 不进版本库�
 首尾相连：生成的曲子结尾常有淡出 / 静音，所以先找循环点 T（find_loop_end：在淡出之前、节奏和开头最像的位置），
 把 T 之前 CROSSFADE 秒和开头交叉淡化（等功率），T 之后的尾声丢掉——循环播放时无缝接回开头。
 原始音频存在 tools/.cache/music/（不进版本库）。
-用法：python tools/audio/gen_music.py [dungeon] [town] [boss] [boss3]（不写就全部生成；已经生成过的跳过，加 --force 重新生成）
+用法：python tools/audio/gen_music.py [dungeon] [town] [boss] [boss3] [night_room]（不写就全部生成；已经生成过的跳过，加 --force 重新生成）
 """
 import json
 import os
@@ -27,6 +27,14 @@ LENGTH_MS = 140000   # 多要 20 秒：结尾的淡出尾声会被切掉，循�
 CROSSFADE = 2.5
 
 TRACKS = {
+    "night_room": ("Instrumental video game background music for a quiet, melancholic night scene: two princesses rest in a small, dusty, "
+                   "long-abandoned bedroom hidden deep inside a dungeon tower, a room full of faded memories that one of them will not talk about. "
+                   "Mood: wistful nostalgia and quiet sorrow, tender but heavy-hearted, like remembering someone you lost long ago; not playful, "
+                   "not cute, not bouncy. Lead: slow, expressive solo cello and violin with long sustained legato lines in a minor key; warm "
+                   "felt piano chords underneath; a distant, slightly detuned antique music box appears only occasionally and softly in the "
+                   "background, like an echo of the past. No drums, no percussion, no pizzicato. Slow tempo around 60 BPM, sparse and intimate, "
+                   "with breathing space between phrases. Seamless loop, consistent dynamics from start to end, no fade-out ending."),
+
     "dungeon": ("Instrumental video game background music for a cute pixel-art dungeon full of mischievous tickle traps. "
                 "Mood: childlike and playful, sly and cunning, with an undercurrent of danger, and the clockwork feel of dungeon "
                 "machinery. Music box and xylophone carry a bouncy, sneaky melody; pizzicato strings and a plucked upright bass "

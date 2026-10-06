@@ -758,7 +758,7 @@
 		},
 		{
 			"speaker": "公主",
-			"text": "……我们……再来……",
+			"text": "……哈……哈……我们……再来……",
 			"actions": [
 				{
 					"who": "pink",
@@ -775,7 +775,7 @@
 		{
 			"act": "burst",
 			"speaker": "公主",
-			"text": "魔、魔力条……满了……！",
+			"text": "哈哈哈……魔、魔力条……满了……！",
 			"actions": [
 				{
 					"who": "pink",
@@ -917,7 +917,7 @@
 					"do": "bubble"
 				}
 			],
-			"emotion": "burst"
+			"emotion": "fatigue_burst"
 		},
 		{
 			"act": "burst",
@@ -930,7 +930,7 @@
 					"do": "bubble"
 				}
 			],
-			"emotion": "burst"
+			"emotion": "fatigue_burst"
 		},
 		{
 			"act": "burst",
@@ -1020,7 +1020,7 @@
 					"do": "tickle"
 				}
 			],
-			"emotion": "helpless_2"
+			"emotion": "fatigue_burst"
 		},
 		{
 			"act": "burst",
@@ -1072,7 +1072,7 @@
 					"do": "tickle"
 				}
 			],
-			"emotion": "helpless_2"
+			"emotion": "fatigue_burst"
 		},
 		{
 			"act": "burst",
@@ -1175,7 +1175,7 @@
 					"do": "tickle"
 				}
 			],
-			"emotion": "helpless_2"
+			"emotion": "fatigue_burst"
 		},
 		{
 			"act": "burst",
@@ -1227,7 +1227,7 @@
 					"do": "tickle"
 				}
 			],
-			"emotion": "helpless_2"
+			"emotion": "fatigue_burst"
 		},
 		{
 			"actions": [

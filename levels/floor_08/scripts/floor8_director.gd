@@ -207,7 +207,7 @@ func start_fight() -> void:
 	# 第八层两个人都会用魔法（AI 也会放）
 	if pink.magic_flag != "":
 		GameState.set_flag(pink.magic_flag)
-	Duo.start([blue, pink], self)
+	Duo.start([blue, pink], self, Floor8AIHooks.new(self))
 	if panel == null:
 		panel = PartnerPanel.new()
 		add_child(panel)

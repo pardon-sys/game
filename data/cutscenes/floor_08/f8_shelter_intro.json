@@ -1,0 +1,244 @@
+{
+	"name": "第八层：小房间",
+	"letterbox": true,
+	"skippable": true,
+	"steps": [
+		{
+			"actions": [
+				{
+					"who": "BluePrincess_12_4",
+					"to": [
+						8,
+						8
+					],
+					"do": "move"
+				},
+				{
+					"who": "BluePrincess_12_4",
+					"dir": "up",
+					"do": "face"
+				},
+				{
+					"who": "princess",
+					"dir": "up",
+					"do": "face"
+				},
+				{
+					"sound": "door",
+					"do": "sfx"
+				}
+			],
+			"wait": 0.6
+		},
+		{
+			"speaker": "公主",
+			"text": "呼……这里……好像是个房间？",
+			"emotion": "surprise",
+			"actions": [
+				{
+					"who": "princess",
+					"kind": "surprise",
+					"do": "bubble"
+				}
+			]
+		},
+		{
+			"actions": [
+				{
+					"who": "princess",
+					"to": [
+						7,
+						6
+					],
+					"speed": 50,
+					"do": "move"
+				},
+				{
+					"who": "BluePrincess_12_4",
+					"to": [
+						9,
+						7
+					],
+					"speed": 50,
+					"do": "move"
+				}
+			],
+			"wait": 0.8
+		},
+		{
+			"speaker": "公主",
+			"text": "哈……哈啾！好、好多灰……",
+			"emotion": "sad",
+			"actions": [
+				{
+					"who": "princess",
+					"time": 0.3,
+					"do": "shake"
+				}
+			]
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……很久没人住了。"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……已经很晚了。外面很危险，到处都是它的手。"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "今晚……先在这里过夜。"
+		},
+		{
+			"speaker": "公主",
+			"text": "嗯！那今天就在这里休息～",
+			"emotion": "happy"
+		},
+		{
+			"speaker": "公主",
+			"text": "……不过，这里好像以前有人住过诶。床、裙子、茶杯……都小小的。",
+			"emotion": "surprise"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……",
+			"actions": [
+				{
+					"who": "BluePrincess_12_4",
+					"dir": "left",
+					"do": "face"
+				}
+			]
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……别乱碰就好。"
+		},
+		{
+			"speaker": "公主",
+			"text": "……嘿嘿。",
+			"emotion": "happy",
+			"actions": [
+				{
+					"who": "princess",
+					"to": [
+						8,
+						7
+					],
+					"speed": 40,
+					"do": "move"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "今天你笑得那么大声，我还没报仇呢——看招！",
+			"emotion": "happy",
+			"actions": [
+				{
+					"who": "princess",
+					"kind": "laugh",
+					"do": "bubble"
+				}
+			]
+		},
+		{
+			"actions": [
+				{
+					"sound": "chime",
+					"do": "sfx"
+				},
+				{
+					"who": "princess",
+					"time": 0.3,
+					"do": "shake"
+				},
+				{
+					"who": "princess",
+					"to": [
+						7,
+						7
+					],
+					"time": 0.2,
+					"do": "move"
+				}
+			],
+			"wait": 0.4
+		},
+		{
+			"speaker": "公主",
+			"text": "呀！冰、冰晶把我弹开了……！",
+			"emotion": "surprise"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……想得美。",
+			"emotion": "angry"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……太暗了。",
+			"actions": [
+				{
+					"sound": "chime",
+					"do": "sfx"
+				}
+			]
+		},
+		{
+			"speaker": "",
+			"text": "（蓝色公主指尖亮起一点冰晶的光，屋里的蜡烛一根一根亮了起来）"
+		},
+		{
+			"speaker": "公主",
+			"text": "哇……好漂亮。今天……笑了一整天，现在这样安安静静的，真好。",
+			"emotion": "happy"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……嗯。"
+		},
+		{
+			"actions": [
+				{
+					"who": "BluePrincess_12_4",
+					"to": [
+						12,
+						4
+					],
+					"speed": 45,
+					"do": "move"
+				},
+				{
+					"who": "princess",
+					"dir": "right",
+					"do": "face"
+				}
+			],
+			"wait": 1.2
+		},
+		{
+			"actions": [
+				{
+					"who": "BluePrincess_12_4",
+					"dir": "down",
+					"do": "face"
+				}
+			],
+			"wait": 0.3
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……我在窗边。你想做什么就做什么。……早点睡。"
+		},
+		{
+			"actions": [
+				{
+					"text": "可以调查房间里的东西，或者和蓝色公主说话。（现在只能操控粉色公主）",
+					"do": "notify"
+				}
+			],
+			"wait": 0.3
+		}
+	]
+}

@@ -11,16 +11,19 @@ static var active := false
 static var members: Array[PlayableCharacter] = []
 ## 第八层的导演（Floor8Director）：倒地超时 / 两人都倒下时调用它的 on_defeat(reason)。
 static var director: Node
+## 给 AI 搭档的导演提示（BattleAIHooks；没给就是什么提示都没有）
+static var hooks: BattleAIHooks
 static var sacrifice_lock := false
 
 
-static func start(chars: Array, dir: Node = null) -> void:
+static func start(chars: Array, dir: Node = null, ai_hooks: BattleAIHooks = null) -> void:
 	active = true
 	members.clear()
 	for c in chars:
 		if c is PlayableCharacter:
 			members.append(c)
 	director = dir
+	hooks = ai_hooks
 	sacrifice_lock = false
 	_bind_tab()
 	for c in members:
@@ -33,6 +36,7 @@ static func stop() -> void:
 	active = false
 	members.clear()
 	director = null
+	hooks = null
 	sacrifice_lock = false
 	PlayerInputController.wasd_only = false
 

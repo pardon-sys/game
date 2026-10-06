@@ -3,7 +3,7 @@ extends Node
 ## 千手痒痒魔的大技能（挂在 ThousandHand 下面，节点名 Skills；第八层专属）：
 ##   俯冲撞墙 dash   阶段一起（阶段三连续两次）：整条横 / 竖通道先亮红色预警带 DASH_WARN 秒，本体沿通道冲过去，
 ##                   撞到的人击飞、闷笑直接加一半（DASH_LAUGH）；冲到墙边撞墙：全屏大震 + 白闪 + 落石，随机掉 2~3 个落笼（先有影子），
-##                   本体撞晕 DAZE_TIME 秒（能打），然后飞回原位。
+##                   本体撞晕 daze_time() 秒（能打；阶段三只晕 0.5 秒），然后飞回原位。
 ##                   特效：速度线 + 残影 + 尘土拖尾。
 ##   手臂雨 rain     阶段二起：6~8 个砸地圈按十字 / 圆环 / 追人的队形陆续落下（阶段二起不抓人，砸中积累闷笑）。
 ##   羽毛风暴 storm  阶段三：屏幕边上先出风向箭头 1 秒，然后全场往一侧推 STORM_TIME 秒（推向漩涡 / 落笼），风里的羽毛轻挠。
@@ -13,7 +13,8 @@ extends Node
 
 const DASH_WARN := 1.0
 const DASH_TIME := 0.5
-const DAZE_TIME := 1.5
+## 撞墙后晕多久（能打本体）：阶段一、二 1.5 秒，阶段三 0.5 秒
+const DAZE_TIME := {1: 1.5, 2: 1.5, 3: 0.5}
 ## 被俯冲的本体撞到：闷笑直接加最大值的这个比例
 const DASH_LAUGH := 0.5
 const RAIN_GAP := 0.14
@@ -136,6 +137,10 @@ var _dash_raised := false
 var _dash_tw: Tween
 
 
+func daze_time() -> float:
+	return float(DAZE_TIME.get(boss.phase, 1.5))
+
+
 func _dash(times: int) -> void:
 	current = "dash"
 	var serial := _serial
@@ -161,15 +166,16 @@ func _dash(times: int) -> void:
 				(warn.get_child(0) as ColorRect).color.a = 0.18 + 0.22 * (0.5 + 0.5 * sin(tt * 26.0))
 			await get_tree().process_frame
 			tt += get_process_delta_time()
+		# 预警一直留到撞墙（AI 搭档靠它躲开）
+		await _dash_run(lane, horizontal, serial)
 		if is_instance_valid(warn):
 			warn.queue_free()
-		await _dash_run(lane, horizontal, serial)
 		if not _alive(serial):
 			return
 		_wall_impact(lane, horizontal)
-		# 撞墙撞晕：DAZE_TIME 秒里能打本体
-		boss.daze(DAZE_TIME)
-		await _wait(DAZE_TIME)
+		# 撞墙撞晕：这段时间里能打本体
+		boss.daze(daze_time())
+		await _wait(daze_time())
 		if not _alive(serial):
 			return
 	var home := _dash_home
@@ -196,6 +202,14 @@ func _dash_run(lane: Rect2, horizontal: bool, serial: int) -> void:
 		return
 	var dir := (to - from).normalized()
 	boss.sprite.flip_h = dir.x < 0.0
+	# 冲过来的本体：一个跟着它走的「移动危险」（danger 组，meta velocity），AI 搭档会提前往旁边闪
+	var moving := Node2D.new()
+	moving.add_to_group("danger")
+	moving.set_meta("radius", 36.0)
+	moving.set_meta("velocity", (to - from) / DASH_TIME)
+	_parent().add_child(moving)
+	_nodes.append(moving)
+	moving.global_position = from + Vector2(0, -10)
 	var hit: Array = []
 	var tt := 0.0
 	var ghost_t := 0.0
@@ -206,6 +220,8 @@ func _dash_run(lane: Rect2, horizontal: bool, serial: int) -> void:
 		var d := get_process_delta_time()
 		tt += d
 		boss.global_position = from.lerp(to, clampf(tt / DASH_TIME, 0.0, 1.0)) + off
+		if is_instance_valid(moving):
+			moving.global_position = boss.global_position + Vector2(0, -40)
 		ghost_t -= d
 		var body_center := boss.global_position + Vector2(0, -40)
 		if ghost_t <= 0.0:
@@ -225,6 +241,8 @@ func _dash_run(lane: Rect2, horizontal: bool, serial: int) -> void:
 				boss.play_tickle_sound()
 				m.shake(0.3)
 		await get_tree().process_frame
+	if is_instance_valid(moving):
+		moving.queue_free()
 	boss.sprite.flip_h = false
 
 

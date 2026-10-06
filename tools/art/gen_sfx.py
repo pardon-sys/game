@@ -114,6 +114,7 @@ def main():
     save("grab", mix(thump, jelly(0.22, 300, 130, delay=0.05) * 0.5))
     gen_expansion_sfx()
     gen_floor4_sfx()
+    gen_floor8_sfx()
     print("音效已生成：", sorted(p.name for p in OUT.glob("*.wav")))
 
 
@@ -285,6 +286,25 @@ def gen_release_sfx():
     save("water_release", mix(flow * 1.4, hiss, whoosh, bubbles, drops), 0.75)
 
 
+
+    gen_release_sfx()
+
+
+def gen_floor8_sfx():
+    """第八层的小房间：旧八音盒的一小段旋律（A 小调，有点寂寞；音头清脆、尾音很快消掉，偶尔一个音慢半拍）。"""
+    notes = [(659.25, 0.0), (880.0, 0.35), (1046.5, 0.7), (987.77, 1.05), (880.0, 1.4), (659.25, 1.9),
+             (783.99, 2.25), (698.46, 2.6), (659.25, 3.05)]
+    total = 3.9
+    sig = np.zeros(int(total * RATE))
+    for f, start in notes:
+        t = t_axis(1.0)
+        partials = np.sin(2 * np.pi * f * t) + 0.4 * np.sin(2 * np.pi * 2 * f * t) + 0.15 * np.sin(2 * np.pi * 3.01 * f * t)
+        note = partials * env(t, 0.002, 0.28)
+        i = int(start * RATE)
+        n = min(len(note), len(sig) - i)
+        sig[i:i + n] += note[:n]
+    save("music_box", sig, 0.45)
+
+
 if __name__ == "__main__":
     main()
-    gen_release_sfx()

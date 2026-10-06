@@ -113,7 +113,7 @@
 		},
 		{
 			"speaker": "公主",
-			"text": "重、重死了！你、你压到我了！",
+			"text": "哈哈……重、重死了！你、你压到我了哈哈！",
 			"actions": [
 				{
 					"who": "pink",
@@ -482,7 +482,7 @@
 		{
 			"act": "burst",
 			"speaker": "公主",
-			"text": "我、我也是……一、一起……！",
+			"text": "哈哈……我、我也是……一、一起……！",
 			"actions": [
 				{
 					"who": "pink",
@@ -615,12 +615,12 @@
 					"do": "bubble"
 				}
 			],
-			"emotion": "burst"
+			"emotion": "fatigue_burst"
 		},
 		{
 			"act": "burst",
 			"speaker": "公主",
-			"text": "……呼……好舒服……",
+			"text": "……呼……哈……好舒服……",
 			"actions": [
 				{
 					"who": "pink",
@@ -628,7 +628,7 @@
 					"do": "bubble"
 				}
 			],
-			"emotion": "burst"
+			"emotion": "fatigue_burst"
 		},
 		{
 			"act": "burst",
@@ -911,7 +911,7 @@
 					"do": "tickle"
 				}
 			],
-			"emotion": "helpless_2"
+			"emotion": "fatigue_burst"
 		},
 		{
 			"act": "burst",
@@ -981,7 +981,7 @@
 					"do": "tickle"
 				}
 			],
-			"emotion": "helpless_2"
+			"emotion": "fatigue_burst"
 		},
 		{
 			"act": "burst",
@@ -1408,7 +1408,7 @@
 		{
 			"act": "burst",
 			"speaker": "公主",
-			"text": "我、我也……第二次了……呜哇——！",
+			"text": "哈哈哈……我、我也……第二次了……呜哇——！",
 			"actions": [
 				{
 					"who": "pink",
@@ -1541,12 +1541,12 @@
 					"do": "bubble"
 				}
 			],
-			"emotion": "burst"
+			"emotion": "fatigue_burst"
 		},
 		{
 			"act": "burst",
 			"speaker": "公主",
-			"text": "……软、软软的……像云……",
+			"text": "……哈……软、软软的……像云……",
 			"actions": [
 				{
 					"who": "pink",
@@ -1554,7 +1554,7 @@
 					"do": "bubble"
 				}
 			],
-			"emotion": "burst"
+			"emotion": "fatigue_burst"
 		},
 		{
 			"act": "burst",
@@ -1698,7 +1698,7 @@
 					"do": "tickle"
 				}
 			],
-			"emotion": "helpless_2"
+			"emotion": "fatigue_burst"
 		},
 		{
 			"act": "burst",
@@ -1768,7 +1768,7 @@
 					"do": "tickle"
 				}
 			],
-			"emotion": "helpless_2"
+			"emotion": "fatigue_burst"
 		},
 		{
 			"act": "burst",
@@ -1907,7 +1907,7 @@
 					"do": "tickle"
 				}
 			],
-			"emotion": "helpless_2"
+			"emotion": "fatigue_burst"
 		},
 		{
 			"act": "burst",
@@ -1977,7 +1977,7 @@
 					"do": "tickle"
 				}
 			],
-			"emotion": "helpless_2"
+			"emotion": "fatigue_burst"
 		},
 		{
 			"act": "burst",

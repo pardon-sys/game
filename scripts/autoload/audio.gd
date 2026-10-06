@@ -39,6 +39,7 @@ const SOUNDS := {
 	"conveyor": ["res://assets/generated/sfx/conveyor.wav"],
 	"chomp": ["res://assets/generated/sfx/chomp.wav"],
 	"chime": ["res://assets/generated/sfx/chime.wav"],
+	"music_box": ["res://assets/generated/sfx/music_box.wav"],
 	"pop": ["res://assets/generated/sfx/pop.wav"],
 	"combo": ["res://assets/generated/sfx/combo.wav"],
 	"tickle_special": ["res://assets/generated/sfx/tickle_special.wav"],
@@ -75,6 +76,7 @@ const MUSIC := {
 	"town": "res://assets/audio/music/town_loop.wav",
 	"boss": "res://assets/audio/music/boss_loop.wav",
 	"boss3": "res://assets/audio/music/boss3_loop.wav",
+	"night_room": "res://assets/audio/music/night_room_loop.wav",
 }
 const MUSIC_DB := -12.0
 const DUCK_DB := -6.0

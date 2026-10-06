@@ -255,6 +255,9 @@ func _show_line() -> void:
 	# 对话行可以顺带设置剧情标记（如 "set_flag": "magic_unlocked"）
 	if line.has("set_flag"):
 		GameState.set_flag(str(line["set_flag"]))
+	# 也可以顺带放一个音效（如 "sfx": "music_box"：拧八音盒）
+	if line.has("sfx"):
+		Audio.play(str(line["sfx"]), -4.0)
 	# 也可以顺带获得被动技能（如 "grant_passive": "struggle_plus"）
 	if line.has("grant_passive"):
 		GameState.grant_passive(str(line["grant_passive"]))
@@ -274,7 +277,7 @@ func _show_line() -> void:
 		npc_portrait.hide()
 	if npc != "":
 		_show_npc(npc, emotion)
-		if emotion in ["helpless_1", "helpless_2"]:
+		if emotion in ["helpless_1", "helpless_2", "fatigue_burst"]:
 			# 等滑入（0.18 秒）结束再抖
 			get_tree().create_timer(0.2).timeout.connect(shake_npc_portrait.bind(3.0 if emotion == "helpless_2" else 2.0, 0.3))
 	elif not is_princess and speaker != "":
@@ -287,7 +290,9 @@ func _show_line() -> void:
 	portrait.modulate = Color(0.55, 0.5, 0.6) if npc != "" else Color.WHITE
 	npc_portrait.modulate = Color(0.55, 0.5, 0.6) if is_princess else Color.WHITE
 	if is_princess:
-		GameState.emote(emotion if emotion != "" else "normal", 0.0, true)
+		# fatigue_burst 只用于人物（右边）立绘；主角自己的爆发立绘由 CG 的 portrait 管
+		var hero_emo := emotion if emotion != "" and emotion != "fatigue_burst" else ("helpless_2" if emotion == "fatigue_burst" else "normal")
+		GameState.emote(hero_emo, 0.0, true)
 		_show_portrait(GameState.player.emotion.current if is_instance_valid(GameState.player) else "normal")
 	name_label.text = speaker
 	name_label.visible = speaker != ""
@@ -351,7 +356,17 @@ func npc_of(line: Dictionary) -> String:
 
 
 ## 人物的立绘：有 portrait_set 的（蓝色公主）按台词的 emotion 取那一套里的格子，其它人物只有一张。
+## 人物（可操作角色的人物版）在小剧场里魔力疲倦爆发：用她自己 CG 数据里的 fatigue_burst 立绘（和组合演出里一样）。
+const NPC_CHARACTER := {"pink_princess": "pink", "blue_princess": "blue"}
+
+
 func npc_texture(id: String, emotion := "") -> Texture2D:
+	if emotion == "fatigue_burst" and NPC_CHARACTER.has(id):
+		Characters.scope(NPC_CHARACTER[id])
+		var burst: Texture2D = CG.portrait_texture("fatigue_burst")
+		Characters.unscope()
+		if burst:
+			return burst
 	var info: Dictionary = npcs.get(id, {})
 	if info.has("portrait_set") and _sets.has(str(info["portrait_set"])):
 		return portrait_for(emotion if emotion != "" else "normal", str(info["portrait_set"]))
