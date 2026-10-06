@@ -3,7 +3,8 @@ extends CanvasLayer
 ## 背包界面（场景 scenes/ui/backpack.tscn，挂在 main 下）。拿到冒险背包（GameState.has_backpack）之后按 Tab / I 打开，打开时暂停游戏。
 ##   物品页：所有物品的格子；选中显示名称、数量、说明；E 使用，Q / R 把消耗品设为对应快捷键（GameState.set_hotkey）。
 ##   状态页：闷笑值 / 魔力疲倦百分比和当前阶段说明、魔法冷却、所有增益 / 减益（data/buffs.json 的 desc）、被抓 / 定身等情况。
-##   CG 图鉴页：笑倒 CG、巢穴过场、三来源组合演出；看过的可以重看（测试模式下全部可看），E 播放。
+##   CG 图鉴页：笑倒 CG、巢穴过场、三来源组合演出、小剧场（第八层 Boss 战败 / 追逐失败、第六层的惩罚 / 训练等）；
+##   看过的可以重看（测试模式下全部可看），E 播放。
 ## 操作：方向键选择，E 使用 / 播放，Q / R 设快捷键，Tab / I 翻到下一页（最后一页再按就关闭），Esc 关闭。
 ## 测试模式（DevConfig.enabled）下没拿到背包也能打开。
 
@@ -301,7 +302,17 @@ func _refresh() -> void:
 
 
 # ------------------------------------------------------------------ CG 图鉴
-## 所有条目（按分类：笑倒 → 巢穴 → 组合演出）。
+## 小剧场的分类（id 前缀 → 图鉴里的分组名），按这个顺序排；没对上的归「小剧场」。
+const THEATER_GROUPS := [["f8_defeat_", "Boss 战败"], ["f8_chase_fail", "Boss 战败"], ["f6_caught_", "潜入失败"], ["f6_punish_", "营地惩罚"],
+	["train_", "训练"], ["", "小剧场"]]
+
+
+## 小剧场的名字（解析一次就记住）
+static var _theater_names := {}
+
+
+## 所有条目（按分类：笑倒 → 巢穴 → 组合演出 → 小剧场）。
+## 小剧场条目：kind = "theater"，看过的标记 cg_seen_theater:<id>。
 static func gallery_entries() -> Array[Dictionary]:
 	var out: Array[Dictionary] = []
 	var cg: Node = (Engine.get_main_loop() as SceneTree).root.get_node_or_null("/root/CG")
@@ -316,6 +327,15 @@ static func gallery_entries() -> Array[Dictionary]:
 	for id in cg.scenes:
 		out.append({"kind": "scene", "id": id, "flag": "cg_seen_combo:" + id, "group": "组合",
 			"name": str(cg.scenes[id].get("name", id))})
+	var ids: Array = cg.theater_index().keys()
+	ids.sort()
+	for g in THEATER_GROUPS:
+		for id in ids.duplicate():
+			if str(id).begins_with(g[0]):
+				ids.erase(id)
+				if not _theater_names.has(id):
+					_theater_names[id] = str(cg.theater_data(id, TrainingStage.gallery_subs()).get("name", id))
+				out.append({"kind": "theater", "id": id, "flag": "cg_seen_theater:" + id, "group": g[1], "name": _theater_names[id]})
 	return out
 
 
@@ -355,6 +375,8 @@ func play_selected() -> bool:
 	close()
 	if e["kind"] == "scene":
 		cg.play_scene(str(e["id"]))
+	elif e["kind"] == "theater":
+		cg.play_theater_subst(str(e["id"]), TrainingStage.gallery_subs())
 	else:
 		var id := str(e["id"])
 		var source := id.trim_prefix("death_") if id.begins_with("death_") else ""

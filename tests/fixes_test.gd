@@ -323,6 +323,25 @@ func _run_dev_mode() -> void:
 	CG._can_skip = true
 	await _drain()
 	check("播完回到游戏", not CG.is_busy() and not GameState.in_dialogue and not get_tree().paused)
+	# 小剧场也在图鉴里：第八层 Boss 战败（各阶段、叠在一起）和追逐失败、第六层的惩罚 / 训练
+	var boss_ids: Array = Backpack.gallery_entries().filter(func(e): return e["group"] == "Boss 战败").map(func(e): return e["id"])
+	var want: Array = ["f8_defeat_1_1", "f8_defeat_1_2", "f8_defeat_2_1", "f8_defeat_2_2", "f8_defeat_3_1", "f8_defeat_3_2", "f8_defeat_3_3",
+		"f8_defeat_3_4", "f8_chase_fail"]
+	check("CG 图鉴里有第八层 Boss 战败的小剧场（%d 段）和追逐失败" % boss_ids.size(), want.all(func(id): return boss_ids.has(id)))
+	var zone_entry: Dictionary = Backpack.gallery_entries().filter(func(e): return e["id"] == "train_zone_punish_1")[0]
+	var zone_text := JSON.stringify(CG.theater_data("train_zone_punish_1", TrainingStage.gallery_subs()))
+	check("要代入部位 / 刑具的训练小剧场也在图鉴里，用默认值（脚心、足枷台）代入",
+		zone_entry["group"] == "训练" and not zone_text.contains("{zone}") and not zone_text.contains("{device"))
+	bp.open()
+	bp.set_page(Backpack.PAGE_GALLERY)
+	bp.gallery_selected = bp._gallery.find(Backpack.gallery_entries().filter(func(e): return e["id"] == "f8_defeat_3_4")[0])
+	played = bp.play_selected()
+	await get_tree().process_frame
+	check("图鉴里选 Boss 战败的小剧场按 E：播放（%s）" % CG.current, played and CG.is_playing() and CG.current == "theater:f8_defeat_3_4")
+	CG._can_skip = true
+	CG.skip()
+	await _drain()
+	check("小剧场播完回到游戏", not CG.is_busy() and not GameState.in_dialogue and not get_tree().paused)
 	# 跳关：第四层
 	var points := DevConfig.skip_points()
 	GameState.flags.erase("magic_unlocked")
