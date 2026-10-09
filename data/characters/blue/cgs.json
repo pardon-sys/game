@@ -473,9 +473,163 @@
 					-48
 				]
 			}
+		},
+		"glow_moth": {
+			"scene": "res://levels/floor_08/scenes/glow_moth.tscn",
+			"sprite": {
+				"hframes": 2
+			}
+		},
+		"dream_fluff": {
+			"scene": "res://levels/floor_08/scenes/dream_fluff.tscn",
+			"sprite": {
+				"hframes": 2
+			}
+		},
+		"lamp_imp": {
+			"scene": "res://levels/floor_08/scenes/lamp_imp.tscn",
+			"sprite": {
+				"hframes": 2
+			}
+		},
+		"laugh_jar": {
+			"scene": "res://levels/floor_08/scenes/laugh_jar.tscn",
+			"sprite": {
+				"hframes": 4,
+				"frame": 2
+			}
 		}
 	},
 	"trap_actors": {
+		"maze_hand": {
+			"hit_fx": "hand",
+			"texture": "res://assets/generated/thousand_hand_arm.png",
+			"hframes": 8,
+			"idle": [
+				0,
+				1
+			],
+			"active": [
+				2,
+				3
+			],
+			"fps": 4,
+			"z": 2,
+			"pitch": 1.1
+		},
+		"hand_rhythm": {
+			"hit_fx": "hand",
+			"texture": "res://assets/generated/thousand_hand_arm.png",
+			"hframes": 8,
+			"idle": [
+				0
+			],
+			"active": [
+				2,
+				3,
+				2,
+				3
+			],
+			"fps": 10,
+			"z": 2,
+			"pitch": 0.9
+		},
+		"hand_shadow": {
+			"hit_fx": "hand",
+			"texture": "res://assets/generated/maze/hand_shadow.png",
+			"hframes": 2,
+			"idle": [
+				0
+			],
+			"active": [
+				1,
+				0
+			],
+			"fps": 4,
+			"z": 2,
+			"pitch": 0.7
+		},
+		"mirror_puddle": {
+			"hit_fx": "hand",
+			"texture": "res://assets/generated/maze/mirror_puddle.png",
+			"hframes": 1,
+			"idle": [
+				0
+			],
+			"active": [
+				0
+			],
+			"z": -1,
+			"pitch": 1.2
+		},
+		"shadow_vine": {
+			"hit_fx": "lines",
+			"texture": "res://assets/generated/maze/shadow_vine.png",
+			"hframes": 2,
+			"idle": [
+				0
+			],
+			"active": [
+				1
+			],
+			"offset": [
+				0,
+				-6
+			],
+			"z": 1,
+			"pitch": 0.9
+		},
+		"feather_curtain": {
+			"hit_fx": "feather",
+			"texture": "res://assets/generated/maze/feather_curtain.png",
+			"hframes": 2,
+			"idle": [
+				1
+			],
+			"active": [
+				0
+			],
+			"offset": [
+				0,
+				-10
+			],
+			"z": 1,
+			"pitch": 1.3
+		},
+		"cradle_bench": {
+			"hit_fx": "hand",
+			"texture": "res://assets/generated/maze/cradle_bench.png",
+			"hframes": 1,
+			"idle": [
+				0
+			],
+			"active": [
+				0
+			],
+			"offset": [
+				0,
+				-4
+			],
+			"z": -1,
+			"pitch": 1.0
+		},
+		"hand_gate": {
+			"hit_fx": "hand",
+			"texture": "res://assets/generated/maze/hand_gate.png",
+			"hframes": 2,
+			"idle": [
+				0
+			],
+			"active": [
+				1
+			],
+			"offset": [
+				0,
+				-14
+			],
+			"z": 0,
+			"pitch": 0.8
+		},
 		"stocks": {
 			"hit_fx": "feather",
 			"texture": "res://assets/generated/stocks.png",

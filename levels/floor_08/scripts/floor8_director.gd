@@ -217,7 +217,12 @@ func start_fight() -> void:
 	for n in get_tree().get_nodes_in_group(gate_group):
 		if Contracts.is_switchable(n):
 			n.set_active(false)
-	start_phase(1)
+	# 测试模式跳关「阶段二 / 阶段三」：变量 f8_start_phase（用一次就清掉），血量从那个阶段的起点开始
+	var p := clampi(int(GameState.vars.get("f8_start_phase", 1)), 1, 3)
+	GameState.vars.erase("f8_start_phase")
+	if p > 1:
+		boss.health.set_hp(boss.phase_start_hp(p))
+	start_phase(p)
 
 
 func start_phase(p: int) -> void:

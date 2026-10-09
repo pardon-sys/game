@@ -831,10 +831,203 @@ from maze_gen import Maze  # noqa: E402
 # 段 -> (单元列, 单元行, 种子, 月光灯数, 回环比例, 小房间数, 呼吸墙对数, 回忆碎片 id)
 MAZES = {
     1: (20, 14, 81, 4, 0.14, 3, 4, (1, 2)),
-    2: (24, 18, 82, 4, 0.13, 4, 6, (3, 4)),
+    2: (24, 18, 82, 4, 0.13, 5, 6, (3, 4)),
     3: (28, 21, 83, 3, 0.12, 5, 8, (5, 6)),
 }
 MAZE_INFO = {}
+
+# 每段的三来源组合区域（按顺序放进不含灯 / 起点 / 出口的小房间）：组合 id -> 要摆的东西
+MAZE_COMBOS = {
+    1: ["mz_moth_curtain", "mz_cradle_moth", "mz_moth_mirror_curtain"],
+    2: ["mz_mirror_vine", "mz_fluff_jar", "mz_curtain_vine", "mz_mirror_jar", "mz_rhythm_combo"],
+    3: ["mz_dark_raid", "mz_shadow_bench", "mz_gate_hands"],
+}
+# 来源键 -> 地图上的写法（maze_hand / hand_rhythm 由导演提供，不用摆；千手之门 / 影子另外处理）
+MAZE_SPEC = {
+    "glow_moth": "monster type=glow_moth", "dream_fluff": "monster type=dream_fluff", "lamp_imp": "monster type=lamp_imp",
+    "laugh_jar": "monster type=laugh_jar", "mirror_puddle": "trap type=mirror_puddle", "shadow_vine": "trap type=shadow_vine",
+    "feather_curtain": "trap type=feather_curtain", "cradle_bench": "cradle",
+}
+MAZE_COMBO_KEYS = {
+    "mz_moth_curtain": ["glow_moth", "feather_curtain"], "mz_mirror_vine": ["mirror_puddle", "shadow_vine"],
+    "mz_fluff_jar": ["dream_fluff", "laugh_jar"], "mz_cradle_moth": ["cradle_bench", "glow_moth"],
+    "mz_curtain_vine": ["feather_curtain", "shadow_vine", "dream_fluff"], "mz_mirror_jar": ["mirror_puddle", "laugh_jar"],
+    "mz_dark_raid": ["lamp_imp", "dream_fluff"], "mz_shadow_bench": ["hand_shadow", "cradle_bench"],
+    "mz_gate_hands": ["hand_gate", "shadow_vine"], "mz_moth_mirror_curtain": ["glow_moth", "feather_curtain", "mirror_puddle"],
+    "mz_rhythm_combo": ["dream_fluff", "shadow_vine"],
+}
+# 段 -> 散放的东西（来源键: 个数）、门帘（主路上的门洞数）、月光镜暗门数、千手之门捷径数、巡逻影子数
+MAZE_SCATTER = {
+    1: ({"glow_moth": 5, "mirror_puddle": 3, "cradle_bench": 1}, 3, 0, 0, 0),
+    2: ({"glow_moth": 2, "dream_fluff": 4, "laugh_jar": 2, "shadow_vine": 4, "mirror_puddle": 3}, 2, 1, 0, 1),
+    3: ({"glow_moth": 2, "dream_fluff": 3, "laugh_jar": 2, "lamp_imp": 4, "shadow_vine": 4}, 2, 1, 1, 2),
+}
+DIRS4 = [(1, 0), (0, 1), (-1, 0), (0, -1)]   # MoonMirror.facing 0~3
+
+
+class MazePlacer:
+    """往一段迷宫里摆怪物 / 陷阱 / 机关 / 组合区域 / 巡逻影子；记下 design.json 用的组合区域和机关。"""
+
+    def __init__(self, sec, mm, mz, reserved_cells):
+        self.sec, self.mm, self.mz = sec, mm, mz
+        self.rng = mz.rng
+        self.used_cells = set(reserved_cells)
+        self.used_tiles = set(mm.cells)
+        self.no_go = set()          # 呼吸墙的格子：什么都不放
+        for b in mz.breathing:
+            self.no_go.update(b["a"])
+            self.no_go.update(b["b"])
+        self.areas = []
+        self.devices = []
+
+    def free_tile(self, x, y):
+        return self.mm.g[y][x] == "." and (x, y) not in self.used_tiles and (x, y) not in self.no_go
+
+    def put(self, x, y, spec):
+        self.mm.put(x, y, spec)
+        self.used_tiles.add((x, y))
+
+    def put_in_cell(self, c, spec):
+        tiles = [t for t in self.mz.cell_floor(c) if self.free_tile(*t)]
+        if not tiles:
+            return None
+        t = self.rng.choice(tiles)
+        self.put(t[0], t[1], spec)
+        self.used_cells.add(c)
+        return t
+
+    # -------------------------------------------------------------- 组合区域
+    def combo_rooms(self):
+        return [r for r in self.mz.rooms if not any(c in self.used_cells for c in r)]
+
+    def room_rect(self, cells):
+        xs = [x for c in cells for (x, _y) in self.mz.cell_floor(c)]
+        ys = [y for c in cells for (_x, y) in self.mz.cell_floor(c)]
+        return [min(xs), min(ys), max(xs), max(ys)]
+
+    def place_combos(self, combos):
+        rooms = self.combo_rooms()
+        assert len(rooms) >= len(combos), ("第 %d 段的小房间不够放组合区域" % self.sec, len(rooms), len(combos))
+        for cid, room in zip(combos, rooms):
+            rect = self.room_rect(room)
+            tiles = [(x, y) for y in range(rect[1], rect[3] + 1) for x in range(rect[0], rect[2] + 1) if self.free_tile(x, y)]
+            self.rng.shuffle(tiles)
+            for key in MAZE_COMBO_KEYS[cid]:
+                if key == "hand_gate":
+                    g = self.hand_gate(room, "hg_%d_%s" % (self.sec, cid))
+                    rect = [min(rect[0], g[0][0]), min(rect[1], g[0][1]), max(rect[2], g[1][0]), max(rect[3], g[1][1])]
+                elif key == "hand_shadow":
+                    self.shadow(room[0])
+                else:
+                    if MAZE_SPEC[key].startswith("monster"):   # 怪物放在房间中间（会走动，别一开始就贴着门口）
+                        cx, cy = (rect[0] + rect[2]) / 2.0, (rect[1] + rect[3]) / 2.0
+                        t = min(tiles, key=lambda p: abs(p[0] - cx) + abs(p[1] - cy))
+                        tiles.remove(t)
+                    else:
+                        t = tiles.pop()
+                    self.put(t[0], t[1], MAZE_SPEC[key])
+            self.used_cells.update(room)
+            # 区域外扩一格（门口一带也算）
+            self.areas.append({"combo": cid, "rect": [rect[0] - 1, rect[1] - 1, rect[2] + 1, rect[3] + 1]})
+
+    # -------------------------------------------------------------- 散放
+    def scatter(self, counts):
+        pool = [c for c in self.mz.corridor_cells(exclude=self.used_cells) + self.mz.dead_ends if c not in self.used_cells]
+        items = [k for k, n in counts.items() for _ in range(n)]
+        for c, key in zip(self.mz.spread(pool, len(items)), items):
+            self.put_in_cell(c, MAZE_SPEC[key])
+
+    def curtains(self, n):
+        """主路上的门洞（两个单元之间的 2 格）挂羽毛门帘。"""
+        path = self.mz.main_path
+        links = [(path[i], path[i + 1]) for i in range(3, len(path) - 2)]
+        links = [p for p in links if all(self.free_tile(*t) for t in self.mz.link_cells(*sorted(p)))]
+        for a, b in self.mz.rng.sample(links, min(n, len(links))):
+            for i, (x, y) in enumerate(self.mz.link_cells(*sorted((a, b)))):
+                self.put(x, y, "trap type=feather_curtain offset=%.1f" % (0.4 * i))
+
+    # -------------------------------------------------------------- 机关
+    def closed_links(self, near_cells, max_cells=3):
+        """离 near_cells 不远、现在封着的单元间墙（打开后是捷径：两边绕路越远越好）。"""
+        dist_from = {}
+        out = []
+        for c in self.mz.all_cells():
+            if min(abs(c[0] - n[0]) + abs(c[1] - n[1]) for n in near_cells) > max_cells:
+                continue
+            for n in self.mz.neighbors(c):
+                if c < n and not self.mz.linked(c, n):
+                    lk = self.mz.link_cells(c, n)
+                    if any(t in self.no_go or t in self.used_tiles for t in lk):
+                        continue
+                    if c not in dist_from:
+                        dist_from[c] = self.mz._cell_dist(c)
+                    out.append((dist_from[c].get(n, 999), c, n, lk))
+        out.sort(key=lambda o: -o[0])
+        return out
+
+    def hand_gate(self, room, group):
+        """千手之门：房间边上一段封着的墙打开、放两扇门（身上 ≥3 只手才推得开）。返回门两格。"""
+        cands = [o for o in self.closed_links(room, 1) if (o[1] in room) != (o[2] in room)]
+        assert cands, ("第 %d 段的房间旁边没有能开千手之门的墙" % self.sec)
+        _d, _c, _n, lk = cands[0]
+        for (x, y) in lk:
+            self.mm.g[y][x] = "."
+            self.put(x, y, "handgate group_name=%s" % group)
+        self.devices.append({"kind": "hand_gate", "group": group, "cells": [list(t) for t in lk]})
+        return lk
+
+    def shortcut_gate(self, i):
+        near = [c for c in self.mz.main_path[len(self.mz.main_path) // 3:]]
+        cands = [o for o in self.closed_links(self.rng.sample(near, min(4, len(near))), 2) if o[0] >= 6 and o[0] < 999]
+        if cands:
+            self.hand_gate([cands[0][1]], "hg_%d_short%d" % (self.sec, i))
+
+    def moon_mirror(self, lamp_cells, i):
+        """月光镜：放在一盏灯（不是入口那盏）的单元里，光带沿一条直走廊照到光开关；开关旁边一段封墙变暗门（捷径）。"""
+        best = None
+        for lc in lamp_cells[1:]:
+            for (mx, my) in self.mz.cell_floor(lc):
+                if not self.free_tile(mx, my):
+                    continue
+                for f, (dx, dy) in enumerate(DIRS4):
+                    run = []
+                    x, y = mx + dx, my + dy
+                    while len(run) < 13 and self.mm.g[y][x] == "." and (x, y) not in self.no_go:
+                        run.append((x, y))
+                        x, y = x + dx, y + dy
+                    if len(run) >= 5 and self.free_tile(*run[-1]) and (best is None or len(run) > len(best[3])):
+                        best = (mx, my, f, run)
+        assert best, ("第 %d 段找不到能放月光镜的直走廊" % self.sec)
+        mx, my, f, run = best
+        group = "beam_%d_%d" % (self.sec, i)
+        sx, sy = run[-1]
+        self.put(mx, my, "moonmirror facing=%d" % ((f + 2) % 4))     # 一开始朝反方向：要转两下
+        self.put(sx, sy, "beamswitch group_name=%s" % group)
+        scell = ((sx - 1) // 3, (sy - 1) // 3)
+        cands = [o for o in self.closed_links([scell], 2) if o[0] < 999]
+        assert cands, ("第 %d 段的光开关旁边没有能开暗门的墙" % self.sec)
+        _d, _c, _n, lk = cands[0]
+        for (x, y) in lk:
+            self.mm.g[y][x] = "."
+            self.put(x, y, "gate group=%s" % group)
+        self.devices.append({"kind": "moon_mirror", "mirror": [mx, my], "facing": f, "switch": [sx, sy], "group": group,
+                             "door": [list(t) for t in lk]})
+
+    def shadow(self, through=None):
+        """千手的影子：沿迷宫走廊来回巡逻（从 through 单元出发、走到 8~12 个单元外再折回来）。"""
+        cells = self.mz.all_cells()
+        start = through or self.rng.choice([c for c in self.mz.branch_cells if c not in self.used_cells] or cells)
+        dist = self.mz._cell_dist(start)
+        far = [c for c in dist if 8 <= dist[c] <= 12] or [max(dist, key=lambda c: dist[c])]
+        end = self.rng.choice(far)
+        path = self.mz._cell_path(start, end)
+        route = path + path[-2:0:-1]
+        pts = [self.mz.cell_floor(c)[0] for c in route]
+        x, y = pts[0]
+        spec = "handshadow route=" + ";".join("%d,%d" % p for p in pts)
+        self.mm.put(x, y, spec)
+        self.devices.append({"kind": "hand_shadow", "route": [list(p) for p in pts]})
+
 
 
 def build_maze(sec):
@@ -845,6 +1038,10 @@ def build_maze(sec):
     title = {1: "第八层·夜迷宫一·外环回廊", 2: "第八层·夜迷宫二·镜之回廊", 3: "第八层·夜迷宫三·千手深处"}[sec]
     mm = Map(fid, mz.w, mz.h, head, title)
     mm.g = [row[:] for row in mz.grid]
+    # 呼吸墙的 b 段在地图上也是地面（运行时导演开场把它升成墙；TerrainShifter 只能降下自己升起的墙）
+    for b in mz.breathing:
+        for (x, y) in b["b"]:
+            mm.g[y][x] = "."
     sx, sy = mz.cell_floor(mz.start_cell)[2]
     mm.put(sx, sy, "player")
     mm.put(sx, sy, "spawn id=from_%d" % (sec - 1))
@@ -862,16 +1059,34 @@ def build_maze(sec):
     for sid, c in zip(shards, mz.dead_ends[:len(shards)]):
         x, y = mz.cell_floor(c)[3]
         mm.put(x, y, "memshard id=%d" % sid)
+    # 怪物 / 陷阱 / 机关 / 组合区域（起点附近 3 个单元、灯、碎片、出口不放）
+    reserved = set(path[:3]) | {path[-4]} | set(lamp_cells) | set(mz.dead_ends[:len(shards)]) | {mz.exit_cell}
+    pl = MazePlacer(sec, mm, mz, reserved)
+    pl.place_combos(MAZE_COMBOS[sec])
+    counts, curtains, mirrors, gates, shadows = MAZE_SCATTER[sec]
+    for i in range(mirrors):
+        pl.moon_mirror(lamp_cells, i)
+    for i in range(gates):
+        pl.shortcut_gate(i)
+    for i in range(shadows - sum(1 for d in pl.devices if d["kind"] == "hand_shadow")):
+        pl.shadow()
+    pl.curtains(curtains)
+    pl.scatter(counts)
     ex, ey = mz.cell_floor(mz.exit_cell)[3]
     if sec < 3:
         mm.put(ex, ey, "exit target=floor_08_maze_%d spawn=from_%d" % (sec + 1, sec))
     else:
         mm.put(ex, ey, "spawn id=maze_exit")
+        # 测试模式跳关「出口前」：主路上离出口 3 个单元的地方
+        bx, by = mz.cell_floor(path[-4])[0]
+        mm.put(bx, by, "spawn id=before_exit")
     mm.write()
     MAZE_INFO[sec] = mz
     Path("levels/%s/design.json" % fid).write_text(json.dumps({
         "_说明": ["第八层夜迷宫第 %d 段（gen_floor08.py + maze_gen.py 生成，种子 %d）。breathing = 呼吸墙对（a 现在是地面、b 心跳后打开）。" % (sec, seed)],
         "breathing": [{"a": [list(p) for p in b["a"]], "b": [list(p) for p in b["b"]]} for b in mz.breathing],
+        "combo_areas": pl.areas,
+        "devices": pl.devices,
     }, ensure_ascii=False, indent="\t") + "\n")
     return mm, mz
 

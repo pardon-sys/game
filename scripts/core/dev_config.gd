@@ -70,7 +70,11 @@ static func rewards_for(point: Dictionary) -> Array[Dictionary]:
 static func grant(rewards: Array[Dictionary]) -> void:
 	for r in rewards:
 		for f in r.get("flags", []):
-			GameState.set_flag(str(f))
+			# "!标记" = 清掉这个标记（比如跳回粉色公主当主角的地方：!blue_is_hero）
+			if str(f).begins_with("!"):
+				GameState.set_flag(str(f).substr(1), false)
+			else:
+				GameState.set_flag(str(f))
 		var items: Dictionary = r.get("items", {})
 		for id in items:
 			var have := GameState.inventory.count(str(id))
@@ -83,7 +87,7 @@ static func grant(rewards: Array[Dictionary]) -> void:
 			GameState.vars[str(k)] = vs[k]
 
 
-## 跳关：补奖励 → 解除暂停 → 换楼层 → 有 cell 时放到那一格并设为检查点。
+## 跳关：补奖励 → 解除暂停 → 换楼层 → 有 cell 时放到那一格（或 spawn：放到那个出生点）并设为检查点。
 static func skip_to(point: Dictionary) -> void:
 	var tree := Engine.get_main_loop() as SceneTree
 	var main := tree.get_first_node_in_group("main")
@@ -94,11 +98,18 @@ static func skip_to(point: Dictionary) -> void:
 	grant([point])
 	tree.paused = false
 	await main.change_level(Floors.scene(str(point["floor"])))
+	var at := Vector2.INF
 	if point.has("cell"):
 		var c: Array = point["cell"]
+		at = Vector2(float(c[0]) * 16.0 + 8.0, float(c[1]) * 16.0 + 12.0)
+	elif point.has("spawn"):
+		for sp in tree.get_nodes_in_group("spawn_point"):
+			if str(sp.get("id")) == str(point["spawn"]):
+				at = (sp as Node2D).global_position
+	if at != Vector2.INF:
 		var p := GameState.player
 		if is_instance_valid(p):
-			p.global_position = Vector2(float(c[0]) * 16.0 + 8.0, float(c[1]) * 16.0 + 12.0)
+			p.global_position = at
 			GameState.set_checkpoint(p.global_position)
 			if p.camera:
 				p.camera.reset_smoothing()

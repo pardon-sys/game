@@ -91,5 +91,35 @@
 				]
 			]
 		}
-	]
+	],
+	"combo_areas": [
+		{
+			"combo": "mz_moth_curtain",
+			"rect": [
+				21,
+				21,
+				27,
+				27
+			]
+		},
+		{
+			"combo": "mz_cradle_moth",
+			"rect": [
+				30,
+				9,
+				36,
+				18
+			]
+		},
+		{
+			"combo": "mz_moth_mirror_curtain",
+			"rect": [
+				12,
+				12,
+				21,
+				18
+			]
+		}
+	],
+	"devices": []
 }

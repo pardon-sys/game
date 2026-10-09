@@ -171,8 +171,11 @@ SHORT = {
     "spring_seat": "一颠一颠的刷毛", "squirrel": "蓬松的尾巴扫", "stocks": "锁着脚被挠", "supine": "仰躺着被画圈", "teaser": "点一下又退开",
     "tentacle": "软触手打转", "thigh_brush_ring": "刷环一圈圈转", "thigh_pincer": "羽毛钳轻轻拧", "thousand_hand": "好多手指一起",
     "troll": "大手指用力挠", "vest": "背心里的羽毛", "vine": "藤蔓嫩芽缠", "wardrobe": "柜子里的手", "wheel": "转轮上的羽毛",
+    "maze_hand": "看不见的手指", "glow_moth": "发光的鳞粉", "dream_fluff": "粘着的绒球", "lamp_imp": "黑暗里的小手",
+    "laugh_jar": "吸笑声的瓶子", "mirror_puddle": "倒影里的手", "shadow_vine": "影子里的藤尖", "feather_curtain": "羽毛门帘",
+    "cradle_bench": "椅下的手", "hand_gate": "门后的手", "hand_shadow": "那团影子", "hand_rhythm": "一起狠挠的手",
 }
-MONSTERS = {"barnacle", "bat", "bubble_fish", "caterpillar", "crab", "fairy", "frog", "ghost", "glove", "hedgehog", "imp", "jelly_queen",
+MONSTERS = {"maze_hand", "glow_moth", "dream_fluff", "lamp_imp", "laugh_jar", "barnacle", "bat", "bubble_fish", "caterpillar", "crab", "fairy", "frog", "ghost", "glove", "hedgehog", "imp", "jelly_queen",
             "mana_jelly", "mimic", "octopus", "rat", "slime", "spider", "split_slime", "squirrel", "tentacle", "thousand_hand", "troll"}
 KIND_SAY = {"monster": ["别、别过来……", "小、小东西……走开……", "一、一只就够了……"],
             "trap": ["动、动不了……", "机、机关……停下……", "挣、挣不开……"]}
@@ -190,16 +193,20 @@ BREAK_T = ["哈哈哈哈……忍、忍不住……明明一直忍着的……{s
            "哈哈哈……停、停下来……{s}……停下来……哈哈哈哈……！", "……哈哈哈哈……{s}……对、对不起……{z}……认输……哈哈哈哈……！",
            "哈哈哈哈……！{s2}……还、还在……哈哈哈……！"]
 # 部位是大腿 / 屁股（她最怕）时额外的、更崩的句子
-WEAK_H1 = ["……哈、哈哈……{z}……为、为什么……偏偏是{z}……", "噗哈哈哈……！{z}、{z}不可以……哈哈……"]
+WEAK_H1 = ["……哈、哈哈……{z}……为、为什么……偏偏是{z}……", "噗哈哈哈……！{z}、{z}不可以……哈哈……",
+           "……{z}……不、不许……噗……哈哈哈……！", "……唔、唔……{z}……知道了……我怕……哈哈哈……"]
 WEAK_BREAK = ["哈哈哈哈哈……！{z}……那里……真的……不行……哈哈哈哈哈……！", "哈哈哈……{s}……一直在{z}上……我、我投降……哈哈哈哈……！"]
 BURST_START_T = ["……魔力……要满出来了。……{s}……别再……", "……不行……{z}被挠得……魔力……压不住了。", "……身体里……在发烫。……都是{s}……害的。",
                  "……{z}……被{s}……好烫……魔力……要出来了。"]
 BURST_COMFY_T = ["……嗯……放出来了……{z}……有点……舒服。", "……呼……{z}……轻、轻松了……", "……魔力走了……{s}……也停了……吗。",
-                 "……哈……身体很轻……刚才{s}的……不算。", "……{z}……不、不烫了……嗯……舒服。"]
+                 "……哈……身体很轻……刚才{s}的……不算。", "……{z}……不、不烫了……嗯……舒服。",
+                 "……呼。……{z}……安静下来了。……还行。", "……嗯。……{z}……凉凉的……刚刚好。"]
 DAZED_T = ["……嗯……天花板……在转……{s}……", "……{s}……软软的……是云吗……", "……没、没笑……{z}……一次都……没笑……嘿……",
-           "……数到一百……{z}就不痒了……一、二……", "……再、再一下……{s}……就忍住了……", "……好困……谁在……挠我的{z}……"]
+           "……数到一百……{z}就不痒了……一、二……", "……再、再一下……{s}……就忍住了……", "……好困……谁在……挠我的{z}……",
+           "……{z}……是、是别人的……不是我的……嘿……", "……冰、冰块……融化了……{z}……也化了……"]
 BURST_SENS_T = ["……刚放完……{z}……好敏感……{s}……不、不要现在……哈哈……！", "哈哈哈……！{s}……刚放完就……犯规……哈哈哈哈！",
-                "……碰、碰哪里都痒……{z}……尤其……哈哈哈哈……！", "哈哈……{s2}……回、回来了……哈哈哈哈……！"]
+                "……碰、碰哪里都痒……{z}……尤其……哈哈哈哈……！", "哈哈……{s2}……回、回来了……哈哈哈哈……！",
+                "……等、等一下……{z}还……还没好……哈哈哈哈……！", "……不、不公平……刚放完……{z}……哈哈哈……！"]
 
 
 def combo_voice(keys):
@@ -211,12 +218,27 @@ def combo_voice(keys):
     return out
 
 
+_VOICE_USES = {}
+
+
 def voice_line(pool, voice, seed, used, slot):
-    """从模板池挑一句（同一段不重复），填入第 slot 个来源（轮流）和下一个来源的手法 / 部位。"""
+    """从模板池挑一句（同一段不重复），填入第 slot 个来源（轮流）和下一个来源的手法 / 部位。
+    所有组合演出合起来也尽量均匀：候选句里挑全局用得最少的（同样少时按种子顺序）。"""
     s, z, kind = voice[slot % len(voice)]
     s2, z2, _ = voice[(slot + 1) % len(voice)]
     k = pick(KIND_SAY[kind], seed + "k")
-    return pick_new(pool, seed, used, s=s, z=z, s2=s2, z2=z2 if z2 != z else "别的地方", k=k)
+    kw = dict(s=s, z=z, s2=s2, z2=z2 if z2 != z else "别的地方", k=k)
+    cands = []
+    for i in range(len(pool) * 3):
+        line = pick(pool, "%s~%d" % (seed, i), **kw)
+        if line not in used and line not in cands:
+            cands.append(line)
+    if not cands:
+        return pick(pool, seed, **kw)
+    line = min(cands, key=lambda t: _VOICE_USES.get(t, 0))
+    _VOICE_USES[line] = _VOICE_USES.get(line, 0) + 1
+    used.add(line)
+    return line
 
 
 # ------------------------------------------------------------------ 组合台词：不念组合名，说手法和感受
@@ -242,6 +264,11 @@ TECH = {
     "tentacle": "软软的触手钻到{z}里打转", "thigh_brush_ring": "刷环套着{z}一圈圈地转", "thigh_pincer": "羽毛钳夹着{z}轻轻地拧",
     "thousand_hand": "好多只手指同时在{z}上挠", "troll": "大手指在{z}上用力地挠", "vest": "背心里面的羽毛贴着{z}蹭",
     "vine": "藤蔓的嫩芽顺着{z}往上缠", "wardrobe": "柜子里伸出来的手在{z}上乱挠", "wheel": "转轮上的羽毛一下下扫过{z}",
+    # 第八层夜迷宫
+    "maze_hand": "看不见的手指在{z}上慢慢画圈", "glow_moth": "发光的鳞粉落在{z}上", "dream_fluff": "软绵绵的绒球粘在{z}上蹭",
+    "lamp_imp": "灯一灭，小手就扑到{z}上", "laugh_jar": "瓶子吸着笑声，{z}跟着发痒", "mirror_puddle": "倒影里伸出的手挠着{z}",
+    "shadow_vine": "影子里的藤尖缠着{z}画圈", "feather_curtain": "羽毛门帘从{z}上一路刷过", "cradle_bench": "椅子下面的手在{z}上一下下点",
+    "hand_gate": "门后的手一下子贴到{z}上", "hand_shadow": "被那团影子看着，{z}凉凉地发痒", "hand_rhythm": "身上的手一起在{z}上狠挠",
 }
 WEAK = ("大腿", "屁股")
 

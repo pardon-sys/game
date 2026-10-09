@@ -40,7 +40,12 @@
 			"squirrel",
 			"octopus",
 			"caterpillar",
-			"barnacle"
+			"barnacle",
+			"maze_hand",
+			"glow_moth",
+			"dream_fluff",
+			"lamp_imp",
+			"laugh_jar"
 		],
 		"trap": [
 			"feather",
@@ -82,7 +87,14 @@
 			"sitz_bath",
 			"spring_seat",
 			"saddle_bench",
-			"scissor_stand"
+			"scissor_stand",
+			"mirror_puddle",
+			"shadow_vine",
+			"feather_curtain",
+			"cradle_bench",
+			"hand_gate",
+			"hand_shadow",
+			"hand_rhythm"
 		]
 	},
 	"combos": [
@@ -3464,6 +3476,372 @@
 				{
 					"type": "grab_presses",
 					"count": 2
+				},
+				{
+					"type": "focus"
+				}
+			]
+		},
+		{
+			"id": "mz_moth_curtain",
+			"category": "第八层·夜迷宫",
+			"keys": [
+				[
+					"glow_moth"
+				],
+				[
+					"feather_curtain"
+				],
+				[
+					"maze_hand"
+				]
+			],
+			"window": 2.5,
+			"cooldown": 8.0,
+			"effects": [
+				{
+					"type": "burst",
+					"amount": 20
+				},
+				{
+					"type": "root",
+					"duration": 1.2
+				},
+				{
+					"type": "special_next",
+					"count": 2
+				},
+				{
+					"type": "focus"
+				}
+			]
+		},
+		{
+			"id": "mz_mirror_vine",
+			"category": "第八层·夜迷宫",
+			"keys": [
+				[
+					"mirror_puddle"
+				],
+				[
+					"shadow_vine"
+				],
+				[
+					"maze_hand"
+				]
+			],
+			"window": 2.5,
+			"cooldown": 8.0,
+			"effects": [
+				{
+					"type": "burst",
+					"amount": 22
+				},
+				{
+					"type": "dot",
+					"rate": 4.0,
+					"duration": 3.0
+				},
+				{
+					"type": "cover_hands",
+					"zone": "butt",
+					"count": 1
+				},
+				{
+					"type": "focus"
+				}
+			]
+		},
+		{
+			"id": "mz_fluff_jar",
+			"category": "第八层·夜迷宫",
+			"keys": [
+				[
+					"dream_fluff"
+				],
+				[
+					"laugh_jar"
+				],
+				[
+					"maze_hand"
+				]
+			],
+			"window": 2.5,
+			"cooldown": 8.0,
+			"effects": [
+				{
+					"type": "burst",
+					"amount": 16
+				},
+				{
+					"type": "laugh_radius_boost",
+					"mult": 2.0,
+					"duration": 8.0
+				},
+				{
+					"type": "summon_hands",
+					"count": 3
+				},
+				{
+					"type": "focus"
+				}
+			]
+		},
+		{
+			"id": "mz_cradle_moth",
+			"category": "第八层·夜迷宫",
+			"keys": [
+				[
+					"cradle_bench"
+				],
+				[
+					"glow_moth"
+				],
+				[
+					"maze_hand"
+				]
+			],
+			"window": 2.5,
+			"cooldown": 8.0,
+			"effects": [
+				{
+					"type": "burst",
+					"amount": 18
+				},
+				{
+					"type": "root",
+					"duration": 2.0
+				},
+				{
+					"type": "dot",
+					"rate": 5.0,
+					"duration": 2.0
+				},
+				{
+					"type": "focus"
+				}
+			]
+		},
+		{
+			"id": "mz_curtain_vine",
+			"category": "第八层·夜迷宫",
+			"keys": [
+				[
+					"feather_curtain"
+				],
+				[
+					"shadow_vine"
+				],
+				[
+					"dream_fluff"
+				]
+			],
+			"window": 2.5,
+			"cooldown": 8.0,
+			"effects": [
+				{
+					"type": "burst",
+					"amount": 22
+				},
+				{
+					"type": "crit_storm",
+					"duration": 3.0
+				},
+				{
+					"type": "focus"
+				}
+			]
+		},
+		{
+			"id": "mz_mirror_jar",
+			"category": "第八层·夜迷宫",
+			"keys": [
+				[
+					"mirror_puddle"
+				],
+				[
+					"laugh_jar"
+				],
+				[
+					"maze_hand"
+				]
+			],
+			"window": 2.5,
+			"cooldown": 8.0,
+			"effects": [
+				{
+					"type": "burst",
+					"amount": 16
+				},
+				{
+					"type": "jar_burst"
+				},
+				{
+					"type": "summon_hands",
+					"count": 4
+				},
+				{
+					"type": "focus"
+				}
+			]
+		},
+		{
+			"id": "mz_dark_raid",
+			"category": "第八层·夜迷宫",
+			"keys": [
+				[
+					"lamp_imp"
+				],
+				[
+					"dream_fluff"
+				],
+				[
+					"maze_hand"
+				]
+			],
+			"window": 2.5,
+			"cooldown": 8.0,
+			"effects": [
+				{
+					"type": "burst",
+					"amount": 14
+				},
+				{
+					"type": "light_drain",
+					"to": 0.05
+				},
+				{
+					"type": "rhythm_now"
+				},
+				{
+					"type": "focus"
+				}
+			]
+		},
+		{
+			"id": "mz_shadow_bench",
+			"category": "第八层·夜迷宫",
+			"keys": [
+				[
+					"hand_shadow"
+				],
+				[
+					"cradle_bench"
+				],
+				[
+					"maze_hand"
+				]
+			],
+			"window": 2.5,
+			"cooldown": 8.0,
+			"effects": [
+				{
+					"type": "burst",
+					"amount": 18
+				},
+				{
+					"type": "summon_hands",
+					"count": 4
+				},
+				{
+					"type": "cover_hands",
+					"zone": "butt",
+					"count": 1
+				},
+				{
+					"type": "focus"
+				}
+			]
+		},
+		{
+			"id": "mz_gate_hands",
+			"category": "第八层·夜迷宫",
+			"keys": [
+				[
+					"hand_gate"
+				],
+				[
+					"shadow_vine"
+				],
+				[
+					"maze_hand"
+				]
+			],
+			"window": 2.5,
+			"cooldown": 8.0,
+			"effects": [
+				{
+					"type": "burst",
+					"amount": 20
+				},
+				{
+					"type": "cover_hands",
+					"zone": "thigh",
+					"count": 2
+				},
+				{
+					"type": "focus"
+				}
+			]
+		},
+		{
+			"id": "mz_moth_mirror_curtain",
+			"category": "第八层·夜迷宫",
+			"keys": [
+				[
+					"glow_moth"
+				],
+				[
+					"feather_curtain"
+				],
+				[
+					"mirror_puddle"
+				]
+			],
+			"window": 2.5,
+			"cooldown": 8.0,
+			"effects": [
+				{
+					"type": "burst",
+					"amount": 15
+				},
+				{
+					"type": "laugh_radius_boost",
+					"mult": 2.0,
+					"duration": 8.0
+				},
+				{
+					"type": "focus"
+				}
+			]
+		},
+		{
+			"id": "mz_rhythm_combo",
+			"category": "第八层·夜迷宫",
+			"keys": [
+				[
+					"hand_rhythm"
+				],
+				[
+					"dream_fluff"
+				],
+				[
+					"shadow_vine"
+				]
+			],
+			"window": 2.5,
+			"cooldown": 8.0,
+			"effects": [
+				{
+					"type": "burst",
+					"amount": 18
+				},
+				{
+					"type": "root",
+					"duration": 1.5
+				},
+				{
+					"type": "rhythm_again"
 				},
 				{
 					"type": "focus"

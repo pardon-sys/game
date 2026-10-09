@@ -59,6 +59,7 @@ var _ended := false
 func _ready() -> void:
 	instance = self
 	add_to_group("maze_director")
+	add_to_group("combo_effect_handler")
 	await get_tree().process_frame
 	await get_tree().process_frame
 	_collect_floor()
@@ -71,6 +72,7 @@ func _ready() -> void:
 			_exit_at = (sp as Node2D).global_position
 	if section == 1:
 		TutorialBoard.show_once("f8m_tutorial", "夜迷宫", TUTORIAL)
+	_setup_breathing()
 
 
 func _exit_tree() -> void:
@@ -208,6 +210,7 @@ func _process(delta: float) -> void:
 	if _exit_at != Vector2.INF and not _ended and blue.global_position.distance_to(_exit_at) < 16.0:
 		_run_ending()
 		return
+	_update_heartbeat(delta)
 	_spawn_t -= delta
 	if _spawn_t <= 0.0:
 		var info: Dictionary = SECTION.get(section, SECTION[1])
@@ -242,6 +245,161 @@ func spawn_hand(at := Vector2.INF) -> MazeHand:
 	(ents if ents else lv).add_child(h)
 	h.global_position = pos
 	return h
+
+
+## 在她周围一圈（离她 30~64 像素、不在光里的地面格；不够就放宽到 100）召出 n 只紫手（千手的影子、笑声收集瓶、组合技）。
+func summon_near(n: int) -> int:
+	if not is_instance_valid(blue):
+		return 0
+	var near: Array[Vector2] = []
+	for far in [64.0, 100.0]:
+		near.clear()
+		for c in _floor_cells:
+			var p := GridPath.center(c)
+			var d := p.distance_to(blue.global_position)
+			if d >= 30.0 and d <= far and not (light_at(p) is Vector2):
+				near.append(p)
+		if near.size() >= n:
+			break
+	near.shuffle()
+	var made := 0
+	for p in near.slice(0, n):
+		if spawn_hand(p):
+			made += 1
+	return made
+
+
+## 从某个地方（镜面水洼的倒影）冒出一只紫手，她这次失败就优先盖 zone。
+func hand_from(pos: Vector2, zone: String) -> void:
+	marked_zone = zone
+	var h := spawn_hand(pos)
+	if h:
+		h.cooldown(0.2)
+
+
+# ------------------------------------------------------------------ 组合技的关卡效果（ComboTracker 转过来）
+func on_combo_effect(e: Dictionary, actor: Node, _source: Node) -> void:
+	if actor != blue:
+		return
+	match str(e.get("type", "")):
+		"laugh_radius_boost":
+			radius.boost(float(e.get("mult", 2.0)), float(e.get("duration", 8.0)))
+		"summon_hands":
+			summon_near(int(e.get("count", 3)))
+		"cover_hands":
+			for i in int(e.get("count", 1)):
+				cover_zone(str(e.get("zone", "thigh")))
+		"light_drain":
+			var cl := carry_light()
+			if cl:
+				cl.level = minf(cl.level, float(e.get("to", 0.1)))
+				cl.dim(3.0)
+		"rhythm_now":
+			cover.rhythm_now()
+		"rhythm_again":
+			cover.rhythm_again()
+		"jar_burst":
+			for j in get_tree().get_nodes_in_group("laugh_jar"):
+				if (j as Node2D).global_position.distance_to(blue.global_position) < 200.0 and j.has_method("fill_now"):
+					j.fill_now()
+
+
+# ------------------------------------------------------------------ 呼吸墙（迷宫会呼吸）
+## design.json 的 breathing：[{a: [[x,y]...], b: [...]}]——地图上两段都是地面；开场先把 b 升起来（a 通、b 封），
+## 每次心跳翻转一次（a 升起、b 沉下 / 反过来）。心跳前 WARN 秒要动的墙闪紫光、地面轻震、低沉的心跳声。
+## 间隔：BEAT_BASE 秒，身上每只手 −2 秒，最快 BEAT_MIN 秒。有人站着的格子不升墙（TerrainShifter）。
+const BEAT_BASE := 40.0
+const BEAT_MIN := 15.0
+const BEAT_WARN := 1.5
+
+var breathing: Array = []
+var breath_state := false
+var shifter: TerrainShifter
+var _beat_t := BEAT_BASE
+var _beat_warn: Node2D
+
+
+func _setup_breathing() -> void:
+	var lv := level()
+	if lv == null:
+		return
+	var path := "res://levels/%s/design.json" % str(lv.get("floor_id"))
+	var parsed: Variant = JSON.parse_string(FileAccess.get_file_as_string(path)) if FileAccess.file_exists(path) else null
+	if not (parsed is Dictionary):
+		return
+	for b in parsed.get("breathing", []):
+		var a_cells: Array[Vector2i] = []
+		var b_cells: Array[Vector2i] = []
+		for p in b["a"]:
+			a_cells.append(Vector2i(int(p[0]), int(p[1])))
+		for p in b["b"]:
+			b_cells.append(Vector2i(int(p[0]), int(p[1])))
+		breathing.append({"a": a_cells, "b": b_cells})
+	if breathing.is_empty():
+		return
+	shifter = TerrainShifter.new()
+	add_child(shifter)
+	var walls := lv.get_node("Walls") as TileMapLayer
+	shifter.setup(lv, walls.get_used_cells()[0])
+	for pair in breathing:
+		shifter.raise_walls(pair["b"])
+
+
+func beat_interval() -> float:
+	return maxf(BEAT_MIN, BEAT_BASE - (cover.total() if cover else 0) * 2.0)
+
+
+func _update_heartbeat(delta: float) -> void:
+	if breathing.is_empty():
+		return
+	_beat_t -= delta
+	if _beat_t <= BEAT_WARN and not is_instance_valid(_beat_warn):
+		_beat_warn = _make_beat_warning()
+		Audio.play("roll", -6.0, 0.0, 0.5)
+		if is_instance_valid(blue):
+			blue.shake(0.4)
+	if _beat_t <= 0.0:
+		heartbeat()
+
+
+## 心跳一次：所有呼吸墙翻转。
+func heartbeat() -> void:
+	_beat_t = beat_interval()
+	if is_instance_valid(_beat_warn):
+		_beat_warn.queue_free()
+	breath_state = not breath_state
+	for pair in breathing:
+		var up: Array = pair["a"] if breath_state else pair["b"]
+		var down: Array = pair["b"] if breath_state else pair["a"]
+		shifter.lower_cells(down)
+		shifter.raise_walls(up)
+	Audio.play("door_close", -4.0, 0.0, 0.5)
+	ScreenFx.flash(Color(0.45, 0.2, 0.6), 0.25)
+
+
+## 要升起来的墙先闪紫光。
+class BeatWarning extends Node2D:
+	var cells: Array = []
+	var t := 0.0
+
+	func _process(delta: float) -> void:
+		t += delta
+		queue_redraw()
+
+	func _draw() -> void:
+		var a := 0.25 + 0.25 * sin(t * 14.0)
+		for c in cells:
+			draw_rect(Rect2(Vector2(c) * 16.0, Vector2(16, 16)), Color(0.75, 0.3, 1.0, a))
+
+
+func _make_beat_warning() -> Node2D:
+	var w := BeatWarning.new()
+	w.z_index = 2
+	for pair in breathing:
+		w.cells += (pair["b"] if breath_state else pair["a"]) as Array
+	var lv := level()
+	lv.add_child(w)
+	return w
 
 
 func _check_lamps(delta: float) -> void:

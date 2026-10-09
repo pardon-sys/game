@@ -56,12 +56,22 @@ const SCENES := {
 	"f8maze": "res://levels/floor_08/scenes/maze_director.tscn",
 	"moonlamp": "res://levels/floor_08/scenes/moon_lamp.tscn",
 	"memshard": "res://levels/floor_08/scenes/memory_shard.tscn",
+	"moonmirror": "res://levels/floor_08/scenes/moon_mirror.tscn",
+	"beamswitch": "res://levels/floor_08/scenes/beam_switch.tscn",
+	"handgate": "res://levels/floor_08/scenes/hand_gate.tscn",
+	"cradle": "res://levels/floor_08/scenes/cradle_bench.tscn",
+	"handshadow": "res://levels/floor_08/scenes/hand_shadow.tscn",
 	"guard_patrol": "res://scenes/stealth/patrol_guard.tscn",
 }
 ## 按 type 参数选择场景的类型：新增怪物/友军/陷阱时在这里注册。
 const TYPED_SCENES := {
 	"monster": {
 		"slime": "res://scenes/actors/monsters/slime.tscn",
+		# 第八层夜迷宫
+		"glow_moth": "res://levels/floor_08/scenes/glow_moth.tscn",
+		"dream_fluff": "res://levels/floor_08/scenes/dream_fluff.tscn",
+		"lamp_imp": "res://levels/floor_08/scenes/lamp_imp.tscn",
+		"laugh_jar": "res://levels/floor_08/scenes/laugh_jar.tscn",
 		"bat": "res://scenes/actors/monsters/feather_bat.tscn",
 		"ghost": "res://scenes/actors/monsters/tickle_ghost.tscn",
 		"spider": "res://scenes/actors/monsters/tickle_spider.tscn",
@@ -88,6 +98,10 @@ const TYPED_SCENES := {
 	"ally": {"knight": "res://scenes/actors/allies/knight.tscn"},
 	"trap": {
 		"spike": "res://scenes/traps/spike_trap.tscn",
+		# 第八层夜迷宫
+		"mirror_puddle": "res://levels/floor_08/scenes/mirror_puddle.tscn",
+		"shadow_vine": "res://levels/floor_08/scenes/shadow_vine.tscn",
+		"feather_curtain": "res://levels/floor_08/scenes/feather_curtain.tscn",
 		"feather": "res://scenes/traps/feather_trap.tscn",
 		"vent": "res://scenes/traps/powder_vent.tscn",
 		"brush": "res://scenes/traps/feather_brush.tscn",

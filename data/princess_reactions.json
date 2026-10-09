@@ -3278,6 +3278,438 @@
 				"刷杆在下面扫起来了……",
 				"夹、夹住了！快挣开！"
 			]
+		},
+		"maze_hand": {
+			"name": "千手的紫手",
+			"first_encounter": [
+				{
+					"speaker": "公主",
+					"text": "……看不见的手？！",
+					"emotion": "surprise"
+				},
+				{
+					"speaker": "公主",
+					"text": "有、有什么贴在身上了——！",
+					"emotion": "shy"
+				},
+				{
+					"speaker": "公主",
+					"text": "手、手指在动……！",
+					"emotion": "angry"
+				}
+			],
+			"calm": [
+				"谁、谁在摸？！",
+				"看不见……"
+			],
+			"giggle": [
+				"嘻嘻……什么在挠……"
+			],
+			"helpless_1": [
+				"哈哈哈！看不见的手哈哈哈！"
+			],
+			"helpless_2": [
+				"哈哈哈哈！好多只——看不见哈哈哈哈！"
+			],
+			"special": [
+				"呀——大腿上一下子全是手指——哈哈哈哈！"
+			]
+		},
+		"glow_moth": {
+			"name": "夜光羽蛾",
+			"first_encounter": [
+				{
+					"speaker": "公主",
+					"text": "发、发光的蛾子……好漂亮……",
+					"emotion": "surprise"
+				},
+				{
+					"speaker": "公主",
+					"text": "噫！翅膀上的粉撒到腿上了！",
+					"emotion": "shy"
+				},
+				{
+					"speaker": "公主",
+					"text": "痒痒的……发着光……",
+					"emotion": "angry"
+				}
+			],
+			"calm": [
+				"粉、粉掉下来了！",
+				"别扇翅膀！"
+			],
+			"giggle": [
+				"嘻嘻……亮晶晶的粉……"
+			],
+			"helpless_1": [
+				"哈哈哈！鳞粉好痒哈哈哈！"
+			],
+			"helpless_2": [
+				"哈哈哈哈！大腿上全是粉哈哈哈哈！"
+			],
+			"special": [
+				"呀——鳞粉一下子钻进大腿内侧——哈哈哈哈！"
+			]
+		},
+		"dream_fluff": {
+			"name": "梦绒球",
+			"first_encounter": [
+				{
+					"speaker": "公主",
+					"text": "软、软乎乎的球……",
+					"emotion": "surprise"
+				},
+				{
+					"speaker": "公主",
+					"text": "粘、粘在腿上了！甩不掉！",
+					"emotion": "shy"
+				},
+				{
+					"speaker": "公主",
+					"text": "它、它在慢慢地蹭……",
+					"emotion": "angry"
+				}
+			],
+			"calm": [
+				"下、下去！",
+				"别粘着！"
+			],
+			"giggle": [
+				"嘻嘻……软绵绵的……"
+			],
+			"helpless_1": [
+				"哈哈哈！一直蹭大腿哈哈哈！"
+			],
+			"helpless_2": [
+				"哈哈哈哈！甩、甩不掉哈哈哈哈！"
+			],
+			"special": [
+				"呀——绒毛一下子全竖起来了——哈哈哈哈！"
+			]
+		},
+		"lamp_imp": {
+			"name": "偷灯小鬼",
+			"first_encounter": [
+				{
+					"speaker": "公主",
+					"text": "小、小黑鬼……戴着灭烛帽？",
+					"emotion": "surprise"
+				},
+				{
+					"speaker": "公主",
+					"text": "它把灯吹灭了！",
+					"emotion": "shy"
+				},
+				{
+					"speaker": "公主",
+					"text": "还、还来挠脚——！",
+					"emotion": "angry"
+				}
+			],
+			"calm": [
+				"别吹灯！",
+				"走开！"
+			],
+			"giggle": [
+				"嘻嘻……趁黑挠……"
+			],
+			"helpless_1": [
+				"哈哈哈！黑漆漆的哈哈哈！"
+			],
+			"helpless_2": [
+				"哈哈哈哈！看不见哈哈哈哈！"
+			],
+			"special": [
+				"呀——灯一灭就扑过来了——哈哈哈哈！"
+			]
+		},
+		"laugh_jar": {
+			"name": "笑声收集瓶",
+			"first_encounter": [
+				{
+					"speaker": "公主",
+					"text": "瓶、瓶子会跑？！",
+					"emotion": "surprise"
+				},
+				{
+					"speaker": "公主",
+					"text": "它在装我的笑声……",
+					"emotion": "shy"
+				},
+				{
+					"speaker": "公主",
+					"text": "装满了会怎样……",
+					"emotion": "angry"
+				}
+			],
+			"calm": [
+				"别、别装！",
+				"不许笑……"
+			],
+			"giggle": [
+				"嘻嘻……瓶子在吸……"
+			],
+			"helpless_1": [
+				"哈哈哈！越笑装得越快哈哈哈！"
+			],
+			"helpless_2": [
+				"哈哈哈哈！要满了哈哈哈哈！"
+			],
+			"special": [
+				"呀——瓶子一开，笑声全炸出来了——哈哈哈哈！"
+			]
+		},
+		"mirror_puddle": {
+			"name": "镜面水洼",
+			"first_encounter": [
+				{
+					"speaker": "公主",
+					"text": "水洼里……有我的倒影……",
+					"emotion": "surprise"
+				},
+				{
+					"speaker": "公主",
+					"text": "倒影里伸出手来了！",
+					"emotion": "shy"
+				},
+				{
+					"speaker": "公主",
+					"text": "从、从下面挠……！",
+					"emotion": "angry"
+				}
+			],
+			"calm": [
+				"别从下面！",
+				"倒影走开！"
+			],
+			"giggle": [
+				"嘻嘻……水里的手……"
+			],
+			"helpless_1": [
+				"哈哈哈！倒影挠屁股哈哈哈！"
+			],
+			"helpless_2": [
+				"哈哈哈哈！水面全是手哈哈哈哈！"
+			],
+			"special": [
+				"呀——倒影一下子抓住屁股——哈哈哈哈！"
+			]
+		},
+		"shadow_vine": {
+			"name": "影子缠腿藤",
+			"first_encounter": [
+				{
+					"speaker": "公主",
+					"text": "影子里长出藤蔓……",
+					"emotion": "surprise"
+				},
+				{
+					"speaker": "公主",
+					"text": "缠、缠住腿了！动不了！",
+					"emotion": "shy"
+				},
+				{
+					"speaker": "公主",
+					"text": "藤尖在大腿内侧画圈……",
+					"emotion": "angry"
+				}
+			],
+			"calm": [
+				"松开！",
+				"动不了……"
+			],
+			"giggle": [
+				"嘻嘻……藤尖……"
+			],
+			"helpless_1": [
+				"哈哈哈！缠着腿挠哈哈哈！"
+			],
+			"helpless_2": [
+				"哈哈哈哈！越缠越紧哈哈哈哈！"
+			],
+			"special": [
+				"呀——藤蔓一下子缠到大腿根——哈哈哈哈！"
+			]
+		},
+		"feather_curtain": {
+			"name": "羽毛门帘",
+			"first_encounter": [
+				{
+					"speaker": "公主",
+					"text": "门、门帘是羽毛做的……",
+					"emotion": "surprise"
+				},
+				{
+					"speaker": "公主",
+					"text": "穿过去的时候刷到腿了！",
+					"emotion": "shy"
+				},
+				{
+					"speaker": "公主",
+					"text": "从大腿一路刷过去……",
+					"emotion": "angry"
+				}
+			],
+			"calm": [
+				"等它卷起来！",
+				"别刷……"
+			],
+			"giggle": [
+				"嘻嘻……羽毛帘子……"
+			],
+			"helpless_1": [
+				"哈哈哈！帘子刷腿哈哈哈！"
+			],
+			"helpless_2": [
+				"哈哈哈哈！整面帘子哈哈哈哈！"
+			],
+			"special": [
+				"呀——羽毛从大腿一直刷到腰——哈哈哈哈！"
+			]
+		},
+		"cradle_bench": {
+			"name": "摇篮长椅",
+			"first_encounter": [
+				{
+					"speaker": "公主",
+					"text": "一张摇来摇去的长椅……",
+					"emotion": "surprise"
+				},
+				{
+					"speaker": "公主",
+					"text": "坐一下休息……",
+					"emotion": "shy"
+				},
+				{
+					"speaker": "公主",
+					"text": "椅、椅子下面有手？！",
+					"emotion": "angry"
+				}
+			],
+			"calm": [
+				"起、起来！",
+				"椅子下面……"
+			],
+			"giggle": [
+				"嘻嘻……摇着摇着……"
+			],
+			"helpless_1": [
+				"哈哈哈！椅下的手挠屁股哈哈哈！"
+			],
+			"helpless_2": [
+				"哈哈哈哈！起不来哈哈哈哈！"
+			],
+			"special": [
+				"呀——摇到最高的时候挠屁股——哈哈哈哈！"
+			]
+		},
+		"hand_gate": {
+			"name": "千手之门",
+			"first_encounter": [
+				{
+					"speaker": "公主",
+					"text": "门上……刻着好多手印。",
+					"emotion": "surprise"
+				},
+				{
+					"speaker": "公主",
+					"text": "推开的时候，门后伸出手来了！",
+					"emotion": "shy"
+				},
+				{
+					"speaker": "公主",
+					"text": "直、直接贴到腿上……",
+					"emotion": "angry"
+				}
+			],
+			"calm": [
+				"门后有手！",
+				"别拉！"
+			],
+			"giggle": [
+				"嘻嘻……门里……"
+			],
+			"helpless_1": [
+				"哈哈哈！门后的手哈哈哈！"
+			],
+			"helpless_2": [
+				"哈哈哈哈！门里全是手哈哈哈哈！"
+			],
+			"special": [
+				"呀——门一开就一起扑上来——哈哈哈哈！"
+			]
+		},
+		"hand_shadow": {
+			"name": "千手的影子",
+			"first_encounter": [
+				{
+					"speaker": "公主",
+					"text": "好、好大的手影……",
+					"emotion": "surprise"
+				},
+				{
+					"speaker": "公主",
+					"text": "它在看我！",
+					"emotion": "shy"
+				},
+				{
+					"speaker": "公主",
+					"text": "被看到的地方……凉凉的……",
+					"emotion": "angry"
+				}
+			],
+			"calm": [
+				"别看！",
+				"躲起来……"
+			],
+			"giggle": [
+				"嘻嘻……被看着……"
+			],
+			"helpless_1": [
+				"哈哈哈！影子召来好多手哈哈哈！"
+			],
+			"helpless_2": [
+				"哈哈哈哈！被看到了哈哈哈哈！"
+			],
+			"special": [
+				"呀——影子一眨眼，手全涌过来了——哈哈哈哈！"
+			]
+		},
+		"hand_rhythm": {
+			"name": "手的节奏",
+			"first_encounter": [
+				{
+					"speaker": "公主",
+					"text": "身上的手……一起停下来了……",
+					"emotion": "surprise"
+				},
+				{
+					"speaker": "公主",
+					"text": "它们在等什么……",
+					"emotion": "shy"
+				},
+				{
+					"speaker": "公主",
+					"text": "一、一起来了——！",
+					"emotion": "angry"
+				}
+			],
+			"calm": [
+				"别一起……",
+				"屏、屏住……"
+			],
+			"giggle": [
+				"嘻嘻……要来了……"
+			],
+			"helpless_1": [
+				"哈哈哈！一起挠哈哈哈！"
+			],
+			"helpless_2": [
+				"哈哈哈哈！全部一起哈哈哈哈！"
+			],
+			"special": [
+				"呀——全身的手同时——哈哈哈哈！"
+			]
 		}
 	},
 	"magic": {
@@ -4196,6 +4628,94 @@
 			"lines": [
 				"吸着的、爬着的、挠着的——哈哈哈哈！",
 				"甩、甩不掉——哈哈哈哈哈！"
+			]
+		},
+		"mz_moth_curtain": {
+			"name": "蛾粉羽帘",
+			"description": "鳞粉落在大腿上，羽毛门帘再刷一遍，紫手趁机贴上来。",
+			"lines": [
+				"鳞粉加羽毛加手——哈哈哈！",
+				"腿、腿上全是——哈哈哈哈！"
+			]
+		},
+		"mz_mirror_vine": {
+			"name": "镜中藤影",
+			"description": "藤蔓缠住大腿，倒影里的手专挑屁股。",
+			"lines": [
+				"缠着腿、倒影里的手——哈哈哈！",
+				"动不了还被挠——哈哈哈哈！"
+			]
+		},
+		"mz_fluff_jar": {
+			"name": "梦绒笑瓶",
+			"description": "梦绒球蹭得停不下来，笑声全被瓶子装走，紫手闻声而来。",
+			"lines": [
+				"笑、笑声被装走了——哈哈哈！",
+				"手、手听到了——哈哈哈哈！"
+			]
+		},
+		"mz_cradle_moth": {
+			"name": "摇篮夜蛾",
+			"description": "坐在摇篮长椅上被鳞粉撒满大腿，椅子下的手挠屁股，被摇得起不来。",
+			"lines": [
+				"起、起不来——哈哈哈！",
+				"摇着、撒着、挠着——哈哈哈哈！"
+			]
+		},
+		"mz_curtain_vine": {
+			"name": "门帘缠藤",
+			"description": "羽毛刷、藤蔓缠、绒球粘——三样全在大腿上。",
+			"lines": [
+				"大、大腿上三样——哈哈哈！",
+				"刷、缠、粘——哈哈哈哈！"
+			]
+		},
+		"mz_mirror_jar": {
+			"name": "镜中笑瓶",
+			"description": "倒影里的笑声把瓶子一下子灌满——瓶塞飞了出去。",
+			"lines": [
+				"瓶、瓶子要炸了——哈哈哈！",
+				"全、全都听到了——哈哈哈哈！"
+			]
+		},
+		"mz_dark_raid": {
+			"name": "熄灯偷袭",
+			"description": "冷光被吹灭，黑暗里的手全都屏住，然后一起挠下来。",
+			"lines": [
+				"灯、灯灭了——哈哈哈！",
+				"黑漆漆的全是手——哈哈哈哈！"
+			]
+		},
+		"mz_shadow_bench": {
+			"name": "影下长椅",
+			"description": "坐着的时候被千手的影子看见——涌出来的手先扑向屁股。",
+			"lines": [
+				"被、被看到了——哈哈哈！",
+				"屁、屁股——哈哈哈哈！"
+			]
+		},
+		"mz_gate_hands": {
+			"name": "门后千手",
+			"description": "推开千手之门的瞬间，门后的手直接缠上大腿。",
+			"lines": [
+				"门、门后全是手——哈哈哈！",
+				"直、直接贴上来了——哈哈哈哈！"
+			]
+		},
+		"mz_moth_mirror_curtain": {
+			"name": "蛾影镜帘",
+			"description": "鳞粉被水面和帘子反射得到处都是，笑声传得好远。",
+			"lines": [
+				"亮、亮晶晶的——哈哈哈！",
+				"到处都是粉——哈哈哈哈！"
+			]
+		},
+		"mz_rhythm_combo": {
+			"name": "节奏连击",
+			"description": "身上的手一起狠挠的那一下，被藤蔓缠住、绒球粘住，躲不开——再来一次。",
+			"lines": [
+				"躲、躲不开——哈哈哈！",
+				"又、又来一次——哈哈哈哈！"
 			]
 		}
 	}

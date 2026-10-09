@@ -17,6 +17,9 @@ func _ready() -> void:
 	_finish()
 	for f in ["f7_argue_done", "f7_pink_ran", "f7_blue_awake", "magic_unlocked", "intro_blue_magic", "f8_done"]:
 		GameState.set_flag(f)
+	# 新来源的初次遭遇对话会暂停逐帧的逻辑：先都标成见过（_run_devices 里单独测一次）
+	for key in ReactionDB.source_keys():
+		GameState.set_flag("met_" + key)
 	await _run_sleep()
 	await _run_25d()
 	await _run_qte_and_cover()
@@ -24,6 +27,12 @@ func _ready() -> void:
 	await _run_light_and_rhythm()
 	await _run_defeat()
 	await _run_shards_and_sections()
+	await _run_data()
+	await _run_combo_effects()
+	await _run_monsters()
+	await _run_devices()
+	await _run_heartbeat_and_shadow()
+	await _run_skip_points()
 	print("\n==== %s (%d 项失败) ====" % ["全部通过" if failures == 0 else "有失败", failures])
 	get_tree().quit(1 if failures else 0)
 
@@ -326,6 +335,323 @@ func _run_shards_and_sections() -> void:
 	Cutscene.started.disconnect(on_cut)
 	check("第三段走到出口：收齐 6 片回忆 → 回忆小剧场 → 出口过场（%s），标记 f8_maze_done" % [seen],
 		seen.has("theater:f8_maze_memory") and seen.has("f8_maze_exit") and GameState.has_flag("f8_maze_done"))
+
+
+# ------------------------------------------------------------------ 第三阶段：新来源 / 组合 / 怪物 / 机关
+const NEW_KEYS := ["maze_hand", "glow_moth", "dream_fluff", "lamp_imp", "laugh_jar", "mirror_puddle", "shadow_vine",
+	"feather_curtain", "cradle_bench", "hand_gate", "hand_shadow", "hand_rhythm"]
+
+
+func _goto_maze(sec: int) -> void:
+	await main.change_level(Floors.scene("floor_08_maze_%d" % sec))
+	await _advance_until(func(): return _dir() != null and _dir().section == sec and _dir().blue != null and not Cutscene.is_playing(), 20.0)
+	_finish()
+	await _wait(0.3)
+	_dir().cover.clear()
+	for e in get_tree().get_nodes_in_group("enemy"):
+		e.process_mode = Node.PROCESS_MODE_DISABLED
+	for h in get_tree().get_nodes_in_group("maze_hand"):
+		h.queue_free()
+	_dir()._spawn_t = 999.0
+
+
+func _fresh(blue: PlayableCharacter) -> void:
+	blue.laugh.set_value(0.0)
+	blue.set_invulnerable(0.0)
+	blue._full_invuln = 0.0
+
+
+func _hands() -> int:
+	return get_tree().get_nodes_in_group("maze_hand").filter(func(h: Node): return not h.is_queued_for_deletion() and not (h as MazeHand).is_gone()).size()
+
+
+func _run_data() -> void:
+	print("-- 新来源 / 组合数据")
+	var missing: Array = []
+	for k in NEW_KEYS:
+		if not TickleZones.table()["sources"].has(k) or ReactionDB.first_encounter(k).is_empty() or str(ReactionDB.source(k).get("name", "")) == "":
+			missing.append(k)
+	check("12 个新来源都有部位权重、蓝色公主的初次遭遇台词和名字（缺：%s）" % [missing], missing.is_empty())
+	var combos: Array = ComboTracker.data()["combos"].filter(func(c: Dictionary): return c.get("category", "") == "第八层·夜迷宫")
+	var named := combos.filter(func(c: Dictionary): return ReactionDB.combo(c["id"]).get("name", "") != "")
+	check("「第八层·夜迷宫」11 组三来源组合，都有名字和蓝色公主的台词（%d / %d）" % [named.size(), combos.size()], combos.size() == 11 and named.size() == 11)
+
+
+func _run_combo_effects() -> void:
+	await _goto_maze(2)
+	print("-- 组合技的关卡效果")
+	var dir := _dir()
+	var blue := dir.blue
+	_move_out_of_light(blue)
+	_fresh(blue)
+	var fx := func(e: Dictionary): dir.on_combo_effect(e, blue, null)
+	blue.laugh.set_value(blue.laugh.helpless_threshold + 5.0)
+	await _wait(0.1)
+	var r0 := dir.radius.radius()
+	fx.call({"type": "laugh_radius_boost", "mult": 2.0, "duration": 8.0})
+	check("laugh_radius_boost：笑声半径翻倍（%.0f → %.0f）" % [r0, dir.radius.radius()], r0 > 0.0 and dir.radius.radius() >= r0 * 1.9)
+	var n0 := _hands()
+	fx.call({"type": "summon_hands", "count": 3})
+	check("summon_hands：她周围召出紫手（%d → %d）" % [n0, _hands()], _hands() >= n0 + 2)
+	for h in get_tree().get_nodes_in_group("maze_hand"):
+		(h as MazeHand).vanish()
+	fx.call({"type": "cover_hands", "zone": "thigh", "count": 2})
+	check("cover_hands：大腿上直接盖 2 只（不给 QTE）", dir.cover.count("thigh") == 2)
+	var cl := dir.carry_light()
+	cl.level = 1.0
+	fx.call({"type": "light_drain", "to": 0.05})
+	check("light_drain：冷光一下降到最低（%.2f）" % cl.level, cl.level <= 0.05 and cl.is_dimmed())
+	fx.call({"type": "rhythm_now"})
+	await _wait(0.1)
+	check("rhythm_now：身上的手立刻开始蓄力", dir.cover.is_charging())
+	dir.cover.clear()
+	cl.level = 1.0
+	# 一次真正的组合：千手之门 + 影子缠腿藤 + 紫手 →「门后千手」
+	_fresh(blue)
+	var tracker: ComboTracker = blue.combo
+	var fired := []
+	var on_c := func(id: String): fired.append(id)
+	tracker.triggered.connect(on_c)
+	for key in ["hand_gate", "shadow_vine", "maze_hand"]:
+		var src := HandCover.Source.new()
+		src.reaction_key = key
+		main.level.add_child(src)
+		src.global_position = blue.global_position
+		blue.set_invulnerable(0.0)
+		blue._full_invuln = 0.0
+		blue.receive_hit(HitData.make_tickle(src, 1.0))
+		await _wait(0.1)
+	await _advance_until(func(): return not CG.is_busy() and not Dialogue.is_active(), 10.0)
+	tracker.triggered.disconnect(on_c)
+	check("三来源「门后千手」触发（%s），大腿直接盖上 2 只手（%s）" % [fired, dir.cover.hands], fired.has("mz_gate_hands") and dir.cover.count("thigh") >= 2)
+	dir.cover.clear()
+
+
+func _run_monsters() -> void:
+	print("-- 新怪物")
+	var dir := _dir()
+	var blue := dir.blue
+	_move_out_of_light(blue)
+	_fresh(blue)
+	# 梦绒球：粘在大腿上一直蹭，冰晶结界甩掉
+	var fluff: DreamFluff = load("res://levels/floor_08/scenes/dream_fluff.tscn").instantiate()
+	main.level.add_child(fluff)
+	fluff.global_position = blue.global_position + Vector2(10, 0)
+	await _wait(0.1)
+	fluff.tickle(blue)
+	await _wait(2.0)
+	var stuck := fluff.is_stuck() and fluff.global_position.distance_to(blue.global_position) < 12.0
+	var gain := blue.laugh.value
+	fluff.on_ice(2.0)
+	check("梦绒球：粘在她身上跟着走、一直挠（闷笑 %.1f），冰晶结界甩掉" % gain, stuck and gain > 1.0 and not fluff.is_stuck())
+	fluff.queue_free()
+	# 笑声收集瓶：装满就「啵」——一大圈笑声 + 叫来紫手
+	var jar: LaughJar = load("res://levels/floor_08/scenes/laugh_jar.tscn").instantiate()
+	main.level.add_child(jar)
+	jar.global_position = blue.global_position + Vector2(20, 0)
+	await _wait(0.1)
+	blue.laugh.set_value(blue.laugh.helpless_threshold + 1.0)
+	var n0 := _hands()
+	jar.fill = 0.95
+	await _advance_until(func(): return jar.fill < 0.5, 3.0)
+	check("笑声收集瓶：她笑的时候装满 → 放出 %.0f 半径的笑声，叫来紫手（%d → %d）" % [dir.radius.radius(), n0, _hands()],
+		dir.radius.radius() >= 200.0 and _hands() > n0)
+	jar.queue_free()
+	for h in get_tree().get_nodes_in_group("maze_hand"):
+		(h as MazeHand).vanish()
+	blue.laugh.set_value(0.0)
+	# 夜光羽蛾：撒中时笑声半径亮一下
+	var moth: GlowMoth = load("res://levels/floor_08/scenes/glow_moth.tscn").instantiate()
+	main.level.add_child(moth)
+	dir.radius._burst_left = 0.0
+	dir.radius._boost_left = 0.0
+	dir.radius._boost = 1.0
+	blue.laugh.set_value(blue.laugh.helpless_threshold + 5.0)
+	await _wait(0.1)
+	var r0 := dir.radius.radius()
+	moth._on_tickle_performed(blue)
+	check("夜光羽蛾：鳞粉撒中让笑声半径亮一下（%.0f → %.0f），自己带光" % [r0, dir.radius.radius()],
+		dir.radius.radius() > r0 and moth.get_node_or_null("Light") != null)
+	moth.queue_free()
+	blue.laugh.set_value(0.0)
+	# 偷灯小鬼：去吹灭最近的月光灯；碰到她吹暗冷光
+	var lamp: MoonLamp = get_tree().get_nodes_in_group("moon_lamp")[1]
+	lamp.relight()
+	var imp: LampImp = load("res://levels/floor_08/scenes/lamp_imp.tscn").instantiate()
+	main.level.add_child(imp)
+	imp.global_position = lamp.global_position + Vector2(0, 20)
+	await _advance_until(func(): return not lamp.lit, 6.0)
+	var blown := not lamp.lit
+	imp._on_tickle_performed(blue)
+	check("偷灯小鬼：吹灭附近的月光灯（%s），碰到她吹暗冷光（%s）" % [blown, dir.carry_light().is_dimmed()], blown and dir.carry_light().is_dimmed())
+	imp.queue_free()
+	lamp.relight()
+
+
+func _run_devices() -> void:
+	print("-- 陷阱 / 机关")
+	var dir := _dir()
+	var blue := dir.blue
+	_fresh(blue)
+	# 镜面水洼：倒影里伸出一只手，这次失败优先盖屁股
+	var puddle: MirrorPuddle = null
+	for n in main.level.find_children("*", "MirrorPuddle", true, false):
+		puddle = n
+	var n0 := _hands()
+	puddle._apply_effect(blue)
+	check("镜面水洼：倒影里冒出一只紫手（%d → %d），标记屁股" % [n0, _hands()], _hands() > n0 and dir.marked_zone == "butt")
+	for h in get_tree().get_nodes_in_group("maze_hand"):
+		(h as MazeHand).vanish()
+	dir.marked_zone = ""
+	# 影子缠腿藤：定身
+	var vine: ShadowVine = main.level.find_children("*", "ShadowVine", true, false)[0]
+	vine._t = 0.0
+	vine._apply_effect(blue)
+	check("影子缠腿藤：缠住定身", blue.status.is_rooted())
+	blue.status.clear_root()
+	# 月光镜：转到正确方向 → 光带照到光开关 → 暗门打开
+	var design: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://levels/floor_08_maze_2/design.json"))
+	var dev: Dictionary = design["devices"].filter(func(d: Dictionary): return d["kind"] == "moon_mirror")[0]
+	var mirror: MoonMirror = main.level.find_children("*", "MoonMirror", true, false)[0]
+	for l in get_tree().get_nodes_in_group("moon_lamp"):
+		(l as MoonLamp).relight()
+	var closed_before: bool = get_tree().get_nodes_in_group(dev["group"]).all(func(g: Node): return not g.get("is_open"))
+	while mirror.facing != int(dev["facing"]):
+		mirror.on_interact(blue)
+	await _wait(1.6)
+	var gates: Array = get_tree().get_nodes_in_group(dev["group"]).filter(func(g: Node): return g is StaticBody2D)
+	check("月光镜：一开始照不到（门关着 %s），按 E 转到正确方向 → 光带照到光开关 → 暗门打开" % closed_before,
+		closed_before and mirror.powered and gates.size() == 2 and gates.all(func(g: Node): return g.get("is_open")))
+	blue.global_position = (mirror.source_point() + mirror.beam_end) / 2.0 + Vector2(0, 10)
+	dir.cover_zone("thigh")
+	dir.cover_zone("sole")
+	await _wait(0.2)
+	check("站在光带里：算在光里（紫手不进来、狠挠躲得掉）", dir.light_at(blue.global_position) is Vector2)
+	dir.cover.clear()
+	# 初次遭遇：第一次被羽毛门帘刷到，蓝色公主的初次遭遇对话
+	GameState.set_flag("met_feather_curtain", false)
+	var curtain: FeatherCurtain = main.level.find_children("*", "FeatherCurtain", true, false)[0]
+	_fresh(blue)
+	curtain._apply_effect(blue)
+	await _wait(0.2)
+	check("第一次被新来源挠到：播蓝色公主的初次遭遇对话", Dialogue.is_active())
+	_finish()
+	# 第三段：千手之门、摇篮长椅
+	await _goto_maze(3)
+	dir = _dir()
+	blue = dir.blue
+	_fresh(blue)
+	var gate: HandGate = main.level.find_children("*", "HandGate", true, false)[0]
+	gate.on_interact(blue)
+	var shut := not gate.opened
+	for i in 3:
+		dir.cover_zone("thigh")
+	gate.on_interact(blue)
+	check("千手之门：手不够推不开（%s），身上 3 只手以后推开（同组两扇都开）" % shut, shut and gate.opened
+		and get_tree().get_nodes_in_group(gate.group_name).all(func(g: Node): return g.get("opened")))
+	dir.cover.clear()
+	var bench: CradleBench = main.level.find_children("*", "CradleBench", true, false)[0]
+	_fresh(blue)
+	blue.laugh.set_value(30.0)
+	bench.sit(blue)
+	await _wait(3.0)
+	var rested := blue.laugh.value < 30.0 and blue.status.is_rooted()
+	await _wait(CradleBench.SAFE + CradleBench.COVER)
+	check("摇篮长椅：坐着闷笑慢慢降（%s），坐久了椅下伸手——屁股盖上一只手（%s）" % [rested, dir.cover.hands], rested and dir.cover.count("butt") >= 1)
+	bench.stand()
+	check("起来以后可以走", not blue.status.is_rooted())
+	dir.cover.clear()
+
+
+func _run_heartbeat_and_shadow() -> void:
+	print("-- 呼吸墙 / 千手的影子")
+	var dir := _dir()
+	var blue := dir.blue
+	var walls: TileMapLayer = main.level.get_node("Walls")
+	var pair: Dictionary = dir.breathing[0]
+	var wall_at := func(cells: Array) -> bool: return cells.all(func(c: Vector2i): return walls.get_cell_source_id(c) != -1)
+	var floor_at := func(cells: Array) -> bool: return cells.all(func(c: Vector2i): return walls.get_cell_source_id(c) == -1)
+	var start_ok: bool = floor_at.call(pair["a"]) and wall_at.call(pair["b"])
+	blue.global_position = dir.blue.global_position
+	dir.heartbeat()
+	var flipped: bool = wall_at.call(pair["a"]) and floor_at.call(pair["b"])
+	dir.heartbeat()
+	var back: bool = floor_at.call(pair["a"]) and wall_at.call(pair["b"])
+	check("呼吸墙：开场 a 通 b 封（%s），心跳一次翻转（%s），再跳翻回来（%s）" % [start_ok, flipped, back], start_ok and flipped and back)
+	var slow := dir.beat_interval()
+	for i in 10:
+		dir.cover_zone("thigh")
+	check("心跳间隔：40 秒起，手越多越快（%.0f → %.0f 秒，最快 15）" % [slow, dir.beat_interval()], slow == 40.0 and dir.beat_interval() == 20.0)
+	dir.cover.clear()
+	# 千手的影子：视野里站 1 秒 → 召出紫手；在光里看不见
+	var shadow: HandShadow = main.level.find_children("*", "HandShadow", true, false)[0]
+	# 找一格不在光里、上面 3 格都是地面的位置：影子从上面看下来
+	var spot := Vector2i(-1, -1)
+	for c in dir._floor_cells:
+		if [1, 2, 3].all(func(k: int) -> bool: return GridPath.walkable(main.level, c + Vector2i(0, -k))) \
+				and not (dir.light_at(GridPath.center(c)) is Vector2):
+			spot = c
+			break
+	blue.global_position = GridPath.center(spot)
+	shadow.global_position = blue.global_position + Vector2(0, -30)
+	shadow.cone.facing = Vector2.DOWN
+	shadow._points.clear()
+	shadow._cd = 0.0
+	var n0 := _hands()
+	await _wait(1.5)
+	check("千手的影子：看到她 1 秒 → 周围涌出紫手（%d → %d）" % [n0, _hands()], spot.x >= 0 and _hands() >= n0 + 3)
+	for h in get_tree().get_nodes_in_group("maze_hand"):
+		(h as MazeHand).vanish()
+	var lamp: MoonLamp = get_tree().get_nodes_in_group("moon_lamp")[0]
+	lamp.relight()
+	blue.global_position = lamp.global_position + Vector2(0, 4)
+	shadow.global_position = blue.global_position + Vector2(-40, 10)
+	shadow.cone.facing = Vector2.RIGHT
+	shadow._cd = 0.0
+	n0 = _hands()
+	await _wait(1.5)
+	check("站在月光灯下：影子看不见她（%d → %d）" % [n0, _hands()], _hands() == n0)
+	for h in get_tree().get_nodes_in_group("maze_hand"):
+		(h as MazeHand).vanish()
+	shadow.on_ice(3.0)
+	check("冰晶结界冻住影子", shadow.is_frozen())
+
+
+# ------------------------------------------------------------------ 测试模式跳关
+func _run_skip_points() -> void:
+	print("-- 第八层的跳关点")
+	var points: Array = DevConfig.skip_points().filter(func(p: Dictionary): return str(p["floor"]).begins_with("floor_08"))
+	check("第八层有 11 个跳关点（%d）" % points.size(), points.size() == 11)
+	for point in points:
+		_finish()
+		await DevConfig.skip_to(point)
+		await _wait(0.2)
+		var p := GameState.player
+		var problems: Array[String] = []
+		if _level_id() != str(point["floor"]):
+			problems.append("楼层 %s" % _level_id())
+		var want_blue: bool = point["flags"].has("blue_is_hero") or point["flags"].has("f8_slept")
+		if (p is BluePrincess) != want_blue:
+			problems.append("主角不对（%s）" % p.name)
+		if point.has("spawn"):
+			var sp_pos := Vector2.INF
+			for sp in get_tree().get_nodes_in_group("spawn_point"):
+				if str(sp.get("id")) == str(point["spawn"]):
+					sp_pos = (sp as Node2D).global_position
+			if sp_pos == Vector2.INF or p.global_position.distance_to(sp_pos) > 4.0:
+				problems.append("没放到出生点 %s" % point["spawn"])
+		if point.has("cell"):
+			var c: Array = point["cell"]
+			if GridPath.cell(p.global_position) != Vector2i(int(c[0]), int(c[1])):
+				problems.append("没放到格子 %s" % [c])
+		var phase := int(point.get("vars", {}).get("f8_start_phase", 0))
+		if phase > 0:
+			await _advance_until(func(): return Floor8Director.instance != null and Floor8Director.instance.phase == phase, 15.0)
+			var d := Floor8Director.instance
+			if d == null or d.phase != phase or d.boss.health.hp > d.boss.phase_start_hp(phase):
+				problems.append("Boss 阶段 %s" % (d.phase if d else -1))
+		check("跳关「%s」%s" % [point["name"], "" if problems.is_empty() else "：" + "；".join(problems)], problems.is_empty())
+		await _advance_until(func(): return not Cutscene.is_playing() and not CG.is_busy(), 30.0)
 
 
 # ------------------------------------------------------------------ 工具

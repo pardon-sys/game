@@ -281,6 +281,8 @@ func _run_design(id: String) -> void:
 		var problems: Array[String] = []
 		var monster_slots: Array = []
 		for slot in combo["keys"]:
+			if _special_source(slot, in_rect):
+				continue
 			if ComboTracker.group("trap").has(slot[0]):
 				if not _cells_of(slot).keys().any(func(c): return cell_rect.has_point(c)):
 					problems.append("区域里没有陷阱 %s" % [slot])
@@ -751,6 +753,21 @@ func _trap_cells() -> Dictionary:
 				out[c] = []
 			(out[c] as Array).append(str(n.get("reaction_key")))
 	return out
+
+
+## 不是陷阱也不是怪物的来源（第八层夜迷宫）：紫手 / 手的节奏由迷宫导演提供；长椅、千手之门按位置，千手的影子按巡逻路线。
+func _special_source(slot: Array, in_rect: Callable) -> bool:
+	if (slot.has("maze_hand") or slot.has("hand_rhythm")) and not get_tree().get_nodes_in_group("maze_director").is_empty():
+		return true
+	for n in level.find_children("*", "", true, false):
+		if n is Trap or n is Monster or not (n is Node2D) or not slot.has(str(n.get("reaction_key"))):
+			continue
+		if n is HandShadow:
+			if (n as HandShadow).route_points().any(func(p: Vector2) -> bool: return in_rect.call(p)):
+				return true
+		elif in_rect.call((n as Node2D).global_position + Vector2(0, -4)):
+			return true
+	return false
 
 
 func _cells_of(slot: Array) -> Dictionary:

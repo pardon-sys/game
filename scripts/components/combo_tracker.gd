@@ -342,6 +342,11 @@ func _apply_effects(c: Dictionary, source: Node) -> void:
 			"focus":
 				if _actor.has_method("focus_camera"):
 					_actor.focus_camera()
+			_:
+				# 关卡自己的效果（第八层夜迷宫：笑声半径翻倍、召手、直接盖手、扣冷光、节奏……）：交给场上的处理者
+				for h in get_tree().get_nodes_in_group("combo_effect_handler"):
+					if h.has_method("on_combo_effect"):
+						h.on_combo_effect(e, _actor, source)
 
 
 ## 抬起：举到半空（本节点抓住她，挣扎无效），期间持续余痒。已经被抓着时延长抓取。
