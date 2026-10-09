@@ -1,0 +1,183 @@
+{
+	"name": "第八层：小房间的夜晚",
+	"letterbox": true,
+	"skippable": true,
+	"steps": [
+		{
+			"actions": [
+				{
+					"time": 0.6,
+					"do": "fade_out"
+				}
+			],
+			"wait": 0.7
+		},
+		{
+			"actions": [
+				{
+					"who": "princess",
+					"to": [
+						5,
+						5
+					],
+					"do": "move"
+				},
+				{
+					"faint": true,
+					"do": "pose"
+				},
+				{
+					"who": "BluePrincess_12_4",
+					"to": [
+						11,
+						5
+					],
+					"do": "move"
+				},
+				{
+					"who": "BluePrincess_12_4",
+					"dir": "left",
+					"do": "face"
+				},
+				{
+					"time": 0.8,
+					"do": "fade_in"
+				}
+			],
+			"wait": 0.9
+		},
+		{
+			"speaker": "",
+			"text": "（粉色公主钻进被窝，没过多久就发出了均匀的呼吸声）"
+		},
+		{
+			"speaker": "公主",
+			"text": "……呼……呼……唔嘿嘿……再、再来一块饼干……",
+			"emotion": "shy"
+		},
+		{
+			"actions": [
+				{
+					"who": "BluePrincess_12_4",
+					"to": [
+						7,
+						5
+					],
+					"speed": 30,
+					"do": "move"
+				}
+			],
+			"wait": 1.6
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……睡着了。"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……对不起。……不能让你跟来。",
+			"emotion": "sad"
+		},
+		{
+			"actions": [
+				{
+					"sound": "chime",
+					"do": "sfx"
+				},
+				{
+					"time": 0.4,
+					"do": "flash"
+				},
+				{
+					"id": "ice",
+					"kind": "prop:ice_block",
+					"at": [
+						5,
+						5
+					],
+					"do": "spawn"
+				}
+			],
+			"wait": 0.6
+		},
+		{
+			"speaker": "",
+			"text": "（冰晶的光一闪，一层薄冰轻轻盖在她身上——从头一直盖到脚踝）"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……这样，它们就找不到你了。"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……",
+			"actions": [
+				{
+					"who": "BluePrincess_12_4",
+					"dir": "left",
+					"do": "face"
+				}
+			]
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……脚。……露在外面了。",
+			"emotion": "surprise"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……她最怕脚心。……",
+			"emotion": "shy"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……算了。……没人会挠的。……应该。",
+			"emotion": "shy"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……对不起。",
+			"emotion": "sad"
+		},
+		{
+			"actions": [
+				{
+					"who": "BluePrincess_12_4",
+					"to": [
+						7,
+						8
+					],
+					"speed": 40,
+					"do": "move"
+				}
+			],
+			"wait": 1.4
+		},
+		{
+			"actions": [
+				{
+					"sound": "door",
+					"do": "sfx"
+				},
+				{
+					"flag": "blue_is_hero",
+					"do": "set_flag"
+				},
+				{
+					"flag": "f8_slept",
+					"do": "set_flag"
+				},
+				{
+					"time": 1.0,
+					"do": "fade_out"
+				},
+				{
+					"to": "floor_08_maze_1",
+					"spawn": "",
+					"do": "goto"
+				}
+			],
+			"wait": 1.2
+		}
+	]
+}

@@ -1,0 +1,149 @@
+{
+	"name": "夜迷宫·回忆",
+	"cast": {
+		"blue": {
+			"kind": "npc:blue_princess",
+			"at": [
+				0,
+				8
+			],
+			"visual": "normal",
+			"anim": "idle",
+			"dir": "down"
+		}
+	},
+	"steps": [
+		{
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "fade_in"
+				}
+			],
+			"wait": 0.5
+		},
+		{
+			"speaker": "",
+			"text": "（六片碎片在她手心里一起亮了起来——眼前浮现出很久以前的那个房间）",
+			"actions": []
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……蜡笔、发夹、发条、蝴蝶结、茶匙……还有，这张画。",
+			"actions": [],
+			"emotion": "sad"
+		},
+		{
+			"speaker": "",
+			"text": "（画上，一个蓝头发的小女孩被好多只手围着，笑得在地上打滚）",
+			"actions": []
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……那时候……我总说「再来一次」。",
+			"actions": [],
+			"emotion": "sad"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……挠到我哭……也说「再来一次」。",
+			"actions": [],
+			"emotion": "sad"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……你从来没有累过。……也从来没有真的挠到我讨厌。",
+			"actions": [],
+			"emotion": "shy"
+		},
+		{
+			"speaker": "",
+			"text": "（一只看不见的手，轻轻落在她的头发上——没有挠，只是摸了摸）",
+			"actions": []
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……！",
+			"actions": [
+				{
+					"state": "giggle",
+					"do": "voice"
+				}
+			],
+			"emotion": "surprise"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……你……还记得这个。",
+			"actions": [],
+			"emotion": "sad"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……哭的时候，你就这样……摸我的头。",
+			"actions": [],
+			"emotion": "sad"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……对不起。……那天，我没有回来。",
+			"actions": [
+				{
+					"state": "laugh",
+					"do": "voice"
+				},
+				{
+					"who": "blue",
+					"visual": "helpless_1",
+					"anim": "helpless",
+					"do": "pose"
+				}
+			],
+			"emotion": "sad"
+		},
+		{
+			"speaker": "",
+			"text": "（手停了很久。然后，在她的大腿上，很轻、很轻地挠了一下）",
+			"actions": []
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……噗。……哈……",
+			"actions": [
+				{
+					"who": "blue",
+					"repeat": 6,
+					"interval": 0.14,
+					"fx": "hand",
+					"zone": "thigh",
+					"do": "tickle"
+				},
+				{
+					"who": "blue",
+					"time": 0.3,
+					"do": "shake"
+				}
+			],
+			"emotion": "helpless_1"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……嗯。……再来一次。",
+			"actions": [],
+			"emotion": "shy"
+		},
+		{
+			"actions": [
+				{
+					"state": "",
+					"do": "voice"
+				},
+				{
+					"time": 0.8,
+					"do": "fade_out"
+				}
+			],
+			"wait": 0.9
+		}
+	]
+}

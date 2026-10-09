@@ -5,7 +5,7 @@ API key 从项目根目录的 .env 读（ELEVENLABS=...，.env 不进版本库�
 首尾相连：生成的曲子结尾常有淡出 / 静音，所以先找循环点 T（find_loop_end：在淡出之前、节奏和开头最像的位置），
 把 T 之前 CROSSFADE 秒和开头交叉淡化（等功率），T 之后的尾声丢掉——循环播放时无缝接回开头。
 原始音频存在 tools/.cache/music/（不进版本库）。
-用法：python tools/audio/gen_music.py [dungeon] [town] [boss] [boss3] [night_room]（不写就全部生成；已经生成过的跳过，加 --force 重新生成）
+用法：python tools/audio/gen_music.py [dungeon] [town] [boss] [boss3] [night_room] [night_maze]（不写就全部生成；已经生成过的跳过，加 --force 重新生成）
 """
 import json
 import os
@@ -27,6 +27,13 @@ LENGTH_MS = 140000   # 多要 20 秒：结尾的淡出尾声会被切掉，循�
 CROSSFADE = 2.5
 
 TRACKS = {
+    "night_maze": ("Instrumental video game background music for exploring a dark, living labyrinth at night, alone. A quiet princess walks "
+                   "through moonlit stone corridors while invisible many-handed things wander in the darkness. Mood: mysterious, cold, "
+                   "tense but restrained, with a thread of melancholy and longing, same melancholic minor key as a soft night lullaby. "
+                   "A low, slow heartbeat-like pulse in the contrabass and soft timpani; sustained cold strings and airy pads; sparse, "
+                   "distant fragments of an antique music box melody that drift in and out like memories; occasional glassy celesta "
+                   "and harp glints like moonlight on stone. No drums kit, no fast rhythm. Around 70 BPM, sparse and atmospheric. "
+                   "Seamless loop, consistent dynamics from start to end, no fade-out ending."),
     "night_room": ("Instrumental video game background music for a quiet, melancholic night scene: two princesses rest in a small, dusty, "
                    "long-abandoned bedroom hidden deep inside a dungeon tower, a room full of faded memories that one of them will not talk about. "
                    "Mood: wistful nostalgia and quiet sorrow, tender but heavy-hearted, like remembering someone you lost long ago; not playful, "

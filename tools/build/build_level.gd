@@ -14,6 +14,9 @@ const KENNEY := "res://assets/third_party/kenney_tiny_dungeon/tilemap_packed.png
 const WALLS := "res://assets/generated/walls.png"
 const FACES := "res://assets/generated/wall_faces.png"
 const TILESET_PATH := "res://assets/tilesets/dungeon.tres"
+## 2.5D 楼层（[level] style = 2.5d）：同样的图块，但贴图是带法线 / 高光的 CanvasTexture（tools/art/gen_normal_maps.py）
+const TILESET_25D_PATH := "res://assets/tilesets/dungeon_25d.tres"
+const NORMAL_DIR := "res://assets/generated/normal/"
 
 const SRC_KENNEY := 0
 const SRC_WALLS := 1
@@ -50,6 +53,9 @@ const SCENES := {
 	"stealth": "res://scenes/stealth/stealth_director.tscn",
 	"f8director": "res://levels/floor_08/scenes/floor8_director.tscn",
 	"f8chase": "res://levels/floor_08/scenes/chase_run.tscn",
+	"f8maze": "res://levels/floor_08/scenes/maze_director.tscn",
+	"moonlamp": "res://levels/floor_08/scenes/moon_lamp.tscn",
+	"memshard": "res://levels/floor_08/scenes/memory_shard.tscn",
 	"guard_patrol": "res://scenes/stealth/patrol_guard.tscn",
 }
 ## 按 type 参数选择场景的类型：新增怪物/友军/陷阱时在这里注册。
@@ -160,7 +166,9 @@ var rows: PackedStringArray = []
 var legend := {}
 ## 同一格叠放的其它实体：字符 -> [info, ...]（legend 里用 " + " 连接，例如 "K = trap type=stocks + trap type=vortex radius=3"）。
 var stacked := {}
-## [level] 段：intro（开场对话 id）、ambient（环境光 r,g,b）、night_ambient（夜晚的环境光，剧情标记 night 时用）、no_switch = true（不能切换操控角色）
+## [level] 段：intro（开场对话 id）、ambient（环境光 r,g,b）、night_ambient（夜晚的环境光，剧情标记 night 时用）、no_switch = true（不能切换操控角色）、
+##   style = 2.5d（法线贴图图块集 dungeon_25d.tres + 很暗的环境光 + 墙上的幽光点；关卡进场时人物套实时光照、操控的角色带冷光）、
+##   light_drain = 秒（2.5D 楼层冷光从满到空的时间，0 = 不消耗）
 var level_meta := {}
 var width := 0
 var height := 0
@@ -196,10 +204,13 @@ func build(floor_id: String) -> int:
 	_reset()
 	if not parse(Floors.map_path(floor_id)):
 		return 1
-	var ts := make_tileset()
+	var style := str(level_meta.get("style", ""))
+	var lit := style == "2.5d"
+	var ts_path := TILESET_25D_PATH if lit else TILESET_PATH
+	var ts := make_tileset(lit)
 	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path("res://assets/tilesets"))
-	ResourceSaver.save(ts, TILESET_PATH)
-	ts = ResourceLoader.load(TILESET_PATH, "", ResourceLoader.CACHE_MODE_REPLACE)
+	ResourceSaver.save(ts, ts_path)
+	ts = ResourceLoader.load(ts_path, "", ResourceLoader.CACHE_MODE_REPLACE)
 
 	var root := Node2D.new()
 	root.name = floor_id.to_pascal_case()
@@ -208,10 +219,12 @@ func build(floor_id: String) -> int:
 	root.set("intro_dialogue", level_meta.get("intro", "intro"))
 	root.set("intro_cutscene", level_meta.get("intro_cutscene", ""))
 	root.set("no_switch", str(level_meta.get("no_switch", "")) == "true")
+	root.set("style", style)
+	root.set("light_drain", float(level_meta.get("light_drain", 0.0)))
 
 	var cm := CanvasModulate.new()
 	cm.name = "Darkness"
-	cm.color = Color(0.2, 0.17, 0.28)
+	cm.color = Color(0.2, 0.17, 0.28) if not lit else Color(0.05, 0.055, 0.1)
 	if level_meta.has("ambient"):
 		var c: PackedStringArray = str(level_meta["ambient"]).split(",")
 		cm.color = Color(float(c[0]), float(c[1]), float(c[2]))
@@ -273,6 +286,8 @@ func build(floor_id: String) -> int:
 						decor.set_cell(Vector2i(x, y), SRC_KENNEY, _kcoord(72))
 					counts[k] = counts.get(k, 0) + 1
 
+	if lit:
+		_add_wall_glows(root, walls_layer)
 	var ps := PackedScene.new()
 	var err := ps.pack(root)
 	if err != OK:
@@ -512,7 +527,32 @@ func _kcoord(id: int) -> Vector2i:
 	return Vector2i(id % 12, id / 12)
 
 
-func make_tileset() -> TileSet:
+## 2.5D 楼层：墙面上零星的幽光点（冷蓝 / 淡紫，很暗），让墙和地面有微光。
+func _add_wall_glows(root: Node2D, walls_layer: TileMapLayer) -> void:
+	var glows := Node2D.new()
+	glows.name = "WallGlows"
+	root.add_child(glows)
+	glows.owner = root
+	var tex := load("res://assets/lights/light_soft.tres")
+	var n := 0
+	for y in height:
+		for x in width:
+			if not is_face(x, y) or rng.randf() > 0.035:
+				continue
+			var l := PointLight2D.new()
+			l.name = "Glow_%d_%d" % [x, y]
+			l.texture = tex
+			l.texture_scale = rng.randf_range(0.28, 0.42)
+			l.energy = rng.randf_range(0.18, 0.32)
+			l.height = 20.0
+			l.color = Color(0.45, 0.75, 1.0) if rng.randf() < 0.6 else Color(0.75, 0.5, 1.0)
+			l.position = Vector2(x * TILE + TILE / 2.0, y * TILE + TILE + 2.0)
+			glows.add_child(l)
+			l.owner = root
+			n += 1
+
+
+func make_tileset(lit := false) -> TileSet:
 	var ts := TileSet.new()
 	ts.tile_size = Vector2i(TILE, TILE)
 	ts.add_physics_layer()
@@ -522,7 +562,7 @@ func make_tileset() -> TileSet:
 	var full := PackedVector2Array([Vector2(-8, -8), Vector2(8, -8), Vector2(8, 8), Vector2(-8, 8)])
 	var low := PackedVector2Array([Vector2(-7, -1), Vector2(7, -1), Vector2(7, 8), Vector2(-7, 8)])
 
-	var ken := _atlas(ts, KENNEY, SRC_KENNEY, Vector2i(12, 11))
+	var ken := _atlas(ts, KENNEY, SRC_KENNEY, Vector2i(12, 11), lit)
 	for y in 11:
 		for x in 12:
 			var id := y * 12 + x
@@ -538,7 +578,7 @@ func make_tileset() -> TileSet:
 	var occ := OccluderPolygon2D.new()
 	occ.polygon = full
 	for src in [[WALLS, SRC_WALLS, Vector2i(16, 16)], [FACES, SRC_FACES, Vector2i(4, 8)]]:
-		var atlas := _atlas(ts, src[0], src[1], src[2])
+		var atlas := _atlas(ts, src[0], src[1], src[2], lit)
 		for y in src[2].y:
 			for x in src[2].x:
 				var td := atlas.get_tile_data(Vector2i(x, y), 0)
@@ -554,9 +594,20 @@ func make_tileset() -> TileSet:
 	return ts
 
 
-func _atlas(ts: TileSet, path: String, id: int, grid: Vector2i) -> TileSetAtlasSource:
+func _atlas(ts: TileSet, path: String, id: int, grid: Vector2i, lit := false) -> TileSetAtlasSource:
 	var src := TileSetAtlasSource.new()
 	src.texture = load(path)
+	if lit:
+		# 带法线 / 高光的贴图（2.5D 楼层）：tools/art/gen_normal_maps.py 生成 <图集名>_n.png / _s.png
+		var base := path.get_file().get_basename()
+		var ct := CanvasTexture.new()
+		ct.diffuse_texture = load(path)
+		if ResourceLoader.exists(NORMAL_DIR + base + "_n.png"):
+			ct.normal_texture = load(NORMAL_DIR + base + "_n.png")
+		if ResourceLoader.exists(NORMAL_DIR + base + "_s.png"):
+			ct.specular_texture = load(NORMAL_DIR + base + "_s.png")
+			ct.specular_shininess = 0.55
+		src.texture = ct
 	src.texture_region_size = Vector2i(TILE, TILE)
 	ts.add_source(src, id)
 	for y in grid.y:

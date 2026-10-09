@@ -782,7 +782,7 @@ def p_interior(kind):
 
 
 # —— 第八层的小房间：很久没人住的、小女孩的房间（落灰、蛛网、褪色）——
-OLD_ROOM = ("old_bed", "old_dresser", "old_tea", "music_box", "crayon_drawing", "height_marks", "cobweb")
+OLD_ROOM = ("old_bed", "old_dresser", "old_tea", "music_box", "crayon_drawing", "height_marks", "cobweb", "ice_block")
 DUST = (150, 140, 150, 255)
 DUST_L = (200, 192, 196, 255)
 
@@ -871,6 +871,17 @@ def p_old_room(kind):
             d.line((7, y, 10 + (i % 2), y), fill=(90, 50, 35, 255))
         d.point((11, 12), fill=(90, 50, 35, 255))
         return add_outline(img)
+    if kind == "ice_block":
+        # 蓝色公主盖在睡着的粉色公主身上的冰（躺着的小人从头盖到脚踝，双脚露在右边外面）
+        img, d = canvas(30, 16)
+        d.rounded_rectangle((0, 2, 23, 15), 2, fill=(170, 220, 255, 150), outline=(220, 245, 255, 230))
+        d.line((2, 4, 21, 4), fill=(235, 250, 255, 200))
+        d.line((3, 5, 8, 5), fill=(255, 255, 255, 220))
+        d.line((15, 8, 19, 12), fill=(140, 200, 240, 200))
+        d.line((6, 11, 9, 9), fill=(140, 200, 240, 200))
+        for (x, y) in ((4, 2), (12, 1), (19, 2)):
+            d.polygon([(x, y), (x + 2, y - 2), (x + 3, y + 1)], fill=(200, 240, 255, 220))
+        return img
     if kind == "cobweb":
         img, d = canvas(16, 16)
         for i in range(0, 15, 3):
@@ -933,6 +944,7 @@ def gen_props():
     items.append(("crayon_drawing", p_interior("crayon_drawing"), {"lift": 12}))
     items.append(("height_marks", p_interior("height_marks"), {"lift": 8}))
     items.append(("cobweb", p_interior("cobweb"), {"lift": 12}))
+    items.append(("ice_block", p_interior("ice_block"), {"light": [0.6, 0.85, 1.0]}))
     # 简单地按行排进 256 宽的图集
     x = y = row_h = 0
     meta = {}

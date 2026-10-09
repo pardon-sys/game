@@ -1,0 +1,247 @@
+{
+	"name": "夜迷宫·好多只手",
+	"cast": {
+		"blue": {
+			"kind": "npc:blue_princess",
+			"at": [
+				0,
+				8
+			],
+			"visual": "normal",
+			"anim": "idle",
+			"dir": "down"
+		}
+	},
+	"steps": [
+		{
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "fade_in"
+				}
+			],
+			"wait": 0.5
+		},
+		{
+			"speaker": "",
+			"text": "（腋下、腰、脚心、大腿……看不见的手已经数不清了）",
+			"actions": []
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……哈……哈……几、几只……",
+			"actions": [
+				{
+					"who": "blue",
+					"repeat": 7,
+					"interval": 0.212,
+					"fx": "hand",
+					"zone": "armpit",
+					"do": "tickle"
+				},
+				{
+					"who": "blue",
+					"time": 0.3,
+					"do": "shake"
+				}
+			],
+			"emotion": "helpless_1"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……数、数不清……",
+			"actions": [
+				{
+					"who": "blue",
+					"repeat": 8,
+					"interval": 0.20400000000000001,
+					"fx": "hand",
+					"zone": "waist",
+					"do": "tickle"
+				},
+				{
+					"who": "blue",
+					"time": 0.3,
+					"do": "shake"
+				}
+			],
+			"emotion": "helpless_1"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……八、八只……？还、还是更多……哈哈……",
+			"actions": [
+				{
+					"who": "blue",
+					"repeat": 9,
+					"interval": 0.196,
+					"fx": "hand",
+					"zone": "sole",
+					"do": "tickle"
+				},
+				{
+					"who": "blue",
+					"time": 0.3,
+					"do": "shake"
+				}
+			],
+			"emotion": "helpless_1"
+		},
+		{
+			"speaker": "",
+			"text": "（每一只都慢慢地、各挠各的地方，凑在一起就是停不下来的痒）",
+			"actions": []
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……哈哈哈……不、不公平……我、我只有一个人……",
+			"actions": [
+				{
+					"who": "blue",
+					"repeat": 7,
+					"interval": 0.18,
+					"fx": "hand",
+					"zone": "thigh",
+					"do": "tickle"
+				},
+				{
+					"who": "blue",
+					"time": 0.3,
+					"do": "shake"
+				}
+			],
+			"emotion": "helpless_2"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……哈哈……你、你有那么多只手……",
+			"actions": [
+				{
+					"who": "blue",
+					"repeat": 8,
+					"interval": 0.172,
+					"fx": "hand",
+					"zone": "butt",
+					"do": "tickle"
+				},
+				{
+					"who": "blue",
+					"time": 0.3,
+					"do": "shake"
+				}
+			],
+			"emotion": "helpless_2"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……以前……一只一只……轮流的……哈哈哈……",
+			"actions": [
+				{
+					"who": "blue",
+					"repeat": 9,
+					"interval": 0.164,
+					"fx": "hand",
+					"zone": "armpit",
+					"do": "tickle"
+				},
+				{
+					"who": "blue",
+					"time": 0.3,
+					"do": "shake"
+				},
+				{
+					"state": "giggle",
+					"do": "voice"
+				}
+			],
+			"emotion": "helpless_2"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……现在……一起来……哈哈哈哈……犯规……！",
+			"actions": [
+				{
+					"who": "blue",
+					"repeat": 6,
+					"interval": 0.156,
+					"fx": "hand",
+					"zone": "waist",
+					"do": "tickle"
+				},
+				{
+					"who": "blue",
+					"time": 0.3,
+					"do": "shake"
+				}
+			],
+			"emotion": "helpless_2"
+		},
+		{
+			"speaker": "",
+			"text": "（她靠着墙滑坐下来，笑声在走廊里回荡）",
+			"actions": []
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……哈……哈……没、没关系……",
+			"actions": [
+				{
+					"state": "laugh",
+					"do": "voice"
+				},
+				{
+					"who": "blue",
+					"visual": "helpless_1",
+					"anim": "helpless",
+					"do": "pose"
+				}
+			],
+			"emotion": "helpless_1"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……是我……自己来的……",
+			"actions": [],
+			"emotion": "sad"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……哈哈……再……再走一段……就好……",
+			"actions": [
+				{
+					"who": "blue",
+					"repeat": 6,
+					"interval": 0.14,
+					"fx": "hand",
+					"zone": "thigh",
+					"do": "tickle"
+				},
+				{
+					"who": "blue",
+					"time": 0.3,
+					"do": "shake"
+				}
+			],
+			"emotion": "helpless_1"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……站、站起来……哈……",
+			"actions": [],
+			"emotion": "angry"
+		},
+		{
+			"actions": [
+				{
+					"state": "",
+					"do": "voice"
+				},
+				{
+					"time": 0.8,
+					"do": "fade_out"
+				}
+			],
+			"wait": 0.9
+		}
+	]
+}

@@ -21,7 +21,7 @@ signal finished(id: String)
 const DIR := "res://data/cutscenes/"
 const BAR_H := 28.0
 const ACTIONS := ["move", "face", "pose", "camera", "shake", "fade_out", "fade_in", "flash", "bubble", "say", "tickle", "trap",
-	"spawn", "despawn", "carry", "wait", "sfx", "voice", "set_flag", "notify", "chapter_end", "hold"]
+	"spawn", "despawn", "carry", "wait", "sfx", "voice", "set_flag", "notify", "chapter_end", "hold", "goto"]
 const BUBBLE_TEXT := {"surprise": "！", "question": "？", "laugh": "哈哈哈", "dots": "……", "sad": "呜……", "angry": "哼！", "shy": "///", "happy": "♪"}
 ## 黑影的颜色（复制公主的精灵后蒙上）。
 const SHADOW_COLOR := Color(0.07, 0.03, 0.1, 0.95)
@@ -49,6 +49,8 @@ var chapter_screen: Control
 var chapter_hint: Label
 ## 章节结束画面按 E 后进入的楼层（chapter_end 的 next，空 = 停在结束画面）。
 var chapter_next := ""
+## goto 动作：过场结束后换到这一层（{floor, spawn}）
+var _goto := {}
 var chapter_title: Label
 var chapter_sub: Label
 
@@ -289,6 +291,13 @@ func _finish(id: String, cs: Dictionary) -> void:
 	_playing = false
 	step_index = -1
 	finished.emit(id)
+	if not _goto.is_empty():
+		var g := _goto
+		_goto = {}
+		GameState.pending_spawn = str(g.get("spawn", ""))
+		var main := get_tree().get_first_node_in_group("main")
+		if main and main.has_method("change_level"):
+			main.change_level(Floors.scene(str(g["floor"])))
 
 
 ## 章节结束画面：按 E 进入下一章（chapter_end 写了 next）。
@@ -459,6 +468,9 @@ func _do(a: Dictionary, instant: bool) -> float:
 			Audio.set_voice_state(str(a.get("state", "")))
 		"set_flag":
 			GameState.set_flag(str(a.get("flag", "")))
+		"goto":
+			# 过场结束后换关卡（to = 楼层 id，spawn = 到达点）
+			_goto = {"floor": str(a.get("to", "")), "spawn": str(a.get("spawn", ""))}
 		"notify":
 			if not instant:
 				GameState.notify(str(a.get("text", "")))
@@ -712,6 +724,11 @@ func _spawn(a: Dictionary) -> void:
 			r.set("npc_id", npc_id)
 			r.set("wander", 0.0)
 			n = r
+	elif kind.begins_with("prop:"):
+		# 道具演员（小镇道具图集里的东西，比如冰块）
+		var pr: Node2D = load("res://scenes/objects/prop.tscn").instantiate()
+		pr.set("kind", kind.trim_prefix("prop:"))
+		n = pr
 	elif kind.begins_with("monster:"):
 		var path := str(CG.data.get("actors", {}).get(kind.trim_prefix("monster:"), {}).get("scene", ""))
 		if path == "" or not ResourceLoader.exists(path):

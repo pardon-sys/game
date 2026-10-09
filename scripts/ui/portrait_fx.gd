@@ -48,6 +48,51 @@ var _flash_tween: Tween
 var _glow: ShaderMaterial
 ## 当前光晕强度（平滑跟随目标值）。
 var glow_strength := 0.0
+## 盖在身上的手（第八层夜迷宫：HandCover）：{部位: 只数}；画在立绘的部位锚点上
+var cover_hands := {}
+## 手一起蓄力（节奏）时鼓起来
+var cover_charging := false
+var _hand_layer: HandLayer
+
+
+## 立绘上盖着的手：每个部位锚点一只紫手；大腿 / 屁股多只时在锚点附近错开叠放（最多 MAX_DRAWN 只，多的写 ×N）。
+class HandLayer extends Control:
+	const ARM := preload("res://assets/generated/thousand_hand_arm.png")
+	const MAX_DRAWN := 6
+	var fx: PortraitFx
+	var t := 0.0
+	## 每个部位固定用一个锚点（部位表可能有好几个，挑一次就记住，不然每帧乱跳）
+	var anchors := {}
+
+	func _process(delta: float) -> void:
+		t += delta
+		visible = fx.active() and not fx.cover_hands.is_empty()
+		if visible:
+			queue_redraw()
+
+	func _draw() -> void:
+		var r := fx.portrait_rect()
+		var font := ThemeDB.fallback_font
+		for z in fx.cover_hands:
+			var n := int(fx.cover_hands[z])
+			if not anchors.has(z):
+				anchors[z] = TickleZones.anchor(z)
+			var a: Variant = anchors[z]
+			if n <= 0 or not (a is Vector2):
+				continue
+			var base: Vector2 = r.position + r.size * (a as Vector2)
+			for i in mini(n, MAX_DRAWN):
+				# 错开：绕着锚点转一圈，越多越往外
+				var ang := i * 2.4
+				var off := Vector2(cos(ang), sin(ang)) * (0.0 if i == 0 else 5.0 + i * 1.2)
+				var wob := Vector2(sin(t * 3.0 + i), cos(t * 2.6 + i * 1.3)) * 1.5
+				var k := 1.0 + (0.25 if fx.cover_charging else 0.0) * (0.5 + 0.5 * sin(t * 18.0))
+				var size := Vector2(24, 24) * k
+				var frame := 2 + int(t * 6.0 + i) % 2
+				draw_texture_rect_region(ARM, Rect2(base + off + wob - size / 2.0, size), Rect2(frame * 24, 0, 24, 24),
+					Color(0.9, 0.65, 1.0, 0.72))
+			if n > MAX_DRAWN:
+				draw_string(font, base + Vector2(10, 14), "×%d" % n, HORIZONTAL_ALIGNMENT_LEFT, -1, 12, Color(1, 0.85, 1.0))
 
 
 func setup(p: TextureRect) -> void:
@@ -58,6 +103,12 @@ func setup(p: TextureRect) -> void:
 	_glow = ShaderMaterial.new()
 	_glow.shader = GLOW_SHADER
 	portrait.material = _glow
+	_hand_layer = HandLayer.new()
+	_hand_layer.fx = self
+	_hand_layer.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_hand_layer.set_anchors_preset(Control.PRESET_FULL_RECT)
+	_hand_layer.z_index = 2
+	add_child(_hand_layer)
 
 
 ## 是否处理（游戏中：不在 CG、不是横版大框；CG 模式：立绘可见就处理）。
@@ -174,7 +225,8 @@ func clear() -> void:
 	_stickers.clear()
 	_zone_stickers.clear()
 	for c in get_children():
-		c.queue_free()
+		if c != _hand_layer:   # 盖着的手那一层常驻，不清
+			c.queue_free()
 	if portrait:
 		portrait.self_modulate = Color.WHITE
 

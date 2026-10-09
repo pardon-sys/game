@@ -105,6 +105,27 @@
 			"scene": "res://levels/floor_08_shelter/floor.tscn",
 			"group": "floor_08",
 			"music": "night_room"
+		},
+		{
+			"id": "floor_08_maze_1",
+			"name": "第八层·夜迷宫一·外环回廊",
+			"scene": "res://levels/floor_08_maze_1/floor.tscn",
+			"group": "floor_08",
+			"music": "night_maze"
+		},
+		{
+			"id": "floor_08_maze_2",
+			"name": "第八层·夜迷宫二·镜之回廊",
+			"scene": "res://levels/floor_08_maze_2/floor.tscn",
+			"group": "floor_08",
+			"music": "night_maze"
+		},
+		{
+			"id": "floor_08_maze_3",
+			"name": "第八层·夜迷宫三·千手深处",
+			"scene": "res://levels/floor_08_maze_3/floor.tscn",
+			"group": "floor_08",
+			"music": "night_maze"
 		}
 	]
 }

@@ -679,7 +679,9 @@ def SL(text, who=P, emotion=None):
 # 调查过蜡笔画 / 发夹 / 刻痕 / 八音盒会设标记，和蓝色公主说话时多出对应的话题。
 SHELTER_OBJ = {"name": "", "entries": [{"node": "bed"}], "nodes": {
     "bed": {"lines": [SL("落了一层灰的床，帷幔是淡淡的蓝色……被子比我的床小一圈。", P, "surprise"),
-                      SL("……今天就在这里过夜吧。", P, "shy")], "set": {"flags": ["f8s_seen_bed"]}},
+                      SL("……今天就在这里过夜吧。", P, "shy")], "set": {"flags": ["f8s_seen_bed"]},
+            "prompt": "……睡吧？", "choices": [{"text": "睡吧", "next": "bed_sleep"}, {"text": "再看看", "next": ""}]},
+    "bed_sleep": {"lines": [SL("……嗯。今天就到这里……晚安。", P, "shy")], "cutscene": "f8_shelter_sleep"},
     "wardrobe": {"lines": [SL("衣柜里挂着几件蓝色的小裙子……好小，像是给小孩子穿的。", P, "surprise"),
                            SL("裙摆上缝着雪花形状的花边。……做得好仔细。", P),
                            SL("……别乱翻。", BLUE)]},
@@ -778,5 +780,247 @@ SIGNS8["f8s_door"] = [{"speaker": BLUE, "text": "……外面很危险。今晚�
 (DLG / "signs.json").write_text(json.dumps(SIGNS8, ensure_ascii=False, indent="\t") + "\n")
 Path("levels/floor_08_shelter/design.json").write_text(json.dumps({
     "_说明": ["第八层的小房间（gen_floor08.py 生成）：追逐逃出来后过夜的地方；操控粉色公主、不能切换（no_switch）。"]}, ensure_ascii=False, indent="\t") + "\n")
+
+# ================================================================ 小房间的夜晚：睡下 → 蓝色公主冰封她（脚露在外面）→ 离开
+SLEEP_CUTS = {
+    "f8_shelter_sleep": cut("第八层：小房间的夜晚", [
+        {"actions": [A("fade_out", time=0.6)], "wait": 0.7},
+        {"actions": [A("move", who="princess", to=[5, 5]), A("pose", faint=True), A("move", who=BLUE_NPC, to=[11, 5]),
+                     A("face", who=BLUE_NPC, dir="left"), A("fade_in", time=0.8)], "wait": 0.9},
+        {"speaker": "", "text": "（粉色公主钻进被窝，没过多久就发出了均匀的呼吸声）"},
+        line(P, "……呼……呼……唔嘿嘿……再、再来一块饼干……", "shy"),
+        {"actions": [A("move", who=BLUE_NPC, to=[7, 5], speed=30)], "wait": 1.6},
+        line(BLUE, "……睡着了。"),
+        line(BLUE, "……对不起。……不能让你跟来。", "sad"),
+        {"actions": [A("sfx", sound="chime"), A("flash", time=0.4),
+                     A("spawn", id="ice", kind="prop:ice_block", at=[5, 5])], "wait": 0.6},
+        {"speaker": "", "text": "（冰晶的光一闪，一层薄冰轻轻盖在她身上——从头一直盖到脚踝）"},
+        line(BLUE, "……这样，它们就找不到你了。"),
+        line(BLUE, "……", actions=[A("face", who=BLUE_NPC, dir="left")]),
+        line(BLUE, "……脚。……露在外面了。", "surprise"),
+        line(BLUE, "……她最怕脚心。……", "shy"),
+        line(BLUE, "……算了。……没人会挠的。……应该。", "shy"),
+        line(BLUE, "……对不起。", "sad"),
+        {"actions": [A("move", who=BLUE_NPC, to=[7, 8], speed=40)], "wait": 1.4},
+        {"actions": [A("sfx", sound="door"), A("set_flag", flag="blue_is_hero"), A("set_flag", flag="f8_slept"),
+                     A("fade_out", time=1.0), A("goto", to="floor_08_maze_1", spawn="")], "wait": 1.2},
+    ]),
+    "f8_maze_intro": cut("第八层：夜迷宫", [
+        {"actions": [A("fade_in", time=1.2)], "wait": 1.2},
+        line(BLUE, "……这里。"),
+        line(BLUE, "……你在吧。"),
+        {"actions": [A("wait")], "wait": 0.8},
+        line(BLUE, "……对不起。", "sad"),
+        line(BLUE, "……这次，换我来补偿你。", "sad"),
+        {"speaker": "", "text": "（远处的黑暗里，亮起一只紫色的手——轻轻晃了晃，又暗了下去）"},
+        line(BLUE, "……", "surprise", [A("bubble", who="princess", kind="dots")]),
+        line(BLUE, "……来吧。", "angry"),
+    ]),
+    "f8_maze_exit": cut("第八层：夜迷宫的出口", [
+        line(BLUE, "……出口。"),
+        line(BLUE, "……前面，是哪里。"),
+        {"actions": [A("notify", text="（待续）")], "wait": 0.6},
+    ]),
+}
+for name, cs in SLEEP_CUTS.items():
+    (CUT / (name + ".json")).write_text(json.dumps(cs, ensure_ascii=False, indent="\t") + "\n")
+
+# ================================================================ 夜迷宫（三段；tools/build/maze_gen.py 生成迷宫格子，2.5D 光照）
+from maze_gen import Maze  # noqa: E402
+
+# 段 -> (单元列, 单元行, 种子, 月光灯数, 回环比例, 小房间数, 呼吸墙对数, 回忆碎片 id)
+MAZES = {
+    1: (20, 14, 81, 4, 0.14, 3, 4, (1, 2)),
+    2: (24, 18, 82, 4, 0.13, 4, 6, (3, 4)),
+    3: (28, 21, 83, 3, 0.12, 5, 8, (5, 6)),
+}
+MAZE_INFO = {}
+
+
+def build_maze(sec):
+    cols, rows, seed, lamps, loops, rooms, breathing, shards = MAZES[sec]
+    mz = Maze(cols, rows, seed=seed, loops=loops, rooms=rooms, breathing=breathing)
+    fid = "floor_08_maze_%d" % sec
+    head = "intro =\nintro_cutscene = %s\nstyle = 2.5d\nlight_drain = 90" % ("f8_maze_intro" if sec == 1 else "")
+    title = {1: "第八层·夜迷宫一·外环回廊", 2: "第八层·夜迷宫二·镜之回廊", 3: "第八层·夜迷宫三·千手深处"}[sec]
+    mm = Map(fid, mz.w, mz.h, head, title)
+    mm.g = [row[:] for row in mz.grid]
+    sx, sy = mz.cell_floor(mz.start_cell)[2]
+    mm.put(sx, sy, "player")
+    mm.put(sx, sy, "spawn id=from_%d" % (sec - 1))
+    dx, dy = mz.cell_floor(mz.start_cell)[1]
+    mm.put(dx, dy, "f8maze section=%d" % sec)
+    # 月光灯：起点一盏，其余沿主路均匀分布
+    path = mz.main_path
+    # 入口那盏放在主路的下一格（不罩住出生点：上一段带过来的手要走进灯里才散）
+    lamp_cells = [path[1]] + [path[int(len(path) * k)] for k in [(i + 1) / (lamps) for i in range(lamps - 1)]]
+    for i, c in enumerate(lamp_cells):
+        x, y = mz.cell_floor(c)[3]
+        mm.put(x, y, "moonlamp")
+        mm.put(x, y, "spawn id=lamp_%d" % (i + 1))
+    # 回忆碎片：离主路最远的死路
+    for sid, c in zip(shards, mz.dead_ends[:len(shards)]):
+        x, y = mz.cell_floor(c)[3]
+        mm.put(x, y, "memshard id=%d" % sid)
+    ex, ey = mz.cell_floor(mz.exit_cell)[3]
+    if sec < 3:
+        mm.put(ex, ey, "exit target=floor_08_maze_%d spawn=from_%d" % (sec + 1, sec))
+    else:
+        mm.put(ex, ey, "spawn id=maze_exit")
+    mm.write()
+    MAZE_INFO[sec] = mz
+    Path("levels/%s/design.json" % fid).write_text(json.dumps({
+        "_说明": ["第八层夜迷宫第 %d 段（gen_floor08.py + maze_gen.py 生成，种子 %d）。breathing = 呼吸墙对（a 现在是地面、b 心跳后打开）。" % (sec, seed)],
+        "breathing": [{"a": [list(p) for p in b["a"]], "b": [list(p) for p in b["b"]]} for b in mz.breathing],
+    }, ensure_ascii=False, indent="\t") + "\n")
+    return mm, mz
+
+
+for _sec in MAZES:
+    build_maze(_sec)
+
+# ================================================================ 夜迷宫的小剧场（只用立绘；她看不见手——舞台上只有她，被看不见的手挠）
+def mtk(zone, repeat=8, interval=0.2):
+    return A("tickle", who="blue", repeat=repeat, interval=interval, fx="hand", zone=zone)
+
+
+def maze_theater(name, lines, end_pose="helpless_1"):
+    """lines：[(说话人, 文本, 部位或 None, 立绘状态或 None)]；部位不为空时这一句带一下看不见的手挠那里。"""
+    steps = [{"actions": [A("fade_in", time=0.5)], "wait": 0.5}]
+    for i, ln in enumerate(lines):
+        sp, text = ln[0], ln[1]
+        zone = ln[2] if len(ln) > 2 else None
+        emo = ln[3] if len(ln) > 3 else None
+        acts = []
+        if zone:
+            acts.append(mtk(zone, 6 + i % 4, 0.22 - min(i, 10) * 0.008))
+            acts.append(A("shake", who="blue", time=0.3))
+        if i == len(lines) // 2:
+            acts.append(A("voice", state="giggle"))
+        if i == int(len(lines) * 0.75):
+            acts.append(A("voice", state="laugh"))
+            acts.append(pose("blue", end_pose))
+        st = {"speaker": sp, "text": text, "actions": acts}
+        if sp == BLUE and emo:
+            st["emotion"] = emo
+        steps.append(st)
+    steps.append({"actions": [A("voice", state=""), A("fade_out", time=0.8)], "wait": 0.9})
+    return {"name": name, "cast": {"blue": {"kind": "npc:blue_princess", "at": [0, 8], "visual": "normal", "anim": "idle", "dir": "down"}},
+            "steps": steps}
+
+
+MAZE_THEATERS = {
+    "f8_maze_first": ("夜迷宫·第一只手", [
+        (N, "（黑暗里，有什么轻轻碰了她一下）"),
+        (BLUE, "……？", None, "surprise"), (BLUE, "……谁。", None, "angry"),
+        (N, "（没有人。只有一只看不见的手，贴在了她身上，慢慢地动了动手指）"),
+        (BLUE, "……唔。", "waist", "shy"), (BLUE, "……有东西……贴着。"), (BLUE, "……看不见。……但是，在动。", "waist"),
+        (N, "（手指一下、一下，像是在确认她怕不怕）"),
+        (BLUE, "……噗。", "waist", "helpless_1"), (BLUE, "……刚才的，不算。", None, "angry"),
+        (BLUE, "……你在吧。……是你，对吧。", None, "sad"),
+        (N, "（手指停了一下——然后，像是听懂了似的，挠得更轻、更慢了）"),
+        (BLUE, "……就这样？……这种程度……", "waist"), (BLUE, "……唔、嗯……哈……", "waist", "helpless_1"),
+        (BLUE, "……不、不痒。……一点也……噗……", "waist"), (BLUE, "……哈……哈……", "waist", "helpless_1"),
+        (N, "（看不见的手没有离开，就那样贴在她身上，一起往黑暗里走）"),
+        (BLUE, "……好。……一起走吧。", None, "sad"), (BLUE, "……我会走到最里面。", None, "angry"),
+    ]),
+    "f8_maze_weak_first": ("夜迷宫·大腿", [
+        (N, "（这一次，看不见的手落在了她的大腿上——不偏不倚，正是最怕的地方）"),
+        (BLUE, "……！", "thigh", "surprise"), (BLUE, "……那、那里……", "thigh", "shy"),
+        (BLUE, "……为什么……偏偏是……", "thigh"),
+        (N, "（手指沿着大腿内侧，慢慢画了一个小圈）"),
+        (BLUE, "……哈、哈……不、不对……忍、忍住……", "thigh", "helpless_1"),
+        (N, "（一圈，又一圈——和很久以前，一模一样的画法）"),
+        (BLUE, "……这个……画法……", "thigh", "sad"), (BLUE, "……你还记得……", None, "sad"),
+        (BLUE, "……哈、哈哈……别、别记得这种事……！", "thigh", "helpless_1"),
+        (BLUE, "……我、我已经……长大了……不怕了……", "thigh"),
+        (N, "（手指好像在笑。圈画得更慢了）"),
+        (BLUE, "……噗哈……！骗、骗人……还是……哈哈……", "thigh", "helpless_2"),
+        (BLUE, "……哈哈……大腿……真的……不行……哈哈哈……", "thigh", "helpless_2"),
+        (BLUE, "……没、没笑。……刚才是……咳嗽……噗哈……！", "thigh", "helpless_2"),
+        (BLUE, "……哈……哈……再、再往前走……不许跟着……哈……", None, "helpless_1"),
+        (N, "（那只手当然没有离开）"),
+    ]),
+    "f8_maze_weak_4": ("夜迷宫·大腿和屁股", [
+        (N, "（大腿上、屁股上，看不见的手一只、又一只地挤了过来）"),
+        (BLUE, "……！……又、又多了……", "butt", "surprise"), (BLUE, "……几、几只了……", "thigh", "shy"),
+        (BLUE, "……唔嗯……哈……都、都往那里……", "butt", "helpless_1"),
+        (N, "（大腿上的在画圈，屁股上的一下一下地点——节奏还对得上）"),
+        (BLUE, "……哈哈……配、配合得……这么好……", "thigh", "helpless_1"),
+        (BLUE, "……以前……也是这样……一个挠大腿，一个……哈哈……", "butt", "helpless_2"),
+        (BLUE, "……哈哈哈……别、别想起来……！", "butt", "helpless_2"),
+        (BLUE, "……屁、屁股……不、不行……哈哈哈哈……！", "butt", "helpless_2"),
+        (BLUE, "……哈哈……我、我说过……补偿你……可是……", "thigh", "helpless_2"),
+        (BLUE, "……哈哈哈哈……没、没说……让你一次……全部……！", "butt", "helpless_2"),
+        (N, "（她笑得弯下了腰，看不见的手却没有一只要离开的意思）"),
+        (BLUE, "……哈……哈……走……继续走……", None, "helpless_1"), (BLUE, "……带着你们……也走……", None, "sad"),
+    ]),
+    "f8_maze_total_8": ("夜迷宫·好多只手", [
+        (N, "（腋下、腰、脚心、大腿……看不见的手已经数不清了）"),
+        (BLUE, "……哈……哈……几、几只……", "armpit", "helpless_1"), (BLUE, "……数、数不清……", "waist", "helpless_1"),
+        (BLUE, "……八、八只……？还、还是更多……哈哈……", "sole", "helpless_1"),
+        (N, "（每一只都慢慢地、各挠各的地方，凑在一起就是停不下来的痒）"),
+        (BLUE, "……哈哈哈……不、不公平……我、我只有一个人……", "thigh", "helpless_2"),
+        (BLUE, "……哈哈……你、你有那么多只手……", "butt", "helpless_2"),
+        (BLUE, "……以前……一只一只……轮流的……哈哈哈……", "armpit", "helpless_2"),
+        (BLUE, "……现在……一起来……哈哈哈哈……犯规……！", "waist", "helpless_2"),
+        (N, "（她靠着墙滑坐下来，笑声在走廊里回荡）"),
+        (BLUE, "……哈……哈……没、没关系……", None, "helpless_1"), (BLUE, "……是我……自己来的……", None, "sad"),
+        (BLUE, "……哈哈……再……再走一段……就好……", "thigh", "helpless_1"),
+        (BLUE, "……站、站起来……哈……", None, "angry"),
+    ]),
+    "f8_maze_total_12": ("夜迷宫·十二只以上", [
+        (N, "（看不见的手把她整个人裹住了。走一步，挠一下；停一下，挠得更凶）"),
+        (BLUE, "……哈哈哈哈……！", "thigh", "helpless_2"), (BLUE, "……走、走不动了……哈哈哈……", "butt", "helpless_2"),
+        (BLUE, "……全、全身……都……哈哈哈哈……！", "armpit", "helpless_2"),
+        (N, "（她笑得眼泪都出来了，却还是一步一步往前挪）"),
+        (BLUE, "……哈哈……我、我投降……投降……", "waist", "helpless_2"),
+        (BLUE, "……但、但是……哈哈……不回去……", "sole", "helpless_2"),
+        (BLUE, "……答应过……要来的……哈哈哈……", "thigh", "helpless_2"),
+        (BLUE, "……你、你……一直在等吧……在这里……一个人……", None, "sad"),
+        (N, "（手指忽然一起停了下来。迷宫里安静得只剩她的喘气声）"),
+        (BLUE, "……哈……哈……", None, "helpless_1"), (BLUE, "……对不起。……让你等了这么久。", None, "sad"),
+        (N, "（过了好一会儿，手指才又轻轻地、轻轻地动了起来）"),
+        (BLUE, "……噗……哈……好、好……挠吧……", "thigh", "helpless_1"), (BLUE, "……我……不躲了。", None, "shy"),
+    ]),
+    "f8_maze_defeat_1": ("夜迷宫·笑倒", [
+        (N, "（看不见的手越来越多，她终于再也撑不住了）"),
+        (BLUE, "……哈哈哈哈哈……！", "thigh", "helpless_2"), (BLUE, "……不、不行了……哈哈哈哈……", "butt", "helpless_2"),
+        (BLUE, "……大腿……屁股……全、全部……哈哈哈哈……！", "thigh", "helpless_2"),
+        (BLUE, "……我、我认输……哈哈哈……认输……！", "waist", "helpless_2"),
+        (N, "（她瘫坐在冰冷的石板上，笑声慢慢变成了喘气）"),
+        (BLUE, "……哈……哈……", None, "helpless_1"),
+        (N, "（不知过了多久，一缕月光照在她脸上。身上的手都不见了）"),
+        (BLUE, "……月光灯……", None, "sad"), (BLUE, "……是你……把我送回来的吗。", None, "sad"),
+        (BLUE, "……", None, "sad"), (BLUE, "……再来。", None, "angry"),
+    ]),
+    "f8_maze_defeat_2": ("夜迷宫·又笑倒了", [
+        (N, "（又一次。她连站都站不稳了）"),
+        (BLUE, "……哈哈哈……又、又是……这里……", "butt", "helpless_2"),
+        (BLUE, "……我、我明明……记住路了……哈哈哈……", "thigh", "helpless_2"),
+        (BLUE, "……你、你故意的……哈哈哈哈……！", "butt", "helpless_2"),
+        (BLUE, "……以前……玩捉迷藏……你、你也是这样……哈哈……", "thigh", "helpless_2"),
+        (BLUE, "……抓到我……就挠……到我认输……哈哈哈哈……！", "waist", "helpless_2"),
+        (N, "（笑声停下来的时候，她又躺在了月光灯下）"),
+        (BLUE, "……哈……", None, "helpless_1"), (BLUE, "……捉迷藏。……我输了。", None, "sad"),
+        (BLUE, "……下一局。", None, "angry"),
+    ]),
+    "f8_maze_memory": ("夜迷宫·回忆", [
+        (N, "（六片碎片在她手心里一起亮了起来——眼前浮现出很久以前的那个房间）"),
+        (BLUE, "……蜡笔、发夹、发条、蝴蝶结、茶匙……还有，这张画。", None, "sad"),
+        (N, "（画上，一个蓝头发的小女孩被好多只手围着，笑得在地上打滚）"),
+        (BLUE, "……那时候……我总说「再来一次」。", None, "sad"),
+        (BLUE, "……挠到我哭……也说「再来一次」。", None, "sad"),
+        (BLUE, "……你从来没有累过。……也从来没有真的挠到我讨厌。", None, "shy"),
+        (N, "（一只看不见的手，轻轻落在她的头发上——没有挠，只是摸了摸）"),
+        (BLUE, "……！", None, "surprise"), (BLUE, "……你……还记得这个。", None, "sad"),
+        (BLUE, "……哭的时候，你就这样……摸我的头。", None, "sad"),
+        (BLUE, "……对不起。……那天，我没有回来。", None, "sad"),
+        (N, "（手停了很久。然后，在她的大腿上，很轻、很轻地挠了一下）"),
+        (BLUE, "……噗。……哈……", "thigh", "helpless_1"), (BLUE, "……嗯。……再来一次。", None, "shy"),
+    ]),
+}
+for tid, (tname, tlines) in MAZE_THEATERS.items():
+    (TH / (tid + ".json")).write_text(json.dumps(maze_theater(tname, tlines), ensure_ascii=False, indent="\t") + "\n")
 
 print("第八层：%d 段过场、%d 段战败小剧场 + 追逐失败" % (len(CUTS), len(DEFEAT) + 1))

@@ -23,7 +23,28 @@
 				"flags": [
 					"f8s_seen_bed"
 				]
-			}
+			},
+			"prompt": "……睡吧？",
+			"choices": [
+				{
+					"text": "睡吧",
+					"next": "bed_sleep"
+				},
+				{
+					"text": "再看看",
+					"next": ""
+				}
+			]
+		},
+		"bed_sleep": {
+			"lines": [
+				{
+					"speaker": "公主",
+					"text": "……嗯。今天就到这里……晚安。",
+					"emotion": "shy"
+				}
+			],
+			"cutscene": "f8_shelter_sleep"
 		},
 		"wardrobe": {
 			"lines": [

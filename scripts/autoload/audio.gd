@@ -77,6 +77,7 @@ const MUSIC := {
 	"boss": "res://assets/audio/music/boss_loop.wav",
 	"boss3": "res://assets/audio/music/boss3_loop.wav",
 	"night_room": "res://assets/audio/music/night_room_loop.wav",
+	"night_maze": "res://assets/audio/music/night_maze_loop.wav",
 }
 const MUSIC_DB := -12.0
 const DUCK_DB := -6.0
