@@ -58027,6 +58027,8798 @@
 					"wait": 0.6
 				}
 			]
+		},
+		"mz_moth_curtain": {
+			"name": "蛾粉羽帘",
+			"cast": {
+				"princess": {
+					"kind": "princess",
+					"at": [
+						0,
+						8
+					],
+					"visual": "helpless_1",
+					"anim": "helpless",
+					"dir": "down"
+				},
+				"src1": {
+					"kind": "monster:glow_moth",
+					"at": [
+						-30,
+						2
+					],
+					"dir": "right",
+					"hidden": true
+				},
+				"src2": {
+					"kind": "trap:feather_curtain",
+					"at": [
+						20,
+						4
+					],
+					"hidden": true
+				},
+				"src3": {
+					"kind": "trap:maze_hand",
+					"at": [
+						0,
+						-20
+					],
+					"hidden": true
+				}
+			},
+			"steps": [
+				{
+					"actions": [
+						{
+							"do": "fade_in",
+							"time": 0.4
+						},
+						{
+							"do": "voice",
+							"state": "giggle"
+						},
+						{
+							"do": "sources",
+							"list": [
+								{
+									"kind": "monster",
+									"key": "glow_moth",
+									"name": "夜光羽蛾"
+								},
+								{
+									"kind": "trap",
+									"key": "feather_curtain",
+									"name": "羽毛门帘"
+								},
+								{
+									"kind": "trap",
+									"key": "maze_hand",
+									"name": "千手的紫手"
+								}
+							]
+						}
+					],
+					"wait": 0.4
+				},
+				{
+					"speaker": "",
+					"text": "【第八层·夜迷宫】蛾粉羽帘——鳞粉落在大腿上，羽毛门帘再刷一遍，紫手趁机贴上来。",
+					"actions": [
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "surprise"
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "嘻嘻哈……亮晶晶的粉一点一点落在大腿上，痒得发麻——噗哈哈！",
+					"actions": [
+						{
+							"do": "enter",
+							"who": "src1",
+							"from": [
+								-80,
+								0
+							],
+							"time": 0.5
+						},
+						{
+							"do": "light",
+							"index": 0
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 6,
+							"interval": 0.32,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "噫哈哈哈！羽毛帘子从大腿一路刷下去，刷完又刷回来哈哈哈！",
+					"actions": [
+						{
+							"do": "enter",
+							"who": "src2",
+							"from": [
+								0,
+								-6
+							],
+							"time": 0.3
+						},
+						{
+							"do": "light",
+							"index": 1
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 7,
+							"interval": 0.28,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 7,
+							"interval": 0.28,
+							"fx": "feather"
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "哈哈哈哈！看、看不见——有什么手指贴在大腿上画圈哈哈哈哈！",
+					"actions": [
+						{
+							"do": "enter",
+							"who": "src3",
+							"from": [
+								0,
+								-6
+							],
+							"time": 0.3
+						},
+						{
+							"do": "light",
+							"index": 2
+						},
+						{
+							"do": "pose",
+							"who": "princess",
+							"visual": "helpless_2"
+						},
+						{
+							"do": "voice",
+							"state": "laugh"
+						},
+						{
+							"do": "camera",
+							"zoom": 1.5,
+							"focus": "princess",
+							"time": 0.4
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.5
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 8,
+							"interval": 0.24,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 8,
+							"interval": 0.24,
+							"fx": "feather"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 8,
+							"interval": 0.24,
+							"fx": "hand"
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "粉在落、帘子在刷、手指在画——哈哈哈哈腿软了！",
+					"actions": [
+						{
+							"do": "light",
+							"all": true
+						},
+						{
+							"do": "flash",
+							"time": 0.25
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.6
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 10,
+							"interval": 0.2,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 10,
+							"interval": 0.2,
+							"fx": "feather"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 10,
+							"interval": 0.2,
+							"fx": "hand"
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "专、专挑大腿内侧——哈哈哈哈！",
+					"actions": [
+						{
+							"do": "light",
+							"all": true
+						},
+						{
+							"do": "flash",
+							"time": 0.25
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.6
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 12,
+							"interval": 0.17,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 12,
+							"interval": 0.17,
+							"fx": "feather"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 12,
+							"interval": 0.17,
+							"fx": "hand"
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "鳞粉被羽毛扫开，手指就跟着钻进来——哈哈哈哈哈！",
+					"actions": [
+						{
+							"do": "light",
+							"all": true
+						},
+						{
+							"do": "flash",
+							"time": 0.25
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.6
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 14,
+							"interval": 0.14,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 14,
+							"interval": 0.14,
+							"fx": "feather"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 14,
+							"interval": 0.14,
+							"fx": "hand"
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "腿上全是——哈哈哈哈哈看不见是什么！",
+					"actions": [
+						{
+							"do": "light",
+							"all": true
+						},
+						{
+							"do": "flash",
+							"time": 0.25
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.6
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 16,
+							"interval": 0.14,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 16,
+							"interval": 0.14,
+							"fx": "feather"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 16,
+							"interval": 0.14,
+							"fx": "hand"
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "哈哈哈哈……大、大腿……亮亮的……哈哈哈哈……",
+					"actions": [
+						{
+							"do": "light",
+							"all": true
+						},
+						{
+							"do": "flash",
+							"time": 0.25
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.6
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "dots"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 18,
+							"interval": 0.14,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 18,
+							"interval": 0.14,
+							"fx": "feather"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 18,
+							"interval": 0.14,
+							"fx": "hand"
+						}
+					]
+				},
+				{
+					"act": "burst",
+					"speaker": "",
+					"text": "（鳞粉、羽毛帘子和看不见的手一起，魔力被挠得满满的）",
+					"actions": [
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.8
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "surprise"
+						},
+						{
+							"do": "voice",
+							"state": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 6,
+							"interval": 0.24,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "feather"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "hand"
+						}
+					]
+				},
+				{
+					"act": "burst",
+					"speaker": "公主",
+					"text": "魔力……要把粉全震飞了——！",
+					"actions": [
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 1.2
+						},
+						{
+							"do": "camera",
+							"zoom": 1.5,
+							"focus": "princess",
+							"time": 0.4
+						},
+						{
+							"do": "flash",
+							"time": 0.2
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "feather"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "hand"
+						}
+					]
+				},
+				{
+					"act": "burst",
+					"portrait": "fatigue_burst",
+					"actions": [
+						{
+							"do": "flash",
+							"time": 0.8
+						},
+						{
+							"do": "sfx",
+							"sound": "star_burst",
+							"volume": -1.0
+						},
+						{
+							"do": "sfx",
+							"sound": "water_release",
+							"volume": -2.0
+						},
+						{
+							"do": "voice",
+							"state": ""
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.5
+						},
+						{
+							"do": "camera",
+							"zoom": 1,
+							"focus": "princess",
+							"time": 0.5
+						},
+						{
+							"do": "move",
+							"who": "src1",
+							"to": [
+								-90,
+								-4
+							],
+							"time": 0.25
+						},
+						{
+							"do": "light",
+							"all": true
+						}
+					],
+					"wait": 1.1
+				},
+				{
+					"act": "burst",
+					"speaker": "公主",
+					"text": "哈啊……魔力全放出去了……大腿上的粉都散了，好舒服……",
+					"actions": [
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "shy"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "feather"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "hand"
+						}
+					]
+				},
+				{
+					"act": "burst",
+					"speaker": "",
+					"text": "（帘子又放了下来，看不见的手指也回到了腿上）",
+					"actions": [
+						{
+							"do": "move",
+							"who": "src1",
+							"to": [
+								-30,
+								2
+							],
+							"time": 0.6
+						},
+						{
+							"do": "voice",
+							"state": "giggle"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 4,
+							"interval": 0.3,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "feather"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "hand"
+						}
+					]
+				},
+				{
+					"act": "burst",
+					"speaker": "公主",
+					"text": "咿哈哈哈！放完魔力大腿好敏感……羽毛一刷就痒到发抖哈哈哈哈！",
+					"actions": [
+						{
+							"do": "voice",
+							"state": "laugh"
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.8
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 10,
+							"interval": 0.16,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "feather"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "hand"
+						}
+					]
+				},
+				{
+					"act": "burst",
+					"speaker": "公主",
+					"text": "刷着、画着——哈哈哈哈更痒了！",
+					"actions": [
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.6
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 10,
+							"interval": 0.15,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "feather"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "hand"
+						}
+					]
+				},
+				{
+					"act": "burst",
+					"speaker": "公主",
+					"text": "……萤火虫……在腿上……开派对……嘿嘿……",
+					"actions": [
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "dots"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 6,
+							"interval": 0.22,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "feather"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "hand"
+						}
+					]
+				},
+				{
+					"actions": [
+						{
+							"do": "fade_out",
+							"time": 0.5
+						},
+						{
+							"do": "voice",
+							"state": ""
+						}
+					],
+					"wait": 0.6
+				}
+			]
+		},
+		"mz_mirror_vine": {
+			"name": "镜中藤影",
+			"cast": {
+				"princess": {
+					"kind": "princess",
+					"at": [
+						0,
+						8
+					],
+					"visual": "helpless_1",
+					"anim": "helpless",
+					"dir": "down"
+				},
+				"src1": {
+					"kind": "trap:shadow_vine",
+					"at": [
+						0,
+						10
+					],
+					"hidden": true
+				},
+				"src2": {
+					"kind": "trap:mirror_puddle",
+					"at": [
+						0,
+						12
+					],
+					"hidden": true
+				},
+				"src3": {
+					"kind": "trap:maze_hand",
+					"at": [
+						0,
+						-20
+					],
+					"hidden": true
+				}
+			},
+			"steps": [
+				{
+					"actions": [
+						{
+							"do": "fade_in",
+							"time": 0.4
+						},
+						{
+							"do": "voice",
+							"state": "giggle"
+						},
+						{
+							"do": "sources",
+							"list": [
+								{
+									"kind": "trap",
+									"key": "shadow_vine",
+									"name": "影子缠腿藤"
+								},
+								{
+									"kind": "trap",
+									"key": "mirror_puddle",
+									"name": "镜面水洼"
+								},
+								{
+									"kind": "trap",
+									"key": "maze_hand",
+									"name": "千手的紫手"
+								}
+							]
+						}
+					],
+					"wait": 0.4
+				},
+				{
+					"speaker": "",
+					"text": "【第八层·夜迷宫】镜中藤影——藤蔓缠住大腿，倒影里的手专挑屁股。",
+					"actions": [
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "surprise"
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "嘻嘻哈……影子里的藤缠上大腿，藤尖在内侧慢慢画圈——噗哈哈！",
+					"actions": [
+						{
+							"do": "enter",
+							"who": "src1",
+							"from": [
+								0,
+								-6
+							],
+							"time": 0.3
+						},
+						{
+							"do": "light",
+							"index": 0
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 6,
+							"interval": 0.32,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "噫哈哈哈！水里的倒影伸出手来，从下面挠屁股哈哈哈！",
+					"actions": [
+						{
+							"do": "enter",
+							"who": "src2",
+							"from": [
+								0,
+								-6
+							],
+							"time": 0.3
+						},
+						{
+							"do": "light",
+							"index": 1
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 7,
+							"interval": 0.28,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 7,
+							"interval": 0.28,
+							"fx": "hand"
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "哈哈哈哈！又、又多了一只看不见的——也在屁股上哈哈哈哈！",
+					"actions": [
+						{
+							"do": "enter",
+							"who": "src3",
+							"from": [
+								0,
+								-6
+							],
+							"time": 0.3
+						},
+						{
+							"do": "light",
+							"index": 2
+						},
+						{
+							"do": "pose",
+							"who": "princess",
+							"visual": "helpless_2"
+						},
+						{
+							"do": "voice",
+							"state": "laugh"
+						},
+						{
+							"do": "camera",
+							"zoom": 1.5,
+							"focus": "princess",
+							"time": 0.4
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.5
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 8,
+							"interval": 0.24,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 8,
+							"interval": 0.24,
+							"fx": "hand"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 8,
+							"interval": 0.24,
+							"fx": "hand"
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "缠着腿、倒影在挠、手指在戳——哈哈哈哈动不了！",
+					"actions": [
+						{
+							"do": "light",
+							"all": true
+						},
+						{
+							"do": "flash",
+							"time": 0.25
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.6
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 10,
+							"interval": 0.2,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 10,
+							"interval": 0.2,
+							"fx": "hand"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 10,
+							"interval": 0.2,
+							"fx": "hand"
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "倒影里的手越伸越多——哈哈哈哈！",
+					"actions": [
+						{
+							"do": "light",
+							"all": true
+						},
+						{
+							"do": "flash",
+							"time": 0.25
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.6
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 12,
+							"interval": 0.17,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 12,
+							"interval": 0.17,
+							"fx": "hand"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 12,
+							"interval": 0.17,
+							"fx": "hand"
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "藤蔓一勒，屁股就翘起来给它们挠——哈哈哈哈哈！",
+					"actions": [
+						{
+							"do": "light",
+							"all": true
+						},
+						{
+							"do": "flash",
+							"time": 0.25
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.6
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 14,
+							"interval": 0.14,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 14,
+							"interval": 0.14,
+							"fx": "hand"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 14,
+							"interval": 0.14,
+							"fx": "hand"
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "上面下面都是手——哈哈哈哈哈分不清哪只是倒影！",
+					"actions": [
+						{
+							"do": "light",
+							"all": true
+						},
+						{
+							"do": "flash",
+							"time": 0.25
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.6
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 16,
+							"interval": 0.14,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 16,
+							"interval": 0.14,
+							"fx": "hand"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 16,
+							"interval": 0.14,
+							"fx": "hand"
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "哈哈哈哈……水、水里……全是我……哈哈哈哈……",
+					"actions": [
+						{
+							"do": "light",
+							"all": true
+						},
+						{
+							"do": "flash",
+							"time": 0.25
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.6
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "dots"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 18,
+							"interval": 0.14,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 18,
+							"interval": 0.14,
+							"fx": "hand"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 18,
+							"interval": 0.14,
+							"fx": "hand"
+						}
+					]
+				},
+				{
+					"act": "burst",
+					"speaker": "",
+					"text": "（藤蔓、倒影和看不见的手一起，魔力满了）",
+					"actions": [
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.8
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "surprise"
+						},
+						{
+							"do": "voice",
+							"state": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"repeat": 6,
+							"interval": 0.24,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "hand"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "hand"
+						}
+					]
+				},
+				{
+					"act": "burst",
+					"speaker": "公主",
+					"text": "魔力……要把藤蔓冲断了——！",
+					"actions": [
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 1.2
+						},
+						{
+							"do": "camera",
+							"zoom": 1.5,
+							"focus": "princess",
+							"time": 0.4
+						},
+						{
+							"do": "flash",
+							"time": 0.2
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "hand"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "hand"
+						}
+					]
+				},
+				{
+					"act": "burst",
+					"portrait": "fatigue_burst",
+					"actions": [
+						{
+							"do": "flash",
+							"time": 0.8
+						},
+						{
+							"do": "sfx",
+							"sound": "star_burst",
+							"volume": -1.0
+						},
+						{
+							"do": "sfx",
+							"sound": "water_release",
+							"volume": -2.0
+						},
+						{
+							"do": "voice",
+							"state": ""
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.5
+						},
+						{
+							"do": "camera",
+							"zoom": 1,
+							"focus": "princess",
+							"time": 0.5
+						},
+						{
+							"do": "light",
+							"all": true
+						}
+					],
+					"wait": 1.1
+				},
+				{
+					"act": "burst",
+					"speaker": "公主",
+					"text": "呼……魔力全涌出去了……水面都平了，好舒服……",
+					"actions": [
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "shy"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "hand"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "hand"
+						}
+					]
+				},
+				{
+					"act": "burst",
+					"speaker": "",
+					"text": "（倒影又晃了起来，藤蔓也从影子里长了回来）",
+					"actions": [
+						{
+							"do": "voice",
+							"state": "giggle"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"repeat": 4,
+							"interval": 0.3,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "hand"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "hand"
+						}
+					]
+				},
+				{
+					"act": "burst",
+					"speaker": "公主",
+					"text": "哈哈哈哈！放完魔力屁股好敏感……倒影一伸手就痒得乱扭哈哈哈哈！",
+					"actions": [
+						{
+							"do": "voice",
+							"state": "laugh"
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.8
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"repeat": 10,
+							"interval": 0.16,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "hand"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "hand"
+						}
+					]
+				},
+				{
+					"act": "burst",
+					"speaker": "公主",
+					"text": "缠着、戳着——哈哈哈哈更痒了！",
+					"actions": [
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.6
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"repeat": 10,
+							"interval": 0.15,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "hand"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "hand"
+						}
+					]
+				},
+				{
+					"act": "burst",
+					"speaker": "公主",
+					"text": "……水里的我……也在笑……嘿嘿……",
+					"actions": [
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "dots"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"repeat": 6,
+							"interval": 0.22,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "hand"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "hand"
+						}
+					]
+				},
+				{
+					"actions": [
+						{
+							"do": "fade_out",
+							"time": 0.5
+						},
+						{
+							"do": "voice",
+							"state": ""
+						}
+					],
+					"wait": 0.6
+				}
+			]
+		},
+		"mz_fluff_jar": {
+			"name": "梦绒笑瓶",
+			"cast": {
+				"princess": {
+					"kind": "princess",
+					"at": [
+						0,
+						8
+					],
+					"visual": "helpless_1",
+					"anim": "helpless",
+					"dir": "down"
+				},
+				"src1": {
+					"kind": "monster:dream_fluff",
+					"at": [
+						-30,
+						2
+					],
+					"dir": "right",
+					"hidden": true
+				},
+				"src2": {
+					"kind": "monster:laugh_jar",
+					"at": [
+						30,
+						2
+					],
+					"dir": "left",
+					"hidden": true
+				},
+				"src3": {
+					"kind": "trap:maze_hand",
+					"at": [
+						0,
+						-20
+					],
+					"hidden": true
+				}
+			},
+			"steps": [
+				{
+					"actions": [
+						{
+							"do": "fade_in",
+							"time": 0.4
+						},
+						{
+							"do": "voice",
+							"state": "giggle"
+						},
+						{
+							"do": "sources",
+							"list": [
+								{
+									"kind": "monster",
+									"key": "dream_fluff",
+									"name": "梦绒球"
+								},
+								{
+									"kind": "monster",
+									"key": "laugh_jar",
+									"name": "笑声收集瓶"
+								},
+								{
+									"kind": "trap",
+									"key": "maze_hand",
+									"name": "千手的紫手"
+								}
+							]
+						}
+					],
+					"wait": 0.4
+				},
+				{
+					"speaker": "",
+					"text": "【第八层·夜迷宫】梦绒笑瓶——梦绒球蹭得停不下来，笑声全被瓶子装走，紫手闻声而来。",
+					"actions": [
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "surprise"
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "嘻嘻哈……软绵绵的绒球粘在大腿上，蹭啊蹭——噗哈哈！",
+					"actions": [
+						{
+							"do": "enter",
+							"who": "src1",
+							"from": [
+								-80,
+								0
+							],
+							"time": 0.5
+						},
+						{
+							"do": "light",
+							"index": 0
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 6,
+							"interval": 0.32,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "噫哈哈哈！瓶、瓶子在吸我的笑声，越笑吸得越快哈哈哈！",
+					"actions": [
+						{
+							"do": "enter",
+							"who": "src2",
+							"from": [
+								80,
+								0
+							],
+							"time": 0.5
+						},
+						{
+							"do": "light",
+							"index": 1
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 7,
+							"interval": 0.28,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 7,
+							"interval": 0.28,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "哈哈哈哈！笑声传出去了——看不见的手顺着声音摸过来了哈哈哈哈！",
+					"actions": [
+						{
+							"do": "enter",
+							"who": "src3",
+							"from": [
+								0,
+								-6
+							],
+							"time": 0.3
+						},
+						{
+							"do": "light",
+							"index": 2
+						},
+						{
+							"do": "pose",
+							"who": "princess",
+							"visual": "helpless_2"
+						},
+						{
+							"do": "voice",
+							"state": "laugh"
+						},
+						{
+							"do": "camera",
+							"zoom": 1.5,
+							"focus": "princess",
+							"time": 0.4
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.5
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 8,
+							"interval": 0.24,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 8,
+							"interval": 0.24,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 8,
+							"interval": 0.24,
+							"fx": "hand"
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "蹭着、吸着、摸着——哈哈哈哈停不下来！",
+					"actions": [
+						{
+							"do": "light",
+							"all": true
+						},
+						{
+							"do": "flash",
+							"time": 0.25
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.6
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 10,
+							"interval": 0.2,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 10,
+							"interval": 0.2,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 10,
+							"interval": 0.2,
+							"fx": "hand"
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "越笑手越多——哈哈哈哈别听！",
+					"actions": [
+						{
+							"do": "light",
+							"all": true
+						},
+						{
+							"do": "flash",
+							"time": 0.25
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.6
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 12,
+							"interval": 0.17,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 12,
+							"interval": 0.17,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 12,
+							"interval": 0.17,
+							"fx": "hand"
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "绒球一蹭，笑声就漏出去，手就又来一只——哈哈哈哈哈！",
+					"actions": [
+						{
+							"do": "light",
+							"all": true
+						},
+						{
+							"do": "flash",
+							"time": 0.25
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.6
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 14,
+							"interval": 0.14,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 14,
+							"interval": 0.14,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 14,
+							"interval": 0.14,
+							"fx": "hand"
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "瓶子要满了——哈哈哈哈哈全都听到了！",
+					"actions": [
+						{
+							"do": "light",
+							"all": true
+						},
+						{
+							"do": "flash",
+							"time": 0.25
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.6
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 16,
+							"interval": 0.14,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 16,
+							"interval": 0.14,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 16,
+							"interval": 0.14,
+							"fx": "hand"
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "哈哈哈哈……笑、笑声……被装走了……哈哈哈哈……",
+					"actions": [
+						{
+							"do": "light",
+							"all": true
+						},
+						{
+							"do": "flash",
+							"time": 0.25
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.6
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "dots"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 18,
+							"interval": 0.14,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 18,
+							"interval": 0.14,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 18,
+							"interval": 0.14,
+							"fx": "hand"
+						}
+					]
+				},
+				{
+					"act": "burst",
+					"speaker": "",
+					"text": "（绒球、笑声瓶和看不见的手一起，魔力被挠得满满的）",
+					"actions": [
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.8
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "surprise"
+						},
+						{
+							"do": "voice",
+							"state": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 6,
+							"interval": 0.24,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 6,
+							"interval": 0.24,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "hand"
+						}
+					]
+				},
+				{
+					"act": "burst",
+					"speaker": "公主",
+					"text": "魔力……要把瓶子冲碎了——！",
+					"actions": [
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 1.2
+						},
+						{
+							"do": "camera",
+							"zoom": 1.5,
+							"focus": "princess",
+							"time": 0.4
+						},
+						{
+							"do": "flash",
+							"time": 0.2
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "hand"
+						}
+					]
+				},
+				{
+					"act": "burst",
+					"portrait": "fatigue_burst",
+					"actions": [
+						{
+							"do": "flash",
+							"time": 0.8
+						},
+						{
+							"do": "sfx",
+							"sound": "star_burst",
+							"volume": -1.0
+						},
+						{
+							"do": "sfx",
+							"sound": "water_release",
+							"volume": -2.0
+						},
+						{
+							"do": "voice",
+							"state": ""
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.5
+						},
+						{
+							"do": "camera",
+							"zoom": 1,
+							"focus": "princess",
+							"time": 0.5
+						},
+						{
+							"do": "move",
+							"who": "src1",
+							"to": [
+								-90,
+								-4
+							],
+							"time": 0.25
+						},
+						{
+							"do": "move",
+							"who": "src2",
+							"to": [
+								90,
+								-4
+							],
+							"time": 0.25
+						},
+						{
+							"do": "light",
+							"all": true
+						}
+					],
+					"wait": 1.1
+				},
+				{
+					"act": "burst",
+					"speaker": "公主",
+					"text": "哈啊……魔力全放出去了……笑声都散了，好舒服……",
+					"actions": [
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "shy"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "hand"
+						}
+					]
+				},
+				{
+					"act": "burst",
+					"speaker": "",
+					"text": "（绒球又滚了回来，瓶子也重新张开了口）",
+					"actions": [
+						{
+							"do": "move",
+							"who": "src1",
+							"to": [
+								-30,
+								2
+							],
+							"time": 0.6
+						},
+						{
+							"do": "move",
+							"who": "src2",
+							"to": [
+								30,
+								2
+							],
+							"time": 0.6
+						},
+						{
+							"do": "voice",
+							"state": "giggle"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 4,
+							"interval": 0.3,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 4,
+							"interval": 0.3,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "hand"
+						}
+					]
+				},
+				{
+					"act": "burst",
+					"speaker": "公主",
+					"text": "咿哈哈哈！放完魔力好敏感……绒球一蹭就笑出声哈哈哈哈！",
+					"actions": [
+						{
+							"do": "voice",
+							"state": "laugh"
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.8
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 10,
+							"interval": 0.16,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 10,
+							"interval": 0.16,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "hand"
+						}
+					]
+				},
+				{
+					"act": "burst",
+					"speaker": "公主",
+					"text": "笑声又被装走了——哈哈哈哈更痒了！",
+					"actions": [
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.6
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 10,
+							"interval": 0.15,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 10,
+							"interval": 0.15,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "hand"
+						}
+					]
+				},
+				{
+					"act": "burst",
+					"speaker": "公主",
+					"text": "……瓶子里……装着……好多个我……嘿嘿……",
+					"actions": [
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "dots"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 6,
+							"interval": 0.22,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 6,
+							"interval": 0.22,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "hand"
+						}
+					]
+				},
+				{
+					"actions": [
+						{
+							"do": "fade_out",
+							"time": 0.5
+						},
+						{
+							"do": "voice",
+							"state": ""
+						}
+					],
+					"wait": 0.6
+				}
+			]
+		},
+		"mz_cradle_moth": {
+			"name": "摇篮夜蛾",
+			"cast": {
+				"princess": {
+					"kind": "princess",
+					"at": [
+						0,
+						8
+					],
+					"visual": "helpless_1",
+					"anim": "helpless",
+					"dir": "down"
+				},
+				"src1": {
+					"kind": "trap:cradle_bench",
+					"at": [
+						0,
+						12
+					],
+					"hidden": true
+				},
+				"src2": {
+					"kind": "monster:glow_moth",
+					"at": [
+						-30,
+						2
+					],
+					"dir": "right",
+					"hidden": true
+				},
+				"src3": {
+					"kind": "trap:maze_hand",
+					"at": [
+						0,
+						-20
+					],
+					"hidden": true
+				}
+			},
+			"steps": [
+				{
+					"actions": [
+						{
+							"do": "fade_in",
+							"time": 0.4
+						},
+						{
+							"do": "voice",
+							"state": "giggle"
+						},
+						{
+							"do": "sources",
+							"list": [
+								{
+									"kind": "trap",
+									"key": "cradle_bench",
+									"name": "摇篮长椅"
+								},
+								{
+									"kind": "monster",
+									"key": "glow_moth",
+									"name": "夜光羽蛾"
+								},
+								{
+									"kind": "trap",
+									"key": "maze_hand",
+									"name": "千手的紫手"
+								}
+							]
+						}
+					],
+					"wait": 0.4
+				},
+				{
+					"speaker": "",
+					"text": "【第八层·夜迷宫】摇篮夜蛾——坐在摇篮长椅上被鳞粉撒满大腿，椅子下的手挠屁股，被摇得起不来。",
+					"actions": [
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "surprise"
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "嘻嘻哈……坐在长椅上摇啊摇，椅子下面伸出手指点屁股——噗哈哈！",
+					"actions": [
+						{
+							"do": "enter",
+							"who": "src1",
+							"from": [
+								0,
+								-6
+							],
+							"time": 0.3
+						},
+						{
+							"do": "light",
+							"index": 0
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 6,
+							"interval": 0.32,
+							"fx": "hand"
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "噫哈哈哈！发光的粉一边摇一边撒在大腿上哈哈哈！",
+					"actions": [
+						{
+							"do": "enter",
+							"who": "src2",
+							"from": [
+								-80,
+								0
+							],
+							"time": 0.5
+						},
+						{
+							"do": "light",
+							"index": 1
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 7,
+							"interval": 0.28,
+							"fx": "hand"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 7,
+							"interval": 0.28,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "哈哈哈哈！看不见的手按住肩膀，起、起不来哈哈哈哈！",
+					"actions": [
+						{
+							"do": "enter",
+							"who": "src3",
+							"from": [
+								0,
+								-6
+							],
+							"time": 0.3
+						},
+						{
+							"do": "light",
+							"index": 2
+						},
+						{
+							"do": "pose",
+							"who": "princess",
+							"visual": "helpless_2"
+						},
+						{
+							"do": "voice",
+							"state": "laugh"
+						},
+						{
+							"do": "camera",
+							"zoom": 1.5,
+							"focus": "princess",
+							"time": 0.4
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.5
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 8,
+							"interval": 0.24,
+							"fx": "hand"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 8,
+							"interval": 0.24,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 8,
+							"interval": 0.24,
+							"fx": "hand"
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "摇着、撒着、按着——哈哈哈哈下不去！",
+					"actions": [
+						{
+							"do": "light",
+							"all": true
+						},
+						{
+							"do": "flash",
+							"time": 0.25
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.6
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 10,
+							"interval": 0.2,
+							"fx": "hand"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 10,
+							"interval": 0.2,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 10,
+							"interval": 0.2,
+							"fx": "hand"
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "摇到最高的时候挠屁股——哈哈哈哈！",
+					"actions": [
+						{
+							"do": "light",
+							"all": true
+						},
+						{
+							"do": "flash",
+							"time": 0.25
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.6
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 12,
+							"interval": 0.17,
+							"fx": "hand"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 12,
+							"interval": 0.17,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 12,
+							"interval": 0.17,
+							"fx": "hand"
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "摇回来又撒一身粉——哈哈哈哈哈！",
+					"actions": [
+						{
+							"do": "light",
+							"all": true
+						},
+						{
+							"do": "flash",
+							"time": 0.25
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.6
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 14,
+							"interval": 0.14,
+							"fx": "hand"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 14,
+							"interval": 0.14,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 14,
+							"interval": 0.14,
+							"fx": "hand"
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "长椅停不下来——哈哈哈哈哈我也停不下来！",
+					"actions": [
+						{
+							"do": "light",
+							"all": true
+						},
+						{
+							"do": "flash",
+							"time": 0.25
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.6
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 16,
+							"interval": 0.14,
+							"fx": "hand"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 16,
+							"interval": 0.14,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 16,
+							"interval": 0.14,
+							"fx": "hand"
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "哈哈哈哈……摇、摇篮……好、好困又好痒……哈哈哈哈……",
+					"actions": [
+						{
+							"do": "light",
+							"all": true
+						},
+						{
+							"do": "flash",
+							"time": 0.25
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.6
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "dots"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 18,
+							"interval": 0.14,
+							"fx": "hand"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 18,
+							"interval": 0.14,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 18,
+							"interval": 0.14,
+							"fx": "hand"
+						}
+					]
+				},
+				{
+					"act": "burst",
+					"speaker": "",
+					"text": "（摇篮长椅、鳞粉和看不见的手一起，魔力满了）",
+					"actions": [
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.8
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "surprise"
+						},
+						{
+							"do": "voice",
+							"state": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 6,
+							"interval": 0.24,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "hand"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "hand"
+						}
+					]
+				},
+				{
+					"act": "burst",
+					"speaker": "公主",
+					"text": "魔力……要把长椅掀翻了——！",
+					"actions": [
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 1.2
+						},
+						{
+							"do": "camera",
+							"zoom": 1.5,
+							"focus": "princess",
+							"time": 0.4
+						},
+						{
+							"do": "flash",
+							"time": 0.2
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "hand"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "hand"
+						}
+					]
+				},
+				{
+					"act": "burst",
+					"portrait": "fatigue_burst",
+					"actions": [
+						{
+							"do": "flash",
+							"time": 0.8
+						},
+						{
+							"do": "sfx",
+							"sound": "star_burst",
+							"volume": -1.0
+						},
+						{
+							"do": "sfx",
+							"sound": "water_release",
+							"volume": -2.0
+						},
+						{
+							"do": "voice",
+							"state": ""
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.5
+						},
+						{
+							"do": "camera",
+							"zoom": 1,
+							"focus": "princess",
+							"time": 0.5
+						},
+						{
+							"do": "move",
+							"who": "src2",
+							"to": [
+								-90,
+								-4
+							],
+							"time": 0.25
+						},
+						{
+							"do": "light",
+							"all": true
+						}
+					],
+					"wait": 1.1
+				},
+				{
+					"act": "burst",
+					"speaker": "公主",
+					"text": "呼啊……魔力全放出去了……摇篮停下来了，好舒服……",
+					"actions": [
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "shy"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "hand"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "hand"
+						}
+					]
+				},
+				{
+					"act": "burst",
+					"speaker": "",
+					"text": "（长椅又轻轻摇了起来，椅子下的手也伸了回来）",
+					"actions": [
+						{
+							"do": "move",
+							"who": "src2",
+							"to": [
+								-30,
+								2
+							],
+							"time": 0.6
+						},
+						{
+							"do": "voice",
+							"state": "giggle"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 4,
+							"interval": 0.3,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "hand"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "hand"
+						}
+					]
+				},
+				{
+					"act": "burst",
+					"speaker": "公主",
+					"text": "哈哈哈哈！放完魔力屁股好敏感……一摇一戳就痒得受不了哈哈哈哈！",
+					"actions": [
+						{
+							"do": "voice",
+							"state": "laugh"
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.8
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 10,
+							"interval": 0.16,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "hand"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "hand"
+						}
+					]
+				},
+				{
+					"act": "burst",
+					"speaker": "公主",
+					"text": "摇着、撒着——哈哈哈哈更痒了！",
+					"actions": [
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.6
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 10,
+							"interval": 0.15,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "hand"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "hand"
+						}
+					]
+				},
+				{
+					"act": "burst",
+					"speaker": "公主",
+					"text": "……摇啊摇……摇到……梦里去……嘿嘿……",
+					"actions": [
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "dots"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 6,
+							"interval": 0.22,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "hand"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "hand"
+						}
+					]
+				},
+				{
+					"actions": [
+						{
+							"do": "fade_out",
+							"time": 0.5
+						},
+						{
+							"do": "voice",
+							"state": ""
+						}
+					],
+					"wait": 0.6
+				}
+			]
+		},
+		"mz_curtain_vine": {
+			"name": "门帘缠藤",
+			"cast": {
+				"princess": {
+					"kind": "princess",
+					"at": [
+						0,
+						8
+					],
+					"visual": "helpless_1",
+					"anim": "helpless",
+					"dir": "down"
+				},
+				"src1": {
+					"kind": "trap:feather_curtain",
+					"at": [
+						20,
+						4
+					],
+					"hidden": true
+				},
+				"src2": {
+					"kind": "trap:shadow_vine",
+					"at": [
+						0,
+						10
+					],
+					"hidden": true
+				},
+				"src3": {
+					"kind": "monster:dream_fluff",
+					"at": [
+						-30,
+						2
+					],
+					"dir": "right",
+					"hidden": true
+				}
+			},
+			"steps": [
+				{
+					"actions": [
+						{
+							"do": "fade_in",
+							"time": 0.4
+						},
+						{
+							"do": "voice",
+							"state": "giggle"
+						},
+						{
+							"do": "sources",
+							"list": [
+								{
+									"kind": "trap",
+									"key": "feather_curtain",
+									"name": "羽毛门帘"
+								},
+								{
+									"kind": "trap",
+									"key": "shadow_vine",
+									"name": "影子缠腿藤"
+								},
+								{
+									"kind": "monster",
+									"key": "dream_fluff",
+									"name": "梦绒球"
+								}
+							]
+						}
+					],
+					"wait": 0.4
+				},
+				{
+					"speaker": "",
+					"text": "【第八层·夜迷宫】门帘缠藤——羽毛刷、藤蔓缠、绒球粘——三样全在大腿上。",
+					"actions": [
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "surprise"
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "嘻嘻哈……羽毛帘子刷过大腿，一下又一下——噗哈哈！",
+					"actions": [
+						{
+							"do": "enter",
+							"who": "src1",
+							"from": [
+								0,
+								-6
+							],
+							"time": 0.3
+						},
+						{
+							"do": "light",
+							"index": 0
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 6,
+							"interval": 0.32,
+							"fx": "feather"
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "噫哈哈哈！影子里的藤缠住大腿，走、走不出帘子了哈哈哈！",
+					"actions": [
+						{
+							"do": "enter",
+							"who": "src2",
+							"from": [
+								0,
+								-6
+							],
+							"time": 0.3
+						},
+						{
+							"do": "light",
+							"index": 1
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 7,
+							"interval": 0.28,
+							"fx": "feather"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 7,
+							"interval": 0.28,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "哈哈哈哈！绒球也粘上来，在缠着的地方蹭哈哈哈哈！",
+					"actions": [
+						{
+							"do": "enter",
+							"who": "src3",
+							"from": [
+								-80,
+								0
+							],
+							"time": 0.5
+						},
+						{
+							"do": "light",
+							"index": 2
+						},
+						{
+							"do": "pose",
+							"who": "princess",
+							"visual": "helpless_2"
+						},
+						{
+							"do": "voice",
+							"state": "laugh"
+						},
+						{
+							"do": "camera",
+							"zoom": 1.5,
+							"focus": "princess",
+							"time": 0.4
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.5
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 8,
+							"interval": 0.24,
+							"fx": "feather"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 8,
+							"interval": 0.24,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 8,
+							"interval": 0.24,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "刷着、缠着、蹭着——哈哈哈哈全在大腿上！",
+					"actions": [
+						{
+							"do": "light",
+							"all": true
+						},
+						{
+							"do": "flash",
+							"time": 0.25
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.6
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 10,
+							"interval": 0.2,
+							"fx": "feather"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 10,
+							"interval": 0.2,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 10,
+							"interval": 0.2,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "帘子放下来又刷一遍——哈哈哈哈！",
+					"actions": [
+						{
+							"do": "light",
+							"all": true
+						},
+						{
+							"do": "flash",
+							"time": 0.25
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.6
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 12,
+							"interval": 0.17,
+							"fx": "feather"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 12,
+							"interval": 0.17,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 12,
+							"interval": 0.17,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "藤尖和绒毛一起往大腿内侧钻——哈哈哈哈哈！",
+					"actions": [
+						{
+							"do": "light",
+							"all": true
+						},
+						{
+							"do": "flash",
+							"time": 0.25
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.6
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 14,
+							"interval": 0.14,
+							"fx": "feather"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 14,
+							"interval": 0.14,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 14,
+							"interval": 0.14,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "大腿……大腿要化掉了——哈哈哈哈哈！",
+					"actions": [
+						{
+							"do": "light",
+							"all": true
+						},
+						{
+							"do": "flash",
+							"time": 0.25
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.6
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 16,
+							"interval": 0.14,
+							"fx": "feather"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 16,
+							"interval": 0.14,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 16,
+							"interval": 0.14,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "哈哈哈哈……腿、腿……不是我的了……哈哈哈哈……",
+					"actions": [
+						{
+							"do": "light",
+							"all": true
+						},
+						{
+							"do": "flash",
+							"time": 0.25
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.6
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "dots"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 18,
+							"interval": 0.14,
+							"fx": "feather"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 18,
+							"interval": 0.14,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 18,
+							"interval": 0.14,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"act": "burst",
+					"speaker": "",
+					"text": "（羽毛帘子、藤蔓和绒球一起挠大腿，魔力被挠得满满的）",
+					"actions": [
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.8
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "surprise"
+						},
+						{
+							"do": "voice",
+							"state": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 6,
+							"interval": 0.24,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "feather"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"act": "burst",
+					"speaker": "公主",
+					"text": "魔力……要从腿上冲出去了——！",
+					"actions": [
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 1.2
+						},
+						{
+							"do": "camera",
+							"zoom": 1.5,
+							"focus": "princess",
+							"time": 0.4
+						},
+						{
+							"do": "flash",
+							"time": 0.2
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "feather"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"act": "burst",
+					"portrait": "fatigue_burst",
+					"actions": [
+						{
+							"do": "flash",
+							"time": 0.8
+						},
+						{
+							"do": "sfx",
+							"sound": "star_burst",
+							"volume": -1.0
+						},
+						{
+							"do": "sfx",
+							"sound": "water_release",
+							"volume": -2.0
+						},
+						{
+							"do": "voice",
+							"state": ""
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.5
+						},
+						{
+							"do": "camera",
+							"zoom": 1,
+							"focus": "princess",
+							"time": 0.5
+						},
+						{
+							"do": "move",
+							"who": "src3",
+							"to": [
+								-90,
+								-4
+							],
+							"time": 0.25
+						},
+						{
+							"do": "light",
+							"all": true
+						}
+					],
+					"wait": 1.1
+				},
+				{
+					"act": "burst",
+					"speaker": "公主",
+					"text": "哈啊……魔力全放出去了……缠着的腿松开了，好舒服……",
+					"actions": [
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "shy"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "feather"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"act": "burst",
+					"speaker": "",
+					"text": "（帘子又放了下来，藤蔓和绒球也回来了）",
+					"actions": [
+						{
+							"do": "move",
+							"who": "src3",
+							"to": [
+								-30,
+								2
+							],
+							"time": 0.6
+						},
+						{
+							"do": "voice",
+							"state": "giggle"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 4,
+							"interval": 0.3,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "feather"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"act": "burst",
+					"speaker": "公主",
+					"text": "咿哈哈哈！放完魔力大腿好敏感……刷一下缠一下就痒到发抖哈哈哈哈！",
+					"actions": [
+						{
+							"do": "voice",
+							"state": "laugh"
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.8
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 10,
+							"interval": 0.16,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "feather"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"act": "burst",
+					"speaker": "公主",
+					"text": "刷着、缠着、蹭着——哈哈哈哈更痒了！",
+					"actions": [
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.6
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 10,
+							"interval": 0.15,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "feather"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"act": "burst",
+					"speaker": "公主",
+					"text": "……大腿……变成羽毛了……嘿嘿……",
+					"actions": [
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "dots"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 6,
+							"interval": 0.22,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "feather"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"actions": [
+						{
+							"do": "fade_out",
+							"time": 0.5
+						},
+						{
+							"do": "voice",
+							"state": ""
+						}
+					],
+					"wait": 0.6
+				}
+			]
+		},
+		"mz_mirror_jar": {
+			"name": "镜中笑瓶",
+			"cast": {
+				"princess": {
+					"kind": "princess",
+					"at": [
+						0,
+						8
+					],
+					"visual": "helpless_1",
+					"anim": "helpless",
+					"dir": "down"
+				},
+				"src1": {
+					"kind": "trap:mirror_puddle",
+					"at": [
+						0,
+						12
+					],
+					"hidden": true
+				},
+				"src2": {
+					"kind": "monster:laugh_jar",
+					"at": [
+						-30,
+						2
+					],
+					"dir": "right",
+					"hidden": true
+				},
+				"src3": {
+					"kind": "trap:maze_hand",
+					"at": [
+						0,
+						-20
+					],
+					"hidden": true
+				}
+			},
+			"steps": [
+				{
+					"actions": [
+						{
+							"do": "fade_in",
+							"time": 0.4
+						},
+						{
+							"do": "voice",
+							"state": "giggle"
+						},
+						{
+							"do": "sources",
+							"list": [
+								{
+									"kind": "trap",
+									"key": "mirror_puddle",
+									"name": "镜面水洼"
+								},
+								{
+									"kind": "monster",
+									"key": "laugh_jar",
+									"name": "笑声收集瓶"
+								},
+								{
+									"kind": "trap",
+									"key": "maze_hand",
+									"name": "千手的紫手"
+								}
+							]
+						}
+					],
+					"wait": 0.4
+				},
+				{
+					"speaker": "",
+					"text": "【第八层·夜迷宫】镜中笑瓶——倒影里的笑声把瓶子一下子灌满——瓶塞飞了出去。",
+					"actions": [
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "surprise"
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "嘻嘻哈……水面的倒影伸出手，从下面挠屁股——噗哈哈！",
+					"actions": [
+						{
+							"do": "enter",
+							"who": "src1",
+							"from": [
+								0,
+								-6
+							],
+							"time": 0.3
+						},
+						{
+							"do": "light",
+							"index": 0
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 6,
+							"interval": 0.32,
+							"fx": "hand"
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "噫哈哈哈！瓶子凑过来，连倒影的笑声都一起装进去哈哈哈！",
+					"actions": [
+						{
+							"do": "enter",
+							"who": "src2",
+							"from": [
+								-80,
+								0
+							],
+							"time": 0.5
+						},
+						{
+							"do": "light",
+							"index": 1
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 7,
+							"interval": 0.28,
+							"fx": "hand"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 7,
+							"interval": 0.28,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "哈哈哈哈！啵——瓶塞飞了！笑声一下子全炸出去哈哈哈哈！",
+					"actions": [
+						{
+							"do": "enter",
+							"who": "src3",
+							"from": [
+								0,
+								-6
+							],
+							"time": 0.3
+						},
+						{
+							"do": "light",
+							"index": 2
+						},
+						{
+							"do": "pose",
+							"who": "princess",
+							"visual": "helpless_2"
+						},
+						{
+							"do": "voice",
+							"state": "laugh"
+						},
+						{
+							"do": "camera",
+							"zoom": 1.5,
+							"focus": "princess",
+							"time": 0.4
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.5
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 8,
+							"interval": 0.24,
+							"fx": "hand"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 8,
+							"interval": 0.24,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 8,
+							"interval": 0.24,
+							"fx": "hand"
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "听、听到了——四面八方的手都来了哈哈哈哈！",
+					"actions": [
+						{
+							"do": "light",
+							"all": true
+						},
+						{
+							"do": "flash",
+							"time": 0.25
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.6
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 10,
+							"interval": 0.2,
+							"fx": "hand"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 10,
+							"interval": 0.2,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 10,
+							"interval": 0.2,
+							"fx": "hand"
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "倒影里的、外面的——哈哈哈哈一起挠！",
+					"actions": [
+						{
+							"do": "light",
+							"all": true
+						},
+						{
+							"do": "flash",
+							"time": 0.25
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.6
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 12,
+							"interval": 0.17,
+							"fx": "hand"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 12,
+							"interval": 0.17,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 12,
+							"interval": 0.17,
+							"fx": "hand"
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "笑声越大手越多——哈哈哈哈哈停不下来！",
+					"actions": [
+						{
+							"do": "light",
+							"all": true
+						},
+						{
+							"do": "flash",
+							"time": 0.25
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.6
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 14,
+							"interval": 0.14,
+							"fx": "hand"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 14,
+							"interval": 0.14,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 14,
+							"interval": 0.14,
+							"fx": "hand"
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "屁股、屁股上全是——哈哈哈哈哈！",
+					"actions": [
+						{
+							"do": "light",
+							"all": true
+						},
+						{
+							"do": "flash",
+							"time": 0.25
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.6
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 16,
+							"interval": 0.14,
+							"fx": "hand"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 16,
+							"interval": 0.14,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 16,
+							"interval": 0.14,
+							"fx": "hand"
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "哈哈哈哈……啵……啵……哈哈哈哈……",
+					"actions": [
+						{
+							"do": "light",
+							"all": true
+						},
+						{
+							"do": "flash",
+							"time": 0.25
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.6
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "dots"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 18,
+							"interval": 0.14,
+							"fx": "hand"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 18,
+							"interval": 0.14,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 18,
+							"interval": 0.14,
+							"fx": "hand"
+						}
+					]
+				},
+				{
+					"act": "burst",
+					"speaker": "",
+					"text": "（倒影、炸开的笑声瓶和看不见的手一起，魔力满了）",
+					"actions": [
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.8
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "surprise"
+						},
+						{
+							"do": "voice",
+							"state": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 6,
+							"interval": 0.24,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "hand"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "hand"
+						}
+					]
+				},
+				{
+					"act": "burst",
+					"speaker": "公主",
+					"text": "魔力……要把水面全冲开了——！",
+					"actions": [
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 1.2
+						},
+						{
+							"do": "camera",
+							"zoom": 1.5,
+							"focus": "princess",
+							"time": 0.4
+						},
+						{
+							"do": "flash",
+							"time": 0.2
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "hand"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "hand"
+						}
+					]
+				},
+				{
+					"act": "burst",
+					"portrait": "fatigue_burst",
+					"actions": [
+						{
+							"do": "flash",
+							"time": 0.8
+						},
+						{
+							"do": "sfx",
+							"sound": "star_burst",
+							"volume": -1.0
+						},
+						{
+							"do": "sfx",
+							"sound": "water_release",
+							"volume": -2.0
+						},
+						{
+							"do": "voice",
+							"state": ""
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.5
+						},
+						{
+							"do": "camera",
+							"zoom": 1,
+							"focus": "princess",
+							"time": 0.5
+						},
+						{
+							"do": "move",
+							"who": "src2",
+							"to": [
+								-90,
+								-4
+							],
+							"time": 0.25
+						},
+						{
+							"do": "light",
+							"all": true
+						}
+					],
+					"wait": 1.1
+				},
+				{
+					"act": "burst",
+					"speaker": "公主",
+					"text": "呼……魔力全涌出去了……周围一下子安静了，好舒服……",
+					"actions": [
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "shy"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "hand"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "hand"
+						}
+					]
+				},
+				{
+					"act": "burst",
+					"speaker": "",
+					"text": "（水面又映出了好多只手）",
+					"actions": [
+						{
+							"do": "move",
+							"who": "src2",
+							"to": [
+								-30,
+								2
+							],
+							"time": 0.6
+						},
+						{
+							"do": "voice",
+							"state": "giggle"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 4,
+							"interval": 0.3,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "hand"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "hand"
+						}
+					]
+				},
+				{
+					"act": "burst",
+					"speaker": "公主",
+					"text": "哈哈哈哈！放完魔力好敏感……倒影一伸手就痒得受不了哈哈哈哈！",
+					"actions": [
+						{
+							"do": "voice",
+							"state": "laugh"
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.8
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 10,
+							"interval": 0.16,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "hand"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "hand"
+						}
+					]
+				},
+				{
+					"act": "burst",
+					"speaker": "公主",
+					"text": "啵、啵——哈哈哈哈更痒了！",
+					"actions": [
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.6
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 10,
+							"interval": 0.15,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "hand"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "hand"
+						}
+					]
+				},
+				{
+					"act": "burst",
+					"speaker": "公主",
+					"text": "……笑声……变成泡泡……飘走了……嘿嘿……",
+					"actions": [
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "dots"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 6,
+							"interval": 0.22,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "hand"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "hand"
+						}
+					]
+				},
+				{
+					"actions": [
+						{
+							"do": "fade_out",
+							"time": 0.5
+						},
+						{
+							"do": "voice",
+							"state": ""
+						}
+					],
+					"wait": 0.6
+				}
+			]
+		},
+		"mz_dark_raid": {
+			"name": "熄灯偷袭",
+			"cast": {
+				"princess": {
+					"kind": "princess",
+					"at": [
+						0,
+						8
+					],
+					"visual": "helpless_1",
+					"anim": "helpless",
+					"dir": "down"
+				},
+				"src1": {
+					"kind": "monster:lamp_imp",
+					"at": [
+						-30,
+						2
+					],
+					"dir": "right",
+					"hidden": true
+				},
+				"src2": {
+					"kind": "monster:dream_fluff",
+					"at": [
+						30,
+						2
+					],
+					"dir": "left",
+					"hidden": true
+				},
+				"src3": {
+					"kind": "trap:maze_hand",
+					"at": [
+						0,
+						-20
+					],
+					"hidden": true
+				}
+			},
+			"steps": [
+				{
+					"actions": [
+						{
+							"do": "fade_in",
+							"time": 0.4
+						},
+						{
+							"do": "voice",
+							"state": "giggle"
+						},
+						{
+							"do": "sources",
+							"list": [
+								{
+									"kind": "monster",
+									"key": "lamp_imp",
+									"name": "偷灯小鬼"
+								},
+								{
+									"kind": "monster",
+									"key": "dream_fluff",
+									"name": "梦绒球"
+								},
+								{
+									"kind": "trap",
+									"key": "maze_hand",
+									"name": "千手的紫手"
+								}
+							]
+						}
+					],
+					"wait": 0.4
+				},
+				{
+					"speaker": "",
+					"text": "【第八层·夜迷宫】熄灯偷袭——冷光被吹灭，黑暗里的手全都屏住，然后一起挠下来。",
+					"actions": [
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "surprise"
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "嘻嘻哈……小黑鬼「呼」地一吹，冷光一下子暗了，趁黑挠脚心——噗哈哈！",
+					"actions": [
+						{
+							"do": "enter",
+							"who": "src1",
+							"from": [
+								-80,
+								0
+							],
+							"time": 0.5
+						},
+						{
+							"do": "light",
+							"index": 0
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 6,
+							"interval": 0.32,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "噫哈哈哈！黑漆漆的，绒球摸黑粘上大腿哈哈哈！",
+					"actions": [
+						{
+							"do": "enter",
+							"who": "src2",
+							"from": [
+								80,
+								0
+							],
+							"time": 0.5
+						},
+						{
+							"do": "light",
+							"index": 1
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 7,
+							"interval": 0.28,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 7,
+							"interval": 0.28,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "哈哈哈哈！身上的手全都停下来——然后一起狠挠哈哈哈哈！",
+					"actions": [
+						{
+							"do": "enter",
+							"who": "src3",
+							"from": [
+								0,
+								-6
+							],
+							"time": 0.3
+						},
+						{
+							"do": "light",
+							"index": 2
+						},
+						{
+							"do": "pose",
+							"who": "princess",
+							"visual": "helpless_2"
+						},
+						{
+							"do": "voice",
+							"state": "laugh"
+						},
+						{
+							"do": "camera",
+							"zoom": 1.5,
+							"focus": "princess",
+							"time": 0.4
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.5
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 8,
+							"interval": 0.24,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 8,
+							"interval": 0.24,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 8,
+							"interval": 0.24,
+							"fx": "hand"
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "看不见、躲不开——哈哈哈哈！",
+					"actions": [
+						{
+							"do": "light",
+							"all": true
+						},
+						{
+							"do": "flash",
+							"time": 0.25
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.6
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 10,
+							"interval": 0.2,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 10,
+							"interval": 0.2,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 10,
+							"interval": 0.2,
+							"fx": "hand"
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "黑暗里全是手指——哈哈哈哈！",
+					"actions": [
+						{
+							"do": "light",
+							"all": true
+						},
+						{
+							"do": "flash",
+							"time": 0.25
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.6
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 12,
+							"interval": 0.17,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 12,
+							"interval": 0.17,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 12,
+							"interval": 0.17,
+							"fx": "hand"
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "一停一挠、一停一挠——哈哈哈哈哈节奏好坏！",
+					"actions": [
+						{
+							"do": "light",
+							"all": true
+						},
+						{
+							"do": "flash",
+							"time": 0.25
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.6
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 14,
+							"interval": 0.14,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 14,
+							"interval": 0.14,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 14,
+							"interval": 0.14,
+							"fx": "hand"
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "灯、灯呢——哈哈哈哈哈谁来点灯！",
+					"actions": [
+						{
+							"do": "light",
+							"all": true
+						},
+						{
+							"do": "flash",
+							"time": 0.25
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.6
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 16,
+							"interval": 0.14,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 16,
+							"interval": 0.14,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 16,
+							"interval": 0.14,
+							"fx": "hand"
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "哈哈哈哈……黑、黑的……痒的……哈哈哈哈……",
+					"actions": [
+						{
+							"do": "light",
+							"all": true
+						},
+						{
+							"do": "flash",
+							"time": 0.25
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.6
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "dots"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 18,
+							"interval": 0.14,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 18,
+							"interval": 0.14,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 18,
+							"interval": 0.14,
+							"fx": "hand"
+						}
+					]
+				},
+				{
+					"act": "burst",
+					"speaker": "",
+					"text": "（黑暗里，小鬼、绒球和看不见的手一起，魔力被挠得满满的）",
+					"actions": [
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.8
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "surprise"
+						},
+						{
+							"do": "voice",
+							"state": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 6,
+							"interval": 0.24,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 6,
+							"interval": 0.24,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "hand"
+						}
+					]
+				},
+				{
+					"act": "burst",
+					"speaker": "公主",
+					"text": "魔力……要把黑暗照亮了——！",
+					"actions": [
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 1.2
+						},
+						{
+							"do": "camera",
+							"zoom": 1.5,
+							"focus": "princess",
+							"time": 0.4
+						},
+						{
+							"do": "flash",
+							"time": 0.2
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "hand"
+						}
+					]
+				},
+				{
+					"act": "burst",
+					"portrait": "fatigue_burst",
+					"actions": [
+						{
+							"do": "flash",
+							"time": 0.8
+						},
+						{
+							"do": "sfx",
+							"sound": "star_burst",
+							"volume": -1.0
+						},
+						{
+							"do": "sfx",
+							"sound": "water_release",
+							"volume": -2.0
+						},
+						{
+							"do": "voice",
+							"state": ""
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.5
+						},
+						{
+							"do": "camera",
+							"zoom": 1,
+							"focus": "princess",
+							"time": 0.5
+						},
+						{
+							"do": "move",
+							"who": "src1",
+							"to": [
+								-90,
+								-4
+							],
+							"time": 0.25
+						},
+						{
+							"do": "move",
+							"who": "src2",
+							"to": [
+								90,
+								-4
+							],
+							"time": 0.25
+						},
+						{
+							"do": "light",
+							"all": true
+						}
+					],
+					"wait": 1.1
+				},
+				{
+					"act": "burst",
+					"speaker": "公主",
+					"text": "哈啊……魔力全放出去了……冰蓝的光又亮了，好舒服……",
+					"actions": [
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "shy"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "hand"
+						}
+					]
+				},
+				{
+					"act": "burst",
+					"speaker": "",
+					"text": "（小鬼又「呼」地吹了一口，手又在黑暗里停住了）",
+					"actions": [
+						{
+							"do": "move",
+							"who": "src1",
+							"to": [
+								-30,
+								2
+							],
+							"time": 0.6
+						},
+						{
+							"do": "move",
+							"who": "src2",
+							"to": [
+								30,
+								2
+							],
+							"time": 0.6
+						},
+						{
+							"do": "voice",
+							"state": "giggle"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 4,
+							"interval": 0.3,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 4,
+							"interval": 0.3,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "hand"
+						}
+					]
+				},
+				{
+					"act": "burst",
+					"speaker": "公主",
+					"text": "咿哈哈哈！放完魔力好敏感……一停一挠就痒到发抖哈哈哈哈！",
+					"actions": [
+						{
+							"do": "voice",
+							"state": "laugh"
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.8
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 10,
+							"interval": 0.16,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 10,
+							"interval": 0.16,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "hand"
+						}
+					]
+				},
+				{
+					"act": "burst",
+					"speaker": "公主",
+					"text": "黑黑的——哈哈哈哈更痒了！",
+					"actions": [
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.6
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 10,
+							"interval": 0.15,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 10,
+							"interval": 0.15,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "hand"
+						}
+					]
+				},
+				{
+					"act": "burst",
+					"speaker": "公主",
+					"text": "……黑黑的……暖暖的……是被窝吗……嘿嘿……",
+					"actions": [
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "dots"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 6,
+							"interval": 0.22,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 6,
+							"interval": 0.22,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "hand"
+						}
+					]
+				},
+				{
+					"actions": [
+						{
+							"do": "fade_out",
+							"time": 0.5
+						},
+						{
+							"do": "voice",
+							"state": ""
+						}
+					],
+					"wait": 0.6
+				}
+			]
+		},
+		"mz_shadow_bench": {
+			"name": "影下长椅",
+			"cast": {
+				"princess": {
+					"kind": "princess",
+					"at": [
+						0,
+						8
+					],
+					"visual": "helpless_1",
+					"anim": "helpless",
+					"dir": "down"
+				},
+				"src1": {
+					"kind": "trap:cradle_bench",
+					"at": [
+						0,
+						12
+					],
+					"hidden": true
+				},
+				"src2": {
+					"kind": "trap:hand_shadow",
+					"at": [
+						0,
+						-30
+					],
+					"hidden": true
+				},
+				"src3": {
+					"kind": "trap:maze_hand",
+					"at": [
+						0,
+						-20
+					],
+					"hidden": true
+				}
+			},
+			"steps": [
+				{
+					"actions": [
+						{
+							"do": "fade_in",
+							"time": 0.4
+						},
+						{
+							"do": "voice",
+							"state": "giggle"
+						},
+						{
+							"do": "sources",
+							"list": [
+								{
+									"kind": "trap",
+									"key": "cradle_bench",
+									"name": "摇篮长椅"
+								},
+								{
+									"kind": "trap",
+									"key": "hand_shadow",
+									"name": "千手的影子"
+								},
+								{
+									"kind": "trap",
+									"key": "maze_hand",
+									"name": "千手的紫手"
+								}
+							]
+						}
+					],
+					"wait": 0.4
+				},
+				{
+					"speaker": "",
+					"text": "【第八层·夜迷宫】影下长椅——坐着的时候被千手的影子看见——涌出来的手先扑向屁股。",
+					"actions": [
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "surprise"
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "嘻嘻哈……刚坐下休息，椅子下面就伸出手指戳屁股——噗哈哈！",
+					"actions": [
+						{
+							"do": "enter",
+							"who": "src1",
+							"from": [
+								0,
+								-6
+							],
+							"time": 0.3
+						},
+						{
+							"do": "light",
+							"index": 0
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 6,
+							"interval": 0.32,
+							"fx": "hand"
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "噫哈哈哈！好大一团手影看过来了——被、被看见了哈哈哈！",
+					"actions": [
+						{
+							"do": "enter",
+							"who": "src2",
+							"from": [
+								0,
+								-6
+							],
+							"time": 0.3
+						},
+						{
+							"do": "light",
+							"index": 1
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 7,
+							"interval": 0.28,
+							"fx": "hand"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 7,
+							"interval": 0.28,
+							"fx": "hand"
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "哈哈哈哈！涌、涌过来好多看不见的手——先抓屁股哈哈哈哈！",
+					"actions": [
+						{
+							"do": "enter",
+							"who": "src3",
+							"from": [
+								0,
+								-6
+							],
+							"time": 0.3
+						},
+						{
+							"do": "light",
+							"index": 2
+						},
+						{
+							"do": "pose",
+							"who": "princess",
+							"visual": "helpless_2"
+						},
+						{
+							"do": "voice",
+							"state": "laugh"
+						},
+						{
+							"do": "camera",
+							"zoom": 1.5,
+							"focus": "princess",
+							"time": 0.4
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.5
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 8,
+							"interval": 0.24,
+							"fx": "hand"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 8,
+							"interval": 0.24,
+							"fx": "hand"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 8,
+							"interval": 0.24,
+							"fx": "hand"
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "坐着起不来——哈哈哈哈全都扑过来了！",
+					"actions": [
+						{
+							"do": "light",
+							"all": true
+						},
+						{
+							"do": "flash",
+							"time": 0.25
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.6
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 10,
+							"interval": 0.2,
+							"fx": "hand"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 10,
+							"interval": 0.2,
+							"fx": "hand"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 10,
+							"interval": 0.2,
+							"fx": "hand"
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "屁股上一只、两只、三只——哈哈哈哈数不清！",
+					"actions": [
+						{
+							"do": "light",
+							"all": true
+						},
+						{
+							"do": "flash",
+							"time": 0.25
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.6
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 12,
+							"interval": 0.17,
+							"fx": "hand"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 12,
+							"interval": 0.17,
+							"fx": "hand"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 12,
+							"interval": 0.17,
+							"fx": "hand"
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "影子还在看着——哈哈哈哈哈别看！",
+					"actions": [
+						{
+							"do": "light",
+							"all": true
+						},
+						{
+							"do": "flash",
+							"time": 0.25
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.6
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 14,
+							"interval": 0.14,
+							"fx": "hand"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 14,
+							"interval": 0.14,
+							"fx": "hand"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 14,
+							"interval": 0.14,
+							"fx": "hand"
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "椅子在摇、手在挠——哈哈哈哈哈！",
+					"actions": [
+						{
+							"do": "light",
+							"all": true
+						},
+						{
+							"do": "flash",
+							"time": 0.25
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.6
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 16,
+							"interval": 0.14,
+							"fx": "hand"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 16,
+							"interval": 0.14,
+							"fx": "hand"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 16,
+							"interval": 0.14,
+							"fx": "hand"
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "哈哈哈哈……被、被看光了……哈哈哈哈……",
+					"actions": [
+						{
+							"do": "light",
+							"all": true
+						},
+						{
+							"do": "flash",
+							"time": 0.25
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.6
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "dots"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 18,
+							"interval": 0.14,
+							"fx": "hand"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 18,
+							"interval": 0.14,
+							"fx": "hand"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 18,
+							"interval": 0.14,
+							"fx": "hand"
+						}
+					]
+				},
+				{
+					"act": "burst",
+					"speaker": "",
+					"text": "（长椅、手影和涌来的手一起，魔力满了）",
+					"actions": [
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.8
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "surprise"
+						},
+						{
+							"do": "voice",
+							"state": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"repeat": 6,
+							"interval": 0.24,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "hand"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "hand"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "hand"
+						}
+					]
+				},
+				{
+					"act": "burst",
+					"speaker": "公主",
+					"text": "魔力……要把影子冲散了——！",
+					"actions": [
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 1.2
+						},
+						{
+							"do": "camera",
+							"zoom": 1.5,
+							"focus": "princess",
+							"time": 0.4
+						},
+						{
+							"do": "flash",
+							"time": 0.2
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "hand"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "hand"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "hand"
+						}
+					]
+				},
+				{
+					"act": "burst",
+					"portrait": "fatigue_burst",
+					"actions": [
+						{
+							"do": "flash",
+							"time": 0.8
+						},
+						{
+							"do": "sfx",
+							"sound": "star_burst",
+							"volume": -1.0
+						},
+						{
+							"do": "sfx",
+							"sound": "water_release",
+							"volume": -2.0
+						},
+						{
+							"do": "voice",
+							"state": ""
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.5
+						},
+						{
+							"do": "camera",
+							"zoom": 1,
+							"focus": "princess",
+							"time": 0.5
+						},
+						{
+							"do": "light",
+							"all": true
+						}
+					],
+					"wait": 1.1
+				},
+				{
+					"act": "burst",
+					"speaker": "公主",
+					"text": "呼啊……魔力全放出去了……那团影子也退开了，好舒服……",
+					"actions": [
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "shy"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "hand"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "hand"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "hand"
+						}
+					]
+				},
+				{
+					"act": "burst",
+					"speaker": "",
+					"text": "（影子又转了回来，手又从椅子下面伸了出来）",
+					"actions": [
+						{
+							"do": "voice",
+							"state": "giggle"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"repeat": 4,
+							"interval": 0.3,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "hand"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "hand"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "hand"
+						}
+					]
+				},
+				{
+					"act": "burst",
+					"speaker": "公主",
+					"text": "哈哈哈哈！放完魔力屁股好敏感……一被看着就痒得乱扭哈哈哈哈！",
+					"actions": [
+						{
+							"do": "voice",
+							"state": "laugh"
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.8
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"repeat": 10,
+							"interval": 0.16,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "hand"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "hand"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "hand"
+						}
+					]
+				},
+				{
+					"act": "burst",
+					"speaker": "公主",
+					"text": "坐着、被看着——哈哈哈哈更痒了！",
+					"actions": [
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.6
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"repeat": 10,
+							"interval": 0.15,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "hand"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "hand"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "hand"
+						}
+					]
+				},
+				{
+					"act": "burst",
+					"speaker": "公主",
+					"text": "……大眼睛……在、在对我眨眼……嘿嘿……",
+					"actions": [
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "dots"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"repeat": 6,
+							"interval": 0.22,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "hand"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "hand"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "hand"
+						}
+					]
+				},
+				{
+					"actions": [
+						{
+							"do": "fade_out",
+							"time": 0.5
+						},
+						{
+							"do": "voice",
+							"state": ""
+						}
+					],
+					"wait": 0.6
+				}
+			]
+		},
+		"mz_gate_hands": {
+			"name": "门后千手",
+			"cast": {
+				"princess": {
+					"kind": "princess",
+					"at": [
+						0,
+						8
+					],
+					"visual": "helpless_1",
+					"anim": "helpless",
+					"dir": "down"
+				},
+				"src1": {
+					"kind": "trap:hand_gate",
+					"at": [
+						-28,
+						4
+					],
+					"hidden": true
+				},
+				"src2": {
+					"kind": "trap:shadow_vine",
+					"at": [
+						0,
+						10
+					],
+					"hidden": true
+				},
+				"src3": {
+					"kind": "trap:maze_hand",
+					"at": [
+						0,
+						-20
+					],
+					"hidden": true
+				}
+			},
+			"steps": [
+				{
+					"actions": [
+						{
+							"do": "fade_in",
+							"time": 0.4
+						},
+						{
+							"do": "voice",
+							"state": "giggle"
+						},
+						{
+							"do": "sources",
+							"list": [
+								{
+									"kind": "trap",
+									"key": "hand_gate",
+									"name": "千手之门"
+								},
+								{
+									"kind": "trap",
+									"key": "shadow_vine",
+									"name": "影子缠腿藤"
+								},
+								{
+									"kind": "trap",
+									"key": "maze_hand",
+									"name": "千手的紫手"
+								}
+							]
+						}
+					],
+					"wait": 0.4
+				},
+				{
+					"speaker": "",
+					"text": "【第八层·夜迷宫】门后千手——推开千手之门的瞬间，门后的手直接缠上大腿。",
+					"actions": [
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "surprise"
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "嘻嘻哈……推开刻满手印的门，门后面伸出手来贴住大腿——噗哈哈！",
+					"actions": [
+						{
+							"do": "enter",
+							"who": "src1",
+							"from": [
+								0,
+								-6
+							],
+							"time": 0.3
+						},
+						{
+							"do": "light",
+							"index": 0
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 6,
+							"interval": 0.32,
+							"fx": "hand"
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "噫哈哈哈！影子里的藤缠住脚踝，退、退不回去哈哈哈！",
+					"actions": [
+						{
+							"do": "enter",
+							"who": "src2",
+							"from": [
+								0,
+								-6
+							],
+							"time": 0.3
+						},
+						{
+							"do": "light",
+							"index": 1
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 7,
+							"interval": 0.28,
+							"fx": "hand"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 7,
+							"interval": 0.28,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "哈哈哈哈！大腿上一下子贴上来两只——看不见的手哈哈哈哈！",
+					"actions": [
+						{
+							"do": "enter",
+							"who": "src3",
+							"from": [
+								0,
+								-6
+							],
+							"time": 0.3
+						},
+						{
+							"do": "light",
+							"index": 2
+						},
+						{
+							"do": "pose",
+							"who": "princess",
+							"visual": "helpless_2"
+						},
+						{
+							"do": "voice",
+							"state": "laugh"
+						},
+						{
+							"do": "camera",
+							"zoom": 1.5,
+							"focus": "princess",
+							"time": 0.4
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.5
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 8,
+							"interval": 0.24,
+							"fx": "hand"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 8,
+							"interval": 0.24,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 8,
+							"interval": 0.24,
+							"fx": "hand"
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "门后、脚下、腿上——哈哈哈哈全是手！",
+					"actions": [
+						{
+							"do": "light",
+							"all": true
+						},
+						{
+							"do": "flash",
+							"time": 0.25
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.6
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 10,
+							"interval": 0.2,
+							"fx": "hand"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 10,
+							"interval": 0.2,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 10,
+							"interval": 0.2,
+							"fx": "hand"
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "藤蔓把腿拉开给它们挠——哈哈哈哈！",
+					"actions": [
+						{
+							"do": "light",
+							"all": true
+						},
+						{
+							"do": "flash",
+							"time": 0.25
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.6
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 12,
+							"interval": 0.17,
+							"fx": "hand"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 12,
+							"interval": 0.17,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 12,
+							"interval": 0.17,
+							"fx": "hand"
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "门里还有——哈哈哈哈哈一只接一只！",
+					"actions": [
+						{
+							"do": "light",
+							"all": true
+						},
+						{
+							"do": "flash",
+							"time": 0.25
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.6
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 14,
+							"interval": 0.14,
+							"fx": "hand"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 14,
+							"interval": 0.14,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 14,
+							"interval": 0.14,
+							"fx": "hand"
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "大腿根——哈哈哈哈哈不行了！",
+					"actions": [
+						{
+							"do": "light",
+							"all": true
+						},
+						{
+							"do": "flash",
+							"time": 0.25
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.6
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 16,
+							"interval": 0.14,
+							"fx": "hand"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 16,
+							"interval": 0.14,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 16,
+							"interval": 0.14,
+							"fx": "hand"
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "哈哈哈哈……门、门后面……全都是……哈哈哈哈……",
+					"actions": [
+						{
+							"do": "light",
+							"all": true
+						},
+						{
+							"do": "flash",
+							"time": 0.25
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.6
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "dots"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 18,
+							"interval": 0.14,
+							"fx": "hand"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 18,
+							"interval": 0.14,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 18,
+							"interval": 0.14,
+							"fx": "hand"
+						}
+					]
+				},
+				{
+					"act": "burst",
+					"speaker": "",
+					"text": "（门后的手、藤蔓和看不见的手一起，魔力被挠得满满的）",
+					"actions": [
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.8
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "surprise"
+						},
+						{
+							"do": "voice",
+							"state": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"repeat": 6,
+							"interval": 0.24,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "hand"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "hand"
+						}
+					]
+				},
+				{
+					"act": "burst",
+					"speaker": "公主",
+					"text": "魔力……要把门关回去了——！",
+					"actions": [
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 1.2
+						},
+						{
+							"do": "camera",
+							"zoom": 1.5,
+							"focus": "princess",
+							"time": 0.4
+						},
+						{
+							"do": "flash",
+							"time": 0.2
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "hand"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "hand"
+						}
+					]
+				},
+				{
+					"act": "burst",
+					"portrait": "fatigue_burst",
+					"actions": [
+						{
+							"do": "flash",
+							"time": 0.8
+						},
+						{
+							"do": "sfx",
+							"sound": "star_burst",
+							"volume": -1.0
+						},
+						{
+							"do": "sfx",
+							"sound": "water_release",
+							"volume": -2.0
+						},
+						{
+							"do": "voice",
+							"state": ""
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.5
+						},
+						{
+							"do": "camera",
+							"zoom": 1,
+							"focus": "princess",
+							"time": 0.5
+						},
+						{
+							"do": "light",
+							"all": true
+						}
+					],
+					"wait": 1.1
+				},
+				{
+					"act": "burst",
+					"speaker": "公主",
+					"text": "哈啊……魔力全放出去了……腿上的手都缩回去了，好舒服……",
+					"actions": [
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "shy"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "hand"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "hand"
+						}
+					]
+				},
+				{
+					"act": "burst",
+					"speaker": "",
+					"text": "（门还开着，手一只只又伸了出来）",
+					"actions": [
+						{
+							"do": "voice",
+							"state": "giggle"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"repeat": 4,
+							"interval": 0.3,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "hand"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "hand"
+						}
+					]
+				},
+				{
+					"act": "burst",
+					"speaker": "公主",
+					"text": "咿哈哈哈！放完魔力大腿好敏感……手指一贴就痒到发抖哈哈哈哈！",
+					"actions": [
+						{
+							"do": "voice",
+							"state": "laugh"
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.8
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"repeat": 10,
+							"interval": 0.16,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "hand"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "hand"
+						}
+					]
+				},
+				{
+					"act": "burst",
+					"speaker": "公主",
+					"text": "门后还有——哈哈哈哈更痒了！",
+					"actions": [
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.6
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"repeat": 10,
+							"interval": 0.15,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "hand"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "hand"
+						}
+					]
+				},
+				{
+					"act": "burst",
+					"speaker": "公主",
+					"text": "……门后面……是、是千手的家吗……嘿嘿……",
+					"actions": [
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "dots"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"repeat": 6,
+							"interval": 0.22,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "hand"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "hand"
+						}
+					]
+				},
+				{
+					"actions": [
+						{
+							"do": "fade_out",
+							"time": 0.5
+						},
+						{
+							"do": "voice",
+							"state": ""
+						}
+					],
+					"wait": 0.6
+				}
+			]
+		},
+		"mz_moth_mirror_curtain": {
+			"name": "蛾影镜帘",
+			"cast": {
+				"princess": {
+					"kind": "princess",
+					"at": [
+						0,
+						8
+					],
+					"visual": "helpless_1",
+					"anim": "helpless",
+					"dir": "down"
+				},
+				"src1": {
+					"kind": "monster:glow_moth",
+					"at": [
+						-30,
+						2
+					],
+					"dir": "right",
+					"hidden": true
+				},
+				"src2": {
+					"kind": "trap:mirror_puddle",
+					"at": [
+						0,
+						12
+					],
+					"hidden": true
+				},
+				"src3": {
+					"kind": "trap:feather_curtain",
+					"at": [
+						20,
+						4
+					],
+					"hidden": true
+				}
+			},
+			"steps": [
+				{
+					"actions": [
+						{
+							"do": "fade_in",
+							"time": 0.4
+						},
+						{
+							"do": "voice",
+							"state": "giggle"
+						},
+						{
+							"do": "sources",
+							"list": [
+								{
+									"kind": "monster",
+									"key": "glow_moth",
+									"name": "夜光羽蛾"
+								},
+								{
+									"kind": "trap",
+									"key": "mirror_puddle",
+									"name": "镜面水洼"
+								},
+								{
+									"kind": "trap",
+									"key": "feather_curtain",
+									"name": "羽毛门帘"
+								}
+							]
+						}
+					],
+					"wait": 0.4
+				},
+				{
+					"speaker": "",
+					"text": "【第八层·夜迷宫】蛾影镜帘——鳞粉被水面和帘子反射得到处都是，笑声传得好远。",
+					"actions": [
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "surprise"
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "嘻嘻哈……鳞粉撒在大腿上，亮晶晶的、痒丝丝的——噗哈哈！",
+					"actions": [
+						{
+							"do": "enter",
+							"who": "src1",
+							"from": [
+								-80,
+								0
+							],
+							"time": 0.5
+						},
+						{
+							"do": "light",
+							"index": 0
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 6,
+							"interval": 0.32,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "噫哈哈哈！水面把光反上来，倒影里的手跟着挠屁股哈哈哈！",
+					"actions": [
+						{
+							"do": "enter",
+							"who": "src2",
+							"from": [
+								0,
+								-6
+							],
+							"time": 0.3
+						},
+						{
+							"do": "light",
+							"index": 1
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 7,
+							"interval": 0.28,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 7,
+							"interval": 0.28,
+							"fx": "hand"
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "哈哈哈哈！羽毛帘子一扫，粉飞得到处都是哈哈哈哈！",
+					"actions": [
+						{
+							"do": "enter",
+							"who": "src3",
+							"from": [
+								0,
+								-6
+							],
+							"time": 0.3
+						},
+						{
+							"do": "light",
+							"index": 2
+						},
+						{
+							"do": "pose",
+							"who": "princess",
+							"visual": "helpless_2"
+						},
+						{
+							"do": "voice",
+							"state": "laugh"
+						},
+						{
+							"do": "camera",
+							"zoom": 1.5,
+							"focus": "princess",
+							"time": 0.4
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.5
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 8,
+							"interval": 0.24,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 8,
+							"interval": 0.24,
+							"fx": "hand"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 8,
+							"interval": 0.24,
+							"fx": "feather"
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "亮晶晶的、湿漉漉的、软绵绵的——哈哈哈哈！",
+					"actions": [
+						{
+							"do": "light",
+							"all": true
+						},
+						{
+							"do": "flash",
+							"time": 0.25
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.6
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 10,
+							"interval": 0.2,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 10,
+							"interval": 0.2,
+							"fx": "hand"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 10,
+							"interval": 0.2,
+							"fx": "feather"
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "笑声传得好远——哈哈哈哈要被听见了！",
+					"actions": [
+						{
+							"do": "light",
+							"all": true
+						},
+						{
+							"do": "flash",
+							"time": 0.25
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.6
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 12,
+							"interval": 0.17,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 12,
+							"interval": 0.17,
+							"fx": "hand"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 12,
+							"interval": 0.17,
+							"fx": "feather"
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "粉一落下来帘子就刷——哈哈哈哈哈！",
+					"actions": [
+						{
+							"do": "light",
+							"all": true
+						},
+						{
+							"do": "flash",
+							"time": 0.25
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.6
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 14,
+							"interval": 0.14,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 14,
+							"interval": 0.14,
+							"fx": "hand"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 14,
+							"interval": 0.14,
+							"fx": "feather"
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "到处都在发光——哈哈哈哈哈藏不住！",
+					"actions": [
+						{
+							"do": "light",
+							"all": true
+						},
+						{
+							"do": "flash",
+							"time": 0.25
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.6
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 16,
+							"interval": 0.14,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 16,
+							"interval": 0.14,
+							"fx": "hand"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 16,
+							"interval": 0.14,
+							"fx": "feather"
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "哈哈哈哈……亮、亮亮的……哈哈哈哈……",
+					"actions": [
+						{
+							"do": "light",
+							"all": true
+						},
+						{
+							"do": "flash",
+							"time": 0.25
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.6
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "dots"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 18,
+							"interval": 0.14,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 18,
+							"interval": 0.14,
+							"fx": "hand"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 18,
+							"interval": 0.14,
+							"fx": "feather"
+						}
+					]
+				},
+				{
+					"act": "burst",
+					"speaker": "",
+					"text": "（鳞粉、倒影和羽毛帘子一起，魔力满了）",
+					"actions": [
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.8
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "surprise"
+						},
+						{
+							"do": "voice",
+							"state": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 6,
+							"interval": 0.24,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "hand"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "feather"
+						}
+					]
+				},
+				{
+					"act": "burst",
+					"speaker": "公主",
+					"text": "魔力……要把粉全吹散了——！",
+					"actions": [
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 1.2
+						},
+						{
+							"do": "camera",
+							"zoom": 1.5,
+							"focus": "princess",
+							"time": 0.4
+						},
+						{
+							"do": "flash",
+							"time": 0.2
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "hand"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "feather"
+						}
+					]
+				},
+				{
+					"act": "burst",
+					"portrait": "fatigue_burst",
+					"actions": [
+						{
+							"do": "flash",
+							"time": 0.8
+						},
+						{
+							"do": "sfx",
+							"sound": "star_burst",
+							"volume": -1.0
+						},
+						{
+							"do": "sfx",
+							"sound": "water_release",
+							"volume": -2.0
+						},
+						{
+							"do": "voice",
+							"state": ""
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.5
+						},
+						{
+							"do": "camera",
+							"zoom": 1,
+							"focus": "princess",
+							"time": 0.5
+						},
+						{
+							"do": "move",
+							"who": "src1",
+							"to": [
+								-90,
+								-4
+							],
+							"time": 0.25
+						},
+						{
+							"do": "light",
+							"all": true
+						}
+					],
+					"wait": 1.1
+				},
+				{
+					"act": "burst",
+					"speaker": "公主",
+					"text": "呼……魔力全涌出去了……一下子清爽了，好舒服……",
+					"actions": [
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "shy"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "hand"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "feather"
+						}
+					]
+				},
+				{
+					"act": "burst",
+					"speaker": "",
+					"text": "（蛾子又飞了回来，帘子也又放了下来）",
+					"actions": [
+						{
+							"do": "move",
+							"who": "src1",
+							"to": [
+								-30,
+								2
+							],
+							"time": 0.6
+						},
+						{
+							"do": "voice",
+							"state": "giggle"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 4,
+							"interval": 0.3,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "hand"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "feather"
+						}
+					]
+				},
+				{
+					"act": "burst",
+					"speaker": "公主",
+					"text": "哈哈哈哈！放完魔力好敏感……粉一落下来就痒得受不了哈哈哈哈！",
+					"actions": [
+						{
+							"do": "voice",
+							"state": "laugh"
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.8
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 10,
+							"interval": 0.16,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "hand"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "feather"
+						}
+					]
+				},
+				{
+					"act": "burst",
+					"speaker": "公主",
+					"text": "亮晶晶的——哈哈哈哈更痒了！",
+					"actions": [
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.6
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 10,
+							"interval": 0.15,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "hand"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "feather"
+						}
+					]
+				},
+				{
+					"act": "burst",
+					"speaker": "公主",
+					"text": "……星星……掉进水里了……嘿嘿……",
+					"actions": [
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "dots"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 6,
+							"interval": 0.22,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "hand"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "feather"
+						}
+					]
+				},
+				{
+					"actions": [
+						{
+							"do": "fade_out",
+							"time": 0.5
+						},
+						{
+							"do": "voice",
+							"state": ""
+						}
+					],
+					"wait": 0.6
+				}
+			]
+		},
+		"mz_rhythm_combo": {
+			"name": "节奏连击",
+			"cast": {
+				"princess": {
+					"kind": "princess",
+					"at": [
+						0,
+						8
+					],
+					"visual": "helpless_1",
+					"anim": "helpless",
+					"dir": "down"
+				},
+				"src1": {
+					"kind": "trap:hand_rhythm",
+					"at": [
+						0,
+						-20
+					],
+					"hidden": true
+				},
+				"src2": {
+					"kind": "trap:shadow_vine",
+					"at": [
+						0,
+						10
+					],
+					"hidden": true
+				},
+				"src3": {
+					"kind": "monster:dream_fluff",
+					"at": [
+						-30,
+						2
+					],
+					"dir": "right",
+					"hidden": true
+				}
+			},
+			"steps": [
+				{
+					"actions": [
+						{
+							"do": "fade_in",
+							"time": 0.4
+						},
+						{
+							"do": "voice",
+							"state": "giggle"
+						},
+						{
+							"do": "sources",
+							"list": [
+								{
+									"kind": "trap",
+									"key": "hand_rhythm",
+									"name": "手的节奏"
+								},
+								{
+									"kind": "trap",
+									"key": "shadow_vine",
+									"name": "影子缠腿藤"
+								},
+								{
+									"kind": "monster",
+									"key": "dream_fluff",
+									"name": "梦绒球"
+								}
+							]
+						}
+					],
+					"wait": 0.4
+				},
+				{
+					"speaker": "",
+					"text": "【第八层·夜迷宫】节奏连击——身上的手一起狠挠的那一下，被藤蔓缠住、绒球粘住，躲不开——再来一次。",
+					"actions": [
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "surprise"
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "嘻嘻哈……身上的手一起停下来——然后同时狠狠一挠——噗哈哈！",
+					"actions": [
+						{
+							"do": "enter",
+							"who": "src1",
+							"from": [
+								0,
+								-6
+							],
+							"time": 0.3
+						},
+						{
+							"do": "light",
+							"index": 0
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 6,
+							"interval": 0.32,
+							"fx": "hand"
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "噫哈哈哈！想冲、冲开——藤蔓缠住腿了，躲不开哈哈哈！",
+					"actions": [
+						{
+							"do": "enter",
+							"who": "src2",
+							"from": [
+								0,
+								-6
+							],
+							"time": 0.3
+						},
+						{
+							"do": "light",
+							"index": 1
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 7,
+							"interval": 0.28,
+							"fx": "hand"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 7,
+							"interval": 0.28,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "哈哈哈哈！绒球粘着不放，又、又一下要来了哈哈哈哈！",
+					"actions": [
+						{
+							"do": "enter",
+							"who": "src3",
+							"from": [
+								-80,
+								0
+							],
+							"time": 0.5
+						},
+						{
+							"do": "light",
+							"index": 2
+						},
+						{
+							"do": "pose",
+							"who": "princess",
+							"visual": "helpless_2"
+						},
+						{
+							"do": "voice",
+							"state": "laugh"
+						},
+						{
+							"do": "camera",
+							"zoom": 1.5,
+							"focus": "princess",
+							"time": 0.4
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.5
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 8,
+							"interval": 0.24,
+							"fx": "hand"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 8,
+							"interval": 0.24,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 8,
+							"interval": 0.24,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "一、二——哈哈哈哈又来了！",
+					"actions": [
+						{
+							"do": "light",
+							"all": true
+						},
+						{
+							"do": "flash",
+							"time": 0.25
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.6
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 10,
+							"interval": 0.2,
+							"fx": "hand"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 10,
+							"interval": 0.2,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 10,
+							"interval": 0.2,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "停、停一下——哈哈哈哈哈不停！",
+					"actions": [
+						{
+							"do": "light",
+							"all": true
+						},
+						{
+							"do": "flash",
+							"time": 0.25
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.6
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 12,
+							"interval": 0.17,
+							"fx": "hand"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 12,
+							"interval": 0.17,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 12,
+							"interval": 0.17,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "缠着、粘着、一起挠——哈哈哈哈哈！",
+					"actions": [
+						{
+							"do": "light",
+							"all": true
+						},
+						{
+							"do": "flash",
+							"time": 0.25
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.6
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 14,
+							"interval": 0.14,
+							"fx": "hand"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 14,
+							"interval": 0.14,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 14,
+							"interval": 0.14,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "第、第三下——哈哈哈哈哈数不过来了！",
+					"actions": [
+						{
+							"do": "light",
+							"all": true
+						},
+						{
+							"do": "flash",
+							"time": 0.25
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.6
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 16,
+							"interval": 0.14,
+							"fx": "hand"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 16,
+							"interval": 0.14,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 16,
+							"interval": 0.14,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "哈哈哈哈……节、节奏……跟不上了……哈哈哈哈……",
+					"actions": [
+						{
+							"do": "light",
+							"all": true
+						},
+						{
+							"do": "flash",
+							"time": 0.25
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.6
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "dots"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 18,
+							"interval": 0.14,
+							"fx": "hand"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 18,
+							"interval": 0.14,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 18,
+							"interval": 0.14,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"act": "burst",
+					"speaker": "",
+					"text": "（一起狠挠的手、藤蔓和绒球，魔力被挠得满满的）",
+					"actions": [
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.8
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "surprise"
+						},
+						{
+							"do": "voice",
+							"state": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 6,
+							"interval": 0.24,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "hand"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"act": "burst",
+					"speaker": "公主",
+					"text": "魔力……要把节奏打乱了——！",
+					"actions": [
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 1.2
+						},
+						{
+							"do": "camera",
+							"zoom": 1.5,
+							"focus": "princess",
+							"time": 0.4
+						},
+						{
+							"do": "flash",
+							"time": 0.2
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "hand"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"act": "burst",
+					"portrait": "fatigue_burst",
+					"actions": [
+						{
+							"do": "flash",
+							"time": 0.8
+						},
+						{
+							"do": "sfx",
+							"sound": "star_burst",
+							"volume": -1.0
+						},
+						{
+							"do": "sfx",
+							"sound": "water_release",
+							"volume": -2.0
+						},
+						{
+							"do": "voice",
+							"state": ""
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.5
+						},
+						{
+							"do": "camera",
+							"zoom": 1,
+							"focus": "princess",
+							"time": 0.5
+						},
+						{
+							"do": "move",
+							"who": "src3",
+							"to": [
+								-90,
+								-4
+							],
+							"time": 0.25
+						},
+						{
+							"do": "light",
+							"all": true
+						}
+					],
+					"wait": 1.1
+				},
+				{
+					"act": "burst",
+					"speaker": "公主",
+					"text": "哈啊……魔力全放出去了……手都停下来了，好舒服……",
+					"actions": [
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "shy"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "hand"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"act": "burst",
+					"speaker": "",
+					"text": "（手又一起屏住了，藤蔓也缠了回来）",
+					"actions": [
+						{
+							"do": "move",
+							"who": "src3",
+							"to": [
+								-30,
+								2
+							],
+							"time": 0.6
+						},
+						{
+							"do": "voice",
+							"state": "giggle"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 4,
+							"interval": 0.3,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "hand"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"act": "burst",
+					"speaker": "公主",
+					"text": "咿哈哈哈！放完魔力好敏感……一、二、挠——痒到发抖哈哈哈哈！",
+					"actions": [
+						{
+							"do": "voice",
+							"state": "laugh"
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.8
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 10,
+							"interval": 0.16,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "hand"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"act": "burst",
+					"speaker": "公主",
+					"text": "又一下——哈哈哈哈更痒了！",
+					"actions": [
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.6
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 10,
+							"interval": 0.15,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "hand"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"act": "burst",
+					"speaker": "公主",
+					"text": "……一、二、三……跳、跳舞吗……嘿嘿……",
+					"actions": [
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "dots"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src3",
+							"repeat": 6,
+							"interval": 0.22,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "hand"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 4,
+							"interval": 0.2,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"actions": [
+						{
+							"do": "fade_out",
+							"time": 0.5
+						},
+						{
+							"do": "voice",
+							"state": ""
+						}
+					],
+					"wait": 0.6
+				}
+			]
 		}
 	}
 }

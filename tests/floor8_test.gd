@@ -867,6 +867,9 @@ func _talk_through(trigger: Callable) -> Array:
 	await get_tree().process_frame
 	var g := 0
 	while (Dialogue.is_active() or Dialogue.runner.is_running()) and g < 400:
+		# 选项（床的「睡吧 / 再看看」）：选最后一个（不睡）
+		if Dialogue.runner.choice_menu.is_open():
+			Dialogue.runner.choice_menu.choose(Dialogue.runner.choice_menu.options.size() - 1)
 		if Dialogue.is_active():
 			said.append(Dialogue.text_label.text)
 			Dialogue.advance()

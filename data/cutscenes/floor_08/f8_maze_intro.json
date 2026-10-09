@@ -1,0 +1,63 @@
+{
+	"name": "第八层：夜迷宫",
+	"letterbox": true,
+	"skippable": true,
+	"steps": [
+		{
+			"actions": [
+				{
+					"time": 1.2,
+					"do": "fade_in"
+				}
+			],
+			"wait": 1.2
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……这里。"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……你在吧。"
+		},
+		{
+			"actions": [
+				{
+					"do": "wait"
+				}
+			],
+			"wait": 0.8
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……对不起。",
+			"emotion": "sad"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……这次，换我来补偿你。",
+			"emotion": "sad"
+		},
+		{
+			"speaker": "",
+			"text": "（远处的黑暗里，亮起一只紫色的手——轻轻晃了晃，又暗了下去）"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……",
+			"emotion": "surprise",
+			"actions": [
+				{
+					"who": "princess",
+					"kind": "dots",
+					"do": "bubble"
+				}
+			]
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……来吧。",
+			"emotion": "angry"
+		}
+	]
+}

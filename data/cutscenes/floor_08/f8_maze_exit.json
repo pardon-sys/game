@@ -1,0 +1,24 @@
+{
+	"name": "第八层：夜迷宫的出口",
+	"letterbox": true,
+	"skippable": true,
+	"steps": [
+		{
+			"speaker": "蓝色的公主",
+			"text": "……出口。"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……前面，是哪里。"
+		},
+		{
+			"actions": [
+				{
+					"text": "（待续）",
+					"do": "notify"
+				}
+			],
+			"wait": 0.6
+		}
+	]
+}

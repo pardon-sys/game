@@ -1,0 +1,257 @@
+{
+	"name": "夜迷宫·第一只手",
+	"cast": {
+		"blue": {
+			"kind": "npc:blue_princess",
+			"at": [
+				0,
+				8
+			],
+			"visual": "normal",
+			"anim": "idle",
+			"dir": "down"
+		}
+	},
+	"steps": [
+		{
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "fade_in"
+				}
+			],
+			"wait": 0.5
+		},
+		{
+			"speaker": "",
+			"text": "（黑暗里，有什么轻轻碰了她一下）",
+			"actions": []
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……？",
+			"actions": [],
+			"emotion": "surprise"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……谁。",
+			"actions": [],
+			"emotion": "angry"
+		},
+		{
+			"speaker": "",
+			"text": "（没有人。只有一只看不见的手，贴在了她身上，慢慢地动了动手指）",
+			"actions": []
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……唔。",
+			"actions": [
+				{
+					"who": "blue",
+					"repeat": 6,
+					"interval": 0.188,
+					"fx": "hand",
+					"zone": "waist",
+					"do": "tickle"
+				},
+				{
+					"who": "blue",
+					"time": 0.3,
+					"do": "shake"
+				}
+			],
+			"emotion": "shy"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……有东西……贴着。",
+			"actions": []
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……看不见。……但是，在动。",
+			"actions": [
+				{
+					"who": "blue",
+					"repeat": 8,
+					"interval": 0.172,
+					"fx": "hand",
+					"zone": "waist",
+					"do": "tickle"
+				},
+				{
+					"who": "blue",
+					"time": 0.3,
+					"do": "shake"
+				}
+			]
+		},
+		{
+			"speaker": "",
+			"text": "（手指一下、一下，像是在确认她怕不怕）",
+			"actions": []
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……噗。",
+			"actions": [
+				{
+					"who": "blue",
+					"repeat": 6,
+					"interval": 0.156,
+					"fx": "hand",
+					"zone": "waist",
+					"do": "tickle"
+				},
+				{
+					"who": "blue",
+					"time": 0.3,
+					"do": "shake"
+				}
+			],
+			"emotion": "helpless_1"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……刚才的，不算。",
+			"actions": [
+				{
+					"state": "giggle",
+					"do": "voice"
+				}
+			],
+			"emotion": "angry"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……你在吧。……是你，对吧。",
+			"actions": [],
+			"emotion": "sad"
+		},
+		{
+			"speaker": "",
+			"text": "（手指停了一下——然后，像是听懂了似的，挠得更轻、更慢了）",
+			"actions": []
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……就这样？……这种程度……",
+			"actions": [
+				{
+					"who": "blue",
+					"repeat": 6,
+					"interval": 0.14,
+					"fx": "hand",
+					"zone": "waist",
+					"do": "tickle"
+				},
+				{
+					"who": "blue",
+					"time": 0.3,
+					"do": "shake"
+				}
+			]
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……唔、嗯……哈……",
+			"actions": [
+				{
+					"who": "blue",
+					"repeat": 7,
+					"interval": 0.14,
+					"fx": "hand",
+					"zone": "waist",
+					"do": "tickle"
+				},
+				{
+					"who": "blue",
+					"time": 0.3,
+					"do": "shake"
+				}
+			],
+			"emotion": "helpless_1"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……不、不痒。……一点也……噗……",
+			"actions": [
+				{
+					"who": "blue",
+					"repeat": 8,
+					"interval": 0.14,
+					"fx": "hand",
+					"zone": "waist",
+					"do": "tickle"
+				},
+				{
+					"who": "blue",
+					"time": 0.3,
+					"do": "shake"
+				},
+				{
+					"state": "laugh",
+					"do": "voice"
+				},
+				{
+					"who": "blue",
+					"visual": "helpless_1",
+					"anim": "helpless",
+					"do": "pose"
+				}
+			]
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……哈……哈……",
+			"actions": [
+				{
+					"who": "blue",
+					"repeat": 9,
+					"interval": 0.14,
+					"fx": "hand",
+					"zone": "waist",
+					"do": "tickle"
+				},
+				{
+					"who": "blue",
+					"time": 0.3,
+					"do": "shake"
+				}
+			],
+			"emotion": "helpless_1"
+		},
+		{
+			"speaker": "",
+			"text": "（看不见的手没有离开，就那样贴在她身上，一起往黑暗里走）",
+			"actions": []
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……好。……一起走吧。",
+			"actions": [],
+			"emotion": "sad"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……我会走到最里面。",
+			"actions": [],
+			"emotion": "angry"
+		},
+		{
+			"actions": [
+				{
+					"state": "",
+					"do": "voice"
+				},
+				{
+					"time": 0.8,
+					"do": "fade_out"
+				}
+			],
+			"wait": 0.9
+		}
+	]
+}

@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="MonsterStats" format=3]
+
+[ext_resource type="Script" path="res://scripts/actors/monsters/monster_stats.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+display_name = "梦绒球"
+reaction_key = "dream_fluff"
+taunt_chance = 0.25
+max_hp = 3
+wander_speed = 14
+chase_speed = 30
+detect_range = 80
+lose_range = 160
+hurt_time = 0.25
+attack_damage = 0
+tickle_amount = 3.0
+tickle_cooldown = 1.0
+tickle_weight = 1.0
+tickle_pitch = 1.3
+hit_fx = "feather"

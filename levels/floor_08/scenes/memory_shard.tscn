@@ -1,0 +1,6 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://levels/floor_08/scripts/memory_shard.gd" id="1"]
+
+[node name="MemoryShard" type="Node2D"]
+script = ExtResource("1")

@@ -4,6 +4,8 @@ extends CharacterController
 ## wasd_only：只用 WASD（和手柄）移动——第八层同时操作两个角色时，方向键留给右边小窗里的角色。
 
 static var wasd_only := false
+## actions_locked：只能移动，别的动作（攻击 / 魔法 / 冲刺 / 交互……）都不算按下——头顶的 QTE（J K L U I O）期间用。
+static var actions_locked := false
 
 
 func get_move_vector() -> Vector2:
@@ -18,8 +20,12 @@ func get_move_vector() -> Vector2:
 
 
 func is_action_just_pressed(action: StringName) -> bool:
+	if actions_locked:
+		return false
 	return Input.is_action_just_pressed(action)
 
 
 func is_action_pressed(action: StringName) -> bool:
+	if actions_locked:
+		return false
 	return Input.is_action_pressed(action)

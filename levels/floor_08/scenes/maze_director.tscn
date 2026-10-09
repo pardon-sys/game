@@ -1,0 +1,6 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://levels/floor_08/scripts/maze_director.gd" id="1"]
+
+[node name="MazeDirector" type="Node2D"]
+script = ExtResource("1")

@@ -40,10 +40,26 @@ actors = {
     "caterpillar": {"scene": M % "caterpillar", "sprite": {"hframes": 2}},
     "barnacle": {"scene": M % "barnacle", "sprite": {"hframes": 3, "frame": 1}},
     "thousand_hand": {"scene": "res://levels/floor_08/scenes/thousand_hand.tscn", "sprite": {"hframes": 6, "offset": [0, -48]}},
+    # 第八层夜迷宫
+    "glow_moth": {"scene": "res://levels/floor_08/scenes/glow_moth.tscn", "sprite": {"hframes": 2}},
+    "dream_fluff": {"scene": "res://levels/floor_08/scenes/dream_fluff.tscn", "sprite": {"hframes": 2}},
+    "lamp_imp": {"scene": "res://levels/floor_08/scenes/lamp_imp.tscn", "sprite": {"hframes": 2}},
+    "laugh_jar": {"scene": "res://levels/floor_08/scenes/laugh_jar.tscn", "sprite": {"hframes": 4, "frame": 2}},
 }
+NO_DEATH_CG = {"thousand_hand", "glow_moth", "dream_fluff", "lamp_imp", "laugh_jar"}
 # 陷阱演员（组合演出用）：贴图、待机 / 发动帧、铺几格、旋转、羽毛臂。舞台上的摆放位置在 gen_combo_scenes.py。
 T = "res://assets/generated/%s.png"
+MZ = "res://assets/generated/maze/%s.png"
 trap_actors = {
+    # 第八层夜迷宫：紫手 / 手的节奏用千手的手掌图，其余用 gen_floor08_maze_art.py 的图
+    "maze_hand": {"hit_fx": "hand", "texture": T % "thousand_hand_arm", "hframes": 8, "idle": [0, 1], "active": [2, 3], "fps": 4, "z": 2, "pitch": 1.1},
+    "hand_rhythm": {"hit_fx": "hand", "texture": T % "thousand_hand_arm", "hframes": 8, "idle": [0], "active": [2, 3, 2, 3], "fps": 10, "z": 2, "pitch": 0.9},
+    "hand_shadow": {"hit_fx": "hand", "texture": MZ % "hand_shadow", "hframes": 2, "idle": [0], "active": [1, 0], "fps": 4, "z": 2, "pitch": 0.7},
+    "mirror_puddle": {"hit_fx": "hand", "texture": MZ % "mirror_puddle", "hframes": 1, "idle": [0], "active": [0], "z": -1, "pitch": 1.2},
+    "shadow_vine": {"hit_fx": "lines", "texture": MZ % "shadow_vine", "hframes": 2, "idle": [0], "active": [1], "offset": [0, -6], "z": 1, "pitch": 0.9},
+    "feather_curtain": {"hit_fx": "feather", "texture": MZ % "feather_curtain", "hframes": 2, "idle": [1], "active": [0], "offset": [0, -10], "z": 1, "pitch": 1.3},
+    "cradle_bench": {"hit_fx": "hand", "texture": MZ % "cradle_bench", "hframes": 1, "idle": [0], "active": [0], "offset": [0, -4], "z": -1, "pitch": 1.0},
+    "hand_gate": {"hit_fx": "hand", "texture": MZ % "hand_gate", "hframes": 2, "idle": [0], "active": [1], "offset": [0, -14], "z": 0, "pitch": 0.8},
     "stocks": {"hit_fx": "feather", "texture": T % "stocks", "hframes": 2, "idle": [0], "active": [1], "z": 1, "pitch": 1.3},
     "carpet": {"hit_fx": "goo", "texture": T % "carpet", "hframes": 2, "idle": [0, 1], "active": [0, 1], "fps": 3, "tiles": [3, 2], "z": -1, "pitch": 1.5},
     "rune": {"hit_fx": "curse", "texture": T % "hex_rune", "hframes": 3, "idle": [0], "active": [1, 1, 0], "z": -1, "pitch": 0.8},
@@ -559,7 +575,8 @@ def main():
         "actors": actors,
         "trap_actors": trap_actors,
         # 千手痒痒魔只在第八层双人模式里出现（倒下是倒地 + 战败小剧场），没有笑倒 CG
-        "death": {"by_source": {k: "death_" + k for k in actors if k != "thousand_hand"}, "default": "death_generic"},
+        # 千手和夜迷宫的怪物没有专属笑倒 CG（Boss 战 / 夜迷宫各有自己的战败小剧场）
+        "death": {"by_source": {k: "death_" + k for k in actors if k not in NO_DEATH_CG}, "default": "death_generic"},
         "cgs": cgs,
     }
     open("data/cgs.json", "w").write(json.dumps(data, ensure_ascii=False, indent="\t") + "\n")

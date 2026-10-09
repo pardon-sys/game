@@ -679,7 +679,9 @@ def SL(text, who=P, emotion=None):
 # 调查过蜡笔画 / 发夹 / 刻痕 / 八音盒会设标记，和蓝色公主说话时多出对应的话题。
 SHELTER_OBJ = {"name": "", "entries": [{"node": "bed"}], "nodes": {
     "bed": {"lines": [SL("落了一层灰的床，帷幔是淡淡的蓝色……被子比我的床小一圈。", P, "surprise"),
-                      SL("……今天就在这里过夜吧。", P, "shy")], "set": {"flags": ["f8s_seen_bed"]}},
+                      SL("……今天就在这里过夜吧。", P, "shy")], "set": {"flags": ["f8s_seen_bed"]},
+            "prompt": "……睡吧？", "choices": [{"text": "睡吧", "next": "bed_sleep"}, {"text": "再看看", "next": ""}]},
+    "bed_sleep": {"lines": [SL("……嗯。今天就到这里……晚安。", P, "shy")], "cutscene": "f8_shelter_sleep"},
     "wardrobe": {"lines": [SL("衣柜里挂着几件蓝色的小裙子……好小，像是给小孩子穿的。", P, "surprise"),
                            SL("裙摆上缝着雪花形状的花边。……做得好仔细。", P),
                            SL("……别乱翻。", BLUE)]},
@@ -778,5 +780,462 @@ SIGNS8["f8s_door"] = [{"speaker": BLUE, "text": "……外面很危险。今晚�
 (DLG / "signs.json").write_text(json.dumps(SIGNS8, ensure_ascii=False, indent="\t") + "\n")
 Path("levels/floor_08_shelter/design.json").write_text(json.dumps({
     "_说明": ["第八层的小房间（gen_floor08.py 生成）：追逐逃出来后过夜的地方；操控粉色公主、不能切换（no_switch）。"]}, ensure_ascii=False, indent="\t") + "\n")
+
+# ================================================================ 小房间的夜晚：睡下 → 蓝色公主冰封她（脚露在外面）→ 离开
+SLEEP_CUTS = {
+    "f8_shelter_sleep": cut("第八层：小房间的夜晚", [
+        {"actions": [A("fade_out", time=0.6)], "wait": 0.7},
+        {"actions": [A("move", who="princess", to=[5, 5]), A("pose", faint=True), A("move", who=BLUE_NPC, to=[11, 5]),
+                     A("face", who=BLUE_NPC, dir="left"), A("fade_in", time=0.8)], "wait": 0.9},
+        {"speaker": "", "text": "（粉色公主钻进被窝，没过多久就发出了均匀的呼吸声）"},
+        line(P, "……呼……呼……唔嘿嘿……再、再来一块饼干……", "shy"),
+        {"actions": [A("move", who=BLUE_NPC, to=[7, 5], speed=30)], "wait": 1.6},
+        line(BLUE, "……睡着了。"),
+        line(BLUE, "……对不起。……不能让你跟来。", "sad"),
+        {"actions": [A("sfx", sound="chime"), A("flash", time=0.4),
+                     A("spawn", id="ice", kind="prop:ice_block", at=[5, 5])], "wait": 0.6},
+        {"speaker": "", "text": "（冰晶的光一闪，一层薄冰轻轻盖在她身上——从头一直盖到脚踝）"},
+        line(BLUE, "……这样，它们就找不到你了。"),
+        line(BLUE, "……", actions=[A("face", who=BLUE_NPC, dir="left")]),
+        line(BLUE, "……脚。……露在外面了。", "surprise"),
+        line(BLUE, "……她最怕脚心。……", "shy"),
+        line(BLUE, "……算了。……没人会挠的。……应该。", "shy"),
+        line(BLUE, "……对不起。", "sad"),
+        {"actions": [A("move", who=BLUE_NPC, to=[7, 8], speed=40)], "wait": 1.4},
+        {"actions": [A("sfx", sound="door"), A("set_flag", flag="blue_is_hero"), A("set_flag", flag="f8_slept"),
+                     A("fade_out", time=1.0), A("goto", to="floor_08_maze_1", spawn="")], "wait": 1.2},
+    ]),
+    "f8_maze_intro": cut("第八层：夜迷宫", [
+        {"actions": [A("fade_in", time=1.2)], "wait": 1.2},
+        line(BLUE, "……这里。"),
+        line(BLUE, "……你在吧。"),
+        {"actions": [A("wait")], "wait": 0.8},
+        line(BLUE, "……对不起。", "sad"),
+        line(BLUE, "……这次，换我来补偿你。", "sad"),
+        {"speaker": "", "text": "（远处的黑暗里，亮起一只紫色的手——轻轻晃了晃，又暗了下去）"},
+        line(BLUE, "……", "surprise", [A("bubble", who="princess", kind="dots")]),
+        line(BLUE, "……来吧。", "angry"),
+    ]),
+    "f8_maze_exit": cut("第八层：夜迷宫的出口", [
+        line(BLUE, "……出口。"),
+        line(BLUE, "……前面，是哪里。"),
+        {"actions": [A("notify", text="（待续）")], "wait": 0.6},
+    ]),
+}
+for name, cs in SLEEP_CUTS.items():
+    (CUT / (name + ".json")).write_text(json.dumps(cs, ensure_ascii=False, indent="\t") + "\n")
+
+# ================================================================ 夜迷宫（三段；tools/build/maze_gen.py 生成迷宫格子，2.5D 光照）
+from maze_gen import Maze  # noqa: E402
+
+# 段 -> (单元列, 单元行, 种子, 月光灯数, 回环比例, 小房间数, 呼吸墙对数, 回忆碎片 id)
+MAZES = {
+    1: (20, 14, 81, 4, 0.14, 3, 4, (1, 2)),
+    2: (24, 18, 82, 4, 0.13, 5, 6, (3, 4)),
+    3: (28, 21, 83, 3, 0.12, 5, 8, (5, 6)),
+}
+MAZE_INFO = {}
+
+# 每段的三来源组合区域（按顺序放进不含灯 / 起点 / 出口的小房间）：组合 id -> 要摆的东西
+MAZE_COMBOS = {
+    1: ["mz_moth_curtain", "mz_cradle_moth", "mz_moth_mirror_curtain"],
+    2: ["mz_mirror_vine", "mz_fluff_jar", "mz_curtain_vine", "mz_mirror_jar", "mz_rhythm_combo"],
+    3: ["mz_dark_raid", "mz_shadow_bench", "mz_gate_hands"],
+}
+# 来源键 -> 地图上的写法（maze_hand / hand_rhythm 由导演提供，不用摆；千手之门 / 影子另外处理）
+MAZE_SPEC = {
+    "glow_moth": "monster type=glow_moth", "dream_fluff": "monster type=dream_fluff", "lamp_imp": "monster type=lamp_imp",
+    "laugh_jar": "monster type=laugh_jar", "mirror_puddle": "trap type=mirror_puddle", "shadow_vine": "trap type=shadow_vine",
+    "feather_curtain": "trap type=feather_curtain", "cradle_bench": "cradle",
+}
+MAZE_COMBO_KEYS = {
+    "mz_moth_curtain": ["glow_moth", "feather_curtain"], "mz_mirror_vine": ["mirror_puddle", "shadow_vine"],
+    "mz_fluff_jar": ["dream_fluff", "laugh_jar"], "mz_cradle_moth": ["cradle_bench", "glow_moth"],
+    "mz_curtain_vine": ["feather_curtain", "shadow_vine", "dream_fluff"], "mz_mirror_jar": ["mirror_puddle", "laugh_jar"],
+    "mz_dark_raid": ["lamp_imp", "dream_fluff"], "mz_shadow_bench": ["hand_shadow", "cradle_bench"],
+    "mz_gate_hands": ["hand_gate", "shadow_vine"], "mz_moth_mirror_curtain": ["glow_moth", "feather_curtain", "mirror_puddle"],
+    "mz_rhythm_combo": ["dream_fluff", "shadow_vine"],
+}
+# 段 -> 散放的东西（来源键: 个数）、门帘（主路上的门洞数）、月光镜暗门数、千手之门捷径数、巡逻影子数
+MAZE_SCATTER = {
+    1: ({"glow_moth": 5, "mirror_puddle": 3, "cradle_bench": 1}, 3, 0, 0, 0),
+    2: ({"glow_moth": 2, "dream_fluff": 4, "laugh_jar": 2, "shadow_vine": 4, "mirror_puddle": 3}, 2, 1, 0, 1),
+    3: ({"glow_moth": 2, "dream_fluff": 3, "laugh_jar": 2, "lamp_imp": 4, "shadow_vine": 4}, 2, 1, 1, 2),
+}
+DIRS4 = [(1, 0), (0, 1), (-1, 0), (0, -1)]   # MoonMirror.facing 0~3
+
+
+class MazePlacer:
+    """往一段迷宫里摆怪物 / 陷阱 / 机关 / 组合区域 / 巡逻影子；记下 design.json 用的组合区域和机关。"""
+
+    def __init__(self, sec, mm, mz, reserved_cells):
+        self.sec, self.mm, self.mz = sec, mm, mz
+        self.rng = mz.rng
+        self.used_cells = set(reserved_cells)
+        self.used_tiles = set(mm.cells)
+        self.no_go = set()          # 呼吸墙的格子：什么都不放
+        for b in mz.breathing:
+            self.no_go.update(b["a"])
+            self.no_go.update(b["b"])
+        self.areas = []
+        self.devices = []
+
+    def free_tile(self, x, y):
+        return self.mm.g[y][x] == "." and (x, y) not in self.used_tiles and (x, y) not in self.no_go
+
+    def put(self, x, y, spec):
+        self.mm.put(x, y, spec)
+        self.used_tiles.add((x, y))
+
+    def put_in_cell(self, c, spec):
+        tiles = [t for t in self.mz.cell_floor(c) if self.free_tile(*t)]
+        if not tiles:
+            return None
+        t = self.rng.choice(tiles)
+        self.put(t[0], t[1], spec)
+        self.used_cells.add(c)
+        return t
+
+    # -------------------------------------------------------------- 组合区域
+    def combo_rooms(self):
+        return [r for r in self.mz.rooms if not any(c in self.used_cells for c in r)]
+
+    def room_rect(self, cells):
+        xs = [x for c in cells for (x, _y) in self.mz.cell_floor(c)]
+        ys = [y for c in cells for (_x, y) in self.mz.cell_floor(c)]
+        return [min(xs), min(ys), max(xs), max(ys)]
+
+    def place_combos(self, combos):
+        rooms = self.combo_rooms()
+        assert len(rooms) >= len(combos), ("第 %d 段的小房间不够放组合区域" % self.sec, len(rooms), len(combos))
+        for cid, room in zip(combos, rooms):
+            rect = self.room_rect(room)
+            tiles = [(x, y) for y in range(rect[1], rect[3] + 1) for x in range(rect[0], rect[2] + 1) if self.free_tile(x, y)]
+            self.rng.shuffle(tiles)
+            for key in MAZE_COMBO_KEYS[cid]:
+                if key == "hand_gate":
+                    g = self.hand_gate(room, "hg_%d_%s" % (self.sec, cid))
+                    rect = [min(rect[0], g[0][0]), min(rect[1], g[0][1]), max(rect[2], g[1][0]), max(rect[3], g[1][1])]
+                elif key == "hand_shadow":
+                    self.shadow(room[0])
+                else:
+                    if MAZE_SPEC[key].startswith("monster"):   # 怪物放在房间中间（会走动，别一开始就贴着门口）
+                        cx, cy = (rect[0] + rect[2]) / 2.0, (rect[1] + rect[3]) / 2.0
+                        t = min(tiles, key=lambda p: abs(p[0] - cx) + abs(p[1] - cy))
+                        tiles.remove(t)
+                    else:
+                        t = tiles.pop()
+                    self.put(t[0], t[1], MAZE_SPEC[key])
+            self.used_cells.update(room)
+            # 区域外扩一格（门口一带也算）
+            self.areas.append({"combo": cid, "rect": [rect[0] - 1, rect[1] - 1, rect[2] + 1, rect[3] + 1]})
+
+    # -------------------------------------------------------------- 散放
+    def scatter(self, counts):
+        pool = [c for c in self.mz.corridor_cells(exclude=self.used_cells) + self.mz.dead_ends if c not in self.used_cells]
+        items = [k for k, n in counts.items() for _ in range(n)]
+        for c, key in zip(self.mz.spread(pool, len(items)), items):
+            self.put_in_cell(c, MAZE_SPEC[key])
+
+    def curtains(self, n):
+        """主路上的门洞（两个单元之间的 2 格）挂羽毛门帘。"""
+        path = self.mz.main_path
+        links = [(path[i], path[i + 1]) for i in range(3, len(path) - 2)]
+        links = [p for p in links if all(self.free_tile(*t) for t in self.mz.link_cells(*sorted(p)))]
+        for a, b in self.mz.rng.sample(links, min(n, len(links))):
+            for i, (x, y) in enumerate(self.mz.link_cells(*sorted((a, b)))):
+                self.put(x, y, "trap type=feather_curtain offset=%.1f" % (0.4 * i))
+
+    # -------------------------------------------------------------- 机关
+    def closed_links(self, near_cells, max_cells=3):
+        """离 near_cells 不远、现在封着的单元间墙（打开后是捷径：两边绕路越远越好）。"""
+        dist_from = {}
+        out = []
+        for c in self.mz.all_cells():
+            if min(abs(c[0] - n[0]) + abs(c[1] - n[1]) for n in near_cells) > max_cells:
+                continue
+            for n in self.mz.neighbors(c):
+                if c < n and not self.mz.linked(c, n):
+                    lk = self.mz.link_cells(c, n)
+                    if any(t in self.no_go or t in self.used_tiles for t in lk):
+                        continue
+                    if c not in dist_from:
+                        dist_from[c] = self.mz._cell_dist(c)
+                    out.append((dist_from[c].get(n, 999), c, n, lk))
+        out.sort(key=lambda o: -o[0])
+        return out
+
+    def hand_gate(self, room, group):
+        """千手之门：房间边上一段封着的墙打开、放两扇门（身上 ≥3 只手才推得开）。返回门两格。"""
+        cands = [o for o in self.closed_links(room, 1) if (o[1] in room) != (o[2] in room)]
+        assert cands, ("第 %d 段的房间旁边没有能开千手之门的墙" % self.sec)
+        _d, _c, _n, lk = cands[0]
+        for (x, y) in lk:
+            self.mm.g[y][x] = "."
+            self.put(x, y, "handgate group_name=%s" % group)
+        self.devices.append({"kind": "hand_gate", "group": group, "cells": [list(t) for t in lk]})
+        return lk
+
+    def shortcut_gate(self, i):
+        near = [c for c in self.mz.main_path[len(self.mz.main_path) // 3:]]
+        cands = [o for o in self.closed_links(self.rng.sample(near, min(4, len(near))), 2) if o[0] >= 6 and o[0] < 999]
+        if cands:
+            self.hand_gate([cands[0][1]], "hg_%d_short%d" % (self.sec, i))
+
+    def moon_mirror(self, lamp_cells, i):
+        """月光镜：放在一盏灯（不是入口那盏）的单元里，光带沿一条直走廊照到光开关；开关旁边一段封墙变暗门（捷径）。"""
+        best = None
+        for lc in lamp_cells[1:]:
+            for (mx, my) in self.mz.cell_floor(lc):
+                if not self.free_tile(mx, my):
+                    continue
+                for f, (dx, dy) in enumerate(DIRS4):
+                    run = []
+                    x, y = mx + dx, my + dy
+                    while len(run) < 13 and self.mm.g[y][x] == "." and (x, y) not in self.no_go:
+                        run.append((x, y))
+                        x, y = x + dx, y + dy
+                    if len(run) >= 5 and self.free_tile(*run[-1]) and (best is None or len(run) > len(best[3])):
+                        best = (mx, my, f, run)
+        assert best, ("第 %d 段找不到能放月光镜的直走廊" % self.sec)
+        mx, my, f, run = best
+        group = "beam_%d_%d" % (self.sec, i)
+        sx, sy = run[-1]
+        self.put(mx, my, "moonmirror facing=%d" % ((f + 2) % 4))     # 一开始朝反方向：要转两下
+        self.put(sx, sy, "beamswitch group_name=%s" % group)
+        scell = ((sx - 1) // 3, (sy - 1) // 3)
+        cands = [o for o in self.closed_links([scell], 2) if o[0] < 999]
+        assert cands, ("第 %d 段的光开关旁边没有能开暗门的墙" % self.sec)
+        _d, _c, _n, lk = cands[0]
+        for (x, y) in lk:
+            self.mm.g[y][x] = "."
+            self.put(x, y, "gate group=%s" % group)
+        self.devices.append({"kind": "moon_mirror", "mirror": [mx, my], "facing": f, "switch": [sx, sy], "group": group,
+                             "door": [list(t) for t in lk]})
+
+    def shadow(self, through=None):
+        """千手的影子：沿迷宫走廊来回巡逻（从 through 单元出发、走到 8~12 个单元外再折回来）。"""
+        cells = self.mz.all_cells()
+        start = through or self.rng.choice([c for c in self.mz.branch_cells if c not in self.used_cells] or cells)
+        dist = self.mz._cell_dist(start)
+        far = [c for c in dist if 8 <= dist[c] <= 12] or [max(dist, key=lambda c: dist[c])]
+        end = self.rng.choice(far)
+        path = self.mz._cell_path(start, end)
+        route = path + path[-2:0:-1]
+        pts = [self.mz.cell_floor(c)[0] for c in route]
+        x, y = pts[0]
+        spec = "handshadow route=" + ";".join("%d,%d" % p for p in pts)
+        self.mm.put(x, y, spec)
+        self.devices.append({"kind": "hand_shadow", "route": [list(p) for p in pts]})
+
+
+
+def build_maze(sec):
+    cols, rows, seed, lamps, loops, rooms, breathing, shards = MAZES[sec]
+    mz = Maze(cols, rows, seed=seed, loops=loops, rooms=rooms, breathing=breathing)
+    fid = "floor_08_maze_%d" % sec
+    head = "intro =\nintro_cutscene = %s\nstyle = 2.5d\nlight_drain = 90" % ("f8_maze_intro" if sec == 1 else "")
+    title = {1: "第八层·夜迷宫一·外环回廊", 2: "第八层·夜迷宫二·镜之回廊", 3: "第八层·夜迷宫三·千手深处"}[sec]
+    mm = Map(fid, mz.w, mz.h, head, title)
+    mm.g = [row[:] for row in mz.grid]
+    # 呼吸墙的 b 段在地图上也是地面（运行时导演开场把它升成墙；TerrainShifter 只能降下自己升起的墙）
+    for b in mz.breathing:
+        for (x, y) in b["b"]:
+            mm.g[y][x] = "."
+    sx, sy = mz.cell_floor(mz.start_cell)[2]
+    mm.put(sx, sy, "player")
+    mm.put(sx, sy, "spawn id=from_%d" % (sec - 1))
+    dx, dy = mz.cell_floor(mz.start_cell)[1]
+    mm.put(dx, dy, "f8maze section=%d" % sec)
+    # 月光灯：起点一盏，其余沿主路均匀分布
+    path = mz.main_path
+    # 入口那盏放在主路的下一格（不罩住出生点：上一段带过来的手要走进灯里才散）
+    lamp_cells = [path[1]] + [path[int(len(path) * k)] for k in [(i + 1) / (lamps) for i in range(lamps - 1)]]
+    for i, c in enumerate(lamp_cells):
+        x, y = mz.cell_floor(c)[3]
+        mm.put(x, y, "moonlamp")
+        mm.put(x, y, "spawn id=lamp_%d" % (i + 1))
+    # 回忆碎片：离主路最远的死路
+    for sid, c in zip(shards, mz.dead_ends[:len(shards)]):
+        x, y = mz.cell_floor(c)[3]
+        mm.put(x, y, "memshard id=%d" % sid)
+    # 怪物 / 陷阱 / 机关 / 组合区域（起点附近 3 个单元、灯、碎片、出口不放）
+    reserved = set(path[:3]) | {path[-4]} | set(lamp_cells) | set(mz.dead_ends[:len(shards)]) | {mz.exit_cell}
+    pl = MazePlacer(sec, mm, mz, reserved)
+    pl.place_combos(MAZE_COMBOS[sec])
+    counts, curtains, mirrors, gates, shadows = MAZE_SCATTER[sec]
+    for i in range(mirrors):
+        pl.moon_mirror(lamp_cells, i)
+    for i in range(gates):
+        pl.shortcut_gate(i)
+    for i in range(shadows - sum(1 for d in pl.devices if d["kind"] == "hand_shadow")):
+        pl.shadow()
+    pl.curtains(curtains)
+    pl.scatter(counts)
+    ex, ey = mz.cell_floor(mz.exit_cell)[3]
+    if sec < 3:
+        mm.put(ex, ey, "exit target=floor_08_maze_%d spawn=from_%d" % (sec + 1, sec))
+    else:
+        mm.put(ex, ey, "spawn id=maze_exit")
+        # 测试模式跳关「出口前」：主路上离出口 3 个单元的地方
+        bx, by = mz.cell_floor(path[-4])[0]
+        mm.put(bx, by, "spawn id=before_exit")
+    mm.write()
+    MAZE_INFO[sec] = mz
+    Path("levels/%s/design.json" % fid).write_text(json.dumps({
+        "_说明": ["第八层夜迷宫第 %d 段（gen_floor08.py + maze_gen.py 生成，种子 %d）。breathing = 呼吸墙对（a 现在是地面、b 心跳后打开）。" % (sec, seed)],
+        "breathing": [{"a": [list(p) for p in b["a"]], "b": [list(p) for p in b["b"]]} for b in mz.breathing],
+        "combo_areas": pl.areas,
+        "devices": pl.devices,
+    }, ensure_ascii=False, indent="\t") + "\n")
+    return mm, mz
+
+
+for _sec in MAZES:
+    build_maze(_sec)
+
+# ================================================================ 夜迷宫的小剧场（只用立绘；她看不见手——舞台上只有她，被看不见的手挠）
+def mtk(zone, repeat=8, interval=0.2):
+    return A("tickle", who="blue", repeat=repeat, interval=interval, fx="hand", zone=zone)
+
+
+def maze_theater(name, lines, end_pose="helpless_1"):
+    """lines：[(说话人, 文本, 部位或 None, 立绘状态或 None)]；部位不为空时这一句带一下看不见的手挠那里。"""
+    steps = [{"actions": [A("fade_in", time=0.5)], "wait": 0.5}]
+    for i, ln in enumerate(lines):
+        sp, text = ln[0], ln[1]
+        zone = ln[2] if len(ln) > 2 else None
+        emo = ln[3] if len(ln) > 3 else None
+        acts = []
+        if zone:
+            acts.append(mtk(zone, 6 + i % 4, 0.22 - min(i, 10) * 0.008))
+            acts.append(A("shake", who="blue", time=0.3))
+        if i == len(lines) // 2:
+            acts.append(A("voice", state="giggle"))
+        if i == int(len(lines) * 0.75):
+            acts.append(A("voice", state="laugh"))
+            acts.append(pose("blue", end_pose))
+        st = {"speaker": sp, "text": text, "actions": acts}
+        if sp == BLUE and emo:
+            st["emotion"] = emo
+        steps.append(st)
+    steps.append({"actions": [A("voice", state=""), A("fade_out", time=0.8)], "wait": 0.9})
+    return {"name": name, "cast": {"blue": {"kind": "npc:blue_princess", "at": [0, 8], "visual": "normal", "anim": "idle", "dir": "down"}},
+            "steps": steps}
+
+
+MAZE_THEATERS = {
+    "f8_maze_first": ("夜迷宫·第一只手", [
+        (N, "（黑暗里，有什么轻轻碰了她一下）"),
+        (BLUE, "……？", None, "surprise"), (BLUE, "……谁。", None, "angry"),
+        (N, "（没有人。只有一只看不见的手，贴在了她身上，慢慢地动了动手指）"),
+        (BLUE, "……唔。", "waist", "shy"), (BLUE, "……有东西……贴着。"), (BLUE, "……看不见。……但是，在动。", "waist"),
+        (N, "（手指一下、一下，像是在确认她怕不怕）"),
+        (BLUE, "……噗。", "waist", "helpless_1"), (BLUE, "……刚才的，不算。", None, "angry"),
+        (BLUE, "……你在吧。……是你，对吧。", None, "sad"),
+        (N, "（手指停了一下——然后，像是听懂了似的，挠得更轻、更慢了）"),
+        (BLUE, "……就这样？……这种程度……", "waist"), (BLUE, "……唔、嗯……哈……", "waist", "helpless_1"),
+        (BLUE, "……不、不痒。……一点也……噗……", "waist"), (BLUE, "……哈……哈……", "waist", "helpless_1"),
+        (N, "（看不见的手没有离开，就那样贴在她身上，一起往黑暗里走）"),
+        (BLUE, "……好。……一起走吧。", None, "sad"), (BLUE, "……我会走到最里面。", None, "angry"),
+    ]),
+    "f8_maze_weak_first": ("夜迷宫·大腿", [
+        (N, "（这一次，看不见的手落在了她的大腿上——不偏不倚，正是最怕的地方）"),
+        (BLUE, "……！", "thigh", "surprise"), (BLUE, "……那、那里……", "thigh", "shy"),
+        (BLUE, "……为什么……偏偏是……", "thigh"),
+        (N, "（手指沿着大腿内侧，慢慢画了一个小圈）"),
+        (BLUE, "……哈、哈……不、不对……忍、忍住……", "thigh", "helpless_1"),
+        (N, "（一圈，又一圈——和很久以前，一模一样的画法）"),
+        (BLUE, "……这个……画法……", "thigh", "sad"), (BLUE, "……你还记得……", None, "sad"),
+        (BLUE, "……哈、哈哈……别、别记得这种事……！", "thigh", "helpless_1"),
+        (BLUE, "……我、我已经……长大了……不怕了……", "thigh"),
+        (N, "（手指好像在笑。圈画得更慢了）"),
+        (BLUE, "……噗哈……！骗、骗人……还是……哈哈……", "thigh", "helpless_2"),
+        (BLUE, "……哈哈……大腿……真的……不行……哈哈哈……", "thigh", "helpless_2"),
+        (BLUE, "……没、没笑。……刚才是……咳嗽……噗哈……！", "thigh", "helpless_2"),
+        (BLUE, "……哈……哈……再、再往前走……不许跟着……哈……", None, "helpless_1"),
+        (N, "（那只手当然没有离开）"),
+    ]),
+    "f8_maze_weak_4": ("夜迷宫·大腿和屁股", [
+        (N, "（大腿上、屁股上，看不见的手一只、又一只地挤了过来）"),
+        (BLUE, "……！……又、又多了……", "butt", "surprise"), (BLUE, "……几、几只了……", "thigh", "shy"),
+        (BLUE, "……唔嗯……哈……都、都往那里……", "butt", "helpless_1"),
+        (N, "（大腿上的在画圈，屁股上的一下一下地点——节奏还对得上）"),
+        (BLUE, "……哈哈……配、配合得……这么好……", "thigh", "helpless_1"),
+        (BLUE, "……以前……也是这样……一个挠大腿，一个……哈哈……", "butt", "helpless_2"),
+        (BLUE, "……哈哈哈……别、别想起来……！", "butt", "helpless_2"),
+        (BLUE, "……屁、屁股……不、不行……哈哈哈哈……！", "butt", "helpless_2"),
+        (BLUE, "……哈哈……我、我说过……补偿你……可是……", "thigh", "helpless_2"),
+        (BLUE, "……哈哈哈哈……没、没说……让你一次……全部……！", "butt", "helpless_2"),
+        (N, "（她笑得弯下了腰，看不见的手却没有一只要离开的意思）"),
+        (BLUE, "……哈……哈……走……继续走……", None, "helpless_1"), (BLUE, "……带着你们……也走……", None, "sad"),
+    ]),
+    "f8_maze_total_8": ("夜迷宫·好多只手", [
+        (N, "（腋下、腰、脚心、大腿……看不见的手已经数不清了）"),
+        (BLUE, "……哈……哈……几、几只……", "armpit", "helpless_1"), (BLUE, "……数、数不清……", "waist", "helpless_1"),
+        (BLUE, "……八、八只……？还、还是更多……哈哈……", "sole", "helpless_1"),
+        (N, "（每一只都慢慢地、各挠各的地方，凑在一起就是停不下来的痒）"),
+        (BLUE, "……哈哈哈……不、不公平……我、我只有一个人……", "thigh", "helpless_2"),
+        (BLUE, "……哈哈……你、你有那么多只手……", "butt", "helpless_2"),
+        (BLUE, "……以前……一只一只……轮流的……哈哈哈……", "armpit", "helpless_2"),
+        (BLUE, "……现在……一起来……哈哈哈哈……犯规……！", "waist", "helpless_2"),
+        (N, "（她靠着墙滑坐下来，笑声在走廊里回荡）"),
+        (BLUE, "……哈……哈……没、没关系……", None, "helpless_1"), (BLUE, "……是我……自己来的……", None, "sad"),
+        (BLUE, "……哈哈……再……再走一段……就好……", "thigh", "helpless_1"),
+        (BLUE, "……站、站起来……哈……", None, "angry"),
+    ]),
+    "f8_maze_total_12": ("夜迷宫·十二只以上", [
+        (N, "（看不见的手把她整个人裹住了。走一步，挠一下；停一下，挠得更凶）"),
+        (BLUE, "……哈哈哈哈……！", "thigh", "helpless_2"), (BLUE, "……走、走不动了……哈哈哈……", "butt", "helpless_2"),
+        (BLUE, "……全、全身……都……哈哈哈哈……！", "armpit", "helpless_2"),
+        (N, "（她笑得眼泪都出来了，却还是一步一步往前挪）"),
+        (BLUE, "……哈哈……我、我投降……投降……", "waist", "helpless_2"),
+        (BLUE, "……但、但是……哈哈……不回去……", "sole", "helpless_2"),
+        (BLUE, "……答应过……要来的……哈哈哈……", "thigh", "helpless_2"),
+        (BLUE, "……你、你……一直在等吧……在这里……一个人……", None, "sad"),
+        (N, "（手指忽然一起停了下来。迷宫里安静得只剩她的喘气声）"),
+        (BLUE, "……哈……哈……", None, "helpless_1"), (BLUE, "……对不起。……让你等了这么久。", None, "sad"),
+        (N, "（过了好一会儿，手指才又轻轻地、轻轻地动了起来）"),
+        (BLUE, "……噗……哈……好、好……挠吧……", "thigh", "helpless_1"), (BLUE, "……我……不躲了。", None, "shy"),
+    ]),
+    "f8_maze_defeat_1": ("夜迷宫·笑倒", [
+        (N, "（看不见的手越来越多，她终于再也撑不住了）"),
+        (BLUE, "……哈哈哈哈哈……！", "thigh", "helpless_2"), (BLUE, "……不、不行了……哈哈哈哈……", "butt", "helpless_2"),
+        (BLUE, "……大腿……屁股……全、全部……哈哈哈哈……！", "thigh", "helpless_2"),
+        (BLUE, "……我、我认输……哈哈哈……认输……！", "waist", "helpless_2"),
+        (N, "（她瘫坐在冰冷的石板上，笑声慢慢变成了喘气）"),
+        (BLUE, "……哈……哈……", None, "helpless_1"),
+        (N, "（不知过了多久，一缕月光照在她脸上。身上的手都不见了）"),
+        (BLUE, "……月光灯……", None, "sad"), (BLUE, "……是你……把我送回来的吗。", None, "sad"),
+        (BLUE, "……", None, "sad"), (BLUE, "……再来。", None, "angry"),
+    ]),
+    "f8_maze_defeat_2": ("夜迷宫·又笑倒了", [
+        (N, "（又一次。她连站都站不稳了）"),
+        (BLUE, "……哈哈哈……又、又是……这里……", "butt", "helpless_2"),
+        (BLUE, "……我、我明明……记住路了……哈哈哈……", "thigh", "helpless_2"),
+        (BLUE, "……你、你故意的……哈哈哈哈……！", "butt", "helpless_2"),
+        (BLUE, "……以前……玩捉迷藏……你、你也是这样……哈哈……", "thigh", "helpless_2"),
+        (BLUE, "……抓到我……就挠……到我认输……哈哈哈哈……！", "waist", "helpless_2"),
+        (N, "（笑声停下来的时候，她又躺在了月光灯下）"),
+        (BLUE, "……哈……", None, "helpless_1"), (BLUE, "……捉迷藏。……我输了。", None, "sad"),
+        (BLUE, "……下一局。", None, "angry"),
+    ]),
+    "f8_maze_memory": ("夜迷宫·回忆", [
+        (N, "（六片碎片在她手心里一起亮了起来——眼前浮现出很久以前的那个房间）"),
+        (BLUE, "……蜡笔、发夹、发条、蝴蝶结、茶匙……还有，这张画。", None, "sad"),
+        (N, "（画上，一个蓝头发的小女孩被好多只手围着，笑得在地上打滚）"),
+        (BLUE, "……那时候……我总说「再来一次」。", None, "sad"),
+        (BLUE, "……挠到我哭……也说「再来一次」。", None, "sad"),
+        (BLUE, "……你从来没有累过。……也从来没有真的挠到我讨厌。", None, "shy"),
+        (N, "（一只看不见的手，轻轻落在她的头发上——没有挠，只是摸了摸）"),
+        (BLUE, "……！", None, "surprise"), (BLUE, "……你……还记得这个。", None, "sad"),
+        (BLUE, "……哭的时候，你就这样……摸我的头。", None, "sad"),
+        (BLUE, "……对不起。……那天，我没有回来。", None, "sad"),
+        (N, "（手停了很久。然后，在她的大腿上，很轻、很轻地挠了一下）"),
+        (BLUE, "……噗。……哈……", "thigh", "helpless_1"), (BLUE, "……嗯。……再来一次。", None, "shy"),
+    ]),
+}
+for tid, (tname, tlines) in MAZE_THEATERS.items():
+    (TH / (tid + ".json")).write_text(json.dumps(maze_theater(tname, tlines), ensure_ascii=False, indent="\t") + "\n")
 
 print("第八层：%d 段过场、%d 段战败小剧场 + 追逐失败" % (len(CUTS), len(DEFEAT) + 1))

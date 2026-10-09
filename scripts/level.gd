@@ -10,6 +10,10 @@ extends Node2D
 @export var night_ambient := Color(0, 0, 0, 0)
 ## 这一关不能切换操控的角色（[level] 段 no_switch = true；第八层的小房间）
 @export var no_switch := false
+## 画面风格（[level] 段 style）：""（默认）/ "2.5d"（法线贴图图块 + 人物实时光照 + 跟着角色的冷光，第八层的夜迷宫）
+@export var style := ""
+## 2.5D 楼层：冷光从满到空的秒数（0 = 不消耗）
+@export var light_drain := 0.0
 
 var _day_ambient := Color.WHITE
 
@@ -38,6 +42,8 @@ func _ready() -> void:
 		GameState.pending_spawn = ""
 	if player:
 		apply_camera_limits(player)
+	if style == "2.5d":
+		_setup_25d()
 	Dialogue.finished.connect(_on_dialogue_finished)
 	if GameState.pending_load > 0:
 		return  # 马上要读档换关卡：不播开场
@@ -116,3 +122,34 @@ func _on_dialogue_finished(id: String) -> void:
 			GameState.notify("第四章通关！楼梯继续往下……")
 		"ending_5":
 			GameState.set_flag("chapter5_clear")
+
+
+# ------------------------------------------------------------------ 2.5D 楼层
+func _setup_25d() -> void:
+	LitSprite.apply_actors(self)
+	get_tree().node_added.connect(_on_node_added_25d)
+	_attach_carry_light(GameState.player)
+	GameState.player_registered.connect(_attach_carry_light)
+
+
+func _on_node_added_25d(n: Node) -> void:
+	if n is Actor and is_ancestor_of(n):
+		LitSprite.apply.call_deferred(n)
+
+
+## 冷光跟着当前操控的角色（换人时移过去，冷光值一起带过去）。
+func _attach_carry_light(p: Node) -> void:
+	if not (p is Node2D) or not is_ancestor_of(p):
+		return
+	var keep := 1.0
+	for l in find_children("CarryLight", "", true, false):
+		if l.get_parent() != p:
+			keep = (l as CarryLight).level
+			l.queue_free()
+	var cl := CarryLight.attach(p as Node2D, light_drain)
+	cl.level = keep if cl.level >= 1.0 else cl.level
+
+
+func carry_light() -> CarryLight:
+	var p := GameState.player
+	return p.get_node_or_null("CarryLight") as CarryLight if is_instance_valid(p) else null

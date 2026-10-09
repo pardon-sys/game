@@ -649,6 +649,9 @@ func _on_died() -> void:
 	if Duo.active and Duo.members.has(self):
 		Downed.start(self)
 		return
+	# 关卡自己接管倒下（第八层夜迷宫：笑倒小剧场 → 回到上一盏月光灯）；返回 true 就由它负责之后的 respawn
+	if death_override.is_valid() and death_override.call(self):
+		return
 	if _play_death_cutscene():
 		return
 	var tw := create_tween()
@@ -702,6 +705,10 @@ func fatigue_burst() -> void:
 	if combo and not combo.monsters_near(StarBurst.FATIGUE["radius"] + 24.0).is_empty():
 		combo.trigger("mana_backlash", self)
 	magic_event.emit("fatigue_burst", 0)
+
+
+## 关卡接管倒下：Callable(角色) -> bool（true = 接管了）。关卡离开时清掉。
+static var death_override: Callable
 
 
 ## 子类钩子：死亡时要播过场就返回 true（由子类负责之后调用 respawn）。

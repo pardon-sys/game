@@ -292,6 +292,62 @@
 		"scissor_stand": {
 			"thigh": 1,
 			"butt": 1
+		},
+		"maze_hand": {
+			"thigh": 3,
+			"butt": 3,
+			"waist": 1,
+			"sole": 1,
+			"armpit": 1
+		},
+		"glow_moth": {
+			"thigh": 3,
+			"butt": 1,
+			"neck": 1
+		},
+		"dream_fluff": {
+			"thigh": 4,
+			"butt": 1
+		},
+		"lamp_imp": {
+			"sole": 2,
+			"waist": 1,
+			"thigh": 1
+		},
+		"laugh_jar": {
+			"waist": 2,
+			"thigh": 1,
+			"armpit": 1
+		},
+		"mirror_puddle": {
+			"butt": 3,
+			"thigh": 1
+		},
+		"shadow_vine": {
+			"thigh": 4
+		},
+		"feather_curtain": {
+			"thigh": 3,
+			"waist": 1,
+			"neck": 1
+		},
+		"cradle_bench": {
+			"butt": 4,
+			"thigh": 1
+		},
+		"hand_gate": {
+			"thigh": 3,
+			"butt": 2
+		},
+		"hand_shadow": {
+			"thigh": 2,
+			"butt": 2,
+			"waist": 1
+		},
+		"hand_rhythm": {
+			"thigh": 3,
+			"butt": 3,
+			"waist": 1
 		}
 	}
 }

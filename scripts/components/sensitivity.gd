@@ -89,7 +89,8 @@ func apply(hit: HitData, actor: Actor) -> float:
 	if ReactionDB.key_of(hit.source) == "":
 		return k
 	var ex := exposed()
-	var zone := TickleZones.pick(hit.source, ex)
+	# 调用方已经指定了部位（第八层夜迷宫：盖在大腿上的手就挠大腿）：照它的
+	var zone := hit.zone if hit.zone != "" else TickleZones.pick(hit.source, ex)
 	hit.zone = zone
 	if zone == "":
 		return k
