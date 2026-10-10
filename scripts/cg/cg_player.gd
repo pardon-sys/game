@@ -67,6 +67,8 @@ var _skip := false
 var _can_skip := false
 
 var background: ColorRect
+## 夜晚小剧场的压暗层（night = true）
+var night_tint: TextureRect
 var frame: Control
 var view: Node2D
 var cast_root: Node2D
@@ -149,6 +151,24 @@ func _build() -> void:
 	fx_root = Node2D.new()
 	fx_root.z_index = 5
 	view.add_child(fx_root)
+	# 夜晚的小剧场（数据里 night = true，第八层夜迷宫）：整个舞台压暗、偏冷，只有中间一圈看得清
+	night_tint = TextureRect.new()
+	var ng := Gradient.new()
+	ng.set_color(0, Color(0.02, 0.03, 0.1, 0.15))
+	ng.set_color(1, Color(0.01, 0.01, 0.05, 0.92))
+	ng.add_point(0.3, Color(0.02, 0.03, 0.1, 0.2))
+	var ngt := GradientTexture2D.new()
+	ngt.gradient = ng
+	ngt.fill = GradientTexture2D.FILL_RADIAL
+	ngt.fill_from = Vector2(0.5, 0.6)
+	ngt.fill_to = Vector2(0.95, 0.6)
+	ngt.width = int(FRAME_RECT.size.x)
+	ngt.height = int(FRAME_RECT.size.y)
+	night_tint.texture = ngt
+	night_tint.size = FRAME_RECT.size
+	night_tint.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	night_tint.visible = false
+	frame.add_child(night_tint)
 	# 聚光：四周压暗的径向渐变
 	var g := Gradient.new()
 	g.set_color(0, Color(0, 0, 0, 0))
@@ -458,6 +478,7 @@ func _play_cg(cg: Dictionary, id: String, source: String, skippable: bool, fx_le
 	curtain.color.a = 1.0
 	flash_rect.color.a = 0.0
 	background.modulate.a = 0.0
+	night_tint.visible = bool(cg.get("night", false))
 	_reset_view()
 	_build_cast(cg.get("cast", {}))
 	show()

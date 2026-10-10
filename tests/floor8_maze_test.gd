@@ -20,6 +20,10 @@ func _ready() -> void:
 	# 新来源的初次遭遇对话会暂停逐帧的逻辑：先都标成见过（_run_devices 里单独测一次）
 	for key in ReactionDB.source_keys():
 		GameState.set_flag("met_" + key)
+	# 第一次看不清的小剧场会停住逐帧逻辑：先标成看过（第五轮的测试里单独测）
+	GameState.set_flag("f8m_dark_first")
+	# 第五轮新摆的束缚陷阱 / 追逐怪 / 遮眼蝠：老的检查里先关掉（_quiet_new_threats；要测的实例标上 test_keep）
+	get_tree().process_frame.connect(_quiet_new_threats)
 	await _run_sleep()
 	await _run_25d()
 	await _run_qte_and_cover()
@@ -35,6 +39,17 @@ func _ready() -> void:
 	await _run_skip_points()
 	print("\n==== %s (%d 项失败) ====" % ["全部通过" if failures == 0 else "有失败", failures])
 	get_tree().quit(1 if failures else 0)
+
+
+## 每帧：关掉迷宫里第五轮新加的威胁（束缚陷阱不触发、追逐怪 / 遮眼蝠不动），除非标了 test_keep。
+func _quiet_new_threats() -> void:
+	for n in get_tree().get_nodes_in_group("restraint"):
+		if not n.has_meta("test_keep") and n is Trap:
+			(n as Trap).active = false
+	for g in ["night_stalker", "blind_bat"]:
+		for n in get_tree().get_nodes_in_group(g):
+			if not n.has_meta("test_keep") and n.process_mode != Node.PROCESS_MODE_DISABLED:
+				n.process_mode = Node.PROCESS_MODE_DISABLED
 
 
 func _level_id() -> String:
@@ -280,7 +295,14 @@ func _run_qte_and_cover() -> void:
 	check("手总数超过 8 只 / 12 只的小剧场（共 %d 只）" % cover.total(), cover.total() > 12
 		and GameState.has_flag("cg_seen_theater:f8_maze_total_8") and GameState.has_flag("cg_seen_theater:f8_maze_total_12"))
 	check("立绘上画着盖住的手（部位数 = %d）" % Dialogue.portrait_fx.cover_hands.size(), Dialogue.portrait_fx.cover_hands.size() == cover.hands.size())
-	# 闷笑按部位敏感度涨：大腿（1.4）比脚心（0.95）涨得快
+	# 闷笑按部位敏感度涨：大腿（1.4）比脚心（0.95）涨得快（附近的怪物、紫手先停下，只量身上的手）
+	var paused := []
+	for e in get_tree().get_nodes_in_group("enemy") + get_tree().get_nodes_in_group("maze_hand"):
+		if e.process_mode != Node.PROCESS_MODE_DISABLED:
+			e.process_mode = Node.PROCESS_MODE_DISABLED
+			paused.append(e)
+	var spawn_was := dir._spawn_t
+	dir._spawn_t = 999.0
 	cover.clear()
 	blue.laugh.set_value(0.0)
 	blue.set_invulnerable(0.0)
@@ -297,6 +319,10 @@ func _run_qte_and_cover() -> void:
 	blue.laugh.set_value(0.0)
 	check("盖着的手慢慢挠，闷笑按部位敏感度涨（大腿 %.1f > 脚心 %.1f，都不算快）" % [thigh_gain, sole_gain],
 		thigh_gain > sole_gain and thigh_gain > 0.5 and thigh_gain < 25.0)
+	for e in paused:
+		if is_instance_valid(e):
+			e.process_mode = Node.PROCESS_MODE_INHERIT
+	dir._spawn_t = spawn_was
 	# 笑声半径：笑起来时吸引半径内的手
 	var far := dir.spawn_hand(blue.global_position + Vector2(80, 0))
 	var attracted_calm := dir.attracts(far)
@@ -497,11 +523,15 @@ func _run_shards_and_sections() -> void:
 	_dir().cover.clear()
 	_fresh(GameState.player)
 	GameState.player.global_position = _dir()._exit_at
-	await _advance_until(func(): return GameState.has_flag("f8_maze_done") and not Cutscene.is_playing() and not CG.is_busy(), 60.0)
+	await _advance_until(func(): return GameState.has_flag("f8_returned") and _level_id() == "floor_08_shelter" and not Cutscene.is_playing() \
+		and not CG.is_busy(), 120.0)
 	CG.started.disconnect(on_cg)
 	Cutscene.started.disconnect(on_cut)
-	check("第三段走到出口：收齐 6 片回忆 → 回忆小剧场 → 出口过场（%s），标记 f8_maze_done" % [seen],
-		seen.has("theater:f8_maze_memory") and seen.has("f8_maze_exit") and GameState.has_flag("f8_maze_done"))
+	check("第三段走到出口：收齐 6 片回忆 → 回忆小剧场 → 千手过场（%s）→ 回小屋，标记 f8_maze_done / f8_returned" % [seen],
+		seen.has("theater:f8_maze_memory") and seen.has(MazeDirector.finale_id()) and seen.has(ShelterReturn.cutscene_id())
+		and GameState.has_flag("f8_maze_done") and GameState.has_flag("f8_returned"))
+	# 后面的检查还要在迷宫里操控蓝色公主
+	GameState.set_flag("blue_is_hero")
 
 
 # ------------------------------------------------------------------ 第三阶段：新来源 / 组合 / 怪物 / 机关
@@ -774,6 +804,11 @@ func _run_heartbeat_and_shadow() -> void:
 	shadow.cone.facing = Vector2.DOWN
 	shadow._points.clear()
 	shadow._cd = 0.0
+	# 场上原有的手先清掉（不然它们在这 1.5 秒里散掉 / 盖上身，数会对不上）
+	for h in get_tree().get_nodes_in_group("maze_hand"):
+		h.queue_free()
+	dir._spawn_t = 999.0
+	await get_tree().process_frame
 	var n0 := _hands()
 	await _wait(1.5)
 	check("千手的影子：看到她 1 秒 → 周围涌出紫手（%d → %d）" % [n0, _hands()], spot.x >= 0 and _hands() >= n0 + 3)

@@ -5,7 +5,8 @@
 		"stat_kinds 规定属性的合并方式：add = 各层数值相加（Actor.stat_add）；mul = 各层数值相乘（Actor.stat_mul）；",
 		"flag = 任何一个状态写 0 就是关（Actor.stat_flag）。",
 		"属性：laugh_gain 闷笑积累加成（+0.3 = +30%）、special_chance 暴击率加成、tickle_cd 挠痒冷却倍率、speed 移动速度倍率、can_channel 能否吟唱。",
-		"desc：背包状态页里显示的效果说明。新属性：invert_controls 方向颠倒（>0 时）、crit_all 所有挠痒都算暴击（>0 时）。"
+		"desc：背包状态页里显示的效果说明。新属性：invert_controls 方向颠倒（>0 时）、crit_all 所有挠痒都算暴击（>0 时）。",
+		"新属性（第八层夜迷宫第五轮）：laugh_floor 闷笑值最低值（各层相加，消减不会低于它）、magic_fail 释放魔法失败的概率（相加）。"
 	],
 	"stat_kinds": {
 		"laugh_gain": "add",
@@ -14,7 +15,9 @@
 		"speed": "mul",
 		"can_channel": "flag",
 		"invert_controls": "add",
-		"crit_all": "add"
+		"crit_all": "add",
+		"laugh_floor": "add",
+		"magic_fail": "add"
 	},
 	"buffs": {
 		"strength": {
@@ -143,6 +146,52 @@
 				"laugh_gain": -1.0
 			},
 			"desc": "冰晶结界展开期间：怎么挠都不会涨闷笑。"
+		},
+		"holding_laugh": {
+			"name": "憋笑",
+			"icon": 19,
+			"debuff": false,
+			"duration": 0.3,
+			"max_stacks": 1,
+			"modifiers": {
+				"speed": 0.7
+			},
+			"desc": "按住空格憋着不笑出声：笑声圈收起来，闷笑只涨一半，但走得慢；憋太久会憋不住。"
+		},
+		"dark_sensitive": {
+			"name": "黑暗敏感",
+			"icon": 20,
+			"debuff": true,
+			"duration": 0.5,
+			"max_stacks": 1,
+			"modifiers": {
+				"laugh_gain": 0.2
+			},
+			"desc": "看不清下一下会落在哪里：挠痒 ×1.2。"
+		},
+		"blinded": {
+			"name": "蒙眼",
+			"icon": 21,
+			"debuff": true,
+			"duration": 3,
+			"max_stacks": 1,
+			"modifiers": {
+				"laugh_gain": 0.3
+			},
+			"desc": "遮眼蝠蒙住了眼睛：几乎看不见，挠痒 ×1.3。冲刺甩掉它。"
+		},
+		"thousand_pants": {
+			"name": "千手痒痒裤",
+			"icon": 22,
+			"debuff": true,
+			"duration": -1,
+			"max_stacks": 1,
+			"modifiers": {
+				"laugh_floor": 20,
+				"speed": 0.9,
+				"magic_fail": 0.1
+			},
+			"desc": "千手的手缠成的紧身裤，裹着屁股和大腿，时不时挠一下：闷笑值最低 20、移动 ×0.9、释放魔法有 10% 会失败并大笑。"
 		}
 	}
 }

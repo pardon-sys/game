@@ -111,7 +111,7 @@ z_index = 10
 position = Vector2(11, -30)
 texture = ExtResource("4")
 offset = Vector2(0, -8)
-hframes = 8
+hframes = 9
 
 [node name="Prompt" type="Sprite2D" parent="." unique_id=8141195]
 visible = false

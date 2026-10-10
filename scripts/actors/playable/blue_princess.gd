@@ -14,13 +14,24 @@ extends Princess
 @export var ai := true
 ## true = 她是主角（第七层起，剧情标记 blue_is_hero）：玩家操控、相机跟着她、没有对话提示。关卡载入时由 level.gd 换上。
 @export var hero := false
+## true = 跟着玩家操控的角色走（第八层回小屋之后：粉色公主操控、她跟着；图例 follow=true）。离太远时直接跟上。
+@export var follow := false
+const FOLLOW_WARP := 180.0
 
 var talking := false
+## 千手痒痒裤（状态 thousand_pants）：每 PANTS_TICK 秒轻轻挠一下大腿 / 屁股（来源键 thousand_pants）
+const PANTS_TICK := 6.0
+const PANTS_TICKLE := 1.5
+var _pants_t := PANTS_TICK
+var _pants_src: Node2D
 
 
 func _setup() -> void:
 	portrait_set = "blue"
 	character_id = "blue"
+	# 千手痒痒裤（夜迷宫里身上超过 8 只手之后一直穿着）：剧情标记 blue_tickle_pants → 永久状态
+	if GameState.has_flag("blue_tickle_pants") and not has_buff("thousand_pants"):
+		add_buff("thousand_pants")
 	if hero:
 		ai = false
 		dialogue = ""
@@ -37,6 +48,11 @@ func _setup() -> void:
 		if talk_area:
 			talk_area.enabled = false
 		return
+	if follow:
+		set_controller(make_ai_controller())
+		super()
+		start_following()
+		return
 	# 场景里自带的是玩家输入：换成 AI（过场演员换成脚本控制）
 	if not (controller is WanderController or controller is ScriptedController):
 		set_controller(make_ai_controller())
@@ -48,6 +64,42 @@ func _setup() -> void:
 		it.interacted.connect(func(p: Node): talk(p))
 	GameState.flag_changed.connect(func(_f: String): _refresh_visibility())
 	_refresh_visibility()
+
+
+## 千手痒痒裤：时不时挠一下大腿 / 屁股（小人上不画出来）。
+func _process(delta: float) -> void:
+	var on := has_buff("thousand_pants")
+	# 跟随：离太远（被墙卡住、换了路）就直接跟上
+	if follow and not is_controlled() and is_instance_valid(GameState.player) and not GameState.in_cutscene \
+			and global_position.distance_to(GameState.player.global_position) > FOLLOW_WARP:
+		global_position = GameState.player.global_position + Vector2(0, 10)
+	if not on or not is_alive() or GameState.in_dialogue or GameState.in_cutscene or CG.is_busy():
+		return
+	_pants_t -= delta
+	if _pants_t <= 0.0:
+		_pants_t = PANTS_TICK * randf_range(0.8, 1.2)
+		if _pants_src == null:
+			_pants_src = HandCover.Source.new()
+			_pants_src.reaction_key = "thousand_pants"
+			add_child(_pants_src)
+		var h := HitData.make_tickle(_pants_src, PANTS_TICKLE)
+		h.zone = "thigh" if randf() < 0.6 else "butt"
+		receive_hit(h)
+
+
+## 千手痒痒裤让魔法失败：魔力散掉的一瞬间，裤子里的手指一起动起来——她憋不住大笑（憋不住的笑声 + 台词 + 闷笑 +15）。
+func _on_magic_fail(_tier: int) -> void:
+	shake(0.5)
+	if laugh:
+		laugh.add(15.0)
+	Audio.play_crack()
+	var line := MazeLines.pick("pants_fail")
+	if line != "":
+		if is_controlled():
+			GameState.princess_reacted.emit(line, 2.8)
+			GameState.hint("魔法失败了！千手痒痒裤……")
+		else:
+			SpeechBubble.say(self, line, 28.0)
 
 
 ## 她的魔法是冰晶结界（冻住范围内的怪物和陷阱，期间自己不涨闷笑），不是星光爆发。
@@ -67,7 +119,25 @@ func fatigue_burst_visual() -> String:
 	return "damaged_giggle_burst"
 
 
+## 跟着玩家操控的角色走（不能说话、不溜达、一直显示）；挣扎也会自己做。
+func start_following() -> void:
+	follow = true
+	ai = false
+	dialogue = ""
+	show_flag = ""
+	hide_flags.clear()
+	if camera and not is_controlled():
+		camera.enabled = false
+	if not is_controlled() and not (controller is CompanionController):
+		set_controller(make_ai_controller())
+	_refresh_visibility()
+
+
 func make_ai_controller() -> CharacterController:
+	if follow:
+		var cc := CompanionController.new()
+		cc.behaviours.assign(["struggle", "follow"])
+		return cc
 	if Duo.active:
 		return CompanionController.new()
 	return WanderController.new() if ai else ScriptedController.new()

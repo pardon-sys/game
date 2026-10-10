@@ -575,7 +575,7 @@ def zone_icon(kind):
     return img
 
 
-BUFF_ICON_COUNT = 19
+BUFF_ICON_COUNT = 23
 
 
 def frost_icon():
@@ -590,10 +590,49 @@ def frost_icon():
     return img
 
 
+def maze5_icon(kind):
+    """第八层夜迷宫第五轮：19 憋笑（鼓起腮帮的嘴）/ 20 黑暗敏感（闭上的眼 + 小火花）/ 21 蒙眼（蝙蝠翅膀盖住眼睛）/
+    22 千手痒痒裤（紫色的一圈布 + 两只小手）。"""
+    img, d = canvas(12, 12)
+    purple = kind in (21, 22)
+    d.rounded_rectangle((0, 0, 11, 11), radius=2, fill=(60, 30, 90, 255) if purple else (30, 40, 80, 255))
+    d.rounded_rectangle((0, 0, 11, 11), radius=2, outline=(200, 150, 255, 255) if purple else (150, 190, 255, 255))
+    if kind == 19:     # 憋笑：圆脸 + 鼓起的腮帮 + 抿着的嘴
+        d.ellipse((2, 2, 9, 9), fill=SKIN)
+        d.point((3, 6), fill=(255, 150, 170, 255))
+        d.point((8, 6), fill=(255, 150, 170, 255))
+        d.line((4, 7, 7, 7), fill=SKIN_D)
+        d.point((4, 4), fill=(60, 50, 80, 255))
+        d.point((7, 4), fill=(60, 50, 80, 255))
+    elif kind == 20:   # 黑暗敏感：闭上的眼睛（弧线 + 睫毛）+ 黄色小火花
+        d.arc((2, 3, 8, 8), 20, 160, fill=(200, 220, 255, 255))
+        for x in (3, 5, 7):
+            d.point((x, 8), fill=(200, 220, 255, 255))
+        d.point((9, 2), fill=(255, 230, 120, 255))
+        d.point((9, 4), fill=(255, 230, 120, 255))
+        d.point((8, 3), fill=(255, 230, 120, 255))
+        d.point((10, 3), fill=(255, 230, 120, 255))
+    elif kind == 21:   # 蒙眼：两片蝙蝠翅膀盖在一只眼睛上
+        d.polygon([(1, 3), (5, 5), (5, 8), (3, 7), (1, 9)], fill=(170, 120, 220, 255))
+        d.polygon([(10, 3), (6, 5), (6, 8), (8, 7), (10, 9)], fill=(170, 120, 220, 255))
+        d.rectangle((5, 5, 6, 7), fill=(60, 30, 80, 255))
+        d.point((4, 2), fill=(255, 230, 120, 255))
+        d.point((7, 2), fill=(255, 230, 120, 255))
+    else:              # 千手痒痒裤：一圈紫布 + 两只小手
+        d.rectangle((2, 5, 9, 8), fill=(150, 80, 200, 255))
+        d.line((2, 5, 9, 5), fill=(220, 170, 255, 255))
+        for x in (3, 7):
+            d.rectangle((x, 2, x + 1, 4), fill=(230, 190, 255, 255))
+            d.point((x - 1, 3), fill=(230, 190, 255, 255))
+        d.point((5, 10), fill=(220, 170, 255, 255))
+    return img
+
+
 def gen_buff_icons():
     sheet = blank(12 * BUFF_ICON_COUNT, 12)
     for i in range(BUFF_ICON_COUNT):
-        sheet.alpha_composite(buff_icon(i) if i < 9 else (zone_icon(i) if i < 18 else frost_icon()), (i * 12, 0))
+        icon = buff_icon(i) if i < 9 else (zone_icon(i) if i < 18 else (frost_icon() if i == 18 else maze5_icon(i)))
+        sheet.alpha_composite(icon, (i * 12, 0))
     sheet.save(OUT / "buff_icons.png")
 
 

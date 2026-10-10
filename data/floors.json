@@ -107,6 +107,13 @@
 			"music": "night_room"
 		},
 		{
+			"id": "floor_07_return",
+			"name": "第七层·归途",
+			"scene": "res://levels/floor_07_return/floor.tscn",
+			"group": "floor_07",
+			"music": "dungeon"
+		},
+		{
 			"id": "floor_08_maze_1",
 			"name": "第八层·夜迷宫一·外环回廊",
 			"scene": "res://levels/floor_08_maze_1/floor.tscn",

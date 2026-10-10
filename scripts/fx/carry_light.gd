@@ -15,6 +15,8 @@ var level := 1.0
 var drain_time := 0.0
 var _dim_left := 0.0
 var _refill := 0.0
+## 光圈再缩小的倍率（被蒙住眼 / 看不清时，DarkSense 设）
+var squeeze := 1.0
 
 
 static func attach(host: Node2D, drain := 0.0) -> CarryLight:
@@ -79,5 +81,5 @@ func brightness() -> float:
 
 func _apply() -> void:
 	var b := brightness()
-	texture_scale = lerpf(MIN_SCALE, MAX_SCALE, b)
+	texture_scale = lerpf(MIN_SCALE, MAX_SCALE, b) * squeeze
 	energy = lerpf(0.35, 0.85, b)

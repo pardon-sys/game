@@ -3710,6 +3710,186 @@
 			"special": [
 				"呀——全身的手同时——哈哈哈哈！"
 			]
+		},
+		"night_stalker": {
+			"name": "夜啼追手",
+			"first_encounter": [
+				{
+					"speaker": "公主",
+					"text": "后、后面有东西在追！",
+					"emotion": "surprise"
+				},
+				{
+					"speaker": "公主",
+					"text": "好多手臂……一团影子……",
+					"emotion": "shy"
+				},
+				{
+					"speaker": "公主",
+					"text": "被、被抱住了——！",
+					"emotion": "angry"
+				}
+			],
+			"calm": [
+				"放开！",
+				"别抱！"
+			],
+			"giggle": [
+				"嘻嘻……抱得好紧……"
+			],
+			"helpless_1": [
+				"哈哈哈！抱着挠哈哈哈！"
+			],
+			"helpless_2": [
+				"哈哈哈哈！跑不掉哈哈哈哈！"
+			],
+			"special": [
+				"呀——所有手臂一起收紧——哈哈哈哈！"
+			]
+		},
+		"blind_bat": {
+			"name": "遮眼蝠",
+			"first_encounter": [
+				{
+					"speaker": "公主",
+					"text": "蝙、蝙蝠扑到脸上了！",
+					"emotion": "surprise"
+				},
+				{
+					"speaker": "公主",
+					"text": "看、看不见了！",
+					"emotion": "shy"
+				},
+				{
+					"speaker": "公主",
+					"text": "翅膀在扫脖子……",
+					"emotion": "angry"
+				}
+			],
+			"calm": [
+				"眼睛！",
+				"走开！"
+			],
+			"giggle": [
+				"嘻嘻……看不见……"
+			],
+			"helpless_1": [
+				"哈哈哈！看不见更痒哈哈哈！"
+			],
+			"helpless_2": [
+				"哈哈哈哈！翅膀哈哈哈哈！"
+			],
+			"special": [
+				"呀——看不见的时候一下扫到脖子——哈哈哈哈！"
+			]
+		},
+		"wall_brush": {
+			"name": "墙缝刷轮",
+			"first_encounter": [
+				{
+					"speaker": "公主",
+					"text": "墙、墙缝里有刷子！",
+					"emotion": "surprise"
+				},
+				{
+					"speaker": "公主",
+					"text": "夹、夹住了！",
+					"emotion": "shy"
+				},
+				{
+					"speaker": "公主",
+					"text": "刷子在转……",
+					"emotion": "angry"
+				}
+			],
+			"calm": [
+				"缩回去！",
+				"别转……"
+			],
+			"giggle": [
+				"嘻嘻……刷来刷去……"
+			],
+			"helpless_1": [
+				"哈哈哈！刷大腿哈哈哈！"
+			],
+			"helpless_2": [
+				"哈哈哈哈！转得好快哈哈哈哈！"
+			],
+			"special": [
+				"呀——两只刷子一起刷屁股——哈哈哈哈！"
+			]
+		},
+		"hanging_hands": {
+			"name": "垂落吊手",
+			"first_encounter": [
+				{
+					"speaker": "公主",
+					"text": "头顶……有手垂下来了！",
+					"emotion": "surprise"
+				},
+				{
+					"speaker": "公主",
+					"text": "被、被吊起来了！",
+					"emotion": "shy"
+				},
+				{
+					"speaker": "公主",
+					"text": "脚够不着地……",
+					"emotion": "angry"
+				}
+			],
+			"calm": [
+				"放我下来！",
+				"别晃！"
+			],
+			"giggle": [
+				"嘻嘻……吊着……"
+			],
+			"helpless_1": [
+				"哈哈哈！吊着挠腰哈哈哈！"
+			],
+			"helpless_2": [
+				"哈哈哈哈！下不来哈哈哈哈！"
+			],
+			"special": [
+				"呀——吊到最高的时候挠肚子——哈哈哈哈！"
+			]
+		},
+		"thousand_pants": {
+			"name": "千手痒痒裤",
+			"first_encounter": [
+				{
+					"speaker": "公主",
+					"text": "裤、裤子在动……？！",
+					"emotion": "surprise"
+				},
+				{
+					"speaker": "公主",
+					"text": "里面……有手指……",
+					"emotion": "shy"
+				},
+				{
+					"speaker": "公主",
+					"text": "大腿上……一圈都是……",
+					"emotion": "angry"
+				}
+			],
+			"calm": [
+				"别、别动……",
+				"安静点……"
+			],
+			"giggle": [
+				"嘻嘻……裤子里……"
+			],
+			"helpless_1": [
+				"哈哈哈！裤子在挠哈哈哈！"
+			],
+			"helpless_2": [
+				"哈哈哈哈！脱、脱不掉哈哈哈哈！"
+			],
+			"special": [
+				"呀——裤子里的手指一起动了——哈哈哈哈！"
+			]
 		}
 	},
 	"magic": {

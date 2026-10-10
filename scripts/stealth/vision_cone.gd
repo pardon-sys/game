@@ -3,6 +3,8 @@ extends Node2D
 ## 视野扇形（可复用组件，挂在巡逻士兵等节点下）：朝 facing 方向张开 angle 度、远 range 像素。
 ## 视线被墙（碰撞层 1）挡住；目标在暗处（离最近的光源超过 dark_radius）时视野只有一半；目标躲起来（不可见）时看不见。
 ## sees(目标) 返回 0（看不见）~ 1（贴脸）；画出来的扇形按射线被墙截断，发现目标时变红。
+## ignore_walls = true：飘在空中的探照（千手的影子），墙不挡视线、扇形也不截断。
+## 等距楼层（IsoView）：扇形按等距投影画（贴在地上）。
 
 @export var range_px := 88.0
 @export var angle_deg := 70.0
@@ -10,6 +12,7 @@ extends Node2D
 @export var dark_radius := 56.0
 @export var color := Color(1.0, 0.95, 0.55, 0.32)
 @export var alert_color := Color(1.0, 0.35, 0.35, 0.45)
+@export var ignore_walls := false
 
 var facing := Vector2.DOWN
 var alerting := false
@@ -56,6 +59,8 @@ func sees(target: Node2D) -> float:
 
 
 func _blocked(a: Vector2, b: Vector2) -> bool:
+	if ignore_walls:
+		return false
 	var q := PhysicsRayQueryParameters2D.create(a, b, 1)
 	q.collide_with_areas = false
 	var hit := get_world_2d().direct_space_state.intersect_ray(q)
@@ -72,9 +77,12 @@ func _process(_delta: float) -> void:
 		var a := facing.angle() - half + (half * 2.0) * i / rays
 		var dir := Vector2.from_angle(a)
 		var to := global_position + dir * range_px
-		var q := PhysicsRayQueryParameters2D.create(global_position, to, 1)
-		var hit := space.intersect_ray(q)
-		var end: Vector2 = hit["position"] if not hit.is_empty() and not (hit.get("collider") is CharacterBody2D) else to
-		pts.append(end - global_position)
+		var end := to
+		if not ignore_walls:
+			var q := PhysicsRayQueryParameters2D.create(global_position, to, 1)
+			var hit := space.intersect_ray(q)
+			if not hit.is_empty() and not (hit.get("collider") is CharacterBody2D):
+				end = hit["position"]
+		pts.append(IsoView.offset(end - global_position))
 	_poly.polygon = pts
 	_poly.color = alert_color if alerting else color

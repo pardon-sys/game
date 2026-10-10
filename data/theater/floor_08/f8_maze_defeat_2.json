@@ -1,5 +1,6 @@
 {
 	"name": "夜迷宫·又笑倒了",
+	"night": true,
 	"cast": {
 		"blue": {
 			"kind": "npc:blue_princess",
@@ -16,92 +17,155 @@
 		{
 			"actions": [
 				{
-					"time": 0.5,
+					"time": 0.6,
 					"do": "fade_in"
 				}
 			],
-			"wait": 0.5
+			"wait": 0.6
 		},
 		{
 			"speaker": "",
-			"text": "（又一次。她连站都站不稳了）",
+			"text": "（又一次。冷光暗下去的那一刻，她就知道要来了）",
 			"actions": []
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……又是……这里。",
+			"actions": [],
+			"emotion": "shy"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……我、我明明……记住路了。",
+			"actions": [],
+			"emotion": "angry"
+		},
+		{
+			"speaker": "",
+			"text": "（黑暗里传来一声很轻的笑——不是她的）",
+			"actions": []
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……你、你故意的。",
+			"actions": [],
+			"emotion": "angry"
+		},
+		{
+			"speaker": "",
+			"text": "（手指从脚踝开始，一路往上爬）",
+			"actions": [
+				{
+					"time": 0.25,
+					"do": "flash"
+				},
+				{
+					"state": "giggle",
+					"do": "voice"
+				}
+			]
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……唔……！……慢、慢一点……",
+			"actions": [
+				{
+					"who": "blue",
+					"repeat": 9,
+					"interval": 0.15999999999999998,
+					"fx": "hand",
+					"zone": "thigh",
+					"do": "tickle"
+				},
+				{
+					"who": "blue",
+					"time": 0.4,
+					"do": "shake"
+				}
+			],
+			"emotion": "helpless_1"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……以前……玩捉迷藏……你、你也是这样……",
+			"actions": [
+				{
+					"who": "blue",
+					"repeat": 10,
+					"interval": 0.15599999999999997,
+					"fx": "hand",
+					"zone": "thigh",
+					"do": "tickle"
+				},
+				{
+					"who": "blue",
+					"time": 0.4,
+					"do": "shake"
+				}
+			],
+			"emotion": "helpless_1"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……躲在黑的地方……等我……",
+			"actions": [],
+			"emotion": "shy"
+		},
+		{
+			"speaker": "",
+			"text": "（手指停在大腿根，轻轻地、一下一下地敲）",
+			"actions": []
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……噗……别、别敲……",
+			"actions": [
+				{
+					"who": "blue",
+					"repeat": 11,
+					"interval": 0.15199999999999997,
+					"fx": "hand",
+					"zone": "butt",
+					"do": "tickle"
+				},
+				{
+					"who": "blue",
+					"time": 0.4,
+					"do": "shake"
+				}
+			],
+			"emotion": "helpless_1"
 		},
 		{
 			"speaker": "蓝色的公主",
 			"text": "……哈哈哈……又、又是……这里……",
 			"actions": [
 				{
+					"sound": "blue_crack",
+					"volume": -3.0,
+					"do": "sfx"
+				},
+				{
+					"state": "laugh",
+					"do": "voice"
+				},
+				{
 					"who": "blue",
-					"repeat": 7,
-					"interval": 0.212,
+					"visual": "helpless_1",
+					"anim": "helpless",
+					"do": "pose"
+				},
+				{
+					"who": "blue",
+					"repeat": 11,
+					"interval": 0.108,
 					"fx": "hand",
 					"zone": "butt",
 					"do": "tickle"
 				},
 				{
 					"who": "blue",
-					"time": 0.3,
-					"do": "shake"
-				}
-			],
-			"emotion": "helpless_2"
-		},
-		{
-			"speaker": "蓝色的公主",
-			"text": "……我、我明明……记住路了……哈哈哈……",
-			"actions": [
-				{
-					"who": "blue",
-					"repeat": 8,
-					"interval": 0.20400000000000001,
-					"fx": "hand",
-					"zone": "thigh",
-					"do": "tickle"
-				},
-				{
-					"who": "blue",
-					"time": 0.3,
-					"do": "shake"
-				}
-			],
-			"emotion": "helpless_2"
-		},
-		{
-			"speaker": "蓝色的公主",
-			"text": "……你、你故意的……哈哈哈哈……！",
-			"actions": [
-				{
-					"who": "blue",
-					"repeat": 9,
-					"interval": 0.196,
-					"fx": "hand",
-					"zone": "butt",
-					"do": "tickle"
-				},
-				{
-					"who": "blue",
-					"time": 0.3,
-					"do": "shake"
-				}
-			],
-			"emotion": "helpless_2"
-		},
-		{
-			"speaker": "蓝色的公主",
-			"text": "……以前……玩捉迷藏……你、你也是这样……哈哈……",
-			"actions": [
-				{
-					"who": "blue",
-					"repeat": 6,
-					"interval": 0.188,
-					"fx": "hand",
-					"zone": "thigh",
-					"do": "tickle"
-				},
-				{
-					"who": "blue",
-					"time": 0.3,
+					"time": 0.5,
 					"do": "shake"
 				}
 			],
@@ -113,20 +177,61 @@
 			"actions": [
 				{
 					"who": "blue",
-					"repeat": 7,
-					"interval": 0.18,
+					"repeat": 12,
+					"interval": 0.104,
 					"fx": "hand",
 					"zone": "waist",
 					"do": "tickle"
 				},
 				{
 					"who": "blue",
-					"time": 0.3,
+					"time": 0.5,
 					"do": "shake"
+				}
+			],
+			"emotion": "helpless_2"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……认、认输……我认输……哈哈哈哈……！",
+			"actions": [
+				{
+					"who": "blue",
+					"repeat": 13,
+					"interval": 0.1,
+					"fx": "hand",
+					"zone": "thigh",
+					"do": "tickle"
 				},
 				{
-					"state": "giggle",
-					"do": "voice"
+					"who": "blue",
+					"time": 0.5,
+					"do": "shake"
+				}
+			],
+			"emotion": "helpless_2"
+		},
+		{
+			"speaker": "",
+			"text": "（她笑着笑着，忽然想起——那时候，认输之后，总会被抱起来转一圈）",
+			"actions": []
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……哈哈……现在……不、不准抱……哈哈……",
+			"actions": [
+				{
+					"who": "blue",
+					"repeat": 11,
+					"interval": 0.1,
+					"fx": "hand",
+					"zone": "butt",
+					"do": "tickle"
+				},
+				{
+					"who": "blue",
+					"time": 0.5,
+					"do": "shake"
 				}
 			],
 			"emotion": "helpless_2"
@@ -139,18 +244,7 @@
 		{
 			"speaker": "蓝色的公主",
 			"text": "……哈……",
-			"actions": [
-				{
-					"state": "laugh",
-					"do": "voice"
-				},
-				{
-					"who": "blue",
-					"visual": "helpless_1",
-					"anim": "helpless",
-					"do": "pose"
-				}
-			],
+			"actions": [],
 			"emotion": "helpless_1"
 		},
 		{

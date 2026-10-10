@@ -19,6 +19,13 @@
   puddle       魔力疲倦水液：啪嗒一声
   tickle_special 特殊挠痒（暴击）：水里的果冻抖动——闷闷的啵叽 + 慢颤音 + 气泡，整体音高上扬约 5 度
   water_release 魔力释放的水声：一股水「哗——」地涌出（低沉的冲水噪声先涌起再退去）+ 一串气泡 + 几滴回落的水珠
+  hand_grab    夜迷宫的手抓上身：软软的一下「啪叽」+ 手指窸窸窣窣地乱动
+  heartbeat    QTE 的心跳：「咚、咚」两下闷响
+  rumble       大量手 / 追逐怪出现：低沉的轰鸣，慢慢涌起再退去
+  brush_spin   墙缝刷轮：呼呼转的刷毛声
+  bat_flap     遮眼蝠：几下扑翅
+  ice_crack    解冻：冰面「咔——」裂开 + 碎冰落下
+  chase_drums  追逐怪开追时的紧张鼓点（循环，2 秒，约 150 拍）
 
 用法：python tools/art/gen_sfx.py
 在游戏里通过 Audio.play("tickle", 音量, 抖动, 音高) 播放，怪物用不同音高区分（巨魔低沉、蝙蝠尖细）。
@@ -115,6 +122,7 @@ def main():
     gen_expansion_sfx()
     gen_floor4_sfx()
     gen_floor8_sfx()
+    gen_maze5_sfx()
     print("音效已生成：", sorted(p.name for p in OUT.glob("*.wav")))
 
 
@@ -304,6 +312,72 @@ def gen_floor8_sfx():
         n = min(len(note), len(sig) - i)
         sig[i:i + n] += note[:n]
     save("music_box", sig, 0.45)
+
+
+def gen_maze5_sfx():
+    """第八层夜迷宫第五轮：手抓上身、心跳、轰鸣、刷轮、扑翅、冰裂。用单独的随机数，不影响前面的音效。"""
+    r = np.random.default_rng(85)
+    # 手抓上身：一下软软的拍击（低频果冻）+ 0.08 秒后一串手指的窸窣（高通噪声，按 18Hz 一下一下）
+    t = t_axis(0.5)
+    slap = np.sin(2 * np.pi * np.cumsum(140 * np.exp(-t / 0.05) + 70) / RATE) * env(t, 0.003, 0.06)
+    flutter = highpass(r.standard_normal(len(t)), 1800) * (0.5 + 0.5 * np.sign(np.sin(2 * np.pi * 18 * t))) * env(t, 0.12, 0.16) * 0.35
+    save("hand_grab", mix(slap * 1.2, jelly(0.2, 360, 150, wobble=28, delay=0.03) * 0.5, flutter), 0.8)
+    # 心跳：「咚、咚」
+    beat = np.zeros(int(0.5 * RATE))
+    for at, a in ((0.0, 1.0), (0.18, 0.7)):
+        bt = t_axis(0.16)
+        b = np.sin(2 * np.pi * np.cumsum(70 * np.exp(-bt / 0.06) + 38) / RATE) * env(bt, 0.004, 0.05) * a
+        i = int(at * RATE)
+        beat[i:i + len(b)] += b
+    save("heartbeat", lowpass(beat, 400), 0.85)
+    # 轰鸣：低频噪声 + 两个失谐的低音，1.6 秒慢慢涌起再退去
+    t = t_axis(1.6)
+    shape = np.sin(np.pi * t / 1.6) ** 1.5
+    drone = (np.sin(2 * np.pi * 46 * t) + 0.7 * np.sin(2 * np.pi * 49.5 * t) + 0.4 * np.sin(2 * np.pi * 92 * t)) * 0.4
+    noise = lowpass(r.standard_normal(len(t)), 180) * 3.0
+    save("rumble", (drone + noise) * shape, 0.7)
+    # 刷轮：带通噪声按转速一下一下（26Hz），音量起伏
+    t = t_axis(0.9)
+    bristle = highpass(lowpass(r.standard_normal(len(t)), 4200), 900)
+    spin = 0.55 + 0.45 * np.sin(2 * np.pi * 26 * t)
+    save("brush_spin", bristle * spin * np.sin(np.pi * t / 0.9) ** 0.6, 0.45)
+    # 扑翅：三下低通噪声「噗噗噗」
+    flap = np.zeros(int(0.45 * RATE))
+    for at in (0.0, 0.14, 0.28):
+        ft = t_axis(0.12)
+        f = lowpass(r.standard_normal(len(ft)), 900) * env(ft, 0.01, 0.035)
+        i = int(at * RATE)
+        flap[i:i + len(f)] += f
+    save("bat_flap", flap, 0.55)
+    # 冰裂：几下尖脆的「咔」（高通噪声短脉冲）+ 下落的碎冰叮当
+    crack = np.zeros(int(1.0 * RATE))
+    for k, at in enumerate((0.0, 0.05, 0.09, 0.16, 0.2)):
+        ct = t_axis(0.05)
+        c = highpass(r.standard_normal(len(ct)), 2500) * env(ct, 0.001, 0.012) * (1.0 - k * 0.12)
+        i = int(at * RATE)
+        crack[i:i + len(c)] += c
+    for at, f in ((0.32, 2400), (0.41, 3100), (0.5, 2700), (0.62, 3500), (0.7, 2900), (0.83, 3300)):
+        dt = t_axis(0.12)
+        d = np.sin(2 * np.pi * f * dt) * env(dt, 0.001, 0.03) * 0.35
+        i = int(at * RATE)
+        crack[i:i + len(d)] += d
+    save("ice_crack", crack, 0.7)
+    # 追逐鼓点：低音鼓「咚、咚咚」+ 军鼓沙沙，2 秒一循环（8 拍 × 0.25 秒）
+    total = 2.0
+    drums = np.zeros(int(total * RATE))
+    for k in range(8):
+        at = k * 0.25
+        if k % 4 in (0, 3) or k == 6:
+            bt = t_axis(0.2)
+            b = np.sin(2 * np.pi * np.cumsum(110 * np.exp(-bt / 0.04) + 45) / RATE) * env(bt, 0.002, 0.07)
+            i = int(at * RATE)
+            drums[i:i + len(b)] += b[: len(drums) - i]
+        if k % 2 == 1:
+            st = t_axis(0.12)
+            sn = highpass(r.standard_normal(len(st)), 1500) * env(st, 0.002, 0.03) * 0.35
+            i = int(at * RATE)
+            drums[i:i + len(sn)] += sn[: len(drums) - i]
+    save_loop("chase_drums", drums, 0.7)
 
 
 if __name__ == "__main__":

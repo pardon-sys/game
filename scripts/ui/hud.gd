@@ -32,6 +32,8 @@ var combo_sub: Label
 var _title_tween: Tween
 ## 三来源组合的慢动作（测试里可以关掉）。
 static var slow_motion := true
+## 屏幕中间的黄字提示
+var center_hint: CenterHint
 ## 公主身上的增益 / 减益图标（心形右边）
 var buff_row: HBoxContainer
 ## 闷笑条下面的魔力疲倦条
@@ -50,6 +52,8 @@ func _ready() -> void:
 	GameState.toast.connect(show_toast)
 	GameState.combo_triggered.connect(show_combo)
 	toast_label.modulate.a = 0.0
+	center_hint = CenterHint.new()
+	add_child(center_hint)
 	_build_magic_ui()
 	fatigue_row = HBoxContainer.new()
 	fatigue_row.name = "FatigueRow"

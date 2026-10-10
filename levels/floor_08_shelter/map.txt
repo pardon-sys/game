@@ -24,8 +24,9 @@ M = prop type=wood_floor + prop type=old_dresser action=talk:floor_08/shelter_ob
 N = prop type=wood_floor + prop type=music_box action=talk:floor_08/shelter_objects#music_box
 O = prop type=wood_floor + player
 Q = prop type=wood_floor + prop type=height_marks action=talk:floor_08/shelter_objects#marks
-R = prop type=wood_floor + exit target=floor_08 locked=true dialogue=f8s_door
+R = prop type=wood_floor + exit target=floor_07_return spawn=from_shelter unlock_flag=f8_returned locked_dialogue=f8s_door
 S = prop type=wood_floor + savepoint place=第八层·小房间
+T = prop type=wood_floor + f8shelter
 
 [map]
 ################
@@ -37,6 +38,6 @@ S = prop type=wood_floor + savepoint place=第八层·小房间
 ##CCCCCKLKCCCC##
 ##CCCCCCCCCCCC##
 ##CMCNCOCCCCJC##
-##CCCCQRCCCSCC##
+##CCCCQRCCCSCT##
 ################
 ################

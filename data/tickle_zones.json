@@ -348,6 +348,27 @@
 			"thigh": 3,
 			"butt": 3,
 			"waist": 1
+		},
+		"night_stalker": {
+			"waist": 2,
+			"thigh": 2,
+			"butt": 1
+		},
+		"blind_bat": {
+			"neck": 3,
+			"armpit": 1
+		},
+		"wall_brush": {
+			"thigh": 3,
+			"butt": 3
+		},
+		"hanging_hands": {
+			"waist": 3,
+			"belly": 2
+		},
+		"thousand_pants": {
+			"thigh": 3,
+			"butt": 3
 		}
 	}
 }

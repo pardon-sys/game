@@ -1,0 +1,806 @@
+{
+	"name": "第八层：回到小屋",
+	"letterbox": true,
+	"skippable": true,
+	"steps": [
+		{
+			"actions": [
+				{
+					"time": 0.0,
+					"do": "fade_out"
+				},
+				{
+					"who": "princess",
+					"at": [
+						3,
+						4.25
+					],
+					"blanket": "old_bed_blanket",
+					"sleep": true,
+					"do": "lie"
+				},
+				{
+					"id": "ice",
+					"kind": "prop:ice_bed",
+					"at": [
+						3,
+						4.25
+					],
+					"do": "spawn"
+				},
+				{
+					"who": "BluePrincess_12_4",
+					"to": [
+						7,
+						9.6
+					],
+					"do": "move"
+				},
+				{
+					"who": "BluePrincess_12_4",
+					"dir": "up",
+					"do": "face"
+				},
+				{
+					"to": [
+						4,
+						6.5
+					],
+					"zoom": 1.5,
+					"time": 0.1,
+					"do": "camera"
+				},
+				{
+					"id": "m1",
+					"kind": "monster:squirrel",
+					"at": [
+						2.4,
+						5.7
+					],
+					"dir": "up",
+					"do": "spawn"
+				},
+				{
+					"id": "m2",
+					"kind": "monster:hedgehog",
+					"at": [
+						3.4,
+						5.9
+					],
+					"dir": "up",
+					"do": "spawn"
+				},
+				{
+					"id": "m3",
+					"kind": "monster:caterpillar",
+					"at": [
+						4.3,
+						5.6
+					],
+					"dir": "up",
+					"do": "spawn"
+				},
+				{
+					"id": "m4",
+					"kind": "monster:fairy",
+					"at": [
+						2.0,
+						5.2
+					],
+					"dir": "up",
+					"do": "spawn"
+				}
+			],
+			"wait": 0.3
+		},
+		{
+			"actions": [
+				{
+					"time": 1.6,
+					"do": "fade_in"
+				},
+				{
+					"fade": 2.5,
+					"do": "crack"
+				}
+			],
+			"wait": 1.4
+		},
+		{
+			"speaker": "",
+			"text": "（小屋里静悄悄的。只有冰床那一头，传来细细的、窸窸窣窣的声音）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "m1",
+					"repeat": 6,
+					"interval": 0.3,
+					"fx": "feather",
+					"zone": "sole",
+					"do": "tickle"
+				}
+			],
+			"auto": 3.2
+		},
+		{
+			"speaker": "公主",
+			"text": "……唔嘿……嘿嘿……",
+			"emotion": "shy",
+			"actions": [
+				{
+					"who": "princess",
+					"time": 0.3,
+					"do": "shake"
+				},
+				{
+					"who": "princess",
+					"by": "m2",
+					"repeat": 6,
+					"interval": 0.25,
+					"fx": "brush",
+					"zone": "sole",
+					"do": "tickle"
+				}
+			],
+			"auto": 1.85
+		},
+		{
+			"speaker": "",
+			"text": "（几只小怪围在床尾，正一下一下地挠着冰外面露出来的脚心）",
+			"actions": [
+				{
+					"who": "m1",
+					"do": "hop"
+				},
+				{
+					"who": "m3",
+					"do": "hop"
+				},
+				{
+					"who": "princess",
+					"by": "m3",
+					"repeat": 8,
+					"interval": 0.2,
+					"fx": "crawl",
+					"zone": "sole",
+					"do": "tickle"
+				}
+			],
+			"auto": 3.2
+		},
+		{
+			"speaker": "公主",
+			"text": "……嘻……别……饼干……不、不要挠……嘿嘿嘿……",
+			"emotion": "shy",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "m4",
+					"repeat": 8,
+					"interval": 0.2,
+					"fx": "feather",
+					"zone": "sole",
+					"do": "tickle"
+				},
+				{
+					"time": 0.3,
+					"do": "shake"
+				}
+			],
+			"auto": 3.04
+		},
+		{
+			"actions": [
+				{
+					"sound": "door",
+					"do": "sfx"
+				},
+				{
+					"to": [
+						5.5,
+						7.8
+					],
+					"zoom": 1.35,
+					"time": 0.8,
+					"do": "camera"
+				}
+			],
+			"wait": 0.6
+		},
+		{
+			"actions": [
+				{
+					"who": "BluePrincess_12_4",
+					"to": [
+						7,
+						7.6
+					],
+					"speed": 18,
+					"do": "move"
+				}
+			],
+			"wait": 2.0
+		},
+		{
+			"speaker": "",
+			"text": "（门开了。蓝色公主扶着门框，慢慢地走了进来。脚步有点晃）",
+			"auto": 3.0
+		},
+		{
+			"actions": [
+				{
+					"who": "BluePrincess_12_4",
+					"id": "thousand_pants",
+					"do": "buff"
+				},
+				{
+					"who": "BluePrincess_12_4",
+					"dir": "down",
+					"do": "face"
+				},
+				{
+					"sound": "hand_grab",
+					"volume": -8.0,
+					"do": "sfx"
+				}
+			],
+			"wait": 0.6
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……？",
+			"emotion": "surprise"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……腿上……有什么……",
+			"emotion": "shy",
+			"actions": [
+				{
+					"who": "BluePrincess_12_4",
+					"text": "……？",
+					"do": "say"
+				}
+			],
+			"auto": 1.94
+		},
+		{
+			"speaker": "",
+			"text": "（大腿上紧紧的，像是穿着什么。低头一看——一层薄薄的紫色，从屁股一直裹到大腿）",
+			"auto": 3.6
+		},
+		{
+			"actions": [
+				{
+					"volume": -8.0,
+					"do": "crack"
+				},
+				{
+					"who": "BluePrincess_12_4",
+					"text": "……噗。",
+					"do": "say"
+				}
+			],
+			"wait": 0.9
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……动、动了……这个……在动……",
+			"emotion": "shy"
+		},
+		{
+			"actions": [
+				{
+					"id": "thousand_pants",
+					"do": "item"
+				},
+				{
+					"flag": "blue_tickle_pants",
+					"do": "set_flag"
+				},
+				{
+					"text": "获得关键道具：千手痒痒裤",
+					"do": "hint"
+				}
+			],
+			"wait": 1.2
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……之后……再说。",
+			"emotion": "angry",
+			"auto": 1.77
+		},
+		{
+			"actions": [
+				{
+					"who": "BluePrincess_12_4",
+					"dir": "left",
+					"do": "face"
+				}
+			],
+			"wait": 0.4
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……！",
+			"emotion": "surprise",
+			"actions": [
+				{
+					"who": "BluePrincess_12_4",
+					"text": "！",
+					"do": "say"
+				}
+			]
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……离她远点。",
+			"emotion": "angry"
+		},
+		{
+			"actions": [
+				{
+					"sound": "chant",
+					"volume": -4.0,
+					"do": "sfx"
+				},
+				{
+					"who": "BluePrincess_12_4",
+					"text": "……冰。",
+					"do": "say"
+				}
+			],
+			"wait": 0.9
+		},
+		{
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "flash"
+				},
+				{
+					"sound": "star_burst",
+					"do": "sfx"
+				},
+				{
+					"time": 0.4,
+					"do": "shake"
+				},
+				{
+					"who": "m1",
+					"do": "hop"
+				},
+				{
+					"who": "m2",
+					"do": "hop"
+				},
+				{
+					"who": "m3",
+					"do": "hop"
+				},
+				{
+					"who": "m4",
+					"do": "hop"
+				}
+			],
+			"wait": 0.5
+		},
+		{
+			"actions": [
+				{
+					"who": "m1",
+					"to": [
+						7,
+						10.5
+					],
+					"speed": 90,
+					"do": "move"
+				},
+				{
+					"who": "m2",
+					"to": [
+						7,
+						10.5
+					],
+					"speed": 90,
+					"do": "move"
+				},
+				{
+					"who": "m3",
+					"to": [
+						7,
+						10.5
+					],
+					"speed": 90,
+					"do": "move"
+				},
+				{
+					"who": "m4",
+					"to": [
+						7,
+						10.5
+					],
+					"speed": 90,
+					"do": "move"
+				}
+			],
+			"wait": 1.2
+		},
+		{
+			"actions": [
+				{
+					"who": "m1",
+					"do": "despawn"
+				},
+				{
+					"who": "m2",
+					"do": "despawn"
+				},
+				{
+					"who": "m3",
+					"do": "despawn"
+				},
+				{
+					"who": "m4",
+					"do": "despawn"
+				},
+				{
+					"sound": "door_close",
+					"volume": -4.0,
+					"do": "sfx"
+				}
+			],
+			"wait": 0.4
+		},
+		{
+			"speaker": "",
+			"text": "（被冻得一跳的小怪们，吱吱叫着，一溜烟逃出了门）",
+			"auto": 2.8
+		},
+		{
+			"actions": [
+				{
+					"who": "BluePrincess_12_4",
+					"to": [
+						4.2,
+						5.6
+					],
+					"speed": 26,
+					"do": "move"
+				},
+				{
+					"to": [
+						3.5,
+						6.5
+					],
+					"zoom": 1.6,
+					"time": 1.2,
+					"do": "camera"
+				}
+			],
+			"wait": 1.6
+		},
+		{
+			"actions": [
+				{
+					"who": "BluePrincess_12_4",
+					"dir": "up",
+					"do": "face"
+				}
+			],
+			"wait": 0.3
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……没事了。",
+			"emotion": "sad",
+			"auto": 1.6
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……我回来了。",
+			"emotion": "sad",
+			"auto": 1.6
+		},
+		{
+			"actions": [
+				{
+					"sound": "ice_crack",
+					"do": "sfx"
+				},
+				{
+					"time": 0.4,
+					"do": "flash"
+				},
+				{
+					"who": "ice",
+					"do": "despawn"
+				},
+				{
+					"time": 0.3,
+					"do": "shake"
+				}
+			],
+			"wait": 0.8
+		},
+		{
+			"speaker": "",
+			"text": "（冰面「咔嚓」一声裂开，碎成一片闪闪发光的小冰粒）",
+			"auto": 2.8
+		},
+		{
+			"actions": [
+				{
+					"who": "princess",
+					"sleep": false,
+					"laugh": "helpless_2",
+					"do": "lie"
+				},
+				{
+					"state": "laugh",
+					"do": "voice"
+				},
+				{
+					"who": "princess",
+					"kind": "laugh",
+					"do": "bubble"
+				},
+				{
+					"who": "princess",
+					"time": 0.6,
+					"do": "shake"
+				}
+			],
+			"wait": 0.4
+		},
+		{
+			"speaker": "公主",
+			"text": "噗——哈哈哈哈哈！好痒——为、为什么脚心这么痒啊哈哈哈！",
+			"emotion": "helpless_2",
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "shake"
+				}
+			],
+			"auto": 3.2
+		},
+		{
+			"speaker": "公主",
+			"text": "哈哈哈……我、我刚才梦见一大堆羽毛追着我……一直挠一直挠……停不下来……哈哈哈……",
+			"emotion": "helpless_2",
+			"auto": 3.8
+		},
+		{
+			"speaker": "公主",
+			"text": "呼……呼……脚心……到现在还麻麻的……嘻嘻……",
+			"emotion": "giggle",
+			"actions": [
+				{
+					"state": "giggle",
+					"do": "voice"
+				}
+			],
+			"auto": 3.0
+		},
+		{
+			"actions": [
+				{
+					"state": "",
+					"do": "voice"
+				},
+				{
+					"who": "princess",
+					"on": false,
+					"do": "lie"
+				},
+				{
+					"who": "princess",
+					"to": [
+						3,
+						5.6
+					],
+					"time": 0.4,
+					"do": "move"
+				},
+				{
+					"who": "princess",
+					"dir": "right",
+					"do": "face"
+				},
+				{
+					"emotion": "surprise",
+					"do": "pose"
+				}
+			],
+			"wait": 0.6
+		},
+		{
+			"speaker": "公主",
+			"text": "……啊！你回来啦！",
+			"emotion": "happy"
+		},
+		{
+			"speaker": "公主",
+			"text": "……刚才，是不是有什么东西挠我的脚？",
+			"emotion": "surprise"
+		},
+		{
+			"actions": [
+				{
+					"who": "BluePrincess_12_4",
+					"kind": "sweat",
+					"do": "bubble"
+				},
+				{
+					"who": "BluePrincess_12_4",
+					"dir": "right",
+					"do": "face"
+				}
+			],
+			"wait": 0.6
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……不知道。……大概……是做梦。",
+			"emotion": "normal"
+		},
+		{
+			"actions": [
+				{
+					"volume": -9.0,
+					"do": "crack"
+				},
+				{
+					"who": "BluePrincess_12_4",
+					"text": "……噗。",
+					"do": "say"
+				}
+			],
+			"wait": 1.0
+		},
+		{
+			"speaker": "",
+			"text": "（蓝色公主别过脸，肩膀一抖一抖的）",
+			"auto": 2.4
+		},
+		{
+			"speaker": "公主",
+			"text": "……？你刚才是不是笑了？",
+			"emotion": "surprise"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……没有。",
+			"emotion": "normal"
+		},
+		{
+			"actions": [
+				{
+					"who": "princess",
+					"dir": "right",
+					"do": "face"
+				}
+			],
+			"wait": 0.3
+		},
+		{
+			"speaker": "公主",
+			"text": "……咦？你腿上那个紫紫的是什么？",
+			"emotion": "surprise"
+		},
+		{
+			"actions": [
+				{
+					"who": "BluePrincess_12_4",
+					"kind": "sweat",
+					"do": "bubble"
+				}
+			],
+			"wait": 0.5
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……没什么。……别看。",
+			"emotion": "shy"
+		},
+		{
+			"actions": [
+				{
+					"volume": -6.0,
+					"do": "crack"
+				},
+				{
+					"who": "BluePrincess_12_4",
+					"text": "……唔、噗……！",
+					"do": "say"
+				}
+			],
+			"wait": 1.0
+		},
+		{
+			"speaker": "公主",
+			"text": "你、你又笑了！腿还抖了一下！",
+			"emotion": "surprise"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……没有。……是冷。",
+			"emotion": "angry"
+		},
+		{
+			"actions": [
+				{
+					"who": "BluePrincess_12_4",
+					"dir": "left",
+					"do": "face"
+				}
+			],
+			"wait": 0.3
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……已经没事了。……我在。",
+			"emotion": "sad"
+		},
+		{
+			"actions": [
+				{
+					"volume": -10.0,
+					"do": "crack"
+				},
+				{
+					"who": "BluePrincess_12_4",
+					"text": "……嘻。",
+					"do": "say"
+				}
+			],
+			"wait": 0.9
+		},
+		{
+			"speaker": "公主",
+			"text": "……嗯。……谢谢你。",
+			"emotion": "shy"
+		},
+		{
+			"speaker": "公主",
+			"text": "总觉得……你看起来好累哦。去了哪里？",
+			"emotion": "sad"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……散步。",
+			"emotion": "normal"
+		},
+		{
+			"speaker": "公主",
+			"text": "骗人——！",
+			"emotion": "angry"
+		},
+		{
+			"speaker": "公主",
+			"text": "……算啦。走吧！我们一起出去！",
+			"emotion": "happy"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……嗯。……一起。",
+			"emotion": "shy"
+		},
+		{
+			"actions": [
+				{
+					"reset": true,
+					"time": 0.6,
+					"do": "camera"
+				},
+				{
+					"flag": "f8_returned",
+					"do": "set_flag"
+				}
+			],
+			"wait": 0.6
+		}
+	]
+}

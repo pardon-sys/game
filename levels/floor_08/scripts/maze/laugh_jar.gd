@@ -54,6 +54,9 @@ func _burst() -> void:
 	var dir: Node = get_tree().get_first_node_in_group("maze_director")
 	if dir and dir.has_method("summon_near"):
 		dir.summon_near(2)
+		# 罐子的笑声一下子传得很远，周围的手都会过来：给个提示
+		if dir.get("alarm"):
+			dir.alarm.trigger()
 
 
 func _animate(_delta: float) -> void:

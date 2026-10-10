@@ -45,7 +45,9 @@
 			"glow_moth",
 			"dream_fluff",
 			"lamp_imp",
-			"laugh_jar"
+			"laugh_jar",
+			"night_stalker",
+			"blind_bat"
 		],
 		"trap": [
 			"feather",
@@ -94,7 +96,10 @@
 			"cradle_bench",
 			"hand_gate",
 			"hand_shadow",
-			"hand_rhythm"
+			"hand_rhythm",
+			"wall_brush",
+			"hanging_hands",
+			"thousand_pants"
 		]
 	},
 	"combos": [

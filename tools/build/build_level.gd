@@ -64,6 +64,9 @@ const SCENES := {
 	"handgate": "res://levels/floor_08/scenes/hand_gate.tscn",
 	"cradle": "res://levels/floor_08/scenes/cradle_bench.tscn",
 	"handshadow": "res://levels/floor_08/scenes/hand_shadow.tscn",
+	"nightstalker": "res://levels/floor_08/scenes/night_stalker.tscn",
+	"stalkerzone": "res://levels/floor_08/scenes/stalker_zone.tscn",
+	"f8shelter": "res://levels/floor_08/scenes/shelter_return.tscn",
 	"guard_patrol": "res://scenes/stealth/patrol_guard.tscn",
 }
 ## 按 type 参数选择场景的类型：新增怪物/友军/陷阱时在这里注册。
@@ -75,6 +78,7 @@ const TYPED_SCENES := {
 		"dream_fluff": "res://levels/floor_08/scenes/dream_fluff.tscn",
 		"lamp_imp": "res://levels/floor_08/scenes/lamp_imp.tscn",
 		"laugh_jar": "res://levels/floor_08/scenes/laugh_jar.tscn",
+		"blind_bat": "res://levels/floor_08/scenes/blind_bat.tscn",
 		"bat": "res://scenes/actors/monsters/feather_bat.tscn",
 		"ghost": "res://scenes/actors/monsters/tickle_ghost.tscn",
 		"spider": "res://scenes/actors/monsters/tickle_spider.tscn",
@@ -105,6 +109,7 @@ const TYPED_SCENES := {
 		"mirror_puddle": "res://levels/floor_08/scenes/mirror_puddle.tscn",
 		"shadow_vine": "res://levels/floor_08/scenes/shadow_vine.tscn",
 		"feather_curtain": "res://levels/floor_08/scenes/feather_curtain.tscn",
+		"hanging_hands": "res://levels/floor_08/scenes/hanging_hands.tscn",
 		"feather": "res://scenes/traps/feather_trap.tscn",
 		"vent": "res://scenes/traps/powder_vent.tscn",
 		"brush": "res://scenes/traps/feather_brush.tscn",
@@ -162,6 +167,7 @@ const TYPED_SCENES := {
 		"wardrobe": "res://scenes/traps/wardrobe.tscn",
 		"duster": "res://scenes/traps/duster.tscn",
 		"thigh_pincer": "res://scenes/traps/thigh_pincer.tscn",
+		"wall_brush": "res://levels/floor_08/scenes/wall_brush.tscn",
 	},
 }
 ## 挂在墙上的类型：所在格仍是墙。

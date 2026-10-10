@@ -7,6 +7,8 @@ signal enemy_defeated(enemy: Node)
 ## Boss 出现（monster）或结束（null），HUD 显示 / 隐藏 Boss 血条。
 signal boss_changed(monster: Node)
 signal toast(text: String)
+## 屏幕中间的黄字提示（CenterHint）
+signal hint_requested(text: String)
 ## 请求玩家角色做表情。duration <= 0 表示一直保持直到下一次请求；emotion 为 "" 表示松开。
 signal emotion_requested(emotion: String, duration: float, bubble: bool)
 ## 玩家角色当前表情已改变（HUD 头像监听）。
@@ -249,6 +251,11 @@ func show_bubble(kind: String) -> void:
 
 func notify(text: String) -> void:
 	toast.emit(text)
+
+
+## 屏幕中间的黄字提示：出现一会就消失（CenterHint，排队播放）。
+func hint(text: String) -> void:
+	hint_requested.emit(text)
 
 
 # ------------------------------------------------------------------ 被动技能

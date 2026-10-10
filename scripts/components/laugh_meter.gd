@@ -8,10 +8,13 @@ extends Node
 ##   达到 100%                  → overflow：笑到脱力（角色扣血），数值回落到 overflow_reset_ratio（70%）
 ## 受到攻击或挠痒后 decay_delay 秒内不下降，之后每秒下降 decay_ratio（6.7%）。挣扎一次 -struggle_ratio（2%）。
 ## giggle_threshold / helpless_threshold / helpless_stage2_threshold / overflow_reset_to 是按比例算出的只读值。
+## gain_mult < 1（憋笑键 HoldLaugh）：涨的量打折，少涨的部分发 suppressed(量)。
+## 最低值：角色状态的 laugh_floor（千手痒痒裤 20）——自然消减、挣扎、降低、清空都不会低于它。
 
 signal changed(value: float, max_value: float)
 signal level_changed(level: Level)
 signal overflow
+signal suppressed(amount: float)
 
 enum Level { CALM, GIGGLING, HELPLESS }
 
@@ -48,6 +51,8 @@ var overflow_reset_to: float:
 var value := 0.0
 var level := Level.CALM
 var _since_attacked := INF
+## 涨幅倍率（憋笑时 0.5）
+var gain_mult := 1.0
 
 
 ## 冰晶守护（蓝色公主的冰晶结界）期间：闷笑自然消减快 FROST_DECAY 倍，而且不用等「最近被挠后的延迟」。
@@ -59,14 +64,25 @@ func _frost_guarded() -> bool:
 	return who != null and who.has_method("has_buff") and who.has_buff("frost_guard")
 
 
+## 闷笑值最低能降到多少（角色状态的 laugh_floor，例如千手痒痒裤）。
+func floor_value() -> float:
+	var who := get_parent()
+	if who == null or not who.has_method("stat_add"):
+		return 0.0
+	return clampf(who.stat_add("laugh_floor"), 0.0, max_value)
+
+
 func _process(delta: float) -> void:
 	_since_attacked += delta
-	if value <= 0.0:
+	var lo := floor_value()
+	if value < lo:
+		_set_value(lo)
+	if value <= lo:
 		return
 	if _frost_guarded():
-		_set_value(value - decay_ratio * FROST_DECAY * max_value * delta)
+		_set_value(maxf(lo, value - decay_ratio * FROST_DECAY * max_value * delta))
 	elif _since_attacked >= decay_delay:
-		_set_value(value - decay_ratio * max_value * delta)
+		_set_value(maxf(lo, value - decay_ratio * max_value * delta))
 
 
 ## 被挠痒：累积闷笑值。
@@ -74,6 +90,9 @@ func add(amount: float) -> void:
 	# 冰晶守护（蓝色公主的冰晶结界）期间：挠痒、组合爆发、余痒都不涨，也不打断消减
 	if amount > 0.0 and _frost_guarded():
 		return
+	if amount > 0.0 and gain_mult < 1.0:
+		suppressed.emit(amount * (1.0 - gain_mult))
+		amount *= gain_mult
 	notify_attacked()
 	_set_value(value + amount)
 	if value >= max_value:
@@ -82,7 +101,7 @@ func add(amount: float) -> void:
 
 
 func reduce(amount: float) -> void:
-	_set_value(value - amount)
+	_set_value(maxf(minf(value, floor_value()), value - amount))
 
 
 ## 按上限的比例降低（薄荷糖、骑士帮忙）。
@@ -102,7 +121,7 @@ func notify_attacked() -> void:
 
 func clear() -> void:
 	_since_attacked = INF
-	_set_value(0.0)
+	_set_value(floor_value())
 
 
 func set_value(v: float) -> void:

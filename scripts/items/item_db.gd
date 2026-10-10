@@ -12,6 +12,7 @@ const PATHS := {
 	"star_candy": "res://data/items/star_candy.tres",
 	"backpack": "res://data/items/backpack.tres",
 	"mystery_key": "res://data/items/mystery_key.tres",
+	"thousand_pants": "res://data/items/thousand_pants.tres",
 }
 
 static var _cache := {}

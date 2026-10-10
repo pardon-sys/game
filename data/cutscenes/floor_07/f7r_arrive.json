@@ -1,0 +1,39 @@
+{
+	"name": "第七层·归途",
+	"letterbox": true,
+	"skippable": true,
+	"steps": [
+		{
+			"actions": [
+				{
+					"time": 1.0,
+					"do": "fade_in"
+				}
+			],
+			"wait": 1.0
+		},
+		{
+			"speaker": "公主",
+			"text": "第七层……？我们之前走过这里吗？……好像不太一样。",
+			"emotion": "surprise"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……路，变了。"
+		},
+		{
+			"speaker": "公主",
+			"text": "没关系！这次我们两个一起走！",
+			"emotion": "happy"
+		},
+		{
+			"actions": [
+				{
+					"text": "（待续）",
+					"do": "hint"
+				}
+			],
+			"wait": 1.0
+		}
+	]
+}

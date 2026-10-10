@@ -1,7 +1,8 @@
 class_name HandShadow
 extends Node2D
 ## 千手的影子（第八层夜迷宫的巡逻者）：一团巨大的手影，沿固定路线（route，格子坐标）慢慢巡游，前面一片紫色的视野（VisionCone）。
-## 墙和柱子挡视线；她在光里（月光灯 / 光带）时看不见她。
+## 它飘在迷宫上空：探照不被墙挡（VisionCone.ignore_walls），路线可以直线横穿墙（生成器给的是横扫迷宫的长直线）；
+## 画面上抬高 FLOAT 像素、上下浮动，地上一团影子。她在光里（月光灯 / 光带）时看不见她。
 ## 看到她 → 停下来「看」LOOK 秒（可以趁这时跑出视野）；还看得到 → 她周围一下子涌出 3~5 只紫手、一阵凉意（来源键 hand_shadow），
 ## 然后接着巡逻（COOLDOWN 秒内不再召手）。冰晶结界冻住它 3 秒（maze_magic_reactive）。
 ## 图例：X = handshadow route=x,y;x,y;...
@@ -10,6 +11,8 @@ const TEX := preload("res://assets/generated/maze/hand_shadow.png")
 const SPEED := 22.0
 const LOOK := 1.0
 const COOLDOWN := 8.0
+## 飘多高（像素）
+const FLOAT := 20.0
 
 @export var route := ""
 
@@ -35,7 +38,7 @@ func _ready() -> void:
 	sprite = Sprite2D.new()
 	sprite.texture = TEX
 	sprite.hframes = 2
-	sprite.offset = Vector2(0, -26)
+	sprite.offset = Vector2(0, -26 - FLOAT)
 	sprite.modulate = Color(1, 1, 1, 0.82)
 	add_child(sprite)
 	cone = VisionCone.new()
@@ -43,7 +46,8 @@ func _ready() -> void:
 	cone.angle_deg = 70.0
 	cone.color = Color(0.65, 0.3, 0.95, 0.22)
 	cone.alert_color = Color(0.95, 0.3, 0.75, 0.38)
-	cone.position = Vector2(0, -10)
+	cone.position = Vector2(0, -2)
+	cone.ignore_walls = true
 	add_child(cone)
 
 
@@ -63,7 +67,8 @@ func is_frozen() -> bool:
 func _process(delta: float) -> void:
 	_t += delta
 	sprite.frame = int(_t * 2.0) % 2
-	sprite.position.y = sin(_t * 1.5) * 2.0
+	sprite.position.y = sin(_t * 1.5) * 3.0
+	queue_redraw()
 	if GameState.in_dialogue or CG.is_busy() or Cutscene.is_playing():
 		return
 	if _frozen > 0.0:
@@ -89,6 +94,15 @@ func _process(delta: float) -> void:
 		return
 	_look = 0.0
 	_patrol(delta)
+
+
+## 地上的影子（飘得越高越淡，跟着浮动一起缩放）。
+func _draw() -> void:
+	var k := 1.0 - (sin(_t * 1.5) * 3.0 + 3.0) / 30.0
+	draw_set_transform(Vector2.ZERO, 0.0, IsoView.ground_scale())
+	draw_circle(Vector2.ZERO, 11.0 * k, Color(0.12, 0.02, 0.2, 0.4))
+	draw_circle(Vector2.ZERO, 6.0 * k, Color(0.12, 0.02, 0.2, 0.3))
+	draw_set_transform(Vector2.ZERO)
 
 
 func _summon(p: PlayableCharacter) -> void:

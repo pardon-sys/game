@@ -1,5 +1,6 @@
 {
 	"name": "夜迷宫·笑倒",
+	"night": true,
 	"cast": {
 		"blue": {
 			"kind": "npc:blue_princess",
@@ -16,32 +17,149 @@
 		{
 			"actions": [
 				{
-					"time": 0.5,
+					"time": 0.6,
 					"do": "fade_in"
 				}
 			],
-			"wait": 0.5
+			"wait": 0.6
 		},
 		{
 			"speaker": "",
-			"text": "（看不见的手越来越多，她终于再也撑不住了）",
+			"text": "（冷光灭了。黑暗一下子涌上来，把她整个吞了进去）",
 			"actions": []
 		},
 		{
 			"speaker": "蓝色的公主",
-			"text": "……哈哈哈哈哈……！",
+			"text": "……光……",
+			"actions": [],
+			"emotion": "surprise"
+		},
+		{
+			"speaker": "",
+			"text": "（看不见自己的手，也看不见墙。只能听见四面八方，手指窸窸窣窣地靠过来）",
+			"actions": []
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……别、别过来……",
+			"actions": [],
+			"emotion": "shy"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……我、我还……能走……",
+			"actions": [],
+			"emotion": "angry"
+		},
+		{
+			"speaker": "",
+			"text": "（第一只落在大腿上。第二只落在腰上。第三只、第四只……）",
+			"actions": [
+				{
+					"time": 0.25,
+					"do": "flash"
+				},
+				{
+					"state": "giggle",
+					"do": "voice"
+				}
+			]
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……唔……！……哈……",
 			"actions": [
 				{
 					"who": "blue",
-					"repeat": 7,
-					"interval": 0.212,
+					"repeat": 9,
+					"interval": 0.15999999999999998,
 					"fx": "hand",
 					"zone": "thigh",
 					"do": "tickle"
 				},
 				{
 					"who": "blue",
-					"time": 0.3,
+					"time": 0.4,
+					"do": "shake"
+				}
+			],
+			"emotion": "helpless_1"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……太、太多了……看不见……",
+			"actions": [
+				{
+					"who": "blue",
+					"repeat": 10,
+					"interval": 0.15599999999999997,
+					"fx": "hand",
+					"zone": "waist",
+					"do": "tickle"
+				},
+				{
+					"who": "blue",
+					"time": 0.4,
+					"do": "shake"
+				}
+			],
+			"emotion": "helpless_1"
+		},
+		{
+			"speaker": "",
+			"text": "（看不见的时候，连哪里被挠都分不清——好像全身都在被挠）",
+			"actions": []
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……哈哈……哪、哪里……到底是哪里……",
+			"actions": [
+				{
+					"who": "blue",
+					"repeat": 11,
+					"interval": 0.15199999999999997,
+					"fx": "hand",
+					"zone": "butt",
+					"do": "tickle"
+				},
+				{
+					"who": "blue",
+					"time": 0.4,
+					"do": "shake"
+				}
+			],
+			"emotion": "helpless_1"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……哈哈哈哈哈……！",
+			"actions": [
+				{
+					"sound": "blue_crack",
+					"volume": -3.0,
+					"do": "sfx"
+				},
+				{
+					"state": "laugh",
+					"do": "voice"
+				},
+				{
+					"who": "blue",
+					"visual": "helpless_1",
+					"anim": "helpless",
+					"do": "pose"
+				},
+				{
+					"who": "blue",
+					"repeat": 11,
+					"interval": 0.108,
+					"fx": "hand",
+					"zone": "thigh",
+					"do": "tickle"
+				},
+				{
+					"who": "blue",
+					"time": 0.5,
 					"do": "shake"
 				}
 			],
@@ -53,15 +171,15 @@
 			"actions": [
 				{
 					"who": "blue",
-					"repeat": 8,
-					"interval": 0.20400000000000001,
+					"repeat": 12,
+					"interval": 0.104,
 					"fx": "hand",
 					"zone": "butt",
 					"do": "tickle"
 				},
 				{
 					"who": "blue",
-					"time": 0.3,
+					"time": 0.5,
 					"do": "shake"
 				}
 			],
@@ -73,15 +191,15 @@
 			"actions": [
 				{
 					"who": "blue",
-					"repeat": 9,
-					"interval": 0.196,
+					"repeat": 13,
+					"interval": 0.1,
 					"fx": "hand",
 					"zone": "thigh",
 					"do": "tickle"
 				},
 				{
 					"who": "blue",
-					"time": 0.3,
+					"time": 0.5,
 					"do": "shake"
 				}
 			],
@@ -93,15 +211,15 @@
 			"actions": [
 				{
 					"who": "blue",
-					"repeat": 6,
-					"interval": 0.188,
+					"repeat": 11,
+					"interval": 0.1,
 					"fx": "hand",
 					"zone": "waist",
 					"do": "tickle"
 				},
 				{
 					"who": "blue",
-					"time": 0.3,
+					"time": 0.5,
 					"do": "shake"
 				}
 			],
@@ -110,17 +228,18 @@
 		{
 			"speaker": "",
 			"text": "（她瘫坐在冰冷的石板上，笑声慢慢变成了喘气）",
-			"actions": []
+			"actions": [
+				{
+					"sound": "blue_crack_long",
+					"volume": -3.0,
+					"do": "sfx"
+				}
+			]
 		},
 		{
 			"speaker": "蓝色的公主",
 			"text": "……哈……哈……",
-			"actions": [
-				{
-					"state": "giggle",
-					"do": "voice"
-				}
-			],
+			"actions": [],
 			"emotion": "helpless_1"
 		},
 		{
@@ -137,25 +256,25 @@
 		{
 			"speaker": "蓝色的公主",
 			"text": "……是你……把我送回来的吗。",
-			"actions": [
-				{
-					"state": "laugh",
-					"do": "voice"
-				},
-				{
-					"who": "blue",
-					"visual": "helpless_1",
-					"anim": "helpless",
-					"do": "pose"
-				}
-			],
+			"actions": [],
 			"emotion": "sad"
+		},
+		{
+			"speaker": "",
+			"text": "（灯光外的黑暗里，好像有什么在看着她。没有靠近，只是看着）",
+			"actions": []
 		},
 		{
 			"speaker": "蓝色的公主",
 			"text": "……",
 			"actions": [],
 			"emotion": "sad"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……这次不算。",
+			"actions": [],
+			"emotion": "angry"
 		},
 		{
 			"speaker": "蓝色的公主",

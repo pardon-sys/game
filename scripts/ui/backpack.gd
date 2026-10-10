@@ -58,6 +58,9 @@ var gallery_selected := 0
 var _gallery: Array[Dictionary] = []
 
 
+## 状态页正在看第几个同行的人（status_members）
+var status_index := 0
+
 func _ready() -> void:
 	layer = 25
 	process_mode = Node.PROCESS_MODE_ALWAYS
@@ -76,6 +79,7 @@ func open() -> void:
 		return
 	page = 0
 	selected = 0
+	status_index = 0
 	_paused_by_me = not get_tree().paused
 	get_tree().paused = true
 	Audio.stop_voice()
@@ -149,6 +153,13 @@ func set_page(p: int) -> void:
 
 
 func move_selection(d: int) -> void:
+	if page == PAGE_STATUS:
+		# 同行的人（蓝色公主跟着时）：← / → 切换看谁的状态
+		var members := status_members()
+		if members.size() > 1 and absi(d) == 1:
+			status_index = posmod(status_index + d, members.size())
+			_refresh()
+		return
 	if page == PAGE_GALLERY:
 		if not _gallery.is_empty():
 			# 左右（±1）翻一页，上下（±COLUMNS）走一行
@@ -490,13 +501,39 @@ func _slot(it: ItemData, active: bool) -> Control:
 	return p
 
 
+## 状态页能看的人：操控的角色在前，同一关卡里一起行动的可操作角色（跟着的蓝色公主）在后。
+func status_members() -> Array[PlayableCharacter]:
+	var out: Array[PlayableCharacter] = []
+	var p := GameState.player
+	if not is_instance_valid(p):
+		return out
+	out.append(p)
+	var lv := p.get_parent()
+	while lv and not lv.has_node("Walls"):
+		lv = lv.get_parent()
+	for n in (lv.find_children("*", "PlayableCharacter", true, false) if lv else []):
+		var c := n as PlayableCharacter
+		if c and c != p and c.visible and c.is_alive() and c.process_mode != Node.PROCESS_MODE_DISABLED:
+			out.append(c)
+	return out
+
+
 func _refresh_status() -> void:
 	var keep := status_page.scroll_vertical
 	status_page.clear()
 	status_page.set_deferred("scroll_vertical", keep)
-	var p := GameState.player
-	if not is_instance_valid(p):
+	var members := status_members()
+	if members.is_empty():
 		return
+	status_index = clampi(status_index, 0, members.size() - 1)
+	var p := members[status_index]
+	if members.size() > 1:
+		_line("◀ %s ▶　（← / → 切换）" % p.display_name(), GOLD)
+	var passives := p.buffs.keys().filter(func(id): return (p.buffs[id] as Buff).is_permanent() and id != "fatigue_scar")
+	if not passives.is_empty():
+		_line("被动状态：", Color(0.85, 0.65, 1.0))
+		for id in passives:
+			_buff_line(id, p.buffs[id], p)
 	if p.laugh:
 		_line("闷笑值 %d%%　%s" % [roundi(p.laugh.percent()), p.laugh.stage_name()], PINK)
 		_line("　" + p.laugh.stage_desc(), TEXT)
@@ -527,8 +564,10 @@ func _refresh_status() -> void:
 	if p.is_magic_unlocked():
 		var cd := p.magic_cooldown_left()
 		_line("星光爆发：" + ("冷却中 %.1f 秒" % cd if cd > 0.0 else "可以使用（按住 L 吟唱）"), GOLD)
-	var any := false
+	var any := not passives.is_empty()
 	for id in p.buffs:
+		if id in passives:
+			continue
 		any = true
 		_buff_line(id, p.buffs[id], p)
 	for s in _situations(p):

@@ -10,11 +10,18 @@ extends CanvasLayer
 ## 动作（do）：
 ##   move（who, to [格x,格y], time 或 speed）  face（who, dir）  pose（who=princess：emotion / laugh 百分比 / faint true|false）
 ##   camera（to [格] 或 who；time；zoom 倍数；reset = true 回到公主）  shake（time, strength）  fade_out / fade_in / flash（time）
+##   lie（who, at, blanket, on, sleep 睡着闭眼 / laugh 躺着换表情）
 ##   bubble（who, kind）  say（who, text）  tickle（who=princess, by 节点, repeat, interval, fx, add 百分比）
-##   trap（who 陷阱节点名）：陷阱演一次发动（只有表现）  spawn（id, kind = shadow | monster:<来源键>, at [格], dir）  despawn（who）
+##   trap（who 陷阱节点名）：陷阱演一次发动（只有表现）  spawn（id, kind = shadow | monster:<来源键>, at [格], dir, z 图层）  despawn（who）
 ##   carry（who 抱人的演员, on = true / false）：抱起公主一起移动  wait（time）  sfx（sound, volume, pitch）  voice（state）
 ##   set_flag（flag）  notify（text）  chapter_end（title, subtitle）：章节结束画面
 ##   lie（who, at [格], blanket = 道具名, on = true / false）：躺到床上——正面朝上、稍微暗一点，盖上被子道具（在她上面一层）
+##   cover（who, zone, add 只数）：往人物身上（BodyHands）扣上小手，带「啪」的动画和声音；是公主时立绘上也长出手
+##   uncover（who）：身上的手散开   burst（who, hold 秒）：魔力疲倦爆发的表现（闪光、星爆 + 泄力声、爆发立绘 hold 秒、地上一滩紫水）
+##   cg（key = data/cgs.json 的 portraits 键；空 = 恢复）：对话框换成大立绘   hint（text）：屏幕中间的黄字
+##   hop（who）：原地跳一下（被吓到、被冻得一跳）
+##   item（id）：拿到道具   buff（who, id, on）：加 / 去掉状态   crack（long, fade 秒）：蓝色公主憋不住的笑（fade = 淡出）
+## 过场数据里 end_dark = true：结束时不揭开黑幕（接着换关卡、下一段过场从黑里亮起来）。
 
 signal started(id: String)
 signal finished(id: String)
@@ -22,13 +29,19 @@ signal finished(id: String)
 const DIR := "res://data/cutscenes/"
 const BAR_H := 28.0
 const ACTIONS := ["move", "face", "pose", "camera", "shake", "fade_out", "fade_in", "flash", "bubble", "say", "tickle", "trap",
-	"spawn", "despawn", "carry", "wait", "sfx", "voice", "set_flag", "notify", "chapter_end", "hold", "goto", "lie"]
+	"spawn", "despawn", "carry", "wait", "sfx", "voice", "set_flag", "notify", "chapter_end", "hold", "goto", "lie",
+	"cover", "uncover", "burst", "cg", "hint", "item", "buff", "crack", "hop"]
 const BUBBLE_TEXT := {"surprise": "！", "question": "？", "laugh": "哈哈哈", "dots": "……", "sad": "呜……", "angry": "哼！", "shy": "///", "happy": "♪"}
+## 过场里换上了大立绘（cg 动作 / burst）：结束时恢复。
+var _cg_override := false
+var _burst_t := 0
 ## 黑影的颜色（复制公主的精灵后蒙上）。
 const SHADOW_COLOR := Color(0.07, 0.03, 0.1, 0.95)
 
 var current := ""
 var step_index := -1
+## 正在播的过场的步骤（测试 / 调试用）
+var _steps: Array = []
 ## 临时演员：id -> Node2D
 var spawned := {}
 var _playing := false
@@ -220,6 +233,7 @@ func play_data(id: String, cs: Dictionary) -> void:
 	tw.tween_property(bottom_bar, "position:y", 270.0 - BAR_H, 0.4)
 	await tw.finished
 	var steps: Array = cs.get("steps", [])
+	_steps = steps
 	for i in steps.size():
 		step_index = i
 		if _skip:
@@ -248,7 +262,12 @@ func _run_step(st: Dictionary) -> void:
 			line["npc"] = st["npc"]
 		Dialogue.start_lines([line], "cutscene:" + current)
 		if st.has("auto"):
-			await _wait(float(st["auto"]))
+			# 自动推进：到时间自己往下走；玩家按键读完了（对话框关掉）也可以提前往下走
+			var t := 0.0
+			var auto_t := float(st["auto"])
+			while t < auto_t and not _skip and Dialogue.is_active():
+				await get_tree().process_frame
+				t += get_process_delta_time()
 			if Dialogue.is_active():
 				Dialogue.advance()
 				Dialogue.advance()
@@ -266,7 +285,8 @@ func _run_instant(steps: Array) -> void:
 		Dialogue.advance()
 	for st in steps:
 		for a in st.get("actions", []):
-			if str(a.get("do", "")) in ["set_flag", "chapter_end", "spawn", "despawn", "move", "carry", "pose", "face"]:
+			if str(a.get("do", "")) in ["set_flag", "chapter_end", "spawn", "despawn", "move", "carry", "pose", "face", "item", "buff",
+					"uncover", "cg", "lie"]:
 				_do(a, true)
 
 
@@ -274,10 +294,15 @@ func _finish(id: String, cs: Dictionary) -> void:
 	GameState.set_flag("cutscene_seen_" + id)
 	_reset_camera(0.3)
 	var keep_screen := chapter_screen.visible
+	if _cg_override:
+		_cg_override = false
+		Dialogue.set_portrait_override(null)
 	var tw := create_tween().set_parallel()
 	tw.tween_property(top_bar, "position:y", -BAR_H, 0.35)
 	tw.tween_property(bottom_bar, "position:y", 270.0, 0.35)
-	if not keep_screen:
+	if bool(cs.get("end_dark", false)):
+		curtain.color.a = 1.0
+	elif not keep_screen:
 		tw.tween_property(curtain, "color:a", 0.0, 0.35)
 	await tw.finished
 	var hud := _hud()
@@ -373,8 +398,8 @@ func _do(a: Dictionary, instant: bool) -> float:
 			var walks := "puppet_walking" in who
 			if walks:
 				who.set("puppet_walking", true)
-			# 演员的 tween（演员被 despawn 时跟着停）
-			var tw := who.create_tween()
+			# 演员的 tween（演员被 despawn 时跟着停）；不处理的演员（生成的怪物）用自己的 tween
+			var tw := _tween_for(who)
 			prev = who.global_position
 			for p in route:
 				var seg := prev.distance_to(p)
@@ -433,8 +458,12 @@ func _do(a: Dictionary, instant: bool) -> float:
 			flash_rect.color.a = 0.8
 			create_tween().tween_property(flash_rect, "color:a", 0.0, t if t > 0.0 else 0.3)
 		"bubble":
+			var emo_c := who.get_node_or_null("Emotion") as EmotionComponent if who else null
 			if who == GameState.player:
 				GameState.bubble_requested.emit(str(a.get("kind", "surprise")))
+			elif emo_c and EmotionComponent.BUBBLE_INDEX.has(str(a.get("kind", ""))):
+				# 有表情组件的演员（搭档的蓝色公主）：头顶的表情气泡
+				emo_c.show_bubble(str(a.get("kind", "")))
 			elif who:
 				SpeechBubble.say(who, str(BUBBLE_TEXT.get(str(a.get("kind", "")), "！")), 24.0)
 		"say":
@@ -453,7 +482,7 @@ func _do(a: Dictionary, instant: bool) -> float:
 			if who and who != GameState.player:
 				spawned.erase(str(a.get("who", "")))
 				# 淡出再删掉（走到一半离场也不突兀）
-				var tw := who.create_tween()
+				var tw := _tween_for(who)
 				tw.tween_property(who, "modulate:a", 0.0, 0.0 if instant else 0.3)
 				tw.tween_callback(who.queue_free)
 		"carry":
@@ -478,6 +507,54 @@ func _do(a: Dictionary, instant: bool) -> float:
 		"notify":
 			if not instant:
 				GameState.notify(str(a.get("text", "")))
+		"hop":
+			if who and not instant:
+				var hop_tw := _tween_for(who)
+				var spr := who.get_node_or_null("Sprite") as Node2D
+				var target: Node2D = spr if spr else who
+				var y0 := target.position.y
+				hop_tw.tween_property(target, "position:y", y0 - 6.0, 0.12).set_ease(Tween.EASE_OUT)
+				hop_tw.tween_property(target, "position:y", y0, 0.14).set_ease(Tween.EASE_IN)
+				return 0.26
+		"cover":
+			_cover(who, str(a.get("zone", "thigh")), int(a.get("add", 1)), instant)
+		"uncover":
+			var bh := BodyHands.of(who) if who else null
+			if bh:
+				bh.clear(not instant)
+			if who == GameState.player:
+				Dialogue.portrait_fx.cover_hands = {}
+		"burst":
+			if not instant:
+				_burst(who, float(a.get("hold", 3.0)))
+		"cg":
+			var key := str(a.get("key", ""))
+			var info: Dictionary = CG.data.get("portraits", {}).get(key, {})
+			if key == "" or info.is_empty() or not ResourceLoader.exists(str(info.get("file", ""))):
+				_cg_override = false
+				Dialogue.set_portrait_override(null)
+			else:
+				_cg_override = true
+				Dialogue.set_portrait_override(load(str(info["file"])), bool(info.get("wide", false)))
+		"hint":
+			if not instant:
+				GameState.hint(str(a.get("text", "")))
+		"item":
+			var item_id := str(a.get("id", ""))
+			if ItemDB.PATHS.has(item_id) and not GameState.inventory.has(item_id):
+				GameState.inventory.add(ItemDB.get_item(item_id), 1)
+		"buff":
+			if who is Actor:
+				if bool(a.get("on", true)):
+					(who as Actor).add_buff(str(a.get("id", "")))
+				else:
+					(who as Actor).remove_buff(str(a.get("id", "")))
+		"crack":
+			if not instant:
+				if a.has("fade"):
+					Audio.fade_crack(float(a["fade"]))
+				else:
+					Audio.play_crack(bool(a.get("long", false)), float(a.get("volume", -4.0)))
 		"chapter_end":
 			chapter_title.text = str(a.get("title", "完"))
 			chapter_sub.text = str(a.get("subtitle", ""))
@@ -489,6 +566,70 @@ func _do(a: Dictionary, instant: bool) -> float:
 				create_tween().tween_property(chapter_screen, "modulate:a", 1.0, 1.2)
 				return 1.2
 	return t
+
+
+## 演员的 tween：正常的演员绑在自己身上（被删掉时一起停）；不处理的（生成的怪物演员 PROCESS_MODE_DISABLED）绑在过场上。
+func _tween_for(who: Node) -> Tween:
+	if who.can_process():
+		return who.create_tween()
+	var tw := create_tween()
+	return tw
+
+
+## 往人物身上扣小手（过场的 cover）：BodyHands 的弹出动画 + 抓上的声音 + 抖一下；是公主时立绘手层也跟着加。
+func _cover(who: Node2D, zone: String, n: int, instant: bool) -> void:
+	if who == null:
+		return
+	var bh := BodyHands.attach(who)
+	if bh == null:
+		return
+	bh.add(zone, n)
+	if who == GameState.player:
+		Dialogue.portrait_fx.cover_hands = bh.hands.duplicate()
+	if instant:
+		return
+	Audio.play("hand_grab", -3.0, 0.1)
+	if who.has_method("shake"):
+		who.call("shake", 0.2)
+
+
+## 魔力疲倦爆发（只是表现，不改数值）：闪光、星爆 + 泄力的水声、爆发立绘（hold 秒后恢复）、脚下一滩紫水。
+func _burst(who: Node2D, hold: float) -> void:
+	flash_rect.color = Color(0.85, 0.7, 1.0, 0.85)
+	create_tween().tween_property(flash_rect, "color:a", 0.0, 0.8)
+	Audio.play("star_burst", -1.0, 0.0)
+	Audio.play("water_release", -2.0, 0.0)
+	_shake(0.5, 3.0)
+	if who is PlayableCharacter:
+		var pc := who as PlayableCharacter
+		pc.shake(0.6)
+		var visual := str(pc.call("fatigue_burst_visual")) if pc.has_method("fatigue_burst_visual") else "damaged_burst"
+		var set_name := "blue" if pc.character_id == "blue" else "pink"
+		var burst_tex: Texture2D = Dialogue.portrait_for(visual, set_name)
+		_cg_override = true
+		Dialogue.set_portrait_override(burst_tex)
+		_burst_t += 1
+		var mine := _burst_t
+		# hold 秒后恢复——只在还是这张爆发立绘时（之后换上的大立绘不动）
+		get_tree().create_timer(hold).timeout.connect(func():
+			if mine == _burst_t and _cg_override and Dialogue.current_override() == burst_tex:
+				_cg_override = false
+				Dialogue.set_portrait_override(null))
+		var lv := _level()
+		if lv and ResourceLoader.exists("res://assets/generated/fatigue_puddle.png"):
+			var puddle := Sprite2D.new()
+			puddle.texture = load("res://assets/generated/fatigue_puddle.png")
+			puddle.hframes = 3
+			puddle.z_index = -1
+			puddle.modulate.a = 0.0
+			puddle.add_to_group(IsoView.GROUND_GROUP)
+			(lv.get_node_or_null("FloorObjects") if lv.has_node("FloorObjects") else lv).add_child(puddle)
+			puddle.global_position = pc.global_position + Vector2(0, 2)
+			var tw := puddle.create_tween()
+			tw.tween_property(puddle, "modulate:a", 0.85, 0.5)
+			tw.tween_interval(6.0)
+			tw.tween_property(puddle, "modulate:a", 0.0, 1.5)
+			tw.tween_callback(puddle.queue_free)
 
 
 ## 走过去的路线（世界坐标的点，最后一个是 to）：直线上没有墙就直接走；有墙就用 GridPath 沿地面绕过去（走不到也直线）。
@@ -569,7 +710,14 @@ func _face(who: Node2D, dir: Vector2) -> void:
 ## 躺到床上：小人正面朝上放在 at（脚在床尾、头在枕头上），不和床的碰撞体顶来顶去；blanket 道具盖在她上面。
 func _lie(p: PlayableCharacter, a: Dictionary) -> void:
 	var blanket_id := "lie_blanket_" + str(p.name)
+	# sleep：睡着（闭着眼）；醒来写 sleep=false（还躺着）
+	if a.has("sleep"):
+		p.sleeping = bool(a["sleep"])
+	if a.has("laugh") and p.emotion:
+		var emo := str(a["laugh"])
+		p.emotion.request(emo if emo != "" else "normal", 0.0, false)
 	if not bool(a.get("on", true)):
+		p.sleeping = false
 		if p.has_meta("lie_mask"):
 			p.collision_mask = int(p.get_meta("lie_mask"))
 			p.remove_meta("lie_mask")
@@ -778,6 +926,9 @@ func _spawn(a: Dictionary) -> void:
 	n.name = "Cutscene_" + id
 	parent.add_child(n)
 	n.global_position = cell_to_world(a.get("at", [0, 0]))
+	# z：画在哪一层（出口过场的千手要盖在墙和人物前面）
+	if a.has("z"):
+		n.z_index = int(a["z"])
 	if a.has("dir"):
 		_face(n, Trap.dir_vector(str(a["dir"])))
 	spawned[id] = n

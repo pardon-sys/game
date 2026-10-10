@@ -74,6 +74,8 @@ enum State { IDLE, MOVE, ATTACK, DASH, HURT, HELPLESS, GRABBED, DEAD, CHANNEL, C
 @onready var fatigue: MagicFatigue = get_node_or_null("Fatigue")
 ## 数据档案（Characters）：受挠台词、部位表、CG 都按这个选（粉色公主 pink、蓝色公主 blue）。
 var character_id := "pink"
+## 睡着了（过场的 lie sleep=true）：小人一直是闭着眼的那张图（立绘照旧）
+var sleeping := false
 ## 正在进行疲倦爆发（CAST 期间用战损释放姿势）。
 var fatigue_bursting := false
 ## 挠痒敏感状态（部位、连续加成、露出部位、战损）：data/actors/princess_ticklish.json。
@@ -432,6 +434,11 @@ func cast_fatigue_burst() -> void:
 	StarBurst.cast_fatigue(self)
 
 
+## 魔法因为状态（magic_fail）失败时的表现：默认只是抖一下；蓝色公主重写成被痒痒裤挠得大笑。
+func _on_magic_fail(_tier: int) -> void:
+	shake(0.3)
+
+
 ## 释放魔法本身（按档位）：默认是星光爆发；蓝色公主重写成冰晶结界。
 func cast_magic(tier: int) -> void:
 	StarBurst.cast(self, tier)
@@ -447,6 +454,13 @@ func release_magic() -> int:
 		_magic_cd = fizzle_cooldown
 		Audio.play("fizzle", -4.0)
 		magic_event.emit("fizzle", 0)
+		return 0
+	# 状态的 magic_fail（千手痒痒裤 10%）：念完了却没放出来，魔力散掉
+	if randf() < stat_add("magic_fail"):
+		_magic_cd = fizzle_cooldown
+		Audio.play("fizzle", -4.0)
+		magic_event.emit("fail", tier)
+		_on_magic_fail(tier)
 		return 0
 	cast_magic(tier)
 	if tier >= channel_tiers.size():
@@ -929,9 +943,20 @@ func _anim_name() -> String:
 	return "idle"
 
 
+## 睡着的样子（闭着眼的单帧图：assets/generated/<名字>_sleep.png，粉色公主是 princess_sleep.png）；没有就 null。
+func sleep_texture() -> Texture2D:
+	var path := "res://assets/generated/%s_sleep.png" % ("princess" if character_id == "pink" else character_id)
+	return load(path) as Texture2D if ResourceLoader.exists(path) else null
+
+
 func _update_animation(delta: float) -> void:
 	if animator == null:
 		return
+	if sleeping:
+		var tex := sleep_texture()
+		if tex:
+			animator.show_still(tex)
+			return
 	animator.play(_anim_name())
 	animator.update(delta, dir_name(), IsoView.screen_dir(facing).x < 0, emotion.row() if emotion else 0)
 

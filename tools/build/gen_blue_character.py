@@ -174,8 +174,10 @@ SHORT = {
     "maze_hand": "看不见的手指", "glow_moth": "发光的鳞粉", "dream_fluff": "粘着的绒球", "lamp_imp": "黑暗里的小手",
     "laugh_jar": "吸笑声的瓶子", "mirror_puddle": "倒影里的手", "shadow_vine": "影子里的藤尖", "feather_curtain": "羽毛门帘",
     "cradle_bench": "椅下的手", "hand_gate": "门后的手", "hand_shadow": "那团影子", "hand_rhythm": "一起狠挠的手",
+    "night_stalker": "抱住的手臂", "blind_bat": "扫过的翅膀", "wall_brush": "墙缝的刷子", "hanging_hands": "垂下来的手",
+    "thousand_pants": "裤子里的手指",
 }
-MONSTERS = {"maze_hand", "glow_moth", "dream_fluff", "lamp_imp", "laugh_jar", "barnacle", "bat", "bubble_fish", "caterpillar", "crab", "fairy", "frog", "ghost", "glove", "hedgehog", "imp", "jelly_queen",
+MONSTERS = {"night_stalker", "blind_bat", "maze_hand", "glow_moth", "dream_fluff", "lamp_imp", "laugh_jar", "barnacle", "bat", "bubble_fish", "caterpillar", "crab", "fairy", "frog", "ghost", "glove", "hedgehog", "imp", "jelly_queen",
             "mana_jelly", "mimic", "octopus", "rat", "slime", "spider", "split_slime", "squirrel", "tentacle", "thousand_hand", "troll"}
 KIND_SAY = {"monster": ["别、别过来……", "小、小东西……走开……", "一、一只就够了……"],
             "trap": ["动、动不了……", "机、机关……停下……", "挣、挣不开……"]}
@@ -269,6 +271,8 @@ TECH = {
     "lamp_imp": "灯一灭，小手就扑到{z}上", "laugh_jar": "瓶子吸着笑声，{z}跟着发痒", "mirror_puddle": "倒影里伸出的手挠着{z}",
     "shadow_vine": "影子里的藤尖缠着{z}画圈", "feather_curtain": "羽毛门帘从{z}上一路刷过", "cradle_bench": "椅子下面的手在{z}上一下下点",
     "hand_gate": "门后的手一下子贴到{z}上", "hand_shadow": "被那团影子看着，{z}凉凉地发痒", "hand_rhythm": "身上的手一起在{z}上狠挠",
+    "night_stalker": "一团手臂抱住她，在{z}上乱挠", "blind_bat": "看不见的时候，翅膀尖扫过{z}", "wall_brush": "墙缝里的刷子夹着{z}转",
+    "hanging_hands": "吊起来的时候，手指在{z}上挠", "thousand_pants": "裤子里的手指在{z}上一起动",
 }
 WEAK = ("大腿", "屁股")
 
@@ -495,6 +499,16 @@ MAZE_LINES = {
     "rhythm_hit": ["哈哈哈哈……！一、一起……犯规……哈哈哈……！", "……哈哈……全、全部一起……", "噗哈哈哈……！我、我就知道……"],
     "rhythm_miss": ["……躲开了。……哼。", "……没挠到。……呼。", "……光里……它们不敢。"],
     "shake_off": ["……冻住，然后……甩掉。", "……别贴着我……走开。", "……冰。……你们，怕冷。"],
+    # 第五轮：看不清（黑暗敏感）、追逐怪、遮眼蝠、墙缝刷轮、垂落吊手、千手痒痒裤让魔法失败
+    "dark": ["……看不见了……下一下……会在哪……", "……好黑……身体……自己在等……", "……看、看不清……反而……更……",
+             "……不知道从哪边来……别……别这样……"],
+    "stalker_seen": ["……有什么……在后面……", "……脚步声……不，是手……很多手……", "……别回头。……跑。"],
+    "stalker_lost": ["……走、走了……？……呼……", "……憋住了。……它没听见。", "……安静……别出声……"],
+    "bat": ["……！眼、眼睛……看不见……！", "……翅膀……别捂着……哈……脖子……", "……什么都看不见……全身……都在等……"],
+    "brush": ["……刷、刷子……夹住了……！", "……大腿……刷……哈哈……放开……", "……墙里……为什么会有……刷子……"],
+    "hanging": ["……！吊、吊起来了……", "……脚、脚够不着地……哈……腰……", "……放、放我下来……哈哈……！"],
+    "pants_fail": ["……噗哈……！裤、裤子……这时候……哈哈哈……！", "……哈哈……魔、魔力……散了……都是……这条……哈哈哈……",
+                   "……唔……别、别在念咒的时候……挠……哈哈哈哈……！", "……哈……失、失败了……大腿……哈哈……"],
 }
 (OUT / "maze_lines.json").write_text(json.dumps(MAZE_LINES, ensure_ascii=False, indent="\t") + "\n")
 
