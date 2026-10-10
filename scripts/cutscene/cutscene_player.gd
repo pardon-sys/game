@@ -14,6 +14,7 @@ extends CanvasLayer
 ##   trap（who 陷阱节点名）：陷阱演一次发动（只有表现）  spawn（id, kind = shadow | monster:<来源键>, at [格], dir）  despawn（who）
 ##   carry（who 抱人的演员, on = true / false）：抱起公主一起移动  wait（time）  sfx（sound, volume, pitch）  voice（state）
 ##   set_flag（flag）  notify（text）  chapter_end（title, subtitle）：章节结束画面
+##   lie（who, at [格], blanket = 道具名, on = true / false）：躺到床上——正面朝上、稍微暗一点，盖上被子道具（在她上面一层）
 
 signal started(id: String)
 signal finished(id: String)
@@ -21,7 +22,7 @@ signal finished(id: String)
 const DIR := "res://data/cutscenes/"
 const BAR_H := 28.0
 const ACTIONS := ["move", "face", "pose", "camera", "shake", "fade_out", "fade_in", "flash", "bubble", "say", "tickle", "trap",
-	"spawn", "despawn", "carry", "wait", "sfx", "voice", "set_flag", "notify", "chapter_end", "hold", "goto"]
+	"spawn", "despawn", "carry", "wait", "sfx", "voice", "set_flag", "notify", "chapter_end", "hold", "goto", "lie"]
 const BUBBLE_TEXT := {"surprise": "！", "question": "？", "laugh": "哈哈哈", "dots": "……", "sad": "呜……", "angry": "哼！", "shy": "///", "happy": "♪"}
 ## 黑影的颜色（复制公主的精灵后蒙上）。
 const SHADOW_COLOR := Color(0.07, 0.03, 0.1, 0.95)
@@ -468,6 +469,9 @@ func _do(a: Dictionary, instant: bool) -> float:
 			Audio.set_voice_state(str(a.get("state", "")))
 		"set_flag":
 			GameState.set_flag(str(a.get("flag", "")))
+		"lie":
+			if who is PlayableCharacter:
+				_lie(who as PlayableCharacter, a)
 		"goto":
 			# 过场结束后换关卡（to = 楼层 id，spawn = 到达点）
 			_goto = {"floor": str(a.get("to", "")), "spawn": str(a.get("spawn", ""))}
@@ -560,6 +564,40 @@ func _face(who: Node2D, dir: Vector2) -> void:
 	var spr := who.get_node_or_null("Sprite") as Sprite2D
 	if spr and absf(dir.x) > 0.1 and not (who is PlayableCharacter):
 		spr.flip_h = dir.x < 0.0
+
+
+## 躺到床上：小人正面朝上放在 at（脚在床尾、头在枕头上），不和床的碰撞体顶来顶去；blanket 道具盖在她上面。
+func _lie(p: PlayableCharacter, a: Dictionary) -> void:
+	var blanket_id := "lie_blanket_" + str(p.name)
+	if not bool(a.get("on", true)):
+		if p.has_meta("lie_mask"):
+			p.collision_mask = int(p.get_meta("lie_mask"))
+			p.remove_meta("lie_mask")
+		if p.sprite:
+			p.sprite.modulate = Color.WHITE
+		if spawned.has(blanket_id) and is_instance_valid(spawned[blanket_id]):
+			spawned[blanket_id].queue_free()
+		spawned.erase(blanket_id)
+		return
+	if not p.has_meta("lie_mask"):
+		p.set_meta("lie_mask", p.collision_mask)
+	p.collision_mask = 0
+	p.velocity = Vector2.ZERO
+	if a.has("at"):
+		p.global_position = cell_to_world(a["at"])
+	_face(p, Vector2.DOWN)
+	if p.sprite:
+		p.sprite.rotation = 0.0
+		p.sprite.modulate = Color(0.88, 0.85, 0.95)
+	if a.has("blanket"):
+		var lv := _level()
+		var pr: Node2D = load("res://scenes/objects/prop.tscn").instantiate()
+		pr.set("kind", str(a["blanket"]))
+		pr.name = "Cutscene_" + blanket_id
+		pr.z_index = 1
+		(lv.get_node_or_null("Entities") if lv and lv.has_node("Entities") else lv).add_child(pr)
+		pr.global_position = p.global_position
+		spawned[blanket_id] = pr
 
 
 ## 昏迷：小人躺倒变暗；faint = false 时起身。

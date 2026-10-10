@@ -16,15 +16,17 @@
 			"actions": [
 				{
 					"who": "princess",
-					"to": [
-						5,
-						5
+					"at": [
+						3,
+						4.25
 					],
-					"do": "move"
+					"blanket": "old_bed_blanket",
+					"do": "lie"
 				},
 				{
-					"faint": true,
-					"do": "pose"
+					"who": "princess",
+					"kind": "dots",
+					"do": "bubble"
 				},
 				{
 					"who": "BluePrincess_12_4",
@@ -60,11 +62,16 @@
 				{
 					"who": "BluePrincess_12_4",
 					"to": [
-						7,
+						5,
 						5
 					],
 					"speed": 30,
 					"do": "move"
+				},
+				{
+					"who": "BluePrincess_12_4",
+					"dir": "left",
+					"do": "face"
 				}
 			],
 			"wait": 1.6
@@ -90,10 +97,10 @@
 				},
 				{
 					"id": "ice",
-					"kind": "prop:ice_block",
+					"kind": "prop:ice_bed",
 					"at": [
-						5,
-						5
+						3,
+						4.25
 					],
 					"do": "spawn"
 				}
@@ -102,7 +109,7 @@
 		},
 		{
 			"speaker": "",
-			"text": "（冰晶的光一闪，一层薄冰轻轻盖在她身上——从头一直盖到脚踝）"
+			"text": "（冰晶的光一闪，一层薄冰连着被子轻轻盖在她身上——从枕头一直盖到床尾）"
 		},
 		{
 			"speaker": "蓝色的公主",
@@ -122,7 +129,18 @@
 		{
 			"speaker": "蓝色的公主",
 			"text": "……脚。……露在外面了。",
-			"emotion": "surprise"
+			"emotion": "surprise",
+			"actions": [
+				{
+					"to": [
+						3,
+						5
+					],
+					"zoom": 1.6,
+					"time": 0.5,
+					"do": "camera"
+				}
+			]
 		},
 		{
 			"speaker": "蓝色的公主",
@@ -137,7 +155,14 @@
 		{
 			"speaker": "蓝色的公主",
 			"text": "……对不起。",
-			"emotion": "sad"
+			"emotion": "sad",
+			"actions": [
+				{
+					"reset": true,
+					"time": 0.5,
+					"do": "camera"
+				}
+			]
 		},
 		{
 			"actions": [

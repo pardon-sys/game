@@ -11,7 +11,7 @@
 """
 import math
 
-from PIL import ImageDraw
+from PIL import Image, ImageDraw
 
 from gen_expansion import _strip, blank, canvas
 from palette import OUT, add_outline
@@ -782,7 +782,8 @@ def p_interior(kind):
 
 
 # —— 第八层的小房间：很久没人住的、小女孩的房间（落灰、蛛网、褪色）——
-OLD_ROOM = ("old_bed", "old_dresser", "old_tea", "music_box", "crayon_drawing", "height_marks", "cobweb", "ice_block")
+OLD_ROOM = ("old_bed", "old_dresser", "old_tea", "music_box", "crayon_drawing", "height_marks", "cobweb", "ice_block",
+            "old_bed_blanket", "ice_bed")
 DUST = (150, 140, 150, 255)
 DUST_L = (200, 192, 196, 255)
 
@@ -813,6 +814,29 @@ def p_old_room(kind):
         for i in range(4):
             d.line((26 - i * 2, 2, 30, 2 + i * 2), fill=DUST_L)
         d.line((26, 2, 30, 8), fill=DUST_L)
+        return img
+    if kind == "old_bed_blanket":
+        # 床上的被子（单独一层，盖在躺着的人身上；和 old_bed 同样大小、同样对齐）
+        bed = p_old_room("old_bed")
+        img = Image.new("RGBA", bed.size, (0, 0, 0, 0))
+        img.alpha_composite(bed.crop((3, 19, 29, 29)), (3, 19))           # 从胸口往下盖（脸露在外面）
+        d = ImageDraw.Draw(img)
+        d.line((4, 19, 27, 19), fill=(235, 240, 250, 255))               # 被子翻边
+        return img
+    if kind == "ice_bed":
+        # 蓝色公主盖在床上的冰：从枕头一直盖到床尾，一双小脚丫从床尾的冰下面露出来（和 old_bed 同样大小、同样对齐）
+        img, d = canvas(32, 32)
+        d.rounded_rectangle((3, 9, 28, 27), 3, fill=(170, 220, 255, 140), outline=(220, 245, 255, 230))
+        d.line((5, 11, 26, 11), fill=(235, 250, 255, 200))
+        d.line((6, 12, 12, 12), fill=(255, 255, 255, 220))
+        d.line((18, 16, 23, 21), fill=(140, 200, 240, 200))
+        d.line((7, 22, 11, 19), fill=(140, 200, 240, 200))
+        for (x, y) in ((6, 9), (15, 8), (23, 9)):
+            d.polygon([(x, y), (x + 2, y - 3), (x + 3, y + 1)], fill=(200, 240, 255, 230))
+        for fx in (12, 17):                                                 # 露在外面的脚：粉色袜边 + 脚丫
+            d.rectangle((fx, 26, fx + 2, 26), fill=(255, 170, 200, 255))
+            d.rounded_rectangle((fx, 27, fx + 2, 30), 1, fill=(255, 224, 205, 255), outline=(200, 150, 140, 255))
+            d.point((fx + 1, 30), fill=(255, 205, 190, 255))
         return img
     if kind == "old_dresser":
         img = _dusty(p_interior("dresser").copy(), 0.5, 5)
@@ -945,6 +969,8 @@ def gen_props():
     items.append(("height_marks", p_interior("height_marks"), {"lift": 8}))
     items.append(("cobweb", p_interior("cobweb"), {"lift": 12}))
     items.append(("ice_block", p_interior("ice_block"), {"light": [0.6, 0.85, 1.0]}))
+    items.append(("old_bed_blanket", p_interior("old_bed_blanket"), {}))
+    items.append(("ice_bed", p_interior("ice_bed"), {"light": [0.6, 0.85, 1.0]}))
     # 简单地按行排进 256 宽的图集
     x = y = row_h = 0
     meta = {}

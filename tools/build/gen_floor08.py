@@ -782,25 +782,27 @@ Path("levels/floor_08_shelter/design.json").write_text(json.dumps({
     "_说明": ["第八层的小房间（gen_floor08.py 生成）：追逐逃出来后过夜的地方；操控粉色公主、不能切换（no_switch）。"]}, ensure_ascii=False, indent="\t") + "\n")
 
 # ================================================================ 小房间的夜晚：睡下 → 蓝色公主冰封她（脚露在外面）→ 离开
+BED_AT = [3, 4.25]   # 床（old_bed，地图 (3,4)）的节点位置 (56, 80) 换成过场格子坐标（cell_to_world：y*16+12）
 SLEEP_CUTS = {
     "f8_shelter_sleep": cut("第八层：小房间的夜晚", [
         {"actions": [A("fade_out", time=0.6)], "wait": 0.7},
-        {"actions": [A("move", who="princess", to=[5, 5]), A("pose", faint=True), A("move", who=BLUE_NPC, to=[11, 5]),
-                     A("face", who=BLUE_NPC, dir="left"), A("fade_in", time=0.8)], "wait": 0.9},
+        # 床（old_bed 道具）在 (3,4)：节点在 (56, 80)；她躺上去，脚在床尾、头在枕头上，被子盖到胸口
+        {"actions": [A("lie", who="princess", at=BED_AT, blanket="old_bed_blanket"), A("bubble", who="princess", kind="dots"),
+                     A("move", who=BLUE_NPC, to=[11, 5]), A("face", who=BLUE_NPC, dir="left"), A("fade_in", time=0.8)], "wait": 0.9},
         {"speaker": "", "text": "（粉色公主钻进被窝，没过多久就发出了均匀的呼吸声）"},
         line(P, "……呼……呼……唔嘿嘿……再、再来一块饼干……", "shy"),
-        {"actions": [A("move", who=BLUE_NPC, to=[7, 5], speed=30)], "wait": 1.6},
+        {"actions": [A("move", who=BLUE_NPC, to=[5, 5], speed=30), A("face", who=BLUE_NPC, dir="left")], "wait": 1.6},
         line(BLUE, "……睡着了。"),
         line(BLUE, "……对不起。……不能让你跟来。", "sad"),
         {"actions": [A("sfx", sound="chime"), A("flash", time=0.4),
-                     A("spawn", id="ice", kind="prop:ice_block", at=[5, 5])], "wait": 0.6},
-        {"speaker": "", "text": "（冰晶的光一闪，一层薄冰轻轻盖在她身上——从头一直盖到脚踝）"},
+                     A("spawn", id="ice", kind="prop:ice_bed", at=BED_AT)], "wait": 0.6},
+        {"speaker": "", "text": "（冰晶的光一闪，一层薄冰连着被子轻轻盖在她身上——从枕头一直盖到床尾）"},
         line(BLUE, "……这样，它们就找不到你了。"),
         line(BLUE, "……", actions=[A("face", who=BLUE_NPC, dir="left")]),
-        line(BLUE, "……脚。……露在外面了。", "surprise"),
+        line(BLUE, "……脚。……露在外面了。", "surprise", [A("camera", to=[3, 5], zoom=1.6, time=0.5)]),
         line(BLUE, "……她最怕脚心。……", "shy"),
         line(BLUE, "……算了。……没人会挠的。……应该。", "shy"),
-        line(BLUE, "……对不起。", "sad"),
+        line(BLUE, "……对不起。", "sad", [A("camera", reset=True, time=0.5)]),
         {"actions": [A("move", who=BLUE_NPC, to=[7, 8], speed=40)], "wait": 1.4},
         {"actions": [A("sfx", sound="door"), A("set_flag", flag="blue_is_hero"), A("set_flag", flag="f8_slept"),
                      A("fade_out", time=1.0), A("goto", to="floor_08_maze_1", spawn="")], "wait": 1.2},

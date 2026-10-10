@@ -24,7 +24,7 @@ const MILESTONES := ["first", "total_8", "total_12", "weak_first", "weak_4"]
 
 ## 第一次进迷宫时的介绍板
 const TUTORIAL := [
-	"千手的紫手在黑暗里游荡。靠近时她头顶会弹出一排按键：按顺序按完（J K L U I O）就能把手弹开。",
+	"千手的紫手在黑暗里游荡。靠近时她头顶会弹出一排按键：按键时站着不能动，按顺序按完（J K L U I O）就能把手弹开。",
 	"· 没按上：那只手会盖在她身上的一个部位，一直慢慢地挠（每个部位一只，大腿和屁股不限只数）。",
 	"· 她一笑就有一圈「笑声」：圈里的手会被吸引过来。越笑圈越大。",
 	"· 月光灯：走进亮着的灯，身上的手全部散掉，也是重生点。冰晶结界满蓄力能震掉大腿 / 屁股以外的手。",
@@ -84,6 +84,7 @@ func _exit_tree() -> void:
 		PlayableCharacter.death_override = Callable()
 	_save_carry()
 	PlayerInputController.actions_locked = false
+	PlayerInputController.movement_locked = false
 
 
 func level() -> Node:
@@ -306,7 +307,7 @@ func on_combo_effect(e: Dictionary, actor: Node, _source: Node) -> void:
 
 # ------------------------------------------------------------------ 呼吸墙（迷宫会呼吸）
 ## design.json 的 breathing：[{a: [[x,y]...], b: [...]}]——地图上两段都是地面；开场先把 b 升起来（a 通、b 封），
-## 每次心跳翻转一次（a 升起、b 沉下 / 反过来）。心跳前 WARN 秒要动的墙闪紫光、地面轻震、低沉的心跳声。
+## 每次心跳翻转一次（a 升起、b 沉下 / 反过来）。画面是「活墙」（LivingWall）：心跳前 WARN 秒要升的裂纹 / 要沉的墙脉络发亮、地面轻震、低沉的心跳声。
 ## 间隔：BEAT_BASE 秒，身上每只手 −2 秒，最快 BEAT_MIN 秒。有人站着的格子不升墙（TerrainShifter）。
 const BEAT_BASE := 40.0
 const BEAT_MIN := 15.0
@@ -315,8 +316,9 @@ const BEAT_WARN := 1.5
 var breathing: Array = []
 var breath_state := false
 var shifter: TerrainShifter
+var living_walls := {}
 var _beat_t := BEAT_BASE
-var _beat_warn: Node2D
+var _beat_warned := false
 
 
 func _setup_breathing() -> void:
@@ -341,8 +343,26 @@ func _setup_breathing() -> void:
 	add_child(shifter)
 	var walls := lv.get_node("Walls") as TileMapLayer
 	shifter.setup(lv, walls.get_used_cells()[0])
+	# 每个呼吸墙格子一面「活墙」（画面）；碰撞由 TerrainShifter 加在透明的 Walls 图层上
 	for pair in breathing:
+		for c in pair["a"] + pair["b"]:
+			if not living_walls.has(c):
+				living_walls[c] = LivingWall.make(lv, c)
 		shifter.raise_walls(pair["b"])
+	_sync_living_walls(false)
+
+
+## 活墙的样子跟着碰撞走（有人站着的格子升不起来，那一格就还是裂纹）。
+func _sync_living_walls(animate := true) -> void:
+	var walls := level().get_node("Walls") as TileMapLayer
+	for c in living_walls:
+		(living_walls[c] as LivingWall).set_up(walls.get_cell_source_id(c) != -1, animate)
+
+
+## 心跳前要变的地方发亮（要升起的裂纹、要沉下的墙）。
+func _warn_living_walls(on: bool) -> void:
+	for c in living_walls:
+		(living_walls[c] as LivingWall).warn(on)
 
 
 func beat_interval() -> float:
@@ -353,8 +373,9 @@ func _update_heartbeat(delta: float) -> void:
 	if breathing.is_empty():
 		return
 	_beat_t -= delta
-	if _beat_t <= BEAT_WARN and not is_instance_valid(_beat_warn):
-		_beat_warn = _make_beat_warning()
+	if _beat_t <= BEAT_WARN and not _beat_warned:
+		_beat_warned = true
+		_warn_living_walls(true)
 		Audio.play("roll", -6.0, 0.0, 0.5)
 		if is_instance_valid(blue):
 			blue.shake(0.4)
@@ -365,41 +386,17 @@ func _update_heartbeat(delta: float) -> void:
 ## 心跳一次：所有呼吸墙翻转。
 func heartbeat() -> void:
 	_beat_t = beat_interval()
-	if is_instance_valid(_beat_warn):
-		_beat_warn.queue_free()
+	_beat_warned = false
+	_warn_living_walls(false)
 	breath_state = not breath_state
 	for pair in breathing:
 		var up: Array = pair["a"] if breath_state else pair["b"]
 		var down: Array = pair["b"] if breath_state else pair["a"]
 		shifter.lower_cells(down)
 		shifter.raise_walls(up)
+	_sync_living_walls()
 	Audio.play("door_close", -4.0, 0.0, 0.5)
 	ScreenFx.flash(Color(0.45, 0.2, 0.6), 0.25)
-
-
-## 要升起来的墙先闪紫光。
-class BeatWarning extends Node2D:
-	var cells: Array = []
-	var t := 0.0
-
-	func _process(delta: float) -> void:
-		t += delta
-		queue_redraw()
-
-	func _draw() -> void:
-		var a := 0.25 + 0.25 * sin(t * 14.0)
-		for c in cells:
-			draw_rect(Rect2(Vector2(c) * 16.0, Vector2(16, 16)), Color(0.75, 0.3, 1.0, a))
-
-
-func _make_beat_warning() -> Node2D:
-	var w := BeatWarning.new()
-	w.z_index = 2
-	for pair in breathing:
-		w.cells += (pair["b"] if breath_state else pair["a"]) as Array
-	var lv := level()
-	lv.add_child(w)
-	return w
 
 
 func _check_lamps(delta: float) -> void:
@@ -427,8 +424,15 @@ func _check_lamps(delta: float) -> void:
 
 # ------------------------------------------------------------------ QTE
 ## 紫手靠近时调：同一时间只有一个 QTE；她在光里 / 倒下 / 对话中时不触发。
+## 两个 QTE 之间至少隔 QTE_GAP 秒（QTE 期间不能动：留一点时间让她挪一步）。
+const QTE_GAP := 0.6
+var _qte_free_at := 0.0
+
+
 func request_qte(hand: MazeHand) -> void:
-	if KeySequenceQTE.is_running() or _qte_hand != null or not blue.is_alive() or light_at(blue.global_position) is Vector2:
+	var now := Time.get_ticks_msec() / 1000.0
+	if KeySequenceQTE.is_running() or _qte_hand != null or not blue.is_alive() or light_at(blue.global_position) is Vector2 \
+			or now < _qte_free_at:
 		hand.cooldown(0.6)
 		return
 	_run_qte(hand)
@@ -452,6 +456,7 @@ func _run_qte(hand: MazeHand) -> void:
 	var q := KeySequenceQTE.start(blue, int(prm["count"]), float(prm["limit"]), float(prm["delay"]))
 	var ok: bool = await q.finished
 	_qte_hand = null
+	_qte_free_at = Time.get_ticks_msec() / 1000.0 + QTE_GAP
 	if not is_instance_valid(hand) or hand.is_gone():
 		return
 	if ok:

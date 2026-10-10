@@ -77,14 +77,36 @@ func _run_sleep() -> void:
 	var seen := []
 	var on_cut := func(id: String): seen.append(id)
 	Cutscene.started.connect(on_cut)
+	_bed_node = bed as Node2D
+	get_tree().process_frame.connect(_watch_bed)
 	bed.on_interact(GameState.player)
 	await _advance_until(_maze_ready, 60.0)
+	get_tree().process_frame.disconnect(_watch_bed)
 	Cutscene.started.disconnect(on_cut)
 	var p := GameState.player
 	check("床 → 睡吧 → 冰封过场（%s）→ 夜迷宫一，开场过场，操控蓝色公主" % [seen],
 		seen.has("f8_shelter_sleep") and seen.has("f8_maze_intro") and _level_id() == "floor_08_maze_1" and p is BluePrincess
 		and GameState.has_flag("blue_is_hero") and GameState.has_flag("f8_slept"))
-	check("冰封过场：冰块盖住她、脚露在外面（有冰块道具）", FileAccess.get_file_as_string("res://data/cutscenes/floor_08/f8_shelter_sleep.json").contains("prop:ice_block"))
+	check("睡下：粉色公主躺在床上（离床 %.1f 像素、正面朝上、有被子），冰块是盖住整张床、脚露在床尾的 %s" % [_bed_seen.get("dist", -1.0), _bed_seen.get("ice", "")],
+		float(_bed_seen.get("dist", 99.0)) < 2.0 and _bed_seen.get("upright", false) and _bed_seen.get("blanket", false) and _bed_seen.get("ice", "") == "ice_bed")
+
+
+var _bed_node: Node2D
+var _bed_seen := {}
+
+
+## 睡觉过场里冰块出现的那一刻：记下粉色公主在哪、有没有被子、冰块是什么。
+func _watch_bed() -> void:
+	var ice: Variant = Cutscene.spawned.get("ice")
+	if not _bed_seen.is_empty() or not (ice is Node2D) or not is_instance_valid(ice) or not is_instance_valid(_bed_node):
+		return
+	var p := GameState.player
+	var blanket := false
+	for k in Cutscene.spawned:
+		if str(k).begins_with("lie_blanket") and is_instance_valid(Cutscene.spawned[k]):
+			blanket = Cutscene.spawned[k].get("kind") == "old_bed_blanket" and Cutscene.spawned[k].z_index > 0
+	_bed_seen = {"dist": p.global_position.distance_to(_bed_node.global_position), "upright": is_zero_approx(p.sprite.rotation),
+		"blanket": blanket, "ice": str((ice as Node2D).get("kind"))}
 
 
 # ------------------------------------------------------------------ 2.5D
@@ -100,6 +122,24 @@ func _run_25d() -> void:
 		lv.get("style") == "2.5d" and tex is CanvasTexture and (tex as CanvasTexture).normal_texture != null
 		and sp.material is ShaderMaterial and (sp.material as ShaderMaterial).shader.resource_path.ends_with("lit_sprite.gdshader")
 		and cl != null and cl.shadow_enabled and lv.get_node("WallGlows").get_child_count() > 0)
+	# 透视倾斜 + 高墙
+	var pv := PerspectiveView.of(lv)
+	var walls := lv.get_node("Walls") as TileMapLayer
+	var caps := lv.get_node_or_null("Entities/WallCaps3D") as TileMapLayer
+	var faces := lv.get_node_or_null("Entities/WallFaces3D") as TileMapLayer
+	var missing := 0
+	if caps:
+		for c in walls.get_used_cells():
+			if caps.get_cell_source_id(c) == -1 and not _dir().living_walls.has(c):
+				missing += 1
+	var mid := pv.output_uv(Vector2(0.5, PerspectiveView.PLAYER_ROW)) if pv else Vector2.ZERO
+	check("透视倾斜：世界之上有 PerspectiveView（层 %d，近处取 %.2f 宽），主角显示在画面 %.0f%% 高度，人物纵向补偿 ×%.2f" % [
+			pv.layer if pv else -1, pv.near_width() if pv else 0.0, mid.y * 100.0, LitSprite.upright],
+		pv != null and pv.layer < 9 and pv.near_width() < 0.8 and mid.y > 0.55 and mid.y < 0.75 and LitSprite.upright > 1.05
+		and is_equal_approx(float((sp.material as ShaderMaterial).get_shader_parameter("upright")), LitSprite.upright))
+	check("高墙：墙面 / 墙顶在 Entities 里和人物一起 y 排序（墙顶往上画），Walls 图层透明但还管碰撞（没有墙顶的墙格 %d 个）" % missing,
+		caps != null and faces != null and caps.y_sort_enabled and faces.get_used_cells().size() > 0 and missing == 0
+		and walls.self_modulate.a == 0.0 and walls.collision_enabled and not caps.collision_enabled)
 
 
 # ------------------------------------------------------------------ 紫手 QTE / 手覆盖
@@ -114,12 +154,38 @@ func _run_qte_and_cover() -> void:
 	await _wait(0.3)
 	var q := KeySequenceQTE.current
 	var prm := dir.qte_params()
-	check("紫手靠近 → 头顶弹出按键序列 QTE（%d 个键，限时 %.1f 秒），期间只能移动" % [int(prm["count"]), float(prm["limit"])],
+	check("紫手靠近 → 头顶弹出按键序列 QTE（%d 个键，限时 %.1f 秒）" % [int(prm["count"]), float(prm["limit"])],
 		q != null and q.keys.size() >= 2 and q.keys.size() <= 5 and PlayerInputController.actions_locked)
+	var act := _open_action(blue)
+	var before := blue.global_position
+	Input.action_press(act)
+	await _wait(0.3)
+	var moved_qte := blue.global_position.distance_to(before)
+	Input.action_release(act)
+	check("QTE 期间按方向键也不能动（移动了 %.1f 像素）" % moved_qte, moved_qte < 0.5 and PlayerInputController.movement_locked)
 	if q:
 		for k in q.keys.duplicate():
 			q.press(q.expected())
+	# 刚结束一个 QTE：0.6 秒内别的手要不到 QTE
+	var h2 := dir.spawn_hand(blue.global_position + Vector2(-12, 0))
+	dir.request_qte(h2)
+	var gap_ok := not KeySequenceQTE.is_running()
+	h2.vanish()
 	await _wait(0.4)
+	before = blue.global_position
+	Input.action_press(act)
+	await _wait(0.3)
+	var moved_after := blue.global_position.distance_to(before)
+	Input.action_release(act)
+	check("QTE 结束后又能走（%.1f 像素），两个 QTE 之间至少隔 %.1f 秒（%s）" % [moved_after, MazeDirector.QTE_GAP, gap_ok],
+		moved_after > 2.0 and not PlayerInputController.movement_locked and gap_ok)
+	blue.global_position = before
+	var stray := KeySequenceQTE.start(blue, 2, 2.0)
+	await get_tree().process_frame
+	var locked := PlayerInputController.movement_locked
+	stray.queue_free()
+	await get_tree().process_frame
+	check("QTE 被提前释放（换关卡 / 删掉）也会解开移动锁", locked and not PlayerInputController.movement_locked and not PlayerInputController.actions_locked)
 	check("按对 → 手消散，没盖到身上", cover.total() == 0 and not is_instance_valid(h) or (h as MazeHand).is_gone())
 	# QTE 失败：盖住一个部位
 	h = dir.spawn_hand(blue.global_position + Vector2(12, 0))
@@ -175,6 +241,24 @@ func _run_qte_and_cover() -> void:
 		not attracted_calm and attracted_laugh)
 	far.vanish()
 	blue.laugh.set_value(0.0)
+
+
+## 活墙的样子和碰撞一致（升起 = 那格有墙）。
+func _living_walls_match(dir: MazeDirector, walls: TileMapLayer) -> bool:
+	for c in dir.living_walls:
+		if (dir.living_walls[c] as LivingWall).up != (walls.get_cell_source_id(c) != -1):
+			return false
+	return true
+
+
+## 往哪个方向走两格都是地面（测试按方向键用）。
+func _open_action(c: Node2D) -> String:
+	for pair in [["move_right", Vector2.RIGHT], ["move_left", Vector2.LEFT], ["move_down", Vector2.DOWN], ["move_up", Vector2.UP]]:
+		var d: Vector2 = pair[1]
+		if GridPath.walkable(main.level, GridPath.cell(c.global_position + d * 16.0)) \
+				and GridPath.walkable(main.level, GridPath.cell(c.global_position + d * 32.0)):
+			return pair[0]
+	return "move_right"
 
 
 func _move_out_of_light(blue: Node2D) -> void:
@@ -572,12 +656,20 @@ func _run_heartbeat_and_shadow() -> void:
 	var wall_at := func(cells: Array) -> bool: return cells.all(func(c: Vector2i): return walls.get_cell_source_id(c) != -1)
 	var floor_at := func(cells: Array) -> bool: return cells.all(func(c: Vector2i): return walls.get_cell_source_id(c) == -1)
 	var start_ok: bool = floor_at.call(pair["a"]) and wall_at.call(pair["b"])
-	blue.global_position = dir.blue.global_position
+	var start_look := _living_walls_match(dir, walls)
+	_move_out_of_light(blue)
+	for c in pair["a"] + pair["b"]:
+		if GridPath.cell(blue.global_position) == c:
+			blue.global_position += Vector2(48, 0)
 	dir.heartbeat()
 	var flipped: bool = wall_at.call(pair["a"]) and floor_at.call(pair["b"])
+	var flip_look: bool = _living_walls_match(dir, walls) and (dir.living_walls[pair["a"][0]] as LivingWall).up \
+		and not (dir.living_walls[pair["b"][0]] as LivingWall).up and (dir.living_walls[pair["b"][0]] as LivingWall).crack.visible
 	dir.heartbeat()
 	var back: bool = floor_at.call(pair["a"]) and wall_at.call(pair["b"])
 	check("呼吸墙：开场 a 通 b 封（%s），心跳一次翻转（%s），再跳翻回来（%s）" % [start_ok, flipped, back], start_ok and flipped and back)
+	check("活墙：每个呼吸墙格子都有画面，升起的是活墙、沉下的是裂纹，和碰撞一致（开场 %s、翻转后 %s）" % [start_look, flip_look],
+		dir.living_walls.size() > 0 and start_look and flip_look and _living_walls_match(dir, walls))
 	var slow := dir.beat_interval()
 	for i in 10:
 		dir.cover_zone("thigh")

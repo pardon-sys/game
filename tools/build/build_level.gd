@@ -17,6 +17,9 @@ const TILESET_PATH := "res://assets/tilesets/dungeon.tres"
 ## 2.5D 楼层（[level] style = 2.5d）：同样的图块，但贴图是带法线 / 高光的 CanvasTexture（tools/art/gen_normal_maps.py）
 const TILESET_25D_PATH := "res://assets/tilesets/dungeon_25d.tres"
 const NORMAL_DIR := "res://assets/generated/normal/"
+## 2.5D 楼层的高墙：墙顶往上画多少像素（墙的高度）；墙顶用 walls 图集的第 CAP_ALT 个替代图块（只是往上画，没有碰撞）
+const WALL_HEIGHT := 16
+const CAP_ALT := 1
 
 const SRC_KENNEY := 0
 const SRC_WALLS := 1
@@ -301,6 +304,7 @@ func build(floor_id: String) -> int:
 					counts[k] = counts.get(k, 0) + 1
 
 	if lit:
+		_add_tall_walls(root, ents, walls_layer, ts)
 		_add_wall_glows(root, walls_layer)
 	var ps := PackedScene.new()
 	var err := ps.pack(root)
@@ -403,6 +407,31 @@ func is_face(x: int, y: int) -> bool:
 
 func is_top(x: int, y: int) -> bool:
 	return is_wall(x, y) and not is_face(x, y)
+
+
+# ------------------------------------------------------------------ 2.5D 高墙
+## Walls 图层只管碰撞 / 挡光 / 寻路（画面透明）；画面交给两个 y 排序的图层（放在 Entities 里，和人物一起排序）：
+##   WallFaces3D：下面是地面的墙格画砖墙正面；WallCaps3D：每个墙格的墙顶往上画 WALL_HEIGHT 像素（排序点在墙脚）。
+## 人物走到墙后（墙的上方）时被墙顶挡住，走在墙前时挡住墙。
+func _add_tall_walls(root: Node, ents: Node, walls_layer: TileMapLayer, ts: TileSet) -> void:
+	walls_layer.self_modulate = Color(1, 1, 1, 0)
+	var faces := _layer("WallFaces3D", ts)
+	var caps := _layer("WallCaps3D", ts)
+	for l in [faces, caps]:
+		l.y_sort_enabled = true
+		l.collision_enabled = false
+		l.occlusion_enabled = false
+		ents.add_child(l)
+		l.owner = root
+	for c in walls_layer.get_used_cells():
+		if is_face(c.x, c.y) and walls_layer.get_cell_source_id(c) == SRC_FACES:
+			faces.set_cell(c, SRC_FACES, walls_layer.get_cell_atlas_coords(c))
+		var mask := 0
+		for n in NEIGHBORS:
+			var p: Vector2i = c + n[1]
+			if p.x >= 0 and p.y >= 0 and p.x < width and p.y < height and not is_wall(p.x, p.y):
+				mask |= n[0]
+		caps.set_cell(c, SRC_WALLS, Vector2i(mask % 16, mask / 16), CAP_ALT)
 
 
 # ------------------------------------------------------------------ 墙体
@@ -601,6 +630,14 @@ func make_tileset(lit := false) -> TileSet:
 				if src[1] == SRC_WALLS:
 					td.add_occluder_polygon(0)
 					td.set_occluder_polygon(0, 0, occ)
+				if lit:
+					# 高墙（WallFaces3D / WallCaps3D 图层用）：墙面按墙脚排序；墙顶的替代图块往上画 WALL_HEIGHT 像素
+					td.y_sort_origin = 8
+					if src[1] == SRC_WALLS:
+						var alt := atlas.create_alternative_tile(Vector2i(x, y), CAP_ALT)
+						var cap := atlas.get_tile_data(Vector2i(x, y), alt)
+						cap.texture_origin = Vector2i(0, WALL_HEIGHT)
+						cap.y_sort_origin = 8
 	for id in VOID_ROCKS:
 		var td := ken.get_tile_data(_kcoord(id), 0)
 		td.add_occluder_polygon(0)
