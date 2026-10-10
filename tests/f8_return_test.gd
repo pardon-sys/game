@@ -1,6 +1,6 @@
 extends Node
 ## 第八层第五轮：走出夜迷宫 → 千手过场 → 回小屋 → 粉色公主操控、蓝色公主跟着 → 新的第七层。
-## 两种情况：迷宫里身上没超过 8 只手 / 超过 8 只手（千手痒痒裤：关键道具 + 永久状态；闷笑最低 20、移动 ×0.9、魔法 10% 失败并大笑）。
+## 两种情况：迷宫里身上没到过 4 只手 / 有过 4 只手（千手痒痒裤：关键道具 + 永久状态；闷笑最低 20、移动 ×0.9、魔法 10% 失败并大笑）。
 ## 还有：粉色公主睡着时闭着眼（小人用闭眼图，立绘照旧）。
 ## 用法：Godot --headless --path . res://tests/f8_return_test.tscn   （退出码 0 = 全部通过）
 
@@ -69,10 +69,10 @@ func _run_sleeping_eyes() -> void:
 
 # ------------------------------------------------------------------ 出口 → 千手过场 → 回小屋
 func _run_ending(pants: bool) -> void:
-	print("-- 出口 → 千手过场 → 回小屋（%s）" % ("身上超过 8 只手过" if pants else "没超过 8 只手"))
-	for f in ["f8_maze_done", "f8_returned", "blue_tickle_pants", "f8m_ms_total_8", "f8_maze_finale_seen"]:
+	print("-- 出口 → 千手过场 → 回小屋（%s）" % ("身上有过 4 只手" if pants else "没到 4 只手"))
+	for f in ["f8_maze_done", "f8_returned", "blue_tickle_pants", "f8m_pants", "f8_maze_finale_seen"]:
 		GameState.set_flag(f, false)
-	GameState.set_flag("f8m_ms_total_8", pants)
+	GameState.set_flag("f8m_pants", pants)
 	if GameState.inventory.has("thousand_pants"):
 		GameState.inventory.remove("thousand_pants", 1)
 	GameState.set_flag("blue_is_hero")
@@ -123,10 +123,10 @@ func _run_ending(pants: bool) -> void:
 	var has_item := GameState.inventory.has("thousand_pants")
 	var has_buff := b != null and b.has_buff("thousand_pants")
 	if pants:
-		check("超过 8 只手 → 千手痒痒裤：关键道具（%s）、蓝色公主的永久状态（%s）、剧情标记（%s）" % [has_item, has_buff, GameState.has_flag("blue_tickle_pants")],
+		check("身上有过 4 只手 → 千手痒痒裤：关键道具（%s）、蓝色公主的永久状态（%s）、剧情标记（%s）" % [has_item, has_buff, GameState.has_flag("blue_tickle_pants")],
 			has_item and has_buff and GameState.has_flag("blue_tickle_pants") and (b.buffs["thousand_pants"] as Buff).is_permanent())
 	else:
-		check("没超过 8 只手 → 没有痒痒裤（道具 %s、状态 %s）" % [has_item, has_buff], not has_item and not has_buff and not GameState.has_flag("blue_tickle_pants"))
+		check("没到 4 只手 → 没有痒痒裤（道具 %s、状态 %s）" % [has_item, has_buff], not has_item and not has_buff and not GameState.has_flag("blue_tickle_pants"))
 	# 跟随：粉色公主走开，蓝色公主跟上来
 	if b and p:
 		var start := b.global_position.distance_to(p.global_position)
@@ -180,6 +180,17 @@ func _run_pants_effects() -> void:
 	b.laugh.clear()
 	check("闷笑值消减停在 20（最低 %.1f），清空也是 20（%.1f）" % [lowest, b.laugh.value], absf(lowest - 20.0) < 0.6 and absf(b.laugh.value - 20.0) < 0.6)
 	check("移动速度 ×0.9（stat_mul speed = %.2f）" % b.stat_mul("speed"), absf(b.stat_mul("speed") - 0.9) < 0.001)
+	# 发作：四种手法各一次，每种都有对应的台词、挠对应的部位
+	var ways_ok := []
+	for way in ["knead", "climb", "pinch", "scrape"]:
+		b.laugh.set_value(20.0)
+		b.set_invulnerable(0.0)
+		var before := b.laugh.value
+		b._pants_bubble_t = 0.0
+		b.pants_flare(way)
+		if b.laugh.value > before and MazeLines.pick("pants_" + way) != "":
+			ways_ok.append(way)
+	check("痒痒裤发作：揉腿根 / 沿内侧往上爬 / 轮流捏屁股 / 交界处轻刮都有对应的台词并挠到（%s）" % [ways_ok], ways_ok.size() == 4)
 	# 魔法 10% 失败：固定随机种子放 300 次
 	seed(20261010)
 	var events := {"fail": 0}
@@ -209,10 +220,23 @@ func _run_pants_effects() -> void:
 	# 背包状态页：可以切到蓝色公主，列出被动状态
 	var bp := get_tree().root.find_child("Backpack", true, false)
 	var ok_page := false
+	var shown := ""
 	if bp and bp.has_method("status_members"):
 		var members: Array = bp.status_members()
 		ok_page = members.size() >= 2 and members.has(b)
-	check("背包状态页能切换看蓝色公主（同行 %s）" % ok_page, ok_page)
+		bp.open()
+		bp.set_page(bp.PAGE_STATUS)
+		bp.status_index = members.find(b)
+		bp._refresh()
+		for c in bp.status_page.box.get_children():
+			var l: Label = c if c is Label else (c.get_child(1) if c.get_child_count() > 1 and c.get_child(1) is Label else null)
+			if l:
+				shown += l.text + "\n"
+		bp.close()
+	# 部位敏感度按她自己的部位表：脚心 ×0.95（粉色公主是 ×1.20）
+	check("背包状态页能切换看蓝色公主（同行 %s），切过去显示的是她自己的状态（痒痒裤 %s、脚心 ×0.95 %s）" % [ok_page,
+			shown.contains("千手痒痒裤"), shown.contains("脚心 ×0.95")],
+		ok_page and shown.contains("蓝色的公主") and shown.contains("千手痒痒裤") and shown.contains("脚心 ×0.95"))
 
 
 # ------------------------------------------------------------------ 新的第七层

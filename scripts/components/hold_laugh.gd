@@ -21,7 +21,7 @@ const REGEN_TIME := 3.0
 const RELEASE_SOFT := 0.3
 const RELEASE_FAIL := 0.7
 const FAIL_EXTRA := 10.0
-const FAIL_RADIUS := 200.0
+const FAIL_RADIUS := 240.0
 const FAIL_ROOT := 1.0
 const LINES := [
 	"……噗——！哈、哈哈哈……憋、憋不住了……！",

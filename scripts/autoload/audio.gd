@@ -81,6 +81,8 @@ var _voice_state := ""
 ## 憋不住的笑（blue_crack）单独一个播放器：换关卡也不断（过场之间的笑声衔接），可以淡出
 var _crack: AudioStreamPlayer
 var _crack_tw: Tween
+## 别处的笑声播放器（小剧场舞台的 voice / voice2）：同一时间只放一段笑声——憋不住的笑在放时它们先停住（register_laugh_player）
+var _laugh_players: Array[AudioStreamPlayer] = []
 
 # ------------------------------------------------------------------ 背景音乐
 ## 配乐（tools/audio/gen_music.py 用 ElevenLabs 生成，2 分钟首尾相连）：地牢层 dungeon、地下小镇 town。
@@ -261,6 +263,21 @@ func crack_playing() -> bool:
 	return _crack.playing
 
 
+## 登记一个会放笑声的播放器：憋不住的笑在放时它暂停，放完接着放（同一时间只有一段笑声）。
+func register_laugh_player(p: AudioStreamPlayer) -> void:
+	if not _laugh_players.has(p):
+		_laugh_players.append(p)
+
+
+func _duck_laughs() -> void:
+	var cracking := _crack.playing
+	if is_instance_valid(_voice):
+		_voice.stream_paused = cracking
+	_laugh_players = _laugh_players.filter(func(p): return is_instance_valid(p))
+	for p in _laugh_players:
+		p.stream_paused = cracking
+
+
 ## 憋不住的笑慢慢淡掉（time 秒）。
 func fade_crack(time := 1.0) -> void:
 	if not _crack.playing:
@@ -299,7 +316,7 @@ func stop_voice() -> void:
 
 
 func play_voice(sound: String) -> void:
-	if get_tree().paused or sound != _voice_state or _voice.playing:
+	if get_tree().paused or sound != _voice_state or _voice.playing or _crack.playing:
 		return
 	var clips: Array = _streams.get(voice_key(sound), [])
 	if clips.is_empty():
@@ -312,6 +329,7 @@ func play_voice(sound: String) -> void:
 
 func _process(_delta: float) -> void:
 	_update_music(_delta)
+	_duck_laughs()
 	if get_tree().paused or not is_instance_valid(GameState.player) or not GameState.player.is_alive():
 		stop_voice()
 	elif _voice_state == "laugh":

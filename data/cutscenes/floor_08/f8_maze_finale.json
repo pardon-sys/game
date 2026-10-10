@@ -351,6 +351,67 @@
 			"auto": 2.2
 		},
 		{
+			"speaker": "",
+			"text": "（大腿上的那只手没有挠。拇指按进大腿根的软肉里，轻轻地、一圈一圈地揉）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "boss",
+					"repeat": 8,
+					"interval": 0.24,
+					"fx": "hand",
+					"zone": "thigh",
+					"do": "tickle"
+				}
+			],
+			"auto": 3.6
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……揉、揉什么……",
+			"emotion": "shy",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "boss",
+					"repeat": 6,
+					"interval": 0.22,
+					"fx": "hand",
+					"zone": "thigh",
+					"do": "tickle"
+				}
+			],
+			"auto": 1.77
+		},
+		{
+			"speaker": "",
+			"text": "（屁股上的那只，整个手掌贴着，五根手指一根、一根地收拢——像在确认那里有多软）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "boss",
+					"repeat": 8,
+					"interval": 0.22,
+					"fx": "hand",
+					"zone": "butt",
+					"do": "tickle"
+				}
+			],
+			"auto": 3.6
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……！……别、别捏……",
+			"emotion": "shy",
+			"actions": [
+				{
+					"time": 0.3,
+					"do": "shake"
+				}
+			],
+			"auto": 1.94
+		},
+		{
 			"speaker": "千手痒痒魔",
 			"text": "……大腿……屁股……你……最怕……"
 		},
@@ -702,6 +763,71 @@
 					"zone": "thigh",
 					"do": "tickle"
 				},
+				{
+					"who": "princess",
+					"by": "boss",
+					"repeat": 14,
+					"interval": 0.12,
+					"fx": "hand",
+					"zone": "butt",
+					"do": "tickle"
+				}
+			],
+			"auto": 3.6
+		},
+		{
+			"speaker": "",
+			"text": "（四只手分成两排，从膝盖内侧开始，像爬楼梯一样，一节一节往大腿根爬）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "boss",
+					"repeat": 12,
+					"interval": 0.14,
+					"fx": "hand",
+					"zone": "thigh",
+					"do": "tickle"
+				}
+			],
+			"auto": 3.6
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……不、不准……往上……",
+			"emotion": "helpless_1",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "boss",
+					"repeat": 8,
+					"interval": 0.14,
+					"fx": "hand",
+					"zone": "thigh",
+					"do": "tickle"
+				}
+			],
+			"auto": 2.02
+		},
+		{
+			"speaker": "",
+			"text": "（爬到腿根就停下，指尖贴着最软的那一块，揉、按、再揉——一刻也不放松）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "boss",
+					"repeat": 14,
+					"interval": 0.11,
+					"fx": "hand",
+					"zone": "thigh",
+					"do": "tickle"
+				}
+			],
+			"auto": 3.6
+		},
+		{
+			"speaker": "",
+			"text": "（屁股上的三只手轮流捏：左边一下，右边一下，中间那只用指尖沿着裙边慢慢地划）",
+			"actions": [
 				{
 					"who": "princess",
 					"by": "boss",
@@ -1112,6 +1238,112 @@
 			"auto": 1.94
 		},
 		{
+			"speaker": "",
+			"text": "（大腿内侧的手指像弹琴一样飞快地轮流点着；腿根被揉、被掐、被画圈，一秒都没有停）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "boss",
+					"repeat": 18,
+					"interval": 0.07,
+					"fx": "hand",
+					"zone": "thigh",
+					"do": "tickle"
+				}
+			],
+			"auto": 3.6
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……腿、腿根……别揉了……哈哈哈哈……！",
+			"emotion": "helpless_2",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "boss",
+					"repeat": 12,
+					"interval": 0.08,
+					"fx": "hand",
+					"zone": "thigh",
+					"do": "tickle"
+				}
+			],
+			"auto": 2.7
+		},
+		{
+			"speaker": "",
+			"text": "（屁股上的手隔着裙子，像揉面团一样一下下揉捏——然后忽然五根手指一起抓挠起来）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "boss",
+					"repeat": 18,
+					"interval": 0.07,
+					"fx": "hand",
+					"zone": "butt",
+					"do": "tickle"
+				}
+			],
+			"auto": 3.6
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……哈哈哈……揉、揉完又抓……犯、犯规……哈哈哈哈……！",
+			"emotion": "helpless_2",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "boss",
+					"repeat": 12,
+					"interval": 0.08,
+					"fx": "hand",
+					"zone": "butt",
+					"do": "tickle"
+				}
+			],
+			"auto": 3.38
+		},
+		{
+			"speaker": "",
+			"text": "（有一只手专门停在大腿和屁股交界的那道弧线上，用指甲尖，轻轻地、来来回回地刮）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "boss",
+					"repeat": 10,
+					"interval": 0.1,
+					"fx": "hand",
+					"zone": "butt",
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"by": "boss",
+					"repeat": 10,
+					"interval": 0.1,
+					"fx": "hand",
+					"zone": "thigh",
+					"do": "tickle"
+				}
+			],
+			"auto": 3.6
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……那、那条线……不、不行不行……哈哈哈哈哈……！",
+			"emotion": "helpless_2",
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "shake"
+				},
+				{
+					"do": "crack"
+				}
+			],
+			"auto": 3.12
+		},
+		{
 			"speaker": "蓝色的公主",
 			"text": "……好、好痒……好痒啦……哈哈哈哈……！",
 			"emotion": "helpless_2",
@@ -1334,7 +1566,7 @@
 		},
 		{
 			"speaker": "",
-			"text": "（刚放完魔力的身体敏感得不得了。手指一碰，魔力就又涌了上来）",
+			"text": "（刚放完魔力的身体敏感得不得了。腿根被揉一下、屁股被捏一下，魔力就又涌了上来）",
 			"actions": [
 				{
 					"who": "princess",

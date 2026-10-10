@@ -5,7 +5,7 @@ extends Node2D
 ## burst(半径) 一下子放出一大圈（笑声收集瓶打开）。
 ## muted（憋笑键按住时）：圈收起来（0），只有 burst 照样放。
 
-const RADII := [75.0, 125.0, 175.0]
+const RADII := [95.0, 155.0, 215.0]
 
 var host: PlayableCharacter
 var _boost := 1.0

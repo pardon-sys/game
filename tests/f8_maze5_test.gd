@@ -29,6 +29,7 @@ func _ready() -> void:
 	await _run_body_hands_and_alarm()
 	await _run_hold_laugh()
 	await _run_dark()
+	await _run_one_laugh()
 	await _run_traps()
 	await _goto(2)
 	await _run_shadow()
@@ -96,6 +97,15 @@ func _open_spot(min_from_light := 60.0) -> Vector2:
 
 # ------------------------------------------------------------------ 生成的数量和位置
 func _run_generated() -> void:
+	print("-- 数据：水洼相关的组合不再召出一大堆手")
+	var combos: Array = JSON.parse_string(FileAccess.get_file_as_string("res://data/combos.json"))["combos"]
+	var bad := []
+	for c in combos:
+		if "mirror_puddle" in JSON.stringify(c.get("keys", [])):
+			for e in c.get("effects", []):
+				if e.get("type") == "summon_hands" or (e.get("type") == "laugh_radius_boost" and float(e.get("mult", 1.0)) > 1.3):
+					bad.append(c["id"])
+	check("带镜面水洼的组合没有召手 / 笑声圈最多放大 1.3 倍（违规 %s）" % [bad], bad.is_empty())
 	print("-- 生成：数量 / 位置")
 	var want := {1: {"wall_brush": 2}, 2: {"wall_brush": 3, "grab_hand": 2, "thigh_pincer": 1, "night_stalker": 1},
 		3: {"wall_brush": 4, "thigh_pincer": 2, "feather_arm": 2, "night_stalker": 1, "stalker_zone": 1}}
@@ -164,6 +174,15 @@ func _run_body_hands_and_alarm() -> void:
 	check("身上的小手：BodyHands 画的只数 = 身上的手（%d / %d），清手后跟着清（%s）" % [bh.total() if bh else -1, dir.cover.total(), "-"],
 		bh != null and bh.total() == dir.cover.total())
 	dir.cover.clear()
+	GameState.set_flag(MazeDirector.PANTS_FLAG, false)
+	for z in ["thigh", "butt", "waist"]:
+		dir.cover_zone(z)
+	var at3 := GameState.has_flag(MazeDirector.PANTS_FLAG)
+	dir.cover_zone("butt")
+	check("身上同时有 4 只手 → 记下千手痒痒裤的标记（3 只时 %s、4 只时 %s），出口过场用 %s" % [at3, GameState.has_flag(MazeDirector.PANTS_FLAG),
+			MazeDirector.finale_id()],
+		not at3 and GameState.has_flag(MazeDirector.PANTS_FLAG) and MazeDirector.finale_id() == "f8_maze_finale_pants")
+	dir.cover.clear()
 	await _wait(0.1)
 	check("月光灯清手后身上的小手也没了（%d）" % bh.total(), bh.total() == 0)
 	blue.global_position = _open_spot()
@@ -220,6 +239,28 @@ func _run_hold_laugh() -> void:
 	hl.force_hold = false
 	await _wait(1.2)
 	_fresh(blue)
+
+
+# ------------------------------------------------------------------ 笑声同一时间只有一段
+func _run_one_laugh() -> void:
+	print("-- 笑声同一时间只有一段")
+	var audible := func() -> bool: return Audio._voice.playing and not Audio._voice.stream_paused
+	Audio.fade_crack(0.01)
+	await _wait(0.2)
+	Audio.set_voice_state("laugh")
+	await _wait(0.3)
+	var before: bool = audible.call()
+	Audio.play_crack()
+	await _wait(0.2)
+	var during: bool = audible.call()
+	Audio.play_voice("laugh")
+	var still: bool = audible.call()
+	Audio.fade_crack(0.05)
+	await _wait(0.5)
+	var after: bool = audible.call()
+	check("笑声同一时间只有一段：憋不住的笑放之前在笑（%s），放的时候别的笑声听不到（%s / %s），放完接着笑（%s）" % [before, not during, not still, after],
+		before and not during and not still and after)
+	Audio.set_voice_state("")
 
 
 # ------------------------------------------------------------------ 黑暗更怕痒

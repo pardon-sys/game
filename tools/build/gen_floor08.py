@@ -1632,6 +1632,10 @@ def finale(pants):
         au(BOSS, "……四……只……", None, [cv("butt"), ftk("butt", 6, 0.2)]),
         line(BLUE, "……那、那里……不行。", "shy", [A("shake", time=0.3)]),
         au(N, "（她的声音，第一次抖了一下）", sec=2.2),
+        au(N, "（大腿上的那只手没有挠。拇指按进大腿根的软肉里，轻轻地、一圈一圈地揉）", None, [ftk("thigh", 8, 0.24)], 3.6),
+        au(BLUE, "……揉、揉什么……", "shy", [ftk("thigh", 6, 0.22)]),
+        au(N, "（屁股上的那只，整个手掌贴着，五根手指一根、一根地收拢——像在确认那里有多软）", None, [ftk("butt", 8, 0.22)], 3.6),
+        au(BLUE, "……！……别、别捏……", "shy", [A("shake", time=0.3)]),
         line(BOSS, "……大腿……屁股……你……最怕……"),
         au(BLUE, "……没有。……不怕。", "angry", [ftk("thigh", 8, 0.18)]),
         au(BLUE, "……一点、一点都……", "shy", [ftk("butt", 8, 0.16)]),
@@ -1654,6 +1658,10 @@ def finale(pants):
         au(BOSS, "……那……再……多……一……点……", None, [cv("thigh", 2), cv("butt", 2), A("cg", key="boss8_resist_2"),
                                                        A("sfx", sound="hand_grab", volume=-2.0)]),
         au(N, "（大腿上四只，屁股上三只。手指一下一下地捏、揉，又沿着腿根画圈）", None, [ftk("thigh", 14, 0.11), ftk("butt", 14, 0.12)], 3.6),
+        au(N, "（四只手分成两排，从膝盖内侧开始，像爬楼梯一样，一节一节往大腿根爬）", None, [ftk("thigh", 12, 0.14)], 3.6),
+        au(BLUE, "……不、不准……往上……", "helpless_1", [ftk("thigh", 8, 0.14)]),
+        au(N, "（爬到腿根就停下，指尖贴着最软的那一块，揉、按、再揉——一刻也不放松）", None, [ftk("thigh", 14, 0.11)], 3.6),
+        au(N, "（屁股上的三只手轮流捏：左边一下，右边一下，中间那只用指尖沿着裙边慢慢地划）", None, [ftk("butt", 14, 0.12)], 3.6),
         au(BLUE, "……哈、哈哈……不、不准……一起……", "helpless_1", [A("voice", state="giggle")]),
         au(BLUE, "……哈哈……哈哈哈……！", "helpless_2", [A("voice", state="laugh"), A("crack")]),
         au(N, "（她第一次笑出了声。笑声在出口的石壁之间来回回荡）", sec=3.0),
@@ -1687,6 +1695,15 @@ def finale(pants):
         au(N, "（大腿上六只，屁股上五只，腰、腋下、肚子、脖子、脚心——手指铺满了她的全身）", None,
            [ftk("thigh", 16, 0.08), ftk("butt", 16, 0.09), ftk("waist", 10, 0.12)], 3.6),
         au(BLUE, "……哈哈哈哈哈哈……！", "helpless_2", [A("voice", state="laugh"), A("crack")]),
+        au(N, "（大腿内侧的手指像弹琴一样飞快地轮流点着；腿根被揉、被掐、被画圈，一秒都没有停）", None,
+           [ftk("thigh", 18, 0.07)], 3.6),
+        au(BLUE, "……腿、腿根……别揉了……哈哈哈哈……！", "helpless_2", [ftk("thigh", 12, 0.08)]),
+        au(N, "（屁股上的手隔着裙子，像揉面团一样一下下揉捏——然后忽然五根手指一起抓挠起来）", None,
+           [ftk("butt", 18, 0.07)], 3.6),
+        au(BLUE, "……哈哈哈……揉、揉完又抓……犯、犯规……哈哈哈哈……！", "helpless_2", [ftk("butt", 12, 0.08)]),
+        au(N, "（有一只手专门停在大腿和屁股交界的那道弧线上，用指甲尖，轻轻地、来来回回地刮）", None,
+           [ftk("butt", 10, 0.1), ftk("thigh", 10, 0.1)], 3.6),
+        au(BLUE, "……那、那条线……不、不行不行……哈哈哈哈哈……！", "helpless_2", [A("shake", time=0.5), A("crack")]),
         au(BLUE, "……好、好痒……好痒啦……哈哈哈哈……！", "helpless_2", [ftk("thigh", 14, 0.08), ftk("butt", 14, 0.09)]),
         au(BLUE, "……我、我认输……认输嘛……哈哈哈哈……！", "helpless_2", [ftk("armpit", 10, 0.1)]),
         au(BOSS, "……再……来……一……次……？", None, [ftk("thigh", 12, 0.09)]),
@@ -1697,7 +1714,8 @@ def finale(pants):
     steps += fburst("……哈哈……第、第三次……要、要来了……哈哈哈……！", "……哈……哈……——！", "……第……三……次……",
                     ["……嗯……舒服……", "……哈哈哈哈……！刚放完……最、最敏感……哈哈哈哈哈……！"])
     steps += [
-        au(N, "（刚放完魔力的身体敏感得不得了。手指一碰，魔力就又涌了上来）", None, [ftk("thigh", 16, 0.07), ftk("butt", 16, 0.08)], 3.2),
+        au(N, "（刚放完魔力的身体敏感得不得了。腿根被揉一下、屁股被捏一下，魔力就又涌了上来）", None,
+           [ftk("thigh", 16, 0.07), ftk("butt", 16, 0.08)], 3.2),
         au(BLUE, "……哈哈……又、又满了……连、连着……不行……哈哈哈……！", "helpless_2", [A("shake", time=0.6)]),
         {"actions": [A("burst", who="princess", hold=5.0), A("crack", long=True, volume=-1.0)], "wait": 1.4},
         au(BLUE, "……呼……哈……哈……", None, [A("bubble", who="princess", kind="shy"), A("voice", state="")], 3.0),
@@ -1733,7 +1751,7 @@ if _old_exit.exists():
 
 # —— 回小屋：粉色公主冰封着睡在床上（闭着眼），床尾的小怪在挠她露出来的脚心；蓝色公主回来、赶走它们、解冻；粉色公主瞬间笑醒
 DOOR_IN = [7, 9.6]
-# 镜头的位置都往下偏一格半：下面三分之一是对话框，床和床尾要露在对话框上方
+# 镜头对准人物：开场是床上的粉色公主，进门时是蓝色公主，走到床边后是两个人中间
 BED_FOOT = [[2.4, 5.7], [3.4, 5.9], [4.3, 5.6], [2.0, 5.2]]
 RET_MON = [("m1", "squirrel"), ("m2", "hedgehog"), ("m3", "caterpillar"), ("m4", "fairy")]
 
@@ -1746,7 +1764,7 @@ def shelter_return(pants):
     setup = [A("lie", who="princess", at=BED_AT, blanket="old_bed_blanket", sleep=True),
              A("spawn", id="ice", kind="prop:ice_bed", at=BED_AT),
              A("move", who=BLUE_NPC, to=DOOR_IN), A("face", who=BLUE_NPC, dir="up"),
-             A("camera", to=[4, 6.5], zoom=1.5, time=0.1)]
+             A("camera", to=[3.2, 4.6], zoom=1.5, time=0.1)]
     for (mid, kind), at in zip(RET_MON, BED_FOOT):
         setup.append(A("spawn", id=mid, kind="monster:" + kind, at=at, dir="up"))
     steps = [
@@ -1757,7 +1775,7 @@ def shelter_return(pants):
         au(N, "（几只小怪围在床尾，正一下一下地挠着冰外面露出来的脚心）", None,
            [A("hop", who="m1"), A("hop", who="m3"), ptk("m3", 8, 0.2, "crawl")], 3.2),
         au(P, "……嘻……别……饼干……不、不要挠……嘿嘿嘿……", "shy", [ptk("m4", 8, 0.2), A("shake", time=0.3)]),
-        {"actions": [A("sfx", sound="door"), A("camera", to=[5.5, 7.8], zoom=1.35, time=0.8)], "wait": 0.6},
+        {"actions": [A("sfx", sound="door"), A("camera", to=[7, 8.0], zoom=1.35, time=0.8)], "wait": 0.6},
         {"actions": [A("move", who=BLUE_NPC, to=[7, 7.6], speed=18)], "wait": 2.0},
         au(N, "（门开了。蓝色公主扶着门框，慢慢地走了进来。脚步有点晃）", sec=3.0),
     ]
@@ -1784,7 +1802,7 @@ def shelter_return(pants):
         {"actions": [A("move", who=mid, to=[7, 10.5], speed=90) for mid, _k in RET_MON], "wait": 1.2},
         {"actions": [A("despawn", who=mid) for mid, _k in RET_MON] + [A("sfx", sound="door_close", volume=-4.0)], "wait": 0.4},
         au(N, "（被冻得一跳的小怪们，吱吱叫着，一溜烟逃出了门）", sec=2.8),
-        {"actions": [A("move", who=BLUE_NPC, to=[4.2, 5.6], speed=26), A("camera", to=[3.5, 6.5], zoom=1.6, time=1.2)], "wait": 1.6},
+        {"actions": [A("move", who=BLUE_NPC, to=[4.2, 5.6], speed=26), A("camera", to=[3.6, 4.9], zoom=1.6, time=1.2)], "wait": 1.6},
         {"actions": [A("face", who=BLUE_NPC, dir="up")], "wait": 0.3},
         au(BLUE, "……没事了。", "sad"),
         au(BLUE, "……我回来了。", "sad"),
@@ -1829,7 +1847,9 @@ def shelter_return(pants):
         line(BLUE, "……嗯。……一起。", "shy"),
         {"actions": [A("camera", reset=True, time=0.6), A("set_flag", flag="f8_returned")], "wait": 0.6},
     ]
-    return cut("第八层：回到小屋", steps)
+    cs = cut("第八层：回到小屋", steps)
+    cs["free_camera"] = True     # 小屋很小：镜头不卡边界，人物在画面正中间
+    return cs
 
 
 for rid, pants in {"f8_shelter_return": False, "f8_shelter_return_pants": True}.items():

@@ -527,6 +527,13 @@ func _refresh_status() -> void:
 		return
 	status_index = clampi(status_index, 0, members.size() - 1)
 	var p := members[status_index]
+	# 部位表、阶段说明等按这个人自己的数据档案读（不然切到蓝色公主还是粉色公主的部位敏感度）
+	Characters.scope(p.character_id)
+	_status_lines(p, members)
+	Characters.unscope()
+
+
+func _status_lines(p: PlayableCharacter, members: Array[PlayableCharacter]) -> void:
 	if members.size() > 1:
 		_line("◀ %s ▶　（← / → 切换）" % p.display_name(), GOLD)
 	var passives := p.buffs.keys().filter(func(id): return (p.buffs[id] as Buff).is_permanent() and id != "fatigue_scar")
@@ -563,7 +570,8 @@ func _refresh_status() -> void:
 			TrainingStats.melee_bonus() * 100.0], Color(0.6, 0.9, 1.0))
 	if p.is_magic_unlocked():
 		var cd := p.magic_cooldown_left()
-		_line("星光爆发：" + ("冷却中 %.1f 秒" % cd if cd > 0.0 else "可以使用（按住 L 吟唱）"), GOLD)
+		var spell := "冰晶结界" if p.character_id == "blue" else "星光爆发"
+		_line(spell + "：" + ("冷却中 %.1f 秒" % cd if cd > 0.0 else "可以使用（按住 L 吟唱）"), GOLD)
 	var any := not passives.is_empty()
 	for id in p.buffs:
 		if id in passives:
