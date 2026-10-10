@@ -167,7 +167,7 @@ func _maze2_shots() -> void:
 
 # ------------------------------------------------------------------ 千手过场
 func _finale_shots() -> void:
-	GameState.set_flag("f8m_ms_total_8")
+	GameState.set_flag("f8m_pants")
 	await _goto(3)
 	var dir := MazeDirector.instance
 	_place(dir.blue, dir._exit_at + Vector2(0, 20))

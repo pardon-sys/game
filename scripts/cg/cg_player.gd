@@ -225,6 +225,8 @@ func _build() -> void:
 	voice2 = AudioStreamPlayer.new()
 	voice2.volume_db = -11.0
 	add_child(voice2)
+	Audio.register_laugh_player(voice)
+	Audio.register_laugh_player(voice2)
 
 
 # ------------------------------------------------------------------ 数据

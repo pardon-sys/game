@@ -21,7 +21,8 @@ extends CanvasLayer
 ##   cg（key = data/cgs.json 的 portraits 键；空 = 恢复）：对话框换成大立绘   hint（text）：屏幕中间的黄字
 ##   hop（who）：原地跳一下（被吓到、被冻得一跳）
 ##   item（id）：拿到道具   buff（who, id, on）：加 / 去掉状态   crack（long, fade 秒）：蓝色公主憋不住的笑（fade = 淡出）
-## 过场数据里 end_dark = true：结束时不揭开黑幕（接着换关卡、下一段过场从黑里亮起来）。
+## 过场数据里 end_dark = true：结束时不揭开黑幕（接着换关卡、下一段过场从黑里亮起来）；
+## free_camera = true：镜头不受地图边界限制（小房间里也能把人物放在画面中间）。
 
 signal started(id: String)
 signal finished(id: String)
@@ -32,6 +33,8 @@ const ACTIONS := ["move", "face", "pose", "camera", "shake", "fade_out", "fade_i
 	"spawn", "despawn", "carry", "wait", "sfx", "voice", "set_flag", "notify", "chapter_end", "hold", "goto", "lie",
 	"cover", "uncover", "burst", "cg", "hint", "item", "buff", "crack", "hop"]
 const BUBBLE_TEXT := {"surprise": "！", "question": "？", "laugh": "哈哈哈", "dots": "……", "sad": "呜……", "angry": "哼！", "shy": "///", "happy": "♪"}
+## free_camera 过场开始前镜头的边界（结束时恢复）
+var _cam_limits: Array = []
 ## 过场里换上了大立绘（cg 动作 / burst）：结束时恢复。
 var _cg_override := false
 var _burst_t := 0
@@ -228,6 +231,14 @@ func play_data(id: String, cs: Dictionary) -> void:
 	if is_instance_valid(GameState.player) and GameState.player.camera:
 		_cam_base = GameState.player.camera.position
 		_cam_zoom = GameState.player.camera.zoom
+		# free_camera：这段过场里镜头不受地图边界限制（小房间里也能把人物放在画面正中间），结束时恢复
+		if bool(cs.get("free_camera", false)):
+			var cam := GameState.player.camera
+			_cam_limits = [cam.limit_left, cam.limit_top, cam.limit_right, cam.limit_bottom]
+			cam.limit_left = -10000000
+			cam.limit_top = -10000000
+			cam.limit_right = 10000000
+			cam.limit_bottom = 10000000
 	var tw := create_tween().set_parallel()
 	tw.tween_property(top_bar, "position:y", 0.0, 0.4)
 	tw.tween_property(bottom_bar, "position:y", 270.0 - BAR_H, 0.4)
@@ -294,6 +305,20 @@ func _finish(id: String, cs: Dictionary) -> void:
 	GameState.set_flag("cutscene_seen_" + id)
 	_reset_camera(0.3)
 	var keep_screen := chapter_screen.visible
+	if not _cam_limits.is_empty():
+		var lim := _cam_limits
+		_cam_limits = []
+		var pl := GameState.player
+		if is_instance_valid(pl) and pl.camera:
+			# 镜头先回到人物身上再恢复边界（不然边界一下子卡回来会跳）
+			var wr: WeakRef = weakref(pl.camera)
+			get_tree().create_timer(0.35).timeout.connect(func():
+				var c := wr.get_ref() as Camera2D
+				if c:
+					c.limit_left = lim[0]
+					c.limit_top = lim[1]
+					c.limit_right = lim[2]
+					c.limit_bottom = lim[3])
 	if _cg_override:
 		_cg_override = false
 		Dialogue.set_portrait_override(null)

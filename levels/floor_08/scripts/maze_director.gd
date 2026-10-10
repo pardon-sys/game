@@ -11,14 +11,15 @@ extends Node2D
 ##   笑倒：迷宫笑倒小剧场（f8_maze_defeat_1 / 2 轮流）→ 回到上一盏亮着的灯，手清空。
 ##   换段：身上的手和冷光记在 GameState.vars（f8m_hands / f8m_light），下一段接着用。
 ##   第五轮：身上的小手（BodyHands）、憋笑键（HoldLaugh）、大量手提示（HandAlarm）、黑暗更怕痒（DarkSense）；
-##          出口：千手过场 f8_maze_finale（迷宫里身上超过 8 只手 → 千手痒痒裤）→ 回小屋 f8_shelter_return。
+##          出口：千手过场 f8_maze_finale（迷宫里身上同时有 4 只手过 → 千手痒痒裤）→ 回小屋 f8_shelter_return。
 
 const HAND_SCRIPT := preload("res://levels/floor_08/scripts/maze_hand.gd")
 ## 每段：同时最多几只紫手、刷新间隔（秒，平静时）
+## 第六轮：手更多、刷得更快
 const SECTION := {
-	1: {"cap": 6, "gap": 7.0},
-	2: {"cap": 9, "gap": 5.5},
-	3: {"cap": 12, "gap": 4.5},
+	1: {"cap": 8, "gap": 5.5},
+	2: {"cap": 12, "gap": 4.5},
+	3: {"cap": 16, "gap": 3.5},
 }
 const SPAWN_MIN := 110.0
 const SPAWN_MAX := 260.0
@@ -536,7 +537,14 @@ func cover_zone(zone: String) -> bool:
 	return true
 
 
-func _on_hands_changed(zone: String, n: int, _total: int) -> void:
+## 迷宫里身上同时有这么多只手过 → 出口过场后得到千手痒痒裤（剧情标记 PANTS_FLAG）
+const PANTS_HANDS := 4
+const PANTS_FLAG := "f8m_pants"
+
+
+func _on_hands_changed(zone: String, n: int, total: int) -> void:
+	if total >= PANTS_HANDS and not GameState.has_flag(PANTS_FLAG):
+		GameState.set_flag(PANTS_FLAG)
 	Dialogue.portrait_fx.cover_hands = cover.hands.duplicate()
 	GameState.vars["f8m_hands"] = cover.hands.duplicate()
 	if zone == "" or n <= 0:
@@ -688,9 +696,9 @@ func _run_ending() -> void:
 	_busy = false
 
 
-## 出口过场用哪一版：迷宫里身上超过 8 只手过（里程碑 total_8）→ 千手痒痒裤的那一版。
+## 出口过场用哪一版：迷宫里身上同时有 PANTS_HANDS 只手过 → 千手痒痒裤的那一版。
 static func finale_id() -> String:
-	return "f8_maze_finale_pants" if GameState.has_flag("f8m_ms_total_8") else "f8_maze_finale"
+	return "f8_maze_finale_pants" if GameState.has_flag(PANTS_FLAG) else "f8_maze_finale"
 
 
 ## 回小屋：主角换回粉色公主（蓝色公主之后跟着她），换关卡；迷宫带的手 / 冷光不再带着走。

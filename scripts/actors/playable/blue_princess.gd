@@ -19,11 +19,19 @@ extends Princess
 const FOLLOW_WARP := 180.0
 
 var talking := false
-## 千手痒痒裤（状态 thousand_pants）：每 PANTS_TICK 秒轻轻挠一下大腿 / 屁股（来源键 thousand_pants）
+## 千手痒痒裤（状态 thousand_pants）：每 PANTS_TICK 秒发作一下（来源键 thousand_pants），每次随机一种手法，
+## 挠对应的部位、说对应的台词（maze_lines.json 的 pants_<手法>）：
+##   knead 揉腿根 / climb 沿大腿内侧往上爬 / pinch 轮流捏屁股 / scrape 大腿和屁股交界处轻刮
+## 她是操控的角色：台词显示在立绘旁；跟着走时：头顶气泡（至少隔 PANTS_BUBBLE_GAP 秒一次，不刷屏）。
 const PANTS_TICK := 6.0
 const PANTS_TICKLE := 1.5
+const PANTS_BUBBLE_GAP := 14.0
+const PANTS_WAYS := {"knead": "thigh", "climb": "thigh", "pinch": "butt", "scrape": "butt"}
 var _pants_t := PANTS_TICK
 var _pants_src: Node2D
+var _pants_bubble_t := 0.0
+## 最近一次发作的手法（测试用）
+var pants_way := ""
 
 
 func _setup() -> void:
@@ -76,15 +84,32 @@ func _process(delta: float) -> void:
 	if not on or not is_alive() or GameState.in_dialogue or GameState.in_cutscene or CG.is_busy():
 		return
 	_pants_t -= delta
+	_pants_bubble_t = maxf(0.0, _pants_bubble_t - delta)
 	if _pants_t <= 0.0:
 		_pants_t = PANTS_TICK * randf_range(0.8, 1.2)
-		if _pants_src == null:
-			_pants_src = HandCover.Source.new()
-			_pants_src.reaction_key = "thousand_pants"
-			add_child(_pants_src)
-		var h := HitData.make_tickle(_pants_src, PANTS_TICKLE)
-		h.zone = "thigh" if randf() < 0.6 else "butt"
-		receive_hit(h)
+		pants_flare()
+
+
+## 痒痒裤发作一下：随机一种手法，挠对应的部位，说这种手法的台词。返回手法。
+func pants_flare(way := "") -> String:
+	if way == "":
+		way = PANTS_WAYS.keys().pick_random()
+	pants_way = way
+	if _pants_src == null:
+		_pants_src = HandCover.Source.new()
+		_pants_src.reaction_key = "thousand_pants"
+		add_child(_pants_src)
+	var h := HitData.make_tickle(_pants_src, PANTS_TICKLE)
+	h.zone = str(PANTS_WAYS.get(way, "thigh"))
+	receive_hit(h)
+	var line := MazeLines.pick("pants_" + way)
+	if line != "":
+		if is_controlled():
+			GameState.princess_reacted.emit(line, 2.4)
+		elif _pants_bubble_t <= 0.0:
+			_pants_bubble_t = PANTS_BUBBLE_GAP
+			SpeechBubble.say(self, line, 28.0)
+	return way
 
 
 ## 千手痒痒裤让魔法失败：魔力散掉的一瞬间，裤子里的手指一起动起来——她憋不住大笑（憋不住的笑声 + 台词 + 闷笑 +15）。
