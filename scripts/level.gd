@@ -68,10 +68,14 @@ func apply_camera_limits(player: PlayableCharacter) -> void:
 	var rect := walls.get_used_rect()
 	var ts := walls.tile_set.tile_size
 	var cam := player.camera
-	cam.limit_left = rect.position.x * ts.x
-	cam.limit_top = rect.position.y * ts.y
-	cam.limit_right = rect.end.x * ts.x
-	cam.limit_bottom = rect.end.y * ts.y
+	# 透视倾斜：画面底部只看得到中间一段，镜头贴着地图边时主角会跑出画面——边界往外放宽一个画面
+	var margin := Vector2.ZERO
+	if style == "2.5d":
+		margin = get_viewport().get_visible_rect().size / cam.zoom
+	cam.limit_left = int(rect.position.x * ts.x - margin.x)
+	cam.limit_top = int(rect.position.y * ts.y - margin.y)
+	cam.limit_right = int(rect.end.x * ts.x + margin.x)
+	cam.limit_bottom = int(rect.end.y * ts.y + margin.y)
 	cam.reset_smoothing()
 
 
@@ -126,6 +130,9 @@ func _on_dialogue_finished(id: String) -> void:
 
 # ------------------------------------------------------------------ 2.5D 楼层
 func _setup_25d() -> void:
+	# 透视倾斜：先算好人物的纵向补偿，再给人物套光照材质
+	var pv := PerspectiveView.attach(self)
+	LitSprite.upright = pv.upright_factor()
 	LitSprite.apply_actors(self)
 	get_tree().node_added.connect(_on_node_added_25d)
 	_attach_carry_light(GameState.player)
@@ -148,6 +155,25 @@ func _attach_carry_light(p: Node) -> void:
 			l.queue_free()
 	var cl := CarryLight.attach(p as Node2D, light_drain)
 	cl.level = keep if cl.level >= 1.0 else cl.level
+	_lift_camera(p)
+
+
+## 透视倾斜时镜头往上抬：主角显示在画面中下方（PerspectiveView.camera_lift）。
+const CAMERA_BASE := Vector2(0, -12)
+
+
+func _lift_camera(p: Node) -> void:
+	var pv := PerspectiveView.of(self)
+	var cam: Camera2D = p.get("camera") if p else null
+	if pv == null or cam == null:
+		return
+	cam.position = CAMERA_BASE - Vector2(0, pv.camera_lift(get_viewport().get_visible_rect().size.y / cam.zoom.y))
+	cam.reset_smoothing()
+
+
+func _exit_tree() -> void:
+	if style == "2.5d":
+		LitSprite.upright = 1.0
 
 
 func carry_light() -> CarryLight:

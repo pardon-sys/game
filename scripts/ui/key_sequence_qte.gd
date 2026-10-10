@@ -3,7 +3,7 @@ extends Node2D
 ## 头顶的按键序列 QTE（可复用；第八层夜迷宫的紫手靠近时弹出）：
 ##   KeySequenceQTE.start(目标角色, 按键个数, 限时, 提示晚出现的秒数) → await 它的 finished(成功)
 ##   一排按键（J / K / L / U / I / O 随机），按顺序按：按对一个亮一个；按错一个或超时就失败。下面一条限时条。
-##   期间角色只能移动（PlayerInputController.actions_locked），别的动作不触发。
+##   期间角色不能移动、别的动作也不触发（PlayerInputController.movement_locked / actions_locked）；结束或被提前释放时都会解开。
 ## delay：冷光很暗时提示晚一点才出现（这段时间也算在限时里）。
 
 signal finished(ok: bool)
@@ -46,13 +46,22 @@ func _ready() -> void:
 	z_index = 20
 	_font = ThemeDB.fallback_font
 	PlayerInputController.actions_locked = true
+	PlayerInputController.movement_locked = true
+	if target is CharacterBody2D:
+		(target as CharacterBody2D).velocity = Vector2.ZERO
 	Audio.play("chime", -6.0, 0.0, 1.4)
 
 
 func _exit_tree() -> void:
 	if current == self:
 		current = null
-		PlayerInputController.actions_locked = false
+	if not _done:
+		_unlock()
+
+
+static func _unlock() -> void:
+	PlayerInputController.actions_locked = false
+	PlayerInputController.movement_locked = false
 
 
 ## 当前要按的键（测试用）。
@@ -102,7 +111,7 @@ func _finish(ok: bool) -> void:
 	if _done:
 		return
 	_done = true
-	PlayerInputController.actions_locked = false
+	_unlock()
 	Audio.play("chime" if ok else "fizzle", -6.0, 0.0, 1.6 if ok else 1.0)
 	finished.emit(ok)
 	var tw := create_tween()

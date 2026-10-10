@@ -6,9 +6,13 @@ extends CharacterController
 static var wasd_only := false
 ## actions_locked：只能移动，别的动作（攻击 / 魔法 / 冲刺 / 交互……）都不算按下——头顶的 QTE（J K L U I O）期间用。
 static var actions_locked := false
+## movement_locked：也不能移动（头顶的 QTE 期间：被紫手盯住了，站着按键）。
+static var movement_locked := false
 
 
 func get_move_vector() -> Vector2:
+	if movement_locked:
+		return Vector2.ZERO
 	if wasd_only:
 		var v := Vector2(float(Input.is_physical_key_pressed(KEY_D)) - float(Input.is_physical_key_pressed(KEY_A)),
 			float(Input.is_physical_key_pressed(KEY_S)) - float(Input.is_physical_key_pressed(KEY_W)))

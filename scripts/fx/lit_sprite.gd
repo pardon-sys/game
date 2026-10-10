@@ -6,6 +6,8 @@ extends RefCounted
 ## 2.5D 楼层的关卡（scripts/level.gd）进场时对所有角色调 apply_actors，之后新进来的角色在 node_added 里再套。
 
 const SHADER := preload("res://shaders/lit_sprite.gdshader")
+## 透视倾斜时人物纵向拉回来的倍数（PerspectiveView 挂上时设置；1 = 不拉）
+static var upright := 1.0
 
 
 static func apply(root: Node) -> void:
@@ -22,6 +24,8 @@ static func apply(root: Node) -> void:
 		if old:
 			mat.set_shader_parameter("flash", old.get_shader_parameter("flash"))
 			mat.set_shader_parameter("flash_color", old.get_shader_parameter("flash_color"))
+		mat.set_shader_parameter("upright", upright)
+		mat.set_shader_parameter("feet_y", sp.get_rect().end.y)
 		sp.material = mat
 		sp.set_meta("lit", true)
 

@@ -1,6 +1,6 @@
 extends Node
 ## 第八层夜迷宫截图（开发用）：Godot --path . res://tests/capture_maze.tscn → tools/.cache/shots/maze_*.png
-## 2.5D 光照、紫手 + 头顶 QTE、立绘上盖着的手、冰封的粉色公主（睡觉过场）；月光镜光带、新怪物、千手的影子。
+## 冰封在床上的粉色公主（睡觉过场）、2.5D 透视 + 高墙（墙前 / 墙后）、活墙、紫手 + 头顶 QTE、立绘上盖着的手；月光镜光带、新怪物、千手的影子。
 
 const OUT := "res://tools/.cache/shots/"
 
@@ -14,14 +14,63 @@ func _ready() -> void:
 	var main: Node = load("res://scenes/main.tscn").instantiate()
 	add_child(main)
 	await _wait(1.0)
-	for f in ["f7_argue_done", "f7_pink_ran", "f7_blue_awake", "magic_unlocked", "intro_blue_magic", "f8_done", "blue_is_hero",
-			"intro_done_f8_maze_intro"]:
+	for f in ["f7_argue_done", "f7_pink_ran", "f7_blue_awake", "magic_unlocked", "intro_blue_magic", "f8_done",
+			"intro_done_f8_shelter_intro"]:
 		GameState.set_flag(f)
+	# 小房间：睡觉过场里冰块盖上床的那一刻
+	await main.change_level(Floors.scene("floor_08_shelter"))
+	await _wait(1.0)
+	Cutscene.play("f8_shelter_sleep")
+	var g := 0
+	while not Cutscene.spawned.has("ice") and g < 400:
+		if Dialogue.is_active():
+			Dialogue.advance()
+			Dialogue.advance()
+		await _wait(0.05)
+		g += 1
+	await _wait(0.6)
+	await _shot("bed")
+	for f in ["blue_is_hero", "intro_done_f8_maze_intro"]:
+		GameState.set_flag(f)
+	while Cutscene.is_playing() and g < 1200:
+		_finish()
+		await _wait(0.05)
+		g += 1
 	await main.change_level(Floors.scene("floor_08_maze_1"))
 	await _wait(1.0)
 	_finish()
 	await _wait(1.0)
 	await _shot("lit")
+	# 高墙：找一段上下都是地面的墙，站在墙前 / 墙后各拍一张
+	var walls: TileMapLayer = main.level.get_node("Walls")
+	var wc := Vector2i(-1, -1)
+	for c in walls.get_used_cells():
+		if GridPath.walkable(main.level, c + Vector2i(0, -1)) and GridPath.walkable(main.level, c + Vector2i(0, 1)) \
+				and walls.get_cell_source_id(c + Vector2i(1, 0)) != -1 and c.y > 6:
+			wc = c
+			break
+	var hero := GameState.player
+	hero.global_position = Vector2(wc.x * 16 + 8, (wc.y + 1) * 16 + 14)
+	hero.camera.reset_smoothing()
+	await _wait(0.5)
+	await _shot("wall_front")
+	hero.global_position = Vector2(wc.x * 16 + 8, (wc.y - 1) * 16 + 12)
+	hero.camera.reset_smoothing()
+	await _wait(0.5)
+	await _shot("wall_behind")
+	# 活墙：站在一面升起的活墙旁边，心跳前发亮
+	var lw: LivingWall = null
+	for n in get_tree().get_nodes_in_group("living_wall"):
+		if (n as LivingWall).up:
+			lw = n
+	if lw:
+		hero.global_position = lw.global_position + Vector2(0, 30)
+		hero.camera.reset_smoothing()
+		MazeDirector.instance._warn_living_walls(true)
+		await _wait(0.5)
+		await _shot("living_wall")
+		MazeDirector.instance._warn_living_walls(false)
+		hero.global_position = Vector2(wc.x * 16 + 8, (wc.y + 1) * 16 + 14)
 	var dir := MazeDirector.instance
 	var blue := GameState.player
 	blue.global_position += Vector2(40, -20)
@@ -42,7 +91,7 @@ func _ready() -> void:
 		" in_cutscene=", GameState.in_cutscene, " wide=", Dialogue.is_portrait_wide())
 	await _shot("hands")
 	# 第二段：月光镜转到正确方向，光带照到光开关（先把节点小剧场放完、标成看过，手不带过去）
-	var g := 0
+	g = 0
 	while (CG.is_busy() or Dialogue.is_active()) and g < 600:
 		Dialogue.advance()
 		await _wait(0.05)

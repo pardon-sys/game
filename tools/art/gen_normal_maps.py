@@ -21,7 +21,8 @@ ATLASES = {
     "walls": (ROOT / "assets/generated/walls.png", 0.8, 0.6, 0.18),
     "wall_faces": (ROOT / "assets/generated/wall_faces.png", 1.0, 0.45, 0.22),
 }
-STRENGTH = 2.2
+STRENGTH = 1.1   # 法线强度（第三轮调柔：原来 2.2 太「真实」）
+SPEC_SCALE = 0.5
 
 
 def tile_normals(rgba: np.ndarray, lum_w: float, bevel: float) -> np.ndarray:
@@ -54,7 +55,7 @@ def main():
         alpha = img[..., 3].astype(np.uint8)
         Image.fromarray(np.dstack([nrgb, np.full_like(alpha, 255)]), "RGBA").save(OUT / f"{name}_n.png")
         lum = (img[..., 0] * 0.299 + img[..., 1] * 0.587 + img[..., 2] * 0.114) / 255.0
-        s = (spec * (0.6 + 0.4 * lum) * 255 * (alpha / 255.0)).clip(0, 255).astype(np.uint8)
+        s = (spec * SPEC_SCALE * (0.6 + 0.4 * lum) * 255 * (alpha / 255.0)).clip(0, 255).astype(np.uint8)
         Image.fromarray(np.dstack([s, s, s, np.full_like(s, 255)]), "RGBA").save(OUT / f"{name}_s.png")
         print("法线贴图：", name, w, "x", h)
 

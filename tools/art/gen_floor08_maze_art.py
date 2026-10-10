@@ -11,6 +11,8 @@
   moon_mirror    月光镜         16x24 × 4 帧（镜面朝右 / 下 / 左 / 上）
   hand_gate      千手之门       32x32 × 2 帧（关着：刻着手印 / 开着）
   cradle_bench   摇篮长椅       32x16
+  living_wall    呼吸墙（活墙） 16x32 × 3 帧（上 16 = 墙顶、下 16 = 正面；紫色脉络一明一暗地起伏）
+  living_crack   呼吸墙沉下后的地面裂纹 16x16 × 2 帧（暗 / 心跳前发亮）
 用法：python tools/art/gen_floor08_maze_art.py
 """
 import math
@@ -191,6 +193,44 @@ def cradle_bench():
     return add_outline(img)
 
 
+def living_wall(f):
+    img, d = canvas(16, 32)
+    glow = [0, 1, 2][f]
+    vein = [(120, 60, 160, 255), (160, 80, 200, 255), (205, 120, 240, 255)][glow]
+    # 墙顶：暗紫色的肉质顶面，中间一道脉络
+    d.rectangle((0, 0, 15, 15), fill=(52, 30, 66, 255))
+    d.rectangle((1, 1, 14, 3), fill=(78, 48, 96, 255))
+    d.line((3, 6, 7, 9), fill=vein)
+    d.line((7, 9, 12, 7), fill=vein)
+    d.line((7, 9, 8, 13), fill=vein)
+    # 正面：深一点，几条往下分叉的脉络，底部一圈暗边
+    d.rectangle((0, 16, 15, 31), fill=(40, 22, 52, 255))
+    d.line((0, 16, 15, 16), fill=(95, 60, 118, 255))
+    for x0, x1 in ((3, 2), (8, 9), (12, 13)):
+        d.line((x0, 17, x1, 24), fill=vein)
+        d.line((x1, 24, x1 - 1, 29), fill=vein)
+    d.line((8, 21, 11, 23), fill=vein)
+    d.rectangle((0, 30, 15, 31), fill=(25, 12, 34, 255))
+    if glow == 2:
+        for (x, y) in ((8, 9), (2, 24), (9, 24), (13, 24)):
+            d.point((x, y), fill=(255, 210, 255, 255))
+    return img
+
+
+def living_crack(f):
+    img, d = canvas(16, 16)
+    col = (150, 80, 200, 170) if f == 0 else (230, 150, 255, 235)
+    d.line((1, 8, 5, 7), fill=col)
+    d.line((5, 7, 8, 9), fill=col)
+    d.line((8, 9, 14, 6), fill=col)
+    d.line((5, 7, 6, 3), fill=col)
+    d.line((8, 9, 9, 13), fill=col)
+    d.line((11, 8, 12, 12), fill=col)
+    if f == 1:
+        d.point((8, 9), fill=(255, 230, 255, 255))
+    return img
+
+
 def main():
     OUT.mkdir(parents=True, exist_ok=True)
     sheets = {
@@ -205,6 +245,8 @@ def main():
         "moon_mirror": strip([moon_mirror(i) for i in range(4)]),
         "hand_gate": strip([hand_gate(0), hand_gate(1)]),
         "cradle_bench": cradle_bench(),
+        "living_wall": strip([living_wall(i) for i in range(3)]),
+        "living_crack": strip([living_crack(0), living_crack(1)]),
     }
     for name, img in sheets.items():
         img.save(OUT / f"{name}.png")
