@@ -216,9 +216,11 @@ func dir4() -> Vector2:
 
 
 func dir_name() -> String:
-	if absf(facing.x) > absf(facing.y):
+	# 等距楼层按屏幕上的方向选帧（转了视角也对）；平常 screen_dir 原样返回
+	var f := IsoView.screen_dir(facing)
+	if absf(f.x) > absf(f.y):
 		return "side"
-	return "up" if facing.y < 0 else "down"
+	return "up" if f.y < 0 else "down"
 
 
 ## 找最近的、活着的敌对角色。

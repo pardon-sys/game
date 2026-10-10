@@ -34,6 +34,20 @@ func _setup() -> void:
 	sprite.frame = 1
 	sprite.offset = Vector2(0, -10)
 	add_child(sprite)
+	if IsoView.enabled:
+		_iso_plane.call_deferred()
+
+
+## 等距：帘子横着挂在门洞里——走廊沿 x 方向时帘子沿 y 方向立着，反过来也一样。
+func _iso_plane() -> void:
+	var lv: Node = get_parent()
+	while lv and not lv.has_node("Walls"):
+		lv = lv.get_parent()
+	if lv == null:
+		return
+	var c := GridPath.cell(global_position)
+	var along_x := GridPath.walkable(lv, c + Vector2i.LEFT) and GridPath.walkable(lv, c + Vector2i.RIGHT)
+	IsoDirectional.add_to(sprite, "plane", Vector2.DOWN if along_x else Vector2.RIGHT)
 
 
 func _apply_effect(target: Node) -> bool:

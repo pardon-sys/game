@@ -33,6 +33,11 @@ func _ready() -> void:
 	sprite.scale = Vector2(0.5, 0.75)
 	sprite.offset = Vector2(0, -16)
 	add_child(sprite)
+	if IsoView.enabled:
+		# 等距楼层：紫色的方块栅栏门（和墙一样高）
+		var t := IsoTheme.for_node(self)
+		t.dress_cube(sprite, t.gate, t.gate_normal, 1)
+		IsoView.anchor(sprite, Vector2(0, -8))
 	var it := Interactable.new()
 	it.prompt_offset = Vector2(0, -30)
 	var ishape := CollisionShape2D.new()
@@ -65,6 +70,11 @@ func set_open(value: bool) -> void:
 	if not value or opened:
 		return
 	opened = true
-	sprite.frame = 1
+	if IsoView.enabled:
+		var tw := create_tween().set_parallel()
+		tw.tween_property(sprite, "offset:y", sprite.offset.y + 12.0, 0.4)
+		tw.tween_property(sprite, "modulate:a", 0.0, 0.4)
+	else:
+		sprite.frame = 1
 	(get_node("Shape") as CollisionShape2D).set_deferred("disabled", true)
 	Audio.play("door", -4.0, 0.0, 0.8)

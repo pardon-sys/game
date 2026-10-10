@@ -1,6 +1,6 @@
 """迷宫生成器（可复用）：按种子生成「真正的迷宫」格子图，给楼层生成脚本（如 gen_floor08.py 的夜迷宫）摆东西用。
 
-结构：迷宫单元 = 2x2 的地面 + 1 格墙（走廊两格宽）。
+结构：迷宫单元 = (step−1)x(step−1) 的地面 + 1 格墙。step = 2（默认）：走廊 1 格宽；step = 3：走廊 2 格宽。
   1. 随机深度优先在单元格上挖出一棵走廊树（岔路、死路多）；
   2. 再随机打通一些墙做回环（loops 比例）；
   3. 挖几个小房间（几个单元连成一片）；
@@ -10,10 +10,12 @@
 
 用法（在别的生成脚本里）：
     from maze_gen import Maze
-    mz = Maze(cols, rows, seed=1, loops=0.12, rooms=3, breathing=6)
-    mz.grid                    # [[ '#' / '.' ]]，大小 (rows*3+1) x (cols*3+1)
+    mz = Maze(cols, rows, seed=1, loops=0.12, rooms=3, breathing=6, step=2)
+    mz.grid                    # [[ '#' / '.' ]]，大小 (rows*step+1) x (cols*step+1)
     mz.start, mz.exit          # 起点 / 出口单元的左上地面格 (x, y)
-    mz.cell_floor(c)           # 单元 c 的 4 个地面格
+    mz.cell_floor(c)           # 单元 c 的地面格（step=2 时 1 格）
+    mz.tile(c, i)              # 单元 c 的第 i 个地面格（不够就取最后一个）
+    mz.cell_of((x, y))         # 地面格所在的单元
     mz.dead_ends               # 死路单元（离主路越远越靠前）
     mz.main_path               # 起点到出口的单元路线
     mz.rooms                   # [[单元, ...], ...]
@@ -23,14 +25,12 @@
 import random
 from collections import deque
 
-STEP = 3
-
-
 class Maze:
-    def __init__(self, cols, rows, seed=1, loops=0.12, rooms=3, breathing=6):
+    def __init__(self, cols, rows, seed=1, loops=0.12, rooms=3, breathing=6, step=2):
         self.cols, self.rows = cols, rows
+        self.step = step
         self.rng = random.Random(seed)
-        self.w, self.h = cols * STEP + 1, rows * STEP + 1
+        self.w, self.h = cols * step + 1, rows * step + 1
         self.grid = [["#"] * self.w for _ in range(self.h)]
         self.links = set()   # 打通的单元对 frozenset({c1, c2})
         self._carve_tree()
@@ -60,23 +60,32 @@ class Maze:
         return [(cx, cy) for cy in range(self.rows) for cx in range(self.cols)]
 
     def cell_floor(self, c):
-        x0, y0 = c[0] * STEP + 1, c[1] * STEP + 1
-        return [(x0, y0), (x0 + 1, y0), (x0, y0 + 1), (x0 + 1, y0 + 1)]
+        x0, y0 = c[0] * self.step + 1, c[1] * self.step + 1
+        n = self.step - 1
+        return [(x0 + i, y0 + j) for j in range(n) for i in range(n)]
+
+    def tile(self, c, i=0):
+        fl = self.cell_floor(c)
+        return fl[min(i, len(fl) - 1)]
+
+    def cell_of(self, t):
+        return ((t[0] - 1) // self.step, (t[1] - 1) // self.step)
 
     def cell_center(self, c):
         """单元 4 个地面格里靠左上的那个（摆东西用）。"""
         return self.cell_floor(c)[0]
 
     def link_cells(self, a, b):
-        """两个相邻单元之间那段墙（2 格）。"""
+        """两个相邻单元之间那段墙（step−1 格）。"""
         (ax, ay), (bx, by) = a, b
+        n = self.step - 1
         if ay == by:
-            x = max(ax, bx) * STEP
-            y0 = ay * STEP + 1
-            return [(x, y0), (x, y0 + 1)]
-        y = max(ay, by) * STEP
-        x0 = ax * STEP + 1
-        return [(x0, y), (x0 + 1, y)]
+            x = max(ax, bx) * self.step
+            y0 = ay * self.step + 1
+            return [(x, y0 + i) for i in range(n)]
+        y = max(ay, by) * self.step
+        x0 = ax * self.step + 1
+        return [(x0 + i, y) for i in range(n)]
 
     def neighbors(self, c):
         cx, cy = c
@@ -131,7 +140,7 @@ class Maze:
             # 房间内部的墙角也打通（变成一整片）
             for i in range(w - 1):
                 for j in range(h - 1):
-                    x, y = (cx + i + 1) * STEP, (cy + j + 1) * STEP
+                    x, y = (cx + i + 1) * self.step, (cy + j + 1) * self.step
                     self.grid[y][x] = "."
             rooms.append(cells)
         for r in rooms:

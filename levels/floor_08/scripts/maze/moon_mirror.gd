@@ -19,6 +19,7 @@ var beam_end := Vector2.ZERO
 var powered := false
 var _t := 0.0
 var _remove_t := 0.0
+var _dir: IsoDirectional
 
 
 func _ready() -> void:
@@ -28,6 +29,8 @@ func _ready() -> void:
 	sprite.hframes = 4
 	sprite.offset = Vector2(0, -12)
 	add_child(sprite)
+	if IsoView.enabled:
+		_dir = IsoDirectional.add_to(sprite, "dir4", DIRS[facing])
 	var it := Interactable.new()
 	it.prompt_offset = Vector2(0, -28)
 	var shape := CollisionShape2D.new()
@@ -61,7 +64,11 @@ func covers(p: Vector2) -> bool:
 
 
 func _refresh() -> void:
-	sprite.frame = facing
+	if _dir:
+		_dir.facing = DIRS[facing]
+		_dir.refresh()
+	else:
+		sprite.frame = facing
 	powered = false
 	for l in get_tree().get_nodes_in_group("moon_lamp"):
 		if (l as MoonLamp).lit and (l as Node2D).global_position.distance_to(global_position) <= POWER_RANGE:
@@ -100,8 +107,9 @@ func _process(delta: float) -> void:
 func _draw() -> void:
 	if not powered:
 		return
+	# 光源在镜子上方（屏幕方向的高度），光带沿地面走（等距下用 IsoView.offset 换成屏幕偏移）
 	var a := source_point() - global_position
-	var b := beam_end - global_position
+	var b := a + IsoView.offset(beam_end - source_point())
 	var k := 0.75 + 0.25 * sin(_t * 3.0)
 	draw_line(a, b, Color(0.7, 0.85, 1.0, 0.18 * k), HALF_WIDTH * 2.0)
 	draw_line(a, b, Color(0.85, 0.95, 1.0, 0.35 * k), 4.0)

@@ -10,14 +10,23 @@ extends Node2D
 @export var night_ambient := Color(0, 0, 0, 0)
 ## 这一关不能切换操控的角色（[level] 段 no_switch = true；第八层的小房间）
 @export var no_switch := false
-## 画面风格（[level] 段 style）：""（默认）/ "2.5d"（法线贴图图块 + 人物实时光照 + 跟着角色的冷光，第八层的夜迷宫）
+## 画面风格（[level] 段 style）：""（默认）/ "2.5d"（法线贴图图块 + 人物实时光照 + 跟着角色的冷光 + 透视倾斜）/
+##   "iso"（同样的光照，画面换成等距 45° + 方块墙 + Z / X 转镜头：scripts/iso/ 的 IsoView + IsoTerrain；第八层的夜迷宫）
 @export var style := ""
+## 等距楼层的外观主题（assets/iso_themes/<名>.tres）和能不能转镜头
+@export var iso_theme := ""
+@export var iso_rotate := true
 ## 2.5D 楼层：冷光从满到空的秒数（0 = 不消耗）
 @export var light_drain := 0.0
 
 var _day_ambient := Color.WHITE
 
 @onready var walls: TileMapLayer = $Walls
+
+
+func _enter_tree() -> void:
+	# 子节点 _ready 之前就要知道：门、活墙之类在等距楼层换等距贴图
+	IsoView.enabled = style == "iso"
 
 
 func _ready() -> void:
@@ -42,7 +51,7 @@ func _ready() -> void:
 		GameState.pending_spawn = ""
 	if player:
 		apply_camera_limits(player)
-	if style == "2.5d":
+	if style == "2.5d" or style == "iso":
 		_setup_25d()
 	Dialogue.finished.connect(_on_dialogue_finished)
 	if GameState.pending_load > 0:
@@ -69,6 +78,14 @@ func apply_camera_limits(player: PlayableCharacter) -> void:
 	var ts := walls.tile_set.tile_size
 	var cam := player.camera
 	# 透视倾斜：画面底部只看得到中间一段，镜头贴着地图边时主角会跑出画面——边界往外放宽一个画面
+	if style == "iso":
+		# 等距：画面由 IsoView 按投影后的位置放镜头，逻辑上的边界不适用
+		cam.limit_left = -10000000
+		cam.limit_top = -10000000
+		cam.limit_right = 10000000
+		cam.limit_bottom = 10000000
+		cam.reset_smoothing()
+		return
 	var margin := Vector2.ZERO
 	if style == "2.5d":
 		margin = get_viewport().get_visible_rect().size / cam.zoom
@@ -130,9 +147,15 @@ func _on_dialogue_finished(id: String) -> void:
 
 # ------------------------------------------------------------------ 2.5D 楼层
 func _setup_25d() -> void:
-	# 透视倾斜：先算好人物的纵向补偿，再给人物套光照材质
-	var pv := PerspectiveView.attach(self)
-	LitSprite.upright = pv.upright_factor()
+	if style == "iso":
+		# 等距：显示层 + 地形（人物不用纵向补偿）
+		var view := IsoView.attach(self, iso_rotate)
+		IsoTerrain.attach(view, IsoTheme.named(iso_theme))
+		LitSprite.upright = 1.0
+	else:
+		# 透视倾斜：先算好人物的纵向补偿，再给人物套光照材质
+		var pv := PerspectiveView.attach(self)
+		LitSprite.upright = pv.upright_factor()
 	LitSprite.apply_actors(self)
 	get_tree().node_added.connect(_on_node_added_25d)
 	_attach_carry_light(GameState.player)
@@ -172,8 +195,10 @@ func _lift_camera(p: Node) -> void:
 
 
 func _exit_tree() -> void:
-	if style == "2.5d":
+	if style == "2.5d" or style == "iso":
 		LitSprite.upright = 1.0
+	if style == "iso":
+		IsoView.enabled = false
 
 
 func carry_light() -> CarryLight:

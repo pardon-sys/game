@@ -10,9 +10,19 @@ extends StaticBody2D
 @onready var shape: CollisionShape2D = $Shape
 @onready var interactable: Interactable = $Interactable
 
+## 关着 / 开着时图的纵向偏移（等距楼层换成方块栅栏门：开的时候沉进地面）
+var _closed_y := -8.0
+var _open_y := -14.0
+
 
 func _ready() -> void:
 	add_to_group(group_name)
+	if IsoView.enabled:
+		var t := IsoTheme.for_node(self)
+		t.dress_cube(sprite, t.gate, t.gate_normal, 0)
+		IsoView.anchor(sprite, Vector2(0, -8))
+		_closed_y = sprite.offset.y
+		_open_y = _closed_y + 12.0
 	_apply(false)
 
 
@@ -32,7 +42,7 @@ func set_open(value: bool) -> void:
 func _apply(animated: bool) -> void:
 	shape.set_deferred("disabled", is_open)
 	interactable.enabled = not is_open
-	var y := -14.0 if is_open else -8.0
+	var y := _open_y if is_open else _closed_y
 	var a := 0.0 if is_open else 1.0
 	if animated:
 		var tw := create_tween().set_parallel()

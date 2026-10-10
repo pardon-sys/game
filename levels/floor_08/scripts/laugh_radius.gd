@@ -76,9 +76,11 @@ func _process(delta: float) -> void:
 func _draw() -> void:
 	if _shown < 2.0:
 		return
-	# 一圈圈往外扩的波纹
+	# 一圈圈往外扩的波纹（地面上的圆：等距楼层压成椭圆）
+	draw_set_transform(Vector2(0, -6), 0.0, IsoView.ground_scale())
 	for i in 3:
 		var k := fmod(_t * 0.8 + i / 3.0, 1.0)
 		var r := _shown * k
-		draw_arc(Vector2(0, -6), r, 0, TAU, 48, Color(1.0, 0.6, 0.9, 0.35 * (1.0 - k)), 1.5)
-	draw_arc(Vector2(0, -6), _shown, 0, TAU, 64, Color(1.0, 0.55, 0.85, 0.18), 1.0)
+		draw_arc(Vector2.ZERO, r, 0, TAU, 48, Color(1.0, 0.6, 0.9, 0.35 * (1.0 - k)), 1.5)
+	draw_arc(Vector2.ZERO, _shown, 0, TAU, 64, Color(1.0, 0.55, 0.85, 0.18), 1.0)
+	draw_set_transform(Vector2.ZERO)

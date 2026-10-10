@@ -759,17 +759,20 @@ func _trap_cells() -> Dictionary:
 ## 2.5D 楼层没有空气墙：Walls 图层透明，所以每个挡路的格子都要有墙顶图块（WallCaps3D）或者一面活墙（呼吸墙）；
 ## 场上每个静态碰撞体旁边都要有看得见的贴图。
 func _run_air_walls(id: String) -> void:
-	if level.get("style") != "2.5d":
+	var style := str(level.get("style"))
+	if style != "2.5d" and style != "iso":
 		return
 	var walls: TileMapLayer = level.get_node("Walls")
 	var caps := level.get_node_or_null("Entities/WallCaps3D") as TileMapLayer
+	# 等距楼层：墙由 IsoTerrain 画成方块（活墙认领的格子由活墙自己画）
+	var terrain := IsoTerrain.of(level) if style == "iso" else null
 	var living := {}
 	for lw in get_tree().get_nodes_in_group("living_wall"):
 		if level.is_ancestor_of(lw):
 			living[(lw as LivingWall).cell] = lw
 	var bad: Array[Vector2i] = []
 	for c in walls.get_used_cells():
-		var drawn := caps != null and caps.get_cell_source_id(c) != -1
+		var drawn := (caps != null and caps.get_cell_source_id(c) != -1) or (terrain != null and terrain.cubes.has(c))
 		if not drawn and not (living.has(c) and (living[c] as LivingWall).up):
 			bad.append(c)
 	var invisible: Array[String] = []
@@ -786,7 +789,7 @@ func _run_air_walls(id: String) -> void:
 		if not seen and n.get_child_count() > 0:
 			invisible.append(str(n.get_path()).get_file())
 	check("%s：没有空气墙（挡路但没画出来的格子 %d 个 %s；看不见的碰撞体 %s）" % [id, bad.size(), bad.slice(0, 4), invisible.slice(0, 4)],
-		caps != null and bad.is_empty() and invisible.is_empty())
+		(caps != null or terrain != null) and bad.is_empty() and invisible.is_empty())
 
 
 ## 不是陷阱也不是怪物的来源（第八层夜迷宫）：紫手 / 手的节奏由迷宫导演提供；长椅、千手之门按位置，千手的影子按巡逻路线。
@@ -979,7 +982,8 @@ func _missing_monsters(slots: Array, in_range: Callable) -> Array[String]:
 	var total := 0
 	for n in level.find_children("*", "", true, false):
 		var keys: Array[String] = []
-		if n is Monster and in_range.call((n as Node2D).global_position):
+		# 怪物按摆放的位置（出生点）算：会走动的怪（偷灯小鬼去吹灯）测试时可能已经离开了小房间
+		if n is Monster and in_range.call((n as Monster)._home if (n as Monster)._home != Vector2.ZERO else (n as Node2D).global_position):
 			keys.append((n as Monster).stats.reaction_key)
 			# Boss 会召唤的怪物
 			if n is TentacleBoss:

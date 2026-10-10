@@ -185,6 +185,7 @@ var legend := {}
 var stacked := {}
 ## [level] 段：intro（开场对话 id）、ambient（环境光 r,g,b）、night_ambient（夜晚的环境光，剧情标记 night 时用）、no_switch = true（不能切换操控角色）、
 ##   style = 2.5d（法线贴图图块集 dungeon_25d.tres + 很暗的环境光 + 墙上的幽光点；关卡进场时人物套实时光照、操控的角色带冷光）、
+##   style = iso（同样的光照，画面是等距 45° + 方块墙 + 转镜头：scripts/iso/；iso_theme = 主题名、iso_rotate = false 关掉转镜头）、
 ##   light_drain = 秒（2.5D 楼层冷光从满到空的时间，0 = 不消耗）
 var level_meta := {}
 var width := 0
@@ -222,7 +223,8 @@ func build(floor_id: String) -> int:
 	if not parse(Floors.map_path(floor_id)):
 		return 1
 	var style := str(level_meta.get("style", ""))
-	var lit := style == "2.5d"
+	# 等距（style = iso）：逻辑图层和 2.5D 一样（带法线的图块集），画面由运行时的 IsoView / IsoTerrain 画，不加高墙图层
+	var lit := style == "2.5d" or style == "iso"
 	var ts_path := TILESET_25D_PATH if lit else TILESET_PATH
 	var ts := make_tileset(lit)
 	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path("res://assets/tilesets"))
@@ -237,6 +239,8 @@ func build(floor_id: String) -> int:
 	root.set("intro_cutscene", level_meta.get("intro_cutscene", ""))
 	root.set("no_switch", str(level_meta.get("no_switch", "")) == "true")
 	root.set("style", style)
+	root.set("iso_theme", str(level_meta.get("iso_theme", "")))
+	root.set("iso_rotate", str(level_meta.get("iso_rotate", "true")) != "false")
 	root.set("light_drain", float(level_meta.get("light_drain", 0.0)))
 
 	var cm := CanvasModulate.new()
@@ -303,8 +307,9 @@ func build(floor_id: String) -> int:
 						decor.set_cell(Vector2i(x, y), SRC_KENNEY, _kcoord(72))
 					counts[k] = counts.get(k, 0) + 1
 
-	if lit:
+	if style == "2.5d":
 		_add_tall_walls(root, ents, walls_layer, ts)
+	if lit:
 		_add_wall_glows(root, walls_layer)
 	var ps := PackedScene.new()
 	var err := ps.pack(root)

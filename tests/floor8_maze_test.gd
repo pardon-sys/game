@@ -111,7 +111,7 @@ func _watch_bed() -> void:
 
 # ------------------------------------------------------------------ 2.5D
 func _run_25d() -> void:
-	print("-- 2.5D")
+	print("-- 2.5D / 等距")
 	var lv: Node = main.level
 	var floor_layer := lv.get_node("Floor") as TileMapLayer
 	var tex: Texture2D = (floor_layer.tile_set.get_source(0) as TileSetAtlasSource).texture
@@ -119,27 +119,93 @@ func _run_25d() -> void:
 	var cl := p.get_node_or_null("CarryLight") as CarryLight
 	var sp := p.get_node("Sprite") as Sprite2D
 	check("2.5D：图块是带法线 / 高光的贴图，人物套了实时光照，身上有冷光（开阴影），墙上有幽光点",
-		lv.get("style") == "2.5d" and tex is CanvasTexture and (tex as CanvasTexture).normal_texture != null
+		lv.get("style") == "iso" and tex is CanvasTexture and (tex as CanvasTexture).normal_texture != null
 		and sp.material is ShaderMaterial and (sp.material as ShaderMaterial).shader.resource_path.ends_with("lit_sprite.gdshader")
 		and cl != null and cl.shadow_enabled and lv.get_node("WallGlows").get_child_count() > 0)
-	# 透视倾斜 + 高墙
-	var pv := PerspectiveView.of(lv)
+	await _wait(0.3)
+	var view := IsoView.current
+	var terrain := IsoTerrain.of(lv)
 	var walls := lv.get_node("Walls") as TileMapLayer
-	var caps := lv.get_node_or_null("Entities/WallCaps3D") as TileMapLayer
-	var faces := lv.get_node_or_null("Entities/WallFaces3D") as TileMapLayer
 	var missing := 0
-	if caps:
+	if terrain:
 		for c in walls.get_used_cells():
-			if caps.get_cell_source_id(c) == -1 and not _dir().living_walls.has(c):
+			if not terrain.has_wall_visual(c):
 				missing += 1
-	var mid := pv.output_uv(Vector2(0.5, PerspectiveView.PLAYER_ROW)) if pv else Vector2.ZERO
-	check("透视倾斜：世界之上有 PerspectiveView（层 %d，近处取 %.2f 宽），主角显示在画面 %.0f%% 高度，人物纵向补偿 ×%.2f" % [
-			pv.layer if pv else -1, pv.near_width() if pv else 0.0, mid.y * 100.0, LitSprite.upright],
-		pv != null and pv.layer < 9 and pv.near_width() < 0.8 and mid.y > 0.55 and mid.y < 0.75 and LitSprite.upright > 1.05
-		and is_equal_approx(float((sp.material as ShaderMaterial).get_shader_parameter("upright")), LitSprite.upright))
-	check("高墙：墙面 / 墙顶在 Entities 里和人物一起 y 排序（墙顶往上画），Walls 图层透明但还管碰撞（没有墙顶的墙格 %d 个）" % missing,
-		caps != null and faces != null and caps.y_sort_enabled and faces.get_used_cells().size() > 0 and missing == 0
-		and walls.self_modulate.a == 0.0 and walls.collision_enabled and not caps.collision_enabled)
+	check("等距：挂了 IsoView + IsoTerrain（主题 %s），逻辑图层隐藏但 Walls 还管碰撞，每个墙格都有方块墙（缺 %d 个），人物不用纵向补偿" % [
+			terrain.theme.theme_name if terrain else "-", missing],
+		view != null and terrain != null and terrain.theme.theme_name == "blue_stone" and missing == 0
+		and not walls.visible and walls.collision_enabled and not floor_layer.visible and LitSprite.upright == 1.0
+		and PerspectiveView.of(lv) == null)
+	var leaks: Array = view.unprojected_visible() if view else [null]
+	check("等距：世界里看得见的东西都投影了（漏 %d 个 %s）" % [leaks.size(), leaks.slice(0, 3)], leaks.is_empty())
+	# 墙后淡化：站到一面墙「后面」（墙在她屏幕前方）
+	var fade_cell := Vector2i(-1, -1)
+	for c in walls.get_used_cells():
+		var f := c - Vector2i(0, 1)
+		if terrain and terrain.cubes.has(c) and GridPath.walkable(lv, f) and not (_dir().light_at(GridPath.center(f)) is Vector2):
+			fade_cell = c
+			break
+	var faded := 1.0
+	var restored := 0.0
+	if fade_cell.x >= 0:
+		var spot := p.global_position
+		p.global_position = Vector2(fade_cell.x * 16 + 8, (fade_cell.y - 1) * 16 + 10)
+		await _wait(0.6)
+		faded = (terrain.cubes[fade_cell] as Sprite2D).modulate.a
+		p.global_position = spot
+		await _wait(0.6)
+		restored = (terrain.cubes[fade_cell] as Sprite2D).modulate.a
+	check("墙后淡化：挡住她的墙淡到 %.2f，走开后回到 %.2f" % [faded, restored], faded < 0.6 and restored > 0.95)
+	# 转镜头：按 X → 视角 +1，地形重排、方向键按新视角换算；按 Z 转回来
+	var k0 := view.k
+	var any_cube: Vector2i = terrain.cubes.keys()[0]
+	await get_tree().process_frame   # 在这一帧的 _process 之前按下（真按键也是这样）
+	Input.action_press("rotate_right")
+	await get_tree().process_frame
+	Input.action_release("rotate_right")
+	await _wait(IsoView.TURN_TIME + 0.2)
+	var cube_ok := (terrain.cubes[any_cube] as Node2D).position.distance_to(view.cell_screen(any_cube)) < 0.5
+	var fc: Vector2i = floor_layer.get_used_cells()[0]
+	var tile_ok := terrain.floor_layer.get_cell_source_id(view.cell_to_iso_map(fc)) != -1 or walls.get_cell_source_id(fc) != -1
+	var up_dir := IsoView.world_dir(Vector2.UP)
+	var cam_ok := view.camera_center().distance_to(view.camera_target()) < 2.0
+	var round_trip := true
+	for kk in 4:
+		view.k = kk
+		for pt in [Vector2(37, 91), Vector2(400, 12), Vector2(-5, 230)]:
+			if view.unproject(view.project(pt)).distance_to(pt) > 0.01:
+				round_trip = false
+	view.k = posmod(k0 + 1, 4)
+	check("转镜头：按 X 视角 %d → %d，墙块 / 地面跟着重排（%s / %s），镜头跟着（%s），屏幕「上」= 逻辑 %s，四个视角投影可逆（%s）" % [
+			k0, view.k, cube_ok, tile_ok, cam_ok, up_dir.round(), round_trip],
+		view.k == posmod(k0 + 1, 4) and cube_ok and tile_ok and cam_ok and round_trip
+		and up_dir.distance_to(view.unlinear(Vector2.UP).normalized()) < 0.01)
+	await get_tree().process_frame
+	Input.action_press("rotate_left")
+	await get_tree().process_frame
+	Input.action_release("rotate_left")
+	await _wait(IsoView.TURN_TIME + 0.2)
+	check("按 Z 转回来（视角 %d）" % view.k, view.k == k0)
+	# 1 格走廊：组合区域（小房间）以外没有 2x2 的空地
+	var design: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://levels/floor_08_maze_1/design.json"))
+	var wide := 0
+	var r := floor_layer.get_used_rect()
+	for y in range(r.position.y, r.end.y - 1):
+		for x in range(r.position.x, r.end.x - 1):
+			var all_open := true
+			for d in [Vector2i(0, 0), Vector2i(1, 0), Vector2i(0, 1), Vector2i(1, 1)]:
+				if not GridPath.walkable(lv, Vector2i(x, y) + d):
+					all_open = false
+			if not all_open:
+				continue
+			var in_room := false
+			for area in design["combo_areas"]:
+				var ar: Array = area["rect"]
+				if x >= ar[0] and y >= ar[1] and x + 1 <= ar[2] and y + 1 <= ar[3]:
+					in_room = true
+			if not in_room:
+				wide += 1
+	check("1 格走廊：小房间以外没有 2x2 的空地（%d 处）" % wide, wide == 0)
 
 
 # ------------------------------------------------------------------ 紫手 QTE / 手覆盖
@@ -245,8 +311,12 @@ func _run_qte_and_cover() -> void:
 
 ## 活墙的样子和碰撞一致（升起 = 那格有墙）。
 func _living_walls_match(dir: MazeDirector, walls: TileMapLayer) -> bool:
+	var terrain := IsoTerrain.of(main.level)
 	for c in dir.living_walls:
 		if (dir.living_walls[c] as LivingWall).up != (walls.get_cell_source_id(c) != -1):
+			return false
+		# 等距：这一格由活墙认领（地形不画普通墙块）
+		if terrain and (terrain.claimed.get(c) != dir.living_walls[c] or terrain.cubes.has(c)):
 			return false
 	return true
 
@@ -259,6 +329,16 @@ func _open_action(c: Node2D) -> String:
 				and GridPath.walkable(main.level, GridPath.cell(c.global_position + d * 32.0)):
 			return pair[0]
 	return "move_right"
+
+
+## pos 附近（格子距离 lo~hi）的一块地面格的中心（1 格走廊里别把东西放进墙里）。
+func _floor_near(pos: Vector2, lo: int, hi: int) -> Vector2:
+	var c0 := GridPath.cell(pos)
+	for d in range(lo, hi + 1):
+		for off in [Vector2i(d, 0), Vector2i(-d, 0), Vector2i(0, d), Vector2i(0, -d)]:
+			if GridPath.walkable(main.level, c0 + off):
+				return GridPath.center(c0 + off)
+	return pos
 
 
 func _move_out_of_light(blue: Node2D) -> void:
@@ -413,6 +493,9 @@ func _run_shards_and_sections() -> void:
 	CG.started.connect(on_cg)
 	var on_cut := func(id: String): seen.append(id)
 	Cutscene.started.connect(on_cut)
+	# 只测出口流程：清掉带过来的手和闷笑（1 格走廊里出生点附近可能有怪，别在走到出口前就笑倒）
+	_dir().cover.clear()
+	_fresh(GameState.player)
 	GameState.player.global_position = _dir()._exit_at
 	await _advance_until(func(): return GameState.has_flag("f8_maze_done") and not Cutscene.is_playing() and not CG.is_busy(), 60.0)
 	CG.started.disconnect(on_cg)
@@ -563,7 +646,7 @@ func _run_monsters() -> void:
 	lamp.relight()
 	var imp: LampImp = load("res://levels/floor_08/scenes/lamp_imp.tscn").instantiate()
 	main.level.add_child(imp)
-	imp.global_position = lamp.global_position + Vector2(0, 20)
+	imp.global_position = _floor_near(lamp.global_position, 1, 2)
 	await _advance_until(func(): return not lamp.lit, 6.0)
 	var blown := not lamp.lit
 	imp._on_tickle_performed(blue)
@@ -605,7 +688,7 @@ func _run_devices() -> void:
 	await _wait(1.6)
 	var gates: Array = get_tree().get_nodes_in_group(dev["group"]).filter(func(g: Node): return g is StaticBody2D)
 	check("月光镜：一开始照不到（门关着 %s），按 E 转到正确方向 → 光带照到光开关 → 暗门打开" % closed_before,
-		closed_before and mirror.powered and gates.size() == 2 and gates.all(func(g: Node): return g.get("is_open")))
+		closed_before and mirror.powered and gates.size() == (dev["door"] as Array).size() and gates.all(func(g: Node): return g.get("is_open")))
 	blue.global_position = (mirror.source_point() + mirror.beam_end) / 2.0 + Vector2(0, 10)
 	dir.cover_zone("thigh")
 	dir.cover_zone("sole")
@@ -668,8 +751,10 @@ func _run_heartbeat_and_shadow() -> void:
 	dir.heartbeat()
 	var back: bool = floor_at.call(pair["a"]) and wall_at.call(pair["b"])
 	check("呼吸墙：开场 a 通 b 封（%s），心跳一次翻转（%s），再跳翻回来（%s）" % [start_ok, flipped, back], start_ok and flipped and back)
-	check("活墙：每个呼吸墙格子都有画面，升起的是活墙、沉下的是裂纹，和碰撞一致（开场 %s、翻转后 %s）" % [start_look, flip_look],
+	check("活墙：每个呼吸墙格子都有画面，升起的是活墙、沉下的是裂纹，和碰撞一致、由活墙认领方块（开场 %s、翻转后 %s）" % [start_look, flip_look],
 		dir.living_walls.size() > 0 and start_look and flip_look and _living_walls_match(dir, walls))
+	var leaks: Array = IsoView.current.unprojected_visible() if IsoView.current else [null]
+	check("跑完怪物 / 机关 / 呼吸墙后，看得见的东西仍然都投影了（漏 %d 个 %s）" % [leaks.size(), leaks.slice(0, 3)], leaks.is_empty())
 	var slow := dir.beat_interval()
 	for i in 10:
 		dir.cover_zone("thigh")

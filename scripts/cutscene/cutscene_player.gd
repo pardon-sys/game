@@ -563,7 +563,7 @@ func _face(who: Node2D, dir: Vector2) -> void:
 		who.set("facing", dir)
 	var spr := who.get_node_or_null("Sprite") as Sprite2D
 	if spr and absf(dir.x) > 0.1 and not (who is PlayableCharacter):
-		spr.flip_h = dir.x < 0.0
+		spr.flip_h = IsoView.screen_dir(dir).x < 0.0
 
 
 ## 躺到床上：小人正面朝上放在 at（脚在床尾、头在枕头上），不和床的碰撞体顶来顶去；blanket 道具盖在她上面。
