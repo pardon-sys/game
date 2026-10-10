@@ -933,7 +933,7 @@ func _update_animation(delta: float) -> void:
 	if animator == null:
 		return
 	animator.play(_anim_name())
-	animator.update(delta, dir_name(), facing.x < 0, emotion.row() if emotion else 0)
+	animator.update(delta, dir_name(), IsoView.screen_dir(facing).x < 0, emotion.row() if emotion else 0)
 
 
 func _update_effects(delta: float) -> void:

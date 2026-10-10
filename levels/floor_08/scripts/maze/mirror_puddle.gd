@@ -31,6 +31,8 @@ func _setup() -> void:
 	sprite.texture = TEX
 	sprite.z_index = -1
 	add_child(sprite)
+	if IsoView.enabled:
+		add_to_group(IsoView.GROUND_GROUP)   # 等距：水洼贴在地上（压成椭圆）
 
 
 func _apply_effect(target: Node) -> bool:

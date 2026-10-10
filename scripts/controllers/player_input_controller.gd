@@ -19,8 +19,9 @@ func get_move_vector() -> Vector2:
 		var pad := Vector2(Input.get_joy_axis(0, JOY_AXIS_LEFT_X), Input.get_joy_axis(0, JOY_AXIS_LEFT_Y))
 		if v == Vector2.ZERO and pad.length() > 0.3:
 			v = pad
-		return v.limit_length(1.0)
-	return Input.get_vector("move_left", "move_right", "move_up", "move_down")
+		return IsoMover.from_screen(get_parent(), v.limit_length(1.0))
+	# 等距楼层：方向键按屏幕方向，换算成逻辑方向 + 走廊辅助（IsoMover）
+	return IsoMover.from_screen(get_parent(), Input.get_vector("move_left", "move_right", "move_up", "move_down"))
 
 
 func is_action_just_pressed(action: StringName) -> bool:

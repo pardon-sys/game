@@ -118,7 +118,7 @@ func _tick_latched(delta: float) -> void:
 	global_position = host.global_position + Vector2(0, 0.5)
 	if sprite:
 		sprite.position = _latch_sprite_pos()
-		sprite.flip_h = host.facing.x < 0.0
+		sprite.flip_h = IsoView.screen_dir(host.facing).x < 0.0
 	if GameState.in_dialogue:
 		return
 	_on_latched_tick(delta)

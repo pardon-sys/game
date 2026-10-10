@@ -102,4 +102,6 @@ func _draw() -> void:
 	draw_circle(Vector2(1.5, y - 1.0), 3.5, Color(0.12, 0.13, 0.2) if not lit else Color(0.6, 0.72, 0.95))
 	# 光圈（亮着时地上一圈淡淡的范围）
 	if lit:
-		draw_arc(Vector2(0, -4), RADIUS, 0, TAU, 48, Color(0.75, 0.88, 1.0, 0.18 + 0.06 * sin(_t * 2.0)), 1.0)
+		draw_set_transform(Vector2(0, -4), 0.0, IsoView.ground_scale())
+		draw_arc(Vector2.ZERO, RADIUS, 0, TAU, 48, Color(0.75, 0.88, 1.0, 0.18 + 0.06 * sin(_t * 2.0)), 1.0)
+		draw_set_transform(Vector2.ZERO)

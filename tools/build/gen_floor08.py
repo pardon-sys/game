@@ -831,10 +831,11 @@ for name, cs in SLEEP_CUTS.items():
 from maze_gen import Maze  # noqa: E402
 
 # 段 -> (单元列, 单元行, 种子, 月光灯数, 回环比例, 小房间数, 呼吸墙对数, 回忆碎片 id)
+# 第四轮：走廊 1 格宽（maze_gen step = 2），单元数加大约 1.3 倍，总路程和原来差不多
 MAZES = {
-    1: (20, 14, 81, 4, 0.14, 3, 4, (1, 2)),
-    2: (24, 18, 82, 4, 0.13, 5, 6, (3, 4)),
-    3: (28, 21, 83, 3, 0.12, 5, 8, (5, 6)),
+    1: (26, 18, 81, 4, 0.14, 3, 4, (1, 2)),
+    2: (31, 23, 82, 4, 0.13, 5, 6, (3, 4)),
+    3: (36, 27, 83, 3, 0.12, 5, 8, (5, 6)),
 }
 MAZE_INFO = {}
 
@@ -917,7 +918,7 @@ class MazePlacer:
             for key in MAZE_COMBO_KEYS[cid]:
                 if key == "hand_gate":
                     g = self.hand_gate(room, "hg_%d_%s" % (self.sec, cid))
-                    rect = [min(rect[0], g[0][0]), min(rect[1], g[0][1]), max(rect[2], g[1][0]), max(rect[3], g[1][1])]
+                    rect = [min([rect[0]] + [t[0] for t in g]), min([rect[1]] + [t[1] for t in g]), max([rect[2]] + [t[0] for t in g]), max([rect[3]] + [t[1] for t in g])]
                 elif key == "hand_shadow":
                     self.shadow(room[0])
                 else:
@@ -985,11 +986,14 @@ class MazePlacer:
             self.hand_gate([cands[0][1]], "hg_%d_short%d" % (self.sec, i))
 
     def moon_mirror(self, lamp_cells, i):
-        """月光镜：放在一盏灯（不是入口那盏）的单元里，光带沿一条直走廊照到光开关；开关旁边一段封墙变暗门（捷径）。"""
+        """月光镜：放在一盏灯（不是入口那盏）旁边，光带沿一条直走廊照到光开关；开关旁边一段封墙变暗门（捷径）。"""
         best = None
         for lc in lamp_cells[1:]:
-            for (mx, my) in self.mz.cell_floor(lc):
-                if not self.free_tile(mx, my):
+            # 灯旁边 3 格以内的空地（走廊 1 格宽时灯那一格已经被灯占了）
+            lx, ly = self.mz.tile(lc, 3)
+            near = [(lx + dx, ly + dy) for dy in range(-3, 4) for dx in range(-3, 4) if abs(dx) + abs(dy) <= 3]
+            for (mx, my) in near:
+                if not (0 <= mx < self.mz.w and 0 <= my < self.mz.h) or not self.free_tile(mx, my):
                     continue
                 for f, (dx, dy) in enumerate(DIRS4):
                     run = []
@@ -1005,7 +1009,7 @@ class MazePlacer:
         sx, sy = run[-1]
         self.put(mx, my, "moonmirror facing=%d" % ((f + 2) % 4))     # 一开始朝反方向：要转两下
         self.put(sx, sy, "beamswitch group_name=%s" % group)
-        scell = ((sx - 1) // 3, (sy - 1) // 3)
+        scell = self.mz.cell_of((sx, sy))
         cands = [o for o in self.closed_links([scell], 2) if o[0] < 999]
         assert cands, ("第 %d 段的光开关旁边没有能开暗门的墙" % self.sec)
         _d, _c, _n, lk = cands[0]
@@ -1024,7 +1028,7 @@ class MazePlacer:
         end = self.rng.choice(far)
         path = self.mz._cell_path(start, end)
         route = path + path[-2:0:-1]
-        pts = [self.mz.cell_floor(c)[0] for c in route]
+        pts = [self.mz.tile(c, 0) for c in route]
         x, y = pts[0]
         spec = "handshadow route=" + ";".join("%d,%d" % p for p in pts)
         self.mm.put(x, y, spec)
@@ -1034,9 +1038,9 @@ class MazePlacer:
 
 def build_maze(sec):
     cols, rows, seed, lamps, loops, rooms, breathing, shards = MAZES[sec]
-    mz = Maze(cols, rows, seed=seed, loops=loops, rooms=rooms, breathing=breathing)
+    mz = Maze(cols, rows, seed=seed, loops=loops, rooms=rooms, breathing=breathing, step=2)
     fid = "floor_08_maze_%d" % sec
-    head = "intro =\nintro_cutscene = %s\nstyle = 2.5d\nlight_drain = 90" % ("f8_maze_intro" if sec == 1 else "")
+    head = "intro =\nintro_cutscene = %s\nstyle = iso\niso_theme = blue_stone\nambient = 0.09,0.095,0.16\nlight_drain = 90" % ("f8_maze_intro" if sec == 1 else "")
     title = {1: "第八层·夜迷宫一·外环回廊", 2: "第八层·夜迷宫二·镜之回廊", 3: "第八层·夜迷宫三·千手深处"}[sec]
     mm = Map(fid, mz.w, mz.h, head, title)
     mm.g = [row[:] for row in mz.grid]
@@ -1044,22 +1048,22 @@ def build_maze(sec):
     for b in mz.breathing:
         for (x, y) in b["b"]:
             mm.g[y][x] = "."
-    sx, sy = mz.cell_floor(mz.start_cell)[2]
+    sx, sy = mz.tile(mz.start_cell, 2)
     mm.put(sx, sy, "player")
     mm.put(sx, sy, "spawn id=from_%d" % (sec - 1))
-    dx, dy = mz.cell_floor(mz.start_cell)[1]
+    dx, dy = mz.tile(mz.start_cell, 1)
     mm.put(dx, dy, "f8maze section=%d" % sec)
     # 月光灯：起点一盏，其余沿主路均匀分布
     path = mz.main_path
     # 入口那盏放在主路的下一格（不罩住出生点：上一段带过来的手要走进灯里才散）
-    lamp_cells = [path[1]] + [path[int(len(path) * k)] for k in [(i + 1) / (lamps) for i in range(lamps - 1)]]
+    lamp_cells = [path[2]] + [path[int(len(path) * k)] for k in [(i + 1) / (lamps) for i in range(lamps - 1)]]
     for i, c in enumerate(lamp_cells):
-        x, y = mz.cell_floor(c)[3]
+        x, y = mz.tile(c, 3)
         mm.put(x, y, "moonlamp")
         mm.put(x, y, "spawn id=lamp_%d" % (i + 1))
     # 回忆碎片：离主路最远的死路
     for sid, c in zip(shards, mz.dead_ends[:len(shards)]):
-        x, y = mz.cell_floor(c)[3]
+        x, y = mz.tile(c, 3)
         mm.put(x, y, "memshard id=%d" % sid)
     # 怪物 / 陷阱 / 机关 / 组合区域（起点附近 3 个单元、灯、碎片、出口不放）
     reserved = set(path[:3]) | {path[-4]} | set(lamp_cells) | set(mz.dead_ends[:len(shards)]) | {mz.exit_cell}
@@ -1074,13 +1078,13 @@ def build_maze(sec):
         pl.shadow()
     pl.curtains(curtains)
     pl.scatter(counts)
-    ex, ey = mz.cell_floor(mz.exit_cell)[3]
+    ex, ey = mz.tile(mz.exit_cell, 3)
     if sec < 3:
         mm.put(ex, ey, "exit target=floor_08_maze_%d spawn=from_%d" % (sec + 1, sec))
     else:
         mm.put(ex, ey, "spawn id=maze_exit")
         # 测试模式跳关「出口前」：主路上离出口 3 个单元的地方
-        bx, by = mz.cell_floor(path[-4])[0]
+        bx, by = mz.tile(path[-4], 0)
         mm.put(bx, by, "spawn id=before_exit")
     mm.write()
     MAZE_INFO[sec] = mz

@@ -628,7 +628,7 @@ func player_behind_portrait() -> bool:
 	var p := GameState.player
 	if not is_instance_valid(p) or not p.is_inside_tree() or _wide or not portrait.visible:
 		return false
-	var c := p.get_global_transform_with_canvas().origin
+	var c := IsoView.canvas_pos(p)
 	var body := Rect2(c + Vector2(-8, -26), Vector2(16, 28))
 	return body.intersects(Rect2(portrait.global_position, portrait.size))
 
