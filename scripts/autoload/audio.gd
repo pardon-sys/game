@@ -56,9 +56,21 @@ const SOUNDS := {
 	# 蓝色公主专属的笑声（用户提供：assets/generated/blue_princess/轻笑.mp3、大笑.mp3）
 	"blue_giggle": ["res://assets/audio/voice/blue/giggle.mp3"],
 	"blue_laugh": ["res://assets/audio/voice/blue/laugh.mp3"],
+	# 蓝色公主憋不住的笑（用户提供：assets/generated/blue_princess/蓝色憋不住笑1~4.mp3）：短的三段随机 / 长的一段（8.6 秒）
+	"blue_crack": ["res://assets/audio/voice/blue/crack_2.mp3", "res://assets/audio/voice/blue/crack_3.mp3",
+		"res://assets/audio/voice/blue/crack_4.mp3"],
+	"blue_crack_long": ["res://assets/audio/voice/blue/crack_1.mp3"],
+	# 第八层夜迷宫第五轮（tools/art/gen_sfx.py）
+	"hand_grab": ["res://assets/generated/sfx/hand_grab.wav"],
+	"heartbeat": ["res://assets/generated/sfx/heartbeat.wav"],
+	"rumble": ["res://assets/generated/sfx/rumble.wav"],
+	"brush_spin": ["res://assets/generated/sfx/brush_spin.wav"],
+	"bat_flap": ["res://assets/generated/sfx/bat_flap.wav"],
+	"ice_crack": ["res://assets/generated/sfx/ice_crack.wav"],
+	"chase_drums": ["res://assets/generated/sfx/chase_drums.wav"],
 }
 ## 循环播放的声音（用 loop_stream 取流，挂到自己的播放器上）。
-const LOOPED := ["laugh", "blue_laugh", "chant", "wind", "conveyor"]
+const LOOPED := ["laugh", "blue_laugh", "chant", "wind", "conveyor", "chase_drums"]
 const POOL_SIZE := 10
 
 var _streams := {}
@@ -66,6 +78,9 @@ var _players: Array[AudioStreamPlayer] = []
 var _next := 0
 var _voice: AudioStreamPlayer
 var _voice_state := ""
+## 憋不住的笑（blue_crack）单独一个播放器：换关卡也不断（过场之间的笑声衔接），可以淡出
+var _crack: AudioStreamPlayer
+var _crack_tw: Tween
 
 # ------------------------------------------------------------------ 背景音乐
 ## 配乐（tools/audio/gen_music.py 用 ElevenLabs 生成，2 分钟首尾相连）：地牢层 dungeon、地下小镇 town。
@@ -195,6 +210,9 @@ func _ready() -> void:
 		_streams[key] = list
 	_voice = AudioStreamPlayer.new()
 	add_child(_voice)
+	_crack = AudioStreamPlayer.new()
+	_crack.name = "Crack"
+	add_child(_crack)
 	for i in 2:
 		var mp := AudioStreamPlayer.new()
 		mp.name = "Music%d" % i
@@ -213,6 +231,9 @@ func play(sound: String, volume_db := 0.0, pitch_jitter := 0.08, pitch := 1.0) -
 	if sound in ["giggle", "laugh"]:
 		play_voice(sound)
 		return
+	if sound in ["blue_crack", "blue_crack_long"]:
+		play_crack(sound == "blue_crack_long", volume_db)
+		return
 	var list: Array = _streams.get(sound, [])
 	if list.is_empty():
 		return
@@ -222,6 +243,33 @@ func play(sound: String, volume_db := 0.0, pitch_jitter := 0.08, pitch := 1.0) -
 	p.volume_db = volume_db
 	p.pitch_scale = pitch * (1.0 + randf_range(-pitch_jitter, pitch_jitter))
 	p.play()
+
+
+## 蓝色公主憋不住的笑：long = 长的那段。正在放时会换成新的一段。
+func play_crack(long := false, volume_db := -4.0) -> void:
+	var clips: Array = _streams.get("blue_crack_long" if long else "blue_crack", [])
+	if clips.is_empty():
+		return
+	if _crack_tw:
+		_crack_tw.kill()
+	_crack.stream = clips.pick_random()
+	_crack.volume_db = volume_db
+	_crack.play()
+
+
+func crack_playing() -> bool:
+	return _crack.playing
+
+
+## 憋不住的笑慢慢淡掉（time 秒）。
+func fade_crack(time := 1.0) -> void:
+	if not _crack.playing:
+		return
+	if _crack_tw:
+		_crack_tw.kill()
+	_crack_tw = create_tween()
+	_crack_tw.tween_property(_crack, "volume_db", -40.0, time)
+	_crack_tw.tween_callback(_crack.stop)
 
 
 ## 笑声按当前操控的角色选：蓝色公主有自己的 blue_giggle / blue_laugh。

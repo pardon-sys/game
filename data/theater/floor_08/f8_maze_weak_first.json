@@ -1,5 +1,6 @@
 {
 	"name": "夜迷宫·大腿",
+	"night": true,
 	"cast": {
 		"blue": {
 			"kind": "npc:blue_princess",
@@ -16,16 +17,49 @@
 		{
 			"actions": [
 				{
-					"time": 0.5,
+					"time": 0.6,
 					"do": "fade_in"
 				}
 			],
-			"wait": 0.5
+			"wait": 0.6
 		},
 		{
 			"speaker": "",
-			"text": "（这一次，看不见的手落在了她的大腿上——不偏不倚，正是最怕的地方）",
+			"text": "（走廊越来越窄，两边的墙几乎要贴到肩膀）",
 			"actions": []
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……窄。……躲不开。",
+			"actions": [],
+			"emotion": "normal"
+		},
+		{
+			"speaker": "",
+			"text": "（冷光只够照亮脚下。墙壁冰冷，靠上去的时候背脊一凉）",
+			"actions": []
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……没关系。……腰、腋下……都、都还好。",
+			"actions": [],
+			"emotion": "normal"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……只要……别碰那里。",
+			"actions": [],
+			"emotion": "shy"
+		},
+		{
+			"speaker": "",
+			"text": "（——像是听见了这句话似的，黑暗里，有什么慢慢地贴上了她的大腿）",
+			"actions": [
+				{
+					"time": 0.25,
+					"do": "flash"
+				}
+			]
 		},
 		{
 			"speaker": "蓝色的公主",
@@ -34,14 +68,14 @@
 				{
 					"who": "blue",
 					"repeat": 7,
-					"interval": 0.212,
+					"interval": 0.19999999999999998,
 					"fx": "hand",
 					"zone": "thigh",
 					"do": "tickle"
 				},
 				{
 					"who": "blue",
-					"time": 0.3,
+					"time": 0.30000000000000004,
 					"do": "shake"
 				}
 			],
@@ -49,119 +83,59 @@
 		},
 		{
 			"speaker": "蓝色的公主",
-			"text": "……那、那里……",
+			"text": "……不、不是那里……",
 			"actions": [
 				{
+					"state": "giggle",
+					"do": "voice"
+				},
+				{
 					"who": "blue",
-					"repeat": 8,
-					"interval": 0.20400000000000001,
+					"repeat": 10,
+					"interval": 0.15599999999999997,
 					"fx": "hand",
 					"zone": "thigh",
 					"do": "tickle"
 				},
 				{
 					"who": "blue",
-					"time": 0.3,
+					"time": 0.4,
 					"do": "shake"
 				}
 			],
 			"emotion": "shy"
 		},
 		{
-			"speaker": "蓝色的公主",
-			"text": "……为什么……偏偏是……",
-			"actions": [
-				{
-					"who": "blue",
-					"repeat": 9,
-					"interval": 0.196,
-					"fx": "hand",
-					"zone": "thigh",
-					"do": "tickle"
-				},
-				{
-					"who": "blue",
-					"time": 0.3,
-					"do": "shake"
-				}
-			]
-		},
-		{
 			"speaker": "",
-			"text": "（手指沿着大腿内侧，慢慢画了一个小圈）",
+			"text": "（手掌整个贴着大腿外侧，没有动。只是贴着）",
 			"actions": []
 		},
 		{
 			"speaker": "蓝色的公主",
-			"text": "……哈、哈……不、不对……忍、忍住……",
-			"actions": [
-				{
-					"who": "blue",
-					"repeat": 7,
-					"interval": 0.18,
-					"fx": "hand",
-					"zone": "thigh",
-					"do": "tickle"
-				},
-				{
-					"who": "blue",
-					"time": 0.3,
-					"do": "shake"
-				}
-			],
-			"emotion": "helpless_1"
+			"text": "……别、别贴着……走开……",
+			"actions": [],
+			"emotion": "shy"
 		},
 		{
 			"speaker": "",
-			"text": "（一圈，又一圈——和很久以前，一模一样的画法）",
+			"text": "（手指一根、一根地抬起来，又落下去，往大腿内侧挪了一点）",
 			"actions": []
 		},
 		{
 			"speaker": "蓝色的公主",
-			"text": "……这个……画法……",
+			"text": "……唔、嗯……！",
 			"actions": [
 				{
 					"who": "blue",
-					"repeat": 9,
-					"interval": 0.164,
+					"repeat": 11,
+					"interval": 0.15199999999999997,
 					"fx": "hand",
 					"zone": "thigh",
 					"do": "tickle"
 				},
 				{
 					"who": "blue",
-					"time": 0.3,
-					"do": "shake"
-				}
-			],
-			"emotion": "sad"
-		},
-		{
-			"speaker": "蓝色的公主",
-			"text": "……你还记得……",
-			"actions": [
-				{
-					"state": "giggle",
-					"do": "voice"
-				}
-			],
-			"emotion": "sad"
-		},
-		{
-			"speaker": "蓝色的公主",
-			"text": "……哈、哈哈……别、别记得这种事……！",
-			"actions": [
-				{
-					"who": "blue",
-					"repeat": 7,
-					"interval": 0.148,
-					"fx": "hand",
-					"zone": "thigh",
-					"do": "tickle"
-				},
-				{
-					"who": "blue",
-					"time": 0.3,
+					"time": 0.4,
 					"do": "shake"
 				}
 			],
@@ -169,45 +143,70 @@
 		},
 		{
 			"speaker": "蓝色的公主",
-			"text": "……我、我已经……长大了……不怕了……",
-			"actions": [
-				{
-					"who": "blue",
-					"repeat": 8,
-					"interval": 0.14,
-					"fx": "hand",
-					"zone": "thigh",
-					"do": "tickle"
-				},
-				{
-					"who": "blue",
-					"time": 0.3,
-					"do": "shake"
-				}
-			]
+			"text": "……看不见……它在往哪走……",
+			"actions": [],
+			"emotion": "shy"
 		},
 		{
 			"speaker": "",
-			"text": "（手指好像在笑。圈画得更慢了）",
+			"text": "（她看不见。只能从皮肤上感觉到，手指一步一步地，往上走）",
 			"actions": []
 		},
 		{
 			"speaker": "蓝色的公主",
-			"text": "……噗哈……！骗、骗人……还是……哈哈……",
+			"text": "……停……停在那里……不准再……",
 			"actions": [
 				{
 					"who": "blue",
-					"repeat": 6,
-					"interval": 0.14,
+					"repeat": 9,
+					"interval": 0.14799999999999996,
 					"fx": "hand",
 					"zone": "thigh",
 					"do": "tickle"
 				},
 				{
 					"who": "blue",
-					"time": 0.3,
+					"time": 0.4,
 					"do": "shake"
+				}
+			],
+			"emotion": "helpless_1"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……噗哈……！……不、不准……",
+			"actions": [
+				{
+					"sound": "blue_crack",
+					"volume": -3.0,
+					"do": "sfx"
 				},
+				{
+					"who": "blue",
+					"repeat": 10,
+					"interval": 0.14399999999999996,
+					"fx": "hand",
+					"zone": "thigh",
+					"do": "tickle"
+				},
+				{
+					"who": "blue",
+					"time": 0.4,
+					"do": "shake"
+				}
+			],
+			"emotion": "helpless_1"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……你……你怎么知道……我最怕……",
+			"actions": [],
+			"emotion": "surprise"
+		},
+		{
+			"speaker": "",
+			"text": "（手指不回答，只是在大腿内侧画起了小小的圈）",
+			"actions": [
 				{
 					"state": "laugh",
 					"do": "voice"
@@ -218,24 +217,23 @@
 					"anim": "helpless",
 					"do": "pose"
 				}
-			],
-			"emotion": "helpless_2"
+			]
 		},
 		{
 			"speaker": "蓝色的公主",
-			"text": "……哈哈……大腿……真的……不行……哈哈哈……",
+			"text": "……哈哈……哈哈哈……那、那里真的不行……！",
 			"actions": [
 				{
 					"who": "blue",
-					"repeat": 7,
-					"interval": 0.14,
+					"repeat": 13,
+					"interval": 0.1,
 					"fx": "hand",
 					"zone": "thigh",
 					"do": "tickle"
 				},
 				{
 					"who": "blue",
-					"time": 0.3,
+					"time": 0.5,
 					"do": "shake"
 				}
 			],
@@ -243,19 +241,44 @@
 		},
 		{
 			"speaker": "蓝色的公主",
-			"text": "……没、没笑。……刚才是……咳嗽……噗哈……！",
+			"text": "……画、画圈……犯规……哈哈哈哈……！",
 			"actions": [
 				{
 					"who": "blue",
-					"repeat": 8,
-					"interval": 0.14,
+					"repeat": 11,
+					"interval": 0.1,
 					"fx": "hand",
 					"zone": "thigh",
 					"do": "tickle"
 				},
 				{
 					"who": "blue",
-					"time": 0.3,
+					"time": 0.5,
+					"do": "shake"
+				}
+			],
+			"emotion": "helpless_2"
+		},
+		{
+			"speaker": "",
+			"text": "（她夹紧双腿想挡住，手指却已经钻进了缝里）",
+			"actions": []
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……哈哈哈哈……夹、夹住了还在动……哈哈哈……！",
+			"actions": [
+				{
+					"who": "blue",
+					"repeat": 12,
+					"interval": 0.1,
+					"fx": "hand",
+					"zone": "thigh",
+					"do": "tickle"
+				},
+				{
+					"who": "blue",
+					"time": 0.5,
 					"do": "shake"
 				}
 			],
@@ -263,14 +286,46 @@
 		},
 		{
 			"speaker": "蓝色的公主",
-			"text": "……哈……哈……再、再往前走……不许跟着……哈……",
+			"text": "……我、我认……不、不认……哈哈哈……",
+			"actions": [
+				{
+					"who": "blue",
+					"repeat": 13,
+					"interval": 0.1,
+					"fx": "hand",
+					"zone": "thigh",
+					"do": "tickle"
+				},
+				{
+					"who": "blue",
+					"time": 0.5,
+					"do": "shake"
+				}
+			],
+			"emotion": "helpless_2"
+		},
+		{
+			"speaker": "",
+			"text": "（手指终于停了下来。贴着大腿，像是在等她喘过气）",
+			"actions": []
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……哈……哈……",
 			"actions": [],
 			"emotion": "helpless_1"
 		},
 		{
-			"speaker": "",
-			"text": "（那只手当然没有离开）",
-			"actions": []
+			"speaker": "蓝色的公主",
+			"text": "……刚才那个……谁都、谁都不许说出去。",
+			"actions": [],
+			"emotion": "angry"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……特别是……她。",
+			"actions": [],
+			"emotion": "shy"
 		},
 		{
 			"actions": [

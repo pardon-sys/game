@@ -150,7 +150,7 @@ static func ground_scale() -> Vector2:
 static func canvas_pos(n: Node2D) -> Vector2:
 	if current == null or not current.is_inside_tree():
 		return n.get_global_transform_with_canvas().origin
-	return current.get_viewport().canvas_transform * current.screen_pos(n)
+	return current.canvas_xform() * current.screen_pos(n)
 
 
 ## 世界节点画在屏幕（画布）上的位置：投影根投影，子树里的节点 = 根的投影 + 相对根的偏移。
@@ -439,16 +439,25 @@ func _follow_camera(dt: float) -> void:
 		_cam_center = _cam_center.lerp(target, 1.0 - exp(-cam.position_smoothing_speed * dt))
 
 
+## 镜头的画布变换（和 _apply_camera 写进 canvas_transform 的一样）。Camera2D 在 _process 里也会写 canvas_transform，
+## 所以别的节点在 _process 里读视口的 canvas_transform 可能是没投影的那一份：要用屏幕位置时用这个。
+func canvas_xform() -> Transform2D:
+	var cam := _camera()
+	if cam == null:
+		return get_viewport().canvas_transform
+	if _cam_center == Vector2.INF:
+		_follow_camera(0.0)
+	var vp := get_viewport().get_visible_rect().size
+	var z := cam.zoom
+	return Transform2D(0.0, z, 0.0, (vp * 0.5 - _cam_center * z).round())
+
+
 ## 画之前（frame_pre_draw）把镜头写进 canvas_transform：Camera2D 每帧也会写，这里最后写、以这里为准。
 func _apply_camera() -> void:
 	var cam := _camera()
 	if cam == null:
 		return
-	if _cam_center == Vector2.INF:
-		_follow_camera(0.0)
-	var vp := get_viewport().get_visible_rect().size
-	var z := cam.zoom
-	get_viewport().canvas_transform = Transform2D(0.0, z, 0.0, (vp * 0.5 - _cam_center * z).round())
+	get_viewport().canvas_transform = canvas_xform()
 
 
 ## 镜头中心（屏幕 / 画布坐标；测试用）。

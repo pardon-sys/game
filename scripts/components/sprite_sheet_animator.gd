@@ -73,6 +73,19 @@ func update(delta: float, dir_name: String, facing_left: bool, emotion_row: int)
 	sprite.position.x = roundf(sin(time * 45.0) * shake) if shake > 0.0 else 0.0
 
 
+## 临时换成一张单帧图（睡着的样子等）；之后 update 会自动换回正常的图集。
+func show_still(tex: Texture2D) -> void:
+	if sprite == null or tex == null:
+		return
+	sheet = "__still"
+	sprite.frame = 0
+	sprite.texture = tex
+	sprite.hframes = 1
+	sprite.vframes = 1
+	sprite.flip_h = false
+	sprite.offset = _default["offset"]
+
+
 ## 切换图集（只在变化时设置 Sprite），返回该图集的配置（默认图集返回空字典）。
 func _use_sheet(name: String) -> Dictionary:
 	var info: Dictionary = config.sheets.get(name, {}) if name != "" else {}

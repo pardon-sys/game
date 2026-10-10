@@ -13,6 +13,8 @@
   cradle_bench   摇篮长椅       32x16
   living_wall    呼吸墙（活墙） 16x32 × 3 帧（上 16 = 墙顶、下 16 = 正面；紫色脉络一明一暗地起伏）
   living_crack   呼吸墙沉下后的地面裂纹 16x16 × 2 帧（暗 / 心跳前发亮）
+  night_stalker  夜啼追手       32x40 × 3 帧（飘 2 帧 / 张开手臂扑过来），一团长满手臂的紫黑影子、两只紫眼
+  blind_bat      遮眼蝠         16x16 × 3 帧（扇翅 2 帧 / 倒挂睡觉）
 用法：python tools/art/gen_floor08_maze_art.py
 """
 import math
@@ -231,6 +233,71 @@ def living_crack(f):
     return img
 
 
+def night_stalker(f):
+    img, d = canvas(32, 40)
+    body = (40, 18, 60, 235)
+    body_l = (80, 40, 115, 240)
+    arm = (95, 55, 135, 235)
+    palm = (175, 120, 220, 240)
+    reach = f == 2
+    bob = 1 if f == 1 else 0
+    # 一团往下拖着尾巴的影子
+    d.ellipse((7, 6 + bob, 25, 30 + bob), fill=body)
+    d.polygon([(8, 22 + bob), (24, 22 + bob), (21, 38), (16, 34), (11, 38)], fill=body)
+    d.arc((9, 8 + bob, 23, 26 + bob), 200, 320, fill=body_l)
+    # 手臂：两边各三条，扑过来时全部往前伸
+    arms = [(-1, 12), (-1, 18), (-1, 24), (1, 12), (1, 18), (1, 24)]
+    for side, y in arms:
+        x0 = 16 + side * 7
+        y0 = y + bob
+        if reach:
+            x1, y1 = 16 + side * 15, y0 - 6 + (y - 18) // 2
+        else:
+            wave = (y // 6 + f) % 2
+            x1, y1 = 16 + side * 13, y0 + 3 + wave * 2
+        d.line((x0, y0, x1, y1), fill=arm, width=2)
+        d.ellipse((x1 - 2, y1 - 2, x1 + 2, y1 + 2), fill=palm)
+        d.point((x1 + side * 2, y1 - 1), fill=palm)
+        d.point((x1 + side * 2, y1 + 1), fill=palm)
+    # 两只紫眼（扑过来时睁大）
+    for ex in (12, 19):
+        if reach:
+            d.ellipse((ex - 1, 12 + bob, ex + 2, 16 + bob), fill=(240, 200, 255, 255))
+            d.point((ex, 14 + bob), fill=(200, 40, 140, 255))
+        else:
+            d.line((ex - 1, 14 + bob, ex + 2, 14 + bob), fill=(230, 170, 255, 255))
+            d.point((ex, 13 + bob), fill=(230, 170, 255, 255))
+    return img
+
+
+def blind_bat(f):
+    img, d = canvas(16, 16)
+    body = (70, 45, 95, 255)
+    wing = (115, 75, 150, 255)
+    wing_l = (160, 120, 200, 255)
+    if f == 2:
+        # 倒挂：翅膀裹着身子，头朝下，眼睛闭着
+        d.line((8, 0, 8, 2), fill=(60, 40, 50, 255))
+        d.ellipse((4, 2, 11, 12), fill=wing)
+        d.line((5, 4, 5, 10), fill=wing_l)
+        d.line((10, 4, 10, 10), fill=wing_l)
+        d.ellipse((6, 10, 9, 14), fill=body)
+        d.point((6, 12), fill=(200, 160, 230, 255))
+        d.point((9, 12), fill=(200, 160, 230, 255))
+        return add_outline(img)
+    up = f == 0
+    for side in (-1, 1):
+        tip_y = 3 if up else 11
+        d.polygon([(8, 7), (8 + side * 7, tip_y), (8 + side * 6, 9), (8 + side * 4, 8), (8 + side * 3, 10)], fill=wing)
+        d.line((8, 7, 8 + side * 7, tip_y), fill=wing_l)
+    d.ellipse((6, 5, 10, 11), fill=body)
+    d.point((7, 4), fill=body)
+    d.point((9, 4), fill=body)
+    d.point((7, 7), fill=(255, 230, 120, 255))
+    d.point((9, 7), fill=(255, 230, 120, 255))
+    return add_outline(img)
+
+
 def main():
     OUT.mkdir(parents=True, exist_ok=True)
     sheets = {
@@ -247,6 +314,8 @@ def main():
         "cradle_bench": cradle_bench(),
         "living_wall": strip([living_wall(i) for i in range(3)]),
         "living_crack": strip([living_crack(0), living_crack(1)]),
+        "night_stalker": strip([night_stalker(i) for i in range(3)]),
+        "blind_bat": strip([blind_bat(i) for i in range(3)]),
     }
     for name, img in sheets.items():
         img.save(OUT / f"{name}.png")

@@ -902,7 +902,7 @@ func _run_shelter() -> void:
 	var nodes: Array = main.level.find_children("*", "", true, false)
 	var saves: Array = nodes.filter(func(n): return n.get("place") != null and str(n.get("place")).contains("小房间"))
 	var door: Array = nodes.filter(func(n): return n.get("target_level") != null)
-	check("有存档点；门锁着（外面危险）", saves.size() == 1 and door.size() == 1 and door[0].get("locked") == true)
+	check("有存档点；门锁着（外面危险；走出夜迷宫回来之后才开）", saves.size() == 1 and door.size() == 1 and door[0].is_locked_now())
 	var props: Array = nodes.filter(func(n): return n.has_method("on_interact") and str(n.get("action")).begins_with("talk:floor_08/shelter_objects"))
 	var all_talk := true
 	var blue_cut_in := false

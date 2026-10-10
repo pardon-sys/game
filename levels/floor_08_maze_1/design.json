@@ -89,5 +89,30 @@
 			]
 		}
 	],
-	"devices": []
+	"devices": [
+		{
+			"kind": "wall_brush",
+			"wall": [
+				46,
+				29
+			],
+			"floor": [
+				47,
+				29
+			],
+			"face": "right"
+		},
+		{
+			"kind": "wall_brush",
+			"wall": [
+				2,
+				2
+			],
+			"floor": [
+				2,
+				1
+			],
+			"face": "up"
+		}
+	]
 }

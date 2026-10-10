@@ -518,6 +518,11 @@ func has_portrait_override() -> bool:
 	return _portrait_override != null
 
 
+## 现在换上的立绘（没有返回 null）。
+func current_override() -> Texture2D:
+	return _portrait_override
+
+
 ## 当前显示的立绘贴图（测试 / CG 用）。
 func current_portrait() -> Texture2D:
 	return portrait.texture if portrait.visible else null

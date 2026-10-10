@@ -21,6 +21,7 @@
 						4.25
 					],
 					"blanket": "old_bed_blanket",
+					"sleep": true,
 					"do": "lie"
 				},
 				{

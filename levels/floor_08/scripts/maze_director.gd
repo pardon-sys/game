@@ -10,6 +10,8 @@ extends Node2D
 ##   节奏：身上的手一起蓄力时屏幕边缘闪紫光；光里或冲刺能躲。
 ##   笑倒：迷宫笑倒小剧场（f8_maze_defeat_1 / 2 轮流）→ 回到上一盏亮着的灯，手清空。
 ##   换段：身上的手和冷光记在 GameState.vars（f8m_hands / f8m_light），下一段接着用。
+##   第五轮：身上的小手（BodyHands）、憋笑键（HoldLaugh）、大量手提示（HandAlarm）、黑暗更怕痒（DarkSense）；
+##          出口：千手过场 f8_maze_finale（迷宫里身上超过 8 只手 → 千手痒痒裤）→ 回小屋 f8_shelter_return。
 
 const HAND_SCRIPT := preload("res://levels/floor_08/scripts/maze_hand.gd")
 ## 每段：同时最多几只紫手、刷新间隔（秒，平静时）
@@ -24,9 +26,11 @@ const MILESTONES := ["first", "total_8", "total_12", "weak_first", "weak_4"]
 
 ## 第一次进迷宫时的介绍板
 const TUTORIAL := [
-	"千手的紫手在黑暗里游荡。靠近时她头顶会弹出一排按键：按键时站着不能动，按顺序按完（J K L U I O）就能把手弹开。",
+	"千手的紫手在黑暗里游荡。靠近时她头顶会弹出一排数字键：按键时站着不能动，按顺序按完（1 2 3 4，小键盘也行）就能把手弹开。",
 	"· 没按上：那只手会盖在她身上的一个部位，一直慢慢地挠（每个部位一只，大腿和屁股不限只数）。",
-	"· 她一笑就有一圈「笑声」：圈里的手会被吸引过来。越笑圈越大。",
+	"· 她一笑就有一圈「笑声」：圈里的手（和别的东西）会被吸引过来。越笑圈越大。",
+	"· 按住 空格 憋笑：笑声圈收起来、闷笑涨得慢，但走得慢；憋气条用完会「噗」地憋不住，笑声一下子传得很远。",
+	"· 冷光太暗时她看不清——不知道下一下落在哪里，会变得更怕痒。",
 	"· 月光灯：走进亮着的灯，身上的手全部散掉，也是重生点。冰晶结界满蓄力能震掉大腿 / 屁股以外的手。",
 	"· 身边的冷光会慢慢变暗：越暗手越难看见、按键提示越晚。在月光灯下补满；放魔法会消耗一截。",
 	"· 身上的手有时会一起「屏住」然后狠挠一下：屏幕边缘闪紫光时冲刺，或者躲进光里。",
@@ -46,6 +50,9 @@ var marked_zone := ""
 var _spawn_t := 3.0
 var _floor_cells: Array[Vector2i] = []
 var _qte_hand: MazeHand
+var hold: HoldLaugh
+var alarm: HandAlarm
+var dark: DarkSense
 var _hud: CanvasLayer
 var _hud_label: Label
 var _light_bar: ColorRect
@@ -68,11 +75,23 @@ func _ready() -> void:
 	GameState.player_registered.connect(_bind)
 	PlayableCharacter.death_override = _on_down
 	_make_hud()
+	alarm = HandAlarm.new()
+	alarm.name = "HandAlarm"
+	alarm.director = self
+	add_child(alarm)
+	dark = DarkSense.new()
+	dark.name = "DarkSense"
+	dark.director = self
+	add_child(dark)
 	for sp in get_tree().get_nodes_in_group("spawn_point"):
 		if str(sp.get("id")) == "maze_exit" and level().is_ancestor_of(sp):
 			_exit_at = (sp as Node2D).global_position
+	_add_exit_glows()
 	if section == 1:
 		TutorialBoard.show_once("f8m_tutorial", "夜迷宫", TUTORIAL)
+	if not GameState.has_flag("f8m_hint_hold"):
+		GameState.set_flag("f8m_hint_hold")
+		_hint_later("按住 空格 憋笑——手和怪听不到你，但憋太久会憋不住！", 1.2)
 	_setup_breathing()
 
 
@@ -122,6 +141,10 @@ func _bind(p: Node) -> void:
 		if GameState.has_flag("f8m_ms_" + id):
 			cover.reached[id] = true
 	radius = LaughRadius.attach(blue)
+	BodyHands.attach(blue)
+	hold = HoldLaugh.attach(blue)
+	if not hold.released.is_connected(_on_hold_released):
+		hold.released.connect(_on_hold_released)
 	if not blue.magic_event.is_connected(_on_magic):
 		blue.magic_event.connect(_on_magic)
 	# 迷宫里：闷笑满了就笑倒（不等扣完血）
@@ -157,6 +180,26 @@ func carry_light() -> CarryLight:
 	return blue.get_node_or_null("CarryLight") as CarryLight if is_instance_valid(blue) else null
 
 
+## 出口亮一点：段间出口（LevelExit）和第三段的最终出口各放一盏微光（ExitGlow）。
+func _add_exit_glows() -> void:
+	var lv := level()
+	if lv == null:
+		return
+	var spots: Array[Vector2] = []
+	for n in lv.find_children("*", "Area2D", true, false):
+		if n.get("target_level") != null and str(n.get("target_level")) != "":
+			spots.append((n as Node2D).global_position)
+	if _exit_at != Vector2.INF:
+		spots.append(_exit_at)
+	var parent: Node = lv.get_node_or_null("FloorObjects")
+	if parent == null:
+		parent = lv.get_node_or_null("Entities")
+	for pos in spots:
+		var g := ExitGlow.new()
+		(parent if parent else lv).add_child(g)
+		g.global_position = pos
+
+
 # ------------------------------------------------------------------ 光 / 吸引（紫手调）
 ## pos 在光里（亮着的月光灯、月光镜的光带）就返回光源位置，否则 null。
 func light_at(pos: Vector2) -> Variant:
@@ -179,7 +222,7 @@ func attracts(hand: Node2D) -> bool:
 
 ## 笑得越厉害，被吸引的手走得越快（0 ~ 1）。
 func attract_boost() -> float:
-	return clampf(radius.radius() / 140.0, 0.0, 1.0) * 0.6 if radius else 0.0
+	return clampf(radius.radius() / LaughRadius.RADII[2], 0.0, 1.0) * 0.6 if radius else 0.0
 
 
 ## 冷光越暗，紫手越淡（0 ~ 1）。
@@ -268,6 +311,8 @@ func summon_near(n: int) -> int:
 	for p in near.slice(0, n):
 		if spawn_hand(p):
 			made += 1
+	if alarm:
+		alarm.summoned(made)
 	return made
 
 
@@ -453,6 +498,9 @@ func qte_params() -> Dictionary:
 
 func _run_qte(hand: MazeHand) -> void:
 	_qte_hand = hand
+	if not GameState.has_flag("f8m_hint_qte"):
+		GameState.set_flag("f8m_hint_qte")
+		GameState.hint("紫手来了！按顺序按数字键 1~4！")
 	var prm := qte_params()
 	var q := KeySequenceQTE.start(blue, int(prm["count"]), float(prm["limit"]), float(prm["delay"]))
 	var ok: bool = await q.finished
@@ -467,8 +515,10 @@ func _run_qte(hand: MazeHand) -> void:
 	if zone == "":
 		hand.vanish()
 		return
-	hand.latch_onto(blue)
-	cover_zone(zone)
+	hand.latch_onto(blue, zone)
+	await get_tree().create_timer(0.16).timeout
+	if is_instance_valid(blue):
+		cover_zone(zone)
 
 
 ## 在 zone 上盖一只手（QTE 失败、组合技「门后千手」、镜面水洼……）。
@@ -476,7 +526,11 @@ func cover_zone(zone: String) -> bool:
 	if not cover.add(zone):
 		return false
 	blue.shake(0.25)
-	Audio.play("grab", -4.0, 0.05, 1.2)
+	Audio.play("hand_grab", -3.0, 0.08)
+	var p := blue.get_parent()
+	if p:
+		Fx.burst(p, blue.global_position + BodyHands.attach(blue).zone_pos(zone), "crystal", 4, 18.0, 0.3, Vector2.ZERO,
+			Color(0.85, 0.5, 1.0))
 	if zone == marked_zone:
 		marked_zone = ""
 	return true
@@ -532,6 +586,48 @@ func _on_magic(event: String, tier: int) -> void:
 			n.on_ice(time)
 
 
+## 过一会儿再弹中间的黄字提示（等介绍板 / 开场过场先走完）。
+func _hint_later(text: String, delay: float) -> void:
+	await get_tree().create_timer(delay).timeout
+	while GameState.in_dialogue or Cutscene.is_playing() or CG.is_busy() or TutorialBoard.is_open():
+		await get_tree().create_timer(0.3).timeout
+	if is_inside_tree():
+		GameState.hint(text)
+
+
+## 憋笑键松开：憋爆了 → 第一次时提示一下
+func _on_hold_released(burst: bool) -> void:
+	if burst and not GameState.has_flag("f8m_hint_crack"):
+		GameState.set_flag("f8m_hint_crack")
+		GameState.hint("憋不住了！笑声传得好远……")
+
+
+# ------------------------------------------------------------------ 夜啼追手抓到她
+var _stalker_catches := 0
+
+
+func stalker_caught(ns: NightStalker) -> void:
+	if _busy or _ended:
+		return
+	_busy = true
+	_stalker_catches += 1
+	ns.velocity = Vector2.ZERO
+	Audio.play("hand_grab", -1.0, 0.0, 0.8)
+	ScreenFx.flash(Color(0.55, 0.15, 0.8), 0.3)
+	await CG.play_theater("f8_maze_stalker_%d" % (1 + (_stalker_catches - 1) % 2))
+	_busy = false
+	if not is_instance_valid(blue):
+		return
+	for i in 2:
+		var z := cover.pick_zone()
+		if z != "":
+			cover_zone(z)
+	if blue.laugh:
+		blue.laugh.add(25.0)
+	if is_instance_valid(ns):
+		ns.retreat()
+
+
 # ------------------------------------------------------------------ 笑倒 → 回到上一盏灯
 func _on_overflow() -> void:
 	if not _busy and not _ended:
@@ -569,16 +665,42 @@ func _run_defeat() -> void:
 
 
 # ------------------------------------------------------------------ 出口（第三段）
+## 走到出口：（收齐回忆时先放回忆小剧场）→ 千手过场（迷宫里身上超过 8 只手过 → 带「千手痒痒裤」的那一版）
+## → 在她的笑声里换到第八层的小房间，接回小屋的过场（shelter_return.gd 放 f8_shelter_return）。
 func _run_ending() -> void:
 	_ended = true
 	_busy = true
 	for h in hands():
 		(h as MazeHand).vanish()
+	for ns in get_tree().get_nodes_in_group("night_stalker"):
+		(ns as NightStalker).retreat(999.0)
+		(ns as Node2D).visible = false
 	if MemoryShard.collected() >= MemoryShard.TOTAL:
 		await CG.play_theater("f8_maze_memory")
 	GameState.set_flag("f8_maze_done")
-	await Cutscene.play("f8_maze_exit")
+	# 身上的手先散掉（过场里千手会一只只重新扣上去）
+	cover.clear()
+	BodyHands.attach(blue).clear(false)
+	if hold and hold.holding:
+		hold._set_holding(false)
+	await Cutscene.play(finale_id())
+	await go_home()
 	_busy = false
+
+
+## 出口过场用哪一版：迷宫里身上超过 8 只手过（里程碑 total_8）→ 千手痒痒裤的那一版。
+static func finale_id() -> String:
+	return "f8_maze_finale_pants" if GameState.has_flag("f8m_ms_total_8") else "f8_maze_finale"
+
+
+## 回小屋：主角换回粉色公主（蓝色公主之后跟着她），换关卡；迷宫带的手 / 冷光不再带着走。
+func go_home() -> void:
+	GameState.set_flag("blue_is_hero", false)
+	GameState.vars.erase("f8m_hands")
+	GameState.vars.erase("f8m_light")
+	var main := get_tree().get_first_node_in_group("main")
+	if main and main.has_method("change_level"):
+		await main.change_level(Floors.scene("floor_08_shelter"))
 
 
 # ------------------------------------------------------------------ HUD：手 ×N、冷光条、回忆 n / 6

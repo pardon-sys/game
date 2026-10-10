@@ -3,8 +3,9 @@ extends Node2D
 ## 笑声半径（第八层夜迷宫）：她憋笑 / 失控时身上有一圈笑声的波纹，半径内的紫手被吸引过来（MazeHand.attracts）。
 ## 半径按闷笑阶段：平静 0、憋笑 RADII[0]、失控一 RADII[1]、失控二 RADII[2]；boost(倍数, 秒) 临时放大（组合技）、
 ## burst(半径) 一下子放出一大圈（笑声收集瓶打开）。
+## muted（憋笑键按住时）：圈收起来（0），只有 burst 照样放。
 
-const RADII := [60.0, 100.0, 140.0]
+const RADII := [75.0, 125.0, 175.0]
 
 var host: PlayableCharacter
 var _boost := 1.0
@@ -13,6 +14,8 @@ var _burst := 0.0
 var _burst_left := 0.0
 var _t := 0.0
 var _shown := 0.0
+## 憋着笑：没声音
+var muted := false
 
 
 static func attach(c: PlayableCharacter) -> LaughRadius:
@@ -46,7 +49,7 @@ func base_radius() -> float:
 
 ## 现在的笑声半径（0 = 没在笑）。
 func radius() -> float:
-	var r := base_radius() * _boost
+	var r := 0.0 if muted else base_radius() * _boost
 	if _burst_left > 0.0:
 		r = maxf(r, _burst)
 	return r

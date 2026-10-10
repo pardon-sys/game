@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="ItemData" format=3]
+
+[ext_resource type="Script" path="res://scripts/items/item_data.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/generated/item_thousand_pants.png" id="2"]
+
+[resource]
+script = ExtResource("1")
+id = "thousand_pants"
+display_name = "千手痒痒裤"
+description = "走出夜迷宫时，几只没有散去的手悄悄缠在蓝色公主的大腿上，变成了一层薄薄的紫色紧身裤——裹着屁股和大腿，脱不下来，时不时还会动一下。闷笑值最低 20、移动 ×0.9、释放魔法有 10% 会失败并大笑。"
+icon = ExtResource("2")
+category = 1
+stackable = false
+pickup_emotion = "shy"

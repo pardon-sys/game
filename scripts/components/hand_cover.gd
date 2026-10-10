@@ -16,7 +16,7 @@ signal rhythm(state: String)
 const WEAK := ["thigh", "butt"]
 const TICK := 0.6
 ## 每只手每次挠的量（再乘部位敏感度、弱点倍率等）：慢慢涨
-const TICKLE := 0.55
+const TICKLE := 0.4
 const CHARGE := 1.2
 const RHYTHM_MULT := 3.0
 
@@ -189,6 +189,17 @@ func rhythm_now() -> void:
 ## 紧接着再来一次狠挠（组合「节奏连击」）。
 func rhythm_again() -> void:
 	_rhythm_cd = minf(_rhythm_cd, 0.3)
+
+
+## 身上的手一起挠一下（垂落吊手把她吊起来时）：每只手 × mult。
+func pulse(mult := 3.0) -> void:
+	var c := host()
+	if c == null or total() == 0:
+		return
+	for z in hands.keys():
+		var h := HitData.make_tickle(_src, TICKLE * count(z) * mult)
+		h.zone = z
+		c.receive_hit(h)
 
 
 func _process(delta: float) -> void:

@@ -1,7 +1,7 @@
 """生成其它像素美术：表情气泡、道具、机关、特效、墙体自动拼接图集。
 
 输出到 assets/generated/：
-  emotes.png   16x16 x 8   (happy, laugh, sad, shy, angry, question, surprise, dots)
+  emotes.png   16x16 x 9   (happy, laugh, sad, shy, angry, question, surprise, dots, sweat)
   items.png    16x16 x 8   (heart, coin, key_bronze, key_gold, letter, lock_bronze, lock_gold, prompt_e)
   hud.png      16x16 x 6   (heart_full, heart_half, heart_empty, gold_full, gold_half, gold_empty)
                金色的三帧盖在红心上（第 6~10 颗心）：满 = 整颗金心、半 = 只有左半边（右半边透出底下的红心）、空 = 只有金色轮廓
@@ -68,8 +68,9 @@ ICONS = {
     "question": ["..EEEE..", ".EE..EE.", ".....EE.", "....EE..", "...EE...", "...EE...", "........", "...EE..."],
     "surprise": ["...aa...", "...aa...", "...aa...", "...aa...", "...aa...", "........", "...aa...", "........"],
     "dots": ["........", "........", "........", "........", "EE.EE.EE", "EE.EE.EE", "........", "........"],
+    "sweat": ["......t.", ".....tt.", "....ttt.", "....tit.", "...ttit.", "...tttt.", "....tt..", "........"],
 }
-EMOTE_ORDER = ["happy", "laugh", "sad", "shy", "angry", "question", "surprise", "dots"]
+EMOTE_ORDER = ["happy", "laugh", "sad", "shy", "angry", "question", "surprise", "dots", "sweat"]
 
 
 def gen_emotes():

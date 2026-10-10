@@ -7,7 +7,7 @@ extends Node2D
 const PRINCESS_TEX := preload("res://assets/generated/princess.png")
 const PRINCESS_CONFIG := preload("res://data/actors/princess_sprites.tres")
 const EMOTES := preload("res://assets/generated/emotes.png")
-const BUBBLE_INDEX := {"happy": 0, "laugh": 1, "sad": 2, "shy": 3, "angry": 4, "question": 5, "surprise": 6, "dots": 7}
+const BUBBLE_INDEX := {"happy": 0, "laugh": 1, "sad": 2, "shy": 3, "angry": 4, "question": 5, "surprise": 6, "dots": 7, "sweat": 8}
 
 var id := ""
 var kind := ""
@@ -233,7 +233,7 @@ func bubble(kind_name: String, time := 1.4) -> void:
 		return
 	var b := Sprite2D.new()
 	b.texture = EMOTES
-	b.hframes = 8
+	b.hframes = 9
 	b.frame = BUBBLE_INDEX[kind_name]
 	b.position = Vector2(8, -34 * _base_scale.y)
 	b.z_index = 10

@@ -34,6 +34,28 @@
 					"text": "再看看",
 					"next": ""
 				}
+			],
+			"goto": [
+				{
+					"if": {
+						"flag": "f8_returned"
+					},
+					"node": "bed_after"
+				}
+			]
+		},
+		"bed_after": {
+			"lines": [
+				{
+					"speaker": "公主",
+					"text": "床单上还留着冰化掉的水印……脚心一想起来就痒痒的。",
+					"emotion": "shy"
+				},
+				{
+					"speaker": "公主",
+					"text": "不睡了！要出发了！",
+					"emotion": "happy"
+				}
 			]
 		},
 		"bed_sleep": {

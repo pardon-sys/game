@@ -7,7 +7,7 @@ extends Node2D
 
 const BUBBLE_INDEX := {
 	"happy": 0, "laugh": 1, "sad": 2, "shy": 3, "angry": 4,
-	"question": 5, "surprise": 6, "dots": 7,
+	"question": 5, "surprise": 6, "dots": 7, "sweat": 8,
 }
 const BUBBLE_TIME := 1.8
 

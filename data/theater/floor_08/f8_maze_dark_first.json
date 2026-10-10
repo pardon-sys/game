@@ -1,0 +1,170 @@
+{
+	"name": "夜迷宫·看不清",
+	"night": true,
+	"cast": {
+		"blue": {
+			"kind": "npc:blue_princess",
+			"at": [
+				0,
+				8
+			],
+			"visual": "normal",
+			"anim": "idle",
+			"dir": "down"
+		}
+	},
+	"steps": [
+		{
+			"actions": [
+				{
+					"time": 0.6,
+					"do": "fade_in"
+				}
+			],
+			"wait": 0.6
+		},
+		{
+			"speaker": "",
+			"text": "（冷光暗得只剩脚边一圈。再往外一步，就是什么都看不见的黑）",
+			"actions": []
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……看不清了。",
+			"actions": [],
+			"emotion": "normal"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……没关系。……摸着墙走。",
+			"actions": [],
+			"emotion": "normal"
+		},
+		{
+			"speaker": "",
+			"text": "（手扶上墙的那一刻，墙缝里有什么，轻轻碰了碰她的指尖）",
+			"actions": []
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……！",
+			"actions": [],
+			"emotion": "surprise"
+		},
+		{
+			"speaker": "",
+			"text": "（看不见的时候，耳朵和皮肤会替眼睛去「看」——风吹过、衣角擦过，全都像是手指）",
+			"actions": [
+				{
+					"state": "giggle",
+					"do": "voice"
+				}
+			]
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……是风。……是风……吧……",
+			"actions": [
+				{
+					"who": "blue",
+					"repeat": 9,
+					"interval": 0.15999999999999998,
+					"fx": "hand",
+					"zone": "neck",
+					"do": "tickle"
+				},
+				{
+					"who": "blue",
+					"time": 0.4,
+					"do": "shake"
+				}
+			],
+			"emotion": "shy"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……不、不知道……下一下……从哪边来……",
+			"actions": [
+				{
+					"who": "blue",
+					"repeat": 10,
+					"interval": 0.15599999999999997,
+					"fx": "hand",
+					"zone": "waist",
+					"do": "tickle"
+				},
+				{
+					"who": "blue",
+					"time": 0.4,
+					"do": "shake"
+				}
+			],
+			"emotion": "helpless_1"
+		},
+		{
+			"speaker": "",
+			"text": "（身体自己绷紧了，等着那一下。等得越久，碰到的时候就越痒）",
+			"actions": []
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……哈、哈哈……碰、碰一下就……哈哈……",
+			"actions": [
+				{
+					"sound": "blue_crack",
+					"volume": -3.0,
+					"do": "sfx"
+				},
+				{
+					"state": "laugh",
+					"do": "voice"
+				},
+				{
+					"who": "blue",
+					"visual": "helpless_1",
+					"anim": "helpless",
+					"do": "pose"
+				},
+				{
+					"who": "blue",
+					"repeat": 13,
+					"interval": 0.11199999999999999,
+					"fx": "hand",
+					"zone": "thigh",
+					"do": "tickle"
+				},
+				{
+					"who": "blue",
+					"time": 0.5,
+					"do": "shake"
+				}
+			],
+			"emotion": "helpless_1"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……太黑了……身体……变奇怪了……",
+			"actions": [],
+			"emotion": "shy"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……找……找月光灯。……快点。",
+			"actions": [],
+			"emotion": "angry"
+		},
+		{
+			"actions": [
+				{
+					"state": "",
+					"do": "voice"
+				},
+				{
+					"time": 0.8,
+					"do": "fade_out"
+				}
+			],
+			"wait": 0.9
+		}
+	]
+}

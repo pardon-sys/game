@@ -1,0 +1,1503 @@
+{
+	"name": "第八层：夜迷宫的出口",
+	"letterbox": true,
+	"skippable": true,
+	"steps": [
+		{
+			"actions": [
+				{
+					"to": [
+						69,
+						1
+					],
+					"zoom": 1.4,
+					"time": 0.8,
+					"do": "camera"
+				},
+				{
+					"who": "princess",
+					"dir": "up",
+					"do": "face"
+				}
+			],
+			"wait": 0.8
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……出口。",
+			"emotion": "surprise",
+			"auto": 1.6
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……光。……终于……",
+			"emotion": "normal",
+			"auto": 1.85
+		},
+		{
+			"actions": [
+				{
+					"time": 0.12,
+					"do": "fade_out"
+				}
+			],
+			"wait": 0.18
+		},
+		{
+			"actions": [
+				{
+					"time": 0.12,
+					"do": "fade_in"
+				}
+			],
+			"wait": 0.3
+		},
+		{
+			"actions": [
+				{
+					"time": 0.12,
+					"do": "fade_out"
+				}
+			],
+			"wait": 0.18
+		},
+		{
+			"actions": [
+				{
+					"time": 0.2,
+					"do": "fade_in"
+				},
+				{
+					"sound": "rumble",
+					"volume": -2.0,
+					"do": "sfx"
+				}
+			],
+			"wait": 0.4
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……？",
+			"emotion": "surprise",
+			"actions": [
+				{
+					"who": "princess",
+					"kind": "question",
+					"do": "bubble"
+				}
+			]
+		},
+		{
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "fade_out"
+				}
+			],
+			"wait": 0.6
+		},
+		{
+			"actions": [
+				{
+					"id": "boss",
+					"kind": "monster:thousand_hand",
+					"at": [
+						61.2,
+						-6.8
+					],
+					"z": 30,
+					"do": "spawn"
+				},
+				{
+					"to": [
+						67.6,
+						-0.3999999999999999
+					],
+					"zoom": 1.0,
+					"time": 0.1,
+					"do": "camera"
+				}
+			],
+			"wait": 0.2
+		},
+		{
+			"actions": [
+				{
+					"time": 1.2,
+					"do": "fade_in"
+				},
+				{
+					"who": "boss",
+					"to": [
+						64.2,
+						-3.8
+					],
+					"time": 1.8,
+					"do": "move"
+				},
+				{
+					"sound": "rumble",
+					"volume": 0.0,
+					"do": "sfx"
+				},
+				{
+					"time": 1.2,
+					"strength": 2.0,
+					"do": "shake"
+				}
+			],
+			"wait": 1.8
+		},
+		{
+			"speaker": "",
+			"text": "（出口的光一下子熄灭了。上方的黑暗里，好多好多只手，慢慢地垂了下来）",
+			"auto": 3.2
+		},
+		{
+			"speaker": "千手痒痒魔",
+			"text": "……你……来……了……"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……让开。",
+			"emotion": "angry"
+		},
+		{
+			"speaker": "千手痒痒魔",
+			"text": "……不……让……",
+			"auto": 1.68
+		},
+		{
+			"actions": [
+				{
+					"sound": "chant",
+					"volume": -6.0,
+					"do": "sfx"
+				},
+				{
+					"who": "princess",
+					"kind": "angry",
+					"do": "bubble"
+				}
+			],
+			"wait": 0.8
+		},
+		{
+			"speaker": "",
+			"text": "（她抬起手要放冰晶——手腕先被两只手扣住了，凝起来的冰一下子散成了雪）",
+			"actions": [
+				{
+					"sound": "fizzle",
+					"do": "sfx"
+				},
+				{
+					"sound": "hand_grab",
+					"do": "sfx"
+				},
+				{
+					"time": 0.3,
+					"do": "shake"
+				}
+			],
+			"auto": 3.4
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……！放、放开。",
+			"emotion": "surprise"
+		},
+		{
+			"speaker": "千手痒痒魔",
+			"text": "……一……只……",
+			"actions": [
+				{
+					"who": "princess",
+					"zone": "waist",
+					"add": 1,
+					"do": "cover"
+				},
+				{
+					"who": "princess",
+					"by": "boss",
+					"repeat": 6,
+					"interval": 0.22,
+					"fx": "hand",
+					"zone": "waist",
+					"do": "tickle"
+				}
+			],
+			"auto": 1.68
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……不痒。",
+			"emotion": "normal",
+			"auto": 1.6
+		},
+		{
+			"speaker": "千手痒痒魔",
+			"text": "……两……只……",
+			"actions": [
+				{
+					"who": "princess",
+					"zone": "armpit",
+					"add": 1,
+					"do": "cover"
+				},
+				{
+					"who": "princess",
+					"by": "boss",
+					"repeat": 6,
+					"interval": 0.22,
+					"fx": "hand",
+					"zone": "armpit",
+					"do": "tickle"
+				}
+			],
+			"auto": 1.68
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……就这种程度。",
+			"emotion": "normal",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "boss",
+					"repeat": 6,
+					"interval": 0.2,
+					"fx": "hand",
+					"zone": "waist",
+					"do": "tickle"
+				}
+			],
+			"auto": 1.68
+		},
+		{
+			"speaker": "",
+			"text": "（她面无表情地站着。只有被扣住的手指，悄悄地蜷了一下）",
+			"auto": 3.0
+		},
+		{
+			"speaker": "千手痒痒魔",
+			"text": "……三……只……",
+			"actions": [
+				{
+					"who": "princess",
+					"zone": "thigh",
+					"add": 1,
+					"do": "cover"
+				},
+				{
+					"who": "princess",
+					"by": "boss",
+					"repeat": 6,
+					"interval": 0.2,
+					"fx": "hand",
+					"zone": "thigh",
+					"do": "tickle"
+				}
+			],
+			"auto": 1.68
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……",
+			"emotion": "shy",
+			"actions": [
+				{
+					"who": "princess",
+					"kind": "dots",
+					"do": "bubble"
+				}
+			]
+		},
+		{
+			"speaker": "千手痒痒魔",
+			"text": "……四……只……",
+			"actions": [
+				{
+					"who": "princess",
+					"zone": "butt",
+					"add": 1,
+					"do": "cover"
+				},
+				{
+					"who": "princess",
+					"by": "boss",
+					"repeat": 6,
+					"interval": 0.2,
+					"fx": "hand",
+					"zone": "butt",
+					"do": "tickle"
+				}
+			],
+			"auto": 1.68
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……那、那里……不行。",
+			"emotion": "shy",
+			"actions": [
+				{
+					"time": 0.3,
+					"do": "shake"
+				}
+			]
+		},
+		{
+			"speaker": "",
+			"text": "（她的声音，第一次抖了一下）",
+			"auto": 2.2
+		},
+		{
+			"speaker": "千手痒痒魔",
+			"text": "……大腿……屁股……你……最怕……"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……没有。……不怕。",
+			"emotion": "angry",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "boss",
+					"repeat": 8,
+					"interval": 0.18,
+					"fx": "hand",
+					"zone": "thigh",
+					"do": "tickle"
+				}
+			],
+			"auto": 1.85
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……一点、一点都……",
+			"emotion": "shy",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "boss",
+					"repeat": 8,
+					"interval": 0.16,
+					"fx": "hand",
+					"zone": "butt",
+					"do": "tickle"
+				}
+			],
+			"auto": 1.85
+		},
+		{
+			"actions": [
+				{
+					"volume": -6.0,
+					"do": "crack"
+				},
+				{
+					"who": "princess",
+					"kind": "laugh",
+					"do": "bubble"
+				},
+				{
+					"time": 0.3,
+					"do": "shake"
+				}
+			],
+			"wait": 0.8
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……刚才的，是……打喷嚏。",
+			"emotion": "angry",
+			"actions": [
+				{
+					"key": "boss8_resist_1",
+					"do": "cg"
+				}
+			]
+		},
+		{
+			"speaker": "千手痒痒魔",
+			"text": "……是……吗……",
+			"actions": [
+				{
+					"who": "princess",
+					"zone": "thigh",
+					"add": 1,
+					"do": "cover"
+				},
+				{
+					"who": "princess",
+					"zone": "butt",
+					"add": 1,
+					"do": "cover"
+				},
+				{
+					"who": "princess",
+					"by": "boss",
+					"repeat": 10,
+					"interval": 0.14,
+					"fx": "hand",
+					"zone": "thigh",
+					"do": "tickle"
+				}
+			],
+			"auto": 1.68
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……唔、嗯……！……大、大腿……两只……",
+			"emotion": "helpless_1",
+			"actions": [
+				{
+					"state": "giggle",
+					"do": "voice"
+				}
+			],
+			"auto": 2.7
+		},
+		{
+			"speaker": "",
+			"text": "（手指贴着大腿内侧，一节一节地往上走，像在弹一首很慢的曲子）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "boss",
+					"repeat": 10,
+					"interval": 0.18,
+					"fx": "hand",
+					"zone": "thigh",
+					"do": "tickle"
+				}
+			],
+			"auto": 3.4
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……别、别弹……哈……",
+			"emotion": "helpless_1",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "boss",
+					"repeat": 10,
+					"interval": 0.14,
+					"fx": "hand",
+					"zone": "butt",
+					"do": "tickle"
+				}
+			],
+			"auto": 1.94
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……魔力……在、在往上涨……",
+			"emotion": "helpless_1",
+			"actions": [
+				{
+					"key": "",
+					"do": "cg"
+				}
+			],
+			"auto": 2.19
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……不、不行……魔力……要满出来了……",
+			"emotion": "helpless_2",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "boss",
+					"repeat": 10,
+					"interval": 0.12,
+					"fx": "hand",
+					"zone": "thigh",
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"by": "boss",
+					"repeat": 10,
+					"interval": 0.13,
+					"fx": "hand",
+					"zone": "butt",
+					"do": "tickle"
+				},
+				{
+					"time": 0.6,
+					"strength": 2.0,
+					"do": "shake"
+				}
+			],
+			"auto": 2.62
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……压、压不住——！",
+			"emotion": "helpless_2",
+			"actions": [
+				{
+					"state": "",
+					"do": "voice"
+				},
+				{
+					"who": "princess",
+					"kind": "surprise",
+					"do": "bubble"
+				}
+			]
+		},
+		{
+			"actions": [
+				{
+					"who": "princess",
+					"hold": 4.0,
+					"do": "burst"
+				},
+				{
+					"fade": 0.4,
+					"do": "crack"
+				}
+			],
+			"wait": 1.2
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……呼……哈……身体……好轻……",
+			"actions": [
+				{
+					"who": "princess",
+					"kind": "shy",
+					"do": "bubble"
+				}
+			],
+			"auto": 3.0
+		},
+		{
+			"speaker": "千手痒痒魔",
+			"text": "……第……一……次……",
+			"actions": [
+				{
+					"who": "boss",
+					"to": [
+						65.0,
+						-3.0
+					],
+					"time": 0.6,
+					"do": "move"
+				}
+			],
+			"auto": 1.94
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……哈、哈哈……！刚、刚放完……别碰……哈哈哈……！",
+			"emotion": "helpless_2",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "boss",
+					"repeat": 12,
+					"interval": 0.1,
+					"fx": "hand",
+					"zone": "thigh",
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"by": "boss",
+					"repeat": 12,
+					"interval": 0.11,
+					"fx": "hand",
+					"zone": "butt",
+					"do": "tickle"
+				},
+				{
+					"state": "laugh",
+					"do": "voice"
+				},
+				{
+					"do": "crack"
+				}
+			],
+			"auto": 3.2
+		},
+		{
+			"speaker": "",
+			"text": "（魔力像泄洪一样涌出去，带走了疲倦——也带走了她最后一点力气）",
+			"auto": 3.2
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……刚才的……不算。",
+			"emotion": "angry",
+			"actions": [
+				{
+					"state": "",
+					"do": "voice"
+				}
+			]
+		},
+		{
+			"speaker": "千手痒痒魔",
+			"text": "……不……算……？",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "boss",
+					"repeat": 6,
+					"interval": 0.2,
+					"fx": "hand",
+					"zone": "thigh",
+					"do": "tickle"
+				}
+			],
+			"auto": 1.77
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……不算。……我、我还没笑。",
+			"emotion": "angry"
+		},
+		{
+			"speaker": "千手痒痒魔",
+			"text": "……那……再……多……一……点……",
+			"actions": [
+				{
+					"who": "princess",
+					"zone": "thigh",
+					"add": 2,
+					"do": "cover"
+				},
+				{
+					"who": "princess",
+					"zone": "butt",
+					"add": 2,
+					"do": "cover"
+				},
+				{
+					"key": "boss8_resist_2",
+					"do": "cg"
+				},
+				{
+					"sound": "hand_grab",
+					"volume": -2.0,
+					"do": "sfx"
+				}
+			],
+			"auto": 2.45
+		},
+		{
+			"speaker": "",
+			"text": "（大腿上四只，屁股上三只。手指一下一下地捏、揉，又沿着腿根画圈）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "boss",
+					"repeat": 14,
+					"interval": 0.11,
+					"fx": "hand",
+					"zone": "thigh",
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"by": "boss",
+					"repeat": 14,
+					"interval": 0.12,
+					"fx": "hand",
+					"zone": "butt",
+					"do": "tickle"
+				}
+			],
+			"auto": 3.6
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……哈、哈哈……不、不准……一起……",
+			"emotion": "helpless_1",
+			"actions": [
+				{
+					"state": "giggle",
+					"do": "voice"
+				}
+			],
+			"auto": 2.53
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……哈哈……哈哈哈……！",
+			"emotion": "helpless_2",
+			"actions": [
+				{
+					"state": "laugh",
+					"do": "voice"
+				},
+				{
+					"do": "crack"
+				}
+			],
+			"auto": 2.02
+		},
+		{
+			"speaker": "",
+			"text": "（她第一次笑出了声。笑声在出口的石壁之间来回回荡）",
+			"auto": 3.0
+		},
+		{
+			"speaker": "千手痒痒魔",
+			"text": "……你……小时候……也……这样……笑……"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……！……那、那个……不准说……",
+			"emotion": "shy",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "boss",
+					"repeat": 8,
+					"interval": 0.14,
+					"fx": "hand",
+					"zone": "thigh",
+					"do": "tickle"
+				}
+			],
+			"auto": 2.36
+		},
+		{
+			"speaker": "千手痒痒魔",
+			"text": "……捉……迷……藏……输……了……就……挠……",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "boss",
+					"repeat": 12,
+					"interval": 0.12,
+					"fx": "hand",
+					"zone": "butt",
+					"do": "tickle"
+				}
+			],
+			"auto": 2.96
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……哈哈哈……不、不准说……哈哈哈哈……！",
+			"emotion": "helpless_2",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "boss",
+					"repeat": 14,
+					"interval": 0.1,
+					"fx": "hand",
+					"zone": "thigh",
+					"do": "tickle"
+				}
+			],
+			"auto": 2.79
+		},
+		{
+			"speaker": "千手痒痒魔",
+			"text": "……挠……到……你……说……「再……来……一……次」……",
+			"actions": [
+				{
+					"key": "boss8_weak_1",
+					"do": "cg"
+				},
+				{
+					"who": "princess",
+					"by": "boss",
+					"repeat": 14,
+					"interval": 0.1,
+					"fx": "hand",
+					"zone": "butt",
+					"do": "tickle"
+				}
+			],
+			"auto": 3.4
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……没、没说过……哈哈哈……一次都、都没……哈哈哈哈……！",
+			"emotion": "helpless_2",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "boss",
+					"repeat": 14,
+					"interval": 0.1,
+					"fx": "hand",
+					"zone": "thigh",
+					"do": "tickle"
+				}
+			],
+			"auto": 3.47
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……魔、魔力……又……",
+			"emotion": "helpless_2",
+			"actions": [
+				{
+					"key": "",
+					"do": "cg"
+				}
+			],
+			"auto": 1.94
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……又、又要满了……这么快……",
+			"emotion": "helpless_2",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "boss",
+					"repeat": 12,
+					"interval": 0.1,
+					"fx": "hand",
+					"zone": "thigh",
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"by": "boss",
+					"repeat": 12,
+					"interval": 0.1,
+					"fx": "hand",
+					"zone": "butt",
+					"do": "tickle"
+				},
+				{
+					"time": 0.6,
+					"do": "shake"
+				}
+			],
+			"auto": 2.28
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……不、不要看……！",
+			"emotion": "helpless_2",
+			"actions": [
+				{
+					"state": "",
+					"do": "voice"
+				},
+				{
+					"who": "princess",
+					"kind": "surprise",
+					"do": "bubble"
+				}
+			]
+		},
+		{
+			"actions": [
+				{
+					"who": "princess",
+					"hold": 5.0,
+					"do": "burst"
+				},
+				{
+					"long": true,
+					"volume": -2.0,
+					"do": "crack"
+				}
+			],
+			"wait": 1.4
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……哈……哈……全、全部……放出去了……",
+			"actions": [
+				{
+					"who": "princess",
+					"kind": "shy",
+					"do": "bubble"
+				}
+			],
+			"auto": 3.0
+		},
+		{
+			"speaker": "",
+			"text": "（长长的笑声里，她软软地靠在了千手的手臂上）",
+			"auto": 3.4
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……咳。",
+			"emotion": "normal",
+			"actions": [
+				{
+					"fade": 1.0,
+					"do": "crack"
+				}
+			]
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……我是……冰之……",
+			"emotion": "angry"
+		},
+		{
+			"actions": [
+				{
+					"who": "princess",
+					"by": "boss",
+					"repeat": 1,
+					"interval": 0.1,
+					"fx": "hand",
+					"zone": "thigh",
+					"do": "tickle"
+				},
+				{
+					"time": 0.25,
+					"do": "shake"
+				},
+				{
+					"who": "princess",
+					"kind": "surprise",
+					"do": "bubble"
+				},
+				{
+					"sound": "pop",
+					"pitch": 1.6,
+					"do": "sfx"
+				}
+			],
+			"wait": 0.3
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……呀！",
+			"emotion": "surprise"
+		},
+		{
+			"actions": [
+				{
+					"do": "wait"
+				}
+			],
+			"wait": 2.0
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……刚才那声……也不算。",
+			"emotion": "shy",
+			"actions": [
+				{
+					"who": "princess",
+					"kind": "shy",
+					"do": "bubble"
+				}
+			]
+		},
+		{
+			"speaker": "千手痒痒魔",
+			"text": "……可……爱……"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……！！……闭、闭嘴……",
+			"emotion": "shy",
+			"actions": [
+				{
+					"who": "princess",
+					"kind": "angry",
+					"do": "bubble"
+				}
+			]
+		},
+		{
+			"speaker": "千手痒痒魔",
+			"text": "……那……全……部……",
+			"actions": [
+				{
+					"who": "princess",
+					"zone": "thigh",
+					"add": 2,
+					"do": "cover"
+				},
+				{
+					"who": "princess",
+					"zone": "butt",
+					"add": 2,
+					"do": "cover"
+				},
+				{
+					"who": "princess",
+					"zone": "belly",
+					"add": 1,
+					"do": "cover"
+				},
+				{
+					"who": "princess",
+					"zone": "neck",
+					"add": 1,
+					"do": "cover"
+				},
+				{
+					"who": "princess",
+					"zone": "sole",
+					"add": 1,
+					"do": "cover"
+				},
+				{
+					"sound": "rumble",
+					"do": "sfx"
+				},
+				{
+					"time": 0.8,
+					"strength": 2.0,
+					"do": "shake"
+				},
+				{
+					"key": "boss8_weak_2",
+					"do": "cg"
+				}
+			],
+			"auto": 3.0
+		},
+		{
+			"speaker": "",
+			"text": "（大腿上六只，屁股上五只，腰、腋下、肚子、脖子、脚心——手指铺满了她的全身）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "boss",
+					"repeat": 16,
+					"interval": 0.08,
+					"fx": "hand",
+					"zone": "thigh",
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"by": "boss",
+					"repeat": 16,
+					"interval": 0.09,
+					"fx": "hand",
+					"zone": "butt",
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"by": "boss",
+					"repeat": 10,
+					"interval": 0.12,
+					"fx": "hand",
+					"zone": "waist",
+					"do": "tickle"
+				}
+			],
+			"auto": 3.6
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……哈哈哈哈哈哈……！",
+			"emotion": "helpless_2",
+			"actions": [
+				{
+					"state": "laugh",
+					"do": "voice"
+				},
+				{
+					"do": "crack"
+				}
+			],
+			"auto": 1.94
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……好、好痒……好痒啦……哈哈哈哈……！",
+			"emotion": "helpless_2",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "boss",
+					"repeat": 14,
+					"interval": 0.08,
+					"fx": "hand",
+					"zone": "thigh",
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"by": "boss",
+					"repeat": 14,
+					"interval": 0.09,
+					"fx": "hand",
+					"zone": "butt",
+					"do": "tickle"
+				}
+			],
+			"auto": 2.7
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……我、我认输……认输嘛……哈哈哈哈……！",
+			"emotion": "helpless_2",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "boss",
+					"repeat": 10,
+					"interval": 0.1,
+					"fx": "hand",
+					"zone": "armpit",
+					"do": "tickle"
+				}
+			],
+			"auto": 2.79
+		},
+		{
+			"speaker": "千手痒痒魔",
+			"text": "……再……来……一……次……？",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "boss",
+					"repeat": 12,
+					"interval": 0.09,
+					"fx": "hand",
+					"zone": "thigh",
+					"do": "tickle"
+				}
+			],
+			"auto": 2.28
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……哈哈哈……不、不要……哈哈……",
+			"emotion": "helpless_2",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "boss",
+					"repeat": 12,
+					"interval": 0.09,
+					"fx": "hand",
+					"zone": "butt",
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……再、再来……一次……哈哈哈哈……！",
+			"emotion": "helpless_2",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "boss",
+					"repeat": 14,
+					"interval": 0.08,
+					"fx": "hand",
+					"zone": "thigh",
+					"do": "tickle"
+				},
+				{
+					"do": "crack"
+				}
+			]
+		},
+		{
+			"speaker": "",
+			"text": "（她说出口的那一刻，自己都愣住了。然后，笑得更厉害了）",
+			"auto": 3.2
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……哈哈……第、第三次……要、要来了……哈哈哈……！",
+			"emotion": "helpless_2",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "boss",
+					"repeat": 10,
+					"interval": 0.12,
+					"fx": "hand",
+					"zone": "thigh",
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"by": "boss",
+					"repeat": 10,
+					"interval": 0.13,
+					"fx": "hand",
+					"zone": "butt",
+					"do": "tickle"
+				},
+				{
+					"time": 0.6,
+					"strength": 2.0,
+					"do": "shake"
+				}
+			],
+			"auto": 3.21
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……哈……哈……——！",
+			"emotion": "helpless_2",
+			"actions": [
+				{
+					"state": "",
+					"do": "voice"
+				},
+				{
+					"who": "princess",
+					"kind": "surprise",
+					"do": "bubble"
+				}
+			]
+		},
+		{
+			"actions": [
+				{
+					"who": "princess",
+					"hold": 4.0,
+					"do": "burst"
+				},
+				{
+					"fade": 0.4,
+					"do": "crack"
+				}
+			],
+			"wait": 1.2
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……嗯……舒服……",
+			"actions": [
+				{
+					"who": "princess",
+					"kind": "shy",
+					"do": "bubble"
+				}
+			],
+			"auto": 3.0
+		},
+		{
+			"speaker": "千手痒痒魔",
+			"text": "……第……三……次……",
+			"actions": [
+				{
+					"who": "boss",
+					"to": [
+						65.0,
+						-3.0
+					],
+					"time": 0.6,
+					"do": "move"
+				}
+			],
+			"auto": 1.94
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……哈哈哈哈……！刚放完……最、最敏感……哈哈哈哈哈……！",
+			"emotion": "helpless_2",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "boss",
+					"repeat": 12,
+					"interval": 0.1,
+					"fx": "hand",
+					"zone": "thigh",
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"by": "boss",
+					"repeat": 12,
+					"interval": 0.11,
+					"fx": "hand",
+					"zone": "butt",
+					"do": "tickle"
+				},
+				{
+					"state": "laugh",
+					"do": "voice"
+				},
+				{
+					"do": "crack"
+				}
+			],
+			"auto": 3.2
+		},
+		{
+			"speaker": "",
+			"text": "（刚放完魔力的身体敏感得不得了。手指一碰，魔力就又涌了上来）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "boss",
+					"repeat": 16,
+					"interval": 0.07,
+					"fx": "hand",
+					"zone": "thigh",
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"by": "boss",
+					"repeat": 16,
+					"interval": 0.08,
+					"fx": "hand",
+					"zone": "butt",
+					"do": "tickle"
+				}
+			],
+			"auto": 3.2
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……哈哈……又、又满了……连、连着……不行……哈哈哈……！",
+			"emotion": "helpless_2",
+			"actions": [
+				{
+					"time": 0.6,
+					"do": "shake"
+				}
+			],
+			"auto": 3.47
+		},
+		{
+			"actions": [
+				{
+					"who": "princess",
+					"hold": 5.0,
+					"do": "burst"
+				},
+				{
+					"long": true,
+					"volume": -1.0,
+					"do": "crack"
+				}
+			],
+			"wait": 1.4
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……呼……哈……哈……",
+			"actions": [
+				{
+					"who": "princess",
+					"kind": "shy",
+					"do": "bubble"
+				},
+				{
+					"state": "",
+					"do": "voice"
+				}
+			],
+			"auto": 3.0
+		},
+		{
+			"speaker": "",
+			"text": "（第四次。她整个人软得像一团云，躺在千手的手心里，一边喘气一边止不住地笑）",
+			"actions": [
+				{
+					"key": "boss8_mob",
+					"do": "cg"
+				}
+			],
+			"auto": 3.6
+		},
+		{
+			"speaker": "千手痒痒魔",
+			"text": "……这样……笑……的……你……"
+		},
+		{
+			"speaker": "千手痒痒魔",
+			"text": "……好……久……没……见……了……"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……哈……哈……",
+			"emotion": "helpless_1",
+			"actions": [
+				{
+					"key": "",
+					"do": "cg"
+				}
+			]
+		},
+		{
+			"speaker": "",
+			"text": "（千手的手慢慢松开，一只、一只地散回黑暗里）",
+			"actions": [
+				{
+					"who": "princess",
+					"do": "uncover"
+				},
+				{
+					"who": "boss",
+					"to": [
+						61.2,
+						-6.8
+					],
+					"time": 2.0,
+					"do": "move"
+				}
+			],
+			"auto": 3.2
+		},
+		{
+			"actions": [
+				{
+					"who": "boss",
+					"do": "despawn"
+				},
+				{
+					"emotion": "helpless_1",
+					"do": "pose"
+				}
+			],
+			"wait": 0.6
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……哈……哈哈……停、停不下来……哈哈……",
+			"emotion": "helpless_1",
+			"actions": [
+				{
+					"state": "laugh",
+					"do": "voice"
+				},
+				{
+					"long": true,
+					"volume": -3.0,
+					"do": "crack"
+				}
+			],
+			"auto": 3.0
+		},
+		{
+			"actions": [
+				{
+					"time": 2.4,
+					"do": "fade_out"
+				}
+			],
+			"wait": 2.6
+		},
+		{
+			"actions": [
+				{
+					"flag": "f8_maze_finale_seen",
+					"do": "set_flag"
+				}
+			],
+			"wait": 0.2
+		}
+	],
+	"end_dark": true
+}

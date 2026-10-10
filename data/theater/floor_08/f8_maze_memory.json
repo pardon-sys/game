@@ -1,5 +1,6 @@
 {
 	"name": "夜迷宫·回忆",
+	"night": true,
 	"cast": {
 		"blue": {
 			"kind": "npc:blue_princess",
@@ -16,15 +17,26 @@
 		{
 			"actions": [
 				{
-					"time": 0.5,
+					"time": 0.6,
 					"do": "fade_in"
 				}
 			],
-			"wait": 0.5
+			"wait": 0.6
 		},
 		{
 			"speaker": "",
-			"text": "（六片碎片在她手心里一起亮了起来——眼前浮现出很久以前的那个房间）",
+			"text": "（六片碎片在她手心里一起亮了起来。冷光、月光、碎片的光——迷宫第一次这么亮）",
+			"actions": []
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……亮了。",
+			"actions": [],
+			"emotion": "surprise"
+		},
+		{
+			"speaker": "",
+			"text": "（光里，浮现出很久以前的那个房间。小小的床、蓝色的帷幔、墙上的蜡笔画）",
 			"actions": []
 		},
 		{
@@ -47,8 +59,25 @@
 		{
 			"speaker": "蓝色的公主",
 			"text": "……挠到我哭……也说「再来一次」。",
-			"actions": [],
+			"actions": [
+				{
+					"state": "giggle",
+					"do": "voice"
+				}
+			],
 			"emotion": "sad"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……晚上怕黑……你就在床边……一只手、一只手地亮着。",
+			"actions": [],
+			"emotion": "shy"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……像星星。",
+			"actions": [],
+			"emotion": "shy"
 		},
 		{
 			"speaker": "蓝色的公主",
@@ -64,12 +93,7 @@
 		{
 			"speaker": "蓝色的公主",
 			"text": "……！",
-			"actions": [
-				{
-					"state": "giggle",
-					"do": "voice"
-				}
-			],
+			"actions": [],
 			"emotion": "surprise"
 		},
 		{
@@ -87,6 +111,12 @@
 		{
 			"speaker": "蓝色的公主",
 			"text": "……对不起。……那天，我没有回来。",
+			"actions": [],
+			"emotion": "sad"
+		},
+		{
+			"speaker": "",
+			"text": "（手停了很久。然后，在她的大腿上，很轻、很轻地挠了一下）",
 			"actions": [
 				{
 					"state": "laugh",
@@ -98,13 +128,7 @@
 					"anim": "helpless",
 					"do": "pose"
 				}
-			],
-			"emotion": "sad"
-		},
-		{
-			"speaker": "",
-			"text": "（手停了很久。然后，在她的大腿上，很轻、很轻地挠了一下）",
-			"actions": []
+			]
 		},
 		{
 			"speaker": "蓝色的公主",
@@ -112,15 +136,60 @@
 			"actions": [
 				{
 					"who": "blue",
-					"repeat": 6,
-					"interval": 0.14,
+					"repeat": 11,
+					"interval": 0.12,
 					"fx": "hand",
 					"zone": "thigh",
 					"do": "tickle"
 				},
 				{
 					"who": "blue",
-					"time": 0.3,
+					"time": 0.5,
+					"do": "shake"
+				}
+			],
+			"emotion": "helpless_1"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……还、还是……那个地方……",
+			"actions": [
+				{
+					"who": "blue",
+					"repeat": 12,
+					"interval": 0.11599999999999999,
+					"fx": "hand",
+					"zone": "thigh",
+					"do": "tickle"
+				},
+				{
+					"who": "blue",
+					"time": 0.5,
+					"do": "shake"
+				}
+			],
+			"emotion": "helpless_1"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……哈哈……一点……都没变……",
+			"actions": [
+				{
+					"sound": "blue_crack",
+					"volume": -3.0,
+					"do": "sfx"
+				},
+				{
+					"who": "blue",
+					"repeat": 13,
+					"interval": 0.11199999999999999,
+					"fx": "hand",
+					"zone": "thigh",
+					"do": "tickle"
+				},
+				{
+					"who": "blue",
+					"time": 0.5,
 					"do": "shake"
 				}
 			],

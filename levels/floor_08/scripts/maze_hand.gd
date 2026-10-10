@@ -22,6 +22,8 @@ var _gone := false
 var _path: Array[Vector2] = []
 var _repath := 0.0
 var glow: PointLight2D
+## 正在扑向她（画张开的手掌）
+var _latching := false
 
 
 func _ready() -> void:
@@ -73,15 +75,22 @@ func vanish() -> void:
 	tw.tween_callback(queue_free)
 
 
-## QTE 没过：朝她飞过去（之后由导演把它算成盖在部位上，这只手本身消失）。
-func latch_onto(c: Node2D) -> void:
+## QTE 没过：张开手掌朝她扑过去，扣到部位上时「啪」地压扁一下（之后由导演算成盖在部位上，身上的小手 BodyHands 接着画，这只手本身消失）。
+func latch_onto(c: Node2D, zone := "") -> void:
 	if _gone:
 		return
 	_gone = true
+	_latching = true
 	remove_from_group("maze_hand")
+	var off := Vector2(0, -10)
+	var bh := BodyHands.of(c)
+	if bh and zone != "":
+		off = bh.zone_pos(zone)
 	var tw := create_tween()
-	tw.tween_property(self, "global_position", c.global_position + Vector2(0, -10), 0.18)
-	tw.tween_property(self, "modulate:a", 0.0, 0.15)
+	tw.tween_property(self, "scale", Vector2(1.35, 1.35), 0.1)
+	tw.parallel().tween_property(self, "global_position", c.global_position + off + Vector2(0, 10), 0.16).set_ease(Tween.EASE_IN)
+	tw.tween_property(self, "scale", Vector2(0.6, 0.35), 0.06)
+	tw.tween_property(self, "modulate:a", 0.0, 0.12)
 	tw.tween_callback(queue_free)
 
 
@@ -142,6 +151,6 @@ func _draw() -> void:
 		var p := Vector2(sway * (1.0 - i / 3.0), -30.0 + i * 7.0)
 		draw_texture_rect_region(ARM, Rect2(p - Vector2(8, 8), Vector2(16, 16)), Rect2((i % 2) * 24, 0, 24, 24),
 			Color(0.85, 0.6, 1.0, 0.7))
-	var f := 2 + int(_t * 6.0) % 2
+	var f := 2 if _latching else 2 + int(_t * 6.0) % 2
 	draw_texture_rect_region(ARM, Rect2(Vector2(sway * 0.3, -10) - Vector2(10, 10), Vector2(20, 20)), Rect2(f * 24, 0, 24, 24),
 		Color(0.95, 0.75, 1.0, 0.9))
