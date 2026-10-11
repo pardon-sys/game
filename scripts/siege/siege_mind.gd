@@ -19,8 +19,23 @@ func _init(d: Node = null) -> void:
 	director = d
 
 
+## 先在某个地方转一会儿（从敌塔地基出来的怪：聚集起来才会搭敌塔）。
+var hold_at := Vector2.ZERO
+var hold_left := 0.0
+
+
+func hold(at: Vector2, sec: float) -> void:
+	hold_at = at
+	hold_left = sec
+
+
 ## 返回 true = 这一帧的移动由它决定了。
 func wander(m: Monster, delta: float) -> bool:
+	if hold_left > 0.0:
+		hold_left -= delta
+		var to := hold_at - m.global_position
+		m._move(to.normalized() if to.length() > 28.0 else Vector2.from_angle(m._t), m.stats.wander_speed, delta)
+		return true
 	_think -= delta
 	if _think <= 0.0:
 		_think = THINK if director == null or director.on_screen(m.global_position) else FAR_THINK

@@ -10,6 +10,8 @@ extends Node2D
 ## 两位公主（Duo：C 键切换）：
 ##   粉色公主默认操控，地面近战；AI 时用 CompanionController（SiegeAIHooks：闷笑高时去薄荷冰泉、没事做时去最危险的那段墙下）。
 ##   蓝色公主在城墙顶走道（SiegeMageController：自动放法术；被挠下城墙后 10 秒走到梯子爬回去）。
+##   镜头（SiegeCamera）：滚轮 / - / = 缩放（0.5~1.5 倍），V 切换整个战场的全景（暂停）。
+##   玩家操控蓝色公主时按 L：瞄准施法（SpellAim，选点放 4 个城墙法术）。
 ##   倒下（death_override）：放笑倒 CG（按她自己的角色版本）；粉色公主在城门复活、城墙扣一点血；
 ##   蓝色公主倒在原地（Downed.timeless：不倒计时、不会自己起来），要粉色公主过去按住 E 救。
 ## 怪物：每只挂 SiegeMind（行军大脑；攻城怪自己的 make_mind() 给特别的大脑）。目标表 nearest_target 每次只查几个对象，不扫全场。
@@ -29,6 +31,8 @@ const TOTAL_WAVES := 10
 const DOWN_PENALTY := 0.05
 ## 蓝色公主被挠下城墙后，多久自己走去梯子爬回去
 const FALLEN_TIME := 10.0
+## 从敌塔地基出来的怪先在地基旁边转多久（聚集起来就会搭敌塔）
+const SITE_HOLD := 14.0
 
 static var current: SiegeDirector
 
@@ -52,6 +56,8 @@ var gate_pos := Vector2.ZERO
 var hooks: SiegeAIHooks
 var hud: SiegeHud
 var intel: SiegeIntel
+var cam: SiegeCamera
+var aim: SpellAim
 ## 这一波还没出的怪：[{t, monster, from}]（t = 战斗开始后第几秒出）
 var _queue: Array = []
 var _fight_t := 0.0
@@ -79,6 +85,9 @@ func _exit_tree() -> void:
 		PlayableCharacter.death_override = Callable()
 	if PlayableCharacter.ai_factory.is_valid() and PlayableCharacter.ai_factory.get_object() == self:
 		PlayableCharacter.ai_factory = Callable()
+	PlayableCharacter.magic_override = Callable()
+	PlayerInputController.movement_locked = false
+	PlayerInputController.actions_locked = false
 	Downed.timeless = false
 	if Duo.director == self:
 		Duo.stop()
@@ -90,6 +99,22 @@ func level() -> Node:
 	while n and not n.has_node("Walls"):
 		n = n.get_parent()
 	return n
+
+
+## 地图大小（像素）：墙图层用到的范围。
+var _map_size := Vector2.ZERO
+
+
+func map_size() -> Vector2:
+	if _map_size != Vector2.ZERO:
+		return _map_size
+	var lv := level()
+	var walls_layer := lv.get_node_or_null("Walls") as TileMapLayer if lv else null
+	if walls_layer == null:
+		return Vector2(110, 80) * 16.0
+	var r := walls_layer.get_used_rect()
+	_map_size = Vector2(r.end) * 16.0
+	return _map_size
 
 
 func entities() -> Node:
@@ -141,6 +166,18 @@ func _setup() -> void:
 	add_child(hud)
 	intel = SiegeIntel.new()
 	add_child(intel)
+	cam = SiegeCamera.new()
+	cam.director = self
+	add_child(cam)
+	cam.setup(map_size())
+	aim = SpellAim.new()
+	aim.director = self
+	add_child(aim)
+	PlayableCharacter.magic_override = func(c: PlayableCharacter) -> bool:
+		if c == blue and c.is_controlled():
+			aim.open(c)
+			return true
+		return false
 	wave = clampi(int(GameState.vars.get("siege_wave", 1)), 1, TOTAL_WAVES)
 	crystals = int(GameState.vars.get("siege_crystals", int(data.get("start_crystals", 20))))
 	crystals_changed.emit(crystals)
@@ -251,10 +288,17 @@ func spawn(key: String, from := "bottom", at = null) -> Monster:
 	var m := load(path).instantiate() as Monster
 	if m == null:
 		return null
-	var pos: Vector2 = at if at is Vector2 else spawn_pos(from)
+	var site: Node2D = null
+	if from == "site" and not (at is Vector2):
+		var sites := get_tree().get_nodes_in_group("siege_enemy_site")
+		if not sites.is_empty():
+			site = sites.pick_random()
+	var pos: Vector2 = at if at is Vector2 else (site.global_position + Vector2(randf_range(-30, 30), randf_range(-20, 20)) if site else spawn_pos(from))
 	entities().add_child(m)
 	m.global_position = pos
 	m.mind = m.call("make_mind", self) if m.has_method("make_mind") else SiegeMind.new(self)
+	if site and m.mind is SiegeMind:
+		(m.mind as SiegeMind).hold(site.global_position, SITE_HOLD)
 	m.set_home(pos, 9999.0)
 	m.died.connect(_on_monster_died)
 	monsters.append(m)
@@ -366,6 +410,31 @@ func hottest_wall() -> SiegeWall:
 
 func is_on_wall(c: Node2D) -> bool:
 	return c.global_position.y < wall_foot_y() - 20.0
+
+
+# ------------------------------------------------------------------ 敌塔相关
+## 蓝色公主（在城墙上）是不是在魔力干扰塔的范围里。
+func silenced(c: PlayableCharacter) -> bool:
+	for t in get_tree().get_nodes_in_group("siege_enemy_tower"):
+		if t.get("kind") == "silence" and t.has_method("silences") and t.silences(c):
+			return true
+	return false
+
+
+## 正被拖走的粉色公主（藤蔓拉拽塔 / 搬运小鬼）：蓝色公主的冰链救援目标。
+func rescue_request() -> Variant:
+	if pink and is_instance_valid(pink) and pink.get_meta("siege_dragged", false):
+		return pink
+	return null
+
+
+# ------------------------------------------------------------------ 造塔
+## 正在等蓝色公主冰光的冰塔格（第一个；没有返回 null）。
+func build_request() -> Variant:
+	for pad in get_tree().get_nodes_in_group("siege_pad"):
+		if pad.has_method("waiting") and pad.waiting():
+			return pad
+	return null
 
 
 # ------------------------------------------------------------------ 目标 / 查询

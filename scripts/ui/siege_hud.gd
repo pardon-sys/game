@@ -77,10 +77,7 @@ func _draw_view() -> void:
 
 
 func world_size() -> Vector2:
-	var lv := director.level()
-	var w := float(lv.get("width")) if lv and lv.get("width") != null else 110.0
-	var h := float(lv.get("height")) if lv and lv.get("height") != null else 80.0
-	return Vector2(w, h) * 16.0
+	return director.map_size()
 
 
 func to_map(p: Vector2) -> Vector2:

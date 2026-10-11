@@ -1,0 +1,127 @@
+{
+	"_说明": [
+		"攻防战的敌塔（gen_floor06_siege.py 生成；EnemyTower 读）。"
+	],
+	"vine_pull": {
+		"name": "藤蔓拉拽塔",
+		"hp": 22,
+		"interval": 7,
+		"range": 200,
+		"pull": 55,
+		"presses": 12,
+		"reward": 8,
+		"lines": [
+			"呀——！藤、藤蔓缠住腰了！",
+			"被拖过去了……放开啦！",
+			"藤蔓尖在腰上挠……嘻嘻嘻！"
+		]
+	},
+	"tailor": {
+		"name": "痒痒裁缝铺",
+		"hp": 20,
+		"interval": 8,
+		"range": 240,
+		"range_wall": 520,
+		"reward": 8,
+		"items": [
+			"equip_t_feather_socks",
+			"equip_t_toe_brush",
+			"equip_t_fluff_bra",
+			"equip_t_thigh_ring",
+			"equip_t_pinch_pad",
+			"equip_t_knead_tights",
+			"equip_t_bell_anklet",
+			"equip_t_mark_patch"
+		]
+	},
+	"glue": {
+		"name": "黏胶喷泉",
+		"hp": 18,
+		"interval": 5,
+		"range": 140,
+		"reward": 6
+	},
+	"net": {
+		"name": "吊网塔",
+		"hp": 20,
+		"interval": 9,
+		"range": 190,
+		"hang": 3.5,
+		"reward": 8,
+		"lines": [
+			"网、网住了！吊起来了！",
+			"网眼里伸出手来了……脚心！哈哈哈！",
+			"脚、脚够不着地……别挠脚心！"
+		]
+	},
+	"silence": {
+		"name": "魔力干扰塔",
+		"hp": 22,
+		"interval": 3,
+		"width": 130,
+		"reward": 10
+	},
+	"portal": {
+		"name": "怪物传送门",
+		"hp": 26,
+		"interval": 3,
+		"cap": 6,
+		"spawns": [
+			"slime",
+			"rat",
+			"caterpillar"
+		],
+		"reward": 10
+	},
+	"windmill": {
+		"name": "强风风车塔",
+		"hp": 20,
+		"interval": 6,
+		"range": 170,
+		"force": 300,
+		"reward": 8,
+		"lines": [
+			"哇啊——被吹走了！",
+			"风、风好大……要吹到怪物堆里了！"
+		]
+	},
+	"totem": {
+		"name": "狂欢图腾",
+		"hp": 28,
+		"interval": 1,
+		"range": 120,
+		"reward": 12
+	},
+	"thigh_tower": {
+		"name": "腿根揉揉塔",
+		"hp": 22,
+		"interval": 5,
+		"range": 560,
+		"amount": 6,
+		"reward": 10,
+		"lines": [
+			"腿、腿根被揉了！",
+			"屁股被捏了一下……！"
+		],
+		"lines_blue": [
+			"……腿根。……拇指，在揉。",
+			"……屁股……左、右……轮流捏……",
+			"……飞、飞过来的手……揉腿根……",
+			"……裤子……也跟着动了……"
+		]
+	},
+	"sole_tower": {
+		"name": "脚心刷刷塔",
+		"hp": 20,
+		"interval": 5,
+		"range": 220,
+		"amount": 4,
+		"reward": 8,
+		"lines": [
+			"脚踝被抓住了！脚趾……被扳开了！",
+			"刷、刷子在刷脚心……哈哈哈哈！",
+			"脚板被扳着往后……指甲在刮……不行不行！",
+			"趾缝里也刷……嘻嘻嘻嘻！"
+		]
+	}
+}

@@ -74,6 +74,8 @@ const SCENES := {
 	"siegewall": "res://scenes/siege/siege_wall.tscn",
 	"siegeladder": "res://scenes/siege/siege_ladder.tscn",
 	"siegehorn": "res://scenes/siege/siege_horn.tscn",
+	"buildpad": "res://scenes/siege/build_pad.tscn",
+	"enemysite": "res://scenes/siege/enemy_site.tscn",
 	"guard_patrol": "res://scenes/stealth/patrol_guard.tscn",
 }
 ## 按 type 参数选择场景的类型：新增怪物/友军/陷阱时在这里注册。

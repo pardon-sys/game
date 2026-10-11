@@ -91,7 +91,18 @@
 					"from": "left",
 					"interval": 1.0,
 					"delay": 16
+				},
+				{
+					"monster": "slime",
+					"count": 13,
+					"from": "site",
+					"interval": 0.5,
+					"delay": 2.0
 				}
+			],
+			"enemy_towers": [
+				"glue",
+				"windmill"
 			],
 			"theater": "siege_fail_3"
 		},
@@ -112,7 +123,19 @@
 					"from": "right",
 					"interval": 1.4,
 					"delay": 10
+				},
+				{
+					"monster": "rat",
+					"count": 14,
+					"from": "site",
+					"interval": 0.5,
+					"delay": 2.0
 				}
+			],
+			"enemy_towers": [
+				"vine_pull",
+				"tailor",
+				"glue"
 			],
 			"theater": "siege_fail_4"
 		},
@@ -140,7 +163,20 @@
 					"from": "right",
 					"interval": 0.9,
 					"delay": 8
+				},
+				{
+					"monster": "slime",
+					"count": 15,
+					"from": "site",
+					"interval": 0.5,
+					"delay": 2.0
 				}
+			],
+			"enemy_towers": [
+				"portal",
+				"vine_pull",
+				"windmill",
+				"glue"
 			],
 			"theater": "siege_fail_5"
 		},
@@ -168,7 +204,19 @@
 					"from": "bottom",
 					"interval": 0.8,
 					"delay": 14
+				},
+				{
+					"monster": "rat",
+					"count": 16,
+					"from": "site",
+					"interval": 0.5,
+					"delay": 2.0
 				}
+			],
+			"enemy_towers": [
+				"sole_tower",
+				"net",
+				"tailor"
 			],
 			"theater": "siege_fail_6"
 		},
@@ -189,7 +237,20 @@
 					"from": "hole",
 					"interval": 1.0,
 					"delay": 4
+				},
+				{
+					"monster": "slime",
+					"count": 17,
+					"from": "site",
+					"interval": 0.5,
+					"delay": 2.0
 				}
+			],
+			"enemy_towers": [
+				"net",
+				"sole_tower",
+				"vine_pull",
+				"glue"
 			],
 			"theater": "siege_fail_7"
 		},
@@ -203,7 +264,19 @@
 					"from": "hole",
 					"interval": 1.0,
 					"delay": 8
+				},
+				{
+					"monster": "rat",
+					"count": 18,
+					"from": "site",
+					"interval": 0.5,
+					"delay": 2.0
 				}
+			],
+			"enemy_towers": [
+				"silence",
+				"thigh_tower",
+				"tailor"
 			],
 			"theater": "siege_fail_8"
 		},
@@ -224,7 +297,20 @@
 					"from": "left",
 					"interval": 0.6,
 					"delay": 20
+				},
+				{
+					"monster": "slime",
+					"count": 19,
+					"from": "site",
+					"interval": 0.5,
+					"delay": 2.0
 				}
+			],
+			"enemy_towers": [
+				"totem",
+				"thigh_tower",
+				"silence",
+				"portal"
 			],
 			"theater": "siege_fail_9"
 		},
@@ -252,7 +338,24 @@
 					"from": "right",
 					"interval": 0.6,
 					"delay": 4
+				},
+				{
+					"monster": "rat",
+					"count": 20,
+					"from": "site",
+					"interval": 0.5,
+					"delay": 2.0
 				}
+			],
+			"enemy_towers": [
+				"totem",
+				"thigh_tower",
+				"sole_tower",
+				"silence",
+				"portal",
+				"net",
+				"vine_pull",
+				"tailor"
 			],
 			"theater": "siege_fail_10"
 		}

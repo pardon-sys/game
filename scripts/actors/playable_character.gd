@@ -300,7 +300,9 @@ func _tick(delta: float) -> void:
 					elif controller.is_action_just_pressed(&"dash") and not rooted:
 						dash(input)
 					elif controller.is_action_just_pressed(&"magic"):
-						begin_channel()
+						# 关卡可以接管魔法键（攻防战：蓝色公主打开瞄准施法）
+						if not (magic_override.is_valid() and magic_override.call(self)):
+							begin_channel()
 					elif controller.is_action_just_pressed(&"interact"):
 						interact()
 					elif controller.is_action_just_pressed(&"use_item"):
@@ -857,6 +859,8 @@ func fatigue_burst() -> void:
 static var death_override: Callable
 ## 关卡自己决定没被操控的角色用什么 AI（攻防战：蓝色公主城墙法师、粉色公主近战）；返回 CharacterController
 static var ai_factory: Callable
+## 关卡接管魔法键（返回 true = 接管了，不吟唱）：攻防战里玩家操控的蓝色公主按 L 打开瞄准施法
+static var magic_override: Callable
 
 
 ## 子类钩子：死亡时要播过场就返回 true（由子类负责之后调用 respawn）。

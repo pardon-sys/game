@@ -1,0 +1,98 @@
+{
+	"tower_icicle": [
+		0,
+		0,
+		16,
+		16
+	],
+	"tower_snowman": [
+		16,
+		0,
+		16,
+		16
+	],
+	"tower_decoy": [
+		32,
+		0,
+		16,
+		16
+	],
+	"tower_mint": [
+		48,
+		0,
+		16,
+		16
+	],
+	"tower_frost": [
+		64,
+		0,
+		16,
+		16
+	],
+	"tower_repair": [
+		80,
+		0,
+		16,
+		16
+	],
+	"etower_vine_pull": [
+		96,
+		0,
+		16,
+		16
+	],
+	"etower_tailor": [
+		112,
+		0,
+		16,
+		16
+	],
+	"etower_glue": [
+		128,
+		0,
+		16,
+		16
+	],
+	"etower_net": [
+		144,
+		0,
+		16,
+		16
+	],
+	"etower_silence": [
+		160,
+		0,
+		16,
+		16
+	],
+	"etower_portal": [
+		176,
+		0,
+		16,
+		16
+	],
+	"etower_windmill": [
+		192,
+		0,
+		16,
+		16
+	],
+	"etower_totem": [
+		208,
+		0,
+		16,
+		16
+	],
+	"etower_thigh_tower": [
+		224,
+		0,
+		16,
+		16
+	],
+	"etower_sole_tower": [
+		240,
+		0,
+		16,
+		16
+	]
+}

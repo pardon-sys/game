@@ -139,6 +139,216 @@ def horn():
     return add_outline(img)
 
 
+# ================================================================ 冰塔（6 种 × 2 级，24x32）
+def ice_base(d, lvl):
+    d.ellipse((2, 25, 21, 31), fill=(120, 150, 180, 255))
+    d.ellipse((4, 26, 19, 30), fill=ICE_D)
+    if lvl >= 2:
+        for x in (3, 18):
+            d.polygon([(x, 28), (x + 1, 21), (x + 3, 28)], fill=ICE_L)
+
+
+def crystal_spire(d, x0, y0, x1, y1, col=ICE, dark=ICE_D, light=ICE_L):
+    cx = (x0 + x1) // 2
+    d.polygon([(cx, y0), (x1, y0 + (y1 - y0) // 3), (x1 - 1, y1), (x0 + 1, y1), (x0, y0 + (y1 - y0) // 3)], fill=col)
+    d.polygon([(cx, y0), (x0, y0 + (y1 - y0) // 3), (x0 + 1, y1), (cx, y1)], fill=dark)
+    d.line((cx + 1, y0 + 3, cx + 1, y1 - 3), fill=light)
+
+
+def tower(kind, lvl):
+    img, d = canvas(24, 32)
+    ice_base(d, lvl)
+    if kind == "icicle":
+        crystal_spire(d, 6, 4 - (2 if lvl > 1 else 0), 17, 27)
+        for (x, y) in ((4, 12), (17, 10)):
+            d.polygon([(x, y), (x + 3, y + 2), (x + 1, y + 5)], fill=ICE_L)
+        if lvl > 1:
+            crystal_spire(d, 1, 12, 7, 26)
+            crystal_spire(d, 16, 12, 22, 26)
+    elif kind == "snowman":
+        d.ellipse((5, 14, 18, 27), fill=(245, 250, 255, 255), outline=(180, 205, 230, 255))
+        d.ellipse((7, 5, 16, 15), fill=(245, 250, 255, 255), outline=(180, 205, 230, 255))
+        d.point((10, 9), fill=(40, 40, 60, 255)); d.point((13, 9), fill=(40, 40, 60, 255))
+        d.polygon([(11, 11), (12, 11), (15, 12)], fill=(255, 150, 60, 255))
+        d.rectangle((6, 14, 17, 15), fill=(255, 120, 160, 255))
+        if lvl > 1:
+            d.rectangle((8, 1, 15, 5), fill=(60, 60, 90, 255)); d.rectangle((6, 4, 17, 5), fill=(60, 60, 90, 255))
+    elif kind == "decoy":
+        # 公主形状的漂亮冰雕
+        d.polygon([(11, 3), (14, 6), (13, 10), (10, 10), (9, 6)], fill=ICE_L)
+        d.polygon([(6, 26), (9, 11), (14, 11), (17, 26)], fill=ICE)
+        d.polygon([(6, 26), (9, 11), (11, 11), (11, 26)], fill=ICE_D)
+        d.polygon([(9, 2), (11, 0), (12, 2), (14, 0), (14, 3), (9, 3)], fill=(255, 230, 140, 255))
+        if lvl > 1:
+            for (x, y) in ((3, 8), (19, 14), (4, 20)):
+                d.point((x, y), fill=(255, 255, 255, 255)); d.point((x + 1, y), fill=ICE_L)
+    elif kind == "mint":
+        d.ellipse((3, 16, 20, 27), fill=(120, 230, 200, 255), outline=(60, 160, 140, 255))
+        d.ellipse((6, 18, 17, 24), fill=(190, 255, 235, 255))
+        d.line((11, 6, 11, 17), fill=(150, 240, 220, 255), width=2)
+        for (x, y) in ((7, 8), (15, 6), (10, 3)):
+            d.ellipse((x, y, x + 3, y + 3), fill=(200, 255, 240, 220))
+        if lvl > 1:
+            d.polygon([(2, 14), (6, 10), (5, 16)], fill=(90, 200, 120, 255)); d.polygon([(21, 14), (17, 10), (18, 16)], fill=(90, 200, 120, 255))
+    elif kind == "frost":
+        crystal_spire(d, 8, 6, 15, 26, (200, 235, 255, 255), (130, 190, 240, 255))
+        for a in range(6):
+            ang = a * math.pi / 3
+            d.line((11, 12, 11 + round(math.cos(ang) * 8), 12 + round(math.sin(ang) * 8)), fill=ICE_L)
+        if lvl > 1:
+            d.ellipse((2, 4, 21, 20), outline=(220, 245, 255, 200))
+    else:  # repair
+        d.rectangle((6, 12, 17, 27), fill=STONE)
+        d.rectangle((6, 12, 17, 14), fill=STONE_L)
+        crystal_spire(d, 8, 2, 15, 13)
+        d.line((5, 20, 18, 20), fill=ICE, width=2)
+        if lvl > 1:
+            d.rectangle((3, 16, 5, 27), fill=ICE_D); d.rectangle((18, 16, 20, 27), fill=ICE_D)
+    return add_outline(img)
+
+
+# ================================================================ 敌塔（10 种，24x40；黑紫木头 + 怪物的装饰）
+EWOOD = (90, 50, 70, 255)
+EWOOD_D = (55, 28, 45, 255)
+EGLOW = (220, 90, 200, 255)
+
+
+def etower_frame(d):
+    d.polygon([(4, 38), (7, 12), (16, 12), (19, 38)], fill=EWOOD)
+    d.polygon([(4, 38), (7, 12), (10, 12), (8, 38)], fill=EWOOD_D)
+    d.line((5, 26, 18, 26), fill=EWOOD_D)
+    d.ellipse((1, 34, 22, 39), fill=(50, 30, 58, 230))
+
+
+def etower(kind):
+    img, d = canvas(24, 40)
+    etower_frame(d)
+    if kind == "vine_pull":
+        for x in (3, 20):
+            d.line((x, 36, 11, 6), fill=(90, 170, 80, 255), width=2)
+        d.ellipse((7, 2, 16, 11), fill=(120, 200, 100, 255)); d.ellipse((9, 4, 14, 9), fill=(255, 120, 180, 255))
+    elif kind == "tailor":
+        d.rectangle((5, 4, 18, 13), fill=(240, 200, 230, 255), outline=(150, 80, 130, 255))
+        d.line((8, 8, 15, 8), fill=(150, 80, 130, 255))
+        d.polygon([(16, 2), (21, 0), (20, 4)], fill=(200, 200, 220, 255))   # 剪刀
+        d.ellipse((2, 15, 7, 20), fill=(255, 180, 210, 255))                 # 小手
+    elif kind == "glue":
+        d.ellipse((5, 4, 18, 14), fill=(190, 230, 120, 255), outline=(110, 150, 60, 255))
+        for x in (7, 11, 15):
+            d.line((x, 14, x, 18 + (x % 3)), fill=(170, 220, 100, 255), width=2)
+    elif kind == "net":
+        d.line((11, 2, 11, 14), fill=EWOOD_D, width=2)
+        d.line((11, 3, 21, 8), fill=EWOOD_D, width=2)
+        for i in range(4):
+            d.line((14 + i * 2, 8, 13 + i * 2, 16), fill=(230, 220, 200, 255))
+            d.line((13, 10 + i * 2, 21, 10 + i * 2), fill=(230, 220, 200, 255))
+    elif kind == "silence":
+        d.polygon([(11, 0), (17, 8), (11, 15), (5, 8)], fill=(150, 80, 220, 255))
+        d.polygon([(11, 3), (14, 8), (11, 12), (8, 8)], fill=(220, 170, 255, 255))
+        d.line((3, 4, 19, 12), fill=(255, 90, 120, 255), width=1)
+    elif kind == "portal":
+        d.ellipse((3, 1, 20, 18), fill=(40, 10, 50, 255), outline=EGLOW)
+        d.ellipse((7, 5, 16, 14), fill=(120, 40, 140, 255))
+        d.ellipse((9, 7, 14, 12), fill=(250, 150, 240, 255))
+    elif kind == "windmill":
+        d.ellipse((9, 6, 14, 11), fill=(200, 180, 150, 255))
+        for ang in (0.4, 2.0, 3.6, 5.2):
+            d.polygon([(11.5, 8.5), (11.5 + math.cos(ang) * 10, 8.5 + math.sin(ang) * 10),
+                       (11.5 + math.cos(ang + 0.5) * 9, 8.5 + math.sin(ang + 0.5) * 9)], fill=(230, 220, 240, 255))
+    elif kind == "totem":
+        for i, c in enumerate(((255, 120, 170), (255, 200, 90), (150, 220, 255))):
+            y = 2 + i * 6
+            d.rectangle((6, y, 17, y + 5), fill=c + (255,), outline=(70, 30, 60, 255))
+            d.point((9, y + 2), fill=(30, 20, 30, 255)); d.point((14, y + 2), fill=(30, 20, 30, 255))
+            d.line((9, y + 4, 14, y + 4), fill=(30, 20, 30, 255))
+        d.polygon([(2, 4), (6, 3), (6, 7)], fill=(255, 220, 120, 255)); d.polygon([(21, 4), (17, 3), (17, 7)], fill=(255, 220, 120, 255))
+    elif kind == "thigh_tower":
+        for i, (x, y) in enumerate(((5, 4), (12, 2), (16, 7))):
+            d.ellipse((x, y, x + 5, y + 6), fill=(190, 140, 230, 255), outline=(110, 60, 150, 255))
+            d.line((x + 1, y + 1, x + 1, y - 2), fill=(190, 140, 230, 255))
+        d.ellipse((8, 12, 15, 16), fill=EGLOW)
+    else:  # sole_tower
+        d.rectangle((5, 6, 18, 12), fill=(230, 200, 140, 255), outline=(140, 100, 60, 255))
+        for x in range(6, 18, 2):
+            d.line((x, 12, x, 16), fill=(250, 240, 200, 255))
+        d.ellipse((1, 2, 6, 8), fill=(255, 190, 210, 255)); d.ellipse((17, 1, 22, 7), fill=(255, 190, 210, 255))
+    return add_outline(img)
+
+
+def snowman(f):
+    img, d = canvas(14, 16)
+    d.ellipse((2, 7, 11, 15), fill=(245, 250, 255, 255), outline=(170, 200, 230, 255))
+    d.ellipse((3, 1 + f, 10, 8 + f), fill=(245, 250, 255, 255), outline=(170, 200, 230, 255))
+    d.point((5, 4 + f), fill=(40, 40, 60, 255)); d.point((8, 4 + f), fill=(40, 40, 60, 255))
+    d.point((7, 5 + f), fill=(255, 150, 60, 255))
+    d.line((0, 9, 3, 10 - f), fill=WOOD_D); d.line((13, 9, 10, 10 - f), fill=WOOD_D)
+    return add_outline(img)
+
+
+def glue_puddle():
+    img, d = canvas(32, 16)
+    d.ellipse((1, 3, 31, 15), fill=(170, 220, 100, 170))
+    d.ellipse((6, 5, 24, 12), fill=(200, 240, 130, 190))
+    for (x, y) in ((9, 7), (20, 9)):
+        d.ellipse((x, y, x + 3, y + 2), fill=(240, 255, 200, 220))
+    return img
+
+
+def hand_proj(col):
+    img, d = canvas(10, 10)
+    d.ellipse((2, 4, 8, 9), fill=col)
+    for x in (2, 4, 6, 8):
+        d.line((x, 4, x, 1), fill=col)
+    return add_outline(img)
+
+
+def brush_proj():
+    img, d = canvas(12, 8)
+    d.rectangle((1, 1, 8, 4), fill=(230, 200, 140, 255))
+    for x in range(1, 9, 2):
+        d.line((x, 4, x, 7), fill=(250, 240, 210, 255))
+    d.ellipse((8, 0, 11, 4), fill=(255, 190, 210, 255))
+    return add_outline(img)
+
+
+def equip_proj():
+    img, d = canvas(12, 12)
+    d.ellipse((1, 1, 11, 11), fill=(255, 170, 220, 255), outline=(160, 60, 130, 255))
+    d.line((4, 6, 8, 6), fill=(255, 255, 255, 255)); d.line((6, 4, 6, 8), fill=(255, 255, 255, 255))
+    return add_outline(img)
+
+
+def net_tile():
+    img, d = canvas(20, 20)
+    for i in range(0, 20, 4):
+        d.line((i, 0, i, 19), fill=(235, 225, 200, 220))
+        d.line((0, i, 19, i), fill=(235, 225, 200, 220))
+    return img
+
+
+def gen_towers():
+    items = []
+    for k in ("icicle", "snowman", "decoy", "mint", "frost", "repair"):
+        for lvl in (1, 2):
+            items.append(("tower_%s_%d" % (k, lvl), tower(k, lvl)))
+    for k in ETOWERS:
+        items.append(("etower_" + k, etower(k)))
+    items += [("snowman_0", snowman(0)), ("snowman_1", snowman(1)), ("glue", glue_puddle()),
+              ("proj_hand", hand_proj((190, 140, 230, 255))), ("proj_brush", brush_proj()), ("proj_equip", equip_proj()),
+              ("proj_icicle", icicle_proj()), ("net", net_tile())]
+    pack(items, "towers")
+
+
+def icicle_proj():
+    img, d = canvas(6, 10)
+    d.polygon([(1, 0), (5, 0), (3, 9)], fill=ICE)
+    d.line((3, 1, 3, 6), fill=ICE_L)
+    return add_outline(img)
+
+
+ETOWERS = ["vine_pull", "tailor", "glue", "net", "silence", "portal", "windmill", "totem", "thigh_tower", "sole_tower"]
+
+
 def pack(items, name):
     x = y = row_h = 0
     meta, placed = {}, []
@@ -165,9 +375,58 @@ def gen_props():
     pack(items, "props")
 
 
+def fit_icon(img, size=16):
+    """把一张图裁掉透明边、等比缩到 size×size 里（最近邻），居中。"""
+    bb = img.getbbox()
+    if bb:
+        img = img.crop(bb)
+    w, h = img.size
+    k = min(size / w, size / h)
+    img = img.resize((max(1, round(w * k)), max(1, round(h * k))), Image.NEAREST)
+    out = Image.new("RGBA", (size, size), (0, 0, 0, 0))
+    out.alpha_composite(img, ((size - img.size[0]) // 2, (size - img.size[1]) // 2))
+    return out
+
+
+def unknown_icon():
+    img, d = canvas(16, 16)
+    d.ellipse((1, 1, 14, 14), fill=(80, 50, 90, 255), outline=(200, 150, 220, 255))
+    d.text((5, 2), "?", fill=(255, 220, 255, 255))
+    return img
+
+
+def gen_icons():
+    """战场情报的图标（16x16）：按 data/siege/intel.json 的键，从各图集里找对应的图缩小；找不到画个问号。"""
+    import os
+    root = OUT.parent.parent
+    intel_path = root / "data/siege/intel.json"
+    keys = [k for k in json.loads(intel_path.read_text()) if k != "_说明"] if intel_path.exists() else []
+    sheets = {}
+    for name in ("towers", "monsters", "hazards"):
+        png, js = DIR / (name + ".png"), DIR / (name + ".json")
+        if png.exists() and js.exists():
+            sheets[name] = (Image.open(png).convert("RGBA"), json.loads(js.read_text()))
+    equip_png = OUT / "equip_icons.png"
+    items = []
+    for k in keys:
+        src = None
+        for sheet, meta in sheets.values():
+            for cand in (k, k + "_1", k.replace("tower_", "tower_") + "_1", "icon_" + k):
+                if cand in meta:
+                    x, y, w, h = meta[cand]
+                    src = sheet.crop((x, y, x + w, y + h))
+                    break
+            if src:
+                break
+        items.append((k, fit_icon(src) if src else unknown_icon()))
+    pack(items, "icons")
+
+
 def main():
     DIR.mkdir(parents=True, exist_ok=True)
     gen_props()
+    gen_towers()
+    gen_icons()
     print("攻防战像素图已生成：", sorted(p.name for p in DIR.glob("*.png")))
 
 

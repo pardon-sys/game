@@ -33,6 +33,12 @@ func _ready() -> void:
 	_finish()
 	await _wait(0.3)
 	await _shot("prep")
+	var pc := GameState.player.camera
+	print("cam zoom ", pc.zoom, " limits ", pc.limit_left, ",", pc.limit_top, ",", pc.limit_right, ",", pc.limit_bottom, " current ", pc.is_current(), " vpcam ", get_viewport().get_camera_2d())
+	pc.zoom = Vector2(0.5, 0.5)
+	await _wait(0.5)
+	print("after zoom ", pc.zoom)
+	await _shot("zoomtest")
 	# 开打
 	d.start_now()
 	await _wait(14.0)

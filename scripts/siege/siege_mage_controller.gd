@@ -33,7 +33,7 @@ func _physics_process(delta: float) -> void:
 	_move = Vector2.ZERO
 	var me := _me()
 	if me == null or director == null or not me.is_alive() or Downed.is_downed(me) or GameState.in_dialogue \
-			or me.get_meta("siege_falling", false) or _climbing:
+			or me.get_meta("siege_falling", false) or me.get_meta("siege_beaming", false) or _climbing:
 		intent = "idle"
 		return
 	# 被缠住 / 被抓住 / 身上挂着东西：连按挣扎
