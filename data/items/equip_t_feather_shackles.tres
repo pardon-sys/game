@@ -1,0 +1,30 @@
+[gd_resource type="Resource" script_class="EquipData" format=3]
+
+[ext_resource type="Script" path="res://scripts/items/equip_data.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/generated/equip_icons.png" id="2"]
+
+[sub_resource type="AtlasTexture" id="icon"]
+atlas = ExtResource("2")
+region = Rect2(304, 0, 16, 16)
+
+[resource]
+script = ExtResource("1")
+id = "equip_t_feather_shackles"
+display_name = "羽毛脚镣"
+description = "两只脚踝被一根短链连在一起，只能小步小步地走。链子上的羽毛扫着脚踝。"
+icon = SubResource("icon")
+category = 4
+stackable = false
+show_in_hud = false
+pickup_emotion = "happy"
+slots = Array[String](["sole"])
+owner_id = ""
+modifiers = {"speed": 0.55}
+zone_mods = {}
+block = {}
+cursed = false
+special = "no_dash"
+pros = "（无）"
+cons = "两脚踝连在一起：不能冲刺、移动 ×0.55，羽毛扫脚踝"
+temporary = true
+kind = "bind"

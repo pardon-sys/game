@@ -11,6 +11,8 @@ extends ItemData
 ##   combo_key  装备组合（combos.json 的 equip）认的键，默认就是 id
 ##   special    特殊效果：bell = 被挠到时叮铃响，附近的怪都朝她过来
 ##   pros / cons  装备页上显示的好处 / 代价
+##   temporary  临时痒痒装备（攻防战里被敌人强制穿上，Equipment.force；不卖、不进背包）
+##   kind       临时装备的类别：tickle 挠痒 / bind 束缚 / curse 负面（装备页、情报里显示）
 
 @export var slots: Array[String] = []
 @export var owner_id := ""
@@ -22,6 +24,8 @@ extends ItemData
 @export var special := ""
 @export var pros := ""
 @export var cons := ""
+@export var temporary := false
+@export var kind := ""
 
 
 func _init() -> void:

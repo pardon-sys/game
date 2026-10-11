@@ -11,12 +11,21 @@ extends RefCounted
 ##   部位敏感度 → Sensitivity.zone_total 加上 zone_mod(角色, 部位)
 ##   挡挠痒 → PlayableCharacter._tickle_multiplier 里 try_block(角色, 部位)
 ##   铃铛 → PlayableCharacter 被挠到时 ring_bell
+## 强制穿上的临时装备（攻防战：痒痒裁缝铺、捆绑藤怪）：force(角色, id, 秒)。
+##   GameState.equip_forced = {角色 id: {部位: {id, left}}}，盖在原装备上面、期间脱不下，倒计时到了自己掉
+##   （EquipFx 每帧调 tick_forced）；release 提前解开（搭档按住 E、清凉雪花）。同一部位再穿一件就替换、重新计时。
+##   蓝色公主穿着千手痒痒裤时，占大腿 / 屁股的临时装备被裤子吸收：裤子 20 秒内发作更频繁、更重（EquipFx 加成 absorb）。
+## 负面装备（is_negative：诅咒的、临时的）由 EquipFx 定时发作、出立绘反应（data/equip_reactions.json，分角色）。
 
 
 const UNLOCK_FLAG := "equip_unlocked"
 const PANTS_ID := "thousand_pants"
 const PANTS_FLAG := "blue_tickle_pants"
 const PANTS_SLOTS := ["thigh", "butt"]
+const FORCE_TIME := 20.0
+## 千手痒痒裤吸收临时装备时的加成：发作频率、力度
+const ABSORB_RATE := 1.8
+const ABSORB_POWER := 1.4
 
 
 static func unlocked() -> bool:
@@ -29,6 +38,9 @@ static func worn(who: String) -> Dictionary:
 	if who == "blue" and GameState.has_flag(PANTS_FLAG):
 		for z in PANTS_SLOTS:
 			out[z] = PANTS_ID
+	var forced: Dictionary = GameState.equip_forced.get(who, {})
+	for z in forced:
+		out[z] = str(forced[z]["id"])
 	return out
 
 
@@ -40,7 +52,7 @@ static func item_at(who: String, zone: String) -> EquipData:
 ## 穿着的装备（每件一次）。没解锁时是空的。
 static func items_of(who: String) -> Array[EquipData]:
 	var out: Array[EquipData] = []
-	if not unlocked() and not (who == "blue" and GameState.has_flag(PANTS_FLAG)):
+	if not unlocked() and not (who == "blue" and GameState.has_flag(PANTS_FLAG)) and (GameState.equip_forced.get(who, {}) as Dictionary).is_empty():
 		return out
 	var seen := {}
 	for z in worn(who):
@@ -75,7 +87,7 @@ static func why_not(who: String, id: String) -> String:
 		return "另一个人正穿着"
 	for z in it.slots:
 		var cur := item_at(who, z)
-		if cur and cur.id != id and cur.cursed:
+		if cur and cur.id != id and (cur.cursed or is_forced(who, cur.id)):
 			return "%s被%s占着（脱不下）" % [TickleZones.zone_name(z), cur.display_name]
 	return ""
 
@@ -105,7 +117,7 @@ static func equip(who: String, id: String) -> bool:
 ## 脱掉这个部位上的装备（整件）。诅咒的脱不下。
 static func unequip(who: String, zone: String) -> bool:
 	var it := item_at(who, zone)
-	if it == null or it.cursed:
+	if it == null or it.cursed or is_forced(who, it.id):
 		return false
 	var mine: Dictionary = GameState.equipment.get(who, {})
 	_remove(mine, it.id)
@@ -113,6 +125,110 @@ static func unequip(who: String, zone: String) -> bool:
 	GameState.set_flag("wearing_%s_%s" % [who, it.id], false)
 	_notify(who)
 	return true
+
+
+# ------------------------------------------------------------------ 临时装备
+## 强制穿上一件临时装备。返回 "worn" / "absorbed"（被千手痒痒裤吸收）/ ""（穿不上）。
+static func force(who: String, id: String, sec := FORCE_TIME) -> String:
+	var it := ItemDB.get_item(id) as EquipData
+	if it == null:
+		return ""
+	var forced: Dictionary = GameState.equip_forced.get(who, {})
+	var zones: Array = []
+	var absorbed := false
+	for z in it.slots:
+		if who == "blue" and GameState.has_flag(PANTS_FLAG) and z in PANTS_SLOTS:
+			absorbed = true
+		else:
+			zones.append(z)
+	if zones.is_empty():
+		_absorb(who)
+		return "absorbed" if absorbed else ""
+	# 同一部位上原来的临时装备整件换掉
+	for z in zones:
+		if forced.has(z):
+			var old := str(forced[z]["id"])
+			for k in forced.keys():
+				if str(forced[k]["id"]) == old:
+					forced.erase(k)
+	for z in zones:
+		forced[z] = {"id": id, "left": sec}
+	GameState.equip_forced[who] = forced
+	if absorbed:
+		_absorb(who)
+	_notify(who)
+	return "worn"
+
+
+static func _absorb(who: String) -> void:
+	var c := Characters.node_of(who)
+	var fx := EquipFx.of(c)
+	if fx:
+		fx.add_mod("absorb", ABSORB_RATE, ABSORB_POWER, FORCE_TIME)
+		fx.flare(PANTS_ID, PANTS_SLOTS.pick_random(), "absorb", false)
+
+
+static func is_forced(who: String, id: String) -> bool:
+	for z in GameState.equip_forced.get(who, {}):
+		if str(GameState.equip_forced[who][z]["id"]) == id:
+			return true
+	return false
+
+
+## 这件是负面装备（诅咒的 / 临时强制的）：会定时发作、出立绘反应。
+static func is_negative(who: String, id: String) -> bool:
+	var it := ItemDB.get_item(id) as EquipData
+	return it != null and (it.cursed or it.temporary or is_forced(who, id))
+
+
+## 正在穿着的临时装备 id（每件一次）。
+static func forced_items(who: String) -> Array:
+	var out := []
+	for z in GameState.equip_forced.get(who, {}):
+		var id := str(GameState.equip_forced[who][z]["id"])
+		if not out.has(id):
+			out.append(id)
+	return out
+
+
+static func forced_left(who: String, id: String) -> float:
+	for z in GameState.equip_forced.get(who, {}):
+		if str(GameState.equip_forced[who][z]["id"]) == id:
+			return float(GameState.equip_forced[who][z]["left"])
+	return 0.0
+
+
+static func tick_forced(who: String, delta: float) -> void:
+	var forced: Dictionary = GameState.equip_forced.get(who, {})
+	if forced.is_empty():
+		return
+	var changed := false
+	for z in forced.keys():
+		forced[z]["left"] = float(forced[z]["left"]) - delta
+		if float(forced[z]["left"]) <= 0.0:
+			forced.erase(z)
+			changed = true
+	if changed:
+		_notify(who)
+
+
+## 解开临时装备（id 为空 = 全部）。返回解开了几件。
+static func release(who: String, id := "") -> int:
+	var forced: Dictionary = GameState.equip_forced.get(who, {})
+	var gone := {}
+	for z in forced.keys():
+		if id == "" or str(forced[z]["id"]) == id:
+			gone[str(forced[z]["id"])] = true
+			forced.erase(z)
+	if not gone.is_empty():
+		_notify(who)
+	return gone.size()
+
+
+static func clear_forced() -> void:
+	for who in GameState.equip_forced.keys():
+		release(str(who))
+	GameState.equip_forced.clear()
 
 
 static func _remove(mine: Dictionary, id: String) -> void:

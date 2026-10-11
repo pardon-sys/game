@@ -1,0 +1,30 @@
+[gd_resource type="Resource" script_class="EquipData" format=3]
+
+[ext_resource type="Script" path="res://scripts/items/equip_data.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/generated/equip_icons.png" id="2"]
+
+[sub_resource type="AtlasTexture" id="icon"]
+atlas = ExtResource("2")
+region = Rect2(272, 0, 16, 16)
+
+[resource]
+script = ExtResource("1")
+id = "equip_t_pinch_pad"
+display_name = "捏捏臀垫"
+description = "贴在屁股上的软垫，左边捏一下、右边捏一下。"
+icon = SubResource("icon")
+category = 4
+stackable = false
+show_in_hud = false
+pickup_emotion = "happy"
+slots = Array[String](["butt"])
+owner_id = ""
+modifiers = {}
+zone_mods = {"butt": 0.3}
+block = {}
+cursed = false
+special = ""
+pros = "（无）"
+cons = "一下下捏屁股、屁股敏感 +0.3"
+temporary = true
+kind = "tickle"

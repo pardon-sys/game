@@ -9,6 +9,8 @@ const TIME := 45.0
 const REVIVE_TIME := 2.0
 const REVIVE_RANGE := 22.0
 const MOB_RANGE := 40.0
+## 不倒计时（攻防战：蓝色公主倒下后不会自己起来，也不会超时失败，只能等粉色公主来救）
+static var timeless := false
 
 var who: PlayableCharacter
 var time_left := TIME
@@ -80,7 +82,8 @@ func _process(delta: float) -> void:
 	for m in get_tree().get_nodes_in_group("enemy"):
 		if m is Monster and m.is_alive() and (m as Node2D).global_position.distance_to(who.global_position) < MOB_RANGE:
 			mobs += 1
-	time_left -= delta * (1.0 + 0.5 * mobs)
+	if not timeless:
+		time_left -= delta * (1.0 + 0.5 * mobs)
 	# 小怪围着挠：挠痒特效 + 她笑
 	_tick -= delta
 	if mobs > 0 and _tick <= 0.0:
@@ -102,7 +105,7 @@ func _process(delta: float) -> void:
 	_rev_ring.points = _arc(6.0, clampf(revive / REVIVE_TIME, 0.0, 1.0)) if revive > 0.0 else PackedVector2Array()
 	if revive >= REVIVE_TIME:
 		_revive()
-	elif time_left <= 0.0 or Duo.all_down():
+	elif (time_left <= 0.0 and not timeless) or Duo.all_down():
 		_fail()
 
 

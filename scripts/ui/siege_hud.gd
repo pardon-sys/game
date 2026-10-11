@@ -1,0 +1,133 @@
+class_name SiegeHud
+extends CanvasLayer
+## 攻防战的 HUD（SiegeDirector 创建）：
+##   顶部中间：第 N / 10 波 + 状态（准备倒计时 / 战斗中还剩几只）、城墙血条（分 8 段，每段按挨打程度变色）、冰晶数。
+##   右上（立绘框下面）：小地图——城墙、冰塔格、两位公主、怪物点、敌塔。
+##   屏幕边缘：大型攻城怪（meta siege_alert）在屏幕外时的红色箭头。
+
+const BAR := Rect2(250, 16, 130, 6)
+const MAP := Rect2(386, 44, 90, 66)
+const RED := Color(1, 0.35, 0.4)
+const GOLD := Color(1, 0.86, 0.4)
+const ICE := Color(0.7, 0.92, 1.0)
+
+var director: SiegeDirector
+var view: Control
+var _font: Font
+
+
+func _ready() -> void:
+	layer = 4
+	view = Control.new()
+	view.set_anchors_preset(Control.PRESET_FULL_RECT)
+	view.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	view.draw.connect(_draw_view)
+	add_child(view)
+	_font = view.get_theme_default_font()
+
+
+func _process(_delta: float) -> void:
+	visible = not CG.is_busy() and not GameState.in_cutscene
+	view.queue_redraw()
+
+
+func status_text() -> String:
+	if director == null:
+		return ""
+	match director.state:
+		"prep": return "第 %d/%d 波 · 准备 %d 秒" % [director.wave, SiegeDirector.TOTAL_WAVES, ceili(director.prep_left)]
+		"fight": return "第 %d/%d 波 · 还剩 %d 只" % [director.wave, SiegeDirector.TOTAL_WAVES, director.remaining()]
+		"failed": return "城墙被攻破了……"
+		"won": return "小镇守住了！"
+	return ""
+
+
+func _text(pos: Vector2, s: String, col: Color, fs := 9, align := HORIZONTAL_ALIGNMENT_LEFT, w := -1.0) -> void:
+	view.draw_string_outline(_font, pos, s, align, w, fs, 3, Color(0.08, 0.04, 0.1))
+	view.draw_string(_font, pos, s, align, w, fs, col)
+
+
+func _draw_view() -> void:
+	if director == null:
+		return
+	_text(Vector2(BAR.position.x - 30, 11), status_text(), GOLD, 9, HORIZONTAL_ALIGNMENT_CENTER, BAR.size.x + 60)
+	# 城墙血条：8 段
+	view.draw_rect(BAR.grow(1), Color(0.1, 0.05, 0.12, 0.85))
+	var frac := director.wall_hp / maxf(director.wall_max, 1.0)
+	view.draw_rect(Rect2(BAR.position, Vector2(BAR.size.x * frac, BAR.size.y)),
+		Color(0.55, 0.85, 1.0) if frac > 0.5 else (Color(1, 0.8, 0.4) if frac > 0.25 else RED))
+	var n := director.walls.size()
+	for i in n:
+		var w := director.walls[i]
+		var x := BAR.position.x + BAR.size.x * float(i) / n
+		if i > 0:
+			view.draw_line(Vector2(x, BAR.position.y), Vector2(x, BAR.end.y), Color(0.1, 0.05, 0.12), 1.0)
+		var lvl := w.damage_level()
+		if lvl > 0:
+			view.draw_rect(Rect2(x + 1, BAR.end.y + 1, BAR.size.x / n - 2, 2), Color(1, 0.75, 0.3) if lvl == 1 else RED)
+		if w.shield_left > 0.0:
+			view.draw_rect(Rect2(x + 1, BAR.position.y - 3, BAR.size.x / n - 2, 2), ICE)
+	_text(Vector2(BAR.position.x, BAR.end.y + 10), "城墙 %d / %d" % [int(director.wall_hp), int(director.wall_max)], Color(0.9, 0.9, 1.0), 8)
+	# 冰晶
+	var cr := SiegeArt.region("crystal")
+	view.draw_texture_rect_region(SiegeArt.TEX, Rect2(BAR.end + Vector2(8, -8), cr.size), cr)
+	_text(BAR.end + Vector2(18, 1), "×%d" % director.crystals, ICE, 9)
+	_draw_map()
+	_draw_alerts()
+
+
+func world_size() -> Vector2:
+	return director.map_size()
+
+
+func to_map(p: Vector2) -> Vector2:
+	var ws := world_size()
+	return MAP.position + Vector2(p.x / ws.x * MAP.size.x, p.y / ws.y * MAP.size.y)
+
+
+func _draw_map() -> void:
+	view.draw_rect(MAP.grow(1), Color(0.55, 0.4, 0.6, 0.9), false, 1.0)
+	view.draw_rect(MAP, Color(0.08, 0.05, 0.1, 0.75))
+	if not director.walls.is_empty():
+		var y := to_map(Vector2(0, director.wall_foot_y())).y
+		for w in director.walls:
+			var a := to_map(Vector2(w.left_x(), 0)).x
+			var b := to_map(Vector2(w.right_x(), 0)).x
+			var lvl := w.damage_level()
+			view.draw_line(Vector2(a, y), Vector2(b, y), [Color(0.8, 0.78, 0.85), Color(1, 0.75, 0.3), RED][lvl], 2.0)
+	for t in get_tree().get_nodes_in_group("siege_pad"):
+		view.draw_rect(Rect2(to_map((t as Node2D).global_position) - Vector2(1, 1), Vector2(2, 2)), ICE if t.get("tower") else Color(0.4, 0.55, 0.7))
+	for t in get_tree().get_nodes_in_group("siege_enemy_tower"):
+		view.draw_rect(Rect2(to_map((t as Node2D).global_position) - Vector2(1.5, 1.5), Vector2(3, 3)), Color(0.85, 0.35, 0.9))
+	for m in director.monsters:
+		if is_instance_valid(m):
+			view.draw_rect(Rect2(to_map(m.global_position), Vector2(1, 1)), RED)
+	for c in [director.pink, director.blue]:
+		if c and is_instance_valid(c):
+			view.draw_circle(to_map(c.global_position), 2.0, Color(1, 0.6, 0.85) if c.character_id == "pink" else Color(0.6, 0.8, 1.0))
+	var cam := view.get_viewport().get_camera_2d()
+	if cam:
+		var half := view.get_viewport_rect().size / cam.zoom / 2.0
+		var c := cam.get_screen_center_position()
+		var r := Rect2(to_map(c - half), to_map(c + half) - to_map(c - half))
+		view.draw_rect(r, Color(1, 1, 1, 0.5), false, 1.0)
+
+
+func _draw_alerts() -> void:
+	var cam := view.get_viewport().get_camera_2d()
+	if cam == null:
+		return
+	var vs := view.get_viewport_rect().size
+	var c := cam.get_screen_center_position()
+	for m in director.monsters:
+		if not is_instance_valid(m) or not m.get_meta("siege_alert", false) or director.on_screen(m.global_position, 0.0):
+			continue
+		var d := (m.global_position - c) * cam.zoom
+		var edge := vs / 2.0 + d.limit_length(minf(vs.x, vs.y) * 0.45)
+		edge.x = clampf(edge.x, 12.0, vs.x - 12.0)
+		edge.y = clampf(edge.y, 30.0, vs.y - 12.0)
+		var ang := d.angle()
+		var pulse := 0.6 + 0.4 * sin(Time.get_ticks_msec() / 120.0)
+		var pts := PackedVector2Array([edge + Vector2.from_angle(ang) * 7.0, edge + Vector2.from_angle(ang + 2.5) * 6.0,
+			edge + Vector2.from_angle(ang - 2.5) * 6.0])
+		view.draw_colored_polygon(pts, Color(RED.r, RED.g, RED.b, pulse))

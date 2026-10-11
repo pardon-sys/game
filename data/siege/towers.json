@@ -1,0 +1,109 @@
+{
+	"_说明": [
+		"攻防战的冰塔（gen_floor06_siege.py 生成；IceTower 读）。"
+	],
+	"icicle": {
+		"name": "冰锥塔",
+		"short": "自动射冰锥",
+		"cost": 10,
+		"upgrade": 12,
+		"desc": "自动朝射程内最近的怪射冰锥。",
+		"levels": [
+			{
+				"range": 140,
+				"interval": 1.2,
+				"damage": 1
+			},
+			{
+				"range": 170,
+				"interval": 0.8,
+				"damage": 2
+			}
+		]
+	},
+	"snowman": {
+		"name": "雪人召唤塔",
+		"short": "放出小雪人",
+		"cost": 14,
+		"upgrade": 14,
+		"desc": "每隔一段时间放出小雪人，去挠 / 推怪物；怪物也会去打小雪人。",
+		"levels": [
+			{
+				"interval": 12,
+				"count": 2,
+				"snow_hp": 4
+			},
+			{
+				"interval": 10,
+				"count": 3,
+				"snow_hp": 6
+			}
+		]
+	},
+	"decoy": {
+		"name": "诱饵冰雕",
+		"short": "吸引攻击",
+		"cost": 12,
+		"upgrade": 12,
+		"desc": "漂亮的公主冰雕，有血量。周围的怪和攻城车会优先去打它。",
+		"levels": [
+			{
+				"hp": 60,
+				"lure": 110
+			},
+			{
+				"hp": 120,
+				"lure": 150
+			}
+		]
+	},
+	"mint": {
+		"name": "薄荷冰泉",
+		"short": "降低闷笑",
+		"cost": 12,
+		"upgrade": 12,
+		"desc": "凉凉的泉水：范围内的公主闷笑值慢慢下降。",
+		"levels": [
+			{
+				"radius": 60,
+				"decay": 6
+			},
+			{
+				"radius": 80,
+				"decay": 10
+			}
+		]
+	},
+	"frost": {
+		"name": "寒霜塔",
+		"short": "减速 + 冻住",
+		"cost": 12,
+		"upgrade": 12,
+		"desc": "范围内的怪减速，每隔几秒冻住一下。",
+		"levels": [
+			{
+				"radius": 70,
+				"freeze": 1.0
+			},
+			{
+				"radius": 90,
+				"freeze": 1.8
+			}
+		]
+	},
+	"repair": {
+		"name": "冰墙修补塔",
+		"short": "修城墙",
+		"cost": 16,
+		"upgrade": 14,
+		"desc": "慢慢修复它身后的那段城墙。",
+		"levels": [
+			{
+				"repair": 3
+			},
+			{
+				"repair": 6
+			}
+		]
+	}
+}

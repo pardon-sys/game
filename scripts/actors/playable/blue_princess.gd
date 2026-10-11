@@ -76,7 +76,8 @@ func _process(delta: float) -> void:
 	var on := has_buff("thousand_pants")
 	if not on or not is_alive() or GameState.in_dialogue or GameState.in_cutscene or CG.is_busy():
 		return
-	_pants_t -= delta
+	var efx := EquipFx.of(self)
+	_pants_t -= delta * (efx.rate_mul if efx else 1.0)
 	_pants_bubble_t = maxf(0.0, _pants_bubble_t - delta)
 	if _pants_t <= 0.0:
 		_pants_t = PANTS_TICK * randf_range(0.8, 1.2)
@@ -92,9 +93,16 @@ func pants_flare(way := "") -> String:
 		_pants_src = HandCover.Source.new()
 		_pants_src.reaction_key = "thousand_pants"
 		add_child(_pants_src)
-	var h := HitData.make_tickle(_pants_src, PANTS_TICKLE)
+	var efx := EquipFx.of(self)
+	# 狂欢图腾立着时，裤子是被图腾「催」着发作的：来源键记成 enemy_totem（三来源组合「裤子大暴走」认它）
+	var totem := efx != null and efx._mods.keys().any(func(k): return str(k).begins_with("totem_"))
+	_pants_src.reaction_key = "enemy_totem" if totem else "thousand_pants"
+	var h := HitData.make_tickle(_pants_src, PANTS_TICKLE * (efx.power_mul if efx else 1.0))
 	h.zone = str(PANTS_WAYS.get(way, "thigh"))
 	receive_hit(h)
+	# 立绘反应（装备模块：抖动 + 部位贴片 + 这种手法的飘字；挠痒上面已经做了）
+	if efx:
+		efx.flare(Equipment.PANTS_ID, h.zone, way, false)
 	var line := MazeLines.pick("pants_" + way)
 	if line != "":
 		if is_controlled():
@@ -151,7 +159,7 @@ func start_following(talk_file := "") -> void:
 
 
 func make_ai_controller() -> CharacterController:
-	if follow:
+	if follow or PlayableCharacter.ai_factory.is_valid():
 		return super()
 	if Duo.active:
 		return CompanionController.new()

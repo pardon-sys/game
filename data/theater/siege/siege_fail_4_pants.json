@@ -1,0 +1,277 @@
+{
+	"name": "失败：绑在一起的两个人",
+	"cast": {
+		"pink": {
+			"kind": "npc:pink_princess",
+			"at": [
+				-24,
+				10
+			],
+			"visual": "helpless_1",
+			"anim": "helpless",
+			"dir": "down"
+		},
+		"blue": {
+			"kind": "npc:blue_princess",
+			"at": [
+				24,
+				10
+			],
+			"visual": "helpless_1",
+			"anim": "helpless",
+			"dir": "down"
+		},
+		"foe1": {
+			"kind": "monster:vine",
+			"at": [
+				-44,
+				0
+			],
+			"dir": "right",
+			"hidden": true
+		},
+		"foe2": {
+			"kind": "monster:hug_bear",
+			"at": [
+				44,
+				0
+			],
+			"dir": "left",
+			"hidden": true
+		}
+	},
+	"steps": [
+		{
+			"actions": [
+				{
+					"do": "fade_in",
+					"time": 0.5
+				},
+				{
+					"do": "voice",
+					"state": "giggle"
+				}
+			],
+			"wait": 0.5
+		},
+		{
+			"speaker": "",
+			"text": "（捆绑藤怪的藤蔓一甩，把两个人背靠背地绑在了一起）",
+			"actions": [
+				{
+					"do": "enter",
+					"who": "foe1",
+					"from": [
+						-90,
+						0
+					],
+					"time": 0.5
+				},
+				{
+					"do": "enter",
+					"who": "foe2",
+					"from": [
+						90,
+						0
+					],
+					"time": 0.5
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "绑、绑在一起了！动不了！"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……背、背靠背。……挤。"
+		},
+		{
+			"speaker": "",
+			"text": "（藤怪又往两个人身上套东西：粉色公主一件绒毛胸衣，蓝色公主一条夹腿绑带）",
+			"actions": [
+				{
+					"do": "tickle",
+					"who": "pink",
+					"by": "foe1",
+					"repeat": 8,
+					"interval": 0.22,
+					"fx": "hand",
+					"zone": "chest"
+				},
+				{
+					"do": "tickle",
+					"who": "blue",
+					"by": "foe2",
+					"repeat": 8,
+					"interval": 0.22,
+					"fx": "brush",
+					"zone": "thigh"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "胸、胸衣里面……绒毛……一呼吸就蹭……嘻嘻！"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……腿……绑带和裤子……挤在一起……"
+		},
+		{
+			"speaker": "",
+			"text": "（拥抱小熊走过来，张开手臂——连两个人一起抱住）",
+			"actions": [
+				{
+					"do": "tickle",
+					"who": "pink",
+					"by": "foe1",
+					"repeat": 8,
+					"interval": 0.22,
+					"fx": "hand",
+					"zone": "chest"
+				},
+				{
+					"do": "tickle",
+					"who": "blue",
+					"by": "foe2",
+					"repeat": 8,
+					"interval": 0.22,
+					"fx": "brush",
+					"zone": "waist"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "被、被抱住了！一抱紧绒毛就……哈哈哈！",
+			"actions": [
+				{
+					"do": "bubble",
+					"who": "pink",
+					"kind": "laugh"
+				},
+				{
+					"do": "bubble",
+					"who": "blue",
+					"kind": "laugh"
+				}
+			]
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……抱、抱太紧……腰……"
+		},
+		{
+			"speaker": "",
+			"text": "（小熊的爪子一只钻进粉色公主的腋下，一只摸到蓝色公主的屁股上捏；藤尖在两人之间的缝里扫来扫去）",
+			"actions": [
+				{
+					"do": "tickle",
+					"who": "pink",
+					"by": "foe1",
+					"repeat": 8,
+					"interval": 0.22,
+					"fx": "hand",
+					"zone": "armpit"
+				},
+				{
+					"do": "tickle",
+					"who": "blue",
+					"by": "foe2",
+					"repeat": 8,
+					"interval": 0.22,
+					"fx": "brush",
+					"zone": "butt"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "她、她一笑我就被晃……我一笑她也……哈哈哈！"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……一晃……裤子就……捏得更紧……哈哈！"
+		},
+		{
+			"speaker": "",
+			"text": "（两个人背靠背笑成一团。一个笑，另一个就跟着被晃——越晃越痒，越痒越笑）",
+			"actions": [
+				{
+					"do": "pose",
+					"who": "pink",
+					"visual": "helpless_2"
+				},
+				{
+					"do": "pose",
+					"who": "blue",
+					"visual": "helpless_2"
+				},
+				{
+					"do": "voice",
+					"state": "laugh"
+				},
+				{
+					"do": "tickle",
+					"who": "pink",
+					"by": "foe1",
+					"repeat": 8,
+					"interval": 0.22,
+					"fx": "hand",
+					"zone": "chest"
+				},
+				{
+					"do": "tickle",
+					"who": "blue",
+					"by": "foe2",
+					"repeat": 8,
+					"interval": 0.22,
+					"fx": "brush",
+					"zone": "thigh"
+				},
+				{
+					"do": "flash",
+					"time": 0.3
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "哈哈哈哈！停、停不下来——是你在晃还是我在晃哈哈哈！"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……都、都在晃……哈哈哈……认输……！",
+			"actions": [
+				{
+					"do": "bubble",
+					"who": "pink",
+					"kind": "laugh"
+				},
+				{
+					"do": "bubble",
+					"who": "blue",
+					"kind": "laugh"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "解开以后……第一件事……把这件胸衣扔掉……"
+		},
+		{
+			"actions": [
+				{
+					"do": "voice",
+					"state": ""
+				},
+				{
+					"do": "fade_out",
+					"time": 0.8
+				}
+			],
+			"wait": 0.9
+		}
+	]
+}

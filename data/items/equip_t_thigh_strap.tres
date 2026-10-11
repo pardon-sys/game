@@ -1,0 +1,30 @@
+[gd_resource type="Resource" script_class="EquipData" format=3]
+
+[ext_resource type="Script" path="res://scripts/items/equip_data.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/generated/equip_icons.png" id="2"]
+
+[sub_resource type="AtlasTexture" id="icon"]
+atlas = ExtResource("2")
+region = Rect2(320, 0, 16, 16)
+
+[resource]
+script = ExtResource("1")
+id = "equip_t_thigh_strap"
+display_name = "夹腿绑带"
+description = "把两条大腿绑在一起的宽绑带，内侧一圈软毛。"
+icon = SubResource("icon")
+category = 4
+stackable = false
+show_in_hud = false
+pickup_emotion = "happy"
+slots = Array[String](["thigh"])
+owner_id = ""
+modifiers = {"speed": 0.6}
+zone_mods = {"thigh": 0.2}
+block = {}
+cursed = false
+special = ""
+pros = "（无）"
+cons = "大腿绑在一起：移动 ×0.6，绑带内侧挠腿"
+temporary = true
+kind = "bind"

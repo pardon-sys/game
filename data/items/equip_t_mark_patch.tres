@@ -1,0 +1,30 @@
+[gd_resource type="Resource" script_class="EquipData" format=3]
+
+[ext_resource type="Script" path="res://scripts/items/equip_data.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/generated/equip_icons.png" id="2"]
+
+[sub_resource type="AtlasTexture" id="icon"]
+atlas = ExtResource("2")
+region = Rect2(352, 0, 16, 16)
+
+[resource]
+script = ExtResource("1")
+id = "equip_t_mark_patch"
+display_name = "痒痒印记臀贴"
+description = "贴在屁股上的发光印记。怪物闻得到，全朝这里来。"
+icon = SubResource("icon")
+category = 4
+stackable = false
+show_in_hud = false
+pickup_emotion = "happy"
+slots = Array[String](["butt"])
+owner_id = ""
+modifiers = {"laugh_gain": 0.15}
+zone_mods = {"butt": 0.2}
+block = {}
+cursed = false
+special = "mark"
+pros = "（无）"
+cons = "怪物优先找她、闷笑涨幅 +15%"
+temporary = true
+kind = "curse"

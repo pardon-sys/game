@@ -121,6 +121,10 @@ var _chant: AudioStreamPlayer
 
 
 func _setup() -> void:
+	add_to_group("player_chars")
+	# 负面装备的发作反应（EquipFx：诅咒 / 临时装备定时挠一下 + 立绘飘字）
+	if get_node_or_null("EquipFx") == null:
+		add_child(EquipFx.new())
 	if fatigue:
 		fatigue.full.connect(fatigue_burst)
 	if controller == null:
@@ -147,6 +151,8 @@ func display_name() -> String:
 
 ## 不被玩家操控时用的 AI 控制器（切换操控时 GameState.switch_control 调用）；默认站着不动，双人模式里是 AI 搭档。
 func make_ai_controller() -> CharacterController:
+	if ai_factory.is_valid():
+		return ai_factory.call(self)
 	if follow:
 		var cc := CompanionController.new()
 		cc.behaviours.assign(["struggle", "follow"])
@@ -291,10 +297,12 @@ func _tick(delta: float) -> void:
 				elif can_control:
 					if controller.is_action_just_pressed(&"attack"):
 						attack()
-					elif controller.is_action_just_pressed(&"dash") and not rooted:
+					elif controller.is_action_just_pressed(&"dash") and not rooted and not Equipment.has_special(character_id, "no_dash"):
 						dash(input)
 					elif controller.is_action_just_pressed(&"magic"):
-						begin_channel()
+						# 关卡可以接管魔法键（攻防战：蓝色公主打开瞄准施法）
+						if not (magic_override.is_valid() and magic_override.call(self)):
+							begin_channel()
 					elif controller.is_action_just_pressed(&"interact"):
 						interact()
 					elif controller.is_action_just_pressed(&"use_item"):
@@ -784,12 +792,13 @@ func _on_died() -> void:
 	_end_channel()
 	_set_state(State.DEAD)
 	_end_attack()
+	# 关卡自己接管倒下（第八层夜迷宫：笑倒小剧场 → 回到上一盏月光灯；攻防战：笑倒 CG → 城门复活 / 倒地等救援）；
+	# 返回 true 就由它负责之后的 respawn
+	if death_override.is_valid() and death_override.call(self):
+		return
 	# 双人模式（第八层）：不放笑倒 CG，倒地等搭档来救
 	if Duo.active and Duo.members.has(self):
 		Downed.start(self)
-		return
-	# 关卡自己接管倒下（第八层夜迷宫：笑倒小剧场 → 回到上一盏月光灯）；返回 true 就由它负责之后的 respawn
-	if death_override.is_valid() and death_override.call(self):
 		return
 	if _play_death_cutscene():
 		return
@@ -848,6 +857,10 @@ func fatigue_burst() -> void:
 
 ## 关卡接管倒下：Callable(角色) -> bool（true = 接管了）。关卡离开时清掉。
 static var death_override: Callable
+## 关卡自己决定没被操控的角色用什么 AI（攻防战：蓝色公主城墙法师、粉色公主近战）；返回 CharacterController
+static var ai_factory: Callable
+## 关卡接管魔法键（返回 true = 接管了，不吟唱）：攻防战里玩家操控的蓝色公主按 L 打开瞄准施法
+static var magic_override: Callable
 
 
 ## 子类钩子：死亡时要播过场就返回 true（由子类负责之后调用 respawn）。

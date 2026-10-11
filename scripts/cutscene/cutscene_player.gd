@@ -31,7 +31,7 @@ const DIR := "res://data/cutscenes/"
 const BAR_H := 28.0
 const ACTIONS := ["move", "face", "pose", "camera", "shake", "fade_out", "fade_in", "flash", "bubble", "say", "tickle", "trap",
 	"spawn", "despawn", "carry", "wait", "sfx", "voice", "set_flag", "notify", "chapter_end", "hold", "goto", "lie",
-	"cover", "uncover", "burst", "cg", "hint", "item", "buff", "crack", "hop"]
+	"cover", "uncover", "burst", "cg", "hint", "item", "buff", "crack", "hop", "words"]
 const BUBBLE_TEXT := {"surprise": "！", "question": "？", "laugh": "哈哈哈", "dots": "……", "sad": "呜……", "angry": "哼！", "shy": "///", "happy": "♪"}
 ## free_camera 过场开始前镜头的边界（结束时恢复）
 var _cam_limits: Array = []
@@ -322,6 +322,7 @@ func _finish(id: String, cs: Dictionary) -> void:
 	if _cg_override:
 		_cg_override = false
 		Dialogue.set_portrait_override(null)
+	Dialogue.portrait_fx.end_cutscene_cg()
 	var tw := create_tween().set_parallel()
 	tw.tween_property(top_bar, "position:y", -BAR_H, 0.35)
 	tw.tween_property(bottom_bar, "position:y", 270.0, 0.35)
@@ -558,9 +559,16 @@ func _do(a: Dictionary, instant: bool) -> float:
 			if key == "" or info.is_empty() or not ResourceLoader.exists(str(info.get("file", ""))):
 				_cg_override = false
 				Dialogue.set_portrait_override(null)
+				Dialogue.portrait_fx.end_cutscene_cg()
 			else:
 				_cg_override = true
 				Dialogue.set_portrait_override(load(str(info["file"])), bool(info.get("wide", false)))
+				# CG 图上也有抖动 / 贴片 / 飘字（强度按第几张递进）
+				Dialogue.portrait_fx.begin_cutscene_cg()
+		"words":
+			if not instant:
+				var texts: Variant = a.get("text", [])
+				Dialogue.portrait_fx.float_words(texts if texts is Array else [str(texts)], bool(a.get("big", false)))
 		"hint":
 			if not instant:
 				GameState.hint(str(a.get("text", "")))
@@ -868,6 +876,8 @@ func _tickle(a: Dictionary, instant: bool) -> float:
 			if zone != "":
 				ZoneFx.play(zone, p.get_parent(), ZoneFx.body_point(p, zone), 1.0, true)
 				Dialogue.portrait_fx.cutscene_tickle(fx, zone)
+			elif Dialogue.portrait_fx.cutscene_cg:
+				Dialogue.portrait_fx.cutscene_tickle(fx, "")
 			else:
 				Dialogue.shake_portrait(3.0, 0.18)
 			if add > 0.0 and p.laugh:

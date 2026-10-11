@@ -26,6 +26,16 @@ const PATHS := {
 	"equip_party_bow": "res://data/items/equip_party_bow.tres",
 	"equip_feather_anklet": "res://data/items/equip_feather_anklet.tres",
 	"equip_ice_hairpin": "res://data/items/equip_ice_hairpin.tres",
+	"equip_t_feather_socks": "res://data/items/equip_t_feather_socks.tres",
+	"equip_t_toe_brush": "res://data/items/equip_t_toe_brush.tres",
+	"equip_t_fluff_bra": "res://data/items/equip_t_fluff_bra.tres",
+	"equip_t_thigh_ring": "res://data/items/equip_t_thigh_ring.tres",
+	"equip_t_pinch_pad": "res://data/items/equip_t_pinch_pad.tres",
+	"equip_t_knead_tights": "res://data/items/equip_t_knead_tights.tres",
+	"equip_t_feather_shackles": "res://data/items/equip_t_feather_shackles.tres",
+	"equip_t_thigh_strap": "res://data/items/equip_t_thigh_strap.tres",
+	"equip_t_bell_anklet": "res://data/items/equip_t_bell_anklet.tres",
+	"equip_t_mark_patch": "res://data/items/equip_t_mark_patch.tres",
 }
 
 static var _cache := {}

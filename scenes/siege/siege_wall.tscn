@@ -1,0 +1,6 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/siege/siege_wall.gd" id="1"]
+
+[node name="siege_wall" type="CharacterBody2D"]
+script = ExtResource("1")

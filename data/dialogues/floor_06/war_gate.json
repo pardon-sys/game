@@ -30,16 +30,13 @@
 				{
 					"text": "（两个人推开城门——）",
 					"speaker": ""
-				},
-				{
-					"text": "（待续）",
-					"speaker": ""
 				}
 			],
 			"set": {
 				"flags": [
 					"f6w_ready"
-				]
+				],
+				"call": "go_siege"
 			}
 		}
 	}

@@ -13,6 +13,8 @@ extends Control
 ## 游戏中：Dialogue 把公主的 tickled / 组合技转给 on_tickled / on_combo（笑倒 CG 播放中不处理）。
 ## CG 中：CGPlayer 调 begin_cg / set_cg_level / cg_tickle / cg_crit / on_combo / end_cg。强度按幕递进（cg_level 1–4），
 ##   横版 CG 图上用轻量版：抖动、轻泛粉、沿大框两边飘字；来源贴片放在图的四周（不挡画面中心）。
+## 地图内过场里换上 CG 图（Cutscene 的 cg 动作）：begin_cutscene_cg / end_cutscene_cg，同样的 CG 模式效果，
+##   过场里的 tickle 走 cg_tickle（部位飘字），强度按这段过场的第几张 CG 递进；float_words 飘指定的字（过场的 words 动作）。
 
 const ANCHORS := [Vector2(0.36, 0.93), Vector2(0.62, 0.93), Vector2(0.3, 0.56), Vector2(0.7, 0.56),
 	Vector2(0.27, 0.42), Vector2(0.73, 0.42), Vector2(0.5, 0.3)]
@@ -39,6 +41,8 @@ var portrait: TextureRect
 ## CG 模式：由 CGPlayer 控制强度，横版图也处理。
 var cg_mode := false
 var cg_level := 0
+## 过场里换上了 CG 图（和 cg_mode 一样处理横版图；由 CutscenePlayer 控制）
+var cutscene_cg := false
 var _stickers: Array[Node] = []
 var _zone_stickers: Array[Node] = []
 var _since_sticker := INF
@@ -115,7 +119,7 @@ func setup(p: TextureRect) -> void:
 func active() -> bool:
 	if portrait == null or not portrait.visible:
 		return false
-	if cg_mode:
+	if cg_mode or cutscene_cg:
 		return true
 	return (not GameState.in_cutscene or Cutscene.is_playing()) and not Dialogue.is_portrait_wide()
 
@@ -141,6 +145,19 @@ func on_combo(triple: bool) -> void:
 	var at := r.get_center() + Vector2(0, -10) if not is_wide() else Vector2(r.get_center().x, r.end.y - 20)
 	Fx.burst(self, at, "heart", 18 if triple else 10, 70.0 if triple else 50.0, 0.8, Vector2(0, -30), Color(1, 0.75, 0.88))
 	_flash(Color(1.5, 0.9, 1.25), 0.2)
+
+
+## 负面装备发作（EquipFx）：立绘抖动 + 部位贴片 + 飘字（平静时也飘）。
+func equip_flare(zone: String, text: String, shake := 2.0) -> void:
+	if cg_mode or not active():
+		return
+	Dialogue.shake_portrait(shake, 0.2)
+	if _since_flash >= FLASH_GAP:
+		_flash(Color(1.25, 0.9, 1.2), 0.12)
+	if zone != "" and not is_wide():
+		_zone_sticker(zone, false)
+	if text != "":
+		float_text(text, false, Color(0.86, 0.66, 1.0))
 
 
 # ------------------------------------------------------------------ CG 中
@@ -172,8 +189,32 @@ func cg_tickle(key: String, kind: String, zone := "") -> void:
 	_tickle_core(key, kind, cg_stage(), false, 1.0 if cg_level >= 3 else 0.0, zone, zone != "")
 
 
+## 地图内过场里换上 CG 图：进入过场 CG 模式（强度从 1 开始，每换一张 +1，换图时切幕星环）。
+func begin_cutscene_cg() -> void:
+	if cg_mode:
+		return
+	if not cutscene_cg:
+		cutscene_cg = true
+		cg_level = 0
+	set_cg_level(cg_level + 1)
+	if cg_level > 1:
+		cg_crit_force()
+
+
+func end_cutscene_cg() -> void:
+	if not cutscene_cg:
+		return
+	cutscene_cg = false
+	cg_level = 0
+	clear()
+
+
 ## 地图内过场里挠到某个部位（Cutscene 的 tickle zone=…）：立绘抖动 + 部位特效 + 部位飘字。
+## 过场换上了 CG 图时按 CG 模式处理（横版图轻量版效果、部位飘字）。
 func cutscene_tickle(kind: String, zone: String) -> void:
+	if cutscene_cg and active():
+		_tickle_core("", kind, cg_stage(), false, 1.0 if cg_level >= 3 else 0.0, zone, zone != "")
+		return
 	if cg_mode or not active():
 		return
 	var p := GameState.player as PlayableCharacter
@@ -184,6 +225,12 @@ func cutscene_tickle(kind: String, zone: String) -> void:
 ## 切幕：金色星环 + 白闪（横版图上星环放在大框右上角，不挡画面中心）。
 func cg_crit() -> void:
 	if not cg_mode or not active():
+		return
+	cg_crit_force()
+
+
+func cg_crit_force() -> void:
+	if not active():
 		return
 	var r := portrait_rect()
 	var at := r.get_center() if not is_wide() else r.position + Vector2(r.size.x - 26, 26)
@@ -372,9 +419,20 @@ func _flash(col: Color, time: float) -> void:
 
 func _haha(big: bool, key := "", stage := "helpless_1", zone := "") -> void:
 	var words := ReactionDB.portrait_words(key, stage, zone)
+	float_text(str(words.pick_random()) if not words.is_empty() else HAHA.pick_random(), big)
+
+
+## 在立绘（或横版 CG 图两边）旁飘一行指定的字（过场的 words 动作、装备发作的飘字）。
+func float_words(texts: Array, big := false) -> void:
+	if not active() or texts.is_empty():
+		return
+	float_text(str(texts.pick_random()), big)
+
+
+func float_text(text: String, big := false, col := Color(1, 0.6, 0.8)) -> void:
 	var l := Label.new()
-	l.text = str(words.pick_random()) if not words.is_empty() else HAHA.pick_random()
-	l.add_theme_color_override("font_color", Color(1, 0.6, 0.8))
+	l.text = text
+	l.add_theme_color_override("font_color", col)
 	l.add_theme_color_override("font_outline_color", Color(0.35, 0.06, 0.22))
 	l.add_theme_constant_override("outline_size", 4)
 	if big:

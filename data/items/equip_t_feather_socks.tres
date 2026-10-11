@@ -1,0 +1,30 @@
+[gd_resource type="Resource" script_class="EquipData" format=3]
+
+[ext_resource type="Script" path="res://scripts/items/equip_data.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/generated/equip_icons.png" id="2"]
+
+[sub_resource type="AtlasTexture" id="icon"]
+atlas = ExtResource("2")
+region = Rect2(208, 0, 16, 16)
+
+[resource]
+script = ExtResource("1")
+id = "equip_t_feather_socks"
+display_name = "羽毛袜"
+description = "袜子内侧铺满了细细的羽毛。每走一步，羽毛就在脚心上扫一下。"
+icon = SubResource("icon")
+category = 4
+stackable = false
+show_in_hud = false
+pickup_emotion = "happy"
+slots = Array[String](["sole"])
+owner_id = ""
+modifiers = {"speed": 0.8}
+zone_mods = {"sole": 0.3}
+block = {}
+cursed = false
+special = ""
+pros = "（无）"
+cons = "走一步挠一下脚心、移动 ×0.8，跑得越快挠得越重"
+temporary = true
+kind = "tickle"

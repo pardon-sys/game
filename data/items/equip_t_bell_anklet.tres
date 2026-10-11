@@ -1,0 +1,30 @@
+[gd_resource type="Resource" script_class="EquipData" format=3]
+
+[ext_resource type="Script" path="res://scripts/items/equip_data.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/generated/equip_icons.png" id="2"]
+
+[sub_resource type="AtlasTexture" id="icon"]
+atlas = ExtResource("2")
+region = Rect2(336, 0, 16, 16)
+
+[resource]
+script = ExtResource("1")
+id = "equip_t_bell_anklet"
+display_name = "铃铛脚链"
+description = "挂满小铃铛的脚链。走一步响一下，怪物全听得见。"
+icon = SubResource("icon")
+category = 4
+stackable = false
+show_in_hud = false
+pickup_emotion = "happy"
+slots = Array[String](["sole"])
+owner_id = ""
+modifiers = {}
+zone_mods = {}
+block = {}
+cursed = false
+special = "bell_move"
+pros = "（无）"
+cons = "一动就叮铃响，把附近的怪引过来"
+temporary = true
+kind = "curse"

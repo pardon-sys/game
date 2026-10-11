@@ -1005,6 +1005,68 @@ def p_tower_base():
     return add_outline(img)
 
 
+def p_decal(kind, v=0):
+    """战时小镇的地面贴花（不挡路，画在地面层）：焦痕 / 灰烬 / 泥脚印 / 碎木 / 稻草 / 积水 / 碎瓷片 / 破布。"""
+    import random
+    rnd = random.Random(sum(map(ord, kind)) * 7 + v)
+    if kind == "scorch":
+        img, d = canvas(24, 14)
+        d.ellipse((1, 2, 23, 13), fill=(40, 28, 26, 70))
+        d.ellipse((5, 4, 19, 11), fill=(30, 20, 18, 110))
+        for _ in range(6):
+            x, y = rnd.randint(2, 21), rnd.randint(2, 11)
+            d.point((x, y), fill=(60, 40, 35, 170))
+        return img
+    if kind == "ash":
+        img, d = canvas(18, 12)
+        for _ in range(26):
+            x, y = rnd.randint(1, 16), rnd.randint(1, 10)
+            c = rnd.choice([(150, 145, 150), (110, 105, 112), (190, 185, 185)])
+            d.point((x, y), fill=c + (rnd.randint(140, 220),))
+        d.ellipse((4, 4, 13, 9), fill=(120, 115, 120, 90))
+        return img
+    if kind == "footprints":
+        img, d = canvas(16, 18)
+        for i, (x, y) in enumerate(((3, 14), (9, 10), (4, 6), (10, 2))):
+            d.ellipse((x, y, x + 3, y + 4), fill=(70, 50, 35, 170))
+            d.point((x + 1, y - 1), fill=(70, 50, 35, 150))
+        return img
+    if kind == "splinters":
+        img, d = canvas(16, 10)
+        for _ in range(5):
+            x, y = rnd.randint(1, 11), rnd.randint(2, 8)
+            d.line((x, y, x + rnd.randint(2, 4), y + rnd.randint(-2, 2)), fill=WOOD_D, width=1)
+        d.line((3, 6, 10, 4), fill=WOOD, width=2)
+        return add_outline(img)
+    if kind == "straw":
+        img, d = canvas(18, 10)
+        for _ in range(12):
+            x, y = rnd.randint(1, 13), rnd.randint(2, 8)
+            d.line((x, y, x + rnd.randint(2, 5), y + rnd.randint(-1, 1)), fill=rnd.choice([(220, 190, 90, 230), (190, 160, 70, 230)]))
+        return img
+    if kind == "puddle":
+        img, d = canvas(22, 12)
+        d.ellipse((1, 3, 21, 11), fill=(90, 105, 130, 80))
+        d.ellipse((4, 5, 17, 9), fill=(110, 130, 160, 90))
+        d.line((6, 6, 11, 6), fill=(190, 205, 230, 160))
+        return img
+    if kind == "shards":
+        img, d = canvas(14, 10)
+        for (x, y) in ((2, 5), (7, 2), (9, 6), (4, 2)):
+            d.polygon([(x, y), (x + 3, y + 1), (x + 1, y + 3)], fill=(225, 230, 240, 255))
+            d.point((x + 1, y + 1), fill=(120, 150, 210, 255))
+        return img
+    # rag
+    img, d = canvas(16, 10)
+    d.polygon([(1, 6), (6, 2), (13, 3), (15, 7), (8, 9)], fill=(150, 70, 80, 230))
+    d.line((4, 6, 11, 5), fill=(110, 50, 60, 230))
+    return add_outline(img)
+
+
+DECALS = [("scorch", 0), ("scorch", 1), ("ash", 0), ("ash", 1), ("footprints", 0), ("splinters", 0), ("straw", 0),
+          ("puddle", 0), ("shards", 0), ("rag", 0)]
+
+
 def gen_props():
     """道具图集：每个道具一格（大小不同），town_props.json 记录区域、碰撞和发光。"""
     from PIL import Image
@@ -1065,6 +1127,9 @@ def gen_props():
     items.append(("fire_small_1", p_fire_small(1), {}))
     items.append(("rubble", p_rubble(), {"body": [20, 6], "body_y": -3}))
     items.append(("tower_base", p_tower_base(), {"body": [18, 8], "body_y": -4, "light": [0.6, 0.85, 1.0]}))
+    # 战时小镇的地面贴花（不挡路，在地面层）
+    for k, v in DECALS:
+        items.append(("decal_%s_%d" % (k, v), p_decal(k, v), {"floor": True, "under": True}))
     # 简单地按行排进 256 宽的图集
     x = y = row_h = 0
     meta = {}

@@ -9,6 +9,7 @@ extends Actor
 ## stun(秒)：僵直（满蓄力星光爆发），期间不移动不行动。
 ##
 ## 约定子节点：Sprite、Health、HitArea (Area2D，接触范围，mask 应包含玩家/友军层)
+## mind：外部大脑（攻防战的 SiegeMind）：没有目标时由它决定怎么走、找谁（mind.wander(怪物, delta) 返回 true = 接手了）。
 ## 子类可重写：_move(dir, speed, delta)、_animate(delta)、_choose_action(target)、
 ##            _on_attack_performed(target)、_on_tickle_performed(target)、_on_died()
 
@@ -28,6 +29,8 @@ var state := State.WANDER
 var target: Actor
 ## 巢穴生成的怪物记住自己的巢穴（MonsterNest）。
 var home_nest: Node
+## 外部大脑（SiegeMind 等；null = 默认的闲逛 / 追击）
+var mind: RefCounted
 var _home := Vector2.ZERO
 var _home_set := false
 ## 没目标时在家附近多远内晃（超出就往家走）
@@ -68,6 +71,8 @@ func _tick(delta: float) -> void:
 			target = exposed
 			state = State.CHASE
 	match state:
+		State.WANDER when mind != null and bool(mind.call("wander", self, delta)):
+			pass
 		State.WANDER:
 			_think -= delta
 			if _think <= 0.0:

@@ -25,6 +25,10 @@ const SCENES_PATH := "res://data/combo_scenes.json"
 const EQUIP_SCENES_PATH := "res://data/equip_scenes.json"
 ## 怪物巢穴的过场（单独的文件，载入时把 portraits / cgs / nest 合并进 data）。
 const NEST_PATH := "res://data/nest_cgs.json"
+## 攻防战攻城怪的笑倒 CG（单独的文件；载入时把 actors / portraits / cgs / death 合并进 data）
+const SIEGE_CGS_PATH := "res://data/siege_cgs.json"
+## 攻防战的三来源组合小演出（合并进 scenes）
+const SIEGE_SCENES_PATH := "res://data/siege_scenes.json"
 const FX_TEX := preload("res://assets/generated/cg_fx.png")
 const TILESET := preload("res://assets/tilesets/dungeon.tres")
 ## 舞台框（屏幕坐标）：立绘右边、对话框上面。
@@ -61,6 +65,10 @@ var scenes: Dictionary:
 			var eparsed: Variant = JSON.parse_string(FileAccess.get_file_as_string(ep)) if FileAccess.file_exists(ep) else {}
 			if eparsed is Dictionary:
 				all.merge(eparsed.get("scenes", {}))
+			var spath := Characters.path("siege_scenes.json", SIEGE_SCENES_PATH, who)
+			var sparsed: Variant = JSON.parse_string(FileAccess.get_file_as_string(spath)) if FileAccess.file_exists(spath) else {}
+			if sparsed is Dictionary:
+				all.merge(sparsed.get("scenes", {}))
 			_scenes_by[who] = all
 		return _scenes_by[who]
 	set(v):
@@ -119,6 +127,18 @@ func _load(who := "pink") -> Dictionary:
 		out["nest"] = nest.get("nest", {})
 	else:
 		push_error("nest_cgs.json 解析失败")
+	var sp := Characters.path("siege_cgs.json", SIEGE_CGS_PATH, who)
+	var siege: Variant = JSON.parse_string(FileAccess.get_file_as_string(sp)) if FileAccess.file_exists(sp) else null
+	if siege is Dictionary:
+		for k in ["portraits", "cgs", "actors"]:
+			var merged2: Dictionary = out.get(k, {})
+			merged2.merge(siege.get(k, {}))
+			out[k] = merged2
+		var death: Dictionary = out.get("death", {})
+		var by: Dictionary = death.get("by_source", {})
+		by.merge(siege.get("death", {}))
+		death["by_source"] = by
+		out["death"] = death
 	return out
 
 
@@ -710,6 +730,14 @@ func _icon_for(kind: String, key: String) -> Texture2D:
 	if kind == "equip":
 		var it := ItemDB.get_item(key)
 		return it.icon if it else null
+	# 攻防战的敌塔 / 陷阱：战场情报的图标
+	if kind == "siege":
+		var r := SiegeIntel.icon_region(key)
+		if r.size == Vector2.ZERO:
+			return null
+		at.atlas = load(SiegeIntel.ICONS)
+		at.region = r
+		return at
 	if kind == "trap":
 		var info: Dictionary = data.get("trap_actors", {}).get(key, {})
 		if info.is_empty():

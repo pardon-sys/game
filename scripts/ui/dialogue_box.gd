@@ -327,6 +327,15 @@ func open_training() -> void:
 		Town.start_training_later(r)
 
 
+## 战乱小镇的城门「出发！」：结束对话，去攻防战（floor_06_siege）。
+func go_siege() -> void:
+	runner.end_conversation()
+	GameState.pending_spawn = ""
+	var main := get_tree().get_first_node_in_group("main")
+	if main and main.has_method("change_level"):
+		main.change_level(Floors.scene("floor_06_siege"))
+
+
 ## 对话里「换我来」（和跟着的搭档说话）：结束这段对话，操控换成她，原来的那个变成跟着走。
 func switch_hero() -> void:
 	runner.end_conversation()

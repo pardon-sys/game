@@ -1,0 +1,57 @@
+{
+	"name": "攻防战：胜利",
+	"letterbox": true,
+	"skippable": true,
+	"steps": [
+		{
+			"actions": [
+				{
+					"to": [
+						54,
+						30
+					],
+					"zoom": 0.9,
+					"time": 1.0,
+					"do": "camera"
+				}
+			],
+			"wait": 1.0
+		},
+		{
+			"speaker": "",
+			"text": "（最后一只怪物逃回了黑暗里。战场上安静下来，只剩下冰塔的光）"
+		},
+		{
+			"speaker": "公主",
+			"text": "我们……守住了！",
+			"emotion": "happy"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……嗯。……守住了。"
+		},
+		{
+			"speaker": "",
+			"text": "（待续）"
+		},
+		{
+			"actions": [
+				{
+					"time": 1.0,
+					"do": "fade_out"
+				}
+			],
+			"wait": 1.0
+		},
+		{
+			"actions": [
+				{
+					"to": "floor_06_war",
+					"spawn": "from_siege",
+					"do": "goto"
+				}
+			],
+			"wait": 0.1
+		}
+	]
+}

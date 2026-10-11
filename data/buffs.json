@@ -197,6 +197,29 @@
 				"magic_fail": 0.1
 			},
 			"desc": "千手的手缠成的紧身裤，裹着屁股和大腿，时不时挠一下：闷笑值最低 20、移动 ×0.9、释放魔法有 10% 会失败并大笑。"
+		},
+		"siege_frenzy": {
+			"name": "狂欢",
+			"icon": 19,
+			"debuff": false,
+			"duration": 1.5,
+			"max_stacks": 1,
+			"modifiers": {
+				"speed": 1.35,
+				"tickle_cd": 0.7
+			},
+			"desc": "狂欢图腾附近：怪物移动和挠痒都更快。"
+		},
+		"siege_chill": {
+			"name": "冰寒",
+			"icon": 18,
+			"debuff": true,
+			"duration": 0.6,
+			"max_stacks": 1,
+			"modifiers": {
+				"speed": 0.5
+			},
+			"desc": "寒霜塔旁边：移动减半。"
 		}
 	}
 }

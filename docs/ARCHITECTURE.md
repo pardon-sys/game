@@ -479,6 +479,23 @@ data/cutscenes/<楼层组>/  地图内过场；data/theater/<楼层组>/  小剧
 - **第五层的 design.json**：`tools/build/gen_floor05.py` 生成 `levels/floor_05/design.json`。`combo_areas`：组合区域里要有组合的每种陷阱和怪物（落笼的 slime / tentacle 内容算对应怪物）；`chains`：`start → goal` 存在不碰静态束缚 / 位移陷阱（`_static_hazards`：束缚、传送带、弹弹床、肥皂、漩涡、风扇、足枷、毛毯、符文、藤蔓）的路（可躲），`links` 依次是束缚陷阱格，`_flow`（弹弹床落点、传送带、风道、漩涡中心）从前一个能到下一个（中招就连锁）。
 - **新机制的介绍石碑**：`MECHANIC_SIGNS` 列出 `[机制, 第一次出现的楼层, 石碑对话 id]`。逐层检查：机制第一次出现的楼层要对得上，石碑对话第一句以「【机制名】」开头，从楼层起点按步数（`_distances`）石碑比机制先走到，且相差不超过 `MECHANIC_SIGN_STEPS`。新增机制时在这里加一行并在地图上放石碑（`X = sign dialogue=<id>`，对话写在该层的 `dialogues.json`）。
 
+## 小镇攻防战（scripts/siege/）
+
+战时小镇城门「出发！」→ `floor_06_siege`（`tools/build/gen_floor06_siege.py` 生成地图 + `data/siege/{waves,towers,enemy_towers,intel}.json`）。
+- **导演 `SiegeDirector`**（图例 `siege`）：10 波（准备 → 战斗 → 奖励冰晶），城墙总血量归零 → 清场 → 失败小剧场
+  `data/theater/siege/siege_fail_<N>[_pants].json` → 从这一波重来（冰塔保留）；第 10 波打完 → `siege_won`。
+  同时在场上限 `alive_cap`；怪物挂 `SiegeMind`（行军大脑，`Monster.mind`），攻城怪继承 `SiegeMonster`（`siege_wander` / `block_hit` / `climb_wall`）。
+  三来源组合的攻防战效果（`siege_lockup` / `siege_knockoff` / `siege_fx`）走 `combo_effect_handler`。
+- **城墙** `SiegeWall` ×8（共用总血量，裂缝 3 档，冰墙加固）；梯子 `SiegeLadder`；号角 `SiegeHorn`。
+- **两位公主**：`Duo` + `PlayableCharacter.ai_factory`（蓝色公主 `SiegeMageController`：城墙法师；粉色公主 `CompanionController` + `SiegeAIHooks`）；
+  倒下走 `death_override`（笑倒 CG 按她自己的版本；粉色公主城门复活，蓝色公主 `Downed.timeless` 等救援）；`magic_override`：玩家操控蓝色公主时 L 打开 `SpellAim`。
+- **法术** `SiegeSpells`（冰锥雨 / 冰晶结界 / 清凉雪花 / 冰墙加固）；**镜头** `SiegeCamera`（滚轮 / - / = 缩放，V 全景）；**HUD** `SiegeHud`；**情报** `SiegeIntel`（H / 点击）。
+- **冰塔** `BuildPad` + `IceTower`（6 种 × 2 级，两人一起造）；**敌塔** `EnemySite` + `EnemyTower`（10 种，聚集自动搭）；
+  **陷阱** `scripts/siege/hazards/`（龙卷风、泡泡潮、痒感连线、羽毛扫帚、迷雾；城墙爬藤 / 黏网 + 冰链 = 牺牲互救，`SiegeDirector.rescue`）。
+- **临时痒痒装备**：`Equipment.force` / `release` / `tick_forced`（`GameState.equip_forced`），负面装备由 `EquipFx` 定时发作 + 立绘反应（`data/equip_reactions.json`，分角色）。
+- 内容生成器：`gen_siege_monsters.py`（场景）、`gen_siege_cgs.py`（笑倒 CG，粉 / 蓝两版）、`gen_siege_scenes.py`（三来源组合小演出）、
+  `gen_siege_theaters.py`（失败小剧场）、`gen_siege_reactions.py`（受挠台词）、`tools/art/gen_siege_art.py`（像素图）。
+
 ## 公主状态与换美术素材
 
 - **魔法姿态**：`princess_visuals.json` 的 `magic_order`（`chant / burst / damaged_chant / damaged_giggle_chant / damaged_burst / damaged_giggle_burst`）。`GameState.EMOTIONS` 仍是 11 种可请求的表情；`MAGIC_VISUALS` 只由 `Princess.resolve_visual()` 在 `CHANNEL`（吟唱）/ `CAST`（释放定住 `cast_time` 0.5 秒）状态下选用，优先级最高。选用规则（`Princess.magic_visual`）：闷笑值超过憋笑阈值（35%）→ 战损闷笑版（不管有没有战损，没有未战损的闷笑素材）；否则战损 → 战损版、未战损 → 普通版。吟唱中闷笑变化会 `emotion.refresh()` 立即切换。`VISUALS = EMOTIONS + MAGIC_VISUALS` 是立绘、头像和 `EmotionComponent.row()` 的顺序。`magic_portrait_alias` 让战损闷笑释放借用战损释放的立绘。

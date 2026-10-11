@@ -1,0 +1,1259 @@
+{
+	"_说明": [
+		"攻防战三来源组合的小演出（gen_siege_scenes.py 生成，不要直接改）：第一次触发时播放（CG.play_scene），进 CG 图鉴。"
+	],
+	"scenes": {
+		"sg_foot_assault": {
+			"name": "脚心总攻",
+			"cast": {
+				"princess": {
+					"kind": "princess",
+					"at": [
+						0,
+						8
+					],
+					"visual": "helpless_1",
+					"anim": "helpless",
+					"dir": "down"
+				},
+				"src1": {
+					"kind": "monster:rat",
+					"at": [
+						-28,
+						2
+					],
+					"dir": "right",
+					"hidden": true
+				}
+			},
+			"steps": [
+				{
+					"actions": [
+						{
+							"do": "fade_in",
+							"time": 0.4
+						},
+						{
+							"do": "voice",
+							"state": "giggle"
+						},
+						{
+							"do": "sources",
+							"list": [
+								{
+									"kind": "equip",
+									"key": "equip_t_feather_socks",
+									"name": "羽毛袜"
+								},
+								{
+									"kind": "siege",
+									"key": "etower_net",
+									"name": "吊网塔"
+								},
+								{
+									"kind": "monster",
+									"key": "rat",
+									"name": "挠脚鼠"
+								}
+							]
+						}
+					],
+					"wait": 0.4
+				},
+				{
+					"speaker": "",
+					"text": "【三来源组合】脚心总攻——羽毛袜里的羽毛、吊网里伸出的手、挠脚鼠的小爪子——三样东西全挤在同一个脚心上。",
+					"actions": [
+						{
+							"do": "light",
+							"index": 0
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "surprise"
+						}
+					]
+				},
+				{
+					"speaker": "",
+					"text": "（她被吊网吊在半空，两只脚够不着地。羽毛袜里的羽毛跟着脚一晃一晃地扫）",
+					"actions": []
+				},
+				{
+					"speaker": "公主",
+					"text": "脚、脚够不着地……袜子里的羽毛还在扫……嘻嘻……",
+					"actions": []
+				},
+				{
+					"speaker": "公主",
+					"text": "网眼里……伸出手来了！抓住脚踝——呀，挠脚心！",
+					"actions": [
+						{
+							"do": "light",
+							"index": 1
+						},
+						{
+							"do": "enter",
+							"who": "src1",
+							"from": [
+								-80,
+								0
+							],
+							"time": 0.5
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 6,
+							"interval": 0.3,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "下面还有老鼠在跳——够、够到我的脚了！哈哈哈！",
+					"actions": [
+						{
+							"do": "light",
+							"index": 2
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 6,
+							"interval": 0.28,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"speaker": "",
+					"text": "（网里的手扳住脚掌往后压，羽毛贴着脚心扫，小老鼠的爪子从下面一下下挠——三样都在同一个脚心上）",
+					"actions": []
+				},
+				{
+					"speaker": "公主",
+					"text": "哈哈哈哈！三、三样一起……脚心要坏掉了哈哈哈哈！",
+					"actions": [
+						{
+							"do": "light",
+							"all": true
+						},
+						{
+							"do": "pose",
+							"who": "princess",
+							"visual": "helpless_2"
+						},
+						{
+							"do": "voice",
+							"state": "laugh"
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.5
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 8,
+							"interval": 0.22,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "脚趾缝也……羽毛钻进去了……扳、扳着不让缩哈哈哈哈！",
+					"actions": [
+						{
+							"do": "flash",
+							"time": 0.25
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 8,
+							"interval": 0.2,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "呼……呼……再也不要穿这种袜子了……",
+					"actions": [
+						{
+							"do": "voice",
+							"state": ""
+						},
+						{
+							"do": "pose",
+							"who": "princess",
+							"visual": "helpless_1"
+						}
+					]
+				},
+				{
+					"actions": [
+						{
+							"do": "voice",
+							"state": ""
+						},
+						{
+							"do": "fade_out",
+							"time": 0.6
+						}
+					],
+					"wait": 0.7
+				}
+			]
+		},
+		"sg_toe_bloom": {
+			"name": "趾缝开花",
+			"cast": {
+				"princess": {
+					"kind": "princess",
+					"at": [
+						0,
+						8
+					],
+					"visual": "helpless_1",
+					"anim": "helpless",
+					"dir": "down"
+				}
+			},
+			"steps": [
+				{
+					"actions": [
+						{
+							"do": "fade_in",
+							"time": 0.4
+						},
+						{
+							"do": "voice",
+							"state": "giggle"
+						},
+						{
+							"do": "sources",
+							"list": [
+								{
+									"kind": "equip",
+									"key": "equip_t_toe_brush",
+									"name": "趾缝刷套"
+								},
+								{
+									"kind": "equip",
+									"key": "equip_t_feather_shackles",
+									"name": "羽毛脚镣"
+								},
+								{
+									"kind": "siege",
+									"key": "etower_sole_tower",
+									"name": "脚心刷刷塔"
+								}
+							]
+						}
+					],
+					"wait": 0.4
+				},
+				{
+					"speaker": "",
+					"text": "【三来源组合】趾缝开花——脚踝被羽毛脚镣锁着跑不掉，趾缝刷套把脚趾一根根扳开，脚心刷刷塔的刷子手顺势刷进每一条趾缝。",
+					"actions": [
+						{
+							"do": "light",
+							"index": 0
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "surprise"
+						}
+					]
+				},
+				{
+					"speaker": "",
+					"text": "（两只脚踝被短链连着，只能小步小步地挪。刷套的小钩子钩住脚趾，一根一根往外扳）",
+					"actions": []
+				},
+				{
+					"speaker": "公主",
+					"text": "脚、脚趾被扳开了……跑、跑不快……嘻嘻……",
+					"actions": []
+				},
+				{
+					"speaker": "公主",
+					"text": "刷子手飞过来了！抓、抓住脚踝了——",
+					"actions": [
+						{
+							"do": "light",
+							"index": 1
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "趾缝！刷子刷进趾缝里了——哈哈哈哈！",
+					"actions": [
+						{
+							"do": "light",
+							"index": 2
+						}
+					]
+				},
+				{
+					"speaker": "",
+					"text": "（脚趾被扳成一朵张开的花，刷毛在每一条趾缝里来回刷；脚镣上的羽毛还在扫脚踝）",
+					"actions": []
+				},
+				{
+					"speaker": "公主",
+					"text": "哈哈哈哈！一、一条一条地刷……全部都刷到了哈哈哈！",
+					"actions": [
+						{
+							"do": "light",
+							"all": true
+						},
+						{
+							"do": "pose",
+							"who": "princess",
+							"visual": "helpless_2"
+						},
+						{
+							"do": "voice",
+							"state": "laugh"
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.5
+						},
+						{
+							"do": "flash",
+							"time": 0.2
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "脚、脚心也……扳着脚板刮……不行不行哈哈哈哈哈！",
+					"actions": [
+						{
+							"do": "flash",
+							"time": 0.25
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "呼……脚趾……合不拢了……",
+					"actions": [
+						{
+							"do": "voice",
+							"state": ""
+						},
+						{
+							"do": "pose",
+							"who": "princess",
+							"visual": "helpless_1"
+						}
+					]
+				},
+				{
+					"actions": [
+						{
+							"do": "voice",
+							"state": ""
+						},
+						{
+							"do": "fade_out",
+							"time": 0.6
+						}
+					],
+					"wait": 0.7
+				}
+			]
+		},
+		"sg_bear_bra": {
+			"name": "熊抱胸衣",
+			"cast": {
+				"princess": {
+					"kind": "princess",
+					"at": [
+						0,
+						8
+					],
+					"visual": "helpless_1",
+					"anim": "helpless",
+					"dir": "down"
+				},
+				"src1": {
+					"kind": "monster:hug_bear",
+					"at": [
+						-28,
+						2
+					],
+					"dir": "right",
+					"hidden": true
+				},
+				"src2": {
+					"kind": "monster:bind_vine",
+					"at": [
+						28,
+						2
+					],
+					"dir": "left",
+					"hidden": true
+				}
+			},
+			"steps": [
+				{
+					"actions": [
+						{
+							"do": "fade_in",
+							"time": 0.4
+						},
+						{
+							"do": "voice",
+							"state": "giggle"
+						},
+						{
+							"do": "sources",
+							"list": [
+								{
+									"kind": "equip",
+									"key": "equip_t_fluff_bra",
+									"name": "绒毛胸衣"
+								},
+								{
+									"kind": "monster",
+									"key": "hug_bear",
+									"name": "拥抱小熊"
+								},
+								{
+									"kind": "monster",
+									"key": "bind_vine",
+									"name": "捆绑藤怪"
+								}
+							]
+						}
+					],
+					"wait": 0.4
+				},
+				{
+					"speaker": "",
+					"text": "【三来源组合】熊抱胸衣——藤蔓把手绑在头顶，拥抱小熊一把抱紧，胸衣里的绒毛被挤得贴着胸口蹭——想喘口气都痒。",
+					"actions": [
+						{
+							"do": "light",
+							"index": 0
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "surprise"
+						}
+					]
+				},
+				{
+					"speaker": "",
+					"text": "（胸衣里的绒毛随着呼吸一下下蹭着胸口。她刚想喘口气——）",
+					"actions": []
+				},
+				{
+					"speaker": "公主",
+					"text": "绒、绒毛……一呼吸就蹭……嘻嘻……",
+					"actions": []
+				},
+				{
+					"speaker": "公主",
+					"text": "藤、藤蔓！手被绑到头顶了——",
+					"actions": [
+						{
+							"do": "light",
+							"index": 1
+						},
+						{
+							"do": "enter",
+							"who": "src1",
+							"from": [
+								-80,
+								0
+							],
+							"time": 0.5
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 6,
+							"interval": 0.3,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "小熊——别抱！抱紧了绒毛就……哈哈哈！",
+					"actions": [
+						{
+							"do": "light",
+							"index": 2
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 6,
+							"interval": 0.28,
+							"fx": "lines"
+						},
+						{
+							"do": "enter",
+							"who": "src2",
+							"from": [
+								80,
+								0
+							],
+							"time": 0.5
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 6,
+							"interval": 0.28,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"speaker": "",
+					"text": "（小熊抱得越紧，胸衣就被挤得越贴；绒毛在胸口上蹭，小熊的爪子在腋下抓，藤尖在腰上扫）",
+					"actions": []
+				},
+				{
+					"speaker": "公主",
+					"text": "哈哈哈哈！喘、喘不过气——一喘就更痒哈哈哈！",
+					"actions": [
+						{
+							"do": "light",
+							"all": true
+						},
+						{
+							"do": "pose",
+							"who": "princess",
+							"visual": "helpless_2"
+						},
+						{
+							"do": "voice",
+							"state": "laugh"
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.5
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 8,
+							"interval": 0.22,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 8,
+							"interval": 0.22,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "腋、腋下也……手被吊着放不下来哈哈哈哈！",
+					"actions": [
+						{
+							"do": "flash",
+							"time": 0.25
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 8,
+							"interval": 0.2,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 8,
+							"interval": 0.2,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "呼……这件胸衣……一定要扔掉……",
+					"actions": [
+						{
+							"do": "voice",
+							"state": ""
+						},
+						{
+							"do": "pose",
+							"who": "princess",
+							"visual": "helpless_1"
+						}
+					]
+				},
+				{
+					"actions": [
+						{
+							"do": "voice",
+							"state": ""
+						},
+						{
+							"do": "fade_out",
+							"time": 0.6
+						}
+					],
+					"wait": 0.7
+				}
+			]
+		},
+		"sg_carried_mark": {
+			"name": "被抬走的印记",
+			"cast": {
+				"princess": {
+					"kind": "princess",
+					"at": [
+						0,
+						8
+					],
+					"visual": "helpless_1",
+					"anim": "helpless",
+					"dir": "down"
+				},
+				"src1": {
+					"kind": "monster:carrier",
+					"at": [
+						-28,
+						2
+					],
+					"dir": "right",
+					"hidden": true
+				}
+			},
+			"steps": [
+				{
+					"actions": [
+						{
+							"do": "fade_in",
+							"time": 0.4
+						},
+						{
+							"do": "voice",
+							"state": "giggle"
+						},
+						{
+							"do": "sources",
+							"list": [
+								{
+									"kind": "equip",
+									"key": "equip_t_mark_patch",
+									"name": "痒痒印记臀贴"
+								},
+								{
+									"kind": "siege",
+									"key": "etower_vine_pull",
+									"name": "藤蔓拉拽塔"
+								},
+								{
+									"kind": "monster",
+									"key": "carrier",
+									"name": "搬运小鬼队"
+								}
+							]
+						}
+					],
+					"wait": 0.4
+				},
+				{
+					"speaker": "",
+					"text": "【三来源组合】被抬走的印记——屁股上的痒痒印记把怪物全招来了：藤蔓拉拽塔一勾，搬运小鬼一扛，一路挠着直接运进了敌塔。",
+					"actions": [
+						{
+							"do": "light",
+							"index": 0
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "surprise"
+						}
+					]
+				},
+				{
+					"speaker": "",
+					"text": "（屁股上的印记一闪一闪地发光，怪物们的眼睛全朝这边看了过来）",
+					"actions": []
+				},
+				{
+					"speaker": "公主",
+					"text": "大、大家都在看我的……屁股？！",
+					"actions": []
+				},
+				{
+					"speaker": "公主",
+					"text": "藤蔓！勾、勾住腰了——往那边拖！",
+					"actions": [
+						{
+							"do": "light",
+							"index": 1
+						},
+						{
+							"do": "enter",
+							"who": "src1",
+							"from": [
+								-80,
+								0
+							],
+							"time": 0.5
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 6,
+							"interval": 0.3,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "小鬼们……别、别扛起来！一边扛一边挠哈哈哈！",
+					"actions": [
+						{
+							"do": "light",
+							"index": 2
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 6,
+							"interval": 0.28,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"speaker": "",
+					"text": "（藤蔓拖着，小鬼扛着，三只小手轮流在发光的印记上捏——一路往敌塔运过去）",
+					"actions": []
+				},
+				{
+					"speaker": "公主",
+					"text": "哈哈哈哈！印、印记那里不要捏——越捏越亮哈哈哈！",
+					"actions": [
+						{
+							"do": "light",
+							"all": true
+						},
+						{
+							"do": "pose",
+							"who": "princess",
+							"visual": "helpless_2"
+						},
+						{
+							"do": "voice",
+							"state": "laugh"
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.5
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 8,
+							"interval": 0.22,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "要、要被关进去了——蓝色的公主——救救我哈哈哈哈！",
+					"actions": [
+						{
+							"do": "flash",
+							"time": 0.25
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 8,
+							"interval": 0.2,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "呜……下次一定要先把那个贴纸撕掉……",
+					"actions": [
+						{
+							"do": "voice",
+							"state": ""
+						},
+						{
+							"do": "pose",
+							"who": "princess",
+							"visual": "helpless_1"
+						}
+					]
+				},
+				{
+					"actions": [
+						{
+							"do": "voice",
+							"state": ""
+						},
+						{
+							"do": "fade_out",
+							"time": 0.6
+						}
+					],
+					"wait": 0.7
+				}
+			]
+		},
+		"sg_bell_tide": {
+			"name": "铃声引来的潮水",
+			"cast": {
+				"princess": {
+					"kind": "princess",
+					"at": [
+						0,
+						8
+					],
+					"visual": "helpless_1",
+					"anim": "helpless",
+					"dir": "down"
+				},
+				"src1": {
+					"kind": "monster:bat_swarm",
+					"at": [
+						-28,
+						2
+					],
+					"dir": "right",
+					"hidden": true
+				}
+			},
+			"steps": [
+				{
+					"actions": [
+						{
+							"do": "fade_in",
+							"time": 0.4
+						},
+						{
+							"do": "voice",
+							"state": "giggle"
+						},
+						{
+							"do": "sources",
+							"list": [
+								{
+									"kind": "equip",
+									"key": "equip_t_bell_anklet",
+									"name": "铃铛脚链"
+								},
+								{
+									"kind": "siege",
+									"key": "hazard_bubbles",
+									"name": "痒痒泡泡潮"
+								},
+								{
+									"kind": "monster",
+									"key": "bat_swarm",
+									"name": "羽毛蝠群"
+								}
+							]
+						}
+					],
+					"wait": 0.4
+				},
+				{
+					"speaker": "",
+					"text": "【三来源组合】铃声引来的潮水——铃铛脚链一路叮铃铃地响，把羽毛蝠群全引了过来；痒痒泡泡潮一扫，她被包进泡泡里飘着，蝙蝠围着泡泡扫。",
+					"actions": [
+						{
+							"do": "light",
+							"index": 0
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "surprise"
+						}
+					]
+				},
+				{
+					"speaker": "",
+					"text": "（脚踝上的铃铛叮铃——叮铃——每走一步都响）",
+					"actions": []
+				},
+				{
+					"speaker": "公主",
+					"text": "铃、铃铛好吵……怪物全听见了……",
+					"actions": []
+				},
+				{
+					"speaker": "公主",
+					"text": "泡泡潮！被、被包进去了——飘起来了！",
+					"actions": [
+						{
+							"do": "light",
+							"index": 1
+						},
+						{
+							"do": "enter",
+							"who": "src1",
+							"from": [
+								-80,
+								0
+							],
+							"time": 0.5
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 6,
+							"interval": 0.3,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "蝙蝠……围着泡泡转圈……羽毛从泡泡外面伸进来了！哈哈哈！",
+					"actions": [
+						{
+							"do": "light",
+							"index": 2
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 6,
+							"interval": 0.28,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"speaker": "",
+					"text": "（她在泡泡里一挣，铃铛就响；铃铛一响，更多蝙蝠就飞过来，羽毛隔着泡泡壁扫个不停）",
+					"actions": []
+				},
+				{
+					"speaker": "公主",
+					"text": "哈哈哈哈！别、别动……一动铃铛就响……可是好痒哈哈哈！",
+					"actions": [
+						{
+							"do": "light",
+							"all": true
+						},
+						{
+							"do": "pose",
+							"who": "princess",
+							"visual": "helpless_2"
+						},
+						{
+							"do": "voice",
+							"state": "laugh"
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.5
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 8,
+							"interval": 0.22,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "脚、脚心也……泡泡里躲不开哈哈哈哈！",
+					"actions": [
+						{
+							"do": "flash",
+							"time": 0.25
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 8,
+							"interval": 0.2,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "呼……铃铛……快点掉下来吧……",
+					"actions": [
+						{
+							"do": "voice",
+							"state": ""
+						},
+						{
+							"do": "pose",
+							"who": "princess",
+							"visual": "helpless_1"
+						}
+					]
+				},
+				{
+					"actions": [
+						{
+							"do": "voice",
+							"state": ""
+						},
+						{
+							"do": "fade_out",
+							"time": 0.6
+						}
+					],
+					"wait": 0.7
+				}
+			]
+		},
+		"sg_strap_tornado": {
+			"name": "夹腿龙卷",
+			"cast": {
+				"princess": {
+					"kind": "princess",
+					"at": [
+						0,
+						8
+					],
+					"visual": "helpless_1",
+					"anim": "helpless",
+					"dir": "down"
+				}
+			},
+			"steps": [
+				{
+					"actions": [
+						{
+							"do": "fade_in",
+							"time": 0.4
+						},
+						{
+							"do": "voice",
+							"state": "giggle"
+						},
+						{
+							"do": "sources",
+							"list": [
+								{
+									"kind": "equip",
+									"key": "equip_t_thigh_strap",
+									"name": "夹腿绑带"
+								},
+								{
+									"kind": "siege",
+									"key": "hazard_tornado",
+									"name": "痒痒龙卷风"
+								},
+								{
+									"kind": "siege",
+									"key": "etower_thigh_tower",
+									"name": "腿根揉揉塔"
+								}
+							]
+						}
+					],
+					"wait": 0.4
+				},
+				{
+					"speaker": "",
+					"text": "【三来源组合】夹腿龙卷——夹腿绑带让她跑不动，痒痒龙卷风把她卷起来转圈，腿根揉揉塔的小手趁着转圈一下下揉——最后被甩飞出去。",
+					"actions": [
+						{
+							"do": "light",
+							"index": 0
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "surprise"
+						}
+					]
+				},
+				{
+					"speaker": "",
+					"text": "（两条大腿被绑带绑在一起，只能一蹦一蹦地挪）",
+					"actions": []
+				},
+				{
+					"speaker": "公主",
+					"text": "跑、跑不动……龙卷风过来了——",
+					"actions": []
+				},
+				{
+					"speaker": "公主",
+					"text": "转、转起来了！绑着腿转圈……",
+					"actions": [
+						{
+							"do": "light",
+							"index": 1
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "小、小手飞过来了——揉、揉腿根！哈哈哈！",
+					"actions": [
+						{
+							"do": "light",
+							"index": 2
+						}
+					]
+				},
+				{
+					"speaker": "",
+					"text": "（转一圈，飞来的小手就揉一下腿根；绑带内侧的软毛也跟着蹭——她并着腿越转越快）",
+					"actions": []
+				},
+				{
+					"speaker": "公主",
+					"text": "哈哈哈哈！转、转一圈揉一下……晕、晕了哈哈哈！",
+					"actions": [
+						{
+							"do": "light",
+							"all": true
+						},
+						{
+							"do": "pose",
+							"who": "princess",
+							"visual": "helpless_2"
+						},
+						{
+							"do": "voice",
+							"state": "laugh"
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.5
+						},
+						{
+							"do": "flash",
+							"time": 0.2
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "要、要被甩出去了——哇啊啊哈哈哈哈！",
+					"actions": [
+						{
+							"do": "flash",
+							"time": 0.25
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "呼……天、天在转……腿还在痒……",
+					"actions": [
+						{
+							"do": "voice",
+							"state": ""
+						},
+						{
+							"do": "pose",
+							"who": "princess",
+							"visual": "helpless_1"
+						}
+					]
+				},
+				{
+					"actions": [
+						{
+							"do": "voice",
+							"state": ""
+						},
+						{
+							"do": "fade_out",
+							"time": 0.6
+						}
+					],
+					"wait": 0.7
+				}
+			]
+		}
+	}
+}

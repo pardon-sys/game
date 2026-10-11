@@ -12,7 +12,9 @@ from pathlib import Path
 os.chdir(Path(__file__).resolve().parents[2])
 
 ICONS = ["armpit_pad", "scarf", "wool_socks", "dance_shoes", "waist_sash", "mint_sachet", "chest_guard",
-         "training_wraps", "padded_shorts", "party_bow", "feather_anklet", "ice_hairpin", "thousand_pants"]
+         "training_wraps", "padded_shorts", "party_bow", "feather_anklet", "ice_hairpin", "thousand_pants",
+         "t_feather_socks", "t_toe_brush", "t_fluff_bra", "t_thigh_ring", "t_pinch_pad", "t_knead_tights",
+         "t_feather_shackles", "t_thigh_strap", "t_bell_anklet", "t_mark_patch"]
 
 # 名字 -> (显示名, 部位, 谁能穿, 属性, 部位加减, 挡下次数, 诅咒, 特殊, 好处, 代价, 说明, 价格(0 = 不卖))
 EQUIP = {
@@ -56,10 +58,46 @@ EQUIP = {
                        "（无）", "脱不下；闷笑最低 20、移动 ×0.9、魔法 10% 失败",
                        "走出夜迷宫时，几只没有散去的手悄悄缠在蓝色公主的大腿上，变成了一层薄薄的紫色紧身裤——裹着屁股和大腿，脱不下来，时不时还会动一下。", 0),
 }
+# 攻防战的临时痒痒装备（被痒痒裁缝铺 / 捆绑藤怪强制穿上 20 秒；不卖、不进背包）：名字 -> (显示名, 部位, 类别, 属性, 部位加减, 特殊, 好处, 代价, 说明)
+TEMP = {
+    "t_feather_socks": ("羽毛袜", ["sole"], "tickle", {"speed": 0.8}, {"sole": 0.3}, "",
+                        "（无）", "走一步挠一下脚心、移动 ×0.8，跑得越快挠得越重",
+                        "袜子内侧铺满了细细的羽毛。每走一步，羽毛就在脚心上扫一下。"),
+    "t_toe_brush": ("趾缝刷套", ["sole"], "tickle", {}, {"sole": 0.4}, "",
+                    "（无）", "把脚趾一根根扳开刷趾缝、脚心敏感 +0.4",
+                    "套在脚上的软刷套：小钩子把脚趾一根根扳开，刷毛钻进趾缝里来回刷。"),
+    "t_fluff_bra": ("绒毛胸衣", ["chest"], "tickle", {"laugh_decay": -0.2}, {"chest": 0.3}, "",
+                    "（无）", "绒毛随呼吸蹭胸口、闷笑消减 −20%",
+                    "里面全是软绒毛的小胸衣。一呼吸，绒毛就蹭一下胸口——越喘越痒。"),
+    "t_thigh_ring": ("腿根揉揉环", ["thigh"], "tickle", {}, {"thigh": 0.3}, "",
+                     "（无）", "环里的手指揉腿根、大腿敏感 +0.3",
+                     "套在大腿根上的软环，里面藏着几根手指，一圈一圈地揉。"),
+    "t_pinch_pad": ("捏捏臀垫", ["butt"], "tickle", {}, {"butt": 0.3}, "",
+                    "（无）", "一下下捏屁股、屁股敏感 +0.3",
+                    "贴在屁股上的软垫，左边捏一下、右边捏一下。"),
+    "t_knead_tights": ("揉揉紧身裤", ["thigh", "butt"], "tickle", {"speed": 0.9}, {"thigh": 0.2, "butt": 0.2}, "",
+                       "（无）", "揉腿根、捏屁股、移动 ×0.9",
+                       "紧紧裹住大腿和屁股的紧身裤，里面全是手。"),
+    "t_feather_shackles": ("羽毛脚镣", ["sole"], "bind", {"speed": 0.55}, {}, "no_dash",
+                           "（无）", "两脚踝连在一起：不能冲刺、移动 ×0.55，羽毛扫脚踝",
+                           "两只脚踝被一根短链连在一起，只能小步小步地走。链子上的羽毛扫着脚踝。"),
+    "t_thigh_strap": ("夹腿绑带", ["thigh"], "bind", {"speed": 0.6}, {"thigh": 0.2}, "",
+                      "（无）", "大腿绑在一起：移动 ×0.6，绑带内侧挠腿",
+                      "把两条大腿绑在一起的宽绑带，内侧一圈软毛。"),
+    "t_bell_anklet": ("铃铛脚链", ["sole"], "curse", {}, {}, "bell_move",
+                      "（无）", "一动就叮铃响，把附近的怪引过来",
+                      "挂满小铃铛的脚链。走一步响一下，怪物全听得见。"),
+    "t_mark_patch": ("痒痒印记臀贴", ["butt"], "curse", {"laugh_gain": 0.15}, {"butt": 0.2}, "mark",
+                     "（无）", "怪物优先找她、闷笑涨幅 +15%",
+                     "贴在屁股上的发光印记。怪物闻得到，全朝这里来。"),
+}
+for k, (disp, slots, kind, mods, zmods, special, pros, cons, desc) in TEMP.items():
+    EQUIP[k] = (disp, slots, "", mods, zmods, {}, False, special, pros, cons, desc, 0, kind)
 
 
 def tres(name):
-    disp, slots, owner, mods, zmods, block, cursed, special, pros, cons, desc, _price = EQUIP[name]
+    disp, slots, owner, mods, zmods, block, cursed, special, pros, cons, desc, _price = EQUIP[name][:12]
+    kind = EQUIP[name][12] if len(EQUIP[name]) > 12 else ""
     idx = ICONS.index(name)
     item_id = name if name == "thousand_pants" else "equip_" + name
 
@@ -81,6 +119,8 @@ def tres(name):
         "cursed = %s" % ("true" if cursed else "false"), 'special = "%s"' % special,
         "pros = %s" % gd(pros), "cons = %s" % gd(cons),
     ]
+    if kind:
+        lines += ["temporary = true", 'kind = "%s"' % kind]
     out = Path("data/items") / (("thousand_pants" if name == "thousand_pants" else "equip_" + name) + ".tres")
     out.write_text("\n".join(lines) + "\n")
     return item_id

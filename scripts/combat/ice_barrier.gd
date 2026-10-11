@@ -33,8 +33,9 @@ static func cast(caster: Node2D, t: int) -> Array[Node]:
 
 
 ## 通用：半径 r、冻 time 秒（疲倦爆发用满蓄力范围、一半时间）。tier 传给会魔法反应的东西。
-static func cast_with(caster: Node2D, r: float, time: float, t := 3) -> Array[Node]:
-	var center := caster.global_position + Vector2(0, -6)
+## at：放在别的地方（攻防战里蓝色公主从城墙上选点放）；施法者不在范围里时她自己不得到守护。
+static func cast_with(caster: Node2D, r: float, time: float, t := 3, at: Variant = null) -> Array[Node]:
+	var center: Vector2 = at if at is Vector2 else caster.global_position + Vector2(0, -6)
 	var hit: Array[Node] = []
 	var tree := caster.get_tree()
 	for n in tree.get_nodes_in_group("actor"):
@@ -61,7 +62,7 @@ static func cast_with(caster: Node2D, r: float, time: float, t := 3) -> Array[No
 		if n is Node2D and Contracts.is_magic_reactive(n) and (n as Node2D).global_position.distance_to(center) <= r:
 			n.on_magic_burst(t, caster)
 	var pc := caster as PlayableCharacter
-	if pc:
+	if pc and pc.global_position.distance_to(center) <= r + StarBurst.BODY_ALLOWANCE:
 		if pc.status and pc.status.is_grabbed():
 			pc.status.release(true)
 		pc.fling_latchers()
