@@ -513,6 +513,8 @@ func rescue_request() -> Variant:
 ## 救援要付出的时间（秒）：冰链拉住 / 探出城垛割网，期间蓝色公主动不了、被挠。
 const RESCUE_TIME := 3.0
 const NET_REACH := 40.0
+## 冰链能拉多远（从城墙上一直够到敌方区域）
+const CHAIN_RANGE := 1100.0
 var rescuing := false
 var _rescue_line: Line2D
 
@@ -524,7 +526,7 @@ func rescue(b: PlayableCharacter) -> bool:
 	var netted: bool = pink.get_meta("siege_netted", false)
 	if netted and absf(b.global_position.x - pink.global_position.x) > NET_REACH:
 		return false
-	if not netted and b.global_position.distance_to(pink.global_position) > SiegeSpells.RANGE:
+	if not netted and b.global_position.distance_to(pink.global_position) > CHAIN_RANGE:
 		return false
 	_rescue_seq(b, netted)
 	return true
@@ -548,7 +550,7 @@ func _rescue_seq(b: PlayableCharacter, netted: bool) -> void:
 	# 墙上的怪趁机挠她（探出城垛时大腿和屁股露在外面）
 	if enemies_near(b.global_position, 60.0).filter(func(m): return m is SiegeMonster and (m as SiegeMonster).on_wall).size() < 2:
 		for i in 2:
-			var g: Monster = spawn("gecko", "", Vector2(b.global_position.x + (16.0 if i == 0 else -16.0), wall_top_y() + 2.0))
+			var g: Monster = spawn("gecko", "", Vector2(b.global_position.x + (40.0 if i == 0 else -40.0), wall_top_y() + 2.0))
 			if g is SiegeMonster:
 				(g as SiegeMonster).on_wall = true
 				g.collision_mask = 0
@@ -562,8 +564,7 @@ func _rescue_seq(b: PlayableCharacter, netted: bool) -> void:
 			continue
 		t += dt
 		tick -= dt
-		if not is_instance_valid(b) or not is_instance_valid(pink) or not is_on_wall(b) or Downed.is_downed(b) or state != "fight" \
-				or (b.laugh and b.laugh.stage() == "helpless_2"):
+		if not is_instance_valid(b) or not is_instance_valid(pink) or not is_on_wall(b) or Downed.is_downed(b) or state != "fight":
 			ok = false
 			break
 		_rescue_line.points = PackedVector2Array([b.global_position + Vector2(0, -12), pink.global_position + Vector2(0, -10)])

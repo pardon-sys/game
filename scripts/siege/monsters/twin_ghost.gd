@@ -15,6 +15,8 @@ var _spawned_pair := false
 
 func _setup() -> void:
 	super()
+	if half == "a":
+		_spawn_pair.call_deferred()
 	if half == "b":
 		sprite_key = "twin_ghost_b"
 		collision_mask = 0
@@ -23,20 +25,25 @@ func _setup() -> void:
 			sprite.region_rect = region(sprite_key + "_0")
 
 
+## 在城墙上生出另一半（b）。
+func _spawn_pair() -> void:
+	if _spawned_pair or half != "a" or director == null or not is_inside_tree():
+		return
+	_spawned_pair = true
+	var b := director.spawn("twin_ghost", "", Vector2(global_position.x, director.wall_top_y() + 2.0)) as TwinGhost
+	if b:
+		b.half = "b"
+		b._spawned_pair = true
+		b.sprite_key = "twin_ghost_b"
+		b.collision_mask = 0
+		b.on_wall = true
+		if b.sprite:
+			b.sprite.region_rect = region("twin_ghost_b_0")
+		twin = b
+		b.twin = self
+
+
 func siege_wander(_mind: SiegeMind, delta: float) -> bool:
-	if not _spawned_pair and half == "a" and director:
-		_spawned_pair = true
-		var b := director.spawn("twin_ghost", "", Vector2(global_position.x, director.wall_top_y() + 2.0)) as TwinGhost
-		if b:
-			b.half = "b"
-			b._spawned_pair = true
-			b.sprite_key = "twin_ghost_b"
-			b.collision_mask = 0
-			b.on_wall = true
-			if b.sprite:
-				b.sprite.region_rect = region("twin_ghost_b_0")
-			twin = b
-			b.twin = self
 	if _down_at >= 0.0:
 		velocity = Vector2.ZERO
 		if Time.get_ticks_msec() / 1000.0 - _down_at >= PAIR_TIME:

@@ -69,10 +69,12 @@ func _on_wall(me: PlayableCharacter, delta: float) -> void:
 		if hot and director.threat(hot) > 0:
 			goal_x = clampf(me.global_position.x, hot.left_x() + 20.0, hot.right_x() - 20.0)
 	var walk_y := director.wall_top_y() + 4.0
-	# 城墙羽毛扫帚要扫过来：换到另一行
+	# 城墙羽毛扫帚要扫过来：先换到另一行（最优先，直接竖着走）
 	for h in get_tree().get_nodes_in_group("siege_hazard"):
 		if h is HazardBroom and (h as HazardBroom).threatens(me.global_position.y):
-			walk_y = (h as HazardBroom).safe_y()
+			_move = Vector2(0, signf((h as HazardBroom).safe_y() - me.global_position.y))
+			intent = "dodge"
+			return
 	var d := Vector2(goal_x - me.global_position.x, (walk_y - me.global_position.y) * 0.5)
 	if d.length() > 6.0:
 		_move = d.normalized()

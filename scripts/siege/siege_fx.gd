@@ -12,6 +12,7 @@ static func ring(parent: Node, at: Vector2, r: float, col: Color, time := 0.6, f
 	n.color = col
 	n.fill = fill
 	n.z_index = -1
+	n.add_to_group("siege_temp")
 	parent.add_child(n)
 	n.global_position = at
 	var tw := n.create_tween()
@@ -29,6 +30,8 @@ static func lane(parent: Node, from: Vector2, to: Vector2, w: float, col: Color,
 	l.default_color = Color(col.r, col.g, col.b, 0.35)
 	l.points = PackedVector2Array([from, to])
 	l.z_index = -1
+	l.add_to_group("siege_temp")
+	l.add_to_group("siege_lane")
 	parent.add_child(l)
 	l.global_position = Vector2.ZERO
 	var tw := l.create_tween().set_loops(int(time / 0.3))
