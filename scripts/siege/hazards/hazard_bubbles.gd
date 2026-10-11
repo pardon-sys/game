@@ -1,6 +1,7 @@
 class_name HazardBubbles
 extends SiegeHazard
 ## 痒痒泡泡潮：一排大泡泡从战场一边扫到另一边；被包进泡泡的公主飘起来、动不了，泡泡里一直挠，过一会儿泡泡破掉。
+## 泡泡运兵（怪物 + 陷阱）：泡泡也会把小怪包进去，一路飘到城墙下放下。
 
 const COUNT := 8
 const SPEED := 55.0
@@ -29,6 +30,20 @@ func _active(delta: float) -> void:
 		if b["pop"]:
 			continue
 		alive += 1
+		var mob: Variant = b.get("mob")
+		if mob != null:
+			if not is_instance_valid(mob):
+				b["pop"] = true
+				continue
+			# 运兵：往城墙那边飘，到墙下就破掉放下
+			var goal := Vector2((b["pos"] as Vector2).x, director.wall_foot_y() + 14.0)
+			b["pos"] = (b["pos"] as Vector2).move_toward(goal, 50.0 * delta)
+			(mob as Node2D).global_position = (b["pos"] as Vector2) + Vector2(0, 4)
+			if (b["pos"] as Vector2).distance_to(goal) < 4.0:
+				(mob as Monster).set_physics_process(true)
+				b["mob"] = null
+				_pop(b)
+			continue
 		var c: PlayableCharacter = b["held"]
 		if c and is_instance_valid(c):
 			b["left"] = float(b["left"]) - delta
@@ -50,6 +65,13 @@ func _active(delta: float) -> void:
 				Audio.play("bubble", -3.0, 0.1)
 				SpeechBubble.say(ch, "泡、泡泡里——飘起来了！" if ch.character_id == "pink" else "……泡泡。……出不去。", 28.0, 1.4)
 				break
+		if b.get("held") == null and b.get("mob") == null:
+			for m in director.enemies_near(b["pos"], R + 2.0):
+				if m.get_meta("siege_on_wall", false) or m is SiegeCart or m.has_meta("in_ladder"):
+					continue
+				b["mob"] = m
+				m.set_physics_process(false)
+				break
 		var x: float = (b["pos"] as Vector2).x
 		if x < -30.0 or x > director.map_size().x + 30.0:
 			b["pop"] = true
@@ -70,6 +92,8 @@ func _pop(b: Dictionary) -> void:
 
 func _end() -> void:
 	for b in _bubbles:
+		if b.get("mob") != null and is_instance_valid(b["mob"]):
+			(b["mob"] as Monster).set_physics_process(true)
 		if b["held"]:
 			_pop(b)
 	super()
@@ -85,3 +109,5 @@ func _draw() -> void:
 		draw_circle(p, R, Color(0.7, 0.9, 1.0, 0.25))
 		draw_arc(p, R, 0.0, TAU, 24, Color(0.85, 0.97, 1.0, 0.8), 1.0)
 		draw_circle(p + Vector2(-4, -4), 2.0, Color(1, 1, 1, 0.8))
+		# 反光闪烁
+		draw_arc(p, R - 2.0, -1.2 + sin(_t * 4.0) * 0.3, -0.4, 8, Color(1, 1, 1, 0.6), 1.0)

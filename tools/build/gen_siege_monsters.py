@@ -21,6 +21,7 @@ MONSTERS = {
     "thigh_spider": ("thigh_spider", "thigh_spider", "腿根爬爬蛛", "thigh_spider", 3, 26, 52, 60, 1, 9.0, 0.6, 0.95, "hand", 5, 8),
     "hug_bear": ("hug_bear", "hug_bear", "拥抱小熊", "hug_bear", 6, 18, 40, 100, 1, 10.0, 0.7, 0.95, "hand", 6, 9),
     "suck_jelly": ("suck_jelly", "suck_jelly", "魔力吸吸水母", "suck_jelly", 4, 20, 40, 999, 1, 7.0, 0.7, 0.95, "goo", 5, 9),
+    "goblin_engineer": ("goblin_engineer", "engineer", "地精工兵", "goblin_engineer", 4, 22, 40, 50, 1, 5.0, 1.0, 0.6, "hand", 5, 8),
     "twin_ghost": ("twin_ghost", "twin_ghost_a", "双子痒痒鬼", "twin_ghost", 5, 20, 42, 90, 1, 9.0, 0.6, 0.85, "hand", 5, 9),
 }
 

@@ -44,6 +44,9 @@ func _active(_delta: float) -> void:
 		director.knock_off(b, "城墙羽毛扫帚")
 	if randf() < 0.5:
 		Fx.burst(get_parent(), Vector2(_x, lane_y), "feather", 2, 40.0, 0.6, Vector2(0, 30))
+	# 风线
+	if randf() < 0.3:
+		SiegeFx.lane(get_parent(), Vector2(_x - 40.0, lane_y - 6.0), Vector2(_x - 4.0, lane_y - 6.0), 1.0, Color(0.95, 0.95, 1.0), 0.3)
 
 
 func _draw() -> void:

@@ -11,6 +11,8 @@ const REVIVE_RANGE := 22.0
 const MOB_RANGE := 40.0
 ## 不倒计时（攻防战：蓝色公主倒下后不会自己起来，也不会超时失败，只能等粉色公主来救）
 static var timeless := false
+## 这么多秒后自己起来（<0 = 不会；攻防战里蓝色公主没人来抬时 40 秒后自己复活）
+var revive_after := -1.0
 
 var who: PlayableCharacter
 var time_left := TIME
@@ -94,6 +96,11 @@ func _process(delta: float) -> void:
 		Characters.unscope()
 		if not lines.is_empty() and randf() < 0.35:
 			SpeechBubble.say(who, str(lines.pick_random()).left(14), 26.0)
+	if revive_after > 0.0:
+		revive_after -= delta
+		if revive_after <= 0.0:
+			_revive()
+			return
 	# 搭档按住 E 救援
 	var other := Duo.partner_of(who)
 	var helping := other != null and other.is_alive() and not Downed.is_downed(other) \
@@ -107,6 +114,12 @@ func _process(delta: float) -> void:
 		_revive()
 	elif (time_left <= 0.0 and not timeless) or Duo.all_down():
 		_fail()
+
+
+## 立刻救起（攻防战：士兵把她抬上城墙）。
+func revive_now() -> void:
+	if not _done:
+		_revive()
 
 
 func _revive() -> void:

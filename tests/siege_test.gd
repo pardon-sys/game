@@ -29,6 +29,7 @@ func _ready() -> void:
 	for key in ReactionDB.source_keys():
 		GameState.set_flag("met_" + key)
 	await _run_enter()
+	_dir().bench_soldiers(true)   # 士兵（siege2_test 测）会先把测试里放的怪打掉
 	await _run_waves()
 	await _run_controls()
 	await _run_towers()
@@ -94,9 +95,12 @@ func _run_waves() -> void:
 	check("打倒怪物得冰晶（%d → %d）" % [c0, d.crystals], d.crystals > c0)
 	# 剩下的直接清掉，看清波
 	d._queue.clear()
-	for m in d.monsters.duplicate():
-		if is_instance_valid(m):
-			m.health.damage(999)
+	# 打倒后会分裂 / 复活的（大史莱姆、分裂史莱姆、双子鬼）多清几轮
+	for k in 6:
+		for m in d.monsters.duplicate():
+			if is_instance_valid(m):
+				m.health.damage(999)
+		await _wait(0.4)
 	await _advance_until(func(): return d.state == "prep" and d.wave == 2, 5.0)
 	check("清完第 1 波 → 第 2 波准备（第 %d 波，%s）" % [d.wave, d.state], d.wave == 2 and d.state == "prep")
 
@@ -142,11 +146,20 @@ func _run_controls() -> void:
 		var m := d.spawn("slime", "bottom", Vector2(d.blue.global_position.x + i * 6.0, d.wall_foot_y() + 60.0))
 		m.mind = null
 	d.blue.set_meta("siege_cd", {})
-	var took: bool = PlayableCharacter.magic_override.call(d.blue)
-	var opened := d.aim.active and PlayerInputController.movement_locked
-	d.aim.cycle(1)
+	# 按 1：打开瞄准、她进入吟诵姿势（小人 CHANNEL + 吟诵立绘），不走蓄力
+	await _press("siege_spell_1")
+	var took := d.aim.active and d.aim.spell == "ice_rain"
+	var opened := took and PlayerInputController.movement_locked
+	var chanting: bool = d.blue.state == PlayableCharacter.State.CHANNEL and d.blue.pose_only and d.blue.resolve_visual("").ends_with("chant")
+	await _press("siege_spell_2")
 	var second := d.aim.spell
-	d.aim.cycle(-1)
+	await _press("siege_spell_1")
+	# 按 Esc：只收起准星，暂停菜单不打开
+	var reopened := d.aim.active and d.aim.spell == "ice_rain"
+	await _press("pause")
+	var esc_ok := not d.aim.active and not get_tree().paused and d.blue.state != PlayableCharacter.State.CHANNEL
+	d.blue.set_meta("siege_cd", {})
+	d.aim.open(d.blue, "ice_rain")
 	d.aim.point = Vector2(d.blue.global_position.x + 15.0, d.wall_foot_y() + 60.0)
 	var hp_before := 0
 	for m in d.monsters:
@@ -156,18 +169,35 @@ func _run_controls() -> void:
 		if fired:
 			break
 		d.blue.set_meta("siege_cd", {})
-		d.aim.open(d.blue)
+		d.aim.open(d.blue, "ice_rain")
 		d.aim.point = Vector2(d.blue.global_position.x + 15.0, d.wall_foot_y() + 60.0)
 		fired = d.aim.fire()
+	var casting: bool = d.blue.state == PlayableCharacter.State.CAST and d.blue.resolve_visual("").ends_with("burst")
 	await _wait(0.8)
 	var hp_after := 0
 	for m in d.monsters:
 		if is_instance_valid(m):
 			hp_after += m.health.hp
-	check("按 L 打开瞄准（%s / %s），Q / R 换法术（%s），放出冰锥雨（%s）打到怪（%d → %d），收起准星、进冷却（%.1f 秒）" % [took, opened, second,
-			fired, hp_before, hp_after, SiegeSpells.cooldown_left(d.blue, "ice_rain")],
-		took and opened and second == "barrier" and fired and hp_after < hp_before and not d.aim.active
-		and SiegeSpells.cooldown_left(d.blue, "ice_rain") > 0.0 and not PlayerInputController.movement_locked)
+	check("按 1 打开瞄准（%s / %s）、吟诵姿势（%s），按 2 换法术（%s），Esc 只收起准星（%s / %s），放出冰锥雨（%s）进入释放姿势（%s）打到怪（%d → %d）" % [
+			took, opened, chanting, second, reopened, esc_ok, fired, casting, hp_before, hp_after],
+		took and opened and chanting and second == "barrier" and reopened and esc_ok and fired and casting and hp_after < hp_before
+		and not d.aim.active and SiegeSpells.cooldown_left(d.blue, "ice_rain") > 0.0 and not PlayerInputController.movement_locked)
+	# L 还是她自己的冰晶结界（原地吟唱，不是瞄准）
+	await _wait(1.0)
+	d.blue._magic_cd = 0.0
+	var ev := InputEventAction.new()
+	ev.action = "magic"
+	ev.pressed = true
+	Input.parse_input_event(ev)
+	await get_tree().physics_frame
+	await get_tree().physics_frame
+	var own := d.blue.state == PlayableCharacter.State.CHANNEL and not d.blue.pose_only and not d.aim.active
+	var up := InputEventAction.new()
+	up.action = "magic"
+	up.pressed = false
+	Input.parse_input_event(up)
+	await _wait(0.5)
+	check("L 还是她自己的冰晶结界（原地吟唱 %s，没打开瞄准）" % own, own)
 	# 千手痒痒裤有 10% 让魔法失败：多试几次
 	for i in 6:
 		d.blue.set_meta("siege_cd", {})
@@ -202,10 +232,12 @@ func _run_controls() -> void:
 
 
 # ------------------------------------------------------------------ 冰塔
-func _pads() -> Array:
-	var a := get_tree().get_nodes_in_group("siege_pad")
-	a.sort_custom(func(x, y): return x.index < y.index)
-	return a
+func _make_pad(at: Vector2, kind: String, lvl := 1) -> BuildPad:
+	var pd := BuildPad.new()
+	_dir().entities().add_child(pd)
+	pd.global_position = at
+	pd._build(kind, lvl)
+	return pd
 
 
 func _keep_fighting(d: SiegeDirector) -> void:
@@ -223,33 +255,50 @@ func _clear_monsters(d: SiegeDirector) -> void:
 func _run_towers() -> void:
 	print("-- 冰塔")
 	var d := _dir()
-	var pads := _pads()
-	check("待建区 10 个冰塔格（%d）、敌方区域 6 个地基（%d）" % [pads.size(), get_tree().get_nodes_in_group("siege_enemy_site").size()],
-		pads.size() == 10 and get_tree().get_nodes_in_group("siege_enemy_site").size() == 6)
-	var pad: BuildPad = pads[4]
+	check("没有固定的冰塔格（%d），敌塔地基全地图都有（%d 个）" % [get_tree().get_nodes_in_group("siege_pad").size(),
+			get_tree().get_nodes_in_group("siege_enemy_site").size()],
+		get_tree().get_nodes_in_group("siege_pad").is_empty() and get_tree().get_nodes_in_group("siege_enemy_site").size() >= 24)
+	if GameState.player != d.pink:
+		main.switch_character()
+		await _wait(0.3)
 	d.add_crystals(200)
 	var c0 := d.crystals
-	d.pink.global_position = pad.global_position
-	pad.on_pink(d.pink)
+	var spot := Vector2(d.gate_pos.x + 100.0, d.wall_foot_y() + 70.0)
+	d.pink.global_position = spot
+	await _press("siege_build")
 	await get_tree().process_frame
 	var menu_open := Dialogue.runner.choice_menu.is_open()
 	Dialogue.runner.choice_menu.choose(0)
 	await get_tree().process_frame
-	check("粉色公主在冰塔格上按 E：选塔菜单（%s），选了冰锥塔付冰晶（%d → %d），等蓝色公主的冰光（%s）" % [menu_open, c0, d.crystals, pad.waiting()],
-		menu_open and d.crystals == c0 - 10 and pad.waiting())
+	await get_tree().process_frame
+	var pad: BuildPad = null
+	for pd in get_tree().get_nodes_in_group("siege_pad"):
+		pad = pd
+	check("粉色公主按 B：在脚下放冰塔基座、选塔菜单（%s），选了冰锥塔付冰晶（%d → %d），等蓝色公主的冰光（%s）" % [menu_open, c0, d.crystals,
+			pad.waiting() if pad else false],
+		menu_open and d.crystals == c0 - 10 and pad != null and pad.waiting() and pad.global_position.distance_to(spot) < 6.0)
 	var t := await _advance_until(func(): return pad.tower != null, 25.0)
 	check("蓝色公主（AI）走过来放冰光 → 冰锥塔破冰而出（%.1f 秒，%s）" % [t, pad.tower.kind if pad.tower else ""], pad.tower != null and pad.tower.kind == "icicle")
+	var why_wall := d.build_blocked(Vector2(spot.x, d.wall_top_y()))
+	var why_near := d.build_blocked(spot + Vector2(16, 0))
+	var far_pad := BuildPad.new()
+	d.entities().add_child(far_pad)
+	far_pad.global_position = Vector2(spot.x, d.wall_foot_y() + 520.0)
+	var beam_far := far_pad.beam_time()
+	far_pad.queue_free()
+	check("城墙上不能建（%s）、离塔太近不能建（%s）；离城墙越远冰光越久（%.1f 秒 > %.1f 秒）" % [why_wall, why_near, beam_far, pad.beam_time()],
+		why_wall != "" and why_near != "" and beam_far > pad.beam_time())
 	pad.request("icicle", true)
 	await _advance_until(func(): return pad.tower and pad.tower.level == 2, 20.0)
-	check("同一格再造一次 → 2 级（%d），布置存进 vars（%s）" % [pad.tower.level if pad.tower else 0, GameState.vars.get("siege_towers", {})],
-		pad.tower and pad.tower.level == 2 and GameState.vars.get("siege_towers", {}).get("4", []) == ["icicle", 2])
+	var saved: Array = GameState.vars.get("siege_towers", [])
+	check("同一座再造一次 → 2 级（%d），布置存进 vars（%s）" % [pad.tower.level if pad.tower else 0, saved],
+		pad.tower and pad.tower.level == 2 and saved.size() == 1 and saved[0]["kind"] == "icicle" and int(saved[0]["level"]) == 2)
 	# 其它 5 种的效果（直接建）
 	var kinds := ["snowman", "decoy", "mint", "frost", "repair"]
 	var built := {}
 	for i in kinds.size():
-		var pd: BuildPad = pads[i]
-		pd._build(kinds[i], 1)
-		built[kinds[i]] = pd.tower
+		var pd2 := _make_pad(Vector2(d.gate_pos.x - 400.0 + i * 70.0, d.wall_foot_y() + 70.0), kinds[i])
+		built[kinds[i]] = pd2.tower
 	_keep_fighting(d)
 	await _wait(0.3)
 	# 冰锥：打怪

@@ -19,6 +19,8 @@ var _struggle_t := 0.0
 ## 最近一次做的决定（测试 / 调试用）：idle / patrol / spell:<id> / fallen / ladder / struggle / build / rescue
 var intent := "idle"
 var _climbing := false
+var _patrol_x := 0.0
+var _patrol_t := 0.0
 
 
 func get_move_vector() -> Vector2:
@@ -68,6 +70,13 @@ func _on_wall(me: PlayableCharacter, delta: float) -> void:
 		var hot := director.hottest_wall()
 		if hot and director.threat(hot) > 0:
 			goal_x = clampf(me.global_position.x, hot.left_x() + 20.0, hot.right_x() - 20.0)
+		else:
+			# 没有威胁：在墙顶走道上随机挑个地方来回巡逻
+			_patrol_t -= delta
+			if _patrol_t <= 0.0 or absf(_patrol_x - me.global_position.x) < 6.0:
+				_patrol_t = randf_range(3.0, 6.0)
+				_patrol_x = clampf(me.global_position.x + randf_range(-160.0, 160.0), 40.0, director.map_size().x - 40.0)
+			goal_x = _patrol_x
 	var walk_y := director.wall_top_y() + 4.0
 	# 城墙羽毛扫帚要扫过来：先换到另一行（最优先，直接竖着走）
 	for h in get_tree().get_nodes_in_group("siege_hazard"):

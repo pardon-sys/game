@@ -1,8 +1,9 @@
 class_name SpellAim
 extends CanvasLayer
-## 攻防战：玩家操控蓝色公主时的「瞄准施法」（SiegeDirector 创建；PlayableCharacter.magic_override 把 L 键转到这里）。
-##   按 L 打开：地上出现准星（默认放在射程里怪最密的地方），蓝色公主站着不动；
-##   方向键 / 鼠标移动准星，Q / R 换法术（冰锥雨 / 冰晶结界 / 清凉雪花 / 冰墙加固），L / E / 鼠标左键放出，Esc 取消。
+## 攻防战：玩家操控蓝色公主时的「瞄准施法」（SiegeDirector 创建）。L 还是她自己的冰晶结界（原地吟唱）。
+##   按 1~4（siege_spell_1~4：冰锥雨 / 冰晶结界 / 清凉雪花 / 冰墙加固）打开：地上出现准星（默认放在射程里怪最密的地方），
+##   她进入吟诵姿势（小人 + 立绘：PlayableCharacter.pose_channel），站着不动；
+##   方向键 / 鼠标移动准星，按别的数字换法术，再按同一个数字 / E / 鼠标左键放出（释放姿势 pose_cast），Esc 取消。
 ##   准星外圈是法术范围，蓝色公主周围的虚线圈是射程；射程外 / 冷却中准星变红。
 
 const MOVE_SPEED := 220.0
@@ -50,12 +51,32 @@ func _ready() -> void:
 	_label.add_theme_color_override("font_outline_color", Color(0.06, 0.1, 0.2))
 	_label.add_theme_constant_override("outline_size", 4)
 	_label.add_theme_font_size_override("font_size", 9)
-	_label.position = Vector2(110, 30)
+	_label.position = Vector2(110, 232)   # 法术格正上方，不挡顶上的波次 / 城墙血条
 	_label.hide()
 	add_child(_label)
 
 
-func open(c: PlayableCharacter) -> void:
+## 按 1~4 打开 / 换法术 / 放出（玩家操控蓝色公主时）。
+func _unhandled_key_spell(event: InputEvent) -> bool:
+	if director == null or not is_instance_valid(GameState.player) or GameState.player != director.get("blue") or GameState.in_dialogue:
+		return false
+	for i in SiegeSpells.ORDER.size():
+		if event.is_action_pressed("siege_spell_%d" % (i + 1)):
+			var id: String = SiegeSpells.ORDER[i]
+			if not active:
+				open(GameState.player, id)
+			elif spell == id:
+				fire()
+			else:
+				spell = id
+				_refresh_label()
+			return true
+	return false
+
+
+func open(c: PlayableCharacter, id := "") -> void:
+	if id != "":
+		spell = id
 	if active:
 		return
 	caster = c
@@ -70,6 +91,7 @@ func open(c: PlayableCharacter) -> void:
 	point = p if p is Vector2 else c.global_position + Vector2(0, 90)
 	PlayerInputController.movement_locked = true
 	PlayerInputController.actions_locked = true
+	c.pose_channel(true)
 	_label.show()
 	_refresh_label()
 
@@ -78,6 +100,8 @@ func close() -> void:
 	active = false
 	PlayerInputController.movement_locked = false
 	PlayerInputController.actions_locked = false
+	if caster and is_instance_valid(caster):
+		caster.pose_channel(false)
 	_label.hide()
 
 
@@ -101,12 +125,13 @@ func fire() -> bool:
 	var ok := SiegeSpells.cast(caster, spell, point)
 	if ok:
 		close()
+		caster.pose_cast()
 	return ok
 
 
 func _refresh_label() -> void:
 	var cd := SiegeSpells.cooldown_left(caster, spell) if caster else 0.0
-	_label.text = "【%s】%s　Q / R 换法术　L / E / 左键 放出　Esc 取消" % [SiegeSpells.spell_name(spell),
+	_label.text = "【%s】%s　1~4 换法术　再按 / E / 左键 放出　Esc 取消" % [SiegeSpells.spell_name(spell),
 		("冷却 %.1f 秒" % cd) if cd > 0.0 else ("射程外" if spell != "reinforce" and caster and not SiegeSpells.in_range(caster, point) else "可以放")]
 
 
@@ -124,7 +149,17 @@ func _process(delta: float) -> void:
 	_refresh_label()
 
 
+## 瞄准中按 Esc 只收起准星（在 _input 里先处理，暂停菜单收不到这次 Esc）。
+func _input(event: InputEvent) -> void:
+	if active and event.is_pressed() and not event.is_echo() and (event.is_action("pause") or event.is_action("ui_cancel")):
+		close()
+		get_viewport().set_input_as_handled()
+
+
 func _unhandled_input(event: InputEvent) -> void:
+	if _unhandled_key_spell(event):
+		get_viewport().set_input_as_handled()
+		return
 	# 没在瞄准时：玩家操控的蓝色公主按 E 救粉色公主（冰链 / 探出城垛割网）
 	if not active:
 		if event.is_action_pressed("interact") and director and is_instance_valid(GameState.player) \
@@ -146,7 +181,7 @@ func _unhandled_input(event: InputEvent) -> void:
 		cycle(-1)
 	elif event.is_action("use_special"):
 		cycle(1)
-	elif event.is_action("magic") or event.is_action("interact") or (event is InputEventMouseButton and (event as InputEventMouseButton).button_index == MOUSE_BUTTON_LEFT):
+	elif event.is_action("interact") or (event is InputEventMouseButton and (event as InputEventMouseButton).button_index == MOUSE_BUTTON_LEFT):
 		if event is InputEventMouseButton and reticle:
 			point = reticle.get_global_mouse_position()
 		fire()

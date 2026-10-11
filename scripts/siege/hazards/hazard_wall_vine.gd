@@ -100,6 +100,10 @@ func _active(delta: float) -> void:
 			_vt = VINE_TICK
 			tickle(bound, 4.0, ["thigh", "waist"].pick_random())
 	_draw_vine(top)
+	# 叶子飘落
+	if randf() < delta * 3.0:
+		Fx.burst(get_parent(), global_position.lerp(top, randf()) + Vector2(randf_range(-6, 6), 0), "feather", 1, 15.0, 1.0, Vector2(0, 30),
+			Color(0.5, 0.85, 0.4))
 	# 根须缠住砍藤根的粉色公主的脚踝
 	var p := director.pink
 	if p and is_instance_valid(p) and p.global_position.distance_to(global_position) < ANKLE:

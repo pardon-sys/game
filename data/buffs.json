@@ -220,6 +220,18 @@
 				"speed": 0.5
 			},
 			"desc": "寒霜塔旁边：移动减半。"
+		},
+		"siege_rapid": {
+			"name": "攻城",
+			"icon": 19,
+			"debuff": false,
+			"duration": -1,
+			"max_stacks": 1,
+			"modifiers": {
+				"tickle_cd": 0.5
+			},
+			"desc": "攻防战里的怪物：挠痒的间隔更短（特殊能力更频繁）。",
+			"hidden": true
 		}
 	}
 }

@@ -1,0 +1,506 @@
+{
+	"_说明": [
+		"怪物配合技（tools/build/gen_teamwork.py 生成；MonsterTeamwork 读）。"
+	],
+	"teams": [
+		{
+			"id": "troll_throw",
+			"name": "巨魔投掷",
+			"color": "#ffb070",
+			"members": [
+				{
+					"key": "troll",
+					"count": 1,
+					"role": "thrower"
+				},
+				{
+					"key": [
+						"rat",
+						"slime"
+					],
+					"count": 1,
+					"role": "ammo"
+				}
+			],
+			"radius": 40,
+			"cooldown": 8,
+			"trigger": "near",
+			"need_princess": 0,
+			"effect": {
+				"type": "throw_onto_wall"
+			},
+			"formation": [
+				[
+					"troll",
+					1
+				],
+				[
+					"rat",
+					4
+				]
+			],
+			"intel": {
+				"desc": "挠痒巨魔和脚边的小怪。",
+				"mech": "巨魔抓起旁边的挠脚鼠 / 史莱姆，直接扔上城墙去挠蓝色公主。",
+				"how": "先打巨魔；蓝色公主注意墙上掉下来的小怪。"
+			}
+		},
+		{
+			"id": "slime_merge",
+			"name": "史莱姆合体",
+			"color": "#8cf0a0",
+			"members": [
+				{
+					"key": "slime",
+					"count": 4,
+					"role": "body"
+				}
+			],
+			"radius": 36,
+			"cooldown": 14,
+			"trigger": "near",
+			"need_princess": 0,
+			"effect": {
+				"type": "merge"
+			},
+			"formation": [
+				[
+					"slime",
+					4
+				]
+			],
+			"intel": {
+				"desc": "挤成一团的史莱姆。",
+				"mech": "4 只挤在一起就合成一只大史莱姆：血厚、能把人整个裹住；打倒后分裂成 6 只小的。",
+				"how": "趁它们还没挤到一起就打散。"
+			}
+		},
+		{
+			"id": "raise_arms",
+			"name": "举手挠腋",
+			"color": "#c8a8ff",
+			"members": [
+				{
+					"key": "glove",
+					"count": 1,
+					"role": "holder"
+				},
+				{
+					"key": "ghost",
+					"count": 1,
+					"role": "tickler"
+				}
+			],
+			"radius": 90,
+			"cooldown": 10,
+			"trigger": "near",
+			"need_princess": 24,
+			"effect": {
+				"type": "raise_arms"
+			},
+			"formation": [
+				[
+					"glove",
+					1
+				],
+				[
+					"ghost",
+					2
+				]
+			],
+			"intel": {
+				"desc": "幽灵手套和挠痒幽灵。",
+				"mech": "手套抓住公主的手腕举高（腋下暴露、定身一下），幽灵趁机钻进腋下挠。",
+				"how": "别让手套贴身；先打手套。"
+			}
+		},
+		{
+			"id": "strip_shoes",
+			"name": "脱鞋小队",
+			"color": "#f0c878",
+			"members": [
+				{
+					"key": "rat",
+					"count": 3,
+					"role": "stripper"
+				}
+			],
+			"radius": 34,
+			"cooldown": 12,
+			"trigger": "near",
+			"need_princess": 22,
+			"effect": {
+				"type": "strip_shoes"
+			},
+			"formation": [
+				[
+					"rat",
+					4
+				],
+				[
+					"squirrel",
+					2
+				],
+				[
+					"hedgehog",
+					1
+				]
+			],
+			"intel": {
+				"desc": "一群挠脚鼠，后面跟着刷子怪。",
+				"mech": "3 只挠脚鼠围住公主就把鞋子扒掉（脚心暴露 8 秒），附近的刷刷松鼠和刷子刺猬都围过来刷脚心。",
+				"how": "冲刺跑出鼠群。"
+			}
+		},
+		{
+			"id": "suction_chain",
+			"name": "吸盘串串",
+			"color": "#ff9fd0",
+			"members": [
+				{
+					"key": "octopus",
+					"count": 1,
+					"role": "head"
+				},
+				{
+					"key": "barnacle",
+					"count": 1,
+					"role": "tail"
+				}
+			],
+			"radius": 160,
+			"cooldown": 12,
+			"trigger": "near",
+			"need_princess": 26,
+			"effect": {
+				"type": "suction_chain"
+			},
+			"formation": [
+				[
+					"octopus",
+					1
+				],
+				[
+					"barnacle",
+					3
+				]
+			],
+			"intel": {
+				"desc": "吸盘章鱼和藤壶。",
+				"mech": "章鱼吸住公主后，藤壶一只接一只吸上来：越走越慢、挣脱要多按几下，还一直余痒。",
+				"how": "连按挣脱；蓝色公主的清凉雪花能解开。"
+			}
+		},
+		{
+			"id": "feather_dance",
+			"name": "精灵羽毛舞会",
+			"color": "#ffe0f4",
+			"members": [
+				{
+					"key": "fairy",
+					"count": 1,
+					"role": "dust"
+				},
+				{
+					"key": "bat",
+					"count": 1,
+					"role": "fan"
+				}
+			],
+			"radius": 70,
+			"cooldown": 10,
+			"trigger": "near",
+			"need_princess": 110,
+			"effect": {
+				"type": "feather_dance"
+			},
+			"formation": [
+				[
+					"fairy",
+					2
+				],
+				[
+					"bat",
+					2
+				]
+			],
+			"intel": {
+				"desc": "小精灵群和羽毛蝙蝠。",
+				"mech": "精灵撒痒痒粉、蝙蝠用羽毛扇：一大圈范围持续挠痒 3 秒。",
+				"how": "看到粉色的圈就跑出去。"
+			}
+		},
+		{
+			"id": "bubble_chain",
+			"name": "泡泡鱼连环泡",
+			"color": "#9fd8ff",
+			"members": [
+				{
+					"key": "bubble_fish",
+					"count": 2,
+					"role": "blower"
+				}
+			],
+			"radius": 90,
+			"cooldown": 12,
+			"trigger": "near",
+			"need_princess": 120,
+			"effect": {
+				"type": "bubble_trap"
+			},
+			"formation": [
+				[
+					"bubble_fish",
+					3
+				],
+				[
+					"caterpillar",
+					2
+				]
+			],
+			"intel": {
+				"desc": "几只泡泡鱼，后面爬着毛毛虫。",
+				"mech": "泡泡鱼一起吐泡泡把公主困进大泡泡（飘起来动不了 3 秒），毛毛虫钻进泡泡里挠。",
+				"how": "远远看到泡泡鱼就绕开。"
+			}
+		},
+		{
+			"id": "jelly_charge",
+			"name": "魔力水母充能",
+			"color": "#c890ff",
+			"members": [
+				{
+					"key": "mana_jelly",
+					"count": 1,
+					"role": "charger"
+				},
+				{
+					"key": [
+						"slime",
+						"rat",
+						"caterpillar",
+						"squirrel",
+						"spider"
+					],
+					"count": 2,
+					"role": "ally"
+				}
+			],
+			"radius": 90,
+			"cooldown": 12,
+			"trigger": "near",
+			"need_princess": 0,
+			"effect": {
+				"type": "charge"
+			},
+			"formation": [
+				[
+					"mana_jelly",
+					1
+				],
+				[
+					"slime",
+					3
+				],
+				[
+					"rat",
+					2
+				]
+			],
+			"intel": {
+				"desc": "魔力水母和身边的怪。",
+				"mech": "魔力水母把吸来的魔力传给附近的怪：它们移动和挠痒都更快 6 秒。",
+				"how": "先打水母。"
+			}
+		},
+		{
+			"id": "hedgehog_roll",
+			"name": "刷子滚球阵",
+			"color": "#e8c090",
+			"members": [
+				{
+					"key": "hedgehog",
+					"count": 3,
+					"role": "roller"
+				}
+			],
+			"radius": 60,
+			"cooldown": 12,
+			"trigger": "near",
+			"need_princess": 160,
+			"effect": {
+				"type": "roll_push"
+			},
+			"formation": [
+				[
+					"hedgehog",
+					3
+				]
+			],
+			"intel": {
+				"desc": "三只刷子刺猬。",
+				"mech": "排成一列滚过来，把公主一路撞向怪最多的地方。",
+				"how": "往侧面躲。"
+			}
+		},
+		{
+			"id": "gecko_ladder",
+			"name": "壁虎叠罗汉",
+			"color": "#a0f0a0",
+			"members": [
+				{
+					"key": "gecko",
+					"count": 5,
+					"role": "rung"
+				}
+			],
+			"radius": 50,
+			"cooldown": 15,
+			"trigger": "near",
+			"need_princess": 0,
+			"effect": {
+				"type": "living_ladder"
+			},
+			"formation": [
+				[
+					"gecko",
+					5
+				]
+			],
+			"intel": {
+				"desc": "一队爬墙壁虎。",
+				"mech": "同一段墙下凑齐 5 只就叠成活梯子，附近的普通怪也能顺着爬上城墙；梯子里的壁虎少于 3 只梯子就散。",
+				"how": "打梯子里的壁虎；冰墙加固那段也有用。"
+			}
+		},
+		{
+			"id": "cart_escort",
+			"name": "攻城车护卫阵",
+			"color": "#ffd060",
+			"members": [
+				{
+					"key": "cart",
+					"count": 1,
+					"role": "cart"
+				},
+				{
+					"key": "shield_crab",
+					"count": 1,
+					"role": "guard"
+				}
+			],
+			"radius": 120,
+			"cooldown": 20,
+			"trigger": "near",
+			"need_princess": 0,
+			"effect": {
+				"type": "escort_cart"
+			},
+			"formation": [
+				[
+					"cart",
+					1
+				],
+				[
+					"shield_crab",
+					3
+				]
+			],
+			"intel": {
+				"desc": "攻城痒痒车和排在车前的盾甲螃蟹。",
+				"mech": "螃蟹排在车前：从前面（上面）来的冰锥和冰塔打不到车。",
+				"how": "粉色公主绕到后面先打螃蟹。"
+			}
+		},
+		{
+			"id": "bat_airdrop",
+			"name": "蝠群空投",
+			"color": "#d0b0ff",
+			"members": [
+				{
+					"key": "bat_swarm",
+					"count": 1,
+					"role": "carrier"
+				},
+				{
+					"key": [
+						"hook",
+						"hug_bear"
+					],
+					"count": 1,
+					"role": "passenger"
+				}
+			],
+			"radius": 40,
+			"cooldown": 14,
+			"trigger": "near",
+			"need_princess": 0,
+			"effect": {
+				"type": "airdrop"
+			},
+			"formation": [
+				[
+					"bat_swarm",
+					1
+				],
+				[
+					"hug_bear",
+					1
+				]
+			],
+			"intel": {
+				"desc": "羽毛蝠群抓着别的怪。",
+				"mech": "蝙蝠抓起钩索怪 / 拥抱小熊，飞过城墙扔到墙顶。",
+				"how": "冰锥打下蝠群；墙上的弓箭手也会射。"
+			}
+		},
+		{
+			"id": "engineer_escort",
+			"name": "工兵护送",
+			"color": "#90e080",
+			"members": [
+				{
+					"key": "goblin_engineer",
+					"count": 1,
+					"role": "builder"
+				},
+				{
+					"key": [
+						"slime",
+						"rat",
+						"shield_crab",
+						"spider"
+					],
+					"count": 3,
+					"role": "guard"
+				}
+			],
+			"radius": 70,
+			"cooldown": 20,
+			"trigger": "near",
+			"need_princess": 0,
+			"effect": {
+				"type": "escort_engineer"
+			},
+			"formation": [
+				[
+					"goblin_engineer",
+					3
+				],
+				[
+					"shield_crab",
+					2
+				],
+				[
+					"slime",
+					3
+				]
+			],
+			"intel": {
+				"desc": "扛着木料的地精工兵和护卫。",
+				"mech": "护卫围着工兵走、攻击靠近的公主；护送着搭成的敌塔第一次发动威力加倍。",
+				"how": "先拆护卫阵、再打工兵；冻住工兵能让搭建停下。"
+			}
+		}
+	]
+}

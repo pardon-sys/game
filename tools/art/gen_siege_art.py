@@ -335,8 +335,16 @@ def gen_towers():
         items.append(("etower_" + k, etower(k)))
     items += [("snowman_0", snowman(0)), ("snowman_1", snowman(1)), ("glue", glue_puddle()),
               ("proj_hand", hand_proj((190, 140, 230, 255))), ("proj_brush", brush_proj()), ("proj_equip", equip_proj()),
-              ("proj_icicle", icicle_proj()), ("net", net_tile())]
+              ("proj_icicle", icicle_proj()), ("net", net_tile()), ("proj_arrow", arrow_proj())]
     pack(items, "towers")
+
+
+def arrow_proj():
+    img, d = canvas(4, 12)
+    d.line((2, 2, 2, 11), fill=WOOD, width=1)
+    d.polygon([(0, 3), (2, 0), (4, 3)], fill=(220, 220, 230, 255))
+    d.line((1, 10, 3, 10), fill=(255, 255, 255, 255))
+    return add_outline(img)
 
 
 def icicle_proj():
@@ -501,7 +509,22 @@ def m_twin_ghost(f, col):
     return add_outline(img)
 
 
+def m_engineer(f):
+    img, d = canvas(16, 18)
+    d.line((1, 4 + f, 15, 2 + f), fill=WOOD, width=3)          # 扛着的木料
+    d.line((1, 4 + f, 15, 2 + f), fill=WOOD_D, width=1)
+    d.ellipse((4, 7, 12, 17), fill=(110, 170, 90, 255))
+    d.ellipse((4, 4, 12, 11), fill=(130, 190, 100, 255))
+    d.polygon([(3, 7), (0, 5), (4, 9)], fill=(130, 190, 100, 255))
+    d.polygon([(13, 7), (16, 5), (12, 9)], fill=(130, 190, 100, 255))
+    d.rectangle((5, 3, 11, 5), fill=(230, 180, 60, 255))       # 安全帽
+    d.point((6, 8), fill=(30, 30, 30, 255)); d.point((10, 8), fill=(30, 30, 30, 255))
+    d.line((6, 16, 6 - f, 17), fill=(80, 120, 60, 255)); d.line((10, 16, 10 + f, 17), fill=(80, 120, 60, 255))
+    return add_outline(img)
+
+
 MONSTERS = {
+    "engineer": m_engineer,
     "cart": m_cart, "hook": m_hook, "vine": m_vine, "gecko": m_gecko, "shield_crab": m_shield_crab, "bat_swarm": m_bat_swarm,
     "carrier": m_carrier, "warm_slime": m_warm_slime, "thigh_spider": m_thigh_spider, "hug_bear": m_hug_bear,
     "suck_jelly": m_suck_jelly,

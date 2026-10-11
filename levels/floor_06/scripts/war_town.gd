@@ -36,6 +36,10 @@ func setup_partners() -> void:
 		return
 	for n in lv.find_children("*", "PlayableCharacter", true, false):
 		var c := n as PlayableCharacter
+		# 从攻防战回来：镜头倍数恢复默认
+		if c.camera:
+			c.camera.zoom = Vector2.ONE
+			c.camera.top_level = false
 		c.follow = true
 		c.partner_talk = PARTNER
 		if c.is_controlled():

@@ -346,6 +346,8 @@ func _tick(delta: float) -> void:
 			if not status.is_grabbed():
 				set_invulnerable(grab_escape_invuln, true)
 				_set_state(State.HELPLESS if laugh and laugh.is_helpless() else State.IDLE)
+		State.CHANNEL when pose_only:
+			velocity = velocity.move_toward(Vector2.ZERO, friction * delta)
 		State.CHANNEL:
 			velocity = velocity.move_toward(Vector2.ZERO, friction * delta)
 			if not GameState.in_dialogue:
@@ -533,6 +535,41 @@ func _on_magic_fail(_tier: int) -> void:
 ## 释放魔法本身（按档位）：默认是星光爆发；蓝色公主重写成冰晶结界。
 func cast_magic(tier: int) -> void:
 	StarBurst.cast(self, tier)
+
+
+## 只摆样子的吟诵 / 释放（攻防战的城墙法术：按 1~4 选点时吟诵，放出时释放）：小人动画、立绘（吟诵 / 释放）、魔法阵都和
+## 平时的魔法一样，但不走蓄力逻辑（不会自己放出冰晶结界）。被挠到失控 / 被抓时照常打断。
+var pose_only := false
+
+
+func pose_channel(on: bool) -> void:
+	if on:
+		if state not in [State.IDLE, State.MOVE]:
+			return
+		_set_state(State.CHANNEL)
+		pose_only = true
+		if _magic_fx == null:
+			_magic_fx = MagicCircle.new()
+			add_child(_magic_fx)
+		_magic_fx.set_stage(1)
+		_magic_fx.show()
+		_refresh_emotion()
+	elif pose_only and state == State.CHANNEL:
+		if _magic_fx:
+			_magic_fx.hide()
+		_set_state(State.IDLE)
+		_refresh_emotion()
+
+
+## 只摆样子的释放：放出城墙法术的一瞬间（cast_time 秒后回到站立）。
+func pose_cast() -> void:
+	if _magic_fx:
+		_magic_fx.hide()
+	if state in [State.IDLE, State.MOVE, State.CHANNEL]:
+		_set_state(State.CAST)
+		pose_only = true
+		shake(0.08)
+		_refresh_emotion()
 
 
 ## 松开：按当前档位释放；不到 1 档算落空。返回释放的档位（0 = 落空）。
@@ -998,6 +1035,8 @@ func _tick_forced(delta: float) -> void:
 
 func _set_state(s: State) -> void:
 	if s != state:
+		if s != State.CHANNEL and s != State.CAST:
+			pose_only = false
 		state = s
 		_state_time = 0.0
 		state_changed.emit(s)

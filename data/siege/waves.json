@@ -2,11 +2,11 @@
 	"_说明": [
 		"小镇攻防战的波次（gen_floor06_siege.py 生成；SiegeDirector 读）。怪物表只有已经做好的怪。"
 	],
-	"wall_hp": 2400,
+	"wall_hp": 3600,
 	"prep_first": 30,
 	"prep": 20,
-	"alive_cap": 90,
-	"start_crystals": 24,
+	"ability_rate": 3.0,
+	"start_crystals": 30,
 	"monsters": {
 		"slime": "res://scenes/actors/monsters/slime.tscn",
 		"rat": "res://scenes/actors/monsters/foot_rat.tscn",
@@ -16,6 +16,19 @@
 		"hedgehog": "res://scenes/actors/monsters/brush_hedgehog.tscn",
 		"spider": "res://scenes/actors/monsters/tickle_spider.tscn",
 		"glove": "res://scenes/actors/monsters/ghost_glove.tscn",
+		"bat": "res://scenes/actors/monsters/feather_bat.tscn",
+		"ghost": "res://scenes/actors/monsters/tickle_ghost.tscn",
+		"troll": "res://scenes/actors/monsters/tickle_troll.tscn",
+		"crab": "res://scenes/actors/monsters/pincer_crab.tscn",
+		"split_slime": "res://scenes/actors/monsters/split_slime.tscn",
+		"mana_jelly": "res://scenes/actors/monsters/mana_jelly.tscn",
+		"bubble_fish": "res://scenes/actors/monsters/bubble_fish.tscn",
+		"imp": "res://scenes/actors/monsters/machine_imp.tscn",
+		"frog": "res://scenes/actors/monsters/tongue_frog.tscn",
+		"octopus": "res://scenes/actors/monsters/suction_octopus.tscn",
+		"barnacle": "res://scenes/actors/monsters/barnacle.tscn",
+		"mini_tentacle": "res://scenes/actors/monsters/mini_tentacle.tscn",
+		"goblin_engineer": "res://scenes/siege/monsters/goblin_engineer.tscn",
 		"cart": "res://scenes/siege/monsters/siege_cart.tscn",
 		"hook": "res://scenes/siege/monsters/hook_climber.tscn",
 		"vine": "res://scenes/siege/monsters/bind_vine.tscn",
@@ -36,24 +49,45 @@
 			"groups": [
 				{
 					"monster": "slime",
-					"count": 12,
+					"count": 36,
 					"from": "bottom",
-					"interval": 1.4,
+					"interval": 0.7,
 					"delay": 0.0
 				},
 				{
 					"monster": "rat",
-					"count": 8,
+					"count": 24,
 					"from": "bottom",
-					"interval": 1.6,
+					"interval": 0.8,
 					"delay": 6
 				},
 				{
 					"monster": "slime",
-					"count": 6,
+					"count": 18,
 					"from": "hole",
-					"interval": 2.0,
+					"interval": 1.0,
 					"delay": 14
+				},
+				{
+					"monster": "bat",
+					"count": 4,
+					"from": "left",
+					"interval": 1.0,
+					"delay": 8
+				},
+				{
+					"monster": "frog",
+					"count": 3,
+					"from": "hole",
+					"interval": 1.5,
+					"delay": 12
+				},
+				{
+					"formation": "engineer_escort",
+					"count": 1,
+					"from": "bottom",
+					"interval": 0,
+					"delay": 10.0
 				}
 			],
 			"theater": "siege_fail_1"
@@ -64,31 +98,107 @@
 			"groups": [
 				{
 					"monster": "slime",
-					"count": 10,
+					"count": 30,
 					"from": "bottom",
-					"interval": 1.2,
+					"interval": 0.6,
 					"delay": 0.0
 				},
 				{
 					"monster": "caterpillar",
-					"count": 8,
+					"count": 24,
 					"from": "left",
-					"interval": 1.5,
+					"interval": 0.75,
 					"delay": 4
 				},
 				{
 					"monster": "hook",
-					"count": 4,
+					"count": 12,
 					"from": "bottom",
-					"interval": 4.0,
+					"interval": 2.0,
 					"delay": 8
 				},
 				{
 					"monster": "gecko",
-					"count": 10,
+					"count": 30,
 					"from": "right",
-					"interval": 1.2,
+					"interval": 0.6,
 					"delay": 12
+				},
+				{
+					"monster": "ghost",
+					"count": 4,
+					"from": "hole",
+					"interval": 1.0,
+					"delay": 6
+				},
+				{
+					"monster": "crab",
+					"count": 4,
+					"from": "bottom",
+					"interval": 1.0,
+					"delay": 10
+				},
+				{
+					"monster": "split_slime",
+					"count": 3,
+					"from": "right",
+					"interval": 1.5,
+					"delay": 14
+				},
+				{
+					"formation": "gecko_ladder",
+					"count": 1,
+					"from": "bottom",
+					"interval": 0,
+					"delay": 16
+				},
+				{
+					"formation": "slime_merge",
+					"count": 2,
+					"from": "hole",
+					"interval": 12,
+					"delay": 8
+				},
+				{
+					"formation": "engineer_escort",
+					"count": 2,
+					"from": "bottom",
+					"interval": 14.0,
+					"delay": 4.0
+				}
+			],
+			"hazards": [
+				{
+					"t": 6.0,
+					"kind": "link_rune"
+				},
+				{
+					"t": 16,
+					"kind": "tornado"
+				},
+				{
+					"t": 18.0,
+					"kind": "wall_vine"
+				},
+				{
+					"t": 30,
+					"kind": "bubbles"
+				},
+				{
+					"t": 30.0,
+					"kind": "bubbles"
+				},
+				{
+					"t": 42.0,
+					"kind": "fog"
+				},
+				{
+					"t": 54.0,
+					"kind": "tornado"
+				},
+				{
+					"t": 66.0,
+					"kind": "broom"
 				}
 			],
 			"theater": "siege_fail_2"
@@ -99,44 +209,109 @@
 			"groups": [
 				{
 					"monster": "rat",
-					"count": 12,
+					"count": 36,
 					"from": "bottom",
-					"interval": 1.0,
+					"interval": 0.5,
 					"delay": 0.0
 				},
 				{
 					"monster": "squirrel",
-					"count": 8,
+					"count": 24,
 					"from": "hole",
-					"interval": 1.5,
+					"interval": 0.75,
 					"delay": 5
 				},
 				{
 					"monster": "cart",
-					"count": 2,
+					"count": 6,
 					"from": "bottom",
-					"interval": 14.0,
+					"interval": 7.0,
 					"delay": 10
 				},
 				{
 					"monster": "slime",
-					"count": 10,
+					"count": 30,
 					"from": "left",
-					"interval": 1.0,
+					"interval": 0.5,
 					"delay": 16
 				},
 				{
 					"monster": "slime",
-					"count": 13,
+					"count": 39,
 					"from": "site",
-					"interval": 0.5,
+					"interval": 0.25,
 					"delay": 2.0
+				},
+				{
+					"monster": "troll",
+					"count": 2,
+					"from": "bottom",
+					"interval": 4.0,
+					"delay": 6
+				},
+				{
+					"monster": "bubble_fish",
+					"count": 4,
+					"from": "left",
+					"interval": 1.0,
+					"delay": 10
+				},
+				{
+					"monster": "octopus",
+					"count": 2,
+					"from": "right",
+					"interval": 3.0,
+					"delay": 12
+				},
+				{
+					"formation": "cart_escort",
+					"count": 1,
+					"from": "bottom",
+					"interval": 0,
+					"delay": 20
+				},
+				{
+					"formation": "troll_throw",
+					"count": 1,
+					"from": "bottom",
+					"interval": 0,
+					"delay": 12
+				},
+				{
+					"formation": "strip_shoes",
+					"count": 1,
+					"from": "hole",
+					"interval": 0,
+					"delay": 14
+				},
+				{
+					"formation": "engineer_escort",
+					"count": 2,
+					"from": "bottom",
+					"interval": 13.0,
+					"delay": 4.0
 				}
 			],
 			"hazards": [
 				{
+					"t": 6.0,
+					"kind": "broom"
+				},
+				{
+					"t": 17.0,
+					"kind": "sticky_net"
+				},
+				{
 					"t": 22,
 					"kind": "tornado"
+				},
+				{
+					"t": 28.0,
+					"kind": "link_rune"
+				},
+				{
+					"t": 39.0,
+					"kind": "wall_vine"
 				}
 			],
 			"enemy_towers": [
@@ -151,48 +326,132 @@
 			"groups": [
 				{
 					"monster": "caterpillar",
-					"count": 12,
+					"count": 36,
 					"from": "bottom",
-					"interval": 1.0,
+					"interval": 0.5,
 					"delay": 0.0
 				},
 				{
 					"monster": "vine",
-					"count": 6,
+					"count": 18,
 					"from": "hole",
-					"interval": 3.0,
+					"interval": 1.5,
 					"delay": 6
 				},
 				{
 					"monster": "fairy",
-					"count": 8,
+					"count": 24,
 					"from": "right",
-					"interval": 1.4,
+					"interval": 0.7,
 					"delay": 10
 				},
 				{
 					"monster": "hug_bear",
-					"count": 3,
+					"count": 9,
 					"from": "bottom",
-					"interval": 5.0,
+					"interval": 2.5,
 					"delay": 14
 				},
 				{
 					"monster": "rat",
-					"count": 14,
+					"count": 42,
 					"from": "site",
-					"interval": 0.5,
+					"interval": 0.25,
 					"delay": 2.0
+				},
+				{
+					"monster": "glove",
+					"count": 4,
+					"from": "hole",
+					"interval": 1.0,
+					"delay": 6
+				},
+				{
+					"monster": "ghost",
+					"count": 4,
+					"from": "hole",
+					"interval": 1.0,
+					"delay": 8
+				},
+				{
+					"monster": "barnacle",
+					"count": 4,
+					"from": "bottom",
+					"interval": 1.0,
+					"delay": 12
+				},
+				{
+					"monster": "mana_jelly",
+					"count": 2,
+					"from": "left",
+					"interval": 2.5,
+					"delay": 14
+				},
+				{
+					"formation": "raise_arms",
+					"count": 2,
+					"from": "hole",
+					"interval": 15,
+					"delay": 8
+				},
+				{
+					"formation": "suction_chain",
+					"count": 1,
+					"from": "right",
+					"interval": 0,
+					"delay": 12
+				},
+				{
+					"formation": "gecko_ladder",
+					"count": 1,
+					"from": "bottom",
+					"interval": 0,
+					"delay": 22
+				},
+				{
+					"formation": "engineer_escort",
+					"count": 3,
+					"from": "bottom",
+					"interval": 12.0,
+					"delay": 4.0
 				}
 			],
 			"hazards": [
+				{
+					"t": 6.0,
+					"kind": "fog"
+				},
 				{
 					"t": 14,
 					"kind": "link_rune"
 				},
 				{
+					"t": 16.0,
+					"kind": "tornado"
+				},
+				{
+					"t": 26.0,
+					"kind": "broom"
+				},
+				{
 					"t": 30,
 					"kind": "sticky_net"
+				},
+				{
+					"t": 36.0,
+					"kind": "sticky_net"
+				},
+				{
+					"t": 40,
+					"combo": "net_link"
+				},
+				{
+					"t": 46.0,
+					"kind": "link_rune"
+				},
+				{
+					"t": 56.0,
+					"kind": "wall_vine"
 				}
 			],
 			"enemy_towers": [
@@ -208,65 +467,164 @@
 			"groups": [
 				{
 					"monster": "slime",
-					"count": 18,
+					"count": 54,
 					"from": "bottom",
-					"interval": 0.6,
+					"interval": 0.3,
 					"delay": 0.0
 				},
 				{
 					"monster": "rat",
-					"count": 14,
+					"count": 42,
 					"from": "left",
-					"interval": 0.8,
+					"interval": 0.4,
 					"delay": 4
 				},
 				{
 					"monster": "squirrel",
-					"count": 10,
+					"count": 30,
 					"from": "right",
-					"interval": 0.9,
+					"interval": 0.45,
 					"delay": 8
 				},
 				{
 					"monster": "hook",
-					"count": 5,
+					"count": 15,
 					"from": "bottom",
-					"interval": 3.0,
+					"interval": 1.5,
 					"delay": 10
 				},
 				{
 					"monster": "gecko",
-					"count": 10,
+					"count": 30,
 					"from": "hole",
-					"interval": 1.0,
+					"interval": 0.5,
 					"delay": 14
 				},
 				{
 					"monster": "cart",
-					"count": 2,
+					"count": 6,
 					"from": "bottom",
-					"interval": 12.0,
+					"interval": 6.0,
 					"delay": 18
 				},
 				{
 					"monster": "slime",
-					"count": 15,
+					"count": 45,
 					"from": "site",
-					"interval": 0.5,
+					"interval": 0.25,
 					"delay": 2.0
+				},
+				{
+					"monster": "troll",
+					"count": 3,
+					"from": "bottom",
+					"interval": 3.0,
+					"delay": 6
+				},
+				{
+					"monster": "imp",
+					"count": 4,
+					"from": "right",
+					"interval": 1.0,
+					"delay": 8
+				},
+				{
+					"monster": "hedgehog",
+					"count": 6,
+					"from": "hole",
+					"interval": 0.75,
+					"delay": 10
+				},
+				{
+					"monster": "mini_tentacle",
+					"count": 4,
+					"from": "hole",
+					"interval": 1.0,
+					"delay": 16
+				},
+				{
+					"formation": "cart_escort",
+					"count": 2,
+					"from": "bottom",
+					"interval": 14,
+					"delay": 10
+				},
+				{
+					"formation": "bat_airdrop",
+					"count": 2,
+					"from": "left",
+					"interval": 12,
+					"delay": 8
+				},
+				{
+					"formation": "feather_dance",
+					"count": 2,
+					"from": "hole",
+					"interval": 15,
+					"delay": 12
+				},
+				{
+					"formation": "jelly_charge",
+					"count": 1,
+					"from": "left",
+					"interval": 0,
+					"delay": 16
+				},
+				{
+					"formation": "engineer_escort",
+					"count": 3,
+					"from": "bottom",
+					"interval": 11.0,
+					"delay": 4.0
 				}
 			],
 			"hazards": [
 				{
+					"t": 6.0,
+					"kind": "wall_vine"
+				},
+				{
 					"t": 12,
 					"kind": "bubbles"
+				},
+				{
+					"t": 15.0,
+					"kind": "bubbles"
+				},
+				{
+					"t": 24.0,
+					"kind": "fog"
 				},
 				{
 					"t": 26,
 					"kind": "broom"
 				},
 				{
+					"t": 33.0,
+					"kind": "tornado"
+				},
+				{
 					"t": 36,
+					"kind": "wall_vine"
+				},
+				{
+					"t": 42.0,
+					"kind": "broom"
+				},
+				{
+					"t": 46,
+					"combo": "bubble_broom"
+				},
+				{
+					"t": 51.0,
+					"kind": "sticky_net"
+				},
+				{
+					"t": 60.0,
+					"kind": "link_rune"
+				},
+				{
+					"t": 69.0,
 					"kind": "wall_vine"
 				}
 			],
@@ -284,58 +642,150 @@
 			"groups": [
 				{
 					"monster": "shield_crab",
-					"count": 6,
+					"count": 18,
 					"from": "bottom",
-					"interval": 3.0,
+					"interval": 1.5,
 					"delay": 0.0
 				},
 				{
 					"monster": "hug_bear",
-					"count": 6,
+					"count": 18,
 					"from": "left",
-					"interval": 3.0,
+					"interval": 1.5,
 					"delay": 4
 				},
 				{
 					"monster": "hedgehog",
-					"count": 10,
+					"count": 30,
 					"from": "hole",
-					"interval": 1.2,
+					"interval": 0.6,
 					"delay": 6
 				},
 				{
 					"monster": "spider",
-					"count": 10,
+					"count": 30,
 					"from": "right",
-					"interval": 1.0,
+					"interval": 0.5,
 					"delay": 10
 				},
 				{
 					"monster": "slime",
-					"count": 14,
+					"count": 42,
 					"from": "bottom",
-					"interval": 0.8,
+					"interval": 0.4,
 					"delay": 14
 				},
 				{
 					"monster": "rat",
-					"count": 16,
+					"count": 48,
 					"from": "site",
-					"interval": 0.5,
+					"interval": 0.25,
 					"delay": 2.0
+				},
+				{
+					"monster": "bat",
+					"count": 8,
+					"from": "left",
+					"interval": 0.5,
+					"delay": 4
+				},
+				{
+					"monster": "frog",
+					"count": 4,
+					"from": "right",
+					"interval": 1.0,
+					"delay": 8
+				},
+				{
+					"monster": "octopus",
+					"count": 3,
+					"from": "bottom",
+					"interval": 2.0,
+					"delay": 10
+				},
+				{
+					"monster": "barnacle",
+					"count": 6,
+					"from": "bottom",
+					"interval": 0.75,
+					"delay": 12
+				},
+				{
+					"formation": "hedgehog_roll",
+					"count": 2,
+					"from": "hole",
+					"interval": 14,
+					"delay": 6
+				},
+				{
+					"formation": "bubble_chain",
+					"count": 2,
+					"from": "hole",
+					"interval": 14,
+					"delay": 10
+				},
+				{
+					"formation": "strip_shoes",
+					"count": 2,
+					"from": "hole",
+					"interval": 12,
+					"delay": 14
+				},
+				{
+					"formation": "engineer_escort",
+					"count": 4,
+					"from": "bottom",
+					"interval": 10.0,
+					"delay": 4.0
 				}
 			],
 			"hazards": [
 				{
+					"t": 6.0,
+					"kind": "sticky_net"
+				},
+				{
 					"t": 10,
 					"kind": "tornado"
+				},
+				{
+					"t": 14.0,
+					"kind": "link_rune"
+				},
+				{
+					"t": 22.0,
+					"kind": "wall_vine"
 				},
 				{
 					"t": 24,
 					"kind": "fog"
 				},
 				{
+					"t": 30.0,
+					"kind": "bubbles"
+				},
+				{
+					"t": 38.0,
+					"kind": "fog"
+				},
+				{
 					"t": 40,
+					"kind": "sticky_net"
+				},
+				{
+					"t": 46.0,
+					"kind": "tornado"
+				},
+				{
+					"t": 50,
+					"combo": "double_tornado"
+				},
+				{
+					"t": 54.0,
+					"kind": "broom"
+				},
+				{
+					"t": 62.0,
 					"kind": "sticky_net"
 				}
 			],
@@ -352,70 +802,177 @@
 			"groups": [
 				{
 					"monster": "rat",
-					"count": 18,
+					"count": 54,
 					"from": "bottom",
-					"interval": 0.7,
+					"interval": 0.35,
 					"delay": 0.0
 				},
 				{
 					"monster": "fairy",
-					"count": 12,
+					"count": 36,
 					"from": "hole",
-					"interval": 1.0,
+					"interval": 0.5,
 					"delay": 4
 				},
 				{
 					"monster": "warm_slime",
-					"count": 6,
+					"count": 18,
 					"from": "left",
-					"interval": 3.0,
+					"interval": 1.5,
 					"delay": 8
 				},
 				{
 					"monster": "carrier",
-					"count": 3,
+					"count": 9,
 					"from": "right",
-					"interval": 8.0,
+					"interval": 4.0,
 					"delay": 10
 				},
 				{
 					"monster": "bat_swarm",
-					"count": 6,
+					"count": 18,
 					"from": "bottom",
-					"interval": 2.5,
+					"interval": 1.25,
 					"delay": 14
 				},
 				{
 					"monster": "vine",
-					"count": 4,
+					"count": 12,
 					"from": "hole",
-					"interval": 4.0,
+					"interval": 2.0,
 					"delay": 18
 				},
 				{
 					"monster": "slime",
-					"count": 17,
+					"count": 51,
 					"from": "site",
-					"interval": 0.5,
+					"interval": 0.25,
 					"delay": 2.0
+				},
+				{
+					"monster": "bubble_fish",
+					"count": 6,
+					"from": "hole",
+					"interval": 0.75,
+					"delay": 4
+				},
+				{
+					"monster": "caterpillar",
+					"count": 6,
+					"from": "hole",
+					"interval": 0.75,
+					"delay": 6
+				},
+				{
+					"monster": "mana_jelly",
+					"count": 3,
+					"from": "left",
+					"interval": 2.0,
+					"delay": 10
+				},
+				{
+					"monster": "split_slime",
+					"count": 4,
+					"from": "right",
+					"interval": 1.0,
+					"delay": 14
+				},
+				{
+					"formation": "slime_merge",
+					"count": 3,
+					"from": "bottom",
+					"interval": 10,
+					"delay": 6
+				},
+				{
+					"formation": "bat_airdrop",
+					"count": 2,
+					"from": "right",
+					"interval": 12,
+					"delay": 10
+				},
+				{
+					"formation": "gecko_ladder",
+					"count": 2,
+					"from": "bottom",
+					"interval": 14,
+					"delay": 14
+				},
+				{
+					"formation": "troll_throw",
+					"count": 2,
+					"from": "bottom",
+					"interval": 14,
+					"delay": 18
+				},
+				{
+					"formation": "engineer_escort",
+					"count": 4,
+					"from": "bottom",
+					"interval": 9.0,
+					"delay": 4.0
 				}
 			],
 			"hazards": [
 				{
+					"t": 6.0,
+					"kind": "tornado"
+				},
+				{
 					"t": 10,
 					"kind": "bubbles"
+				},
+				{
+					"t": 13.0,
+					"kind": "broom"
+				},
+				{
+					"t": 20.0,
+					"kind": "sticky_net"
 				},
 				{
 					"t": 22,
 					"kind": "broom"
 				},
 				{
+					"t": 27.0,
+					"kind": "link_rune"
+				},
+				{
 					"t": 34,
 					"kind": "wall_vine"
 				},
 				{
+					"t": 34.0,
+					"kind": "wall_vine"
+				},
+				{
+					"t": 41.0,
+					"kind": "bubbles"
+				},
+				{
 					"t": 46,
 					"kind": "link_rune"
+				},
+				{
+					"t": 48.0,
+					"kind": "fog"
+				},
+				{
+					"t": 55.0,
+					"kind": "tornado"
+				},
+				{
+					"t": 56,
+					"combo": "fog_tornado"
+				},
+				{
+					"t": 62.0,
+					"kind": "broom"
+				},
+				{
+					"t": 69.0,
+					"kind": "sticky_net"
 				}
 			],
 			"enemy_towers": [
@@ -432,70 +989,181 @@
 			"groups": [
 				{
 					"monster": "suck_jelly",
-					"count": 6,
+					"count": 18,
 					"from": "bottom",
-					"interval": 3.0,
+					"interval": 1.5,
 					"delay": 0.0
 				},
 				{
 					"monster": "thigh_spider",
-					"count": 8,
+					"count": 24,
 					"from": "right",
-					"interval": 2.0,
+					"interval": 1.0,
 					"delay": 4
 				},
 				{
 					"monster": "bat_swarm",
-					"count": 8,
+					"count": 24,
 					"from": "left",
-					"interval": 2.0,
+					"interval": 1.0,
 					"delay": 6
 				},
 				{
 					"monster": "glove",
-					"count": 12,
+					"count": 36,
 					"from": "hole",
-					"interval": 1.0,
+					"interval": 0.5,
 					"delay": 8
 				},
 				{
 					"monster": "gecko",
-					"count": 14,
+					"count": 42,
 					"from": "bottom",
-					"interval": 0.8,
+					"interval": 0.4,
 					"delay": 10
 				},
 				{
 					"monster": "cart",
-					"count": 2,
+					"count": 6,
 					"from": "bottom",
-					"interval": 15.0,
+					"interval": 7.5,
 					"delay": 20
 				},
 				{
 					"monster": "rat",
-					"count": 18,
+					"count": 54,
 					"from": "site",
-					"interval": 0.5,
+					"interval": 0.25,
 					"delay": 2.0
+				},
+				{
+					"monster": "glove",
+					"count": 6,
+					"from": "hole",
+					"interval": 0.75,
+					"delay": 4
+				},
+				{
+					"monster": "ghost",
+					"count": 6,
+					"from": "hole",
+					"interval": 0.75,
+					"delay": 6
+				},
+				{
+					"monster": "troll",
+					"count": 3,
+					"from": "bottom",
+					"interval": 3.0,
+					"delay": 10
+				},
+				{
+					"monster": "imp",
+					"count": 6,
+					"from": "left",
+					"interval": 0.75,
+					"delay": 12
+				},
+				{
+					"formation": "raise_arms",
+					"count": 3,
+					"from": "hole",
+					"interval": 10,
+					"delay": 6
+				},
+				{
+					"formation": "suction_chain",
+					"count": 2,
+					"from": "right",
+					"interval": 12,
+					"delay": 10
+				},
+				{
+					"formation": "feather_dance",
+					"count": 2,
+					"from": "hole",
+					"interval": 12,
+					"delay": 12
+				},
+				{
+					"formation": "jelly_charge",
+					"count": 2,
+					"from": "left",
+					"interval": 14,
+					"delay": 16
+				},
+				{
+					"formation": "engineer_escort",
+					"count": 5,
+					"from": "bottom",
+					"interval": 8.0,
+					"delay": 4.0
 				}
 			],
 			"hazards": [
 				{
+					"t": 6.0,
+					"kind": "bubbles"
+				},
+				{
 					"t": 10,
 					"kind": "fog"
+				},
+				{
+					"t": 12.0,
+					"kind": "fog"
+				},
+				{
+					"t": 18.0,
+					"kind": "tornado"
 				},
 				{
 					"t": 20,
 					"kind": "wall_vine"
 				},
 				{
+					"t": 24.0,
+					"kind": "broom"
+				},
+				{
+					"t": 30.0,
+					"kind": "sticky_net"
+				},
+				{
 					"t": 32,
 					"kind": "sticky_net"
 				},
 				{
+					"t": 36.0,
+					"kind": "link_rune"
+				},
+				{
+					"t": 40,
+					"combo": "bubble_broom"
+				},
+				{
+					"t": 42.0,
+					"kind": "wall_vine"
+				},
+				{
 					"t": 44,
 					"kind": "broom"
+				},
+				{
+					"t": 48.0,
+					"kind": "bubbles"
+				},
+				{
+					"t": 54.0,
+					"kind": "fog"
+				},
+				{
+					"t": 60.0,
+					"kind": "tornado"
+				},
+				{
+					"t": 64,
+					"combo": "net_link"
 				}
 			],
 			"enemy_towers": [
@@ -511,95 +1179,214 @@
 			"groups": [
 				{
 					"monster": "slime",
-					"count": 20,
+					"count": 60,
 					"from": "bottom",
-					"interval": 0.5,
+					"interval": 0.25,
 					"delay": 0.0
 				},
 				{
 					"monster": "thigh_spider",
-					"count": 10,
+					"count": 30,
 					"from": "hole",
-					"interval": 1.5,
+					"interval": 0.75,
 					"delay": 4
 				},
 				{
 					"monster": "twin_ghost",
-					"count": 3,
+					"count": 9,
 					"from": "bottom",
-					"interval": 8.0,
+					"interval": 4.0,
 					"delay": 6
 				},
 				{
 					"monster": "hook",
-					"count": 6,
+					"count": 18,
 					"from": "left",
-					"interval": 2.5,
+					"interval": 1.25,
 					"delay": 8
 				},
 				{
 					"monster": "hug_bear",
-					"count": 6,
+					"count": 18,
 					"from": "right",
-					"interval": 2.5,
+					"interval": 1.25,
 					"delay": 10
 				},
 				{
 					"monster": "warm_slime",
-					"count": 6,
+					"count": 18,
 					"from": "hole",
-					"interval": 2.5,
+					"interval": 1.25,
 					"delay": 14
 				},
 				{
 					"monster": "vine",
-					"count": 6,
+					"count": 18,
 					"from": "bottom",
-					"interval": 3.0,
+					"interval": 1.5,
 					"delay": 16
 				},
 				{
 					"monster": "cart",
-					"count": 3,
+					"count": 9,
 					"from": "bottom",
-					"interval": 10.0,
+					"interval": 5.0,
 					"delay": 18
 				},
 				{
 					"monster": "squirrel",
-					"count": 20,
+					"count": 60,
 					"from": "left",
-					"interval": 0.6,
+					"interval": 0.3,
 					"delay": 20
 				},
 				{
 					"monster": "slime",
-					"count": 19,
+					"count": 57,
 					"from": "site",
-					"interval": 0.5,
+					"interval": 0.25,
 					"delay": 2.0
+				},
+				{
+					"monster": "crab",
+					"count": 8,
+					"from": "bottom",
+					"interval": 0.5,
+					"delay": 4
+				},
+				{
+					"monster": "frog",
+					"count": 6,
+					"from": "right",
+					"interval": 0.75,
+					"delay": 8
+				},
+				{
+					"monster": "bat",
+					"count": 10,
+					"from": "left",
+					"interval": 0.4,
+					"delay": 10
+				},
+				{
+					"monster": "mini_tentacle",
+					"count": 6,
+					"from": "hole",
+					"interval": 0.75,
+					"delay": 14
+				},
+				{
+					"formation": "cart_escort",
+					"count": 2,
+					"from": "bottom",
+					"interval": 10,
+					"delay": 8
+				},
+				{
+					"formation": "hedgehog_roll",
+					"count": 2,
+					"from": "hole",
+					"interval": 10,
+					"delay": 10
+				},
+				{
+					"formation": "bubble_chain",
+					"count": 2,
+					"from": "hole",
+					"interval": 10,
+					"delay": 12
+				},
+				{
+					"formation": "gecko_ladder",
+					"count": 1,
+					"from": "bottom",
+					"interval": 12,
+					"delay": 14
+				},
+				{
+					"formation": "engineer_escort",
+					"count": 5,
+					"from": "bottom",
+					"interval": 7.0,
+					"delay": 4.0
 				}
 			],
 			"hazards": [
 				{
+					"t": 6.0,
+					"kind": "link_rune"
+				},
+				{
 					"t": 8,
 					"kind": "tornado"
+				},
+				{
+					"t": 12.0,
+					"kind": "wall_vine"
 				},
 				{
 					"t": 18,
 					"kind": "broom"
 				},
 				{
+					"t": 18.0,
+					"kind": "bubbles"
+				},
+				{
+					"t": 24.0,
+					"kind": "fog"
+				},
+				{
 					"t": 28,
 					"kind": "bubbles"
+				},
+				{
+					"t": 30.0,
+					"kind": "tornado"
+				},
+				{
+					"t": 36.0,
+					"kind": "broom"
+				},
+				{
+					"t": 36,
+					"combo": "double_tornado"
 				},
 				{
 					"t": 40,
 					"kind": "wall_vine"
 				},
 				{
+					"t": 42.0,
+					"kind": "sticky_net"
+				},
+				{
+					"t": 48.0,
+					"kind": "link_rune"
+				},
+				{
 					"t": 52,
 					"kind": "fog"
+				},
+				{
+					"t": 54.0,
+					"kind": "wall_vine"
+				},
+				{
+					"t": 60.0,
+					"kind": "bubbles"
+				},
+				{
+					"t": 60,
+					"combo": "fog_tornado"
+				},
+				{
+					"t": 66.0,
+					"kind": "fog"
+				},
+				{
+					"t": 72.0,
+					"kind": "tornado"
 				}
 			],
 			"enemy_towers": [
@@ -616,149 +1403,377 @@
 			"groups": [
 				{
 					"monster": "slime",
-					"count": 26,
+					"count": 78,
 					"from": "bottom",
-					"interval": 0.4,
+					"interval": 0.2,
 					"delay": 0.0
 				},
 				{
 					"monster": "rat",
-					"count": 20,
+					"count": 60,
 					"from": "left",
-					"interval": 0.5,
+					"interval": 0.25,
 					"delay": 2
 				},
 				{
 					"monster": "squirrel",
-					"count": 16,
+					"count": 48,
 					"from": "right",
-					"interval": 0.6,
+					"interval": 0.3,
 					"delay": 4
 				},
 				{
 					"monster": "hook",
-					"count": 8,
+					"count": 24,
 					"from": "bottom",
-					"interval": 2.0,
+					"interval": 1.0,
 					"delay": 6
 				},
 				{
 					"monster": "gecko",
-					"count": 16,
+					"count": 48,
 					"from": "hole",
-					"interval": 0.7,
+					"interval": 0.35,
 					"delay": 8
 				},
 				{
 					"monster": "shield_crab",
-					"count": 6,
+					"count": 18,
 					"from": "bottom",
-					"interval": 3.0,
+					"interval": 1.5,
 					"delay": 10
 				},
 				{
 					"monster": "bat_swarm",
-					"count": 8,
+					"count": 24,
 					"from": "left",
-					"interval": 2.0,
+					"interval": 1.0,
 					"delay": 12
 				},
 				{
 					"monster": "carrier",
-					"count": 3,
+					"count": 9,
 					"from": "right",
-					"interval": 8.0,
+					"interval": 4.0,
 					"delay": 14
 				},
 				{
 					"monster": "warm_slime",
-					"count": 6,
+					"count": 18,
 					"from": "hole",
-					"interval": 2.5,
+					"interval": 1.25,
 					"delay": 16
 				},
 				{
 					"monster": "thigh_spider",
-					"count": 8,
+					"count": 24,
 					"from": "bottom",
-					"interval": 2.0,
+					"interval": 1.0,
 					"delay": 18
 				},
 				{
 					"monster": "hug_bear",
-					"count": 6,
+					"count": 18,
 					"from": "left",
-					"interval": 2.5,
+					"interval": 1.25,
 					"delay": 20
 				},
 				{
 					"monster": "suck_jelly",
-					"count": 6,
+					"count": 18,
 					"from": "right",
-					"interval": 2.5,
+					"interval": 1.25,
 					"delay": 22
 				},
 				{
 					"monster": "twin_ghost",
-					"count": 4,
+					"count": 12,
 					"from": "bottom",
-					"interval": 6.0,
+					"interval": 3.0,
 					"delay": 24
 				},
 				{
 					"monster": "vine",
-					"count": 6,
+					"count": 18,
 					"from": "hole",
-					"interval": 3.0,
+					"interval": 1.5,
 					"delay": 26
 				},
 				{
 					"monster": "cart",
-					"count": 4,
+					"count": 12,
 					"from": "bottom",
-					"interval": 9.0,
+					"interval": 4.5,
 					"delay": 28
 				},
 				{
 					"monster": "rat",
-					"count": 20,
+					"count": 60,
 					"from": "site",
-					"interval": 0.5,
+					"interval": 0.25,
 					"delay": 2.0
+				},
+				{
+					"monster": "troll",
+					"count": 4,
+					"from": "bottom",
+					"interval": 2.5,
+					"delay": 4
+				},
+				{
+					"monster": "octopus",
+					"count": 4,
+					"from": "right",
+					"interval": 1.5,
+					"delay": 6
+				},
+				{
+					"monster": "barnacle",
+					"count": 8,
+					"from": "bottom",
+					"interval": 0.5,
+					"delay": 8
+				},
+				{
+					"monster": "bubble_fish",
+					"count": 8,
+					"from": "hole",
+					"interval": 0.5,
+					"delay": 10
+				},
+				{
+					"monster": "glove",
+					"count": 8,
+					"from": "hole",
+					"interval": 0.5,
+					"delay": 12
+				},
+				{
+					"monster": "ghost",
+					"count": 8,
+					"from": "hole",
+					"interval": 0.5,
+					"delay": 14
+				},
+				{
+					"monster": "mana_jelly",
+					"count": 4,
+					"from": "left",
+					"interval": 1.5,
+					"delay": 16
+				},
+				{
+					"formation": "cart_escort",
+					"count": 1,
+					"from": "bottom",
+					"interval": 9,
+					"delay": 4
+				},
+				{
+					"formation": "gecko_ladder",
+					"count": 1,
+					"from": "bottom",
+					"interval": 9,
+					"delay": 7
+				},
+				{
+					"formation": "troll_throw",
+					"count": 1,
+					"from": "bottom",
+					"interval": 9,
+					"delay": 10
+				},
+				{
+					"formation": "slime_merge",
+					"count": 1,
+					"from": "hole",
+					"interval": 9,
+					"delay": 13
+				},
+				{
+					"formation": "raise_arms",
+					"count": 1,
+					"from": "hole",
+					"interval": 9,
+					"delay": 16
+				},
+				{
+					"formation": "strip_shoes",
+					"count": 1,
+					"from": "hole",
+					"interval": 9,
+					"delay": 19
+				},
+				{
+					"formation": "suction_chain",
+					"count": 1,
+					"from": "hole",
+					"interval": 9,
+					"delay": 22
+				},
+				{
+					"formation": "feather_dance",
+					"count": 1,
+					"from": "hole",
+					"interval": 9,
+					"delay": 25
+				},
+				{
+					"formation": "bubble_chain",
+					"count": 1,
+					"from": "hole",
+					"interval": 9,
+					"delay": 28
+				},
+				{
+					"formation": "jelly_charge",
+					"count": 1,
+					"from": "hole",
+					"interval": 9,
+					"delay": 31
+				},
+				{
+					"formation": "hedgehog_roll",
+					"count": 1,
+					"from": "hole",
+					"interval": 9,
+					"delay": 34
+				},
+				{
+					"formation": "bat_airdrop",
+					"count": 1,
+					"from": "hole",
+					"interval": 9,
+					"delay": 37
+				},
+				{
+					"formation": "engineer_escort",
+					"count": 6,
+					"from": "bottom",
+					"interval": 6.0,
+					"delay": 4.0
 				}
 			],
 			"hazards": [
 				{
+					"t": 6.0,
+					"kind": "broom"
+				},
+				{
 					"t": 8,
 					"kind": "bubbles"
+				},
+				{
+					"t": 12.0,
+					"kind": "sticky_net"
 				},
 				{
 					"t": 16,
 					"kind": "broom"
 				},
 				{
+					"t": 18.0,
+					"kind": "link_rune"
+				},
+				{
 					"t": 24,
 					"kind": "tornado"
+				},
+				{
+					"t": 24.0,
+					"kind": "wall_vine"
+				},
+				{
+					"t": 30.0,
+					"kind": "bubbles"
+				},
+				{
+					"t": 30,
+					"combo": "bubble_broom"
 				},
 				{
 					"t": 34,
 					"kind": "wall_vine"
 				},
 				{
+					"t": 36.0,
+					"kind": "fog"
+				},
+				{
+					"t": 42.0,
+					"kind": "tornado"
+				},
+				{
 					"t": 44,
 					"kind": "sticky_net"
+				},
+				{
+					"t": 48.0,
+					"kind": "broom"
+				},
+				{
+					"t": 50,
+					"combo": "double_tornado"
 				},
 				{
 					"t": 52,
 					"kind": "link_rune"
 				},
 				{
+					"t": 54.0,
+					"kind": "sticky_net"
+				},
+				{
 					"t": 60,
 					"kind": "fog"
 				},
 				{
+					"t": 60.0,
+					"kind": "link_rune"
+				},
+				{
+					"t": 66.0,
+					"kind": "wall_vine"
+				},
+				{
 					"t": 70,
 					"kind": "broom"
+				},
+				{
+					"t": 70,
+					"combo": "fog_tornado"
+				},
+				{
+					"t": 72.0,
+					"kind": "bubbles"
+				},
+				{
+					"t": 78.0,
+					"kind": "fog"
+				},
+				{
+					"t": 84.0,
+					"kind": "tornado"
+				},
+				{
+					"t": 90.0,
+					"kind": "broom"
+				},
+				{
+					"t": 90,
+					"combo": "net_link"
+				},
+				{
+					"t": 96.0,
+					"kind": "sticky_net"
+				},
+				{
+					"t": 102.0,
+					"kind": "link_rune"
+				},
+				{
+					"t": 108.0,
+					"kind": "wall_vine"
 				}
 			],
 			"enemy_towers": [

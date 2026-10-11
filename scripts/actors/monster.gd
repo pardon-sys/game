@@ -247,12 +247,12 @@ func is_stunned() -> bool:
 	return _stun_left > 0.0
 
 
-## 头顶的增益标记：有增益时显示第一个增益的图标，上下浮动。
+## 头顶的增益标记：有增益时显示第一个增益的图标，上下浮动（buffs.json 里 hidden 的不显示）。
 func _refresh_buff_mark() -> void:
 	var mark := get_node_or_null("BuffMark") as Sprite2D
 	var shown := ""
 	for id in buffs:
-		if not (buffs[id] as Buff).is_debuff():
+		if not (buffs[id] as Buff).is_debuff() and not bool(Buff.info(id).get("hidden", false)):
 			shown = id
 			break
 	if shown == "":

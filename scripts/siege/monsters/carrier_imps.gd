@@ -53,6 +53,10 @@ func _carry_tick(delta: float) -> void:
 	var d := _dest - global_position
 	velocity = Vector2.ZERO if p.get_meta("siege_chained", false) else d.normalized() * CARRY_SPEED * stat_mul("speed")
 	p.global_position = global_position + Vector2(0, -6)
+	if randf() < delta * 8.0:
+		Fx.burst(get_parent(), global_position + Vector2(randf_range(-8, 8), 2), "dust", 1, 20.0, 0.5, Vector2(0, 10))
+	if randf() < delta * 0.4:
+		SpeechBubble.say(self, "嘿咻、嘿咻！", 24.0, 1.0)
 	if randf() < delta * 2.0:
 		p.receive_hit(HitData.make_tickle(self, 4.0))
 	if d.length() < 10.0:

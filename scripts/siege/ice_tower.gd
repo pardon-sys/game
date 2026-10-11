@@ -166,7 +166,7 @@ func _icicle() -> void:
 		return
 	var best: Monster = null
 	var best_d := float(p("range", 140.0))
-	for m in director.enemies_near(global_position, best_d):
+	for m in director.enemies_near(global_position, best_d, false):
 		var d := global_position.distance_to(m.global_position)
 		if d < best_d:
 			best_d = d
