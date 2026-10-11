@@ -1,0 +1,46 @@
+{
+	"name": "城门",
+	"entries": [
+		{
+			"node": "gate"
+		}
+	],
+	"nodes": {
+		"gate": {
+			"lines": [
+				{
+					"text": "（城门外就是前线。怪物的叫声从远处传过来）",
+					"speaker": ""
+				}
+			],
+			"prompt": "准备好了吗？",
+			"choices": [
+				{
+					"text": "出发！",
+					"next": "go"
+				},
+				{
+					"text": "再准备一下",
+					"next": ""
+				}
+			]
+		},
+		"go": {
+			"lines": [
+				{
+					"text": "（两个人推开城门——）",
+					"speaker": ""
+				},
+				{
+					"text": "（待续）",
+					"speaker": ""
+				}
+			],
+			"set": {
+				"flags": [
+					"f6w_ready"
+				]
+			}
+		}
+	}
+}

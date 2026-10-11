@@ -1,0 +1,28 @@
+[gd_resource type="Resource" script_class="EquipData" format=3]
+
+[ext_resource type="Script" path="res://scripts/items/equip_data.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/generated/equip_icons.png" id="2"]
+
+[sub_resource type="AtlasTexture" id="icon"]
+atlas = ExtResource("2")
+region = Rect2(0, 0, 16, 16)
+
+[resource]
+script = ExtResource("1")
+id = "equip_armpit_pad"
+display_name = "软绵护腋垫"
+description = "两块软乎乎的棉垫，夹在腋下。挠过来的手指先碰到的是垫子——就是走起路来有点别扭。"
+icon = SubResource("icon")
+category = 4
+stackable = false
+show_in_hud = false
+pickup_emotion = "happy"
+slots = Array[String](["armpit"])
+owner_id = ""
+modifiers = {"speed": 0.95}
+zone_mods = {}
+block = {"armpit": 6}
+cursed = false
+special = ""
+pros = "挡下 6 次腋下的挠痒"
+cons = "移动 ×0.95"

@@ -14,9 +14,6 @@ extends Princess
 @export var ai := true
 ## true = 她是主角（第七层起，剧情标记 blue_is_hero）：玩家操控、相机跟着她、没有对话提示。关卡载入时由 level.gd 换上。
 @export var hero := false
-## true = 跟着玩家操控的角色走（第八层回小屋之后：粉色公主操控、她跟着；图例 follow=true）。离太远时直接跟上。
-@export var follow := false
-const FOLLOW_WARP := 180.0
 
 var talking := false
 ## 千手痒痒裤（状态 thousand_pants）：每 PANTS_TICK 秒发作一下（来源键 thousand_pants），每次随机一种手法，
@@ -77,10 +74,6 @@ func _setup() -> void:
 ## 千手痒痒裤：时不时挠一下大腿 / 屁股（小人上不画出来）。
 func _process(delta: float) -> void:
 	var on := has_buff("thousand_pants")
-	# 跟随：离太远（被墙卡住、换了路）就直接跟上
-	if follow and not is_controlled() and is_instance_valid(GameState.player) and not GameState.in_cutscene \
-			and global_position.distance_to(GameState.player.global_position) > FOLLOW_WARP:
-		global_position = GameState.player.global_position + Vector2(0, 10)
 	if not on or not is_alive() or GameState.in_dialogue or GameState.in_cutscene or CG.is_busy():
 		return
 	_pants_t -= delta
@@ -112,7 +105,7 @@ func pants_flare(way := "") -> String:
 	return way
 
 
-## 千手痒痒裤让魔法失败：魔力散掉的一瞬间，裤子里的手指一起动起来——她憋不住大笑（憋不住的笑声 + 台词 + 闷笑 +15）。
+## 千手痒痒裤让魔法失败：魔力散掉的一瞬间，裤子里的手指一起动起来——她憋不住大笑（轻笑声 + 台词 + 闷笑 +15）。
 func _on_magic_fail(_tier: int) -> void:
 	shake(0.5)
 	if laugh:
@@ -144,25 +137,22 @@ func fatigue_burst_visual() -> String:
 	return "damaged_giggle_burst"
 
 
-## 跟着玩家操控的角色走（不能说话、不溜达、一直显示）；挣扎也会自己做。
-func start_following() -> void:
-	follow = true
+## 跟着玩家操控的角色走（不溜达、一直显示；普通的对话关掉，partner_talk 给了就能聊 / 换人）；挣扎也会自己做。
+func start_following(talk_file := "") -> void:
 	ai = false
 	dialogue = ""
 	show_flag = ""
 	hide_flags.clear()
-	if camera and not is_controlled():
-		camera.enabled = false
-	if not is_controlled() and not (controller is CompanionController):
-		set_controller(make_ai_controller())
+	var it := get_node_or_null("Talk") as Interactable
+	if it:
+		it.enabled = false
+	super(talk_file)
 	_refresh_visibility()
 
 
 func make_ai_controller() -> CharacterController:
 	if follow:
-		var cc := CompanionController.new()
-		cc.behaviours.assign(["struggle", "follow"])
-		return cc
+		return super()
 	if Duo.active:
 		return CompanionController.new()
 	return WanderController.new() if ai else ScriptedController.new()

@@ -1,0 +1,28 @@
+[gd_resource type="Resource" script_class="EquipData" format=3]
+
+[ext_resource type="Script" path="res://scripts/items/equip_data.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/generated/equip_icons.png" id="2"]
+
+[sub_resource type="AtlasTexture" id="icon"]
+atlas = ExtResource("2")
+region = Rect2(128, 0, 16, 16)
+
+[resource]
+script = ExtResource("1")
+id = "equip_padded_shorts"
+display_name = "软垫短裤"
+description = "屁股上缝了厚厚的垫子。裤腿却短得露出一大截大腿。"
+icon = SubResource("icon")
+category = 4
+stackable = false
+show_in_hud = false
+pickup_emotion = "happy"
+slots = Array[String](["butt"])
+owner_id = ""
+modifiers = {}
+zone_mods = {"thigh": 0.15}
+block = {"butt": 5}
+cursed = false
+special = ""
+pros = "挡下 5 次屁股的挠痒"
+cons = "大腿敏感 +0.15"

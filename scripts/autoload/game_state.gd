@@ -9,6 +9,8 @@ signal boss_changed(monster: Node)
 signal toast(text: String)
 ## 屏幕中间的黄字提示（CenterHint）
 signal hint_requested(text: String)
+## 装备换了（Equipment.equip / unequip）
+signal equipment_changed(who: String)
 ## 请求玩家角色做表情。duration <= 0 表示一直保持直到下一次请求；emotion 为 "" 表示松开。
 signal emotion_requested(emotion: String, duration: float, bubble: bool)
 ## 玩家角色当前表情已改变（HUD 头像监听）。
@@ -71,6 +73,9 @@ var in_cutscene := false
 
 ## 关卡切换时暂存的公主状态（血量、闷笑值、战损）。
 var carried_player_state := {}
+## 装备：{角色 id: {部位: 装备 id}}、{角色 id: {部位: 剩余挡下次数}}（Equipment；随存档保存，重新开始清空）
+var equipment := {}
+var equip_charges := {}
 
 
 func register_player(p: PlayableCharacter) -> void:
@@ -168,6 +173,8 @@ func reset() -> void:
 	in_cutscene = false
 	checkpoint = Vector2.ZERO
 	carried_player_state = {}
+	equipment = {}
+	equip_charges = {}
 	player = null
 
 

@@ -13,6 +13,19 @@ const PATHS := {
 	"backpack": "res://data/items/backpack.tres",
 	"mystery_key": "res://data/items/mystery_key.tres",
 	"thousand_pants": "res://data/items/thousand_pants.tres",
+	# 装备（tools/build/gen_equipment.py）
+	"equip_armpit_pad": "res://data/items/equip_armpit_pad.tres",
+	"equip_scarf": "res://data/items/equip_scarf.tres",
+	"equip_wool_socks": "res://data/items/equip_wool_socks.tres",
+	"equip_dance_shoes": "res://data/items/equip_dance_shoes.tres",
+	"equip_waist_sash": "res://data/items/equip_waist_sash.tres",
+	"equip_mint_sachet": "res://data/items/equip_mint_sachet.tres",
+	"equip_chest_guard": "res://data/items/equip_chest_guard.tres",
+	"equip_training_wraps": "res://data/items/equip_training_wraps.tres",
+	"equip_padded_shorts": "res://data/items/equip_padded_shorts.tres",
+	"equip_party_bow": "res://data/items/equip_party_bow.tres",
+	"equip_feather_anklet": "res://data/items/equip_feather_anklet.tres",
+	"equip_ice_hairpin": "res://data/items/equip_ice_hairpin.tres",
 }
 
 static var _cache := {}

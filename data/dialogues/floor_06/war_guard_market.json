@@ -1,0 +1,52 @@
+{
+	"name": "守集市的队员",
+	"entries": [
+		{
+			"if": {
+				"hero": "blue",
+				"flag": "blue_tickle_pants"
+			},
+			"node": "blue_pants"
+		},
+		{
+			"if": {
+				"hero": "blue"
+			},
+			"node": "blue"
+		},
+		{
+			"node": "pink"
+		}
+	],
+	"nodes": {
+		"blue_pants": {
+			"lines": [
+				{
+					"text": "补给站有薄荷糖。城墙上冷，多带几颗。"
+				},
+				{
+					"text": "……哈、哈……知、知道了。",
+					"speaker": "蓝色的公主",
+					"emotion": "shy"
+				},
+				{
+					"text": "……？你没事吧？"
+				}
+			]
+		},
+		"blue": {
+			"lines": [
+				{
+					"text": "补给站有薄荷糖。城墙上冷，多带几颗。"
+				}
+			]
+		},
+		"pink": {
+			"lines": [
+				{
+					"text": "补给站还开着，去看看吧。"
+				}
+			]
+		}
+	}
+}

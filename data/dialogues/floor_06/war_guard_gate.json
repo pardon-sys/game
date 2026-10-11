@@ -1,0 +1,52 @@
+{
+	"name": "守城门的队员",
+	"entries": [
+		{
+			"if": {
+				"hero": "blue",
+				"flag": "blue_tickle_pants"
+			},
+			"node": "blue_pants"
+		},
+		{
+			"if": {
+				"hero": "blue"
+			},
+			"node": "blue"
+		},
+		{
+			"node": "pink"
+		}
+	],
+	"nodes": {
+		"blue_pants": {
+			"lines": [
+				{
+					"text": "城墙的楼梯在城门两边。冰塔的位置，工匠会告诉你。"
+				},
+				{
+					"text": "……哈、哈……知、知道了。",
+					"speaker": "蓝色的公主",
+					"emotion": "shy"
+				},
+				{
+					"text": "……？你没事吧？"
+				}
+			]
+		},
+		"blue": {
+			"lines": [
+				{
+					"text": "城墙的楼梯在城门两边。冰塔的位置，工匠会告诉你。"
+				}
+			]
+		},
+		"pink": {
+			"lines": [
+				{
+					"text": "城门后面就是前线。准备好了再出去。"
+				}
+			]
+		}
+	}
+}

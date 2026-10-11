@@ -1,0 +1,52 @@
+{
+	"name": "城墙上的队员",
+	"entries": [
+		{
+			"if": {
+				"hero": "blue",
+				"flag": "blue_tickle_pants"
+			},
+			"node": "blue_pants"
+		},
+		{
+			"if": {
+				"hero": "blue"
+			},
+			"node": "blue"
+		},
+		{
+			"node": "pink"
+		}
+	],
+	"nodes": {
+		"blue_pants": {
+			"lines": [
+				{
+					"text": "东边的冰塔地基能看到整条前线。"
+				},
+				{
+					"text": "……哈、哈……知、知道了。",
+					"speaker": "蓝色的公主",
+					"emotion": "shy"
+				},
+				{
+					"text": "……？你没事吧？"
+				}
+			]
+		},
+		"blue": {
+			"lines": [
+				{
+					"text": "东边的冰塔地基能看到整条前线。"
+				}
+			]
+		},
+		"pink": {
+			"lines": [
+				{
+					"text": "东边的路障快撑不住了，前线的人要多注意。"
+				}
+			]
+		}
+	}
+}

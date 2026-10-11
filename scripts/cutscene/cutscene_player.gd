@@ -20,7 +20,7 @@ extends CanvasLayer
 ##   uncover（who）：身上的手散开   burst（who, hold 秒）：魔力疲倦爆发的表现（闪光、星爆 + 泄力声、爆发立绘 hold 秒、地上一滩紫水）
 ##   cg（key = data/cgs.json 的 portraits 键；空 = 恢复）：对话框换成大立绘   hint（text）：屏幕中间的黄字
 ##   hop（who）：原地跳一下（被吓到、被冻得一跳）
-##   item（id）：拿到道具   buff（who, id, on）：加 / 去掉状态   crack（long, fade 秒）：蓝色公主憋不住的笑（fade = 淡出）
+##   item（id）：拿到道具   buff（who, id, on）：加 / 去掉状态   crack（long, fade 秒）：蓝色公主笑出声（轻笑 / long = 大笑；fade = 淡出）
 ## 过场数据里 end_dark = true：结束时不揭开黑幕（接着换关卡、下一段过场从黑里亮起来）；
 ## free_camera = true：镜头不受地图边界限制（小房间里也能把人物放在画面中间）。
 

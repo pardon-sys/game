@@ -1,0 +1,88 @@
+{
+	"name": "小莉莉",
+	"entries": [
+		{
+			"if": {
+				"not": "f6w_anklet",
+				"flag": "equip_unlocked"
+			},
+			"node": "anklet"
+		},
+		{
+			"if": {
+				"hero": "blue",
+				"flag": "blue_tickle_pants"
+			},
+			"node": "blue_pants"
+		},
+		{
+			"if": {
+				"hero": "blue"
+			},
+			"node": "blue"
+		},
+		{
+			"node": "pink"
+		}
+	],
+	"nodes": {
+		"blue_pants": {
+			"lines": [
+				{
+					"text": "冰的姐姐……怪物好可怕。"
+				},
+				{
+					"text": "……我、我会守住。……噗。",
+					"speaker": "蓝色的公主",
+					"emotion": "shy"
+				},
+				{
+					"text": "……姐姐？"
+				}
+			]
+		},
+		"blue": {
+			"lines": [
+				{
+					"text": "冰的姐姐……怪物好可怕。"
+				},
+				{
+					"text": "……我会守住。",
+					"speaker": "蓝色的公主"
+				}
+			]
+		},
+		"pink": {
+			"lines": [
+				{
+					"text": "姐姐……怪物会不会打进来？"
+				},
+				{
+					"text": "……嗯！我相信姐姐！"
+				}
+			]
+		},
+		"anklet": {
+			"lines": [
+				{
+					"text": "这个给你！我和汤姆用羽毛编的脚环，戴上就能跑得像风一样快！"
+				},
+				{
+					"text": "……就是羽毛会蹭到脚心，有一点点痒。嘻嘻。"
+				},
+				{
+					"text": "（得到了羽毛脚环）",
+					"speaker": ""
+				}
+			],
+			"set": {
+				"flags": [
+					"f6w_anklet"
+				],
+				"give_item": {
+					"equip_feather_anklet": 1
+				}
+			}
+		}
+	}
+}

@@ -114,6 +114,13 @@
 			"music": "dungeon"
 		},
 		{
+			"id": "floor_06_war",
+			"name": "地下小镇·战时",
+			"scene": "res://levels/floor_06_war/floor.tscn",
+			"group": "floor_06",
+			"music": "town"
+		},
+		{
 			"id": "floor_08_maze_1",
 			"name": "第八层·夜迷宫一·外环回廊",
 			"scene": "res://levels/floor_08_maze_1/floor.tscn",

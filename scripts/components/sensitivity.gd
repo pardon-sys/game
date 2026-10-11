@@ -9,6 +9,8 @@ extends RefCounted
 signal weak_point(zone: String)
 
 var damaged := false
+## 谁的敏感状态（角色 id；装备的部位加减按这个人算）
+var owner_id := ""
 ## 部位 -> 当前连续加成
 var streak := {}
 ## 部位 -> 最后一次被挠的时间
@@ -77,7 +79,8 @@ func streak_of(zone: String) -> float:
 
 ## 某部位现在的总敏感倍率（不含全身项）：部位 sensitivity × (1 + 连续加成) × 露出倍率。
 func zone_total(zone: String) -> float:
-	return TickleZones.zone_multiplier(zone) * (1.0 + streak_of(zone)) * float(exposed().get(zone, 1.0))
+	var base := maxf(TickleZones.zone_multiplier(zone) + Equipment.zone_mod(owner_id, zone), 0.0)
+	return base * (1.0 + streak_of(zone)) * float(exposed().get(zone, 1.0))
 
 
 ## 受到挠痒时调用：有来源键的挠痒抽一个部位，返回总敏感倍率（全身项 × 部位项）。

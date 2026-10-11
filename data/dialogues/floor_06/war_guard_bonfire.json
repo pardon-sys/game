@@ -1,0 +1,52 @@
+{
+	"name": "守篝火的队员",
+	"entries": [
+		{
+			"if": {
+				"hero": "blue",
+				"flag": "blue_tickle_pants"
+			},
+			"node": "blue_pants"
+		},
+		{
+			"if": {
+				"hero": "blue"
+			},
+			"node": "blue"
+		},
+		{
+			"node": "pink"
+		}
+	],
+	"nodes": {
+		"blue_pants": {
+			"lines": [
+				{
+					"text": "派对的主人在给大家分热汤。你也去喝一口吧。"
+				},
+				{
+					"text": "……哈、哈……知、知道了。",
+					"speaker": "蓝色的公主",
+					"emotion": "shy"
+				},
+				{
+					"text": "……？你没事吧？"
+				}
+			]
+		},
+		"blue": {
+			"lines": [
+				{
+					"text": "派对的主人在给大家分热汤。你也去喝一口吧。"
+				}
+			]
+		},
+		"pink": {
+			"lines": [
+				{
+					"text": "大家都躲在篝火边。有我在，怪物过不来。"
+				}
+			]
+		}
+	}
+}

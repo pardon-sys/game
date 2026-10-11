@@ -580,5 +580,126 @@
 			32,
 			32
 		]
+	},
+	"house_burnt_0": {
+		"body": [
+			40,
+			16
+		],
+		"body_y": -8,
+		"smoke": true,
+		"region": [
+			0,
+			208,
+			48,
+			48
+		]
+	},
+	"house_burnt_1": {
+		"body": [
+			40,
+			16
+		],
+		"body_y": -8,
+		"smoke": true,
+		"region": [
+			48,
+			208,
+			48,
+			48
+		]
+	},
+	"stall_broken": {
+		"body": [
+			28,
+			8
+		],
+		"body_y": -6,
+		"region": [
+			96,
+			208,
+			32,
+			32
+		]
+	},
+	"barricade": {
+		"body": [
+			30,
+			8
+		],
+		"body_y": -4,
+		"region": [
+			128,
+			208,
+			32,
+			24
+		]
+	},
+	"sandbag": {
+		"body": [
+			22,
+			6
+		],
+		"body_y": -3,
+		"region": [
+			160,
+			208,
+			24,
+			16
+		]
+	},
+	"fire_small": {
+		"light": [
+			1.0,
+			0.55,
+			0.25
+		],
+		"anim": "fire_small_1",
+		"fire": true,
+		"region": [
+			184,
+			208,
+			16,
+			16
+		]
+	},
+	"fire_small_1": {
+		"region": [
+			200,
+			208,
+			16,
+			16
+		]
+	},
+	"rubble": {
+		"body": [
+			20,
+			6
+		],
+		"body_y": -3,
+		"region": [
+			216,
+			208,
+			24,
+			16
+		]
+	},
+	"tower_base": {
+		"body": [
+			18,
+			8
+		],
+		"body_y": -4,
+		"light": [
+			0.6,
+			0.85,
+			1.0
+		],
+		"region": [
+			0,
+			256,
+			24,
+			24
+		]
 	}
 }

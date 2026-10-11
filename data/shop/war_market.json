@@ -1,0 +1,83 @@
+{
+	"_说明": [
+		"战乱的小镇里的商店（ShopUI 读取）：补给 + 辅助装备。equip = true 的条目要解锁装备系统（和篝火派对的主人说话）后才显示。"
+	],
+	"name": "战时补给站",
+	"keeper": "supervisor",
+	"items": [
+		{
+			"id": "mint",
+			"price": 3,
+			"stock": -1
+		},
+		{
+			"id": "clear_dew",
+			"price": 5,
+			"stock": -1
+		},
+		{
+			"id": "heart",
+			"price": 6,
+			"stock": 6
+		},
+		{
+			"id": "star_candy",
+			"price": 12,
+			"stock": 2
+		},
+		{
+			"id": "equip_armpit_pad",
+			"price": 15,
+			"stock": 1,
+			"equip": true
+		},
+		{
+			"id": "equip_scarf",
+			"price": 10,
+			"stock": 1,
+			"equip": true
+		},
+		{
+			"id": "equip_wool_socks",
+			"price": 12,
+			"stock": 1,
+			"equip": true
+		},
+		{
+			"id": "equip_dance_shoes",
+			"price": 12,
+			"stock": 1,
+			"equip": true
+		},
+		{
+			"id": "equip_waist_sash",
+			"price": 12,
+			"stock": 1,
+			"equip": true
+		},
+		{
+			"id": "equip_mint_sachet",
+			"price": 12,
+			"stock": 1,
+			"equip": true
+		},
+		{
+			"id": "equip_chest_guard",
+			"price": 18,
+			"stock": 1,
+			"equip": true
+		},
+		{
+			"id": "equip_training_wraps",
+			"price": 14,
+			"stock": 1,
+			"equip": true
+		},
+		{
+			"id": "equip_padded_shorts",
+			"price": 15,
+			"stock": 1,
+			"equip": true
+		}
+	]
+}

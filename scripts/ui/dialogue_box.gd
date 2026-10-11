@@ -314,12 +314,40 @@ func open_shop() -> void:
 	await Town.open_shop("market")
 
 
+## 战乱小镇的补给站（补给 + 辅助装备）。
+func open_war_shop() -> void:
+	await Town.open_shop("war_market")
+
+
 ## 对话里只选训练项目；训练本身等这段对话结束后再开始（Town.start_training_later，不 await）。
 func open_training() -> void:
 	var r := await Town.choose_training()
 	if not r.is_empty():
 		runner.end_conversation()   # 选好了就结束对话（不回到选项页），对话收尾后马上开始训练
 		Town.start_training_later(r)
+
+
+## 对话里「换我来」（和跟着的搭档说话）：结束这段对话，操控换成她，原来的那个变成跟着走。
+func switch_hero() -> void:
+	runner.end_conversation()
+	var me := GameState.player
+	if not is_instance_valid(me):
+		return
+	var lv := me.get_parent()
+	while lv and not lv.has_node("Walls"):
+		lv = lv.get_parent()
+	if lv == null:
+		return
+	for n in lv.find_children("*", "PlayableCharacter", true, false):
+		var c := n as PlayableCharacter
+		if c and c != me and c.visible and c.is_alive() and c.follow:
+			# 等这段对话收尾再换（换操控时对话框还开着会卡住输入）
+			await get_tree().process_frame
+			me.follow = true
+			GameState.switch_control(c)
+			me.start_following(me.partner_talk)
+			GameState.hint("现在操控：%s" % c.display_name())
+			return
 
 
 ## 对话里选择睡觉（床）：结束这段对话，等它收尾后再睡（Sleep），早上的过场按剧情选。

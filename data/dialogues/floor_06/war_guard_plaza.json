@@ -1,0 +1,52 @@
+{
+	"name": "巡逻的队员",
+	"entries": [
+		{
+			"if": {
+				"hero": "blue",
+				"flag": "blue_tickle_pants"
+			},
+			"node": "blue_pants"
+		},
+		{
+			"if": {
+				"hero": "blue"
+			},
+			"node": "blue"
+		},
+		{
+			"node": "pink"
+		}
+	],
+	"nodes": {
+		"blue_pants": {
+			"lines": [
+				{
+					"text": "队长说城墙交给你。……我们都很放心。"
+				},
+				{
+					"text": "……哈、哈……知、知道了。",
+					"speaker": "蓝色的公主",
+					"emotion": "shy"
+				},
+				{
+					"text": "……？你没事吧？"
+				}
+			]
+		},
+		"blue": {
+			"lines": [
+				{
+					"text": "队长说城墙交给你。……我们都很放心。"
+				}
+			]
+		},
+		"pink": {
+			"lines": [
+				{
+					"text": "队长在广场中间。有不懂的就去问他。"
+				}
+			]
+		}
+	}
+}

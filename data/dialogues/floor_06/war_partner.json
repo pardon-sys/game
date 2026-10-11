@@ -1,0 +1,204 @@
+{
+	"name": "",
+	"entries": [
+		{
+			"if": {
+				"hero": "pink"
+			},
+			"node": "to_blue"
+		},
+		{
+			"node": "to_pink"
+		}
+	],
+	"nodes": {
+		"to_blue": {
+			"lines": [
+				{
+					"text": "……嗯？",
+					"speaker": "蓝色的公主"
+				}
+			],
+			"goto": [
+				{
+					"if": {
+						"flag": "blue_tickle_pants"
+					},
+					"node": "to_blue_pants"
+				}
+			],
+			"next": "blue_menu"
+		},
+		"to_blue_pants": {
+			"lines": [
+				{
+					"text": "……嗯？……哈、哈……没事。",
+					"speaker": "蓝色的公主",
+					"emotion": "shy"
+				}
+			],
+			"next": "blue_menu"
+		},
+		"blue_menu": {
+			"prompt": "……要换我来吗？",
+			"choices": [
+				{
+					"text": "换你来（操控蓝色的公主）",
+					"next": "swap_to_blue"
+				},
+				{
+					"text": "聊两句",
+					"next": "chat_blue",
+					"return": true
+				},
+				{
+					"text": "没什么",
+					"next": ""
+				}
+			]
+		},
+		"swap_to_blue": {
+			"lines": [
+				{
+					"text": "……交给我。城墙那边，我去看看。",
+					"speaker": "蓝色的公主"
+				}
+			],
+			"set": {
+				"call": "switch_hero"
+			}
+		},
+		"chat_blue": {
+			"goto": [
+				{
+					"if": {
+						"flag": "blue_tickle_pants"
+					},
+					"node": "chat_blue_pants"
+				}
+			],
+			"lines": [
+				{
+					"text": "……怪物变多了。……感觉，和我有关。",
+					"speaker": "蓝色的公主",
+					"emotion": "sad"
+				},
+				{
+					"text": "和你有关？怎么会！",
+					"speaker": "公主",
+					"emotion": "surprise"
+				},
+				{
+					"text": "……没什么。……别担心。",
+					"speaker": "蓝色的公主"
+				}
+			]
+		},
+		"chat_blue_pants": {
+			"lines": [
+				{
+					"text": "……怪物变多了。……感觉，和我有关。……哈、哈……",
+					"speaker": "蓝色的公主",
+					"emotion": "sad"
+				},
+				{
+					"text": "你、你又在笑……到底怎么了嘛？",
+					"speaker": "公主",
+					"emotion": "surprise"
+				},
+				{
+					"text": "……腿……不、没事。……别看。",
+					"speaker": "蓝色的公主",
+					"emotion": "shy"
+				}
+			]
+		},
+		"to_pink": {
+			"lines": [
+				{
+					"text": "嗯？怎么啦？",
+					"speaker": "公主",
+					"emotion": "happy"
+				}
+			],
+			"next": "pink_menu"
+		},
+		"pink_menu": {
+			"prompt": "要换我来吗？",
+			"choices": [
+				{
+					"text": "换你来（操控公主）",
+					"next": "swap_to_pink"
+				},
+				{
+					"text": "聊两句",
+					"next": "chat_pink",
+					"return": true
+				},
+				{
+					"text": "没什么",
+					"next": ""
+				}
+			]
+		},
+		"swap_to_pink": {
+			"lines": [
+				{
+					"text": "交给我吧！前线那边我去转一圈！",
+					"speaker": "公主",
+					"emotion": "happy"
+				}
+			],
+			"set": {
+				"call": "switch_hero"
+			}
+		},
+		"chat_pink": {
+			"goto": [
+				{
+					"if": {
+						"flag": "blue_tickle_pants"
+					},
+					"node": "chat_pink_pants"
+				}
+			],
+			"lines": [
+				{
+					"text": "你说，那些怪物到底在找什么呢？",
+					"speaker": "公主"
+				},
+				{
+					"text": "……不知道。",
+					"speaker": "蓝色的公主"
+				},
+				{
+					"text": "不管找什么，我们一起把它们赶回去！",
+					"speaker": "公主",
+					"emotion": "happy"
+				}
+			]
+		},
+		"chat_pink_pants": {
+			"lines": [
+				{
+					"text": "你说，那些怪物到底在找什么呢？",
+					"speaker": "公主"
+				},
+				{
+					"text": "……不、不知道。……哈。",
+					"speaker": "蓝色的公主",
+					"emotion": "shy"
+				},
+				{
+					"text": "……你的腿是不是不舒服？一直在抖。",
+					"speaker": "公主",
+					"emotion": "surprise"
+				},
+				{
+					"text": "……没有。……走路，走多了。",
+					"speaker": "蓝色的公主"
+				}
+			]
+		}
+	}
+}

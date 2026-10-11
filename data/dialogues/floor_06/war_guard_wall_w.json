@@ -1,0 +1,52 @@
+{
+	"name": "城墙上的队员",
+	"entries": [
+		{
+			"if": {
+				"hero": "blue",
+				"flag": "blue_tickle_pants"
+			},
+			"node": "blue_pants"
+		},
+		{
+			"if": {
+				"hero": "blue"
+			},
+			"node": "blue"
+		},
+		{
+			"node": "pink"
+		}
+	],
+	"nodes": {
+		"blue_pants": {
+			"lines": [
+				{
+					"text": "西边的冰塔地基离城门最近。先在那里造塔吧。"
+				},
+				{
+					"text": "……哈、哈……知、知道了。",
+					"speaker": "蓝色的公主",
+					"emotion": "shy"
+				},
+				{
+					"text": "……？你没事吧？"
+				}
+			]
+		},
+		"blue": {
+			"lines": [
+				{
+					"text": "西边的冰塔地基离城门最近。先在那里造塔吧。"
+				}
+			]
+		},
+		"pink": {
+			"lines": [
+				{
+					"text": "墙外面全是爪印。它们还会回来的。"
+				}
+			]
+		}
+	}
+}

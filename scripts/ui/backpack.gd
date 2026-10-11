@@ -12,17 +12,19 @@ signal opened
 signal closed
 
 const BUFF_ICONS := preload("res://assets/generated/buff_icons.png")
-const PAGES := ["物品", "被动技能", "状态", "CG 图鉴"]
+## 页签名（下标就是 PAGE_* 的值）；实际顺序看 page_order()：装备系统解锁后「装备」页插在「物品」后面
+const PAGES := ["物品", "被动技能", "状态", "CG 图鉴", "装备"]
 const PAGE_ITEMS := 0
 const PAGE_PASSIVES := 1
 const PAGE_STATUS := 2
 const PAGE_GALLERY := 3
+const PAGE_EQUIP := 4
 ## CG 图鉴一屏显示的行数。
 const GALLERY_ROWS := 9
 const COLUMNS := 8
 const CATEGORY_NAMES := {
 	ItemData.Category.CONSUMABLE: "消耗品", ItemData.Category.KEY: "钥匙",
-	ItemData.Category.CURRENCY: "货币", ItemData.Category.INSTANT: "其它",
+	ItemData.Category.CURRENCY: "货币", ItemData.Category.INSTANT: "其它", ItemData.Category.EQUIP: "装备",
 }
 const PINK := Color(1, 0.72, 0.86)
 const GOLD := Color(1, 0.86, 0.4)
@@ -61,6 +63,10 @@ var _gallery: Array[Dictionary] = []
 ## 状态页正在看第几个同行的人（status_members）
 var status_index := 0
 
+## 装备页
+var equip_page: EquipPage
+var _equip_opened := false
+
 func _ready() -> void:
 	layer = 25
 	process_mode = Node.PROCESS_MODE_ALWAYS
@@ -77,6 +83,9 @@ func is_open() -> bool:
 func open() -> void:
 	if is_open():
 		return
+	_equip_opened = false
+	if equip_page:
+		equip_page.mode = "slots"
 	page = 0
 	selected = 0
 	status_index = 0
@@ -118,10 +127,15 @@ func _input(event: InputEvent) -> void:
 	if event.is_action("pause") or event.is_action("ui_cancel"):
 		close()
 	elif event.is_action("backpack"):
-		if page + 1 < PAGES.size():
-			set_page(page + 1)
+		var order := page_order()
+		var at := order.find(page)
+		if at + 1 < order.size():
+			set_page(order[at + 1])
 		else:
 			close()
+	elif page == PAGE_EQUIP and _equip_action(event) != "":
+		handled = equip_page.handle(_equip_action(event))
+		hint_label.text = equip_page.hint()
 	elif event.is_action("move_left") or event.is_action("ui_left"):
 		move_selection(-1)
 	elif event.is_action("move_right") or event.is_action("ui_right"):
@@ -147,9 +161,29 @@ func _input(event: InputEvent) -> void:
 
 
 func set_page(p: int) -> void:
-	page = clampi(p, 0, PAGES.size() - 1)
+	page = p if p in page_order() else PAGE_ITEMS
 	status_page.scroll_to_top()
 	_refresh()
+
+
+## 现在有哪些页、按什么顺序（装备系统没解锁时没有「装备」页）。
+func page_order() -> Array:
+	return [PAGE_ITEMS, PAGE_EQUIP, PAGE_PASSIVES, PAGE_STATUS, PAGE_GALLERY] if Equipment.unlocked() \
+		else [PAGE_ITEMS, PAGE_PASSIVES, PAGE_STATUS, PAGE_GALLERY]
+
+
+func _equip_action(event: InputEvent) -> String:
+	if event.is_action("move_up") or event.is_action("ui_up"):
+		return "up"
+	if event.is_action("move_down") or event.is_action("ui_down"):
+		return "down"
+	if event.is_action("move_left") or event.is_action("ui_left"):
+		return "left"
+	if event.is_action("move_right") or event.is_action("ui_right"):
+		return "right"
+	if event.is_action("interact") or event.is_action("ui_accept"):
+		return "ok"
+	return ""
 
 
 func move_selection(d: int) -> void:
@@ -189,6 +223,9 @@ func use_selected() -> bool:
 	var it := selected_item()
 	var p := GameState.player
 	if it == null or not is_instance_valid(p):
+		return false
+	if it.category == ItemData.Category.EQUIP:
+		GameState.notify("%s是装备：到「装备」页换上。" % it.display_name)
 		return false
 	if it.category != ItemData.Category.CONSUMABLE:
 		GameState.notify("%s不能直接使用。" % it.display_name)
@@ -278,6 +315,10 @@ func _build() -> void:
 	gallery_page.size = Vector2(396, 190)
 	gallery_page.add_theme_constant_override("separation", 1)
 	panel.add_child(gallery_page)
+	# 装备页（解锁后才出现）
+	equip_page = EquipPage.new()
+	equip_page.position = Vector2(12, 26)
+	panel.add_child(equip_page)
 	hint_label = _label(DIM)
 	hint_label.position = Vector2(12, 222)
 	panel.add_child(hint_label)
@@ -291,9 +332,22 @@ func _label(col: Color) -> Label:
 
 func _refresh() -> void:
 	var parts: Array[String] = []
-	for i in PAGES.size():
+	for i in page_order():
 		parts.append(("【%s】" if i == page else " %s ") % PAGES[i])
 	tabs_label.text = "冒险背包　" + "  ".join(parts)
+	equip_page.visible = page == PAGE_EQUIP
+	if page == PAGE_EQUIP:
+		# 第一次翻到装备页：先看现在操控的这个人
+		if not _equip_opened and is_instance_valid(GameState.player):
+			equip_page.who = GameState.player.character_id
+		_equip_opened = true
+		equip_page.refresh()
+		hint_label.text = equip_page.hint()
+		items_page.visible = false
+		passives_page.visible = false
+		status_page.visible = false
+		gallery_page.visible = false
+		return
 	items_page.visible = page == PAGE_ITEMS
 	passives_page.visible = page == PAGE_PASSIVES
 	status_page.visible = page == PAGE_STATUS

@@ -1,0 +1,52 @@
+{
+	"name": "守矿道口的队员",
+	"entries": [
+		{
+			"if": {
+				"hero": "blue",
+				"flag": "blue_tickle_pants"
+			},
+			"node": "blue_pants"
+		},
+		{
+			"if": {
+				"hero": "blue"
+			},
+			"node": "blue"
+		},
+		{
+			"node": "pink"
+		}
+	],
+	"nodes": {
+		"blue_pants": {
+			"lines": [
+				{
+					"text": "矿道里也有怪物的脚印……一直通到很深的地方。"
+				},
+				{
+					"text": "……哈、哈……知、知道了。",
+					"speaker": "蓝色的公主",
+					"emotion": "shy"
+				},
+				{
+					"text": "……？你没事吧？"
+				}
+			]
+		},
+		"blue": {
+			"lines": [
+				{
+					"text": "矿道里也有怪物的脚印……一直通到很深的地方。"
+				}
+			]
+		},
+		"pink": {
+			"lines": [
+				{
+					"text": "你们就是从矿道那边跑回来的吧？那边暂时安全。"
+				}
+			]
+		}
+	}
+}
