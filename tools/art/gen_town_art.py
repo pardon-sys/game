@@ -921,6 +921,90 @@ def p_old_room(kind):
 PROPS = {}
 
 
+# ------------------------------------------------------------------ 战乱的小镇（第六层·战时）
+def p_house_burnt(v):
+    """烧焦的房子：熏黑的墙、塌了一半的屋顶、空洞的窗户。"""
+    img, d = canvas(48, 48)
+    wall = (120, 100, 92, 255) if v == 0 else (104, 96, 108, 255)
+    d.rectangle((4, 20, 43, 46), fill=wall)
+    d.line((4, 46, 43, 46), fill=STONE_D)
+    # 熏黑的痕迹
+    for (x, y, r) in ((10, 24, 6), (30, 22, 8), (38, 30, 5)):
+        d.ellipse((x - r, y - r, x + r, y + r), fill=(60, 48, 46, 200))
+    # 塌了一半的屋顶：左半边还在（发黑），右半边只剩几根梁
+    d.polygon([(0, 22), (24, 3), (24, 22)], fill=(70, 50, 48, 255))
+    for x in (28, 33, 38, 43):
+        d.line((24, 4 + (x - 24) // 3, x, 20), fill=(50, 34, 30, 255), width=2)
+    d.rectangle((19, 31, 28, 46), fill=(40, 28, 26, 255))      # 门洞
+    for wx in (8, 33):
+        d.rectangle((wx, 27, wx + 7, 34), fill=(30, 22, 24, 255))
+        d.point((wx + 2, 29), fill=(255, 150, 60, 255))           # 里面还有火星
+    d.line((14, 44, 22, 46), fill=(90, 70, 60, 255), width=2)     # 掉下来的木头
+    return add_outline(img)
+
+
+def p_stall_broken():
+    img, d = canvas(32, 32)
+    d.line((3, 30, 8, 12), fill=WOOD_D, width=2)                  # 歪掉的柱子
+    d.rectangle((27, 14, 28, 30), fill=WOOD_D)
+    d.polygon([(4, 14), (29, 10), (31, 16), (6, 20)], fill=(150, 70, 80, 255))   # 破掉的棚布
+    d.line((10, 16, 14, 13), fill=(240, 230, 220, 255))
+    d.rectangle((2, 24, 22, 28), fill=WOOD)
+    d.line((22, 24, 29, 30), fill=WOOD, width=3)                  # 断掉的柜台
+    for (x, y, c) in ((6, 29, (255, 120, 120)), (14, 30, (255, 200, 90)), (24, 29, (140, 220, 120))):
+        d.ellipse((x, y, x + 3, y + 2), fill=c + (255,))
+    return add_outline(img)
+
+
+def p_barricade():
+    img, d = canvas(32, 24)
+    for x0, y0, x1, y1 in ((2, 20, 30, 8), (2, 8, 30, 20)):
+        d.line((x0, y0, x1, y1), fill=WOOD_D, width=3)
+    d.rectangle((1, 14, 31, 18), fill=WOOD)
+    d.line((1, 14, 31, 14), fill=WOOD_L)
+    for x in (6, 16, 26):
+        d.polygon([(x, 8), (x + 2, 2), (x + 4, 8)], fill=(200, 200, 210, 255))   # 削尖的木桩
+    return add_outline(img)
+
+
+def p_sandbag():
+    img, d = canvas(24, 16)
+    for (x, y) in ((2, 8), (10, 8), (18, 8), (6, 3), (14, 3)):
+        d.ellipse((x - 1, y, x + 7, y + 6), fill=(190, 170, 120, 255))
+        d.line((x + 1, y + 2, x + 5, y + 2), fill=(150, 130, 90, 255))
+    return add_outline(img)
+
+
+def p_fire_small(f):
+    img, d = canvas(16, 16)
+    d.line((3, 14, 12, 12), fill=WOOD_D, width=2)
+    d.line((4, 12, 13, 14), fill=(60, 40, 30, 255), width=2)
+    h = 9 if f == 0 else 7
+    d.polygon([(4, 13), (8, 13 - h), (12, 13)], fill=(255, 120, 40, 255))
+    d.polygon([(6, 13), (8 + (1 if f else -1), 13 - h + 3), (10, 13)], fill=(255, 220, 90, 255))
+    return add_outline(img)
+
+
+def p_rubble():
+    img, d = canvas(24, 16)
+    for (x, y, w, h, c) in ((2, 9, 7, 5, (130, 120, 130)), (8, 6, 8, 7, (110, 100, 110)), (15, 10, 7, 4, (140, 130, 120)),
+                            (5, 4, 4, 3, (120, 110, 115))):
+        d.polygon([(x, y + h), (x + 1, y), (x + w, y + 1), (x + w, y + h)], fill=c + (255,))
+    d.line((12, 3, 20, 8), fill=WOOD_D, width=2)
+    return add_outline(img)
+
+
+def p_tower_base():
+    """冰塔地基：一圈石头底座，中间嵌着发淡蓝光的冰晶（等开打时在这里造冰塔）。"""
+    img, d = canvas(24, 24)
+    d.ellipse((2, 12, 21, 22), fill=STONE)
+    d.ellipse((4, 13, 19, 20), fill=STONE_D)
+    d.polygon([(11, 3), (15, 12), (11, 18), (7, 12)], fill=(170, 225, 255, 230))
+    d.line((11, 4, 11, 16), fill=(235, 250, 255, 255))
+    d.polygon([(16, 9), (18, 14), (16, 17), (14, 14)], fill=(140, 200, 245, 220))
+    return add_outline(img)
+
+
 def gen_props():
     """道具图集：每个道具一格（大小不同），town_props.json 记录区域、碰撞和发光。"""
     from PIL import Image
@@ -971,6 +1055,16 @@ def gen_props():
     items.append(("ice_block", p_interior("ice_block"), {"light": [0.6, 0.85, 1.0]}))
     items.append(("old_bed_blanket", p_interior("old_bed_blanket"), {}))
     items.append(("ice_bed", p_interior("ice_bed"), {"light": [0.6, 0.85, 1.0]}))
+    # 战乱的小镇（加在最后，前面道具的图集位置不变）
+    items.append(("house_burnt_0", p_house_burnt(0), {"body": [40, 16], "body_y": -8, "smoke": True}))
+    items.append(("house_burnt_1", p_house_burnt(1), {"body": [40, 16], "body_y": -8, "smoke": True}))
+    items.append(("stall_broken", p_stall_broken(), {"body": [28, 8], "body_y": -6}))
+    items.append(("barricade", p_barricade(), {"body": [30, 8], "body_y": -4}))
+    items.append(("sandbag", p_sandbag(), {"body": [22, 6], "body_y": -3}))
+    items.append(("fire_small", p_fire_small(0), {"light": [1.0, 0.55, 0.25], "anim": "fire_small_1", "fire": True}))
+    items.append(("fire_small_1", p_fire_small(1), {}))
+    items.append(("rubble", p_rubble(), {"body": [20, 6], "body_y": -3}))
+    items.append(("tower_base", p_tower_base(), {"body": [18, 8], "body_y": -4, "light": [0.6, 0.85, 1.0]}))
     # 简单地按行排进 256 宽的图集
     x = y = row_h = 0
     meta = {}

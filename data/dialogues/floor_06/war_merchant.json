@@ -1,0 +1,59 @@
+{
+	"name": "水果摊的商贩",
+	"entries": [
+		{
+			"if": {
+				"hero": "blue",
+				"flag": "blue_tickle_pants"
+			},
+			"node": "blue_pants"
+		},
+		{
+			"if": {
+				"hero": "blue"
+			},
+			"node": "blue"
+		},
+		{
+			"node": "pink"
+		}
+	],
+	"nodes": {
+		"blue_pants": {
+			"lines": [
+				{
+					"text": "城墙上冷吧？等打完了——"
+				},
+				{
+					"text": "……哈、哈哈……",
+					"speaker": "蓝色的公主",
+					"emotion": "shy"
+				},
+				{
+					"text": "我、我还没说笑话呢？"
+				}
+			]
+		},
+		"blue": {
+			"lines": [
+				{
+					"text": "城墙上冷吧？等打完了，给你留最冰的西瓜。"
+				},
+				{
+					"text": "……嗯。",
+					"speaker": "蓝色的公主"
+				}
+			]
+		},
+		"pink": {
+			"lines": [
+				{
+					"text": "摊子还剩一半！今天的水果……都被怪物踩烂啦。"
+				},
+				{
+					"text": "等打完了，请你吃最甜的苹果！"
+				}
+			]
+		}
+	}
+}

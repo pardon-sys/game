@@ -25,6 +25,9 @@ func _on_body_entered(body: Node) -> void:
 		set_deferred("monitoring", false)
 	triggered.emit()
 	if cutscene != "":
+		# 过场只放一次（读档回来也不再放）
+		if GameState.has_flag("seen_cutscene_" + cutscene):
+			return
 		GameState.set_flag("seen_cutscene_" + cutscene)
 		Cutscene.play(cutscene)
 		return

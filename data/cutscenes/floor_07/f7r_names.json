@@ -1,0 +1,179 @@
+{
+	"name": "第七层·归途：名字",
+	"letterbox": true,
+	"skippable": true,
+	"steps": [
+		{
+			"actions": [
+				{
+					"to": [
+						64,
+						17.5
+					],
+					"zoom": 1.3,
+					"time": 0.6,
+					"do": "camera"
+				},
+				{
+					"who": "princess",
+					"dir": "right",
+					"do": "face"
+				},
+				{
+					"who": "BluePrincess_7_5",
+					"to": [
+						65,
+						18
+					],
+					"speed": 40,
+					"do": "move"
+				}
+			],
+			"wait": 0.8
+		},
+		{
+			"actions": [
+				{
+					"who": "BluePrincess_7_5",
+					"dir": "left",
+					"do": "face"
+				}
+			],
+			"wait": 0.3
+		},
+		{
+			"speaker": "公主",
+			"text": "……说起来。",
+			"emotion": "normal"
+		},
+		{
+			"speaker": "公主",
+			"text": "我们一起走了这么久……我还不知道你的名字。",
+			"emotion": "shy"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……你先说。"
+		},
+		{
+			"speaker": "公主",
+			"text": "诶？我、我的名字是——",
+			"emotion": "shy"
+		},
+		{
+			"actions": [
+				{
+					"sound": "door",
+					"do": "sfx"
+				},
+				{
+					"id": "soldier",
+					"kind": "npc:guard",
+					"at": [
+						64,
+						11
+					],
+					"dir": "down",
+					"do": "spawn"
+				},
+				{
+					"who": "soldier",
+					"to": [
+						64,
+						16
+					],
+					"speed": 110,
+					"do": "move"
+				},
+				{
+					"time": 0.3,
+					"do": "shake"
+				}
+			],
+			"wait": 0.6
+		},
+		{
+			"speaker": "保卫队员",
+			"text": "找、找到了！两位公主——！",
+			"actions": [
+				{
+					"who": "princess",
+					"kind": "surprise",
+					"do": "bubble"
+				}
+			]
+		},
+		{
+			"speaker": "保卫队员",
+			"text": "小镇……小镇被大量的怪物袭击了！"
+		},
+		{
+			"speaker": "保卫队员",
+			"text": "保卫队队长正在到处找你们，请马上回去！"
+		},
+		{
+			"speaker": "公主",
+			"text": "怪物？！",
+			"emotion": "surprise"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……走。",
+			"emotion": "angry"
+		},
+		{
+			"actions": [
+				{
+					"who": "soldier",
+					"to": [
+						64,
+						10
+					],
+					"speed": 110,
+					"do": "move"
+				},
+				{
+					"who": "princess",
+					"to": [
+						64,
+						11
+					],
+					"speed": 95,
+					"do": "move"
+				},
+				{
+					"who": "BluePrincess_7_5",
+					"to": [
+						65,
+						11
+					],
+					"speed": 95,
+					"do": "move"
+				},
+				{
+					"time": 1.0,
+					"do": "fade_out"
+				}
+			],
+			"wait": 1.2
+		},
+		{
+			"actions": [
+				{
+					"flag": "f7r_done",
+					"do": "set_flag"
+				},
+				{
+					"to": "floor_06_war",
+					"spawn": "from_ruins",
+					"do": "goto"
+				}
+			],
+			"wait": 0.2
+		}
+	]
+}

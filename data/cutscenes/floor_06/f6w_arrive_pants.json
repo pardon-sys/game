@@ -1,0 +1,395 @@
+{
+	"name": "地下小镇·战时",
+	"letterbox": true,
+	"skippable": true,
+	"steps": [
+		{
+			"actions": [
+				{
+					"time": 0.0,
+					"do": "fade_out"
+				},
+				{
+					"who": "princess",
+					"to": [
+						42,
+						30
+					],
+					"do": "move"
+				},
+				{
+					"who": "BluePrincess_55_8",
+					"to": [
+						44,
+						30
+					],
+					"do": "move"
+				},
+				{
+					"who": "princess",
+					"dir": "left",
+					"do": "face"
+				},
+				{
+					"who": "BluePrincess_55_8",
+					"dir": "left",
+					"do": "face"
+				},
+				{
+					"to": [
+						38,
+						30
+					],
+					"zoom": 1.25,
+					"time": 0.1,
+					"do": "camera"
+				}
+			],
+			"wait": 0.2
+		},
+		{
+			"actions": [
+				{
+					"time": 1.0,
+					"do": "fade_in"
+				},
+				{
+					"sound": "rumble",
+					"volume": -6.0,
+					"do": "sfx"
+				}
+			],
+			"wait": 0.8
+		},
+		{
+			"speaker": "",
+			"text": "（跑回广场的时候，小镇已经变了样：房子烧掉了好几间，到处是碎石和还没熄灭的小火堆）"
+		},
+		{
+			"speaker": "公主",
+			"text": "怎么会……这样……",
+			"emotion": "sad"
+		},
+		{
+			"actions": [
+				{
+					"id": "cap",
+					"kind": "npc:captain",
+					"at": [
+						24,
+						30
+					],
+					"dir": "right",
+					"do": "spawn"
+				},
+				{
+					"id": "s1",
+					"kind": "npc:guard",
+					"at": [
+						22,
+						28
+					],
+					"dir": "right",
+					"do": "spawn"
+				},
+				{
+					"id": "s2",
+					"kind": "npc:guard",
+					"at": [
+						20,
+						29
+					],
+					"dir": "right",
+					"do": "spawn"
+				},
+				{
+					"id": "s3",
+					"kind": "npc:guard",
+					"at": [
+						22,
+						30
+					],
+					"dir": "right",
+					"do": "spawn"
+				},
+				{
+					"id": "s4",
+					"kind": "npc:guard",
+					"at": [
+						20,
+						31
+					],
+					"dir": "right",
+					"do": "spawn"
+				},
+				{
+					"id": "s5",
+					"kind": "npc:guard",
+					"at": [
+						22,
+						32
+					],
+					"dir": "right",
+					"do": "spawn"
+				},
+				{
+					"who": "cap",
+					"to": [
+						37,
+						30
+					],
+					"speed": 60,
+					"do": "move"
+				},
+				{
+					"who": "s1",
+					"to": [
+						34,
+						28
+					],
+					"speed": 60,
+					"do": "move"
+				},
+				{
+					"who": "s2",
+					"to": [
+						32,
+						29
+					],
+					"speed": 60,
+					"do": "move"
+				},
+				{
+					"who": "s3",
+					"to": [
+						34,
+						30
+					],
+					"speed": 60,
+					"do": "move"
+				},
+				{
+					"who": "s4",
+					"to": [
+						32,
+						31
+					],
+					"speed": 60,
+					"do": "move"
+				},
+				{
+					"who": "s5",
+					"to": [
+						34,
+						32
+					],
+					"speed": 60,
+					"do": "move"
+				}
+			],
+			"wait": 2.0
+		},
+		{
+			"speaker": "保卫队队长",
+			"text": "找到了！你们两个——可算回来了！",
+			"npc": "captain"
+		},
+		{
+			"speaker": "保卫队队长",
+			"text": "去哪儿了？一整晚都没见人影。没受伤吧？",
+			"npc": "captain"
+		},
+		{
+			"actions": [
+				{
+					"who": "princess",
+					"dir": "right",
+					"do": "face"
+				},
+				{
+					"who": "princess",
+					"kind": "shy",
+					"do": "bubble"
+				}
+			],
+			"wait": 0.5
+		},
+		{
+			"speaker": "公主",
+			"text": "没……没发生什么……",
+			"emotion": "shy"
+		},
+		{
+			"speaker": "公主",
+			"text": "……真的，什么都没有……",
+			"emotion": "shy"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……说正事。……哈。",
+			"actions": [
+				{
+					"who": "BluePrincess_55_8",
+					"kind": "sweat",
+					"do": "bubble"
+				}
+			]
+		},
+		{
+			"speaker": "保卫队队长",
+			"text": "……？你刚才是不是笑了？",
+			"npc": "captain"
+		},
+		{
+			"speaker": "保卫队员",
+			"text": "（小声）……蓝色的那位，在笑？"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……没有。……继续说。",
+			"emotion": "angry"
+		},
+		{
+			"speaker": "保卫队队长",
+			"text": "……好。",
+			"npc": "captain"
+		},
+		{
+			"speaker": "保卫队队长",
+			"text": "不知道怎么回事，昨天夜里，怪物突然变多了。",
+			"npc": "captain"
+		},
+		{
+			"actions": [
+				{
+					"who": "BluePrincess_55_8",
+					"kind": "dots",
+					"do": "bubble"
+				}
+			],
+			"wait": 0.6
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……",
+			"emotion": "sad"
+		},
+		{
+			"speaker": "保卫队队长",
+			"text": "从矿道、从远处的裂缝……一起涌上来，直接冲到了镇上。",
+			"npc": "captain"
+		},
+		{
+			"speaker": "保卫队队长",
+			"text": "怪的是，它们不抢东西，也不追人——好像在找什么。",
+			"npc": "captain"
+		},
+		{
+			"speaker": "保卫队队长",
+			"text": "第一波已经挡下来了。可是看样子，后面还会有更多。",
+			"npc": "captain"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……更、更多……哈、哈哈……",
+			"emotion": "shy",
+			"actions": [
+				{
+					"time": 0.3,
+					"do": "shake"
+				}
+			]
+		},
+		{
+			"speaker": "保卫队队长",
+			"text": "……你到底在笑什么？",
+			"npc": "captain"
+		},
+		{
+			"speaker": "公主",
+			"text": "她、她今天一直这样……",
+			"emotion": "surprise"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……腿……不。……没事。……说下去。",
+			"emotion": "angry"
+		},
+		{
+			"speaker": "保卫队队长",
+			"text": "所以我需要你们两个帮忙。",
+			"npc": "captain"
+		},
+		{
+			"speaker": "保卫队队长",
+			"text": "蓝色的——你上城墙。冰塔的地基已经打好了，开打的时候在上面造塔，从远处打。",
+			"npc": "captain"
+		},
+		{
+			"speaker": "保卫队队长",
+			"text": "粉色的——你在前线。怪物冲进来的时候，帮队员们把它们打散。",
+			"npc": "captain"
+		},
+		{
+			"speaker": "公主",
+			"text": "交给我吧！",
+			"emotion": "happy"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……嗯。"
+		},
+		{
+			"speaker": "保卫队队长",
+			"text": "趁现在，去补给站补点东西，跟大家说说话。准备好了，就去南边的城门。",
+			"npc": "captain"
+		},
+		{
+			"speaker": "保卫队队长",
+			"text": "……还有。你们两个，别分开。",
+			"npc": "captain"
+		},
+		{
+			"actions": [
+				{
+					"who": "cap",
+					"do": "despawn"
+				},
+				{
+					"who": "s1",
+					"do": "despawn"
+				},
+				{
+					"who": "s2",
+					"do": "despawn"
+				},
+				{
+					"who": "s3",
+					"do": "despawn"
+				},
+				{
+					"who": "s4",
+					"do": "despawn"
+				},
+				{
+					"who": "s5",
+					"do": "despawn"
+				},
+				{
+					"flag": "f6w_arrived",
+					"do": "set_flag"
+				},
+				{
+					"reset": true,
+					"time": 0.6,
+					"do": "camera"
+				},
+				{
+					"text": "和跟着的那个人说话，可以换人操控",
+					"do": "hint"
+				}
+			],
+			"wait": 0.7
+		}
+	]
+}

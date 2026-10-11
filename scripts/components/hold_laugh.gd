@@ -6,7 +6,7 @@ extends Node2D
 ##   憋气条（breath，0~1）：满条约 HOLD_TIME 秒；身上每多一只手（HandCover）耗得快 HAND_DRAIN，已经在憋笑阶段耗得快一倍。
 ##           松开 REGEN_DELAY 秒后开始回，REGEN_TIME 秒回满。
 ##   自己松开：憋住的笑放出 RELEASE_SOFT，笑声圈小亮一下。
-##   憋到底：「噗——」憋不住（蓝色公主憋不住的笑 blue_crack），放出 RELEASE_FAIL + FAIL_EXTRA，笑声圈爆到 FAIL_RADIUS，定住 FAIL_ROOT 秒。
+##   憋到底：「噗——」憋不住（蓝色公主的轻笑 blue_crack），放出 RELEASE_FAIL + FAIL_EXTRA，笑声圈爆到 FAIL_RADIUS，定住 FAIL_ROOT 秒。
 ##   对话、过场、小剧场、QTE、被抓住 / 束缚、笑到失控时不能憋（正在憋就算自己松开）。
 ## 信号：started、released(是否憋爆)。HUD：冷光条下面一条细细的憋气条（只在憋 / 回气时显示）。
 

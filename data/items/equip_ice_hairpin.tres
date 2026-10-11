@@ -1,0 +1,28 @@
+[gd_resource type="Resource" script_class="EquipData" format=3]
+
+[ext_resource type="Script" path="res://scripts/items/equip_data.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/generated/equip_icons.png" id="2"]
+
+[sub_resource type="AtlasTexture" id="icon"]
+atlas = ExtResource("2")
+region = Rect2(176, 0, 16, 16)
+
+[resource]
+script = ExtResource("1")
+id = "equip_ice_hairpin"
+display_name = "冰晶发夹"
+description = "雪花形状的小发夹。面包店的奶奶一直替她收着——那是她小时候落在店里的。别在脖子后面的头发上，凉凉的。"
+icon = SubResource("icon")
+category = 4
+stackable = false
+show_in_hud = false
+pickup_emotion = "happy"
+slots = Array[String](["neck"])
+owner_id = "blue"
+modifiers = {"magic_cd": 0.85}
+zone_mods = {"neck": 0.1}
+block = {}
+cursed = false
+special = ""
+pros = "魔法冷却 −15%"
+cons = "脖子敏感 +0.1"

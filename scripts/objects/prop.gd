@@ -75,13 +75,17 @@ func _ready() -> void:
 		light.texture = preload("res://assets/lights/light_soft.tres")
 		light.color = Color(float(l[0]), float(l[1]), float(l[2]))
 		var fire := kind.begins_with("bonfire")
-		light.energy = 0.8 if fire else 0.4
-		light.texture_scale = 1.3 if fire else 0.55
+		light.energy = 0.8 if fire else (0.6 if info.get("fire", false) else 0.4)
+		light.texture_scale = 1.3 if fire else (0.8 if info.get("fire", false) else 0.55)
 		light.position = Vector2(0, -float(r[3]) * 0.6)
 		add_child(light)
-	if kind.begins_with("bonfire"):
+	if kind.begins_with("bonfire") or info.get("fire", false):
 		Fx.emitter(self, "ember", 8, 1.0, {"offset": Vector2(0, -10), "dir": Vector2.UP, "spread": 25.0,
 				"speed": [12.0, 26.0], "gravity": Vector2(0, -10), "color": Color(1, 0.7, 0.4), "z": 3})
+	# smoke：烧过的房子还在冒烟
+	if info.get("smoke", false):
+		Fx.emitter(self, "dust", 6, 2.2, {"offset": Vector2(8, -float(r[3]) * 0.7), "dir": Vector2.UP, "spread": 15.0,
+				"speed": [6.0, 12.0], "gravity": Vector2(2, -4), "color": Color(0.35, 0.32, 0.36, 0.7), "z": 3})
 	if action != "":
 		var it := Interactable.new()
 		it.name = "Interactable"

@@ -15,7 +15,10 @@ var shop_id := ""
 var shop := {}
 var selected := 0
 var panel: Panel
+## 商品列表、说明：都是 ScrollTextBox（商品多了自动出滚动条，选中的那行自动滚进来；和训练菜单同一个组件）
+var list_box: ScrollTextBox
 var list: VBoxContainer
+var desc_box: ScrollTextBox
 var coins_label: Label
 var desc_label: Label
 var _paused_by_me := false
@@ -41,15 +44,12 @@ func _ready() -> void:
 	coins_label = _label(GOLD)
 	coins_label.position = Vector2(12, 6)
 	panel.add_child(coins_label)
-	list = VBoxContainer.new()
-	list.position = Vector2(12, 28)
-	list.add_theme_constant_override("separation", 2)
-	panel.add_child(list)
-	desc_label = _label(TEXT)
-	desc_label.position = Vector2(12, 140)
-	desc_label.size = Vector2(296, 34)
-	desc_label.autowrap_mode = TextServer.AUTOWRAP_ARBITRARY
-	panel.add_child(desc_label)
+	list_box = ScrollTextBox.make(Rect2(12, 26, 296, 106), 2)
+	panel.add_child(list_box)
+	list = list_box.box
+	desc_box = ScrollTextBox.make(Rect2(12, 136, 296, 40), 1)
+	panel.add_child(desc_box)
+	desc_label = desc_box.add_line("", TEXT)
 	var hint := _label(DIM)
 	hint.text = "上下 选择　E 购买　Esc 离开"
 	hint.position = Vector2(12, 178)
@@ -86,8 +86,9 @@ func close() -> void:
 	closed.emit()
 
 
+## 商品（equip = true 的装备要解锁装备系统后才显示）。
 func items() -> Array:
-	return shop.get("items", [])
+	return (shop.get("items", []) as Array).filter(func(it): return not bool(it.get("equip", false)) or Equipment.unlocked())
 
 
 func sold_key(item_id: String) -> String:
@@ -132,20 +133,27 @@ func buy(i: int) -> bool:
 
 func _refresh() -> void:
 	coins_label.text = "%s　　金币 ×%d" % [str(shop.get("name", "商店")), GameState.inventory.count("coin")]
-	for c in list.get_children():
-		list.remove_child(c)
-		c.queue_free()
+	list_box.clear()
+	var chosen: Label = null
 	for i in items().size():
 		var it: Dictionary = items()[i]
 		var item := ItemDB.get_item(str(it["id"]))
 		var left := stock_left(i)
-		var l := _label(PINK if i == selected else (TEXT if left != 0 else DIM))
-		l.text = "%s%s　%d 金币%s　（有 %d）" % ["▶ " if i == selected else "　 ", item.display_name if item else str(it["id"]),
-			int(it.get("price", 0)), ("　剩 %d" % left) if left >= 0 else "", GameState.inventory.count(str(it["id"]))]
-		list.add_child(l)
+		var l := list_box.add_line("%s%s　%d 金币%s　（有 %d）" % ["▶ " if i == selected else "　 ", item.display_name if item else str(it["id"]),
+			int(it.get("price", 0)), ("　剩 %d" % left) if left >= 0 else "", GameState.inventory.count(str(it["id"]))],
+			PINK if i == selected else (TEXT if left != 0 else DIM))
+		if i == selected:
+			chosen = l
 	if not items().is_empty():
 		var item := ItemDB.get_item(str(items()[selected]["id"]))
 		desc_label.text = item.description if item else ""
+		if item is EquipData:
+			var eq := item as EquipData
+			desc_label.text = "【装备·%s】好处：%s；代价：%s" % ["、".join(eq.slots.map(func(z): return TickleZones.zone_name(z))), eq.pros, eq.cons]
+		desc_box.scroll_to_top()
+	# 选中的那行自动滚进来（等这一帧排完版再滚）
+	if chosen:
+		list_box.ensure_control_visible.call_deferred(chosen)
 
 
 func _input(event: InputEvent) -> void:

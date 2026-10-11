@@ -1,0 +1,108 @@
+{
+	"name": "面包店的奶奶",
+	"entries": [
+		{
+			"if": {
+				"hero": "blue",
+				"not": "f6w_hairpin",
+				"flag": "equip_unlocked"
+			},
+			"node": "hairpin"
+		},
+		{
+			"if": {
+				"hero": "blue",
+				"flag": "blue_tickle_pants"
+			},
+			"node": "blue_pants"
+		},
+		{
+			"if": {
+				"hero": "blue"
+			},
+			"node": "blue"
+		},
+		{
+			"node": "pink"
+		}
+	],
+	"nodes": {
+		"blue_pants": {
+			"lines": [
+				{
+					"text": "……是你呀。长这么大了。"
+				},
+				{
+					"text": "……哈、哈……奶、奶奶好。",
+					"speaker": "蓝色的公主",
+					"emotion": "shy"
+				},
+				{
+					"text": "怎么了？笑得这么开心？"
+				},
+				{
+					"text": "……没、没有。",
+					"speaker": "蓝色的公主"
+				},
+				{
+					"text": "等一下……奶奶有样东西，一直替你收着。"
+				}
+			]
+		},
+		"blue": {
+			"lines": [
+				{
+					"text": "……是你呀。长这么大了。"
+				},
+				{
+					"text": "等一下……奶奶有样东西，一直替你收着。"
+				}
+			]
+		},
+		"pink": {
+			"lines": [
+				{
+					"text": "孩子，你们回来就好。店烧了，饼干也没了……"
+				},
+				{
+					"text": "等打完了，奶奶再给你烤。"
+				}
+			]
+		},
+		"hairpin": {
+			"lines": [
+				{
+					"text": "……是你呀。长这么大了。"
+				},
+				{
+					"text": "等一下……奶奶有样东西，一直替你收着。"
+				},
+				{
+					"text": "你小时候落在店里的雪花发夹。别在头发上，冻冻的，你最喜欢了。"
+				},
+				{
+					"text": "……",
+					"speaker": "蓝色的公主",
+					"emotion": "sad"
+				},
+				{
+					"text": "……谢谢。",
+					"speaker": "蓝色的公主",
+					"emotion": "shy"
+				},
+				{
+					"text": "（得到了冰晶发夹——蓝色的公主专用的装备）",
+					"speaker": ""
+				}
+			],
+			"set": {
+				"flags": [
+					"f6w_hairpin"
+				],
+				"give_item": {
+					"equip_ice_hairpin": 1
+				}
+			}
+		}
+	}
+}

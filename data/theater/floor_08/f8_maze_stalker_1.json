@@ -36,7 +36,7 @@
 		},
 		{
 			"speaker": "",
-			"text": "（一团长满手臂的影子，从背后把她整个抱住了）",
+			"text": "（一团长满手臂的影子，从背后把她整个抱住了。冷光被挡住，眼前一片漆黑）",
 			"actions": []
 		},
 		{
@@ -53,7 +53,32 @@
 		},
 		{
 			"speaker": "",
-			"text": "（手臂一圈一圈地收紧，指尖贴着腰侧和大腿，慢慢地揉）",
+			"text": "（一条手臂勒住她的腰，一捏、一捏，像在确认她有多软）",
+			"actions": []
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……唔……腰……别捏……",
+			"actions": [
+				{
+					"who": "blue",
+					"repeat": 7,
+					"interval": 0.19999999999999998,
+					"fx": "hand",
+					"zone": "waist",
+					"do": "tickle"
+				},
+				{
+					"who": "blue",
+					"time": 0.30000000000000004,
+					"do": "shake"
+				}
+			],
+			"emotion": "shy"
+		},
+		{
+			"speaker": "",
+			"text": "（另一只手的拇指按进她的大腿根，按住了，慢慢地揉圈）",
 			"actions": [
 				{
 					"state": "giggle",
@@ -63,27 +88,7 @@
 		},
 		{
 			"speaker": "蓝色的公主",
-			"text": "……唔……！……抱、抱这么紧……",
-			"actions": [
-				{
-					"who": "blue",
-					"repeat": 9,
-					"interval": 0.15999999999999998,
-					"fx": "hand",
-					"zone": "waist",
-					"do": "tickle"
-				},
-				{
-					"who": "blue",
-					"time": 0.4,
-					"do": "shake"
-				}
-			],
-			"emotion": "helpless_1"
-		},
-		{
-			"speaker": "蓝色的公主",
-			"text": "……跑不掉……",
+			"text": "……腿、腿根……！按、按进去了……",
 			"actions": [
 				{
 					"who": "blue",
@@ -103,19 +108,19 @@
 		},
 		{
 			"speaker": "",
-			"text": "（影子的两只紫眼睛，就在她耳边。一眨，一眨）",
+			"text": "（四根手指并排，从膝盖内侧开始，一节、一节，往大腿根爬）",
 			"actions": []
 		},
 		{
 			"speaker": "蓝色的公主",
-			"text": "……别、别在耳边……",
+			"text": "……别、别往上……停、停在那里……！",
 			"actions": [
 				{
 					"who": "blue",
 					"repeat": 11,
 					"interval": 0.15199999999999997,
 					"fx": "hand",
-					"zone": "neck",
+					"zone": "thigh",
 					"do": "tickle"
 				},
 				{
@@ -127,14 +132,126 @@
 			"emotion": "helpless_1"
 		},
 		{
+			"speaker": "",
+			"text": "（爬到顶又滑下去，再从膝盖重新爬上来。她看不见，只能数着那几根手指）",
+			"actions": []
+		},
+		{
 			"speaker": "蓝色的公主",
-			"text": "……哈哈哈……！一、一起揉……哈哈哈哈……！",
+			"text": "……又、又来……数、数不清了……",
+			"actions": [
+				{
+					"who": "blue",
+					"repeat": 9,
+					"interval": 0.14799999999999996,
+					"fx": "hand",
+					"zone": "thigh",
+					"do": "tickle"
+				},
+				{
+					"who": "blue",
+					"time": 0.4,
+					"do": "shake"
+				}
+			],
+			"emotion": "helpless_1"
+		},
+		{
+			"speaker": "",
+			"text": "（屁股上，两只手一左一右，轮流捏——左边一下，右边一下）",
+			"actions": []
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……噗……！左、左边……右边……别打拍子……",
+			"actions": [
+				{
+					"who": "blue",
+					"repeat": 10,
+					"interval": 0.14399999999999996,
+					"fx": "hand",
+					"zone": "butt",
+					"do": "tickle"
+				},
+				{
+					"who": "blue",
+					"time": 0.4,
+					"do": "shake"
+				}
+			],
+			"emotion": "helpless_1"
+		},
+		{
+			"speaker": "",
+			"text": "（几条手臂把她的脚抬了起来，握住脚踝，不让她缩）",
 			"actions": [
 				{
 					"sound": "blue_crack",
 					"volume": -3.0,
 					"do": "sfx"
+				}
+			]
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……脚、脚……放下来……！",
+			"actions": [],
+			"emotion": "surprise"
+		},
+		{
+			"speaker": "",
+			"text": "（一只手扳开她的脚趾，用指尖一根、一根地挠脚趾缝）",
+			"actions": []
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……哈、哈哈……脚趾……一、一根一根的……犯规……",
+			"actions": [
+				{
+					"who": "blue",
+					"repeat": 11,
+					"interval": 0.13999999999999999,
+					"fx": "hand",
+					"zone": "sole",
+					"do": "tickle"
 				},
+				{
+					"who": "blue",
+					"time": 0.4,
+					"do": "shake"
+				}
+			],
+			"emotion": "helpless_1"
+		},
+		{
+			"speaker": "",
+			"text": "（另一只手把她的脚板往后扳，绷得紧紧的，指甲贴着脚心慢慢刮下去）",
+			"actions": []
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……绷、绷紧了刮……不行不行……哈哈哈……",
+			"actions": [
+				{
+					"who": "blue",
+					"repeat": 9,
+					"interval": 0.13599999999999998,
+					"fx": "hand",
+					"zone": "sole",
+					"do": "tickle"
+				},
+				{
+					"who": "blue",
+					"time": 0.4,
+					"do": "shake"
+				}
+			],
+			"emotion": "helpless_2"
+		},
+		{
+			"speaker": "",
+			"text": "（腿根被揉、屁股被捏、脚心被刮——三处一起来。她连猜都来不及猜）",
+			"actions": [
 				{
 					"state": "laugh",
 					"do": "voice"
@@ -144,31 +261,17 @@
 					"visual": "helpless_1",
 					"anim": "helpless",
 					"do": "pose"
-				},
-				{
-					"who": "blue",
-					"repeat": 11,
-					"interval": 0.108,
-					"fx": "hand",
-					"zone": "waist",
-					"do": "tickle"
-				},
-				{
-					"who": "blue",
-					"time": 0.5,
-					"do": "shake"
 				}
-			],
-			"emotion": "helpless_2"
+			]
 		},
 		{
 			"speaker": "蓝色的公主",
-			"text": "……大腿……大腿不行……哈哈哈哈……！",
+			"text": "……哈哈哈……！一、一起……全、全部一起……哈哈哈哈……！",
 			"actions": [
 				{
 					"who": "blue",
 					"repeat": 12,
-					"interval": 0.104,
+					"interval": 0.1,
 					"fx": "hand",
 					"zone": "thigh",
 					"do": "tickle"
@@ -182,15 +285,72 @@
 			"emotion": "helpless_2"
 		},
 		{
+			"speaker": "蓝色的公主",
+			"text": "……脚、脚心……腿根……屁股……哈哈哈哈……不准一起……！",
+			"actions": [
+				{
+					"who": "blue",
+					"repeat": 13,
+					"interval": 0.1,
+					"fx": "hand",
+					"zone": "sole",
+					"do": "tickle"
+				},
+				{
+					"who": "blue",
+					"time": 0.5,
+					"do": "shake"
+				}
+			],
+			"emotion": "helpless_2"
+		},
+		{
+			"speaker": "",
+			"text": "（手臂举起她的胳膊，指尖钻进腋下打转）",
+			"actions": []
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……腋、腋下也……哈哈哈哈……我、我认输……！",
+			"actions": [
+				{
+					"who": "blue",
+					"repeat": 11,
+					"interval": 0.1,
+					"fx": "hand",
+					"zone": "armpit",
+					"do": "tickle"
+				},
+				{
+					"who": "blue",
+					"time": 0.5,
+					"do": "shake"
+				}
+			],
+			"emotion": "helpless_2"
+		},
+		{
 			"speaker": "",
 			"text": "（她笑得没了力气，影子却忽然松开，把两只手轻轻按在了她身上——然后缩回了黑暗里）",
-			"actions": []
+			"actions": [
+				{
+					"sound": "blue_crack_long",
+					"volume": -3.0,
+					"do": "sfx"
+				}
+			]
 		},
 		{
 			"speaker": "蓝色的公主",
 			"text": "……哈……哈……留、留了两只……",
 			"actions": [],
 			"emotion": "helpless_1"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……脚趾缝……还在痒……",
+			"actions": [],
+			"emotion": "shy"
 		},
 		{
 			"speaker": "蓝色的公主",

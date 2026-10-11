@@ -1,0 +1,28 @@
+[gd_resource type="Resource" script_class="EquipData" format=3]
+
+[ext_resource type="Script" path="res://scripts/items/equip_data.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/generated/equip_icons.png" id="2"]
+
+[sub_resource type="AtlasTexture" id="icon"]
+atlas = ExtResource("2")
+region = Rect2(144, 0, 16, 16)
+
+[resource]
+script = ExtResource("1")
+id = "equip_party_bow"
+display_name = "派对彩带蝴蝶结"
+description = "篝火派对的主人送的大蝴蝶结，系在腰上，挂着一只小铃铛。戴着它就想笑——可惜一被挠，铃铛就叮铃铃地把怪物全叫过来。"
+icon = SubResource("icon")
+category = 4
+stackable = false
+show_in_hud = false
+pickup_emotion = "happy"
+slots = Array[String](["waist"])
+owner_id = ""
+modifiers = {"laugh_gain": -0.1}
+zone_mods = {}
+block = {}
+cursed = false
+special = "bell"
+pros = "闷笑涨幅 −10%"
+cons = "被挠到时叮铃响，引来附近的怪物"

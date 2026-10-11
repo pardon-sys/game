@@ -342,7 +342,7 @@ func stat_add(stat: String) -> float:
 		var v: Variant = (b as Buff).modifier(stat)
 		if v != null:
 			total += float(v) * b.stacks
-	return total
+	return total + _extra_stat_add(stat)
 
 
 ## 相乘类属性（tickle_cd、speed）：各状态数值的层数次方相乘。
@@ -352,7 +352,16 @@ func stat_mul(stat: String) -> float:
 		var v: Variant = (b as Buff).modifier(stat)
 		if v != null:
 			total *= pow(float(v), b.stacks)
-	return total
+	return total * _extra_stat_mul(stat)
+
+
+## 子类额外的属性来源（可操作角色：装备）。
+func _extra_stat_add(_stat: String) -> float:
+	return 0.0
+
+
+func _extra_stat_mul(_stat: String) -> float:
+	return 1.0
 
 
 ## 开关类属性（can_channel）：任何一个状态写 0 就是关。

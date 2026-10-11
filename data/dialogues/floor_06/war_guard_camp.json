@@ -1,0 +1,52 @@
+{
+	"name": "守路障的队员",
+	"entries": [
+		{
+			"if": {
+				"hero": "blue",
+				"flag": "blue_tickle_pants"
+			},
+			"node": "blue_pants"
+		},
+		{
+			"if": {
+				"hero": "blue"
+			},
+			"node": "blue"
+		},
+		{
+			"node": "pink"
+		}
+	],
+	"nodes": {
+		"blue_pants": {
+			"lines": [
+				{
+					"text": "营地的楼梯封住了。……有事去找队长。"
+				},
+				{
+					"text": "……哈、哈……知、知道了。",
+					"speaker": "蓝色的公主",
+					"emotion": "shy"
+				},
+				{
+					"text": "……？你没事吧？"
+				}
+			]
+		},
+		"blue": {
+			"lines": [
+				{
+					"text": "营地的楼梯封住了。……有事去找队长。"
+				}
+			]
+		},
+		"pink": {
+			"lines": [
+				{
+					"text": "营地那边的路被封住了，现在出不去。"
+				}
+			]
+		}
+	}
+}

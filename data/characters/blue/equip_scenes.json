@@ -1,0 +1,1561 @@
+{
+	"_说明": [
+		"装备组合的小演出（gen_equip_scenes.py 生成，不要直接改）：穿着装备 + 指定的来源挠到时第一次播放（CG.play_scene），进 CG 图鉴。"
+	],
+	"scenes": {
+		"eq_anklet_rat": {
+			"name": "脚环共鸣",
+			"cast": {
+				"princess": {
+					"kind": "princess",
+					"at": [
+						0,
+						8
+					],
+					"visual": "helpless_1",
+					"anim": "helpless",
+					"dir": "down"
+				},
+				"src1": {
+					"kind": "monster:rat",
+					"at": [
+						-32,
+						2
+					],
+					"dir": "right",
+					"hidden": true
+				},
+				"src2": {
+					"kind": "trap:feather",
+					"at": [
+						32,
+						2
+					],
+					"dir": "left",
+					"hidden": true
+				}
+			},
+			"steps": [
+				{
+					"actions": [
+						{
+							"do": "fade_in",
+							"time": 0.4
+						},
+						{
+							"do": "voice",
+							"state": "giggle"
+						},
+						{
+							"do": "sources",
+							"list": [
+								{
+									"kind": "equip",
+									"key": "equip_feather_anklet",
+									"name": "羽毛脚环"
+								},
+								{
+									"kind": "monster",
+									"key": "rat",
+									"name": "挠脚鼠"
+								},
+								{
+									"kind": "trap",
+									"key": "feather",
+									"name": "羽毛机关"
+								}
+							]
+						}
+					],
+					"wait": 0.4
+				},
+				{
+					"speaker": "",
+					"text": "【装备+来源】脚环共鸣——羽毛脚环的羽毛还在蹭脚心，挠脚鼠的小爪子又扑上来，机关再补一下——脚心一下子痒到顶。",
+					"actions": [
+						{
+							"do": "light",
+							"index": 0
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "surprise"
+						}
+					]
+				},
+				{
+					"speaker": "",
+					"text": "（脚踝上的羽毛脚环一走动，白羽毛就一下下蹭过脚心）",
+					"actions": []
+				},
+				{
+					"speaker": "蓝色的公主",
+					"text": "……脚环。……在蹭。",
+					"actions": []
+				},
+				{
+					"speaker": "蓝色的公主",
+					"text": "……！老、老鼠……别抓……脚心……",
+					"actions": [
+						{
+							"do": "enter",
+							"who": "src1",
+							"from": [
+								-80,
+								0
+							],
+							"time": 0.5
+						},
+						{
+							"do": "light",
+							"index": 1
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 6,
+							"interval": 0.3,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"speaker": "蓝色的公主",
+					"text": "……机关也……噗……三、三样……",
+					"actions": [
+						{
+							"do": "enter",
+							"who": "src2",
+							"from": [
+								80,
+								0
+							],
+							"time": 0.5
+						},
+						{
+							"do": "light",
+							"index": 2
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 6,
+							"interval": 0.28,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 6,
+							"interval": 0.28,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"speaker": "",
+					"text": "（羽毛、小爪子、机关——都挤在同一个脚心上）",
+					"actions": []
+				},
+				{
+					"speaker": "蓝色的公主",
+					"text": "……哈、哈哈……脚、脚心……没那么怕的……哈哈哈……！",
+					"actions": [
+						{
+							"do": "light",
+							"all": true
+						},
+						{
+							"do": "pose",
+							"who": "princess",
+							"visual": "helpless_2"
+						},
+						{
+							"do": "voice",
+							"state": "laugh"
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.5
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 8,
+							"interval": 0.22,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 8,
+							"interval": 0.22,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"speaker": "蓝色的公主",
+					"text": "……脚趾缝……不、不准钻……哈哈哈哈……！",
+					"actions": [
+						{
+							"do": "flash",
+							"time": 0.25
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 8,
+							"interval": 0.2,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 8,
+							"interval": 0.2,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"speaker": "蓝色的公主",
+					"text": "……呼。……这个脚环……摘掉。……之后。",
+					"actions": [
+						{
+							"do": "voice",
+							"state": ""
+						},
+						{
+							"do": "pose",
+							"who": "princess",
+							"visual": "helpless_1"
+						}
+					]
+				},
+				{
+					"actions": [
+						{
+							"do": "voice",
+							"state": ""
+						},
+						{
+							"do": "fade_out",
+							"time": 0.6
+						}
+					],
+					"wait": 0.7
+				}
+			]
+		},
+		"eq_bow_fairy": {
+			"name": "铃声派对",
+			"cast": {
+				"princess": {
+					"kind": "princess",
+					"at": [
+						0,
+						8
+					],
+					"visual": "helpless_1",
+					"anim": "helpless",
+					"dir": "down"
+				},
+				"src1": {
+					"kind": "monster:fairy",
+					"at": [
+						-32,
+						2
+					],
+					"dir": "right",
+					"hidden": true
+				},
+				"src2": {
+					"kind": "monster:slime",
+					"at": [
+						32,
+						2
+					],
+					"dir": "left",
+					"hidden": true
+				}
+			},
+			"steps": [
+				{
+					"actions": [
+						{
+							"do": "fade_in",
+							"time": 0.4
+						},
+						{
+							"do": "voice",
+							"state": "giggle"
+						},
+						{
+							"do": "sources",
+							"list": [
+								{
+									"kind": "equip",
+									"key": "equip_party_bow",
+									"name": "派对彩带蝴蝶结"
+								},
+								{
+									"kind": "monster",
+									"key": "fairy",
+									"name": "小精灵群"
+								},
+								{
+									"kind": "monster",
+									"key": "slime",
+									"name": "史莱姆"
+								}
+							]
+						}
+					],
+					"wait": 0.4
+				},
+				{
+					"speaker": "",
+					"text": "【装备+来源】铃声派对——派对蝴蝶结的铃铛叮铃铃响个不停，小精灵们闻声赶来开派对，旁边的怪也凑了过来——越笑越热闹。",
+					"actions": [
+						{
+							"do": "light",
+							"index": 0
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "surprise"
+						}
+					]
+				},
+				{
+					"speaker": "",
+					"text": "（腰上的蝴蝶结一晃，小铃铛叮铃——叮铃——）",
+					"actions": []
+				},
+				{
+					"speaker": "蓝色的公主",
+					"text": "……吵。",
+					"actions": []
+				},
+				{
+					"speaker": "蓝色的公主",
+					"text": "……精、精灵……不是派对……走开……",
+					"actions": [
+						{
+							"do": "enter",
+							"who": "src1",
+							"from": [
+								-80,
+								0
+							],
+							"time": 0.5
+						},
+						{
+							"do": "light",
+							"index": 1
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 6,
+							"interval": 0.3,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"speaker": "蓝色的公主",
+					"text": "……别、别的也来了……噗……腰……",
+					"actions": [
+						{
+							"do": "enter",
+							"who": "src2",
+							"from": [
+								80,
+								0
+							],
+							"time": 0.5
+						},
+						{
+							"do": "light",
+							"index": 2
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 6,
+							"interval": 0.28,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 6,
+							"interval": 0.28,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"speaker": "",
+					"text": "（铃声越响，过来的越多；越多，她越憋不住，铃声就更响）",
+					"actions": []
+				},
+				{
+					"speaker": "蓝色的公主",
+					"text": "……哈、哈哈……铃、铃铛……别响了……哈哈哈……！",
+					"actions": [
+						{
+							"do": "light",
+							"all": true
+						},
+						{
+							"do": "pose",
+							"who": "princess",
+							"visual": "helpless_2"
+						},
+						{
+							"do": "voice",
+							"state": "laugh"
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.5
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 8,
+							"interval": 0.22,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 8,
+							"interval": 0.22,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"speaker": "蓝色的公主",
+					"text": "……那个人……送的……什么东西……哈哈哈哈……！",
+					"actions": [
+						{
+							"do": "flash",
+							"time": 0.25
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 8,
+							"interval": 0.2,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 8,
+							"interval": 0.2,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"speaker": "蓝色的公主",
+					"text": "……摘掉。……现在就摘。",
+					"actions": [
+						{
+							"do": "voice",
+							"state": ""
+						},
+						{
+							"do": "pose",
+							"who": "princess",
+							"visual": "helpless_1"
+						}
+					]
+				},
+				{
+					"actions": [
+						{
+							"do": "voice",
+							"state": ""
+						},
+						{
+							"do": "fade_out",
+							"time": 0.6
+						}
+					],
+					"wait": 0.7
+				}
+			]
+		},
+		"eq_pad_glove": {
+			"name": "垫子被掀开",
+			"cast": {
+				"princess": {
+					"kind": "princess",
+					"at": [
+						0,
+						8
+					],
+					"visual": "helpless_1",
+					"anim": "helpless",
+					"dir": "down"
+				},
+				"src1": {
+					"kind": "monster:glove",
+					"at": [
+						-32,
+						2
+					],
+					"dir": "right",
+					"hidden": true
+				},
+				"src2": {
+					"kind": "monster:slime",
+					"at": [
+						32,
+						2
+					],
+					"dir": "left",
+					"hidden": true
+				}
+			},
+			"steps": [
+				{
+					"actions": [
+						{
+							"do": "fade_in",
+							"time": 0.4
+						},
+						{
+							"do": "voice",
+							"state": "giggle"
+						},
+						{
+							"do": "sources",
+							"list": [
+								{
+									"kind": "equip",
+									"key": "equip_armpit_pad",
+									"name": "软绵护腋垫"
+								},
+								{
+									"kind": "monster",
+									"key": "glove",
+									"name": "幽灵手套"
+								},
+								{
+									"kind": "monster",
+									"key": "slime",
+									"name": "史莱姆"
+								}
+							]
+						}
+					],
+					"wait": 0.4
+				},
+				{
+					"speaker": "",
+					"text": "【装备+来源】垫子被掀开——护腋垫挡了太多下，已经瘪得挡不住了——幽灵手套一把掀开，腋下整个露了出来。",
+					"actions": [
+						{
+							"do": "light",
+							"index": 0
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "surprise"
+						}
+					]
+				},
+				{
+					"speaker": "",
+					"text": "（护腋垫已经被挠得瘪瘪的，软乎乎地贴在腋下）",
+					"actions": []
+				},
+				{
+					"speaker": "蓝色的公主",
+					"text": "……垫子。……扁了。",
+					"actions": []
+				},
+				{
+					"speaker": "蓝色的公主",
+					"text": "……！掀、掀开了……",
+					"actions": [
+						{
+							"do": "enter",
+							"who": "src1",
+							"from": [
+								-80,
+								0
+							],
+							"time": 0.5
+						},
+						{
+							"do": "light",
+							"index": 1
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 6,
+							"interval": 0.3,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"speaker": "蓝色的公主",
+					"text": "……腋下……露、露出来了……别……",
+					"actions": [
+						{
+							"do": "enter",
+							"who": "src2",
+							"from": [
+								80,
+								0
+							],
+							"time": 0.5
+						},
+						{
+							"do": "light",
+							"index": 2
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 6,
+							"interval": 0.28,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 6,
+							"interval": 0.28,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"speaker": "",
+					"text": "（垫子被丢到一边，空手套和别的怪一起钻进腋下）",
+					"actions": []
+				},
+				{
+					"speaker": "蓝色的公主",
+					"text": "……哈、哈哈……手、手臂……放不下来……哈哈哈……！",
+					"actions": [
+						{
+							"do": "light",
+							"all": true
+						},
+						{
+							"do": "pose",
+							"who": "princess",
+							"visual": "helpless_2"
+						},
+						{
+							"do": "voice",
+							"state": "laugh"
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.5
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 8,
+							"interval": 0.22,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 8,
+							"interval": 0.22,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"speaker": "蓝色的公主",
+					"text": "……不、不准钻……哈哈哈哈……！",
+					"actions": [
+						{
+							"do": "flash",
+							"time": 0.25
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 8,
+							"interval": 0.2,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 8,
+							"interval": 0.2,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"speaker": "蓝色的公主",
+					"text": "……回去。……拍蓬。",
+					"actions": [
+						{
+							"do": "voice",
+							"state": ""
+						},
+						{
+							"do": "pose",
+							"who": "princess",
+							"visual": "helpless_1"
+						}
+					]
+				},
+				{
+					"actions": [
+						{
+							"do": "voice",
+							"state": ""
+						},
+						{
+							"do": "fade_out",
+							"time": 0.6
+						}
+					],
+					"wait": 0.7
+				}
+			]
+		},
+		"eq_socks_stocks": {
+			"name": "袜子被扒掉",
+			"cast": {
+				"princess": {
+					"kind": "princess",
+					"at": [
+						0,
+						8
+					],
+					"visual": "helpless_1",
+					"anim": "helpless",
+					"dir": "down"
+				},
+				"src1": {
+					"kind": "trap:stocks",
+					"at": [
+						-32,
+						2
+					],
+					"dir": "right",
+					"hidden": true
+				},
+				"src2": {
+					"kind": "monster:rat",
+					"at": [
+						32,
+						2
+					],
+					"dir": "left",
+					"hidden": true
+				}
+			},
+			"steps": [
+				{
+					"actions": [
+						{
+							"do": "fade_in",
+							"time": 0.4
+						},
+						{
+							"do": "voice",
+							"state": "giggle"
+						},
+						{
+							"do": "sources",
+							"list": [
+								{
+									"kind": "equip",
+									"key": "equip_wool_socks",
+									"name": "厚底羊毛袜"
+								},
+								{
+									"kind": "trap",
+									"key": "stocks",
+									"name": "脚枷"
+								},
+								{
+									"kind": "monster",
+									"key": "rat",
+									"name": "挠脚鼠"
+								}
+							]
+						}
+					],
+					"wait": 0.4
+				},
+				{
+					"speaker": "",
+					"text": "【装备+来源】袜子被扒掉——脚被脚枷锁住，挠脚鼠咬住厚底羊毛袜，一点一点往下扒——脚心慢慢露了出来。",
+					"actions": [
+						{
+							"do": "light",
+							"index": 0
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "surprise"
+						}
+					]
+				},
+				{
+					"speaker": "",
+					"text": "（脚枷咔嗒一声扣住了脚踝。脚上套着厚厚的羊毛袜）",
+					"actions": []
+				},
+				{
+					"speaker": "蓝色的公主",
+					"text": "……没用。……隔着袜子。",
+					"actions": []
+				},
+				{
+					"speaker": "蓝色的公主",
+					"text": "……老鼠。……咬袜子……做什么。",
+					"actions": [
+						{
+							"do": "enter",
+							"who": "src1",
+							"from": [
+								-80,
+								0
+							],
+							"time": 0.5
+						},
+						{
+							"do": "light",
+							"index": 1
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 6,
+							"interval": 0.3,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"speaker": "",
+					"text": "（小老鼠咬住袜口，一点、一点，往下扒）",
+					"actions": [
+						{
+							"do": "enter",
+							"who": "src2",
+							"from": [
+								80,
+								0
+							],
+							"time": 0.5
+						},
+						{
+							"do": "light",
+							"index": 2
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 6,
+							"interval": 0.28,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 6,
+							"interval": 0.28,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"speaker": "蓝色的公主",
+					"text": "……别、别扒……脚跟……",
+					"actions": []
+				},
+				{
+					"speaker": "蓝色的公主",
+					"text": "……！脚、脚心……露出来了……噗……",
+					"actions": [
+						{
+							"do": "light",
+							"all": true
+						},
+						{
+							"do": "pose",
+							"who": "princess",
+							"visual": "helpless_2"
+						},
+						{
+							"do": "voice",
+							"state": "laugh"
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.5
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 8,
+							"interval": 0.22,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 8,
+							"interval": 0.22,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"speaker": "蓝色的公主",
+					"text": "……锁、锁着……缩不回来……哈哈哈……！",
+					"actions": [
+						{
+							"do": "flash",
+							"time": 0.25
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 8,
+							"interval": 0.2,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 8,
+							"interval": 0.2,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"speaker": "蓝色的公主",
+					"text": "……袜子。……还来。",
+					"actions": [
+						{
+							"do": "voice",
+							"state": ""
+						},
+						{
+							"do": "pose",
+							"who": "princess",
+							"visual": "helpless_1"
+						}
+					]
+				},
+				{
+					"actions": [
+						{
+							"do": "voice",
+							"state": ""
+						},
+						{
+							"do": "fade_out",
+							"time": 0.6
+						}
+					],
+					"wait": 0.7
+				}
+			]
+		},
+		"eq_pants_crawl": {
+			"name": "裤内外夹击",
+			"cast": {
+				"princess": {
+					"kind": "princess",
+					"at": [
+						0,
+						8
+					],
+					"visual": "helpless_1",
+					"anim": "helpless",
+					"dir": "down"
+				},
+				"src1": {
+					"kind": "monster:caterpillar",
+					"at": [
+						-32,
+						2
+					],
+					"dir": "right",
+					"hidden": true
+				},
+				"src2": {
+					"kind": "monster:squirrel",
+					"at": [
+						32,
+						2
+					],
+					"dir": "left",
+					"hidden": true
+				}
+			},
+			"steps": [
+				{
+					"actions": [
+						{
+							"do": "fade_in",
+							"time": 0.4
+						},
+						{
+							"do": "voice",
+							"state": "giggle"
+						},
+						{
+							"do": "sources",
+							"list": [
+								{
+									"kind": "equip",
+									"key": "thousand_pants",
+									"name": "千手痒痒裤"
+								},
+								{
+									"kind": "monster",
+									"key": "caterpillar",
+									"name": "毛毛虫"
+								},
+								{
+									"kind": "monster",
+									"key": "squirrel",
+									"name": "刷刷松鼠"
+								}
+							]
+						}
+					],
+					"wait": 0.4
+				},
+				{
+					"speaker": "",
+					"text": "【装备+来源】裤内外夹击——千手痒痒裤里的手指在里面动，毛毛虫在裤腿外沿着大腿爬，松鼠的尾巴扫屁股——里里外外一起。",
+					"actions": [
+						{
+							"do": "light",
+							"index": 0
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "surprise"
+						}
+					]
+				},
+				{
+					"speaker": "",
+					"text": "（紫色的痒痒裤紧紧裹着大腿和屁股。裤子里的手指，又开始一根一根地动）",
+					"actions": []
+				},
+				{
+					"speaker": "蓝色的公主",
+					"text": "……裤、裤子……又……",
+					"actions": []
+				},
+				{
+					"speaker": "蓝色的公主",
+					"text": "……毛、毛虫……在裤腿外面……往上爬……！",
+					"actions": [
+						{
+							"do": "enter",
+							"who": "src1",
+							"from": [
+								-80,
+								0
+							],
+							"time": 0.5
+						},
+						{
+							"do": "light",
+							"index": 1
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 6,
+							"interval": 0.3,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"speaker": "蓝色的公主",
+					"text": "……松、松鼠……尾巴……扫屁股……噗……",
+					"actions": [
+						{
+							"do": "enter",
+							"who": "src2",
+							"from": [
+								80,
+								0
+							],
+							"time": 0.5
+						},
+						{
+							"do": "light",
+							"index": 2
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 6,
+							"interval": 0.28,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 6,
+							"interval": 0.28,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"speaker": "",
+					"text": "（里面是手指揉着腿根，外面是一排小脚沿着大腿爬、蓬松的尾巴扫过屁股）",
+					"actions": []
+				},
+				{
+					"speaker": "蓝色的公主",
+					"text": "……哈、哈哈……里、里外一起……犯规……哈哈哈……！",
+					"actions": [
+						{
+							"do": "light",
+							"all": true
+						},
+						{
+							"do": "pose",
+							"who": "princess",
+							"visual": "helpless_2"
+						},
+						{
+							"do": "voice",
+							"state": "laugh"
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.5
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 8,
+							"interval": 0.22,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 8,
+							"interval": 0.22,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"speaker": "蓝色的公主",
+					"text": "……裤子……还、还配合它们……哈哈哈哈……！",
+					"actions": [
+						{
+							"do": "flash",
+							"time": 0.25
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 8,
+							"interval": 0.2,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 8,
+							"interval": 0.2,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"speaker": "蓝色的公主",
+					"text": "……呼……这条裤子……是叛徒。",
+					"actions": [
+						{
+							"do": "voice",
+							"state": ""
+						},
+						{
+							"do": "pose",
+							"who": "princess",
+							"visual": "helpless_1"
+						}
+					]
+				},
+				{
+					"actions": [
+						{
+							"do": "voice",
+							"state": ""
+						},
+						{
+							"do": "fade_out",
+							"time": 0.6
+						}
+					],
+					"wait": 0.7
+				}
+			]
+		},
+		"eq_pants_bind": {
+			"name": "动弹不得的裤子",
+			"cast": {
+				"princess": {
+					"kind": "princess",
+					"at": [
+						0,
+						8
+					],
+					"visual": "helpless_1",
+					"anim": "helpless",
+					"dir": "down"
+				},
+				"src1": {
+					"kind": "trap:stocks",
+					"at": [
+						-32,
+						2
+					],
+					"dir": "right",
+					"hidden": true
+				},
+				"src2": {
+					"kind": "monster:slime",
+					"at": [
+						32,
+						2
+					],
+					"dir": "left",
+					"hidden": true
+				}
+			},
+			"steps": [
+				{
+					"actions": [
+						{
+							"do": "fade_in",
+							"time": 0.4
+						},
+						{
+							"do": "voice",
+							"state": "giggle"
+						},
+						{
+							"do": "sources",
+							"list": [
+								{
+									"kind": "equip",
+									"key": "thousand_pants",
+									"name": "千手痒痒裤"
+								},
+								{
+									"kind": "trap",
+									"key": "stocks",
+									"name": "束缚陷阱"
+								},
+								{
+									"kind": "monster",
+									"key": "slime",
+									"name": "史莱姆"
+								}
+							]
+						}
+					],
+					"wait": 0.4
+				},
+				{
+					"speaker": "",
+					"text": "【装备+来源】动弹不得的裤子——被束缚陷阱困住动不了，千手痒痒裤趁机一起发作，旁边的怪物也凑了上来。",
+					"actions": [
+						{
+							"do": "light",
+							"index": 0
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "surprise"
+						}
+					]
+				},
+				{
+					"speaker": "",
+					"text": "（被陷阱扣住，一动也不能动。就在这时，痒痒裤里的手指像是等了很久似的——一起动了）",
+					"actions": []
+				},
+				{
+					"speaker": "蓝色的公主",
+					"text": "……！现、现在……？",
+					"actions": []
+				},
+				{
+					"speaker": "蓝色的公主",
+					"text": "……别、别趁我动不了……腿根……揉……",
+					"actions": [
+						{
+							"do": "enter",
+							"who": "src1",
+							"from": [
+								-80,
+								0
+							],
+							"time": 0.5
+						},
+						{
+							"do": "light",
+							"index": 1
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 6,
+							"interval": 0.3,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"speaker": "蓝色的公主",
+					"text": "……外、外面的也……过来了……噗……",
+					"actions": [
+						{
+							"do": "enter",
+							"who": "src2",
+							"from": [
+								80,
+								0
+							],
+							"time": 0.5
+						},
+						{
+							"do": "light",
+							"index": 2
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 6,
+							"interval": 0.28,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 6,
+							"interval": 0.28,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"speaker": "",
+					"text": "（裤子里的手指轮流捏着屁股，外面的怪物挠着露在外面的地方。挣不开，也躲不了）",
+					"actions": []
+				},
+				{
+					"speaker": "蓝色的公主",
+					"text": "……哈、哈哈……动、动不了……哈哈哈哈……！",
+					"actions": [
+						{
+							"do": "light",
+							"all": true
+						},
+						{
+							"do": "pose",
+							"who": "princess",
+							"visual": "helpless_2"
+						},
+						{
+							"do": "voice",
+							"state": "laugh"
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.5
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 8,
+							"interval": 0.22,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 8,
+							"interval": 0.22,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"speaker": "蓝色的公主",
+					"text": "……交、交界那里……刮……不行……哈哈哈哈哈……！",
+					"actions": [
+						{
+							"do": "flash",
+							"time": 0.25
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 8,
+							"interval": 0.2,
+							"fx": "lines"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src2",
+							"repeat": 8,
+							"interval": 0.2,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"speaker": "蓝色的公主",
+					"text": "……呼……裤子……你……记住。",
+					"actions": [
+						{
+							"do": "voice",
+							"state": ""
+						},
+						{
+							"do": "pose",
+							"who": "princess",
+							"visual": "helpless_1"
+						}
+					]
+				},
+				{
+					"actions": [
+						{
+							"do": "voice",
+							"state": ""
+						},
+						{
+							"do": "fade_out",
+							"time": 0.6
+						}
+					],
+					"wait": 0.7
+				}
+			]
+		}
+	}
+}

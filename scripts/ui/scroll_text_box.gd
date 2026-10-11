@@ -1,7 +1,7 @@
 class_name ScrollTextBox
 extends ScrollContainer
 ## 可复用的滚动文字面板：固定大小，只竖向滚动；文字自动换行、不超出边框，内容比面板高时出现像素风滚动条（鼠标滚轮可滚）。
-## 用在训练菜单的说明 / 列表、背包状态页和物品 / 被动说明、训练小游戏的面板上。
+## 用在训练菜单的说明 / 列表、商店的商品列表 / 说明、背包状态页和物品 / 被动说明、训练小游戏的面板上。
 ##   var box := ScrollTextBox.make(Rect2(位置, 大小))；parent.add_child(box)
 ##   clear()、add_line(文字, 颜色)、add_row(图标控件, 文字, 颜色)、add_control(控件)、set_text(文字, 颜色)
 ##   scroll_by(方向)（键盘一次一行）、scroll_to_top()、ensure_visible(控件)

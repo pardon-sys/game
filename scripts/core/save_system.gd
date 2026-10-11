@@ -64,6 +64,8 @@ static func save(slot: int, place := "") -> bool:
 		"inventory": GameState.inventory.to_dict(),
 		"hotkeys": GameState.hotkeys,
 		"passives": GameState.passives,
+		"equipment": GameState.equipment,
+		"equip_charges": GameState.equip_charges,
 		"play_time": GameState.play_time,
 	}
 	DirAccess.make_dir_recursive_absolute(dir)
@@ -114,6 +116,8 @@ static func apply_state(d: Dictionary) -> void:
 	GameState.hotkeys = d.get("hotkeys", GameState.DEFAULT_HOTKEYS).duplicate()
 	GameState.hotkeys_changed.emit()
 	GameState.passives = d.get("passives", {}).duplicate()
+	GameState.equipment = (d.get("equipment", {}) as Dictionary).duplicate(true)
+	GameState.equip_charges = (d.get("equip_charges", {}) as Dictionary).duplicate(true)
 	var ps: Dictionary = d.get("player", {}).duplicate(true)
 	# 旧存档：只有一个人的状态（扁平的 {hp, laugh, …}）→ 算粉色公主的
 	if ps.has("hp"):

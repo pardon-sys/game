@@ -1,0 +1,107 @@
+[level]
+# 第六层·地下小镇·战时（tools/build/gen_floor06_war.py 生成，不要直接改）
+intro =
+ambient = 0.5,0.38,0.36
+no_switch = true
+[legend]
+# = wall
+. = floor
+P = player
+t = torch lit=true
+A = prop type=dungeon_gate
+C = exit target=floor_06_mine locked=true dialogue=f6w_gate_back
+D = spawn id=from_ruins
+E = blue_princess follow=true ai=false
+F = f6war
+G = prop type=house_burnt_0
+H = prop type=house_1
+I = prop type=house_burnt_1
+J = prop type=house_3
+K = prop type=rubble
+L = prop type=house_blue
+M = exit target=floor_06_house locked=true dialogue=f6w_house_locked
+N = prop type=stall_0 action=shop:war_market
+O = prop type=stall_broken
+Q = prop type=stall_2 action=shop:war_market
+R = prop type=stall_1 action=shop:war_market
+S = prop type=crate
+T = prop type=bonfire_0 action=heal
+U = prop type=bench
+V = prop type=lamp
+W = prop type=well
+X = savepoint place=战时的广场
+Y = prop type=fire_small
+Z = prop type=stairs_down
+a = prop type=barricade
+b = prop type=sandbag
+c = sign dialogue=f6w_camp_blocked
+d = prop type=barricade + npc id=guard dialogue=floor_06/war_guard_camp wander=0 dir=right
+e = prop type=tower_base action=talk:floor_06/war_objects#tower_base
+f = prop type=tower action=talk:floor_06/war_objects#arrow_tower
+g = prop type=dungeon_gate action=talk:floor_06/war_gate#gate
+h = npc id=captain dialogue=floor_06/war_captain wander=0 show_flag=f6w_arrived dir=down
+i = npc id=supervisor dialogue=floor_06/war_supervisor wander=0 dir=down
+j = npc id=bonfire_host dialogue=floor_06/war_bonfire_host wander=0
+k = npc id=granny dialogue=floor_06/war_granny wander=0 dir=right
+l = npc id=kid dialogue=floor_06/war_kid_tom wander=1
+m = npc id=kid dialogue=floor_06/war_kid_lily wander=1
+n = npc id=maid dialogue=floor_06/war_maid wander=0 dir=left
+o = npc id=merchant dialogue=floor_06/war_merchant wander=1
+p = npc id=miner dialogue=floor_06/war_engineer wander=1
+q = npc id=guard dialogue=floor_06/war_guard_gate wander=0 dir=down
+r = npc id=guard dialogue=floor_06/war_guard_gate2 wander=0 dir=down
+s = npc id=guard dialogue=floor_06/war_guard_wall_w wander=0 dir=down
+u = npc id=guard dialogue=floor_06/war_guard_wall_e wander=0 dir=down
+v = npc id=guard dialogue=floor_06/war_guard_ruins wander=0 dir=up
+w = npc id=guard dialogue=floor_06/war_guard_house wander=0 dir=down
+y = npc id=guard dialogue=floor_06/war_guard_market wander=0 dir=left
+z = npc id=guard dialogue=floor_06/war_guard_plaza wander=0 dir=right
+0 = npc id=guard dialogue=floor_06/war_guard_bonfire wander=0 dir=up
+
+[map]
+################################################################
+########t###########t###########t###########t###########t#######
+##............................................................##
+##............................................................##
+##....................................................A.......##
+##....................................................C.......##
+##..................................................v.........##
+##....................................................D.......##
+##......G.......H.......I.......J.........L...........PE......##
+##........................................M.........F.........##
+##......................................w.....................##
+##..........K...............K.................................##
+##..................K.........................................##
+##.................................Y..........................##
+##............................................................##
+##..................Y.........................................##
+##............................................................##
+##............................................................##
+##............................W...........................Y...##
+##.....N...O...Q..............................................##
+##............................................................##
+##......................................U.......U.............##
+##..S.....................Y...............m...................##
+##..S.......i.................................................##
+##......o.........y..................V......T.j....V..........##
+##........................................k.....n.............##
+##.....R...Q...O..............................................##
+##......................................U.....l.U.............##
+##............................................................##
+##................................h...........................##
+##........Y.................z.X...............................##
+##..........................................0.................##
+##............................................................##
+##..................................................Y.........##
+##............................................................##
+##............................................................##
+##..............................p.............................##
+##..........e....Y....e...................e.........e.......b.##
+##........s................f.q.....r.f................u...a...##
+##......a.......b.......a...............a.......b.......d.....##
+##...........................V..g..V.....................c.Z..##
+################################################################
+##............................................................##
+##............................................................##
+################################################################
+################################################################

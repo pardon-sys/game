@@ -18,6 +18,7 @@ static func rest(player: Node) -> void:
 		p.laugh.clear()
 	if p.get("fatigue"):
 		p.fatigue.clear()
+	Equipment.restore_charges()
 	Audio.play("chime", -4.0, 0.05, 0.9)
 	Fx.burst(p.get_parent(), p.global_position + Vector2(0, -10), "heart", 8, 30.0, 0.8, Vector2(0, -30), Color(1, 0.7, 0.5))
 	GameState.notify("在篝火旁暖和了一会儿——生命值恢复了，笑意也平复了")

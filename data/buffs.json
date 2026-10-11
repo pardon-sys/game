@@ -6,7 +6,8 @@
 		"flag = 任何一个状态写 0 就是关（Actor.stat_flag）。",
 		"属性：laugh_gain 闷笑积累加成（+0.3 = +30%）、special_chance 暴击率加成、tickle_cd 挠痒冷却倍率、speed 移动速度倍率、can_channel 能否吟唱。",
 		"desc：背包状态页里显示的效果说明。新属性：invert_controls 方向颠倒（>0 时）、crit_all 所有挠痒都算暴击（>0 时）。",
-		"新属性（第八层夜迷宫第五轮）：laugh_floor 闷笑值最低值（各层相加，消减不会低于它）、magic_fail 释放魔法失败的概率（相加）。"
+		"新属性（第八层夜迷宫第五轮）：laugh_floor 闷笑值最低值（各层相加，消减不会低于它）、magic_fail 释放魔法失败的概率（相加）。",
+		"装备（data/items/equip_*.tres 的 modifiers）也用这些属性。新属性：attack 近战伤害倍率（mul）、magic_cd 魔法冷却倍率（mul）、laugh_decay 闷笑消减加成（add，+0.2 = 快 20%）、struggle 挣扎加成（add，+0.3 = 每下多算 0.3 下）。"
 	],
 	"stat_kinds": {
 		"laugh_gain": "add",
@@ -17,7 +18,11 @@
 		"invert_controls": "add",
 		"crit_all": "add",
 		"laugh_floor": "add",
-		"magic_fail": "add"
+		"magic_fail": "add",
+		"attack": "mul",
+		"magic_cd": "mul",
+		"laugh_decay": "add",
+		"struggle": "add"
 	},
 	"buffs": {
 		"strength": {

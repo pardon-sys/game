@@ -3,7 +3,7 @@ extends Resource
 ## 物品基类（数据资源，放在 data/items/*.tres）。实现 Usable 接口：can_use(user) / use(user)。
 ## 新物品：继承本类重写 can_use / use，建一个 .tres，并在 ItemDB.PATHS 注册。
 
-enum Category { CONSUMABLE, KEY, CURRENCY, INSTANT }
+enum Category { CONSUMABLE, KEY, CURRENCY, INSTANT, EQUIP }
 
 @export var id := ""
 @export var display_name := ""

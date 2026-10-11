@@ -56,10 +56,9 @@ const SOUNDS := {
 	# 蓝色公主专属的笑声（用户提供：assets/generated/blue_princess/轻笑.mp3、大笑.mp3）
 	"blue_giggle": ["res://assets/audio/voice/blue/giggle.mp3"],
 	"blue_laugh": ["res://assets/audio/voice/blue/laugh.mp3"],
-	# 蓝色公主憋不住的笑（用户提供：assets/generated/blue_princess/蓝色憋不住笑1~4.mp3）：短的三段随机 / 长的一段（8.6 秒）
-	"blue_crack": ["res://assets/audio/voice/blue/crack_2.mp3", "res://assets/audio/voice/blue/crack_3.mp3",
-		"res://assets/audio/voice/blue/crack_4.mp3"],
-	"blue_crack_long": ["res://assets/audio/voice/blue/crack_1.mp3"],
+	# 蓝色公主笑出声（憋爆、魔法失败、过场）：只用她的两种笑声——短的是轻笑，长的是大笑（不循环）
+	"blue_crack": ["res://assets/audio/voice/blue/giggle.mp3"],
+	"blue_crack_long": ["res://assets/audio/voice/blue/laugh.mp3"],
 	# 第八层夜迷宫第五轮（tools/art/gen_sfx.py）
 	"hand_grab": ["res://assets/generated/sfx/hand_grab.wav"],
 	"heartbeat": ["res://assets/generated/sfx/heartbeat.wav"],
@@ -78,10 +77,10 @@ var _players: Array[AudioStreamPlayer] = []
 var _next := 0
 var _voice: AudioStreamPlayer
 var _voice_state := ""
-## 憋不住的笑（blue_crack）单独一个播放器：换关卡也不断（过场之间的笑声衔接），可以淡出
+## 蓝色公主笑出声（blue_crack = 轻笑 / blue_crack_long = 大笑）单独一个播放器：换关卡也不断（过场之间的笑声衔接），可以淡出
 var _crack: AudioStreamPlayer
 var _crack_tw: Tween
-## 别处的笑声播放器（小剧场舞台的 voice / voice2）：同一时间只放一段笑声——憋不住的笑在放时它们先停住（register_laugh_player）
+## 别处的笑声播放器（小剧场舞台的 voice / voice2）：同一时间只放一段笑声——她笑出声（blue_crack）时它们先停住（register_laugh_player）
 var _laugh_players: Array[AudioStreamPlayer] = []
 
 # ------------------------------------------------------------------ 背景音乐
@@ -247,7 +246,7 @@ func play(sound: String, volume_db := 0.0, pitch_jitter := 0.08, pitch := 1.0) -
 	p.play()
 
 
-## 蓝色公主憋不住的笑：long = 长的那段。正在放时会换成新的一段。
+## 蓝色公主笑出声：long = 大笑，否则轻笑。正在放时会换成新的一段。
 func play_crack(long := false, volume_db := -4.0) -> void:
 	var clips: Array = _streams.get("blue_crack_long" if long else "blue_crack", [])
 	if clips.is_empty():
@@ -263,7 +262,7 @@ func crack_playing() -> bool:
 	return _crack.playing
 
 
-## 登记一个会放笑声的播放器：憋不住的笑在放时它暂停，放完接着放（同一时间只有一段笑声）。
+## 登记一个会放笑声的播放器：她笑出声（blue_crack）时它暂停，放完接着放（同一时间只有一段笑声）。
 func register_laugh_player(p: AudioStreamPlayer) -> void:
 	if not _laugh_players.has(p):
 		_laugh_players.append(p)
@@ -278,7 +277,7 @@ func _duck_laughs() -> void:
 		p.stream_paused = cracking
 
 
-## 憋不住的笑慢慢淡掉（time 秒）。
+## 笑出声的那一段慢慢淡掉（time 秒）。
 func fade_crack(time := 1.0) -> void:
 	if not _crack.playing:
 		return

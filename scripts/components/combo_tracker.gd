@@ -14,6 +14,7 @@ extends Node
 ## 条件型：狂热连击（被带狂热 / 力量增益的怪物暴击）、牢笼里的暴击（被困住时被暴击）在这里检测；
 ## 魔力反噬（疲倦爆发时身边有怪物）由 PlayableCharacter.fatigue_burst 调用 trigger("mana_backlash")。
 ## 三来源组合第一次触发时播放 data/combo_scenes.json 里的小演出（CG.play_scene）。
+## 装备组合（combos.json 里带 equip: [装备键]）：穿着那几件装备就占了对应的来源格，剩下的 keys 由挠痒凑；小演出在 data/equip_scenes.json。
 
 signal triggered(id: String)
 
@@ -71,8 +72,9 @@ static func group(name: String) -> Array:
 	return data().get("groups", {}).get(name, [])
 
 
+## 三来源：来源槽 + 装备（equip）一共 3 个以上。
 static func is_triple(c: Dictionary) -> bool:
-	return c.get("keys", []).size() >= 3
+	return c.get("keys", []).size() + c.get("equip", []).size() >= 3
 
 
 static func has_wildcard(c: Dictionary) -> bool:
@@ -178,6 +180,9 @@ func _check(newest: Dictionary) -> void:
 	for c in sorted_combos():
 		if is_on_cooldown(c["id"]):
 			continue
+		# 装备组合：穿着 equip 里的每一件（Equipment.combo_keys，挡下次数用光的还有 "<键>:spent"）才算这几格满了
+		if c.has("equip") and not _wears_all(c["equip"]):
+			continue
 		var triple := is_triple(c)
 		var since := _time - combo_window(c)
 		# 每个来源键只保留最近一次；两来源组合不用已经连锁过的记录
@@ -199,6 +204,12 @@ func _check(newest: Dictionary) -> void:
 				e["chained"] = true
 		_fire(c, used[0]["source"], upgraded)
 		return
+
+
+func _wears_all(keys: Array) -> bool:
+	var who := str(_actor.get("character_id")) if _actor else ""
+	var worn := Equipment.combo_keys(who)
+	return keys.all(func(k) -> bool: return worn.has(str(k)))
 
 
 ## 给每个槽位分配一个不同的来源；最新的那次挠痒必须用上。失败返回空数组。
@@ -282,6 +293,25 @@ func _fire(c: Dictionary, source: Node, upgraded := false) -> void:
 			get_tree().create_timer(SCENE_DELAY, false).timeout.connect(cg.play_scene.bind(id))
 
 
+## 组合效果 expose：这个部位露出来一阵子（敏感 × mult），时间到自己收回。
+var _expose_src: RefCounted
+
+
+func _expose(zone: String, mult: float, duration: float) -> void:
+	var pc := _actor as PlayableCharacter
+	if pc == null:
+		return
+	if _expose_src == null:
+		_expose_src = RefCounted.new()
+	pc.sensitivity.expose(_expose_src, {zone: mult}, pc)
+	var src := _expose_src
+	var wr: WeakRef = weakref(pc)
+	get_tree().create_timer(duration, false).timeout.connect(func():
+		var who := wr.get_ref() as PlayableCharacter
+		if who:
+			who.sensitivity.unexpose(src, who))
+
+
 func _apply_effects(c: Dictionary, source: Node) -> void:
 	var st := _actor.status if _actor else null
 	var k := chain_mult()
@@ -342,6 +372,9 @@ func _apply_effects(c: Dictionary, source: Node) -> void:
 			"focus":
 				if _actor.has_method("focus_camera"):
 					_actor.focus_camera()
+			"expose":
+				# 露出部位一阵子（装备组合：护腋垫被掀开、袜子被扒掉）：{zone, mult, duration}
+				_expose(str(e.get("zone", "sole")), float(e.get("mult", 1.5)), float(e.get("duration", 5.0)))
 			_:
 				# 关卡自己的效果（第八层夜迷宫：笑声半径翻倍、召手、直接盖手、扣冷光、节奏……）：交给场上的处理者
 				for h in get_tree().get_nodes_in_group("combo_effect_handler"):

@@ -41,6 +41,7 @@ func on_interact(player: Node) -> void:
 	var p := player as PlayableCharacter
 	if p and p.health:
 		p.health.fill()
+	Equipment.restore_charges()
 	if SaveSystem.save(slot, place):
 		Audio.play("chime", -4.0, 0.05, 1.1)
 		GameState.notify("已存档（存档 %d）" % slot)

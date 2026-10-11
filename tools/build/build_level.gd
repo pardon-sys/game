@@ -42,6 +42,7 @@ const SCENES := {
 	"item": "res://scenes/items/world_item.tscn",
 	"checkpoint": "res://scenes/objects/checkpoint.tscn",
 	"trigger": "res://scenes/objects/dialogue_trigger.tscn",
+	"banter": "res://scenes/objects/banter_zone.tscn",
 	"arena": "res://scenes/objects/arena_zone.tscn",
 	"traproom": "res://scenes/objects/trap_room_zone.tscn",
 	# 第六层地下小镇
@@ -67,6 +68,7 @@ const SCENES := {
 	"nightstalker": "res://levels/floor_08/scenes/night_stalker.tscn",
 	"stalkerzone": "res://levels/floor_08/scenes/stalker_zone.tscn",
 	"f8shelter": "res://levels/floor_08/scenes/shelter_return.tscn",
+	"f6war": "res://levels/floor_06/scenes/war_town.tscn",
 	"guard_patrol": "res://scenes/stealth/patrol_guard.tscn",
 }
 ## 按 type 参数选择场景的类型：新增怪物/友军/陷阱时在这里注册。
@@ -175,7 +177,7 @@ const WALL_MOUNTED := ["torch", "face", "walltrap", "secret"]
 ## 看起来是墙、之后可能打开的格子：照常放墙块，下面再铺一层地面。
 const HIDDEN_PASSAGE := ["secret"]
 ## 放在地面层（总在角色下方）的类型。
-const FLOOR_LEVEL := ["trap", "checkpoint", "trigger", "plate", "exit", "arena", "traproom", "stairs", "spawn", "spot"]
+const FLOOR_LEVEL := ["trap", "checkpoint", "trigger", "banter", "plate", "exit", "arena", "traproom", "stairs", "spawn", "spot"]
 ## Kenney 图块中带碰撞的装饰（下半格碰撞）。
 const SOLID_DECOR := [63, 64, 65, 72, 73, 74, 75, 82]
 ## 当墙顶用的 Kenney 碎石图块（整格碰撞）。
@@ -306,7 +308,7 @@ func build(floor_id: String) -> int:
 					if not (SCENES.has(k) or TYPED_SCENES.has(k)):
 						continue
 					var inst := _spawn(k, one, x, y)
-					var parent: Node = triggers if k in ["checkpoint", "trigger", "exit", "arena", "traproom"] else (floor_objs if k in FLOOR_LEVEL else ents)
+					var parent: Node = triggers if k in ["checkpoint", "trigger", "banter", "exit", "arena", "traproom"] else (floor_objs if k in FLOOR_LEVEL else ents)
 					parent.add_child(inst)
 					inst.owner = root
 					if k == "letter":
@@ -496,7 +498,7 @@ func _spawn(kind: String, info: Dictionary, x: int, y: int) -> Node2D:
 			inst.position = base - Vector2(0, 4)
 		"stairs":
 			inst.position = base - Vector2(0, TILE / 2.0)
-		"trap", "checkpoint", "trigger", "plate", "exit", "arena", "traproom":
+		"trap", "checkpoint", "trigger", "banter", "plate", "exit", "arena", "traproom":
 			inst.position = base - Vector2(0, TILE / 2.0)
 		"letter":
 			inst.position = base + Vector2(0, 0.5)
@@ -558,10 +560,10 @@ func _spawn(kind: String, info: Dictionary, x: int, y: int) -> Node2D:
 				continue
 			["arena", "h"]:
 				continue
-			["trigger", "w"]:
+			["trigger", "w"], ["banter", "w"]:
 				inst.set("size", Vector2(float(info["w"]) * TILE, float(info.get("h", 1)) * TILE))
 				continue
-			["trigger", "h"]:
+			["trigger", "h"], ["banter", "h"]:
 				continue
 		if not prop in inst:
 			push_warning("(%d,%d) %s 没有属性 %s" % [x, y, inst.name, prop])

@@ -1,0 +1,76 @@
+{
+	"name": "市场监督",
+	"entries": [
+		{
+			"if": {
+				"hero": "blue",
+				"flag": "blue_tickle_pants"
+			},
+			"node": "blue_pants"
+		},
+		{
+			"if": {
+				"hero": "blue"
+			},
+			"node": "blue"
+		},
+		{
+			"node": "pink"
+		}
+	],
+	"nodes": {
+		"blue_pants": {
+			"lines": [
+				{
+					"text": "城墙上的？你要补给的话——"
+				},
+				{
+					"text": "……噗。",
+					"speaker": "蓝色的公主",
+					"emotion": "shy"
+				},
+				{
+					"text": "……你笑什么？我账本算错了吗？"
+				},
+				{
+					"text": "……没有。……买东西。",
+					"speaker": "蓝色的公主"
+				}
+			],
+			"next": "shop"
+		},
+		"blue": {
+			"lines": [
+				{
+					"text": "城墙上的？你要补给的话，薄荷糖和清心花露都有。"
+				},
+				{
+					"text": "……护具也有几件，看你需不需要。"
+				}
+			],
+			"next": "shop"
+		},
+		"pink": {
+			"lines": [
+				{
+					"text": "账本都烧掉一半了……算了，先顾眼前。"
+				},
+				{
+					"text": "补给、护具，要什么自己挑，打完再算钱。……不对，钱还是要收的。"
+				}
+			],
+			"next": "shop"
+		},
+		"shop": {
+			"lines": [
+				{
+					"text": "看看吧。"
+				}
+			],
+			"set": {
+				"call": "open_war_shop"
+			}
+		}
+	},
+	"npc": "supervisor"
+}

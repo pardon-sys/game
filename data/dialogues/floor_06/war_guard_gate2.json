@@ -1,0 +1,52 @@
+{
+	"name": "守城门的队员",
+	"entries": [
+		{
+			"if": {
+				"hero": "blue",
+				"flag": "blue_tickle_pants"
+			},
+			"node": "blue_pants"
+		},
+		{
+			"if": {
+				"hero": "blue"
+			},
+			"node": "blue"
+		},
+		{
+			"node": "pink"
+		}
+	],
+	"nodes": {
+		"blue_pants": {
+			"lines": [
+				{
+					"text": "上次第一波，城墙上没人……这次有你在，就不一样了。"
+				},
+				{
+					"text": "……哈、哈……知、知道了。",
+					"speaker": "蓝色的公主",
+					"emotion": "shy"
+				},
+				{
+					"text": "……？你没事吧？"
+				}
+			]
+		},
+		"blue": {
+			"lines": [
+				{
+					"text": "上次第一波，城墙上没人……这次有你在，就不一样了。"
+				}
+			]
+		},
+		"pink": {
+			"lines": [
+				{
+					"text": "第一波怪物就是从这道门冲进来的。差一点就守不住了。"
+				}
+			]
+		}
+	}
+}

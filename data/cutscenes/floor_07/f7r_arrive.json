@@ -25,15 +25,6 @@
 			"speaker": "公主",
 			"text": "没关系！这次我们两个一起走！",
 			"emotion": "happy"
-		},
-		{
-			"actions": [
-				{
-					"text": "（待续）",
-					"do": "hint"
-				}
-			],
-			"wait": 1.0
 		}
 	]
 }

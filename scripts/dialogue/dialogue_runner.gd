@@ -14,7 +14,7 @@ extends Node
 ##   next        没有选项时接着走的节点（空 = 结束）
 ##   goto        条件跳转 [{if: 条件, node: 节点}, ...]：进入节点时先看，第一个满足的直接跳过去（按选择记忆分支）
 ## 条件（if）：{flag: 标记 / [标记…]（都要有）, not: 标记 / [标记…]（都没有）, eq: {变量: 值}, var: {变量: [">=", 数]},
-##             seen: "文件:节点"（看过）, any: [条件…]（满足一个即可）}
+##             seen: "文件:节点"（看过）, hero: "pink" / "blue"（现在操控的是谁）, any: [条件…]（满足一个即可）}
 ## 效果（set）：{flags: [标记…] 或 {标记: 值}, vars: {变量: 值}, add: {变量: 数}, give_item: {物品: 数量}, coins: 数（负数是花钱）,
 ##             passive: 被动 id, call: 方法名（调到 Dialogue.talk_handler 上，如打开商店 / 训练）}
 ## 选择记忆：关键选择写进 GameState.vars（如 f6_attitude），别的人物用 entries / 选项的 if 读它；看过的节点记 dlg_<文件>_<节点>，
@@ -217,6 +217,12 @@ static func check(cond: Dictionary) -> bool:
 	for s in _list(cond.get("seen", [])):
 		var parts := str(s).split(":")
 		if parts.size() == 2 and not GameState.has_flag("dlg_%s_%s" % [parts[0], parts[1]]):
+			return false
+	# hero：现在操控的是谁（pink / blue）
+	if cond.has("hero"):
+		var p := GameState.player
+		var who := str(p.get("character_id")) if is_instance_valid(p) else ""
+		if who != str(cond["hero"]):
 			return false
 	if cond.has("any"):
 		return (cond["any"] as Array).any(func(c): return check(c))

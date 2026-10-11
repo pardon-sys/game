@@ -21,6 +21,8 @@ signal giggled
 signal state_changed(state: State)
 ## 魔法事件："channel" 开始吟唱、"tier" 升档、"burst" 释放、"fizzle" 蓄力不足落空、"interrupted" 被打断。
 signal magic_event(event: String, tier: int)
+## 装备挡下了一下挠痒（部位）
+signal tickle_blocked(zone: String)
 
 enum State { IDLE, MOVE, ATTACK, DASH, HURT, HELPLESS, GRABBED, DEAD, CHANNEL, CAST }
 
@@ -74,6 +76,12 @@ enum State { IDLE, MOVE, ATTACK, DASH, HURT, HELPLESS, GRABBED, DEAD, CHANNEL, C
 @onready var fatigue: MagicFatigue = get_node_or_null("Fatigue")
 ## 数据档案（Characters）：受挠台词、部位表、CG 都按这个选（粉色公主 pink、蓝色公主 blue）。
 var character_id := "pink"
+## 跟着玩家操控的那个走（图例 follow=true；第八层回小屋之后）
+@export var follow := false
+const FOLLOW_WARP := 180.0
+## 跟着走时和她说话用的对话文件（空 = 不能说话）
+var partner_talk := ""
+var _partner_area: Interactable
 ## 睡着了（过场的 lie sleep=true）：小人一直是闭着眼的那张图（立绘照旧）
 var sleeping := false
 ## 正在进行疲倦爆发（CAST 期间用战损释放姿势）。
@@ -139,9 +147,68 @@ func display_name() -> String:
 
 ## 不被玩家操控时用的 AI 控制器（切换操控时 GameState.switch_control 调用）；默认站着不动，双人模式里是 AI 搭档。
 func make_ai_controller() -> CharacterController:
+	if follow:
+		var cc := CompanionController.new()
+		cc.behaviours.assign(["struggle", "follow"])
+		return cc
 	if Duo.active:
 		return CompanionController.new()
 	return ScriptedController.new()
+
+
+## 是不是玩家正在操控的那一个（Princess 里有同样的定义）。
+func is_controlled() -> bool:
+	return GameState.player == self
+
+
+# ------------------------------------------------------------------ 跟着走 / 和搭档说话（两个公主通用）
+## 没被操控时跟着玩家操控的那个走（离太远就直接跟上）；partner_talk 不为空时可以走过去按 E 和她说话
+## （对话文件，比如「换我来」切换操控：dialogue_box 的 call switch_hero）。
+func start_following(talk_file := "") -> void:
+	follow = true
+	if talk_file != "":
+		partner_talk = talk_file
+	if camera and not is_controlled():
+		camera.enabled = false
+	if not is_controlled() and not (controller is CompanionController):
+		set_controller(make_ai_controller())
+	_refresh_partner_area()
+
+
+func _refresh_partner_area() -> void:
+	if partner_talk == "":
+		if _partner_area:
+			_partner_area.enabled = false
+		return
+	if _partner_area == null:
+		_partner_area = Interactable.new()
+		_partner_area.name = "PartnerTalk"
+		_partner_area.position = Vector2(0, -8)
+		_partner_area.prompt_offset = Vector2(0, -26)
+		var cs := CollisionShape2D.new()
+		var r := RectangleShape2D.new()
+		r.size = Vector2(20, 20)
+		cs.shape = r
+		_partner_area.add_child(cs)
+		_partner_area.interacted.connect(_on_partner_talk)
+		add_child(_partner_area)
+	_partner_area.enabled = follow and not is_controlled() and is_alive()
+
+
+func _on_partner_talk(_who: Node) -> void:
+	if partner_talk == "" or is_controlled() or Dialogue.runner.is_running():
+		return
+	velocity = Vector2.ZERO
+	var d := GameState.player.global_position - global_position if is_instance_valid(GameState.player) else Vector2.ZERO
+	if d.length() > 0.1:
+		facing = d.normalized()
+	await Dialogue.talk(partner_talk)
+
+
+func _follow_warp() -> void:
+	if follow and not is_controlled() and is_instance_valid(GameState.player) and not GameState.in_cutscene \
+			and global_position.distance_to(GameState.player.global_position) > FOLLOW_WARP:
+		global_position = GameState.player.global_position + Vector2(0, 10)
 
 
 ## 更换输入来源（Controllable 接口）。
@@ -159,6 +226,10 @@ func _physics_process(delta: float) -> void:
 	Characters.scope(character_id)
 	super(delta)
 	Characters.unscope()
+	if follow:
+		_follow_warp()
+		if _partner_area:
+			_partner_area.enabled = partner_talk != "" and not is_controlled() and is_alive()
 
 
 func receive_hit(hit: HitData) -> bool:
@@ -347,7 +418,19 @@ func use_item(hotkey := "use_item") -> bool:
 
 
 ## 笑瘫 / 被抓时挣扎一次：降闷笑值，被抓时同时计入挣脱次数。
+## 装备的 struggle 加成：每下多算一点，攒满一下就多挣扎一次。
+var _struggle_bonus := 0.0
+
+
 func struggle() -> void:
+	_struggle_bonus += stat_add("struggle")
+	while _struggle_bonus >= 1.0:
+		_struggle_bonus -= 1.0
+		_struggle_once()
+	_struggle_once()
+
+
+func _struggle_once() -> void:
 	if laugh:
 		# 被动「挣脱强化」：每下多降 value 倍
 		laugh.reduce_ratio(laugh.struggle_ratio * (1.0 + PassiveDB.value("struggle_plus")))
@@ -465,7 +548,7 @@ func release_magic() -> int:
 	cast_magic(tier)
 	if tier >= channel_tiers.size():
 		fling_latchers()  # 满蓄力：全部震飞
-	_magic_cd = magic_cooldown
+	_magic_cd = magic_cooldown * stat_mul("magic_cd")
 	shake(0.06 * tier)
 	_set_state(State.CAST)
 	magic_event.emit("burst", tier)
@@ -515,9 +598,51 @@ func _on_channel_tier(tier: int) -> void:
 func _tickle_multiplier(hit: HitData) -> float:
 	var k := super(hit) * (exposed_tickle_mult if state == State.CHANNEL else 1.0)
 	if TickleZones.enabled:
+		sensitivity.owner_id = character_id
 		k *= sensitivity.apply(hit, self)
+	# 装备：这个部位有能挡挠痒的装备、还有次数 → 这一下挡下来
+	if hit.zone != "" and Equipment.try_block(character_id, hit.zone):
+		_on_tickle_blocked(hit.zone)
+		return 0.0
+	if Equipment.unlocked() and Equipment.has_special(character_id, "bell"):
+		_ring_bell()
 	k *= 1.0 + (fatigue.laugh_bonus() if fatigue else 0.0)
 	return k * (combo.hit_multiplier(hit) if combo else 1.0)
+
+
+# ------------------------------------------------------------------ 装备
+func _extra_stat_add(stat: String) -> float:
+	return Equipment.stat_add(character_id, stat)
+
+
+func _extra_stat_mul(stat: String) -> float:
+	return Equipment.stat_mul(character_id, stat)
+
+
+## 装备挡下了一下挠痒：头顶冒「挡住了！」。
+func _on_tickle_blocked(zone: String) -> void:
+	tickle_blocked.emit(zone)
+	Audio.play("pop", -8.0, 0.1, 0.8)
+	var left := Equipment.charges(character_id, zone)
+	SpeechBubble.say(self, "挡住了！（%s 还剩 %d 次）" % [TickleZones.zone_name(zone), left] if left > 0 else "挡住了！……%s的垫子用光了" % TickleZones.zone_name(zone), 30.0, 1.4)
+
+
+## 派对彩带蝴蝶结：被挠到时叮铃响，附近 BELL_RANGE 内的怪物都朝她过来（BELL_GAP 秒最多一次）。
+const BELL_RANGE := 120.0
+const BELL_GAP := 2.0
+var _bell_at := -INF
+
+
+func _ring_bell() -> void:
+	var now := Time.get_ticks_msec() / 1000.0
+	if now - _bell_at < BELL_GAP:
+		return
+	_bell_at = now
+	Audio.play("chime", -6.0, 0.05, 1.6)
+	SpeechBubble.say(self, "叮铃♪", 30.0, 1.0)
+	for m in get_tree().get_nodes_in_group("enemy"):
+		if m is Monster and (m as Node2D).global_position.distance_to(global_position) <= BELL_RANGE:
+			(m as Monster).rally_to(self)
 
 
 func revive() -> void:

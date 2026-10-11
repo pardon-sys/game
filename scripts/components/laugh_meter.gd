@@ -79,10 +79,13 @@ func _process(delta: float) -> void:
 		_set_value(lo)
 	if value <= lo:
 		return
+	# 装备 / 状态的 laugh_decay：消减快 / 慢一点
+	var who := get_parent()
+	var rate := decay_ratio * maxf(0.0, 1.0 + (who.stat_add("laugh_decay") if who and who.has_method("stat_add") else 0.0))
 	if _frost_guarded():
-		_set_value(maxf(lo, value - decay_ratio * FROST_DECAY * max_value * delta))
+		_set_value(maxf(lo, value - rate * FROST_DECAY * max_value * delta))
 	elif _since_attacked >= decay_delay:
-		_set_value(maxf(lo, value - decay_ratio * max_value * delta))
+		_set_value(maxf(lo, value - rate * max_value * delta))
 
 
 ## 被挠痒：累积闷笑值。

@@ -37,6 +37,10 @@ func scan() -> void:
 		var dmg := damage
 		if tickle <= 0.0 and attacker == GameState.player:
 			dmg = TrainingStats.melee_damage(damage)   # 耐笑部位训练加的近战强度
+		# 装备 / 状态的 attack：伤害倍率（小数部分按几率多 1 点）
+		if tickle <= 0.0 and attacker and attacker.has_method("stat_mul"):
+			var scaled := float(dmg) * float(attacker.stat_mul("attack"))
+			dmg = int(scaled) + (1 if randf() < scaled - floorf(scaled) else 0)
 		var hit := HitData.make_tickle(attacker, tickle, knockback) if tickle > 0.0 else HitData.make_attack(attacker, dmg, knockback)
 		if body.receive_hit(hit):
 			hit_landed.emit(body)

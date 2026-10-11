@@ -1,0 +1,28 @@
+[gd_resource type="Resource" script_class="EquipData" format=3]
+
+[ext_resource type="Script" path="res://scripts/items/equip_data.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/generated/equip_icons.png" id="2"]
+
+[sub_resource type="AtlasTexture" id="icon"]
+atlas = ExtResource("2")
+region = Rect2(160, 0, 16, 16)
+
+[resource]
+script = ExtResource("1")
+id = "equip_feather_anklet"
+display_name = "羽毛脚环"
+description = "小孩们用彩绳和白羽毛编的脚环。跑起来很轻快，羽毛却总是蹭到脚心。"
+icon = SubResource("icon")
+category = 4
+stackable = false
+show_in_hud = false
+pickup_emotion = "happy"
+slots = Array[String](["sole"])
+owner_id = ""
+modifiers = {"speed": 1.1}
+zone_mods = {"sole": 0.3}
+block = {}
+cursed = false
+special = ""
+pros = "移动 ×1.1"
+cons = "脚心敏感 +0.3"

@@ -1,0 +1,64 @@
+{
+	"name": "小汤姆",
+	"entries": [
+		{
+			"if": {
+				"hero": "blue",
+				"flag": "blue_tickle_pants"
+			},
+			"node": "blue_pants"
+		},
+		{
+			"if": {
+				"hero": "blue"
+			},
+			"node": "blue"
+		},
+		{
+			"node": "pink"
+		}
+	],
+	"nodes": {
+		"blue_pants": {
+			"lines": [
+				{
+					"text": "冰的姐姐！可以变冰给我看吗？"
+				},
+				{
+					"text": "……现在不、不行……哈……",
+					"speaker": "蓝色的公主",
+					"emotion": "shy"
+				},
+				{
+					"text": "姐姐你在笑！姐姐笑起来好奇怪！"
+				},
+				{
+					"text": "……不准说。",
+					"speaker": "蓝色的公主",
+					"emotion": "angry"
+				}
+			]
+		},
+		"blue": {
+			"lines": [
+				{
+					"text": "冰的姐姐！可以变冰给我看吗？"
+				},
+				{
+					"text": "……现在不行。……打完了，变一个大的。",
+					"speaker": "蓝色的公主"
+				}
+			]
+		},
+		"pink": {
+			"lines": [
+				{
+					"text": "姐姐！我刚才看到怪物了！好大一只，被队员叔叔打跑了！"
+				},
+				{
+					"text": "姐姐你要去打怪物吗？加油！"
+				}
+			]
+		}
+	}
+}

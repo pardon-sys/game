@@ -1,0 +1,62 @@
+{
+	"name": "工匠",
+	"entries": [
+		{
+			"if": {
+				"hero": "blue",
+				"flag": "blue_tickle_pants"
+			},
+			"node": "blue_pants"
+		},
+		{
+			"if": {
+				"hero": "blue"
+			},
+			"node": "blue"
+		},
+		{
+			"node": "pink"
+		}
+	],
+	"nodes": {
+		"blue_pants": {
+			"lines": [
+				{
+					"text": "冰塔的地基打好了四座——"
+				},
+				{
+					"text": "……噗。",
+					"speaker": "蓝色的公主",
+					"emotion": "shy"
+				},
+				{
+					"text": "……我说错什么了吗？"
+				},
+				{
+					"text": "……没有。……继续。",
+					"speaker": "蓝色的公主"
+				}
+			]
+		},
+		"blue": {
+			"lines": [
+				{
+					"text": "冰塔的地基打好了四座。开打的时候，你往上面放冰就行。"
+				},
+				{
+					"text": "攻击的那种、减速的那种……你自己搭配。"
+				}
+			]
+		},
+		"pink": {
+			"lines": [
+				{
+					"text": "前线的路障是我钉的，结实着呢！"
+				},
+				{
+					"text": "怪物冲过来的时候，你就站在路障后面打。被围住了就往回退。"
+				}
+			]
+		}
+	}
+}

@@ -21,6 +21,8 @@ signal finished(id: String)
 
 const PATH := "res://data/cgs.json"
 const SCENES_PATH := "res://data/combo_scenes.json"
+## 装备组合的小演出（单独的文件；蓝色公主版在 data/characters/blue/equip_scenes.json），合并进 scenes
+const EQUIP_SCENES_PATH := "res://data/equip_scenes.json"
 ## 怪物巢穴的过场（单独的文件，载入时把 portraits / cgs / nest 合并进 data）。
 const NEST_PATH := "res://data/nest_cgs.json"
 const FX_TEX := preload("res://assets/generated/cg_fx.png")
@@ -54,7 +56,12 @@ var scenes: Dictionary:
 		if not _scenes_by.has(who):
 			var p := Characters.path("combo_scenes.json", SCENES_PATH, who)
 			var parsed: Variant = JSON.parse_string(FileAccess.get_file_as_string(p)) if FileAccess.file_exists(p) else {}
-			_scenes_by[who] = parsed.get("scenes", {}) if parsed is Dictionary else {}
+			var all: Dictionary = (parsed.get("scenes", {}) if parsed is Dictionary else {}).duplicate()
+			var ep := Characters.path("equip_scenes.json", EQUIP_SCENES_PATH, who)
+			var eparsed: Variant = JSON.parse_string(FileAccess.get_file_as_string(ep)) if FileAccess.file_exists(ep) else {}
+			if eparsed is Dictionary:
+				all.merge(eparsed.get("scenes", {}))
+			_scenes_by[who] = all
 		return _scenes_by[who]
 	set(v):
 		_scenes_by[Characters.current()] = v
@@ -699,6 +706,10 @@ func _clear_sources() -> void:
 ## 来源图标：怪物取演员贴图的第一帧，陷阱取 trap_actors 的待机帧（羽毛臂取羽毛尖）。
 func _icon_for(kind: String, key: String) -> Texture2D:
 	var at := AtlasTexture.new()
+	# 装备组合：来源栏里显示装备的图标
+	if kind == "equip":
+		var it := ItemDB.get_item(key)
+		return it.icon if it else null
 	if kind == "trap":
 		var info: Dictionary = data.get("trap_actors", {}).get(key, {})
 		if info.is_empty():
