@@ -4,6 +4,7 @@ extends CanvasLayer
 ##   顶部中间：第 N / 10 波 + 状态（准备倒计时 / 战斗中还剩几只）、城墙血条（分 8 段，每段按挨打程度变色）、冰晶数。
 ##   右上（立绘框下面）：小地图——城墙、冰塔格、两位公主、怪物点、敌塔。
 ##   屏幕边缘：大型攻城怪（meta siege_alert）在屏幕外时的红色箭头。
+##   底部：蓝色公主的 4 个城墙法术格（键位 1~4、名字、冷却遮罩；正在瞄准的那个金框）。
 
 const BAR := Rect2(250, 16, 130, 6)
 const MAP := Rect2(386, 44, 90, 66)
@@ -74,6 +75,32 @@ func _draw_view() -> void:
 	_text(BAR.end + Vector2(18, 1), "×%d" % director.crystals, ICE, 9)
 	_draw_map()
 	_draw_alerts()
+	_draw_spells()
+
+
+const SPELL_COLORS := {"ice_rain": Color(0.6, 0.85, 1.0), "barrier": Color(0.75, 0.9, 1.0), "snow": Color(0.9, 0.97, 1.0),
+	"reinforce": Color(0.55, 0.75, 0.95)}
+
+
+func _draw_spells() -> void:
+	var b: PlayableCharacter = director.blue
+	if b == null or not is_instance_valid(b):
+		return
+	var n := SiegeSpells.ORDER.size()
+	var w := 34.0
+	var x0 := 240.0 - n * (w + 4.0) / 2.0
+	var y := 250.0
+	for i in n:
+		var id: String = SiegeSpells.ORDER[i]
+		var r := Rect2(x0 + i * (w + 4.0), y, w, 14)
+		view.draw_rect(r, Color(0.1, 0.06, 0.14, 0.85))
+		var info: Dictionary = SiegeSpells.INFO[id]
+		var cd := SiegeSpells.cooldown_left(b, id)
+		if cd > 0.0:
+			view.draw_rect(Rect2(r.position, Vector2(r.size.x * cd / float(info["cd"]), r.size.y)), Color(0.3, 0.3, 0.4, 0.8))
+		var aiming: bool = director.aim and director.aim.active and director.aim.spell == id
+		view.draw_rect(r, GOLD if aiming else SPELL_COLORS.get(id, ICE), false, 1.0)
+		_text(r.position + Vector2(2, 10), "%d %s" % [i + 1, SiegeSpells.spell_name(id).left(2)], SPELL_COLORS.get(id, ICE) if cd <= 0.0 else Color(0.6, 0.6, 0.7), 8)
 
 
 func world_size() -> Vector2:
@@ -102,6 +129,11 @@ func _draw_map() -> void:
 	for m in director.monsters:
 		if is_instance_valid(m):
 			view.draw_rect(Rect2(to_map(m.global_position), Vector2(1, 1)), RED)
+	# 正在搭的敌塔地基：闪紫圈
+	var blink := 0.5 + 0.5 * sin(Time.get_ticks_msec() / 150.0)
+	for s in get_tree().get_nodes_in_group("siege_enemy_site"):
+		if s.has_method("is_building") and s.call("is_building"):
+			view.draw_arc(to_map((s as Node2D).global_position), 3.5, 0.0, TAU, 12, Color(0.9, 0.4, 1.0, blink), 1.0)
 	for c in [director.pink, director.blue]:
 		if c and is_instance_valid(c):
 			view.draw_circle(to_map(c.global_position), 2.0, Color(1, 0.6, 0.85) if c.character_id == "pink" else Color(0.6, 0.8, 1.0))

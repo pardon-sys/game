@@ -1,12 +1,15 @@
 class_name BuildPad
 extends Node2D
-## 攻防战的冰塔格（图例 X = buildpad index=<序号>，待建区一排 10 个）。两个人一起造：
-##   1. 粉色公主站在格子上按 E → 选塔（6 种，显示价格）/ 已经有塔时：升级（同一种再造一次 = 2 级）/ 拆掉（返还一半）；付冰晶。
-##   2. 格子进入「等冰光」：蓝色公主（AI 自动走过来；玩家操控时走到格子正上方的城墙上按 E）从城墙射冰光 BEAM_TIME 秒。
+## 攻防战的冰塔基座（运行时生成：粉色公主在战场上任何能建的地方按 B，SiegeDirector.try_build）。两个人一起造：
+##   1. 选塔（6 种，显示价格）/ 已经有塔时（站在旁边按 B 或 E）：升级（同一种再造一次 = 2 级）/ 拆掉（返还一半）；付冰晶。
+##   2. 基座进入「等冰光」：蓝色公主（AI 自动走过来；玩家操控时走到基座正上方的城墙上按 E）从城墙射冰光——
+##      BEAM_TIME 秒，离城墙每多 BEAM_STEP 像素加 1 秒。
 ##   3. 冰塔破冰而出（IceTower）。
-## 冰塔布置随 GameState.vars["siege_towers"] 保存（{序号: [种类, 级]}），失败重来时保留。
+## 冰塔布置随 GameState.vars["siege_towers"] 保存（[{x, y, kind, level}]），失败重来时保留。
 
 const BEAM_TIME := 3.0
+const BEAM_STEP := 160.0
+const BEAM_FREE := 200.0
 
 @export var index := 0
 
@@ -46,10 +49,6 @@ func _ready() -> void:
 		_blue_area = _make_area(Vector2(0, d.wall_top_y() - global_position.y), Vector2(28, 16))
 		_blue_area.interacted.connect(func(p: Node): if p is PlayableCharacter: blue_beam(p))
 		_blue_area.enabled = false
-		var saved: Dictionary = GameState.vars.get("siege_towers", {})
-		if saved.has(str(index)):
-			var t: Array = saved[str(index)]
-			_build(str(t[0]), int(t[1]), true)
 
 
 func _make_area(at: Vector2, sz: Vector2) -> Interactable:
@@ -96,6 +95,7 @@ func on_pink(p: Node) -> void:
 		get_tree().paused = was_paused
 		if pick < ks.size():
 			request(ks[pick])
+		discard_if_empty()
 	else:
 		var inf := IceTower.info(tower.kind)
 		var opts: Array = []
@@ -113,6 +113,7 @@ func on_pink(p: Node) -> void:
 			tower.queue_free()
 			tower = null
 			_save()
+			queue_free()
 
 
 ## 付冰晶、等蓝色公主的冰光。返回是否成功。
@@ -139,15 +140,16 @@ func blue_beam(blue: PlayableCharacter) -> void:
 	if pending.is_empty() or beaming or blue == null or Downed.is_downed(blue):
 		return
 	beaming = true
+	var t := beam_time()
 	var from := blue.global_position + Vector2(0, -12)
-	SiegeFx.beam(get_parent(), from, global_position + Vector2(0, -8), Color(0.65, 0.9, 1.0, 0.9), BEAM_TIME, 3.0)
-	Fx.burst(get_parent(), global_position + Vector2(0, -6), "snow", 18, 30.0, BEAM_TIME, Vector2(0, -10), Color(0.85, 0.97, 1.0))
+	SiegeFx.beam(get_parent(), from, global_position + Vector2(0, -8), Color(0.65, 0.9, 1.0, 0.9), t, 3.0)
+	Fx.burst(get_parent(), global_position + Vector2(0, -6), "snow", 18, 30.0, t, Vector2(0, -10), Color(0.85, 0.97, 1.0))
 	Audio.play("chant", -6.0, 0.0, 1.3)
 	var was_locked := blue.is_controlled()
 	if was_locked:
 		PlayerInputController.movement_locked = true
 	blue.set_meta("siege_beaming", true)
-	await get_tree().create_timer(BEAM_TIME).timeout
+	await get_tree().create_timer(t).timeout
 	if is_instance_valid(blue):
 		blue.set_meta("siege_beaming", false)
 	if was_locked:
@@ -167,6 +169,13 @@ func blue_beam(blue: PlayableCharacter) -> void:
 	_save()
 
 
+## 冰光要多久：离城墙越远越久。
+func beam_time() -> float:
+	var d := SiegeDirector.current
+	var dist := global_position.y - d.wall_foot_y() if d else 0.0
+	return BEAM_TIME + maxf(0.0, dist - BEAM_FREE) / BEAM_STEP
+
+
 func _build(kind: String, lvl: int, _quiet := false) -> void:
 	if tower:
 		tower.queue_free()
@@ -182,12 +191,21 @@ func _build(kind: String, lvl: int, _quiet := false) -> void:
 func tower_gone() -> void:
 	tower = null
 	_save()
+	queue_free()
 
 
+## 存档：所有基座上的塔一起写（[{x, y, kind, level}]）。
 func _save() -> void:
-	var saved: Dictionary = GameState.vars.get("siege_towers", {})
-	if tower and is_instance_valid(tower) and not tower.is_queued_for_deletion():
-		saved[str(index)] = [tower.kind, tower.level]
-	else:
-		saved.erase(str(index))
-	GameState.vars["siege_towers"] = saved
+	var out := []
+	for pd in get_tree().get_nodes_in_group("siege_pad"):
+		var p := pd as BuildPad
+		if p == null or p.is_queued_for_deletion() or p.tower == null or not is_instance_valid(p.tower) or p.tower.is_queued_for_deletion():
+			continue
+		out.append({"x": p.global_position.x, "y": p.global_position.y, "kind": p.tower.kind, "level": p.tower.level})
+	GameState.vars["siege_towers"] = out
+
+
+## 取消（选塔菜单里选了「算了」、或者塔被拆掉）且基座上没东西：基座也收掉。
+func discard_if_empty() -> void:
+	if tower == null and pending.is_empty() and not beaming:
+		queue_free()

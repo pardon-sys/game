@@ -14,6 +14,7 @@ extends CharacterController
 ##              吟唱被打断时强制放出当前档位（PlayableCharacter.interrupt_channel 里处理）
 ##   attack     打范围内最近的敌人（hooks.priority_target 优先）
 ##   follow     跟在玩家操控的角色身边（2~4 格）
+##   wander     什么都没得做时在附近随机走走（锚点 hooks.wander_anchor，没有就以自己为中心；WANDER_RADIUS 内每 2~4 秒换个点）
 
 const ALL_BEHAVIOURS: Array[String] = ["struggle", "safe", "dodge", "revive", "objective", "magic", "attack", "follow"]
 ## 危险快碰到时就躲（圈 / 矩形外扩这么多像素）
@@ -112,6 +113,8 @@ func _run(b: String, me: PlayableCharacter) -> bool:
 		"follow":
 			_follow(me)
 			return true
+		"wander":
+			return _wander(me)
 	return false
 
 
@@ -332,6 +335,27 @@ func _enemies_near(me: PlayableCharacter, r: float) -> int:
 		if e is Actor and e.is_alive() and e.get("attackable") != false and (e as Node2D).global_position.distance_to(me.global_position) <= r:
 			n += 1
 	return n
+
+
+const WANDER_RADIUS := 90.0
+var _wander_to := Vector2.INF
+var _wander_t := 0.0
+
+
+func _wander(me: PlayableCharacter) -> bool:
+	_wander_t -= get_physics_process_delta_time()
+	if _wander_to == Vector2.INF or _wander_t <= 0.0 or me.global_position.distance_to(_wander_to) < 6.0:
+		var a: Variant = _hooks().wander_anchor(me) if _hooks().has_method("wander_anchor") else null
+		var c: Vector2 = a if a is Vector2 else me.global_position
+		_wander_to = c + Vector2.from_angle(randf() * TAU) * randf_range(16.0, WANDER_RADIUS)
+		_wander_t = randf_range(2.0, 4.0)
+		if randf() < 0.3:
+			_wander_to = me.global_position   # 偶尔站一会儿
+	var to := _wander_to - me.global_position
+	if to.length() > 6.0:
+		_move = to.normalized() * 0.6
+	intent = "wander"
+	return true
 
 
 func _follow(me: PlayableCharacter) -> void:

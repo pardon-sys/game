@@ -12,6 +12,9 @@ var _life := LIFE
 var _hit_cd := 0.0
 var _spr: Sprite2D
 var _anim := 0.0
+var _home := Vector2.ZERO
+var _idle_t := 0.0
+var _idle_dir := Vector2.ZERO
 
 
 func _setup() -> void:
@@ -38,6 +41,8 @@ func _setup() -> void:
 	_spr.offset = Vector2(0, -8)
 	add_child(_spr)
 	hurt_invuln_time = 0.4
+	_home = global_position
+	(func(): _home = global_position).call_deferred()
 
 
 func _tick(delta: float) -> void:
@@ -52,13 +57,20 @@ func _tick(delta: float) -> void:
 		return
 	var best: Monster = null
 	var best_d := RANGE
-	for m in d.enemies_near(global_position, RANGE):
+	for m in d.enemies_near(global_position, RANGE, false):
 		var dist := global_position.distance_to(m.global_position)
 		if dist < best_d:
 			best_d = dist
 			best = m
 	if best == null:
-		velocity = Vector2.ZERO
+		# 没有怪：在出生的地方附近随机走
+		_idle_t -= delta
+		if _idle_t <= 0.0:
+			_idle_t = randf_range(1.5, 3.0)
+			_idle_dir = Vector2.ZERO if randf() < 0.3 else Vector2.from_angle(randf() * TAU)
+			if global_position.distance_to(_home) > 50.0:
+				_idle_dir = global_position.direction_to(_home)
+		velocity = _idle_dir * SPEED * 0.5
 	else:
 		velocity = global_position.direction_to(best.global_position) * SPEED
 		if best_d < 14.0 and _hit_cd <= 0.0:

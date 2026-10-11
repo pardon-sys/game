@@ -68,12 +68,15 @@ put(GATE_X - 3, 11, "siegehorn")
 put(GATE_X, 12, "spawn id=gate")
 put(GATE_X, 13, "player")
 put(GATE_X + 3, 7, "blue_princess")
-# —— 待建区：10 个冰塔格（避开城门）
-PADS = [8, 18, 28, 38, 47, 61, 70, 80, 90, 100]
-for i, x in enumerate(PADS):
-    put(x, 14, "buildpad index=%d" % i)
-# —— 敌方区域：6 个敌塔地基
-SITES = [(14, 68), (34, 72), (55, 67), (76, 72), (96, 68), (55, 75)]
+# （冰塔不再有固定格子：粉色公主在战场上按 B 随处建）
+# —— 敌塔地基：全地图都有（战场 + 敌方区域，离城墙至少 8 格），地精工兵挑最近的空地基搭塔
+_srnd = random.Random(2828)
+SITES = []
+for gy in range(22, 78, 10):
+    for gx in range(9, W - 6, 20):
+        x, y = gx + _srnd.randint(-3, 3), gy + _srnd.randint(-2, 2)
+        if 1 < x < W - 2 and 18 <= y < H - 2:
+            SITES.append((x, y))
 for i, (x, y) in enumerate(SITES):
     put(x, y, "enemysite index=%d" % i)
 # —— 战场：碎石、沙袋、木桩（少量，不挡路）
@@ -122,6 +125,20 @@ MONSTERS = {
     "hedgehog": "res://scenes/actors/monsters/brush_hedgehog.tscn",
     "spider": "res://scenes/actors/monsters/tickle_spider.tscn",
     "glove": "res://scenes/actors/monsters/ghost_glove.tscn",
+    # 第二轮加入的已有怪物
+    "bat": "res://scenes/actors/monsters/feather_bat.tscn",
+    "ghost": "res://scenes/actors/monsters/tickle_ghost.tscn",
+    "troll": "res://scenes/actors/monsters/tickle_troll.tscn",
+    "crab": "res://scenes/actors/monsters/pincer_crab.tscn",
+    "split_slime": "res://scenes/actors/monsters/split_slime.tscn",
+    "mana_jelly": "res://scenes/actors/monsters/mana_jelly.tscn",
+    "bubble_fish": "res://scenes/actors/monsters/bubble_fish.tscn",
+    "imp": "res://scenes/actors/monsters/machine_imp.tscn",
+    "frog": "res://scenes/actors/monsters/tongue_frog.tscn",
+    "octopus": "res://scenes/actors/monsters/suction_octopus.tscn",
+    "barnacle": "res://scenes/actors/monsters/barnacle.tscn",
+    "mini_tentacle": "res://scenes/actors/monsters/mini_tentacle.tscn",
+    "goblin_engineer": "res://scenes/siege/monsters/goblin_engineer.tscn",
     # 攻城怪（scenes/siege/monsters/，阶段 5 做）
     "cart": "res://scenes/siege/monsters/siege_cart.tscn",
     "hook": "res://scenes/siege/monsters/hook_climber.tscn",
@@ -177,7 +194,47 @@ WAVES = [
                                                         G("twin_ghost", 4, "bottom", 6.0, 24), G("vine", 6, "hole", 3.0, 26),
                                                         G("cart", 4, "bottom", 9.0, 28)]},
 ]
-# 敌塔：每波可能出现哪些（从敌塔地基出来的怪聚集起来就搭）
+# —— 第二轮：怪物 3 倍、加入更多已有怪物、成套生成（配合技）、地精工兵队、陷阱 3 倍 + 陷阱组合
+MULT = 3
+EXTRA = {   # 每波额外的已有怪物
+    1: [G("bat", 4, "left", 2.0, 8), G("frog", 3, "hole", 3.0, 12)],
+    2: [G("ghost", 4, "hole", 2.0, 6), G("crab", 4, "bottom", 2.0, 10), G("split_slime", 3, "right", 3.0, 14)],
+    3: [G("troll", 2, "bottom", 8.0, 6), G("bubble_fish", 4, "left", 2.0, 10), G("octopus", 2, "right", 6.0, 12)],
+    4: [G("glove", 4, "hole", 2.0, 6), G("ghost", 4, "hole", 2.0, 8), G("barnacle", 4, "bottom", 2.0, 12), G("mana_jelly", 2, "left", 5.0, 14)],
+    5: [G("troll", 3, "bottom", 6.0, 6), G("imp", 4, "right", 2.0, 8), G("hedgehog", 6, "hole", 1.5, 10), G("mini_tentacle", 4, "hole", 2.0, 16)],
+    6: [G("bat", 8, "left", 1.0, 4), G("frog", 4, "right", 2.0, 8), G("octopus", 3, "bottom", 4.0, 10), G("barnacle", 6, "bottom", 1.5, 12)],
+    7: [G("bubble_fish", 6, "hole", 1.5, 4), G("caterpillar", 6, "hole", 1.5, 6), G("mana_jelly", 3, "left", 4.0, 10), G("split_slime", 4, "right", 2.0, 14)],
+    8: [G("glove", 6, "hole", 1.5, 4), G("ghost", 6, "hole", 1.5, 6), G("troll", 3, "bottom", 6.0, 10), G("imp", 6, "left", 1.5, 12)],
+    9: [G("crab", 8, "bottom", 1.0, 4), G("frog", 6, "right", 1.5, 8), G("bat", 10, "left", 0.8, 10), G("mini_tentacle", 6, "hole", 1.5, 14)],
+    10: [G("troll", 4, "bottom", 5.0, 4), G("octopus", 4, "right", 3.0, 6), G("barnacle", 8, "bottom", 1.0, 8), G("bubble_fish", 8, "hole", 1.0, 10),
+         G("glove", 8, "hole", 1.0, 12), G("ghost", 8, "hole", 1.0, 14), G("mana_jelly", 4, "left", 3.0, 16)],
+}
+
+
+def F(formation, count, frm="bottom", interval=10.0, delay=0.0):
+    return {"formation": formation, "count": count, "from": frm, "interval": interval, "delay": delay}
+
+
+FORMATIONS = {   # 成套生成的配合技（data/teamwork.json）
+    2: [F("gecko_ladder", 1, "bottom", 0, 16), F("slime_merge", 2, "hole", 12, 8)],
+    3: [F("cart_escort", 1, "bottom", 0, 20), F("troll_throw", 1, "bottom", 0, 12), F("strip_shoes", 1, "hole", 0, 14)],
+    4: [F("raise_arms", 2, "hole", 15, 8), F("suction_chain", 1, "right", 0, 12), F("gecko_ladder", 1, "bottom", 0, 22)],
+    5: [F("cart_escort", 2, "bottom", 14, 10), F("bat_airdrop", 2, "left", 12, 8), F("feather_dance", 2, "hole", 15, 12), F("jelly_charge", 1, "left", 0, 16)],
+    6: [F("hedgehog_roll", 2, "hole", 14, 6), F("bubble_chain", 2, "hole", 14, 10), F("strip_shoes", 2, "hole", 12, 14)],
+    7: [F("slime_merge", 3, "bottom", 10, 6), F("bat_airdrop", 2, "right", 12, 10), F("gecko_ladder", 2, "bottom", 14, 14), F("troll_throw", 2, "bottom", 14, 18)],
+    8: [F("raise_arms", 3, "hole", 10, 6), F("suction_chain", 2, "right", 12, 10), F("feather_dance", 2, "hole", 12, 12), F("jelly_charge", 2, "left", 14, 16)],
+    9: [F("cart_escort", 2, "bottom", 10, 8), F("hedgehog_roll", 2, "hole", 10, 10), F("bubble_chain", 2, "hole", 10, 12), F("gecko_ladder", 1, "bottom", 12, 14)],
+    10: [F(t, 1, "bottom" if t in ("cart_escort", "gecko_ladder", "troll_throw") else "hole", 9, 4 + i * 3)
+         for i, t in enumerate(["cart_escort", "gecko_ladder", "troll_throw", "slime_merge", "raise_arms", "strip_shoes", "suction_chain",
+                                "feather_dance", "bubble_chain", "jelly_charge", "hedgehog_roll", "bat_airdrop"])],
+}
+ENGINEERS = {n: [F("engineer_escort", 1 + n // 2, "bottom", max(5.0, 16.0 - n), 4.0)] for n in range(2, 11)}
+ENGINEERS[1] = [F("engineer_escort", 1, "bottom", 0, 10.0)]
+HAZARD_COMBOS = {4: [(40, "net_link")], 5: [(46, "bubble_broom")], 6: [(50, "double_tornado")], 7: [(56, "fog_tornado")],
+                 8: [(40, "bubble_broom"), (64, "net_link")], 9: [(36, "double_tornado"), (60, "fog_tornado")],
+                 10: [(30, "bubble_broom"), (50, "double_tornado"), (70, "fog_tornado"), (90, "net_link")]}
+
+# 敌塔：每波可能出现哪些（地精工兵搭 / 怪物聚集起来搭）
 ENEMY_TOWERS = {
     3: ["glue", "windmill"], 4: ["vine_pull", "tailor", "glue"], 5: ["portal", "vine_pull", "windmill", "glue"],
     6: ["sole_tower", "net", "tailor"], 7: ["net", "sole_tower", "vine_pull", "glue"], 8: ["silence", "thigh_tower", "tailor"],
@@ -190,16 +247,39 @@ HAZARDS = {
     8: [(10, "fog"), (20, "wall_vine"), (32, "sticky_net"), (44, "broom")], 9: [(8, "tornado"), (18, "broom"), (28, "bubbles"), (40, "wall_vine"), (52, "fog")],
     10: [(8, "bubbles"), (16, "broom"), (24, "tornado"), (34, "wall_vine"), (44, "sticky_net"), (52, "link_rune"), (60, "fog"), (70, "broom")],
 }
+HAZARDS[2] = [(16, "tornado"), (30, "bubbles")]
+HAZARD_KINDS = ["tornado", "bubbles", "link_rune", "broom", "fog", "wall_vine", "sticky_net"]
+for n in range(2, 11):
+    base = HAZARDS.get(n, [])
+    # 陷阱 3 倍：原来的之间再插两倍的量（后几波每 6~8 秒一个）
+    extra = []
+    gap = max(6.0, 14.0 - n)
+    t, i = 6.0, n
+    while len(extra) < len(base) * 2 + 2:
+        extra.append((round(t, 1), HAZARD_KINDS[i % len(HAZARD_KINDS)]))
+        t += gap
+        i += 3
+    HAZARDS[n] = sorted(base + extra)
 for n, hz in HAZARDS.items():
-    WAVES[n - 1]["hazards"] = [{"t": t, "kind": k} for t, k in hz]
+    WAVES[n - 1]["hazards"] = [{"t": t, "kind": k} for t, k in hz] + [{"t": t, "combo": k} for t, k in HAZARD_COMBOS.get(n, [])]
+    WAVES[n - 1]["hazards"].sort(key=lambda h: h["t"])
 for n, kinds in ENEMY_TOWERS.items():
     WAVES[n - 1]["enemy_towers"] = kinds
     WAVES[n - 1]["groups"].append(G("slime" if n % 2 else "rat", 10 + n, "site", 0.5, 2.0))
 for i, w in enumerate(WAVES):
+    n = i + 1
+    for gr in w["groups"]:
+        gr["count"] *= MULT
+        gr["interval"] = round(max(0.15, gr["interval"] / 2.0), 2)
+    for gr in EXTRA.get(n, []):
+        gr = dict(gr)
+        gr["interval"] = round(max(0.2, gr["interval"] / 2.0), 2)
+        w["groups"].append(gr)
     w["groups"] = [gr for gr in w["groups"] if gr["monster"] in have]
+    w["groups"] += FORMATIONS.get(n, []) + ENGINEERS.get(n, [])
     w["theater"] = "siege_fail_%d" % (i + 1)
 WAVE_DATA = {"_说明": ["小镇攻防战的波次（gen_floor06_siege.py 生成；SiegeDirector 读）。怪物表只有已经做好的怪。"],
-             "wall_hp": 2400, "prep_first": 30, "prep": 20, "alive_cap": 90, "start_crystals": 24,
+             "wall_hp": 3600, "prep_first": 30, "prep": 20, "ability_rate": 3.0, "start_crystals": 30,
              "monsters": have, "waves": WAVES}
 Path("data/siege").mkdir(parents=True, exist_ok=True)
 Path("data/siege/waves.json").write_text(json.dumps(WAVE_DATA, ensure_ascii=False, indent="\t") + "\n")
@@ -315,6 +395,22 @@ TEMP_INTEL = {
     "t_bell_anklet": ("铃铛脚链", "负面", "一动就叮铃响，把附近的怪引过来。"),
     "t_mark_patch": ("痒痒印记臀贴", "负面", "怪物优先找她，闷笑涨得更快。"),
 }
+TEAMS = json.loads(Path("data/teamwork.json").read_text())["teams"] if Path("data/teamwork.json").exists() else []
+for t in TEAMS:
+    INTEL["team_" + t["id"]] = I(t["name"], "怪物配合技", t["intel"]["desc"], t["intel"]["mech"], t["intel"]["how"])
+    INTEL["team_" + t["id"]]["icon"] = t["members"][0]["key"] if isinstance(t["members"][0]["key"], str) else t["members"][0]["key"][0]
+HZC = {
+    "bubble_broom": ("泡泡扫帚", "泡泡潮把怪运到墙下的同时，羽毛扫帚从墙顶扫过。", "蓝色公主先躲扫帚，粉色公主去墙下接住运来的怪。", "bubbles"),
+    "double_tornado": ("双龙卷", "两个龙卷风反方向绕着一个中心转，被一个甩出去很容易又被另一个卷走。", "往两个龙卷风都够不着的外圈跑。", "tornado"),
+    "fog_tornado": ("迷雾龙卷", "龙卷风藏在迷雾里游走，只看得到卷起的粉尘；卷着的时候雾里的手一起挠。", "别进雾里；看到粉尘就绕开。", "fog"),
+    "net_link": ("黏网连线", "痒感连线符文旁紧接着落下黏网：网里被挠，连线另一头的蓝色公主也跟着痒。", "先打碎符文石，再让蓝色公主割网。", "link_rune"),
+}
+for k, (name, mech, how, icon) in HZC.items():
+    INTEL["hzcombo_" + k] = I(name, "陷阱组合", "几个大范围陷阱成套出现。", mech, how)
+    INTEL["hzcombo_" + k]["icon"] = "hazard_" + icon
+INTEL["goblin_engineer"] = I("地精工兵", "攻城怪", "戴着安全帽、扛着木料的地精，三只一队。",
+                             "走到离自己最近的空地基搭敌塔（地基上出进度条，12 秒）；搭完去找下一个。冻住时进度停下，冻久了倒退。",
+                             "看到进度条就去打工兵；蓝色公主的冰晶结界能冻住他们。")
 for k, (name, kind, mech) in TEMP_INTEL.items():
     INTEL["equip_" + k] = I(name, "临时痒痒装备·" + kind, "被痒痒裁缝铺或捆绑藤怪强制穿上的装备，20 秒后自己掉。", mech,
                              "另一位公主靠近按住 E 2 秒帮忙解开；蓝色公主的清凉雪花也能解开。蓝色公主穿着千手痒痒裤时，大腿 / 屁股的会被裤子吸收（裤子变得更频繁、更重）。")
@@ -375,5 +471,12 @@ else:
     i = next(i for i, f in enumerate(lst) if f["id"] == "floor_06_war") + 1
     lst.insert(i, entry)
 Path("data/floors.json").write_text(json.dumps(floors, ensure_ascii=False, indent="\t") + "\n")
-print("%s：%dx%d，图例 %d 种；怪物 %d 种，10 波（共 %d 只）" % (FID, W, H, len(specs), len(have),
-                                                     sum(gr["count"] for w in WAVES for gr in w["groups"])))
+def _count(gr):
+    if "formation" in gr:
+        tw = next((t for t in TEAMS if t["id"] == gr["formation"]), None)
+        return gr["count"] * (sum(f[1] for f in tw["formation"]) if tw else 0)
+    return gr["count"]
+
+
+print("%s：%dx%d，图例 %d 种；怪物 %d 种，10 波（共约 %d 只，最后一波 %d 只），地基 %d 个" % (
+    FID, W, H, len(specs), len(have), sum(_count(gr) for w in WAVES for gr in w["groups"]), sum(_count(gr) for gr in WAVES[9]["groups"]), len(SITES)))

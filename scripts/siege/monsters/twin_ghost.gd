@@ -79,9 +79,25 @@ func is_alive() -> bool:
 	return _down_at < 0.0 and super()
 
 
+## 两只之间一条忽明忽暗的连线。
+func _process(_delta: float) -> void:
+	if half == "a":
+		queue_redraw()
+
+
+func _draw() -> void:
+	if half != "a" or twin == null or not is_instance_valid(twin):
+		return
+	var a := 0.25 + 0.2 * sin(Time.get_ticks_msec() / 200.0)
+	draw_line(Vector2(0, -10), to_local(twin.global_position) + Vector2(0, -10), Color(1, 0.75, 0.95, a), 1.0)
+
+
 func _revive_half() -> void:
 	_down_at = -1.0
 	modulate.a = 1.0
 	health.fill()
 	Fx.burst(get_parent(), global_position + Vector2(0, -10), "ember", 10, 40.0, 0.5, Vector2(0, -20), Color(1, 0.7, 0.9))
+	var r := SiegeFx.ring(get_parent(), global_position, 10.0, Color(0.9, 0.7, 1.0, 0.9), 0.5, 0.2)
+	if r:
+		r.create_tween().tween_property(r, "scale", Vector2(3, 3), 0.45)
 	SpeechBubble.say(self, "复活啦～", 24.0, 1.2)

@@ -20,6 +20,8 @@ static var _data := {}
 
 var site: Node2D
 var director: SiegeDirector
+## 威力倍数（工兵护送搭成的塔：第一次发动 ×2，发动完回到 1）
+var power := 1.0
 var reaction_key := ""
 var _t := 1.5
 var _spr: Sprite2D
@@ -131,7 +133,11 @@ func _tick(delta: float) -> void:
 	_t -= delta
 	if _t > 0.0:
 		return
-	_t = float(p("interval", 6.0))
+	# 发动间隔按攻防战的频率倍数缩短（waves.json 的 ability_rate）
+	_t = float(p("interval", 6.0)) / SiegeDirector.ability_rate()
+	var boosted := power > 1.0
+	if boosted:
+		Fx.burst(get_parent(), global_position + Vector2(0, -24), "ember", 14, 50.0, 0.6, Vector2(0, -20), Color(1, 0.5, 0.9))
 	match kind:
 		"vine_pull": _vine_throw()
 		"tailor": _tailor()
@@ -143,6 +149,8 @@ func _tick(delta: float) -> void:
 		"totem": _totem()
 		"thigh_tower": _thigh()
 		"sole_tower": _sole()
+	if boosted:
+		power = 1.0
 
 
 func _in_range(c: PlayableCharacter, r: float) -> bool:
@@ -167,7 +175,7 @@ func _line(c: PlayableCharacter) -> void:
 func _tickle(c: PlayableCharacter, amount: float, zone: String) -> void:
 	if not _alive(c):
 		return
-	var h := HitData.make_tickle(self, amount)
+	var h := HitData.make_tickle(self, amount * power)
 	h.zone = zone
 	c.receive_hit(h)
 

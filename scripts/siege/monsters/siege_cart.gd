@@ -23,6 +23,20 @@ func _setup() -> void:
 	set_meta("siege_alert", true)
 
 
+## 攻城车护卫阵：车前（靠城墙那边）有活着的盾甲螃蟹时，从前面 / 上面来的攻击打不到车。
+func block_hit(hit: HitData) -> bool:
+	if hit.source == null or not is_instance_valid(hit.source) or not (hit.source is Node2D):
+		return false
+	if (hit.source as Node2D).global_position.y >= global_position.y - 6.0:
+		return false
+	for g in get_meta("escorts", []):
+		if g != null and is_instance_valid(g) and (g as Actor).is_alive() and (g as Node2D).global_position.y < global_position.y \
+				and (g as Node2D).global_position.distance_to(global_position) < 34.0:
+			Fx.burst(get_parent(), (g as Node2D).global_position + Vector2(0, -10), "chip", 4, 40.0, 0.3, Vector2(0, 40), Color(1, 0.9, 0.5))
+			return true
+	return false
+
+
 func siege_wander(_mind: SiegeMind, delta: float) -> bool:
 	if director == null:
 		return true
@@ -38,6 +52,11 @@ func siege_wander(_mind: SiegeMind, delta: float) -> bool:
 				_phase = "charge"
 		"charge":
 			_speed = minf(TOP_SPEED, _speed + ACCEL * delta)
+			# 车轮扬尘拖尾、车身颠
+			if randf() < delta * 14.0:
+				Fx.burst(get_parent(), global_position + Vector2(randf_range(-12, 12), 2), "dust", 2, 25.0, 0.6, Vector2(0, 10), Color(0.75, 0.65, 0.55))
+			if sprite:
+				sprite.position.y = -absf(sin(_t * 22.0)) * 1.5
 			var dir := global_position.direction_to(_goal)
 			velocity = dir * _speed * stat_mul("speed")
 			var p := director.pink
@@ -72,9 +91,12 @@ func _impact() -> void:
 		if b and is_instance_valid(b) and director.is_on_wall(b) and absf(b.global_position.x - global_position.x) < 90.0:
 			director.knock_off(b, "攻城痒痒车")
 	Fx.burst(get_parent(), global_position + Vector2(0, -8), "dust", 24, 90.0, 0.8, Vector2(0, 30), Color(0.8, 0.7, 0.6))
+	# 冲击波圆环
+	var ring := SiegeFx.ring(get_parent(), global_position + Vector2(0, -4), 14.0, Color(1, 0.85, 0.6, 0.9), 0.5, 0.1)
+	if ring:
+		ring.create_tween().tween_property(ring, "scale", Vector2(4, 2.5), 0.45)
 	Fx.burst(get_parent(), global_position + Vector2(0, -8), "chip", 14, 80.0, 0.7, Vector2(0, 120), Color(0.6, 0.4, 0.3))
 	Audio.play("wall_crash", 0.0)
-	var cam := get_viewport().get_camera_2d()
-	if cam and cam.has_method("shake"):
-		cam.call("shake", 0.4, 3.0)
+	if director.on_screen(global_position):
+		SiegeFx.screen_shake(self, 4.0, 0.45)
 	health.damage(health.hp)

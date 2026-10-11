@@ -4082,7 +4082,7 @@
 				]
 			],
 			"window": 3.0,
-			"cooldown": 12.0,
+			"cooldown": 4.0,
 			"effects": [
 				{
 					"type": "burst",
@@ -4119,7 +4119,7 @@
 				]
 			],
 			"window": 3.0,
-			"cooldown": 12.0,
+			"cooldown": 4.0,
 			"effects": [
 				{
 					"type": "burst",
@@ -4155,7 +4155,7 @@
 				]
 			],
 			"window": 3.0,
-			"cooldown": 12.0,
+			"cooldown": 4.0,
 			"effects": [
 				{
 					"type": "burst",
@@ -4195,7 +4195,7 @@
 				]
 			],
 			"window": 3.0,
-			"cooldown": 12.0,
+			"cooldown": 4.0,
 			"effects": [
 				{
 					"type": "burst",
@@ -4228,7 +4228,7 @@
 				]
 			],
 			"window": 3.0,
-			"cooldown": 12.0,
+			"cooldown": 4.0,
 			"effects": [
 				{
 					"type": "burst",
@@ -4267,7 +4267,7 @@
 				]
 			],
 			"window": 3.0,
-			"cooldown": 12.0,
+			"cooldown": 4.0,
 			"effects": [
 				{
 					"type": "burst",
@@ -4300,7 +4300,7 @@
 				]
 			],
 			"window": 3.0,
-			"cooldown": 12.0,
+			"cooldown": 4.0,
 			"effects": [
 				{
 					"type": "burst",
@@ -4338,7 +4338,7 @@
 				]
 			],
 			"window": 3.0,
-			"cooldown": 12.0,
+			"cooldown": 4.0,
 			"effects": [
 				{
 					"type": "burst",

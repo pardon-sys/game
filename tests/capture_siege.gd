@@ -35,21 +35,24 @@ func _ready() -> void:
 	await _shot("prep")
 	# 冰塔：两人一起造（冰光）
 	d.add_crystals(300)
-	var pads := get_tree().get_nodes_in_group("siege_pad")
-	pads.sort_custom(func(a, b): return a.index < b.index)
-	var pad: BuildPad = pads[4]
+	var base := Vector2(d.gate_pos.x - 240.0, d.wall_foot_y() + 80.0)
+	var pad := BuildPad.new()
+	d.entities().add_child(pad)
+	pad.global_position = base + Vector2(120, 60)
 	d.pink.global_position = pad.global_position + Vector2(0, 14)
 	pad.request("frost")
 	await _until(func(): return pad.beaming, 15.0)
 	await _wait(1.2)
 	await _shot("build_beam")
-	await _until(func(): return pad.tower != null, 6.0)
+	await _until(func(): return pad.tower != null, 8.0)
 	# 6 种冰塔排一排
 	var kinds := ["icicle", "snowman", "decoy", "mint", "frost", "repair"]
 	for i in kinds.size():
-		var pd: BuildPad = pads[i + 1] if i < 3 else pads[i + 2]
+		var pd := BuildPad.new()
+		d.entities().add_child(pd)
+		pd.global_position = base + Vector2(i * 56.0, 0)
 		pd._build(kinds[i], 2 if i % 2 == 0 else 1)
-	await _look(Vector2((pads[1].global_position.x + pads[7].global_position.x) / 2.0, pads[1].global_position.y - 30.0), 0.6)
+	await _look(base + Vector2(140, -30), 0.6)
 	await _wait(0.6)
 	await _shot("towers")
 	_unlook()
@@ -59,7 +62,7 @@ func _ready() -> void:
 	for i in mini(sites.size(), ek.size()):
 		(sites[i] as EnemySite).build(ek[i])
 	await _wait(0.8)
-	await _look((sites[1] as Node2D).global_position + Vector2(0, -30), 0.7)
+	await _look((sites[0] as Node2D).global_position + Vector2(0, -30), 0.5)
 	await _shot("enemy_towers")
 	_unlook()
 	# 开打：100 多只怪
@@ -97,8 +100,7 @@ func _ready() -> void:
 	await _wait(0.3)
 	d.blue.global_position = Vector2(d.gate_pos.x + 16.0, d.wall_top_y() + 4.0)
 	d.blue.set_meta("siege_cd", {})
-	d.aim.open(d.blue)
-	d.aim.spell = "barrier"
+	d.aim.open(d.blue, "barrier")
 	await _wait(0.6)
 	await _shot("aim")
 	d.aim.close()

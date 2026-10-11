@@ -11,10 +11,11 @@ extends Node2D
 ##   粉色公主默认操控，地面近战；AI 时用 CompanionController（SiegeAIHooks：闷笑高时去薄荷冰泉、没事做时去最危险的那段墙下）。
 ##   蓝色公主在城墙顶走道（SiegeMageController：自动放法术；被挠下城墙后 10 秒走到梯子爬回去）。
 ##   镜头（SiegeCamera）：滚轮 / - / = 缩放（0.5~1.5 倍），V 切换整个战场的全景（暂停）。
-##   玩家操控蓝色公主时按 L：瞄准施法（SpellAim，选点放 4 个城墙法术）。
+##   玩家操控蓝色公主时按 1~4：瞄准施法（SpellAim，选点放 4 个城墙法术；L 仍是她自己的冰晶结界）。
 ##   倒下（death_override）：放笑倒 CG（按她自己的角色版本）；粉色公主在城门复活、城墙扣一点血；
 ##   蓝色公主倒在原地（Downed.timeless：不倒计时、不会自己起来），要粉色公主过去按住 E 救。
 ## 怪物：每只挂 SiegeMind（行军大脑；攻城怪自己的 make_mind() 给特别的大脑）。目标表 nearest_target 每次只查几个对象，不扫全场。
+## 建塔：粉色公主按 B（siege_build）在脚下放冰塔基座（BuildPad，try_build / build_blocked），蓝色公主冰光造出来。
 ## 冰晶：打倒怪物 +1（大怪更多）、每波奖励；造塔 / 升级用（spend）。存在 GameState.vars（siege_wave / siege_crystals）。
 
 signal state_changed(state: String)
@@ -35,6 +36,11 @@ const FALLEN_TIME := 10.0
 const SITE_HOLD := 14.0
 
 static var current: SiegeDirector
+
+
+## 怪物 / 敌塔特殊能力和陷阱的频率倍数（waves.json 的 ability_rate，默认 1）。
+static func ability_rate() -> float:
+	return float(current.data.get("ability_rate", 1.0)) if current else 1.0
 
 var data := {}
 var wave := 1
@@ -58,6 +64,7 @@ var hud: SiegeHud
 var intel: SiegeIntel
 var cam: SiegeCamera
 var aim: SpellAim
+var teamwork: MonsterTeamwork
 ## 这一波还没出的怪：[{t, monster, from}]（t = 战斗开始后第几秒出）
 var _queue: Array = []
 ## 这一波还没放的大范围陷阱：[{t, kind}]
@@ -92,6 +99,12 @@ func _exit_tree() -> void:
 	PlayerInputController.movement_locked = false
 	PlayerInputController.actions_locked = false
 	Downed.timeless = false
+	# 离开攻防战：两位公主的镜头恢复默认（倍数 1、跟着人）
+	for c: PlayableCharacter in [pink, blue]:
+		if c and is_instance_valid(c) and c.camera:
+			c.camera.zoom = Vector2.ONE
+			c.camera.top_level = false
+			c.camera.position = Vector2.ZERO
 	if Duo.director == self:
 		Duo.stop()
 	Equipment.clear_forced()
@@ -176,11 +189,15 @@ func _setup() -> void:
 	aim = SpellAim.new()
 	aim.director = self
 	add_child(aim)
-	PlayableCharacter.magic_override = func(c: PlayableCharacter) -> bool:
-		if c == blue and c.is_controlled():
-			aim.open(c)
-			return true
-		return false
+	teamwork = MonsterTeamwork.new()
+	teamwork.spawn_func = func(k: String, at: Vector2) -> Monster: return spawn(k, "", at)
+	teamwork.monsters_func = func() -> Array: return monsters
+	teamwork.triggered.connect(func(id: String, _at: Vector2):
+		intel.discover("team_" + id)
+		Audio.play("combo", -4.0, 0.05))
+	add_child(teamwork)
+	_restore_towers()
+	_spawn_soldiers()
 	wave = clampi(int(GameState.vars.get("siege_wave", 1)), 1, TOTAL_WAVES)
 	crystals = int(GameState.vars.get("siege_crystals", int(data.get("start_crystals", 20))))
 	crystals_changed.emit(crystals)
@@ -194,7 +211,7 @@ func _make_ai(c: PlayableCharacter) -> CharacterController:
 		m.director = self
 		return m
 	var cc := CompanionController.new()
-	cc.behaviours.assign(["struggle", "dodge", "revive", "safe", "attack", "objective"])
+	cc.behaviours.assign(["struggle", "dodge", "revive", "safe", "attack", "objective", "wander"])
 	cc.hooks = hooks
 	return cc
 
@@ -233,7 +250,10 @@ func _begin_fight() -> void:
 		var iv := float(g.get("interval", 1.0))
 		var delay := float(g.get("delay", 0.0))
 		for i in n:
-			_queue.append({"t": delay + i * iv, "monster": str(g.get("monster", "slime")), "from": str(g.get("from", "bottom"))})
+			if g.has("formation"):
+				_queue.append({"t": delay + i * iv, "formation": str(g["formation"]), "from": str(g.get("from", "bottom"))})
+			else:
+				_queue.append({"t": delay + i * iv, "monster": str(g.get("monster", "slime")), "from": str(g.get("from", "bottom"))})
 	_queue.sort_custom(func(a, b): return float(a["t"]) < float(b["t"]))
 	_total_this_wave = _queue.size()
 	_hazards = (wave_data().get("hazards", []) as Array).duplicate(true)
@@ -290,12 +310,20 @@ func _process(delta: float) -> void:
 		"fight":
 			_fight_t += delta
 			monsters = monsters.filter(func(m): return is_instance_valid(m) and m.is_alive())
-			var cap := int(data.get("alive_cap", 90))
+			# 场上不设上限（alive_cap 写了才限制）
+			var cap := int(data.get("alive_cap", 1 << 30))
 			while not _queue.is_empty() and float(_queue[0]["t"]) <= _fight_t and monsters.size() < cap:
 				var q: Dictionary = _queue.pop_front()
-				spawn(str(q["monster"]), str(q["from"]))
+				if q.has("formation"):
+					teamwork.spawn_formation(str(q["formation"]), spawn_pos(str(q["from"])))
+				else:
+					spawn(str(q["monster"]), str(q["from"]))
 			while not _hazards.is_empty() and float(_hazards[0]["t"]) <= _fight_t:
-				spawn_hazard(str(_hazards.pop_front()["kind"]))
+				var hz: Dictionary = _hazards.pop_front()
+				if hz.has("combo"):
+					spawn_hazard_combo(str(hz["combo"]))
+				else:
+					spawn_hazard(str(hz["kind"]))
 			if _queue.is_empty() and monsters.is_empty():
 				_clear_wave()
 
@@ -338,6 +366,10 @@ func spawn(key: String, from := "bottom", at = null) -> Monster:
 	var pos: Vector2 = at if at is Vector2 else (site.global_position + Vector2(randf_range(-30, 30), randf_range(-20, 20)) if site else spawn_pos(from))
 	entities().add_child(m)
 	m.global_position = pos
+	# 攻防战里怪物之间不互相挡（几百只同时在场时省物理计算）
+	m.collision_mask = 1 if m.collision_mask != 0 else 0
+	m.add_buff("siege_rapid", 99999.0)
+	_speed_up_specials(m)
 	m.mind = m.call("make_mind", self) if m.has_method("make_mind") else SiegeMind.new(self)
 	if site and m.mind is SiegeMind:
 		(m.mind as SiegeMind).hold(site.global_position, SITE_HOLD)
@@ -379,6 +411,61 @@ func _hazard_pos(kind: String) -> Vector2:
 			return near
 	var p := near + Vector2(randf_range(-90, 90), randf_range(-60, 60))
 	return Vector2(clampf(p.x, 60.0, ms.x - 60.0), clampf(p.y, field_top, ms.y - 60.0))
+
+
+## 怪物特殊能力的间隔按 ability_rate 缩短（翻滚、吐泡泡、舌头、吐丝、召唤、再扑上来……；抓住后的挠痒节奏不动）。
+const SPECIAL_PROPS := ["roll_cooldown", "shot_cooldown", "brush_cooldown", "combo_cooldown", "switch_cooldown", "tongue_cooldown",
+	"web_cooldown", "relatch_delay", "summon_interval", "puddle_interval", "strike_interval"]
+
+
+func _speed_up_specials(m: Monster) -> void:
+	var r := ability_rate()
+	if r <= 1.0:
+		return
+	for prop in SPECIAL_PROPS:
+		var v: Variant = m.get(prop)
+		if v is float:
+			m.set(prop, float(v) / r)
+
+
+## 陷阱组合（成套出现）：bubble_broom 泡泡扫帚 / double_tornado 双龙卷 / fog_tornado 迷雾龙卷 / net_link 黏网连线。
+const HAZARD_COMBOS := {"bubble_broom": ["泡泡扫帚", "#9fd8ff"], "double_tornado": ["双龙卷", "#e0b0ff"],
+	"fog_tornado": ["迷雾龙卷", "#ffb0d8"], "net_link": ["黏网连线", "#ffd0f0"]}
+
+
+func spawn_hazard_combo(kind: String) -> Array:
+	var made: Array = []
+	var near := pink.global_position if pink and is_instance_valid(pink) else gate_pos + Vector2(0, 200)
+	var c := _hazard_pos("tornado")
+	match kind:
+		"bubble_broom":
+			made.append(spawn_hazard("bubbles"))
+			made.append(spawn_hazard("broom"))
+		"double_tornado":
+			for i in 2:
+				# 一里一外两圈、方向相反：不会叠成一个，甩出去容易落进另一个的路上
+				var t := spawn_hazard("tornado", c + Vector2(60.0 if i == 0 else -110.0, 0)) as HazardTornado
+				if t:
+					t.orbit_center = c
+					t.orbit_dir = 1.0 if i == 0 else -1.0
+					made.append(t)
+		"fog_tornado":
+			var f := spawn_hazard("fog", c) as HazardFog
+			var t2 := spawn_hazard("tornado", c) as HazardTornado
+			if t2:
+				t2.hidden_in = f
+			made += [f, t2]
+		"net_link":
+			made.append(spawn_hazard("link_rune", near + Vector2(10, 0)))
+			var wr: WeakRef = weakref(self)
+			get_tree().create_timer(1.0).timeout.connect(func():
+				var d2 := wr.get_ref() as SiegeDirector
+				if d2 and d2.state == "fight":
+					d2.spawn_hazard("sticky_net"))
+	var info: Array = HAZARD_COMBOS.get(kind, [kind, "#ffffff"])
+	teamwork.announce(str(info[0]), c, Color(str(info[1])), "陷阱组合：")
+	intel.discover("hzcombo_" + kind)
+	return made
 
 
 ## 这个位置在痒痒迷雾里吗（蓝色公主看不见、支援不了）。
@@ -655,6 +742,70 @@ func lock_up(c: PlayableCharacter, at: Variant = null, sec := LOCK_TIME) -> void
 
 
 # ------------------------------------------------------------------ 造塔
+const BUILD_GAP := 32.0
+const BUILD_MARGIN := 24.0
+const BUILD_FROM_WALL := 30.0
+
+
+## 粉色公主按 B：站在已有冰塔旁边 → 升级 / 拆掉；否则在脚下放一个冰塔基座、选塔。
+func _unhandled_input(event: InputEvent) -> void:
+	if not event.is_action_pressed("siege_build") or state == "" or _busy or GameState.in_dialogue or get_tree().paused:
+		return
+	var p := GameState.player
+	if p == null or p != pink:
+		if p == blue:
+			GameState.notify("建塔要粉色公主来：先按 C 换过去")
+		return
+	get_viewport().set_input_as_handled()
+	try_build(pink, pink.global_position)
+
+
+## 在这里建（或者打开旁边那座塔的菜单）。返回基座（不能建返回 null，并提示原因）。
+func try_build(c: PlayableCharacter, at: Vector2) -> BuildPad:
+	for pd in get_tree().get_nodes_in_group("siege_pad"):
+		if (pd as Node2D).global_position.distance_to(at) < 18.0:
+			(pd as BuildPad).on_pink(c)
+			return pd
+	var why := build_blocked(at)
+	if why != "":
+		GameState.notify("这里不能建：" + why)
+		Audio.play("locked", -6.0)
+		return null
+	var pad := BuildPad.new()
+	entities().add_child(pad)
+	pad.global_position = at.snapped(Vector2(4, 4))
+	pad.on_pink.call_deferred(c)
+	return pad
+
+
+## 不能建的原因（"" = 能建）：城墙上 / 太靠近城墙、离别的冰塔或敌塔地基不到 2 格、地图边上。
+func build_blocked(at: Vector2) -> String:
+	var ms := map_size()
+	if at.x < BUILD_MARGIN or at.x > ms.x - BUILD_MARGIN or at.y > ms.y - BUILD_MARGIN:
+		return "太靠边了"
+	if at.y < wall_foot_y() + BUILD_FROM_WALL:
+		return "城墙上 / 离城墙太近"
+	for g in ["siege_pad", "siege_tower", "siege_enemy_site", "siege_enemy_tower"]:
+		for n in get_tree().get_nodes_in_group(g):
+			if (n as Node2D).global_position.distance_to(at) < BUILD_GAP:
+				return "离别的塔太近"
+	return ""
+
+
+## 读存档里的冰塔（[{x, y, kind, level}]）。
+func _restore_towers() -> void:
+	var saved: Variant = GameState.vars.get("siege_towers", [])
+	if not saved is Array:
+		return
+	for t in saved:
+		if not t is Dictionary:
+			continue
+		var pad := BuildPad.new()
+		entities().add_child(pad)
+		pad.global_position = Vector2(float(t["x"]), float(t["y"]))
+		pad._build.call_deferred(str(t["kind"]), int(t["level"]), true)
+
+
 ## 正在等蓝色公主冰光的冰塔格（第一个；没有返回 null）。
 func build_request() -> Variant:
 	for pad in get_tree().get_nodes_in_group("siege_pad"):
@@ -691,11 +842,13 @@ func nearest_target(m: Monster, max_range: float) -> Actor:
 	return best
 
 
-func enemies_near(pos: Vector2, r: float) -> Array[Monster]:
+func enemies_near(pos: Vector2, r: float, include_fog := true) -> Array[Monster]:
 	var out: Array[Monster] = []
 	var r2 := r * r
 	for m in monsters:
 		if is_instance_valid(m) and m.is_alive() and m.global_position.distance_squared_to(pos) <= r2:
+			if not include_fog and m.get_meta("in_fog", false):
+				continue
 			out.append(m)
 	return out
 
@@ -791,8 +944,10 @@ func _down_seq(c: PlayableCharacter) -> void:
 	if not is_instance_valid(c):
 		return
 	if c == blue:
-		# 倒在原地，等粉色公主来救
-		Downed.start(c)
+		# 倒在原地：友军士兵过来把她抬上城墙复活；没人来的话 BLUE_REVIVE 秒后自己起来；粉色公主也能按住 E 救
+		var dn := Downed.start(c)
+		dn.revive_after = BLUE_REVIVE
+		call_bearers(c)
 		return
 	GameState.set_checkpoint(gate_pos)
 	c.respawn()
@@ -803,6 +958,66 @@ func _down_seq(c: PlayableCharacter) -> void:
 
 func on_defeat(_reason: String) -> void:
 	pass
+
+
+# ------------------------------------------------------------------ 友军士兵
+const SPEARMEN := 6
+const ARCHERS := 4
+## 蓝色公主没人来抬时，多久自己复活
+const BLUE_REVIVE := 40.0
+var soldiers: Array[SiegeSoldier] = []
+
+
+func _spawn_soldiers() -> void:
+	if walls.is_empty():
+		return
+	var ms := map_size()
+	for i in SPEARMEN:
+		var s := SiegeSoldier.new()
+		s.role = "spear"
+		s.director = self
+		entities().add_child(s)
+		s.global_position = Vector2(ms.x * (i + 0.5) / SPEARMEN, wall_foot_y() + 26.0)
+		s.post = s.global_position
+		soldiers.append(s)
+		extra_targets.append(s)
+	for i in ARCHERS:
+		var a := SiegeSoldier.new()
+		a.role = "archer"
+		a.director = self
+		entities().add_child(a)
+		a.global_position = Vector2(ms.x * (i + 0.5) / ARCHERS + 30.0, wall_top_y() - 10.0)
+		a.post = a.global_position
+		soldiers.append(a)
+
+
+## 叫士兵来抬倒下的蓝色公主（墙下：两个长矛兵；墙顶：一个弓箭手）。返回派了几个。
+func call_bearers(b: PlayableCharacter) -> int:
+	var role := "archer" if is_on_wall(b) else "spear"
+	var need := 1 if role == "archer" else 2
+	var pool := soldiers.filter(func(s): return is_instance_valid(s) and s.role == role and s.available())
+	pool.sort_custom(func(x, y): return x.global_position.distance_to(b.global_position) < y.global_position.distance_to(b.global_position))
+	var picked := pool.slice(0, need)
+	for i in picked.size():
+		var partner: SiegeSoldier = picked[1 - i] if picked.size() == 2 else null
+		(picked[i] as SiegeSoldier).assign_carry(b, partner)
+	if not picked.is_empty():
+		GameState.notify("士兵们赶去救蓝色的公主！")
+	return picked.size()
+
+
+## 蓝色公主复活（士兵抬上城墙 / 扶起来）。
+func revive_blue(b: PlayableCharacter, msg := "") -> void:
+	var dn := b.get_node_or_null("Downed") as Downed
+	if dn:
+		dn.revive_now()
+	if not is_on_wall(b):
+		b.global_position = Vector2(b.global_position.x, wall_top_y() + 4.0)
+	if b.laugh:
+		b.laugh.set_value(0.0)
+	b.set_meta("siege_carried", false)
+	if msg != "":
+		GameState.notify(msg)
 
 
 # ------------------------------------------------------------------ 失败 / 胜利
@@ -851,6 +1066,16 @@ func clear_field() -> void:
 	Equipment.clear_forced()
 
 
+## 士兵全部下场 / 回岗（测试和以后的剧情用）。
+func bench_soldiers(benched: bool) -> void:
+	for s in soldiers:
+		if not is_instance_valid(s):
+			continue
+		s.reset_post()
+		s.retreating = benched
+		s.visible = not benched
+
+
 func reset_after_fail() -> void:
 	wall_hp = wall_max
 	for w in walls:
@@ -873,6 +1098,9 @@ func reset_after_fail() -> void:
 		c.set_physics_process(true)
 		if c.sprite:
 			c.sprite.modulate.a = 1.0
+	for s in soldiers:
+		if is_instance_valid(s):
+			s.reset_post()
 	if pink:
 		pink.global_position = gate_pos
 	if blue and not walls.is_empty():

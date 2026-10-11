@@ -79,6 +79,20 @@ static func beam(parent: Node, from: Vector2, to: Vector2, col: Color, time: flo
 	return l
 
 
+## 屏幕震动（当前镜头的 offset 抖几下再回来）。
+static func screen_shake(node: Node, strength := 3.0, time := 0.35) -> void:
+	var cam := node.get_viewport().get_camera_2d() if node and node.is_inside_tree() else null
+	if cam == null:
+		return
+	var base := cam.offset
+	var tw := cam.create_tween()
+	var steps := maxi(2, int(time / 0.04))
+	for i in steps:
+		var f := 1.0 - float(i) / steps
+		tw.tween_property(cam, "offset", base + Vector2(randf_range(-1, 1), randf_range(-1, 1)) * strength * f, 0.04)
+	tw.tween_property(cam, "offset", base, 0.04)
+
+
 ## 三来源组合的专属特效（在公主身上放）。
 static func combo_fx(c: Node2D, kind: String) -> void:
 	var parent := c.get_parent()

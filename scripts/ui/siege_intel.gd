@@ -68,8 +68,10 @@ func _rebuild() -> void:
 	for b in _buttons:
 		b.queue_free()
 	_buttons.clear()
-	for i in mini(shown.size(), MAX_ICONS):
-		var key := shown[i]
+	# 看过的图标不再留在右边（暂停菜单的「战场情报」里还能翻）
+	var unread := shown.filter(func(k): return not GameState.has_flag("siege_intel_" + k))
+	for i in mini(unread.size(), MAX_ICONS):
+		var key: String = unread[i]
 		var b := Button.new()
 		b.flat = true
 		b.focus_mode = Control.FOCUS_NONE
@@ -113,19 +115,30 @@ func _process(delta: float) -> void:
 		b.visible = not hide_icons
 
 
+## 卡片开着时 Esc / E / H / 点击只关卡片（在 _input 里先处理，暂停菜单收不到这次 Esc）。
+func _input(event: InputEvent) -> void:
+	if card and card.visible and event.is_pressed() and not event.is_echo() and (event.is_action("pause") or event.is_action("ui_cancel")
+			or event.is_action("interact") or event.is_action("intel") or (event is InputEventMouseButton and not _over_icon(event))):
+		close()
+		get_viewport().set_input_as_handled()
+
+
+func _over_icon(event: InputEvent) -> bool:
+	var mb := event as InputEventMouseButton
+	return mb != null and _buttons.any(func(b): return is_instance_valid(b) and (b as Control).get_global_rect().has_point(mb.position))
+
+
 func _unhandled_input(event: InputEvent) -> void:
 	if card and card.visible:
-		if event.is_pressed() and not event.is_echo() and (event.is_action("pause") or event.is_action("ui_cancel") or event.is_action("interact")
-				or event.is_action("intel") or event is InputEventMouseButton):
-			close()
-			get_viewport().set_input_as_handled()
 		return
 	if event.is_action_pressed("intel") and not GameState.in_dialogue and not shown.is_empty():
-		var key := shown[0]
+		var key := ""
 		for k in shown:
 			if not GameState.has_flag("siege_intel_" + k):
 				key = k
 				break
+		if key == "":
+			key = shown[0]
 		open(key)
 		get_viewport().set_input_as_handled()
 
@@ -138,6 +151,7 @@ func open(key: String) -> void:
 	GameState.set_flag("siege_intel_" + key)
 	_flash.erase(key)
 	_card_key = key
+	_rebuild.call_deferred()
 	if card == null:
 		card = Panel.new()
 		var sb := StyleBoxFlat.new()

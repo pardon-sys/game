@@ -26,5 +26,10 @@ func magic_target(_ai: PlayableCharacter) -> Variant:
 	return null
 
 
+## 闲着时随机走动的中心（CompanionController 的 wander 行为；null = 以自己为中心）。
+func wander_anchor(_ai: PlayableCharacter) -> Variant:
+	return null
+
+
 func partner_of(ai: PlayableCharacter) -> PlayableCharacter:
 	return Duo.partner_of(ai)

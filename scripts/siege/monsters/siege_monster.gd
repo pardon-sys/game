@@ -90,6 +90,9 @@ func receive_hit(hit: HitData) -> bool:
 
 func _ding() -> void:
 	Fx.burst(get_parent(), global_position + Vector2(0, -10), "chip", 3, 30.0, 0.3, Vector2(0, 40), Color(1, 1, 0.8))
+	if sprite:
+		sprite.modulate = Color(2.0, 1.8, 1.0)
+		create_tween().tween_property(sprite, "modulate", Color.WHITE, 0.2)
 	Audio.play("locked", -10.0, 0.2, 1.4)
 
 

@@ -213,7 +213,7 @@ def main():
     cb = json.loads(Path("data/combos.json").read_text())
     cb["combos"] = [c for c in cb["combos"] if c.get("category") != "攻防战"]
     for cid, c in COMBOS.items():
-        cb["combos"].append({"id": cid, "category": "攻防战", "equip": c["equip"], "keys": c["keys"], "window": 3.0, "cooldown": 12.0,
+        cb["combos"].append({"id": cid, "category": "攻防战", "equip": c["equip"], "keys": c["keys"], "window": 3.0, "cooldown": 4.0,
                              "effects": c["effects"]})
     Path("data/combos.json").write_text(json.dumps(cb, ensure_ascii=False, indent="\t") + "\n")
     rx = json.loads(Path("data/princess_reactions.json").read_text())

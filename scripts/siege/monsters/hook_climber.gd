@@ -60,6 +60,7 @@ func _throw() -> void:
 		if not is_instance_valid(rope) or not is_alive():
 			return
 		_phase = "slide"
+		Fx.burst(get_parent(), top, "chip", 6, 40.0, 0.3, Vector2(0, 40), Color(1, 1, 0.8))   # 钩爪勾住城墙的火花
 		var w := director.segment_at(top.x)
 		if w and not w.climbable():
 			rope_cut()

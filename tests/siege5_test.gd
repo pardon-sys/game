@@ -33,6 +33,7 @@ func _ready() -> void:
 	await main.change_level(Floors.scene("floor_06_siege"))
 	await _until(func(): return SiegeDirector.current != null and SiegeDirector.current.state == "prep", 20.0)
 	d = SiegeDirector.current
+	d.bench_soldiers(true)   # 士兵会先把测试里放的怪打掉；这个测试只看怪 / 陷阱本身
 	await _wait(0.5)
 	_finish()
 	await _run_data()
@@ -208,7 +209,9 @@ func _run_monsters() -> void:
 	await _reset()
 	_fight()
 	# 诱饵冰雕吸引攻城车
-	var pad: BuildPad = get_tree().get_nodes_in_group("siege_pad")[2]
+	var pad := BuildPad.new()
+	d.entities().add_child(pad)
+	pad.global_position = Vector2(d.gate_pos.x - 300.0, d.wall_foot_y() + 60.0)
 	pad._build("decoy", 1)
 	await _wait(0.2)
 	var decoy := pad.tower
@@ -277,7 +280,9 @@ func _run_monsters() -> void:
 	await _reset()
 	_fight()
 	# 暖炉史莱姆：冻不住、冰打不动、融化冰塔
-	var pad2: BuildPad = get_tree().get_nodes_in_group("siege_pad")[6]
+	var pad2 := BuildPad.new()
+	d.entities().add_child(pad2)
+	pad2.global_position = Vector2(d.gate_pos.x + 300.0, d.wall_foot_y() + 60.0)
 	pad2._build("icicle", 1)
 	await _wait(0.2)
 	var tower := pad2.tower

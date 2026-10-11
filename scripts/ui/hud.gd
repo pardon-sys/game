@@ -293,6 +293,7 @@ func _show_title(title: String, category: String) -> void:
 
 
 func _process(delta: float) -> void:
+	_process_toast(delta)
 	_update_carousel(delta)
 	var p := _player
 	if not is_instance_valid(p):
@@ -472,7 +473,35 @@ func _on_emotion_changed(emotion: String) -> void:
 
 
 ## 屏幕上方的黄色提示：太长时自动换行（宽度不超过屏幕宽 − 40，居中，按行数往下长），不会跑出屏幕。
+## 停留 TOAST_HOLD 秒；新的一条来了，旧的往下挪一行接着显示（同时最多 3 条）。
 const TOAST_MARGIN := 20.0
+const TOAST_HOLD := 10.0
+var _toast_prev_text := ""
+var _toast_left := 0.0
+var _toast_old: Array = []
+
+
+func _process_toast(delta: float) -> void:
+	_toast_left = maxf(0.0, _toast_left - delta)
+
+
+func _push_old_toast(t: String, left: float) -> void:
+	_toast_old = _toast_old.filter(func(l): return is_instance_valid(l))
+	while _toast_old.size() >= 2:
+		(_toast_old.pop_front() as Label).queue_free()
+	for l in _toast_old:
+		(l as Label).position.y += 16.0
+	var l := toast_label.duplicate() as Label
+	l.text = t
+	l.position = toast_label.position + Vector2(0, 16.0 + toast_label.size.y - 16.0)
+	l.modulate.a = 0.8
+	l.add_theme_font_size_override("font_size", 9)
+	toast_label.get_parent().add_child(l)
+	_toast_old.append(l)
+	var tw := l.create_tween()
+	tw.tween_interval(maxf(left, 0.5))
+	tw.tween_property(l, "modulate:a", 0.0, 0.4)
+	tw.tween_callback(l.queue_free)
 
 
 func show_toast(text: String) -> void:
@@ -483,10 +512,14 @@ func show_toast(text: String) -> void:
 	toast_label.text = text
 	toast_label.reset_size()
 	toast_label.size.x = vw - TOAST_MARGIN * 2.0
-	# 时间按长度略加长，长句子来得及看完
-	var hold := clampf(2.4 + text.length() * 0.03, 2.4, 5.0)
+	# 停留约 10 秒；上一条还在的话往下挪一行、接着显示（同时最多 3 条）
+	var hold := TOAST_HOLD
 	if _toast_tween:
 		_toast_tween.kill()
+	if toast_label.modulate.a > 0.05 and _toast_prev_text != "" and _toast_prev_text != text:
+		_push_old_toast(_toast_prev_text, _toast_left)
+	_toast_prev_text = text
+	_toast_left = hold
 	toast_label.modulate.a = 1.0
 	_toast_tween = create_tween()
 	_toast_tween.tween_interval(hold)

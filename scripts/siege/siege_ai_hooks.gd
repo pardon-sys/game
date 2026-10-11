@@ -27,6 +27,14 @@ func safe_spot_for(ai: PlayableCharacter) -> Variant:
 	return best if best != null else director.gate_pos
 
 
+## 闲着时：在最危险的那段墙下面（没有就城门口）附近随机走。
+func wander_anchor(_ai: PlayableCharacter) -> Variant:
+	var hot: SiegeWall = director.hottest_wall()
+	if hot:
+		return Vector2(hot.global_position.x, hot.foot_y() + 70.0)
+	return director.gate_pos + Vector2(0, 60)
+
+
 func objective_for(ai: PlayableCharacter) -> Variant:
 	# 蓝色公主被城墙爬藤缠住：先去砍藤根
 	for r in ai.get_tree().get_nodes_in_group("siege_vine_root"):

@@ -65,6 +65,11 @@ func _active(_delta: float) -> void:
 	if linked and _line and is_instance_valid(director.blue) and is_instance_valid(p):
 		_line.points = PackedVector2Array([p.global_position + Vector2(0, -10), director.blue.global_position + Vector2(0, -10)])
 		_line.default_color.a = 0.5 + 0.3 * sin(_t * 6.0)
+		# 粉线上流动的小心形
+		if randf() < 0.15:
+			var f := fmod(_t * 0.7, 1.0)
+			Fx.burst(get_parent(), p.global_position.lerp(director.blue.global_position, f) + Vector2(0, -10), "heart", 1, 10.0, 0.6, Vector2(0, -10),
+				Color(1, 0.6, 0.85))
 
 
 func link() -> void:

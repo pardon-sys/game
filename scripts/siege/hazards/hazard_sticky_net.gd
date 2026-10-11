@@ -36,6 +36,9 @@ func _active(delta: float) -> void:
 	if caught == null or not is_instance_valid(caught):
 		return
 	caught.global_position = caught.global_position.move_toward(global_position, 20.0 * delta)
+	# 黏液往下滴
+	if randf() < delta * 3.0:
+		Fx.burst(get_parent(), global_position + Vector2(randf_range(-R, R), -R), "drop", 1, 10.0, 0.6, Vector2(0, 80), Color(0.95, 0.9, 0.6))
 	_tt -= delta
 	if _tt <= 0.0:
 		_tt = 0.6
