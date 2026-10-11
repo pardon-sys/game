@@ -149,10 +149,25 @@ func _run_war_town() -> void:
 			captain_visible = (n as Node2D).visible
 	check("过场后队长站在广场上（%s）" % captain_visible, captain_visible)
 	# 城门：确认出发 → （待续）
+	GameState.set_flag("intro_done_siege_intro")
+	GameState.set_flag("siege_intro_seen")
 	Dialogue.call("talk", "floor_06/war_gate")
-	await _advance_until(func(): return GameState.has_flag("f6w_ready") or not Dialogue.runner.is_running(), 10.0)
-	check("南边的城门：问「准备好了吗？」→ 出发 → 标记 f6w_ready（%s）" % GameState.has_flag("f6w_ready"), GameState.has_flag("f6w_ready"))
-	await _advance_until(func(): return not Dialogue.runner.is_running(), 5.0)
+	await _advance_until(func(): return _level_id() == "floor_06_siege", 20.0)
+	check("南边的城门：问「准备好了吗？」→ 出发 → 标记 f6w_ready（%s）、进攻防战（%s）" % [GameState.has_flag("f6w_ready"), _level_id()],
+		GameState.has_flag("f6w_ready") and _level_id() == "floor_06_siege")
+	# 回到战时小镇继续测（撤退）
+	await _advance_until(func(): return SiegeDirector.current != null and SiegeDirector.current.state != "", 10.0)
+	await _wait(1.0)
+	SiegeDirector.current.retreat()
+	await _advance_until(func(): return _level_id() == "floor_06_war", 20.0)
+	await _advance_until(func(): return not Cutscene.is_playing() and not Dialogue.is_active(), 10.0)
+	await _wait(0.5)
+	var spot := Vector2.ZERO
+	for n in main.level.find_children("*", "SpawnPoint", true, false):
+		if str(n.get("id")) == "from_siege":
+			spot = (n as Node2D).global_position
+	check("暂停菜单「撤退」→ 回到战时小镇的城门口（%s，离到达点 %.0f）" % [_level_id(), GameState.player.global_position.distance_to(spot)],
+		_level_id() == "floor_06_war" and GameState.player.global_position.distance_to(spot) < 24.0)
 
 
 # ------------------------------------------------------------------ 和搭档说话换人

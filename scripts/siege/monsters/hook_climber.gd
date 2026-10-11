@@ -51,7 +51,7 @@ func _throw() -> void:
 	get_parent().add_child(rope)
 	rope.global_position = Vector2.ZERO
 	rope.points = PackedVector2Array([global_position + Vector2(0, -10), global_position + Vector2(0, -10)])
-	Audio.play("swish", -4.0, 0.1, 0.8)
+	Audio.play("hook_throw", -4.0, 0.1)
 	var tw := create_tween()
 	tw.tween_method(func(v: float):
 		if is_instance_valid(rope):

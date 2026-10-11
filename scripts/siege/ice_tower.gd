@@ -178,7 +178,7 @@ func _icicle() -> void:
 	SiegeProjectile.shoot(get_parent(), global_position + Vector2(0, -24), best, "proj_icicle", 260.0, func(t: Node):
 		if is_instance_valid(t) and t is Actor:
 			(t as Actor).receive_hit(HitData.make_attack(self, int(p("damage", 1)), 40.0)))
-	Audio.play("ice_crack", -12.0, 0.2, 1.8)
+	Audio.play("icicle", -12.0, 0.2)
 
 
 func _snowman() -> void:

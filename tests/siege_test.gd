@@ -24,7 +24,7 @@ func _ready() -> void:
 	add_child(main)
 	await _wait(1.0)
 	for f in ["f7_argue_done", "f7_pink_ran", "f7_blue_awake", "magic_unlocked", "intro_blue_magic", "f8_done", "f8_slept",
-			"f8_maze_done", "f8_returned", "blue_tickle_pants", "backpack", "f7r_done", "f6w_arrived", "equip_unlocked"]:
+			"f8_maze_done", "f8_returned", "blue_tickle_pants", "backpack", "f7r_done", "f6w_arrived", "equip_unlocked", "seen_fatigue_burst"]:
 		GameState.set_flag(f)
 	for key in ReactionDB.source_keys():
 		GameState.set_flag("met_" + key)

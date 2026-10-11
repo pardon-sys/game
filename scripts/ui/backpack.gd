@@ -372,7 +372,7 @@ func _refresh() -> void:
 
 # ------------------------------------------------------------------ CG 图鉴
 ## 小剧场的分类（id 前缀 → 图鉴里的分组名），按这个顺序排；没对上的归「小剧场」。
-const THEATER_GROUPS := [["f8_defeat_", "Boss 战败"], ["f8_chase_fail", "Boss 战败"], ["f6_caught_", "潜入失败"], ["f6_punish_", "营地惩罚"],
+const THEATER_GROUPS := [["siege_fail_", "攻防战失败"], ["f8_defeat_", "Boss 战败"], ["f8_chase_fail", "Boss 战败"], ["f6_caught_", "潜入失败"], ["f6_punish_", "营地惩罚"],
 	["train_", "训练"], ["", "小剧场"]]
 
 

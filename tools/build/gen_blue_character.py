@@ -321,10 +321,29 @@ def combo_lines(cid, keys, desc):
 
 
 COMBO_KEYS = {c["id"]: [k for g in c.get("keys", []) for k in g if k != "*"] for c in json.loads(Path("data/combos.json").read_text())["combos"]}
+# 攻防战的三来源组合：台词在 gen_siege_scenes.py 里手写了蓝色公主版就直接用；只有粉色公主版的按来源名拼一句崩溃的
+import sys as _sys
+_sys.path.insert(0, str(Path(__file__).resolve().parent))
+import gen_siege_scenes as _sg  # noqa: E402
+
+
+def siege_combo_lines(cid):
+    c = _sg.COMBOS[cid]
+    if "blue" in c:
+        return [t for (sp, t) in c["blue"] if sp is None][4:7]
+    names = [n for (_k, _key, n, _st) in c["src"]]
+    return ["……%s……%s……嗯、唔……哈……！" % (names[0], names[1]),
+            "……哈哈哈……%s……一、一起……不、不行……哈哈哈哈……！" % names[2],
+            "……投、投降……哈哈哈……三、三样……一起……哈哈哈哈……！"]
+
+
 for cid, c in rx.get("combos", {}).items():
     if not isinstance(c, dict):
         continue
-    c["lines"] = combo_lines(cid, COMBO_KEYS.get(cid, []), str(c.get("description", "")))
+    if cid in _sg.COMBOS:
+        c["lines"] = siege_combo_lines(cid)
+    else:
+        c["lines"] = combo_lines(cid, COMBO_KEYS.get(cid, []), str(c.get("description", "")))
 
 
 def no_ben(t):

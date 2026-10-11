@@ -289,9 +289,14 @@ func _net() -> void:
 		tc.add_child(net)
 		tc.get_tree().create_timer(hang).timeout.connect(net.queue_free)
 		_line(tc)
+		# 塔被拆掉以后网眼里的手也停（弱引用，别调到已经释放的塔上）
+		var me: WeakRef = weakref(self)
 		var tw := tc.create_tween().set_loops(int(hang / 0.5))
 		tw.tween_interval(0.5)
-		tw.tween_callback(func(): _tickle(tc, 4.0, "sole")))
+		tw.tween_callback(func():
+			var t2 := me.get_ref() as EnemyTower
+			if t2:
+				t2._tickle(tc, 4.0, "sole")))
 	Audio.play("swish", -4.0, 0.1, 0.8)
 
 
@@ -389,7 +394,12 @@ func _sole() -> void:
 		if tc.status:
 			tc.status.apply_root(1.6)
 		_line(tc)
+		var me: WeakRef = weakref(self)
+		var amount := float(p("amount", 4.0))
 		var tw := tc.create_tween().set_loops(4)
 		tw.tween_interval(0.35)
-		tw.tween_callback(func(): _tickle(tc, float(p("amount", 4.0)), "sole")))
+		tw.tween_callback(func():
+			var t2 := me.get_ref() as EnemyTower
+			if t2:
+				t2._tickle(tc, amount, "sole")))
 	Audio.play("brush_spin", -8.0, 0.1)

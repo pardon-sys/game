@@ -1,0 +1,277 @@
+{
+	"name": "失败：并排吊着刷脚心",
+	"cast": {
+		"pink": {
+			"kind": "npc:pink_princess",
+			"at": [
+				-24,
+				10
+			],
+			"visual": "helpless_1",
+			"anim": "helpless",
+			"dir": "down"
+		},
+		"blue": {
+			"kind": "npc:blue_princess",
+			"at": [
+				24,
+				10
+			],
+			"visual": "helpless_1",
+			"anim": "helpless",
+			"dir": "down"
+		},
+		"foe1": {
+			"kind": "monster:rat",
+			"at": [
+				-44,
+				0
+			],
+			"dir": "right",
+			"hidden": true
+		},
+		"foe2": {
+			"kind": "monster:squirrel",
+			"at": [
+				44,
+				0
+			],
+			"dir": "left",
+			"hidden": true
+		}
+	},
+	"steps": [
+		{
+			"actions": [
+				{
+					"do": "fade_in",
+					"time": 0.5
+				},
+				{
+					"do": "voice",
+					"state": "giggle"
+				}
+			],
+			"wait": 0.5
+		},
+		{
+			"speaker": "",
+			"text": "（吊网塔把两个人一起网起来，并排吊在了半空——四只脚都够不着地）",
+			"actions": [
+				{
+					"do": "enter",
+					"who": "foe1",
+					"from": [
+						-90,
+						0
+					],
+					"time": 0.5
+				},
+				{
+					"do": "enter",
+					"who": "foe2",
+					"from": [
+						90,
+						0
+					],
+					"time": 0.5
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "吊、吊起来了！脚够不着地！"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……晃。……下面……有刷子。"
+		},
+		{
+			"speaker": "",
+			"text": "（脚心刷刷塔的刷子手飞过来，抓住四只脚踝，把脚趾一根一根扳开）",
+			"actions": [
+				{
+					"do": "tickle",
+					"who": "pink",
+					"by": "foe1",
+					"repeat": 8,
+					"interval": 0.22,
+					"fx": "hand",
+					"zone": "sole"
+				},
+				{
+					"do": "tickle",
+					"who": "blue",
+					"by": "foe2",
+					"repeat": 8,
+					"interval": 0.22,
+					"fx": "brush",
+					"zone": "sole"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "脚、脚趾被扳开了……要、要刷了吗……"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……扳开了。……趾缝……凉……"
+		},
+		{
+			"speaker": "",
+			"text": "（刷毛钻进趾缝，一条一条地来回刷；下面的挠脚鼠跳起来，小爪子刨脚心）",
+			"actions": [
+				{
+					"do": "tickle",
+					"who": "pink",
+					"by": "foe1",
+					"repeat": 8,
+					"interval": 0.22,
+					"fx": "hand",
+					"zone": "sole"
+				},
+				{
+					"do": "tickle",
+					"who": "blue",
+					"by": "foe2",
+					"repeat": 8,
+					"interval": 0.22,
+					"fx": "brush",
+					"zone": "sole"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "趾缝——！一、一条一条刷哈哈哈！",
+			"actions": [
+				{
+					"do": "bubble",
+					"who": "pink",
+					"kind": "laugh"
+				},
+				{
+					"do": "bubble",
+					"who": "blue",
+					"kind": "laugh"
+				}
+			]
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……趾、趾缝……噗……哈……"
+		},
+		{
+			"speaker": "",
+			"text": "（刷子手把脚板往后扳，绷得紧紧的，指甲从脚跟一路刮到脚尖；刷刷松鼠的大尾巴扫过脚背）",
+			"actions": [
+				{
+					"do": "tickle",
+					"who": "pink",
+					"by": "foe1",
+					"repeat": 8,
+					"interval": 0.22,
+					"fx": "hand",
+					"zone": "sole"
+				},
+				{
+					"do": "tickle",
+					"who": "blue",
+					"by": "foe2",
+					"repeat": 8,
+					"interval": 0.22,
+					"fx": "brush",
+					"zone": "sole"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "扳、扳着脚板刮——不行不行哈哈哈哈！"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……脚心……裤子也趁机……捏屁股……哈哈哈……！"
+		},
+		{
+			"speaker": "",
+			"text": "（四只脚并排吊着，刷子、爪子、尾巴轮流上——两个人在网里晃来晃去，笑声一下下撞在一起）",
+			"actions": [
+				{
+					"do": "pose",
+					"who": "pink",
+					"visual": "helpless_2"
+				},
+				{
+					"do": "pose",
+					"who": "blue",
+					"visual": "helpless_2"
+				},
+				{
+					"do": "voice",
+					"state": "laugh"
+				},
+				{
+					"do": "tickle",
+					"who": "pink",
+					"by": "foe1",
+					"repeat": 8,
+					"interval": 0.22,
+					"fx": "hand",
+					"zone": "sole"
+				},
+				{
+					"do": "tickle",
+					"who": "blue",
+					"by": "foe2",
+					"repeat": 8,
+					"interval": 0.22,
+					"fx": "brush",
+					"zone": "sole"
+				},
+				{
+					"do": "flash",
+					"time": 0.3
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "哈哈哈哈！你、你也笑了——脚心果然大家都怕哈哈哈！"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……哈哈哈……认输……放、放下来……！",
+			"actions": [
+				{
+					"do": "bubble",
+					"who": "pink",
+					"kind": "laugh"
+				},
+				{
+					"do": "bubble",
+					"who": "blue",
+					"kind": "laugh"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "呼……脚趾……合不拢了……"
+		},
+		{
+			"actions": [
+				{
+					"do": "voice",
+					"state": ""
+				},
+				{
+					"do": "fade_out",
+					"time": 0.8
+				}
+			],
+			"wait": 0.9
+		}
+	]
+}

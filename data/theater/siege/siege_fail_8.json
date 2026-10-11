@@ -1,0 +1,277 @@
+{
+	"name": "失败：魔力被吸干",
+	"cast": {
+		"pink": {
+			"kind": "npc:pink_princess",
+			"at": [
+				-24,
+				10
+			],
+			"visual": "helpless_1",
+			"anim": "helpless",
+			"dir": "down"
+		},
+		"blue": {
+			"kind": "npc:blue_princess",
+			"at": [
+				24,
+				10
+			],
+			"visual": "helpless_1",
+			"anim": "helpless",
+			"dir": "down"
+		},
+		"foe1": {
+			"kind": "monster:suck_jelly",
+			"at": [
+				-44,
+				0
+			],
+			"dir": "right",
+			"hidden": true
+		},
+		"foe2": {
+			"kind": "monster:glove",
+			"at": [
+				44,
+				0
+			],
+			"dir": "left",
+			"hidden": true
+		}
+	},
+	"steps": [
+		{
+			"actions": [
+				{
+					"do": "fade_in",
+					"time": 0.5
+				},
+				{
+					"do": "voice",
+					"state": "giggle"
+				}
+			],
+			"wait": 0.5
+		},
+		{
+			"speaker": "",
+			"text": "（魔力吸吸水母吸住了蓝色公主的后背。腿根揉揉塔的小手一只接一只地飞上城墙）",
+			"actions": [
+				{
+					"do": "enter",
+					"who": "foe1",
+					"from": [
+						-90,
+						0
+					],
+					"time": 0.5
+				},
+				{
+					"do": "enter",
+					"who": "foe2",
+					"from": [
+						90,
+						0
+					],
+					"time": 0.5
+				}
+			]
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……魔力……被吸走了。……冰……放不出来。"
+		},
+		{
+			"speaker": "公主",
+			"text": "我、我来帮你——呀，幽灵手套抓住我了！"
+		},
+		{
+			"speaker": "",
+			"text": "（水母的触手钻进蓝色公主抬起的腋下打转；幽灵手套从后面挠粉色公主的腰）",
+			"actions": [
+				{
+					"do": "tickle",
+					"who": "blue",
+					"by": "foe2",
+					"repeat": 8,
+					"interval": 0.22,
+					"fx": "brush",
+					"zone": "armpit"
+				},
+				{
+					"do": "tickle",
+					"who": "pink",
+					"by": "foe1",
+					"repeat": 8,
+					"interval": 0.22,
+					"fx": "hand",
+					"zone": "waist"
+				}
+			]
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……腋、腋下……一抬手……就……"
+		},
+		{
+			"speaker": "公主",
+			"text": "腰、腰！手套在挠腰……嘻嘻嘻！"
+		},
+		{
+			"speaker": "",
+			"text": "（飞来的小手落在蓝色公主的大腿上，拇指按进腿根，一圈一圈地揉）",
+			"actions": [
+				{
+					"do": "tickle",
+					"who": "blue",
+					"by": "foe2",
+					"repeat": 8,
+					"interval": 0.22,
+					"fx": "brush",
+					"zone": "thigh"
+				},
+				{
+					"do": "tickle",
+					"who": "pink",
+					"by": "foe1",
+					"repeat": 8,
+					"interval": 0.22,
+					"fx": "hand",
+					"zone": "armpit"
+				}
+			]
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……腿根……揉……唔、嗯……"
+		},
+		{
+			"speaker": "公主",
+			"text": "她、她的腿根被揉了——你们欺负她最怕的地方！",
+			"actions": [
+				{
+					"do": "bubble",
+					"who": "pink",
+					"kind": "laugh"
+				},
+				{
+					"do": "bubble",
+					"who": "blue",
+					"kind": "laugh"
+				}
+			]
+		},
+		{
+			"speaker": "",
+			"text": "（又飞来两只，一左一右，轮流捏蓝色公主的屁股；手套也学着去捏粉色公主的）",
+			"actions": [
+				{
+					"do": "tickle",
+					"who": "blue",
+					"by": "foe2",
+					"repeat": 8,
+					"interval": 0.22,
+					"fx": "brush",
+					"zone": "butt"
+				},
+				{
+					"do": "tickle",
+					"who": "pink",
+					"by": "foe1",
+					"repeat": 8,
+					"interval": 0.22,
+					"fx": "hand",
+					"zone": "butt"
+				}
+			]
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……哈、哈哈……左、右……轮流……不准……"
+		},
+		{
+			"speaker": "公主",
+			"text": "我、我也被捏了——哈哈哈！"
+		},
+		{
+			"speaker": "",
+			"text": "（魔力一点点被吸走，蓝色公主越来越没力气憋笑；小手们揉得越来越快）",
+			"actions": [
+				{
+					"do": "pose",
+					"who": "pink",
+					"visual": "helpless_2"
+				},
+				{
+					"do": "pose",
+					"who": "blue",
+					"visual": "helpless_2"
+				},
+				{
+					"do": "voice",
+					"state": "laugh"
+				},
+				{
+					"do": "tickle",
+					"who": "blue",
+					"by": "foe2",
+					"repeat": 8,
+					"interval": 0.22,
+					"fx": "brush",
+					"zone": "thigh"
+				},
+				{
+					"do": "tickle",
+					"who": "pink",
+					"by": "foe1",
+					"repeat": 8,
+					"interval": 0.22,
+					"fx": "hand",
+					"zone": "waist"
+				},
+				{
+					"do": "flash",
+					"time": 0.3
+				}
+			]
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……哈哈哈哈……魔力……没了……憋、憋不住了……哈哈哈哈！"
+		},
+		{
+			"speaker": "公主",
+			"text": "哈哈哈……认、认输！这一波……认输！",
+			"actions": [
+				{
+					"do": "bubble",
+					"who": "pink",
+					"kind": "laugh"
+				},
+				{
+					"do": "bubble",
+					"who": "blue",
+					"kind": "laugh"
+				}
+			]
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……下次……先拆那个塔。"
+		},
+		{
+			"actions": [
+				{
+					"do": "voice",
+					"state": ""
+				},
+				{
+					"do": "fade_out",
+					"time": 0.8
+				}
+			],
+			"wait": 0.9
+		}
+	]
+}

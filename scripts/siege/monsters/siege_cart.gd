@@ -31,7 +31,7 @@ func siege_wander(_mind: SiegeMind, delta: float) -> bool:
 			if _warn_t == WARN:
 				_goal = _pick_goal()
 				SiegeFx.lane(get_parent(), global_position, _goal, 18.0, Color(1, 0.3, 0.3), WARN)
-				Audio.play("rumble", -4.0, 0.0, 0.7)
+				Audio.play("cart_rumble", -3.0)
 			_warn_t -= delta
 			velocity = Vector2.ZERO
 			if _warn_t <= 0.0:
@@ -73,7 +73,7 @@ func _impact() -> void:
 			director.knock_off(b, "攻城痒痒车")
 	Fx.burst(get_parent(), global_position + Vector2(0, -8), "dust", 24, 90.0, 0.8, Vector2(0, 30), Color(0.8, 0.7, 0.6))
 	Fx.burst(get_parent(), global_position + Vector2(0, -8), "chip", 14, 80.0, 0.7, Vector2(0, 120), Color(0.6, 0.4, 0.3))
-	Audio.play("break", 0.0, 0.0, 0.7)
+	Audio.play("wall_crash", 0.0)
 	var cam := get_viewport().get_camera_2d()
 	if cam and cam.has_method("shake"):
 		cam.call("shake", 0.4, 3.0)

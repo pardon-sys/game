@@ -1,6 +1,7 @@
 extends CanvasLayer
 ## 暂停菜单（Esc）。测试模式（DevConfig.enabled）打开时多两项：
 ##   「测试：跳关」展开成 dev_config.json 的跳关点列表（放在带滚动条的 skip_scroll 里：跳关点多了也能上下滚动，键盘移动焦点时自动滚到可见）；
+##   攻防战里（SiegeDirector.current）多两项：「战场情报」（看过的情报列表，点开看简介卡）、「撤退」（回战时小镇，这一波从准备阶段重来）。
 ##   「测试：训练度」选角色（粉色 / 蓝色公主），每项训练值一行 − / + 调（到所有阶段的最高上限），「全部清零」「全部练满」，改完马上生效。
 
 @onready var root: Control = $Root
@@ -12,6 +13,8 @@ var music_slider: HSlider
 var skip_box: VBoxContainer
 var skip_scroll: ScrollContainer
 var train_button: Button
+var intel_button: Button
+var retreat_button: Button
 ## 训练度页正在调的角色（"pink" / "blue"）
 var train_who := "pink"
 ## 一项分几步调满
@@ -63,6 +66,21 @@ func _ready() -> void:
 	train_button.pressed.connect(show_training)
 	box.add_child(train_button)
 	box.move_child(train_button, 3)
+	intel_button = Button.new()
+	intel_button.name = "SiegeIntel"
+	intel_button.text = "战场情报"
+	intel_button.pressed.connect(show_intel_list)
+	box.add_child(intel_button)
+	box.move_child(intel_button, 1)
+	retreat_button = Button.new()
+	retreat_button.name = "SiegeRetreat"
+	retreat_button.text = "撤退（回战时小镇）"
+	retreat_button.pressed.connect(func():
+		toggle()
+		if SiegeDirector.current:
+			SiegeDirector.current.retreat())
+	box.add_child(retreat_button)
+	box.move_child(retreat_button, 2)
 	skip_scroll = ScrollContainer.new()
 	skip_scroll.name = "SkipScroll"
 	skip_scroll.set_anchors_preset(Control.PRESET_CENTER)
@@ -103,9 +121,34 @@ func toggle() -> void:
 		Audio.stop_voice()
 		skip_button.visible = DevConfig.enabled()
 		train_button.visible = DevConfig.enabled()
+		intel_button.visible = SiegeDirector.current != null
+		retreat_button.visible = SiegeDirector.current != null
 		music_slider.set_value_no_signal(Audio.music_volume)
 		hide_skip_list()
 		$Root/Box/Resume.grab_focus()
+
+
+## 攻防战的战场情报列表（看过的；点一条打开简介卡）。
+func show_intel_list() -> void:
+	for c in skip_box.get_children():
+		c.queue_free()
+	var keys := SiegeIntel.seen_keys()
+	if keys.is_empty():
+		var l := Label.new()
+		l.text = "还没有情报"
+		skip_box.add_child(l)
+	for k in keys:
+		var b := Button.new()
+		b.text = str(SiegeIntel.entry(str(k)).get("name", k))
+		b.pressed.connect(func():
+			var d := SiegeDirector.current
+			if d and d.intel:
+				d.intel.open(str(k)))
+		skip_box.add_child(b)
+	skip_scroll.show()
+	box.hide()
+	if skip_box.get_child_count() > 0 and skip_box.get_child(0) is Button:
+		(skip_box.get_child(0) as Button).grab_focus.call_deferred()
 
 
 ## 跳关点列表（测试模式）。

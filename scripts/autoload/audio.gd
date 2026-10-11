@@ -66,6 +66,16 @@ const SOUNDS := {
 	"brush_spin": ["res://assets/generated/sfx/brush_spin.wav"],
 	"bat_flap": ["res://assets/generated/sfx/bat_flap.wav"],
 	"ice_crack": ["res://assets/generated/sfx/ice_crack.wav"],
+	# 小镇攻防战
+	"siege_horn": ["res://assets/generated/sfx/siege_horn.wav"],
+	"cart_rumble": ["res://assets/generated/sfx/cart_rumble.wav"],
+	"wall_crash": ["res://assets/generated/sfx/wall_crash.wav"],
+	"hook_throw": ["res://assets/generated/sfx/hook_throw.wav"],
+	"tower_build": ["res://assets/generated/sfx/tower_build.wav"],
+	"icicle": ["res://assets/generated/sfx/icicle.wav"],
+	"win_fanfare": ["res://assets/generated/sfx/win_fanfare.wav"],
+	"lose_fanfare": ["res://assets/generated/sfx/lose_fanfare.wav"],
+	"bell_jingle": ["res://assets/generated/sfx/bell_jingle.wav"],
 	"chase_drums": ["res://assets/generated/sfx/chase_drums.wav"],
 }
 ## 循环播放的声音（用 loop_stream 取流，挂到自己的播放器上）。
@@ -84,7 +94,7 @@ var _crack_tw: Tween
 var _laugh_players: Array[AudioStreamPlayer] = []
 
 # ------------------------------------------------------------------ 背景音乐
-## 配乐（tools/audio/gen_music.py 用 ElevenLabs 生成，2 分钟首尾相连）：地牢层 dungeon、地下小镇 town。
+## 配乐（tools/audio/gen_music.py 用 ElevenLabs 生成，2 分钟首尾相连）：地牢层 dungeon、地下小镇 town、攻防战 siege。
 ## 关卡载入时按 data/floors.json 的 music 切换（play_music），换曲时淡入淡出；CG / 过场 / 对话剧场时压低（DUCK_DB）。
 ## 音乐音量 music_volume（0~1）存在玩家数据目录的 settings.cfg（暂停菜单调）。
 const MUSIC := {
@@ -94,6 +104,7 @@ const MUSIC := {
 	"boss3": "res://assets/audio/music/boss3_loop.wav",
 	"night_room": "res://assets/audio/music/night_room_loop.wav",
 	"night_maze": "res://assets/audio/music/night_maze_loop.wav",
+	"siege": "res://assets/audio/music/siege_loop.wav",
 }
 const MUSIC_DB := -12.0
 const DUCK_DB := -6.0

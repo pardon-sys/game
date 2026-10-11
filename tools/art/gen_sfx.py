@@ -123,6 +123,7 @@ def main():
     gen_floor4_sfx()
     gen_floor8_sfx()
     gen_maze5_sfx()
+    gen_siege_sfx()
     print("音效已生成：", sorted(p.name for p in OUT.glob("*.wav")))
 
 
@@ -382,3 +383,73 @@ def gen_maze5_sfx():
 
 if __name__ == "__main__":
     main()
+
+
+def gen_siege_sfx():
+    """小镇攻防战：号角、攻城车、撞墙、钩索、造塔、冰锥、胜利 / 失败、铃铛串。单独的随机数，不影响前面的音效。"""
+    r = np.random.default_rng(606)
+
+    def brass(f, dur, vib=5.0):
+        t = t_axis(dur)
+        ph = 2 * np.pi * np.cumsum(f * (1 + 0.006 * np.sin(2 * np.pi * vib * t))) / RATE
+        saw = sum(np.sin(k * ph) / k for k in range(1, 9))
+        return lowpass(saw, 1800) * env(t, 0.06, dur * 0.6)
+
+    # 号角：两个低音铜管（五度）拖长 + 一点尾音
+    save("siege_horn", mix(brass(146.8, 1.4), brass(220.0, 1.4) * 0.7, brass(293.7, 1.0) * 0.3), 0.75)
+    # 攻城车：木轮隆隆（低频噪声 + 按轮子转速一下一下的咔嗒）
+    t = t_axis(1.4)
+    rumble = lowpass(r.standard_normal(len(t)), 220) * 3.0
+    clack = highpass(r.standard_normal(len(t)), 1200) * (np.sin(2 * np.pi * 9 * t) > 0.85) * 0.6
+    save("cart_rumble", (rumble + clack) * np.minimum(t / 0.3, 1.0) * np.minimum((1.4 - t) / 0.2, 1.0), 0.7)
+    # 撞墙：一声闷重的「轰」+ 碎石哗啦
+    t = t_axis(1.2)
+    boom = np.sin(2 * np.pi * np.cumsum(70 * np.exp(-t / 0.15) + 35) / RATE) * env(t, 0.003, 0.25) * 1.4
+    debris = np.zeros(len(t))
+    for _ in range(14):
+        at = r.uniform(0.05, 0.9)
+        dt = t_axis(0.06)
+        c = highpass(r.standard_normal(len(dt)), 1500) * env(dt, 0.001, 0.02) * r.uniform(0.3, 0.8)
+        i = int(at * RATE)
+        debris[i:i + len(c)] += c[: len(debris) - i]
+    save("wall_crash", mix(boom, lowpass(r.standard_normal(len(t)), 600) * env(t, 0.01, 0.3) * 1.5, debris), 0.85)
+    # 钩索：呼的一声甩出去 + 金属「叮」
+    t = t_axis(0.5)
+    whoosh = highpass(lowpass(r.standard_normal(len(t)), 2500), 400) * np.sin(np.pi * t / 0.5) ** 2
+    ct = t_axis(0.3)
+    clink = (np.sin(2 * np.pi * 2300 * ct) + 0.5 * np.sin(2 * np.pi * 3450 * ct)) * env(ct, 0.001, 0.06)
+    save("hook_throw", mix(whoosh, np.concatenate([np.zeros(int(0.4 * RATE)), clink]) * 0.6), 0.6)
+    # 造塔：上扬的闪光 + 冰「咔」一声长出来
+    t = t_axis(0.9)
+    sweep = np.sin(2 * np.pi * np.cumsum(600 + 1800 * (t / 0.9) ** 2) / RATE) * env(t, 0.3, 0.2) * 0.5
+    sparkle = sum(np.sin(2 * np.pi * f * t) * env(np.maximum(t - d, 0), 0.002, 0.15) * (t >= d) for f, d in
+                  ((1568, 0.3), (2093, 0.45), (2637, 0.6), (3136, 0.72)))
+    crack = highpass(r.standard_normal(len(t)), 2200) * env(np.maximum(t - 0.7, 0), 0.001, 0.03) * (t >= 0.7) * 1.2
+    save("tower_build", mix(sweep, sparkle * 0.4, crack), 0.7)
+    # 冰锥：短促清脆的「叮」
+    t = t_axis(0.25)
+    save("icicle", (np.sin(2 * np.pi * 3100 * t) + 0.4 * np.sin(2 * np.pi * 4650 * t)) * env(t, 0.001, 0.05)
+         + highpass(r.standard_normal(len(t)), 3000) * env(t, 0.001, 0.01) * 0.6, 0.45)
+    # 胜利：大调琶音的小号
+    sig = np.zeros(int(1.8 * RATE))
+    for f, at, d in ((523.25, 0.0, 0.2), (659.25, 0.18, 0.2), (783.99, 0.36, 0.2), (1046.5, 0.54, 1.1)):
+        b = brass(f, d + 0.1, 6.0)
+        i = int(at * RATE)
+        sig[i:i + len(b)] += b[: len(sig) - i]
+    save("win_fanfare", sig, 0.7)
+    # 失败：往下走的小调，拖长
+    sig = np.zeros(int(2.0 * RATE))
+    for f, at, d in ((392.0, 0.0, 0.35), (349.23, 0.35, 0.35), (311.13, 0.7, 0.35), (261.63, 1.05, 0.9)):
+        b = brass(f, d + 0.1, 4.0)
+        i = int(at * RATE)
+        sig[i:i + len(b)] += b[: len(sig) - i]
+    save("lose_fanfare", sig, 0.6)
+    # 铃铛串：几颗小铃铛叮铃铃
+    sig = np.zeros(int(0.8 * RATE))
+    for k, at in enumerate((0.0, 0.07, 0.15, 0.24, 0.33)):
+        bt = t_axis(0.4)
+        f = 2600 + k * 180
+        b = (np.sin(2 * np.pi * f * bt) + 0.3 * np.sin(2 * np.pi * 2.7 * f * bt)) * env(bt, 0.001, 0.09)
+        i = int(at * RATE)
+        sig[i:i + len(b)] += b[: len(sig) - i]
+    save("bell_jingle", sig, 0.5)

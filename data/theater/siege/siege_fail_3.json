@@ -1,0 +1,281 @@
+{
+	"name": "失败：被撞开的城墙",
+	"cast": {
+		"pink": {
+			"kind": "npc:pink_princess",
+			"at": [
+				-24,
+				10
+			],
+			"visual": "helpless_1",
+			"anim": "helpless",
+			"dir": "down"
+		},
+		"blue": {
+			"kind": "npc:blue_princess",
+			"at": [
+				24,
+				10
+			],
+			"visual": "helpless_1",
+			"anim": "helpless",
+			"dir": "down"
+		},
+		"foe1": {
+			"kind": "monster:cart",
+			"at": [
+				-44,
+				0
+			],
+			"dir": "right",
+			"hidden": true
+		},
+		"foe2": {
+			"kind": "monster:carrier",
+			"at": [
+				44,
+				0
+			],
+			"dir": "left",
+			"hidden": true
+		}
+	},
+	"steps": [
+		{
+			"actions": [
+				{
+					"do": "fade_in",
+					"time": 0.5
+				},
+				{
+					"do": "voice",
+					"state": "giggle"
+				}
+			],
+			"wait": 0.5
+		},
+		{
+			"speaker": "",
+			"text": "（攻城痒痒车轰地撞开城墙。车斗里伸出一排排小手，把两个人一起捞了进去）",
+			"actions": [
+				{
+					"do": "enter",
+					"who": "foe1",
+					"from": [
+						-90,
+						0
+					],
+					"time": 0.5
+				},
+				{
+					"do": "enter",
+					"who": "foe2",
+					"from": [
+						90,
+						0
+					],
+					"time": 0.5
+				},
+				{
+					"do": "flash",
+					"time": 0.3
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "呀——！车、车斗里全是手！"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……一起……被捞进来了。"
+		},
+		{
+			"speaker": "",
+			"text": "（车子掉头往敌阵开。车斗里的小手按住四肢，排着队在两个人的肋骨上一根一根地数）",
+			"actions": [
+				{
+					"do": "tickle",
+					"who": "pink",
+					"by": "foe1",
+					"repeat": 8,
+					"interval": 0.22,
+					"fx": "hand",
+					"zone": "waist"
+				},
+				{
+					"do": "tickle",
+					"who": "blue",
+					"by": "foe2",
+					"repeat": 8,
+					"interval": 0.22,
+					"fx": "brush",
+					"zone": "waist"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "数、数肋骨……嘻嘻……一、二、三……哈哈！"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……数到……几了。……噗。"
+		},
+		{
+			"speaker": "",
+			"text": "（车轮一颠，所有小手就跟着一抖。粉色公主的脚被扳起来，指甲刮脚心；蓝色公主的膝盖被分开，指尖沿着大腿内侧往上走）",
+			"actions": [
+				{
+					"do": "tickle",
+					"who": "pink",
+					"by": "foe1",
+					"repeat": 8,
+					"interval": 0.22,
+					"fx": "hand",
+					"zone": "sole"
+				},
+				{
+					"do": "tickle",
+					"who": "blue",
+					"by": "foe2",
+					"repeat": 8,
+					"interval": 0.22,
+					"fx": "brush",
+					"zone": "thigh"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "颠、颠的时候刮脚心——哈哈哈！",
+			"actions": [
+				{
+					"do": "bubble",
+					"who": "pink",
+					"kind": "laugh"
+				},
+				{
+					"do": "bubble",
+					"who": "blue",
+					"kind": "laugh"
+				}
+			]
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……往、往上走……不准……"
+		},
+		{
+			"speaker": "",
+			"text": "（车子停在敌塔下。搬运小鬼们一人扛一个，把她们抬进了塔里——塔门砰地关上）",
+			"actions": [
+				{
+					"do": "tickle",
+					"who": "pink",
+					"by": "foe1",
+					"repeat": 8,
+					"interval": 0.22,
+					"fx": "hand",
+					"zone": "armpit"
+				},
+				{
+					"do": "tickle",
+					"who": "blue",
+					"by": "foe2",
+					"repeat": 8,
+					"interval": 0.22,
+					"fx": "brush",
+					"zone": "butt"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "关、关进来了……好黑……小鬼在挠腋下！"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……屁股……被捏……一下、一下……"
+		},
+		{
+			"speaker": "",
+			"text": "（小鬼们慢慢地数：一、二、三……每数一下就换个地方挠。腋下、腰、脚心、腿根、屁股——一轮又一轮）",
+			"actions": [
+				{
+					"do": "pose",
+					"who": "pink",
+					"visual": "helpless_2"
+				},
+				{
+					"do": "pose",
+					"who": "blue",
+					"visual": "helpless_2"
+				},
+				{
+					"do": "voice",
+					"state": "laugh"
+				},
+				{
+					"do": "tickle",
+					"who": "pink",
+					"by": "foe1",
+					"repeat": 8,
+					"interval": 0.22,
+					"fx": "hand",
+					"zone": "sole"
+				},
+				{
+					"do": "tickle",
+					"who": "blue",
+					"by": "foe2",
+					"repeat": 8,
+					"interval": 0.22,
+					"fx": "brush",
+					"zone": "thigh"
+				},
+				{
+					"do": "flash",
+					"time": 0.3
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "哈哈哈哈！数、数得好慢……还有几下哈哈哈！"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……哈哈哈……认输……快、快数完……哈哈哈哈！",
+			"actions": [
+				{
+					"do": "bubble",
+					"who": "pink",
+					"kind": "laugh"
+				},
+				{
+					"do": "bubble",
+					"who": "blue",
+					"kind": "laugh"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "呜……下次……要在车子的路上放冰雕……"
+		},
+		{
+			"actions": [
+				{
+					"do": "voice",
+					"state": ""
+				},
+				{
+					"do": "fade_out",
+					"time": 0.8
+				}
+			],
+			"wait": 0.9
+		}
+	]
+}

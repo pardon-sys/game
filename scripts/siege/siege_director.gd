@@ -239,7 +239,7 @@ func _begin_fight() -> void:
 	_hazards = (wave_data().get("hazards", []) as Array).duplicate(true)
 	_hazards.sort_custom(func(a, b): return float(a["t"]) < float(b["t"]))
 	_set_state("fight")
-	Audio.play("rumble", -2.0, 0.0, 0.8)
+	Audio.play("siege_horn", -1.0)
 	GameState.hint("第 %d 波来了！" % wave)
 	wave_started.emit(wave)
 
@@ -812,11 +812,14 @@ func _fail() -> void:
 	_busy = true
 	_set_state("failed")
 	failed.emit(wave)
-	Audio.play("rumble", 0.0, 0.0, 0.6)
+	Audio.play("lose_fanfare", -1.0)
 	GameState.hint("城墙被攻破了……")
 	await get_tree().create_timer(1.2).timeout
 	clear_field()
 	var tid := "siege_fail_%d" % wave
+	# 蓝色公主穿着千手痒痒裤时用她那几句换成裤子的版本
+	if GameState.has_flag(Equipment.PANTS_FLAG) and CG.has_theater(tid + "_pants"):
+		tid += "_pants"
 	if CG.has_theater(tid):
 		await CG.play_theater(tid)
 	reset_after_fail()
@@ -882,6 +885,7 @@ func _win() -> void:
 	GameState.set_flag("siege_won")
 	GameState.vars.erase("siege_wave")
 	won.emit()
+	Audio.play("win_fanfare", -1.0)
 	await get_tree().create_timer(1.0).timeout
 	if FileAccess.file_exists(Cutscene.DIR + "floor_06/siege_won.json"):
 		Cutscene.play("siege_won")

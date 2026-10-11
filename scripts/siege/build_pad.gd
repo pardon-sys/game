@@ -161,7 +161,7 @@ func blue_beam(blue: PlayableCharacter) -> void:
 		tower.upgrade()
 	else:
 		_build(str(job["kind"]), 1)
-	Audio.play("ice_crack", -2.0, 0.0, 1.5)
+	Audio.play("tower_build", -2.0)
 	if SiegeDirector.current:
 		SiegeDirector.current.intel.discover("tower_" + str(job["kind"]))
 	_save()

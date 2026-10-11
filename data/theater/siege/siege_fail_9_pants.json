@@ -1,0 +1,257 @@
+{
+	"name": "失败：狂欢与共振",
+	"cast": {
+		"pink": {
+			"kind": "npc:pink_princess",
+			"at": [
+				-24,
+				10
+			],
+			"visual": "helpless_1",
+			"anim": "helpless",
+			"dir": "down"
+		},
+		"blue": {
+			"kind": "npc:blue_princess",
+			"at": [
+				24,
+				10
+			],
+			"visual": "helpless_1",
+			"anim": "helpless",
+			"dir": "down"
+		},
+		"foe1": {
+			"kind": "monster:thigh_spider",
+			"at": [
+				-44,
+				0
+			],
+			"dir": "right",
+			"hidden": true
+		},
+		"foe2": {
+			"kind": "monster:slime",
+			"at": [
+				44,
+				0
+			],
+			"dir": "left",
+			"hidden": true
+		}
+	},
+	"steps": [
+		{
+			"actions": [
+				{
+					"do": "fade_in",
+					"time": 0.5
+				},
+				{
+					"do": "voice",
+					"state": "giggle"
+				}
+			],
+			"wait": 0.5
+		},
+		{
+			"speaker": "",
+			"text": "（狂欢图腾咚咚地响。怪物们兴奋得发疯，蓝色公主的裤子也跟着鼓点一下一下地抽动）",
+			"actions": [
+				{
+					"do": "enter",
+					"who": "foe1",
+					"from": [
+						-90,
+						0
+					],
+					"time": 0.5
+				},
+				{
+					"do": "enter",
+					"who": "foe2",
+					"from": [
+						90,
+						0
+					],
+					"time": 0.5
+				}
+			]
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……图腾……裤子……跟着鼓点……停、停下……"
+		},
+		{
+			"speaker": "公主",
+			"text": "怪物们……好像跳舞一样冲过来了！"
+		},
+		{
+			"speaker": "",
+			"text": "（腿根爬爬蛛爬上蓝色公主的腿，八只脚跟着鼓点在腿根上点；史莱姆跟着鼓点一下下扑粉色公主的脚心）",
+			"actions": [
+				{
+					"do": "tickle",
+					"who": "blue",
+					"by": "foe2",
+					"repeat": 8,
+					"interval": 0.22,
+					"fx": "brush",
+					"zone": "thigh"
+				},
+				{
+					"do": "tickle",
+					"who": "pink",
+					"by": "foe1",
+					"repeat": 8,
+					"interval": 0.22,
+					"fx": "hand",
+					"zone": "sole"
+				}
+			]
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……共振……蜘蛛和裤子……对着点……噗……"
+		},
+		{
+			"speaker": "公主",
+			"text": "脚、脚心——跟着鼓点扑哈哈！",
+			"actions": [
+				{
+					"do": "bubble",
+					"who": "pink",
+					"kind": "laugh"
+				},
+				{
+					"do": "bubble",
+					"who": "blue",
+					"kind": "laugh"
+				}
+			]
+		},
+		{
+			"speaker": "",
+			"text": "（鼓点越来越快。蜘蛛点得越来越快，粉色公主腰上的史莱姆也蹭得越来越快）",
+			"actions": [
+				{
+					"do": "tickle",
+					"who": "blue",
+					"by": "foe2",
+					"repeat": 8,
+					"interval": 0.22,
+					"fx": "brush",
+					"zone": "butt"
+				},
+				{
+					"do": "tickle",
+					"who": "pink",
+					"by": "foe1",
+					"repeat": 8,
+					"interval": 0.22,
+					"fx": "hand",
+					"zone": "waist"
+				}
+			]
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……屁股……裤子里轮流捏、外面蜘蛛刮……那条线……"
+		},
+		{
+			"speaker": "公主",
+			"text": "越、越来越快了——哈哈哈！"
+		},
+		{
+			"speaker": "",
+			"text": "（图腾的鼓点忽然一停——所有的怪物、蜘蛛、史莱姆，也一起停下）"
+		},
+		{
+			"speaker": "公主",
+			"text": "停、停了？……呼……"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……停了。……呼……"
+		},
+		{
+			"speaker": "",
+			"text": "（——咚！鼓点再响的那一刻，所有的手、脚、果冻同时落了下来）",
+			"actions": [
+				{
+					"do": "pose",
+					"who": "pink",
+					"visual": "helpless_2"
+				},
+				{
+					"do": "pose",
+					"who": "blue",
+					"visual": "helpless_2"
+				},
+				{
+					"do": "voice",
+					"state": "laugh"
+				},
+				{
+					"do": "tickle",
+					"who": "pink",
+					"by": "foe1",
+					"repeat": 8,
+					"interval": 0.22,
+					"fx": "hand",
+					"zone": "sole"
+				},
+				{
+					"do": "tickle",
+					"who": "blue",
+					"by": "foe2",
+					"repeat": 8,
+					"interval": 0.22,
+					"fx": "brush",
+					"zone": "thigh"
+				},
+				{
+					"do": "flash",
+					"time": 0.3
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "哈哈哈哈哈！骗、骗人——一起来哈哈哈哈！"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……哈哈哈哈哈……裤子……也被骗了……一起……哈哈哈哈！",
+			"actions": [
+				{
+					"do": "bubble",
+					"who": "pink",
+					"kind": "laugh"
+				},
+				{
+					"do": "bubble",
+					"who": "blue",
+					"kind": "laugh"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "认、认输……这一波……认输……"
+		},
+		{
+			"actions": [
+				{
+					"do": "voice",
+					"state": ""
+				},
+				{
+					"do": "fade_out",
+					"time": 0.8
+				}
+			],
+			"wait": 0.9
+		}
+	]
+}

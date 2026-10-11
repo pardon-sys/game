@@ -122,6 +122,7 @@ func _bell_move(delta: float) -> void:
 		return
 	_bell_t = 1.6
 	if who.has_method("_ring_bell"):
+		Audio.play("bell_jingle", -8.0, 0.1)
 		who.call("_ring_bell")
 
 
