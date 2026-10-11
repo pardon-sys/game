@@ -5,7 +5,7 @@ extends CanvasLayer
 ##   状态页：闷笑值 / 魔力疲倦百分比和当前阶段说明、魔法冷却、所有增益 / 减益（data/buffs.json 的 desc）、被抓 / 定身等情况。
 ##   CG 图鉴页：笑倒 CG、巢穴过场、三来源组合演出、小剧场（第八层 Boss 战败 / 追逐失败、第六层的惩罚 / 训练等）；
 ##   看过的可以重看（测试模式下全部可看），E 播放。
-## 操作：方向键选择，E 使用 / 播放，Q / R 设快捷键，Tab / I 翻到下一页（最后一页再按就关闭），Esc 关闭。
+## 操作：方向键选择，E 使用 / 播放，Q / R 设快捷键，Tab / I 翻到下一页（最后一页再按就关闭），~ 翻到上一页（第一页再按到最后一页），Esc 关闭。
 ## 测试模式（DevConfig.enabled）下没拿到背包也能打开。
 
 signal opened
@@ -133,6 +133,10 @@ func _input(event: InputEvent) -> void:
 			set_page(order[at + 1])
 		else:
 			close()
+	elif event.is_action("prev_page"):
+		var order := page_order()
+		var at := order.find(page)
+		set_page(order[(at - 1 + order.size()) % order.size()])
 	elif page == PAGE_EQUIP and _equip_action(event) != "":
 		handled = equip_page.handle(_equip_action(event))
 		hint_label.text = equip_page.hint()
@@ -354,16 +358,16 @@ func _refresh() -> void:
 	gallery_page.visible = page == PAGE_GALLERY
 	if page == PAGE_GALLERY:
 		_refresh_gallery()
-		hint_label.text = "上下 选择　左右 翻页　E 播放　Tab / Esc 关闭"
+		hint_label.text = "上下 选择　左右 翻页　E 播放　Tab 下一页　~ 上一页　Esc 关闭"
 	elif page == PAGE_ITEMS:
 		_refresh_items()
-		hint_label.text = "方向键 选择　E 使用　Q / R 设为快捷键　Tab 下一页　Esc 关闭"
+		hint_label.text = "方向键 选择　E 使用　Q / R 快捷键　Tab 下一页　~ 上一页　Esc 关闭"
 	elif page == PAGE_PASSIVES:
 		_refresh_passives()
-		hint_label.text = "方向键 选择　Tab 下一页　Esc 关闭"
+		hint_label.text = "方向键 选择　Tab 下一页　~ 上一页　Esc 关闭"
 	else:
 		_refresh_status()
-		hint_label.text = "↑↓ 滚动　Tab 下一页　Esc 关闭"
+		hint_label.text = "↑↓ 滚动　Tab 下一页　~ 上一页　Esc 关闭"
 
 
 # ------------------------------------------------------------------ CG 图鉴

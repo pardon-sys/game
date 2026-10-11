@@ -76,7 +76,8 @@ func _process(delta: float) -> void:
 	var on := has_buff("thousand_pants")
 	if not on or not is_alive() or GameState.in_dialogue or GameState.in_cutscene or CG.is_busy():
 		return
-	_pants_t -= delta
+	var efx := EquipFx.of(self)
+	_pants_t -= delta * (efx.rate_mul if efx else 1.0)
 	_pants_bubble_t = maxf(0.0, _pants_bubble_t - delta)
 	if _pants_t <= 0.0:
 		_pants_t = PANTS_TICK * randf_range(0.8, 1.2)
@@ -92,9 +93,13 @@ func pants_flare(way := "") -> String:
 		_pants_src = HandCover.Source.new()
 		_pants_src.reaction_key = "thousand_pants"
 		add_child(_pants_src)
-	var h := HitData.make_tickle(_pants_src, PANTS_TICKLE)
+	var efx := EquipFx.of(self)
+	var h := HitData.make_tickle(_pants_src, PANTS_TICKLE * (efx.power_mul if efx else 1.0))
 	h.zone = str(PANTS_WAYS.get(way, "thigh"))
 	receive_hit(h)
+	# 立绘反应（装备模块：抖动 + 部位贴片 + 这种手法的飘字；挠痒上面已经做了）
+	if efx:
+		efx.flare(Equipment.PANTS_ID, h.zone, way, false)
 	var line := MazeLines.pick("pants_" + way)
 	if line != "":
 		if is_controlled():

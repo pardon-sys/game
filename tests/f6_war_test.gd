@@ -35,6 +35,7 @@ func _ready() -> void:
 	await _run_equipment()
 	await _run_equip_combos()
 	await _run_equip_page()
+	await _run_fixes()
 	print("\n==== %s (%d 项失败) ====" % ["全部通过" if failures == 0 else "有失败", failures])
 	get_tree().quit(1 if failures else 0)
 
@@ -352,6 +353,75 @@ func _run_equip_page() -> void:
 	check("装备页：打开就能看到（%s），←→ 换人（%s → %s），E 打开列表换上厚底羊毛袜（%s），诅咒的格子打不开（%s）" % [visible, first_who,
 			second_who, wearing.id if wearing else "", stays],
 		visible and first_who != second_who and in_list and wearing != null and wearing.id == "equip_wool_socks" and stays)
+
+
+# ------------------------------------------------------------------ 小修：背包 ~、装备页锚点、负面装备立绘反应、过场 CG 飘字
+func _run_fixes() -> void:
+	print("-- 小修")
+	var bp = get_tree().root.find_child("Backpack", true, false)
+	bp.open()
+	bp.set_page(bp.PAGE_ITEMS)
+	var ev := InputEventKey.new()
+	ev.physical_keycode = KEY_QUOTELEFT
+	ev.pressed = true
+	bp._input(ev)
+	var prev_from_first: int = bp.page
+	bp._input(ev)
+	var prev2: int = bp.page
+	var order: Array = bp.page_order()
+	check("背包按 ~ 翻到上一页（第一页 → 最后一页 %d，再按 → %d）" % [prev_from_first, prev2],
+		prev_from_first == order[-1] and prev2 == order[-2] and bp.hint_label.text.contains("~ 上一页"))
+	bp.set_page(bp.PAGE_EQUIP)
+	var ep: EquipPage = bp.equip_page
+	ep.who = "pink"
+	var ys := ["neck", "chest", "waist", "thigh", "sole"].map(func(z): return ep.body_at(z).y)
+	var chest := ep.body_at("chest")
+	var belly := ep.body_at("belly")
+	check("装备页连线：从上到下 脖子 < 胸 < 腰 < 大腿 < 脚心（%s），肚子在胸下面（%s / %s）" % [ys, chest, belly],
+		ys[0] < ys[1] and ys[1] < ys[2] and ys[2] < ys[3] and ys[3] < ys[4]
+		and belly.y > chest.y and ep.body_at("neck").y > 0.4)
+	ep.mode = "slots"
+	ep.slot_index = EquipPage.ZONES.find("sole")
+	ep.handle("ok")
+	await get_tree().process_frame
+	check("装备列表是可滚动的列表（%d 行），好处 / 代价在下半（y ≥ %d）" % [ep.list_box.line_count(), EquipPage.DETAIL_Y],
+		ep.list_box.visible and ep.list_box.line_count() == ep.choices().size() and EquipPage.DETAIL_Y > EquipPage.LIST_RECT.end.y)
+	ep.handle("back")
+	bp.close()
+	await get_tree().process_frame
+	# 千手痒痒裤发作：立绘飘字（操控蓝色公主时）
+	var blue := _char("blue")
+	GameState.switch_control(blue)
+	await _wait(0.3)
+	var fx := Dialogue.portrait_fx
+	blue.laugh.set_value(0.0)
+	var way: String = blue.pants_flare("knead")
+	await get_tree().process_frame
+	var efx := EquipFx.of(blue)
+	var texts: Array = fx.haha_texts()
+	check("千手痒痒裤发作（%s）：立绘上飘手法的字（%s），平静时也飘" % [way, texts],
+		efx and efx.last.size() == 3 and str(efx.last[2]) != "" and texts.has(str(efx.last[2])))
+	# 狂欢图腾一类的加成：发作更频繁、更重
+	efx.add_mod("test", 0.5, 2.0)
+	check("EquipFx 加成：频率 ×%.1f、力度 ×%.1f" % [efx.rate_mul, efx.power_mul], is_equal_approx(efx.rate_mul, 0.5) and is_equal_approx(efx.power_mul, 2.0))
+	efx.remove_mod("test")
+	# 过场换上 CG 图：CG 模式的抖动 / 飘字
+	Cutscene.call("play_data", "test_cg", {"name": "测试", "steps": [
+		{"actions": [{"do": "cg", "key": "boss8_resist_1"}], "wait": 0.2},
+		{"actions": [{"do": "tickle", "who": "princess", "zone": "thigh", "repeat": 4, "interval": 0.1},
+			{"do": "words", "text": ["腿根……别揉"]}], "wait": 0.6},
+		{"actions": [{"do": "wait"}], "wait": 0.3}]})
+	var t := 0.0
+	var saw_cg := false
+	var saw_words := false
+	while t < 3.0:
+		saw_cg = saw_cg or fx.cutscene_cg
+		saw_words = saw_words or fx.haha_texts().has("腿根……别揉")
+		await get_tree().process_frame
+		t += get_process_delta_time()
+	check("过场里换上 CG 图时进入 CG 模式（%s），words 动作在图旁飘字（%s），结束后退出（%s）" % [saw_cg, saw_words, not fx.cutscene_cg],
+		saw_cg and saw_words and not fx.cutscene_cg)
+	GameState.switch_control(_char("pink"))
 
 
 # ------------------------------------------------------------------ 工具

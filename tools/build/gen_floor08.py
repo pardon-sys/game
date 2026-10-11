@@ -1630,6 +1630,36 @@ FIN_BOSS_NEAR = [FIN_EXIT[0] - 4.0, FIN_EXIT[1] - 4.0]
 FIN_CAM = [FIN_EXIT[0] - 1.4, FIN_EXIT[1] - 1.4]   # 她在对话框上方、千手的手在她头顶
 
 
+# 过场换上 CG 图那几步：CG 图上按挠的部位飘字（words 动作；强度看第几张 CG）
+CG_WORDS = {
+    "thigh": [["……腿……", "……揉……", "……别……"], ["腿根……别揉……", "往、往上了……", "大腿……哈……"], ["腿根——哈哈哈！", "不准爬……哈哈！", "大腿不行……！"]],
+    "butt": [["……捏……", "……那里……", "……唔"], ["别、别捏……", "屁股……哈……", "揉什么……"], ["屁股——哈哈哈！", "又抓……哈哈！", "那条线不行……！"]],
+    "waist": [["……腰……"], ["腰、腰……哈……"], ["腰——哈哈哈！"]],
+    "armpit": [["……"], ["腋、腋下……"], ["腋下不行……哈哈！"]],
+    "": [["……", "……唔", "……噗"], ["哈……", "……哈哈", "嗯、嗯……"], ["哈哈哈哈！", "好痒——！", "哈哈……认输……！"]],
+}
+
+
+def cg_words(steps):
+    on, level = False, 0
+    for st in steps:
+        for a in st.get("actions", []):
+            if a.get("do") == "cg":
+                on = a.get("key", "") != ""
+                level = level + 1 if on else level
+        if not on or "text" not in st and not any(a.get("do") == "tickle" for a in st.get("actions", [])):
+            continue
+        zones = [a.get("zone", "") for a in st.get("actions", []) if a.get("do") == "tickle"]
+        tier = 0 if level <= 1 else (1 if level <= 2 else 2)
+        if st.get("emotion") == "helpless_2":
+            tier = 2
+        texts = []
+        for z in (zones or [""]):
+            texts += CG_WORDS.get(z, CG_WORDS[""])[tier]
+        st.setdefault("actions", []).append(A("words", text=texts, big=tier == 2))
+    return steps
+
+
 def finale(pants):
     steps = [
         # —— 序：出口的光在前面
@@ -1770,7 +1800,7 @@ def finale(pants):
         {"actions": [A("fade_out", time=2.4)], "wait": 2.6},
         {"actions": [A("set_flag", flag="f8_maze_finale_seen")], "wait": 0.2},
     ]
-    cs = cut("第八层：夜迷宫的出口", steps)
+    cs = cut("第八层：夜迷宫的出口", cg_words(steps))
     cs["end_dark"] = True
     return cs
 

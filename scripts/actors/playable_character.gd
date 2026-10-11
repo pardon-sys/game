@@ -121,6 +121,10 @@ var _chant: AudioStreamPlayer
 
 
 func _setup() -> void:
+	add_to_group("player_chars")
+	# 负面装备的发作反应（EquipFx：诅咒 / 临时装备定时挠一下 + 立绘飘字）
+	if get_node_or_null("EquipFx") == null:
+		add_child(EquipFx.new())
 	if fatigue:
 		fatigue.full.connect(fatigue_burst)
 	if controller == null:

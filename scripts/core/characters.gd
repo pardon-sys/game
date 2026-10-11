@@ -12,6 +12,20 @@ const DIR := "res://data/characters/%s/"
 static var _scope: Array[String] = []
 
 
+## 场景里这个角色的节点（PlayableCharacter，character_id 一致；没有返回 null）。
+static func node_of(id: String) -> PlayableCharacter:
+	var tree := Engine.get_main_loop() as SceneTree
+	if tree == null:
+		return null
+	var p := GameState.player
+	if is_instance_valid(p) and p.get("character_id") == id:
+		return p as PlayableCharacter
+	for n in tree.get_nodes_in_group("player_chars"):
+		if is_instance_valid(n) and n.get("character_id") == id:
+			return n as PlayableCharacter
+	return null
+
+
 static func scope(id: String) -> void:
 	_scope.append(id)
 

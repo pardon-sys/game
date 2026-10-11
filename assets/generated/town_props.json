@@ -701,5 +701,105 @@
 			24,
 			24
 		]
+	},
+	"decal_scorch_0": {
+		"floor": true,
+		"under": true,
+		"region": [
+			24,
+			256,
+			24,
+			14
+		]
+	},
+	"decal_scorch_1": {
+		"floor": true,
+		"under": true,
+		"region": [
+			48,
+			256,
+			24,
+			14
+		]
+	},
+	"decal_ash_0": {
+		"floor": true,
+		"under": true,
+		"region": [
+			72,
+			256,
+			18,
+			12
+		]
+	},
+	"decal_ash_1": {
+		"floor": true,
+		"under": true,
+		"region": [
+			90,
+			256,
+			18,
+			12
+		]
+	},
+	"decal_footprints_0": {
+		"floor": true,
+		"under": true,
+		"region": [
+			108,
+			256,
+			16,
+			18
+		]
+	},
+	"decal_splinters_0": {
+		"floor": true,
+		"under": true,
+		"region": [
+			124,
+			256,
+			16,
+			10
+		]
+	},
+	"decal_straw_0": {
+		"floor": true,
+		"under": true,
+		"region": [
+			140,
+			256,
+			18,
+			10
+		]
+	},
+	"decal_puddle_0": {
+		"floor": true,
+		"under": true,
+		"region": [
+			158,
+			256,
+			22,
+			12
+		]
+	},
+	"decal_shards_0": {
+		"floor": true,
+		"under": true,
+		"region": [
+			180,
+			256,
+			14,
+			10
+		]
+	},
+	"decal_rag_0": {
+		"floor": true,
+		"under": true,
+		"region": [
+			194,
+			256,
+			16,
+			10
+		]
 	}
 }

@@ -76,6 +76,8 @@ var carried_player_state := {}
 ## 装备：{角色 id: {部位: 装备 id}}、{角色 id: {部位: 剩余挡下次数}}（Equipment；随存档保存，重新开始清空）
 var equipment := {}
 var equip_charges := {}
+## 被强制穿上的临时装备 {角色 id: {部位: {id, left}}}（Equipment.force；不存档）
+var equip_forced := {}
 
 
 func register_player(p: PlayableCharacter) -> void:
@@ -175,6 +177,7 @@ func reset() -> void:
 	carried_player_state = {}
 	equipment = {}
 	equip_charges = {}
+	equip_forced = {}
 	player = null
 
 

@@ -144,6 +144,35 @@ GUARDS = [(29, 38, "war_guard_gate", "down"), (35, 38, "war_guard_gate2", "down"
           (44, 31, "war_guard_bonfire", "up")]
 for (x, y, f, d) in GUARDS:
     npc(m, x, y, "guard", f, 0, "dir=" + d)
+# 脏乱的地面：焦痕、灰烬、泥脚印、碎木、稻草、积水、碎瓷片、破布（地面贴花，不挡路）；火堆和烧焦的房子周围更密
+import random
+rnd = random.Random(606)
+HOT = [(20, 15), (10, 30), (35, 13), (52, 33), (17, 37), (58, 18), (26, 22), (8, 9), (24, 9), (11, 19), (15, 26)]
+NEAR_HOT = ["decal_scorch_0", "decal_scorch_1", "decal_ash_0", "decal_ash_1", "decal_splinters_0"]
+ANY = ["decal_footprints_0", "decal_straw_0", "decal_puddle_0", "decal_shards_0", "decal_rag_0", "decal_ash_1", "decal_scorch_1",
+       "decal_splinters_0"]
+
+
+def free(x, y):
+    if not (3 <= x <= 60 and 3 <= y <= 39) or m.g[y][x] != ".":
+        return False
+    return all((x + dx, y + dy) not in m.cells for dx in (-1, 0, 1) for dy in (-1, 0, 1))
+
+
+placed = 0
+for (hx, hy) in HOT:
+    for _ in range(5):
+        x, y = hx + rnd.randint(-3, 3), hy + rnd.randint(-2, 3)
+        if free(x, y):
+            prop(m, x, y, rnd.choice(NEAR_HOT))
+            placed += 1
+tries = 0
+while placed < 120 and tries < 4000:
+    tries += 1
+    x, y = rnd.randint(3, 60), rnd.randint(3, 39)
+    if free(x, y):
+        prop(m, x, y, rnd.choice(ANY))
+        placed += 1
 m.write()
 Path("levels/%s/design.json" % FID).write_text(json.dumps({"_说明": [
     "地下小镇·战时（gen_floor06_war.py 生成）：防卫战的准备阶段。城门（32,42）是攻防战入口（地图之后再做）。"]},
