@@ -69,6 +69,11 @@ const SCENES := {
 	"stalkerzone": "res://levels/floor_08/scenes/stalker_zone.tscn",
 	"f8shelter": "res://levels/floor_08/scenes/shelter_return.tscn",
 	"f6war": "res://levels/floor_06/scenes/war_town.tscn",
+	# 小镇攻防战（scripts/siege/）
+	"siege": "res://scenes/siege/siege_director.tscn",
+	"siegewall": "res://scenes/siege/siege_wall.tscn",
+	"siegeladder": "res://scenes/siege/siege_ladder.tscn",
+	"siegehorn": "res://scenes/siege/siege_horn.tscn",
 	"guard_patrol": "res://scenes/stealth/patrol_guard.tscn",
 }
 ## 按 type 参数选择场景的类型：新增怪物/友军/陷阱时在这里注册。

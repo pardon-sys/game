@@ -156,7 +156,7 @@ func start_following(talk_file := "") -> void:
 
 
 func make_ai_controller() -> CharacterController:
-	if follow:
+	if follow or PlayableCharacter.ai_factory.is_valid():
 		return super()
 	if Duo.active:
 		return CompanionController.new()

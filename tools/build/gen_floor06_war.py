@@ -2,7 +2,7 @@
 （和原来的集市广场 floor_06_upper 布局相同、单独一张图；原来的小镇不动。）
   样子：一半房子烧焦冒烟、摊位倒塌、地上零星的小火堆和碎石、路障和沙袋、站岗的守卫；篝火还在，是镇民的避难点。
   出口：从矿洞那边回来的地方（from_ruins，东北角）；通往营地的楼梯被路障封住；蓝色公主的家锁着；
-        广场正下方、南边城墙正中间的城门 = 攻防战入口（问「准备好了吗？」→ 出发 → 「（待续）」）。
+        广场正下方、南边城墙正中间的城门 = 攻防战入口（问「准备好了吗？」→ 出发 → 攻防战 floor_06_siege；回来时到 from_siege）。
   城墙边：冰塔地基（发淡蓝光）、箭塔、路障——调查时有说明（开打时蓝色公主在城墙上造冰塔，粉色公主在前线近战）。
   剧情：进来时的过场 f6w_arrive（有千手痒痒裤时 f6w_arrive_pants，蓝色公主的台词夹着「哈哈哈」，大家觉得奇怪）
         ——队长带着一队士兵过来，关心两人、交代怪物突然变多了、分配任务。
@@ -125,6 +125,7 @@ for (x, y) in ((12, 37), (22, 37), (42, 37), (52, 37)):
 for (x, y) in ((27, 38), (37, 38)):
     prop(m, x, y, "tower", OBJ + "arrow_tower")
 prop(m, 32, 40, "dungeon_gate", "talk:floor_06/war_gate#gate")
+m.put(32, 38, "spawn id=from_siege")
 for x in (29, 35):
     prop(m, x, 40, "lamp")
 # 人物（队长在过场之后才出现）
@@ -368,7 +369,7 @@ for f, (name, pink, blue) in GUARD_LINES.items():
 D["war_gate"] = {"name": "城门", "entries": [{"node": "gate"}], "nodes": {
     "gate": {"lines": [L("（城门外就是前线。怪物的叫声从远处传过来）", N)], "prompt": "准备好了吗？",
              "choices": [{"text": "出发！", "next": "go"}, {"text": "再准备一下", "next": ""}]},
-    "go": {"lines": [L("（两个人推开城门——）", N), L("（待续）", N)], "set": {"flags": ["f6w_ready"]}},
+    "go": {"lines": [L("（两个人推开城门——）", N)], "set": {"flags": ["f6w_ready"], "call": "go_siege"}},
 }}
 # —— 可以调查的东西
 D["war_objects"] = {"name": "", "entries": [{"node": "tower_base"}], "nodes": {

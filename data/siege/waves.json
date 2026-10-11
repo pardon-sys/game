@@ -1,0 +1,260 @@
+{
+	"_说明": [
+		"小镇攻防战的波次（gen_floor06_siege.py 生成；SiegeDirector 读）。怪物表只有已经做好的怪。"
+	],
+	"wall_hp": 2400,
+	"prep_first": 30,
+	"prep": 20,
+	"alive_cap": 90,
+	"start_crystals": 24,
+	"monsters": {
+		"slime": "res://scenes/actors/monsters/slime.tscn",
+		"rat": "res://scenes/actors/monsters/foot_rat.tscn",
+		"caterpillar": "res://scenes/actors/monsters/caterpillar.tscn",
+		"fairy": "res://scenes/actors/monsters/fairy_swarm.tscn",
+		"squirrel": "res://scenes/actors/monsters/brush_squirrel.tscn",
+		"hedgehog": "res://scenes/actors/monsters/brush_hedgehog.tscn",
+		"spider": "res://scenes/actors/monsters/tickle_spider.tscn",
+		"glove": "res://scenes/actors/monsters/ghost_glove.tscn"
+	},
+	"waves": [
+		{
+			"name": "小怪潮",
+			"reward": 14,
+			"groups": [
+				{
+					"monster": "slime",
+					"count": 12,
+					"from": "bottom",
+					"interval": 1.4,
+					"delay": 0.0
+				},
+				{
+					"monster": "rat",
+					"count": 8,
+					"from": "bottom",
+					"interval": 1.6,
+					"delay": 6
+				},
+				{
+					"monster": "slime",
+					"count": 6,
+					"from": "hole",
+					"interval": 2.0,
+					"delay": 14
+				}
+			],
+			"theater": "siege_fail_1"
+		},
+		{
+			"name": "钩索与壁虎",
+			"reward": 16,
+			"groups": [
+				{
+					"monster": "slime",
+					"count": 10,
+					"from": "bottom",
+					"interval": 1.2,
+					"delay": 0.0
+				},
+				{
+					"monster": "caterpillar",
+					"count": 8,
+					"from": "left",
+					"interval": 1.5,
+					"delay": 4
+				}
+			],
+			"theater": "siege_fail_2"
+		},
+		{
+			"name": "攻城痒痒车",
+			"reward": 18,
+			"groups": [
+				{
+					"monster": "rat",
+					"count": 12,
+					"from": "bottom",
+					"interval": 1.0,
+					"delay": 0.0
+				},
+				{
+					"monster": "squirrel",
+					"count": 8,
+					"from": "hole",
+					"interval": 1.5,
+					"delay": 5
+				},
+				{
+					"monster": "slime",
+					"count": 10,
+					"from": "left",
+					"interval": 1.0,
+					"delay": 16
+				}
+			],
+			"theater": "siege_fail_3"
+		},
+		{
+			"name": "捆绑藤怪",
+			"reward": 18,
+			"groups": [
+				{
+					"monster": "caterpillar",
+					"count": 12,
+					"from": "bottom",
+					"interval": 1.0,
+					"delay": 0.0
+				},
+				{
+					"monster": "fairy",
+					"count": 8,
+					"from": "right",
+					"interval": 1.4,
+					"delay": 10
+				}
+			],
+			"theater": "siege_fail_4"
+		},
+		{
+			"name": "大波次：怪物潮",
+			"reward": 26,
+			"groups": [
+				{
+					"monster": "slime",
+					"count": 18,
+					"from": "bottom",
+					"interval": 0.6,
+					"delay": 0.0
+				},
+				{
+					"monster": "rat",
+					"count": 14,
+					"from": "left",
+					"interval": 0.8,
+					"delay": 4
+				},
+				{
+					"monster": "squirrel",
+					"count": 10,
+					"from": "right",
+					"interval": 0.9,
+					"delay": 8
+				}
+			],
+			"theater": "siege_fail_5"
+		},
+		{
+			"name": "盾甲螃蟹与拥抱小熊",
+			"reward": 22,
+			"groups": [
+				{
+					"monster": "hedgehog",
+					"count": 10,
+					"from": "hole",
+					"interval": 1.2,
+					"delay": 6
+				},
+				{
+					"monster": "spider",
+					"count": 10,
+					"from": "right",
+					"interval": 1.0,
+					"delay": 10
+				},
+				{
+					"monster": "slime",
+					"count": 14,
+					"from": "bottom",
+					"interval": 0.8,
+					"delay": 14
+				}
+			],
+			"theater": "siege_fail_6"
+		},
+		{
+			"name": "暖炉与搬运小鬼",
+			"reward": 24,
+			"groups": [
+				{
+					"monster": "rat",
+					"count": 18,
+					"from": "bottom",
+					"interval": 0.7,
+					"delay": 0.0
+				},
+				{
+					"monster": "fairy",
+					"count": 12,
+					"from": "hole",
+					"interval": 1.0,
+					"delay": 4
+				}
+			],
+			"theater": "siege_fail_7"
+		},
+		{
+			"name": "魔力吸吸水母",
+			"reward": 26,
+			"groups": [
+				{
+					"monster": "glove",
+					"count": 12,
+					"from": "hole",
+					"interval": 1.0,
+					"delay": 8
+				}
+			],
+			"theater": "siege_fail_8"
+		},
+		{
+			"name": "狂欢与共振",
+			"reward": 30,
+			"groups": [
+				{
+					"monster": "slime",
+					"count": 20,
+					"from": "bottom",
+					"interval": 0.5,
+					"delay": 0.0
+				},
+				{
+					"monster": "squirrel",
+					"count": 20,
+					"from": "left",
+					"interval": 0.6,
+					"delay": 20
+				}
+			],
+			"theater": "siege_fail_9"
+		},
+		{
+			"name": "最终波：全部一起上",
+			"reward": 40,
+			"groups": [
+				{
+					"monster": "slime",
+					"count": 26,
+					"from": "bottom",
+					"interval": 0.4,
+					"delay": 0.0
+				},
+				{
+					"monster": "rat",
+					"count": 20,
+					"from": "left",
+					"interval": 0.5,
+					"delay": 2
+				},
+				{
+					"monster": "squirrel",
+					"count": 16,
+					"from": "right",
+					"interval": 0.6,
+					"delay": 4
+				}
+			],
+			"theater": "siege_fail_10"
+		}
+	]
+}

@@ -1,0 +1,98 @@
+{
+	"name": "攻防战：开始",
+	"letterbox": true,
+	"skippable": true,
+	"steps": [
+		{
+			"actions": [
+				{
+					"time": 0.8,
+					"do": "fade_in"
+				},
+				{
+					"to": [
+						54,
+						20
+					],
+					"zoom": 0.8,
+					"time": 0.1,
+					"do": "camera"
+				}
+			],
+			"wait": 0.8
+		},
+		{
+			"actions": [
+				{
+					"to": [
+						54,
+						40
+					],
+					"zoom": 0.8,
+					"time": 2.0,
+					"do": "camera"
+				}
+			],
+			"wait": 2.0
+		},
+		{
+			"speaker": "",
+			"text": "（城墙外面，一大片开阔地。远处的黑暗里，怪物的眼睛一对一对地亮起来）"
+		},
+		{
+			"actions": [
+				{
+					"to": [
+						54,
+						9
+					],
+					"zoom": 1.2,
+					"time": 1.2,
+					"do": "camera"
+				}
+			],
+			"wait": 1.2
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……我在城墙上。远的，交给我。"
+		},
+		{
+			"speaker": "公主",
+			"text": "那下面的就交给我！",
+			"emotion": "happy"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……冰塔格，你站上去按 E。……我从上面放冰，一起造。"
+		},
+		{
+			"speaker": "公主",
+			"text": "嗯！还有——要是你被挠下来了，我就去救你！",
+			"emotion": "happy"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……不会被挠下来。",
+			"emotion": "angry"
+		},
+		{
+			"actions": [
+				{
+					"text": "C 切换操控；蓝色公主：L 瞄准施法；H 查看新情报；城门口的号角可以提前开打",
+					"do": "hint"
+				}
+			],
+			"wait": 0.2
+		},
+		{
+			"actions": [
+				{
+					"flag": "siege_intro_seen",
+					"do": "set_flag"
+				}
+			],
+			"wait": 0.1
+		}
+	]
+}
