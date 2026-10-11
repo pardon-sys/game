@@ -125,7 +125,14 @@ func _process(delta: float) -> void:
 
 
 func _unhandled_input(event: InputEvent) -> void:
-	if not active or Engine.get_process_frames() == _opened_t:
+	# 没在瞄准时：玩家操控的蓝色公主按 E 救粉色公主（冰链 / 探出城垛割网）
+	if not active:
+		if event.is_action_pressed("interact") and director and is_instance_valid(GameState.player) \
+				and GameState.player == director.get("blue") and director.rescue_request() != null:
+			if director.rescue(GameState.player):
+				get_viewport().set_input_as_handled()
+		return
+	if Engine.get_process_frames() == _opened_t:
 		return
 	if event is InputEventMouseMotion and reticle:
 		point = reticle.get_global_mouse_position()

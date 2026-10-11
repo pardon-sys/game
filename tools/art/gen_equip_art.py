@@ -8,7 +8,10 @@ from PIL import Image, ImageDraw
 from palette import OUT, add_outline
 
 ICONS = ["armpit_pad", "scarf", "wool_socks", "dance_shoes", "waist_sash", "mint_sachet", "chest_guard",
-         "training_wraps", "padded_shorts", "party_bow", "feather_anklet", "ice_hairpin", "thousand_pants"]
+         "training_wraps", "padded_shorts", "party_bow", "feather_anklet", "ice_hairpin", "thousand_pants",
+         # 攻防战里被敌人强制穿上的临时痒痒装备（粉紫色调）
+         "t_feather_socks", "t_toe_brush", "t_fluff_bra", "t_thigh_ring", "t_pinch_pad", "t_knead_tights",
+         "t_feather_shackles", "t_thigh_strap", "t_bell_anklet", "t_mark_patch"]
 
 
 def canvas():
@@ -18,6 +21,9 @@ def canvas():
 
 def icon(name):
     img, d = canvas()
+    if name.startswith("t_"):
+        t_icon(name, img, d)
+        return add_outline(img)
     if name == "armpit_pad":      # 软绵护腋垫：两块圆圆的粉色软垫 + 带子
         d.ellipse((2, 5, 7, 12), fill=(255, 205, 225, 255))
         d.ellipse((9, 5, 14, 12), fill=(255, 205, 225, 255))
@@ -88,6 +94,61 @@ def icon(name):
             d.point((x, 9), fill=(230, 190, 255, 255))
             d.point((x + 1, 9), fill=(230, 190, 255, 255))
     return add_outline(img)
+
+
+HAND = (255, 175, 215, 255)
+TPINK = (240, 150, 210, 255)
+TPURP = (180, 110, 220, 255)
+
+
+def t_icon(name, img, d):
+    if name == "t_feather_socks":
+        d.rectangle((5, 2, 10, 9), fill=TPINK)
+        d.polygon([(5, 9), (10, 9), (13, 12), (13, 14), (5, 14)], fill=TPINK)
+        for (x, y) in ((6, 11), (9, 12), (11, 13)):
+            d.line((x, y, x + 2, y - 3), fill=(255, 255, 255, 255))
+    elif name == "t_toe_brush":
+        d.polygon([(2, 9), (12, 9), (14, 13), (2, 13)], fill=TPINK)
+        for x in range(4, 14, 2):
+            d.line((x, 8, x, 5), fill=(250, 240, 200, 255))
+        d.ellipse((11, 2, 15, 6), fill=HAND)
+    elif name == "t_fluff_bra":
+        d.ellipse((2, 5, 8, 11), fill=TPINK)
+        d.ellipse((8, 5, 14, 11), fill=TPINK)
+        for (x, y) in ((3, 6), (6, 9), (10, 6), (12, 9)):
+            d.point((x, y), fill=(255, 255, 255, 255))
+        d.line((2, 5, 14, 5), fill=TPURP)
+    elif name == "t_thigh_ring":
+        d.ellipse((2, 4, 13, 12), outline=TPURP, width=2)
+        for x in (4, 7, 10):
+            d.line((x, 6, x, 3), fill=HAND)
+    elif name == "t_pinch_pad":
+        d.ellipse((2, 5, 13, 13), fill=TPINK)
+        d.ellipse((4, 2, 8, 6), fill=HAND)
+        d.ellipse((8, 2, 12, 6), fill=HAND)
+    elif name == "t_knead_tights":
+        d.rectangle((3, 2, 12, 6), fill=TPURP)
+        d.rectangle((3, 6, 7, 14), fill=TPURP)
+        d.rectangle((8, 6, 12, 14), fill=TPURP)
+        for (x, y) in ((4, 8), (10, 10)):
+            d.ellipse((x, y, x + 2, y + 2), fill=HAND)
+    elif name == "t_feather_shackles":
+        d.ellipse((1, 8, 6, 13), outline=(200, 200, 220, 255), width=2)
+        d.ellipse((10, 8, 15, 13), outline=(200, 200, 220, 255), width=2)
+        d.line((6, 10, 10, 10), fill=(200, 200, 220, 255))
+        d.line((3, 7, 6, 2), fill=(255, 255, 255, 255))
+        d.line((12, 7, 9, 2), fill=(255, 255, 255, 255))
+    elif name == "t_thigh_strap":
+        d.rectangle((3, 3, 7, 14), fill=(250, 230, 240, 255))
+        d.rectangle((8, 3, 12, 14), fill=(250, 230, 240, 255))
+        d.rectangle((2, 7, 13, 9), fill=TPURP)
+    elif name == "t_bell_anklet":
+        d.arc((2, 3, 13, 12), 0, 180, fill=(230, 190, 90, 255), width=2)
+        d.ellipse((6, 9, 10, 14), fill=(255, 220, 90, 255))
+        d.point((8, 12), fill=(120, 80, 30, 255))
+    elif name == "t_mark_patch":
+        d.ellipse((2, 4, 13, 13), fill=(255, 210, 230, 255))
+        d.polygon([(7, 5), (9, 8), (12, 8), (10, 10), (11, 13), (7, 11), (4, 13), (5, 10), (3, 8), (6, 8)], fill=(230, 60, 150, 255))
 
 
 def slot_bg(locked):

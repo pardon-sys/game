@@ -209,6 +209,17 @@
 				"tickle_cd": 0.7
 			},
 			"desc": "狂欢图腾附近：怪物移动和挠痒都更快。"
+		},
+		"siege_chill": {
+			"name": "冰寒",
+			"icon": 18,
+			"debuff": true,
+			"duration": 0.6,
+			"max_stacks": 1,
+			"modifiers": {
+				"speed": 0.5
+			},
+			"desc": "寒霜塔旁边：移动减半。"
 		}
 	}
 }

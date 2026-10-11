@@ -94,5 +94,179 @@
 		0,
 		16,
 		16
+	],
+	"cart": [
+		0,
+		16,
+		16,
+		16
+	],
+	"hook": [
+		16,
+		16,
+		16,
+		16
+	],
+	"vine": [
+		32,
+		16,
+		16,
+		16
+	],
+	"gecko": [
+		48,
+		16,
+		16,
+		16
+	],
+	"shield_crab": [
+		64,
+		16,
+		16,
+		16
+	],
+	"bat_swarm": [
+		80,
+		16,
+		16,
+		16
+	],
+	"carrier": [
+		96,
+		16,
+		16,
+		16
+	],
+	"warm_slime": [
+		112,
+		16,
+		16,
+		16
+	],
+	"thigh_spider": [
+		128,
+		16,
+		16,
+		16
+	],
+	"hug_bear": [
+		144,
+		16,
+		16,
+		16
+	],
+	"suck_jelly": [
+		160,
+		16,
+		16,
+		16
+	],
+	"twin_ghost": [
+		176,
+		16,
+		16,
+		16
+	],
+	"hazard_tornado": [
+		192,
+		16,
+		16,
+		16
+	],
+	"hazard_bubbles": [
+		208,
+		16,
+		16,
+		16
+	],
+	"hazard_link_rune": [
+		224,
+		16,
+		16,
+		16
+	],
+	"hazard_broom": [
+		240,
+		16,
+		16,
+		16
+	],
+	"hazard_fog": [
+		0,
+		32,
+		16,
+		16
+	],
+	"hazard_wall_vine": [
+		16,
+		32,
+		16,
+		16
+	],
+	"hazard_sticky_net": [
+		32,
+		32,
+		16,
+		16
+	],
+	"equip_t_feather_socks": [
+		48,
+		32,
+		16,
+		16
+	],
+	"equip_t_toe_brush": [
+		64,
+		32,
+		16,
+		16
+	],
+	"equip_t_fluff_bra": [
+		80,
+		32,
+		16,
+		16
+	],
+	"equip_t_thigh_ring": [
+		96,
+		32,
+		16,
+		16
+	],
+	"equip_t_pinch_pad": [
+		112,
+		32,
+		16,
+		16
+	],
+	"equip_t_knead_tights": [
+		128,
+		32,
+		16,
+		16
+	],
+	"equip_t_feather_shackles": [
+		144,
+		32,
+		16,
+		16
+	],
+	"equip_t_thigh_strap": [
+		160,
+		32,
+		16,
+		16
+	],
+	"equip_t_bell_anklet": [
+		176,
+		32,
+		16,
+		16
+	],
+	"equip_t_mark_patch": [
+		192,
+		32,
+		16,
+		16
 	]
 }

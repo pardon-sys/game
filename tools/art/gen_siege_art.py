@@ -375,6 +375,148 @@ def gen_props():
     pack(items, "props")
 
 
+# ================================================================ 攻城怪物（每种 2 帧：<名字>_0 / _1）
+def m_cart(f):
+    img, d = canvas(32, 26)
+    d.rectangle((3, 6, 28, 18), fill=(140, 90, 60, 255), outline=(80, 50, 35, 255))
+    d.polygon([(28, 9), (31, 12), (28, 15)], fill=(200, 200, 210, 255))          # 撞角
+    for x in (9, 22):
+        d.ellipse((x - 4, 16 + f, x + 4, 24 + f), fill=(70, 50, 40, 255), outline=(40, 30, 25, 255))
+        d.line((x - 3, 20 + f, x + 3, 20 + f), fill=(150, 120, 90, 255))
+    for i, x in enumerate((7, 13, 19)):   # 车上一排挥舞的小手 / 羽毛
+        d.ellipse((x, 1 + (f + i) % 2, x + 4, 6 + (f + i) % 2), fill=(255, 180, 215, 255))
+    d.line((5, 10, 26, 10), fill=(200, 140, 90, 255))
+    return add_outline(img)
+
+
+def m_hook(f):
+    img, d = canvas(16, 18)
+    d.ellipse((3, 6, 12, 16), fill=(120, 100, 150, 255))
+    d.ellipse((4, 2, 11, 9), fill=(150, 130, 180, 255))
+    d.point((6, 5), fill=(255, 255, 255, 255)); d.point((9, 5), fill=(255, 255, 255, 255))
+    d.line((12, 8, 15, 3 + f), fill=(180, 180, 190, 255), width=1)
+    d.arc((12, 0 + f, 16, 5 + f), 180, 360, fill=(200, 200, 210, 255))
+    return add_outline(img)
+
+
+def m_vine(f):
+    img, d = canvas(16, 18)
+    d.ellipse((3, 9, 13, 17), fill=(80, 150, 70, 255))
+    for i, x in enumerate((2, 7, 12)):
+        d.line((x + 1, 10, x + (1 if (f + i) % 2 else -1), 2), fill=(110, 190, 90, 255), width=2)
+    d.ellipse((6, 11, 10, 14), fill=(255, 130, 190, 255))
+    return add_outline(img)
+
+
+def m_gecko(f):
+    img, d = canvas(16, 14)
+    d.ellipse((4, 4, 12, 11), fill=(130, 210, 140, 255))
+    d.ellipse((5, 1, 11, 6), fill=(150, 230, 160, 255))
+    d.point((6, 3), fill=(30, 30, 30, 255)); d.point((10, 3), fill=(30, 30, 30, 255))
+    for (x, y) in ((2, 5 + f), (13, 5 - f), (2, 10 - f), (13, 10 + f)):
+        d.line((8, 7, x, y), fill=(110, 180, 120, 255))
+    d.line((8, 11, 8 + (2 if f else -2), 13), fill=(110, 180, 120, 255))
+    return add_outline(img)
+
+
+def m_shield_crab(f):
+    img, d = canvas(22, 16)
+    d.ellipse((5, 6, 17, 14), fill=(220, 100, 80, 255))
+    d.rectangle((1, 1, 21, 6 - f), fill=(170, 170, 185, 255), outline=(100, 100, 115, 255))   # 举起的大钳子像盾
+    d.line((3, 3, 19, 3), fill=(210, 210, 225, 255))
+    for x in (6, 15):
+        d.line((x, 13, x - 2 + f * 2, 15), fill=(200, 80, 60, 255))
+    return add_outline(img)
+
+
+def m_bat_swarm(f):
+    img, d = canvas(24, 16)
+    for (x, y) in ((2, 6), (10, 2), (16, 8)):
+        y += f if x != 10 else -f
+        d.polygon([(x, y + 3), (x + 3, y), (x + 4, y + 3), (x + 5, y), (x + 8, y + 3), (x + 4, y + 5)], fill=(170, 120, 200, 255))
+        d.point((x + 3, y + 2), fill=(255, 255, 255, 255))
+        d.line((x + 4, y + 5, x + 5, y + 8), fill=(255, 255, 255, 255))   # 羽毛
+    return add_outline(img)
+
+
+def m_carrier(f):
+    img, d = canvas(26, 16)
+    d.line((1, 4, 25, 4), fill=WOOD, width=2)   # 抬人的杆子
+    for i, x in enumerate((2, 10, 18)):
+        y = 6 + ((f + i) % 2)
+        d.ellipse((x, y, x + 6, y + 8), fill=(120, 90, 130, 255))
+        d.polygon([(x + 1, y + 1), (x + 2, y - 2), (x + 3, y + 1)], fill=(120, 90, 130, 255))
+        d.point((x + 2, y + 3), fill=(255, 220, 90, 255)); d.point((x + 4, y + 3), fill=(255, 220, 90, 255))
+    return add_outline(img)
+
+
+def m_warm_slime(f):
+    img, d = canvas(16, 14)
+    h = 9 if f == 0 else 8
+    d.ellipse((1, 13 - h, 15, 13), fill=(255, 140, 80, 255))
+    d.ellipse((4, 14 - h, 10, 10 - h // 2), fill=(255, 210, 140, 255))
+    d.point((5, 9), fill=(60, 30, 20, 255)); d.point((10, 9), fill=(60, 30, 20, 255))
+    d.line((7, 1, 7, 3 - f), fill=(255, 220, 160, 200)); d.line((10, 2, 11, 0 + f), fill=(255, 220, 160, 200))   # 热气
+    return add_outline(img)
+
+
+def m_thigh_spider(f):
+    img, d = canvas(18, 14)
+    d.ellipse((5, 3, 13, 11), fill=(150, 90, 200, 255))
+    d.ellipse((7, 1, 11, 5), fill=(190, 140, 230, 255))
+    for i, (x, y) in enumerate(((1, 2), (1, 8), (16, 2), (16, 8), (2, 12), (15, 12))):
+        d.line((9, 7, x, y + (f if i % 2 else -f)), fill=(120, 70, 170, 255))
+    d.point((8, 3), fill=(255, 120, 200, 255)); d.point((10, 3), fill=(255, 120, 200, 255))
+    return add_outline(img)
+
+
+def m_hug_bear(f):
+    img, d = canvas(18, 18)
+    d.ellipse((3, 6, 15, 17), fill=(200, 150, 110, 255))
+    d.ellipse((4, 1, 14, 10), fill=(210, 160, 120, 255))
+    d.ellipse((3, 0, 7, 4), fill=(210, 160, 120, 255)); d.ellipse((11, 0, 15, 4), fill=(210, 160, 120, 255))
+    d.point((7, 5), fill=(40, 30, 30, 255)); d.point((11, 5), fill=(40, 30, 30, 255))
+    d.ellipse((8, 6, 10, 8), fill=(255, 150, 170, 255))
+    d.line((3, 9, 0, 6 - f), fill=(190, 140, 100, 255), width=2); d.line((15, 9, 18, 6 - f), fill=(190, 140, 100, 255), width=2)
+    d.ellipse((6, 10, 12, 15), fill=(240, 210, 180, 255))
+    return add_outline(img)
+
+
+def m_suck_jelly(f):
+    img, d = canvas(16, 20)
+    d.ellipse((1, 1 + f, 15, 11 + f), fill=(150, 200, 255, 200), outline=(90, 140, 220, 255))
+    d.ellipse((4, 3 + f, 9, 7 + f), fill=(230, 245, 255, 220))
+    for x in (3, 6, 9, 12):
+        d.line((x, 10 + f, x + (1 if f else -1), 18), fill=(170, 210, 255, 230))
+    d.ellipse((6, 6 + f, 10, 9 + f), fill=(220, 120, 255, 230))
+    return add_outline(img)
+
+
+def m_twin_ghost(f, col):
+    img, d = canvas(16, 18)
+    d.ellipse((2, 1 + f, 14, 13 + f), fill=col)
+    d.polygon([(2, 8 + f), (14, 8 + f), (14, 16), (11, 13 + f), (8, 16), (5, 13 + f), (2, 16)], fill=col)
+    d.point((6, 6 + f), fill=(30, 20, 40, 255)); d.point((10, 6 + f), fill=(30, 20, 40, 255))
+    d.arc((6, 7 + f, 10, 10 + f), 0, 180, fill=(30, 20, 40, 255))
+    return add_outline(img)
+
+
+MONSTERS = {
+    "cart": m_cart, "hook": m_hook, "vine": m_vine, "gecko": m_gecko, "shield_crab": m_shield_crab, "bat_swarm": m_bat_swarm,
+    "carrier": m_carrier, "warm_slime": m_warm_slime, "thigh_spider": m_thigh_spider, "hug_bear": m_hug_bear,
+    "suck_jelly": m_suck_jelly,
+    "twin_ghost_a": lambda f: m_twin_ghost(f, (255, 190, 225, 230)), "twin_ghost_b": lambda f: m_twin_ghost(f, (180, 210, 255, 230)),
+}
+
+
+def gen_monsters():
+    items = []
+    for k, fn in MONSTERS.items():
+        for f in (0, 1):
+            items.append(("%s_%d" % (k, f), fn(f)))
+    pack(items, "monsters")
+
+
 def fit_icon(img, size=16):
     """把一张图裁掉透明边、等比缩到 size×size 里（最近邻），居中。"""
     bb = img.getbbox()
@@ -386,6 +528,33 @@ def fit_icon(img, size=16):
     out = Image.new("RGBA", (size, size), (0, 0, 0, 0))
     out.alpha_composite(img, ((size - img.size[0]) // 2, (size - img.size[1]) // 2))
     return out
+
+
+def hazard_icon(kind):
+    img, d = canvas(16, 16)
+    if kind == "tornado":
+        for i in range(4):
+            d.arc((3 - i, 2 + i * 3, 13 + i, 7 + i * 3), 0, 360, fill=(220, 180, 255, 255))
+    elif kind == "bubbles":
+        for (x, y, r) in ((2, 6, 5), (8, 3, 4), (9, 9, 5)):
+            d.ellipse((x, y, x + r * 1.4, y + r * 1.4), outline=(190, 230, 255, 255), fill=(170, 220, 255, 90))
+    elif kind == "link_rune":
+        d.polygon([(8, 1), (13, 6), (11, 14), (5, 14), (3, 6)], fill=(110, 80, 120, 255))
+        d.ellipse((6, 6, 10, 10), outline=(255, 140, 210, 255))
+    elif kind == "broom":
+        d.line((2, 2, 9, 9), fill=(150, 100, 60, 255), width=2)
+        for i in range(5):
+            d.line((9, 9, 11 + i, 15 - i), fill=(255, 255, 255, 255))
+    elif kind == "fog":
+        for (x, y) in ((1, 6), (6, 3), (8, 8)):
+            d.ellipse((x, y, x + 8, y + 6), fill=(255, 180, 220, 160))
+    elif kind == "wall_vine":
+        d.rectangle((1, 1, 15, 15), fill=(130, 120, 135, 255))
+        d.line((4, 15, 7, 8), fill=(90, 170, 80, 255), width=2); d.line((7, 8, 11, 2), fill=(90, 170, 80, 255), width=2)
+    elif kind == "sticky_net":
+        for i in range(0, 16, 4):
+            d.line((i, 0, i, 15), fill=(240, 230, 190, 255)); d.line((0, i, 15, i), fill=(240, 230, 190, 255))
+    return add_outline(img)
 
 
 def unknown_icon():
@@ -407,17 +576,27 @@ def gen_icons():
         if png.exists() and js.exists():
             sheets[name] = (Image.open(png).convert("RGBA"), json.loads(js.read_text()))
     equip_png = OUT / "equip_icons.png"
+    equip_order = ["armpit_pad", "scarf", "wool_socks", "dance_shoes", "waist_sash", "mint_sachet", "chest_guard",
+                   "training_wraps", "padded_shorts", "party_bow", "feather_anklet", "ice_hairpin", "thousand_pants",
+                   "t_feather_socks", "t_toe_brush", "t_fluff_bra", "t_thigh_ring", "t_pinch_pad", "t_knead_tights",
+                   "t_feather_shackles", "t_thigh_strap", "t_bell_anklet", "t_mark_patch"]
+    eq = Image.open(equip_png).convert("RGBA") if equip_png.exists() else None
     items = []
     for k in keys:
         src = None
         for sheet, meta in sheets.values():
-            for cand in (k, k + "_1", k.replace("tower_", "tower_") + "_1", "icon_" + k):
+            for cand in (k, k + "_1", k + "_0", k + "_a_0", "icon_" + k):
                 if cand in meta:
                     x, y, w, h = meta[cand]
                     src = sheet.crop((x, y, x + w, y + h))
                     break
             if src:
                 break
+        if src is None and eq is not None and k.startswith("equip_") and k[6:] in equip_order:
+            i = equip_order.index(k[6:])
+            src = eq.crop((i * 16, 0, i * 16 + 16, 16))
+        if src is None and k.startswith("hazard_"):
+            src = hazard_icon(k[7:])
         items.append((k, fit_icon(src) if src else unknown_icon()))
     pack(items, "icons")
 
@@ -426,6 +605,7 @@ def main():
     DIR.mkdir(parents=True, exist_ok=True)
     gen_props()
     gen_towers()
+    gen_monsters()
     gen_icons()
     print("攻防战像素图已生成：", sorted(p.name for p in DIR.glob("*.png")))
 

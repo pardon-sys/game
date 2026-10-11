@@ -201,6 +201,8 @@ func _drag_tick(delta: float) -> void:
 		return
 	_vine.points = PackedVector2Array([global_position + Vector2(0, -24), c.global_position + Vector2(0, -8)])
 	var d := global_position + Vector2(0, 10) - c.global_position
+	if c.get_meta("siege_chained", false):
+		return
 	if d.length() > 14.0:
 		c.global_position += d.normalized() * float(p("pull", 55.0)) * delta
 	elif randf() < delta * 2.5:

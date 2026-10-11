@@ -69,6 +69,10 @@ func _on_wall(me: PlayableCharacter, delta: float) -> void:
 		if hot and director.threat(hot) > 0:
 			goal_x = clampf(me.global_position.x, hot.left_x() + 20.0, hot.right_x() - 20.0)
 	var walk_y := director.wall_top_y() + 4.0
+	# 城墙羽毛扫帚要扫过来：换到另一行
+	for h in get_tree().get_nodes_in_group("siege_hazard"):
+		if h is HazardBroom and (h as HazardBroom).threatens(me.global_position.y):
+			walk_y = (h as HazardBroom).safe_y()
 	var d := Vector2(goal_x - me.global_position.x, (walk_y - me.global_position.y) * 0.5)
 	if d.length() > 6.0:
 		_move = d.normalized()
@@ -96,11 +100,10 @@ func _decide(me: PlayableCharacter, req: Variant, rescue: Variant) -> void:
 			(req as Node2D).call("blue_beam", me)
 			intent = "build"
 		return
-	# 冰链救援（被拖走的粉色公主）
-	if rescue is Node2D and director.has_method("ice_chain"):
-		if director.ice_chain(me, rescue as Node2D):
-			intent = "rescue"
-			return
+	# 冰链救援 / 探出城垛割网（被拖走 / 被黏网罩住的粉色公主）
+	if rescue is Node2D and director.rescue(me):
+		intent = "rescue"
+		return
 	# 冰墙加固
 	var hot := director.hottest_wall()
 	if hot and director.threat(hot) >= REINFORCE_AT and hot.climbable() and SiegeSpells.ready(me, "reinforce"):

@@ -2,7 +2,7 @@ class_name SiegeAIHooks
 extends BattleAIHooks
 ## 攻防战给粉色公主 AI（CompanionController）的导演提示：
 ##   safe_spot_for   闷笑 ≥ 60% 时去最近的薄荷冰泉（冰塔）喘口气；没有冰泉就退到城门口
-##   objective_for   附近没怪时，去最危险的那段墙下面
+##   objective_for   蓝色公主被城墙爬藤缠住时去砍藤根；附近没怪时，去最危险的那段墙下面
 ##   partner_of      蓝色公主（Duo）
 
 const SAFE_AT := 0.6
@@ -28,6 +28,9 @@ func safe_spot_for(ai: PlayableCharacter) -> Variant:
 
 
 func objective_for(ai: PlayableCharacter) -> Variant:
+	# 蓝色公主被城墙爬藤缠住：先去砍藤根
+	for r in ai.get_tree().get_nodes_in_group("siege_vine_root"):
+		return (r as Node2D).global_position + Vector2(0, 12)
 	if not director.enemies_near(ai.global_position, 90.0).is_empty():
 		return null
 	var hot: SiegeWall = director.hottest_wall()

@@ -89,6 +89,7 @@ func _process(delta: float) -> void:
 		_refresh_mods()
 	if who and not GameState.in_cutscene and not CG.is_busy():
 		Equipment.tick_forced(who.character_id, delta)
+	_bell_move(delta)
 	if who == null or not who.is_alive() or GameState.in_dialogue or GameState.in_cutscene or CG.is_busy():
 		return
 	var live := {}
@@ -111,6 +112,19 @@ func _process(delta: float) -> void:
 			_timers.erase(id)
 
 
+var _bell_t := 0.0
+
+
+## 铃铛脚链（临时装备 special = bell_move）：走动时每隔一会儿叮铃一声，把附近的怪引过来。
+func _bell_move(delta: float) -> void:
+	_bell_t -= delta
+	if who == null or _bell_t > 0.0 or who.velocity.length() < 12.0 or not Equipment.has_special(who.character_id, "bell_move"):
+		return
+	_bell_t = 1.6
+	if who.has_method("_ring_bell"):
+		who.call("_ring_bell")
+
+
 func _next_interval(e: Dictionary) -> float:
 	var iv: Variant = e.get("interval", [8.0, 12.0])
 	if iv is Array and iv.size() >= 2:
@@ -124,6 +138,9 @@ func flare(id: String, zone: String, way := "", tickle := true) -> String:
 		return ""
 	var e := entry(who.character_id, id)
 	var amount := float(e.get("amount", 0.0)) * power_mul
+	# 羽毛袜：跑得越快挠得越重
+	if bool(e.get("move_scale", false)):
+		amount *= 1.0 + who.velocity.length() / 50.0
 	if tickle and amount > 0.0:
 		var h := HitData.make_tickle(_source(id), amount)
 		h.zone = zone

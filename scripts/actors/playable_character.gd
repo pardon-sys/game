@@ -297,7 +297,7 @@ func _tick(delta: float) -> void:
 				elif can_control:
 					if controller.is_action_just_pressed(&"attack"):
 						attack()
-					elif controller.is_action_just_pressed(&"dash") and not rooted:
+					elif controller.is_action_just_pressed(&"dash") and not rooted and not Equipment.has_special(character_id, "no_dash"):
 						dash(input)
 					elif controller.is_action_just_pressed(&"magic"):
 						# 关卡可以接管魔法键（攻防战：蓝色公主打开瞄准施法）

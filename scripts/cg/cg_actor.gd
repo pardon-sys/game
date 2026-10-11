@@ -79,6 +79,8 @@ static func make_monster(actor_id: String, key: String, info: Dictionary) -> CGA
 		a.hit_fx = stats.hit_fx
 	inst.free()
 	var over: Dictionary = info.get("sprite", {})
+	if over.has("texture"):
+		a.sprite.texture = load(str(over["texture"]))
 	if over.has("hframes"):
 		a.sprite.hframes = int(over["hframes"])
 	if over.has("region"):

@@ -275,8 +275,7 @@ func _run_towers() -> void:
 	var m3: Monster = d.spawn("slime", "", frost.global_position + Vector2(0, 40))
 	m3.mind = null
 	await _wait(0.8)
-	check("寒霜塔：范围里的怪减速 / 冻住（减速 %s，冻住 %s）" % [m3.status.is_slowed() if m3.status else false, m3.is_stunned()],
-		(m3.status and m3.status.is_slowed()) or m3.is_stunned())
+	check("寒霜塔：范围里的怪减速（%s）/ 冻住（%s）" % [m3.has_buff("siege_chill"), m3.is_stunned()], m3.has_buff("siege_chill") and m3.is_stunned())
 	var rep: IceTower = built["repair"]
 	var seg := d.segment_at(rep.global_position.x)
 	seg.take(60.0)

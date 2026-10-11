@@ -1,0 +1,829 @@
+{
+	"_说明": [
+		"攻防战三来源组合的小演出（gen_siege_scenes.py 生成，不要直接改）：第一次触发时播放（CG.play_scene），进 CG 图鉴。"
+	],
+	"scenes": {
+		"sg_pants_frenzy": {
+			"name": "裤子大暴走",
+			"cast": {
+				"princess": {
+					"kind": "princess",
+					"at": [
+						0,
+						8
+					],
+					"visual": "helpless_1",
+					"anim": "helpless",
+					"dir": "down"
+				},
+				"src1": {
+					"kind": "monster:thigh_spider",
+					"at": [
+						-28,
+						2
+					],
+					"dir": "right",
+					"hidden": true
+				}
+			},
+			"steps": [
+				{
+					"actions": [
+						{
+							"do": "fade_in",
+							"time": 0.4
+						},
+						{
+							"do": "voice",
+							"state": "giggle"
+						},
+						{
+							"do": "sources",
+							"list": [
+								{
+									"kind": "equip",
+									"key": "thousand_pants",
+									"name": "千手痒痒裤"
+								},
+								{
+									"kind": "siege",
+									"key": "etower_totem",
+									"name": "狂欢图腾"
+								},
+								{
+									"kind": "monster",
+									"key": "thigh_spider",
+									"name": "腿根爬爬蛛"
+								}
+							]
+						}
+					],
+					"wait": 0.4
+				},
+				{
+					"speaker": "",
+					"text": "【三来源组合】裤子大暴走——狂欢图腾让千手痒痒裤兴奋得停不下来，腿根爬爬蛛又在外面一起爬——裤子里外的手指一起在腿根上爆发。",
+					"actions": [
+						{
+							"do": "light",
+							"index": 0
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "surprise"
+						}
+					]
+				},
+				{
+					"speaker": "",
+					"text": "（远处的狂欢图腾咚咚地响。每响一下，她的裤子就跟着抽一下）",
+					"actions": []
+				},
+				{
+					"speaker": "蓝色的公主",
+					"text": "……图腾。……裤子……在兴奋。",
+					"actions": []
+				},
+				{
+					"speaker": "蓝色的公主",
+					"text": "……蜘、蜘蛛……爬上来了……外、外面也……",
+					"actions": [
+						{
+							"do": "light",
+							"index": 1
+						},
+						{
+							"do": "enter",
+							"who": "src1",
+							"from": [
+								-80,
+								0
+							],
+							"time": 0.5
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 6,
+							"interval": 0.3,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"speaker": "蓝色的公主",
+					"text": "……里面在揉……外面在点……噗……哈……",
+					"actions": [
+						{
+							"do": "light",
+							"index": 2
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 6,
+							"interval": 0.28,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"speaker": "",
+					"text": "（裤子里的拇指按进腿根揉圈，外面的蜘蛛八只脚一起点；屁股上的手跟着图腾的鼓点一下下捏）",
+					"actions": []
+				},
+				{
+					"speaker": "蓝色的公主",
+					"text": "……哈哈哈哈……鼓、鼓点……跟着鼓点捏……不准……哈哈哈！",
+					"actions": [
+						{
+							"do": "light",
+							"all": true
+						},
+						{
+							"do": "pose",
+							"who": "princess",
+							"visual": "helpless_2"
+						},
+						{
+							"do": "voice",
+							"state": "laugh"
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.5
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 8,
+							"interval": 0.22,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"speaker": "蓝色的公主",
+					"text": "……交、交界那条线……里外一起刮……哈哈哈哈哈……！",
+					"actions": [
+						{
+							"do": "flash",
+							"time": 0.25
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 8,
+							"interval": 0.2,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"speaker": "蓝色的公主",
+					"text": "……呼。……那个图腾。……一定要拆掉。",
+					"actions": [
+						{
+							"do": "voice",
+							"state": ""
+						},
+						{
+							"do": "pose",
+							"who": "princess",
+							"visual": "helpless_1"
+						}
+					]
+				},
+				{
+					"actions": [
+						{
+							"do": "voice",
+							"state": ""
+						},
+						{
+							"do": "fade_out",
+							"time": 0.6
+						}
+					],
+					"wait": 0.7
+				}
+			]
+		},
+		"sg_broom_wall": {
+			"name": "扫帚下的城墙",
+			"cast": {
+				"princess": {
+					"kind": "princess",
+					"at": [
+						0,
+						8
+					],
+					"visual": "helpless_1",
+					"anim": "helpless",
+					"dir": "down"
+				},
+				"src1": {
+					"kind": "monster:gecko",
+					"at": [
+						-28,
+						2
+					],
+					"dir": "right",
+					"hidden": true
+				}
+			},
+			"steps": [
+				{
+					"actions": [
+						{
+							"do": "fade_in",
+							"time": 0.4
+						},
+						{
+							"do": "voice",
+							"state": "giggle"
+						},
+						{
+							"do": "sources",
+							"list": [
+								{
+									"kind": "equip",
+									"key": "thousand_pants",
+									"name": "千手痒痒裤"
+								},
+								{
+									"kind": "siege",
+									"key": "hazard_broom",
+									"name": "城墙羽毛扫帚"
+								},
+								{
+									"kind": "monster",
+									"key": "gecko",
+									"name": "爬墙壁虎"
+								}
+							]
+						}
+					],
+					"wait": 0.4
+				},
+				{
+					"speaker": "",
+					"text": "【三来源组合】扫帚下的城墙——城墙羽毛扫帚扫过来的一瞬间，裤子里的手一起动、壁虎钻进裙底——她一脚踩空，被挠下了城墙。",
+					"actions": [
+						{
+							"do": "light",
+							"index": 0
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "surprise"
+						}
+					]
+				},
+				{
+					"speaker": "",
+					"text": "（巨大的羽毛扫帚沿着城墙顶扫了过来。她正要换到另一行——）",
+					"actions": []
+				},
+				{
+					"speaker": "蓝色的公主",
+					"text": "……扫帚。……躲开——",
+					"actions": []
+				},
+				{
+					"speaker": "蓝色的公主",
+					"text": "……！裤、裤子……这时候动……",
+					"actions": [
+						{
+							"do": "light",
+							"index": 1
+						},
+						{
+							"do": "enter",
+							"who": "src1",
+							"from": [
+								-80,
+								0
+							],
+							"time": 0.5
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 6,
+							"interval": 0.3,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"speaker": "蓝色的公主",
+					"text": "……壁、壁虎……钻进裙子……",
+					"actions": [
+						{
+							"do": "light",
+							"index": 2
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 6,
+							"interval": 0.28,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"speaker": "",
+					"text": "（羽毛从脖子扫到脚踝，裤子里的手在腿根上猛地一抓，壁虎顺着大腿往上爬——她脚下一软）",
+					"actions": []
+				},
+				{
+					"speaker": "蓝色的公主",
+					"text": "……哈哈哈哈……站、站不住……要、要掉下去了……！",
+					"actions": [
+						{
+							"do": "light",
+							"all": true
+						},
+						{
+							"do": "pose",
+							"who": "princess",
+							"visual": "helpless_2"
+						},
+						{
+							"do": "voice",
+							"state": "laugh"
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.5
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 8,
+							"interval": 0.22,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"speaker": "蓝色的公主",
+					"text": "……掉、掉下去的时候……也在挠……哈哈哈哈……！",
+					"actions": [
+						{
+							"do": "flash",
+							"time": 0.25
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 8,
+							"interval": 0.2,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"speaker": "蓝色的公主",
+					"text": "……摔、摔下来了。……裤子。……你是故意的。",
+					"actions": [
+						{
+							"do": "voice",
+							"state": ""
+						},
+						{
+							"do": "pose",
+							"who": "princess",
+							"visual": "helpless_1"
+						}
+					]
+				},
+				{
+					"actions": [
+						{
+							"do": "voice",
+							"state": ""
+						},
+						{
+							"do": "fade_out",
+							"time": 0.6
+						}
+					],
+					"wait": 0.7
+				}
+			]
+		},
+		"sg_bell_tide": {
+			"name": "铃声引来的潮水",
+			"cast": {
+				"princess": {
+					"kind": "princess",
+					"at": [
+						0,
+						8
+					],
+					"visual": "helpless_1",
+					"anim": "helpless",
+					"dir": "down"
+				},
+				"src1": {
+					"kind": "monster:bat_swarm",
+					"at": [
+						-28,
+						2
+					],
+					"dir": "right",
+					"hidden": true
+				}
+			},
+			"steps": [
+				{
+					"actions": [
+						{
+							"do": "fade_in",
+							"time": 0.4
+						},
+						{
+							"do": "voice",
+							"state": "giggle"
+						},
+						{
+							"do": "sources",
+							"list": [
+								{
+									"kind": "equip",
+									"key": "equip_t_bell_anklet",
+									"name": "铃铛脚链"
+								},
+								{
+									"kind": "siege",
+									"key": "hazard_bubbles",
+									"name": "痒痒泡泡潮"
+								},
+								{
+									"kind": "monster",
+									"key": "bat_swarm",
+									"name": "羽毛蝠群"
+								}
+							]
+						}
+					],
+					"wait": 0.4
+				},
+				{
+					"speaker": "",
+					"text": "【三来源组合】铃声引来的潮水——铃铛脚链一路叮铃铃地响，把羽毛蝠群全引了过来；痒痒泡泡潮一扫，她被包进泡泡里飘着，蝙蝠围着泡泡扫。",
+					"actions": [
+						{
+							"do": "light",
+							"index": 0
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "surprise"
+						}
+					]
+				},
+				{
+					"speaker": "",
+					"text": "（脚踝上的铃铛叮铃——叮铃——）",
+					"actions": []
+				},
+				{
+					"speaker": "蓝色的公主",
+					"text": "……吵。……都听见了。",
+					"actions": []
+				},
+				{
+					"speaker": "蓝色的公主",
+					"text": "……泡泡。……飘起来了。",
+					"actions": [
+						{
+							"do": "light",
+							"index": 1
+						},
+						{
+							"do": "enter",
+							"who": "src1",
+							"from": [
+								-80,
+								0
+							],
+							"time": 0.5
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 6,
+							"interval": 0.3,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"speaker": "蓝色的公主",
+					"text": "……蝙蝠……围着泡泡……羽毛……噗……",
+					"actions": [
+						{
+							"do": "light",
+							"index": 2
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 6,
+							"interval": 0.28,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"speaker": "",
+					"text": "（她一挣，铃铛就响；越响，蝙蝠越多，羽毛隔着泡泡扫大腿和脚心）",
+					"actions": []
+				},
+				{
+					"speaker": "蓝色的公主",
+					"text": "……哈哈哈哈……别、别响……一挣就响……哈哈哈！",
+					"actions": [
+						{
+							"do": "light",
+							"all": true
+						},
+						{
+							"do": "pose",
+							"who": "princess",
+							"visual": "helpless_2"
+						},
+						{
+							"do": "voice",
+							"state": "laugh"
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.5
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 8,
+							"interval": 0.22,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"speaker": "蓝色的公主",
+					"text": "……大、大腿……泡泡里……躲不开……哈哈哈哈……！",
+					"actions": [
+						{
+							"do": "flash",
+							"time": 0.25
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						},
+						{
+							"do": "tickle",
+							"who": "princess",
+							"by": "src1",
+							"repeat": 8,
+							"interval": 0.2,
+							"fx": "lines"
+						}
+					]
+				},
+				{
+					"speaker": "蓝色的公主",
+					"text": "……铃铛。……拆掉。",
+					"actions": [
+						{
+							"do": "voice",
+							"state": ""
+						},
+						{
+							"do": "pose",
+							"who": "princess",
+							"visual": "helpless_1"
+						}
+					]
+				},
+				{
+					"actions": [
+						{
+							"do": "voice",
+							"state": ""
+						},
+						{
+							"do": "fade_out",
+							"time": 0.6
+						}
+					],
+					"wait": 0.7
+				}
+			]
+		},
+		"sg_strap_tornado": {
+			"name": "夹腿龙卷",
+			"cast": {
+				"princess": {
+					"kind": "princess",
+					"at": [
+						0,
+						8
+					],
+					"visual": "helpless_1",
+					"anim": "helpless",
+					"dir": "down"
+				}
+			},
+			"steps": [
+				{
+					"actions": [
+						{
+							"do": "fade_in",
+							"time": 0.4
+						},
+						{
+							"do": "voice",
+							"state": "giggle"
+						},
+						{
+							"do": "sources",
+							"list": [
+								{
+									"kind": "equip",
+									"key": "equip_t_thigh_strap",
+									"name": "夹腿绑带"
+								},
+								{
+									"kind": "siege",
+									"key": "hazard_tornado",
+									"name": "痒痒龙卷风"
+								},
+								{
+									"kind": "siege",
+									"key": "etower_thigh_tower",
+									"name": "腿根揉揉塔"
+								}
+							]
+						}
+					],
+					"wait": 0.4
+				},
+				{
+					"speaker": "",
+					"text": "【三来源组合】夹腿龙卷——夹腿绑带让她跑不动，痒痒龙卷风把她卷起来转圈，腿根揉揉塔的小手趁着转圈一下下揉——最后被甩飞出去。",
+					"actions": [
+						{
+							"do": "light",
+							"index": 0
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "surprise"
+						}
+					]
+				},
+				{
+					"speaker": "",
+					"text": "（两条大腿被绑带绑在一起。她面无表情地一蹦一蹦）",
+					"actions": []
+				},
+				{
+					"speaker": "蓝色的公主",
+					"text": "……绑着。……跑不了。",
+					"actions": []
+				},
+				{
+					"speaker": "蓝色的公主",
+					"text": "……转、转起来了。",
+					"actions": [
+						{
+							"do": "light",
+							"index": 1
+						}
+					]
+				},
+				{
+					"speaker": "蓝色的公主",
+					"text": "……小手……揉腿根……转着……揉……噗……",
+					"actions": [
+						{
+							"do": "light",
+							"index": 2
+						}
+					]
+				},
+				{
+					"speaker": "",
+					"text": "（转一圈，小手就揉一下腿根；裤子里的手也跟着节奏捏屁股——绑带把腿夹得更紧）",
+					"actions": []
+				},
+				{
+					"speaker": "蓝色的公主",
+					"text": "……哈哈哈哈……一、一圈一下……裤、裤子也……哈哈哈！",
+					"actions": [
+						{
+							"do": "light",
+							"all": true
+						},
+						{
+							"do": "pose",
+							"who": "princess",
+							"visual": "helpless_2"
+						},
+						{
+							"do": "voice",
+							"state": "laugh"
+						},
+						{
+							"do": "shake",
+							"who": "princess",
+							"time": 0.5
+						},
+						{
+							"do": "flash",
+							"time": 0.2
+						}
+					]
+				},
+				{
+					"speaker": "蓝色的公主",
+					"text": "……甩、甩出去了……哈哈哈哈……！",
+					"actions": [
+						{
+							"do": "flash",
+							"time": 0.25
+						},
+						{
+							"do": "bubble",
+							"who": "princess",
+							"kind": "laugh"
+						}
+					]
+				},
+				{
+					"speaker": "蓝色的公主",
+					"text": "……天在转。……腿根。……还在痒。",
+					"actions": [
+						{
+							"do": "voice",
+							"state": ""
+						},
+						{
+							"do": "pose",
+							"who": "princess",
+							"visual": "helpless_1"
+						}
+					]
+				},
+				{
+					"actions": [
+						{
+							"do": "voice",
+							"state": ""
+						},
+						{
+							"do": "fade_out",
+							"time": 0.6
+						}
+					],
+					"wait": 0.7
+				}
+			]
+		}
+	}
+}

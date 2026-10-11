@@ -121,7 +121,8 @@
 		"lines": [
 			"……这袜子。……里面全是羽毛。",
 			"……走路……很难。"
-		]
+		],
+		"move_scale": true
 	},
 	"equip_t_toe_brush": {
 		"interval": [

@@ -223,8 +223,7 @@ func _frost(delta: float) -> void:
 	var r := float(p("radius", 70.0))
 	var ms := director.enemies_near(global_position, r)
 	for m in ms:
-		if m.status:
-			m.status.apply_slow(0.5, 0.6)
+		m.add_buff("siege_chill", 0.6)
 	if _freeze_t <= 0.0 and not ms.is_empty():
 		_freeze_t = 5.0
 		for m in ms:

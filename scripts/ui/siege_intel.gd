@@ -108,7 +108,7 @@ func _process(delta: float) -> void:
 			_flash.erase(k)
 	for b in _buttons:
 		b.queue_redraw()
-	var hide_icons := CG.is_busy() or GameState.in_cutscene
+	var hide_icons: bool = CG.is_busy() or GameState.in_cutscene
 	for b in _buttons:
 		b.visible = not hide_icons
 

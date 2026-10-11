@@ -1,0 +1,30 @@
+[gd_resource type="Resource" script_class="EquipData" format=3]
+
+[ext_resource type="Script" path="res://scripts/items/equip_data.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/generated/equip_icons.png" id="2"]
+
+[sub_resource type="AtlasTexture" id="icon"]
+atlas = ExtResource("2")
+region = Rect2(256, 0, 16, 16)
+
+[resource]
+script = ExtResource("1")
+id = "equip_t_thigh_ring"
+display_name = "腿根揉揉环"
+description = "套在大腿根上的软环，里面藏着几根手指，一圈一圈地揉。"
+icon = SubResource("icon")
+category = 4
+stackable = false
+show_in_hud = false
+pickup_emotion = "happy"
+slots = Array[String](["thigh"])
+owner_id = ""
+modifiers = {}
+zone_mods = {"thigh": 0.3}
+block = {}
+cursed = false
+special = ""
+pros = "（无）"
+cons = "环里的手指揉腿根、大腿敏感 +0.3"
+temporary = true
+kind = "tickle"

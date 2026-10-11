@@ -60,6 +60,8 @@ var cam: SiegeCamera
 var aim: SpellAim
 ## 这一波还没出的怪：[{t, monster, from}]（t = 战斗开始后第几秒出）
 var _queue: Array = []
+## 这一波还没放的大范围陷阱：[{t, kind}]
+var _hazards: Array = []
 var _fight_t := 0.0
 var _total_this_wave := 0
 var _busy := false
@@ -69,6 +71,7 @@ var kills := 0
 
 func _ready() -> void:
 	current = self
+	add_to_group("combo_effect_handler")
 	var parsed: Variant = JSON.parse_string(FileAccess.get_file_as_string(WAVES_PATH))
 	data = parsed if parsed is Dictionary else {}
 	wall_max = float(data.get("wall_hp", 2000.0))
@@ -233,13 +236,50 @@ func _begin_fight() -> void:
 			_queue.append({"t": delay + i * iv, "monster": str(g.get("monster", "slime")), "from": str(g.get("from", "bottom"))})
 	_queue.sort_custom(func(a, b): return float(a["t"]) < float(b["t"]))
 	_total_this_wave = _queue.size()
+	_hazards = (wave_data().get("hazards", []) as Array).duplicate(true)
+	_hazards.sort_custom(func(a, b): return float(a["t"]) < float(b["t"]))
 	_set_state("fight")
 	Audio.play("rumble", -2.0, 0.0, 0.8)
 	GameState.hint("第 %d 波来了！" % wave)
 	wave_started.emit(wave)
 
 
+## 临时痒痒装备：另一位公主靠近按住 E HELP_TIME 秒帮忙解开（{角色 id: 已经按了几秒}）
+const HELP_TIME := 2.0
+const HELP_RANGE := 24.0
+var _help := {}
+
+
+func _help_unequip(delta: float) -> void:
+	for c: PlayableCharacter in [pink, blue]:
+		if c == null or not is_instance_valid(c) or Equipment.forced_items(c.character_id).is_empty():
+			_help.erase(c.character_id if c else "")
+			continue
+		var other: PlayableCharacter = blue if c == pink else pink
+		var helping := other != null and is_instance_valid(other) and other.is_alive() and not Downed.is_downed(other) \
+			and other.global_position.distance_to(c.global_position) <= HELP_RANGE and other.controller != null \
+			and other.controller.is_action_pressed(&"interact")
+		if not helping:
+			_help.erase(c.character_id)
+			continue
+		if not _help.has(c.character_id):
+			SpeechBubble.say(other, "我来帮你解开！" if other == pink else "……别动。解开。", 28.0, 1.2)
+		_help[c.character_id] = float(_help.get(c.character_id, 0.0)) + delta
+		if float(_help[c.character_id]) >= HELP_TIME:
+			_help.erase(c.character_id)
+			Equipment.release(c.character_id)
+			Fx.burst(c.get_parent(), c.global_position + Vector2(0, -10), "heart", 6, 30.0, 0.5, Vector2(0, -10), Color(1, 0.8, 0.9))
+			Audio.play("cloth", -4.0)
+			SpeechBubble.say(c, "解开了……谢谢！" if c == pink else "……谢谢。", 28.0, 1.4)
+
+
+func help_progress(who: String) -> float:
+	return float(_help.get(who, 0.0)) / HELP_TIME
+
+
 func _process(delta: float) -> void:
+	if not (_busy or state == "" or GameState.in_dialogue or CG.is_busy() or GameState.in_cutscene):
+		_help_unequip(delta)
 	if _busy or state == "" or GameState.in_dialogue or CG.is_busy() or GameState.in_cutscene:
 		return
 	match state:
@@ -254,6 +294,8 @@ func _process(delta: float) -> void:
 			while not _queue.is_empty() and float(_queue[0]["t"]) <= _fight_t and monsters.size() < cap:
 				var q: Dictionary = _queue.pop_front()
 				spawn(str(q["monster"]), str(q["from"]))
+			while not _hazards.is_empty() and float(_hazards[0]["t"]) <= _fight_t:
+				spawn_hazard(str(_hazards.pop_front()["kind"]))
 			if _queue.is_empty() and monsters.is_empty():
 				_clear_wave()
 
@@ -306,6 +348,45 @@ func spawn(key: String, from := "bottom", at = null) -> Monster:
 	if from == "hole":
 		Fx.burst(m.get_parent(), pos, "dust", 8, 40.0, 0.5, Vector2(0, 40), Color(0.6, 0.5, 0.4))
 	return m
+
+
+## 放一个大范围陷阱（位置按种类挑：龙卷风 / 迷雾 / 符文在战场上靠近粉色公主，城墙爬藤在蓝色公主那段墙下，扫帚在走道上……）。
+func spawn_hazard(kind: String, at: Variant = null) -> SiegeHazard:
+	var h := SiegeHazard.make(kind)
+	if h == null:
+		return null
+	var pos: Vector2 = at if at is Vector2 else _hazard_pos(kind)
+	h.position = pos
+	entities().add_child(h)
+	h.global_position = pos
+	intel.discover("hazard_" + kind)
+	return h
+
+
+func _hazard_pos(kind: String) -> Vector2:
+	var ms := map_size()
+	var field_top := wall_foot_y() + 60.0
+	var near := pink.global_position if pink and is_instance_valid(pink) else Vector2(ms.x / 2.0, ms.y / 2.0)
+	match kind:
+		"wall_vine":
+			var bx := blue.global_position.x if blue and is_instance_valid(blue) else gate_pos.x
+			return Vector2(bx + randf_range(-30, 30), wall_foot_y())
+		"broom":
+			return Vector2(0, wall_top_y())
+		"bubbles":
+			return Vector2(ms.x / 2.0, clampf(near.y, field_top + 60.0, ms.y - 120.0))
+		"sticky_net":
+			return near
+	var p := near + Vector2(randf_range(-90, 90), randf_range(-60, 60))
+	return Vector2(clampf(p.x, 60.0, ms.x - 60.0), clampf(p.y, field_top, ms.y - 60.0))
+
+
+## 这个位置在痒痒迷雾里吗（蓝色公主看不见、支援不了）。
+func in_fog(pos: Vector2) -> bool:
+	for h in get_tree().get_nodes_in_group("siege_hazard"):
+		if h is HazardFog and (h as HazardFog).covers(pos):
+			return true
+	return false
 
 
 func spawn_pos(from: String) -> Vector2:
@@ -421,11 +502,155 @@ func silenced(c: PlayableCharacter) -> bool:
 	return false
 
 
-## 正被拖走的粉色公主（藤蔓拉拽塔 / 搬运小鬼）：蓝色公主的冰链救援目标。
+## 要蓝色公主去救的粉色公主：被拖走（藤蔓拉拽塔 / 搬运小鬼 → 冰链）或被黏网罩住（→ 探出城垛割网）。
 func rescue_request() -> Variant:
-	if pink and is_instance_valid(pink) and pink.get_meta("siege_dragged", false):
+	if pink and is_instance_valid(pink) and (pink.get_meta("siege_dragged", false) or pink.get_meta("siege_netted", false)) \
+			and not in_fog(pink.global_position):
 		return pink
 	return null
+
+
+## 救援要付出的时间（秒）：冰链拉住 / 探出城垛割网，期间蓝色公主动不了、被挠。
+const RESCUE_TIME := 3.0
+const NET_REACH := 40.0
+var rescuing := false
+var _rescue_line: Line2D
+
+
+## 蓝色公主开始救援（AI 自动调；玩家操控时在城墙上按 E）。返回是否开始了（条件不满足返回 false）。
+func rescue(b: PlayableCharacter) -> bool:
+	if rescuing or b == null or not is_on_wall(b) or Downed.is_downed(b) or rescue_request() == null:
+		return false
+	var netted: bool = pink.get_meta("siege_netted", false)
+	if netted and absf(b.global_position.x - pink.global_position.x) > NET_REACH:
+		return false
+	if not netted and b.global_position.distance_to(pink.global_position) > SiegeSpells.RANGE:
+		return false
+	_rescue_seq(b, netted)
+	return true
+
+
+func _rescue_seq(b: PlayableCharacter, netted: bool) -> void:
+	rescuing = true
+	b.set_meta("siege_beaming", true)
+	if b.is_controlled():
+		PlayerInputController.movement_locked = true
+	pink.set_meta("siege_chained", true)
+	_rescue_line = Line2D.new()
+	_rescue_line.width = 2.0
+	_rescue_line.default_color = Color(0.75, 0.93, 1.0) if not netted else Color(0.9, 0.97, 1.0)
+	_rescue_line.z_index = 30
+	_rescue_line.add_to_group("siege_temp")
+	entities().add_child(_rescue_line)
+	_rescue_line.global_position = Vector2.ZERO
+	SpeechBubble.say(b, "……抓住。……冰链。" if not netted else "……我、我探出去……割网。", 28.0, 1.6)
+	Audio.play("chant", -4.0, 0.0, 1.2)
+	# 墙上的怪趁机挠她（探出城垛时大腿和屁股露在外面）
+	if enemies_near(b.global_position, 60.0).filter(func(m): return m is SiegeMonster and (m as SiegeMonster).on_wall).size() < 2:
+		for i in 2:
+			var g: Monster = spawn("gecko", "", Vector2(b.global_position.x + (16.0 if i == 0 else -16.0), wall_top_y() + 2.0))
+			if g is SiegeMonster:
+				(g as SiegeMonster).on_wall = true
+				g.collision_mask = 0
+	var t := 0.0
+	var tick := 0.0
+	var ok := true
+	while t < RESCUE_TIME:
+		await get_tree().process_frame
+		var dt := get_process_delta_time()
+		if CG.is_busy() or GameState.in_dialogue:
+			continue
+		t += dt
+		tick -= dt
+		if not is_instance_valid(b) or not is_instance_valid(pink) or not is_on_wall(b) or Downed.is_downed(b) or state != "fight" \
+				or (b.laugh and b.laugh.stage() == "helpless_2"):
+			ok = false
+			break
+		_rescue_line.points = PackedVector2Array([b.global_position + Vector2(0, -12), pink.global_position + Vector2(0, -10)])
+		if tick <= 0.0:
+			tick = 0.45
+			var src: Node = null
+			for m in enemies_near(b.global_position, 60.0):
+				src = m
+				break
+			var h := HitData.make_tickle(src if src else self, 5.0)
+			h.zone = ["thigh", "butt"].pick_random() if netted else ["armpit", "waist", "thigh"].pick_random()
+			b.receive_hit(h)
+	if is_instance_valid(_rescue_line):
+		_rescue_line.queue_free()
+	if is_instance_valid(b):
+		b.set_meta("siege_beaming", false)
+		if b.is_controlled():
+			PlayerInputController.movement_locked = false
+	if is_instance_valid(pink):
+		pink.set_meta("siege_chained", false)
+	rescuing = false
+	if not ok or not is_instance_valid(pink):
+		return
+	if netted:
+		for h in get_tree().get_nodes_in_group("siege_hazard"):
+			if h is HazardStickyNet and (h as HazardStickyNet).caught == pink:
+				(h as HazardStickyNet).free_caught()
+		SpeechBubble.say(pink, "网破了！谢谢你——！", 28.0, 1.6)
+	else:
+		var dragger: Variant = pink.get_meta("siege_dragger") if pink.has_meta("siege_dragger") else null
+		if dragger is Node and is_instance_valid(dragger) and dragger.has_method("release_drag"):
+			dragger.release_drag()
+		var tw := pink.create_tween()
+		tw.tween_property(pink, "global_position", pink.global_position.move_toward(Vector2(pink.global_position.x, wall_foot_y() + 40.0), 50.0), 0.4)
+		SpeechBubble.say(pink, "被拉回来了！", 28.0, 1.4)
+	Audio.play("chime", -2.0, 0.0, 1.5)
+
+
+# ------------------------------------------------------------------ 三来源组合的攻防战效果（ComboTracker 交给 combo_effect_handler）
+##   siege_lockup  直接被运进最近的敌塔里关着挠（被抬走的印记）
+##   siege_knockoff 被挠下城墙（扫帚下的城墙）
+##   siege_fx      专属特效 {kind: vortex / brush_flowers / heart_fluff / mark_trail / purple_hands / feather_storm / bell_ripple / wind_lines}
+func on_combo_effect(e: Dictionary, who: Actor, _source: Node) -> void:
+	var c := who as PlayableCharacter
+	if c == null:
+		return
+	match str(e.get("type", "")):
+		"siege_lockup":
+			lock_up(c)
+		"siege_knockoff":
+			knock_off(c, "组合")
+		"siege_fx":
+			SiegeFx.combo_fx(c, str(e.get("kind", "")))
+
+
+## 把人关进最近的敌塔里挠 time 秒再扔出来（搬运小鬼、被抬走的印记）。
+const LOCK_TIME := 8.0
+
+
+func lock_up(c: PlayableCharacter, at: Variant = null, sec := LOCK_TIME) -> void:
+	if c == null or not is_instance_valid(c) or not c.visible:
+		return
+	var pos: Vector2 = at if at is Vector2 else c.global_position
+	if not (at is Vector2):
+		var best: Node2D = null
+		for t in get_tree().get_nodes_in_group("siege_enemy_tower"):
+			if best == null or (t as Node2D).global_position.distance_to(c.global_position) < best.global_position.distance_to(c.global_position):
+				best = t
+		if best:
+			pos = best.global_position + Vector2(0, 8)
+	c.visible = false
+	c.set_physics_process(false)
+	c.global_position = pos
+	GameState.notify("%s被关进敌塔里了……" % c.display_name())
+	var tw := c.create_tween().set_loops(int(sec / 0.5))
+	tw.tween_interval(0.5)
+	tw.tween_callback(func():
+		if is_instance_valid(c):
+			c.receive_hit(HitData.make_tickle(self, 3.0))
+			Fx.burst(c.get_parent(), pos + Vector2(0, -16), "feather", 3, 30.0, 0.4, Vector2(0, -10)))
+	get_tree().create_timer(sec).timeout.connect(func():
+		if is_instance_valid(c):
+			c.visible = true
+			c.set_physics_process(true)
+			c.global_position = pos + Vector2(0, 24)
+			c.apply_knockback(pos, 200.0)
+			SpeechBubble.say(c, "呼……哈……被、被扔出来了……" if c.character_id == "pink" else "……出、出来了……哈……", 28.0, 2.0))
 
 
 # ------------------------------------------------------------------ 造塔
@@ -446,6 +671,9 @@ func nearest_target(m: Monster, max_range: float) -> Actor:
 		if c == null or not is_instance_valid(c) or not c.is_alive() or Downed.is_downed(c) or is_on_wall(c):
 			continue
 		var d := m.global_position.distance_squared_to(c.global_position)
+		# 痒痒印记臀贴：怪物优先找她（相当于近了一大截）
+		if Equipment.has_special(c.character_id, "mark"):
+			d *= 0.35
 		if d < best_d:
 			best_d = d
 			best = c
@@ -603,8 +831,19 @@ func clear_field() -> void:
 			m.queue_free()
 	monsters.clear()
 	_queue.clear()
+	_hazards.clear()
 	for n in get_tree().get_nodes_in_group("siege_temp"):
+		if n.has_method("_end"):
+			n.call("_end")
 		n.queue_free()
+	for c: PlayableCharacter in [pink, blue]:
+		if c and is_instance_valid(c):
+			for k in ["siege_dragged", "siege_netted", "siege_bubbled", "siege_chained"]:
+				c.set_meta(k, false)
+			if c.status:
+				c.status.release(true)
+				c.status.clear_root()
+			c.visible = true
 	Equipment.clear_forced()
 
 

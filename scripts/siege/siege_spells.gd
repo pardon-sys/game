@@ -1,7 +1,7 @@
 class_name SiegeSpells
 extends RefCounted
 ## 蓝色公主在城墙上的法术（攻防战；AI 自动放，玩家操控她时用瞄准施法 SpellAim 选点）：
-##   ice_rain   冰锥雨：选一个点，落下一片冰锥——范围伤害；也能射断钩索和黏网（"siege_cuttable" 组的 cut()）
+##   ice_rain   冰锥雨：选一个点，落下一片冰锥——范围伤害；也能射断钩索怪的绳子（"siege_cuttable" 组的 cut()）
 ##   barrier    冰晶结界：原来的魔法，可以选点——冻住范围内的怪和陷阱（IceBarrier.cast_with 的 at）
 ##   snow       清凉雪花：选一个点——范围内的公主闷笑下降、解开束缚和临时痒痒装备
 ##   reinforce  冰墙加固：给离这个点最近的那段城墙罩上冰壳（吸收伤害，期间怪物爬不上来）
@@ -47,6 +47,9 @@ static func cast(c: PlayableCharacter, id: String, point: Vector2) -> bool:
 		return false
 	if id != "reinforce" and not in_range(c, point):
 		return false
+	# 痒痒迷雾：看不见雾里的地方（清凉雪花 / 结界放不进去）
+	if id != "reinforce" and SiegeDirector.current and SiegeDirector.current.in_fog(point):
+		return false
 	var info: Dictionary = INFO[id]
 	var cd: Dictionary = c.get_meta("siege_cd", {})
 	cd[id] = Time.get_ticks_msec() / 1000.0 + float(info["cd"])
@@ -58,6 +61,15 @@ static func cast(c: PlayableCharacter, id: String, point: Vector2) -> bool:
 		c.shake(0.3)
 		if c.laugh:
 			c.laugh.add(8.0)
+		return false
+	# 被吸住 / 被缠住时放不出来（魔力吸吸水母会趁她抬手时专挠腋下）
+	if c.status and c.status.is_grabbed():
+		if dir:
+			for m in dir.enemies_near(c.global_position, 30.0):
+				if m.has_method("on_cast_try"):
+					m.call("on_cast_try", c)
+		if c.is_controlled():
+			GameState.notify("被缠住了，魔法放不出来！")
 		return false
 	if c.stat_add("magic_fail") > 0.0 and randf() < c.stat_add("magic_fail"):
 		if c.has_method("_on_magic_fail"):

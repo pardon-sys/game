@@ -32,7 +32,8 @@
 		"lines": [
 			"这袜子里面全是羽毛啦！",
 			"每走一步都……嘻嘻嘻……"
-		]
+		],
+		"move_scale": true
 	},
 	"equip_t_toe_brush": {
 		"interval": [
