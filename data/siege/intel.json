@@ -2,6 +2,14 @@
 	"_说明": [
 		"战场情报（gen_floor06_siege.py 生成；SiegeIntel 读）。"
 	],
+	"controls": {
+		"name": "攻防战按键说明",
+		"kind": "操作",
+		"desc": "两个人分工守城：粉色公主在墙下打怪、建冰塔，蓝色公主在城墙上放法术。",
+		"mech": "",
+		"how": "",
+		"icon": "horn"
+	},
 	"tower_icicle": {
 		"name": "冰锥塔",
 		"kind": "冰塔",

@@ -32,6 +32,44 @@ static func data() -> Dictionary:
 	return _data
 
 
+## 动作当前绑定的键（按 InputMap 现查，改了键位也跟着变）：最多 n 个，用「 / 」连起来。
+## 进攻防战、开场过场放完后自动弹出按键说明（测试里关掉）。
+static var auto_controls := true
+
+
+static func keys_of(action: String, n := 2) -> String:
+	if not InputMap.has_action(action):
+		return "?"
+	var out: Array[String] = []
+	for ev in InputMap.action_get_events(action):
+		var k := ev as InputEventKey
+		if k == null:
+			continue
+		var code := k.physical_keycode if k.physical_keycode != KEY_NONE else k.keycode
+		var name := OS.get_keycode_string(code)
+		name = {"Escape": "Esc", "Space": "空格", "Up": "↑", "Down": "↓", "Left": "←", "Right": "→"}.get(name, name)
+		if name != "" and not out.has(name):
+			out.append(name)
+		if out.size() >= n:
+			break
+	return " / ".join(out) if not out.is_empty() else "?"
+
+
+## 攻防战按键说明（情报 controls 的正文，按当前键位生成）。
+static func controls_text() -> String:
+	var k := func(a: String, n := 2) -> String: return keys_of(a, n)
+	return "\n".join([
+		"【通用】移动 %s/%s/%s/%s　攻击 %s　冲刺 %s　交互 / 救人 / 帮搭档解开装备（按住）%s" % [k.call("move_up", 1), k.call("move_left", 1),
+			k.call("move_down", 1), k.call("move_right", 1), k.call("attack", 1), k.call("dash"), k.call("interact", 1)],
+		"换人操控 %s　薄荷糖 %s　憋笑 %s　背包 %s" % [k.call("switch_character", 1), k.call("use_item", 1), k.call("hold_laugh", 1), k.call("backpack")],
+		"【粉色公主】%s：在脚下放冰塔基座、选塔；站在冰塔旁按 %s 升级 / 拆掉" % [k.call("siege_build", 1), k.call("siege_build", 1)],
+		"【蓝色公主】%s~%s：城墙法术（冰锥雨 / 冰晶结界 / 清凉雪花 / 冰墙加固 / 暴风雪 / 冰川突刺 / 冰镜分身）" % [k.call("siege_spell_1", 1), k.call("siege_spell_7", 1)],
+		"　瞄准时方向键 / 鼠标移动准星，再按同一个数字 / %s / 左键放出，%s 取消；%s 是她自己的冰晶结界" % [k.call("interact", 1), k.call("pause", 1), k.call("magic", 1)],
+		"【镜头】滚轮 / %s / %s 缩放　%s 全景（暂停）" % [k.call("zoom_out", 1), k.call("zoom_in", 1), k.call("overview", 1)],
+		"【其它】%s 看新情报（右边的图标也能点）　号角旁按 %s 提前开打　%s 暂停菜单（战场情报 / 撤退）" % [k.call("intel", 1), k.call("interact", 1), k.call("pause", 1)],
+	])
+
+
 static func entry(key: String) -> Dictionary:
 	var e: Variant = data().get(key, {})
 	return e if e is Dictionary else {}
@@ -116,7 +154,16 @@ func _process(delta: float) -> void:
 
 
 ## 卡片开着时 Esc / E / H / 点击只关卡片（在 _input 里先处理，暂停菜单收不到这次 Esc）。
+var _card_box: ScrollTextBox
+
+
 func _input(event: InputEvent) -> void:
+	# 卡片开着时 ↑↓ 滚动正文
+	if card and card.visible and event.is_pressed() and _card_box and (event.is_action("move_up") or event.is_action("ui_up")
+			or event.is_action("move_down") or event.is_action("ui_down")):
+		_card_box.scroll_by(-1 if (event.is_action("move_up") or event.is_action("ui_up")) else 1)
+		get_viewport().set_input_as_handled()
+		return
 	if card and card.visible and event.is_pressed() and not event.is_echo() and (event.is_action("pause") or event.is_action("ui_cancel")
 			or event.is_action("interact") or event.is_action("intel") or (event is InputEventMouseButton and not _over_icon(event))):
 		close()
@@ -185,12 +232,16 @@ func open(key: String) -> void:
 	card.add_child(kind)
 	var box := ScrollTextBox.make(Rect2(12, 50, 296, 104), 3, 10)
 	card.add_child(box)
+	_card_box = box
 	box.add_line(str(e.get("desc", "")), Color(0.95, 0.92, 0.98))
+	if key == "controls":
+		for line in controls_text().split("\n"):
+			box.add_line(line, Color(1, 0.86, 0.6) if line.begins_with("【") else Color(0.95, 0.92, 0.98))
 	if str(e.get("mech", "")) != "":
 		box.add_line("机制：" + str(e.get("mech", "")), Color(1.0, 0.7, 0.75))
 	if str(e.get("how", "")) != "":
 		box.add_line("应对：" + str(e.get("how", "")), Color(0.6, 1.0, 0.75))
-	var hint := _label("Esc / E / H 关闭", Color(0.7, 0.62, 0.78), 8)
+	var hint := _label("↑↓ 滚动　Esc / E / H 关闭", Color(0.7, 0.62, 0.78), 8)
 	hint.position = Vector2(12, 158)
 	card.add_child(hint)
 	card.show()

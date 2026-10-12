@@ -20,6 +20,7 @@ func _ready() -> void:
 	DevConfig.override = false
 	ComboTracker.play_scenes = false
 	TutorialBoard.enabled = false
+	SiegeIntel.auto_controls = false   # 按键说明情报不自动弹（siege3_test 单独测）
 	TownBuffShow.enabled = false   # 镇民支援的过场跳过（buff 照样生效）
 	main = load("res://scenes/main.tscn").instantiate()
 	add_child(main)
@@ -272,10 +273,22 @@ func _run_towers() -> void:
 	d.pink.global_position = spot
 	await _press("siege_build")
 	await get_tree().process_frame
-	var menu_open := Dialogue.runner.choice_menu.is_open()
-	Dialogue.runner.choice_menu.choose(0)
+	# 造塔菜单：带滚动的选择界面（ScrollPicker），整块面板在屏幕里
+	var picker := ScrollPicker.current
+	var menu_open := picker != null and picker.options.size() == IceTower.kinds().size() + 1
+	var vp := get_viewport().get_visible_rect().size
+	var inside := picker != null and Rect2(Vector2.ZERO, vp).encloses(Rect2(picker.panel.position, picker.panel.size))
+	# 往下翻到最后一个塔（列表滚动），再回到第一个选
+	for i in IceTower.kinds().size() - 1:
+		await _press("move_down")
+	var scrolled := picker != null and picker.list_box.scroll_vertical > 0
+	for i in IceTower.kinds().size() - 1:
+		await _press("move_up")
+	if picker:
+		picker.choose(0)
 	await get_tree().process_frame
 	await get_tree().process_frame
+	check("造塔菜单在屏幕里（%s），选项多了能往下滚（%s）" % [inside, scrolled], inside and scrolled)
 	var pad: BuildPad = null
 	for pd in get_tree().get_nodes_in_group("siege_pad"):
 		pad = pd
@@ -320,8 +333,10 @@ func _run_towers() -> void:
 	var t2 := d.nearest_target(m2, m2.stats.detect_range)
 	check("诱饵冰雕：附近的怪优先找它（%s）" % [t2], t2 == decoy)
 	var mint: IceTower = built["mint"]
+	_clear_monsters(d)   # 旁边的怪会一边挠她（闷笑反而涨）
 	d.pink.global_position = mint.global_position + Vector2(0, 16)
 	d.pink.laugh.set_value(d.pink.laugh.max_value * 0.5)
+	d.pink._full_invuln = 2.0   # 只看冰泉本身（别让路过的怪挠到她）
 	var lv0 := d.pink.laugh.value
 	await _wait(1.6)
 	check("薄荷冰泉：旁边的粉色公主闷笑下降（%.0f → %.0f）" % [lv0, d.pink.laugh.value], d.pink.laugh.value < lv0 - 3.0)
@@ -363,12 +378,15 @@ func _run_enemy_towers() -> void:
 	var near_pink := func(et: EnemyTower, off := Vector2(0, -60)):
 		d.pink.global_position = et.global_position + off
 		d.pink.camera.reset_smoothing()
-	# 各种敌塔
+	# 各种敌塔（蓝色公主的 AI 见粉色公主被拖走 / 抓住会放清凉雪花解开，这一段先让她站着）
+	d.blue.set_controller(CharacterController.new())
 	var results := {}
 	var s1: EnemySite = sites[1]
 	for kind in ["vine_pull", "glue", "net", "windmill", "sole_tower", "portal", "totem", "thigh_tower", "silence"]:
 		var et := s1.build(kind)
 		await get_tree().process_frame
+		if kind != "portal":
+			_clear_monsters(d)   # 别的怪抓着她时藤蔓勾不住
 		d.pink.status.release(true)
 		d.pink.status.clear_root()
 		d.pink.laugh.set_value(0.0)
@@ -380,7 +398,8 @@ func _run_enemy_towers() -> void:
 		var tt := 0.0
 		while tt < 4.0 and not ok:
 			match kind:
-				"vine_pull": ok = d.pink.get_meta("siege_dragged", false) and d.pink.global_position.distance_to(et.global_position) < p0.distance_to(et.global_position) - 4.0
+				# 勾住了、开始往塔下拖（机器很忙时帧少，拖得慢，只看拖动开始了没有）
+				"vine_pull": ok = d.pink.get_meta("siege_dragged", false) and d.pink.global_position.distance_to(et.global_position) < p0.distance_to(et.global_position) - 1.0
 				"glue": ok = get_tree().get_nodes_in_group("siege_temp").any(func(n): return n is GluePuddle)
 				"net": ok = d.pink.status.is_rooted() and d.pink.has_buff("lifted")
 				"windmill": ok = d.pink.global_position.distance_to(p0) > 10.0
@@ -399,6 +418,7 @@ func _run_enemy_towers() -> void:
 		_clear_monsters(d)
 	check("敌塔各自生效：%s" % [results], results.values().all(func(v): return v))
 	check("狂欢图腾倒了以后千手痒痒裤恢复（频率 ×%.2f）" % EquipFx.of(d.blue).rate_mul, is_equal_approx(EquipFx.of(d.blue).rate_mul, 1.0))
+	d.blue.set_controller(d._make_ai(d.blue))
 	d.pink.status.release(true)
 	d.pink.status.clear_root()
 	for n in get_tree().get_nodes_in_group("siege_temp"):

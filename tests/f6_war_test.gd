@@ -18,6 +18,7 @@ func _ready() -> void:
 	DevConfig.override = false
 	ComboTracker.play_scenes = false
 	TutorialBoard.enabled = false
+	SiegeIntel.auto_controls = false   # 按键说明情报不自动弹（siege3_test 单独测）
 	main = load("res://scenes/main.tscn").instantiate()
 	add_child(main)
 	await _wait(1.0)

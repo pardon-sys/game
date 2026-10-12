@@ -17,6 +17,7 @@ func _ready() -> void:
 		push_error("截图超时")
 		get_tree().quit(1))
 	TutorialBoard.enabled = false
+	SiegeIntel.auto_controls = false   # 按键说明情报不自动弹（siege3_test 单独测）
 	ComboTracker.play_scenes = false
 	main = load("res://scenes/main.tscn").instantiate()
 	add_child(main)
@@ -33,6 +34,23 @@ func _ready() -> void:
 	await _wait(0.6)
 	_finish()
 	d.add_crystals(300)
+	# 按键说明情报
+	d.intel.open("controls")
+	await _wait(0.3)
+	await _shot("controls")
+	d.intel.close()
+	# B 键造塔菜单（带滚动的选择界面），往下翻到底
+	d.pink.global_position = Vector2(d.gate_pos.x + 120.0, d.wall_foot_y() + 90.0)
+	d.try_build(d.pink, d.pink.global_position)
+	await _wait(0.3)
+	if ScrollPicker.current:
+		for i in 7:
+			ScrollPicker.current.selected = i + 1
+			ScrollPicker.current._refresh()
+		await _wait(0.3)
+		await _shot("build_picker")
+		ScrollPicker.current.cancel()
+	await _wait(0.3)
 	# 镇民支援过场（中途截一张）
 	var job := func(): await d.town.grant("mayor")
 	job.call()

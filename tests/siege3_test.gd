@@ -18,6 +18,7 @@ func _ready() -> void:
 	DevConfig.override = false
 	ComboTracker.play_scenes = false
 	TutorialBoard.enabled = false
+	SiegeIntel.auto_controls = false   # 按键说明情报不自动弹（siege3_test 单独测）
 	TownBuffShow.enabled = false
 	main = load("res://scenes/main.tscn").instantiate()
 	add_child(main)
@@ -143,12 +144,23 @@ func _run_hints() -> void:
 	GameState.notify("普通通知")
 	await _wait(5.6)
 	var normal_gone := toast != null and toast.modulate.a < 0.1
-	GameState.rule("规则说明：这条要停 10 秒")
-	await _wait(8.0)
-	var rule_still := toast != null and toast.modulate.a > 0.5
-	await _wait(2.6)
-	check("普通通知按原来的时长消失（%s），规则说明停 10 秒（8 秒时还在 %s，10.6 秒后没了 %s）" % [normal_gone, rule_still, toast.modulate.a < 0.1 if toast else false],
-		normal_gone and rule_still and toast.modulate.a < 0.1)
+	GameState.rule("规则说明：现在也是默认时长")
+	await _wait(5.6)
+	var rule_gone := toast != null and toast.modulate.a < 0.1
+	check("黄字都是默认时长：普通通知（%s）、规则说明（%s）5.6 秒内都消失" % [normal_gone, rule_gone], normal_gone and rule_gone)
+	# 按键说明情报：开场过场放完后自动弹出，正文按当前键位生成
+	SiegeIntel.auto_controls = true
+	d.intel.close()
+	d._show_controls()
+	await _until(func(): return d.intel.is_open(), 4.0)
+	var txt := SiegeIntel.controls_text()
+	var ok_keys := txt.contains(SiegeIntel.keys_of("siege_build", 1)) and txt.contains("1~7") and txt.contains(SiegeIntel.keys_of("switch_character", 1))
+	check("进攻防战后自动弹出「攻防战按键说明」（%s，%s），按键按当前键位（%s）" % [d.intel.is_open(), d.intel._card_key, ok_keys],
+		d.intel.is_open() and d.intel._card_key == "controls" and ok_keys)
+	await _press("pause")
+	await get_tree().process_frame
+	check("按 Esc 关掉、不开暂停菜单（%s / %s）" % [not d.intel.is_open(), not get_tree().paused], not d.intel.is_open() and not get_tree().paused)
+	SiegeIntel.auto_controls = false
 	var src := FileAccess.get_file_as_string("res://scripts/components/combo_tracker.gd")
 	check("组合技等首次说明走 GameState.rule（%s）" % src.contains("GameState.rule(ReactionDB.hint"), src.contains("GameState.rule(ReactionDB.hint"))
 

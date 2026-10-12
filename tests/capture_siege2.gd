@@ -19,6 +19,7 @@ func _ready() -> void:
 		push_error("截图超时")
 		get_tree().quit(1))
 	TutorialBoard.enabled = false
+	SiegeIntel.auto_controls = false   # 按键说明情报不自动弹（siege3_test 单独测）
 	ComboTracker.play_scenes = false
 	main = load("res://scenes/main.tscn").instantiate()
 	add_child(main)
@@ -46,7 +47,8 @@ func _ready() -> void:
 	d.try_build(d.pink, d.pink.global_position)
 	await _wait(0.4)
 	await _shot("build_menu")
-	Dialogue.runner.choice_menu.choose(0)
+	if ScrollPicker.current:
+		ScrollPicker.current.choose(0)
 	await _wait(0.3)
 	# 法术格 + 吟诵姿势
 	GameState.switch_control(d.blue)
