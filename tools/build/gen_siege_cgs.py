@@ -18,14 +18,17 @@ ACTOR_SCENE = {
     "shield_crab": ("shield_crab", "shield_crab"), "bat_swarm": ("feather_bat_swarm", "bat_swarm"), "carrier": ("carrier_imps", "carrier"),
     "warm_slime": ("warm_slime", "warm_slime"), "thigh_spider": ("thigh_spider", "thigh_spider"), "hug_bear": ("hug_bear", "hug_bear"),
     "suck_jelly": ("suck_jelly", "suck_jelly"), "twin_ghost": ("twin_ghost", "twin_ghost_a"),
+    "troll_general": ("troll_general", "general"),
 }
 
 
 def actor(key):
     scene, spr = ACTOR_SCENE[key]
     x, y, w, h = MON_META[spr + "_0"]
+    # 按图集键引用（CGActor.atlas_region），图集重新打包也不会错位
     return {"scene": "res://scenes/siege/monsters/%s.tscn" % scene,
-            "sprite": {"texture": "res://assets/generated/siege/monsters.png", "region": [x, y, w, h], "offset": [0, -h / 2]}}
+            "sprite": {"texture": "res://assets/generated/siege/monsters.png", "atlas": "res://assets/generated/siege/monsters.json",
+                       "key": spr + "_0", "offset": [0, -h / 2]}}
 
 
 def A(do, **kw):
@@ -76,6 +79,39 @@ def build(key, title, foe, script, speaker):
 
 # 每段：(标题, 怪物说话名, 粉色版台词, 蓝色版台词)；台词 (说话人 P/F/N, 文本, 动作标签)
 CG = {
+    "troll_general": ("将军的大手", "攻城巨魔将军", [
+        ("N", "（地面咚的一震。攻城巨魔将军从尘土里走出来，一只大手就把她整个人捞了起来）", "in sh"),
+        ("P", "好、好大的手……放、放我下来！", ""),
+        ("F", "哈！小镇的公主——将军亲自来挠！", "hop"),
+        ("N", "（他把她握在掌心里，另一只手捏住她的脚踝往上一扳，鞋子啪地掉在了地上）", "tk sh"),
+        ("P", "鞋、鞋子……别扳脚——嘻嘻嘻！", "tk"),
+        ("N", "（粗粗的食指按在脚心正中，慢慢地、一圈一圈地转）", "tk"),
+        ("P", "转、转圈不行……嘻嘻……哈哈！脚心——！", "laugh"),
+        ("N", "（五根大手指一齐上阵：一根挠脚心，一根钻脚趾缝，剩下的顺着脚背、脚跟来回刮）", "tk2 h2 zoom"),
+        ("P", "哈哈哈哈！五、五根一起——脚、脚要化掉了哈哈哈！", "sh"),
+        ("F", "将军的手指，比十只小怪还好用！哈哈！", "taunt"),
+        ("N", "（握着她的那只手也动了起来，大拇指在她腰侧一下一下地按）", "tk2 fl"),
+        ("P", "腰、腰也——哈哈哈哈！两只手都在动哈哈哈哈！", "laugh"),
+        ("N", "（他把她举高，对着脚心呼地吹了一口热气，再用指甲尖轻轻一刮）", "tk2"),
+        ("P", "认、认输——我认输啦哈哈哈哈！放下来——！", "sh unzoom"),
+        ("N", "（将军满意地哼了一声，一边挠一边扛着她走回了怪物的阵地）", "tk"),
+    ], [
+        ("N", "（地面一震。巨魔将军走出尘土，一只大手把她从城墙边捞了下来）", "in sh"),
+        ("P", "……放下。……我在、施法。", ""),
+        ("F", "哈！城墙上的冰公主——将军亲自来挠！", "hop"),
+        ("N", "（他把她握在掌心，另一只手扳住她的脚踝，靴子被拔掉丢在地上）", "tk sh"),
+        ("P", "……靴子。……还我。", "tk"),
+        ("N", "（粗大的食指按在脚心，慢慢转圈。她的脚趾一根根蜷了起来）", "tk"),
+        ("P", "……不、不痒。……噗。……脚趾、自己缩的。", "laugh"),
+        ("N", "（五根手指一起：一根挠脚心，一根撑开脚趾缝来回钻，其余的刮脚背、捏脚跟）", "tk2 h2 zoom"),
+        ("P", "……哈、哈哈……五、五根……数不过来……哈哈哈……！", "sh"),
+        ("F", "冰公主也会笑嘛！哈哈！", "taunt"),
+        ("N", "（握住她的拇指沿着大腿外侧往上按，按到腿根那一块，停住，揉了两下）", "tk2 fl"),
+        ("P", "……哈哈哈哈……腿根……揉、揉的时候……别……哈哈哈！", "laugh"),
+        ("N", "（他朝她的脚心吹了一口气，再用指甲尖从脚跟慢慢刮到脚尖）", "tk2"),
+        ("P", "……认、认输……哈哈哈……我认输……！", "sh unzoom"),
+        ("N", "（将军扛着她走回了敌阵。她的笑声断断续续，一路没停）", "tk"),
+    ]),
     "cart": ("车上的一排小手", "攻城痒痒车", [
         ("N", "（撞城墙的车子在她面前刹住了。车上的木板一块块翻开，露出一排排挥舞的小手）", "in"),
         ("P", "等、等一下……车上怎么全是手……", ""),

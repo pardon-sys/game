@@ -126,12 +126,12 @@ func _on_tickled(hit: HitData) -> void:
 		_say(ReactionDB.special(key), "special")
 		if not GameState.has_flag("hint_first_special"):
 			GameState.set_flag("hint_first_special")
-			GameState.notify(ReactionDB.hint("first_special"))
+			GameState.rule(ReactionDB.hint("first_special"))
 		return
 	_react_to_tickle(key, _variant_of(hit.source))
 	if not GameState.has_flag("hint_tickled"):
 		GameState.set_flag("hint_tickled")
-		GameState.notify(ReactionDB.hint("first_tickled"))
+		GameState.rule(ReactionDB.hint("first_tickled"))
 
 
 func _on_laugh_level_changed(level: LaughMeter.Level) -> void:
@@ -140,7 +140,7 @@ func _on_laugh_level_changed(level: LaughMeter.Level) -> void:
 		return
 	if level == LaughMeter.Level.HELPLESS:
 		GameState.set_flag("was_helpless")
-		GameState.notify(ReactionDB.hint("helpless"))
+		GameState.rule(ReactionDB.hint("helpless"))
 	elif level == LaughMeter.Level.CALM and GameState.has_flag("was_helpless") and not GameState.has_flag("seen_laugh_recover"):
 		GameState.set_flag("seen_laugh_recover")
 		Dialogue.start("laugh_recover")
@@ -149,7 +149,7 @@ func _on_laugh_level_changed(level: LaughMeter.Level) -> void:
 func _on_laugh_overflow() -> void:
 	super()
 	if is_controlled():
-		GameState.notify(ReactionDB.hint("overflow"))
+		GameState.rule(ReactionDB.hint("overflow"))
 
 
 func _on_died() -> void:
@@ -315,7 +315,7 @@ func _on_magic_event(event: String, tier: int) -> void:
 		"channel":
 			if not GameState.has_flag("hint_magic_exposed"):
 				GameState.set_flag("hint_magic_exposed")
-				GameState.notify(ReactionDB.hint("magic_exposed"))
+				GameState.rule(ReactionDB.hint("magic_exposed"))
 			_say(ReactionDB.magic("channel"), "magic")
 		"interrupted":
 			GameState.emote("angry", 1.2)
@@ -366,6 +366,6 @@ func _on_grabbed(source: Node) -> void:
 		return
 	if not GameState.has_flag("hint_grabbed"):
 		GameState.set_flag("hint_grabbed")
-		GameState.notify(ReactionDB.hint("grabbed"))
+		GameState.rule(ReactionDB.hint("grabbed"))
 	if not GameState.in_dialogue:
 		_say(ReactionDB.lines(ReactionDB.key_of(source), "grabbed", _variant_of(source)), "grabbed")

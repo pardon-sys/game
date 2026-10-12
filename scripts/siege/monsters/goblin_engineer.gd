@@ -26,7 +26,7 @@ func siege_wander(_mind: SiegeMind, delta: float) -> bool:
 		return true
 	var to := site.global_position + Vector2(randf_range(-2, 2), 10) - global_position
 	if to.length() > 16.0:
-		_move(to.normalized(), stats.chase_speed, delta)
+		_move(to.normalized(), stats.chase_speed * (director.town.mul("engineer_speed") if director and director.town else 1.0), delta)
 		site.unregister_builder(self)
 	else:
 		velocity = Vector2.ZERO

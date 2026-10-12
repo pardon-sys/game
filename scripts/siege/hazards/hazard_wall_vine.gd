@@ -92,7 +92,7 @@ func _active(delta: float) -> void:
 		if b.status.grab(root, 999.0, 99999):
 			bound = b
 			SpeechBubble.say(b, "……藤、藤蔓……缠住了……动不了。", 28.0, 1.8)
-			GameState.notify("蓝色公主被城墙爬藤缠住了！粉色公主去墙脚砍断藤根！")
+			GameState.rule("蓝色公主被城墙爬藤缠住了！粉色公主去墙脚砍断藤根！")
 	if bound:
 		top = bound.global_position + Vector2(0, -6)
 		_vt -= delta

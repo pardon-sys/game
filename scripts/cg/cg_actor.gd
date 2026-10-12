@@ -87,6 +87,14 @@ static func make_monster(actor_id: String, key: String, info: Dictionary) -> CGA
 		var r: Array = over["region"]
 		a.sprite.region_enabled = true
 		a.sprite.region_rect = Rect2(r[0], r[1], r[2], r[3])
+	# 按图集键取区域（图集重新打包后不会错位）：{"atlas": "res://…/monsters.json", "key": "cart_0"}
+	if over.has("atlas") and over.has("key"):
+		var rr := atlas_region(str(over["atlas"]), str(over["key"]))
+		if rr.size != Vector2.ZERO:
+			a.sprite.region_enabled = true
+			a.sprite.region_rect = rr
+			if not over.has("offset"):
+				a.sprite.offset = Vector2(0, -rr.size.y / 2.0)
 	if over.has("scale"):
 		a.sprite.scale = Vector2.ONE * float(over["scale"])
 	if over.has("offset"):
@@ -94,6 +102,18 @@ static func make_monster(actor_id: String, key: String, info: Dictionary) -> CGA
 	a.sprite.frame = int(over.get("frame", 0))
 	a.add_child(a.sprite)
 	return a
+
+
+static var _atlas_cache := {}
+
+
+## 图集 json（{键: [x, y, w, h]}）里某个键的区域；没有返回空 Rect2。
+static func atlas_region(path: String, key: String) -> Rect2:
+	if not _atlas_cache.has(path):
+		var parsed: Variant = JSON.parse_string(FileAccess.get_file_as_string(path)) if FileAccess.file_exists(path) else {}
+		_atlas_cache[path] = parsed if parsed is Dictionary else {}
+	var r: Variant = (_atlas_cache[path] as Dictionary).get(key)
+	return Rect2(float(r[0]), float(r[1]), float(r[2]), float(r[3])) if r is Array else Rect2()
 
 
 ## 人物演员（小剧场）：info = data/actors/npcs.json 的人物。用公主行走图格式的（蓝色公主）沿用公主演员换贴图；

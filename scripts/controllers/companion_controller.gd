@@ -313,11 +313,15 @@ func _attack(me: PlayableCharacter) -> bool:
 
 
 func _target(me: PlayableCharacter) -> Node2D:
+	var engage := _hooks().engage_range()
 	var pt: Variant = _hooks().priority_target()
-	if pt is Node2D and is_instance_valid(pt) and (pt as Node2D).global_position.distance_to(me.global_position) < ENGAGE_RANGE * 1.5:
+	if pt is Node2D and is_instance_valid(pt) and (pt as Node2D).global_position.distance_to(me.global_position) < engage * 1.5:
 		return pt
+	var ne: Variant = _hooks().nearest_enemy(me, engage)
+	if ne is Node2D and is_instance_valid(ne):
+		return ne
 	var best: Node2D = null
-	var best_d := ENGAGE_RANGE
+	var best_d := engage
 	for n in get_tree().get_nodes_in_group("enemy"):
 		var a := n as Actor
 		if a == null or not a.is_alive() or a.get("attackable") == false:

@@ -1,0 +1,190 @@
+[
+	{
+		"id": "party",
+		"name": "派对者的激励",
+		"who": "派对主持人",
+		"sheet": "bonfire_host",
+		"color": "#ffb0e0",
+		"after_wave": 0,
+		"line": "开打啦！大家跑起来——派对节奏！",
+		"desc": "全部友军移动速度 +50%。",
+		"buff": "town_party"
+	},
+	{
+		"id": "smith",
+		"name": "铁匠的磨刀石",
+		"who": "铁匠",
+		"sheet": "miner",
+		"color": "#ffb070",
+		"after_wave": 1,
+		"line": "矛尖、箭头、冰棱，统统给你们磨快了！",
+		"desc": "士兵攻击 +50%，冰塔伤害 +30%，粉色公主近战 +1。",
+		"buff": "town_smith",
+		"mul": {
+			"soldier_atk": 1.5,
+			"tower_dmg": 1.3
+		}
+	},
+	{
+		"id": "band",
+		"name": "乐队的鼓点",
+		"who": "小镇乐队",
+		"sheet": "kid",
+		"color": "#ffe070",
+		"after_wave": 2,
+		"line": "咚、咚、咚！跟着鼓点打！",
+		"desc": "友军攻击间隔 -30%，蓝色公主城墙法术冷却 -25%。",
+		"buff": "town_band",
+		"mul": {
+			"ally_cd": 0.7,
+			"spell_cd": 0.75
+		}
+	},
+	{
+		"id": "tailor",
+		"name": "裁缝的厚棉衣",
+		"who": "裁缝",
+		"sheet": "maid",
+		"color": "#c8a8ff",
+		"after_wave": 3,
+		"line": "厚厚的棉衣，痒痒手伸不进去！",
+		"desc": "友军受到的挠痒 -25%，临时痒痒装备的发作力度减半。",
+		"buff": "town_tailor",
+		"mul": {
+			"equip_power": 0.5
+		}
+	},
+	{
+		"id": "mason",
+		"name": "泥瓦匠的砂浆",
+		"who": "泥瓦匠",
+		"sheet": "supervisor",
+		"color": "#d0c0a0",
+		"after_wave": 4,
+		"line": "砂浆来了！城墙补得结结实实！",
+		"desc": "城墙上限 +15%，马上修 20%；之后每一波开始自动修 5%。",
+		"once": {
+			"wall_max_mul": 1.15,
+			"wall_repair": 0.2
+		},
+		"per_wave": {
+			"wall_repair": 0.05
+		}
+	},
+	{
+		"id": "pharm",
+		"name": "药剂师的薄荷",
+		"who": "药剂师奶奶",
+		"sheet": "granny",
+		"color": "#a0f0d0",
+		"after_wave": 5,
+		"line": "薄荷糖拿好，憋不住了就含一颗。",
+		"desc": "马上送 2 颗薄荷糖，之后每波再送 2 颗；蓝色公主魔力疲倦增长 -30%。",
+		"mul": {
+			"fatigue": 0.7
+		},
+		"once": {
+			"mints": 2
+		},
+		"per_wave": {
+			"mints": 2
+		}
+	},
+	{
+		"id": "watch",
+		"name": "守夜人的灯笼",
+		"who": "守夜人",
+		"sheet": "guard",
+		"color": "#ffe8a0",
+		"after_wave": 6,
+		"line": "灯笼挂起来——幽灵别想躲！",
+		"desc": "所有友军身边有小光圈：幽灵靠近就现形；友军索敌范围 +40%。",
+		"mul": {
+			"detect": 1.4
+		},
+		"add": {
+			"lantern": 60
+		}
+	},
+	{
+		"id": "cheer",
+		"name": "村民们的加油声",
+		"who": "村民们",
+		"sheet": "kid",
+		"color": "#ff9090",
+		"after_wave": 7,
+		"line": "公主加油——！忍住！别笑出来！",
+		"desc": "两位公主更不容易失控，被抓 / 被缠时挣脱少按一半。",
+		"buff": "town_cheer"
+	},
+	{
+		"id": "captain",
+		"name": "卫兵队长的号令",
+		"who": "卫兵队长",
+		"sheet": "captain",
+		"color": "#90b0ff",
+		"after_wave": 8,
+		"line": "全体听令！顶住！援兵马上到！",
+		"desc": "士兵血量 +50%，撤退回来的时间减半，增派 2 个长矛兵。",
+		"mul": {
+			"soldier_hp": 1.5,
+			"soldier_return": 0.5
+		},
+		"once": {
+			"spears": 2
+		}
+	},
+	{
+		"id": "hunter",
+		"name": "猎人的绊绳站",
+		"who": "猎人",
+		"sheet": "miner",
+		"color": "#b0d080",
+		"after_wave": 9,
+		"line": "绊绳拉好了，那些地精跑不快！",
+		"desc": "怪物搭敌塔的速度 -30%，地精工兵移动 -25%。",
+		"mul": {
+			"build_speed": 0.7,
+			"engineer_speed": 0.75
+		}
+	},
+	{
+		"id": "florist",
+		"name": "花匠的香草",
+		"who": "花匠",
+		"sheet": "maid",
+		"color": "#a0ffa0",
+		"after_wave": 10,
+		"line": "香草的味道，冰塔也精神起来了！",
+		"desc": "冰塔射程 +25%，雪人召唤塔每次多召一只。",
+		"mul": {
+			"tower_range": 1.25
+		},
+		"add": {
+			"snowmen": 1
+		}
+	},
+	{
+		"id": "mayor",
+		"name": "镇长的祭典狂欢",
+		"who": "镇长",
+		"sheet": "merchant",
+		"color": "#ffd700",
+		"after_wave": 11,
+		"line": "最后一波了！全镇一起——祭典开始！",
+		"desc": "全部友军所有属性 +20%，城墙回满。",
+		"buff": "town_mayor",
+		"mul": {
+			"tower_dmg": 1.2,
+			"ally_cd": 0.83,
+			"spell_cd": 0.83,
+			"soldier_atk": 1.2,
+			"soldier_hp": 1.2,
+			"detect": 1.2
+		},
+		"once": {
+			"wall_full": true,
+			"fireworks": true
+		}
+	}
+]

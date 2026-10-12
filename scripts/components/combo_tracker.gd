@@ -281,7 +281,7 @@ func _fire(c: Dictionary, source: Node, upgraded := false) -> void:
 	GameState.combo_triggered.emit(id, str(ReactionDB.combo(id).get("name", id)))
 	if not GameState.has_flag("hint_first_combo"):
 		GameState.set_flag("hint_first_combo")
-		GameState.notify(ReactionDB.hint("first_combo"))
+		GameState.rule(ReactionDB.hint("first_combo"))
 	triggered.emit(id)
 	if _actor and _actor.has_method("say_combo"):
 		_actor.say_combo(id)

@@ -1,11 +1,11 @@
 class_name CenterHint
 extends Label
-## 屏幕中间的黄字提示（HUD 自带一个）：淡入 → 停 HOLD 秒（约 10 秒）→ 淡出。新的一条来了不用排队：
+## 屏幕中间的黄字提示（HUD 自带一个）：淡入 → 停 HOLD 秒（规则介绍可以传更长的 hold）→ 淡出。新的一条来了不用排队：
 ## 正在显示的那条往上顶（继续数完自己的时间），同时最多 MAX_SHOWN 条。
-## 用法：GameState.hint("按住 空格 憋笑……")。同一句正在放或已经在排队时不重复加。
+## 用法：GameState.hint("按住 空格 憋笑……")、GameState.hint(规则, GameState.RULE_HOLD)。同一句正在放时不重复加。
 
 const FADE_IN := 0.2
-const HOLD := 10.0
+const HOLD := 1.6
 const FADE_OUT := 0.4
 const MAX_SHOWN := 3
 const LINE_STEP := 22.0
@@ -37,7 +37,7 @@ func _ready() -> void:
 	GameState.hint_requested.connect(show_hint)
 
 
-func show_hint(text: String) -> void:
+func show_hint(text: String, hold := -1.0) -> void:
 	if text == "" or (modulate.a > 0.05 and self.text == text):
 		return
 	history.append(text)
@@ -47,7 +47,7 @@ func show_hint(text: String) -> void:
 	if modulate.a > 0.05 and self.text != "":
 		_push_old(self.text, _left)
 	self.text = text
-	_left = HOLD
+	_left = HOLD if hold < 0.0 else hold
 	_busy = true
 	scale = Vector2(1.25, 1.25)
 	modulate.a = 0.0

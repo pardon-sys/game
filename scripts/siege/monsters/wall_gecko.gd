@@ -9,7 +9,7 @@ func siege_wander(_mind: SiegeMind, delta: float) -> bool:
 	if on_wall:
 		wall_hunt(delta)
 		return true
-	if director and global_position.y <= director.wall_foot_y() + 8.0:
+	if director and global_position.y <= director.wall_foot_y() + 16.0:
 		_retry -= delta
 		if _retry <= 0.0 and not climb_wall():
 			_retry = 0.6

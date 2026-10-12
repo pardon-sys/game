@@ -6,9 +6,9 @@ signal player_registered(player: PlayableCharacter)
 signal enemy_defeated(enemy: Node)
 ## Boss 出现（monster）或结束（null），HUD 显示 / 隐藏 Boss 血条。
 signal boss_changed(monster: Node)
-signal toast(text: String)
+signal toast(text: String, hold: float)
 ## 屏幕中间的黄字提示（CenterHint）
-signal hint_requested(text: String)
+signal hint_requested(text: String, hold: float)
 ## 装备换了（Equipment.equip / unequip）
 signal equipment_changed(who: String)
 ## 请求玩家角色做表情。duration <= 0 表示一直保持直到下一次请求；emotion 为 "" 表示松开。
@@ -259,13 +259,23 @@ func show_bubble(kind: String) -> void:
 	bubble_requested.emit(kind)
 
 
-func notify(text: String) -> void:
-	toast.emit(text)
+## 规则介绍（第一次被暴击、第一次组合技、失控、攻防战的玩法说明……）停留的秒数；普通提示用各自的默认时长。
+const RULE_HOLD := 10.0
 
 
-## 屏幕中间的黄字提示：出现一会就消失（CenterHint，排队播放）。
-func hint(text: String) -> void:
-	hint_requested.emit(text)
+## 屏幕上方的黄色通知。hold < 0：按长度的默认时长（2.4~5 秒）。
+func notify(text: String, hold := -1.0) -> void:
+	toast.emit(text, hold)
+
+
+## 规则介绍：和 notify 一样显示在上方，但停 RULE_HOLD 秒，来得及读完。
+func rule(text: String) -> void:
+	notify(text, RULE_HOLD)
+
+
+## 屏幕中间的黄字提示：出现一会就消失（CenterHint）。hold < 0：默认 1.6 秒。
+func hint(text: String, hold := -1.0) -> void:
+	hint_requested.emit(text, hold)
 
 
 # ------------------------------------------------------------------ 被动技能

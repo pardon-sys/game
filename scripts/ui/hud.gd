@@ -473,9 +473,8 @@ func _on_emotion_changed(emotion: String) -> void:
 
 
 ## 屏幕上方的黄色提示：太长时自动换行（宽度不超过屏幕宽 − 40，居中，按行数往下长），不会跑出屏幕。
-## 停留 TOAST_HOLD 秒；新的一条来了，旧的往下挪一行接着显示（同时最多 3 条）。
+## 停留时间按长度（2.4~5 秒；规则介绍传 hold = GameState.RULE_HOLD）；新的一条来了，旧的往下挪一行接着显示（同时最多 3 条）。
 const TOAST_MARGIN := 20.0
-const TOAST_HOLD := 10.0
 var _toast_prev_text := ""
 var _toast_left := 0.0
 var _toast_old: Array = []
@@ -504,7 +503,7 @@ func _push_old_toast(t: String, left: float) -> void:
 	tw.tween_callback(l.queue_free)
 
 
-func show_toast(text: String) -> void:
+func show_toast(text: String, hold := -1.0) -> void:
 	var vw := get_viewport().get_visible_rect().size.x
 	toast_label.autowrap_mode = TextServer.AUTOWRAP_ARBITRARY
 	toast_label.size = Vector2(vw - TOAST_MARGIN * 2.0, 0.0)
@@ -512,8 +511,9 @@ func show_toast(text: String) -> void:
 	toast_label.text = text
 	toast_label.reset_size()
 	toast_label.size.x = vw - TOAST_MARGIN * 2.0
-	# 停留约 10 秒；上一条还在的话往下挪一行、接着显示（同时最多 3 条）
-	var hold := TOAST_HOLD
+	# 时间按长度略加长，长句子来得及看完；上一条还在的话往下挪一行、接着显示（同时最多 3 条）
+	if hold < 0.0:
+		hold = clampf(2.4 + text.length() * 0.03, 2.4, 5.0)
 	if _toast_tween:
 		_toast_tween.kill()
 	if toast_label.modulate.a > 0.05 and _toast_prev_text != "" and _toast_prev_text != text:

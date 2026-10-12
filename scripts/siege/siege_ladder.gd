@@ -45,7 +45,8 @@ func top_pos() -> Vector2:
 
 ## 墙下的那一头。
 func bottom_pos() -> Vector2:
-	return global_position + Vector2(0, -2.0)
+	# 墙脚有一条挡人的窄条（SiegeWall.FOOT_STRIP）：梯子底下的落脚点在它下面
+	return global_position + Vector2(0, 6.0)
 
 
 ## 爬梯子（离哪头近就往另一头爬）。await 到爬完。

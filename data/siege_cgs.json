@@ -7,12 +7,8 @@
 			"scene": "res://scenes/siege/monsters/siege_cart.tscn",
 			"sprite": {
 				"texture": "res://assets/generated/siege/monsters.png",
-				"region": [
-					0,
-					0,
-					32,
-					26
-				],
+				"atlas": "res://assets/generated/siege/monsters.json",
+				"key": "cart_0",
 				"offset": [
 					0,
 					-13.0
@@ -23,12 +19,8 @@
 			"scene": "res://scenes/siege/monsters/hook_climber.tscn",
 			"sprite": {
 				"texture": "res://assets/generated/siege/monsters.png",
-				"region": [
-					64,
-					0,
-					16,
-					18
-				],
+				"atlas": "res://assets/generated/siege/monsters.json",
+				"key": "hook_0",
 				"offset": [
 					0,
 					-9.0
@@ -39,12 +31,8 @@
 			"scene": "res://scenes/siege/monsters/bind_vine.tscn",
 			"sprite": {
 				"texture": "res://assets/generated/siege/monsters.png",
-				"region": [
-					96,
-					0,
-					16,
-					18
-				],
+				"atlas": "res://assets/generated/siege/monsters.json",
+				"key": "vine_0",
 				"offset": [
 					0,
 					-9.0
@@ -55,12 +43,8 @@
 			"scene": "res://scenes/siege/monsters/wall_gecko.tscn",
 			"sprite": {
 				"texture": "res://assets/generated/siege/monsters.png",
-				"region": [
-					128,
-					0,
-					16,
-					14
-				],
+				"atlas": "res://assets/generated/siege/monsters.json",
+				"key": "gecko_0",
 				"offset": [
 					0,
 					-7.0
@@ -71,12 +55,8 @@
 			"scene": "res://scenes/siege/monsters/shield_crab.tscn",
 			"sprite": {
 				"texture": "res://assets/generated/siege/monsters.png",
-				"region": [
-					160,
-					0,
-					22,
-					16
-				],
+				"atlas": "res://assets/generated/siege/monsters.json",
+				"key": "shield_crab_0",
 				"offset": [
 					0,
 					-8.0
@@ -87,12 +67,8 @@
 			"scene": "res://scenes/siege/monsters/feather_bat_swarm.tscn",
 			"sprite": {
 				"texture": "res://assets/generated/siege/monsters.png",
-				"region": [
-					204,
-					0,
-					24,
-					16
-				],
+				"atlas": "res://assets/generated/siege/monsters.json",
+				"key": "bat_swarm_0",
 				"offset": [
 					0,
 					-8.0
@@ -103,12 +79,8 @@
 			"scene": "res://scenes/siege/monsters/carrier_imps.tscn",
 			"sprite": {
 				"texture": "res://assets/generated/siege/monsters.png",
-				"region": [
-					0,
-					26,
-					26,
-					16
-				],
+				"atlas": "res://assets/generated/siege/monsters.json",
+				"key": "carrier_0",
 				"offset": [
 					0,
 					-8.0
@@ -119,12 +91,8 @@
 			"scene": "res://scenes/siege/monsters/warm_slime.tscn",
 			"sprite": {
 				"texture": "res://assets/generated/siege/monsters.png",
-				"region": [
-					52,
-					26,
-					16,
-					14
-				],
+				"atlas": "res://assets/generated/siege/monsters.json",
+				"key": "warm_slime_0",
 				"offset": [
 					0,
 					-7.0
@@ -135,12 +103,8 @@
 			"scene": "res://scenes/siege/monsters/thigh_spider.tscn",
 			"sprite": {
 				"texture": "res://assets/generated/siege/monsters.png",
-				"region": [
-					84,
-					26,
-					18,
-					14
-				],
+				"atlas": "res://assets/generated/siege/monsters.json",
+				"key": "thigh_spider_0",
 				"offset": [
 					0,
 					-7.0
@@ -151,12 +115,8 @@
 			"scene": "res://scenes/siege/monsters/hug_bear.tscn",
 			"sprite": {
 				"texture": "res://assets/generated/siege/monsters.png",
-				"region": [
-					120,
-					26,
-					18,
-					18
-				],
+				"atlas": "res://assets/generated/siege/monsters.json",
+				"key": "hug_bear_0",
 				"offset": [
 					0,
 					-9.0
@@ -167,12 +127,8 @@
 			"scene": "res://scenes/siege/monsters/suck_jelly.tscn",
 			"sprite": {
 				"texture": "res://assets/generated/siege/monsters.png",
-				"region": [
-					156,
-					26,
-					16,
-					20
-				],
+				"atlas": "res://assets/generated/siege/monsters.json",
+				"key": "suck_jelly_0",
 				"offset": [
 					0,
 					-10.0
@@ -183,20 +139,29 @@
 			"scene": "res://scenes/siege/monsters/twin_ghost.tscn",
 			"sprite": {
 				"texture": "res://assets/generated/siege/monsters.png",
-				"region": [
-					188,
-					26,
-					16,
-					18
-				],
+				"atlas": "res://assets/generated/siege/monsters.json",
+				"key": "twin_ghost_a_0",
 				"offset": [
 					0,
 					-9.0
 				]
 			}
+		},
+		"troll_general": {
+			"scene": "res://scenes/siege/monsters/troll_general.tscn",
+			"sprite": {
+				"texture": "res://assets/generated/siege/monsters.png",
+				"atlas": "res://assets/generated/siege/monsters.json",
+				"key": "general_0",
+				"offset": [
+					0,
+					-44.0
+				]
+			}
 		}
 	},
 	"death": {
+		"troll_general": "death_siege_troll_general",
 		"cart": "death_siege_cart",
 		"hook": "death_siege_hook",
 		"bind_vine": "death_siege_bind_vine",
@@ -212,6 +177,296 @@
 	},
 	"portraits": {},
 	"cgs": {
+		"death_siege_troll_general": {
+			"name": "将军的大手",
+			"cast": {
+				"princess": {
+					"kind": "princess",
+					"at": [
+						0,
+						8
+					],
+					"visual": "helpless_1",
+					"anim": "helpless",
+					"dir": "down"
+				},
+				"foe": {
+					"kind": "monster:troll_general",
+					"at": [
+						22,
+						8
+					],
+					"dir": "left",
+					"hidden": true
+				}
+			},
+			"steps": [
+				{
+					"actions": [
+						{
+							"time": 0.7,
+							"do": "fade_in"
+						},
+						{
+							"state": "giggle",
+							"do": "voice"
+						}
+					],
+					"wait": 0.8
+				},
+				{
+					"speaker": "",
+					"text": "（地面咚的一震。攻城巨魔将军从尘土里走出来，一只大手就把她整个人捞了起来）",
+					"actions": [
+						{
+							"who": "foe",
+							"from": [
+								90,
+								0
+							],
+							"time": 0.6,
+							"do": "enter"
+						},
+						{
+							"who": "princess",
+							"kind": "surprise",
+							"do": "bubble"
+						},
+						{
+							"who": "princess",
+							"time": 0.4,
+							"do": "shake"
+						}
+					],
+					"portrait": "defeat_1"
+				},
+				{
+					"speaker": "公主",
+					"text": "好、好大的手……放、放我下来！",
+					"actions": [],
+					"portrait": "defeat_1"
+				},
+				{
+					"speaker": "攻城巨魔将军",
+					"text": "哈！小镇的公主——将军亲自来挠！",
+					"actions": [
+						{
+							"who": "foe",
+							"count": 2,
+							"do": "hop"
+						}
+					],
+					"portrait": "defeat_1"
+				},
+				{
+					"speaker": "",
+					"text": "（他把她握在掌心里，另一只手捏住她的脚踝往上一扳，鞋子啪地掉在了地上）",
+					"actions": [
+						{
+							"who": "princess",
+							"by": "foe",
+							"repeat": 5,
+							"interval": 0.3,
+							"fx": "lines",
+							"do": "tickle"
+						},
+						{
+							"who": "princess",
+							"time": 0.4,
+							"do": "shake"
+						}
+					],
+					"portrait": "defeat_1"
+				},
+				{
+					"speaker": "公主",
+					"text": "鞋、鞋子……别扳脚——嘻嘻嘻！",
+					"actions": [
+						{
+							"who": "princess",
+							"by": "foe",
+							"repeat": 5,
+							"interval": 0.3,
+							"fx": "lines",
+							"do": "tickle"
+						}
+					],
+					"portrait": "defeat_1"
+				},
+				{
+					"speaker": "",
+					"text": "（粗粗的食指按在脚心正中，慢慢地、一圈一圈地转）",
+					"actions": [
+						{
+							"who": "princess",
+							"by": "foe",
+							"repeat": 5,
+							"interval": 0.3,
+							"fx": "lines",
+							"do": "tickle"
+						}
+					],
+					"portrait": "defeat_1"
+				},
+				{
+					"speaker": "公主",
+					"text": "转、转圈不行……嘻嘻……哈哈！脚心——！",
+					"actions": [
+						{
+							"who": "princess",
+							"kind": "laugh",
+							"do": "bubble"
+						}
+					],
+					"portrait": "defeat_1"
+				},
+				{
+					"speaker": "",
+					"text": "（五根大手指一齐上阵：一根挠脚心，一根钻脚趾缝，剩下的顺着脚背、脚跟来回刮）",
+					"actions": [
+						{
+							"who": "princess",
+							"by": "foe",
+							"repeat": 8,
+							"interval": 0.22,
+							"fx": "lines",
+							"do": "tickle"
+						},
+						{
+							"who": "princess",
+							"visual": "helpless_2",
+							"do": "pose"
+						},
+						{
+							"state": "laugh",
+							"do": "voice"
+						},
+						{
+							"zoom": 1.5,
+							"focus": "princess",
+							"time": 0.5,
+							"do": "camera"
+						}
+					],
+					"portrait": "defeat_2"
+				},
+				{
+					"speaker": "公主",
+					"text": "哈哈哈哈！五、五根一起——脚、脚要化掉了哈哈哈！",
+					"actions": [
+						{
+							"who": "princess",
+							"time": 0.4,
+							"do": "shake"
+						}
+					],
+					"portrait": "defeat_2"
+				},
+				{
+					"speaker": "攻城巨魔将军",
+					"text": "将军的手指，比十只小怪还好用！哈哈！",
+					"actions": [
+						{
+							"who": "foe",
+							"do": "taunt"
+						}
+					],
+					"portrait": "defeat_2"
+				},
+				{
+					"speaker": "",
+					"text": "（握着她的那只手也动了起来，大拇指在她腰侧一下一下地按）",
+					"actions": [
+						{
+							"who": "princess",
+							"by": "foe",
+							"repeat": 8,
+							"interval": 0.22,
+							"fx": "lines",
+							"do": "tickle"
+						},
+						{
+							"time": 0.4,
+							"do": "flash"
+						}
+					],
+					"portrait": "defeat_2"
+				},
+				{
+					"speaker": "公主",
+					"text": "腰、腰也——哈哈哈哈！两只手都在动哈哈哈哈！",
+					"actions": [
+						{
+							"who": "princess",
+							"kind": "laugh",
+							"do": "bubble"
+						}
+					],
+					"portrait": "defeat_2"
+				},
+				{
+					"speaker": "",
+					"text": "（他把她举高，对着脚心呼地吹了一口热气，再用指甲尖轻轻一刮）",
+					"actions": [
+						{
+							"who": "princess",
+							"by": "foe",
+							"repeat": 8,
+							"interval": 0.22,
+							"fx": "lines",
+							"do": "tickle"
+						}
+					],
+					"portrait": "defeat_2"
+				},
+				{
+					"speaker": "公主",
+					"text": "认、认输——我认输啦哈哈哈哈！放下来——！",
+					"actions": [
+						{
+							"who": "princess",
+							"time": 0.4,
+							"do": "shake"
+						},
+						{
+							"zoom": 1,
+							"focus": "princess",
+							"time": 0.4,
+							"do": "camera"
+						}
+					],
+					"portrait": "defeat_2"
+				},
+				{
+					"speaker": "",
+					"text": "（将军满意地哼了一声，一边挠一边扛着她走回了怪物的阵地）",
+					"actions": [
+						{
+							"who": "princess",
+							"by": "foe",
+							"repeat": 5,
+							"interval": 0.3,
+							"fx": "lines",
+							"do": "tickle"
+						}
+					],
+					"portrait": "defeat_2"
+				},
+				{
+					"actions": [
+						{
+							"state": "",
+							"do": "voice"
+						},
+						{
+							"time": 0.8,
+							"do": "fade_out"
+						}
+					],
+					"wait": 0.9
+				}
+			]
+		},
 		"death_siege_cart": {
 			"name": "车上的一排小手",
 			"cast": {

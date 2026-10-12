@@ -24,6 +24,10 @@ var fatigue_mult := 1.0
 var zone := ""
 ## 挠到的是被束缚露出的部位（弱点）。
 var weak := false
+## true：不走「这个部位有防护装备就挡下」（负面装备自己发作的那一下）
+var ignore_block := false
+## 命中特效的大小倍数（被防护装备挡下一部分时放小一号）
+var fx_scale := 1.0
 
 
 func is_magic() -> bool:

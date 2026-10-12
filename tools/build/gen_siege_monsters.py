@@ -23,6 +23,8 @@ MONSTERS = {
     "suck_jelly": ("suck_jelly", "suck_jelly", "魔力吸吸水母", "suck_jelly", 4, 20, 40, 999, 1, 7.0, 0.7, 0.95, "goo", 5, 9),
     "goblin_engineer": ("goblin_engineer", "engineer", "地精工兵", "goblin_engineer", 4, 22, 40, 50, 1, 5.0, 1.0, 0.6, "hand", 5, 8),
     "twin_ghost": ("twin_ghost", "twin_ghost_a", "双子痒痒鬼", "twin_ghost", 5, 20, 42, 90, 1, 9.0, 0.6, 0.85, "hand", 5, 9),
+    # 小 Boss（继承 TickleTroll，不是 SiegeMonster；脚本里按 sprite_key 取 general_0~4）
+    "troll_general": ("troll_general", "general", "攻城巨魔将军", "troll_general", 160, 18, 34, 400, 2, 9.0, 0.9, 0.7, "hand", 12, 18),
 }
 
 TPL = """[gd_scene format=3]

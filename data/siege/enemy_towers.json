@@ -4,7 +4,7 @@
 	],
 	"vine_pull": {
 		"name": "藤蔓拉拽塔",
-		"hp": 22,
+		"hp": 13,
 		"interval": 7,
 		"range": 200,
 		"pull": 55,
@@ -18,7 +18,7 @@
 	},
 	"tailor": {
 		"name": "痒痒裁缝铺",
-		"hp": 20,
+		"hp": 12,
 		"interval": 8,
 		"range": 240,
 		"range_wall": 520,
@@ -36,14 +36,14 @@
 	},
 	"glue": {
 		"name": "黏胶喷泉",
-		"hp": 18,
+		"hp": 11,
 		"interval": 5,
 		"range": 140,
 		"reward": 6
 	},
 	"net": {
 		"name": "吊网塔",
-		"hp": 20,
+		"hp": 12,
 		"interval": 9,
 		"range": 190,
 		"hang": 3.5,
@@ -56,14 +56,14 @@
 	},
 	"silence": {
 		"name": "魔力干扰塔",
-		"hp": 22,
+		"hp": 13,
 		"interval": 3,
 		"width": 130,
 		"reward": 10
 	},
 	"portal": {
 		"name": "怪物传送门",
-		"hp": 26,
+		"hp": 16,
 		"interval": 3,
 		"cap": 6,
 		"spawns": [
@@ -75,10 +75,10 @@
 	},
 	"windmill": {
 		"name": "强风风车塔",
-		"hp": 20,
+		"hp": 12,
 		"interval": 6,
-		"range": 170,
-		"force": 300,
+		"range": 320,
+		"force": 340,
 		"reward": 8,
 		"lines": [
 			"哇啊——被吹走了！",
@@ -87,14 +87,14 @@
 	},
 	"totem": {
 		"name": "狂欢图腾",
-		"hp": 28,
+		"hp": 17,
 		"interval": 1,
 		"range": 120,
 		"reward": 12
 	},
 	"thigh_tower": {
 		"name": "腿根揉揉塔",
-		"hp": 22,
+		"hp": 13,
 		"interval": 5,
 		"range": 560,
 		"amount": 6,
@@ -112,7 +112,7 @@
 	},
 	"sole_tower": {
 		"name": "脚心刷刷塔",
-		"hp": 20,
+		"hp": 12,
 		"interval": 5,
 		"range": 220,
 		"amount": 4,

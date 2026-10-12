@@ -63,7 +63,7 @@ class Mind extends SiegeMind:
 
 
 func _animate(delta: float) -> void:
-	if sprite == null:
+	if sprite == null or get_meta("siege_spawning", false):
 		return
 	if director and not director.on_screen(global_position):
 		return

@@ -10,6 +10,8 @@ extends Actor
 const TILE := 16.0
 ## 怪物普通攻击打到城墙上的倍数（怪物的攻击力是按打公主设计的，1~2 点）
 const DAMAGE_MULT := 3.0
+## 墙脚挡人的窄条有多高（像素）
+const FOOT_STRIP := 5.0
 ## 挨打时冒灰尘的最短间隔
 const DUST_GAP := 0.35
 
@@ -39,7 +41,19 @@ func _setup() -> void:
 	shape.shape = rect
 	shape.position = Vector2(0, -TILE + 4.0)
 	add_child(shape)
-	z_index = 1
+	# 墙脚多一条挡人的窄条（world 层，左右各多半格）：人物的脚不会贴进墙面里
+	var foot := StaticBody2D.new()
+	foot.collision_layer = 1
+	foot.collision_mask = 0
+	var fs := CollisionShape2D.new()
+	var fr := RectangleShape2D.new()
+	fr.size = Vector2(w * TILE + TILE, FOOT_STRIP)
+	fs.shape = fr
+	fs.position = Vector2(0, 6.0 + FOOT_STRIP / 2.0)
+	foot.add_child(fs)
+	add_child(foot)
+	# 城墙画在人物、怪物下面（人物站在墙前时盖住墙，不会被墙挡住）；墙顶走道上的蓝色公主也在它上面
+	z_index = -1
 
 
 func width_px() -> float:

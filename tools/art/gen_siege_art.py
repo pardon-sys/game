@@ -14,6 +14,7 @@
 用法：python tools/art/gen_siege_art.py
 """
 import json
+from pathlib import Path
 import math
 import random
 
@@ -331,8 +332,12 @@ def gen_towers():
     for k in ("icicle", "snowman", "decoy", "mint", "frost", "repair"):
         for lvl in (1, 2):
             items.append(("tower_%s_%d" % (k, lvl), tower(k, lvl)))
+    for k in ("campfire", "ballista", "cocoa"):
+        for lvl in (1, 2):
+            items.append(("tower_%s_%d" % (k, lvl), tower3(k, lvl)))
     for k in ETOWERS:
         items.append(("etower_" + k, etower(k)))
+    items += [("proj_bolt", bolt_proj()), ("banner_0", banner(0)), ("banner_1", banner(1))]
     items += [("snowman_0", snowman(0)), ("snowman_1", snowman(1)), ("glue", glue_puddle()),
               ("proj_hand", hand_proj((190, 140, 230, 255))), ("proj_brush", brush_proj()), ("proj_equip", equip_proj()),
               ("proj_icicle", icicle_proj()), ("net", net_tile()), ("proj_arrow", arrow_proj())]
@@ -525,6 +530,7 @@ def m_engineer(f):
 
 MONSTERS = {
     "engineer": m_engineer,
+    "general": None,
     "cart": m_cart, "hook": m_hook, "vine": m_vine, "gecko": m_gecko, "shield_crab": m_shield_crab, "bat_swarm": m_bat_swarm,
     "carrier": m_carrier, "warm_slime": m_warm_slime, "thigh_spider": m_thigh_spider, "hug_bear": m_hug_bear,
     "suck_jelly": m_suck_jelly,
@@ -535,6 +541,10 @@ MONSTERS = {
 def gen_monsters():
     items = []
     for k, fn in MONSTERS.items():
+        if k == "general":
+            for f in range(5):
+                items.append(("general_%d" % f, m_general(f)))
+            continue
         for f in (0, 1):
             items.append(("%s_%d" % (k, f), fn(f)))
     pack(items, "monsters")
@@ -608,7 +618,8 @@ def gen_icons():
     for k in keys:
         src = None
         for sheet, meta in sheets.values():
-            for cand in (k, k + "_1", k + "_0", k + "_a_0", "icon_" + k):
+            alias = {"troll_general": "general_0"}.get(k, "")
+            for cand in (k, k + "_1", k + "_0", k + "_a_0", "icon_" + k, alias):
                 if cand in meta:
                     x, y, w, h = meta[cand]
                     src = sheet.crop((x, y, x + w, y + h))
@@ -624,11 +635,256 @@ def gen_icons():
     pack(items, "icons")
 
 
+# ================================================================ 第三轮：新友军塔、巨魔将军、军旗、士兵行走图、新粒子
+def tower3(kind, lvl):
+    img, d = canvas(24, 32)
+    if kind == "campfire":
+        d.ellipse((2, 25, 21, 31), fill=(110, 90, 80, 255))
+        for i, x in enumerate((4, 8, 12, 16)):
+            d.ellipse((x, 24 - (i % 2), x + 5, 29 - (i % 2)), fill=(130, 125, 135, 255), outline=(80, 74, 84, 255))
+        d.line((5, 26, 18, 20), fill=WOOD_D, width=3); d.line((5, 20, 18, 26), fill=WOOD, width=3)
+        d.polygon([(6, 22), (9, 9), (11, 15), (13, 5), (15, 14), (18, 22)], fill=(255, 140, 50, 255))
+        d.polygon([(8, 22), (11, 12), (13, 16), (15, 22)], fill=(255, 220, 90, 255))
+        d.polygon([(10, 22), (12, 16), (13, 22)], fill=(255, 250, 200, 255))
+        if lvl > 1:
+            d.rectangle((1, 6, 2, 27), fill=WOOD_D); d.rectangle((21, 6, 22, 27), fill=WOOD_D)
+            d.line((1, 6, 22, 6), fill=WOOD, width=2)
+            d.polygon([(10, 7), (13, 7), (12, 11)], fill=(120, 120, 130, 255))   # 吊锅
+    elif kind == "ballista":
+        ice_base(d, lvl)
+        d.rectangle((9, 14, 14, 26), fill=WOOD_D)
+        d.polygon([(2, 10), (11, 15), (21, 10), (21, 12), (11, 17), (2, 12)], fill=WOOD)       # 弩臂
+        d.line((2, 11, 11, 7), fill=(230, 230, 240, 255)); d.line((21, 11, 11, 7), fill=(230, 230, 240, 255))  # 弦
+        d.polygon([(11, 1), (13, 6), (12, 16), (10, 16), (9, 6)], fill=ICE)                    # 冰棱
+        d.line((11, 3, 11, 14), fill=ICE_L)
+        if lvl > 1:
+            crystal_spire(d, 2, 16, 6, 26); crystal_spire(d, 17, 16, 21, 26)
+    else:  # cocoa 热可可摊
+        d.rectangle((2, 16, 21, 29), fill=(200, 140, 90, 255), outline=(120, 70, 40, 255))
+        d.line((2, 20, 21, 20), fill=(240, 200, 150, 255))
+        for i, x in enumerate(range(1, 22, 4)):
+            d.polygon([(x, 6), (x + 4, 6), (x + 4, 11), (x + 2, 13), (x, 11)], fill=(255, 120, 150, 255) if i % 2 == 0 else (255, 245, 240, 255))
+        d.line((2, 6, 2, 16), fill=WOOD_D); d.line((21, 6, 21, 16), fill=WOOD_D)
+        d.rectangle((8, 11, 15, 16), fill=(250, 250, 255, 255), outline=(150, 110, 90, 255))     # 杯子
+        d.rectangle((9, 11, 14, 12), fill=(120, 70, 40, 255))
+        d.arc((14, 12, 18, 15), 270, 90, fill=(150, 110, 90, 255))
+        for x in (10, 13):
+            d.line((x, 9, x + 1, 5), fill=(255, 255, 255, 200))
+        if lvl > 1:
+            d.ellipse((17, 22, 21, 26), fill=(255, 220, 120, 255)); d.ellipse((3, 22, 7, 26), fill=(255, 220, 120, 255))
+    return add_outline(img)
+
+
+def bolt_proj():
+    img, d = canvas(6, 16)
+    d.polygon([(3, 0), (5, 4), (4, 15), (2, 15), (1, 4)], fill=ICE)
+    d.line((3, 2, 3, 13), fill=ICE_L)
+    return add_outline(img)
+
+
+def banner(f):
+    img, d = canvas(20, 34)
+    d.line((3, 2, 3, 33), fill=WOOD_D, width=2)
+    d.ellipse((1, 0, 5, 4), fill=(230, 190, 70, 255))
+    wave = (0, 1, 2, 1) if f == 0 else (1, 2, 1, 0)
+    pts = [(4, 4)]
+    for i, w in enumerate(wave):
+        pts.append((8 + i * 3, 4 + w))
+    pts += [(19, 10 + wave[-1]), (16, 13), (19, 17 + wave[0])]
+    for i, w in reversed(list(enumerate(wave))):
+        pts.append((8 + i * 3, 18 + w))
+    pts.append((4, 18))
+    d.polygon(pts, fill=(200, 50, 70, 255))
+    d.ellipse((7, 7, 14, 14), fill=(255, 200, 220, 255))        # 军旗上的痒痒手印
+    for x in (8, 10, 12, 14):
+        d.line((x, 7, x, 5), fill=(255, 200, 220, 255))
+    return add_outline(img)
+
+
+G_SKIN = (150, 205, 170, 255); G_SKIN_D = (100, 160, 130, 255); G_SKIN_L = (200, 238, 205, 255)
+G_BELLY = (225, 245, 220, 255)
+G_HELM = (240, 196, 80, 255); G_HELM_D = (196, 140, 50, 255); G_HELM_L = (255, 236, 160, 255)
+G_PLUME = (255, 120, 160, 255); G_PLUME_L = (255, 190, 210, 255)
+G_CAPE = (210, 70, 90, 255); G_CAPE_D = (150, 45, 70, 255)
+G_GLOVE = (255, 252, 245, 255); G_GLOVE_D = (215, 205, 220, 255)
+G_BELT = (120, 70, 50, 255); G_GOLD = (250, 210, 90, 255)
+G_EYE = (50, 30, 50, 255); G_BLUSH = (255, 150, 170, 255)
+
+
+def _g_glove(d, cx, cy, r=5):
+    d.ellipse((cx - r, cy - r, cx + r, cy + r), fill=G_GLOVE)
+    d.ellipse((cx - r + 1, cy, cx + r - 1, cy + r), fill=G_GLOVE_D)
+    for k in (-3, 0, 3):    # 手指
+        d.ellipse((cx + k - 1, cy - r - 2, cx + k + 1, cy - r + 1), fill=G_GLOVE)
+    d.line((cx - r, cy + 1, cx + r, cy + 1), fill=(240, 150, 170, 255))   # 手套上的粉色条纹
+
+
+def m_general(f):
+    """攻防战小 Boss 攻城巨魔将军：用 tools/art/src/siege_general_<帧>.png（codex 生成的概念图像素化后的 81x88 帧：
+    0/1 走路、2 举手蓄力、3 扛木桩冲锋、4 跳起）；没有的话退回下面手画的版本。"""
+    src = Path(__file__).resolve().parent / "src" / ("siege_general_%d.png" % f)
+    if src.exists():
+        return Image.open(src).convert("RGBA")
+    return _m_general_drawn(f)
+
+
+def _m_general_drawn(f):
+    """（后备的手画版）攻防战小 Boss 攻城巨魔将军（48x56）：金色圆盔 + 弯弯的粉羽毛、小红披风、
+    一对挠痒用的白色大手套、腰挂号角。0/1 走路、2 举手蓄力、3 扛木桩冲锋、4 跳起（缩腿）。"""
+    W, H = 48, 56
+    img = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+    d = ImageDraw.Draw(img)
+    bob = 1 if f == 1 else 0
+    jump = f == 4
+    oy = (-2 if jump else bob) + 6
+    # 披风（身后）
+    d.polygon([(12, 20 + oy), (36, 20 + oy), (40, 44 + oy), (8, 44 + oy)], fill=G_CAPE_D)
+    d.polygon([(13, 20 + oy), (35, 20 + oy), (37, 42 + oy), (11, 42 + oy)], fill=G_CAPE)
+    # 脚
+    if jump:
+        d.ellipse((14, 41 + oy, 22, 46 + oy), fill=G_SKIN_D); d.ellipse((26, 41 + oy, 34, 46 + oy), fill=G_SKIN_D)
+    else:
+        d.ellipse((13, 48 - bob, 22, 54 - bob), fill=G_SKIN_D); d.ellipse((26, 48 + bob, 35, 54 + bob), fill=G_SKIN_D)
+        d.line((15, 52 - bob, 20, 52 - bob), fill=G_SKIN); d.line((28, 52 + bob, 33, 52 + bob), fill=G_SKIN)
+    # 圆滚滚的身子
+    d.ellipse((10, 18 + oy, 38, 46 + oy), fill=G_SKIN)
+    d.ellipse((12, 19 + oy, 30, 36 + oy), fill=G_SKIN_L)
+    d.ellipse((15, 26 + oy, 33, 44 + oy), fill=G_BELLY)
+    d.ellipse((10, 30 + oy, 38, 46 + oy), outline=G_SKIN_D)
+    # 腰带
+    d.rectangle((11, 34 + oy, 37, 37 + oy), fill=G_BELT)
+    d.rectangle((21, 33 + oy, 27, 38 + oy), fill=G_GOLD); d.rectangle((23, 35 + oy, 25, 36 + oy), fill=G_BELT)
+    # 号角挂在腰上
+    d.polygon([(34, 36 + oy), (40, 33 + oy), (41, 38 + oy), (35, 39 + oy)], fill=(245, 230, 190, 255))
+    d.line((40, 33 + oy, 41, 38 + oy), fill=G_GOLD)
+    # 头（大大的圆）
+    hy = 2 + oy
+    d.ellipse((11, hy + 6, 37, hy + 28), fill=G_SKIN)
+    d.ellipse((13, hy + 7, 29, hy + 20), fill=G_SKIN_L)
+    # 小耳朵
+    d.polygon([(11, hy + 16), (5, hy + 12), (12, hy + 21)], fill=G_SKIN); d.polygon([(37, hy + 16), (43, hy + 12), (36, hy + 21)], fill=G_SKIN)
+    # 眼睛（两只，弯弯坏笑）+ 腮红 + 大嘴笑 + 小獠牙
+    d.ellipse((17, hy + 15, 21, hy + 19), fill=G_EYE); d.point((18, hy + 16), fill=(255, 255, 255, 255))
+    d.ellipse((27, hy + 15, 31, hy + 19), fill=G_EYE); d.point((28, hy + 16), fill=(255, 255, 255, 255))
+    d.line((16, hy + 13, 21, hy + 14), fill=G_SKIN_D); d.line((27, hy + 14, 32, hy + 13), fill=G_SKIN_D)   # 挑起的眉毛
+    d.ellipse((13, hy + 19, 17, hy + 22), fill=G_BLUSH); d.ellipse((31, hy + 19, 35, hy + 22), fill=G_BLUSH)
+    d.chord((19, hy + 18, 29, hy + 26), 0, 180, fill=(160, 50, 80, 255))
+    d.chord((21, hy + 21, 27, hy + 26), 0, 180, fill=(255, 140, 160, 255))
+    d.polygon([(20, hy + 22), (21, hy + 25), (22, hy + 22)], fill=(255, 255, 245, 255))
+    d.polygon([(26, hy + 22), (27, hy + 25), (28, hy + 22)], fill=(255, 255, 245, 255))
+    # 将军头盔（金色圆盔）+ 高高的羽毛
+    d.chord((10, hy + 3, 38, hy + 22), 180, 360, fill=G_HELM)
+    d.chord((12, hy + 4, 30, hy + 18), 180, 270, fill=G_HELM_L)
+    d.rectangle((10, hy + 11, 38, hy + 13), fill=G_HELM_D)
+    d.ellipse((22, hy + 9, 26, hy + 13), fill=(220, 60, 90, 255))     # 盔上的宝石
+    d.ellipse((22, hy + 1, 26, hy + 5), fill=G_HELM_D)
+    # 弯弯的大羽毛（挠痒将军的标志），走路时一晃一晃
+    sway = f % 2
+    pts = [(24, hy + 2), (26 + sway, hy - 2), (30 + sway, hy - 5), (34 + sway, hy - 5), (33 + sway, hy - 2), (29 + sway, hy + 1), (26, hy + 4)]
+    d.polygon(pts, fill=G_PLUME)
+    d.line((25, hy + 2, 28 + sway, hy - 2, 33 + sway, hy - 4), fill=G_PLUME_L)
+    for k in range(3):
+        x = 27 + k * 2 + sway
+        d.line((x, hy - 1 - k, x + 1, hy + 1 - k), fill=(230, 80, 130, 255))
+    # 手臂 + 大手套
+    if f == 2:      # 举起双手
+        d.line((12, 26 + oy, 5, 10 + oy), fill=G_SKIN, width=5); d.line((36, 26 + oy, 43, 10 + oy), fill=G_SKIN, width=5)
+        _g_glove(d, 5, 8 + oy); _g_glove(d, 43, 8 + oy)
+    elif f == 3:    # 扛木桩
+        d.line((1, 21, 47, 27), fill=WOOD, width=7); d.line((1, 19, 47, 25), fill=(200, 140, 90, 255), width=1)
+        d.ellipse((42, 21, 48, 29), fill=(215, 165, 110, 255)); d.ellipse((44, 23, 46, 27), fill=WOOD_D)
+        _g_glove(d, 13, 26, 4); _g_glove(d, 35, 29, 4)
+    else:
+        sw = 1 if f == 1 else 0
+        d.line((12, 26 + oy, 6, 34 + oy - sw), fill=G_SKIN, width=5); d.line((36, 26 + oy, 42, 34 + oy + sw), fill=G_SKIN, width=5)
+        _g_glove(d, 6, 37 + oy - sw); _g_glove(d, 42, 37 + oy + sw)
+    return add_outline(img)
+
+
+SOLDIER_ROLES = {
+    # 角色: (制服主色, 头盔色, 道具)
+    "spear": (None, None, None),
+    "archer": ((80, 140, 90), (120, 170, 100), "bow"),
+    "shield": ((170, 70, 70), (200, 190, 120), "shield"),
+    "medic": ((235, 235, 240), (250, 250, 255), "cross"),
+    "artisan": ((170, 115, 60), (200, 160, 90), "hammer"),
+}
+UNIFORM = [(90, 110, 150), (62, 77, 105), (120, 132, 156), (45, 55, 75), (36, 44, 60)]
+
+
+def _shade(c, k):
+    return tuple(max(0, min(255, int(v * k))) for v in c) + (255,)
+
+
+def gen_soldiers():
+    src = Image.open(OUT / "npcs" / "guard.png").convert("RGBA")
+    for role, (uni, helm, item) in SOLDIER_ROLES.items():
+        img = src.copy()
+        px = img.load()
+        if uni:
+            ks = [1.0, 0.72, 1.25, 0.55, 0.45]
+            for y in range(img.height):
+                for x in range(img.width):
+                    c = px[x, y]
+                    if c[3] and c[:3] in UNIFORM:
+                        px[x, y] = _shade(uni, ks[UNIFORM.index(c[:3])])
+                    elif c[3] and c[:3] == (196, 206, 222) and helm:
+                        px[x, y] = helm + (255,)
+        d = ImageDraw.Draw(img)
+        for row in range(4):
+            for col in range(4):
+                ox, oy = col * 32, row * 32
+                shaft = [(x, y) for y in range(oy, oy + 32) for x in range(ox, ox + 32) if src.getpixel((x, y))[:3] == (140, 90, 60)]
+                sx = min(shaft)[0] if shaft else ox + 24
+                top = min(y for _, y in shaft) if shaft else oy + 12
+                if item == "shield" and row != 3:
+                    cx = ox + (11 if row == 1 else 20 if row == 2 else 16)
+                    d.rounded_rectangle((cx - 6, oy + 13, cx + 6, oy + 27), radius=3, fill=(190, 190, 205, 255), outline=(63, 38, 49, 255))
+                    d.rectangle((cx - 4, oy + 15, cx + 4, oy + 25), fill=(170, 60, 60, 255))
+                    d.line((cx, oy + 15, cx, oy + 25), fill=(240, 210, 90, 255)); d.line((cx - 4, oy + 19, cx + 4, oy + 19), fill=(240, 210, 90, 255))
+                elif item == "shield":
+                    d.rounded_rectangle((ox + 10, oy + 14, ox + 22, oy + 28), radius=3, fill=(150, 150, 165, 255), outline=(63, 38, 49, 255))
+                elif item == "cross" and shaft:
+                    d.rectangle((sx - 4, top - 1, sx + 4, top + 6), fill=(255, 255, 255, 255), outline=(63, 38, 49, 255))
+                    d.line((sx, top, sx, top + 5), fill=(220, 50, 60, 255)); d.line((sx - 3, top + 2, sx + 3, top + 2), fill=(220, 50, 60, 255))
+                    if row == 0:
+                        d.line((ox + 16, oy + 18, ox + 16, oy + 22), fill=(220, 50, 60, 255)); d.line((ox + 14, oy + 20, ox + 18, oy + 20), fill=(220, 50, 60, 255))
+                elif item == "hammer" and shaft:
+                    d.rectangle((sx - 3, top - 2, sx + 3, top + 2), fill=(130, 130, 145, 255), outline=(63, 38, 49, 255))
+                    if row == 0:
+                        d.rectangle((ox + 11, oy + 22, ox + 20, oy + 26), fill=(120, 80, 45, 255))   # 工具包
+                elif item == "bow" and shaft:
+                    d.arc((sx - 5, top - 1, sx + 4, top + 16), 270, 90, fill=(120, 80, 45, 255), width=1)
+                    d.line((sx - 1, top - 1, sx - 1, top + 16), fill=(240, 240, 230, 255))
+        img.save(DIR / ("soldier_%s.png" % role))
+
+
+def gen_particles():
+    """新粒子（和 assets/generated/particle_*.png 同风格的几像素小图；Fx.PARTICLES 注册）。"""
+    def save(name, w, h, draw):
+        img, d = canvas(w, h)
+        draw(d)
+        img.save(OUT / ("particle_%s.png" % name))
+    save("spark", 3, 3, lambda d: (d.point((1, 0), fill=(255, 255, 220, 255)), d.line((0, 1, 2, 1), fill=(255, 230, 140, 255)), d.point((1, 2), fill=(255, 255, 220, 255))))
+    save("leaf", 5, 4, lambda d: (d.polygon([(0, 2), (2, 0), (4, 1), (2, 3)], fill=(120, 200, 90, 255)), d.line((0, 2, 4, 1), fill=(80, 150, 60, 255))))
+    save("cloth", 4, 4, lambda d: d.polygon([(0, 0), (3, 1), (2, 3), (0, 2)], fill=(220, 60, 80, 255)))
+    save("note", 4, 6, lambda d: (d.ellipse((0, 3, 2, 5), fill=(255, 255, 255, 255)), d.line((2, 0, 2, 4), fill=(255, 255, 255, 255)), d.point((3, 0), fill=(255, 255, 255, 255))))
+    save("rock", 4, 4, lambda d: d.polygon([(0, 1), (2, 0), (3, 2), (2, 3), (0, 3)], fill=(140, 125, 115, 255), outline=(90, 78, 72, 255)))
+    save("steam", 5, 5, lambda d: d.ellipse((0, 0, 4, 4), fill=(255, 255, 255, 170)))
+    save("wood", 4, 2, lambda d: d.line((0, 0, 3, 1), fill=(180, 120, 70, 255)))
+    save("flame", 3, 5, lambda d: (d.polygon([(1, 0), (2, 2), (2, 4), (0, 4), (0, 2)], fill=(255, 150, 50, 255)), d.point((1, 3), fill=(255, 240, 160, 255))))
+    save("bubble", 5, 5, lambda d: (d.ellipse((0, 0, 4, 4), outline=(200, 235, 255, 230)), d.point((1, 1), fill=(255, 255, 255, 255))))
+    save("thread", 5, 2, lambda d: d.line((0, 1, 2, 0, 4, 1), fill=(255, 170, 210, 255)))
+    save("ring", 5, 5, lambda d: d.ellipse((0, 0, 4, 4), outline=(255, 255, 255, 255)))
+
+
 def main():
     DIR.mkdir(parents=True, exist_ok=True)
     gen_props()
     gen_towers()
     gen_monsters()
+    gen_soldiers()
+    gen_particles()
     gen_icons()
     print("攻防战像素图已生成：", sorted(p.name for p in DIR.glob("*.png")))
 

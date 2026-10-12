@@ -81,7 +81,7 @@ func on_pink(p: Node) -> void:
 	var d := SiegeDirector.current
 	if d == null or not (p is PlayableCharacter) or (p as PlayableCharacter).character_id != "pink" or Dialogue.runner.choice_menu.is_open():
 		return
-	var menu := Dialogue.runner.choice_menu
+	var menu: ChoiceMenu = Dialogue.runner.choice_menu
 	var was_paused := get_tree().paused
 	get_tree().paused = true
 	if tower == null:
@@ -129,7 +129,7 @@ func request(kind: String, upgrade := false) -> bool:
 	Audio.play("chime", -6.0, 0.0, 1.3)
 	var blue: PlayableCharacter = d.blue
 	if blue and blue.is_controlled():
-		GameState.hint("蓝色公主：走到格子正上方的城墙上按 E 放冰光")
+		GameState.rule("蓝色公主：走到冰塔基座正上方的城墙上按 E 放冰光")
 	else:
 		GameState.notify("等蓝色公主从城墙上放冰光……")
 	return true

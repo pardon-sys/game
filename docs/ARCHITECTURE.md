@@ -481,8 +481,11 @@ data/cutscenes/<楼层组>/  地图内过场；data/theater/<楼层组>/  小剧
 
 ## 小镇攻防战（scripts/siege/）
 
+提示时长：普通黄字 `GameState.hint` 1.6 秒、通知 `notify` 按长度 2.4~5 秒；规则介绍用 `GameState.rule(...)`（`RULE_HOLD` 10 秒）。
+
 战时小镇城门「出发！」→ `floor_06_siege`（`tools/build/gen_floor06_siege.py` 生成地图 + `data/siege/{waves,towers,enemy_towers,intel}.json`）。
-- **导演 `SiegeDirector`**（图例 `siege`）：10 波（准备 → 战斗 → 奖励冰晶），城墙总血量归零 → 清场 → 失败小剧场
+- **导演 `SiegeDirector`**（图例 `siege`）：12 波（`total_waves()`）。只有第 1 波前 / 失败重来时有准备阶段；一波的怪出完后倒计时
+  `countdown`（15 秒，`next_left`）自动进下一波，场上的怪留着，提前清完立刻进；最后一波出完并清空才赢。城墙总血量归零 → 清场 → 失败小剧场
   `data/theater/siege/siege_fail_<N>[_pants].json` → 从这一波重来（冰塔保留）；第 10 波打完 → `siege_won`。
   不设同时在场上限（`alive_cap` 写了才限制）；`ability_rate`（3）= 怪物特殊能力 / 敌塔 / 配合技冷却的缩短倍数（`SiegeDirector.ability_rate()`）。
   怪物挂 `SiegeMind`（行军大脑，`Monster.mind`），攻城怪继承 `SiegeMonster`（`siege_wander` / `block_hit` / `climb_wall`）。
@@ -492,14 +495,24 @@ data/cutscenes/<楼层组>/  地图内过场；data/theater/<楼层组>/  小剧
   倒下走 `death_override`（笑倒 CG 按她自己的版本；粉色公主城门复活，蓝色公主 `Downed.timeless` + `revive_after` 40 秒兜底，
   `call_bearers` 叫士兵把她抬上城墙 / 扶起来 → `revive_blue`）。L 是她自己的魔法；城墙法术用 1~4（`SpellAim`，`pose_channel` / `pose_cast` 只摆姿势）。
   没目标时都会闲逛：`CompanionController` 的 `wander`（锚点 `BattleAIHooks.wander_anchor`）、`SiegeMageController` 墙顶巡逻、雪人、士兵。
-- **友军士兵** `SiegeSoldier`（墙下长矛兵 ×6、墙顶弓箭手 ×4；被挠撑不住就撤回城门 20 秒；`bench_soldiers` 全部下场）。
-- **法术** `SiegeSpells`（冰锥雨 / 冰晶结界 / 清凉雪花 / 冰墙加固）；**镜头** `SiegeCamera`（滚轮 / - / = 缩放，V 全景）；**HUD** `SiegeHud`；**情报** `SiegeIntel`（H / 点击）。
+- **友军士兵** `SiegeSoldier`（`SiegeDirector.ROSTER`：长矛兵 ×10、弓箭手 ×6、盾兵 ×3（嘲讽 `lure`、挡攻城车 `block_cart`）、医护兵 ×2、工匠 ×2；
+  被挠撑不住就撤回城门；`add_soldiers` 增派、`bench_soldiers` 全部下场；和公主互相穿过去）。
+- **镇民支援** `TownBuffs`（`data/siege/town_buffs.json`，12 个：开局一个、之后每进一波一个；`mul` / `add` 读数 + 给友军挂 `town_*` 状态）
+  + 过场 `TownBuffShow`（暂停、镜头推到城门 → 拉远看光点飞到友军；`TownBuffShow.enabled` 测试里关掉）。
+- **小 Boss** `TrollGeneral`（继承 `TickleTroll`，第 3 波）：10 个技能（抓挠脚心 / 三连扫掌 / 地震 / 投掷上墙 / 攻城锤 / 跳劈 / 战吼 / 痒痒军旗 `TrollBanner` /
+  就地搭塔（临时 `EnemySite`）/ 半血狂暴）；预警用 `SiegeFx.warn`，命中用 `SiegeFx.impact`（震屏 + 顿帧 `hitstop`）；
+  立绘是 codex 生成后像素化的 `tools/art/src/siege_general_0~4.png`。
+- **法术** `SiegeSpells`（冰锥雨 / 冰晶结界 / 清凉雪花 / 冰墙加固 / 暴风雪 `Blizzard` / 冰川突刺 / 冰镜分身 `IceMirror`，1~7 键，射程 640；
+  瞄准时镜头跟着准星：`PlayableCharacter.camera_bias`；大震屏走 `shake_camera`）；**镜头** `SiegeCamera`（滚轮 / - / = 缩放，V 全景）；**HUD** `SiegeHud`；**情报** `SiegeIntel`（H / 点击）。
 - **冰塔** `BuildPad`（运行时基座：粉色公主按 B `try_build`，`build_blocked` 判断能不能建；存 `vars.siege_towers = [{x, y, kind, level}]`）+ `IceTower`（6 种 × 2 级）；
   **敌塔** `EnemySite`（全地图 30 个地基）+ `EnemyTower`（10 种）：地精工兵 `GoblinEngineer` 挑最近的空地基搭（进度条，冻住暂停 / 倒退），怪物聚集 5 只也会搭；
 - **怪物配合技**（可复用组件，不限攻防战）：`MonsterTeamwork`（`scripts/components/`，读 `data/teamwork.json`，`tools/build/gen_teamwork.py` 生成）
   每 0.5 秒凑齐就发动，`spawn_formation(id, at)` 成套生成；效果在 `TeamworkEffects`（按 `effect.type` 分派：投掷、合体、举手、脱鞋、吸盘、
   舞会、泡泡、充能、滚球、活梯子 `LivingLadder`、护卫阵、空投、工兵护送）。波次 `groups` 里写 `formation` 项；墙顶通用行为在 `SiegeMind.wall_top`。
   **陷阱** `scripts/siege/hazards/`（龙卷风、泡泡潮、痒感连线、羽毛扫帚、迷雾；城墙爬藤 / 黏网 + 冰链 = 牺牲互救，`SiegeDirector.rescue`）。
+  战场：怪物出生钻地 `SiegeFx.burrow`（`quiet_spawn` 关掉）、`SiegeMind` 斜着走向目标墙段（`march_x`）+ 触须避障（`avoid`）、
+  `_clamp_monsters` 不出地图、`enemies_near` 用空间网格；城墙 `z_index -1` + 墙脚挡人窄条（`FOOT_STRIP`）；
+  冰塔加篝火（`torch` 组，幽灵现形）/ 冰棱弩炮（穿透、打敌塔 ×3）/ 热可可摊；敌塔整个塔身可打（`HurtProxy`）、血条、范围 / 蓄力 / 崩塌特效。
   陷阱和怪物配合：龙卷风卷怪、迷雾里的怪打不到（meta `in_fog`，`enemies_near(..., false)`）、泡泡运兵；陷阱组合 `spawn_hazard_combo`（波次 `hazards` 里写 `combo`）。
 - **临时痒痒装备**：`Equipment.force` / `release` / `tick_forced`（`GameState.equip_forced`），负面装备由 `EquipFx` 定时发作 + 立绘反应（`data/equip_reactions.json`，分角色）。
 - 内容生成器：`gen_siege_monsters.py`（场景）、`gen_siege_cgs.py`（笑倒 CG，粉 / 蓝两版）、`gen_siege_scenes.py`（三来源组合小演出）、

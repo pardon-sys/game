@@ -72,4 +72,4 @@ func fire(by: Node = null) -> void:
 			n.trigger()
 	if by is Monster and not GameState.has_flag("hint_tripwire_monster"):
 		GameState.set_flag("hint_tripwire_monster")
-		GameState.notify(ReactionDB.hint("tripwire_monster"))
+		GameState.rule(ReactionDB.hint("tripwire_monster"))

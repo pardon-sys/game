@@ -111,6 +111,10 @@ var _dash_dir := Vector2.DOWN
 var _ghost_time := 0.0
 var _step_time := 0.0
 var _shake := 0.0
+## 镜头抖动的幅度（像素；shake_camera 设，抖完回到 2）
+var _shake_power := 2.0
+## 镜头的额外偏移（攻防战瞄准时镜头跟着准星走；抖动叠在它上面）
+var camera_bias := Vector2.ZERO
 var _laugh_timer := 0.0
 var _target: Interactable = null
 var _channel_time := 0.0
@@ -458,6 +462,12 @@ func shake(duration: float) -> void:
 	_shake = maxf(_shake, duration)
 
 
+## 镜头大幅抖动（重击落地、攻城车撞墙……）：power 像素，time 秒。
+func shake_camera(time: float, power: float) -> void:
+	_shake = maxf(_shake, time)
+	_shake_power = maxf(_shake_power if _shake > 0.0 else 0.0, power)
+
+
 func is_helpless() -> bool:
 	return state == State.HELPLESS
 
@@ -645,10 +655,11 @@ func _tickle_multiplier(hit: HitData) -> float:
 	if TickleZones.enabled:
 		sensitivity.owner_id = character_id
 		k *= sensitivity.apply(hit, self)
-	# 装备：这个部位有能挡挠痒的装备、还有次数 → 这一下挡下来
-	if hit.zone != "" and Equipment.try_block(character_id, hit.zone):
+	# 装备：这个部位有能挡挠痒的装备、还有次数 → 挡下大半（还是会痒一点：BLOCKED_TICKLE），特效放小一号、先闪一下护盾光
+	if hit.zone != "" and not hit.ignore_block and Equipment.try_block(character_id, hit.zone):
 		_on_tickle_blocked(hit.zone)
-		return 0.0
+		hit.fx_scale = 0.6
+		k *= BLOCKED_TICKLE
 	if Equipment.unlocked() and Equipment.has_special(character_id, "bell"):
 		_ring_bell()
 	k *= 1.0 + (fatigue.laugh_bonus() if fatigue else 0.0)
@@ -665,8 +676,20 @@ func _extra_stat_mul(stat: String) -> float:
 
 
 ## 装备挡下了一下挠痒：头顶冒「挡住了！」。
+## 被防护装备挡下的那一下还剩多少（不是完全没感觉）
+const BLOCKED_TICKLE := 0.3
+
+
 func _on_tickle_blocked(zone: String) -> void:
 	tickle_blocked.emit(zone)
+	# 护盾光：小人身上一圈蓝光；操控的人立绘上也闪一下
+	var at := ZoneFx.body_point(self, zone) if is_inside_tree() else global_position
+	var ring := SiegeFx.ring(get_parent(), at, 7.0, Color(0.6, 0.85, 1.0, 0.95), 0.35, 0.35)
+	if ring:
+		ring.z_index = 12
+		ring.create_tween().tween_property(ring, "scale", Vector2(1.8, 1.8), 0.3)
+	if is_controlled() and Dialogue.portrait_fx:
+		Dialogue.portrait_fx.block_flash(zone)
 	Audio.play("pop", -8.0, 0.1, 0.8)
 	var left := Equipment.charges(character_id, zone)
 	SpeechBubble.say(self, "挡住了！（%s 还剩 %d 次）" % [TickleZones.zone_name(zone), left] if left > 0 else "挡住了！……%s的垫子用光了" % TickleZones.zone_name(zone), 30.0, 1.4)
@@ -1150,9 +1173,11 @@ func _update_effects(delta: float) -> void:
 	if camera:
 		if _shake > 0.0:
 			_shake -= delta
-			camera.offset = Vector2(randf_range(-2, 2), randf_range(-2, 2)).round()
+			var pw := _shake_power
+			camera.offset = camera_bias + Vector2(randf_range(-pw, pw), randf_range(-pw, pw)).round()
 		else:
-			camera.offset = Vector2.ZERO
+			_shake_power = 2.0
+			camera.offset = camera_bias
 
 
 func _footsteps(delta: float) -> void:

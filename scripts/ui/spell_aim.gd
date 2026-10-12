@@ -1,12 +1,15 @@
 class_name SpellAim
 extends CanvasLayer
 ## 攻防战：玩家操控蓝色公主时的「瞄准施法」（SiegeDirector 创建）。L 还是她自己的冰晶结界（原地吟唱）。
-##   按 1~4（siege_spell_1~4：冰锥雨 / 冰晶结界 / 清凉雪花 / 冰墙加固）打开：地上出现准星（默认放在射程里怪最密的地方），
+##   按 1~7（siege_spell_1~7：冰锥雨 / 冰晶结界 / 清凉雪花 / 冰墙加固 / 暴风雪 / 冰川突刺 / 冰镜分身）打开：地上出现准星（默认放在射程里怪最密的地方），
 ##   她进入吟诵姿势（小人 + 立绘：PlayableCharacter.pose_channel），站着不动；
 ##   方向键 / 鼠标移动准星，按别的数字换法术，再按同一个数字 / E / 鼠标左键放出（释放姿势 pose_cast），Esc 取消。
 ##   准星外圈是法术范围，蓝色公主周围的虚线圈是射程；射程外 / 冷却中准星变红。
+##   瞄准时镜头跟着准星走（Camera2D.offset 平滑移过去，准星可以移出原来的画面），收起后回到人物身上。
 
-const MOVE_SPEED := 220.0
+const MOVE_SPEED := 360.0
+## 镜头跟随准星的比例（1 = 镜头中心就是准星）
+const CAM_FOLLOW := 0.85
 
 var director: Node
 var caster: PlayableCharacter
@@ -33,8 +36,16 @@ class Reticle extends Node2D:
 		draw_arc(c, SiegeSpells.RANGE, 0.0, TAU, 96, Color(0.7, 0.9, 1.0, 0.25), 1.0)
 		var p := aim.point - global_position
 		var r := SiegeSpells.radius(aim.spell) if aim.spell != "reinforce" else 20.0
-		draw_circle(p, r, Color(col.r, col.g, col.b, 0.15))
-		draw_arc(p, r, 0.0, TAU, 40, col, 1.5)
+		if aim.spell == "spike":
+			# 冰川突刺：从城墙脚下到准星的一条直线
+			var start := Vector2(aim.caster.global_position.x, aim.director.wall_foot_y() + 8.0) - global_position if aim.director else c
+			var way := start.direction_to(p)
+			var slen: float = SiegeSpells.INFO["spike"]["length"]
+			draw_line(start, start + way * slen, Color(col.r, col.g, col.b, 0.3), 22.0)
+			draw_line(start, start + way * slen, col, 1.0)
+		else:
+			draw_circle(p, r, Color(col.r, col.g, col.b, 0.15))
+			draw_arc(p, r, 0.0, TAU, 40, col, 1.5)
 		draw_line(p + Vector2(-5, 0), p + Vector2(5, 0), col, 1.0)
 		draw_line(p + Vector2(0, -5), p + Vector2(0, 5), col, 1.0)
 		if aim.spell == "reinforce" and aim.director:
@@ -98,6 +109,8 @@ func open(c: PlayableCharacter, id := "") -> void:
 
 func close() -> void:
 	active = false
+	if caster and is_instance_valid(caster):
+		caster.create_tween().tween_property(caster, "camera_bias", Vector2.ZERO, 0.35).set_trans(Tween.TRANS_SINE)
 	PlayerInputController.movement_locked = false
 	PlayerInputController.actions_locked = false
 	if caster and is_instance_valid(caster):
@@ -131,7 +144,7 @@ func fire() -> bool:
 
 func _refresh_label() -> void:
 	var cd := SiegeSpells.cooldown_left(caster, spell) if caster else 0.0
-	_label.text = "【%s】%s　1~4 换法术　再按 / E / 左键 放出　Esc 取消" % [SiegeSpells.spell_name(spell),
+	_label.text = "【%s】%s　1~7 换法术　再按 / E / 左键 放出　Esc 取消" % [SiegeSpells.spell_name(spell),
 		("冷却 %.1f 秒" % cd) if cd > 0.0 else ("射程外" if spell != "reinforce" and caster and not SiegeSpells.in_range(caster, point) else "可以放")]
 
 
@@ -146,6 +159,9 @@ func _process(delta: float) -> void:
 	if director:
 		var ms: Vector2 = director.map_size()
 		point = point.clamp(Vector2.ZERO, ms)
+	# 镜头跟着准星
+	var want := (point - caster.global_position) * CAM_FOLLOW
+	caster.camera_bias = caster.camera_bias.lerp(want, minf(1.0, delta * 6.0))
 	_refresh_label()
 
 

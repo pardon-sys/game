@@ -2,7 +2,9 @@ class_name SiegeCart
 extends SiegeMonster
 ## 攻城痒痒车：从地图下边出来，地上先亮红色预警线（WARN 秒），然后沿直线加速撞向城墙——
 ## 城墙大扣血（IMPACT），撞到的那一段墙上的蓝色公主被震下城墙；路线附近有诱饵冰雕时改撞冰雕（撞碎自己）。
-## 寒霜塔 / 冰晶结界能让它变慢 / 停下；不吃击退。路上撞到粉色公主：撞开 + 挠一下。
+## 寒霜塔 / 冰晶结界能让它变慢 / 停下；不吃击退、不吃受击僵直（挨打不打断冲锋）。路上撞到粉色公主：撞开 + 挠一下。
+## 冲锋中被挡住（盾兵、冰晶结界、塔、道具……速度掉到 1/3 以下超过 BLOCK_T 秒）：停 REAIM 秒、亮一条短预警线，从当前位置再冲。
+## 路上的道具（木桩、沙袋……）直接撞碎。
 
 const WARN := 1.4
 const TOP_SPEED := 150.0
@@ -10,7 +12,12 @@ const ACCEL := 90.0
 const IMPACT := 220.0
 const LURE_PATH := 160.0
 
+const BLOCK_T := 0.3
+const REAIM := 0.8
+
 var _phase := "warn"
+var _blocked_t := 0.0
+var _reaim_t := 0.0
 var _warn_t := WARN
 var _speed := 0.0
 var _goal := Vector2.ZERO
@@ -37,10 +44,34 @@ func block_hit(hit: HitData) -> bool:
 	return false
 
 
+## 挨打不进入受击僵直（不打断冲锋），只闪白。
+func _on_damaged(hit: HitData) -> void:
+	Audio.play("hit", -6.0)
+	if is_instance_valid(hit.source) and hit.source is Actor:
+		target = hit.source
+
+
 func siege_wander(_mind: SiegeMind, delta: float) -> bool:
 	if director == null:
 		return true
 	match _phase:
+		"reaim":
+			velocity = Vector2.ZERO
+			_reaim_t -= delta
+			if sprite:
+				sprite.position.x = roundf(sin(_t * 50.0))
+			if _reaim_t <= 0.0:
+				_goal = _pick_goal()
+				SiegeFx.lane(get_parent(), global_position, _goal, 14.0, Color(1, 0.4, 0.3), 0.6)
+				Audio.play("cart_rumble", -6.0, 0.1, 1.2)
+				_warn_t = 0.6
+				_phase = "warn2"
+		"warn2":
+			velocity = Vector2.ZERO
+			_warn_t -= delta
+			if _warn_t <= 0.0:
+				_phase = "charge"
+				_speed = TOP_SPEED * 0.5
 		"warn":
 			if _warn_t == WARN:
 				_goal = _pick_goal()
@@ -59,21 +90,51 @@ func siege_wander(_mind: SiegeMind, delta: float) -> bool:
 				sprite.position.y = -absf(sin(_t * 22.0)) * 1.5
 			var dir := global_position.direction_to(_goal)
 			velocity = dir * _speed * stat_mul("speed")
+			# 盾兵挡车：挡下一次（盾兵撤退），车停下重新瞄准
+			for sd in director.soldiers:
+				if is_instance_valid(sd) and sd.role == "shield" and not sd.retreating and sd.global_position.distance_to(global_position) < 18.0:
+					if sd.block_cart(self):
+						_start_reaim()
+						return true
+			# 路上的道具直接撞碎
+			for n in get_tree().get_nodes_in_group("prop"):
+				var pr := n as Node2D
+				if pr and pr.global_position.distance_to(global_position + dir * 10.0) < 14.0 and pr.has_method("smash"):
+					pr.call("smash")
+					Fx.burst(get_parent(), pr.global_position + Vector2(0, -6), "wood", 10, 60.0, 0.6, Vector2(0, 120), Color(0.8, 0.6, 0.4))
+			# 被挡住：速度掉下来太久 → 重新瞄准再冲
+			if _speed > TOP_SPEED * 0.4 and get_real_velocity().length() < _speed * 0.33:
+				_blocked_t += delta
+				if _blocked_t > BLOCK_T:
+					_start_reaim()
+					return true
+			else:
+				_blocked_t = 0.0
 			var p := director.pink
 			if not _hit_pink and p and is_instance_valid(p) and p.global_position.distance_to(global_position) < 16.0:
 				_hit_pink = true
 				p.apply_knockback(global_position, 280.0)
 				p.receive_hit(HitData.make_tickle(self, 10.0))
-			if global_position.distance_to(_goal) < 10.0 or global_position.y <= director.wall_foot_y() + 6.0:
+			if global_position.distance_to(_goal) < 10.0 or global_position.y <= director.wall_foot_y() + 22.0:
 				_impact()
 	return true
+
+
+func _start_reaim() -> void:
+	_phase = "reaim"
+	_reaim_t = REAIM
+	_blocked_t = 0.0
+	_speed = 0.0
+	velocity = Vector2.ZERO
+	Fx.burst(get_parent(), global_position + Vector2(0, -6), "dust", 10, 50.0, 0.5, Vector2(0, 30), Color(0.8, 0.7, 0.6))
+	SpeechBubble.say(self, "咕噜？！再来一次！", 26.0, 1.0)
 
 
 func _pick_goal() -> Vector2:
 	for t in director.extra_targets:
 		if is_instance_valid(t) and t is IceTower and (t as IceTower).kind == "decoy" and absf(t.global_position.x - global_position.x) < LURE_PATH:
 			return t.global_position
-	return Vector2(global_position.x, director.wall_foot_y() + 4.0)
+	return Vector2(global_position.x, director.wall_foot_y() + 14.0)
 
 
 func _impact() -> void:

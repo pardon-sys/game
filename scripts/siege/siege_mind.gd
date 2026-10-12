@@ -77,21 +77,80 @@ func wander(m: Monster, delta: float) -> bool:
 	return true
 
 
-## 朝城墙走（成套生成的小队有 march_x：奔同一段墙）；到墙下就停——旁边有活梯子的话顺着爬上去。
+## 朝城墙走：每只怪生成后挑一个目标墙段 x（march_x；偏向中间，左右出生的怪斜着走过去，不贴着地图两边）；
+## 成套生成的小队共用一个 march_x。到墙下就停——旁边有活梯子的话顺着爬上去。路上被道具 / 塔挡住会自动绕开（avoid）。
 func march(m: Monster, delta: float) -> void:
 	if director == null:
 		return
 	var foot: float = director.wall_foot_y()
-	if m.global_position.y <= foot + 6.0:
+	# 墙脚有一条挡人的窄条（SiegeWall.FOOT_STRIP），走到它下面就算到了墙下
+	if m.global_position.y <= foot + SiegeWall.FOOT_STRIP + 8.0:
 		m.velocity = m.velocity.move_toward(Vector2.ZERO, 600.0 * delta)
 		var lad := LivingLadder.near(m.get_tree(), m.global_position.x)
 		if lad and not (m is SiegeMonster and (m as SiegeMonster).climbing):
 			climb_ladder(m, lad)
 		return
-	var dir := Vector2(drift, -1.0)
-	if m.has_meta("march_x"):
-		dir.x = clampf((float(m.get_meta("march_x")) - m.global_position.x) / 60.0, -1.0, 1.0)
-	m._move(dir.normalized(), m.stats.chase_speed * 0.8, delta)
+	if not m.has_meta("march_x"):
+		var ms: Vector2 = director.map_size()
+		var cx := ms.x / 2.0
+		var gx := lerpf(m.global_position.x, cx, randf_range(0.25, 0.6)) + randf_range(-160.0, 160.0)
+		m.set_meta("march_x", clampf(gx, 90.0, ms.x - 90.0))
+	var dir := Vector2(0.0, -1.0)
+	var dx := float(m.get_meta("march_x")) - m.global_position.x
+	var dy := m.global_position.y - foot
+	# 斜着走：剩下的横向距离按剩下的纵向距离分摊（离墙越近越要往目标 x 拐）
+	dir.x = clampf(dx / maxf(dy * 0.8, 40.0), -1.2, 1.2) + drift * 0.3
+	# 离墙很近时不探测（墙面本身是 world 层的砖，探到会以为被挡住）
+	m._move(avoid(m, dir.normalized(), delta) if dy > LOOK + 10.0 else dir.normalized(), m.stats.chase_speed * 0.8, delta)
+
+
+## 「触须」避障：前方 LOOK 像素有挡路的（world 层：道具、冰塔、敌塔、木桩……）就往两边较空的一侧拐，
+## 记住拐的方向 TURN_KEEP 秒；被卡住（几乎没动）超过 STUCK 秒就换一边。远处的怪探测得稀一点。
+const LOOK := 18.0
+const TURN_KEEP := 1.0
+const STUCK := 0.4
+var _turn := 0.0
+var _turn_t := 0.0
+var _probe_t := 0.0
+var _stuck_t := 0.0
+var _last_pos := Vector2.INF
+
+
+func avoid(m: Monster, dir: Vector2, delta: float) -> Vector2:
+	_turn_t -= delta
+	_probe_t -= delta
+	# 卡住检测
+	if _last_pos != Vector2.INF and m.global_position.distance_to(_last_pos) < 5.0 * delta:
+		_stuck_t += delta
+	else:
+		_stuck_t = 0.0
+	_last_pos = m.global_position
+	if _stuck_t > STUCK:
+		_stuck_t = 0.0
+		_turn = -_turn if _turn != 0.0 else (1.0 if randf() < 0.5 else -1.0)
+		_turn_t = TURN_KEEP
+	if _turn_t > 0.0 and _turn != 0.0:
+		return dir.rotated(_turn * 1.1)
+	if _probe_t > 0.0:
+		return dir
+	_probe_t = 0.15 if director.on_screen(m.global_position) else 0.5
+	if not _blocked(m, dir):
+		_turn = 0.0
+		return dir
+	for k in [0.7, 1.3, 2.0]:
+		for side in [1.0, -1.0]:
+			if not _blocked(m, dir.rotated(side * k)):
+				_turn = side
+				_turn_t = TURN_KEEP
+				return dir.rotated(side * k)
+	return dir
+
+
+func _blocked(m: Monster, dir: Vector2) -> bool:
+	var space := m.get_world_2d().direct_space_state
+	var q := PhysicsRayQueryParameters2D.create(m.global_position + Vector2(0, -3), m.global_position + Vector2(0, -3) + dir * LOOK, 1)
+	q.exclude = [m.get_rid()]
+	return not space.intersect_ray(q).is_empty()
 
 
 ## 顺着活梯子爬上墙顶。
