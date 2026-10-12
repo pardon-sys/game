@@ -4,39 +4,58 @@
 	],
 	"icicle": {
 		"name": "冰锥塔",
-		"short": "自动射冰锥",
+		"short": "冰锥 + 溅射",
 		"cost": 10,
 		"upgrade": 12,
-		"desc": "自动朝射程内最近的怪射冰锥。",
+		"desc": "自动朝射程内最近的怪射冰锥，落地碎开溅射一小片。",
 		"levels": [
 			{
 				"range": 140,
 				"interval": 1.2,
-				"damage": 1
+				"damage": 1,
+				"splash": 22
 			},
 			{
 				"range": 170,
-				"interval": 0.8,
-				"damage": 2
+				"interval": 0.9,
+				"damage": 2,
+				"splash": 30
+			},
+			{
+				"range": 200,
+				"interval": 0.7,
+				"damage": 3,
+				"splash": 38
 			}
 		]
 	},
 	"snowman": {
 		"name": "雪人召唤塔",
-		"short": "放出小雪人",
+		"short": "一群扔雪球的雪人",
 		"cost": 14,
 		"upgrade": 14,
-		"desc": "每隔一段时间放出小雪人，去挠 / 推怪物；怪物也会去打小雪人。",
+		"desc": "每隔一会儿放出一群小雪人，扔雪球砸怪（落地炸开、减速）；怪物也会去打小雪人。",
 		"levels": [
 			{
-				"interval": 12,
-				"count": 2,
-				"snow_hp": 4
+				"interval": 7,
+				"count": 3,
+				"snow_hp": 4,
+				"ball_splash": 18,
+				"ball_damage": 1
 			},
 			{
-				"interval": 10,
-				"count": 3,
-				"snow_hp": 6
+				"interval": 6,
+				"count": 4,
+				"snow_hp": 6,
+				"ball_splash": 22,
+				"ball_damage": 1
+			},
+			{
+				"interval": 5,
+				"count": 5,
+				"snow_hp": 8,
+				"ball_splash": 26,
+				"ball_damage": 2
 			}
 		]
 	},
@@ -54,6 +73,10 @@
 			{
 				"hp": 120,
 				"lure": 150
+			},
+			{
+				"hp": 200,
+				"lure": 190
 			}
 		]
 	},
@@ -71,23 +94,34 @@
 			{
 				"radius": 80,
 				"decay": 10
+			},
+			{
+				"radius": 100,
+				"decay": 14
 			}
 		]
 	},
 	"frost": {
 		"name": "寒霜塔",
-		"short": "减速 + 冻住",
+		"short": "减速 + 冰爆",
 		"cost": 12,
 		"upgrade": 12,
-		"desc": "范围内的怪减速，每隔几秒冻住一下。",
+		"desc": "范围内的怪减速；每隔几秒冻住一下，同时冰爆，范围里的怪都掉血。",
 		"levels": [
 			{
 				"radius": 70,
-				"freeze": 1.0
+				"freeze": 1.0,
+				"burst": 1
 			},
 			{
 				"radius": 90,
-				"freeze": 1.8
+				"freeze": 1.5,
+				"burst": 2
+			},
+			{
+				"radius": 110,
+				"freeze": 2.0,
+				"burst": 3
 			}
 		]
 	},
@@ -103,6 +137,9 @@
 			},
 			{
 				"repair": 6
+			},
+			{
+				"repair": 10
 			}
 		]
 	},
@@ -120,27 +157,43 @@
 			{
 				"radius": 140,
 				"decay": 5
+			},
+			{
+				"radius": 170,
+				"decay": 7
 			}
 		]
 	},
 	"ballista": {
 		"name": "冰棱弩炮",
-		"short": "远程穿透",
+		"short": "远程穿透 + 冰花",
 		"cost": 18,
 		"upgrade": 16,
-		"desc": "射程很远的穿透冰棱，专打敌塔和大型怪（攻城车 / Boss 伤害 ×3）。",
+		"desc": "射程很远的穿透冰棱，射到尽头炸开一大朵冰花；专打敌塔和大型怪（攻城车 / Boss 伤害 ×3）。",
 		"levels": [
 			{
 				"range": 420,
 				"interval": 2.6,
 				"damage": 3,
-				"pierce": 4
+				"pierce": 4,
+				"bloom": 40,
+				"bloom_damage": 2
 			},
 			{
 				"range": 480,
-				"interval": 1.8,
+				"interval": 2.0,
 				"damage": 4,
-				"pierce": 6
+				"pierce": 6,
+				"bloom": 56,
+				"bloom_damage": 3
+			},
+			{
+				"range": 540,
+				"interval": 1.6,
+				"damage": 5,
+				"pierce": 8,
+				"bloom": 72,
+				"bloom_damage": 4
 			}
 		]
 	},
@@ -162,6 +215,196 @@
 				"haste": 0.65,
 				"speed": 1.3,
 				"decay": 6
+			},
+			{
+				"radius": 150,
+				"haste": 0.55,
+				"speed": 1.4,
+				"decay": 8
+			}
+		]
+	},
+	"mortar": {
+		"name": "冰霜迫击炮",
+		"short": "远程大范围",
+		"cost": 20,
+		"upgrade": 16,
+		"unlock_wave": 3,
+		"desc": "往射程里怪最密的地方抛一颗大冰弹（落点有影子），炸开一大片，减速。",
+		"levels": [
+			{
+				"range": 520,
+				"interval": 4.0,
+				"radius": 48,
+				"damage": 2
+			},
+			{
+				"range": 560,
+				"interval": 3.5,
+				"radius": 60,
+				"damage": 3
+			},
+			{
+				"range": 600,
+				"interval": 3.0,
+				"radius": 72,
+				"damage": 4
+			}
+		]
+	},
+	"vortex": {
+		"name": "冰风旋涡塔",
+		"short": "持续冰风",
+		"cost": 18,
+		"upgrade": 16,
+		"unlock_wave": 4,
+		"desc": "身边一直转着一圈冰风：里面的怪持续掉血，被往外推。",
+		"levels": [
+			{
+				"radius": 80,
+				"damage": 1,
+				"push": 40
+			},
+			{
+				"radius": 100,
+				"damage": 1,
+				"push": 55
+			},
+			{
+				"radius": 120,
+				"damage": 2,
+				"push": 70
+			}
+		]
+	},
+	"resonance": {
+		"name": "冰晶共鸣塔",
+		"short": "连跳冰光",
+		"cost": 20,
+		"upgrade": 16,
+		"unlock_wave": 5,
+		"desc": "一道冰光在怪之间连跳，每跳一下都掉血、冻一下。",
+		"levels": [
+			{
+				"range": 200,
+				"interval": 2.2,
+				"jumps": 5,
+				"damage": 2
+			},
+			{
+				"range": 220,
+				"interval": 1.9,
+				"jumps": 7,
+				"damage": 2
+			},
+			{
+				"range": 240,
+				"interval": 1.6,
+				"jumps": 9,
+				"damage": 3
+			}
+		]
+	},
+	"meteor": {
+		"name": "冰陨星台",
+		"short": "超大范围陨星",
+		"cost": 28,
+		"upgrade": 20,
+		"unlock_wave": 7,
+		"desc": "蓄力后往全场最大的怪堆砸一颗冰陨星：超大范围伤害、把怪冻住。",
+		"levels": [
+			{
+				"interval": 12,
+				"radius": 90,
+				"damage": 4,
+				"freeze": 2.0
+			},
+			{
+				"interval": 10,
+				"radius": 110,
+				"damage": 6,
+				"freeze": 2.0
+			},
+			{
+				"interval": 8,
+				"radius": 130,
+				"damage": 8,
+				"freeze": 2.5
+			}
+		]
+	},
+	"hotspring": {
+		"name": "温泉治疗泉",
+		"short": "大范围治疗",
+		"cost": 18,
+		"upgrade": 14,
+		"unlock_wave": 6,
+		"desc": "冒热气的温泉：范围内公主闷笑持续下降、士兵回血，还慢慢修身后那段城墙。",
+		"levels": [
+			{
+				"radius": 110,
+				"decay": 4,
+				"heal": 1,
+				"repair": 2
+			},
+			{
+				"radius": 140,
+				"decay": 6,
+				"heal": 1,
+				"repair": 3
+			},
+			{
+				"radius": 170,
+				"decay": 8,
+				"heal": 2,
+				"repair": 4
+			}
+		]
+	},
+	"lamp": {
+		"name": "冰灯塔",
+		"short": "照亮 + 减速",
+		"cost": 16,
+		"upgrade": 14,
+		"unlock_wave": 8,
+		"desc": "一大圈冷光：幽灵现形，里面的怪变慢，范围里的敌塔发动也变慢。",
+		"levels": [
+			{
+				"radius": 140,
+				"slow": 0.7,
+				"etower_slow": 1.3
+			},
+			{
+				"radius": 170,
+				"slow": 0.6,
+				"etower_slow": 1.5
+			},
+			{
+				"radius": 200,
+				"slow": 0.5,
+				"etower_slow": 1.7
+			}
+		]
+	},
+	"shield": {
+		"name": "冰盾发生器",
+		"short": "给友军套冰盾",
+		"cost": 20,
+		"upgrade": 16,
+		"unlock_wave": 9,
+		"desc": "每隔一会儿给范围内的友军套一层冰盾，挡掉下一次挠痒或抓取。",
+		"levels": [
+			{
+				"radius": 120,
+				"interval": 8
+			},
+			{
+				"radius": 150,
+				"interval": 7
+			},
+			{
+				"radius": 180,
+				"interval": 6
 			}
 		]
 	}

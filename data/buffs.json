@@ -327,6 +327,51 @@
 				"attack": 2.0
 			},
 			"desc": "铁匠的磨刀石：近战攻击 +1。"
+		},
+		"ice_shield": {
+			"name": "冰盾",
+			"icon": 1,
+			"debuff": false,
+			"duration": 30,
+			"max_stacks": 1,
+			"modifiers": {},
+			"desc": "冰盾发生器给的冰盾：挡掉下一次挠痒或抓取。"
+		},
+		"siege_lamp_1": {
+			"name": "冷光",
+			"icon": 1,
+			"debuff": true,
+			"duration": 0.8,
+			"max_stacks": 1,
+			"modifiers": {
+				"speed": 0.7
+			},
+			"desc": "冰灯塔的冷光里：移动变慢。",
+			"hidden": true
+		},
+		"siege_lamp_2": {
+			"name": "冷光",
+			"icon": 1,
+			"debuff": true,
+			"duration": 0.8,
+			"max_stacks": 1,
+			"modifiers": {
+				"speed": 0.6
+			},
+			"desc": "冰灯塔的冷光里：移动变慢。",
+			"hidden": true
+		},
+		"siege_lamp_3": {
+			"name": "冷光",
+			"icon": 1,
+			"debuff": true,
+			"duration": 0.8,
+			"max_stacks": 1,
+			"modifiers": {
+				"speed": 0.5
+			},
+			"desc": "冰灯塔的冷光里：移动变慢。",
+			"hidden": true
 		}
 	}
 }

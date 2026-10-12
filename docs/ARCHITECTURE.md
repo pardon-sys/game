@@ -513,7 +513,9 @@ data/cutscenes/<楼层组>/  地图内过场；data/theater/<楼层组>/  小剧
   **陷阱** `scripts/siege/hazards/`（龙卷风、泡泡潮、痒感连线、羽毛扫帚、迷雾；城墙爬藤 / 黏网 + 冰链 = 牺牲互救，`SiegeDirector.rescue`）。
   战场：怪物出生钻地 `SiegeFx.burrow`（`quiet_spawn` 关掉）、`SiegeMind` 斜着走向目标墙段（`march_x`）+ 触须避障（`avoid`）、
   `_clamp_monsters` 不出地图、`enemies_near` 用空间网格；城墙 `z_index -1` + 墙脚挡人窄条（`FOOT_STRIP`）；
-  冰塔加篝火（`torch` 组，幽灵现形）/ 冰棱弩炮（穿透、打敌塔 ×3）/ 热可可摊；敌塔整个塔身可打（`HurtProxy`）、血条、范围 / 蓄力 / 崩塌特效。
+  冰塔加篝火（`torch` 组，幽灵现形）/ 冰棱弩炮（穿透 + 末端冰花、打敌塔 ×3）/ 热可可摊；冰锥 / 寒霜 / 雪球都有范围伤害；
+  随波次解锁（`unlock_wave`）：冰霜迫击炮、冰风旋涡、冰晶共鸣、冰陨星台、温泉治疗泉、冰灯（敌塔变慢 `lamp_slow_at`）、冰盾发生器（`ice_shield`）；
+  所有塔 3 级（`IceTower.MAX_LEVEL`）；活梯子 `LivingLadder` 是敌方 Actor（`siege_enemy_tower` 组，受击转给最下面的壁虎）；敌塔整个塔身可打（`HurtProxy`）、血条、范围 / 蓄力 / 崩塌特效。
   陷阱和怪物配合：龙卷风卷怪、迷雾里的怪打不到（meta `in_fog`，`enemies_near(..., false)`）、泡泡运兵；陷阱组合 `spawn_hazard_combo`（波次 `hazards` 里写 `combo`）。
 - **临时痒痒装备**：`Equipment.force` / `release` / `tick_forced`（`GameState.equip_forced`），负面装备由 `EquipFx` 定时发作 + 立绘反应（`data/equip_reactions.json`，分角色）。
 - 内容生成器：`gen_siege_monsters.py`（场景）、`gen_siege_cgs.py`（笑倒 CG，粉 / 蓝两版）、`gen_siege_scenes.py`（三来源组合小演出）、

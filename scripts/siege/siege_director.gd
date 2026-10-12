@@ -295,9 +295,18 @@ func _begin_fight() -> void:
 	_hazards = (wave_data().get("hazards", []) as Array).duplicate(true)
 	_hazards.sort_custom(func(a, b): return float(a["t"]) < float(b["t"]))
 	_set_state("fight")
+	_announce_unlocks()
 	Audio.play("siege_horn", -1.0)
 	GameState.hint("第 %d 波来了！" % wave)
 	wave_started.emit(wave)
+
+
+## 这一波新解锁的冰塔：顶部通知 + 弹情报（菜单里就能造了）。
+func _announce_unlocks() -> void:
+	for k in IceTower.kinds():
+		if IceTower.unlock_wave(k) == wave and wave > 1:
+			GameState.notify("新冰塔解锁：%s（按 B 在菜单里造）" % str(IceTower.info(k).get("name", k)))
+			intel.discover("tower_" + k)
 
 
 ## 临时痒痒装备：另一位公主靠近按住 E HELP_TIME 秒帮忙解开（{角色 id: 已经按了几秒}）
@@ -821,6 +830,8 @@ func lock_up(c: PlayableCharacter, at: Variant = null, sec := LOCK_TIME) -> void
 	if not (at is Vector2):
 		var best: Node2D = null
 		for t in get_tree().get_nodes_in_group("siege_enemy_tower"):
+			if not (t is EnemyTower):
+				continue   # 活梯子、军旗也在这个组里，关人只用真的敌塔
 			if best == null or (t as Node2D).global_position.distance_to(c.global_position) < best.global_position.distance_to(c.global_position):
 				best = t
 		if best:

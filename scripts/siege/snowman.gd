@@ -8,6 +8,11 @@ const LIFE := 30.0
 const RANGE := 240.0
 
 var hp := 4
+## 扔雪球：射程 THROW_RANGE，落地炸开 ball_splash 像素、ball_damage 点、减速（雪人召唤塔按等级设）
+const THROW_RANGE := 90.0
+const THROW_CD := 1.3
+var ball_splash := 18.0
+var ball_damage := 1
 var _life := LIFE
 var _hit_cd := 0.0
 var _spr: Sprite2D
@@ -74,6 +79,12 @@ func _tick(delta: float) -> void:
 		# 撞到东西（冰塔、墙脚）走不动：马上换个方向
 		if _idle_dir != Vector2.ZERO and get_real_velocity().length() < 2.0 and _idle_t < 1.2:
 			_idle_t = 0.0
+	elif best_d <= THROW_RANGE:
+		# 站住扔雪球（抛物线，落地炸开一小片、减速）
+		velocity = velocity.move_toward(Vector2.ZERO, 300.0 * delta)
+		if _hit_cd <= 0.0:
+			_hit_cd = THROW_CD
+			_throw(best.global_position)
 	else:
 		velocity = global_position.direction_to(best.global_position) * SPEED
 		if best_d < 14.0 and _hit_cd <= 0.0:
@@ -83,6 +94,38 @@ func _tick(delta: float) -> void:
 	velocity *= stat_mul("speed")
 	move_with_push()
 	_spr.region_rect = IceTower.region("snowman_%d" % (int(_anim * 4.0) % 2 if velocity != Vector2.ZERO else 0))
+
+
+func _throw(to: Vector2) -> void:
+	var ball := Sprite2D.new()
+	ball.texture = IceTower.TEX
+	ball.region_enabled = true
+	ball.region_rect = IceTower.region("proj_snowball")
+	ball.z_index = 30
+	ball.add_to_group("siege_temp")
+	var parent := get_parent()
+	parent.add_child(ball)
+	var from := global_position + Vector2(0, -12)
+	var t := clampf(from.distance_to(to) / 160.0, 0.25, 0.6)
+	var src: WeakRef = weakref(self)
+	var r := ball_splash
+	var dmg := ball_damage
+	var tw := ball.create_tween()
+	tw.tween_method(func(v: float):
+		if is_instance_valid(ball):
+			ball.global_position = from.lerp(to, v) + Vector2(0, -sin(v * PI) * 26.0), 0.0, 1.0, t)
+	tw.tween_callback(func():
+		if is_instance_valid(ball):
+			ball.queue_free()
+		var me := src.get_ref() as Node
+		var d := SiegeDirector.current
+		if d:
+			for m in d.enemies_near(to, r, false):
+				m.receive_hit(HitData.make_attack(me if me else parent, dmg, 40.0))
+				m.add_buff("siege_chill", 1.0)
+		Fx.burst(parent, to + Vector2(0, -4), "snow", 8, 30.0, 0.5, Vector2(0, 40), Color(1, 1, 1))
+		SiegeFx.ring(parent, to, r, Color(0.95, 0.98, 1.0, 0.8), 0.3, 0.12))
+	Audio.play("puff", -12.0, 0.2, 1.4)
 
 
 func _melt() -> void:

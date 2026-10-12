@@ -87,6 +87,11 @@ func on_pink(p: Node) -> void:
 		for k in ks:
 			var inf := IceTower.info(k)
 			var cost := int(inf.get("cost", 10))
+			if not IceTower.unlocked(k):
+				# 还没解锁：灰色一行，不能选
+				opts.append({"text": "%s　第 %d 波解锁" % [inf.get("name", k), IceTower.unlock_wave(k)], "desc": str(inf.get("desc", "")),
+					"enabled": false})
+				continue
 			opts.append({"text": "%s　❄%d　%s" % [inf.get("name", k), cost, inf.get("short", "")],
 				"desc": str(inf.get("desc", "")) + ("" if d.crystals >= cost else "（冰晶不够）")})
 		opts.append({"text": "算了", "desc": "不建了。"})
@@ -97,13 +102,15 @@ func on_pink(p: Node) -> void:
 	else:
 		var inf := IceTower.info(tower.kind)
 		var opts: Array = []
-		if tower.level < 2:
-			opts.append({"text": "升级成 2 级　❄%d" % int(inf.get("upgrade", 12)), "desc": str(inf.get("desc", ""))})
+		var can_up := tower.level < IceTower.MAX_LEVEL
+		if can_up:
+			opts.append({"text": "升级成 %d 级　❄%d" % [tower.level + 1, _upgrade_cost(inf, tower.level)],
+				"desc": str(inf.get("desc", "")) + "（范围和伤害变大）"})
 		opts.append({"text": "拆掉（返还 ❄%d）" % int(int(inf.get("cost", 10)) / 2), "desc": "拆掉这座塔，返还一半冰晶，基座也一起收掉。"})
 		opts.append({"text": "算了", "desc": ""})
 		var pick := await ScrollPicker.ask("%s（%d 级）　冰晶 ×%d" % [inf.get("name", tower.kind), tower.level, d.crystals], opts, "", self)
-		var off := 0 if tower.level < 2 else -1
-		if tower.level < 2 and pick == 0:
+		var off := 0 if can_up else -1
+		if can_up and pick == 0:
 			request(tower.kind, true)
 		elif pick == 1 + off:
 			d.add_crystals(int(int(inf.get("cost", 10)) / 2))
@@ -113,11 +120,17 @@ func on_pink(p: Node) -> void:
 			queue_free()
 
 
+## 升级的价格：升到 3 级再贵一半。
+func _upgrade_cost(inf: Dictionary, cur_level: int) -> int:
+	var base := int(inf.get("upgrade", 12))
+	return base if cur_level < 2 else int(base * 1.5)
+
+
 ## 付冰晶、等蓝色公主的冰光。返回是否成功。
 func request(kind: String, upgrade := false) -> bool:
 	var d := SiegeDirector.current
 	var inf := IceTower.info(kind)
-	var cost := int(inf.get("upgrade" if upgrade else "cost", 10))
+	var cost := _upgrade_cost(inf, tower.level) if upgrade and tower else int(inf.get("upgrade" if upgrade else "cost", 10))
 	if d == null or not d.spend(cost):
 		GameState.notify("冰晶不够（要 %d）" % cost)
 		Audio.play("locked", -6.0)

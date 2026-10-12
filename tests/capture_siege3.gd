@@ -51,6 +51,28 @@ func _ready() -> void:
 		await _shot("build_picker")
 		ScrollPicker.current.cancel()
 	await _wait(0.3)
+	# 第五轮的新塔（3 级）+ 怪群
+	_fight()
+	var tb := Vector2(d.gate_pos.x - 200.0, d.wall_foot_y() + 120.0)
+	var kinds5 := ["mortar", "vortex", "resonance", "meteor", "hotspring", "lamp", "shield"]
+	for i in kinds5.size():
+		var pd5 := BuildPad.new()
+		d.entities().add_child(pd5)
+		pd5.global_position = tb + Vector2((i % 4) * 70.0, (i / 4) * 60.0)
+		pd5._build(kinds5[i], 3)
+	for i in 30:
+		var m5 := d.spawn("rat" if i % 2 else "slime", "", tb + Vector2(randf_range(-40, 260), randf_range(80, 160)))
+		m5.mind = null
+	await _wait(0.3)
+	for t5 in get_tree().get_nodes_in_group("siege_tower"):
+		(t5 as IceTower)._t = 0.0
+	await _wait(1.0)
+	await _look(tb + Vector2(110, 50), 0.9)
+	await _shot("towers5")
+	await _wait(0.9)
+	await _shot("towers5_b")
+	_unlook()
+	await _clear()
 	# 镇民支援过场（中途截一张）
 	var job := func(): await d.town.grant("mayor")
 	job.call()
@@ -194,6 +216,8 @@ func _fight() -> void:
 func _clear() -> void:
 	d.state = "prep"
 	d.clear_field()
+	for n in get_tree().get_nodes_in_group("siege_pad"):
+		n.queue_free()
 	for n in get_tree().get_nodes_in_group("siege_pad"):
 		n.queue_free()
 	for n in get_tree().get_nodes_in_group("siege_enemy_tower"):
