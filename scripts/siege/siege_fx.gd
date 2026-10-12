@@ -209,13 +209,16 @@ static func camera_peek(node: Node, at: Vector2, time := 1.6, zoom := 0.8) -> vo
 	if cam == null:
 		return
 	var saved := [cam.top_level, cam.position, cam.zoom, cam.position_smoothing_enabled, cam.limit_left, cam.limit_top, cam.limit_right, cam.limit_bottom]
+	# 起点要在改 top_level 之前取（改完 global_position 会变成相对坐标那个值 = 地图左上角）
+	var from := cam.get_screen_center_position()
 	cam.top_level = true
 	cam.position_smoothing_enabled = false
 	cam.limit_left = -100000
 	cam.limit_top = -100000
 	cam.limit_right = 100000
 	cam.limit_bottom = 100000
-	var from := cam.global_position
+	cam.global_position = from
+	cam.reset_smoothing()
 	var tw := cam.create_tween()
 	tw.tween_method(func(v: float):
 		cam.global_position = from.lerp(at, v)

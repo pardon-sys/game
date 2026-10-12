@@ -30,6 +30,7 @@ var _flashes: Array = []  # [{at, t0}]
 var _fireworks: Array = []  # [{at, t0, col, n}]
 var _banner: CanvasLayer
 var _spots := {}
+var _start_zoom := 1.0
 var _said := false
 var _sent := false
 
@@ -40,6 +41,10 @@ func _ready() -> void:
 	_was_paused = get_tree().paused
 	get_tree().paused = true
 	_cam = GameState.player.camera if GameState.player else null
+	# 起点：镜头现在在屏幕上看着的地方（一定要在改 top_level 之前取——改完以后 global_position 会变成相对坐标那个值，
+	# 过场最后一段就会飞到地图左上角）
+	var start := _cam.get_screen_center_position() if _cam else director.gate_pos
+	_start_zoom = _cam.zoom.x if _cam else 1.0
 	if _cam:
 		_cam_saved = {"top": _cam.top_level, "pos": _cam.position, "zoom": _cam.zoom, "smooth": _cam.position_smoothing_enabled,
 			"l": _cam.limit_left, "t": _cam.limit_top, "r": _cam.limit_right, "b": _cam.limit_bottom}
@@ -49,8 +54,10 @@ func _ready() -> void:
 		_cam.limit_top = -100000
 		_cam.limit_right = 100000
 		_cam.limit_bottom = 100000
+		# 改成 top_level 后马上放回原来的位置（不然第一帧会闪到地图左上角）
+		_cam.global_position = start
+		_cam.reset_smoothing()
 	var gate := director.gate_pos + Vector2(0, 10)
-	var start := _cam.global_position if _cam else gate
 	_spots = {"start": start, "gate": gate, "wide": director.gate_pos + Vector2(0, 30)}
 	# 镇民
 	_npc = Sprite2D.new()
@@ -131,7 +138,10 @@ func _process(delta: float) -> void:
 				var pa: Vector2 = _spots[a[1]]
 				var pb: Vector2 = _spots[b[1]]
 				_cam.global_position = pa.lerp(pb, f)
-				var z := lerpf(float(a[2]), float(b[2]), f)
+				# 起点 / 终点用过场前的倍数（玩家可能缩放过镜头）
+				var za: float = _start_zoom if str(a[1]) == "start" else float(a[2])
+				var zb: float = _start_zoom if str(b[1]) == "start" else float(b[2])
+				var z := lerpf(za, zb, f)
 				_cam.zoom = Vector2(z, z)
 				break
 		_cam.reset_smoothing()
@@ -213,6 +223,12 @@ func _draw() -> void:
 				draw_circle(p2, 2.0 * (1.0 - r) + 0.6, Color(col2.r, col2.g, col2.b, 1.0 - r))
 
 
+## 半路被释放（撤退 / 换关卡时导演没了）：也要把镜头和暂停恢复，不然游戏一直停着、WASD 动不了。
+func _exit_tree() -> void:
+	if not _done:
+		_finish()
+
+
 func _finish() -> void:
 	if _done:
 		return
@@ -227,11 +243,18 @@ func _finish() -> void:
 		_cam.limit_right = int(_cam_saved.get("r", 100000))
 		_cam.limit_bottom = int(_cam_saved.get("b", 100000))
 		_cam.reset_smoothing()
+		# 恢复游戏后的下一帧再对齐一次（暂停时镜头内部的平滑位置不更新）
+		var cam := _cam
+		get_tree().process_frame.connect(func():
+			if is_instance_valid(cam):
+				cam.reset_smoothing(), CONNECT_ONE_SHOT)
 	if not _was_paused:
 		get_tree().paused = false
 	# 每个友军身上再落一下（游戏恢复后在世界里放，能看到）
-	for a in director.town.allies():
+	var allies: Array = director.town.allies() if director and is_instance_valid(director) and director.town else []
+	for a in allies:
 		if is_instance_valid(a):
 			Fx.burst(a.get_parent(), a.global_position + Vector2(0, -12), "crystal", 6, 30.0, 0.5, Vector2(0, -20), Color(str(entry.get("color", "#ffd966"))))
 	finished.emit()
-	queue_free()
+	if is_inside_tree():
+		queue_free()

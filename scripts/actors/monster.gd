@@ -56,6 +56,15 @@ func _setup() -> void:
 	_t = randf() * TAU
 
 
+## 目标被释放了（小雪人化了、冰镜碎了、诱饵冰雕塌了……）就忘掉它，免得子类拿已经释放的对象去转换类型报错。
+func _physics_process(delta: float) -> void:
+	if target != null and not is_instance_valid(target):
+		target = null
+		if state == State.CHASE:
+			state = State.WANDER
+	super(delta)
+
+
 func _tick(delta: float) -> void:
 	_t += delta
 	_state_time += delta

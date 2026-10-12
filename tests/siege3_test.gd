@@ -36,7 +36,7 @@ func _ready() -> void:
 	await _wait(0.5)
 	_finish()
 	var only := OS.get_environment("SIEGE3_ONLY")
-	for sec in ["hints", "waves", "town", "boss", "soldiers", "towers", "spells", "etowers", "field", "cart", "wall", "equip", "cg", "perf"]:
+	for sec in ["hints", "waves", "town", "boss", "soldiers", "towers", "spells", "etowers", "field", "cart", "wall", "locks", "equip", "cg", "perf"]:
 		if only == "" or sec in only.split(","):
 			if is_instance_valid(d):
 				d.bench_soldiers(sec != "soldiers")
@@ -220,12 +220,15 @@ func _run_town() -> void:
 	await get_tree().process_frame
 	var show_node: Node = d.find_children("*", "TownBuffShow", false, false).front() if not d.find_children("*", "TownBuffShow", false, false).is_empty() else null
 	var paused := get_tree().paused
+	var cam := GameState.player.camera
+	var cam_ok := cam.get_screen_center_position().distance_to(d.gate_pos) < 400.0
 	await get_tree().create_timer(0.6, true, false, true).timeout
 	if show_node and is_instance_valid(show_node):
 		show_node.call("_finish")
 	await get_tree().process_frame
 	await get_tree().process_frame
 	TownBuffShow.enabled = false
+	check("过场一开始镜头没有闪到地图左上角（%s）" % [cam_ok], cam_ok)
 	check("派对者的激励：播过场（暂停 %s，可以跳过 %s），全部友军移动 +50%%（%.2f → %.2f）" % [paused, done[0], sp0, d.pink.stat_mul("speed")],
 		paused and done[0] and not get_tree().paused and is_equal_approx(d.pink.stat_mul("speed"), sp0 * 1.5))
 	var wm := d.wall_max
@@ -594,6 +597,30 @@ func _run_wall() -> void:
 	Input.parse_input_event(up)
 	check("往城墙走会被墙脚挡住（y %.0f ≥ 墙脚 %.0f + %.0f）" % [d.pink.global_position.y, d.wall_foot_y(), SiegeWall.FOOT_STRIP],
 		d.pink.global_position.y >= d.wall_foot_y() + SiegeWall.FOOT_STRIP)
+
+
+# ------------------------------------------------------------------ 11b 输入锁 / 释放的目标
+func _run_locks() -> void:
+	print("-- 输入锁 / 被释放的目标")
+	await _clear()
+	_fight()
+	# 救援中途换人：救完之后换过去的人照样能动
+	PlayerInputController.movement_locked = true
+	d.rescuing = false
+	await get_tree().process_frame
+	await get_tree().process_frame
+	check("没人在瞄准 / 救援 / 放冰光时，残留的移动锁会被解开（%s）" % (not PlayerInputController.movement_locked), not PlayerInputController.movement_locked)
+	# 怪物的目标被释放：不报错、忘掉它
+	var sm := Snowman.new()
+	d.entities().add_child(sm)
+	sm.global_position = d.gate_pos + Vector2(0, 200)
+	var frog := d.spawn("frog", "", sm.global_position + Vector2(20, 0))
+	frog.target = sm
+	frog.state = Monster.State.CHASE
+	sm.free()
+	await get_tree().physics_frame
+	await get_tree().physics_frame
+	check("目标被释放后怪物把它忘掉（%s）" % (frog.target == null), frog.target == null)
 
 
 # ------------------------------------------------------------------ 12 装备挠痒
