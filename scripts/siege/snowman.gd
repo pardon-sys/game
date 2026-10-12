@@ -5,7 +5,7 @@ extends Actor
 
 const SPEED := 46.0
 const LIFE := 30.0
-const RANGE := 170.0
+const RANGE := 240.0
 
 var hp := 4
 var _life := LIFE
@@ -67,16 +67,20 @@ func _tick(delta: float) -> void:
 		_idle_t -= delta
 		if _idle_t <= 0.0:
 			_idle_t = randf_range(1.5, 3.0)
-			_idle_dir = Vector2.ZERO if randf() < 0.3 else Vector2.from_angle(randf() * TAU)
+			_idle_dir = Vector2.ZERO if randf() < 0.15 else Vector2.from_angle(randf() * TAU)
 			if global_position.distance_to(_home) > 50.0:
 				_idle_dir = global_position.direction_to(_home)
 		velocity = _idle_dir * SPEED * 0.5
+		# 撞到东西（冰塔、墙脚）走不动：马上换个方向
+		if _idle_dir != Vector2.ZERO and get_real_velocity().length() < 2.0 and _idle_t < 1.2:
+			_idle_t = 0.0
 	else:
 		velocity = global_position.direction_to(best.global_position) * SPEED
 		if best_d < 14.0 and _hit_cd <= 0.0:
 			_hit_cd = 1.0
 			best.receive_hit(HitData.make_attack(self, 1, 90.0))
 			Fx.burst(get_parent(), best.global_position + Vector2(0, -8), "snow", 4, 30.0, 0.4, Vector2(0, 30))
+	velocity *= stat_mul("speed")
 	move_with_push()
 	_spr.region_rect = IceTower.region("snowman_%d" % (int(_anim * 4.0) % 2 if velocity != Vector2.ZERO else 0))
 

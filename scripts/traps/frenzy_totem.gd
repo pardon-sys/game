@@ -63,7 +63,7 @@ func _hint() -> void:
 	if GameState.has_flag("hint_totem") or not is_instance_valid(p) or p.global_position.distance_to(global_position) > 120.0:
 		return
 	GameState.set_flag("hint_totem")
-	GameState.notify(ReactionDB.hint("frenzy_totem"))
+	GameState.rule(ReactionDB.hint("frenzy_totem"))
 
 
 ## 权杖打（HitRelay 转交）。

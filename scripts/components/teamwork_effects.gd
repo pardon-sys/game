@@ -266,8 +266,10 @@ static func _ladder(geckos: Array) -> void:
 	var x: float = (geckos[0] as Node2D).global_position.x
 	var lad := LivingLadder.new()
 	lad.geckos = geckos.duplicate()
-	d.entities().add_child(lad)
-	lad.global_position = Vector2(x, d.wall_foot_y())
+	# 先定好位置再加进场景（_ready 里按自己的位置把壁虎一只只叠上去）
+	var ent := d.entities()
+	lad.position = (ent as Node2D).to_local(Vector2(x, d.wall_foot_y())) if ent is Node2D else Vector2(x, d.wall_foot_y())
+	ent.add_child(lad)
 	for g in geckos:
 		if _alive(g):
 			(g as Monster).set_meta("in_ladder", lad)

@@ -18,6 +18,8 @@ static var _meta := {}
 @export var action := ""
 
 var sprite: Sprite2D
+## 着火的道具（篝火、火堆、路灯）：在 torch 组里，幽灵进了光照范围就现形（TickleGhost 读 lit）
+var lit := false
 var _anim_t := 0.0
 var _frames: Array = []
 
@@ -34,6 +36,10 @@ func _ready() -> void:
 	if info.is_empty():
 		push_warning("没有这种道具: " + kind)
 		return
+	add_to_group("prop")
+	if kind.begins_with("bonfire") or info.get("fire", false) or kind.begins_with("fire") or kind.begins_with("lamp"):
+		lit = true
+		add_to_group("torch")
 	var r: Array = info["region"]
 	sprite = Sprite2D.new()
 	sprite.texture = SHEET
@@ -97,6 +103,16 @@ func _ready() -> void:
 		shape.position = Vector2(0, -6 + sort_shift)
 		it.add_child(shape)
 		add_child(it)
+
+
+## 被撞碎（攻防战的攻城车 / 巨魔将军冲锋）：只有沙袋、路障、碎石、木箱这类小东西会碎。
+func smash() -> void:
+	if not (kind.begins_with("sandbag") or kind.begins_with("barricade") or kind.begins_with("rubble") or kind.begins_with("crate")
+			or kind.begins_with("barrel") or kind.begins_with("stump")):
+		return
+	Fx.burst(get_parent(), global_position + Vector2(0, -6), "wood", 10, 60.0, 0.6, Vector2(0, 120), Color(0.8, 0.6, 0.4))
+	Fx.burst(get_parent(), global_position + Vector2(0, -4), "dust", 8, 40.0, 0.5, Vector2(0, 20))
+	queue_free()
 
 
 ## under：铺在最底下（木地板），其它地面上的东西（地毯、楼梯、陷阱）画在它上面。

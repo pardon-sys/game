@@ -253,21 +253,22 @@ func _run_equipment() -> void:
 	src.reaction_key = "feather"
 	add_child(src)
 	pink.laugh.set_value(0.0)
-	var blocked := 0
+	# 挡下的那一下还会痒一点（PlayableCharacter.BLOCKED_TICKLE），所以按 tickle_blocked 信号数
+	var blocked := [0]
+	var on_block := func(_z: String): blocked[0] += 1
+	pink.tickle_blocked.connect(on_block)
 	for i in 7:
 		pink.set_invulnerable(0.0)
 		pink._full_invuln = 0.0
-		var v := pink.laugh.value
 		var h := HitData.make_tickle(src, 3.0)
 		h.zone = "armpit"
 		pink.receive_hit(h)
-		if is_equal_approx(pink.laugh.value, v):
-			blocked += 1
 		await get_tree().process_frame
+	pink.tickle_blocked.disconnect(on_block)
 	var left := Equipment.charges("pink", "armpit")
 	Town.rest(pink)
-	check("软绵护腋垫：挡下 %d 次腋下的挠痒、第 7 次挠到了（剩 %d），休息后恢复到 %d" % [blocked, left, Equipment.charges("pink", "armpit")],
-		blocked == 6 and left == 0 and Equipment.charges("pink", "armpit") == 6)
+	check("软绵护腋垫：挡下 %d 次腋下的挠痒、第 7 次挠到了（剩 %d），休息后恢复到 %d" % [blocked[0], left, Equipment.charges("pink", "armpit")],
+		blocked[0] == 6 and left == 0 and Equipment.charges("pink", "armpit") == 6)
 	# 铃铛
 	Equipment.equip("pink", "equip_party_bow")
 	var slime: Monster = load("res://scenes/actors/monsters/slime.tscn").instantiate()

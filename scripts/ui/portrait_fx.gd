@@ -148,7 +148,7 @@ func on_combo(triple: bool) -> void:
 
 
 ## 负面装备发作（EquipFx）：立绘抖动 + 部位贴片 + 飘字（平静时也飘）。
-func equip_flare(zone: String, text: String, shake := 2.0) -> void:
+func equip_flare(zone: String, text: String, shake := 2.0, kind := "") -> void:
 	if cg_mode or not active():
 		return
 	Dialogue.shake_portrait(shake, 0.2)
@@ -156,8 +156,23 @@ func equip_flare(zone: String, text: String, shake := 2.0) -> void:
 		_flash(Color(1.25, 0.9, 1.2), 0.12)
 	if zone != "" and not is_wide():
 		_zone_sticker(zone, false)
+		# 装备的手法（羽毛拂 / 刷子刷 / 小手挠 / 铃铛……）也贴在那个部位上
+		if kind != "":
+			_sticker(kind, _anchor_point(zone), 1.6, true)
 	if text != "":
 		float_text(text, false, Color(0.86, 0.66, 1.0))
+
+
+## 防护装备挡下了挠痒：立绘闪一下蓝光，那个部位贴一个小号的部位特效。
+func block_flash(zone: String) -> void:
+	if cg_mode or not active():
+		return
+	_flash(Color(0.75, 0.95, 1.4), 0.15)
+	if zone != "" and not is_wide():
+		var s := ZoneFx.play(zone, self, _anchor_point(zone), 1.2, false)
+		if s:
+			s.z_index = 3
+			s.modulate = Color(0.7, 0.9, 1.3, 0.9)
 
 
 # ------------------------------------------------------------------ CG 中

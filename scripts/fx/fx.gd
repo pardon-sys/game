@@ -14,6 +14,18 @@ const PARTICLES := {
 	"bristle": preload("res://assets/generated/particle_bristle.png"),
 	"snow": preload("res://assets/generated/particle_snow.png"),
 	"crystal": preload("res://assets/generated/particle_crystal.png"),
+	# 攻防战第三轮（tools/art/gen_siege_art.py 的 gen_particles）
+	"spark": preload("res://assets/generated/particle_spark.png"),
+	"leaf": preload("res://assets/generated/particle_leaf.png"),
+	"cloth": preload("res://assets/generated/particle_cloth.png"),
+	"note": preload("res://assets/generated/particle_note.png"),
+	"rock": preload("res://assets/generated/particle_rock.png"),
+	"steam": preload("res://assets/generated/particle_steam.png"),
+	"wood": preload("res://assets/generated/particle_wood.png"),
+	"flame": preload("res://assets/generated/particle_flame.png"),
+	"bubble": preload("res://assets/generated/particle_bubble.png"),
+	"thread": preload("res://assets/generated/particle_thread.png"),
+	"ring": preload("res://assets/generated/particle_ring.png"),
 }
 
 

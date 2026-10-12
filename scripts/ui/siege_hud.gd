@@ -36,8 +36,11 @@ func status_text() -> String:
 	if director == null:
 		return ""
 	match director.state:
-		"prep": return "第 %d/%d 波 · 准备 %d 秒" % [director.wave, SiegeDirector.TOTAL_WAVES, ceili(director.prep_left)]
-		"fight": return "第 %d/%d 波 · 还剩 %d 只" % [director.wave, SiegeDirector.TOTAL_WAVES, director.remaining()]
+		"prep": return "第 %d/%d 波 · 准备 %d 秒" % [director.wave, SiegeDirector.total_waves(), ceili(director.prep_left)]
+		"fight":
+			if director.next_left >= 0.0:
+				return "第 %d/%d 波 · 场上 %d 只 · 下一波 %d 秒" % [director.wave, SiegeDirector.total_waves(), director.remaining(), ceili(director.next_left)]
+			return "第 %d/%d 波 · 还剩 %d 只" % [director.wave, SiegeDirector.total_waves(), director.remaining()]
 		"failed": return "城墙被攻破了……"
 		"won": return "小镇守住了！"
 	return ""
@@ -79,7 +82,8 @@ func _draw_view() -> void:
 
 
 const SPELL_COLORS := {"ice_rain": Color(0.6, 0.85, 1.0), "barrier": Color(0.75, 0.9, 1.0), "snow": Color(0.9, 0.97, 1.0),
-	"reinforce": Color(0.55, 0.75, 0.95)}
+	"reinforce": Color(0.55, 0.75, 0.95), "blizzard": Color(0.85, 0.95, 1.0), "spike": Color(0.5, 0.8, 1.0),
+	"mirror": Color(0.75, 0.85, 1.0)}
 
 
 func _draw_spells() -> void:

@@ -4,13 +4,13 @@ extends SiegeHazard
 ## 龙卷风卷怪（怪物 + 陷阱）：经过的小怪（最多 MAX_MOBS 只）也被卷进去一起转，过一会儿甩到公主身边；卷着公主时里面的怪也在挠。
 ## 陷阱组合：orbit_center 有值时绕着它转（双龙卷）；hidden_in（迷雾龙卷）时只在雾里游走、只看得到卷起的粉尘。
 
-const RADIUS := 22.0
+const RADIUS := 36.0   # 第三轮放大（原来 22）
 const SPEED := 34.0
 const SPIN := 2.2
 
 var _dir := Vector2.ZERO
 var _turn := 0.0
-const MAX_MOBS := 4
+const MAX_MOBS := 6
 var orbit_center := Vector2.INF
 var orbit_dir := 1.0
 var hidden_in: Node2D
@@ -140,8 +140,11 @@ func _draw() -> void:
 	draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
 	if hidden_in and is_instance_valid(hidden_in):
 		return  # 迷雾龙卷：只看得到卷起的粉尘
-	for i in 5:
-		var r := 6.0 + i * 4.0
-		var y := -i * 7.0
+	# 漏斗：一层层旋转的风圈（跟着 RADIUS 放大）
+	var k := RADIUS / 22.0
+	for i in 7:
+		var r := (6.0 + i * 4.0) * k
+		var y := -i * 7.0 * k
 		var a := _t * 8.0 + i
-		draw_arc(Vector2(sin(a) * 2.0, y), r, 0.0, TAU, 20, Color(0.85, 0.75, 1.0, 0.55), 1.5)
+		draw_arc(Vector2(sin(a) * 2.0 * k, y), r, a, a + TAU * 0.8, 24, Color(0.85, 0.75, 1.0, 0.55), 1.5)
+		draw_arc(Vector2(sin(a) * 2.0 * k, y), r * 0.7, -a, -a + 2.0, 12, Color(1, 0.9, 1.0, 0.4), 1.0)

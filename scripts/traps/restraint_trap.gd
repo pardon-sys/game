@@ -136,7 +136,7 @@ func _apply_effect(target: Node) -> bool:
 	restrained.emit(a)
 	if not GameState.has_flag("hint_restraint"):
 		GameState.set_flag("hint_restraint")
-		GameState.notify(ReactionDB.hint("restraint"))
+		GameState.rule(ReactionDB.hint("restraint"))
 	return true
 
 

@@ -17,6 +17,11 @@ signal flared(id: String, zone: String)
 const PATH := "res://data/equip_reactions.json"
 ## 跟着走的那个人：头顶气泡至少隔这么久一次
 const BUBBLE_GAP := 6.0
+## 发作那一下的闷笑倍数（原来的 amount 太小，几乎看不出涨）
+const FLARE_MULT := 2.5
+## 装备 → 手法特效（HitFx 的种类）
+const WAY_FX := {"feather": ["feather_socks", "fluff", "feather_shackles"], "brush": ["toe_brush"], "pinch": ["pinch_pad", "knead"],
+	"hand": ["thigh_ring", "thigh_strap", "pants"], "bubble": ["bell"], "curse": ["mark"]}
 
 static var _cache := {}
 
@@ -139,20 +144,30 @@ func flare(id: String, zone: String, way := "", tickle := true) -> String:
 		return ""
 	var e := entry(who.character_id, id)
 	var amount := float(e.get("amount", 0.0)) * power_mul
+	# 攻防战：裁缝的厚棉衣让临时装备的发作减半
+	var sd := SiegeDirector.current
+	if sd and sd.town and Equipment.is_forced(who.character_id, id):
+		amount *= sd.town.mul("equip_power")
 	# 羽毛袜：跑得越快挠得越重
 	if bool(e.get("move_scale", false)):
 		amount *= 1.0 + who.velocity.length() / 50.0
+	var fx_kind := fx_of(id)
 	if tickle and amount > 0.0:
-		var h := HitData.make_tickle(_source(id), amount)
+		var h := HitData.make_tickle(_source(id), amount * FLARE_MULT)
 		h.zone = zone
+		h.ignore_block = true   # 装备自己挠自己：防护装备挡不住
 		who.receive_hit(h)
+		# 小人身上那个部位：手法特效 + 抖一下
+		if who.is_inside_tree():
+			HitFx.play(fx_kind, who.get_parent(), ZoneFx.body_point(who, zone) if zone != "" else who.global_position + Vector2(0, -10))
+			who.shake(0.15)
 	var text := _pick_words(e, way)
 	last = [id, zone, text]
 	flared.emit(id, zone)
 	if who.is_controlled():
 		var fx: PortraitFx = Dialogue.portrait_fx
 		if fx:
-			fx.equip_flare(zone, text, float(e.get("shake", 2.0)))
+			fx.equip_flare(zone, text, float(e.get("shake", 2.0)), fx_kind)
 		var lines: Array = e.get("lines", [])
 		if not lines.is_empty() and randf() < float(e.get("line_chance", 0.25)):
 			GameState.princess_reacted.emit(str(lines.pick_random()), 2.2)
@@ -162,6 +177,15 @@ func flare(id: String, zone: String, way := "", tickle := true) -> String:
 			_bubble_t = BUBBLE_GAP
 			SpeechBubble.say(who, text, 28.0, 1.6)
 	return text
+
+
+## 装备用哪种手法特效。
+static func fx_of(id: String) -> String:
+	for k in WAY_FX:
+		for part in WAY_FX[k]:
+			if id.contains(part):
+				return k
+	return "feather"
 
 
 func _pick_words(e: Dictionary, way: String) -> String:

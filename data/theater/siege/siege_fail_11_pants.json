@@ -1,0 +1,253 @@
+{
+	"name": "失败：钢铁与羽毛",
+	"cast": {
+		"pink": {
+			"kind": "npc:pink_princess",
+			"at": [
+				-24,
+				10
+			],
+			"visual": "helpless_1",
+			"anim": "helpless",
+			"dir": "down"
+		},
+		"blue": {
+			"kind": "npc:blue_princess",
+			"at": [
+				24,
+				10
+			],
+			"visual": "helpless_1",
+			"anim": "helpless",
+			"dir": "down"
+		},
+		"foe1": {
+			"kind": "monster:shield_crab",
+			"at": [
+				-44,
+				0
+			],
+			"dir": "right",
+			"hidden": true
+		},
+		"foe2": {
+			"kind": "monster:bat_swarm",
+			"at": [
+				44,
+				0
+			],
+			"dir": "left",
+			"hidden": true
+		}
+	},
+	"steps": [
+		{
+			"actions": [
+				{
+					"do": "fade_in",
+					"time": 0.5
+				},
+				{
+					"do": "voice",
+					"state": "giggle"
+				}
+			],
+			"wait": 0.5
+		},
+		{
+			"speaker": "",
+			"text": "（盾甲螃蟹排成一堵墙推了过来，羽毛蝠群从天上越过城墙。两个人被夹在中间，前后都是怪）",
+			"actions": [
+				{
+					"do": "enter",
+					"who": "foe1",
+					"from": [
+						-90,
+						0
+					],
+					"time": 0.5
+				},
+				{
+					"do": "enter",
+					"who": "foe2",
+					"from": [
+						90,
+						0
+					],
+					"time": 0.5
+				},
+				{
+					"do": "flash",
+					"time": 0.3
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "前、前面是钳子，上面是羽毛……往哪边跑？！"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……哪边……都不行。……背靠背。"
+		},
+		{
+			"speaker": "",
+			"text": "（两个人背靠着背。螃蟹的钳子轻轻夹住粉色公主的腰侧一开一合，蝙蝠们叼着羽毛钻进蓝色公主的袖口）",
+			"actions": [
+				{
+					"do": "tickle",
+					"who": "pink",
+					"by": "foe1",
+					"repeat": 8,
+					"interval": 0.22,
+					"fx": "hand",
+					"zone": "waist"
+				},
+				{
+					"do": "tickle",
+					"who": "blue",
+					"by": "foe2",
+					"repeat": 8,
+					"interval": 0.22,
+					"fx": "brush",
+					"zone": "armpit"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "钳、钳子在腰上一夹一夹的——嘻嘻嘻！"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……袖子里羽毛……裤子里……手……两边……"
+		},
+		{
+			"speaker": "",
+			"text": "（又一排螃蟹围上来，钳子尖顺着粉色公主的肋骨一格一格往上数；蝙蝠扇着翅膀，把羽毛往蓝色公主的腋窝深处送）",
+			"actions": [
+				{
+					"do": "tickle",
+					"who": "pink",
+					"by": "foe1",
+					"repeat": 8,
+					"interval": 0.22,
+					"fx": "hand",
+					"zone": "belly"
+				},
+				{
+					"do": "tickle",
+					"who": "blue",
+					"by": "foe2",
+					"repeat": 8,
+					"interval": 0.22,
+					"fx": "brush",
+					"zone": "armpit"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "肋、肋骨在被一根根数——哈哈哈不要数了！",
+			"actions": [
+				{
+					"do": "bubble",
+					"who": "pink",
+					"kind": "laugh"
+				},
+				{
+					"do": "bubble",
+					"who": "blue",
+					"kind": "laugh"
+				}
+			]
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……腋窝……最里面……噗……噗哈……"
+		},
+		{
+			"speaker": "",
+			"text": "（背后的那只大蝙蝠落下来，用羽毛同时扫过两个人的脖子；最大的那只螃蟹举起钳子，对准了两个人的脚心）",
+			"actions": [
+				{
+					"do": "pose",
+					"who": "pink",
+					"visual": "helpless_2"
+				},
+				{
+					"do": "pose",
+					"who": "blue",
+					"visual": "helpless_2"
+				},
+				{
+					"do": "voice",
+					"state": "laugh"
+				},
+				{
+					"do": "tickle",
+					"who": "pink",
+					"by": "foe1",
+					"repeat": 8,
+					"interval": 0.22,
+					"fx": "hand",
+					"zone": "sole"
+				},
+				{
+					"do": "tickle",
+					"who": "blue",
+					"by": "foe2",
+					"repeat": 8,
+					"interval": 0.22,
+					"fx": "brush",
+					"zone": "sole"
+				},
+				{
+					"do": "flash",
+					"time": 0.3
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "脚、脚心也——哈哈哈哈哈！背、背靠背也没用哈哈哈！"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……哈哈哈哈……裤子也……一起……全部……哈哈哈哈！",
+			"actions": [
+				{
+					"do": "bubble",
+					"who": "pink",
+					"kind": "laugh"
+				},
+				{
+					"do": "bubble",
+					"who": "blue",
+					"kind": "laugh"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "认、认输……下次……先打螃蟹……"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……嗯。……还有……蝙蝠。……哈……"
+		},
+		{
+			"actions": [
+				{
+					"do": "voice",
+					"state": ""
+				},
+				{
+					"do": "fade_out",
+					"time": 0.8
+				}
+			],
+			"wait": 0.9
+		}
+	]
+}

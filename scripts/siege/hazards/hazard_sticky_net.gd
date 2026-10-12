@@ -27,7 +27,7 @@ func _on_start() -> void:
 			caught = p
 			p.set_meta("siege_netted", true)
 			SpeechBubble.say(p, "黏、黏网！动不了了——网眼里有手！", 28.0, 1.8)
-			GameState.notify("粉色公主被黏网罩住了！蓝色公主到她正上方的城墙上探出去割网！")
+			GameState.rule("粉色公主被黏网罩住了！蓝色公主到她正上方的城墙上探出去割网！")
 			return
 	life = 0.6
 

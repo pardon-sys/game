@@ -3,10 +3,12 @@ extends Node2D
 ## 小镇攻防战的导演（图例 X = siege；地图 floor_06_siege，生成器 tools/build/gen_floor06_siege.py）。
 ## 数据：data/siege/waves.json（同一个生成器写）：
 ##   wall_hp 城墙总血量、prep_first / prep 准备秒数、alive_cap 同时在场上限、monsters {键: 场景}、
-##   waves [{name, groups: [{monster, count, from, interval, delay}], reward, hazards, theater}]（10 波）
-## 流程：准备（prep，可以造塔；号角提前开打）→ 战斗（按 groups 排队出怪，同时最多 alive_cap 只）→ 清完 → 奖励冰晶 → 下一波。
-##   城墙总血量归零 → 失败：清场 → 放这一波的失败小剧场（data/theater/siege/siege_fail_<N>.json）→ 城墙修好、冰塔保留 → 从这一波的准备阶段重来。
-##   10 波撑过 → 胜利（剧情标记 siege_won）→ 过场 siege_won（「（待续）」）→ 回战时小镇。
+##   waves [{name, groups: [{monster | formation, count, from, interval, delay}], reward, hazards, countdown}]（12 波）
+## 流程：准备（prep，只有第 1 波前 / 失败重来时有；可以造塔；号角提前开打）→ 战斗（按 groups 排队出怪）→
+##   这一波的怪出完后倒计时 countdown 秒（默认 15）→ 自动进下一波（场上剩下的怪留着，不用清完）；提前清完立刻进。
+##   每进一波：奖励冰晶 + 镇民支援（TownBuffs：每波固定一个，播 TownBuffShow 过场，整局叠加）；派对者的激励在第 1 波开打前给。
+##   城墙总血量归零 → 失败：清场 → 放这一波的失败小剧场（data/theater/siege/siege_fail_<N>.json）→ 城墙修好、冰塔和 buff 保留 → 从这一波的准备阶段重来。
+##   最后一波出完怪并清空 → 胜利（剧情标记 siege_won）→ 过场 siege_won（「（待续）」）→ 回战时小镇。
 ## 两位公主（Duo：C 键切换）：
 ##   粉色公主默认操控，地面近战；AI 时用 CompanionController（SiegeAIHooks：闷笑高时去薄荷冰泉、没事做时去最危险的那段墙下）。
 ##   蓝色公主在城墙顶走道（SiegeMageController：自动放法术；被挠下城墙后 10 秒走到梯子爬回去）。
@@ -27,7 +29,8 @@ signal failed(n: int)
 signal won
 
 const WAVES_PATH := "res://data/siege/waves.json"
-const TOTAL_WAVES := 10
+## 一波怪出完后到下一波的默认秒数（waves.json 每波的 countdown 可以改）
+const COUNTDOWN := 15.0
 ## 粉色公主笑倒复活时城墙扣掉的比例
 const DOWN_PENALTY := 0.05
 ## 蓝色公主被挠下城墙后，多久自己走去梯子爬回去
@@ -36,6 +39,11 @@ const FALLEN_TIME := 10.0
 const SITE_HOLD := 14.0
 
 static var current: SiegeDirector
+
+
+## 总波数（waves.json 里有几波）。
+static func total_waves() -> int:
+	return (current.data.get("waves", []) as Array).size() if current else 12
 
 
 ## 怪物 / 敌塔特殊能力和陷阱的频率倍数（waves.json 的 ability_rate，默认 1）。
@@ -47,6 +55,8 @@ var wave := 1
 ## prep / fight / failed / won
 var state := ""
 var prep_left := 0.0
+## 这一波的怪出完后，离下一波还有几秒（<0 = 还在出怪）
+var next_left := -1.0
 var wall_hp := 2000.0
 var wall_max := 2000.0
 var crystals := 0
@@ -65,6 +75,7 @@ var intel: SiegeIntel
 var cam: SiegeCamera
 var aim: SpellAim
 var teamwork: MonsterTeamwork
+var town: TownBuffs
 ## 这一波还没出的怪：[{t, monster, from}]（t = 战斗开始后第几秒出）
 var _queue: Array = []
 ## 这一波还没放的大范围陷阱：[{t, kind}]
@@ -107,6 +118,8 @@ func _exit_tree() -> void:
 			c.camera.position = Vector2.ZERO
 	if Duo.director == self:
 		Duo.stop()
+	if town:
+		town.strip()
 	Equipment.clear_forced()
 
 
@@ -198,7 +211,9 @@ func _setup() -> void:
 	add_child(teamwork)
 	_restore_towers()
 	_spawn_soldiers()
-	wave = clampi(int(GameState.vars.get("siege_wave", 1)), 1, TOTAL_WAVES)
+	wave = clampi(int(GameState.vars.get("siege_wave", 1)), 1, total_waves())
+	town = TownBuffs.new(self)
+	town.restore()
 	crystals = int(GameState.vars.get("siege_crystals", int(data.get("start_crystals", 20))))
 	crystals_changed.emit(crystals)
 	wall_changed.emit(wall_hp, wall_max)
@@ -243,8 +258,14 @@ func start_now() -> void:
 
 
 func _begin_fight() -> void:
+	# 第 1 波开打前：派对者的激励（开局自带的那个）
+	if town.has_pending_start() and not _busy:
+		_busy = true
+		await town.grant_for(0)
+		_busy = false
 	_queue.clear()
 	_fight_t = 0.0
+	next_left = -1.0
 	for g in wave_data().get("groups", []):
 		var n := int(g.get("count", 1))
 		var iv := float(g.get("interval", 1.0))
@@ -310,6 +331,10 @@ func _process(delta: float) -> void:
 		"fight":
 			_fight_t += delta
 			monsters = monsters.filter(func(m): return is_instance_valid(m) and m.is_alive())
+			_clamp_t -= delta
+			if _clamp_t <= 0.0:
+				_clamp_t = 0.25
+				_clamp_monsters()
 			# 场上不设上限（alive_cap 写了才限制）
 			var cap := int(data.get("alive_cap", 1 << 30))
 			while not _queue.is_empty() and float(_queue[0]["t"]) <= _fight_t and monsters.size() < cap:
@@ -324,8 +349,35 @@ func _process(delta: float) -> void:
 					spawn_hazard_combo(str(hz["combo"]))
 				else:
 					spawn_hazard(str(hz["kind"]))
-			if _queue.is_empty() and monsters.is_empty():
-				_clear_wave()
+			if _queue.is_empty():
+				# 怪出完了：最后一波要清空才算赢；其它波倒计时到了（或提前清完）就自动进下一波
+				if wave >= total_waves():
+					if monsters.is_empty():
+						_clear_wave()
+				elif monsters.is_empty():
+					_clear_wave()
+				else:
+					if next_left < 0.0:
+						next_left = float(wave_data().get("countdown", COUNTDOWN))
+					next_left -= delta
+					if next_left <= 0.0:
+						_clear_wave()
+
+
+var _clamp_t := 0.0
+
+
+## 怪物不出地图：左右 / 下边夹在地图里，上边不越过墙顶走道。
+func _clamp_monsters() -> void:
+	var ms := map_size()
+	var top := wall_top_y() - 16.0 if not walls.is_empty() else 16.0
+	for m in monsters:
+		var p := m.global_position
+		var c := Vector2(clampf(p.x, 16.0, ms.x - 16.0), clampf(p.y, top, ms.y - 16.0))
+		if c != p:
+			m.global_position = c
+			if m.has_meta("march_x"):
+				m.set_meta("march_x", clampf(float(m.get_meta("march_x")), 90.0, ms.x - 90.0))
 
 
 func remaining() -> int:
@@ -333,21 +385,37 @@ func remaining() -> int:
 
 
 func _clear_wave() -> void:
+	if _busy:
+		return
 	var reward := int(wave_data().get("reward", 10))
 	add_crystals(reward)
 	wave_cleared.emit(wave)
 	Audio.play("chime", -2.0, 0.0, 1.1)
-	if wave >= TOTAL_WAVES:
+	if wave >= total_waves():
 		_win()
 		return
-	GameState.notify("第 %d 波挡住了！冰晶 +%d" % [wave, reward])
+	GameState.notify("第 %d 波挡住了！冰晶 +%d" % [wave, reward] if monsters.is_empty() else "第 %d 波来了，冰晶 +%d——上一波的怪还在！" % [wave + 1, reward])
+	var done := wave
 	wave += 1
-	_begin_prep()
+	GameState.vars["siege_wave"] = wave
+	GameState.vars["siege_crystals"] = crystals
+	# 镇民支援（过场期间暂停），然后直接开打下一波（不清场、没有准备阶段）
+	_busy = true
+	await town.grant_for(done)
+	_busy = false
+	if state == "fight":
+		_begin_fight()
 
 
 # ------------------------------------------------------------------ 出怪
 func monster_scene(key: String) -> String:
 	return str(data.get("monsters", {}).get(key, ""))
+
+
+## 会飞 / 飘的怪：出生时从烟里淡入，不钻地。
+const FLYERS := ["bat", "bat_swarm", "fairy", "ghost", "twin_ghost", "suck_jelly", "glove", "mana_jelly", "bubble_fish"]
+## true 时 spawn 不放出生动画（测试 / 成批生成）
+var quiet_spawn := false
 
 
 func spawn(key: String, from := "bottom", at = null) -> Monster:
@@ -376,6 +444,9 @@ func spawn(key: String, from := "bottom", at = null) -> Monster:
 	m.set_home(pos, 9999.0)
 	m.died.connect(_on_monster_died)
 	monsters.append(m)
+	# 出生动画：从地里钻出来（会飞的从烟里淡入）
+	if not quiet_spawn:
+		SiegeFx.burrow(m, FLYERS.has(key))
 	intel.discover(key)
 	if from == "hole":
 		Fx.burst(m.get_parent(), pos, "dust", 8, 40.0, 0.5, Vector2(0, 40), Color(0.6, 0.5, 0.4))
@@ -754,7 +825,7 @@ func _unhandled_input(event: InputEvent) -> void:
 	var p := GameState.player
 	if p == null or p != pink:
 		if p == blue:
-			GameState.notify("建塔要粉色公主来：先按 C 换过去")
+			GameState.rule("建塔要粉色公主来：先按 C 换过去")
 		return
 	get_viewport().set_input_as_handled()
 	try_build(pink, pink.global_position)
@@ -842,15 +913,56 @@ func nearest_target(m: Monster, max_range: float) -> Actor:
 	return best
 
 
+## 怪物的空间网格（每个物理帧最多重建一次）：几百上千只怪时，enemies_near 只查附近的格子。
+const GRID := 64.0
+var _grid := {}
+var _grid_frame := -1
+
+
+func _grid_build() -> void:
+	var f := Engine.get_physics_frames()
+	if f == _grid_frame:
+		return
+	_grid_frame = f
+	_grid.clear()
+	for m in monsters:
+		if not is_instance_valid(m):
+			continue
+		var p := m.global_position
+		var key := Vector2i(int(floorf(p.x / GRID)), int(floorf(p.y / GRID)))
+		var cell: Variant = _grid.get(key)
+		if cell == null:
+			_grid[key] = [m]
+		else:
+			(cell as Array).append(m)
+
+
 func enemies_near(pos: Vector2, r: float, include_fog := true) -> Array[Monster]:
 	var out: Array[Monster] = []
 	var r2 := r * r
-	for m in monsters:
-		if is_instance_valid(m) and m.is_alive() and m.global_position.distance_squared_to(pos) <= r2:
-			if not include_fog and m.get_meta("in_fog", false):
+	_grid_build()
+	var x0 := int(floorf((pos.x - r) / GRID))
+	var x1 := int(floorf((pos.x + r) / GRID))
+	var y0 := int(floorf((pos.y - r) / GRID))
+	var y1 := int(floorf((pos.y + r) / GRID))
+	for gx in range(x0, x1 + 1):
+		for gy in range(y0, y1 + 1):
+			var cell: Variant = _grid.get(Vector2i(gx, gy))
+			if cell == null:
 				continue
-			out.append(m)
+			for m in cell:
+				if is_instance_valid(m) and m.is_alive() and (m as Node2D).global_position.distance_squared_to(pos) <= r2:
+					if not include_fog and m.get_meta("in_fog", false):
+						continue
+					out.append(m)
 	return out
+
+
+## 把一个位置夹在地图里（离边 margin 像素；不进城墙上面那片小镇，除非 allow_town）。
+func clamp_in_map(p: Vector2, margin := 24.0, allow_town := false) -> Vector2:
+	var ms := map_size()
+	var top := margin if allow_town or walls.is_empty() else wall_foot_y() - 2.0
+	return Vector2(clampf(p.x, margin, ms.x - margin), clampf(p.y, top, ms.y - margin))
 
 
 ## 怪最密的地方（半径 r 内最多的那只怪的位置；没有怪返回 null）。
@@ -961,8 +1073,8 @@ func on_defeat(_reason: String) -> void:
 
 
 # ------------------------------------------------------------------ 友军士兵
-const SPEARMEN := 6
-const ARCHERS := 4
+## 开局的士兵编制：{角色: 人数}。墙顶的（弓箭手）沿墙顶均匀排开，其余在墙下。
+const ROSTER := {"spear": 10, "archer": 6, "shield": 3, "medic": 2, "artisan": 2}
 ## 蓝色公主没人来抬时，多久自己复活
 const BLUE_REVIVE := 40.0
 var soldiers: Array[SiegeSoldier] = []
@@ -971,24 +1083,39 @@ var soldiers: Array[SiegeSoldier] = []
 func _spawn_soldiers() -> void:
 	if walls.is_empty():
 		return
+	for role in ROSTER:
+		add_soldiers(role, int(ROSTER[role]), false)
+
+
+## 加 n 个某种士兵（卫兵队长的号令会增派）。墙下的站在墙脚往下 26 像素，按人数均匀分开。
+func add_soldiers(role: String, n: int, announce := true) -> void:
 	var ms := map_size()
-	for i in SPEARMEN:
+	var have := soldiers.filter(func(x): return is_instance_valid(x) and x.role == role).size()
+	for i in n:
 		var s := SiegeSoldier.new()
-		s.role = "spear"
+		s.role = role
 		s.director = self
 		entities().add_child(s)
-		s.global_position = Vector2(ms.x * (i + 0.5) / SPEARMEN, wall_foot_y() + 26.0)
+		var k := have + i
+		var slots := maxi(int(ROSTER.get(role, n)), k + 1)
+		var off: float = 30.0 if role == "archer" else float({"spear": 0.0, "shield": 18.0, "medic": -24.0, "artisan": 40.0}.get(role, 0.0))
+		var x: float = ms.x * (k + 0.5) / slots + off
+		var y := wall_top_y() - 10.0 if role == "archer" else wall_foot_y() + 26.0 + (14.0 if role in ["medic", "artisan"] else 0.0)
+		s.global_position = Vector2(clampf(x, 30.0, ms.x - 30.0), y)
 		s.post = s.global_position
 		soldiers.append(s)
-		extra_targets.append(s)
-	for i in ARCHERS:
-		var a := SiegeSoldier.new()
-		a.role = "archer"
-		a.director = self
-		entities().add_child(a)
-		a.global_position = Vector2(ms.x * (i + 0.5) / ARCHERS + 30.0, wall_top_y() - 10.0)
-		a.post = a.global_position
-		soldiers.append(a)
+		# 公主和士兵互相穿过去（墙下站了一排士兵，不挡公主走路）
+		for c: PlayableCharacter in [pink, blue]:
+			if c and is_instance_valid(c):
+				s.add_collision_exception_with(c)
+		if role != "archer":
+			extra_targets.append(s)
+		if town:
+			town.apply_to(s)
+		if announce:
+			SiegeFx.burrow(s, true)
+	if announce:
+		GameState.notify("增派了 %d 个%s！" % [n, SiegeSoldier.ROLE_NAMES.get(role, "士兵")])
 
 
 ## 叫士兵来抬倒下的蓝色公主（墙下：两个长矛兵；墙顶：一个弓箭手）。返回派了几个。

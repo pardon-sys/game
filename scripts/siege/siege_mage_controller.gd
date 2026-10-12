@@ -3,7 +3,8 @@ extends CharacterController
 ## 攻防战里蓝色公主的 AI（没被玩家操控时；SiegeDirector 的 ai_factory 给她）：
 ##   在城墙上：沿墙顶走道左右走，站到最危险的那段墙上面；每 THINK 秒挑一个法术放（SiegeSpells）：
 ##     清凉雪花（粉色公主闷笑高 / 被缠住 / 穿着临时痒痒装备）> 帮忙造冰塔（director.build_request）> 冰链救援（director.rescue_request）
-##     > 冰墙加固（某段墙下的怪 ≥ REINFORCE_AT）> 冰晶结界（一团怪 ≥ BARRIER_AT）> 冰锥雨（射程内有怪）
+##     > 冰墙加固（某段墙下的怪 ≥ REINFORCE_AT）> 冰镜分身（粉色公主身边怪 ≥ MIRROR_AT）> 冰川突刺（射程里有攻城车 / Boss / 敌塔）
+##     > 暴风雪（一大团怪 ≥ BLIZZARD_AT）> 冰晶结界（一团怪 ≥ BARRIER_AT）> 冰锥雨（射程内有怪）
 ##   在城墙上被挠到失控、身边有怪 → 被挠下城墙（director.knock_off）。
 ##   在墙下（被震下 / 推下）：坐着笑一阵，SiegeDirector.FALLEN_TIME 秒后走到最近的梯子爬回去。
 ##   被缠住 / 被抓住：连按挣扎。倒地（Downed）：什么也不做，等粉色公主救。
@@ -11,6 +12,8 @@ extends CharacterController
 const THINK := 0.45
 const REINFORCE_AT := 7
 const BARRIER_AT := 6
+const BLIZZARD_AT := 10
+const MIRROR_AT := 5
 
 var director: SiegeDirector
 var _move := Vector2.ZERO
@@ -78,12 +81,16 @@ func _on_wall(me: PlayableCharacter, delta: float) -> void:
 				_patrol_x = clampf(me.global_position.x + randf_range(-160.0, 160.0), 40.0, director.map_size().x - 40.0)
 			goal_x = _patrol_x
 	var walk_y := director.wall_top_y() + 4.0
-	# 城墙羽毛扫帚要扫过来：先换到另一行（最优先，直接竖着走）
+	# 城墙羽毛扫帚要扫过来：先换到另一行（最优先，直接竖着走）；扫帚还在的时候巡逻也走安全的那一行，不往回走
 	for h in get_tree().get_nodes_in_group("siege_hazard"):
-		if h is HazardBroom and (h as HazardBroom).threatens(me.global_position.y):
-			_move = Vector2(0, signf((h as HazardBroom).safe_y() - me.global_position.y))
-			intent = "dodge"
-			return
+		if h is HazardBroom:
+			var br := h as HazardBroom
+			if br.threatens(walk_y):
+				walk_y = br.safe_y()
+			if br.threatens(me.global_position.y):
+				_move = Vector2(0, signf(br.safe_y() - me.global_position.y))
+				intent = "dodge"
+				return
 	var d := Vector2(goal_x - me.global_position.x, (walk_y - me.global_position.y) * 0.5)
 	if d.length() > 6.0:
 		_move = d.normalized()
@@ -121,6 +128,35 @@ func _decide(me: PlayableCharacter, req: Variant, rescue: Variant) -> void:
 		if SiegeSpells.cast(me, "reinforce", Vector2(hot.global_position.x, hot.foot_y())):
 			intent = "spell:reinforce"
 			return
+	# 冰镜分身：粉色公主被围住了——放个分身把怪引开
+	if pink and pink.is_alive() and not Downed.is_downed(pink) and SiegeSpells.ready(me, "mirror") \
+			and director.enemies_near(pink.global_position, 60.0).size() >= MIRROR_AT:
+		var at := pink.global_position + Vector2(randf_range(-50, 50), 40.0)
+		if SiegeSpells.in_range(me, at) and SiegeSpells.cast(me, "mirror", at):
+			intent = "spell:mirror"
+			return
+	# 冰川突刺：攻城车 / Boss / 敌塔
+	if SiegeSpells.ready(me, "spike"):
+		var big: Node2D = null
+		for m in director.enemies_near(me.global_position, SiegeSpells.RANGE * 0.6):
+			if m is SiegeCart or m is TrollGeneral:
+				big = m
+				break
+		if big == null:
+			for t in me.get_tree().get_nodes_in_group("siege_enemy_tower"):
+				if (t as Node2D).global_position.distance_to(me.global_position) < 360.0:
+					big = t
+					break
+		if big and SiegeSpells.cast(me, "spike", big.global_position):
+			intent = "spell:spike"
+			return
+	# 暴风雪：一大团怪
+	if SiegeSpells.ready(me, "blizzard"):
+		var pb: Variant = director.densest(60.0, me.global_position, SiegeSpells.RANGE)
+		if pb is Vector2 and director.enemies_near(pb, 90.0).size() >= BLIZZARD_AT:
+			if SiegeSpells.cast(me, "blizzard", pb):
+				intent = "spell:blizzard"
+				return
 	# 冰晶结界：一大团怪
 	if SiegeSpells.ready(me, "barrier"):
 		var p: Variant = director.densest(40.0, me.global_position, SiegeSpells.RANGE)

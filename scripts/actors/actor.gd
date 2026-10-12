@@ -132,7 +132,7 @@ func receive_hit(hit: HitData) -> bool:
 ## 挠到了某个部位时再叠一个部位专属特效（ZoneFx，弱点放大变亮）。
 func _play_hit_fx(hit: HitData, fallback: String, force := false) -> void:
 	if not force and hit.zone != "" and is_inside_tree():
-		ZoneFx.play(hit.zone, get_parent(), ZoneFx.body_point(self, hit.zone), 1.0, hit.weak)
+		ZoneFx.play(hit.zone, get_parent(), ZoneFx.body_point(self, hit.zone), hit.fx_scale, hit.weak)
 	var kind := fallback if force else HitFx.kind_of(hit.source)
 	if kind == "":
 		kind = fallback

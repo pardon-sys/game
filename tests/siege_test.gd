@@ -2,7 +2,7 @@ extends Node
 ## 小镇攻防战：
 ##   城门 → 攻防战地图；导演、8 段城墙、梯子、两位公主（粉色操控、蓝色在城墙上用城墙法师 AI）。
 ##   波次：准备倒计时 → 号角提前开打 → 出怪、怪物走到墙下打墙（城墙总血量下降）→ 蓝色公主放法术打怪 → 打倒得冰晶 → 清完下一波。
-##   失败：城墙归零 → 清场 → （失败小剧场）→ 城墙修好、从这一波的准备阶段重来。胜利：第 10 波打完 → siege_won。
+##   失败：城墙归零 → 清场 → （失败小剧场）→ 城墙修好、从这一波的准备阶段重来。胜利：最后一波（第 12 波）打完 → siege_won。
 ##   蓝色公主：被挠下城墙 → 时间到自己走到梯子爬回去；倒下不倒计时，粉色公主按住 E 救起。粉色公主倒下 → 城门复活、城墙扣血。
 ##   C 键切换；性能：150 只怪同时在场的帧时间。
 ## 用法：Godot --headless --path . res://tests/siege_test.tscn   （退出码 0 = 全部通过）
@@ -20,6 +20,7 @@ func _ready() -> void:
 	DevConfig.override = false
 	ComboTracker.play_scenes = false
 	TutorialBoard.enabled = false
+	TownBuffShow.enabled = false   # 镇民支援的过场跳过（buff 照样生效）
 	main = load("res://scenes/main.tscn").instantiate()
 	add_child(main)
 	await _wait(1.0)
@@ -29,7 +30,8 @@ func _ready() -> void:
 	for key in ReactionDB.source_keys():
 		GameState.set_flag("met_" + key)
 	await _run_enter()
-	_dir().bench_soldiers(true)   # 士兵（siege2_test 测）会先把测试里放的怪打掉
+	_dir().bench_soldiers(true)
+	_dir().quiet_spawn = true   # 士兵（siege2_test 测）会先把测试里放的怪打掉
 	await _run_waves()
 	await _run_controls()
 	await _run_towers()
@@ -101,8 +103,8 @@ func _run_waves() -> void:
 			if is_instance_valid(m):
 				m.health.damage(999)
 		await _wait(0.4)
-	await _advance_until(func(): return d.state == "prep" and d.wave == 2, 5.0)
-	check("清完第 1 波 → 第 2 波准备（第 %d 波，%s）" % [d.wave, d.state], d.wave == 2 and d.state == "prep")
+	await _advance_until(func(): return d.wave == 2, 5.0)
+	check("清完第 1 波 → 直接开打第 2 波（第 %d 波，%s）" % [d.wave, d.state], d.wave == 2 and d.state == "fight")
 
 
 # ------------------------------------------------------------------ 镜头 / 切换 / 瞄准施法
@@ -161,8 +163,11 @@ func _run_controls() -> void:
 	d.blue.set_meta("siege_cd", {})
 	d.aim.open(d.blue, "ice_rain")
 	d.aim.point = Vector2(d.blue.global_position.x + 15.0, d.wall_foot_y() + 60.0)
+	# 只看这几只（自动推进会一直出新怪）
+	d._queue = [{"t": 99999.0, "monster": "slime", "from": "bottom"}]
+	var watch := d.monsters.filter(func(m): return is_instance_valid(m) and m.global_position.distance_to(d.aim.point) < 60.0)
 	var hp_before := 0
-	for m in d.monsters:
+	for m in watch:
 		hp_before += m.health.hp
 	var fired := d.aim.fire()
 	for i in 5:
@@ -175,7 +180,7 @@ func _run_controls() -> void:
 	var casting: bool = d.blue.state == PlayableCharacter.State.CAST and d.blue.resolve_visual("").ends_with("burst")
 	await _wait(0.8)
 	var hp_after := 0
-	for m in d.monsters:
+	for m in watch:
 		if is_instance_valid(m):
 			hp_after += m.health.hp
 	check("按 1 打开瞄准（%s / %s）、吟诵姿势（%s），按 2 换法术（%s），Esc 只收起准星（%s / %s），放出冰锥雨（%s）进入释放姿势（%s）打到怪（%d → %d）" % [
@@ -406,6 +411,13 @@ func _run_enemy_towers() -> void:
 func _run_blue_fall() -> void:
 	print("-- 蓝色公主被挠下城墙 / 爬回去")
 	var d := _dir()
+	# 前面几段留下的敌塔 / 怪清掉（地基离城墙近了，塔会够到墙下）
+	_clear_monsters(d)
+	for t in get_tree().get_nodes_in_group("siege_enemy_tower"):
+		t.queue_free()
+	if d.blue.status:
+		d.blue.status.release(true)
+	await _wait(0.3)
 	d.knock_off(d.blue, "测试")
 	await _wait(1.0)
 	var down := not d.is_on_wall(d.blue)
@@ -463,7 +475,7 @@ func _run_fail_and_win() -> void:
 	await _advance_until(func(): return d.state == "prep" and not d._busy, 20.0)
 	check("城墙归零 → 失败 → 城墙修好（%d）、怪物清空（%d）、从第 %d 波的准备阶段重来（第 %d 波 %s）" % [int(d.wall_hp), d.monsters.size(), w, d.wave, d.state],
 		d.wall_hp == d.wall_max and d.monsters.is_empty() and d.wave == w and d.state == "prep")
-	d.wave = 10
+	d.wave = SiegeDirector.total_waves()
 	d.start_now()
 	await _wait(0.3)
 	d._queue.clear()
@@ -471,7 +483,7 @@ func _run_fail_and_win() -> void:
 		if is_instance_valid(m):
 			m.health.damage(999)
 	await _advance_until(func(): return GameState.has_flag("siege_won"), 5.0)
-	check("第 10 波打完 → 胜利（%s）" % GameState.has_flag("siege_won"), GameState.has_flag("siege_won") and d.state == "won")
+	check("最后一波打完 → 胜利（%s）" % GameState.has_flag("siege_won"), GameState.has_flag("siege_won") and d.state == "won")
 	await _advance_until(func(): return _level_id() == "floor_06_war", 20.0)
 	check("胜利过场后回到战时小镇（%s）" % _level_id(), _level_id() == "floor_06_war")
 

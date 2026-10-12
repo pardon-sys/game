@@ -20,6 +20,7 @@ func _ready() -> void:
 	DevConfig.override = false
 	ComboTracker.play_scenes = false
 	TutorialBoard.enabled = false
+	TownBuffShow.enabled = false   # 镇民支援的过场跳过（buff 照样生效）
 	Monster.random_specials = false
 	main = load("res://scenes/main.tscn").instantiate()
 	add_child(main)
@@ -33,6 +34,7 @@ func _ready() -> void:
 	await main.change_level(Floors.scene("floor_06_siege"))
 	await _until(func(): return SiegeDirector.current != null and SiegeDirector.current.state == "prep", 20.0)
 	d = SiegeDirector.current
+	d.quiet_spawn = true    # 不放出生动画（测试里生成的怪要马上能动）
 	d.bench_soldiers(true)   # 士兵会先把测试里放的怪打掉；这个测试只看怪 / 陷阱本身
 	await _wait(0.5)
 	_finish()
@@ -52,6 +54,17 @@ func _fight() -> void:
 	d._queue = [{"t": 99999.0, "monster": "slime", "from": "bottom"}]
 	d._hazards.clear()
 	d.state = "fight"
+	_hold_new_spells()
+
+
+## 第三轮的新法术（暴风雪 / 冰川突刺 / 冰镜分身）在这个测试里一直冷却着：
+## 这里测的是单个怪 / 陷阱本身，蓝色公主的 AI 放暴风雪、冰镜会把怪减速 / 引走（siege3_test 测新法术）。
+func _hold_new_spells() -> void:
+	if d and d.blue:
+		var cd: Dictionary = d.blue.get_meta("siege_cd", {})
+		for id in ["blizzard", "spike", "mirror"]:
+			cd[id] = Time.get_ticks_msec() / 1000.0 + 99999.0
+		d.blue.set_meta("siege_cd", cd)
 
 
 func _reset() -> void:
@@ -96,6 +109,7 @@ func _reset() -> void:
 		c.set_invulnerable(0.0)
 		c._full_invuln = 0.0
 		c.set_meta("siege_cd", {})
+		_hold_new_spells()
 	Equipment.clear_forced()
 	d.pink.global_position = d.gate_pos + Vector2(0, 40)
 	d.blue.global_position = Vector2(d.gate_pos.x + 16.0, d.wall_top_y() + 4.0)
@@ -181,10 +195,10 @@ func _run_data() -> void:
 		for g in w.get("groups", []):
 			total += int(g.get("count", 0))
 	var last := 0
-	for g in waves[9].get("groups", []):
+	for g in waves[-1].get("groups", []):
 		last += int(g.get("count", 0))
-	check("10 波共 %d 只怪，最后一波 %d 只（> 100），后面几波有大范围陷阱和敌塔" % [total, last],
-		waves.size() == 10 and last > 100 and not waves[9].get("hazards", []).is_empty() and not waves[9].get("enemy_towers", []).is_empty())
+	check("12 波共 %d 只怪，最后一波 %d 只（> 100），后面几波有大范围陷阱和敌塔" % [total, last],
+		waves.size() == 12 and last > 100 and not waves[-1].get("hazards", []).is_empty() and not waves[-1].get("enemy_towers", []).is_empty())
 
 
 # ------------------------------------------------------------------ 攻城怪
@@ -320,6 +334,7 @@ func _run_monsters() -> void:
 	await _until(func(): return d.blue.status.is_grabbed(), 8.0)
 	var lv0 := d.blue.laugh.value
 	d.blue.set_meta("siege_cd", {})
+	_hold_new_spells()
 	var cast := SiegeSpells.cast(d.blue, "ice_rain", d.blue.global_position + Vector2(0, 80))
 	check("魔力吸吸水母：吸住蓝色公主（%s），施法放不出来（%s）并被挠（%.0f → %.0f）" % [d.blue.status.is_grabbed(), not cast, lv0, d.blue.laugh.value],
 		d.blue.status.is_grabbed() and not cast and d.blue.laugh.value > lv0)
@@ -415,6 +430,7 @@ func _run_hazards() -> void:
 	var fog: HazardFog = d.spawn_hazard("fog", p.global_position)
 	await _wait(1.4)
 	d.blue.set_meta("siege_cd", {})
+	_hold_new_spells()
 	var snow := SiegeSpells.cast(d.blue, "snow", p.global_position)
 	check("痒痒迷雾：粉色公主在雾里（%s），蓝色公主的清凉雪花放不进去（%s）" % [d.in_fog(p.global_position), not snow], d.in_fog(p.global_position) and not snow)
 	await _reset()
@@ -427,10 +443,14 @@ func _run_rescues() -> void:
 	var p := d.pink
 	var b := d.blue
 	# 城墙爬藤：缠住墙上的蓝色公主，粉色公主砍藤根时被挠脚心
+	# 蓝色公主的 AI 没威胁时会在墙顶巡逻走开：这一段先让她站着别动
+	b.set_controller(CharacterController.new())
 	var vine: HazardWallVine = d.spawn_hazard("wall_vine", Vector2(b.global_position.x, d.wall_foot_y()))
 	await _until(func(): return vine.bound == b, 6.0)
 	var bound := vine.bound == b
+	b.set_controller(d._make_ai(b))
 	b.set_meta("siege_cd", {})
+	_hold_new_spells()
 	var cast := SiegeSpells.cast(b, "ice_rain", b.global_position + Vector2(0, 80))
 	p.global_position = vine.global_position + Vector2(0, 8)
 	var lv := p.laugh.value
@@ -474,6 +494,9 @@ func _run_rescues() -> void:
 	await _until(func(): return p.get_meta("siege_dragged", false), 3.0)
 	var dragged: bool = p.get_meta("siege_dragged", false)
 	b.global_position = Vector2(p.global_position.x, d.wall_top_y() + 4.0)
+	# 清凉雪花的范围变大了（正下方放会把蓝色公主自己的闷笑也降掉），这里先让它冷却着
+	b.set_meta("siege_cd", {"snow": Time.get_ticks_msec() / 1000.0 + 60.0})
+	_hold_new_spells()
 	bl = b.laugh.value
 	t = await _until(func(): return not p.get_meta("siege_dragged", false), 12.0)
 	check("冰链救援：粉色公主被藤蔓拖走（%s），蓝色公主放冰链拉回来（%.1f 秒 %s），拉的时候被挠（%.0f → %.0f）" % [dragged, t,
@@ -510,10 +533,12 @@ func _run_temp_equipment() -> void:
 	Equipment.force("pink", "equip_t_pinch_pad")
 	d.blue.global_position = Vector2(d.gate_pos.x + 16.0, d.wall_top_y() + 4.0)
 	d.blue.set_meta("siege_cd", {})
+	_hold_new_spells()
 	p.global_position = d.gate_pos + Vector2(0, 40)
 	var ok := false
 	for i in 6:
 		d.blue.set_meta("siege_cd", {})
+		_hold_new_spells()
 		if SiegeSpells.cast(d.blue, "snow", p.global_position):
 			ok = true
 			break

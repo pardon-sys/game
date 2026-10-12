@@ -102,7 +102,7 @@ func latch(pc: PlayableCharacter) -> bool:
 	_on_latch()
 	if not GameState.has_flag("hint_latch"):
 		GameState.set_flag("hint_latch")
-		GameState.notify(ReactionDB.hint("latch"))
+		GameState.rule(ReactionDB.hint("latch"))
 	return true
 
 

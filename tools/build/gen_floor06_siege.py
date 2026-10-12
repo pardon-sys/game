@@ -4,11 +4,12 @@
     第 6~7 行   城墙顶走道（蓝色公主站的地方）
     第 8~9 行   城墙墙面（8 段 SiegeWall，放在第 10 行、节点往上挪一格贴着墙下沿）
     第 10 行起  墙下：梯子（两头 + 城门）、号角、粉色公主的出生点 / 复活点（spawn gate）
-    第 11~16 行 待建区（冰塔格 buildpad）
+    第 11~16 行 墙下（粉色公主按 B 随处建冰塔；士兵的岗位）
     第 17~62 行 战场（碎石、沙袋、木桩；随机冒怪的地洞 spawn siege_hole_*）
     第 63~78 行 敌方区域（敌塔地基 enemysite；底边出怪 siege_bottom_*，左右出怪 siege_left_* / siege_right_*）
   数据：
-    data/siege/waves.json   城墙血量、准备时间、同时在场上限、怪物表、10 波
+    data/siege/waves.json   城墙血量、准备时间、怪物表、12 波（每波出完怪倒计时 countdown 秒自动进下一波）
+    data/siege/town_buffs.json  镇民支援（每波固定一个 buff）
     data/siege/intel.json   战场情报（新怪 / 冰塔 / 敌塔 / 陷阱 / 临时装备的简介、机制、应对）
     data/cutscenes/floor_06/siege_intro.json / siege_won.json
   怪物表只写已经有场景的怪（还没做的攻城怪先跳过，波次里也跳过），所以每个阶段生成出来的数据都能直接用。
@@ -69,13 +70,13 @@ put(GATE_X, 12, "spawn id=gate")
 put(GATE_X, 13, "player")
 put(GATE_X + 3, 7, "blue_princess")
 # （冰塔不再有固定格子：粉色公主在战场上按 B 随处建）
-# —— 敌塔地基：全地图都有（战场 + 敌方区域，离城墙至少 8 格），地精工兵挑最近的空地基搭塔
+# —— 敌塔地基：全地图都有（战场 + 敌方区域，离城墙最近 4 格），地精工兵挑最近的空地基搭塔
 _srnd = random.Random(2828)
 SITES = []
-for gy in range(22, 78, 10):
+for gy in range(15, 78, 9):
     for gx in range(9, W - 6, 20):
-        x, y = gx + _srnd.randint(-3, 3), gy + _srnd.randint(-2, 2)
-        if 1 < x < W - 2 and 18 <= y < H - 2:
+        x, y = gx + _srnd.randint(-3, 3), gy + _srnd.randint(-1, 2)
+        if 1 < x < W - 2 and 14 <= y < H - 2 and not (abs(x - GATE_X) < 6 and y < 20):
             SITES.append((x, y))
 for i, (x, y) in enumerate(SITES):
     put(x, y, "enemysite index=%d" % i)
@@ -89,8 +90,8 @@ for _ in range(26):
 for i, x in enumerate(range(6, W - 5, 8)):
     put(x, H - 3, "spawn id=siege_bottom_%d" % i)
 for i, y in enumerate(range(28, 72, 6)):
-    put(2, y, "spawn id=siege_left_%d" % i)
-    put(W - 3, y, "spawn id=siege_right_%d" % i)
+    put(5, y, "spawn id=siege_left_%d" % i)       # 往里挪 3 格：怪不会贴着地图边走
+    put(W - 6, y, "spawn id=siege_right_%d" % i)
 for i, (x, y) in enumerate([(14, 26), (40, 30), (70, 28), (95, 26), (24, 40), (56, 42), (86, 40), (10, 52), (38, 54),
                             (66, 56), (98, 52), (52, 34)]):
     put(x, y, "spawn id=siege_hole_%d" % i)
@@ -139,6 +140,7 @@ MONSTERS = {
     "barnacle": "res://scenes/actors/monsters/barnacle.tscn",
     "mini_tentacle": "res://scenes/actors/monsters/mini_tentacle.tscn",
     "goblin_engineer": "res://scenes/siege/monsters/goblin_engineer.tscn",
+    "troll_general": "res://scenes/siege/monsters/troll_general.tscn",
     # 攻城怪（scenes/siege/monsters/，阶段 5 做）
     "cart": "res://scenes/siege/monsters/siege_cart.tscn",
     "hook": "res://scenes/siege/monsters/hook_climber.tscn",
@@ -194,8 +196,24 @@ WAVES = [
                                                         G("twin_ghost", 4, "bottom", 6.0, 24), G("vine", 6, "hole", 3.0, 26),
                                                         G("cart", 4, "bottom", 9.0, 28)]},
 ]
+# 第三轮：加第 11、12 波
+WAVES += [
+    {"name": "钢铁与羽毛", "reward": 44, "groups": [G("shield_crab", 8, "bottom", 2.0), G("cart", 4, "bottom", 8.0, 4),
+                                                  G("bat_swarm", 10, "left", 1.5, 6), G("hook", 8, "right", 2.0, 8),
+                                                  G("gecko", 18, "hole", 0.6, 10), G("hug_bear", 8, "bottom", 2.0, 12),
+                                                  G("thigh_spider", 10, "right", 1.5, 14), G("slime", 28, "bottom", 0.4, 16)]},
+    {"name": "终极攻城：全军压上", "reward": 60, "groups": [G("slime", 30, "bottom", 0.35), G("rat", 24, "left", 0.4, 2),
+                                                        G("squirrel", 18, "right", 0.5, 4), G("hook", 10, "bottom", 1.6, 6),
+                                                        G("gecko", 20, "hole", 0.6, 8), G("shield_crab", 8, "bottom", 2.5, 10),
+                                                        G("bat_swarm", 10, "left", 1.6, 12), G("carrier", 4, "right", 7.0, 14),
+                                                        G("warm_slime", 8, "hole", 2.0, 16), G("thigh_spider", 10, "bottom", 1.6, 18),
+                                                        G("hug_bear", 8, "left", 2.0, 20), G("suck_jelly", 8, "right", 2.0, 22),
+                                                        G("twin_ghost", 5, "bottom", 5.0, 24), G("vine", 8, "hole", 2.5, 26),
+                                                        G("cart", 6, "bottom", 7.0, 28)]},
+]
 # —— 第二轮：怪物 3 倍、加入更多已有怪物、成套生成（配合技）、地精工兵队、陷阱 3 倍 + 陷阱组合
-MULT = 3
+# —— 第三轮：再 ×2（MULT 3 → 6；EXTRA / 成套 / 陷阱组合也 ×2）
+MULT = 6
 EXTRA = {   # 每波额外的已有怪物
     1: [G("bat", 4, "left", 2.0, 8), G("frog", 3, "hole", 3.0, 12)],
     2: [G("ghost", 4, "hole", 2.0, 6), G("crab", 4, "bottom", 2.0, 10), G("split_slime", 3, "right", 3.0, 14)],
@@ -208,7 +226,14 @@ EXTRA = {   # 每波额外的已有怪物
     9: [G("crab", 8, "bottom", 1.0, 4), G("frog", 6, "right", 1.5, 8), G("bat", 10, "left", 0.8, 10), G("mini_tentacle", 6, "hole", 1.5, 14)],
     10: [G("troll", 4, "bottom", 5.0, 4), G("octopus", 4, "right", 3.0, 6), G("barnacle", 8, "bottom", 1.0, 8), G("bubble_fish", 8, "hole", 1.0, 10),
          G("glove", 8, "hole", 1.0, 12), G("ghost", 8, "hole", 1.0, 14), G("mana_jelly", 4, "left", 3.0, 16)],
+    11: [G("troll", 4, "bottom", 4.0, 4), G("ghost", 10, "hole", 1.0, 6), G("glove", 10, "hole", 1.0, 8), G("frog", 8, "right", 1.2, 10),
+         G("crab", 10, "bottom", 1.0, 12), G("mana_jelly", 4, "left", 3.0, 14)],
+    12: [G("troll", 6, "bottom", 3.0, 4), G("octopus", 6, "right", 2.0, 6), G("barnacle", 10, "bottom", 0.8, 8), G("bubble_fish", 10, "hole", 0.8, 10),
+         G("glove", 10, "hole", 0.8, 12), G("ghost", 10, "hole", 0.8, 14), G("mana_jelly", 6, "left", 2.0, 16), G("imp", 8, "right", 1.0, 18)],
 }
+for _n, _gs in EXTRA.items():
+    for _g in _gs:
+        _g["count"] *= 2
 
 
 def F(formation, count, frm="bottom", interval=10.0, delay=0.0):
@@ -228,28 +253,45 @@ FORMATIONS = {   # 成套生成的配合技（data/teamwork.json）
          for i, t in enumerate(["cart_escort", "gecko_ladder", "troll_throw", "slime_merge", "raise_arms", "strip_shoes", "suction_chain",
                                 "feather_dance", "bubble_chain", "jelly_charge", "hedgehog_roll", "bat_airdrop"])],
 }
-ENGINEERS = {n: [F("engineer_escort", 1 + n // 2, "bottom", max(5.0, 16.0 - n), 4.0)] for n in range(2, 11)}
+for _n in (11, 12):
+    FORMATIONS[_n] = [F(t, 1, "bottom" if t in ("cart_escort", "gecko_ladder", "troll_throw") else "hole", 8, 3 + i * 2.5)
+                      for i, t in enumerate(["cart_escort", "gecko_ladder", "troll_throw", "slime_merge", "raise_arms", "strip_shoes",
+                                             "suction_chain", "feather_dance", "bubble_chain", "jelly_charge", "hedgehog_roll", "bat_airdrop"])]
+for _n, _fs in FORMATIONS.items():
+    for _f in _fs:
+        _f["count"] *= 2
+        _f["interval"] = max(4.0, _f["interval"] * 0.6)
+ENGINEERS = {n: [F("engineer_escort", 2 + n // 2, "bottom", max(4.0, 14.0 - n), 4.0)] for n in range(2, 13)}
 ENGINEERS[1] = [F("engineer_escort", 1, "bottom", 0, 10.0)]
 HAZARD_COMBOS = {4: [(40, "net_link")], 5: [(46, "bubble_broom")], 6: [(50, "double_tornado")], 7: [(56, "fog_tornado")],
                  8: [(40, "bubble_broom"), (64, "net_link")], 9: [(36, "double_tornado"), (60, "fog_tornado")],
-                 10: [(30, "bubble_broom"), (50, "double_tornado"), (70, "fog_tornado"), (90, "net_link")]}
+                 10: [(30, "bubble_broom"), (50, "double_tornado"), (70, "fog_tornado"), (90, "net_link")],
+                 11: [(20, "double_tornado"), (40, "net_link"), (60, "bubble_broom")],
+                 12: [(15, "bubble_broom"), (30, "double_tornado"), (45, "fog_tornado"), (60, "net_link")]}
+for _n, _hs in list(HAZARD_COMBOS.items()):
+    HAZARD_COMBOS[_n] = sorted(_hs + [(t + 18, k) for t, k in _hs])   # 陷阱组合 ×2
 
 # 敌塔：每波可能出现哪些（地精工兵搭 / 怪物聚集起来搭）
 ENEMY_TOWERS = {
     3: ["glue", "windmill"], 4: ["vine_pull", "tailor", "glue"], 5: ["portal", "vine_pull", "windmill", "glue"],
     6: ["sole_tower", "net", "tailor"], 7: ["net", "sole_tower", "vine_pull", "glue"], 8: ["silence", "thigh_tower", "tailor"],
     9: ["totem", "thigh_tower", "silence", "portal"], 10: ["totem", "thigh_tower", "sole_tower", "silence", "portal", "net", "vine_pull", "tailor"],
+    11: ["windmill", "glue", "net", "totem", "tailor"], 12: ["totem", "thigh_tower", "sole_tower", "silence", "portal", "net", "vine_pull", "tailor", "windmill", "glue"],
 }
+ENEMY_TOWERS[1] = ["glue", "windmill"]
+ENEMY_TOWERS[2] = ["glue", "windmill", "vine_pull"]
 # 大范围陷阱的时间表（战斗开始后第几秒）
 HAZARDS = {
     3: [(22, "tornado")], 4: [(14, "link_rune"), (30, "sticky_net")], 5: [(12, "bubbles"), (26, "broom"), (36, "wall_vine")],
     6: [(10, "tornado"), (24, "fog"), (40, "sticky_net")], 7: [(10, "bubbles"), (22, "broom"), (34, "wall_vine"), (46, "link_rune")],
     8: [(10, "fog"), (20, "wall_vine"), (32, "sticky_net"), (44, "broom")], 9: [(8, "tornado"), (18, "broom"), (28, "bubbles"), (40, "wall_vine"), (52, "fog")],
     10: [(8, "bubbles"), (16, "broom"), (24, "tornado"), (34, "wall_vine"), (44, "sticky_net"), (52, "link_rune"), (60, "fog"), (70, "broom")],
+    11: [(6, "tornado"), (14, "fog"), (22, "broom"), (30, "wall_vine"), (38, "bubbles"), (46, "sticky_net"), (54, "link_rune")],
+    12: [(6, "bubbles"), (12, "broom"), (18, "tornado"), (26, "wall_vine"), (34, "sticky_net"), (42, "link_rune"), (50, "fog"), (58, "tornado")],
 }
 HAZARDS[2] = [(16, "tornado"), (30, "bubbles")]
 HAZARD_KINDS = ["tornado", "bubbles", "link_rune", "broom", "fog", "wall_vine", "sticky_net"]
-for n in range(2, 11):
+for n in range(2, 13):
     base = HAZARDS.get(n, [])
     # 陷阱 3 倍：原来的之间再插两倍的量（后几波每 6~8 秒一个）
     extra = []
@@ -278,8 +320,13 @@ for i, w in enumerate(WAVES):
     w["groups"] = [gr for gr in w["groups"] if gr["monster"] in have]
     w["groups"] += FORMATIONS.get(n, []) + ENGINEERS.get(n, [])
     w["theater"] = "siege_fail_%d" % (i + 1)
+    w["countdown"] = 15
+# 第 3 波中段：小 Boss 攻城巨魔将军（出场时自己带 4 只盾甲螃蟹护卫）
+if "troll_general" in have:
+    WAVES[2]["groups"].append(G("troll_general", 1, "bottom", 1.0, 22.0))
+    WAVES[2]["boss"] = "troll_general"
 WAVE_DATA = {"_说明": ["小镇攻防战的波次（gen_floor06_siege.py 生成；SiegeDirector 读）。怪物表只有已经做好的怪。"],
-             "wall_hp": 3600, "prep_first": 30, "prep": 20, "ability_rate": 3.0, "start_crystals": 30,
+             "wall_hp": 4320, "prep_first": 30, "prep": 20, "ability_rate": 3.0, "start_crystals": 30,
              "monsters": have, "waves": WAVES}
 Path("data/siege").mkdir(parents=True, exist_ok=True)
 Path("data/siege/waves.json").write_text(json.dumps(WAVE_DATA, ensure_ascii=False, indent="\t") + "\n")
@@ -300,25 +347,34 @@ TOWERS = {
               "desc": "范围内的怪减速，每隔几秒冻住一下。", "levels": [{"radius": 70, "freeze": 1.0}, {"radius": 90, "freeze": 1.8}]},
     "repair": {"name": "冰墙修补塔", "short": "修城墙", "cost": 16, "upgrade": 14,
                "desc": "慢慢修复它身后的那段城墙。", "levels": [{"repair": 3}, {"repair": 6}]},
+    "campfire": {"name": "篝火塔", "short": "照亮 + 暖和", "cost": 12, "upgrade": 12,
+                 "desc": "一大圈火光：幽灵现形，暖炉史莱姆化得更快，圈里的友军闷笑慢慢降。",
+                 "levels": [{"radius": 110, "decay": 3}, {"radius": 140, "decay": 5}]},
+    "ballista": {"name": "冰棱弩炮", "short": "远程穿透", "cost": 18, "upgrade": 16,
+                 "desc": "射程很远的穿透冰棱，专打敌塔和大型怪（攻城车 / Boss 伤害 ×3）。",
+                 "levels": [{"range": 420, "interval": 2.6, "damage": 3, "pierce": 4}, {"range": 480, "interval": 1.8, "damage": 4, "pierce": 6}]},
+    "cocoa": {"name": "热可可摊", "short": "友军加速", "cost": 14, "upgrade": 12,
+              "desc": "热乎乎的可可：附近友军攻击更快、走得更快，粉色公主闷笑降得更快。",
+              "levels": [{"radius": 90, "haste": 0.75, "speed": 1.2, "decay": 4}, {"radius": 120, "haste": 0.65, "speed": 1.3, "decay": 6}]},
 }
 ETOWERS = {
-    "vine_pull": {"name": "藤蔓拉拽塔", "hp": 22, "interval": 7, "range": 200, "pull": 55, "presses": 12, "reward": 8,
+    "vine_pull": {"name": "藤蔓拉拽塔", "hp": 13, "interval": 7, "range": 200, "pull": 55, "presses": 12, "reward": 8,
                   "lines": ["呀——！藤、藤蔓缠住腰了！", "被拖过去了……放开啦！", "藤蔓尖在腰上挠……嘻嘻嘻！"]},
-    "tailor": {"name": "痒痒裁缝铺", "hp": 20, "interval": 8, "range": 240, "range_wall": 520, "reward": 8,
+    "tailor": {"name": "痒痒裁缝铺", "hp": 12, "interval": 8, "range": 240, "range_wall": 520, "reward": 8,
                "items": ["equip_t_feather_socks", "equip_t_toe_brush", "equip_t_fluff_bra", "equip_t_thigh_ring", "equip_t_pinch_pad",
                          "equip_t_knead_tights", "equip_t_bell_anklet", "equip_t_mark_patch"]},
-    "glue": {"name": "黏胶喷泉", "hp": 18, "interval": 5, "range": 140, "reward": 6},
-    "net": {"name": "吊网塔", "hp": 20, "interval": 9, "range": 190, "hang": 3.5, "reward": 8,
+    "glue": {"name": "黏胶喷泉", "hp": 11, "interval": 5, "range": 140, "reward": 6},
+    "net": {"name": "吊网塔", "hp": 12, "interval": 9, "range": 190, "hang": 3.5, "reward": 8,
             "lines": ["网、网住了！吊起来了！", "网眼里伸出手来了……脚心！哈哈哈！", "脚、脚够不着地……别挠脚心！"]},
-    "silence": {"name": "魔力干扰塔", "hp": 22, "interval": 3, "width": 130, "reward": 10},
-    "portal": {"name": "怪物传送门", "hp": 26, "interval": 3, "cap": 6, "spawns": ["slime", "rat", "caterpillar"], "reward": 10},
-    "windmill": {"name": "强风风车塔", "hp": 20, "interval": 6, "range": 170, "force": 300, "reward": 8,
+    "silence": {"name": "魔力干扰塔", "hp": 13, "interval": 3, "width": 130, "reward": 10},
+    "portal": {"name": "怪物传送门", "hp": 16, "interval": 3, "cap": 6, "spawns": ["slime", "rat", "caterpillar"], "reward": 10},
+    "windmill": {"name": "强风风车塔", "hp": 12, "interval": 6, "range": 320, "force": 340, "reward": 8,
                  "lines": ["哇啊——被吹走了！", "风、风好大……要吹到怪物堆里了！"]},
-    "totem": {"name": "狂欢图腾", "hp": 28, "interval": 1, "range": 120, "reward": 12},
-    "thigh_tower": {"name": "腿根揉揉塔", "hp": 22, "interval": 5, "range": 560, "amount": 6, "reward": 10,
+    "totem": {"name": "狂欢图腾", "hp": 17, "interval": 1, "range": 120, "reward": 12},
+    "thigh_tower": {"name": "腿根揉揉塔", "hp": 13, "interval": 5, "range": 560, "amount": 6, "reward": 10,
                     "lines": ["腿、腿根被揉了！", "屁股被捏了一下……！"],
                     "lines_blue": ["……腿根。……拇指，在揉。", "……屁股……左、右……轮流捏……", "……飞、飞过来的手……揉腿根……", "……裤子……也跟着动了……"]},
-    "sole_tower": {"name": "脚心刷刷塔", "hp": 20, "interval": 5, "range": 220, "amount": 4, "reward": 8,
+    "sole_tower": {"name": "脚心刷刷塔", "hp": 12, "interval": 5, "range": 220, "amount": 4, "reward": 8,
                    "lines": ["脚踝被抓住了！脚趾……被扳开了！", "刷、刷子在刷脚心……哈哈哈哈！", "脚板被扳着往后……指甲在刮……不行不行！", "趾缝里也刷……嘻嘻嘻嘻！"]},
 }
 Path("data/siege/towers.json").write_text(json.dumps({"_说明": ["攻防战的冰塔（gen_floor06_siege.py 生成；IceTower 读）。"], **TOWERS},
@@ -339,6 +395,9 @@ TOWER_INTEL = {
     "mint": ("站在旁边闷笑值会慢慢降下来。粉色公主的 AI 闷笑高时会自己跑过来。", "放在粉色公主常去的前线后面。"),
     "frost": ("范围减速，每隔几秒把范围里的怪冻住一下。攻城车经过也会变慢。", "和冰锥塔放在一起效果最好。"),
     "repair": ("一秒一秒地修补它身后那一段城墙。", "放在最常被打的那段墙下面。"),
+    "campfire": ("火光范围里幽灵会现形（能打到了），暖炉史莱姆化得更快；站在火边的友军闷笑慢慢降。", "放在幽灵多的那一侧。"),
+    "ballista": ("每隔一会儿射出一根穿透的长冰棱，优先打敌塔、攻城车和 Boss，对它们伤害 ×3。", "放在墙下中间，射程能盖住大半个战场。"),
+    "cocoa": ("附近的友军（公主和士兵）攻击间隔缩短、移动变快；粉色公主站在旁边闷笑降得更快。", "放在士兵扎堆的地方。"),
 }
 for k, (mech, how) in TOWER_INTEL.items():
     INTEL["tower_" + k] = I(TOWERS[k]["name"], "冰塔", TOWERS[k]["desc"], mech, how)
@@ -414,6 +473,55 @@ INTEL["goblin_engineer"] = I("地精工兵", "攻城怪", "戴着安全帽、扛
 for k, (name, kind, mech) in TEMP_INTEL.items():
     INTEL["equip_" + k] = I(name, "临时痒痒装备·" + kind, "被痒痒裁缝铺或捆绑藤怪强制穿上的装备，20 秒后自己掉。", mech,
                              "另一位公主靠近按住 E 2 秒帮忙解开；蓝色公主的清凉雪花也能解开。蓝色公主穿着千手痒痒裤时，大腿 / 屁股的会被裤子吸收（裤子变得更频繁、更重）。")
+# ================================================================ 镇民支援（每波固定一个；派对者的激励开局就有）
+def TB(id, name, who, sheet, color, after, line, desc, buff=None, mul=None, add=None, once=None, per_wave=None):
+    e = {"id": id, "name": name, "who": who, "sheet": sheet, "color": color, "after_wave": after, "line": line, "desc": desc}
+    if buff:
+        e["buff"] = buff
+    for k, v in (("mul", mul), ("add", add), ("once", once), ("per_wave", per_wave)):
+        if v:
+            e[k] = v
+    return e
+
+
+TOWN_BUFFS = [
+    TB("party", "派对者的激励", "派对主持人", "bonfire_host", "#ffb0e0", 0, "开打啦！大家跑起来——派对节奏！", "全部友军移动速度 +50%。", buff="town_party"),
+    TB("smith", "铁匠的磨刀石", "铁匠", "miner", "#ffb070", 1, "矛尖、箭头、冰棱，统统给你们磨快了！", "士兵攻击 +50%，冰塔伤害 +30%，粉色公主近战 +1。",
+       buff="town_smith", mul={"soldier_atk": 1.5, "tower_dmg": 1.3}),
+    TB("band", "乐队的鼓点", "小镇乐队", "kid", "#ffe070", 2, "咚、咚、咚！跟着鼓点打！", "友军攻击间隔 -30%，蓝色公主城墙法术冷却 -25%。",
+       buff="town_band", mul={"ally_cd": 0.7, "spell_cd": 0.75}),
+    TB("tailor", "裁缝的厚棉衣", "裁缝", "maid", "#c8a8ff", 3, "厚厚的棉衣，痒痒手伸不进去！", "友军受到的挠痒 -25%，临时痒痒装备的发作力度减半。",
+       buff="town_tailor", mul={"equip_power": 0.5}),
+    TB("mason", "泥瓦匠的砂浆", "泥瓦匠", "supervisor", "#d0c0a0", 4, "砂浆来了！城墙补得结结实实！", "城墙上限 +15%，马上修 20%；之后每一波开始自动修 5%。",
+       once={"wall_max_mul": 1.15, "wall_repair": 0.2}, per_wave={"wall_repair": 0.05}),
+    TB("pharm", "药剂师的薄荷", "药剂师奶奶", "granny", "#a0f0d0", 5, "薄荷糖拿好，憋不住了就含一颗。", "马上送 2 颗薄荷糖，之后每波再送 2 颗；蓝色公主魔力疲倦增长 -30%。",
+       mul={"fatigue": 0.7}, once={"mints": 2}, per_wave={"mints": 2}),
+    TB("watch", "守夜人的灯笼", "守夜人", "guard", "#ffe8a0", 6, "灯笼挂起来——幽灵别想躲！", "所有友军身边有小光圈：幽灵靠近就现形；友军索敌范围 +40%。",
+       mul={"detect": 1.4}, add={"lantern": 60}),
+    TB("cheer", "村民们的加油声", "村民们", "kid", "#ff9090", 7, "公主加油——！忍住！别笑出来！", "两位公主更不容易失控，被抓 / 被缠时挣脱少按一半。",
+       buff="town_cheer"),
+    TB("captain", "卫兵队长的号令", "卫兵队长", "captain", "#90b0ff", 8, "全体听令！顶住！援兵马上到！", "士兵血量 +50%，撤退回来的时间减半，增派 2 个长矛兵。",
+       mul={"soldier_hp": 1.5, "soldier_return": 0.5}, once={"spears": 2}),
+    TB("hunter", "猎人的绊绳站", "猎人", "miner", "#b0d080", 9, "绊绳拉好了，那些地精跑不快！", "怪物搭敌塔的速度 -30%，地精工兵移动 -25%。",
+       mul={"build_speed": 0.7, "engineer_speed": 0.75}),
+    TB("florist", "花匠的香草", "花匠", "maid", "#a0ffa0", 10, "香草的味道，冰塔也精神起来了！", "冰塔射程 +25%，雪人召唤塔每次多召一只。",
+       mul={"tower_range": 1.25}, add={"snowmen": 1}),
+    TB("mayor", "镇长的祭典狂欢", "镇长", "merchant", "#ffd700", 11, "最后一波了！全镇一起——祭典开始！", "全部友军所有属性 +20%，城墙回满。",
+       buff="town_mayor", mul={"tower_dmg": 1.2, "ally_cd": 0.83, "spell_cd": 0.83, "soldier_atk": 1.2, "soldier_hp": 1.2, "detect": 1.2},
+       once={"wall_full": True, "fireworks": True}),
+]
+Path("data/siege/town_buffs.json").write_text(json.dumps(TOWN_BUFFS, ensure_ascii=False, indent="\t") + "\n")
+for tb in TOWN_BUFFS:
+    INTEL["town_" + tb["id"]] = I(tb["name"], "镇民支援", "%s：「%s」" % (tb["who"], tb["line"]), tb["desc"], "整局都有效（失败重来也保留）。")
+    INTEL["town_" + tb["id"]]["icon"] = "crystal"
+INTEL["troll_general"] = I("攻城巨魔将军", "小 Boss", "戴着牛角头盔、腰挂号角的独眼巨魔，第 3 波中段带着盾甲螃蟹出场。",
+                           "大手抓住人扳脚挠脚心；三连扫掌；蓄力地震重击（墙下时把蓝色公主震下城墙）；把小怪扔上城墙；扛木桩冲撞城墙；"
+                           "跳到墙脚劈墙再跳回战场中间；战吼让附近的怪发狂；插痒痒军旗（不断钻出小怪）；叫工兵就地搭敌塔；半血狂暴。",
+                           "看清地上的预警形状就躲；被抓住连按挣脱，松手后他会僵 2 秒——这时全力打；军旗和工兵优先处理；冰棱弩炮伤害 ×3。")
+for role, (name, mech) in {"shield": ("盾兵", "站在受伤最重的那段墙下，嘲讽附近的怪；攻城车撞上来能挡下一次。"),
+                           "medic": ("医护兵", "跟着粉色公主和受伤的士兵，每 3 秒给范围内的人降闷笑、回血。"),
+                           "artisan": ("工匠", "修城墙最破的一段、修冰塔，没事做时去拆敌塔地基的搭建进度。")}.items():
+    INTEL["soldier_" + role] = I(name, "友军士兵", "小镇保卫队的%s。" % name, mech, "被挠得撑不住会撤回城门，过一会儿满血回来。")
 Path("data/siege/intel.json").write_text(json.dumps({"_说明": ["战场情报（gen_floor06_siege.py 生成；SiegeIntel 读）。"], **INTEL},
                                                    ensure_ascii=False, indent="\t") + "\n")
 
@@ -440,7 +548,7 @@ INTRO = {"name": "攻防战：开始", "letterbox": True, "skippable": True, "st
     {"actions": [A("camera", to=[GATE_X, 9], zoom=1.2, time=1.2)], "wait": 1.2},
     line(BLUE, "……我在城墙上。远的，交给我。"),
     line(P, "那下面的就交给我！", "happy"),
-    line(BLUE, "……冰塔格，你站上去按 E。……我从上面放冰，一起造。"),
+    line(BLUE, "……你按 B，在脚下放冰塔基座。……我从城墙上放冰光，一起造。"),
     line(P, "嗯！还有——要是你被挠下来了，我就去救你！", "happy"),
     line(BLUE, "……不会被挠下来。", "angry"),
     {"actions": [A("hint", text="C 切换操控；蓝色公主：L 瞄准施法；H 查看新情报；城门口的号角可以提前开打")], "wait": 0.2},
@@ -478,5 +586,6 @@ def _count(gr):
     return gr["count"]
 
 
-print("%s：%dx%d，图例 %d 种；怪物 %d 种，10 波（共约 %d 只，最后一波 %d 只），地基 %d 个" % (
-    FID, W, H, len(specs), len(have), sum(_count(gr) for w in WAVES for gr in w["groups"]), sum(_count(gr) for gr in WAVES[9]["groups"]), len(SITES)))
+print("%s：%dx%d，图例 %d 种；怪物 %d 种，%d 波（共约 %d 只，每波 %s），地基 %d 个" % (
+    FID, W, H, len(specs), len(have), len(WAVES), sum(_count(gr) for w in WAVES for gr in w["groups"]),
+    [sum(_count(gr) for gr in w["groups"]) for w in WAVES], len(SITES)))

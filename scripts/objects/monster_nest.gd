@@ -250,7 +250,7 @@ func _try_grab(p: PlayableCharacter) -> void:
 	SpeechBubble.say(draggers[0], "拖回去～", 18.0)
 	if not GameState.has_flag("hint_nest_drag"):
 		GameState.set_flag("hint_nest_drag")
-		GameState.notify(ReactionDB.hint("nest_drag"))
+		GameState.rule(ReactionDB.hint("nest_drag"))
 
 
 func _update_drag(delta: float) -> void:

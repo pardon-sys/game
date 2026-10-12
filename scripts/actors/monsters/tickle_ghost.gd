@@ -18,9 +18,20 @@ func _tick(delta: float) -> void:
 func _update_reveal() -> void:
 	var r := false
 	for t in get_tree().get_nodes_in_group("torch"):
-		if t.lit and t.global_position.distance_to(global_position) <= reveal_radius:
+		# 光照半径：火把用 reveal_radius；篝火塔 / 篝火这类自己带 light_radius 的按它算
+		var lr: Variant = t.get("light_radius")
+		var rad := maxf(reveal_radius, float(lr) if lr != null else 0.0)
+		if t.lit and t.global_position.distance_to(global_position) <= rad:
 			r = true
 			break
+	# 攻防战：守夜人的灯笼（友军身边的小光圈）
+	var d := SiegeDirector.current
+	if not r and d and d.town and d.town.add("lantern") > 0.0:
+		var lr2 := d.town.add("lantern")
+		for a in d.town.allies():
+			if is_instance_valid(a) and a.global_position.distance_to(global_position) <= lr2:
+				r = true
+				break
 	if r != revealed:
 		revealed = r
 		if revealed:

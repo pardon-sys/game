@@ -32,7 +32,8 @@ func siege_wander(_mind: SiegeMind, delta: float) -> bool:
 			best = t
 	if best == null:
 		return false
-	if best_d > 14.0:
+	# 塔身是挡路的（16x8）：从侧面贴上去时中心离塔正好 14 像素左右，留点余量
+	if best_d > 20.0:
 		_move(global_position.direction_to(best.global_position), stats.chase_speed, delta)
 	else:
 		velocity = Vector2.ZERO

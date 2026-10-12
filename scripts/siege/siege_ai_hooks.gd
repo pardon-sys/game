@@ -45,3 +45,30 @@ func objective_for(ai: PlayableCharacter) -> Variant:
 	if hot == null or director.threat(hot) == 0:
 		return null
 	return Vector2(clampf(ai.global_position.x, hot.left_x() + 16.0, hot.right_x() - 16.0), hot.foot_y() + 40.0)
+
+
+## 攻防战：粉色公主的 AI 主动出击的距离 ×1.6（守夜人的灯笼再加）。
+func engage_range() -> float:
+	return 240.0 * (director.town.mul("detect") if director and director.town else 1.0)
+
+
+## 网格里找最近的怪（迷雾里的看不到）；没有怪时找附近的敌塔 / 军旗去拆。
+func nearest_enemy(ai: PlayableCharacter, r: float) -> Variant:
+	if director == null:
+		return null
+	var best: Node2D = null
+	var best_d := r
+	for m in director.enemies_near(ai.global_position, r, false):
+		if m.get("attackable") == false or m.get_meta("siege_on_wall", false):
+			continue
+		var d: float = m.global_position.distance_to(ai.global_position)
+		if d < best_d:
+			best_d = d
+			best = m
+	if best == null:
+		for t in ai.get_tree().get_nodes_in_group("siege_enemy_tower"):
+			var d2 := (t as Node2D).global_position.distance_to(ai.global_position)
+			if d2 < best_d and (t as Actor).is_alive():
+				best_d = d2
+				best = t
+	return best

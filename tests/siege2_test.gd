@@ -17,6 +17,7 @@ func _ready() -> void:
 	DevConfig.override = false
 	ComboTracker.play_scenes = false
 	TutorialBoard.enabled = false
+	TownBuffShow.enabled = false   # 镇民支援的过场跳过（buff 照样生效）
 	main = load("res://scenes/main.tscn").instantiate()
 	add_child(main)
 	await _wait(1.0)
@@ -29,6 +30,7 @@ func _ready() -> void:
 	await main.change_level(Floors.scene("floor_06_siege"))
 	await _until(func(): return SiegeDirector.current != null and SiegeDirector.current.state == "prep", 20.0)
 	d = SiegeDirector.current
+	d.quiet_spawn = true
 	await _wait(0.5)
 	_finish()
 	var only := OS.get_environment("SIEGE2_ONLY")
@@ -129,17 +131,20 @@ func _wait(sec: float) -> void:
 func _run_hints() -> void:
 	print("-- 黄字 10 秒 / 情报图标")
 	var hint: CenterHint = main.find_child("CenterHint", true, false)
-	GameState.hint("测试一")
+	GameState.hint("测试一", GameState.RULE_HOLD)
 	await _wait(0.5)
-	GameState.hint("测试二")
+	GameState.hint("测试二", GameState.RULE_HOLD)
 	await _wait(0.5)
-	GameState.hint("测试三")
+	GameState.hint("测试三", GameState.RULE_HOLD)
 	await _wait(0.3)
 	var stacked := hint.get_parent().get_children().filter(func(n): return n is Label and (n as Label).text.begins_with("测试") and n.modulate.a > 0.1).size()
 	await _wait(8.0)
 	var still := hint.modulate.a > 0.5 and hint.text == "测试三"
 	await _wait(2.5)
-	check("黄字叠放（同时 %d 条），9 秒后还在（%s），10 秒后消失（%s）" % [stacked, still, hint.modulate.a < 0.1], stacked == 3 and still and hint.modulate.a < 0.1)
+	check("规则说明的黄字叠放（同时 %d 条），9 秒后还在（%s），10 秒后消失（%s）" % [stacked, still, hint.modulate.a < 0.1], stacked == 3 and still and hint.modulate.a < 0.1)
+	GameState.hint("普通提示")
+	await _wait(2.4)
+	check("普通黄字按原来的时长（约 1.6 秒）就消失（%s）" % (hint.modulate.a < 0.1), hint.modulate.a < 0.1)
 	var intel := d.intel
 	for k in ["hug_bear", "cart"]:
 		GameState.set_flag("siege_intel_" + k, false)
@@ -216,7 +221,7 @@ func _run_soldiers() -> void:
 	var spears := d.soldiers.filter(func(s): return s.role == "spear")
 	var archers := d.soldiers.filter(func(s): return s.role == "archer")
 	check("墙下 %d 个长矛兵、墙顶 %d 个弓箭手（弓箭手在墙上 %s）" % [spears.size(), archers.size(), archers.all(func(a): return d.is_on_wall(a))],
-		spears.size() == 6 and archers.size() == 4 and archers.all(func(a): return d.is_on_wall(a)))
+		spears.size() == 10 and archers.size() == 6 and archers.all(func(a): return d.is_on_wall(a)))
 	var sp: SiegeSoldier = spears[2]
 	var m := d.spawn("slime", "", sp.global_position + Vector2(0, 30))
 	m.mind = null
@@ -297,7 +302,7 @@ func _run_engineers() -> void:
 	await _wait(0.3)
 	var waves: Array = d.data.get("waves", [])
 	var with_eng := waves.filter(func(w): return w.get("groups", []).any(func(g): return g.get("formation", "") == "engineer_escort")).size()
-	check("每一波都有工兵队（%d / 10 波）" % with_eng, with_eng == 10)
+	check("每一波都有工兵队（%d / %d 波）" % [with_eng, waves.size()], with_eng == waves.size())
 	d.state = "prep"
 	d._queue.clear()
 
@@ -305,6 +310,8 @@ func _run_engineers() -> void:
 # ------------------------------------------------------------------ 配合技
 func _run_teamwork() -> void:
 	print("-- 怪物配合技")
+	# 蓝色公主的 AI 会用暴风雪 / 冰锥把测试里的怪打掉（壁虎只有 2 血），这一段先让她站着
+	d.blue.set_controller(CharacterController.new())
 	var ok := {}
 	for t in MonsterTeamwork.data().get("teams", []):
 		await _clear()
@@ -401,6 +408,7 @@ func _run_teamwork() -> void:
 			in_waves[str(g.get("monster", ""))] = true
 	var missing := n_new.filter(func(k): return not in_waves.has(k))
 	check("新加入的已有怪物都出现在波次里（缺 %s）" % [missing], missing.is_empty())
+	d.blue.set_controller(d._make_ai(d.blue))
 
 
 # ------------------------------------------------------------------ 陷阱

@@ -84,7 +84,7 @@ func link() -> void:
 	get_parent().add_child(_line)
 	_line.global_position = Vector2.ZERO
 	Audio.play("rune", -3.0, 0.1)
-	GameState.notify("痒感连线！一个被挠，另一个也会痒——打碎符文石！")
+	GameState.rule("痒感连线！一个被挠，另一个也会痒——打碎符文石！")
 
 
 func _on_tickled(hit: HitData, c: PlayableCharacter) -> void:

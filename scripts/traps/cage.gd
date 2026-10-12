@@ -124,7 +124,7 @@ func _land() -> void:
 		active_time = lock_time + 0.8
 		if not GameState.has_flag("hint_cage"):
 			GameState.set_flag("hint_cage")
-			GameState.notify(ReactionDB.hint("cage"))
+			GameState.rule(ReactionDB.hint("cage"))
 	if SPAWN.has(content):
 		_spawned = _spawned.filter(func(m): return is_instance_valid(m) and m.is_alive())
 		if _spawned.size() < max_spawn:

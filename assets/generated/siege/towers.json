@@ -71,117 +71,171 @@
 		24,
 		32
 	],
-	"etower_vine_pull": [
+	"tower_campfire_1": [
 		48,
 		32,
 		24,
-		40
+		32
 	],
-	"etower_tailor": [
+	"tower_campfire_2": [
 		72,
 		32,
 		24,
-		40
+		32
 	],
-	"etower_glue": [
+	"tower_ballista_1": [
 		96,
 		32,
 		24,
-		40
+		32
 	],
-	"etower_net": [
+	"tower_ballista_2": [
 		120,
 		32,
 		24,
-		40
+		32
 	],
-	"etower_silence": [
+	"tower_cocoa_1": [
 		144,
 		32,
 		24,
-		40
+		32
 	],
-	"etower_portal": [
+	"tower_cocoa_2": [
 		168,
 		32,
 		24,
-		40
+		32
 	],
-	"etower_windmill": [
+	"etower_vine_pull": [
 		192,
 		32,
 		24,
 		40
 	],
-	"etower_totem": [
+	"etower_tailor": [
 		216,
 		32,
 		24,
 		40
 	],
-	"etower_thigh_tower": [
+	"etower_glue": [
 		0,
 		72,
 		24,
 		40
 	],
-	"etower_sole_tower": [
+	"etower_net": [
 		24,
 		72,
 		24,
 		40
 	],
-	"snowman_0": [
+	"etower_silence": [
 		48,
+		72,
+		24,
+		40
+	],
+	"etower_portal": [
+		72,
+		72,
+		24,
+		40
+	],
+	"etower_windmill": [
+		96,
+		72,
+		24,
+		40
+	],
+	"etower_totem": [
+		120,
+		72,
+		24,
+		40
+	],
+	"etower_thigh_tower": [
+		144,
+		72,
+		24,
+		40
+	],
+	"etower_sole_tower": [
+		168,
+		72,
+		24,
+		40
+	],
+	"proj_bolt": [
+		192,
+		72,
+		6,
+		16
+	],
+	"banner_0": [
+		198,
+		72,
+		20,
+		34
+	],
+	"banner_1": [
+		218,
+		72,
+		20,
+		34
+	],
+	"snowman_0": [
+		238,
 		72,
 		14,
 		16
 	],
 	"snowman_1": [
-		62,
-		72,
+		0,
+		112,
 		14,
 		16
 	],
 	"glue": [
-		76,
-		72,
+		14,
+		112,
 		32,
 		16
 	],
 	"proj_hand": [
-		108,
-		72,
+		46,
+		112,
 		10,
 		10
 	],
 	"proj_brush": [
-		118,
-		72,
+		56,
+		112,
 		12,
 		8
 	],
 	"proj_equip": [
-		130,
-		72,
+		68,
+		112,
 		12,
 		12
 	],
 	"proj_icicle": [
-		142,
-		72,
+		80,
+		112,
 		6,
 		10
 	],
 	"net": [
-		148,
-		72,
+		86,
+		112,
 		20,
 		20
 	],
 	"proj_arrow": [
-		168,
-		72,
+		106,
+		112,
 		4,
 		12
 	]

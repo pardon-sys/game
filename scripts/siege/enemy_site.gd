@@ -14,6 +14,10 @@ const BUILD_TIME := 12.0
 const FROZEN_DECAY := 3.0
 
 @export var index := 0
+## 搭一座塔要多久（巨魔将军叫来的工兵就地搭：更快）
+var build_time := BUILD_TIME
+## 临时地基（巨魔将军就地搭塔）：塔拆掉 / 没人搭了就消失
+var temporary := false
 
 var tower: EnemyTower
 var progress := 0.0
@@ -37,7 +41,7 @@ class Bar extends Node2D:
 		queue_redraw()
 
 	func _draw() -> void:
-		var f := site.build_progress / EnemySite.BUILD_TIME
+		var f := site.build_progress / site.build_time
 		draw_rect(Rect2(-14, -30, 28, 4), Color(0.1, 0.05, 0.1, 0.85))
 		draw_rect(Rect2(-14, -30, 28 * f, 4), Color(0.95, 0.45, 0.85) if site._frozen_t <= 0.0 else Color(0.6, 0.85, 1.0))
 		draw_rect(Rect2(-14, -30, 28, 4), Color(1, 0.8, 0.95), false, 1.0)
@@ -77,7 +81,7 @@ func register_builder(g: GoblinEngineer) -> void:
 			var d := SiegeDirector.current
 			if d:
 				d.intel.discover("goblin_engineer")
-				GameState.hint("地精工兵在搭敌塔！打倒他们或者冻住他们！")
+				GameState.rule("地精工兵在搭敌塔！打倒他们或者冻住他们！")
 
 
 func unregister_builder(g: GoblinEngineer) -> void:
@@ -116,6 +120,8 @@ func _build_tick(delta: float) -> void:
 	builders = builders.filter(func(g): return is_instance_valid(g) and g.is_alive() and g.site == self)
 	if builders.is_empty():
 		build_progress = maxf(0.0, build_progress - delta * 0.3)
+		if temporary and build_progress <= 0.0 and tower == null and _claim_t <= 0.0:
+			queue_free()
 		return
 	var working := builders.filter(func(g): return not g.is_stunned())
 	if working.is_empty():
@@ -124,8 +130,12 @@ func _build_tick(delta: float) -> void:
 			build_progress = maxf(0.0, build_progress - delta)
 		return
 	_frozen_t = 0.0
-	build_progress += delta * [0.0, 0.45, 0.75, 1.0][mini(working.size(), 3)]
-	if build_progress >= BUILD_TIME:
+	var town_k := SiegeDirector.current.town.mul("build_speed") if SiegeDirector.current and SiegeDirector.current.town else 1.0
+	build_progress += delta * [0.0, 0.45, 0.75, 1.0][mini(working.size(), 3)] * town_k
+	# 敲打的木屑 / 火花
+	if randf() < delta * 5.0:
+		Fx.burst(get_parent(), global_position + Vector2(randf_range(-10, 10), -10), "wood", 3, 40.0, 0.5, Vector2(0, 120), Color(0.9, 0.7, 0.5))
+	if build_progress >= build_time:
 		var escorted := builders.any(func(g): return (g as GoblinEngineer).escorted)
 		var d := SiegeDirector.current
 		var t := build_tower(_pick_kind(d)) if d else null
@@ -168,3 +178,5 @@ func build(kind: String) -> EnemyTower:
 
 func tower_gone() -> void:
 	tower = null
+	if temporary:
+		queue_free()

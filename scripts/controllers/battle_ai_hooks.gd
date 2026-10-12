@@ -26,6 +26,16 @@ func magic_target(_ai: PlayableCharacter) -> Variant:
 	return null
 
 
+## AI 主动去打怪的距离（攻防战更大）。
+func engage_range() -> float:
+	return 150.0
+
+
+## 范围内最近的可打目标（null = 交给 CompanionController 自己扫 "enemy" 组；攻防战用网格查得快）。
+func nearest_enemy(_ai: PlayableCharacter, _r: float) -> Variant:
+	return null
+
+
 ## 闲着时随机走动的中心（CompanionController 的 wander 行为；null = 以自己为中心）。
 func wander_anchor(_ai: PlayableCharacter) -> Variant:
 	return null
