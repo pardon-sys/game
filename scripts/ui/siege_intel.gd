@@ -250,6 +250,13 @@ func open(key: String) -> void:
 		_paused_by_me = true
 
 
+## 卡片开着时情报栏被释放（换关卡）：别让游戏一直暂停着。
+func _exit_tree() -> void:
+	if _paused_by_me:
+		get_tree().paused = false
+		_paused_by_me = false
+
+
 func close() -> void:
 	if card:
 		card.hide()

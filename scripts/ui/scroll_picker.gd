@@ -4,6 +4,7 @@ extends CanvasLayer
 ## 选项多了自动出滚动条，选中的那行自动滚进来；整块面板固定在屏幕中间，不会跑出屏幕。打开时暂停游戏。
 ##   var i := await ScrollPicker.ask("造哪一种冰塔？", [{"text": "冰锥塔　❄10", "desc": "……", "enabled": true}, …])
 ##   返回选中的序号；Esc / Tab 取消返回 -1。测试 / 脚本可以用 ScrollPicker.current.choose(i) 直接选。
+##   owner_node：打开它的节点（冰塔基座……）；它没了（换关卡、被拆）就自动取消，界面不会一直挂着暂停游戏、吃掉按键。
 ## 用在：攻防战 B 键的造塔 / 升级菜单。
 
 signal picked(index: int)
@@ -28,12 +29,14 @@ var desc_label: Label
 var _paused_by_me := false
 var _done := false
 var _opened_frame := 0
+var owner_node: Node
 
 
 ## 打开一个选择界面，await 到选完（-1 = 取消）。
-static func ask(t: String, opts: Array, hint := "") -> int:
+static func ask(t: String, opts: Array, hint := "", owner_node: Node = null) -> int:
 	var tree := Engine.get_main_loop() as SceneTree
 	var p := ScrollPicker.new()
+	p.owner_node = owner_node
 	p.title = t
 	p.options = opts
 	if hint != "":
@@ -82,6 +85,11 @@ func _ready() -> void:
 	get_tree().paused = true
 	Audio.play("book", -8.0)
 	_refresh()
+
+
+func _process(_delta: float) -> void:
+	if not _done and owner_node != null and not is_instance_valid(owner_node):
+		cancel()
 
 
 func _exit_tree() -> void:

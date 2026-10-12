@@ -333,7 +333,22 @@ func help_progress(who: String) -> float:
 	return float(_help.get(who, 0.0)) / HELP_TIME
 
 
+## 移动 / 行动锁的保险：攻防战里锁住移动的只有瞄准施法、冰链 / 割网救援、放冰光造塔、按键 QTE；
+## 这些都不在进行时还锁着（协程半路被打断、中途换了人……），就解开，免得 WASD 控制不了人。
+func _unlock_watchdog() -> void:
+	if not (PlayerInputController.movement_locked or PlayerInputController.actions_locked):
+		return
+	if (aim and aim.active) or rescuing or KeySequenceQTE.current != null:
+		return
+	for pd in get_tree().get_nodes_in_group("siege_pad"):
+		if (pd as BuildPad).beaming:
+			return
+	PlayerInputController.movement_locked = false
+	PlayerInputController.actions_locked = false
+
+
 func _process(delta: float) -> void:
+	_unlock_watchdog()
 	if not (_busy or state == "" or GameState.in_dialogue or CG.is_busy() or GameState.in_cutscene):
 		_help_unequip(delta)
 	if _busy or state == "" or GameState.in_dialogue or CG.is_busy() or GameState.in_cutscene:
@@ -708,7 +723,8 @@ func rescue(b: PlayableCharacter) -> bool:
 func _rescue_seq(b: PlayableCharacter, netted: bool) -> void:
 	rescuing = true
 	b.set_meta("siege_beaming", true)
-	if b.is_controlled():
+	var locked := b.is_controlled()
+	if locked:
 		PlayerInputController.movement_locked = true
 	pink.set_meta("siege_chained", true)
 	_rescue_line = Line2D.new()
@@ -754,8 +770,9 @@ func _rescue_seq(b: PlayableCharacter, netted: bool) -> void:
 		_rescue_line.queue_free()
 	if is_instance_valid(b):
 		b.set_meta("siege_beaming", false)
-		if b.is_controlled():
-			PlayerInputController.movement_locked = false
+	# 锁了就一定解开（救的途中换人操控过也一样，不然换过去的人动不了）
+	if locked:
+		PlayerInputController.movement_locked = false
 	if is_instance_valid(pink):
 		pink.set_meta("siege_chained", false)
 	rescuing = false

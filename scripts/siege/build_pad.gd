@@ -90,7 +90,7 @@ func on_pink(p: Node) -> void:
 			opts.append({"text": "%s　❄%d　%s" % [inf.get("name", k), cost, inf.get("short", "")],
 				"desc": str(inf.get("desc", "")) + ("" if d.crystals >= cost else "（冰晶不够）")})
 		opts.append({"text": "算了", "desc": "不建了。"})
-		var pick := await ScrollPicker.ask("造哪一种冰塔？（冰晶 ×%d）" % d.crystals, opts)
+		var pick := await ScrollPicker.ask("造哪一种冰塔？（冰晶 ×%d）" % d.crystals, opts, "", self)
 		if pick >= 0 and pick < ks.size():
 			request(ks[pick])
 		discard_if_empty()
@@ -101,7 +101,7 @@ func on_pink(p: Node) -> void:
 			opts.append({"text": "升级成 2 级　❄%d" % int(inf.get("upgrade", 12)), "desc": str(inf.get("desc", ""))})
 		opts.append({"text": "拆掉（返还 ❄%d）" % int(int(inf.get("cost", 10)) / 2), "desc": "拆掉这座塔，返还一半冰晶，基座也一起收掉。"})
 		opts.append({"text": "算了", "desc": ""})
-		var pick := await ScrollPicker.ask("%s（%d 级）　冰晶 ×%d" % [inf.get("name", tower.kind), tower.level, d.crystals], opts)
+		var pick := await ScrollPicker.ask("%s（%d 级）　冰晶 ×%d" % [inf.get("name", tower.kind), tower.level, d.crystals], opts, "", self)
 		var off := 0 if tower.level < 2 else -1
 		if tower.level < 2 and pick == 0:
 			request(tower.kind, true)
@@ -146,7 +146,7 @@ func blue_beam(blue: PlayableCharacter) -> void:
 	if was_locked:
 		PlayerInputController.movement_locked = true
 	blue.set_meta("siege_beaming", true)
-	await get_tree().create_timer(t).timeout
+	await get_tree().create_timer(t, false).timeout
 	if is_instance_valid(blue):
 		blue.set_meta("siege_beaming", false)
 	if was_locked:

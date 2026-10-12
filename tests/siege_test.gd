@@ -251,6 +251,26 @@ func _keep_fighting(d: SiegeDirector) -> void:
 	d.state = "fight"
 
 
+## 前面被挠倒了的话扶起来（倒地 / 失控时塔和冰泉都不理她）。
+func _revive_pink(d: SiegeDirector) -> void:
+	var p := d.pink
+	var dn := p.get_node_or_null("Downed")
+	if dn:
+		dn.free()
+	if not p.is_alive() or p.state == PlayableCharacter.State.DEAD:
+		p.revive()
+	if p.state in [PlayableCharacter.State.DEAD, PlayableCharacter.State.HELPLESS, PlayableCharacter.State.GRABBED]:
+		p._set_state(PlayableCharacter.State.IDLE)
+	p.visible = true
+	p.set_physics_process(true)
+	p.laugh.set_value(0.0)
+	if p.status:
+		p.status.release(true)
+		p.status.clear_root()
+	for k in ["siege_dragged", "siege_netted", "siege_bubbled", "siege_chained"]:
+		p.set_meta(k, false)
+
+
 func _clear_monsters(d: SiegeDirector) -> void:
 	for m in d.monsters.duplicate():
 		if is_instance_valid(m):
@@ -334,6 +354,7 @@ func _run_towers() -> void:
 	check("诱饵冰雕：附近的怪优先找它（%s）" % [t2], t2 == decoy)
 	var mint: IceTower = built["mint"]
 	_clear_monsters(d)   # 旁边的怪会一边挠她（闷笑反而涨）
+	_revive_pink(d)
 	d.pink.global_position = mint.global_position + Vector2(0, 16)
 	d.pink.laugh.set_value(d.pink.laugh.max_value * 0.5)
 	d.pink._full_invuln = 2.0   # 只看冰泉本身（别让路过的怪挠到她）
@@ -387,6 +408,7 @@ func _run_enemy_towers() -> void:
 		await get_tree().process_frame
 		if kind != "portal":
 			_clear_monsters(d)   # 别的怪抓着她时藤蔓勾不住
+		_revive_pink(d)
 		d.pink.status.release(true)
 		d.pink.status.clear_root()
 		d.pink.laugh.set_value(0.0)
