@@ -239,7 +239,7 @@ func _tick(delta: float) -> void:
 	if _light:
 		create_tween().tween_property(_light, "energy", 0.7, 0.4)
 	# 发动间隔按攻防战的频率倍数缩短（waves.json 的 ability_rate）
-	_t = float(p("interval", 6.0)) / SiegeDirector.ability_rate()
+	_t = float(p("interval", 6.0)) / SiegeDirector.ability_rate() * IceTower.lamp_slow_at(get_tree(), global_position)
 	if director.on_screen(global_position) and Time.get_ticks_msec() / 1000.0 - _shake_t > 1.2:
 		_shake_t = Time.get_ticks_msec() / 1000.0
 		SiegeFx.screen_shake(self, 1.2, 0.15)

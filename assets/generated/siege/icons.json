@@ -59,440 +59,482 @@
 		16,
 		16
 	],
-	"etower_vine_pull": [
+	"tower_mortar": [
 		160,
 		0,
 		16,
 		16
 	],
-	"etower_tailor": [
+	"tower_vortex": [
 		176,
 		0,
 		16,
 		16
 	],
-	"etower_glue": [
+	"tower_resonance": [
 		192,
 		0,
 		16,
 		16
 	],
-	"etower_net": [
+	"tower_meteor": [
 		208,
 		0,
 		16,
 		16
 	],
-	"etower_silence": [
+	"tower_hotspring": [
 		224,
 		0,
 		16,
 		16
 	],
-	"etower_portal": [
+	"tower_lamp": [
 		240,
 		0,
 		16,
 		16
 	],
-	"etower_windmill": [
+	"tower_shield": [
 		0,
+		16,
+		16,
+		16
+	],
+	"etower_vine_pull": [
+		16,
+		16,
+		16,
+		16
+	],
+	"etower_tailor": [
+		32,
+		16,
+		16,
+		16
+	],
+	"etower_glue": [
+		48,
+		16,
+		16,
+		16
+	],
+	"etower_net": [
+		64,
+		16,
+		16,
+		16
+	],
+	"etower_silence": [
+		80,
+		16,
+		16,
+		16
+	],
+	"etower_portal": [
+		96,
+		16,
+		16,
+		16
+	],
+	"etower_windmill": [
+		112,
 		16,
 		16,
 		16
 	],
 	"etower_totem": [
-		16,
+		128,
 		16,
 		16,
 		16
 	],
 	"etower_thigh_tower": [
-		32,
+		144,
 		16,
 		16,
 		16
 	],
 	"etower_sole_tower": [
-		48,
+		160,
 		16,
 		16,
 		16
 	],
 	"cart": [
-		64,
+		176,
 		16,
 		16,
 		16
 	],
 	"hook": [
-		80,
+		192,
 		16,
 		16,
 		16
 	],
 	"vine": [
-		96,
+		208,
 		16,
 		16,
 		16
 	],
 	"gecko": [
-		112,
+		224,
 		16,
 		16,
 		16
 	],
 	"shield_crab": [
-		128,
+		240,
 		16,
 		16,
 		16
 	],
 	"bat_swarm": [
-		144,
-		16,
+		0,
+		32,
 		16,
 		16
 	],
 	"carrier": [
-		160,
 		16,
+		32,
 		16,
 		16
 	],
 	"warm_slime": [
-		176,
-		16,
+		32,
+		32,
 		16,
 		16
 	],
 	"thigh_spider": [
-		192,
-		16,
+		48,
+		32,
 		16,
 		16
 	],
 	"hug_bear": [
-		208,
-		16,
+		64,
+		32,
 		16,
 		16
 	],
 	"suck_jelly": [
-		224,
-		16,
+		80,
+		32,
 		16,
 		16
 	],
 	"twin_ghost": [
-		240,
-		16,
+		96,
+		32,
 		16,
 		16
 	],
 	"hazard_tornado": [
-		0,
+		112,
 		32,
 		16,
 		16
 	],
 	"hazard_bubbles": [
-		16,
+		128,
 		32,
 		16,
 		16
 	],
 	"hazard_link_rune": [
-		32,
+		144,
 		32,
 		16,
 		16
 	],
 	"hazard_broom": [
-		48,
+		160,
 		32,
 		16,
 		16
 	],
 	"hazard_fog": [
-		64,
+		176,
 		32,
 		16,
 		16
 	],
 	"hazard_wall_vine": [
-		80,
+		192,
 		32,
 		16,
 		16
 	],
 	"hazard_sticky_net": [
-		96,
+		208,
 		32,
 		16,
 		16
 	],
 	"team_troll_throw": [
-		112,
+		224,
 		32,
 		16,
 		16
 	],
 	"team_slime_merge": [
-		128,
+		240,
 		32,
 		16,
 		16
 	],
 	"team_raise_arms": [
-		144,
-		32,
+		0,
+		48,
 		16,
 		16
 	],
 	"team_strip_shoes": [
-		160,
-		32,
+		16,
+		48,
 		16,
 		16
 	],
 	"team_suction_chain": [
-		176,
 		32,
+		48,
 		16,
 		16
 	],
 	"team_feather_dance": [
-		192,
-		32,
+		48,
+		48,
 		16,
 		16
 	],
 	"team_bubble_chain": [
-		208,
-		32,
+		64,
+		48,
 		16,
 		16
 	],
 	"team_jelly_charge": [
-		224,
-		32,
+		80,
+		48,
 		16,
 		16
 	],
 	"team_hedgehog_roll": [
-		240,
-		32,
+		96,
+		48,
 		16,
 		16
 	],
 	"team_gecko_ladder": [
-		0,
+		112,
 		48,
 		16,
 		16
 	],
 	"team_cart_escort": [
-		16,
+		128,
 		48,
 		16,
 		16
 	],
 	"team_bat_airdrop": [
-		32,
+		144,
 		48,
 		16,
 		16
 	],
 	"team_engineer_escort": [
-		48,
+		160,
 		48,
 		16,
 		16
 	],
 	"hzcombo_bubble_broom": [
-		64,
+		176,
 		48,
 		16,
 		16
 	],
 	"hzcombo_double_tornado": [
-		80,
+		192,
 		48,
 		16,
 		16
 	],
 	"hzcombo_fog_tornado": [
-		96,
+		208,
 		48,
 		16,
 		16
 	],
 	"hzcombo_net_link": [
-		112,
+		224,
 		48,
 		16,
 		16
 	],
 	"goblin_engineer": [
-		128,
+		240,
 		48,
 		16,
 		16
 	],
 	"equip_t_feather_socks": [
-		144,
-		48,
-		16,
-		16
-	],
-	"equip_t_toe_brush": [
-		160,
-		48,
-		16,
-		16
-	],
-	"equip_t_fluff_bra": [
-		176,
-		48,
-		16,
-		16
-	],
-	"equip_t_thigh_ring": [
-		192,
-		48,
-		16,
-		16
-	],
-	"equip_t_pinch_pad": [
-		208,
-		48,
-		16,
-		16
-	],
-	"equip_t_knead_tights": [
-		224,
-		48,
-		16,
-		16
-	],
-	"equip_t_feather_shackles": [
-		240,
-		48,
-		16,
-		16
-	],
-	"equip_t_thigh_strap": [
 		0,
 		64,
 		16,
 		16
 	],
-	"equip_t_bell_anklet": [
+	"equip_t_toe_brush": [
 		16,
 		64,
 		16,
 		16
 	],
-	"equip_t_mark_patch": [
+	"equip_t_fluff_bra": [
 		32,
 		64,
 		16,
 		16
 	],
-	"town_party": [
+	"equip_t_thigh_ring": [
 		48,
 		64,
 		16,
 		16
 	],
-	"town_smith": [
+	"equip_t_pinch_pad": [
 		64,
 		64,
 		16,
 		16
 	],
-	"town_band": [
+	"equip_t_knead_tights": [
 		80,
 		64,
 		16,
 		16
 	],
-	"town_tailor": [
+	"equip_t_feather_shackles": [
 		96,
 		64,
 		16,
 		16
 	],
-	"town_mason": [
+	"equip_t_thigh_strap": [
 		112,
 		64,
 		16,
 		16
 	],
-	"town_pharm": [
+	"equip_t_bell_anklet": [
 		128,
 		64,
 		16,
 		16
 	],
-	"town_watch": [
+	"equip_t_mark_patch": [
 		144,
 		64,
 		16,
 		16
 	],
-	"town_cheer": [
+	"town_party": [
 		160,
 		64,
 		16,
 		16
 	],
-	"town_captain": [
+	"town_smith": [
 		176,
 		64,
 		16,
 		16
 	],
-	"town_hunter": [
+	"town_band": [
 		192,
 		64,
 		16,
 		16
 	],
-	"town_florist": [
+	"town_tailor": [
 		208,
 		64,
 		16,
 		16
 	],
-	"town_mayor": [
+	"town_mason": [
 		224,
 		64,
 		16,
 		16
 	],
-	"troll_general": [
+	"town_pharm": [
 		240,
 		64,
 		16,
 		16
 	],
-	"soldier_shield": [
+	"town_watch": [
 		0,
 		80,
 		16,
 		16
 	],
-	"soldier_medic": [
+	"town_cheer": [
 		16,
 		80,
 		16,
 		16
 	],
-	"soldier_artisan": [
+	"town_captain": [
 		32,
+		80,
+		16,
+		16
+	],
+	"town_hunter": [
+		48,
+		80,
+		16,
+		16
+	],
+	"town_florist": [
+		64,
+		80,
+		16,
+		16
+	],
+	"town_mayor": [
+		80,
+		80,
+		16,
+		16
+	],
+	"troll_general": [
+		96,
+		80,
+		16,
+		16
+	],
+	"soldier_shield": [
+		112,
+		80,
+		16,
+		16
+	],
+	"soldier_medic": [
+		128,
+		80,
+		16,
+		16
+	],
+	"soldier_artisan": [
+		144,
 		80,
 		16,
 		16

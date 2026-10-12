@@ -109,6 +109,10 @@ func receive_hit(hit: HitData) -> bool:
 		HitData.Kind.TICKLE:
 			if laugh == null:
 				return false
+			# 冰盾（冰盾发生器）：挡掉这一下，冰盾碎掉
+			if buffs.has("ice_shield"):
+				break_ice_shield()
+				return false
 			if hit.knockback > 0.0:
 				apply_knockback(hit.origin, hit.knockback)
 			# 全场暴击（三来源组合的减益）：怪物和陷阱的每一下都算暴击
@@ -292,6 +296,15 @@ func _on_tickled(_hit: HitData) -> void:
 ## 受到的挠痒倍率（易痒、弱点暴露、增益减益的 laugh_gain 等）。hit.tickle 会先乘上它再加到闷笑值。
 func _tickle_multiplier(_hit: HitData) -> float:
 	return (status.tickle_multiplier() if status else 1.0) * maxf(0.0, 1.0 + stat_add("laugh_gain"))
+
+
+## 冰盾碎掉：挡下一次挠痒 / 抓取时调用。
+func break_ice_shield() -> void:
+	remove_buff("ice_shield")
+	if is_inside_tree():
+		Fx.burst(get_parent(), global_position + Vector2(0, -10), "crystal", 10, 50.0, 0.5, Vector2(0, 60), Color(0.8, 0.95, 1.0))
+		SiegeFx.ring(get_parent(), global_position + Vector2(0, -8), 12.0, Color(0.75, 0.92, 1.0, 0.95), 0.35, 0.3)
+		Audio.play("ice_crack", -6.0, 0.1, 1.5)
 
 
 # ------------------------------------------------------------------ 增益 / 减益

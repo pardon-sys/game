@@ -38,6 +38,8 @@ func _pick_up(p: PlayableCharacter) -> void:
 	p.add_buff("lifted", 12.0)
 	var best: Node2D = null
 	for t in get_tree().get_nodes_in_group("siege_enemy_tower"):
+		if not (t is EnemyTower):
+			continue   # 活梯子、军旗也在这个组里，关人只用真的敌塔
 		if best == null or (t as Node2D).global_position.distance_to(global_position) < best.global_position.distance_to(global_position):
 			best = t
 	_dest = best.global_position + Vector2(0, 8) if best else Vector2(global_position.x, director.map_size().y - 40.0)

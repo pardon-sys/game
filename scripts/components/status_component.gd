@@ -93,6 +93,11 @@ func is_slowed() -> bool:
 func grab(source: Node, max_time := 3.5, break_presses := 10) -> bool:
 	if is_grabbed():
 		return false
+	# 冰盾：挡掉这一次抓取
+	var who := get_parent() as Actor
+	if who and who.buffs.has("ice_shield"):
+		who.break_ice_shield()
+		return false
 	grabber = source
 	_grab_time = 0.0
 	_grab_max = max_time

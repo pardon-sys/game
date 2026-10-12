@@ -11,6 +11,12 @@ extends Actor
 ##   ballista 冰棱弩炮：射程很远的穿透冰棱，优先打敌塔 / 攻城车 / Boss（对它们 ×3）
 ##   cocoa    热可可摊：附近友军攻击更快（town_cocoa 状态）、走得更快，粉色公主闷笑降得更快
 ## 镇民支援的倍数：tower_dmg 伤害、tower_range 射程；snowmen 雪人多召几只（SiegeDirector.town）。
+## 范围伤害：冰锥落地溅射（splash）、寒霜塔冻住时冰爆（burst）、小雪人扔雪球（ball_splash）、弩炮射到尽头开冰花（bloom）。
+## 随波次解锁（towers.json 的 unlock_wave）：
+##   mortar 冰霜迫击炮（抛大冰弹到怪最密处）/ vortex 冰风旋涡塔（身边一圈冰风持续伤害 + 外推）/ resonance 冰晶共鸣塔（冰光连跳）/
+##   meteor 冰陨星台（蓄力砸全场最大的怪堆）/ hotspring 温泉治疗泉（降闷笑、士兵回血、修墙）/ lamp 冰灯塔（幽灵现形、怪减速、敌塔变慢）/
+##   shield 冰盾发生器（给友军套冰盾 ice_shield，挡掉下一次挠痒 / 抓取）。
+## 每种 3 级（MAX_LEVEL），3 级塔身边有一圈慢慢转的光环。
 ## 数值在 data/siege/towers.json（tools/build/gen_floor06_siege.py 生成）：{种类: {name, cost, upgrade, desc, levels: [{...}, {...}]}}。
 ## 冰塔挡路（world 层），只有诱饵冰雕在玩家一方的层上（怪物会去打它）。暖炉史莱姆贴着会把塔融化（melt）。
 ## 图：assets/generated/siege/towers.png 的 tower_<种类>_<级>。
@@ -20,6 +26,7 @@ const TEX := preload("res://assets/generated/siege/towers.png")
 const META := "res://assets/generated/siege/towers.json"
 ## 冰塔被融化的耐久（诱饵冰雕用 levels 里的 hp）
 const MELT_HP := 40.0
+const MAX_LEVEL := 3
 
 static var _data := {}
 static var _meta := {}
@@ -60,7 +67,19 @@ static func region(key: String) -> Rect2:
 
 
 static func kinds() -> Array:
-	return ["icicle", "snowman", "decoy", "mint", "frost", "repair", "campfire", "ballista", "cocoa"]
+	return ["icicle", "snowman", "decoy", "mint", "frost", "repair", "campfire", "ballista", "cocoa",
+		"mortar", "vortex", "resonance", "meteor", "hotspring", "lamp", "shield"]
+
+
+## 第几波开始能造（towers.json 的 unlock_wave，没写 = 1）。
+static func unlock_wave(k: String) -> int:
+	return int(info(k).get("unlock_wave", 1))
+
+
+## 现在能不能造（按攻防战导演当前的波次）。
+static func unlocked(k: String) -> bool:
+	var d := SiegeDirector.current
+	return d == null or d.wave >= unlock_wave(k)
 
 
 func p(key: String, default: Variant = 0.0) -> Variant:
@@ -119,6 +138,21 @@ func _setup() -> void:
 		var em := Fx.emitter(self, "ember", 6, 1.4, {"offset": Vector2(0, -16), "dir": Vector2.UP, "spread": 35.0, "speed": [10.0, 22.0],
 			"gravity": Vector2(0, -8), "color": Color(1, 0.6, 0.3), "z": 3})
 		em.emitting = true
+	elif kind == "lamp":
+		lit = true
+		light_radius = float(p("radius", 140.0))
+		add_to_group("torch")
+		light.color = Color(0.6, 0.85, 1.0)
+		light.energy = 0.9
+		light.texture_scale = 1.8
+	elif kind == "vortex":
+		var sn := Fx.emitter(self, "snow", 18, 1.2, {"offset": Vector2(0, -8), "dir": Vector2.RIGHT, "spread": 180.0, "speed": [30.0, 60.0],
+			"gravity": Vector2.ZERO, "color": Color(0.9, 0.97, 1.0), "z": 3, "extents": Vector2(20, 8)})
+		sn.emitting = true
+	elif kind == "hotspring":
+		var st2 := Fx.emitter(self, "steam", 8, 1.8, {"offset": Vector2(0, -12), "dir": Vector2.UP, "spread": 25.0, "speed": [6.0, 14.0],
+			"gravity": Vector2(0, -6), "color": Color(1, 1, 1, 0.6), "z": 3, "extents": Vector2(8, 2)})
+		st2.emitting = true
 	elif kind == "cocoa":
 		var st := Fx.emitter(self, "steam", 5, 1.6, {"offset": Vector2(0, -22), "dir": Vector2.UP, "spread": 12.0, "speed": [6.0, 12.0],
 			"gravity": Vector2(2, -6), "color": Color(1, 1, 1, 0.6), "z": 3})
@@ -132,7 +166,7 @@ func _setup() -> void:
 
 
 func upgrade() -> void:
-	level = mini(level + 1, 2)
+	level = mini(level + 1, MAX_LEVEL)
 	_spr.region_rect = region("tower_%s_%d" % [kind, level])
 	_spr.offset = Vector2(0, -_spr.region_rect.size.y / 2.0 + 2.0)
 	if health:
@@ -196,6 +230,13 @@ func _tick(delta: float) -> void:
 		"campfire": _campfire(delta)
 		"ballista": _ballista()
 		"cocoa": _cocoa()
+		"mortar": _mortar()
+		"vortex": _vortex()
+		"resonance": _resonance()
+		"meteor": _meteor(delta)
+		"hotspring": _hotspring()
+		"lamp": _lamp()
+		"shield": _shield()
 
 
 ## 范围类塔在地上画一圈淡淡的范围。
@@ -215,6 +256,32 @@ func _draw() -> void:
 		"frost":
 			r = float(p("radius", 70.0))
 			col = Color(0.7, 0.9, 1)
+		"vortex":
+			r = float(p("radius", 80.0))
+			col = Color(0.8, 0.95, 1)
+		"hotspring":
+			r = float(p("radius", 110.0))
+			col = Color(0.6, 0.95, 1)
+		"lamp":
+			r = float(p("radius", 140.0))
+			col = Color(0.6, 0.85, 1)
+		"shield":
+			r = float(p("radius", 120.0))
+			col = Color(0.75, 0.9, 1)
+	var tt := Time.get_ticks_msec() / 1000.0
+	# 3 级塔：一圈慢慢转的光环
+	if level >= 3:
+		draw_set_transform(Vector2(0, -2), 0.0, Vector2(1, 0.45))
+		draw_arc(Vector2.ZERO, 16.0, tt, tt + TAU * 0.7, 24, Color(1, 0.9, 0.5, 0.75), 1.5)
+		draw_arc(Vector2.ZERO, 19.0, -tt * 1.3, -tt * 1.3 + TAU * 0.4, 16, Color(0.8, 0.95, 1, 0.6), 1.0)
+		draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
+	if kind == "vortex":
+		# 冰风：几道转着的风线
+		draw_set_transform(Vector2.ZERO, 0.0, Vector2(1, 0.6))
+		for i in 4:
+			var a0 := tt * 3.0 + i * TAU / 4.0
+			draw_arc(Vector2.ZERO, r * (0.45 + 0.13 * i), a0, a0 + 1.4, 16, Color(0.92, 0.98, 1.0, 0.45), 1.5)
+		draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
 	if r <= 0.0:
 		return
 	var a := 0.05 + 0.02 * sin(Time.get_ticks_msec() / 400.0)
@@ -285,6 +352,16 @@ func _ballista() -> void:
 		(n as Actor).receive_hit(HitData.make_attack(self, dmg * (3 if big2 else 1), 80.0))
 		Fx.burst(get_parent(), n.global_position + Vector2(0, -8), "crystal", 5, 50.0, 0.4, Vector2(0, 60), Color(0.8, 0.95, 1.0))
 	var end := from + dir * reach
+	# 射到尽头（最后一个打到的东西那里）炸开一大朵冰花
+	var bloom_at: Vector2 = (hit.back() as Node2D).global_position if not hit.is_empty() else end
+	var bloom := float(p("bloom", 0.0))
+	if bloom > 0.0:
+		var bd := _dmg(int(p("bloom_damage", 2)))
+		for m in director.enemies_near(bloom_at, bloom, false):
+			m.receive_hit(HitData.make_attack(self, bd, 60.0))
+		SiegeFx.impact(get_parent(), bloom_at, bloom, false, Color(0.8, 0.95, 1.0))
+		for i in 10:
+			Fx.burst(get_parent(), bloom_at + Vector2.from_angle(TAU * i / 10.0) * bloom * 0.6, "crystal", 2, 30.0, 0.4, Vector2(0, 40), Color(0.85, 0.97, 1.0))
 	SiegeFx.beam(get_parent(), from, end, Color(0.75, 0.92, 1.0, 0.9), 0.18, 3.0)
 	SiegeFx.lane(get_parent(), from, end, 2.0, Color(1, 1, 1), 0.25)
 	if _spr:
@@ -331,10 +408,22 @@ func _icicle() -> void:
 		return
 	_t = float(p("interval", 1.2)) * (director.town.mul("ally_cd") if director.town else 1.0)
 	var dmg := _dmg(int(p("damage", 1)))
+	var splash := float(p("splash", 0.0))
+	var wr: WeakRef = weakref(self)
 	SiegeProjectile.shoot(get_parent(), global_position + Vector2(0, -24), best, "proj_icicle", 260.0, func(t: Node):
-		if is_instance_valid(t) and t is Actor:
-			(t as Actor).receive_hit(HitData.make_attack(self, dmg, 40.0))
-			Fx.burst(t.get_parent(), (t as Node2D).global_position + Vector2(0, -8), "crystal", 3, 30.0, 0.3, Vector2(0, 50), Color(0.85, 0.95, 1.0)))
+		if not is_instance_valid(t) or not (t is Actor):
+			return
+		var me := wr.get_ref() as IceTower
+		var src: Node = me if me else t
+		(t as Actor).receive_hit(HitData.make_attack(src, dmg, 40.0))
+		var at := (t as Node2D).global_position
+		# 落地碎开：溅射一小片
+		if splash > 0.0 and me and me.director:
+			for m in me.director.enemies_near(at, splash, false):
+				if m != t:
+					m.receive_hit(HitData.make_attack(src, maxi(1, dmg - 1), 30.0))
+			SiegeFx.ring(t.get_parent(), at, splash, Color(0.8, 0.95, 1.0, 0.8), 0.35, 0.15)
+		Fx.burst(t.get_parent(), at + Vector2(0, -8), "crystal", 6, 40.0, 0.4, Vector2(0, 60), Color(0.85, 0.95, 1.0)))
 	Audio.play("icicle", -12.0, 0.2)
 
 
@@ -349,6 +438,8 @@ func _snowman() -> void:
 			break
 		var s := Snowman.new()
 		s.hp = int(p("snow_hp", 4))
+		s.ball_splash = float(p("ball_splash", 18.0))
+		s.ball_damage = int(p("ball_damage", 1))
 		get_parent().add_child(s)
 		s.global_position = global_position + Vector2(randf_range(-14, 14), 10)
 		_snowmen.append(s)
@@ -385,9 +476,16 @@ func _frost(delta: float) -> void:
 		m.add_buff("siege_chill", 0.6)
 	if _freeze_t <= 0.0 and not ms.is_empty():
 		_freeze_t = 5.0
+		var burst := _dmg(int(p("burst", 1)))
 		for m in ms:
 			m.stun(float(p("freeze", 1.0)))
-		SiegeFx.ring(get_parent(), global_position, r, Color(0.8, 0.95, 1.0, 0.7), 0.5)
+			m.receive_hit(HitData.make_attack(self, burst, 0.0))
+		# 冰爆：冲击环 + 一圈冰花
+		var rg := SiegeFx.ring(get_parent(), global_position, r * 0.3, Color(0.85, 0.97, 1.0, 0.9), 0.5, 0.2)
+		if rg:
+			rg.create_tween().tween_property(rg, "scale", Vector2(3.4, 3.4), 0.4)
+		for i in 8:
+			Fx.burst(get_parent(), global_position + Vector2.from_angle(TAU * i / 8.0) * r * 0.7, "crystal", 3, 30.0, 0.4, Vector2(0, 40), Color(0.85, 0.97, 1.0))
 		Audio.play("chime", -10.0, 0.1, 1.9)
 
 
@@ -401,3 +499,273 @@ func _repair() -> void:
 		if got > 0.0:
 			SiegeFx.beam(get_parent(), global_position + Vector2(0, -20), Vector2(global_position.x, w.foot_y() - 10.0),
 				Color(0.6, 0.9, 1.0, 0.6), 0.25, 1.5)
+
+
+
+# ------------------------------------------------------------------ 随波次解锁的新塔
+## 冰霜迫击炮：往射程里怪最密的地方抛大冰弹，落点影子预警，炸开一大片 + 减速。
+func _mortar() -> void:
+	if _t > 0.0:
+		return
+	var rng := float(p("range", 520.0)) * _town("tower_range")
+	var at: Variant = director.densest(36.0, global_position, rng)
+	if not (at is Vector2):
+		_t = 0.6
+		return
+	_t = float(p("interval", 4.0)) * _town("ally_cd")
+	var to: Vector2 = at
+	var r := float(p("radius", 48.0))
+	var dmg := _dmg(int(p("damage", 2)))
+	var fly := clampf(global_position.distance_to(to) / 320.0, 0.6, 1.4)
+	SiegeFx.warn(get_parent(), to, "shadow", r, fly, Color(0.75, 0.92, 1.0))
+	var ball := Sprite2D.new()
+	ball.texture = TEX
+	ball.region_enabled = true
+	ball.region_rect = region("proj_mortar")
+	ball.z_index = 30
+	ball.add_to_group("siege_temp")
+	get_parent().add_child(ball)
+	var from := global_position + Vector2(0, -26)
+	var parent := get_parent()
+	var wr: WeakRef = weakref(self)
+	var tw := ball.create_tween()
+	tw.tween_method(func(v: float):
+		if is_instance_valid(ball):
+			ball.global_position = from.lerp(to, v) + Vector2(0, -sin(v * PI) * 110.0)
+			if randf() < 0.5:
+				Fx.burst(parent, ball.global_position, "snow", 1, 5.0, 0.4, Vector2.ZERO, Color(0.9, 0.97, 1.0)), 0.0, 1.0, fly)
+	tw.tween_callback(func():
+		if is_instance_valid(ball):
+			ball.queue_free()
+		var me := wr.get_ref() as IceTower
+		var src: Node = me if me else parent
+		var d := SiegeDirector.current
+		if d:
+			for m in d.enemies_near(to, r, false):
+				m.receive_hit(HitData.make_attack(src, dmg, 90.0))
+				m.add_buff("siege_chill", 2.0)
+		SiegeFx.impact(parent, to, r, false, Color(0.8, 0.95, 1.0))
+		Fx.burst(parent, to + Vector2(0, -6), "crystal", 16, r * 1.2, 0.6, Vector2(0, 100), Color(0.85, 0.97, 1.0))
+		if d and d.on_screen(to):
+			SiegeFx.screen_shake(parent, 2.0, 0.2)
+		Audio.play("ice_crack", -2.0, 0.1, 0.7))
+	Audio.play("swish", -6.0, 0.1, 0.6)
+
+
+## 冰风旋涡塔：身边一圈冰风，每 0.5 秒掉血、往外推。
+func _vortex() -> void:
+	if _t > 0.0:
+		return
+	_t = 0.5
+	var r := float(p("radius", 80.0))
+	var dmg := _dmg(int(p("damage", 1)))
+	var push := float(p("push", 40.0))
+	for m in director.enemies_near(global_position, r, false):
+		m.receive_hit(HitData.make_attack(self, dmg, 0.0))
+		m.apply_knockback(global_position, push * 3.0)
+	if randf() < 0.6:
+		var a := randf() * TAU
+		Fx.burst(get_parent(), global_position + Vector2.from_angle(a) * r * 0.7 + Vector2(0, -6), "snow", 3, 40.0, 0.5, Vector2.from_angle(a + PI / 2) * 40.0, Color(0.9, 0.97, 1.0))
+
+
+## 冰晶共鸣塔：冰光在怪之间连跳 jumps 下，每下掉血、冻 0.3 秒。
+func _resonance() -> void:
+	if _t > 0.0:
+		return
+	var rng := float(p("range", 200.0)) * _town("tower_range")
+	var first: Monster = null
+	var bd := rng
+	for m in director.enemies_near(global_position, rng, false):
+		var dd := global_position.distance_to(m.global_position)
+		if dd < bd:
+			bd = dd
+			first = m
+	if first == null:
+		_t = 0.4
+		return
+	_t = float(p("interval", 2.2)) * _town("ally_cd")
+	var dmg := _dmg(int(p("damage", 2)))
+	var hit: Array = [first]
+	var cur: Monster = first
+	for i in int(p("jumps", 5)) - 1:
+		var nxt: Monster = null
+		var nd := 70.0
+		for m in director.enemies_near(cur.global_position, 70.0, false):
+			if hit.has(m):
+				continue
+			var dd2 := cur.global_position.distance_to(m.global_position)
+			if dd2 < nd:
+				nd = dd2
+				nxt = m
+		if nxt == null:
+			break
+		hit.append(nxt)
+		cur = nxt
+	var prev := global_position + Vector2(0, -24)
+	for i in hit.size():
+		var m: Monster = hit[i]
+		var at := m.global_position + Vector2(0, -8)
+		_arc_line(prev, at, i * 0.05)
+		m.receive_hit(HitData.make_attack(self, dmg, 0.0))
+		m.stun(0.3)
+		Fx.burst(get_parent(), at, "crystal", 4, 30.0, 0.4, Vector2(0, 40), Color(0.85, 0.75, 1.0))
+		prev = at
+	Audio.play("chime", -6.0, 0.1, 1.7)
+
+
+## 一段锯齿状的冰光（共鸣塔的连跳）。
+func _arc_line(a: Vector2, b: Vector2, delay: float) -> void:
+	var l := Line2D.new()
+	l.width = 2.0
+	l.default_color = Color(0.85, 0.75, 1.0, 0.95)
+	var n := 6
+	for k in n + 1:
+		var pt := a.lerp(b, float(k) / n)
+		if k > 0 and k < n:
+			pt += (b - a).orthogonal().normalized() * randf_range(-5, 5)
+		l.add_point(pt)
+	l.z_index = 30
+	l.add_to_group("siege_temp")
+	l.modulate.a = 0.0
+	get_parent().add_child(l)
+	l.global_position = Vector2.ZERO
+	var tw := l.create_tween()
+	tw.tween_interval(delay)
+	tw.tween_property(l, "modulate:a", 1.0, 0.02)
+	tw.tween_property(l, "modulate:a", 0.0, 0.3)
+	tw.tween_callback(l.queue_free)
+
+
+## 冰陨星台：蓄力 interval 秒（塔顶越来越亮），往全场最大的怪堆砸冰陨星。
+var _charge_glow := 0.0
+
+
+func _meteor(delta: float) -> void:
+	var iv := float(p("interval", 12.0)) * _town("ally_cd")
+	_charge_glow = clampf(1.0 - _t / iv, 0.0, 1.0)
+	if _spr:
+		_spr.self_modulate = Color(1, 1, 1).lerp(Color(1.6, 1.8, 2.2), _charge_glow * _charge_glow)
+	if _t > 0.0:
+		if _t < 1.2 and randf() < delta * 10.0:
+			Fx.burst(get_parent(), global_position + Vector2(randf_range(-10, 10), -30), "crystal", 1, 20.0, 0.5, Vector2(0, -30), Color(0.85, 0.97, 1.0))
+		return
+	var at: Variant = director.densest(60.0)
+	if not (at is Vector2):
+		_t = 1.0
+		return
+	_t = iv
+	var to: Vector2 = at
+	var r := float(p("radius", 90.0))
+	var dmg := _dmg(int(p("damage", 4)))
+	var frz := float(p("freeze", 2.0))
+	SiegeFx.warn(get_parent(), to, "shadow", r, 1.0, Color(0.7, 0.9, 1.0))
+	SiegeFx.beam(get_parent(), global_position + Vector2(0, -30), global_position + Vector2(0, -400), Color(0.8, 0.95, 1.0, 0.9), 0.3, 4.0)
+	Audio.play("chime", -2.0, 0.0, 0.8)
+	var rock := Sprite2D.new()
+	rock.texture = TEX
+	rock.region_enabled = true
+	rock.region_rect = region("proj_meteor")
+	rock.z_index = 40
+	rock.scale = Vector2(1.6, 1.6)
+	rock.add_to_group("siege_temp")
+	var parent := get_parent()
+	parent.add_child(rock)
+	var start := to + Vector2(-160, -420)
+	rock.global_position = start
+	var wr: WeakRef = weakref(self)
+	var tw := rock.create_tween()
+	tw.tween_method(func(v: float):
+		if is_instance_valid(rock):
+			rock.global_position = start.lerp(to, v)
+			rock.rotation += 0.2
+			Fx.burst(parent, rock.global_position, "snow", 2, 20.0, 0.5, Vector2(0, -20), Color(0.85, 0.97, 1.0)), 0.0, 1.0, 1.0)
+	tw.tween_callback(func():
+		if is_instance_valid(rock):
+			rock.queue_free()
+		var me := wr.get_ref() as IceTower
+		var src: Node = me if me else parent
+		var d := SiegeDirector.current
+		if d:
+			for m in d.enemies_near(to, r, false):
+				m.receive_hit(HitData.make_attack(src, dmg, 160.0))
+				m.stun(frz)
+			for t in parent.get_tree().get_nodes_in_group("siege_enemy_tower"):
+				if (t as Node2D).global_position.distance_to(to) <= r:
+					(t as Actor).receive_hit(HitData.make_attack(src, dmg, 0.0))
+		SiegeFx.impact(parent, to, r, true, Color(0.8, 0.95, 1.0))
+		Fx.burst(parent, to + Vector2(0, -8), "crystal", 30, r * 1.5, 0.9, Vector2(0, 120), Color(0.85, 0.97, 1.0))
+		Audio.play("wall_crash", 0.0, 0.05, 1.3))
+
+
+## 温泉治疗泉：范围内公主闷笑降、士兵回血、修身后那段城墙。
+var _heal_t := 0.0
+
+
+func _hotspring() -> void:
+	if _t > 0.0:
+		return
+	_t = 0.5
+	var r := float(p("radius", 110.0))
+	for c: PlayableCharacter in [director.pink, director.blue]:
+		if c and is_instance_valid(c) and c.laugh and c.global_position.distance_to(global_position) <= r:
+			c.laugh.reduce_ratio(float(p("decay", 4.0)) / 100.0 * 0.5)
+	_heal_t -= 0.5
+	if _heal_t <= 0.0:
+		_heal_t = 2.0
+		var healed := false
+		for s2 in director.soldiers:
+			if is_instance_valid(s2) and not s2.retreating and s2.global_position.distance_to(global_position) <= r and s2.health.hp < s2.health.max_hp:
+				s2.health.heal(int(p("heal", 1)))
+				healed = true
+				Fx.burst(get_parent(), s2.global_position + Vector2(0, -12), "heart", 2, 15.0, 0.6, Vector2(0, -20), Color(0.6, 1.0, 0.8))
+		if healed:
+			SiegeFx.ring(get_parent(), global_position, r, Color(0.6, 1.0, 0.9, 0.5), 0.6, 0.05)
+	var w: SiegeWall = director.segment_at(global_position.x)
+	if w and w.taken > 0.0:
+		w.repair(float(p("repair", 2.0)) * 0.5)
+	if randf() < 0.5:
+		Fx.burst(get_parent(), global_position + Vector2.from_angle(randf() * TAU) * r * randf() * 0.6, "bubble", 1, 10.0, 0.8, Vector2(0, -20), Color(0.8, 1.0, 1.0))
+
+
+## 冰灯塔：冷光里幽灵现形（torch 组）、怪减速；范围里的敌塔发动变慢（EnemyTower 读 lamp_slow_at）。
+func _lamp() -> void:
+	if _t > 0.0:
+		return
+	_t = 0.5
+	var r := float(p("radius", 140.0))
+	light_radius = r
+	var buff := "siege_lamp_%d" % level
+	for m in director.enemies_near(global_position, r):
+		m.add_buff(buff, 0.8)
+	if randf() < 0.5:
+		Fx.burst(get_parent(), global_position + Vector2.from_angle(randf() * TAU) * r * randf() * 0.8, "crystal", 1, 6.0, 1.0, Vector2(0, -6), Color(0.75, 0.9, 1.0, 0.8))
+
+
+## 某个位置被冰灯照着时，敌塔的发动间隔倍数（没有 = 1）。
+static func lamp_slow_at(tree: SceneTree, at: Vector2) -> float:
+	var k := 1.0
+	for n in tree.get_nodes_in_group("siege_tower"):
+		var t := n as IceTower
+		if t and t.kind == "lamp" and t.global_position.distance_to(at) <= float(t.p("radius", 140.0)):
+			k = maxf(k, float(t.p("etower_slow", 1.3)))
+	return k
+
+
+## 冰盾发生器：每 interval 秒给范围内的友军套一层冰盾（ice_shield：挡掉下一次挠痒 / 抓取）。
+func _shield() -> void:
+	if _t > 0.0:
+		return
+	_t = float(p("interval", 8.0)) * _town("ally_cd")
+	var r := float(p("radius", 120.0))
+	var n := 0
+	if director.town:
+		for a in director.town.allies():
+			if is_instance_valid(a) and a.global_position.distance_to(global_position) <= r and not a.has_buff("ice_shield"):
+				a.add_buff("ice_shield", 30.0)
+				n += 1
+				SiegeFx.ring(a.get_parent(), a.global_position + Vector2(0, -8), 10.0, Color(0.7, 0.9, 1.0, 0.9), 0.5, 0.25)
+	if n > 0:
+		var rg := SiegeFx.ring(get_parent(), global_position, 12.0, Color(0.75, 0.92, 1.0, 0.9), 0.5, 0.1)
+		if rg:
+			rg.create_tween().tween_property(rg, "scale", Vector2(r / 12.0, r / 12.0 * 0.6), 0.5)
+		Audio.play("chime", -6.0, 0.0, 1.5)

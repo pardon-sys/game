@@ -102,7 +102,7 @@ func _setup() -> void:
 	# 关卡切换后恢复的闷笑值 / 战损需要立即反映到形象与语音
 	_on_laugh_value_changed(laugh.value, laugh.max_value)
 	animator.config.row_names.assign(GameState.VISUALS)
-	GameState.enemy_defeated.connect(func(_e: Node): if is_controlled(): GameState.emote("happy", 1.5))
+	GameState.enemy_defeated.connect(_on_enemy_defeated)
 	if status:
 		status.grabbed.connect(_on_grabbed)
 	magic_event.connect(_on_magic_event)
@@ -325,6 +325,25 @@ func _on_magic_event(event: String, tier: int) -> void:
 		"burst":
 			GameState.emote("happy", 1.2)
 			_say(ReactionDB.magic("burst_full" if tier >= channel_tiers.size() else "burst"), "magic")
+
+
+## 打倒怪物开心一下：只算她自己（近战 / 自己的魔法）打倒的，同一个表情 HAPPY_GAP 秒内不重复——
+## 攻防战里士兵、冰塔、搭档的法术一直在打倒怪，不然她就一直是开心脸。
+const HAPPY_GAP := 4.0
+var _happy_at := -INF
+
+
+func _on_enemy_defeated(e: Node) -> void:
+	if not is_controlled() or not (e is Actor):
+		return
+	var h: HitData = (e as Actor).last_hit
+	if h == null or not is_instance_valid(h.source) or h.source != self:
+		return
+	var now := Time.get_ticks_msec() / 1000.0
+	if now - _happy_at < HAPPY_GAP:
+		return
+	_happy_at = now
+	GameState.emote("happy", 1.5)
 
 
 # ------------------------------------------------------------------ 魔力疲倦

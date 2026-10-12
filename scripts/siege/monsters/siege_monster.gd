@@ -112,6 +112,7 @@ func climb_wall() -> bool:
 	set_physics_process(false)
 	var to := Vector2(global_position.x, director.wall_top_y() + randf_range(-2, 6))
 	var tw := create_tween()
+	_climb_tw = tw
 	tw.tween_property(self, "global_position", to, CLIMB_TIME).set_trans(Tween.TRANS_SINE)
 	tw.tween_callback(func():
 		climbing = false
@@ -119,6 +120,17 @@ func climb_wall() -> bool:
 		collision_mask = 0
 		set_physics_process(true))
 	return true
+
+
+var _climb_tw: Tween
+
+
+## 停下正在进行的爬墙（叠成活梯子时）。
+func stop_climb() -> void:
+	if _climb_tw and _climb_tw.is_valid():
+		_climb_tw.kill()
+	_climb_tw = null
+	climbing = false
 
 
 ## 墙顶走道上：找蓝色公主（她不在墙上就打墙）。

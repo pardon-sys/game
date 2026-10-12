@@ -332,9 +332,15 @@ def gen_towers():
     for k in ("icicle", "snowman", "decoy", "mint", "frost", "repair"):
         for lvl in (1, 2):
             items.append(("tower_%s_%d" % (k, lvl), tower(k, lvl)))
+        items.append(("tower_%s_3" % k, lvl3(tower(k, 2))))
     for k in ("campfire", "ballista", "cocoa"):
         for lvl in (1, 2):
             items.append(("tower_%s_%d" % (k, lvl), tower3(k, lvl)))
+        items.append(("tower_%s_3" % k, lvl3(tower3(k, 2))))
+    for k in ("mortar", "vortex", "resonance", "meteor", "hotspring", "lamp", "shield"):
+        for lvl in (1, 2, 3):
+            items.append(("tower_%s_%d" % (k, lvl), tower5(k, lvl)))
+    items += [("proj_mortar", mortar_proj()), ("proj_meteor", meteor_proj()), ("proj_snowball", snowball_proj())]
     for k in ETOWERS:
         items.append(("etower_" + k, etower(k)))
     items += [("proj_bolt", bolt_proj()), ("banner_0", banner(0)), ("banner_1", banner(1))]
@@ -876,6 +882,117 @@ def gen_particles():
     save("bubble", 5, 5, lambda d: (d.ellipse((0, 0, 4, 4), outline=(200, 235, 255, 230)), d.point((1, 1), fill=(255, 255, 255, 255))))
     save("thread", 5, 2, lambda d: d.line((0, 1, 2, 0, 4, 1), fill=(255, 170, 210, 255)))
     save("ring", 5, 5, lambda d: d.ellipse((0, 0, 4, 4), outline=(255, 255, 255, 255)))
+
+
+# ================================================================ 第五轮：3 级塔、随波次解锁的新塔、新投射物
+GOLD = (255, 214, 90, 255)
+GOLD_D = (200, 150, 50, 255)
+
+
+def lvl3(img):
+    """在 2 级图上加 3 级的装饰：冰晶冠、金边、发光点。"""
+    img = img.copy()
+    d = ImageDraw.Draw(img)
+    w, h = img.size
+    cx = w // 2
+    # 顶上的冰晶冠
+    bb = img.getbbox() or (0, 0, w, h)
+    top = bb[1]
+    for dx, hh in ((-5, 4), (0, 7), (5, 4)):
+        x = cx + dx
+        d.polygon([(x - 2, top + 3), (x, top + 3 - hh), (x + 2, top + 3)], fill=ICE_L, outline=ICE_D)
+    # 底座金边
+    d.arc((2, h - 8, w - 3, h - 1), 0, 180, fill=GOLD, width=1)
+    for x in (4, w - 5):
+        d.point((x, h - 5), fill=GOLD)
+    # 发光点
+    for (x, y) in ((cx - 7, h // 2), (cx + 7, h // 2 - 4), (cx, h // 2 + 6)):
+        if 0 <= x < w and 0 <= y < h and img.getpixel((x, y))[3]:
+            d.point((x, y), fill=(255, 255, 255, 255))
+    return add_outline(img)
+
+
+def tower5(kind, lvl):
+    img, d = canvas(24, 32)
+    if kind == "mortar":
+        d.rectangle((3, 22, 20, 30), fill=STONE, outline=STONE_D)
+        d.line((3, 25, 20, 25), fill=STONE_L)
+        d.polygon([(6, 22), (8, 10), (17, 8), (19, 20)], fill=(110, 130, 160, 255), outline=(60, 70, 95, 255))   # 炮身（斜着朝上）
+        d.ellipse((7, 5, 18, 12), fill=(60, 70, 95, 255))
+        d.ellipse((9, 6, 16, 10), fill=ICE)                      # 炮口里的冰弹
+        d.line((10, 7, 12, 7), fill=ICE_L)
+        for i in range(lvl):
+            d.line((6 + i, 14 + i * 3, 18, 13 + i * 3), fill=(180, 190, 210, 255))
+    elif kind == "vortex":
+        ice_base(d, lvl)
+        crystal_spire(d, 9, 6, 14, 27)
+        for i in range(2 + lvl):
+            y = 8 + i * 5
+            d.arc((2, y, 21, y + 8), 200 + i * 30, 340 + i * 30, fill=ICE_L, width=1)
+            d.arc((3, y + 1, 20, y + 7), 20 + i * 30, 160 + i * 30, fill=(200, 235, 255, 200), width=1)
+    elif kind == "resonance":
+        ice_base(d, lvl)
+        d.polygon([(11, 2), (15, 10), (13, 26), (9, 26), (7, 10)], fill=(190, 160, 255, 255), outline=(110, 80, 190, 255))
+        d.line((11, 4, 11, 24), fill=(235, 220, 255, 255))
+        for i, (x, y) in enumerate(((2, 9), (19, 7), (3, 18), (19, 17))[:2 + lvl]):
+            d.polygon([(x, y), (x + 2, y - 3), (x + 4, y), (x + 2, y + 3)], fill=(220, 200, 255, 255), outline=(110, 80, 190, 255))
+    elif kind == "meteor":
+        d.rectangle((5, 20, 18, 30), fill=STONE, outline=STONE_D)
+        d.polygon([(3, 20), (20, 20), (17, 16), (6, 16)], fill=STONE_L, outline=STONE_D)
+        d.ellipse((5, 1 - lvl, 18, 14 - lvl), fill=ICE, outline=ICE_D)       # 浮着的大冰晶球
+        d.ellipse((8, 3 - lvl, 13, 8 - lvl), fill=ICE_L)
+        for x in (3, 20):
+            d.line((x, 18, x, 10), fill=GOLD_D)
+            d.point((x, 9), fill=GOLD)
+    elif kind == "hotspring":
+        d.ellipse((1, 18, 22, 30), fill=(130, 125, 135, 255), outline=(80, 74, 84, 255))
+        d.ellipse((4, 20, 19, 28), fill=(120, 200, 230, 255))
+        d.ellipse((7, 22, 13, 25), fill=(190, 240, 255, 255))
+        for i in range(2 + lvl):
+            x = 5 + i * 4
+            d.arc((x, 6 + (i % 2) * 2, x + 4, 16), 180, 360, fill=(255, 255, 255, 190))
+        if lvl >= 2:
+            d.rectangle((0, 22, 2, 28), fill=STONE_D); d.rectangle((21, 22, 23, 28), fill=STONE_D)
+    elif kind == "lamp":
+        d.line((11, 12, 11, 30), fill=(70, 80, 110, 255), width=3)
+        d.rectangle((6, 28, 17, 31), fill=(70, 80, 110, 255))
+        d.polygon([(6, 3), (17, 3), (16, 13), (7, 13)], fill=(60, 70, 100, 255))
+        d.rectangle((8, 5, 15, 11), fill=(200, 240, 255, 255))           # 冷光
+        d.rectangle((10, 6, 13, 10), fill=(255, 255, 255, 255))
+        d.polygon([(5, 3), (11, 0), (18, 3)], fill=(90, 100, 140, 255))
+        if lvl >= 2:
+            d.line((4, 8, 6, 8), fill=ICE_L); d.line((17, 8, 19, 8), fill=ICE_L)
+    else:  # shield 冰盾发生器
+        ice_base(d, lvl)
+        pts = [(11, 3), (19, 8), (19, 18), (11, 23), (3, 18), (3, 8)]
+        d.polygon(pts, fill=(170, 225, 255, 200), outline=ICE_D)
+        d.polygon([(11, 7), (15, 10), (15, 16), (11, 19), (7, 16), (7, 10)], fill=ICE_L)
+        for i in range(lvl):
+            d.arc((1 - i, 1 - i, 21 + i, 25 + i), 200, 340, fill=(220, 245, 255, 220))
+    img = add_outline(img)
+    return lvl3(img) if lvl == 3 else img
+
+
+def mortar_proj():
+    img, d = canvas(9, 9)
+    d.ellipse((0, 0, 8, 8), fill=ICE, outline=ICE_D)
+    d.ellipse((2, 1, 5, 4), fill=ICE_L)
+    return add_outline(img)
+
+
+def meteor_proj():
+    img, d = canvas(18, 18)
+    d.polygon([(9, 0), (15, 4), (17, 10), (12, 17), (5, 16), (1, 10), (3, 3)], fill=ICE, outline=ICE_D)
+    d.polygon([(9, 3), (13, 6), (10, 9), (6, 7)], fill=ICE_L)
+    d.line((4, 12, 8, 14), fill=ICE_D)
+    return add_outline(img)
+
+
+def snowball_proj():
+    img, d = canvas(6, 6)
+    d.ellipse((0, 0, 5, 5), fill=(250, 252, 255, 255), outline=(180, 205, 230, 255))
+    d.point((2, 1), fill=(255, 255, 255, 255))
+    return add_outline(img)
 
 
 def main():

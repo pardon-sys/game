@@ -36,7 +36,7 @@ func _ready() -> void:
 	await _wait(0.5)
 	_finish()
 	var only := OS.get_environment("SIEGE3_ONLY")
-	for sec in ["hints", "waves", "town", "boss", "soldiers", "towers", "spells", "etowers", "field", "cart", "wall", "locks", "equip", "cg", "perf"]:
+	for sec in ["hints", "waves", "town", "boss", "soldiers", "towers", "spells", "etowers", "field", "cart", "wall", "locks", "bugs5", "towers5", "equip", "cg", "perf"]:
 		if only == "" or sec in only.split(","):
 			if is_instance_valid(d):
 				d.bench_soldiers(sec != "soldiers")
@@ -371,7 +371,7 @@ func _run_towers() -> void:
 	print("-- 新友军塔")
 	await _clear()
 	_fight()
-	check("冰塔种类 9 种（%s）" % [IceTower.kinds()], IceTower.kinds().size() == 9 and IceTower.kinds().has("campfire"))
+	check("冰塔种类（%d 种，有篝火塔）" % IceTower.kinds().size(), IceTower.kinds().size() >= 9 and IceTower.kinds().has("campfire"))
 	var at := Vector2(d.gate_pos.x - 300.0, d.wall_foot_y() + 120.0)
 	var fire := _make_tower("campfire", at)
 	var gh := d.spawn("ghost", "", at + Vector2(400, 0)) as TickleGhost
@@ -621,6 +621,185 @@ func _run_locks() -> void:
 	await get_tree().physics_frame
 	await get_tree().physics_frame
 	check("目标被释放后怪物把它忘掉（%s）" % (frog.target == null), frog.target == null)
+
+
+# ------------------------------------------------------------------ 第五轮的 bug
+func _run_bugs5() -> void:
+	print("-- 第五轮 bug：释放的目标 / 活梯子 / 开心表情")
+	await _clear()
+	_fight()
+	# 1 目标 queue_free 之后（释放的对象和 null 相等，之前的保护失效）
+	var sm := Snowman.new()
+	d.entities().add_child(sm)
+	sm.global_position = d.gate_pos + Vector2(0, 220)
+	var sq := d.spawn("squirrel", "", sm.global_position + Vector2(20, 0))
+	sq.target = sm
+	sq.state = Monster.State.CHASE
+	sm.queue_free()
+	await get_tree().physics_frame
+	await get_tree().physics_frame
+	await get_tree().physics_frame
+	check("目标 queue_free 后刷刷松鼠把它忘掉（%s）" % (not is_instance_valid(sq.target)), not is_instance_valid(sq.target) and sq.target == null)
+	# 2 活梯子：粉色公主在墙脚就能打到
+	var atw := Vector2(d.gate_pos.x - 300.0, d.wall_foot_y() + 4.0)
+	var geckos := d.teamwork.spawn_formation("gecko_ladder", atw)
+	for g in geckos:
+		g.global_position = atw + Vector2(randf_range(-6, 6), 0)
+		g.mind = null
+	d.teamwork._cd.clear()
+	d.teamwork.scan()
+	await _wait(0.6)
+	var lad := LivingLadder.near(get_tree(), atw.x)
+	var in_group := lad != null and lad.is_in_group("siege_enemy_tower")
+	var p := d.pink
+	if lad:
+		p.global_position = Vector2(lad.global_position.x, d.wall_foot_y() + 14.0)
+	p.facing = Vector2.UP
+	var hp0 := 0
+	for g in geckos:
+		if is_instance_valid(g):
+			hp0 += g.health.hp
+	for i in 10:
+		p.set_invulnerable(0.0)
+		p.attack()
+		await _wait(0.3)
+	var hp1 := 0
+	for g in geckos:
+		if is_instance_valid(g):
+			hp1 += g.health.hp
+	check("活梯子：粉色公主在墙脚就打得到（壁虎血 %d → %d），在敌塔组里（%s）" % [hp0, hp1, in_group], in_group and hp1 < hp0)
+	await _clear()
+	_fight()
+	# 3 开心表情：士兵打倒的不算，自己打倒的才算
+	p._happy_at = -INF   # 前面打梯子时她自己打倒过壁虎（4 秒内不重复开心）
+	var emotes := []
+	var cb := func(e: String, _dur: float, _b: bool): emotes.append(e)
+	GameState.emotion_requested.connect(cb)
+	var src := Src.new()
+	add_child(src)
+	for i in 6:
+		var m := d.spawn("slime", "", d.gate_pos + Vector2(i * 10, 200))
+		m.receive_hit(HitData.make_attack(d.soldiers[0], 99, 0.0))
+	await _wait(0.2)
+	var happy_by_others := emotes.count("happy")
+	var mine := d.spawn("slime", "", p.global_position + Vector2(10, 0))
+	mine.receive_hit(HitData.make_attack(p, 99, 0.0))
+	await _wait(0.2)
+	GameState.emotion_requested.disconnect(cb)
+	src.queue_free()
+	check("士兵打倒的怪不让粉色公主开心（%d 次），她自己打倒的才开心（%s）" % [happy_by_others, emotes.count("happy") > happy_by_others],
+		happy_by_others == 0 and emotes.count("happy") == 1)
+
+
+# ------------------------------------------------------------------ 第五轮的塔
+func _cluster(at: Vector2, n: int, key := "rat") -> Array[Monster]:
+	var out: Array[Monster] = []
+	for i in n:
+		var m := d.spawn(key, "", at + Vector2.from_angle(TAU * i / n) * 10.0)
+		m.mind = null
+		m.health.max_hp = 99
+		m.health.fill()
+		m.set_physics_process(false)
+		out.append(m)
+	return out
+
+
+func _hurt(ms: Array[Monster]) -> int:
+	return ms.filter(func(m): return is_instance_valid(m) and m.health.hp < 99).size()
+
+
+func _run_towers5() -> void:
+	print("-- 第五轮的塔：范围伤害 / 新塔 / 3 级 / 解锁")
+	await _clear()
+	_fight()
+	d.blue.set_controller(CharacterController.new())
+	var base := Vector2(d.gate_pos.x - 300.0, d.wall_foot_y() + 140.0)
+	var ok := {}
+	# 冰锥溅射
+	var t := _make_tower("icicle", base)
+	var ms := _cluster(base + Vector2(0, 60), 4)
+	await _wait(2.0)
+	ok["冰锥溅射"] = _hurt(ms) >= 2
+	t.queue_free()
+	d.clear_field()
+	# 寒霜冰爆
+	t = _make_tower("frost", base)
+	ms = _cluster(base + Vector2(0, 30), 4)
+	await _wait(1.0)
+	ok["寒霜冰爆"] = _hurt(ms) >= 3
+	t.queue_free()
+	d.clear_field()
+	# 雪人：数量 / 雪球
+	t = _make_tower("snowman", base)
+	await _wait(0.3)
+	var snows := get_tree().get_nodes_in_group("siege_temp").filter(func(n): return n is Snowman)
+	ms = _cluster(base + Vector2(0, 70), 3)
+	await _wait(3.0)
+	ok["雪人 3 只 + 雪球"] = snows.size() == 3 and _hurt(ms) >= 2 and int(t.p("interval")) == 7
+	t.queue_free()
+	d.clear_field()
+	for n in get_tree().get_nodes_in_group("siege_temp"):
+		if n is Snowman:
+			n.queue_free()
+	# 新塔
+	for k in ["mortar", "vortex", "resonance", "meteor"]:
+		t = _make_tower(k, base)
+		ms = _cluster(base + Vector2(0, 60), 5)
+		t._t = 0.0
+		await _wait(2.6 if k != "meteor" else 2.4)
+		ok[k] = _hurt(ms) >= 3
+		t.queue_free()
+		d.clear_field()
+		await _wait(0.2)
+	# 温泉
+	t = _make_tower("hotspring", base)
+	d.pink.global_position = base + Vector2(20, 10)
+	d.pink._full_invuln = 3.0
+	d.pink.laugh.set_value(d.pink.laugh.max_value * 0.6)
+	var l0 := d.pink.laugh.value
+	await _wait(1.5)
+	ok["温泉降闷笑"] = d.pink.laugh.value < l0 - 3.0
+	t.queue_free()
+	# 冰灯
+	t = _make_tower("lamp", base)
+	ms = _cluster(base + Vector2(0, 40), 2)
+	await _wait(0.8)
+	ok["冰灯减速 + 敌塔变慢"] = ms[0].stat_mul("speed") < 0.8 and IceTower.lamp_slow_at(get_tree(), base + Vector2(30, 0)) > 1.2
+	t.queue_free()
+	d.clear_field()
+	# 冰盾
+	t = _make_tower("shield", base)
+	d.pink.global_position = base + Vector2(20, 10)
+	d.pink._full_invuln = 0.0
+	d.pink.set_invulnerable(0.0)
+	t._t = 0.0
+	await _wait(0.4)
+	var shielded := d.pink.has_buff("ice_shield")
+	var s2 := Src.new()
+	s2.reaction_key = "slime"
+	add_child(s2)
+	d.pink.laugh.set_value(0.0)
+	var blocked := not d.pink.receive_hit(HitData.make_tickle(s2, 10.0))
+	s2.queue_free()
+	ok["冰盾挡一下"] = shielded and blocked and not d.pink.has_buff("ice_shield") and d.pink.laugh.value == 0.0
+	t.queue_free()
+	var bad := ok.keys().filter(func(k): return not ok[k])
+	check("范围伤害 / 新塔都生效（没生效：%s）" % [bad], bad.is_empty())
+	# 3 级：范围更大
+	t = _make_tower("frost", base)
+	var r1 := float(t.p("radius"))
+	t.upgrade()
+	t.upgrade()
+	check("升到 3 级（%d），范围变大（%.0f → %.0f）" % [t.level, r1, float(t.p("radius"))], t.level == 3 and float(t.p("radius")) > r1)
+	t.queue_free()
+	# 解锁
+	d.wave = 2
+	var locked := not IceTower.unlocked("mortar")
+	d.wave = 3
+	check("冰霜迫击炮第 3 波才解锁（第 2 波 %s，第 3 波 %s），共 %d 种塔" % [locked, IceTower.unlocked("mortar"), IceTower.kinds().size()],
+		locked and IceTower.unlocked("mortar") and IceTower.kinds().size() == 16)
+	d.wave = 1
+	d.blue.set_controller(d._make_ai(d.blue))
 
 
 # ------------------------------------------------------------------ 12 装备挠痒
