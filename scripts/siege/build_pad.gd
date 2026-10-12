@@ -76,35 +76,32 @@ func waiting() -> bool:
 	return not pending.is_empty() and not beaming
 
 
-## 粉色公主按 E：选塔 / 升级 / 拆掉。
+## 粉色公主按 B / E：选塔 / 升级 / 拆掉（ScrollPicker：带滚动的选择界面，和商店同一个模板）。
 func on_pink(p: Node) -> void:
 	var d := SiegeDirector.current
-	if d == null or not (p is PlayableCharacter) or (p as PlayableCharacter).character_id != "pink" or Dialogue.runner.choice_menu.is_open():
+	if d == null or not (p is PlayableCharacter) or (p as PlayableCharacter).character_id != "pink" or ScrollPicker.current != null:
 		return
-	var menu: ChoiceMenu = Dialogue.runner.choice_menu
-	var was_paused := get_tree().paused
-	get_tree().paused = true
 	if tower == null:
 		var ks := IceTower.kinds()
 		var opts: Array = []
 		for k in ks:
 			var inf := IceTower.info(k)
-			opts.append("%s　❄%d　%s" % [inf.get("name", k), int(inf.get("cost", 10)), inf.get("short", "")])
-		opts.append("算了")
-		var pick: int = await menu.ask(opts, "造哪一种冰塔？（冰晶 ×%d）" % d.crystals)
-		get_tree().paused = was_paused
-		if pick < ks.size():
+			var cost := int(inf.get("cost", 10))
+			opts.append({"text": "%s　❄%d　%s" % [inf.get("name", k), cost, inf.get("short", "")],
+				"desc": str(inf.get("desc", "")) + ("" if d.crystals >= cost else "（冰晶不够）")})
+		opts.append({"text": "算了", "desc": "不建了。"})
+		var pick := await ScrollPicker.ask("造哪一种冰塔？（冰晶 ×%d）" % d.crystals, opts)
+		if pick >= 0 and pick < ks.size():
 			request(ks[pick])
 		discard_if_empty()
 	else:
 		var inf := IceTower.info(tower.kind)
 		var opts: Array = []
 		if tower.level < 2:
-			opts.append("升级成 2 级　❄%d" % int(inf.get("upgrade", 12)))
-		opts.append("拆掉（返还 ❄%d）" % int(int(inf.get("cost", 10)) / 2))
-		opts.append("算了")
-		var pick: int = await menu.ask(opts, "%s（%d 级）" % [inf.get("name", tower.kind), tower.level])
-		get_tree().paused = was_paused
+			opts.append({"text": "升级成 2 级　❄%d" % int(inf.get("upgrade", 12)), "desc": str(inf.get("desc", ""))})
+		opts.append({"text": "拆掉（返还 ❄%d）" % int(int(inf.get("cost", 10)) / 2), "desc": "拆掉这座塔，返还一半冰晶，基座也一起收掉。"})
+		opts.append({"text": "算了", "desc": ""})
+		var pick := await ScrollPicker.ask("%s（%d 级）　冰晶 ×%d" % [inf.get("name", tower.kind), tower.level, d.crystals], opts)
 		var off := 0 if tower.level < 2 else -1
 		if tower.level < 2 and pick == 0:
 			request(tower.kind, true)

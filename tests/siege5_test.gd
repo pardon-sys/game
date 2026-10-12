@@ -20,6 +20,7 @@ func _ready() -> void:
 	DevConfig.override = false
 	ComboTracker.play_scenes = false
 	TutorialBoard.enabled = false
+	SiegeIntel.auto_controls = false   # 按键说明情报不自动弹（siege3_test 单独测）
 	TownBuffShow.enabled = false   # 镇民支援的过场跳过（buff 照样生效）
 	Monster.random_specials = false
 	main = load("res://scenes/main.tscn").instantiate()

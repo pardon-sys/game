@@ -17,6 +17,7 @@ func _ready() -> void:
 		push_error("截图超时")
 		get_tree().quit(1))
 	TutorialBoard.enabled = false
+	SiegeIntel.auto_controls = false   # 按键说明情报不自动弹（siege3_test 单独测）
 	ComboTracker.play_scenes = false
 	main = load("res://scenes/main.tscn").instantiate()
 	add_child(main)

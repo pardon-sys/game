@@ -17,6 +17,7 @@ func _ready() -> void:
 	DevConfig.override = false
 	ComboTracker.play_scenes = false
 	TutorialBoard.enabled = false
+	SiegeIntel.auto_controls = false   # 按键说明情报不自动弹（siege3_test 单独测）
 	TownBuffShow.enabled = false   # 镇民支援的过场跳过（buff 照样生效）
 	main = load("res://scenes/main.tscn").instantiate()
 	add_child(main)
@@ -131,20 +132,15 @@ func _wait(sec: float) -> void:
 func _run_hints() -> void:
 	print("-- 黄字 10 秒 / 情报图标")
 	var hint: CenterHint = main.find_child("CenterHint", true, false)
-	GameState.hint("测试一", GameState.RULE_HOLD)
-	await _wait(0.5)
-	GameState.hint("测试二", GameState.RULE_HOLD)
-	await _wait(0.5)
-	GameState.hint("测试三", GameState.RULE_HOLD)
+	GameState.hint("测试一")
 	await _wait(0.3)
+	GameState.hint("测试二")
+	await _wait(0.3)
+	GameState.hint("测试三")
+	await _wait(0.2)
 	var stacked := hint.get_parent().get_children().filter(func(n): return n is Label and (n as Label).text.begins_with("测试") and n.modulate.a > 0.1).size()
-	await _wait(8.0)
-	var still := hint.modulate.a > 0.5 and hint.text == "测试三"
-	await _wait(2.5)
-	check("规则说明的黄字叠放（同时 %d 条），9 秒后还在（%s），10 秒后消失（%s）" % [stacked, still, hint.modulate.a < 0.1], stacked == 3 and still and hint.modulate.a < 0.1)
-	GameState.hint("普通提示")
-	await _wait(2.4)
-	check("普通黄字按原来的时长（约 1.6 秒）就消失（%s）" % (hint.modulate.a < 0.1), hint.modulate.a < 0.1)
+	await _wait(2.6)
+	check("黄字叠放（同时 %d 条），按默认时长消失（%s）" % [stacked, hint.modulate.a < 0.1], stacked == 3 and hint.modulate.a < 0.1)
 	var intel := d.intel
 	for k in ["hug_bear", "cart"]:
 		GameState.set_flag("siege_intel_" + k, false)

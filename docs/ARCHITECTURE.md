@@ -481,7 +481,8 @@ data/cutscenes/<楼层组>/  地图内过场；data/theater/<楼层组>/  小剧
 
 ## 小镇攻防战（scripts/siege/）
 
-提示时长：普通黄字 `GameState.hint` 1.6 秒、通知 `notify` 按长度 2.4~5 秒；规则介绍用 `GameState.rule(...)`（`RULE_HOLD` 10 秒）。
+提示时长：黄字都用默认时长（`GameState.hint` 1.6 秒、通知 `notify` 按长度 2.4~5 秒）；规则介绍走 `GameState.rule(...)`（`RULE_HOLD`，现在也是默认）。
+攻防战的按键说明是一条情报（`controls`），进入攻防战、开场过场放完后自动弹出。
 
 战时小镇城门「出发！」→ `floor_06_siege`（`tools/build/gen_floor06_siege.py` 生成地图 + `data/siege/{waves,towers,enemy_towers,intel}.json`）。
 - **导演 `SiegeDirector`**（图例 `siege`）：12 波（`total_waves()`）。只有第 1 波前 / 失败重来时有准备阶段；一波的怪出完后倒计时

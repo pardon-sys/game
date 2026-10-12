@@ -218,6 +218,21 @@ func _setup() -> void:
 	crystals_changed.emit(crystals)
 	wall_changed.emit(wall_hp, wall_max)
 	_begin_prep()
+	_show_controls()
+
+
+## 按键说明：等开场过场 / 对话放完，自动弹出情报「攻防战按键说明」（每次进攻防战都弹一次，Esc 关掉）。
+func _show_controls() -> void:
+	intel.discover("controls")
+	if not SiegeIntel.auto_controls:
+		return
+	await get_tree().create_timer(1.2).timeout
+	var g := 0
+	while is_inside_tree() and (Cutscene.is_playing() or GameState.in_cutscene or CG.is_busy() or Dialogue.is_active() or get_tree().paused) and g < 6000:
+		await get_tree().process_frame
+		g += 1
+	if is_inside_tree() and intel and not intel.is_open():
+		intel.open("controls")
 
 
 func _make_ai(c: PlayableCharacter) -> CharacterController:

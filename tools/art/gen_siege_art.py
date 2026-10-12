@@ -604,7 +604,7 @@ def gen_icons():
     intel_path = root / "data/siege/intel.json"
     keys = [k for k in json.loads(intel_path.read_text()) if k != "_说明"] if intel_path.exists() else []
     sheets = {}
-    for name in ("towers", "monsters", "hazards"):
+    for name in ("towers", "monsters", "hazards", "props"):
         png, js = DIR / (name + ".png"), DIR / (name + ".json")
         if png.exists() and js.exists():
             sheets[name] = (Image.open(png).convert("RGBA"), json.loads(js.read_text()))
@@ -618,7 +618,7 @@ def gen_icons():
     for k in keys:
         src = None
         for sheet, meta in sheets.values():
-            alias = {"troll_general": "general_0"}.get(k, "")
+            alias = {"troll_general": "general_0", "controls": "horn"}.get(k, "")
             for cand in (k, k + "_1", k + "_0", k + "_a_0", "icon_" + k, alias):
                 if cand in meta:
                     x, y, w, h = meta[cand]

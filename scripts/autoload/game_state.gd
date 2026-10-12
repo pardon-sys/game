@@ -259,8 +259,8 @@ func show_bubble(kind: String) -> void:
 	bubble_requested.emit(kind)
 
 
-## 规则介绍（第一次被暴击、第一次组合技、失控、攻防战的玩法说明……）停留的秒数；普通提示用各自的默认时长。
-const RULE_HOLD := 10.0
+## 规则介绍（第一次被暴击、第一次组合技、失控、攻防战的玩法说明……）停留的秒数：< 0 = 和普通提示一样用默认时长。
+const RULE_HOLD := -1.0
 
 
 ## 屏幕上方的黄色通知。hold < 0：按长度的默认时长（2.4~5 秒）。
@@ -268,7 +268,7 @@ func notify(text: String, hold := -1.0) -> void:
 	toast.emit(text, hold)
 
 
-## 规则介绍：和 notify 一样显示在上方，但停 RULE_HOLD 秒，来得及读完。
+## 规则介绍：和 notify 一样显示在上方（停留时长 RULE_HOLD，现在和普通通知一样是默认的）。
 func rule(text: String) -> void:
 	notify(text, RULE_HOLD)
 
