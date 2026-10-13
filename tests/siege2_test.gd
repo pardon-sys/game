@@ -64,6 +64,7 @@ func _clear() -> void:
 	# 先退回准备阶段再清场，免得导演以为这一波打完了（连着清几次会一路「打赢」到最后一波）
 	d.state = "prep"
 	d._busy = false
+	d.features.end()   # 这一波的特色（泡泡潮、强风……）别带到下一段
 	d.wave = 1
 	d.clear_field()
 	for pd in get_tree().get_nodes_in_group("siege_pad"):
@@ -197,10 +198,15 @@ func _run_wander() -> void:
 	pd._build("snowman", 1)
 	_fight()
 	await _until(func(): return get_tree().get_nodes_in_group("siege_temp").any(func(n): return n is Snowman), 3.0)
-	var sm: Snowman = get_tree().get_nodes_in_group("siege_temp").filter(func(n): return n is Snowman)[0]
-	var s0 := sm.global_position
+	# 一次放 3 只（第五轮）：有的会站一会儿 / 撞到塔换方向，看走得最多的那只
+	var sms := get_tree().get_nodes_in_group("siege_temp").filter(func(n): return n is Snowman)
+	var s0s := sms.map(func(n): return (n as Node2D).global_position)
 	await _wait(4.0)
-	check("雪人没怪可打时在附近走动（移动 %.0f）" % sm.global_position.distance_to(s0), sm.global_position.distance_to(s0) > 5.0)
+	var best_move := 0.0
+	for i in sms.size():
+		if is_instance_valid(sms[i]):
+			best_move = maxf(best_move, (sms[i] as Node2D).global_position.distance_to(s0s[i]))
+	check("雪人没怪可打时在附近走动（%d 只，最多移动 %.0f）" % [sms.size(), best_move], best_move > 5.0)
 	var sp: SiegeSoldier = d.soldiers.filter(func(s): return s.role == "spear")[0]
 	var q0 := sp.global_position
 	await _wait(4.0)
@@ -358,7 +364,13 @@ func _run_teamwork() -> void:
 	await _wait(0.6)
 	var lad := LivingLadder.near(get_tree(), atw.x)
 	var climber := d.spawn("slime", "", Vector2(atw.x + 4.0, d.wall_foot_y() + 30.0))
-	await _until(func(): return is_instance_valid(climber) and climber.get_meta("siege_on_wall", false), 8.0)
+	# 爬梯子的途中打梯子也会打到它（第六轮）：这里只看它能不能爬上去——给它足够的血，蓝色公主先别放法术（会把它击退、引去追人）
+	climber.health.max_hp = 99
+	climber.health.fill()
+	d.blue.set_controller(CharacterController.new())
+	var cref: WeakRef = weakref(climber)
+	await _until(func(): return cref.get_ref() != null and (cref.get_ref() as Node).get_meta("siege_on_wall", false), 8.0)
+	d.blue.set_controller(d._make_ai(d.blue))
 	check("壁虎叠罗汉：叠成活梯子（%s），普通怪顺着爬上墙（%s）" % [lad != null, is_instance_valid(climber) and climber.get_meta("siege_on_wall", false)],
 		lad != null and is_instance_valid(climber) and climber.get_meta("siege_on_wall", false))
 	await _clear()

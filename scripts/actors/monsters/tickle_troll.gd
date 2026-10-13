@@ -32,10 +32,13 @@ var _summon_cd := 0.0
 
 
 func _tick(delta: float) -> void:
+	# 攻防战里当小怪（meta siege_minion_boss）：不弹 Boss 血条、不召唤小怪
+	var minion := has_meta("siege_minion_boss")
 	if not _announced and state == State.CHASE:
 		_announced = true
-		GameState.boss_changed.emit(self)
-	if _announced and is_alive() and not GameState.in_dialogue:
+		if not minion:
+			GameState.boss_changed.emit(self)
+	if _announced and not minion and is_alive() and not GameState.in_dialogue:
 		_update_summon(delta)
 	match mode:
 		Mode.NORMAL:

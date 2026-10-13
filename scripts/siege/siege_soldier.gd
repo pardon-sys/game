@@ -169,7 +169,8 @@ func _tick(delta: float) -> void:
 			"shield": _shield(delta)
 			"medic": _medic(delta)
 			"artisan": _artisan(delta)
-	velocity *= stat_mul("speed")
+	# 速度加成乘在这一帧算出来的速度上（先限一下长度：有的分支沿用上一帧的速度，不能越乘越大）
+	velocity = velocity.limit_length(SPEED * 1.6) * stat_mul("speed")
 	move_with_push()
 	_animate()
 

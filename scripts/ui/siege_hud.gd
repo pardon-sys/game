@@ -4,6 +4,7 @@ extends CanvasLayer
 ##   顶部中间：第 N / 10 波 + 状态（准备倒计时 / 战斗中还剩几只）、城墙血条（分 8 段，每段按挨打程度变色）、冰晶数。
 ##   右上（立绘框下面）：小地图——城墙、冰塔格、两位公主、怪物点、敌塔。
 ##   屏幕边缘：大型攻城怪（meta siege_alert）在屏幕外时的红色箭头。
+##   小地图下面：这一波的特色机制标签（图标 + 名字，鼠标停上去看说明；WaveFeatures）。
 ##   底部：蓝色公主的 4 个城墙法术格（键位 1~4、名字、冷却遮罩；正在瞄准的那个金框）。
 
 const BAR := Rect2(250, 16, 130, 6)
@@ -15,6 +16,9 @@ const ICE := Color(0.7, 0.92, 1.0)
 var director: SiegeDirector
 var view: Control
 var _font: Font
+## 特色标签（tags 是现在显示的 id，测试用）
+var tag_box: VBoxContainer
+var tags: Array[String] = []
 
 
 func _ready() -> void:
@@ -25,11 +29,56 @@ func _ready() -> void:
 	view.draw.connect(_draw_view)
 	add_child(view)
 	_font = view.get_theme_default_font()
+	tag_box = VBoxContainer.new()
+	tag_box.position = Vector2(MAP.position.x, MAP.end.y + 4.0)
+	tag_box.add_theme_constant_override("separation", 1)
+	add_child(tag_box)
 
 
 func _process(_delta: float) -> void:
 	visible = not CG.is_busy() and not GameState.in_cutscene
 	view.queue_redraw()
+	var now: Array[String] = []
+	if director and director.features and director.state == "fight":
+		now = director.features.active.duplicate()
+	if now != tags:
+		_build_tags(now)
+
+
+func _build_tags(ids: Array[String]) -> void:
+	tags = ids
+	for c in tag_box.get_children():
+		c.queue_free()
+	for id in ids:
+		var inf := WaveFeatures.info(id)
+		var row := HBoxContainer.new()
+		row.add_theme_constant_override("separation", 2)
+		row.mouse_filter = Control.MOUSE_FILTER_STOP
+		row.tooltip_text = "%s\n%s" % [inf.get("name", id), inf.get("desc", "")]
+		var bg := StyleBoxFlat.new()
+		bg.bg_color = Color(0.08, 0.05, 0.1, 0.75)
+		bg.set_corner_radius_all(2)
+		var panel := PanelContainer.new()
+		panel.add_theme_stylebox_override("panel", bg)
+		panel.mouse_filter = Control.MOUSE_FILTER_PASS
+		panel.tooltip_text = row.tooltip_text
+		var icon := TextureRect.new()
+		var at := AtlasTexture.new()
+		at.atlas = WaveFeatures.TEX
+		at.region = WaveFeatures.icon_rect(id)
+		icon.texture = at
+		icon.mouse_filter = Control.MOUSE_FILTER_PASS
+		var l := Label.new()
+		l.text = str(inf.get("name", id))
+		l.add_theme_font_size_override("font_size", 8)
+		l.add_theme_color_override("font_color", Color(str(inf.get("color", "#ffffff"))))
+		l.add_theme_color_override("font_outline_color", Color(0.08, 0.04, 0.1))
+		l.add_theme_constant_override("outline_size", 3)
+		l.mouse_filter = Control.MOUSE_FILTER_PASS
+		row.add_child(icon)
+		row.add_child(l)
+		panel.add_child(row)
+		tag_box.add_child(panel)
 
 
 func status_text() -> String:

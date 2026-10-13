@@ -8,6 +8,10 @@ extends Monster
 @export var revealed_speed_mult := 0.5
 
 var revealed := false
+## 没显形时不能被选为攻击目标（同伴 AI 的 attackable 检查、攻防战的 SiegeDirector.enemies_near 都看它）
+var attackable: bool:
+	get:
+		return revealed
 
 
 func _tick(delta: float) -> void:

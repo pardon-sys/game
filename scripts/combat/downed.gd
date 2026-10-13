@@ -78,7 +78,10 @@ static func _arc(r: float, frac: float) -> PackedVector2Array:
 
 
 func _process(delta: float) -> void:
-	if _done or not is_instance_valid(who) or GameState.in_dialogue:
+	if _done or not is_instance_valid(who):
+		return
+	# 对话时不倒计时（攻防战例外：黄字 / 小剧场很多，不能让她一直躺着）
+	if GameState.in_dialogue and not (Duo.director and Duo.director.get("downed_never_fails") == true):
 		return
 	var mobs := 0
 	for m in get_tree().get_nodes_in_group("enemy"):
@@ -139,6 +142,9 @@ func _revive() -> void:
 
 
 func _fail() -> void:
+	# 攻防战：两个人都倒下也不算输（只看城墙），倒地照样倒计时 / 能被救起——不能卡住
+	if Duo.director and Duo.director.get("downed_never_fails") == true:
+		return
 	_done = true
 	if Duo.director and Duo.director.has_method("on_defeat"):
 		Duo.director.on_defeat("downed")

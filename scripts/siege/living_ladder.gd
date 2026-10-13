@@ -5,22 +5,31 @@ extends Actor
 ## 梯子里的壁虎被打倒到少于 MIN_GECKOS 只，梯子就散了。
 ## 能打：梯子本身是敌方的 Actor（在 siege_enemy_tower 组里：冰塔、弩炮、士兵、粉色公主的 AI 都会来打），
 ## 受击范围从墙顶一直到墙脚往下 REACH_BELOW 像素——壁虎贴在墙面上、墙脚挡人窄条的里面，直接打壁虎是够不着的；
-## 打到梯子的那一下转给最下面那只活着的壁虎。
+## 打到梯子的那一下转给离攻击来源最近的目标：梯子里的壁虎，或者正顺着梯子往上爬的怪（meta ladder_of = 这架梯子）。
+## 受击范围加高到墙顶上方 REACH_ABOVE 像素：墙顶的蓝色公主、弓箭手也打得到上半段。
 
 const CLIMB_X := 28.0
+## 离墙 ATTRACT_Y 以内、横向 ATTRACT_X 以内的怪会改道去梯子那里（SiegeMind.march）
+const ATTRACT_X := 140.0
+const ATTRACT_Y := 120.0
 const MIN_GECKOS := 3
 const REACH_BELOW := 14.0
+const REACH_ABOVE := 16.0
+const WIDTH := 28.0
 
 var geckos: Array = []
 var _t := 0.0
 
 
-static func near(tree: SceneTree, x: float) -> LivingLadder:
+static func near(tree: SceneTree, x: float, r := CLIMB_X) -> LivingLadder:
+	var best: LivingLadder = null
+	var best_d := r
 	for n in tree.get_nodes_in_group("siege_ladder_living"):
 		var l := n as LivingLadder
-		if l and absf(l.global_position.x - x) <= CLIMB_X:
-			return l
-	return null
+		if l and l.is_alive() and absf(l.global_position.x - x) <= best_d:
+			best_d = absf(l.global_position.x - x)
+			best = l
+	return best
 
 
 func _setup() -> void:
@@ -35,11 +44,11 @@ func _setup() -> void:
 	collision_layer = 4
 	collision_mask = 0
 	if d:
-		var top := d.wall_top_y() - global_position.y
+		var top := d.wall_top_y() - global_position.y - REACH_ABOVE
 		var bottom := REACH_BELOW
 		var cs := CollisionShape2D.new()
 		var r := RectangleShape2D.new()
-		r.size = Vector2(20, bottom - top)
+		r.size = Vector2(WIDTH, bottom - top)
 		cs.shape = r
 		cs.position = Vector2(0, (top + bottom) / 2.0)
 		add_child(cs)
@@ -73,16 +82,26 @@ func is_alive() -> bool:
 	return is_inside_tree() and alive_count() >= MIN_GECKOS
 
 
-## 打到梯子：转给最下面那只活着的壁虎（挠痒不算）。
+## 正顺着这架梯子往上爬的怪。
+func climbers() -> Array:
+	var out := []
+	for m in get_tree().get_nodes_in_group("enemy"):
+		if m is Monster and (m as Monster).is_alive() and m.has_meta("ladder_of") and m.get_meta("ladder_of") == self:
+			out.append(m)
+	return out
+
+
+## 打到梯子：转给离攻击来源最近的壁虎 / 爬梯子的怪（挠痒不算）。
 func receive_hit(hit: HitData) -> bool:
 	if hit.kind != HitData.Kind.ATTACK or _attack_invuln > 0.0:
 		return false
-	var alive := alive_geckos()
-	if alive.is_empty():
+	var pool: Array = alive_geckos() + climbers()
+	if pool.is_empty():
 		return false
-	alive.sort_custom(func(a, b): return (a as Node2D).global_position.y > (b as Node2D).global_position.y)
+	var from: Vector2 = (hit.source as Node2D).global_position if is_instance_valid(hit.source) and hit.source is Node2D else global_position
+	pool.sort_custom(func(a, b): return (a as Node2D).global_position.distance_to(from) < (b as Node2D).global_position.distance_to(from))
 	_attack_invuln = hurt_invuln_time
-	var g := alive[0] as Monster
+	var g := pool[0] as Monster
 	var ok := g.receive_hit(hit)
 	if ok:
 		Fx.burst(get_parent(), g.global_position + Vector2(0, -4), "chip", 4, 30.0, 0.3, Vector2(0, 60), Color(0.7, 1.0, 0.6))

@@ -36,7 +36,7 @@ func _ready() -> void:
 	await _wait(0.5)
 	_finish()
 	var only := OS.get_environment("SIEGE3_ONLY")
-	for sec in ["hints", "waves", "town", "boss", "soldiers", "towers", "spells", "etowers", "field", "cart", "wall", "locks", "bugs5", "towers5", "equip", "cg", "perf"]:
+	for sec in ["hints", "waves", "town", "boss", "soldiers", "towers", "spells", "etowers", "field", "cart", "wall", "locks", "bugs5", "towers5", "fixes6", "features6", "equip", "cg", "perf"]:
 		if only == "" or sec in only.split(","):
 			if is_instance_valid(d):
 				d.bench_soldiers(sec != "soldiers")
@@ -63,6 +63,7 @@ func _clear() -> void:
 		g += 1
 	d.state = "prep"
 	d._busy = false
+	d.features.end()
 	d.wave = 1
 	d.next_left = -1.0
 	d.clear_field()
@@ -799,6 +800,287 @@ func _run_towers5() -> void:
 	check("冰霜迫击炮第 3 波才解锁（第 2 波 %s，第 3 波 %s），共 %d 种塔" % [locked, IceTower.unlocked("mortar"), IceTower.kinds().size()],
 		locked and IceTower.unlocked("mortar") and IceTower.kinds().size() == 16)
 	d.wave = 1
+	d.blue.set_controller(d._make_ai(d.blue))
+
+
+# ------------------------------------------------------------------ 第六轮的修正
+func _run_fixes6() -> void:
+	print("-- 第六轮修正：雪人 / 活梯子上半段 / 幽灵 / 小 Boss / 蓝色公主卡死 / 旧 Boss 当小怪 / 配合技情报 / 第 10 波")
+	await _clear()
+	_fight()
+	d.blue.set_controller(CharacterController.new())
+	# 1 雪人有速度加成时站着扔雪球，不会越来越快把自己扔飞
+	var base := Vector2(d.gate_pos.x - 260.0, d.wall_foot_y() + 160.0)
+	var sm := Snowman.new()
+	d.entities().add_child(sm)
+	sm.global_position = base
+	sm.add_buff("siege_carnival", 99.0)
+	sm.add_buff("town_party", 99.0)
+	var foe := d.spawn("slime", "", base + Vector2(130, 0))   # 射程外：先走过去，再站住扔（原来的 bug：站住时速度越乘越大）
+	foe.mind = null
+	foe.set_physics_process(false)
+	foe.health.max_hp = 999
+	foe.health.fill()
+	var max_v := 0.0
+	for i in 150:
+		await get_tree().physics_frame
+		max_v = maxf(max_v, sm.velocity.length())
+	var moved := sm.global_position.distance_to(base)
+	check("雪人走到射程里站着扔雪球（移动 %.0f 像素、最大速度 %.0f），没把自己扔飞" % [moved, max_v], moved > 20.0 and moved < 80.0 and max_v < Snowman.SPEED * 2.0)
+	sm.queue_free()
+	d.clear_field()
+	# 2 活梯子：受击范围高过墙顶；从墙顶打，打到的是正往上爬的怪
+	var atw := Vector2(d.gate_pos.x - 320.0, d.wall_foot_y() + 4.0)
+	var geckos := d.teamwork.spawn_formation("gecko_ladder", atw)
+	for g in geckos:
+		g.global_position = atw + Vector2(randf_range(-6, 6), 0)
+		g.mind = null
+	d.teamwork._cd.clear()
+	d.teamwork.scan()
+	await _wait(0.6)
+	var lad := LivingLadder.near(get_tree(), atw.x)
+	var climber := d.spawn("rat", "", Vector2(atw.x, d.wall_top_y() + 10.0))
+	climber.mind = null
+	climber.set_physics_process(false)
+	climber.global_position = Vector2(atw.x, d.wall_top_y() + 10.0)
+	var top_ok := false
+	if lad:
+		climber.set_meta("ladder_of", lad)
+		var cs := lad.get_child(0) as CollisionShape2D
+		for c in lad.get_children():
+			if c is CollisionShape2D:
+				cs = c
+		var top_y := lad.global_position.y + cs.position.y - (cs.shape as RectangleShape2D).size.y / 2.0
+		top_ok = top_y < d.wall_top_y()
+		var src := Src.new()
+		add_child(src)
+		src.global_position = climber.global_position
+		var hp0 := climber.health.hp
+		lad.receive_hit(HitData.make_attack(src, 1, 0.0))
+		await _wait(0.1)
+		check("活梯子受击范围高过墙顶（%s），从墙顶打到正在爬的怪（血 %d → %d）" % [top_ok, hp0, climber.health.hp if is_instance_valid(climber) else -1],
+			top_ok and (not is_instance_valid(climber) or climber.health.hp < hp0))
+		src.queue_free()
+	else:
+		check("活梯子没搭起来", false)
+	d.clear_field()
+	for n in get_tree().get_nodes_in_group("siege_enemy_tower"):
+		n.queue_free()
+	# 3 幽灵：没显形时不会被选成目标，篝火旁现形后才会
+	var gpos := Vector2(d.gate_pos.x + 260.0, d.wall_foot_y() + 200.0)
+	var gh := d.spawn("ghost", "", gpos) as TickleGhost
+	gh.mind = null
+	gh.set_physics_process(false)
+	gh._update_reveal()
+	var hidden_skip: bool = not d.enemies_near(gpos, 30.0, false).has(gh) and gh.get("attackable") == false
+	var cf := _make_tower("campfire", gpos + Vector2(20, 0))
+	gh._update_reveal()
+	var shown_ok: bool = d.enemies_near(gpos, 30.0, false).has(gh) and gh.get("attackable") == true
+	check("没显形的幽灵不当目标（%s），篝火旁现形后才当（%s）" % [hidden_skip, shown_ok], hidden_skip and shown_ok)
+	cf.pad.queue_free()
+	cf.queue_free()
+	d.clear_field()
+	# 4 小 Boss：冰塔伤害 25%；狂暴前不上地图上半部、不冲锋不跳劈
+	var gat := Vector2(d.gate_pos.x - 200.0, d.map_size().y * 0.75)
+	var boss := d.spawn("troll_general", "", gat) as TrollGeneral
+	await _until(func(): return boss._intro_done and boss.is_physics_processing(), 5.0)
+	await _wait(0.8)
+	boss._full_invuln = 0.0
+	var tw := _make_tower("icicle", gat + Vector2(0, -80))
+	var hp_a := boss.health.hp
+	for i in 4:
+		boss._attack_invuln = 0.0
+		boss.receive_hit(HitData.make_attack(tw, 4, 0.0))
+	var tower_loss := hp_a - boss.health.hp
+	boss._attack_invuln = 0.0
+	var hp_b := boss.health.hp
+	boss.receive_hit(HitData.make_attack(d.pink, 4, 0.0))
+	var pink_loss := hp_b - boss.health.hp
+	check("冰塔打小 Boss 只有 25%%（4 下 ×4 → 掉 %d），粉色公主照常（4 → 掉 %d）" % [tower_loss, pink_loss], tower_loss == 4 and pink_loss == 4)
+	tw.pad.queue_free()
+	tw.queue_free()
+	boss.global_position = Vector2(gat.x, d.wall_foot_y() + 60.0)
+	d.pink.global_position = Vector2(gat.x + 600.0, d.map_size().y - 40.0)
+	boss.skill = ""
+	var picked: Array[String] = []
+	for i in 30:
+		for k in boss.cds:
+			boss.cds[k] = 0.0
+		boss.skill = ""
+		boss._global_cd = 0.0
+		boss._choose()
+		if boss.skill != "":
+			picked.append(boss.skill)
+		boss.skill = ""
+		boss.mode = TickleTroll.Mode.NORMAL
+	boss.global_position = Vector2(gat.x, d.wall_foot_y() + 60.0)
+	var y_up := boss.global_position.y
+	await _wait(2.5)
+	check("狂暴前：在上半部就往下走回去（y %.0f → %.0f，下半部从 %.0f 开始），路上不放技能（%s），不用冲锋 / 跳劈（选过 %s）" % [y_up,
+			boss.global_position.y, boss.min_y(), boss.skill == "", picked],
+		boss.global_position.y > y_up + 40.0 and boss.skill == "" and not picked.has("ram") and not picked.has("leap"))
+	boss.health.damage(boss.health.max_hp / 2 + 1)
+	await _wait(0.3)
+	check("狂暴后不再限制（min_y = %s）" % boss.min_y(), boss.raged and boss.min_y() == -INF)
+	boss.health.damage(9999)
+	await _wait(0.5)
+	await _clear()
+	_fight()
+	d.blue.set_controller(CharacterController.new())
+	# 5 蓝色公主卡死：两个人都倒下也会照常倒计时 / 自己起来；倒了却没有倒地组件，看门狗会补上
+	var b := d.blue
+	var p := d.pink
+	p._dead = true
+	p._set_state(PlayableCharacter.State.DEAD)
+	var dp := Downed.start(p)
+	var dn := Downed.start(b)
+	b._dead = true
+	b._set_state(PlayableCharacter.State.DEAD)
+	dn.revive_after = 0.6
+	await _wait(1.2)
+	var both_ok := b.is_alive() and not Downed.is_downed(b)
+	dp.queue_free()
+	p.revive()
+	p._set_state(PlayableCharacter.State.IDLE)
+	check("两个人都倒下：蓝色公主的倒地照样倒计时、自己起来（%s）" % both_ok, both_ok)
+	b._dead = true
+	b._set_state(PlayableCharacter.State.DEAD)
+	await _until(func(): return Downed.is_downed(b), 6.0)
+	var patched := Downed.is_downed(b)
+	if patched:
+		(b.get_node("Downed") as Downed).revive_after = -1.0
+		d._blue_down_t = SiegeDirector.BLUE_REVIVE + 9.5
+	await _until(func(): return b.is_alive(), 3.0)
+	check("倒了却没有倒地组件 → 看门狗补上（%s），倒地太久直接救起（%s）" % [patched, b.is_alive()], patched and b.is_alive())
+	await _clear()
+	_fight()
+	# 6 旧 Boss（挠痒巨魔）当小怪：不弹 Boss 血条、不掉钥匙
+	var seen := [null]
+	var cb := func(m: Node): seen[0] = m
+	GameState.boss_changed.connect(cb)
+	var tr := d.spawn("troll", "", d.gate_pos + Vector2(0, 300))
+	tr.state = Monster.State.CHASE
+	tr.target = d.pink
+	await _wait(0.5)
+	GameState.boss_changed.disconnect(cb)
+	var keys := tr.stats.drops.filter(func(dr): return dr.item and dr.item.category == ItemData.Category.KEY).size()
+	check("挠痒巨魔在攻防战里是小怪：is_boss %s、没弹 Boss 血条（%s）、不掉钥匙（%d）" % [tr.stats.is_boss, seen[0] == null, keys],
+		not tr.stats.is_boss and seen[0] == null and keys == 0)
+	var orig := load("res://data/monsters/tickle_troll.tres") as MonsterStats
+	check("原来的挠痒巨魔数据没被改（第 1~5 层照旧是 Boss：%s）" % orig.is_boss, orig.is_boss)
+	d.clear_field()
+	# 7 配合技 / 陷阱组合不进情报
+	var bad_keys := SiegeIntel.data().keys().filter(func(k): return str(k).begins_with("team_") or str(k).begins_with("hzcombo_"))
+	var shown0 := d.intel.shown.size()
+	d.teamwork.triggered.emit("slime_merge", d.gate_pos)
+	d.spawn_hazard_combo("net_link")
+	await _wait(0.2)
+	check("配合技不进情报（情报表里 %d 条，发动后新情报 %d 条）" % [bad_keys.size(), d.intel.shown.size() - shown0],
+		bad_keys.is_empty() and not d.intel.shown.any(func(k): return str(k).begins_with("team_") or str(k).begins_with("hzcombo_")))
+	await _clear()
+	# 8 第 10 波不叫最终波
+	var w10 := str((d.data["waves"] as Array)[9].get("name", ""))
+	check("第 10 波叫「%s」（不是最终波）" % w10, not w10.contains("最终") and not w10.contains("最后"))
+	d.blue.set_controller(d._make_ai(d.blue))
+
+
+# ------------------------------------------------------------------ 第六轮：每波特色
+func _run_features6() -> void:
+	print("-- 每波特色机制")
+	await _clear()
+	var waves: Array = d.data["waves"]
+	var all_ids := {}
+	var every := true
+	for w in waves:
+		var fs: Array = (w as Dictionary).get("features", [])
+		every = every and not fs.is_empty()
+		for f in fs:
+			all_ids[f] = true
+	var later_repeat := (waves[11]["features"] as Array).all(func(f): return all_ids.has(f)) and (waves[11]["features"] as Array).size() >= 3
+	check("每波都有特色（%s），12 种都用上（%d），后面的波次叠加前面的（%s）" % [every, all_ids.size(), later_repeat],
+		every and all_ids.size() == 12 and later_repeat)
+	# 开打时：大字 + 标签 + 配合技频率
+	d.wave = 6
+	await d._begin_fight()
+	await _wait(0.2)
+	var on := d.features.active.duplicate()
+	check("第 6 波开打：特色 %s、小地图下的标签 %s、配合技冷却 ×%.2f" % [on, d.hud.tags, d.teamwork.cd_scale],
+		on == ["gale"] and d.hud.tags == on and d.hud.tag_box.get_child_count() >= 1 and absf(d.teamwork.cd_scale - 1.0 / 1.6) < 0.01)
+	await _clear()
+	_fight()
+	d.blue.set_controller(CharacterController.new())
+	var f := d.features
+	var ok := {}
+	# 狂风：把粉色公主吹走
+	f.begin(["gale"])
+	var p := d.pink
+	p.global_position = Vector2(d.gate_pos.x, d.wall_foot_y() + 220.0)
+	var x0 := p.global_position.x
+	f.gust()
+	await _wait(1.8)
+	ok["狂风"] = absf(p.global_position.x - x0) > 30.0 and signf(p.global_position.x - x0) == f.gust_dir.x
+	# 攻城大队：一排车 + 螃蟹护卫
+	f.begin(["corps"])
+	var carts0 := d.monsters.filter(func(m): return m is SiegeCart).size()
+	f.corps()
+	await _wait(1.8)
+	var carts := d.monsters.filter(func(m): return m is SiegeCart).size() - carts0
+	var escorts := d.monsters.filter(func(m): return m is ShieldCrab and m.has_meta("escort_of")).size()
+	ok["攻城大队 %d 车 %d 蟹" % [carts, escorts]] = carts >= 4 and escorts >= 8
+	d.clear_field()
+	_fight()
+	# 抢掠小队：拆冰塔，基座留着
+	f.begin(["raiders"])
+	var tpos := Vector2(d.gate_pos.x + 200.0, d.wall_foot_y() + 160.0)
+	var tw := _make_tower("cocoa", tpos)
+	var pad := tw.pad
+	tw.health.set_hp(3)
+	var raiders := f.raid()
+	for m in raiders:
+		m.global_position = tpos + Vector2(randf_range(-30, 30), 50)
+	p.global_position = tpos + Vector2(0, 260)
+	var wtw: WeakRef = weakref(tw)
+	await _until(func(): return wtw.get_ref() == null, 12.0)
+	ok["抢掠小队拆塔、基座留着"] = raiders.size() == 6 and not is_instance_valid(tw) and is_instance_valid(pad) and pad.get("tower") == null \
+		and raiders.all(func(m): return not is_instance_valid(m) or m.mind is RaiderMind)
+	if is_instance_valid(pad):
+		pad.queue_free()
+	d.clear_field()
+	_fight()
+	# 羽毛暴风雪：开阔地涨闷笑，冰塔旁安全
+	f.begin(["feathers"])
+	p.global_position = Vector2(d.gate_pos.x + 300.0, d.wall_foot_y() + 260.0)
+	p.laugh.set_value(0.0)
+	await _wait(2.1)
+	var open_gain := p.laugh.value
+	var st := _make_tower("icicle", p.global_position + Vector2(20, 0))
+	p.laugh.set_value(0.0)
+	await _wait(1.6)
+	ok["羽毛暴风雪 开阔 %.1f / 塔旁 %.1f" % [open_gain, p.laugh.value]] = open_gain > 1.0 and p.laugh.value <= 0.01 and f.feather_safe(p.global_position)
+	st.pad.queue_free()
+	st.queue_free()
+	# 狂欢节：怪加速
+	f.begin(["carnival"])
+	var cm := d.spawn("slime", "", d.gate_pos + Vector2(0, 300))
+	cm.mind = null
+	await _wait(1.3)
+	ok["狂欢节"] = cm.has_buff("siege_carnival") and cm.stat_mul("speed") > 1.2
+	# 迷雾之夜：变暗，结束后恢复
+	var dark := d.level().get_node("Darkness") as CanvasModulate
+	var c0 := dark.color
+	f.begin(["fog"])
+	await _wait(1.7)
+	var darker := dark.color.v < c0.v - 0.1
+	f.end()
+	await _wait(1.7)
+	ok["迷雾之夜"] = darker and dark.color.is_equal_approx(c0)
+	# 工兵狂潮 / 痒痒装备日：倍率
+	f.begin(["engineers", "equip"])
+	ok["工兵 / 装备倍率"] = WaveFeatures.mul_of("build_speed") == 1.5 and WaveFeatures.mul_of("equip_time") == 1.5
+	f.end()
+	ok["结束后倍率复原"] = WaveFeatures.mul_of("build_speed") == 1.0
+	var bad := ok.keys().filter(func(k): return not ok[k])
+	check("特色机制都生效（没生效：%s）" % [bad], bad.is_empty())
 	d.blue.set_controller(d._make_ai(d.blue))
 
 

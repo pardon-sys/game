@@ -24,6 +24,8 @@ var monsters_func: Callable
 var _cd := {}
 var _scan := 0.0
 var enabled := true
+## 冷却再乘这个（攻防战：随波次越来越小，配合技越来越频繁；SiegeDirector 每波设）
+var cd_scale := 1.0
 ## 发动过的（测试 / 调试用）：[id, …]
 var history: Array[String] = []
 
@@ -148,7 +150,7 @@ func _princess_near(at: Vector2, r: float) -> PlayableCharacter:
 ## 发动一个配合技（members[0] 是 leader）。
 func fire(t: Dictionary, members: Array) -> void:
 	var id := str(t["id"])
-	_cd[id] = float(t.get("cooldown", 10.0)) / (SiegeDirector.ability_rate() if SiegeDirector.current else 1.0)
+	_cd[id] = float(t.get("cooldown", 10.0)) / (SiegeDirector.ability_rate() if SiegeDirector.current else 1.0) * cd_scale
 	var until := Time.get_ticks_msec() / 1000.0 + BUSY
 	for m in members:
 		m.set_meta("team_busy", until)

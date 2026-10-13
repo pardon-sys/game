@@ -117,6 +117,14 @@ func _setup() -> void:
 	else:
 		set_faction(Faction.Type.NEUTRAL)
 		collision_layer = 1
+		# 血量：只有抢掠小队会来拆（WaveFeatures 的 raiders），工匠会修；拆掉了基座还在
+		var hc2 := HealthComponent.new()
+		hc2.name = "Health"
+		hc2.max_hp = max_hp_now()
+		add_child(hc2)
+		health = hc2
+		hc2.fill()
+		hc2.died.connect(_die)
 	_spr = Sprite2D.new()
 	_spr.texture = TEX
 	_spr.region_enabled = true
@@ -165,12 +173,33 @@ func _setup() -> void:
 	Fx.burst(get_parent(), global_position + Vector2(0, -8), "crystal", 16, 60.0, 0.6, Vector2(0, 60), Color(0.8, 0.94, 1.0))
 
 
+## 普通冰塔每级的血量（诱饵雪人用自己的 hp 参数）
+const RAID_HP := [30, 45, 60]
+
+
+func max_hp_now() -> int:
+	return int(p("hp", RAID_HP[clampi(level - 1, 0, 2)]))
+
+
+## 被抢掠小队打：掉血、抖一下、冒冰屑。
+func raid_hit(dmg: int, from: Node2D) -> void:
+	if health == null or not is_alive():
+		return
+	health.damage(dmg)
+	flash(Color(1, 0.5, 0.45), 0.12)
+	if _spr:
+		_spr.position.x = 2.0 if from and from.global_position.x < global_position.x else -2.0
+		create_tween().tween_property(_spr, "position:x", 0.0, 0.12)
+	Fx.burst(get_parent(), global_position + Vector2(randf_range(-6, 6), -12), "chip", 3, 30.0, 0.3, Vector2(0, 60), Color(0.8, 0.94, 1.0))
+	Audio.play("ice_crack", -12.0, 0.2, 1.3)
+
+
 func upgrade() -> void:
 	level = mini(level + 1, MAX_LEVEL)
 	_spr.region_rect = region("tower_%s_%d" % [kind, level])
 	_spr.offset = Vector2(0, -_spr.region_rect.size.y / 2.0 + 2.0)
 	if health:
-		health.max_hp = int(p("hp", 60))
+		health.max_hp = max_hp_now()
 		health.fill()
 	lure = float(p("lure", lure))
 	_spr.scale = Vector2(1.2, 0.8)
@@ -192,16 +221,23 @@ func melt(amount: float) -> void:
 		collapse()
 
 
-func collapse() -> void:
+func collapse(keep_pad := false) -> void:
 	Fx.burst(get_parent(), global_position + Vector2(0, -8), "drop", 14, 50.0, 0.6, Vector2(0, 80), Color(0.7, 0.9, 1.0))
 	Audio.play("ice_crack", -2.0, 0.1, 0.8)
-	if pad and pad.has_method("tower_gone"):
-		pad.call("tower_gone")
+	if pad and is_instance_valid(pad):
+		if keep_pad and pad.has_method("tower_raided"):
+			pad.call("tower_raided")
+		elif pad.has_method("tower_gone"):
+			pad.call("tower_gone")
 	queue_free()
 
 
+## 被打倒：诱饵雪人连基座一起没了；普通冰塔（被抢掠小队拆）基座留着。
 func _on_died() -> void:
-	collapse()
+	if kind != "decoy":
+		Fx.burst(get_parent(), global_position + Vector2(0, -14), "crystal", 18, 70.0, 0.7, Vector2(0, 90), Color(0.8, 0.94, 1.0))
+		GameState.notify("%s被抢掠小队拆掉了！（基座还在，按 B 重新造）" % str(info(kind).get("name", kind)))
+	collapse(kind != "decoy")
 
 
 var _fire: CPUParticles2D

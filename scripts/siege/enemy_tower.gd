@@ -424,7 +424,7 @@ func _tailor() -> void:
 		var tc := t as PlayableCharacter
 		if tc == null or not _alive(tc):
 			return
-		var how := Equipment.force(tc.character_id, id)
+		var how := Equipment.force(tc.character_id, id, Equipment.FORCE_TIME * WaveFeatures.mul_of("equip_time"))
 		if how != "":
 			var it := ItemDB.get_item(id)
 			Fx.burst(tc.get_parent(), tc.global_position + Vector2(0, -10), "heart", 6, 30.0, 0.5, Vector2(0, -10), Color(1, 0.7, 0.9))

@@ -141,6 +141,12 @@ func _music_tween(i: int) -> Tween:
 	return _music_tw[i]
 
 
+## 配乐音高（攻防战狂欢节 1.06，换波 / 离开时回到 1）。
+func set_music_pitch(pitch: float) -> void:
+	for m in _music:
+		m.pitch_scale = pitch
+
+
 func play_music(id: String, fade := MUSIC_FADE) -> void:
 	if id == music_id and (id == "" or _music[_music_cur].playing):
 		return
