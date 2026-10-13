@@ -80,10 +80,16 @@ func set_faction(f: Faction.Type) -> void:
 
 
 func _physics_process(delta: float) -> void:
+	tick_timers(delta)
+	_tick(delta)
+
+
+## 受击无敌 / 增益的倒计时。别人接管了它的 _physics_process（关掉了，比如活梯子里的壁虎）时由接管的那一方每帧调用，
+## 不然受一次击后无敌时间永远不会减，再也打不到。
+func tick_timers(delta: float) -> void:
 	_attack_invuln = maxf(_attack_invuln - delta, 0.0)
 	_full_invuln = maxf(_full_invuln - delta, 0.0)
 	_tick_buffs(delta)
-	_tick(delta)
 
 
 # ------------------------------------------------------------------ Damageable

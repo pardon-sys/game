@@ -117,11 +117,12 @@ func _tick(delta: float) -> void:
 	if not is_alive():
 		_break()
 		return
-	# 摇摇晃晃
+	# 摇摇晃晃；壁虎的物理关掉了（贴在墙上不动），受击无敌 / 增益的倒计时由梯子替它们走
 	for i in geckos.size():
 		var g: Variant = geckos[i]
 		if is_instance_valid(g):
 			(g as Node2D).rotation = sin(_t * 6.0 + i) * 0.12
+			(g as Actor).tick_timers(delta)
 	if randf() < delta * 1.5:
 		Fx.burst(get_parent(), global_position + Vector2(randf_range(-6, 6), -randf_range(4, 30)), "dust", 2, 20.0, 0.4, Vector2(0, 40))
 

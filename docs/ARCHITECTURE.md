@@ -523,7 +523,9 @@ data/cutscenes/<楼层组>/  地图内过场；data/theater/<楼层组>/  小剧
   活梯子打倒一只就散（`LivingLadder.start_count`）；有小 Boss 的波打倒它才进下一波（`SiegeDirector.boss_alive`）；小 Boss 被建筑挡住先绕、再穿过去（`TrollGeneral._unstick`）；
   蓝色公主的 AI `SiegeMageController` 继承 `CompanionController`（挣扎 / 闪避 / 打墙顶的怪 / 墙下救人）；敌方预警 `SiegeFx.warn/lane(..., danger = true)` 进 `danger` 组；
   冰法学徒（士兵 `mage`）帮忙放冰光：`BuildPad` 改成进度制（蓝色公主 1 / 秒、学徒 `HELPER_RATE` 0.5 / 秒，`reserve` 认领位置）；基座贴图在 `SiegeDirector.decals()` 层；
-  城墙灯 `SiegeWall.WallLight`（火盆在 `torch` 组）；敌塔整个塔身可打（`HurtProxy`）、血条、范围 / 蓄力 / 崩塌特效。
+  城墙灯 `SiegeWall.WallLight`（火盆在 `torch` 组）；
+  物理被关掉的 Actor（活梯子里的壁虎）由接管方调用 `Actor.tick_timers` 走受击无敌 / 增益倒计时；
+  蓝色公主 AI 放法术更勤（`THINK` 0.2、门槛降低，AI 施法冷却 / 疲倦 × `SiegeSpells.AI_CD` / `AI_FATIGUE`），粉色公主吟唱时 `JOIN_PINK` 50% 跟着放（`join_pink`）；敌塔整个塔身可打（`HurtProxy`）、血条、范围 / 蓄力 / 崩塌特效。
   陷阱和怪物配合：龙卷风卷怪、迷雾里的怪打不到（meta `in_fog`，`enemies_near(..., false)`）、泡泡运兵；陷阱组合 `spawn_hazard_combo`（波次 `hazards` 里写 `combo`）。
 - **临时痒痒装备**：`Equipment.force` / `release` / `tick_forced`（`GameState.equip_forced`），负面装备由 `EquipFx` 定时发作 + 立绘反应（`data/equip_reactions.json`，分角色）。
 - 内容生成器：`gen_siege_monsters.py`（场景）、`gen_siege_cgs.py`（笑倒 CG，粉 / 蓝两版）、`gen_siege_scenes.py`（三来源组合小演出）、
