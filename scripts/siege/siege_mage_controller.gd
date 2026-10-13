@@ -1,33 +1,32 @@
 class_name SiegeMageController
-extends CharacterController
-## 攻防战里蓝色公主的 AI（没被玩家操控时；SiegeDirector 的 ai_factory 给她）：
+extends CompanionController
+## 攻防战里蓝色公主的 AI（没被玩家操控时；SiegeDirector 的 ai_factory 给她）。
+## 继承 Boss 战的通用 AI（CompanionController）：挣扎（被抓 / 失控 / 身上挂着怪：连按）、闪避（danger 组的预警：Boss 重击、跳劈落点、
+## 攻城车 / 冲锋的路线……）、攻击（打身边的怪）、救人（墙下时去救倒地的粉色公主）；在这之上做攻防战自己的事：
 ##   在城墙上：沿墙顶走道左右走，站到最危险的那段墙上面；每 THINK 秒挑一个法术放（SiegeSpells）：
 ##     清凉雪花（粉色公主闷笑高 / 被缠住 / 穿着临时痒痒装备）> 帮忙造冰塔（director.build_request）> 冰链救援（director.rescue_request）
 ##     > 冰墙加固（某段墙下的怪 ≥ REINFORCE_AT）> 冰镜分身（粉色公主身边怪 ≥ MIRROR_AT）> 冰川突刺（射程里有攻城车 / Boss / 敌塔）
 ##     > 暴风雪（一大团怪 ≥ BLIZZARD_AT）> 冰晶结界（一团怪 ≥ BARRIER_AT）> 冰锥雨（射程内有怪）
+##     爬上城墙的怪贴到 WALL_FIGHT 以内：先用普通攻击打它；预警落在走道上：沿走道左右闪开（不往墙下跳）。
 ##   在城墙上被挠到失控、身边有怪 → 被挠下城墙（director.knock_off）。
-##   在墙下（被震下 / 推下）：坐着笑一阵，SiegeDirector.FALLEN_TIME 秒后走到最近的梯子爬回去。
-##   被缠住 / 被抓住：连按挣扎。倒地（Downed）：什么也不做，等粉色公主救。
+##   在墙下（被震下 / 推下）：坐着笑一阵（这时也会挣扎、闪避），SiegeDirector.FALLEN_TIME 秒后走到最近的梯子爬回去；
+##     路上粉色公主倒在附近就先去救，被怪围住就先打。倒地（Downed）：什么也不做，等人救。
 
 const THINK := 0.45
 const REINFORCE_AT := 7
 const BARRIER_AT := 6
 const BLIZZARD_AT := 10
 const MIRROR_AT := 5
+## 墙顶上贴到这么近的怪：先打
+const WALL_FIGHT := 26.0
+## 墙下：救粉色公主 / 打怪的范围
+const GROUND_HELP := 120.0
 
 var director: SiegeDirector
-var _move := Vector2.ZERO
 var _think := 0.0
-var _struggle_t := 0.0
-## 最近一次做的决定（测试 / 调试用）：idle / patrol / spell:<id> / fallen / ladder / struggle / build / rescue
-var intent := "idle"
 var _climbing := false
 var _patrol_x := 0.0
 var _patrol_t := 0.0
-
-
-func get_move_vector() -> Vector2:
-	return _move
 
 
 func _me() -> PlayableCharacter:
@@ -35,32 +34,82 @@ func _me() -> PlayableCharacter:
 
 
 func _physics_process(delta: float) -> void:
+	_attack_cd -= delta
+	_struggle_cd -= delta
+	_dash_cd -= delta
 	_move = Vector2.ZERO
+	_held.clear()
 	var me := _me()
+	if hooks == null and director:
+		hooks = director.hooks
 	if me == null or director == null or not me.is_alive() or Downed.is_downed(me) or GameState.in_dialogue \
 			or me.get_meta("siege_falling", false) or me.get_meta("siege_beaming", false) or _climbing:
 		intent = "idle"
 		return
-	# 被缠住 / 被抓住 / 身上挂着东西：连按挣扎
-	_struggle_t -= delta
+	# 被缠住 / 被抓住 / 笑到失控 / 身上挂着东西：连按挣扎（通用的 + 直接挣一下）
 	var stuck: bool = (me.status and (me.status.is_grabbed() or me.status.is_immobile())) or me.latch_count() > 0 \
-		or me.state in [PlayableCharacter.State.GRABBED]
+		or me.state in [PlayableCharacter.State.GRABBED, PlayableCharacter.State.HELPLESS]
 	if stuck:
 		intent = "struggle"
-		if _struggle_t <= 0.0:
-			_struggle_t = 0.14
+		if _struggle_cd <= 0.0:
+			_struggle_cd = STRUGGLE_INTERVAL
+			_pressed[&"attack"] = true
 			me.struggle()
 		return
 	if director.is_on_wall(me):
 		_on_wall(me, delta)
 	else:
-		_fallen(me)
+		_ground(me)
+
+
+## 墙顶上的闪避：预警落在她身上 → 沿走道往离预警远的一边跑（冲刺），不往墙下跳。
+func _wall_dodge(me: PlayableCharacter) -> bool:
+	var d := CompanionController.danger_at(get_tree(), me.global_position, DODGE_MARGIN)
+	if d == null:
+		d = _incoming(me)
+	if d == null:
+		return false
+	intent = "dodge"
+	var sx := signf(me.global_position.x - d.global_position.x)
+	if sx == 0.0:
+		sx = 1.0 if randf() < 0.5 else -1.0
+	_move = Vector2(sx, 0)
+	if _dash_cd <= 0.0:
+		_dash_cd = 0.8
+		_pressed[&"dash"] = true
+	return true
+
+
+## 墙顶上贴过来的怪（被扔上来 / 爬上来）：走过去用普通攻击打。
+func _wall_fight(me: PlayableCharacter) -> bool:
+	var best: Monster = null
+	var best_d := WALL_FIGHT
+	for m in director.enemies_near(me.global_position, WALL_FIGHT, true):
+		if m.get_meta("siege_on_wall", false):
+			var dist := m.global_position.distance_to(me.global_position)
+			if dist < best_d:
+				best_d = dist
+				best = m
+	if best == null:
+		return false
+	intent = "attack"
+	var to := best.global_position - me.global_position
+	if to.length() > ATTACK_RANGE:
+		_move = to.normalized()
+	else:
+		_move = to.normalized() * 0.15
+		if _attack_cd <= 0.0:
+			_attack_cd = ATTACK_INTERVAL
+			_pressed[&"attack"] = true
+	return true
 
 
 func _on_wall(me: PlayableCharacter, delta: float) -> void:
 	# 墙上被挠到失控、身边有怪 → 被挠下去
 	if me.laugh and me.laugh.stage() == "helpless_2" and not director.enemies_near(me.global_position, 22.0).is_empty():
 		director.knock_off(me, "爬上城墙的怪物")
+		return
+	if _wall_dodge(me) or _wall_fight(me):
 		return
 	var goal_x := me.global_position.x
 	var req: Variant = director.call("build_request") if director.has_method("build_request") else null
@@ -171,7 +220,18 @@ func _decide(me: PlayableCharacter, req: Variant, rescue: Variant) -> void:
 			intent = "spell:ice_rain"
 
 
-## 在墙下：先坐着笑一阵，时间到了走去梯子爬回去。
+## 在墙下：闪避预警 → 救附近倒地的粉色公主 → 被怪贴身就打 → 先坐着笑一阵，时间到了走去梯子爬回去。
+func _ground(me: PlayableCharacter) -> void:
+	if _dodge(me):
+		return
+	var pink := director.pink
+	if pink and Downed.is_downed(pink) and pink.global_position.distance_to(me.global_position) < GROUND_HELP and _revive(me):
+		return
+	if _enemies_near(me, 30.0) >= 1 and _attack(me):
+		return
+	_fallen(me)
+
+
 func _fallen(me: PlayableCharacter) -> void:
 	if director.fallen_for(me) < SiegeDirector.FALLEN_TIME:
 		intent = "fallen"

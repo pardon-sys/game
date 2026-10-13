@@ -2,7 +2,7 @@ class_name LivingLadder
 extends Actor
 ## 壁虎叠罗汉的「活梯子」：几只壁虎贴着墙面一只叠一只（MonsterTeamwork 的 living_ladder 效果生成）。
 ## 梯子在的时候，走到墙下、离梯子 CLIMB_X 以内的普通怪也能顺着爬上城墙（SiegeMind.march 里检查 near()）。
-## 梯子里的壁虎被打倒到少于 MIN_GECKOS 只，梯子就散了。
+## 梯子里的壁虎只要被打倒一只，梯子就散了（剩下的壁虎掉下来照常行动）。
 ## 能打：梯子本身是敌方的 Actor（在 siege_enemy_tower 组里：冰塔、弩炮、士兵、粉色公主的 AI 都会来打），
 ## 受击范围从墙顶一直到墙脚往下 REACH_BELOW 像素——壁虎贴在墙面上、墙脚挡人窄条的里面，直接打壁虎是够不着的；
 ## 打到梯子的那一下转给离攻击来源最近的目标：梯子里的壁虎，或者正顺着梯子往上爬的怪（meta ladder_of = 这架梯子）。
@@ -12,12 +12,15 @@ const CLIMB_X := 28.0
 ## 离墙 ATTRACT_Y 以内、横向 ATTRACT_X 以内的怪会改道去梯子那里（SiegeMind.march）
 const ATTRACT_X := 140.0
 const ATTRACT_Y := 120.0
+## 至少几只才搭得起来（MonsterTeamwork 凑齐的数量）
 const MIN_GECKOS := 3
 const REACH_BELOW := 14.0
 const REACH_ABOVE := 16.0
 const WIDTH := 28.0
 
 var geckos: Array = []
+## 搭起来时有几只：少了任何一只就散
+var start_count := 0
 var _t := 0.0
 
 
@@ -52,6 +55,7 @@ func _setup() -> void:
 		cs.shape = r
 		cs.position = Vector2(0, (top + bottom) / 2.0)
 		add_child(cs)
+	start_count = alive_count()
 	if d == null:
 		return
 	# 壁虎贴到墙面上，一只叠一只（已经在爬墙的先停下来）
@@ -79,7 +83,7 @@ func alive_count() -> int:
 
 
 func is_alive() -> bool:
-	return is_inside_tree() and alive_count() >= MIN_GECKOS
+	return is_inside_tree() and start_count >= MIN_GECKOS and alive_count() >= start_count
 
 
 ## 正顺着这架梯子往上爬的怪。
@@ -110,7 +114,7 @@ func receive_hit(hit: HitData) -> bool:
 
 func _tick(delta: float) -> void:
 	_t += delta
-	if alive_count() < MIN_GECKOS:
+	if not is_alive():
 		_break()
 		return
 	# 摇摇晃晃

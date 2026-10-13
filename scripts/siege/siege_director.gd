@@ -148,6 +148,22 @@ func map_size() -> Vector2:
 	return _map_size
 
 
+## 地上贴图那一层（冰塔基座……）：紧跟在地板 Floor 后面，画在地板上、所有人物和建筑下面。
+func decals() -> Node2D:
+	var lv := level()
+	if lv == null:
+		return null
+	var dec := lv.get_node_or_null("SiegeDecals") as Node2D
+	if dec == null:
+		dec = Node2D.new()
+		dec.name = "SiegeDecals"
+		lv.add_child(dec)
+		var fl := lv.get_node_or_null("Floor")
+		if fl:
+			lv.move_child(dec, fl.get_index() + 1)
+	return dec
+
+
 func entities() -> Node:
 	var lv := level()
 	return lv.get_node_or_null("Entities") if lv else get_parent()
@@ -285,6 +301,7 @@ func _begin_fight() -> void:
 	_queue.clear()
 	_fight_t = 0.0
 	next_left = -1.0
+	_boss_gate_told = false
 	for g in wave_data().get("groups", []):
 		var n := int(g.get("count", 1))
 		var iv := float(g.get("interval", 1.0))
@@ -420,8 +437,13 @@ func _process(delta: float) -> void:
 				else:
 					spawn_hazard(str(hz["kind"]))
 			if _queue.is_empty():
-				# 怪出完了：最后一波要清空才算赢；其它波倒计时到了（或提前清完）就自动进下一波
-				if wave >= total_waves():
+				# 怪出完了：最后一波要清空才算赢；有小 Boss 的波要先打倒它；其它波倒计时到了（或提前清完）就自动进下一波
+				if boss_alive():
+					next_left = -1.0
+					if not _boss_gate_told:
+						_boss_gate_told = true
+						GameState.notify("打倒小 Boss 才能进入下一波！")
+				elif wave >= total_waves():
 					if monsters.is_empty():
 						_clear_wave()
 				elif monsters.is_empty():
@@ -448,6 +470,22 @@ func _clamp_monsters() -> void:
 			m.global_position = c
 			if m.has_meta("march_x"):
 				m.set_meta("march_x", clampf(float(m.get_meta("march_x")), 90.0, ms.x - 90.0))
+
+
+var _boss_gate_told := false
+
+
+## 这一波的小 Boss 还在场上（或还没出场）：打倒它才进下一波。
+func boss_alive() -> bool:
+	if not wave_data().has("boss"):
+		return false
+	for q in _queue:
+		if str(q.get("monster", "")) == str(wave_data()["boss"]):
+			return true
+	for m in monsters:
+		if m is TrollGeneral and is_instance_valid(m) and m.is_alive():
+			return true
+	return false
 
 
 func remaining() -> int:
@@ -1180,7 +1218,7 @@ func on_defeat(_reason: String) -> void:
 
 # ------------------------------------------------------------------ 友军士兵
 ## 开局的士兵编制：{角色: 人数}。墙顶的（弓箭手）沿墙顶均匀排开，其余在墙下。
-const ROSTER := {"spear": 10, "archer": 6, "shield": 3, "medic": 2, "artisan": 2}
+const ROSTER := {"spear": 10, "archer": 6, "shield": 3, "medic": 2, "artisan": 2, "mage": 3}
 ## 蓝色公主没人来抬时，多久自己复活
 const BLUE_REVIVE := 40.0
 ## 倒地组件：两个人都倒下也不算输、对话时也倒计时（Downed 看这个）
@@ -1209,9 +1247,9 @@ func add_soldiers(role: String, n: int, announce := true) -> void:
 		entities().add_child(s)
 		var k := have + i
 		var slots := maxi(int(ROSTER.get(role, n)), k + 1)
-		var off: float = 30.0 if role == "archer" else float({"spear": 0.0, "shield": 18.0, "medic": -24.0, "artisan": 40.0}.get(role, 0.0))
+		var off: float = 30.0 if role == "archer" else float({"spear": 0.0, "shield": 18.0, "medic": -24.0, "artisan": 40.0, "mage": -40.0}.get(role, 0.0))
 		var x: float = ms.x * (k + 0.5) / slots + off
-		var y := wall_top_y() - 10.0 if role == "archer" else wall_foot_y() + 26.0 + (14.0 if role in ["medic", "artisan"] else 0.0)
+		var y := wall_top_y() - 10.0 if role == "archer" else wall_foot_y() + 26.0 + (14.0 if role in ["medic", "artisan", "mage"] else 0.0)
 		s.global_position = Vector2(clampf(x, 30.0, ms.x - 30.0), y)
 		s.post = s.global_position
 		soldiers.append(s)

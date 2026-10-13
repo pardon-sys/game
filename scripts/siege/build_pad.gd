@@ -3,20 +3,33 @@ extends Node2D
 ## 攻防战的冰塔基座（运行时生成：粉色公主在战场上任何能建的地方按 B，SiegeDirector.try_build）。两个人一起造：
 ##   1. 选塔（6 种，显示价格）/ 已经有塔时（站在旁边按 B 或 E）：升级（同一种再造一次 = 2 级）/ 拆掉（返还一半）；付冰晶。
 ##   2. 基座进入「等冰光」：蓝色公主（AI 自动走过来；玩家操控时走到基座正上方的城墙上按 E）从城墙射冰光——
-##      BEAM_TIME 秒，离城墙每多 BEAM_STEP 像素加 1 秒。
+##      BEAM_TIME 秒，离城墙每多 BEAM_STEP 像素加 1 秒。冰法学徒（SiegeSoldier 的 mage）也会走过来帮忙，效率是蓝色公主的一半
+##      （HELPER_RATE；每座最多 MAX_HELPERS 个）；几个人一起放就加起来（progress 每秒 + 1 + 0.5 × 学徒数，够 beam_time() 就造好）。
 ##   3. 冰塔破冰而出（IceTower）。
 ## 冰塔布置随 GameState.vars["siege_towers"] 保存（[{x, y, kind, level}]），失败重来时保留。
 
 const BEAM_TIME := 3.0
 const BEAM_STEP := 160.0
 const BEAM_FREE := 200.0
+const HELPER_RATE := 0.5
+const MAX_HELPERS := 2
 
 @export var index := 0
 
 var tower: IceTower
 ## 等蓝色公主冰光的那座塔：{kind, upgrade: bool}；空 = 没在等
 var pending := {}
+## 蓝色公主正在放冰光
 var beaming := false
+## 冰光进度（按蓝色公主的速度算的秒数），够 _need 就造好
+var progress := 0.0
+var _need := 0.0
+var _blue: PlayableCharacter
+var _blue_locked := false
+## 正在帮忙的冰法学徒（站到位了的）；reserved：认领了旁边位置的（第几个就站第几个位置，不会挤在一起）
+var helpers: Array = []
+var reserved: Array = []
+var _lines := {}
 var _spr: Sprite2D
 var _area: Interactable
 var _blue_area: Interactable
@@ -28,7 +41,14 @@ func _ready() -> void:
 	z_index = -1
 	_spr = SiegeArt.sprite("pad_0")
 	_spr.offset = Vector2(0, -8)
-	add_child(_spr)
+	# 基座是地上的图：放进地板上面一层（SiegeDirector.decals()），不然 z -1 会被地板盖住、z 0 又会盖住站在上面的塔和人
+	var dec: Node2D = SiegeDirector.current.decals() if SiegeDirector.current else null
+	if dec:
+		dec.add_child(_spr)
+		_spr.global_position = global_position
+		tree_exiting.connect(_spr.queue_free)
+	else:
+		add_child(_spr)
 	_area = _make_area(Vector2(0, -8), Vector2(22, 14))
 	_area.interacted.connect(func(p: Node): on_pink(p))
 	_label = Label.new()
@@ -63,13 +83,122 @@ func _make_area(at: Vector2, sz: Vector2) -> Interactable:
 	return a
 
 
-func _process(_delta: float) -> void:
+func _process(delta: float) -> void:
 	var waiting := not pending.is_empty()
 	_spr.region_rect = SiegeArt.region("pad_1" if waiting or beaming else "pad_0")
+	if _spr.get_parent() != self:
+		_spr.global_position = global_position   # 在地贴层里：跟着基座的位置（生成后才设位置也没关系）
 	if _blue_area:
 		_blue_area.enabled = waiting and not beaming
 	_area.enabled = not waiting and not beaming
-	_label.text = "等冰光……" if waiting and not beaming else ("造塔中" if beaming else "")
+	if waiting:
+		_beam_tick(delta)
+	var pct := int(clampf(progress / maxf(_need, 0.01), 0.0, 1.0) * 100.0)
+	if not waiting:
+		_label.text = ""
+	elif beaming or not helpers.is_empty():
+		_label.text = "冰光 %d%%" % pct
+	else:
+		_label.text = "等冰光……" if progress <= 0.0 else "等冰光 %d%%" % pct
+
+
+## 冰光进度：蓝色公主每秒 1、每个学徒每秒 HELPER_RATE；够了就造好。
+func _beam_tick(delta: float) -> void:
+	if beaming and (not is_instance_valid(_blue) or not _blue.is_alive() or Downed.is_downed(_blue)):
+		_stop_blue()
+	helpers = helpers.filter(func(h): return is_instance_valid(h) and (h as SiegeSoldier).is_alive() and not (h as SiegeSoldier).retreating)
+	var rate := (1.0 if beaming else 0.0) + HELPER_RATE * helpers.size()
+	progress += rate * delta
+	_draw_lines()
+	if rate > 0.0 and randf() < delta * 8.0:
+		Fx.burst(get_parent(), global_position + Vector2(randf_range(-8, 8), -6), "snow", 2, 20.0, 0.5, Vector2(0, -10), Color(0.85, 0.97, 1.0))
+	if progress >= _need:
+		_complete()
+
+
+## 放冰光的人到基座的光线（蓝色公主粗一点，学徒细一点）。
+func _draw_lines() -> void:
+	var srcs: Array = helpers.duplicate()
+	if beaming and is_instance_valid(_blue):
+		srcs.append(_blue)
+	for k in _lines.keys():
+		if not srcs.has(k) or not is_instance_valid(k):
+			(_lines[k] as Line2D).queue_free()
+			_lines.erase(k)
+	for s in srcs:
+		if not _lines.has(s):
+			var l := Line2D.new()
+			l.width = 3.0 if s == _blue else 2.0
+			l.default_color = Color(0.65, 0.9, 1.0, 0.9) if s == _blue else Color(0.75, 0.95, 1.0, 0.9)
+			l.z_as_relative = false
+			l.z_index = 20
+			add_child(l)
+			_lines[s] = l
+		var line := _lines[s] as Line2D
+		var flick := 0.8 + 0.2 * sin(Time.get_ticks_msec() / 60.0 + float(line.get_instance_id() % 7))
+		line.modulate.a = flick
+		line.points = PackedVector2Array([to_local((s as Node2D).global_position + Vector2(0, -12)), Vector2(0, -8)])
+
+
+func _clear_lines() -> void:
+	for k in _lines.keys():
+		if is_instance_valid(_lines[k]):
+			(_lines[k] as Line2D).queue_free()
+	_lines.clear()
+
+
+## 冰法学徒认领一个旁边的位置：返回位置序号（0 左 / 1 右），满了返回 -1。
+func reserve(s: Node) -> int:
+	reserved = reserved.filter(func(h): return is_instance_valid(h) and not (h as SiegeSoldier).retreating)
+	if pending.is_empty():
+		return -1
+	var i := reserved.find(s)
+	if i >= 0:
+		return i
+	if reserved.size() >= MAX_HELPERS:
+		return -1
+	reserved.append(s)
+	return reserved.size() - 1
+
+
+## 学徒站的位置。
+func helper_spot(slot: int) -> Vector2:
+	return global_position + Vector2(-18.0 if slot == 0 else 18.0, 8.0)
+
+
+## 站到位了：开始帮忙放冰光。
+func helper_join(s: Node) -> bool:
+	if pending.is_empty() or not reserved.has(s):
+		return false
+	if not helpers.has(s):
+		helpers.append(s)
+		Audio.play("chant", -12.0, 0.1, 1.5)
+	return true
+
+
+## 走开（被挠跑了 / 去别处）：位置也让出来。
+func helper_leave(s: Node) -> void:
+	helpers.erase(s)
+	reserved.erase(s)
+
+
+func helper_slots() -> int:
+	reserved = reserved.filter(func(h): return is_instance_valid(h) and not (h as SiegeSoldier).retreating)
+	return MAX_HELPERS - reserved.size() if not pending.is_empty() else 0
+
+
+func _stop_blue() -> void:
+	if is_instance_valid(_blue):
+		_blue.set_meta("siege_beaming", false)
+	if _blue_locked:
+		PlayerInputController.movement_locked = false
+	_blue_locked = false
+	_blue = null
+	beaming = false
+
+
+func _exit_tree() -> void:
+	_stop_blue()
 
 
 func waiting() -> bool:
@@ -136,37 +265,42 @@ func request(kind: String, upgrade := false) -> bool:
 		Audio.play("locked", -6.0)
 		return false
 	pending = {"kind": kind, "upgrade": upgrade}
+	progress = 0.0
+	_need = beam_time()
 	Audio.play("chime", -6.0, 0.0, 1.3)
 	var blue: PlayableCharacter = d.blue
 	if blue and blue.is_controlled():
 		GameState.rule("蓝色公主：走到冰塔基座正上方的城墙上按 E 放冰光")
 	else:
-		GameState.notify("等蓝色公主从城墙上放冰光……")
+		GameState.notify("等蓝色公主从城墙上放冰光……（冰法学徒也会来帮忙）")
 	return true
 
 
-## 蓝色公主放冰光（AI 走到附近时调用；玩家操控时在城墙上的交互点按 E）。
+## 蓝色公主放冰光（AI 走到附近时调用；玩家操控时在城墙上的交互点按 E）：放到造好为止（被打倒就停下，进度留着）。
 func blue_beam(blue: PlayableCharacter) -> void:
 	if pending.is_empty() or beaming or blue == null or Downed.is_downed(blue):
 		return
 	beaming = true
-	var t := beam_time()
-	var from := blue.global_position + Vector2(0, -12)
-	SiegeFx.beam(get_parent(), from, global_position + Vector2(0, -8), Color(0.65, 0.9, 1.0, 0.9), t, 3.0)
-	Fx.burst(get_parent(), global_position + Vector2(0, -6), "snow", 18, 30.0, t, Vector2(0, -10), Color(0.85, 0.97, 1.0))
+	_blue = blue
+	if _need <= 0.0:
+		_need = beam_time()
+	Fx.burst(get_parent(), global_position + Vector2(0, -6), "snow", 18, 30.0, 0.8, Vector2(0, -10), Color(0.85, 0.97, 1.0))
 	Audio.play("chant", -6.0, 0.0, 1.3)
-	var was_locked := blue.is_controlled()
-	if was_locked:
+	_blue_locked = blue.is_controlled()
+	if _blue_locked:
 		PlayerInputController.movement_locked = true
 	blue.set_meta("siege_beaming", true)
-	await get_tree().create_timer(t, false).timeout
-	if is_instance_valid(blue):
-		blue.set_meta("siege_beaming", false)
-	if was_locked:
-		PlayerInputController.movement_locked = false
+
+
+## 进度够了：冰塔破冰而出 / 升级。
+func _complete() -> void:
 	var job := pending
 	pending = {}
-	beaming = false
+	progress = 0.0
+	_stop_blue()
+	helpers.clear()
+	reserved.clear()
+	_clear_lines()
 	if job.is_empty():
 		return
 	if bool(job.get("upgrade", false)) and tower:

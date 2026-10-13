@@ -62,7 +62,7 @@ func siege_wander(_mind: SiegeMind, delta: float) -> bool:
 				sprite.position.x = roundf(sin(_t * 50.0))
 			if _reaim_t <= 0.0:
 				_goal = _pick_goal()
-				SiegeFx.lane(get_parent(), global_position, _goal, 14.0, Color(1, 0.4, 0.3), 0.6)
+				SiegeFx.lane(get_parent(), global_position, _goal, 14.0, Color(1, 0.4, 0.3), 0.6, true)
 				Audio.play("cart_rumble", -6.0, 0.1, 1.2)
 				_warn_t = 0.6
 				_phase = "warn2"
@@ -75,7 +75,7 @@ func siege_wander(_mind: SiegeMind, delta: float) -> bool:
 		"warn":
 			if _warn_t == WARN:
 				_goal = _pick_goal()
-				SiegeFx.lane(get_parent(), global_position, _goal, 18.0, Color(1, 0.3, 0.3), WARN)
+				SiegeFx.lane(get_parent(), global_position, _goal, 18.0, Color(1, 0.3, 0.3), WARN, true)
 				Audio.play("cart_rumble", -3.0)
 			_warn_t -= delta
 			velocity = Vector2.ZERO

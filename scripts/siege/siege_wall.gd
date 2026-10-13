@@ -6,6 +6,7 @@ extends Actor
 ## 用来画裂缝（0 完好 / 1 裂缝 / 2 快塌了）和给蓝色公主的 AI 判断哪一段最危险。
 ## 冰墙加固（蓝色公主的法术）：shield_left 秒内先吸收 shield_hp 点伤害，期间怪物爬不上来（climbable() = false）。
 ## 墙面的图：assets/generated/siege/props.png 的 wall_0~2 / wall_shell，按宽度一格一格画。
+## 墙上的灯（WallLight，图 wall_lights.png）：每段 LIGHTS 盏，城垛上的火盆和墙面挂灯交替；火盆在 torch 组里（幽灵靠近会现形）。
 
 const TILE := 16.0
 ## 怪物普通攻击打到城墙上的倍数（怪物的攻击力是按打公主设计的，1~2 点）
@@ -14,6 +15,8 @@ const DAMAGE_MULT := 3.0
 const FOOT_STRIP := 5.0
 ## 挨打时冒灰尘的最短间隔
 const DUST_GAP := 0.35
+const LIGHTS := 4
+const LIGHT_TEX := preload("res://assets/generated/siege/wall_lights.png")
 
 @export var index := 0
 @export var w := 13.5
@@ -54,6 +57,53 @@ func _setup() -> void:
 	add_child(foot)
 	# 城墙画在人物、怪物下面（人物站在墙前时盖住墙，不会被墙挡住）；墙顶走道上的蓝色公主也在它上面
 	z_index = -1
+	for i in LIGHTS:
+		var wl := WallLight.new()
+		wl.brazier = i % 2 == 0
+		wl.position = Vector2(-width_px() / 2.0 + width_px() * (i + 0.5) / LIGHTS, -TILE * 2.0 + 2.0 if wl.brazier else -TILE + 2.0)
+		add_child(wl)
+
+
+## 城墙上的一盏灯：火盆（城垛上，火焰两帧 + 火星 + 光）/ 挂灯（墙面上）。光会轻轻闪。
+class WallLight extends Node2D:
+	const BRAZIER_E := 0.55
+	const LANTERN_E := 0.4
+	var brazier := true
+	## 幽灵现形用（TickleGhost 读 torch 组的 lit / light_radius）
+	var lit := true
+	var light_radius := 64.0
+	var _spr: Sprite2D
+	var _light: PointLight2D
+	var _t := randf() * 10.0
+
+	func _ready() -> void:
+		# 城墙本身在 z -1（画在人物下面）；灯要画在墙面（Walls 图块层）上面
+		z_as_relative = false
+		z_index = 0
+		_spr = Sprite2D.new()
+		_spr.texture = SiegeWall.LIGHT_TEX
+		_spr.region_enabled = true
+		_spr.region_rect = Rect2(0, 0, 12, 14) if brazier else Rect2(24, 0, 8, 14)
+		_spr.offset = Vector2(0, -7)
+		add_child(_spr)
+		_light = PointLight2D.new()
+		_light.texture = load("res://assets/lights/light_soft.tres")
+		_light.color = Color(1.0, 0.68, 0.38) if brazier else Color(1.0, 0.82, 0.5)
+		_light.energy = BRAZIER_E if brazier else LANTERN_E
+		_light.texture_scale = 0.55 if brazier else 0.35
+		_light.position = Vector2(0, -8)
+		add_child(_light)
+		if brazier:
+			add_to_group("torch")
+			var em := Fx.emitter(self, "ember", 3, 1.0, {"offset": Vector2(0, -12), "dir": Vector2.UP, "spread": 30.0, "speed": [8.0, 18.0],
+				"gravity": Vector2(0, -10), "color": Color(1, 0.6, 0.3), "z": 1})
+			em.emitting = true
+
+	func _process(delta: float) -> void:
+		_t += delta
+		var f := int(_t * 6.0) % 2
+		_spr.region_rect = Rect2(f * 12, 0, 12, 14) if brazier else Rect2(24 + f * 8, 0, 8, 14)
+		_light.energy = (BRAZIER_E if brazier else LANTERN_E) * (0.88 + 0.12 * sin(_t * 9.0) * sin(_t * 3.7))
 
 
 func width_px() -> float:

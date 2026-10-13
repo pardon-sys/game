@@ -87,6 +87,8 @@ func status_text() -> String:
 	match director.state:
 		"prep": return "第 %d/%d 波 · 准备 %d 秒" % [director.wave, SiegeDirector.total_waves(), ceili(director.prep_left)]
 		"fight":
+			if director.remaining() > 0 and director.boss_alive() and director._queue.is_empty():
+				return "第 %d/%d 波 · 打倒小 Boss 才进下一波" % [director.wave, SiegeDirector.total_waves()]
 			if director.next_left >= 0.0:
 				return "第 %d/%d 波 · 场上 %d 只 · 下一波 %d 秒" % [director.wave, SiegeDirector.total_waves(), director.remaining(), ceili(director.next_left)]
 			return "第 %d/%d 波 · 还剩 %d 只" % [director.wave, SiegeDirector.total_waves(), director.remaining()]
