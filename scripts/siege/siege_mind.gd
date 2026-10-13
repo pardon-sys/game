@@ -95,6 +95,11 @@ func march(m: Monster, delta: float) -> void:
 		var cx := ms.x / 2.0
 		var gx := lerpf(m.global_position.x, cx, randf_range(0.25, 0.6)) + randf_range(-160.0, 160.0)
 		m.set_meta("march_x", clampf(gx, 90.0, ms.x - 90.0))
+	# 附近有活梯子：快到墙下时改道去梯子那里（不然斜着走到墙下时多半差几步够不着）
+	if m.global_position.y - foot < LivingLadder.ATTRACT_Y:
+		var near_lad := LivingLadder.near(m.get_tree(), m.global_position.x, LivingLadder.ATTRACT_X)
+		if near_lad:
+			m.set_meta("march_x", near_lad.global_position.x)
 	var dir := Vector2(0.0, -1.0)
 	var dx := float(m.get_meta("march_x")) - m.global_position.x
 	var dy := m.global_position.y - foot
@@ -158,10 +163,12 @@ func climb_ladder(m: Monster, lad: LivingLadder) -> void:
 	var to := Vector2(lad.global_position.x + randf_range(-6, 6), director.wall_top_y() + randf_range(-2, 6))
 	m.set_physics_process(false)
 	m.collision_mask = 0
+	m.set_meta("ladder_of", lad)   # 爬的途中打梯子能打到它
 	var tw := m.create_tween()
 	tw.tween_property(m, "global_position", to, 1.0).set_trans(Tween.TRANS_SINE)
 	tw.tween_callback(func():
 		if is_instance_valid(m):
+			m.remove_meta("ladder_of")
 			m.set_physics_process(true)
 			TeamworkEffects.put_on_wall(m, to))
 

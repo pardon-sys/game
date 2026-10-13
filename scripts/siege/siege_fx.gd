@@ -29,7 +29,8 @@ static func lane(parent: Node, from: Vector2, to: Vector2, w: float, col: Color,
 	l.width = w
 	l.default_color = Color(col.r, col.g, col.b, 0.35)
 	l.points = PackedVector2Array([from, to])
-	l.z_index = -1
+	# z 0：画在地板上面（-1 会被 Floor 盖住，看不见）；挂在 y 排序的 Entities 下、原点 y = 0，所以仍在所有人物下面
+	l.z_index = 0
 	l.add_to_group("siege_temp")
 	l.add_to_group("siege_lane")
 	parent.add_child(l)
@@ -163,9 +164,11 @@ static func burrow(a: Node2D, fly := false) -> void:
 		mm.state = Monster.State.HURT
 		mm.velocity = Vector2.ZERO
 	a.set_meta("siege_spawning", true)
+	var ar: WeakRef = weakref(a)   # 出生途中被打倒释放：闭包别直接抓着它
 	a.get_tree().create_timer(0.6, false).timeout.connect(func():
-		if is_instance_valid(a):
-			a.set_meta("siege_spawning", false))
+		var me := ar.get_ref() as Node
+		if me:
+			me.set_meta("siege_spawning", false))
 	if fly or spr == null:
 		Fx.burst(parent, a.global_position + Vector2(0, -8), "steam", 10, 30.0, 0.6, Vector2(0, -10), Color(0.9, 0.85, 1.0, 0.8))
 		if spr:

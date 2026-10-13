@@ -26,6 +26,7 @@ const PARTICLES := {
 	"bubble": preload("res://assets/generated/particle_bubble.png"),
 	"thread": preload("res://assets/generated/particle_thread.png"),
 	"ring": preload("res://assets/generated/particle_ring.png"),
+	"confetti": preload("res://assets/generated/particle_confetti.png"),
 }
 
 

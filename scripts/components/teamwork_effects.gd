@@ -222,12 +222,16 @@ static func _bubble_trap(members: Array, target: PlayableCharacter) -> void:
 	for m in members[0].get_tree().get_nodes_in_group("enemy"):
 		if m is Monster and (m as Node2D).global_position.distance_to(target.global_position) < 200.0 and MonsterTeamwork.key_of(m) == "caterpillar":
 			(m as Monster).rally_to(target)
-	var src: Node = members[0]
+	# 用 weakref：闭包直接抓着的怪被打倒释放后，再调用闭包 Godot 会报「Lambda capture was freed」
+	var src_ref: WeakRef = weakref(members[0])
+	var tgt_ref: WeakRef = weakref(target)
 	var tw := target.create_tween().set_loops(6)
 	tw.tween_interval(0.5)
 	tw.tween_callback(func():
-		if is_instance_valid(target) and is_instance_valid(src):
-			target.receive_hit(HitData.make_tickle(src, 3.0)))
+		var t := tgt_ref.get_ref() as Actor
+		var src := src_ref.get_ref() as Node
+		if t and src:
+			t.receive_hit(HitData.make_tickle(src, 3.0)))
 
 
 static func _charge(jelly: Monster) -> void:
@@ -252,10 +256,13 @@ static func _roll(members: Array, target: PlayableCharacter) -> void:
 	var d := SiegeDirector.current
 	var crowd: Variant = d.densest(40.0, target.global_position, 220.0) if d else null
 	var push := target.global_position + (target.global_position.direction_to(crowd) if crowd is Vector2 else dir) * 10.0
+	var tgt_ref: WeakRef = weakref(target)
+	var lead_ref: WeakRef = weakref(members[0])
 	target.get_tree().create_timer(0.5).timeout.connect(func():
-		if is_instance_valid(target):
-			target.apply_knockback(target.global_position - (push - target.global_position), 320.0)
-			target.receive_hit(HitData.make_tickle(members[0] if is_instance_valid(members[0]) else null, 6.0)))
+		var t := tgt_ref.get_ref() as PlayableCharacter
+		if t:
+			t.apply_knockback(t.global_position - (push - t.global_position), 320.0)
+			t.receive_hit(HitData.make_tickle(lead_ref.get_ref() as Node, 6.0)))
 	Audio.play("roll", -2.0, 0.1)
 
 

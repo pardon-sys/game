@@ -73,6 +73,51 @@ func _ready() -> void:
 	await _shot("towers5_b")
 	_unlook()
 	await _clear()
+	# 第六轮：每波特色
+	if only.is_empty() or only.any(func(n): return str(n).begins_with("feat_")):
+		var f := d.features
+		d.wave = 12
+		_fight()
+		f.begin(["carnival", "feathers", "corps", "raiders"])
+		await _wait(0.6)
+		await _shot("feat_title")
+		await _wait(2.5)
+		var tp := Vector2(d.gate_pos.x + 140.0, d.wall_foot_y() + 120.0)
+		await _clear_towers_only()
+		var rs := f.raid()
+		for m in rs:
+			m.global_position = tp + Vector2(randf_range(-20, 100), randf_range(30, 60))
+		d.pink.global_position = tp + Vector2(40, 120)
+		for i in 2:
+			var pdf := BuildPad.new()
+			d.entities().add_child(pdf)
+			pdf.global_position = tp + Vector2(i * 80.0, 0)
+			pdf._build(["cocoa", "mint"][i], 1)
+		await _wait(1.2)
+		await _shot("feat_hud")
+		await _look(tp + Vector2(40, 50), 1.2)
+		await _shot("feat_raiders")
+		_unlook()
+		f.corps()
+		await _wait(0.4)
+		await _look(Vector2(d.map_size().x / 2.0, d.map_size().y - 160.0), 0.5)
+		await _shot("feat_corps")
+		await _wait(1.6)
+		await _look(Vector2(d.map_size().x / 2.0, d.map_size().y - 120.0), 0.6)
+		await _shot("feat_corps_b")
+		_unlook()
+		await _clear()
+		f.begin(["gale", "fog"])
+		await _wait(2.5)
+		for i in 8:
+			var gm := d.spawn("ghost" if i % 2 else "slime", "", d.pink.global_position + Vector2(randf_range(-80, 80), randf_range(-40, 60)))
+			gm.mind = null
+		f.gust()
+		await _wait(0.5)
+		await _shot("feat_gale_fog")
+		f.end()
+		d.wave = 1
+		await _clear()
 	# 镇民支援过场（中途截一张）
 	var job := func(): await d.town.grant("mayor")
 	job.call()
@@ -218,7 +263,7 @@ func _clear() -> void:
 	d.clear_field()
 	for n in get_tree().get_nodes_in_group("siege_pad"):
 		n.queue_free()
-	for n in get_tree().get_nodes_in_group("siege_pad"):
+	for n in get_tree().get_nodes_in_group("siege_tower"):
 		n.queue_free()
 	for n in get_tree().get_nodes_in_group("siege_enemy_tower"):
 		n.queue_free()
@@ -226,6 +271,12 @@ func _clear() -> void:
 	await _wait(0.3)
 	d.pink.global_position = d.gate_pos + Vector2(0, 140)
 	_fight()
+
+
+func _clear_towers_only() -> void:
+	for n in get_tree().get_nodes_in_group("siege_tower"):
+		n.queue_free()
+	await _wait(0.1)
 
 
 func _cg_frame(step: int) -> void:

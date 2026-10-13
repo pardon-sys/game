@@ -515,7 +515,11 @@ data/cutscenes/<楼层组>/  地图内过场；data/theater/<楼层组>/  小剧
   `_clamp_monsters` 不出地图、`enemies_near` 用空间网格；城墙 `z_index -1` + 墙脚挡人窄条（`FOOT_STRIP`）；
   冰塔加篝火（`torch` 组，幽灵现形）/ 冰棱弩炮（穿透 + 末端冰花、打敌塔 ×3）/ 热可可摊；冰锥 / 寒霜 / 雪球都有范围伤害；
   随波次解锁（`unlock_wave`）：冰霜迫击炮、冰风旋涡、冰晶共鸣、冰陨星台、温泉治疗泉、冰灯（敌塔变慢 `lamp_slow_at`）、冰盾发生器（`ice_shield`）；
-  所有塔 3 级（`IceTower.MAX_LEVEL`）；活梯子 `LivingLadder` 是敌方 Actor（`siege_enemy_tower` 组，受击转给最下面的壁虎）；敌塔整个塔身可打（`HurtProxy`）、血条、范围 / 蓄力 / 崩塌特效。
+  所有塔 3 级（`IceTower.MAX_LEVEL`）；活梯子 `LivingLadder` 是敌方 Actor（`siege_enemy_tower` 组，受击范围高过墙顶，转给离攻击者最近的壁虎 / 正在爬梯子的怪 meta `ladder_of`）；
+  每波特色 `WaveFeatures`（`waves.json` 顶层 `features` 定义 + 每波 `features` 列表；`SiegeDirector.features`，开打时 `begin`）：迷雾之夜变暗、攻城大队、狂风、
+  抢掠小队（`RaiderMind` 拆冰塔 `IceTower.raid_hit`、基座留着）、羽毛暴风雪、狂欢节、工兵狂潮 / 痒痒装备日的倍率 `WaveFeatures.mul_of`；HUD 小地图下挂标签；
+  配合技冷却 `MonsterTeamwork.cd_scale` 随波次变小；配合技 / 陷阱组合不进情报；攻防战里的旧 Boss 当小怪（`SiegeDirector._as_minion`），不掉钥匙；
+  小 Boss 冰塔伤害 ×0.25、狂暴前待在下半场（`TrollGeneral.min_y`）；蓝色公主看门狗 `_blue_watchdog`、`downed_never_fails`；敌塔整个塔身可打（`HurtProxy`）、血条、范围 / 蓄力 / 崩塌特效。
   陷阱和怪物配合：龙卷风卷怪、迷雾里的怪打不到（meta `in_fog`，`enemies_near(..., false)`）、泡泡运兵；陷阱组合 `spawn_hazard_combo`（波次 `hazards` 里写 `combo`）。
 - **临时痒痒装备**：`Equipment.force` / `release` / `tick_forced`（`GameState.equip_forced`），负面装备由 `EquipFx` 定时发作 + 立绘反应（`data/equip_reactions.json`，分角色）。
 - 内容生成器：`gen_siege_monsters.py`（场景）、`gen_siege_cgs.py`（笑倒 CG，粉 / 蓝两版）、`gen_siege_scenes.py`（三来源组合小演出）、

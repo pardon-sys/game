@@ -75,6 +75,8 @@ var intel: SiegeIntel
 var cam: SiegeCamera
 var aim: SpellAim
 var teamwork: MonsterTeamwork
+## 每波的特色机制（狂风、攻城大队、抢掠小队……）
+var features: WaveFeatures
 var town: TownBuffs
 ## 这一波还没出的怪：[{t, monster, from}]（t = 战斗开始后第几秒出）
 var _queue: Array = []
@@ -205,10 +207,12 @@ func _setup() -> void:
 	teamwork = MonsterTeamwork.new()
 	teamwork.spawn_func = func(k: String, at: Vector2) -> Monster: return spawn(k, "", at)
 	teamwork.monsters_func = func() -> Array: return monsters
-	teamwork.triggered.connect(func(id: String, _at: Vector2):
-		intel.discover("team_" + id)
+	teamwork.triggered.connect(func(_id: String, _at: Vector2):
 		Audio.play("combo", -4.0, 0.05))
 	add_child(teamwork)
+	features = WaveFeatures.new()
+	features.director = self
+	add_child(features)
 	_restore_towers()
 	_spawn_soldiers()
 	wave = clampi(int(GameState.vars.get("siege_wave", 1)), 1, total_waves())
@@ -295,6 +299,9 @@ func _begin_fight() -> void:
 	_hazards = (wave_data().get("hazards", []) as Array).duplicate(true)
 	_hazards.sort_custom(func(a, b): return float(a["t"]) < float(b["t"]))
 	_set_state("fight")
+	# 配合技越往后越频繁（第 12 波约 2.3 倍）；这一波的特色机制
+	teamwork.cd_scale = 1.0 / (1.0 + 0.12 * (wave - 1))
+	features.begin(wave_data().get("features", []))
 	_announce_unlocks()
 	Audio.play("siege_horn", -1.0)
 	GameState.hint("第 %d 波来了！" % wave)
@@ -356,8 +363,32 @@ func _unlock_watchdog() -> void:
 	PlayerInputController.actions_locked = false
 
 
+## 蓝色公主卡死的保险：倒了却一直没有倒地组件（倒下的协程被打断）超过 3 秒 → 补一个；倒地超过 50 秒还没起来 → 直接救起。
+func _blue_watchdog(delta: float) -> void:
+	if blue == null or not is_instance_valid(blue) or state in ["", "failed", "won"]:
+		return
+	if Downed.is_downed(blue):
+		_blue_lost_t = 0.0
+		_blue_down_t += delta
+		if _blue_down_t > BLUE_REVIVE + 10.0:
+			_blue_down_t = 0.0
+			revive_blue(blue, "蓝色公主自己爬起来了")
+		return
+	_blue_down_t = 0.0
+	if blue.is_alive():
+		_blue_lost_t = 0.0
+		return
+	_blue_lost_t += delta
+	if _blue_lost_t > 3.0 and not CG.is_busy() or _blue_lost_t > 15.0:
+		_blue_lost_t = 0.0
+		var dn := Downed.start(blue)
+		dn.revive_after = BLUE_REVIVE
+		call_bearers(blue)
+
+
 func _process(delta: float) -> void:
 	_unlock_watchdog()
+	_blue_watchdog(delta)
 	if not (_busy or state == "" or GameState.in_dialogue or CG.is_busy() or GameState.in_cutscene):
 		_help_unequip(delta)
 	if _busy or state == "" or GameState.in_dialogue or CG.is_busy() or GameState.in_cutscene:
@@ -471,6 +502,7 @@ func spawn(key: String, from := "bottom", at = null) -> Monster:
 		if not sites.is_empty():
 			site = sites.pick_random()
 	var pos: Vector2 = at if at is Vector2 else (site.global_position + Vector2(randf_range(-30, 30), randf_range(-20, 20)) if site else spawn_pos(from))
+	_as_minion(m)
 	entities().add_child(m)
 	m.global_position = pos
 	# 攻防战里怪物之间不互相挡（几百只同时在场时省物理计算）
@@ -490,6 +522,27 @@ func spawn(key: String, from := "bottom", at = null) -> Monster:
 	if from == "hole":
 		Fx.burst(m.get_parent(), pos, "dust", 8, 40.0, 0.5, Vector2(0, 40), Color(0.6, 0.5, 0.4))
 	return m
+
+
+## 攻防战里的怪都是小怪：前几层的 Boss（挠痒巨魔……）不弹 Boss 血条、不召唤；所有怪都不掉钥匙。
+## 小 Boss 巨魔将军除外（它有自己的血条和出场）。
+func _as_minion(m: Monster) -> void:
+	if m is TrollGeneral or m.stats == null:
+		return
+	var old_boss := m.stats.is_boss
+	var has_key := m.stats.drops.any(func(dr): return dr != null and dr.item != null and dr.item.category == ItemData.Category.KEY)
+	if not old_boss and not has_key:
+		return
+	var st := m.stats.duplicate() as MonsterStats
+	st.is_boss = false
+	var keep: Array[ItemDrop] = []
+	for dr in st.drops:
+		if dr != null and dr.item != null and dr.item.category != ItemData.Category.KEY:
+			keep.append(dr)
+	st.drops = keep
+	m.stats = st
+	if old_boss:
+		m.set_meta("siege_minion_boss", true)
 
 
 ## 放一个大范围陷阱（位置按种类挑：龙卷风 / 迷雾 / 符文在战场上靠近粉色公主，城墙爬藤在蓝色公主那段墙下，扫帚在走道上……）。
@@ -574,7 +627,6 @@ func spawn_hazard_combo(kind: String) -> Array:
 					d2.spawn_hazard("sticky_net"))
 	var info: Array = HAZARD_COMBOS.get(kind, [kind, "#ffffff"])
 	teamwork.announce(str(info[0]), c, Color(str(info[1])), "陷阱组合：")
-	intel.discover("hzcombo_" + kind)
 	return made
 
 
@@ -997,6 +1049,8 @@ func enemies_near(pos: Vector2, r: float, include_fog := true) -> Array[Monster]
 				if is_instance_valid(m) and m.is_alive() and (m as Node2D).global_position.distance_squared_to(pos) <= r2:
 					if not include_fog and m.get_meta("in_fog", false):
 						continue
+					if m is TickleGhost and not (m as TickleGhost).revealed:
+						continue   # 没显形的幽灵不算（打不到，也不该被选成目标）
 					out.append(m)
 	return out
 
@@ -1093,8 +1147,17 @@ func _down_seq(c: PlayableCharacter) -> void:
 	if c.is_laugh_defeat() and c.has_method("defeat_source_key"):
 		key = str(c.call("defeat_source_key"))
 	if key != "" and state != "failed":
+		# 等小剧场播完，最多 12 秒（CG 卡住时不能让后面的倒地 / 复活一直不发生）
 		Characters.scope(c.character_id)
-		await CG.play_death(key)
+		var done := [false]
+		var job := func():
+			await CG.play_death(key)
+			done[0] = true
+		job.call()
+		var waited := 0.0
+		while not done[0] and waited < 12.0 and is_instance_valid(c):
+			await get_tree().process_frame
+			waited += get_process_delta_time()
 		Characters.unscope()
 	if not is_instance_valid(c):
 		return
@@ -1120,6 +1183,11 @@ func on_defeat(_reason: String) -> void:
 const ROSTER := {"spear": 10, "archer": 6, "shield": 3, "medic": 2, "artisan": 2}
 ## 蓝色公主没人来抬时，多久自己复活
 const BLUE_REVIVE := 40.0
+## 倒地组件：两个人都倒下也不算输、对话时也倒计时（Downed 看这个）
+var downed_never_fails := true
+## 蓝色公主倒了却没有倒地组件 / 倒地太久的计时（_blue_watchdog）
+var _blue_lost_t := 0.0
+var _blue_down_t := 0.0
 var soldiers: Array[SiegeSoldier] = []
 
 
@@ -1195,6 +1263,7 @@ func _fail() -> void:
 	if _busy:
 		return
 	_busy = true
+	features.end()
 	_set_state("failed")
 	failed.emit(wave)
 	Audio.play("lose_fanfare", -1.0)
@@ -1279,6 +1348,7 @@ func reset_after_fail() -> void:
 
 func _win() -> void:
 	_busy = true
+	features.end()
 	_set_state("won")
 	GameState.set_flag("siege_won")
 	GameState.vars.erase("siege_wave")

@@ -16,7 +16,7 @@ func _on_tickle_performed(t: Node) -> void:
 	if c.status.grab(self, 3.5, 10):
 		_held = c
 		var id: String = ITEMS.pick_random()
-		var how := Equipment.force(c.character_id, id)
+		var how := Equipment.force(c.character_id, id, Equipment.FORCE_TIME * WaveFeatures.mul_of("equip_time"))
 		Audio.play("vine", -3.0, 0.1)
 		SpeechBubble.say(c, "藤、藤蔓缠上来了！" if c.character_id == "pink" else "……缠、缠住了。", 28.0, 1.6)
 		if how != "" and director and director.intel:

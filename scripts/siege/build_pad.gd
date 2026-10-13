@@ -204,6 +204,13 @@ func tower_gone() -> void:
 	queue_free()
 
 
+## 塔被抢掠小队拆了：基座留着（按 B 在这里重新造）。
+func tower_raided() -> void:
+	tower = null
+	_save()
+	queue_redraw()
+
+
 ## 存档：所有基座上的塔一起写（[{x, y, kind, level}]）。
 func _save() -> void:
 	var out := []

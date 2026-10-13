@@ -96,6 +96,20 @@
 					"from": "bottom",
 					"interval": 0,
 					"delay": 10.0
+				},
+				{
+					"monster": "bubble_fish",
+					"count": 30,
+					"from": "hole",
+					"interval": 1.0,
+					"delay": 4.0
+				},
+				{
+					"formation": "bubble_chain",
+					"count": 3,
+					"from": "hole",
+					"interval": 12,
+					"delay": 8
 				}
 			],
 			"enemy_towers": [
@@ -103,7 +117,52 @@
 				"windmill"
 			],
 			"theater": "siege_fail_1",
-			"countdown": 15
+			"countdown": 15,
+			"hazards": [
+				{
+					"t": 6,
+					"kind": "bubbles"
+				},
+				{
+					"t": 16,
+					"kind": "bubbles"
+				},
+				{
+					"t": 26,
+					"kind": "bubbles"
+				},
+				{
+					"t": 36,
+					"kind": "bubbles"
+				},
+				{
+					"t": 46,
+					"kind": "bubbles"
+				},
+				{
+					"t": 56,
+					"kind": "bubbles"
+				},
+				{
+					"t": 66,
+					"kind": "bubbles"
+				},
+				{
+					"t": 76,
+					"kind": "bubbles"
+				},
+				{
+					"t": 86,
+					"kind": "bubbles"
+				},
+				{
+					"t": 96,
+					"kind": "bubbles"
+				}
+			],
+			"features": [
+				"bubbles"
+			]
 		},
 		{
 			"name": "钩索与壁虎",
@@ -185,6 +244,27 @@
 					"from": "bottom",
 					"interval": 12.0,
 					"delay": 4.0
+				},
+				{
+					"formation": "bat_airdrop",
+					"count": 3,
+					"from": "left",
+					"interval": 10,
+					"delay": 6
+				},
+				{
+					"formation": "gecko_ladder",
+					"count": 3,
+					"from": "bottom",
+					"interval": 14,
+					"delay": 10
+				},
+				{
+					"monster": "hook",
+					"count": 20,
+					"from": "bottom",
+					"interval": 1.5,
+					"delay": 8.0
 				}
 			],
 			"hazards": [
@@ -227,7 +307,10 @@
 				"vine_pull"
 			],
 			"theater": "siege_fail_2",
-			"countdown": 15
+			"countdown": 15,
+			"features": [
+				"airdrop"
+			]
 		},
 		{
 			"name": "攻城痒痒车",
@@ -318,6 +401,20 @@
 					"delay": 4.0
 				},
 				{
+					"monster": "troll",
+					"count": 8,
+					"from": "bottom",
+					"interval": 4.0,
+					"delay": 6.0
+				},
+				{
+					"formation": "troll_throw",
+					"count": 3,
+					"from": "bottom",
+					"interval": 12,
+					"delay": 10
+				},
+				{
 					"monster": "troll_general",
 					"count": 1,
 					"from": "bottom",
@@ -353,6 +450,9 @@
 			],
 			"theater": "siege_fail_3",
 			"countdown": 15,
+			"features": [
+				"trolls"
+			],
 			"boss": "troll_general"
 		},
 		{
@@ -449,11 +549,22 @@
 					"from": "bottom",
 					"interval": 10.0,
 					"delay": 4.0
+				},
+				{
+					"monster": "ghost",
+					"count": 30,
+					"from": "hole",
+					"interval": 0.8,
+					"delay": 4.0
 				}
 			],
 			"hazards": [
 				{
 					"t": 6.0,
+					"kind": "fog"
+				},
+				{
+					"t": 10,
 					"kind": "fog"
 				},
 				{
@@ -471,6 +582,10 @@
 				{
 					"t": 30,
 					"kind": "sticky_net"
+				},
+				{
+					"t": 35,
+					"kind": "fog"
 				},
 				{
 					"t": 36.0,
@@ -491,6 +606,10 @@
 				{
 					"t": 58,
 					"combo": "net_link"
+				},
+				{
+					"t": 60,
+					"kind": "fog"
 				}
 			],
 			"enemy_towers": [
@@ -499,7 +618,10 @@
 				"glue"
 			],
 			"theater": "siege_fail_4",
-			"countdown": 15
+			"countdown": 15,
+			"features": [
+				"fog"
+			]
 		},
 		{
 			"name": "大波次：怪物潮",
@@ -679,7 +801,10 @@
 				"glue"
 			],
 			"theater": "siege_fail_5",
-			"countdown": 15
+			"countdown": 15,
+			"features": [
+				"corps"
+			]
 		},
 		{
 			"name": "盾甲螃蟹与拥抱小熊",
@@ -794,6 +919,10 @@
 					"kind": "tornado"
 				},
 				{
+					"t": 12,
+					"kind": "tornado"
+				},
+				{
 					"t": 14.0,
 					"kind": "link_rune"
 				},
@@ -804,6 +933,10 @@
 				{
 					"t": 24,
 					"kind": "fog"
+				},
+				{
+					"t": 25,
+					"combo": "double_tornado"
 				},
 				{
 					"t": 30.0,
@@ -818,6 +951,10 @@
 					"kind": "sticky_net"
 				},
 				{
+					"t": 40,
+					"kind": "tornado"
+				},
+				{
 					"t": 46.0,
 					"kind": "tornado"
 				},
@@ -830,21 +967,34 @@
 					"kind": "broom"
 				},
 				{
+					"t": 55,
+					"combo": "double_tornado"
+				},
+				{
 					"t": 62.0,
 					"kind": "sticky_net"
 				},
 				{
 					"t": 68,
 					"combo": "double_tornado"
+				},
+				{
+					"t": 68,
+					"kind": "tornado"
 				}
 			],
 			"enemy_towers": [
 				"sole_tower",
 				"net",
-				"tailor"
+				"tailor",
+				"windmill",
+				"windmill"
 			],
 			"theater": "siege_fail_6",
-			"countdown": 15
+			"countdown": 15,
+			"features": [
+				"gale"
+			]
 		},
 		{
 			"name": "暖炉与搬运小鬼",
@@ -961,6 +1111,20 @@
 					"from": "bottom",
 					"interval": 7.0,
 					"delay": 4.0
+				},
+				{
+					"monster": "vine",
+					"count": 12,
+					"from": "hole",
+					"interval": 2.0,
+					"delay": 6.0
+				},
+				{
+					"monster": "vine",
+					"count": 12,
+					"from": "bottom",
+					"interval": 2.0,
+					"delay": 10.0
 				}
 			],
 			"hazards": [
@@ -977,12 +1141,20 @@
 					"kind": "broom"
 				},
 				{
+					"t": 14,
+					"kind": "wall_vine"
+				},
+				{
 					"t": 20.0,
 					"kind": "sticky_net"
 				},
 				{
 					"t": 22,
 					"kind": "broom"
+				},
+				{
+					"t": 22,
+					"kind": "sticky_net"
 				},
 				{
 					"t": 27.0,
@@ -997,12 +1169,20 @@
 					"kind": "wall_vine"
 				},
 				{
+					"t": 38,
+					"kind": "wall_vine"
+				},
+				{
 					"t": 41.0,
 					"kind": "bubbles"
 				},
 				{
 					"t": 46,
 					"kind": "link_rune"
+				},
+				{
+					"t": 46,
+					"kind": "sticky_net"
 				},
 				{
 					"t": 48.0,
@@ -1021,7 +1201,15 @@
 					"kind": "broom"
 				},
 				{
+					"t": 62,
+					"kind": "wall_vine"
+				},
+				{
 					"t": 69.0,
+					"kind": "sticky_net"
+				},
+				{
+					"t": 70,
 					"kind": "sticky_net"
 				},
 				{
@@ -1033,10 +1221,16 @@
 				"net",
 				"sole_tower",
 				"vine_pull",
-				"glue"
+				"glue",
+				"tailor",
+				"tailor"
 			],
 			"theater": "siege_fail_7",
-			"countdown": 15
+			"countdown": 15,
+			"features": [
+				"equip",
+				"vines"
+			]
 		},
 		{
 			"name": "魔力吸吸水母",
@@ -1153,6 +1347,13 @@
 					"from": "bottom",
 					"interval": 6.0,
 					"delay": 4.0
+				},
+				{
+					"formation": "engineer_escort",
+					"count": 6,
+					"from": "bottom",
+					"interval": 6.0,
+					"delay": 4.0
 				}
 			],
 			"hazards": [
@@ -1235,7 +1436,11 @@
 				"tailor"
 			],
 			"theater": "siege_fail_8",
-			"countdown": 15
+			"countdown": 15,
+			"features": [
+				"engineers",
+				"raiders"
+			]
 		},
 		{
 			"name": "狂欢与共振",
@@ -1373,6 +1578,13 @@
 					"from": "bottom",
 					"interval": 5.0,
 					"delay": 4.0
+				},
+				{
+					"monster": "ghost",
+					"count": 30,
+					"from": "hole",
+					"interval": 0.8,
+					"delay": 4.0
 				}
 			],
 			"hazards": [
@@ -1383,6 +1595,10 @@
 				{
 					"t": 8,
 					"kind": "tornado"
+				},
+				{
+					"t": 10,
+					"kind": "fog"
 				},
 				{
 					"t": 12.0,
@@ -1407,6 +1623,10 @@
 				{
 					"t": 30.0,
 					"kind": "tornado"
+				},
+				{
+					"t": 35,
+					"kind": "fog"
 				},
 				{
 					"t": 36.0,
@@ -1449,6 +1669,10 @@
 					"combo": "fog_tornado"
 				},
 				{
+					"t": 60,
+					"kind": "fog"
+				},
+				{
 					"t": 66.0,
 					"kind": "fog"
 				},
@@ -1468,10 +1692,14 @@
 				"portal"
 			],
 			"theater": "siege_fail_9",
-			"countdown": 15
+			"countdown": 15,
+			"features": [
+				"feathers",
+				"fog"
+			]
 		},
 		{
-			"name": "最终波：全部一起上",
+			"name": "大混战：全部一起上",
 			"reward": 40,
 			"groups": [
 				{
@@ -1725,6 +1953,27 @@
 					"from": "bottom",
 					"interval": 4.0,
 					"delay": 4.0
+				},
+				{
+					"formation": "bat_airdrop",
+					"count": 3,
+					"from": "left",
+					"interval": 10,
+					"delay": 6
+				},
+				{
+					"formation": "gecko_ladder",
+					"count": 3,
+					"from": "bottom",
+					"interval": 14,
+					"delay": 10
+				},
+				{
+					"monster": "hook",
+					"count": 20,
+					"from": "bottom",
+					"interval": 1.5,
+					"delay": 8.0
 				}
 			],
 			"hazards": [
@@ -1873,10 +2122,17 @@
 				"portal",
 				"net",
 				"vine_pull",
-				"tailor"
+				"tailor",
+				"totem",
+				"totem"
 			],
 			"theater": "siege_fail_10",
-			"countdown": 15
+			"countdown": 15,
+			"features": [
+				"carnival",
+				"corps",
+				"airdrop"
+			]
 		},
 		{
 			"name": "钢铁与羽毛",
@@ -2077,6 +2333,34 @@
 					"from": "bottom",
 					"interval": 4.0,
 					"delay": 4.0
+				},
+				{
+					"monster": "troll",
+					"count": 8,
+					"from": "bottom",
+					"interval": 4.0,
+					"delay": 6.0
+				},
+				{
+					"formation": "troll_throw",
+					"count": 3,
+					"from": "bottom",
+					"interval": 12,
+					"delay": 10
+				},
+				{
+					"monster": "bubble_fish",
+					"count": 30,
+					"from": "hole",
+					"interval": 1.0,
+					"delay": 4.0
+				},
+				{
+					"formation": "bubble_chain",
+					"count": 3,
+					"from": "hole",
+					"interval": 12,
+					"delay": 8
 				}
 			],
 			"hazards": [
@@ -2089,12 +2373,24 @@
 					"kind": "tornado"
 				},
 				{
+					"t": 6,
+					"kind": "bubbles"
+				},
+				{
 					"t": 12.0,
+					"kind": "tornado"
+				},
+				{
+					"t": 12,
 					"kind": "tornado"
 				},
 				{
 					"t": 14,
 					"kind": "fog"
+				},
+				{
+					"t": 16,
+					"kind": "bubbles"
 				},
 				{
 					"t": 18.0,
@@ -2113,6 +2409,14 @@
 					"kind": "sticky_net"
 				},
 				{
+					"t": 25,
+					"combo": "double_tornado"
+				},
+				{
+					"t": 26,
+					"kind": "bubbles"
+				},
+				{
 					"t": 30.0,
 					"kind": "link_rune"
 				},
@@ -2123,6 +2427,10 @@
 				{
 					"t": 36.0,
 					"kind": "wall_vine"
+				},
+				{
+					"t": 36,
+					"kind": "bubbles"
 				},
 				{
 					"t": 38,
@@ -2137,12 +2445,20 @@
 					"combo": "net_link"
 				},
 				{
+					"t": 40,
+					"kind": "tornado"
+				},
+				{
 					"t": 42.0,
 					"kind": "bubbles"
 				},
 				{
 					"t": 46,
 					"kind": "sticky_net"
+				},
+				{
+					"t": 46,
+					"kind": "bubbles"
 				},
 				{
 					"t": 48.0,
@@ -2155,6 +2471,14 @@
 				{
 					"t": 54.0,
 					"kind": "tornado"
+				},
+				{
+					"t": 55,
+					"combo": "double_tornado"
+				},
+				{
+					"t": 56,
+					"kind": "bubbles"
 				},
 				{
 					"t": 58,
@@ -2173,8 +2497,20 @@
 					"kind": "sticky_net"
 				},
 				{
+					"t": 66,
+					"kind": "bubbles"
+				},
+				{
+					"t": 68,
+					"kind": "tornado"
+				},
+				{
 					"t": 72.0,
 					"kind": "link_rune"
+				},
+				{
+					"t": 76,
+					"kind": "bubbles"
 				},
 				{
 					"t": 78.0,
@@ -2189,12 +2525,20 @@
 					"kind": "bubbles"
 				},
 				{
+					"t": 86,
+					"kind": "bubbles"
+				},
+				{
 					"t": 90.0,
 					"kind": "fog"
 				},
 				{
 					"t": 96.0,
 					"kind": "tornado"
+				},
+				{
+					"t": 96,
+					"kind": "bubbles"
 				}
 			],
 			"enemy_towers": [
@@ -2202,10 +2546,17 @@
 				"glue",
 				"net",
 				"totem",
-				"tailor"
+				"tailor",
+				"windmill",
+				"windmill"
 			],
 			"theater": "siege_fail_11",
-			"countdown": 15
+			"countdown": 15,
+			"features": [
+				"gale",
+				"trolls",
+				"bubbles"
+			]
 		},
 		{
 			"name": "终极攻城：全军压上",
@@ -2619,10 +2970,92 @@
 				"vine_pull",
 				"tailor",
 				"windmill",
-				"glue"
+				"glue",
+				"totem",
+				"totem"
 			],
 			"theater": "siege_fail_12",
-			"countdown": 15
+			"countdown": 15,
+			"features": [
+				"carnival",
+				"feathers",
+				"corps",
+				"raiders"
+			]
 		}
-	]
+	],
+	"features": {
+		"bubbles": {
+			"name": "泡泡潮汐",
+			"color": "#80d8ff",
+			"desc": "泡泡潮一阵接一阵、泡泡鱼成群，泡泡把小怪成批运到墙下。",
+			"icon": 0
+		},
+		"airdrop": {
+			"name": "空降突袭",
+			"color": "#c0a0ff",
+			"desc": "蝠群空投、钩索怪、壁虎叠罗汉连着来：压力全在墙顶。",
+			"icon": 1
+		},
+		"trolls": {
+			"name": "巨魔军团",
+			"color": "#a8c878",
+			"desc": "一群挠痒巨魔压过来，边走边把小怪扔上城墙。",
+			"icon": 2
+		},
+		"fog": {
+			"name": "迷雾之夜",
+			"color": "#9a88d0",
+			"desc": "天黑了：迷雾陷阱和幽灵成群，篝火塔 / 冰灯塔 / 灯笼照到的地方幽灵才现形。",
+			"icon": 3
+		},
+		"corps": {
+			"name": "攻城大队",
+			"color": "#ff8060",
+			"desc": "每 25 秒一排攻城车带着螃蟹护卫同时出发（地上先亮一排红线）。",
+			"icon": 4
+		},
+		"gale": {
+			"name": "狂风肆虐",
+			"color": "#a8f0e0",
+			"desc": "龙卷风变多；一阵阵横扫全场的强风，把粉色公主和小怪往一边吹。",
+			"icon": 5
+		},
+		"equip": {
+			"name": "痒痒装备日",
+			"color": "#ff90c8",
+			"desc": "痒痒裁缝铺和捆绑藤怪变多，临时装备穿得更久（+50%）。",
+			"icon": 6
+		},
+		"vines": {
+			"name": "藤蔓疯长",
+			"color": "#78d878",
+			"desc": "城墙爬藤、黏网、捆绑藤怪一起疯长。",
+			"icon": 7
+		},
+		"engineers": {
+			"name": "工兵狂潮",
+			"color": "#ffc060",
+			"desc": "地精工兵翻倍、搭塔快 50%，每立起一座敌塔都响一声号角。",
+			"icon": 8
+		},
+		"raiders": {
+			"name": "抢掠小队",
+			"color": "#ff6060",
+			"desc": "每 20 秒一队举红旗的小怪绕开公主，专拆冰塔、打士兵；冰塔拆了基座还在，工匠会修。",
+			"icon": 9
+		},
+		"feathers": {
+			"name": "羽毛暴风雪",
+			"color": "#fff0b0",
+			"desc": "天上飘满痒痒羽毛：开阔地上粉色公主的闷笑慢慢涨；墙下、冰塔旁、薄荷冰泉 / 温泉范围里是安全的。",
+			"icon": 10
+		},
+		"carnival": {
+			"name": "狂欢节",
+			"color": "#ffd040",
+			"desc": "狂欢图腾变多，所有怪移速 +25%、挠得更勤。",
+			"icon": 11
+		}
+	}
 }

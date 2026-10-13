@@ -210,6 +210,18 @@
 			},
 			"desc": "狂欢图腾附近：怪物移动和挠痒都更快。"
 		},
+		"siege_carnival": {
+			"name": "狂欢",
+			"icon": 1,
+			"debuff": false,
+			"hidden": true,
+			"duration": 1.5,
+			"max_stacks": 1,
+			"modifiers": {
+				"speed": 1.25,
+				"tickle_cd": 0.8
+			}
+		},
 		"siege_chill": {
 			"name": "冰寒",
 			"icon": 18,

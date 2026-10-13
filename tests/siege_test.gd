@@ -364,6 +364,8 @@ func _run_towers() -> void:
 	var frost: IceTower = built["frost"]
 	var m3: Monster = d.spawn("slime", "", frost.global_position + Vector2(0, 40))
 	m3.mind = null
+	m3.health.max_hp = 99   # 寒霜冰爆有范围伤害：别让它半路被打倒
+	m3.health.fill()
 	await _wait(0.8)
 	check("寒霜塔：范围里的怪减速（%s）/ 冻住（%s）" % [m3.has_buff("siege_chill"), m3.is_stunned()], m3.has_buff("siege_chill") and m3.is_stunned())
 	var rep: IceTower = built["repair"]

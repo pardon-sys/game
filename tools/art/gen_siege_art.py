@@ -995,6 +995,89 @@ def snowball_proj():
     return add_outline(img)
 
 
+# ================================================================ 第六轮：每波特色机制的小图标（12x12，features.png 一排；顺序和 waves.json 的 features 一致）
+def gen_features():
+    S = 12
+    order = ["bubbles", "airdrop", "trolls", "fog", "corps", "gale", "equip", "vines", "engineers", "raiders", "feathers", "carnival"]
+    sheet = Image.new("RGBA", (S * len(order), S), (0, 0, 0, 0))
+    W_ = (255, 255, 255, 255)
+
+    def icon(k):
+        img, d = canvas(S - 2, S - 2)
+        if k == "bubbles":
+            d.ellipse((0, 3, 5, 8), outline=(140, 215, 255, 255), fill=(90, 170, 230, 120))
+            d.ellipse((5, 0, 9, 4), outline=(140, 215, 255, 255), fill=(90, 170, 230, 120))
+            d.ellipse((6, 6, 9, 9), outline=(140, 215, 255, 255))
+            d.point((2, 4), fill=W_)
+            d.point((6, 1), fill=W_)
+        elif k == "airdrop":
+            d.polygon([(0, 2), (3, 0), (5, 2), (7, 0), (9, 2), (5, 5)], fill=(150, 110, 200, 255))
+            d.line((5, 5, 5, 8), fill=(200, 200, 220, 255))
+            d.rectangle((3, 8, 7, 9), fill=(120, 200, 110, 255))
+        elif k == "trolls":
+            d.ellipse((1, 1, 8, 8), fill=(130, 165, 95, 255))
+            d.point((3, 4), fill=(40, 20, 20, 255))
+            d.point((6, 4), fill=(40, 20, 20, 255))
+            d.line((3, 6, 6, 6), fill=(60, 30, 30, 255))
+            d.polygon([(1, 2), (0, 0), (3, 1)], fill=(230, 220, 200, 255))
+            d.polygon([(8, 2), (9, 0), (6, 1)], fill=(230, 220, 200, 255))
+        elif k == "fog":
+            d.ellipse((5, 0, 9, 4), fill=(240, 230, 170, 255))
+            d.ellipse((6, 0, 10, 3), fill=(0, 0, 0, 0))
+            for y, c in ((4, 170), (6, 140), (8, 120)):
+                d.line((0, y, 9, y), fill=(c, c - 20, c + 50, 220))
+        elif k == "corps":
+            d.rectangle((1, 3, 8, 7), fill=WOOD)
+            d.rectangle((1, 3, 8, 3), fill=WOOD_D)
+            d.polygon([(8, 4), (9, 5), (8, 6)], fill=(200, 200, 210, 255))
+            d.ellipse((1, 7, 3, 9), fill=(60, 50, 50, 255))
+            d.ellipse((6, 7, 8, 9), fill=(60, 50, 50, 255))
+        elif k == "gale":
+            d.arc((0, 0, 7, 5), 180, 360, fill=(170, 240, 225, 255))
+            d.line((0, 3, 7, 3), fill=(170, 240, 225, 255))
+            d.arc((2, 4, 9, 9), 0, 180, fill=(170, 240, 225, 255))
+            d.line((0, 6, 6, 6), fill=(170, 240, 225, 255))
+        elif k == "equip":
+            d.polygon([(2, 0), (7, 0), (9, 3), (7, 3), (7, 9), (2, 9), (2, 3), (0, 3)], fill=(255, 140, 195, 255))
+            d.line((4, 2, 5, 2), fill=W_)
+            d.point((4, 5), fill=(255, 220, 240, 255))
+        elif k == "vines":
+            d.line((1, 9, 3, 6, 2, 3, 5, 0), fill=(90, 180, 80, 255))
+            d.line((5, 9, 7, 6, 6, 3, 9, 1), fill=(90, 180, 80, 255))
+            d.point((3, 4), fill=(150, 230, 120, 255))
+            d.point((7, 4), fill=(150, 230, 120, 255))
+        elif k == "engineers":
+            d.pieslice((1, 1, 8, 8), 180, 360, fill=(255, 190, 70, 255))
+            d.rectangle((0, 4, 9, 5), fill=(230, 150, 40, 255))
+            d.line((4, 6, 4, 9), fill=WOOD_D)
+            d.rectangle((2, 6, 6, 7), fill=(160, 160, 170, 255))
+        elif k == "raiders":
+            d.line((2, 0, 2, 9), fill=WOOD_D)
+            d.polygon([(3, 0), (9, 2), (3, 4)], fill=(255, 70, 70, 255))
+            d.line((5, 6, 9, 9), fill=(200, 200, 210, 255))
+            d.line((9, 6, 5, 9), fill=(200, 200, 210, 255))
+        elif k == "feathers":
+            for x0, y0 in ((0, 1), (5, 0), (3, 5)):
+                d.line((x0, y0 + 4, x0 + 4, y0), fill=(255, 245, 200, 255))
+                d.point((x0 + 1, y0 + 2), fill=(255, 220, 150, 255))
+                d.point((x0 + 3, y0 + 2), fill=(255, 220, 150, 255))
+        elif k == "carnival":
+            d.polygon([(4, 0), (9, 9), (0, 9)], fill=(255, 205, 60, 255))
+            d.line((2, 6, 7, 6), fill=(255, 90, 120, 255))
+            d.line((3, 4, 6, 4), fill=(90, 200, 255, 255))
+            d.point((1, 1), fill=(255, 120, 160, 255))
+            d.point((8, 2), fill=(120, 230, 140, 255))
+        return add_outline(img)
+
+    for i, k in enumerate(order):
+        sheet.paste(icon(k), (i * S + 1, 1))
+    sheet.save(DIR / "features.png")
+    # 彩带粒子（白色，用 color 着色）
+    img, d = canvas(3, 2)
+    d.rectangle((0, 0, 2, 1), fill=W_)
+    img.save(OUT / "particle_confetti.png")
+
+
 def main():
     DIR.mkdir(parents=True, exist_ok=True)
     gen_props()
@@ -1003,6 +1086,7 @@ def main():
     gen_soldiers()
     gen_particles()
     gen_icons()
+    gen_features()
     print("攻防战像素图已生成：", sorted(p.name for p in DIR.glob("*.png")))
 
 

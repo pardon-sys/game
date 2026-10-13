@@ -44,6 +44,9 @@ var _banner: Node2D
 var _steam: CPUParticles2D
 var _crack_t := 0.0
 var _base_scale := 1.0
+## 冰塔 / 小雪人打它只有 TOWER_MULT 的伤害（小数部分攒着）
+const TOWER_MULT := 0.25
+var _tower_frac := 0.0
 
 
 func _setup() -> void:
@@ -141,10 +144,17 @@ func _tick(delta: float) -> void:
 			Fx.burst(get_parent(), (victim as Node2D).global_position + Vector2(randf_range(-4, 4), -2), "bristle", 3, 30.0, 0.4, Vector2(0, 40))
 		super(delta)
 		return
+	var above := not raged and director != null and global_position.y < min_y() - 10.0
 	if skill != "":
 		_skill_tick(delta)
+	elif above:
+		# 半血狂暴前只在地图下半部活动：被弄到上半部（击退、过场……）就先走回去，路上不放技能
+		velocity = Vector2(0, 1) * stats.chase_speed * 1.2 * stat_mul("speed")
+		facing = Vector2.DOWN
 	else:
 		_walk(delta)
+		if not raged and director and global_position.y + velocity.y * delta < min_y():
+			velocity.y = maxf(velocity.y, 0.0)
 		_global_cd -= delta
 		_skill_think -= delta
 		if _global_cd <= 0.0 and _skill_think <= 0.0:
@@ -154,6 +164,13 @@ func _tick(delta: float) -> void:
 	_animate(delta)
 	if raged:
 		_rage_tick(delta)
+
+
+## 能走到的最高处（y 最小）：狂暴前是地图半高，狂暴后不限（能一路打到墙下）。
+func min_y() -> float:
+	if raged or director == null:
+		return -INF
+	return maxf(director.map_size().y / 2.0, director.wall_foot_y() + 40.0)
 
 
 func _pink() -> PlayableCharacter:
@@ -171,7 +188,7 @@ func _walk(delta: float) -> void:
 		velocity = to.normalized() * spd if to.length() > 22.0 else velocity.move_toward(Vector2.ZERO, 400.0 * delta)
 	elif director:
 		var gx: float = director.blue.global_position.x if director.blue else global_position.x
-		var goal := Vector2(gx, director.wall_foot_y() + 30.0)
+		var goal := Vector2(gx, maxf(director.wall_foot_y() + 30.0, min_y() + 10.0))
 		var to2 := goal - global_position
 		velocity = to2.normalized() * spd * 0.8 if to2.length() > 10.0 else Vector2.ZERO
 	if velocity.length() > 1.0:
@@ -191,9 +208,10 @@ func _choose() -> void:
 		picks.append("quake")
 	if float(cds["throw"]) <= 0.0 and _nearby_minions(80.0).size() >= 1:
 		picks.append("throw")
-	if to_wall > 130.0 and float(cds["ram"]) <= 0.0:
+	# 攻城锤冲锋 / 跳劈城墙：狂暴后才用（之前待在下半场）
+	if raged and to_wall > 130.0 and float(cds["ram"]) <= 0.0:
 		picks.append("ram")
-	if to_wall > 160.0 and float(cds["leap"]) <= 0.0:
+	if raged and to_wall > 160.0 and float(cds["leap"]) <= 0.0:
 		picks.append("leap")
 	if float(cds["cry"]) <= 0.0 and director and director.enemies_near(global_position, 160.0).size() >= 4:
 		picks.append("cry")
@@ -470,7 +488,7 @@ func _ram_tick(delta: float) -> void:
 func _leap_start(to_wall: bool) -> void:
 	var x := director.blue.global_position.x if director.blue and director.is_on_wall(director.blue) else global_position.x
 	x = clampf(x + randf_range(-40, 40), 40.0, director.map_size().x - 40.0)
-	_goal = Vector2(x, director.wall_foot_y() + 22.0) if to_wall else Vector2(director.map_size().x / 2.0 + randf_range(-120, 120), director.wall_foot_y() + 300.0)
+	_goal = Vector2(x, director.wall_foot_y() + 22.0) if to_wall else Vector2(director.map_size().x / 2.0 + randf_range(-120, 120), maxf(director.wall_foot_y() + 300.0, director.map_size().y * 0.6))
 	SiegeFx.warn(get_parent(), _goal, "shadow", 46.0, 0.9 / rate, Color(1, 0.4, 0.3))
 	_set_frame(2)
 	flash(Color(1, 0.7, 0.4), 0.5)
@@ -671,6 +689,14 @@ func _animate(delta: float) -> void:
 
 
 func receive_hit(hit: HitData) -> bool:
+	if hit.kind == HitData.Kind.ATTACK and (hit.source is IceTower or hit.source is Snowman) and hit.damage > 0:
+		_tower_frac += hit.damage * TOWER_MULT
+		var dmg := int(floorf(_tower_frac))
+		_tower_frac -= dmg
+		if dmg <= 0:
+			flash(Color(0.7, 0.9, 1.0), 0.08)   # 冰打在厚皮上：只闪一下
+			return false
+		hit = HitData.make_attack(hit.source, dmg, 0.0)
 	var ok := super(hit)
 	if ok and hit.kind == HitData.Kind.ATTACK:
 		Fx.burst(get_parent(), global_position + Vector2(randf_range(-8, 8), -24), "chip", 3, 30.0, 0.3, Vector2(0, 60), Color(1, 0.85, 0.7))

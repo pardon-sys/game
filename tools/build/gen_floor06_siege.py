@@ -187,7 +187,7 @@ WAVES = [
                                                   G("hug_bear", 6, "right", 2.5, 10), G("warm_slime", 6, "hole", 2.5, 14),
                                                   G("vine", 6, "bottom", 3.0, 16), G("cart", 3, "bottom", 10.0, 18),
                                                   G("squirrel", 20, "left", 0.6, 20)]},
-    {"name": "最终波：全部一起上", "reward": 40, "groups": [G("slime", 26, "bottom", 0.4), G("rat", 20, "left", 0.5, 2),
+    {"name": "大混战：全部一起上", "reward": 40, "groups": [G("slime", 26, "bottom", 0.4), G("rat", 20, "left", 0.5, 2),
                                                         G("squirrel", 16, "right", 0.6, 4), G("hook", 8, "bottom", 2.0, 6),
                                                         G("gecko", 16, "hole", 0.7, 8), G("shield_crab", 6, "bottom", 3.0, 10),
                                                         G("bat_swarm", 8, "left", 2.0, 12), G("carrier", 3, "right", 8.0, 14),
@@ -321,13 +321,78 @@ for i, w in enumerate(WAVES):
     w["groups"] += FORMATIONS.get(n, []) + ENGINEERS.get(n, [])
     w["theater"] = "siege_fail_%d" % (i + 1)
     w["countdown"] = 15
+# —— 第六轮：每波的特色机制（features；后面的波次叠加前面出现过的）。
+#    这里往波次里加怪 / 陷阱 / 敌塔比重；持续的机制（强风、攻城大队、抢掠小队、羽毛暴风雪、狂欢、天黑……）由 WaveFeatures 在游戏里做。
+FEATURES = {   # id: (名字, 颜色, 说明)；图标按顺序在 assets/generated/siege/features.png
+    "bubbles": ("泡泡潮汐", "#80d8ff", "泡泡潮一阵接一阵、泡泡鱼成群，泡泡把小怪成批运到墙下。"),
+    "airdrop": ("空降突袭", "#c0a0ff", "蝠群空投、钩索怪、壁虎叠罗汉连着来：压力全在墙顶。"),
+    "trolls": ("巨魔军团", "#a8c878", "一群挠痒巨魔压过来，边走边把小怪扔上城墙。"),
+    "fog": ("迷雾之夜", "#9a88d0", "天黑了：迷雾陷阱和幽灵成群，篝火塔 / 冰灯塔 / 灯笼照到的地方幽灵才现形。"),
+    "corps": ("攻城大队", "#ff8060", "每 25 秒一排攻城车带着螃蟹护卫同时出发（地上先亮一排红线）。"),
+    "gale": ("狂风肆虐", "#a8f0e0", "龙卷风变多；一阵阵横扫全场的强风，把粉色公主和小怪往一边吹。"),
+    "equip": ("痒痒装备日", "#ff90c8", "痒痒裁缝铺和捆绑藤怪变多，临时装备穿得更久（+50%）。"),
+    "vines": ("藤蔓疯长", "#78d878", "城墙爬藤、黏网、捆绑藤怪一起疯长。"),
+    "engineers": ("工兵狂潮", "#ffc060", "地精工兵翻倍、搭塔快 50%，每立起一座敌塔都响一声号角。"),
+    "raiders": ("抢掠小队", "#ff6060", "每 20 秒一队举红旗的小怪绕开公主，专拆冰塔、打士兵；冰塔拆了基座还在，工匠会修。"),
+    "feathers": ("羽毛暴风雪", "#fff0b0", "天上飘满痒痒羽毛：开阔地上粉色公主的闷笑慢慢涨；墙下、冰塔旁、薄荷冰泉 / 温泉范围里是安全的。"),
+    "carnival": ("狂欢节", "#ffd040", "狂欢图腾变多，所有怪移速 +25%、挠得更勤。"),
+}
+WAVE_FEATURES = {1: ["bubbles"], 2: ["airdrop"], 3: ["trolls"], 4: ["fog"], 5: ["corps"], 6: ["gale"], 7: ["equip", "vines"],
+                 8: ["engineers", "raiders"], 9: ["feathers", "fog"], 10: ["carnival", "corps", "airdrop"],
+                 11: ["gale", "trolls", "bubbles"], 12: ["carnival", "feathers", "corps", "raiders"]}
+
+
+def _hz(w, t, kind, combo=False):
+    w["hazards"].append({"t": t, "combo" if combo else "kind": kind})
+
+
+for i, w in enumerate(WAVES):
+    n = i + 1
+    w.setdefault("hazards", [])
+    w.setdefault("enemy_towers", [])
+    fs = WAVE_FEATURES.get(n, [])
+    w["features"] = fs
+    for f in fs:
+        if f == "bubbles":
+            for t in range(6, 100, 10):
+                _hz(w, t, "bubbles")
+            w["groups"] += [G("bubble_fish", 30, "hole", 1.0, 4.0), F("bubble_chain", 3, "hole", 12, 8)]
+        elif f == "airdrop":
+            w["groups"] += [F("bat_airdrop", 3, "left", 10, 6), F("gecko_ladder", 3, "bottom", 14, 10), G("hook", 20, "bottom", 1.5, 8.0)]
+        elif f == "trolls":
+            w["groups"] += [G("troll", 8, "bottom", 4.0, 6.0), F("troll_throw", 3, "bottom", 12, 10)]
+        elif f == "fog":
+            for t in (10, 35, 60):
+                _hz(w, t, "fog")
+            w["groups"] += [G("ghost", 30, "hole", 0.8, 4.0)]
+        elif f == "gale":
+            for t in (12, 40, 68):
+                _hz(w, t, "tornado")
+            for t in (25, 55):
+                _hz(w, t, "double_tornado", True)
+            w["enemy_towers"] += ["windmill", "windmill"]
+        elif f == "equip":
+            w["enemy_towers"] += ["tailor", "tailor"]
+            w["groups"] += [G("vine", 12, "hole", 2.0, 6.0)]
+        elif f == "vines":
+            for t in (14, 38, 62):
+                _hz(w, t, "wall_vine")
+                _hz(w, t + 8, "sticky_net")
+            w["groups"] += [G("vine", 12, "bottom", 2.0, 10.0)]
+        elif f == "engineers":
+            w["groups"] += [dict(g) for g in ENGINEERS.get(n, [])]
+        elif f == "carnival":
+            w["enemy_towers"] += ["totem", "totem"]
+    w["hazards"].sort(key=lambda h: h["t"])
+    w["groups"] = [gr for gr in w["groups"] if gr.get("formation") or gr["monster"] in have]
 # 第 3 波中段：小 Boss 攻城巨魔将军（出场时自己带 4 只盾甲螃蟹护卫）
 if "troll_general" in have:
     WAVES[2]["groups"].append(G("troll_general", 1, "bottom", 1.0, 22.0))
     WAVES[2]["boss"] = "troll_general"
 WAVE_DATA = {"_说明": ["小镇攻防战的波次（gen_floor06_siege.py 生成；SiegeDirector 读）。怪物表只有已经做好的怪。"],
              "wall_hp": 4320, "prep_first": 30, "prep": 20, "ability_rate": 3.0, "start_crystals": 30,
-             "monsters": have, "waves": WAVES}
+             "monsters": have, "waves": WAVES,
+             "features": {k: {"name": v[0], "color": v[1], "desc": v[2], "icon": i} for i, (k, v) in enumerate(FEATURES.items())}}
 Path("data/siege").mkdir(parents=True, exist_ok=True)
 Path("data/siege/waves.json").write_text(json.dumps(WAVE_DATA, ensure_ascii=False, indent="\t") + "\n")
 
@@ -501,18 +566,7 @@ TEMP_INTEL = {
     "t_mark_patch": ("痒痒印记臀贴", "负面", "怪物优先找她，闷笑涨得更快。"),
 }
 TEAMS = json.loads(Path("data/teamwork.json").read_text())["teams"] if Path("data/teamwork.json").exists() else []
-for t in TEAMS:
-    INTEL["team_" + t["id"]] = I(t["name"], "怪物配合技", t["intel"]["desc"], t["intel"]["mech"], t["intel"]["how"])
-    INTEL["team_" + t["id"]]["icon"] = t["members"][0]["key"] if isinstance(t["members"][0]["key"], str) else t["members"][0]["key"][0]
-HZC = {
-    "bubble_broom": ("泡泡扫帚", "泡泡潮把怪运到墙下的同时，羽毛扫帚从墙顶扫过。", "蓝色公主先躲扫帚，粉色公主去墙下接住运来的怪。", "bubbles"),
-    "double_tornado": ("双龙卷", "两个龙卷风反方向绕着一个中心转，被一个甩出去很容易又被另一个卷走。", "往两个龙卷风都够不着的外圈跑。", "tornado"),
-    "fog_tornado": ("迷雾龙卷", "龙卷风藏在迷雾里游走，只看得到卷起的粉尘；卷着的时候雾里的手一起挠。", "别进雾里；看到粉尘就绕开。", "fog"),
-    "net_link": ("黏网连线", "痒感连线符文旁紧接着落下黏网：网里被挠，连线另一头的蓝色公主也跟着痒。", "先打碎符文石，再让蓝色公主割网。", "link_rune"),
-}
-for k, (name, mech, how, icon) in HZC.items():
-    INTEL["hzcombo_" + k] = I(name, "陷阱组合", "几个大范围陷阱成套出现。", mech, how)
-    INTEL["hzcombo_" + k]["icon"] = "hazard_" + icon
+# 怪物配合技 / 陷阱组合不进情报（发动时只有飘字提示「怪物配合：××！」）
 INTEL["goblin_engineer"] = I("地精工兵", "攻城怪", "戴着安全帽、扛着木料的地精，三只一队。",
                              "走到离自己最近的空地基搭敌塔（地基上出进度条，12 秒）；搭完去找下一个。冻住时进度停下，冻久了倒退。",
                              "看到进度条就去打工兵；蓝色公主的冰晶结界能冻住他们。")

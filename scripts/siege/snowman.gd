@@ -81,7 +81,7 @@ func _tick(delta: float) -> void:
 			_idle_t = 0.0
 	elif best_d <= THROW_RANGE:
 		# 站住扔雪球（抛物线，落地炸开一小片、减速）
-		velocity = velocity.move_toward(Vector2.ZERO, 300.0 * delta)
+		velocity = Vector2.ZERO
 		if _hit_cd <= 0.0:
 			_hit_cd = THROW_CD
 			_throw(best.global_position)
@@ -91,7 +91,8 @@ func _tick(delta: float) -> void:
 			_hit_cd = 1.0
 			best.receive_hit(HitData.make_attack(self, 1, 90.0))
 			Fx.burst(get_parent(), best.global_position + Vector2(0, -8), "snow", 4, 30.0, 0.4, Vector2(0, 30))
-	velocity *= stat_mul("speed")
+	# 速度加成乘在这一帧算出来的速度上（每帧都从头算，不会越乘越大）
+	velocity = velocity.limit_length(SPEED) * stat_mul("speed")
 	move_with_push()
 	_spr.region_rect = IceTower.region("snowman_%d" % (int(_anim * 4.0) % 2 if velocity != Vector2.ZERO else 0))
 
