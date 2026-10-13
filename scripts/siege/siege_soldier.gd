@@ -7,6 +7,7 @@ extends Actor
 ##   shield  盾兵：站到受伤最重的那段城墙下，嘲讽 TAUNT 像素内的怪（lure：怪物优先挠他）；攻城车撞上来会被他挡下一次（他撤退）。
 ##   medic   医护兵：跟着粉色公主 / 受伤的士兵，每 MEDIC_GAP 秒给范围内的人降闷笑、回血；也能和长矛兵一起抬蓝色公主。
 ##   artisan 工匠：去修城墙最破的一段、修受伤的冰塔；没得修时去拆附近敌塔地基的搭建进度。
+##   mage    冰法学徒：去最近的「等冰光」的冰塔基座旁边帮忙放冰光（效率是蓝色公主的一半，BuildPad.HELPER_RATE）；没活时在岗位附近转。
 ## 怪物会挠士兵（他们是怪物的目标之一：SiegeDirector.extra_targets；血量 = 还能撑多久），被挠时头顶冒气泡；
 ## 撑不住了（血量到 RETREAT_HP 以下 / 归零）就跑回城门，RETURN_TIME 秒后满血回到岗位，不会真的倒下。
 ## 抬蓝色公主：SiegeDirector.call_bearers 叫两个长矛兵 / 医护兵（她倒在墙下）/ 一个弓箭手（倒在墙顶）过去：
@@ -23,9 +24,11 @@ const REPAIR_RATE := 4.0
 const RETREAT_HP := 1
 const RETURN_TIME := 20.0
 const HELP_TIME := 6.0
+## 冰法学徒离开帮忙的位置这么远才算走开
+const MAGE_LEAVE := 16.0
 const LINES := ["哈哈别挠了！", "痒、痒——站住！", "哈哈哈……顶住！", "别挠胳肢窝……哈哈！"]
-const ROLE_NAMES := {"spear": "长矛兵", "archer": "弓箭手", "shield": "盾兵", "medic": "医护兵", "artisan": "工匠"}
-const HP := {"spear": 8, "archer": 5, "shield": 14, "medic": 5, "artisan": 6}
+const ROLE_NAMES := {"spear": "长矛兵", "archer": "弓箭手", "shield": "盾兵", "medic": "医护兵", "artisan": "工匠", "mage": "冰法学徒"}
+const HP := {"spear": 8, "archer": 5, "shield": 14, "medic": 5, "artisan": 6, "mage": 5}
 const ART_DIR := "res://assets/generated/siege/"
 
 @export var role := "spear"
@@ -169,6 +172,7 @@ func _tick(delta: float) -> void:
 			"shield": _shield(delta)
 			"medic": _medic(delta)
 			"artisan": _artisan(delta)
+			"mage": _mage(delta)
 	# 速度加成乘在这一帧算出来的速度上（先限一下长度：有的分支沿用上一帧的速度，不能越乘越大）
 	velocity = velocity.limit_length(SPEED * 1.6) * stat_mul("speed")
 	move_with_push()
@@ -380,6 +384,57 @@ func _work() -> Node2D:
 		if es and es.build_progress > 0.0 and es.builders.is_empty() and es.global_position.distance_to(global_position) < 360.0:
 			return es
 	return null
+
+
+## 冰法学徒：走到最近的等冰光的基座旁边（左右两个位置），站定后帮忙放冰光；基座造好 / 没人要了就回去。
+func _mage(delta: float) -> void:
+	var pad: BuildPad = null
+	if is_instance_valid(_job) and _job is BuildPad:   # 先判断还在不在（释放了的对象不能用 is）
+		pad = _job
+	if pad and pad.pending.is_empty():
+		pad.helper_leave(self)
+		pad = null
+		_job = null
+	_job_t -= delta
+	if pad == null and _job_t <= 0.0:
+		_job_t = 0.8
+		pad = _pick_pad()
+		_job = pad
+	if pad == null:
+		_wander(delta, 30.0)
+		return
+	var slot := pad.reserve(self)
+	if slot < 0:
+		_job = null   # 人满了：换一座
+		return
+	var to := pad.helper_spot(slot) - global_position
+	var helping := pad.helpers.has(self)
+	# 到位才开始帮忙；已经在帮的被挤开一点不算走开（离开 MAGE_LEAVE 以上才停）
+	if to.length() > (MAGE_LEAVE if helping else 6.0):
+		if helping:
+			pad.helpers.erase(self)
+		velocity = to.normalized() * SPEED
+		return
+	velocity = to.normalized() * SPEED * 0.5 if to.length() > 3.0 else Vector2.ZERO
+	facing = global_position.direction_to(pad.global_position)
+	pad.helper_join(self)
+	if randf() < delta * 4.0:
+		Fx.burst(get_parent(), global_position + Vector2(0, -20), "crystal", 1, 10.0, 0.4, Vector2(0, -10), Color(0.7, 0.9, 1.0))
+
+
+## 最近的、还有空位的等冰光的基座。
+func _pick_pad() -> BuildPad:
+	var best: BuildPad = null
+	var best_d := INF
+	for n in get_tree().get_nodes_in_group("siege_pad"):
+		var p := n as BuildPad
+		if p == null or p.is_queued_for_deletion() or p.helper_slots() <= 0:
+			continue
+		var dist := p.global_position.distance_to(global_position)
+		if dist < best_d:
+			best_d = dist
+			best = p
+	return best
 
 
 func _wander(delta: float, r: float, horizontal := false) -> void:

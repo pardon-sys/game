@@ -202,7 +202,7 @@ func corps() -> void:
 	for i in n:
 		spots.append(Vector2(lerpf(160.0, ms.x - 160.0, (i + 0.5) / n) + randf_range(-30, 30), y))
 	for p in spots:
-		SiegeFx.lane(director.entities(), p, Vector2(p.x, director.wall_foot_y() + 20.0), 26.0, Color(1, 0.3, 0.25), 1.4)
+		SiegeFx.lane(director.entities(), p, Vector2(p.x, director.wall_foot_y() + 20.0), 26.0, Color(1, 0.3, 0.25), 1.4, true)
 	GameState.notify("攻城大队来了！%d 辆攻城车一起冲过来！" % n)
 	Audio.play("siege_horn", -4.0, 0.05, 0.8)
 	var wr: WeakRef = weakref(self)

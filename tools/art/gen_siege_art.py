@@ -814,6 +814,7 @@ SOLDIER_ROLES = {
     "shield": ((170, 70, 70), (200, 190, 120), "shield"),
     "medic": ((235, 235, 240), (250, 250, 255), "cross"),
     "artisan": ((170, 115, 60), (200, 160, 90), "hammer"),
+    "mage": ((80, 140, 215), (200, 232, 255), "staff"),
 }
 UNIFORM = [(90, 110, 150), (62, 77, 105), (120, 132, 156), (45, 55, 75), (36, 44, 60)]
 
@@ -859,6 +860,12 @@ def gen_soldiers():
                     d.rectangle((sx - 3, top - 2, sx + 3, top + 2), fill=(130, 130, 145, 255), outline=(63, 38, 49, 255))
                     if row == 0:
                         d.rectangle((ox + 11, oy + 22, ox + 20, oy + 26), fill=(120, 80, 45, 255))   # 工具包
+                elif item == "staff" and shaft:
+                    # 冰晶法杖：杖头一颗冰晶 + 亮点
+                    d.polygon([(sx, top - 5), (sx + 3, top - 1), (sx, top + 3), (sx - 3, top - 1)], fill=(170, 225, 255, 255), outline=(63, 38, 49, 255))
+                    d.point((sx - 1, top - 2), fill=(255, 255, 255, 255))
+                    if row == 0:
+                        d.line((ox + 12, oy + 21, ox + 20, oy + 21), fill=(200, 232, 255, 255))   # 袍子上的冰纹
                 elif item == "bow" and shaft:
                     d.arc((sx - 5, top - 1, sx + 4, top + 16), 270, 90, fill=(120, 80, 45, 255), width=1)
                     d.line((sx - 1, top - 1, sx - 1, top + 16), fill=(240, 240, 230, 255))
@@ -1078,6 +1085,36 @@ def gen_features():
     img.save(OUT / "particle_confetti.png")
 
 
+# ================================================================ 第七轮：城墙上的灯（wall_lights.png：brazier 12x14 火盆 / lantern 8x14 挂灯，各 2 帧火焰）
+def gen_wall_lights():
+    IRON = (70, 62, 72, 255)
+    IRON_L = (120, 110, 120, 255)
+    FIRE = [(255, 120, 40, 255), (255, 190, 70, 255), (255, 245, 180, 255)]
+    sheet = Image.new("RGBA", (12 * 2 + 8 * 2, 14), (0, 0, 0, 0))
+    for f in range(2):
+        img, d = canvas(12, 14)
+        # 火盆：三脚架 + 盆 + 火
+        d.line((2, 13, 4, 9), fill=IRON); d.line((9, 13, 7, 9), fill=IRON); d.line((6, 13, 6, 9), fill=IRON)
+        d.polygon([(1, 7), (10, 7), (9, 10), (2, 10)], fill=IRON, outline=(40, 34, 44, 255))
+        d.line((2, 8, 9, 8), fill=IRON_L)
+        sway = 1 if f else 0
+        d.polygon([(3, 7), (5 + sway, 1), (6, 4), (7 + sway, 0), (9, 7)], fill=FIRE[0])
+        d.polygon([(4, 7), (6 + sway, 3), (8, 7)], fill=FIRE[1])
+        d.point((6, 6), fill=FIRE[2])
+        sheet.paste(add_outline(img), (f * 12, 0))
+        img, d = canvas(8, 14)
+        # 挂灯：钩子 + 灯罩 + 里面的火
+        d.line((4, 0, 4, 2), fill=IRON)
+        d.rectangle((1, 3, 6, 4), fill=IRON)
+        d.rectangle((1, 5, 6, 11), fill=(255, 214, 130, 255), outline=IRON)
+        d.line((1, 8, 6, 8), fill=IRON)
+        d.rectangle((3, 6 + (0 if f else 1), 4, 9), fill=FIRE[1])
+        d.point((3, 7), fill=FIRE[2])
+        d.rectangle((2, 12, 5, 12), fill=IRON)
+        sheet.paste(add_outline(img), (24 + f * 8, 0))
+    sheet.save(DIR / "wall_lights.png")
+
+
 def main():
     DIR.mkdir(parents=True, exist_ok=True)
     gen_props()
@@ -1087,6 +1124,7 @@ def main():
     gen_particles()
     gen_icons()
     gen_features()
+    gen_wall_lights()
     print("攻防战像素图已生成：", sorted(p.name for p in DIR.glob("*.png")))
 
 

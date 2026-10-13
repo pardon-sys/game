@@ -47,9 +47,27 @@ var _base_scale := 1.0
 ## 冰塔 / 小雪人打它只有 TOWER_MULT 的伤害（小数部分攒着）
 const TOWER_MULT := 0.25
 var _tower_frac := 0.0
+## 被建筑（冰塔、敌塔、道具）卡住：STUCK_SIDE 秒走不动 → 往侧面绕 SIDE_TIME 秒；绕了 PASS_AFTER 次还是被挡（中间没顺畅走过 FREE_RESET 秒）
+## 或者一直卡着 STUCK_PASS 秒 → 穿过去（直到完全出来）
+const STUCK_SIDE := 0.5
+const SIDE_TIME := 0.8
+const STUCK_PASS := 2.0
+const PASS_TIME := 1.2
+const PASS_AFTER := 2
+const FREE_RESET := 1.0
+var _blocked_n := 0
+var _free_t := 0.0
+var _stuck_t := 0.0
+var _side_t := 0.0
+var _side_dir := Vector2.ZERO
+var _pass_t := 0.0
+## 绕开 / 穿过去的次数（测试用）
+var unstuck := 0
+var _mask0 := 1
 
 
 func _setup() -> void:
+	_mask0 = collision_mask if collision_mask != 0 else 1
 	super()
 	director = SiegeDirector.current
 	knockback_resist = 0.9
@@ -160,10 +178,61 @@ func _tick(delta: float) -> void:
 		if _global_cd <= 0.0 and _skill_think <= 0.0:
 			_skill_think = 0.3
 			_choose()
+	_unstick(delta)
 	move_with_push()
 	_animate(delta)
 	if raged:
 		_rage_tick(delta)
+
+
+## 卡住检测：想走却几乎没动 → 先往侧面绕，还卡着就暂时穿过建筑。
+func _unstick(delta: float) -> void:
+	if _pass_t > 0.0:
+		_pass_t -= delta
+		if _pass_t <= 0.0:
+			# 还压在建筑里：接着穿（直到完全出来）
+			collision_mask = _mask0
+			if test_move(global_transform, Vector2.ZERO) or test_move(global_transform, velocity.normalized() * 2.0):
+				collision_mask = 0
+				_pass_t = 0.3
+	var want := velocity.length()
+	# 墙下（狂暴后本来就要贴着墙打）不算卡住，也不能穿进城墙里
+	var at_wall := director != null and global_position.y < director.wall_foot_y() + 40.0
+	if want < 10.0 or skill in ["leap", "grab"] or at_wall:
+		_stuck_t = maxf(0.0, _stuck_t - delta)
+		return
+	var blocked := get_real_velocity().length() < want * 0.25
+	if blocked:
+		_stuck_t += delta
+		_free_t = 0.0
+	else:
+		_stuck_t = maxf(0.0, _stuck_t - delta * 2.0)
+		if _side_t <= 0.0:
+			_free_t += delta
+			if _free_t > FREE_RESET:
+				_blocked_n = 0
+	if _side_t > 0.0:
+		_side_t -= delta
+		velocity = _side_dir * want
+	elif _stuck_t > STUCK_SIDE and skill == "":
+		_blocked_n += 1
+		_stuck_t = 0.0
+		unstuck += 1
+		if _blocked_n >= PASS_AFTER:
+			_stuck_t = STUCK_PASS + 1.0   # 绕了几次还被挡：直接穿过去
+		else:
+			_side_t = SIDE_TIME
+			var o := velocity.orthogonal().normalized()
+			# 第一次随机挑一边，之后接着往同一边绕
+			_side_dir = o if randf() < 0.5 else -o
+	if _stuck_t > STUCK_PASS and _pass_t <= 0.0:
+		_stuck_t = 0.0
+		_side_t = 0.0
+		_blocked_n = 0
+		_pass_t = PASS_TIME
+		collision_mask = 0
+		unstuck += 1
+		Fx.burst(get_parent(), global_position + Vector2(0, -10), "dust", 10, 40.0, 0.5, Vector2(0, 40))
 
 
 ## 能走到的最高处（y 最小）：狂暴前是地图半高，狂暴后不限（能一路打到墙下）。
@@ -272,7 +341,7 @@ func _grab_start() -> void:
 		_end_skill(0.2)
 		return
 	_goal = p.global_position
-	SiegeFx.warn(get_parent(), _goal, "shadow", 16.0, 0.45, Color(1, 0.5, 0.6))
+	SiegeFx.warn(get_parent(), _goal, "shadow", 16.0, 0.45, Color(1, 0.5, 0.6), 0.0, 1.2, true)
 	_set_frame(2)
 	flash(Color(1, 0.6, 0.6), 0.45)
 	Audio.play("grab", -4.0, 0.05, 0.6)
@@ -312,7 +381,7 @@ func _swipe_tick() -> void:
 		var ang: float = base + [-0.6, 0.6, 0.0][_sector_i]
 		set_meta("swipe_ang", ang)
 		set_meta("swipe_t", _st)
-		SiegeFx.warn(get_parent(), global_position, "sector", 66.0, step, Color(1, 0.35, 0.3), ang, 1.25)
+		SiegeFx.warn(get_parent(), global_position, "sector", 66.0, step, Color(1, 0.35, 0.3), ang, 1.25, true)
 		_set_frame(2 if _sector_i % 2 == 0 else 0)
 		Audio.play("boss_charge", -10.0, 0.1, 1.6)
 		_phase += 1
@@ -348,7 +417,7 @@ func _swipe_hit(ang: float) -> void:
 func _quake_start() -> void:
 	_set_frame(2)
 	flash(Color(1, 0.3, 0.2), 1.0)
-	SiegeFx.warn(get_parent(), global_position, "circle", 110.0, 1.0 / rate, Color(1, 0.45, 0.2))
+	SiegeFx.warn(get_parent(), global_position, "circle", 110.0, 1.0 / rate, Color(1, 0.45, 0.2), 0.0, 1.2, true)
 	Audio.play("boss_charge", -3.0)
 	_phase = 0
 
@@ -361,7 +430,7 @@ func _quake_tick() -> void:
 		_quake_hit()
 		_phase = 1
 		if raged:
-			SiegeFx.warn(get_parent(), global_position, "circle", 110.0, 0.6, Color(1, 0.3, 0.2))
+			SiegeFx.warn(get_parent(), global_position, "circle", 110.0, 0.6, Color(1, 0.3, 0.2), 0.0, 1.2, true)
 	elif _phase == 1 and raged and _st >= wind + 0.6:
 		_quake_hit()
 		_phase = 2
@@ -431,7 +500,7 @@ func _trail(n: Node2D, time: float) -> void:
 func _ram_start() -> void:
 	_set_frame(3)
 	_goal = Vector2(global_position.x, director.wall_foot_y() + 18.0)
-	SiegeFx.lane(get_parent(), global_position, _goal, 30.0, Color(1, 0.3, 0.25), 1.2 / rate)
+	SiegeFx.lane(get_parent(), global_position, _goal, 30.0, Color(1, 0.3, 0.25), 1.2 / rate, true)
 	SpeechBubble.say(self, "攻城锤——撞开它！", 46.0, 1.2)
 	Audio.play("cart_rumble", -2.0, 0.05, 0.7)
 	_phase = 0
@@ -460,7 +529,8 @@ func _ram_tick(delta: float) -> void:
 				else:
 					a.receive_hit(HitData.make_attack(self, 2, 0.0))
 		set_meta("rammed", hit)
-		if global_position.distance_to(_goal) < 10.0 or global_position.y <= director.wall_foot_y() + 26.0:
+		# 到了墙下 / 撞上东西冲不动了（超时）就停
+		if global_position.distance_to(_goal) < 10.0 or global_position.y <= director.wall_foot_y() + 26.0 or _st > 1.2 / rate + 3.0:
 			_phase = 2
 			_st = 0.0
 			velocity = Vector2.ZERO
@@ -489,7 +559,7 @@ func _leap_start(to_wall: bool) -> void:
 	var x := director.blue.global_position.x if director.blue and director.is_on_wall(director.blue) else global_position.x
 	x = clampf(x + randf_range(-40, 40), 40.0, director.map_size().x - 40.0)
 	_goal = Vector2(x, director.wall_foot_y() + 22.0) if to_wall else Vector2(director.map_size().x / 2.0 + randf_range(-120, 120), maxf(director.wall_foot_y() + 300.0, director.map_size().y * 0.6))
-	SiegeFx.warn(get_parent(), _goal, "shadow", 46.0, 0.9 / rate, Color(1, 0.4, 0.3))
+	SiegeFx.warn(get_parent(), _goal, "shadow", 46.0, 0.9 / rate, Color(1, 0.4, 0.3), 0.0, 1.2, true)
 	_set_frame(2)
 	flash(Color(1, 0.7, 0.4), 0.5)
 	set_meta("leap_back", not to_wall)

@@ -73,6 +73,33 @@ func _ready() -> void:
 	await _shot("towers5_b")
 	_unlook()
 	await _clear()
+	# 第七轮：城墙灯 + 冰法学徒帮忙放冰光
+	if only.is_empty() or only.any(func(n): return str(n).begins_with("r7_")):
+		_fight()
+		d.blue.set_controller(CharacterController.new())
+		var pd7 := BuildPad.new()
+		d.entities().add_child(pd7)
+		pd7.global_position = Vector2(d.gate_pos.x - 60.0, d.wall_foot_y() + 60.0)
+		await _wait(0.1)
+		pd7.request("frost")
+		await _until(func(): return pd7.helpers.size() >= 1, 15.0)
+		await _wait(0.2)
+		await _look(pd7.global_position + Vector2(0, -20), 2.0)
+		await _shot("r7_mages")
+		_unlook()
+		d.features.begin(["fog"])
+		await _wait(2.0)
+		await _look(Vector2(d.gate_pos.x - 120.0, d.wall_foot_y() - 20.0), 1.3)
+		await _shot("r7_wall_lights")
+		_unlook()
+		d.features.end()
+		await _wait(1.8)
+		await _look(Vector2(d.walls[2].global_position.x, d.wall_foot_y() - 24.0), 3.0)
+		await _shot("r7_wall_close")
+		_unlook()
+		d.features.end()
+		d.blue.set_controller(d._make_ai(d.blue))
+		await _clear()
 	# 第六轮：每波特色
 	if only.is_empty() or only.any(func(n): return str(n).begins_with("feat_")):
 		var f := d.features

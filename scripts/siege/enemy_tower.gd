@@ -474,7 +474,7 @@ func _net() -> void:
 		return
 	var hang := float(p("hang", 3.5))
 	# 网落下来之前地上的影子
-	SiegeFx.warn(get_parent(), c.global_position, "shadow", 16.0, global_position.distance_to(c.global_position) / 170.0, Color(0.95, 0.9, 0.75))
+	SiegeFx.warn(get_parent(), c.global_position, "shadow", 16.0, global_position.distance_to(c.global_position) / 170.0, Color(0.95, 0.9, 0.75), 0.0, 1.2, true)
 	SiegeProjectile.shoot(get_parent(), global_position + Vector2(0, -26), c, "net", 170.0, func(t: Node):
 		var tc := t as PlayableCharacter
 		if tc == null or not _alive(tc):

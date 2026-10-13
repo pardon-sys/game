@@ -36,7 +36,7 @@ func _ready() -> void:
 	await _wait(0.5)
 	_finish()
 	var only := OS.get_environment("SIEGE3_ONLY")
-	for sec in ["hints", "waves", "town", "boss", "soldiers", "towers", "spells", "etowers", "field", "cart", "wall", "locks", "bugs5", "towers5", "fixes6", "features6", "equip", "cg", "perf"]:
+	for sec in ["hints", "waves", "town", "boss", "soldiers", "towers", "spells", "etowers", "field", "cart", "wall", "locks", "bugs5", "towers5", "fixes6", "features6", "round7", "equip", "cg", "perf"]:
 		if only == "" or sec in only.split(","):
 			if is_instance_valid(d):
 				d.bench_soldiers(sec != "soldiers")
@@ -1082,6 +1082,164 @@ func _run_features6() -> void:
 	var bad := ok.keys().filter(func(k): return not ok[k])
 	check("特色机制都生效（没生效：%s）" % [bad], bad.is_empty())
 	d.blue.set_controller(d._make_ai(d.blue))
+
+
+# ------------------------------------------------------------------ 第七轮
+func _run_round7() -> void:
+	print("-- 第七轮：活梯子一只倒就散 / 小 Boss 挡波次 / 小 Boss 不卡 / 蓝色公主的通用 AI / 冰法学徒 / 城墙灯")
+	await _clear()
+	_fight()
+	var b := d.blue
+	b.set_controller(CharacterController.new())
+	# 1 活梯子：打倒一只就散
+	var atw := Vector2(d.gate_pos.x - 320.0, d.wall_foot_y() + 4.0)
+	var geckos := d.teamwork.spawn_formation("gecko_ladder", atw)
+	for g in geckos:
+		g.global_position = atw + Vector2(randf_range(-6, 6), 0)
+		g.mind = null
+	d.teamwork._cd.clear()
+	d.teamwork.scan()
+	await _wait(0.6)
+	var lad := LivingLadder.near(get_tree(), atw.x)
+	var n0 := lad.start_count if lad else 0
+	var wl: WeakRef = weakref(lad)
+	if lad:
+		(lad.alive_geckos()[0] as Monster).health.damage(999)
+	await _wait(0.3)
+	check("活梯子（%d 只）打倒一只就散（%s）" % [n0, wl.get_ref() == null], n0 >= 3 and wl.get_ref() == null)
+	await _clear()
+	_fight()
+	b.set_controller(CharacterController.new())
+	# 2 有小 Boss 的波：打倒它才进下一波
+	d.wave = 3
+	d._queue.clear()
+	var boss := d.spawn("troll_general", "", Vector2(d.gate_pos.x + 300.0, d.map_size().y * 0.8)) as TrollGeneral
+	d.monsters = [boss]
+	await _wait(2.0)
+	var held := d.wave == 3 and d.next_left < 0.0 and d.boss_alive() and d.hud.status_text().contains("小 Boss")
+	var told := d.hud.status_text()
+	boss.health.damage(99999)
+	await _until(func(): return d.next_left >= 0.0 or d.wave == 4, 4.0)
+	check("第 3 波：小 Boss 在场时不进下一波（%s，「%s」），打倒后开始下一波倒计时 / 进第 4 波（%.0f 秒，第 %d 波）" % [held, told, d.next_left, d.wave],
+		held and (d.next_left >= 0.0 or d.wave == 4))
+	await _clear()
+	_fight()
+	b.set_controller(CharacterController.new())
+	# 3 小 Boss 被建筑挡住：绕开 / 穿过去
+	var g2 := d.spawn("troll_general", "", Vector2(d.gate_pos.x, d.map_size().y * 0.85)) as TrollGeneral
+	await _until(func(): return g2._intro_done and g2.is_physics_processing(), 5.0)
+	await _wait(0.8)
+	for k in g2.cds:
+		g2.cds[k] = 999.0
+	d.pink.global_position = Vector2(d.gate_pos.x + 900.0, d.map_size().y - 30.0)
+	var box := StaticBody2D.new()
+	box.collision_layer = 1
+	var cs := CollisionShape2D.new()
+	var rs := RectangleShape2D.new()
+	rs.size = Vector2(160, 16)
+	cs.shape = rs
+	box.add_child(cs)
+	d.entities().add_child(box)
+	box.global_position = g2.global_position + Vector2(0, -34)
+	b.global_position = Vector2(g2.global_position.x, b.global_position.y)
+	var y0 := g2.global_position.y
+	await _wait(6.0)
+	check("小 Boss 被挡住会绕开 / 穿过去（处理了 %d 次，y %.0f → %.0f）" % [g2.unstuck, y0, g2.global_position.y],
+		g2.unstuck > 0 and g2.global_position.y < box.global_position.y - 4.0)
+	box.queue_free()
+	g2.health.damage(99999)
+	await _clear()
+	_fight()
+	# 4 蓝色公主的 AI：Boss 战的通用功能（挣扎 / 闪避 / 打墙顶的怪）
+	var ai := d._make_ai(b)
+	b.set_controller(ai)
+	var is_comp := ai is CompanionController
+	var wm := d.spawn("slime", "", b.global_position + Vector2(12, 0))
+	wm.mind = null
+	wm.health.max_hp = 99
+	wm.health.fill()
+	TeamworkEffects.put_on_wall(wm, b.global_position + Vector2(12, 0))
+	var hp0 := wm.health.hp
+	var fought := false
+	for i in 30:
+		await _wait(0.1)
+		fought = fought or (ai as SiegeMageController).intent == "attack"
+	check("蓝色公主的 AI 是通用 AI（%s），爬上墙的怪贴过来先打（%s，血 %d → %d）" % [is_comp, fought, hp0, wm.health.hp],
+		is_comp and fought and wm.health.hp < hp0)
+	wm.queue_free()
+	await _wait(0.2)
+	var src := Src.new()
+	add_child(src)
+	src.global_position = b.global_position
+	b.status.grab(src, 3.0, 10)
+	await _wait(0.3)
+	var struggled := (ai as SiegeMageController).intent == "struggle"
+	b.status.release(true)
+	src.queue_free()
+	await _wait(0.5)
+	d.knock_off(b, "测试")
+	await _until(func(): return not b.get_meta("siege_falling", false), 4.0)
+	await _wait(0.3)
+	var at := b.global_position
+	SiegeFx.warn(d.entities(), at, "circle", 36.0, 1.5, Color(1, 0.4, 0.3), 0.0, 1.2, true)
+	var dodged := false
+	for i in 12:
+		await _wait(0.1)
+		dodged = dodged or (ai as SiegeMageController).intent == "dodge"
+	check("被抓住连按挣扎（%s）；墙下踩到预警会闪开（%s，离开 %.0f 像素）" % [struggled, dodged, b.global_position.distance_to(at)],
+		struggled and dodged and b.global_position.distance_to(at) > 20.0)
+	d.revive_blue(b)
+	await _clear()
+	_fight()
+	b.set_controller(CharacterController.new())
+	# 5 冰法学徒：帮忙放冰光，效率是蓝色公主的一半
+	var mages := d.soldiers.filter(func(x): return is_instance_valid(x) and x.role == "mage")
+	d.bench_soldiers(false)
+	d.add_crystals(200)
+	var pd := BuildPad.new()
+	d.entities().add_child(pd)
+	pd.global_position = Vector2(d.gate_pos.x - 80.0, d.wall_foot_y() + 90.0)
+	await _wait(0.1)
+	pd.request("icicle")
+	var need := pd._need
+	await _until(func(): return pd.helpers.size() >= 1 or pd.tower != null, 15.0)
+	var n_help := pd.helpers.size()
+	var p_a := pd.progress
+	await _wait(0.4)
+	var same := pd.helpers.size() == n_help and not pd.pending.is_empty()
+	var rate := (pd.progress - p_a) / 0.4 / maxf(n_help, 1)
+	var most := 0
+	while pd.tower == null and most < 300:
+		await _wait(0.05)
+		most += 1
+	check("冰法学徒 %d 个，%d 个在帮忙，每个 %.2f / 秒（蓝色公主是 1，一半），塔造好了（%s）" % [mages.size(), n_help, rate, pd.tower != null],
+		mages.size() == 3 and n_help >= 1 and (not same or absf(rate - 0.5) < 0.1) and pd.tower != null and need > 0.0)
+	# 和蓝色公主一起放：更快
+	var pd2 := BuildPad.new()
+	d.entities().add_child(pd2)
+	pd2.global_position = Vector2(d.gate_pos.x - 80.0, d.wall_foot_y() + 150.0)
+	await _wait(0.1)
+	pd2.request("icicle")
+	await _until(func(): return pd2.helpers.size() >= 1, 15.0)
+	pd2.blue_beam(b)
+	var q0 := pd2.progress
+	await _wait(0.5)
+	var rate2 := (pd2.progress - q0) / 0.5
+	check("蓝色公主 + 学徒一起放冰光更快（%.2f / 秒 > 1）" % rate2, rate2 > 1.3)
+	await _until(func(): return pd2.tower != null, 10.0)
+	check("造好后蓝色公主不再锁在冰光里（%s）" % (not b.get_meta("siege_beaming", false)), not b.get_meta("siege_beaming", false) and not pd2.beaming)
+	d.bench_soldiers(true)
+	# 6 城墙上的灯
+	var lights := 0
+	var braziers := 0
+	for w in d.walls:
+		for c in w.get_children():
+			if c is SiegeWall.WallLight:
+				lights += 1
+				if c.is_in_group("torch"):
+					braziers += 1
+	check("城墙上的灯 %d 盏（火盆 %d 个，幽灵靠近会现形）" % [lights, braziers], lights >= 32 and braziers >= 16)
+	b.set_controller(d._make_ai(b))
 
 
 # ------------------------------------------------------------------ 12 装备挠痒

@@ -22,7 +22,8 @@ static func ring(parent: Node, at: Vector2, r: float, col: Color, time := 0.6, f
 
 
 ## 地上的预警线（攻城车的路线、扫帚扫过的走道）：from → to，宽 w，time 秒。
-static func lane(parent: Node, from: Vector2, to: Vector2, w: float, col: Color, time := 1.0) -> Node2D:
+## danger = true：敌方冲锋的路线，放进 danger 组（meta rect = 路线外框），AI 会躲开。
+static func lane(parent: Node, from: Vector2, to: Vector2, w: float, col: Color, time := 1.0, danger := false) -> Node2D:
 	if parent == null or not parent.is_inside_tree():
 		return null
 	var l := Line2D.new()
@@ -33,6 +34,9 @@ static func lane(parent: Node, from: Vector2, to: Vector2, w: float, col: Color,
 	l.z_index = 0
 	l.add_to_group("siege_temp")
 	l.add_to_group("siege_lane")
+	if danger:
+		l.add_to_group("danger")
+		l.set_meta("rect", Rect2(from, Vector2.ZERO).expand(to).grow(w / 2.0))
 	parent.add_child(l)
 	l.global_position = Vector2.ZERO
 	var tw := l.create_tween().set_loops(int(time / 0.3))
@@ -101,7 +105,8 @@ static func screen_shake(node: Node, strength := 3.0, time := 0.35) -> void:
 
 ## 地面预警（Boss 技能、敌塔蓄力……）：kind = circle / sector / shadow；time 秒内从里往外填满，到点后消失。
 ## sector：angle 朝向、arc 张角（弧度）。shadow：落点影子，越来越大越来越黑（跳劈、空投）。返回预警节点。
-static func warn(parent: Node, at: Vector2, kind: String, r: float, time: float, col: Color, angle := 0.0, arc := 1.2) -> Node2D:
+## danger = true：敌方的攻击预警，放进 danger 组（meta radius），两位公主的 AI（CompanionController 的闪避）会躲开。
+static func warn(parent: Node, at: Vector2, kind: String, r: float, time: float, col: Color, angle := 0.0, arc := 1.2, danger := false) -> Node2D:
 	if parent == null or not parent.is_inside_tree():
 		return null
 	var n := Warn.new()
@@ -113,6 +118,9 @@ static func warn(parent: Node, at: Vector2, kind: String, r: float, time: float,
 	n.arc = arc
 	n.z_index = -1
 	n.add_to_group("siege_temp")
+	if danger:
+		n.add_to_group("danger")
+		n.set_meta("radius", r)
 	parent.add_child(n)
 	n.global_position = at
 	return n
