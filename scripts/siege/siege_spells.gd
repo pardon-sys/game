@@ -35,6 +35,11 @@ static func radius(id: String) -> float:
 	return float(INFO.get(id, {}).get("radius", 24.0))
 
 
+## AI 放的（蓝色公主没被玩家操控时）：冷却 × AI_CD、魔力疲倦 × AI_FATIGUE（放得更勤，又不会一直疲倦爆发）
+const AI_CD := 0.6
+const AI_FATIGUE := 0.6
+
+
 static func cooldown_left(c: Node, id: String) -> float:
 	var cd: Dictionary = c.get_meta("siege_cd", {})
 	return maxf(0.0, float(cd.get(id, 0.0)) - Time.get_ticks_msec() / 1000.0)
@@ -49,8 +54,9 @@ static func in_range(c: Node2D, point: Vector2) -> bool:
 
 
 ## 放一个法术。返回是否放出去了（冷却中 / 射程外 / 被打断 / 失败都算没放成，失败也进冷却）。
-static func cast(c: PlayableCharacter, id: String, point: Vector2) -> bool:
-	if not INFO.has(id) or not ready(c, id) or not c.is_alive() or Downed.is_downed(c):
+## force：不看冷却（蓝色公主跟着粉色公主一起放魔法时）。
+static func cast(c: PlayableCharacter, id: String, point: Vector2, force := false) -> bool:
+	if not INFO.has(id) or (not force and not ready(c, id)) or not c.is_alive() or Downed.is_downed(c):
 		return false
 	if id != "reinforce" and not in_range(c, point):
 		return false
@@ -60,7 +66,8 @@ static func cast(c: PlayableCharacter, id: String, point: Vector2) -> bool:
 	var info: Dictionary = INFO[id]
 	var dir := SiegeDirector.current
 	var cd: Dictionary = c.get_meta("siege_cd", {})
-	cd[id] = Time.get_ticks_msec() / 1000.0 + float(info["cd"]) * (dir.town.mul("spell_cd") if dir and dir.town else 1.0)
+	var ai := not c.is_controlled()
+	cd[id] = Time.get_ticks_msec() / 1000.0 + float(info["cd"]) * (dir.town.mul("spell_cd") if dir and dir.town else 1.0) * (AI_CD if ai else 1.0)
 	c.set_meta("siege_cd", cd)
 	if dir and dir.has_method("silenced") and dir.silenced(c):
 		if c.is_controlled():
@@ -83,7 +90,7 @@ static func cast(c: PlayableCharacter, id: String, point: Vector2) -> bool:
 			c.call("_on_magic_fail", 1)
 		return false
 	if c.fatigue:
-		c.fatigue.add(float(info["fatigue"]) * (dir.town.mul("fatigue") if dir and dir.town else 1.0))
+		c.fatigue.add(float(info["fatigue"]) * (dir.town.mul("fatigue") if dir and dir.town else 1.0) * (AI_FATIGUE if not c.is_controlled() else 1.0))
 	_cast_fx(c, point)
 	match id:
 		"ice_rain": _ice_rain(c, point, float(info["radius"]), int(info["damage"]))

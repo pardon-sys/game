@@ -12,11 +12,16 @@ extends CompanionController
 ##   在墙下（被震下 / 推下）：坐着笑一阵（这时也会挣扎、闪避），SiegeDirector.FALLEN_TIME 秒后走到最近的梯子爬回去；
 ##     路上粉色公主倒在附近就先去救，被怪围住就先打。倒地（Downed）：什么也不做，等人救。
 
-const THINK := 0.45
-const REINFORCE_AT := 7
-const BARRIER_AT := 6
-const BLIZZARD_AT := 10
-const MIRROR_AT := 5
+## 法术放得勤：每 THINK 秒想一次，门槛低（AI 放的冷却 / 疲倦还有 SiegeSpells.AI_CD / AI_FATIGUE）
+const THINK := 0.2
+const REINFORCE_AT := 4
+const BARRIER_AT := 3
+const BLIZZARD_AT := 6
+const MIRROR_AT := 3
+## 粉色公主放魔法时，有这么大几率跟着一起放（吟唱开始时决定，她放出来的那一下一起放）
+const JOIN_PINK := 0.5
+## 一起放时按这个顺序挑第一个冷却好了的；都在冷却就放一发不看冷却的冰锥雨
+const JOIN_SPELLS := ["blizzard", "barrier", "spike", "ice_rain"]
 ## 墙顶上贴到这么近的怪：先打
 const WALL_FIGHT := 26.0
 ## 墙下：救粉色公主 / 打怪的范围
@@ -24,6 +29,10 @@ const GROUND_HELP := 120.0
 
 var director: SiegeDirector
 var _think := 0.0
+## 跟着粉色公主放魔法：这次决定一起放了 / 一起放过几次（测试用）
+var join_next := false
+var joined := 0
+var _pink_hooked: PlayableCharacter
 var _climbing := false
 var _patrol_x := 0.0
 var _patrol_t := 0.0
@@ -42,6 +51,7 @@ func _physics_process(delta: float) -> void:
 	var me := _me()
 	if hooks == null and director:
 		hooks = director.hooks
+	_hook_pink()
 	if me == null or director == null or not me.is_alive() or Downed.is_downed(me) or GameState.in_dialogue \
 			or me.get_meta("siege_falling", false) or me.get_meta("siege_beaming", false) or _climbing:
 		intent = "idle"
@@ -60,6 +70,62 @@ func _physics_process(delta: float) -> void:
 		_on_wall(me, delta)
 	else:
 		_ground(me)
+
+
+## 接上粉色公主的魔法事件（吟唱开始时掷骰子，放出来时一起放）。
+func _hook_pink() -> void:
+	var p: PlayableCharacter = director.pink if director else null
+	if p == _pink_hooked or p == null:
+		return
+	if is_instance_valid(_pink_hooked) and _pink_hooked.magic_event.is_connected(_on_pink_magic):
+		_pink_hooked.magic_event.disconnect(_on_pink_magic)
+	_pink_hooked = p
+	p.magic_event.connect(_on_pink_magic)
+
+
+func _exit_tree() -> void:
+	if is_instance_valid(_pink_hooked) and _pink_hooked.magic_event.is_connected(_on_pink_magic):
+		_pink_hooked.magic_event.disconnect(_on_pink_magic)
+
+
+func _on_pink_magic(event: String, _tier: int) -> void:
+	match event:
+		"channel":
+			join_next = randf() < JOIN_PINK
+		"burst":
+			if join_next:
+				join_next = false
+				join_pink()
+		"fizzle", "fail", "interrupted":
+			join_next = false
+
+
+## 跟着粉色公主一起放：往她身边最密的地方放最强的那个冷却好了的法术。
+func join_pink() -> bool:
+	var me := _me()
+	var p: PlayableCharacter = director.pink if director else null
+	if me == null or p == null or not me.is_alive() or Downed.is_downed(me) or me.get_meta("siege_beaming", false) or not director.is_on_wall(me):
+		return false
+	var at: Vector2 = p.global_position
+	var crowd: Variant = director.densest(40.0, p.global_position, 90.0)
+	if crowd is Vector2:
+		at = crowd
+	if not SiegeSpells.in_range(me, at):
+		return false
+	for id in JOIN_SPELLS:
+		if SiegeSpells.ready(me, id) and SiegeSpells.cast(me, id, at):
+			_joined(me, id)
+			return true
+	if SiegeSpells.cast(me, "ice_rain", at, true):
+		_joined(me, "ice_rain")
+		return true
+	return false
+
+
+func _joined(me: PlayableCharacter, id: String) -> void:
+	joined += 1
+	intent = "spell:" + id
+	SpeechBubble.say(me, "……一起。", 28.0, 1.0)
 
 
 ## 墙顶上的闪避：预警落在她身上 → 沿走道往离预警远的一边跑（冲刺），不往墙下跳。

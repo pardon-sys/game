@@ -36,7 +36,7 @@ func _ready() -> void:
 	await _wait(0.5)
 	_finish()
 	var only := OS.get_environment("SIEGE3_ONLY")
-	for sec in ["hints", "waves", "town", "boss", "soldiers", "towers", "spells", "etowers", "field", "cart", "wall", "locks", "bugs5", "towers5", "fixes6", "features6", "round7", "equip", "cg", "perf"]:
+	for sec in ["hints", "waves", "town", "boss", "soldiers", "towers", "spells", "etowers", "field", "cart", "wall", "locks", "bugs5", "towers5", "fixes6", "features6", "round7", "round8", "equip", "cg", "perf"]:
 		if only == "" or sec in only.split(","):
 			if is_instance_valid(d):
 				d.bench_soldiers(sec != "soldiers")
@@ -1240,6 +1240,97 @@ func _run_round7() -> void:
 					braziers += 1
 	check("城墙上的灯 %d 盏（火盆 %d 个，幽灵靠近会现形）" % [lights, braziers], lights >= 32 and braziers >= 16)
 	b.set_controller(d._make_ai(b))
+
+
+# ------------------------------------------------------------------ 第八轮
+func _run_round8() -> void:
+	print("-- 第八轮：活梯子连着打得到 / 蓝色公主法术更勤 / 跟着粉色公主放魔法")
+	await _clear()
+	_fight()
+	var b := d.blue
+	b.set_controller(CharacterController.new())
+	# 1 活梯子：每一下都打得到（之前壁虎物理关掉了，受一次击后无敌时间不再减少，之后都打不到）
+	var atw := Vector2(d.gate_pos.x - 320.0, d.wall_foot_y() + 4.0)
+	var geckos := d.teamwork.spawn_formation("gecko_ladder", atw)
+	for g in geckos:
+		g.global_position = atw + Vector2(randf_range(-6, 6), 0)
+		g.mind = null
+	d.teamwork._cd.clear()
+	d.teamwork.scan()
+	await _wait(0.6)
+	var lad := LivingLadder.near(get_tree(), atw.x)
+	var wl: WeakRef = weakref(lad)
+	var src := Src.new()
+	add_child(src)
+	src.global_position = Vector2(atw.x, d.wall_foot_y() + 14.0)
+	var landed := 0
+	for i in 4:
+		var l := wl.get_ref() as LivingLadder
+		if l == null:
+			break
+		if l.receive_hit(HitData.make_attack(src, 1, 0.0)):
+			landed += 1
+		await _wait(0.3)
+	src.queue_free()
+	check("活梯子连着打：每一下都打得到（打中 %d 下），打倒一只就散（%s）" % [landed, wl.get_ref() == null], landed >= 2 and wl.get_ref() == null)
+	await _clear()
+	_fight()
+	# 2 蓝色公主的 AI：冷却 × 0.6、法术放得勤
+	var ai := d._make_ai(b) as SiegeMageController
+	b.set_controller(ai)
+	b.set_meta("siege_cd", {})
+	if b.fatigue:
+		b.fatigue.clear()
+	var at := Vector2(b.global_position.x, d.wall_foot_y() + 140.0)
+	SiegeSpells.cast(b, "ice_rain", at)
+	var cd_ai := SiegeSpells.cooldown_left(b, "ice_rain")
+	b.set_meta("siege_cd", {})
+	var ms: Array[Monster] = []
+	for i in 14:
+		var m := d.spawn("slime", "", at + Vector2(randf_range(-40, 40), randf_range(-20, 20)))
+		m.mind = null
+		m.set_physics_process(false)
+		m.health.max_hp = 999
+		m.health.fill()
+		ms.append(m)
+	var casts := {}
+	for i in 60:
+		await _wait(0.1)
+		for id in SiegeSpells.INFO:
+			if SiegeSpells.cooldown_left(b, id) > 0.0:
+				casts[id] = true
+	check("AI 的冷却是 0.6 倍（冰锥雨 %.1f 秒，原来 3.5），6 秒里放了 %d 种法术（%s）" % [cd_ai, casts.size(), casts.keys()],
+		absf(cd_ai - 3.5 * SiegeSpells.AI_CD) < 0.3 and casts.size() >= 3)
+	d.clear_field()
+	_fight()
+	# 3 粉色公主放魔法：一半的几率跟着放
+	var yes := 0
+	for i in 400:
+		ai._on_pink_magic("channel", 0)
+		if ai.join_next:
+			yes += 1
+	ai.join_next = false
+	for i in 6:
+		var m2 := d.spawn("slime", "", d.pink.global_position + Vector2(randf_range(-20, 20), randf_range(10, 30)))
+		m2.mind = null
+		m2.set_physics_process(false)
+	# 所有法术都在冷却也能跟着放（不看冷却的冰锥雨）
+	var big := {}
+	for id in SiegeSpells.INFO:
+		big[id] = Time.get_ticks_msec() / 1000.0 + 999.0
+	b.set_meta("siege_cd", big)
+	var j0 := ai.joined
+	# 千手痒痒裤之类的装备会让魔法有几率失败：多试几次
+	for i in 6:
+		if ai.joined > j0:
+			break
+		ai._on_pink_magic("channel", 0)
+		ai.join_next = true
+		d.pink.magic_event.emit("burst", 2)
+		await _wait(0.2)
+	check("粉色公主吟唱时跟着放的几率 %.0f%%（约一半），她放出来那一下蓝色公主一起放（%d → %d，%s）" % [yes / 4.0, j0, ai.joined, ai.intent],
+		yes > 160 and yes < 240 and ai.joined == j0 + 1)
+	b.set_meta("siege_cd", {})
 
 
 # ------------------------------------------------------------------ 12 装备挠痒
