@@ -18,6 +18,7 @@ const GUST_GAP := 8.0
 const GUST_TIME := 1.6
 const GUST_PINK := 75.0
 const GUST_MOB := 55.0
+const GUST_BUBBLE := 110.0 # 轻泡泡可被逆风吹回，不能只与自身漂移相抵。
 const RAID_GAP := 20.0
 const RAID_SIZE := 6
 const FEATHER_RATE := 0.015
@@ -40,6 +41,14 @@ var _fx: Node2D
 var _safe: Node2D
 var _day := Color.WHITE
 var _dark_on := false
+var rotation_left := 30.0
+var rotating := false
+var rotation_seed := -1 # >=0：测试可复现；重进从同一个 seed 重新抽。
+var generation := 0
+var rng := RandomNumberGenerator.new()
+var jobs: Array[Dictionary] = []
+var feature_towers: Array = []
+
 
 
 static func current() -> WaveFeatures:
@@ -90,6 +99,18 @@ func _ready() -> void:
 
 ## 这一波开着哪些特色（换波时整组替换）。
 func begin(ids: Array) -> void:
+	if director.wave == 12:
+		if rotation_seed >= 0:
+			rng.seed = rotation_seed
+		else:
+			rng.randomize()
+		active.clear()
+		rotate_features()
+	else:
+		_apply(ids)
+
+
+func _apply(ids: Array) -> void:
 	end()
 	for id in ids:
 		active.append(str(id))
@@ -121,6 +142,9 @@ func begin(ids: Array) -> void:
 
 ## 关掉这一波的全部持续效果。
 func end() -> void:
+	generation += 1
+	jobs.clear()
+	rotating = false
 	active.clear()
 	gust_left = 0.0
 	for c in _fx.get_children():
@@ -165,6 +189,11 @@ func _process(delta: float) -> void:
 		return
 	if director.state != "fight" or GameState.in_dialogue or CG.is_busy() or GameState.in_cutscene:
 		return
+	if rotating:
+		rotation_left -= delta
+		if rotation_left <= 0.0:
+			rotate_features()
+	_tick_jobs(delta)
 	for k in _t.keys():
 		_t[k] = float(_t[k]) - delta
 	if is_on("corps") and float(_t["corps"]) <= 0.0:
@@ -205,20 +234,8 @@ func corps() -> void:
 		SiegeFx.lane(director.entities(), p, Vector2(p.x, director.wall_foot_y() + 20.0), 26.0, Color(1, 0.3, 0.25), 1.4, true)
 	GameState.notify("攻城大队来了！%d 辆攻城车一起冲过来！" % n)
 	Audio.play("siege_horn", -4.0, 0.05, 0.8)
-	var wr: WeakRef = weakref(self)
-	get_tree().create_timer(1.4, false).timeout.connect(func():
-		var me := wr.get_ref() as WaveFeatures
-		if me == null or me.director == null or me.director.state != "fight":
-			return
-		for p in spots:
-			var cart := me.director.spawn("cart", "", p)
-			if cart == null:
-				continue
-			for side in [-1.0, 1.0]:
-				var crab := me.director.spawn("shield_crab", "", p + Vector2(side * 18.0, 10.0))
-				if crab:
-					crab.set_meta("escort_of", cart)
-					crab.set_meta("escort_off", Vector2(side * 18.0, 10.0)))
+	jobs.append({"left": 1.4, "source": "corps", "generation": generation, "spots": spots})
+
 
 
 # ------------------------------------------------------------------ 抢掠小队
@@ -271,17 +288,21 @@ func gust() -> void:
 
 
 func _gust_tick(delta: float) -> void:
-	if gust_left <= 0.0:
+	if gust_left <= 0.0 or SiegeTools.paused() or director.state != "fight":
 		return
+	delta = minf(delta,gust_left)
 	gust_left -= delta
 	_wind.queue_redraw()
+	for n in get_tree().get_nodes_in_group("siege_wind_bubbles"):
+		if is_instance_valid(n) and not n.is_queued_for_deletion():
+			(n as HazardBubbles).blow(gust_dir * GUST_BUBBLE * delta)
 	var p := director.pink
 	if p and is_instance_valid(p) and p.is_alive() and not Downed.is_downed(p) and not director.is_on_wall(p) \
 			and p.is_physics_processing() and not (p.status and p.status.is_grabbed()):
 		p.move_and_collide(gust_dir * GUST_PINK * delta)
 	for m in director.monsters:
 		if not is_instance_valid(m) or m.get_meta("siege_on_wall", false) or m.get_meta("airborne", false) or m.has_meta("in_ladder") \
-				or m is SiegeCart or m is TrollGeneral or not m.is_physics_processing():
+				or m is SiegeCart or m is TrollGeneral or m is CarnivalFortress or not m.is_physics_processing():
 			continue
 		m.global_position += gust_dir * GUST_MOB * delta
 
@@ -330,6 +351,8 @@ func _feather_tick(dt: float) -> void:
 
 
 func _draw_safe() -> void:
+	if not is_instance_valid(_safe) or _safe.is_queued_for_deletion():
+		return
 	var ms := director.map_size()
 	var col := Color(0.7, 1.0, 0.85, 0.12)
 	_safe.draw_rect(Rect2(0, director.wall_foot_y(), ms.x, SAFE_WALL), col)
@@ -352,3 +375,68 @@ func on_tower_built(site: Node2D) -> void:
 	Audio.play("siege_horn", -6.0, 0.05, 1.3)
 	GameState.hint("工兵狂潮：又立起一座敌塔！")
 	Fx.burst(site.get_parent(), site.global_position + Vector2(0, -16), "spark", 10, 50.0, 0.5, Vector2(0, 60), Color(1, 0.8, 0.4))
+
+
+func rotate_features() -> void:
+	var previous := active.duplicate()
+	var pool: Array = director.data.get("features", {}).keys().filter(func(k): return k != "carnival" and not previous.has(k))
+	var selected: Array = ["carnival"]
+	for i in mini(3, pool.size()):
+		var index := rng.randi_range(0, pool.size() - 1)
+		selected.append(pool.pop_at(index))
+	_apply(selected)
+	rotating = true
+	rotation_left = 30.0
+	feature_towers = director.wave_data().get("enemy_towers", []).duplicate()
+	var payloads: Dictionary = director.data.get("feature_payloads", {})
+	for id in active:
+		var payload: Dictionary = payloads.get(id, {})
+		feature_towers.append_array(payload.get("enemy_towers", []))
+		for group in payload.get("groups", []):
+			for i in int(group.get("count", 1)):
+				var at := float(group.get("delay", 0)) + i * float(group.get("interval", 1))
+				if at < 30.0:
+					jobs.append({"source": id, "generation": generation, "left": at, "group": group})
+		for hazard in payload.get("hazards", []):
+			if float(hazard["t"]) < 30.0:
+				jobs.append({"source": id, "generation": generation, "left": float(hazard["t"]), "hazard": hazard})
+	if not previous.is_empty():
+		var incoming := active.filter(func(k): return not previous.has(k)).map(func(k): return str(info(k).get("name", k)))
+		var outgoing := previous.filter(func(k): return not active.has(k)).map(func(k): return str(info(k).get("name", k)))
+		GameState.notify("换入：%s；换出：%s" % ["、".join(incoming), "、".join(outgoing)])
+
+
+func _tick_jobs(delta: float) -> void:
+	for job in jobs.duplicate():
+		if job["generation"] != generation or not is_on(job["source"]):
+			jobs.erase(job)
+			continue
+		job["left"] -= delta
+		if job["left"] > 0:
+			continue
+		jobs.erase(job)
+		if job.has("spots"):
+			for p in job["spots"]:
+				var cart := director.spawn("cart", "", p)
+				if cart == null:
+					continue
+				var escorts: Array = []
+				for side in [-1.0, 1.0]:
+					var crab := director.spawn("shield_crab", "", p + Vector2(side * 18.0, -18.0))
+					if crab:
+						crab.set_meta("escort_of", cart)
+						crab.set_meta("escort_off", Vector2(side * 18.0, -18.0))
+						escorts.append(crab)
+				cart.set_meta("escorts", escorts)
+		elif job.has("group"):
+			var g: Dictionary = job["group"]
+			if g.has("formation"):
+				director.teamwork.spawn_formation(g["formation"], director.spawn_pos(g.get("from", "bottom")))
+			else:
+				director.spawn(g["monster"], g.get("from", "bottom"))
+		elif job.has("hazard"):
+			var h: Dictionary = job["hazard"]
+			if h.has("combo"):
+				director.spawn_hazard_combo(h["combo"])
+			else:
+				director.spawn_hazard(h["kind"])

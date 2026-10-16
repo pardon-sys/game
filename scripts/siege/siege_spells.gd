@@ -198,9 +198,11 @@ static func _snow(c: PlayableCharacter, point: Vector2, r: float, laugh_frac: fl
 
 ## 敌塔（和巨魔将军的军旗）也吃法术伤害。
 static func _hit_towers(caster: Node, at: Vector2, r: float, dmg: int) -> void:
-	for t in caster.get_tree().get_nodes_in_group("siege_enemy_tower"):
+	for t in caster.get_tree().get_nodes_in_group("siege_enemy_tower") + caster.get_tree().get_nodes_in_group("fortress_target"):
 		if t is Actor and (t as Node2D).global_position.distance_to(at) <= r:
-			(t as Actor).receive_hit(HitData.make_attack(caster, dmg, 0.0))
+			var spell_hit := HitData.make_attack(caster, dmg, 0.0)
+			spell_hit.tag = "siege_spell"
+			(t as Actor).receive_hit(spell_hit)
 
 
 ## 冰墙加固：冰壳从墙脚往上结，闪一下。

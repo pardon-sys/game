@@ -119,6 +119,13 @@ for k, (name, z) in TEMP.items():
     SRC[k] = S(name, ["%s里……在动！" % name], ["%s……嘻嘻" % z], ["%s好痒……哈哈哈！" % z], ["哈哈哈哈！%s……快脱掉哈哈哈！" % z],
                words={"helpless_1": ["%s哈哈" % z], "helpless_2": ["%s哈哈哈" % z]})
 
+from gale_bear_text import reaction
+SRC["gale_bear"] = reaction("pink")
+from fortress_text import reaction as fortress_reaction
+SRC["carnival_fortress"] = fortress_reaction("pink")
+from puppet_master_text import reaction as puppet_reaction, tower_reactions
+SRC["puppet_master"] = puppet_reaction("pink")
+SRC.update(tower_reactions("pink"))
 rx_path = Path("data/princess_reactions.json")
 rx = json.loads(rx_path.read_text())
 rx["sources"].update(SRC)

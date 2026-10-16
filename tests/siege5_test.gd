@@ -39,13 +39,10 @@ func _ready() -> void:
 	d.bench_soldiers(true)   # 士兵会先把测试里放的怪打掉；这个测试只看怪 / 陷阱本身
 	await _wait(0.5)
 	_finish()
-	await _run_data()
-	await _run_monsters()
-	await _run_hazards()
-	await _run_rescues()
-	await _run_temp_equipment()
-	await _run_combos()
-	await _run_intel()
+	var only := OS.get_environment("SIEGE5_ONLY")
+	for section in ["data", "monsters", "hazards", "rescues", "temp_equipment", "combos", "intel"]:
+		if only == "" or only.split(",").has(section):
+			await call("_run_" + section)
 	print("\n==== %s (%d 项失败) ====" % ["全部通过" if failures == 0 else "有失败", failures])
 	get_tree().quit(1 if failures else 0)
 
@@ -349,13 +346,13 @@ func _run_monsters() -> void:
 	ga.health.damage(999)
 	await _wait(0.2)
 	var a_down := not ga.is_alive() and is_instance_valid(ga)
-	await _wait(3.2)
+	await _wait(TwinGhost.PAIR_TIME + 0.2)
 	var revived := is_instance_valid(ga) and ga.is_alive()
 	ga.health.damage(999)
 	await _wait(0.3)
 	gb.health.damage(999)
 	await _wait(0.4)
-	check("双子痒痒鬼：成对出现（%s），只打倒一只 3 秒后复活（%s / %s），两只一起打倒才消失（%s）" % [paired, a_down, revived,
+	check("双子痒痒鬼：成对出现（%s），只打倒一只 8 秒后复活（%s / %s），两只一起打倒才消失（%s）" % [paired, a_down, revived,
 			not is_instance_valid(ga) and not is_instance_valid(gb)],
 		paired and a_down and revived and not is_instance_valid(ga) and not is_instance_valid(gb))
 	d.blue.set_controller(d._make_ai(d.blue))

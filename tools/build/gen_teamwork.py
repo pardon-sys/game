@@ -59,6 +59,47 @@ TEAMS = [
       mech="护卫围着工兵走、攻击靠近的公主；护送着搭成的敌塔第一次发动威力加倍。", how="先拆护卫阵、再打工兵；冻住工兵能让搭建停下。"),
 ]
 
+# 第六波扩展：沿用成员 / effect / formation 格式，额外条件只作用于新配合。
+NEW_TEAMS = [
+    T("sticky_pincer", "黏步夹击", "#90dca0", [("slime", 1, "leader"), ("rat", 2, "flank")],
+      "sticky_pincer", 70, 30, 80, [("slime", 1), ("rat", 2)], "史莱姆领着两只挠脚鼠。", "预警后减速 2 秒，小鼠从两侧集结。", "离开预警圈，先击败领队。"),
+    T("hook_relay", "钩索接力", "#a0d8e8", [("hook", 1, "leader"), ("gecko", 2, "passenger")],
+      "hook_relay", 80, 30, 0, [("hook", 1), ("gecko", 2)], "钩索怪与壁虎小队。", "预警后沿钩索投送壁虎上墙。", "击败或冻结钩索怪；加固落点城墙。"),
+    T("vine_pincer", "藤网合围", "#98c878", [("bind_vine", 1, "leader"), ("caterpillar", 2, "flank")],
+      "vine_pincer", 70, 30, 80, [("vine", 1), ("caterpillar", 2)], "藤怪领着毛毛虫。", "预警后短暂定身 1 秒，毛毛虫趁机集结。", "先打藤怪；清凉雪花可解开束缚。"),
+    T("escort_bear", "蟹盾熊扑", "#ecc070", [("hug_bear", 1, "leader"), ("shield_crab", 2, "guard")],
+      "escort_bear", 100, 30, 0, [("hug_bear", 1), ("shield_crab", 2)], "两只盾甲螃蟹保护小熊。", "盾阵掩护小熊靠近；小熊受蓝色公主攻击仍会松手。", "绕后打蟹；用冰法救援搭档。"),
+    T("melt_delivery", "搬运融塔", "#ffc890", [("carrier", 1, "leader"), ("warm_slime", 2, "passenger")],
+      "melt_delivery", 90, 30, 0, [("carrier", 1), ("warm_slime", 2)], "搬运小鬼运送暖炉史莱姆。", "把两只史莱姆送到附近冰塔旁，沿用史莱姆融塔行为。", "冻结搬运者，或优先清掉暖炉史莱姆。"),
+    T("jelly_guard", "水母护卫", "#c0a0ed", [("suck_jelly", 1, "leader"), ("glove", 2, "guard")],
+      "jelly_guard", 90, 30, 0, [("suck_jelly", 1), ("glove", 2)], "手套护送吸吸水母接近施法者。", "保护水母并集结到蓝色公主附近，沿用各自施法干扰。", "先拆护卫，保持距离并用范围法术。"),
+    T("bear_shield", "蟹盾风阵", "#ffd070", [("gale_bear", 1, "leader"), ("shield_crab", 3, "guard")],
+      "bear_shield", 180, 36, desc="熊统领与三只盾甲螃蟹。", mech="三只盾蟹掩护熊统领吸引蓄力，沿用正面挡冰与护卫行为。", how="绕后拆盾，或冻结熊打断吸引。"),
+    T("bear_airlift", "旋风挠痒运兵", "#80ded8", [("gale_bear", 1, "leader"), (["hug_bear", "spider", "hedgehog", "frog", "octopus", "barnacle"], 2, "passenger")],
+      "bear_airlift", 224, 36, desc="熊统领借风投送现有小怪。", mech="两个运输龙卷分别压地面与墙顶；加固城墙可阻止上墙。", how="冻结熊或乘客，按落点预警躲开。"),
+    T("bear_airlift_rage", "狂风双路运兵", "#80ded8", [("gale_bear", 1, "leader"), (["hug_bear", "spider", "hedgehog", "frog", "octopus", "barnacle"], 4, "passenger")],
+      "bear_airlift_rage", 224, 36, desc="狂暴熊统领的双路运兵。", mech="每路两只现有小怪；运输途中冻结熊会立即取消。", how="加固落点或冻结熊。"),
+    T("bear_roll", "借风滚击", "#e8c090", [("gale_bear", 1, "leader"), ("hedgehog", 3, "roller")],
+      "bear_roll", 180, 36, 250, desc="熊统领与三只刷子刺猬。", mech="八向龙卷释放后，刺猬沿另有预警的路线接滚击。", how="向侧面躲开；冻结领队可以打断预警。"),
+]
+for team, first in zip(NEW_TEAMS, [1, 2, 4, 6, 7, 8, 6, 6, 6, 6]):
+    team.update(siege_only=True, min_wave=first)
+    if team["id"].startswith("bear_"):
+        team["trigger"] = "boss_command"
+        team.update(cooldown=9, busy_time=0.9, windup=0.12)
+TEAMS += NEW_TEAMS
+
+for count, ident in ((2, "puppet_relay"), (4, "puppet_relay_rage")):
+    team = T(ident, "魔偶挠痒接力", "#f2a6d9",
+             [("puppet_master", 1, "leader"), (["bind_vine", "hug_bear", "thigh_spider", "ghost"], count, "tickler")],
+             "puppet_relay", 360, 9, desc="魔偶师与已有束缚 / 挠痒小怪。",
+             mech="接力小怪投送到受束缚目标附近，并催动最多两座新敌塔。", how="拆掉共振钟楼，打断领队。")
+    team.update(siege_only=True, min_wave=9, trigger="boss_command", windup=0.12, busy_time=0.9)
+    TEAMS.append(team)
+
+from siege_cooperation_data import teams as cooperation_teams
+TEAMS += cooperation_teams(T)
+
 out = {"_说明": ["怪物配合技（tools/build/gen_teamwork.py 生成；MonsterTeamwork 读）。"], "teams": TEAMS}
 Path("data/teamwork.json").write_text(json.dumps(out, ensure_ascii=False, indent="\t") + "\n")
 print("怪物配合技：%d 个" % len(TEAMS))

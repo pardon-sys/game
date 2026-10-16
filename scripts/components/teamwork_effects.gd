@@ -20,6 +20,15 @@ extends RefCounted
 static func apply(t: Dictionary, members: Array, ctx: Dictionary) -> void:
 	var e: Dictionary = t.get("effect", {})
 	var target: PlayableCharacter = ctx.get("target")
+	if e.get("joint", false):
+		var action := CoordinatedAction.new()
+		action.team = t
+		action.left = float(t.get("windup", 0.2))
+		action.members = members.map(func(m): return weakref(m))
+		action.target_ref = weakref(target) if is_instance_valid(target) else null
+		members[0].get_parent().add_child(action)
+		action.global_position = members[0].global_position
+		return
 	var leader: Monster = members[0]
 	match str(e.get("type", "")):
 		"throw_onto_wall": _throw(leader, members.slice(1), target)
@@ -35,6 +44,14 @@ static func apply(t: Dictionary, members: Array, ctx: Dictionary) -> void:
 		"escort_cart": _escort(leader, members.slice(1), Vector2(0, -18))
 		"airdrop": _airdrop(leader, members.slice(1), target)
 		"escort_engineer": _escort_engineer(members)
+		"sticky_pincer", "hook_relay", "vine_pincer", "escort_bear", "melt_delivery", "jelly_guard", "bear_shield", "bear_airlift", "bear_airlift_rage", "bear_roll", "puppet_relay":
+			var action := CoordinatedAction.new()
+			action.team = t
+			action.left = float(t.get("windup", 0.8))
+			action.members = members.map(func(m): return weakref(m))
+			action.target_ref = weakref(target) if is_instance_valid(target) else null
+			leader.get_parent().add_child(action)
+			action.global_position = leader.global_position
 
 
 ## 成套生成后马上组队（formation）：按 effect.type 把成员连起来，不需要公主在旁边。
@@ -61,6 +78,9 @@ static func on_spawn(t: Dictionary, made: Array, _ctx: Dictionary) -> void:
 		"airdrop":
 			if not rest.is_empty():
 				_airdrop(leader, [rest[0]], null)
+		"sticky_pincer", "hook_relay", "vine_pincer", "escort_bear", "melt_delivery", "jelly_guard":
+			# 新队形先聚集，扫描凑齐且预警后才施加效果。
+			_escort(leader, rest, Vector2(0, 18))
 		_:
 			for m in rest:
 				m.set_meta("escort_of", leader)
@@ -69,6 +89,220 @@ static func on_spawn(t: Dictionary, made: Array, _ctx: Dictionary) -> void:
 
 static func _alive(m: Variant) -> bool:
 	return m != null and is_instance_valid(m) and m is Actor and (m as Actor).is_alive()
+
+
+## 沿用现有效果的临时节点风格（如 DanceZone）：统一预警、冻结取消和来源生命周期。
+class CoordinatedAction extends Node2D:
+	var team := {}
+	var members: Array = []
+	var target_ref: WeakRef
+	var warning: Node
+	var left := 0.8
+	var wall_spot: Variant
+
+	func _ready() -> void:
+		add_to_group("siege_temp")
+		# add_child 后宿主会设置位置，延后一帧初始化预警。
+		_begin.call_deferred()
+
+	func _begin() -> void:
+		var group := _group()
+		if group.is_empty():
+			queue_free()
+			return
+		global_position = group[0].global_position
+		var kind := str(team.get("effect", {}).get("type", ""))
+		var col := Color(str(team.get("color", "#9fe8e0")))
+		var at := global_position
+		if kind in ["hook_relay", "bear_airlift", "bear_airlift_rage"]:
+			wall_spot = TeamworkEffects._wall_spot(global_position.x)
+			if wall_spot is Vector2:
+				at = wall_spot
+		elif target_ref and TeamworkEffects._alive(target_ref.get_ref()) and kind in ["sticky_pincer", "vine_pincer", "bear_roll"]:
+			at = (target_ref.get_ref() as Node2D).global_position
+		warning = SiegeFx.warn(get_parent(), at, "shadow" if kind in ["hook_relay", "bear_airlift", "bear_airlift_rage"] else "circle", 42.0, left, col, 0.0, 1.2, true)
+		SiegeFx.wind_wheel(get_parent(), global_position, 45.0, col, left)
+
+	func _group() -> Array:
+		var out := []
+		for ref in members:
+			var m: Variant = ref.get_ref()
+			if not TeamworkEffects._alive(m) or (m is Monster and m.is_stunned()):
+				return []
+			out.append(m)
+		return out
+
+	func _process(delta: float) -> void:
+		var d := SiegeDirector.current
+		if d == null or d.state != "fight":
+			queue_free()
+			return
+		if GameState.in_dialogue or GameState.in_cutscene or CG.is_busy():
+			return
+		var group := _group()
+		if group.is_empty():
+			if is_instance_valid(warning):
+				warning.queue_free()
+			queue_free()
+			return
+		left -= delta
+		if left > 0.0:
+			return
+		var target := target_ref.get_ref() as PlayableCharacter if target_ref else null
+		if not TeamworkEffects._alive(target) or Downed.is_downed(target):
+			target = null
+		if team.get("effect", {}).get("joint", false):
+			SiegeCooperation.perform(team, group, target)
+		else:
+			TeamworkEffects._coordinated(str(team.get("effect", {}).get("type", "")), group, target, wall_spot)
+		queue_free()
+
+
+static func _coordinated(kind: String, group: Array, target: PlayableCharacter, wall_spot: Variant) -> void:
+	var leader: Monster = group[0]
+	match kind:
+		"puppet_relay":
+			var d := SiegeDirector.current
+			if d == null:
+				return
+			var people: Array = [d.pink, d.blue].filter(func(c): return SiegeTools.alive(c))
+			people.sort_custom(func(a, b): return a.status.is_grabbed() and not b.status.is_grabbed())
+			if people.is_empty():
+				return
+			for i in range(1, group.size()):
+				var c: PlayableCharacter = people[(i - 1) % people.size()]
+				var m: Monster = group[i]
+				var to := c.global_position + Vector2((i % 2 * 2 - 1) * 18, 0)
+				var wall := d.is_on_wall(c)
+				if wall and (d.segment_at(to.x) == null or not d.segment_at(to.x).climbable()):
+					to.y = d.wall_foot_y() + 28
+					wall = false
+				m.remove_meta("escort_of")
+				m.set_meta("puppet_victim", weakref(c))
+				_transfer(leader, m, to, wall, false, true)
+			var towers: Array = leader.get_tree().get_nodes_in_group("siege_enemy_tower").filter(func(t): return t is EnemyTower and SiegeTools.alive(t) and t.kind in ["airdrop", "brush_battery", "resonance"] and t.global_position.distance_to(leader.global_position) < 360)
+			towers.sort_custom(func(a, b): return a.global_position.distance_squared_to(leader.global_position) < b.global_position.distance_squared_to(leader.global_position))
+			for tower in towers.slice(0, 2):
+				tower.command_fire()
+		"sticky_pincer", "vine_pincer":
+			if target == null or leader.global_position.distance_to(target.global_position) > 90.0:
+				return
+			if target.status:
+				if kind == "sticky_pincer":
+					target.status.apply_slow(0.65, 2.0)
+				elif not target.status.is_immobile():
+					target.status.apply_root(1.0)
+			for m in group:
+				if m.has_meta("escort_of"):
+					m.remove_meta("escort_of")
+				m.rally_to(target)
+			SpeechBubble.say(target, "脚步乱了！先打领头的！" if target.character_id == "pink" else "……包围。先打领头的。", 28.0, 1.4)
+		"hook_relay":
+			if wall_spot is Vector2:
+				_send_to_wall(leader, group.slice(1), wall_spot)
+		"bear_airlift", "bear_airlift_rage":
+			var d := SiegeDirector.current
+			if d == null:
+				return
+			for i in range(1, group.size()):
+				var passenger: Monster = group[i]
+				if passenger.has_meta("escort_of"):
+					passenger.remove_meta("escort_of")
+				var wall := i % 2 == 1 and GaleBear._alive(d.blue) and d.is_on_wall(d.blue)
+				var to: Vector2 = wall_spot if wall and wall_spot is Vector2 else (d.pink.global_position if GaleBear._alive(d.pink) else d.blue.global_position)
+				to += Vector2((i - 1) * 16.0, 0)
+				if wall and not d.segment_at(to.x).climbable():
+					continue
+				SiegeFx.warn(leader.get_parent(), to, "shadow", 30.0, 0.12, GaleBear.WIND, 0.0, 1.2, true)
+				_transfer(leader, passenger, to, wall, true)
+		"escort_bear", "bear_shield":
+			_escort(leader, group.slice(1), Vector2(0, -32))
+		"melt_delivery":
+			var d := SiegeDirector.current
+			var nearest: Node2D
+			var distance := 400.0
+			for tower in leader.get_tree().get_nodes_in_group("siege_tower"):
+				var span := leader.global_position.distance_to(tower.global_position)
+				if span < distance:
+					distance = span
+					nearest = tower
+			if nearest == null or d == null:
+				return
+			for i in range(1, group.size()):
+				var m: Monster = group[i]
+				if m.has_meta("escort_of"):
+					m.remove_meta("escort_of")
+				var to := d.clamp_in_map(nearest.global_position + Vector2((i * 2 - 3) * 18.0, 10.0))
+				_transfer(leader, m, to, false)
+		"jelly_guard":
+			_escort(leader, group.slice(1), Vector2(0, -16))
+			var d := SiegeDirector.current
+			if d and _alive(d.blue) and not Downed.is_downed(d.blue):
+				leader.rally_to(d.blue)
+		"bear_roll":
+			if target:
+				for m in group.slice(1):
+					if m.has_meta("escort_of"):
+						m.remove_meta("escort_of")
+				_roll(group.slice(1), target, true)
+
+
+static func _send_to_wall(leader: Monster, passengers: Array, spot: Vector2) -> void:
+	var d := SiegeDirector.current
+	if d == null:
+		return
+	var wall := d.segment_at(spot.x)
+	if wall == null or not wall.climbable():
+		return
+	for i in passengers.size():
+		var m: Monster = passengers[i]
+		if m.has_meta("escort_of"):
+			m.remove_meta("escort_of")
+		_transfer(leader, m, spot + Vector2(i * 14.0, 0), true)
+
+
+## 运输复用 _arc；冻结或击败领队会取消落地效果，乘客回到起点并恢复正常 AI。
+static func _transfer(leader: Monster, passenger: Monster, to: Vector2, wall: bool, windy := false, puppet := false) -> void:
+	var source: WeakRef = weakref(leader)
+	var rider: WeakRef = weakref(passenger)
+	var from := passenger.global_position
+	passenger.set_meta("team_transfer", true)
+	passenger.set_meta("airborne", true)
+	var flight := _arc(passenger, to, 0.45 if windy or puppet else 0.9, 70.0, func():
+		var m := rider.get_ref() as Monster
+		var lead := source.get_ref() as Monster
+		if not _alive(m):
+			return
+		m.set_meta("team_transfer", false)
+		m.set_meta("airborne", false)
+		var d := SiegeDirector.current
+		if not _alive(lead) or lead.is_stunned() or m.is_stunned() or d == null or d.state != "fight":
+			m.global_position = from
+			if puppet:
+				m.remove_meta("puppet_victim")
+			return
+		if wall:
+			var segment := d.segment_at(to.x)
+			if segment and segment.climbable():
+				put_on_wall(m, to)
+			else:
+				m.global_position = from
+		if puppet and lead is PuppetMaster and m.has_meta("puppet_victim"):
+			var c := (m.get_meta("puppet_victim") as WeakRef).get_ref() as PlayableCharacter
+			m.remove_meta("puppet_victim")
+			if SiegeTools.alive(c) and m.global_position.distance_to(c.global_position) < 48.0:
+				m.rally_to(c)
+				lead.register_field(SiegeTools.sequence(lead, c, 2, 3.0, "relay")))
+	if windy or puppet:
+		var guard := WindTransport.new()
+		guard.source = source
+		guard.rider = rider
+		guard.from = from
+		guard.flight = flight
+		guard.puppet = puppet
+		leader.get_parent().add_child(guard)
+		if leader.has_method("register_field"):
+			leader.call("register_field", guard)
 
 
 ## 放到墙顶（攻防战）：之后用通用的墙顶行为（找蓝色公主 / 拆墙）。
@@ -92,7 +326,7 @@ static func _wall_spot(near_x: float) -> Variant:
 	return Vector2(x, d.wall_top_y() + randf_range(-2, 6))
 
 
-static func _arc(m: Node2D, to: Vector2, time: float, height: float, done: Callable) -> void:
+static func _arc(m: Node2D, to: Vector2, time: float, height: float, done: Callable) -> Tween:
 	var from := m.global_position
 	if m is Monster:
 		(m as Monster).set_physics_process(false)
@@ -105,6 +339,64 @@ static func _arc(m: Node2D, to: Vector2, time: float, height: float, done: Calla
 			if m is Monster:
 				(m as Monster).set_physics_process(true)
 			done.call())
+	return tw
+
+
+## 运输仍走原 _arc / _transfer；这个薄守卫只管风效、暂停、计时与立即取消。
+class WindTransport extends Node2D:
+	var source: WeakRef
+	var rider: WeakRef
+	var flight: Tween
+	var from := Vector2.ZERO
+	var t := 0.0
+	var puppet := false
+
+	func _ready() -> void:
+		add_to_group("siege_temp")
+		z_index = 4
+
+	func _process(delta: float) -> void:
+		var p := rider.get_ref() as Monster
+		var lead := source.get_ref() as Monster
+		if not TeamworkEffects._alive(p) or not TeamworkEffects._alive(lead) or lead.is_stunned() or p.is_stunned() or SiegeDirector.current == null or SiegeDirector.current.state != "fight":
+			_end()
+			return
+		if not p.get_meta("team_transfer", false):
+			queue_free()
+			return
+		if GameState.in_dialogue or GameState.in_cutscene or CG.is_busy():
+			flight.pause()
+			return
+		if not flight.is_running():
+			flight.play()
+		t += delta
+		global_position = p.global_position
+		queue_redraw()
+
+	func _physics_process(delta: float) -> void:
+		var p := rider.get_ref() as Monster
+		if TeamworkEffects._alive(p) and not p.is_physics_processing() and not GameState.in_dialogue and not GameState.in_cutscene and not CG.is_busy():
+			p.tick_timers(delta)
+
+	func _draw() -> void:
+		if puppet:
+			draw_arc(Vector2.ZERO, 20, t * 5, t * 5 + 4, 20, SiegeTools.COLOR, 2)
+			draw_line(Vector2(-24, -8), Vector2(24, -8), SiegeTools.COLOR, 1.5)
+		else:
+			SiegeFx.draw_tornado(self, Vector2.ZERO, 18.0, t, GaleBear.WIND)
+
+	func _end() -> void:
+		if flight and flight.is_valid():
+			flight.kill()
+		var p := rider.get_ref() as Monster
+		if TeamworkEffects._alive(p) and p.get_meta("team_transfer", false):
+			p.global_position = from
+			p.set_meta("team_transfer", false)
+			p.set_meta("airborne", false)
+			p.set_physics_process(true)
+			if puppet:
+				p.remove_meta("puppet_victim")
+		queue_free()
 
 
 # ------------------------------------------------------------------ 各个效果
@@ -242,7 +534,7 @@ static func _charge(jelly: Monster) -> void:
 	SiegeFx.ring(jelly.get_parent(), jelly.global_position, 90.0, Color(0.8, 0.55, 1.0, 0.7), 0.6, 0.06)
 
 
-static func _roll(members: Array, target: PlayableCharacter) -> void:
+static func _roll(members: Array, target: PlayableCharacter, fast := false) -> void:
 	if target == null:
 		return
 	var dir := (members[0] as Node2D).global_position.direction_to(target.global_position)
@@ -252,13 +544,13 @@ static func _roll(members: Array, target: PlayableCharacter) -> void:
 			continue
 		m.global_position = (members[0] as Node2D).global_position - dir * (i * 12.0)
 		var tw := m.create_tween()
-		tw.tween_property(m, "global_position", target.global_position + dir * 30.0 - dir * (i * 12.0), 0.8)
+		tw.tween_property(m, "global_position", target.global_position + dir * 30.0 - dir * (i * 12.0), 0.35 if fast else 0.8)
 	var d := SiegeDirector.current
 	var crowd: Variant = d.densest(40.0, target.global_position, 220.0) if d else null
 	var push := target.global_position + (target.global_position.direction_to(crowd) if crowd is Vector2 else dir) * 10.0
 	var tgt_ref: WeakRef = weakref(target)
 	var lead_ref: WeakRef = weakref(members[0])
-	target.get_tree().create_timer(0.5).timeout.connect(func():
+	target.get_tree().create_timer(0.18 if fast else 0.5).timeout.connect(func():
 		var t := tgt_ref.get_ref() as PlayableCharacter
 		if t:
 			t.apply_knockback(t.global_position - (push - t.global_position), 320.0)

@@ -45,6 +45,8 @@ func _active(_delta: float) -> void:
 
 
 func _process(delta: float) -> void:
+	if SiegeTools.paused():
+		return
 	if director == null or director.state != "fight" and director.state != "prep":
 		return
 	if _warn_left > 0.0:

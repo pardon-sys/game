@@ -3,6 +3,17 @@
 		"攻防战攻城怪的笑倒 CG（gen_siege_cgs.py 生成，不要直接改）：CG 播放器合并进 cgs.json。"
 	],
 	"actors": {
+		"carnival_fortress": {
+			"scene": "res://scenes/siege/monsters/carnival_fortress.tscn",
+			"sprite": {
+				"texture": "res://assets/generated/siege/fortress_v2_hull.png",
+				"offset": [
+					0,
+					-200
+				],
+				"scale": 0.055
+			}
+		},
 		"cart": {
 			"scene": "res://scenes/siege/monsters/siege_cart.tscn",
 			"sprite": {
@@ -158,6 +169,32 @@
 					-44.0
 				]
 			}
+		},
+		"gale_bear": {
+			"scene": "res://scenes/siege/monsters/gale_bear.tscn",
+			"sprite": {
+				"texture": "res://assets/generated/siege/monsters.png",
+				"atlas": "res://assets/generated/siege/monsters.json",
+				"key": "gale_bear_0",
+				"offset": [
+					0,
+					-56.0
+				],
+				"scale": 0.55
+			}
+		},
+		"puppet_master": {
+			"scene": "res://scenes/siege/monsters/puppet_master.tscn",
+			"sprite": {
+				"texture": "res://assets/generated/siege/monsters.png",
+				"atlas": "res://assets/generated/siege/monsters.json",
+				"key": "puppet_master_0",
+				"offset": [
+					0,
+					-56.0
+				],
+				"scale": 0.55
+			}
 		}
 	},
 	"death": {
@@ -173,7 +210,10 @@
 		"thigh_spider": "death_siege_thigh_spider",
 		"hug_bear": "death_siege_hug_bear",
 		"suck_jelly": "death_siege_suck_jelly",
-		"twin_ghost": "death_siege_twin_ghost"
+		"twin_ghost": "death_siege_twin_ghost",
+		"gale_bear": "death_siege_gale_bear",
+		"puppet_master": "death_siege_puppet_master",
+		"carnival_fortress": "death_siege_carnival_fortress"
 	},
 	"portraits": {},
 	"cgs": {
@@ -3618,6 +3658,772 @@
 						}
 					],
 					"portrait": "defeat_2"
+				},
+				{
+					"actions": [
+						{
+							"state": "",
+							"do": "voice"
+						},
+						{
+							"time": 0.8,
+							"do": "fade_out"
+						}
+					],
+					"wait": 0.9
+				}
+			]
+		},
+		"death_siege_gale_bear": {
+			"name": "连滚刷都卷进风里了",
+			"cast": {
+				"princess": {
+					"kind": "princess",
+					"at": [
+						0,
+						8
+					],
+					"visual": "helpless_1",
+					"anim": "helpless",
+					"dir": "down"
+				},
+				"foe": {
+					"kind": "monster:gale_bear",
+					"at": [
+						40,
+						8
+					],
+					"dir": "left",
+					"hidden": true
+				}
+			},
+			"steps": [
+				{
+					"actions": [
+						{
+							"time": 0.7,
+							"do": "fade_in"
+						},
+						{
+							"state": "giggle",
+							"do": "voice"
+						}
+					],
+					"wait": 0.8
+				},
+				{
+					"speaker": "",
+					"text": "（八道旋风从巨熊身边散开。粉色公主提着锤子绕过一团，又发现羽毛与滚刷正被一起吸进风眼，纷纷朝自己的落点飞来）",
+					"actions": [
+						{
+							"who": "foe",
+							"from": [
+								90,
+								0
+							],
+							"time": 0.6,
+							"do": "enter"
+						},
+						{
+							"who": "princess",
+							"kind": "surprise",
+							"do": "bubble"
+						},
+						{
+							"who": "princess",
+							"visual": "giggle",
+							"anim": "idle",
+							"do": "pose"
+						},
+						{
+							"state": "giggle",
+							"do": "voice"
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "喂，你连刷子都卷进来啦？！我才刚绕开一个风轮，又来这么多！",
+					"actions": []
+				},
+				{
+					"speaker": "狂风熊统领",
+					"text": "刷子比冰块轻！风轮一转，全都能追过来！",
+					"actions": [
+						{
+							"who": "foe",
+							"count": 2,
+							"do": "hop"
+						}
+					]
+				},
+				{
+					"speaker": "",
+					"text": "（她举锤想把飞来的刷具截住，羽毛却先擦过脚心。她急忙缩脚，锤子差点挥偏，只好一边重新站稳，一边向巨熊抗议）",
+					"actions": [
+						{
+							"who": "princess",
+							"by": "foe",
+							"repeat": 3,
+							"interval": 0.35,
+							"fx": "feather",
+							"zone": "sole",
+							"do": "tickle"
+						},
+						{
+							"who": "princess",
+							"time": 0.4,
+							"do": "shake"
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "嘻哈哈！等等，我还没抡出去呢！追人就算了，连刷子都要跟着我跑吗？！",
+					"actions": [
+						{
+							"who": "princess",
+							"kind": "laugh",
+							"do": "bubble"
+						}
+					]
+				},
+				{
+					"speaker": "",
+					"text": "（巨熊收起风盾，露出掌边的小羽刷。她还在提防盾牌冲撞，直到刷头碰到脚心，才发现自己盯错了地方，连忙换了握锤的姿势）",
+					"actions": [
+						{
+							"who": "princess",
+							"by": "foe",
+							"repeat": 3,
+							"interval": 0.35,
+							"fx": "hand",
+							"zone": "sole",
+							"do": "tickle"
+						},
+						{
+							"who": "princess",
+							"visual": "helpless_1",
+							"anim": "helpless",
+							"do": "pose"
+						},
+						{
+							"state": "laugh",
+							"do": "voice"
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "哈哈哈，脚心！你刚才明明把刷子藏起来了，这种偷偷加招的可不算！",
+					"actions": [
+						{
+							"who": "princess",
+							"kind": "laugh",
+							"do": "bubble"
+						}
+					]
+				},
+				{
+					"speaker": "",
+					"text": "（她刚退开一步，下一轮刷具又顺着风道飞来。脚步和举锤的动作接不上，她只好朝蓝色公主挥手，让搭档先把旁边的旋风截住）",
+					"actions": [
+						{
+							"who": "princess",
+							"by": "foe",
+							"repeat": 3,
+							"interval": 0.35,
+							"fx": "feather",
+							"zone": "sole",
+							"do": "tickle"
+						},
+						{
+							"who": "princess",
+							"time": 0.4,
+							"do": "shake"
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "我还没输！让我把锤子举稳……哈哈哈哈！你先帮我挡那阵风，我马上就能敲到它啦！",
+					"actions": []
+				},
+				{
+					"speaker": "狂风熊统领",
+					"text": "转一圈，换一招！熊队看好下一处落点！",
+					"actions": [
+						{
+							"who": "foe",
+							"do": "taunt"
+						}
+					]
+				},
+				{
+					"speaker": "",
+					"text": "（小怪沿着风道接力赶来。她仍想举锤拦住前排，话却一再被笑声打断，最后只能撑着锤柄坐稳，抬手把城門方向指给搭档）",
+					"actions": [
+						{
+							"who": "princess",
+							"by": "foe",
+							"repeat": 3,
+							"interval": 0.35,
+							"fx": "feather",
+							"zone": "sole",
+							"do": "tickle"
+						},
+						{
+							"who": "princess",
+							"visual": "helpless_2",
+							"do": "pose"
+						},
+						{
+							"state": "laugh",
+							"do": "voice"
+						},
+						{
+							"who": "princess",
+							"time": 0.4,
+							"do": "shake"
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "哈哈哈哈哈！先收刷子，这一回合算你赢！我不是不打了，是、是要缓口气再来呀哈哈哈！",
+					"actions": [
+						{
+							"who": "princess",
+							"kind": "laugh",
+							"do": "bubble"
+						}
+					]
+				},
+				{
+					"speaker": "",
+					"text": "（熊的风轮终于放慢。她抱住锤子，等呼吸顺了些，马上朝搭档示意城门边又有小怪过来，自己则准备重新起身）",
+					"actions": []
+				},
+				{
+					"speaker": "公主",
+					"text": "呼……下次我先收你的刷子！刚才那招我记住啦，别想再偷着来一遍！",
+					"actions": [
+						{
+							"zoom": 1,
+							"focus": "princess",
+							"time": 0.4,
+							"do": "camera"
+						}
+					]
+				},
+				{
+					"speaker": "",
+					"text": "（她仍不服气地盯着熊掌边的小羽刷。蓝色公主一靠近，她就先把那把刷子指给对方看，认真讨论下一轮该怎么绕过去）",
+					"actions": []
+				},
+				{
+					"actions": [
+						{
+							"state": "",
+							"do": "voice"
+						},
+						{
+							"time": 0.8,
+							"do": "fade_out"
+						}
+					],
+					"wait": 0.9
+				}
+			]
+		},
+		"death_siege_puppet_master": {
+			"name": "刷轮接力",
+			"cast": {
+				"princess": {
+					"kind": "princess",
+					"at": [
+						0,
+						8
+					],
+					"visual": "helpless_1",
+					"anim": "helpless",
+					"dir": "down"
+				},
+				"foe": {
+					"kind": "monster:puppet_master",
+					"at": [
+						40,
+						8
+					],
+					"dir": "left",
+					"hidden": true
+				}
+			},
+			"steps": [
+				{
+					"actions": [
+						{
+							"time": 0.7,
+							"do": "fade_in"
+						},
+						{
+							"state": "giggle",
+							"do": "voice"
+						}
+					],
+					"wait": 0.8
+				},
+				{
+					"speaker": "",
+					"text": "（木偶小丑掀开刷轮箱，粉色公主立刻把锤子举高，准备先敲停绞盘。她还提醒搭档注意缎带，却没想到机关已经伸到了自己脚边）",
+					"actions": [
+						{
+							"who": "foe",
+							"from": [
+								90,
+								0
+							],
+							"time": 0.6,
+							"do": "enter"
+						},
+						{
+							"who": "princess",
+							"kind": "surprise",
+							"do": "bubble"
+						},
+						{
+							"who": "princess",
+							"visual": "giggle",
+							"anim": "idle",
+							"do": "pose"
+						},
+						{
+							"state": "giggle",
+							"do": "voice"
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "你打架居然还背了一整箱刷子？！站好，让我先敲掉那个转来转去的绞盘！",
+					"actions": []
+				},
+				{
+					"speaker": "狂欢挠痒魔偶师",
+					"text": "缎带提线就位，刷轮接力开始！",
+					"actions": [
+						{
+							"who": "foe",
+							"count": 2,
+							"do": "hop"
+						}
+					]
+				},
+				{
+					"speaker": "",
+					"text": "（缎带把她带到脚掌固定器旁，软夹扳直脚掌，滚刷开始转动。她想调整脚步再挥锤，却发现两套动作都被机关卡在了半途）",
+					"actions": [
+						{
+							"who": "princess",
+							"by": "foe",
+							"repeat": 3,
+							"interval": 0.18,
+							"fx": "brush",
+							"zone": "sole",
+							"tool": "tool_roller",
+							"do": "tickle"
+						},
+						{
+							"who": "princess",
+							"time": 0.4,
+							"do": "shake"
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "嘻、脚心！等等，我还没敲下去呢！先让我站稳，哪有先把脚掌扳直再开打的啦！",
+					"actions": [
+						{
+							"who": "princess",
+							"kind": "laugh",
+							"do": "bubble"
+						}
+					]
+				},
+				{
+					"speaker": "",
+					"text": "（左右滚刷交替扫过脚心。她本能地想缩脚，固定器却挡住了动作；她只好握紧锤柄，一边抗议，一边寻找箱子上能敲到的地方）",
+					"actions": [
+						{
+							"who": "princess",
+							"by": "foe",
+							"repeat": 3,
+							"interval": 0.18,
+							"fx": "brush",
+							"zone": "sole",
+							"tool": "tool_roller",
+							"do": "tickle"
+						},
+						{
+							"who": "princess",
+							"visual": "helpless_1",
+							"anim": "helpless",
+							"do": "pose"
+						},
+						{
+							"state": "laugh",
+							"do": "voice"
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "哈哈哈哈！先松脚，我松开就能跟你打了！你等我抡完这一锤再换刷子，哈哈哈！",
+					"actions": [
+						{
+							"who": "princess",
+							"kind": "laugh",
+							"do": "bubble"
+						}
+					]
+				},
+				{
+					"speaker": "",
+					"text": "（绞盘把她带过第二排刷具。刚躲开一处，小怪就在落点接了上来，她赶紧向搭档示意后面的队伍，自己则试着把锤子护在身前）",
+					"actions": [
+						{
+							"who": "princess",
+							"by": "foe",
+							"repeat": 3,
+							"interval": 0.18,
+							"fx": "brush",
+							"zone": "sole",
+							"tool": "tool_roller",
+							"do": "tickle"
+						},
+						{
+							"who": "princess",
+							"time": 0.4,
+							"do": "shake"
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "哈哈哈哈！你们怎么连挠痒都要排队接力呀！别一齐往脚心来，我一个锤子哪挡得住这么多！",
+					"actions": [
+						{
+							"who": "princess",
+							"kind": "laugh",
+							"do": "bubble"
+						}
+					]
+				},
+				{
+					"speaker": "狂欢挠痒魔偶师",
+					"text": "换个位置！下一队接住新落点！",
+					"actions": [
+						{
+							"who": "foe",
+							"do": "taunt"
+						}
+					]
+				},
+				{
+					"speaker": "",
+					"text": "（换位缎带把她送上墙顶。她刚站稳，就朝地面的蓝色公主指了指梯子，想着先把搭档接上来，再一起拆掉那座刷具箱）",
+					"actions": [
+						{
+							"who": "princess",
+							"time": 0.4,
+							"do": "shake"
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "你先上来，我帮你挡！别在下面逞强……哈哈哈哈，怎么刷轮也跟到墙顶啦？！",
+					"actions": [
+						{
+							"who": "princess",
+							"visual": "helpless_2",
+							"do": "pose"
+						},
+						{
+							"state": "laugh",
+							"do": "voice"
+						},
+						{
+							"who": "princess",
+							"kind": "laugh",
+							"do": "bubble"
+						}
+					]
+				},
+				{
+					"speaker": "",
+					"text": "（滚刷跟着落点继续转动，接力小怪又赶来一队。她举锤到一半便被笑声打断，仍不忘伸手指向钟楼，让搭档先把加快节拍的机关敲停）",
+					"actions": [
+						{
+							"who": "princess",
+							"by": "foe",
+							"repeat": 3,
+							"interval": 0.18,
+							"fx": "brush",
+							"zone": "sole",
+							"tool": "tool_roller",
+							"do": "tickle"
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "哈哈哈哈哈！这一轮我认输啦！先把刷子收回去……你去拆钟楼，我缓过来就马上帮忙，哈哈哈哈！",
+					"actions": [
+						{
+							"who": "princess",
+							"kind": "laugh",
+							"do": "bubble"
+						},
+						{
+							"who": "princess",
+							"time": 0.4,
+							"do": "shake"
+						}
+					]
+				},
+				{
+					"speaker": "",
+					"text": "（钟声终于停下，软夹松开，刷具退回箱中。她扶着城垛重新站稳，第一件事仍是朝搭档摆手，确认对方也已经脱离了机关）",
+					"actions": []
+				},
+				{
+					"speaker": "公主",
+					"text": "哼，下次我先砸你的刷轮箱！今天这一整套我都记住了，别以为笑赢我就算打赢啦！",
+					"actions": [
+						{
+							"zoom": 1,
+							"focus": "princess",
+							"time": 0.4,
+							"do": "camera"
+						}
+					]
+				},
+				{
+					"actions": [
+						{
+							"state": "",
+							"do": "voice"
+						},
+						{
+							"time": 0.8,
+							"do": "fade_out"
+						}
+					],
+					"wait": 0.9
+				}
+			]
+		},
+		"death_siege_carnival_fortress": {
+			"name": "公主与追猎巨手",
+			"cast": {
+				"princess": {
+					"kind": "princess",
+					"at": [
+						0,
+						8
+					],
+					"visual": "helpless_1",
+					"anim": "helpless",
+					"dir": "down"
+				},
+				"foe": {
+					"kind": "monster:carnival_fortress",
+					"at": [
+						55,
+						4
+					],
+					"dir": "left",
+					"hidden": true
+				}
+			},
+			"steps": [
+				{
+					"actions": [
+						{
+							"time": 0.7,
+							"do": "fade_in"
+						},
+						{
+							"state": "giggle",
+							"do": "voice"
+						}
+					],
+					"wait": 0.8
+				},
+				{
+					"speaker": "",
+					"text": "第一批冲车从堡垒侧门驶出，第二批斜切前方。粉色公主绕开交叉线，赶向被吊起的冰塔。",
+					"actions": [
+						{
+							"who": "foe",
+							"from": [
+								90,
+								0
+							],
+							"time": 0.6,
+							"do": "enter"
+						},
+						{
+							"who": "princess",
+							"kind": "surprise",
+							"do": "bubble"
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "还有第三批，我记住啦！蓝色，我们一人救一座！",
+					"actions": [
+						{
+							"who": "princess",
+							"visual": "giggle",
+							"anim": "idle",
+							"do": "pose"
+						},
+						{
+							"state": "giggle",
+							"do": "voice"
+						}
+					]
+				},
+				{
+					"speaker": "",
+					"text": "巡航弹拖着尾焰跟来。她等到弹头闪光再侧身跑开，巨手也在这时从肩舱伸出。",
+					"actions": [
+						{
+							"who": "princess",
+							"by": "foe",
+							"repeat": 5,
+							"interval": 0.3,
+							"fx": "lines",
+							"do": "tickle"
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "哇，手掌张开啦！等它停——再跑！",
+					"actions": [
+						{
+							"who": "princess",
+							"visual": "giggle",
+							"anim": "idle",
+							"do": "pose"
+						},
+						{
+							"state": "giggle",
+							"do": "voice"
+						}
+					]
+				},
+				{
+					"speaker": "",
+					"text": "她向吊索多迈了一步。机械掌在身后合拢，衬垫轻轻震动，沿真实的拖痕把她带离了锤击距离。",
+					"actions": [
+						{
+							"who": "princess",
+							"by": "foe",
+							"repeat": 5,
+							"interval": 0.3,
+							"fx": "lines",
+							"do": "tickle"
+						},
+						{
+							"who": "princess",
+							"visual": "helpless_1",
+							"anim": "helpless",
+							"do": "pose"
+						},
+						{
+							"state": "laugh",
+							"do": "voice"
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "哈哈！别往回拉，我还差一下就救到塔啦！",
+					"actions": [
+						{
+							"who": "princess",
+							"kind": "laugh",
+							"do": "bubble"
+						}
+					]
+				},
+				{
+					"speaker": "",
+					"text": "巨手松开时，她又听见墙顶的空降警报。笑声让脚步发软，她靠着基座坐下，仍向同伴指出吊索。",
+					"actions": [
+						{
+							"who": "princess",
+							"by": "foe",
+							"repeat": 8,
+							"interval": 0.22,
+							"fx": "lines",
+							"do": "tickle"
+						},
+						{
+							"who": "princess",
+							"visual": "helpless_2",
+							"do": "pose"
+						},
+						{
+							"state": "laugh",
+							"do": "voice"
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "哈哈、先救塔！别让它拿我们的冰塔装第四发！",
+					"actions": [
+						{
+							"who": "princess",
+							"time": 0.4,
+							"do": "shake"
+						}
+					]
+				},
+				{
+					"speaker": "",
+					"text": "冰晶击断吊索，塔落回原位。两人趁母车收臂的空档重新站稳，等待核心再次亮起。",
+					"actions": [
+						{
+							"zoom": 1,
+							"focus": "princess",
+							"time": 0.4,
+							"do": "camera"
+						}
+					]
+				},
+				{
+					"speaker": "公主",
+					"text": "这回我会提前跑开！等核心一亮，我们一起敲！",
+					"actions": [
+						{
+							"who": "princess",
+							"visual": "giggle",
+							"anim": "idle",
+							"do": "pose"
+						},
+						{
+							"state": "giggle",
+							"do": "voice"
+						}
+					]
 				},
 				{
 					"actions": [

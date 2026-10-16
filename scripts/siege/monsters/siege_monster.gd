@@ -137,7 +137,7 @@ func stop_climb() -> void:
 func wall_hunt(delta: float) -> void:
 	if director == null:
 		return
-	var b := director.blue
+	var b := director.wall_target()
 	if b and is_instance_valid(b) and b.is_alive() and not Downed.is_downed(b) and director.is_on_wall(b):
 		target = b
 		var d := b.global_position - global_position

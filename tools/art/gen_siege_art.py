@@ -222,6 +222,9 @@ def etower_frame(d):
 
 
 def etower(kind):
+    if kind in ("airdrop", "brush_battery", "resonance"):
+        from puppet_art import tower
+        return tower(kind)
     img, d = canvas(24, 40)
     etower_frame(d)
     if kind == "vine_pull":
@@ -347,6 +350,9 @@ def gen_towers():
     items += [("snowman_0", snowman(0)), ("snowman_1", snowman(1)), ("glue", glue_puddle()),
               ("proj_hand", hand_proj((190, 140, 230, 255))), ("proj_brush", brush_proj()), ("proj_equip", equip_proj()),
               ("proj_icicle", icicle_proj()), ("net", net_tile()), ("proj_arrow", arrow_proj())]
+    from puppet_art import tool
+    for key in ("tool_finger", "tool_roller", "tool_pad", "tool_capsule"):
+        items.append((key, tool(key)))
     pack(items, "towers")
 
 
@@ -365,7 +371,7 @@ def icicle_proj():
     return add_outline(img)
 
 
-ETOWERS = ["vine_pull", "tailor", "glue", "net", "silence", "portal", "windmill", "totem", "thigh_tower", "sole_tower"]
+ETOWERS = ["vine_pull", "tailor", "glue", "net", "silence", "portal", "windmill", "totem", "thigh_tower", "sole_tower", "airdrop", "brush_battery", "resonance"]
 
 
 def pack(items, name):
@@ -544,6 +550,12 @@ MONSTERS = {
 }
 
 
+def m_gale_bear(frame):
+    """读取直接生成的熊统领像素帧；import_gale_bear.py 只负责源图切帧与对齐。"""
+    src = Path(__file__).resolve().parent / "src" / ("gale_bear_%d.png" % frame)
+    return Image.open(src).convert("RGBA")
+
+
 def gen_monsters():
     items = []
     for k, fn in MONSTERS.items():
@@ -553,6 +565,11 @@ def gen_monsters():
             continue
         for f in (0, 1):
             items.append(("%s_%d" % (k, f), fn(f)))
+    for frame in range(8):
+        items.append(("gale_bear_%d" % frame, m_gale_bear(frame)))
+    from puppet_art import boss
+    for frame in range(8):
+        items.append(("puppet_master_%d" % frame, boss(frame)))
     pack(items, "monsters")
 
 

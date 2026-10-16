@@ -180,7 +180,7 @@ func wall_top(m: Monster, delta: float) -> void:
 	if m is SiegeMonster:
 		(m as SiegeMonster).wall_hunt(delta)
 		return
-	var b: PlayableCharacter = director.blue
+	var b: PlayableCharacter = director.wall_target()
 	if b and is_instance_valid(b) and b.is_alive() and not Downed.is_downed(b) and director.is_on_wall(b):
 		m.target = b
 		var d := b.global_position - m.global_position

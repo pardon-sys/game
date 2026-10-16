@@ -152,7 +152,7 @@ func make_tickle(t: Node, amount: float, force_special := false, kb := 0.0) -> H
 		special = true
 	if not special and random_specials:
 		special = randf() < stats.special_chance + stat_add("special_chance")
-	var h := HitData.make_tickle(self, amount * (stats.special_mult if special else 1.0), kb)
+	var h := HitData.make_tickle(self, amount * stat_mul("tickle_power") * (stats.special_mult if special else 1.0), kb)
 	h.special = special
 	h.fatigue_mult = stats.fatigue_mult
 	return h

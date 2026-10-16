@@ -62,7 +62,7 @@ static func cast_with(caster: Node2D, p: Dictionary, visual_tier: int, tag: Stri
 		var a := n as Actor
 		if a == null or a == caster or not a.is_alive() or not Faction.are_hostile(caster, a):
 			continue
-		if a.global_position.distance_to(center) > radius + BODY_ALLOWANCE:
+		if FortressRules.distance(a,center) > radius + BODY_ALLOWANCE:
 			continue
 		var h := HitData.make_attack(caster, p["damage"], p["knockback"])
 		h.origin = center

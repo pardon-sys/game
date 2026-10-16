@@ -187,7 +187,12 @@ func _atlas(tex: Texture2D, region: Rect2) -> AtlasTexture:
 
 
 ## 当前操控角色的立绘套装（公主 "pink" / 蓝色公主 "blue"）。
+var line_character := ""
+
+
 func active_set() -> String:
+	if line_character != "" and _sets.has(line_character):
+		return line_character
 	var p := GameState.player
 	var s := str(p.get("portrait_set")) if is_instance_valid(p) and p.get("portrait_set") != null else "pink"
 	return s if _sets.has(s) else "pink"
@@ -237,9 +242,10 @@ func lines_for(id: String) -> Array:
 	return _data.get(id, [])
 
 
-func start_lines(lines: Array, id := "") -> void:
+func start_lines(lines: Array, id := "", who := "") -> void:
 	if _active or lines.is_empty():
 		return
+	line_character = who
 	_lines = lines
 	_index = 0
 	_id = id
@@ -372,12 +378,12 @@ func rest() -> void:
 ## 这行台词是哪个人物说的（line.npc，或说话人名字和人物表里的名字一样）。
 ## 当前操控角色在人物表里的 id（蓝色公主当主角时是 blue_princess；粉色公主不在人物表里，返回 ""）。
 func hero_npc() -> String:
-	return "blue_princess" if Characters.current() == "blue" else ""
+	return "blue_princess" if (line_character if line_character != "" else Characters.current()) == "blue" else ""
 
 
 ## 当前主角在台词里的名字（蓝色公主当主角时是「蓝色的公主」；有的楼层的人物表里没有她，按名字认）。
 func hero_speaker() -> String:
-	return "蓝色的公主" if Characters.current() == "blue" else ""
+	return "蓝色的公主" if (line_character if line_character != "" else Characters.current()) == "blue" else ""
 
 
 func npc_of(line: Dictionary) -> String:
@@ -399,9 +405,7 @@ const NPC_CHARACTER := {"pink_princess": "pink", "blue_princess": "blue"}
 
 func npc_texture(id: String, emotion := "") -> Texture2D:
 	if emotion == "fatigue_burst" and NPC_CHARACTER.has(id):
-		Characters.scope(NPC_CHARACTER[id])
-		var burst: Texture2D = CG.portrait_texture("fatigue_burst")
-		Characters.unscope()
+		var burst: Texture2D = CG.portrait_texture("fatigue_burst", NPC_CHARACTER[id])
 		if burst:
 			return burst
 	var info: Dictionary = npcs.get(id, {})
@@ -748,6 +752,7 @@ func advance() -> void:
 
 func _end() -> void:
 	_active = false
+	line_character = ""
 	panel.hide()
 	npc_portrait.hide()
 	portrait.modulate = Color.WHITE

@@ -142,6 +142,15 @@ for key, s in rx.get("sources", {}).items():
             for stage, pool in (("calm", CALM), ("giggle", GIGGLE), ("helpless_1", H1), ("helpless_2", BREAK)):
                 if stage in v:
                     v[stage] = picks(pool, key + _c + stage, 2, n=n, z=z)
+# 熊统领两位角色均手写，连技能变体也整体覆盖，避免继承粉色的嵌套文案。
+from gale_bear_text import reaction
+if "gale_bear" in rx["sources"]:
+    rx["sources"]["gale_bear"] = reaction("blue")
+from fortress_text import reaction as fortress_reaction
+rx["sources"]["carnival_fortress"] = fortress_reaction("blue")
+from puppet_master_text import reaction as puppet_reaction, tower_reactions
+rx["sources"]["puppet_master"] = puppet_reaction("blue")
+rx["sources"].update(tower_reactions("blue"))
 # 千手痒痒魔：她认识它（不点明）。被它挠时的台词带着惋惜和自责，和别的来源不一样。
 BOSS_LINES = {
     "first_encounter": [{"speaker": BLUE, "emotion": "sad", "text": "……原来，你在这里。"},

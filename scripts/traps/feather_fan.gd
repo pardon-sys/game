@@ -49,6 +49,7 @@ func _setup() -> void:
 	_particles.angular_velocity_max = 200.0
 	add_child(_particles)
 	_sound = AudioStreamPlayer2D.new()
+	_sound.bus = Audio.SFX_BUS
 	_sound.stream = Audio.loop_stream("wind")
 	_sound.volume_db = -12.0
 	_sound.max_distance = 180.0

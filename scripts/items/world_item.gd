@@ -3,6 +3,7 @@ extends Area2D
 ## 地上的可拾取物品（公主碰到即拾取）：auto_use_on_pickup 的物品立即使用，其余放进背包。
 
 const SCENE := "res://scenes/items/world_item.tscn"
+const SIEGE_DROP_LIFETIME := 20.0
 
 @export var item: ItemData
 @export var amount := 1
@@ -13,6 +14,7 @@ var spawn_pop := false
 
 var _t := 0.0
 var _ready_time := 0.0
+var _siege_life_left := -1.0
 
 
 ## 在 pos 处生成一个掉落物。
@@ -29,6 +31,12 @@ static func spawn(parent: Node, pos: Vector2, it: ItemData, n := 1, pop := true)
 
 
 func _ready() -> void:
+	add_to_group("world_item")
+	var siege := SiegeDirector.current
+	if is_instance_valid(siege):
+		var battle := siege.level()
+		if is_instance_valid(battle) and battle.is_ancestor_of(self):
+			_siege_life_left = SIEGE_DROP_LIFETIME
 	if item:
 		sprite.texture = item.icon
 	_t = randf() * 3.0
@@ -43,6 +51,11 @@ func _ready() -> void:
 
 
 func _process(delta: float) -> void:
+	if _siege_life_left >= 0.0 and not SiegeTools.paused():
+		_siege_life_left = maxf(0.0, _siege_life_left - delta)
+		if _siege_life_left <= 0.0:
+			queue_free()
+			return
 	_t += delta
 	_ready_time -= delta
 	sprite.offset.y = -8.0 + roundf(sin(_t * 4.0) * 1.0)

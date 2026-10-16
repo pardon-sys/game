@@ -19,6 +19,7 @@ var _font: Font
 ## 特色标签（tags 是现在显示的 id，测试用）
 var tag_box: VBoxContainer
 var tags: Array[String] = []
+var rotation_label: Label
 
 
 func _ready() -> void:
@@ -33,6 +34,10 @@ func _ready() -> void:
 	tag_box.position = Vector2(MAP.position.x, MAP.end.y + 4.0)
 	tag_box.add_theme_constant_override("separation", 1)
 	add_child(tag_box)
+	rotation_label = Label.new()
+	rotation_label.position = Vector2(MAP.position.x, MAP.end.y + 68)
+	rotation_label.add_theme_font_size_override("font_size", 8)
+	add_child(rotation_label)
 
 
 func _process(_delta: float) -> void:
@@ -41,6 +46,9 @@ func _process(_delta: float) -> void:
 	var now: Array[String] = []
 	if director and director.features and director.state == "fight":
 		now = director.features.active.duplicate()
+	rotation_label.visible = director != null and director.features != null and director.features.rotating
+	if rotation_label.visible:
+		rotation_label.text = "特色轮换：%d 秒" % ceili(director.features.rotation_left)
 	if now != tags:
 		_build_tags(now)
 
@@ -87,6 +95,9 @@ func status_text() -> String:
 	match director.state:
 		"prep": return "第 %d/%d 波 · 准备 %d 秒" % [director.wave, SiegeDirector.total_waves(), ceili(director.prep_left)]
 		"fight":
+			if director.reinforcements.active:
+				var r := director.reinforcements
+				return "终战 %d/800 · ×%.1f%s" % [r.alive_count(),r.multiplier()," · 升档%d秒" % ceili(45.0-fmod(r.elapsed,45.0)) if r.tier()<4 else " · 最高强度"]
 			if director.remaining() > 0 and director.boss_alive() and director._queue.is_empty():
 				return "第 %d/%d 波 · 打倒小 Boss 才进下一波" % [director.wave, SiegeDirector.total_waves()]
 			if director.next_left >= 0.0:
@@ -130,6 +141,12 @@ func _draw_view() -> void:
 	_draw_map()
 	_draw_alerts()
 	_draw_spells()
+	if director.wave == 12 and director.state == "fight":
+		for b in get_tree().get_nodes_in_group("fortress"):
+			if not SiegeTools.alive(b): continue
+			var names: Array = b.mechanisms.jobs.map(func(j): return str(FortressMechanisms.NAMES[j["kind"]]))
+			_text(Vector2(240,39)," ＋ ".join(names),GOLD,8)
+			if b.empowered: _text(Vector2(240,49),"劫塔装填：下轮四连",RED,8)
 
 
 const SPELL_COLORS := {"ice_rain": Color(0.6, 0.85, 1.0), "barrier": Color(0.75, 0.9, 1.0), "snow": Color(0.9, 0.97, 1.0),
@@ -189,6 +206,10 @@ func _draw_map() -> void:
 	for s in get_tree().get_nodes_in_group("siege_enemy_site"):
 		if s.has_method("is_building") and s.call("is_building"):
 			view.draw_arc(to_map((s as Node2D).global_position), 3.5, 0.0, TAU, 12, Color(0.9, 0.4, 1.0, blink), 1.0)
+	for b in get_tree().get_nodes_in_group("fortress"):
+		if SiegeTools.alive(b):
+			var footprint: Rect2=b.footprint()
+			view.draw_rect(Rect2(to_map(footprint.position),to_map(footprint.end)-to_map(footprint.position)),Color(GOLD,0.6))
 	for c in [director.pink, director.blue]:
 		if c and is_instance_valid(c):
 			view.draw_circle(to_map(c.global_position), 2.0, Color(1, 0.6, 0.85) if c.character_id == "pink" else Color(0.6, 0.8, 1.0))

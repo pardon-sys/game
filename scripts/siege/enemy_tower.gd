@@ -20,7 +20,8 @@ const CHARGE := 0.5
 ## 每种塔的颜色（光照、范围、蓄力光）
 const COLORS := {"vine_pull": Color(0.5, 0.95, 0.45), "tailor": Color(1, 0.6, 0.85), "glue": Color(0.8, 0.95, 0.4), "net": Color(0.95, 0.9, 0.75),
 	"silence": Color(0.75, 0.45, 1.0), "portal": Color(0.9, 0.4, 1.0), "windmill": Color(0.85, 0.95, 1.0), "totem": Color(1, 0.7, 0.3),
-	"thigh_tower": Color(0.8, 0.55, 1.0), "sole_tower": Color(1, 0.85, 0.55)}
+	"thigh_tower": Color(0.8, 0.55, 1.0), "sole_tower": Color(1, 0.85, 0.55),
+	"airdrop": Color(0.45, 0.85, 1.0), "brush_battery": Color(1.0, 0.65, 0.75), "resonance": Color(1.0, 0.8, 0.35)}
 static var _shake_t := 0.0
 
 static var _data := {}
@@ -43,6 +44,12 @@ var _hit_t := 0.0
 var _anim := 0.0
 var _charging := false
 var _blades: Node2D
+var _tools: Array[WeakRef] = []
+var _boosted: Array[WeakRef] = []
+var _aura_left := 0.0
+var _command_left := 0.0
+var cooperation := {}
+var _co_before := 0.0
 
 
 ## 受击范围（整个塔身都能打到；转给塔本身）。
@@ -67,7 +74,7 @@ static func info(k: String) -> Dictionary:
 
 
 static func kinds() -> Array:
-	return ["vine_pull", "tailor", "glue", "net", "silence", "portal", "windmill", "totem", "thigh_tower", "sole_tower"]
+	return ["vine_pull", "tailor", "glue", "net", "silence", "portal", "windmill", "totem", "thigh_tower", "sole_tower", "airdrop", "brush_battery", "resonance"]
 
 
 func p(key: String, default: Variant = 0.0) -> Variant:
@@ -118,13 +125,18 @@ func _setup() -> void:
 	var hs := CollisionShape2D.new()
 	var hr := RectangleShape2D.new()
 	hr.size = Vector2(22, 36)
+	if kind in ["airdrop", "brush_battery", "resonance"]:
+		hr.size = Vector2(30, 46)
 	hs.shape = hr
 	hs.position = Vector2(0, -18)
+	if kind in ["airdrop", "brush_battery", "resonance"]:
+		hs.position.y = -22
 	hp_body.add_child(hs)
 	add_child(hp_body)
 	# 漂浮在塔周围的粒子
 	var pk: String = {"vine_pull": "leaf", "tailor": "thread", "glue": "bubble", "net": "thread", "silence": "spark", "portal": "ember",
-		"windmill": "feather", "totem": "note", "thigh_tower": "heart", "sole_tower": "bristle"}.get(kind, "ember")
+		"windmill": "feather", "totem": "note", "thigh_tower": "heart", "sole_tower": "bristle",
+		"airdrop": "thread", "brush_battery": "bristle", "resonance": "note"}.get(kind, "ember")
 	_float = Fx.emitter(self, pk, 6, 2.0, {"offset": Vector2(0, -20), "dir": Vector2.UP, "spread": 180.0, "speed": [4.0, 12.0],
 		"gravity": Vector2(0, -6), "color": col, "z": 3, "extents": Vector2(14, 12)})
 	_float.emitting = true
@@ -143,6 +155,7 @@ func _setup() -> void:
 
 
 func _on_died() -> void:
+	_clear_tools()
 	if director:
 		director.add_crystals(int(p("reward", 8)), global_position)
 	if site and is_instance_valid(site) and site.has_method("tower_gone"):
@@ -196,6 +209,7 @@ class Blades extends Node2D:
 
 
 func _exit_tree() -> void:
+	_clear_tools()
 	if kind == "totem":
 		_set_totem(false)
 	_release_drag()
@@ -214,6 +228,10 @@ func _alive(c: PlayableCharacter) -> bool:
 
 
 func _tick(delta: float) -> void:
+	if SiegeTools.paused():
+		return
+	if not cooperation.is_empty() and not cooperation_valid(cooperation):
+		_cancel_cooperation()
 	_anim += delta
 	_hit_t = maxf(0.0, _hit_t - delta)
 	if _spr:
@@ -226,7 +244,15 @@ func _tick(delta: float) -> void:
 		_light.visible = director.on_screen(global_position, 80.0)
 	if kind == "vine_pull":
 		_drag_tick(delta)
-	_t -= delta
+	_command_left = maxf(0.0, _command_left - delta)
+	if kind == "resonance":
+		_aura_left -= delta
+		if _aura_left <= 0.0:
+			_aura_left = 0.25
+			EnemyTowerTools.aura(self)
+	var clock_delta := delta / (0.65 if EnemyTowerTools.bell_at(self) else 1.0)
+	_t -= clock_delta
+	_co_before = maxf(0.0, _co_before - clock_delta)
 	# 发动前蓄力：光变亮、塔身抖、粒子聚拢
 	if _t <= CHARGE and _t > 0.0 and not _charging:
 		_charging = true
@@ -261,8 +287,73 @@ func _tick(delta: float) -> void:
 		"totem": _totem()
 		"thigh_tower": _thigh()
 		"sole_tower": _sole()
+		"airdrop", "brush_battery", "resonance": EnemyTowerTools.attack(self)
 	if boosted:
 		power = 1.0
+	cooperation = {}
+
+
+## 联动与 Boss 都催动同一发射时钟；一次性上下文随发射消费。
+func command_fire(context: Dictionary = {}) -> bool:
+	var supported := kind in ["airdrop", "brush_battery", "resonance"] or (not context.is_empty() and kind in ["glue", "windmill"])
+	if _command_left > 0.0 or not supported or not is_alive():
+		return false
+	_command_left = 2.0
+	_co_before = _t
+	cooperation = context
+	_t = minf(_t, 0.12)
+	return true
+
+
+static func cooperation_valid(context: Dictionary) -> bool:
+	if context.is_empty():
+		return true
+	var owner: Variant = context.get("owner")
+	return owner is WeakRef and is_instance_valid(owner.get_ref()) and owner.get_ref().sources_alive()
+
+
+func cooperation_target() -> PlayableCharacter:
+	var ref: Variant = cooperation.get("focus")
+	var c: Variant = ref.get_ref() if ref is WeakRef else null
+	return c as PlayableCharacter if SiegeTools.alive(c) else null
+
+
+func _cancel_cooperation() -> void:
+	if not cooperation.is_empty():
+		_t = maxf(_t, _co_before)
+		cooperation = {}
+		_charging = false
+		if _light:
+			_light.energy = 0.7
+
+
+func cancel_cooperation(owner: Node) -> void:
+	var ref: Variant = cooperation.get("owner")
+	if ref is WeakRef and ref.get_ref() == owner:
+		_cancel_cooperation()
+
+
+func register_tools(n: Node) -> void:
+	_tools = _tools.filter(func(ref): return is_instance_valid(ref.get_ref()))
+	_tools.append(weakref(n))
+
+
+func track_boost(n: Actor) -> void:
+	_boosted = _boosted.filter(func(ref): return is_instance_valid(ref.get_ref()))
+	if not _boosted.any(func(ref): return ref.get_ref() == n):
+		_boosted.append(weakref(n))
+
+
+func _clear_tools() -> void:
+	for ref in _tools:
+		var n: Variant = ref.get_ref()
+		if is_instance_valid(n):
+			if n.has_method("_end"):
+				n.call("_end")
+			n.queue_free()
+	_tools.clear()
+	if kind == "resonance" and is_inside_tree():
+		EnemyTowerTools.clear_aura(self)
 
 
 ## 地上的范围（按种类）+ 受伤时的血条。
@@ -307,6 +398,19 @@ func _draw() -> void:
 		"totem":
 			draw_circle(Vector2.ZERO, r, Color.from_hsv(fmod(_anim * 0.2, 1.0), 0.5, 1.0, 0.06))
 			draw_arc(Vector2.ZERO, r, 0, TAU, 48, Color.from_hsv(fmod(_anim * 0.2, 1.0), 0.6, 1.0, 0.3), 1.5)
+		"resonance":
+			for i in 3:
+				var rr := fmod(_anim * 80 + i * 100, r)
+				draw_arc(Vector2.ZERO, rr, 0, TAU, 48, Color(col.r, col.g, col.b, 0.3 * (1.0 - rr / r)), 1.5)
+		"airdrop":
+			for i in 4:
+				var a4 := _anim + i * PI / 2
+				var pt := Vector2.from_angle(a4) * 32
+				draw_line(pt, pt + Vector2(0, 10), Color(col.r, col.g, col.b, 0.5), 2)
+		"brush_battery":
+			for i in 3:
+				var pt := Vector2((i - 1) * 12, -8 - fmod(_anim * 18 + i * 7, 18))
+				draw_line(pt, pt + Vector2(0, 7), Color(col.r, col.g, col.b, 0.5), 1.5)
 		_:
 			if r > 0.0 and r < 400.0:
 				draw_arc(Vector2.ZERO, r, 0, TAU, 48, Color(col.r, col.g, col.b, 0.12 + 0.08 * pulse), 1.0)
@@ -438,10 +542,12 @@ func _tailor() -> void:
 
 # ------------------------------------------------------------------ 黏胶喷泉
 func _glue() -> void:
-	var c := pink()
+	var c := cooperation_target() if not cooperation.is_empty() else pink()
 	var at := global_position + Vector2.from_angle(randf() * TAU) * randf_range(30.0, float(p("range", 140.0)))
 	if _in_range(c, float(p("range", 140.0)) + 40.0):
 		at = c.global_position + Vector2(randf_range(-10, 10), randf_range(-6, 6))
+	if cooperation.has("at"):
+		at = cooperation["at"]
 	# 喷射：弧形黏液滴飞过去，落地成水洼
 	var from := global_position + Vector2(0, -28)
 	for i in 6:
@@ -459,9 +565,10 @@ func _glue() -> void:
 		tw.tween_callback(dot.queue_free)
 	Fx.burst(get_parent(), from, "goo", 8, 40.0, 0.5, Vector2(0, 80), Color(0.85, 1.0, 0.45))
 	var wr: WeakRef = weakref(get_parent())
+	var command := cooperation.duplicate()
 	get_tree().create_timer(0.5, false).timeout.connect(func():
 		var par := wr.get_ref() as Node
-		if par:
+		if par and cooperation_valid(command):
 			GluePuddle.spawn(par, at, GLUE_TIME)
 			Fx.burst(par, at, "goo", 10, 40.0, 0.5, Vector2(0, 60), Color(0.85, 1.0, 0.45)))
 	Audio.play("puddle", -6.0, 0.1)
@@ -550,7 +657,7 @@ func _portal() -> void:
 
 # ------------------------------------------------------------------ 强风风车
 func _windmill() -> void:
-	var c := pink()
+	var c := cooperation_target() if not cooperation.is_empty() else pink()
 	if not _in_range(c, float(p("range", 170.0))):
 		return
 	var dir := global_position.direction_to(c.global_position)

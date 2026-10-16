@@ -44,7 +44,8 @@ static func cast_with(caster: Node2D, r: float, time: float, t := 3, at: Variant
 			continue
 		# 大型 Boss：按本体中心（aim_point）和身体半径（meta hit_radius）算；会冻结的（freeze）冻住，其它的僵直
 		var pt: Vector2 = a.call("aim_point") if a.has_method("aim_point") else a.global_position
-		if pt.distance_to(center) > r + StarBurst.BODY_ALLOWANCE + float(a.get_meta("body_radius", 0.0)):
+		var distance := FortressRules.distance(a,center) if a.has_method("attack_point") else pt.distance_to(center)
+		if distance > r + StarBurst.BODY_ALLOWANCE + float(a.get_meta("body_radius", 0.0)):
 			continue
 		if a.has_method("freeze"):
 			a.freeze(time)

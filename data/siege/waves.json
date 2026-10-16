@@ -8,6 +8,7 @@
 	"ability_rate": 3.0,
 	"start_crystals": 30,
 	"monsters": {
+		"carnival_fortress": "res://scenes/siege/monsters/carnival_fortress.tscn",
 		"slime": "res://scenes/actors/monsters/slime.tscn",
 		"rat": "res://scenes/actors/monsters/foot_rat.tscn",
 		"caterpillar": "res://scenes/actors/monsters/caterpillar.tscn",
@@ -30,6 +31,7 @@
 		"mini_tentacle": "res://scenes/actors/monsters/mini_tentacle.tscn",
 		"goblin_engineer": "res://scenes/siege/monsters/goblin_engineer.tscn",
 		"troll_general": "res://scenes/siege/monsters/troll_general.tscn",
+		"gale_bear": "res://scenes/siege/monsters/gale_bear.tscn",
 		"cart": "res://scenes/siege/monsters/siege_cart.tscn",
 		"hook": "res://scenes/siege/monsters/hook_climber.tscn",
 		"vine": "res://scenes/siege/monsters/bind_vine.tscn",
@@ -41,7 +43,8 @@
 		"thigh_spider": "res://scenes/siege/monsters/thigh_spider.tscn",
 		"hug_bear": "res://scenes/siege/monsters/hug_bear.tscn",
 		"suck_jelly": "res://scenes/siege/monsters/suck_jelly.tscn",
-		"twin_ghost": "res://scenes/siege/monsters/twin_ghost.tscn"
+		"twin_ghost": "res://scenes/siege/monsters/twin_ghost.tscn",
+		"puppet_master": "res://scenes/siege/monsters/puppet_master.tscn"
 	},
 	"waves": [
 		{
@@ -50,14 +53,14 @@
 			"groups": [
 				{
 					"monster": "slime",
-					"count": 72,
+					"count": 71,
 					"from": "bottom",
 					"interval": 0.7,
 					"delay": 0.0
 				},
 				{
 					"monster": "rat",
-					"count": 48,
+					"count": 46,
 					"from": "bottom",
 					"interval": 0.8,
 					"delay": 6
@@ -110,6 +113,13 @@
 					"from": "hole",
 					"interval": 12,
 					"delay": 8
+				},
+				{
+					"formation": "sticky_pincer",
+					"count": 1,
+					"from": "bottom",
+					"interval": 1.0,
+					"delay": 12.0
 				}
 			],
 			"enemy_towers": [
@@ -184,14 +194,14 @@
 				},
 				{
 					"monster": "hook",
-					"count": 24,
+					"count": 23,
 					"from": "bottom",
 					"interval": 2.0,
 					"delay": 8
 				},
 				{
 					"monster": "gecko",
-					"count": 60,
+					"count": 58,
 					"from": "right",
 					"interval": 0.6,
 					"delay": 12
@@ -265,6 +275,13 @@
 					"from": "bottom",
 					"interval": 1.5,
 					"delay": 8.0
+				},
+				{
+					"formation": "hook_relay",
+					"count": 1,
+					"from": "bottom",
+					"interval": 1.0,
+					"delay": 12.0
 				}
 			],
 			"hazards": [
@@ -318,7 +335,7 @@
 			"groups": [
 				{
 					"monster": "rat",
-					"count": 72,
+					"count": 70,
 					"from": "bottom",
 					"interval": 0.5,
 					"delay": 0.0
@@ -339,7 +356,7 @@
 				},
 				{
 					"monster": "slime",
-					"count": 60,
+					"count": 59,
 					"from": "left",
 					"interval": 0.5,
 					"delay": 16
@@ -420,6 +437,13 @@
 					"from": "bottom",
 					"interval": 1.0,
 					"delay": 22.0
+				},
+				{
+					"formation": "sticky_pincer",
+					"count": 1,
+					"from": "bottom",
+					"interval": 1.0,
+					"delay": 12.0
 				}
 			],
 			"hazards": [
@@ -444,9 +468,13 @@
 					"kind": "wall_vine"
 				}
 			],
+			"priority_enemy_towers": [
+				"airdrop"
+			],
 			"enemy_towers": [
 				"glue",
-				"windmill"
+				"windmill",
+				"airdrop"
 			],
 			"theater": "siege_fail_3",
 			"countdown": 15,
@@ -461,14 +489,14 @@
 			"groups": [
 				{
 					"monster": "caterpillar",
-					"count": 72,
+					"count": 70,
 					"from": "bottom",
 					"interval": 0.5,
 					"delay": 0.0
 				},
 				{
 					"monster": "vine",
-					"count": 36,
+					"count": 35,
 					"from": "hole",
 					"interval": 1.5,
 					"delay": 6
@@ -556,6 +584,13 @@
 					"from": "hole",
 					"interval": 0.8,
 					"delay": 4.0
+				},
+				{
+					"formation": "vine_pincer",
+					"count": 1,
+					"from": "bottom",
+					"interval": 1.0,
+					"delay": 12.0
 				}
 			],
 			"hazards": [
@@ -615,7 +650,8 @@
 			"enemy_towers": [
 				"vine_pull",
 				"tailor",
-				"glue"
+				"glue",
+				"airdrop"
 			],
 			"theater": "siege_fail_4",
 			"countdown": 15,
@@ -629,14 +665,14 @@
 			"groups": [
 				{
 					"monster": "slime",
-					"count": 108,
+					"count": 107,
 					"from": "bottom",
 					"interval": 0.3,
 					"delay": 0.0
 				},
 				{
 					"monster": "rat",
-					"count": 84,
+					"count": 82,
 					"from": "left",
 					"interval": 0.4,
 					"delay": 4
@@ -650,14 +686,14 @@
 				},
 				{
 					"monster": "hook",
-					"count": 30,
+					"count": 28,
 					"from": "bottom",
 					"interval": 1.5,
 					"delay": 10
 				},
 				{
 					"monster": "gecko",
-					"count": 60,
+					"count": 58,
 					"from": "hole",
 					"interval": 0.5,
 					"delay": 14
@@ -692,7 +728,7 @@
 				},
 				{
 					"monster": "hedgehog",
-					"count": 12,
+					"count": 8,
 					"from": "hole",
 					"interval": 0.75,
 					"delay": 10
@@ -713,7 +749,7 @@
 				},
 				{
 					"formation": "bat_airdrop",
-					"count": 4,
+					"count": 2,
 					"from": "left",
 					"interval": 7.199999999999999,
 					"delay": 8
@@ -727,7 +763,7 @@
 				},
 				{
 					"formation": "jelly_charge",
-					"count": 2,
+					"count": 1,
 					"from": "left",
 					"interval": 4.0,
 					"delay": 16
@@ -738,6 +774,69 @@
 					"from": "bottom",
 					"interval": 9.0,
 					"delay": 4.0
+				},
+				{
+					"formation": "hook_relay",
+					"count": 1,
+					"from": "bottom",
+					"interval": 1.0,
+					"delay": 12.0
+				},
+				{
+					"formation": "sticky_pincer",
+					"count": 1,
+					"from": "bottom",
+					"interval": 1.0,
+					"delay": 28.0
+				},
+				{
+					"monster": "slime",
+					"count": 3,
+					"from": "left",
+					"interval": 0.4,
+					"delay": 16
+				},
+				{
+					"monster": "rat",
+					"count": 2,
+					"from": "left",
+					"interval": 0.4,
+					"delay": 16
+				},
+				{
+					"formation": "magic_recoil",
+					"count": 1,
+					"from": "bottom",
+					"interval": 1.0,
+					"delay": 20.0
+				},
+				{
+					"formation": "glue_roll",
+					"count": 1,
+					"from": "bottom",
+					"interval": 1.0,
+					"delay": 28.0
+				},
+				{
+					"monster": "bat_swarm",
+					"count": 1,
+					"from": "left",
+					"interval": 0.4,
+					"delay": 8
+				},
+				{
+					"formation": "wind_transport",
+					"count": 1,
+					"from": "bottom",
+					"interval": 1.0,
+					"delay": 36.0
+				},
+				{
+					"formation": "drop_hook",
+					"count": 1,
+					"from": "bottom",
+					"interval": 1.0,
+					"delay": 44.0
 				}
 			],
 			"hazards": [
@@ -794,11 +893,16 @@
 					"kind": "wall_vine"
 				}
 			],
+			"priority_enemy_towers": [
+				"brush_battery"
+			],
 			"enemy_towers": [
 				"portal",
 				"vine_pull",
 				"windmill",
-				"glue"
+				"glue",
+				"airdrop",
+				"brush_battery"
 			],
 			"theater": "siege_fail_5",
 			"countdown": 15,
@@ -812,21 +916,21 @@
 			"groups": [
 				{
 					"monster": "shield_crab",
-					"count": 36,
+					"count": 31,
 					"from": "bottom",
 					"interval": 1.5,
 					"delay": 0.0
 				},
 				{
 					"monster": "hug_bear",
-					"count": 36,
+					"count": 33,
 					"from": "left",
 					"interval": 1.5,
 					"delay": 4
 				},
 				{
 					"monster": "hedgehog",
-					"count": 60,
+					"count": 55,
 					"from": "hole",
 					"interval": 0.6,
 					"delay": 6
@@ -889,7 +993,7 @@
 				},
 				{
 					"formation": "bubble_chain",
-					"count": 4,
+					"count": 3,
 					"from": "hole",
 					"interval": 8.4,
 					"delay": 10
@@ -907,6 +1011,41 @@
 					"from": "bottom",
 					"interval": 8.0,
 					"delay": 4.0
+				},
+				{
+					"formation": "escort_bear",
+					"count": 1,
+					"from": "bottom",
+					"interval": 1.0,
+					"delay": 12.0
+				},
+				{
+					"monster": "bubble_fish",
+					"count": 1,
+					"from": "hole",
+					"interval": 0.4,
+					"delay": 10
+				},
+				{
+					"monster": "caterpillar",
+					"count": 2,
+					"from": "hole",
+					"interval": 0.4,
+					"delay": 10
+				},
+				{
+					"formation": "bubble_roll",
+					"count": 1,
+					"from": "bottom",
+					"interval": 1.0,
+					"delay": 20.0
+				},
+				{
+					"monster": "gale_bear",
+					"count": 1,
+					"from": "bottom",
+					"interval": 1.0,
+					"delay": 16.0
 				}
 			],
 			"hazards": [
@@ -987,6 +1126,8 @@
 				"sole_tower",
 				"net",
 				"tailor",
+				"airdrop",
+				"brush_battery",
 				"windmill",
 				"windmill"
 			],
@@ -994,7 +1135,13 @@
 			"countdown": 15,
 			"features": [
 				"gale"
-			]
+			],
+			"boss_escort": {
+				"shield_crab": 3,
+				"hug_bear": 2,
+				"hedgehog": 3
+			},
+			"boss": "gale_bear"
 		},
 		{
 			"name": "暖炉与搬运小鬼",
@@ -1016,14 +1163,14 @@
 				},
 				{
 					"monster": "warm_slime",
-					"count": 36,
+					"count": 33,
 					"from": "left",
 					"interval": 1.5,
 					"delay": 8
 				},
 				{
 					"monster": "carrier",
-					"count": 18,
+					"count": 17,
 					"from": "right",
 					"interval": 4.0,
 					"delay": 10
@@ -1037,7 +1184,7 @@
 				},
 				{
 					"monster": "vine",
-					"count": 24,
+					"count": 23,
 					"from": "hole",
 					"interval": 2.0,
 					"delay": 18
@@ -1058,7 +1205,7 @@
 				},
 				{
 					"monster": "caterpillar",
-					"count": 12,
+					"count": 10,
 					"from": "hole",
 					"interval": 0.75,
 					"delay": 6
@@ -1107,7 +1254,7 @@
 				},
 				{
 					"formation": "engineer_escort",
-					"count": 5,
+					"count": 4,
 					"from": "bottom",
 					"interval": 7.0,
 					"delay": 4.0
@@ -1125,6 +1272,48 @@
 					"from": "bottom",
 					"interval": 2.0,
 					"delay": 10.0
+				},
+				{
+					"formation": "melt_delivery",
+					"count": 1,
+					"from": "bottom",
+					"interval": 1.0,
+					"delay": 12.0
+				},
+				{
+					"formation": "vine_pincer",
+					"count": 1,
+					"from": "bottom",
+					"interval": 1.0,
+					"delay": 28.0
+				},
+				{
+					"monster": "goblin_engineer",
+					"count": 2,
+					"from": "bottom",
+					"interval": 0.4,
+					"delay": 4.0
+				},
+				{
+					"monster": "slime",
+					"count": 3,
+					"from": "bottom",
+					"interval": 0.4,
+					"delay": 4.0
+				},
+				{
+					"formation": "shield_melt",
+					"count": 1,
+					"from": "bottom",
+					"interval": 1.0,
+					"delay": 20.0
+				},
+				{
+					"formation": "bell_repair",
+					"count": 1,
+					"from": "bottom",
+					"interval": 1.0,
+					"delay": 28.0
 				}
 			],
 			"hazards": [
@@ -1217,11 +1406,17 @@
 					"combo": "fog_tornado"
 				}
 			],
+			"priority_enemy_towers": [
+				"resonance"
+			],
 			"enemy_towers": [
 				"net",
 				"sole_tower",
 				"vine_pull",
 				"glue",
+				"airdrop",
+				"brush_battery",
+				"resonance",
 				"tailor",
 				"tailor"
 			],
@@ -1238,14 +1433,14 @@
 			"groups": [
 				{
 					"monster": "suck_jelly",
-					"count": 36,
+					"count": 35,
 					"from": "bottom",
 					"interval": 1.5,
 					"delay": 0.0
 				},
 				{
 					"monster": "thigh_spider",
-					"count": 48,
+					"count": 46,
 					"from": "right",
 					"interval": 1.0,
 					"delay": 4
@@ -1259,7 +1454,7 @@
 				},
 				{
 					"monster": "glove",
-					"count": 72,
+					"count": 70,
 					"from": "hole",
 					"interval": 0.5,
 					"delay": 8
@@ -1343,7 +1538,7 @@
 				},
 				{
 					"formation": "engineer_escort",
-					"count": 6,
+					"count": 5,
 					"from": "bottom",
 					"interval": 6.0,
 					"delay": 4.0
@@ -1354,6 +1549,48 @@
 					"from": "bottom",
 					"interval": 6.0,
 					"delay": 4.0
+				},
+				{
+					"formation": "jelly_guard",
+					"count": 1,
+					"from": "bottom",
+					"interval": 1.0,
+					"delay": 12.0
+				},
+				{
+					"formation": "web_battery",
+					"count": 1,
+					"from": "bottom",
+					"interval": 1.0,
+					"delay": 20.0
+				},
+				{
+					"monster": "goblin_engineer",
+					"count": 2,
+					"from": "bottom",
+					"interval": 0.4,
+					"delay": 4.0
+				},
+				{
+					"monster": "shield_crab",
+					"count": 2,
+					"from": "bottom",
+					"interval": 0.4,
+					"delay": 4.0
+				},
+				{
+					"monster": "slime",
+					"count": 3,
+					"from": "bottom",
+					"interval": 0.4,
+					"delay": 4.0
+				},
+				{
+					"formation": "bell_repair",
+					"count": 1,
+					"from": "bottom",
+					"interval": 1.0,
+					"delay": 28.0
 				}
 			],
 			"hazards": [
@@ -1433,7 +1670,10 @@
 			"enemy_towers": [
 				"silence",
 				"thigh_tower",
-				"tailor"
+				"tailor",
+				"airdrop",
+				"brush_battery",
+				"resonance"
 			],
 			"theater": "siege_fail_8",
 			"countdown": 15,
@@ -1455,42 +1695,42 @@
 				},
 				{
 					"monster": "thigh_spider",
-					"count": 60,
+					"count": 56,
 					"from": "hole",
 					"interval": 0.75,
 					"delay": 4
 				},
 				{
 					"monster": "twin_ghost",
-					"count": 18,
+					"count": 17,
 					"from": "bottom",
 					"interval": 4.0,
 					"delay": 6
 				},
 				{
 					"monster": "hook",
-					"count": 36,
+					"count": 34,
 					"from": "left",
 					"interval": 1.25,
 					"delay": 8
 				},
 				{
 					"monster": "hug_bear",
-					"count": 36,
+					"count": 35,
 					"from": "right",
 					"interval": 1.25,
 					"delay": 10
 				},
 				{
 					"monster": "warm_slime",
-					"count": 36,
+					"count": 35,
 					"from": "hole",
 					"interval": 1.25,
 					"delay": 14
 				},
 				{
 					"monster": "vine",
-					"count": 36,
+					"count": 34,
 					"from": "bottom",
 					"interval": 1.5,
 					"delay": 16
@@ -1546,21 +1786,21 @@
 				},
 				{
 					"formation": "cart_escort",
-					"count": 4,
+					"count": 2,
 					"from": "bottom",
 					"interval": 6.0,
 					"delay": 8
 				},
 				{
 					"formation": "hedgehog_roll",
-					"count": 4,
+					"count": 3,
 					"from": "hole",
 					"interval": 6.0,
 					"delay": 10
 				},
 				{
 					"formation": "bubble_chain",
-					"count": 4,
+					"count": 3,
 					"from": "hole",
 					"interval": 6.0,
 					"delay": 12
@@ -1574,17 +1814,143 @@
 				},
 				{
 					"formation": "engineer_escort",
-					"count": 6,
+					"count": 5,
 					"from": "bottom",
 					"interval": 5.0,
 					"delay": 4.0
 				},
 				{
 					"monster": "ghost",
-					"count": 30,
+					"count": 24,
 					"from": "hole",
 					"interval": 0.8,
 					"delay": 4.0
+				},
+				{
+					"monster": "cart",
+					"count": 1,
+					"from": "bottom",
+					"interval": 0.4,
+					"delay": 8
+				},
+				{
+					"formation": "escort_bear",
+					"count": 1,
+					"from": "bottom",
+					"interval": 1.0,
+					"delay": 12.0
+				},
+				{
+					"formation": "hook_haunt",
+					"count": 1,
+					"from": "bottom",
+					"interval": 1.0,
+					"delay": 20.0
+				},
+				{
+					"monster": "bubble_fish",
+					"count": 1,
+					"from": "hole",
+					"interval": 0.4,
+					"delay": 12
+				},
+				{
+					"monster": "caterpillar",
+					"count": 2,
+					"from": "hole",
+					"interval": 0.4,
+					"delay": 12
+				},
+				{
+					"monster": "hedgehog",
+					"count": 1,
+					"from": "hole",
+					"interval": 0.4,
+					"delay": 10
+				},
+				{
+					"formation": "bubble_roll",
+					"count": 1,
+					"from": "bottom",
+					"interval": 1.0,
+					"delay": 28.0
+				},
+				{
+					"monster": "cart",
+					"count": 1,
+					"from": "bottom",
+					"interval": 0.4,
+					"delay": 8
+				},
+				{
+					"monster": "shield_crab",
+					"count": 2,
+					"from": "bottom",
+					"interval": 0.4,
+					"delay": 8
+				},
+				{
+					"formation": "shield_melt",
+					"count": 1,
+					"from": "bottom",
+					"interval": 1.0,
+					"delay": 36.0
+				},
+				{
+					"formation": "twin_relay",
+					"count": 1,
+					"from": "bottom",
+					"interval": 1.0,
+					"delay": 44.0
+				},
+				{
+					"formation": "drop_hook",
+					"count": 1,
+					"from": "bottom",
+					"interval": 1.0,
+					"delay": 52.0
+				},
+				{
+					"formation": "web_battery",
+					"count": 1,
+					"from": "bottom",
+					"interval": 1.0,
+					"delay": 60.0
+				},
+				{
+					"monster": "goblin_engineer",
+					"count": 2,
+					"from": "bottom",
+					"interval": 0.4,
+					"delay": 4.0
+				},
+				{
+					"monster": "shield_crab",
+					"count": 2,
+					"from": "bottom",
+					"interval": 0.4,
+					"delay": 4.0
+				},
+				{
+					"monster": "slime",
+					"count": 3,
+					"from": "bottom",
+					"interval": 0.4,
+					"delay": 4.0
+				},
+				{
+					"formation": "bell_repair",
+					"count": 1,
+					"from": "bottom",
+					"interval": 1.0,
+					"delay": 68.0
+				},
+				{
+					"monster": "puppet_master",
+					"count": 1,
+					"from": "bottom",
+					"interval": 1.0,
+					"delay": 16.0
 				}
 			],
 			"hazards": [
@@ -1689,14 +2055,23 @@
 				"totem",
 				"thigh_tower",
 				"silence",
-				"portal"
+				"portal",
+				"airdrop",
+				"brush_battery",
+				"resonance"
 			],
 			"theater": "siege_fail_9",
 			"countdown": 15,
 			"features": [
 				"feathers",
 				"fog"
-			]
+			],
+			"boss_escort": {
+				"vine": 2,
+				"ghost": 2,
+				"thigh_spider": 2
+			},
+			"boss": "puppet_master"
 		},
 		{
 			"name": "大混战：全部一起上",
@@ -1725,7 +2100,7 @@
 				},
 				{
 					"monster": "hook",
-					"count": 48,
+					"count": 46,
 					"from": "bottom",
 					"interval": 1.0,
 					"delay": 6
@@ -1739,7 +2114,7 @@
 				},
 				{
 					"monster": "shield_crab",
-					"count": 36,
+					"count": 32,
 					"from": "bottom",
 					"interval": 1.5,
 					"delay": 10
@@ -1760,35 +2135,35 @@
 				},
 				{
 					"monster": "warm_slime",
-					"count": 36,
+					"count": 35,
 					"from": "hole",
 					"interval": 1.25,
 					"delay": 16
 				},
 				{
 					"monster": "thigh_spider",
-					"count": 48,
+					"count": 46,
 					"from": "bottom",
 					"interval": 1.0,
 					"delay": 18
 				},
 				{
 					"monster": "hug_bear",
-					"count": 36,
+					"count": 35,
 					"from": "left",
 					"interval": 1.25,
 					"delay": 20
 				},
 				{
 					"monster": "suck_jelly",
-					"count": 36,
+					"count": 35,
 					"from": "right",
 					"interval": 1.25,
 					"delay": 22
 				},
 				{
 					"monster": "twin_ghost",
-					"count": 24,
+					"count": 23,
 					"from": "bottom",
 					"interval": 3.0,
 					"delay": 24
@@ -1837,28 +2212,28 @@
 				},
 				{
 					"monster": "bubble_fish",
-					"count": 16,
+					"count": 14,
 					"from": "hole",
 					"interval": 0.5,
 					"delay": 10
 				},
 				{
 					"monster": "glove",
-					"count": 16,
+					"count": 14,
 					"from": "hole",
 					"interval": 0.5,
 					"delay": 12
 				},
 				{
 					"monster": "ghost",
-					"count": 16,
+					"count": 12,
 					"from": "hole",
 					"interval": 0.5,
 					"delay": 14
 				},
 				{
 					"monster": "mana_jelly",
-					"count": 8,
+					"count": 7,
 					"from": "left",
 					"interval": 1.5,
 					"delay": 16
@@ -1899,13 +2274,6 @@
 					"delay": 16
 				},
 				{
-					"formation": "strip_shoes",
-					"count": 2,
-					"from": "hole",
-					"interval": 5.3999999999999995,
-					"delay": 19
-				},
-				{
 					"formation": "suction_chain",
 					"count": 2,
 					"from": "hole",
@@ -1935,7 +2303,7 @@
 				},
 				{
 					"formation": "hedgehog_roll",
-					"count": 2,
+					"count": 1,
 					"from": "hole",
 					"interval": 5.3999999999999995,
 					"delay": 34
@@ -1949,7 +2317,7 @@
 				},
 				{
 					"formation": "engineer_escort",
-					"count": 7,
+					"count": 6,
 					"from": "bottom",
 					"interval": 4.0,
 					"delay": 4.0
@@ -1974,6 +2342,132 @@
 					"from": "bottom",
 					"interval": 1.5,
 					"delay": 8.0
+				},
+				{
+					"formation": "escort_bear",
+					"count": 1,
+					"from": "bottom",
+					"interval": 1.0,
+					"delay": 12.0
+				},
+				{
+					"formation": "jelly_guard",
+					"count": 1,
+					"from": "bottom",
+					"interval": 1.0,
+					"delay": 28.0
+				},
+				{
+					"formation": "hook_haunt",
+					"count": 1,
+					"from": "bottom",
+					"interval": 1.0,
+					"delay": 20.0
+				},
+				{
+					"monster": "rat",
+					"count": 4,
+					"from": "hole",
+					"interval": 0.4,
+					"delay": 19
+				},
+				{
+					"monster": "squirrel",
+					"count": 2,
+					"from": "hole",
+					"interval": 0.4,
+					"delay": 19
+				},
+				{
+					"monster": "rat",
+					"count": 4,
+					"from": "hole",
+					"interval": 0.4,
+					"delay": 19
+				},
+				{
+					"monster": "squirrel",
+					"count": 2,
+					"from": "hole",
+					"interval": 0.4,
+					"delay": 19
+				},
+				{
+					"formation": "bubble_roll",
+					"count": 1,
+					"from": "bottom",
+					"interval": 1.0,
+					"delay": 28.0
+				},
+				{
+					"formation": "shield_melt",
+					"count": 1,
+					"from": "bottom",
+					"interval": 1.0,
+					"delay": 36.0
+				},
+				{
+					"monster": "hedgehog",
+					"count": 1,
+					"from": "hole",
+					"interval": 0.4,
+					"delay": 34
+				},
+				{
+					"formation": "magic_recoil",
+					"count": 1,
+					"from": "bottom",
+					"interval": 1.0,
+					"delay": 44.0
+				},
+				{
+					"formation": "twin_relay",
+					"count": 1,
+					"from": "bottom",
+					"interval": 1.0,
+					"delay": 52.0
+				},
+				{
+					"formation": "drop_hook",
+					"count": 1,
+					"from": "bottom",
+					"interval": 1.0,
+					"delay": 60.0
+				},
+				{
+					"formation": "web_battery",
+					"count": 1,
+					"from": "bottom",
+					"interval": 1.0,
+					"delay": 68.0
+				},
+				{
+					"monster": "goblin_engineer",
+					"count": 2,
+					"from": "bottom",
+					"interval": 0.4,
+					"delay": 4.0
+				},
+				{
+					"monster": "shield_crab",
+					"count": 2,
+					"from": "bottom",
+					"interval": 0.4,
+					"delay": 4.0
+				},
+				{
+					"monster": "slime",
+					"count": 3,
+					"from": "bottom",
+					"interval": 0.4,
+					"delay": 4.0
+				},
+				{
+					"formation": "bell_repair",
+					"count": 1,
+					"from": "bottom",
+					"interval": 1.0,
+					"delay": 76.0
 				}
 			],
 			"hazards": [
@@ -2123,6 +2617,9 @@
 				"net",
 				"vine_pull",
 				"tailor",
+				"airdrop",
+				"brush_battery",
+				"resonance",
 				"totem",
 				"totem"
 			],
@@ -2140,7 +2637,7 @@
 			"groups": [
 				{
 					"monster": "shield_crab",
-					"count": 48,
+					"count": 46,
 					"from": "bottom",
 					"interval": 1.0,
 					"delay": 0.0
@@ -2154,35 +2651,35 @@
 				},
 				{
 					"monster": "bat_swarm",
-					"count": 60,
+					"count": 59,
 					"from": "left",
 					"interval": 0.75,
 					"delay": 6
 				},
 				{
 					"monster": "hook",
-					"count": 48,
+					"count": 45,
 					"from": "right",
 					"interval": 1.0,
 					"delay": 8
 				},
 				{
 					"monster": "gecko",
-					"count": 108,
+					"count": 106,
 					"from": "hole",
 					"interval": 0.3,
 					"delay": 10
 				},
 				{
 					"monster": "hug_bear",
-					"count": 48,
+					"count": 45,
 					"from": "bottom",
 					"interval": 1.0,
 					"delay": 12
 				},
 				{
 					"monster": "thigh_spider",
-					"count": 60,
+					"count": 58,
 					"from": "right",
 					"interval": 0.75,
 					"delay": 14
@@ -2210,7 +2707,7 @@
 				},
 				{
 					"monster": "ghost",
-					"count": 20,
+					"count": 18,
 					"from": "hole",
 					"interval": 0.5,
 					"delay": 6
@@ -2238,7 +2735,7 @@
 				},
 				{
 					"monster": "mana_jelly",
-					"count": 8,
+					"count": 7,
 					"from": "left",
 					"interval": 1.5,
 					"delay": 14
@@ -2279,13 +2776,6 @@
 					"delay": 13.0
 				},
 				{
-					"formation": "strip_shoes",
-					"count": 2,
-					"from": "hole",
-					"interval": 4.8,
-					"delay": 15.5
-				},
-				{
 					"formation": "suction_chain",
 					"count": 2,
 					"from": "hole",
@@ -2314,13 +2804,6 @@
 					"delay": 25.5
 				},
 				{
-					"formation": "hedgehog_roll",
-					"count": 2,
-					"from": "hole",
-					"interval": 4.8,
-					"delay": 28.0
-				},
-				{
 					"formation": "bat_airdrop",
 					"count": 2,
 					"from": "hole",
@@ -2329,7 +2812,7 @@
 				},
 				{
 					"formation": "engineer_escort",
-					"count": 7,
+					"count": 6,
 					"from": "bottom",
 					"interval": 4.0,
 					"delay": 4.0
@@ -2350,7 +2833,7 @@
 				},
 				{
 					"monster": "bubble_fish",
-					"count": 30,
+					"count": 28,
 					"from": "hole",
 					"interval": 1.0,
 					"delay": 4.0
@@ -2361,6 +2844,132 @@
 					"from": "hole",
 					"interval": 12,
 					"delay": 8
+				},
+				{
+					"formation": "hook_relay",
+					"count": 1,
+					"from": "bottom",
+					"interval": 1.0,
+					"delay": 12.0
+				},
+				{
+					"formation": "escort_bear",
+					"count": 1,
+					"from": "bottom",
+					"interval": 1.0,
+					"delay": 28.0
+				},
+				{
+					"formation": "hook_haunt",
+					"count": 1,
+					"from": "bottom",
+					"interval": 1.0,
+					"delay": 20.0
+				},
+				{
+					"monster": "rat",
+					"count": 4,
+					"from": "hole",
+					"interval": 0.4,
+					"delay": 15.5
+				},
+				{
+					"monster": "squirrel",
+					"count": 2,
+					"from": "hole",
+					"interval": 0.4,
+					"delay": 15.5
+				},
+				{
+					"monster": "rat",
+					"count": 4,
+					"from": "hole",
+					"interval": 0.4,
+					"delay": 15.5
+				},
+				{
+					"monster": "squirrel",
+					"count": 2,
+					"from": "hole",
+					"interval": 0.4,
+					"delay": 15.5
+				},
+				{
+					"formation": "bubble_roll",
+					"count": 1,
+					"from": "bottom",
+					"interval": 1.0,
+					"delay": 28.0
+				},
+				{
+					"formation": "magic_recoil",
+					"count": 1,
+					"from": "bottom",
+					"interval": 1.0,
+					"delay": 36.0
+				},
+				{
+					"monster": "hedgehog",
+					"count": 2,
+					"from": "hole",
+					"interval": 0.4,
+					"delay": 28.0
+				},
+				{
+					"formation": "glue_roll",
+					"count": 1,
+					"from": "bottom",
+					"interval": 1.0,
+					"delay": 44.0
+				},
+				{
+					"formation": "wind_transport",
+					"count": 1,
+					"from": "bottom",
+					"interval": 1.0,
+					"delay": 52.0
+				},
+				{
+					"formation": "drop_hook",
+					"count": 1,
+					"from": "bottom",
+					"interval": 1.0,
+					"delay": 60.0
+				},
+				{
+					"formation": "web_battery",
+					"count": 1,
+					"from": "bottom",
+					"interval": 1.0,
+					"delay": 68.0
+				},
+				{
+					"monster": "goblin_engineer",
+					"count": 2,
+					"from": "bottom",
+					"interval": 0.4,
+					"delay": 4.0
+				},
+				{
+					"monster": "shield_crab",
+					"count": 2,
+					"from": "bottom",
+					"interval": 0.4,
+					"delay": 4.0
+				},
+				{
+					"monster": "slime",
+					"count": 3,
+					"from": "bottom",
+					"interval": 0.4,
+					"delay": 4.0
+				},
+				{
+					"formation": "bell_repair",
+					"count": 1,
+					"from": "bottom",
+					"interval": 1.0,
+					"delay": 76.0
 				}
 			],
 			"hazards": [
@@ -2547,6 +3156,9 @@
 				"net",
 				"totem",
 				"tailor",
+				"airdrop",
+				"brush_battery",
+				"resonance",
 				"windmill",
 				"windmill"
 			],
@@ -2585,7 +3197,7 @@
 				},
 				{
 					"monster": "hook",
-					"count": 60,
+					"count": 58,
 					"from": "bottom",
 					"interval": 0.8,
 					"delay": 6
@@ -2599,56 +3211,56 @@
 				},
 				{
 					"monster": "shield_crab",
-					"count": 48,
+					"count": 46,
 					"from": "bottom",
 					"interval": 1.25,
 					"delay": 10
 				},
 				{
 					"monster": "bat_swarm",
-					"count": 60,
+					"count": 59,
 					"from": "left",
 					"interval": 0.8,
 					"delay": 12
 				},
 				{
 					"monster": "carrier",
-					"count": 24,
+					"count": 23,
 					"from": "right",
 					"interval": 3.5,
 					"delay": 14
 				},
 				{
 					"monster": "warm_slime",
-					"count": 48,
+					"count": 45,
 					"from": "hole",
 					"interval": 1.0,
 					"delay": 16
 				},
 				{
 					"monster": "thigh_spider",
-					"count": 60,
+					"count": 58,
 					"from": "bottom",
 					"interval": 0.8,
 					"delay": 18
 				},
 				{
 					"monster": "hug_bear",
-					"count": 48,
+					"count": 46,
 					"from": "left",
 					"interval": 1.0,
 					"delay": 20
 				},
 				{
 					"monster": "suck_jelly",
-					"count": 48,
+					"count": 47,
 					"from": "right",
 					"interval": 1.0,
 					"delay": 22
 				},
 				{
 					"monster": "twin_ghost",
-					"count": 30,
+					"count": 29,
 					"from": "bottom",
 					"interval": 2.5,
 					"delay": 24
@@ -2697,28 +3309,28 @@
 				},
 				{
 					"monster": "bubble_fish",
-					"count": 20,
+					"count": 18,
 					"from": "hole",
 					"interval": 0.4,
 					"delay": 10
 				},
 				{
 					"monster": "glove",
-					"count": 20,
+					"count": 18,
 					"from": "hole",
 					"interval": 0.4,
 					"delay": 12
 				},
 				{
 					"monster": "ghost",
-					"count": 20,
+					"count": 16,
 					"from": "hole",
 					"interval": 0.4,
 					"delay": 14
 				},
 				{
 					"monster": "mana_jelly",
-					"count": 12,
+					"count": 11,
 					"from": "left",
 					"interval": 1.0,
 					"delay": 16
@@ -2766,13 +3378,6 @@
 					"delay": 13.0
 				},
 				{
-					"formation": "strip_shoes",
-					"count": 2,
-					"from": "hole",
-					"interval": 4.8,
-					"delay": 15.5
-				},
-				{
 					"formation": "suction_chain",
 					"count": 2,
 					"from": "hole",
@@ -2801,13 +3406,6 @@
 					"delay": 25.5
 				},
 				{
-					"formation": "hedgehog_roll",
-					"count": 2,
-					"from": "hole",
-					"interval": 4.8,
-					"delay": 28.0
-				},
-				{
 					"formation": "bat_airdrop",
 					"count": 2,
 					"from": "hole",
@@ -2816,10 +3414,157 @@
 				},
 				{
 					"formation": "engineer_escort",
-					"count": 8,
+					"count": 7,
 					"from": "bottom",
 					"interval": 4.0,
 					"delay": 4.0
+				},
+				{
+					"formation": "melt_delivery",
+					"count": 1,
+					"from": "bottom",
+					"interval": 1.0,
+					"delay": 12.0
+				},
+				{
+					"formation": "jelly_guard",
+					"count": 1,
+					"from": "bottom",
+					"interval": 1.0,
+					"delay": 28.0
+				},
+				{
+					"formation": "hook_haunt",
+					"count": 1,
+					"from": "bottom",
+					"interval": 1.0,
+					"delay": 20.0
+				},
+				{
+					"monster": "rat",
+					"count": 4,
+					"from": "hole",
+					"interval": 0.4,
+					"delay": 15.5
+				},
+				{
+					"monster": "squirrel",
+					"count": 2,
+					"from": "hole",
+					"interval": 0.4,
+					"delay": 15.5
+				},
+				{
+					"monster": "rat",
+					"count": 4,
+					"from": "hole",
+					"interval": 0.4,
+					"delay": 15.5
+				},
+				{
+					"monster": "squirrel",
+					"count": 2,
+					"from": "hole",
+					"interval": 0.4,
+					"delay": 15.5
+				},
+				{
+					"formation": "bubble_roll",
+					"count": 1,
+					"from": "bottom",
+					"interval": 1.0,
+					"delay": 28.0
+				},
+				{
+					"formation": "shield_melt",
+					"count": 1,
+					"from": "bottom",
+					"interval": 1.0,
+					"delay": 36.0
+				},
+				{
+					"formation": "magic_recoil",
+					"count": 1,
+					"from": "bottom",
+					"interval": 1.0,
+					"delay": 44.0
+				},
+				{
+					"formation": "twin_relay",
+					"count": 1,
+					"from": "bottom",
+					"interval": 1.0,
+					"delay": 52.0
+				},
+				{
+					"monster": "hedgehog",
+					"count": 2,
+					"from": "hole",
+					"interval": 0.4,
+					"delay": 28.0
+				},
+				{
+					"formation": "glue_roll",
+					"count": 1,
+					"from": "bottom",
+					"interval": 1.0,
+					"delay": 60.0
+				},
+				{
+					"formation": "wind_transport",
+					"count": 1,
+					"from": "bottom",
+					"interval": 1.0,
+					"delay": 68.0
+				},
+				{
+					"formation": "drop_hook",
+					"count": 1,
+					"from": "bottom",
+					"interval": 1.0,
+					"delay": 76.0
+				},
+				{
+					"formation": "web_battery",
+					"count": 1,
+					"from": "bottom",
+					"interval": 1.0,
+					"delay": 84.0
+				},
+				{
+					"monster": "goblin_engineer",
+					"count": 2,
+					"from": "bottom",
+					"interval": 0.4,
+					"delay": 4.0
+				},
+				{
+					"monster": "shield_crab",
+					"count": 2,
+					"from": "bottom",
+					"interval": 0.4,
+					"delay": 4.0
+				},
+				{
+					"monster": "slime",
+					"count": 3,
+					"from": "bottom",
+					"interval": 0.4,
+					"delay": 4.0
+				},
+				{
+					"formation": "bell_repair",
+					"count": 1,
+					"from": "bottom",
+					"interval": 1.0,
+					"delay": 92.0
+				},
+				{
+					"monster": "carnival_fortress",
+					"count": 1,
+					"from": "bottom",
+					"interval": 1.0,
+					"delay": 18.0
 				}
 			],
 			"hazards": [
@@ -2971,19 +3716,275 @@
 				"tailor",
 				"windmill",
 				"glue",
-				"totem",
-				"totem"
+				"airdrop",
+				"brush_battery",
+				"resonance"
 			],
 			"theater": "siege_fail_12",
 			"countdown": 15,
 			"features": [
-				"carnival",
-				"feathers",
-				"corps",
-				"raiders"
-			]
+				"carnival"
+			],
+			"feature_rotation": 30.0,
+			"boss": "carnival_fortress",
+			"fortress_config": "res://data/siege/fortress.json"
 		}
 	],
+	"feature_payloads": {
+		"bubbles": {
+			"groups": [
+				{
+					"monster": "bubble_fish",
+					"count": 30,
+					"from": "hole",
+					"interval": 1.0,
+					"delay": 4.0
+				},
+				{
+					"formation": "bubble_chain",
+					"count": 3,
+					"from": "hole",
+					"interval": 12,
+					"delay": 8
+				}
+			],
+			"hazards": [
+				{
+					"t": 6,
+					"kind": "bubbles"
+				},
+				{
+					"t": 16,
+					"kind": "bubbles"
+				},
+				{
+					"t": 26,
+					"kind": "bubbles"
+				},
+				{
+					"t": 36,
+					"kind": "bubbles"
+				},
+				{
+					"t": 46,
+					"kind": "bubbles"
+				},
+				{
+					"t": 56,
+					"kind": "bubbles"
+				},
+				{
+					"t": 66,
+					"kind": "bubbles"
+				},
+				{
+					"t": 76,
+					"kind": "bubbles"
+				},
+				{
+					"t": 86,
+					"kind": "bubbles"
+				},
+				{
+					"t": 96,
+					"kind": "bubbles"
+				}
+			],
+			"enemy_towers": []
+		},
+		"airdrop": {
+			"groups": [
+				{
+					"formation": "bat_airdrop",
+					"count": 3,
+					"from": "left",
+					"interval": 10,
+					"delay": 6
+				},
+				{
+					"formation": "gecko_ladder",
+					"count": 3,
+					"from": "bottom",
+					"interval": 14,
+					"delay": 10
+				},
+				{
+					"monster": "hook",
+					"count": 20,
+					"from": "bottom",
+					"interval": 1.5,
+					"delay": 8.0
+				}
+			],
+			"hazards": [],
+			"enemy_towers": []
+		},
+		"trolls": {
+			"groups": [
+				{
+					"monster": "troll",
+					"count": 8,
+					"from": "bottom",
+					"interval": 4.0,
+					"delay": 6.0
+				},
+				{
+					"formation": "troll_throw",
+					"count": 3,
+					"from": "bottom",
+					"interval": 12,
+					"delay": 10
+				}
+			],
+			"hazards": [],
+			"enemy_towers": []
+		},
+		"fog": {
+			"groups": [
+				{
+					"monster": "ghost",
+					"count": 30,
+					"from": "hole",
+					"interval": 0.8,
+					"delay": 4.0
+				}
+			],
+			"hazards": [
+				{
+					"t": 10,
+					"kind": "fog"
+				},
+				{
+					"t": 35,
+					"kind": "fog"
+				},
+				{
+					"t": 60,
+					"kind": "fog"
+				}
+			],
+			"enemy_towers": []
+		},
+		"corps": {
+			"groups": [],
+			"hazards": [],
+			"enemy_towers": []
+		},
+		"gale": {
+			"groups": [],
+			"hazards": [
+				{
+					"t": 12,
+					"kind": "tornado"
+				},
+				{
+					"t": 40,
+					"kind": "tornado"
+				},
+				{
+					"t": 68,
+					"kind": "tornado"
+				},
+				{
+					"t": 25,
+					"combo": "double_tornado"
+				},
+				{
+					"t": 55,
+					"combo": "double_tornado"
+				}
+			],
+			"enemy_towers": [
+				"windmill",
+				"windmill"
+			]
+		},
+		"equip": {
+			"groups": [
+				{
+					"monster": "vine",
+					"count": 12,
+					"from": "hole",
+					"interval": 2.0,
+					"delay": 6.0
+				}
+			],
+			"hazards": [],
+			"enemy_towers": [
+				"tailor",
+				"tailor"
+			]
+		},
+		"vines": {
+			"groups": [
+				{
+					"monster": "vine",
+					"count": 12,
+					"from": "bottom",
+					"interval": 2.0,
+					"delay": 10.0
+				}
+			],
+			"hazards": [
+				{
+					"t": 14,
+					"kind": "wall_vine"
+				},
+				{
+					"t": 22,
+					"kind": "sticky_net"
+				},
+				{
+					"t": 38,
+					"kind": "wall_vine"
+				},
+				{
+					"t": 46,
+					"kind": "sticky_net"
+				},
+				{
+					"t": 62,
+					"kind": "wall_vine"
+				},
+				{
+					"t": 70,
+					"kind": "sticky_net"
+				}
+			],
+			"enemy_towers": []
+		},
+		"engineers": {
+			"groups": [
+				{
+					"formation": "engineer_escort",
+					"count": 8,
+					"from": "bottom",
+					"interval": 4.0,
+					"delay": 4.0
+				}
+			],
+			"hazards": [],
+			"enemy_towers": []
+		},
+		"raiders": {
+			"groups": [],
+			"hazards": [],
+			"enemy_towers": []
+		},
+		"feathers": {
+			"groups": [],
+			"hazards": [],
+			"enemy_towers": []
+		},
+		"carnival": {
+			"groups": [],
+			"hazards": [],
+			"enemy_towers": [
+				"totem",
+				"totem"
+			]
+		}
+	},
 	"features": {
 		"bubbles": {
 			"name": "泡泡潮汐",

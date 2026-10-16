@@ -1,0 +1,24 @@
+{
+  "canvas": [
+    192,
+    160
+  ],
+  "body": [
+    128,
+    160
+  ],
+  "expanded": [
+    192,
+    160
+  ],
+  "layers": [
+    "tracks",
+    "platform",
+    "hull",
+    "plow",
+    "rockets",
+    "crane",
+    "arms"
+  ],
+  "pixel_scale": 2
+}

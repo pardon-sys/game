@@ -79,7 +79,7 @@ func _ready() -> void:
 	var pm := main.get_node("PauseMenu")
 	pm.toggle()
 	await _wait(0.3)
-	(pm.get_node("Root/Box/DevTraining") as Button).pressed.emit()
+	(pm.train_button as Button).pressed.emit()
 	await _wait(0.2)
 	pm._train_step("train_fatigue_up", 1, 2)
 	await _wait(0.3)

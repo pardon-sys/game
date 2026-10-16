@@ -20,6 +20,8 @@ static var _data := {}
 
 var spawn_func: Callable
 var monsters_func: Callable
+## 可选非怪物协作成员（攻防战敌塔）；旧关卡不设置时行为不变。
+var partners_func: Callable
 ## 冷却：{配合技 id: 剩余秒}
 var _cd := {}
 var _scan := 0.0
@@ -53,9 +55,10 @@ func _ready() -> void:
 
 
 func _monsters() -> Array:
-	if monsters_func.is_valid():
-		return monsters_func.call()
-	return get_tree().get_nodes_in_group("enemy").filter(func(n): return n is Monster)
+	var out: Array = monsters_func.call() if monsters_func.is_valid() else get_tree().get_nodes_in_group("enemy").filter(func(n): return n is Monster)
+	if partners_func.is_valid():
+		out = out + partners_func.call()
+	return out.filter(func(n): return is_instance_valid(n) and n is Actor and not n.is_queued_for_deletion())
 
 
 func _process(delta: float) -> void:
@@ -76,14 +79,14 @@ func scan() -> Array[String]:
 	var buckets := {}
 	var now := Time.get_ticks_msec() / 1000.0
 	for m in _monsters():
-		if not is_instance_valid(m) or not (m as Monster).is_alive() or float(m.get_meta("team_busy", 0.0)) > now:
+		if not is_instance_valid(m) or not (m as Actor).is_alive() or float(m.get_meta("team_busy", 0.0)) > now:
 			continue
 		var k := key_of(m)
 		if not buckets.has(k):
 			buckets[k] = []
 		buckets[k].append(m)
 	for t in data().get("teams", []):
-		if str(t.get("trigger", "near")) != "near" or float(_cd.get(t["id"], 0.0)) > 0.0:
+		if not _allowed(t) or str(t.get("trigger", "near")) != "near" or float(_cd.get(t["id"], 0.0)) > 0.0:
 			continue
 		var members := _find(t, buckets)
 		if members.is_empty():
@@ -94,13 +97,17 @@ func scan() -> Array[String]:
 
 
 ## 找一组凑齐的成员（members[0] 当 leader）；凑不齐返回 []。
-func _find(t: Dictionary, buckets: Dictionary) -> Array:
+func _find(t: Dictionary, buckets: Dictionary, required_leader: Actor = null) -> Array:
 	var specs: Array = t.get("members", [])
 	if specs.is_empty():
 		return []
 	var r := float(t.get("radius", 60.0))
 	var need_p := float(t.get("need_princess", 0.0))
 	for leader in _bucket(buckets, specs[0]["key"]):
+		if (required_leader != null and leader != required_leader) or not _available(leader, t):
+			continue
+		if t.get("paired_twins", false) and (not leader is TwinGhost or leader.half != "a" or not is_instance_valid(leader.twin)):
+			continue
 		var at: Vector2 = (leader as Node2D).global_position
 		if need_p > 0.0 and _princess_near(at, need_p) == null:
 			continue
@@ -115,7 +122,9 @@ func _find(t: Dictionary, buckets: Dictionary) -> Array:
 			for m in _bucket(buckets, sp["key"]):
 				if got >= want:
 					break
-				if group.has(m) or (m as Node2D).global_position.distance_to(at) > r:
+				if group.has(m) or not _available(m, t) or (m as Node2D).global_position.distance_to(at) > r:
+					continue
+				if i == 0 and t.get("paired_twins", false) and m != leader.twin:
 					continue
 				group.append(m)
 				got += 1
@@ -123,8 +132,47 @@ func _find(t: Dictionary, buckets: Dictionary) -> Array:
 				ok = false
 				break
 		if ok:
+			if t.get("effect", {}).get("joint", false) and not SiegeCooperation.can_start(t, group):
+				continue
 			return group
 	return []
+
+
+## 新攻防战配合的条件；旧数据不写字段时沿用原有行为。
+func _allowed(t: Dictionary) -> bool:
+	if not bool(t.get("siege_only", false)):
+		return true
+	var d := SiegeDirector.current
+	return d != null and d.state == "fight" and d.wave >= int(t.get("min_wave", 1))
+
+
+func _available(m: Actor, t: Dictionary) -> bool:
+	if not bool(t.get("siege_only", false)):
+		return true
+	return is_instance_valid(m) and m.is_alive() and not (m is Monster and m.is_stunned()) and not m.get_meta("airborne", false) \
+		and not m.has_meta("in_ladder") and not m.has_meta("fortress_coop") and not m.get_meta("team_transfer", false) \
+		and float(m.get_meta("team_busy", 0.0)) <= Time.get_ticks_msec() / 1000.0
+
+
+## Boss 号令也走同一套成员匹配 / 冷却 / 忙碌锁，避免另一套协作系统。
+func try_fire(id: String, leader: Actor) -> bool:
+	var t := team(id)
+	if t.is_empty() or not _allowed(t) or float(_cd.get(id, 0.0)) > 0.0:
+		return false
+	var buckets := {}
+	var now := Time.get_ticks_msec() / 1000.0
+	for m in _monsters():
+		if not is_instance_valid(m) or not m.is_alive() or float(m.get_meta("team_busy", 0.0)) > now:
+			continue
+		var key := key_of(m)
+		if not buckets.has(key):
+			buckets[key] = []
+		buckets[key].append(m)
+	var members := _find(t, buckets, leader)
+	if members.is_empty():
+		return false
+	fire(t, members)
+	return true
 
 
 func _bucket(buckets: Dictionary, key: Variant) -> Array:
@@ -151,7 +199,7 @@ func _princess_near(at: Vector2, r: float) -> PlayableCharacter:
 func fire(t: Dictionary, members: Array) -> void:
 	var id := str(t["id"])
 	_cd[id] = float(t.get("cooldown", 10.0)) / (SiegeDirector.ability_rate() if SiegeDirector.current else 1.0) * cd_scale
-	var until := Time.get_ticks_msec() / 1000.0 + BUSY
+	var until := Time.get_ticks_msec() / 1000.0 + float(t.get("busy_time", BUSY))
 	for m in members:
 		m.set_meta("team_busy", until)
 	var at: Vector2 = (members[0] as Node2D).global_position
@@ -190,6 +238,11 @@ func spawn_formation(id: String, at: Vector2) -> Array:
 	var t := team(id)
 	if t.is_empty() or not spawn_func.is_valid():
 		return []
+	var final_director := SiegeDirector.current
+	if final_director and final_director.wave == 12 and final_director.reinforcements.active:
+		var members := 0
+		for row in t.get("formation", []): members += int(row[1])
+		if final_director.reinforcements.capacity() < members: return []
 	var made := []
 	var i := 0
 	for row in t.get("formation", []):

@@ -1,0 +1,13 @@
+Built-in imagegen, transparent_background=true.
+Source image: gale_bear_generated_sheet.png
+Frame order: idle0, idle1, walk0, walk1, wind-up, grab, charge, rage.
+
+Use case: stylized-concept.
+Asset type: production pixel-art sprite sheet for a Godot top-down fantasy dungeon defense game.
+Primary request: create a complete eight-pose sprite sheet of ONE consistent new mini-boss, the Gale Bear Commander (狂风熊统领), a large stocky brown bear in medieval armor carrying a round windmill shield. The shield has four clearly readable teal wind blades and a golden hub. Brown fur, cream muzzle, stern expressive eyebrows, small round ears, imposing broad shoulders, steel shoulder armor, warm gold trim, short dark teal cape, armored boots, and a small horn at the belt. It must look like an actual polished retro game enemy, charming but formidable, not a children's flat vector icon.
+Style/medium: finely crafted 16-bit pixel art, crisp square pixels, deep burgundy 1-2 pixel outlines, coherent limited palette, clustered highlights and shadows, no soft painted gradients or antialiasing. Camera is the same slightly elevated front three-quarter view in every pose, facing slightly toward the viewer's left; full body and feet always visible. Detail comparable to an 80x90 to 96x112 pixel RPG boss. Render pixel blocks enlarged, with readable face and armor details.
+Composition/framing: exactly EIGHT isolated sprites arranged in a regular FOUR-COLUMN by TWO-ROW grid on a wide landscape sheet. Equal cell dimensions and generous fully transparent gutters. Each sprite is centered in its cell at consistent character scale with a consistent feet baseline. No sprite may cross into another cell. No text, numbers, labels, arrows, border, floor, drop shadow, or other monsters.
+Frame order left to right:
+Top row: 0 confident idle holding shield low; 1 breathing idle with a slightly different stance; 2 walking left foot forward; 3 walking right foot forward.
+Bottom row: 4 wind-up raising the windmill shield while leaning back; 5 short-range attack reaching out with the free paw, shield retained; 6 charging forward with the shield in front, cape flowing behind; 7 enraged ready stance with narrowed eyebrows, teal glow confined to the shield, cape lifted.
+Constraints: identical character design, fur colors, armor, round shield, silhouette proportions and camera across all eight frames. Real transparent alpha background. Every frame must be distinct and usable in animation. All weapons and all limbs fully inside their cell. Do not add external swirling effects: the engine will create effects separately. Avoid giant smooth illustration, blurry pixels, tiny sprites lost in canvas, inconsistent outfits, gore, extra characters, duplicated poses.

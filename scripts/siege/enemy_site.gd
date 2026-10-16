@@ -145,12 +145,15 @@ func _build_tick(delta: float) -> void:
 
 
 func _pick_kind(d: SiegeDirector) -> String:
-	var pool: Array = d.wave_data().get("enemy_towers", [])
+	var pool: Array = d.features.feature_towers if d.features and d.features.rotating else d.wave_data().get("enemy_towers", [])
 	if pool.is_empty():
 		pool = EnemyTower.kinds()
 	var have := {}
 	for t in get_tree().get_nodes_in_group("siege_enemy_tower"):
 		have[str(t.get("kind"))] = true
+	for k in d.wave_data().get("priority_enemy_towers", []):
+		if pool.has(k) and not have.has(str(k)):
+			return str(k)
 	var fresh := pool.filter(func(k): return not have.has(str(k)))
 	return str((fresh if not fresh.is_empty() else pool).pick_random())
 

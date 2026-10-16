@@ -14,21 +14,29 @@ PINK, BLUE = "公主", "蓝色的公主"
 
 MON_META = json.loads(Path("assets/generated/siege/monsters.json").read_text())
 ACTOR_SCENE = {
+    "carnival_fortress": ("carnival_fortress", "fortress"),
     "cart": ("siege_cart", "cart"), "hook": ("hook_climber", "hook"), "bind_vine": ("bind_vine", "vine"), "gecko": ("wall_gecko", "gecko"),
     "shield_crab": ("shield_crab", "shield_crab"), "bat_swarm": ("feather_bat_swarm", "bat_swarm"), "carrier": ("carrier_imps", "carrier"),
     "warm_slime": ("warm_slime", "warm_slime"), "thigh_spider": ("thigh_spider", "thigh_spider"), "hug_bear": ("hug_bear", "hug_bear"),
     "suck_jelly": ("suck_jelly", "suck_jelly"), "twin_ghost": ("twin_ghost", "twin_ghost_a"),
     "troll_general": ("troll_general", "general"),
+    "gale_bear": ("gale_bear", "gale_bear"),
+    "puppet_master": ("puppet_master", "puppet_master"),
 }
 
 
 def actor(key):
+    if key == "carnival_fortress":
+        return {"scene":"res://scenes/siege/monsters/carnival_fortress.tscn", "sprite":{"texture":"res://assets/generated/siege/fortress_v2_hull.png", "offset":[0,-200], "scale":0.055}}
     scene, spr = ACTOR_SCENE[key]
     x, y, w, h = MON_META[spr + "_0"]
     # 按图集键引用（CGActor.atlas_region），图集重新打包也不会错位
-    return {"scene": "res://scenes/siege/monsters/%s.tscn" % scene,
+    result = {"scene": "res://scenes/siege/monsters/%s.tscn" % scene,
             "sprite": {"texture": "res://assets/generated/siege/monsters.png", "atlas": "res://assets/generated/siege/monsters.json",
                        "key": spr + "_0", "offset": [0, -h / 2]}}
+    if key in ("gale_bear", "puppet_master", "carnival_fortress"):
+        result["sprite"]["scale"] = 0.55
+    return result
 
 
 def A(do, **kw):
@@ -52,6 +60,19 @@ def build(key, title, foe, script, speaker):
                 acts.append(tk())
             elif t == "tk2":
                 acts.append(tk(8, 0.22))
+            elif t == "g1":
+                acts += [A("pose", who="princess", visual="giggle", anim="idle"), A("voice", state="giggle")]
+            elif t == "h1":
+                acts += [A("pose", who="princess", visual="helpless_1", anim="helpless"), A("voice", state="laugh")]
+            elif t in ("ft", "pt"):
+                zone = "sole" if speaker == PINK else ("thigh" if t == "ft" else "butt")
+                acts += [A("tickle", who="princess", by="foe", repeat=3, interval=0.35,
+                           fx="feather" if t == "ft" else "hand", zone=zone)]
+            elif t in ("tf", "tr", "bp"):
+                zone = "sole" if speaker == PINK else ("butt" if t == "bp" else "thigh")
+                acts += [A("tickle", who="princess", by="foe", repeat=3, interval=0.18,
+                           fx={"tf": "hand", "tr": "brush", "bp": "pinch"}[t], zone=zone,
+                           tool="tool_roller" if speaker == PINK else {"tf": "tool_finger", "tr": "tool_roller", "bp": "tool_pad"}[t])]
             elif t == "h2":
                 acts += [A("pose", who="princess", visual="helpless_2"), A("voice", state="laugh")]
             elif t == "fl":
@@ -69,11 +90,18 @@ def build(key, title, foe, script, speaker):
             elif t == "unzoom":
                 acts.append(A("camera", zoom=1, focus="princess", time=0.4))
         st = {"speaker": {"P": speaker, "F": foe, "N": ""}[sp], "text": text, "actions": acts}
-        st["portrait"] = "defeat_1" if i < n * 0.45 else "defeat_2"
+        if key not in ("gale_bear", "puppet_master", "carnival_fortress"):
+            st["portrait"] = "defeat_1" if i < n * 0.45 else "defeat_2"
         steps.append(st)
     steps.append({"actions": [A("voice", state=""), A("fade_out", time=0.8)], "wait": 0.9})
-    return {"name": title, "cast": {"princess": {"kind": "princess", "at": [0, 8], "visual": "helpless_1", "anim": "helpless", "dir": "down"},
-                                    "foe": {"kind": "monster:" + key, "at": [22, 8], "dir": "left", "hidden": True}},
+    foe_at = [40, 8] if key in ("gale_bear", "puppet_master", "carnival_fortress") else [22, 8]
+    if key == "carnival_fortress":
+        foe_at = [55, 4]
+    display_title = blue_title if key == "gale_bear" and speaker == BLUE else (puppet_blue_title if key == "puppet_master" and speaker == BLUE else title)
+    if key == "carnival_fortress" and speaker == BLUE:
+        display_title = fortress_blue_title
+    return {"name": display_title, "cast": {"princess": {"kind": "princess", "at": [0, 8], "visual": "helpless_1", "anim": "helpless", "dir": "down"},
+                                    "foe": {"kind": "monster:" + key, "at": foe_at, "dir": "left", "hidden": True}},
             "steps": steps}
 
 
@@ -488,6 +516,22 @@ CG = {
     ]),
 }
 
+
+# 角色独立手写，仍使用原有 CG 演绎指令。
+from gale_bear_text import cg_script
+pink_title, pink_script = cg_script("pink")
+blue_title, blue_script = cg_script("blue")
+CG["gale_bear"] = (pink_title, "狂风熊统领", pink_script, blue_script)
+from puppet_master_text import cg_script as puppet_cg
+puppet_pink_title, puppet_pink = puppet_cg("pink")
+puppet_blue_title, puppet_blue = puppet_cg("blue")
+CG["puppet_master"] = (puppet_pink_title, "狂欢挠痒魔偶师", puppet_pink, puppet_blue)
+
+
+from fortress_text import cg_script as fortress_cg
+fortress_pink_title, fortress_pink = fortress_cg("pink")
+fortress_blue_title, fortress_blue = fortress_cg("blue")
+CG["carnival_fortress"] = (fortress_pink_title,"狂欢攻城堡垒",fortress_pink,fortress_blue)
 
 def main():
     actors = {k: actor(k) for k in ACTOR_SCENE}

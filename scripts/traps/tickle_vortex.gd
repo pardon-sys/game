@@ -41,6 +41,7 @@ func _setup() -> void:
 	_particles.tangential_accel_min = 40.0
 	_particles.tangential_accel_max = 60.0
 	_sound = AudioStreamPlayer2D.new()
+	_sound.bus = Audio.SFX_BUS
 	_sound.stream = Audio.loop_stream("wind")
 	_sound.volume_db = -16.0
 	_sound.pitch_scale = 0.7

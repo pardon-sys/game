@@ -8,3 +8,4 @@ tools/.cache/
 *.tiff
 __pycache__/
 .env
+/doc

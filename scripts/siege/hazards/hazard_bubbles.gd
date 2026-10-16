@@ -10,10 +10,12 @@ const HOLD := 2.6
 
 var _from_left := true
 var _bubbles: Array = []
+var _closed := false
 
 
 func _begin() -> void:
 	reaction_key = "hazard_bubble"
+	add_to_group("siege_wind_bubbles")
 	life = 40.0
 	_from_left = randf() < 0.5
 	var ms := director.map_size()
@@ -23,7 +25,35 @@ func _begin() -> void:
 	SiegeFx.lane(get_parent(), Vector2(x, global_position.y), Vector2(ms.x - x, global_position.y), COUNT * 22.0, Color(0.6, 0.9, 1.0), WARN)
 
 
+## 风推动的是每颗泡泡的实际位置，乘员随泡泡碰撞移动。
+func blow(motion: Vector2) -> void:
+	if _closed or not warned or SiegeTools.paused() or director.state != "fight":
+		return
+	for b in _bubbles:
+		if not b["pop"]:
+			_move_bubble(b, motion)
+	queue_redraw()
+
+
+func _move_bubble(b: Dictionary, motion: Vector2) -> void:
+	var passenger: Variant = b.get("held")
+	if typeof(passenger) != TYPE_OBJECT: passenger = b.get("mob")
+	if typeof(passenger) == TYPE_OBJECT:
+		if not SiegeTools.alive(passenger) or passenger.get_meta("siege_bubble_owner", null) != self:
+			_pop(b)
+			return
+		var actor := passenger as Actor
+		actor.move_and_collide(motion)
+		b["pos"] = actor.global_position - Vector2(0, 4)
+	else:
+		b["pos"] = (b["pos"] as Vector2) + motion
+	var at: Vector2 = b["pos"]
+	if at.x < -30.0 or at.x > director.map_size().x + 30.0:
+		_pop(b)
+
+
 func _active(delta: float) -> void:
+	if _closed: return
 	var dir := 1.0 if _from_left else -1.0
 	var alive := 0
 	for b in _bubbles:
@@ -31,35 +61,38 @@ func _active(delta: float) -> void:
 			continue
 		alive += 1
 		var mob: Variant = b.get("mob")
-		if mob != null:
+		if typeof(mob) == TYPE_OBJECT:
 			if not is_instance_valid(mob):
-				b["pop"] = true
+				_pop(b)
 				continue
 			# 运兵：往城墙那边飘，到墙下就破掉放下
 			var goal := Vector2((b["pos"] as Vector2).x, director.wall_foot_y() + 14.0)
-			b["pos"] = (b["pos"] as Vector2).move_toward(goal, 50.0 * delta)
-			(mob as Node2D).global_position = (b["pos"] as Vector2) + Vector2(0, 4)
+			_move_bubble(b, (b["pos"] as Vector2).direction_to(goal) * minf(50.0 * delta, (b["pos"] as Vector2).distance_to(goal)))
 			if (b["pos"] as Vector2).distance_to(goal) < 4.0:
-				(mob as Monster).set_physics_process(true)
-				b["mob"] = null
 				_pop(b)
 			continue
-		var c: PlayableCharacter = b["held"]
-		if c and is_instance_valid(c):
+		var held: Variant = b.get("held")
+		if typeof(held) == TYPE_OBJECT:
+			if not is_instance_valid(held):
+				_pop(b)
+				continue
+			var c := held as PlayableCharacter
 			b["left"] = float(b["left"]) - delta
-			b["pos"] = (b["pos"] as Vector2) + Vector2(dir * SPEED * 0.4, -6.0) * delta
-			c.global_position = (b["pos"] as Vector2) + Vector2(0, 4)
-			if randf() < delta * 3.0:
+			_move_bubble(b, Vector2(dir * SPEED * 0.4, -6.0) * delta)
+			if not b["pop"] and randf() < delta * 3.0:
 				tickle(c, 4.0, ["sole", "waist", "armpit"].pick_random())
 			if float(b["left"]) <= 0.0:
 				_pop(b)
 			continue
-		b["pos"] = (b["pos"] as Vector2) + Vector2(dir * SPEED, sin(_t * 3.0 + (b["pos"] as Vector2).y) * 6.0) * delta
+		_move_bubble(b, Vector2(dir * SPEED, sin(_t * 3.0 + (b["pos"] as Vector2).y) * 6.0) * delta)
+		if b["pop"]: continue
 		for ch in chars():
-			if not director.is_on_wall(ch) and not ch.get_meta("siege_bubbled", false) and ch.global_position.distance_to(b["pos"]) < R + 4.0:
+			if not director.is_on_wall(ch) and SiegeTools.can_move(null, ch) and ch.global_position.distance_to(b["pos"]) < R + 4.0:
 				b["held"] = ch
 				b["left"] = HOLD
+				b["pos"] = ch.global_position - Vector2(0, 4)
 				ch.set_meta("siege_bubbled", true)
+				ch.set_meta("siege_bubble_owner", self)
 				ch.set_physics_process(false)
 				ch.add_buff("lifted", HOLD)
 				Audio.play("bubble", -3.0, 0.1)
@@ -67,36 +100,51 @@ func _active(delta: float) -> void:
 				break
 		if b.get("held") == null and b.get("mob") == null:
 			for m in director.enemies_near(b["pos"], R + 2.0):
-				if m.get_meta("siege_on_wall", false) or m is SiegeCart or m.has_meta("in_ladder"):
+				if m is SiegeBoss or m is TrollGeneral or m is SiegeCart or not m.is_physics_processing() or m.get_meta("siege_on_wall", false) \
+						or m.get_meta("airborne", false) or m.get_meta("team_transfer", false) or m.has_meta("in_ladder"):
 					continue
 				b["mob"] = m
+				b["pos"] = m.global_position - Vector2(0, 4)
+				m.set_meta("siege_bubble_owner", self)
 				m.set_physics_process(false)
 				break
-		var x: float = (b["pos"] as Vector2).x
-		if x < -30.0 or x > director.map_size().x + 30.0:
-			b["pop"] = true
 	if alive == 0:
 		life = 0.0
 
 
 func _pop(b: Dictionary) -> void:
+	if b["pop"]: return
 	b["pop"] = true
-	var c: PlayableCharacter = b["held"]
-	b["held"] = null
+	_release(b)
 	Audio.play("bubble_pop", -3.0, 0.1)
 	Fx.burst(get_parent(), b["pos"], "drop", 8, 40.0, 0.4, Vector2(0, 60), Color(0.7, 0.9, 1.0))
-	if c and is_instance_valid(c):
-		c.set_meta("siege_bubbled", false)
-		c.set_physics_process(true)
+
+
+func _release(b: Dictionary) -> void:
+	for key in ["held", "mob"]:
+		var passenger: Variant = b.get(key)
+		b[key] = null
+		if not is_instance_valid(passenger) or passenger.get_meta("siege_bubble_owner", null) != self:
+			continue
+		passenger.remove_meta("siege_bubble_owner")
+		if passenger is PlayableCharacter:
+			passenger.set_meta("siege_bubbled", false)
+			passenger.remove_buff("lifted")
+		passenger.velocity = Vector2.ZERO
+		passenger.set_physics_process(true)
 
 
 func _end() -> void:
+	if _closed: return
+	_closed = true
 	for b in _bubbles:
-		if b.get("mob") != null and is_instance_valid(b["mob"]):
-			(b["mob"] as Monster).set_physics_process(true)
-		if b["held"]:
-			_pop(b)
+		_pop(b)
 	super()
+
+
+func _exit_tree() -> void:
+	for b in _bubbles:
+		_release(b)
 
 
 func _draw() -> void:

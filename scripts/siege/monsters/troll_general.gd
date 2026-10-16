@@ -1,5 +1,5 @@
 class_name TrollGeneral
-extends TickleTroll
+extends SiegeBoss
 ## 攻城巨魔将军（攻防战第 3 波的小 Boss；挠痒巨魔的模板：抓取 / 挣脱 / 松手僵直沿用 TickleTroll）。
 ## 出场：地面连震、裂缝蔓延 → 镜头摇过去 → 从地里钻出来 → 名字大字 + Boss 血条 → 带 4 只盾甲螃蟹护卫。
 ## 技能（每个都有自己颜色和形状的地面预警 + 蓄力光 + 音效；AI 按距离和场况挑，冷却 ÷ rate）：
@@ -22,9 +22,6 @@ const MINIONS := ["slime", "rat", "caterpillar", "squirrel"]
 
 @export var sprite_key := "general"
 
-var director: SiegeDirector
-var skill := ""
-var raged := false
 var rate := 1.0
 ## 每个技能剩下的冷却（秒）
 var cds := {}
@@ -44,32 +41,10 @@ var _banner: Node2D
 var _steam: CPUParticles2D
 var _crack_t := 0.0
 var _base_scale := 1.0
-## 冰塔 / 小雪人打它只有 TOWER_MULT 的伤害（小数部分攒着）
-const TOWER_MULT := 0.25
-var _tower_frac := 0.0
-## 被建筑（冰塔、敌塔、道具）卡住：STUCK_SIDE 秒走不动 → 往侧面绕 SIDE_TIME 秒；绕了 PASS_AFTER 次还是被挡（中间没顺畅走过 FREE_RESET 秒）
-## 或者一直卡着 STUCK_PASS 秒 → 穿过去（直到完全出来）
-const STUCK_SIDE := 0.5
-const SIDE_TIME := 0.8
-const STUCK_PASS := 2.0
-const PASS_TIME := 1.2
-const PASS_AFTER := 2
-const FREE_RESET := 1.0
-var _blocked_n := 0
-var _free_t := 0.0
-var _stuck_t := 0.0
-var _side_t := 0.0
-var _side_dir := Vector2.ZERO
-var _pass_t := 0.0
-## 绕开 / 穿过去的次数（测试用）
-var unstuck := 0
-var _mask0 := 1
 
 
 func _setup() -> void:
-	_mask0 = collision_mask if collision_mask != 0 else 1
 	super()
-	director = SiegeDirector.current
 	knockback_resist = 0.9
 	stun_time = 2.0
 	grab_presses = 12
@@ -87,7 +62,6 @@ func _setup() -> void:
 		sprite.texture = load("res://assets/generated/siege/monsters.png")
 		_set_frame(0)
 		sprite.scale = Vector2.ONE
-	add_to_group("siege_boss")
 
 
 func make_mind(_d: Node) -> RefCounted:
@@ -183,63 +157,6 @@ func _tick(delta: float) -> void:
 	_animate(delta)
 	if raged:
 		_rage_tick(delta)
-
-
-## 卡住检测：想走却几乎没动 → 先往侧面绕，还卡着就暂时穿过建筑。
-func _unstick(delta: float) -> void:
-	if _pass_t > 0.0:
-		_pass_t -= delta
-		if _pass_t <= 0.0:
-			# 还压在建筑里：接着穿（直到完全出来）
-			collision_mask = _mask0
-			if test_move(global_transform, Vector2.ZERO) or test_move(global_transform, velocity.normalized() * 2.0):
-				collision_mask = 0
-				_pass_t = 0.3
-	var want := velocity.length()
-	# 墙下（狂暴后本来就要贴着墙打）不算卡住，也不能穿进城墙里
-	var at_wall := director != null and global_position.y < director.wall_foot_y() + 40.0
-	if want < 10.0 or skill in ["leap", "grab"] or at_wall:
-		_stuck_t = maxf(0.0, _stuck_t - delta)
-		return
-	var blocked := get_real_velocity().length() < want * 0.25
-	if blocked:
-		_stuck_t += delta
-		_free_t = 0.0
-	else:
-		_stuck_t = maxf(0.0, _stuck_t - delta * 2.0)
-		if _side_t <= 0.0:
-			_free_t += delta
-			if _free_t > FREE_RESET:
-				_blocked_n = 0
-	if _side_t > 0.0:
-		_side_t -= delta
-		velocity = _side_dir * want
-	elif _stuck_t > STUCK_SIDE and skill == "":
-		_blocked_n += 1
-		_stuck_t = 0.0
-		unstuck += 1
-		if _blocked_n >= PASS_AFTER:
-			_stuck_t = STUCK_PASS + 1.0   # 绕了几次还被挡：直接穿过去
-		else:
-			_side_t = SIDE_TIME
-			var o := velocity.orthogonal().normalized()
-			# 第一次随机挑一边，之后接着往同一边绕
-			_side_dir = o if randf() < 0.5 else -o
-	if _stuck_t > STUCK_PASS and _pass_t <= 0.0:
-		_stuck_t = 0.0
-		_side_t = 0.0
-		_blocked_n = 0
-		_pass_t = PASS_TIME
-		collision_mask = 0
-		unstuck += 1
-		Fx.burst(get_parent(), global_position + Vector2(0, -10), "dust", 10, 40.0, 0.5, Vector2(0, 40))
-
-
-## 能走到的最高处（y 最小）：狂暴前是地图半高，狂暴后不限（能一路打到墙下）。
-func min_y() -> float:
-	if raged or director == null:
-		return -INF
-	return maxf(director.map_size().y / 2.0, director.wall_foot_y() + 40.0)
 
 
 func _pink() -> PlayableCharacter:
@@ -459,7 +376,7 @@ func _quake_hit() -> void:
 func _nearby_minions(r: float) -> Array:
 	if director == null:
 		return []
-	return director.enemies_near(global_position, r).filter(func(m): return m != self and not (m is TrollGeneral) and not m is SiegeCart \
+	return director.enemies_near(global_position, r).filter(func(m): return m != self and not (m is SiegeBoss) and not m is SiegeCart \
 		and not m.get_meta("siege_on_wall", false) and not m.has_meta("in_ladder") and not m.get_meta("airborne", false))
 
 
@@ -759,14 +676,6 @@ func _animate(delta: float) -> void:
 
 
 func receive_hit(hit: HitData) -> bool:
-	if hit.kind == HitData.Kind.ATTACK and (hit.source is IceTower or hit.source is Snowman) and hit.damage > 0:
-		_tower_frac += hit.damage * TOWER_MULT
-		var dmg := int(floorf(_tower_frac))
-		_tower_frac -= dmg
-		if dmg <= 0:
-			flash(Color(0.7, 0.9, 1.0), 0.08)   # 冰打在厚皮上：只闪一下
-			return false
-		hit = HitData.make_attack(hit.source, dmg, 0.0)
 	var ok := super(hit)
 	if ok and hit.kind == HitData.Kind.ATTACK:
 		Fx.burst(get_parent(), global_position + Vector2(randf_range(-8, 8), -24), "chip", 3, 30.0, 0.3, Vector2(0, 60), Color(1, 0.85, 0.7))

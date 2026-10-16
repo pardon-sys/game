@@ -161,381 +161,315 @@
 		16,
 		16
 	],
-	"cart": [
+	"etower_airdrop": [
 		176,
+		16,
+		16,
+		16
+	],
+	"etower_brush_battery": [
+		192,
+		16,
+		16,
+		16
+	],
+	"etower_resonance": [
+		208,
+		16,
+		16,
+		16
+	],
+	"cart": [
+		224,
 		16,
 		16,
 		16
 	],
 	"hook": [
-		192,
+		240,
 		16,
 		16,
 		16
 	],
 	"vine": [
-		208,
-		16,
+		0,
+		32,
 		16,
 		16
 	],
 	"gecko": [
-		224,
 		16,
+		32,
 		16,
 		16
 	],
 	"shield_crab": [
-		240,
-		16,
+		32,
+		32,
 		16,
 		16
 	],
 	"bat_swarm": [
-		0,
+		48,
 		32,
 		16,
 		16
 	],
 	"carrier": [
-		16,
+		64,
 		32,
 		16,
 		16
 	],
 	"warm_slime": [
-		32,
+		80,
 		32,
 		16,
 		16
 	],
 	"thigh_spider": [
-		48,
+		96,
 		32,
 		16,
 		16
 	],
 	"hug_bear": [
-		64,
+		112,
 		32,
 		16,
 		16
 	],
 	"suck_jelly": [
-		80,
+		128,
 		32,
 		16,
 		16
 	],
 	"twin_ghost": [
-		96,
+		144,
 		32,
 		16,
 		16
 	],
 	"hazard_tornado": [
-		112,
+		160,
 		32,
 		16,
 		16
 	],
 	"hazard_bubbles": [
-		128,
+		176,
 		32,
 		16,
 		16
 	],
 	"hazard_link_rune": [
-		144,
+		192,
 		32,
 		16,
 		16
 	],
 	"hazard_broom": [
-		160,
+		208,
 		32,
 		16,
 		16
 	],
 	"hazard_fog": [
-		176,
+		224,
 		32,
 		16,
 		16
 	],
 	"hazard_wall_vine": [
-		192,
+		240,
 		32,
 		16,
 		16
 	],
 	"hazard_sticky_net": [
-		208,
-		32,
-		16,
-		16
-	],
-	"team_troll_throw": [
-		224,
-		32,
-		16,
-		16
-	],
-	"team_slime_merge": [
-		240,
-		32,
-		16,
-		16
-	],
-	"team_raise_arms": [
 		0,
-		48,
-		16,
-		16
-	],
-	"team_strip_shoes": [
-		16,
-		48,
-		16,
-		16
-	],
-	"team_suction_chain": [
-		32,
-		48,
-		16,
-		16
-	],
-	"team_feather_dance": [
-		48,
-		48,
-		16,
-		16
-	],
-	"team_bubble_chain": [
-		64,
-		48,
-		16,
-		16
-	],
-	"team_jelly_charge": [
-		80,
-		48,
-		16,
-		16
-	],
-	"team_hedgehog_roll": [
-		96,
-		48,
-		16,
-		16
-	],
-	"team_gecko_ladder": [
-		112,
-		48,
-		16,
-		16
-	],
-	"team_cart_escort": [
-		128,
-		48,
-		16,
-		16
-	],
-	"team_bat_airdrop": [
-		144,
-		48,
-		16,
-		16
-	],
-	"team_engineer_escort": [
-		160,
-		48,
-		16,
-		16
-	],
-	"hzcombo_bubble_broom": [
-		176,
-		48,
-		16,
-		16
-	],
-	"hzcombo_double_tornado": [
-		192,
-		48,
-		16,
-		16
-	],
-	"hzcombo_fog_tornado": [
-		208,
-		48,
-		16,
-		16
-	],
-	"hzcombo_net_link": [
-		224,
 		48,
 		16,
 		16
 	],
 	"goblin_engineer": [
-		240,
+		16,
 		48,
 		16,
 		16
 	],
 	"equip_t_feather_socks": [
-		0,
-		64,
+		32,
+		48,
 		16,
 		16
 	],
 	"equip_t_toe_brush": [
-		16,
-		64,
+		48,
+		48,
 		16,
 		16
 	],
 	"equip_t_fluff_bra": [
-		32,
 		64,
+		48,
 		16,
 		16
 	],
 	"equip_t_thigh_ring": [
+		80,
 		48,
-		64,
 		16,
 		16
 	],
 	"equip_t_pinch_pad": [
-		64,
-		64,
+		96,
+		48,
 		16,
 		16
 	],
 	"equip_t_knead_tights": [
-		80,
-		64,
+		112,
+		48,
 		16,
 		16
 	],
 	"equip_t_feather_shackles": [
-		96,
-		64,
+		128,
+		48,
 		16,
 		16
 	],
 	"equip_t_thigh_strap": [
-		112,
-		64,
+		144,
+		48,
 		16,
 		16
 	],
 	"equip_t_bell_anklet": [
-		128,
-		64,
+		160,
+		48,
 		16,
 		16
 	],
 	"equip_t_mark_patch": [
-		144,
-		64,
+		176,
+		48,
 		16,
 		16
 	],
 	"town_party": [
-		160,
-		64,
+		192,
+		48,
 		16,
 		16
 	],
 	"town_smith": [
-		176,
-		64,
+		208,
+		48,
 		16,
 		16
 	],
 	"town_band": [
-		192,
-		64,
+		224,
+		48,
 		16,
 		16
 	],
 	"town_tailor": [
-		208,
-		64,
+		240,
+		48,
 		16,
 		16
 	],
 	"town_mason": [
-		224,
+		0,
 		64,
 		16,
 		16
 	],
 	"town_pharm": [
-		240,
+		16,
 		64,
 		16,
 		16
 	],
 	"town_watch": [
-		0,
-		80,
+		32,
+		64,
 		16,
 		16
 	],
 	"town_cheer": [
-		16,
-		80,
+		48,
+		64,
 		16,
 		16
 	],
 	"town_captain": [
-		32,
-		80,
+		64,
+		64,
 		16,
 		16
 	],
 	"town_hunter": [
-		48,
 		80,
+		64,
 		16,
 		16
 	],
 	"town_florist": [
+		96,
 		64,
-		80,
 		16,
 		16
 	],
 	"town_mayor": [
-		80,
-		80,
+		112,
+		64,
 		16,
 		16
 	],
 	"troll_general": [
-		96,
-		80,
+		128,
+		64,
+		16,
+		16
+	],
+	"puppet_master": [
+		144,
+		64,
+		16,
+		16
+	],
+	"gale_bear": [
+		160,
+		64,
 		16,
 		16
 	],
 	"soldier_shield": [
-		112,
-		80,
+		176,
+		64,
 		16,
 		16
 	],
 	"soldier_medic": [
-		128,
-		80,
+		192,
+		64,
 		16,
 		16
 	],
 	"soldier_artisan": [
-		144,
-		80,
+		208,
+		64,
+		16,
+		16
+	],
+	"soldier_mage": [
+		224,
+		64,
 		16,
 		16
 	]
