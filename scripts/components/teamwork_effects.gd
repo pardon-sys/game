@@ -15,13 +15,29 @@ extends RefCounted
 ##   airdrop          蝠群空投：蝙蝠抓起钩索怪 / 小熊飞过城墙扔到墙顶
 ##   escort_engineer  工兵护送：护卫围着工兵走，护送搭成的塔第一次发动威力加倍
 ## 攻防战相关的部分（城墙、墙顶）走 SiegeDirector.current；没有的话自动退化成「扔到公主身边」。
+## 关卡专属的配合技（攻防战的联合配合、Boss 配合）不写在这里：关卡用 handlers / spawn_handlers / joint_handler 登记（SiegeTeamEffects）。
+
+
+## 关卡自己的配合技效果（攻防战的 SiegeTeamEffects.register 登记）：effect.type → Callable(team, members, ctx)；
+## spawn_handlers：成套生成后组队的处理。登记过的类型（以及 effect.joint 的联合配合）不走下面的通用效果。
+static var handlers := {}
+static var spawn_handlers := {}
+## effect.joint = true 的联合配合交给它（攻防战：SiegeTeamEffects）
+static var joint_handler: Callable
 
 
 static func apply(t: Dictionary, members: Array, ctx: Dictionary) -> void:
 	var e: Dictionary = t.get("effect", {})
 	var target: PlayableCharacter = ctx.get("target")
+	var kind := str(e.get("type", ""))
+	if e.get("joint", false) and joint_handler.is_valid():
+		joint_handler.call(t, members, ctx)
+		return
+	if handlers.has(kind):
+		(handlers[kind] as Callable).call(t, members, ctx)
+		return
 	var leader: Monster = members[0]
-	match str(e.get("type", "")):
+	match kind:
 		"throw_onto_wall": _throw(leader, members.slice(1), target)
 		"merge": _merge(leader, members.slice(1), ctx.get("host"))
 		"raise_arms": _raise_arms(leader, members.slice(1), target)
@@ -50,7 +66,11 @@ static func on_spawn(t: Dictionary, made: Array, _ctx: Dictionary) -> void:
 	var leaders: Array = keyed.get(first_key, [made[0]])
 	var leader: Monster = leaders[0]
 	var rest := made.filter(func(m): return m != leader)
-	match str(e.get("type", "")):
+	var kind := str(e.get("type", ""))
+	if spawn_handlers.has(kind):
+		(spawn_handlers[kind] as Callable).call(t, leader, rest)
+		return
+	match kind:
 		"escort_cart": _escort(leader, rest, Vector2(0, -18))
 		"escort_engineer": _escort_engineer(made)
 		"living_ladder":
@@ -92,7 +112,7 @@ static func _wall_spot(near_x: float) -> Variant:
 	return Vector2(x, d.wall_top_y() + randf_range(-2, 6))
 
 
-static func _arc(m: Node2D, to: Vector2, time: float, height: float, done: Callable) -> void:
+static func _arc(m: Node2D, to: Vector2, time: float, height: float, done: Callable) -> Tween:
 	var from := m.global_position
 	if m is Monster:
 		(m as Monster).set_physics_process(false)
@@ -105,6 +125,7 @@ static func _arc(m: Node2D, to: Vector2, time: float, height: float, done: Calla
 			if m is Monster:
 				(m as Monster).set_physics_process(true)
 			done.call())
+	return tw
 
 
 # ------------------------------------------------------------------ 各个效果
@@ -242,7 +263,7 @@ static func _charge(jelly: Monster) -> void:
 	SiegeFx.ring(jelly.get_parent(), jelly.global_position, 90.0, Color(0.8, 0.55, 1.0, 0.7), 0.6, 0.06)
 
 
-static func _roll(members: Array, target: PlayableCharacter) -> void:
+static func _roll(members: Array, target: PlayableCharacter, fast := false) -> void:
 	if target == null:
 		return
 	var dir := (members[0] as Node2D).global_position.direction_to(target.global_position)
@@ -252,13 +273,13 @@ static func _roll(members: Array, target: PlayableCharacter) -> void:
 			continue
 		m.global_position = (members[0] as Node2D).global_position - dir * (i * 12.0)
 		var tw := m.create_tween()
-		tw.tween_property(m, "global_position", target.global_position + dir * 30.0 - dir * (i * 12.0), 0.8)
+		tw.tween_property(m, "global_position", target.global_position + dir * 30.0 - dir * (i * 12.0), 0.35 if fast else 0.8)
 	var d := SiegeDirector.current
 	var crowd: Variant = d.densest(40.0, target.global_position, 220.0) if d else null
 	var push := target.global_position + (target.global_position.direction_to(crowd) if crowd is Vector2 else dir) * 10.0
 	var tgt_ref: WeakRef = weakref(target)
 	var lead_ref: WeakRef = weakref(members[0])
-	target.get_tree().create_timer(0.5).timeout.connect(func():
+	target.get_tree().create_timer(0.18 if fast else 0.5).timeout.connect(func():
 		var t := tgt_ref.get_ref() as PlayableCharacter
 		if t:
 			t.apply_knockback(t.global_position - (push - t.global_position), 320.0)

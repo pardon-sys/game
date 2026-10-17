@@ -1,5 +1,5 @@
 class_name TrollGeneral
-extends TickleTroll
+extends SiegeBoss
 ## 攻城巨魔将军（攻防战第 3 波的小 Boss；挠痒巨魔的模板：抓取 / 挣脱 / 松手僵直沿用 TickleTroll）。
 ## 出场：地面连震、裂缝蔓延 → 镜头摇过去 → 从地里钻出来 → 名字大字 + Boss 血条 → 带 4 只盾甲螃蟹护卫。
 ## 技能（每个都有自己颜色和形状的地面预警 + 蓄力光 + 音效；AI 按距离和场况挑，冷却 ÷ rate）：
@@ -13,23 +13,15 @@ extends TickleTroll
 ##   banner  痒痒军旗：插一面有血量的军旗，旗边的怪加速、每 4 秒从地里钻出一只小怪
 ##   build   召工兵就地搭塔：叫一队地精工兵在身边直接搭敌塔（8 秒，打倒工兵可打断）
 ##   rage    半血狂暴：变红变大、移速 +40%、召 4 只盾甲螃蟹，之后技能间隔缩短，身上冒红色蒸汽、脚下踩出裂纹
+## 技能名 / 冷却 / 喊话 / 横幅在 data/siege/bosses.json 的 troll_general（SiegeBoss 读）。
 ## 图：siege/monsters.png 的 general_0~4（0/1 走、2 蓄力举手、3 扛木桩、4 跳起）。
 
 const META := "res://assets/generated/siege/monsters.json"
-const SKILL_CD := {"grab": 8.0, "swipe": 6.0, "quake": 11.0, "throw": 10.0, "ram": 16.0, "leap": 18.0, "cry": 15.0,
-	"banner": 24.0, "build": 30.0}
 const MINIONS := ["slime", "rat", "caterpillar", "squirrel"]
 
 @export var sprite_key := "general"
 
-var director: SiegeDirector
-var skill := ""
-var raged := false
 var rate := 1.0
-## 每个技能剩下的冷却（秒）
-var cds := {}
-## 用过的技能（测试用）
-var used: Array[String] = []
 var _phase := 0
 var _st := 0.0
 var _global_cd := 2.0
@@ -44,32 +36,11 @@ var _banner: Node2D
 var _steam: CPUParticles2D
 var _crack_t := 0.0
 var _base_scale := 1.0
-## 冰塔 / 小雪人打它只有 TOWER_MULT 的伤害（小数部分攒着）
-const TOWER_MULT := 0.25
-var _tower_frac := 0.0
-## 被建筑（冰塔、敌塔、道具）卡住：STUCK_SIDE 秒走不动 → 往侧面绕 SIDE_TIME 秒；绕了 PASS_AFTER 次还是被挡（中间没顺畅走过 FREE_RESET 秒）
-## 或者一直卡着 STUCK_PASS 秒 → 穿过去（直到完全出来）
-const STUCK_SIDE := 0.5
-const SIDE_TIME := 0.8
-const STUCK_PASS := 2.0
-const PASS_TIME := 1.2
-const PASS_AFTER := 2
-const FREE_RESET := 1.0
-var _blocked_n := 0
-var _free_t := 0.0
-var _stuck_t := 0.0
-var _side_t := 0.0
-var _side_dir := Vector2.ZERO
-var _pass_t := 0.0
-## 绕开 / 穿过去的次数（测试用）
-var unstuck := 0
-var _mask0 := 1
 
 
 func _setup() -> void:
-	_mask0 = collision_mask if collision_mask != 0 else 1
+	boss_key = "troll_general"
 	super()
-	director = SiegeDirector.current
 	knockback_resist = 0.9
 	stun_time = 2.0
 	grab_presses = 12
@@ -77,7 +48,7 @@ func _setup() -> void:
 	grab_tickle = 7.0
 	summon_interval = 99999.0   # 巨魔原来的召蝙蝠不用：空投走号角技能
 	slam_chance = 0.0
-	for k in SKILL_CD:
+	for k in skill_keys():
 		cds[k] = randf_range(1.0, 4.0)
 	cds["ram"] = 6.0
 	cds["leap"] = 8.0
@@ -87,7 +58,6 @@ func _setup() -> void:
 		sprite.texture = load("res://assets/generated/siege/monsters.png")
 		_set_frame(0)
 		sprite.scale = Vector2.ONE
-	add_to_group("siege_boss")
 
 
 func make_mind(_d: Node) -> RefCounted:
@@ -102,7 +72,7 @@ func _set_frame(f: int) -> void:
 
 
 func _cd(key: String) -> float:
-	return float(SKILL_CD.get(key, 10.0)) / rate
+	return skill_cd(key) / rate
 
 
 # ------------------------------------------------------------------ 出场
@@ -133,7 +103,7 @@ func intro() -> void:
 	SiegeFx.burrow(self)
 	SiegeFx.impact(get_parent(), at, 70.0, true, Color(1, 0.6, 0.4))
 	Audio.play("boss_roar", 0.0)
-	SiegeFx.big_title(self, "攻城巨魔将军", Color(1, 0.55, 0.35), "第 3 波的小 Boss——看清地上的预警！")
+	announce("intro")
 	GameState.boss_changed.emit(self)
 	_announced = true
 	if director:
@@ -183,63 +153,6 @@ func _tick(delta: float) -> void:
 	_animate(delta)
 	if raged:
 		_rage_tick(delta)
-
-
-## 卡住检测：想走却几乎没动 → 先往侧面绕，还卡着就暂时穿过建筑。
-func _unstick(delta: float) -> void:
-	if _pass_t > 0.0:
-		_pass_t -= delta
-		if _pass_t <= 0.0:
-			# 还压在建筑里：接着穿（直到完全出来）
-			collision_mask = _mask0
-			if test_move(global_transform, Vector2.ZERO) or test_move(global_transform, velocity.normalized() * 2.0):
-				collision_mask = 0
-				_pass_t = 0.3
-	var want := velocity.length()
-	# 墙下（狂暴后本来就要贴着墙打）不算卡住，也不能穿进城墙里
-	var at_wall := director != null and global_position.y < director.wall_foot_y() + 40.0
-	if want < 10.0 or skill in ["leap", "grab"] or at_wall:
-		_stuck_t = maxf(0.0, _stuck_t - delta)
-		return
-	var blocked := get_real_velocity().length() < want * 0.25
-	if blocked:
-		_stuck_t += delta
-		_free_t = 0.0
-	else:
-		_stuck_t = maxf(0.0, _stuck_t - delta * 2.0)
-		if _side_t <= 0.0:
-			_free_t += delta
-			if _free_t > FREE_RESET:
-				_blocked_n = 0
-	if _side_t > 0.0:
-		_side_t -= delta
-		velocity = _side_dir * want
-	elif _stuck_t > STUCK_SIDE and skill == "":
-		_blocked_n += 1
-		_stuck_t = 0.0
-		unstuck += 1
-		if _blocked_n >= PASS_AFTER:
-			_stuck_t = STUCK_PASS + 1.0   # 绕了几次还被挡：直接穿过去
-		else:
-			_side_t = SIDE_TIME
-			var o := velocity.orthogonal().normalized()
-			# 第一次随机挑一边，之后接着往同一边绕
-			_side_dir = o if randf() < 0.5 else -o
-	if _stuck_t > STUCK_PASS and _pass_t <= 0.0:
-		_stuck_t = 0.0
-		_side_t = 0.0
-		_blocked_n = 0
-		_pass_t = PASS_TIME
-		collision_mask = 0
-		unstuck += 1
-		Fx.burst(get_parent(), global_position + Vector2(0, -10), "dust", 10, 40.0, 0.5, Vector2(0, 40))
-
-
-## 能走到的最高处（y 最小）：狂暴前是地图半高，狂暴后不限（能一路打到墙下）。
-func min_y() -> float:
-	if raged or director == null:
-		return -INF
-	return maxf(director.map_size().y / 2.0, director.wall_foot_y() + 40.0)
 
 
 func _pink() -> PlayableCharacter:
@@ -300,7 +213,7 @@ func _start(s: String) -> void:
 	_phase = 0
 	_st = 0.0
 	cds[s] = _cd(s)
-	used.append(s)
+	mark_used(s)
 	velocity = Vector2.ZERO
 	match s:
 		"grab": _grab_start()
@@ -360,7 +273,7 @@ func _grab_skill_tick() -> void:
 		if p.combo:
 			p.combo._expose("sole", 1.6, grab_max_time)
 		Fx.burst(get_parent(), p.global_position + Vector2(0, -2), "dust", 12, 40.0, 0.5, Vector2(0, 20))
-		SpeechBubble.say(self, "抓到了！脚心——给我露出来！", 46.0, 1.6)
+		SpeechBubble.say(self, skill_shout("grab"), 46.0, 1.6)
 		SpeechBubble.say(p, "呀——脚、脚被扳起来了！", 28.0, 1.6)
 		Audio.play("grab", -1.0, 0.05, 0.7)
 	else:
@@ -459,7 +372,7 @@ func _quake_hit() -> void:
 func _nearby_minions(r: float) -> Array:
 	if director == null:
 		return []
-	return director.enemies_near(global_position, r).filter(func(m): return m != self and not (m is TrollGeneral) and not m is SiegeCart \
+	return director.enemies_near(global_position, r).filter(func(m): return m != self and not (m is SiegeBoss) and not m is SiegeCart \
 		and not m.get_meta("siege_on_wall", false) and not m.has_meta("in_ladder") and not m.get_meta("airborne", false))
 
 
@@ -474,7 +387,7 @@ func _throw_tick() -> void:
 			var spot := Vector2(clampf(global_position.x + randf_range(-90, 90), 30, director.map_size().x - 30), director.wall_top_y() + randf_range(-2, 6))
 			if director.blue and director.is_on_wall(director.blue):
 				spot.x = director.blue.global_position.x + randf_range(-40, 40)
-			SpeechBubble.say(self, "飞——上——去！", 46.0, 0.8)
+			SpeechBubble.say(self, skill_shout("throw"), 46.0, 0.8)
 			Audio.play("swish", -2.0, 0.1, 0.6)
 			var mm := m as Monster
 			mm.set_meta("airborne", true)
@@ -501,7 +414,7 @@ func _ram_start() -> void:
 	_set_frame(3)
 	_goal = Vector2(global_position.x, director.wall_foot_y() + 18.0)
 	SiegeFx.lane(get_parent(), global_position, _goal, 30.0, Color(1, 0.3, 0.25), 1.2 / rate, true)
-	SpeechBubble.say(self, "攻城锤——撞开它！", 46.0, 1.2)
+	SpeechBubble.say(self, skill_shout("ram"), 46.0, 1.2)
 	Audio.play("cart_rumble", -2.0, 0.05, 0.7)
 	_phase = 0
 	set_meta("rammed", [])
@@ -618,7 +531,7 @@ func _leap_land() -> void:
 # ------------------------------------------------------------------ 7 战吼
 func _cry() -> void:
 	_set_frame(2)
-	SpeechBubble.say(self, "吼——————！", 46.0, 1.2)
+	SpeechBubble.say(self, skill_shout("cry"), 46.0, 1.2)
 	Audio.play("boss_roar", 0.0, 0.05)
 	SiegeFx.screen_shake(self, 3.0, 0.4)
 	for i in 3:
@@ -652,7 +565,7 @@ func _plant_banner() -> void:
 	get_parent().add_child(b)
 	b.global_position = global_position + Vector2(signf(randf() - 0.5) * 30.0, 10.0)
 	_banner = b
-	SpeechBubble.say(self, "插旗！小的们，给我钻出来！", 46.0, 1.4)
+	SpeechBubble.say(self, skill_shout("banner"), 46.0, 1.4)
 	Audio.play("hammer", -2.0, 0.05, 0.6)
 	SiegeFx.impact(get_parent(), b.global_position, 30.0, false, Color(1, 0.4, 0.5))
 	get_tree().create_timer(0.5, false).timeout.connect(func():
@@ -662,7 +575,7 @@ func _plant_banner() -> void:
 
 # ------------------------------------------------------------------ 9 召工兵就地搭塔
 func _call_builders() -> void:
-	SpeechBubble.say(self, "哔——！工兵！就在这儿搭！", 46.0, 1.4)
+	SpeechBubble.say(self, skill_shout("build"), 46.0, 1.4)
 	Audio.play("whistle", -2.0)
 	var site := EnemySite.new()
 	site.temporary = true
@@ -689,7 +602,7 @@ func _rage() -> void:
 	raged = true
 	rate = 1.6
 	SiegeFx.screen_flash(self, Color(1, 0.15, 0.1, 0.45), 0.6)
-	SiegeFx.big_title(self, "将军狂暴了！", Color(1, 0.3, 0.25), "移速变快、技能更频繁，地震重击变成两连！")
+	announce("rage")
 	Audio.play("boss_roar", 1.0, 0.0, 0.85)
 	SiegeFx.screen_shake(self, 5.0, 0.6)
 	_base_scale = 1.15   # 新立绘本身就很大
@@ -759,14 +672,6 @@ func _animate(delta: float) -> void:
 
 
 func receive_hit(hit: HitData) -> bool:
-	if hit.kind == HitData.Kind.ATTACK and (hit.source is IceTower or hit.source is Snowman) and hit.damage > 0:
-		_tower_frac += hit.damage * TOWER_MULT
-		var dmg := int(floorf(_tower_frac))
-		_tower_frac -= dmg
-		if dmg <= 0:
-			flash(Color(0.7, 0.9, 1.0), 0.08)   # 冰打在厚皮上：只闪一下
-			return false
-		hit = HitData.make_attack(hit.source, dmg, 0.0)
 	var ok := super(hit)
 	if ok and hit.kind == HitData.Kind.ATTACK:
 		Fx.burst(get_parent(), global_position + Vector2(randf_range(-8, 8), -24), "chip", 3, 30.0, 0.3, Vector2(0, 60), Color(1, 0.85, 0.7))
@@ -780,10 +685,9 @@ func _on_died() -> void:
 		_steam.emitting = false
 	GameState.boss_changed.emit(null)
 	SiegeFx.impact(get_parent(), global_position, 120.0, true, Color(1, 0.9, 0.6))
-	SiegeFx.big_title(self, "攻城巨魔将军被打倒了！", Color(1, 0.9, 0.5))
+	announce("defeat")
 	Fx.burst(get_parent(), global_position + Vector2(0, -20), "crystal", 30, 90.0, 1.0, Vector2(0, 60), Color(0.8, 0.95, 1.0))
-	if director:
-		director.add_crystals(30)
+	reward_defeat()
 	super()
 
 
@@ -864,5 +768,5 @@ class TrollBanner extends Actor:
 		Fx.burst(get_parent(), global_position + Vector2(4, -20), "cloth", 18, 70.0, 0.9, Vector2(0, 90), Color(0.9, 0.25, 0.3))
 		Fx.burst(get_parent(), global_position + Vector2(0, -10), "wood", 8, 50.0, 0.6, Vector2(0, 120), Color(0.7, 0.5, 0.35))
 		Audio.play("break", -2.0, 0.05)
-		GameState.notify("痒痒军旗被拆掉了！")
+		GameState.notify(SiegeBoss.boss_data().get("troll_general", {}).get("notices", {}).get("banner_broken", ""))
 		queue_free()

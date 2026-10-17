@@ -1,7 +1,8 @@
 class_name ShieldCrab
 extends SiegeMonster
 ## 盾甲螃蟹：举着大钳子挡住正面（朝着城墙的那一面）——从前面 / 上面来的冰锥、冰塔、法术都打不动；
-## 只有从背后（下面）打才有用，所以要粉色公主绕到后面去。走到墙下用钳子夹墙（伤害更高）。
+## 只有从背后（下面）打才有用，所以要粉色公主绕到后面去；冰晶共鸣的电弧、冰陨星台的陨石挡不住（HitData.ignore_block）。
+## 走到墙下用钳子夹墙（伤害更高）。
 
 
 func block_hit(hit: HitData) -> bool:

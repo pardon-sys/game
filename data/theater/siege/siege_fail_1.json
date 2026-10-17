@@ -42,6 +42,7 @@
 	},
 	"steps": [
 		{
+			"act": 1,
 			"actions": [
 				{
 					"do": "fade_in",
@@ -55,6 +56,7 @@
 			"wait": 0.5
 		},
 		{
+			"act": 1,
 			"speaker": "",
 			"text": "（城墙塌了一个口子。史莱姆和挠脚鼠像潮水一样涌进来，把两个人堵在了城门口）",
 			"actions": [
@@ -79,16 +81,19 @@
 			]
 		},
 		{
+			"act": 1,
 			"speaker": "公主",
-			"text": "好、好多……被围住了！"
+			"text": "好、好多……蓝色的，背靠背！我们一边一半！"
 		},
 		{
+			"act": 1,
 			"speaker": "蓝色的公主",
-			"text": "……背靠背。……别慌。"
+			"text": "……嗯。……左边归我。"
 		},
 		{
+			"act": 1,
 			"speaker": "",
-			"text": "（史莱姆们一跳一跳地扑上来，凉凉地黏住两个人的脚踝，把她们拖倒在地上）",
+			"text": "（史莱姆一扑，把两个人黏在了一起；挠脚鼠们趁机围上来，扒鞋的扒鞋，扯裙摆的扯裙摆）",
 			"actions": [
 				{
 					"do": "tickle",
@@ -98,78 +103,6 @@
 					"interval": 0.22,
 					"fx": "hand",
 					"zone": "sole"
-				},
-				{
-					"do": "tickle",
-					"who": "blue",
-					"by": "foe2",
-					"repeat": 8,
-					"interval": 0.22,
-					"fx": "brush",
-					"zone": "sole"
-				}
-			]
-		},
-		{
-			"speaker": "公主",
-			"text": "呀！黏、黏在脚上了……凉凉的……嘻嘻！"
-		},
-		{
-			"speaker": "蓝色的公主",
-			"text": "……凉。……噗。"
-		},
-		{
-			"speaker": "",
-			"text": "（挠脚鼠钻进鞋子里，小爪子在脚心上一下一下地刨，像在挖洞）",
-			"actions": [
-				{
-					"do": "tickle",
-					"who": "pink",
-					"by": "foe1",
-					"repeat": 8,
-					"interval": 0.22,
-					"fx": "hand",
-					"zone": "sole"
-				},
-				{
-					"do": "tickle",
-					"who": "blue",
-					"by": "foe2",
-					"repeat": 8,
-					"interval": 0.22,
-					"fx": "brush",
-					"zone": "sole"
-				}
-			]
-		},
-		{
-			"speaker": "公主",
-			"text": "刨、刨什么洞啦——哈哈！脚心！",
-			"actions": [
-				{
-					"do": "bubble",
-					"who": "pink",
-					"kind": "laugh"
-				},
-				{
-					"do": "bubble",
-					"who": "blue",
-					"kind": "laugh"
-				}
-			]
-		},
-		{
-			"speaker": "",
-			"text": "（史莱姆爬上粉色公主的腰，一鼓一鼓地蹭；另一团裹住蓝色公主的大腿，往上滑）",
-			"actions": [
-				{
-					"do": "tickle",
-					"who": "pink",
-					"by": "foe1",
-					"repeat": 8,
-					"interval": 0.22,
-					"fx": "hand",
-					"zone": "waist"
 				},
 				{
 					"do": "tickle",
@@ -183,16 +116,284 @@
 			]
 		},
 		{
-			"speaker": "蓝色的公主",
-			"text": "……那、那团……往上滑……别……"
-		},
-		{
+			"act": 1,
 			"speaker": "公主",
-			"text": "你、你那边也……哈哈……我们两个都……"
+			"text": "鞋、鞋子！别扒我的鞋——蓝色的，它们在脱我鞋！"
 		},
 		{
+			"act": 1,
+			"speaker": "蓝色的公主",
+			"text": "……看见了。……我这边……也有。"
+		},
+		{
+			"act": 2,
 			"speaker": "",
-			"text": "（老鼠们排成一排，从脚跟到脚尖一路刨过去；史莱姆整个扑上来，把两个人裹进同一团凉凉的果冻里）",
+			"text": "（挠脚鼠们扳住她的脚背，小爪子在脚心上一下一下地刮，另一只钻进趾缝里乱拱）",
+			"actions": [
+				{
+					"do": "tickle",
+					"who": "pink",
+					"by": "foe1",
+					"repeat": 8,
+					"interval": 0.22,
+					"fx": "hand",
+					"zone": "sole"
+				}
+			]
+		},
+		{
+			"act": 2,
+			"speaker": "公主",
+			"text": "嘻嘻嘻！趾、趾缝里有老鼠——哈哈哈好痒！"
+		},
+		{
+			"act": 2,
+			"speaker": "",
+			"text": "（史莱姆贴着蓝色公主的大腿内侧往上漫，漫到腿根就在那里打转，挠脚鼠的尾巴在屁股上左一下右一下地扫）",
+			"actions": [
+				{
+					"do": "tickle",
+					"who": "blue",
+					"by": "foe2",
+					"repeat": 8,
+					"interval": 0.22,
+					"fx": "brush",
+					"zone": "thigh"
+				}
+			]
+		},
+		{
+			"act": 2,
+			"speaker": "蓝色的公主",
+			"text": "……唔。……黏液……往上……那里……别打转……"
+		},
+		{
+			"act": 2,
+			"speaker": "公主",
+			"text": "蓝色的，你、你声音在抖！哈哈哈……我、我也不行了！",
+			"actions": [
+				{
+					"do": "bubble",
+					"who": "pink",
+					"kind": "laugh"
+				},
+				{
+					"do": "bubble",
+					"who": "blue",
+					"kind": "laugh"
+				}
+			]
+		},
+		{
+			"act": 2,
+			"speaker": "蓝色的公主",
+			"text": "……没抖。……是城墙……在抖。"
+		},
+		{
+			"act": 3,
+			"speaker": "",
+			"text": "（两个人背靠背笑成一团，魔力被笑声搅得翻滚。粉色公主的疲倦先满了）",
+			"actions": [
+				{
+					"do": "pose",
+					"who": "pink",
+					"visual": "helpless_2"
+				},
+				{
+					"do": "pose",
+					"who": "blue",
+					"visual": "helpless_2"
+				},
+				{
+					"do": "voice",
+					"state": "laugh"
+				}
+			]
+		},
+		{
+			"act": 3,
+			"speaker": "公主",
+			"text": "要、要炸了——蓝色的，捂住耳朵——！"
+		},
+		{
+			"act": "burst",
+			"speaker": "",
+			"text": "（星光从她身上炸开，挠脚鼠们被冲得四散，滚成了一个个毛球）",
+			"actions": [
+				{
+					"do": "flash",
+					"time": 0.8
+				},
+				{
+					"do": "sfx",
+					"sound": "star_burst",
+					"volume": -1.0
+				},
+				{
+					"do": "sfx",
+					"sound": "water_release",
+					"volume": -2.0
+				},
+				{
+					"do": "shake",
+					"who": "pink",
+					"time": 0.5
+				},
+				{
+					"do": "bubble",
+					"who": "pink",
+					"kind": "surprise"
+				},
+				{
+					"do": "move",
+					"who": "foe1",
+					"to": [
+						-94,
+						-6
+					],
+					"time": 0.25
+				},
+				{
+					"do": "move",
+					"who": "foe2",
+					"to": [
+						94,
+						-6
+					],
+					"time": 0.25
+				}
+			],
+			"wait": 1.0
+		},
+		{
+			"act": 3,
+			"speaker": "蓝色的公主",
+			"text": "……该我了。……魔力……也、也满了……"
+		},
+		{
+			"act": "burst",
+			"speaker": "",
+			"text": "（冰蓝色的星光接着炸开，史莱姆被冻成一大块果冻，「啪」地裂成几块）",
+			"actions": [
+				{
+					"do": "flash",
+					"time": 0.8
+				},
+				{
+					"do": "sfx",
+					"sound": "star_burst",
+					"volume": -1.0
+				},
+				{
+					"do": "sfx",
+					"sound": "water_release",
+					"volume": -2.0
+				},
+				{
+					"do": "shake",
+					"who": "blue",
+					"time": 0.5
+				},
+				{
+					"do": "bubble",
+					"who": "blue",
+					"kind": "surprise"
+				},
+				{
+					"do": "move",
+					"who": "foe1",
+					"to": [
+						-94,
+						-6
+					],
+					"time": 0.25
+				},
+				{
+					"do": "move",
+					"who": "foe2",
+					"to": [
+						94,
+						-6
+					],
+					"time": 0.25
+				}
+			],
+			"wait": 1.0
+		},
+		{
+			"act": 3,
+			"speaker": "公主",
+			"text": "呼……全、全放出去了……可是……一点力气都没有了……"
+		},
+		{
+			"act": 3,
+			"speaker": "",
+			"text": "（果冻化开，毛球们重新站起来，又一起扑了上来。刚放空魔力的两个人，敏感得一碰就叫）",
+			"actions": [
+				{
+					"do": "move",
+					"who": "foe1",
+					"to": [
+						-44,
+						0
+					],
+					"time": 0.6
+				},
+				{
+					"do": "move",
+					"who": "foe2",
+					"to": [
+						44,
+						0
+					],
+					"time": 0.6
+				},
+				{
+					"do": "tickle",
+					"who": "pink",
+					"by": "foe1",
+					"repeat": 8,
+					"interval": 0.22,
+					"fx": "hand",
+					"zone": "sole"
+				},
+				{
+					"do": "tickle",
+					"who": "blue",
+					"by": "foe2",
+					"repeat": 8,
+					"interval": 0.22,
+					"fx": "brush",
+					"zone": "butt"
+				}
+			]
+		},
+		{
+			"act": 3,
+			"speaker": "公主",
+			"text": "呀啊——！脚、脚心……比刚才痒好多！哈哈哈哈！",
+			"actions": [
+				{
+					"do": "bubble",
+					"who": "pink",
+					"kind": "laugh"
+				},
+				{
+					"do": "bubble",
+					"who": "blue",
+					"kind": "laugh"
+				}
+			]
+		},
+		{
+			"act": 3,
+			"speaker": "蓝色的公主",
+			"text": "……哈哈哈……腿根……一碰……就……停不住……哈哈哈！"
+		},
+		{
+			"act": 4,
+			"speaker": "",
+			"text": "（挠脚鼠们排成一排，把两个人的脚并在一起刮；史莱姆在两个人中间来回地漫，谁也没放过）",
 			"actions": [
 				{
 					"do": "pose",
@@ -224,7 +425,7 @@
 					"repeat": 8,
 					"interval": 0.22,
 					"fx": "brush",
-					"zone": "butt"
+					"zone": "thigh"
 				},
 				{
 					"do": "flash",
@@ -233,16 +434,14 @@
 			]
 		},
 		{
+			"act": 4,
 			"speaker": "公主",
-			"text": "哈哈哈哈！脚、脚心和腰一起——哈哈哈！"
+			"text": "哈哈哈哈——认输！我们认输！蓝色的，快说认输！"
 		},
 		{
+			"act": 4,
 			"speaker": "蓝色的公主",
-			"text": "……哈、哈哈……屁、屁股……果冻……别蹭……哈哈哈！"
-		},
-		{
-			"speaker": "公主",
-			"text": "我、我认输……这一波……我们认输！哈哈哈哈！",
+			"text": "……哈哈……我、我说了……你没听见……哈哈哈……",
 			"actions": [
 				{
 					"do": "bubble",
@@ -257,10 +456,22 @@
 			]
 		},
 		{
-			"speaker": "蓝色的公主",
-			"text": "……认、认输。……下次……守住。"
+			"act": 4,
+			"speaker": "",
+			"text": "（笑声传遍了整个小镇。城墙后面，镇民们握紧了拳头）"
 		},
 		{
+			"act": 4,
+			"speaker": "公主",
+			"text": "哈……哈……下次……我们一定守住城门……"
+		},
+		{
+			"act": 4,
+			"speaker": "蓝色的公主",
+			"text": "……嗯。……下次……城门口……先铺冰。"
+		},
+		{
+			"act": 4,
 			"actions": [
 				{
 					"do": "voice",

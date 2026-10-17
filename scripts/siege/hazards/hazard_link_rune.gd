@@ -10,6 +10,12 @@ var stone: Stone
 var linked := false
 var _line: Line2D
 var _busy := false
+## Boss 可选配置；原地图符文默认不变。
+var share := SHARE
+var role_zones := false
+var auto_link := false
+var life_override := 40.0
+var owner_ref: WeakRef
 
 
 class Stone extends Actor:
@@ -46,16 +52,22 @@ class Stone extends Actor:
 
 func _begin() -> void:
 	reaction_key = "hazard_link"
-	life = 40.0
+	life = life_override
 	stone = Stone.new()
 	stone.rune = self
 	get_parent().add_child(stone)
 	stone.global_position = global_position
 	stone.queue_redraw()
 	SiegeFx.ring(get_parent(), global_position, TRIGGER * 2.0, Color(1, 0.55, 0.85, 0.8), WARN)
+	if auto_link:
+		_warn_left = 0.0
+		link()
 
 
 func _active(_delta: float) -> void:
+	if owner_ref and not SiegeTools.valid_source(owner_ref.get_ref()):
+		_end()
+		return
 	if not is_instance_valid(stone):
 		life = 0.0
 		return
@@ -84,17 +96,22 @@ func link() -> void:
 	get_parent().add_child(_line)
 	_line.global_position = Vector2.ZERO
 	Audio.play("rune", -3.0, 0.1)
-	GameState.rule("痒感连线！一个被挠，另一个也会痒——打碎符文石！")
+	GameState.rule("机关连线！闷笑传递35%——打碎符文石！" if role_zones else "痒感连线！一个被挠，另一个也会痒——打碎符文石！")
 
 
 func _on_tickled(hit: HitData, c: PlayableCharacter) -> void:
-	if _busy or not linked or hit.source == self:
+	if _busy or not linked or hit.source == self or hit.tag == "tickle_echo":
 		return
 	var other: PlayableCharacter = director.blue if c == director.pink else director.pink
 	if other == null or not is_instance_valid(other):
 		return
 	_busy = true
-	tickle(other, hit.tickle * SHARE, hit.zone)
+	var source: Node = owner_ref.get_ref() if owner_ref else self
+	var h := HitData.make_tickle(source, hit.tickle * share)
+	h.tag = "tickle_echo"
+	h.zone = SiegeTools.zone(other, int(_t / 0.25)) if role_zones else hit.zone
+	h.reaction_variant = "link" if role_zones else ""
+	other.receive_hit(h)
 	_busy = false
 
 
@@ -117,3 +134,16 @@ func _end() -> void:
 	if is_instance_valid(stone):
 		stone.queue_free()
 	super()
+
+
+func _process(delta: float) -> void:
+	if SiegeTools.paused():
+		return
+	super(delta)
+
+
+func _exit_tree() -> void:
+	if is_instance_valid(director):
+		unlink()
+	if is_instance_valid(stone):
+		stone.queue_free()

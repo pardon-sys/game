@@ -25,6 +25,7 @@ var _idle_dir := Vector2.ZERO
 func _setup() -> void:
 	set_faction(Faction.Type.ALLY)
 	add_to_group("siege_temp")
+	add_to_group("siege_snowman")
 	collision_layer = 2
 	collision_mask = 1
 	var shape := CollisionShape2D.new()
@@ -63,7 +64,7 @@ func _tick(delta: float) -> void:
 	var best: Monster = null
 	var best_d := RANGE
 	for m in d.enemies_near(global_position, RANGE, false):
-		var dist := global_position.distance_to(m.global_position)
+		var dist := FortressRules.distance(m,global_position)
 		if dist < best_d:
 			best_d = dist
 			best = m
@@ -84,12 +85,12 @@ func _tick(delta: float) -> void:
 		velocity = Vector2.ZERO
 		if _hit_cd <= 0.0:
 			_hit_cd = THROW_CD
-			_throw(best.global_position)
+			_throw(FortressRules.point(best,global_position))
 	else:
-		velocity = global_position.direction_to(best.global_position) * SPEED
+		velocity = global_position.direction_to(FortressRules.point(best,global_position)) * SPEED
 		if best_d < 14.0 and _hit_cd <= 0.0:
 			_hit_cd = 1.0
-			best.receive_hit(HitData.make_attack(self, 1, 90.0))
+			best.receive_hit(HitData.make_attack(self, 1, 90.0, true))
 			Fx.burst(get_parent(), best.global_position + Vector2(0, -8), "snow", 4, 30.0, 0.4, Vector2(0, 30))
 	# 速度加成乘在这一帧算出来的速度上（每帧都从头算，不会越乘越大）
 	velocity = velocity.limit_length(SPEED) * stat_mul("speed")
@@ -122,7 +123,7 @@ func _throw(to: Vector2) -> void:
 		var d := SiegeDirector.current
 		if d:
 			for m in d.enemies_near(to, r, false):
-				m.receive_hit(HitData.make_attack(me if me else parent, dmg, 40.0))
+				m.receive_hit(HitData.make_attack(me if me else parent, dmg, 40.0, true))
 				m.add_buff("siege_chill", 1.0)
 		Fx.burst(parent, to + Vector2(0, -4), "snow", 8, 30.0, 0.5, Vector2(0, 40), Color(1, 1, 1))
 		SiegeFx.ring(parent, to, r, Color(0.95, 0.98, 1.0, 0.8), 0.3, 0.12))

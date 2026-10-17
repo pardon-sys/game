@@ -501,6 +501,1074 @@
 				"mech": "护卫围着工兵走、攻击靠近的公主；护送着搭成的敌塔第一次发动威力加倍。",
 				"how": "先拆护卫阵、再打工兵；冻住工兵能让搭建停下。"
 			}
+		},
+		{
+			"id": "sticky_pincer",
+			"name": "黏步夹击",
+			"color": "#90dca0",
+			"members": [
+				{
+					"key": "slime",
+					"count": 1,
+					"role": "leader"
+				},
+				{
+					"key": "rat",
+					"count": 2,
+					"role": "flank"
+				}
+			],
+			"radius": 70,
+			"cooldown": 30,
+			"trigger": "near",
+			"need_princess": 80,
+			"effect": {
+				"type": "sticky_pincer"
+			},
+			"formation": [
+				[
+					"slime",
+					1
+				],
+				[
+					"rat",
+					2
+				]
+			],
+			"intel": {
+				"desc": "史莱姆领着两只挠脚鼠。",
+				"mech": "预警后减速 2 秒，小鼠从两侧集结。",
+				"how": "离开预警圈，先击败领队。"
+			},
+			"siege_only": true,
+			"min_wave": 1
+		},
+		{
+			"id": "hook_relay",
+			"name": "钩索接力",
+			"color": "#a0d8e8",
+			"members": [
+				{
+					"key": "hook",
+					"count": 1,
+					"role": "leader"
+				},
+				{
+					"key": "gecko",
+					"count": 2,
+					"role": "passenger"
+				}
+			],
+			"radius": 80,
+			"cooldown": 30,
+			"trigger": "near",
+			"need_princess": 0,
+			"effect": {
+				"type": "hook_relay"
+			},
+			"formation": [
+				[
+					"hook",
+					1
+				],
+				[
+					"gecko",
+					2
+				]
+			],
+			"intel": {
+				"desc": "钩索怪与壁虎小队。",
+				"mech": "预警后沿钩索投送壁虎上墙。",
+				"how": "击败或冻结钩索怪；加固落点城墙。"
+			},
+			"siege_only": true,
+			"min_wave": 2
+		},
+		{
+			"id": "vine_pincer",
+			"name": "藤网合围",
+			"color": "#98c878",
+			"members": [
+				{
+					"key": "bind_vine",
+					"count": 1,
+					"role": "leader"
+				},
+				{
+					"key": "caterpillar",
+					"count": 2,
+					"role": "flank"
+				}
+			],
+			"radius": 70,
+			"cooldown": 30,
+			"trigger": "near",
+			"need_princess": 80,
+			"effect": {
+				"type": "vine_pincer"
+			},
+			"formation": [
+				[
+					"vine",
+					1
+				],
+				[
+					"caterpillar",
+					2
+				]
+			],
+			"intel": {
+				"desc": "藤怪领着毛毛虫。",
+				"mech": "预警后短暂定身 1 秒，毛毛虫趁机集结。",
+				"how": "先打藤怪；清凉雪花可解开束缚。"
+			},
+			"siege_only": true,
+			"min_wave": 4
+		},
+		{
+			"id": "escort_bear",
+			"name": "蟹盾熊扑",
+			"color": "#ecc070",
+			"members": [
+				{
+					"key": "hug_bear",
+					"count": 1,
+					"role": "leader"
+				},
+				{
+					"key": "shield_crab",
+					"count": 2,
+					"role": "guard"
+				}
+			],
+			"radius": 100,
+			"cooldown": 30,
+			"trigger": "near",
+			"need_princess": 0,
+			"effect": {
+				"type": "escort_bear"
+			},
+			"formation": [
+				[
+					"hug_bear",
+					1
+				],
+				[
+					"shield_crab",
+					2
+				]
+			],
+			"intel": {
+				"desc": "两只盾甲螃蟹保护小熊。",
+				"mech": "盾阵掩护小熊靠近；小熊受蓝色公主攻击仍会松手。",
+				"how": "绕后打蟹；用冰法救援搭档。"
+			},
+			"siege_only": true,
+			"min_wave": 6
+		},
+		{
+			"id": "melt_delivery",
+			"name": "搬运融塔",
+			"color": "#ffc890",
+			"members": [
+				{
+					"key": "carrier",
+					"count": 1,
+					"role": "leader"
+				},
+				{
+					"key": "warm_slime",
+					"count": 2,
+					"role": "passenger"
+				}
+			],
+			"radius": 90,
+			"cooldown": 30,
+			"trigger": "near",
+			"need_princess": 0,
+			"effect": {
+				"type": "melt_delivery"
+			},
+			"formation": [
+				[
+					"carrier",
+					1
+				],
+				[
+					"warm_slime",
+					2
+				]
+			],
+			"intel": {
+				"desc": "搬运小鬼运送暖炉史莱姆。",
+				"mech": "把两只史莱姆送到附近冰塔旁，沿用史莱姆融塔行为。",
+				"how": "冻结搬运者，或优先清掉暖炉史莱姆。"
+			},
+			"siege_only": true,
+			"min_wave": 7
+		},
+		{
+			"id": "jelly_guard",
+			"name": "水母护卫",
+			"color": "#c0a0ed",
+			"members": [
+				{
+					"key": "suck_jelly",
+					"count": 1,
+					"role": "leader"
+				},
+				{
+					"key": "glove",
+					"count": 2,
+					"role": "guard"
+				}
+			],
+			"radius": 90,
+			"cooldown": 30,
+			"trigger": "near",
+			"need_princess": 0,
+			"effect": {
+				"type": "jelly_guard"
+			},
+			"formation": [
+				[
+					"suck_jelly",
+					1
+				],
+				[
+					"glove",
+					2
+				]
+			],
+			"intel": {
+				"desc": "手套护送吸吸水母接近施法者。",
+				"mech": "保护水母并集结到蓝色公主附近，沿用各自施法干扰。",
+				"how": "先拆护卫，保持距离并用范围法术。"
+			},
+			"siege_only": true,
+			"min_wave": 8
+		},
+		{
+			"id": "bear_shield",
+			"name": "蟹盾风阵",
+			"color": "#ffd070",
+			"members": [
+				{
+					"key": "gale_bear",
+					"count": 1,
+					"role": "leader"
+				},
+				{
+					"key": "shield_crab",
+					"count": 3,
+					"role": "guard"
+				}
+			],
+			"radius": 180,
+			"cooldown": 9,
+			"trigger": "boss_command",
+			"need_princess": 0,
+			"effect": {
+				"type": "bear_shield"
+			},
+			"formation": [],
+			"intel": {
+				"desc": "熊统领与三只盾甲螃蟹。",
+				"mech": "三只盾蟹掩护熊统领吸引蓄力，沿用正面挡冰与护卫行为。",
+				"how": "绕后拆盾，或冻结熊打断吸引。"
+			},
+			"siege_only": true,
+			"min_wave": 6,
+			"busy_time": 0.9,
+			"windup": 0.12
+		},
+		{
+			"id": "bear_airlift",
+			"name": "旋风挠痒运兵",
+			"color": "#80ded8",
+			"members": [
+				{
+					"key": "gale_bear",
+					"count": 1,
+					"role": "leader"
+				},
+				{
+					"key": [
+						"hug_bear",
+						"spider",
+						"hedgehog",
+						"frog",
+						"octopus",
+						"barnacle"
+					],
+					"count": 2,
+					"role": "passenger"
+				}
+			],
+			"radius": 224,
+			"cooldown": 9,
+			"trigger": "boss_command",
+			"need_princess": 0,
+			"effect": {
+				"type": "bear_airlift"
+			},
+			"formation": [],
+			"intel": {
+				"desc": "熊统领借风投送现有小怪。",
+				"mech": "两个运输龙卷分别压地面与墙顶；加固城墙可阻止上墙。",
+				"how": "冻结熊或乘客，按落点预警躲开。"
+			},
+			"siege_only": true,
+			"min_wave": 6,
+			"busy_time": 0.9,
+			"windup": 0.12
+		},
+		{
+			"id": "bear_airlift_rage",
+			"name": "狂风双路运兵",
+			"color": "#80ded8",
+			"members": [
+				{
+					"key": "gale_bear",
+					"count": 1,
+					"role": "leader"
+				},
+				{
+					"key": [
+						"hug_bear",
+						"spider",
+						"hedgehog",
+						"frog",
+						"octopus",
+						"barnacle"
+					],
+					"count": 4,
+					"role": "passenger"
+				}
+			],
+			"radius": 224,
+			"cooldown": 9,
+			"trigger": "boss_command",
+			"need_princess": 0,
+			"effect": {
+				"type": "bear_airlift_rage"
+			},
+			"formation": [],
+			"intel": {
+				"desc": "狂暴熊统领的双路运兵。",
+				"mech": "每路两只现有小怪；运输途中冻结熊会立即取消。",
+				"how": "加固落点或冻结熊。"
+			},
+			"siege_only": true,
+			"min_wave": 6,
+			"busy_time": 0.9,
+			"windup": 0.12
+		},
+		{
+			"id": "bear_roll",
+			"name": "借风滚击",
+			"color": "#e8c090",
+			"members": [
+				{
+					"key": "gale_bear",
+					"count": 1,
+					"role": "leader"
+				},
+				{
+					"key": "hedgehog",
+					"count": 3,
+					"role": "roller"
+				}
+			],
+			"radius": 180,
+			"cooldown": 9,
+			"trigger": "boss_command",
+			"need_princess": 250,
+			"effect": {
+				"type": "bear_roll"
+			},
+			"formation": [],
+			"intel": {
+				"desc": "熊统领与三只刷子刺猬。",
+				"mech": "八向龙卷释放后，刺猬沿另有预警的路线接滚击。",
+				"how": "向侧面躲开；冻结领队可以打断预警。"
+			},
+			"siege_only": true,
+			"min_wave": 6,
+			"busy_time": 0.9,
+			"windup": 0.12
+		},
+		{
+			"id": "puppet_relay",
+			"name": "魔偶挠痒接力",
+			"color": "#f2a6d9",
+			"members": [
+				{
+					"key": "puppet_master",
+					"count": 1,
+					"role": "leader"
+				},
+				{
+					"key": [
+						"bind_vine",
+						"hug_bear",
+						"thigh_spider",
+						"ghost"
+					],
+					"count": 2,
+					"role": "tickler"
+				}
+			],
+			"radius": 360,
+			"cooldown": 9,
+			"trigger": "boss_command",
+			"need_princess": 0,
+			"effect": {
+				"type": "puppet_relay"
+			},
+			"formation": [],
+			"intel": {
+				"desc": "魔偶师与已有束缚 / 挠痒小怪。",
+				"mech": "接力小怪投送到受束缚目标附近，并催动最多两座新敌塔。",
+				"how": "拆掉共振钟楼，打断领队。"
+			},
+			"siege_only": true,
+			"min_wave": 9,
+			"windup": 0.12,
+			"busy_time": 0.9
+		},
+		{
+			"id": "puppet_relay_rage",
+			"name": "魔偶挠痒接力",
+			"color": "#f2a6d9",
+			"members": [
+				{
+					"key": "puppet_master",
+					"count": 1,
+					"role": "leader"
+				},
+				{
+					"key": [
+						"bind_vine",
+						"hug_bear",
+						"thigh_spider",
+						"ghost"
+					],
+					"count": 4,
+					"role": "tickler"
+				}
+			],
+			"radius": 360,
+			"cooldown": 9,
+			"trigger": "boss_command",
+			"need_princess": 0,
+			"effect": {
+				"type": "puppet_relay"
+			},
+			"formation": [],
+			"intel": {
+				"desc": "魔偶师与已有束缚 / 挠痒小怪。",
+				"mech": "接力小怪投送到受束缚目标附近，并催动最多两座新敌塔。",
+				"how": "拆掉共振钟楼，打断领队。"
+			},
+			"siege_only": true,
+			"min_wave": 9,
+			"windup": 0.12,
+			"busy_time": 0.9
+		},
+		{
+			"id": "hook_haunt",
+			"name": "钩索幽影",
+			"color": "#cf9cec",
+			"members": [
+				{
+					"key": "hook",
+					"count": 1,
+					"role": "leader"
+				},
+				{
+					"key": "ghost",
+					"count": 2,
+					"role": "partner"
+				}
+			],
+			"radius": 180,
+			"cooldown": 12,
+			"trigger": "near",
+			"need_princess": 320,
+			"effect": {
+				"type": "hook_haunt",
+				"joint": true
+			},
+			"formation": [
+				[
+					"hook",
+					1
+				],
+				[
+					"ghost",
+					2
+				]
+			],
+			"intel": {
+				"desc": "钩索幽影配合小队。",
+				"mech": "钩索最多拖行96像素，两只幽灵交叉接战。",
+				"how": "先击败参与者；拆除协作敌塔或冻结小怪可中断未完成联动。"
+			},
+			"siege_only": true,
+			"min_wave": 9,
+			"windup": 0.18,
+			"busy_time": 2.0300000000000002
+		},
+		{
+			"id": "bubble_roll",
+			"name": "泡泡滚刷",
+			"color": "#9fd8ff",
+			"members": [
+				{
+					"key": "bubble_fish",
+					"count": 2,
+					"role": "leader"
+				},
+				{
+					"key": "hedgehog",
+					"count": 2,
+					"role": "partner"
+				}
+			],
+			"radius": 180,
+			"cooldown": 14,
+			"trigger": "near",
+			"need_princess": 320,
+			"effect": {
+				"type": "bubble_roll",
+				"joint": true
+			},
+			"formation": [
+				[
+					"bubble_fish",
+					2
+				],
+				[
+					"hedgehog",
+					2
+				]
+			],
+			"intel": {
+				"desc": "泡泡滚刷配合小队。",
+				"mech": "泡泡困住目标1.6秒，两只刺猬轮流滚刷。",
+				"how": "先击败参与者；拆除协作敌塔或冻结小怪可中断未完成联动。"
+			},
+			"siege_only": true,
+			"min_wave": 6,
+			"windup": 0.2,
+			"busy_time": 2.05
+		},
+		{
+			"id": "shield_melt",
+			"name": "钳盾融塔",
+			"color": "#ffd070",
+			"members": [
+				{
+					"key": "warm_slime",
+					"count": 1,
+					"role": "leader"
+				},
+				{
+					"key": "shield_crab",
+					"count": 2,
+					"role": "partner"
+				}
+			],
+			"radius": 180,
+			"cooldown": 18,
+			"trigger": "near",
+			"need_princess": 0,
+			"effect": {
+				"type": "shield_melt",
+				"joint": true
+			},
+			"formation": [
+				[
+					"warm_slime",
+					1
+				],
+				[
+					"shield_crab",
+					2
+				]
+			],
+			"intel": {
+				"desc": "钳盾融塔配合小队。",
+				"mech": "蟹盾护送暖炉史莱姆六秒，集中贴塔融冰。",
+				"how": "先击败参与者；拆除协作敌塔或冻结小怪可中断未完成联动。"
+			},
+			"siege_only": true,
+			"min_wave": 7,
+			"windup": 0.25,
+			"busy_time": 6.5
+		},
+		{
+			"id": "magic_recoil",
+			"name": "魔力回旋滚击",
+			"color": "#c890ff",
+			"members": [
+				{
+					"key": "mana_jelly",
+					"count": 1,
+					"role": "leader"
+				},
+				{
+					"key": "hedgehog",
+					"count": 2,
+					"role": "partner"
+				}
+			],
+			"radius": 180,
+			"cooldown": 12,
+			"trigger": "near",
+			"need_princess": 320,
+			"effect": {
+				"type": "magic_recoil",
+				"joint": true
+			},
+			"formation": [
+				[
+					"mana_jelly",
+					1
+				],
+				[
+					"hedgehog",
+					2
+				]
+			],
+			"intel": {
+				"desc": "魔力回旋滚击配合小队。",
+				"mech": "水母充能，刺猬滚击后回旋再撞一次。",
+				"how": "先击败参与者；拆除协作敌塔或冻结小怪可中断未完成联动。"
+			},
+			"siege_only": true,
+			"min_wave": 5,
+			"windup": 0.18,
+			"busy_time": 2.23
+		},
+		{
+			"id": "twin_relay",
+			"name": "双子幽影接力",
+			"color": "#f2a6d9",
+			"members": [
+				{
+					"key": "twin_ghost",
+					"count": 2,
+					"role": "leader"
+				},
+				{
+					"key": "ghost",
+					"count": 2,
+					"role": "partner"
+				}
+			],
+			"radius": 240,
+			"cooldown": 16,
+			"trigger": "near",
+			"need_princess": 320,
+			"effect": {
+				"type": "twin_relay",
+				"joint": true
+			},
+			"formation": [
+				[
+					"twin_ghost",
+					1
+				],
+				[
+					"ghost",
+					2
+				]
+			],
+			"intel": {
+				"desc": "双子幽影接力配合小队。",
+				"mech": "同一对双子连线脉冲，两只幽灵交替接战四轮。",
+				"how": "先击败参与者；拆除协作敌塔或冻结小怪可中断未完成联动。"
+			},
+			"siege_only": true,
+			"min_wave": 9,
+			"windup": 0.15,
+			"busy_time": 2.0,
+			"paired_twins": true
+		},
+		{
+			"id": "glue_roll",
+			"name": "黏池滚球",
+			"color": "#c5e878",
+			"members": [
+				{
+					"key": "enemy_glue",
+					"count": 1,
+					"role": "leader"
+				},
+				{
+					"key": "hedgehog",
+					"count": 2,
+					"role": "partner"
+				}
+			],
+			"radius": 180,
+			"cooldown": 12,
+			"trigger": "near",
+			"need_princess": 320,
+			"effect": {
+				"type": "glue_roll",
+				"joint": true
+			},
+			"formation": [
+				[
+					"hedgehog",
+					2
+				]
+			],
+			"intel": {
+				"desc": "黏池滚球配合小队。",
+				"mech": "黏胶喷泉锁定落点，刺猬从黏池两侧夹击。",
+				"how": "先击败参与者；拆除协作敌塔或冻结小怪可中断未完成联动。"
+			},
+			"siege_only": true,
+			"min_wave": 5,
+			"windup": 0.18,
+			"busy_time": 2.43
+		},
+		{
+			"id": "wind_transport",
+			"name": "风车顺风运兵",
+			"color": "#b5edf3",
+			"members": [
+				{
+					"key": "enemy_windmill",
+					"count": 1,
+					"role": "leader"
+				},
+				{
+					"key": "bat_swarm",
+					"count": 1,
+					"role": "partner"
+				},
+				{
+					"key": "hug_bear",
+					"count": 2,
+					"role": "partner"
+				}
+			],
+			"radius": 180,
+			"cooldown": 16,
+			"trigger": "near",
+			"need_princess": 320,
+			"effect": {
+				"type": "wind_transport",
+				"joint": true
+			},
+			"formation": [
+				[
+					"bat_swarm",
+					1
+				],
+				[
+					"hug_bear",
+					2
+				]
+			],
+			"intel": {
+				"desc": "风车顺风运兵配合小队。",
+				"mech": "风车加速蝠群运输两只拥抱熊，落地包夹；加固墙段仍阻止上墙。",
+				"how": "先击败参与者；拆除协作敌塔或冻结小怪可中断未完成联动。"
+			},
+			"siege_only": true,
+			"min_wave": 5,
+			"windup": 0.2,
+			"busy_time": 1.65
+		},
+		{
+			"id": "drop_hook",
+			"name": "空投牵引包夹",
+			"color": "#80cfee",
+			"members": [
+				{
+					"key": "enemy_airdrop",
+					"count": 1,
+					"role": "leader"
+				},
+				{
+					"key": "hook",
+					"count": 1,
+					"role": "partner"
+				}
+			],
+			"radius": 180,
+			"cooldown": 18,
+			"trigger": "near",
+			"need_princess": 320,
+			"effect": {
+				"type": "drop_hook",
+				"joint": true
+			},
+			"formation": [
+				[
+					"hook",
+					1
+				]
+			],
+			"intel": {
+				"desc": "空投牵引包夹配合小队。",
+				"mech": "钩索把目标拖向标出的空投落点，不额外增加投兵数量或上限。",
+				"how": "先击败参与者；拆除协作敌塔或冻结小怪可中断未完成联动。"
+			},
+			"siege_only": true,
+			"min_wave": 5,
+			"windup": 0.15,
+			"busy_time": 1.7999999999999998
+		},
+		{
+			"id": "web_battery",
+			"name": "蛛网校射",
+			"color": "#f2a6d9",
+			"members": [
+				{
+					"key": "enemy_brush_battery",
+					"count": 1,
+					"role": "leader"
+				},
+				{
+					"key": "thigh_spider",
+					"count": 2,
+					"role": "partner"
+				}
+			],
+			"radius": 180,
+			"cooldown": 14,
+			"trigger": "near",
+			"need_princess": 320,
+			"effect": {
+				"type": "web_battery",
+				"joint": true
+			},
+			"formation": [
+				[
+					"thigh_spider",
+					2
+				]
+			],
+			"intel": {
+				"desc": "蛛网校射配合小队。",
+				"mech": "蜘蛛限制目标，轰击塔同步三连射，实际角色决定工具和弱点。",
+				"how": "先击败参与者；拆除协作敌塔或冻结小怪可中断未完成联动。"
+			},
+			"siege_only": true,
+			"min_wave": 8,
+			"windup": 0.15,
+			"busy_time": 2.4
+		},
+		{
+			"id": "bell_repair",
+			"name": "共振抢修",
+			"color": "#ffd070",
+			"members": [
+				{
+					"key": "enemy_resonance",
+					"count": 1,
+					"role": "leader"
+				},
+				{
+					"key": "goblin_engineer",
+					"count": 1,
+					"role": "partner"
+				}
+			],
+			"radius": 180,
+			"cooldown": 18,
+			"trigger": "near",
+			"need_princess": 0,
+			"effect": {
+				"type": "bell_repair",
+				"joint": true
+			},
+			"formation": [
+				[
+					"goblin_engineer",
+					1
+				]
+			],
+			"intel": {
+				"desc": "共振抢修配合小队。",
+				"mech": "工兵持续维修1.5秒，完成后恢复受损敌塔15%最大血量；死亡的塔不能修复。",
+				"how": "先击败参与者；拆除协作敌塔或冻结小怪可中断未完成联动。"
+			},
+			"siege_only": true,
+			"min_wave": 7,
+			"windup": 0.25,
+			"busy_time": 2.3
+		},
+		{
+			"id": "crab_rat",
+			"name": "夹脚脱鞋",
+			"color": "#ff9a80",
+			"members": [
+				{
+					"key": "crab",
+					"count": 1,
+					"role": "leader"
+				},
+				{
+					"key": "rat",
+					"count": 2,
+					"role": "flank"
+				}
+			],
+			"radius": 70,
+			"cooldown": 26,
+			"trigger": "near",
+			"need_princess": 70,
+			"effect": {
+				"type": "crab_rat"
+			},
+			"formation": [
+				[
+					"crab",
+					1
+				],
+				[
+					"rat",
+					2
+				]
+			],
+			"intel": {
+				"desc": "钳钳蟹带着两只挠脚鼠。",
+				"mech": "预警后钳钳蟹夹住脚踝（定身 2 秒），挠脚鼠扒掉鞋子挠脚心（脚心暴露）。",
+				"how": "看到预警就躲开；先打钳钳蟹，它一松钳小鼠就散了。"
+			},
+			"siege_only": true,
+			"min_wave": 2
+		},
+		{
+			"id": "crab_tentacle",
+			"name": "夹脚缠腿",
+			"color": "#c890ff",
+			"members": [
+				{
+					"key": "crab",
+					"count": 1,
+					"role": "leader"
+				},
+				{
+					"key": "tentacle",
+					"count": 2,
+					"role": "flank"
+				}
+			],
+			"radius": 70,
+			"cooldown": 26,
+			"trigger": "near",
+			"need_princess": 70,
+			"effect": {
+				"type": "crab_tentacle"
+			},
+			"formation": [
+				[
+					"crab",
+					1
+				],
+				[
+					"mini_tentacle",
+					2
+				]
+			],
+			"intel": {
+				"desc": "钳钳蟹和两根小触手。",
+				"mech": "钳钳蟹夹住脚踝，小触手顺着小腿往上缠着挠（余痒 4 秒，挣脱要多按几下）。",
+				"how": "先打小触手；蓝色公主的清凉雪花能解开。"
+			},
+			"siege_only": true,
+			"min_wave": 4
+		},
+		{
+			"id": "imp_slime",
+			"name": "史莱姆弹射",
+			"color": "#90e0ff",
+			"members": [
+				{
+					"key": "imp",
+					"count": 1,
+					"role": "leader"
+				},
+				{
+					"key": "split_slime",
+					"count": 2,
+					"role": "ammo"
+				}
+			],
+			"radius": 120,
+			"cooldown": 26,
+			"trigger": "near",
+			"need_princess": 220,
+			"effect": {
+				"type": "imp_slime"
+			},
+			"formation": [
+				[
+					"imp",
+					1
+				],
+				[
+					"split_slime",
+					2
+				]
+			],
+			"intel": {
+				"desc": "机械小鬼背着两只分裂史莱姆。",
+				"mech": "小鬼把史莱姆当弹药弹射过来，粘在身上分裂成更多小的一起挠（减速 3 秒）。",
+				"how": "离小鬼远一点；冰锥能在半空打碎史莱姆。"
+			},
+			"siege_only": true,
+			"min_wave": 5
+		},
+		{
+			"id": "bear_tentacle",
+			"name": "熊抱触手",
+			"color": "#ffb0c8",
+			"members": [
+				{
+					"key": "hug_bear",
+					"count": 1,
+					"role": "leader"
+				},
+				{
+					"key": "tentacle",
+					"count": 2,
+					"role": "flank"
+				}
+			],
+			"radius": 70,
+			"cooldown": 30,
+			"trigger": "near",
+			"need_princess": 60,
+			"effect": {
+				"type": "bear_tentacle"
+			},
+			"formation": [
+				[
+					"hug_bear",
+					1
+				],
+				[
+					"mini_tentacle",
+					2
+				]
+			],
+			"intel": {
+				"desc": "拥抱小熊身边跟着两根小触手。",
+				"mech": "小熊从背后抱住（连按挣脱），小触手趁机从前面挠。",
+				"how": "被抱住就连按挣扎；冰链 / 清凉雪花能帮忙。"
+			},
+			"siege_only": true,
+			"min_wave": 6
 		}
 	]
 }

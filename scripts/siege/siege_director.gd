@@ -50,6 +50,7 @@ static func total_waves() -> int:
 static func ability_rate() -> float:
 	return float(current.data.get("ability_rate", 1.0)) if current else 1.0
 
+var reinforcements := FinalReinforcements.new()
 var data := {}
 var wave := 1
 ## prep / fight / failed / won
@@ -90,6 +91,7 @@ var kills := 0
 
 
 func _ready() -> void:
+	reinforcements.director = self
 	current = self
 	add_to_group("combo_effect_handler")
 	var parsed: Variant = JSON.parse_string(FileAccess.get_file_as_string(WAVES_PATH))
@@ -171,6 +173,10 @@ func entities() -> Node:
 
 func _setup() -> void:
 	var lv := level()
+	entities().child_entered_tree.connect(_track_final_child)
+	# 小象限减少同一地板合批命中的灯数量，批量造塔也保留原有 PointLight2D 的亮度。
+	for layer: TileMapLayer in lv.find_children("*", "TileMapLayer", true, false):
+		layer.rendering_quadrant_size = 4
 	for n in lv.find_children("*", "SiegeWall", true, false):
 		var w := n as SiegeWall
 		w.director = self
@@ -223,8 +229,19 @@ func _setup() -> void:
 	teamwork = MonsterTeamwork.new()
 	teamwork.spawn_func = func(k: String, at: Vector2) -> Monster: return spawn(k, "", at)
 	teamwork.monsters_func = func() -> Array: return monsters
+	teamwork.partners_func = func() -> Array: return get_tree().get_nodes_in_group("siege_enemy_tower")
+	teamwork.cd_divisor = ability_rate()
+	teamwork.allowed_func = func(t: Dictionary) -> bool: return state == "fight" and wave >= int(t.get("min_wave", 1))
+	teamwork.can_start_func = SiegeCooperation.can_start
+	teamwork.formation_gate_func = func(_t: Dictionary, n: int) -> bool:
+		return not (is_final_fortress() and reinforcements.active) or reinforcements.capacity() >= n
+	SiegeTeamEffects.register()
+	# 配合技不进情报（只有飘字提示「怪物配合：××！」和公主的受挠台词）
 	teamwork.triggered.connect(func(_id: String, _at: Vector2):
 		Audio.play("combo", -4.0, 0.05))
+	teamwork.fired.connect(func(id: String, _at: Vector2, target: Node):
+		if target is PlayableCharacter:
+			SiegeTeamEffects.say_later(target, id))
 	add_child(teamwork)
 	features = WaveFeatures.new()
 	features.director = self
@@ -293,11 +310,15 @@ func start_now() -> void:
 
 
 func _begin_fight() -> void:
+	victory_locked = false
+	battle_generation += 1
 	# 第 1 波开打前：派对者的激励（开局自带的那个）
 	if town.has_pending_start() and not _busy:
 		_busy = true
 		await town.grant_for(0)
 		_busy = false
+	reinforcements.stop()
+	reinforcements.director = self
 	_queue.clear()
 	_fight_t = 0.0
 	next_left = -1.0
@@ -430,6 +451,7 @@ func _process(delta: float) -> void:
 					teamwork.spawn_formation(str(q["formation"]), spawn_pos(str(q["from"])))
 				else:
 					spawn(str(q["monster"]), str(q["from"]))
+			reinforcements.tick(delta)
 			while not _hazards.is_empty() and float(_hazards[0]["t"]) <= _fight_t:
 				var hz: Dictionary = _hazards.pop_front()
 				if hz.has("combo"):
@@ -442,7 +464,7 @@ func _process(delta: float) -> void:
 					next_left = -1.0
 					if not _boss_gate_told:
 						_boss_gate_told = true
-						GameState.notify("打倒小 Boss 才能进入下一波！")
+						GameState.notify("母车存活期间增援不会停止！" if is_final_fortress() else "打倒小 Boss 才能进入下一波！")
 				elif wave >= total_waves():
 					if monsters.is_empty():
 						_clear_wave()
@@ -473,6 +495,13 @@ func _clamp_monsters() -> void:
 
 
 var _boss_gate_told := false
+var victory_locked := false
+var battle_generation := 0
+
+
+## 这一波是狂欢要塞的最终波吗（波次表里有 fortress_config；增援上限、视野、HUD、配合技都按它）。
+func is_final_fortress(n := -1) -> bool:
+	return wave_data(n).has("fortress_config")
 
 
 ## 这一波的小 Boss 还在场上（或还没出场）：打倒它才进下一波。
@@ -483,7 +512,7 @@ func boss_alive() -> bool:
 		if str(q.get("monster", "")) == str(wave_data()["boss"]):
 			return true
 	for m in monsters:
-		if m is TrollGeneral and is_instance_valid(m) and m.is_alive():
+		if is_instance_valid(m) and m.is_alive() and m.stats and m.stats.reaction_key == str(wave_data()["boss"]):
 			return true
 	return false
 
@@ -522,15 +551,33 @@ func monster_scene(key: String) -> String:
 
 ## 会飞 / 飘的怪：出生时从烟里淡入，不钻地。
 const FLYERS := ["bat", "bat_swarm", "fairy", "ghost", "twin_ghost", "suck_jelly", "glove", "mana_jelly", "bubble_fish"]
+
+
+## 换位后粉色可留在墙顶；蓝色仍是默认目标，她不在墙上时才找粉色。
+func wall_target() -> PlayableCharacter:
+	for c in [blue, pink]:
+		if is_instance_valid(c) and c.is_alive() and not Downed.is_downed(c) and is_on_wall(c):
+			return c
+	return null
+
+
 ## true 时 spawn 不放出生动画（测试 / 成批生成）
 var quiet_spawn := false
 
 
-func spawn(key: String, from := "bottom", at = null) -> Monster:
+func spawn(key: String, from := "bottom", at = null, ticket := -1) -> Monster:
+	if victory_locked:
+		return null
+	if key == "carnival_fortress" and not at is Vector2:
+		at = Vector2(map_size().x / 2.0, map_size().y - 220.0)
 	var path := monster_scene(key)
 	if path == "" or not ResourceLoader.exists(path):
 		push_warning("攻防战：没有这种怪 " + key)
 		return null
+	if is_final_fortress() and key != "carnival_fortress":
+		if ticket >= 0:
+			if not reinforcements.consume(ticket): return null
+		elif reinforcements.capacity() <= 0: return null
 	var m := load(path).instantiate() as Monster
 	if m == null:
 		return null
@@ -540,6 +587,7 @@ func spawn(key: String, from := "bottom", at = null) -> Monster:
 		if not sites.is_empty():
 			site = sites.pick_random()
 	var pos: Vector2 = at if at is Vector2 else (site.global_position + Vector2(randf_range(-30, 30), randf_range(-20, 20)) if site else spawn_pos(from))
+	m.set_meta("siege_director_spawn",true)
 	_as_minion(m)
 	entities().add_child(m)
 	m.global_position = pos
@@ -553,10 +601,13 @@ func spawn(key: String, from := "bottom", at = null) -> Monster:
 	m.set_home(pos, 9999.0)
 	m.died.connect(_on_monster_died)
 	monsters.append(m)
+	_grid_frame = -1
 	# 出生动画：从地里钻出来（会飞的从烟里淡入）
 	if not quiet_spawn:
 		SiegeFx.burrow(m, FLYERS.has(key))
 	intel.discover(key)
+	if key == "carnival_fortress" and is_final_fortress():
+		reinforcements.start(self)
 	if from == "hole":
 		Fx.burst(m.get_parent(), pos, "dust", 8, 40.0, 0.5, Vector2(0, 40), Color(0.6, 0.5, 0.4))
 	return m
@@ -565,7 +616,7 @@ func spawn(key: String, from := "bottom", at = null) -> Monster:
 ## 攻防战里的怪都是小怪：前几层的 Boss（挠痒巨魔……）不弹 Boss 血条、不召唤；所有怪都不掉钥匙。
 ## 小 Boss 巨魔将军除外（它有自己的血条和出场）。
 func _as_minion(m: Monster) -> void:
-	if m is TrollGeneral or m.stats == null:
+	if m is SiegeBoss or m.stats == null:
 		return
 	var old_boss := m.stats.is_boss
 	var has_key := m.stats.drops.any(func(dr): return dr != null and dr.item != null and dr.item.category == ItemData.Category.KEY)
@@ -1090,6 +1141,9 @@ func enemies_near(pos: Vector2, r: float, include_fog := true) -> Array[Monster]
 					if m is TickleGhost and not (m as TickleGhost).revealed:
 						continue   # 没显形的幽灵不算（打不到，也不该被选成目标）
 					out.append(m)
+	for giant in get_tree().get_nodes_in_group("fortress"):
+		if SiegeTools.alive(giant) and not out.has(giant) and FortressRules.distance(giant,pos) <= r:
+			out.append(giant)
 	return out
 
 
@@ -1109,12 +1163,19 @@ func densest(r := 40.0, near = null, within := INF) -> Variant:
 		var m := monsters[i]
 		if not is_instance_valid(m):
 			continue
-		if near is Vector2 and m.global_position.distance_to(near) > within:
+		if near is Vector2 and FortressRules.distance(m,near) > within:
 			continue
-		var n := enemies_near(m.global_position, r).size()
+		var aim: Vector2 = FortressRules.point(m,near) if near is Vector2 else m.global_position
+		var n := enemies_near(aim, r).size()
 		if n > best_n:
 			best_n = n
-			best = m.global_position
+			best = aim
+	# Sampling must not omit the one large hull simply because it sits between samples.
+	if near is Vector2:
+		for giant in get_tree().get_nodes_in_group("fortress"):
+			if SiegeTools.alive(giant) and FortressRules.distance(giant,near)<=within:
+				var aim := FortressRules.point(giant,near)
+				if enemies_near(aim,r).size()>best_n: best=aim
 	return best
 
 
@@ -1178,26 +1239,25 @@ func _on_down(c: PlayableCharacter) -> bool:
 
 
 func _down_seq(c: PlayableCharacter) -> void:
+	var epoch := battle_generation
 	await get_tree().create_timer(0.8).timeout
-	if not is_instance_valid(c):
+	if not is_instance_valid(c) or epoch != battle_generation or victory_locked:
 		return
 	var key := ""
 	if c.is_laugh_defeat() and c.has_method("defeat_source_key"):
 		key = str(c.call("defeat_source_key"))
 	if key != "" and state != "failed":
 		# 等小剧场播完，最多 12 秒（CG 卡住时不能让后面的倒地 / 复活一直不发生）
-		Characters.scope(c.character_id)
 		var done := [false]
 		var job := func():
-			await CG.play_death(key)
+			await CG.play_death(key, c.character_id)
 			done[0] = true
 		job.call()
 		var waited := 0.0
 		while not done[0] and waited < 12.0 and is_instance_valid(c):
 			await get_tree().process_frame
 			waited += get_process_delta_time()
-		Characters.unscope()
-	if not is_instance_valid(c):
+	if not is_instance_valid(c) or epoch != battle_generation or victory_locked:
 		return
 	if c == blue:
 		# 倒在原地：友军士兵过来把她抬上城墙复活；没人来的话 BLUE_REVIVE 秒后自己起来；粉色公主也能按住 E 救
@@ -1322,6 +1382,12 @@ func _fail() -> void:
 
 ## 清场：怪物、陷阱、敌塔里关着的人……全部收掉；临时装备解开。
 func clear_field() -> void:
+	reinforcements.stop()
+	battle_generation += 1
+	if features:
+		features.end()
+	for boss in get_tree().get_nodes_in_group("fortress"):
+		if is_instance_valid(boss.mechanisms): boss.mechanisms.cancel_all()
 	for m in monsters:
 		if is_instance_valid(m):
 			m.queue_free()
@@ -1334,6 +1400,7 @@ func clear_field() -> void:
 		n.queue_free()
 	for c: PlayableCharacter in [pink, blue]:
 		if c and is_instance_valid(c):
+			c.end_forced_move()
 			for k in ["siege_dragged", "siege_netted", "siege_bubbled", "siege_chained"]:
 				c.set_meta(k, false)
 			if c.status:
@@ -1384,6 +1451,11 @@ func reset_after_fail() -> void:
 		blue.global_position = Vector2(gate_pos.x + 16.0, wall_top_y() + 4.0)
 
 
+## 狂欢要塞被打倒：胜利演出在 FortressFinale（残兵撤退、车身崩塌，演完 _win）。
+func final_boss_defeated(boss: CarnivalFortress) -> void:
+	FortressFinale.play(self, boss)
+
+
 func _win() -> void:
 	_busy = true
 	features.end()
@@ -1408,3 +1480,7 @@ func retreat() -> void:
 	var main := get_tree().get_first_node_in_group("main")
 	if main and main.has_method("change_level"):
 		main.change_level(Floors.scene("floor_06_war"))
+
+## 最终波里不经过 spawn 生出来的怪（分裂史莱姆的小史莱姆……）也要占增援配额、胜利时一起清掉（FinalReinforcements.track_child）。
+func _track_final_child(node: Node) -> void:
+	reinforcements.track_child(node)

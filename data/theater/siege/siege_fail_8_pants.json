@@ -42,6 +42,7 @@
 	},
 	"steps": [
 		{
+			"act": 1,
 			"actions": [
 				{
 					"do": "fade_in",
@@ -55,8 +56,9 @@
 			"wait": 0.5
 		},
 		{
+			"act": 1,
 			"speaker": "",
-			"text": "（魔力吸吸水母吸住了蓝色公主的后背。腿根揉揉塔的小手一只接一只地飞上城墙）",
+			"text": "（吸吸水母飘到两个人头顶，触须吸住手腕；痒痒手套飞过来，手指张得开开的）",
 			"actions": [
 				{
 					"do": "enter",
@@ -79,26 +81,20 @@
 			]
 		},
 		{
+			"act": 1,
 			"speaker": "蓝色的公主",
-			"text": "……魔力……被吸走了。……冰……放不出来。"
+			"text": "……魔力……被吸了。……放不出来。"
 		},
 		{
+			"act": 1,
 			"speaker": "公主",
-			"text": "我、我来帮你——呀，幽灵手套抓住我了！"
+			"text": "我、我来敲掉它！……哇，手套抓住我的锤子了！"
 		},
 		{
+			"act": 1,
 			"speaker": "",
-			"text": "（水母的触手钻进蓝色公主抬起的腋下打转；幽灵手套从后面挠粉色公主的腰）",
+			"text": "（手套们夺走锤子，一只抓住她的脚踝把鞋子剥掉；水母的触须垂下来，吸盘贴上两个人）",
 			"actions": [
-				{
-					"do": "tickle",
-					"who": "blue",
-					"by": "foe2",
-					"repeat": 8,
-					"interval": 0.22,
-					"fx": "brush",
-					"zone": "armpit"
-				},
 				{
 					"do": "tickle",
 					"who": "pink",
@@ -106,22 +102,8 @@
 					"repeat": 8,
 					"interval": 0.22,
 					"fx": "hand",
-					"zone": "waist"
-				}
-			]
-		},
-		{
-			"speaker": "蓝色的公主",
-			"text": "……腋、腋下……一抬手……就……"
-		},
-		{
-			"speaker": "公主",
-			"text": "腰、腰！手套在挠腰……嘻嘻嘻！"
-		},
-		{
-			"speaker": "",
-			"text": "（飞来的小手落在蓝色公主的大腿上，拇指按进腿根，一圈一圈地揉）",
-			"actions": [
+					"zone": "sole"
+				},
 				{
 					"do": "tickle",
 					"who": "blue",
@@ -130,7 +112,19 @@
 					"interval": 0.22,
 					"fx": "brush",
 					"zone": "thigh"
-				},
+				}
+			]
+		},
+		{
+			"act": 1,
+			"speaker": "公主",
+			"text": "鞋、鞋子——手套你们怎么也会脱鞋！"
+		},
+		{
+			"act": 2,
+			"speaker": "",
+			"text": "（手套的五根手指张开，一根根插进她的趾缝，像梳子一样来回梳，大拇指按着脚心揉）",
+			"actions": [
 				{
 					"do": "tickle",
 					"who": "pink",
@@ -138,33 +132,19 @@
 					"repeat": 8,
 					"interval": 0.22,
 					"fx": "hand",
-					"zone": "armpit"
+					"zone": "sole"
 				}
 			]
 		},
 		{
-			"speaker": "蓝色的公主",
-			"text": "……腿根……外面的小手揉……裤子里的手也揉……两层……"
-		},
-		{
+			"act": 2,
 			"speaker": "公主",
-			"text": "她、她的腿根被揉了——你们欺负她最怕的地方！",
-			"actions": [
-				{
-					"do": "bubble",
-					"who": "pink",
-					"kind": "laugh"
-				},
-				{
-					"do": "bubble",
-					"who": "blue",
-					"kind": "laugh"
-				}
-			]
+			"text": "嘻嘻嘻！梳、梳趾缝——哈哈哈手指好多！"
 		},
 		{
+			"act": 2,
 			"speaker": "",
-			"text": "（又飞来两只，一左一右，轮流捏蓝色公主的屁股；手套也学着去捏粉色公主的）",
+			"text": "（水母的吸盘顺着蓝色公主的大腿内侧一个接一个往上吸，吸到腿根就一吸一放；另一只手套轮流捏着她的屁股）",
 			"actions": [
 				{
 					"do": "tickle",
@@ -174,6 +154,194 @@
 					"interval": 0.22,
 					"fx": "brush",
 					"zone": "butt"
+				}
+			]
+		},
+		{
+			"act": 2,
+			"speaker": "蓝色的公主",
+			"text": "……水母……吸着……裤子……揉着……轮、轮流……"
+		},
+		{
+			"act": 2,
+			"speaker": "公主",
+			"text": "蓝、蓝色的……你都没魔力了……还嘴硬哈哈哈！",
+			"actions": [
+				{
+					"do": "bubble",
+					"who": "pink",
+					"kind": "laugh"
+				},
+				{
+					"do": "bubble",
+					"who": "blue",
+					"kind": "laugh"
+				}
+			]
+		},
+		{
+			"act": 2,
+			"speaker": "蓝色的公主",
+			"text": "……嘴硬……裤子……管不着。"
+		},
+		{
+			"act": 3,
+			"speaker": "",
+			"text": "（魔力一边被吸一边被搅乱，蓝色公主体内剩下的那一点挤在一起，疲倦先满了）",
+			"actions": [
+				{
+					"do": "pose",
+					"who": "pink",
+					"visual": "helpless_2"
+				},
+				{
+					"do": "pose",
+					"who": "blue",
+					"visual": "helpless_2"
+				},
+				{
+					"do": "voice",
+					"state": "laugh"
+				}
+			]
+		},
+		{
+			"act": 3,
+			"speaker": "蓝色的公主",
+			"text": "……裤子……里的……也全部……给你。"
+		},
+		{
+			"act": "burst",
+			"speaker": "",
+			"text": "（冰蓝色的星光炸开，水母吸进太多魔力，冻成一盏冰灯咕噜噜滚开）",
+			"actions": [
+				{
+					"do": "flash",
+					"time": 0.8
+				},
+				{
+					"do": "sfx",
+					"sound": "star_burst",
+					"volume": -1.0
+				},
+				{
+					"do": "sfx",
+					"sound": "water_release",
+					"volume": -2.0
+				},
+				{
+					"do": "shake",
+					"who": "blue",
+					"time": 0.5
+				},
+				{
+					"do": "bubble",
+					"who": "blue",
+					"kind": "surprise"
+				},
+				{
+					"do": "move",
+					"who": "foe1",
+					"to": [
+						-94,
+						-6
+					],
+					"time": 0.25
+				},
+				{
+					"do": "move",
+					"who": "foe2",
+					"to": [
+						94,
+						-6
+					],
+					"time": 0.25
+				}
+			],
+			"wait": 1.0
+		},
+		{
+			"act": 3,
+			"speaker": "公主",
+			"text": "好、好亮——呜哇，我、我也——！"
+		},
+		{
+			"act": "burst",
+			"speaker": "",
+			"text": "（星光接着从她身上炸开，手套们被冲得像落叶一样飘走）",
+			"actions": [
+				{
+					"do": "flash",
+					"time": 0.8
+				},
+				{
+					"do": "sfx",
+					"sound": "star_burst",
+					"volume": -1.0
+				},
+				{
+					"do": "sfx",
+					"sound": "water_release",
+					"volume": -2.0
+				},
+				{
+					"do": "shake",
+					"who": "pink",
+					"time": 0.5
+				},
+				{
+					"do": "bubble",
+					"who": "pink",
+					"kind": "surprise"
+				},
+				{
+					"do": "move",
+					"who": "foe1",
+					"to": [
+						-94,
+						-6
+					],
+					"time": 0.25
+				},
+				{
+					"do": "move",
+					"who": "foe2",
+					"to": [
+						94,
+						-6
+					],
+					"time": 0.25
+				}
+			],
+			"wait": 1.0
+		},
+		{
+			"act": 3,
+			"speaker": "蓝色的公主",
+			"text": "……呼。……空了。……真的……空了。"
+		},
+		{
+			"act": 3,
+			"speaker": "",
+			"text": "（冰灯化开，水母飘了回来，手套们也重新飞了过来。刚放空魔力的两个人一碰就叫）",
+			"actions": [
+				{
+					"do": "move",
+					"who": "foe1",
+					"to": [
+						-44,
+						0
+					],
+					"time": 0.6
+				},
+				{
+					"do": "move",
+					"who": "foe2",
+					"to": [
+						44,
+						0
+					],
+					"time": 0.6
 				},
 				{
 					"do": "tickle",
@@ -182,21 +350,45 @@
 					"repeat": 8,
 					"interval": 0.22,
 					"fx": "hand",
-					"zone": "butt"
+					"zone": "sole"
+				},
+				{
+					"do": "tickle",
+					"who": "blue",
+					"by": "foe2",
+					"repeat": 8,
+					"interval": 0.22,
+					"fx": "brush",
+					"zone": "thigh"
 				}
 			]
 		},
 		{
-			"speaker": "蓝色的公主",
-			"text": "……哈、哈哈……左、右……轮流……不准……"
-		},
-		{
+			"act": 3,
 			"speaker": "公主",
-			"text": "我、我也被捏了——哈哈哈！"
+			"text": "呀啊——！手、手指……比刚才痒好多！哈哈哈哈！",
+			"actions": [
+				{
+					"do": "bubble",
+					"who": "pink",
+					"kind": "laugh"
+				},
+				{
+					"do": "bubble",
+					"who": "blue",
+					"kind": "laugh"
+				}
+			]
 		},
 		{
+			"act": 3,
+			"speaker": "蓝色的公主",
+			"text": "……哈哈……裤子……没被吸……还、还有劲……哈哈哈哈！"
+		},
+		{
+			"act": 4,
 			"speaker": "",
-			"text": "（魔力一点点被吸走，蓝色公主越来越没力气憋笑；小手们揉得越来越快）",
+			"text": "（手套们排成一圈，十只手套一百根手指，在两个人身上轮流挠）",
 			"actions": [
 				{
 					"do": "pose",
@@ -214,21 +406,21 @@
 				},
 				{
 					"do": "tickle",
-					"who": "blue",
-					"by": "foe2",
-					"repeat": 8,
-					"interval": 0.22,
-					"fx": "brush",
-					"zone": "thigh"
-				},
-				{
-					"do": "tickle",
 					"who": "pink",
 					"by": "foe1",
 					"repeat": 8,
 					"interval": 0.22,
 					"fx": "hand",
-					"zone": "waist"
+					"zone": "sole"
+				},
+				{
+					"do": "tickle",
+					"who": "blue",
+					"by": "foe2",
+					"repeat": 8,
+					"interval": 0.22,
+					"fx": "brush",
+					"zone": "butt"
 				},
 				{
 					"do": "flash",
@@ -237,12 +429,14 @@
 			]
 		},
 		{
-			"speaker": "蓝色的公主",
-			"text": "……哈哈哈哈……裤子……趁我没魔力……全、全动起来了……哈哈哈哈！"
+			"act": 4,
+			"speaker": "公主",
+			"text": "哈哈哈哈！一、一百根手指——认输！认输啦哈哈哈！"
 		},
 		{
-			"speaker": "公主",
-			"text": "哈哈哈……认、认输！这一波……认输！",
+			"act": 4,
+			"speaker": "蓝色的公主",
+			"text": "……哈哈……一百根……加上裤子的……数、数不清了……",
 			"actions": [
 				{
 					"do": "bubble",
@@ -257,10 +451,22 @@
 			]
 		},
 		{
-			"speaker": "蓝色的公主",
-			"text": "……下次……先拆那个塔。"
+			"act": 4,
+			"speaker": "",
+			"text": "（水母心满意足地飘走了。手套们把锤子扔回给她，挥挥手指飞远了）"
 		},
 		{
+			"act": 4,
+			"speaker": "公主",
+			"text": "哈……哈……下次……我先敲水母……"
+		},
+		{
+			"act": 4,
+			"speaker": "蓝色的公主",
+			"text": "……嗯。……水母……先打。……这个……我记住了。"
+		},
+		{
+			"act": 4,
 			"actions": [
 				{
 					"do": "voice",

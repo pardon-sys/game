@@ -142,6 +142,9 @@ for key, s in rx.get("sources", {}).items():
             for stage, pool in (("calm", CALM), ("giggle", GIGGLE), ("helpless_1", H1), ("helpless_2", BREAK)):
                 if stage in v:
                     v[stage] = picks(pool, key + _c + stage, 2, n=n, z=z)
+# 攻防战的全部来源（攻城怪、敌塔、陷阱、临时装备、Boss、配合技）都给她手写了一套：直接用，不走上面的自动转换
+import gen_siege_reactions as _sr  # noqa: E402
+rx["sources"].update(_sr.siege_sources("blue"))
 # 千手痒痒魔：她认识它（不点明）。被它挠时的台词带着惋惜和自责，和别的来源不一样。
 BOSS_LINES = {
     "first_encounter": [{"speaker": BLUE, "emotion": "sad", "text": "……原来，你在这里。"},
@@ -321,20 +324,14 @@ def combo_lines(cid, keys, desc):
 
 
 COMBO_KEYS = {c["id"]: [k for g in c.get("keys", []) for k in g if k != "*"] for c in json.loads(Path("data/combos.json").read_text())["combos"]}
-# 攻防战的三来源组合：台词在 gen_siege_scenes.py 里手写了蓝色公主版就直接用；只有粉色公主版的按来源名拼一句崩溃的
+# 攻防战的三来源组合：每组都手写了蓝色公主版（tools/build/siege_text/scenes_*.py），直接取她的三句
 import sys as _sys
 _sys.path.insert(0, str(Path(__file__).resolve().parent))
 import gen_siege_scenes as _sg  # noqa: E402
 
 
 def siege_combo_lines(cid):
-    c = _sg.COMBOS[cid]
-    if "blue" in c:
-        return [t for (sp, t) in c["blue"] if sp is None][4:7]
-    names = [n for (_k, _key, n, _st) in c["src"]]
-    return ["……%s……%s……嗯、唔……哈……！" % (names[0], names[1]),
-            "……哈哈哈……%s……一、一起……不、不行……哈哈哈哈……！" % names[2],
-            "……投、投降……哈哈哈……三、三样……一起……哈哈哈哈……！"]
+    return _sg.combo_lines(cid, "blue")
 
 
 for cid, c in rx.get("combos", {}).items():

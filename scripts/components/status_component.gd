@@ -46,7 +46,7 @@ var _hobble_speed := 1.0
 
 
 func _process(delta: float) -> void:
-	if GameState.in_dialogue:  # 对话期间状态计时暂停
+	if GameState.in_dialogue or GameState.in_cutscene or CG.is_busy():  # 对话 / 小剧场期间不消耗束缚时间
 		return
 	if _slow_time > 0.0:
 		_slow_time -= delta
@@ -66,11 +66,12 @@ func _process(delta: float) -> void:
 				owner_actor.add_push(to.normalized() * _pull_speed)
 		else:
 			_pull_time = 0.0
-	if hobbler != null:
+	# 已释放的 Object 会 == null，但不是 TYPE_NIL，仍需清理并发送释放信号。
+	if typeof(hobbler) != TYPE_NIL:
 		_hobble_time += delta
 		if not is_instance_valid(hobbler) or (_hobble_max > 0.0 and _hobble_time >= _hobble_max):
 			release_hobble(false)
-	if grabber != null:
+	if typeof(grabber) != TYPE_NIL:
 		_grab_time += delta
 		if not is_instance_valid(grabber) or (_grab_max > 0.0 and _grab_time >= _grab_max):
 			release(false)
@@ -130,9 +131,10 @@ func presses_left() -> int:
 
 
 func release(broke_free := false) -> void:
-	if grabber == null:
+	if typeof(grabber) == TYPE_NIL:
 		return
-	var src := grabber
+	# 节点删除和本组件下一帧更新之间，引用可能已失效；信号只传活节点或 null。
+	var src: Node = grabber if is_instance_valid(grabber) else null
 	grabber = null
 	if _root_on_release > 0.0:
 		apply_root(_root_on_release)
@@ -273,9 +275,9 @@ func struggle_hobble() -> bool:
 
 
 func release_hobble(broke_free := false) -> void:
-	if hobbler == null:
+	if typeof(hobbler) == TYPE_NIL:
 		return
-	var src := hobbler
+	var src: Node = hobbler if is_instance_valid(hobbler) else null
 	hobbler = null
 	hobble_released.emit(src, broke_free)
 

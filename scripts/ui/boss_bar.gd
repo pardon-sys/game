@@ -2,9 +2,9 @@ class_name BossBar
 extends Control
 ## HUD 顶部的 Boss 血条：GameState.boss_changed(monster) 时显示，传 null 时隐藏。
 
-const BG := Color(0.12, 0.07, 0.12, 0.9)
-const FILL := Color(0.9, 0.25, 0.4)
-const BORDER := Color(1, 0.84, 0.28)
+const BG := Color(0.12, 0.07, 0.12, 0.4)
+const FILL := Color(0.9, 0.25, 0.4, 0.65)
+const BORDER := Color(1, 0.84, 0.28, 0.75)
 
 var monster: Monster
 var _label: Label
@@ -17,7 +17,7 @@ func _ready() -> void:
 	_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_label.position = Vector2(0, -15)
 	_label.size = Vector2(size.x, 14)
-	_label.add_theme_color_override("font_color", BORDER)
+	_label.add_theme_color_override("font_color", Color(1, 0.84, 0.28))
 	_label.add_theme_color_override("font_outline_color", Color(0.25, 0.15, 0.19))
 	_label.add_theme_constant_override("outline_size", 4)
 	add_child(_label)
@@ -26,6 +26,8 @@ func _ready() -> void:
 
 func bind_monster(m: Node) -> void:
 	monster = m as Monster
+	# 攻防战顶部已有波次 / 城墙条，Boss 血条放在下方避免叠字。
+	position = Vector2(150, 54) if SiegeDirector.current else Vector2(150, 20)
 	visible = monster != null
 	if monster:
 		_label.text = monster.stats.display_name

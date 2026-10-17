@@ -57,6 +57,16 @@ func has(id: String) -> bool:
 	return owned.has(id)
 
 
+## 测试跳波：补齐进入目标波次前应有的永久支援，不重播过场或历史周期补给。
+func grant_missing_for_wave(wave: int) -> void:
+	for e in all():
+		var after := int(e.get("after_wave", -1))
+		if after >= 0 and after < wave:
+			await grant(str(e["id"]), false)
+	# 已领取条目也要补挂到复位后的友军，不能只更新owned列表。
+	apply_all()
+
+
 ## 开局那个还没给（第 1 波开打前要放过场）。
 func has_pending_start() -> bool:
 	var e := for_wave(0)

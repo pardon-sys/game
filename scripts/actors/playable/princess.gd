@@ -128,7 +128,7 @@ func _on_tickled(hit: HitData) -> void:
 			GameState.set_flag("hint_first_special")
 			GameState.rule(ReactionDB.hint("first_special"))
 		return
-	_react_to_tickle(key, _variant_of(hit.source))
+	_react_to_tickle(key, hit.reaction_variant if hit.reaction_variant != "" else _variant_of(hit.source))
 	if not GameState.has_flag("hint_tickled"):
 		GameState.set_flag("hint_tickled")
 		GameState.rule(ReactionDB.hint("first_tickled"))
@@ -220,7 +220,7 @@ func _nest_cg(cg: Node, nest_kind: String) -> void:
 	await get_tree().create_timer(0.6).timeout
 	if sprite:
 		sprite.modulate.a = 0.0
-	await cg.play_nest(nest_kind)
+	await cg.play_nest(nest_kind, character_id)
 	_after_cg = true
 	respawn()
 
@@ -242,7 +242,7 @@ func _death_cg(cg: Node, key: String) -> void:
 	await get_tree().create_timer(0.8).timeout  # 先倒下停一会儿
 	if sprite:
 		sprite.modulate.a = 0.0
-	await cg.play_death(key)
+	await cg.play_death(key, character_id)
 	_after_cg = true
 	respawn()
 

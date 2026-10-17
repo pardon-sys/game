@@ -74,6 +74,7 @@ func _ready() -> void:
 	glow.position = Vector2(0, -24)
 	add_child(glow)
 	_drums = AudioStreamPlayer.new()
+	_drums.bus = Audio.SFX_BUS
 	_drums.stream = Audio.loop_stream("chase_drums")
 	_drums.volume_db = -40.0
 	add_child(_drums)

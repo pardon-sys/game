@@ -42,6 +42,7 @@
 	},
 	"steps": [
 		{
+			"act": 1,
 			"actions": [
 				{
 					"do": "fade_in",
@@ -55,8 +56,9 @@
 			"wait": 0.5
 		},
 		{
+			"act": 1,
 			"speaker": "",
-			"text": "（盾甲螃蟹用大钳子夹住了蓝色公主的腰；拥抱小熊扑上来抱住了粉色公主）",
+			"text": "（狂风熊统领的龙卷把两个人卷下了城墙，落地的地方，盾甲螃蟹和拥抱小熊早就等着了）",
 			"actions": [
 				{
 					"do": "enter",
@@ -79,16 +81,19 @@
 			]
 		},
 		{
+			"act": 1,
 			"speaker": "公主",
-			"text": "放、放开她！——呀，我、我也被抱住了！"
+			"text": "转、转晕了……蓝色的，你在哪……"
 		},
 		{
+			"act": 1,
 			"speaker": "蓝色的公主",
-			"text": "……钳子。……夹住了。"
+			"text": "……这里。……旁边……有螃蟹。"
 		},
 		{
+			"act": 1,
 			"speaker": "",
-			"text": "（钳子一松一紧，正好夹在蓝色公主的腰侧；小熊一边抱一边用脑袋蹭粉色公主的胸口）",
+			"text": "（螃蟹的钳子夹住两个人的脚踝，把她们拖到一起；小熊张开双臂，把两个人一起抱住）",
 			"actions": [
 				{
 					"do": "tickle",
@@ -97,7 +102,7 @@
 					"repeat": 8,
 					"interval": 0.22,
 					"fx": "hand",
-					"zone": "chest"
+					"zone": "sole"
 				},
 				{
 					"do": "tickle",
@@ -106,21 +111,40 @@
 					"repeat": 8,
 					"interval": 0.22,
 					"fx": "brush",
-					"zone": "waist"
+					"zone": "thigh"
 				}
 			]
 		},
 		{
+			"act": 1,
 			"speaker": "公主",
-			"text": "胸、胸口……毛茸茸地蹭……嘻嘻！"
+			"text": "又、又抱上来了！螃蟹你先放开我的脚！"
 		},
 		{
-			"speaker": "蓝色的公主",
-			"text": "……一松……一紧……有、有节奏……"
-		},
-		{
+			"act": 2,
 			"speaker": "",
-			"text": "（螃蟹的小钳子沿着大腿外侧夹下去，又绕到内侧往上夹）",
+			"text": "（螃蟹不放。小钳子在她的脚心上一夹一松，钳尖插进趾缝把脚趾撑开，熊爪顺着足弓刮下去）",
+			"actions": [
+				{
+					"do": "tickle",
+					"who": "pink",
+					"by": "foe1",
+					"repeat": 8,
+					"interval": 0.22,
+					"fx": "hand",
+					"zone": "sole"
+				}
+			]
+		},
+		{
+			"act": 2,
+			"speaker": "公主",
+			"text": "嘻嘻嘻！夹、夹脚心——撑脚趾——哈哈哈好痒！"
+		},
+		{
+			"act": 2,
+			"speaker": "",
+			"text": "（小熊的肉垫贴着蓝色公主的大腿内侧往上按，按到腿根就揉圈；螃蟹的另一只钳子在屁股上左边夹一下、右边夹一下）",
 			"actions": [
 				{
 					"do": "tickle",
@@ -130,25 +154,18 @@
 					"interval": 0.22,
 					"fx": "brush",
 					"zone": "thigh"
-				},
-				{
-					"do": "tickle",
-					"who": "pink",
-					"by": "foe1",
-					"repeat": 8,
-					"interval": 0.22,
-					"fx": "hand",
-					"zone": "armpit"
 				}
 			]
 		},
 		{
+			"act": 2,
 			"speaker": "蓝色的公主",
-			"text": "……内侧……裤子挡着……还、还是夹到了……"
+			"text": "……肉垫……钳子……裤子……三、三方会谈……"
 		},
 		{
+			"act": 2,
 			"speaker": "公主",
-			"text": "小、小熊的爪子到腋下了——哈哈哈！",
+			"text": "噗哈哈……你、你还在评价它们！",
 			"actions": [
 				{
 					"do": "bubble",
@@ -163,9 +180,169 @@
 			]
 		},
 		{
+			"act": 2,
+			"speaker": "蓝色的公主",
+			"text": "……裤子……没有……客观。……全是……偏心。"
+		},
+		{
+			"act": 3,
 			"speaker": "",
-			"text": "（小熊把粉色公主抱起来转圈，每转一圈，爪子就在腋下抓一下）",
+			"text": "（又夹又抱，笑声在战场上回荡。蓝色公主的疲倦先满了）",
 			"actions": [
+				{
+					"do": "pose",
+					"who": "pink",
+					"visual": "helpless_2"
+				},
+				{
+					"do": "pose",
+					"who": "blue",
+					"visual": "helpless_2"
+				},
+				{
+					"do": "voice",
+					"state": "laugh"
+				}
+			]
+		},
+		{
+			"act": 3,
+			"speaker": "蓝色的公主",
+			"text": "……裤子的手……抓着我……别、别跑……"
+		},
+		{
+			"act": "burst",
+			"speaker": "",
+			"text": "（冰蓝色的星光炸开，螃蟹被冻进冰块里滑了出去）",
+			"actions": [
+				{
+					"do": "flash",
+					"time": 0.8
+				},
+				{
+					"do": "sfx",
+					"sound": "star_burst",
+					"volume": -1.0
+				},
+				{
+					"do": "sfx",
+					"sound": "water_release",
+					"volume": -2.0
+				},
+				{
+					"do": "shake",
+					"who": "blue",
+					"time": 0.5
+				},
+				{
+					"do": "bubble",
+					"who": "blue",
+					"kind": "surprise"
+				},
+				{
+					"do": "move",
+					"who": "foe1",
+					"to": [
+						-94,
+						-6
+					],
+					"time": 0.25
+				},
+				{
+					"do": "move",
+					"who": "foe2",
+					"to": [
+						94,
+						-6
+					],
+					"time": 0.25
+				}
+			],
+			"wait": 1.0
+		},
+		{
+			"act": 3,
+			"speaker": "公主",
+			"text": "螃、螃蟹滑走了——呜哇我也满了——！"
+		},
+		{
+			"act": "burst",
+			"speaker": "",
+			"text": "（星光紧接着炸开，小熊被弹得翻了个跟头，抱着空气转圈）",
+			"actions": [
+				{
+					"do": "flash",
+					"time": 0.8
+				},
+				{
+					"do": "sfx",
+					"sound": "star_burst",
+					"volume": -1.0
+				},
+				{
+					"do": "sfx",
+					"sound": "water_release",
+					"volume": -2.0
+				},
+				{
+					"do": "shake",
+					"who": "pink",
+					"time": 0.5
+				},
+				{
+					"do": "bubble",
+					"who": "pink",
+					"kind": "surprise"
+				},
+				{
+					"do": "move",
+					"who": "foe1",
+					"to": [
+						-94,
+						-6
+					],
+					"time": 0.25
+				},
+				{
+					"do": "move",
+					"who": "foe2",
+					"to": [
+						94,
+						-6
+					],
+					"time": 0.25
+				}
+			],
+			"wait": 1.0
+		},
+		{
+			"act": 3,
+			"speaker": "蓝色的公主",
+			"text": "……呼。……刚才那句。……不算。"
+		},
+		{
+			"act": 3,
+			"speaker": "",
+			"text": "（冰块裂开，螃蟹爬了回来，小熊也晃晃悠悠扑了回来。刚放空魔力的两个人敏感得要命）",
+			"actions": [
+				{
+					"do": "move",
+					"who": "foe1",
+					"to": [
+						-44,
+						0
+					],
+					"time": 0.6
+				},
+				{
+					"do": "move",
+					"who": "foe2",
+					"to": [
+						44,
+						0
+					],
+					"time": 0.6
+				},
 				{
 					"do": "tickle",
 					"who": "pink",
@@ -173,7 +350,7 @@
 					"repeat": 8,
 					"interval": 0.22,
 					"fx": "hand",
-					"zone": "armpit"
+					"zone": "sole"
 				},
 				{
 					"do": "tickle",
@@ -187,16 +364,31 @@
 			]
 		},
 		{
+			"act": 3,
 			"speaker": "公主",
-			"text": "转、转一圈抓一下——晕、晕了哈哈哈！"
+			"text": "呀啊——！钳、钳尖……碰一下就……哈哈哈哈！",
+			"actions": [
+				{
+					"do": "bubble",
+					"who": "pink",
+					"kind": "laugh"
+				},
+				{
+					"do": "bubble",
+					"who": "blue",
+					"kind": "laugh"
+				}
+			]
 		},
 		{
+			"act": 3,
 			"speaker": "蓝色的公主",
-			"text": "……屁股……钳子夹在裤子上……里面的手……一起动了……哈哈！"
+			"text": "……哈哈……裤子……比肉垫……还会揉……哈哈哈哈！"
 		},
 		{
+			"act": 4,
 			"speaker": "",
-			"text": "（钳子的节奏和小熊转圈的节奏对上了——两个人的笑声也对上了）",
+			"text": "（小熊抱着两个人坐下，螃蟹一只钳子一个，在两个人身上轮流夹）",
 			"actions": [
 				{
 					"do": "pose",
@@ -219,7 +411,7 @@
 					"repeat": 8,
 					"interval": 0.22,
 					"fx": "hand",
-					"zone": "chest"
+					"zone": "sole"
 				},
 				{
 					"do": "tickle",
@@ -237,12 +429,14 @@
 			]
 		},
 		{
+			"act": 4,
 			"speaker": "公主",
-			"text": "哈哈哈哈！我们……笑、笑得同步了哈哈哈！"
+			"text": "哈哈哈哈！认输——轮流夹犯规——认输啦哈哈哈！"
 		},
 		{
+			"act": 4,
 			"speaker": "蓝色的公主",
-			"text": "……哈哈哈哈……认输……一、一起认输……！",
+			"text": "……哈哈……裤子……第一个……举手……",
 			"actions": [
 				{
 					"do": "bubble",
@@ -257,10 +451,22 @@
 			]
 		},
 		{
-			"speaker": "公主",
-			"text": "下次……我先去打螃蟹的背后……"
+			"act": 4,
+			"speaker": "",
+			"text": "（风熊在远处得意地转着风轮。螃蟹和小熊把两个人放下，跑回了它身边）"
 		},
 		{
+			"act": 4,
+			"speaker": "公主",
+			"text": "哈……哈……刚才……你说抱紧你……"
+		},
+		{
+			"act": 4,
+			"speaker": "蓝色的公主",
+			"text": "……说了不算。……下次……先冻螃蟹。"
+		},
+		{
+			"act": 4,
 			"actions": [
 				{
 					"do": "voice",

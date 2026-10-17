@@ -1,0 +1,46 @@
+{
+  "body": [
+    1176,
+    400
+  ],
+  "source": "tools/art/src/fortress_playful_source.png",
+  "pixel_scale": 2,
+  "palette_colors": 32,
+  "style": "playful dungeon toy fortress",
+  "anchors": {
+    "shoulders": [
+      [
+        -520,
+        -70
+      ],
+      [
+        520,
+        -70
+      ]
+    ],
+    "cranes": [
+      [
+        -360,
+        -130
+      ],
+      [
+        360,
+        -130
+      ]
+    ],
+    "core": [
+      [
+        -600,
+        -170
+      ],
+      [
+        600,
+        -170
+      ]
+    ],
+    "cannon": [
+      0,
+      -190
+    ]
+  }
+}

@@ -1,34 +1,54 @@
-"""攻防战新怪物的笑倒 CG（每种攻城怪一段，粉色 / 蓝色公主各一版；可以反复运行，覆盖写）：
+"""攻防战笑倒 CG（每种攻城怪 / Boss 一段，粉色 / 蓝色公主各一版；可以反复运行，覆盖写）：
   data/siege_cgs.json                     粉色公主版：actors（舞台演员：攻城怪的场景 + 图）、cgs（death_siege_<键>）、death（来源键 → CG）
-  data/characters/blue/siege_cgs.json     蓝色公主版（台词按她的性格单独写，不走自动转换）
-CG 播放器把它们合并进 cgs.json 的数据（像巢穴 CG 一样）；立绘沿用状态立绘 defeat_1 / defeat_2。
-台词三幕：被抓住 → 手法越来越多、她慢慢破防 → 彻底大笑；每段写具体的手法（部位 + 怎么挠）。
+  data/characters/blue/siege_cgs.json     蓝色公主版
+CG 播放器把它们合并进 cgs.json 的数据（像巢穴 CG 一样）。台词在 tools/build/siege_text/cgs_*.py，这里只负责拼装。
+四幕（每一步标 act）：1 被抓住、嘴硬 → 2 弱点被找到、开始破功 → 3 魔力疲倦满了、爆发（act = burst，立绘 fatigue_burst，
+怪被震开再回来）、爆发后更怕痒 → 4 彻底笑倒。立绘按幕换：defeat_1 → defeat_2 → fatigue_burst → defeat_2。
 用法：python tools/build/gen_siege_cgs.py
 """
 import json
 import os
+import sys
 from pathlib import Path
 
 os.chdir(Path(__file__).resolve().parents[2])
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from burst_lines import PORTRAIT as BURST_PORTRAIT  # noqa: E402
+from siege_text import cgs_1, cgs_2, cgs_3, cgs_bosses  # noqa: E402
+
 PINK, BLUE = "公主", "蓝色的公主"
+CG = {**cgs_1.CGS, **cgs_2.CGS, **cgs_3.CGS, **cgs_bosses.CGS}
+BOSSES = ("troll_general", "gale_bear", "puppet_master", "carnival_fortress")
+# 用刷子 / 机械手指、不用羽毛的怪（羽毛标签换成手）
+NO_FEATHER = ("puppet_master", "carnival_fortress")
+ACT_PORTRAIT = {1: "defeat_1", 2: "defeat_2", 3: "defeat_2", 4: "defeat_2"}
 
 MON_META = json.loads(Path("assets/generated/siege/monsters.json").read_text())
 ACTOR_SCENE = {
+    "carnival_fortress": ("carnival_fortress", "fortress"),
     "cart": ("siege_cart", "cart"), "hook": ("hook_climber", "hook"), "bind_vine": ("bind_vine", "vine"), "gecko": ("wall_gecko", "gecko"),
     "shield_crab": ("shield_crab", "shield_crab"), "bat_swarm": ("feather_bat_swarm", "bat_swarm"), "carrier": ("carrier_imps", "carrier"),
     "warm_slime": ("warm_slime", "warm_slime"), "thigh_spider": ("thigh_spider", "thigh_spider"), "hug_bear": ("hug_bear", "hug_bear"),
     "suck_jelly": ("suck_jelly", "suck_jelly"), "twin_ghost": ("twin_ghost", "twin_ghost_a"),
     "troll_general": ("troll_general", "general"),
+    "gale_bear": ("gale_bear", "gale_bear"),
+    "puppet_master": ("puppet_master", "puppet_master"),
 }
 
 
 def actor(key):
+    if key == "carnival_fortress":
+        return {"scene": "res://scenes/siege/monsters/carnival_fortress.tscn",
+                "sprite": {"texture": "res://assets/generated/siege/fortress_v2_hull.png", "offset": [0, -200], "scale": 0.055}}
     scene, spr = ACTOR_SCENE[key]
-    x, y, w, h = MON_META[spr + "_0"]
+    _x, _y, _w, h = MON_META[spr + "_0"]
     # 按图集键引用（CGActor.atlas_region），图集重新打包也不会错位
-    return {"scene": "res://scenes/siege/monsters/%s.tscn" % scene,
-            "sprite": {"texture": "res://assets/generated/siege/monsters.png", "atlas": "res://assets/generated/siege/monsters.json",
-                       "key": spr + "_0", "offset": [0, -h / 2]}}
+    result = {"scene": "res://scenes/siege/monsters/%s.tscn" % scene,
+              "sprite": {"texture": "res://assets/generated/siege/monsters.png", "atlas": "res://assets/generated/siege/monsters.json",
+                         "key": spr + "_0", "offset": [0, -h / 2]}}
+    if key in ("gale_bear", "puppet_master"):
+        result["sprite"]["scale"] = 0.55
+    return result
 
 
 def A(do, **kw):
@@ -40,466 +60,99 @@ def tk(n=5, iv=0.3, fx="lines"):
     return A("tickle", who="princess", by="foe", repeat=n, interval=iv, fx=fx)
 
 
-def build(key, title, foe, script, speaker):
-    steps = [{"actions": [A("fade_in", time=0.7), A("voice", state="giggle")], "wait": 0.8}]
-    n = len(script)
-    for i, (sp, text, tags) in enumerate(script):
+def foe_at(key):
+    if key == "carnival_fortress":
+        return [55, 4]
+    return [40, 8] if key in BOSSES else [22, 8]
+
+
+def burst_actions(at):
+    """爆发：白光、星光爆发 + 释放声，怪被震开（和 burst_lines.burst_steps 的爆发一样）。"""
+    return [A("flash", time=0.8), A("sfx", sound="star_burst", volume=-1.0), A("sfx", sound="water_release", volume=-2.0),
+            A("voice", state=""), A("shake", who="princess", time=0.5), A("camera", zoom=1, focus="princess", time=0.5),
+            A("move", who="foe", to=[at[0] + 60, at[1] - 6], time=0.25)]
+
+
+def tag_actions(t, key, speaker, at):
+    pink = speaker == PINK
+    feather = "hand" if key in NO_FEATHER else "feather"
+    if t == "in":
+        return [A("enter", who="foe", **{"from": [90, 0]}, time=0.6), A("bubble", who="princess", kind="surprise")]
+    if t == "tk":
+        return [tk()]
+    if t == "tk2":
+        return [tk(8, 0.22)]
+    if t == "g1":
+        return [A("pose", who="princess", visual="giggle", anim="idle"), A("voice", state="giggle")]
+    if t == "h1":
+        return [A("pose", who="princess", visual="helpless_1", anim="helpless"), A("voice", state="laugh")]
+    if t == "h2":
+        return [A("pose", who="princess", visual="helpless_2"), A("voice", state="laugh")]
+    if t in ("ft", "pt"):
+        zone = "sole" if pink else ("thigh" if t == "ft" else "butt")
+        return [A("tickle", who="princess", by="foe", repeat=3, interval=0.35, fx=feather if t == "ft" else "hand", zone=zone)]
+    if t == "fl":
+        return [A("flash", time=0.4)]
+    if t == "sh":
+        return [A("shake", who="princess", time=0.4)]
+    if t == "hop":
+        return [A("hop", who="foe", count=2)]
+    if t == "taunt":
+        return [A("taunt", who="foe")]
+    if t == "laugh":
+        return [A("bubble", who="princess", kind="laugh")]
+    if t == "zoom":
+        return [A("camera", zoom=1.5, focus="princess", time=0.5), A("shake", who="princess", time=1.0)]
+    if t == "unzoom":
+        return [A("camera", zoom=1, focus="princess", time=0.4), A("bubble", who="princess", kind="shy")]
+    if t == "back":
+        return [A("move", who="foe", to=list(at), time=0.6), A("voice", state="giggle")]
+    if t == "burst":
+        return burst_actions(at)
+    return []
+
+
+def build(key, entry, who):
+    speaker = PINK if who == "pink" else BLUE
+    script = entry[who]
+    at = foe_at(key)
+    steps = [{"act": 1, "portrait": ACT_PORTRAIT[1], "actions": [A("fade_in", time=0.7), A("voice", state="giggle")], "wait": 0.8}]
+    act = 1
+    burst_done = False
+    for sp, text, tags in script:
+        tags = tags.split()
+        for t in tags:
+            if t in ("a2", "a3", "a4"):
+                act = int(t[1])
         acts = []
-        for t in tags.split():
-            if t == "in":
-                acts += [A("enter", who="foe", **{"from": [90, 0]}, time=0.6), A("bubble", who="princess", kind="surprise")]
-            elif t == "tk":
-                acts.append(tk())
-            elif t == "tk2":
-                acts.append(tk(8, 0.22))
-            elif t == "h2":
-                acts += [A("pose", who="princess", visual="helpless_2"), A("voice", state="laugh")]
-            elif t == "fl":
-                acts.append(A("flash", time=0.4))
-            elif t == "sh":
-                acts.append(A("shake", who="princess", time=0.4))
-            elif t == "hop":
-                acts.append(A("hop", who="foe", count=2))
-            elif t == "taunt":
-                acts.append(A("taunt", who="foe"))
-            elif t == "laugh":
-                acts.append(A("bubble", who="princess", kind="laugh"))
-            elif t == "zoom":
-                acts.append(A("camera", zoom=1.5, focus="princess", time=0.5))
-            elif t == "unzoom":
-                acts.append(A("camera", zoom=1, focus="princess", time=0.4))
-        st = {"speaker": {"P": speaker, "F": foe, "N": ""}[sp], "text": text, "actions": acts}
-        st["portrait"] = "defeat_1" if i < n * 0.45 else "defeat_2"
+        for t in tags:
+            acts += tag_actions(t, key, speaker, at)
+        st = {"act": act, "speaker": {"P": speaker, "F": entry["foe"], "N": ""}[sp], "text": text, "actions": acts}
+        if "burst" in tags:
+            st["act"] = "burst"
+            st["portrait"] = BURST_PORTRAIT
+            st["wait"] = 1.1
+            burst_done = True
+        elif act == 3 and burst_done:
+            st["portrait"] = BURST_PORTRAIT
+        else:
+            st["portrait"] = ACT_PORTRAIT[act]
         steps.append(st)
-    steps.append({"actions": [A("voice", state=""), A("fade_out", time=0.8)], "wait": 0.9})
-    return {"name": title, "cast": {"princess": {"kind": "princess", "at": [0, 8], "visual": "helpless_1", "anim": "helpless", "dir": "down"},
-                                    "foe": {"kind": "monster:" + key, "at": [22, 8], "dir": "left", "hidden": True}},
+    steps.append({"act": 4, "actions": [A("voice", state=""), A("fade_out", time=0.8)], "wait": 0.9})
+    return {"name": entry["title"][0 if who == "pink" else 1],
+            "cast": {"princess": {"kind": "princess", "at": [0, 8], "visual": "helpless_1", "anim": "helpless", "dir": "down"},
+                     "foe": {"kind": "monster:" + key, "at": at, "dir": "left", "hidden": True}},
             "steps": steps}
-
-
-# 每段：(标题, 怪物说话名, 粉色版台词, 蓝色版台词)；台词 (说话人 P/F/N, 文本, 动作标签)
-CG = {
-    "troll_general": ("将军的大手", "攻城巨魔将军", [
-        ("N", "（地面咚的一震。攻城巨魔将军从尘土里走出来，一只大手就把她整个人捞了起来）", "in sh"),
-        ("P", "好、好大的手……放、放我下来！", ""),
-        ("F", "哈！小镇的公主——将军亲自来挠！", "hop"),
-        ("N", "（他把她握在掌心里，另一只手捏住她的脚踝往上一扳，鞋子啪地掉在了地上）", "tk sh"),
-        ("P", "鞋、鞋子……别扳脚——嘻嘻嘻！", "tk"),
-        ("N", "（粗粗的食指按在脚心正中，慢慢地、一圈一圈地转）", "tk"),
-        ("P", "转、转圈不行……嘻嘻……哈哈！脚心——！", "laugh"),
-        ("N", "（五根大手指一齐上阵：一根挠脚心，一根钻脚趾缝，剩下的顺着脚背、脚跟来回刮）", "tk2 h2 zoom"),
-        ("P", "哈哈哈哈！五、五根一起——脚、脚要化掉了哈哈哈！", "sh"),
-        ("F", "将军的手指，比十只小怪还好用！哈哈！", "taunt"),
-        ("N", "（握着她的那只手也动了起来，大拇指在她腰侧一下一下地按）", "tk2 fl"),
-        ("P", "腰、腰也——哈哈哈哈！两只手都在动哈哈哈哈！", "laugh"),
-        ("N", "（他把她举高，对着脚心呼地吹了一口热气，再用指甲尖轻轻一刮）", "tk2"),
-        ("P", "认、认输——我认输啦哈哈哈哈！放下来——！", "sh unzoom"),
-        ("N", "（将军满意地哼了一声，一边挠一边扛着她走回了怪物的阵地）", "tk"),
-    ], [
-        ("N", "（地面一震。巨魔将军走出尘土，一只大手把她从城墙边捞了下来）", "in sh"),
-        ("P", "……放下。……我在、施法。", ""),
-        ("F", "哈！城墙上的冰公主——将军亲自来挠！", "hop"),
-        ("N", "（他把她握在掌心，另一只手扳住她的脚踝，靴子被拔掉丢在地上）", "tk sh"),
-        ("P", "……靴子。……还我。", "tk"),
-        ("N", "（粗大的食指按在脚心，慢慢转圈。她的脚趾一根根蜷了起来）", "tk"),
-        ("P", "……不、不痒。……噗。……脚趾、自己缩的。", "laugh"),
-        ("N", "（五根手指一起：一根挠脚心，一根撑开脚趾缝来回钻，其余的刮脚背、捏脚跟）", "tk2 h2 zoom"),
-        ("P", "……哈、哈哈……五、五根……数不过来……哈哈哈……！", "sh"),
-        ("F", "冰公主也会笑嘛！哈哈！", "taunt"),
-        ("N", "（握住她的拇指沿着大腿外侧往上按，按到腿根那一块，停住，揉了两下）", "tk2 fl"),
-        ("P", "……哈哈哈哈……腿根……揉、揉的时候……别……哈哈哈！", "laugh"),
-        ("N", "（他朝她的脚心吹了一口气，再用指甲尖从脚跟慢慢刮到脚尖）", "tk2"),
-        ("P", "……认、认输……哈哈哈……我认输……！", "sh unzoom"),
-        ("N", "（将军扛着她走回了敌阵。她的笑声断断续续，一路没停）", "tk"),
-    ]),
-    "cart": ("车上的一排小手", "攻城痒痒车", [
-        ("N", "（撞城墙的车子在她面前刹住了。车上的木板一块块翻开，露出一排排挥舞的小手）", "in"),
-        ("P", "等、等一下……车上怎么全是手……", ""),
-        ("F", "咕噜咕噜～撞不了墙，就撞公主！", "hop"),
-        ("N", "（车子一倾，她整个人滚进了车斗里。小手们一拥而上，按住手腕和脚踝）", "tk sh"),
-        ("P", "放、放开——嘻嘻……别一起抓……", "tk"),
-        ("N", "（左边一排小手在腰侧排着队往上爬，右边一排专门挠肋骨，一根一根地数）", "tk"),
-        ("P", "数、数什么肋骨啦……嘻嘻嘻……哈哈！", "laugh"),
-        ("N", "（车斗底下伸出两只手，扳住她的脚掌，指甲顺着脚心从脚跟刮到脚尖）", "tk2 h2 zoom"),
-        ("P", "脚、脚心——！哈哈哈哈！刮、刮到脚趾了哈哈哈！", "sh"),
-        ("F", "车子开动咯～颠一颠，挠一挠～", "taunt"),
-        ("N", "（车轮一颠，所有小手就跟着一起抖——腰、肋骨、脚心同时被抖着挠）", "tk2 fl"),
-        ("P", "哈哈哈哈！颠、颠的时候不行——全身都在抖哈哈哈哈！", "laugh"),
-        ("N", "（腋下也被两只手撑开了，指尖在腋窝里画着小圈）", "tk2"),
-        ("P", "腋、腋下也……我投降——投降啦哈哈哈哈！", "sh unzoom"),
-        ("N", "（车子咕噜咕噜地开回了敌阵，车斗里一路都是她止不住的笑声）", "tk"),
-    ], [
-        ("N", "（撞墙的车子在她面前刹住。木板翻开，一排排小手伸了出来）", "in"),
-        ("P", "……车上。……全是手。", ""),
-        ("F", "咕噜咕噜～墙撞不成，撞公主！", "hop"),
-        ("N", "（车子一倾，她跌进车斗。小手按住手腕、脚踝，把她摆平）", "tk sh"),
-        ("P", "……放开。……不痒。", "tk"),
-        ("N", "（一排小手沿着大腿内侧往上爬，另一排在屁股上轮流捏——左一下，右一下）", "tk"),
-        ("P", "……那、那里……噗。……不准捏。", "laugh"),
-        ("N", "（车斗底下的手扳住她的脚板往后压，指甲从脚跟刮到脚尖，又在脚趾缝里来回钻）", "tk2 h2 zoom"),
-        ("P", "……哈、哈哈……脚、脚趾缝……不行……哈哈哈……！", "sh"),
-        ("F", "车子开动咯～颠一颠～", "taunt"),
-        ("N", "（车轮一颠，腿根上的手指也跟着一按——正好按在最软的那一块）", "tk2 fl"),
-        ("P", "……哈哈哈哈……腿、腿根……颠的时候……按、按到了……哈哈哈！", "laugh"),
-        ("N", "（她想并拢腿，两边的手却把膝盖轻轻分开，指尖顺着内侧画圈）", "tk2"),
-        ("P", "……认、认输……哈哈哈……我认输……！", "sh unzoom"),
-        ("N", "（车子开回了敌阵。车斗里断断续续的笑声，一路都没停）", "tk"),
-    ]),
-    "hook": ("顺着绳子滑下来的爪子", "钩索怪", [
-        ("N", "（钩索怪从城墙上滑下来，钩爪一甩，勾住了她的腰带）", "in"),
-        ("P", "呀！腰带被勾住了——", "sh"),
-        ("F", "嘿咻～钓到公主咯！", "hop"),
-        ("N", "（钩爪一下一下地往回拉，每拉一下，爪尖就在腰侧刮一下）", "tk"),
-        ("P", "别、别一边拉一边刮……嘻嘻嘻！", "laugh"),
-        ("N", "（钩索绕着她的腰缠了两圈，钩索怪顺着绳子爬过来，小爪子挠她的肚子）", "tk"),
-        ("P", "肚、肚子……爪子好多……哈哈！", ""),
-        ("N", "（绳子越收越紧，把她的手臂也捆在身侧。腋下一点都护不住了）", "tk2 h2 zoom"),
-        ("P", "手、手臂放不下来——腋下哈哈哈哈！", "sh"),
-        ("F", "爪爪挠腋下～爪爪挠腰～", "taunt"),
-        ("N", "（钩爪最尖的那一根，在腋窝最深的地方慢慢地转圈）", "tk2 fl"),
-        ("P", "那、那里转圈不行——哈哈哈哈哈！", "laugh"),
-        ("P", "放、放我下来……哈哈……我认输了……！", "sh unzoom"),
-        ("N", "（钩索怪把她吊在城墙下面，晃啊晃，一直挠到她笑得没力气）", "tk"),
-    ], [
-        ("N", "（钩索怪顺着绳子滑下来，钩爪一甩，勾住了她的腰带）", "in"),
-        ("P", "……！腰带。", "sh"),
-        ("F", "嘿咻～钓到冰公主咯！", "hop"),
-        ("N", "（钩爪往回拉一下，爪尖就在腰侧刮一下）", "tk"),
-        ("P", "……别、别刮。……噗。", "laugh"),
-        ("N", "（绳子绕着她缠了两圈，把手臂捆在身侧。钩索怪爬上来，小爪子沿着大腿外侧往下划）", "tk"),
-        ("P", "……大腿。……唔……", ""),
-        ("N", "（爪子绕到大腿内侧，沿着腿根那条线来回刮）", "tk2 h2 zoom"),
-        ("P", "……哈、哈哈……腿根……那条线……不准……哈哈哈！", "sh"),
-        ("F", "爪爪挠腿根～", "taunt"),
-        ("N", "（最尖的那根爪子在腋窝里转圈，别的爪子还在腿根上点）", "tk2 fl"),
-        ("P", "……上、上下一起……哈哈哈哈……不行……！", "laugh"),
-        ("P", "……认输。……哈……认输……", "sh unzoom"),
-        ("N", "（她被吊在城墙下面晃来晃去，笑声断断续续的）", "tk"),
-    ]),
-    "bind_vine": ("缠满全身的藤蔓", "捆绑藤怪", [
-        ("N", "（藤怪一扑，藤蔓从脚踝开始一圈圈往上缠）", "in"),
-        ("P", "藤、藤蔓……缠上来了！", "sh"),
-        ("F", "缠缠～缠紧紧～", "hop"),
-        ("N", "（藤蔓缠过膝盖、大腿、腰，最后把两只手腕绑在头顶）", "tk"),
-        ("P", "手、手被吊起来了……嘻嘻……藤尖在动……", "laugh"),
-        ("N", "（每一根藤蔓的尖端都卷着一小簇软叶子，在缠到的地方轻轻扫）", "tk"),
-        ("P", "叶、叶子在扫……腰、腰也……哈哈！", ""),
-        ("N", "（藤蔓把她的鞋子顶掉，叶尖钻进脚趾缝，一根一根地拨）", "tk2 h2 zoom"),
-        ("P", "脚趾缝——！哈哈哈哈！一、一根一根地拨不行哈哈哈！", "sh"),
-        ("F", "给公主穿件好东西～", "taunt"),
-        ("N", "（藤怪往她身上套了一件毛茸茸的胸衣——里面的绒毛随着她笑的时候一起一伏地蹭）", "tk2 fl"),
-        ("P", "越、越笑越蹭……停不下来哈哈哈哈！", "laugh"),
-        ("P", "解、解开……我认输……哈哈哈……！", "sh unzoom"),
-        ("N", "（藤蔓把她吊在半空，藤尖和绒毛一直挠到她笑得发软）", "tk"),
-    ], [
-        ("N", "（藤怪一扑，藤蔓从脚踝开始一圈圈往上缠）", "in"),
-        ("P", "……缠住了。", "sh"),
-        ("F", "缠缠～", "hop"),
-        ("N", "（藤蔓缠过大腿、腰，最后把手腕绑在头顶）", "tk"),
-        ("P", "……手。……吊着。……噗。", "laugh"),
-        ("N", "（缠在大腿上的那几圈慢慢收紧又放松，藤尖的软叶子在腿根上扫来扫去）", "tk"),
-        ("P", "……腿根……叶子……唔……", ""),
-        ("N", "（一根藤蔓绕到身后，像手掌一样贴着屁股，一下一下地收紧）", "tk2 h2 zoom"),
-        ("P", "……哈、哈哈……屁、屁股……别、别缠紧……哈哈哈！", "sh"),
-        ("F", "再穿一件～", "taunt"),
-        ("N", "（藤怪往她腿上套了一个软环——环里的手指开始揉腿根）", "tk2 fl"),
-        ("P", "……揉……揉腿根……哈哈哈哈……不行不行……！", "laugh"),
-        ("P", "……认输……哈……解开……", "sh unzoom"),
-        ("N", "（藤蔓吊着她，叶子和软环一直挠到她没力气笑）", "tk"),
-    ]),
-    "gecko": ("钻进衣服里的壁虎", "爬墙壁虎", [
-        ("N", "（一只壁虎从城墙上掉下来，正好落进她的衣领）", "in"),
-        ("P", "呀——！有、有东西掉进衣服里了！", "sh"),
-        ("F", "嘶嘶～暖和～", "hop"),
-        ("N", "（小脚丫顺着后背一路往下爬，凉凉的、一点一点的）", "tk"),
-        ("P", "后、后背……别爬……嘻嘻嘻！", "laugh"),
-        ("N", "（又有好几只壁虎从袖口、裙摆钻了进去，各爬各的）", "tk"),
-        ("P", "好、好多只……哈哈！在、在里面乱爬！", ""),
-        ("N", "（一只爬到腋下就不走了，四只小脚丫在腋窝里轮流踩）", "tk2 h2 zoom"),
-        ("P", "腋、腋下——踩、踩什么啦哈哈哈哈！", "sh"),
-        ("F", "嘶嘶～这里好软～", "taunt"),
-        ("N", "（腰侧、肚子、脚心——每个地方都有一只小壁虎在爬）", "tk2 fl"),
-        ("P", "全、全身都有……哈哈哈哈！抓、抓不出来哈哈哈！", "laugh"),
-        ("P", "出、出来……求求你们出来……哈哈哈哈！", "sh unzoom"),
-        ("N", "（她在地上打滚，衣服里一鼓一鼓的，笑声一直停不下来）", "tk"),
-    ], [
-        ("N", "（一只壁虎从城墙上掉下来，落进她的衣领）", "in"),
-        ("P", "……！衣、衣服里。", "sh"),
-        ("F", "嘶嘶～冰冰的～", "hop"),
-        ("N", "（小脚丫顺着后背往下爬，一点一点的）", "tk"),
-        ("P", "……别爬。……噗。", "laugh"),
-        ("N", "（几只壁虎从裙摆钻进去，顺着大腿往上爬，一只停在了腿根）", "tk"),
-        ("P", "……腿、腿根……停、停在那里……", ""),
-        ("N", "（停在腿根的那只开始原地踩小脚丫，另一只爬到屁股上，尾巴扫来扫去）", "tk2 h2 zoom"),
-        ("P", "……哈、哈哈……踩……扫……不行……哈哈哈！", "sh"),
-        ("F", "嘶嘶～这里最软～", "taunt"),
-        ("N", "（更多壁虎钻进来，腰侧、腋下、脚心，到处都是小脚丫）", "tk2 fl"),
-        ("P", "……哈哈哈哈……全、全身……出、出来……！", "laugh"),
-        ("P", "……认输。……拜托……出来……", "sh unzoom"),
-        ("N", "（她蜷成一团，衣服里一鼓一鼓的，笑声断断续续）", "tk"),
-    ]),
-    "shield_crab": ("一松一紧的大钳子", "盾甲螃蟹", [
-        ("N", "（盾甲螃蟹放下挡在前面的大钳子——那对钳子，正好夹住她的腰）", "in"),
-        ("P", "腰、腰被夹住了！", "sh"),
-        ("F", "咔嚓咔嚓～抓到啦～", "hop"),
-        ("N", "（钳子一松，一紧；一松，一紧——每一下都正好夹在腰侧最怕痒的地方）", "tk"),
-        ("P", "一松一紧……嘻嘻……别、别有节奏……", "laugh"),
-        ("N", "（小钳子们伸过来，在肋骨上一根一根地夹）", "tk"),
-        ("P", "肋、肋骨……哈哈！一根一根……", ""),
-        ("N", "（大钳子夹着她往上一举，小钳子立刻钻进腋下）", "tk2 h2 zoom"),
-        ("P", "举、举起来了——腋下哈哈哈哈！", "sh"),
-        ("F", "咔嚓～打不动我吧～", "taunt"),
-        ("N", "（螃蟹的腿也凑过来，硬硬的腿尖在脚心上轻轻敲）", "tk2 fl"),
-        ("P", "敲、敲脚心……哈哈哈哈！全身都被夹着哈哈哈！", "laugh"),
-        ("P", "认、认输……放我下来……哈哈哈……！", "sh unzoom"),
-        ("N", "（螃蟹举着她横着走回敌阵，钳子一路咔嚓咔嚓地夹）", "tk"),
-    ], [
-        ("N", "（盾甲螃蟹放下大钳子——夹住了她的大腿）", "in"),
-        ("P", "……大腿。……夹住了。", "sh"),
-        ("F", "咔嚓咔嚓～", "hop"),
-        ("N", "（钳子一松一紧，每夹一下都往上挪一点）", "tk"),
-        ("P", "……往、往上……噗。……别挪。", "laugh"),
-        ("N", "（挪到腿根就停了，钳子尖在最软的地方一下下夹）", "tk"),
-        ("P", "……腿根……唔、嗯……", ""),
-        ("N", "（另一只钳子绕到身后，在屁股上同样一松一紧地夹）", "tk2 h2 zoom"),
-        ("P", "……哈、哈哈……前、后一起……不准……哈哈哈！", "sh"),
-        ("F", "咔嚓～冰公主也会笑嘛～", "taunt"),
-        ("N", "（小钳子们钻进腋下和腰侧，跟着大钳子的节奏一起夹）", "tk2 fl"),
-        ("P", "……哈哈哈哈……节、节奏……一起……不行……！", "laugh"),
-        ("P", "……认输……哈……放开……", "sh unzoom"),
-        ("N", "（螃蟹夹着她横着走开，钳子的咔嚓声和她的笑声混在一起）", "tk"),
-    ]),
-    "bat_swarm": ("四面八方的羽毛", "羽毛蝠群", [
-        ("N", "（蝠群绕着她飞成一圈，每只蝙蝠的嘴里都叼着一根羽毛）", "in"),
-        ("P", "好、好多蝙蝠……在转圈……", "sh"),
-        ("F", "吱～羽毛派对～", "hop"),
-        ("N", "（羽毛从四面八方伸过来，扫过脖子、耳朵后面）", "tk"),
-        ("P", "脖、脖子……嘻嘻……耳朵也……", "laugh"),
-        ("N", "（她一缩脖子，下面的蝙蝠就钻到腋下扫）", "tk"),
-        ("P", "腋下……哈哈！护、护不过来！", ""),
-        ("N", "（几只蝙蝠倒挂在她的手臂上，把她的手抬起来，羽毛在腋窝里来回扫）", "tk2 h2 zoom"),
-        ("P", "手、手被抬着——哈哈哈哈！放、放下来！", "sh"),
-        ("F", "吱吱～够不着我们吧～", "taunt"),
-        ("N", "（更多的羽毛落在脚心、腰侧、肚子上，扫得越来越快）", "tk2 fl"),
-        ("P", "哈哈哈哈！扫、扫得好快——哪里都在扫哈哈哈！", "laugh"),
-        ("P", "我、我投降……哈哈……别扫了……！", "sh unzoom"),
-        ("N", "（蝠群绕着她飞了一圈又一圈，羽毛像雪一样落在她身上）", "tk"),
-    ], [
-        ("N", "（蝠群绕着她飞成一圈，嘴里都叼着羽毛）", "in"),
-        ("P", "……蝙蝠。……很多。", "sh"),
-        ("F", "吱～冰公主的羽毛派对～", "hop"),
-        ("N", "（羽毛扫过脖子、耳后）", "tk"),
-        ("P", "……脖子。……噗。", "laugh"),
-        ("N", "（几只蝙蝠钻到裙摆下面，羽毛顺着大腿内侧慢慢往上扫）", "tk"),
-        ("P", "……往、往上……扫什么……", ""),
-        ("N", "（扫到腿根，羽毛尖就在那里打转；后面的几只扫屁股和大腿交界的那条线）", "tk2 h2 zoom"),
-        ("P", "……哈、哈哈……那条线……羽毛……不行……哈哈哈！", "sh"),
-        ("F", "吱吱～这里最好笑～", "taunt"),
-        ("N", "（羽毛越扫越快，脚心、腋下也加入了）", "tk2 fl"),
-        ("P", "……哈哈哈哈……全、全部……扫……！", "laugh"),
-        ("P", "……认输。……别扫了……", "sh unzoom"),
-        ("N", "（羽毛像雪一样落满她一身）", "tk"),
-    ]),
-    "carrier": ("被抬进敌塔的公主", "搬运小鬼队", [
-        ("N", "（小鬼们扛着杆子把她抬进了敌塔，塔门砰地关上）", "in"),
-        ("P", "放、放我出去……这里好黑……", "sh"),
-        ("F", "嘿咻～关好咯～大家开工～", "hop"),
-        ("N", "（三只小鬼分工：一只按手，一只按脚，一只坐在她肚子上）", "tk"),
-        ("P", "坐、坐在肚子上……嘻嘻……要干什么……", "laugh"),
-        ("N", "（坐在肚子上的那只开始用手指在肚脐周围画圈）", "tk"),
-        ("P", "肚、肚脐……画圈不行……哈哈！", ""),
-        ("N", "（按脚的那只把她的脚抬起来，用尾巴尖扫脚心）", "tk2 h2 zoom"),
-        ("P", "脚、脚心——尾巴——哈哈哈哈！", "sh"),
-        ("F", "嘻嘻～在塔里挠 8 秒哦～", "taunt"),
-        ("N", "（按手的那只腾出一只手，挠她的腋下；三只小鬼一起数数：一、二、三……）", "tk2 fl"),
-        ("P", "数、数得好慢——哈哈哈哈！还有几秒哈哈哈！", "laugh"),
-        ("P", "八、八秒好长……哈哈哈……放我出去……！", "sh unzoom"),
-        ("N", "（塔门打开的时候，她被小鬼们扔了出来，在地上笑得爬不起来）", "tk"),
-    ], [
-        ("N", "（小鬼们把她抬进敌塔，塔门砰地关上）", "in"),
-        ("P", "……黑。……放我出去。", "sh"),
-        ("F", "嘿咻～冰公主关好咯～", "hop"),
-        ("N", "（一只按手，一只按脚，一只坐在她的大腿上）", "tk"),
-        ("P", "……坐在……腿上。……要干什么。", "laugh"),
-        ("N", "（坐在大腿上的那只，两只小手开始揉她的腿根）", "tk"),
-        ("P", "……腿根……揉……唔……", ""),
-        ("N", "（按脚的那只用尾巴尖扫脚心，揉腿根的那只顺手捏了一下屁股）", "tk2 h2 zoom"),
-        ("P", "……哈、哈哈……捏……不准……哈哈哈！", "sh"),
-        ("F", "嘻嘻～挠 8 秒～", "taunt"),
-        ("N", "（三只小鬼慢慢地数：一、二、三——每数一下，就换个地方挠）", "tk2 fl"),
-        ("P", "……哈哈哈哈……数、数快点……！", "laugh"),
-        ("P", "……认输……哈……八秒……好长……", "sh unzoom"),
-        ("N", "（塔门打开，她被扔了出来，坐在地上一边喘一边笑）", "tk"),
-    ]),
-    "warm_slime": ("暖烘烘的果冻", "暖炉史莱姆", [
-        ("N", "（暖炉史莱姆整个扑上来，把她的两只脚裹进了热乎乎的果冻里）", "in"),
-        ("P", "好、好暖……脚被裹住了……", "sh"),
-        ("F", "噗叽～暖不暖～", "hop"),
-        ("N", "（果冻里的小气泡一个接一个地在脚心上破开）", "tk"),
-        ("P", "气、气泡……嘻嘻……一个一个的……", "laugh"),
-        ("N", "（果冻往上爬，把小腿、膝盖也裹了进去，一边爬一边轻轻地吸）", "tk"),
-        ("P", "吸、吸着……哈哈！往上爬了……", ""),
-        ("N", "（它挤进脚趾缝里，在每一条缝里慢慢地蠕动）", "tk2 h2 zoom"),
-        ("P", "趾缝——！暖暖地钻……哈哈哈哈！", "sh"),
-        ("F", "噗叽～冰塔都化掉了，公主也化掉吧～", "taunt"),
-        ("N", "（果冻一鼓一鼓地按摩着脚心，越按越快）", "tk2 fl"),
-        ("P", "化、化掉了……哈哈哈哈！脚、脚要笑化了哈哈哈！", "laugh"),
-        ("P", "我、我投降……哈哈……热、热乎乎的投降……！", "sh unzoom"),
-        ("N", "（她坐在一滩暖暖的果冻里，笑得眼泪都出来了）", "tk"),
-    ], [
-        ("N", "（暖炉史莱姆扑上来，把她的腿裹进热乎乎的果冻里）", "in"),
-        ("P", "……热。……冰的天敌。", "sh"),
-        ("F", "噗叽～冰公主化掉吧～", "hop"),
-        ("N", "（果冻里的小气泡在脚心上一个个破开）", "tk"),
-        ("P", "……气泡。……噗。", "laugh"),
-        ("N", "（果冻一路往上爬，裹住了大腿，在腿根那里停下来，一吸一放）", "tk"),
-        ("P", "……腿根……吸……唔……", ""),
-        ("N", "（它整个挤到身后，暖暖地贴住屁股，一鼓一鼓地揉）", "tk2 h2 zoom"),
-        ("P", "……哈、哈哈……揉、揉屁股……不行……哈哈哈！", "sh"),
-        ("F", "噗叽～暖暖地挠～", "taunt"),
-        ("N", "（腿根和屁股同时被一吸一揉，节奏越来越快）", "tk2 fl"),
-        ("P", "……哈哈哈哈……化、化掉……要化掉了……！", "laugh"),
-        ("P", "……认输……哈……热……", "sh unzoom"),
-        ("N", "（她瘫在暖暖的果冻里，笑声软软的）", "tk"),
-    ]),
-    "thigh_spider": ("八只脚的腿根", "腿根爬爬蛛", [
-        ("N", "（腿根爬爬蛛从裙摆下面钻了进去）", "in"),
-        ("P", "蜘、蜘蛛——钻进裙子里了！", "sh"),
-        ("F", "沙沙～腿根～", "hop"),
-        ("N", "（八只细细的脚沿着大腿内侧往上爬，每一步都点一下）", "tk"),
-        ("P", "一、一步一步的……嘻嘻……别往上……", "laugh"),
-        ("N", "（爬到腿根停下，八只脚开始轮流在那里点——像在弹琴）", "tk"),
-        ("P", "弹、弹什么琴啦……哈哈！", ""),
-        ("N", "（又爬来几只，分别占住两条腿的腿根和屁股，一起弹）", "tk2 h2 zoom"),
-        ("P", "好、好几只一起——哈哈哈哈！腿根不行哈哈哈！", "sh"),
-        ("F", "沙沙沙～", "taunt"),
-        ("N", "（弹琴的节奏越来越快，八只脚点得像下雨）", "tk2 fl"),
-        ("P", "下、下雨了一样……哈哈哈哈哈！", "laugh"),
-        ("P", "出、出来……我认输……哈哈哈……！", "sh unzoom"),
-        ("N", "（她并着腿在地上扭来扭去，蜘蛛们还在裙子底下弹个不停）", "tk"),
-    ], [
-        ("N", "（腿根爬爬蛛钻进了裙摆。她的千手痒痒裤立刻跟着动了一下）", "in"),
-        ("P", "……！裤、裤子……动了。", "sh"),
-        ("F", "沙沙～裤子一起来～", "hop"),
-        ("N", "（蜘蛛的八只脚沿着大腿内侧往上爬；裤子里的手指也跟着往上爬，一前一后）", "tk"),
-        ("P", "……两、两个……一起爬……噗……", "laugh"),
-        ("N", "（爬到腿根，蜘蛛在外面点，裤子里的拇指在里面揉——一个点一下，一个揉一圈）", "tk"),
-        ("P", "……腿根……里、外……不、不准……", ""),
-        ("N", "（裤子里另几只手开始轮流捏屁股，蜘蛛就在交界那条线上来回爬）", "tk2 h2 zoom"),
-        ("P", "……哈、哈哈哈……共、共振……裤子……哈哈哈哈！", "sh"),
-        ("F", "沙沙沙～裤子好开心～", "taunt"),
-        ("N", "（裤子和蜘蛛越来越合拍：点、揉、捏、刮，一刻也不停）", "tk2 fl"),
-        ("P", "……哈哈哈哈哈……停、停不下来……裤子……！", "laugh"),
-        ("P", "……认输……哈……裤子……也认输……", "sh unzoom"),
-        ("N", "（她并着腿蜷成一团，裤子还在一下一下地动）", "tk"),
-    ]),
-    "hug_bear": ("抱紧不放的小熊", "拥抱小熊", [
-        ("N", "（拥抱小熊张开手臂扑上来，结结实实地抱住了她）", "in"),
-        ("P", "被、被抱住了……好紧……", "sh"),
-        ("F", "抱抱～不放～", "hop"),
-        ("N", "（小熊一边抱一边蹭，毛茸茸的脑袋在胸口上蹭来蹭去）", "tk"),
-        ("P", "胸、胸口……毛茸茸的……嘻嘻……", "laugh"),
-        ("N", "（抱着她的两只爪子悄悄地挪到腋下，开始一抓一抓地挠）", "tk"),
-        ("P", "腋、腋下……抱着挠……哈哈！", ""),
-        ("N", "（她想挣开，小熊抱得更紧——爪子反而陷得更深）", "tk2 h2 zoom"),
-        ("P", "越、越挣越深——哈哈哈哈！", "sh"),
-        ("F", "抱抱最好笑～", "taunt"),
-        ("N", "（小熊把她抱起来转圈，转一圈挠一下）", "tk2 fl"),
-        ("P", "转、转着挠……哈哈哈哈！晕了哈哈哈！", "laugh"),
-        ("P", "我、我认输……抱、抱得好暖但是……哈哈哈……！", "sh unzoom"),
-        ("N", "（小熊心满意足地抱着她坐下来，爪子还在腋下慢慢地挠）", "tk"),
-    ], [
-        ("N", "（拥抱小熊扑上来，结结实实地抱住了她）", "in"),
-        ("P", "……抱住了。……放开。", "sh"),
-        ("F", "抱抱冰公主～", "hop"),
-        ("N", "（小熊蹭来蹭去，毛茸茸的爪子在后背上下摸）", "tk"),
-        ("P", "……后背。……噗。", "laugh"),
-        ("N", "（爪子摸到腰，又往下滑——停在了屁股上，一下一下地拍）", "tk"),
-        ("P", "……拍、拍什么……", ""),
-        ("N", "（拍着拍着变成了捏，另一只爪子钻进腋下抓）", "tk2 h2 zoom"),
-        ("P", "……哈、哈哈……捏……腋下……一起……哈哈哈！", "sh"),
-        ("F", "抱抱～挠挠～", "taunt"),
-        ("N", "（小熊抱着她转圈，转一圈就换个地方挠）", "tk2 fl"),
-        ("P", "……哈哈哈哈……转、转……晕……！", "laugh"),
-        ("P", "……认输。……哈……抱、抱够了……", "sh unzoom"),
-        ("N", "（小熊抱着她坐下，爪子还在慢慢挠）", "tk"),
-    ]),
-    "suck_jelly": ("吸走魔力的触手", "魔力吸吸水母", [
-        ("N", "（吸吸水母飘下来，一下子吸住了她的后背）", "in"),
-        ("P", "凉、凉凉的……吸住了……", "sh"),
-        ("F", "咕嘟～魔力～", "hop"),
-        ("N", "（细细的触手从水母底下垂下来，绕着她的腰转圈）", "tk"),
-        ("P", "触、触手……嘻嘻……绕着转……", "laugh"),
-        ("N", "（她举起锤子想打，触手立刻钻进抬起的腋下）", "tk"),
-        ("P", "腋、腋下！一、一抬手就……哈哈！", ""),
-        ("N", "（触手把她的两只手臂都卷起来举高，腋下完全露了出来）", "tk2 h2 zoom"),
-        ("P", "举、举着不放——哈哈哈哈！", "sh"),
-        ("F", "咕嘟咕嘟～抬手呀～", "taunt"),
-        ("N", "（所有触手一起在两边腋下画圈，一圈比一圈快）", "tk2 fl"),
-        ("P", "画、画圈……哈哈哈哈！快、快放下来哈哈哈！", "laugh"),
-        ("P", "认、认输……哈哈……魔力给你……！", "sh unzoom"),
-        ("N", "（水母吸饱了魔力，慢悠悠地飘走了。她瘫在地上，笑得手臂都抬不起来）", "tk"),
-    ], [
-        ("N", "（吸吸水母飘上城墙，一下吸住了她的后背。凝起来的冰晶一下子散了）", "in"),
-        ("P", "……魔力。……被吸走了。", "sh"),
-        ("F", "咕嘟～冰魔力好好喝～", "hop"),
-        ("N", "（触手垂下来，绕着腰转圈）", "tk"),
-        ("P", "……触手。……噗。", "laugh"),
-        ("N", "（她抬手想重新凝冰——触手立刻钻进抬起的腋下）", "tk"),
-        ("P", "……！一、一抬手……腋下……", ""),
-        ("N", "（触手卷住手臂举高，另几根往下，贴着大腿内侧一路滑到腿根）", "tk2 h2 zoom"),
-        ("P", "……哈、哈哈……腋下……腿根……上、下……哈哈哈！", "sh"),
-        ("F", "咕嘟～再抬手试试～", "taunt"),
-        ("N", "（她越想施法，触手就挠得越凶；魔力一点一点被吸走）", "tk2 fl"),
-        ("P", "……哈哈哈哈……不、不放了……不施法了……！", "laugh"),
-        ("P", "……认输……哈……", "sh unzoom"),
-        ("N", "（水母吸饱了魔力飘走了。她靠在城垛上，手臂软软地垂着）", "tk"),
-    ]),
-    "twin_ghost": ("一粉一蓝的两只", "双子痒痒鬼", [
-        ("N", "（粉色的痒痒鬼从前面扑过来，蓝色的那只从后面穿了过来）", "in"),
-        ("P", "前、前后都有……！", "sh"),
-        ("F", "嘻嘻～一起来～", "hop"),
-        ("N", "（两只幽灵一前一后地抱住她，凉飕飕的手在腰两边同时挠）", "tk"),
-        ("P", "两、两边一起……嘻嘻……凉凉的……", "laugh"),
-        ("N", "（粉的那只挠肚子，蓝的那只就挠后背；粉的挠腋下，蓝的就挠脚心）", "tk"),
-        ("P", "配、配合得好好……哈哈！", ""),
-        ("N", "（她转身去打粉的那只，蓝的那只立刻在她身后的腰窝里转圈）", "tk2 h2 zoom"),
-        ("P", "打、打一只另一只就……哈哈哈哈！", "sh"),
-        ("F", "嘻嘻～要一起打才行哦～", "taunt"),
-        ("N", "（两只幽灵穿过她的身体，凉意从里面一路挠出来）", "tk2 fl"),
-        ("P", "从、从里面……哈哈哈哈！怎、怎么挠的哈哈哈！", "laugh"),
-        ("P", "认、认输……下次……一起打你们……哈哈哈……！", "sh unzoom"),
-        ("N", "（两只幽灵手拉着手绕着她飘，笑嘻嘻地看着她笑）", "tk"),
-    ], [
-        ("N", "（蓝色的痒痒鬼从城墙下飘上来，粉色的那只从走道另一头飘过来）", "in"),
-        ("P", "……两只。", "sh"),
-        ("F", "嘻嘻～一起挠冰公主～", "hop"),
-        ("N", "（两只一前一后，凉飕飕的手在腰两边同时挠）", "tk"),
-        ("P", "……凉。……噗。", "laugh"),
-        ("N", "（粉的那只挠大腿，蓝的那只就挠屁股；一个往上，一个往下）", "tk"),
-        ("P", "……配、配合……唔……", ""),
-        ("N", "（她转身对付粉的那只，蓝的那只立刻在腿根上画圈）", "tk2 h2 zoom"),
-        ("P", "……哈、哈哈……转身……就……哈哈哈！", "sh"),
-        ("F", "嘻嘻～一起打才行哦～", "taunt"),
-        ("N", "（两只幽灵穿过她的身体，凉意从大腿里面一路挠到脚心）", "tk2 fl"),
-        ("P", "……哈哈哈哈……里、里面……！", "laugh"),
-        ("P", "……认输。……下次……一起打。", "sh unzoom"),
-        ("N", "（两只幽灵手拉手绕着她飘）", "tk"),
-    ]),
-}
 
 
 def main():
     actors = {k: actor(k) for k in ACTOR_SCENE}
     death = {k: "death_siege_" + k for k in CG}
-    pink = {"_说明": ["攻防战攻城怪的笑倒 CG（gen_siege_cgs.py 生成，不要直接改）：CG 播放器合并进 cgs.json。"],
-            "actors": actors, "death": death, "portraits": {},
-            "cgs": {"death_siege_" + k: build(k, t, foe, pl, PINK) for k, (t, foe, pl, _bl) in CG.items()}}
-    blue = {"_说明": ["蓝色公主版的攻防战笑倒 CG（gen_siege_cgs.py 生成）。"],
-            "actors": actors, "death": death, "portraits": {},
-            "cgs": {"death_siege_" + k: build(k, t, foe, bl, BLUE) for k, (t, foe, _pl, bl) in CG.items()}}
-    Path("data/siege_cgs.json").write_text(json.dumps(pink, ensure_ascii=False, indent="\t") + "\n")
-    Path("data/characters/blue/siege_cgs.json").write_text(json.dumps(blue, ensure_ascii=False, indent="\t") + "\n")
+    for who, path, note in (("pink", "data/siege_cgs.json", "攻防战攻城怪的笑倒 CG（gen_siege_cgs.py 生成，不要直接改）：CG 播放器合并进 cgs.json。"),
+                            ("blue", "data/characters/blue/siege_cgs.json", "蓝色公主版的攻防战笑倒 CG（gen_siege_cgs.py 生成）。")):
+        data = {"_说明": [note], "actors": actors, "death": death, "portraits": {},
+                "cgs": {"death_siege_" + k: build(k, e, who) for k, e in CG.items()}}
+        Path(path).write_text(json.dumps(data, ensure_ascii=False, indent="\t") + "\n")
     print("攻防战笑倒 CG：%d 段 × 2 版" % len(CG))
 
 

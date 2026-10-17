@@ -39,13 +39,10 @@ func _ready() -> void:
 	d.bench_soldiers(true)   # 士兵会先把测试里放的怪打掉；这个测试只看怪 / 陷阱本身
 	await _wait(0.5)
 	_finish()
-	await _run_data()
-	await _run_monsters()
-	await _run_hazards()
-	await _run_rescues()
-	await _run_temp_equipment()
-	await _run_combos()
-	await _run_intel()
+	var only := OS.get_environment("SIEGE5_ONLY")
+	for section in ["data", "monsters", "hazards", "rescues", "temp_equipment", "combos", "intel"]:
+		if only == "" or only.split(",").has(section):
+			await call("_run_" + section)
 	print("\n==== %s (%d 项失败) ====" % ["全部通过" if failures == 0 else "有失败", failures])
 	get_tree().quit(1 if failures else 0)
 
@@ -349,13 +346,13 @@ func _run_monsters() -> void:
 	ga.health.damage(999)
 	await _wait(0.2)
 	var a_down := not ga.is_alive() and is_instance_valid(ga)
-	await _wait(3.2)
+	await _wait(TwinGhost.PAIR_TIME + 0.2)
 	var revived := is_instance_valid(ga) and ga.is_alive()
 	ga.health.damage(999)
 	await _wait(0.3)
 	gb.health.damage(999)
 	await _wait(0.4)
-	check("双子痒痒鬼：成对出现（%s），只打倒一只 3 秒后复活（%s / %s），两只一起打倒才消失（%s）" % [paired, a_down, revived,
+	check("双子痒痒鬼：成对出现（%s），只打倒一只 8 秒后复活（%s / %s），两只一起打倒才消失（%s）" % [paired, a_down, revived,
 			not is_instance_valid(ga) and not is_instance_valid(gb)],
 		paired and a_down and revived and not is_instance_valid(ga) and not is_instance_valid(gb))
 	d.blue.set_controller(d._make_ai(d.blue))
@@ -563,6 +560,8 @@ func _run_temp_equipment() -> void:
 func _run_combos() -> void:
 	print("-- 三来源组合")
 	_fight()
+	# 蓝色公主的 AI 看到粉色公主穿着临时装备会马上放清凉雪花解开（装备格就凑不齐了），这一段先让她站着
+	d.blue.set_controller(CharacterController.new())
 	var p := d.pink
 	Equipment.force("pink", "equip_t_feather_socks")
 	var got := []
@@ -597,6 +596,61 @@ func _run_combos() -> void:
 	check("千手痒痒裤 + 城墙羽毛扫帚 + 爬墙壁虎 → 「扫帚下的城墙」并被挠下城墙（%s，%s）" % [got, not d.is_on_wall(b)],
 		got.has("sg_broom_wall") and not d.is_on_wall(b))
 	await _reset()
+	# 全部攻防战组合：两位公主各穿上组合要的装备，每个来源槽挨一下 → 都能触发
+	var combos: Array = (JSON.parse_string(FileAccess.get_file_as_string("res://data/combos.json")) as Dictionary)["combos"]
+	var bad := []
+	var n := 0
+	var pants_was := GameState.has_flag(Equipment.PANTS_FLAG)
+	for c in combos:
+		if str(c.get("category", "")) != "攻防战":
+			continue
+		for who: PlayableCharacter in [d.pink, d.blue]:
+			Equipment.clear_forced()
+			# 穿着千手痒痒裤时大腿 / 屁股的临时装备会被裤子吸收，那些组合只在没穿裤子时凑得齐
+			GameState.set_flag(Equipment.PANTS_FLAG, (c["equip"] as Array).has("thousand_pants"))
+			for e in c["equip"]:
+				Equipment.force(who.character_id, str(e))
+			var hits := []
+			var on_hit := func(id: String): hits.append(id)
+			who.combo.triggered.connect(on_hit)
+			who.combo.reset()
+			for slot in c["keys"]:
+				_tickle(who, str(slot[0]), 3.0)
+				await _wait(0.05)
+			await _wait(0.1)
+			who.combo.triggered.disconnect(on_hit)
+			n += 1
+			if not hits.has(str(c["id"])):
+				bad.append("%s/%s" % [c["id"], who.character_id])
+			await _skip_cg()
+			_restore(who)
+	Equipment.clear_forced()
+	GameState.set_flag(Equipment.PANTS_FLAG, pants_was)
+	check("攻防战的 %d 次组合（23 组 × 两位公主）都能触发（没触发：%s）" % [n, bad], bad.is_empty() and n >= 46)
+	await _reset()
+	d.blue.set_controller(d._make_ai(d.blue))
+
+
+func _skip_cg() -> void:
+	var g := 0
+	while CG.is_busy() and g < 400:
+		CG._can_skip = true
+		CG.skip()
+		await get_tree().process_frame
+		g += 1
+
+
+## 组合效果（关进敌塔、挠下城墙、吊起来……）之后把人放回原样
+func _restore(c: PlayableCharacter) -> void:
+	c.visible = true
+	c.set_physics_process(true)
+	c.end_forced_move()
+	if c.status:
+		c.status.release(true)
+		c.status.clear_root()
+	c.laugh.set_value(0.0)
+	c.set_invulnerable(0.0)
+	c._full_invuln = 0.0
 
 
 # ------------------------------------------------------------------ 情报

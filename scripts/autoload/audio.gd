@@ -106,10 +106,12 @@ const MUSIC := {
 	"night_maze": "res://assets/audio/music/night_maze_loop.wav",
 	"siege": "res://assets/audio/music/siege_loop.wav",
 }
-const MUSIC_DB := -12.0
+const MUSIC_DB := -6.0
+const SFX_BUS := &"SFX"
 const DUCK_DB := -6.0
 const MUSIC_FADE := 1.2
 var music_volume := 0.7
+var sfx_volume := 1.0
 var music_id := ""
 var _music: Array[AudioStreamPlayer] = []
 var _music_cur := 0
@@ -122,9 +124,28 @@ static func settings_path() -> String:
 
 func set_music_volume(v: float) -> void:
 	music_volume = clampf(v, 0.0, 1.0)
+	_save_volume("music_volume", music_volume)
+	if music_id != "" and _music[_music_cur].playing:
+		_music_tween(_music_cur).tween_property(_music[_music_cur], "volume_db", _music_target_db(), 0.1)
+
+
+## 音效、机关循环声和人物声音统一经过 SFX 总线，保留各播放器自己的音量与淡出。
+func set_sfx_volume(v: float) -> void:
+	sfx_volume = clampf(v, 0.0, 1.0)
+	_apply_sfx_volume()
+	_save_volume("sfx_volume", sfx_volume)
+
+
+func _apply_sfx_volume() -> void:
+	var bus := AudioServer.get_bus_index(SFX_BUS)
+	AudioServer.set_bus_mute(bus, sfx_volume <= 0.001)
+	AudioServer.set_bus_volume_db(bus, linear_to_db(maxf(sfx_volume, 0.001)))
+
+
+func _save_volume(key: String, value: float) -> void:
 	var cfg := ConfigFile.new()
 	cfg.load(settings_path())
-	cfg.set_value("audio", "music_volume", music_volume)
+	cfg.set_value("audio", key, value)
 	cfg.save(settings_path())
 
 
@@ -202,7 +223,8 @@ func _update_music(delta: float) -> void:
 	_duck = move_toward(_duck, DUCK_DB if _music_ducked() else 0.0, 24.0 * delta)
 	var p := _music[_music_cur]
 	# 淡入的补间结束后才接手音量（不和补间抢）
-	if p.playing and absf(p.volume_db - _music_target_db()) < 6.0:
+	var tw := _music_tw[_music_cur]
+	if music_id != "" and p.playing and (tw == null or not tw.is_running()):
 		p.volume_db = _music_target_db()
 
 
@@ -227,8 +249,10 @@ func _ready() -> void:
 				list.append(s)
 		_streams[key] = list
 	_voice = AudioStreamPlayer.new()
+	_voice.bus = SFX_BUS
 	add_child(_voice)
 	_crack = AudioStreamPlayer.new()
+	_crack.bus = SFX_BUS
 	_crack.name = "Crack"
 	add_child(_crack)
 	for i in 2:
@@ -238,9 +262,12 @@ func _ready() -> void:
 		_music.append(mp)
 	var cfg := ConfigFile.new()
 	if cfg.load(settings_path()) == OK:
-		music_volume = float(cfg.get_value("audio", "music_volume", music_volume))
+		music_volume = clampf(float(cfg.get_value("audio", "music_volume", music_volume)), 0.0, 1.0)
+		sfx_volume = clampf(float(cfg.get_value("audio", "sfx_volume", sfx_volume)), 0.0, 1.0)
+	_apply_sfx_volume()
 	for i in POOL_SIZE:
 		var p := AudioStreamPlayer.new()
+		p.bus = SFX_BUS
 		add_child(p)
 		_players.append(p)
 
@@ -281,6 +308,7 @@ func crack_playing() -> bool:
 
 ## 登记一个会放笑声的播放器：她笑出声（blue_crack）时它暂停，放完接着放（同一时间只有一段笑声）。
 func register_laugh_player(p: AudioStreamPlayer) -> void:
+	p.bus = SFX_BUS
 	if not _laugh_players.has(p):
 		_laugh_players.append(p)
 
@@ -306,15 +334,16 @@ func fade_crack(time := 1.0) -> void:
 
 
 ## 笑声按当前操控的角色选：蓝色公主有自己的 blue_giggle / blue_laugh。
-func voice_key(sound: String) -> String:
-	if sound in ["giggle", "laugh"] and Characters.current() == "blue" and not _streams.get("blue_" + sound, []).is_empty():
+func voice_key(sound: String, who := "") -> String:
+	who = who if who != "" else Characters.current()
+	if sound in ["giggle", "laugh"] and who == "blue" and not _streams.get("blue_" + sound, []).is_empty():
 		return "blue_" + sound
 	return sound
 
 
 ## 取一个循环声音的流（吟唱、风扇、传送带），由调用者用自己的 AudioStreamPlayer(2D) 播放。
-func loop_stream(sound: String) -> AudioStream:
-	var list: Array = _streams.get(voice_key(sound), [])
+func loop_stream(sound: String, who := "") -> AudioStream:
+	var list: Array = _streams.get(voice_key(sound, who), [])
 	return list[0] if not list.is_empty() else null
 
 

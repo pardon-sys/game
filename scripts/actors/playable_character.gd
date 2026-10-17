@@ -250,6 +250,10 @@ func receive_hit(hit: HitData) -> bool:
 
 
 func _tick(delta: float) -> void:
+	# 强制滑行也暂停，不能比管理机关先跑一帧；普通过场 move 仍由原 Tween 管理。
+	if is_force_moving() and (GameState.in_dialogue or GameState.in_cutscene or CG.is_busy()):
+		velocity = Vector2.ZERO
+		return
 	_state_time += delta
 	sensitivity.tick(delta)
 	_dash_cd = maxf(_dash_cd - delta, 0.0)
@@ -523,6 +527,7 @@ func begin_channel() -> bool:
 	_magic_fx.show()
 	if _chant == null:
 		_chant = AudioStreamPlayer.new()
+		_chant.bus = Audio.SFX_BUS
 		_chant.stream = Audio.loop_stream("chant")
 		_chant.volume_db = -10.0
 		add_child(_chant)

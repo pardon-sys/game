@@ -35,6 +35,7 @@ func _setup() -> void:
 	shape.shape = rect
 	shape.position = belt * 16.0 * (length - 1) / 2.0
 	_sound = AudioStreamPlayer2D.new()
+	_sound.bus = Audio.SFX_BUS
 	_sound.stream = Audio.loop_stream("conveyor")
 	_sound.volume_db = -14.0
 	_sound.max_distance = 160.0

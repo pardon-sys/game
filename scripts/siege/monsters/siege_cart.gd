@@ -22,6 +22,42 @@ var _warn_t := WARN
 var _speed := 0.0
 var _goal := Vector2.ZERO
 var _hit_pink := false
+var redirect_manager: WeakRef
+var redirect_job: Dictionary = {}
+var redirected := false
+
+func redirect(manager: WeakRef, job: Dictionary) -> void:
+	redirect_manager = manager
+	redirect_job = job
+	redirected = true
+	_phase = "charge"
+	_speed = 60.0
+	set_meta("redirected",true)
+
+func _redirect_tick(delta: float) -> void:
+	var manager := redirect_manager.get_ref() as FortressMechanisms
+	var aim: Actor = manager.boss if is_instance_valid(manager) and manager.valid() else null
+	if aim == null:
+		var towers := get_tree().get_nodes_in_group("siege_enemy_tower").filter(func(t): return SiegeTools.alive(t))
+		towers.sort_custom(func(a,b): return a.global_position.distance_squared_to(global_position)<b.global_position.distance_squared_to(global_position))
+		if not towers.is_empty(): aim=towers[0]
+	if aim == null:
+		velocity=Vector2.ZERO
+		return
+	_speed=minf(TOP_SPEED,_speed+ACCEL*delta)
+	velocity=global_position.direction_to(aim.global_position)*_speed*convoy_speed()
+	if global_position.distance_to(aim.global_position)<(85.0 if aim is CarnivalFortress else 24.0):
+		if aim is CarnivalFortress: manager.round_damage(redirect_job,84,420)
+		else: aim.receive_hit(HitData.make_attack(self,84,0))
+		SiegeFx.impact(get_parent(),global_position,24,false,Color(1,0.8,0.3))
+		health.damage(health.hp)
+
+func convoy_speed() -> float:
+	var ref: Variant=get_meta("fortress_speed_source") if has_meta("fortress_speed_source") else null
+	if ref is WeakRef and SiegeTools.valid_source(ref.get_ref()) and ref.get_ref().global_position.distance_to(global_position)<360:
+		return 1.35
+	return 1.0
+
 
 
 func _setup() -> void:
@@ -53,6 +89,14 @@ func _on_damaged(hit: HitData) -> void:
 
 func siege_wander(_mind: SiegeMind, delta: float) -> bool:
 	if director == null:
+		return true
+	if director.state != "fight" or SiegeTools.paused():
+		velocity = Vector2.ZERO
+		return true
+	if _fortress_manager:
+		return _fortress_tick(delta)
+	if redirected:
+		_redirect_tick(delta)
 		return true
 	match _phase:
 		"reaim":
@@ -89,7 +133,7 @@ func siege_wander(_mind: SiegeMind, delta: float) -> bool:
 			if sprite:
 				sprite.position.y = -absf(sin(_t * 22.0)) * 1.5
 			var dir := global_position.direction_to(_goal)
-			velocity = dir * _speed * stat_mul("speed")
+			velocity = dir * _speed * stat_mul("speed") * convoy_speed()
 			# 盾兵挡车：挡下一次（盾兵撤退），车停下重新瞄准
 			for sd in director.soldiers:
 				if is_instance_valid(sd) and sd.role == "shield" and not sd.retreating and sd.global_position.distance_to(global_position) < 18.0:
@@ -137,7 +181,7 @@ func _pick_goal() -> Vector2:
 	return Vector2(global_position.x, director.wall_foot_y() + 14.0)
 
 
-func _impact() -> void:
+func _impact(wall_damage := IMPACT) -> void:
 	_phase = "done"
 	var hit_decoy := false
 	for t in director.extra_targets:
@@ -147,7 +191,7 @@ func _impact() -> void:
 	if not hit_decoy:
 		var w := director.segment_at(global_position.x)
 		if w:
-			w.take(IMPACT)
+			w.take(wall_damage)
 		var b := director.blue
 		if b and is_instance_valid(b) and director.is_on_wall(b) and absf(b.global_position.x - global_position.x) < 90.0:
 			director.knock_off(b, "攻城痒痒车")
@@ -161,3 +205,47 @@ func _impact() -> void:
 	if director.on_screen(global_position):
 		SiegeFx.screen_shake(self, 4.0, 0.45)
 	health.damage(health.hp)
+
+# Only fortress cars use these values. Other waves retain their original behavior.
+var _fortress_manager: WeakRef
+var _fortress_speed := 190.0
+var _fortress_wall := 80.0
+var _fortress_hits := {}
+func configure_fortress(manager: FortressMechanisms, goal: Vector2, expanded: bool) -> void:
+	_fortress_manager=weakref(manager)
+	_fortress_speed=220.0 if expanded else 190.0
+	_fortress_wall=100.0 if expanded else 80.0
+	_goal=goal
+	_phase="charge"
+	_speed=60
+	set_meta("fortress_cart",manager.boss.get_instance_id())
+
+func _fortress_tick(delta: float) -> bool:
+	var manager: Variant=_fortress_manager.get_ref()
+	if not is_instance_valid(manager) or not manager.valid(): velocity=Vector2.ZERO; return true
+	if _phase=="reaim":
+		_reaim_t-=delta
+		velocity=Vector2.ZERO
+		if _reaim_t<=0: _phase="charge"
+		return true
+	_speed=minf(_fortress_speed,_speed+120*delta)
+	var dir := global_position.direction_to(_goal)
+	velocity=dir*_speed*stat_mul("speed")*convoy_speed()
+	if _speed>70 and get_real_velocity().length()<_speed*0.33:
+		_blocked_t+=delta
+		if _blocked_t>0.3:
+			_phase="reaim"
+			_reaim_t=0.8
+			_blocked_t=0
+			_speed=30
+			_goal=_pick_goal()
+			SiegeFx.lane(get_parent(),global_position,_goal,40,Color(1,0.5,0.25),0.8,true)
+	else: _blocked_t=0
+	for c in manager.people():
+		if not _fortress_hits.has(c.get_instance_id()) and global_position.distance_to(c.global_position)<24:
+			if SiegeTools.strike(manager.boss,c,22,0,"convoy"):
+				_fortress_hits[c.get_instance_id()]=true
+				if SiegeTools.can_move(manager.boss,c): c.force_move(dir*300,0.6,"slide")
+	if global_position.distance_to(_goal)<16 or global_position.y<=director.wall_foot_y()+22:
+		_impact(_fortress_wall)
+	return true

@@ -222,6 +222,9 @@ def etower_frame(d):
 
 
 def etower(kind):
+    if kind in ("airdrop", "brush_battery", "resonance"):
+        from puppet_art import tower
+        return tower(kind)
     img, d = canvas(24, 40)
     etower_frame(d)
     if kind == "vine_pull":
@@ -347,6 +350,9 @@ def gen_towers():
     items += [("snowman_0", snowman(0)), ("snowman_1", snowman(1)), ("glue", glue_puddle()),
               ("proj_hand", hand_proj((190, 140, 230, 255))), ("proj_brush", brush_proj()), ("proj_equip", equip_proj()),
               ("proj_icicle", icicle_proj()), ("net", net_tile()), ("proj_arrow", arrow_proj())]
+    from puppet_art import tool
+    for key in ("tool_finger", "tool_roller", "tool_pad", "tool_capsule"):
+        items.append((key, tool(key)))
     pack(items, "towers")
 
 
@@ -365,7 +371,7 @@ def icicle_proj():
     return add_outline(img)
 
 
-ETOWERS = ["vine_pull", "tailor", "glue", "net", "silence", "portal", "windmill", "totem", "thigh_tower", "sole_tower"]
+ETOWERS = ["vine_pull", "tailor", "glue", "net", "silence", "portal", "windmill", "totem", "thigh_tower", "sole_tower", "airdrop", "brush_battery", "resonance"]
 
 
 def pack(items, name):
@@ -544,6 +550,12 @@ MONSTERS = {
 }
 
 
+def m_gale_bear(frame):
+    """读取直接生成的熊统领像素帧；import_gale_bear.py 只负责源图切帧与对齐。"""
+    src = Path(__file__).resolve().parent / "src" / ("gale_bear_%d.png" % frame)
+    return Image.open(src).convert("RGBA")
+
+
 def gen_monsters():
     items = []
     for k, fn in MONSTERS.items():
@@ -553,6 +565,11 @@ def gen_monsters():
             continue
         for f in (0, 1):
             items.append(("%s_%d" % (k, f), fn(f)))
+    for frame in range(8):
+        items.append(("gale_bear_%d" % frame, m_gale_bear(frame)))
+    from puppet_art import boss
+    for frame in range(8):
+        items.append(("puppet_master_%d" % frame, boss(frame)))
     pack(items, "monsters")
 
 
@@ -593,6 +610,26 @@ def hazard_icon(kind):
     elif kind == "sticky_net":
         for i in range(0, 16, 4):
             d.line((i, 0, i, 15), fill=(240, 230, 190, 255)); d.line((0, i, 15, i), fill=(240, 230, 190, 255))
+    elif kind == "claw":
+        d.line((8, 0, 8, 5), fill=(150, 145, 160, 255))
+        d.rectangle((5, 5, 11, 7), fill=(200, 195, 210, 255))
+        d.line((6, 8, 3, 12, 5, 15), fill=(220, 215, 230, 255), width=2)
+        d.line((10, 8, 13, 12, 11, 15), fill=(220, 215, 230, 255), width=2)
+        d.line((8, 8, 8, 13), fill=(255, 190, 215, 255), width=2)
+    elif kind == "quicksand":
+        d.ellipse((1, 5, 15, 14), fill=(200, 160, 95, 255))
+        d.arc((3, 6, 13, 13), 200, 470, fill=(240, 210, 150, 255))
+        d.ellipse((6, 8, 10, 11), fill=(120, 85, 50, 255))
+        d.line((4, 6, 4, 3), fill=(255, 215, 195, 255)); d.line((12, 6, 12, 3), fill=(255, 215, 195, 255))
+    elif kind == "mushrooms":
+        for (x, y) in ((1, 9), (8, 4)):
+            d.rectangle((x + 2, y + 3, x + 4, y + 6), fill=(250, 235, 215, 255))
+            d.pieslice((x, y, x + 7, y + 6), 180, 360, fill=(240, 90, 125, 255))
+            d.point((x + 2, y + 1), fill=(255, 235, 240, 255))
+    elif kind == "portal_pair":
+        d.ellipse((0, 3, 7, 14), outline=(180, 120, 255, 255), fill=(40, 15, 60, 255))
+        d.ellipse((9, 3, 15, 14), outline=(255, 130, 200, 255), fill=(40, 15, 60, 255))
+        d.arc((2, 6, 13, 11), 180, 360, fill=(255, 255, 255, 200))
     return add_outline(img)
 
 

@@ -237,7 +237,7 @@ func _on_died() -> void:
 	if kind != "decoy":
 		Fx.burst(get_parent(), global_position + Vector2(0, -14), "crystal", 18, 70.0, 0.7, Vector2(0, 90), Color(0.8, 0.94, 1.0))
 		GameState.notify("%s被抢掠小队拆掉了！（基座还在，按 B 重新造）" % str(info(kind).get("name", kind)))
-	collapse(kind != "decoy")
+	collapse(kind != "decoy" or get_meta("fortress_keep_pad",false))
 
 
 var _fire: CPUParticles2D
@@ -339,7 +339,7 @@ func _campfire(_delta: float) -> void:
 	# 暖炉史莱姆在火边化得更快
 	for m in director.enemies_near(global_position, r):
 		if m is WarmSlime:
-			m.receive_hit(HitData.make_attack(self, 1, 0.0))
+			m.receive_hit(HitData.make_attack(self, 1, 0.0, true))
 
 
 func _ballista() -> void:
@@ -356,8 +356,8 @@ func _ballista() -> void:
 			target = t
 	if target == null:
 		for m in director.enemies_near(global_position, rng, false):
-			var d2 := global_position.distance_to(m.global_position)
-			var big := m is SiegeCart or m is TrollGeneral
+			var d2 := FortressRules.distance(m,global_position)
+			var big := m is SiegeCart or m.is_in_group("siege_boss")
 			if (big and d2 < rng) or (target == null and d2 < best):
 				best = d2
 				target = m
@@ -368,33 +368,33 @@ func _ballista() -> void:
 		return
 	_t = float(p("interval", 2.6)) * (director.town.mul("ally_cd") if director.town else 1.0)
 	var from := global_position + Vector2(0, -20)
-	var dir := from.direction_to(target.global_position + Vector2(0, -8))
+	var dir := from.direction_to(FortressRules.point(target,from) + Vector2(0, -8))
 	var reach := rng + 40.0
 	var dmg := _dmg(int(p("damage", 3)))
 	var pierce := int(p("pierce", 4))
 	# 穿透：一条直线上的怪 / 敌塔依次挨打
 	var hit: Array[Node2D] = []
 	for m in director.enemies_near(from + dir * reach / 2.0, reach / 2.0 + 12.0, false):
-		var rel := m.global_position + Vector2(0, -8) - from
+		var rel := FortressRules.point(m,from) + Vector2(0, -8) - from
 		var along := rel.dot(dir)
 		if along > 0.0 and along < reach and absf(rel.cross(dir)) < 12.0:
 			hit.append(m)
-	hit.sort_custom(func(a, b): return from.distance_to(a.global_position) < from.distance_to(b.global_position))
+	hit.sort_custom(func(a, b): return FortressRules.distance(a,from) < FortressRules.distance(b,from))
 	hit = hit.slice(0, pierce)
 	if target.is_in_group("siege_enemy_tower") and not hit.has(target):
 		hit.append(target)
 	for n in hit:
-		var big2 := n is SiegeCart or n is TrollGeneral or n.is_in_group("siege_enemy_tower")
-		(n as Actor).receive_hit(HitData.make_attack(self, dmg * (3 if big2 else 1), 80.0))
+		var big2 := n is SiegeCart or n.is_in_group("siege_boss") or n.is_in_group("siege_enemy_tower")
+		(n as Actor).receive_hit(HitData.make_attack(self, dmg * (3 if big2 else 1), 80.0, true))
 		Fx.burst(get_parent(), n.global_position + Vector2(0, -8), "crystal", 5, 50.0, 0.4, Vector2(0, 60), Color(0.8, 0.95, 1.0))
 	var end := from + dir * reach
 	# 射到尽头（最后一个打到的东西那里）炸开一大朵冰花
-	var bloom_at: Vector2 = (hit.back() as Node2D).global_position if not hit.is_empty() else end
+	var bloom_at: Vector2 = FortressRules.point(hit.back(),from) if not hit.is_empty() else end
 	var bloom := float(p("bloom", 0.0))
 	if bloom > 0.0:
 		var bd := _dmg(int(p("bloom_damage", 2)))
 		for m in director.enemies_near(bloom_at, bloom, false):
-			m.receive_hit(HitData.make_attack(self, bd, 60.0))
+			m.receive_hit(HitData.make_attack(self, bd, 60.0, true))
 		SiegeFx.impact(get_parent(), bloom_at, bloom, false, Color(0.8, 0.95, 1.0))
 		for i in 10:
 			Fx.burst(get_parent(), bloom_at + Vector2.from_angle(TAU * i / 10.0) * bloom * 0.6, "crystal", 2, 30.0, 0.4, Vector2(0, 40), Color(0.85, 0.97, 1.0))
@@ -428,7 +428,7 @@ func _icicle() -> void:
 	var best: Node2D = null
 	var best_d := float(p("range", 140.0)) * _town("tower_range")
 	for m in director.enemies_near(global_position, best_d, false):
-		var d := global_position.distance_to(m.global_position)
+		var d := FortressRules.distance(m,global_position)
 		if d < best_d:
 			best_d = d
 			best = m
@@ -445,22 +445,28 @@ func _icicle() -> void:
 	_t = float(p("interval", 1.2)) * (director.town.mul("ally_cd") if director.town else 1.0)
 	var dmg := _dmg(int(p("damage", 1)))
 	var splash := float(p("splash", 0.0))
-	var wr: WeakRef = weakref(self)
-	SiegeProjectile.shoot(get_parent(), global_position + Vector2(0, -24), best, "proj_icicle", 260.0, func(t: Node):
+	SiegeProjectile.shoot(get_parent(), global_position + Vector2(0, -24), best, "proj_icicle", 260.0,
+		_icicle_hit(weakref(self), dmg, splash, global_position))
+	Audio.play("icicle", -12.0, 0.2)
+
+
+## 冰锥命中的回调。写在静态函数里：飞行途中冰塔被拆掉，回调也不会跟着失效（实例方法里的闭包会绑在塔上）。
+static func _icicle_hit(wr: WeakRef, dmg: int, splash: float, from: Vector2) -> Callable:
+	return func(t: Node):
 		if not is_instance_valid(t) or not (t is Actor):
 			return
 		var me := wr.get_ref() as IceTower
 		var src: Node = me if me else t
-		(t as Actor).receive_hit(HitData.make_attack(src, dmg, 40.0))
-		var at := (t as Node2D).global_position
+		(t as Actor).receive_hit(HitData.make_attack(src, dmg, 40.0, true))
+		var at := FortressRules.point(t, from)
 		# 落地碎开：溅射一小片
-		if splash > 0.0 and me and me.director:
-			for m in me.director.enemies_near(at, splash, false):
+		var d := SiegeDirector.current
+		if splash > 0.0 and d:
+			for m in d.enemies_near(at, splash, false):
 				if m != t:
-					m.receive_hit(HitData.make_attack(src, maxi(1, dmg - 1), 30.0))
+					m.receive_hit(HitData.make_attack(src, maxi(1, dmg - 1), 30.0, true))
 			SiegeFx.ring(t.get_parent(), at, splash, Color(0.8, 0.95, 1.0, 0.8), 0.35, 0.15)
-		Fx.burst(t.get_parent(), at + Vector2(0, -8), "crystal", 6, 40.0, 0.4, Vector2(0, 60), Color(0.85, 0.95, 1.0)))
-	Audio.play("icicle", -12.0, 0.2)
+		Fx.burst(t.get_parent(), at + Vector2(0, -8), "crystal", 6, 40.0, 0.4, Vector2(0, 60), Color(0.85, 0.95, 1.0))
 
 
 func _snowman() -> void:
@@ -515,7 +521,7 @@ func _frost(delta: float) -> void:
 		var burst := _dmg(int(p("burst", 1)))
 		for m in ms:
 			m.stun(float(p("freeze", 1.0)))
-			m.receive_hit(HitData.make_attack(self, burst, 0.0))
+			m.receive_hit(HitData.make_attack(self, burst, 0.0, true))
 		# 冰爆：冲击环 + 一圈冰花
 		var rg := SiegeFx.ring(get_parent(), global_position, r * 0.3, Color(0.85, 0.97, 1.0, 0.9), 0.5, 0.2)
 		if rg:
@@ -578,7 +584,7 @@ func _mortar() -> void:
 		var d := SiegeDirector.current
 		if d:
 			for m in d.enemies_near(to, r, false):
-				m.receive_hit(HitData.make_attack(src, dmg, 90.0))
+				m.receive_hit(HitData.make_attack(src, dmg, 90.0, true))
 				m.add_buff("siege_chill", 2.0)
 		SiegeFx.impact(parent, to, r, false, Color(0.8, 0.95, 1.0))
 		Fx.burst(parent, to + Vector2(0, -6), "crystal", 16, r * 1.2, 0.6, Vector2(0, 100), Color(0.85, 0.97, 1.0))
@@ -597,7 +603,7 @@ func _vortex() -> void:
 	var dmg := _dmg(int(p("damage", 1)))
 	var push := float(p("push", 40.0))
 	for m in director.enemies_near(global_position, r, false):
-		m.receive_hit(HitData.make_attack(self, dmg, 0.0))
+		m.receive_hit(HitData.make_attack(self, dmg, 0.0, true))
 		m.apply_knockback(global_position, push * 3.0)
 	if randf() < 0.6:
 		var a := randf() * TAU
@@ -612,7 +618,7 @@ func _resonance() -> void:
 	var first: Monster = null
 	var bd := rng
 	for m in director.enemies_near(global_position, rng, false):
-		var dd := global_position.distance_to(m.global_position)
+		var dd := FortressRules.distance(m,global_position)
 		if dd < bd:
 			bd = dd
 			first = m
@@ -629,7 +635,7 @@ func _resonance() -> void:
 		for m in director.enemies_near(cur.global_position, 70.0, false):
 			if hit.has(m):
 				continue
-			var dd2 := cur.global_position.distance_to(m.global_position)
+			var dd2 := FortressRules.distance(m,cur.global_position)
 			if dd2 < nd:
 				nd = dd2
 				nxt = m
@@ -640,9 +646,12 @@ func _resonance() -> void:
 	var prev := global_position + Vector2(0, -24)
 	for i in hit.size():
 		var m: Monster = hit[i]
-		var at := m.global_position + Vector2(0, -8)
+		var at := FortressRules.point(m,prev) + Vector2(0, -8)
 		_arc_line(prev, at, i * 0.05)
-		m.receive_hit(HitData.make_attack(self, dmg, 0.0))
+		# 电弧从上一只怪那里跳过来：盾甲螃蟹的正面挡不住
+		var arc := HitData.make_attack(self, dmg, 0.0, true)
+		arc.ignore_block = true
+		m.receive_hit(arc)
 		m.stun(0.3)
 		Fx.burst(get_parent(), at, "crystal", 4, 30.0, 0.4, Vector2(0, 40), Color(0.85, 0.75, 1.0))
 		prev = at
@@ -723,11 +732,14 @@ func _meteor(delta: float) -> void:
 		var d := SiegeDirector.current
 		if d:
 			for m in d.enemies_near(to, r, false):
-				m.receive_hit(HitData.make_attack(src, dmg, 160.0))
+				# 陨石从天上砸下来：盾甲螃蟹举着钳子也挡不住
+				var fall := HitData.make_attack(src, dmg, 160.0, true)
+				fall.ignore_block = true
+				m.receive_hit(fall)
 				m.stun(frz)
 			for t in parent.get_tree().get_nodes_in_group("siege_enemy_tower"):
 				if (t as Node2D).global_position.distance_to(to) <= r:
-					(t as Actor).receive_hit(HitData.make_attack(src, dmg, 0.0))
+					(t as Actor).receive_hit(HitData.make_attack(src, dmg, 0.0, true))
 		SiegeFx.impact(parent, to, r, true, Color(0.8, 0.95, 1.0))
 		Fx.burst(parent, to + Vector2(0, -8), "crystal", 30, r * 1.5, 0.9, Vector2(0, 120), Color(0.85, 0.97, 1.0))
 		Audio.play("wall_crash", 0.0, 0.05, 1.3))

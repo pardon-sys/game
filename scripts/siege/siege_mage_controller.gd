@@ -254,7 +254,7 @@ func _decide(me: PlayableCharacter, req: Variant, rescue: Variant) -> void:
 	if SiegeSpells.ready(me, "spike"):
 		var big: Node2D = null
 		for m in director.enemies_near(me.global_position, SiegeSpells.RANGE * 0.6):
-			if m is SiegeCart or m is TrollGeneral:
+			if m is SiegeCart or m is SiegeBoss:
 				big = m
 				break
 		if big == null:
@@ -278,6 +278,14 @@ func _decide(me: PlayableCharacter, req: Variant, rescue: Variant) -> void:
 		if p is Vector2 and director.enemies_near(p, 40.0).size() >= BARRIER_AT:
 			if SiegeSpells.cast(me, "barrier", p):
 				intent = "spell:barrier"
+				return
+	# 挠痒传送门：粉色公主快走进紫门了 → 冰锥雨冰封它
+	if SiegeSpells.ready(me, "ice_rain") and pink:
+		for h in me.get_tree().get_nodes_in_group("siege_portal"):
+			var portal := h as HazardPortalPair
+			if portal and portal.warned and float(portal.frozen[0]) <= 0.0 and pink.global_position.distance_to(portal.global_position) < 90.0 \
+					and SiegeSpells.in_range(me, portal.global_position) and SiegeSpells.cast(me, "ice_rain", portal.global_position):
+				intent = "spell:ice_rain"
 				return
 	# 冰锥雨：射程内最密的地方
 	if SiegeSpells.ready(me, "ice_rain"):

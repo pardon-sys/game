@@ -47,32 +47,43 @@ var _data_by := {}
 var _scenes_by := {}
 var data: Dictionary:
 	get:
-		var who := Characters.current()
-		if not _data_by.has(who):
-			_data_by[who] = _load(who)
-		return _data_by[who]
+		return _data_for(render_character())
 	set(v):
 		_data_by[Characters.current()] = v
-## 组合技小演出：组合 id -> {cast, steps}
+## 组合技小演出按请求角色缓存，播放中不随操控对象变化。
 var scenes: Dictionary:
 	get:
-		var who := Characters.current()
-		if not _scenes_by.has(who):
-			var p := Characters.path("combo_scenes.json", SCENES_PATH, who)
-			var parsed: Variant = JSON.parse_string(FileAccess.get_file_as_string(p)) if FileAccess.file_exists(p) else {}
-			var all: Dictionary = (parsed.get("scenes", {}) if parsed is Dictionary else {}).duplicate()
-			var ep := Characters.path("equip_scenes.json", EQUIP_SCENES_PATH, who)
-			var eparsed: Variant = JSON.parse_string(FileAccess.get_file_as_string(ep)) if FileAccess.file_exists(ep) else {}
-			if eparsed is Dictionary:
-				all.merge(eparsed.get("scenes", {}))
-			var spath := Characters.path("siege_scenes.json", SIEGE_SCENES_PATH, who)
-			var sparsed: Variant = JSON.parse_string(FileAccess.get_file_as_string(spath)) if FileAccess.file_exists(spath) else {}
-			if sparsed is Dictionary:
-				all.merge(sparsed.get("scenes", {}))
-			_scenes_by[who] = all
-		return _scenes_by[who]
+		return _scenes_for(render_character())
 	set(v):
 		_scenes_by[Characters.current()] = v
+var character_id := "pink"
+var _generation := 0
+
+
+func render_character() -> String:
+	return character_id if _playing else Characters.current()
+
+
+func _data_for(who: String) -> Dictionary:
+	if not _data_by.has(who):
+		_data_by[who] = _load(who)
+	return _data_by[who]
+
+
+func _scenes_for(who: String) -> Dictionary:
+	if not _scenes_by.has(who):
+		var p := Characters.path("combo_scenes.json", SCENES_PATH, who)
+		var parsed: Variant = JSON.parse_string(FileAccess.get_file_as_string(p)) if FileAccess.file_exists(p) else {}
+		var all: Dictionary = (parsed.get("scenes", {}) if parsed is Dictionary else {}).duplicate()
+		for filename in ["equip_scenes.json", "siege_scenes.json"]:
+			var path := Characters.path(filename, EQUIP_SCENES_PATH if filename == "equip_scenes.json" else SIEGE_SCENES_PATH, who)
+			var extra: Variant = JSON.parse_string(FileAccess.get_file_as_string(path)) if FileAccess.file_exists(path) else {}
+			if extra is Dictionary:
+				all.merge(extra.get("scenes", {}))
+		_scenes_by[who] = all
+	return _scenes_by[who]
+
+
 var current := ""
 var step_index := -1
 var actors := {}
@@ -101,7 +112,7 @@ var _fx_act := 0
 ## 这段演出没有写 portrait（组合演出）：立绘跟着舞台上公主的姿势走（失控 1 → 失控 2），直到最后一幕魔力爆发换成战损释放立绘。
 var _auto_portrait := false
 ## CG 指令 fx（lines / feather / hand / heart）→ 立绘贴片种类（没有挠痒演员时用）。
-const FX_TO_HIT := {"feather": "feather", "hand": "hand"}
+const FX_TO_HIT := {"feather": "feather", "hand": "hand", "brush": "brush", "pinch": "pinch"}
 
 
 func _ready() -> void:
@@ -257,12 +268,12 @@ func _build() -> void:
 
 
 # ------------------------------------------------------------------ 数据
-func cgs() -> Dictionary:
-	return data.get("cgs", {})
+func cgs(who := "") -> Dictionary:
+	return _data_for(who if who != "" else render_character()).get("cgs", {})
 
 
-func death_cg_for(key: String) -> String:
-	var death: Dictionary = data.get("death", {})
+func death_cg_for(key: String, who := "") -> String:
+	var death: Dictionary = _data_for(who if who != "" else render_character()).get("death", {})
 	return str(death.get("by_source", {}).get(key, death.get("default", "")))
 
 
@@ -271,17 +282,19 @@ func nest_cg_for(nest_kind: String) -> String:
 	return str(data.get("nest", {}).get(nest_kind, {}).get("cg", ""))
 
 
-func play_nest(nest_kind: String) -> void:
-	var info: Dictionary = data.get("nest", {}).get(nest_kind, {})
+func play_nest(nest_kind: String, who := "") -> void:
+	who = who if who != "" else Characters.current()
+	var info: Dictionary = _data_for(who).get("nest", {}).get(nest_kind, {})
 	if info.is_empty():
-		await play_death("")
+		await play_death("", who)
 		return
-	await play(str(info["cg"]), str(info.get("source", "")))
+	await play(str(info["cg"]), str(info.get("source", "")), false, who)
 
 
 ## CG 立绘接口：素材文件存在就用它（导入过的资源或直接读 png），否则用 placeholder 指定的公主状态立绘。
-func portrait_texture(id: String) -> Texture2D:
-	var info: Dictionary = data.get("portraits", {}).get(id, {})
+func portrait_texture(id: String, who := "") -> Texture2D:
+	who = who if who != "" else render_character()
+	var info: Dictionary = _data_for(who).get("portraits", {}).get(id, {})
 	var file := str(info.get("file", ""))
 	if file != "":
 		if ResourceLoader.exists(file):
@@ -290,8 +303,8 @@ func portrait_texture(id: String) -> Texture2D:
 			var img := Image.load_from_file(file)
 			if img:
 				return ImageTexture.create_from_image(img)
-	# 占位立绘用「当前角色」那一套（Characters.scope 临时换成别人时也对：第八层剧场里另一个公主的爆发立绘）
-	return Dialogue.portrait_for(str(info.get("placeholder", "helpless_1")), Characters.current())
+	# 占位图使用固定演出角色；另一位公主的立绘通过显式 who 查询。
+	return Dialogue.portrait_for(str(info.get("placeholder", "helpless_1")), who)
 
 
 func has_portrait_file(id: String) -> bool:
@@ -359,27 +372,30 @@ func can_skip() -> bool:
 
 
 ## 笑倒：按最后一次挠痒的来源键选 CG 并播放（await 到结束）。正在播别的时插到队首，当前这段播完马上播。
-func play_death(key: String) -> void:
-	await play(death_cg_for(key), key, true)
+func play_death(key: String, who := "") -> void:
+	who = who if who != "" else Characters.current()
+	await play(death_cg_for(key, who), key, true, who)
 
 
 ## 播放笑倒 CG / 巢穴过场（await 到播完）。正在播别的时排队（priority = true 插到队首）。
-func play(id: String, source := "", priority := false) -> void:
-	var cg: Dictionary = cgs().get(id, {})
+func play(id: String, source := "", priority := false, who := "") -> void:
+	who = who if who != "" else Characters.current()
+	var cg: Dictionary = cgs(who).get(id, {})
 	if cg.is_empty():
 		push_warning("没有 CG: " + id)
 		return
-	await _request({"cg": cg, "id": id, "source": source, "skippable": GameState.has_flag("cg_seen_" + id), "fx": 0}, priority)
+	await _request({"cg": cg, "character_id": who, "id": id, "source": source, "skippable": GameState.has_flag("cg_seen_" + id), "fx": 0}, priority)
 
 
 ## 组合技小演出（data/combo_scenes.json）。正在播 CG 时排队，按触发顺序依次播；同一段不会重复排队。
 ## 真正开始播时才设 combo_scene_<id> 标记（ComboTracker 据此判断是不是第一次）。
-func play_scene(combo_id: String) -> void:
-	var sc: Dictionary = scenes.get(combo_id, {})
+func play_scene(combo_id: String, who := "") -> void:
+	who = who if who != "" else Characters.current()
+	var sc: Dictionary = _scenes_for(who).get(combo_id, {})
 	var id := "combo:" + combo_id
 	if sc.is_empty() or current == id or _queue.any(func(r): return r["id"] == id):
 		return
-	await _request({"cg": sc, "id": id, "source": "", "skippable": true, "fx": 1, "combo": combo_id}, false)
+	await _request({"cg": sc, "character_id": who, "id": id, "source": "", "skippable": true, "fx": 1, "combo": combo_id}, false)
 
 
 # ------------------------------------------------------------------ 小剧场
@@ -448,6 +464,27 @@ var _queue: Array[Dictionary] = []
 
 
 ## 排队中的 CG id（测试 / 调试用）。
+## 战斗胜利使旧死亡演出失效；唤醒排队调用者，避免遗留 await。
+func cancel_pending_deaths() -> void:
+	for request in _queue.duplicate():
+		if str(request.get("id", "")).begins_with("death"):
+			request["done"] = true
+			_queue.erase(request)
+	if _playing and current.begins_with("death"):
+		_skip = true
+		Dialogue.close()
+
+
+func cancel_source(key: String) -> void:
+	for request in _queue.duplicate():
+		if str(request.get("source", "")) == key:
+			request["done"] = true
+			_queue.erase(request)
+	if _playing and source_key == key:
+		_skip = true
+		Dialogue.close()
+
+
 func queued() -> Array:
 	return _queue.map(func(r): return r["id"])
 
@@ -458,6 +495,8 @@ func is_busy() -> bool:
 
 
 func _request(req: Dictionary, priority: bool) -> void:
+	if not req.has("character_id"):
+		req["character_id"] = Characters.current()
 	req["done"] = false
 	if not is_busy():
 		await _run(req)
@@ -471,6 +510,8 @@ func _request(req: Dictionary, priority: bool) -> void:
 
 
 func _run(req: Dictionary) -> void:
+	character_id = str(req["character_id"])
+	_generation += 1
 	if req.has("combo"):
 		GameState.set_flag("combo_scene_" + str(req["combo"]))
 	await _play_cg(req["cg"], req["id"], req["source"], req["skippable"], req["fx"])
@@ -487,7 +528,7 @@ func _play_cg(cg: Dictionary, id: String, source: String, skippable: bool, fx_le
 	Dialogue.portrait_fx.begin_cg()
 	Dialogue.portrait_fx.set_cg_level(fx_level)
 	# 没写 portrait 的演出（组合演出）立绘跟着舞台上的姿势走；最后一幕魔力爆发（act = burst）的立绘不算
-	_auto_portrait = not cg.get("steps", []).any(func(st): return st is Dictionary and st.has("portrait") and st.get("act", "") != "burst")
+	_auto_portrait = not cg.get("steps", []).any(func(st): return st is Dictionary and st.has("portrait") and str(st.get("act", "")) != "burst")
 	if _auto_portrait:
 		var princess_info: Dictionary = {}
 		for who in cg.get("cast", {}):
@@ -530,7 +571,7 @@ func _play_cg(cg: Dictionary, id: String, source: String, skippable: bool, fx_le
 			var line := {"speaker": step.get("speaker", ""), "text": step["text"]}
 			if step.has("emotion"):
 				line["emotion"] = step["emotion"]
-			Dialogue.start_lines([line], "cg:" + id)
+			Dialogue.start_lines([line], "cg:" + id, character_id)
 			if step.has("auto"):
 				_auto_advance(float(step["auto"]), i)
 			await Dialogue.finished
@@ -591,8 +632,9 @@ func _sleep(t: float) -> void:
 
 
 func _auto_advance(t: float, index: int) -> void:
+	var generation := _generation
 	await get_tree().create_timer(t).timeout
-	if _playing and step_index == index and Dialogue.is_active():
+	if generation == _generation and _playing and step_index == index and Dialogue.is_active():
 		Dialogue.close()
 
 
@@ -621,7 +663,7 @@ func _apply_portrait(step: Dictionary) -> void:
 ## 立绘换成公主当前姿势对应的状态立绘（没写 portrait 的演出用）。
 func _follow_pose(visual: String) -> void:
 	if GameState.VISUALS.has(visual):
-		Dialogue.set_portrait_override(Dialogue.portrait_for(visual))
+		Dialogue.set_portrait_override(Dialogue.portrait_for(visual, character_id))
 
 
 func _reset_view() -> void:
@@ -641,7 +683,7 @@ func _build_cast(cast: Dictionary) -> void:
 		var k := str(info.get("kind", ""))
 		var a: CGActor
 		if k == "princess":
-			a = CGActor.make_princess(who)
+			a = CGActor.make_princess(who, character_id)
 			a.set_pose(str(info.get("visual", "helpless_1")), str(info.get("anim", "helpless")), str(info.get("dir", "down")))
 		elif k.begins_with("trap:"):
 			a = CGActor.make_trap(who, k.substr(5), data.get("trap_actors", {}).get(k.substr(5), {}))
@@ -850,6 +892,7 @@ func _act(a: Dictionary) -> float:
 			var n := int(a.get("repeat", 3))
 			var every := float(a.get("interval", 0.35))
 			var fx := str(a.get("fx", "lines"))
+			var tool := str(a.get("tool", ""))
 			t = n * every
 			if by:
 				by.style = "wiggle"
@@ -861,8 +904,11 @@ func _act(a: Dictionary) -> float:
 			var by_ref: WeakRef = weakref(by) if by else null
 			var after := str(a.get("after", "idle"))
 			var zone := str(a.get("zone", ""))
+			var generation := _generation
 			for i in n:
 				tw.tween_callback(func():
+					if not _playing or generation != _generation:
+						return
 					var w: CGActor = who_ref.get_ref()
 					if w == null:
 						return
@@ -873,9 +919,9 @@ func _act(a: Dictionary) -> float:
 						Dialogue.shake_npc_portrait(2.5, 0.18)   # 另一个公主：右边的立绘跟着抖
 					if _is_hero_actor(w):
 						# 立绘反馈（抖动、泛粉、贴片、飘字、光晕）；没有挠痒演员时按指令的 fx 和致死来源
-						Dialogue.portrait_fx.cg_tickle(b.reaction_key if b else source_key,
-								b.hit_fx if b else str(FX_TO_HIT.get(fx, "")), zone)
-					_spawn_fx(w, fx))
+						_hero_tickle(b.reaction_key if b else source_key,
+								b.hit_fx if b and tool == "" else str(FX_TO_HIT.get(fx, "")), zone)
+					_spawn_fx(w, fx, tool, zone))
 				tw.tween_interval(every)
 			tw.tween_callback(func():
 				var b: CGActor = by_ref.get_ref() if by_ref else null
@@ -927,7 +973,23 @@ func _act(a: Dictionary) -> float:
 	return t
 
 
-func _spawn_fx(target: CGActor, kind: String) -> void:
+## scope 只包住同步的反馈计算，不跨帧污染其他演出 / 战斗角色。
+func _hero_tickle(key: String, kind: String, zone: String) -> void:
+	Characters.scope(character_id)
+	Dialogue.portrait_fx.cg_tickle(key, kind, zone)
+	Characters.unscope()
+
+
+func _spawn_fx(target: CGActor, kind: String, tool := "", zone := "") -> void:
+	if tool != "":
+		var who := str(Dialogue.NPC_CHARACTER.get(target.reaction_key, character_id)) if target.kind == "npc_princess" else character_id
+		Characters.scope(who)
+		var off := _v(TickleZones.info(zone).get("body", [0, -10]))
+		Characters.unscope()
+		var v := SiegeTools.visual(fx_root, target.position + off, tool, 0.25)
+		v.during_cg = true
+		v.scale = Vector2(0.45, 0.45)
+		return
 	var frames: Array = FX_FRAMES.get(kind, FX_FRAMES["lines"])
 	var s := Sprite2D.new()
 	s.texture = FX_TEX
@@ -949,7 +1011,7 @@ func _set_voice(state: String) -> void:
 		voice.stop()
 		voice2.stop()
 		return
-	var stream := Audio.loop_stream(state)
+	var stream := Audio.loop_stream(state, character_id)
 	if stream and (voice.stream != stream or not voice.playing):
 		voice.stream = stream
 		voice.play()
@@ -958,9 +1020,7 @@ func _set_voice(state: String) -> void:
 	if other == "":
 		voice2.stop()
 		return
-	Characters.scope(other)
-	var s2 := Audio.loop_stream(state)
-	Characters.unscope()
+	var s2 := Audio.loop_stream(state, other)
 	if s2 and (voice2.stream != s2 or not voice2.playing):
 		voice2.stream = s2
 		voice2.play()
@@ -982,5 +1042,5 @@ func _is_hero_actor(w: CGActor) -> bool:
 		return false
 	if w.kind == "princess":
 		return true
-	var hero_id := "blue_princess" if Characters.current() == "blue" else "pink_princess"
+	var hero_id := "blue_princess" if character_id == "blue" else "pink_princess"
 	return w.kind == "npc_princess" and w.reaction_key == hero_id

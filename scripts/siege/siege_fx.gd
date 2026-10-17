@@ -3,6 +3,100 @@ extends RefCounted
 ## 攻防战的小特效（Godot 内置绘制 + Tween，不用图）：预警圈 / 预警线、冰锥落下、冰光束……
 
 
+## 风轮：沿用 Godot 内置绘制和临时特效生命周期；不承担伤害判定。
+static func wind_wheel(parent: Node, at: Vector2, radius: float, col: Color, duration := 0.8) -> Node2D:
+	if parent == null or not parent.is_inside_tree():
+		return null
+	var wheel := WindWheel.new()
+	wheel.radius = radius
+	wheel.color = col
+	wheel.life = duration
+	wheel.add_to_group("siege_temp")
+	wheel.z_index = 12
+	parent.add_child(wheel)
+	wheel.position = at
+	return wheel
+
+
+class WindWheel extends Node2D:
+	var radius := 32.0
+	var color := Color.WHITE
+	var life := 0.8
+	var elapsed := 0.0
+
+	func _process(delta: float) -> void:
+		elapsed += delta
+		if elapsed >= life:
+			queue_free()
+		else:
+			rotation += delta * 8.0
+			modulate.a = 1.0 - elapsed / life
+			queue_redraw()
+
+	func _draw() -> void:
+		for i in 4:
+			var angle := TAU * i / 4.0
+			draw_arc(Vector2.ZERO, radius, angle, angle + 1.0, 12, color, 2.0)
+			draw_arc(Vector2.ZERO, radius * 0.65, angle + 0.4, angle + 1.3, 8, Color(1, 1, 1, 0.7), 1.0)
+
+
+## 共用原龙卷漏斗绘制。攻击龙卷和运输残影只改变颜色、半径，不另造一套画风。
+static func draw_tornado(n: Node2D, at: Vector2, radius: float, t: float, col: Color, strong := false) -> void:
+	var k := radius / 22.0
+	for i in 7:
+		var r := (6.0 + i * 4.0) * k
+		var a := t * 8.0 + i
+		var p := (at + Vector2(sin(a) * 2.0 * k, -i * 7.0 * k)).round()
+		n.draw_arc(p, roundf(r), a, a + TAU * 0.8, 24, Color(col, 0.8 if strong else 0.55), 1.5)
+		n.draw_arc(p, roundf(r * 0.7), -a, -a + 2.0, 12, Color(1, 0.95, 1, 0.4), 1.0)
+
+
+## 风眼：内收风纹 + 羽毛 / 刷毛绕转；生命周期沿用 siege_temp。
+static func wind_eye(parent: Node, at: Vector2, radius: float, time: float, inward := true) -> Node2D:
+	if parent == null or not parent.is_inside_tree():
+		return null
+	var n := WindEye.new()
+	n.radius = radius
+	n.life = time
+	n.inward = inward
+	n.add_to_group("siege_temp")
+	parent.add_child(n)
+	n.global_position = at
+	return n
+
+
+class WindEye extends Node2D:
+	var radius := 224.0
+	var life := 3.5
+	var inward := true
+	var t := 0.0
+
+	func _process(delta: float) -> void:
+		if GameState.in_dialogue or GameState.in_cutscene or CG.is_busy():
+			return
+		t += delta
+		if t >= life:
+			queue_free()
+		queue_redraw()
+
+	func _draw() -> void:
+		draw_arc(Vector2.ZERO, radius, 0.0, TAU, 64, Color(0.45, 0.95, 0.9, 0.3), 1.0)
+		for i in 6:
+			var f := fmod(t * 0.7 + i / 6.0, 1.0)
+			var r := radius * (1.0 - f if inward else f)
+			var a := t * 2.5 + i * TAU / 6.0
+			draw_arc(Vector2.ZERO, roundf(r), a, a + 0.9, 16, Color(0.45, 0.95, 0.9, 0.2 + f * 0.25), 2.0)
+		for i in 12:
+			var a := t * 4.0 + i * TAU / 12.0
+			var p := (Vector2.from_angle(a) * (54.0 + i % 3 * 14.0) + Vector2(0, -8)).round()
+			draw_set_transform(p, a + PI / 2.0)
+			if i % 3 == 2:
+				draw_texture_rect(Fx.PARTICLES["feather"], Rect2(-6, -6, 12, 12), false, Color(1, 1, 1, 0.85))
+			else:
+				draw_texture_rect_region(IceTower.TEX, Rect2(-8, -8, 16, 16), IceTower.region("proj_brush" if i % 3 == 0 else "proj_hand"), Color(1, 1, 1, 0.85))
+			draw_set_transform(Vector2.ZERO)
+
+
 ## 地上的圆圈（预警 / 法术范围），time 秒后淡出删掉。
 static func ring(parent: Node, at: Vector2, r: float, col: Color, time := 0.6, fill := 0.18) -> Node2D:
 	if parent == null or not parent.is_inside_tree():
@@ -39,7 +133,7 @@ static func lane(parent: Node, from: Vector2, to: Vector2, w: float, col: Color,
 		l.set_meta("rect", Rect2(from, Vector2.ZERO).expand(to).grow(w / 2.0))
 	parent.add_child(l)
 	l.global_position = Vector2.ZERO
-	var tw := l.create_tween().set_loops(int(time / 0.3))
+	var tw := l.create_tween().set_loops(maxi(1, int(time / 0.3)))
 	tw.tween_property(l, "modulate:a", 0.4, 0.15)
 	tw.tween_property(l, "modulate:a", 1.0, 0.15)
 	l.get_tree().create_timer(time).timeout.connect(l.queue_free)
@@ -116,7 +210,8 @@ static func warn(parent: Node, at: Vector2, kind: String, r: float, time: float,
 	n.color = col
 	n.angle = angle
 	n.arc = arc
-	n.z_index = -1
+	# Floor 默认 z=0；预警也放在 z=0，避免被地板盖住。
+	n.z_index = 0
 	n.add_to_group("siege_temp")
 	if danger:
 		n.add_to_group("danger")
@@ -255,6 +350,7 @@ static func big_title(node: Node, text: String, col: Color, sub := "") -> void:
 		return
 	var layer := CanvasLayer.new()
 	layer.layer = 55
+	layer.add_to_group("siege_temp")
 	node.get_tree().current_scene.add_child(layer) if node.get_tree().current_scene else node.add_child(layer)
 	var l := Label.new()
 	l.text = text

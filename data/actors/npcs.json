@@ -30,7 +30,12 @@
 			"sprite": "res://assets/generated/princess_blue.png",
 			"portrait_set": "blue",
 			"princess_sheet": true,
-			"scene": "res://scenes/actors/playable/blue_princess.tscn"
+			"scene": "res://scenes/actors/playable/blue_princess.tscn",
+			"profile": {
+				"age": "成年",
+				"personality": "寡言、嘴硬：短句带省略号，越痒句子越碎；破防后小声服软，有反差萌（不用固定口头禅）",
+				"weak": "大腿和屁股（腿根、大腿内侧、屁股、两者交界处）"
+			}
 		},
 		"guard": {
 			"name": "保卫队员",
@@ -61,7 +66,12 @@
 			"sprite": "res://assets/generated/princess.png",
 			"portrait_set": "pink",
 			"princess_sheet": true,
-			"scene": "res://scenes/actors/playable/princess.tscn"
+			"scene": "res://scenes/actors/playable/princess.tscn",
+			"profile": {
+				"age": "成年",
+				"personality": "开朗、倔强、直来直去：被挠时叫嚷反抗、边笑边求饶，嘴上还嚷着要还手",
+				"weak": "脚（脚心、趾缝、足弓、脚趾根）"
+			}
 		},
 		"thousand_hand": {
 			"name": "千手痒痒魔",

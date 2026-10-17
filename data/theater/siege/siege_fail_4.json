@@ -42,6 +42,7 @@
 	},
 	"steps": [
 		{
+			"act": 1,
 			"actions": [
 				{
 					"do": "fade_in",
@@ -55,8 +56,9 @@
 			"wait": 0.5
 		},
 		{
+			"act": 1,
 			"speaker": "",
-			"text": "（捆绑藤怪的藤蔓一甩，把两个人背靠背地绑在了一起）",
+			"text": "（藤蔓从地里钻出来，把两个人背对背绑在一起；拥抱小熊张开双臂，从正面扑了上来）",
 			"actions": [
 				{
 					"do": "enter",
@@ -79,16 +81,19 @@
 			]
 		},
 		{
+			"act": 1,
 			"speaker": "公主",
-			"text": "绑、绑在一起了！动不了！"
+			"text": "绑、绑在一起了！蓝色的，你那边能动吗！"
 		},
 		{
+			"act": 1,
 			"speaker": "蓝色的公主",
-			"text": "……背、背靠背。……挤。"
+			"text": "……不能。……手……在你背后。"
 		},
 		{
+			"act": 1,
 			"speaker": "",
-			"text": "（藤怪又往两个人身上套东西：粉色公主一件绒毛胸衣，蓝色公主一条夹腿绑带）",
+			"text": "（小熊抱住粉色公主，熊爪勾掉她的鞋；藤蔓从蓝色公主的膝盖开始，一圈一圈往上缠）",
 			"actions": [
 				{
 					"do": "tickle",
@@ -97,7 +102,7 @@
 					"repeat": 8,
 					"interval": 0.22,
 					"fx": "hand",
-					"zone": "chest"
+					"zone": "sole"
 				},
 				{
 					"do": "tickle",
@@ -111,16 +116,14 @@
 			]
 		},
 		{
+			"act": 1,
 			"speaker": "公主",
-			"text": "胸、胸衣里面……绒毛……一呼吸就蹭……嘻嘻！"
+			"text": "鞋！又是鞋！为什么每次都是先脱鞋啊！"
 		},
 		{
-			"speaker": "蓝色的公主",
-			"text": "……腿……绑住了。……绑带里……有毛。"
-		},
-		{
+			"act": 2,
 			"speaker": "",
-			"text": "（拥抱小熊走过来，张开手臂——连两个人一起抱住）",
+			"text": "（小熊肉乎乎的肉垫按在她的脚心揉圈，熊爪尖勾住脚趾一根根往后扳，藤上的叶子顺势钻进趾缝里扫）",
 			"actions": [
 				{
 					"do": "tickle",
@@ -129,8 +132,20 @@
 					"repeat": 8,
 					"interval": 0.22,
 					"fx": "hand",
-					"zone": "chest"
-				},
+					"zone": "sole"
+				}
+			]
+		},
+		{
+			"act": 2,
+			"speaker": "公主",
+			"text": "嘻嘻嘻！肉垫——叶子——一起来哈哈哈！"
+		},
+		{
+			"act": 2,
+			"speaker": "",
+			"text": "（藤蔓缠到蓝色公主的腿根就停住，一圈一圈地收紧又放松；两根细藤从身后绕过来，轮流在屁股上收紧）",
+			"actions": [
 				{
 					"do": "tickle",
 					"who": "blue",
@@ -138,13 +153,19 @@
 					"repeat": 8,
 					"interval": 0.22,
 					"fx": "brush",
-					"zone": "waist"
+					"zone": "thigh"
 				}
 			]
 		},
 		{
+			"act": 2,
+			"speaker": "蓝色的公主",
+			"text": "……藤、藤蔓……在那里……一紧一松……"
+		},
+		{
+			"act": 2,
 			"speaker": "公主",
-			"text": "被、被抱住了！一抱紧绒毛就……哈哈哈！",
+			"text": "蓝、蓝色的……你背在抖……哈哈哈……我也是！",
 			"actions": [
 				{
 					"do": "bubble",
@@ -159,13 +180,169 @@
 			]
 		},
 		{
+			"act": 2,
 			"speaker": "蓝色的公主",
-			"text": "……抱、抱太紧……腰……"
+			"text": "……你先抖的。……传过来的。"
 		},
 		{
+			"act": 3,
 			"speaker": "",
-			"text": "（小熊的爪子一只钻进粉色公主的腋下，一只摸到蓝色公主的屁股上捏；藤尖在两人之间的缝里扫来扫去）",
+			"text": "（两个人背靠背，谁一笑另一个就跟着抖。蓝色公主的疲倦先满了）",
 			"actions": [
+				{
+					"do": "pose",
+					"who": "pink",
+					"visual": "helpless_2"
+				},
+				{
+					"do": "pose",
+					"who": "blue",
+					"visual": "helpless_2"
+				},
+				{
+					"do": "voice",
+					"state": "laugh"
+				}
+			]
+		},
+		{
+			"act": 3,
+			"speaker": "蓝色的公主",
+			"text": "……要出来了。……你……别回头。"
+		},
+		{
+			"act": "burst",
+			"speaker": "",
+			"text": "（冰蓝色的星光炸开，藤蔓冻成冰条碎了一地）",
+			"actions": [
+				{
+					"do": "flash",
+					"time": 0.8
+				},
+				{
+					"do": "sfx",
+					"sound": "star_burst",
+					"volume": -1.0
+				},
+				{
+					"do": "sfx",
+					"sound": "water_release",
+					"volume": -2.0
+				},
+				{
+					"do": "shake",
+					"who": "blue",
+					"time": 0.5
+				},
+				{
+					"do": "bubble",
+					"who": "blue",
+					"kind": "surprise"
+				},
+				{
+					"do": "move",
+					"who": "foe1",
+					"to": [
+						-94,
+						-6
+					],
+					"time": 0.25
+				},
+				{
+					"do": "move",
+					"who": "foe2",
+					"to": [
+						94,
+						-6
+					],
+					"time": 0.25
+				}
+			],
+			"wait": 1.0
+		},
+		{
+			"act": 3,
+			"speaker": "公主",
+			"text": "松、松开了——呜哇，我、我也……！"
+		},
+		{
+			"act": "burst",
+			"speaker": "",
+			"text": "（星光紧跟着从她身上炸开，小熊被弹得往后翻了个跟头）",
+			"actions": [
+				{
+					"do": "flash",
+					"time": 0.8
+				},
+				{
+					"do": "sfx",
+					"sound": "star_burst",
+					"volume": -1.0
+				},
+				{
+					"do": "sfx",
+					"sound": "water_release",
+					"volume": -2.0
+				},
+				{
+					"do": "shake",
+					"who": "pink",
+					"time": 0.5
+				},
+				{
+					"do": "bubble",
+					"who": "pink",
+					"kind": "surprise"
+				},
+				{
+					"do": "move",
+					"who": "foe1",
+					"to": [
+						-94,
+						-6
+					],
+					"time": 0.25
+				},
+				{
+					"do": "move",
+					"who": "foe2",
+					"to": [
+						94,
+						-6
+					],
+					"time": 0.25
+				}
+			],
+			"wait": 1.0
+		},
+		{
+			"act": 3,
+			"speaker": "蓝色的公主",
+			"text": "……呼。……都……放完了。"
+		},
+		{
+			"act": 3,
+			"speaker": "",
+			"text": "（新的藤蔓又钻了出来，小熊揉揉脑袋又扑了上来。刚放空魔力的两个人敏感得要命）",
+			"actions": [
+				{
+					"do": "move",
+					"who": "foe1",
+					"to": [
+						-44,
+						0
+					],
+					"time": 0.6
+				},
+				{
+					"do": "move",
+					"who": "foe2",
+					"to": [
+						44,
+						0
+					],
+					"time": 0.6
+				},
 				{
 					"do": "tickle",
 					"who": "pink",
@@ -173,7 +350,7 @@
 					"repeat": 8,
 					"interval": 0.22,
 					"fx": "hand",
-					"zone": "armpit"
+					"zone": "sole"
 				},
 				{
 					"do": "tickle",
@@ -187,16 +364,31 @@
 			]
 		},
 		{
+			"act": 3,
 			"speaker": "公主",
-			"text": "她、她一笑我就被晃……我一笑她也……哈哈哈！"
+			"text": "呀啊——！肉、肉垫……碰一下就……哈哈哈哈！",
+			"actions": [
+				{
+					"do": "bubble",
+					"who": "pink",
+					"kind": "laugh"
+				},
+				{
+					"do": "bubble",
+					"who": "blue",
+					"kind": "laugh"
+				}
+			]
 		},
 		{
+			"act": 3,
 			"speaker": "蓝色的公主",
-			"text": "……别、别晃……一晃……绑带就……哈哈！"
+			"text": "……哈哈……藤……收、收紧……哈哈哈哈！"
 		},
 		{
+			"act": 4,
 			"speaker": "",
-			"text": "（两个人背靠背笑成一团。一个笑，另一个就跟着被晃——越晃越痒，越痒越笑）",
+			"text": "（小熊把两个人一起抱进怀里，藤蔓把三个缠成了一团，肉垫和叶子轮流挠）",
 			"actions": [
 				{
 					"do": "pose",
@@ -219,7 +411,7 @@
 					"repeat": 8,
 					"interval": 0.22,
 					"fx": "hand",
-					"zone": "chest"
+					"zone": "sole"
 				},
 				{
 					"do": "tickle",
@@ -237,12 +429,14 @@
 			]
 		},
 		{
+			"act": 4,
 			"speaker": "公主",
-			"text": "哈哈哈哈！停、停不下来——是你在晃还是我在晃哈哈哈！"
+			"text": "哈哈哈哈！认输！抱、抱可以——挠不行哈哈哈！"
 		},
 		{
+			"act": 4,
 			"speaker": "蓝色的公主",
-			"text": "……都、都在晃……哈哈哈……认输……！",
+			"text": "……哈哈……抱……也不行……哈哈哈……认输……",
 			"actions": [
 				{
 					"do": "bubble",
@@ -257,10 +451,22 @@
 			]
 		},
 		{
-			"speaker": "公主",
-			"text": "解开以后……第一件事……把这件胸衣扔掉……"
+			"act": 4,
+			"speaker": "",
+			"text": "（小熊心满意足地抱了好久，藤蔓在两个人头上开出了一朵小花）"
 		},
 		{
+			"act": 4,
+			"speaker": "公主",
+			"text": "哈……哈……下次……一定……不让它们靠近……"
+		},
+		{
+			"act": 4,
+			"speaker": "蓝色的公主",
+			"text": "……下次。……背靠背。……但不要绑着。"
+		},
+		{
+			"act": 4,
 			"actions": [
 				{
 					"do": "voice",
