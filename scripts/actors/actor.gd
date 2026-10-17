@@ -40,6 +40,12 @@ signal buffs_changed
 var facing := Vector2.DOWN
 ## 本帧累积的外力（风扇、传送带、拉扯），移动时叠加到速度上，然后清零。
 var _push := Vector2.ZERO
+## 远处降级（LOD，攻防战用：SiegeDirector 给屏幕外的怪打开）：物理隔帧更新（delta ×2），移动不做碰撞求解、直接按速度走；
+## lod_clamp（导演设置）把走出来的位置夹回合法范围（不穿过城墙）。屏幕内照常。
+var lod_far := false
+static var lod_clamp: Callable
+var _lod_skip := false
+var _lod_delta := 0.0
 ## 最近一次成功生效的命中（死亡时可据此判断是被什么打死的）。
 var last_hit: HitData
 ## 这次死亡是笑到脱力（闷笑值满扣血）造成的。
@@ -80,6 +86,12 @@ func set_faction(f: Faction.Type) -> void:
 
 
 func _physics_process(delta: float) -> void:
+	if lod_far:
+		_lod_skip = not _lod_skip
+		if _lod_skip:
+			return
+		delta *= 2.0
+	_lod_delta = delta
 	tick_timers(delta)
 	_tick(delta)
 
@@ -208,6 +220,11 @@ func add_push(v: Vector2) -> void:
 
 ## 带外力的 move_and_slide：外力不会累积进 velocity。
 func move_with_push() -> void:
+	if lod_far:
+		var to := global_position + (velocity + _push) * _lod_delta
+		_push = Vector2.ZERO
+		global_position = lod_clamp.call(self, to) if lod_clamp.is_valid() else to
+		return
 	if _push == Vector2.ZERO:
 		move_and_slide()
 		return

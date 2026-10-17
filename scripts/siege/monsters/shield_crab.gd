@@ -5,7 +5,7 @@ extends SiegeMonster
 ## 粉色公主的锤子绕到背后（下面）打才有用，正面（朝城墙那一面）照样挡住。走到墙下用钳子夹墙（伤害更高）。
 
 const RESONANCE_TAG := "resonance"
-const RESONANCE_MULT := 0.1
+const RESONANCE_MULT := 0.25
 
 
 func block_hit(hit: HitData) -> bool:

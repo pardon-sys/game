@@ -8,7 +8,6 @@
 	"ability_rate": 3.0,
 	"start_crystals": 30,
 	"difficulty": {
-		"hp": 1.4,
 		"build": 1.3,
 		"team_cd": 0.75
 	},
@@ -49,6 +48,7 @@
 		"hug_bear": "res://scenes/siege/monsters/hug_bear.tscn",
 		"suck_jelly": "res://scenes/siege/monsters/suck_jelly.tscn",
 		"twin_ghost": "res://scenes/siege/monsters/twin_ghost.tscn",
+		"bugler": "res://scenes/siege/monsters/horn_bugler.tscn",
 		"puppet_master": "res://scenes/siege/monsters/puppet_master.tscn"
 	},
 	"waves": [
@@ -623,6 +623,13 @@
 					"delay": 16
 				},
 				{
+					"formation": "bugler_squad",
+					"count": 2,
+					"from": "bottom",
+					"interval": 10.799999999999999,
+					"delay": 14
+				},
+				{
 					"formation": "engineer_escort",
 					"count": 4,
 					"from": "bottom",
@@ -856,6 +863,13 @@
 					"from": "hole",
 					"interval": 4.0,
 					"delay": 24
+				},
+				{
+					"formation": "bugler_squad",
+					"count": 2,
+					"from": "bottom",
+					"interval": 10.799999999999999,
+					"delay": 18
 				},
 				{
 					"formation": "engineer_escort",
@@ -1132,6 +1146,13 @@
 					"from": "left",
 					"interval": 4.0,
 					"delay": 20
+				},
+				{
+					"formation": "bugler_squad",
+					"count": 2,
+					"from": "bottom",
+					"interval": 10.799999999999999,
+					"delay": 10
 				},
 				{
 					"formation": "engineer_escort",
@@ -1429,6 +1450,13 @@
 					"from": "left",
 					"interval": 4.0,
 					"delay": 22
+				},
+				{
+					"formation": "bugler_squad",
+					"count": 4,
+					"from": "bottom",
+					"interval": 10.799999999999999,
+					"delay": 14
 				},
 				{
 					"formation": "engineer_escort",
@@ -1770,6 +1798,13 @@
 					"delay": 18
 				},
 				{
+					"formation": "bugler_squad",
+					"count": 4,
+					"from": "bottom",
+					"interval": 10.799999999999999,
+					"delay": 18
+				},
+				{
 					"formation": "engineer_escort",
 					"count": 5,
 					"from": "bottom",
@@ -2092,6 +2127,13 @@
 					"from": "bottom",
 					"interval": 8.4,
 					"delay": 12
+				},
+				{
+					"formation": "bugler_squad",
+					"count": 4,
+					"from": "bottom",
+					"interval": 10.799999999999999,
+					"delay": 10
 				},
 				{
 					"formation": "engineer_escort",
@@ -2672,6 +2714,13 @@
 					"from": "hole",
 					"interval": 5.3999999999999995,
 					"delay": 18
+				},
+				{
+					"formation": "bugler_squad",
+					"count": 6,
+					"from": "bottom",
+					"interval": 10.799999999999999,
+					"delay": 14
 				},
 				{
 					"formation": "engineer_escort",
@@ -3256,6 +3305,13 @@
 					"from": "hole",
 					"interval": 4.8,
 					"delay": 14
+				},
+				{
+					"formation": "bugler_squad",
+					"count": 6,
+					"from": "bottom",
+					"interval": 10.799999999999999,
+					"delay": 18
 				},
 				{
 					"formation": "engineer_escort",
@@ -3947,6 +4003,13 @@
 					"from": "hole",
 					"interval": 4.8,
 					"delay": 13
+				},
+				{
+					"formation": "bugler_squad",
+					"count": 6,
+					"from": "bottom",
+					"interval": 10.799999999999999,
+					"delay": 10
 				},
 				{
 					"formation": "engineer_escort",

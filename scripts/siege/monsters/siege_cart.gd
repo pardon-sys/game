@@ -3,7 +3,7 @@ extends SiegeMonster
 ## 攻城痒痒车：从地图下边出来，地上先亮红色预警线（WARN 秒），然后沿直线加速撞向城墙——
 ## 城墙大扣血（IMPACT），撞到的那一段墙上的蓝色公主被震下城墙；路线附近有诱饵冰雕时改撞冰雕（撞碎自己）。
 ## 寒霜塔 / 冰晶结界能让它变慢 / 停下；不吃击退、不吃受击僵直（挨打不打断冲锋）。
-## 路上撞到粉色公主：撞开、闷笑 +50%；撞到冰塔（诱饵冰雕除外）：塔碎掉（基座留着），车减速一半继续冲。
+## 路上撞到粉色公主：撞开、闷笑 +50%；撞到冰塔（诱饵冰雕除外）：塔碎掉（基座留着），车撞晕 SMASH_DAZE 秒后再重新瞄准冲刺。
 ## 冲锋中被挡住（盾兵、冰晶结界、塔、道具……速度掉到 1/3 以下超过 BLOCK_T 秒）：停 REAIM 秒、亮一条短预警线，从当前位置再冲。
 ## 路上的道具（木桩、沙袋……）直接撞碎。
 
@@ -17,6 +17,7 @@ const BLOCK_T := 0.3
 ## 第十轮：冲锋路上 SMASH_R 以内的冰塔撞碎；撞到粉色公主闷笑 +PINK_LAUGH（上限的比例）
 const SMASH_R := 26.0
 const CONTACT_R := 22.0
+const SMASH_DAZE := 3.0
 const PINK_LAUGH := 0.5
 const REAIM := 0.8
 
@@ -32,6 +33,7 @@ var redirect_job: Dictionary = {}
 var redirected := false
 ## 测试用：这一辆撞碎了几座冰塔
 var smashed := 0
+var _daze_t := 0.0
 
 func redirect(manager: WeakRef, job: Dictionary) -> void:
 	redirect_manager = manager
@@ -106,6 +108,17 @@ func siege_wander(_mind: SiegeMind, delta: float) -> bool:
 		_redirect_tick(delta)
 		return true
 	match _phase:
+		"dazed":
+			velocity = Vector2.ZERO
+			_daze_t -= delta
+			if sprite:
+				sprite.rotation = sin(_t * 18.0) * 0.08
+			if randf() < delta * 4.0:
+				Fx.burst(get_parent(), global_position + Vector2(randf_range(-8, 8), -22), "spark", 1, 12.0, 0.6, Vector2(0, -10), Color(1, 0.95, 0.5))
+			if _daze_t <= 0.0:
+				if sprite:
+					sprite.rotation = 0.0
+				_start_reaim()
 		"reaim":
 			velocity = Vector2.ZERO
 			_reaim_t -= delta
@@ -147,15 +160,16 @@ func siege_wander(_mind: SiegeMind, delta: float) -> bool:
 					if sd.block_cart(self):
 						_start_reaim()
 						return true
-			# 路上的冰塔（诱饵冰雕除外，它按原规则把车引过去撞毁）直接撞碎，基座留着；车减速一半继续冲
+			# 路上的冰塔（诱饵冰雕除外，它按原规则把车引过去撞毁）直接撞碎，基座留着；车撞晕了，SMASH_DAZE 秒后才重新瞄准冲刺
 			for t in get_tree().get_nodes_in_group("siege_tower"):
 				var tower := t as IceTower
 				if tower and tower.kind != "decoy" and tower.is_alive() and tower.global_position.distance_to(global_position + dir * 8.0) < SMASH_R:
 					tower.raid_hit(9999, self)
-					_speed *= 0.5
 					smashed += 1
 					Fx.burst(get_parent(), tower.global_position + Vector2(0, -10), "crystal", 18, 80.0, 0.6, Vector2(0, 120), Color(0.85, 0.95, 1.0))
 					Audio.play("ice_crack", -2.0, 0.1, 0.8)
+					_daze()
+					return true
 			# 路上的道具直接撞碎
 			for n in get_tree().get_nodes_in_group("prop"):
 				var pr := n as Node2D
@@ -188,6 +202,16 @@ func _touching_decoy() -> bool:
 		if is_instance_valid(t) and t is IceTower and (t as IceTower).kind == "decoy" and t.global_position.distance_to(global_position) < CONTACT_R:
 			return true
 	return false
+
+
+## 撞碎冰塔：车停下晕 SMASH_DAZE 秒（车身摇晃、冒星星），之后重新瞄准再冲。
+func _daze() -> void:
+	_phase = "dazed"
+	_daze_t = SMASH_DAZE
+	_speed = 0.0
+	_blocked_t = 0.0
+	velocity = Vector2.ZERO
+	SpeechBubble.say(self, "咕噜……头、头好晕……", 26.0, 1.2)
 
 
 func _start_reaim() -> void:

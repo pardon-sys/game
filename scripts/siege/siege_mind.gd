@@ -3,10 +3,12 @@ extends RefCounted
 ## 攻防战里怪物的「行军」大脑（Monster.mind）：没有目标时朝城墙走，走到墙下就停住（HitArea 碰到城墙就会自己攻击）。
 ## 每 THINK 秒（不是每帧）在 SiegeDirector 维护的目标表里找最近的活物（两位公主、小雪人、诱饵冰雕……）：
 ##   在 detect 范围内 → 锁定它（Monster 进入 CHASE），追丢了再回到行军。
-## 屏幕外的怪：思考间隔拉长（FAR_THINK），不放动画（Monster 的 _animate 由导演关掉）。
+## 屏幕外的怪（Actor.lod_far，导演每 0.25 秒判一次）：思考间隔拉长（FAR_THINK）、避障探测变稀，物理隔帧、移动不做碰撞求解（见 Actor）。
 ## 子类（攻城车、钩索怪、爬墙壁虎……）重写 wander 做自己的行动。
 
 const THINK := 0.35
+## 离墙脚还有这么远时才会换目标墙段（快到墙下就不换了）
+const REPICK_Y := 140.0
 const FAR_THINK := 0.9
 
 var director: Node
@@ -60,6 +62,13 @@ func wander(m: Monster, delta: float) -> bool:
 				m.velocity = (lead as CharacterBody2D).velocity if lead is CharacterBody2D else Vector2.ZERO
 			return true
 		m.remove_meta("escort_of")
+	# 号手倒下后乱成一团：SCATTER 秒里乱走，之后重新挑墙段
+	if m.has_meta("scatter_until"):
+		if Time.get_ticks_msec() / 1000.0 < float(m.get_meta("scatter_until")):
+			m._move(Vector2.from_angle(m._t * 2.3 + float(m.get_instance_id() % 7)), m.stats.wander_speed, delta)
+			return true
+		m.remove_meta("scatter_until")
+		m.remove_meta("march_x")
 	if hold_left > 0.0:
 		hold_left -= delta
 		var to := hold_at - m.global_position
@@ -67,7 +76,7 @@ func wander(m: Monster, delta: float) -> bool:
 		return true
 	_think -= delta
 	if _think <= 0.0:
-		_think = THINK if director == null or director.on_screen(m.global_position) else FAR_THINK
+		_think = FAR_THINK if m.lod_far else THINK
 		var t: Actor = director.nearest_target(m, m.stats.detect_range) if director else null
 		if t:
 			m.target = t
@@ -77,8 +86,8 @@ func wander(m: Monster, delta: float) -> bool:
 	return true
 
 
-## 朝城墙走：每只怪生成后挑一个目标墙段 x（march_x；偏向中间，左右出生的怪斜着走过去，不贴着地图两边）；
-## 成套生成的小队共用一个 march_x。到墙下就停——旁边有活梯子的话顺着爬上去。路上被道具 / 塔挡住会自动绕开（avoid）。
+## 朝城墙走：挑一个目标墙段 x（march_x，SiegeDirector.pick_weak_x：冰塔少、没加固、蓝色公主不在的墙段更容易被挑），
+## 离墙还远时每 WEAK_GAP 秒重新挑一次（蓝色公主换墙段 / 新造了塔，怪群会跟着转向）；成套的小队（march_lock）共用一个 march_x。到墙下就停——旁边有活梯子的话顺着爬上去。路上被道具 / 塔挡住会自动绕开（avoid）。
 func march(m: Monster, delta: float) -> void:
 	if director == null:
 		return
@@ -90,11 +99,12 @@ func march(m: Monster, delta: float) -> void:
 		if lad and not (m is SiegeMonster and (m as SiegeMonster).climbing):
 			climb_ladder(m, lad)
 		return
-	if not m.has_meta("march_x"):
-		var ms: Vector2 = director.map_size()
-		var cx := ms.x / 2.0
-		var gx := lerpf(m.global_position.x, cx, randf_range(0.25, 0.6)) + randf_range(-160.0, 160.0)
-		m.set_meta("march_x", clampf(gx, 90.0, ms.x - 90.0))
+	# 挑薄弱处：没定目标时挑一段墙；离墙还远的时候每 WEAK_GAP 秒按最新的薄弱分重新挑（成套的小队锁着不换）
+	var now := Time.get_ticks_msec() / 1000.0
+	var far := m.global_position.y - foot > REPICK_Y
+	if not m.has_meta("march_x") or (far and not m.has_meta("march_lock") and now - float(m.get_meta("march_pick", -INF)) > SiegeDirector.WEAK_GAP):
+		m.set_meta("march_x", director.pick_weak_x(m.global_position.x))
+		m.set_meta("march_pick", now)
 	# 附近有活梯子：快到墙下时改道去梯子那里（不然斜着走到墙下时多半差几步够不着）
 	if m.global_position.y - foot < LivingLadder.ATTRACT_Y:
 		var near_lad := LivingLadder.near(m.get_tree(), m.global_position.x, LivingLadder.ATTRACT_X)
@@ -138,7 +148,7 @@ func avoid(m: Monster, dir: Vector2, delta: float) -> Vector2:
 		return dir.rotated(_turn * 1.1)
 	if _probe_t > 0.0:
 		return dir
-	_probe_t = 0.15 if director.on_screen(m.global_position) else 0.5
+	_probe_t = 0.5 if m.lod_far else 0.15
 	if not _blocked(m, dir):
 		_turn = 0.0
 		return dir

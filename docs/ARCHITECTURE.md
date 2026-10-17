@@ -565,15 +565,29 @@ data/cutscenes/<楼层组>/  地图内过场；data/theater/<楼层组>/  小剧
   物理被关掉的 Actor（活梯子里的壁虎）由接管方调用 `Actor.tick_timers` 走受击无敌 / 增益倒计时；
   蓝色公主 AI 放法术更勤（`THINK` 0.2、门槛降低，AI 施法冷却 / 疲倦 × `SiegeSpells.AI_CD` / `AI_FATIGUE`），粉色公主吟唱时 `JOIN_PINK` 50% 跟着放（`join_pink`）；敌塔整个塔身可打（`HurtProxy`）、血条、范围 / 蓄力 / 崩塌特效。
   陷阱和怪物配合：龙卷风卷怪、迷雾里的怪打不到（meta `in_fog`，`enemies_near(..., false)`）、泡泡运兵；陷阱组合 `spawn_hazard_combo`（波次 `hazards` 里写 `combo`）。
-- **难度**（第十轮，中档）：`waves.json` 顶层 `difficulty {hp, build, team_cd}`（`SiegeDirector.difficulty(键)`）——小怪血量 ×1.4、
-  怪物搭敌塔 ×1.3（`EnemySite`）、配合技冷却 ×0.75（`cd_divisor`）；挠痒力度 ×1.4 是状态 `siege_hard`（`data/buffs.json`，`tickle_power`）。
-- **攻城车**：冲锋路上 `SMASH_R` 以内的冰塔（诱饵冰雕除外）撞碎、基座留着，车减速一半继续冲；撞到粉色公主闷笑 +50%（`PINK_LAUGH`）。
+- **难度**：怪物血量 / 挠痒保持原值，难度走机制（怪物挑薄弱墙段、号手指挥官，见下）；`waves.json` 顶层 `difficulty {build, team_cd}`
+  （`SiegeDirector.difficulty(键)`）——怪物搭敌塔 ×1.3（`EnemySite`）、配合技冷却 ×0.75（`cd_divisor`）。
+- **怪物挑薄弱处**：`SiegeDirector.wall_weakness()`（每段墙 `1 / (1 + 守备)`：射程覆盖墙中心的冰塔数、冰盾 +2、蓝色公主站在这段 +1.5，缓存 `WEAK_GAP` 4 秒）、
+  `pick_weak_x(from_x)`（按薄弱分² / 距离加权随机挑一段）；`SiegeMind.march` 离墙脚还远（`REPICK_Y`）时每 4 秒重挑 `march_x`，成套小队（meta `march_lock`）不换。
+- **号手指挥官** `HornBugler`（配合技 `bugler_squad`，第 4 波起成套出现）：号手在前、其余 10 只排成每排 4 个跟着（`SiegeTeamEffects._bugler_formation`，`escort_of`）；
+  号手离墙脚 `RALLY_Y` 以内吹冲锋号，整组挂 `siege_rally`（城墙伤害 ×1.2 走 `stat_mul("wall_damage")`、移速 ×1.15，每 3 秒续），散开冲到号手那段墙下；
+  号手倒下整组挂 meta `scatter_until`（3 秒乱走，`SiegeMind.wander`），之后各自重新挑墙段。
+- **蘑菇吸附**：`HazardMushrooms` 每颗蘑菇把 `PULL_R` 以内的公主（冲刺中不吸）和可推动的怪往帽上吸（`add_push`，越近越强），吸到帽上照常弹走。
+- **撤退**（暂停菜单）：`retreat()` 先 `_busy` + 切 `retreat` 状态再清场，存档 `siege_wave` 保持当前波（从准备阶段重来，不会被当成清完了跳到下一波）。
+- **性能**：屏幕外的普通怪降级（`Actor.lod_far`，导演每 0.25 秒在 `_clamp_monsters` 里判：只降级普通怪，攻城怪 `SiegeMonster` / Boss / 墙顶 / 被运着的不降级）——物理隔帧更新（delta ×2）、
+  移动不做碰撞求解直接按速度走（`Actor.lod_clamp` = `SiegeDirector._lod_clamp` 夹在地图里、不越过墙脚窄条），`SiegeMind` 思考 / 避障探测变稀；
+  `LivingLadder.near` 没有梯子时不分配组数组。1000 只怪挤在墙下：headless 每帧 13.2 → 8.3 ms、开窗口渲染 16.2 → 11 ms（`tests/siege_perf_profile` 打印）。
+  计时用 `SiegeFixture.saturated_frame_ms`（物理每秒 1000 步、每帧 1 步，墙钟 / 帧数）；`Performance.TIME_PHYSICS_PROCESS` 是每秒内的最大值，不能算平均。
+- **攻城车**：冲锋路上 `SMASH_R` 以内的冰塔（诱饵冰雕除外）撞碎、基座留着，车撞晕 3 秒（`SMASH_DAZE`）后重新瞄准再冲；撞到粉色公主闷笑 +50%（`PINK_LAUGH`）。
   攻城大队每 14 秒两排共 9~11 辆（`WaveFeatures.CORPS_*`）；最终波固定开着攻城大队和狂欢节（`FINAL_FIXED`，开打 2 秒就来）。
-- **盾甲螃蟹**：冰塔 / 塔弹 / 法术 / 陨石 / 士兵全挡；只有冰晶共鸣的电弧（`HitData.tag == ShieldCrab.RESONANCE_TAG`）打得动、伤害 ×0.1；
+- **盾甲螃蟹**：冰塔 / 塔弹 / 法术 / 陨石 / 士兵全挡；只有冰晶共鸣的电弧（`HitData.tag == ShieldCrab.RESONANCE_TAG`）打得动、伤害 ×0.25；
   粉色公主的锤子背后打得动、正面挡。
 - **拆塔投石车**（敌塔 `catapult`，第 6 波起）：挑射程里血最多的冰塔，落点影子亮 1.2 秒后砸下（`CatapultStone`），影子里的冰塔掉 60% 血上限；
   粉色公主站进影子替塔挡下（石头碎成羽毛挠她一下）。
-- **胜利后**：`TownBuffs.clear_all()` 撤掉 12 个镇民支援（友军身上的 `town_*`、`vars.siege_town_buffs`）。
+- **胜利后**：`TownBuffs.clear_all()` 撤掉 12 个镇民支援（友军身上的 `town_*`、`vars.siege_town_buffs`）；`stage_victory()` 把操控切回粉色公主、
+  两个人摆到城门前（`VICTORY_CELL` 两侧，蓝色公主节点改名 `SiegeBlue`）→ 过场 `siege_won`（`gen_floor06_siege.py` 的 `CHEERS`）：镜头拉远到整个战场，
+  十二位激励镇民按波次顺序从城门出来、各说一句、站成半圆（演员 `cheer_<激励 id>`，行走图用 `town_buffs.json` 的 `sheet`），镇长宣布祭典，
+  烟花（过场动作 `fireworks`：`at` 格子列表、`count`、`time`）→ 回战时小镇。
 - **临时痒痒装备**：`Equipment.force` / `release` / `tick_forced`（`GameState.equip_forced`），负面装备由 `EquipFx` 定时发作 + 立绘反应（`data/equip_reactions.json`，分角色）。
 - 内容生成器：`gen_siege_monsters.py`（场景）、`gen_siege_cgs.py`（笑倒 CG，粉 / 蓝两版）、`gen_siege_scenes.py`（三来源组合小演出）、
   `gen_siege_theaters.py`（失败小剧场）、`gen_siege_reactions.py`（受挠台词）、`gen_siege_bosses.py`（Boss 技能 / 横幅、要塞数据）、
@@ -584,7 +598,7 @@ data/cutscenes/<楼层组>/  地图内过场；data/theater/<楼层组>/  小剧
   | 文件 | 内容 | 拼装 |
   |---|---|---|
   | `cgs_1/2/3.py`、`cgs_bosses.py` | 16 段笑倒 CG（12 种攻城怪约 29 句、4 个 Boss 约 40 句） | `gen_siege_cgs.py` → `data/siege_cgs.json`（+ 蓝色版） |
-  | `theaters.py` | 12 段失败小剧场（约 26 句，蓝色公主的句子另有千手痒痒裤版） | `gen_siege_theaters.py` → `data/theater/siege/` |
+  | `theaters.py` | 12 段失败小剧场（27 句，照每一波的特色写：泡泡潮 / 空降 / 巨魔军团 / 迷雾 / 攻城大队 / 狂风 / 装备日 + 藤蔓 / 工兵 + 抢掠 / 魔偶师 + 羽毛雪 / 狂欢节 / 风卷巨魔泡泡 / 要塞操作台；蓝色公主的句子另有千手痒痒裤版） | `gen_siege_theaters.py` → `data/theater/siege/` |
   | `scenes_1/2/3.py` | 23 组三来源组合演出（约 32 句；机制在 `gen_siege_scenes.py` 的 `MECH`） | `gen_siege_scenes.py` → `data/siege_scenes.json`（+ 蓝色版）、`combos.json` |
   | `reactions_1/2.py`、`reactions_bosses.py` | 攻城怪 / 敌塔 / 陷阱 / 临时装备 / Boss（按技能）的受挠台词 | `gen_siege_reactions.py`（`siege_sources(who)`）→ 两份 `reactions.json` |
   | `team_lines.py` | 39 个配合技的发动字幕 + 怪物回嘴 | 同上 |
@@ -599,6 +613,7 @@ data/cutscenes/<楼层组>/  地图内过场；data/theater/<楼层组>/  小剧
 - 测试：`siege_test` / `siege2_test` / `siege3_test` / `siege5_test`（攻防战各轮），Boss 和机关的 `siege_w6_bear_test` / `siege_w9_puppet_test` /
   `siege_w12_fortress_test`、`siege_cooperation_test`、`siege_dev_test`、`siege_revision_test`（都直接继承夹具 `tests/helpers/siege_fixture.gd`）；
   `siege3_test` 的第十轮测四个大型陷阱和四个地面配合技、第十一轮测难度倍率 / 陷阱配合 / 双向传送门 / 攻城车撞塔撞人 / 投石车 / 胜利清空支援、
+  第十二轮测攻城车撞晕 / 蘑菇吸附 / 挑薄弱墙段 / 号手阵型和散乱 / 撤退不跳波、perf 段 1000 只怪每帧 ≤ 16 ms（满负荷计时）；`siege_test` 的胜利段测镜头拉远和十二位镇民出场；
   第九轮测螃蟹规则、CG 段测四幕结构和配合技字幕；`siege_w12_fortress_test` 的 `_round10` 测要塞的新机关、护盾柱、超载和最终波车队；`siege5_test` 的组合段把 23 组三来源组合给两位公主各触发一遍
   （穿着千手痒痒裤时大腿 / 屁股的临时装备会被裤子吸收，测试按组合临时开关 `Equipment.PANTS_FLAG`）；
   截图 `capture_siege*.gd` 输出到 `tools/.cache/shots/`。

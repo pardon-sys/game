@@ -78,6 +78,7 @@ static func on_spawn(t: Dictionary, made: Array, _ctx: Dictionary) -> void:
 			var x: float = leader.global_position.x
 			for m in made:
 				m.set_meta("march_x", x + randf_range(-10, 10))
+				m.set_meta("march_lock", true)
 		"airdrop":
 			if not rest.is_empty():
 				_airdrop(leader, [rest[0]], null)

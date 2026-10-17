@@ -23,6 +23,7 @@ MONSTERS = {
     "suck_jelly": ("suck_jelly", "suck_jelly", "魔力吸吸水母", "suck_jelly", 4, 20, 40, 999, 1, 7.0, 0.7, 0.95, "goo", 5, 9),
     "goblin_engineer": ("goblin_engineer", "engineer", "地精工兵", "goblin_engineer", 4, 22, 40, 50, 1, 5.0, 1.0, 0.6, "hand", 5, 8),
     "twin_ghost": ("twin_ghost", "twin_ghost_a", "双子痒痒鬼", "twin_ghost", 5, 20, 42, 90, 1, 9.0, 0.6, 0.85, "hand", 5, 9),
+    "horn_bugler": ("horn_bugler", "bugler", "号手小鬼", "bugler", 5, 18, 30, 40, 1, 6.0, 1.0, 0.6, "hand", 5, 8),
     # 小 Boss（继承 TickleTroll，不是 SiegeMonster；脚本里按 sprite_key 取 general_0~4）
     "gale_bear": ("gale_bear", "gale_bear", "狂风熊统领", "gale_bear", 320, 22, 38, 400, 2, 8.0, 0.9, 0.7, "hand", 18, 26),
     "puppet_master": ("puppet_master", "puppet_master", "狂欢挠痒魔偶师", "puppet_master", 420, 22, 40, 600, 2, 4.0, 0.9, 0.7, "hand", 18, 26),

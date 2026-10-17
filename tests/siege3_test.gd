@@ -36,7 +36,7 @@ func _ready() -> void:
 	await _wait(0.5)
 	_finish()
 	var only := OS.get_environment("SIEGE3_ONLY")
-	for sec in ["hints", "waves", "town", "boss", "soldiers", "towers", "spells", "etowers", "field", "cart", "wall", "locks", "bugs5", "towers5", "fixes6", "features6", "round7", "round8", "round9", "round10", "round11", "equip", "cg", "perf"]:
+	for sec in ["hints", "waves", "town", "boss", "soldiers", "towers", "spells", "etowers", "field", "cart", "wall", "locks", "bugs5", "towers5", "fixes6", "features6", "round7", "round8", "round9", "round10", "round11", "round12", "equip", "cg", "perf"]:
 		if only == "" or sec in only.split(","):
 			if is_instance_valid(d):
 				d.bench_soldiers(sec != "soldiers")
@@ -1343,7 +1343,7 @@ func _run_round8() -> void:
 
 # ------------------------------------------------------------------ 第九轮
 func _run_round9() -> void:
-	print("-- 第九 / 十一轮：盾甲螃蟹只吃冰晶共鸣（10%）和粉色公主从背后的锤子")
+	print("-- 第九 / 十一轮：盾甲螃蟹只吃冰晶共鸣（25%）和粉色公主从背后的锤子")
 	await _clear()
 	_fight()
 	d.blue.set_controller(CharacterController.new())
@@ -1517,10 +1517,13 @@ func _run_round11() -> void:
 	var p := d.pink
 	var home := Vector2(d.gate_pos.x + 160.0, d.wall_foot_y() + 220.0)
 	var ok := {}
-	# 难度：小怪血量 ×hp、挂 siege_hard（挠痒力度）
+	# 难度：怪物血量 / 挠痒保持原值（难度走机制），只有搭塔 / 配合技冷却的倍率
 	var slime := d.spawn("slime", "", home + Vector2(300, 200))
-	ok["难度倍率 hp ×%.1f、挠痒 ×%.1f" % [SiegeDirector.difficulty("hp"), slime.stat_mul("tickle_power")]] = SiegeDirector.difficulty("hp") >= 1.4 \
-		and slime.has_buff("siege_hard") and slime.stat_mul("tickle_power") >= 1.39
+	var plain := load(d.monster_scene("slime")).instantiate() as Monster
+	var base_hp := plain.stats.max_hp if plain.stats else 0
+	plain.free()
+	ok["怪物血量原值（%d / %d）、挠痒力度 ×%.2f" % [slime.health.max_hp, base_hp, slime.stat_mul("tickle_power")]] = slime.health.max_hp == base_hp \
+		and is_equal_approx(slime.stat_mul("tickle_power"), 1.0) and SiegeDirector.difficulty("build") > 1.0
 	slime.queue_free()
 	# 传送门：双向 + 怪潮
 	p.global_position = home + Vector2(0, 80)
@@ -1600,7 +1603,7 @@ func _run_round11() -> void:
 	net.free_caught()
 	d.clear_field()
 	_fight()
-	# 攻城车：撞碎路上的冰塔继续冲；撞到粉色公主闷笑 +50%
+	# 攻城车：撞碎路上的冰塔（晕一下再冲）；撞到粉色公主闷笑 +50%
 	var lane_x := home.x + 260.0
 	var tw := _make_tower("icicle", Vector2(lane_x, d.wall_foot_y() + 140.0))
 	var pad := tw.pad
@@ -1609,8 +1612,9 @@ func _run_round11() -> void:
 	await _until(func(): return wcart.get_ref() == null or (wcart.get_ref() as SiegeCart).smashed > 0, 8.0)
 	var smashed := cart.smashed if is_instance_valid(cart) else 0
 	await _wait(0.2)
-	ok["攻城车撞碎冰塔（%d）、基座还在、车继续冲" % smashed] = smashed == 1 and not is_instance_valid(tw) and is_instance_valid(pad) \
-		and (not is_instance_valid(cart) or cart._phase in ["charge", "done"])
+	# 第十一轮起撞塔后先晕 SMASH_DAZE 秒（第十二轮单独测），晕完再冲
+	ok["攻城车撞碎冰塔（%d）、基座还在、车先晕住再冲" % smashed] = smashed == 1 and not is_instance_valid(tw) and is_instance_valid(pad) \
+		and (not is_instance_valid(cart) or cart._phase in ["dazed", "reaim", "warn2", "charge", "done"])
 	if is_instance_valid(pad):
 		pad.queue_free()
 	d.clear_field()
@@ -1671,6 +1675,99 @@ func _run_round11() -> void:
 	d.town.restore()
 	var bad := ok.keys().filter(func(k): return not ok[k])
 	check("第十一轮都生效（没生效：%s）" % [bad], bad.is_empty())
+	d.blue.set_controller(d._make_ai(d.blue))
+
+
+# ------------------------------------------------------------------ 第十二轮：攻城车撞晕、蘑菇吸附、挑薄弱墙段、号手指挥官、撤退不跳波
+func _run_round12() -> void:
+	print("-- 第十二轮：攻城车撞晕 / 蘑菇吸附 / 挑薄弱墙段 / 号手 / 撤退")
+	await _clear()
+	_fight()
+	d.blue.set_controller(CharacterController.new())
+	var p := d.pink
+	var home := Vector2(d.gate_pos.x + 160.0, d.wall_foot_y() + 220.0)
+	var ok := {}
+	for old_tower in get_tree().get_nodes_in_group("siege_tower"):
+		old_tower.queue_free()
+	await get_tree().process_frame
+	# 攻城车撞碎冰塔后晕 3 秒，不冲
+	var lane_x := home.x + 260.0
+	var tw := _make_tower("icicle", Vector2(lane_x, d.wall_foot_y() + 140.0))
+	var cart := d.spawn("cart", "", Vector2(lane_x, d.wall_foot_y() + 300.0)) as SiegeCart
+	p.global_position = home + Vector2(-300, 200)
+	await _until(func(): return not is_instance_valid(cart) or cart.smashed > 0, 8.0)
+	var dazed := is_instance_valid(cart) and cart._phase == "dazed"
+	var y0 := cart.global_position.y if is_instance_valid(cart) else 0.0
+	await _wait(2.0)
+	var still := is_instance_valid(cart) and absf(cart.global_position.y - y0) < 4.0 and cart._phase == "dazed"
+	await _wait(1.6)
+	var moving_on := is_instance_valid(cart) and cart._phase != "dazed"
+	ok["攻城车撞塔后晕住（%s）、2 秒内不动（%s）、3 秒后再冲（%s）" % [dazed, still, moving_on]] = dazed and still and moving_on
+	if is_instance_valid(tw):
+		tw.queue_free()
+	d.clear_field()
+	_fight()
+	# 蘑菇吸附：站在吸附圈里被吸过去；冲刺时挣得开
+	var mush := d.spawn_hazard("mushrooms", home) as HazardMushrooms
+	await _until(func(): return mush.warned, 3.0)
+	var cap := mush.global_position + mush.caps[4]
+	p.global_position = cap + Vector2(50, 0)
+	p.end_forced_move()
+	var d0 := p.global_position.distance_to(cap)
+	await _wait(0.5)
+	var pulled := p.global_position.distance_to(cap) < d0 - 4.0 or mush._bouncing.has(p.get_instance_id())
+	ok["蘑菇把公主吸过去（%.0f → %.0f）" % [d0, p.global_position.distance_to(cap)]] = pulled
+	d.clear_field()
+	_fight()
+	# 挑薄弱墙段：一段墙前面堆满冰塔，怪几乎不挑它
+	var guarded: SiegeWall = d.walls[2]
+	var gx := (guarded.left_x() + guarded.right_x()) / 2.0
+	var made_towers := []
+	for i in 4:
+		made_towers.append(_make_tower("icicle", Vector2(gx - 60 + i * 40, guarded.foot_y() + 70.0)))
+	d._weak_at = -INF
+	var weak := d.wall_weakness()
+	var hits := 0
+	for i in 200:
+		var x := d.pick_weak_x(gx)
+		if x >= guarded.left_x() and x <= guarded.right_x():
+			hits += 1
+	var weakest: float = weak.max()
+	ok["怪物挑薄弱墙段：冰塔多的那段薄弱分 %.2f（最高 %.2f），200 次只挑中 %d 次" % [weak[2], weakest, hits]] = weak[2] < weakest and hits < 40
+	for t in made_towers:
+		if is_instance_valid(t):
+			t.pad.queue_free()
+	d.clear_field()
+	_fight()
+	# 号手指挥官：成套生成排阵型；吹号整组挂冲锋状态；号手倒下整组乱
+	d.wave = 6
+	var squad := d.teamwork.spawn_formation("bugler_squad", home + Vector2(0, 200))
+	var bugler: HornBugler = null
+	for m in squad:
+		if m is HornBugler:
+			bugler = m
+	var followers := squad.filter(func(m): return not (m is HornBugler) and m.get_meta("escort_of", null) == bugler)
+	ok["号手带队（%d 人跟着）" % followers.size()] = bugler != null and followers.size() >= 8 and bugler.squad.size() == followers.size()
+	if bugler:
+		bugler._blow(true)
+		var rallied := followers.all(func(m): return m.has_buff("siege_rally") and not m.has_meta("escort_of"))
+		var power: float = followers[0].stat_mul("wall_damage") if not followers.is_empty() else 0.0
+		bugler.health.damage(999)
+		await get_tree().process_frame
+		var scattered := followers.filter(func(m): return SiegeTools.alive(m) and m.has_meta("scatter_until")).size()
+		ok["吹号冲锋（%s，城墙伤害 ×%.1f），号手倒下后乱成一团 %d 只" % [rallied, power, scattered]] = rallied and power >= 1.19 and scattered >= 8
+	d.wave = 1
+	d.clear_field()
+	_fight()
+	# 撤退：这一波不会算成打完
+	var w0 := d.wave
+	d.retreat(false)
+	await _wait(0.5)
+	ok["撤退后存档还是第 %d 波（%s）" % [int(GameState.vars.get("siege_wave", -1)), d.state]] = int(GameState.vars.get("siege_wave", -1)) == w0 and d.wave == w0
+	d._busy = false
+	d._set_state("fight")
+	var bad := ok.keys().filter(func(k): return not ok[k])
+	check("第十二轮都生效（没生效：%s）" % [bad], bad.is_empty())
 	d.blue.set_controller(d._make_ai(d.blue))
 
 
@@ -1772,11 +1869,8 @@ func _run_perf() -> void:
 	for i in 1000:
 		d.spawn(keys[i % keys.size()], ["bottom", "left", "right", "hole"][i % 4])
 	await _wait(1.0)
-	var frames := 0
-	var t0 := Time.get_ticks_usec()
-	while Time.get_ticks_usec() - t0 < 4_000_000:
-		await get_tree().physics_frame
-		frames += 1
-	var avg := 4000.0 / frames
-	check("1000 只怪同时在场：平均每物理帧 %.1f ms（目标 ≤ 33 ms）" % avg, avg <= 33.0 and d.monsters.size() >= 900)
+	# 满负荷计时（一帧接一帧不停）：屏幕外的怪降级后，一帧物理 + 处理要在 16 ms 以内
+	var avg := await SiegeFixture.saturated_frame_ms(get_tree(), 3.0)
+	var far := d.monsters.filter(func(m): return is_instance_valid(m) and m.lod_far).size()
+	check("1000 只怪同时在场：每帧 %.1f ms（目标 ≤ 16 ms），屏幕外降级 %d 只" % [avg, far], avg <= 16.0 and d.monsters.size() >= 900 and far > 500)
 	d.clear_field()

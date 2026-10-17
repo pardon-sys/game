@@ -33,6 +33,7 @@ ACTOR_SCENE = {
     "troll_general": ("troll_general", "general"),
     "gale_bear": ("gale_bear", "gale_bear"),
     "puppet_master": ("puppet_master", "puppet_master"),
+    "goblin_engineer": ("goblin_engineer", "engineer"), "horn_bugler": ("horn_bugler", "bugler"),
 }
 
 
