@@ -11,6 +11,8 @@ extends Node
 ## 发动时在发动处冒一行彩色大字（「怪物配合：××！」），发 triggered(id, 位置) 信号（宿主据此弹情报、放音效）。
 
 signal triggered(id: String, at: Vector2)
+## 配合技真正发动（不含成套出现）：target 是被盯上的公主（可能为 null）
+signal fired(id: String, at: Vector2, target: Node)
 
 const PATH := "res://data/teamwork.json"
 const SCAN := 0.5
@@ -216,6 +218,7 @@ func fire(t: Dictionary, members: Array) -> void:
 	history.append(id)
 	announce(str(t.get("name", id)), at, Color(str(t.get("color", "#ffd966"))))
 	triggered.emit(id, at)
+	fired.emit(id, at, ctx.get("target"))
 
 
 ## 发动处冒一行彩色大字。

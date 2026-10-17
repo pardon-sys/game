@@ -42,6 +42,7 @@
 	},
 	"steps": [
 		{
+			"act": 1,
 			"actions": [
 				{
 					"do": "fade_in",
@@ -55,8 +56,9 @@
 			"wait": 0.5
 		},
 		{
+			"act": 1,
 			"speaker": "",
-			"text": "（盾甲螃蟹排成一堵墙推了过来，羽毛蝠群从天上越过城墙。两个人被夹在中间，前后都是怪）",
+			"text": "（盾甲螃蟹举着大钳子在地上横行，羽毛蝠群在天上盘旋。两个人一个在地上、一个在墙上，被同时夹击）",
 			"actions": [
 				{
 					"do": "enter",
@@ -75,25 +77,272 @@
 						0
 					],
 					"time": 0.5
+				}
+			]
+		},
+		{
+			"act": 1,
+			"speaker": "公主",
+			"text": "螃蟹太硬了——锤子敲不动！"
+		},
+		{
+			"act": 1,
+			"speaker": "蓝色的公主",
+			"text": "……蝙蝠……飞上来了。……冰锥……追不上。"
+		},
+		{
+			"act": 1,
+			"speaker": "",
+			"text": "（螃蟹的钳子夹住她的脚踝，把她拖倒；蝠群越过城墙，把蓝色公主也拽了下来，扔在她旁边）",
+			"actions": [
+				{
+					"do": "tickle",
+					"who": "pink",
+					"by": "foe1",
+					"repeat": 8,
+					"interval": 0.22,
+					"fx": "hand",
+					"zone": "sole"
 				},
+				{
+					"do": "tickle",
+					"who": "blue",
+					"by": "foe2",
+					"repeat": 8,
+					"interval": 0.22,
+					"fx": "brush",
+					"zone": "thigh"
+				}
+			]
+		},
+		{
+			"act": 1,
+			"speaker": "公主",
+			"text": "蓝、蓝色的，你也掉下来了！"
+		},
+		{
+			"act": 2,
+			"speaker": "",
+			"text": "（螃蟹的小钳子在她的脚心上一夹一刮，蝙蝠们叼着羽毛钻进她的趾缝里抽来抽去）",
+			"actions": [
+				{
+					"do": "tickle",
+					"who": "pink",
+					"by": "foe1",
+					"repeat": 8,
+					"interval": 0.22,
+					"fx": "hand",
+					"zone": "sole"
+				}
+			]
+		},
+		{
+			"act": 2,
+			"speaker": "公主",
+			"text": "嘻嘻嘻！钳子和羽毛——硬的软的一起哈哈哈！"
+		},
+		{
+			"act": 2,
+			"speaker": "",
+			"text": "（蝙蝠们钻进蓝色公主的裙摆，羽毛贴着大腿内侧往上扫，扫到腿根就打旋；螃蟹的另一只钳子沿着屁股下面的交界轻刮）",
+			"actions": [
+				{
+					"do": "tickle",
+					"who": "blue",
+					"by": "foe2",
+					"repeat": 8,
+					"interval": 0.22,
+					"fx": "brush",
+					"zone": "butt"
+				}
+			]
+		},
+		{
+			"act": 2,
+			"speaker": "蓝色的公主",
+			"text": "……羽毛……钳子……一软……一硬……"
+		},
+		{
+			"act": 2,
+			"speaker": "公主",
+			"text": "噗哈哈！你、你还在分类！",
+			"actions": [
+				{
+					"do": "bubble",
+					"who": "pink",
+					"kind": "laugh"
+				},
+				{
+					"do": "bubble",
+					"who": "blue",
+					"kind": "laugh"
+				}
+			]
+		},
+		{
+			"act": 2,
+			"speaker": "蓝色的公主",
+			"text": "……整理……情报。"
+		},
+		{
+			"act": 3,
+			"speaker": "",
+			"text": "（钢铁和羽毛轮流来，笑声一刻都停不下来。粉色公主的疲倦先满了）",
+			"actions": [
+				{
+					"do": "pose",
+					"who": "pink",
+					"visual": "helpless_2"
+				},
+				{
+					"do": "pose",
+					"who": "blue",
+					"visual": "helpless_2"
+				},
+				{
+					"do": "voice",
+					"state": "laugh"
+				}
+			]
+		},
+		{
+			"act": 3,
+			"speaker": "公主",
+			"text": "要、要满了——螃蟹你翻过去吧——！"
+		},
+		{
+			"act": "burst",
+			"speaker": "",
+			"text": "（星光炸开，螃蟹被冲得翻了个身，四脚朝天转圈）",
+			"actions": [
 				{
 					"do": "flash",
-					"time": 0.3
+					"time": 0.8
+				},
+				{
+					"do": "sfx",
+					"sound": "star_burst",
+					"volume": -1.0
+				},
+				{
+					"do": "sfx",
+					"sound": "water_release",
+					"volume": -2.0
+				},
+				{
+					"do": "shake",
+					"who": "pink",
+					"time": 0.5
+				},
+				{
+					"do": "bubble",
+					"who": "pink",
+					"kind": "surprise"
+				},
+				{
+					"do": "move",
+					"who": "foe1",
+					"to": [
+						-94,
+						-6
+					],
+					"time": 0.25
+				},
+				{
+					"do": "move",
+					"who": "foe2",
+					"to": [
+						94,
+						-6
+					],
+					"time": 0.25
 				}
-			]
+			],
+			"wait": 1.0
 		},
 		{
-			"speaker": "公主",
-			"text": "前、前面是钳子，上面是羽毛……往哪边跑？！"
-		},
-		{
+			"act": 3,
 			"speaker": "蓝色的公主",
-			"text": "……哪边……都不行。……背靠背。"
+			"text": "……翻得好。……我也……满了。"
 		},
 		{
+			"act": "burst",
 			"speaker": "",
-			"text": "（两个人背靠着背。螃蟹的钳子轻轻夹住粉色公主的腰侧一开一合，蝙蝠们叼着羽毛钻进蓝色公主的袖口）",
+			"text": "（冰蓝色的星光接着炸开，蝙蝠们被冻成一颗颗小冰球，叮叮当当掉了一地）",
 			"actions": [
+				{
+					"do": "flash",
+					"time": 0.8
+				},
+				{
+					"do": "sfx",
+					"sound": "star_burst",
+					"volume": -1.0
+				},
+				{
+					"do": "sfx",
+					"sound": "water_release",
+					"volume": -2.0
+				},
+				{
+					"do": "shake",
+					"who": "blue",
+					"time": 0.5
+				},
+				{
+					"do": "bubble",
+					"who": "blue",
+					"kind": "surprise"
+				},
+				{
+					"do": "move",
+					"who": "foe1",
+					"to": [
+						-94,
+						-6
+					],
+					"time": 0.25
+				},
+				{
+					"do": "move",
+					"who": "foe2",
+					"to": [
+						94,
+						-6
+					],
+					"time": 0.25
+				}
+			],
+			"wait": 1.0
+		},
+		{
+			"act": 3,
+			"speaker": "公主",
+			"text": "呼……下、下冰雹了……"
+		},
+		{
+			"act": 3,
+			"speaker": "",
+			"text": "（螃蟹翻回身，冰球化开，蝙蝠们叼着羽毛又扑了下来。刚放空魔力的两个人一碰就叫）",
+			"actions": [
+				{
+					"do": "move",
+					"who": "foe1",
+					"to": [
+						-44,
+						0
+					],
+					"time": 0.6
+				},
+				{
+					"do": "move",
+					"who": "foe2",
+					"to": [
+						44,
+						0
+					],
+					"time": 0.6
+				},
 				{
 					"do": "tickle",
 					"who": "pink",
@@ -101,7 +350,7 @@
 					"repeat": 8,
 					"interval": 0.22,
 					"fx": "hand",
-					"zone": "waist"
+					"zone": "sole"
 				},
 				{
 					"do": "tickle",
@@ -110,45 +359,14 @@
 					"repeat": 8,
 					"interval": 0.22,
 					"fx": "brush",
-					"zone": "armpit"
+					"zone": "thigh"
 				}
 			]
 		},
 		{
+			"act": 3,
 			"speaker": "公主",
-			"text": "钳、钳子在腰上一夹一夹的——嘻嘻嘻！"
-		},
-		{
-			"speaker": "蓝色的公主",
-			"text": "……袖子里……羽毛……在转……"
-		},
-		{
-			"speaker": "",
-			"text": "（又一排螃蟹围上来，钳子尖顺着粉色公主的肋骨一格一格往上数；蝙蝠扇着翅膀，把羽毛往蓝色公主的腋窝深处送）",
-			"actions": [
-				{
-					"do": "tickle",
-					"who": "pink",
-					"by": "foe1",
-					"repeat": 8,
-					"interval": 0.22,
-					"fx": "hand",
-					"zone": "belly"
-				},
-				{
-					"do": "tickle",
-					"who": "blue",
-					"by": "foe2",
-					"repeat": 8,
-					"interval": 0.22,
-					"fx": "brush",
-					"zone": "armpit"
-				}
-			]
-		},
-		{
-			"speaker": "公主",
-			"text": "肋、肋骨在被一根根数——哈哈哈不要数了！",
+			"text": "呀啊——！钳、钳尖……比刚才痒好多！哈哈哈哈！",
 			"actions": [
 				{
 					"do": "bubble",
@@ -163,12 +381,14 @@
 			]
 		},
 		{
+			"act": 3,
 			"speaker": "蓝色的公主",
-			"text": "……腋窝……最里面……噗……噗哈……"
+			"text": "……哈哈……羽、羽毛……打旋……哈哈哈哈！"
 		},
 		{
+			"act": 4,
 			"speaker": "",
-			"text": "（背后的那只大蝙蝠落下来，用羽毛同时扫过两个人的脖子；最大的那只螃蟹举起钳子，对准了两个人的脚心）",
+			"text": "（螃蟹把两个人的脚并排夹住，蝙蝠们轮班扑下来扫，一群扫完换一群）",
 			"actions": [
 				{
 					"do": "pose",
@@ -200,7 +420,7 @@
 					"repeat": 8,
 					"interval": 0.22,
 					"fx": "brush",
-					"zone": "sole"
+					"zone": "butt"
 				},
 				{
 					"do": "flash",
@@ -209,12 +429,14 @@
 			]
 		},
 		{
+			"act": 4,
 			"speaker": "公主",
-			"text": "脚、脚心也——哈哈哈哈哈！背、背靠背也没用哈哈哈！"
+			"text": "哈哈哈哈！轮、轮班——认输！认输啦哈哈哈！"
 		},
 		{
+			"act": 4,
 			"speaker": "蓝色的公主",
-			"text": "……哈哈哈哈……脖子……脚……全、全部……哈哈哈哈！",
+			"text": "……哈哈……我、我也……服了……哈哈哈……",
 			"actions": [
 				{
 					"do": "bubble",
@@ -229,14 +451,22 @@
 			]
 		},
 		{
+			"act": 4,
+			"speaker": "",
+			"text": "（螃蟹横着挪走，蝠群飞过城墙。地上铺满了白羽毛）"
+		},
+		{
+			"act": 4,
 			"speaker": "公主",
-			"text": "认、认输……下次……先打螃蟹……"
+			"text": "哈……哈……螃蟹……要用冰陨星台砸……"
 		},
 		{
+			"act": 4,
 			"speaker": "蓝色的公主",
-			"text": "……嗯。……还有……蝙蝠。……哈……"
+			"text": "……蝙蝠……用共鸣塔。……下次……先造。"
 		},
 		{
+			"act": 4,
 			"actions": [
 				{
 					"do": "voice",

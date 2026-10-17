@@ -1467,9 +1467,12 @@ func _run_round10() -> void:
 			m.set_physics_process(false)
 			m.global_position = home + Vector2(randf_range(10, 40), randf_range(-8, 8))
 		await get_tree().process_frame
+		if p.has_meta("siege_team_said"):
+			p.remove_meta("siege_team_said")
 		d.teamwork.scan()
 		await _wait(1.3)
-		var fired := d.teamwork.history.has(id)
+		# 发动后横幅飘过，她走字幕说了一句（SiegeTeamEffects.say_later）
+		var fired: bool = d.teamwork.history.has(id) and p.has_meta("siege_team_said")
 		var effect := false
 		match id:
 			"crab_rat": effect = p.status.is_rooted() and p.has_meta("shoeless_until")
@@ -1482,7 +1485,7 @@ func _run_round10() -> void:
 			p.status.clear_root()
 		d.wave = 1
 	var tbad := team_ok.keys().filter(func(k): return not team_ok[k])
-	check("四个新配合技凑齐就发动、效果生效（没生效：%s）" % [tbad], tbad.is_empty())
+	check("四个新配合技凑齐就发动、效果生效、公主说了字幕（没生效：%s）" % [tbad], tbad.is_empty())
 	d.blue.set_controller(d._make_ai(d.blue))
 
 
@@ -1543,6 +1546,36 @@ func _run_cg() -> void:
 			if want.is_empty() or r != Rect2(want[0], want[1], want[2], want[3]):
 				bad.append(k)
 	check("攻防战 CG 的演员按图集键取图、和图集一致（不对的：%s）" % [bad], bad.is_empty() and data.get("actors", {}).size() >= 13)
+	# 四幕：笑倒 CG / 组合演出（粉 / 蓝）都有第 1~4 幕和爆发幕，句数够；失败小剧场两个人各爆发一次
+	var short := []
+	for path in ["res://data/siege_cgs.json", "res://data/characters/blue/siege_cgs.json", "res://data/siege_scenes.json", "res://data/characters/blue/siege_scenes.json"]:
+		var d2: Dictionary = JSON.parse_string(FileAccess.get_file_as_string(path))
+		var group: Dictionary = d2.get("cgs", d2.get("scenes", {}))
+		for id in group:
+			var steps: Array = group[id]["steps"]
+			var acts := {}
+			for st in steps:
+				var a: Variant = st.get("act", "")
+				acts[str(int(a)) if a is float else str(a)] = true
+			var lines := steps.filter(func(st): return st.has("text")).size()
+			if not (acts.has("1") and acts.has("2") and acts.has("3") and acts.has("4") and acts.has("burst")) or lines < 28:
+				short.append("%s:%s(%d)" % [path.get_file(), id, lines])
+	for n in range(1, 13):
+		for suffix in ["", "_pants"]:
+			var th: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://data/theater/siege/siege_fail_%d%s.json" % [n, suffix]))
+			var bursts: int = th["steps"].filter(func(st): return str(st.get("act", "")) == "burst").size()
+			if bursts < 2 or th["steps"].filter(func(st): return st.has("text")).size() < 24:
+				short.append("siege_fail_%d%s" % [n, suffix])
+	check("笑倒 CG / 组合演出 / 失败小剧场都是四幕 + 魔力爆发、句数够（不够的：%s）" % [short], short.is_empty())
+	var mute := []
+	var teams: Array = (JSON.parse_string(FileAccess.get_file_as_string("res://data/teamwork.json")) as Dictionary)["teams"]
+	for who in ["pink", "blue"]:
+		Characters.scope(who)
+		for t in teams:
+			if ReactionDB.lines("team_" + str(t["id"]), "trigger").is_empty():
+				mute.append("%s/%s" % [who, t["id"]])
+		Characters.unscope()
+	check("每个配合技发动时两位公主都有字幕台词（缺：%s）" % [mute], mute.is_empty())
 
 
 # ------------------------------------------------------------------ 14 性能

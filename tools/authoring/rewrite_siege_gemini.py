@@ -1,23 +1,25 @@
-"""写作辅助（不在生成流程里）：用户确认提示词后调用官方 Gemini 改写 Boss 文本；待审稿和写回原模块分开，密钥只来自环境变量 / .env。
-提示词在 tools/authoring/prompts/，待审稿写到 tools/.cache/（不进仓库）。
+"""写作辅助（不在生成流程里）：用户确认提示词后调用官方 Gemini 改写 Boss 文本；密钥只来自环境变量 / .env。
+读 tools/build/siege_text/（reactions_bosses.py 的受挠台词 + cgs_bosses.py 的笑倒 CG）；提示词在 tools/authoring/prompts/。
+generate 把待审稿写到 tools/.cache/siege_gemini_review.json；apply 把审过的定稿写到 tools/.cache/siege_gemini_revised.json，
+由人手合并回 siege_text（不自动改源文件）。都不进仓库。
 """
 import argparse
-import ast
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from copy import deepcopy
 import hashlib
-import importlib
 import json
 import os
 from pathlib import Path
-from pprint import pformat
 import ssl
+import sys
 import urllib.error
 import urllib.request
 
 ROOT = Path(__file__).resolve().parents[2]
 PROMPT = ROOT / "tools/authoring/prompts/siege_gemini_rewrite_prompt.md"
 REVIEW = ROOT / "tools/.cache/siege_gemini_review.json"
+REVISED = ROOT / "tools/.cache/siege_gemini_revised.json"
+TEXT_FILES = [ROOT / "tools/build/siege_text/reactions_bosses.py", ROOT / "tools/build/siege_text/cgs_bosses.py"]
 MODEL = "gemini-4-argon"
 MODULES = ("gale_bear", "puppet_master")
 CONTENT_FLAGS = ("高潮", "情欲", "性欲", "乳头", "阴道", "阴蒂", "阴茎", "勃起")
@@ -31,17 +33,17 @@ def digest(text):
 
 
 def source_data():
+    sys.path.insert(0, str(ROOT / "tools/build"))
+    from gen_siege_reactions import siege_sources
+    from siege_text.cgs_bosses import CGS
+    hashes = {f.name: digest(f.read_text()) for f in TEXT_FILES}
     result = {}
-    hashes = {}
     for boss in MODULES:
-        module = importlib.import_module(boss + "_text")
-        hashes[boss] = digest(Path(module.__file__).read_text())
         result[boss] = {}
         for role in ("pink", "blue"):
-            title, steps = module.cg_script(role)
-            bundle = {"reaction": module.reaction(role), "cg": {"title": title, "steps": steps}}
-            if boss == "puppet_master":
-                bundle["towers"] = module.tower_reactions(role)
+            cg = CGS[boss]
+            bundle = {"reaction": siege_sources(role)[boss],
+                      "cg": {"title": cg["title"][0 if role == "pink" else 1], "steps": [list(row) for row in cg[role]]}}
             result[boss][role] = json.loads(json.dumps(bundle, ensure_ascii=False))
     return result, hashes
 
@@ -183,31 +185,12 @@ def apply():
     revised = deepcopy(original)
     replacements = {r["id"]: r["text"] for r in audit["replacements"]}
     for row in rows:
-        if row["path"][0] == "towers":
-            continue  # 用户最后收紧范围：只改两个 Boss，敌塔的原反应保持不变。
         target = revised[row["boss"]][row["role"]]
         for step in row["path"][:-1]:
             target = target[step]
         target[row["path"][-1]] = replacements[row["id"]]
-    for boss in MODULES:
-        roles = revised[boss]
-        path = ROOT / "tools/build" / (boss + "_text.py")
-        tower_function = None
-        if boss == "puppet_master":
-            source = path.read_text()
-            tree = ast.parse(source)
-            tower_function = ast.get_source_segment(source, next(n for n in tree.body if isinstance(n, ast.FunctionDef) and n.name == "tower_reactions"))
-        text = '"""Gemini 4 Argon 重写后的定稿；保持原生成器接口。提示词与完整待审稿见 doc。"""\nfrom copy import deepcopy\n\n'
-        text += 'STAGES = ("calm", "giggle", "helpless_1", "helpless_2")\n\n'
-        text += "_REACTIONS = " + pformat({role: d["reaction"] for role, d in roles.items()}, width=112, sort_dicts=False) + "\n\n"
-        text += "_CGS = " + pformat({role: d["cg"] for role, d in roles.items()}, width=112, sort_dicts=False) + "\n\n"
-        text += "def reaction(who):\n    return deepcopy(_REACTIONS[who])\n\n\n"
-        if boss == "puppet_master":
-            text += tower_function + "\n\n\n"
-        text += 'def cg_script(who):\n    script = _CGS[who]\n    return script["title"], deepcopy(script["steps"])\n'
-        path.write_text(text)
-    print("Applied reviewed text to two original source modules; run the three original generators next")
-
+    REVISED.write_text(json.dumps(revised, ensure_ascii=False, indent=2) + "\n")
+    print("Reviewed text written to", REVISED.relative_to(ROOT), "- merge it into tools/build/siege_text by hand, then rerun the generators")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()

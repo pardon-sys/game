@@ -4110,10 +4110,12 @@
 			"id": "sg_toe_bloom",
 			"category": "攻防战",
 			"equip": [
-				"equip_t_toe_brush",
-				"equip_t_feather_shackles"
+				"equip_t_toe_brush"
 			],
 			"keys": [
+				[
+					"hazard_net"
+				],
 				[
 					"enemy_sole_tower"
 				]
@@ -4356,6 +4358,567 @@
 				{
 					"type": "siege_fx",
 					"kind": "wind_lines"
+				},
+				{
+					"type": "focus"
+				}
+			]
+		},
+		{
+			"id": "sg_portal_toes",
+			"category": "攻防战",
+			"equip": [
+				"equip_t_toe_brush"
+			],
+			"keys": [
+				[
+					"hazard_portal"
+				],
+				[
+					"crab"
+				]
+			],
+			"window": 3.0,
+			"cooldown": 4.0,
+			"effects": [
+				{
+					"type": "burst",
+					"amount": 18
+				},
+				{
+					"type": "root",
+					"duration": 2.0
+				},
+				{
+					"type": "dot",
+					"rate": 3.0,
+					"duration": 4.0
+				},
+				{
+					"type": "siege_fx",
+					"kind": "brush_flowers"
+				},
+				{
+					"type": "focus"
+				}
+			]
+		},
+		{
+			"id": "sg_launch_soles",
+			"category": "攻防战",
+			"equip": [
+				"equip_t_feather_shackles"
+			],
+			"keys": [
+				[
+					"enemy_brush_battery"
+				],
+				[
+					"imp"
+				]
+			],
+			"window": 3.0,
+			"cooldown": 4.0,
+			"effects": [
+				{
+					"type": "burst",
+					"amount": 16
+				},
+				{
+					"type": "crit_storm",
+					"duration": 3.0
+				},
+				{
+					"type": "siege_fx",
+					"kind": "feather_storm"
+				},
+				{
+					"type": "focus"
+				}
+			]
+		},
+		{
+			"id": "sg_sand_thighs",
+			"category": "攻防战",
+			"equip": [
+				"equip_t_thigh_ring"
+			],
+			"keys": [
+				[
+					"hazard_quicksand"
+				],
+				[
+					"tentacle"
+				]
+			],
+			"window": 3.0,
+			"cooldown": 4.0,
+			"effects": [
+				{
+					"type": "burst",
+					"amount": 18
+				},
+				{
+					"type": "root",
+					"duration": 2.5
+				},
+				{
+					"type": "multiplier",
+					"value": 1.4,
+					"duration": 5.0
+				},
+				{
+					"type": "siege_fx",
+					"kind": "purple_hands"
+				},
+				{
+					"type": "focus"
+				}
+			]
+		},
+		{
+			"id": "sg_mushroom_bounce",
+			"category": "攻防战",
+			"equip": [
+				"equip_t_pinch_pad"
+			],
+			"keys": [
+				[
+					"hazard_mushroom"
+				],
+				[
+					"split_slime"
+				]
+			],
+			"window": 3.0,
+			"cooldown": 4.0,
+			"effects": [
+				{
+					"type": "burst",
+					"amount": 16
+				},
+				{
+					"type": "confuse",
+					"duration": 3.0
+				},
+				{
+					"type": "siege_fx",
+					"kind": "heart_fluff"
+				},
+				{
+					"type": "focus"
+				}
+			]
+		},
+		{
+			"id": "sg_bear_tentacle_pants",
+			"category": "攻防战",
+			"equip": [
+				"thousand_pants"
+			],
+			"keys": [
+				[
+					"hug_bear"
+				],
+				[
+					"tentacle"
+				]
+			],
+			"window": 3.0,
+			"cooldown": 4.0,
+			"effects": [
+				{
+					"type": "burst",
+					"amount": 20
+				},
+				{
+					"type": "lift",
+					"duration": 2.0
+				},
+				{
+					"type": "siege_fx",
+					"kind": "purple_hands"
+				},
+				{
+					"type": "focus"
+				}
+			]
+		},
+		{
+			"id": "sg_puppet_dance",
+			"category": "攻防战",
+			"equip": [
+				"equip_t_knead_tights"
+			],
+			"keys": [
+				[
+					"puppet_master"
+				],
+				[
+					"enemy_resonance"
+				]
+			],
+			"window": 3.0,
+			"cooldown": 4.0,
+			"effects": [
+				{
+					"type": "burst",
+					"amount": 18
+				},
+				{
+					"type": "confuse",
+					"duration": 3.0
+				},
+				{
+					"type": "dot",
+					"rate": 3.0,
+					"duration": 4.0
+				},
+				{
+					"type": "siege_fx",
+					"kind": "bell_ripple"
+				},
+				{
+					"type": "focus"
+				}
+			]
+		},
+		{
+			"id": "sg_storm_airlift",
+			"category": "攻防战",
+			"equip": [
+				"equip_t_mark_patch"
+			],
+			"keys": [
+				[
+					"gale_bear"
+				],
+				[
+					"hazard_claw"
+				]
+			],
+			"window": 3.0,
+			"cooldown": 4.0,
+			"effects": [
+				{
+					"type": "burst",
+					"amount": 18
+				},
+				{
+					"type": "rally",
+					"radius": 200.0
+				},
+				{
+					"type": "lift",
+					"duration": 2.0
+				},
+				{
+					"type": "siege_fx",
+					"kind": "vortex"
+				},
+				{
+					"type": "focus"
+				}
+			]
+		},
+		{
+			"id": "sg_glue_soles",
+			"category": "攻防战",
+			"equip": [
+				"equip_t_feather_socks"
+			],
+			"keys": [
+				[
+					"enemy_glue"
+				],
+				[
+					"squirrel"
+				]
+			],
+			"window": 3.0,
+			"cooldown": 4.0,
+			"effects": [
+				{
+					"type": "burst",
+					"amount": 18
+				},
+				{
+					"type": "root",
+					"duration": 2.5
+				},
+				{
+					"type": "special_next",
+					"count": 3
+				},
+				{
+					"type": "siege_fx",
+					"kind": "brush_flowers"
+				},
+				{
+					"type": "focus"
+				}
+			]
+		},
+		{
+			"id": "sg_windmill_feet",
+			"category": "攻防战",
+			"equip": [
+				"equip_t_bell_anklet"
+			],
+			"keys": [
+				[
+					"enemy_windmill"
+				],
+				[
+					"bat_swarm"
+				]
+			],
+			"window": 3.0,
+			"cooldown": 4.0,
+			"effects": [
+				{
+					"type": "burst",
+					"amount": 16
+				},
+				{
+					"type": "rally",
+					"radius": 220.0
+				},
+				{
+					"type": "multiplier",
+					"value": 1.4,
+					"duration": 5.0
+				},
+				{
+					"type": "siege_fx",
+					"kind": "feather_storm"
+				},
+				{
+					"type": "focus"
+				}
+			]
+		},
+		{
+			"id": "sg_mushroom_shoes",
+			"category": "攻防战",
+			"equip": [
+				"equip_t_feather_shackles"
+			],
+			"keys": [
+				[
+					"hazard_mushroom"
+				],
+				[
+					"rat"
+				]
+			],
+			"window": 3.0,
+			"cooldown": 4.0,
+			"effects": [
+				{
+					"type": "burst",
+					"amount": 16
+				},
+				{
+					"type": "root",
+					"duration": 2.0
+				},
+				{
+					"type": "dot",
+					"rate": 3.0,
+					"duration": 4.0
+				},
+				{
+					"type": "siege_fx",
+					"kind": "vortex"
+				},
+				{
+					"type": "focus"
+				}
+			]
+		},
+		{
+			"id": "sg_tornado_toes",
+			"category": "攻防战",
+			"equip": [
+				"equip_t_toe_brush"
+			],
+			"keys": [
+				[
+					"hazard_tornado"
+				],
+				[
+					"imp"
+				]
+			],
+			"window": 3.0,
+			"cooldown": 4.0,
+			"effects": [
+				{
+					"type": "burst",
+					"amount": 18
+				},
+				{
+					"type": "lift",
+					"duration": 2.0
+				},
+				{
+					"type": "confuse",
+					"duration": 2.5
+				},
+				{
+					"type": "siege_fx",
+					"kind": "wind_lines"
+				},
+				{
+					"type": "focus"
+				}
+			]
+		},
+		{
+			"id": "sg_portal_spiders",
+			"category": "攻防战",
+			"equip": [
+				"equip_t_thigh_strap"
+			],
+			"keys": [
+				[
+					"hazard_portal"
+				],
+				[
+					"thigh_spider"
+				]
+			],
+			"window": 3.0,
+			"cooldown": 4.0,
+			"effects": [
+				{
+					"type": "burst",
+					"amount": 18
+				},
+				{
+					"type": "root",
+					"duration": 2.5
+				},
+				{
+					"type": "multiplier",
+					"value": 1.4,
+					"duration": 5.0
+				},
+				{
+					"type": "siege_fx",
+					"kind": "purple_hands"
+				},
+				{
+					"type": "focus"
+				}
+			]
+		},
+		{
+			"id": "sg_bubble_pinch",
+			"category": "攻防战",
+			"equip": [
+				"equip_t_pinch_pad"
+			],
+			"keys": [
+				[
+					"hazard_bubble"
+				],
+				[
+					"suck_jelly"
+				]
+			],
+			"window": 3.0,
+			"cooldown": 4.0,
+			"effects": [
+				{
+					"type": "burst",
+					"amount": 16
+				},
+				{
+					"type": "lift",
+					"duration": 2.0
+				},
+				{
+					"type": "fatigue",
+					"percent": 15.0
+				},
+				{
+					"type": "siege_fx",
+					"kind": "bell_ripple"
+				},
+				{
+					"type": "focus"
+				}
+			]
+		},
+		{
+			"id": "sg_fog_seam",
+			"category": "攻防战",
+			"equip": [
+				"thousand_pants"
+			],
+			"keys": [
+				[
+					"hazard_fog"
+				],
+				[
+					"twin_ghost"
+				]
+			],
+			"window": 3.0,
+			"cooldown": 4.0,
+			"effects": [
+				{
+					"type": "burst",
+					"amount": 18
+				},
+				{
+					"type": "crit_storm",
+					"duration": 3.5
+				},
+				{
+					"type": "siege_fx",
+					"kind": "purple_hands"
+				},
+				{
+					"type": "focus"
+				}
+			]
+		},
+		{
+			"id": "sg_airdrop_tights",
+			"category": "攻防战",
+			"equip": [
+				"equip_t_knead_tights"
+			],
+			"keys": [
+				[
+					"enemy_airdrop"
+				],
+				[
+					"hook"
+				]
+			],
+			"window": 3.0,
+			"cooldown": 4.0,
+			"effects": [
+				{
+					"type": "burst",
+					"amount": 16
+				},
+				{
+					"type": "lift",
+					"duration": 2.0
+				},
+				{
+					"type": "dot",
+					"rate": 3.0,
+					"duration": 4.0
+				},
+				{
+					"type": "siege_fx",
+					"kind": "mark_trail"
 				},
 				{
 					"type": "focus"

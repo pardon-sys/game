@@ -42,6 +42,7 @@
 	},
 	"steps": [
 		{
+			"act": 1,
 			"actions": [
 				{
 					"do": "fade_in",
@@ -55,8 +56,9 @@
 			"wait": 0.5
 		},
 		{
+			"act": 1,
 			"speaker": "",
-			"text": "（怪物传送门不停地吐出小怪。一张大黏网从天而降，把两个人罩在了一起）",
+			"text": "（恶作剧妖精挥了挥魔杖，两个人脚下各开了一扇传送门，掉出来的时候，正好落进一张黏网里）",
 			"actions": [
 				{
 					"do": "enter",
@@ -75,100 +77,23 @@
 						0
 					],
 					"time": 0.5
-				},
-				{
-					"do": "flash",
-					"time": 0.3
 				}
 			]
 		},
 		{
+			"act": 1,
 			"speaker": "公主",
-			"text": "网、网住了！黏黏的……"
+			"text": "哇啊！掉、掉下来了——黏住了！"
 		},
 		{
+			"act": 1,
 			"speaker": "蓝色的公主",
-			"text": "……割不开。……冰，凝不起来。"
+			"text": "……传送门。……出口……选得很坏。"
 		},
 		{
+			"act": 1,
 			"speaker": "",
-			"text": "（网眼里伸出一只只小手，有的挠脚心，有的挠腰侧。小精灵们从网孔钻进来，绕着两个人飞）",
-			"actions": [
-				{
-					"do": "tickle",
-					"who": "pink",
-					"by": "foe1",
-					"repeat": 8,
-					"interval": 0.22,
-					"fx": "hand",
-					"zone": "sole"
-				},
-				{
-					"do": "tickle",
-					"who": "blue",
-					"by": "foe2",
-					"repeat": 8,
-					"interval": 0.22,
-					"fx": "brush",
-					"zone": "waist"
-				}
-			]
-		},
-		{
-			"speaker": "公主",
-			"text": "小、小精灵也进来了——嘻嘻嘻！"
-		},
-		{
-			"speaker": "蓝色的公主",
-			"text": "……飞来飞去。……烦。……噗。"
-		},
-		{
-			"speaker": "",
-			"text": "（小精灵们分工：一群在粉色公主的脖子上吹气，一群用翅膀扫蓝色公主的耳后）",
-			"actions": [
-				{
-					"do": "tickle",
-					"who": "pink",
-					"by": "foe1",
-					"repeat": 8,
-					"interval": 0.22,
-					"fx": "hand",
-					"zone": "neck"
-				},
-				{
-					"do": "tickle",
-					"who": "blue",
-					"by": "foe2",
-					"repeat": 8,
-					"interval": 0.22,
-					"fx": "brush",
-					"zone": "neck"
-				}
-			]
-		},
-		{
-			"speaker": "公主",
-			"text": "脖、脖子……吹气不行……哈哈！",
-			"actions": [
-				{
-					"do": "bubble",
-					"who": "pink",
-					"kind": "laugh"
-				},
-				{
-					"do": "bubble",
-					"who": "blue",
-					"kind": "laugh"
-				}
-			]
-		},
-		{
-			"speaker": "蓝色的公主",
-			"text": "……耳、耳后……唔……"
-		},
-		{
-			"speaker": "",
-			"text": "（传送门吐出的史莱姆一团团挤进网里，把两个人的腿裹在一起，凉凉地蠕动）",
+			"text": "（史莱姆从网边爬上来，黏乎乎地裹住两个人的腿；妖精们拿着羽毛飞了过来）",
 			"actions": [
 				{
 					"do": "tickle",
@@ -191,16 +116,279 @@
 			]
 		},
 		{
+			"act": 1,
 			"speaker": "公主",
-			"text": "腿、腿被裹在一起了——脚心！"
+			"text": "羽、羽毛……妖精你们别过来！"
 		},
 		{
-			"speaker": "蓝色的公主",
-			"text": "……大、大腿……凉……蠕动……"
-		},
-		{
+			"act": 2,
 			"speaker": "",
-			"text": "（网越收越紧，网里的小手、小精灵、史莱姆挤成一团——两个人在网里滚来滚去地笑）",
+			"text": "（妖精们一个扳住她的脚趾往后拉，一个拿羽毛在脚心画圈，史莱姆钻进趾缝里冒泡泡）",
+			"actions": [
+				{
+					"do": "tickle",
+					"who": "pink",
+					"by": "foe1",
+					"repeat": 8,
+					"interval": 0.22,
+					"fx": "hand",
+					"zone": "sole"
+				}
+			]
+		},
+		{
+			"act": 2,
+			"speaker": "公主",
+			"text": "嘻嘻嘻！羽毛和泡泡——趾缝里……好痒好痒哈哈哈！"
+		},
+		{
+			"act": 2,
+			"speaker": "",
+			"text": "（史莱姆顺着蓝色公主的大腿内侧往上漫，漫到腿根就鼓起一圈泡泡；一只妖精用羽毛沿着屁股和大腿交界的那道线来回轻扫）",
+			"actions": [
+				{
+					"do": "tickle",
+					"who": "blue",
+					"by": "foe2",
+					"repeat": 8,
+					"interval": 0.22,
+					"fx": "brush",
+					"zone": "butt"
+				}
+			]
+		},
+		{
+			"act": 2,
+			"speaker": "蓝色的公主",
+			"text": "……泡、泡泡……在腿根……破……还有……羽毛……"
+		},
+		{
+			"act": 2,
+			"speaker": "公主",
+			"text": "蓝色的……你、你刚刚笑出声了！",
+			"actions": [
+				{
+					"do": "bubble",
+					"who": "pink",
+					"kind": "laugh"
+				},
+				{
+					"do": "bubble",
+					"who": "blue",
+					"kind": "laugh"
+				}
+			]
+		},
+		{
+			"act": 2,
+			"speaker": "蓝色的公主",
+			"text": "……打喷嚏。……羽毛……挠鼻子。"
+		},
+		{
+			"act": 3,
+			"speaker": "",
+			"text": "（黏网越挣越紧，笑声越来越大。粉色公主的疲倦先满了）",
+			"actions": [
+				{
+					"do": "pose",
+					"who": "pink",
+					"visual": "helpless_2"
+				},
+				{
+					"do": "pose",
+					"who": "blue",
+					"visual": "helpless_2"
+				},
+				{
+					"do": "voice",
+					"state": "laugh"
+				}
+			]
+		},
+		{
+			"act": 3,
+			"speaker": "公主",
+			"text": "要、要满了——妖精们快飞远——！"
+		},
+		{
+			"act": "burst",
+			"speaker": "",
+			"text": "（星光炸开，黏网被冲出一个大洞，妖精们被吹得在空中翻跟头）",
+			"actions": [
+				{
+					"do": "flash",
+					"time": 0.8
+				},
+				{
+					"do": "sfx",
+					"sound": "star_burst",
+					"volume": -1.0
+				},
+				{
+					"do": "sfx",
+					"sound": "water_release",
+					"volume": -2.0
+				},
+				{
+					"do": "shake",
+					"who": "pink",
+					"time": 0.5
+				},
+				{
+					"do": "bubble",
+					"who": "pink",
+					"kind": "surprise"
+				},
+				{
+					"do": "move",
+					"who": "foe1",
+					"to": [
+						-94,
+						-6
+					],
+					"time": 0.25
+				},
+				{
+					"do": "move",
+					"who": "foe2",
+					"to": [
+						94,
+						-6
+					],
+					"time": 0.25
+				}
+			],
+			"wait": 1.0
+		},
+		{
+			"act": 3,
+			"speaker": "蓝色的公主",
+			"text": "……网……破了。……我……也到了。"
+		},
+		{
+			"act": "burst",
+			"speaker": "",
+			"text": "（冰蓝色的星光接着炸开，史莱姆冻成一层薄冰，「咔」地碎成好几块）",
+			"actions": [
+				{
+					"do": "flash",
+					"time": 0.8
+				},
+				{
+					"do": "sfx",
+					"sound": "star_burst",
+					"volume": -1.0
+				},
+				{
+					"do": "sfx",
+					"sound": "water_release",
+					"volume": -2.0
+				},
+				{
+					"do": "shake",
+					"who": "blue",
+					"time": 0.5
+				},
+				{
+					"do": "bubble",
+					"who": "blue",
+					"kind": "surprise"
+				},
+				{
+					"do": "move",
+					"who": "foe1",
+					"to": [
+						-94,
+						-6
+					],
+					"time": 0.25
+				},
+				{
+					"do": "move",
+					"who": "foe2",
+					"to": [
+						94,
+						-6
+					],
+					"time": 0.25
+				}
+			],
+			"wait": 1.0
+		},
+		{
+			"act": 3,
+			"speaker": "公主",
+			"text": "呼……可、可是……我们还躺在网里……动不了……"
+		},
+		{
+			"act": 3,
+			"speaker": "",
+			"text": "（妖精们又开了一扇传送门，把史莱姆和羽毛全部送了回来。刚放空魔力的两个人一碰就叫）",
+			"actions": [
+				{
+					"do": "move",
+					"who": "foe1",
+					"to": [
+						-44,
+						0
+					],
+					"time": 0.6
+				},
+				{
+					"do": "move",
+					"who": "foe2",
+					"to": [
+						44,
+						0
+					],
+					"time": 0.6
+				},
+				{
+					"do": "tickle",
+					"who": "pink",
+					"by": "foe1",
+					"repeat": 8,
+					"interval": 0.22,
+					"fx": "hand",
+					"zone": "sole"
+				},
+				{
+					"do": "tickle",
+					"who": "blue",
+					"by": "foe2",
+					"repeat": 8,
+					"interval": 0.22,
+					"fx": "brush",
+					"zone": "thigh"
+				}
+			]
+		},
+		{
+			"act": 3,
+			"speaker": "公主",
+			"text": "呀啊——！羽、羽毛……比刚才痒好多！哈哈哈哈！",
+			"actions": [
+				{
+					"do": "bubble",
+					"who": "pink",
+					"kind": "laugh"
+				},
+				{
+					"do": "bubble",
+					"who": "blue",
+					"kind": "laugh"
+				}
+			]
+		},
+		{
+			"act": 3,
+			"speaker": "蓝色的公主",
+			"text": "……哈哈……泡、泡泡……又来……哈哈哈哈！"
+		},
+		{
+			"act": 4,
+			"speaker": "",
+			"text": "（妖精们在网上开起了派对，羽毛、泡泡、魔杖星星一起落下来）",
 			"actions": [
 				{
 					"do": "pose",
@@ -223,7 +411,7 @@
 					"repeat": 8,
 					"interval": 0.22,
 					"fx": "hand",
-					"zone": "waist"
+					"zone": "sole"
 				},
 				{
 					"do": "tickle",
@@ -241,12 +429,14 @@
 			]
 		},
 		{
+			"act": 4,
 			"speaker": "公主",
-			"text": "哈哈哈哈！网、网里全是挠痒的东西哈哈哈！"
+			"text": "哈哈哈哈！认输——派对……不要在我们身上开哈哈哈！"
 		},
 		{
+			"act": 4,
 			"speaker": "蓝色的公主",
-			"text": "……哈哈哈……拆、拆传送门……下次……哈哈哈哈！",
+			"text": "……哈哈……我、我们……投降……哈哈哈……",
 			"actions": [
 				{
 					"do": "bubble",
@@ -261,10 +451,22 @@
 			]
 		},
 		{
-			"speaker": "公主",
-			"text": "这一波……太多了……"
+			"act": 4,
+			"speaker": "",
+			"text": "（妖精们笑嘻嘻地钻进传送门不见了，只留下一张破网和两个喘气的人）"
 		},
 		{
+			"act": 4,
+			"speaker": "公主",
+			"text": "哈……哈……下次……传送门一开……我就跳开……"
+		},
+		{
+			"act": 4,
+			"speaker": "蓝色的公主",
+			"text": "……下次。……我先冻住门。"
+		},
+		{
+			"act": 4,
 			"actions": [
 				{
 					"do": "voice",

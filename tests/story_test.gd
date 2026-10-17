@@ -361,7 +361,7 @@ func _run_blue_arc() -> void:
 		TickleZones.info("thigh")["sensitivity"] >= 1.4 and TickleZones.info("butt")["sensitivity"] >= 1.4 and TickleZones.info("sole")["sensitivity"] < 1.0)
 	var slime_cg: Dictionary = CG.cgs().get("death_slime", {})
 	check("她的笑倒 CG / 组合演出是转换过的蓝色版（说话人、立绘），魔力疲倦爆发立绘是最后一格",
-		slime_cg.get("steps", []).any(func(st): return st.get("speaker", "") == "蓝色的公主") and CG.scenes.size() == 84 + 6 + 4 and CG.scenes.has("eq_pants_crawl") and CG.scenes.has("sg_pants_frenzy")
+		slime_cg.get("steps", []).any(func(st): return st.get("speaker", "") == "蓝色的公主") and CG.scenes.size() == 84 + 6 + 23 and CG.scenes.has("eq_pants_crawl") and CG.scenes.has("sg_pants_frenzy")
 		and str(CG.data["portraits"]["fatigue_burst"]["placeholder"]) == "damaged_giggle_burst" and hero.fatigue_burst_visual() == "damaged_giggle_burst"
 		and GameState.VISUALS.find("damaged_giggle_burst") == GameState.VISUALS.size() - 1)
 	check("训练成果只算粉色公主（换成她之后部位修正为 0）", TrainingStats.zone_modifier("sole") == 0.0)

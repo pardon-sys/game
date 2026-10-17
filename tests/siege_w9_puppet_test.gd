@@ -290,10 +290,15 @@ func _texts9() -> void:
 		var cgpath := "res://data/characters/blue/siege_cgs.json" if role == "blue" else "res://data/siege_cgs.json"
 		var data: Dictionary = JSON.parse_string(FileAccess.get_file_as_string(cgpath))
 		var cg: Dictionary = data["cgs"]["death_siege_puppet_master"]
-		check("%s standalone CG and atlas sprite" % role, cg["steps"].size() == 18 and data["actors"]["puppet_master"]["sprite"]["key"] == "puppet_master_0")
+		var lines: Array = cg["steps"].filter(func(st): return st.has("text"))
+		var acts := {}
+		for step in cg["steps"]:
+			var a: Variant = step.get("act", "")
+			acts[str(int(a)) if a is float else str(a)] = true
+		check("%s standalone 4-act CG (%d lines) and atlas sprite" % [role, lines.size()], lines.size() >= 38 and acts.has("burst") and acts.has("4") and data["actors"]["puppet_master"]["sprite"]["key"] == "puppet_master_0")
 		for step in cg["steps"]:
 			for action in step.get("actions", []):
-				if action["do"] == "tickle":
+				if action["do"] == "tickle" and action.has("zone"):
 					check("%s CG correct bodyparts and nonfeather tools" % role, action["zone"] in (["thigh", "butt"] if role == "blue" else ["sole"]) and action["fx"] in ["hand", "brush", "pinch"])
 	# 同时存在旧符文和Boss连线：转发命中不再次转发。
 	var p := _puppet()

@@ -42,6 +42,7 @@
 	},
 	"steps": [
 		{
+			"act": 1,
 			"actions": [
 				{
 					"do": "fade_in",
@@ -55,8 +56,9 @@
 			"wait": 0.5
 		},
 		{
+			"act": 1,
 			"speaker": "",
-			"text": "（第十波。攻城车撞开城墙，双子痒痒鬼、钩索怪、壁虎、小熊……所有的怪物一起涌了进来）",
+			"text": "（大混战。攻城车一辆接一辆撞进来，双子痒痒鬼一只在墙上、一只在墙下，把两个人分别缠住）",
 			"actions": [
 				{
 					"do": "enter",
@@ -75,100 +77,23 @@
 						0
 					],
 					"time": 0.5
-				},
-				{
-					"do": "flash",
-					"time": 0.3
 				}
 			]
 		},
 		{
+			"act": 1,
 			"speaker": "公主",
-			"text": "全、全部都来了……！"
+			"text": "太、太多了！蓝色的，你那边怎么样！"
 		},
 		{
+			"act": 1,
 			"speaker": "蓝色的公主",
-			"text": "……手。……牵着。……别分开。"
+			"text": "……一只鬼。……你那边……也是一只。"
 		},
 		{
+			"act": 1,
 			"speaker": "",
-			"text": "（两个人手拉着手，被怪物们一圈圈围住。粉色的痒痒鬼挠粉色公主，蓝色的那只挠蓝色公主）",
-			"actions": [
-				{
-					"do": "tickle",
-					"who": "pink",
-					"by": "foe1",
-					"repeat": 8,
-					"interval": 0.22,
-					"fx": "hand",
-					"zone": "waist"
-				},
-				{
-					"do": "tickle",
-					"who": "blue",
-					"by": "foe2",
-					"repeat": 8,
-					"interval": 0.22,
-					"fx": "brush",
-					"zone": "waist"
-				}
-			]
-		},
-		{
-			"speaker": "公主",
-			"text": "嘻、嘻嘻……你、你别松手……"
-		},
-		{
-			"speaker": "蓝色的公主",
-			"text": "……不松。……噗。"
-		},
-		{
-			"speaker": "",
-			"text": "（羽毛扫脖子，爪子刨脚心，藤尖钻腋下；小熊从后面抱住两个人，往一起挤）",
-			"actions": [
-				{
-					"do": "tickle",
-					"who": "pink",
-					"by": "foe1",
-					"repeat": 8,
-					"interval": 0.22,
-					"fx": "hand",
-					"zone": "armpit"
-				},
-				{
-					"do": "tickle",
-					"who": "blue",
-					"by": "foe2",
-					"repeat": 8,
-					"interval": 0.22,
-					"fx": "brush",
-					"zone": "thigh"
-				}
-			]
-		},
-		{
-			"speaker": "公主",
-			"text": "挤、挤在一起了——哈哈哈！",
-			"actions": [
-				{
-					"do": "bubble",
-					"who": "pink",
-					"kind": "laugh"
-				},
-				{
-					"do": "bubble",
-					"who": "blue",
-					"kind": "laugh"
-				}
-			]
-		},
-		{
-			"speaker": "蓝色的公主",
-			"text": "……腿根……谁的手……还是……裤子的……"
-		},
-		{
-			"speaker": "",
-			"text": "（手越来越多，分不清是谁的——腋下、腰、肚子、大腿、屁股、脚心，一起被挠）",
+			"text": "（粉色的鬼穿过她的身体，凉意让她一软坐倒；车斗里的小手趁机扒掉了她的鞋）",
 			"actions": [
 				{
 					"do": "tickle",
@@ -186,21 +111,284 @@
 					"repeat": 8,
 					"interval": 0.22,
 					"fx": "brush",
+					"zone": "thigh"
+				}
+			]
+		},
+		{
+			"act": 1,
+			"speaker": "公主",
+			"text": "凉、凉飕飕的……鞋子又没了！"
+		},
+		{
+			"act": 2,
+			"speaker": "",
+			"text": "（鬼的手直接穿进她的脚掌，从里面挠，车斗里的小手掰开她的脚趾，指甲在趾缝里刮）",
+			"actions": [
+				{
+					"do": "tickle",
+					"who": "pink",
+					"by": "foe1",
+					"repeat": 8,
+					"interval": 0.22,
+					"fx": "hand",
+					"zone": "sole"
+				}
+			]
+		},
+		{
+			"act": 2,
+			"speaker": "公主",
+			"text": "嘻嘻嘻！里、里面外面一起——犯规哈哈哈！"
+		},
+		{
+			"act": 2,
+			"speaker": "",
+			"text": "（蓝色的鬼凉凉的指尖沿着蓝色公主的大腿内侧往上滑，滑到腿根就打转；车斗里的小手在屁股上轮流捏）",
+			"actions": [
+				{
+					"do": "tickle",
+					"who": "blue",
+					"by": "foe2",
+					"repeat": 8,
+					"interval": 0.22,
+					"fx": "brush",
 					"zone": "butt"
 				}
 			]
 		},
 		{
-			"speaker": "公主",
-			"text": "哈哈哈哈！全、全身都……分不清了哈哈哈！"
-		},
-		{
+			"act": 2,
 			"speaker": "蓝色的公主",
-			"text": "……哈哈哈……一起……笑……也一起……"
+			"text": "……鬼的手……凉的……裤子的手……热的……"
 		},
 		{
+			"act": 2,
+			"speaker": "公主",
+			"text": "蓝色的！我们得在八秒里……一起打倒它们……哈哈哈！",
+			"actions": [
+				{
+					"do": "bubble",
+					"who": "pink",
+					"kind": "laugh"
+				},
+				{
+					"do": "bubble",
+					"who": "blue",
+					"kind": "laugh"
+				}
+			]
+		},
+		{
+			"act": 2,
+			"speaker": "蓝色的公主",
+			"text": "……知道。……裤子……按着我的手。"
+		},
+		{
+			"act": 3,
 			"speaker": "",
-			"text": "（两个人笑得手都快拉不住了，可是谁都没有先松开）",
+			"text": "（八秒一次又一次地过去，两只鬼一次又一次复活。蓝色公主的疲倦先满了）",
+			"actions": [
+				{
+					"do": "pose",
+					"who": "pink",
+					"visual": "helpless_2"
+				},
+				{
+					"do": "pose",
+					"who": "blue",
+					"visual": "helpless_2"
+				},
+				{
+					"do": "voice",
+					"state": "laugh"
+				}
+			]
+		},
+		{
+			"act": 3,
+			"speaker": "蓝色的公主",
+			"text": "……裤子……和我……一起……先放。"
+		},
+		{
+			"act": "burst",
+			"speaker": "",
+			"text": "（冰蓝色的星光炸开，蓝色的鬼被冻成一座小冰雕）",
+			"actions": [
+				{
+					"do": "flash",
+					"time": 0.8
+				},
+				{
+					"do": "sfx",
+					"sound": "star_burst",
+					"volume": -1.0
+				},
+				{
+					"do": "sfx",
+					"sound": "water_release",
+					"volume": -2.0
+				},
+				{
+					"do": "shake",
+					"who": "blue",
+					"time": 0.5
+				},
+				{
+					"do": "bubble",
+					"who": "blue",
+					"kind": "surprise"
+				},
+				{
+					"do": "move",
+					"who": "foe1",
+					"to": [
+						-94,
+						-6
+					],
+					"time": 0.25
+				},
+				{
+					"do": "move",
+					"who": "foe2",
+					"to": [
+						94,
+						-6
+					],
+					"time": 0.25
+				}
+			],
+			"wait": 1.0
+		},
+		{
+			"act": 3,
+			"speaker": "公主",
+			"text": "现、现在！我也——！"
+		},
+		{
+			"act": "burst",
+			"speaker": "",
+			"text": "（星光紧接着炸开，粉色的鬼被照得透亮，车斗里的小手也被冲得四散）",
+			"actions": [
+				{
+					"do": "flash",
+					"time": 0.8
+				},
+				{
+					"do": "sfx",
+					"sound": "star_burst",
+					"volume": -1.0
+				},
+				{
+					"do": "sfx",
+					"sound": "water_release",
+					"volume": -2.0
+				},
+				{
+					"do": "shake",
+					"who": "pink",
+					"time": 0.5
+				},
+				{
+					"do": "bubble",
+					"who": "pink",
+					"kind": "surprise"
+				},
+				{
+					"do": "move",
+					"who": "foe1",
+					"to": [
+						-94,
+						-6
+					],
+					"time": 0.25
+				},
+				{
+					"do": "move",
+					"who": "foe2",
+					"to": [
+						94,
+						-6
+					],
+					"time": 0.25
+				}
+			],
+			"wait": 1.0
+		},
+		{
+			"act": 3,
+			"speaker": "蓝色的公主",
+			"text": "……同时……打倒了。……八秒内。"
+		},
+		{
+			"act": 3,
+			"speaker": "",
+			"text": "（可是攻城车又来了一辆，两只鬼也从冰雕和光里重新飘了出来。刚放空魔力的两个人一碰就叫）",
+			"actions": [
+				{
+					"do": "move",
+					"who": "foe1",
+					"to": [
+						-44,
+						0
+					],
+					"time": 0.6
+				},
+				{
+					"do": "move",
+					"who": "foe2",
+					"to": [
+						44,
+						0
+					],
+					"time": 0.6
+				},
+				{
+					"do": "tickle",
+					"who": "pink",
+					"by": "foe1",
+					"repeat": 8,
+					"interval": 0.22,
+					"fx": "hand",
+					"zone": "sole"
+				},
+				{
+					"do": "tickle",
+					"who": "blue",
+					"by": "foe2",
+					"repeat": 8,
+					"interval": 0.22,
+					"fx": "brush",
+					"zone": "thigh"
+				}
+			]
+		},
+		{
+			"act": 3,
+			"speaker": "公主",
+			"text": "呀啊——！它们……又复活了！哈哈哈哈！",
+			"actions": [
+				{
+					"do": "bubble",
+					"who": "pink",
+					"kind": "laugh"
+				},
+				{
+					"do": "bubble",
+					"who": "blue",
+					"kind": "laugh"
+				}
+			]
+		},
+		{
+			"act": 3,
+			"speaker": "蓝色的公主",
+			"text": "……哈哈……白冻了……裤子……也、也白冻了……哈哈哈哈！"
+		},
+		{
+			"act": 4,
+			"speaker": "",
+			"text": "（两只鬼手拉手绕着两个人转，车斗里的小手全部伸了出来）",
 			"actions": [
 				{
 					"do": "pose",
@@ -223,7 +411,7 @@
 					"repeat": 8,
 					"interval": 0.22,
 					"fx": "hand",
-					"zone": "waist"
+					"zone": "sole"
 				},
 				{
 					"do": "tickle",
@@ -232,7 +420,7 @@
 					"repeat": 8,
 					"interval": 0.22,
 					"fx": "brush",
-					"zone": "thigh"
+					"zone": "butt"
 				},
 				{
 					"do": "flash",
@@ -241,12 +429,14 @@
 			]
 		},
 		{
+			"act": 4,
 			"speaker": "公主",
-			"text": "哈哈……就算输了……也、也是和你一起输的……哈哈哈哈！"
+			"text": "哈哈哈哈！认输——大混战我们认输啦哈哈哈！"
 		},
 		{
+			"act": 4,
 			"speaker": "蓝色的公主",
-			"text": "……嗯。……哈哈哈哈……一起……认输。……然后……一起……再来。",
+			"text": "……哈哈……裤子……第一个……举白旗……哈哈哈……",
 			"actions": [
 				{
 					"do": "bubble",
@@ -261,10 +451,22 @@
 			]
 		},
 		{
-			"speaker": "公主",
-			"text": "嗯！再来一次——这次一定守住！"
+			"act": 4,
+			"speaker": "",
+			"text": "（攻城车一辆接一辆开走了。两个人坐在城门口，互相靠着喘气）"
 		},
 		{
+			"act": 4,
+			"speaker": "公主",
+			"text": "哈……哈……这一波……还不是最后一波吗……"
+		},
+		{
+			"act": 4,
+			"speaker": "蓝色的公主",
+			"text": "……不是。……后面……还有两波。……先休息。"
+		},
+		{
+			"act": 4,
 			"actions": [
 				{
 					"do": "voice",

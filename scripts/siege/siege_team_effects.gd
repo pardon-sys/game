@@ -27,10 +27,31 @@ static func register() -> void:
 	TeamworkEffects.joint_handler = func(t: Dictionary, members: Array, ctx: Dictionary): start(t, members, ctx, 0.2)
 
 
-## 配合技发动在公主身上时她说一句（data/princess_reactions.json / 蓝色公主的 reactions.json 里来源 team_<id> 的 trigger）。
+const SAY_GAP := 1.5
+## 「怪物配合：XX！」横幅先飘一会儿，她再说（不然两行字叠在一起）
+const SAY_DELAY := 0.8
+
+
+## 配合技发动在她身上：等横幅飘过 SAY_DELAY 秒后说一句（SiegeDirector 接 MonsterTeamwork.fired 调用）。
+static func say_later(c: PlayableCharacter, team_id: String) -> void:
+	if not SiegeTools.alive(c):
+		return
+	var wr: WeakRef = weakref(c)
+	c.get_tree().create_timer(SAY_DELAY, false).timeout.connect(func():
+		var who := wr.get_ref() as PlayableCharacter
+		if who:
+			say(who, team_id))
+
+
+## 配合技发动时被盯上的公主走字幕说一句（来源 team_<id> 的 trigger，粉 / 蓝各一套，在受挠反应里）。
 static func say(c: PlayableCharacter, team_id: String) -> void:
 	if not SiegeTools.alive(c):
 		return
+	# 同一个配合技有好几处会叫她说（导演发动时、效果落下时），SAY_GAP 秒内只说一次
+	var now := Time.get_ticks_msec() / 1000.0
+	if now - float(c.get_meta("siege_team_said", -99.0)) < SAY_GAP:
+		return
+	c.set_meta("siege_team_said", now)
 	Characters.scope(c.character_id)
 	var lines := ReactionDB.lines("team_" + team_id, "trigger")
 	Characters.unscope()
@@ -155,7 +176,6 @@ static func _coordinated(kind: String, group: Array, target: PlayableCharacter, 
 				if m.has_meta("escort_of"):
 					m.remove_meta("escort_of")
 				m.rally_to(target)
-			SiegeTeamEffects.say(target, kind)
 		"hook_relay":
 			if wall_spot is Vector2:
 				_send_to_wall(leader, group.slice(1), wall_spot)
@@ -224,7 +244,6 @@ static func _ankle_team(kind: String, group: Array, target: PlayableCharacter) -
 	for m in group:
 		if m.has_meta("escort_of"):
 			m.remove_meta("escort_of")
-	say(target, kind)
 	match kind:
 		"crab_rat":
 			# 钳钳蟹夹住脚踝，挠脚鼠扒鞋（脚心暴露），围上来挠

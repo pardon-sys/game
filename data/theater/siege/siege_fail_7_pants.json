@@ -42,6 +42,7 @@
 	},
 	"steps": [
 		{
+			"act": 1,
 			"actions": [
 				{
 					"do": "fade_in",
@@ -55,8 +56,9 @@
 			"wait": 0.5
 		},
 		{
+			"act": 1,
 			"speaker": "",
-			"text": "（吊网塔把两个人一起网起来，并排吊在了半空——四只脚都够不着地）",
+			"text": "（挠脚鼠和刷刷松鼠把两个人倒吊在敌塔的横梁上，并排挂着，像两串腊肠）",
 			"actions": [
 				{
 					"do": "enter",
@@ -79,16 +81,19 @@
 			]
 		},
 		{
+			"act": 1,
 			"speaker": "公主",
-			"text": "吊、吊起来了！脚够不着地！"
+			"text": "倒、倒吊着……头好晕……蓝色的，你还好吗！"
 		},
 		{
+			"act": 1,
 			"speaker": "蓝色的公主",
-			"text": "……晃。……下面……有刷子。"
+			"text": "……裙子。……裙子要掉下来了。"
 		},
 		{
+			"act": 1,
 			"speaker": "",
-			"text": "（脚心刷刷塔的刷子手飞过来，抓住四只脚踝，把脚趾一根一根扳开）",
+			"text": "（松鼠们按住她的脚，大尾巴像刷子一样在脚心上扫；挠脚鼠爬上蓝色公主的腿）",
 			"actions": [
 				{
 					"do": "tickle",
@@ -106,21 +111,19 @@
 					"repeat": 8,
 					"interval": 0.22,
 					"fx": "brush",
-					"zone": "sole"
+					"zone": "thigh"
 				}
 			]
 		},
 		{
+			"act": 1,
 			"speaker": "公主",
-			"text": "脚、脚趾被扳开了……要、要刷了吗……"
+			"text": "尾、尾巴刷——哈哈，松鼠的尾巴原来是干这个用的！"
 		},
 		{
-			"speaker": "蓝色的公主",
-			"text": "……扳开了。……趾缝……凉……"
-		},
-		{
+			"act": 2,
 			"speaker": "",
-			"text": "（刷毛钻进趾缝，一条一条地来回刷；下面的挠脚鼠跳起来，小爪子刨脚心）",
+			"text": "（松鼠用小爪子掰开她的脚趾，尾巴尖一条一条地刷过趾缝；另一只拿松果壳在足弓上滚）",
 			"actions": [
 				{
 					"do": "tickle",
@@ -130,7 +133,19 @@
 					"interval": 0.22,
 					"fx": "hand",
 					"zone": "sole"
-				},
+				}
+			]
+		},
+		{
+			"act": 2,
+			"speaker": "公主",
+			"text": "嘻嘻嘻！松、松果——滚来滚去——趾缝也刷哈哈哈！"
+		},
+		{
+			"act": 2,
+			"speaker": "",
+			"text": "（挠脚鼠们顺着蓝色公主倒挂的大腿往下爬，爬到腿根就挤在那里拱来拱去；两只抓住屁股两边轮流挠）",
+			"actions": [
 				{
 					"do": "tickle",
 					"who": "blue",
@@ -138,13 +153,19 @@
 					"repeat": 8,
 					"interval": 0.22,
 					"fx": "brush",
-					"zone": "sole"
+					"zone": "butt"
 				}
 			]
 		},
 		{
+			"act": 2,
+			"speaker": "蓝色的公主",
+			"text": "……倒挂着……裤子的手……顺、顺着往下……揉……"
+		},
+		{
+			"act": 2,
 			"speaker": "公主",
-			"text": "趾缝——！一、一条一条刷哈哈哈！",
+			"text": "蓝色的，你、你在晃！晃得我也在晃哈哈哈！",
 			"actions": [
 				{
 					"do": "bubble",
@@ -159,13 +180,169 @@
 			]
 		},
 		{
+			"act": 2,
 			"speaker": "蓝色的公主",
-			"text": "……趾、趾缝……噗……哈……"
+			"text": "……是裤子……在晃。……我很稳。……真的。"
 		},
 		{
+			"act": 3,
 			"speaker": "",
-			"text": "（刷子手把脚板往后扳，绷得紧紧的，指甲从脚跟一路刮到脚尖；刷刷松鼠的大尾巴扫过脚背）",
+			"text": "（两个人吊着晃来晃去，笑声越来越大。粉色公主的疲倦先满了）",
 			"actions": [
+				{
+					"do": "pose",
+					"who": "pink",
+					"visual": "helpless_2"
+				},
+				{
+					"do": "pose",
+					"who": "blue",
+					"visual": "helpless_2"
+				},
+				{
+					"do": "voice",
+					"state": "laugh"
+				}
+			]
+		},
+		{
+			"act": 3,
+			"speaker": "公主",
+			"text": "要、要满了——横梁你撑住——！"
+		},
+		{
+			"act": "burst",
+			"speaker": "",
+			"text": "（星光炸开，松鼠们被冲得抱着尾巴滚了出去）",
+			"actions": [
+				{
+					"do": "flash",
+					"time": 0.8
+				},
+				{
+					"do": "sfx",
+					"sound": "star_burst",
+					"volume": -1.0
+				},
+				{
+					"do": "sfx",
+					"sound": "water_release",
+					"volume": -2.0
+				},
+				{
+					"do": "shake",
+					"who": "pink",
+					"time": 0.5
+				},
+				{
+					"do": "bubble",
+					"who": "pink",
+					"kind": "surprise"
+				},
+				{
+					"do": "move",
+					"who": "foe1",
+					"to": [
+						-94,
+						-6
+					],
+					"time": 0.25
+				},
+				{
+					"do": "move",
+					"who": "foe2",
+					"to": [
+						94,
+						-6
+					],
+					"time": 0.25
+				}
+			],
+			"wait": 1.0
+		},
+		{
+			"act": 3,
+			"speaker": "蓝色的公主",
+			"text": "……横梁在响……裤子……也在响……"
+		},
+		{
+			"act": "burst",
+			"speaker": "",
+			"text": "（冰蓝色的星光接着炸开，挠脚鼠们被冻成小冰块，掉了一地）",
+			"actions": [
+				{
+					"do": "flash",
+					"time": 0.8
+				},
+				{
+					"do": "sfx",
+					"sound": "star_burst",
+					"volume": -1.0
+				},
+				{
+					"do": "sfx",
+					"sound": "water_release",
+					"volume": -2.0
+				},
+				{
+					"do": "shake",
+					"who": "blue",
+					"time": 0.5
+				},
+				{
+					"do": "bubble",
+					"who": "blue",
+					"kind": "surprise"
+				},
+				{
+					"do": "move",
+					"who": "foe1",
+					"to": [
+						-94,
+						-6
+					],
+					"time": 0.25
+				},
+				{
+					"do": "move",
+					"who": "foe2",
+					"to": [
+						94,
+						-6
+					],
+					"time": 0.25
+				}
+			],
+			"wait": 1.0
+		},
+		{
+			"act": 3,
+			"speaker": "公主",
+			"text": "呼……可是我们……还吊着……"
+		},
+		{
+			"act": 3,
+			"speaker": "",
+			"text": "（冰块化开，松鼠们抱着尾巴爬了回来。刚放空魔力的两个人一碰就叫）",
+			"actions": [
+				{
+					"do": "move",
+					"who": "foe1",
+					"to": [
+						-44,
+						0
+					],
+					"time": 0.6
+				},
+				{
+					"do": "move",
+					"who": "foe2",
+					"to": [
+						44,
+						0
+					],
+					"time": 0.6
+				},
 				{
 					"do": "tickle",
 					"who": "pink",
@@ -182,21 +359,36 @@
 					"repeat": 8,
 					"interval": 0.22,
 					"fx": "brush",
-					"zone": "sole"
+					"zone": "thigh"
 				}
 			]
 		},
 		{
+			"act": 3,
 			"speaker": "公主",
-			"text": "扳、扳着脚板刮——不行不行哈哈哈哈！"
+			"text": "呀啊——！尾、尾巴……比刚才痒好多！哈哈哈哈！",
+			"actions": [
+				{
+					"do": "bubble",
+					"who": "pink",
+					"kind": "laugh"
+				},
+				{
+					"do": "bubble",
+					"who": "blue",
+					"kind": "laugh"
+				}
+			]
 		},
 		{
+			"act": 3,
 			"speaker": "蓝色的公主",
-			"text": "……脚心……裤子也趁机……捏屁股……哈哈哈……！"
+			"text": "……哈哈……裤子……和老鼠……抢、抢腿根……哈哈哈哈！"
 		},
 		{
+			"act": 4,
 			"speaker": "",
-			"text": "（四只脚并排吊着，刷子、爪子、尾巴轮流上——两个人在网里晃来晃去，笑声一下下撞在一起）",
+			"text": "（松鼠和老鼠交换了位置：松鼠刷蓝色公主的腿根，老鼠挠粉色公主的脚心）",
 			"actions": [
 				{
 					"do": "pose",
@@ -228,7 +420,7 @@
 					"repeat": 8,
 					"interval": 0.22,
 					"fx": "brush",
-					"zone": "sole"
+					"zone": "butt"
 				},
 				{
 					"do": "flash",
@@ -237,12 +429,14 @@
 			]
 		},
 		{
+			"act": 4,
 			"speaker": "公主",
-			"text": "哈哈哈哈！你、你也笑了——脚心果然大家都怕哈哈哈！"
+			"text": "哈哈哈哈！换、换班了！认输！认输啦哈哈哈！"
 		},
 		{
+			"act": 4,
 			"speaker": "蓝色的公主",
-			"text": "……哈哈哈……认输……放、放下来……！",
+			"text": "……哈哈……裤子……从来……不换班……哈哈哈……",
 			"actions": [
 				{
 					"do": "bubble",
@@ -257,10 +451,22 @@
 			]
 		},
 		{
-			"speaker": "公主",
-			"text": "呼……脚趾……合不拢了……"
+			"act": 4,
+			"speaker": "",
+			"text": "（松鼠们把两个人放下来，排成一排鞠了个躬，抱着尾巴跑回了敌阵）"
 		},
 		{
+			"act": 4,
+			"speaker": "公主",
+			"text": "哈……哈……下次……我要先剪掉它们的尾巴毛……"
+		},
+		{
+			"act": 4,
+			"speaker": "蓝色的公主",
+			"text": "……别剪。……冻住就好。……尾巴……挺好看的。"
+		},
+		{
+			"act": 4,
 			"actions": [
 				{
 					"do": "voice",

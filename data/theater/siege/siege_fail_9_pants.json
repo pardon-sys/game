@@ -42,6 +42,7 @@
 	},
 	"steps": [
 		{
+			"act": 1,
 			"actions": [
 				{
 					"do": "fade_in",
@@ -55,8 +56,9 @@
 			"wait": 0.5
 		},
 		{
+			"act": 1,
 			"speaker": "",
-			"text": "（狂欢图腾咚咚地响。怪物们兴奋得发疯，蓝色公主的裤子也跟着鼓点一下一下地抽动）",
+			"text": "（魔偶师的共振刷钟楼「当」地一响，城墙跟着震动；腿根爬爬蛛和史莱姆跟着钟声涌了上来）",
 			"actions": [
 				{
 					"do": "enter",
@@ -79,17 +81,29 @@
 			]
 		},
 		{
-			"speaker": "蓝色的公主",
-			"text": "……图腾……裤子……跟着鼓点……停、停下……"
-		},
-		{
+			"act": 1,
 			"speaker": "公主",
-			"text": "怪物们……好像跳舞一样冲过来了！"
+			"text": "钟、钟声……地在震！蓝色的，抓住我！"
 		},
 		{
+			"act": 1,
+			"speaker": "蓝色的公主",
+			"text": "……抓住了。……蜘蛛……也来了。"
+		},
+		{
+			"act": 1,
 			"speaker": "",
-			"text": "（腿根爬爬蛛爬上蓝色公主的腿，八只脚跟着鼓点在腿根上点；史莱姆跟着鼓点一下下扑粉色公主的脚心）",
+			"text": "（钟声每响一次，史莱姆就跳一下，把两个人往一起挤；蜘蛛们吐丝，把两个人的手腕缠在一起）",
 			"actions": [
+				{
+					"do": "tickle",
+					"who": "pink",
+					"by": "foe1",
+					"repeat": 8,
+					"interval": 0.22,
+					"fx": "hand",
+					"zone": "sole"
+				},
 				{
 					"do": "tickle",
 					"who": "blue",
@@ -98,7 +112,19 @@
 					"interval": 0.22,
 					"fx": "brush",
 					"zone": "thigh"
-				},
+				}
+			]
+		},
+		{
+			"act": 1,
+			"speaker": "公主",
+			"text": "缠、缠在一起了！鞋子……被史莱姆吞掉了！"
+		},
+		{
+			"act": 2,
+			"speaker": "",
+			"text": "（钟声一响，史莱姆在她的脚心上冒一串泡泡；钟声再响，蜘蛛就钻进她的趾缝里，八条腿一起挠）",
+			"actions": [
 				{
 					"do": "tickle",
 					"who": "pink",
@@ -111,28 +137,14 @@
 			]
 		},
 		{
-			"speaker": "蓝色的公主",
-			"text": "……共振……蜘蛛和裤子……对着点……噗……"
-		},
-		{
+			"act": 2,
 			"speaker": "公主",
-			"text": "脚、脚心——跟着鼓点扑哈哈！",
-			"actions": [
-				{
-					"do": "bubble",
-					"who": "pink",
-					"kind": "laugh"
-				},
-				{
-					"do": "bubble",
-					"who": "blue",
-					"kind": "laugh"
-				}
-			]
+			"text": "嘻嘻嘻！跟、跟着钟声——哈哈哈有节奏地痒！"
 		},
 		{
+			"act": 2,
 			"speaker": "",
-			"text": "（鼓点越来越快。蜘蛛点得越来越快，粉色公主腰上的史莱姆也蹭得越来越快）",
+			"text": "（蜘蛛们沿着蓝色公主的大腿内侧一步一步爬上去，钟声一响就在腿根上打一圈；另一只沿着屁股和大腿的交界横着走）",
 			"actions": [
 				{
 					"do": "tickle",
@@ -142,6 +154,194 @@
 					"interval": 0.22,
 					"fx": "brush",
 					"zone": "butt"
+				}
+			]
+		},
+		{
+			"act": 2,
+			"speaker": "蓝色的公主",
+			"text": "……钟一响……裤子……就……共、共振……"
+		},
+		{
+			"act": 2,
+			"speaker": "公主",
+			"text": "哈哈……蓝色的，你、你跟着钟声在抖！",
+			"actions": [
+				{
+					"do": "bubble",
+					"who": "pink",
+					"kind": "laugh"
+				},
+				{
+					"do": "bubble",
+					"who": "blue",
+					"kind": "laugh"
+				}
+			]
+		},
+		{
+			"act": 2,
+			"speaker": "蓝色的公主",
+			"text": "……不是我。……是裤子……跟着钟……在抖。"
+		},
+		{
+			"act": 3,
+			"speaker": "",
+			"text": "（钟声越敲越快，笑声越来越急。粉色公主的疲倦先满了）",
+			"actions": [
+				{
+					"do": "pose",
+					"who": "pink",
+					"visual": "helpless_2"
+				},
+				{
+					"do": "pose",
+					"who": "blue",
+					"visual": "helpless_2"
+				},
+				{
+					"do": "voice",
+					"state": "laugh"
+				}
+			]
+		},
+		{
+			"act": 3,
+			"speaker": "公主",
+			"text": "钟、钟声太快了——要、要炸了——！"
+		},
+		{
+			"act": "burst",
+			"speaker": "",
+			"text": "（星光炸开，蛛丝全部断开，史莱姆被冲得弹到半空）",
+			"actions": [
+				{
+					"do": "flash",
+					"time": 0.8
+				},
+				{
+					"do": "sfx",
+					"sound": "star_burst",
+					"volume": -1.0
+				},
+				{
+					"do": "sfx",
+					"sound": "water_release",
+					"volume": -2.0
+				},
+				{
+					"do": "shake",
+					"who": "pink",
+					"time": 0.5
+				},
+				{
+					"do": "bubble",
+					"who": "pink",
+					"kind": "surprise"
+				},
+				{
+					"do": "move",
+					"who": "foe1",
+					"to": [
+						-94,
+						-6
+					],
+					"time": 0.25
+				},
+				{
+					"do": "move",
+					"who": "foe2",
+					"to": [
+						94,
+						-6
+					],
+					"time": 0.25
+				}
+			],
+			"wait": 1.0
+		},
+		{
+			"act": 3,
+			"speaker": "蓝色的公主",
+			"text": "……裤子……还在嗡嗡响……我也……"
+		},
+		{
+			"act": "burst",
+			"speaker": "",
+			"text": "（冰蓝色的星光接着炸开，钟楼的钟锤被冻住，钟声终于停了）",
+			"actions": [
+				{
+					"do": "flash",
+					"time": 0.8
+				},
+				{
+					"do": "sfx",
+					"sound": "star_burst",
+					"volume": -1.0
+				},
+				{
+					"do": "sfx",
+					"sound": "water_release",
+					"volume": -2.0
+				},
+				{
+					"do": "shake",
+					"who": "blue",
+					"time": 0.5
+				},
+				{
+					"do": "bubble",
+					"who": "blue",
+					"kind": "surprise"
+				},
+				{
+					"do": "move",
+					"who": "foe1",
+					"to": [
+						-94,
+						-6
+					],
+					"time": 0.25
+				},
+				{
+					"do": "move",
+					"who": "foe2",
+					"to": [
+						94,
+						-6
+					],
+					"time": 0.25
+				}
+			],
+			"wait": 1.0
+		},
+		{
+			"act": 3,
+			"speaker": "公主",
+			"text": "呼……钟、钟停了……"
+		},
+		{
+			"act": 3,
+			"speaker": "",
+			"text": "（冰化开，钟声又「当」地响起来，蜘蛛和史莱姆跟着钟声冲回来。刚放空魔力的两个人一碰就叫）",
+			"actions": [
+				{
+					"do": "move",
+					"who": "foe1",
+					"to": [
+						-44,
+						0
+					],
+					"time": 0.6
+				},
+				{
+					"do": "move",
+					"who": "foe2",
+					"to": [
+						44,
+						0
+					],
+					"time": 0.6
 				},
 				{
 					"do": "tickle",
@@ -150,33 +350,45 @@
 					"repeat": 8,
 					"interval": 0.22,
 					"fx": "hand",
-					"zone": "waist"
+					"zone": "sole"
+				},
+				{
+					"do": "tickle",
+					"who": "blue",
+					"by": "foe2",
+					"repeat": 8,
+					"interval": 0.22,
+					"fx": "brush",
+					"zone": "thigh"
 				}
 			]
 		},
 		{
-			"speaker": "蓝色的公主",
-			"text": "……屁股……裤子里轮流捏、外面蜘蛛刮……那条线……"
-		},
-		{
+			"act": 3,
 			"speaker": "公主",
-			"text": "越、越来越快了——哈哈哈！"
+			"text": "呀啊——！泡、泡泡……比刚才痒好多！哈哈哈哈！",
+			"actions": [
+				{
+					"do": "bubble",
+					"who": "pink",
+					"kind": "laugh"
+				},
+				{
+					"do": "bubble",
+					"who": "blue",
+					"kind": "laugh"
+				}
+			]
 		},
 		{
-			"speaker": "",
-			"text": "（图腾的鼓点忽然一停——所有的怪物、蜘蛛、史莱姆，也一起停下）"
-		},
-		{
-			"speaker": "公主",
-			"text": "停、停了？……呼……"
-		},
-		{
+			"act": 3,
 			"speaker": "蓝色的公主",
-			"text": "……停了。……呼……"
+			"text": "……哈哈……钟一响……裤子就揉……哈哈哈哈！"
 		},
 		{
+			"act": 4,
 			"speaker": "",
-			"text": "（——咚！鼓点再响的那一刻，所有的手、脚、果冻同时落了下来）",
+			"text": "（钟声连成一片，蜘蛛和史莱姆跟着节奏，在两个人身上跳起了狂欢舞）",
 			"actions": [
 				{
 					"do": "pose",
@@ -208,7 +420,7 @@
 					"repeat": 8,
 					"interval": 0.22,
 					"fx": "brush",
-					"zone": "thigh"
+					"zone": "butt"
 				},
 				{
 					"do": "flash",
@@ -217,12 +429,14 @@
 			]
 		},
 		{
+			"act": 4,
 			"speaker": "公主",
-			"text": "哈哈哈哈哈！骗、骗人——一起来哈哈哈哈！"
+			"text": "哈哈哈哈！狂、狂欢节——认输！认输啦哈哈哈！"
 		},
 		{
+			"act": 4,
 			"speaker": "蓝色的公主",
-			"text": "……哈哈哈哈哈……裤子……也被骗了……一起……哈哈哈哈！",
+			"text": "……哈哈……钟……关掉……裤子……也关掉……",
 			"actions": [
 				{
 					"do": "bubble",
@@ -237,10 +451,22 @@
 			]
 		},
 		{
-			"speaker": "公主",
-			"text": "认、认输……这一波……认输……"
+			"act": 4,
+			"speaker": "",
+			"text": "（魔偶师在远处鞠了一躬。钟声停下，蜘蛛和史莱姆跟着它退回了敌阵）"
 		},
 		{
+			"act": 4,
+			"speaker": "公主",
+			"text": "哈……哈……下次……我先砸钟楼……"
+		},
+		{
+			"act": 4,
+			"speaker": "蓝色的公主",
+			"text": "……钟锤。……我冻。……你砸。"
+		},
+		{
+			"act": 4,
 			"actions": [
 				{
 					"do": "voice",

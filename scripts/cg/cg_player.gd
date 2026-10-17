@@ -528,7 +528,7 @@ func _play_cg(cg: Dictionary, id: String, source: String, skippable: bool, fx_le
 	Dialogue.portrait_fx.begin_cg()
 	Dialogue.portrait_fx.set_cg_level(fx_level)
 	# 没写 portrait 的演出（组合演出）立绘跟着舞台上的姿势走；最后一幕魔力爆发（act = burst）的立绘不算
-	_auto_portrait = not cg.get("steps", []).any(func(st): return st is Dictionary and st.has("portrait") and st.get("act", "") != "burst")
+	_auto_portrait = not cg.get("steps", []).any(func(st): return st is Dictionary and st.has("portrait") and str(st.get("act", "")) != "burst")
 	if _auto_portrait:
 		var princess_info: Dictionary = {}
 		for who in cg.get("cast", {}):

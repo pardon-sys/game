@@ -42,6 +42,7 @@
 	},
 	"steps": [
 		{
+			"act": 1,
 			"actions": [
 				{
 					"do": "fade_in",
@@ -55,8 +56,9 @@
 			"wait": 0.5
 		},
 		{
+			"act": 1,
 			"speaker": "",
-			"text": "（钩索一根接一根地勾上城墙。壁虎们贴着墙爬上来，墙顶一下子挤满了）",
+			"text": "（钩索一根接一根勾上城垛，壁虎叠成梯子翻了上来。墙顶上，两个人被围在了中间）",
 			"actions": [
 				{
 					"do": "enter",
@@ -79,16 +81,19 @@
 			]
 		},
 		{
+			"act": 1,
 			"speaker": "蓝色的公主",
-			"text": "……上、上来了。……好多。"
+			"text": "……钩索。……壁虎。……全部……从我这边上来的。"
 		},
 		{
+			"act": 1,
 			"speaker": "公主",
-			"text": "我上来帮你了！——呀，我也被围住了！"
+			"text": "我、我马上爬上来帮你！……哇，梯子上也全是壁虎！"
 		},
 		{
+			"act": 1,
 			"speaker": "",
-			"text": "（钩索怪把两个人的手腕用绳子绑在城垛上，钩爪尖沿着腰侧往上刮）",
+			"text": "（钩索怪甩出钩索，把两个人的脚踝勾在一起，倒拖着拉到城垛边；壁虎们一拥而上）",
 			"actions": [
 				{
 					"do": "tickle",
@@ -97,39 +102,7 @@
 					"repeat": 8,
 					"interval": 0.22,
 					"fx": "hand",
-					"zone": "waist"
-				},
-				{
-					"do": "tickle",
-					"who": "blue",
-					"by": "foe2",
-					"repeat": 8,
-					"interval": 0.22,
-					"fx": "brush",
-					"zone": "waist"
-				}
-			]
-		},
-		{
-			"speaker": "公主",
-			"text": "绑、绑住了！钩、钩爪在刮腰……嘻嘻嘻！"
-		},
-		{
-			"speaker": "蓝色的公主",
-			"text": "……刮。……不痒。……噗。"
-		},
-		{
-			"speaker": "",
-			"text": "（壁虎钻进衣领、袖口和裙摆，凉凉的小脚丫在衣服里到处爬）",
-			"actions": [
-				{
-					"do": "tickle",
-					"who": "pink",
-					"by": "foe1",
-					"repeat": 8,
-					"interval": 0.22,
-					"fx": "hand",
-					"zone": "armpit"
+					"zone": "sole"
 				},
 				{
 					"do": "tickle",
@@ -143,8 +116,56 @@
 			]
 		},
 		{
+			"act": 1,
 			"speaker": "公主",
-			"text": "衣、衣服里面——哈哈！在爬！在爬！",
+			"text": "倒、倒过来了！我的鞋——掉下城墙了！"
+		},
+		{
+			"act": 2,
+			"speaker": "",
+			"text": "（壁虎的吸盘一个接一个吸在她光着的脚心上，啪嗒啪嗒地爬向脚趾，钩爪的爪背顺着足弓来回刮）",
+			"actions": [
+				{
+					"do": "tickle",
+					"who": "pink",
+					"by": "foe1",
+					"repeat": 8,
+					"interval": 0.22,
+					"fx": "hand",
+					"zone": "sole"
+				}
+			]
+		},
+		{
+			"act": 2,
+			"speaker": "公主",
+			"text": "嘻嘻嘻！吸、吸盘——爪子——两样一起哈哈哈！"
+		},
+		{
+			"act": 2,
+			"speaker": "",
+			"text": "（另一只壁虎钻进蓝色公主的裙摆，吸盘贴着大腿内侧往上吸，吸到腿根就趴着不动，尾巴尖沿着屁股下面的边扫来扫去）",
+			"actions": [
+				{
+					"do": "tickle",
+					"who": "blue",
+					"by": "foe2",
+					"repeat": 8,
+					"interval": 0.22,
+					"fx": "brush",
+					"zone": "thigh"
+				}
+			]
+		},
+		{
+			"act": 2,
+			"speaker": "蓝色的公主",
+			"text": "……裤子……和壁虎……抢位置……挤、挤在腿根……"
+		},
+		{
+			"act": 2,
+			"speaker": "公主",
+			"text": "噗……哈哈……蓝色的，你、你脸好红！",
 			"actions": [
 				{
 					"do": "bubble",
@@ -159,13 +180,169 @@
 			]
 		},
 		{
+			"act": 2,
 			"speaker": "蓝色的公主",
-			"text": "……腿根……壁虎……和裤子的手……撞上了……"
+			"text": "……是裤子……闷出来的。……不是脸红。"
 		},
 		{
+			"act": 3,
 			"speaker": "",
-			"text": "（一只壁虎停在粉色公主的腋下踩来踩去；另一只钻到蓝色公主身后，在屁股上爬了一圈又一圈）",
+			"text": "（钩爪和吸盘一起来，笑声停都停不下来。蓝色公主的疲倦先满了）",
 			"actions": [
+				{
+					"do": "pose",
+					"who": "pink",
+					"visual": "helpless_2"
+				},
+				{
+					"do": "pose",
+					"who": "blue",
+					"visual": "helpless_2"
+				},
+				{
+					"do": "voice",
+					"state": "laugh"
+				}
+			]
+		},
+		{
+			"act": 3,
+			"speaker": "蓝色的公主",
+			"text": "……裤子的手……一起亮了……城垛……抓、抓紧……"
+		},
+		{
+			"act": "burst",
+			"speaker": "",
+			"text": "（冰蓝色的星光炸开，壁虎们被冻成小冰雕，叮叮当当滚下城墙）",
+			"actions": [
+				{
+					"do": "flash",
+					"time": 0.8
+				},
+				{
+					"do": "sfx",
+					"sound": "star_burst",
+					"volume": -1.0
+				},
+				{
+					"do": "sfx",
+					"sound": "water_release",
+					"volume": -2.0
+				},
+				{
+					"do": "shake",
+					"who": "blue",
+					"time": 0.5
+				},
+				{
+					"do": "bubble",
+					"who": "blue",
+					"kind": "surprise"
+				},
+				{
+					"do": "move",
+					"who": "foe1",
+					"to": [
+						-94,
+						-6
+					],
+					"time": 0.25
+				},
+				{
+					"do": "move",
+					"who": "foe2",
+					"to": [
+						94,
+						-6
+					],
+					"time": 0.25
+				}
+			],
+			"wait": 1.0
+		},
+		{
+			"act": 3,
+			"speaker": "公主",
+			"text": "好、好厉害——呜哇，我、我也要满了——！"
+		},
+		{
+			"act": "burst",
+			"speaker": "",
+			"text": "（星光紧接着从她身上炸开，钩索被冲断，钩索怪挂在城垛外面晃来晃去）",
+			"actions": [
+				{
+					"do": "flash",
+					"time": 0.8
+				},
+				{
+					"do": "sfx",
+					"sound": "star_burst",
+					"volume": -1.0
+				},
+				{
+					"do": "sfx",
+					"sound": "water_release",
+					"volume": -2.0
+				},
+				{
+					"do": "shake",
+					"who": "pink",
+					"time": 0.5
+				},
+				{
+					"do": "bubble",
+					"who": "pink",
+					"kind": "surprise"
+				},
+				{
+					"do": "move",
+					"who": "foe1",
+					"to": [
+						-94,
+						-6
+					],
+					"time": 0.25
+				},
+				{
+					"do": "move",
+					"who": "foe2",
+					"to": [
+						94,
+						-6
+					],
+					"time": 0.25
+				}
+			],
+			"wait": 1.0
+		},
+		{
+			"act": 3,
+			"speaker": "蓝色的公主",
+			"text": "……呼。……两个人……都……空了。"
+		},
+		{
+			"act": 3,
+			"speaker": "",
+			"text": "（冰雕化开，钩索怪重新甩上钩索，壁虎们又爬了上来。刚放空魔力的两个人敏感得要命）",
+			"actions": [
+				{
+					"do": "move",
+					"who": "foe1",
+					"to": [
+						-44,
+						0
+					],
+					"time": 0.6
+				},
+				{
+					"do": "move",
+					"who": "foe2",
+					"to": [
+						44,
+						0
+					],
+					"time": 0.6
+				},
 				{
 					"do": "tickle",
 					"who": "pink",
@@ -173,7 +350,7 @@
 					"repeat": 8,
 					"interval": 0.22,
 					"fx": "hand",
-					"zone": "armpit"
+					"zone": "sole"
 				},
 				{
 					"do": "tickle",
@@ -187,16 +364,31 @@
 			]
 		},
 		{
+			"act": 3,
 			"speaker": "公主",
-			"text": "腋、腋下！踩什么啦——哈哈哈！"
+			"text": "呀啊——！吸、吸盘……碰一下就……哈哈哈哈！",
+			"actions": [
+				{
+					"do": "bubble",
+					"who": "pink",
+					"kind": "laugh"
+				},
+				{
+					"do": "bubble",
+					"who": "blue",
+					"kind": "laugh"
+				}
+			]
 		},
 		{
+			"act": 3,
 			"speaker": "蓝色的公主",
-			"text": "……屁股……裤子里的手也……一起转圈……哈哈！"
+			"text": "……哈哈……裤子……沿着边……刮、刮回来……哈哈哈哈！"
 		},
 		{
+			"act": 4,
 			"speaker": "",
-			"text": "（钩爪和壁虎一起动起来：腰、腋下、大腿、屁股——两个人被绑在城垛上，躲都没地方躲）",
+			"text": "（壁虎们在两个人身上叠成了一座小山，钩爪还在一下一下地刮）",
 			"actions": [
 				{
 					"do": "pose",
@@ -219,7 +411,7 @@
 					"repeat": 8,
 					"interval": 0.22,
 					"fx": "hand",
-					"zone": "waist"
+					"zone": "sole"
 				},
 				{
 					"do": "tickle",
@@ -237,12 +429,14 @@
 			]
 		},
 		{
+			"act": 4,
 			"speaker": "公主",
-			"text": "哈哈哈哈！城、城墙上……全是笑声了哈哈哈！"
+			"text": "哈哈哈哈！认输——墙顶给你们！给你们啦哈哈哈！"
 		},
 		{
+			"act": 4,
 			"speaker": "蓝色的公主",
-			"text": "……哈哈哈哈……认、认输……墙顶……认输……！",
+			"text": "……哈哈……城墙……和这条裤子……都、都给你们……",
 			"actions": [
 				{
 					"do": "bubble",
@@ -257,10 +451,22 @@
 			]
 		},
 		{
-			"speaker": "公主",
-			"text": "下、下次一定要先把绳子射断……哈哈……"
+			"act": 4,
+			"speaker": "",
+			"text": "（壁虎们得意地在城垛上排成一排。远处，镇民们正在扛新的砖头过来）"
 		},
 		{
+			"act": 4,
+			"speaker": "公主",
+			"text": "哈……哈……下次……我在墙根下面守着……一只都不让它们爬……"
+		},
+		{
+			"act": 4,
+			"speaker": "蓝色的公主",
+			"text": "……墙顶……我来。……这次……先冻钩索。"
+		},
+		{
+			"act": 4,
 			"actions": [
 				{
 					"do": "voice",

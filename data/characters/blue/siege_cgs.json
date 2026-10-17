@@ -198,7 +198,6 @@
 		}
 	},
 	"death": {
-		"troll_general": "death_siege_troll_general",
 		"cart": "death_siege_cart",
 		"hook": "death_siege_hook",
 		"bind_vine": "death_siege_bind_vine",
@@ -211,304 +210,15 @@
 		"hug_bear": "death_siege_hug_bear",
 		"suck_jelly": "death_siege_suck_jelly",
 		"twin_ghost": "death_siege_twin_ghost",
+		"troll_general": "death_siege_troll_general",
 		"gale_bear": "death_siege_gale_bear",
 		"puppet_master": "death_siege_puppet_master",
 		"carnival_fortress": "death_siege_carnival_fortress"
 	},
 	"portraits": {},
 	"cgs": {
-		"death_siege_troll_general": {
-			"name": "将军的大手",
-			"cast": {
-				"princess": {
-					"kind": "princess",
-					"at": [
-						0,
-						8
-					],
-					"visual": "helpless_1",
-					"anim": "helpless",
-					"dir": "down"
-				},
-				"foe": {
-					"kind": "monster:troll_general",
-					"at": [
-						22,
-						8
-					],
-					"dir": "left",
-					"hidden": true
-				}
-			},
-			"steps": [
-				{
-					"actions": [
-						{
-							"time": 0.7,
-							"do": "fade_in"
-						},
-						{
-							"state": "giggle",
-							"do": "voice"
-						}
-					],
-					"wait": 0.8
-				},
-				{
-					"speaker": "",
-					"text": "（地面一震。巨魔将军走出尘土，一只大手把她从城墙边捞了下来）",
-					"actions": [
-						{
-							"who": "foe",
-							"from": [
-								90,
-								0
-							],
-							"time": 0.6,
-							"do": "enter"
-						},
-						{
-							"who": "princess",
-							"kind": "surprise",
-							"do": "bubble"
-						},
-						{
-							"who": "princess",
-							"time": 0.4,
-							"do": "shake"
-						}
-					],
-					"portrait": "defeat_1"
-				},
-				{
-					"speaker": "蓝色的公主",
-					"text": "……放下。……我在、施法。",
-					"actions": [],
-					"portrait": "defeat_1"
-				},
-				{
-					"speaker": "攻城巨魔将军",
-					"text": "哈！城墙上的冰公主——将军亲自来挠！",
-					"actions": [
-						{
-							"who": "foe",
-							"count": 2,
-							"do": "hop"
-						}
-					],
-					"portrait": "defeat_1"
-				},
-				{
-					"speaker": "",
-					"text": "（他把她握在掌心，另一只手扳住她的脚踝，靴子被拔掉丢在地上）",
-					"actions": [
-						{
-							"who": "princess",
-							"by": "foe",
-							"repeat": 5,
-							"interval": 0.3,
-							"fx": "lines",
-							"do": "tickle"
-						},
-						{
-							"who": "princess",
-							"time": 0.4,
-							"do": "shake"
-						}
-					],
-					"portrait": "defeat_1"
-				},
-				{
-					"speaker": "蓝色的公主",
-					"text": "……靴子。……还我。",
-					"actions": [
-						{
-							"who": "princess",
-							"by": "foe",
-							"repeat": 5,
-							"interval": 0.3,
-							"fx": "lines",
-							"do": "tickle"
-						}
-					],
-					"portrait": "defeat_1"
-				},
-				{
-					"speaker": "",
-					"text": "（粗大的食指按在脚心，慢慢转圈。她的脚趾一根根蜷了起来）",
-					"actions": [
-						{
-							"who": "princess",
-							"by": "foe",
-							"repeat": 5,
-							"interval": 0.3,
-							"fx": "lines",
-							"do": "tickle"
-						}
-					],
-					"portrait": "defeat_1"
-				},
-				{
-					"speaker": "蓝色的公主",
-					"text": "……不、不痒。……噗。……脚趾、自己缩的。",
-					"actions": [
-						{
-							"who": "princess",
-							"kind": "laugh",
-							"do": "bubble"
-						}
-					],
-					"portrait": "defeat_1"
-				},
-				{
-					"speaker": "",
-					"text": "（五根手指一起：一根挠脚心，一根撑开脚趾缝来回钻，其余的刮脚背、捏脚跟）",
-					"actions": [
-						{
-							"who": "princess",
-							"by": "foe",
-							"repeat": 8,
-							"interval": 0.22,
-							"fx": "lines",
-							"do": "tickle"
-						},
-						{
-							"who": "princess",
-							"visual": "helpless_2",
-							"do": "pose"
-						},
-						{
-							"state": "laugh",
-							"do": "voice"
-						},
-						{
-							"zoom": 1.5,
-							"focus": "princess",
-							"time": 0.5,
-							"do": "camera"
-						}
-					],
-					"portrait": "defeat_2"
-				},
-				{
-					"speaker": "蓝色的公主",
-					"text": "……哈、哈哈……五、五根……数不过来……哈哈哈……！",
-					"actions": [
-						{
-							"who": "princess",
-							"time": 0.4,
-							"do": "shake"
-						}
-					],
-					"portrait": "defeat_2"
-				},
-				{
-					"speaker": "攻城巨魔将军",
-					"text": "冰公主也会笑嘛！哈哈！",
-					"actions": [
-						{
-							"who": "foe",
-							"do": "taunt"
-						}
-					],
-					"portrait": "defeat_2"
-				},
-				{
-					"speaker": "",
-					"text": "（握住她的拇指沿着大腿外侧往上按，按到腿根那一块，停住，揉了两下）",
-					"actions": [
-						{
-							"who": "princess",
-							"by": "foe",
-							"repeat": 8,
-							"interval": 0.22,
-							"fx": "lines",
-							"do": "tickle"
-						},
-						{
-							"time": 0.4,
-							"do": "flash"
-						}
-					],
-					"portrait": "defeat_2"
-				},
-				{
-					"speaker": "蓝色的公主",
-					"text": "……哈哈哈哈……腿根……揉、揉的时候……别……哈哈哈！",
-					"actions": [
-						{
-							"who": "princess",
-							"kind": "laugh",
-							"do": "bubble"
-						}
-					],
-					"portrait": "defeat_2"
-				},
-				{
-					"speaker": "",
-					"text": "（他朝她的脚心吹了一口气，再用指甲尖从脚跟慢慢刮到脚尖）",
-					"actions": [
-						{
-							"who": "princess",
-							"by": "foe",
-							"repeat": 8,
-							"interval": 0.22,
-							"fx": "lines",
-							"do": "tickle"
-						}
-					],
-					"portrait": "defeat_2"
-				},
-				{
-					"speaker": "蓝色的公主",
-					"text": "……认、认输……哈哈哈……我认输……！",
-					"actions": [
-						{
-							"who": "princess",
-							"time": 0.4,
-							"do": "shake"
-						},
-						{
-							"zoom": 1,
-							"focus": "princess",
-							"time": 0.4,
-							"do": "camera"
-						}
-					],
-					"portrait": "defeat_2"
-				},
-				{
-					"speaker": "",
-					"text": "（将军扛着她走回了敌阵。她的笑声断断续续，一路没停）",
-					"actions": [
-						{
-							"who": "princess",
-							"by": "foe",
-							"repeat": 5,
-							"interval": 0.3,
-							"fx": "lines",
-							"do": "tickle"
-						}
-					],
-					"portrait": "defeat_2"
-				},
-				{
-					"actions": [
-						{
-							"state": "",
-							"do": "voice"
-						},
-						{
-							"time": 0.8,
-							"do": "fade_out"
-						}
-					],
-					"wait": 0.9
-				}
-			]
-		},
 		"death_siege_cart": {
-			"name": "车上的一排小手",
+			"name": "冰公主与攻城痒痒车",
 			"cast": {
 				"princess": {
 					"kind": "princess",
@@ -532,6 +242,8 @@
 			},
 			"steps": [
 				{
+					"act": 1,
+					"portrait": "defeat_1",
 					"actions": [
 						{
 							"time": 0.7,
@@ -545,8 +257,9 @@
 					"wait": 0.8
 				},
 				{
+					"act": 1,
 					"speaker": "",
-					"text": "（撞墙的车子在她面前刹住。木板翻开，一排排小手伸了出来）",
+					"text": "（撞城墙的车子在墙脚刹住，木板翻开，一排排小手伸了出来，朝着刚被震下城墙的她挥了挥）",
 					"actions": [
 						{
 							"who": "foe",
@@ -566,14 +279,16 @@
 					"portrait": "defeat_1"
 				},
 				{
+					"act": 1,
 					"speaker": "蓝色的公主",
 					"text": "……车上。……全是手。",
 					"actions": [],
 					"portrait": "defeat_1"
 				},
 				{
+					"act": 1,
 					"speaker": "攻城痒痒车",
-					"text": "咕噜咕噜～墙撞不成，撞公主！",
+					"text": "咕噜咕噜～墙撞不成，撞冰公主！",
 					"actions": [
 						{
 							"who": "foe",
@@ -584,8 +299,9 @@
 					"portrait": "defeat_1"
 				},
 				{
+					"act": 1,
 					"speaker": "",
-					"text": "（车子一倾，她跌进车斗。小手按住手腕、脚踝，把她摆平）",
+					"text": "（车子一倾，她跌进车斗。小手们七手八脚按住她的手腕、脚踝，把她平平地摆在车斗中间）",
 					"actions": [
 						{
 							"who": "princess",
@@ -604,8 +320,27 @@
 					"portrait": "defeat_1"
 				},
 				{
+					"act": 1,
 					"speaker": "蓝色的公主",
-					"text": "……放开。……不痒。",
+					"text": "……放开。……这种程度，冻不住你们才奇怪。",
+					"actions": [
+						{
+							"who": "princess",
+							"visual": "giggle",
+							"anim": "idle",
+							"do": "pose"
+						},
+						{
+							"state": "giggle",
+							"do": "voice"
+						}
+					],
+					"portrait": "defeat_1"
+				},
+				{
+					"act": 1,
+					"speaker": "",
+					"text": "（一排小手贴上她的大腿外侧，不紧不慢地揉了两圈，像是在找什么）",
 					"actions": [
 						{
 							"who": "princess",
@@ -619,8 +354,16 @@
 					"portrait": "defeat_1"
 				},
 				{
+					"act": 1,
+					"speaker": "蓝色的公主",
+					"text": "……找什么。……那里没有你们要的东西。",
+					"actions": [],
+					"portrait": "defeat_1"
+				},
+				{
+					"act": 2,
 					"speaker": "",
-					"text": "（一排小手沿着大腿内侧往上爬，另一排在屁股上轮流捏——左一下，右一下）",
+					"text": "（小手们换了个方向。指尖从膝盖内侧出发，沿着大腿内侧一点一点往上爬，爬到腿根就停住，按着腿根打圈揉）",
 					"actions": [
 						{
 							"who": "princess",
@@ -629,25 +372,53 @@
 							"interval": 0.3,
 							"fx": "lines",
 							"do": "tickle"
+						},
+						{
+							"who": "princess",
+							"by": "foe",
+							"repeat": 3,
+							"interval": 0.35,
+							"fx": "feather",
+							"zone": "thigh",
+							"do": "tickle"
 						}
 					],
-					"portrait": "defeat_1"
+					"portrait": "defeat_2"
 				},
 				{
+					"act": 2,
 					"speaker": "蓝色的公主",
-					"text": "……那、那里……噗。……不准捏。",
+					"text": "……！……停、停下。……那个方向……不准……",
 					"actions": [
 						{
 							"who": "princess",
-							"kind": "laugh",
-							"do": "bubble"
+							"visual": "helpless_1",
+							"anim": "helpless",
+							"do": "pose"
+						},
+						{
+							"state": "laugh",
+							"do": "voice"
 						}
 					],
-					"portrait": "defeat_1"
+					"portrait": "defeat_2"
 				},
 				{
+					"act": 2,
+					"speaker": "攻城痒痒车",
+					"text": "咕噜～找到啦～冰公主的腿根～",
+					"actions": [
+						{
+							"who": "foe",
+							"do": "taunt"
+						}
+					],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 2,
 					"speaker": "",
-					"text": "（车斗底下的手扳住她的脚板往后压，指甲从脚跟刮到脚尖，又在脚趾缝里来回钻）",
+					"text": "（另一排小手绕到她身后，在屁股上左一下、右一下，轮流捏）",
 					"actions": [
 						{
 							"who": "princess",
@@ -657,6 +428,197 @@
 							"fx": "lines",
 							"do": "tickle"
 						},
+						{
+							"who": "princess",
+							"by": "foe",
+							"repeat": 3,
+							"interval": 0.35,
+							"fx": "hand",
+							"zone": "butt",
+							"do": "tickle"
+						}
+					],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 2,
+					"speaker": "蓝色的公主",
+					"text": "……噗。……左、右……你们……还排了顺序……噗哈……",
+					"actions": [
+						{
+							"who": "princess",
+							"kind": "laugh",
+							"do": "bubble"
+						}
+					],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 2,
+					"speaker": "",
+					"text": "（最细的那只小手找到了大腿和屁股交界的那条线，指甲贴着线，轻轻地来回刮）",
+					"actions": [
+						{
+							"who": "princess",
+							"time": 0.4,
+							"do": "shake"
+						},
+						{
+							"who": "princess",
+							"by": "foe",
+							"repeat": 8,
+							"interval": 0.22,
+							"fx": "lines",
+							"do": "tickle"
+						}
+					],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 2,
+					"speaker": "蓝色的公主",
+					"text": "……哈、哈哈……刮、刮那里……谁教你的……哈哈……",
+					"actions": [],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 3,
+					"speaker": "",
+					"text": "（笑声越压越漏，体内的魔力跟着乱了节拍，疲倦一下子满了）",
+					"actions": [],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 3,
+					"speaker": "蓝色的公主",
+					"text": "……魔力……溢、溢出来了……来不及……收住……",
+					"actions": [
+						{
+							"zoom": 1.5,
+							"focus": "princess",
+							"time": 0.5,
+							"do": "camera"
+						},
+						{
+							"who": "princess",
+							"time": 1.0,
+							"do": "shake"
+						}
+					],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": "burst",
+					"speaker": "",
+					"text": "（冰蓝色的星光从她身上炸开，木板裂成几块，小手们被一只只弹出车斗）",
+					"actions": [
+						{
+							"time": 0.8,
+							"do": "flash"
+						},
+						{
+							"sound": "star_burst",
+							"volume": -1.0,
+							"do": "sfx"
+						},
+						{
+							"sound": "water_release",
+							"volume": -2.0,
+							"do": "sfx"
+						},
+						{
+							"state": "",
+							"do": "voice"
+						},
+						{
+							"who": "princess",
+							"time": 0.5,
+							"do": "shake"
+						},
+						{
+							"zoom": 1,
+							"focus": "princess",
+							"time": 0.5,
+							"do": "camera"
+						},
+						{
+							"who": "foe",
+							"to": [
+								82,
+								2
+							],
+							"time": 0.25,
+							"do": "move"
+						},
+						{
+							"time": 0.4,
+							"do": "flash"
+						}
+					],
+					"portrait": "fatigue_burst",
+					"wait": 1.1
+				},
+				{
+					"act": 3,
+					"speaker": "蓝色的公主",
+					"text": "……呼……呼……空了。……手指……抬不起来。",
+					"actions": [
+						{
+							"zoom": 1,
+							"focus": "princess",
+							"time": 0.4,
+							"do": "camera"
+						},
+						{
+							"who": "princess",
+							"kind": "shy",
+							"do": "bubble"
+						}
+					],
+					"portrait": "fatigue_burst"
+				},
+				{
+					"act": 3,
+					"speaker": "攻城痒痒车",
+					"text": "咕噜咕噜～冰公主没魔力啦～小手们，回来！",
+					"actions": [
+						{
+							"who": "foe",
+							"to": [
+								22,
+								8
+							],
+							"time": 0.6,
+							"do": "move"
+						},
+						{
+							"state": "giggle",
+							"do": "voice"
+						}
+					],
+					"portrait": "fatigue_burst"
+				},
+				{
+					"act": 3,
+					"speaker": "",
+					"text": "（小手们爬回车斗。放空魔力的身体敏感得不像自己，指尖刚碰到腿根，她的腿就自己并紧了）",
+					"actions": [
+						{
+							"who": "princess",
+							"by": "foe",
+							"repeat": 5,
+							"interval": 0.3,
+							"fx": "lines",
+							"do": "tickle"
+						}
+					],
+					"portrait": "fatigue_burst"
+				},
+				{
+					"act": 3,
+					"speaker": "蓝色的公主",
+					"text": "……呜！……腿、腿自己并起来了……我没让它并……哈哈哈哈！",
+					"actions": [
 						{
 							"who": "princess",
 							"visual": "helpless_2",
@@ -667,17 +629,42 @@
 							"do": "voice"
 						},
 						{
-							"zoom": 1.5,
-							"focus": "princess",
-							"time": 0.5,
-							"do": "camera"
+							"who": "princess",
+							"kind": "laugh",
+							"do": "bubble"
 						}
 					],
-					"portrait": "defeat_2"
+					"portrait": "fatigue_burst"
 				},
 				{
+					"act": 3,
+					"speaker": "",
+					"text": "（腿根的揉圈越转越快，屁股上的轮流捏没有停，交界处的指甲还在一下一下地刮）",
+					"actions": [
+						{
+							"who": "princess",
+							"by": "foe",
+							"repeat": 8,
+							"interval": 0.22,
+							"fx": "lines",
+							"do": "tickle"
+						},
+						{
+							"who": "princess",
+							"by": "foe",
+							"repeat": 3,
+							"interval": 0.35,
+							"fx": "hand",
+							"zone": "butt",
+							"do": "tickle"
+						}
+					],
+					"portrait": "fatigue_burst"
+				},
+				{
+					"act": 3,
 					"speaker": "蓝色的公主",
-					"text": "……哈、哈哈……脚、脚趾缝……不行……哈哈哈……！",
+					"text": "……哈哈哈哈……三、三个地方……一起……我、我数不过来……哈哈哈！",
 					"actions": [
 						{
 							"who": "princess",
@@ -685,53 +672,24 @@
 							"do": "shake"
 						}
 					],
-					"portrait": "defeat_2"
+					"portrait": "fatigue_burst"
 				},
 				{
+					"act": 3,
 					"speaker": "攻城痒痒车",
-					"text": "车子开动咯～颠一颠～",
+					"text": "咕噜～冰公主也会大笑呀～",
 					"actions": [
 						{
 							"who": "foe",
 							"do": "taunt"
 						}
 					],
-					"portrait": "defeat_2"
+					"portrait": "fatigue_burst"
 				},
 				{
+					"act": 4,
 					"speaker": "",
-					"text": "（车轮一颠，腿根上的手指也跟着一按——正好按在最软的那一块）",
-					"actions": [
-						{
-							"who": "princess",
-							"by": "foe",
-							"repeat": 8,
-							"interval": 0.22,
-							"fx": "lines",
-							"do": "tickle"
-						},
-						{
-							"time": 0.4,
-							"do": "flash"
-						}
-					],
-					"portrait": "defeat_2"
-				},
-				{
-					"speaker": "蓝色的公主",
-					"text": "……哈哈哈哈……腿、腿根……颠的时候……按、按到了……哈哈哈！",
-					"actions": [
-						{
-							"who": "princess",
-							"kind": "laugh",
-							"do": "bubble"
-						}
-					],
-					"portrait": "defeat_2"
-				},
-				{
-					"speaker": "",
-					"text": "（她想并拢腿，两边的手却把膝盖轻轻分开，指尖顺着内侧画圈）",
+					"text": "（车子掉头往敌阵开。车斗里清脆的笑声和小手的沙沙声混在一起）",
 					"actions": [
 						{
 							"who": "princess",
@@ -745,26 +703,26 @@
 					"portrait": "defeat_2"
 				},
 				{
+					"act": 4,
 					"speaker": "蓝色的公主",
-					"text": "……认、认输……哈哈哈……我认输……！",
+					"text": "……哈哈……这、这次……算你们……赢……哈哈哈……",
 					"actions": [
 						{
 							"who": "princess",
-							"time": 0.4,
-							"do": "shake"
+							"visual": "helpless_2",
+							"do": "pose"
 						},
 						{
-							"zoom": 1,
-							"focus": "princess",
-							"time": 0.4,
-							"do": "camera"
+							"state": "laugh",
+							"do": "voice"
 						}
 					],
 					"portrait": "defeat_2"
 				},
 				{
+					"act": 4,
 					"speaker": "",
-					"text": "（车子开回了敌阵。车斗里断断续续的笑声，一路都没停）",
+					"text": "（小手们得意地又揉了一圈。她把脸埋进胳膊里，耳朵红得发烫）",
 					"actions": [
 						{
 							"who": "princess",
@@ -778,6 +736,27 @@
 					"portrait": "defeat_2"
 				},
 				{
+					"act": 4,
+					"speaker": "蓝色的公主",
+					"text": "……刚才……笑得很大声的事。……不准……告诉粉色的。",
+					"actions": [
+						{
+							"who": "princess",
+							"kind": "laugh",
+							"do": "bubble"
+						}
+					],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 4,
+					"speaker": "",
+					"text": "（攻城痒痒车咕噜咕噜地开远了。车斗里那句小小的威胁，谁也没有听进去）",
+					"actions": [],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 4,
 					"actions": [
 						{
 							"state": "",
@@ -793,7 +772,7 @@
 			]
 		},
 		"death_siege_hook": {
-			"name": "顺着绳子滑下来的爪子",
+			"name": "冰公主与钩索怪",
 			"cast": {
 				"princess": {
 					"kind": "princess",
@@ -817,6 +796,8 @@
 			},
 			"steps": [
 				{
+					"act": 1,
+					"portrait": "defeat_1",
 					"actions": [
 						{
 							"time": 0.7,
@@ -830,8 +811,9 @@
 					"wait": 0.8
 				},
 				{
+					"act": 1,
 					"speaker": "",
-					"text": "（钩索怪顺着绳子滑下来，钩爪一甩，勾住了她的腰带）",
+					"text": "（钩索怪顺着绳子滑上墙顶，一落地就甩出钩爪，勾住了她的裙摆）",
 					"actions": [
 						{
 							"who": "foe",
@@ -851,20 +833,16 @@
 					"portrait": "defeat_1"
 				},
 				{
+					"act": 1,
 					"speaker": "蓝色的公主",
-					"text": "……！腰带。",
-					"actions": [
-						{
-							"who": "princess",
-							"time": 0.4,
-							"do": "shake"
-						}
-					],
+					"text": "……下去。……这里是城墙，不是你的攀岩场。",
+					"actions": [],
 					"portrait": "defeat_1"
 				},
 				{
+					"act": 1,
 					"speaker": "钩索怪",
-					"text": "嘿咻～钓到冰公主咯！",
+					"text": "嘿咻～冰公主～借你的腿挂一下钩～",
 					"actions": [
 						{
 							"who": "foe",
@@ -875,8 +853,48 @@
 					"portrait": "defeat_1"
 				},
 				{
+					"act": 1,
 					"speaker": "",
-					"text": "（钩爪往回拉一下，爪尖就在腰侧刮一下）",
+					"text": "（钩索绕过她的膝弯，把两条腿并在一起捆住。她站不稳，被拉得跪坐在城垛边上）",
+					"actions": [
+						{
+							"who": "princess",
+							"by": "foe",
+							"repeat": 5,
+							"interval": 0.3,
+							"fx": "lines",
+							"do": "tickle"
+						},
+						{
+							"who": "princess",
+							"time": 0.4,
+							"do": "shake"
+						}
+					],
+					"portrait": "defeat_1"
+				},
+				{
+					"act": 1,
+					"speaker": "蓝色的公主",
+					"text": "……绑腿。……幼稚。……我一抬手，你就冻成冰雕。",
+					"actions": [
+						{
+							"who": "princess",
+							"visual": "giggle",
+							"anim": "idle",
+							"do": "pose"
+						},
+						{
+							"state": "giggle",
+							"do": "voice"
+						}
+					],
+					"portrait": "defeat_1"
+				},
+				{
+					"act": 1,
+					"speaker": "",
+					"text": "（钩爪的背面贴着她的大腿外侧滑下去，冰凉的金属，滑得很慢）",
 					"actions": [
 						{
 							"who": "princess",
@@ -890,41 +908,71 @@
 					"portrait": "defeat_1"
 				},
 				{
+					"act": 1,
 					"speaker": "蓝色的公主",
-					"text": "……别、别刮。……噗。",
-					"actions": [
-						{
-							"who": "princess",
-							"kind": "laugh",
-							"do": "bubble"
-						}
-					],
-					"portrait": "defeat_1"
-				},
-				{
-					"speaker": "",
-					"text": "（绳子绕着她缠了两圈，把手臂捆在身侧。钩索怪爬上来，小爪子沿着大腿外侧往下划）",
-					"actions": [
-						{
-							"who": "princess",
-							"by": "foe",
-							"repeat": 5,
-							"interval": 0.3,
-							"fx": "lines",
-							"do": "tickle"
-						}
-					],
-					"portrait": "defeat_1"
-				},
-				{
-					"speaker": "蓝色的公主",
-					"text": "……大腿。……唔……",
+					"text": "……冷。……这点刺激，算不上什么。",
 					"actions": [],
 					"portrait": "defeat_1"
 				},
 				{
+					"act": 2,
 					"speaker": "",
-					"text": "（爪子绕到大腿内侧，沿着腿根那条线来回刮）",
+					"text": "（钩爪绕到大腿内侧。弯弯的爪尖从膝盖上方出发，贴着内侧一寸一寸往上挪，挪到腿根才停下，在那里轻轻打转）",
+					"actions": [
+						{
+							"who": "princess",
+							"by": "foe",
+							"repeat": 5,
+							"interval": 0.3,
+							"fx": "lines",
+							"do": "tickle"
+						},
+						{
+							"who": "princess",
+							"by": "foe",
+							"repeat": 3,
+							"interval": 0.35,
+							"fx": "feather",
+							"zone": "thigh",
+							"do": "tickle"
+						}
+					],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 2,
+					"speaker": "蓝色的公主",
+					"text": "……！……别、别往那边……上、上面不准……",
+					"actions": [
+						{
+							"who": "princess",
+							"visual": "helpless_1",
+							"anim": "helpless",
+							"do": "pose"
+						},
+						{
+							"state": "laugh",
+							"do": "voice"
+						}
+					],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 2,
+					"speaker": "钩索怪",
+					"text": "嘿嘿～这里的墙缝最软～",
+					"actions": [
+						{
+							"who": "foe",
+							"do": "taunt"
+						}
+					],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 2,
+					"speaker": "",
+					"text": "（另一只爪子勾住她的裙边，爪背在屁股上左边划一下、右边划一下）",
 					"actions": [
 						{
 							"who": "princess",
@@ -934,6 +982,197 @@
 							"fx": "lines",
 							"do": "tickle"
 						},
+						{
+							"who": "princess",
+							"by": "foe",
+							"repeat": 3,
+							"interval": 0.35,
+							"fx": "hand",
+							"zone": "butt",
+							"do": "tickle"
+						}
+					],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 2,
+					"speaker": "蓝色的公主",
+					"text": "……噗。……左、右……像在……敲门……不准……敲……",
+					"actions": [
+						{
+							"who": "princess",
+							"kind": "laugh",
+							"do": "bubble"
+						}
+					],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 2,
+					"speaker": "",
+					"text": "（爪尖找到了大腿和屁股交界的那道线，像找到了最好的落脚点，贴着线来回轻刮）",
+					"actions": [
+						{
+							"who": "princess",
+							"time": 0.4,
+							"do": "shake"
+						},
+						{
+							"who": "princess",
+							"by": "foe",
+							"repeat": 8,
+							"interval": 0.22,
+							"fx": "lines",
+							"do": "tickle"
+						}
+					],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 2,
+					"speaker": "蓝色的公主",
+					"text": "……哈、哈哈……那道线……不是……落脚点……哈哈……",
+					"actions": [],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 3,
+					"speaker": "",
+					"text": "（她想念咒，可是每念一个字就漏出一声笑。魔力在体内乱撞，疲倦满了）",
+					"actions": [],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 3,
+					"speaker": "蓝色的公主",
+					"text": "……咒文……念、念不完……魔力……自己……要出来了……",
+					"actions": [
+						{
+							"zoom": 1.5,
+							"focus": "princess",
+							"time": 0.5,
+							"do": "camera"
+						},
+						{
+							"who": "princess",
+							"time": 1.0,
+							"do": "shake"
+						}
+					],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": "burst",
+					"speaker": "",
+					"text": "（冰蓝色的星光从她身上炸开，钩索冻成冰条碎掉，钩索怪被震得挂在墙沿上晃）",
+					"actions": [
+						{
+							"time": 0.8,
+							"do": "flash"
+						},
+						{
+							"sound": "star_burst",
+							"volume": -1.0,
+							"do": "sfx"
+						},
+						{
+							"sound": "water_release",
+							"volume": -2.0,
+							"do": "sfx"
+						},
+						{
+							"state": "",
+							"do": "voice"
+						},
+						{
+							"who": "princess",
+							"time": 0.5,
+							"do": "shake"
+						},
+						{
+							"zoom": 1,
+							"focus": "princess",
+							"time": 0.5,
+							"do": "camera"
+						},
+						{
+							"who": "foe",
+							"to": [
+								82,
+								2
+							],
+							"time": 0.25,
+							"do": "move"
+						},
+						{
+							"time": 0.4,
+							"do": "flash"
+						}
+					],
+					"portrait": "fatigue_burst",
+					"wait": 1.1
+				},
+				{
+					"act": 3,
+					"speaker": "蓝色的公主",
+					"text": "……呼……空、空了。……腿……没力气。",
+					"actions": [
+						{
+							"zoom": 1,
+							"focus": "princess",
+							"time": 0.4,
+							"do": "camera"
+						},
+						{
+							"who": "princess",
+							"kind": "shy",
+							"do": "bubble"
+						}
+					],
+					"portrait": "fatigue_burst"
+				},
+				{
+					"act": 3,
+					"speaker": "钩索怪",
+					"text": "嘿咻～冰公主没力气了～再挂一次钩～",
+					"actions": [
+						{
+							"who": "foe",
+							"to": [
+								22,
+								8
+							],
+							"time": 0.6,
+							"do": "move"
+						},
+						{
+							"state": "giggle",
+							"do": "voice"
+						}
+					],
+					"portrait": "fatigue_burst"
+				},
+				{
+					"act": 3,
+					"speaker": "",
+					"text": "（钩索怪爬回来。放空魔力的身体敏感得过分，爪尖只是擦过腿根，她就整个人一颤）",
+					"actions": [
+						{
+							"who": "princess",
+							"by": "foe",
+							"repeat": 5,
+							"interval": 0.3,
+							"fx": "lines",
+							"do": "tickle"
+						}
+					],
+					"portrait": "fatigue_burst"
+				},
+				{
+					"act": 3,
+					"speaker": "蓝色的公主",
+					"text": "……哇、哇啊！……刚才……还能忍的……现在……一下都不行……哈哈哈哈！",
+					"actions": [
 						{
 							"who": "princess",
 							"visual": "helpless_2",
@@ -944,40 +1183,17 @@
 							"do": "voice"
 						},
 						{
-							"zoom": 1.5,
-							"focus": "princess",
-							"time": 0.5,
-							"do": "camera"
-						}
-					],
-					"portrait": "defeat_2"
-				},
-				{
-					"speaker": "蓝色的公主",
-					"text": "……哈、哈哈……腿根……那条线……不准……哈哈哈！",
-					"actions": [
-						{
 							"who": "princess",
-							"time": 0.4,
-							"do": "shake"
+							"kind": "laugh",
+							"do": "bubble"
 						}
 					],
-					"portrait": "defeat_2"
+					"portrait": "fatigue_burst"
 				},
 				{
-					"speaker": "钩索怪",
-					"text": "爪爪挠腿根～",
-					"actions": [
-						{
-							"who": "foe",
-							"do": "taunt"
-						}
-					],
-					"portrait": "defeat_2"
-				},
-				{
+					"act": 3,
 					"speaker": "",
-					"text": "（最尖的那根爪子在腋窝里转圈，别的爪子还在腿根上点）",
+					"text": "（爪尖在腿根打转，爪背轮流划过屁股两边，交界那道线也一下都没漏）",
 					"actions": [
 						{
 							"who": "princess",
@@ -988,45 +1204,79 @@
 							"do": "tickle"
 						},
 						{
-							"time": 0.4,
-							"do": "flash"
-						}
-					],
-					"portrait": "defeat_2"
-				},
-				{
-					"speaker": "蓝色的公主",
-					"text": "……上、上下一起……哈哈哈哈……不行……！",
-					"actions": [
-						{
 							"who": "princess",
-							"kind": "laugh",
-							"do": "bubble"
+							"by": "foe",
+							"repeat": 3,
+							"interval": 0.35,
+							"fx": "hand",
+							"zone": "butt",
+							"do": "tickle"
 						}
 					],
-					"portrait": "defeat_2"
+					"portrait": "fatigue_burst"
 				},
 				{
+					"act": 3,
 					"speaker": "蓝色的公主",
-					"text": "……认输。……哈……认输……",
+					"text": "……哈哈哈哈……全、全部……一起……我……我笑不停……哈哈哈！",
 					"actions": [
 						{
 							"who": "princess",
 							"time": 0.4,
 							"do": "shake"
-						},
+						}
+					],
+					"portrait": "fatigue_burst"
+				},
+				{
+					"act": 3,
+					"speaker": "钩索怪",
+					"text": "嘿嘿～冰公主的腿～是最好爬的墙～",
+					"actions": [
 						{
-							"zoom": 1,
-							"focus": "princess",
-							"time": 0.4,
-							"do": "camera"
+							"who": "foe",
+							"do": "taunt"
+						}
+					],
+					"portrait": "fatigue_burst"
+				},
+				{
+					"act": 4,
+					"speaker": "",
+					"text": "（钩索怪把钩索系在城垛上，坐在她旁边，一边晃着腿一边慢慢地挠）",
+					"actions": [
+						{
+							"who": "princess",
+							"by": "foe",
+							"repeat": 8,
+							"interval": 0.22,
+							"fx": "lines",
+							"do": "tickle"
 						}
 					],
 					"portrait": "defeat_2"
 				},
 				{
+					"act": 4,
+					"speaker": "蓝色的公主",
+					"text": "……哈哈……这一段墙……让、让给你……先让给你……哈哈哈……",
+					"actions": [
+						{
+							"who": "princess",
+							"visual": "helpless_2",
+							"do": "pose"
+						},
+						{
+							"state": "laugh",
+							"do": "voice"
+						}
+					],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 4,
 					"speaker": "",
-					"text": "（她被吊在城墙下面晃来晃去，笑声断断续续的）",
+					"text": "（爪尖又沿着内侧往上爬了一次。她咬着嘴唇憋了两秒，还是笑出了声）",
 					"actions": [
 						{
 							"who": "princess",
@@ -1040,6 +1290,27 @@
 					"portrait": "defeat_2"
 				},
 				{
+					"act": 4,
+					"speaker": "蓝色的公主",
+					"text": "……下次。……你的钩子……我先冻住。……全部。",
+					"actions": [
+						{
+							"who": "princess",
+							"kind": "laugh",
+							"do": "bubble"
+						}
+					],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 4,
+					"speaker": "",
+					"text": "（钩索怪吐了吐舌头，顺着绳子溜下了城墙。城垛边只剩她小小的、还在发抖的笑声）",
+					"actions": [],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 4,
 					"actions": [
 						{
 							"state": "",
@@ -1055,7 +1326,7 @@
 			]
 		},
 		"death_siege_bind_vine": {
-			"name": "缠满全身的藤蔓",
+			"name": "冰公主与捆绑藤怪",
 			"cast": {
 				"princess": {
 					"kind": "princess",
@@ -1079,6 +1350,8 @@
 			},
 			"steps": [
 				{
+					"act": 1,
+					"portrait": "defeat_1",
 					"actions": [
 						{
 							"time": 0.7,
@@ -1092,8 +1365,9 @@
 					"wait": 0.8
 				},
 				{
+					"act": 1,
 					"speaker": "",
-					"text": "（藤怪一扑，藤蔓从脚踝开始一圈圈往上缠）",
+					"text": "（藤蔓顺着城墙爬上来，卷住她的脚踝，把她从城垛边拖了下来）",
 					"actions": [
 						{
 							"who": "foe",
@@ -1113,20 +1387,16 @@
 					"portrait": "defeat_1"
 				},
 				{
+					"act": 1,
 					"speaker": "蓝色的公主",
-					"text": "……缠住了。",
-					"actions": [
-						{
-							"who": "princess",
-							"time": 0.4,
-							"do": "shake"
-						}
-					],
+					"text": "……藤蔓。……你们长错地方了。",
+					"actions": [],
 					"portrait": "defeat_1"
 				},
 				{
+					"act": 1,
 					"speaker": "捆绑藤怪",
-					"text": "缠缠～",
+					"text": "沙沙～冰公主～陪我们晒晒太阳～",
 					"actions": [
 						{
 							"who": "foe",
@@ -1137,8 +1407,48 @@
 					"portrait": "defeat_1"
 				},
 				{
+					"act": 1,
 					"speaker": "",
-					"text": "（藤蔓缠过大腿、腰，最后把手腕绑在头顶）",
+					"text": "（藤蔓把她的手腕绑在头顶的城垛上，又缠住两条大腿，把她固定在墙边）",
+					"actions": [
+						{
+							"who": "princess",
+							"by": "foe",
+							"repeat": 5,
+							"interval": 0.3,
+							"fx": "lines",
+							"do": "tickle"
+						},
+						{
+							"who": "princess",
+							"time": 0.4,
+							"do": "shake"
+						}
+					],
+					"portrait": "defeat_1"
+				},
+				{
+					"act": 1,
+					"speaker": "蓝色的公主",
+					"text": "……绑得挺紧。……可惜，藤蔓怕冷。",
+					"actions": [
+						{
+							"who": "princess",
+							"visual": "giggle",
+							"anim": "idle",
+							"do": "pose"
+						},
+						{
+							"state": "giggle",
+							"do": "voice"
+						}
+					],
+					"portrait": "defeat_1"
+				},
+				{
+					"act": 1,
+					"speaker": "",
+					"text": "（细藤沿着她的小腿往上缠，藤上的绒毛擦过皮肤，痒痒的）",
 					"actions": [
 						{
 							"who": "princess",
@@ -1152,41 +1462,71 @@
 					"portrait": "defeat_1"
 				},
 				{
+					"act": 1,
 					"speaker": "蓝色的公主",
-					"text": "……手。……吊着。……噗。",
-					"actions": [
-						{
-							"who": "princess",
-							"kind": "laugh",
-							"do": "bubble"
-						}
-					],
-					"portrait": "defeat_1"
-				},
-				{
-					"speaker": "",
-					"text": "（缠在大腿上的那几圈慢慢收紧又放松，藤尖的软叶子在腿根上扫来扫去）",
-					"actions": [
-						{
-							"who": "princess",
-							"by": "foe",
-							"repeat": 5,
-							"interval": 0.3,
-							"fx": "lines",
-							"do": "tickle"
-						}
-					],
-					"portrait": "defeat_1"
-				},
-				{
-					"speaker": "蓝色的公主",
-					"text": "……腿根……叶子……唔……",
+					"text": "……绒毛。……这个程度，忍得住。",
 					"actions": [],
 					"portrait": "defeat_1"
 				},
 				{
+					"act": 2,
 					"speaker": "",
-					"text": "（一根藤蔓绕到身后，像手掌一样贴着屁股，一下一下地收紧）",
+					"text": "（藤尖缠到大腿内侧，绕着腿一圈一圈往上爬，每爬一圈就收紧一点，一直爬到腿根才停住，在那里轻轻揉）",
+					"actions": [
+						{
+							"who": "princess",
+							"by": "foe",
+							"repeat": 5,
+							"interval": 0.3,
+							"fx": "lines",
+							"do": "tickle"
+						},
+						{
+							"who": "princess",
+							"by": "foe",
+							"repeat": 3,
+							"interval": 0.35,
+							"fx": "feather",
+							"zone": "thigh",
+							"do": "tickle"
+						}
+					],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 2,
+					"speaker": "蓝色的公主",
+					"text": "……！……往、往上……爬什么……停在那里……更不准……",
+					"actions": [
+						{
+							"who": "princess",
+							"visual": "helpless_1",
+							"anim": "helpless",
+							"do": "pose"
+						},
+						{
+							"state": "laugh",
+							"do": "voice"
+						}
+					],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 2,
+					"speaker": "捆绑藤怪",
+					"text": "沙沙～这里暖暖的～藤蔓喜欢～",
+					"actions": [
+						{
+							"who": "foe",
+							"do": "taunt"
+						}
+					],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 2,
+					"speaker": "",
+					"text": "（另外两根藤蔓从身后绕上来，一根缠左边，一根缠右边，轮流收紧，像在捏她的屁股）",
 					"actions": [
 						{
 							"who": "princess",
@@ -1196,6 +1536,197 @@
 							"fx": "lines",
 							"do": "tickle"
 						},
+						{
+							"who": "princess",
+							"by": "foe",
+							"repeat": 3,
+							"interval": 0.35,
+							"fx": "hand",
+							"zone": "butt",
+							"do": "tickle"
+						}
+					],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 2,
+					"speaker": "蓝色的公主",
+					"text": "……噗。……轮流……收紧……你们……在玩……节拍……噗哈……",
+					"actions": [
+						{
+							"who": "princess",
+							"kind": "laugh",
+							"do": "bubble"
+						}
+					],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 2,
+					"speaker": "",
+					"text": "（一根最细的藤尖沿着大腿和屁股交界的那道弧线游过去，来回地蹭）",
+					"actions": [
+						{
+							"who": "princess",
+							"time": 0.4,
+							"do": "shake"
+						},
+						{
+							"who": "princess",
+							"by": "foe",
+							"repeat": 8,
+							"interval": 0.22,
+							"fx": "lines",
+							"do": "tickle"
+						}
+					],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 2,
+					"speaker": "蓝色的公主",
+					"text": "……哈、哈哈……那道弧线……藤蔓……也知道……哈哈……",
+					"actions": [],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 3,
+					"speaker": "",
+					"text": "（被绑着施不了法，魔力憋在体内越积越满，疲倦涨到了顶）",
+					"actions": [],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 3,
+					"speaker": "蓝色的公主",
+					"text": "……冻、冻住你们……魔力……自己……炸开了……",
+					"actions": [
+						{
+							"zoom": 1.5,
+							"focus": "princess",
+							"time": 0.5,
+							"do": "camera"
+						},
+						{
+							"who": "princess",
+							"time": 1.0,
+							"do": "shake"
+						}
+					],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": "burst",
+					"speaker": "",
+					"text": "（冰蓝色的星光从她身上炸开，藤蔓一瞬间结满白霜，「咔啦咔啦」地碎了一地）",
+					"actions": [
+						{
+							"time": 0.8,
+							"do": "flash"
+						},
+						{
+							"sound": "star_burst",
+							"volume": -1.0,
+							"do": "sfx"
+						},
+						{
+							"sound": "water_release",
+							"volume": -2.0,
+							"do": "sfx"
+						},
+						{
+							"state": "",
+							"do": "voice"
+						},
+						{
+							"who": "princess",
+							"time": 0.5,
+							"do": "shake"
+						},
+						{
+							"zoom": 1,
+							"focus": "princess",
+							"time": 0.5,
+							"do": "camera"
+						},
+						{
+							"who": "foe",
+							"to": [
+								82,
+								2
+							],
+							"time": 0.25,
+							"do": "move"
+						},
+						{
+							"time": 0.4,
+							"do": "flash"
+						}
+					],
+					"portrait": "fatigue_burst",
+					"wait": 1.1
+				},
+				{
+					"act": 3,
+					"speaker": "蓝色的公主",
+					"text": "……呼……碎了。……可是……我也……动不了了。",
+					"actions": [
+						{
+							"zoom": 1,
+							"focus": "princess",
+							"time": 0.4,
+							"do": "camera"
+						},
+						{
+							"who": "princess",
+							"kind": "shy",
+							"do": "bubble"
+						}
+					],
+					"portrait": "fatigue_burst"
+				},
+				{
+					"act": 3,
+					"speaker": "捆绑藤怪",
+					"text": "沙沙沙～冰化了～藤蔓又长出来了～",
+					"actions": [
+						{
+							"who": "foe",
+							"to": [
+								22,
+								8
+							],
+							"time": 0.6,
+							"do": "move"
+						},
+						{
+							"state": "giggle",
+							"do": "voice"
+						}
+					],
+					"portrait": "fatigue_burst"
+				},
+				{
+					"act": 3,
+					"speaker": "",
+					"text": "（碎冰下面又钻出新藤蔓。放空魔力的身体敏感得出奇，藤尖刚擦过腿根，她就整个人缩起来）",
+					"actions": [
+						{
+							"who": "princess",
+							"by": "foe",
+							"repeat": 5,
+							"interval": 0.3,
+							"fx": "lines",
+							"do": "tickle"
+						}
+					],
+					"portrait": "fatigue_burst"
+				},
+				{
+					"act": 3,
+					"speaker": "蓝色的公主",
+					"text": "……这、这不对……刚才……明明没有这么……呜哈哈哈哈！",
+					"actions": [
 						{
 							"who": "princess",
 							"visual": "helpless_2",
@@ -1206,40 +1737,17 @@
 							"do": "voice"
 						},
 						{
-							"zoom": 1.5,
-							"focus": "princess",
-							"time": 0.5,
-							"do": "camera"
-						}
-					],
-					"portrait": "defeat_2"
-				},
-				{
-					"speaker": "蓝色的公主",
-					"text": "……哈、哈哈……屁、屁股……别、别缠紧……哈哈哈！",
-					"actions": [
-						{
 							"who": "princess",
-							"time": 0.4,
-							"do": "shake"
+							"kind": "laugh",
+							"do": "bubble"
 						}
 					],
-					"portrait": "defeat_2"
+					"portrait": "fatigue_burst"
 				},
 				{
-					"speaker": "捆绑藤怪",
-					"text": "再穿一件～",
-					"actions": [
-						{
-							"who": "foe",
-							"do": "taunt"
-						}
-					],
-					"portrait": "defeat_2"
-				},
-				{
+					"act": 3,
 					"speaker": "",
-					"text": "（藤怪往她腿上套了一个软环——环里的手指开始揉腿根）",
+					"text": "（藤蔓揉着腿根，轮流收紧着屁股两边，细藤还在交界那道弧线上一下一下地蹭）",
 					"actions": [
 						{
 							"who": "princess",
@@ -1250,45 +1758,79 @@
 							"do": "tickle"
 						},
 						{
-							"time": 0.4,
-							"do": "flash"
-						}
-					],
-					"portrait": "defeat_2"
-				},
-				{
-					"speaker": "蓝色的公主",
-					"text": "……揉……揉腿根……哈哈哈哈……不行不行……！",
-					"actions": [
-						{
 							"who": "princess",
-							"kind": "laugh",
-							"do": "bubble"
+							"by": "foe",
+							"repeat": 3,
+							"interval": 0.35,
+							"fx": "hand",
+							"zone": "butt",
+							"do": "tickle"
 						}
 					],
-					"portrait": "defeat_2"
+					"portrait": "fatigue_burst"
 				},
 				{
+					"act": 3,
 					"speaker": "蓝色的公主",
-					"text": "……认输……哈……解开……",
+					"text": "……哈哈哈哈……停、停不下来……笑……停不下来……哈哈哈！",
 					"actions": [
 						{
 							"who": "princess",
 							"time": 0.4,
 							"do": "shake"
-						},
+						}
+					],
+					"portrait": "fatigue_burst"
+				},
+				{
+					"act": 3,
+					"speaker": "捆绑藤怪",
+					"text": "沙沙～冰公主笑起来～藤蔓也开心～",
+					"actions": [
 						{
-							"zoom": 1,
-							"focus": "princess",
-							"time": 0.4,
-							"do": "camera"
+							"who": "foe",
+							"do": "taunt"
+						}
+					],
+					"portrait": "fatigue_burst"
+				},
+				{
+					"act": 4,
+					"speaker": "",
+					"text": "（藤蔓在她身边开出了冰蓝色的小花。花瓣落在她的腿上，跟着藤尖一起扫）",
+					"actions": [
+						{
+							"who": "princess",
+							"by": "foe",
+							"repeat": 8,
+							"interval": 0.22,
+							"fx": "lines",
+							"do": "tickle"
 						}
 					],
 					"portrait": "defeat_2"
 				},
 				{
+					"act": 4,
+					"speaker": "蓝色的公主",
+					"text": "……哈哈……认输。……我……认输……你们……开得……还挺好看……",
+					"actions": [
+						{
+							"who": "princess",
+							"visual": "helpless_2",
+							"do": "pose"
+						},
+						{
+							"state": "laugh",
+							"do": "voice"
+						}
+					],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 4,
 					"speaker": "",
-					"text": "（藤蔓吊着她，叶子和软环一直挠到她没力气笑）",
+					"text": "（藤蔓高兴得又收紧了一圈。她把脸转到一边，假装刚才什么都没说）",
 					"actions": [
 						{
 							"who": "princess",
@@ -1302,6 +1844,27 @@
 					"portrait": "defeat_2"
 				},
 				{
+					"act": 4,
+					"speaker": "蓝色的公主",
+					"text": "……刚才那句。……不算。……花……一点也不好看。",
+					"actions": [
+						{
+							"who": "princess",
+							"kind": "laugh",
+							"do": "bubble"
+						}
+					],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 4,
+					"speaker": "",
+					"text": "（藤蔓慢慢缩回墙缝里，留下一朵冰蓝色的小花，插在她的发间）",
+					"actions": [],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 4,
 					"actions": [
 						{
 							"state": "",
@@ -1317,7 +1880,7 @@
 			]
 		},
 		"death_siege_gecko": {
-			"name": "钻进衣服里的壁虎",
+			"name": "冰公主与爬墙壁虎",
 			"cast": {
 				"princess": {
 					"kind": "princess",
@@ -1341,6 +1904,8 @@
 			},
 			"steps": [
 				{
+					"act": 1,
+					"portrait": "defeat_1",
 					"actions": [
 						{
 							"time": 0.7,
@@ -1354,8 +1919,9 @@
 					"wait": 0.8
 				},
 				{
+					"act": 1,
 					"speaker": "",
-					"text": "（一只壁虎从城墙上掉下来，落进她的衣领）",
+					"text": "（壁虎们叠成了一座活梯子，一只接一只翻上城垛，围住了她）",
 					"actions": [
 						{
 							"who": "foe",
@@ -1375,20 +1941,16 @@
 					"portrait": "defeat_1"
 				},
 				{
+					"act": 1,
 					"speaker": "蓝色的公主",
-					"text": "……！衣、衣服里。",
-					"actions": [
-						{
-							"who": "princess",
-							"time": 0.4,
-							"do": "shake"
-						}
-					],
+					"text": "……壁虎。……冷血动物，最怕冰。",
+					"actions": [],
 					"portrait": "defeat_1"
 				},
 				{
+					"act": 1,
 					"speaker": "爬墙壁虎",
-					"text": "嘶嘶～冰冰的～",
+					"text": "嘶嘶～冰公主～我们找到暖和的地方了～",
 					"actions": [
 						{
 							"who": "foe",
@@ -1399,8 +1961,48 @@
 					"portrait": "defeat_1"
 				},
 				{
+					"act": 1,
 					"speaker": "",
-					"text": "（小脚丫顺着后背往下爬，一点一点的）",
+					"text": "（壁虎们爬上她的裙摆，有的抱住脚踝，有的趴在膝盖上，把她压坐在走道上）",
+					"actions": [
+						{
+							"who": "princess",
+							"by": "foe",
+							"repeat": 5,
+							"interval": 0.3,
+							"fx": "lines",
+							"do": "tickle"
+						},
+						{
+							"who": "princess",
+							"time": 0.4,
+							"do": "shake"
+						}
+					],
+					"portrait": "defeat_1"
+				},
+				{
+					"act": 1,
+					"speaker": "蓝色的公主",
+					"text": "……下去。……数到三。……一。",
+					"actions": [
+						{
+							"who": "princess",
+							"visual": "giggle",
+							"anim": "idle",
+							"do": "pose"
+						},
+						{
+							"state": "giggle",
+							"do": "voice"
+						}
+					],
+					"portrait": "defeat_1"
+				},
+				{
+					"act": 1,
+					"speaker": "",
+					"text": "（一只壁虎顺着她的小腿往上爬，冰凉的小肚皮贴着皮肤滑过去）",
 					"actions": [
 						{
 							"who": "princess",
@@ -1414,41 +2016,71 @@
 					"portrait": "defeat_1"
 				},
 				{
+					"act": 1,
 					"speaker": "蓝色的公主",
-					"text": "……别爬。……噗。",
-					"actions": [
-						{
-							"who": "princess",
-							"kind": "laugh",
-							"do": "bubble"
-						}
-					],
-					"portrait": "defeat_1"
-				},
-				{
-					"speaker": "",
-					"text": "（几只壁虎从裙摆钻进去，顺着大腿往上爬，一只停在了腿根）",
-					"actions": [
-						{
-							"who": "princess",
-							"by": "foe",
-							"repeat": 5,
-							"interval": 0.3,
-							"fx": "lines",
-							"do": "tickle"
-						}
-					],
-					"portrait": "defeat_1"
-				},
-				{
-					"speaker": "蓝色的公主",
-					"text": "……腿、腿根……停、停在那里……",
+					"text": "……二。……冰凉的……小脚……不、不准往上……",
 					"actions": [],
 					"portrait": "defeat_1"
 				},
 				{
+					"act": 2,
 					"speaker": "",
-					"text": "（停在腿根的那只开始原地踩小脚丫，另一只爬到屁股上，尾巴扫来扫去）",
+					"text": "（壁虎钻进了她的裙底。小吸盘贴着大腿内侧，一个接一个地往上吸，吸到腿根就趴在那里不动了，只剩尾巴在扫）",
+					"actions": [
+						{
+							"who": "princess",
+							"by": "foe",
+							"repeat": 5,
+							"interval": 0.3,
+							"fx": "lines",
+							"do": "tickle"
+						},
+						{
+							"who": "princess",
+							"by": "foe",
+							"repeat": 3,
+							"interval": 0.35,
+							"fx": "feather",
+							"zone": "thigh",
+							"do": "tickle"
+						}
+					],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 2,
+					"speaker": "蓝色的公主",
+					"text": "……！……三、三……出来……趴在那里……不准……",
+					"actions": [
+						{
+							"who": "princess",
+							"visual": "helpless_1",
+							"anim": "helpless",
+							"do": "pose"
+						},
+						{
+							"state": "laugh",
+							"do": "voice"
+						}
+					],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 2,
+					"speaker": "爬墙壁虎",
+					"text": "嘶～这里暖暖的～不出来～",
+					"actions": [
+						{
+							"who": "foe",
+							"do": "taunt"
+						}
+					],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 2,
+					"speaker": "",
+					"text": "（另外两只壁虎绕到她身后，一只在左边、一只在右边，用小脚轮流在屁股上踩）",
 					"actions": [
 						{
 							"who": "princess",
@@ -1458,6 +2090,197 @@
 							"fx": "lines",
 							"do": "tickle"
 						},
+						{
+							"who": "princess",
+							"by": "foe",
+							"repeat": 3,
+							"interval": 0.35,
+							"fx": "hand",
+							"zone": "butt",
+							"do": "tickle"
+						}
+					],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 2,
+					"speaker": "蓝色的公主",
+					"text": "……噗。……踩、踩什么……左……右……噗哈……",
+					"actions": [
+						{
+							"who": "princess",
+							"kind": "laugh",
+							"do": "bubble"
+						}
+					],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 2,
+					"speaker": "",
+					"text": "（最小的那只沿着大腿和屁股交界的那道线爬过去，尾巴尖贴着线，一扫一扫）",
+					"actions": [
+						{
+							"who": "princess",
+							"time": 0.4,
+							"do": "shake"
+						},
+						{
+							"who": "princess",
+							"by": "foe",
+							"repeat": 8,
+							"interval": 0.22,
+							"fx": "lines",
+							"do": "tickle"
+						}
+					],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 2,
+					"speaker": "蓝色的公主",
+					"text": "……哈、哈哈……尾巴……扫、扫在边上……哈哈……",
+					"actions": [],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 3,
+					"speaker": "",
+					"text": "（她想站起来甩掉它们，腿却笑得发软。魔力在体内积满了，疲倦涨到顶）",
+					"actions": [],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 3,
+					"speaker": "蓝色的公主",
+					"text": "……全部……冻住……魔力……忍、忍不住了……",
+					"actions": [
+						{
+							"zoom": 1.5,
+							"focus": "princess",
+							"time": 0.5,
+							"do": "camera"
+						},
+						{
+							"who": "princess",
+							"time": 1.0,
+							"do": "shake"
+						}
+					],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": "burst",
+					"speaker": "",
+					"text": "（冰蓝色的星光炸开，壁虎们一瞬间裹上一层白霜，像小冰雕一样滚落一地）",
+					"actions": [
+						{
+							"time": 0.8,
+							"do": "flash"
+						},
+						{
+							"sound": "star_burst",
+							"volume": -1.0,
+							"do": "sfx"
+						},
+						{
+							"sound": "water_release",
+							"volume": -2.0,
+							"do": "sfx"
+						},
+						{
+							"state": "",
+							"do": "voice"
+						},
+						{
+							"who": "princess",
+							"time": 0.5,
+							"do": "shake"
+						},
+						{
+							"zoom": 1,
+							"focus": "princess",
+							"time": 0.5,
+							"do": "camera"
+						},
+						{
+							"who": "foe",
+							"to": [
+								82,
+								2
+							],
+							"time": 0.25,
+							"do": "move"
+						},
+						{
+							"time": 0.4,
+							"do": "flash"
+						}
+					],
+					"portrait": "fatigue_burst",
+					"wait": 1.1
+				},
+				{
+					"act": 3,
+					"speaker": "蓝色的公主",
+					"text": "……呼……呼……冻住了。……我……也……没力气了。",
+					"actions": [
+						{
+							"zoom": 1,
+							"focus": "princess",
+							"time": 0.4,
+							"do": "camera"
+						},
+						{
+							"who": "princess",
+							"kind": "shy",
+							"do": "bubble"
+						}
+					],
+					"portrait": "fatigue_burst"
+				},
+				{
+					"act": 3,
+					"speaker": "爬墙壁虎",
+					"text": "嘶嘶～冰化啦～又暖和啦～",
+					"actions": [
+						{
+							"who": "foe",
+							"to": [
+								22,
+								8
+							],
+							"time": 0.6,
+							"do": "move"
+						},
+						{
+							"state": "giggle",
+							"do": "voice"
+						}
+					],
+					"portrait": "fatigue_burst"
+				},
+				{
+					"act": 3,
+					"speaker": "",
+					"text": "（壁虎们抖掉身上的霜，又爬了回来。放空魔力的身体敏感得过头，吸盘刚碰到腿根，她就笑出了声）",
+					"actions": [
+						{
+							"who": "princess",
+							"by": "foe",
+							"repeat": 5,
+							"interval": 0.3,
+							"fx": "lines",
+							"do": "tickle"
+						}
+					],
+					"portrait": "fatigue_burst"
+				},
+				{
+					"act": 3,
+					"speaker": "蓝色的公主",
+					"text": "……嘶——！……吸盘……一下……就……哈哈哈哈！……别、别看我……",
+					"actions": [
 						{
 							"who": "princess",
 							"visual": "helpless_2",
@@ -1468,40 +2291,17 @@
 							"do": "voice"
 						},
 						{
-							"zoom": 1.5,
-							"focus": "princess",
-							"time": 0.5,
-							"do": "camera"
-						}
-					],
-					"portrait": "defeat_2"
-				},
-				{
-					"speaker": "蓝色的公主",
-					"text": "……哈、哈哈……踩……扫……不行……哈哈哈！",
-					"actions": [
-						{
 							"who": "princess",
-							"time": 0.4,
-							"do": "shake"
+							"kind": "laugh",
+							"do": "bubble"
 						}
 					],
-					"portrait": "defeat_2"
+					"portrait": "fatigue_burst"
 				},
 				{
-					"speaker": "爬墙壁虎",
-					"text": "嘶嘶～这里最软～",
-					"actions": [
-						{
-							"who": "foe",
-							"do": "taunt"
-						}
-					],
-					"portrait": "defeat_2"
-				},
-				{
+					"act": 3,
 					"speaker": "",
-					"text": "（更多壁虎钻进来，腰侧、腋下、脚心，到处都是小脚丫）",
+					"text": "（吸盘在腿根上一下下吸，小脚轮流踩着屁股，尾巴还在交界那道线上扫来扫去）",
 					"actions": [
 						{
 							"who": "princess",
@@ -1512,45 +2312,79 @@
 							"do": "tickle"
 						},
 						{
-							"time": 0.4,
-							"do": "flash"
-						}
-					],
-					"portrait": "defeat_2"
-				},
-				{
-					"speaker": "蓝色的公主",
-					"text": "……哈哈哈哈……全、全身……出、出来……！",
-					"actions": [
-						{
 							"who": "princess",
-							"kind": "laugh",
-							"do": "bubble"
+							"by": "foe",
+							"repeat": 3,
+							"interval": 0.35,
+							"fx": "hand",
+							"zone": "butt",
+							"do": "tickle"
 						}
 					],
-					"portrait": "defeat_2"
+					"portrait": "fatigue_burst"
 				},
 				{
+					"act": 3,
 					"speaker": "蓝色的公主",
-					"text": "……认输。……拜托……出来……",
+					"text": "……哈哈哈哈……全、全部……壁虎……出来……哈哈哈哈！",
 					"actions": [
 						{
 							"who": "princess",
 							"time": 0.4,
 							"do": "shake"
-						},
+						}
+					],
+					"portrait": "fatigue_burst"
+				},
+				{
+					"act": 3,
+					"speaker": "爬墙壁虎",
+					"text": "嘶嘶～冰公主～好暖和～",
+					"actions": [
 						{
-							"zoom": 1,
-							"focus": "princess",
-							"time": 0.4,
-							"do": "camera"
+							"who": "foe",
+							"do": "taunt"
+						}
+					],
+					"portrait": "fatigue_burst"
+				},
+				{
+					"act": 4,
+					"speaker": "",
+					"text": "（越来越多的壁虎爬上城墙，在她身上叠成了一座小小的绿色山丘）",
+					"actions": [
+						{
+							"who": "princess",
+							"by": "foe",
+							"repeat": 8,
+							"interval": 0.22,
+							"fx": "lines",
+							"do": "tickle"
 						}
 					],
 					"portrait": "defeat_2"
 				},
 				{
+					"act": 4,
+					"speaker": "蓝色的公主",
+					"text": "……哈哈……下、下去就是了……城墙……归你们……哈哈哈……",
+					"actions": [
+						{
+							"who": "princess",
+							"visual": "helpless_2",
+							"do": "pose"
+						},
+						{
+							"state": "laugh",
+							"do": "voice"
+						}
+					],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 4,
 					"speaker": "",
-					"text": "（她蜷成一团，衣服里一鼓一鼓的，笑声断断续续）",
+					"text": "（山丘顶上的壁虎得意地晃了晃尾巴，又在腿根上扫了一下）",
 					"actions": [
 						{
 							"who": "princess",
@@ -1564,6 +2398,27 @@
 					"portrait": "defeat_2"
 				},
 				{
+					"act": 4,
+					"speaker": "蓝色的公主",
+					"text": "……下次。……城墙……全部结冰。……一只也爬不上来。",
+					"actions": [
+						{
+							"who": "princess",
+							"kind": "laugh",
+							"do": "bubble"
+						}
+					],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 4,
+					"speaker": "",
+					"text": "（壁虎们排成一队爬下城墙，她抱着腿坐在走道上，好半天才止住笑）",
+					"actions": [],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 4,
 					"actions": [
 						{
 							"state": "",
@@ -1579,7 +2434,7 @@
 			]
 		},
 		"death_siege_shield_crab": {
-			"name": "一松一紧的大钳子",
+			"name": "冰公主与盾甲螃蟹",
 			"cast": {
 				"princess": {
 					"kind": "princess",
@@ -1603,6 +2458,8 @@
 			},
 			"steps": [
 				{
+					"act": 1,
+					"portrait": "defeat_1",
 					"actions": [
 						{
 							"time": 0.7,
@@ -1616,8 +2473,9 @@
 					"wait": 0.8
 				},
 				{
+					"act": 1,
 					"speaker": "",
-					"text": "（盾甲螃蟹放下大钳子——夹住了她的大腿）",
+					"text": "（螃蟹的大钳子「咔嚓」一声夹住城墙的砖缝，城墙一抖，她从城垛边摔了下来，正好落在钳子前面）",
 					"actions": [
 						{
 							"who": "foe",
@@ -1637,20 +2495,16 @@
 					"portrait": "defeat_1"
 				},
 				{
+					"act": 1,
 					"speaker": "蓝色的公主",
-					"text": "……大腿。……夹住了。",
-					"actions": [
-						{
-							"who": "princess",
-							"time": 0.4,
-							"do": "shake"
-						}
-					],
+					"text": "……挡得住冰锥。……也只是挡得住冰锥而已。",
+					"actions": [],
 					"portrait": "defeat_1"
 				},
 				{
+					"act": 1,
 					"speaker": "盾甲螃蟹",
-					"text": "咔嚓咔嚓～",
+					"text": "咔嚓咔嚓～冰公主掉下来啦～",
 					"actions": [
 						{
 							"who": "foe",
@@ -1661,8 +2515,48 @@
 					"portrait": "defeat_1"
 				},
 				{
+					"act": 1,
 					"speaker": "",
-					"text": "（钳子一松一紧，每夹一下都往上挪一点）",
+					"text": "（钳子横着一扫，把她扫倒在地，另一只钳子夹住她的裙摆，把她按在原地）",
+					"actions": [
+						{
+							"who": "princess",
+							"by": "foe",
+							"repeat": 5,
+							"interval": 0.3,
+							"fx": "lines",
+							"do": "tickle"
+						},
+						{
+							"who": "princess",
+							"time": 0.4,
+							"do": "shake"
+						}
+					],
+					"portrait": "defeat_1"
+				},
+				{
+					"act": 1,
+					"speaker": "蓝色的公主",
+					"text": "……一只螃蟹。……我在墙上冻过一百只。",
+					"actions": [
+						{
+							"who": "princess",
+							"visual": "giggle",
+							"anim": "idle",
+							"do": "pose"
+						},
+						{
+							"state": "giggle",
+							"do": "voice"
+						}
+					],
+					"portrait": "defeat_1"
+				},
+				{
+					"act": 1,
+					"speaker": "",
+					"text": "（钳背贴着她的大腿外侧滑过去，硬硬的壳，凉凉的，没什么感觉）",
 					"actions": [
 						{
 							"who": "princess",
@@ -1676,41 +2570,71 @@
 					"portrait": "defeat_1"
 				},
 				{
+					"act": 1,
 					"speaker": "蓝色的公主",
-					"text": "……往、往上……噗。……别挪。",
-					"actions": [
-						{
-							"who": "princess",
-							"kind": "laugh",
-							"do": "bubble"
-						}
-					],
-					"portrait": "defeat_1"
-				},
-				{
-					"speaker": "",
-					"text": "（挪到腿根就停了，钳子尖在最软的地方一下下夹）",
-					"actions": [
-						{
-							"who": "princess",
-							"by": "foe",
-							"repeat": 5,
-							"interval": 0.3,
-							"fx": "lines",
-							"do": "tickle"
-						}
-					],
-					"portrait": "defeat_1"
-				},
-				{
-					"speaker": "蓝色的公主",
-					"text": "……腿根……唔、嗯……",
+					"text": "……壳，很硬。……也很冷。……没别的了？",
 					"actions": [],
 					"portrait": "defeat_1"
 				},
 				{
+					"act": 2,
 					"speaker": "",
-					"text": "（另一只钳子绕到身后，在屁股上同样一松一紧地夹）",
+					"text": "（小钳子换到大腿内侧，从膝盖上面开始，一夹一松，一夹一松，一路往上挪到腿根，在那里不轻不重地夹着揉）",
+					"actions": [
+						{
+							"who": "princess",
+							"by": "foe",
+							"repeat": 5,
+							"interval": 0.3,
+							"fx": "lines",
+							"do": "tickle"
+						},
+						{
+							"who": "princess",
+							"by": "foe",
+							"repeat": 3,
+							"interval": 0.35,
+							"fx": "feather",
+							"zone": "thigh",
+							"do": "tickle"
+						}
+					],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 2,
+					"speaker": "蓝色的公主",
+					"text": "……！……往上……挪什么……那、那里……别夹……",
+					"actions": [
+						{
+							"who": "princess",
+							"visual": "helpless_1",
+							"anim": "helpless",
+							"do": "pose"
+						},
+						{
+							"state": "laugh",
+							"do": "voice"
+						}
+					],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 2,
+					"speaker": "盾甲螃蟹",
+					"text": "咔嚓～冰公主的腿根～软软的～",
+					"actions": [
+						{
+							"who": "foe",
+							"do": "taunt"
+						}
+					],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 2,
+					"speaker": "",
+					"text": "（两只钳子绕到身后，左边夹一下，右边夹一下，轮流捏着她的屁股）",
 					"actions": [
 						{
 							"who": "princess",
@@ -1720,6 +2644,197 @@
 							"fx": "lines",
 							"do": "tickle"
 						},
+						{
+							"who": "princess",
+							"by": "foe",
+							"repeat": 3,
+							"interval": 0.35,
+							"fx": "hand",
+							"zone": "butt",
+							"do": "tickle"
+						}
+					],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 2,
+					"speaker": "蓝色的公主",
+					"text": "……噗。……轮、轮流……钳子……还有节奏感……噗哈……",
+					"actions": [
+						{
+							"who": "princess",
+							"kind": "laugh",
+							"do": "bubble"
+						}
+					],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 2,
+					"speaker": "",
+					"text": "（钳尖最细的那一点，贴着大腿和屁股交界的那道线，轻轻地刮过来、刮过去）",
+					"actions": [
+						{
+							"who": "princess",
+							"time": 0.4,
+							"do": "shake"
+						},
+						{
+							"who": "princess",
+							"by": "foe",
+							"repeat": 8,
+							"interval": 0.22,
+							"fx": "lines",
+							"do": "tickle"
+						}
+					],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 2,
+					"speaker": "蓝色的公主",
+					"text": "……哈、哈哈……那道线……钳子……也能找到……哈哈……",
+					"actions": [],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 3,
+					"speaker": "",
+					"text": "（她想抬手放冰锥，可一抬手就笑软了。魔力堵在身体里，疲倦涨到了顶）",
+					"actions": [],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 3,
+					"speaker": "蓝色的公主",
+					"text": "……压、压不住……要……全部……放出去……",
+					"actions": [
+						{
+							"zoom": 1.5,
+							"focus": "princess",
+							"time": 0.5,
+							"do": "camera"
+						},
+						{
+							"who": "princess",
+							"time": 1.0,
+							"do": "shake"
+						}
+					],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": "burst",
+					"speaker": "",
+					"text": "（冰蓝色的星光炸开，螃蟹整个被冻在一块冰里，冰块滑出去好远）",
+					"actions": [
+						{
+							"time": 0.8,
+							"do": "flash"
+						},
+						{
+							"sound": "star_burst",
+							"volume": -1.0,
+							"do": "sfx"
+						},
+						{
+							"sound": "water_release",
+							"volume": -2.0,
+							"do": "sfx"
+						},
+						{
+							"state": "",
+							"do": "voice"
+						},
+						{
+							"who": "princess",
+							"time": 0.5,
+							"do": "shake"
+						},
+						{
+							"zoom": 1,
+							"focus": "princess",
+							"time": 0.5,
+							"do": "camera"
+						},
+						{
+							"who": "foe",
+							"to": [
+								82,
+								2
+							],
+							"time": 0.25,
+							"do": "move"
+						},
+						{
+							"time": 0.4,
+							"do": "flash"
+						}
+					],
+					"portrait": "fatigue_burst",
+					"wait": 1.1
+				},
+				{
+					"act": 3,
+					"speaker": "蓝色的公主",
+					"text": "……呼……冻住了。……我……站不起来。",
+					"actions": [
+						{
+							"zoom": 1,
+							"focus": "princess",
+							"time": 0.4,
+							"do": "camera"
+						},
+						{
+							"who": "princess",
+							"kind": "shy",
+							"do": "bubble"
+						}
+					],
+					"portrait": "fatigue_burst"
+				},
+				{
+					"act": 3,
+					"speaker": "盾甲螃蟹",
+					"text": "咔嚓……咔嚓咔嚓～冰裂开啦～",
+					"actions": [
+						{
+							"who": "foe",
+							"to": [
+								22,
+								8
+							],
+							"time": 0.6,
+							"do": "move"
+						},
+						{
+							"state": "giggle",
+							"do": "voice"
+						}
+					],
+					"portrait": "fatigue_burst"
+				},
+				{
+					"act": 3,
+					"speaker": "",
+					"text": "（冰块裂开，螃蟹爬了回来。放空魔力的身体变得格外敏感，钳尖刚碰到腿根，她就笑出声来）",
+					"actions": [
+						{
+							"who": "princess",
+							"by": "foe",
+							"repeat": 5,
+							"interval": 0.3,
+							"fx": "lines",
+							"do": "tickle"
+						}
+					],
+					"portrait": "fatigue_burst"
+				},
+				{
+					"act": 3,
+					"speaker": "蓝色的公主",
+					"text": "……唔哇！……钳子……碰一下……全身都……麻、麻了……哈哈哈哈！",
+					"actions": [
 						{
 							"who": "princess",
 							"visual": "helpless_2",
@@ -1730,40 +2845,17 @@
 							"do": "voice"
 						},
 						{
-							"zoom": 1.5,
-							"focus": "princess",
-							"time": 0.5,
-							"do": "camera"
-						}
-					],
-					"portrait": "defeat_2"
-				},
-				{
-					"speaker": "蓝色的公主",
-					"text": "……哈、哈哈……前、后一起……不准……哈哈哈！",
-					"actions": [
-						{
 							"who": "princess",
-							"time": 0.4,
-							"do": "shake"
+							"kind": "laugh",
+							"do": "bubble"
 						}
 					],
-					"portrait": "defeat_2"
+					"portrait": "fatigue_burst"
 				},
 				{
-					"speaker": "盾甲螃蟹",
-					"text": "咔嚓～冰公主也会笑嘛～",
-					"actions": [
-						{
-							"who": "foe",
-							"do": "taunt"
-						}
-					],
-					"portrait": "defeat_2"
-				},
-				{
+					"act": 3,
 					"speaker": "",
-					"text": "（小钳子们钻进腋下和腰侧，跟着大钳子的节奏一起夹）",
+					"text": "（小钳子夹着揉腿根，大钳子轮流捏两边，钳尖还在交界那道线上来回刮）",
 					"actions": [
 						{
 							"who": "princess",
@@ -1774,45 +2866,79 @@
 							"do": "tickle"
 						},
 						{
-							"time": 0.4,
-							"do": "flash"
-						}
-					],
-					"portrait": "defeat_2"
-				},
-				{
-					"speaker": "蓝色的公主",
-					"text": "……哈哈哈哈……节、节奏……一起……不行……！",
-					"actions": [
-						{
 							"who": "princess",
-							"kind": "laugh",
-							"do": "bubble"
+							"by": "foe",
+							"repeat": 3,
+							"interval": 0.35,
+							"fx": "hand",
+							"zone": "butt",
+							"do": "tickle"
 						}
 					],
-					"portrait": "defeat_2"
+					"portrait": "fatigue_burst"
 				},
 				{
+					"act": 3,
 					"speaker": "蓝色的公主",
-					"text": "……认输……哈……放开……",
+					"text": "……哈哈哈哈……全、全部……钳子……全部拿开……哈哈哈！",
 					"actions": [
 						{
 							"who": "princess",
 							"time": 0.4,
 							"do": "shake"
-						},
+						}
+					],
+					"portrait": "fatigue_burst"
+				},
+				{
+					"act": 3,
+					"speaker": "盾甲螃蟹",
+					"text": "咔嚓～冰公主笑起来～很好听～",
+					"actions": [
 						{
-							"zoom": 1,
-							"focus": "princess",
-							"time": 0.4,
-							"do": "camera"
+							"who": "foe",
+							"do": "taunt"
+						}
+					],
+					"portrait": "fatigue_burst"
+				},
+				{
+					"act": 4,
+					"speaker": "",
+					"text": "（螃蟹把她夹得稳稳的，八条腿也跟着在她腿上踩着小步子）",
+					"actions": [
+						{
+							"who": "princess",
+							"by": "foe",
+							"repeat": 8,
+							"interval": 0.22,
+							"fx": "lines",
+							"do": "tickle"
 						}
 					],
 					"portrait": "defeat_2"
 				},
 				{
+					"act": 4,
+					"speaker": "蓝色的公主",
+					"text": "……哈哈……好、好了……你赢了。……被一只螃蟹……打败了……哈哈哈……",
+					"actions": [
+						{
+							"who": "princess",
+							"visual": "helpless_2",
+							"do": "pose"
+						},
+						{
+							"state": "laugh",
+							"do": "voice"
+						}
+					],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 4,
 					"speaker": "",
-					"text": "（螃蟹夹着她横着走开，钳子的咔嚓声和她的笑声混在一起）",
+					"text": "（螃蟹高高举起钳子庆祝。她别过脸去，耳根红得像煮熟的蟹壳）",
 					"actions": [
 						{
 							"who": "princess",
@@ -1826,6 +2952,27 @@
 					"portrait": "defeat_2"
 				},
 				{
+					"act": 4,
+					"speaker": "蓝色的公主",
+					"text": "……下次。……用冰陨星台。……从天上砸你。",
+					"actions": [
+						{
+							"who": "princess",
+							"kind": "laugh",
+							"do": "bubble"
+						}
+					],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 4,
+					"speaker": "",
+					"text": "（螃蟹横着挪回了城墙脚下。她躺在原地，好一会儿才把腿并拢）",
+					"actions": [],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 4,
 					"actions": [
 						{
 							"state": "",
@@ -1841,7 +2988,7 @@
 			]
 		},
 		"death_siege_bat_swarm": {
-			"name": "四面八方的羽毛",
+			"name": "冰公主与羽毛蝠群",
 			"cast": {
 				"princess": {
 					"kind": "princess",
@@ -1865,6 +3012,8 @@
 			},
 			"steps": [
 				{
+					"act": 1,
+					"portrait": "defeat_1",
 					"actions": [
 						{
 							"time": 0.7,
@@ -1878,8 +3027,9 @@
 					"wait": 0.8
 				},
 				{
+					"act": 1,
 					"speaker": "",
-					"text": "（蝠群绕着她飞成一圈，嘴里都叼着羽毛）",
+					"text": "（一片蝙蝠飞过战场，越过所有人的头顶，直接扑上了城墙）",
 					"actions": [
 						{
 							"who": "foe",
@@ -1899,20 +3049,16 @@
 					"portrait": "defeat_1"
 				},
 				{
+					"act": 1,
 					"speaker": "蓝色的公主",
-					"text": "……蝙蝠。……很多。",
-					"actions": [
-						{
-							"who": "princess",
-							"time": 0.4,
-							"do": "shake"
-						}
-					],
+					"text": "……飞上来了。……粉色的锤子，够不着你们。",
+					"actions": [],
 					"portrait": "defeat_1"
 				},
 				{
+					"act": 1,
 					"speaker": "羽毛蝠群",
-					"text": "吱～冰公主的羽毛派对～",
+					"text": "吱吱～冰公主～我们来送羽毛啦～",
 					"actions": [
 						{
 							"who": "foe",
@@ -1923,8 +3069,48 @@
 					"portrait": "defeat_1"
 				},
 				{
+					"act": 1,
 					"speaker": "",
-					"text": "（羽毛扫过脖子、耳后）",
+					"text": "（蝙蝠群把她团团围住，有的扯袖子，有的抓裙角，把她拽得坐倒在城墙走道上）",
+					"actions": [
+						{
+							"who": "princess",
+							"by": "foe",
+							"repeat": 5,
+							"interval": 0.3,
+							"fx": "lines",
+							"do": "tickle"
+						},
+						{
+							"who": "princess",
+							"time": 0.4,
+							"do": "shake"
+						}
+					],
+					"portrait": "defeat_1"
+				},
+				{
+					"act": 1,
+					"speaker": "蓝色的公主",
+					"text": "……冰雾。……一口气，你们全都冻掉下去。",
+					"actions": [
+						{
+							"who": "princess",
+							"visual": "giggle",
+							"anim": "idle",
+							"do": "pose"
+						},
+						{
+							"state": "giggle",
+							"do": "voice"
+						}
+					],
+					"portrait": "defeat_1"
+				},
+				{
+					"act": 1,
+					"speaker": "",
+					"text": "（一只蝙蝠倒挂在她膝盖上，羽毛尖在大腿外侧扫了两下）",
 					"actions": [
 						{
 							"who": "princess",
@@ -1938,41 +3124,71 @@
 					"portrait": "defeat_1"
 				},
 				{
+					"act": 1,
 					"speaker": "蓝色的公主",
-					"text": "……脖子。……噗。",
-					"actions": [
-						{
-							"who": "princess",
-							"kind": "laugh",
-							"do": "bubble"
-						}
-					],
-					"portrait": "defeat_1"
-				},
-				{
-					"speaker": "",
-					"text": "（几只蝙蝠钻到裙摆下面，羽毛顺着大腿内侧慢慢往上扫）",
-					"actions": [
-						{
-							"who": "princess",
-							"by": "foe",
-							"repeat": 5,
-							"interval": 0.3,
-							"fx": "lines",
-							"do": "tickle"
-						}
-					],
-					"portrait": "defeat_1"
-				},
-				{
-					"speaker": "蓝色的公主",
-					"text": "……往、往上……扫什么……",
+					"text": "……羽毛。……我又不是脚心怕痒的那个。",
 					"actions": [],
 					"portrait": "defeat_1"
 				},
 				{
+					"act": 2,
 					"speaker": "",
-					"text": "（扫到腿根，羽毛尖就在那里打转；后面的几只扫屁股和大腿交界的那条线）",
+					"text": "（蝙蝠们钻到裙摆下面。羽毛贴着大腿内侧，从膝盖往上一下一下扫，扫到腿根就停在那里打旋）",
+					"actions": [
+						{
+							"who": "princess",
+							"by": "foe",
+							"repeat": 5,
+							"interval": 0.3,
+							"fx": "lines",
+							"do": "tickle"
+						},
+						{
+							"who": "princess",
+							"by": "foe",
+							"repeat": 3,
+							"interval": 0.35,
+							"fx": "feather",
+							"zone": "thigh",
+							"do": "tickle"
+						}
+					],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 2,
+					"speaker": "蓝色的公主",
+					"text": "……！……羽、羽毛……往上……扫……那里……",
+					"actions": [
+						{
+							"who": "princess",
+							"visual": "helpless_1",
+							"anim": "helpless",
+							"do": "pose"
+						},
+						{
+							"state": "laugh",
+							"do": "voice"
+						}
+					],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 2,
+					"speaker": "羽毛蝠群",
+					"text": "吱～这里～这里冰公主最怕～",
+					"actions": [
+						{
+							"who": "foe",
+							"do": "taunt"
+						}
+					],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 2,
+					"speaker": "",
+					"text": "（两只蝙蝠一左一右扒在她身后，翅膀拍一下，就轮流拿羽毛在屁股上扫一道）",
 					"actions": [
 						{
 							"who": "princess",
@@ -1982,6 +3198,197 @@
 							"fx": "lines",
 							"do": "tickle"
 						},
+						{
+							"who": "princess",
+							"by": "foe",
+							"repeat": 3,
+							"interval": 0.35,
+							"fx": "hand",
+							"zone": "butt",
+							"do": "tickle"
+						}
+					],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 2,
+					"speaker": "蓝色的公主",
+					"text": "……噗。……一、一左一右……扇着翅膀……噗哈……",
+					"actions": [
+						{
+							"who": "princess",
+							"kind": "laugh",
+							"do": "bubble"
+						}
+					],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 2,
+					"speaker": "",
+					"text": "（一根羽毛横着贴上大腿和屁股交界的那道线，被蝙蝠叼着来回拉）",
+					"actions": [
+						{
+							"who": "princess",
+							"time": 0.4,
+							"do": "shake"
+						},
+						{
+							"who": "princess",
+							"by": "foe",
+							"repeat": 8,
+							"interval": 0.22,
+							"fx": "lines",
+							"do": "tickle"
+						}
+					],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 2,
+					"speaker": "蓝色的公主",
+					"text": "……哈、哈哈……拉来拉去……交界……哈哈……",
+					"actions": [],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 3,
+					"speaker": "",
+					"text": "（她深吸一口气想吐冰雾，可一张嘴就是笑。魔力憋在胸口，疲倦满了）",
+					"actions": [],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 3,
+					"speaker": "蓝色的公主",
+					"text": "……冰雾……吐、吐不出来……魔力……自己……",
+					"actions": [
+						{
+							"zoom": 1.5,
+							"focus": "princess",
+							"time": 0.5,
+							"do": "camera"
+						},
+						{
+							"who": "princess",
+							"time": 1.0,
+							"do": "shake"
+						}
+					],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": "burst",
+					"speaker": "",
+					"text": "（冰蓝色的星光炸开，蝙蝠们被冻成一颗颗小冰球，叮叮当当滚下城墙）",
+					"actions": [
+						{
+							"time": 0.8,
+							"do": "flash"
+						},
+						{
+							"sound": "star_burst",
+							"volume": -1.0,
+							"do": "sfx"
+						},
+						{
+							"sound": "water_release",
+							"volume": -2.0,
+							"do": "sfx"
+						},
+						{
+							"state": "",
+							"do": "voice"
+						},
+						{
+							"who": "princess",
+							"time": 0.5,
+							"do": "shake"
+						},
+						{
+							"zoom": 1,
+							"focus": "princess",
+							"time": 0.5,
+							"do": "camera"
+						},
+						{
+							"who": "foe",
+							"to": [
+								82,
+								2
+							],
+							"time": 0.25,
+							"do": "move"
+						},
+						{
+							"time": 0.4,
+							"do": "flash"
+						}
+					],
+					"portrait": "fatigue_burst",
+					"wait": 1.1
+				},
+				{
+					"act": 3,
+					"speaker": "蓝色的公主",
+					"text": "……呼……掉下去了。……羽毛……还在飘。",
+					"actions": [
+						{
+							"zoom": 1,
+							"focus": "princess",
+							"time": 0.4,
+							"do": "camera"
+						},
+						{
+							"who": "princess",
+							"kind": "shy",
+							"do": "bubble"
+						}
+					],
+					"portrait": "fatigue_burst"
+				},
+				{
+					"act": 3,
+					"speaker": "羽毛蝠群",
+					"text": "吱吱吱～冰化啦～飞回来啦～",
+					"actions": [
+						{
+							"who": "foe",
+							"to": [
+								22,
+								8
+							],
+							"time": 0.6,
+							"do": "move"
+						},
+						{
+							"state": "giggle",
+							"do": "voice"
+						}
+					],
+					"portrait": "fatigue_burst"
+				},
+				{
+					"act": 3,
+					"speaker": "",
+					"text": "（冰球化开，蝙蝠们又扑上城墙。放空魔力的身体敏感过头，羽毛轻轻一扫腿根，她就整个人一抖）",
+					"actions": [
+						{
+							"who": "princess",
+							"by": "foe",
+							"repeat": 5,
+							"interval": 0.3,
+							"fx": "lines",
+							"do": "tickle"
+						}
+					],
+					"portrait": "fatigue_burst"
+				},
+				{
+					"act": 3,
+					"speaker": "蓝色的公主",
+					"text": "……呀！……羽毛……轻成这样……也……受不住……哈哈哈哈！",
+					"actions": [
 						{
 							"who": "princess",
 							"visual": "helpless_2",
@@ -1992,40 +3399,17 @@
 							"do": "voice"
 						},
 						{
-							"zoom": 1.5,
-							"focus": "princess",
-							"time": 0.5,
-							"do": "camera"
-						}
-					],
-					"portrait": "defeat_2"
-				},
-				{
-					"speaker": "蓝色的公主",
-					"text": "……哈、哈哈……那条线……羽毛……不行……哈哈哈！",
-					"actions": [
-						{
 							"who": "princess",
-							"time": 0.4,
-							"do": "shake"
+							"kind": "laugh",
+							"do": "bubble"
 						}
 					],
-					"portrait": "defeat_2"
+					"portrait": "fatigue_burst"
 				},
 				{
-					"speaker": "羽毛蝠群",
-					"text": "吱吱～这里最好笑～",
-					"actions": [
-						{
-							"who": "foe",
-							"do": "taunt"
-						}
-					],
-					"portrait": "defeat_2"
-				},
-				{
+					"act": 3,
 					"speaker": "",
-					"text": "（羽毛越扫越快，脚心、腋下也加入了）",
+					"text": "（羽毛在腿根打旋，两边屁股轮流被扫，交界那道线上的羽毛还在来回拉）",
 					"actions": [
 						{
 							"who": "princess",
@@ -2036,45 +3420,79 @@
 							"do": "tickle"
 						},
 						{
-							"time": 0.4,
-							"do": "flash"
-						}
-					],
-					"portrait": "defeat_2"
-				},
-				{
-					"speaker": "蓝色的公主",
-					"text": "……哈哈哈哈……全、全部……扫……！",
-					"actions": [
-						{
 							"who": "princess",
-							"kind": "laugh",
-							"do": "bubble"
+							"by": "foe",
+							"repeat": 3,
+							"interval": 0.35,
+							"fx": "hand",
+							"zone": "butt",
+							"do": "tickle"
 						}
 					],
-					"portrait": "defeat_2"
+					"portrait": "fatigue_burst"
 				},
 				{
+					"act": 3,
 					"speaker": "蓝色的公主",
-					"text": "……认输。……别扫了……",
+					"text": "……哈哈哈哈……全、全部……飞走……哈哈哈哈！",
 					"actions": [
 						{
 							"who": "princess",
 							"time": 0.4,
 							"do": "shake"
-						},
+						}
+					],
+					"portrait": "fatigue_burst"
+				},
+				{
+					"act": 3,
+					"speaker": "羽毛蝠群",
+					"text": "吱吱～冰公主～笑得好响～",
+					"actions": [
 						{
-							"zoom": 1,
-							"focus": "princess",
-							"time": 0.4,
-							"do": "camera"
+							"who": "foe",
+							"do": "taunt"
+						}
+					],
+					"portrait": "fatigue_burst"
+				},
+				{
+					"act": 4,
+					"speaker": "",
+					"text": "（蝙蝠们轮班扑上来：一群扫完飞走，另一群叼着新羽毛又扑下来）",
+					"actions": [
+						{
+							"who": "princess",
+							"by": "foe",
+							"repeat": 8,
+							"interval": 0.22,
+							"fx": "lines",
+							"do": "tickle"
 						}
 					],
 					"portrait": "defeat_2"
 				},
 				{
+					"act": 4,
+					"speaker": "蓝色的公主",
+					"text": "……哈哈……我、我投降……轮班……不公平……哈哈哈……",
+					"actions": [
+						{
+							"who": "princess",
+							"visual": "helpless_2",
+							"do": "pose"
+						},
+						{
+							"state": "laugh",
+							"do": "voice"
+						}
+					],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 4,
 					"speaker": "",
-					"text": "（羽毛像雪一样落满她一身）",
+					"text": "（最后一只蝙蝠在她腿根上扫了一下才飞走。她抱着膝盖缩成一团）",
 					"actions": [
 						{
 							"who": "princess",
@@ -2088,6 +3506,27 @@
 					"portrait": "defeat_2"
 				},
 				{
+					"act": 4,
+					"speaker": "蓝色的公主",
+					"text": "……城墙上。……以后挂满冰锥。……一只也别想落脚。",
+					"actions": [
+						{
+							"who": "princess",
+							"kind": "laugh",
+							"do": "bubble"
+						}
+					],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 4,
+					"speaker": "",
+					"text": "（蝠群飞远了。城墙走道上铺了一层白羽毛，她坐在中间，脸红得厉害）",
+					"actions": [],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 4,
 					"actions": [
 						{
 							"state": "",
@@ -2103,7 +3542,7 @@
 			]
 		},
 		"death_siege_carrier": {
-			"name": "被抬进敌塔的公主",
+			"name": "冰公主与搬运小鬼队",
 			"cast": {
 				"princess": {
 					"kind": "princess",
@@ -2127,6 +3566,8 @@
 			},
 			"steps": [
 				{
+					"act": 1,
+					"portrait": "defeat_1",
 					"actions": [
 						{
 							"time": 0.7,
@@ -2140,8 +3581,9 @@
 					"wait": 0.8
 				},
 				{
+					"act": 1,
 					"speaker": "",
-					"text": "（小鬼们把她抬进敌塔，塔门砰地关上）",
+					"text": "（三只扛着长杆子的小鬼爬上城墙，嘿咻嘿咻地朝她走过来）",
 					"actions": [
 						{
 							"who": "foe",
@@ -2161,20 +3603,16 @@
 					"portrait": "defeat_1"
 				},
 				{
+					"act": 1,
 					"speaker": "蓝色的公主",
-					"text": "……黑。……放我出去。",
-					"actions": [
-						{
-							"who": "princess",
-							"time": 0.4,
-							"do": "shake"
-						}
-					],
+					"text": "……杆子。……要搬什么。",
+					"actions": [],
 					"portrait": "defeat_1"
 				},
 				{
+					"act": 1,
 					"speaker": "搬运小鬼队",
-					"text": "嘿咻～冰公主关好咯～",
+					"text": "嘿咻嘿咻～搬冰公主～搬回塔里～",
 					"actions": [
 						{
 							"who": "foe",
@@ -2185,8 +3623,48 @@
 					"portrait": "defeat_1"
 				},
 				{
+					"act": 1,
 					"speaker": "",
-					"text": "（一只按手，一只按脚，一只坐在她的大腿上）",
+					"text": "（小鬼们把她的手腕和膝弯挂在长杆上，扛起来就走，两条腿在杆子下面晃来晃去）",
+					"actions": [
+						{
+							"who": "princess",
+							"by": "foe",
+							"repeat": 5,
+							"interval": 0.3,
+							"fx": "lines",
+							"do": "tickle"
+						},
+						{
+							"who": "princess",
+							"time": 0.4,
+							"do": "shake"
+						}
+					],
+					"portrait": "defeat_1"
+				},
+				{
+					"act": 1,
+					"speaker": "蓝色的公主",
+					"text": "……放下。……我不是行李。",
+					"actions": [
+						{
+							"who": "princess",
+							"visual": "giggle",
+							"anim": "idle",
+							"do": "pose"
+						},
+						{
+							"state": "giggle",
+							"do": "voice"
+						}
+					],
+					"portrait": "defeat_1"
+				},
+				{
+					"act": 1,
+					"speaker": "",
+					"text": "（走在最后的小鬼伸手拍了拍她晃过来的大腿外侧，像在拍一袋米）",
 					"actions": [
 						{
 							"who": "princess",
@@ -2200,41 +3678,71 @@
 					"portrait": "defeat_1"
 				},
 				{
+					"act": 1,
 					"speaker": "蓝色的公主",
-					"text": "……坐在……腿上。……要干什么。",
-					"actions": [
-						{
-							"who": "princess",
-							"kind": "laugh",
-							"do": "bubble"
-						}
-					],
-					"portrait": "defeat_1"
-				},
-				{
-					"speaker": "",
-					"text": "（坐在大腿上的那只，两只小手开始揉她的腿根）",
-					"actions": [
-						{
-							"who": "princess",
-							"by": "foe",
-							"repeat": 5,
-							"interval": 0.3,
-							"fx": "lines",
-							"do": "tickle"
-						}
-					],
-					"portrait": "defeat_1"
-				},
-				{
-					"speaker": "蓝色的公主",
-					"text": "……腿根……揉……唔……",
+					"text": "……拍什么。……很失礼。",
 					"actions": [],
 					"portrait": "defeat_1"
 				},
 				{
+					"act": 2,
 					"speaker": "",
-					"text": "（按脚的那只用尾巴尖扫脚心，揉腿根的那只顺手捏了一下屁股）",
+					"text": "（那只手没有走开。手指顺着大腿内侧，随着脚步一晃一晃地往上挪，挪到腿根就停住，按在那里打圈揉）",
+					"actions": [
+						{
+							"who": "princess",
+							"by": "foe",
+							"repeat": 5,
+							"interval": 0.3,
+							"fx": "lines",
+							"do": "tickle"
+						},
+						{
+							"who": "princess",
+							"by": "foe",
+							"repeat": 3,
+							"interval": 0.35,
+							"fx": "feather",
+							"zone": "thigh",
+							"do": "tickle"
+						}
+					],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 2,
+					"speaker": "蓝色的公主",
+					"text": "……！……走路的时候……揉……那里……",
+					"actions": [
+						{
+							"who": "princess",
+							"visual": "helpless_1",
+							"anim": "helpless",
+							"do": "pose"
+						},
+						{
+							"state": "laugh",
+							"do": "voice"
+						}
+					],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 2,
+					"speaker": "搬运小鬼队",
+					"text": "嘿嘿～一边搬一边揉～效率高～",
+					"actions": [
+						{
+							"who": "foe",
+							"do": "taunt"
+						}
+					],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 2,
+					"speaker": "",
+					"text": "（中间的小鬼腾出两只手，杆子晃左边就捏一下左边屁股，晃右边就捏一下右边）",
 					"actions": [
 						{
 							"who": "princess",
@@ -2244,6 +3752,197 @@
 							"fx": "lines",
 							"do": "tickle"
 						},
+						{
+							"who": "princess",
+							"by": "foe",
+							"repeat": 3,
+							"interval": 0.35,
+							"fx": "hand",
+							"zone": "butt",
+							"do": "tickle"
+						}
+					],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 2,
+					"speaker": "蓝色的公主",
+					"text": "……噗。……跟、跟着……杆子……晃……噗哈……",
+					"actions": [
+						{
+							"who": "princess",
+							"kind": "laugh",
+							"do": "bubble"
+						}
+					],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 2,
+					"speaker": "",
+					"text": "（三只小鬼喊起号子。每喊一声「嘿咻」，就有一根指甲在大腿和屁股交界处刮一道）",
+					"actions": [
+						{
+							"who": "princess",
+							"time": 0.4,
+							"do": "shake"
+						},
+						{
+							"who": "princess",
+							"by": "foe",
+							"repeat": 8,
+							"interval": 0.22,
+							"fx": "lines",
+							"do": "tickle"
+						}
+					],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 2,
+					"speaker": "蓝色的公主",
+					"text": "……哈、哈哈……号子……不是……这么用的……哈哈……",
+					"actions": [],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 3,
+					"speaker": "",
+					"text": "（被挂在杆子上施不了法，魔力在身体里越积越多，疲倦满了）",
+					"actions": [],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 3,
+					"speaker": "蓝色的公主",
+					"text": "……杆子……冻断它……魔力……收、收不住了……",
+					"actions": [
+						{
+							"zoom": 1.5,
+							"focus": "princess",
+							"time": 0.5,
+							"do": "camera"
+						},
+						{
+							"who": "princess",
+							"time": 1.0,
+							"do": "shake"
+						}
+					],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": "burst",
+					"speaker": "",
+					"text": "（冰蓝色的星光炸开，长杆冻成冰棍「啪」地断开，三只小鬼滑倒在城墙上）",
+					"actions": [
+						{
+							"time": 0.8,
+							"do": "flash"
+						},
+						{
+							"sound": "star_burst",
+							"volume": -1.0,
+							"do": "sfx"
+						},
+						{
+							"sound": "water_release",
+							"volume": -2.0,
+							"do": "sfx"
+						},
+						{
+							"state": "",
+							"do": "voice"
+						},
+						{
+							"who": "princess",
+							"time": 0.5,
+							"do": "shake"
+						},
+						{
+							"zoom": 1,
+							"focus": "princess",
+							"time": 0.5,
+							"do": "camera"
+						},
+						{
+							"who": "foe",
+							"to": [
+								82,
+								2
+							],
+							"time": 0.25,
+							"do": "move"
+						},
+						{
+							"time": 0.4,
+							"do": "flash"
+						}
+					],
+					"portrait": "fatigue_burst",
+					"wait": 1.1
+				},
+				{
+					"act": 3,
+					"speaker": "蓝色的公主",
+					"text": "……呼……掉下来了。……可是……手脚……没力气。",
+					"actions": [
+						{
+							"zoom": 1,
+							"focus": "princess",
+							"time": 0.4,
+							"do": "camera"
+						},
+						{
+							"who": "princess",
+							"kind": "shy",
+							"do": "bubble"
+						}
+					],
+					"portrait": "fatigue_burst"
+				},
+				{
+					"act": 3,
+					"speaker": "搬运小鬼队",
+					"text": "嘿咻嘿咻～冰公主没魔力啦～换新杆子～",
+					"actions": [
+						{
+							"who": "foe",
+							"to": [
+								22,
+								8
+							],
+							"time": 0.6,
+							"do": "move"
+						},
+						{
+							"state": "giggle",
+							"do": "voice"
+						}
+					],
+					"portrait": "fatigue_burst"
+				},
+				{
+					"act": 3,
+					"speaker": "",
+					"text": "（小鬼们扛着新杆子又把她挂了起来。放空魔力的身体敏感得过分，手指刚碰到腿根她就缩起来）",
+					"actions": [
+						{
+							"who": "princess",
+							"by": "foe",
+							"repeat": 5,
+							"interval": 0.3,
+							"fx": "lines",
+							"do": "tickle"
+						}
+					],
+					"portrait": "fatigue_burst"
+				},
+				{
+					"act": 3,
+					"speaker": "蓝色的公主",
+					"text": "……等、等等……先、先别挂……哈、哈哈哈哈！……太快了……",
+					"actions": [
 						{
 							"who": "princess",
 							"visual": "helpless_2",
@@ -2254,40 +3953,17 @@
 							"do": "voice"
 						},
 						{
-							"zoom": 1.5,
-							"focus": "princess",
-							"time": 0.5,
-							"do": "camera"
-						}
-					],
-					"portrait": "defeat_2"
-				},
-				{
-					"speaker": "蓝色的公主",
-					"text": "……哈、哈哈……捏……不准……哈哈哈！",
-					"actions": [
-						{
 							"who": "princess",
-							"time": 0.4,
-							"do": "shake"
+							"kind": "laugh",
+							"do": "bubble"
 						}
 					],
-					"portrait": "defeat_2"
+					"portrait": "fatigue_burst"
 				},
 				{
-					"speaker": "搬运小鬼队",
-					"text": "嘻嘻～挠 8 秒～",
-					"actions": [
-						{
-							"who": "foe",
-							"do": "taunt"
-						}
-					],
-					"portrait": "defeat_2"
-				},
-				{
+					"act": 3,
 					"speaker": "",
-					"text": "（三只小鬼慢慢地数：一、二、三——每数一下，就换个地方挠）",
+					"text": "（一只揉腿根，一只跟着节奏轮流捏，一只在交界那道线上一下一下地刮）",
 					"actions": [
 						{
 							"who": "princess",
@@ -2298,45 +3974,79 @@
 							"do": "tickle"
 						},
 						{
-							"time": 0.4,
-							"do": "flash"
-						}
-					],
-					"portrait": "defeat_2"
-				},
-				{
-					"speaker": "蓝色的公主",
-					"text": "……哈哈哈哈……数、数快点……！",
-					"actions": [
-						{
 							"who": "princess",
-							"kind": "laugh",
-							"do": "bubble"
+							"by": "foe",
+							"repeat": 3,
+							"interval": 0.35,
+							"fx": "hand",
+							"zone": "butt",
+							"do": "tickle"
 						}
 					],
-					"portrait": "defeat_2"
+					"portrait": "fatigue_burst"
 				},
 				{
+					"act": 3,
 					"speaker": "蓝色的公主",
-					"text": "……认输……哈……八秒……好长……",
+					"text": "……哈哈哈哈……三、三只……分工……太、太明确了……哈哈哈！",
 					"actions": [
 						{
 							"who": "princess",
 							"time": 0.4,
 							"do": "shake"
-						},
+						}
+					],
+					"portrait": "fatigue_burst"
+				},
+				{
+					"act": 3,
+					"speaker": "搬运小鬼队",
+					"text": "嘿嘿～冰公主～关进塔里挠八秒～",
+					"actions": [
 						{
-							"zoom": 1,
-							"focus": "princess",
-							"time": 0.4,
-							"do": "camera"
+							"who": "foe",
+							"do": "taunt"
+						}
+					],
+					"portrait": "fatigue_burst"
+				},
+				{
+					"act": 4,
+					"speaker": "",
+					"text": "（八秒到了，小鬼们对视一眼，谁也没有停手）",
+					"actions": [
+						{
+							"who": "princess",
+							"by": "foe",
+							"repeat": 8,
+							"interval": 0.22,
+							"fx": "lines",
+							"do": "tickle"
 						}
 					],
 					"portrait": "defeat_2"
 				},
 				{
+					"act": 4,
+					"speaker": "蓝色的公主",
+					"text": "……哈哈……超、超时……认输……我认输……哈哈哈……",
+					"actions": [
+						{
+							"who": "princess",
+							"visual": "helpless_2",
+							"do": "pose"
+						},
+						{
+							"state": "laugh",
+							"do": "voice"
+						}
+					],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 4,
 					"speaker": "",
-					"text": "（塔门打开，她被扔了出来，坐在地上一边喘一边笑）",
+					"text": "（小鬼们这才把她放下来。她蜷在城墙角落，抱着膝盖小口喘气）",
 					"actions": [
 						{
 							"who": "princess",
@@ -2350,6 +4060,27 @@
 					"portrait": "defeat_2"
 				},
 				{
+					"act": 4,
+					"speaker": "蓝色的公主",
+					"text": "……刚才。……你们数到十二了。……我听见了。",
+					"actions": [
+						{
+							"who": "princess",
+							"kind": "laugh",
+							"do": "bubble"
+						}
+					],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 4,
+					"speaker": "",
+					"text": "（三只小鬼扛着杆子溜下城墙，假装什么都没听见）",
+					"actions": [],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 4,
 					"actions": [
 						{
 							"state": "",
@@ -2365,7 +4096,7 @@
 			]
 		},
 		"death_siege_warm_slime": {
-			"name": "暖烘烘的果冻",
+			"name": "冰公主与暖炉史莱姆",
 			"cast": {
 				"princess": {
 					"kind": "princess",
@@ -2389,6 +4120,8 @@
 			},
 			"steps": [
 				{
+					"act": 1,
+					"portrait": "defeat_1",
 					"actions": [
 						{
 							"time": 0.7,
@@ -2402,8 +4135,9 @@
 					"wait": 0.8
 				},
 				{
+					"act": 1,
 					"speaker": "",
-					"text": "（暖炉史莱姆扑上来，把她的腿裹进热乎乎的果冻里）",
+					"text": "（一团冒着热气的橙色史莱姆从冰塔的残骸里爬出来，咕嘟咕嘟地滚到她脚边）",
 					"actions": [
 						{
 							"who": "foe",
@@ -2423,20 +4157,16 @@
 					"portrait": "defeat_1"
 				},
 				{
+					"act": 1,
 					"speaker": "蓝色的公主",
-					"text": "……热。……冰的天敌。",
-					"actions": [
-						{
-							"who": "princess",
-							"time": 0.4,
-							"do": "shake"
-						}
-					],
+					"text": "……我的冰塔。……被你泡成水了。",
+					"actions": [],
 					"portrait": "defeat_1"
 				},
 				{
+					"act": 1,
 					"speaker": "暖炉史莱姆",
-					"text": "噗叽～冰公主化掉吧～",
+					"text": "咕嘟～冰公主好凉～暖暖的史莱姆来给你暖暖～",
 					"actions": [
 						{
 							"who": "foe",
@@ -2447,8 +4177,48 @@
 					"portrait": "defeat_1"
 				},
 				{
+					"act": 1,
 					"speaker": "",
-					"text": "（果冻里的小气泡在脚心上一个个破开）",
+					"text": "（史莱姆扑上来，热乎乎地裹住她的两条腿，从脚踝一路裹到大腿）",
+					"actions": [
+						{
+							"who": "princess",
+							"by": "foe",
+							"repeat": 5,
+							"interval": 0.3,
+							"fx": "lines",
+							"do": "tickle"
+						},
+						{
+							"who": "princess",
+							"time": 0.4,
+							"do": "shake"
+						}
+					],
+					"portrait": "defeat_1"
+				},
+				{
+					"act": 1,
+					"speaker": "蓝色的公主",
+					"text": "……热。……我讨厌热。……下去。",
+					"actions": [
+						{
+							"who": "princess",
+							"visual": "giggle",
+							"anim": "idle",
+							"do": "pose"
+						},
+						{
+							"state": "giggle",
+							"do": "voice"
+						}
+					],
+					"portrait": "defeat_1"
+				},
+				{
+					"act": 1,
+					"speaker": "",
+					"text": "（她抬手放冰锥，冰锥打在史莱姆身上，「嗞」地化成一缕白气）",
 					"actions": [
 						{
 							"who": "princess",
@@ -2462,41 +4232,71 @@
 					"portrait": "defeat_1"
 				},
 				{
+					"act": 1,
 					"speaker": "蓝色的公主",
-					"text": "……气泡。……噗。",
-					"actions": [
-						{
-							"who": "princess",
-							"kind": "laugh",
-							"do": "bubble"
-						}
-					],
-					"portrait": "defeat_1"
-				},
-				{
-					"speaker": "",
-					"text": "（果冻一路往上爬，裹住了大腿，在腿根那里停下来，一吸一放）",
-					"actions": [
-						{
-							"who": "princess",
-							"by": "foe",
-							"repeat": 5,
-							"interval": 0.3,
-							"fx": "lines",
-							"do": "tickle"
-						}
-					],
-					"portrait": "defeat_1"
-				},
-				{
-					"speaker": "蓝色的公主",
-					"text": "……腿根……吸……唔……",
+					"text": "……化、化掉了。……冰锥……没用。",
 					"actions": [],
 					"portrait": "defeat_1"
 				},
 				{
+					"act": 2,
 					"speaker": "",
-					"text": "（它整个挤到身后，暖暖地贴住屁股，一鼓一鼓地揉）",
+					"text": "（暖烘烘的黏液顺着大腿内侧，一点一点往上漫，漫到腿根就在那里鼓起一圈，慢慢揉）",
+					"actions": [
+						{
+							"who": "princess",
+							"by": "foe",
+							"repeat": 5,
+							"interval": 0.3,
+							"fx": "lines",
+							"do": "tickle"
+						},
+						{
+							"who": "princess",
+							"by": "foe",
+							"repeat": 3,
+							"interval": 0.35,
+							"fx": "feather",
+							"zone": "thigh",
+							"do": "tickle"
+						}
+					],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 2,
+					"speaker": "蓝色的公主",
+					"text": "……！……热……热的……往上……漫什么……",
+					"actions": [
+						{
+							"who": "princess",
+							"visual": "helpless_1",
+							"anim": "helpless",
+							"do": "pose"
+						},
+						{
+							"state": "laugh",
+							"do": "voice"
+						}
+					],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 2,
+					"speaker": "暖炉史莱姆",
+					"text": "咕嘟咕嘟～这里最暖～",
+					"actions": [
+						{
+							"who": "foe",
+							"do": "taunt"
+						}
+					],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 2,
+					"speaker": "",
+					"text": "（黏液绕到身后，左边鼓一个泡，右边鼓一个泡，一边一下地挤）",
 					"actions": [
 						{
 							"who": "princess",
@@ -2506,6 +4306,197 @@
 							"fx": "lines",
 							"do": "tickle"
 						},
+						{
+							"who": "princess",
+							"by": "foe",
+							"repeat": 3,
+							"interval": 0.35,
+							"fx": "hand",
+							"zone": "butt",
+							"do": "tickle"
+						}
+					],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 2,
+					"speaker": "蓝色的公主",
+					"text": "……噗。……泡、泡泡……左右……挤……噗哈……",
+					"actions": [
+						{
+							"who": "princess",
+							"kind": "laugh",
+							"do": "bubble"
+						}
+					],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 2,
+					"speaker": "",
+					"text": "（一串细细的小泡沿着大腿和屁股交界的那道线排开，一个接一个「啵啵啵」地破）",
+					"actions": [
+						{
+							"who": "princess",
+							"time": 0.4,
+							"do": "shake"
+						},
+						{
+							"who": "princess",
+							"by": "foe",
+							"repeat": 8,
+							"interval": 0.22,
+							"fx": "lines",
+							"do": "tickle"
+						}
+					],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 2,
+					"speaker": "蓝色的公主",
+					"text": "……哈、哈哈……一串……在那道边上……破……哈哈……",
+					"actions": [],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 3,
+					"speaker": "",
+					"text": "（又热又痒，她的冰魔力被烘得乱成一团，疲倦满了）",
+					"actions": [],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 3,
+					"speaker": "蓝色的公主",
+					"text": "……全部……冻住……这次……一定……要冻住……",
+					"actions": [
+						{
+							"zoom": 1.5,
+							"focus": "princess",
+							"time": 0.5,
+							"do": "camera"
+						},
+						{
+							"who": "princess",
+							"time": 1.0,
+							"do": "shake"
+						}
+					],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": "burst",
+					"speaker": "",
+					"text": "（冰蓝色的星光炸开，史莱姆的外层冻成一层薄冰壳，「咔」地裂开，碎成好几团）",
+					"actions": [
+						{
+							"time": 0.8,
+							"do": "flash"
+						},
+						{
+							"sound": "star_burst",
+							"volume": -1.0,
+							"do": "sfx"
+						},
+						{
+							"sound": "water_release",
+							"volume": -2.0,
+							"do": "sfx"
+						},
+						{
+							"state": "",
+							"do": "voice"
+						},
+						{
+							"who": "princess",
+							"time": 0.5,
+							"do": "shake"
+						},
+						{
+							"zoom": 1,
+							"focus": "princess",
+							"time": 0.5,
+							"do": "camera"
+						},
+						{
+							"who": "foe",
+							"to": [
+								82,
+								2
+							],
+							"time": 0.25,
+							"do": "move"
+						},
+						{
+							"time": 0.4,
+							"do": "flash"
+						}
+					],
+					"portrait": "fatigue_burst",
+					"wait": 1.1
+				},
+				{
+					"act": 3,
+					"speaker": "蓝色的公主",
+					"text": "……呼……冻、冻住了一点。……我……没力气了。",
+					"actions": [
+						{
+							"zoom": 1,
+							"focus": "princess",
+							"time": 0.4,
+							"do": "camera"
+						},
+						{
+							"who": "princess",
+							"kind": "shy",
+							"do": "bubble"
+						}
+					],
+					"portrait": "fatigue_burst"
+				},
+				{
+					"act": 3,
+					"speaker": "暖炉史莱姆",
+					"text": "咕嘟咕嘟～冰壳化啦～合起来～",
+					"actions": [
+						{
+							"who": "foe",
+							"to": [
+								22,
+								8
+							],
+							"time": 0.6,
+							"do": "move"
+						},
+						{
+							"state": "giggle",
+							"do": "voice"
+						}
+					],
+					"portrait": "fatigue_burst"
+				},
+				{
+					"act": 3,
+					"speaker": "",
+					"text": "（几团史莱姆又滚到一起。放空魔力的身体又被暖暖地裹住，敏感得过头，热乎乎的黏液一碰到腿根她就叫出声）",
+					"actions": [
+						{
+							"who": "princess",
+							"by": "foe",
+							"repeat": 5,
+							"interval": 0.3,
+							"fx": "lines",
+							"do": "tickle"
+						}
+					],
+					"portrait": "fatigue_burst"
+				},
+				{
+					"act": 3,
+					"speaker": "蓝色的公主",
+					"text": "……烫……不、不是烫……是痒……热乎乎地……痒……哈哈哈哈！",
+					"actions": [
 						{
 							"who": "princess",
 							"visual": "helpless_2",
@@ -2516,40 +4507,17 @@
 							"do": "voice"
 						},
 						{
-							"zoom": 1.5,
-							"focus": "princess",
-							"time": 0.5,
-							"do": "camera"
-						}
-					],
-					"portrait": "defeat_2"
-				},
-				{
-					"speaker": "蓝色的公主",
-					"text": "……哈、哈哈……揉、揉屁股……不行……哈哈哈！",
-					"actions": [
-						{
 							"who": "princess",
-							"time": 0.4,
-							"do": "shake"
+							"kind": "laugh",
+							"do": "bubble"
 						}
 					],
-					"portrait": "defeat_2"
+					"portrait": "fatigue_burst"
 				},
 				{
-					"speaker": "暖炉史莱姆",
-					"text": "噗叽～暖暖地挠～",
-					"actions": [
-						{
-							"who": "foe",
-							"do": "taunt"
-						}
-					],
-					"portrait": "defeat_2"
-				},
-				{
+					"act": 3,
 					"speaker": "",
-					"text": "（腿根和屁股同时被一吸一揉，节奏越来越快）",
+					"text": "（黏液揉着腿根，轮流挤着两边屁股，交界那道线上的小泡一串接一串地破）",
 					"actions": [
 						{
 							"who": "princess",
@@ -2560,45 +4528,79 @@
 							"do": "tickle"
 						},
 						{
-							"time": 0.4,
-							"do": "flash"
-						}
-					],
-					"portrait": "defeat_2"
-				},
-				{
-					"speaker": "蓝色的公主",
-					"text": "……哈哈哈哈……化、化掉……要化掉了……！",
-					"actions": [
-						{
 							"who": "princess",
-							"kind": "laugh",
-							"do": "bubble"
+							"by": "foe",
+							"repeat": 3,
+							"interval": 0.35,
+							"fx": "hand",
+							"zone": "butt",
+							"do": "tickle"
 						}
 					],
-					"portrait": "defeat_2"
+					"portrait": "fatigue_burst"
 				},
 				{
+					"act": 3,
 					"speaker": "蓝色的公主",
-					"text": "……认输……哈……热……",
+					"text": "……哈哈哈哈……泡泡……停、停下……哈哈哈哈！",
 					"actions": [
 						{
 							"who": "princess",
 							"time": 0.4,
 							"do": "shake"
-						},
+						}
+					],
+					"portrait": "fatigue_burst"
+				},
+				{
+					"act": 3,
+					"speaker": "暖炉史莱姆",
+					"text": "咕嘟～冰公主暖起来啦～脸都红啦～",
+					"actions": [
 						{
-							"zoom": 1,
-							"focus": "princess",
-							"time": 0.4,
-							"do": "camera"
+							"who": "foe",
+							"do": "taunt"
+						}
+					],
+					"portrait": "fatigue_burst"
+				},
+				{
+					"act": 4,
+					"speaker": "",
+					"text": "（史莱姆把她整个人陷进去，暖洋洋的，像被一池会挠痒的温泉泡着）",
+					"actions": [
+						{
+							"who": "princess",
+							"by": "foe",
+							"repeat": 8,
+							"interval": 0.22,
+							"fx": "lines",
+							"do": "tickle"
 						}
 					],
 					"portrait": "defeat_2"
 				},
 				{
+					"act": 4,
+					"speaker": "蓝色的公主",
+					"text": "……哈哈……服、服了……太热了……我服了……哈哈哈……",
+					"actions": [
+						{
+							"who": "princess",
+							"visual": "helpless_2",
+							"do": "pose"
+						},
+						{
+							"state": "laugh",
+							"do": "voice"
+						}
+					],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 4,
 					"speaker": "",
-					"text": "（她瘫在暖暖的果冻里，笑声软软的）",
+					"text": "（史莱姆心满意足地冒了个大泡。她瘫在热乎乎的黏液里，额头冒着细汗）",
 					"actions": [
 						{
 							"who": "princess",
@@ -2612,6 +4614,27 @@
 					"portrait": "defeat_2"
 				},
 				{
+					"act": 4,
+					"speaker": "蓝色的公主",
+					"text": "……下次。……你一出现。……我就叫粉色的来敲你。",
+					"actions": [
+						{
+							"who": "princess",
+							"kind": "laugh",
+							"do": "bubble"
+						}
+					],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 4,
+					"speaker": "",
+					"text": "（史莱姆咕嘟咕嘟地滚走了。她坐在原地，难得地觉得有点冷）",
+					"actions": [],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 4,
 					"actions": [
 						{
 							"state": "",
@@ -2627,7 +4650,7 @@
 			]
 		},
 		"death_siege_thigh_spider": {
-			"name": "八只脚的腿根",
+			"name": "冰公主与腿根爬爬蛛",
 			"cast": {
 				"princess": {
 					"kind": "princess",
@@ -2651,6 +4674,8 @@
 			},
 			"steps": [
 				{
+					"act": 1,
+					"portrait": "defeat_1",
 					"actions": [
 						{
 							"time": 0.7,
@@ -2664,8 +4689,9 @@
 					"wait": 0.8
 				},
 				{
+					"act": 1,
 					"speaker": "",
-					"text": "（腿根爬爬蛛钻进了裙摆。她的千手痒痒裤立刻跟着动了一下）",
+					"text": "（一窝紫色的小蜘蛛爬上城墙，一看见她，八条腿全都兴奋地挥了起来）",
 					"actions": [
 						{
 							"who": "foe",
@@ -2685,20 +4711,16 @@
 					"portrait": "defeat_1"
 				},
 				{
+					"act": 1,
 					"speaker": "蓝色的公主",
-					"text": "……！裤、裤子……动了。",
-					"actions": [
-						{
-							"who": "princess",
-							"time": 0.4,
-							"do": "shake"
-						}
-					],
+					"text": "……你们。……又是你们。",
+					"actions": [],
 					"portrait": "defeat_1"
 				},
 				{
+					"act": 1,
 					"speaker": "腿根爬爬蛛",
-					"text": "沙沙～裤子一起来～",
+					"text": "嘶嘶～找到啦～冰公主的腿根～",
 					"actions": [
 						{
 							"who": "foe",
@@ -2709,8 +4731,48 @@
 					"portrait": "defeat_1"
 				},
 				{
+					"act": 1,
 					"speaker": "",
-					"text": "（蜘蛛的八只脚沿着大腿内侧往上爬；裤子里的手指也跟着往上爬，一前一后）",
+					"text": "（蛛丝一圈圈缠住她的膝盖和手腕，把她固定在城垛边，坐也坐不下，站也站不直）",
+					"actions": [
+						{
+							"who": "princess",
+							"by": "foe",
+							"repeat": 5,
+							"interval": 0.3,
+							"fx": "lines",
+							"do": "tickle"
+						},
+						{
+							"who": "princess",
+							"time": 0.4,
+							"do": "shake"
+						}
+					],
+					"portrait": "defeat_1"
+				},
+				{
+					"act": 1,
+					"speaker": "蓝色的公主",
+					"text": "……丝线。……冻一下就脆了。……别以为能绑住我。",
+					"actions": [
+						{
+							"who": "princess",
+							"visual": "giggle",
+							"anim": "idle",
+							"do": "pose"
+						},
+						{
+							"state": "giggle",
+							"do": "voice"
+						}
+					],
+					"portrait": "defeat_1"
+				},
+				{
+					"act": 1,
+					"speaker": "",
+					"text": "（一只蜘蛛落在她的膝盖上，八条细腿在大腿外侧轻轻点了两下，像在敲门）",
 					"actions": [
 						{
 							"who": "princess",
@@ -2724,41 +4786,71 @@
 					"portrait": "defeat_1"
 				},
 				{
+					"act": 1,
 					"speaker": "蓝色的公主",
-					"text": "……两、两个……一起爬……噗……",
-					"actions": [
-						{
-							"who": "princess",
-							"kind": "laugh",
-							"do": "bubble"
-						}
-					],
-					"portrait": "defeat_1"
-				},
-				{
-					"speaker": "",
-					"text": "（爬到腿根，蜘蛛在外面点，裤子里的拇指在里面揉——一个点一下，一个揉一圈）",
-					"actions": [
-						{
-							"who": "princess",
-							"by": "foe",
-							"repeat": 5,
-							"interval": 0.3,
-							"fx": "lines",
-							"do": "tickle"
-						}
-					],
-					"portrait": "defeat_1"
-				},
-				{
-					"speaker": "蓝色的公主",
-					"text": "……腿根……里、外……不、不准……",
+					"text": "……敲什么。……没人在家。",
 					"actions": [],
 					"portrait": "defeat_1"
 				},
 				{
+					"act": 2,
 					"speaker": "",
-					"text": "（裤子里另几只手开始轮流捏屁股，蜘蛛就在交界那条线上来回爬）",
+					"text": "（蜘蛛转到大腿内侧。八条腿一步一步，从膝盖上方慢慢地往上爬，爬一步停一下，爬到腿根就盘在那里，八条腿一起打圈）",
+					"actions": [
+						{
+							"who": "princess",
+							"by": "foe",
+							"repeat": 5,
+							"interval": 0.3,
+							"fx": "lines",
+							"do": "tickle"
+						},
+						{
+							"who": "princess",
+							"by": "foe",
+							"repeat": 3,
+							"interval": 0.35,
+							"fx": "feather",
+							"zone": "thigh",
+							"do": "tickle"
+						}
+					],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 2,
+					"speaker": "蓝色的公主",
+					"text": "……！……八、八条……一起……在那里……转……",
+					"actions": [
+						{
+							"who": "princess",
+							"visual": "helpless_1",
+							"anim": "helpless",
+							"do": "pose"
+						},
+						{
+							"state": "laugh",
+							"do": "voice"
+						}
+					],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 2,
+					"speaker": "腿根爬爬蛛",
+					"text": "嘶～冰公主的腿根～我们最熟～",
+					"actions": [
+						{
+							"who": "foe",
+							"do": "taunt"
+						}
+					],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 2,
+					"speaker": "",
+					"text": "（另外两只爬到她身后，一只在左边、一只在右边，八条腿轮流抓一下、放一下）",
 					"actions": [
 						{
 							"who": "princess",
@@ -2768,6 +4860,197 @@
 							"fx": "lines",
 							"do": "tickle"
 						},
+						{
+							"who": "princess",
+							"by": "foe",
+							"repeat": 3,
+							"interval": 0.35,
+							"fx": "hand",
+							"zone": "butt",
+							"do": "tickle"
+						}
+					],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 2,
+					"speaker": "蓝色的公主",
+					"text": "……噗。……左、右……抓……放……你们……很有默契……噗哈……",
+					"actions": [
+						{
+							"who": "princess",
+							"kind": "laugh",
+							"do": "bubble"
+						}
+					],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 2,
+					"speaker": "",
+					"text": "（第四只蜘蛛沿着大腿和屁股交界的那道线横着走，每一步都是八条腿轮流刮过去）",
+					"actions": [
+						{
+							"who": "princess",
+							"time": 0.4,
+							"do": "shake"
+						},
+						{
+							"who": "princess",
+							"by": "foe",
+							"repeat": 8,
+							"interval": 0.22,
+							"fx": "lines",
+							"do": "tickle"
+						}
+					],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 2,
+					"speaker": "蓝色的公主",
+					"text": "……哈、哈哈……横着……走……分界那里……哈哈……",
+					"actions": [],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 3,
+					"speaker": "",
+					"text": "（四只蜘蛛，三十二条腿。她咬着嘴唇憋笑，魔力在体内撞来撞去，疲倦满了）",
+					"actions": [],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 3,
+					"speaker": "蓝色的公主",
+					"text": "……三十二……数、数不过来……魔力……出、出来了……",
+					"actions": [
+						{
+							"zoom": 1.5,
+							"focus": "princess",
+							"time": 0.5,
+							"do": "camera"
+						},
+						{
+							"who": "princess",
+							"time": 1.0,
+							"do": "shake"
+						}
+					],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": "burst",
+					"speaker": "",
+					"text": "（冰蓝色的星光炸开，蛛丝冻成冰线碎成粉，蜘蛛们被冻在一颗颗冰珠里）",
+					"actions": [
+						{
+							"time": 0.8,
+							"do": "flash"
+						},
+						{
+							"sound": "star_burst",
+							"volume": -1.0,
+							"do": "sfx"
+						},
+						{
+							"sound": "water_release",
+							"volume": -2.0,
+							"do": "sfx"
+						},
+						{
+							"state": "",
+							"do": "voice"
+						},
+						{
+							"who": "princess",
+							"time": 0.5,
+							"do": "shake"
+						},
+						{
+							"zoom": 1,
+							"focus": "princess",
+							"time": 0.5,
+							"do": "camera"
+						},
+						{
+							"who": "foe",
+							"to": [
+								82,
+								2
+							],
+							"time": 0.25,
+							"do": "move"
+						},
+						{
+							"time": 0.4,
+							"do": "flash"
+						}
+					],
+					"portrait": "fatigue_burst",
+					"wait": 1.1
+				},
+				{
+					"act": 3,
+					"speaker": "蓝色的公主",
+					"text": "……呼……碎了。……腿……抖得停不下来。",
+					"actions": [
+						{
+							"zoom": 1,
+							"focus": "princess",
+							"time": 0.4,
+							"do": "camera"
+						},
+						{
+							"who": "princess",
+							"kind": "shy",
+							"do": "bubble"
+						}
+					],
+					"portrait": "fatigue_burst"
+				},
+				{
+					"act": 3,
+					"speaker": "腿根爬爬蛛",
+					"text": "嘶嘶嘶～冰珠化啦～冰公主没魔力啦～",
+					"actions": [
+						{
+							"who": "foe",
+							"to": [
+								22,
+								8
+							],
+							"time": 0.6,
+							"do": "move"
+						},
+						{
+							"state": "giggle",
+							"do": "voice"
+						}
+					],
+					"portrait": "fatigue_burst"
+				},
+				{
+					"act": 3,
+					"speaker": "",
+					"text": "（蜘蛛们从冰珠里钻出来爬回去。放空魔力的身体敏感过头，一条细腿碰到腿根，她就整个人弹了一下）",
+					"actions": [
+						{
+							"who": "princess",
+							"by": "foe",
+							"repeat": 5,
+							"interval": 0.3,
+							"fx": "lines",
+							"do": "tickle"
+						}
+					],
+					"portrait": "fatigue_burst"
+				},
+				{
+					"act": 3,
+					"speaker": "蓝色的公主",
+					"text": "……一、一条腿……就够了……不用八条……哈哈哈哈！",
+					"actions": [
 						{
 							"who": "princess",
 							"visual": "helpless_2",
@@ -2778,40 +5061,17 @@
 							"do": "voice"
 						},
 						{
-							"zoom": 1.5,
-							"focus": "princess",
-							"time": 0.5,
-							"do": "camera"
-						}
-					],
-					"portrait": "defeat_2"
-				},
-				{
-					"speaker": "蓝色的公主",
-					"text": "……哈、哈哈哈……共、共振……裤子……哈哈哈哈！",
-					"actions": [
-						{
 							"who": "princess",
-							"time": 0.4,
-							"do": "shake"
+							"kind": "laugh",
+							"do": "bubble"
 						}
 					],
-					"portrait": "defeat_2"
+					"portrait": "fatigue_burst"
 				},
 				{
-					"speaker": "腿根爬爬蛛",
-					"text": "沙沙沙～裤子好开心～",
-					"actions": [
-						{
-							"who": "foe",
-							"do": "taunt"
-						}
-					],
-					"portrait": "defeat_2"
-				},
-				{
+					"act": 3,
 					"speaker": "",
-					"text": "（裤子和蜘蛛越来越合拍：点、揉、捏、刮，一刻也不停）",
+					"text": "（腿根上的盘着打圈，两边的轮流抓放，交界线上的那只来回横着走）",
 					"actions": [
 						{
 							"who": "princess",
@@ -2822,45 +5082,79 @@
 							"do": "tickle"
 						},
 						{
-							"time": 0.4,
-							"do": "flash"
-						}
-					],
-					"portrait": "defeat_2"
-				},
-				{
-					"speaker": "蓝色的公主",
-					"text": "……哈哈哈哈哈……停、停不下来……裤子……！",
-					"actions": [
-						{
 							"who": "princess",
-							"kind": "laugh",
-							"do": "bubble"
+							"by": "foe",
+							"repeat": 3,
+							"interval": 0.35,
+							"fx": "hand",
+							"zone": "butt",
+							"do": "tickle"
 						}
 					],
-					"portrait": "defeat_2"
+					"portrait": "fatigue_burst"
 				},
 				{
+					"act": 3,
 					"speaker": "蓝色的公主",
-					"text": "……认输……哈……裤子……也认输……",
+					"text": "……哈哈哈哈……全、全部……三十二条……哈哈哈哈！",
 					"actions": [
 						{
 							"who": "princess",
 							"time": 0.4,
 							"do": "shake"
-						},
+						}
+					],
+					"portrait": "fatigue_burst"
+				},
+				{
+					"act": 3,
+					"speaker": "腿根爬爬蛛",
+					"text": "嘶嘶～冰公主～今天也很好爬～",
+					"actions": [
 						{
-							"zoom": 1,
-							"focus": "princess",
-							"time": 0.4,
-							"do": "camera"
+							"who": "foe",
+							"do": "taunt"
+						}
+					],
+					"portrait": "fatigue_burst"
+				},
+				{
+					"act": 4,
+					"speaker": "",
+					"text": "（蜘蛛们在她的腿上织起了一张小网，织好一圈就在网上爬一圈）",
+					"actions": [
+						{
+							"who": "princess",
+							"by": "foe",
+							"repeat": 8,
+							"interval": 0.22,
+							"fx": "lines",
+							"do": "tickle"
 						}
 					],
 					"portrait": "defeat_2"
 				},
 				{
+					"act": 4,
+					"speaker": "蓝色的公主",
+					"text": "……哈哈……够、够了……网……不要……织了……哈哈哈……",
+					"actions": [
+						{
+							"who": "princess",
+							"visual": "helpless_2",
+							"do": "pose"
+						},
+						{
+							"state": "laugh",
+							"do": "voice"
+						}
+					],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 4,
 					"speaker": "",
-					"text": "（她并着腿蜷成一团，裤子还在一下一下地动）",
+					"text": "（蜘蛛们排成一排趴在网上，八条腿还在腿根上一下一下地点）",
 					"actions": [
 						{
 							"who": "princess",
@@ -2874,6 +5168,27 @@
 					"portrait": "defeat_2"
 				},
 				{
+					"act": 4,
+					"speaker": "蓝色的公主",
+					"text": "……你们。……记住了。……下次见面……先冻。",
+					"actions": [
+						{
+							"who": "princess",
+							"kind": "laugh",
+							"do": "bubble"
+						}
+					],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 4,
+					"speaker": "",
+					"text": "（蜘蛛们收起网溜下城墙。她靠着城垛坐下，把裙摆往下拉了又拉）",
+					"actions": [],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 4,
 					"actions": [
 						{
 							"state": "",
@@ -2889,7 +5204,7 @@
 			]
 		},
 		"death_siege_hug_bear": {
-			"name": "抱紧不放的小熊",
+			"name": "冰公主与拥抱小熊",
 			"cast": {
 				"princess": {
 					"kind": "princess",
@@ -2913,6 +5228,8 @@
 			},
 			"steps": [
 				{
+					"act": 1,
+					"portrait": "defeat_1",
 					"actions": [
 						{
 							"time": 0.7,
@@ -2926,8 +5243,9 @@
 					"wait": 0.8
 				},
 				{
+					"act": 1,
 					"speaker": "",
-					"text": "（拥抱小熊扑上来，结结实实地抱住了她）",
+					"text": "（她刚从城墙上被震下来，一只毛茸茸的小熊就张开双臂扑了上来）",
 					"actions": [
 						{
 							"who": "foe",
@@ -2947,20 +5265,16 @@
 					"portrait": "defeat_1"
 				},
 				{
+					"act": 1,
 					"speaker": "蓝色的公主",
-					"text": "……抱住了。……放开。",
-					"actions": [
-						{
-							"who": "princess",
-							"time": 0.4,
-							"do": "shake"
-						}
-					],
+					"text": "……别过来。……我不喜欢被抱。",
+					"actions": [],
 					"portrait": "defeat_1"
 				},
 				{
+					"act": 1,
 					"speaker": "拥抱小熊",
-					"text": "抱抱冰公主～",
+					"text": "呼噜～冰公主凉凉的～抱抱～",
 					"actions": [
 						{
 							"who": "foe",
@@ -2971,8 +5285,48 @@
 					"portrait": "defeat_1"
 				},
 				{
+					"act": 1,
 					"speaker": "",
-					"text": "（小熊蹭来蹭去，毛茸茸的爪子在后背上下摸）",
+					"text": "（小熊从背后一把抱住她，坐在地上，把她整个人圈在怀里）",
+					"actions": [
+						{
+							"who": "princess",
+							"by": "foe",
+							"repeat": 5,
+							"interval": 0.3,
+							"fx": "lines",
+							"do": "tickle"
+						},
+						{
+							"who": "princess",
+							"time": 0.4,
+							"do": "shake"
+						}
+					],
+					"portrait": "defeat_1"
+				},
+				{
+					"act": 1,
+					"speaker": "蓝色的公主",
+					"text": "……放手。……毛……很热。",
+					"actions": [
+						{
+							"who": "princess",
+							"visual": "giggle",
+							"anim": "idle",
+							"do": "pose"
+						},
+						{
+							"state": "giggle",
+							"do": "voice"
+						}
+					],
+					"portrait": "defeat_1"
+				},
+				{
+					"act": 1,
+					"speaker": "",
+					"text": "（熊掌搭在她的大腿上，肉垫拍了两下，软软的，像在哄小孩）",
 					"actions": [
 						{
 							"who": "princess",
@@ -2986,41 +5340,71 @@
 					"portrait": "defeat_1"
 				},
 				{
+					"act": 1,
 					"speaker": "蓝色的公主",
-					"text": "……后背。……噗。",
-					"actions": [
-						{
-							"who": "princess",
-							"kind": "laugh",
-							"do": "bubble"
-						}
-					],
-					"portrait": "defeat_1"
-				},
-				{
-					"speaker": "",
-					"text": "（爪子摸到腰，又往下滑——停在了屁股上，一下一下地拍）",
-					"actions": [
-						{
-							"who": "princess",
-							"by": "foe",
-							"repeat": 5,
-							"interval": 0.3,
-							"fx": "lines",
-							"do": "tickle"
-						}
-					],
-					"portrait": "defeat_1"
-				},
-				{
-					"speaker": "蓝色的公主",
-					"text": "……拍、拍什么……",
+					"text": "……不用哄。……我不是小孩。",
 					"actions": [],
 					"portrait": "defeat_1"
 				},
 				{
+					"act": 2,
 					"speaker": "",
-					"text": "（拍着拍着变成了捏，另一只爪子钻进腋下抓）",
+					"text": "（肉垫没有走。它顺着大腿内侧往上按，一按一挪，挪到腿根就停住，肉垫贴着腿根慢慢揉圈）",
+					"actions": [
+						{
+							"who": "princess",
+							"by": "foe",
+							"repeat": 5,
+							"interval": 0.3,
+							"fx": "lines",
+							"do": "tickle"
+						},
+						{
+							"who": "princess",
+							"by": "foe",
+							"repeat": 3,
+							"interval": 0.35,
+							"fx": "feather",
+							"zone": "thigh",
+							"do": "tickle"
+						}
+					],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 2,
+					"speaker": "蓝色的公主",
+					"text": "……！……肉、肉垫……那里……不行……",
+					"actions": [
+						{
+							"who": "princess",
+							"visual": "helpless_1",
+							"anim": "helpless",
+							"do": "pose"
+						},
+						{
+							"state": "laugh",
+							"do": "voice"
+						}
+					],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 2,
+					"speaker": "拥抱小熊",
+					"text": "呼噜～冰公主的腿根～软软的～",
+					"actions": [
+						{
+							"who": "foe",
+							"do": "taunt"
+						}
+					],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 2,
+					"speaker": "",
+					"text": "（另一只熊掌绕到她身后，左边捏一下，右边捏一下，像在揉面团）",
 					"actions": [
 						{
 							"who": "princess",
@@ -3030,6 +5414,197 @@
 							"fx": "lines",
 							"do": "tickle"
 						},
+						{
+							"who": "princess",
+							"by": "foe",
+							"repeat": 3,
+							"interval": 0.35,
+							"fx": "hand",
+							"zone": "butt",
+							"do": "tickle"
+						}
+					],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 2,
+					"speaker": "蓝色的公主",
+					"text": "……噗。……揉、揉面团……我不是……面团……噗哈……",
+					"actions": [
+						{
+							"who": "princess",
+							"kind": "laugh",
+							"do": "bubble"
+						}
+					],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 2,
+					"speaker": "",
+					"text": "（熊爪伸出一点点，爪尖沿着大腿和屁股交界的那道线，轻轻地刮过去）",
+					"actions": [
+						{
+							"who": "princess",
+							"time": 0.4,
+							"do": "shake"
+						},
+						{
+							"who": "princess",
+							"by": "foe",
+							"repeat": 8,
+							"interval": 0.22,
+							"fx": "lines",
+							"do": "tickle"
+						}
+					],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 2,
+					"speaker": "蓝色的公主",
+					"text": "……哈、哈哈……爪、爪子……腿和屁股中间……哈哈……",
+					"actions": [],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 3,
+					"speaker": "",
+					"text": "（被熊抱着动弹不得，魔力在身体里堵成一团，疲倦满了）",
+					"actions": [],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 3,
+					"speaker": "蓝色的公主",
+					"text": "……抱、抱得太紧……魔力……挤出来了……",
+					"actions": [
+						{
+							"zoom": 1.5,
+							"focus": "princess",
+							"time": 0.5,
+							"do": "camera"
+						},
+						{
+							"who": "princess",
+							"time": 1.0,
+							"do": "shake"
+						}
+					],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": "burst",
+					"speaker": "",
+					"text": "（冰蓝色的星光炸开，小熊的毛一下子结满白霜，打着喷嚏往后翻了个跟头）",
+					"actions": [
+						{
+							"time": 0.8,
+							"do": "flash"
+						},
+						{
+							"sound": "star_burst",
+							"volume": -1.0,
+							"do": "sfx"
+						},
+						{
+							"sound": "water_release",
+							"volume": -2.0,
+							"do": "sfx"
+						},
+						{
+							"state": "",
+							"do": "voice"
+						},
+						{
+							"who": "princess",
+							"time": 0.5,
+							"do": "shake"
+						},
+						{
+							"zoom": 1,
+							"focus": "princess",
+							"time": 0.5,
+							"do": "camera"
+						},
+						{
+							"who": "foe",
+							"to": [
+								82,
+								2
+							],
+							"time": 0.25,
+							"do": "move"
+						},
+						{
+							"time": 0.4,
+							"do": "flash"
+						}
+					],
+					"portrait": "fatigue_burst",
+					"wait": 1.1
+				},
+				{
+					"act": 3,
+					"speaker": "蓝色的公主",
+					"text": "……呼……松开了。……身体……软了。",
+					"actions": [
+						{
+							"zoom": 1,
+							"focus": "princess",
+							"time": 0.4,
+							"do": "camera"
+						},
+						{
+							"who": "princess",
+							"kind": "shy",
+							"do": "bubble"
+						}
+					],
+					"portrait": "fatigue_burst"
+				},
+				{
+					"act": 3,
+					"speaker": "拥抱小熊",
+					"text": "呼噜……阿嚏！还没抱够～",
+					"actions": [
+						{
+							"who": "foe",
+							"to": [
+								22,
+								8
+							],
+							"time": 0.6,
+							"do": "move"
+						},
+						{
+							"state": "giggle",
+							"do": "voice"
+						}
+					],
+					"portrait": "fatigue_burst"
+				},
+				{
+					"act": 3,
+					"speaker": "",
+					"text": "（小熊抖掉霜，又扑回来抱住她。放空魔力的身体敏感过头，肉垫一碰腿根她就整个人缩起来）",
+					"actions": [
+						{
+							"who": "princess",
+							"by": "foe",
+							"repeat": 5,
+							"interval": 0.3,
+							"fx": "lines",
+							"do": "tickle"
+						}
+					],
+					"portrait": "fatigue_burst"
+				},
+				{
+					"act": 3,
+					"speaker": "蓝色的公主",
+					"text": "……呜……肉垫……软得……我、我撑不住……哈哈哈哈！",
+					"actions": [
 						{
 							"who": "princess",
 							"visual": "helpless_2",
@@ -3040,40 +5615,17 @@
 							"do": "voice"
 						},
 						{
-							"zoom": 1.5,
-							"focus": "princess",
-							"time": 0.5,
-							"do": "camera"
-						}
-					],
-					"portrait": "defeat_2"
-				},
-				{
-					"speaker": "蓝色的公主",
-					"text": "……哈、哈哈……捏……腋下……一起……哈哈哈！",
-					"actions": [
-						{
 							"who": "princess",
-							"time": 0.4,
-							"do": "shake"
+							"kind": "laugh",
+							"do": "bubble"
 						}
 					],
-					"portrait": "defeat_2"
+					"portrait": "fatigue_burst"
 				},
 				{
-					"speaker": "拥抱小熊",
-					"text": "抱抱～挠挠～",
-					"actions": [
-						{
-							"who": "foe",
-							"do": "taunt"
-						}
-					],
-					"portrait": "defeat_2"
-				},
-				{
+					"act": 3,
 					"speaker": "",
-					"text": "（小熊抱着她转圈，转一圈就换个地方挠）",
+					"text": "（肉垫揉着腿根，熊掌轮流捏着两边，爪尖还在交界那道线上来回地刮）",
 					"actions": [
 						{
 							"who": "princess",
@@ -3084,45 +5636,79 @@
 							"do": "tickle"
 						},
 						{
-							"time": 0.4,
-							"do": "flash"
-						}
-					],
-					"portrait": "defeat_2"
-				},
-				{
-					"speaker": "蓝色的公主",
-					"text": "……哈哈哈哈……转、转……晕……！",
-					"actions": [
-						{
 							"who": "princess",
-							"kind": "laugh",
-							"do": "bubble"
+							"by": "foe",
+							"repeat": 3,
+							"interval": 0.35,
+							"fx": "hand",
+							"zone": "butt",
+							"do": "tickle"
 						}
 					],
-					"portrait": "defeat_2"
+					"portrait": "fatigue_burst"
 				},
 				{
+					"act": 3,
 					"speaker": "蓝色的公主",
-					"text": "……认输。……哈……抱、抱够了……",
+					"text": "……哈哈哈哈……熊、熊……放开……哈哈哈哈！",
 					"actions": [
 						{
 							"who": "princess",
 							"time": 0.4,
 							"do": "shake"
-						},
+						}
+					],
+					"portrait": "fatigue_burst"
+				},
+				{
+					"act": 3,
+					"speaker": "拥抱小熊",
+					"text": "呼噜～冰公主暖起来啦～",
+					"actions": [
 						{
-							"zoom": 1,
-							"focus": "princess",
-							"time": 0.4,
-							"do": "camera"
+							"who": "foe",
+							"do": "taunt"
+						}
+					],
+					"portrait": "fatigue_burst"
+				},
+				{
+					"act": 4,
+					"speaker": "",
+					"text": "（小熊把下巴搁在她的肩膀上摇来摇去，熊掌还在慢慢地揉）",
+					"actions": [
+						{
+							"who": "princess",
+							"by": "foe",
+							"repeat": 8,
+							"interval": 0.22,
+							"fx": "lines",
+							"do": "tickle"
 						}
 					],
 					"portrait": "defeat_2"
 				},
 				{
+					"act": 4,
+					"speaker": "蓝色的公主",
+					"text": "……哈哈……抱……抱也可以。……别、别再揉了……",
+					"actions": [
+						{
+							"who": "princess",
+							"visual": "helpless_2",
+							"do": "pose"
+						},
+						{
+							"state": "laugh",
+							"do": "voice"
+						}
+					],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 4,
 					"speaker": "",
-					"text": "（小熊抱着她坐下，爪子还在慢慢挠）",
+					"text": "（小熊开心地蹭了蹭她的脸，熊掌终于停了下来，只是还抱着不放）",
 					"actions": [
 						{
 							"who": "princess",
@@ -3136,6 +5722,27 @@
 					"portrait": "defeat_2"
 				},
 				{
+					"act": 4,
+					"speaker": "蓝色的公主",
+					"text": "……刚才那句。……我是说……抱一下下。……只有一下下。",
+					"actions": [
+						{
+							"who": "princess",
+							"kind": "laugh",
+							"do": "bubble"
+						}
+					],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 4,
+					"speaker": "",
+					"text": "（小熊又抱了好久才松手。她坐在原地，脸颊被熊毛蹭得红红的）",
+					"actions": [],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 4,
 					"actions": [
 						{
 							"state": "",
@@ -3151,7 +5758,7 @@
 			]
 		},
 		"death_siege_suck_jelly": {
-			"name": "吸走魔力的触手",
+			"name": "冰公主与魔力吸吸水母",
 			"cast": {
 				"princess": {
 					"kind": "princess",
@@ -3175,6 +5782,8 @@
 			},
 			"steps": [
 				{
+					"act": 1,
+					"portrait": "defeat_1",
 					"actions": [
 						{
 							"time": 0.7,
@@ -3188,8 +5797,9 @@
 					"wait": 0.8
 				},
 				{
+					"act": 1,
 					"speaker": "",
-					"text": "（吸吸水母飘上城墙，一下吸住了她的后背。凝起来的冰晶一下子散了）",
+					"text": "（一只半透明的水母晃晃悠悠飘上城墙，触须轻轻贴上了她的手腕）",
 					"actions": [
 						{
 							"who": "foe",
@@ -3209,20 +5819,16 @@
 					"portrait": "defeat_1"
 				},
 				{
+					"act": 1,
 					"speaker": "蓝色的公主",
-					"text": "……魔力。……被吸走了。",
-					"actions": [
-						{
-							"who": "princess",
-							"time": 0.4,
-							"do": "shake"
-						}
-					],
+					"text": "……吸魔力的。……想都别想。",
+					"actions": [],
 					"portrait": "defeat_1"
 				},
 				{
+					"act": 1,
 					"speaker": "魔力吸吸水母",
-					"text": "咕嘟～冰魔力好好喝～",
+					"text": "啵～啵～冰公主的魔力～最好吃～",
 					"actions": [
 						{
 							"who": "foe",
@@ -3233,8 +5839,48 @@
 					"portrait": "defeat_1"
 				},
 				{
+					"act": 1,
 					"speaker": "",
-					"text": "（触手垂下来，绕着腰转圈）",
+					"text": "（触须一下吸住她的手腕，她抬手念咒，手心刚聚起的冰光就被吸得一干二净）",
+					"actions": [
+						{
+							"who": "princess",
+							"by": "foe",
+							"repeat": 5,
+							"interval": 0.3,
+							"fx": "lines",
+							"do": "tickle"
+						},
+						{
+							"who": "princess",
+							"time": 0.4,
+							"do": "shake"
+						}
+					],
+					"portrait": "defeat_1"
+				},
+				{
+					"act": 1,
+					"speaker": "蓝色的公主",
+					"text": "……吸、吸走了。……再念一次。……这次……更快。",
+					"actions": [
+						{
+							"who": "princess",
+							"visual": "giggle",
+							"anim": "idle",
+							"do": "pose"
+						},
+						{
+							"state": "giggle",
+							"do": "voice"
+						}
+					],
+					"portrait": "defeat_1"
+				},
+				{
+					"act": 1,
+					"speaker": "",
+					"text": "（她第二次抬手，一根触须立刻钻进她的腋下挠了一下，咒文一下子断掉了）",
 					"actions": [
 						{
 							"who": "princess",
@@ -3248,41 +5894,71 @@
 					"portrait": "defeat_1"
 				},
 				{
+					"act": 1,
 					"speaker": "蓝色的公主",
-					"text": "……触手。……噗。",
-					"actions": [
-						{
-							"who": "princess",
-							"kind": "laugh",
-							"do": "bubble"
-						}
-					],
-					"portrait": "defeat_1"
-				},
-				{
-					"speaker": "",
-					"text": "（她抬手想重新凝冰——触手立刻钻进抬起的腋下）",
-					"actions": [
-						{
-							"who": "princess",
-							"by": "foe",
-							"repeat": 5,
-							"interval": 0.3,
-							"fx": "lines",
-							"do": "tickle"
-						}
-					],
-					"portrait": "defeat_1"
-				},
-				{
-					"speaker": "蓝色的公主",
-					"text": "……！一、一抬手……腋下……",
+					"text": "……噗。……腋下……耍赖。……重来。",
 					"actions": [],
 					"portrait": "defeat_1"
 				},
 				{
+					"act": 2,
 					"speaker": "",
-					"text": "（触手卷住手臂举高，另几根往下，贴着大腿内侧一路滑到腿根）",
+					"text": "（更多触须垂下来，吸盘贴上她的大腿内侧，从膝盖往上，一个接一个吸上去，吸到腿根就一下下地吸、放）",
+					"actions": [
+						{
+							"who": "princess",
+							"by": "foe",
+							"repeat": 5,
+							"interval": 0.3,
+							"fx": "lines",
+							"do": "tickle"
+						},
+						{
+							"who": "princess",
+							"by": "foe",
+							"repeat": 3,
+							"interval": 0.35,
+							"fx": "feather",
+							"zone": "thigh",
+							"do": "tickle"
+						}
+					],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 2,
+					"speaker": "蓝色的公主",
+					"text": "……！……吸、吸着……往上……在、在那里……吸……",
+					"actions": [
+						{
+							"who": "princess",
+							"visual": "helpless_1",
+							"anim": "helpless",
+							"do": "pose"
+						},
+						{
+							"state": "laugh",
+							"do": "voice"
+						}
+					],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 2,
+					"speaker": "魔力吸吸水母",
+					"text": "啵～这里～魔力藏得最多～",
+					"actions": [
+						{
+							"who": "foe",
+							"do": "taunt"
+						}
+					],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 2,
+					"speaker": "",
+					"text": "（两根触须绕到身后，左边吸一下，右边吸一下，吸盘「啵、啵」地交替响）",
 					"actions": [
 						{
 							"who": "princess",
@@ -3292,6 +5968,197 @@
 							"fx": "lines",
 							"do": "tickle"
 						},
+						{
+							"who": "princess",
+							"by": "foe",
+							"repeat": 3,
+							"interval": 0.35,
+							"fx": "hand",
+							"zone": "butt",
+							"do": "tickle"
+						}
+					],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 2,
+					"speaker": "蓝色的公主",
+					"text": "……噗。……啵、啵……左……右……噗哈……",
+					"actions": [
+						{
+							"who": "princess",
+							"kind": "laugh",
+							"do": "bubble"
+						}
+					],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 2,
+					"speaker": "",
+					"text": "（一排小吸盘沿着大腿和屁股交界的那道线排好，从一头到另一头依次吸起来）",
+					"actions": [
+						{
+							"who": "princess",
+							"time": 0.4,
+							"do": "shake"
+						},
+						{
+							"who": "princess",
+							"by": "foe",
+							"repeat": 8,
+							"interval": 0.22,
+							"fx": "lines",
+							"do": "tickle"
+						}
+					],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 2,
+					"speaker": "蓝色的公主",
+					"text": "……哈、哈哈……排、排好队……吸……那道弧……哈哈……",
+					"actions": [],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 3,
+					"speaker": "",
+					"text": "（魔力一边被吸、一边被笑声搅乱，剩下的全部挤在一起，疲倦满了）",
+					"actions": [],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 3,
+					"speaker": "蓝色的公主",
+					"text": "……吸、吸不完的……给你……全部……！",
+					"actions": [
+						{
+							"zoom": 1.5,
+							"focus": "princess",
+							"time": 0.5,
+							"do": "camera"
+						},
+						{
+							"who": "princess",
+							"time": 1.0,
+							"do": "shake"
+						}
+					],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": "burst",
+					"speaker": "",
+					"text": "（冰蓝色的星光炸开，水母吸进去太多魔力，整只冻成了一盏透明的冰灯，咕噜噜滚开）",
+					"actions": [
+						{
+							"time": 0.8,
+							"do": "flash"
+						},
+						{
+							"sound": "star_burst",
+							"volume": -1.0,
+							"do": "sfx"
+						},
+						{
+							"sound": "water_release",
+							"volume": -2.0,
+							"do": "sfx"
+						},
+						{
+							"state": "",
+							"do": "voice"
+						},
+						{
+							"who": "princess",
+							"time": 0.5,
+							"do": "shake"
+						},
+						{
+							"zoom": 1,
+							"focus": "princess",
+							"time": 0.5,
+							"do": "camera"
+						},
+						{
+							"who": "foe",
+							"to": [
+								82,
+								2
+							],
+							"time": 0.25,
+							"do": "move"
+						},
+						{
+							"time": 0.4,
+							"do": "flash"
+						}
+					],
+					"portrait": "fatigue_burst",
+					"wait": 1.1
+				},
+				{
+					"act": 3,
+					"speaker": "蓝色的公主",
+					"text": "……呼……冻住了。……我……空了。",
+					"actions": [
+						{
+							"zoom": 1,
+							"focus": "princess",
+							"time": 0.4,
+							"do": "camera"
+						},
+						{
+							"who": "princess",
+							"kind": "shy",
+							"do": "bubble"
+						}
+					],
+					"portrait": "fatigue_burst"
+				},
+				{
+					"act": 3,
+					"speaker": "魔力吸吸水母",
+					"text": "啵……啵啵～化开啦～还想吃～",
+					"actions": [
+						{
+							"who": "foe",
+							"to": [
+								22,
+								8
+							],
+							"time": 0.6,
+							"do": "move"
+						},
+						{
+							"state": "giggle",
+							"do": "voice"
+						}
+					],
+					"portrait": "fatigue_burst"
+				},
+				{
+					"act": 3,
+					"speaker": "",
+					"text": "（水母化开飘回来。放空魔力的身体敏感过头，吸盘刚碰到腿根，她就忍不住缩起来）",
+					"actions": [
+						{
+							"who": "princess",
+							"by": "foe",
+							"repeat": 5,
+							"interval": 0.3,
+							"fx": "lines",
+							"do": "tickle"
+						}
+					],
+					"portrait": "fatigue_burst"
+				},
+				{
+					"act": 3,
+					"speaker": "蓝色的公主",
+					"text": "……没、没有魔力了……还吸……吸什么……哈哈哈哈！",
+					"actions": [
 						{
 							"who": "princess",
 							"visual": "helpless_2",
@@ -3302,40 +6169,17 @@
 							"do": "voice"
 						},
 						{
-							"zoom": 1.5,
-							"focus": "princess",
-							"time": 0.5,
-							"do": "camera"
-						}
-					],
-					"portrait": "defeat_2"
-				},
-				{
-					"speaker": "蓝色的公主",
-					"text": "……哈、哈哈……腋下……腿根……上、下……哈哈哈！",
-					"actions": [
-						{
 							"who": "princess",
-							"time": 0.4,
-							"do": "shake"
+							"kind": "laugh",
+							"do": "bubble"
 						}
 					],
-					"portrait": "defeat_2"
+					"portrait": "fatigue_burst"
 				},
 				{
-					"speaker": "魔力吸吸水母",
-					"text": "咕嘟～再抬手试试～",
-					"actions": [
-						{
-							"who": "foe",
-							"do": "taunt"
-						}
-					],
-					"portrait": "defeat_2"
-				},
-				{
+					"act": 3,
 					"speaker": "",
-					"text": "（她越想施法，触手就挠得越凶；魔力一点一点被吸走）",
+					"text": "（吸盘吸着腿根，两边交替地吸，交界线上的一排小吸盘还在依次地吸）",
 					"actions": [
 						{
 							"who": "princess",
@@ -3346,45 +6190,79 @@
 							"do": "tickle"
 						},
 						{
-							"time": 0.4,
-							"do": "flash"
-						}
-					],
-					"portrait": "defeat_2"
-				},
-				{
-					"speaker": "蓝色的公主",
-					"text": "……哈哈哈哈……不、不放了……不施法了……！",
-					"actions": [
-						{
 							"who": "princess",
-							"kind": "laugh",
-							"do": "bubble"
+							"by": "foe",
+							"repeat": 3,
+							"interval": 0.35,
+							"fx": "hand",
+							"zone": "butt",
+							"do": "tickle"
 						}
 					],
-					"portrait": "defeat_2"
+					"portrait": "fatigue_burst"
 				},
 				{
+					"act": 3,
 					"speaker": "蓝色的公主",
-					"text": "……认输……哈……",
+					"text": "……哈哈哈哈……啵啵……停、停下……哈哈哈哈！",
 					"actions": [
 						{
 							"who": "princess",
 							"time": 0.4,
 							"do": "shake"
-						},
+						}
+					],
+					"portrait": "fatigue_burst"
+				},
+				{
+					"act": 3,
+					"speaker": "魔力吸吸水母",
+					"text": "啵～没魔力了～那就吸笑声～",
+					"actions": [
 						{
-							"zoom": 1,
-							"focus": "princess",
-							"time": 0.4,
-							"do": "camera"
+							"who": "foe",
+							"do": "taunt"
+						}
+					],
+					"portrait": "fatigue_burst"
+				},
+				{
+					"act": 4,
+					"speaker": "",
+					"text": "（水母干脆罩在她头顶上，十几根触须全垂下来，吸盘贴满了大腿和屁股）",
+					"actions": [
+						{
+							"who": "princess",
+							"by": "foe",
+							"repeat": 8,
+							"interval": 0.22,
+							"fx": "lines",
+							"do": "tickle"
 						}
 					],
 					"portrait": "defeat_2"
 				},
 				{
+					"act": 4,
+					"speaker": "蓝色的公主",
+					"text": "……哈哈……笑、笑声……也给你……都给你……哈哈哈……",
+					"actions": [
+						{
+							"who": "princess",
+							"visual": "helpless_2",
+							"do": "pose"
+						},
+						{
+							"state": "laugh",
+							"do": "voice"
+						}
+					],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 4,
 					"speaker": "",
-					"text": "（水母吸饱了魔力飘走了。她靠在城垛上，手臂软软地垂着）",
+					"text": "（水母心满意足地晃了晃。她软软地靠在城垛上，脸颊红扑扑的）",
 					"actions": [
 						{
 							"who": "princess",
@@ -3398,6 +6276,27 @@
 					"portrait": "defeat_2"
 				},
 				{
+					"act": 4,
+					"speaker": "蓝色的公主",
+					"text": "……那盏冰灯。……其实……挺好看的。……下次……再冻一次。",
+					"actions": [
+						{
+							"who": "princess",
+							"kind": "laugh",
+							"do": "bubble"
+						}
+					],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 4,
+					"speaker": "",
+					"text": "（水母好像听懂了，飘得飞快，一眨眼就不见了）",
+					"actions": [],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 4,
 					"actions": [
 						{
 							"state": "",
@@ -3413,7 +6312,7 @@
 			]
 		},
 		"death_siege_twin_ghost": {
-			"name": "一粉一蓝的两只",
+			"name": "冰公主与双子痒痒鬼",
 			"cast": {
 				"princess": {
 					"kind": "princess",
@@ -3437,6 +6336,8 @@
 			},
 			"steps": [
 				{
+					"act": 1,
+					"portrait": "defeat_1",
 					"actions": [
 						{
 							"time": 0.7,
@@ -3450,8 +6351,9 @@
 					"wait": 0.8
 				},
 				{
+					"act": 1,
 					"speaker": "",
-					"text": "（蓝色的痒痒鬼从城墙下飘上来，粉色的那只从走道另一头飘过来）",
+					"text": "（一只蓝色的小幽灵从城墙外面飘上来，另一只粉色的从墙下穿上来，两只在她面前会合）",
 					"actions": [
 						{
 							"who": "foe",
@@ -3471,20 +6373,16 @@
 					"portrait": "defeat_1"
 				},
 				{
+					"act": 1,
 					"speaker": "蓝色的公主",
-					"text": "……两只。",
-					"actions": [
-						{
-							"who": "princess",
-							"time": 0.4,
-							"do": "shake"
-						}
-					],
+					"text": "……两只。……八秒内都打倒就行。……简单。",
+					"actions": [],
 					"portrait": "defeat_1"
 				},
 				{
+					"act": 1,
 					"speaker": "双子痒痒鬼",
-					"text": "嘻嘻～一起挠冰公主～",
+					"text": "咯咯～冰公主～我们不给你八秒～",
 					"actions": [
 						{
 							"who": "foe",
@@ -3495,8 +6393,48 @@
 					"portrait": "defeat_1"
 				},
 				{
+					"act": 1,
 					"speaker": "",
-					"text": "（两只一前一后，凉飕飕的手在腰两边同时挠）",
+					"text": "（两只幽灵同时穿过她的身体，凉意从后背一路蹿到脚底，她膝盖一软坐在了城墙上）",
+					"actions": [
+						{
+							"who": "princess",
+							"by": "foe",
+							"repeat": 5,
+							"interval": 0.3,
+							"fx": "lines",
+							"do": "tickle"
+						},
+						{
+							"who": "princess",
+							"time": 0.4,
+							"do": "shake"
+						}
+					],
+					"portrait": "defeat_1"
+				},
+				{
+					"act": 1,
+					"speaker": "蓝色的公主",
+					"text": "……冷。……穿过来……很没礼貌。",
+					"actions": [
+						{
+							"who": "princess",
+							"visual": "giggle",
+							"anim": "idle",
+							"do": "pose"
+						},
+						{
+							"state": "giggle",
+							"do": "voice"
+						}
+					],
+					"portrait": "defeat_1"
+				},
+				{
+					"act": 1,
+					"speaker": "",
+					"text": "（两只幽灵一左一右在她的大腿外侧各划了一道，凉凉的，轻飘飘的）",
 					"actions": [
 						{
 							"who": "princess",
@@ -3510,41 +6448,71 @@
 					"portrait": "defeat_1"
 				},
 				{
+					"act": 1,
 					"speaker": "蓝色的公主",
-					"text": "……凉。……噗。",
-					"actions": [
-						{
-							"who": "princess",
-							"kind": "laugh",
-							"do": "bubble"
-						}
-					],
-					"portrait": "defeat_1"
-				},
-				{
-					"speaker": "",
-					"text": "（粉的那只挠大腿，蓝的那只就挠屁股；一个往上，一个往下）",
-					"actions": [
-						{
-							"who": "princess",
-							"by": "foe",
-							"repeat": 5,
-							"interval": 0.3,
-							"fx": "lines",
-							"do": "tickle"
-						}
-					],
-					"portrait": "defeat_1"
-				},
-				{
-					"speaker": "蓝色的公主",
-					"text": "……配、配合……唔……",
+					"text": "……幽灵的手。……没什么力气。",
 					"actions": [],
 					"portrait": "defeat_1"
 				},
 				{
+					"act": 2,
 					"speaker": "",
-					"text": "（她转身对付粉的那只，蓝的那只立刻在腿根上画圈）",
+					"text": "（蓝色的幽灵把手伸到大腿内侧，凉凉的指尖从膝盖慢慢往上滑，滑到腿根就停在那里，轻轻地打转）",
+					"actions": [
+						{
+							"who": "princess",
+							"by": "foe",
+							"repeat": 5,
+							"interval": 0.3,
+							"fx": "lines",
+							"do": "tickle"
+						},
+						{
+							"who": "princess",
+							"by": "foe",
+							"repeat": 3,
+							"interval": 0.35,
+							"fx": "feather",
+							"zone": "thigh",
+							"do": "tickle"
+						}
+					],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 2,
+					"speaker": "蓝色的公主",
+					"text": "……！……凉、凉的……在、在那里……转……",
+					"actions": [
+						{
+							"who": "princess",
+							"visual": "helpless_1",
+							"anim": "helpless",
+							"do": "pose"
+						},
+						{
+							"state": "laugh",
+							"do": "voice"
+						}
+					],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 2,
+					"speaker": "双子痒痒鬼",
+					"text": "咯咯～蓝色的找到腿根啦～",
+					"actions": [
+						{
+							"who": "foe",
+							"do": "taunt"
+						}
+					],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 2,
+					"speaker": "",
+					"text": "（粉色的幽灵绕到她身后，左边戳一下，右边戳一下，凉凉的小手指交替落下）",
 					"actions": [
 						{
 							"who": "princess",
@@ -3554,6 +6522,197 @@
 							"fx": "lines",
 							"do": "tickle"
 						},
+						{
+							"who": "princess",
+							"by": "foe",
+							"repeat": 3,
+							"interval": 0.35,
+							"fx": "hand",
+							"zone": "butt",
+							"do": "tickle"
+						}
+					],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 2,
+					"speaker": "蓝色的公主",
+					"text": "……噗。……交、交替……一下一下……噗哈……",
+					"actions": [
+						{
+							"who": "princess",
+							"kind": "laugh",
+							"do": "bubble"
+						}
+					],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 2,
+					"speaker": "",
+					"text": "（两只幽灵会合到一起，一只从左、一只从右，沿着大腿和屁股交界的那道线轻刮，在中间碰头，再刮回去）",
+					"actions": [
+						{
+							"who": "princess",
+							"time": 0.4,
+							"do": "shake"
+						},
+						{
+							"who": "princess",
+							"by": "foe",
+							"repeat": 8,
+							"interval": 0.22,
+							"fx": "lines",
+							"do": "tickle"
+						}
+					],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 2,
+					"speaker": "蓝色的公主",
+					"text": "……哈、哈哈……碰、碰头……再……回去……哈哈……",
+					"actions": [],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 3,
+					"speaker": "",
+					"text": "（被两只同时挠，她连抬手都做不到。魔力在体内打转，疲倦满了）",
+					"actions": [],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 3,
+					"speaker": "蓝色的公主",
+					"text": "……两只……一起……冻住……这一下……一定……",
+					"actions": [
+						{
+							"zoom": 1.5,
+							"focus": "princess",
+							"time": 0.5,
+							"do": "camera"
+						},
+						{
+							"who": "princess",
+							"time": 1.0,
+							"do": "shake"
+						}
+					],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": "burst",
+					"speaker": "",
+					"text": "（冰蓝色的星光炸开，两只幽灵被冻成两座小小的冰雕，一粉一蓝，摆在城墙上）",
+					"actions": [
+						{
+							"time": 0.8,
+							"do": "flash"
+						},
+						{
+							"sound": "star_burst",
+							"volume": -1.0,
+							"do": "sfx"
+						},
+						{
+							"sound": "water_release",
+							"volume": -2.0,
+							"do": "sfx"
+						},
+						{
+							"state": "",
+							"do": "voice"
+						},
+						{
+							"who": "princess",
+							"time": 0.5,
+							"do": "shake"
+						},
+						{
+							"zoom": 1,
+							"focus": "princess",
+							"time": 0.5,
+							"do": "camera"
+						},
+						{
+							"who": "foe",
+							"to": [
+								82,
+								2
+							],
+							"time": 0.25,
+							"do": "move"
+						},
+						{
+							"time": 0.4,
+							"do": "flash"
+						}
+					],
+					"portrait": "fatigue_burst",
+					"wait": 1.1
+				},
+				{
+					"act": 3,
+					"speaker": "蓝色的公主",
+					"text": "……呼……冻、冻住了。……两只。……同时。",
+					"actions": [
+						{
+							"zoom": 1,
+							"focus": "princess",
+							"time": 0.4,
+							"do": "camera"
+						},
+						{
+							"who": "princess",
+							"kind": "shy",
+							"do": "bubble"
+						}
+					],
+					"portrait": "fatigue_burst"
+				},
+				{
+					"act": 3,
+					"speaker": "双子痒痒鬼",
+					"text": "咯……咯咯～我们是幽灵～冰困不住～",
+					"actions": [
+						{
+							"who": "foe",
+							"to": [
+								22,
+								8
+							],
+							"time": 0.6,
+							"do": "move"
+						},
+						{
+							"state": "giggle",
+							"do": "voice"
+						}
+					],
+					"portrait": "fatigue_burst"
+				},
+				{
+					"act": 3,
+					"speaker": "",
+					"text": "（两只幽灵穿出冰雕又飘了回来。放空魔力的身体敏感过头，凉凉的指尖一碰腿根她就叫出声）",
+					"actions": [
+						{
+							"who": "princess",
+							"by": "foe",
+							"repeat": 5,
+							"interval": 0.3,
+							"fx": "lines",
+							"do": "tickle"
+						}
+					],
+					"portrait": "fatigue_burst"
+				},
+				{
+					"act": 3,
+					"speaker": "蓝色的公主",
+					"text": "……冰、冰雕……白、白冻了……呜哈哈哈哈！",
+					"actions": [
 						{
 							"who": "princess",
 							"visual": "helpless_2",
@@ -3564,40 +6723,17 @@
 							"do": "voice"
 						},
 						{
-							"zoom": 1.5,
-							"focus": "princess",
-							"time": 0.5,
-							"do": "camera"
-						}
-					],
-					"portrait": "defeat_2"
-				},
-				{
-					"speaker": "蓝色的公主",
-					"text": "……哈、哈哈……转身……就……哈哈哈！",
-					"actions": [
-						{
 							"who": "princess",
-							"time": 0.4,
-							"do": "shake"
+							"kind": "laugh",
+							"do": "bubble"
 						}
 					],
-					"portrait": "defeat_2"
+					"portrait": "fatigue_burst"
 				},
 				{
-					"speaker": "双子痒痒鬼",
-					"text": "嘻嘻～一起打才行哦～",
-					"actions": [
-						{
-							"who": "foe",
-							"do": "taunt"
-						}
-					],
-					"portrait": "defeat_2"
-				},
-				{
+					"act": 3,
 					"speaker": "",
-					"text": "（两只幽灵穿过她的身体，凉意从大腿里面一路挠到脚心）",
+					"text": "（一只在腿根打转，一只在两边交替戳，两只的手还在交界那道线上碰头又分开）",
 					"actions": [
 						{
 							"who": "princess",
@@ -3608,45 +6744,79 @@
 							"do": "tickle"
 						},
 						{
-							"time": 0.4,
-							"do": "flash"
-						}
-					],
-					"portrait": "defeat_2"
-				},
-				{
-					"speaker": "蓝色的公主",
-					"text": "……哈哈哈哈……里、里面……！",
-					"actions": [
-						{
 							"who": "princess",
-							"kind": "laugh",
-							"do": "bubble"
+							"by": "foe",
+							"repeat": 3,
+							"interval": 0.35,
+							"fx": "hand",
+							"zone": "butt",
+							"do": "tickle"
 						}
 					],
-					"portrait": "defeat_2"
+					"portrait": "fatigue_burst"
 				},
 				{
+					"act": 3,
 					"speaker": "蓝色的公主",
-					"text": "……认输。……下次……一起打。",
+					"text": "……哈哈哈哈……两、两只……都、都太会了……哈哈哈哈！",
 					"actions": [
 						{
 							"who": "princess",
 							"time": 0.4,
 							"do": "shake"
-						},
+						}
+					],
+					"portrait": "fatigue_burst"
+				},
+				{
+					"act": 3,
+					"speaker": "双子痒痒鬼",
+					"text": "咯咯～冰公主～笑起来比粉色的还响～",
+					"actions": [
 						{
-							"zoom": 1,
-							"focus": "princess",
-							"time": 0.4,
-							"do": "camera"
+							"who": "foe",
+							"do": "taunt"
+						}
+					],
+					"portrait": "fatigue_burst"
+				},
+				{
+					"act": 4,
+					"speaker": "",
+					"text": "（两只幽灵手拉手绕着她转圈，转一圈就各挠一下）",
+					"actions": [
+						{
+							"who": "princess",
+							"by": "foe",
+							"repeat": 8,
+							"interval": 0.22,
+							"fx": "lines",
+							"do": "tickle"
 						}
 					],
 					"portrait": "defeat_2"
 				},
 				{
+					"act": 4,
+					"speaker": "蓝色的公主",
+					"text": "……哈哈……八秒……白、白数了……我输了……哈哈哈……",
+					"actions": [
+						{
+							"who": "princess",
+							"visual": "helpless_2",
+							"do": "pose"
+						},
+						{
+							"state": "laugh",
+							"do": "voice"
+						}
+					],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 4,
 					"speaker": "",
-					"text": "（两只幽灵手拉手绕着她飘）",
+					"text": "（它们最后一左一右在她耳边吹了一口凉气，咯咯笑着飘远了）",
 					"actions": [
 						{
 							"who": "princess",
@@ -3660,6 +6830,730 @@
 					"portrait": "defeat_2"
 				},
 				{
+					"act": 4,
+					"speaker": "蓝色的公主",
+					"text": "……刚才。……说我比粉色的笑得响。……收回。",
+					"actions": [
+						{
+							"who": "princess",
+							"kind": "laugh",
+							"do": "bubble"
+						}
+					],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 4,
+					"speaker": "",
+					"text": "（两只幽灵已经飘下了城墙，只留下她一个人对着空气小声抗议）",
+					"actions": [],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 4,
+					"actions": [
+						{
+							"state": "",
+							"do": "voice"
+						},
+						{
+							"time": 0.8,
+							"do": "fade_out"
+						}
+					],
+					"wait": 0.9
+				}
+			]
+		},
+		"death_siege_troll_general": {
+			"name": "冰公主与攻城巨魔将军",
+			"cast": {
+				"princess": {
+					"kind": "princess",
+					"at": [
+						0,
+						8
+					],
+					"visual": "helpless_1",
+					"anim": "helpless",
+					"dir": "down"
+				},
+				"foe": {
+					"kind": "monster:troll_general",
+					"at": [
+						40,
+						8
+					],
+					"dir": "left",
+					"hidden": true
+				}
+			},
+			"steps": [
+				{
+					"act": 1,
+					"portrait": "defeat_1",
+					"actions": [
+						{
+							"time": 0.7,
+							"do": "fade_in"
+						},
+						{
+							"state": "giggle",
+							"do": "voice"
+						}
+					],
+					"wait": 0.8
+				},
+				{
+					"act": 1,
+					"speaker": "",
+					"text": "（巨魔将军跳到墙脚，一拳砸在城墙上。城墙一震，她从城垛边滑了下去，正好落进那只大手里）",
+					"actions": [
+						{
+							"who": "foe",
+							"from": [
+								90,
+								0
+							],
+							"time": 0.6,
+							"do": "enter"
+						},
+						{
+							"who": "princess",
+							"kind": "surprise",
+							"do": "bubble"
+						}
+					],
+					"portrait": "defeat_1"
+				},
+				{
+					"act": 1,
+					"speaker": "蓝色的公主",
+					"text": "……放手。……你的手，比你的脑袋大。",
+					"actions": [],
+					"portrait": "defeat_1"
+				},
+				{
+					"act": 1,
+					"speaker": "巨魔将军",
+					"text": "吼哈哈！冰丫头！嘴巴硬，身子软！",
+					"actions": [
+						{
+							"who": "foe",
+							"count": 2,
+							"do": "hop"
+						}
+					],
+					"portrait": "defeat_1"
+				},
+				{
+					"act": 1,
+					"speaker": "",
+					"text": "（巨魔用一只手把她整个人圈住，两根手指按着她的膝盖，让她坐在自己的掌心上动弹不得）",
+					"actions": [
+						{
+							"who": "princess",
+							"by": "foe",
+							"repeat": 5,
+							"interval": 0.3,
+							"fx": "lines",
+							"do": "tickle"
+						},
+						{
+							"who": "princess",
+							"time": 0.4,
+							"do": "shake"
+						}
+					],
+					"portrait": "defeat_1"
+				},
+				{
+					"act": 1,
+					"speaker": "蓝色的公主",
+					"text": "……一只手。……就想抓住我。……太看得起自己了。",
+					"actions": [
+						{
+							"who": "princess",
+							"visual": "giggle",
+							"anim": "idle",
+							"do": "pose"
+						},
+						{
+							"state": "giggle",
+							"do": "voice"
+						}
+					],
+					"portrait": "defeat_1"
+				},
+				{
+					"act": 1,
+					"speaker": "巨魔将军",
+					"text": "吼？冰丫头的弱点，将军早就打听过了！",
+					"actions": [
+						{
+							"who": "foe",
+							"do": "taunt"
+						}
+					],
+					"portrait": "defeat_1"
+				},
+				{
+					"act": 1,
+					"speaker": "",
+					"text": "（一根粗手指压在她的大腿外侧，像在试探一块石头，按了按，又按了按）",
+					"actions": [
+						{
+							"who": "princess",
+							"by": "foe",
+							"repeat": 5,
+							"interval": 0.3,
+							"fx": "lines",
+							"do": "tickle"
+						}
+					],
+					"portrait": "defeat_1"
+				},
+				{
+					"act": 1,
+					"speaker": "蓝色的公主",
+					"text": "……打听错了。……那里，什么都没有。",
+					"actions": [],
+					"portrait": "defeat_1"
+				},
+				{
+					"act": 1,
+					"speaker": "巨魔将军",
+					"text": "那里没有？那就往里面找！",
+					"actions": [
+						{
+							"who": "foe",
+							"count": 2,
+							"do": "hop"
+						}
+					],
+					"portrait": "defeat_1"
+				},
+				{
+					"act": 2,
+					"speaker": "",
+					"text": "（粗手指挪到大腿内侧，指腹贴着皮肤，从膝盖上面一点一点地往上推，推到腿根就停住，按着那里慢慢地揉圈）",
+					"actions": [
+						{
+							"who": "princess",
+							"by": "foe",
+							"repeat": 5,
+							"interval": 0.3,
+							"fx": "lines",
+							"do": "tickle"
+						},
+						{
+							"who": "princess",
+							"by": "foe",
+							"repeat": 3,
+							"interval": 0.35,
+							"fx": "feather",
+							"zone": "thigh",
+							"do": "tickle"
+						}
+					],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 2,
+					"speaker": "蓝色的公主",
+					"text": "……！……往、往上……推什么……停在那里……更……",
+					"actions": [
+						{
+							"who": "princess",
+							"visual": "helpless_1",
+							"anim": "helpless",
+							"do": "pose"
+						},
+						{
+							"state": "laugh",
+							"do": "voice"
+						}
+					],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 2,
+					"speaker": "巨魔将军",
+					"text": "吼哈哈！找到了！冰丫头的弱点！",
+					"actions": [
+						{
+							"who": "foe",
+							"do": "taunt"
+						}
+					],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 2,
+					"speaker": "",
+					"text": "（另一只手的两根手指绕到她身后，左边捏一下，右边捏一下，像在捏两团面团）",
+					"actions": [
+						{
+							"who": "princess",
+							"by": "foe",
+							"repeat": 8,
+							"interval": 0.22,
+							"fx": "lines",
+							"do": "tickle"
+						},
+						{
+							"who": "princess",
+							"by": "foe",
+							"repeat": 3,
+							"interval": 0.35,
+							"fx": "hand",
+							"zone": "butt",
+							"do": "tickle"
+						}
+					],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 2,
+					"speaker": "蓝色的公主",
+					"text": "……噗。……面、面团……将军……也会……揉面……噗哈……",
+					"actions": [
+						{
+							"who": "princess",
+							"kind": "laugh",
+							"do": "bubble"
+						}
+					],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 2,
+					"speaker": "",
+					"text": "（巨魔用小指的指甲尖找到了大腿和屁股交界的那道线，指甲贴着线，轻轻地来回刮）",
+					"actions": [
+						{
+							"who": "princess",
+							"by": "foe",
+							"repeat": 8,
+							"interval": 0.22,
+							"fx": "lines",
+							"do": "tickle"
+						}
+					],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 2,
+					"speaker": "蓝色的公主",
+					"text": "……哈、哈哈……那、那道线……指甲……太细了……哈哈……",
+					"actions": [
+						{
+							"who": "princess",
+							"time": 0.4,
+							"do": "shake"
+						}
+					],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 2,
+					"speaker": "巨魔将军",
+					"text": "全军听令！冰丫头，擂鼓！",
+					"actions": [
+						{
+							"who": "foe",
+							"do": "taunt"
+						}
+					],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 2,
+					"speaker": "",
+					"text": "（五根手指在她的腿根和屁股上轮流敲，咚咚咚，敲一下揉一下，像在擂一面软软的鼓）",
+					"actions": [
+						{
+							"who": "princess",
+							"by": "foe",
+							"repeat": 8,
+							"interval": 0.22,
+							"fx": "lines",
+							"do": "tickle"
+						}
+					],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 2,
+					"speaker": "蓝色的公主",
+					"text": "……哈哈哈……擂、擂鼓……我不是……鼓……哈哈哈！",
+					"actions": [
+						{
+							"who": "princess",
+							"visual": "helpless_1",
+							"anim": "helpless",
+							"do": "pose"
+						},
+						{
+							"state": "laugh",
+							"do": "voice"
+						}
+					],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 3,
+					"speaker": "",
+					"text": "（她想抬手放冰锥，手腕却被巨魔的拇指按着。魔力憋在身体里越积越多，疲倦满了）",
+					"actions": [],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 3,
+					"speaker": "蓝色的公主",
+					"text": "……冰锥……出不来……那就……全部……一起……",
+					"actions": [
+						{
+							"zoom": 1.5,
+							"focus": "princess",
+							"time": 0.5,
+							"do": "camera"
+						},
+						{
+							"who": "princess",
+							"time": 1.0,
+							"do": "shake"
+						}
+					],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 3,
+					"speaker": "巨魔将军",
+					"text": "吼？冰丫头在冒冷气——",
+					"actions": [],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": "burst",
+					"speaker": "",
+					"text": "（冰蓝色的星光炸开，巨魔的手掌一下子结满了白霜，冻得它嗷嗷叫着把她甩了出去）",
+					"actions": [
+						{
+							"time": 0.8,
+							"do": "flash"
+						},
+						{
+							"sound": "star_burst",
+							"volume": -1.0,
+							"do": "sfx"
+						},
+						{
+							"sound": "water_release",
+							"volume": -2.0,
+							"do": "sfx"
+						},
+						{
+							"state": "",
+							"do": "voice"
+						},
+						{
+							"who": "princess",
+							"time": 0.5,
+							"do": "shake"
+						},
+						{
+							"zoom": 1,
+							"focus": "princess",
+							"time": 0.5,
+							"do": "camera"
+						},
+						{
+							"who": "foe",
+							"to": [
+								100,
+								2
+							],
+							"time": 0.25,
+							"do": "move"
+						},
+						{
+							"time": 0.4,
+							"do": "flash"
+						}
+					],
+					"portrait": "fatigue_burst",
+					"wait": 1.1
+				},
+				{
+					"act": 3,
+					"speaker": "蓝色的公主",
+					"text": "……呼……呼……冻、冻到了。……可是……我也……站不起来了。",
+					"actions": [
+						{
+							"zoom": 1,
+							"focus": "princess",
+							"time": 0.4,
+							"do": "camera"
+						},
+						{
+							"who": "princess",
+							"kind": "shy",
+							"do": "bubble"
+						}
+					],
+					"portrait": "fatigue_burst"
+				},
+				{
+					"act": 3,
+					"speaker": "巨魔将军",
+					"text": "吼……吼哈哈！手冻了，搓一搓就好！冰丫头没魔力了！",
+					"actions": [
+						{
+							"who": "foe",
+							"to": [
+								40,
+								8
+							],
+							"time": 0.6,
+							"do": "move"
+						},
+						{
+							"state": "giggle",
+							"do": "voice"
+						}
+					],
+					"portrait": "fatigue_burst"
+				},
+				{
+					"act": 3,
+					"speaker": "",
+					"text": "（巨魔搓热了手，又把她捞了回来。放空魔力的身体敏感过头，粗手指刚碰到腿根，她就整个人缩成一团）",
+					"actions": [
+						{
+							"who": "princess",
+							"by": "foe",
+							"repeat": 5,
+							"interval": 0.3,
+							"fx": "lines",
+							"do": "tickle"
+						}
+					],
+					"portrait": "fatigue_burst"
+				},
+				{
+					"act": 3,
+					"speaker": "蓝色的公主",
+					"text": "……哇啊！……手、手指……那么粗……还、还那么轻……哈哈哈哈！",
+					"actions": [
+						{
+							"who": "princess",
+							"visual": "helpless_2",
+							"do": "pose"
+						},
+						{
+							"state": "laugh",
+							"do": "voice"
+						},
+						{
+							"who": "princess",
+							"kind": "laugh",
+							"do": "bubble"
+						}
+					],
+					"portrait": "fatigue_burst"
+				},
+				{
+					"act": 3,
+					"speaker": "巨魔将军",
+					"text": "吼哈哈！冒完冷气，更好挠！将军记下了！",
+					"actions": [
+						{
+							"who": "foe",
+							"do": "taunt"
+						}
+					],
+					"portrait": "fatigue_burst"
+				},
+				{
+					"act": 3,
+					"speaker": "",
+					"text": "（一根手指揉着腿根打圈，两根手指轮流捏着屁股，小指的指甲还在交界那道线上一下一下地刮）",
+					"actions": [
+						{
+							"who": "princess",
+							"by": "foe",
+							"repeat": 8,
+							"interval": 0.22,
+							"fx": "lines",
+							"do": "tickle"
+						},
+						{
+							"who": "princess",
+							"by": "foe",
+							"repeat": 3,
+							"interval": 0.35,
+							"fx": "hand",
+							"zone": "butt",
+							"do": "tickle"
+						}
+					],
+					"portrait": "fatigue_burst"
+				},
+				{
+					"act": 3,
+					"speaker": "蓝色的公主",
+					"text": "……哈哈哈哈……全、全部……一起……我、我数不过来……哈哈哈！",
+					"actions": [
+						{
+							"who": "princess",
+							"time": 0.4,
+							"do": "shake"
+						}
+					],
+					"portrait": "fatigue_burst"
+				},
+				{
+					"act": 3,
+					"speaker": "",
+					"text": "（巨魔把指尖沿着内侧又往上推了一次，推到腿根就停住，五根手指一起揉）",
+					"actions": [
+						{
+							"who": "princess",
+							"by": "foe",
+							"repeat": 8,
+							"interval": 0.22,
+							"fx": "lines",
+							"do": "tickle"
+						}
+					],
+					"portrait": "fatigue_burst"
+				},
+				{
+					"act": 3,
+					"speaker": "蓝色的公主",
+					"text": "……哈哈哈哈……那、那里……五根……太、太多了……哈哈哈哈！",
+					"actions": [
+						{
+							"who": "princess",
+							"visual": "helpless_2",
+							"do": "pose"
+						},
+						{
+							"state": "laugh",
+							"do": "voice"
+						}
+					],
+					"portrait": "fatigue_burst"
+				},
+				{
+					"act": 4,
+					"speaker": "",
+					"text": "（巨魔举起她，朝敌阵吹响了号角。小怪们围上来，看将军表演）",
+					"actions": [
+						{
+							"who": "princess",
+							"by": "foe",
+							"repeat": 8,
+							"interval": 0.22,
+							"fx": "lines",
+							"do": "tickle"
+						}
+					],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 4,
+					"speaker": "巨魔将军",
+					"text": "全军看好！冰丫头，也会大笑！",
+					"actions": [
+						{
+							"who": "foe",
+							"do": "taunt"
+						}
+					],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 4,
+					"speaker": "蓝色的公主",
+					"text": "……哈哈……别、别给它们看……认输……我认输……哈哈哈……",
+					"actions": [
+						{
+							"who": "princess",
+							"visual": "helpless_2",
+							"do": "pose"
+						},
+						{
+							"state": "laugh",
+							"do": "voice"
+						},
+						{
+							"who": "princess",
+							"kind": "laugh",
+							"do": "bubble"
+						}
+					],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 4,
+					"speaker": "",
+					"text": "（小怪们学着将军，一人在她的腿根上戳一下，排成了长长的一队）",
+					"actions": [
+						{
+							"who": "princess",
+							"by": "foe",
+							"repeat": 8,
+							"interval": 0.22,
+							"fx": "lines",
+							"do": "tickle"
+						}
+					],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 4,
+					"speaker": "蓝色的公主",
+					"text": "……哈哈……排、排队……你们……一个一个……我都记住了……",
+					"actions": [
+						{
+							"who": "princess",
+							"time": 0.4,
+							"do": "shake"
+						}
+					],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 4,
+					"speaker": "巨魔将军",
+					"text": "吼哈哈！冰丫头，今天的仗，将军赢了！",
+					"actions": [],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 4,
+					"speaker": "蓝色的公主",
+					"text": "……下次。……你的号角……我冻住。……吹不响。",
+					"actions": [
+						{
+							"who": "princess",
+							"kind": "laugh",
+							"do": "bubble"
+						}
+					],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 4,
+					"speaker": "",
+					"text": "（巨魔把她放回城墙脚下，大笑着走远了。她抱着膝盖坐了好久，脸上的红晕一直没退）",
+					"actions": [],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 4,
 					"actions": [
 						{
 							"state": "",
@@ -3675,7 +7569,7 @@
 			]
 		},
 		"death_siege_gale_bear": {
-			"name": "只是风大乱了手势",
+			"name": "冰公主与狂风熊统领",
 			"cast": {
 				"princess": {
 					"kind": "princess",
@@ -3699,6 +7593,8 @@
 			},
 			"steps": [
 				{
+					"act": 1,
+					"portrait": "defeat_1",
 					"actions": [
 						{
 							"time": 0.7,
@@ -3712,8 +7608,9 @@
 					"wait": 0.8
 				},
 				{
+					"act": 1,
 					"speaker": "",
-					"text": "（八向旋风越过城垛，羽毛与刷具也随气流飞来。她侧身避开第一阵风，仍抬着施法的手，先把风眼和刷具的落点记了下来）",
+					"text": "（一道羽毛龙卷越过城垛，把她从城墙上卷了下去，在半空里转了好几圈）",
 					"actions": [
 						{
 							"who": "foe",
@@ -3728,7 +7625,56 @@
 							"who": "princess",
 							"kind": "surprise",
 							"do": "bubble"
+						}
+					],
+					"portrait": "defeat_1"
+				},
+				{
+					"act": 1,
+					"speaker": "蓝色的公主",
+					"text": "……转、转晕了。……放我下来。",
+					"actions": [],
+					"portrait": "defeat_1"
+				},
+				{
+					"act": 1,
+					"speaker": "狂风熊统领",
+					"text": "风轮转一圈！冰公主，进风眼！",
+					"actions": [
+						{
+							"who": "foe",
+							"count": 2,
+							"do": "hop"
+						}
+					],
+					"portrait": "defeat_1"
+				},
+				{
+					"act": 1,
+					"speaker": "",
+					"text": "（龙卷把她送进风眼。气流托着她浮在巨熊面前，裙摆被风吹得乱飘，两条腿被风压着并不拢也张不开）",
+					"actions": [
+						{
+							"who": "princess",
+							"by": "foe",
+							"repeat": 5,
+							"interval": 0.3,
+							"fx": "lines",
+							"do": "tickle"
 						},
+						{
+							"who": "princess",
+							"time": 0.4,
+							"do": "shake"
+						}
+					],
+					"portrait": "defeat_1"
+				},
+				{
+					"act": 1,
+					"speaker": "蓝色的公主",
+					"text": "……风。……冻住风眼，你就什么都没有了。",
+					"actions": [
 						{
 							"who": "princess",
 							"visual": "giggle",
@@ -3739,28 +7685,70 @@
 							"state": "giggle",
 							"do": "voice"
 						}
-					]
+					],
+					"portrait": "defeat_1"
 				},
 				{
-					"speaker": "蓝色的公主",
-					"text": "哼，把刷子混进风里就想乱我的阵脚？我连你的落点都看清了，少得意！",
-					"actions": []
-				},
-				{
+					"act": 1,
 					"speaker": "狂风熊统领",
-					"text": "熊队，跟上风轮！给她的冰晶添点小麻烦！",
+					"text": "冻？风一直在转，冻不住！",
+					"actions": [
+						{
+							"who": "foe",
+							"do": "taunt"
+						}
+					],
+					"portrait": "defeat_1"
+				},
+				{
+					"act": 1,
+					"speaker": "",
+					"text": "（她抬手凝冰，冰晶刚成形就被风卷散，叮叮当当地在风眼里乱转）",
+					"actions": [
+						{
+							"who": "princess",
+							"by": "foe",
+							"repeat": 5,
+							"interval": 0.3,
+							"fx": "lines",
+							"do": "tickle"
+						}
+					],
+					"portrait": "defeat_1"
+				},
+				{
+					"act": 1,
+					"speaker": "蓝色的公主",
+					"text": "……散、散了。……再来一次。",
+					"actions": [],
+					"portrait": "defeat_1"
+				},
+				{
+					"act": 1,
+					"speaker": "狂风熊统领",
+					"text": "羽刷，出鞘！",
 					"actions": [
 						{
 							"who": "foe",
 							"count": 2,
 							"do": "hop"
 						}
-					]
+					],
+					"portrait": "defeat_1"
 				},
 				{
+					"act": 2,
 					"speaker": "",
-					"text": "（另一束羽刷从侧面擦过大腿，她急着调整站位，指尖冰晶却晃了一下。她立刻瞪向巨熊，想用一声呵斥盖过刚漏出的笑）",
+					"text": "（巨熊抽出羽刷。刷头顺着风，贴着她的大腿内侧，从膝盖慢慢往上刷，刷到腿根就停在那里，被风吹着打转）",
 					"actions": [
+						{
+							"who": "princess",
+							"by": "foe",
+							"repeat": 5,
+							"interval": 0.3,
+							"fx": "lines",
+							"do": "tickle"
+						},
 						{
 							"who": "princess",
 							"by": "foe",
@@ -3769,48 +7757,15 @@
 							"fx": "feather",
 							"zone": "thigh",
 							"do": "tickle"
-						},
-						{
-							"who": "princess",
-							"time": 0.4,
-							"do": "shake"
 						}
-					]
+					],
+					"portrait": "defeat_2"
 				},
 				{
+					"act": 2,
 					"speaker": "蓝色的公主",
-					"text": "噗……看什么看！只是这阵风乱吹，害我站偏了一步，才不是我笑了！",
+					"text": "……！……往、往上……刷……那里……风……别吹……",
 					"actions": [
-						{
-							"who": "princess",
-							"kind": "laugh",
-							"do": "bubble"
-						}
-					]
-				},
-				{
-					"speaker": "",
-					"text": "（她重新凝聚冰晶，准备先冻住风眼。巨熊却收起风盾，把一直藏在掌边的小羽刷亮了出来；她的目光顿时从盾牌移到了刷头）",
-					"actions": []
-				},
-				{
-					"speaker": "蓝色的公主",
-					"text": "原来你还藏了一把！把刷子收回去，有本事正面接我的冰晶！",
-					"actions": []
-				},
-				{
-					"speaker": "",
-					"text": "（吸引气流把她的脚步拉乱，羽刷接上下一轮攻击。她先想避开腿侧的扫刷，又被身后的爪垫打乱站位，憋着的笑再也接不回完整的咒语）",
-					"actions": [
-						{
-							"who": "princess",
-							"by": "foe",
-							"repeat": 3,
-							"interval": 0.35,
-							"fx": "hand",
-							"zone": "butt",
-							"do": "tickle"
-						},
 						{
 							"who": "princess",
 							"visual": "helpless_1",
@@ -3820,48 +7775,280 @@
 						{
 							"state": "laugh",
 							"do": "voice"
+						}
+					],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 2,
+					"speaker": "狂风熊统领",
+					"text": "嗷！找到了！冰公主怕这里！",
+					"actions": [
+						{
+							"who": "foe",
+							"do": "taunt"
+						}
+					],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 2,
+					"speaker": "",
+					"text": "（巨熊伸出熊掌，肉垫绕到她身后，左边按一下，右边按一下，跟着风轮的节奏轮流捏）",
+					"actions": [
+						{
+							"who": "princess",
+							"by": "foe",
+							"repeat": 8,
+							"interval": 0.22,
+							"fx": "lines",
+							"do": "tickle"
 						},
 						{
 							"who": "princess",
-							"time": 0.4,
-							"do": "shake"
+							"by": "foe",
+							"repeat": 3,
+							"interval": 0.35,
+							"fx": "hand",
+							"zone": "butt",
+							"do": "tickle"
 						}
-					]
+					],
+					"portrait": "defeat_2"
 				},
 				{
+					"act": 2,
 					"speaker": "蓝色的公主",
-					"text": "噗哈哈、哈哈哈哈！先把爪子收回去……我还差半句就念完了！这次是风捣乱，不许算你赢！",
+					"text": "……噗。……跟、跟着……风轮……左、右……噗哈……",
 					"actions": [
 						{
 							"who": "princess",
 							"kind": "laugh",
 							"do": "bubble"
 						}
-					]
+					],
+					"portrait": "defeat_2"
 				},
 				{
+					"act": 2,
+					"speaker": "",
+					"text": "（风里的细羽毛排成一线，顺着大腿和屁股交界的那道线，被风推着来回轻扫）",
+					"actions": [
+						{
+							"who": "princess",
+							"by": "foe",
+							"repeat": 8,
+							"interval": 0.22,
+							"fx": "lines",
+							"do": "tickle"
+						}
+					],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 2,
+					"speaker": "蓝色的公主",
+					"text": "……哈、哈哈……风、风也知道……那条线……哈哈……",
+					"actions": [
+						{
+							"who": "princess",
+							"time": 0.4,
+							"do": "shake"
+						}
+					],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 2,
 					"speaker": "狂风熊统领",
-					"text": "风轮再转一圈！落点换了，小熊们接力跟上！",
+					"text": "风轮再转！羽刷换一招！",
 					"actions": [
 						{
 							"who": "foe",
 							"do": "taunt"
 						}
-					]
+					],
+					"portrait": "defeat_2"
 				},
 				{
+					"act": 2,
 					"speaker": "",
-					"text": "（她硬要把剩下的咒语念完，追来的羽毛却又一次打断了节拍。粉色公主在旁边举起锤子，想替她截住刷具；她抬手示意搭档先守住小怪的落点）",
+					"text": "（羽刷从腿根转到交界线，熊掌从左边换到右边，风每转一圈，挠法就换一次）",
 					"actions": [
 						{
 							"who": "princess",
 							"by": "foe",
-							"repeat": 3,
-							"interval": 0.35,
-							"fx": "feather",
-							"zone": "thigh",
+							"repeat": 8,
+							"interval": 0.22,
+							"fx": "lines",
 							"do": "tickle"
+						}
+					],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 2,
+					"speaker": "蓝色的公主",
+					"text": "……哈哈哈……换、换来换去……跟不上……哈哈哈！",
+					"actions": [
+						{
+							"who": "princess",
+							"visual": "helpless_1",
+							"anim": "helpless",
+							"do": "pose"
 						},
+						{
+							"state": "laugh",
+							"do": "voice"
+						}
+					],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 3,
+					"speaker": "",
+					"text": "（咒文被笑声和风声打得七零八落，魔力在体内打着旋往上涌，疲倦满了）",
+					"actions": [],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 3,
+					"speaker": "蓝色的公主",
+					"text": "……咒、咒文……不用了……魔力……自己……",
+					"actions": [
+						{
+							"zoom": 1.5,
+							"focus": "princess",
+							"time": 0.5,
+							"do": "camera"
+						},
+						{
+							"who": "princess",
+							"time": 1.0,
+							"do": "shake"
+						}
+					],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 3,
+					"speaker": "狂风熊统领",
+					"text": "嗷？风眼结霜了——",
+					"actions": [],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": "burst",
+					"speaker": "",
+					"text": "（冰蓝色的星光炸开，整个风眼一瞬间冻成一圈冰环，巨熊的风轮盾也冻住了，转不动了）",
+					"actions": [
+						{
+							"time": 0.8,
+							"do": "flash"
+						},
+						{
+							"sound": "star_burst",
+							"volume": -1.0,
+							"do": "sfx"
+						},
+						{
+							"sound": "water_release",
+							"volume": -2.0,
+							"do": "sfx"
+						},
+						{
+							"state": "",
+							"do": "voice"
+						},
+						{
+							"who": "princess",
+							"time": 0.5,
+							"do": "shake"
+						},
+						{
+							"zoom": 1,
+							"focus": "princess",
+							"time": 0.5,
+							"do": "camera"
+						},
+						{
+							"who": "foe",
+							"to": [
+								100,
+								2
+							],
+							"time": 0.25,
+							"do": "move"
+						},
+						{
+							"time": 0.4,
+							"do": "flash"
+						}
+					],
+					"portrait": "fatigue_burst",
+					"wait": 1.1
+				},
+				{
+					"act": 3,
+					"speaker": "蓝色的公主",
+					"text": "……呼……冻住了。……风……停了。……我……没力气了。",
+					"actions": [
+						{
+							"zoom": 1,
+							"focus": "princess",
+							"time": 0.4,
+							"do": "camera"
+						},
+						{
+							"who": "princess",
+							"kind": "shy",
+							"do": "bubble"
+						}
+					],
+					"portrait": "fatigue_burst"
+				},
+				{
+					"act": 3,
+					"speaker": "狂风熊统领",
+					"text": "嗷呜……熊掌一拍，冰就碎！熊队，重新起风！",
+					"actions": [
+						{
+							"who": "foe",
+							"to": [
+								40,
+								8
+							],
+							"time": 0.6,
+							"do": "move"
+						},
+						{
+							"state": "giggle",
+							"do": "voice"
+						}
+					],
+					"portrait": "fatigue_burst"
+				},
+				{
+					"act": 3,
+					"speaker": "",
+					"text": "（巨熊拍碎冰环，风轮又转了起来。放空魔力的身体敏感过头，羽刷刚擦过腿根，她就整个人缩起来）",
+					"actions": [
+						{
+							"who": "princess",
+							"by": "foe",
+							"repeat": 5,
+							"interval": 0.3,
+							"fx": "lines",
+							"do": "tickle"
+						}
+					],
+					"portrait": "fatigue_burst"
+				},
+				{
+					"act": 3,
+					"speaker": "蓝色的公主",
+					"text": "……呀啊！……羽刷……风……一起……我、我不行了……哈哈哈哈！",
+					"actions": [
 						{
 							"who": "princess",
 							"visual": "helpless_2",
@@ -3873,45 +8060,203 @@
 						},
 						{
 							"who": "princess",
+							"kind": "laugh",
+							"do": "bubble"
+						}
+					],
+					"portrait": "fatigue_burst"
+				},
+				{
+					"act": 3,
+					"speaker": "狂风熊统领",
+					"text": "嗷哈哈！冻完之后，更好挠！羽刷记下了！",
+					"actions": [
+						{
+							"who": "foe",
+							"do": "taunt"
+						}
+					],
+					"portrait": "fatigue_burst"
+				},
+				{
+					"act": 3,
+					"speaker": "",
+					"text": "（羽刷在腿根打旋，熊掌轮流捏两边，风里的羽毛还在交界线上来回地扫）",
+					"actions": [
+						{
+							"who": "princess",
+							"by": "foe",
+							"repeat": 8,
+							"interval": 0.22,
+							"fx": "lines",
+							"do": "tickle"
+						},
+						{
+							"who": "princess",
+							"by": "foe",
+							"repeat": 3,
+							"interval": 0.35,
+							"fx": "hand",
+							"zone": "butt",
+							"do": "tickle"
+						}
+					],
+					"portrait": "fatigue_burst"
+				},
+				{
+					"act": 3,
+					"speaker": "蓝色的公主",
+					"text": "……哈哈哈哈……风、风……刷子……熊掌……全、全部……哈哈哈！",
+					"actions": [
+						{
+							"who": "princess",
 							"time": 0.4,
 							"do": "shake"
 						}
-					]
+					],
+					"portrait": "fatigue_burst"
 				},
 				{
+					"act": 3,
+					"speaker": "",
+					"text": "（巨熊把风轮盾插在地上，风一直往她身上吹，羽刷顺着内侧一遍一遍往上刷到腿根）",
+					"actions": [
+						{
+							"who": "princess",
+							"by": "foe",
+							"repeat": 8,
+							"interval": 0.22,
+							"fx": "lines",
+							"do": "tickle"
+						}
+					],
+					"portrait": "fatigue_burst"
+				},
+				{
+					"act": 3,
 					"speaker": "蓝色的公主",
-					"text": "哈哈哈哈哈！先、先停一下……我明明都看见它飞过来了！别笑话我，去挡住后面那队小怪呀，哈哈哈哈！",
+					"text": "……哈哈哈哈……一、一遍又一遍……哈哈哈哈！",
+					"actions": [
+						{
+							"who": "princess",
+							"visual": "helpless_2",
+							"do": "pose"
+						},
+						{
+							"state": "laugh",
+							"do": "voice"
+						}
+					],
+					"portrait": "fatigue_burst"
+				},
+				{
+					"act": 4,
+					"speaker": "",
+					"text": "（小熊们乘着旋风落下来，围着她，学着统领的样子拿小羽毛扫）",
+					"actions": [
+						{
+							"who": "princess",
+							"by": "foe",
+							"repeat": 8,
+							"interval": 0.22,
+							"fx": "lines",
+							"do": "tickle"
+						}
+					],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 4,
+					"speaker": "狂风熊统领",
+					"text": "熊队！接力挠！",
+					"actions": [
+						{
+							"who": "foe",
+							"do": "taunt"
+						}
+					],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 4,
+					"speaker": "蓝色的公主",
+					"text": "……哈哈……风、风……你赢了……我投降……哈哈哈……",
+					"actions": [
+						{
+							"who": "princess",
+							"visual": "helpless_2",
+							"do": "pose"
+						},
+						{
+							"state": "laugh",
+							"do": "voice"
+						},
+						{
+							"who": "princess",
+							"kind": "laugh",
+							"do": "bubble"
+						}
+					],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 4,
+					"speaker": "",
+					"text": "（一只扫完换下一只，她软软地浮在风眼里，笑得连指尖都在抖）",
+					"actions": [
+						{
+							"who": "princess",
+							"by": "foe",
+							"repeat": 8,
+							"interval": 0.22,
+							"fx": "lines",
+							"do": "tickle"
+						}
+					],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 4,
+					"speaker": "蓝色的公主",
+					"text": "……哈哈……接、接力……你们……排练过……",
+					"actions": [
+						{
+							"who": "princess",
+							"time": 0.4,
+							"do": "shake"
+						}
+					],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 4,
+					"speaker": "狂风熊统领",
+					"text": "嗷！今天的风，熊赢了！",
+					"actions": [],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 4,
+					"speaker": "蓝色的公主",
+					"text": "……下次。……先冻风轮。……一片叶子……也转不动。",
 					"actions": [
 						{
 							"who": "princess",
 							"kind": "laugh",
 							"do": "bubble"
 						}
-					]
+					],
+					"portrait": "defeat_2"
 				},
 				{
+					"act": 4,
 					"speaker": "",
-					"text": "（风轮渐渐慢下来。她扶着城垛坐稳，等呼吸不再被笑声打断，便指向城门边的落点，示意粉色公主接过这一段防线）",
-					"actions": []
+					"text": "（风停了，她轻轻落回城墙脚下。巨熊带着熊队走远，她把吹乱的头发拨好，耳朵还红着）",
+					"actions": [],
+					"portrait": "defeat_2"
 				},
 				{
-					"speaker": "蓝色的公主",
-					"text": "你先替我挡一下，我马上就来！刚才那是风压太古怪……听见没有，回去不准拿这个笑我！",
-					"actions": [
-						{
-							"zoom": 1,
-							"focus": "princess",
-							"time": 0.4,
-							"do": "camera"
-						}
-					]
-				},
-				{
-					"speaker": "",
-					"text": "（她整理好袖口，再次举起施法的手。看到搭档还在看她，她先扬起下巴，又低声补了一句让对方小心下一轮风）",
-					"actions": []
-				},
-				{
+					"act": 4,
 					"actions": [
 						{
 							"state": "",
@@ -3927,7 +8272,7 @@
 			]
 		},
 		"death_siege_puppet_master": {
-			"name": "提线刷阵与四段破防",
+			"name": "冰公主与狂欢挠痒魔偶师",
 			"cast": {
 				"princess": {
 					"kind": "princess",
@@ -3951,6 +8296,8 @@
 			},
 			"steps": [
 				{
+					"act": 1,
+					"portrait": "defeat_1",
 					"actions": [
 						{
 							"time": 0.7,
@@ -3964,8 +8311,9 @@
 					"wait": 0.8
 				},
 				{
+					"act": 1,
 					"speaker": "",
-					"text": "（木偶小丑转动绞盘，缎带把她的脚步拉乱。她扶住城垛，偏要先把手里的冰晶稳定下来，才肯承认自己被拖进了机关节奏）",
+					"text": "（彩色缎带飞上城墙，缠住她的手腕，把她施法的手拉到了头顶，丝线的另一头攥在魔偶师的手指上）",
 					"actions": [
 						{
 							"who": "foe",
@@ -3980,7 +8328,56 @@
 							"who": "princess",
 							"kind": "surprise",
 							"do": "bubble"
+						}
+					],
+					"portrait": "defeat_1"
+				},
+				{
+					"act": 1,
+					"speaker": "蓝色的公主",
+					"text": "……丝线。……手被吊起来，也能放魔法。",
+					"actions": [],
+					"portrait": "defeat_1"
+				},
+				{
+					"act": 1,
+					"speaker": "魔偶师",
+					"text": "嘻嘻嘻～冰公主～今晚的女主角～",
+					"actions": [
+						{
+							"who": "foe",
+							"count": 2,
+							"do": "hop"
+						}
+					],
+					"portrait": "defeat_1"
+				},
+				{
+					"act": 1,
+					"speaker": "",
+					"text": "（魔偶师手指一勾，她被提下城墙，悬在刷轮箱的上方，两只膝盖被丝线往两边轻轻拉开）",
+					"actions": [
+						{
+							"who": "princess",
+							"by": "foe",
+							"repeat": 5,
+							"interval": 0.3,
+							"fx": "lines",
+							"do": "tickle"
 						},
+						{
+							"who": "princess",
+							"time": 0.4,
+							"do": "shake"
+						}
+					],
+					"portrait": "defeat_1"
+				},
+				{
+					"act": 1,
+					"speaker": "蓝色的公主",
+					"text": "……拉什么。……把腿……放回去。",
+					"actions": [
 						{
 							"who": "princess",
 							"visual": "giggle",
@@ -3991,70 +8388,87 @@
 							"state": "giggle",
 							"do": "voice"
 						}
-					]
+					],
+					"portrait": "defeat_1"
 				},
 				{
+					"act": 1,
+					"speaker": "魔偶师",
+					"text": "那可不行～第一幕需要这个姿势～",
+					"actions": [
+						{
+							"who": "foe",
+							"do": "taunt"
+						}
+					],
+					"portrait": "defeat_1"
+				},
+				{
+					"act": 1,
+					"speaker": "",
+					"text": "（她指尖凝起冰光，丝线立刻一抖，手腕被拉得转了半圈，冰光落了个空）",
+					"actions": [
+						{
+							"who": "princess",
+							"by": "foe",
+							"repeat": 5,
+							"interval": 0.3,
+							"fx": "lines",
+							"do": "tickle"
+						}
+					],
+					"portrait": "defeat_1"
+				},
+				{
+					"act": 1,
 					"speaker": "蓝色的公主",
-					"text": "几根缎带就想把我当木偶？等我念完这句，你的提线一根也别想留下！",
-					"actions": []
+					"text": "……歪了。……再来。",
+					"actions": [],
+					"portrait": "defeat_1"
 				},
 				{
-					"speaker": "狂欢挠痒魔偶师",
-					"text": "机关接力，开演！看看她能把节拍记住多久！",
+					"act": 1,
+					"speaker": "魔偶师",
+					"text": "嘻嘻～第一幕，腿根独奏～",
 					"actions": [
 						{
 							"who": "foe",
 							"count": 2,
 							"do": "hop"
 						}
-					]
+					],
+					"portrait": "defeat_1"
 				},
 				{
+					"act": 2,
 					"speaker": "",
-					"text": "（缎带把她带到刷阵边，圆头软指率先轻点大腿内侧。她急忙挪步，嘴上却还在数第一段的节奏，想用分析压住那一下意外的漏笑）",
+					"text": "（一只机械软指从箱子里伸出来，贴着她的大腿内侧，从膝盖往上一根一根按下去，像弹琴一样，一直弹到腿根，在那里来回地按）",
 					"actions": [
 						{
 							"who": "princess",
 							"by": "foe",
+							"repeat": 5,
+							"interval": 0.3,
+							"fx": "lines",
+							"do": "tickle"
+						},
+						{
+							"who": "princess",
+							"by": "foe",
 							"repeat": 3,
-							"interval": 0.18,
+							"interval": 0.35,
 							"fx": "hand",
 							"zone": "thigh",
-							"tool": "tool_finger",
 							"do": "tickle"
-						},
-						{
-							"who": "princess",
-							"time": 0.4,
-							"do": "shake"
 						}
-					]
+					],
+					"portrait": "defeat_2"
 				},
 				{
+					"act": 2,
 					"speaker": "蓝色的公主",
-					"text": "唔、噗！第一段，我已经记住了！才揉一下就想让我乱掉？你还差得远……嘻，别盯着我看！",
+					"text": "……！……弹、弹琴……往上……那里……不是琴键……",
 					"actions": [
-						{
-							"who": "princess",
-							"kind": "laugh",
-							"do": "bubble"
-						}
-					]
-				},
-				{
-					"speaker": "",
-					"text": "（软指收回，滚刷接上短程往返。她一边躲开腿侧的刷头，一边想把下一句咒语接回去，绞盘却又拖动了半步，让她的判断和站位同时落空）",
-					"actions": [
-						{
-							"who": "princess",
-							"by": "foe",
-							"repeat": 3,
-							"interval": 0.18,
-							"fx": "brush",
-							"zone": "thigh",
-							"tool": "tool_roller",
-							"do": "tickle"
-						},
 						{
 							"who": "princess",
 							"visual": "helpless_1",
@@ -4065,75 +8479,278 @@
 							"state": "laugh",
 							"do": "voice"
 						}
-					]
+					],
+					"portrait": "defeat_2"
 				},
 				{
-					"speaker": "蓝色的公主",
-					"text": "哈、哈哈哈哈！刚才那段还没停，怎么滚刷就接上了？！我是站位偏了，先把那两个轮子停住！",
-					"actions": [
-						{
-							"who": "princess",
-							"kind": "laugh",
-							"do": "bubble"
-						}
-					]
-				},
-				{
-					"speaker": "",
-					"text": "（左右软垫轮流按压屁股，滚刷随即在大腿与臀部交界处轻轻一刮。她原本还想指出机关的顺序，却被左右交替的节拍打断，指着刷具的手也跟着晃了起来）",
-					"actions": [
-						{
-							"who": "princess",
-							"by": "foe",
-							"repeat": 3,
-							"interval": 0.18,
-							"fx": "pinch",
-							"zone": "butt",
-							"tool": "tool_pad",
-							"do": "tickle"
-						},
-						{
-							"who": "princess",
-							"time": 0.4,
-							"do": "shake"
-						}
-					]
-				},
-				{
-					"speaker": "蓝色的公主",
-					"text": "左边……右边又来了？！哈哈哈哈哈！别轮流捏，我还在记第四段呢！你这是故意把节拍搅乱，不许说我没记住！",
-					"actions": [
-						{
-							"who": "princess",
-							"kind": "laugh",
-							"do": "bubble"
-						}
-					]
-				},
-				{
-					"speaker": "狂欢挠痒魔偶师",
-					"text": "换位缎带收紧！接力队跟上新落点！",
+					"act": 2,
+					"speaker": "魔偶师",
+					"text": "嘻嘻～这里的音色～最好听～",
 					"actions": [
 						{
 							"who": "foe",
 							"do": "taunt"
 						}
-					]
+					],
+					"portrait": "defeat_2"
 				},
 				{
+					"act": 2,
 					"speaker": "",
-					"text": "（换位缎带调换两人的位置。她落到地面，抬头看到粉色公主在墙顶指向梯子，便抢着回应，让对方先照看正门，自己随后上去）",
+					"text": "（两只软指绕到她身后，左边捏一下，右边捏一下，一拍一拍地打着节奏）",
+					"actions": [
+						{
+							"who": "princess",
+							"by": "foe",
+							"repeat": 8,
+							"interval": 0.22,
+							"fx": "lines",
+							"do": "tickle"
+						},
+						{
+							"who": "princess",
+							"by": "foe",
+							"repeat": 3,
+							"interval": 0.35,
+							"fx": "hand",
+							"zone": "butt",
+							"do": "tickle"
+						}
+					],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 2,
+					"speaker": "蓝色的公主",
+					"text": "……噗。……打、打拍子……左、右……噗哈……",
+					"actions": [
+						{
+							"who": "princess",
+							"kind": "laugh",
+							"do": "bubble"
+						}
+					],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 2,
+					"speaker": "",
+					"text": "（刷轮箱升起来，一只小滚刷贴着大腿和屁股交界的那道线，嗡嗡地从一头滚到另一头）",
+					"actions": [
+						{
+							"who": "princess",
+							"by": "foe",
+							"repeat": 8,
+							"interval": 0.22,
+							"fx": "lines",
+							"do": "tickle"
+						}
+					],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 2,
+					"speaker": "蓝色的公主",
+					"text": "……哈、哈哈……滚、滚刷……交界……哈哈……",
 					"actions": [
 						{
 							"who": "princess",
 							"time": 0.4,
 							"do": "shake"
 						}
-					]
+					],
+					"portrait": "defeat_2"
 				},
 				{
+					"act": 2,
+					"speaker": "魔偶师",
+					"text": "第二幕～双路刷挠～",
+					"actions": [
+						{
+							"who": "foe",
+							"do": "taunt"
+						}
+					],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 2,
+					"speaker": "",
+					"text": "（魔偶师像在指挥乐队，丝线一松一紧，软指揉腿根，滚刷滚交界，一个高音一个低音）",
+					"actions": [
+						{
+							"who": "princess",
+							"by": "foe",
+							"repeat": 8,
+							"interval": 0.22,
+							"fx": "lines",
+							"do": "tickle"
+						}
+					],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 2,
 					"speaker": "蓝色的公主",
-					"text": "我当然看得见梯子，不用你一直指！你先帮我挡正门……哈哈哈哈，刷子怎么也追到落点了？！",
+					"text": "……哈哈哈……指、指挥……我不是……乐队……哈哈哈！",
+					"actions": [
+						{
+							"who": "princess",
+							"visual": "helpless_1",
+							"anim": "helpless",
+							"do": "pose"
+						},
+						{
+							"state": "laugh",
+							"do": "voice"
+						}
+					],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 3,
+					"speaker": "",
+					"text": "（被丝线吊着施不了法，魔力在体内越积越多，疲倦满了）",
+					"actions": [],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 3,
+					"speaker": "蓝色的公主",
+					"text": "……丝线……全部……冻断……",
+					"actions": [
+						{
+							"zoom": 1.5,
+							"focus": "princess",
+							"time": 0.5,
+							"do": "camera"
+						},
+						{
+							"who": "princess",
+							"time": 1.0,
+							"do": "shake"
+						}
+					],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 3,
+					"speaker": "魔偶师",
+					"text": "嘻？道具结霜了——",
+					"actions": [],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": "burst",
+					"speaker": "",
+					"text": "（冰蓝色的星光炸开，缎带冻成冰条一根根碎掉，刷轮箱结了一层冰，魔偶师被冻得在空中打喷嚏）",
+					"actions": [
+						{
+							"time": 0.8,
+							"do": "flash"
+						},
+						{
+							"sound": "star_burst",
+							"volume": -1.0,
+							"do": "sfx"
+						},
+						{
+							"sound": "water_release",
+							"volume": -2.0,
+							"do": "sfx"
+						},
+						{
+							"state": "",
+							"do": "voice"
+						},
+						{
+							"who": "princess",
+							"time": 0.5,
+							"do": "shake"
+						},
+						{
+							"zoom": 1,
+							"focus": "princess",
+							"time": 0.5,
+							"do": "camera"
+						},
+						{
+							"who": "foe",
+							"to": [
+								100,
+								2
+							],
+							"time": 0.25,
+							"do": "move"
+						},
+						{
+							"time": 0.4,
+							"do": "flash"
+						}
+					],
+					"portrait": "fatigue_burst",
+					"wait": 1.1
+				},
+				{
+					"act": 3,
+					"speaker": "蓝色的公主",
+					"text": "……呼……碎了。……可是……我……落下来……站不稳。",
+					"actions": [
+						{
+							"zoom": 1,
+							"focus": "princess",
+							"time": 0.4,
+							"do": "camera"
+						},
+						{
+							"who": "princess",
+							"kind": "shy",
+							"do": "bubble"
+						}
+					],
+					"portrait": "fatigue_burst"
+				},
+				{
+					"act": 3,
+					"speaker": "魔偶师",
+					"text": "嘻嘻嘻～阿嚏～意外也是狂欢～换新丝线～",
+					"actions": [
+						{
+							"who": "foe",
+							"to": [
+								40,
+								8
+							],
+							"time": 0.6,
+							"do": "move"
+						},
+						{
+							"state": "giggle",
+							"do": "voice"
+						}
+					],
+					"portrait": "fatigue_burst"
+				},
+				{
+					"act": 3,
+					"speaker": "",
+					"text": "（新的缎带又缠了上来。放空魔力的身体敏感过头，软指刚按到腿根，她就整个人一颤）",
+					"actions": [
+						{
+							"who": "princess",
+							"by": "foe",
+							"repeat": 5,
+							"interval": 0.3,
+							"fx": "lines",
+							"do": "tickle"
+						}
+					],
+					"portrait": "fatigue_burst"
+				},
+				{
+					"act": 3,
+					"speaker": "蓝色的公主",
+					"text": "……唔！……琴、琴键……按一下……我就……哈哈哈哈！……别按了……",
 					"actions": [
 						{
 							"who": "princess",
@@ -4149,68 +8766,200 @@
 							"kind": "laugh",
 							"do": "bubble"
 						}
-					]
+					],
+					"portrait": "fatigue_burst"
 				},
 				{
+					"act": 3,
+					"speaker": "魔偶师",
+					"text": "嘻嘻～冻完之后～音色更甜了～",
+					"actions": [
+						{
+							"who": "foe",
+							"do": "taunt"
+						}
+					],
+					"portrait": "fatigue_burst"
+				},
+				{
+					"act": 3,
 					"speaker": "",
-					"text": "（钟声响起，刷轮与接力小怪又接成一套攻击。她努力抬手指向钟楼，想把战术安排说完整，笑声却一次次抢在话尾前面）",
+					"text": "（软指在腿根上弹，两只软指轮流捏两边，滚刷在交界线上嗡嗡地滚）",
 					"actions": [
 						{
 							"who": "princess",
 							"by": "foe",
-							"repeat": 3,
-							"interval": 0.18,
-							"fx": "brush",
-							"zone": "thigh",
-							"tool": "tool_roller",
+							"repeat": 8,
+							"interval": 0.22,
+							"fx": "lines",
 							"do": "tickle"
 						},
 						{
 							"who": "princess",
 							"by": "foe",
 							"repeat": 3,
-							"interval": 0.18,
-							"fx": "pinch",
+							"interval": 0.35,
+							"fx": "hand",
 							"zone": "butt",
-							"tool": "tool_pad",
 							"do": "tickle"
 						}
-					]
+					],
+					"portrait": "fatigue_burst"
 				},
 				{
+					"act": 3,
 					"speaker": "蓝色的公主",
-					"text": "哈哈哈哈哈！别站着看我，先去拆钟楼！我、我只是暂时接不上咒语……你听见没，先拆钟楼呀哈哈哈哈！",
+					"text": "……哈哈哈哈……三、三声部……一起……哈哈哈！",
 					"actions": [
-						{
-							"who": "princess",
-							"kind": "laugh",
-							"do": "bubble"
-						},
 						{
 							"who": "princess",
 							"time": 0.4,
 							"do": "shake"
 						}
-					]
+					],
+					"portrait": "fatigue_burst"
 				},
 				{
+					"act": 3,
 					"speaker": "",
-					"text": "（钟声停下，缎带与刷具一同收回。她扶着梯子缓了一口气，先示意搭档继续守城，又偷偷看了看对方是不是还在忍笑）",
-					"actions": []
-				},
-				{
-					"speaker": "蓝色的公主",
-					"text": "不过四段机关，下次我肯定能躲开！喂，你还笑？刚才先去拆钟楼的明明是我的主意……记住这个就行了！",
+					"text": "（魔偶师把丝线挂上绞盘，绞盘每转一圈，软指就顺着内侧往上按到腿根一次）",
 					"actions": [
 						{
-							"zoom": 1,
-							"focus": "princess",
-							"time": 0.4,
-							"do": "camera"
+							"who": "princess",
+							"by": "foe",
+							"repeat": 8,
+							"interval": 0.22,
+							"fx": "lines",
+							"do": "tickle"
 						}
-					]
+					],
+					"portrait": "fatigue_burst"
 				},
 				{
+					"act": 3,
+					"speaker": "蓝色的公主",
+					"text": "……哈哈哈哈……绞、绞盘……也……停、停下……哈哈哈哈！",
+					"actions": [
+						{
+							"who": "princess",
+							"visual": "helpless_2",
+							"do": "pose"
+						},
+						{
+							"state": "laugh",
+							"do": "voice"
+						}
+					],
+					"portrait": "fatigue_burst"
+				},
+				{
+					"act": 4,
+					"speaker": "",
+					"text": "（小木偶们从箱子里爬出来，围着她跳舞，跳一圈就在她的腿根上戳一下）",
+					"actions": [
+						{
+							"who": "princess",
+							"by": "foe",
+							"repeat": 8,
+							"interval": 0.22,
+							"fx": "lines",
+							"do": "tickle"
+						}
+					],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 4,
+					"speaker": "魔偶师",
+					"text": "终幕～全体谢幕～",
+					"actions": [
+						{
+							"who": "foe",
+							"do": "taunt"
+						}
+					],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 4,
+					"speaker": "蓝色的公主",
+					"text": "……哈哈……谢、谢幕。……我认输。……认输……哈哈哈……",
+					"actions": [
+						{
+							"who": "princess",
+							"visual": "helpless_2",
+							"do": "pose"
+						},
+						{
+							"state": "laugh",
+							"do": "voice"
+						},
+						{
+							"who": "princess",
+							"kind": "laugh",
+							"do": "bubble"
+						}
+					],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 4,
+					"speaker": "",
+					"text": "（木偶们齐齐鞠躬，鞠完躬又在她的屁股上捏了一下）",
+					"actions": [
+						{
+							"who": "princess",
+							"by": "foe",
+							"repeat": 8,
+							"interval": 0.22,
+							"fx": "lines",
+							"do": "tickle"
+						}
+					],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 4,
+					"speaker": "蓝色的公主",
+					"text": "……哈哈……鞠、鞠完躬……还捏……一点礼貌都没有……",
+					"actions": [
+						{
+							"who": "princess",
+							"time": 0.4,
+							"do": "shake"
+						}
+					],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 4,
+					"speaker": "魔偶师",
+					"text": "嘻嘻嘻～冰公主的独奏～圆满落幕～",
+					"actions": [],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 4,
+					"speaker": "蓝色的公主",
+					"text": "……下次。……你的木偶……一个一个……冻成冰雕。……摆在城墙上。",
+					"actions": [
+						{
+							"who": "princess",
+							"kind": "laugh",
+							"do": "bubble"
+						}
+					],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 4,
+					"speaker": "",
+					"text": "（魔偶师鞠了一躬，消失在彩色烟雾里。她坐在地上，把缠在手腕上的那截缎带解了好久）",
+					"actions": [],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 4,
 					"actions": [
 						{
 							"state": "",
@@ -4226,7 +8975,7 @@
 			]
 		},
 		"death_siege_carnival_fortress": {
-			"name": "冰公主与第四声炮响",
+			"name": "冰公主与狂欢攻城堡垒",
 			"cast": {
 				"princess": {
 					"kind": "princess",
@@ -4250,6 +8999,8 @@
 			},
 			"steps": [
 				{
+					"act": 1,
+					"portrait": "defeat_1",
 					"actions": [
 						{
 							"time": 0.7,
@@ -4263,8 +9014,9 @@
 					"wait": 0.8
 				},
 				{
+					"act": 1,
 					"speaker": "",
-					"text": "巨型母车的双钩缓缓伸向塔阵。蓝色公主留在救援线上，冰晶已对准右侧吊索。",
+					"text": "（巨型母车的双钩伸向塔阵。她留在救援线上，冰晶已经对准吊索，却没注意到车侧的追猎巨手已经张开）",
 					"actions": [
 						{
 							"who": "foe",
@@ -4280,11 +9032,54 @@
 							"kind": "surprise",
 							"do": "bubble"
 						}
-					]
+					],
+					"portrait": "defeat_1"
 				},
 				{
+					"act": 1,
 					"speaker": "蓝色的公主",
-					"text": "左边交给你。我救这座，来得及。",
+					"text": "……右边那条。……来得及。",
+					"actions": [],
+					"portrait": "defeat_1"
+				},
+				{
+					"act": 1,
+					"speaker": "狂欢攻城堡垒",
+					"text": "目标锁定。追猎巨手，回收。",
+					"actions": [
+						{
+							"who": "foe",
+							"count": 2,
+							"do": "hop"
+						}
+					],
+					"portrait": "defeat_1"
+				},
+				{
+					"act": 1,
+					"speaker": "",
+					"text": "（巨手在她身后合拢，软软的衬垫把她包住，拖离吊索，提到了车身侧面的操作台上）",
+					"actions": [
+						{
+							"who": "princess",
+							"by": "foe",
+							"repeat": 5,
+							"interval": 0.3,
+							"fx": "lines",
+							"do": "tickle"
+						},
+						{
+							"who": "princess",
+							"time": 0.4,
+							"do": "shake"
+						}
+					],
+					"portrait": "defeat_1"
+				},
+				{
+					"act": 1,
+					"speaker": "蓝色的公主",
+					"text": "……抓错了。……我只是一个法师。……没什么好回收的。",
 					"actions": [
 						{
 							"who": "princess",
@@ -4296,11 +9091,25 @@
 							"state": "giggle",
 							"do": "voice"
 						}
-					]
+					],
+					"portrait": "defeat_1"
 				},
 				{
+					"act": 1,
+					"speaker": "狂欢攻城堡垒",
+					"text": "操作台，展开。腿部舒缓程序，启动。",
+					"actions": [
+						{
+							"who": "foe",
+							"do": "taunt"
+						}
+					],
+					"portrait": "defeat_1"
+				},
+				{
+					"act": 1,
 					"speaker": "",
-					"text": "巡航弹绕到她身后，弹头亮起。她横向换步，追猎巨手却从车侧伸来，张开的掌心停了一拍。",
+					"text": "（操作台伸出两只软垫扣环，扣住她的膝盖，把两条腿稳稳地固定在台面上）",
 					"actions": [
 						{
 							"who": "princess",
@@ -4310,27 +9119,33 @@
 							"fx": "lines",
 							"do": "tickle"
 						}
-					]
+					],
+					"portrait": "defeat_1"
 				},
 				{
+					"act": 1,
 					"speaker": "蓝色的公主",
-					"text": "哼，合拢前的停顿——我看见了。",
-					"actions": [
-						{
-							"who": "princess",
-							"visual": "giggle",
-							"anim": "idle",
-							"do": "pose"
-						},
-						{
-							"state": "giggle",
-							"do": "voice"
-						}
-					]
+					"text": "……舒缓。……不需要。……我很舒缓。",
+					"actions": [],
+					"portrait": "defeat_1"
 				},
 				{
+					"act": 1,
+					"speaker": "狂欢攻城堡垒",
+					"text": "检测到：腿根。敏感度：高。",
+					"actions": [
+						{
+							"who": "foe",
+							"count": 2,
+							"do": "hop"
+						}
+					],
+					"portrait": "defeat_1"
+				},
+				{
+					"act": 2,
 					"speaker": "",
-					"text": "她为补上救塔的一击晚走半步。手掌合拢，沿地面把她拖离吊索，柔软衬垫的震动打乱了咏唱。",
+					"text": "（一根机械臂伸过来，顶端的软刷贴着她的大腿内侧，从膝盖慢慢往上推，推到腿根就停住，嗡嗡地转起小圈）",
 					"actions": [
 						{
 							"who": "princess",
@@ -4340,6 +9155,23 @@
 							"fx": "lines",
 							"do": "tickle"
 						},
+						{
+							"who": "princess",
+							"by": "foe",
+							"repeat": 3,
+							"interval": 0.35,
+							"fx": "hand",
+							"zone": "thigh",
+							"do": "tickle"
+						}
+					],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 2,
+					"speaker": "蓝色的公主",
+					"text": "……！……检、检测……谁准你……往上……那里……",
+					"actions": [
 						{
 							"who": "princess",
 							"visual": "helpless_1",
@@ -4350,22 +9182,25 @@
 							"state": "laugh",
 							"do": "voice"
 						}
-					]
+					],
+					"portrait": "defeat_2"
 				},
 				{
-					"speaker": "蓝色的公主",
-					"text": "哈、哈哈！别拖！冰塔还在上面——粉色，帮我补一下！",
+					"act": 2,
+					"speaker": "狂欢攻城堡垒",
+					"text": "确认。弱点：腿根、臀部、交界线。",
 					"actions": [
 						{
-							"who": "princess",
-							"kind": "laugh",
-							"do": "bubble"
+							"who": "foe",
+							"do": "taunt"
 						}
-					]
+					],
+					"portrait": "defeat_2"
 				},
 				{
+					"act": 2,
 					"speaker": "",
-					"text": "同伴击断吊索，冰塔落回基座。另一条运输线上却响起拆解声，母车的第四个装填灯亮了。",
+					"text": "（两只软垫机械手绕到她身后，左边捏一下，右边捏一下，节奏精准得像钟表）",
 					"actions": [
 						{
 							"who": "princess",
@@ -4377,6 +9212,339 @@
 						},
 						{
 							"who": "princess",
+							"by": "foe",
+							"repeat": 3,
+							"interval": 0.35,
+							"fx": "hand",
+							"zone": "butt",
+							"do": "tickle"
+						}
+					],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 2,
+					"speaker": "蓝色的公主",
+					"text": "……噗。……钟、钟表……一秒……一下……噗哈……",
+					"actions": [
+						{
+							"who": "princess",
+							"kind": "laugh",
+							"do": "bubble"
+						}
+					],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 2,
+					"speaker": "",
+					"text": "（一根细刷对准大腿和屁股交界的那道线，像扫描仪一样，从一头慢慢扫到另一头，再扫回来）",
+					"actions": [
+						{
+							"who": "princess",
+							"by": "foe",
+							"repeat": 8,
+							"interval": 0.22,
+							"fx": "lines",
+							"do": "tickle"
+						}
+					],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 2,
+					"speaker": "蓝色的公主",
+					"text": "……哈、哈哈……扫、扫描……那道边……哈哈……",
+					"actions": [
+						{
+							"who": "princess",
+							"time": 0.4,
+							"do": "shake"
+						}
+					],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 2,
+					"speaker": "狂欢攻城堡垒",
+					"text": "效率提升。追加：羽毛模块。",
+					"actions": [
+						{
+							"who": "foe",
+							"do": "taunt"
+						}
+					],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 2,
+					"speaker": "",
+					"text": "（操作台两侧弹出一排羽毛，跟着软刷的节奏，在腿根上一根接一根地扫）",
+					"actions": [
+						{
+							"who": "princess",
+							"by": "foe",
+							"repeat": 8,
+							"interval": 0.22,
+							"fx": "lines",
+							"do": "tickle"
+						}
+					],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 2,
+					"speaker": "蓝色的公主",
+					"text": "……哈哈哈……模、模块……你到底……装了多少……哈哈哈！",
+					"actions": [
+						{
+							"who": "princess",
+							"visual": "helpless_1",
+							"anim": "helpless",
+							"do": "pose"
+						},
+						{
+							"state": "laugh",
+							"do": "voice"
+						}
+					],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 3,
+					"speaker": "",
+					"text": "（她想念咒打断机械臂，咒文却被笑声打碎。魔力在体内越积越满，疲倦到了顶）",
+					"actions": [],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 3,
+					"speaker": "蓝色的公主",
+					"text": "……核心……冻住……全部……",
+					"actions": [
+						{
+							"zoom": 1.5,
+							"focus": "princess",
+							"time": 0.5,
+							"do": "camera"
+						},
+						{
+							"who": "princess",
+							"time": 1.0,
+							"do": "shake"
+						}
+					],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 3,
+					"speaker": "狂欢攻城堡垒",
+					"text": "警告。检测到低温反应——",
+					"actions": [],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": "burst",
+					"speaker": "",
+					"text": "（冰蓝色的星光炸开，操作台结满白霜，机械臂冻得咔咔作响，巨手也被冻得松开了）",
+					"actions": [
+						{
+							"time": 0.8,
+							"do": "flash"
+						},
+						{
+							"sound": "star_burst",
+							"volume": -1.0,
+							"do": "sfx"
+						},
+						{
+							"sound": "water_release",
+							"volume": -2.0,
+							"do": "sfx"
+						},
+						{
+							"state": "",
+							"do": "voice"
+						},
+						{
+							"who": "princess",
+							"time": 0.5,
+							"do": "shake"
+						},
+						{
+							"zoom": 1,
+							"focus": "princess",
+							"time": 0.5,
+							"do": "camera"
+						},
+						{
+							"who": "foe",
+							"to": [
+								115,
+								-2
+							],
+							"time": 0.25,
+							"do": "move"
+						},
+						{
+							"time": 0.4,
+							"do": "flash"
+						}
+					],
+					"portrait": "fatigue_burst",
+					"wait": 1.1
+				},
+				{
+					"act": 3,
+					"speaker": "蓝色的公主",
+					"text": "……呼……冻住了。……我……也……动不了了。",
+					"actions": [
+						{
+							"zoom": 1,
+							"focus": "princess",
+							"time": 0.4,
+							"do": "camera"
+						},
+						{
+							"who": "princess",
+							"kind": "shy",
+							"do": "bubble"
+						}
+					],
+					"portrait": "fatigue_burst"
+				},
+				{
+					"act": 3,
+					"speaker": "狂欢攻城堡垒",
+					"text": "系统重启。除霜完成。追猎巨手，再次回收。",
+					"actions": [
+						{
+							"who": "foe",
+							"to": [
+								55,
+								4
+							],
+							"time": 0.6,
+							"do": "move"
+						},
+						{
+							"state": "giggle",
+							"do": "voice"
+						}
+					],
+					"portrait": "fatigue_burst"
+				},
+				{
+					"act": 3,
+					"speaker": "",
+					"text": "（白霜化开，机械臂又一根根伸了回来。放空魔力的身体敏感过头，软刷刚碰到腿根她就整个人一颤）",
+					"actions": [
+						{
+							"who": "princess",
+							"by": "foe",
+							"repeat": 5,
+							"interval": 0.3,
+							"fx": "lines",
+							"do": "tickle"
+						}
+					],
+					"portrait": "fatigue_burst"
+				},
+				{
+					"act": 3,
+					"speaker": "蓝色的公主",
+					"text": "……嘶……！……系、系统……你、你作弊……哈哈哈哈！",
+					"actions": [
+						{
+							"who": "princess",
+							"visual": "helpless_2",
+							"do": "pose"
+						},
+						{
+							"state": "laugh",
+							"do": "voice"
+						},
+						{
+							"who": "princess",
+							"kind": "laugh",
+							"do": "bubble"
+						}
+					],
+					"portrait": "fatigue_burst"
+				},
+				{
+					"act": 3,
+					"speaker": "狂欢攻城堡垒",
+					"text": "记录：释放魔力后，敏感度上升。更新程序。",
+					"actions": [
+						{
+							"who": "foe",
+							"do": "taunt"
+						}
+					],
+					"portrait": "fatigue_burst"
+				},
+				{
+					"act": 3,
+					"speaker": "",
+					"text": "（软刷在腿根转圈，软垫机械手轮流捏着两边，细刷在交界线上来回扫描，羽毛一刻不停）",
+					"actions": [
+						{
+							"who": "princess",
+							"by": "foe",
+							"repeat": 8,
+							"interval": 0.22,
+							"fx": "lines",
+							"do": "tickle"
+						},
+						{
+							"who": "princess",
+							"by": "foe",
+							"repeat": 3,
+							"interval": 0.35,
+							"fx": "hand",
+							"zone": "butt",
+							"do": "tickle"
+						}
+					],
+					"portrait": "fatigue_burst"
+				},
+				{
+					"act": 3,
+					"speaker": "蓝色的公主",
+					"text": "……哈哈哈哈……全、全套……一起……哈哈哈！",
+					"actions": [
+						{
+							"who": "princess",
+							"time": 0.4,
+							"do": "shake"
+						}
+					],
+					"portrait": "fatigue_burst"
+				},
+				{
+					"act": 3,
+					"speaker": "",
+					"text": "（母车缓缓前进，履带每转一圈，操作台就震一下，所有机械臂跟着一抖）",
+					"actions": [
+						{
+							"who": "princess",
+							"by": "foe",
+							"repeat": 8,
+							"interval": 0.22,
+							"fx": "lines",
+							"do": "tickle"
+						}
+					],
+					"portrait": "fatigue_burst"
+				},
+				{
+					"act": 3,
+					"speaker": "蓝色的公主",
+					"text": "……哈哈哈哈……震、震的时候……别……哈哈哈哈！",
+					"actions": [
+						{
+							"who": "princess",
 							"visual": "helpless_2",
 							"do": "pose"
 						},
@@ -4384,48 +9552,117 @@
 							"state": "laugh",
 							"do": "voice"
 						}
-					]
+					],
+					"portrait": "fatigue_burst"
 				},
 				{
+					"act": 4,
+					"speaker": "",
+					"text": "（母车载着她开回敌阵，车身上的喇叭放起了欢快的狂欢节音乐）",
+					"actions": [
+						{
+							"who": "princess",
+							"by": "foe",
+							"repeat": 8,
+							"interval": 0.22,
+							"fx": "lines",
+							"do": "tickle"
+						}
+					],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 4,
+					"speaker": "狂欢攻城堡垒",
+					"text": "目标回收完毕。狂欢节，继续。",
+					"actions": [
+						{
+							"who": "foe",
+							"do": "taunt"
+						}
+					],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 4,
 					"speaker": "蓝色的公主",
-					"text": "哈哈……我没漏数。四发，是另一座塔被拆了！",
+					"text": "……哈哈……我认输……认输了……音乐……关掉……哈哈哈……",
+					"actions": [
+						{
+							"who": "princess",
+							"visual": "helpless_2",
+							"do": "pose"
+						},
+						{
+							"state": "laugh",
+							"do": "voice"
+						},
+						{
+							"who": "princess",
+							"kind": "laugh",
+							"do": "bubble"
+						}
+					],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 4,
+					"speaker": "",
+					"text": "（小怪们爬上母车，围着操作台跳舞，还帮机械手扶住她的腿）",
+					"actions": [
+						{
+							"who": "princess",
+							"by": "foe",
+							"repeat": 8,
+							"interval": 0.22,
+							"fx": "lines",
+							"do": "tickle"
+						}
+					],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 4,
+					"speaker": "蓝色的公主",
+					"text": "……哈哈……你们……也……帮忙……全部……记住了……",
 					"actions": [
 						{
 							"who": "princess",
 							"time": 0.4,
 							"do": "shake"
 						}
-					]
+					],
+					"portrait": "defeat_2"
 				},
 				{
-					"speaker": "",
-					"text": "机械手松开，她倚着基座喘息，仍指向巨炮旁开始发亮的核心。两人决定在下一轮开火前一同反击。",
-					"actions": [
-						{
-							"zoom": 1,
-							"focus": "princess",
-							"time": 0.4,
-							"do": "camera"
-						}
-					]
+					"act": 4,
+					"speaker": "狂欢攻城堡垒",
+					"text": "程序结束。目标：笑倒。",
+					"actions": [],
+					"portrait": "defeat_2"
 				},
 				{
+					"act": 4,
 					"speaker": "蓝色的公主",
-					"text": "先让我站稳。下一次蓄力，你敲左边，我打右边。",
+					"text": "……下次。……蓄力的时候……我先打核心。……一下都不让你开炮。",
 					"actions": [
 						{
 							"who": "princess",
-							"visual": "giggle",
-							"anim": "idle",
-							"do": "pose"
-						},
-						{
-							"state": "giggle",
-							"do": "voice"
+							"kind": "laugh",
+							"do": "bubble"
 						}
-					]
+					],
+					"portrait": "defeat_2"
 				},
 				{
+					"act": 4,
+					"speaker": "",
+					"text": "（母车把她放回城墙脚下，轰隆隆地开远了。她扶着城墙站起来，脸红得厉害，一句话也没说）",
+					"actions": [],
+					"portrait": "defeat_2"
+				},
+				{
+					"act": 4,
 					"actions": [
 						{
 							"state": "",

@@ -233,7 +233,6 @@ class JointAction extends Node2D:
 				_move_actor(group[1], destination + Vector2(22, 12), 0.3)
 				next_hit = 0.3
 		active = true
-		SiegeTeamEffects.say(c, kind)
 		Fx.burst(get_parent(), origin + Vector2(0, -12), "spark", 10, 45, 0.45, Vector2.ZERO, color)
 		Audio.play("chime", -8.0)
 

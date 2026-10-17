@@ -239,6 +239,9 @@ func _setup() -> void:
 	# 配合技不进情报（只有飘字提示「怪物配合：××！」和公主的受挠台词）
 	teamwork.triggered.connect(func(_id: String, _at: Vector2):
 		Audio.play("combo", -4.0, 0.05))
+	teamwork.fired.connect(func(id: String, _at: Vector2, target: Node):
+		if target is PlayableCharacter:
+			SiegeTeamEffects.say_later(target, id))
 	add_child(teamwork)
 	features = WaveFeatures.new()
 	features.director = self

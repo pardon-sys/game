@@ -355,9 +355,9 @@ func _reactions() -> void:
 		check("handwritten generic and special lines: " + who, src["calm"].size() == 4 and src["special"].size() == 3 and src["first_encounter"].size() == 3)
 		check("helpless voice actually breaks into laughter: " + who, src["helpless_2"].all(func(line): return "哈哈" in line))
 		var cg: Dictionary = CG.cgs()["death_siege_gale_bear"]
-		check("CG has 15 authored beats: " + who, cg["steps"].size() == 17)
+		check("CG has ~40 authored beats: " + who, cg["steps"].filter(func(step): return step.has("text")).size() >= 38)
 		check("CG uses original tickle choreography: " + who, cg["steps"].any(func(step): return step.get("actions", []).any(func(action): return action.get("do") == "tickle")))
-		check("CG portraits follow poses: " + who, not cg["steps"].any(func(step): return step.has("portrait")))
+		check("CG is four acts with a fatigue burst: " + who, cg["steps"].any(func(step): return str(step.get("act")) == "burst" and step.get("portrait") == "fatigue_burst") and cg["steps"].any(func(step): return str(step.get("act")) in ["4", "4.0"]))
 		Characters.unscope()
 	var bear := _bear()
 	var saved_player := GameState.player
