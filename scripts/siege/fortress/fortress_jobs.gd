@@ -1,6 +1,7 @@
 class_name FortressJobs
 extends Node2D
-## 狂欢要塞的六个机关（数据在 data/siege/fortress.json，名字在 bosses.json）：按战斗时间计时，两两成对调度（pairs）。
+## 狂欢要塞的机关（数据在 data/siege/fortress.json，名字在 bosses.json）：按战斗时间计时，展开后两两成对调度（pairs），
+## 超载后每轮三个；auto 机关（护盾柱、车头舱门）不进轮换、由 FortressSkills 按条件放。机关时间线按 1 / warn_mult 加快。
 ##   missiles 猎笑巡航弹（追着人飞、闪光后爆开）、hands 伸缩追猎巨手（抓住往回拖）、rockets 双线火箭运兵（地面 / 墙顶分批落兵）、
 ##   crane 双钩劫塔（吊走冰塔，打断吊索 FortressTarget 救回来）、convoy 三批交叉车阵、cannon 三连锁定重炮（蓄力时打核心能取消）。
 ## 每个机关是一个 job（字典），目标、抓取、增援预约和被吊的冰塔都走同一条取消路径（finish / cancel_all）。
@@ -18,7 +19,10 @@ static var NAMES: Dictionary:
 		for key in FortressRules.data()["skills"]:
 			result[key] = FortressRules.skill(key)["name"]
 		return result
-const PAIRS := [["hands", "missiles"], ["convoy", "rockets"], ["crane", "cannon"]]
+## 展开后的成对调度（fortress.json 的 pairs）；超载时每轮再从下一对里多拉一个，三个一起放
+static var PAIRS: Array:
+	get:
+		return FortressRules.data()["pairs"]
 var boss: CarnivalFortress
 var cds := {}
 var jobs: Array[Dictionary] = []
@@ -28,7 +32,8 @@ var autonomous := true
 var sequence := 0
 var pair_index := 0
 var rest := 2.0
-var pending: Dictionary = {}
+## 成对 / 超载时排队等着放的机关：[{key, delay}]
+var pending: Array[Dictionary] = []
 var generation := 0
 var next_serial := 0
 var coop: FortressCooperation
@@ -36,6 +41,11 @@ var ground: Node2D
 var clock := 0.0
 var _textures := {}
 var last_safety := {}
+## 机关整条时间线（预警、飞行、回收）的快慢：默认 1 / warn_mult（第十轮加快）；测试可以设回 1
+var pace := 1.0 / float(FortressRules.data().get("warn_mult", 1.0))
+## 每个公主站着不动了几秒（索敌用）
+var still := {}
+var _last_pos := {}
 
 
 func _ready() -> void:
@@ -55,6 +65,19 @@ func _ready() -> void:
 	z_index = 16
 
 
+## 索敌分数（越小越优先）：距离减去站着不动的秒数 × 120。
+func target_score(c: PlayableCharacter, from: Vector2) -> float:
+	return c.global_position.distance_to(from) - float(still.get(c.get_instance_id(), 0.0)) * 120.0
+
+
+func _track_still(delta: float) -> void:
+	for c: PlayableCharacter in people():
+		var id := c.get_instance_id()
+		var last: Vector2 = _last_pos.get(id, c.global_position)
+		still[id] = float(still.get(id, 0.0)) + delta if last.distance_to(c.global_position) < 3.0 * maxf(delta * 60.0, 1.0) else 0.0
+		_last_pos[id] = c.global_position
+
+
 func valid() -> bool:
 	return SiegeTools.alive(boss) and not boss.ending and is_instance_valid(boss.director) and boss.director.state == "fight"
 
@@ -67,17 +90,28 @@ func nearby(key: String, count: int) -> Array:
 	return boss.director.enemies_near(boss.global_position, 850).filter(func(m): return MonsterTeamwork.key_of(m) == key and SiegeTools.valid_source(m) and m.is_physics_processing() and not m.get_meta("team_transfer", false) and not m.has_meta("fortress_coop") and float(m.get_meta("team_busy", 0.0)) <= Time.get_ticks_msec() / 1000.0).slice(0, count)
 
 
+## auto 机关（护盾柱、车头舱门）不进轮换、不占同时机关数，由子类按条件放。
+static func is_auto(key: String) -> bool:
+	return bool(FortressRules.skill(key).get("auto", false))
+
+
+## 正在放的轮换机关（不含 auto）。
+func main_jobs() -> Array[Dictionary]:
+	return jobs.filter(func(j): return not is_auto(j["kind"]))
+
+
 func tick(delta: float) -> void:
 	if not valid() or SiegeTools.paused():
 		return
 	clock += delta
+	_track_still(delta)
 	for key in cds:
 		cds[key] = maxf(0, float(cds[key]) - delta)
 	for job in jobs.duplicate():
 		if job["ended"]:
 			continue
-		job["t"] += delta
-		_update(job, delta)
+		job["t"] += delta * pace
+		_update(job, delta * pace)
 		if not job["ended"] and job["t"] >= job["life"]:
 			finish(job)
 	coop.tick(delta)
@@ -91,28 +125,35 @@ func tick(delta: float) -> void:
 
 func _schedule(delta: float) -> void:
 	if not pending.is_empty():
-		pending["delay"] -= delta
-		if pending["delay"] <= 0:
-			var key: String = pending["key"]
-			if jobs.is_empty() or safe_pair(key):
-				start(key)
-				pending.clear()
-			else:
-				pending["delay"] = 0.25
+		for item in pending.duplicate():
+			item["delay"] -= delta
+			if item["delay"] <= 0:
+				if main_jobs().is_empty() or safe_pair(item["key"]):
+					start(item["key"])
+					pending.erase(item)
+				else:
+					item["delay"] = 0.25
 		return
-	if not jobs.is_empty():
+	if not main_jobs().is_empty():
 		return
 	rest = maxf(0, rest - delta)
 	if rest > 0:
 		return
 	if boss.expanded:
-		var pair: Array = PAIRS[pair_index]
+		var pairs := PAIRS
+		var pair: Array = pairs[pair_index % pairs.size()]
+		var delay := float(FortressRules.data()["pair_delays"][pair_index % pairs.size()])
 		start(pair[0])
-		pending = {"key": pair[1], "delay": float(FortressRules.data()["pair_delays"][pair_index])}
-		pair_index = (pair_index + 1) % 3
-		GameState.hint(boss.notice("pair") % [NAMES[pair[0]], NAMES[pair[1]]])
+		pending = [{"key": pair[1], "delay": delay}]
+		if boss.overdrive:
+			var third: String = pairs[(pair_index + 1) % pairs.size()][0]
+			pending.append({"key": third, "delay": delay + 0.8})
+			GameState.hint(boss.notice("triple") % [NAMES[pair[0]], NAMES[pair[1]], NAMES[third]])
+		else:
+			GameState.hint(boss.notice("pair") % [NAMES[pair[0]], NAMES[pair[1]]])
+		pair_index = (pair_index + 1) % pairs.size()
 	else:
-		var keys := CD.keys()
+		var keys := CD.keys().filter(func(k): return not is_auto(k))
 		for i in keys.size():
 			var key: String = keys[sequence % keys.size()]
 			sequence += 1
@@ -122,7 +163,9 @@ func _schedule(delta: float) -> void:
 
 
 func start(key: String) -> bool:
-	if not valid() or not CD.has(key) or float(cds[key]) > 0 or jobs.size() >= (2 if boss.expanded else 1) or jobs.any(func(j): return j["kind"] == key):
+	if not valid() or not CD.has(key) or float(cds[key]) > 0 or jobs.any(func(j): return j["kind"] == key):
+		return false
+	if not is_auto(key) and main_jobs().size() >= (3 if boss.overdrive else (2 if boss.expanded else 1)):
 		return false
 	var job := {"kind": key, "t": 0.0, "life": float(FortressRules.skill(key)["life"]), "id": next_serial, "generation": generation, "objects": [], "ended": false, "next_hit": {}, "damage": 0, "ticket": -1, "reserved": 0}
 	next_serial += 1
@@ -272,8 +315,8 @@ func finish(job: Dictionary, _cancelled := false) -> void:
 			target.close()
 	_release_reserve(job)
 	jobs.erase(job)
-	cds[job["kind"]] = float(CD[job["kind"]])
-	if jobs.is_empty():
+	cds[job["kind"]] = float(CD[job["kind"]]) * (float(FortressRules.data().get("overdrive_cd", 1.0)) if boss.overdrive else 1.0)
+	if main_jobs().is_empty():
 		rest = 4.0 if boss.expanded else 2.0
 		boss.skill = ""
 	targets = targets.filter(func(t): return is_instance_valid(t) and not t.closed)

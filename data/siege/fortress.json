@@ -3,10 +3,10 @@
 		1176,
 		400
 	],
-	"hp": 4200,
-	"expand_hp": 1400,
-	"crew_cap": 48,
-	"cart_cap": 20,
+	"hp": 6000,
+	"expand_hp": 2000,
+	"crew_cap": 64,
+	"cart_cap": 40,
 	"alive_cap": 800,
 	"base_rate": 10.0,
 	"tier_seconds": 45.0,
@@ -20,33 +20,75 @@
 	"skills": {
 		"missiles": {
 			"name": "猎笑巡航弹",
-			"cd": 18.0,
-			"life": 7.0
+			"cd": 12.6,
+			"life": 7.0,
+			"auto": false
 		},
 		"hands": {
 			"name": "伸缩追猎巨手",
-			"cd": 16.0,
-			"life": 12.0
+			"cd": 11.2,
+			"life": 12.0,
+			"auto": false
 		},
 		"rockets": {
 			"name": "双线火箭运兵",
-			"cd": 20.0,
-			"life": 5.0
+			"cd": 14.0,
+			"life": 5.0,
+			"auto": false
 		},
 		"crane": {
 			"name": "双钩劫塔",
-			"cd": 26.0,
-			"life": 8.7
+			"cd": 18.2,
+			"life": 8.7,
+			"auto": false
 		},
 		"convoy": {
 			"name": "三批交叉车阵",
-			"cd": 26.0,
-			"life": 9.0
+			"cd": 18.2,
+			"life": 9.0,
+			"auto": false
 		},
 		"cannon": {
 			"name": "三连锁定重炮",
-			"cd": 30.0,
-			"life": 12.0
+			"cd": 21.0,
+			"life": 12.0,
+			"auto": false
+		},
+		"tornado_launcher": {
+			"name": "龙卷发射器",
+			"cd": 18.0,
+			"life": 9.0,
+			"auto": false
+		},
+		"portal_drop": {
+			"name": "传送门空降",
+			"cd": 22.0,
+			"life": 10.0,
+			"auto": false
+		},
+		"fireworks": {
+			"name": "烟花弹幕",
+			"cd": 20.0,
+			"life": 8.0,
+			"auto": false
+		},
+		"magnet": {
+			"name": "磁吸车头",
+			"cd": 18.0,
+			"life": 5.0,
+			"auto": false
+		},
+		"shields": {
+			"name": "护盾发生柱",
+			"cd": 999.0,
+			"life": 40.0,
+			"auto": true
+		},
+		"hatch": {
+			"name": "车头舱门",
+			"cd": 16.0,
+			"life": 3.0,
+			"auto": true
 		}
 	},
 	"pairs": [
@@ -61,11 +103,42 @@
 		[
 			"crane",
 			"cannon"
+		],
+		[
+			"tornado_launcher",
+			"magnet"
+		],
+		[
+			"portal_drop",
+			"fireworks"
 		]
 	],
 	"pair_delays": [
 		0.8,
 		0.8,
-		1.0
-	]
+		1.0,
+		0.8,
+		0.8
+	],
+	"warn_mult": 0.75,
+	"hand_speed": 1.4,
+	"hand_reach": 1.5,
+	"overdrive_ratio": 0.3,
+	"overdrive_cd": 0.6,
+	"shield_at": [
+		0.75,
+		0.45
+	],
+	"shield_count": 3,
+	"shield_hp": 40,
+	"shield_reduction": 0.2,
+	"intro_carts": 8,
+	"hatch_count": 10,
+	"tornado_count": 3,
+	"tornado_crew": 4,
+	"portal_crew": 12,
+	"firework_waves": 3,
+	"firework_shells": 7,
+	"magnet_radius": 260.0,
+	"magnet_pull": 70.0
 }

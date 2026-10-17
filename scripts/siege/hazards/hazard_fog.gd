@@ -3,7 +3,7 @@ extends SiegeHazard
 ## 痒痒迷雾：一大片粉色的雾。粉色公主在雾里时，蓝色公主看不见她、支援不了（SiegeDirector.in_fog）；雾里还会伸出手来挠。
 ## 迷雾伏击（怪物 + 陷阱）：雾里的怪半透明（meta in_fog），冰塔、弓箭手、法术都打不到；粉色公主一走进雾，雾里的怪全扑过来。
 
-const RADIUS := 90.0
+const RADIUS := 126.0
 
 var _poke := 0.0
 

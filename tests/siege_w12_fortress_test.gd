@@ -27,6 +27,11 @@ func _ready() -> void:
 		print("FORTRESS V2 FREED TARGETS: %d checks, %d failures" % [checks,failures])
 		get_tree().quit(1 if failures else 0)
 		return
+	if "--round10-only" in OS.get_cmdline_user_args():
+		await _round10()
+		print("FORTRESS ROUND10: %d checks, %d failures" % [checks,failures])
+		get_tree().quit(1 if failures else 0)
+		return
 	if "--cars-only" in OS.get_cmdline_user_args():
 		await _cars()
 		print("FORTRESS V2 CARS: %d checks, %d failures" % [checks,failures])
@@ -51,6 +56,7 @@ func _ready() -> void:
 	await _cars()
 	await _cannon()
 	await _pairs_and_pause()
+	await _round10()
 	await _resonance_types()
 	await _effects_and_drops()
 	await _coops()
@@ -216,9 +222,10 @@ func _geometry() -> void:
 	var y:=b.global_position.y
 	step(b,0.5)
 	check("normal speed eight px per sec",absf(b.global_position.y-(y-4))<0.02)
-	b.health.set_hp(1400)
+	var expand_hp:=int(FortressRules.data()["expand_hp"])
+	b.health.set_hp(expand_hp)
 	step(b,1.6)
-	check("one expansion with no healing",b.expanded and b.phase_count==1 and b.health.hp==1400)
+	check("one expansion with no healing",b.expanded and b.phase_count==1 and b.health.hp==expand_hp)
 	b.apply_knockback(b.global_position-Vector2(0,20),100)
 	check("expanded hull can be knocked back",b.recoil.length()>0)
 	var first:=tower(b.global_position+Vector2(-500,0))
@@ -266,7 +273,7 @@ func _capacity() -> void:
 	await get_tree().process_frame
 	check("deferred child setup tolerates deleted instance",not is_instance_valid(accepted_child))
 	var own:=b.reserve_crew(100)
-	check("boss crew cap remains 48",own==48 and b.reserve_crew(2)==0)
+	check("boss crew cap follows fortress.json (%d)" % b.max_crew,own==b.max_crew and b.reserve_crew(2)==0)
 	b.reserved_crew=0
 	for n in d.monsters:
 		if is_instance_valid(n) and n!=b: n.queue_free()
@@ -410,7 +417,7 @@ func _pairs_and_pause() -> void:
 	b.mechanisms.tick(20)
 	check("all mechanism clocks pause",b.mechanisms.jobs[0]["t"]==before)
 	GameState.in_dialogue=false
-	check("three designed pair identities",FortressMechanisms.PAIRS==[["hands","missiles"],["convoy","rockets"],["crane","cannon"]])
+	check("five designed pair identities",FortressMechanisms.PAIRS==[["hands","missiles"],["convoy","rockets"],["crane","cannon"],["tornado_launcher","magnet"],["portal_drop","fireworks"]])
 	check("clear side corridors pass safety graph",b.mechanisms.safe_pair("missiles"))
 func _effect_count(kind: String) -> int:
 	return get_tree().get_nodes_in_group("fortress_skill_fx").filter(func(n): return not n.is_queued_for_deletion() and n.kind==kind).size()
@@ -644,3 +651,107 @@ func _freed_targets_v2() -> void:
 	check("deleted cable safely returns original tower",not t.has_meta("fortress_lift"))
 	b.mechanisms.cancel_all()
 	check("cancel after freed target clears remaining jobs",b.mechanisms.jobs.is_empty())
+
+
+## 第十轮加强：血量 / 节奏数据、登场车队和车头舱门、五个新机关、护盾柱减伤、超载三机关、最终波固定攻城大队。
+func _round10() -> void:
+	var data := FortressRules.data()
+	await _reset()
+	var b:=fortress()
+	var m:=b.mechanisms as FortressSkills
+	check("round10 fortress uses FortressSkills with data hp %d" % b.health.max_hp, m != null and b.health.max_hp==int(data["hp"]) and int(data["hp"])==6000)
+	check("round10 default pace speeds skill timelines", is_equal_approx(FortressSkills.new().pace, 1.0/float(data["warn_mult"])) and float(data["warn_mult"])<1.0)
+	check("round10 hands reach / speed tuned", float(data["hand_reach"])>=1.5 and float(data["hand_speed"])>=1.4)
+	# 登场车队
+	b._introduced=false
+	b.set_physics_process(true)
+	step(b,0.05)
+	var intro:=b.carts.filter(func(r): return SiegeTools.alive(r.get_ref()) and r.get_ref().has_meta("fortress_hatch")).size()
+	check("round10 intro lines up %d carts in front" % intro, intro==int(data["intro_carts"]))
+	# 车头舱门
+	var before:=b.carts.size()
+	check("round10 hatch releases a cart row", m.start("hatch") and b.carts.size()-before==int(data["hatch_count"]))
+	await _reset()
+	b=fortress()
+	m=b.mechanisms as FortressSkills
+	# 龙卷发射器
+	var hz0:=get_tree().get_nodes_in_group("siege_hazard").filter(func(h): return h is HazardTornado).size()
+	check("round10 tornado launcher starts", m.start("tornado_launcher"))
+	var tornadoes:=get_tree().get_nodes_in_group("siege_hazard").filter(func(h): return h is HazardTornado)
+	var crew:=d.monsters.filter(func(x): return SiegeTools.alive(x) and x.has_meta("fortress_crew")).size()
+	check("round10 launches %d chasing tornadoes carrying crew (%d)" % [tornadoes.size()-hz0, crew],
+		tornadoes.size()-hz0==int(data["tornado_count"]) and tornadoes.all(func(t): return t.chase) and crew>=int(data["tornado_count"]))
+	m.cancel_all()
+	await _reset()
+	b=fortress()
+	m=b.mechanisms as FortressSkills
+	# 传送门空降：船员落在入口，被送上城墙
+	check("round10 portal drop starts", m.start("portal_drop"))
+	var portal:HazardPortalPair=(m.jobs[0]["portal"] as WeakRef).get_ref()
+	check("round10 portal exits on the wall top", portal!=null and portal.exit.y<d.wall_foot_y())
+	for i in 240:
+		portal._process(1.0/60)
+		step(b,1.0/60)
+	var up:=d.monsters.filter(func(x): return SiegeTools.alive(x) and x.has_meta("fortress_crew") and x.get_meta("siege_on_wall",false)).size()
+	check("round10 crew poured through the portal onto the wall (%d)" % up, up>0)
+	m.cancel_all()
+	await _reset()
+	b=fortress()
+	m=b.mechanisms as FortressSkills
+	# 烟花弹幕
+	d.pink.global_position=b.global_position+Vector2(0,-b.footprint().size.y/2-200)
+	check("round10 fireworks start", m.start("fireworks"))
+	var job:Dictionary=m.jobs[0]
+	step(b,float(job["life"])+0.2)
+	var landed:=(job["shells"] as Array).filter(func(sh): return sh["done"]).size()
+	check("round10 all firework shells landed (%d/%d)" % [landed, (job["shells"] as Array).size()], landed==(job["shells"] as Array).size() and landed>=int(data["firework_waves"])*int(data["firework_shells"]))
+	m.cancel_all()
+	await _reset()
+	b=fortress()
+	m=b.mechanisms as FortressSkills
+	# 磁吸车头：粉色公主被往车头拉
+	var front:=m._magnet_point()
+	d.pink.global_position=front+Vector2(0,-180)
+	d.pink.set_physics_process(true)
+	var dist0:=d.pink.global_position.distance_to(front)
+	check("round10 magnet starts", m.start("magnet"))
+	for i in 60:
+		step(b,1.0/60)
+		await get_tree().physics_frame
+	check("round10 magnet pulls pink toward the hull (%.0f -> %.0f)" % [dist0, d.pink.global_position.distance_to(front)], d.pink.global_position.distance_to(front)<dist0-8.0)
+	m.cancel_all()
+	await _reset()
+	b=fortress()
+	m=b.mechanisms as FortressSkills
+	# 护盾柱：立着时母车受伤 ×0.2，柱子全倒恢复
+	check("round10 shield pillars rise", m.start("shields") and m.shield_up() and is_equal_approx(m.damage_mult(), float(data["shield_reduction"])))
+	b._attack_invuln=0
+	b._full_invuln=0
+	var hp:=b.health.hp
+	b.receive_hit(HitData.make_attack(d.pink,10,0.0))
+	var shielded:=hp-b.health.hp
+	var sjob:Dictionary=m.jobs.filter(func(j): return j["kind"]=="shields")[0]
+	for i in sjob["objects"].size():
+		var pillar:=FortressJobs.live_target(sjob,i)
+		if pillar:
+			m.target_hit(pillar,999)
+	b._attack_invuln=0
+	b._full_invuln=0
+	hp=b.health.hp
+	b.receive_hit(HitData.make_attack(d.pink,10,0.0))
+	check("round10 pillars cut damage to %d, broken pillars restore %d" % [shielded, hp-b.health.hp], shielded>0 and shielded<=3 and not m.shield_up() and hp-b.health.hp>=shielded*3)
+	await _reset()
+	b=fortress()
+	m=b.mechanisms as FortressSkills
+	# 超载：剩 30% 血 → 每轮三个、增援最高档
+	b.expanded=true
+	b.expand_left=0
+	b.health.set_hp(int(b.health.max_hp*float(data["overdrive_ratio"]))-1)
+	step(b,0.1)
+	check("round10 overdrive at 30% hp maxes reinforcements", b.overdrive and d.reinforcements.tier()>=4)
+	check("round10 overdrive allows three skills at once", m.start("missiles") and m.start("magnet") and m.start("fireworks") and m.main_jobs().size()==3)
+	m.cancel_all()
+	# 最终波固定开着攻城大队
+	d.features.begin([])
+	check("round10 final wave always runs the corps", d.features.is_on("corps") and d.features.is_on("carnival"))
+	d.features.end()

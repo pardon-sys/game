@@ -235,11 +235,13 @@ func _towers9() -> void:
 	var m := d.spawn("slime", "", a.global_position + Vector2(80, 30))
 	m.set_physics_process(false)
 	var base_cd := m.stat_mul("tickle_cd")
+	# 攻防战的难度状态（siege_hard）本来就乘了挠痒力度：钟楼的 ×1.2 叠在它上面
+	var base_power := m.stat_mul("tickle_power")
 	await get_tree().physics_frame
 	EnemyTowerTools.aura(a)
 	EnemyTowerTools.aura(b)
-	check("multiplebells maxstack1", m.buff_stacks("siege_resonant") == 1 and is_equal_approx(m.stat_mul("tickle_power"), 1.2))
-	check("actual monster hit carries20percent stronger tickle", is_equal_approx(m.make_tickle(d.pink, 10.0).tickle, 12.0))
+	check("multiplebells maxstack1", m.buff_stacks("siege_resonant") == 1 and is_equal_approx(m.stat_mul("tickle_power"), base_power * 1.2))
+	check("actual monster hit carries20percent stronger tickle", is_equal_approx(m.make_tickle(d.pink, 10.0).tickle, 10.0 * base_power * 1.2))
 	check("monster attack frequency1.3", is_equal_approx(m.stat_mul("tickle_cd"), base_cd / 1.3))
 	var f := EquipFx.of(d.pink)
 	check("equipment unique nonstacking modifier", f.has_mod("siege_resonance"))

@@ -50,6 +50,11 @@ static func total_waves() -> int:
 static func ability_rate() -> float:
 	return float(current.data.get("ability_rate", 1.0)) if current else 1.0
 
+
+## 整体难度倍率（waves.json 顶层 difficulty）：hp 小怪血量、build 怪物搭敌塔速度、team_cd 配合技冷却；挠痒力度在状态 siege_hard。没有攻防战时 1。
+static func difficulty(key: String) -> float:
+	return float((current.data.get("difficulty", {}) as Dictionary).get(key, 1.0)) if current else 1.0
+
 var reinforcements := FinalReinforcements.new()
 var data := {}
 var wave := 1
@@ -230,7 +235,7 @@ func _setup() -> void:
 	teamwork.spawn_func = func(k: String, at: Vector2) -> Monster: return spawn(k, "", at)
 	teamwork.monsters_func = func() -> Array: return monsters
 	teamwork.partners_func = func() -> Array: return get_tree().get_nodes_in_group("siege_enemy_tower")
-	teamwork.cd_divisor = ability_rate()
+	teamwork.cd_divisor = ability_rate() / difficulty("team_cd")
 	teamwork.allowed_func = func(t: Dictionary) -> bool: return state == "fight" and wave >= int(t.get("min_wave", 1))
 	teamwork.can_start_func = SiegeCooperation.can_start
 	teamwork.formation_gate_func = func(_t: Dictionary, n: int) -> bool:
@@ -594,6 +599,11 @@ func spawn(key: String, from := "bottom", at = null, ticket := -1) -> Monster:
 	# 攻防战里怪物之间不互相挡（几百只同时在场时省物理计算）
 	m.collision_mask = 1 if m.collision_mask != 0 else 0
 	m.add_buff("siege_rapid", 99999.0)
+	if not (m is SiegeBoss):
+		m.add_buff("siege_hard", 99999.0)
+		if m.health:
+			m.health.max_hp = int(ceil(m.health.max_hp * difficulty("hp")))
+			m.health.fill()
 	_speed_up_specials(m)
 	m.mind = m.call("make_mind", self) if m.has_method("make_mind") else SiegeMind.new(self)
 	if site and m.mind is SiegeMind:
@@ -1462,6 +1472,9 @@ func _win() -> void:
 	_set_state("won")
 	GameState.set_flag("siege_won")
 	GameState.vars.erase("siege_wave")
+	# 打赢了：镇民支援全部撤掉
+	if town:
+		town.clear_all()
 	won.emit()
 	Audio.play("win_fanfare", -1.0)
 	await get_tree().create_timer(1.0).timeout

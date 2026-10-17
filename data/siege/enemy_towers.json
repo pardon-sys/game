@@ -145,5 +145,14 @@
 		"interval": 9,
 		"range": 300,
 		"reward": 20
+	},
+	"catapult": {
+		"name": "拆塔投石车",
+		"hp": 40,
+		"interval": 7,
+		"range": 420,
+		"reward": 18,
+		"splash": 36,
+		"dmg": 0.6
 	}
 }

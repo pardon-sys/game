@@ -3,9 +3,9 @@ extends SiegeHazard
 ## 痒痒泡泡潮：一排大泡泡从战场一边扫到另一边；被包进泡泡的公主飘起来、动不了，泡泡里一直挠，过一会儿泡泡破掉。
 ## 泡泡运兵（怪物 + 陷阱）：泡泡也会把小怪包进去，一路飘到城墙下放下。
 
-const COUNT := 8
+const COUNT := 11
 const SPEED := 55.0
-const R := 11.0
+const R := 15.0
 const HOLD := 2.6
 
 var _from_left := true

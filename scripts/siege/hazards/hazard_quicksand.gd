@@ -4,9 +4,10 @@ extends SiegeHazard
 ## 公主陷到中心（SINK_R 以内）就被流沙抓住（status.grab，连按 BREAK_PRESSES 下挣脱），沙里伸出小手挠
 ## （粉色公主挠脚心，蓝色公主挠大腿根 / 屁股）；蓝色公主的冰链也能把粉色公主拉出来（标记 siege_dragged / siege_dragger，
 ## 冰链救援会调 release_drag）。挣出来后 COOL 秒内不会再被吸住。怪被吸到中心会陷住一会儿（冻住）。来源键 hazard_quicksand。
+## 流沙伏兵（第十轮）：沙里不时钻出小怪；公主陷住时附近的怪全部围过来。
 
-const RADIUS := 92.0
-const SINK_R := 16.0
+const RADIUS := 130.0
+const SINK_R := 20.0
 const PULL := 46.0
 const MOB_PULL := 38.0
 const BREAK_PRESSES := 12
@@ -14,6 +15,11 @@ const HOLD := 4.0
 const TICKLE_GAP := 0.45
 const TICKLE := 4.0
 const COOL := 3.0
+## 流沙伏兵（第十轮）：每 AMBUSH_GAP 秒从沙里钻出 AMBUSH_N 只小怪；公主陷住时 RALLY_R 以内的怪围过来挠
+const AMBUSH_GAP := 3.0
+const AMBUSH_N := 2
+const AMBUSH_KEYS := ["slime", "rat", "mini_tentacle"]
+const RALLY_R := 220.0
 
 var sunk: PlayableCharacter
 var _tick := 0.0
@@ -21,6 +27,9 @@ var _hits := 0
 var _cool := {}
 var _owned_physics := true
 var _hands: Array[Vector2] = []
+var _ambush_t := 1.0
+## 测试用：沙里钻出来的伏兵有几只
+var ambushed := 0
 
 
 func _begin() -> void:
@@ -43,6 +52,11 @@ func _active(delta: float) -> void:
 		_cool[k] = float(_cool[k]) - delta
 	if sunk:
 		_hold_tick(delta)
+	_ambush_t -= delta
+	if _ambush_t <= 0.0:
+		_ambush_t = AMBUSH_GAP
+		var at := global_position + Vector2.from_angle(randf() * TAU) * randf_range(RADIUS * 0.3, RADIUS * 0.7) * Vector2(1, 0.55)
+		ambushed += ambush(at, AMBUSH_KEYS, AMBUSH_N, sunk).size()
 	for c in chars():
 		if c == sunk or director.is_on_wall(c) or float(_cool.get(c.character_id, 0.0)) > 0.0 or not SiegeTools.can_move(null, c):
 			continue
@@ -76,6 +90,9 @@ func _sink(c: PlayableCharacter) -> void:
 	c.set_meta("siege_dragged", true)
 	c.set_meta("siege_dragger", self)
 	_tick = 0.2
+	for m in director.enemies_near(global_position, RALLY_R):
+		if SiegeTools.alive(m) and not (m is SiegeBoss) and not (m is SiegeCart):
+			m.rally_to(c)
 	SpeechBubble.say(c, "陷、陷进去了——拉我一把！" if c.character_id == "pink" else "……陷到腰了。……别伸手进来。", 28.0, 1.6)
 	Audio.play("bubble_pop", -4.0, 0.1, 0.8)
 

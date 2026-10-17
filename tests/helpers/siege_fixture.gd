@@ -159,6 +159,8 @@ func fortress() -> CarnivalFortress:
 	b._introduced=true
 	b.mechanisms.autonomous=false
 	b.mechanisms.coop.enabled=false
+	# 机关的单项测试按原来的时间线（第十轮的 1 / warn_mult 加快另测）
+	b.mechanisms.pace=1.0
 	return b
 func tower(at: Vector2, kind := "icicle") -> IceTower:
 	var pad:=BuildPad.new()

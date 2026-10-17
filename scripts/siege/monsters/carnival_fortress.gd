@@ -2,7 +2,9 @@ class_name CarnivalFortress
 extends SiegeBoss
 ## 第 12 波（最终波）的「狂欢攻城堡垒」（SiegeBoss，数据 bosses.json 的 carnival_fortress + fortress.json）：
 ## 一辆巨大的母车，慢慢压向城墙（贴到墙就每 3 秒撞一下）；车身负责几何（footprint / attack_point）、血量和船员（crew，上限 max_crew）。
-## 技能由 FortressMechanisms（六个机关）和 FortressCooperation（船员协作）执行；半血（expand_hp）展开平台：机关加倍。
+## 技能由 FortressMechanisms（原六个机关）、FortressSkills（第十轮新增：龙卷发射器、传送门空降、烟花弹幕、磁吸车头、护盾发生柱、车头舱门）
+## 和 FortressCooperation（船员协作）执行。三个阶段：展开平台（expand_hp，机关成对放）→ 超载（overdrive_ratio，每轮三个、冷却再缩短、增援最高档）。
+## 登场时车头前排一排攻城车；护盾柱立着时母车受伤 ×shield_reduction（receive_hit）。
 ## 被打倒 → SiegeDirector.final_boss_defeated（FortressFinale：残兵撤退、车身崩塌 → 胜利）。
 
 ## 船员 / 车队上限（data/siege/fortress.json 的 crew_cap / cart_cap）
@@ -19,6 +21,8 @@ var expanded := false
 var expand_left := 0.0
 var phase_count := 0
 var empowered := false  # One stolen-tower shell, consumed at the next cannon charge.
+## 第三阶段「超载」：剩 overdrive_ratio 血时进入，每轮三个机关一起放、冷却再缩短、增援最高档
+var overdrive := false
 var healed_total := 0
 var reserved_crew := 0
 var crew: Array[WeakRef] = []
@@ -66,7 +70,11 @@ func _setup() -> void:
 	shape.shape = rectangle
 	_blocker.add_child(shape)
 	add_child(_blocker)
-	mechanisms = FortressMechanisms.new()
+	# 血量 / 展开线在 fortress.json（第十轮 6000 / 2000）
+	if health:
+		health.max_hp = int(FortressRules.data()["hp"])
+		health.fill()
+	mechanisms = FortressSkills.new()
 	mechanisms.boss = self
 	add_child(mechanisms)
 	add_to_group("fortress")
@@ -105,10 +113,12 @@ func _tick(delta: float) -> void:
 		GameState.boss_changed.emit(self)
 		announce("intro")
 		SiegeFx.camera_peek(self, global_position, 1.8, 0.30)
+		# 登场时车头前排一排攻城车，马上冲墙
+		(mechanisms as FortressSkills).release_carts(int(FortressRules.data()["intro_carts"]))
 		Audio.play("boss_roar", -2)
 	_t += delta
 	_stun_left = maxf(0, _stun_left - delta)
-	if not expanded and health.hp <= 1400:
+	if not expanded and health.hp <= int(FortressRules.data()["expand_hp"]):
 		expanded = true
 		raged = true
 		phase_count += 1
@@ -117,6 +127,13 @@ func _tick(delta: float) -> void:
 		for side in [-1, 1]:
 			mechanisms.burst(shoulder(side), 80, "crane")
 		announce("rage")
+	if expanded and not overdrive and health.hp <= health.max_hp * float(FortressRules.data()["overdrive_ratio"]):
+		overdrive = true
+		phase_count += 1
+		announce("overdrive")
+		Audio.play("boss_roar", -1)
+		var reinforcements := director.reinforcements
+		reinforcements.elapsed = maxf(reinforcements.elapsed, float(FortressRules.data()["tier_seconds"]) * 4.0)
 	if expand_left > 0:
 		expand_left = maxf(0, expand_left - delta)
 	else:
@@ -207,6 +224,14 @@ func apply_knockback(from: Vector2, force: float) -> void:
 	if dir == Vector2.ZERO:
 		dir = Vector2.DOWN
 	recoil += Vector2(dir.x, maxf(0.0, dir.y)) * maxf(0.0, force) * (1.0 - knockback_resist)
+
+
+## 护盾发生柱立着时，母车受到的伤害 ×shield_reduction（至少 1）。
+func receive_hit(hit: HitData) -> bool:
+	var mult := (mechanisms as FortressSkills).damage_mult() if mechanisms is FortressSkills else 1.0
+	if mult < 1.0 and hit.damage > 0:
+		hit.damage = maxi(1, int(round(hit.damage * mult)))
+	return super(hit)
 
 
 func _on_damaged(_hit: HitData) -> void:

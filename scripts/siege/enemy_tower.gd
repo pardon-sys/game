@@ -8,6 +8,8 @@ extends Actor
 ##   增益：totem 狂欢图腾（附近的怪加速、挠得更重；立着时蓝色公主的千手痒痒裤发作间隔 ×0.6、力度 ×1.5）
 ##   挠痒：thigh_tower 腿根揉揉塔（射程够到城墙，专打蓝色公主的大腿 / 屁股；穿着千手痒痒裤时裤子跟着一起动）/
 ##         sole_tower 脚心刷刷塔（刷子手抓住粉色公主的脚踝，扳脚趾、刷脚心、扳着脚板刮）
+##   拆塔：catapult 拆塔投石车（第十轮：挑射程里血最多的冰塔，落点影子亮 CATAPULT_WARN 秒后砸下，影子里的冰塔掉 dmg 比例的血上限；
+##         粉色公主站进影子就替塔挡下，石头碎成羽毛挠她一下）
 ## 数值和手法台词在 data/siege/enemy_towers.json（{种类: {name, hp, interval, range, lines: [...]}}；gen_floor06_siege.py 生成）。
 ## 挠痒的来源键 = enemy_<种类>（reaction_key），三来源组合认它。图：towers 图集的 etower_<种类>。
 ## 能拆：受击范围覆盖整个塔身（HurtProxy），挨打时抖动 + 碎片 + 血条，拆掉时塌下去、碎木飞散；冰塔 / 弩炮 / 法术 / 士兵都会打它。
@@ -21,7 +23,10 @@ const CHARGE := 0.5
 const COLORS := {"vine_pull": Color(0.5, 0.95, 0.45), "tailor": Color(1, 0.6, 0.85), "glue": Color(0.8, 0.95, 0.4), "net": Color(0.95, 0.9, 0.75),
 	"silence": Color(0.75, 0.45, 1.0), "portal": Color(0.9, 0.4, 1.0), "windmill": Color(0.85, 0.95, 1.0), "totem": Color(1, 0.7, 0.3),
 	"thigh_tower": Color(0.8, 0.55, 1.0), "sole_tower": Color(1, 0.85, 0.55),
-	"airdrop": Color(0.45, 0.85, 1.0), "brush_battery": Color(1.0, 0.65, 0.75), "resonance": Color(1.0, 0.8, 0.35)}
+	"airdrop": Color(0.45, 0.85, 1.0), "brush_battery": Color(1.0, 0.65, 0.75), "resonance": Color(1.0, 0.8, 0.35),
+	"catapult": Color(1.0, 0.55, 0.3)}
+## 拆塔投石车：落点影子亮 CATAPULT_WARN 秒后石头砸下
+const CATAPULT_WARN := 1.2
 static var _shake_t := 0.0
 
 static var _data := {}
@@ -288,6 +293,7 @@ func _tick(delta: float) -> void:
 		"thigh_tower": _thigh()
 		"sole_tower": _sole()
 		"airdrop", "brush_battery", "resonance": EnemyTowerTools.attack(self)
+		"catapult": _catapult()
 	if boosted:
 		power = 1.0
 	cooperation = {}
@@ -424,6 +430,63 @@ func _draw() -> void:
 		draw_rect(Rect2(-12, -44, 24, 3), Color(0.1, 0.05, 0.1, 0.85))
 		draw_rect(Rect2(-12, -44, 24 * f, 3), Color(1, 0.4, 0.5))
 		draw_rect(Rect2(-12, -44, 24, 3), Color(1, 0.85, 0.9, 0.8), false, 1.0)
+
+
+# ------------------------------------------------------------------ 拆塔投石车
+## 测试用：扔了几块石头、被粉色公主挡下几块
+var catapult_shots := 0
+var catapult_blocked := 0
+
+
+func _catapult() -> void:
+	var r := float(p("range", 420.0))
+	var best: IceTower = null
+	for t in get_tree().get_nodes_in_group("siege_tower"):
+		var tw := t as IceTower
+		if tw == null or not tw.is_alive() or tw.health == null or tw.has_meta("fortress_lift") or tw.global_position.distance_to(global_position) > r:
+			continue
+		if best == null or tw.health.hp > best.health.hp:
+			best = tw
+	if best == null:
+		return
+	var at := best.global_position
+	var splash := float(p("splash", 36.0))
+	catapult_shots += 1
+	SiegeFx.warn(get_parent(), at, "shadow", splash, CATAPULT_WARN, COLORS["catapult"])
+	Audio.play("swish", -3.0, 0.1, 0.6)
+	var stone := CatapultStone.new()
+	stone.from = global_position + Vector2(0, -30)
+	stone.to = at
+	stone.time = CATAPULT_WARN
+	stone.add_to_group("siege_temp")
+	get_parent().add_child(stone)
+	get_tree().create_timer(CATAPULT_WARN, false).timeout.connect(_catapult_cb(weakref(self), at, splash))
+
+
+static func _catapult_cb(wr: WeakRef, at: Vector2, splash: float) -> Callable:
+	return func():
+		var me := wr.get_ref() as EnemyTower
+		if me and me.is_inside_tree():
+			me._catapult_land(at, splash)
+
+
+func _catapult_land(at: Vector2, splash: float) -> void:
+	SiegeFx.impact(get_parent(), at, splash, false, Color(0.75, 0.65, 0.55))
+	var pk := pink()
+	if _alive(pk) and not director.is_on_wall(pk) and pk.global_position.distance_to(at) <= splash:
+		catapult_blocked += 1
+		Fx.burst(get_parent(), at + Vector2(0, -12), "feather", 14, 70.0, 0.7, Vector2(0, 40))
+		var h := HitData.make_tickle(self, 6.0)
+		h.zone = "sole"
+		pk.receive_hit(h)
+		SpeechBubble.say(pk, "挡、挡住了！石头里全是羽毛——嘻嘻！", 28.0, 1.4)
+		return
+	Audio.play("wall_crash", -4.0, 0.1, 1.2)
+	var ratio := float(p("dmg", 0.6))
+	for t in get_tree().get_nodes_in_group("siege_tower"):
+		var tw := t as IceTower
+		if tw and tw.is_alive() and tw.health and tw.global_position.distance_to(at) <= splash + 10.0:
+			tw.raid_hit(int(ceil(tw.health.max_hp * ratio)), self)
 
 
 func _in_range(c: PlayableCharacter, r: float) -> bool:

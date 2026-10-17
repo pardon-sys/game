@@ -7,6 +7,11 @@
 	"prep": 20,
 	"ability_rate": 3.0,
 	"start_crystals": 30,
+	"difficulty": {
+		"hp": 1.4,
+		"build": 1.3,
+		"team_cd": 0.75
+	},
 	"monsters": {
 		"carnival_fortress": "res://scenes/siege/monsters/carnival_fortress.tscn",
 		"slime": "res://scenes/actors/monsters/slime.tscn",
@@ -323,6 +328,18 @@
 				{
 					"t": 66.0,
 					"kind": "broom"
+				},
+				{
+					"t": 78.0,
+					"kind": "sticky_net"
+				},
+				{
+					"t": 90.0,
+					"kind": "link_rune"
+				},
+				{
+					"t": 102.0,
+					"kind": "wall_vine"
 				}
 			],
 			"enemy_towers": [
@@ -459,6 +476,10 @@
 					"kind": "broom"
 				},
 				{
+					"t": 8.0,
+					"kind": "portal_pair"
+				},
+				{
 					"t": 17.0,
 					"kind": "sticky_net"
 				},
@@ -467,16 +488,28 @@
 					"kind": "tornado"
 				},
 				{
+					"t": 23.0,
+					"kind": "mushrooms"
+				},
+				{
 					"t": 28.0,
 					"kind": "link_rune"
 				},
 				{
-					"t": 28,
-					"kind": "mushrooms"
+					"t": 38.0,
+					"kind": "claw"
 				},
 				{
 					"t": 39.0,
 					"kind": "wall_vine"
+				},
+				{
+					"t": 50.0,
+					"kind": "bubbles"
+				},
+				{
+					"t": 61.0,
+					"kind": "fog"
 				}
 			],
 			"priority_enemy_towers": [
@@ -617,6 +650,10 @@
 					"kind": "fog"
 				},
 				{
+					"t": 8.0,
+					"kind": "mushrooms"
+				},
+				{
 					"t": 10,
 					"kind": "fog"
 				},
@@ -629,7 +666,7 @@
 					"kind": "tornado"
 				},
 				{
-					"t": 24,
+					"t": 22.2,
 					"kind": "claw"
 				},
 				{
@@ -647,6 +684,10 @@
 				{
 					"t": 36.0,
 					"kind": "sticky_net"
+				},
+				{
+					"t": 36.4,
+					"kind": "quicksand"
 				},
 				{
 					"t": 40,
@@ -667,6 +708,18 @@
 				{
 					"t": 60,
 					"kind": "fog"
+				},
+				{
+					"t": 66.0,
+					"kind": "bubbles"
+				},
+				{
+					"t": 76.0,
+					"kind": "fog"
+				},
+				{
+					"t": 86.0,
+					"kind": "tornado"
 				}
 			],
 			"enemy_towers": [
@@ -881,6 +934,10 @@
 					"kind": "wall_vine"
 				},
 				{
+					"t": 8.0,
+					"kind": "claw"
+				},
+				{
 					"t": 12,
 					"kind": "bubbles"
 				},
@@ -889,7 +946,7 @@
 					"kind": "bubbles"
 				},
 				{
-					"t": 20,
+					"t": 21.4,
 					"kind": "quicksand"
 				},
 				{
@@ -905,6 +962,10 @@
 					"kind": "tornado"
 				},
 				{
+					"t": 34.8,
+					"kind": "portal_pair"
+				},
+				{
 					"t": 36,
 					"kind": "wall_vine"
 				},
@@ -915,6 +976,10 @@
 				{
 					"t": 46,
 					"combo": "bubble_broom"
+				},
+				{
+					"t": 48.2,
+					"kind": "mushrooms"
 				},
 				{
 					"t": 51.0,
@@ -931,6 +996,22 @@
 				{
 					"t": 69.0,
 					"kind": "wall_vine"
+				},
+				{
+					"t": 78.0,
+					"kind": "bubbles"
+				},
+				{
+					"t": 87.0,
+					"kind": "fog"
+				},
+				{
+					"t": 96.0,
+					"kind": "tornado"
+				},
+				{
+					"t": 105.0,
+					"kind": "broom"
 				}
 			],
 			"priority_enemy_towers": [
@@ -1101,6 +1182,10 @@
 					"kind": "sticky_net"
 				},
 				{
+					"t": 8.0,
+					"kind": "quicksand"
+				},
+				{
 					"t": 10,
 					"kind": "tornado"
 				},
@@ -1113,7 +1198,7 @@
 					"kind": "link_rune"
 				},
 				{
-					"t": 18,
+					"t": 20.6,
 					"kind": "portal_pair"
 				},
 				{
@@ -1133,6 +1218,10 @@
 					"kind": "bubbles"
 				},
 				{
+					"t": 33.2,
+					"kind": "mushrooms"
+				},
+				{
 					"t": 38.0,
 					"kind": "fog"
 				},
@@ -1145,8 +1234,8 @@
 					"kind": "tornado"
 				},
 				{
-					"t": 44,
-					"kind": "mushrooms"
+					"t": 45.8,
+					"kind": "claw"
 				},
 				{
 					"t": 46.0,
@@ -1175,7 +1264,26 @@
 				{
 					"t": 68,
 					"kind": "tornado"
+				},
+				{
+					"t": 70.0,
+					"kind": "link_rune"
+				},
+				{
+					"t": 78.0,
+					"kind": "wall_vine"
+				},
+				{
+					"t": 86.0,
+					"kind": "bubbles"
+				},
+				{
+					"t": 94.0,
+					"kind": "fog"
 				}
+			],
+			"priority_enemy_towers": [
+				"catapult"
 			],
 			"enemy_towers": [
 				"sole_tower",
@@ -1183,6 +1291,7 @@
 				"tailor",
 				"airdrop",
 				"brush_battery",
+				"catapult",
 				"windmill",
 				"windmill"
 			],
@@ -1391,6 +1500,10 @@
 					"kind": "tornado"
 				},
 				{
+					"t": 8.0,
+					"kind": "portal_pair"
+				},
+				{
 					"t": 10,
 					"kind": "bubbles"
 				},
@@ -1403,8 +1516,8 @@
 					"kind": "wall_vine"
 				},
 				{
-					"t": 16,
-					"kind": "claw"
+					"t": 19.8,
+					"kind": "mushrooms"
 				},
 				{
 					"t": 20.0,
@@ -1423,6 +1536,10 @@
 					"kind": "link_rune"
 				},
 				{
+					"t": 31.6,
+					"kind": "claw"
+				},
+				{
 					"t": 34,
 					"kind": "wall_vine"
 				},
@@ -1435,12 +1552,12 @@
 					"kind": "wall_vine"
 				},
 				{
-					"t": 40,
-					"kind": "quicksand"
-				},
-				{
 					"t": 41.0,
 					"kind": "bubbles"
+				},
+				{
+					"t": 43.4,
+					"kind": "quicksand"
 				},
 				{
 					"t": 46,
@@ -1457,6 +1574,10 @@
 				{
 					"t": 55.0,
 					"kind": "tornado"
+				},
+				{
+					"t": 55.2,
+					"kind": "portal_pair"
 				},
 				{
 					"t": 56,
@@ -1481,6 +1602,26 @@
 				{
 					"t": 74,
 					"combo": "fog_tornado"
+				},
+				{
+					"t": 76.0,
+					"kind": "link_rune"
+				},
+				{
+					"t": 83.0,
+					"kind": "wall_vine"
+				},
+				{
+					"t": 90.0,
+					"kind": "bubbles"
+				},
+				{
+					"t": 97.0,
+					"kind": "fog"
+				},
+				{
+					"t": 104.0,
+					"kind": "tornado"
 				}
 			],
 			"priority_enemy_towers": [
@@ -1493,6 +1634,7 @@
 				"glue",
 				"airdrop",
 				"brush_battery",
+				"catapult",
 				"resonance",
 				"tailor",
 				"tailor"
@@ -1690,6 +1832,10 @@
 					"kind": "bubbles"
 				},
 				{
+					"t": 8.0,
+					"kind": "mushrooms"
+				},
+				{
 					"t": 10,
 					"kind": "fog"
 				},
@@ -1698,12 +1844,12 @@
 					"kind": "fog"
 				},
 				{
-					"t": 14,
-					"kind": "portal_pair"
-				},
-				{
 					"t": 18.0,
 					"kind": "tornado"
+				},
+				{
+					"t": 19.0,
+					"kind": "claw"
 				},
 				{
 					"t": 20,
@@ -1715,15 +1861,15 @@
 				},
 				{
 					"t": 30.0,
+					"kind": "quicksand"
+				},
+				{
+					"t": 30.0,
 					"kind": "sticky_net"
 				},
 				{
 					"t": 32,
 					"kind": "sticky_net"
-				},
-				{
-					"t": 34,
-					"kind": "claw"
 				},
 				{
 					"t": 36.0,
@@ -1732,6 +1878,10 @@
 				{
 					"t": 40,
 					"combo": "bubble_broom"
+				},
+				{
+					"t": 41.0,
+					"kind": "portal_pair"
 				},
 				{
 					"t": 42.0,
@@ -1744,6 +1894,10 @@
 				{
 					"t": 48.0,
 					"kind": "bubbles"
+				},
+				{
+					"t": 52.0,
+					"kind": "mushrooms"
 				},
 				{
 					"t": 54.0,
@@ -1762,8 +1916,28 @@
 					"combo": "net_link"
 				},
 				{
+					"t": 66.0,
+					"kind": "broom"
+				},
+				{
+					"t": 72.0,
+					"kind": "sticky_net"
+				},
+				{
+					"t": 78.0,
+					"kind": "link_rune"
+				},
+				{
 					"t": 82,
 					"combo": "net_link"
+				},
+				{
+					"t": 84.0,
+					"kind": "wall_vine"
+				},
+				{
+					"t": 90.0,
+					"kind": "bubbles"
 				}
 			],
 			"enemy_towers": [
@@ -1772,6 +1946,7 @@
 				"tailor",
 				"airdrop",
 				"brush_battery",
+				"catapult",
 				"resonance"
 			],
 			"theater": "siege_fail_8",
@@ -2065,16 +2240,16 @@
 					"kind": "link_rune"
 				},
 				{
+					"t": 8.0,
+					"kind": "claw"
+				},
+				{
 					"t": 8,
 					"kind": "tornado"
 				},
 				{
 					"t": 10,
 					"kind": "fog"
-				},
-				{
-					"t": 12,
-					"kind": "quicksand"
 				},
 				{
 					"t": 12.0,
@@ -2089,6 +2264,10 @@
 					"kind": "bubbles"
 				},
 				{
+					"t": 18.2,
+					"kind": "quicksand"
+				},
+				{
 					"t": 24.0,
 					"kind": "fog"
 				},
@@ -2097,8 +2276,8 @@
 					"kind": "bubbles"
 				},
 				{
-					"t": 30,
-					"kind": "mushrooms"
+					"t": 28.4,
+					"kind": "portal_pair"
 				},
 				{
 					"t": 30.0,
@@ -2117,6 +2296,10 @@
 					"combo": "double_tornado"
 				},
 				{
+					"t": 38.6,
+					"kind": "mushrooms"
+				},
+				{
 					"t": 40,
 					"kind": "wall_vine"
 				},
@@ -2129,8 +2312,8 @@
 					"kind": "link_rune"
 				},
 				{
-					"t": 48,
-					"kind": "portal_pair"
+					"t": 48.8,
+					"kind": "claw"
 				},
 				{
 					"t": 52,
@@ -2143,6 +2326,10 @@
 				{
 					"t": 54,
 					"combo": "double_tornado"
+				},
+				{
+					"t": 59.0,
+					"kind": "quicksand"
 				},
 				{
 					"t": 60.0,
@@ -2165,8 +2352,32 @@
 					"kind": "tornado"
 				},
 				{
+					"t": 78.0,
+					"kind": "broom"
+				},
+				{
 					"t": 78,
 					"combo": "fog_tornado"
+				},
+				{
+					"t": 84.0,
+					"kind": "sticky_net"
+				},
+				{
+					"t": 90.0,
+					"kind": "link_rune"
+				},
+				{
+					"t": 96.0,
+					"kind": "wall_vine"
+				},
+				{
+					"t": 102.0,
+					"kind": "bubbles"
+				},
+				{
+					"t": 108.0,
+					"kind": "fog"
 				}
 			],
 			"enemy_towers": [
@@ -2176,6 +2387,7 @@
 				"portal",
 				"airdrop",
 				"brush_battery",
+				"catapult",
 				"resonance"
 			],
 			"theater": "siege_fail_9",
@@ -2626,8 +2838,8 @@
 					"kind": "bubbles"
 				},
 				{
-					"t": 10,
-					"kind": "claw"
+					"t": 8.0,
+					"kind": "quicksand"
 				},
 				{
 					"t": 12.0,
@@ -2636,6 +2848,10 @@
 				{
 					"t": 16,
 					"kind": "broom"
+				},
+				{
+					"t": 17.4,
+					"kind": "portal_pair"
 				},
 				{
 					"t": 18.0,
@@ -2650,8 +2866,8 @@
 					"kind": "wall_vine"
 				},
 				{
-					"t": 26,
-					"kind": "quicksand"
+					"t": 26.8,
+					"kind": "mushrooms"
 				},
 				{
 					"t": 30.0,
@@ -2670,8 +2886,8 @@
 					"kind": "fog"
 				},
 				{
-					"t": 42,
-					"kind": "mushrooms"
+					"t": 36.2,
+					"kind": "claw"
 				},
 				{
 					"t": 42.0,
@@ -2680,6 +2896,10 @@
 				{
 					"t": 44,
 					"kind": "sticky_net"
+				},
+				{
+					"t": 45.6,
+					"kind": "quicksand"
 				},
 				{
 					"t": 48.0,
@@ -2702,7 +2922,7 @@
 					"kind": "sticky_net"
 				},
 				{
-					"t": 58,
+					"t": 55.0,
 					"kind": "portal_pair"
 				},
 				{
@@ -2768,6 +2988,42 @@
 				{
 					"t": 108,
 					"combo": "net_link"
+				},
+				{
+					"t": 114.0,
+					"kind": "bubbles"
+				},
+				{
+					"t": 120.0,
+					"kind": "fog"
+				},
+				{
+					"t": 126.0,
+					"kind": "tornado"
+				},
+				{
+					"t": 132.0,
+					"kind": "broom"
+				},
+				{
+					"t": 138.0,
+					"kind": "sticky_net"
+				},
+				{
+					"t": 144.0,
+					"kind": "link_rune"
+				},
+				{
+					"t": 150.0,
+					"kind": "wall_vine"
+				},
+				{
+					"t": 156.0,
+					"kind": "bubbles"
+				},
+				{
+					"t": 162.0,
+					"kind": "fog"
 				}
 			],
 			"enemy_towers": [
@@ -2781,6 +3037,7 @@
 				"tailor",
 				"airdrop",
 				"brush_battery",
+				"catapult",
 				"resonance",
 				"totem",
 				"totem"
@@ -3176,8 +3433,8 @@
 					"kind": "bubbles"
 				},
 				{
-					"t": 8,
-					"kind": "claw"
+					"t": 8.0,
+					"kind": "portal_pair"
 				},
 				{
 					"t": 12.0,
@@ -3196,6 +3453,10 @@
 					"kind": "bubbles"
 				},
 				{
+					"t": 16.6,
+					"kind": "mushrooms"
+				},
+				{
 					"t": 18.0,
 					"kind": "broom"
 				},
@@ -3208,16 +3469,16 @@
 					"kind": "broom"
 				},
 				{
-					"t": 22,
-					"kind": "portal_pair"
-				},
-				{
 					"t": 24.0,
 					"kind": "sticky_net"
 				},
 				{
 					"t": 25,
 					"combo": "double_tornado"
+				},
+				{
+					"t": 25.2,
+					"kind": "claw"
 				},
 				{
 					"t": 26,
@@ -3232,7 +3493,7 @@
 					"kind": "wall_vine"
 				},
 				{
-					"t": 36,
+					"t": 33.8,
 					"kind": "quicksand"
 				},
 				{
@@ -3264,6 +3525,10 @@
 					"kind": "bubbles"
 				},
 				{
+					"t": 42.4,
+					"kind": "portal_pair"
+				},
+				{
 					"t": 46,
 					"kind": "sticky_net"
 				},
@@ -3276,7 +3541,7 @@
 					"kind": "fog"
 				},
 				{
-					"t": 50,
+					"t": 51.0,
 					"kind": "mushrooms"
 				},
 				{
@@ -3298,6 +3563,10 @@
 				{
 					"t": 58,
 					"combo": "net_link"
+				},
+				{
+					"t": 59.6,
+					"kind": "claw"
 				},
 				{
 					"t": 60.0,
@@ -3354,6 +3623,38 @@
 				{
 					"t": 96,
 					"kind": "bubbles"
+				},
+				{
+					"t": 102.0,
+					"kind": "broom"
+				},
+				{
+					"t": 108.0,
+					"kind": "sticky_net"
+				},
+				{
+					"t": 114.0,
+					"kind": "link_rune"
+				},
+				{
+					"t": 120.0,
+					"kind": "wall_vine"
+				},
+				{
+					"t": 126.0,
+					"kind": "bubbles"
+				},
+				{
+					"t": 132.0,
+					"kind": "fog"
+				},
+				{
+					"t": 138.0,
+					"kind": "tornado"
+				},
+				{
+					"t": 144.0,
+					"kind": "broom"
 				}
 			],
 			"enemy_towers": [
@@ -3364,6 +3665,7 @@
 				"tailor",
 				"airdrop",
 				"brush_battery",
+				"catapult",
 				"resonance",
 				"windmill",
 				"windmill"
@@ -3811,8 +4113,8 @@
 					"kind": "wall_vine"
 				},
 				{
-					"t": 10,
-					"kind": "claw"
+					"t": 8.0,
+					"kind": "mushrooms"
 				},
 				{
 					"t": 12,
@@ -3827,12 +4129,20 @@
 					"combo": "bubble_broom"
 				},
 				{
+					"t": 16.0,
+					"kind": "claw"
+				},
+				{
 					"t": 18.0,
 					"kind": "fog"
 				},
 				{
 					"t": 18,
 					"kind": "tornado"
+				},
+				{
+					"t": 24.0,
+					"kind": "quicksand"
 				},
 				{
 					"t": 24.0,
@@ -3848,11 +4158,11 @@
 				},
 				{
 					"t": 30,
-					"kind": "quicksand"
+					"combo": "double_tornado"
 				},
 				{
-					"t": 30,
-					"combo": "double_tornado"
+					"t": 32.0,
+					"kind": "portal_pair"
 				},
 				{
 					"t": 33,
@@ -3865,6 +4175,10 @@
 				{
 					"t": 36.0,
 					"kind": "sticky_net"
+				},
+				{
+					"t": 40.0,
+					"kind": "mushrooms"
 				},
 				{
 					"t": 42,
@@ -3880,6 +4194,10 @@
 				},
 				{
 					"t": 48.0,
+					"kind": "claw"
+				},
+				{
+					"t": 48.0,
 					"kind": "wall_vine"
 				},
 				{
@@ -3891,12 +4209,12 @@
 					"kind": "fog"
 				},
 				{
-					"t": 50,
-					"kind": "portal_pair"
-				},
-				{
 					"t": 54.0,
 					"kind": "bubbles"
+				},
+				{
+					"t": 56.0,
+					"kind": "quicksand"
 				},
 				{
 					"t": 58,
@@ -3917,10 +4235,6 @@
 				{
 					"t": 66.0,
 					"kind": "tornado"
-				},
-				{
-					"t": 70,
-					"kind": "mushrooms"
 				},
 				{
 					"t": 72.0,
@@ -3953,6 +4267,42 @@
 				{
 					"t": 108.0,
 					"kind": "tornado"
+				},
+				{
+					"t": 114.0,
+					"kind": "broom"
+				},
+				{
+					"t": 120.0,
+					"kind": "sticky_net"
+				},
+				{
+					"t": 126.0,
+					"kind": "link_rune"
+				},
+				{
+					"t": 132.0,
+					"kind": "wall_vine"
+				},
+				{
+					"t": 138.0,
+					"kind": "bubbles"
+				},
+				{
+					"t": 144.0,
+					"kind": "fog"
+				},
+				{
+					"t": 150.0,
+					"kind": "tornado"
+				},
+				{
+					"t": 156.0,
+					"kind": "broom"
+				},
+				{
+					"t": 162.0,
+					"kind": "sticky_net"
 				}
 			],
 			"enemy_towers": [
@@ -3968,6 +4318,7 @@
 				"glue",
 				"airdrop",
 				"brush_battery",
+				"catapult",
 				"resonance"
 			],
 			"theater": "siege_fail_12",
@@ -4263,7 +4614,7 @@
 		"corps": {
 			"name": "攻城大队",
 			"color": "#ff8060",
-			"desc": "每 25 秒一排攻城车带着螃蟹护卫同时出发（地上先亮一排红线）。",
+			"desc": "每 14 秒两排共 9~11 辆攻城车带着螃蟹护卫同时出发（地上先亮红线）；撞碎路上的冰塔，撞到公主闷笑涨一半。",
 			"icon": 4
 		},
 		"gale": {

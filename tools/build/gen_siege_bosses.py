@@ -75,14 +75,22 @@ BOSSES = {
         "name": "狂欢攻城堡垒", "color": [1.0, 0.78, 0.3], "crystals": 0,
         "intro": {"title": "狂欢攻城堡垒", "sub": "持续增援！救回冰塔 · 蓄力时攻击核心"},
         "rage": {"title": "展开平台：双重追猎", "sub": "巨手巡航 · 交叉空降 · 双钩重炮"},
+        "overdrive": {"title": "超载：全机关同时运转！", "sub": "每轮三个机关一起来 · 冷却缩短 · 增援全开", "color": [1.0, 0.35, 0.3]},
         "defeat": {"title": "狂欢攻城堡垒被打倒了！"},
+        # 第十轮：原六个机关冷却 ×0.7；新增五个（auto = 不进轮换，由要塞自己按条件放：护盾柱按血量、车头舱门按时间）
         "skills": {
-            "missiles": S("猎笑巡航弹", 18.0) | {"life": 7.0},
-            "hands": S("伸缩追猎巨手", 16.0) | {"life": 12.0},
-            "rockets": S("双线火箭运兵", 20.0) | {"life": 5.0},
-            "crane": S("双钩劫塔", 26.0) | {"life": 8.7},
-            "convoy": S("三批交叉车阵", 26.0) | {"life": 9.0},
-            "cannon": S("三连锁定重炮", 30.0) | {"life": 12.0},
+            "missiles": S("猎笑巡航弹", 12.6) | {"life": 7.0},
+            "hands": S("伸缩追猎巨手", 11.2) | {"life": 12.0},
+            "rockets": S("双线火箭运兵", 14.0) | {"life": 5.0},
+            "crane": S("双钩劫塔", 18.2) | {"life": 8.7},
+            "convoy": S("三批交叉车阵", 18.2) | {"life": 9.0},
+            "cannon": S("三连锁定重炮", 21.0) | {"life": 12.0},
+            "tornado_launcher": S("龙卷发射器", 18.0) | {"life": 9.0},
+            "portal_drop": S("传送门空降", 22.0) | {"life": 10.0},
+            "fireworks": S("烟花弹幕", 20.0) | {"life": 8.0},
+            "magnet": S("磁吸车头", 18.0) | {"life": 5.0},
+            "shields": S("护盾发生柱", 999.0) | {"life": 40.0, "auto": True},
+            "hatch": S("车头舱门", 16.0) | {"life": 3.0, "auto": True},
         },
         # 要塞上的怪物协作（FortressCooperation）
         "cooperation": {
@@ -93,17 +101,34 @@ BOSSES = {
             "pair": "平台调度：%s ＋ %s",
             "tower_dismantled": "冰塔被拆解！下轮重炮：四连装填",
             "recoil_title": "重炮反冲 −%d", "recoil_sub": "整轮炮击已取消！",
+            "triple": "超载调度：%s ＋ %s ＋ %s",
+            "shield_up": "护盾发生柱立起来了！柱子不倒，母车几乎打不动——先打柱子！",
+            "shield_down": "护盾柱全倒了！母车的护盾消失！",
+            "hatch": "车头舱门打开了！一排攻城车冲出来了！",
+            "magnet": "车头在吸人！往反方向跑或者冲刺挣开！",
+            "portal": "传送门开到城墙上了！冰封它！",
         },
     },
 }
 
 FORTRESS = {
-    "body": [1176, 400], "hp": 4200, "expand_hp": 1400,
-    "crew_cap": 48, "cart_cap": 20, "alive_cap": 800,
+    "body": [1176, 400], "hp": 6000, "expand_hp": 2000,
+    "crew_cap": 64, "cart_cap": 40, "alive_cap": 800,
     "base_rate": 10.0, "tier_seconds": 45.0, "multipliers": [1.0, 1.5, 2.0, 2.5, 3.0],
-    "skills": {k: {"name": v["name"], "cd": v["cd"], "life": v["life"]} for k, v in BOSSES["carnival_fortress"]["skills"].items()},
-    "pairs": [["hands", "missiles"], ["convoy", "rockets"], ["crane", "cannon"]],
-    "pair_delays": [0.8, 0.8, 1.0],
+    "skills": {k: {"name": v["name"], "cd": v["cd"], "life": v["life"], "auto": v.get("auto", False)}
+               for k, v in BOSSES["carnival_fortress"]["skills"].items()},
+    "pairs": [["hands", "missiles"], ["convoy", "rockets"], ["crane", "cannon"], ["tornado_launcher", "magnet"], ["portal_drop", "fireworks"]],
+    "pair_delays": [0.8, 0.8, 1.0, 0.8, 0.8],
+    # 第十轮加强：机关出手更快（预警 ×warn_mult），巨手更快更远；剩 overdrive_ratio 血进超载（每轮三个机关、冷却再 ×overdrive_cd、增援最高档）
+    "warn_mult": 0.75, "hand_speed": 1.4, "hand_reach": 1.5,
+    "overdrive_ratio": 0.3, "overdrive_cd": 0.6,
+    # 护盾发生柱：剩 shield_at 比例的血各立一次 shield_count 根（每根 shield_hp），柱子没倒完母车受伤 ×shield_reduction
+    "shield_at": [0.75, 0.45], "shield_count": 3, "shield_hp": 40, "shield_reduction": 0.2,
+    # 车头舱门：登场时车头前排 intro_carts 辆，之后每次放 hatch_count 辆
+    "intro_carts": 8, "hatch_count": 10,
+    # 龙卷发射器 / 传送门空降 / 烟花弹幕 / 磁吸车头
+    "tornado_count": 3, "tornado_crew": 4, "portal_crew": 12, "firework_waves": 3, "firework_shells": 7,
+    "magnet_radius": 260.0, "magnet_pull": 70.0,
 }
 
 

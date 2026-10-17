@@ -271,6 +271,12 @@ def etower(kind):
             d.ellipse((x, y, x + 5, y + 6), fill=(190, 140, 230, 255), outline=(110, 60, 150, 255))
             d.line((x + 1, y + 1, x + 1, y - 2), fill=(190, 140, 230, 255))
         d.ellipse((8, 12, 15, 16), fill=EGLOW)
+    elif kind == "catapult":
+        d.line((4, 14, 19, 4), fill=(150, 100, 60, 255), width=2)                 # 投掷臂
+        d.ellipse((15, 0, 22, 6), fill=(110, 90, 80, 255), outline=(60, 45, 40, 255))   # 兜里的石头
+        d.rectangle((1, 12, 7, 18), fill=(80, 70, 90, 255), outline=(40, 30, 50, 255))  # 配重
+        d.line((11, 9, 11, 14), fill=EWOOD_D, width=2)
+        d.ellipse((9, 13, 13, 17), fill=EGLOW)
     else:  # sole_tower
         d.rectangle((5, 6, 18, 12), fill=(230, 200, 140, 255), outline=(140, 100, 60, 255))
         for x in range(6, 18, 2):
@@ -371,7 +377,8 @@ def icicle_proj():
     return add_outline(img)
 
 
-ETOWERS = ["vine_pull", "tailor", "glue", "net", "silence", "portal", "windmill", "totem", "thigh_tower", "sole_tower", "airdrop", "brush_battery", "resonance"]
+ETOWERS = ["vine_pull", "tailor", "glue", "net", "silence", "portal", "windmill", "totem", "thigh_tower", "sole_tower", "airdrop", "brush_battery", "resonance",
+           "catapult"]
 
 
 def pack(items, name):

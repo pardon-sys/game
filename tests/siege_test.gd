@@ -220,6 +220,9 @@ func _run_controls() -> void:
 	var snow_ok := false
 	for i in 6:
 		d.blue.set_meta("siege_cd", {})
+		# 前面几段施法攒的魔力疲倦会让施法随机失败（magic_fail）：每次试之前清掉
+		if d.blue.fatigue:
+			d.blue.fatigue.clear()
 		d.aim.open(d.blue)
 		d.aim.spell = "snow"
 		d.aim.point = d.pink.global_position
@@ -228,6 +231,8 @@ func _run_controls() -> void:
 			break
 		d.aim.close()
 	check("清凉雪花：粉色公主闷笑下降（%.0f → %.0f）" % [lv0, d.pink.laugh.value], snow_ok and d.pink.laugh.value < lv0)
+	# 后面造塔要粉色公主能动：闷笑清零（这一项没过也不连累后面）
+	d.pink.laugh.set_value(0.0)
 	for m in d.monsters.duplicate():
 		if is_instance_valid(m):
 			m.queue_free()
@@ -462,6 +467,9 @@ func _run_blue_fall() -> void:
 	if d.blue.status:
 		d.blue.status.release(true)
 	await _wait(0.3)
+	# 先清场：陷阱（龙卷风 / 泡泡……）抓住她就走不到梯子
+	d.clear_field()
+	await get_tree().process_frame
 	d.knock_off(d.blue, "测试")
 	await _wait(1.0)
 	var down := not d.is_on_wall(d.blue)

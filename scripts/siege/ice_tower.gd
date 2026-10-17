@@ -648,9 +648,9 @@ func _resonance() -> void:
 		var m: Monster = hit[i]
 		var at := FortressRules.point(m,prev) + Vector2(0, -8)
 		_arc_line(prev, at, i * 0.05)
-		# 电弧从上一只怪那里跳过来：盾甲螃蟹的正面挡不住
+		# 电弧从上一只怪那里跳过来：唯一打得动盾甲螃蟹的（伤害 ×0.1，见 ShieldCrab）
 		var arc := HitData.make_attack(self, dmg, 0.0, true)
-		arc.ignore_block = true
+		arc.tag = ShieldCrab.RESONANCE_TAG
 		m.receive_hit(arc)
 		m.stun(0.3)
 		Fx.burst(get_parent(), at, "crystal", 4, 30.0, 0.4, Vector2(0, 40), Color(0.85, 0.75, 1.0))
@@ -732,9 +732,7 @@ func _meteor(delta: float) -> void:
 		var d := SiegeDirector.current
 		if d:
 			for m in d.enemies_near(to, r, false):
-				# 陨石从天上砸下来：盾甲螃蟹举着钳子也挡不住
 				var fall := HitData.make_attack(src, dmg, 160.0, true)
-				fall.ignore_block = true
 				m.receive_hit(fall)
 				m.stun(frz)
 			for t in parent.get_tree().get_nodes_in_group("siege_enemy_tower"):

@@ -4,7 +4,7 @@ extends Node
 ## SiegeDirector 每波开打时 begin(ids)，下一波开打时换成新的一组。怪 / 陷阱 / 敌塔比重由 gen_floor06_siege.py 直接写进波次表，
 ## 这里只做持续的机制：
 ##   fog       迷雾之夜：画面变暗（关卡的 Darkness 补间到暗紫色）
-##   corps     攻城大队：每 CORPS_GAP 秒一排 4~5 辆攻城车（各带 2 只盾甲螃蟹）从底边同时出发，先亮一排红色预警线
+##   corps     攻城大队：每 CORPS_GAP 秒两排共 9~11 辆攻城车（各带 2 只盾甲螃蟹）从底边同时出发，先亮红色预警线；最终波一直开着
 ##   gale      狂风肆虐：每 GUST_GAP 秒一阵 GUST_TIME 秒的横扫强风（屏幕风线 + 羽毛），把粉色公主和小怪往一边吹
 ##   equip     痒痒装备日：临时装备时长 ×1.5（mul("equip_time")）
 ##   engineers 工兵狂潮：搭敌塔快 50%（mul("build_speed")），每立起一座敌塔响号角（on_tower_built）
@@ -13,7 +13,11 @@ extends Node
 ##   carnival  狂欢节：所有怪 siege_carnival（移速 +25%、挠痒间隔 -20%），满屏彩带，配乐音高 +6%
 ## 波次开始时屏幕中间大字（SiegeFx.big_title），SiegeHud 在小地图下面挂这一波的特色标签（鼠标停上去看说明）。
 
-const CORPS_GAP := 25.0
+const CORPS_GAP := 14.0
+## 攻城大队一次几辆（第十轮：9~11 辆，第 10 波起 11 辆）
+const CORPS_MIN := 9
+const CORPS_MAX := 11
+const FINAL_FIXED := ["carnival", "corps"]
 const GUST_GAP := 8.0
 const GUST_TIME := 1.6
 const GUST_PINK := 75.0
@@ -114,7 +118,7 @@ func _apply(ids: Array) -> void:
 	end()
 	for id in ids:
 		active.append(str(id))
-	_t = {"corps": 6.0, "raiders": 8.0, "gale": 5.0, "feathers": 0.5, "carnival": 0.0}
+	_t = {"corps": 2.0 if director.is_final_fortress() else 6.0, "raiders": 8.0, "gale": 5.0, "feathers": 0.5, "carnival": 0.0}
 	if active.is_empty():
 		return
 	var names: Array[String] = []
@@ -225,11 +229,12 @@ func _count(k: String) -> void:
 func corps() -> void:
 	_count("corps")
 	var ms := director.map_size()
-	var n := 5 if director.wave >= 10 else 4
-	var y := ms.y - 40.0
+	var n := CORPS_MAX if director.wave >= 10 else randi_range(CORPS_MIN, CORPS_MAX)
 	var spots: Array[Vector2] = []
 	for i in n:
-		spots.append(Vector2(lerpf(160.0, ms.x - 160.0, (i + 0.5) / n) + randf_range(-30, 30), y))
+		# 两排错开：单号车在前排，双号车在后排
+		var y := ms.y - (40.0 if i % 2 == 0 else 90.0)
+		spots.append(Vector2(lerpf(120.0, ms.x - 120.0, (i + 0.5) / n) + randf_range(-16, 16), y))
 	for p in spots:
 		SiegeFx.lane(director.entities(), p, Vector2(p.x, director.wall_foot_y() + 20.0), 26.0, Color(1, 0.3, 0.25), 1.4, true)
 	GameState.notify("攻城大队来了！%d 辆攻城车一起冲过来！" % n)
@@ -378,9 +383,10 @@ func on_tower_built(site: Node2D) -> void:
 
 func rotate_features() -> void:
 	var previous := active.duplicate()
-	var pool: Array = director.data.get("features", {}).keys().filter(func(k): return k != "carnival" and not previous.has(k))
-	var selected: Array = ["carnival"]
-	for i in mini(3, pool.size()):
+	# 最终波固定开着狂欢节和攻城大队（要塞登场前后都有车队冲墙），另外轮换两个
+	var pool: Array = director.data.get("features", {}).keys().filter(func(k): return not FINAL_FIXED.has(k) and not previous.has(k))
+	var selected: Array = FINAL_FIXED.duplicate()
+	for i in mini(2, pool.size()):
 		var index := rng.randi_range(0, pool.size() - 1)
 		selected.append(pool.pop_at(index))
 	_apply(selected)
