@@ -249,6 +249,13 @@
 					"delay": 8
 				},
 				{
+					"formation": "crab_rat",
+					"count": 2,
+					"from": "hole",
+					"interval": 4.0,
+					"delay": 14
+				},
+				{
 					"formation": "engineer_escort",
 					"count": 3,
 					"from": "bottom",
@@ -464,6 +471,10 @@
 					"kind": "link_rune"
 				},
 				{
+					"t": 28,
+					"kind": "mushrooms"
+				},
+				{
 					"t": 39.0,
 					"kind": "wall_vine"
 				}
@@ -572,6 +583,13 @@
 					"delay": 22
 				},
 				{
+					"formation": "crab_tentacle",
+					"count": 2,
+					"from": "hole",
+					"interval": 4.0,
+					"delay": 16
+				},
+				{
 					"formation": "engineer_escort",
 					"count": 4,
 					"from": "bottom",
@@ -609,6 +627,10 @@
 				{
 					"t": 16.0,
 					"kind": "tornado"
+				},
+				{
+					"t": 24,
+					"kind": "claw"
 				},
 				{
 					"t": 26.0,
@@ -769,6 +791,20 @@
 					"delay": 16
 				},
 				{
+					"formation": "imp_slime",
+					"count": 2,
+					"from": "right",
+					"interval": 4.0,
+					"delay": 18
+				},
+				{
+					"formation": "crab_rat",
+					"count": 2,
+					"from": "hole",
+					"interval": 4.0,
+					"delay": 24
+				},
+				{
 					"formation": "engineer_escort",
 					"count": 4,
 					"from": "bottom",
@@ -851,6 +887,10 @@
 				{
 					"t": 15.0,
 					"kind": "bubbles"
+				},
+				{
+					"t": 20,
+					"kind": "quicksand"
 				},
 				{
 					"t": 24.0,
@@ -1006,6 +1046,13 @@
 					"delay": 14
 				},
 				{
+					"formation": "bear_tentacle",
+					"count": 2,
+					"from": "left",
+					"interval": 4.0,
+					"delay": 20
+				},
+				{
 					"formation": "engineer_escort",
 					"count": 5,
 					"from": "bottom",
@@ -1066,6 +1113,10 @@
 					"kind": "link_rune"
 				},
 				{
+					"t": 18,
+					"kind": "portal_pair"
+				},
+				{
 					"t": 22.0,
 					"kind": "wall_vine"
 				},
@@ -1092,6 +1143,10 @@
 				{
 					"t": 40,
 					"kind": "tornado"
+				},
+				{
+					"t": 44,
+					"kind": "mushrooms"
 				},
 				{
 					"t": 46.0,
@@ -1253,6 +1308,20 @@
 					"delay": 18
 				},
 				{
+					"formation": "crab_tentacle",
+					"count": 2,
+					"from": "hole",
+					"interval": 7.199999999999999,
+					"delay": 14
+				},
+				{
+					"formation": "imp_slime",
+					"count": 2,
+					"from": "left",
+					"interval": 4.0,
+					"delay": 22
+				},
+				{
 					"formation": "engineer_escort",
 					"count": 4,
 					"from": "bottom",
@@ -1334,6 +1403,10 @@
 					"kind": "wall_vine"
 				},
 				{
+					"t": 16,
+					"kind": "claw"
+				},
+				{
 					"t": 20.0,
 					"kind": "sticky_net"
 				},
@@ -1360,6 +1433,10 @@
 				{
 					"t": 38,
 					"kind": "wall_vine"
+				},
+				{
+					"t": 40,
+					"kind": "quicksand"
 				},
 				{
 					"t": 41.0,
@@ -1537,6 +1614,20 @@
 					"delay": 16
 				},
 				{
+					"formation": "crab_rat",
+					"count": 4,
+					"from": "hole",
+					"interval": 7.199999999999999,
+					"delay": 10
+				},
+				{
+					"formation": "bear_tentacle",
+					"count": 2,
+					"from": "right",
+					"interval": 4.0,
+					"delay": 18
+				},
+				{
 					"formation": "engineer_escort",
 					"count": 5,
 					"from": "bottom",
@@ -1607,6 +1698,10 @@
 					"kind": "fog"
 				},
 				{
+					"t": 14,
+					"kind": "portal_pair"
+				},
+				{
 					"t": 18.0,
 					"kind": "tornado"
 				},
@@ -1625,6 +1720,10 @@
 				{
 					"t": 32,
 					"kind": "sticky_net"
+				},
+				{
+					"t": 34,
+					"kind": "claw"
 				},
 				{
 					"t": 36.0,
@@ -1813,6 +1912,13 @@
 					"delay": 14
 				},
 				{
+					"formation": "imp_slime",
+					"count": 4,
+					"from": "bottom",
+					"interval": 8.4,
+					"delay": 12
+				},
+				{
 					"formation": "engineer_escort",
 					"count": 5,
 					"from": "bottom",
@@ -1967,6 +2073,10 @@
 					"kind": "fog"
 				},
 				{
+					"t": 12,
+					"kind": "quicksand"
+				},
+				{
 					"t": 12.0,
 					"kind": "wall_vine"
 				},
@@ -1985,6 +2095,10 @@
 				{
 					"t": 28,
 					"kind": "bubbles"
+				},
+				{
+					"t": 30,
+					"kind": "mushrooms"
 				},
 				{
 					"t": 30.0,
@@ -2013,6 +2127,10 @@
 				{
 					"t": 48.0,
 					"kind": "link_rune"
+				},
+				{
+					"t": 48,
+					"kind": "portal_pair"
 				},
 				{
 					"t": 52,
@@ -2316,6 +2434,34 @@
 					"delay": 37
 				},
 				{
+					"formation": "crab_rat",
+					"count": 2,
+					"from": "hole",
+					"interval": 5.3999999999999995,
+					"delay": 6
+				},
+				{
+					"formation": "crab_tentacle",
+					"count": 2,
+					"from": "hole",
+					"interval": 5.3999999999999995,
+					"delay": 10
+				},
+				{
+					"formation": "imp_slime",
+					"count": 2,
+					"from": "hole",
+					"interval": 5.3999999999999995,
+					"delay": 14
+				},
+				{
+					"formation": "bear_tentacle",
+					"count": 2,
+					"from": "hole",
+					"interval": 5.3999999999999995,
+					"delay": 18
+				},
+				{
 					"formation": "engineer_escort",
 					"count": 6,
 					"from": "bottom",
@@ -2480,6 +2626,10 @@
 					"kind": "bubbles"
 				},
 				{
+					"t": 10,
+					"kind": "claw"
+				},
+				{
 					"t": 12.0,
 					"kind": "sticky_net"
 				},
@@ -2500,6 +2650,10 @@
 					"kind": "wall_vine"
 				},
 				{
+					"t": 26,
+					"kind": "quicksand"
+				},
+				{
 					"t": 30.0,
 					"kind": "bubbles"
 				},
@@ -2514,6 +2668,10 @@
 				{
 					"t": 36.0,
 					"kind": "fog"
+				},
+				{
+					"t": 42,
+					"kind": "mushrooms"
 				},
 				{
 					"t": 42.0,
@@ -2542,6 +2700,10 @@
 				{
 					"t": 54.0,
 					"kind": "sticky_net"
+				},
+				{
+					"t": 58,
+					"kind": "portal_pair"
 				},
 				{
 					"t": 60,
@@ -2811,6 +2973,34 @@
 					"delay": 30.5
 				},
 				{
+					"formation": "crab_rat",
+					"count": 2,
+					"from": "hole",
+					"interval": 4.8,
+					"delay": 5
+				},
+				{
+					"formation": "crab_tentacle",
+					"count": 2,
+					"from": "hole",
+					"interval": 4.8,
+					"delay": 8
+				},
+				{
+					"formation": "imp_slime",
+					"count": 2,
+					"from": "hole",
+					"interval": 4.8,
+					"delay": 11
+				},
+				{
+					"formation": "bear_tentacle",
+					"count": 2,
+					"from": "hole",
+					"interval": 4.8,
+					"delay": 14
+				},
+				{
 					"formation": "engineer_escort",
 					"count": 6,
 					"from": "bottom",
@@ -2986,6 +3176,10 @@
 					"kind": "bubbles"
 				},
 				{
+					"t": 8,
+					"kind": "claw"
+				},
+				{
 					"t": 12.0,
 					"kind": "tornado"
 				},
@@ -3014,6 +3208,10 @@
 					"kind": "broom"
 				},
 				{
+					"t": 22,
+					"kind": "portal_pair"
+				},
+				{
 					"t": 24.0,
 					"kind": "sticky_net"
 				},
@@ -3032,6 +3230,10 @@
 				{
 					"t": 30,
 					"kind": "wall_vine"
+				},
+				{
+					"t": 36,
+					"kind": "quicksand"
 				},
 				{
 					"t": 36.0,
@@ -3072,6 +3274,10 @@
 				{
 					"t": 48.0,
 					"kind": "fog"
+				},
+				{
+					"t": 50,
+					"kind": "mushrooms"
 				},
 				{
 					"t": 54,
@@ -3413,6 +3619,34 @@
 					"delay": 30.5
 				},
 				{
+					"formation": "crab_rat",
+					"count": 2,
+					"from": "hole",
+					"interval": 4.8,
+					"delay": 4
+				},
+				{
+					"formation": "crab_tentacle",
+					"count": 2,
+					"from": "hole",
+					"interval": 4.8,
+					"delay": 7
+				},
+				{
+					"formation": "imp_slime",
+					"count": 2,
+					"from": "hole",
+					"interval": 4.8,
+					"delay": 10
+				},
+				{
+					"formation": "bear_tentacle",
+					"count": 2,
+					"from": "hole",
+					"interval": 4.8,
+					"delay": 13
+				},
+				{
 					"formation": "engineer_escort",
 					"count": 7,
 					"from": "bottom",
@@ -3577,6 +3811,10 @@
 					"kind": "wall_vine"
 				},
 				{
+					"t": 10,
+					"kind": "claw"
+				},
+				{
 					"t": 12,
 					"kind": "broom"
 				},
@@ -3607,6 +3845,10 @@
 				{
 					"t": 30.0,
 					"kind": "broom"
+				},
+				{
+					"t": 30,
+					"kind": "quicksand"
 				},
 				{
 					"t": 30,
@@ -3649,6 +3891,10 @@
 					"kind": "fog"
 				},
 				{
+					"t": 50,
+					"kind": "portal_pair"
+				},
+				{
 					"t": 54.0,
 					"kind": "bubbles"
 				},
@@ -3671,6 +3917,10 @@
 				{
 					"t": 66.0,
 					"kind": "tornado"
+				},
+				{
+					"t": 70,
+					"kind": "mushrooms"
 				},
 				{
 					"t": 72.0,

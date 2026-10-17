@@ -1,6 +1,7 @@
 class_name EnemyTowerTools
 extends RefCounted
-## 新塔只增加效果分支，建造、受击、拆除与发射时钟仍归 EnemyTower。
+## 后加的三种敌塔的效果（痒痒空投站 airdrop 第 3 波起、机关刷具轰击塔 brush_battery 第 5 波起、共振刷钟楼 resonance 第 7 波起）：只写效果分支，
+## 建造、受击、拆除和发射计时仍归 EnemyTower。
 
 static func attack(tower: EnemyTower) -> void:
 	match tower.kind:

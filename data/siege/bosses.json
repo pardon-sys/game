@@ -1,0 +1,309 @@
+{
+	"_说明": [
+		"攻防战小 Boss 的技能 / 横幅（tools/build/gen_siege_bosses.py 生成；SiegeBoss 读）。"
+	],
+	"troll_general": {
+		"name": "攻城巨魔将军",
+		"color": [
+			1.0,
+			0.55,
+			0.35
+		],
+		"crystals": 30,
+		"intro": {
+			"title": "攻城巨魔将军",
+			"sub": "第 3 波的小 Boss——看清地上的预警！"
+		},
+		"rage": {
+			"title": "将军狂暴了！",
+			"sub": "移速变快、技能更频繁，地震重击变成两连！",
+			"color": [
+				1.0,
+				0.3,
+				0.25
+			]
+		},
+		"defeat": {
+			"title": "攻城巨魔将军被打倒了！",
+			"color": [
+				1.0,
+				0.9,
+				0.5
+			]
+		},
+		"skills": {
+			"grab": {
+				"name": "大手抓挠",
+				"cd": 8.0,
+				"warn": 0.45,
+				"shout": "抓到了！脚心——给我露出来！"
+			},
+			"swipe": {
+				"name": "三连扫掌",
+				"cd": 6.0,
+				"warn": 0.0
+			},
+			"quake": {
+				"name": "地震重击",
+				"cd": 11.0,
+				"warn": 1.0
+			},
+			"throw": {
+				"name": "投掷上墙",
+				"cd": 10.0,
+				"warn": 0.0,
+				"shout": "飞——上——去！"
+			},
+			"ram": {
+				"name": "攻城锤冲锋",
+				"cd": 16.0,
+				"warn": 1.2,
+				"shout": "攻城锤——撞开它！"
+			},
+			"leap": {
+				"name": "跳劈城墙",
+				"cd": 18.0,
+				"warn": 0.9
+			},
+			"cry": {
+				"name": "战吼",
+				"cd": 15.0,
+				"warn": 0.0,
+				"shout": "吼——————！"
+			},
+			"banner": {
+				"name": "痒痒军旗",
+				"cd": 24.0,
+				"warn": 0.0,
+				"shout": "插旗！小的们，给我钻出来！"
+			},
+			"build": {
+				"name": "就地搭塔",
+				"cd": 30.0,
+				"warn": 0.0,
+				"shout": "哔——！工兵！就在这儿搭！"
+			}
+		},
+		"notices": {
+			"banner_broken": "痒痒军旗被拆掉了！"
+		}
+	},
+	"gale_bear": {
+		"name": "狂风熊统领",
+		"color": [
+			1.0,
+			0.78,
+			0.35
+		],
+		"crystals": 40,
+		"rage_cd": 0.45,
+		"intro": {
+			"title": "狂风熊统领",
+			"sub": "第 6 波：躲开羽痒龙卷，冻结风眼！冰塔伤害只有 25%。"
+		},
+		"rage": {
+			"title": "熊统领：狂风推进！",
+			"sub": "半血后向城墙推进，技能与协作加快！"
+		},
+		"defeat": {
+			"title": "狂风熊统领被打倒了！"
+		},
+		"skills": {
+			"tornado": {
+				"name": "八向羽痒龙卷",
+				"cd": 3.6,
+				"warn": 0.18
+			},
+			"vacuum": {
+				"name": "吸痒羽毛风眼",
+				"cd": 4.2,
+				"warn": 0.18
+			},
+			"chase": {
+				"name": "羽刷追痒",
+				"cd": 2.4,
+				"warn": 0.15
+			},
+			"pulse": {
+				"name": "挠痒风盾震荡",
+				"cd": 2.7,
+				"warn": 0.12
+			},
+			"lanes": {
+				"name": "羽痒三岔压城",
+				"cd": 4.8,
+				"warn": 0.18
+			},
+			"convoy": {
+				"name": "旋风挠痒运兵",
+				"cd": 4.8,
+				"warn": 0.15
+			},
+			"paw": {
+				"name": "熊掌挠挠",
+				"cd": 1.8,
+				"warn": 0.1,
+				"shout": "熊掌挠脚心！"
+			}
+		}
+	},
+	"puppet_master": {
+		"name": "狂欢挠痒魔偶师",
+		"color": [
+			0.95,
+			0.65,
+			0.85
+		],
+		"crystals": 50,
+		"rage_cd": 0.45,
+		"intro": {
+			"title": "狂欢挠痒魔偶师",
+			"sub": "第 9 波：缎带换位、刷轮拖行！塔伤害只有 25%。"
+		},
+		"rage": {
+			"title": "魔偶师：机关狂欢！",
+			"sub": "双人拖行、六段刷挠，机关接力加快！"
+		},
+		"defeat": {
+			"title": "狂欢挠痒魔偶师被打倒了！"
+		},
+		"skills": {
+			"tether": {
+				"name": "缎带提线",
+				"cd": 3.2,
+				"warn": 0.18
+			},
+			"swap": {
+				"name": "缎带换位",
+				"cd": 6.0,
+				"warn": 0.18
+			},
+			"brush": {
+				"name": "双路机关刷挠",
+				"cd": 2.4,
+				"warn": 0.12
+			},
+			"cross": {
+				"name": "十字刷具阵",
+				"cd": 4.2,
+				"warn": 0.18
+			},
+			"link": {
+				"name": "双子痒感线",
+				"cd": 6.0,
+				"warn": 0.12
+			},
+			"lift": {
+				"name": "吊起刷挠",
+				"cd": 3.6,
+				"warn": 0.12
+			},
+			"relay": {
+				"name": "挠痒接力号令",
+				"cd": 4.5,
+				"warn": 0.12
+			},
+			"winch": {
+				"name": "缎带绞盘拖行",
+				"cd": 3.0,
+				"warn": 0.1
+			}
+		}
+	},
+	"carnival_fortress": {
+		"name": "狂欢攻城堡垒",
+		"color": [
+			1.0,
+			0.78,
+			0.3
+		],
+		"crystals": 0,
+		"intro": {
+			"title": "狂欢攻城堡垒",
+			"sub": "持续增援！救回冰塔 · 蓄力时攻击核心"
+		},
+		"rage": {
+			"title": "展开平台：双重追猎",
+			"sub": "巨手巡航 · 交叉空降 · 双钩重炮"
+		},
+		"defeat": {
+			"title": "狂欢攻城堡垒被打倒了！"
+		},
+		"skills": {
+			"missiles": {
+				"name": "猎笑巡航弹",
+				"cd": 18.0,
+				"warn": 0.0,
+				"life": 7.0
+			},
+			"hands": {
+				"name": "伸缩追猎巨手",
+				"cd": 16.0,
+				"warn": 0.0,
+				"life": 12.0
+			},
+			"rockets": {
+				"name": "双线火箭运兵",
+				"cd": 20.0,
+				"warn": 0.0,
+				"life": 5.0
+			},
+			"crane": {
+				"name": "双钩劫塔",
+				"cd": 26.0,
+				"warn": 0.0,
+				"life": 8.7
+			},
+			"convoy": {
+				"name": "三批交叉车阵",
+				"cd": 26.0,
+				"warn": 0.0,
+				"life": 9.0
+			},
+			"cannon": {
+				"name": "三连锁定重炮",
+				"cd": 30.0,
+				"warn": 0.0,
+				"life": 12.0
+			}
+		},
+		"cooperation": {
+			"escort": {
+				"name": "盾蟹护卫车队",
+				"cd": 16.0,
+				"warn": 0.0
+			},
+			"repair": {
+				"name": "工兵维护母车",
+				"cd": 20.0,
+				"warn": 0.0
+			},
+			"airlift": {
+				"name": "蝠群接应火箭兵",
+				"cd": 18.0,
+				"warn": 0.0
+			},
+			"hook": {
+				"name": "钩索接应巨手",
+				"cd": 16.0,
+				"warn": 0.0
+			},
+			"warm": {
+				"name": "暖炉伴车拆塔",
+				"cd": 22.0,
+				"warn": 0.0
+			},
+			"resonance": {
+				"name": "共振塔车队号令",
+				"cd": 24.0,
+				"warn": 0.0
+			}
+		},
+		"notices": {
+			"pair": "平台调度：%s ＋ %s",
+			"tower_dismantled": "冰塔被拆解！下轮重炮：四连装填",
+			"recoil_title": "重炮反冲 −%d",
+			"recoil_sub": "整轮炮击已取消！"
+		}
+	}
+}

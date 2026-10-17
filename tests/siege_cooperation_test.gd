@@ -1,10 +1,11 @@
-extends "res://tests/siege9_boss_test.gd"
+extends SiegeFixture
 ## 真正升级、真实换位后的双人 CG 排队、双子距离与十种联动生命周期。
 
 var new_teams: Array
 
 
 func _ready() -> void:
+	fixture_wave = 9
 	await _boot()
 	await _drain()
 	new_teams = MonsterTeamwork.data()["teams"].filter(func(t): return t["effect"].get("joint", false))

@@ -6328,6 +6328,60 @@
 					"一起反击！"
 				]
 			}
+		},
+		"team_hook_haunt": {
+			"trigger": [
+				"先松开钩子！我可没答应陪你们练配合！"
+			],
+			"name": "hook_haunt"
+		},
+		"team_bubble_roll": {
+			"trigger": [
+				"区区泡泡……哈！那两只刷子给我停下！"
+			],
+			"name": "bubble_roll"
+		},
+		"team_magic_recoil": {
+			"trigger": [
+				"我躲过第一下了——哈！谁让你们再来一遍！"
+			],
+			"name": "magic_recoil"
+		},
+		"team_twin_relay": {
+			"trigger": [
+				"别以为轮流来，我就会认输……哈！"
+			],
+			"name": "twin_relay"
+		},
+		"team_glue_roll": {
+			"trigger": [
+				"这点黏胶困不住我……先把刷子拿开！"
+			],
+			"name": "glue_roll"
+		},
+		"team_drop_hook": {
+			"trigger": [
+				"你们连落点都算好了？哼，别碰我！"
+			],
+			"name": "drop_hook"
+		},
+		"team_web_battery": {
+			"trigger": [
+				"别拿我当靶子！哈……这两只蜘蛛真碍事！"
+			],
+			"name": "web_battery"
+		},
+		"team_sticky_pincer": {
+			"trigger": [
+				"……包围。先打领头的。"
+			],
+			"name": "sticky_pincer"
+		},
+		"team_vine_pincer": {
+			"trigger": [
+				"……包围。先打领头的。"
+			],
+			"name": "vine_pincer"
 		}
 	},
 	"magic": {

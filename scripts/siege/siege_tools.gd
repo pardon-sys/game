@@ -10,6 +10,18 @@ static func alive(a: Variant) -> bool:
 	return is_instance_valid(a) and a is Actor and a.is_alive() and not a.is_queued_for_deletion() and not (a is PlayableCharacter and Downed.is_downed(a))
 
 
+## 能不能被陷阱 / 风场 / 泡泡 / 强风带走（吹、卷、吸、弹）：Boss、攻城车不行；在墙上、在空中、在活梯子里、
+## 正被配合技运送（team_transfer）、物理被别人接管的也不行。stunned_ok = false 时冻住 / 晕住的也不动。
+static func displaceable(m: Variant, stunned_ok := false) -> bool:
+	if not alive(m) or not (m is Monster):
+		return false
+	if m is SiegeBoss or m is SiegeCart or not m.is_physics_processing():
+		return false
+	if m.get_meta("siege_on_wall", false) or m.get_meta("airborne", false) or m.get_meta("team_transfer", false) or m.has_meta("in_ladder"):
+		return false
+	return stunned_ok or not m.is_stunned()
+
+
 static func valid_source(a: Variant) -> bool:
 	return alive(a) and not (a is Monster and a.is_stunned())
 

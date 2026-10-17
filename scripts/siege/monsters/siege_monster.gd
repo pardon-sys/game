@@ -82,7 +82,7 @@ func block_hit(_hit: HitData) -> bool:
 
 
 func receive_hit(hit: HitData) -> bool:
-	if block_hit(hit):
+	if not hit.ignore_block and block_hit(hit):
 		_ding()
 		return false
 	return super(hit)

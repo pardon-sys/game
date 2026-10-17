@@ -1,15 +1,14 @@
 class_name GaleBear
 extends SiegeBoss
-## 第六波狂风熊统领：七技能；风场复用攻防战陷阱、飞具与协作，部位判定走 HitData。
-## 半血前只在下半场；技能冷却是实际秒数，不重复乘 ability_rate。
+## 第 6 波小 Boss「狂风熊统领」（SiegeBoss，数据 data/siege/bosses.json 的 gale_bear）。七个技能：
+##   tornado 八向羽痒龙卷（龙卷风 HazardTornado 的熊统领模式，朝八个方向放出）、vacuum 吸痒羽毛风眼（GaleVortex：把人和怪吸向中心）、
+##   chase 羽刷追痒（追着公主放风弹 GaleWind.Shot）、pulse 挠痒风盾震荡（一圈圈击退）、lanes 羽痒三岔压城（三条风道压向蓝色公主那段墙）、
+##   convoy 旋风挠痒运兵（配合技 bear_airlift：用风把附近的怪送到公主身边）、paw 熊掌挠挠（贴身扇形，挠脚心 / 大腿）。
+## 半血狂暴：冷却 × rage_cd、技能加强。冷却是实际秒数（×2），不再乘 ability_rate。风场节点都 register_field，倒下 / 被冻住时一起收掉。
 
 const WIND := Color(0.45, 0.95, 0.9)
 const GOLD := Color(1.0, 0.78, 0.35)
-const SKILL_CD := {"tornado": 3.6, "vacuum": 4.2, "chase": 2.4, "pulse": 2.7, "lanes": 4.8, "convoy": 4.8, "paw": 1.8}
-const NAMES := {"tornado": "八向羽痒龙卷", "vacuum": "吸痒羽毛风眼", "chase": "羽刷追痒", "pulse": "挠痒风盾震荡", "lanes": "羽痒三岔压城", "convoy": "旋风挠痒运兵", "paw": "熊掌挠挠"}
 const MAX_TORNADOES := 48
-const WARN_TIME := {"tornado": 0.18, "vacuum": 0.18, "chase": 0.15, "pulse": 0.12, "lanes": 0.18, "convoy": 0.15, "paw": 0.1}
-const RAGE_CD_MULT := 0.45
 const TORNADO_GAP := 0.18
 const CHASE_GAP := 0.18
 const PULSE_GAP := 0.18
@@ -18,8 +17,6 @@ const HIT_GAP := 0.12
 
 @export var sprite_key := "gale_bear"
 
-var cds := {}
-var used: Array[String] = []
 var rage_count := 0
 var _intro_done := false
 var _intro_left := 0.0
@@ -31,10 +28,7 @@ var _from := Vector2.ZERO
 var _heading := Vector2.UP
 var _victim_ref: WeakRef
 var _blue_zone := 0
-var _warns: Array[Node] = []
 var _hit_cool := {}
-var _last_used := {}
-var _fields: Array[WeakRef] = []
 var _vortex: GaleVortex
 var _round_goals: Array[Vector2] = []
 var _next_round := 0.0
@@ -44,6 +38,7 @@ var _steam: CPUParticles2D
 
 
 func _setup() -> void:
+	boss_key = "gale_bear"
 	super()
 	knockback_resist = 0.9
 	grab_max_time = 3.0
@@ -54,8 +49,7 @@ func _setup() -> void:
 	slam_chance = 0.0
 	max_bats = 0
 	summon_interval = 99999.0
-	for key in SKILL_CD:
-		cds[key] = 0.0
+	reset_cooldowns()
 	if sprite:
 		sprite.texture = SiegeMonster.TEX
 		sprite.region_enabled = true
@@ -76,23 +70,14 @@ func intro() -> void:
 	_intro_left = 0.25
 	_announced = true
 	GameState.boss_changed.emit(self)
-	SiegeFx.big_title(self, "狂风熊统领", GOLD, "第 6 波：躲开羽痒龙卷，冻结风眼！冰塔伤害只有 25%。")
+	announce("intro")
 	SiegeFx.camera_peek(self, global_position + Vector2(0, -40), 1.8, 0.85)
 	Audio.play("boss_roar", -1.0)
 	_wheel = SiegeFx.wind_wheel(self, Vector2(0, -38), 38.0, WIND, 1.1)
 	if director:
 		director.intel.discover("gale_bear")
 		# 对应生成器在原出怪配额里预留的护卫；只出场一次，不在号令中补怪。
-		var keys: Array[String] = []
-		for key in director.wave_data().get("boss_escort", {}):
-			for _i in int(director.wave_data()["boss_escort"][key]):
-				keys.append(str(key))
-		for i in keys.size():
-			var offset := Vector2.from_angle(TAU * i / keys.size()) * 58.0
-			var m := director.spawn(keys[i], "", director.clamp_in_map(global_position + offset))
-			if m:
-				m.set_meta("escort_of", self)
-				m.set_meta("escort_off", offset)
+		spawn_escorts()
 
 
 func _tick(delta: float) -> void:
@@ -106,8 +91,7 @@ func _tick(delta: float) -> void:
 	if _intro_left > 0.0:
 		_intro_left -= delta
 		return
-	for key in cds:
-		cds[key] = maxf(0.0, float(cds[key]) - delta)
+	tick_cooldowns(delta)
 	if not raged and health.hp <= health.max_hp / 2:
 		_rage()
 	if _stun_left > 0.0:
@@ -153,7 +137,7 @@ func _walk(delta: float) -> void:
 			target = near
 			goal = near.global_position
 		else:
-			goal = Vector2(director.blue.global_position.x if _alive(director.blue) else director.gate_pos.x,
+			goal = Vector2(director.blue.global_position.x if SiegeTools.alive(director.blue) else director.gate_pos.x,
 				maxf(director.wall_foot_y() + 28.0, min_y() + 30.0))
 	goal.y = maxf(goal.y, min_y())
 	var offset := goal - global_position
@@ -163,17 +147,13 @@ func _walk(delta: float) -> void:
 		facing = velocity.normalized()
 
 
-static func _alive(c: Variant) -> bool:
-	return is_instance_valid(c) and c is Actor and c.is_alive() and not (c is PlayableCharacter and Downed.is_downed(c))
-
-
 func _choose() -> void:
 	if _rest > 0.0:
 		return
 	var candidates: Array[String] = []
-	if not (_alive(director.pink) or _alive(director.blue)):
+	if not (SiegeTools.alive(director.pink) or SiegeTools.alive(director.blue)):
 		return
-	for key in SKILL_CD:
+	for key in skill_keys():
 		if float(cds[key]) > 0.0 or (not used.is_empty() and used[-1] == key):
 			continue
 		if key == "paw" and _near_princess(56.0) == null:
@@ -196,21 +176,21 @@ func _choose() -> void:
 	elif not used.is_empty() and used[-1] == "vacuum" and candidates.has("convoy"):
 		_start("convoy")
 	else:
-		candidates.sort_custom(func(a, b): return float(_last_used.get(a, -INF)) < float(_last_used.get(b, -INF)))
+		candidates.sort_custom(func(a, b): return float(last_used.get(a, -INF)) < float(last_used.get(b, -INF)))
 		_start(candidates[0])
 
 
 func _near_princess(radius: float) -> PlayableCharacter:
 	var nearest: PlayableCharacter
 	for c in [director.pink, director.blue]:
-		if _alive(c) and global_position.distance_to(c.global_position) <= radius:
+		if SiegeTools.alive(c) and global_position.distance_to(c.global_position) <= radius:
 			radius = global_position.distance_to(c.global_position)
 			nearest = c
 	return nearest
 
 
 func _start(key: String) -> bool:
-	if not SKILL_CD.has(key) or skill != "" or mode != Mode.NORMAL or is_stunned() or not is_alive():
+	if not has_skill(key) or skill != "" or mode != Mode.NORMAL or is_stunned() or not is_alive():
 		return false
 	var chosen: PlayableCharacter = _near_princess(56.0) if key == "paw" else null
 	if key == "paw" and chosen == null:
@@ -218,15 +198,14 @@ func _start(key: String) -> bool:
 	if key == "vacuum" and is_instance_valid(_vortex):
 		return false
 	if chosen == null:
-		chosen = director.pink if _alive(director.pink) else director.blue
-	if not _alive(chosen):
+		chosen = director.pink if SiegeTools.alive(director.pink) else director.blue
+	if not SiegeTools.alive(chosen):
 		return false
 	if key == "tornado" and tornado_count() + (16 if raged else 8) > MAX_TORNADOES:
 		return false
 	_warns = _warns.filter(func(n): return is_instance_valid(n))
 	skill = key
-	used.append(key)
-	_last_used[key] = _t
+	mark_used(key)
 	_elapsed = 0.0
 	_phase = 0
 	_cast_raged = raged
@@ -238,38 +217,30 @@ func _start(key: String) -> bool:
 	_victim_ref = weakref(chosen)
 	facing = _heading
 	velocity = Vector2.ZERO
-	cds[key] = float(SKILL_CD[key]) * 2.0 * (RAGE_CD_MULT if raged else 1.0)
+	put_on_cooldown(key, 2.0 * (rage_cd() if raged else 1.0))
 	_frame(5 if key == "paw" else 4)
-	var warning := float(WARN_TIME[key])
+	var warning := skill_warn(key)
 	match key:
 		"tornado": _tornado_warning(0.0, warning)
 		"vacuum":
-			_track(SiegeFx.warn(get_parent(), _from, "circle", 256.0 if raged else 224.0, warning, WIND, 0.0, 1.2, true))
-			_track(SiegeFx.wind_eye(get_parent(), _from, 256.0 if raged else 224.0, warning, true))
+			track_warn(SiegeFx.warn(get_parent(), _from, "circle", 256.0 if raged else 224.0, warning, WIND, 0.0, 1.2, true))
+			track_warn(SiegeFx.wind_eye(get_parent(), _from, 256.0 if raged else 224.0, warning, true))
 			director.teamwork.try_fire("bear_shield", self)
 		"chase": _chase_warning(warning)
 		"lanes":
-			var x: float = director.blue.global_position.x if _alive(director.blue) else _goal.x
+			var x: float = director.blue.global_position.x if SiegeTools.alive(director.blue) else _goal.x
 			_goal = Vector2(x, director.wall_top_y() + 4.0)
 			for i in 3:
-				_track(SiegeFx.lane(get_parent(), _from, _goal + Vector2((i - 1) * 72.0, 0), 32.0, WIND, warning, true))
+				track_warn(SiegeFx.lane(get_parent(), _from, _goal + Vector2((i - 1) * 72.0, 0), 32.0, WIND, warning, true))
 		"paw": _paw_warning(warning)
-		"convoy": _track(SiegeFx.warn(get_parent(), _from, "circle", 80.0, warning, GOLD, 0.0, 1.2, true))
-		_: _track(SiegeFx.warn(get_parent(), _from, "circle", 160.0, warning, GOLD, 0.0, 1.2, true))
-	_track(SiegeFx.wind_wheel(get_parent(), _from + Vector2(0, -36), 28.0, WIND, warning))
-	SpeechBubble.say(self, "熊掌挠脚心！" if key == "paw" and chosen.character_id == "pink" else str(NAMES[key]), 108.0, warning + 0.4)
+		"convoy": track_warn(SiegeFx.warn(get_parent(), _from, "circle", 80.0, warning, GOLD, 0.0, 1.2, true))
+		_: track_warn(SiegeFx.warn(get_parent(), _from, "circle", 160.0, warning, GOLD, 0.0, 1.2, true))
+	track_warn(SiegeFx.wind_wheel(get_parent(), _from + Vector2(0, -36), 28.0, WIND, warning))
+	SpeechBubble.say(self, skill_shout(key) if key == "paw" and chosen.character_id == "pink" else skill_name(key), 108.0, warning + 0.4)
 	Audio.play("wind", -5.0)
 	return true
 
 
-func _track(n: Node) -> void:
-	if is_instance_valid(n):
-		_warns.append(n)
-
-
-func register_field(n: Node) -> void:
-	_fields = _fields.filter(func(ref): return is_instance_valid(ref.get_ref()))
-	_fields.append(weakref(n))
 
 
 func tornado_count() -> int:
@@ -284,7 +255,7 @@ func tornado_count() -> int:
 func _tornado_warning(offset: float, time: float) -> void:
 	for i in 8:
 		var dir := _heading.rotated(TAU * i / 8.0 + offset)
-		_track(SiegeFx.lane(get_parent(), _from, director.clamp_in_map(_from + dir * 660.0, 24), 48.0, WIND, time, true))
+		track_warn(SiegeFx.lane(get_parent(), _from, director.clamp_in_map(_from + dir * 660.0, 24), 48.0, WIND, time, true))
 
 
 func _release_tornadoes(offset := 0.0) -> void:
@@ -292,7 +263,9 @@ func _release_tornadoes(offset := 0.0) -> void:
 		if tornado_count() >= MAX_TORNADOES:
 			break
 		var n := HazardTornado.new()
-		n.boss_ref = weakref(self)
+		n.owner_ref = weakref(self)
+		n.owner_key = "gale_bear"
+		n.tint = WIND
 		n.wind_direction = _heading.rotated(TAU * i / 8.0 + offset)
 		n.position = _from
 		get_parent().add_child(n)
@@ -303,10 +276,10 @@ func _release_tornadoes(offset := 0.0) -> void:
 func _chase_warning(time: float) -> void:
 	_round_goals.clear()
 	for c in [director.pink, director.blue]:
-		if not _alive(c):
+		if not SiegeTools.alive(c):
 			continue
 		_round_goals.append(c.global_position)
-		_track(SiegeFx.lane(get_parent(), _from, c.global_position, 32.0, GOLD, time, true))
+		track_warn(SiegeFx.lane(get_parent(), _from, c.global_position, 32.0, GOLD, time, true))
 
 
 func _chase_round() -> void:
@@ -319,15 +292,15 @@ func _chase_round() -> void:
 
 func _paw_warning(time: float) -> void:
 	var c := _victim_ref.get_ref() as PlayableCharacter if _victim_ref else null
-	if _alive(c):
+	if SiegeTools.alive(c):
 		_heading = global_position.direction_to(c.global_position)
-	_track(SiegeFx.warn(get_parent(), global_position, "sector", 60.0, time, GOLD, _heading.angle(), 1.6, true))
+	track_warn(SiegeFx.warn(get_parent(), global_position, "sector", 60.0, time, GOLD, _heading.angle(), 1.6, true))
 
 
 func _skill_tick(delta: float) -> void:
 	_elapsed += delta
 	velocity = Vector2.ZERO
-	var warning := float(WARN_TIME[skill])
+	var warning := skill_warn(skill)
 	if _elapsed < warning:
 		return
 	if _phase == 0:
@@ -354,7 +327,7 @@ func _skill_tick(delta: float) -> void:
 				if not _cast_raged:
 					_end_skill()
 					return
-				_track(SiegeFx.warn(get_parent(), _from, "circle", 160.0, PULSE_GAP, GOLD, 0.0, 1.2, true))
+				track_warn(SiegeFx.warn(get_parent(), _from, "circle", 160.0, PULSE_GAP, GOLD, 0.0, 1.2, true))
 			"lanes":
 				for i in 3:
 					GaleWind.lane(self, _from, _goal + Vector2((i - 1) * 72.0, 0), 6.0 if _cast_raged else 4.5)
@@ -399,7 +372,7 @@ func _skill_tick(delta: float) -> void:
 
 func _paw_hit(index: int) -> void:
 	var c := _victim_ref.get_ref() as PlayableCharacter if _victim_ref else null
-	if not _alive(c):
+	if not SiegeTools.alive(c):
 		return
 	_frame(5)
 	var to := c.global_position - global_position
@@ -413,14 +386,14 @@ func _paw_hit(index: int) -> void:
 func _targets() -> Array[Actor]:
 	var out: Array[Actor] = []
 	for a in [director.pink, director.blue] + director.soldiers + director.extra_targets:
-		if _alive(a):
+		if SiegeTools.alive(a):
 			out.append(a)
 	return out
 
 
 ## 各风场共享短命中保护；伤害仍由 Actor / HitData / Sensitivity 结算。
 func strike(a: Actor, amount: float, variant: String, push := 0.0, origin := Vector2.INF) -> bool:
-	if not _alive(a) or (a is PlayableCharacter and (a.is_dashing() or a.is_airborne())):
+	if not SiegeTools.alive(a) or (a is PlayableCharacter and (a.is_dashing() or a.is_airborne())):
 		return false
 	var now := Time.get_ticks_msec() / 1000.0
 	if now < float(_hit_cool.get(a.get_instance_id(), 0.0)):
@@ -462,10 +435,7 @@ func _cancel() -> void:
 	if is_instance_valid(_vortex):
 		_vortex._end()
 	_vortex = null
-	for n in _warns:
-		if is_instance_valid(n):
-			n.queue_free()
-	_warns.clear()
+	clear_warns()
 	_end_skill()
 	if is_instance_valid(victim) and victim.status and victim.status.is_grabbed_by(self):
 		_end_grab()
@@ -474,7 +444,7 @@ func _cancel() -> void:
 func _rage() -> void:
 	raged = true
 	rage_count += 1
-	SiegeFx.big_title(self, "熊统领：狂风推进！", GOLD, "半血后向城墙推进，技能与协作加快！")
+	announce("rage")
 	SiegeFx.screen_flash(self, Color(0.2, 0.9, 0.8, 0.3), 0.4)
 	SiegeFx.wind_wheel(get_parent(), global_position, 130.0, WIND, 1.0)
 	Audio.play("boss_roar", -1.0, 0.0, 0.9)
@@ -483,7 +453,7 @@ func _rage() -> void:
 	_steam = Fx.emitter(self, "steam", 12, 1.0, {"offset": Vector2(0, -40), "dir": Vector2.UP, "speed": [14.0, 30.0], "color": WIND, "extents": Vector2(20, 10)})
 	_steam.emitting = true
 	for key in cds:
-		cds[key] = minf(float(cds[key]), float(SKILL_CD[key]) * RAGE_CD_MULT)
+		cds[key] = minf(float(cds[key]), skill_cd(key) * rage_cd())
 
 
 func _animate(_delta: float) -> void:
@@ -498,28 +468,17 @@ func _animate(_delta: float) -> void:
 
 
 func _on_died() -> void:
-	_clear_fields()
+	clear_fields()
 	_cancel()
 	if is_instance_valid(_steam):
 		_steam.emitting = false
 	GameState.boss_changed.emit(null)
 	SiegeFx.impact(get_parent(), global_position, 110.0, true, GOLD)
-	SiegeFx.big_title(self, "狂风熊统领被打倒了！", GOLD)
-	if director:
-		director.add_crystals(40, global_position)
+	announce("defeat")
+	reward_defeat()
 	super()
 
 
-func _clear_fields() -> void:
-	for ref in _fields:
-		var n: Variant = ref.get_ref()
-		if is_instance_valid(n):
-			if n.has_method("_end"):
-				n.call("_end")
-			n.queue_free()
-	_fields.clear()
-
-
 func _exit_tree() -> void:
-	_clear_fields()
 	_cancel()
+	super()

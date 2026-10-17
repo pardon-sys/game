@@ -126,6 +126,10 @@ SRC["carnival_fortress"] = fortress_reaction("pink")
 from puppet_master_text import reaction as puppet_reaction, tower_reactions
 SRC["puppet_master"] = puppet_reaction("pink")
 SRC.update(tower_reactions("pink"))
+import sys
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from siege_text import team_lines
+SRC.update(team_lines.sources("pink"))
 rx_path = Path("data/princess_reactions.json")
 rx = json.loads(rx_path.read_text())
 rx["sources"].update(SRC)

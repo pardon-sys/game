@@ -293,183 +293,213 @@
 		16,
 		16
 	],
-	"goblin_engineer": [
+	"hazard_claw": [
 		16,
+		48,
+		16,
+		16
+	],
+	"hazard_quicksand": [
+		32,
+		48,
+		16,
+		16
+	],
+	"hazard_mushrooms": [
+		48,
+		48,
+		16,
+		16
+	],
+	"hazard_portal_pair": [
+		64,
+		48,
+		16,
+		16
+	],
+	"goblin_engineer": [
+		80,
 		48,
 		16,
 		16
 	],
 	"equip_t_feather_socks": [
-		32,
+		96,
 		48,
 		16,
 		16
 	],
 	"equip_t_toe_brush": [
-		48,
+		112,
 		48,
 		16,
 		16
 	],
 	"equip_t_fluff_bra": [
-		64,
+		128,
 		48,
 		16,
 		16
 	],
 	"equip_t_thigh_ring": [
-		80,
+		144,
 		48,
 		16,
 		16
 	],
 	"equip_t_pinch_pad": [
-		96,
+		160,
 		48,
 		16,
 		16
 	],
 	"equip_t_knead_tights": [
-		112,
+		176,
 		48,
 		16,
 		16
 	],
 	"equip_t_feather_shackles": [
-		128,
+		192,
 		48,
 		16,
 		16
 	],
 	"equip_t_thigh_strap": [
-		144,
+		208,
 		48,
 		16,
 		16
 	],
 	"equip_t_bell_anklet": [
-		160,
+		224,
 		48,
 		16,
 		16
 	],
 	"equip_t_mark_patch": [
-		176,
-		48,
-		16,
-		16
-	],
-	"town_party": [
-		192,
-		48,
-		16,
-		16
-	],
-	"town_smith": [
-		208,
-		48,
-		16,
-		16
-	],
-	"town_band": [
-		224,
-		48,
-		16,
-		16
-	],
-	"town_tailor": [
 		240,
 		48,
 		16,
 		16
 	],
-	"town_mason": [
+	"town_party": [
 		0,
 		64,
 		16,
 		16
 	],
-	"town_pharm": [
+	"town_smith": [
 		16,
 		64,
 		16,
 		16
 	],
-	"town_watch": [
+	"town_band": [
 		32,
 		64,
 		16,
 		16
 	],
-	"town_cheer": [
+	"town_tailor": [
 		48,
 		64,
 		16,
 		16
 	],
-	"town_captain": [
+	"town_mason": [
 		64,
 		64,
 		16,
 		16
 	],
-	"town_hunter": [
+	"town_pharm": [
 		80,
 		64,
 		16,
 		16
 	],
-	"town_florist": [
+	"town_watch": [
 		96,
 		64,
 		16,
 		16
 	],
-	"town_mayor": [
+	"town_cheer": [
 		112,
 		64,
 		16,
 		16
 	],
-	"troll_general": [
+	"town_captain": [
 		128,
 		64,
 		16,
 		16
 	],
-	"puppet_master": [
+	"town_hunter": [
 		144,
 		64,
 		16,
 		16
 	],
-	"gale_bear": [
+	"town_florist": [
 		160,
 		64,
 		16,
 		16
 	],
-	"soldier_shield": [
+	"town_mayor": [
 		176,
 		64,
 		16,
 		16
 	],
-	"soldier_medic": [
+	"troll_general": [
 		192,
 		64,
 		16,
 		16
 	],
-	"soldier_artisan": [
+	"carnival_fortress": [
 		208,
 		64,
 		16,
 		16
 	],
-	"soldier_mage": [
+	"puppet_master": [
 		224,
 		64,
+		16,
+		16
+	],
+	"gale_bear": [
+		240,
+		64,
+		16,
+		16
+	],
+	"soldier_shield": [
+		0,
+		80,
+		16,
+		16
+	],
+	"soldier_medic": [
+		16,
+		80,
+		16,
+		16
+	],
+	"soldier_artisan": [
+		32,
+		80,
+		16,
+		16
+	],
+	"soldier_mage": [
+		48,
+		80,
 		16,
 		16
 	]

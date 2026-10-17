@@ -1,17 +1,10 @@
 class_name SiegeCooperation
 extends RefCounted
-## 十种新联动只负责攻防战效果，成员 / 冷却 / 前摇仍由原配合组件管理。
+## 攻防战的十种「怪物 + 敌塔」联合配合（data/teamwork.json 里 effect.joint 的，数据来自 tools/build/siege_cooperation_data.py）：
+## 只负责效果（perform 返回一个 JointAction 场地），成员匹配 / 冷却 / 前摇仍由 MonsterTeamwork 管理（can_start 是注入给它的条件）。
 
 const LIFE := {"hook_haunt": 1.6, "bubble_roll": 1.6, "shield_melt": 6.0, "magic_recoil": 1.8,
 	"twin_relay": 1.6, "glue_roll": 2.0, "wind_transport": 1.2, "drop_hook": 1.4, "web_battery": 2.0, "bell_repair": 1.8}
-const LINES := {
-	"hook_haunt": ["哇！钩子和幽灵还会接力？", "先松开钩子！我可没答应陪你们练配合！"],
-	"bubble_roll": ["泡泡里面也能刷到？哈哈，别两边一起！", "区区泡泡……哈！那两只刷子给我停下！"],
-	"magic_recoil": ["还会滚回来？这也太犯规啦！", "我躲过第一下了——哈！谁让你们再来一遍！"],
-	"twin_relay": ["一只刚停，另一只又来啦！", "别以为轮流来，我就会认输……哈！"],
-	"glue_roll": ["黏住了！刷子别从两边滚过来呀！", "这点黏胶困不住我……先把刷子拿开！"],
-	"drop_hook": ["空投还带钩子的？不许把我拉过去！", "你们连落点都算好了？哼，别碰我！"],
-	"web_battery": ["蛛丝黏住了，炮弹又来了——！", "别拿我当靶子！哈……这两只蜘蛛真碍事！"]}
 
 
 static func repair_target(bell: Actor) -> EnemyTower:
@@ -240,8 +233,7 @@ class JointAction extends Node2D:
 				_move_actor(group[1], destination + Vector2(22, 12), 0.3)
 				next_hit = 0.3
 		active = true
-		if SiegeTools.alive(c) and SiegeCooperation.LINES.has(kind):
-			SpeechBubble.say(c, str(SiegeCooperation.LINES[kind][0 if c.character_id == "pink" else 1]), 28, 1.5)
+		SiegeTeamEffects.say(c, kind)
 		Fx.burst(get_parent(), origin + Vector2(0, -12), "spark", 10, 45, 0.45, Vector2.ZERO, color)
 		Audio.play("chime", -8.0)
 

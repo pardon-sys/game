@@ -100,6 +100,25 @@ for count, ident in ((2, "puppet_relay"), (4, "puppet_relay_rage")):
 from siege_cooperation_data import teams as cooperation_teams
 TEAMS += cooperation_teams(T)
 
+# 第九轮：给还没有配合的怪（钳钳蟹、机械小鬼、小触手、分裂史莱姆）加的配合（效果在 SiegeTeamEffects）
+NEW_TEAMS_9 = [
+    T("crab_rat", "夹脚脱鞋", "#ff9a80", [("crab", 1, "leader"), ("rat", 2, "flank")],
+      "crab_rat", 70, 26, 70, [("crab", 1), ("rat", 2)], "钳钳蟹带着两只挠脚鼠。",
+      "预警后钳钳蟹夹住脚踝（定身 2 秒），挠脚鼠扒掉鞋子挠脚心（脚心暴露）。", "看到预警就躲开；先打钳钳蟹，它一松钳小鼠就散了。"),
+    T("crab_tentacle", "夹脚缠腿", "#c890ff", [("crab", 1, "leader"), ("tentacle", 2, "flank")],
+      "crab_tentacle", 70, 26, 70, [("crab", 1), ("mini_tentacle", 2)], "钳钳蟹和两根小触手。",
+      "钳钳蟹夹住脚踝，小触手顺着小腿往上缠着挠（余痒 4 秒，挣脱要多按几下）。", "先打小触手；蓝色公主的清凉雪花能解开。"),
+    T("imp_slime", "史莱姆弹射", "#90e0ff", [("imp", 1, "leader"), ("split_slime", 2, "ammo")],
+      "imp_slime", 120, 26, 220, [("imp", 1), ("split_slime", 2)], "机械小鬼背着两只分裂史莱姆。",
+      "小鬼把史莱姆当弹药弹射过来，粘在身上分裂成更多小的一起挠（减速 3 秒）。", "离小鬼远一点；冰锥能在半空打碎史莱姆。"),
+    T("bear_tentacle", "熊抱触手", "#ffb0c8", [("hug_bear", 1, "leader"), ("tentacle", 2, "flank")],
+      "bear_tentacle", 70, 30, 60, [("hug_bear", 1), ("mini_tentacle", 2)], "拥抱小熊身边跟着两根小触手。",
+      "小熊从背后抱住（连按挣脱），小触手趁机从前面挠。", "被抱住就连按挣扎；冰链 / 清凉雪花能帮忙。"),
+]
+for team, first in zip(NEW_TEAMS_9, [2, 4, 5, 6]):
+    team.update(siege_only=True, min_wave=first)
+TEAMS += NEW_TEAMS_9
+
 out = {"_说明": ["怪物配合技（tools/build/gen_teamwork.py 生成；MonsterTeamwork 读）。"], "teams": TEAMS}
 Path("data/teamwork.json").write_text(json.dumps(out, ensure_ascii=False, indent="\t") + "\n")
 print("怪物配合技：%d 个" % len(TEAMS))

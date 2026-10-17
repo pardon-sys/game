@@ -1,19 +1,12 @@
 class_name PuppetMaster
 extends SiegeBoss
-## 第九波魔偶师：机关独立运行；实际位置决定追击路径，角色身份决定弱点与工具。
-
-const SKILL_CD := {"tether": 3.2, "swap": 6.0, "brush": 2.4, "cross": 4.2, "link": 6.0, "lift": 3.6, "relay": 4.5, "winch": 3.0}
-const WARN := {"tether": 0.18, "swap": 0.18, "brush": 0.12, "cross": 0.18, "link": 0.12, "lift": 0.12, "relay": 0.12, "winch": 0.1}
-const NAMES := {"tether": "缎带提线", "swap": "缎带换位", "brush": "双路机关刷挠", "cross": "十字刷具阵", "link": "双子痒感线", "lift": "吊起刷挠", "relay": "挠痒接力号令", "winch": "缎带绞盘拖行"}
-const RAGE_CD_MULT := 0.45
+## 第 9 波小 Boss「狂欢挠痒魔偶师」（SiegeBoss，数据 data/siege/bosses.json 的 puppet_master）。八个技能，机关（SiegeTools）独立运行：
+##   tether 缎带提线（拉向最近的刷具场）、swap 缎带换位（两位公主互换位置）、brush 双路机关刷挠（连挠几下）、cross 十字刷具阵（两边放刷具场）、
+##   link 双子痒感线（HazardLinkRune：一个人被挠另一个也痒）、lift 吊起刷挠（吊起来连挠）、relay 挠痒接力号令（配合技 puppet_relay）、
+##   winch 缎带绞盘拖行（拖着人走过刷具场）。弱点由角色决定：粉色公主是脚心，蓝色公主是大腿 / 屁股（SiegeTools.zone）。
+## 半血狂暴：冷却 × rage_cd、拖行 / 吊起两个人一起、刷挠次数变多。
 
 @export var sprite_key := "puppet_master"
-var cds := {}
-var used: Array[String] = []
-var _last := {}
-var _fields: Array[WeakRef] = []
-var _hits := {}
-var _warns: Array[Node] = []
 var _elapsed := 0.0
 var _rest := 0.0
 var _intro_done := false
@@ -23,13 +16,13 @@ var _link: HazardLinkRune
 
 
 func _setup() -> void:
+	boss_key = "puppet_master"
 	super()
 	knockback_resist = 0.9
 	slam_chance = 0.0
 	max_bats = 0
 	summon_interval = 99999.0
-	for key in SKILL_CD:
-		cds[key] = 0.0
+	reset_cooldowns()
 	if sprite:
 		sprite.texture = SiegeMonster.TEX
 		sprite.region_enabled = true
@@ -50,20 +43,11 @@ func intro() -> void:
 	_intro_left = 0.25
 	_announced = true
 	GameState.boss_changed.emit(self)
-	SiegeFx.big_title(self, "狂欢挠痒魔偶师", SiegeTools.COLOR, "第 9 波：缎带换位、刷轮拖行！塔伤害只有 25%。")
+	announce("intro")
 	SiegeFx.camera_peek(self, global_position + Vector2(0, -40), 1.8, 0.85)
 	Audio.play("boss_roar", -2.0, 0.0, 1.15)
 	director.intel.discover("puppet_master")
-	var keys: Array[String] = []
-	for key in director.wave_data().get("boss_escort", {}):
-		for _i in int(director.wave_data()["boss_escort"][key]):
-			keys.append(key)
-	for i in keys.size():
-		var at := director.clamp_in_map(global_position + Vector2.from_angle(TAU * i / keys.size()) * 58.0)
-		var m := director.spawn(keys[i], "", at)
-		if m:
-			m.set_meta("escort_of", self)
-			m.set_meta("escort_off", at - global_position)
+	spawn_escorts()
 
 
 func _tick(delta: float) -> void:
@@ -77,8 +61,7 @@ func _tick(delta: float) -> void:
 	if _intro_left > 0.0:
 		_intro_left -= delta
 		return
-	for key in cds:
-		cds[key] = maxf(0.0, float(cds[key]) - delta)
+	tick_cooldowns(delta)
 	if not raged and health.hp <= health.max_hp / 2:
 		_rage()
 	if is_stunned():
@@ -88,7 +71,7 @@ func _tick(delta: float) -> void:
 	if skill != "":
 		_elapsed += delta
 		velocity = Vector2.ZERO
-		if _elapsed >= float(WARN[skill]):
+		if _elapsed >= skill_warn(skill):
 			_execute(skill)
 			skill = ""
 			_rest = 0.7 if raged else 1.2
@@ -134,14 +117,14 @@ func _choose() -> void:
 		var key: String = next.get(used[-1], "")
 		if key != "" and float(cds[key]) <= 0.0 and _start(key):
 			return
-		order.sort_custom(func(a, b): return float(_last.get(a, -INF)) < float(_last.get(b, -INF)))
+		order.sort_custom(func(a, b): return float(last_used.get(a, -INF)) < float(last_used.get(b, -INF)))
 	for key in order:
 		if float(cds[key]) <= 0.0 and (used.is_empty() or key != used[-1]) and _start(key):
 			return
 
 
 func _start(key: String) -> bool:
-	if not SKILL_CD.has(key) or skill != "" or not SiegeTools.valid_source(self) or people().is_empty():
+	if not has_skill(key) or skill != "" or not SiegeTools.valid_source(self) or people().is_empty():
 		return false
 	if key == "swap" and (people().size() != 2 or not SiegeTools.can_move(self, director.pink) or not SiegeTools.can_move(self, director.blue)):
 		return false
@@ -154,34 +137,21 @@ func _start(key: String) -> bool:
 	skill = key
 	_elapsed = 0.0
 	_cast_raged = raged
-	cds[key] = float(SKILL_CD[key]) * 2.0 * (RAGE_CD_MULT if raged else 1.0)
-	used.append(key)
-	_last[key] = _t
+	put_on_cooldown(key, 2.0 * (rage_cd() if raged else 1.0))
+	mark_used(key)
 	_frame(4 if key != "winch" else 5)
 	for c in people():
-		_warns.append(SiegeFx.warn(get_parent(), c.global_position, "circle", 30.0, WARN[key], SiegeTools.COLOR, 0.0, 1.2, true))
+		_warns.append(SiegeFx.warn(get_parent(), c.global_position, "circle", 30.0, skill_warn(key), SiegeTools.COLOR, 0.0, 1.2, true))
 		if key in ["tether", "swap", "winch"]:
-			_warns.append(SiegeFx.lane(get_parent(), global_position + Vector2(0, -40), c.global_position, 6, SiegeTools.COLOR, WARN[key], true))
+			_warns.append(SiegeFx.lane(get_parent(), global_position + Vector2(0, -40), c.global_position, 6, SiegeTools.COLOR, skill_warn(key), true))
 	_warns = _warns.filter(func(n): return is_instance_valid(n))
-	SpeechBubble.say(self, NAMES[key], 100.0, 0.6)
+	SpeechBubble.say(self, skill_name(key), 100.0, 0.6)
 	Audio.play("swish", -5.0, 0.0, 1.2)
 	return true
 
 
-func register_field(n: Node) -> void:
-	if n == null:
-		return
-	_fields = _fields.filter(func(ref): return is_instance_valid(ref.get_ref()))
-	_fields.append(weakref(n))
-
-
 func brush_fields() -> Array:
-	var out: Array = []
-	for ref in _fields:
-		var n: Variant = ref.get_ref()
-		if is_instance_valid(n) and n is SiegeTools.BrushField and n.is_processing() and not n.is_queued_for_deletion():
-			out.append(n)
-	return out
+	return live_fields().filter(func(n): return n is SiegeTools.BrushField and n.is_processing())
 
 
 func drag_goal(c: PlayableCharacter) -> Vector2:
@@ -266,24 +236,11 @@ func _execute(key: String) -> void:
 	SiegeFx.ring(get_parent(), global_position + Vector2(0, -30), 34.0, SiegeTools.COLOR, 0.35)
 
 
-func strike_tools(c: PlayableCharacter, amount: float, part: String, variant: String) -> bool:
-	var now := _t
-	if not SiegeTools.alive(c) or now < float(_hits.get(c.get_instance_id(), -INF)):
-		return false
-	var h := make_tickle(c, amount)
-	h.zone = part
-	h.reaction_variant = variant
-	var ok := c.receive_hit(h)
-	if ok:
-		_hits[c.get_instance_id()] = now + 0.12
-	return ok
-
-
 func _rage() -> void:
 	raged = true
 	for key in cds:
-		cds[key] = minf(cds[key], SKILL_CD[key] * RAGE_CD_MULT)
-	SiegeFx.big_title(self, "魔偶师：机关狂欢！", SiegeTools.COLOR, "双人拖行、六段刷挠，机关接力加快！")
+		cds[key] = minf(cds[key], skill_cd(key) * rage_cd())
+	announce("rage")
 	SiegeFx.screen_flash(self, Color(1, 0.5, 0.75, 0.3), 0.4)
 	Fx.burst(get_parent(), global_position + Vector2(0, -40), "thread", 24, 95.0, 0.8, Vector2(0, -30), SiegeTools.COLOR)
 
@@ -295,36 +252,28 @@ func _animate(_delta: float) -> void:
 		sprite.flip_h = facing.x < -0.1
 
 
-func _clear_fields() -> void:
-	for ref in _fields:
-		var n: Variant = ref.get_ref()
-		if is_instance_valid(n):
-			if n.has_method("_end"):
-				n.call("_end")
-			n.queue_free()
-	_fields.clear()
+## 收掉所有机关、预警和痒感线。
+func _clear_all() -> void:
+	clear_fields()
+	clear_warns()
 	_link = null
-	for n in _warns:
-		if is_instance_valid(n):
-			n.queue_free()
-	_warns.clear()
 	skill = ""
 
 
 func _on_stunned(duration: float) -> void:
 	super(duration)
-	_clear_fields()
+	_clear_all()
 
 
 func _on_died() -> void:
-	_clear_fields()
+	_clear_all()
 	GameState.boss_changed.emit(null)
 	SiegeFx.impact(get_parent(), global_position, 110.0, true, SiegeTools.COLOR)
-	SiegeFx.big_title(self, "狂欢挠痒魔偶师被打倒了！", SiegeTools.COLOR)
-	if director:
-		director.add_crystals(50, global_position)
+	announce("defeat")
+	reward_defeat()
 	super()
 
 
 func _exit_tree() -> void:
-	_clear_fields()
+	_clear_all()
+	super()

@@ -1405,6 +1405,170 @@
 			"min_wave": 7,
 			"windup": 0.25,
 			"busy_time": 2.3
+		},
+		{
+			"id": "crab_rat",
+			"name": "夹脚脱鞋",
+			"color": "#ff9a80",
+			"members": [
+				{
+					"key": "crab",
+					"count": 1,
+					"role": "leader"
+				},
+				{
+					"key": "rat",
+					"count": 2,
+					"role": "flank"
+				}
+			],
+			"radius": 70,
+			"cooldown": 26,
+			"trigger": "near",
+			"need_princess": 70,
+			"effect": {
+				"type": "crab_rat"
+			},
+			"formation": [
+				[
+					"crab",
+					1
+				],
+				[
+					"rat",
+					2
+				]
+			],
+			"intel": {
+				"desc": "钳钳蟹带着两只挠脚鼠。",
+				"mech": "预警后钳钳蟹夹住脚踝（定身 2 秒），挠脚鼠扒掉鞋子挠脚心（脚心暴露）。",
+				"how": "看到预警就躲开；先打钳钳蟹，它一松钳小鼠就散了。"
+			},
+			"siege_only": true,
+			"min_wave": 2
+		},
+		{
+			"id": "crab_tentacle",
+			"name": "夹脚缠腿",
+			"color": "#c890ff",
+			"members": [
+				{
+					"key": "crab",
+					"count": 1,
+					"role": "leader"
+				},
+				{
+					"key": "tentacle",
+					"count": 2,
+					"role": "flank"
+				}
+			],
+			"radius": 70,
+			"cooldown": 26,
+			"trigger": "near",
+			"need_princess": 70,
+			"effect": {
+				"type": "crab_tentacle"
+			},
+			"formation": [
+				[
+					"crab",
+					1
+				],
+				[
+					"mini_tentacle",
+					2
+				]
+			],
+			"intel": {
+				"desc": "钳钳蟹和两根小触手。",
+				"mech": "钳钳蟹夹住脚踝，小触手顺着小腿往上缠着挠（余痒 4 秒，挣脱要多按几下）。",
+				"how": "先打小触手；蓝色公主的清凉雪花能解开。"
+			},
+			"siege_only": true,
+			"min_wave": 4
+		},
+		{
+			"id": "imp_slime",
+			"name": "史莱姆弹射",
+			"color": "#90e0ff",
+			"members": [
+				{
+					"key": "imp",
+					"count": 1,
+					"role": "leader"
+				},
+				{
+					"key": "split_slime",
+					"count": 2,
+					"role": "ammo"
+				}
+			],
+			"radius": 120,
+			"cooldown": 26,
+			"trigger": "near",
+			"need_princess": 220,
+			"effect": {
+				"type": "imp_slime"
+			},
+			"formation": [
+				[
+					"imp",
+					1
+				],
+				[
+					"split_slime",
+					2
+				]
+			],
+			"intel": {
+				"desc": "机械小鬼背着两只分裂史莱姆。",
+				"mech": "小鬼把史莱姆当弹药弹射过来，粘在身上分裂成更多小的一起挠（减速 3 秒）。",
+				"how": "离小鬼远一点；冰锥能在半空打碎史莱姆。"
+			},
+			"siege_only": true,
+			"min_wave": 5
+		},
+		{
+			"id": "bear_tentacle",
+			"name": "熊抱触手",
+			"color": "#ffb0c8",
+			"members": [
+				{
+					"key": "hug_bear",
+					"count": 1,
+					"role": "leader"
+				},
+				{
+					"key": "tentacle",
+					"count": 2,
+					"role": "flank"
+				}
+			],
+			"radius": 70,
+			"cooldown": 30,
+			"trigger": "near",
+			"need_princess": 60,
+			"effect": {
+				"type": "bear_tentacle"
+			},
+			"formation": [
+				[
+					"hug_bear",
+					1
+				],
+				[
+					"mini_tentacle",
+					2
+				]
+			],
+			"intel": {
+				"desc": "拥抱小熊身边跟着两根小触手。",
+				"mech": "小熊从背后抱住（连按挣脱），小触手趁机从前面挠。",
+				"how": "被抱住就连按挣扎；冰链 / 清凉雪花能帮忙。"
+			},
+			"siege_only": true,
+			"min_wave": 6
 		}
 	]
 }

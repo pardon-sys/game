@@ -99,7 +99,7 @@ func _ready() -> void:
 
 ## 这一波开着哪些特色（换波时整组替换）。
 func begin(ids: Array) -> void:
-	if director.wave == 12:
+	if director.is_final_fortress():
 		if rotation_seed >= 0:
 			rng.seed = rotation_seed
 		else:
@@ -301,8 +301,7 @@ func _gust_tick(delta: float) -> void:
 			and p.is_physics_processing() and not (p.status and p.status.is_grabbed()):
 		p.move_and_collide(gust_dir * GUST_PINK * delta)
 	for m in director.monsters:
-		if not is_instance_valid(m) or m.get_meta("siege_on_wall", false) or m.get_meta("airborne", false) or m.has_meta("in_ladder") \
-				or m is SiegeCart or m is TrollGeneral or m is CarnivalFortress or not m.is_physics_processing():
+		if not SiegeTools.displaceable(m, true):
 			continue
 		m.global_position += gust_dir * GUST_MOB * delta
 

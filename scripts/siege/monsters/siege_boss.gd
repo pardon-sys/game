@@ -1,11 +1,35 @@
 class_name SiegeBoss
 extends TickleTroll
-## 攻防战小 Boss 的共用规则，从 TrollGeneral 提取：塔伤害 25%、半场边界、建筑脱困。
-## 技能 / 出场 / 狂暴仍由具体 Boss 管理；抓取、挣脱和反击窗口沿用 TickleTroll。
+## 攻防战小 Boss 的基类（第 3 波 TrollGeneral、第 6 波 GaleBear、第 9 波 PuppetMaster、第 12 波 CarnivalFortress）。
+## 共用规则：冰塔 / 小雪人伤害 ×TOWER_MULT、狂暴前只在下半场（min_y）、被建筑卡住先绕再穿（_unstick）。
+## 共用的技能框架（具体技能由子类写）：
+##   技能数据在 data/siege/bosses.json（tools/build/gen_siege_bosses.py 生成）：boss_key 选哪一段，
+##   skill_info / skill_name / skill_cd / skill_warn / skill_shout 读；cds 冷却（tick_cooldowns / put_on_cooldown）、used / last_used 记录（mark_used）。
+##   预警节点 track_warn、持续场地 register_field（clear_warns / clear_fields 一起收掉，出树时自动收）。
+##   strike_tools：机关工具挠一下（走 make_tickle，每个目标 TOOL_GAP 秒内只算一次）。
+##   出场 / 狂暴 / 打倒的横幅 announce("intro" / "rage" / "defeat")、护卫 spawn_escorts、打倒奖励 reward_defeat。
+## 抓取、挣脱和反击窗口沿用 TickleTroll。
+
+const DATA_PATH := "res://data/siege/bosses.json"
+## 机关工具对同一个人的最短间隔
+const TOOL_GAP := 0.12
+
+static var _data := {}
+
+## data/siege/bosses.json 里的哪一段
+@export var boss_key := ""
 
 var director: SiegeDirector
 var skill := ""
 var raged := false
+## 每个技能剩下的冷却（秒）
+var cds := {}
+## 用过的技能（按顺序）/ 每个技能上次放的时间（_t）
+var used: Array[String] = []
+var last_used := {}
+var _fields: Array[WeakRef] = []
+var _warns: Array[Node] = []
+var _tool_hits := {}
 ## 冰塔 / 小雪人打它只有 TOWER_MULT 的伤害（小数部分攒着）
 const TOWER_MULT := 0.25
 var _tower_frac := 0.0
@@ -37,6 +61,199 @@ func _setup() -> void:
 
 func make_mind(_d: Node) -> RefCounted:
 	return null
+
+
+# ------------------------------------------------------------------ 数据
+static func boss_data() -> Dictionary:
+	if _data.is_empty() and FileAccess.file_exists(DATA_PATH):
+		var parsed: Variant = JSON.parse_string(FileAccess.get_file_as_string(DATA_PATH))
+		if parsed is Dictionary:
+			_data = parsed
+	return _data
+
+
+func info() -> Dictionary:
+	return boss_data().get(boss_key, {})
+
+
+## 某个 Boss 的 {技能: 冷却} / {技能: 预警秒数}（测试 / 截图用）。
+static func cd_table(key: String) -> Dictionary:
+	var out := {}
+	var skills: Dictionary = boss_data().get(key, {}).get("skills", {})
+	for k in skills:
+		out[k] = float(skills[k].get("cd", 10.0))
+	return out
+
+
+static func warn_table(key: String) -> Dictionary:
+	var out := {}
+	var skills: Dictionary = boss_data().get(key, {}).get("skills", {})
+	for k in skills:
+		out[k] = float(skills[k].get("warn", 0.0))
+	return out
+
+
+func boss_color() -> Color:
+	var c: Array = info().get("color", [1, 1, 1])
+	return Color(float(c[0]), float(c[1]), float(c[2]))
+
+
+func skill_keys() -> Array:
+	return (info().get("skills", {}) as Dictionary).keys()
+
+
+func skill_info(key: String) -> Dictionary:
+	return (info().get("skills", {}) as Dictionary).get(key, {})
+
+
+func has_skill(key: String) -> bool:
+	return not skill_info(key).is_empty()
+
+
+func skill_name(key: String) -> String:
+	return str(skill_info(key).get("name", key))
+
+
+func skill_cd(key: String) -> float:
+	return float(skill_info(key).get("cd", 10.0))
+
+
+func skill_warn(key: String) -> float:
+	return float(skill_info(key).get("warn", 0.0))
+
+
+func skill_shout(key: String) -> String:
+	return str(skill_info(key).get("shout", ""))
+
+
+## 狂暴后冷却的倍数（bosses.json 的 rage_cd，没写 = 1）
+func rage_cd() -> float:
+	return float(info().get("rage_cd", 1.0))
+
+
+func notice(key: String) -> String:
+	return str((info().get("notices", {}) as Dictionary).get(key, ""))
+
+
+# ------------------------------------------------------------------ 冷却 / 记录
+func reset_cooldowns(value := 0.0) -> void:
+	for key in skill_keys():
+		cds[key] = value
+
+
+func tick_cooldowns(delta: float) -> void:
+	for key in cds:
+		cds[key] = maxf(0.0, float(cds[key]) - delta)
+
+
+func cooled(key: String) -> bool:
+	return float(cds.get(key, 0.0)) <= 0.0
+
+
+func put_on_cooldown(key: String, mult := 1.0) -> void:
+	cds[key] = skill_cd(key) * mult
+
+
+func mark_used(key: String) -> void:
+	used.append(key)
+	last_used[key] = _t
+
+
+# ------------------------------------------------------------------ 预警 / 场地
+func track_warn(n: Node) -> Node:
+	if is_instance_valid(n):
+		_warns.append(n)
+	return n
+
+
+func register_field(n: Node) -> void:
+	if n == null:
+		return
+	_fields = _fields.filter(func(ref): return is_instance_valid(ref.get_ref()))
+	_fields.append(weakref(n))
+
+
+func live_fields() -> Array:
+	var out: Array = []
+	for ref in _fields:
+		var n: Variant = ref.get_ref()
+		if is_instance_valid(n) and not n.is_queued_for_deletion():
+			out.append(n)
+	return out
+
+
+func clear_warns() -> void:
+	for n in _warns:
+		if is_instance_valid(n):
+			n.queue_free()
+	_warns.clear()
+
+
+func clear_fields() -> void:
+	for ref in _fields:
+		var n: Variant = ref.get_ref()
+		if is_instance_valid(n):
+			if n.has_method("_end"):
+				n.call("_end")
+			n.queue_free()
+	_fields.clear()
+
+
+func _exit_tree() -> void:
+	clear_fields()
+	clear_warns()
+
+
+## 机关工具挠一下（魔偶师的刷子、要塞的巨手……）：走 make_tickle（暴击 / 部位），每个人 gap 秒内只算一次。
+func strike_tools(c: PlayableCharacter, amount: float, part: String, variant: String, gap := TOOL_GAP) -> bool:
+	if not SiegeTools.alive(c) or _t < float(_tool_hits.get(c.get_instance_id(), -INF)):
+		return false
+	var h := make_tickle(c, amount)
+	h.zone = part
+	h.reaction_variant = variant
+	var ok := c.receive_hit(h)
+	if ok:
+		_tool_hits[c.get_instance_id()] = _t + gap
+	return ok
+
+
+# ------------------------------------------------------------------ 出场 / 狂暴 / 打倒
+## 横幅：kind = intro / rage / defeat（bosses.json 里的 title / sub）。
+func announce(kind: String) -> void:
+	var b: Dictionary = info().get(kind, {})
+	if b.is_empty():
+		return
+	var col := boss_color()
+	if b.has("color"):
+		col = Color(float(b["color"][0]), float(b["color"][1]), float(b["color"][2]))
+	SiegeFx.big_title(self, str(b.get("title", "")), col, str(b.get("sub", "")))
+
+
+## 波次表里预留的护卫（wave_data().boss_escort = {怪物键: 数量}），围成一圈出场、跟着 Boss。
+func spawn_escorts(radius := 58.0) -> Array[Monster]:
+	var made: Array[Monster] = []
+	if director == null:
+		return made
+	var keys: Array[String] = []
+	var table: Dictionary = director.wave_data().get("boss_escort", {})
+	for key in table:
+		for _i in int(table[key]):
+			keys.append(str(key))
+	for i in keys.size():
+		var offset := Vector2.from_angle(TAU * i / keys.size()) * radius
+		var m := director.spawn(keys[i], "", director.clamp_in_map(global_position + offset))
+		if m:
+			m.set_meta("escort_of", self)
+			m.set_meta("escort_off", offset)
+			made.append(m)
+	return made
+
+
+## 打倒奖励的冰晶（bosses.json 的 crystals）。
+func reward_defeat() -> void:
+	var n := int(info().get("crystals", 0))
+	if director and n > 0:
+		director.add_crystals(n, global_position)
 
 
 func receive_hit(hit: HitData) -> bool:

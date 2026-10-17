@@ -8,8 +8,12 @@ const RADIUS := 36.0   # 第三轮放大（原来 22）
 const SPEED := 34.0
 const SPIN := 2.2
 
-## 可选熊统领模式。未配置时仍是原有游走 / 抓取龙卷。
-var boss_ref: WeakRef
+## 召唤者模式（例：狂风熊统领的八向龙卷）：owner_ref 指向放出它的怪（要有 _targets() 和 strike(目标, 量, 变体, 击退, 来源点)），
+## 沿 wind_direction 直线吹过去、不抓人、每 0.5 秒挠一下范围里的人；召唤者没了就消失。颜色 tint、台词来源 owner_key。
+## 没设 owner_ref 时是原来的游走 / 抓取龙卷风。
+var owner_ref: WeakRef
+var owner_key := ""
+var tint := Color(0.85, 0.75, 1.0, 0.55)
 var wind_direction := Vector2.ZERO
 var radius := RADIUS
 var active := true
@@ -34,8 +38,8 @@ var _owned_physics := true
 
 
 func _begin() -> void:
-	if boss_ref:
-		reaction_key = "gale_bear"
+	if owner_ref:
+		reaction_key = owner_key
 		radius = 24.0
 		life = 9.5
 		_warn_left = 0.0
@@ -52,7 +56,7 @@ func _begin() -> void:
 
 
 func _active(delta: float) -> void:
-	if boss_ref:
+	if owner_ref:
 		_wind_active(delta)
 		return
 	_turn -= delta
@@ -159,7 +163,7 @@ func _mob_tick(delta: float) -> void:
 		for m in director.enemies_near(global_position, RADIUS):
 			if _mobs.size() >= MAX_MOBS:
 				break
-			if _mobs.has(m) or m.get_meta("siege_on_wall", false) or m.get_meta("airborne", false) or m.has_meta("in_ladder") or m is SiegeCart or m is SiegeBoss or m.is_stunned() or not m.is_physics_processing() or m.get_meta("team_transfer", false):
+			if _mobs.has(m) or not SiegeTools.displaceable(m):
 				continue
 			_mobs.append(m)
 			m.set_physics_process(false)
@@ -207,7 +211,7 @@ func _draw() -> void:
 	draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
 	if hidden_in and is_instance_valid(hidden_in):
 		return  # 迷雾龙卷：只看得到卷起的粉尘
-	SiegeFx.draw_tornado(self, Vector2.ZERO, radius, _t, GaleBear.WIND if boss_ref else Color(0.85, 0.75, 1.0, 0.55), boss_ref != null)
+	SiegeFx.draw_tornado(self, Vector2.ZERO, radius, _t, tint, owner_ref != null)
 
 
 func _process(delta: float) -> void:
@@ -216,9 +220,9 @@ func _process(delta: float) -> void:
 		return
 	if SiegeTools.paused():
 		return
-	if boss_ref:
-		var bear := boss_ref.get_ref() as GaleBear
-		if not GaleBear._alive(bear) or director == null or director.state != "fight":
+	if owner_ref:
+		var summoner: Variant = owner_ref.get_ref()
+		if not SiegeTools.alive(summoner) or director == null or director.state != "fight":
 			_end()
 			return
 		if GameState.in_dialogue or GameState.in_cutscene or CG.is_busy():
@@ -244,15 +248,15 @@ func _wind_active(delta: float) -> void:
 	_wind_tick -= delta
 	if _wind_tick <= 0.0:
 		_wind_tick = 0.5
-		var bear := boss_ref.get_ref() as GaleBear
-		if bear:
-			for a in bear._targets():
+		var summoner: Variant = owner_ref.get_ref()
+		if SiegeTools.alive(summoner):
+			for a in summoner.call("_targets"):
 				if a.global_position.distance_to(global_position) <= radius:
-					bear.strike(a, 6.0, "tornado", 0.0, global_position)
+					summoner.call("strike", a, 6.0, "tornado", 0.0, global_position)
 	if director.on_screen(global_position) and randf() < delta * 4.0:
 		Fx.burst(get_parent(), global_position + Vector2(0, -12), "feather", 1, 35.0, 0.5, Vector2(0, -30))
 
 
 func on_magic_burst(tier: int, _caster: Node) -> void:
-	if boss_ref and tier >= 3:
+	if owner_ref and tier >= 3:
 		_end()

@@ -100,8 +100,7 @@ func _active(delta: float) -> void:
 				break
 		if b.get("held") == null and b.get("mob") == null:
 			for m in director.enemies_near(b["pos"], R + 2.0):
-				if m is SiegeBoss or m is TrollGeneral or m is SiegeCart or not m.is_physics_processing() or m.get_meta("siege_on_wall", false) \
-						or m.get_meta("airborne", false) or m.get_meta("team_transfer", false) or m.has_meta("in_ladder"):
+				if not SiegeTools.displaceable(m, true):
 					continue
 				b["mob"] = m
 				b["pos"] = m.global_position - Vector2(0, 4)

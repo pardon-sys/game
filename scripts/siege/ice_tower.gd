@@ -445,22 +445,28 @@ func _icicle() -> void:
 	_t = float(p("interval", 1.2)) * (director.town.mul("ally_cd") if director.town else 1.0)
 	var dmg := _dmg(int(p("damage", 1)))
 	var splash := float(p("splash", 0.0))
-	var wr: WeakRef = weakref(self)
-	SiegeProjectile.shoot(get_parent(), global_position + Vector2(0, -24), best, "proj_icicle", 260.0, func(t: Node):
+	SiegeProjectile.shoot(get_parent(), global_position + Vector2(0, -24), best, "proj_icicle", 260.0,
+		_icicle_hit(weakref(self), dmg, splash, global_position))
+	Audio.play("icicle", -12.0, 0.2)
+
+
+## 冰锥命中的回调。写在静态函数里：飞行途中冰塔被拆掉，回调也不会跟着失效（实例方法里的闭包会绑在塔上）。
+static func _icicle_hit(wr: WeakRef, dmg: int, splash: float, from: Vector2) -> Callable:
+	return func(t: Node):
 		if not is_instance_valid(t) or not (t is Actor):
 			return
 		var me := wr.get_ref() as IceTower
 		var src: Node = me if me else t
 		(t as Actor).receive_hit(HitData.make_attack(src, dmg, 40.0, true))
-		var at := FortressRules.point(t,global_position)
+		var at := FortressRules.point(t, from)
 		# 落地碎开：溅射一小片
-		if splash > 0.0 and me and me.director:
-			for m in me.director.enemies_near(at, splash, false):
+		var d := SiegeDirector.current
+		if splash > 0.0 and d:
+			for m in d.enemies_near(at, splash, false):
 				if m != t:
 					m.receive_hit(HitData.make_attack(src, maxi(1, dmg - 1), 30.0, true))
 			SiegeFx.ring(t.get_parent(), at, splash, Color(0.8, 0.95, 1.0, 0.8), 0.35, 0.15)
-		Fx.burst(t.get_parent(), at + Vector2(0, -8), "crystal", 6, 40.0, 0.4, Vector2(0, 60), Color(0.85, 0.95, 1.0)))
-	Audio.play("icicle", -12.0, 0.2)
+		Fx.burst(t.get_parent(), at + Vector2(0, -8), "crystal", 6, 40.0, 0.4, Vector2(0, 60), Color(0.85, 0.95, 1.0))
 
 
 func _snowman() -> void:
@@ -642,7 +648,10 @@ func _resonance() -> void:
 		var m: Monster = hit[i]
 		var at := FortressRules.point(m,prev) + Vector2(0, -8)
 		_arc_line(prev, at, i * 0.05)
-		m.receive_hit(HitData.make_attack(self, dmg, 0.0, true))
+		# 电弧从上一只怪那里跳过来：盾甲螃蟹的正面挡不住
+		var arc := HitData.make_attack(self, dmg, 0.0, true)
+		arc.ignore_block = true
+		m.receive_hit(arc)
 		m.stun(0.3)
 		Fx.burst(get_parent(), at, "crystal", 4, 30.0, 0.4, Vector2(0, 40), Color(0.85, 0.75, 1.0))
 		prev = at
@@ -723,7 +732,10 @@ func _meteor(delta: float) -> void:
 		var d := SiegeDirector.current
 		if d:
 			for m in d.enemies_near(to, r, false):
-				m.receive_hit(HitData.make_attack(src, dmg, 160.0, true))
+				# 陨石从天上砸下来：盾甲螃蟹举着钳子也挡不住
+				var fall := HitData.make_attack(src, dmg, 160.0, true)
+				fall.ignore_block = true
+				m.receive_hit(fall)
 				m.stun(frz)
 			for t in parent.get_tree().get_nodes_in_group("siege_enemy_tower"):
 				if (t as Node2D).global_position.distance_to(to) <= r:

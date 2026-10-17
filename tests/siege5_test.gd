@@ -560,6 +560,8 @@ func _run_temp_equipment() -> void:
 func _run_combos() -> void:
 	print("-- 三来源组合")
 	_fight()
+	# 蓝色公主的 AI 看到粉色公主穿着临时装备会马上放清凉雪花解开（装备格就凑不齐了），这一段先让她站着
+	d.blue.set_controller(CharacterController.new())
 	var p := d.pink
 	Equipment.force("pink", "equip_t_feather_socks")
 	var got := []
@@ -594,6 +596,7 @@ func _run_combos() -> void:
 	check("千手痒痒裤 + 城墙羽毛扫帚 + 爬墙壁虎 → 「扫帚下的城墙」并被挠下城墙（%s，%s）" % [got, not d.is_on_wall(b)],
 		got.has("sg_broom_wall") and not d.is_on_wall(b))
 	await _reset()
+	d.blue.set_controller(d._make_ai(d.blue))
 
 
 # ------------------------------------------------------------------ 情报

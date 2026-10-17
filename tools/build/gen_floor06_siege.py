@@ -260,6 +260,14 @@ for _n in (11, 12):
     FORMATIONS[_n] = [F(t, 1, "bottom" if t in ("cart_escort", "gecko_ladder", "troll_throw") else "hole", 8, 3 + i * 2.5)
                       for i, t in enumerate(["cart_escort", "gecko_ladder", "troll_throw", "slime_merge", "raise_arms", "strip_shoes",
                                              "suction_chain", "feather_dance", "bubble_chain", "jelly_charge", "hedgehog_roll", "bat_airdrop"])]
+# 第九轮的四个新配合：从解锁的那一波起成套出现
+for _n, _fs in {2: [F("crab_rat", 1, "hole", 0, 14)], 4: [F("crab_tentacle", 1, "hole", 0, 16)], 5: [F("imp_slime", 1, "right", 0, 18), F("crab_rat", 1, "hole", 0, 24)],
+                6: [F("bear_tentacle", 1, "left", 0, 20)], 7: [F("crab_tentacle", 1, "hole", 12, 14), F("imp_slime", 1, "left", 0, 22)],
+                8: [F("crab_rat", 2, "hole", 12, 10), F("bear_tentacle", 1, "right", 0, 18)], 9: [F("imp_slime", 2, "bottom", 14, 12)],
+                10: [F(t, 1, "hole", 9, 6 + i * 4) for i, t in enumerate(["crab_rat", "crab_tentacle", "imp_slime", "bear_tentacle"])],
+                11: [F(t, 1, "hole", 8, 5 + i * 3) for i, t in enumerate(["crab_rat", "crab_tentacle", "imp_slime", "bear_tentacle"])],
+                12: [F(t, 1, "hole", 8, 4 + i * 3) for i, t in enumerate(["crab_rat", "crab_tentacle", "imp_slime", "bear_tentacle"])]}.items():
+    FORMATIONS.setdefault(_n, []).extend(_fs)
 for _n, _fs in FORMATIONS.items():
     for _f in _fs:
         _f["count"] *= 2
@@ -305,6 +313,13 @@ for n in range(2, 13):
         t += gap
         i += 3
     HAZARDS[n] = sorted(base + extra)
+# 第九轮的四个大型强制位移陷阱：从第 3 波起陆续加入，后面的波次混着出
+NEW_HAZARDS = {3: [(28, "mushrooms")], 4: [(24, "claw")], 5: [(20, "quicksand")], 6: [(18, "portal_pair"), (44, "mushrooms")],
+               7: [(16, "claw"), (40, "quicksand")], 8: [(14, "portal_pair"), (34, "claw")], 9: [(12, "quicksand"), (30, "mushrooms"), (48, "portal_pair")],
+               10: [(10, "claw"), (26, "quicksand"), (42, "mushrooms"), (58, "portal_pair")], 11: [(8, "claw"), (22, "portal_pair"), (36, "quicksand"), (50, "mushrooms")],
+               12: [(10, "claw"), (30, "quicksand"), (50, "portal_pair"), (70, "mushrooms")]}
+for n, extra in NEW_HAZARDS.items():
+    HAZARDS[n] = sorted(HAZARDS.get(n, []) + extra)
 for n, hz in HAZARDS.items():
     WAVES[n - 1]["hazards"] = [{"t": t, "kind": k} for t, k in hz] + [{"t": t, "combo": k} for t, k in HAZARD_COMBOS.get(n, [])]
     WAVES[n - 1]["hazards"].sort(key=lambda h: h["t"])
@@ -622,8 +637,8 @@ TOWER_INTEL = {
     "cocoa": ("附近的友军（公主和士兵）攻击间隔缩短、移动变快；粉色公主站在旁边闷笑降得更快。", "放在士兵扎堆的地方。"),
     "mortar": ("射程很远，抛物线飞过去，落点先出影子；炸开一大片、减速 2 秒。第 3 波解锁。", "放在墙下中间，盖住怪最多的那片。"),
     "vortex": ("身边一圈冰风一直转：每半秒掉血，把怪往外推，挡住冲过来的怪。第 4 波解锁。", "放在城门口、怪一定会经过的地方。"),
-    "resonance": ("冰光在怪之间连跳，每跳一下都冻一下，怪越挤跳得越多。第 5 波解锁。", "对付成群的小怪。"),
-    "meteor": ("蓄力后往全场最大的怪堆砸冰陨星，超大范围、冻住 2 秒、震屏。第 7 波解锁。", "越往后怪越多，越值。"),
+    "resonance": ("冰光在怪之间连跳，每跳一下都冻一下，怪越挤跳得越多；电弧从侧面跳过去，盾甲螃蟹的钳子挡不住。第 5 波解锁。", "对付成群的小怪和盾甲螃蟹。"),
+    "meteor": ("蓄力后往全场最大的怪堆砸冰陨星，超大范围、冻住 2 秒、震屏；从天上砸下来，盾甲螃蟹也挡不住。第 7 波解锁。", "越往后怪越多，越值。"),
     "hotspring": ("范围很大：公主闷笑一直降、士兵回血、修身后的城墙。第 6 波解锁。", "放在墙下正中，士兵和粉色公主常在的地方。"),
     "lamp": ("冷光范围里幽灵现形、怪减速，范围里的敌塔发动变慢。第 8 波解锁。", "放在敌塔多、幽灵多的那一侧。"),
     "shield": ("每隔几秒给范围里的友军套冰盾，挡掉下一次挠痒或抓取（挡下时会闪一下）。第 9 波解锁。", "和士兵、粉色公主放在一起。"),
@@ -652,7 +667,7 @@ MON_INTEL = {
     "hook": ("钩索怪", "背着钩爪的小怪。", "走到墙前甩钩索勾住城墙，顺着绳子滑上墙顶，上去就挠蓝色公主。", "冰锥雨能射断绳子；滑的时候打它一下就会摔下来。"),
     "vine": ("捆绑藤怪", "一团会走路的藤蔓。", "缠住公主（连按挣脱），缠着的时候给她强制穿上一件临时痒痒装备，藤尖一直挠。", "别让它贴身；被缠住时蓝色公主的清凉雪花能解开。"),
     "gecko": ("爬墙壁虎", "又小又快的绿壁虎。", "走到墙下就贴着墙爬上去，在城墙顶上乱窜、挠蓝色公主。冰墙加固的那段爬不上去。", "数量多、血少：冰锥雨一扫一片。"),
-    "shield_crab": ("盾甲螃蟹", "举着一对大钳子当盾牌的螃蟹。", "正面（朝城墙的那一面）挡得住冰锥、冰塔和法术；走到墙下用钳子夹墙，伤害很高。", "粉色公主绕到它背后（下面）打。"),
+    "shield_crab": ("盾甲螃蟹", "举着一对大钳子当盾牌的螃蟹。", "正面（朝城墙的那一面）挡得住冰锥、冰塔和法术，但挡不住冰晶共鸣塔的电弧和冰陨星台的陨石；走到墙下用钳子夹墙，伤害很高。", "粉色公主绕到它背后（下面）打，或者造冰晶共鸣塔 / 冰陨星台。"),
     "bat_swarm": ("羽毛蝠群", "一群叼着羽毛的小蝙蝠。", "飞在天上：粉色公主的近战够不着，直接越过战场飞上城墙挠蓝色公主。", "只有蓝色公主的法术和冰塔能打下来。"),
     "carrier": ("搬运小鬼队", "扛着长杆子的三只小鬼。", "粉色公主失控时冲过来把她抬走，运进敌塔里关起来挠 8 秒。", "蓝色公主用冰链把人拉回来；冻住 / 打倒小鬼也会把人放下。"),
     "warm_slime": ("暖炉史莱姆", "暖烘烘、冒着热气的橙色史莱姆。", "不怕冻，冰锥、冰塔、蓝色公主的法术都打不动；专找冰塔，贴上去把塔慢慢融化。", "只能粉色公主去打。"),
@@ -671,6 +686,18 @@ HZ_INTEL = {
     "fog": ("痒痒迷雾", "大范围陷阱", "一大片粉色的雾。", "粉色公主在雾里时，蓝色公主看不见她、支援不了；雾里还会伸出手来挠。", "别在雾里待太久。"),
     "wall_vine": ("城墙爬藤", "牺牲互救", "怪物在墙脚种下的藤根。", "藤蔓爬上城墙缠住蓝色公主：动不了、放不了法术，一直被挠大腿和腰。", "粉色公主去墙脚砍断藤根——砍的时候根须会缠住她的脚踝挠脚心，要忍住。"),
     "sticky_net": ("黏网", "牺牲互救", "从敌方区域抛过来的大黏网。", "罩住粉色公主后她动不了，网眼里伸出小手挠。", "蓝色公主走到她正上方的城墙上，探出城垛割网——探出去时大腿和屁股露在墙外，会被爬墙的怪挠。"),
+    "claw": ("天降抓娃娃机", "大型强制位移", "从天上降下来的巨大机械爪，地上有它的影子。",
+             "影子追着人跑一会儿后爪子落下：抓住就吊起来，一路运到怪最多的地方再放下，运送途中爪子内侧的刷子一直挠（墙顶的人也会被抓下城墙）。",
+             "盯着影子，落下前冲刺躲开；被吊起来就连按挣扎，能当场掉下来。"),
+    "quicksand": ("挠痒流沙旋涡", "大型强制位移", "地面裂开的一大圈流沙。",
+                  "圈里的人和怪都被慢慢吸向中心；陷到中心就被沙里伸出的小手抓住挠（脚心 / 大腿根），怪陷进去会被困住一会儿。",
+                  "沿着圈边往外跑；陷进去就连按挣扎，或者让蓝色公主用冰链拉出来。也可以把怪引进去。"),
+    "mushrooms": ("弹弹蘑菇阵", "大型强制位移", "一串从地里冲出来的弹弹蘑菇，排成一条通向怪堆的路。",
+                  "踩到一颗就被弹到下一颗，连着弹几次，最后一颗把人弹进怪堆；每弹一下蘑菇帽都喷出羽毛孢子挠一下。",
+                  "别踩第一颗；绕着蘑菇走。"),
+    "portal_pair": ("挠痒传送门", "大型强制位移", "一对紫色和粉色的门。",
+                    "粉色公主走进紫门会从粉门（怪群中间 / 挠痒敌塔旁）掉出来，落地时被门里的小手挠一下；怪走进粉门会从紫门钻出来。",
+                    "绕开紫门；蓝色公主的法术打在门旁能把那扇门冰封 6 秒。"),
 }
 for k, (name, kind, desc, mech, how) in HZ_INTEL.items():
     INTEL["hazard_" + k] = I(name, kind, desc, mech, how)
@@ -752,13 +779,6 @@ for role, (name, mech) in {"shield": ("盾兵", "站在受伤最重的那段墙�
                            "artisan": ("工匠", "修城墙最破的一段、修冰塔，没事做时去拆敌塔地基的搭建进度。"),
                            "mage": ("冰法学徒", "走到等冰光的冰塔基座旁边帮忙放冰光，效率是蓝色公主的一半；和蓝色公主一起放就更快。")}.items():
     INTEL["soldier_" + role] = I(name, "友军士兵", "小镇保卫队的%s。" % name, mech, "被挠得撑不住会撤回城门，过一会儿满血回来。")
-for team in TEAMS:
-    if team["effect"].get("joint"):
-        first_key = team["members"][0]["key"]
-        item = I(team["name"], "怪物与机关配合", team["intel"]["desc"], team["intel"]["mech"], team["intel"]["how"])
-        item["icon"] = "etower_" + first_key.removeprefix("enemy_") if first_key.startswith("enemy_") else first_key
-        item["icon"] = {"bubble_fish": "hazard_bubbles", "mana_jelly": "suck_jelly"}.get(item["icon"], item["icon"])
-        INTEL["team_" + team["id"]] = item
 Path("data/siege/intel.json").write_text(json.dumps({"_说明": ["战场情报（gen_floor06_siege.py 生成；SiegeIntel 读）。"], **INTEL},
                                                    ensure_ascii=False, indent="\t") + "\n")
 

@@ -488,6 +488,12 @@ func _run_downs() -> void:
 	await _wait(1.0)
 	check("蓝色公主倒下：倒地不倒计时（%.1f → %.1f）" % [tl0, dn.time_left if dn else -1.0], dn != null and dn.time_left == tl0)
 	var lad: SiegeLadder = d.nearest_ladder(d.blue.global_position)
+	# 先清场：墙上的怪抓住粉色公主就按不了 E
+	d.clear_field()
+	if d.pink.status.is_grabbed():
+		d.pink.status.release(true)
+	d.pink.laugh.set_value(0.0)
+	await _wait(0.2)
 	d.pink.global_position = d.blue.global_position + Vector2(10, 0)
 	d.pink.set_controller(HoldE.new())
 	await _advance_until(func(): return not Downed.is_downed(d.blue), 5.0)
@@ -511,8 +517,9 @@ func _run_downs() -> void:
 func _run_fail_and_win() -> void:
 	print("-- 失败 / 胜利")
 	var d := _dir()
+	await _advance_until(func(): return not GameState.in_dialogue and not d._busy, 10.0)
 	d.start_now()
-	await _wait(0.3)
+	await _advance_until(func(): return d.state == "fight", 5.0)
 	var w := d.wave
 	d.wall_hp = 10.0
 	d.walls[3].take(50.0)

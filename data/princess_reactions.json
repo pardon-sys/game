@@ -5707,6 +5707,60 @@
 					"一起反击！"
 				]
 			}
+		},
+		"team_hook_haunt": {
+			"trigger": [
+				"哇！钩子和幽灵还会接力？"
+			],
+			"name": "hook_haunt"
+		},
+		"team_bubble_roll": {
+			"trigger": [
+				"泡泡里面也能刷到？哈哈，别两边一起！"
+			],
+			"name": "bubble_roll"
+		},
+		"team_magic_recoil": {
+			"trigger": [
+				"还会滚回来？这也太犯规啦！"
+			],
+			"name": "magic_recoil"
+		},
+		"team_twin_relay": {
+			"trigger": [
+				"一只刚停，另一只又来啦！"
+			],
+			"name": "twin_relay"
+		},
+		"team_glue_roll": {
+			"trigger": [
+				"黏住了！刷子别从两边滚过来呀！"
+			],
+			"name": "glue_roll"
+		},
+		"team_drop_hook": {
+			"trigger": [
+				"空投还带钩子的？不许把我拉过去！"
+			],
+			"name": "drop_hook"
+		},
+		"team_web_battery": {
+			"trigger": [
+				"蛛丝黏住了，炮弹又来了——！"
+			],
+			"name": "web_battery"
+		},
+		"team_sticky_pincer": {
+			"trigger": [
+				"脚步乱了！先打领头的！"
+			],
+			"name": "sticky_pincer"
+		},
+		"team_vine_pincer": {
+			"trigger": [
+				"脚步乱了！先打领头的！"
+			],
+			"name": "vine_pincer"
 		}
 	},
 	"magic": {

@@ -141,7 +141,7 @@ func _draw_view() -> void:
 	_draw_map()
 	_draw_alerts()
 	_draw_spells()
-	if director.wave == 12 and director.state == "fight":
+	if director.is_final_fortress() and director.state == "fight":
 		for b in get_tree().get_nodes_in_group("fortress"):
 			if not SiegeTools.alive(b): continue
 			var names: Array = b.mechanisms.jobs.map(func(j): return str(FortressMechanisms.NAMES[j["kind"]]))

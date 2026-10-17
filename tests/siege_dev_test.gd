@@ -1,8 +1,9 @@
-extends "res://tests/siege9_boss_test.gd"
+extends SiegeFixture
 ## 复用攻防战实际世界夹具：失效抓取引用、跳波生命周期、暂停测试 UI 与真实批量造塔。
 
 
 func _ready() -> void:
+	fixture_wave = 9
 	await _boot()
 	if "--jump-buffs-only" in OS.get_cmdline_user_args():
 		d.set_process(false)

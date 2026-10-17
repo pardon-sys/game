@@ -310,12 +310,17 @@ func _run_engineers() -> void:
 
 
 # ------------------------------------------------------------------ 配合技
+const ORIGINAL_TEAMS := ["troll_throw", "slime_merge", "raise_arms", "strip_shoes", "suction_chain", "feather_dance", "bubble_chain",
+	"jelly_charge", "hedgehog_roll", "gecko_ladder", "cart_escort", "bat_airdrop", "engineer_escort"]
+
+
 func _run_teamwork() -> void:
 	print("-- 怪物配合技")
 	# 蓝色公主的 AI 会用暴风雪 / 冰锥把测试里的怪打掉（壁虎只有 2 血），这一段先让她站着
 	d.blue.set_controller(CharacterController.new())
 	var ok := {}
-	for t in MonsterTeamwork.data().get("teams", []):
+	# 通用检查只看最早的 13 个（之后加的攻防战配合技 / Boss 配合在 siege_w6_bear_test / siege_cooperation_test 里各自测）
+	for t in MonsterTeamwork.data().get("teams", []).filter(func(x): return x["id"] in ORIGINAL_TEAMS):
 		await _clear()
 		_fight()
 		var id: String = t["id"]
@@ -424,6 +429,8 @@ func _run_trap_combos() -> void:
 	print("-- 怪物 + 陷阱 / 陷阱组合")
 	await _clear()
 	_fight()
+	# 蓝色公主的 AI 放法术很勤，会把测试里的怪冻住（龙卷风不卷冻住的怪），这一段先让她站着
+	d.blue.set_controller(CharacterController.new())
 	var p := d.pink
 	var c := Vector2(d.gate_pos.x - 200.0, d.wall_foot_y() + 220.0)
 	p.global_position = c + Vector2(300, 0)
@@ -479,6 +486,7 @@ func _run_trap_combos() -> void:
 	var hz2: int = waves[1].get("hazards", []).size()
 	var hz10: int = waves[9].get("hazards", []).size()
 	check("陷阱更频繁：第 2 波 %d 个、第 10 波 %d 个（含陷阱组合）" % [hz2, hz10], hz2 >= 2 and hz10 >= 15)
+	d.blue.set_controller(d._make_ai(d.blue))
 	d.state = "prep"
 	d._queue.clear()
 

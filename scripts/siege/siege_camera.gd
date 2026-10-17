@@ -45,7 +45,7 @@ func camera() -> Camera2D:
 
 
 func set_zoom_level(z: float, instant := false) -> void:
-	target_zoom = clampf(z, 0.30 if is_instance_valid(director) and director.wave == 12 else MIN_ZOOM, MAX_ZOOM)
+	target_zoom = clampf(z, 0.30 if is_instance_valid(director) and director.is_final_fortress() else MIN_ZOOM, MAX_ZOOM)
 	if instant:
 		zoom = target_zoom
 		_apply(true)

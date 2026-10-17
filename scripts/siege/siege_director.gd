@@ -230,10 +230,15 @@ func _setup() -> void:
 	teamwork.spawn_func = func(k: String, at: Vector2) -> Monster: return spawn(k, "", at)
 	teamwork.monsters_func = func() -> Array: return monsters
 	teamwork.partners_func = func() -> Array: return get_tree().get_nodes_in_group("siege_enemy_tower")
+	teamwork.cd_divisor = ability_rate()
+	teamwork.allowed_func = func(t: Dictionary) -> bool: return state == "fight" and wave >= int(t.get("min_wave", 1))
+	teamwork.can_start_func = SiegeCooperation.can_start
+	teamwork.formation_gate_func = func(_t: Dictionary, n: int) -> bool:
+		return not (is_final_fortress() and reinforcements.active) or reinforcements.capacity() >= n
+	SiegeTeamEffects.register()
+	# 配合技不进情报（只有飘字提示「怪物配合：××！」和公主的受挠台词）
 	teamwork.triggered.connect(func(_id: String, _at: Vector2):
-		Audio.play("combo", -4.0, 0.05)
-		if is_instance_valid(intel) and MonsterTeamwork.team(_id).get("effect", {}).get("joint", false):
-			intel.discover("team_" + _id))
+		Audio.play("combo", -4.0, 0.05))
 	add_child(teamwork)
 	features = WaveFeatures.new()
 	features.director = self
@@ -456,7 +461,7 @@ func _process(delta: float) -> void:
 					next_left = -1.0
 					if not _boss_gate_told:
 						_boss_gate_told = true
-						GameState.notify("母车存活期间增援不会停止！" if wave == 12 else "打倒小 Boss 才能进入下一波！")
+						GameState.notify("母车存活期间增援不会停止！" if is_final_fortress() else "打倒小 Boss 才能进入下一波！")
 				elif wave >= total_waves():
 					if monsters.is_empty():
 						_clear_wave()
@@ -489,6 +494,11 @@ func _clamp_monsters() -> void:
 var _boss_gate_told := false
 var victory_locked := false
 var battle_generation := 0
+
+
+## 这一波是狂欢要塞的最终波吗（波次表里有 fortress_config；增援上限、视野、HUD、配合技都按它）。
+func is_final_fortress(n := -1) -> bool:
+	return wave_data(n).has("fortress_config")
 
 
 ## 这一波的小 Boss 还在场上（或还没出场）：打倒它才进下一波。
@@ -561,7 +571,7 @@ func spawn(key: String, from := "bottom", at = null, ticket := -1) -> Monster:
 	if path == "" or not ResourceLoader.exists(path):
 		push_warning("攻防战：没有这种怪 " + key)
 		return null
-	if wave == 12 and key != "carnival_fortress":
+	if is_final_fortress() and key != "carnival_fortress":
 		if ticket >= 0:
 			if not reinforcements.consume(ticket): return null
 		elif reinforcements.capacity() <= 0: return null
@@ -593,7 +603,7 @@ func spawn(key: String, from := "bottom", at = null, ticket := -1) -> Monster:
 	if not quiet_spawn:
 		SiegeFx.burrow(m, FLYERS.has(key))
 	intel.discover(key)
-	if key == "carnival_fortress" and wave == 12:
+	if key == "carnival_fortress" and is_final_fortress():
 		reinforcements.start(self)
 	if from == "hole":
 		Fx.burst(m.get_parent(), pos, "dust", 8, 40.0, 0.5, Vector2(0, 40), Color(0.6, 0.5, 0.4))
@@ -1438,56 +1448,9 @@ func reset_after_fail() -> void:
 		blue.global_position = Vector2(gate_pos.x + 16.0, wall_top_y() + 4.0)
 
 
+## 狂欢要塞被打倒：胜利演出在 FortressFinale（残兵撤退、车身崩塌，演完 _win）。
 func final_boss_defeated(boss: CarnivalFortress) -> void:
-	if victory_locked or state != "fight":
-		return
-	victory_locked = true
-	CG.cancel_pending_deaths()
-	_set_state("victory")
-	_busy = true
-	var at := boss.global_position
-	# 只保留有上限的撤退剪影；真实敌人和伤害回调立即清掉。
-	var retreat_count := 0
-	for monster in monsters:
-		if monster == boss or not is_instance_valid(monster) or monster.sprite == null or not on_screen(monster.global_position) or retreat_count >= 24:
-			continue
-		var shade := Sprite2D.new()
-		shade.texture = monster.sprite.texture
-		shade.region_enabled = monster.sprite.region_enabled
-		shade.region_rect = monster.sprite.region_rect
-		shade.hframes = monster.sprite.hframes
-		shade.vframes = monster.sprite.vframes
-		shade.frame = monster.sprite.frame
-		shade.offset = monster.sprite.offset
-		shade.scale = monster.sprite.scale
-		shade.position = monster.global_position
-		entities().add_child(shade)
-		var retreat := shade.create_tween().set_parallel()
-		retreat.tween_property(shade,"position",shade.position + Vector2(0,120),1.2)
-		retreat.tween_property(shade,"modulate:a",0.0,1.2)
-		retreat.chain().tween_callback(shade.queue_free)
-		retreat_count += 1
-	clear_field()
-	for c in [pink, blue]:
-		if not is_instance_valid(c): continue
-		c.end_forced_move()
-		c.set_physics_process(true)
-		c.remove_buff("lifted")
-		c._update_lift(0.0)
-	var wreck := Sprite2D.new()
-	wreck.texture = load("res://assets/generated/siege/fortress_v2_hull.png")
-	wreck.position = at
-	entities().add_child(wreck)
-	SiegeFx.big_title(self,"狂欢堡垒已击破！",Color(1,0.85,0.4),"残兵撤退，小镇守住了！")
-	SiegeFx.impact(entities(),at,220,true,Color(1,0.7,0.3))
-	Audio.play("wall_crash",0.0)
-	var epoch := battle_generation
-	var tw := wreck.create_tween()
-	tw.tween_property(wreck,"modulate",Color(0.25,0.2,0.3,0),1.5)
-	tw.tween_callback(func():
-		wreck.queue_free()
-		if state == "victory" and epoch == battle_generation:
-			_win())
+	FortressFinale.play(self, boss)
 
 
 func _win() -> void:
@@ -1515,27 +1478,6 @@ func retreat() -> void:
 	if main and main.has_method("change_level"):
 		main.change_level(Floors.scene("floor_06_war"))
 
-## Generic monster offspring (e.g. split slimes from rotating features) cannot bypass
-## the final-wave cap or survive a victory by using their own PackedScene factory.
+## 最终波里不经过 spawn 生出来的怪（分裂史莱姆的小史莱姆……）也要占增援配额、胜利时一起清掉（FinalReinforcements.track_child）。
 func _track_final_child(node: Node) -> void:
-	if wave!=12 or not node is Monster or node.get_meta("siege_director_spawn",false): return
-	if victory_locked:
-		node.queue_free()
-		return
-	if not reinforcements.active: return
-	var ticket := reinforcements.reserve(1)
-	if ticket<0:
-		node.queue_free()
-		return
-	reinforcements.consume(ticket)
-	node.set_meta("siege_director_spawn",true)
-	monsters.append(node)
-	node.died.connect(_on_monster_died)
-	_grid_frame=-1
-	_configure_final_child.call_deferred(node)
-func _configure_final_child(node: Variant) -> void:
-	if not SiegeTools.alive(node) or victory_locked: return
-	_as_minion(node)
-	node.add_buff("siege_rapid",99999)
-	node.mind=SiegeMind.new(self)
-	node.collision_mask=1 if node.collision_mask!=0 else 0
+	reinforcements.track_child(node)

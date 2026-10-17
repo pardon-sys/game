@@ -28,6 +28,15 @@ var _scan := 0.0
 var enabled := true
 ## 冷却再乘这个（攻防战：随波次越来越小，配合技越来越频繁；SiegeDirector 每波设）
 var cd_scale := 1.0
+## 冷却再除以这个（攻防战：特殊能力频率 ability_rate）
+var cd_divisor := 1.0
+## 关卡注入的条件（不设 = 都允许）：
+##   allowed_func(team) -> bool            带 siege_only 的配合技现在能不能发动（攻防战：战斗中、到了 min_wave）
+##   can_start_func(team, group) -> bool   联合配合（effect.joint）凑齐的这一组能不能开始
+##   formation_gate_func(team, n) -> bool  成套生成 n 只之前问一下（攻防战最终波：增援上限）
+var allowed_func: Callable
+var can_start_func: Callable
+var formation_gate_func: Callable
 ## 发动过的（测试 / 调试用）：[id, …]
 var history: Array[String] = []
 
@@ -132,7 +141,7 @@ func _find(t: Dictionary, buckets: Dictionary, required_leader: Actor = null) ->
 				ok = false
 				break
 		if ok:
-			if t.get("effect", {}).get("joint", false) and not SiegeCooperation.can_start(t, group):
+			if t.get("effect", {}).get("joint", false) and can_start_func.is_valid() and not can_start_func.call(t, group):
 				continue
 			return group
 	return []
@@ -142,8 +151,7 @@ func _find(t: Dictionary, buckets: Dictionary, required_leader: Actor = null) ->
 func _allowed(t: Dictionary) -> bool:
 	if not bool(t.get("siege_only", false)):
 		return true
-	var d := SiegeDirector.current
-	return d != null and d.state == "fight" and d.wave >= int(t.get("min_wave", 1))
+	return allowed_func.is_valid() and allowed_func.call(t)
 
 
 func _available(m: Actor, t: Dictionary) -> bool:
@@ -198,7 +206,7 @@ func _princess_near(at: Vector2, r: float) -> PlayableCharacter:
 ## 发动一个配合技（members[0] 是 leader）。
 func fire(t: Dictionary, members: Array) -> void:
 	var id := str(t["id"])
-	_cd[id] = float(t.get("cooldown", 10.0)) / (SiegeDirector.ability_rate() if SiegeDirector.current else 1.0) * cd_scale
+	_cd[id] = float(t.get("cooldown", 10.0)) / cd_divisor * cd_scale
 	var until := Time.get_ticks_msec() / 1000.0 + float(t.get("busy_time", BUSY))
 	for m in members:
 		m.set_meta("team_busy", until)
@@ -238,11 +246,12 @@ func spawn_formation(id: String, at: Vector2) -> Array:
 	var t := team(id)
 	if t.is_empty() or not spawn_func.is_valid():
 		return []
-	var final_director := SiegeDirector.current
-	if final_director and final_director.wave == 12 and final_director.reinforcements.active:
+	if formation_gate_func.is_valid():
 		var members := 0
-		for row in t.get("formation", []): members += int(row[1])
-		if final_director.reinforcements.capacity() < members: return []
+		for row in t.get("formation", []):
+			members += int(row[1])
+		if not formation_gate_func.call(t, members):
+			return []
 	var made := []
 	var i := 0
 	for row in t.get("formation", []):

@@ -105,7 +105,8 @@ GDScript 没有 `interface` 关键字，本项目用**方法约定 + `Contracts`
 | Grabbable | Actor 且有 `Status` 组件，`can_be_grabbed()` | 公主 |
 | MagicReactive | `on_magic_burst(tier, caster)`，加入 `magic_reactive` 组，可选 `magic_radius` | 粉雾、藤蔓、小精灵群、触手怪 |
 
-所有伤害和挠痒都打包成 **`HitData`**（`kind` = `ATTACK` 或 `TICKLE`，以及 `damage / tickle / knockback / source`，星光爆发另带 `tag = "magic_1~3"`），只通过 `receive_hit` 传递。攻击方不需要知道对方是谁：
+所有伤害和挠痒都打包成 **`HitData`**（`kind` = `ATTACK` 或 `TICKLE`，以及 `damage / tickle / knockback / source`，星光爆发另带 `tag = "magic_1~3"`；
+`ignore_block` = 格挡 / 防护装备挡不住，例如冰晶共鸣的电弧、冰陨星台的陨石穿过盾甲螃蟹的钳子），只通过 `receive_hit` 传递。攻击方不需要知道对方是谁：
 
 ```gdscript
 target.receive_hit(HitData.make_attack(self, 1, 170.0))   # 扣 1 点血
@@ -487,7 +488,7 @@ data/cutscenes/<楼层组>/  地图内过场；data/theater/<楼层组>/  小剧
 战时小镇城门「出发！」→ `floor_06_siege`（`tools/build/gen_floor06_siege.py` 生成地图 + `data/siege/{waves,towers,enemy_towers,intel}.json`）。
 - **导演 `SiegeDirector`**（图例 `siege`）：12 波（`total_waves()`）。只有第 1 波前 / 失败重来时有准备阶段；一波的怪出完后倒计时
   `countdown`（15 秒，`next_left`）自动进下一波，场上的怪留着，提前清完立刻进；最后一波出完并清空才赢。城墙总血量归零 → 清场 → 失败小剧场
-  `data/theater/siege/siege_fail_<N>[_pants].json` → 从这一波重来（冰塔保留）；第 10 波打完 → `siege_won`。
+  `data/theater/siege/siege_fail_<N>[_pants].json` → 从这一波重来（冰塔保留）；第 12 波（最终波）打倒狂欢要塞 → 胜利演出 → `siege_won`。
   不设同时在场上限（`alive_cap` 写了才限制）；`ability_rate`（3）= 怪物特殊能力 / 敌塔 / 配合技冷却的缩短倍数（`SiegeDirector.ability_rate()`）。
   怪物挂 `SiegeMind`（行军大脑，`Monster.mind`），攻城怪继承 `SiegeMonster`（`siege_wander` / `block_hit` / `climb_wall`）。
   三来源组合的攻防战效果（`siege_lockup` / `siege_knockoff` / `siege_fx`）走 `combo_effect_handler`。
@@ -500,9 +501,32 @@ data/cutscenes/<楼层组>/  地图内过场；data/theater/<楼层组>/  小剧
   被挠撑不住就撤回城门；`add_soldiers` 增派、`bench_soldiers` 全部下场；和公主互相穿过去）。
 - **镇民支援** `TownBuffs`（`data/siege/town_buffs.json`，12 个：开局一个、之后每进一波一个；`mul` / `add` 读数 + 给友军挂 `town_*` 状态）
   + 过场 `TownBuffShow`（暂停、镜头推到城门 → 拉远看光点飞到友军；`TownBuffShow.enabled` 测试里关掉）。
-- **小 Boss** `TrollGeneral`（继承 `TickleTroll`，第 3 波）：10 个技能（抓挠脚心 / 三连扫掌 / 地震 / 投掷上墙 / 攻城锤 / 跳劈 / 战吼 / 痒痒军旗 `TrollBanner` /
-  就地搭塔（临时 `EnemySite`）/ 半血狂暴）；预警用 `SiegeFx.warn`，命中用 `SiegeFx.impact`（震屏 + 顿帧 `hitstop`）；
-  立绘是 codex 生成后像素化的 `tools/art/src/siege_general_0~4.png`。
+- **小 Boss**：都继承 `SiegeBoss`（`scripts/siege/monsters/siege_boss.gd`，它继承 `TickleTroll` 的抓取 / 挣脱 / 僵直）：
+  | 波 | Boss | 文件 | 技能 |
+  |---|---|---|---|
+  | 3 | 攻城巨魔将军 | `troll_general.gd` | 抓挠脚心 / 三连扫掌 / 地震 / 投掷上墙 / 攻城锤 / 跳劈 / 战吼 / 痒痒军旗 `TrollBanner` / 就地搭塔 / 半血狂暴 |
+  | 6 | 狂风熊统领 | `gale_bear.gd` + `monsters/gale_bear/`（`GaleWind` 风弹 / 风场、`GaleVortex` 风眼） | 八向龙卷 / 风眼 / 追痒 / 风盾 / 三岔风道 / 运兵 / 熊掌 |
+  | 9 | 狂欢挠痒魔偶师 | `puppet_master.gd`（机关在 `SiegeTools`） | 提线 / 换位 / 刷挠 / 刷具阵 / 痒感线 / 吊起 / 接力 / 绞盘 |
+  | 12 | 狂欢攻城堡垒（最终 Boss） | `carnival_fortress.gd` + `scripts/siege/fortress/` | 六个机关（见下）+ 船员协作 |
+  - `SiegeBoss` 的共用规则：冰塔 / 小雪人伤害 ×0.25（飞行中的塔弹 `HitData.from_tower`）、狂暴前只在下半场（`min_y`）、被建筑卡住先绕再穿（`_unstick`）、
+	有 Boss 的波打倒它才进下一波（`SiegeDirector.boss_alive`）。
+  - 共用的技能框架：数据在 `data/siege/bosses.json`（`tools/build/gen_siege_bosses.py` 生成：技能名 / 冷却 / 预警 / 喊话、出场 / 狂暴 / 打倒横幅、奖励），
+	`boss_key` 选段；`skill_name / skill_cd / skill_warn / skill_shout`、`cds` + `tick_cooldowns / put_on_cooldown / mark_used`、
+	预警 `track_warn`、场地 `register_field`（`clear_warns / clear_fields`，出树时自动收）、机关工具 `strike_tools`（走 `make_tickle`）、
+	`announce("intro" / "rage" / "defeat")`、护卫 `spawn_escorts`（波次表的 `boss_escort`）、`reward_defeat`。测试用 `SiegeBoss.cd_table / warn_table`。
+  - 预警用 `SiegeFx.warn`（敌方的传 `danger = true`），命中用 `SiegeFx.impact`（震屏 + 顿帧 `hitstop`）；立绘是 codex 生成后像素化的 `tools/art/src/siege_*`。
+- **狂欢要塞**（`scripts/siege/fortress/`）：`FortressRules`（`data/siege/fortress.json` + 巨型目标几何 `point / distance`）、
+  `FortressJobs`（机关调度：成对 `pairs`、增援预约、命中 / 爆炸、`FortressTarget` 吊索 / 核心、取消、`safe_pair`）←
+  `FortressMechanisms`（六个机关：巡航弹 / 伸缩巨手 / 火箭运兵 / 双钩劫塔 / 交叉车阵 / 三连重炮 + 绘制）、`FortressOrdnance`（制导飞行）、
+  `FortressCooperation`（船员协作，名字 / 冷却在 bosses.json）、`FortressFx`（像素爆发）、`FinalReinforcements`（最终波增援配额，所有出怪来源共用；
+  不经过 spawn 的子怪走 `track_child`）、`FortressFinale`（胜利演出）。最终波由数据决定：`SiegeDirector.is_final_fortress()`（波次表里有 `fortress_config`）。
+- **攻防战配合技**：通用组件 `MonsterTeamwork` / `TeamworkEffects` 不认识攻防战；攻防战在开场注入
+  `cd_divisor`（ability_rate）、`allowed_func`（siege_only 的要在战斗中、到 `min_wave`）、`can_start_func`（联合配合 `SiegeCooperation.can_start`）、
+  `formation_gate_func`（最终波增援配额），并用 `SiegeTeamEffects.register()` 把自己的效果登记进 `TeamworkEffects.handlers / spawn_handlers / joint_handler`：
+  `SiegeTeamEffects`（黏住 / 缠住包围、钩索接力、护卫阵、送暖炉、熊统领空运 / 滚球、魔偶师接力；先预警 `CoordinatedAction`，运送 `_transfer`）、
+  `SiegeCooperation`（十种怪物 + 敌塔的联合配合，`tools/build/siege_cooperation_data.py`）。配合技发动在公主身上时她说一句：来源 `team_<id>` 的 `trigger`
+  （`SiegeTeamEffects.say`，文本在 `tools/build/siege_text/team_lines.py`）。
+- **开发工具**：暂停菜单「测试：攻防战」页（`scripts/dev/siege_dev_tools.gd`，只在 `DevConfig` 打开时）：跳波次、摆 / 升级 / 清空测试冰塔。
 - **法术** `SiegeSpells`（冰锥雨 / 冰晶结界 / 清凉雪花 / 冰墙加固 / 暴风雪 `Blizzard` / 冰川突刺 / 冰镜分身 `IceMirror`，1~7 键，射程 640；
   瞄准时镜头跟着准星：`PlayableCharacter.camera_bias`；大震屏走 `shake_camera`）；**镜头** `SiegeCamera`（滚轮 / - / = 缩放，V 全景）；**HUD** `SiegeHud`；**情报** `SiegeIntel`（H / 点击）。
 - **冰塔** `BuildPad`（运行时基座：粉色公主按 B `try_build`，`build_blocked` 判断能不能建；存 `vars.siege_towers = [{x, y, kind, level}]`）+ `IceTower`（6 种 × 2 级）；
@@ -529,7 +553,12 @@ data/cutscenes/<楼层组>/  地图内过场；data/theater/<楼层组>/  小剧
   陷阱和怪物配合：龙卷风卷怪、迷雾里的怪打不到（meta `in_fog`，`enemies_near(..., false)`）、泡泡运兵；陷阱组合 `spawn_hazard_combo`（波次 `hazards` 里写 `combo`）。
 - **临时痒痒装备**：`Equipment.force` / `release` / `tick_forced`（`GameState.equip_forced`），负面装备由 `EquipFx` 定时发作 + 立绘反应（`data/equip_reactions.json`，分角色）。
 - 内容生成器：`gen_siege_monsters.py`（场景）、`gen_siege_cgs.py`（笑倒 CG，粉 / 蓝两版）、`gen_siege_scenes.py`（三来源组合小演出）、
-  `gen_siege_theaters.py`（失败小剧场）、`gen_siege_reactions.py`（受挠台词）、`tools/art/gen_siege_art.py`（像素图）。
+  `gen_siege_theaters.py`（失败小剧场）、`gen_siege_reactions.py`（受挠台词）、`gen_siege_bosses.py`（Boss 技能 / 横幅、要塞数据）、
+  `gen_teamwork.py`（配合技，联合配合的数据在 `siege_cooperation_data.py`）、`tools/art/gen_siege_art.py`（像素图）、`gen_fortress_v2.py`（要塞美术）。
+  文本在 `tools/build/siege_text/`（生成器只负责拼装）；`tools/authoring/rewrite_siege_gemini.py` 是不在生成流程里的写作辅助（提示词在 `tools/authoring/prompts/`）。
+- 测试：`siege_test` / `siege2_test` / `siege3_test` / `siege5_test`（攻防战各轮），Boss 和机关的 `siege_w6_bear_test` / `siege_w9_puppet_test` /
+  `siege_w12_fortress_test`、`siege_cooperation_test`、`siege_dev_test`、`siege_revision_test`（都直接继承夹具 `tests/helpers/siege_fixture.gd`）；
+  截图 `capture_siege*.gd` 输出到 `tools/.cache/shots/`。
 
 ## 公主状态与换美术素材
 

@@ -92,6 +92,8 @@ static func cast(c: PlayableCharacter, id: String, point: Vector2, force := fals
 	if c.fatigue:
 		c.fatigue.add(float(info["fatigue"]) * (dir.town.mul("fatigue") if dir and dir.town else 1.0) * (AI_FATIGUE if not c.is_controlled() else 1.0))
 	_cast_fx(c, point)
+	if id != "reinforce" and id != "snow":
+		SiegeHazard.notify_spell(c.get_tree(), point, float(info.get("radius", 30.0)))
 	match id:
 		"ice_rain": _ice_rain(c, point, float(info["radius"]), int(info["damage"]))
 		"barrier": IceBarrier.cast_with(c, float(info["radius"]), float(info["time"]), 2, point)

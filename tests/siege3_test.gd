@@ -36,7 +36,7 @@ func _ready() -> void:
 	await _wait(0.5)
 	_finish()
 	var only := OS.get_environment("SIEGE3_ONLY")
-	for sec in ["hints", "waves", "town", "boss", "soldiers", "towers", "spells", "etowers", "field", "cart", "wall", "locks", "bugs5", "towers5", "fixes6", "features6", "round7", "round8", "equip", "cg", "perf"]:
+	for sec in ["hints", "waves", "town", "boss", "soldiers", "towers", "spells", "etowers", "field", "cart", "wall", "locks", "bugs5", "towers5", "fixes6", "features6", "round7", "round8", "round9", "round10", "equip", "cg", "perf"]:
 		if only == "" or sec in only.split(","):
 			if is_instance_valid(d):
 				d.bench_soldiers(sec != "soldiers")
@@ -78,6 +78,13 @@ func _clear() -> void:
 		if not c.is_alive() or c.state == PlayableCharacter.State.DEAD:
 			c.revive()
 			c._set_state(PlayableCharacter.State.IDLE)
+		# 上一段被抓 / 被吸住刚松开会有一小段无敌，别带到下一段
+		if c.status and c.status.is_grabbed():
+			c.status.release(true)
+		if c.state == PlayableCharacter.State.GRABBED:
+			c._set_state(PlayableCharacter.State.IDLE)
+		c._full_invuln = 0.0
+		c.set_invulnerable(0.0)
 		c.visible = true
 		c.set_physics_process(true)
 		c.laugh.set_value(0.0)
@@ -996,7 +1003,8 @@ func _run_features6() -> void:
 		every = every and not fs.is_empty()
 		for f in fs:
 			all_ids[f] = true
-	var later_repeat := (waves[11]["features"] as Array).all(func(f): return all_ids.has(f)) and (waves[11]["features"] as Array).size() >= 3
+	# 叠加看第 11 波（第 12 波是狂欢要塞的最终波，只留狂欢节）
+	var later_repeat := (waves[10]["features"] as Array).all(func(f): return all_ids.has(f)) and (waves[10]["features"] as Array).size() >= 3
 	check("每波都有特色（%s），12 种都用上（%d），后面的波次叠加前面的（%s）" % [every, all_ids.size(), later_repeat],
 		every and all_ids.size() == 12 and later_repeat)
 	# 开打时：大字 + 标签 + 配合技频率
@@ -1300,7 +1308,7 @@ func _run_round8() -> void:
 			if SiegeSpells.cooldown_left(b, id) > 0.0:
 				casts[id] = true
 	check("AI 的冷却是 0.6 倍（冰锥雨 %.1f 秒，原来 3.5），6 秒里放了 %d 种法术（%s）" % [cd_ai, casts.size(), casts.keys()],
-		absf(cd_ai - 3.5 * SiegeSpells.AI_CD) < 0.3 and casts.size() >= 3)
+		absf(cd_ai - 3.5 * SiegeSpells.AI_CD * (d.town.mul("spell_cd") if d.town else 1.0)) < 0.3 and casts.size() >= 3)
 	d.clear_field()
 	_fight()
 	# 3 粉色公主放魔法：一半的几率跟着放
@@ -1331,6 +1339,151 @@ func _run_round8() -> void:
 	check("粉色公主吟唱时跟着放的几率 %.0f%%（约一半），她放出来那一下蓝色公主一起放（%d → %d，%s）" % [yes / 4.0, j0, ai.joined, ai.intent],
 		yes > 160 and yes < 240 and ai.joined == j0 + 1)
 	b.set_meta("siege_cd", {})
+
+
+# ------------------------------------------------------------------ 第九轮
+func _run_round9() -> void:
+	print("-- 第九轮：冰晶共鸣 / 冰陨星台打得到盾甲螃蟹，冰锥仍被挡")
+	await _clear()
+	_fight()
+	d.blue.set_controller(CharacterController.new())
+	var at := Vector2(d.gate_pos.x - 260.0, d.wall_foot_y() + 220.0)
+	var hurt := {}
+	for kind in ["icicle", "resonance", "meteor"]:
+		var crab := d.spawn("shield_crab", "", at) as ShieldCrab
+		crab.mind = null
+		crab.set_physics_process(false)
+		crab.health.max_hp = 99
+		crab.health.fill()
+		var t := _make_tower(kind, at + Vector2(0, -90))   # 塔在螃蟹上方（正面）
+		t.level = 1
+		var hp0 := crab.health.hp
+		if kind == "icicle":
+			for i in 3:
+				t._t = 0.0
+				t._icicle()
+				await _wait(0.7)
+		elif kind == "resonance":
+			t._t = 0.0
+			t._resonance()
+			await _wait(0.3)
+		else:
+			t._t = 0.0
+			for i in 160:
+				t._meteor(0.05)
+				await get_tree().physics_frame
+			await _wait(1.6)
+		hurt[kind] = hp0 - crab.health.hp
+		t.pad.queue_free()
+		t.queue_free()
+		crab.queue_free()
+		await _wait(0.2)
+	check("塔在正面：冰锥被盾甲螃蟹挡住（掉 %d），冰晶共鸣（掉 %d）、冰陨星台（掉 %d）打得到" % [hurt["icicle"], hurt["resonance"], hurt["meteor"]],
+		hurt["icicle"] == 0 and hurt["resonance"] > 0 and hurt["meteor"] > 0)
+	d.blue.set_controller(d._make_ai(d.blue))
+
+
+# ------------------------------------------------------------------ 第十轮：大型强制位移陷阱 + 新配合技
+func _run_round10() -> void:
+	print("-- 第十轮：抓娃娃机 / 流沙 / 弹弹蘑菇 / 传送门，四个新配合技")
+	await _clear()
+	_fight()
+	d.blue.set_controller(CharacterController.new())
+	var p := d.pink
+	var home := Vector2(d.gate_pos.x + 160.0, d.wall_foot_y() + 200.0)
+	var ok := {}
+	# 抓娃娃机：抓起来运到怪堆、一路挠
+	for i in 8:
+		var m := d.spawn("slime", "", home + Vector2(320, 120) + Vector2(randf_range(-20, 20), randf_range(-12, 12)))
+		m.mind = null
+		m.set_physics_process(false)
+	p.global_position = home
+	p.laugh.set_value(0.0)
+	var claw := d.spawn_hazard("claw", home) as HazardClaw
+	claw.target = p
+	await _until(func(): return claw.phase == "carry", 6.0)
+	var carried := claw.phase == "carry" and p.status.is_grabbed_by(claw)
+	await _until(func(): return claw.phase == "rise" or not is_instance_valid(claw), 6.0)
+	ok["抓娃娃机 运走 %.0f 像素" % p.global_position.distance_to(home)] = carried and p.global_position.distance_to(home) > 120.0 \
+		and p.laugh.value > 0.0 and not p.status.is_grabbed() and p.is_physics_processing()
+	d.clear_field()
+	_fight()
+	# 流沙：吸到中心、抓住挠、标记成被拖着（冰链能救）
+	p.global_position = home
+	p.laugh.set_value(0.0)
+	var qs := d.spawn_hazard("quicksand", home + Vector2(40, 0)) as HazardQuicksand
+	await _until(func(): return qs.sunk == p, 7.0)
+	var sunk: bool = qs.sunk == p and p.get_meta("siege_dragged", false) and d.rescue_request() == p
+	await _wait(1.2)
+	var l_sand := p.laugh.value
+	qs.release_drag()
+	ok["流沙 吸住挠（%.0f）冰链能救" % l_sand] = sunk and l_sand > 0.0 and not p.get_meta("siege_dragged", false) and not p.status.is_grabbed()
+	d.clear_field()
+	_fight()
+	# 弹弹蘑菇：踩到第一颗，一路弹到最后
+	p.global_position = home
+	p.laugh.set_value(0.0)
+	var mush := d.spawn_hazard("mushrooms", home) as HazardMushrooms
+	await _until(func(): return mush.warned, 3.0)
+	await _wait(0.2)
+	await _until(func(): return not mush._bouncing.has(p.get_instance_id()), 6.0)
+	ok["弹弹蘑菇 弹出 %.0f 像素" % p.global_position.distance_to(home)] = p.global_position.distance_to(home) > HazardMushrooms.STEP * 2.5 and p.laugh.value > 0.0
+	d.clear_field()
+	_fight()
+	# 传送门：粉色公主进紫门 → 粉门出来；怪进粉门 → 紫门出来；法术冰封紫门后不传送
+	p.global_position = home + Vector2(0, 60)
+	var portal := d.spawn_hazard("portal_pair", home) as HazardPortalPair
+	await _until(func(): return portal.warned, 3.0)
+	p.global_position = portal.global_position
+	await _wait(0.2)
+	var sent := p.global_position.distance_to(portal.exit) < 40.0
+	var mob := d.spawn("rat", "", portal.exit)
+	mob.mind = null
+	await _wait(0.2)
+	var mob_sent := mob.global_position.distance_to(portal.global_position) < 30.0
+	SiegeHazard.notify_spell(get_tree(), portal.global_position, 20.0)
+	await _wait(2.8)
+	p.global_position = portal.global_position
+	await _wait(0.2)
+	var frozen_ok := p.global_position.distance_to(portal.global_position) < 10.0
+	ok["传送门 人（%s）怪（%s）冰封（%s）" % [sent, mob_sent, frozen_ok]] = sent and mob_sent and frozen_ok
+	d.clear_field()
+	_fight()
+	var bad := ok.keys().filter(func(k): return not ok[k])
+	check("四个大型强制位移陷阱都生效（没生效：%s）" % [bad], bad.is_empty())
+	# 四个新配合技
+	var team_ok := {}
+	for id in ["crab_rat", "crab_tentacle", "imp_slime", "bear_tentacle"]:
+		await _clear()
+		_fight()
+		d.blue.set_controller(CharacterController.new())
+		d.wave = 8
+		d.teamwork._cd.clear()
+		d.teamwork.history.clear()
+		p.global_position = home
+		var made := d.teamwork.spawn_formation(id, home + Vector2(30, 0))
+		for m in made:
+			m.mind = null
+			m.set_physics_process(false)
+			m.global_position = home + Vector2(randf_range(10, 40), randf_range(-8, 8))
+		await get_tree().process_frame
+		d.teamwork.scan()
+		await _wait(1.3)
+		var fired := d.teamwork.history.has(id)
+		var effect := false
+		match id:
+			"crab_rat": effect = p.status.is_rooted() and p.has_meta("shoeless_until")
+			"crab_tentacle": effect = p.status.is_rooted()
+			"imp_slime": effect = made.any(func(m): return is_instance_valid(m) and m.global_position.distance_to(p.global_position) < 30.0)
+			"bear_tentacle": effect = p.status.is_grabbed()
+		team_ok[id] = fired and effect and made.size() == 3
+		if p.status:
+			p.status.release(true)
+			p.status.clear_root()
+		d.wave = 1
+	var tbad := team_ok.keys().filter(func(k): return not team_ok[k])
+	check("四个新配合技凑齐就发动、效果生效（没生效：%s）" % [tbad], tbad.is_empty())
+	d.blue.set_controller(d._make_ai(d.blue))
 
 
 # ------------------------------------------------------------------ 12 装备挠痒

@@ -150,6 +150,8 @@ from fortress_text import reaction as fortress_reaction
 rx["sources"]["carnival_fortress"] = fortress_reaction("blue")
 from puppet_master_text import reaction as puppet_reaction, tower_reactions
 rx["sources"]["puppet_master"] = puppet_reaction("blue")
+from siege_text import team_lines  # noqa: E402
+rx["sources"].update(team_lines.sources("blue"))
 rx["sources"].update(tower_reactions("blue"))
 # 千手痒痒魔：她认识它（不点明）。被它挠时的台词带着惋惜和自责，和别的来源不一样。
 BOSS_LINES = {

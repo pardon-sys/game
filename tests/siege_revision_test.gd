@@ -1,8 +1,9 @@
-extends "res://tests/siege9_boss_test.gd"
+extends SiegeFixture
 ## 实际泡泡与魔偶师交叠的生命周期回归，另覆盖批量塔光效和居中暂停页。
 
 
 func _ready() -> void:
+	fixture_wave = 9
 	await _boot()
 	for _i in 100:
 		if not Dialogue.is_active():
