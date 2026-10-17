@@ -543,7 +543,19 @@ func _run_fail_and_win() -> void:
 			m.health.damage(999)
 	await _advance_until(func(): return GameState.has_flag("siege_won"), 5.0)
 	check("最后一波打完 → 胜利（%s）" % GameState.has_flag("siege_won"), GameState.has_flag("siege_won") and d.state == "won")
-	await _advance_until(func(): return _level_id() == "floor_06_war", 20.0)
+	# 胜利过场：镜头拉远看整个战场；十二位激励镇民依次出场（过场里生成的 cheer_* 演员）
+	var stats := {"zoom": 99.0, "cheer": {}}
+	var watch := func() -> bool:
+		var cam: Camera2D = GameState.player.camera if is_instance_valid(GameState.player) and GameState.player.get("camera") else null
+		if cam and Cutscene.is_playing():
+			stats["zoom"] = minf(stats["zoom"], cam.zoom.x)
+		for k in Cutscene.spawned:
+			if str(k).begins_with("cheer_"):
+				stats["cheer"][k] = true
+		return _level_id() == "floor_06_war"
+	await _advance_until(watch, 90.0)
+	check("胜利过场：镜头拉远到 %.2f 倍（看得到整个战场）、%d 位激励镇民出来祝贺" % [stats["zoom"], stats["cheer"].size()],
+		stats["zoom"] < 0.4 and stats["cheer"].size() == 12)
 	check("胜利过场后回到战时小镇（%s）" % _level_id(), _level_id() == "floor_06_war")
 
 

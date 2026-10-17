@@ -8,7 +8,8 @@ extends Node2D
 ##   这一波的怪出完后倒计时 countdown 秒（默认 15）→ 自动进下一波（场上剩下的怪留着，不用清完）；提前清完立刻进。
 ##   每进一波：奖励冰晶 + 镇民支援（TownBuffs：每波固定一个，播 TownBuffShow 过场，整局叠加）；派对者的激励在第 1 波开打前给。
 ##   城墙总血量归零 → 失败：清场 → 放这一波的失败小剧场（data/theater/siege/siege_fail_<N>.json）→ 城墙修好、冰塔和 buff 保留 → 从这一波的准备阶段重来。
-##   最后一波出完怪并清空 → 胜利（剧情标记 siege_won）→ 过场 siege_won（「（待续）」）→ 回战时小镇。
+##   最后一波出完怪并清空 → 胜利（剧情标记 siege_won）→ stage_victory 摆位 → 过场 siege_won（镜头拉远看整个战场，
+##   十二位激励镇民依次从城门出来祝贺、站成半圆，镇长宣布祭典、烟花）→ 回战时小镇。
 ## 两位公主（Duo：C 键切换）：
 ##   粉色公主默认操控，地面近战；AI 时用 CompanionController（SiegeAIHooks：闷笑高时去薄荷冰泉、没事做时去最危险的那段墙下）。
 ##   蓝色公主在城墙顶走道（SiegeMageController：自动放法术；被挠下城墙后 10 秒走到梯子爬回去）。
@@ -51,7 +52,7 @@ static func ability_rate() -> float:
 	return float(current.data.get("ability_rate", 1.0)) if current else 1.0
 
 
-## 整体难度倍率（waves.json 顶层 difficulty）：hp 小怪血量、build 怪物搭敌塔速度、team_cd 配合技冷却；挠痒力度在状态 siege_hard。没有攻防战时 1。
+## 整体难度倍率（waves.json 顶层 difficulty）：build 怪物搭敌塔速度、team_cd 配合技冷却。怪物血量 / 挠痒保持原值，难度主要走机制。没有攻防战时 1。
 static func difficulty(key: String) -> float:
 	return float((current.data.get("difficulty", {}) as Dictionary).get(key, 1.0)) if current else 1.0
 
@@ -98,6 +99,7 @@ var kills := 0
 func _ready() -> void:
 	reinforcements.director = self
 	current = self
+	Actor.lod_clamp = _lod_clamp
 	add_to_group("combo_effect_handler")
 	var parsed: Variant = JSON.parse_string(FileAccess.get_file_as_string(WAVES_PATH))
 	data = parsed if parsed is Dictionary else {}
@@ -111,6 +113,8 @@ func _ready() -> void:
 func _exit_tree() -> void:
 	if current == self:
 		current = null
+	if Actor.lod_clamp.is_valid() and Actor.lod_clamp.get_object() == self:
+		Actor.lod_clamp = Callable()
 	if PlayableCharacter.death_override.is_valid() and PlayableCharacter.death_override.get_object() == self:
 		PlayableCharacter.death_override = Callable()
 	if PlayableCharacter.ai_factory.is_valid() and PlayableCharacter.ai_factory.get_object() == self:
@@ -484,6 +488,19 @@ func _process(delta: float) -> void:
 
 
 var _clamp_t := 0.0
+## 屏幕外的怪降级（性能）：测试可以关掉
+var lod_enabled := true
+const LOD_MARGIN := 120.0
+
+
+## 降级的怪直接按速度走（不碰撞）：夹在地图里，地上的怪不越过墙脚的挡人窄条。
+func _lod_clamp(a: Actor, to: Vector2) -> Vector2:
+	var ms := map_size()
+	to.x = clampf(to.x, 16.0, ms.x - 16.0)
+	to.y = minf(to.y, ms.y - 16.0)
+	if not walls.is_empty() and a.global_position.y >= wall_foot_y():
+		to.y = maxf(to.y, wall_foot_y() + SiegeWall.FOOT_STRIP)
+	return to
 
 
 ## 怪物不出地图：左右 / 下边夹在地图里，上边不越过墙顶走道。
@@ -491,6 +508,9 @@ func _clamp_monsters() -> void:
 	var ms := map_size()
 	var top := wall_top_y() - 16.0 if not walls.is_empty() else 16.0
 	for m in monsters:
+		# 屏幕外的普通怪降级（Actor.lod_far）：攻城怪（SiegeMonster：攻城车、爬墙、飘上墙的……数量少、动作讲究）/ Boss / 墙顶 / 被运着的照常
+		m.lod_far = lod_enabled and not (m is SiegeMonster or m is SiegeBoss) and not m.get_meta("siege_on_wall", false) \
+			and not m.get_meta("airborne", false) and not on_screen(m.global_position, LOD_MARGIN)
 		var p := m.global_position
 		var c := Vector2(clampf(p.x, 16.0, ms.x - 16.0), clampf(p.y, top, ms.y - 16.0))
 		if c != p:
@@ -599,11 +619,6 @@ func spawn(key: String, from := "bottom", at = null, ticket := -1) -> Monster:
 	# 攻防战里怪物之间不互相挡（几百只同时在场时省物理计算）
 	m.collision_mask = 1 if m.collision_mask != 0 else 0
 	m.add_buff("siege_rapid", 99999.0)
-	if not (m is SiegeBoss):
-		m.add_buff("siege_hard", 99999.0)
-		if m.health:
-			m.health.max_hp = int(ceil(m.health.max_hp * difficulty("hp")))
-			m.health.fill()
 	_speed_up_specials(m)
 	m.mind = m.call("make_mind", self) if m.has_method("make_mind") else SiegeMind.new(self)
 	if site and m.mind is SiegeMind:
@@ -802,6 +817,59 @@ func wall_foot_y() -> float:
 
 func wall_top_y() -> float:
 	return walls[0].top_y() if not walls.is_empty() else 0.0
+
+
+# ------------------------------------------------------------------ 怪物挑薄弱处（机制型难度）
+## 每 WEAK_GAP 秒给每段墙算一次「薄弱分」（0~1，越大越薄弱）：前方射程能盖到这段墙的冰塔越多、有冰墙加固、
+## 蓝色公主站在这段墙上，分数越低。怪物行军时按薄弱分（再按离自己远近）加权挑一段墙去打（SiegeMind.march）。
+const WEAK_GAP := 4.0
+var _weak: Array[float] = []
+var _weak_at := -INF
+
+
+func wall_weakness() -> Array[float]:
+	var now := Time.get_ticks_msec() / 1000.0
+	if now - _weak_at < WEAK_GAP and _weak.size() == walls.size():
+		return _weak
+	_weak_at = now
+	_weak.clear()
+	var towers := get_tree().get_nodes_in_group("siege_tower")
+	for w in walls:
+		var center := Vector2((w.left_x() + w.right_x()) / 2.0, w.foot_y() + 60.0)
+		var guard := 0.0
+		for t in towers:
+			var tw := t as IceTower
+			if tw == null or not tw.is_alive() or tw.kind == "decoy":
+				continue
+			var reach := float(tw.p("range", tw.p("radius", 160.0)))
+			if tw.global_position.distance_to(center) <= reach + (w.right_x() - w.left_x()) * 0.5:
+				guard += 1.0
+		if w.shield_left > 0.0:
+			guard += 2.0
+		if blue and is_instance_valid(blue) and is_on_wall(blue) and segment_at(blue.global_position.x) == w:
+			guard += 1.5
+		_weak.append(1.0 / (1.0 + guard))
+	return _weak
+
+
+## 给一只在 from_x 的怪挑一个要去打的 x：按薄弱分的平方 × 远近加权随机挑一段墙，落在这段墙里面。
+func pick_weak_x(from_x: float) -> float:
+	var weak := wall_weakness()
+	if weak.is_empty():
+		return from_x
+	var total := 0.0
+	var weights: Array[float] = []
+	for i in walls.size():
+		var cx := (walls[i].left_x() + walls[i].right_x()) / 2.0
+		var wgt := weak[i] * weak[i] / (1.0 + absf(cx - from_x) / 700.0)
+		weights.append(wgt)
+		total += wgt
+	var r := randf() * total
+	for i in walls.size():
+		r -= weights[i]
+		if r <= 0.0:
+			return clampf(randf_range(walls[i].left_x() + 20.0, walls[i].right_x() - 20.0), 90.0, map_size().x - 90.0)
+	return from_x
 
 
 func segment_at(x: float) -> SiegeWall:
@@ -1478,17 +1546,48 @@ func _win() -> void:
 	won.emit()
 	Audio.play("win_fanfare", -1.0)
 	await get_tree().create_timer(1.0).timeout
+	stage_victory()
 	if FileAccess.file_exists(Cutscene.DIR + "floor_06/siege_won.json"):
 		Cutscene.play("siege_won")
 	else:
-		GameState.hint("小镇守住了！（待续）")
+		GameState.hint("小镇守住了！")
 
 
-## 暂停菜单的「撤退」：回战时小镇（这一波从准备阶段重来）。
-func retreat() -> void:
+## 胜利过场前摆好位置：操控切回粉色公主，两个人站到城门前（蓝色公主从城墙上下来，AI 停住），
+## 蓝色公主的节点改名 SiegeBlue（过场 siege_won 用这个名字点她）。
+const VICTORY_CELL := Vector2(54, 13)
+
+
+func stage_victory() -> void:
+	if is_instance_valid(pink) and GameState.player != pink:
+		GameState.switch_control(pink)
+	for c: PlayableCharacter in [pink, blue]:
+		if not is_instance_valid(c):
+			continue
+		c.end_forced_move()
+		c.set_physics_process(true)
+		c.velocity = Vector2.ZERO
+		c.visible = true
+	if is_instance_valid(pink):
+		pink.global_position = Cutscene.cell_to_world([VICTORY_CELL.x - 1, VICTORY_CELL.y])
+		pink.facing = Vector2.DOWN
+	if is_instance_valid(blue):
+		blue.set_controller(CharacterController.new())
+		blue.global_position = Cutscene.cell_to_world([VICTORY_CELL.x + 1, VICTORY_CELL.y])
+		blue.facing = Vector2.DOWN
+		blue.name = "SiegeBlue"
+
+
+## 暂停菜单的「撤退」：回战时小镇（这一波从准备阶段重来，不会算成打完）。
+func retreat(change_level := true) -> void:
+	# 先停住导演：不然清场后下一帧会把空掉的这一波当成「清完了」，存成下一波
+	_busy = true
+	_set_state("retreat")
 	clear_field()
 	GameState.vars["siege_wave"] = wave
 	GameState.vars["siege_crystals"] = crystals
+	if not change_level:
+		return
 	GameState.pending_spawn = "from_siege"
 	var main := get_tree().get_first_node_in_group("main")
 	if main and main.has_method("change_level"):

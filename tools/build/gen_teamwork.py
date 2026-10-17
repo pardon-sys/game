@@ -118,6 +118,12 @@ NEW_TEAMS_9 = [
 for team, first in zip(NEW_TEAMS_9, [2, 4, 5, 6]):
     team.update(siege_only=True, min_wave=first)
 TEAMS += NEW_TEAMS_9
+# 第十一轮：号手指挥官（机制型难度；效果在 SiegeTeamEffects._bugler_formation / _bugler_call，号手本身是 HornBugler）
+BUGLER = T("bugler_squad", "号手指挥", "#ffb060", [("bugler", 1, "leader"), (["slime", "rat", "squirrel"], 3, "squad")],
+           "bugler_squad", 120, 30, 90, [("bugler", 1), ("slime", 4), ("rat", 3), ("squirrel", 3)], "号手小鬼带着一整队小怪。",
+           "整队排成几排跟着号手行军；到墙下吹冲锋号一起冲（城墙伤害 ×1.2）；号手倒下整队乱成一团。", "先打号手。")
+BUGLER.update(siege_only=True, min_wave=4)
+TEAMS.append(BUGLER)
 
 out = {"_说明": ["怪物配合技（tools/build/gen_teamwork.py 生成；MonsterTeamwork 读）。"], "teams": TEAMS}
 Path("data/teamwork.json").write_text(json.dumps(out, ensure_ascii=False, indent="\t") + "\n")

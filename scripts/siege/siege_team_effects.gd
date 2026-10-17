@@ -25,6 +25,8 @@ static func register() -> void:
 	for kind in GATHER:
 		TeamworkEffects.spawn_handlers[kind] = func(_t: Dictionary, leader: Monster, rest: Array): TeamworkEffects._escort(leader, rest, Vector2(0, 18))
 	TeamworkEffects.joint_handler = func(t: Dictionary, members: Array, ctx: Dictionary): start(t, members, ctx, 0.2)
+	TeamworkEffects.spawn_handlers["bugler_squad"] = func(_t: Dictionary, leader: Monster, rest: Array): _bugler_formation(leader, rest)
+	TeamworkEffects.handlers["bugler_squad"] = func(_t: Dictionary, members: Array, ctx: Dictionary): _bugler_call(members, ctx.get("target"))
 
 
 const SAY_GAP := 1.5
@@ -399,3 +401,26 @@ class WindTransport extends Node2D:
 			if puppet:
 				p.remove_meta("puppet_victim")
 		queue_free()
+
+
+# ------------------------------------------------------------------ 号手指挥官（bugler_squad）
+## 成套生成：号手在最前，其余的人排成每排 4 个跟在后面（下方 = 后面）。
+static func _bugler_formation(leader: Monster, rest: Array) -> void:
+	var bugler := leader as HornBugler
+	for i in rest.size():
+		var m: Monster = rest[i]
+		if not TeamworkEffects._alive(m):
+			continue
+		m.set_meta("escort_of", leader)
+		m.set_meta("escort_off", Vector2((i % 4 - 1.5) * 16.0, 20.0 + float(i / 4) * 16.0))
+		if bugler:
+			bugler.squad.append(m)
+
+
+## 凑齐时碰到公主：号手吹一声，整组朝她围过去。
+static func _bugler_call(members: Array, target: Variant) -> void:
+	if not (target is PlayableCharacter) or not SiegeTools.alive(target):
+		return
+	for m in members:
+		if TeamworkEffects._alive(m) and not (m is HornBugler):
+			(m as Monster).rally_to(target)

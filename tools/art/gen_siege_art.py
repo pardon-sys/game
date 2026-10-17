@@ -547,8 +547,24 @@ def m_engineer(f):
     return add_outline(img)
 
 
+def m_bugler(f):
+    """号手小鬼：紫色小鬼，举着铜号，背后插一面小红旗（f = 号口抬起 / 放下）。"""
+    img, d = canvas(16, 18)
+    d.line((3, 2, 3, 12), fill=WOOD_D, width=1)                              # 旗杆
+    d.polygon([(4, 2), (9, 3 + f), (4, 6)], fill=(230, 70, 80, 255))          # 小红旗
+    d.ellipse((4, 8, 12, 17), fill=(150, 100, 190, 255))
+    d.ellipse((4, 5, 12, 12), fill=(170, 120, 210, 255))
+    d.polygon([(4, 7), (2, 3), (6, 6)], fill=(170, 120, 210, 255)); d.polygon([(12, 7), (14, 3), (10, 6)], fill=(170, 120, 210, 255))  # 小角
+    d.point((6, 9), fill=(30, 30, 30, 255)); d.point((10, 9), fill=(30, 30, 30, 255))
+    d.line((10, 11, 14, 9 - f * 2), fill=(230, 190, 80, 255), width=2)       # 铜号
+    d.polygon([(13, 8 - f * 2), (16, 6 - f * 2), (16, 11 - f * 2)], fill=(250, 210, 90, 255))
+    d.line((6, 16, 6 - f, 17), fill=(110, 70, 140, 255)); d.line((10, 16, 10 + f, 17), fill=(110, 70, 140, 255))
+    return add_outline(img)
+
+
 MONSTERS = {
     "engineer": m_engineer,
+    "bugler": m_bugler,
     "general": None,
     "cart": m_cart, "hook": m_hook, "vine": m_vine, "gecko": m_gecko, "shield_crab": m_shield_crab, "bat_swarm": m_bat_swarm,
     "carrier": m_carrier, "warm_slime": m_warm_slime, "thigh_spider": m_thigh_spider, "hug_bear": m_hug_bear,

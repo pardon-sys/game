@@ -1,0 +1,64 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/siege/monsters/horn_bugler.gd" id="1"]
+[ext_resource type="Shader" path="res://shaders/flash.gdshader" id="flash"]
+[ext_resource type="Script" path="res://scripts/components/health_component.gd" id="health"]
+[ext_resource type="Script" path="res://scripts/actors/monsters/monster_stats.gd" id="stats_script"]
+
+[sub_resource type="Resource" id="stats"]
+script = ExtResource("stats_script")
+display_name = "号手小鬼"
+reaction_key = "bugler"
+max_hp = 5
+wander_speed = 18.0
+chase_speed = 30.0
+detect_range = 40.0
+lose_range = 160.0
+attack_damage = 1
+tickle_amount = 6.0
+tickle_cooldown = 1.0
+tickle_weight = 0.6
+hit_fx = "hand"
+
+[sub_resource type="ShaderMaterial" id="mat"]
+resource_local_to_scene = true
+shader = ExtResource("flash")
+shader_parameter/flash = 0.0
+shader_parameter/flash_color = Color(1, 1, 1, 1)
+
+[sub_resource type="CircleShape2D" id="body"]
+radius = 5.0
+
+[sub_resource type="CircleShape2D" id="hit"]
+radius = 8.0
+
+[node name="HornBugler" type="CharacterBody2D"]
+collision_layer = 4
+collision_mask = 5
+motion_mode = 1
+script = ExtResource("1")
+stats = SubResource("stats")
+sprite_key = "bugler"
+faction = 3
+hurt_invuln_time = 0.1
+flash_color = Color(1, 1, 1, 1)
+
+[node name="Sprite" type="Sprite2D" parent="."]
+material = SubResource("mat")
+
+[node name="Shape" type="CollisionShape2D" parent="."]
+position = Vector2(0, -3)
+shape = SubResource("body")
+
+[node name="Health" type="Node" parent="."]
+script = ExtResource("health")
+max_hp = 5
+
+[node name="HitArea" type="Area2D" parent="."]
+position = Vector2(0, -5)
+collision_layer = 0
+collision_mask = 2
+monitorable = false
+
+[node name="Shape" type="CollisionShape2D" parent="HitArea"]
+shape = SubResource("hit")

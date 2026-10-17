@@ -235,7 +235,7 @@ func _towers9() -> void:
 	var m := d.spawn("slime", "", a.global_position + Vector2(80, 30))
 	m.set_physics_process(false)
 	var base_cd := m.stat_mul("tickle_cd")
-	# 攻防战的难度状态（siege_hard）本来就乘了挠痒力度：钟楼的 ×1.2 叠在它上面
+	# 钟楼的 ×1.2 叠在怪物原有的挠痒力度上
 	var base_power := m.stat_mul("tickle_power")
 	await get_tree().physics_frame
 	EnemyTowerTools.aura(a)

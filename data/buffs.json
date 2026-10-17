@@ -258,16 +258,17 @@
 			"desc": "攻防战里的怪物：挠痒的间隔更短（特殊能力更频繁）。",
 			"hidden": true
 		},
-		"siege_hard": {
-			"name": "攻城难度",
+		"siege_rally": {
+			"name": "冲锋号",
 			"icon": 19,
 			"debuff": false,
-			"duration": -1,
+			"duration": 3.5,
 			"max_stacks": 1,
 			"modifiers": {
-				"tickle_power": 1.4
+				"wall_damage": 1.2,
+				"speed": 1.15
 			},
-			"desc": "攻防战的难度：怪物挠痒力度 ×1.4（血量 / 搭塔 / 配合技倍率在 data/siege/waves.json 的 difficulty）。",
+			"desc": "号手吹响冲锋号：打城墙的伤害 ×1.2、移速 ×1.15。",
 			"hidden": true
 		},
 		"town_party": {

@@ -3,7 +3,8 @@ extends SiegeHazard
 ## 弹弹蘑菇阵：一串 COUNT 颗弹弹蘑菇从地里冲出来，排成一条从公主附近通向怪堆的路（每颗离上一颗 STEP 像素）。
 ## 踩到一颗就被弹到下一颗（force_move「bounce」，在空中，落地才算），连弹几次，最后一颗把人弹进怪堆；
 ## 每弹一下蘑菇帽喷出羽毛孢子挠一下（粉色公主挠脚心，蓝色公主挠大腿 / 屁股）。弹完这一个人 COOL 秒内不会再被弹。
-## 怪踩到也会一颗接一颗被弹到路的尽头，最后一颗把怪弹上城墙顶（第十轮）。来源键 hazard_mushroom。
+## 怪踩到也会一颗接一颗被弹到路的尽头，最后一颗把怪弹上城墙顶（第十轮）。
+## 吸附：每颗蘑菇把 PULL_R 以内的公主和可推动的怪往帽上吸（冲刺时挣得开）。来源键 hazard_mushroom。
 
 const COUNT := 9
 const STEP := 64.0
@@ -12,6 +13,10 @@ const TRIGGER := 12.0
 const HOP_TIME := 0.42
 const TICKLE := 4.0
 const COOL := 4.0
+## 吸附（第十一轮）：PULL_R 以内的公主 / 怪往最近的蘑菇帽上吸
+const PULL_R := 70.0
+const PULL := 55.0
+const MOB_PULL := 45.0
 
 var caps: Array[Vector2] = []
 var _cool := {}
@@ -75,17 +80,42 @@ func _active(delta: float) -> void:
 		var id := c.get_instance_id()
 		if _bouncing.has(id) or director.is_on_wall(c) or float(_cool.get(id, 0.0)) > 0.0 or not SiegeTools.can_move(null, c) or c.is_airborne():
 			continue
+		var bounced := false
 		for i in caps.size():
 			if (global_position + caps[i]).distance_to(c.global_position) <= TRIGGER:
 				_bounce(c, i)
+				bounced = true
 				break
-	for m in director.enemies_near(global_position + caps[caps.size() / 2], STEP * COUNT * 0.6):
+		# 吸附：冲刺时挣得开
+		if not bounced and c.state != PlayableCharacter.State.DASH:
+			_suck(c, PULL)
+	for m in director.enemies_near(global_position + caps[caps.size() / 2], STEP * COUNT * 0.6 + PULL_R):
 		if not SiegeTools.displaceable(m) or m.has_meta("siege_mushroom_hop"):
 			continue
+		var hopped := false
 		for i in caps.size():
 			if (global_position + caps[i]).distance_to(m.global_position) <= TRIGGER:
 				_hop_mob(m, i)
+				hopped = true
 				break
+		if not hopped:
+			_suck(m, MOB_PULL)
+
+
+## 把 a 往最近的蘑菇帽吸（PULL_R 以内，越近越强）。返回吸没吸。
+func _suck(a: Actor, strength: float) -> bool:
+	var best := Vector2.INF
+	var best_d := PULL_R
+	for cap in caps:
+		var at := global_position + cap
+		var dist := at.distance_to(a.global_position)
+		if dist < best_d:
+			best_d = dist
+			best = at
+	if best == Vector2.INF:
+		return false
+	a.add_push(a.global_position.direction_to(best) * strength * (1.3 - best_d / PULL_R))
+	return true
 
 
 ## 公主：从第 i 颗弹到下一颗，一直弹到最后，最后一颗弹进怪堆。
@@ -153,6 +183,14 @@ func _draw() -> void:
 		var p := caps[i]
 		var squash := 1.0 - float(_pop[i]) * 1.5 if i < _pop.size() else 1.0
 		var rise := 1.0 if warned else 0.4
+		if warned:
+			# 吸附圈：淡粉色、往里转的旋涡
+			draw_set_transform(p, 0.0, Vector2(1, 0.55))
+			draw_circle(Vector2.ZERO, PULL_R, Color(1, 0.6, 0.8, 0.06))
+			for k in 2:
+				var a0 := -_t * (2.0 + k) + k * PI
+				draw_arc(Vector2.ZERO, PULL_R * (0.5 + 0.35 * k), a0, a0 + 2.2, 18, Color(1, 0.65, 0.85, 0.3), 1.5)
+			draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
 		# 蘑菇柄 + 蘑菇帽（踩到时压扁一下）
 		draw_rect(Rect2(p + Vector2(-3, -8 * rise), Vector2(6, 8 * rise)), Color(0.98, 0.92, 0.85))
 		draw_set_transform(p + Vector2(0, -9 * rise), 0.0, Vector2(1.0 / maxf(squash, 0.5), squash))

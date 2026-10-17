@@ -195,6 +195,30 @@
 				],
 				"scale": 0.55
 			}
+		},
+		"goblin_engineer": {
+			"scene": "res://scenes/siege/monsters/goblin_engineer.tscn",
+			"sprite": {
+				"texture": "res://assets/generated/siege/monsters.png",
+				"atlas": "res://assets/generated/siege/monsters.json",
+				"key": "engineer_0",
+				"offset": [
+					0,
+					-9.0
+				]
+			}
+		},
+		"horn_bugler": {
+			"scene": "res://scenes/siege/monsters/horn_bugler.tscn",
+			"sprite": {
+				"texture": "res://assets/generated/siege/monsters.png",
+				"atlas": "res://assets/generated/siege/monsters.json",
+				"key": "bugler_0",
+				"offset": [
+					0,
+					-9.0
+				]
+			}
 		}
 	},
 	"death": {

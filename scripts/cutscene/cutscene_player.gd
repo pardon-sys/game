@@ -31,7 +31,7 @@ const DIR := "res://data/cutscenes/"
 const BAR_H := 28.0
 const ACTIONS := ["move", "face", "pose", "camera", "shake", "fade_out", "fade_in", "flash", "bubble", "say", "tickle", "trap",
 	"spawn", "despawn", "carry", "wait", "sfx", "voice", "set_flag", "notify", "chapter_end", "hold", "goto", "lie",
-	"cover", "uncover", "burst", "cg", "hint", "item", "buff", "crack", "hop", "words"]
+	"cover", "uncover", "burst", "cg", "hint", "item", "buff", "crack", "hop", "words", "fireworks"]
 const BUBBLE_TEXT := {"surprise": "！", "question": "？", "laugh": "哈哈哈", "dots": "……", "sad": "呜……", "angry": "哼！", "shy": "///", "happy": "♪"}
 ## free_camera 过场开始前镜头的边界（结束时恢复）
 var _cam_limits: Array = []
@@ -588,6 +588,9 @@ func _do(a: Dictionary, instant: bool) -> float:
 					Audio.fade_crack(float(a["fade"]))
 				else:
 					Audio.play_crack(bool(a.get("long", false)), float(a.get("volume", -4.0)))
+		"fireworks":
+			if not instant:
+				_fireworks(a.get("at", []), int(a.get("count", 8)), t)
 		"chapter_end":
 			chapter_title.text = str(a.get("title", "完"))
 			chapter_sub.text = str(a.get("subtitle", ""))
@@ -703,6 +706,25 @@ func _blocked(lv: Node, a: Vector2, b: Vector2) -> bool:
 
 
 ## 格子 -> 世界坐标（角色脚下：格子中心往下 4 像素，和构建器放角色的位置一致）。
+## 烟花（胜利 / 庆典）：在 at 列出的格子上空，time 秒内陆续放 count 发（光点升空 → 炸开）。
+func _fireworks(cells: Array, count: int, t: float) -> void:
+	var lv := _level()
+	var parent: Node = lv.get_node_or_null("Entities") if lv else null
+	if parent == null or cells.is_empty():
+		return
+	for i in count:
+		var at := cell_to_world(cells[i % cells.size()]) + Vector2(randf_range(-20, 20), randf_range(-70, -40))
+		var col := Color.from_hsv(randf(), 0.55, 1.0)
+		get_tree().create_timer(maxf(t, 0.5) * float(i) / maxf(count, 1)).timeout.connect(func():
+			if not is_instance_valid(parent):
+				return
+			Fx.burst(parent, at + Vector2(0, 40), "spark", 4, 30.0, 0.4, Vector2(0, -160), col)
+			get_tree().create_timer(0.35).timeout.connect(func():
+				if is_instance_valid(parent):
+					Fx.burst(parent, at, "spark", 22, 80.0, 0.9, Vector2(0, 40), col)
+					Audio.play("pop", -4.0, 0.15, 0.8)))
+
+
 static func cell_to_world(c: Variant) -> Vector2:
 	return Vector2(float(c[0]) * 16.0 + 8.0, float(c[1]) * 16.0 + 12.0)
 

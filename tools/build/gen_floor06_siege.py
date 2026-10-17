@@ -156,6 +156,7 @@ MONSTERS = {
     "hug_bear": "res://scenes/siege/monsters/hug_bear.tscn",
     "suck_jelly": "res://scenes/siege/monsters/suck_jelly.tscn",
     "twin_ghost": "res://scenes/siege/monsters/twin_ghost.tscn",
+    "bugler": "res://scenes/siege/monsters/horn_bugler.tscn",
     "puppet_master": "res://scenes/siege/monsters/puppet_master.tscn",
 }
 have = {k: v for k, v in MONSTERS.items() if Path(v.replace("res://", "")).exists()}
@@ -268,6 +269,9 @@ for _n, _fs in {2: [F("crab_rat", 1, "hole", 0, 14)], 4: [F("crab_tentacle", 1, 
                 11: [F(t, 1, "hole", 8, 5 + i * 3) for i, t in enumerate(["crab_rat", "crab_tentacle", "imp_slime", "bear_tentacle"])],
                 12: [F(t, 1, "hole", 8, 4 + i * 3) for i, t in enumerate(["crab_rat", "crab_tentacle", "imp_slime", "bear_tentacle"])]}.items():
     FORMATIONS.setdefault(_n, []).extend(_fs)
+# 第十一轮：号手指挥官（第 4 波起，一个号手带 10 只小怪排阵型行军、一起冲墙）
+for _n in range(4, 13):
+    FORMATIONS.setdefault(_n, []).append(F("bugler_squad", 1 + (_n - 4) // 3, "bottom", 18, 10 + (_n % 3) * 4))
 for _n, _fs in FORMATIONS.items():
     for _f in _fs:
         _f["count"] *= 2
@@ -517,8 +521,8 @@ for w in WAVES:
 
 WAVE_DATA = {"_说明": ["小镇攻防战的波次（gen_floor06_siege.py 生成；SiegeDirector 读）。怪物表只有已经做好的怪。"],
              "wall_hp": 4320, "prep_first": 30, "prep": 20, "ability_rate": 3.0, "start_crystals": 30,
-             # 整体难度（第十轮，中档）：小怪血量、怪物搭敌塔速度、配合技冷却；挠痒力度 ×1.4 在 data/buffs.json 的 siege_hard
-             "difficulty": {"hp": 1.4, "build": 1.3, "team_cd": 0.75},
+             # 整体难度：怪物搭敌塔速度、配合技冷却（怪物血量 / 挠痒保持原值，难度走机制：挑薄弱墙段、号手指挥官）
+             "difficulty": {"build": 1.3, "team_cd": 0.75},
              "monsters": have, "waves": WAVES, "feature_payloads": FEATURE_PAYLOADS,
              "features": {k: {"name": v[0], "color": v[1], "desc": v[2], "icon": i} for i, (k, v) in enumerate(FEATURES.items())}}
 Path("data/siege").mkdir(parents=True, exist_ok=True)
@@ -643,7 +647,7 @@ TOWER_INTEL = {
     "cocoa": ("附近的友军（公主和士兵）攻击间隔缩短、移动变快；粉色公主站在旁边闷笑降得更快。", "放在士兵扎堆的地方。"),
     "mortar": ("射程很远，抛物线飞过去，落点先出影子；炸开一大片、减速 2 秒。第 3 波解锁。", "放在墙下中间，盖住怪最多的那片。"),
     "vortex": ("身边一圈冰风一直转：每半秒掉血，把怪往外推，挡住冲过来的怪。第 4 波解锁。", "放在城门口、怪一定会经过的地方。"),
-    "resonance": ("冰光在怪之间连跳，每跳一下都冻一下，怪越挤跳得越多；唯一打得动盾甲螃蟹的塔（对螃蟹只有 10% 伤害）。第 5 波解锁。", "对付成群的小怪；有盾甲螃蟹时一定要造。"),
+    "resonance": ("冰光在怪之间连跳，每跳一下都冻一下，怪越挤跳得越多；唯一打得动盾甲螃蟹的塔（对螃蟹只有 25% 伤害）。第 5 波解锁。", "对付成群的小怪；有盾甲螃蟹时一定要造。"),
     "meteor": ("蓄力后往全场最大的怪堆砸冰陨星，超大范围、冻住 2 秒、震屏（盾甲螃蟹挡得住）。第 7 波解锁。", "越往后怪越多，越值。"),
     "hotspring": ("范围很大：公主闷笑一直降、士兵回血、修身后的城墙。第 6 波解锁。", "放在墙下正中，士兵和粉色公主常在的地方。"),
     "lamp": ("冷光范围里幽灵现形、怪减速，范围里的敌塔发动变慢。第 8 波解锁。", "放在敌塔多、幽灵多的那一侧。"),
@@ -675,7 +679,7 @@ MON_INTEL = {
     "hook": ("钩索怪", "背着钩爪的小怪。", "走到墙前甩钩索勾住城墙，顺着绳子滑上墙顶，上去就挠蓝色公主。", "冰锥雨能射断绳子；滑的时候打它一下就会摔下来。"),
     "vine": ("捆绑藤怪", "一团会走路的藤蔓。", "缠住公主（连按挣脱），缠着的时候给她强制穿上一件临时痒痒装备，藤尖一直挠。", "别让它贴身；被缠住时蓝色公主的清凉雪花能解开。"),
     "gecko": ("爬墙壁虎", "又小又快的绿壁虎。", "走到墙下就贴着墙爬上去，在城墙顶上乱窜、挠蓝色公主。冰墙加固的那段爬不上去。", "数量多、血少：冰锥雨一扫一片。"),
-    "shield_crab": ("盾甲螃蟹", "举着一对大钳子当盾牌的螃蟹。", "冰塔、蓝色公主的法术、陨石、士兵全都打不动；只有冰晶共鸣塔的电弧打得动，而且只有 10% 伤害。粉色公主的锤子从正面也挡得住，要绕到背后（下面）打。走到墙下用钳子夹墙，伤害很高。", "粉色公主绕到它背后锤；第 5 波后造冰晶共鸣塔慢慢磨。"),
+    "shield_crab": ("盾甲螃蟹", "举着一对大钳子当盾牌的螃蟹。", "冰塔、蓝色公主的法术、陨石、士兵全都打不动；只有冰晶共鸣塔的电弧打得动，而且只有 25% 伤害。粉色公主的锤子从正面也挡得住，要绕到背后（下面）打。走到墙下用钳子夹墙，伤害很高。", "粉色公主绕到它背后锤；第 5 波后造冰晶共鸣塔磨掉它。"),
     "bat_swarm": ("羽毛蝠群", "一群叼着羽毛的小蝙蝠。", "飞在天上：粉色公主的近战够不着，直接越过战场飞上城墙挠蓝色公主。", "只有蓝色公主的法术和冰塔能打下来。"),
     "carrier": ("搬运小鬼队", "扛着长杆子的三只小鬼。", "粉色公主失控时冲过来把她抬走，运进敌塔里关起来挠 8 秒。", "蓝色公主用冰链把人拉回来；冻住 / 打倒小鬼也会把人放下。"),
     "warm_slime": ("暖炉史莱姆", "暖烘烘、冒着热气的橙色史莱姆。", "不怕冻，冰锥、冰塔、蓝色公主的法术都打不动；专找冰塔，贴上去把塔慢慢融化。", "只能粉色公主去打。"),
@@ -722,6 +726,9 @@ TEMP_INTEL = {
     "t_mark_patch": ("痒痒印记臀贴", "负面", "怪物优先找她，闷笑涨得更快。"),
 }
 # 怪物配合技 / 陷阱组合不进情报（发动时只有飘字提示「怪物配合：××！」）
+INTEL["bugler"] = I("号手小鬼", "攻城怪", "举着铜号、背后插着小红旗的紫色小鬼，第 4 波起带着一队小怪出现。",
+                     "号手活着时整队排成几排跟着它走，走到墙下吹冲锋号：整队打城墙更狠、走得更快。号手一倒，整队乱成一团好几秒。",
+                     "先打号手！冰锥塔 / 弩炮专点它，粉色公主也可以冲进队伍里先敲它。")
 INTEL["goblin_engineer"] = I("地精工兵", "攻城怪", "戴着安全帽、扛着木料的地精，三只一队。",
                              "走到离自己最近的空地基搭敌塔（地基上出进度条，12 秒）；搭完去找下一个。冻住时进度停下，冻久了倒退。",
                              "看到进度条就去打工兵；蓝色公主的冰晶结界能冻住他们。")
@@ -819,15 +826,59 @@ INTRO = {"name": "攻防战：开始", "letterbox": True, "skippable": True, "st
     {"actions": [A("hint", text="C 切换操控；蓝色公主：L 瞄准施法；H 查看新情报；城门口的号角可以提前开打")], "wait": 0.2},
     {"actions": [A("set_flag", flag="siege_intro_seen")], "wait": 0.1},
 ]}
-WON = {"name": "攻防战：胜利", "letterbox": True, "skippable": True, "steps": [
-    {"actions": [A("camera", to=[GATE_X, 30], zoom=0.9, time=1.0)], "wait": 1.0},
-    line(N, "（最后一只怪物逃回了黑暗里。战场上安静下来，只剩下冰塔的光）"),
+# 胜利：镜头拉远看整个战场 → 十二位激励镇民按波次顺序从城门出来，各说一句、站成半圆 → 镇长宣布祭典 → 烟花。
+# 两位公主由 SiegeDirector.stage_victory 摆在城门前（VICTORY_CELL 两侧），蓝色公主的节点叫 SiegeBlue。
+import math  # noqa: E402
+VICTORY = (54, 13)
+CHEERS = {   # 激励 id → 胜利时的祝贺（照各自激励台词的口吻）
+    "party": "赢啦赢啦！今晚的篝火派对，主角就是你们两个！",
+    "smith": "磨了一整晚的矛尖，总算没白磨！公主，回头把锤子拿来，我给你重新打一把！",
+    "band": "咚咚锵——！胜利进行曲，我们偷偷练了好久呢！",
+    "tailor": "哎呀，裙摆都磨破了……明天来店里，我给两位缝新的！",
+    "mason": "城墙交给我们！砖头已经堆好了，三天就补得跟新的一样！",
+    "pharm": "笑了一整晚，嗓子都哑了吧？来，薄荷茶，慢慢喝。",
+    "watch": "今晚我还是守夜——不过今晚，大家可以睡个好觉了。",
+    "cheer": "公主好厉害！一下都没笑……呃，笑了好多下，可是没认输！",
+    "captain": "……殿下，辛苦了。……你也是。今晚先好好休息。",
+    "hunter": "那些地精被绊绳绊得一路滚回去了，哈哈！",
+    "florist": "给，香草花环，一人一个——蓝色的那位，也要戴！",
+    "mayor": "全镇的大家！小镇守住了！今晚——祭典开始！",
+}
+REPLIES = {"band": (P, "好、好响！可是好开心！", "happy"), "pharm": (BLUE, "……谢谢。……嗓子……还好。", None),
+           "cheer": (P, "别、别说出来啊！", "angry"), "captain": (BLUE, "……嗯。", None),
+           "florist": (BLUE, "……戴就戴。", None)}
+_buffs = json.loads(Path("data/siege/town_buffs.json").read_text())
+_buffs.sort(key=lambda b: b["after_wave"])
+won_steps = [
+    {"actions": [A("camera", to=[55, 31], zoom=0.137, time=2.0)], "wait": 2.0},
+    line(N, "（最后一只怪物逃回了黑暗里。冰塔的光照着整片战场：倒下的敌塔、冻住的攻城车、满地的羽毛和泡泡）"),
+    {"actions": [A("camera", to=[VICTORY[0], VICTORY[1] + 1], zoom=0.6, time=1.6)], "wait": 1.6},
     line(P, "我们……守住了！", "happy"),
-    line(BLUE, "……嗯。……守住了。"),
-    line(N, "（待续）"),
-    {"actions": [A("fade_out", time=1.0)], "wait": 1.0},
+    line(BLUE, "……嗯。……守住了。", None, [A("face", who="SiegeBlue", dir="left")]),
+    line(N, "（城门「吱呀」一声打开了。帮忙守城的镇民们，一个接一个走了出来）", None, [A("sfx", sound="door", volume=-4.0)]),
+]
+n_b = len(_buffs)
+for i, b in enumerate(_buffs):
+    a = math.pi * (i + 0.5) / n_b
+    spot = [round(VICTORY[0] - 5.5 * math.cos(a), 1), round(VICTORY[1] + 1.2 + 2.6 * math.sin(a), 1)]
+    nid = "cheer_%s" % b["id"]
+    won_steps.append({"actions": [A("spawn", id=nid, kind="npc:" + b["sheet"], at=[VICTORY[0], 9], dir="down"),
+                                  A("move", who=nid, to=spot, speed=70.0)], "wait": 0.2})
+    won_steps.append(line(b["who"], CHEERS[b["id"]], None, [A("face", who=nid, dir="up"), A("hop", who=nid)]))
+    if b["id"] in REPLIES:
+        sp, text, emo = REPLIES[b["id"]]
+        won_steps.append(line(sp, text, emo))
+won_steps += [
+    {"actions": [A("fireworks", at=[[VICTORY[0] - 4, VICTORY[1] - 3], [VICTORY[0], VICTORY[1] - 4], [VICTORY[0] + 4, VICTORY[1] - 3]],
+                   count=14, time=3.0), A("sfx", sound="win_fanfare", volume=-4.0), A("hop", who="princess"), A("hop", who="SiegeBlue")], "wait": 1.0},
+    line(N, "（烟花一朵接一朵在城墙上空炸开。镇民们围着两个人欢呼起来）"),
+    line(P, "大家……谢谢你们！", "happy"),
+    line(BLUE, "……谢谢。……大家。", None, [A("bubble", who="SiegeBlue", kind="happy")]),
+    {"actions": [A("fireworks", at=[[VICTORY[0] - 2, VICTORY[1] - 4], [VICTORY[0] + 2, VICTORY[1] - 4]], count=8, time=2.0)], "wait": 2.2},
+    {"actions": [A("fade_out", time=1.2)], "wait": 1.2},
     {"actions": [A("goto", to="floor_06_war", spawn="from_siege")], "wait": 0.1},
-]}
+]
+WON = {"name": "攻防战：胜利", "letterbox": True, "skippable": True, "steps": won_steps}
 cut = Path("data/cutscenes/floor_06")
 (cut / "siege_intro.json").write_text(json.dumps(INTRO, ensure_ascii=False, indent="\t") + "\n")
 (cut / "siege_won.json").write_text(json.dumps(WON, ensure_ascii=False, indent="\t") + "\n")

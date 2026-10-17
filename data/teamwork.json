@@ -1569,6 +1569,59 @@
 			},
 			"siege_only": true,
 			"min_wave": 6
+		},
+		{
+			"id": "bugler_squad",
+			"name": "号手指挥",
+			"color": "#ffb060",
+			"members": [
+				{
+					"key": "bugler",
+					"count": 1,
+					"role": "leader"
+				},
+				{
+					"key": [
+						"slime",
+						"rat",
+						"squirrel"
+					],
+					"count": 3,
+					"role": "squad"
+				}
+			],
+			"radius": 120,
+			"cooldown": 30,
+			"trigger": "near",
+			"need_princess": 90,
+			"effect": {
+				"type": "bugler_squad"
+			},
+			"formation": [
+				[
+					"bugler",
+					1
+				],
+				[
+					"slime",
+					4
+				],
+				[
+					"rat",
+					3
+				],
+				[
+					"squirrel",
+					3
+				]
+			],
+			"intel": {
+				"desc": "号手小鬼带着一整队小怪。",
+				"mech": "整队排成几排跟着号手行军；到墙下吹冲锋号一起冲（城墙伤害 ×1.2）；号手倒下整队乱成一团。",
+				"how": "先打号手。"
+			},
+			"siege_only": true,
+			"min_wave": 4
 		}
 	]
 }

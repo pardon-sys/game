@@ -323,188 +323,194 @@
 		16,
 		16
 	],
-	"goblin_engineer": [
+	"bugler": [
 		96,
+		48,
+		16,
+		16
+	],
+	"goblin_engineer": [
+		112,
 		48,
 		16,
 		16
 	],
 	"equip_t_feather_socks": [
-		112,
+		128,
 		48,
 		16,
 		16
 	],
 	"equip_t_toe_brush": [
-		128,
+		144,
 		48,
 		16,
 		16
 	],
 	"equip_t_fluff_bra": [
-		144,
+		160,
 		48,
 		16,
 		16
 	],
 	"equip_t_thigh_ring": [
-		160,
+		176,
 		48,
 		16,
 		16
 	],
 	"equip_t_pinch_pad": [
-		176,
+		192,
 		48,
 		16,
 		16
 	],
 	"equip_t_knead_tights": [
-		192,
+		208,
 		48,
 		16,
 		16
 	],
 	"equip_t_feather_shackles": [
-		208,
+		224,
 		48,
 		16,
 		16
 	],
 	"equip_t_thigh_strap": [
-		224,
+		240,
 		48,
 		16,
 		16
 	],
 	"equip_t_bell_anklet": [
-		240,
-		48,
+		0,
+		64,
 		16,
 		16
 	],
 	"equip_t_mark_patch": [
-		0,
+		16,
 		64,
 		16,
 		16
 	],
 	"town_party": [
-		16,
+		32,
 		64,
 		16,
 		16
 	],
 	"town_smith": [
-		32,
+		48,
 		64,
 		16,
 		16
 	],
 	"town_band": [
-		48,
+		64,
 		64,
 		16,
 		16
 	],
 	"town_tailor": [
-		64,
+		80,
 		64,
 		16,
 		16
 	],
 	"town_mason": [
-		80,
-		64,
-		16,
-		16
-	],
-	"town_pharm": [
 		96,
 		64,
 		16,
 		16
 	],
-	"town_watch": [
+	"town_pharm": [
 		112,
 		64,
 		16,
 		16
 	],
-	"town_cheer": [
+	"town_watch": [
 		128,
 		64,
 		16,
 		16
 	],
-	"town_captain": [
+	"town_cheer": [
 		144,
 		64,
 		16,
 		16
 	],
-	"town_hunter": [
+	"town_captain": [
 		160,
 		64,
 		16,
 		16
 	],
-	"town_florist": [
+	"town_hunter": [
 		176,
 		64,
 		16,
 		16
 	],
-	"town_mayor": [
+	"town_florist": [
 		192,
 		64,
 		16,
 		16
 	],
-	"troll_general": [
+	"town_mayor": [
 		208,
 		64,
 		16,
 		16
 	],
-	"carnival_fortress": [
+	"troll_general": [
 		224,
 		64,
 		16,
 		16
 	],
-	"puppet_master": [
+	"carnival_fortress": [
 		240,
 		64,
 		16,
 		16
 	],
-	"gale_bear": [
+	"puppet_master": [
 		0,
 		80,
 		16,
 		16
 	],
-	"soldier_shield": [
+	"gale_bear": [
 		16,
 		80,
 		16,
 		16
 	],
-	"soldier_medic": [
+	"soldier_shield": [
 		32,
 		80,
 		16,
 		16
 	],
-	"soldier_artisan": [
+	"soldier_medic": [
 		48,
 		80,
 		16,
 		16
 	],
-	"soldier_mage": [
+	"soldier_artisan": [
 		64,
+		80,
+		16,
+		16
+	],
+	"soldier_mage": [
+		80,
 		80,
 		16,
 		16

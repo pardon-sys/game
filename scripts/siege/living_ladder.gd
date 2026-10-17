@@ -25,6 +25,9 @@ var _t := 0.0
 
 
 static func near(tree: SceneTree, x: float, r := CLIMB_X) -> LivingLadder:
+	# 墙下几百只怪每帧都会问一次：没有梯子时别去分配组数组
+	if not tree.has_group("siege_ladder_living"):
+		return null
 	var best: LivingLadder = null
 	var best_d := r
 	for n in tree.get_nodes_in_group("siege_ladder_living"):

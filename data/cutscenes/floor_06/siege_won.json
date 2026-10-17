@@ -7,19 +7,33 @@
 			"actions": [
 				{
 					"to": [
-						54,
-						30
+						55,
+						31
 					],
-					"zoom": 0.9,
-					"time": 1.0,
+					"zoom": 0.137,
+					"time": 2.0,
 					"do": "camera"
 				}
 			],
-			"wait": 1.0
+			"wait": 2.0
 		},
 		{
 			"speaker": "",
-			"text": "（最后一只怪物逃回了黑暗里。战场上安静下来，只剩下冰塔的光）"
+			"text": "（最后一只怪物逃回了黑暗里。冰塔的光照着整片战场：倒下的敌塔、冻住的攻城车、满地的羽毛和泡泡）"
+		},
+		{
+			"actions": [
+				{
+					"to": [
+						54,
+						14
+					],
+					"zoom": 0.6,
+					"time": 1.6,
+					"do": "camera"
+				}
+			],
+			"wait": 1.6
 		},
 		{
 			"speaker": "公主",
@@ -28,20 +42,601 @@
 		},
 		{
 			"speaker": "蓝色的公主",
-			"text": "……嗯。……守住了。"
+			"text": "……嗯。……守住了。",
+			"actions": [
+				{
+					"who": "SiegeBlue",
+					"dir": "left",
+					"do": "face"
+				}
+			]
 		},
 		{
 			"speaker": "",
-			"text": "（待续）"
+			"text": "（城门「吱呀」一声打开了。帮忙守城的镇民们，一个接一个走了出来）",
+			"actions": [
+				{
+					"sound": "door",
+					"volume": -4.0,
+					"do": "sfx"
+				}
+			]
 		},
 		{
 			"actions": [
 				{
-					"time": 1.0,
-					"do": "fade_out"
+					"id": "cheer_party",
+					"kind": "npc:bonfire_host",
+					"at": [
+						54,
+						9
+					],
+					"dir": "down",
+					"do": "spawn"
+				},
+				{
+					"who": "cheer_party",
+					"to": [
+						48.5,
+						14.5
+					],
+					"speed": 70.0,
+					"do": "move"
+				}
+			],
+			"wait": 0.2
+		},
+		{
+			"speaker": "派对主持人",
+			"text": "赢啦赢啦！今晚的篝火派对，主角就是你们两个！",
+			"actions": [
+				{
+					"who": "cheer_party",
+					"dir": "up",
+					"do": "face"
+				},
+				{
+					"who": "cheer_party",
+					"do": "hop"
+				}
+			]
+		},
+		{
+			"actions": [
+				{
+					"id": "cheer_smith",
+					"kind": "npc:miner",
+					"at": [
+						54,
+						9
+					],
+					"dir": "down",
+					"do": "spawn"
+				},
+				{
+					"who": "cheer_smith",
+					"to": [
+						48.9,
+						15.2
+					],
+					"speed": 70.0,
+					"do": "move"
+				}
+			],
+			"wait": 0.2
+		},
+		{
+			"speaker": "铁匠",
+			"text": "磨了一整晚的矛尖，总算没白磨！公主，回头把锤子拿来，我给你重新打一把！",
+			"actions": [
+				{
+					"who": "cheer_smith",
+					"dir": "up",
+					"do": "face"
+				},
+				{
+					"who": "cheer_smith",
+					"do": "hop"
+				}
+			]
+		},
+		{
+			"actions": [
+				{
+					"id": "cheer_band",
+					"kind": "npc:kid",
+					"at": [
+						54,
+						9
+					],
+					"dir": "down",
+					"do": "spawn"
+				},
+				{
+					"who": "cheer_band",
+					"to": [
+						49.6,
+						15.8
+					],
+					"speed": 70.0,
+					"do": "move"
+				}
+			],
+			"wait": 0.2
+		},
+		{
+			"speaker": "小镇乐队",
+			"text": "咚咚锵——！胜利进行曲，我们偷偷练了好久呢！",
+			"actions": [
+				{
+					"who": "cheer_band",
+					"dir": "up",
+					"do": "face"
+				},
+				{
+					"who": "cheer_band",
+					"do": "hop"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "好、好响！可是好开心！",
+			"emotion": "happy"
+		},
+		{
+			"actions": [
+				{
+					"id": "cheer_tailor",
+					"kind": "npc:maid",
+					"at": [
+						54,
+						9
+					],
+					"dir": "down",
+					"do": "spawn"
+				},
+				{
+					"who": "cheer_tailor",
+					"to": [
+						50.7,
+						16.3
+					],
+					"speed": 70.0,
+					"do": "move"
+				}
+			],
+			"wait": 0.2
+		},
+		{
+			"speaker": "裁缝",
+			"text": "哎呀，裙摆都磨破了……明天来店里，我给两位缝新的！",
+			"actions": [
+				{
+					"who": "cheer_tailor",
+					"dir": "up",
+					"do": "face"
+				},
+				{
+					"who": "cheer_tailor",
+					"do": "hop"
+				}
+			]
+		},
+		{
+			"actions": [
+				{
+					"id": "cheer_mason",
+					"kind": "npc:supervisor",
+					"at": [
+						54,
+						9
+					],
+					"dir": "down",
+					"do": "spawn"
+				},
+				{
+					"who": "cheer_mason",
+					"to": [
+						51.9,
+						16.6
+					],
+					"speed": 70.0,
+					"do": "move"
+				}
+			],
+			"wait": 0.2
+		},
+		{
+			"speaker": "泥瓦匠",
+			"text": "城墙交给我们！砖头已经堆好了，三天就补得跟新的一样！",
+			"actions": [
+				{
+					"who": "cheer_mason",
+					"dir": "up",
+					"do": "face"
+				},
+				{
+					"who": "cheer_mason",
+					"do": "hop"
+				}
+			]
+		},
+		{
+			"actions": [
+				{
+					"id": "cheer_pharm",
+					"kind": "npc:granny",
+					"at": [
+						54,
+						9
+					],
+					"dir": "down",
+					"do": "spawn"
+				},
+				{
+					"who": "cheer_pharm",
+					"to": [
+						53.3,
+						16.8
+					],
+					"speed": 70.0,
+					"do": "move"
+				}
+			],
+			"wait": 0.2
+		},
+		{
+			"speaker": "药剂师奶奶",
+			"text": "笑了一整晚，嗓子都哑了吧？来，薄荷茶，慢慢喝。",
+			"actions": [
+				{
+					"who": "cheer_pharm",
+					"dir": "up",
+					"do": "face"
+				},
+				{
+					"who": "cheer_pharm",
+					"do": "hop"
+				}
+			]
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……谢谢。……嗓子……还好。"
+		},
+		{
+			"actions": [
+				{
+					"id": "cheer_watch",
+					"kind": "npc:guard",
+					"at": [
+						54,
+						9
+					],
+					"dir": "down",
+					"do": "spawn"
+				},
+				{
+					"who": "cheer_watch",
+					"to": [
+						54.7,
+						16.8
+					],
+					"speed": 70.0,
+					"do": "move"
+				}
+			],
+			"wait": 0.2
+		},
+		{
+			"speaker": "守夜人",
+			"text": "今晚我还是守夜——不过今晚，大家可以睡个好觉了。",
+			"actions": [
+				{
+					"who": "cheer_watch",
+					"dir": "up",
+					"do": "face"
+				},
+				{
+					"who": "cheer_watch",
+					"do": "hop"
+				}
+			]
+		},
+		{
+			"actions": [
+				{
+					"id": "cheer_cheer",
+					"kind": "npc:kid",
+					"at": [
+						54,
+						9
+					],
+					"dir": "down",
+					"do": "spawn"
+				},
+				{
+					"who": "cheer_cheer",
+					"to": [
+						56.1,
+						16.6
+					],
+					"speed": 70.0,
+					"do": "move"
+				}
+			],
+			"wait": 0.2
+		},
+		{
+			"speaker": "村民们",
+			"text": "公主好厉害！一下都没笑……呃，笑了好多下，可是没认输！",
+			"actions": [
+				{
+					"who": "cheer_cheer",
+					"dir": "up",
+					"do": "face"
+				},
+				{
+					"who": "cheer_cheer",
+					"do": "hop"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "别、别说出来啊！",
+			"emotion": "angry"
+		},
+		{
+			"actions": [
+				{
+					"id": "cheer_captain",
+					"kind": "npc:captain",
+					"at": [
+						54,
+						9
+					],
+					"dir": "down",
+					"do": "spawn"
+				},
+				{
+					"who": "cheer_captain",
+					"to": [
+						57.3,
+						16.3
+					],
+					"speed": 70.0,
+					"do": "move"
+				}
+			],
+			"wait": 0.2
+		},
+		{
+			"speaker": "卫兵队长",
+			"text": "……殿下，辛苦了。……你也是。今晚先好好休息。",
+			"actions": [
+				{
+					"who": "cheer_captain",
+					"dir": "up",
+					"do": "face"
+				},
+				{
+					"who": "cheer_captain",
+					"do": "hop"
+				}
+			]
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……嗯。"
+		},
+		{
+			"actions": [
+				{
+					"id": "cheer_hunter",
+					"kind": "npc:miner",
+					"at": [
+						54,
+						9
+					],
+					"dir": "down",
+					"do": "spawn"
+				},
+				{
+					"who": "cheer_hunter",
+					"to": [
+						58.4,
+						15.8
+					],
+					"speed": 70.0,
+					"do": "move"
+				}
+			],
+			"wait": 0.2
+		},
+		{
+			"speaker": "猎人",
+			"text": "那些地精被绊绳绊得一路滚回去了，哈哈！",
+			"actions": [
+				{
+					"who": "cheer_hunter",
+					"dir": "up",
+					"do": "face"
+				},
+				{
+					"who": "cheer_hunter",
+					"do": "hop"
+				}
+			]
+		},
+		{
+			"actions": [
+				{
+					"id": "cheer_florist",
+					"kind": "npc:maid",
+					"at": [
+						54,
+						9
+					],
+					"dir": "down",
+					"do": "spawn"
+				},
+				{
+					"who": "cheer_florist",
+					"to": [
+						59.1,
+						15.2
+					],
+					"speed": 70.0,
+					"do": "move"
+				}
+			],
+			"wait": 0.2
+		},
+		{
+			"speaker": "花匠",
+			"text": "给，香草花环，一人一个——蓝色的那位，也要戴！",
+			"actions": [
+				{
+					"who": "cheer_florist",
+					"dir": "up",
+					"do": "face"
+				},
+				{
+					"who": "cheer_florist",
+					"do": "hop"
+				}
+			]
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……戴就戴。"
+		},
+		{
+			"actions": [
+				{
+					"id": "cheer_mayor",
+					"kind": "npc:merchant",
+					"at": [
+						54,
+						9
+					],
+					"dir": "down",
+					"do": "spawn"
+				},
+				{
+					"who": "cheer_mayor",
+					"to": [
+						59.5,
+						14.5
+					],
+					"speed": 70.0,
+					"do": "move"
+				}
+			],
+			"wait": 0.2
+		},
+		{
+			"speaker": "镇长",
+			"text": "全镇的大家！小镇守住了！今晚——祭典开始！",
+			"actions": [
+				{
+					"who": "cheer_mayor",
+					"dir": "up",
+					"do": "face"
+				},
+				{
+					"who": "cheer_mayor",
+					"do": "hop"
+				}
+			]
+		},
+		{
+			"actions": [
+				{
+					"at": [
+						[
+							50,
+							10
+						],
+						[
+							54,
+							9
+						],
+						[
+							58,
+							10
+						]
+					],
+					"count": 14,
+					"time": 3.0,
+					"do": "fireworks"
+				},
+				{
+					"sound": "win_fanfare",
+					"volume": -4.0,
+					"do": "sfx"
+				},
+				{
+					"who": "princess",
+					"do": "hop"
+				},
+				{
+					"who": "SiegeBlue",
+					"do": "hop"
 				}
 			],
 			"wait": 1.0
+		},
+		{
+			"speaker": "",
+			"text": "（烟花一朵接一朵在城墙上空炸开。镇民们围着两个人欢呼起来）"
+		},
+		{
+			"speaker": "公主",
+			"text": "大家……谢谢你们！",
+			"emotion": "happy"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……谢谢。……大家。",
+			"actions": [
+				{
+					"who": "SiegeBlue",
+					"kind": "happy",
+					"do": "bubble"
+				}
+			]
+		},
+		{
+			"actions": [
+				{
+					"at": [
+						[
+							52,
+							9
+						],
+						[
+							56,
+							9
+						]
+					],
+					"count": 8,
+					"time": 2.0,
+					"do": "fireworks"
+				}
+			],
+			"wait": 2.2
+		},
+		{
+			"actions": [
+				{
+					"time": 1.2,
+					"do": "fade_out"
+				}
+			],
+			"wait": 1.2
 		},
 		{
 			"actions": [
