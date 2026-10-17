@@ -6,18 +6,21 @@ extends SiegeHazard
 ##   3. 运：吊起来运到怪最多的地方（director.densest），路上爪子内侧的刷子一直挠（粉色公主刮脚心，蓝色公主刷大腿 / 屁股）；
 ##      挣脱了就当场掉下来；墙顶的蓝色公主被抓下城墙；
 ##   4. 放：在怪堆里松开（轻轻弹一下），这一个人 COOL 秒内不会再被抓。
+## 没抓到公主时改抓一把怪（最多 MOB_CARGO 只），运到城墙顶（蓝色公主在墙上时）或粉色公主头顶扔下（第十轮）。
 ## 来源键 hazard_claw。
 
 const HUNT := 1.6
 const DROP := 0.4
 const CARRY := 2.6
-const RADIUS := 20.0
+const RADIUS := 28.0
 const HUNT_SPEED := 70.0
 const BREAK_PRESSES := 14
 const TICKLE_GAP := 0.35
 const TICKLE := 5.0
 const COOL := 5.0
 const HEIGHT := 70.0
+const MOB_CARGO := 5
+const MOB_CARRY := 1.6
 
 var phase := "hunt"
 var target: PlayableCharacter
@@ -30,11 +33,15 @@ var _tick := 0.0
 var _hits := 0
 var _owned_physics := true
 var _cool := {}
+var _mob_cargo: Array = []
+var _cargo_to_wall := false
+## 测试用：运过去扔下的怪有几只
+var dropped_mobs := 0
 
 
 func _begin() -> void:
 	reaction_key = "hazard_claw"
-	life = HUNT + DROP + CARRY + 2.0
+	life = HUNT + DROP + maxf(CARRY, MOB_CARRY) + 2.0
 	_pick_target()
 	if target:
 		global_position = target.global_position
@@ -81,6 +88,8 @@ func _active(delta: float) -> void:
 				_try_grab()
 		"carry":
 			_carry(delta)
+		"carry_mobs":
+			_carry_mobs()
 		"rise":
 			_lift = HEIGHT * minf(1.0, _phase_t / 0.6)
 			if _phase_t >= 0.6:
@@ -115,7 +124,8 @@ func _try_grab() -> void:
 		Audio.play("swish", -3.0, 0.1, 0.8)
 		_set_phase("carry")
 		return
-	_set_phase("rise")
+	# 没抓到公主：抓起一把怪，运到城墙顶（蓝色公主在墙上时）或粉色公主头顶扔下
+	_grab_mobs()
 
 
 func _carry(delta: float) -> void:
@@ -138,6 +148,51 @@ func _carry(delta: float) -> void:
 		Fx.burst(get_parent(), c.global_position + Vector2(0, -6), "bristle", 3, 25.0, 0.3, Vector2(0, 30))
 	if k >= 1.0:
 		_drop(true)
+
+
+func _grab_mobs() -> void:
+	_mob_cargo.clear()
+	for m in director.enemies_near(global_position, RADIUS + 16.0):
+		if _mob_cargo.size() >= MOB_CARGO:
+			break
+		if SiegeTools.displaceable(m):
+			_mob_cargo.append(m)
+			m.set_physics_process(false)
+	if _mob_cargo.is_empty():
+		_set_phase("rise")
+		return
+	_from = global_position
+	var blue := director.blue
+	_cargo_to_wall = SiegeTools.alive(blue) and director.is_on_wall(blue) and randf() < 0.6
+	if _cargo_to_wall:
+		_to = Vector2(blue.global_position.x + randf_range(-40, 40), director.wall_foot_y() + 30.0)
+	else:
+		var pink := director.pink
+		_to = pink.global_position if SiegeTools.alive(pink) else global_position + Vector2(0, 120)
+	Audio.play("swish", -3.0, 0.1, 0.8)
+	_set_phase("carry_mobs")
+
+
+func _carry_mobs() -> void:
+	var k := clampf(_phase_t / MOB_CARRY, 0.0, 1.0)
+	_lift = HEIGHT * sin(minf(k * 2.0, 1.0) * PI * 0.5)
+	global_position = _from.lerp(_to, k)
+	_mob_cargo = _mob_cargo.filter(func(m): return TeamworkEffects._alive(m))
+	for i in _mob_cargo.size():
+		(_mob_cargo[i] as Node2D).global_position = global_position + Vector2(-8.0 + i * 4.0, -_lift * 0.5 - 4.0)
+	if k < 1.0:
+		return
+	for m in _mob_cargo:
+		var mob := m as Monster
+		mob.set_physics_process(true)
+		if _cargo_to_wall and SiegeHazard.fling_to_wall(mob, 0.4, 40.0):
+			dropped_mobs += 1
+			continue
+		SiegeHazard.fling_to(mob, global_position + Vector2(randf_range(-18, 18), randf_range(-6, 10)), 0.35, 20.0)
+		dropped_mobs += 1
+	_mob_cargo.clear()
+	SiegeFx.ring(get_parent(), global_position, 24.0, Color(1, 0.85, 0.5, 0.8), 0.3)
+	_set_phase("rise")
 
 
 func _drop(arrived: bool) -> void:
@@ -165,6 +220,10 @@ func _drop(arrived: bool) -> void:
 func _end() -> void:
 	if caught:
 		_drop(false)
+	for m in _mob_cargo:
+		if is_instance_valid(m):
+			(m as Monster).set_physics_process(true)
+	_mob_cargo.clear()
 	super()
 
 

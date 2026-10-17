@@ -106,7 +106,7 @@ GDScript 没有 `interface` 关键字，本项目用**方法约定 + `Contracts`
 | MagicReactive | `on_magic_burst(tier, caster)`，加入 `magic_reactive` 组，可选 `magic_radius` | 粉雾、藤蔓、小精灵群、触手怪 |
 
 所有伤害和挠痒都打包成 **`HitData`**（`kind` = `ATTACK` 或 `TICKLE`，以及 `damage / tickle / knockback / source`，星光爆发另带 `tag = "magic_1~3"`；
-`ignore_block` = 格挡 / 防护装备挡不住，例如冰晶共鸣的电弧、冰陨星台的陨石穿过盾甲螃蟹的钳子），只通过 `receive_hit` 传递。攻击方不需要知道对方是谁：
+`ignore_block` = 格挡 / 防护装备挡不住，例如装备自己发作挠自己；`tag` 可以给接收方认来源，例如盾甲螃蟹只认冰晶共鸣的 `resonance`），只通过 `receive_hit` 传递。攻击方不需要知道对方是谁：
 
 ```gdscript
 target.receive_hit(HitData.make_attack(self, 1, 170.0))   # 扣 1 点血
@@ -518,8 +518,13 @@ data/cutscenes/<楼层组>/  地图内过场；data/theater/<楼层组>/  小剧
 - **狂欢要塞**（`scripts/siege/fortress/`）：`FortressRules`（`data/siege/fortress.json` + 巨型目标几何 `point / distance`）、
   `FortressJobs`（机关调度：成对 `pairs`、增援预约、命中 / 爆炸、`FortressTarget` 吊索 / 核心、取消、`safe_pair`）←
   `FortressMechanisms`（六个机关：巡航弹 / 伸缩巨手 / 火箭运兵 / 双钩劫塔 / 交叉车阵 / 三连重炮 + 绘制）、`FortressOrdnance`（制导飞行）、
+  `FortressSkills`（第十轮新增，继承 `FortressMechanisms`：龙卷发射器、传送门空降、烟花弹幕、磁吸车头，以及不进轮换的 auto 机关——
+  护盾发生柱（剩 75% / 45% 血各立一次，柱子没倒完母车受伤 ×0.2，`receive_hit` 里乘）、车头舱门（每 16 秒放一排 10 辆车；登场时先排 8 辆 `release_carts`））、
   `FortressCooperation`（船员协作，名字 / 冷却在 bosses.json）、`FortressFx`（像素爆发）、`FinalReinforcements`（最终波增援配额，所有出怪来源共用；
-  不经过 spawn 的子怪走 `track_child`）、`FortressFinale`（胜利演出）。最终波由数据决定：`SiegeDirector.is_final_fortress()`（波次表里有 `fortress_config`）。
+  不经过 spawn 的子怪走 `track_child`）、`FortressFinale`（胜利演出）。
+  第十轮加强（数据都在 `fortress.json`）：血量 6000 / 展开 2000、原六个机关冷却 ×0.7、机关时间线按 `1 / warn_mult` 加快（`FortressJobs.pace`，测试设回 1）、
+  巨手 `hand_reach` / `hand_speed`、索敌优先站着不动最久的公主（`target_score`）；成对轮换扩成五对；剩 30% 血进**超载**（`overdrive`：每轮三个机关、
+  冷却再 ×0.6、增援直接最高档）。最终波由数据决定：`SiegeDirector.is_final_fortress()`（波次表里有 `fortress_config`）。
 - **攻防战配合技**：通用组件 `MonsterTeamwork` / `TeamworkEffects` 不认识攻防战；攻防战在开场注入
   `cd_divisor`（ability_rate）、`allowed_func`（siege_only 的要在战斗中、到 `min_wave`）、`can_start_func`（联合配合 `SiegeCooperation.can_start`）、
   `formation_gate_func`（最终波增援配额），并用 `SiegeTeamEffects.register()` 把自己的效果登记进 `TeamworkEffects.handlers / spawn_handlers / joint_handler`：
@@ -538,8 +543,12 @@ data/cutscenes/<楼层组>/  地图内过场；data/theater/<楼层组>/  小剧
   **陷阱** `scripts/siege/hazards/`（龙卷风、泡泡潮、痒感连线、羽毛扫帚、迷雾；城墙爬藤 / 黏网 + 冰链 = 牺牲互救，`SiegeDirector.rescue`）。
   大型强制位移陷阱（第 3~12 波，`gen_floor06_siege.py` 的 `NEW_HAZARDS`）：天降抓娃娃机 `HazardClaw`（影子追人 → 落下抓住 `status.grab` → 吊着运到怪最多处、
   爪子里的刷子一路挠 → 放下）、挠痒流沙旋涡 `HazardQuicksand`（吸向中心、陷住挠；挂 `siege_dragged / siege_dragger`，冰链救援调 `release_drag`）、
-  弹弹蘑菇阵 `HazardMushrooms`（一串蘑菇，踩到就 `force_move("bounce")` 连弹进怪堆，怪也会被弹）、挠痒传送门 `HazardPortalPair`（公主紫门进粉门出、
-  怪反过来；法术落在门上 `SiegeHazard.notify_spell` → `on_spell` 冰封一会儿，蓝色公主的 AI 会用冰锥雨封门）。能不能卷 / 吸 / 弹怪统一看 `SiegeTools.displaceable`。
+  弹弹蘑菇阵 `HazardMushrooms`（9 颗蘑菇，最多拐两次弯，踩到就 `force_move("bounce")` 连弹进怪堆）、挠痒传送门 `HazardPortalPair`（双向：公主和怪走进哪扇门
+  都从另一扇出来；法术落在门上 `SiegeHazard.notify_spell` → `on_spell` 冰封一会儿，蓝色公主的 AI 会用冰锥雨封门）。能不能卷 / 吸 / 弹怪统一看 `SiegeTools.displaceable`。
+  第十轮：大型陷阱频率约 ×2（第 3 波 3 个 → 第 12 波 7 个）、范围 ×1.4；**陷阱和怪物的配合**（共用工具在 `SiegeHazard`：`fling_to_wall` 把怪甩上墙顶、
+  `fling_to`、`ambush` 放伏兵，伏兵挂 meta `siege_hazard_spawn`）：龙卷风卷怪一半甩上墙、一半甩到粉色公主身边；抓娃娃机没抓到公主就抓一把怪
+  运到墙顶 / 公主头顶扔下；流沙每 3 秒钻出伏兵、公主陷住时附近的怪全围过来；蘑菇把怪一路弹到尽头弹上墙；传送门每 4 秒从一扇门涌出小怪；
+  黏网罩住公主时爆出伏兵（粉色公主挠脚鼠 / 蓝色公主腿根爬爬蛛）。
   战场：怪物出生钻地 `SiegeFx.burrow`（`quiet_spawn` 关掉）、`SiegeMind` 斜着走向目标墙段（`march_x`）+ 触须避障（`avoid`）、
   `_clamp_monsters` 不出地图、`enemies_near` 用空间网格；城墙 `z_index -1` + 墙脚挡人窄条（`FOOT_STRIP`）；
   冰塔加篝火（`torch` 组，幽灵现形）/ 冰棱弩炮（穿透 + 末端冰花、打敌塔 ×3）/ 热可可摊；冰锥 / 寒霜 / 雪球都有范围伤害；
@@ -556,6 +565,15 @@ data/cutscenes/<楼层组>/  地图内过场；data/theater/<楼层组>/  小剧
   物理被关掉的 Actor（活梯子里的壁虎）由接管方调用 `Actor.tick_timers` 走受击无敌 / 增益倒计时；
   蓝色公主 AI 放法术更勤（`THINK` 0.2、门槛降低，AI 施法冷却 / 疲倦 × `SiegeSpells.AI_CD` / `AI_FATIGUE`），粉色公主吟唱时 `JOIN_PINK` 50% 跟着放（`join_pink`）；敌塔整个塔身可打（`HurtProxy`）、血条、范围 / 蓄力 / 崩塌特效。
   陷阱和怪物配合：龙卷风卷怪、迷雾里的怪打不到（meta `in_fog`，`enemies_near(..., false)`）、泡泡运兵；陷阱组合 `spawn_hazard_combo`（波次 `hazards` 里写 `combo`）。
+- **难度**（第十轮，中档）：`waves.json` 顶层 `difficulty {hp, build, team_cd}`（`SiegeDirector.difficulty(键)`）——小怪血量 ×1.4、
+  怪物搭敌塔 ×1.3（`EnemySite`）、配合技冷却 ×0.75（`cd_divisor`）；挠痒力度 ×1.4 是状态 `siege_hard`（`data/buffs.json`，`tickle_power`）。
+- **攻城车**：冲锋路上 `SMASH_R` 以内的冰塔（诱饵冰雕除外）撞碎、基座留着，车减速一半继续冲；撞到粉色公主闷笑 +50%（`PINK_LAUGH`）。
+  攻城大队每 14 秒两排共 9~11 辆（`WaveFeatures.CORPS_*`）；最终波固定开着攻城大队和狂欢节（`FINAL_FIXED`，开打 2 秒就来）。
+- **盾甲螃蟹**：冰塔 / 塔弹 / 法术 / 陨石 / 士兵全挡；只有冰晶共鸣的电弧（`HitData.tag == ShieldCrab.RESONANCE_TAG`）打得动、伤害 ×0.1；
+  粉色公主的锤子背后打得动、正面挡。
+- **拆塔投石车**（敌塔 `catapult`，第 6 波起）：挑射程里血最多的冰塔，落点影子亮 1.2 秒后砸下（`CatapultStone`），影子里的冰塔掉 60% 血上限；
+  粉色公主站进影子替塔挡下（石头碎成羽毛挠她一下）。
+- **胜利后**：`TownBuffs.clear_all()` 撤掉 12 个镇民支援（友军身上的 `town_*`、`vars.siege_town_buffs`）。
 - **临时痒痒装备**：`Equipment.force` / `release` / `tick_forced`（`GameState.equip_forced`），负面装备由 `EquipFx` 定时发作 + 立绘反应（`data/equip_reactions.json`，分角色）。
 - 内容生成器：`gen_siege_monsters.py`（场景）、`gen_siege_cgs.py`（笑倒 CG，粉 / 蓝两版）、`gen_siege_scenes.py`（三来源组合小演出）、
   `gen_siege_theaters.py`（失败小剧场）、`gen_siege_reactions.py`（受挠台词）、`gen_siege_bosses.py`（Boss 技能 / 横幅、要塞数据）、
@@ -580,7 +598,8 @@ data/cutscenes/<楼层组>/  地图内过场；data/theater/<楼层组>/  小剧
   - 检查：`python tools/build/check_siege_text.py [--top]`（四幕和句数、两人的手法词、蓝色公主重复句 / 「不痒」次数、繁体字 / 日文假名）。
 - 测试：`siege_test` / `siege2_test` / `siege3_test` / `siege5_test`（攻防战各轮），Boss 和机关的 `siege_w6_bear_test` / `siege_w9_puppet_test` /
   `siege_w12_fortress_test`、`siege_cooperation_test`、`siege_dev_test`、`siege_revision_test`（都直接继承夹具 `tests/helpers/siege_fixture.gd`）；
-  `siege3_test` 的第十轮测四个大型陷阱和四个地面配合技、CG 段测四幕结构和配合技字幕；`siege5_test` 的组合段把 23 组三来源组合给两位公主各触发一遍
+  `siege3_test` 的第十轮测四个大型陷阱和四个地面配合技、第十一轮测难度倍率 / 陷阱配合 / 双向传送门 / 攻城车撞塔撞人 / 投石车 / 胜利清空支援、
+  第九轮测螃蟹规则、CG 段测四幕结构和配合技字幕；`siege_w12_fortress_test` 的 `_round10` 测要塞的新机关、护盾柱、超载和最终波车队；`siege5_test` 的组合段把 23 组三来源组合给两位公主各触发一遍
   （穿着千手痒痒裤时大腿 / 屁股的临时装备会被裤子吸收，测试按组合临时开关 `Equipment.PANTS_FLAG`）；
   截图 `capture_siege*.gd` 输出到 `tools/.cache/shots/`。
 

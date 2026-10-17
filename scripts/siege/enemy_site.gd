@@ -131,7 +131,7 @@ func _build_tick(delta: float) -> void:
 		return
 	_frozen_t = 0.0
 	var town_k := SiegeDirector.current.town.mul("build_speed") if SiegeDirector.current and SiegeDirector.current.town else 1.0
-	build_progress += delta * [0.0, 0.45, 0.75, 1.0][mini(working.size(), 3)] * town_k * WaveFeatures.mul_of("build_speed")
+	build_progress += delta * [0.0, 0.45, 0.75, 1.0][mini(working.size(), 3)] * town_k * WaveFeatures.mul_of("build_speed") * SiegeDirector.difficulty("build")
 	# 敲打的木屑 / 火花
 	if randf() < delta * 5.0:
 		Fx.burst(get_parent(), global_position + Vector2(randf_range(-10, 10), -10), "wood", 3, 40.0, 0.5, Vector2(0, 120), Color(0.9, 0.7, 0.5))

@@ -3,10 +3,11 @@ extends SiegeHazard
 ## 弹弹蘑菇阵：一串 COUNT 颗弹弹蘑菇从地里冲出来，排成一条从公主附近通向怪堆的路（每颗离上一颗 STEP 像素）。
 ## 踩到一颗就被弹到下一颗（force_move「bounce」，在空中，落地才算），连弹几次，最后一颗把人弹进怪堆；
 ## 每弹一下蘑菇帽喷出羽毛孢子挠一下（粉色公主挠脚心，蓝色公主挠大腿 / 屁股）。弹完这一个人 COOL 秒内不会再被弹。
-## 怪踩到也会被弹到下一颗（往城墙那边送）。来源键 hazard_mushroom。
+## 怪踩到也会一颗接一颗被弹到路的尽头，最后一颗把怪弹上城墙顶（第十轮）。来源键 hazard_mushroom。
 
-const COUNT := 5
-const STEP := 56.0
+const COUNT := 9
+const STEP := 64.0
+const MAX_TURNS := 2
 const TRIGGER := 12.0
 const HOP_TIME := 0.42
 const TICKLE := 4.0
@@ -15,6 +16,8 @@ const COOL := 4.0
 var caps: Array[Vector2] = []
 var _cool := {}
 var _bouncing := {}
+## 测试用：弹完整条路（最后一颗把它弹上城墙）的怪有几只
+var launched_to_wall := 0
 var _pop := []
 
 
@@ -36,10 +39,23 @@ func _layout() -> void:
 	var start := global_position
 	var crowd: Variant = director.densest(60.0, start, 700.0)
 	var dir: Vector2 = start.direction_to(crowd) if crowd is Vector2 and (crowd as Vector2).distance_to(start) > 40.0 else Vector2(randf_range(-0.6, 0.6), -1).normalized()
+	# 一颗接一颗往前排；快出地图 / 撞到城墙脚时朝地图中间拐弯（最多拐 MAX_TURNS 次）
+	var p := start
+	var turns := 0
+	var center := director.map_size() / 2.0
 	for i in COUNT:
-		var p := start + dir.rotated(sin(i * 1.3) * 0.35) * STEP * i
-		p = director.clamp_in_map(p)
-		p.y = maxf(p.y, director.wall_foot_y() + 50.0)
+		if i > 0:
+			var next := p + dir.rotated(sin(i * 1.3) * 0.35) * STEP
+			var fixed := director.clamp_in_map(next)
+			fixed.y = maxf(fixed.y, director.wall_foot_y() + 50.0)
+			if fixed.distance_to(next) > 1.0 and turns < MAX_TURNS:
+				turns += 1
+				var to_center := p.direction_to(center)
+				dir = dir.rotated(PI / 2.0 if dir.rotated(PI / 2.0).dot(to_center) > 0.0 else -PI / 2.0)
+				next = p + dir * STEP
+				fixed = director.clamp_in_map(next)
+				fixed.y = maxf(fixed.y, director.wall_foot_y() + 50.0)
+			p = fixed
 		caps.append(p - global_position)
 	_pop.resize(COUNT)
 	_pop.fill(0.0)
@@ -66,7 +82,7 @@ func _active(delta: float) -> void:
 	for m in director.enemies_near(global_position + caps[caps.size() / 2], STEP * COUNT * 0.6):
 		if not SiegeTools.displaceable(m) or m.has_meta("siege_mushroom_hop"):
 			continue
-		for i in caps.size() - 1:
+		for i in caps.size():
 			if (global_position + caps[i]).distance_to(m.global_position) <= TRIGGER:
 				_hop_mob(m, i)
 				break
@@ -109,14 +125,27 @@ func _landing(from: Vector2) -> Vector2:
 	return to
 
 
-## 怪：弹到下一颗（往路的尽头送）。
+## 怪：一颗接一颗弹到路的尽头，最后一颗把它弹上城墙顶（那段墙上不去就落在最后一颗旁边）。
 func _hop_mob(m: Monster, i: int) -> void:
 	m.set_meta("siege_mushroom_hop", true)
 	_pop[i] = 0.3
-	var to := global_position + caps[i + 1]
-	TeamworkEffects._arc(m, to, HOP_TIME, 26.0, func():
-		if is_instance_valid(m):
-			m.remove_meta("siege_mushroom_hop"))
+	if i >= caps.size() - 1:
+		if not SiegeHazard.fling_to_wall(m, 0.7, 90.0):
+			SiegeHazard.fling_to(m, global_position + caps[i] + Vector2(randf_range(-20, 20), -30), HOP_TIME, 30.0)
+		m.remove_meta("siege_mushroom_hop")
+		launched_to_wall += 1
+		return
+	var wr: WeakRef = weakref(self)
+	var mr: WeakRef = weakref(m)
+	TeamworkEffects._arc(m, global_position + caps[i + 1], HOP_TIME, 26.0, func():
+		var me := wr.get_ref() as HazardMushrooms
+		var mob := mr.get_ref() as Monster
+		if mob == null:
+			return
+		if me and me.is_processing() and TeamworkEffects._alive(mob):
+			me._hop_mob(mob, i + 1)
+		else:
+			mob.remove_meta("siege_mushroom_hop"))
 
 
 func _draw() -> void:

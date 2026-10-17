@@ -2,7 +2,10 @@ class_name FortressMechanisms
 extends FortressJobs
 ## 狂欢要塞的六个机关本身（调度、预约、命中、取消在 FortressJobs）：
 ##   missiles 猎笑巡航弹、hands 伸缩追猎巨手、rockets 双线火箭运兵、crane 双钩劫塔、convoy 三批交叉车阵、cannon 三连锁定重炮；
-## 以及机关在地上 / 空中的绘制（_draw / _draw_ground）。
+## 以及机关在地上 / 空中的绘制（_draw / _draw_ground）。巨手的伸展范围 / 速度乘 fortress.json 的 hand_reach / hand_speed。
+
+const HAND_REACH := 560.0
+const HAND_GRAB := 60.0
 
 
 func _begin(job: Dictionary) -> bool:
@@ -115,16 +118,19 @@ func _hands(job: Dictionary, delta: float) -> void:
 			continue
 		arm["t"] += delta
 		var at := boss.shoulder(arm["side"])
+		var reach := HAND_REACH * float(FortressRules.data().get("hand_reach", 1.0))
+		var speed := float(FortressRules.data().get("hand_speed", 1.0))
 		if arm["phase"] == "idle":
-			var candidates := people().filter(func(c): return not boss.director.is_on_wall(c) and SiegeTools.can_move(boss, c) and c.global_position.distance_to(at) <= 560)
+			var candidates := people().filter(func(c): return not boss.director.is_on_wall(c) and SiegeTools.can_move(boss, c) and c.global_position.distance_to(at) <= reach)
 			if candidates.is_empty():
 				arm["phase"] = "done"
 				continue
-			candidates.sort_custom(func(a, b): return a.global_position.distance_squared_to(at) < b.global_position.distance_squared_to(at))
+			# 索敌：站着不动越久越优先（每秒抵 120 像素距离）
+			candidates.sort_custom(func(a, b): return target_score(a, at) < target_score(b, at))
 			arm["target"] = weakref(candidates[0])
 			arm["phase"] = "extend"
 			arm["extension"] = boss.safe_exterior(candidates[0].global_position)
-			arm["extension"] = at + (arm["extension"] - at).limit_length(560)
+			arm["extension"] = at + (arm["extension"] - at).limit_length(reach)
 		if arm["phase"] == "extend":
 			arm["p"] = at.lerp(arm["extension"], clampf(arm["t"], 0, 1))
 			if arm["t"] >= 1:
@@ -134,17 +140,17 @@ func _hands(job: Dictionary, delta: float) -> void:
 			var c: Variant = arm["target"].get_ref()
 			if SiegeTools.alive(c):
 				var goal := boss.safe_exterior(c.global_position)
-				goal = at + (goal - at).limit_length(560)
-				arm["p"] = (arm["p"] as Vector2).move_toward(goal, c.move_speed * 0.9 * delta)
+				goal = at + (goal - at).limit_length(reach)
+				arm["p"] = (arm["p"] as Vector2).move_toward(goal, c.move_speed * 0.9 * speed * delta)
 			if arm["hunt_t"] >= 1.5:
 				arm["phase"] = "lock"
 				arm["locked"] = arm["p"]
 				arm["lock_t"] = arm["t"]
 		elif arm["phase"] == "lock" and arm["t"] - arm["lock_t"] >= 0.7:
 			arm["phase"] = "return"
-			burst(arm["p"], 60, "hands")
+			burst(arm["p"], HAND_GRAB * speed, "hands")
 			for c in people():
-				if c.global_position.distance_to(arm["p"]) < 60 and SiegeTools.can_move(boss, c) and strike(c, 30, "hands", job):
+				if c.global_position.distance_to(arm["p"]) < HAND_GRAB * minf(speed, 1.3) and SiegeTools.can_move(boss, c) and strike(c, 30, "hands", job):
 					var goal := boss.safe_exterior(c.global_position + (at - c.global_position).limit_length(180))
 					var hold := SiegeTools.hold(boss, c, goal, false, 1.2)
 					if hold:
@@ -169,7 +175,7 @@ func _hands(job: Dictionary, delta: float) -> void:
 			if arm["hold_left"] <= 0 or not SiegeTools.alive(c):
 				_release_arm(arm, true)
 		elif arm["phase"] == "return":
-			arm["p"] = (arm["p"] as Vector2).move_toward(at, 360 * delta)
+			arm["p"] = (arm["p"] as Vector2).move_toward(at, 360 * speed * delta)
 			if (arm["p"] as Vector2).distance_to(at) < 4:
 				arm["phase"] = "done"
 	if job["arms"].all(func(a): return a["phase"] == "done"):

@@ -36,7 +36,7 @@ func _ready() -> void:
 	await _wait(0.5)
 	_finish()
 	var only := OS.get_environment("SIEGE3_ONLY")
-	for sec in ["hints", "waves", "town", "boss", "soldiers", "towers", "spells", "etowers", "field", "cart", "wall", "locks", "bugs5", "towers5", "fixes6", "features6", "round7", "round8", "round9", "round10", "equip", "cg", "perf"]:
+	for sec in ["hints", "waves", "town", "boss", "soldiers", "towers", "spells", "etowers", "field", "cart", "wall", "locks", "bugs5", "towers5", "fixes6", "features6", "round7", "round8", "round9", "round10", "round11", "equip", "cg", "perf"]:
 		if only == "" or sec in only.split(","):
 			if is_instance_valid(d):
 				d.bench_soldiers(sec != "soldiers")
@@ -1034,7 +1034,7 @@ func _run_features6() -> void:
 	await _wait(1.8)
 	var carts := d.monsters.filter(func(m): return m is SiegeCart).size() - carts0
 	var escorts := d.monsters.filter(func(m): return m is ShieldCrab and m.has_meta("escort_of")).size()
-	ok["攻城大队 %d 车 %d 蟹" % [carts, escorts]] = carts >= 4 and escorts >= 8
+	ok["攻城大队 %d 车 %d 蟹" % [carts, escorts]] = carts >= WaveFeatures.CORPS_MIN and escorts >= WaveFeatures.CORPS_MIN * 2
 	d.clear_field()
 	_fight()
 	# 抢掠小队：拆冰塔，基座留着
@@ -1343,22 +1343,23 @@ func _run_round8() -> void:
 
 # ------------------------------------------------------------------ 第九轮
 func _run_round9() -> void:
-	print("-- 第九轮：冰晶共鸣 / 冰陨星台打得到盾甲螃蟹，冰锥仍被挡")
+	print("-- 第九 / 十一轮：盾甲螃蟹只吃冰晶共鸣（10%）和粉色公主从背后的锤子")
 	await _clear()
 	_fight()
 	d.blue.set_controller(CharacterController.new())
 	var at := Vector2(d.gate_pos.x - 260.0, d.wall_foot_y() + 220.0)
 	var hurt := {}
-	for kind in ["icicle", "resonance", "meteor"]:
+	for kind in ["icicle", "icicle_back", "resonance", "meteor"]:
 		var crab := d.spawn("shield_crab", "", at) as ShieldCrab
 		crab.mind = null
 		crab.set_physics_process(false)
 		crab.health.max_hp = 99
 		crab.health.fill()
-		var t := _make_tower(kind, at + Vector2(0, -90))   # 塔在螃蟹上方（正面）
+		# 塔在螃蟹上方（正面）；icicle_back 在下方（背后）
+		var t := _make_tower(kind.trim_suffix("_back"), at + Vector2(0, 90 if kind == "icicle_back" else -90))
 		t.level = 1
 		var hp0 := crab.health.hp
-		if kind == "icicle":
+		if kind.begins_with("icicle"):
 			for i in 3:
 				t._t = 0.0
 				t._icicle()
@@ -1378,8 +1379,26 @@ func _run_round9() -> void:
 		t.queue_free()
 		crab.queue_free()
 		await _wait(0.2)
-	check("塔在正面：冰锥被盾甲螃蟹挡住（掉 %d），冰晶共鸣（掉 %d）、冰陨星台（掉 %d）打得到" % [hurt["icicle"], hurt["resonance"], hurt["meteor"]],
-		hurt["icicle"] == 0 and hurt["resonance"] > 0 and hurt["meteor"] > 0)
+	# 公主：粉色公主正面挡住、背后打得动；蓝色公主（法术 / 普攻）打不动
+	var crab2 := d.spawn("shield_crab", "", at) as ShieldCrab
+	crab2.mind = null
+	crab2.set_physics_process(false)
+	crab2.health.max_hp = 99
+	crab2.health.fill()
+	var hits := {}
+	for who in ["pink_front", "pink_back", "blue"]:
+		var c: PlayableCharacter = d.pink if who.begins_with("pink") else d.blue
+		var keep := c.global_position
+		c.global_position = at + Vector2(0, 40 if who == "pink_back" else -40)
+		var hp1 := crab2.health.hp
+		crab2.set_invulnerable(0.0)
+		crab2.receive_hit(HitData.make_attack(c, 5, 0.0))
+		hits[who] = hp1 - crab2.health.hp
+		c.global_position = keep
+	crab2.queue_free()
+	check("盾甲螃蟹：冰锥正面 %d / 背后 %d、陨石 %d 都打不动，冰晶共鸣只掉 %d；粉色公主正面 %d、背后 %d，蓝色公主 %d" % [hurt["icicle"], hurt["icicle_back"], hurt["meteor"], hurt["resonance"], hits["pink_front"], hits["pink_back"], hits["blue"]],
+		hurt["icicle"] == 0 and hurt["icicle_back"] == 0 and hurt["meteor"] == 0 and hurt["resonance"] >= 1 and hurt["resonance"] <= 2
+		and hits["pink_front"] == 0 and hits["pink_back"] > 0 and hits["blue"] == 0)
 	d.blue.set_controller(d._make_ai(d.blue))
 
 
@@ -1486,6 +1505,172 @@ func _run_round10() -> void:
 		d.wave = 1
 	var tbad := team_ok.keys().filter(func(k): return not team_ok[k])
 	check("四个新配合技凑齐就发动、效果生效、公主说了字幕（没生效：%s）" % [tbad], tbad.is_empty())
+	d.blue.set_controller(d._make_ai(d.blue))
+
+
+# ------------------------------------------------------------------ 第十一轮：难度、陷阱配合、双向传送门、攻城车撞塔 / 撞人、投石车、胜利清空支援
+func _run_round11() -> void:
+	print("-- 第十一轮：难度倍率 / 陷阱配合 / 攻城车 / 投石车 / 胜利清空支援")
+	await _clear()
+	_fight()
+	d.blue.set_controller(CharacterController.new())
+	var p := d.pink
+	var home := Vector2(d.gate_pos.x + 160.0, d.wall_foot_y() + 220.0)
+	var ok := {}
+	# 难度：小怪血量 ×hp、挂 siege_hard（挠痒力度）
+	var slime := d.spawn("slime", "", home + Vector2(300, 200))
+	ok["难度倍率 hp ×%.1f、挠痒 ×%.1f" % [SiegeDirector.difficulty("hp"), slime.stat_mul("tickle_power")]] = SiegeDirector.difficulty("hp") >= 1.4 \
+		and slime.has_buff("siege_hard") and slime.stat_mul("tickle_power") >= 1.39
+	slime.queue_free()
+	# 传送门：双向 + 怪潮
+	p.global_position = home + Vector2(0, 80)
+	var portal := d.spawn_hazard("portal_pair", home) as HazardPortalPair
+	await _until(func(): return portal.warned, 3.0)
+	p.global_position = portal.exit
+	await _wait(0.2)
+	var back := p.global_position.distance_to(portal.global_position) < 40.0
+	var mob := d.spawn("rat", "", portal.global_position)
+	mob.mind = null
+	await _wait(0.2)
+	var mob_out := mob.global_position.distance_to(portal.exit) < 30.0
+	await _wait(HazardPortalPair.TIDE_GAP + 0.3)
+	ok["传送门双向：公主从出口回到入口（%s）、怪从入口到出口（%s）、门里涌怪 %d" % [back, mob_out, portal.tide]] = back and mob_out and portal.tide > 0
+	d.clear_field()
+	_fight()
+	# 弹弹蘑菇：9 颗，怪一路弹到尽头弹上城墙
+	p.global_position = home + Vector2(-300, 120)
+	var mush := d.spawn_hazard("mushrooms", home) as HazardMushrooms
+	await _until(func(): return mush.warned, 3.0)
+	var hop := d.spawn("slime", "", mush.global_position + mush.caps[0])
+	hop.mind = null
+	await _wait(HazardMushrooms.HOP_TIME * HazardMushrooms.COUNT + 1.5)
+	ok["蘑菇 %d 颗，怪弹完整条路 %d 只（上墙：%s）" % [mush.caps.size(), mush.launched_to_wall, hop.get_meta("siege_on_wall", false) if is_instance_valid(hop) else "-"]] = mush.caps.size() == 9 and mush.launched_to_wall >= 1
+	d.clear_field()
+	_fight()
+	# 龙卷风：卷怪，甩的时候一半上墙
+	p.global_position = home + Vector2(-400, 200)
+	d.blue.global_position = Vector2(home.x, d.wall_top_y() + 4)
+	var tor := d.spawn_hazard("tornado", home) as HazardTornado
+	for i in 6:
+		var m := d.spawn("slime", "", home + Vector2(randf_range(-10, 10), randf_range(-8, 8)))
+		m.mind = null
+	await _until(func(): return tor.warned, 3.0)
+	await _until(func(): return tor.flung_to_wall > 0, 8.0)
+	ok["龙卷风卷怪甩上墙 %d 只" % tor.flung_to_wall] = tor.flung_to_wall > 0
+	d.clear_field()
+	_fight()
+	# 抓娃娃机：没抓到公主就抓怪扔过去
+	p.global_position = home + Vector2(0, 260)
+	var claw := d.spawn_hazard("claw", home) as HazardClaw
+	# 两位公主都在冷却里：爪子不追人，落下来只抓得到怪
+	claw._cool["pink"] = 99.0
+	claw._cool["blue"] = 99.0
+	claw.target = null
+	claw.global_position = home
+	for i in 4:
+		var m2 := d.spawn("rat", "", home + Vector2(randf_range(-8, 8), randf_range(-6, 6)))
+		m2.mind = null
+		# 待在爪子底下（不追人、不闲逛）
+		m2.stats = m2.stats.duplicate()
+		m2.stats.chase_speed = 0.0
+		m2.stats.wander_speed = 0.0
+	var wclaw: WeakRef = weakref(claw)
+	var dropped := 0
+	var t_claw := 0.0
+	while t_claw < 8.0 and wclaw.get_ref() != null:
+		dropped = (wclaw.get_ref() as HazardClaw).dropped_mobs
+		if dropped > 0:
+			break
+		await _wait(0.1)
+		t_claw += 0.1
+	ok["抓娃娃机投怪 %d 只" % dropped] = dropped > 0
+	d.clear_field()
+	_fight()
+	# 流沙伏兵 + 黏网伏兵（粉色公主 → 挠脚鼠）
+	p.global_position = home + Vector2(0, 300)
+	var qs := d.spawn_hazard("quicksand", home) as HazardQuicksand
+	await _until(func(): return qs.ambushed > 0, 6.0)
+	ok["流沙钻出伏兵 %d 只" % qs.ambushed] = qs.ambushed > 0
+	d.clear_field()
+	_fight()
+	p.global_position = home
+	var net := d.spawn_hazard("sticky_net", home) as HazardStickyNet
+	await _until(func(): return net.caught != null, 3.0)
+	ok["黏网伏兵 %d 只挠脚鼠" % net.ambushed.size()] = net.ambushed.size() > 0 and net.ambushed.all(func(m3): return MonsterTeamwork.key_of(m3) == "rat")
+	net.free_caught()
+	d.clear_field()
+	_fight()
+	# 攻城车：撞碎路上的冰塔继续冲；撞到粉色公主闷笑 +50%
+	var lane_x := home.x + 260.0
+	var tw := _make_tower("icicle", Vector2(lane_x, d.wall_foot_y() + 140.0))
+	var pad := tw.pad
+	var cart := d.spawn("cart", "", Vector2(lane_x, d.wall_foot_y() + 300.0)) as SiegeCart
+	var wcart: WeakRef = weakref(cart)
+	await _until(func(): return wcart.get_ref() == null or (wcart.get_ref() as SiegeCart).smashed > 0, 8.0)
+	var smashed := cart.smashed if is_instance_valid(cart) else 0
+	await _wait(0.2)
+	ok["攻城车撞碎冰塔（%d）、基座还在、车继续冲" % smashed] = smashed == 1 and not is_instance_valid(tw) and is_instance_valid(pad) \
+		and (not is_instance_valid(cart) or cart._phase in ["charge", "done"])
+	if is_instance_valid(pad):
+		pad.queue_free()
+	d.clear_field()
+	_fight()
+	# 黏网 / 爪子松开后的挣脱无敌要等状态机走完再清
+	await _wait(0.3)
+	p.status.release(true)
+	p.end_forced_move()
+	p._set_state(PlayableCharacter.State.IDLE)
+	p.laugh.set_value(0.0)
+	p.set_invulnerable(0.0)
+	p._full_invuln = 0.0
+	var cart2 := d.spawn("cart", "", Vector2(lane_x, d.wall_foot_y() + 320.0)) as SiegeCart
+	p.global_position = Vector2(lane_x, d.wall_foot_y() + 200.0)
+	var w2: WeakRef = weakref(cart2)
+	await _until(func(): return w2.get_ref() == null or (w2.get_ref() as SiegeCart)._hit_pink, 8.0)
+	await _wait(0.1)
+	ok["攻城车撞到粉色公主：闷笑 %.0f / %.0f" % [p.laugh.value, p.laugh.max_value]] = p.laugh.value >= p.laugh.max_value * 0.5
+	d.clear_field()
+	_fight()
+	p.laugh.set_value(0.0)
+	# 拆塔投石车：砸冰塔；粉色公主站进影子替塔挡（先清掉前面几段留下的冰塔，免得它挑别的塔）
+	for old_tower in get_tree().get_nodes_in_group("siege_tower"):
+		old_tower.queue_free()
+	await get_tree().process_frame
+	var cat := EnemyTower.new()
+	cat.kind = "catapult"
+	d.entities().add_child(cat)
+	cat.global_position = Vector2(home.x - 200.0, home.y + 200.0)
+	var tw2 := _make_tower("frost", Vector2(home.x - 200.0, home.y - 60.0))
+	var hp0 := tw2.health.hp
+	p.global_position = home + Vector2(300, 300)
+	cat._catapult()
+	await _wait(EnemyTower.CATAPULT_WARN + 0.3)
+	var hit_dmg := hp0 - (tw2.health.hp if is_instance_valid(tw2) else 0)
+	if is_instance_valid(tw2):
+		tw2.health.fill()
+	var hp1 := tw2.health.hp if is_instance_valid(tw2) else 0
+	p.global_position = (tw2.global_position if is_instance_valid(tw2) else home) + Vector2(0, 16)
+	p.end_forced_move()
+	p.velocity = Vector2.ZERO
+	cat._catapult()
+	await _wait(EnemyTower.CATAPULT_WARN + 0.3)
+	ok["投石车砸冰塔掉 %d、公主挡下 %d 次" % [hit_dmg, cat.catapult_blocked]] = hit_dmg > 0 and cat.catapult_blocked == 1 and is_instance_valid(tw2) and tw2.health.hp == hp1
+	if is_instance_valid(tw2):
+		tw2.pad.queue_free()
+	cat.queue_free()
+	d.clear_field()
+	_fight()
+	# 胜利清空镇民支援
+	var saved: Array = GameState.vars.get("siege_town_buffs", []).duplicate()
+	d.town.grant(str(TownBuffs.for_wave(1).get("id", "")), false)
+	var had := d.town.owned.size() > 0 and p.buffs.keys().any(func(k): return str(k).begins_with("town_"))
+	d.town.clear_all()
+	ok["胜利后镇民支援清空（之前有：%s）" % had] = had and d.town.owned.is_empty() and not GameState.vars.has("siege_town_buffs") \
+		and not p.buffs.keys().any(func(k): return str(k).begins_with("town_"))
+	GameState.vars["siege_town_buffs"] = saved
+	d.town.restore()
+	var bad := ok.keys().filter(func(k): return not ok[k])
+	check("第十一轮都生效（没生效：%s）" % [bad], bad.is_empty())
 	d.blue.set_controller(d._make_ai(d.blue))
 
 

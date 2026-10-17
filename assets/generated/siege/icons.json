@@ -179,326 +179,332 @@
 		16,
 		16
 	],
-	"cart": [
+	"etower_catapult": [
 		224,
+		16,
+		16,
+		16
+	],
+	"cart": [
+		240,
 		16,
 		16,
 		16
 	],
 	"hook": [
-		240,
-		16,
+		0,
+		32,
 		16,
 		16
 	],
 	"vine": [
-		0,
+		16,
 		32,
 		16,
 		16
 	],
 	"gecko": [
-		16,
+		32,
 		32,
 		16,
 		16
 	],
 	"shield_crab": [
-		32,
+		48,
 		32,
 		16,
 		16
 	],
 	"bat_swarm": [
-		48,
+		64,
 		32,
 		16,
 		16
 	],
 	"carrier": [
-		64,
+		80,
 		32,
 		16,
 		16
 	],
 	"warm_slime": [
-		80,
+		96,
 		32,
 		16,
 		16
 	],
 	"thigh_spider": [
-		96,
+		112,
 		32,
 		16,
 		16
 	],
 	"hug_bear": [
-		112,
+		128,
 		32,
 		16,
 		16
 	],
 	"suck_jelly": [
-		128,
+		144,
 		32,
 		16,
 		16
 	],
 	"twin_ghost": [
-		144,
+		160,
 		32,
 		16,
 		16
 	],
 	"hazard_tornado": [
-		160,
+		176,
 		32,
 		16,
 		16
 	],
 	"hazard_bubbles": [
-		176,
+		192,
 		32,
 		16,
 		16
 	],
 	"hazard_link_rune": [
-		192,
+		208,
 		32,
 		16,
 		16
 	],
 	"hazard_broom": [
-		208,
+		224,
 		32,
 		16,
 		16
 	],
 	"hazard_fog": [
-		224,
+		240,
 		32,
 		16,
 		16
 	],
 	"hazard_wall_vine": [
-		240,
-		32,
+		0,
+		48,
 		16,
 		16
 	],
 	"hazard_sticky_net": [
-		0,
+		16,
 		48,
 		16,
 		16
 	],
 	"hazard_claw": [
-		16,
+		32,
 		48,
 		16,
 		16
 	],
 	"hazard_quicksand": [
-		32,
+		48,
 		48,
 		16,
 		16
 	],
 	"hazard_mushrooms": [
-		48,
+		64,
 		48,
 		16,
 		16
 	],
 	"hazard_portal_pair": [
-		64,
+		80,
 		48,
 		16,
 		16
 	],
 	"goblin_engineer": [
-		80,
+		96,
 		48,
 		16,
 		16
 	],
 	"equip_t_feather_socks": [
-		96,
+		112,
 		48,
 		16,
 		16
 	],
 	"equip_t_toe_brush": [
-		112,
+		128,
 		48,
 		16,
 		16
 	],
 	"equip_t_fluff_bra": [
-		128,
+		144,
 		48,
 		16,
 		16
 	],
 	"equip_t_thigh_ring": [
-		144,
+		160,
 		48,
 		16,
 		16
 	],
 	"equip_t_pinch_pad": [
-		160,
+		176,
 		48,
 		16,
 		16
 	],
 	"equip_t_knead_tights": [
-		176,
+		192,
 		48,
 		16,
 		16
 	],
 	"equip_t_feather_shackles": [
-		192,
+		208,
 		48,
 		16,
 		16
 	],
 	"equip_t_thigh_strap": [
-		208,
+		224,
 		48,
 		16,
 		16
 	],
 	"equip_t_bell_anklet": [
-		224,
+		240,
 		48,
 		16,
 		16
 	],
 	"equip_t_mark_patch": [
-		240,
-		48,
+		0,
+		64,
 		16,
 		16
 	],
 	"town_party": [
-		0,
+		16,
 		64,
 		16,
 		16
 	],
 	"town_smith": [
-		16,
+		32,
 		64,
 		16,
 		16
 	],
 	"town_band": [
-		32,
+		48,
 		64,
 		16,
 		16
 	],
 	"town_tailor": [
-		48,
+		64,
 		64,
 		16,
 		16
 	],
 	"town_mason": [
-		64,
+		80,
 		64,
 		16,
 		16
 	],
 	"town_pharm": [
-		80,
-		64,
-		16,
-		16
-	],
-	"town_watch": [
 		96,
 		64,
 		16,
 		16
 	],
-	"town_cheer": [
+	"town_watch": [
 		112,
 		64,
 		16,
 		16
 	],
-	"town_captain": [
+	"town_cheer": [
 		128,
 		64,
 		16,
 		16
 	],
-	"town_hunter": [
+	"town_captain": [
 		144,
 		64,
 		16,
 		16
 	],
-	"town_florist": [
+	"town_hunter": [
 		160,
 		64,
 		16,
 		16
 	],
-	"town_mayor": [
+	"town_florist": [
 		176,
 		64,
 		16,
 		16
 	],
-	"troll_general": [
+	"town_mayor": [
 		192,
 		64,
 		16,
 		16
 	],
-	"carnival_fortress": [
+	"troll_general": [
 		208,
 		64,
 		16,
 		16
 	],
-	"puppet_master": [
+	"carnival_fortress": [
 		224,
 		64,
 		16,
 		16
 	],
-	"gale_bear": [
+	"puppet_master": [
 		240,
 		64,
 		16,
 		16
 	],
-	"soldier_shield": [
+	"gale_bear": [
 		0,
 		80,
 		16,
 		16
 	],
-	"soldier_medic": [
+	"soldier_shield": [
 		16,
 		80,
 		16,
 		16
 	],
-	"soldier_artisan": [
+	"soldier_medic": [
 		32,
 		80,
 		16,
 		16
 	],
-	"soldier_mage": [
+	"soldier_artisan": [
 		48,
+		80,
+		16,
+		16
+	],
+	"soldier_mage": [
+		64,
 		80,
 		16,
 		16

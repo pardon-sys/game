@@ -308,23 +308,25 @@ for n in range(2, 13):
     extra = []
     gap = max(6.0, 14.0 - n)
     t, i = 6.0, n
-    while len(extra) < len(base) * 2 + 2:
+    while len(extra) < int((len(base) * 2 + 2) * 1.5):   # 第十轮：再 ×1.5
         extra.append((round(t, 1), HAZARD_KINDS[i % len(HAZARD_KINDS)]))
         t += gap
         i += 3
     HAZARDS[n] = sorted(base + extra)
-# 第九轮的四个大型强制位移陷阱：从第 3 波起陆续加入，后面的波次混着出
-NEW_HAZARDS = {3: [(28, "mushrooms")], 4: [(24, "claw")], 5: [(20, "quicksand")], 6: [(18, "portal_pair"), (44, "mushrooms")],
-               7: [(16, "claw"), (40, "quicksand")], 8: [(14, "portal_pair"), (34, "claw")], 9: [(12, "quicksand"), (30, "mushrooms"), (48, "portal_pair")],
-               10: [(10, "claw"), (26, "quicksand"), (42, "mushrooms"), (58, "portal_pair")], 11: [(8, "claw"), (22, "portal_pair"), (36, "quicksand"), (50, "mushrooms")],
-               12: [(10, "claw"), (30, "quicksand"), (50, "portal_pair"), (70, "mushrooms")]}
+# 四个大型强制位移陷阱：第 3 波起加入，越往后越多（第十轮加倍：第 3 波 3 个 → 第 12 波 7 个，间隔从 15 秒缩到 8 秒），四种轮换
+NEW_KINDS = ["mushrooms", "claw", "quicksand", "portal_pair"]
+NEW_HAZARDS = {}
+for n in range(3, 13):
+    count = 3 + (n - 3) // 2
+    gap = max(8.0, 15.0 - (n - 3) * 0.8)
+    NEW_HAZARDS[n] = [(round(8.0 + i * gap, 1), NEW_KINDS[(n + i) % len(NEW_KINDS)]) for i in range(count)]
 for n, extra in NEW_HAZARDS.items():
     HAZARDS[n] = sorted(HAZARDS.get(n, []) + extra)
 for n, hz in HAZARDS.items():
     WAVES[n - 1]["hazards"] = [{"t": t, "kind": k} for t, k in hz] + [{"t": t, "combo": k} for t, k in HAZARD_COMBOS.get(n, [])]
     WAVES[n - 1]["hazards"].sort(key=lambda h: h["t"])
 for n, kinds in ENEMY_TOWERS.items():
-    for first, key in ((3, "airdrop"), (5, "brush_battery"), (7, "resonance")):
+    for first, key in ((3, "airdrop"), (5, "brush_battery"), (6, "catapult"), (7, "resonance")):
         if n >= first:
             kinds.append(key)
         if n == first:
@@ -351,7 +353,7 @@ FEATURES = {   # id: (名字, 颜色, 说明)；图标按顺序在 assets/genera
     "airdrop": ("空降突袭", "#c0a0ff", "蝠群空投、钩索怪、壁虎叠罗汉连着来：压力全在墙顶。"),
     "trolls": ("巨魔军团", "#a8c878", "一群挠痒巨魔压过来，边走边把小怪扔上城墙。"),
     "fog": ("迷雾之夜", "#9a88d0", "天黑了：迷雾陷阱和幽灵成群，篝火塔 / 冰灯塔 / 灯笼照到的地方幽灵才现形。"),
-    "corps": ("攻城大队", "#ff8060", "每 25 秒一排攻城车带着螃蟹护卫同时出发（地上先亮一排红线）。"),
+    "corps": ("攻城大队", "#ff8060", "每 14 秒两排共 9~11 辆攻城车带着螃蟹护卫同时出发（地上先亮红线）；撞碎路上的冰塔，撞到公主闷笑涨一半。"),
     "gale": ("狂风肆虐", "#a8f0e0", "龙卷风变多；一阵阵横扫全场的强风，把粉色公主和小怪往一边吹。"),
     "equip": ("痒痒装备日", "#ff90c8", "痒痒裁缝铺和捆绑藤怪变多，临时装备穿得更久（+50%）。"),
     "vines": ("藤蔓疯长", "#78d878", "城墙爬藤、黏网、捆绑藤怪一起疯长。"),
@@ -515,6 +517,8 @@ for w in WAVES:
 
 WAVE_DATA = {"_说明": ["小镇攻防战的波次（gen_floor06_siege.py 生成；SiegeDirector 读）。怪物表只有已经做好的怪。"],
              "wall_hp": 4320, "prep_first": 30, "prep": 20, "ability_rate": 3.0, "start_crystals": 30,
+             # 整体难度（第十轮，中档）：小怪血量、怪物搭敌塔速度、配合技冷却；挠痒力度 ×1.4 在 data/buffs.json 的 siege_hard
+             "difficulty": {"hp": 1.4, "build": 1.3, "team_cd": 0.75},
              "monsters": have, "waves": WAVES, "feature_payloads": FEATURE_PAYLOADS,
              "features": {k: {"name": v[0], "color": v[1], "desc": v[2], "icon": i} for i, (k, v) in enumerate(FEATURES.items())}}
 Path("data/siege").mkdir(parents=True, exist_ok=True)
@@ -610,6 +614,8 @@ ETOWERS.update({
     "airdrop": {"name": "痒痒空投站", "hp": 42, "interval": 12, "range": 700, "cap": 16, "reward": 18},
     "brush_battery": {"name": "机关刷具轰击塔", "hp": 36, "interval": 6, "range": 700, "reward": 16},
     "resonance": {"name": "共振刷钟楼", "hp": 40, "interval": 9, "range": 300, "reward": 20},
+    # 第十轮：会攻击友塔的拆塔投石车（dmg = 砸中的冰塔掉血上限的比例）
+    "catapult": {"name": "拆塔投石车", "hp": 40, "interval": 7, "range": 420, "reward": 18, "splash": 36, "dmg": 0.6},
 })
 Path("data/siege/towers.json").write_text(json.dumps({"_说明": ["攻防战的冰塔（gen_floor06_siege.py 生成；IceTower 读）。"], **TOWERS},
                                                     ensure_ascii=False, indent="\t") + "\n")
@@ -637,8 +643,8 @@ TOWER_INTEL = {
     "cocoa": ("附近的友军（公主和士兵）攻击间隔缩短、移动变快；粉色公主站在旁边闷笑降得更快。", "放在士兵扎堆的地方。"),
     "mortar": ("射程很远，抛物线飞过去，落点先出影子；炸开一大片、减速 2 秒。第 3 波解锁。", "放在墙下中间，盖住怪最多的那片。"),
     "vortex": ("身边一圈冰风一直转：每半秒掉血，把怪往外推，挡住冲过来的怪。第 4 波解锁。", "放在城门口、怪一定会经过的地方。"),
-    "resonance": ("冰光在怪之间连跳，每跳一下都冻一下，怪越挤跳得越多；电弧从侧面跳过去，盾甲螃蟹的钳子挡不住。第 5 波解锁。", "对付成群的小怪和盾甲螃蟹。"),
-    "meteor": ("蓄力后往全场最大的怪堆砸冰陨星，超大范围、冻住 2 秒、震屏；从天上砸下来，盾甲螃蟹也挡不住。第 7 波解锁。", "越往后怪越多，越值。"),
+    "resonance": ("冰光在怪之间连跳，每跳一下都冻一下，怪越挤跳得越多；唯一打得动盾甲螃蟹的塔（对螃蟹只有 10% 伤害）。第 5 波解锁。", "对付成群的小怪；有盾甲螃蟹时一定要造。"),
+    "meteor": ("蓄力后往全场最大的怪堆砸冰陨星，超大范围、冻住 2 秒、震屏（盾甲螃蟹挡得住）。第 7 波解锁。", "越往后怪越多，越值。"),
     "hotspring": ("范围很大：公主闷笑一直降、士兵回血、修身后的城墙。第 6 波解锁。", "放在墙下正中，士兵和粉色公主常在的地方。"),
     "lamp": ("冷光范围里幽灵现形、怪减速，范围里的敌塔发动变慢。第 8 波解锁。", "放在敌塔多、幽灵多的那一侧。"),
     "shield": ("每隔几秒给范围里的友军套冰盾，挡掉下一次挠痒或抓取（挡下时会闪一下）。第 9 波解锁。", "和士兵、粉色公主放在一起。"),
@@ -659,6 +665,8 @@ ET_INTEL = {
     "airdrop": ("持续投送藤怪、小熊、幽灵和蜘蛛到两路；每塔最多16只，全场48只，阵亡后补充。", "尽快拆掉空投站；加固城墙可将墙顶空投挡到墙下。"),
     "brush_battery": ("三轮工具轰击，短束缚接四段刷挠。粉色脚心滚刷；蓝色大腿软指与绒刷、臀部左右软垫。", "离开发射时锁定的落点，尽快拆塔停止后续连段。"),
     "resonance": ("范围300内敌塔间隔×0.65、小怪挠痒频率×1.3力度×1.2、已有临时装备频率×1.3力度×1.15；多个钟楼不叠乘。", "优先拆掉钟楼，立刻解除支援加速。"),
+    "catapult": ("专砸友塔：挑射程里血最多的冰塔，地上先亮落点影子，然后一块大石头砸下来，影子里的冰塔都掉一大截血，砸碎了留下基座。第 6 波起出现。",
+                 "粉色公主站进影子里能替塔挡下（石头碎成羽毛挠她一下）；尽快拆掉。"),
 }
 for k, (mech, how) in ET_INTEL.items():
     INTEL["etower_" + k] = I(ETOWERS[k]["name"], "敌塔", "怪物聚集在敌方区域的地基上搭起来的塔。", mech, how)
@@ -667,7 +675,7 @@ MON_INTEL = {
     "hook": ("钩索怪", "背着钩爪的小怪。", "走到墙前甩钩索勾住城墙，顺着绳子滑上墙顶，上去就挠蓝色公主。", "冰锥雨能射断绳子；滑的时候打它一下就会摔下来。"),
     "vine": ("捆绑藤怪", "一团会走路的藤蔓。", "缠住公主（连按挣脱），缠着的时候给她强制穿上一件临时痒痒装备，藤尖一直挠。", "别让它贴身；被缠住时蓝色公主的清凉雪花能解开。"),
     "gecko": ("爬墙壁虎", "又小又快的绿壁虎。", "走到墙下就贴着墙爬上去，在城墙顶上乱窜、挠蓝色公主。冰墙加固的那段爬不上去。", "数量多、血少：冰锥雨一扫一片。"),
-    "shield_crab": ("盾甲螃蟹", "举着一对大钳子当盾牌的螃蟹。", "正面（朝城墙的那一面）挡得住冰锥、冰塔和法术，但挡不住冰晶共鸣塔的电弧和冰陨星台的陨石；走到墙下用钳子夹墙，伤害很高。", "粉色公主绕到它背后（下面）打，或者造冰晶共鸣塔 / 冰陨星台。"),
+    "shield_crab": ("盾甲螃蟹", "举着一对大钳子当盾牌的螃蟹。", "冰塔、蓝色公主的法术、陨石、士兵全都打不动；只有冰晶共鸣塔的电弧打得动，而且只有 10% 伤害。粉色公主的锤子从正面也挡得住，要绕到背后（下面）打。走到墙下用钳子夹墙，伤害很高。", "粉色公主绕到它背后锤；第 5 波后造冰晶共鸣塔慢慢磨。"),
     "bat_swarm": ("羽毛蝠群", "一群叼着羽毛的小蝙蝠。", "飞在天上：粉色公主的近战够不着，直接越过战场飞上城墙挠蓝色公主。", "只有蓝色公主的法术和冰塔能打下来。"),
     "carrier": ("搬运小鬼队", "扛着长杆子的三只小鬼。", "粉色公主失控时冲过来把她抬走，运进敌塔里关起来挠 8 秒。", "蓝色公主用冰链把人拉回来；冻住 / 打倒小鬼也会把人放下。"),
     "warm_slime": ("暖炉史莱姆", "暖烘烘、冒着热气的橙色史莱姆。", "不怕冻，冰锥、冰塔、蓝色公主的法术都打不动；专找冰塔，贴上去把塔慢慢融化。", "只能粉色公主去打。"),

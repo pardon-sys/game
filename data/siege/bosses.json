@@ -226,45 +226,92 @@
 			"title": "展开平台：双重追猎",
 			"sub": "巨手巡航 · 交叉空降 · 双钩重炮"
 		},
+		"overdrive": {
+			"title": "超载：全机关同时运转！",
+			"sub": "每轮三个机关一起来 · 冷却缩短 · 增援全开",
+			"color": [
+				1.0,
+				0.35,
+				0.3
+			]
+		},
 		"defeat": {
 			"title": "狂欢攻城堡垒被打倒了！"
 		},
 		"skills": {
 			"missiles": {
 				"name": "猎笑巡航弹",
-				"cd": 18.0,
+				"cd": 12.6,
 				"warn": 0.0,
 				"life": 7.0
 			},
 			"hands": {
 				"name": "伸缩追猎巨手",
-				"cd": 16.0,
+				"cd": 11.2,
 				"warn": 0.0,
 				"life": 12.0
 			},
 			"rockets": {
 				"name": "双线火箭运兵",
-				"cd": 20.0,
+				"cd": 14.0,
 				"warn": 0.0,
 				"life": 5.0
 			},
 			"crane": {
 				"name": "双钩劫塔",
-				"cd": 26.0,
+				"cd": 18.2,
 				"warn": 0.0,
 				"life": 8.7
 			},
 			"convoy": {
 				"name": "三批交叉车阵",
-				"cd": 26.0,
+				"cd": 18.2,
 				"warn": 0.0,
 				"life": 9.0
 			},
 			"cannon": {
 				"name": "三连锁定重炮",
-				"cd": 30.0,
+				"cd": 21.0,
 				"warn": 0.0,
 				"life": 12.0
+			},
+			"tornado_launcher": {
+				"name": "龙卷发射器",
+				"cd": 18.0,
+				"warn": 0.0,
+				"life": 9.0
+			},
+			"portal_drop": {
+				"name": "传送门空降",
+				"cd": 22.0,
+				"warn": 0.0,
+				"life": 10.0
+			},
+			"fireworks": {
+				"name": "烟花弹幕",
+				"cd": 20.0,
+				"warn": 0.0,
+				"life": 8.0
+			},
+			"magnet": {
+				"name": "磁吸车头",
+				"cd": 18.0,
+				"warn": 0.0,
+				"life": 5.0
+			},
+			"shields": {
+				"name": "护盾发生柱",
+				"cd": 999.0,
+				"warn": 0.0,
+				"life": 40.0,
+				"auto": true
+			},
+			"hatch": {
+				"name": "车头舱门",
+				"cd": 16.0,
+				"warn": 0.0,
+				"life": 3.0,
+				"auto": true
 			}
 		},
 		"cooperation": {
@@ -303,7 +350,13 @@
 			"pair": "平台调度：%s ＋ %s",
 			"tower_dismantled": "冰塔被拆解！下轮重炮：四连装填",
 			"recoil_title": "重炮反冲 −%d",
-			"recoil_sub": "整轮炮击已取消！"
+			"recoil_sub": "整轮炮击已取消！",
+			"triple": "超载调度：%s ＋ %s ＋ %s",
+			"shield_up": "护盾发生柱立起来了！柱子不倒，母车几乎打不动——先打柱子！",
+			"shield_down": "护盾柱全倒了！母车的护盾消失！",
+			"hatch": "车头舱门打开了！一排攻城车冲出来了！",
+			"magnet": "车头在吸人！往反方向跑或者冲刺挣开！",
+			"portal": "传送门开到城墙上了！冰封它！"
 		}
 	}
 }

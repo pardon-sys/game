@@ -10,7 +10,7 @@ extends RefCounted
 ##   equip_power 临时装备发作力度、fatigue 蓝色公主魔力疲倦增长；add：pink_melee 粉色公主近战、snowmen 雪人多召几只、lantern 灯笼光圈半径。
 ## once（拿到时一次）：wall_max_mul 城墙上限倍数、wall_repair 修百分比、wall_full 回满、mints 薄荷糖、spears 增派长矛兵、fireworks 烟花过场。
 ## per_wave（之后每进一波）：wall_repair、mints。
-## 已获得的 id 存 GameState.vars.siege_town_buffs（失败重来保留；离开攻防战时公主身上的 town_* 状态会去掉）。
+## 已获得的 id 存 GameState.vars.siege_town_buffs（失败重来保留；离开攻防战时公主身上的 town_* 状态会去掉；打赢后 clear_all 全部撤掉）。
 
 const PATH := "res://data/siege/town_buffs.json"
 
@@ -155,6 +155,16 @@ func strip() -> void:
 			for id in c.buffs.keys():
 				if str(id).begins_with("town_"):
 					c.remove_buff(id)
+
+
+## 攻防战打赢了：12 个镇民支援全部撤掉（友军身上的 town_* 去掉，已获得的清单清空，下次进攻防战从头来）。
+func clear_all() -> void:
+	for a in allies():
+		for id in a.buffs.keys():
+			if str(id).begins_with("town_"):
+				a.remove_buff(id)
+	owned.clear()
+	GameState.vars.erase("siege_town_buffs")
 
 
 func _once(e: Dictionary) -> void:

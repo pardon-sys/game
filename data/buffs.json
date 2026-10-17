@@ -217,7 +217,10 @@
 			"debuff": false,
 			"duration": 0.6,
 			"max_stacks": 1,
-			"modifiers": {"tickle_cd": 0.7692307692, "tickle_power": 1.2},
+			"modifiers": {
+				"tickle_cd": 0.7692307692,
+				"tickle_power": 1.2
+			},
 			"desc": "共振刷钟楼附近：挠痒频率 ×1.3、力度 ×1.2；多个钟楼不叠加。"
 		},
 		"siege_carnival": {
@@ -253,6 +256,18 @@
 				"tickle_cd": 0.5
 			},
 			"desc": "攻防战里的怪物：挠痒的间隔更短（特殊能力更频繁）。",
+			"hidden": true
+		},
+		"siege_hard": {
+			"name": "攻城难度",
+			"icon": 19,
+			"debuff": false,
+			"duration": -1,
+			"max_stacks": 1,
+			"modifiers": {
+				"tickle_power": 1.4
+			},
+			"desc": "攻防战的难度：怪物挠痒力度 ×1.4（血量 / 搭塔 / 配合技倍率在 data/siege/waves.json 的 difficulty）。",
 			"hidden": true
 		},
 		"town_party": {

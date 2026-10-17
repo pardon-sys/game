@@ -104,3 +104,51 @@ func chars() -> Array[PlayableCharacter]:
 		if c and is_instance_valid(c) and c.is_alive() and not Downed.is_downed(c):
 			out.append(c)
 	return out
+
+
+# ------------------------------------------------------------------ 陷阱和怪物的配合（龙卷风 / 抓娃娃机 / 蘑菇把怪送上墙，流沙 / 传送门 / 黏网放伏兵）
+## 把怪甩上城墙顶（落点靠近蓝色公主，见 TeamworkEffects._wall_spot）；那段墙爬不上去就不甩，返回 false。
+static func fling_to_wall(m: Monster, time := 0.6, height := 60.0) -> bool:
+	var d := SiegeDirector.current
+	var spot: Variant = TeamworkEffects._wall_spot(m.global_position.x)
+	if d == null or not (spot is Vector2):
+		return false
+	var wall := d.segment_at((spot as Vector2).x)
+	if wall == null or not wall.climbable():
+		return false
+	var wr: WeakRef = weakref(m)
+	m.set_meta("airborne", true)
+	TeamworkEffects._arc(m, spot, time, height, func():
+		var mm := wr.get_ref() as Monster
+		if TeamworkEffects._alive(mm):
+			mm.remove_meta("airborne")
+			TeamworkEffects.put_on_wall(mm, mm.global_position))
+	return true
+
+
+## 把怪甩到 to（落地扬尘）。
+static func fling_to(m: Monster, to: Vector2, time := 0.5, height := 40.0) -> void:
+	var wr: WeakRef = weakref(m)
+	m.set_meta("airborne", true)
+	TeamworkEffects._arc(m, to, time, height, func():
+		var mm := wr.get_ref() as Monster
+		if TeamworkEffects._alive(mm):
+			mm.remove_meta("airborne")
+			Fx.burst(mm.get_parent(), mm.global_position, "dust", 4, 30.0, 0.4, Vector2(0, 20)))
+
+
+## 在 at 附近放出 n 只伏兵（keys 里轮流挑；最终波受增援配额限制，spawn 不出来就少几只）；target 给了就围过去。
+func ambush(at: Vector2, keys: Array, n: int, target: PlayableCharacter = null) -> Array[Monster]:
+	var made: Array[Monster] = []
+	for i in n:
+		var pos := director.clamp_in_map(at + Vector2.from_angle(randf() * TAU) * randf_range(6.0, 18.0))
+		var m := director.spawn(str(keys[i % keys.size()]), "", pos)
+		if m == null:
+			continue
+		m.set_meta("siege_hazard_spawn", true)
+		if target and SiegeTools.alive(target):
+			m.rally_to(target)
+		made.append(m)
+	if not made.is_empty():
+		Fx.burst(get_parent(), at, "dust", 10, 40.0, 0.5, Vector2(0, 30), Color(0.8, 0.7, 0.5))
+	return made
