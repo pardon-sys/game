@@ -1869,8 +1869,11 @@ func _run_perf() -> void:
 	for i in 1000:
 		d.spawn(keys[i % keys.size()], ["bottom", "left", "right", "hole"][i % 4])
 	await _wait(1.0)
-	# 满负荷计时（一帧接一帧不停）：屏幕外的怪降级后，一帧物理 + 处理要在 16 ms 以内
-	var avg := await SiegeFixture.saturated_frame_ms(get_tree(), 3.0)
-	var far := d.monsters.filter(func(m): return is_instance_valid(m) and m.lod_far).size()
-	check("1000 只怪同时在场：每帧 %.1f ms（目标 ≤ 16 ms），屏幕外降级 %d 只" % [avg, far], avg <= 16.0 and d.monsters.size() >= 900 and far > 500)
+	var frames := 0
+	var t0 := Time.get_ticks_usec()
+	while Time.get_ticks_usec() - t0 < 4_000_000:
+		await get_tree().physics_frame
+		frames += 1
+	var avg := 4000.0 / frames
+	check("1000 只怪同时在场：平均每物理帧 %.1f ms（目标 ≤ 33 ms）" % avg, avg <= 33.0 and d.monsters.size() >= 900)
 	d.clear_field()

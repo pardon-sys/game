@@ -183,22 +183,3 @@ func _bubble_at(at: Vector2) -> HazardBubbles:
 	h._warn_left = 0
 	h._bubbles = [{"pos":at,"held":null,"mob":null,"left":0.0,"pop":false}]
 	return h
-
-
-## 满负荷计时：物理每秒 1000 步、每帧只跑 1 步，一帧接一帧不停，墙钟时间 / 帧数 = 一帧（物理 + 处理）的真实开销（毫秒）。
-## （Performance 的 TIME_PHYSICS_PROCESS 是每秒内的最大值；数 60 Hz 下的物理帧又封顶在 16.7 ms，都不能拿来比。）
-static func saturated_frame_ms(tree: SceneTree, sec: float) -> float:
-	var tps := Engine.physics_ticks_per_second
-	var steps := Engine.max_physics_steps_per_frame
-	Engine.physics_ticks_per_second = 1000
-	Engine.max_physics_steps_per_frame = 1
-	await tree.process_frame
-	var n := 0
-	var t0 := Time.get_ticks_usec()
-	while Time.get_ticks_usec() - t0 < int(sec * 1_000_000):
-		await tree.physics_frame
-		n += 1
-	var ms := (Time.get_ticks_usec() - t0) / 1000.0 / maxi(n, 1)
-	Engine.physics_ticks_per_second = tps
-	Engine.max_physics_steps_per_frame = steps
-	return ms

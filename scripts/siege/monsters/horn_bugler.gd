@@ -57,7 +57,7 @@ func _on_down(_who: Actor = null) -> void:
 	var left := squad.filter(func(m): return SiegeTools.alive(m))
 	if left.is_empty():
 		return
-	var until := Time.get_ticks_msec() / 1000.0 + SCATTER
+	var until := (director.game_t if director else 0.0) + SCATTER
 	for m: Monster in left:
 		m.remove_meta("escort_of")
 		m.remove_meta("march_lock")

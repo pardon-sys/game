@@ -70,7 +70,11 @@ func _twin_leash() -> void:
 	check("twins enter together away from wall", is_instance_valid(b) and a.global_position.distance_to(b.global_position) < 40 and not d.is_on_wall(b))
 	a.global_position = Vector2(700, d.wall_foot_y() + 112)
 	b.global_position = a.global_position + Vector2(20, -16)
-	await _wait(4.5)
+	# b 跟着 a 斜着飘上去，一般 3.5~4 秒；最多等 7 秒
+	var t := 0.0
+	while t < 7.0 and not (b.on_wall and d.is_on_wall(b)):
+		await _wait(0.1)
+		t += 0.1
 	check("partner can float onto wall after approaching together", b.on_wall and d.is_on_wall(b))
 	b.global_position = a.global_position + Vector2(600, -100)
 	b._limit_pair()
