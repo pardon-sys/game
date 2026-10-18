@@ -14,7 +14,7 @@ const HOP_TIME := 0.42
 const TICKLE := 4.0
 const COOL := 4.0
 ## 吸附（第十一轮）：PULL_R 以内的公主 / 怪往最近的蘑菇帽上吸
-const PULL_R := 70.0
+const PULL_R := 120.0
 const PULL := 55.0
 const MOB_PULL := 45.0
 

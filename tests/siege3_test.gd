@@ -1343,7 +1343,7 @@ func _run_round8() -> void:
 
 # ------------------------------------------------------------------ 第九轮
 func _run_round9() -> void:
-	print("-- 第九 / 十一轮：盾甲螃蟹只吃冰晶共鸣（25%）和粉色公主从背后的锤子")
+	print("-- 第九 / 十一 / 十三轮：盾甲螃蟹只吃冰晶共鸣和冰陨星台（25%）和粉色公主从背后的锤子")
 	await _clear()
 	_fight()
 	d.blue.set_controller(CharacterController.new())
@@ -1396,8 +1396,8 @@ func _run_round9() -> void:
 		hits[who] = hp1 - crab2.health.hp
 		c.global_position = keep
 	crab2.queue_free()
-	check("盾甲螃蟹：冰锥正面 %d / 背后 %d、陨石 %d 都打不动，冰晶共鸣只掉 %d；粉色公主正面 %d、背后 %d，蓝色公主 %d" % [hurt["icicle"], hurt["icicle_back"], hurt["meteor"], hurt["resonance"], hits["pink_front"], hits["pink_back"], hits["blue"]],
-		hurt["icicle"] == 0 and hurt["icicle_back"] == 0 and hurt["meteor"] == 0 and hurt["resonance"] >= 1 and hurt["resonance"] <= 2
+	check("盾甲螃蟹：冰锥正面 %d / 背后 %d 打不动，陨石只掉 %d、冰晶共鸣只掉 %d；粉色公主正面 %d、背后 %d，蓝色公主 %d" % [hurt["icicle"], hurt["icicle_back"], hurt["meteor"], hurt["resonance"], hits["pink_front"], hits["pink_back"], hits["blue"]],
+		hurt["icicle"] == 0 and hurt["icicle_back"] == 0 and hurt["meteor"] >= 1 and hurt["meteor"] <= 3 and hurt["resonance"] >= 1 and hurt["resonance"] <= 2
 		and hits["pink_front"] == 0 and hits["pink_back"] > 0 and hits["blue"] == 0)
 	d.blue.set_controller(d._make_ai(d.blue))
 

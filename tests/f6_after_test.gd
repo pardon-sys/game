@@ -29,6 +29,7 @@ func _ready() -> void:
 	await _run_night()
 	_run_clock()
 	await _run_old_save()
+	await _run_skip()
 	print("\n==== %s (%d 项失败) ====" % ["全部通过" if failures == 0 else "有失败", failures])
 	get_tree().quit(1 if failures else 0)
 
@@ -184,6 +185,20 @@ func _run_old_save() -> void:
 	await main.change_level(Floors.scene("floor_06_war"))
 	await _advance_until(func(): return _level_id() == "floor_06_after" and not StoryDirector.instance.sequence_running, 30.0)
 	check("进战时小镇 → 直接到战后的小镇（%s）" % _level_id(), _level_id() == "floor_06_after" and GameState.has_flag(AfterStory.STARTED))
+
+
+# ------------------------------------------------------------------ 测试跳关
+func _run_skip() -> void:
+	print("-- 测试跳关：能跳到最新的内容")
+	var names := DevConfig.skip_points().map(func(p): return str(p["name"]))
+	check("跳关列表有归途、战时小镇、攻防战第 12 波、七日赎罪第 1 天各段（共 %d 个）" % names.size(),
+		names.has("第七层·归途（开场）") and names.has("地下小镇·战时（队长过场后）") and names.has("攻防战·第 12 波（狂欢要塞）")
+		and names.has("七日赎罪·第 1 天（战后开场）") and names.has("七日赎罪·第 1 天夜里（梦游）"))
+	var night: Dictionary = DevConfig.skip_points().filter(func(p): return p["name"] == "七日赎罪·第 1 天夜里（梦游）")[0]
+	await DevConfig.skip_to(night)
+	await _advance_until(func(): return GameState.has_flag(AfterStory.NIGHT_BUSY) and not Cutscene.is_playing() and not DayClock.passing, 60.0)
+	check("跳到第 1 天夜里：进小屋天黑、梦游开演（%s，%s）" % [_level_id(), DayClock.label()],
+		_level_id() == "floor_06_after_house" and DayClock.day() == 1 and DayClock.slot() == DayClock.NIGHT and GameState.has_flag(AfterStory.NIGHT_BUSY))
 
 
 # ------------------------------------------------------------------ 工具

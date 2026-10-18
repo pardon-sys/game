@@ -6,6 +6,10 @@ extends FortressJobs
 
 const HAND_REACH := 560.0
 const HAND_GRAB := 60.0
+## 巨手抓住人以后强制拖走的距离（往这只手那一侧斜着拖）和时间；松手时顺着拖的方向再甩出去 HAND_FLING 像素
+const HAND_DRAG := 240.0
+const HAND_DRAG_TIME := 1.2
+const HAND_FLING := 80.0
 
 
 func _begin(job: Dictionary) -> bool:
@@ -151,13 +155,18 @@ func _hands(job: Dictionary, delta: float) -> void:
 			burst(arm["p"], HAND_GRAB * speed, "hands")
 			for c in people():
 				if c.global_position.distance_to(arm["p"]) < HAND_GRAB * minf(speed, 1.3) and SiegeTools.can_move(boss, c) and strike(c, 30, "hands", job):
-					var goal := boss.safe_exterior(c.global_position + (at - c.global_position).limit_length(180))
-					var hold := SiegeTools.hold(boss, c, goal, false, 1.2)
+					# 往这只手那一侧斜着拖（侧向为主、带一点朝要塞）：人站在车头跟前时直着拖会马上顶到车身
+					var drag_dir: Vector2 = (Vector2(float(arm["side"]), 0.0) * 0.85 + c.global_position.direction_to(at) * 0.5).normalized()
+					var goal := boss.safe_exterior(c.global_position + drag_dir * HAND_DRAG)
+					var hold := SiegeTools.hold(boss, c, goal, false, HAND_DRAG_TIME)
 					if hold:
 						hold.set_physics_process(false)
+						hold.speed = HAND_DRAG / (HAND_DRAG_TIME * 0.9)
+						hold.slide = true
 						arm["hold"] = weakref(hold)
 						arm["victim"] = weakref(c)
-						arm["hold_left"] = 1.2
+						arm["hold_left"] = HAND_DRAG_TIME
+						arm["drag_dir"] = c.global_position.direction_to(goal)
 						boss.protect(c, 2.0)
 						arm["phase"] = "drag"
 						arm["hit"] = true
@@ -191,8 +200,9 @@ func _release_arm(arm: Dictionary, fling: bool) -> void:
 		if SiegeTools.alive(c):
 			boss.protect(c, 0.8)
 			if fling and not c.is_force_moving():
-				var dir := boss.global_position.direction_to(c.global_position)
-				c.force_move(dir * 200, 0.6, "slide")
+				# 顺着拖的方向再甩出去一段（不再往反方向甩回原地）
+				var dir: Vector2 = arm.get("drag_dir", boss.global_position.direction_to(c.global_position))
+				c.force_move(dir * (HAND_FLING / 0.5), 0.5, "slide")
 	arm["hold"] = null
 	arm["phase"] = "return"
 

@@ -201,6 +201,9 @@ class Hold extends Node2D:
 	var life := 4.0
 	var t := 0.0
 	var ended := false
+	## 拖人的速度（像素 / 秒）；slide = true：碰到墙 / 塔就顺着滑开，不会被卡住不动（要塞巨手的强制位移）
+	var speed := 160.0
+	var slide := false
 	func _ready() -> void:
 		add_to_group("siege_temp")
 		z_index = 17
@@ -219,7 +222,9 @@ class Hold extends Node2D:
 			return
 		global_position = c.global_position
 		if not c.get_meta("siege_chained", false):
-			c.move_and_collide((goal - c.global_position).limit_length(160.0 * delta))
+			var col := c.move_and_collide((goal - c.global_position).limit_length(speed * delta))
+			if col and slide:
+				c.move_and_collide(col.get_remainder().slide(col.get_normal()))
 		queue_redraw()
 	func _draw() -> void:
 		var s := source.get_ref() as Node2D

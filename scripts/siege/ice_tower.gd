@@ -733,6 +733,7 @@ func _meteor(delta: float) -> void:
 		if d:
 			for m in d.enemies_near(to, r, false):
 				var fall := HitData.make_attack(src, dmg, 160.0, true)
+				fall.tag = ShieldCrab.METEOR_TAG     # 盾甲螃蟹吃陨石的 25%
 				m.receive_hit(fall)
 				m.stun(frz)
 			for t in parent.get_tree().get_nodes_in_group("siege_enemy_tower"):
