@@ -18,7 +18,7 @@ from pathlib import Path
 os.chdir(Path(__file__).resolve().parents[2])
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-from after_text import d1, d2, house, punish, town  # noqa: E402
+from after_text import d1, d2, errands, house, play, punish, town  # noqa: E402
 
 POOL = list("ACDEFGHIJKLMNOQRSTUVWXYZabcdefghijklmnopqrsuvwyz0123456789!?$&*+-/:;<>@^_|~()'=,`{}\"")
 POOL += list("αβγδεζηθικλμνξοπρστυφχψωΓΔΘΛΞΠΣΦΨΩ甲乙丙丁戊己庚辛壬癸子丑寅卯辰巳午未申酉戌亥金木水火土日月山川")
@@ -267,6 +267,11 @@ DAYS = {
            "night": {"event": "d1_sleepwalk", "task": "回小屋睡觉"}},
 }
 Path("data/after").mkdir(parents=True, exist_ok=True)
+Path("data/after/errands.json").write_text(json.dumps({
+    "_说明": "七日赎罪的镇民委托（gen_floor06_after.py 从 after_text/errands.py 生成，AfterErrands 读）。", "errands": errands.ERRANDS},
+    ensure_ascii=False, indent="\t") + "\n")
+Path("data/after/play.json").write_text(json.dumps(dict({"_说明": "两位公主的玩闹（after_text/play.py 生成，AfterPlay 读）。"}, **play.PLAY),
+    ensure_ascii=False, indent="\t") + "\n")
 Path("data/after/schedule.json").write_text(json.dumps({
     "_说明": ["七日赎罪的日程（tools/build/gen_floor06_after.py 生成，DayClock 读）。",
              "npcs：镇民（对话文件名）→ default / 时段 / d<N>.{all, 时段, 时段_done} 逐层覆盖的 {at 格, dir, wander, hidden, dialogue}。",
@@ -276,6 +281,7 @@ Path("data/after/schedule.json").write_text(json.dumps({
 # ================================================================ 对话 / 过场 / 楼层表
 dlg = Path("data/dialogues/floor_06")
 files = dict(town.D)
+errands.inject(files)
 files["after_house_objects"] = house.HOUSE
 files["after_house_up_objects"] = house.HOUSE_UP
 files["after_blue_room"] = house.BLUE_ROOM

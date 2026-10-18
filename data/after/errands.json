@@ -1,0 +1,31 @@
+{
+	"_说明": "七日赎罪的镇民委托（gen_floor06_after.py 从 after_text/errands.py 生成，AfterErrands 读）。",
+	"errands": {
+		"cookies": {
+			"name": "送饼干",
+			"npc": "after_granny",
+			"from": [
+				2,
+				1
+			],
+			"hours": 3,
+			"kind": "cookies",
+			"objective": "把饼干送给守城门的队员",
+			"target": [
+				29,
+				37
+			]
+		},
+		"apples": {
+			"name": "捡苹果",
+			"npc": "after_merchant",
+			"from": [
+				2,
+				1
+			],
+			"hours": 2,
+			"kind": "apples",
+			"objective": "捡回十个苹果（别踩痒痒草）"
+		}
+	}
+}

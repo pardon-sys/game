@@ -29,11 +29,33 @@
 		"bed_day": {
 			"lines": [
 				{
-					"text": "……好想躺下。可是天还亮着，活还没干完……",
-					"speaker": "公主",
-					"emotion": "sad"
+					"text": "……要不要躺一会儿？",
+					"speaker": "公主"
+				}
+			],
+			"prompt": "休息一下？",
+			"choices": [
+				{
+					"text": "休息到下一个时段",
+					"next": "bed_rest"
+				},
+				{
+					"text": "不了",
+					"next": ""
 				}
 			]
+		},
+		"bed_rest": {
+			"lines": [
+				{
+					"text": "……就躺一会儿。一会儿就好……",
+					"speaker": "公主",
+					"emotion": "shy"
+				}
+			],
+			"set": {
+				"call": "after_rest"
+			}
 		},
 		"bed_busy": {
 			"lines": [

@@ -572,7 +572,7 @@ data/cutscenes/<楼层组>/  地图内过场；data/theater/<楼层组>/  小剧
 - **号手指挥官** `HornBugler`（配合技 `bugler_squad`，第 4 波起成套出现）：号手在前、其余 10 只排成每排 4 个跟着（`SiegeTeamEffects._bugler_formation`，`escort_of`）；
   号手离墙脚 `RALLY_Y` 以内吹冲锋号，整组挂 `siege_rally`（城墙伤害 ×1.2 走 `stat_mul("wall_damage")`、移速 ×1.15，每 3 秒续），散开冲到号手那段墙下；
   号手倒下整组挂 meta `scatter_until`（3 秒乱走，`SiegeMind.wander`），之后各自重新挑墙段。
-- **蘑菇吸附**：`HazardMushrooms` 每颗蘑菇把 `PULL_R`（120 像素）以内的公主（冲刺中不吸）和可推动的怪往帽上吸（`add_push`，越近越强），吸到帽上照常弹走。
+- **蘑菇吸附**：`HazardMushrooms` 每颗蘑菇把 `PULL_R`（帽子外一格）以内的公主（冲刺中不吸）和可推动的怪往帽上吸（`add_push`，吸力很大、走路挣不开），吸到帽上照常弹走。
 - **撤退**（暂停菜单）：`retreat()` 先 `_busy` + 切 `retreat` 状态再清场，存档 `siege_wave` 保持当前波（从准备阶段重来，不会被当成清完了跳到下一波）。
 - **攻城车**：冲锋路上 `SMASH_R` 以内的冰塔（诱饵冰雕除外）撞碎、基座留着，车撞晕 3 秒（`SMASH_DAZE`）后重新瞄准再冲；撞到粉色公主闷笑 +50%（`PINK_LAUGH`）。
   攻城大队每 14 秒两排共 9~11 辆（`WaveFeatures.CORPS_*`）；最终波固定开着攻城大队和狂欢节（`FINAL_FIXED`，开打 2 秒就来）。
@@ -634,20 +634,41 @@ data/cutscenes/<楼层组>/  地图内过场；data/theater/<楼层组>/  小剧
   （刑床 / 足枷 / 转轮 / 刷子凳，`forced` 测试用）→ 小剧场 `after_roulette_<刑具>` → 记受罚。
 - **忍笑选择 `EndureChoice`**（`scripts/ui/endure_choice.gd`，过场步骤 `endure`）：忍笑条 `time` 秒涨满（`time_by` 按上一次的结果换），期间一直被挠；
   `delay` 秒后弹出应对选项，条满前没选 = `burst`（`burst_var` 计数）；结果写进 `vars[var]`，后面的步骤用 `if` 分支（过场步骤的 `if` 条件同人物对话）。
-  `auto_pick` 测试用（-1 = 等到笑出声）。
-- **剧情 `AfterStory`**：`EVENTS` 事件 id → 在哪张图演 + 过场；导演进图 / 时间变了时调 `run_pending(图)`，事件开始记 `after_ev_<id>`；`finish_slot()`：
-  早上做完自动到下午、下午做完提示回小屋、夜里做完回楼下的床上睡（`go_to_bed`）。进小屋 `enter_house()`：白天的事都做完 → 天黑。夜里的事件进行中开
-  `after_night_busy`（床不能睡）。床 `call: after_sleep`。旧存档（打赢攻防战还在战时小镇）进战时小镇时直接送过来。
+  `auto_pick` 测试用（-1 = 等到笑出声）。目前还没有剧情在用（示众改成了小游戏），留给之后的日常事件。
+- **剧情 `AfterStory`**：推进方式是「自由活动 → 走到目标地点 → 演事件 → 推进时段」。`EVENTS` 事件 id → `where` 哪张图、`auto`（进图就演：开场、
+  夜里进小屋）或 `spot [格x, 格y, 半径格]`（走进圈才演，导演 `_process` 里检测 → `trigger(图)`）、`objective` 目标文字、过场。`objective(图)` 给导演的目标
+  （别的图上指向小屋门口 / 门；没有事件的时段是「自由活动，床上可以休息」）。事件开始记 `after_ev_<id>`；`finish_slot()` 还工时 → `advance_slot()`：
+  早上 → 下午、下午 → 夜晚（宵禁）、夜里 → 回楼下的床上睡（`go_to_bed`）。夜里的事件进行中开 `after_night_busy`（床不能睡）。
+  床：夜里 `call: after_sleep`，白天 `call: after_rest`（`rest()`：这个时段还有事件 / 委托没做完时不让休息）。旧存档（打赢攻防战还在战时小镇）进战时小镇时直接送过来。
+- **目标提示 `ObjectiveMarker`**（`scripts/story/objective_marker.gd`）：目标格上的光圈 + 上下跳的箭头，目标在画面外时屏幕边缘的指向箭头，右下角
+  「第 N 天·时段 / 目标 / 实时状态（`extra`）」；过场 / 对话 / 黑幕时藏起来。
+- **镇民委托 `AfterErrands`**（`levels/floor_06/scripts/after_errands.gd`，数据 `data/after/errands.json` ← `after_text/errands.py`）：有赎罪簿以后、白天、到了
+  `from` 的时段开放（`errand_<id>_open`，委托人头上冒「！」，对话 entries 最前面接委托：`set {vars: {errand_req}, call: errand_start}`）；接下 `_active`，
+  导演摆上玩法节点（`errand_cookies.gd` 送饼干、`errand_apples.gd` 捡苹果）；`complete` 减工时，`fail` 当场被挠一下、回到能接。一次只能接一个。
+  - 闲逛的小孩 `AfterKid`（`after_kid.gd`，场景 `levels/floor_06/scenes/after_kid.tscn`）：`lure` 成立且公主在视野里 → 跑过去挠（闷笑最多 97%，小镇里不会笑晕）
+	→ `on_catch`；冲刺甩开 / 按 E（`on_shoo`）。`pick_zone` / `caption` 给部位和详细字幕（装备回收按穿着的装备写配合挠法）。
+  - 痒痒草 `TickleGrass`（`tickle_grass.gd`）：踩进去被藤蔓缠住（定身）挠腰和脚心，冲刺躲得开。
+- **两位公主的玩闹 `AfterPlay`**（`after_play.gd`，台词 `data/after/play.json` ← `after_text/play.py`）：和跟着的蓝色公主说话「逗她笑一笑」（`call: after_play`），
+  千手痒痒裤的小手按住她；最多 3 次选部位，今天的弱点（`weak_spot()` 按天变）以外的部位台词透露远近，挠中后节奏连击（`KeySequenceQTE`）成功就破功；
+  每天一次（`vars.after_play_day`），成功 `blue_bond` +1。
 - **导演**：`AfterTown`（图例 `f6after`）把跟着的蓝色公主改名 `AfterBlue`、镇民改名成对话文件名（过场里直接用），按日程摆（`place`：藏起来 = `show_flag` 设成
   永远没有的标记）；过场放完重新摆、揭开 `end_dark` 的黑幕（紧接着 `pass_time` 时交给它）。`AfterHouse`（图例 `f6afterhouse`，楼上楼下共用）：楼下进门 → `enter_house`，
   梦游进行中摆出三处可调查的手印（`CLUES`）；楼上蓝色公主（`AfterBlue`）夜里躺床上，三处手印都看过 → `run_upstairs()`。
 - **第 1 天**：早 `after_d1_open`（千手痒痒裤当众发作、队长要砍裤子、私下特训 / 搬砖）→ 午 `after_d1_verdict`（镇长主持、队长宣读，「……那扇门，钥匙是我的」被打断，
   发赎罪簿）→ 回小屋天黑 → 夜 `after_d1_night`（被裤子的手挠脚心挠醒）→ 手印 `after_house_objects#clue_bed / clue_tea`，最后 `clue_stairs`（→ `after_d1_clues`、
   `after_house_up_open`）→ 楼上 `after_d1_night_end` → 第 2 天早上。
-- **第 2 天早上** `after_d2_stocks`：广场足枷（地图上的 `trap type=stocks active=false`，过场 `hold` 锁住）示众，镇民夸她的脚，四轮忍笑选择
-  （羽毛 → 狗尾巴草 → 刷子 + 扳脚趾 → 一群小孩），装没事 / 求饶 / 顶嘴决定下一个人怎么来；笑出声一次 +2 工时（`stocks_bursts`），3 次以上 → 受罚转盘；
-  蓝色公主最后一个来（跟着的 `AfterBlue` 过场开头挪走、结尾放回）。之后的时段内容之后几批补（日程里没有事件的时段算做完）。
-- 测试：`tests/f6_after_test`（胜利去向、开场 → 宣判、日程摆位、赎罪簿和背包页、宵禁锁门、手印顺序、楼上结尾 → 第 2 天、示众的四轮忍笑 / 罚工时 / 转盘 / 分支、日程逐层覆盖、旧存档、跳关）。
+- **第 2 天早上** 足枷示众：走到广场足枷（地图上的 `trap type=stocks active=false`）→ 开场过场 `after_d2_stocks`（镇民夸她的脚、队长讲规矩）
+  → 小游戏 `StocksShow`（`levels/floor_06/scripts/stocks_show.gd`，继承训练小游戏 `TrainingStage` 的画面）→ 结局过场。
+  - 120 秒倒计时，孩子按 `TOOLS` 轮换（羽毛 / 狗尾巴草 / 小刷子 / 一群小孩），每个孩子按 `PICK_WEIGHTS` 挑一个部位（`PARTS`：前脚掌 / 脚心 / 脚趾缝 / 脚弓，
+    闷笑每秒涨的比例、魔力疲倦倍率、挠多久各不同；挠完脚弓下一个孩子工具升级）。
+  - J / E 挣扎降闷笑 2.5%（挠的手停 0.3 秒；同一部位连挣 6 次孩子换部位）；1~4 花求情（3 次）换部位，倒计时 +2 秒。
+  - 孩子换人的间隙三选一（1 装没事「硬撑」挣扎减半 / 2 求饶「丢脸」闷笑 +25%、下一个时间 −30%、求情 +1 / 3 顶嘴「挑衅」两只脚一起挠、疲倦 +30%、挣扎 ×1.5、求情 −1），
+    限时 3 秒，不选算装没事。
+  - 闷笑满 = 笑出声（回到 40%，结算时一次 +2 工时，3 次以上去受罚转盘）；魔力疲倦满 = 自动释放，队长「不符合管教，加时！」+15 秒。
+  - 撑到 0 秒 → `after_d2_stocks_end`（蓝色公主最后一个来，千手痒痒裤的小手偷戳脚心「不算」，送鞋）；释放超过 5 次笑晕 → `after_d2_stocks_faint`
+    （醒来后蓝色公主绘声绘色地描述她昏过去以后孩子们怎么挠她的脚心）。跟着的 `AfterBlue` 开场挪走、结局放回。
+  - 测试接口：`press("J")`、`plead(部位)`、`respond(id)`、`auto_respond`、`time_scale`。
+- 测试：`tests/f6_after_test`（胜利去向、开场 → 宣判、日程摆位、赎罪簿和背包页、宵禁锁门、手印顺序、楼上结尾 → 第 2 天、示众小游戏（挣扎 / 求情 / 应对 / 笑出声 / 释放加时 / 笑晕）/ 罚工时 / 转盘、委托、玩闹、床上休息、日程逐层覆盖、旧存档、跳关）。
 
 ## 公主状态与换美术素材
 

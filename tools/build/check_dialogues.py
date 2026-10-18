@@ -12,9 +12,9 @@ from collections import defaultdict
 from pathlib import Path
 
 os.chdir(Path(__file__).resolve().parents[2])
-CALLS = {"open_shop", "open_training", "rest", "sleep", "open_war_shop", "go_siege", "switch_hero", "after_sleep"}
+CALLS = {"open_shop", "open_training", "rest", "sleep", "open_war_shop", "go_siege", "switch_hero", "after_sleep", "after_rest", "errand_start", "after_play"}
 # 代码里写的变量（不是对话的 set 写的）：七日赎罪的时钟 DayClock
-CODE_VARS = {"after_day", "after_slot"}
+CODE_VARS = {"after_day", "after_slot", "errand_req"}
 
 
 def ids_in(folder):

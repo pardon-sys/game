@@ -1,0 +1,245 @@
+{
+	"name": "笑晕以后",
+	"letterbox": true,
+	"skippable": true,
+	"end_dark": true,
+	"steps": [
+		{
+			"actions": [
+				{
+					"time": 0.0,
+					"do": "fade_out"
+				},
+				{
+					"who": "Stocks_23_24",
+					"on": false,
+					"do": "hold"
+				},
+				{
+					"who": "princess",
+					"to": [
+						21,
+						27.4
+					],
+					"do": "move"
+				},
+				{
+					"who": "after_kid_tom",
+					"to": [
+						40,
+						26
+					],
+					"do": "move"
+				},
+				{
+					"id": "b",
+					"kind": "npc:blue_princess",
+					"at": [
+						22.4,
+						27.6
+					],
+					"dir": "left",
+					"do": "spawn"
+				},
+				{
+					"to": [
+						22,
+						28
+					],
+					"zoom": 1.0,
+					"time": 0.1,
+					"do": "camera"
+				},
+				{
+					"emotion": "helpless_2",
+					"laugh": 0,
+					"do": "pose"
+				}
+			],
+			"wait": 1.2
+		},
+		{
+			"speaker": "",
+			"text": "（…………）"
+		},
+		{
+			"speaker": "",
+			"text": "（……………………）"
+		},
+		{
+			"actions": [
+				{
+					"time": 1.4,
+					"do": "fade_in"
+				}
+			],
+			"wait": 1.4
+		},
+		{
+			"speaker": "公主",
+			"text": "……唔……这里是……",
+			"emotion": "helpless_1"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……醒了。"
+		},
+		{
+			"speaker": "公主",
+			"text": "我……我怎么了……？足枷呢……？",
+			"emotion": "surprise"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……笑晕了。……第六次放魔法的时候。",
+			"actions": [
+				{
+					"who": "b",
+					"dir": "left",
+					"do": "face"
+				}
+			]
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……队长说，晕了的人不算示众。……放下来了。"
+		},
+		{
+			"speaker": "公主",
+			"text": "笑、笑晕……？！我……我什么都不记得了……",
+			"emotion": "shy"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……我记得。……全部。"
+		},
+		{
+			"speaker": "公主",
+			"text": "……全部？",
+			"emotion": "surprise"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……你晕过去以后，小孩们以为你在装睡。"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……汤姆扳开你的脚趾，莉莉拿狗尾巴草，一根一根地，从脚趾缝里穿过去。"
+		},
+		{
+			"speaker": "公主",
+			"text": "等、等一下……",
+			"emotion": "shy"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……你的脚趾，就这样……一张一合。……像在跟草打招呼。"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……然后刷子。从脚跟，顺着脚弓，慢慢刷到前脚掌。……刷到前脚掌的时候，你在梦里笑出了声。"
+		},
+		{
+			"speaker": "公主",
+			"text": "不、不要说了……！",
+			"emotion": "shy",
+			"actions": [
+				{
+					"who": "princess",
+					"kind": "shy",
+					"do": "bubble"
+				}
+			]
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……最后是羽毛。……在脚心画圈。顺时针三圈，逆时针三圈。……汤姆说，这样「最公平」。"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……你一边睡一边说「再来一次」。"
+		},
+		{
+			"speaker": "公主",
+			"text": "我、我才没说！！绝对没说！！",
+			"emotion": "angry",
+			"actions": [
+				{
+					"time": 0.3,
+					"do": "shake"
+				}
+			]
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……说了。……三次。"
+		},
+		{
+			"speaker": "",
+			"text": "（她把脸埋进手心里，耳朵红得快要滴出血来）",
+			"actions": [
+				{
+					"who": "princess",
+					"kind": "shy",
+					"do": "bubble"
+				}
+			]
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……鞋。……给。",
+			"actions": [
+				{
+					"who": "b",
+					"kind": "dots",
+					"do": "bubble"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "……呜……谢谢……",
+			"emotion": "shy"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……还有。……脚，很白。……镇上的人说的。"
+		},
+		{
+			"speaker": "公主",
+			"text": "你也不准评价——！！",
+			"emotion": "angry"
+		},
+		{
+			"actions": [
+				{
+					"time": 0.8,
+					"do": "fade_out"
+				}
+			],
+			"wait": 0.8
+		},
+		{
+			"actions": [
+				{
+					"who": "b",
+					"do": "despawn"
+				},
+				{
+					"who": "AfterBlue",
+					"to": [
+						22.4,
+						27.6
+					],
+					"do": "move"
+				},
+				{
+					"reset": true,
+					"time": 0.0,
+					"do": "camera"
+				}
+			],
+			"wait": 0.1
+		}
+	]
+}

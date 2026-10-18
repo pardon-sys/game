@@ -381,6 +381,23 @@ func after_sleep() -> void:
 	AfterStory.sleep_later()
 
 
+## 七日赎罪：接镇民委托（对话的 set.vars.errand_req 写委托 id）。
+func errand_start() -> void:
+	AfterErrands.start(str(GameState.vars.get("errand_req", "")))
+
+
+## 七日赎罪：和蓝色公主玩闹（逗她笑一笑）。
+func after_play() -> void:
+	runner.end_conversation()
+	AfterPlay.run()
+
+
+## 七日赎罪：小屋里的床（白天）→ 这个时段没事了就休息到下一个时段（AfterStory.rest）。
+func after_rest() -> void:
+	runner.end_conversation()
+	AfterStory.rest_later()
+
+
 ## 这行台词是哪个人物说的（line.npc，或说话人名字和人物表里的名字一样）。
 ## 当前操控角色在人物表里的 id（蓝色公主当主角时是 blue_princess；粉色公主不在人物表里，返回 ""）。
 func hero_npc() -> String:

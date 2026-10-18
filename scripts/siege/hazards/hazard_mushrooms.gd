@@ -13,10 +13,10 @@ const TRIGGER := 12.0
 const HOP_TIME := 0.42
 const TICKLE := 4.0
 const COOL := 4.0
-## 吸附（第十一轮）：PULL_R 以内的公主 / 怪往最近的蘑菇帽上吸
-const PULL_R := 120.0
-const PULL := 55.0
-const MOB_PULL := 45.0
+## 吸附：蘑菇帽外一圈一个格子（PULL_R）以内的公主 / 怪往最近的蘑菇帽上吸，吸力很大（走路挣不开，冲刺挣得开）
+const PULL_R := TRIGGER + 16.0
+const PULL := 360.0
+const MOB_PULL := 300.0
 
 var caps: Array[Vector2] = []
 var _cool := {}
@@ -186,10 +186,10 @@ func _draw() -> void:
 		if warned:
 			# 吸附圈：淡粉色、往里转的旋涡
 			draw_set_transform(p, 0.0, Vector2(1, 0.55))
-			draw_circle(Vector2.ZERO, PULL_R, Color(1, 0.6, 0.8, 0.06))
+			draw_circle(Vector2.ZERO, PULL_R, Color(1, 0.45, 0.75, 0.16))
 			for k in 2:
-				var a0 := -_t * (2.0 + k) + k * PI
-				draw_arc(Vector2.ZERO, PULL_R * (0.5 + 0.35 * k), a0, a0 + 2.2, 18, Color(1, 0.65, 0.85, 0.3), 1.5)
+				var a0 := -_t * (3.0 + k) + k * PI
+				draw_arc(Vector2.ZERO, PULL_R * (0.55 + 0.4 * k), a0, a0 + 2.2, 14, Color(1, 0.5, 0.8, 0.55), 1.5)
 			draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
 		# 蘑菇柄 + 蘑菇帽（踩到时压扁一下）
 		draw_rect(Rect2(p + Vector2(-3, -8 * rise), Vector2(6, 8 * rise)), Color(0.98, 0.92, 0.85))

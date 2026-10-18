@@ -9,6 +9,18 @@
 						"==",
 						1
 					]
+				},
+				"not": "after_done_d1_afternoon"
+			},
+			"node": "d1_wait"
+		},
+		{
+			"if": {
+				"var": {
+					"after_day": [
+						"==",
+						1
+					]
 				}
 			},
 			"node": "d1"
@@ -42,7 +54,8 @@
 				{
 					"text": "……嗯。……那就，最后一个去。"
 				}
-			]
+			],
+			"next": "menu"
 		},
 		"default": {
 			"lines": [
@@ -51,6 +64,51 @@
 				},
 				{
 					"text": "……城墙，修得很快。"
+				}
+			],
+			"next": "menu"
+		},
+		"menu": {
+			"prompt": "……还有事？",
+			"choices": [
+				{
+					"text": "逗她笑一笑",
+					"if": {
+						"flag": "penance_book"
+					},
+					"next": "play"
+				},
+				{
+					"text": "没什么",
+					"next": ""
+				}
+			]
+		},
+		"play": {
+			"lines": [
+				{
+					"text": "……又想干什么。"
+				}
+			],
+			"set": {
+				"call": "after_play"
+			}
+		},
+		"d1_wait": {
+			"lines": [
+				{
+					"text": "……广场。……要宣判了。"
+				},
+				{
+					"text": "……别怕。"
+				},
+				{
+					"text": "说得好像要被宣判的是你一样……",
+					"speaker": "公主",
+					"emotion": "sad"
+				},
+				{
+					"text": "……嗯。"
 				}
 			]
 		}

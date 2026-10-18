@@ -6,9 +6,13 @@ from .common import BLUE, CAP, MAYOR, N, P, L, day_is
 DONE_D1 = "after_done_d1_afternoon"
 
 
-def by_day(name, npc_id, days, default):
-    """days: {天: 台词}；台词可以是 lines 列表，也可以是完整的节点 dict。"""
+def by_day(name, npc_id, days, default, wait=None):
+    """days: {天: 台词}；台词可以是 lines 列表，也可以是完整的节点 dict。
+    wait：第 1 天宣判之前（下午在广场上等着）说的话。"""
     entries, nodes = [], {}
+    if wait:
+        entries.append({"if": dict(day_is(1), **{"not": DONE_D1}), "node": "d1_wait"})
+        nodes["d1_wait"] = {"lines": wait}
     for d, body in days.items():
         nid = "d%d" % d
         entries.append({"if": day_is(d), "node": nid})
@@ -30,8 +34,12 @@ D["after_partner"] = {
     "nodes": {
         "d1": {"lines": [L("……搬砖，累吗。"), L("累死了……手臂都不是自己的了。", P, "sad"),
                          L("……明天，足枷。"), L("……我会去看。"),
-                         L("不准来看！", P, "angry"), L("……嗯。……那就，最后一个去。")]},
-        "default": {"lines": [L("……嗯？"), L("……城墙，修得很快。")]},
+                         L("不准来看！", P, "angry"), L("……嗯。……那就，最后一个去。")], "next": "menu"},
+        "default": {"lines": [L("……嗯？"), L("……城墙，修得很快。")], "next": "menu"},
+        "menu": {"prompt": "……还有事？", "choices": [
+            {"text": "逗她笑一笑", "if": {"flag": "penance_book"}, "next": "play"},
+            {"text": "没什么", "next": ""}]},
+        "play": {"lines": [L("……又想干什么。")], "set": {"call": "after_play"}},
     },
 }
 
@@ -107,6 +115,29 @@ GUARDS = {
 }
 for f, (name, d1) in GUARDS.items():
     D[f] = by_day(name, "guard", {1: d1}, [L("站岗中。")])
+
+# —— 第 1 天下午、宣判之前（大家在广场上等着）说的话
+WAITS = {
+    "after_partner": [L("……广场。……要宣判了。"), L("……别怕。"), L("说得好像要被宣判的是你一样……", P, "sad"), L("……嗯。")],
+    "after_captain": [L("……还没到时候。去台子前面站好，镇长马上就来。")],
+    "after_mayor": [L("咳、咳……宣判词我背了一上午……"), L("你、你先去台子前面站好。")],
+    "after_granny": [L("孩子，别怕。大家都看见你在城门外守了一整晚。")],
+    "after_merchant": [L("哼，等着吧。我的摊子可不能白被踩烂。")],
+    "after_supervisor": [L("账本带来了。……今天要记的账，可不少。")],
+    "after_bonfire_host": [L("宣判完了我请你喝热汤！……要是你还喝得下的话。")],
+    "after_kid_tom": [L("姐姐要被宣判了？宣判是什么？好吃吗？")],
+    "after_kid_lily": [L("姐姐……会被关起来吗？")],
+    "after_maid": [L("广场上人好多……您的脸色不太好，先喝口水吧。")],
+    "after_engineer": [L("宣判台是我早上钉的！结实着呢，你随便站。")],
+    "after_guard_gate": [L("广场那边要宣判了。快去吧。")],
+    "after_guard_gate2": [L("……（瞄了一眼蓝色公主的裤子）……广、广场在那边！")],
+    "after_guard_plaza": [L("宣判台前面给你留了位置。")],
+    "after_guard_wall": [L("城墙的事先放一放，大家都去广场了。")],
+    "after_guard_house": [L("下午广场宣判。……别想着溜回屋里。")],
+}
+for f, w in WAITS.items():
+    D[f]["entries"].insert(0, {"if": dict(day_is(1), **{"not": DONE_D1}), "node": "d1_wait"})
+    D[f]["nodes"]["d1_wait"] = {"lines": w}
 
 # —— 告示板 / 图腾柱 / 足枷 / 宣判台 / 城门（after_objects 一个文件，每样东西一个节点）
 D["after_objects"] = {"name": "", "entries": [{"node": "notice"}], "nodes": {
