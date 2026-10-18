@@ -20,9 +20,11 @@ SIEGE = WAR + ["f6w_ready", "siege_intro_seen", "intro_done_siege_intro", "!sieg
 AFTER_RESET = ["!after_started", "!penance_book", "!after_night_busy", "!after_d1_clues", "!after_house_up_open",
                "!after_d1_clue_bed", "!after_d1_clue_tea"] + \
               ["!after_done_d1_%s" % s for s in ("morning", "afternoon", "night")] + \
-              ["!after_ev_%s" % e for e in ("d1_open", "d1_verdict", "d1_sleepwalk")]
+              ["!after_ev_%s" % e for e in ("d1_open", "d1_verdict", "d1_sleepwalk", "d2_stocks")] + \
+              ["!after_done_d2_morning"] + \
+              ["!errand_%s_%s" % (e, k) for e in ("cookies", "apples") for k in ("open", "active", "done")]
 AFTER = WAR + ["siege_won"] + AFTER_RESET
-BOOK = {"penance_hours": 100, "penance_log": []}
+BOOK = {"penance_hours": 100, "penance_log": [], "penance_punish": [], "after_play_day": 0, "blue_bond": 0}
 
 
 def point(name, floor, flags, vars_=None, **kw):
@@ -45,13 +47,15 @@ POINTS = [
     point("攻防战·第 6 波（风暴熊）", "floor_06_siege", SIEGE, {"day": 2, "siege_wave": 6}),
     point("攻防战·第 9 波（魔偶师）", "floor_06_siege", SIEGE, {"day": 2, "siege_wave": 9}),
     point("攻防战·第 12 波（狂欢要塞）", "floor_06_siege", SIEGE, {"day": 2, "siege_wave": 12}),
-    point("七日赎罪·第 1 天（战后开场）", "floor_06_after", AFTER, {"day": 2, "after_day": 1, "after_slot": 0}, spawn="from_siege"),
-    point("七日赎罪·第 1 天下午（宣判后）", "floor_06_after", AFTER + after_done("morning", "afternoon"),
-          dict({"day": 2, "after_day": 1, "after_slot": 1}, **BOOK), cell=[30, 28]),
-    point("七日赎罪·第 1 天夜里（梦游）", "floor_06_after_house", AFTER + after_done("morning", "afternoon"),
-          dict({"day": 2, "after_day": 1, "after_slot": 1}, **BOOK), spawn="from_town"),
+    point("七日赎罪·第 1 天（战后开场）", "floor_06_after", AFTER, dict({"day": 2, "after_day": 1, "after_slot": 0}, **BOOK), spawn="from_siege"),
+    point("七日赎罪·第 1 天下午（宣判前）", "floor_06_after", AFTER + ["after_started", "after_done_d1_morning", "after_ev_d1_open"],
+          dict({"day": 2, "after_day": 1, "after_slot": 1}, **BOOK), cell=[31, 31]),
+    point("七日赎罪·第 1 天夜里（梦游）", "floor_06_after_house", AFTER + after_done("morning", "afternoon") + ["night"],
+          dict({"day": 2, "after_day": 1, "after_slot": 2}, **BOOK), spawn="from_town"),
     point("七日赎罪·第 2 天早上（示众前）", "floor_06_after_house", AFTER + after_done("morning", "afternoon", "night") + ["!after_done_d2_morning", "!after_ev_d2_stocks"],
           dict({"day": 3, "after_day": 2, "after_slot": 0}, **BOOK), spawn="bed"),
+    point("七日赎罪·第 2 天下午（委托 / 玩闹）", "floor_06_after", AFTER + after_done("morning", "afternoon", "night") + ["after_done_d2_morning", "after_ev_d2_stocks"],
+          dict({"day": 3, "after_day": 2, "after_slot": 1}, **BOOK), cell=[40, 26]),
 ]
 Path("data/dev").mkdir(parents=True, exist_ok=True)
 Path("data/dev/skip_points_more.json").write_text(json.dumps({

@@ -3,6 +3,37 @@
 	"entries": [
 		{
 			"if": {
+				"flag": "errand_apples_open"
+			},
+			"node": "errand_apples"
+		},
+		{
+			"if": {
+				"flag": "errand_apples_active"
+			},
+			"node": "errand_apples_active"
+		},
+		{
+			"if": {
+				"flag": "errand_apples_done",
+				"not": "dlg_floor_06/after_merchant_errand_apples_done"
+			},
+			"node": "errand_apples_done"
+		},
+		{
+			"if": {
+				"var": {
+					"after_day": [
+						"==",
+						1
+					]
+				},
+				"not": "after_done_d1_afternoon"
+			},
+			"node": "d1_wait"
+		},
+		{
+			"if": {
 				"var": {
 					"after_day": [
 						"==",
@@ -31,6 +62,67 @@
 			"lines": [
 				{
 					"text": "今天的苹果……还是烂的。"
+				}
+			]
+		},
+		"d1_wait": {
+			"lines": [
+				{
+					"text": "哼，等着吧。我的摊子可不能白被踩烂。"
+				}
+			]
+		},
+		"errand_apples": {
+			"lines": [
+				{
+					"text": "哎哟哟——刚进的一筐苹果，被搬木料的车一撞，滚了一地！"
+				},
+				{
+					"text": "你手脚快，帮我捡回来？四十秒，捡齐十个！"
+				},
+				{
+					"text": "对了，有几个滚到了那种开粉花的怪草旁边……那草会缠人，小心点。"
+				}
+			],
+			"prompt": "帮忙捡苹果？",
+			"choices": [
+				{
+					"text": "好，计时开始！",
+					"next": "errand_apples_accept"
+				},
+				{
+					"text": "等一下再说",
+					"next": ""
+				}
+			]
+		},
+		"errand_apples_accept": {
+			"lines": [
+				{
+					"text": "预备——开始！"
+				}
+			],
+			"set": {
+				"vars": {
+					"errand_req": "apples"
+				},
+				"call": "errand_start"
+			}
+		},
+		"errand_apples_active": {
+			"lines": [
+				{
+					"text": "快快快！还有好几个没捡！"
+				}
+			]
+		},
+		"errand_apples_done": {
+			"lines": [
+				{
+					"text": "一个都没少，好！这个账我给你记一笔。"
+				},
+				{
+					"text": "……摊子被踩烂的那笔，另算。"
 				}
 			]
 		}

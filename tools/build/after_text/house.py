@@ -1,5 +1,6 @@
 """蓝色小屋（战后）：楼下粉色公主的房间（after_house_objects）、楼上蓝色公主的房间（after_house_up_objects）、楼上的蓝色公主（after_blue_room）。
-床：夜里、夜里的事件不在进行中（after_night_busy 没开）→ 睡觉（call after_sleep）。
+床：夜里、夜里的事件不在进行中（after_night_busy 没开）→ 睡觉（call after_sleep）；
+    白天 → 可以休息到下一个时段（call after_rest：这个时段还有事没做时不让休息，AfterStory.rest）。
 梦游的三处手印：clue_bed / clue_tea 随便先看，clue_stairs 要前两处都看过 → after_d1_clues + after_house_up_open（楼梯解锁）。
 """
 from .common import BLUE, N, P, L
@@ -9,7 +10,9 @@ BUSY = "after_night_busy"
 HOUSE = {"name": "", "entries": [{"node": "bed"}], "nodes": {
     "bed": {"goto": [{"if": {"flag": "night", "not": BUSY}, "node": "bed_sleep"}, {"if": {"flag": BUSY}, "node": "bed_busy"},
                      {"node": "bed_day"}]},
-    "bed_day": {"lines": [L("……好想躺下。可是天还亮着，活还没干完……", P, "sad")]},
+    "bed_day": {"lines": [L("……要不要躺一会儿？", P)], "prompt": "休息一下？", "choices": [
+        {"text": "休息到下一个时段", "next": "bed_rest"}, {"text": "不了", "next": ""}]},
+    "bed_rest": {"lines": [L("……就躺一会儿。一会儿就好……", P, "shy")], "set": {"call": "after_rest"}},
     "bed_busy": {"lines": [L("……那些手印还没弄清楚。睡不着。", P, "angry")]},
     "bed_sleep": {"lines": [L("……呼啊。今天就到这里吧……", P, "shy")], "set": {"call": "after_sleep"}},
     "window": {"goto": [{"if": {"flag": "night"}, "node": "window_night"}],

@@ -8,6 +8,18 @@
 						"==",
 						1
 					]
+				},
+				"not": "after_done_d1_afternoon"
+			},
+			"node": "d1_wait"
+		},
+		{
+			"if": {
+				"var": {
+					"after_day": [
+						"==",
+						1
+					]
 				}
 			},
 			"node": "d1"
@@ -31,6 +43,13 @@
 			"lines": [
 				{
 					"text": "姐姐，加油还债哦。"
+				}
+			]
+		},
+		"d1_wait": {
+			"lines": [
+				{
+					"text": "姐姐……会被关起来吗？"
 				}
 			]
 		}

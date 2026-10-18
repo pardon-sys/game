@@ -1,0 +1,342 @@
+{
+	"_说明": "两位公主的玩闹（after_text/play.py 生成，AfterPlay 读）。",
+	"intro": [
+		{
+			"text": "……你又板着脸了。",
+			"speaker": "公主"
+		},
+		{
+			"text": "……一直这样。",
+			"speaker": "蓝色的公主"
+		},
+		{
+			"text": "今天我决定了——一定要让你笑一个！",
+			"speaker": "公主",
+			"emotion": "happy"
+		},
+		{
+			"text": "……不要。",
+			"speaker": "蓝色的公主"
+		},
+		{
+			"text": "（蓝色公主转身想走。裤腿上的条纹却「唰」地亮了，几只小手伸出来，一左一右按住了她的胳膊）",
+			"speaker": ""
+		},
+		{
+			"text": "……！放、放开……你到底是哪边的……",
+			"speaker": "蓝色的公主",
+			"emotion": "angry"
+		},
+		{
+			"text": "看吧，连裤子都站在我这边！",
+			"speaker": "公主",
+			"emotion": "happy"
+		}
+	],
+	"spots": {
+		"waist": {
+			"name": "腰",
+			"zone": "waist",
+			"miss_far": [
+				{
+					"text": "（指尖顺着腰侧轻轻划过去）",
+					"speaker": ""
+				},
+				{
+					"text": "……就这样？",
+					"speaker": "蓝色的公主"
+				},
+				{
+					"text": "……一点感觉都没有。",
+					"speaker": "蓝色的公主"
+				}
+			],
+			"miss_near": [
+				{
+					"text": "（指尖戳了戳她的腰侧）",
+					"speaker": ""
+				},
+				{
+					"text": "……唔。……没、没事。",
+					"speaker": "蓝色的公主"
+				},
+				{
+					"text": "……往下……不对，我什么都没说。",
+					"speaker": "蓝色的公主"
+				}
+			],
+			"hit": [
+				{
+					"text": "（指尖刚碰到腰侧，她整个人一抖）",
+					"speaker": ""
+				},
+				{
+					"text": "……那、那里……不行……",
+					"speaker": "蓝色的公主",
+					"emotion": "shy"
+				},
+				{
+					"text": "找到了！就是这里！",
+					"speaker": "公主",
+					"emotion": "happy"
+				}
+			],
+			"break": [
+				{
+					"text": "……噗、哈……哈哈哈……！住、住手……腰、腰不行……！",
+					"speaker": "蓝色的公主",
+					"emotion": "shy"
+				},
+				{
+					"text": "（被小手按着胳膊，躲也躲不开，她笑得弯下了腰）",
+					"speaker": ""
+				}
+			]
+		},
+		"thigh": {
+			"name": "大腿",
+			"zone": "thigh",
+			"miss_far": [
+				{
+					"text": "（隔着裤子在大腿外侧挠了几下）",
+					"speaker": ""
+				},
+				{
+					"text": "……裤子很厚。",
+					"speaker": "蓝色的公主"
+				},
+				{
+					"text": "……没用的。",
+					"speaker": "蓝色的公主"
+				}
+			],
+			"miss_near": [
+				{
+					"text": "（手指在大腿上打圈）",
+					"speaker": ""
+				},
+				{
+					"text": "……嗯。……还、还好。",
+					"speaker": "蓝色的公主"
+				},
+				{
+					"text": "……别往那边……我是说，随便你。",
+					"speaker": "蓝色的公主"
+				}
+			],
+			"hit": [
+				{
+					"text": "（指尖顺着大腿内侧轻轻往上挪了一点）",
+					"speaker": ""
+				},
+				{
+					"text": "……停……那里……",
+					"speaker": "蓝色的公主",
+					"emotion": "shy"
+				},
+				{
+					"text": "嘿嘿，声音在抖哦～",
+					"speaker": "公主",
+					"emotion": "happy"
+				}
+			],
+			"break": [
+				{
+					"text": "哈……哈哈哈……！大、大腿……不准……画圈……！",
+					"speaker": "蓝色的公主",
+					"emotion": "shy"
+				},
+				{
+					"text": "（裤子的小手还在帮倒忙，跟着一起在她腿上挠）",
+					"speaker": ""
+				}
+			]
+		},
+		"butt": {
+			"name": "屁股",
+			"zone": "butt",
+			"miss_far": [
+				{
+					"text": "（戳了戳她的屁股）",
+					"speaker": ""
+				},
+				{
+					"text": "……",
+					"speaker": "蓝色的公主",
+					"emotion": "angry"
+				},
+				{
+					"text": "……幼稚。",
+					"speaker": "蓝色的公主"
+				}
+			],
+			"miss_near": [
+				{
+					"text": "（左右各捏了一下）",
+					"speaker": ""
+				},
+				{
+					"text": "……！……你、你……",
+					"speaker": "蓝色的公主",
+					"emotion": "shy"
+				},
+				{
+					"text": "……不痒。……就是不痒。",
+					"speaker": "蓝色的公主"
+				}
+			],
+			"hit": [
+				{
+					"text": "（手指在她屁股和大腿交界的地方来回轻轻刮了一下）",
+					"speaker": ""
+				},
+				{
+					"text": "……那里……别……",
+					"speaker": "蓝色的公主",
+					"emotion": "shy"
+				},
+				{
+					"text": "原来是这里呀～",
+					"speaker": "公主",
+					"emotion": "happy"
+				}
+			],
+			"break": [
+				{
+					"text": "噗……哈哈……！别、别刮……交界那里……哈哈哈……！",
+					"speaker": "蓝色的公主",
+					"emotion": "shy"
+				},
+				{
+					"text": "（她想往后躲，却被小手牢牢按在原地，只能笑得直跺脚）",
+					"speaker": ""
+				}
+			]
+		},
+		"knee": {
+			"name": "膝盖窝",
+			"zone": "thigh",
+			"miss_far": [
+				{
+					"text": "（挠了挠她的膝盖窝）",
+					"speaker": ""
+				},
+				{
+					"text": "……那是膝盖。……你在干什么。",
+					"speaker": "蓝色的公主"
+				}
+			],
+			"miss_near": [
+				{
+					"text": "（指尖在膝盖窝里点了点）",
+					"speaker": ""
+				},
+				{
+					"text": "……唔……",
+					"speaker": "蓝色的公主"
+				},
+				{
+					"text": "……往上一点……不，没什么。",
+					"speaker": "蓝色的公主"
+				}
+			],
+			"hit": [
+				{
+					"text": "（指尖一钻进膝盖窝，她的腿就软了一下）",
+					"speaker": ""
+				},
+				{
+					"text": "……那、那里是……禁止……",
+					"speaker": "蓝色的公主",
+					"emotion": "shy"
+				},
+				{
+					"text": "禁止就是有效果嘛！",
+					"speaker": "公主",
+					"emotion": "happy"
+				}
+			],
+			"break": [
+				{
+					"text": "哈、哈哈哈……！膝、膝盖窝……站不住了……哈哈……！",
+					"speaker": "蓝色的公主",
+					"emotion": "shy"
+				},
+				{
+					"text": "（她腿一软，差点坐到地上，被小手扶着胳膊撑住了——然后继续笑）",
+					"speaker": ""
+				}
+			]
+		}
+	},
+	"combo_fail": [
+		{
+			"text": "……哼。……忍住了。",
+			"speaker": "蓝色的公主"
+		},
+		{
+			"text": "诶——差一点点！",
+			"speaker": "公主",
+			"emotion": "sad"
+		}
+	],
+	"win": [
+		{
+			"text": "……哈……哈……",
+			"speaker": "蓝色的公主",
+			"emotion": "shy"
+		},
+		{
+			"text": "笑了！你刚才笑了！笑得好大声！",
+			"speaker": "公主",
+			"emotion": "happy"
+		},
+		{
+			"text": "……没有。……是裤子。……裤子笑的。",
+			"speaker": "蓝色的公主",
+			"emotion": "angry"
+		},
+		{
+			"text": "裤子会笑吗？",
+			"speaker": "公主",
+			"emotion": "happy"
+		},
+		{
+			"text": "……会。……今天开始会。",
+			"speaker": "蓝色的公主"
+		},
+		{
+			"text": "（小手松开了她的胳膊，在半空中得意地晃了晃）",
+			"speaker": ""
+		}
+	],
+	"lose": [
+		{
+			"text": "……结束了？",
+			"speaker": "蓝色的公主"
+		},
+		{
+			"text": "呜……今天没找到……",
+			"speaker": "公主",
+			"emotion": "sad"
+		},
+		{
+			"text": "……明天，也找不到。",
+			"speaker": "蓝色的公主"
+		},
+		{
+			"text": "（嘴上这么说，她的嘴角好像动了一下）",
+			"speaker": ""
+		}
+	],
+	"again": [
+		{
+			"text": "……今天，不玩了。",
+			"speaker": "蓝色的公主"
+		},
+		{
+			"text": "……腿还在软。",
+			"speaker": "蓝色的公主"
+		}
+	]
+}

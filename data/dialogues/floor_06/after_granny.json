@@ -3,6 +3,37 @@
 	"entries": [
 		{
 			"if": {
+				"flag": "errand_cookies_open"
+			},
+			"node": "errand_cookies"
+		},
+		{
+			"if": {
+				"flag": "errand_cookies_active"
+			},
+			"node": "errand_cookies_active"
+		},
+		{
+			"if": {
+				"flag": "errand_cookies_done",
+				"not": "dlg_floor_06/after_granny_errand_cookies_done"
+			},
+			"node": "errand_cookies_done"
+		},
+		{
+			"if": {
+				"var": {
+					"after_day": [
+						"==",
+						1
+					]
+				},
+				"not": "after_done_d1_afternoon"
+			},
+			"node": "d1_wait"
+		},
+		{
+			"if": {
 				"var": {
 					"after_day": [
 						"==",
@@ -36,6 +67,71 @@
 			"lines": [
 				{
 					"text": "店还没盖好，饼干先欠着。"
+				}
+			]
+		},
+		"d1_wait": {
+			"lines": [
+				{
+					"text": "孩子，别怕。大家都看见你在城门外守了一整晚。"
+				}
+			]
+		},
+		"errand_cookies": {
+			"lines": [
+				{
+					"text": "孩子，来得正好。刚烤好一篮饼干，想送给守城门的队员们——他们守了一整夜呢。"
+				},
+				{
+					"text": "奶奶腿脚不方便，你帮我跑一趟？"
+				},
+				{
+					"text": "就是……路上那几个小馋猫，鼻子灵得很。闻到香味，准会缠上来。"
+				}
+			],
+			"prompt": "帮奶奶送饼干？",
+			"choices": [
+				{
+					"text": "交给我吧！",
+					"next": "errand_cookies_accept"
+				},
+				{
+					"text": "等一下再说",
+					"next": ""
+				}
+			]
+		},
+		"errand_cookies_accept": {
+			"lines": [
+				{
+					"text": "好孩子。篮子拿稳了——被小鬼们缠上了，分他们一块就肯走；不想给，就跑快点。"
+				},
+				{
+					"text": "（拿到了一篮饼干，一共六块）",
+					"speaker": ""
+				}
+			],
+			"set": {
+				"vars": {
+					"errand_req": "cookies"
+				},
+				"call": "errand_start"
+			}
+		},
+		"errand_cookies_active": {
+			"lines": [
+				{
+					"text": "快去吧，饼干要凉了。守城门的队员在南边城门那里。"
+				}
+			]
+		},
+		"errand_cookies_done": {
+			"lines": [
+				{
+					"text": "队员们说饼干很好吃。辛苦你啦。"
+				},
+				{
+					"text": "……腰没被那几个小鬼挠坏吧？呵呵。"
 				}
 			]
 		}

@@ -29,6 +29,9 @@ func _ready() -> void:
 	await _run_book()
 	await _run_night()
 	await _run_day2()
+	await _run_errands()
+	await _run_play()
+	await _run_rest()
 	_run_clock()
 	await _run_old_save()
 	await _run_skip()
@@ -58,9 +61,9 @@ func _run_data() -> void:
 	check("镇长有自己的行走图", ResourceLoader.exists(str(Dialogue.npcs.get("mayor", {}).get("sprite", ""))))
 
 
-# ------------------------------------------------------------------ 第 1 天：开场 → 宣判
+# ------------------------------------------------------------------ 第 1 天：开场 → 自由活动 → 走到宣判台 → 宣判 → 晚上
 func _run_day1() -> void:
-	print("-- 第 1 天：战后开场 → 广场宣判")
+	print("-- 第 1 天：战后开场 → 自由活动 → 广场宣判")
 	var morning := {}
 	var watch := func(id: String):
 		if id == "after_d1_open":
@@ -72,27 +75,36 @@ func _run_day1() -> void:
 	Cutscene.started.connect(watch)
 	GameState.pending_spawn = "from_siege"
 	await main.change_level(Floors.scene("floor_06_after"))
-	await _advance_until(func(): return GameState.has_flag("after_done_d1_afternoon") and not Cutscene.is_playing() and not DayClock.passing, 120.0)
+	await _advance_until(func(): return DayClock.done(1, 0) and not Cutscene.is_playing() and not DayClock.passing, 120.0)
 	Cutscene.started.disconnect(watch)
+	await _wait(0.5)
 	check("进战后的小镇 = 第 1 天早上开始（after_started、开场时是早上 %s）" % morning.get("slot"),
 		GameState.has_flag("after_started") and morning.get("slot") == DayClock.MORNING)
-	check("开场的过场放了（千手痒痒裤当众发作）→ 自动到下午 → 宣判的过场（%s）" % [seen_cuts],
-		seen_cuts.has("after_d1_open") and seen_cuts.has("after_d1_verdict") and seen_cuts.find("after_d1_open") < seen_cuts.find("after_d1_verdict"))
 	check("开场时只有队长和守城的队员（奶奶藏着 %s、队长在 %s）" % [not morning.get("granny", true), morning.get("captain")],
 		morning.get("granny") == false and morning.get("captain") == true)
-	check("现在是第 1 天下午，早上和下午都做完了", DayClock.day() == 1 and DayClock.slot() == DayClock.AFTERNOON
-		and DayClock.done(1, 0) and DayClock.done(1, 1))
-	check("宣判之后拿到赎罪簿：100 工时", PenanceBook.started() and PenanceBook.hours() == 100)
-	await _wait(1.0)
+	check("开场演完 → 到下午，宣判不会接着自动演（%s，%s）" % [DayClock.label(), seen_cuts],
+		DayClock.slot() == DayClock.AFTERNOON and not DayClock.done(1, 1) and not seen_cuts.has("after_d1_verdict"))
 	check("过场留下的黑幕揭开了（%.2f）" % Cutscene.curtain.color.a, Cutscene.curtain.color.a < 0.05)
-	# 镇民：节点改名成对话文件名、宣判完散回默认位置；蓝色公主跟着
-	var cap := _node("after_captain") as Resident
-	var want: Vector2 = Cutscene.cell_to_world([34, 29])
-	check("宣判完队长回到默认位置（离 %.0f）、镇长也在广场上" % (cap.global_position.distance_to(want) if cap else -1.0),
-		cap != null and cap.global_position.distance_to(want) < 4.0 and cap.visible and (_node("after_mayor") as Node2D).visible)
+	var mk := _node("Objective") as ObjectiveMarker
+	var spot: Vector2 = Cutscene.cell_to_world([31, 27])
+	check("目标提示：「%s」，标记在宣判台前（离 %.0f）" % [mk.text if mk else "", mk.global_position.distance_to(spot) if mk else -1.0],
+		mk != null and mk.text.contains("宣判台") and mk.has_cell and mk.global_position.distance_to(spot) < 2.0)
+	await _wait(1.0)
+	check("自由活动时等了一秒也不会自己开演", not seen_cuts.has("after_d1_verdict") and not Cutscene.is_playing())
 	var blue := _node("AfterBlue") as PlayableCharacter
 	check("蓝色公主（AfterBlue）跟着粉色公主、粉色公主在操控", blue != null and blue.follow and GameState.player.character_id == "pink")
-	# 镇民第 1 天的对话
+	await _talk("floor_06/after_mayor", "")
+	check("宣判之前镇民说的是等着宣判的话", GameState.has_flag("dlg_floor_06/after_mayor_d1_wait"))
+	# 走到宣判台前 → 宣判 → 晚上
+	_go(spot)
+	await _advance_until(func(): return DayClock.done(1, 1) and not Cutscene.is_playing() and not DayClock.passing, 120.0)
+	await _wait(0.5)
+	check("走到宣判台前 → 宣判的过场（%s）→ 到晚上（%s）" % [seen_cuts.has("after_d1_verdict"), DayClock.label()],
+		seen_cuts.has("after_d1_verdict") and DayClock.slot() == DayClock.NIGHT and GameState.has_flag("night"))
+	check("宣判之后拿到赎罪簿：100 工时", PenanceBook.started() and PenanceBook.hours() == 100)
+	var door: Vector2 = Cutscene.cell_to_world(AfterStory.TOWN_HOUSE_DOOR)
+	check("晚上的目标：回蓝色小屋（标记在小屋门口）", mk.text.contains("回蓝色小屋") and mk.global_position.distance_to(door) < 2.0)
+	check("晚上镇民回家了（队长不在），宵禁的守卫还在", not (_node("after_captain") as Node2D).visible and (_node("after_guard_gate") as Node2D).visible)
 	await _talk("floor_06/after_captain", "", [0, 2])
 	check("队长第 1 天的对话（问钥匙被岔开）", GameState.has_flag("dlg_floor_06/after_captain_d1") and GameState.has_flag("dlg_floor_06/after_captain_d1_key"))
 
@@ -176,6 +188,11 @@ func _run_day2() -> void:
 	get_tree().node_added.connect(watch)
 	GameState.pending_spawn = "from_house"
 	await main.change_level(Floors.scene("floor_06_after"))
+	await _wait(1.5)
+	var mk := _node("Objective") as ObjectiveMarker
+	check("第 2 天早上：目标是广场的足枷，进镇不会自己开演（%s）" % (mk.text if mk else ""),
+		mk != null and mk.text.contains("足枷") and not seen_cuts.has("after_d2_stocks"))
+	_go(Cutscene.cell_to_world([23, 25.5]))
 	await _advance_until(func(): return DayClock.done(2, DayClock.MORNING) and not Cutscene.is_playing() and not DayClock.passing and not CG.is_busy(), 180.0)
 	get_tree().node_added.disconnect(watch)
 	EndureChoice.auto_pick = null
@@ -202,6 +219,95 @@ func _run_day2() -> void:
 	check("每轮都装没事：一次都没笑出声（%s，最后一轮 %s）" % [GameState.vars.get("stocks_bursts"), GameState.vars.get("stocks_last")],
 		int(GameState.vars.get("stocks_bursts", -1)) == 0 and GameState.vars.get("stocks_last") == "calm")
 	Cutscene.curtain_clear(0.01)
+
+
+# ------------------------------------------------------------------ 镇民委托
+func _run_errands() -> void:
+	print("-- 镇民委托：送饼干、捡苹果")
+	await _wait(0.5)
+	check("第 2 天下午：送饼干和捡苹果都能接，委托人头上冒「！」",
+		GameState.has_flag("errand_cookies_open") and GameState.has_flag("errand_apples_open")
+		and _node("after_granny").get_node_or_null("ErrandMark") != null and _node("after_merchant").get_node_or_null("ErrandMark") != null)
+	var h0 := PenanceBook.hours()
+	# 送饼干：接下 → 小孩闻香过来挠、拿走一块 → 送到守城门的队员
+	await _talk("floor_06/after_granny", "", [0])
+	await _wait(0.3)
+	var runner := _node("Errand_cookies")
+	var kids: Array = main.level.find_children("*", "AfterKid", true, false)
+	check("接下送饼干：篮子 6 块、路上 3 个小孩、别的委托暂时接不了（%d 个小孩）" % kids.size(),
+		AfterErrands.active() == "cookies" and runner != null and kids.size() == 3 and int(GameState.vars.get("errand_cookies_left", 0)) == 6
+		and not GameState.has_flag("errand_apples_open"))
+	var kid := kids[0] as AfterKid
+	var l0 := GameState.player.laugh.value
+	_go(kid.global_position + Vector2(20, 0))
+	await _advance_until(func(): return int(GameState.vars.get("errand_cookies_left", 0)) < 6, 8.0)
+	check("小孩闻到香味跑过来挠（闷笑 %.0f → %.0f），拿走一块饼干（剩 %d）" % [l0, GameState.player.laugh.value, int(GameState.vars.get("errand_cookies_left", 0))],
+		int(GameState.vars.get("errand_cookies_left", 0)) == 5 and GameState.player.laugh.value > l0)
+	var k2 := kids[1] as AfterKid
+	k2.talk(GameState.player)
+	check("按 E 哄走：分他一块就走了（剩 %d）" % int(GameState.vars.get("errand_cookies_left", 0)), int(GameState.vars.get("errand_cookies_left", 0)) == 4 and k2.mode == AfterKid.Mode.LEAVE)
+	GameState.player.laugh.clear()
+	_go((_node("after_guard_gate") as Node2D).global_position + Vector2(0, 10))
+	await _advance_until(func(): return AfterErrands.is_done("cookies") and not Dialogue.is_active(), 10.0)
+	check("送到守城门的队员 → 委托完成、减 3 工时（%d → %d）、小孩散了" % [h0, PenanceBook.hours()],
+		AfterErrands.is_done("cookies") and PenanceBook.hours() == h0 - 3 and main.level.find_children("*", "AfterKid", true, false).is_empty())
+	# 捡苹果：失败一次（时间到）→ 再接 → 捡齐
+	await _talk("floor_06/after_merchant", "", [0])
+	await _wait(0.3)
+	var ap := _node("Errand_apples")
+	check("接下捡苹果：地上 10 个苹果、5 丛痒痒草", ap != null and get_tree().get_nodes_in_group("tickle_grass").size() == 5)
+	var grass := get_tree().get_nodes_in_group("tickle_grass")[0] as TickleGrass
+	_go(grass.global_position)
+	await _wait(0.5)
+	check("踩到痒痒草：被缠住（定身）、闷笑上涨", grass.caught >= 1 and GameState.player.status.is_rooted())
+	await _wait(1.5)
+	ap.left_t = 0.05
+	await _advance_until(func(): return AfterErrands.active() == "" and not Dialogue.is_active(), 10.0)
+	check("时间到没捡齐 → 失败（被掸子挠一下），委托回到能接", not AfterErrands.is_done("apples") and GameState.has_flag("errand_apples_open"))
+	GameState.player.laugh.clear()
+	await _talk("floor_06/after_merchant", "", [0])
+	await _wait(0.3)
+	ap = _node("Errand_apples")
+	for c in ap.APPLES:
+		_go(Cutscene.cell_to_world(c))
+		await _wait(0.12)
+	await _advance_until(func(): return AfterErrands.is_done("apples") and not Dialogue.is_active(), 10.0)
+	check("十个苹果都捡回来 → 委托完成", AfterErrands.is_done("apples") and not GameState.has_flag("errand_apples_open"))
+	GameState.player.laugh.clear()
+
+
+# ------------------------------------------------------------------ 两位公主的玩闹
+func _run_play() -> void:
+	print("-- 两位公主的玩闹")
+	var weak := AfterPlay.weak_spot()
+	var other: String = AfterPlay.SPOTS[(AfterPlay.SPOTS.find(weak) + 2) % 4]
+	check("每天的弱点不一样（第 2 天 %s、第 3 天 %s）" % [weak, AfterPlay.weak_spot(3)], AfterPlay.weak_spot(2) != AfterPlay.weak_spot(3))
+	var b0 := int(GameState.vars.get("blue_bond", 0))
+	AfterPlay.auto_picks = [AfterPlay.SPOTS.find(other), AfterPlay.SPOTS.find(weak)]
+	AfterPlay.auto_qte = true
+	await _talk("floor_06/after_partner", "", [0])
+	await _advance_until(func(): return AfterPlay.played_today() and not AfterPlay.running and not Dialogue.is_active(), 30.0)
+	check("先挠错一个、再挠中弱点 + 连击成功 → 她破功大笑，关系值 +1（%d → %d）" % [b0, int(GameState.vars.get("blue_bond", 0))],
+		int(GameState.vars.get("blue_bond", 0)) == b0 + 1 and AfterPlay.played_today())
+	AfterPlay.auto_picks = [0, 0, 0]
+	await _talk("floor_06/after_partner", "", [0])
+	await _wait(0.5)
+	await _advance_until(func(): return not AfterPlay.running and not Dialogue.is_active(), 10.0)
+	check("一天只能玩一次（关系值不再加）", int(GameState.vars.get("blue_bond", 0)) == b0 + 1)
+	AfterPlay.auto_picks = []
+	AfterPlay.auto_qte = null
+
+
+# ------------------------------------------------------------------ 空时段：床上休息
+func _run_rest() -> void:
+	print("-- 空时段：小屋的床上休息到晚上")
+	GameState.pending_spawn = "from_town"
+	await main.change_level(Floors.scene("floor_06_after_house"))
+	await _wait(0.5)
+	check("第 2 天下午没有剧情：进小屋不会天黑", DayClock.slot() == DayClock.AFTERNOON)
+	await _talk("floor_06/after_house_objects", "bed", [0])
+	await _advance_until(func(): return DayClock.slot() == DayClock.NIGHT and not DayClock.passing, 10.0)
+	check("床上「休息到下一个时段」→ 晚上（%s）" % DayClock.label(), DayClock.day() == 2 and DayClock.slot() == DayClock.NIGHT)
 
 
 # ------------------------------------------------------------------ 时钟 / 日程
@@ -245,6 +351,14 @@ func _run_skip() -> void:
 
 
 # ------------------------------------------------------------------ 工具
+## 把公主放到某个位置（模拟走过去）
+func _go(at: Vector2) -> void:
+	var p := GameState.player
+	p.global_position = at
+	if p.camera:
+		p.camera.reset_smoothing()
+
+
 func _cell(info: Dictionary) -> Vector2:
 	var a: Array = info.get("at", [-1, -1])
 	return Vector2(float(a[0]), float(a[1]))

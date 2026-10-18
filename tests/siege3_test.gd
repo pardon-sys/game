@@ -1711,12 +1711,17 @@ func _run_round12() -> void:
 	var mush := d.spawn_hazard("mushrooms", home) as HazardMushrooms
 	await _until(func(): return mush.warned, 3.0)
 	var cap := mush.global_position + mush.caps[4]
+	# 吸附圈只有帽子外一格：50 像素外不吸，一格以内一下子吸上帽子
 	p.global_position = cap + Vector2(50, 0)
 	p.end_forced_move()
+	await _wait(0.4)
+	var far_d := p.global_position.distance_to(cap)
+	p.global_position = cap + Vector2(HazardMushrooms.PULL_R - 3.0, 0)
+	p.end_forced_move()
 	var d0 := p.global_position.distance_to(cap)
-	await _wait(0.5)
+	await _wait(0.3)
 	var pulled := p.global_position.distance_to(cap) < d0 - 4.0 or mush._bouncing.has(p.get_instance_id())
-	ok["蘑菇把公主吸过去（%.0f → %.0f）" % [d0, p.global_position.distance_to(cap)]] = pulled
+	ok["蘑菇只吸一格以内（50 像素外不动：%.0f），一格以内一下子吸过去（%.0f → %.0f）" % [far_d, d0, p.global_position.distance_to(cap)]] = pulled and far_d > 46.0
 	d.clear_field()
 	_fight()
 	# 挑薄弱墙段：一段墙前面堆满冰塔，怪几乎不挑它

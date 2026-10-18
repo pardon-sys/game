@@ -8,6 +8,18 @@
 						"==",
 						1
 					]
+				},
+				"not": "after_done_d1_afternoon"
+			},
+			"node": "d1_wait"
+		},
+		{
+			"if": {
+				"var": {
+					"after_day": [
+						"==",
+						1
+					]
 				}
 			},
 			"node": "d1"
@@ -28,6 +40,13 @@
 			"lines": [
 				{
 					"text": "站岗中。"
+				}
+			]
+		},
+		"d1_wait": {
+			"lines": [
+				{
+					"text": "下午广场宣判。……别想着溜回屋里。"
 				}
 			]
 		}

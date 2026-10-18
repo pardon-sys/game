@@ -125,7 +125,7 @@ def d1_verdict():
         line(BLUE, "……", None, [A("move", who=B, to=[31.5, 27], time=0.8), A("face", who=B, dir="left")]),
         line(BLUE, "……对不起。"),
         line(P, "诶？你道什么歉呀？", "surprise", [A("face", who="princess", dir="right")]),
-        line(BLUE, "……没什么。……搬砖，去吧。"),
+        line(BLUE, "……没什么。……天快黑了，回家吧。"),
         {"actions": [A("fade_out", time=0.8)], "wait": 0.8},
         {"actions": [A("camera", reset=True, time=0.0)], "wait": 0.1},
     ]

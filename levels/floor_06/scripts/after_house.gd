@@ -1,7 +1,7 @@
 class_name AfterHouse
 extends Node2D
 ## 蓝色小屋（战后，七日赎罪）的导演，楼上楼下共用：
-##   楼下（floor_06_after_house，粉色公主的房间）：进门时白天的事都做完了 → 天黑（AfterStory.enter_house），再演夜里的事件；
+##   楼下（floor_06_after_house，粉色公主的房间）：进门时演这里自动演的事件（夜里的事件，AfterStory.enter_house）；目标提示 ObjectiveMarker；
 ##     第 1 天夜里被挠醒之后、梦游还没结束：地上出现三处可以调查的发光手印（CLUES，对话 after_house_objects#clue_*）。
 ##   楼上（floor_06_after_house_up，蓝色公主的房间）：蓝色公主（节点改名 AfterBlue）白天站着，夜里躺在床上睡；
 ##     第 1 天夜里三处手印都看过了 → 梦游的结尾（AfterStory.run_upstairs）。
@@ -12,6 +12,7 @@ const BLUE_BED := [4, 4.25]
 
 var _clue_nodes: Array[Node] = []
 var _lv: Node
+var marker: ObjectiveMarker
 
 
 func _ready() -> void:
@@ -20,12 +21,16 @@ func _ready() -> void:
 	var lv := _level()
 	if lv == null:
 		return
+	_lv = lv
+	marker = ObjectiveMarker.new()
+	marker.name = "Objective"
+	lv.get_node("Entities").add_child(marker)
+	GameState.flag_changed.connect(_on_flag_changed)
+	_refresh_objective()
 	if str(lv.get("floor_id")) == AfterStory.HOUSE_UP:
 		_setup_up(lv)
 		await AfterStory.run_upstairs()
 		return
-	_lv = lv
-	GameState.flag_changed.connect(_on_flag_changed)
 	_refresh_clues(lv)
 	await AfterStory.enter_house()
 	_refresh_clues(lv)
@@ -34,6 +39,13 @@ func _ready() -> void:
 func _on_flag_changed(flag: String) -> void:
 	if flag == AfterStory.NIGHT_BUSY and is_instance_valid(_lv):
 		_refresh_clues(_lv)
+	if flag == DayClock.TICK or flag.begins_with("after_"):
+		_refresh_objective.call_deferred()
+
+
+func _refresh_objective() -> void:
+	if is_instance_valid(marker) and is_instance_valid(_lv):
+		marker.set_target(AfterStory.objective(str(_lv.get("floor_id"))))
 
 
 func _level() -> Node:
