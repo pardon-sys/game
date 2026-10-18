@@ -45,6 +45,26 @@
 					"wander": 0,
 					"hidden": false
 				}
+			},
+			"d2": {
+				"morning": {
+					"at": [
+						21,
+						23
+					],
+					"dir": "right",
+					"wander": 0,
+					"hidden": false
+				},
+				"morning_done": {
+					"at": [
+						34,
+						29
+					],
+					"dir": "down",
+					"wander": 0,
+					"hidden": false
+				}
 			}
 		},
 		"after_mayor": {
@@ -74,6 +94,26 @@
 					"hidden": false
 				},
 				"afternoon_done": {
+					"at": [
+						31,
+						29
+					],
+					"dir": "down",
+					"wander": 1,
+					"hidden": false
+				}
+			},
+			"d2": {
+				"morning": {
+					"at": [
+						21,
+						21.5
+					],
+					"dir": "down",
+					"wander": 0,
+					"hidden": false
+				},
+				"morning_done": {
 					"at": [
 						31,
 						29
@@ -119,6 +159,26 @@
 					"wander": 1,
 					"hidden": false
 				}
+			},
+			"d2": {
+				"morning": {
+					"at": [
+						20,
+						27
+					],
+					"dir": "up",
+					"wander": 0,
+					"hidden": false
+				},
+				"morning_done": {
+					"at": [
+						42,
+						25
+					],
+					"dir": "down",
+					"wander": 1,
+					"hidden": false
+				}
 			}
 		},
 		"after_merchant": {
@@ -148,6 +208,26 @@
 					"hidden": false
 				},
 				"afternoon_done": {
+					"at": [
+						8,
+						24
+					],
+					"dir": "down",
+					"wander": 1,
+					"hidden": false
+				}
+			},
+			"d2": {
+				"morning": {
+					"at": [
+						26.5,
+						27.5
+					],
+					"dir": "left",
+					"wander": 0,
+					"hidden": false
+				},
+				"morning_done": {
 					"at": [
 						8,
 						24
@@ -193,6 +273,26 @@
 					"wander": 1,
 					"hidden": false
 				}
+			},
+			"d2": {
+				"morning": {
+					"at": [
+						25,
+						23
+					],
+					"dir": "left",
+					"wander": 0,
+					"hidden": false
+				},
+				"morning_done": {
+					"at": [
+						12,
+						23
+					],
+					"dir": "down",
+					"wander": 1,
+					"hidden": false
+				}
 			}
 		},
 		"after_bonfire_host": {
@@ -222,6 +322,26 @@
 					"hidden": false
 				},
 				"afternoon_done": {
+					"at": [
+						46,
+						24
+					],
+					"dir": "down",
+					"wander": 1,
+					"hidden": false
+				}
+			},
+			"d2": {
+				"morning": {
+					"at": [
+						28,
+						24
+					],
+					"dir": "left",
+					"wander": 0,
+					"hidden": false
+				},
+				"morning_done": {
 					"at": [
 						46,
 						24
@@ -267,6 +387,26 @@
 					"wander": 1,
 					"hidden": false
 				}
+			},
+			"d2": {
+				"morning": {
+					"at": [
+						32,
+						26
+					],
+					"dir": "left",
+					"wander": 0,
+					"hidden": false
+				},
+				"morning_done": {
+					"at": [
+						46,
+						27
+					],
+					"dir": "down",
+					"wander": 1,
+					"hidden": false
+				}
 			}
 		},
 		"after_kid_lily": {
@@ -296,6 +436,26 @@
 					"hidden": false
 				},
 				"afternoon_done": {
+					"at": [
+						42,
+						22
+					],
+					"dir": "down",
+					"wander": 1,
+					"hidden": false
+				}
+			},
+			"d2": {
+				"morning": {
+					"at": [
+						33,
+						25
+					],
+					"dir": "left",
+					"wander": 0,
+					"hidden": false
+				},
+				"morning_done": {
 					"at": [
 						42,
 						22
@@ -341,6 +501,26 @@
 					"wander": 1,
 					"hidden": false
 				}
+			},
+			"d2": {
+				"morning": {
+					"at": [
+						19,
+						25
+					],
+					"dir": "right",
+					"wander": 0,
+					"hidden": false
+				},
+				"morning_done": {
+					"at": [
+						48,
+						25
+					],
+					"dir": "down",
+					"wander": 1,
+					"hidden": false
+				}
 			}
 		},
 		"after_engineer": {
@@ -378,6 +558,9 @@
 					"wander": 1,
 					"hidden": false
 				}
+			},
+			"d2": {
+				"morning": {}
 			}
 		},
 		"after_guard_gate": {
@@ -402,6 +585,9 @@
 					"dir": "right"
 				},
 				"afternoon": {}
+			},
+			"d2": {
+				"morning": {}
 			}
 		},
 		"after_guard_gate2": {
@@ -426,6 +612,9 @@
 					"dir": "left"
 				},
 				"afternoon": {}
+			},
+			"d2": {
+				"morning": {}
 			}
 		},
 		"after_guard_plaza": {
@@ -459,6 +648,26 @@
 					"hidden": false
 				},
 				"afternoon_done": {
+					"at": [
+						28,
+						31
+					],
+					"dir": "down",
+					"wander": 0,
+					"hidden": false
+				}
+			},
+			"d2": {
+				"morning": {
+					"at": [
+						26,
+						21.5
+					],
+					"dir": "down",
+					"wander": 0,
+					"hidden": false
+				},
+				"morning_done": {
 					"at": [
 						28,
 						31
@@ -508,6 +717,9 @@
 					"wander": 0,
 					"hidden": false
 				}
+			},
+			"d2": {
+				"morning": {}
 			}
 		},
 		"after_guard_house": {
@@ -528,10 +740,20 @@
 					"hidden": true
 				},
 				"afternoon": {}
+			},
+			"d2": {
+				"morning": {}
 			}
 		}
 	},
 	"days": {
+		"d2": {
+			"morning": {
+				"event": "d2_stocks",
+				"task": "广场足枷示众",
+				"hours": 12
+			}
+		},
 		"d1": {
 			"morning": {
 				"event": "d1_open",

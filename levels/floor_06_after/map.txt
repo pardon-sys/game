@@ -32,7 +32,7 @@ V = prop type=lamp
 W = prop type=well
 X = prop type=podium action=talk:floor_06/after_objects#podium
 Y = prop type=notice_board action=talk:floor_06/after_objects#notice
-Z = prop type=stocks_plaza action=talk:floor_06/after_objects#stocks
+Z = trap type=stocks active=false
 a = prop type=bunting
 b = savepoint place=战后的广场
 c = prop type=totem_tilted action=talk:floor_06/after_objects#totem

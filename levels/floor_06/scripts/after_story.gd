@@ -10,6 +10,9 @@ extends RefCounted
 ##   午  d1_verdict   广场宣判（after_d1_verdict）：镇长主持、队长宣读，发赎罪簿（PenanceBook.start）
 ##   夜  d1_sleepwalk 千手痒痒裤半夜梦游（after_d1_night）：楼下被挠醒 → 调查三处手印（after_house_objects#clue_*）
 ##                    → 上楼（after_d1_night_end）→ 回床上睡觉
+## 第二批（D2）：
+##   早  d2_stocks    广场足枷示众（after_d2_stocks）：四轮忍笑选择（EndureChoice），笑出声一次 +2 工时（vars.stocks_bursts），
+##                    3 次以上 → 训练营受罚转盘（PenanceRoulette）
 ## 旧存档：打赢攻防战之后回到战时小镇的，直接送到战后的小镇。
 
 const TOWN := "floor_06_after"
@@ -21,7 +24,11 @@ const EVENTS := {
 	"d1_open": {"where": TOWN, "cutscene": "after_d1_open"},
 	"d1_verdict": {"where": TOWN, "cutscene": "after_d1_verdict"},
 	"d1_sleepwalk": {"where": HOUSE, "cutscene": "after_d1_night"},
+	"d2_stocks": {"where": TOWN, "cutscene": "after_d2_stocks"},
 }
+## 足枷示众：笑出声一次罚几工时、几次以上去转转盘
+const STOCKS_BURST_HOURS := 2
+const STOCKS_ROULETTE := 3
 ## 梦游的三处手印都看过了 → 楼梯解锁（after_house_objects 里设）
 const CLUES_FLAG := "after_d1_clues"
 ## 夜里的事件演到一半（床还不能睡）
@@ -74,6 +81,9 @@ static func run_pending(floor_id: String) -> void:
 
 
 static func _run(ev: String, info: Dictionary) -> void:
+	if ev == "d2_stocks":
+		GameState.vars["stocks_bursts"] = 0
+		GameState.vars["stocks_last"] = ""
 	if str(info.get("cutscene", "")) != "":
 		await Cutscene.play(str(info["cutscene"]))
 	match ev:
@@ -82,6 +92,14 @@ static func _run(ev: String, info: Dictionary) -> void:
 		"d1_verdict":
 			PenanceBook.start()
 			GameState.hint("背包里多了一页「赎罪簿」")
+			await finish_slot()
+		"d2_stocks":
+			var n := int(GameState.vars.get("stocks_bursts", 0))
+			if n > 0:
+				PenanceBook.add(n * STOCKS_BURST_HOURS, "示众时笑出声 ×%d" % n)
+			if n >= STOCKS_ROULETTE:
+				Cutscene.curtain_clear(0.3)
+				await PenanceRoulette.spin("示众时笑出声 %d 次" % n)
 			await finish_slot()
 		"d1_sleepwalk":
 			GameState.set_flag(NIGHT_BUSY)

@@ -3,7 +3,8 @@ extends Node
 ##   攻防战胜利的过场最后去战后的小镇；第 1 天：早上开场（千手痒痒裤当众发作）→ 自动到下午 → 广场宣判（发赎罪簿）
 ##   → 镇民按日程摆位置（开场时只有队长和守城队员、宣判时围在台下、宣判完散开）→ 回小屋 = 天黑 → 被裤子的手挠醒
 ##   → 三处手印（楼梯那处要最后看）→ 楼上梦游的结尾 → 回床上睡 → 第 2 天早上。
-##   赎罪簿：100 工时、加减和记录、背包里的「赎罪簿」页；时钟：日程的逐层覆盖、夜里宵禁锁门；旧存档从战时小镇送过来。
+##   第 2 天早上：广场足枷示众（四轮忍笑选择，笑出声罚工时，3 次以上去训练营转受罚转盘 → 刑具小剧场 → 受罚记录）；按应对分支。
+##   赎罪簿：100 工时、加减和记录、受罚记录、背包里的「赎罪簿」页；时钟：日程的逐层覆盖、夜里宵禁锁门；旧存档从战时小镇送过来。
 ## 用法：Godot --headless --path . res://tests/f6_after_test.tscn   （退出码 0 = 全部通过）
 
 var main: Node
@@ -27,6 +28,7 @@ func _ready() -> void:
 	await _run_day1()
 	await _run_book()
 	await _run_night()
+	await _run_day2()
 	_run_clock()
 	await _run_old_save()
 	await _run_skip()
@@ -159,6 +161,47 @@ func _run_night() -> void:
 	await _wait(0.6)
 	check("梦游的手印收掉了、黑幕揭开了（%.2f）" % Cutscene.curtain.color.a,
 		not GameState.has_flag(AfterStory.NIGHT_BUSY) and _node("Clue_clue_bed") == null and Cutscene.curtain.color.a < 0.05)
+
+
+# ------------------------------------------------------------------ 第 2 天早上：足枷示众
+func _run_day2() -> void:
+	print("-- 第 2 天早上：广场足枷示众")
+	var h0 := PenanceBook.hours()
+	var p0 := PenanceBook.punishments().size()
+	# 一直不选 → 四轮都笑出声 → 罚 8 工时 + 转盘（固定停在转轮）
+	EndureChoice.auto_pick = -1
+	PenanceRoulette.forced = "wheel"
+	var bars := {"n": 0}
+	var watch := func(_n: Node): if _n is EndureChoice: bars["n"] += 1
+	get_tree().node_added.connect(watch)
+	GameState.pending_spawn = "from_house"
+	await main.change_level(Floors.scene("floor_06_after"))
+	await _advance_until(func(): return DayClock.done(2, DayClock.MORNING) and not Cutscene.is_playing() and not DayClock.passing and not CG.is_busy(), 180.0)
+	get_tree().node_added.disconnect(watch)
+	EndureChoice.auto_pick = null
+	check("示众的过场放了，四轮忍笑条（%d）" % bars["n"], seen_cuts.has("after_d2_stocks") and bars["n"] == 4)
+	check("一直不应对 = 四次都笑出声（%s）" % GameState.vars.get("stocks_bursts"), int(GameState.vars.get("stocks_bursts", 0)) == 4)
+	check("工时：示众做完 -12、笑出声 4 次 +8（%d → %d）" % [h0, PenanceBook.hours()], PenanceBook.hours() == h0 - 12 + 8)
+	var pun := PenanceBook.punishments()
+	check("笑出声 3 次以上 → 训练营转盘停在转轮，播了刑具小剧场、记进受罚记录（%s）" % [pun.back().get("text") if pun.size() > p0 else ""],
+		pun.size() == p0 + 1 and str(pun.back()["theater"]) == "after_roulette_wheel" and GameState.has_flag("cg_seen_theater:after_roulette_wheel"))
+	check("示众完到了第 2 天下午、蓝色公主回到身边", DayClock.day() == 2 and DayClock.slot() == DayClock.AFTERNOON
+		and _node("AfterBlue") != null and (_node("AfterBlue") as Node2D).global_position.distance_to(GameState.player.global_position) < 80.0)
+	var text := "\n".join(PenanceBook.page_rows().map(func(r): return str(r["text"])))
+	check("赎罪簿页列出受罚记录", text.contains("受罚记录") and text.contains("训练营转盘：转轮"))
+	var bp: Backpack = main.get_node("Backpack")
+	var groups := Backpack.gallery_entries().filter(func(e): return str(e.get("id", "")).begins_with("after_roulette_")).map(func(e): return e["group"])
+	check("四段转盘小剧场都在 CG 图鉴的「七日赎罪」分组里（%d）" % groups.size(), groups.size() == 4 and groups.all(func(g): return g == "七日赎罪"))
+	# 分支：每轮都「装没事」→ 一次都没笑出声
+	GameState.vars["stocks_bursts"] = 0
+	EndureChoice.auto_pick = 0
+	Cutscene.play("after_d2_stocks")
+	await get_tree().process_frame
+	await _advance_until(func(): return not Cutscene.is_playing(), 90.0)
+	EndureChoice.auto_pick = null
+	check("每轮都装没事：一次都没笑出声（%s，最后一轮 %s）" % [GameState.vars.get("stocks_bursts"), GameState.vars.get("stocks_last")],
+		int(GameState.vars.get("stocks_bursts", -1)) == 0 and GameState.vars.get("stocks_last") == "calm")
+	Cutscene.curtain_clear(0.01)
 
 
 # ------------------------------------------------------------------ 时钟 / 日程

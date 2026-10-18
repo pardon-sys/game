@@ -618,7 +618,7 @@ data/cutscenes/<楼层组>/  地图内过场；data/theater/<楼层组>/  小剧
 
 ## 七日赎罪：战后的小镇（levels/floor_06/scripts/after_*.gd）
 攻防战胜利的过场 `siege_won` 最后 goto `floor_06_after`（`from_siege`）。`tools/build/gen_floor06_after.py` 生成三张地图、日程、对话和过场，台词在 `tools/build/after_text/`
-（`d1.py` 第 1 天的过场、`town.py` 镇民 / 告示板、`house.py` 小屋家具和梦游的手印；生成器只负责拼装）。
+（`d1.py` 第 1 天的过场、`d2.py` 第 2 天的足枷示众、`punish.py` 受罚转盘的四段小剧场、`town.py` 镇民 / 告示板、`house.py` 小屋家具和梦游的手印；生成器只负责拼装）。
 - **地图**：`floor_06_after`（和战时小镇同样的布局：脚手架、木料、歪掉的狂欢图腾柱、宣判台、告示板、广场足枷、彩旗；no_switch，蓝色公主跟着）、
   `floor_06_after_house`（小屋楼下，夜里门锁上 = 宵禁）、`floor_06_after_house_up`（楼上，`after_house_up_open` 之后才能上）。新道具在 `tools/art/gen_town_art.py`
   （`house_scaffold_*`、`lumber`、`totem_tilted`、`podium`、`notice_board`、`stocks_plaza`、`pants_hand`、`handprint`、`bunting`），镇长的行走图 `npcs/mayor.png`。
@@ -627,7 +627,14 @@ data/cutscenes/<楼层组>/  地图内过场；data/theater/<楼层组>/  小剧
   日程 `data/after/schedule.json`：`npcs` 镇民（键 = 对话文件名）按 default → 时段 → `d<N>.all` → `d<N>.<时段>` → 做完后的 `<时段>_done` 逐层覆盖
   `{at, dir, wander, hidden, dialogue}`；`days.d<N>.<时段>` = `{event, task, hours}`。做完记 `after_done_d<N>_<时段>`（`done` / `mark_done`）。
 - **赎罪簿 `PenanceBook`**（`scripts/story/penance_book.gd`）：宣判时 `start()`（`penance_book`，100 工时），`add(差值, 原因)` 记 `vars.penance_log` 并提示；
-  背包的「赎罪簿」页（`Backpack.PAGE_PENANCE`，有赎罪簿后插在「物品」后面）读 `page_rows()`：剩余工时、今天的安排（✔ / ▶）、最近的记录。没有失败结局。
+  背包的「赎罪簿」页（`Backpack.PAGE_PENANCE`，有赎罪簿后插在「物品」后面）读 `page_rows()`：剩余工时、今天的安排（✔ / ▶）、最近的记录、受罚记录。没有失败结局。
+  `punish(文字, 小剧场)` 记受罚（`vars.penance_punish`）；`fail(任务名, 小剧场, 罚工时)`：弥补任务办砸了 → 失败小剧场 → 罚工时 → 记受罚（任务自己再从头来）。
+  受罚的小剧场放在 `data/theater/after/`（id 以 `after_` 开头），看过后在背包「CG 图鉴」的「七日赎罪」分组里重看。
+- **受罚转盘 `PenanceRoulette`**（`scripts/story/penance_roulette.gd`，盘面 `roulette_wheel.gd`）：`await spin(原因)` 转盘越转越慢停在四种刑具之一
+  （刑床 / 足枷 / 转轮 / 刷子凳，`forced` 测试用）→ 小剧场 `after_roulette_<刑具>` → 记受罚。
+- **忍笑选择 `EndureChoice`**（`scripts/ui/endure_choice.gd`，过场步骤 `endure`）：忍笑条 `time` 秒涨满（`time_by` 按上一次的结果换），期间一直被挠；
+  `delay` 秒后弹出应对选项，条满前没选 = `burst`（`burst_var` 计数）；结果写进 `vars[var]`，后面的步骤用 `if` 分支（过场步骤的 `if` 条件同人物对话）。
+  `auto_pick` 测试用（-1 = 等到笑出声）。
 - **剧情 `AfterStory`**：`EVENTS` 事件 id → 在哪张图演 + 过场；导演进图 / 时间变了时调 `run_pending(图)`，事件开始记 `after_ev_<id>`；`finish_slot()`：
   早上做完自动到下午、下午做完提示回小屋、夜里做完回楼下的床上睡（`go_to_bed`）。进小屋 `enter_house()`：白天的事都做完 → 天黑。夜里的事件进行中开
   `after_night_busy`（床不能睡）。床 `call: after_sleep`。旧存档（打赢攻防战还在战时小镇）进战时小镇时直接送过来。
@@ -636,8 +643,11 @@ data/cutscenes/<楼层组>/  地图内过场；data/theater/<楼层组>/  小剧
   梦游进行中摆出三处可调查的手印（`CLUES`）；楼上蓝色公主（`AfterBlue`）夜里躺床上，三处手印都看过 → `run_upstairs()`。
 - **第 1 天**：早 `after_d1_open`（千手痒痒裤当众发作、队长要砍裤子、私下特训 / 搬砖）→ 午 `after_d1_verdict`（镇长主持、队长宣读，「……那扇门，钥匙是我的」被打断，
   发赎罪簿）→ 回小屋天黑 → 夜 `after_d1_night`（被裤子的手挠脚心挠醒）→ 手印 `after_house_objects#clue_bed / clue_tea`，最后 `clue_stairs`（→ `after_d1_clues`、
-  `after_house_up_open`）→ 楼上 `after_d1_night_end` → 第 2 天早上。第 2 天起的内容之后几批补（日程里没有事件的时段算做完）。
-- 测试：`tests/f6_after_test`（胜利去向、开场 → 宣判、日程摆位、赎罪簿和背包页、宵禁锁门、手印顺序、楼上结尾 → 第 2 天、日程逐层覆盖、旧存档）。
+  `after_house_up_open`）→ 楼上 `after_d1_night_end` → 第 2 天早上。
+- **第 2 天早上** `after_d2_stocks`：广场足枷（地图上的 `trap type=stocks active=false`，过场 `hold` 锁住）示众，镇民夸她的脚，四轮忍笑选择
+  （羽毛 → 狗尾巴草 → 刷子 + 扳脚趾 → 一群小孩），装没事 / 求饶 / 顶嘴决定下一个人怎么来；笑出声一次 +2 工时（`stocks_bursts`），3 次以上 → 受罚转盘；
+  蓝色公主最后一个来（跟着的 `AfterBlue` 过场开头挪走、结尾放回）。之后的时段内容之后几批补（日程里没有事件的时段算做完）。
+- 测试：`tests/f6_after_test`（胜利去向、开场 → 宣判、日程摆位、赎罪簿和背包页、宵禁锁门、手印顺序、楼上结尾 → 第 2 天、示众的四轮忍笑 / 罚工时 / 转盘 / 分支、日程逐层覆盖、旧存档、跳关）。
 
 ## 公主状态与换美术素材
 
