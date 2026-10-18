@@ -99,7 +99,6 @@ var kills := 0
 func _ready() -> void:
 	reinforcements.director = self
 	current = self
-	Actor.lod_clamp = _lod_clamp
 	add_to_group("combo_effect_handler")
 	var parsed: Variant = JSON.parse_string(FileAccess.get_file_as_string(WAVES_PATH))
 	data = parsed if parsed is Dictionary else {}
@@ -113,8 +112,6 @@ func _ready() -> void:
 func _exit_tree() -> void:
 	if current == self:
 		current = null
-	if Actor.lod_clamp.is_valid() and Actor.lod_clamp.get_object() == self:
-		Actor.lod_clamp = Callable()
 	if PlayableCharacter.death_override.is_valid() and PlayableCharacter.death_override.get_object() == self:
 		PlayableCharacter.death_override = Callable()
 	if PlayableCharacter.ai_factory.is_valid() and PlayableCharacter.ai_factory.get_object() == self:
@@ -488,19 +485,6 @@ func _process(delta: float) -> void:
 
 
 var _clamp_t := 0.0
-## 屏幕外的怪降级（性能）：测试可以关掉
-var lod_enabled := true
-const LOD_MARGIN := 120.0
-
-
-## 降级的怪直接按速度走（不碰撞）：夹在地图里，地上的怪不越过墙脚的挡人窄条。
-func _lod_clamp(a: Actor, to: Vector2) -> Vector2:
-	var ms := map_size()
-	to.x = clampf(to.x, 16.0, ms.x - 16.0)
-	to.y = minf(to.y, ms.y - 16.0)
-	if not walls.is_empty() and a.global_position.y >= wall_foot_y():
-		to.y = maxf(to.y, wall_foot_y() + SiegeWall.FOOT_STRIP)
-	return to
 
 
 ## 怪物不出地图：左右 / 下边夹在地图里，上边不越过墙顶走道。
@@ -508,9 +492,6 @@ func _clamp_monsters() -> void:
 	var ms := map_size()
 	var top := wall_top_y() - 16.0 if not walls.is_empty() else 16.0
 	for m in monsters:
-		# 屏幕外的普通怪降级（Actor.lod_far）：攻城怪（SiegeMonster：攻城车、爬墙、飘上墙的……数量少、动作讲究）/ Boss / 墙顶 / 被运着的照常
-		m.lod_far = lod_enabled and not (m is SiegeMonster or m is SiegeBoss) and not m.get_meta("siege_on_wall", false) \
-			and not m.get_meta("airborne", false) and not on_screen(m.global_position, LOD_MARGIN)
 		var p := m.global_position
 		var c := Vector2(clampf(p.x, 16.0, ms.x - 16.0), clampf(p.y, top, ms.y - 16.0))
 		if c != p:
