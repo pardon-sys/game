@@ -368,6 +368,11 @@ func _run_teamwork() -> void:
 	d.teamwork.scan()
 	await _wait(0.6)
 	var lad := LivingLadder.near(get_tree(), atw.x)
+	# 前面段落留下的小雪人 / 诱饵会把它引走：先清掉
+	for t in d.extra_targets.duplicate():
+		if is_instance_valid(t):
+			t.queue_free()
+	d.extra_targets.clear()
 	var climber := d.spawn("slime", "", Vector2(atw.x + 4.0, d.wall_foot_y() + 30.0))
 	# 爬梯子的途中打梯子也会打到它（第六轮）：这里只看它能不能爬上去——给它足够的血，蓝色公主先别放法术（会把它击退、引去追人）
 	climber.health.max_hp = 99

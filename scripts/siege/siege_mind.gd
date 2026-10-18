@@ -64,7 +64,7 @@ func wander(m: Monster, delta: float) -> bool:
 		m.remove_meta("escort_of")
 	# 号手倒下后乱成一团：SCATTER 秒里乱走，之后重新挑墙段
 	if m.has_meta("scatter_until"):
-		if Time.get_ticks_msec() / 1000.0 < float(m.get_meta("scatter_until")):
+		if (director.game_t if director else 0.0) < float(m.get_meta("scatter_until")):
 			m._move(Vector2.from_angle(m._t * 2.3 + float(m.get_instance_id() % 7)), m.stats.wander_speed, delta)
 			return true
 		m.remove_meta("scatter_until")
@@ -100,7 +100,7 @@ func march(m: Monster, delta: float) -> void:
 			climb_ladder(m, lad)
 		return
 	# 挑薄弱处：没定目标时挑一段墙；离墙还远的时候每 WEAK_GAP 秒按最新的薄弱分重新挑（成套的小队锁着不换）
-	var now := Time.get_ticks_msec() / 1000.0
+	var now: float = director.game_t
 	var far := m.global_position.y - foot > REPICK_Y
 	if not m.has_meta("march_x") or (far and not m.has_meta("march_lock") and now - float(m.get_meta("march_pick", -INF)) > SiegeDirector.WEAK_GAP):
 		m.set_meta("march_x", director.pick_weak_x(m.global_position.x))

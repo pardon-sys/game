@@ -430,7 +430,12 @@ func _blue_watchdog(delta: float) -> void:
 		call_bearers(blue)
 
 
+## 游戏时间（秒，暂停时不走）：挑薄弱墙段、号手散乱这类计时用它，不用墙钟（每帧慢的时候墙钟会跑在游戏前面）
+var game_t := 0.0
+
+
 func _process(delta: float) -> void:
+	game_t += delta
 	_unlock_watchdog()
 	_blue_watchdog(delta)
 	if not (_busy or state == "" or GameState.in_dialogue or CG.is_busy() or GameState.in_cutscene):
@@ -809,7 +814,7 @@ var _weak_at := -INF
 
 
 func wall_weakness() -> Array[float]:
-	var now := Time.get_ticks_msec() / 1000.0
+	var now := game_t
 	if now - _weak_at < WEAK_GAP and _weak.size() == walls.size():
 		return _weak
 	_weak_at = now
