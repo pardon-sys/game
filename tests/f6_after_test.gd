@@ -177,15 +177,19 @@ func _run_night() -> void:
 
 # ------------------------------------------------------------------ 第 2 天早上：足枷示众
 func _run_day2() -> void:
-	print("-- 第 2 天早上：广场足枷示众")
+	print("-- 第 2 天早上：广场足枷示众（小游戏）")
 	var h0 := PenanceBook.hours()
 	var p0 := PenanceBook.punishments().size()
-	# 一直不选 → 四轮都笑出声 → 罚 8 工时 + 转盘（固定停在转轮）
-	EndureChoice.auto_pick = -1
 	PenanceRoulette.forced = "wheel"
-	var bars := {"n": 0}
-	var watch := func(_n: Node): if _n is EndureChoice: bars["n"] += 1
-	get_tree().node_added.connect(watch)
+	StocksShow.auto_respond = "calm"
+	# 示众开始以后：倒计时调到 2 秒、笑出声记成 3 次（看结算和转盘）
+	var hook := func(n: Node):
+		if n is StocksShow:
+			(func():
+				await get_tree().process_frame
+				n.time_left = 2.0
+				n.bursts = 3).call()
+	get_tree().node_added.connect(hook)
 	GameState.pending_spawn = "from_house"
 	await main.change_level(Floors.scene("floor_06_after"))
 	await _wait(1.5)
@@ -194,11 +198,11 @@ func _run_day2() -> void:
 		mk != null and mk.text.contains("足枷") and not seen_cuts.has("after_d2_stocks"))
 	_go(Cutscene.cell_to_world([23, 25.5]))
 	await _advance_until(func(): return DayClock.done(2, DayClock.MORNING) and not Cutscene.is_playing() and not DayClock.passing and not CG.is_busy(), 180.0)
-	get_tree().node_added.disconnect(watch)
-	EndureChoice.auto_pick = null
-	check("示众的过场放了，四轮忍笑条（%d）" % bars["n"], seen_cuts.has("after_d2_stocks") and bars["n"] == 4)
-	check("一直不应对 = 四次都笑出声（%s）" % GameState.vars.get("stocks_bursts"), int(GameState.vars.get("stocks_bursts", 0)) == 4)
-	check("工时：示众做完 -12、笑出声 4 次 +8（%d → %d）" % [h0, PenanceBook.hours()], PenanceBook.hours() == h0 - 12 + 8)
+	get_tree().node_added.disconnect(hook)
+	StocksShow.auto_respond = ""
+	check("示众：开场过场 → 小游戏 → 撑过时间的结局（%s）" % [seen_cuts.filter(func(c): return c.begins_with("after_d2"))],
+		seen_cuts.has("after_d2_stocks") and seen_cuts.has("after_d2_stocks_end") and not seen_cuts.has("after_d2_stocks_faint"))
+	check("工时：示众做完 -12、笑出声 3 次 +6（%d → %d）" % [h0, PenanceBook.hours()], PenanceBook.hours() == h0 - 12 + 6)
 	var pun := PenanceBook.punishments()
 	check("笑出声 3 次以上 → 训练营转盘停在转轮，播了刑具小剧场、记进受罚记录（%s）" % [pun.back().get("text") if pun.size() > p0 else ""],
 		pun.size() == p0 + 1 and str(pun.back()["theater"]) == "after_roulette_wheel" and GameState.has_flag("cg_seen_theater:after_roulette_wheel"))
@@ -206,19 +210,75 @@ func _run_day2() -> void:
 		and _node("AfterBlue") != null and (_node("AfterBlue") as Node2D).global_position.distance_to(GameState.player.global_position) < 80.0)
 	var text := "\n".join(PenanceBook.page_rows().map(func(r): return str(r["text"])))
 	check("赎罪簿页列出受罚记录", text.contains("受罚记录") and text.contains("训练营转盘：转轮"))
-	var bp: Backpack = main.get_node("Backpack")
 	var groups := Backpack.gallery_entries().filter(func(e): return str(e.get("id", "")).begins_with("after_roulette_")).map(func(e): return e["group"])
 	check("四段转盘小剧场都在 CG 图鉴的「七日赎罪」分组里（%d）" % groups.size(), groups.size() == 4 and groups.all(func(g): return g == "七日赎罪"))
-	# 分支：每轮都「装没事」→ 一次都没笑出声
-	GameState.vars["stocks_bursts"] = 0
-	EndureChoice.auto_pick = 0
-	Cutscene.play("after_d2_stocks")
+	await _run_stocks_rules()
+	# 笑晕的结局过场
+	Cutscene.play("after_d2_stocks_faint")
 	await get_tree().process_frame
 	await _advance_until(func(): return not Cutscene.is_playing(), 90.0)
-	EndureChoice.auto_pick = null
-	check("每轮都装没事：一次都没笑出声（%s，最后一轮 %s）" % [GameState.vars.get("stocks_bursts"), GameState.vars.get("stocks_last")],
-		int(GameState.vars.get("stocks_bursts", -1)) == 0 and GameState.vars.get("stocks_last") == "calm")
+	check("笑晕的结局过场（蓝色公主描述她昏过去以后的事）能放完", GameState.has_flag("cutscene_seen_after_d2_stocks_faint"))
 	Cutscene.curtain_clear(0.01)
+
+
+## 示众小游戏的规则（单独开一个，直接调它的方法）
+func _run_stocks_rules() -> void:
+	print("-- 示众小游戏的规则")
+	var show := StocksShow.new()
+	add_child(show)
+	var res := {}
+	(func(): res.merge(await show.play_show())).call()
+	await get_tree().process_frame
+	var p := GameState.player
+	var lmax := p.laugh.max_value
+	check("开始：120 秒、求情 3 次、第一个孩子挑了部位", show.time_left > 118.0 and show.pleads == 3 and not show.part.is_empty())
+	# 部位：前脚掌比脚弓涨得快（先让孩子挑脚心，再求情换到前脚掌）
+	show._set_part(1)
+	var t_before := show.time_left
+	show.plead(0)
+	check("按 1 求情：换到前脚掌、求情 -1、倒计时 +2", show.part["id"] == "ball" and show.pleads == 2 and absf(show.time_left - t_before - 2.0) < 0.01)
+	p.laugh.set_value(0.0)
+	show._tick(1.0)
+	var ball := p.laugh.value
+	show.plead(3)
+	p.laugh.set_value(0.0)
+	show._tick(1.0)
+	var arch := p.laugh.value
+	check("前脚掌每秒涨闷笑 %.1f，脚弓 %.1f（前脚掌最痒）" % [ball, arch], ball > arch * 2.5)
+	# 挣扎
+	p.laugh.set_value(lmax * 0.5)
+	show.press("J")
+	check("J 挣扎：闷笑降 2.5%%（%.1f%%）" % (p.laugh.ratio() * 100.0), absf(p.laugh.ratio() - 0.475) < 0.005)
+	for i in StocksShow.SWITCH_AFTER:
+		show.press("E")
+	check("同一部位连挣 6 次：孩子换部位（%s）" % show.part["name"], show.part["id"] != "arch")
+	# 应对：顶嘴 → 两只脚、求情 -1
+	show.part_left = 0.0
+	show._tick(0.01)
+	check("孩子挠完一段 → 间隙弹出应对", show.responding)
+	var pl := show.pleads
+	show.respond("sass")
+	check("顶嘴：挂「挑衅」、两只脚一起挠、求情 -1", show.debuff == "sass" and show.both_feet and show.pleads == pl - 1)
+	show.part_left = 0.0
+	show._tick(0.01)
+	show.respond("beg")
+	check("求饶：挂「丢脸」、求情 +1、这个孩子时间 -30%", show.debuff == "beg" and show.pleads == pl and show.part_left <= float(show.part["time"]) * 0.71)
+	# 闷笑满 = 笑出声
+	show.add_laugh(lmax)
+	await _wait(1.2)
+	check("闷笑满：笑出声（%d）、闷笑回到 40%%" % show.bursts, show.bursts == 1 and absf(p.laugh.ratio() - 0.4) < 0.05)
+	# 疲倦满 = 释放、加时
+	var t0 := show.time_left
+	show.add_fatigue(p.fatigue.max_value)
+	await _wait(1.6)
+	check("魔力疲倦满：自动释放（%d）、队长加时 +15 秒（%.0f → %.0f）" % [show.releases, t0, show.time_left], show.releases == 1 and show.time_left > t0 + 14.0)
+	# 释放超过 5 次 = 笑晕
+	for i in 5:
+		show.add_fatigue(p.fatigue.max_value)
+		await _wait(1.8)
+	await _advance_until(func(): return not res.is_empty(), 10.0)
+	check("释放第 6 次：笑晕，示众结束（%s）" % [res], bool(res.get("fainted", false)) and int(res.get("releases", 0)) == 6)
+	show.queue_free()
 
 
 # ------------------------------------------------------------------ 镇民委托

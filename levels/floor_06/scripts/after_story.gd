@@ -11,7 +11,8 @@ extends RefCounted
 ##   早上 → 下午、下午 → 夜晚（夜里宵禁，目标「回蓝色小屋」）、夜里 → 回床上睡 → 第二天早上。
 ##   没有事件的时段：自由活动（镇民委托、和蓝色公主玩闹），小屋的床可以休息到下一个时段（rest）。
 ## 第 1 天：早 d1_open 开场（自动）→ 午 d1_verdict 宣判（广场宣判台）→ 夜 d1_sleepwalk 梦游（进小屋，三处手印 → 楼上结尾）。
-## 第 2 天：早 d2_stocks 足枷示众（广场足枷）。
+## 第 2 天：早 d2_stocks 足枷示众（广场足枷）：开场过场 → 小游戏 StocksShow → 结局过场（撑过时间 after_d2_stocks_end /
+##   释放超过 5 次笑晕 after_d2_stocks_faint）；笑出声一次 +2 工时，3 次以上去训练营转受罚转盘。
 ## 旧存档：打赢攻防战之后回到战时小镇的，直接送到战后的小镇。
 
 const TOWN := "floor_06_after"
@@ -135,7 +136,6 @@ static func _try(floor_id: String, by_spot: bool) -> void:
 static func _run(ev: String, info: Dictionary) -> void:
 	if ev == "d2_stocks":
 		GameState.vars["stocks_bursts"] = 0
-		GameState.vars["stocks_last"] = ""
 	if str(info.get("cutscene", "")) != "":
 		await Cutscene.play(str(info["cutscene"]))
 	match ev:
@@ -146,7 +146,15 @@ static func _run(ev: String, info: Dictionary) -> void:
 			GameState.hint("背包里多了一页「赎罪簿」")
 			await finish_slot()
 		"d2_stocks":
-			var n := int(GameState.vars.get("stocks_bursts", 0))
+			var show := StocksShow.new()
+			var tree := Engine.get_main_loop() as SceneTree
+			tree.root.add_child(show)
+			var res: Dictionary = await show.play_show()
+			show.queue_free()
+			var n := int(res.get("bursts", 0))
+			GameState.vars["stocks_bursts"] = n
+			GameState.vars["stocks_releases"] = int(res.get("releases", 0))
+			await Cutscene.play("after_d2_stocks_faint" if bool(res.get("fainted", false)) else "after_d2_stocks_end")
 			if n > 0:
 				PenanceBook.add(n * STOCKS_BURST_HOURS, "示众时笑出声 ×%d" % n)
 			if n >= STOCKS_ROULETTE:

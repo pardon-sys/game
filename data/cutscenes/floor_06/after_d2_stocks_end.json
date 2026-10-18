@@ -1,0 +1,324 @@
+{
+	"name": "示众结束",
+	"letterbox": true,
+	"skippable": true,
+	"end_dark": true,
+	"steps": [
+		{
+			"actions": [
+				{
+					"who": "Stocks_23_24",
+					"do": "hold"
+				},
+				{
+					"emotion": "helpless_1",
+					"laugh": 40,
+					"do": "pose"
+				},
+				{
+					"to": [
+						23,
+						26
+					],
+					"zoom": 1.0,
+					"time": 0.1,
+					"do": "camera"
+				},
+				{
+					"who": "after_kid_tom",
+					"to": [
+						40,
+						26
+					],
+					"speed": 80,
+					"do": "move"
+				}
+			],
+			"wait": 0.6
+		},
+		{
+			"speaker": "保卫队队长",
+			"text": "……时间到。",
+			"npc": "captain"
+		},
+		{
+			"speaker": "",
+			"text": "（围观的人慢慢散了。她瘫在足枷上，脚趾还在一抽一抽地发抖）"
+		},
+		{
+			"actions": [
+				{
+					"id": "b",
+					"kind": "npc:blue_princess",
+					"at": [
+						31,
+						24
+					],
+					"dir": "left",
+					"do": "spawn"
+				},
+				{
+					"who": "b",
+					"to": [
+						24.8,
+						24.6
+					],
+					"speed": 40,
+					"do": "move"
+				}
+			],
+			"wait": 2.2
+		},
+		{
+			"speaker": "",
+			"text": "（一个蓝色的身影从训练室那边走了过来。头发乱糟糟的，走路有点晃）"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……还活着吗。"
+		},
+		{
+			"speaker": "公主",
+			"text": "你、你来干什么啦……！说好了不准来看的！",
+			"emotion": "angry"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……说好了，最后一个来。……我是最后一个。"
+		},
+		{
+			"speaker": "公主",
+			"text": "……那你的头发怎么了？",
+			"emotion": "surprise"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……特训。……别问。"
+		},
+		{
+			"actions": [
+				{
+					"id": "ph",
+					"kind": "prop:pants_hand",
+					"at": [
+						24.6,
+						24.8
+					],
+					"z": 2,
+					"do": "spawn"
+				},
+				{
+					"who": "ph",
+					"to": [
+						23.3,
+						25.4
+					],
+					"time": 0.9,
+					"do": "move"
+				}
+			],
+			"wait": 0.9
+		},
+		{
+			"speaker": "公主",
+			"text": "呀啊！？谁、谁在挠——",
+			"emotion": "surprise",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "ph",
+					"zone": "sole",
+					"fx": "hand",
+					"repeat": 4,
+					"interval": 0.22,
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……不是我。……是它。"
+		},
+		{
+			"speaker": "",
+			"text": "（裤子里伸出来的小手，正用指尖戳她的脚心——戳一下，缩回去，再戳一下，像在打招呼）"
+		},
+		{
+			"speaker": "市场监督",
+			"text": "这、这一下算不算？"
+		},
+		{
+			"speaker": "保卫队队长",
+			"text": "……不算。",
+			"actions": [
+				{
+					"who": "after_captain",
+					"dir": "left",
+					"do": "face"
+				}
+			],
+			"npc": "captain"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……乖。回来。",
+			"actions": [
+				{
+					"who": "ph",
+					"to": [
+						24.8,
+						24.6
+					],
+					"time": 0.6,
+					"do": "move"
+				}
+			]
+		},
+		{
+			"actions": [
+				{
+					"who": "ph",
+					"do": "despawn"
+				},
+				{
+					"who": "Stocks_23_24",
+					"on": false,
+					"do": "hold"
+				},
+				{
+					"sound": "stocks",
+					"do": "sfx"
+				},
+				{
+					"laugh": 0,
+					"do": "pose"
+				}
+			],
+			"wait": 0.4
+		},
+		{
+			"if": {
+				"var": {
+					"stocks_bursts": [
+						"==",
+						0
+					]
+				}
+			},
+			"speaker": "市场监督",
+			"text": "一次都没笑出声……记号笔都没用上。"
+		},
+		{
+			"if": {
+				"var": {
+					"stocks_bursts": [
+						"==",
+						0
+					]
+				}
+			},
+			"speaker": "公主",
+			"text": "哼哼……（脚、脚底板还在发抖……）",
+			"emotion": "happy"
+		},
+		{
+			"if": {
+				"var": {
+					"stocks_bursts": [
+						">=",
+						1
+					]
+				}
+			},
+			"speaker": "市场监督",
+			"text": "笑出声的次数都记下来了。按老规矩，一次两工时。",
+			"actions": [
+				{
+					"sound": "book",
+					"do": "sfx"
+				}
+			]
+		},
+		{
+			"if": {
+				"var": {
+					"stocks_bursts": [
+						">=",
+						3
+					]
+				}
+			},
+			"speaker": "保卫队队长",
+			"text": "……笑得太多了。下午之前，去训练营转一次受罚转盘。",
+			"npc": "captain"
+		},
+		{
+			"if": {
+				"var": {
+					"stocks_bursts": [
+						">=",
+						3
+					]
+				}
+			},
+			"speaker": "公主",
+			"text": "还、还有转盘——？！",
+			"emotion": "surprise"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……鞋。",
+			"actions": [
+				{
+					"who": "b",
+					"kind": "dots",
+					"do": "bubble"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "……谢谢。（……原来她是来送鞋的……）",
+			"emotion": "shy"
+		},
+		{
+			"actions": [
+				{
+					"time": 0.8,
+					"do": "fade_out"
+				}
+			],
+			"wait": 0.8
+		},
+		{
+			"actions": [
+				{
+					"who": "b",
+					"do": "despawn"
+				},
+				{
+					"who": "AfterBlue",
+					"to": [
+						24.8,
+						25.6
+					],
+					"do": "move"
+				},
+				{
+					"who": "princess",
+					"to": [
+						23,
+						26
+					],
+					"do": "move"
+				},
+				{
+					"reset": true,
+					"time": 0.0,
+					"do": "camera"
+				}
+			],
+			"wait": 0.1
+		}
+	]
+}
