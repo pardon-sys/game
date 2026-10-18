@@ -1,0 +1,156 @@
+{
+	"_说明": "配药解谜（after_text/potion.py 生成，TaskPotion 读）。",
+	"herbs": {
+		"mint": {
+			"name": "薄荷叶",
+			"wrong": [
+				{
+					"speaker": "药剂师奶奶",
+					"text": "（羽毛轻轻碰了一下脚底）哎呀，脚底冰得发白了。"
+				},
+				{
+					"speaker": "公主",
+					"text": "好、好冰！凉过头了……一碰就想跳起来——哈、哈哈！",
+					"emotion": "surprise"
+				}
+			],
+			"zone": "sole",
+			"note": "脚底冰得发麻，一碰就跳"
+		},
+		"ice": {
+			"name": "冰晶草",
+			"wrong": [
+				{
+					"speaker": "药剂师奶奶",
+					"text": "（羽毛扫过手心）怎么牙齿在打颤呀？"
+				},
+				{
+					"speaker": "公主",
+					"text": "冷、冷、冷……笑、笑声都一、一抖一抖的……哈、哈……",
+					"emotion": "helpless_1"
+				}
+			],
+			"zone": "armpit",
+			"note": "冻得打哆嗦，笑声一抖一抖"
+		},
+		"lavender": {
+			"name": "薰衣草",
+			"wrong": [
+				{
+					"speaker": "药剂师奶奶",
+					"text": "（羽毛扫过脚心，过了好一会儿……）"
+				},
+				{
+					"speaker": "公主",
+					"text": "……嗯？……好困……………哈、哈哈哈哈！？反应慢、慢半拍——！",
+					"emotion": "helpless_1"
+				}
+			],
+			"zone": "sole",
+			"note": "困得眼皮打架，痒的反应慢半拍然后一下子笑出来"
+		},
+		"mushroom": {
+			"name": "痒痒菇粉",
+			"wrong": [
+				{
+					"speaker": "药剂师奶奶",
+					"text": "（羽毛还没碰到）……哎？我还没挠呢。"
+				},
+				{
+					"speaker": "公主",
+					"text": "哈哈哈哈！羽毛、羽毛还没碰到就……好痒！全身都好痒——！",
+					"emotion": "helpless_2"
+				}
+			],
+			"zone": "waist",
+			"note": "更怕痒，羽毛还没碰到就笑出来"
+		},
+		"feather": {
+			"name": "羽毛花",
+			"wrong": [
+				{
+					"speaker": "药剂师奶奶",
+					"text": "（羽毛扫过手心）……你怎么在缩脚？"
+				},
+				{
+					"speaker": "公主",
+					"text": "奇、奇怪……你挠的是手心，可是痒的是脚心——哈、哈哈！",
+					"emotion": "surprise"
+				}
+			],
+			"zone": "sole",
+			"note": "痒的地方转移：挠手心，脚心在痒"
+		},
+		"honey": {
+			"name": "蜂蜜根",
+			"wrong": [
+				{
+					"speaker": "药剂师奶奶",
+					"text": "（羽毛扫过脚心）……还是一样怕痒嘛。"
+				},
+				{
+					"speaker": "公主",
+					"text": "嘴里甜甜的……可是脚心、脚心还是一样痒——哈哈哈！一点用都没有！",
+					"emotion": "helpless_1"
+				}
+			],
+			"zone": "sole",
+			"note": "嘴里甜甜的，可是一点止痒的效果都没有"
+		}
+	},
+	"order": [
+		"mint",
+		"ice",
+		"lavender",
+		"mushroom",
+		"feather",
+		"honey"
+	],
+	"recipes": [
+		{
+			"answer": [
+				"mint",
+				"ice",
+				"lavender"
+			],
+			"blurred": "「止痒药：薄荷▒、冰晶▒、▒▒草，文火慢熬……」（后半张被水渍晕开了）"
+		},
+		{
+			"answer": [
+				"mint",
+				"ice",
+				"honey"
+			],
+			"blurred": "「止痒药（甜口）：薄▒叶、▒晶草，再加一味▒▒根……」"
+		},
+		{
+			"answer": [
+				"ice",
+				"lavender",
+				"honey"
+			],
+			"blurred": "「止痒药（安神）：▒晶草、薰▒▒，佐以蜂▒▒……」"
+		}
+	],
+	"success": [
+		{
+			"speaker": "药剂师奶奶",
+			"text": "（羽毛扫过手心、脚心、腰侧……）……嗯？"
+		},
+		{
+			"speaker": "公主",
+			"text": "……咦？不痒？……一点都不痒！",
+			"emotion": "happy"
+		},
+		{
+			"speaker": "药剂师奶奶",
+			"text": "呵呵，配对了。就是这个味道——奶奶年轻的时候，也是这么配出来的。"
+		}
+	],
+	"miss": [
+		{
+			"speaker": "药剂师奶奶",
+			"text": "嗯……这一碗不对。记下来，下一碗再试。"
+		}
+	]
+}

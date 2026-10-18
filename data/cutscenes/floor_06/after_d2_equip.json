@@ -1,0 +1,90 @@
+{
+	"name": "痒痒装备回收",
+	"letterbox": true,
+	"skippable": true,
+	"steps": [
+		{
+			"actions": [
+				{
+					"who": "after_supervisor",
+					"dir": "right",
+					"do": "face"
+				},
+				{
+					"to": [
+						13,
+						25
+					],
+					"zoom": 1.0,
+					"time": 0.5,
+					"do": "camera"
+				}
+			],
+			"wait": 0.5
+		},
+		{
+			"speaker": "市场监督",
+			"text": "来了？正好。攻防战的时候，裁缝铺的痒痒装备被怪物撒得满镇都是。"
+		},
+		{
+			"speaker": "市场监督",
+			"text": "一共八件。你去收回来，送到我这里。"
+		},
+		{
+			"speaker": "公主",
+			"text": "捡起来送过来就行吧？这个简单！",
+			"emotion": "happy"
+		},
+		{
+			"speaker": "市场监督",
+			"text": "……这些装备有个小毛病。被人拿起来，就会自己穿到身上去。"
+		},
+		{
+			"speaker": "公主",
+			"text": "……什么？！",
+			"emotion": "surprise"
+		},
+		{
+			"speaker": "市场监督",
+			"text": "而且同一个地方只能穿一件。脚上已经有一件，再捡一件脚上的，旧的那件就会掉下来。"
+		},
+		{
+			"speaker": "市场监督",
+			"text": "所以——自己想好路线，多跑几趟。送到我这里，我帮你卸下来。"
+		},
+		{
+			"speaker": "公主",
+			"text": "……这哪里简单了……",
+			"emotion": "sad"
+		},
+		{
+			"speaker": "市场监督",
+			"text": "还有，那群小鬼头今天下午正闲着。你身上叮叮当当、扭来扭去的，他们准会凑过来。"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……小心。……那几个，很会挠。",
+			"actions": [
+				{
+					"who": "AfterBlue",
+					"dir": "left",
+					"do": "face"
+				}
+			]
+		},
+		{
+			"speaker": "",
+			"text": "（笑得太厉害就去长椅上歇歇脚，或者到井边洗把脸。被小孩缠住了，按 J 挣扎、E 哄走、冲刺甩掉）"
+		},
+		{
+			"actions": [
+				{
+					"reset": true,
+					"time": 0.5,
+					"do": "camera"
+				}
+			],
+			"wait": 0.5
+		}
+	]
+}

@@ -166,5 +166,23 @@
 			"speaker": "",
 			"text": "（楼上是蓝色公主的房间。……没事别上去打扰她）"
 		}
+	],
+	"after_task_locked": [
+		{
+			"speaker": "",
+			"text": "（活还没干完……现在回屋，市场监督会追过来的）"
+		}
+	],
+	"after_gate_closed": [
+		{
+			"speaker": "",
+			"text": "（城门关着。外面在清理战场，现在不让出去）"
+		}
+	],
+	"after_pharmacy_sign": [
+		{
+			"speaker": "招牌",
+			"text": "【药剂师工房】止痒药、薄荷糖、清心花露。……试药员招募中。"
+		}
 	]
 }

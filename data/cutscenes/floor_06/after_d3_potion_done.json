@@ -1,0 +1,72 @@
+{
+	"name": "止痒药熬好了",
+	"letterbox": true,
+	"skippable": true,
+	"steps": [
+		{
+			"actions": [
+				{
+					"who": "after_pharm",
+					"dir": "down",
+					"do": "face"
+				},
+				{
+					"to": [
+						8,
+						6
+					],
+					"zoom": 1.0,
+					"time": 0.4,
+					"do": "camera"
+				}
+			],
+			"wait": 0.4
+		},
+		{
+			"speaker": "药剂师奶奶",
+			"text": "好啦，一大锅止痒药熬好了。这一瓶送你——辛苦的试药员。"
+		},
+		{
+			"speaker": "",
+			"text": "（得到了「薄荷止痒药」：喝下后 10 秒内怎么挠都不会涨闷笑）",
+			"actions": [
+				{
+					"id": "mint_potion",
+					"do": "item"
+				},
+				{
+					"sound": "pickup",
+					"do": "sfx"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "谢谢奶奶！……舌头到现在还是怪怪的……",
+			"emotion": "shy"
+		},
+		{
+			"speaker": "药剂师奶奶",
+			"text": "呵呵。你和小时候的那孩子一样，喝药的时候总皱着鼻子。"
+		},
+		{
+			"speaker": "公主",
+			"text": "……小时候的那孩子？",
+			"emotion": "surprise"
+		},
+		{
+			"speaker": "药剂师奶奶",
+			"text": "……啊，年纪大了，记性不好。去吧去吧，下午还有活呢。"
+		},
+		{
+			"actions": [
+				{
+					"reset": true,
+					"time": 0.4,
+					"do": "camera"
+				}
+			],
+			"wait": 0.4
+		}
+	]
+}

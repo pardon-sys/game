@@ -6,6 +6,30 @@
 				"var": {
 					"after_day": [
 						"==",
+						2
+					]
+				},
+				"not": "after_done_d2_morning"
+			},
+			"node": "d2_wait"
+		},
+		{
+			"if": {
+				"var": {
+					"after_day": [
+						"==",
+						2
+					]
+				},
+				"flag": "after_done_d2_morning"
+			},
+			"node": "d2"
+		},
+		{
+			"if": {
+				"var": {
+					"after_day": [
+						"==",
 						1
 					]
 				},
@@ -50,6 +74,20 @@
 			"lines": [
 				{
 					"text": "城墙的事先放一放，大家都去广场了。"
+				}
+			]
+		},
+		"d2_wait": {
+			"lines": [
+				{
+					"text": "城墙上都听得见广场那边的动静。……加油。"
+				}
+			]
+		},
+		"d2": {
+			"lines": [
+				{
+					"text": "你笑起来，声音挺响的。……啊，失礼了。"
 				}
 			]
 		}

@@ -6,6 +6,30 @@
 				"var": {
 					"after_day": [
 						"==",
+						2
+					]
+				},
+				"not": "after_done_d2_morning"
+			},
+			"node": "d2_wait"
+		},
+		{
+			"if": {
+				"var": {
+					"after_day": [
+						"==",
+						2
+					]
+				},
+				"flag": "after_done_d2_morning"
+			},
+			"node": "d2"
+		},
+		{
+			"if": {
+				"var": {
+					"after_day": [
+						"==",
 						1
 					]
 				},
@@ -47,6 +71,20 @@
 			"lines": [
 				{
 					"text": "下午广场宣判。……别想着溜回屋里。"
+				}
+			]
+		},
+		"d2_wait": {
+			"lines": [
+				{
+					"text": "蓝色的那位一大早就去训练室了。……说是不想看。"
+				}
+			]
+		},
+		"d2": {
+			"lines": [
+				{
+					"text": "……其实她示众快结束的时候就站在广场边上了。"
 				}
 			]
 		}

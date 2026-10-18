@@ -6,6 +6,45 @@
 				"var": {
 					"after_day": [
 						"==",
+						2
+					]
+				},
+				"not": "after_done_d2_morning"
+			},
+			"node": "d2_wait"
+		},
+		{
+			"if": {
+				"var": {
+					"after_day": [
+						"==",
+						2
+					]
+				},
+				"flag": [
+					"after_done_d2_morning",
+					"after_d2_fainted"
+				]
+			},
+			"node": "d2_faint"
+		},
+		{
+			"if": {
+				"var": {
+					"after_day": [
+						"==",
+						2
+					]
+				},
+				"flag": "after_done_d2_morning"
+			},
+			"node": "d2"
+		},
+		{
+			"if": {
+				"var": {
+					"after_day": [
+						"==",
 						1
 					]
 				},
@@ -55,6 +94,32 @@
 			"lines": [
 				{
 					"text": "广场上人好多……您的脸色不太好，先喝口水吧。"
+				}
+			]
+		},
+		"d2_wait": {
+			"lines": [
+				{
+					"text": "鞋子先放我这里保管。……示众完了来拿。"
+				},
+				{
+					"text": "……为什么连鞋都要收走啊……",
+					"speaker": "公主",
+					"emotion": "sad"
+				}
+			]
+		},
+		"d2": {
+			"lines": [
+				{
+					"text": "鞋子拿好。……脚底红红的，回去用凉水敷一下吧。"
+				}
+			]
+		},
+		"d2_faint": {
+			"lines": [
+				{
+					"text": "您醒了？鞋子刚才蓝色的那位来拿走了。……她好像很担心您。"
 				}
 			]
 		}

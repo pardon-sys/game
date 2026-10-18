@@ -18,11 +18,12 @@ from pathlib import Path
 os.chdir(Path(__file__).resolve().parents[2])
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-from after_text import d1, d2, errands, house, play, punish, town  # noqa: E402
+from after_text import d1, d2, equip_kids, errands, house, play, potion, punish, stocks, tasks, town  # noqa: E402
 
 POOL = list("ACDEFGHIJKLMNOQRSTUVWXYZabcdefghijklmnopqrsuvwyz0123456789!?$&*+-/:;<>@^_|~()'=,`{}\"")
 POOL += list("αβγδεζηθικλμνξοπρστυφχψωΓΔΘΛΞΠΣΦΨΩ甲乙丙丁戊己庚辛壬癸子丑寅卯辰巳午未申酉戌亥金木水火土日月山川")
 TOWN, HOUSE, HOUSE_UP = "floor_06_after", "floor_06_after_house", "floor_06_after_house_up"
+PHARMACY, FIELD = "floor_06_after_pharmacy", "floor_06_after_field"
 
 
 class Map:
@@ -80,11 +81,15 @@ m.put(54, 5, "exit target=floor_06_mine locked=true dialogue=after_mine_locked")
 # 居民区：烧焦的房子搭上了脚手架
 for i, x in enumerate((8, 16, 24, 32)):
     prop(m, x, 8, ("house_scaffold_%d" % (i // 2)) if i % 2 == 0 else "house_%d" % i)
+# 药剂师工房（北边第二座房子）
+m.put(16, 9, "exit target=%s spawn=from_town" % PHARMACY)
+m.put(16, 10, "spawn id=from_pharmacy")
+m.put(18, 10, "sign dialogue=after_pharmacy_sign")
 for (x, y) in ((12, 11), (28, 11)):
     prop(m, x, y, "lumber", OBJ + "lumber")
 prop(m, 20, 12, "rubble")
 prop(m, 42, 8, "house_blue")
-m.put(42, 9, "exit target=%s spawn=from_town" % HOUSE)
+m.put(42, 9, "exit target=%s spawn=from_town lock_flag=after_task_active locked_dialogue=after_task_locked" % HOUSE)
 m.put(42, 10, "spawn id=from_house")
 # 集贸市场：补好了一个摊位，另一个还塌着
 for row, y in enumerate((19, 26)):
@@ -130,6 +135,9 @@ prop(m, 32, 40, "dungeon_gate", OBJ + "gate")
 for x in (29, 35):
     prop(m, x, 40, "lamp")
 m.put(32, 38, "spawn id=from_siege")
+# 城门 → 城外的战场（第 3 天下午拆攻城车的时候才开）
+m.put(32, 39, "exit target=%s spawn=from_town unlock_flag=after_field_open locked_dialogue=after_gate_closed" % FIELD)
+m.put(33, 36, "spawn id=from_field")
 m.put(32, 37, "player")
 m.put(33, 37, "blue_princess follow=true ai=false")
 
@@ -223,6 +231,54 @@ u.put(6, 7, "blue_princess ai=false dialogue=floor_06/after_blue_room")
 u.put(11, 5, "player")
 u.write()
 
+# ================================================================ 药剂师工房
+PH = "talk:floor_06/after_pharm_objects#"
+ph = Map(PHARMACY, 16, 12, "intro =\nambient = 0.86,0.9,0.8\nno_switch = true")
+ph.room(2, 2, 13, 9)
+for y in range(2, 10):
+    for x in range(2, 14):
+        ph.put(x, y, "prop type=wood_floor")
+for x in (5, 11):
+    ph.put(x, 1, "torch lit=true")
+ph.put(2, 2, "f6afterroom")
+prop(ph, 4, 3, "herb_rack", PH + "rack")
+prop(ph, 7, 3, "herb_rack", PH + "rack")
+prop(ph, 11, 3, "bookshelf", PH + "book")
+prop(ph, 11, 6, "cauldron", PH + "cauldron")
+prop(ph, 4, 7, "desk", PH + "desk")
+prop(ph, 13, 9, "plant")
+prop(ph, 2, 9, "plant")
+prop(ph, 9, 7, "candle")
+npc(ph, 8, 5, "pharmacist", "after_pharm", 0, "dir=down")
+ph.put(8, 9, "exit target=%s spawn=from_pharmacy" % TOWN)
+ph.put(8, 8, "spawn id=from_town")
+ph.put(7, 8, "player")
+ph.write()
+
+# ================================================================ 城门外的战场
+fd = Map(FIELD, 44, 30, "intro =\nambient = 0.72,0.66,0.62\nnight_ambient = 0.3,0.3,0.5")
+fd.room(2, 2, 41, 27)
+for x in (8, 16, 26, 34):
+    fd.put(x, 1, "torch lit=true")
+fd.put(3, 3, "f6afterroom")
+fd.put(21, 2, "exit target=%s spawn=from_field" % TOWN)
+fd.put(21, 4, "spawn id=from_town")
+fd.put(21, 5, "player")
+fd.put(22, 5, "blue_princess follow=true ai=false")
+# 三辆睡着的攻城车（一辆比一辆难：扫得更宽、更快、车灯更远）
+fd.put(10, 15, "f6cart index=0 dir=right sweep=40 speed=0.9 range_px=90")
+fd.put(30, 10, "f6cart index=1 dir=down sweep=55 speed=1.2 range_px=100")
+fd.put(32, 22, "f6cart index=2 dir=left sweep=70 speed=1.5 range_px=112")
+frnd = random.Random(626)
+WRECK = ["flag_broken", "feather_pile", "bubble_frozen", "rubble", "feather_pile", "decal_scorch_0", "decal_ash_1", "decal_splinters_0"]
+for (x, y) in ((6, 8), (15, 6), (26, 5), (36, 7), (5, 21), (14, 24), (24, 26), (38, 26), (19, 14), (24, 18), (38, 15), (8, 26)):
+    prop(fd, x, y, frnd.choice(WRECK))
+for (x, y) in ((17, 10), (25, 13), (20, 20)):
+    prop(fd, x, y, "barricade")
+for (x, y) in ((12, 11), (35, 18)):
+    prop(fd, x, y, "sandbag")
+fd.write()
+
 # ================================================================ 日程（DayClock）
 HIDE = {"hidden": True}
 
@@ -261,7 +317,10 @@ for f in NPCS:
     if f in D2_STOCKS:
         NPCS[f]["d2"]["morning_done"] = dict(NPCS[f]["default"])
 DAYS = {
-    "d2": {"morning": {"event": "d2_stocks", "task": "广场足枷示众", "hours": 12}},
+    "d2": {"morning": {"event": "d2_stocks", "task": "广场足枷示众", "hours": 12},
+           "afternoon": {"event": "d2_equip", "task": "回收痒痒装备", "hours": 10}},
+    "d3": {"morning": {"event": "d3_potion", "task": "药剂师的试药员", "hours": 10},
+           "afternoon": {"event": "d3_cart", "task": "拆除哑火的攻城车", "hours": 12}},
     "d1": {"morning": {"event": "d1_open", "task": "战后集合"},
            "afternoon": {"event": "d1_verdict", "task": "广场听候宣判"},
            "night": {"event": "d1_sleepwalk", "task": "回小屋睡觉"}},
@@ -269,6 +328,12 @@ DAYS = {
 Path("data/after").mkdir(parents=True, exist_ok=True)
 Path("data/after/errands.json").write_text(json.dumps({
     "_说明": "七日赎罪的镇民委托（gen_floor06_after.py 从 after_text/errands.py 生成，AfterErrands 读）。", "errands": errands.ERRANDS},
+    ensure_ascii=False, indent="\t") + "\n")
+Path("data/after/stocks.json").write_text(json.dumps(dict({"_说明": "足枷示众小游戏的台词（after_text/stocks.py 生成，StocksShow 读）。"}, **stocks.STOCKS),
+    ensure_ascii=False, indent="\t") + "\n")
+Path("data/after/equip_kids.json").write_text(json.dumps(dict({"_说明": "装备回收里小孩的配合挠法（after_text/equip_kids.py 生成，EquipKids 读）。"}, **equip_kids.EQUIP_KIDS),
+    ensure_ascii=False, indent="\t") + "\n")
+Path("data/after/potion.json").write_text(json.dumps(dict({"_说明": "配药解谜（after_text/potion.py 生成，TaskPotion 读）。"}, **potion.POTION),
     ensure_ascii=False, indent="\t") + "\n")
 Path("data/after/play.json").write_text(json.dumps(dict({"_说明": "两位公主的玩闹（after_text/play.py 生成，AfterPlay 读）。"}, **play.PLAY),
     ensure_ascii=False, indent="\t") + "\n")
@@ -293,17 +358,18 @@ signs.update(town.SIGNS)
 signs_path.write_text(json.dumps(signs, ensure_ascii=False, indent="\t") + "\n")
 
 cut = Path("data/cutscenes/floor_06")
-CUTS = dict(d1.CUTSCENES, **d2.CUTSCENES)
+CUTS = dict(d1.CUTSCENES, **d2.CUTSCENES, **tasks.CUTSCENES, **potion.CUTSCENES)
 for cid, fn in CUTS.items():
     (cut / (cid + ".json")).write_text(json.dumps(fn(), ensure_ascii=False, indent="\t") + "\n")
 th = Path("data/theater/after")
 th.mkdir(parents=True, exist_ok=True)
-for tid, data in punish.THEATERS.items():
+for tid, data in dict(punish.THEATERS, **tasks.THEATERS, **potion.THEATERS).items():
     (th / (tid + ".json")).write_text(json.dumps(data, ensure_ascii=False, indent="\t") + "\n")
 
 floors = json.loads(Path("data/floors.json").read_text())
 lst = floors["floors"]
-NEW = [(TOWN, "地下小镇·战后", "town"), (HOUSE, "蓝色小屋·战后", "town"), (HOUSE_UP, "蓝色小屋·战后（楼上）", "night_room")]
+NEW = [(TOWN, "地下小镇·战后", "town"), (HOUSE, "蓝色小屋·战后", "town"), (HOUSE_UP, "蓝色小屋·战后（楼上）", "night_room"),
+       (PHARMACY, "药剂师工房", "town"), (FIELD, "城门外的战场", "town")]
 at = next(i for i, f in enumerate(lst) if f["id"] == "floor_06_siege") + 1
 for fid, name, music in NEW:
     if not any(f["id"] == fid for f in lst):

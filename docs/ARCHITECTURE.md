@@ -660,15 +660,36 @@ data/cutscenes/<楼层组>/  地图内过场；data/theater/<楼层组>/  小剧
 - **第 2 天早上** 足枷示众：走到广场足枷（地图上的 `trap type=stocks active=false`）→ 开场过场 `after_d2_stocks`（镇民夸她的脚、队长讲规矩）
   → 小游戏 `StocksShow`（`levels/floor_06/scripts/stocks_show.gd`，继承训练小游戏 `TrainingStage` 的画面）→ 结局过场。
   - 120 秒倒计时，孩子按 `TOOLS` 轮换（羽毛 / 狗尾巴草 / 小刷子 / 一群小孩），每个孩子按 `PICK_WEIGHTS` 挑一个部位（`PARTS`：前脚掌 / 脚心 / 脚趾缝 / 脚弓，
-    闷笑每秒涨的比例、魔力疲倦倍率、挠多久各不同；挠完脚弓下一个孩子工具升级）。
+	闷笑每秒涨的比例、魔力疲倦倍率、挠多久各不同；挠完脚弓下一个孩子工具升级）。
   - J / E 挣扎降闷笑 2.5%（挠的手停 0.3 秒；同一部位连挣 6 次孩子换部位）；1~4 花求情（3 次）换部位，倒计时 +2 秒。
   - 孩子换人的间隙三选一（1 装没事「硬撑」挣扎减半 / 2 求饶「丢脸」闷笑 +25%、下一个时间 −30%、求情 +1 / 3 顶嘴「挑衅」两只脚一起挠、疲倦 +30%、挣扎 ×1.5、求情 −1），
-    限时 3 秒，不选算装没事。
+	限时 3 秒，不选算装没事。
   - 闷笑满 = 笑出声（回到 40%，结算时一次 +2 工时，3 次以上去受罚转盘）；魔力疲倦满 = 自动释放，队长「不符合管教，加时！」+15 秒。
   - 撑到 0 秒 → `after_d2_stocks_end`（蓝色公主最后一个来，千手痒痒裤的小手偷戳脚心「不算」，送鞋）；释放超过 5 次笑晕 → `after_d2_stocks_faint`
-    （醒来后蓝色公主绘声绘色地描述她昏过去以后孩子们怎么挠她的脚心）。跟着的 `AfterBlue` 开场挪走、结局放回。
-  - 测试接口：`press("J")`、`plead(部位)`、`respond(id)`、`auto_respond`、`time_scale`。
-- 测试：`tests/f6_after_test`（胜利去向、开场 → 宣判、日程摆位、赎罪簿和背包页、宵禁锁门、手印顺序、楼上结尾 → 第 2 天、示众小游戏（挣扎 / 求情 / 应对 / 笑出声 / 释放加时 / 笑晕）/ 罚工时 / 转盘、委托、玩闹、床上休息、日程逐层覆盖、旧存档、跳关）。
+	（醒来后蓝色公主绘声绘色地描述她昏过去以后孩子们怎么挠她的脚心）。跟着的 `AfterBlue` 开场挪走、结局放回。
+  - 演出：孩子登场、换人的应对、笑出声、魔力释放都暂停示众（`busy`），在对话框里演一小段——台词 `data/after/stocks.json`（← `after_text/stocks.py`）：
+	前四个孩子是原来过场里的戏份（登场、应对的提问和三个选项、三种反应），之后的孩子从池子里挑；开挠时有「工具 × 部位」的挠法描写和公主的第一句；
+	应对用对话的选项页（选项后面带负面状态名，效果写在下面）；挠的过程中公主的反应用立绘旁的反应字（`GameState.princess_reacted`，不暂停）和头顶气泡。
+  - 测试接口：`press("J")`、`plead(部位)`、`respond(id)`、`auto_respond`、`quiet`（不演对话，直接测数值）、`time_scale`。
+  - 第 2 天早上示众之前：蓝色公主不在身边（`AfterTown.blue_away()`，一早去了训练室），镇民有等着示众的话（`d2_wait`），示众之后 / 笑晕之后各一套（`d2` / `d2_faint`）。
+- **弥补任务**（`AfterStory.TASKS`：事件 id → 玩法节点脚本、失败小剧场、罚工时、收尾过场、失败后回到哪一格）：`run_task(ev)` 摆上玩法节点，等它发
+  `finished(ok)`；失败 → `PenanceBook.fail`（失败小剧场 + 罚工时 + 记受罚）→ `reset_items()` → 重来；任务进行中开 `after_task_active`（委托接不了、小屋的门锁上）。
+  玩法节点没做完就离开场景树（换图 / 读档 / 测试跳关）→ `aborted`，清掉标记，走回触发点重新开始（`recover_task` / `reset_runtime`）。
+  目标下面的实时状态读脚本的静态 `status_text()`（`AfterStory.status_text`，没任务时是委托的）。文本在 `after_text/tasks.py`、`potion.py`、`equip_kids.py`。
+  - **痒痒装备回收**（第 2 天下午，`TaskEquip`，`task_equip.gd`）：8 件临时痒痒装备（`ItemSpot`）走过去就被强制穿上（`Equipment.force`），同部位再捡一件旧的掉在脚下；
+    送到补给站（`DEPOT`）全部卸下。路上 4 个 `AfterKid`：闷笑超过 40%、装备刚发作（`EquipFx.flared`）、或戴着铃铛脚链 / 痒痒印记臀贴时跑过来，
+    按穿着的装备配合着挠（`EquipKids.caption / zone_for`，两件一起有组合挠法；描写走立绘旁的反应字）。长椅歇脚 / 井边洗脸降闷笑，被挠时 J 挣扎、E 哄走、冲刺甩掉。
+    闷笑到 90% = 失败（`after_fail_equip`）。
+  - **药剂师的试药员**（第 3 天早上，药剂师工房 `floor_06_after_pharmacy`，`TaskPotion`）：配方本（水渍盖住的配方 + 记下的反应）→ 六味药草挑三味 → 奶奶用羽毛试，
+    配方里没有的药草各有一种可推理的反应（`data/after/potion.json`）；错三碗 = 失败（`after_fail_potion`），换下一张配方。配对 → 「薄荷止痒药」（`MintPotionItem`：
+    10 秒 `frost_guard`，闷笑不涨）。
+  - **拆除哑火的攻城车**（第 3 天下午，城门外的战场 `floor_06_after_field`，城门 `after_field_open` 这时才开；`TaskCart` + `DormantCart`，图例 `f6cart index dir sweep speed range_px`）：
+    车灯（`VisionCone`）左右扫，被照到累计 0.4 秒或在附近冲刺就醒 → 捞进车斗挠 → `KeySequenceQTE` 挣扎，挣不开 = 失败（`after_fail_cart`）；车尾按住 E 三秒拆车轴。
+    蓝色公主（这张图能换人）在车旁按住技能键冻住车轮（冻着的车灯不扫），冻久了千手痒痒裤反弹（解冻、她被挠、5 秒冻不了）。
+    三辆拆完 → `after_d3_cart_done`：队长递手帕的「花猫样」口误（用户给定的台词）。
+- 小场景导演 `AfterRoom`（图例 `f6afterroom`）：目标提示、目标圈触发、进图自动演的事件、镇民改名、蓝色公主跟着。`AfterStory.TOWN_DOORS / ROOM_EXITS` 指路。
+- 小剧场 / 舞台上的字（`SpeechBubble`）画在最前面（`z_as_relative = false`、`z_index = 4000`）；训练小游戏舞台上气泡垫在飘字下面。
+- 测试：`tests/f6_after_test`（胜利去向、开场 → 宣判、日程摆位、赎罪簿和背包页、宵禁锁门、手印顺序、楼上结尾 → 第 2 天、示众小游戏（挣扎 / 求情 / 应对 / 笑出声 / 释放加时 / 笑晕）/ 罚工时 / 转盘、委托、玩闹、三个弥补任务（完成 / 失败小剧场 / 重来）、床上休息、日程逐层覆盖、旧存档、跳关）。
 
 ## 公主状态与换美术素材
 

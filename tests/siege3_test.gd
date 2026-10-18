@@ -533,7 +533,8 @@ func _run_field() -> void:
 	var mx := float(m.get_meta("march_x", 0.0))
 	m.global_position = Vector2(-50, d.wall_foot_y() + 500.0)
 	await _wait(0.5)
-	check("左边出生的怪：目标墙段往中间（march_x %.0f），被推出地图会被拉回来（x %.0f）" % [mx, m.global_position.x], mx > 120.0 and m.global_position.x >= 16.0)
+	# 第十二轮起按薄弱分挑墙段（最左边那段也可能被挑中）：目标 x 至少离地图边 90 像素
+	check("左边出生的怪：目标墙段不贴着地图边（march_x %.0f），被推出地图会被拉回来（x %.0f）" % [mx, m.global_position.x], mx >= 89.0 and m.global_position.x >= 16.0)
 	# 绕开挡路的东西：怪物正前方放一块挡板
 	var y0 := d.wall_foot_y() + 300.0
 	var x0 := ms.x / 2.0 + 300.0
@@ -1554,12 +1555,19 @@ func _run_round11() -> void:
 	p.global_position = home + Vector2(-400, 200)
 	d.blue.global_position = Vector2(home.x, d.wall_top_y() + 4)
 	var tor := d.spawn_hazard("tornado", home) as HazardTornado
+	var swept: Array = []
 	for i in 6:
 		var m := d.spawn("slime", "", home + Vector2(randf_range(-10, 10), randf_range(-8, 8)))
 		m.mind = null
+		m.health.max_hp = 99
+		m.health.fill()
+		m.stun(6.0)      # 战场上的怪大多被冰塔冻着：冻住的也要卷得起来
+		swept.append(m)
 	await _until(func(): return tor.warned, 3.0)
 	await _until(func(): return tor.flung_to_wall > 0, 8.0)
-	ok["龙卷风卷怪甩上墙 %d 只" % tor.flung_to_wall] = tor.flung_to_wall > 0
+	await _wait(1.0)
+	var landed := swept.filter(func(m): return is_instance_valid(m) and m.get_meta("siege_on_wall", false)).size()
+	ok["龙卷风卷起冻住的怪、甩上墙 %d 只（真的落在墙顶上 %d 只）" % [tor.flung_to_wall, landed]] = tor.flung_to_wall > 0 and landed > 0
 	d.clear_field()
 	_fight()
 	# 抓娃娃机：没抓到公主就抓怪扔过去
@@ -1712,10 +1720,13 @@ func _run_round12() -> void:
 	await _until(func(): return mush.warned, 3.0)
 	var cap := mush.global_position + mush.caps[4]
 	# 吸附圈只有帽子外一格：50 像素外不吸，一格以内一下子吸上帽子
-	p.global_position = cap + Vector2(50, 0)
+	# 垂直于蘑菇串的方向站开 50 像素（离每一颗都远）
+	var side := (mush.caps[5] - mush.caps[3]).orthogonal().normalized()
+	var far_at := cap + side * 50.0
+	p.global_position = far_at
 	p.end_forced_move()
 	await _wait(0.4)
-	var far_d := p.global_position.distance_to(cap)
+	var far_d := p.global_position.distance_to(cap) if p.global_position.distance_to(far_at) < 4.0 else 0.0
 	p.global_position = cap + Vector2(HazardMushrooms.PULL_R - 3.0, 0)
 	p.end_forced_move()
 	var d0 := p.global_position.distance_to(cap)

@@ -174,32 +174,22 @@
 			]
 		},
 		{
+			"speaker": "小孩们",
+			"text": "（远处）排队排队！一个一个来！",
 			"actions": [
 				{
 					"who": "after_kid_tom",
-					"to": [
-						23,
-						25.6
-					],
-					"speed": 70,
-					"do": "move"
-				}
-			],
-			"wait": 1.4
-		},
-		{
-			"speaker": "小汤姆",
-			"text": "姐姐！我说过要拿羽毛来的！后面还有好多人排队哦！",
-			"actions": [
+					"do": "hop"
+				},
 				{
-					"who": "after_kid_tom",
+					"who": "after_kid_lily",
 					"do": "hop"
 				}
 			]
 		},
 		{
 			"speaker": "公主",
-			"text": "排、排队……？！",
+			"text": "排、排队……？！排什么队啊！！",
 			"emotion": "surprise"
 		},
 		{

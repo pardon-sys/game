@@ -1,0 +1,178 @@
+{
+	"name": "试药失败：全身羽毛测试",
+	"cast": {
+		"princess": {
+			"kind": "princess",
+			"at": [
+				0,
+				8
+			],
+			"visual": "helpless_1",
+			"anim": "helpless",
+			"dir": "down"
+		},
+		"chair": {
+			"kind": "trap:cushion",
+			"at": [
+				0,
+				10
+			]
+		},
+		"ph": {
+			"kind": "npc:pharmacist",
+			"at": [
+				-30,
+				10
+			],
+			"dir": "right"
+		}
+	},
+	"steps": [
+		{
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "fade_in"
+				},
+				{
+					"state": "giggle",
+					"do": "voice"
+				}
+			],
+			"wait": 0.5
+		},
+		{
+			"speaker": "药剂师奶奶",
+			"text": "三碗都不对……哎呀呀，药效全混在一起了。"
+		},
+		{
+			"speaker": "公主",
+			"text": "全、全混在一起……是什么意思……？",
+			"emotion": "surprise"
+		},
+		{
+			"speaker": "药剂师奶奶",
+			"text": "意思是——现在你全身上下，哪里都比平时怕痒。奶奶得一处一处试，看看药效散了没有。"
+		},
+		{
+			"speaker": "",
+			"text": "（奶奶拿出一根长长的白羽毛，先从手心开始）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "ph",
+					"zone": "armpit",
+					"fx": "feather",
+					"repeat": 6,
+					"interval": 0.3,
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "噗……哈、哈……手心……！",
+			"emotion": "helpless_1"
+		},
+		{
+			"speaker": "药剂师奶奶",
+			"text": "手心还没散。那，脖子。",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "ph",
+					"zone": "neck",
+					"fx": "feather",
+					"repeat": 8,
+					"interval": 0.22,
+					"do": "tickle"
+				}
+			],
+			"portrait": "defeat_1"
+		},
+		{
+			"speaker": "公主",
+			"text": "哈哈哈！脖子不行！缩、缩不起来——！",
+			"actions": [
+				{
+					"who": "princess",
+					"kind": "laugh",
+					"do": "bubble"
+				},
+				{
+					"who": "princess",
+					"time": 0.5,
+					"do": "shake"
+				}
+			]
+		},
+		{
+			"speaker": "药剂师奶奶",
+			"text": "腰也没散。……脚心呢？把鞋脱了，奶奶看看。",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "ph",
+					"zone": "waist",
+					"fx": "feather",
+					"repeat": 6,
+					"interval": 0.25,
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "脚、脚心肯定没散啊！不用试了——哈哈哈哈！",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "ph",
+					"zone": "sole",
+					"fx": "feather",
+					"repeat": 12,
+					"interval": 0.16,
+					"do": "tickle"
+				}
+			],
+			"portrait": "defeat_2"
+		},
+		{
+			"speaker": "",
+			"text": "（羽毛顺着脚弓慢慢扫到前脚掌，又在脚趾缝里轻轻转了一圈。三碗药的药效一起发作，痒得她连脚趾都不知道该往哪边蜷）"
+		},
+		{
+			"speaker": "药剂师奶奶",
+			"text": "嗯……全身都没散。那就只好等它自己散啦。……要等一个时辰哦。",
+			"actions": [
+				{
+					"who": "princess",
+					"visual": "helpless_2",
+					"do": "pose"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "一、一个时辰……！？哈哈……奶奶你在笑吧……你绝对在偷笑吧……！",
+			"emotion": "helpless_2"
+		},
+		{
+			"speaker": "药剂师奶奶",
+			"text": "呵呵呵。……散了以后，换一张配方，重新来。"
+		},
+		{
+			"actions": [
+				{
+					"time": 0.6,
+					"do": "fade_out"
+				},
+				{
+					"state": "",
+					"do": "voice"
+				}
+			],
+			"wait": 0.7
+		}
+	]
+}

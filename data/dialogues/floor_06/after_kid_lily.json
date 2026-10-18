@@ -6,6 +6,45 @@
 				"var": {
 					"after_day": [
 						"==",
+						2
+					]
+				},
+				"not": "after_done_d2_morning"
+			},
+			"node": "d2_wait"
+		},
+		{
+			"if": {
+				"var": {
+					"after_day": [
+						"==",
+						2
+					]
+				},
+				"flag": [
+					"after_done_d2_morning",
+					"after_d2_fainted"
+				]
+			},
+			"node": "d2_faint"
+		},
+		{
+			"if": {
+				"var": {
+					"after_day": [
+						"==",
+						2
+					]
+				},
+				"flag": "after_done_d2_morning"
+			},
+			"node": "d2"
+		},
+		{
+			"if": {
+				"var": {
+					"after_day": [
+						"==",
 						1
 					]
 				},
@@ -50,6 +89,31 @@
 			"lines": [
 				{
 					"text": "姐姐……会被关起来吗？"
+				}
+			]
+		},
+		"d2_wait": {
+			"lines": [
+				{
+					"text": "姐姐……我、我是来拦着汤姆的。……真的。"
+				},
+				{
+					"text": "……那你手里的狗尾巴草是什么？",
+					"speaker": "公主"
+				}
+			]
+		},
+		"d2": {
+			"lines": [
+				{
+					"text": "姐姐……对不起。狗尾巴草……是我忍不住……"
+				}
+			]
+		},
+		"d2_faint": {
+			"lines": [
+				{
+					"text": "姐姐晕过去的时候，我、我一直在旁边扇风！……真的！"
 				}
 			]
 		}

@@ -1,0 +1,187 @@
+{
+	"name": "花猫样",
+	"letterbox": true,
+	"skippable": true,
+	"steps": [
+		{
+			"actions": [
+				{
+					"to": [
+						21,
+						8
+					],
+					"zoom": 1.0,
+					"time": 0.5,
+					"do": "camera"
+				},
+				{
+					"id": "cap",
+					"kind": "npc:captain",
+					"at": [
+						21,
+						3
+					],
+					"dir": "down",
+					"do": "spawn"
+				},
+				{
+					"who": "cap",
+					"to": [
+						21,
+						6.5
+					],
+					"speed": 50,
+					"do": "move"
+				}
+			],
+			"wait": 1.0
+		},
+		{
+			"speaker": "",
+			"text": "（最后一根车轴「哐当」一声掉在地上。她从车底下爬出来，脸上、手上全是黑乎乎的车油）"
+		},
+		{
+			"speaker": "公主",
+			"text": "呼……三辆……全拆完了……",
+			"emotion": "happy"
+		},
+		{
+			"speaker": "保卫队队长",
+			"text": "……干得不错。",
+			"actions": [
+				{
+					"who": "cap",
+					"dir": "down",
+					"do": "face"
+				}
+			],
+			"npc": "captain"
+		},
+		{
+			"speaker": "",
+			"text": "（队长从怀里掏出一块手帕，很自然地递了过来）"
+		},
+		{
+			"speaker": "保卫队队长",
+			"text": "擦擦吧，你小时候只要一赌气去钻管道，出来也是这副花猫样……",
+			"npc": "captain"
+		},
+		{
+			"actions": [
+				{
+					"who": "cap",
+					"kind": "dots",
+					"do": "bubble"
+				}
+			],
+			"wait": 0.9
+		},
+		{
+			"speaker": "",
+			"text": "（话说到一半，队长愣住了）"
+		},
+		{
+			"speaker": "公主",
+			"text": "……小时候？",
+			"emotion": "surprise",
+			"actions": [
+				{
+					"who": "princess",
+					"kind": "question",
+					"do": "bubble"
+				}
+			]
+		},
+		{
+			"speaker": "",
+			"text": "（队长看了她一眼——那眼神很复杂，像是想说什么，又硬生生咽了回去）"
+		},
+		{
+			"speaker": "保卫队队长",
+			"text": "……认错人了。手帕不用还。",
+			"actions": [
+				{
+					"who": "cap",
+					"dir": "up",
+					"do": "face"
+				}
+			],
+			"npc": "captain"
+		},
+		{
+			"actions": [
+				{
+					"who": "cap",
+					"to": [
+						21,
+						2.5
+					],
+					"speed": 60,
+					"do": "move"
+				}
+			],
+			"wait": 1.4
+		},
+		{
+			"actions": [
+				{
+					"who": "cap",
+					"do": "despawn"
+				}
+			],
+			"wait": 0.1
+		},
+		{
+			"speaker": "公主",
+			"text": "……管道……？",
+			"emotion": "sad"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……",
+			"actions": [
+				{
+					"who": "AfterBlue",
+					"dir": "up",
+					"do": "face"
+				},
+				{
+					"who": "AfterBlue",
+					"kind": "dots",
+					"do": "bubble"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "你知道他在说什么吗？",
+			"emotion": "surprise",
+			"actions": [
+				{
+					"who": "princess",
+					"dir": "right",
+					"do": "face"
+				}
+			]
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……不知道。……脸，擦一擦。……真的很像花猫。"
+		},
+		{
+			"speaker": "公主",
+			"text": "连你也说！",
+			"emotion": "angry"
+		},
+		{
+			"actions": [
+				{
+					"reset": true,
+					"time": 0.5,
+					"do": "camera"
+				}
+			],
+			"wait": 0.5
+		}
+	]
+}

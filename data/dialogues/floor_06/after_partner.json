@@ -7,6 +7,33 @@
 				"var": {
 					"after_day": [
 						"==",
+						2
+					]
+				},
+				"flag": [
+					"after_done_d2_morning",
+					"after_d2_fainted"
+				]
+			},
+			"node": "d2_faint"
+		},
+		{
+			"if": {
+				"var": {
+					"after_day": [
+						"==",
+						2
+					]
+				},
+				"flag": "after_done_d2_morning"
+			},
+			"node": "d2"
+		},
+		{
+			"if": {
+				"var": {
+					"after_day": [
+						"==",
 						1
 					]
 				},
@@ -111,6 +138,43 @@
 					"text": "……嗯。"
 				}
 			]
+		},
+		"d2": {
+			"lines": [
+				{
+					"text": "……示众，还疼吗。"
+				},
+				{
+					"text": "不疼！就是……脚底到现在还麻麻的……",
+					"speaker": "公主",
+					"emotion": "sad"
+				},
+				{
+					"text": "……嗯。……下次，我早点来。"
+				}
+			],
+			"next": "menu"
+		},
+		"d2_faint": {
+			"lines": [
+				{
+					"text": "……醒了就好。"
+				},
+				{
+					"text": "你、你不准再提那件事！",
+					"speaker": "公主",
+					"emotion": "angry"
+				},
+				{
+					"text": "……哪件。……脚趾打招呼的那件？"
+				},
+				{
+					"text": "——！！",
+					"speaker": "公主",
+					"emotion": "shy"
+				}
+			],
+			"next": "menu"
 		}
 	}
 }

@@ -6,6 +6,45 @@
 				"var": {
 					"after_day": [
 						"==",
+						2
+					]
+				},
+				"not": "after_done_d2_morning"
+			},
+			"node": "d2_wait"
+		},
+		{
+			"if": {
+				"var": {
+					"after_day": [
+						"==",
+						2
+					]
+				},
+				"flag": [
+					"after_done_d2_morning",
+					"after_d2_fainted"
+				]
+			},
+			"node": "d2_faint"
+		},
+		{
+			"if": {
+				"var": {
+					"after_day": [
+						"==",
+						2
+					]
+				},
+				"flag": "after_done_d2_morning"
+			},
+			"node": "d2"
+		},
+		{
+			"if": {
+				"var": {
+					"after_day": [
+						"==",
 						1
 					]
 				},
@@ -58,6 +97,42 @@
 			"lines": [
 				{
 					"text": "姐姐要被宣判了？宣判是什么？好吃吗？"
+				}
+			]
+		},
+		"d2_wait": {
+			"lines": [
+				{
+					"text": "姐姐！羽毛我带来啦！最长最软的那根！"
+				},
+				{
+					"text": "……收起来！",
+					"speaker": "公主",
+					"emotion": "angry"
+				}
+			]
+		},
+		"d2": {
+			"lines": [
+				{
+					"text": "姐姐的脚好怕痒哦！比我还怕！"
+				},
+				{
+					"text": "……不准说出去。",
+					"speaker": "公主",
+					"emotion": "shy"
+				}
+			]
+		},
+		"d2_faint": {
+			"lines": [
+				{
+					"text": "姐姐睡着了还在笑！我们都看见了！"
+				},
+				{
+					"text": "我、我那是晕过去了！不是睡着了！",
+					"speaker": "公主",
+					"emotion": "angry"
 				}
 			]
 		}

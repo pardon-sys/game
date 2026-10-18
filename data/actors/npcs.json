@@ -57,6 +57,10 @@
 			"name": "镇长",
 			"sprite": "res://assets/generated/npcs/mayor.png"
 		},
+		"pharmacist": {
+			"name": "药剂师奶奶",
+			"sprite": "res://assets/generated/npcs/pharmacist.png"
+		},
 		"miner": {
 			"name": "矿工",
 			"sprite": "res://assets/generated/npcs/miner.png"

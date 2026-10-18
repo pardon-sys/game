@@ -1,0 +1,151 @@
+{
+	"name": "拆除哑火的攻城车",
+	"letterbox": true,
+	"skippable": true,
+	"steps": [
+		{
+			"actions": [
+				{
+					"time": 0.0,
+					"do": "fade_out"
+				},
+				{
+					"who": "princess",
+					"to": [
+						21,
+						5
+					],
+					"do": "move"
+				},
+				{
+					"who": "AfterBlue",
+					"to": [
+						22.5,
+						5
+					],
+					"do": "move"
+				},
+				{
+					"id": "cap",
+					"kind": "npc:captain",
+					"at": [
+						19.5,
+						6
+					],
+					"dir": "right",
+					"do": "spawn"
+				},
+				{
+					"to": [
+						21,
+						8
+					],
+					"zoom": 0.9,
+					"time": 0.1,
+					"do": "camera"
+				}
+			],
+			"wait": 0.2
+		},
+		{
+			"actions": [
+				{
+					"time": 0.8,
+					"do": "fade_in"
+				},
+				{
+					"sound": "wind",
+					"volume": -10.0,
+					"do": "sfx"
+				}
+			],
+			"wait": 0.8
+		},
+		{
+			"speaker": "",
+			"text": "（城门外的战场。泡泡、羽毛、倒下的敌塔……收拾到一半的残骸还堆得到处都是）"
+		},
+		{
+			"speaker": "保卫队队长",
+			"text": "看见那三辆攻城车了吗。打到最后没油了，就停在那儿——睡着了。",
+			"npc": "captain"
+		},
+		{
+			"speaker": "公主",
+			"text": "睡、睡着了……？车也会睡觉吗？",
+			"emotion": "surprise"
+		},
+		{
+			"speaker": "保卫队队长",
+			"text": "这些家伙会。车灯还在一下一下地扫，一被照到、或者脚步太响，就会醒。",
+			"npc": "captain"
+		},
+		{
+			"speaker": "保卫队队长",
+			"text": "醒了会怎么样，你在攻防战上见过。……车斗里是什么，你也知道。",
+			"npc": "captain"
+		},
+		{
+			"speaker": "公主",
+			"text": "……刷、刷子……",
+			"emotion": "sad"
+		},
+		{
+			"speaker": "保卫队队长",
+			"text": "从车尾绕过去，把车轴拆下来，它就再也动不了。别冲刺，别进车灯里。",
+			"npc": "captain"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……我可以冻住车轮。……冻着的时候，车灯不扫。"
+		},
+		{
+			"speaker": "保卫队队长",
+			"text": "……殿下，冻太久的话，那条裤子会——",
+			"npc": "captain"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……知道。……我会小心。",
+			"actions": [
+				{
+					"who": "AfterBlue",
+					"kind": "dots",
+					"do": "bubble"
+				}
+			]
+		},
+		{
+			"speaker": "",
+			"text": "（按 C 换成蓝色公主，靠近车按住技能键冻住车轮。冻得越久，千手痒痒裤的反弹条越满）"
+		},
+		{
+			"actions": [
+				{
+					"who": "cap",
+					"to": [
+						19.5,
+						3
+					],
+					"speed": 50,
+					"do": "move"
+				},
+				{
+					"reset": true,
+					"time": 0.5,
+					"do": "camera"
+				}
+			],
+			"wait": 0.6
+		},
+		{
+			"actions": [
+				{
+					"who": "cap",
+					"do": "despawn"
+				}
+			],
+			"wait": 0.1
+		}
+	]
+}

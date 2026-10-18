@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="MintPotionItem" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/items/mint_potion_item.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/generated/item_mint_potion.png" id="2"]
+
+[resource]
+script = ExtResource("1")
+icon = ExtResource("2")
+id = "mint_potion"
+display_name = "薄荷止痒药"
+description = "药剂师奶奶照着配方熬的止痒药，凉丝丝的。喝下后 10 秒内怎么挠都不会涨闷笑。（Q 键使用）"
+category = 0
+max_stack = 5
+pickup_emotion = "happy"

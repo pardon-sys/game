@@ -752,6 +752,23 @@
 				"event": "d2_stocks",
 				"task": "广场足枷示众",
 				"hours": 12
+			},
+			"afternoon": {
+				"event": "d2_equip",
+				"task": "回收痒痒装备",
+				"hours": 10
+			}
+		},
+		"d3": {
+			"morning": {
+				"event": "d3_potion",
+				"task": "药剂师的试药员",
+				"hours": 10
+			},
+			"afternoon": {
+				"event": "d3_cart",
+				"task": "拆除哑火的攻城车",
+				"hours": 12
 			}
 		},
 		"d1": {

@@ -169,7 +169,8 @@ func _mob_tick(delta: float) -> void:
 		for m in director.enemies_near(global_position, RADIUS):
 			if _mobs.size() >= MAX_MOBS:
 				break
-			if _mobs.has(m) or not SiegeTools.displaceable(m):
+			# 冻住 / 晕住的怪也卷得起来（战场上的怪大多被冰塔冻着，原来一只都卷不到）
+			if _mobs.has(m) or not SiegeTools.displaceable(m, true):
 				continue
 			_mobs.append(m)
 			m.set_physics_process(false)

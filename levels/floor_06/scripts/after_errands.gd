@@ -46,7 +46,7 @@ static func active() -> String:
 
 ## 现在能不能接（不算「已经有别的委托在做」）。
 static func is_open(id: String) -> bool:
-	if not PenanceBook.started() or is_done(id) or is_active(id) or DayClock.slot() == DayClock.NIGHT:
+	if not PenanceBook.started() or is_done(id) or is_active(id) or DayClock.slot() == DayClock.NIGHT or GameState.has_flag(AfterStory.TASK_FLAG):
 		return false
 	var from: Array = info(id).get("from", [99, 0])
 	return DayClock.day() * 3 + DayClock.slot() >= int(from[0]) * 3 + int(from[1])

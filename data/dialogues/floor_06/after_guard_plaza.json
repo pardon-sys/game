@@ -6,6 +6,30 @@
 				"var": {
 					"after_day": [
 						"==",
+						2
+					]
+				},
+				"not": "after_done_d2_morning"
+			},
+			"node": "d2_wait"
+		},
+		{
+			"if": {
+				"var": {
+					"after_day": [
+						"==",
+						2
+					]
+				},
+				"flag": "after_done_d2_morning"
+			},
+			"node": "d2"
+		},
+		{
+			"if": {
+				"var": {
+					"after_day": [
+						"==",
 						1
 					]
 				},
@@ -50,6 +74,20 @@
 			"lines": [
 				{
 					"text": "宣判台前面给你留了位置。"
+				}
+			]
+		},
+		"d2_wait": {
+			"lines": [
+				{
+					"text": "足枷前面给你留了位置。……队长交代的。"
+				}
+			]
+		},
+		"d2": {
+			"lines": [
+				{
+					"text": "……今天的事，我也什么都没看见。"
 				}
 			]
 		}

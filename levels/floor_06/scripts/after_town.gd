@@ -29,10 +29,11 @@ func _ready() -> void:
 		return
 	_setup(lv)
 	AfterStory.begin()
+	AfterStory.recover_task()
 	apply_schedule()
 	marker = ObjectiveMarker.new()
 	marker.name = "Objective"
-	marker.extra = AfterErrands.status_text
+	marker.extra = AfterStory.status_text
 	lv.get_node("Entities").add_child(marker)
 	AfterErrands.refresh()
 	_sync_errand()
@@ -71,7 +72,17 @@ func _setup(lv: Node) -> void:
 			residents[key] = r
 
 
+## 蓝色公主不在身边的时候（第 2 天早上，示众之前：她一早去了训练室）
+static func blue_away() -> bool:
+	return DayClock.day() == 2 and DayClock.slot() == DayClock.MORNING and not DayClock.done(2, DayClock.MORNING)
+
+
 func apply_schedule() -> void:
+	if is_instance_valid(blue):
+		var away := blue_away() and not Cutscene.is_playing()
+		blue.ai = away
+		blue.show_flag = NEVER if away else ""
+		blue._refresh_visibility()
 	for key in residents:
 		var r: Resident = residents[key]
 		if is_instance_valid(r):
@@ -99,7 +110,7 @@ static func place(r: Resident, info: Dictionary) -> void:
 func _on_flag_changed(flag: String) -> void:
 	if flag == DayClock.TICK or flag.begins_with("after_done_"):
 		apply_schedule()
-	if flag == DayClock.TICK or flag == PenanceBook.FLAG:
+	if flag == DayClock.TICK or flag == PenanceBook.FLAG or flag == AfterStory.TASK_FLAG:
 		AfterErrands.refresh()
 	if flag == DayClock.TICK or flag.begins_with("after_") or flag.begins_with("errand_") or flag == PenanceBook.FLAG:
 		refresh_objective.call_deferred()

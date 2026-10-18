@@ -521,6 +521,8 @@ func say(who: String, text: String) -> void:
 	l.reset_size()
 	var base := to_frame(a.position + Vector2(0, -a.top_height() - 2))
 	l.position = Vector2(clampf(base.x - l.size.x / 2.0, 2, FRAME_RECT.size.x - l.size.x - 2), base.y - l.size.y).round()
+	# 气泡（带底色）垫在最下面：飘字（pop）总在它上面，不被盖住
+	overlay.move_child(l, 0)
 	_bubbles[who] = l
 	var tw := l.create_tween()
 	tw.tween_interval(1.1)
@@ -600,6 +602,8 @@ func _build_ui() -> void:
 	laugh_bar = _bar(Vector2(FRAME_RECT.position.x, INFO_Y + 14), LAUGH_COL, "闷笑")
 	count_label = _label(TEXT, 8)
 	count_label.position = Vector2(FRAME_RECT.position.x, INFO_Y + 30)
+	count_label.size = Vector2(FRAME_RECT.size.x, 14)
+	count_label.clip_text = true
 	root.add_child(count_label)
 	hint_label = _label(DIM, 8)
 	hint_label.position = Vector2(FRAME_RECT.position.x, INFO_Y + 44)

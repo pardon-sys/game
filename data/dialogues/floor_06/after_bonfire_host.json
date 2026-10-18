@@ -6,6 +6,45 @@
 				"var": {
 					"after_day": [
 						"==",
+						2
+					]
+				},
+				"not": "after_done_d2_morning"
+			},
+			"node": "d2_wait"
+		},
+		{
+			"if": {
+				"var": {
+					"after_day": [
+						"==",
+						2
+					]
+				},
+				"flag": [
+					"after_done_d2_morning",
+					"after_d2_fainted"
+				]
+			},
+			"node": "d2_faint"
+		},
+		{
+			"if": {
+				"var": {
+					"after_day": [
+						"==",
+						2
+					]
+				},
+				"flag": "after_done_d2_morning"
+			},
+			"node": "d2"
+		},
+		{
+			"if": {
+				"var": {
+					"after_day": [
+						"==",
 						1
 					]
 				},
@@ -55,6 +94,42 @@
 			"lines": [
 				{
 					"text": "宣判完了我请你喝热汤！……要是你还喝得下的话。"
+				}
+			]
+		},
+		"d2_wait": {
+			"lines": [
+				{
+					"text": "示众要开始啦！我带了热饮来给你加油～还有派对用的小刷子～"
+				},
+				{
+					"text": "小刷子是用来干什么的？！",
+					"speaker": "公主",
+					"emotion": "surprise"
+				}
+			]
+		},
+		"d2": {
+			"lines": [
+				{
+					"text": "刷子祝福送到啦～感觉怎么样？是不是神清气爽？"
+				},
+				{
+					"text": "一点都不！！",
+					"speaker": "公主",
+					"emotion": "angry"
+				}
+			]
+		},
+		"d2_faint": {
+			"lines": [
+				{
+					"text": "哎呀呀，祝福过头了……下次刷子我换软一点的！"
+				},
+				{
+					"text": "没有下次了！！",
+					"speaker": "公主",
+					"emotion": "angry"
 				}
 			]
 		}

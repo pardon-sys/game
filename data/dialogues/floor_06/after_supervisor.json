@@ -6,6 +6,45 @@
 				"var": {
 					"after_day": [
 						"==",
+						2
+					]
+				},
+				"not": "after_done_d2_morning"
+			},
+			"node": "d2_wait"
+		},
+		{
+			"if": {
+				"var": {
+					"after_day": [
+						"==",
+						2
+					]
+				},
+				"flag": [
+					"after_done_d2_morning",
+					"after_d2_fainted"
+				]
+			},
+			"node": "d2_faint"
+		},
+		{
+			"if": {
+				"var": {
+					"after_day": [
+						"==",
+						2
+					]
+				},
+				"flag": "after_done_d2_morning"
+			},
+			"node": "d2"
+		},
+		{
+			"if": {
+				"var": {
+					"after_day": [
+						"==",
 						1
 					]
 				},
@@ -50,6 +89,27 @@
 			"lines": [
 				{
 					"text": "账本带来了。……今天要记的账，可不少。"
+				}
+			]
+		},
+		"d2_wait": {
+			"lines": [
+				{
+					"text": "记号笔准备好了。每笑一声，我就在账本上画一道。"
+				}
+			]
+		},
+		"d2": {
+			"lines": [
+				{
+					"text": "账记好了。笑出声几次，一次两工时——你自己翻赎罪簿看。"
+				}
+			]
+		},
+		"d2_faint": {
+			"lines": [
+				{
+					"text": "……晕过去以后的那些，我没记。不算你的。"
 				}
 			]
 		}
