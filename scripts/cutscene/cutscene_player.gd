@@ -21,6 +21,10 @@ extends CanvasLayer
 ##   cg（key = data/cgs.json 的 portraits 键；空 = 恢复）：对话框换成大立绘   hint（text）：屏幕中间的黄字
 ##   hop（who）：原地跳一下（被吓到、被冻得一跳）
 ##   item（id）：拿到道具   buff（who, id, on）：加 / 去掉状态   crack（long, fade 秒）：蓝色公主笑出声（轻笑 / long = 大笑；fade = 淡出）
+## 步骤还可以写：
+##   if（条件，同人物对话的 if：DialogueRunner.check）：不满足就跳过这一步（按之前的选择分支）
+##   endure（忍笑选择，EndureChoice）：{time 忍笑条涨满的秒数（time_by 按上一次结果换）, prompt, options [[id, 文字], …], var 结果写进的变量, burst_var 笑出声的次数变量,
+##           tickle 这期间一直在挠的动作参数（同 tickle 动作）, delay 选项晚几秒出来}——条满之前没选就是 "burst"（笑出声）
 ## 过场数据里 end_dark = true：结束时不揭开黑幕（接着换关卡、下一段过场从黑里亮起来）；
 ## free_camera = true：镜头不受地图边界限制（小房间里也能把人物放在画面中间）。
 
@@ -250,6 +254,8 @@ func play_data(id: String, cs: Dictionary) -> void:
 		if _skip:
 			_run_instant(steps.slice(i))
 			break
+		if steps[i].has("if") and not DialogueRunner.check(steps[i]["if"]):
+			continue
 		await _run_step(steps[i])
 	await _finish(id, cs)
 
@@ -265,6 +271,8 @@ func _run_step(st: Dictionary) -> void:
 		await Dialogue.talk(str(tk.get("file", "")), str(tk.get("node", "")))
 	if st.has("theater"):
 		await CG.play_theater(str(st["theater"]))
+	if st.has("endure"):
+		await EndureChoice.run(st["endure"])
 	if st.has("text"):
 		var line := {"speaker": st.get("speaker", ""), "text": st["text"]}
 		if st.has("emotion"):
@@ -295,6 +303,8 @@ func _run_instant(steps: Array) -> void:
 		Dialogue.advance()
 		Dialogue.advance()
 	for st in steps:
+		if st.has("if") and not DialogueRunner.check(st["if"]):
+			continue
 		for a in st.get("actions", []):
 			if str(a.get("do", "")) in ["set_flag", "chapter_end", "spawn", "despawn", "move", "carry", "pose", "face", "item", "buff",
 					"uncover", "cg", "lie"]:

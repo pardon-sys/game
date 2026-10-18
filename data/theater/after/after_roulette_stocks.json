@@ -1,0 +1,222 @@
+{
+	"name": "受罚转盘：足枷",
+	"cast": {
+		"princess": {
+			"kind": "princess",
+			"at": [
+				0,
+				8
+			],
+			"visual": "helpless_1",
+			"anim": "helpless",
+			"dir": "down"
+		},
+		"dev": {
+			"kind": "trap:stocks",
+			"at": [
+				0,
+				23
+			]
+		},
+		"t": {
+			"kind": "npc:guard",
+			"at": [
+				-34,
+				10
+			],
+			"dir": "right"
+		},
+		"g": {
+			"kind": "npc:guard",
+			"at": [
+				34,
+				10
+			],
+			"dir": "left"
+		}
+	},
+	"steps": [
+		{
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "fade_in"
+				},
+				{
+					"state": "giggle",
+					"do": "voice"
+				}
+			],
+			"wait": 0.5
+		},
+		{
+			"speaker": "训练营的教官",
+			"text": "足枷。早上不是刚坐过吗？熟门熟路了吧。",
+			"actions": [
+				{
+					"who": "t",
+					"dir": "right",
+					"do": "face"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "才不熟！一点都不想熟！",
+			"emotion": "angry"
+		},
+		{
+			"speaker": "",
+			"text": "（木枷合上，两只脚踝被牢牢夹住。底下的羽毛滚轮慢慢转了起来）",
+			"actions": [
+				{
+					"sound": "stocks",
+					"do": "sfx"
+				},
+				{
+					"who": "princess",
+					"by": "dev",
+					"zone": "sole",
+					"fx": "lines",
+					"repeat": 6,
+					"interval": 0.3,
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "滚、滚轮……从脚跟一直滚到脚趾……唔唔……",
+			"emotion": "shy"
+		},
+		{
+			"speaker": "训练营的教官",
+			"text": "滚轮只是热身。——扳脚趾。",
+			"actions": [
+				{
+					"who": "g",
+					"dir": "left",
+					"do": "face"
+				}
+			]
+		},
+		{
+			"speaker": "保卫队员",
+			"text": "是。左边五个，右边五个。",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "g",
+					"zone": "sole",
+					"fx": "hand",
+					"repeat": 6,
+					"interval": 0.25,
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "别扳——扳开就合不上了——哈、哈哈哈！",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "t",
+					"zone": "sole",
+					"fx": "feather",
+					"repeat": 10,
+					"interval": 0.18,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"by": "dev",
+					"zone": "sole",
+					"fx": "lines",
+					"repeat": 10,
+					"interval": 0.2,
+					"do": "tickle"
+				}
+			],
+			"portrait": "defeat_1"
+		},
+		{
+			"speaker": "训练营的教官",
+			"text": "羽毛从脚趾缝中间穿过去……一根，两根……"
+		},
+		{
+			"speaker": "公主",
+			"text": "哈哈哈哈哈！缝、缝里不行！我、我认输——认输还不行吗哈哈哈！",
+			"actions": [
+				{
+					"who": "princess",
+					"kind": "laugh",
+					"do": "bubble"
+				},
+				{
+					"who": "princess",
+					"time": 0.6,
+					"do": "shake"
+				}
+			]
+		},
+		{
+			"speaker": "训练营的教官",
+			"text": "认输是你的事，时间是转盘的事。",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "t",
+					"zone": "sole",
+					"fx": "hand",
+					"repeat": 10,
+					"interval": 0.16,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"by": "g",
+					"zone": "sole",
+					"fx": "hand",
+					"repeat": 10,
+					"interval": 0.17,
+					"do": "tickle"
+				}
+			],
+			"portrait": "defeat_2"
+		},
+		{
+			"speaker": "公主",
+			"text": "什、什么歪理哈哈哈哈！脚心、两只脚心都——哈哈哈哈哈！",
+			"actions": [
+				{
+					"who": "princess",
+					"visual": "helpless_2",
+					"do": "pose"
+				}
+			]
+		},
+		{
+			"speaker": "",
+			"text": "（滚轮、羽毛、扳开的脚趾——被锁住的两只脚，一刻也没能缩回去）"
+		},
+		{
+			"speaker": "公主",
+			"text": "……早上……加现在……今天的脚……已经不是我的了……",
+			"emotion": "helpless_2"
+		},
+		{
+			"actions": [
+				{
+					"time": 0.6,
+					"do": "fade_out"
+				},
+				{
+					"state": "",
+					"do": "voice"
+				}
+			],
+			"wait": 0.7
+		}
+	]
+}

@@ -424,7 +424,7 @@
 			"spawn": "from_town"
 		},
 		{
-			"name": "七日赎罪·第 2 天早上",
+			"name": "七日赎罪·第 2 天早上（示众前）",
 			"floor": "floor_06_after_house",
 			"rewards_through": "floor_06_upper",
 			"flags": [
@@ -476,7 +476,9 @@
 				"after_done_d1_night",
 				"after_ev_d1_open",
 				"after_ev_d1_verdict",
-				"after_ev_d1_sleepwalk"
+				"after_ev_d1_sleepwalk",
+				"!after_done_d2_morning",
+				"!after_ev_d2_stocks"
 			],
 			"vars": {
 				"day": 3,

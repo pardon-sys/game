@@ -50,7 +50,7 @@ POINTS = [
           dict({"day": 2, "after_day": 1, "after_slot": 1}, **BOOK), cell=[30, 28]),
     point("七日赎罪·第 1 天夜里（梦游）", "floor_06_after_house", AFTER + after_done("morning", "afternoon"),
           dict({"day": 2, "after_day": 1, "after_slot": 1}, **BOOK), spawn="from_town"),
-    point("七日赎罪·第 2 天早上", "floor_06_after_house", AFTER + after_done("morning", "afternoon", "night"),
+    point("七日赎罪·第 2 天早上（示众前）", "floor_06_after_house", AFTER + after_done("morning", "afternoon", "night") + ["!after_done_d2_morning", "!after_ev_d2_stocks"],
           dict({"day": 3, "after_day": 2, "after_slot": 0}, **BOOK), spawn="bed"),
 ]
 Path("data/dev").mkdir(parents=True, exist_ok=True)

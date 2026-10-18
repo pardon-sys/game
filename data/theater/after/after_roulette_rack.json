@@ -1,0 +1,217 @@
+{
+	"name": "受罚转盘：刑床",
+	"cast": {
+		"princess": {
+			"kind": "princess",
+			"at": [
+				0,
+				8
+			],
+			"visual": "helpless_1",
+			"anim": "helpless",
+			"dir": "down"
+		},
+		"dev": {
+			"kind": "trap:supine",
+			"at": [
+				0,
+				18
+			]
+		},
+		"t": {
+			"kind": "npc:guard",
+			"at": [
+				-34,
+				10
+			],
+			"dir": "right"
+		},
+		"g": {
+			"kind": "npc:guard",
+			"at": [
+				34,
+				10
+			],
+			"dir": "left"
+		}
+	},
+	"steps": [
+		{
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "fade_in"
+				},
+				{
+					"state": "giggle",
+					"do": "voice"
+				}
+			],
+			"wait": 0.5
+		},
+		{
+			"speaker": "训练营的教官",
+			"text": "转到刑床了。躺上去，手脚各一个扣环。",
+			"actions": [
+				{
+					"who": "t",
+					"dir": "right",
+					"do": "face"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "躺、躺就躺……先说好，只是躺着对吧？",
+			"emotion": "shy"
+		},
+		{
+			"speaker": "训练营的教官",
+			"text": "躺着，然后把鞋脱了。",
+			"actions": [
+				{
+					"sound": "cloth",
+					"do": "sfx"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "我就知道！！",
+			"emotion": "angry"
+		},
+		{
+			"speaker": "",
+			"text": "（扣环「咔哒」一声扣紧。整个人被拉成一条直线，光着的脚底正对着教官）",
+			"actions": [
+				{
+					"sound": "stocks",
+					"do": "sfx"
+				}
+			]
+		},
+		{
+			"speaker": "训练营的教官",
+			"text": "脚趾张开。……我数到十，你忍到十就放你下来。一——",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "t",
+					"zone": "sole",
+					"fx": "feather",
+					"repeat": 6,
+					"interval": 0.3,
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "唔……嗯……二、二呢？二怎么还不数——",
+			"emotion": "shy"
+		},
+		{
+			"speaker": "训练营的教官",
+			"text": "二……",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "t",
+					"zone": "sole",
+					"fx": "feather",
+					"repeat": 10,
+					"interval": 0.2,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"by": "g",
+					"zone": "waist",
+					"fx": "hand",
+					"repeat": 6,
+					"interval": 0.22,
+					"do": "tickle"
+				}
+			],
+			"portrait": "defeat_1"
+		},
+		{
+			"speaker": "公主",
+			"text": "哈哈哈哈哈！数、数得太慢了！腰也、腰也不行哈哈哈！",
+			"actions": [
+				{
+					"who": "princess",
+					"kind": "laugh",
+					"do": "bubble"
+				},
+				{
+					"who": "princess",
+					"time": 0.5,
+					"do": "shake"
+				}
+			]
+		},
+		{
+			"speaker": "保卫队员",
+			"text": "教官，她脚跟那里最怕。"
+		},
+		{
+			"speaker": "训练营的教官",
+			"text": "记下了。三……",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "t",
+					"zone": "sole",
+					"fx": "hand",
+					"repeat": 10,
+					"interval": 0.18,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"by": "g",
+					"zone": "sole",
+					"fx": "hand",
+					"repeat": 8,
+					"interval": 0.2,
+					"do": "tickle"
+				}
+			],
+			"portrait": "defeat_2"
+		},
+		{
+			"speaker": "公主",
+			"text": "不要告诉他啊哈哈哈哈！脚跟、脚跟要被刮掉了哈哈哈哈——！",
+			"actions": [
+				{
+					"who": "princess",
+					"visual": "helpless_2",
+					"do": "pose"
+				}
+			]
+		},
+		{
+			"speaker": "",
+			"text": "（「十」最后也没有数到。等教官想起来的时候，她已经笑得只剩下喘气声了）"
+		},
+		{
+			"speaker": "公主",
+			"text": "……下、下次……我自己数……",
+			"emotion": "helpless_2"
+		},
+		{
+			"actions": [
+				{
+					"time": 0.6,
+					"do": "fade_out"
+				},
+				{
+					"state": "",
+					"do": "voice"
+				}
+			],
+			"wait": 0.7
+		}
+	]
+}

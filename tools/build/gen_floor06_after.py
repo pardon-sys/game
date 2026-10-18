@@ -18,7 +18,7 @@ from pathlib import Path
 os.chdir(Path(__file__).resolve().parents[2])
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-from after_text import d1, house, town  # noqa: E402
+from after_text import d1, d2, house, punish, town  # noqa: E402
 
 POOL = list("ACDEFGHIJKLMNOQRSTUVWXYZabcdefghijklmnopqrsuvwyz0123456789!?$&*+-/:;<>@^_|~()'=,`{}\"")
 POOL += list("αβγδεζηθικλμνξοπρστυφχψωΓΔΘΛΞΠΣΦΨΩ甲乙丙丁戊己庚辛壬癸子丑寅卯辰巳午未申酉戌亥金木水火土日月山川")
@@ -105,7 +105,7 @@ prop(m, 30, 18, "well")
 # 广场：宣判台、告示板、足枷、庆功的彩旗
 prop(m, 30, 25, "podium", OBJ + "podium")
 prop(m, 35, 23, "notice_board", OBJ + "notice")
-prop(m, 23, 24, "stocks_plaza", OBJ + "stocks")
+m.put(23, 24, "trap type=stocks active=false")      # 第 2 天早上示众用（过场 hold 锁住）
 for (x, y) in ((25, 21), (36, 21)):
     prop(m, x, y, "bunting")
 m.put(30, 32, "savepoint place=战后的广场")
@@ -251,7 +251,17 @@ for f in NPCS:
     NPCS[f]["d1"] = {"morning": D1_MORNING.get(f, HIDE), "afternoon": D1_VERDICT.get(f, {})}
     if f in D1_VERDICT:
         NPCS[f]["d1"]["afternoon_done"] = dict(NPCS[f]["default"])
+# 第 2 天早上：足枷示众，大家围在足枷周围
+D2_STOCKS = {"after_captain": crowd((21, 23), "right"), "after_supervisor": crowd((25, 23), "left"), "after_granny": crowd((20, 27)),
+             "after_merchant": crowd((26.5, 27.5), "left"), "after_kid_tom": crowd((32, 26), "left"), "after_kid_lily": crowd((33, 25), "left"),
+             "after_bonfire_host": crowd((28, 24), "left"), "after_maid": crowd((19, 25), "right"), "after_mayor": crowd((21, 21.5), "down"),
+             "after_guard_plaza": crowd((26, 21.5), "down")}
+for f in NPCS:
+    NPCS[f].setdefault("d2", {})["morning"] = D2_STOCKS.get(f, {})
+    if f in D2_STOCKS:
+        NPCS[f]["d2"]["morning_done"] = dict(NPCS[f]["default"])
 DAYS = {
+    "d2": {"morning": {"event": "d2_stocks", "task": "广场足枷示众", "hours": 12}},
     "d1": {"morning": {"event": "d1_open", "task": "战后集合"},
            "afternoon": {"event": "d1_verdict", "task": "广场听候宣判"},
            "night": {"event": "d1_sleepwalk", "task": "回小屋睡觉"}},
@@ -277,8 +287,13 @@ signs.update(town.SIGNS)
 signs_path.write_text(json.dumps(signs, ensure_ascii=False, indent="\t") + "\n")
 
 cut = Path("data/cutscenes/floor_06")
-for cid, fn in d1.CUTSCENES.items():
+CUTS = dict(d1.CUTSCENES, **d2.CUTSCENES)
+for cid, fn in CUTS.items():
     (cut / (cid + ".json")).write_text(json.dumps(fn(), ensure_ascii=False, indent="\t") + "\n")
+th = Path("data/theater/after")
+th.mkdir(parents=True, exist_ok=True)
+for tid, data in punish.THEATERS.items():
+    (th / (tid + ".json")).write_text(json.dumps(data, ensure_ascii=False, indent="\t") + "\n")
 
 floors = json.loads(Path("data/floors.json").read_text())
 lst = floors["floors"]
@@ -289,4 +304,4 @@ for fid, name, music in NEW:
         lst.insert(at, {"id": fid, "name": name, "scene": "res://levels/%s/floor.tscn" % fid, "group": "floor_06", "music": music})
     at += 1
 Path("data/floors.json").write_text(json.dumps(floors, ensure_ascii=False, indent="\t") + "\n")
-print("对话 %d 个文件、过场 %d 段" % (len(files), len(d1.CUTSCENES)))
+print("对话 %d 个文件、过场 %d 段、小剧场 %d 段" % (len(files), len(CUTS), len(punish.THEATERS)))
