@@ -2,6 +2,10 @@ class_name FortressOrdnance
 extends RefCounted
 
 
+## 巡航导弹炸到人：闷笑直接涨上限的一半
+const MISSILE_LAUGH := 0.5
+
+
 ## 要塞的制导飞行（巡航弹 / 火箭）：有转向惯性，和冰塔那种瞬间转向的 SiegeProjectile 分开算。
 static func missile(from: Vector2, victim: PlayableCharacter) -> Dictionary:
 	return {"p": from, "previous": from, "target": weakref(victim), "speed": victim.move_speed, "angle": from.angle_to_point(victim.global_position), "t": 0.0, "done": false, "state": "hunt", "trail": []}
@@ -38,7 +42,7 @@ static func tick_missile(manager: FortressMechanisms, shot: Dictionary, delta: f
 		if c.global_position.distance_to(nearest) < 15:
 			touched = true
 	if touched or blocked:
-		manager.explode(shot["p"], 48, 22, "missiles", 120)
+		manager.explode(shot["p"], 48, 22, "missiles", 120, MISSILE_LAUGH)
 		shot["done"] = true
 	elif shot["t"] >= 3.4 or before > 5:
 		manager.burst(shot["p"], 20, "missiles")

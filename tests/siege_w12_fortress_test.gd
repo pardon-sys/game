@@ -297,6 +297,13 @@ func _guidance() -> void:
 	shot["t"]=2.65
 	FortressOrdnance.tick_missile(b.mechanisms,shot,0.1)
 	check("locked dash cannot turn after target moves",is_equal_approx(angle,shot["angle"]) and shot["state"]=="dash")
+	# 巡航弹炸到人：闷笑直接涨一半
+	c.laugh.clear()
+	c.global_position=Vector2(500,700)
+	var hit_shot:=FortressOrdnance.missile(Vector2(500,690),c)
+	FortressOrdnance.tick_missile(b.mechanisms,hit_shot,0.05)
+	check("missile hit adds half laugh (%.0f%%)"%(c.laugh.ratio()*100.0),hit_shot["done"] and c.laugh.ratio()>=0.5)
+	c.laugh.clear()
 	b.mechanisms.start("missiles")
 	step(b,6)
 	check("missile job ends and cooldown starts after finish",b.mechanisms.jobs.is_empty() and b.mechanisms.cds["missiles"]>0)
@@ -317,6 +324,10 @@ func _arms() -> void:
 	step(b,0.4)
 	check("real contact captures after warning",d.pink.status.is_grabbed() and arm["phase"]=="drag")
 	check("other mother attacks cannot chain a held target",not b.strike_tools(d.pink,22,"sole","missiles"))
+	# 被抓住：强制拖向要塞一大段
+	var start:Vector2=d.pink.global_position
+	step(b,1.0)
+	check("held target is dragged a long way (%.0f px)"%d.pink.global_position.distance_to(start),d.pink.global_position.distance_to(start)>=150.0)
 	b.mechanisms.cancel_all()
 	check("cancelled hand restores control",not d.pink.status.is_grabbed())
 	check("cancel retains short mother protection",b.protected(d.pink))

@@ -225,11 +225,14 @@ func strike(c: PlayableCharacter, amount: float, variant: String, job: Dictionar
 	return accepted
 
 
-func explode(at: Vector2, radius: float, amount: float, variant: String, push := 0.0) -> void:
+## laugh_ratio：炸到的人再直接涨这么多闷笑（占上限的比例；巡航导弹 0.5）
+func explode(at: Vector2, radius: float, amount: float, variant: String, push := 0.0, laugh_ratio := 0.0) -> void:
 	if not valid():
 		return
 	for c in people():
 		if c.global_position.distance_to(at) <= radius and SiegeTools.strike(boss, c, amount, int(clock * 4), variant):
+			if laugh_ratio > 0.0 and c.laugh:
+				c.laugh.add(c.laugh.max_value * laugh_ratio)
 			if push > 0 and SiegeTools.can_move(boss, c):
 				c.force_move(at.direction_to(c.global_position) * (push / 0.6), 0.6, "slide")
 	burst(at, radius, variant)

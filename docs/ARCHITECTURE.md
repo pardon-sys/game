@@ -106,7 +106,7 @@ GDScript 没有 `interface` 关键字，本项目用**方法约定 + `Contracts`
 | MagicReactive | `on_magic_burst(tier, caster)`，加入 `magic_reactive` 组，可选 `magic_radius` | 粉雾、藤蔓、小精灵群、触手怪 |
 
 所有伤害和挠痒都打包成 **`HitData`**（`kind` = `ATTACK` 或 `TICKLE`，以及 `damage / tickle / knockback / source`，星光爆发另带 `tag = "magic_1~3"`；
-`ignore_block` = 格挡 / 防护装备挡不住，例如装备自己发作挠自己；`tag` 可以给接收方认来源，例如盾甲螃蟹只认冰晶共鸣的 `resonance`），只通过 `receive_hit` 传递。攻击方不需要知道对方是谁：
+`ignore_block` = 格挡 / 防护装备挡不住，例如装备自己发作挠自己；`tag` 可以给接收方认来源，例如盾甲螃蟹只认冰晶共鸣的 `resonance` 和冰陨星台的 `meteor`），只通过 `receive_hit` 传递。攻击方不需要知道对方是谁：
 
 ```gdscript
 target.receive_hit(HitData.make_attack(self, 1, 170.0))   # 扣 1 点血
@@ -268,7 +268,7 @@ HUD 背包栏会根据物品数据自动显示，不需要改 UI 代码。
 - 「挣脱强化」`struggle_plus`：`PlayableCharacter.struggle()` 降闷笑 ×(1 + value)。背包 `Backpack.PAGES = 物品 / 被动技能 / 状态`（`PAGE_*` 常量）。
 
 ### 测试模式
-- `dev_config.json`（项目根目录）+ `DevConfig`（`scripts/core/dev_config.gd`，静态）：`enabled()`（`DevConfig.override` 可在测试里强制开关）、`skip_points()`、`rewards_for(跳关点)`（`floor_rewards` 里排在目标楼层前面的各层，`rewards_through` 连这一层）、`skip_to(跳关点)`（补奖励 → `main.change_level` → 有 `cell` 时放到那一格并设检查点）。
+- `dev_config.json`（项目根目录）+ `DevConfig`（`scripts/core/dev_config.gd`，静态）：`enabled()`（`DevConfig.override` 可在测试里强制开关）、`skip_points()`（`dev_config.json` 的 + `data/dev/skip_points_more.json` 的：第八层之后的新内容，`tools/build/gen_dev_skips.py` 生成，每出一段新内容就加；`flags` 里 `!标记` 是清掉）、`rewards_for(跳关点)`（`floor_rewards` 里排在目标楼层前面的各层，`rewards_through` 连这一层）、`skip_to(跳关点)`（补奖励 → `main.change_level` → 有 `cell` 时放到那一格并设检查点）。
 - 暂停菜单（`scripts/ui/pause_menu.gd`）测试模式下显示 `skip_button`，展开 `skip_box` 列表。
 - 背包 `PAGE_GALLERY`：`Backpack.gallery_entries()`（`death_*`、`nest_*` CG 和 `CG.scenes`）、`gallery_unlocked(条目)`（测试模式或看过：`cg_seen_<播放 id>`）、`play_selected()`。
 
@@ -572,14 +572,16 @@ data/cutscenes/<楼层组>/  地图内过场；data/theater/<楼层组>/  小剧
 - **号手指挥官** `HornBugler`（配合技 `bugler_squad`，第 4 波起成套出现）：号手在前、其余 10 只排成每排 4 个跟着（`SiegeTeamEffects._bugler_formation`，`escort_of`）；
   号手离墙脚 `RALLY_Y` 以内吹冲锋号，整组挂 `siege_rally`（城墙伤害 ×1.2 走 `stat_mul("wall_damage")`、移速 ×1.15，每 3 秒续），散开冲到号手那段墙下；
   号手倒下整组挂 meta `scatter_until`（3 秒乱走，`SiegeMind.wander`），之后各自重新挑墙段。
-- **蘑菇吸附**：`HazardMushrooms` 每颗蘑菇把 `PULL_R` 以内的公主（冲刺中不吸）和可推动的怪往帽上吸（`add_push`，越近越强），吸到帽上照常弹走。
+- **蘑菇吸附**：`HazardMushrooms` 每颗蘑菇把 `PULL_R`（120 像素）以内的公主（冲刺中不吸）和可推动的怪往帽上吸（`add_push`，越近越强），吸到帽上照常弹走。
 - **撤退**（暂停菜单）：`retreat()` 先 `_busy` + 切 `retreat` 状态再清场，存档 `siege_wave` 保持当前波（从准备阶段重来，不会被当成清完了跳到下一波）。
 - **攻城车**：冲锋路上 `SMASH_R` 以内的冰塔（诱饵冰雕除外）撞碎、基座留着，车撞晕 3 秒（`SMASH_DAZE`）后重新瞄准再冲；撞到粉色公主闷笑 +50%（`PINK_LAUGH`）。
   攻城大队每 14 秒两排共 9~11 辆（`WaveFeatures.CORPS_*`）；最终波固定开着攻城大队和狂欢节（`FINAL_FIXED`，开打 2 秒就来）。
-- **盾甲螃蟹**：冰塔 / 塔弹 / 法术 / 陨石 / 士兵全挡；只有冰晶共鸣的电弧（`HitData.tag == ShieldCrab.RESONANCE_TAG`）打得动、伤害 ×0.25；
+- **盾甲螃蟹**：冰塔 / 塔弹 / 法术 / 士兵全挡；只有冰晶共鸣的电弧和冰陨星台的陨石（`HitData.tag` 是 `ShieldCrab.RESONANCE_TAG` / `METEOR_TAG`）打得动、伤害 ×0.25；
   粉色公主的锤子背后打得动、正面挡。
 - **拆塔投石车**（敌塔 `catapult`，第 6 波起）：挑射程里血最多的冰塔，落点影子亮 1.2 秒后砸下（`CatapultStone`），影子里的冰塔掉 60% 血上限；
   粉色公主站进影子替塔挡下（石头碎成羽毛挠她一下）。
+- **狂欢要塞的巡航弹 / 巨手**：巡航弹炸到人时闷笑直接涨上限的一半（`FortressOrdnance.MISSILE_LAUGH`，`explode(…, laugh_ratio)`）；
+  巨手抓住人后强制拖走 `HAND_DRAG`（往这只手那一侧斜着拖，`SiegeTools.Hold` 的 `speed` / `slide`：碰到障碍顺着滑开），松手时顺着拖的方向再甩 `HAND_FLING`。
 - **胜利后**：`TownBuffs.clear_all()` 撤掉 12 个镇民支援（友军身上的 `town_*`、`vars.siege_town_buffs`）；`stage_victory()` 把操控切回粉色公主、
   两个人摆到城门前（`VICTORY_CELL` 两侧，蓝色公主节点改名 `SiegeBlue`）→ 过场 `siege_won`（`gen_floor06_siege.py` 的 `CHEERS`）：镜头拉远到整个战场，
   十二位激励镇民按波次顺序从城门出来、各说一句、站成半圆（演员 `cheer_<激励 id>`，行走图用 `town_buffs.json` 的 `sheet`），镇长宣布祭典，

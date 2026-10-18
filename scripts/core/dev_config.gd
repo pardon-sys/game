@@ -2,7 +2,7 @@ class_name DevConfig
 extends RefCounted
 ## 测试模式：项目根目录的 dev_config.json（dev_mode 一键开关）。
 ##   enabled()              测试模式是否打开（测试脚本可以用 override 强制开关）
-##   skip_points()          跳关点列表（暂停菜单「测试：跳关」）
+##   skip_points()          跳关点列表（暂停菜单「测试：跳关」）：dev_config.json 的 + data/dev/skip_points_more.json 的（新内容，gen_dev_skips.py 生成）
 ##   rewards_for(跳关点)     跳到这里要补上的流程奖励（前面各层的；rewards_through 连这一层也给）
 ##   skip_to(跳关点)         补奖励 → 解除暂停 → 换楼层 → 放到指定格
 ## 打开后背包不需要先拿到也能打开，背包「CG 图鉴」里所有 CG 都能播放。
@@ -11,6 +11,8 @@ extends RefCounted
 ##                          以后要存别的数据（设置、图鉴进度……）也放在 data_root() 下。
 
 const PATH := "res://dev_config.json"
+## 新内容的跳关点（跟着代码提交；dev_config.json 是本地开关文件）
+const MORE_PATH := "res://data/dev/skip_points_more.json"
 
 static var _data := {}
 ## 不为 null 时覆盖配置文件里的 dev_mode（测试用）。
@@ -48,7 +50,12 @@ static func enabled() -> bool:
 
 
 static func skip_points() -> Array:
-	return data().get("skip_points", [])
+	var out: Array = data().get("skip_points", []).duplicate()
+	if FileAccess.file_exists(MORE_PATH):
+		var parsed: Variant = JSON.parse_string(FileAccess.get_file_as_string(MORE_PATH))
+		if parsed is Dictionary:
+			out.append_array(parsed.get("skip_points", []))
+	return out
 
 
 ## 跳到这个点要补的奖励：楼层表里排在目标楼层前面的各层（rewards_through 的那一层也算）。
