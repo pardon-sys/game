@@ -1,0 +1,515 @@
+{
+	"name": "战后的小镇",
+	"letterbox": true,
+	"skippable": true,
+	"end_dark": true,
+	"steps": [
+		{
+			"actions": [
+				{
+					"time": 0.0,
+					"do": "fade_out"
+				},
+				{
+					"who": "princess",
+					"to": [
+						31,
+						37
+					],
+					"do": "move"
+				},
+				{
+					"who": "AfterBlue",
+					"to": [
+						33,
+						37
+					],
+					"do": "move"
+				},
+				{
+					"who": "princess",
+					"dir": "up",
+					"do": "face"
+				},
+				{
+					"who": "AfterBlue",
+					"dir": "up",
+					"do": "face"
+				},
+				{
+					"id": "s1",
+					"kind": "npc:guard",
+					"at": [
+						27,
+						35
+					],
+					"dir": "right",
+					"do": "spawn"
+				},
+				{
+					"id": "s2",
+					"kind": "npc:guard",
+					"at": [
+						37,
+						35
+					],
+					"dir": "left",
+					"do": "spawn"
+				},
+				{
+					"id": "s3",
+					"kind": "npc:guard",
+					"at": [
+						26,
+						37
+					],
+					"dir": "right",
+					"do": "spawn"
+				},
+				{
+					"to": [
+						32,
+						36.5
+					],
+					"zoom": 0.9,
+					"time": 0.1,
+					"do": "camera"
+				}
+			],
+			"wait": 0.2
+		},
+		{
+			"actions": [
+				{
+					"time": 1.0,
+					"do": "fade_in"
+				},
+				{
+					"sound": "gate",
+					"volume": -6.0,
+					"do": "sfx"
+				}
+			],
+			"wait": 1.0
+		},
+		{
+			"speaker": "",
+			"text": "（城门在身后合上了。镇民们还在城外收拾战场，守城的队员们却一个接一个围了过来）"
+		},
+		{
+			"speaker": "保卫队员",
+			"text": "回来了！两位都回来了！",
+			"actions": [
+				{
+					"who": "s1",
+					"do": "hop"
+				}
+			]
+		},
+		{
+			"actions": [
+				{
+					"who": "after_captain",
+					"to": [
+						32,
+						35
+					],
+					"speed": 80,
+					"do": "move"
+				}
+			],
+			"wait": 0.6
+		},
+		{
+			"speaker": "保卫队队长",
+			"text": "让开让开——！",
+			"npc": "captain"
+		},
+		{
+			"speaker": "保卫队队长",
+			"text": "殿下！有没有受伤？刚才城墙塌下来那一下，我在下面看得清清楚楚——",
+			"actions": [
+				{
+					"who": "after_captain",
+					"dir": "right",
+					"do": "face"
+				}
+			],
+			"npc": "captain"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……没事。……一点擦伤。"
+		},
+		{
+			"speaker": "保卫队队长",
+			"text": "擦伤也是伤！转过来，我看看——",
+			"npc": "captain"
+		},
+		{
+			"speaker": "",
+			"text": "（队长刚伸出手，蓝色公主的裤子忽然「沙沙」地动了一下）",
+			"actions": [
+				{
+					"who": "AfterBlue",
+					"kind": "surprise",
+					"do": "bubble"
+				},
+				{
+					"time": 0.2,
+					"strength": 1.5,
+					"do": "shake"
+				}
+			]
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……？"
+		},
+		{
+			"speaker": "",
+			"text": "（裤腿上的蓝白条纹一圈一圈亮了起来。也许是打了一整晚仗太兴奋，也许是图腾的余波还没散——一只只半透明的小手，从她的衣摆底下钻了出来）",
+			"actions": [
+				{
+					"who": "AfterBlue",
+					"zone": "waist",
+					"add": 2,
+					"do": "cover"
+				},
+				{
+					"sound": "hand_grab",
+					"volume": -4.0,
+					"do": "sfx"
+				}
+			]
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……等、等一下……现在不行……！",
+			"emotion": "shy",
+			"actions": [
+				{
+					"who": "AfterBlue",
+					"zone": "thigh",
+					"add": 2,
+					"do": "cover"
+				},
+				{
+					"who": "AfterBlue",
+					"laugh": 40,
+					"do": "pose"
+				}
+			]
+		},
+		{
+			"speaker": "",
+			"text": "（小手沿着她的腰侧一路往上爬，又顺着大腿根挠了回去）",
+			"actions": [
+				{
+					"long": false,
+					"do": "crack"
+				},
+				{
+					"time": 0.3,
+					"strength": 2.0,
+					"do": "shake"
+				}
+			]
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "噗……哈、哈哈……！不……不准……在这里……！",
+			"emotion": "shy",
+			"actions": [
+				{
+					"who": "AfterBlue",
+					"zone": "butt",
+					"add": 1,
+					"do": "cover"
+				},
+				{
+					"who": "AfterBlue",
+					"laugh": 75,
+					"do": "pose"
+				},
+				{
+					"long": true,
+					"do": "crack"
+				}
+			]
+		},
+		{
+			"speaker": "保卫队员",
+			"text": "（小声）……队、队长……蓝色的那位……在笑？",
+			"actions": [
+				{
+					"who": "after_guard_plaza",
+					"kind": "surprise",
+					"do": "bubble"
+				}
+			]
+		},
+		{
+			"speaker": "保卫队员",
+			"text": "我在保卫队待了五年……第一次听见她笑出声……",
+			"actions": [
+				{
+					"who": "s2",
+					"kind": "question",
+					"do": "bubble"
+				}
+			]
+		},
+		{
+			"speaker": "",
+			"text": "（蓝色公主膝盖一软，当着全体队员的面，捂着腰笑得蹲了下去）",
+			"actions": [
+				{
+					"who": "AfterBlue",
+					"to": [
+						33,
+						37.4
+					],
+					"time": 0.3,
+					"do": "move"
+				},
+				{
+					"who": "AfterBlue",
+					"kind": "laugh",
+					"do": "bubble"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "你、你没事吧？！这些手……是那条裤子！",
+			"emotion": "surprise",
+			"actions": [
+				{
+					"who": "princess",
+					"dir": "right",
+					"do": "face"
+				}
+			]
+		},
+		{
+			"speaker": "保卫队队长",
+			"text": "……裤子？",
+			"actions": [
+				{
+					"who": "after_captain",
+					"kind": "question",
+					"do": "bubble"
+				}
+			],
+			"npc": "captain"
+		},
+		{
+			"speaker": "保卫队队长",
+			"text": "……退后，殿下。我这就把这个邪物砍下来。",
+			"actions": [
+				{
+					"sound": "swish",
+					"volume": -2.0,
+					"do": "sfx"
+				},
+				{
+					"time": 0.15,
+					"do": "shake"
+				}
+			],
+			"npc": "captain"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "不、不准砍！哈哈……这是我输给它的……赌注！我答应过要陪它玩的！",
+			"emotion": "angry",
+			"actions": [
+				{
+					"long": false,
+					"do": "crack"
+				}
+			]
+		},
+		{
+			"speaker": "",
+			"text": "（全场一片安静。只有那些小手，还在她腰上挠个不停）"
+		},
+		{
+			"speaker": "保卫队队长",
+			"text": "………………",
+			"npc": "captain"
+		},
+		{
+			"speaker": "保卫队队长",
+			"text": "殿下，您从小就是这样，每次从下面回来都要带点让人头疼的东西……上一次是满身的涂鸦，这一次干脆把惩罚道具穿在身上了！",
+			"npc": "captain"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……哈、哈……不、不是惩罚道具……是……赌注……",
+			"emotion": "shy"
+		},
+		{
+			"speaker": "公主",
+			"text": "（……上一次？满身的涂鸦？）",
+			"actions": [
+				{
+					"who": "princess",
+					"kind": "question",
+					"do": "bubble"
+				}
+			]
+		},
+		{
+			"speaker": "保卫队队长",
+			"text": "（长长地叹了一口气）……都听好了。今天看到的，一个字都不许往外说。",
+			"npc": "captain"
+		},
+		{
+			"speaker": "保卫队员",
+			"text": "是、是！",
+			"actions": [
+				{
+					"who": "s1",
+					"do": "hop"
+				},
+				{
+					"who": "s2",
+					"do": "hop"
+				},
+				{
+					"who": "s3",
+					"do": "hop"
+				}
+			]
+		},
+		{
+			"speaker": "保卫队队长",
+			"text": "殿下，从明天起，每天到我的训练室报到。忍耐力——还有这条裤子，都得好好驯服。",
+			"npc": "captain"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……特、特训……？哈……我不需要……"
+		},
+		{
+			"speaker": "保卫队队长",
+			"text": "您需要。……全镇都需要。",
+			"npc": "captain"
+		},
+		{
+			"speaker": "",
+			"text": "（小手像是玩够了，一只接一只缩回了裤腿里。蓝色公主撑着膝盖喘气，耳朵红透了）",
+			"actions": [
+				{
+					"who": "AfterBlue",
+					"do": "uncover"
+				},
+				{
+					"who": "AfterBlue",
+					"laugh": 10,
+					"do": "pose"
+				},
+				{
+					"who": "AfterBlue",
+					"to": [
+						33,
+						37
+					],
+					"time": 0.3,
+					"do": "move"
+				}
+			]
+		},
+		{
+			"speaker": "保卫队队长",
+			"text": "然后——你。",
+			"actions": [
+				{
+					"who": "after_captain",
+					"dir": "left",
+					"do": "face"
+				}
+			],
+			"npc": "captain"
+		},
+		{
+			"speaker": "公主",
+			"text": "诶？我？",
+			"emotion": "surprise"
+		},
+		{
+			"speaker": "保卫队队长",
+			"text": "你的事，下午在广场上说清楚。镇长会来。",
+			"npc": "captain"
+		},
+		{
+			"speaker": "公主",
+			"text": "广场……？我、我做什么了吗……？",
+			"emotion": "sad"
+		},
+		{
+			"speaker": "保卫队队长",
+			"text": "在那之前，跟着工匠去搬砖。城墙塌了三段，正缺人手。",
+			"npc": "captain"
+		},
+		{
+			"speaker": "公主",
+			"text": "欸——？才刚打完仗诶！",
+			"emotion": "angry"
+		},
+		{
+			"speaker": "保卫队队长",
+			"text": "那就更不能闲着。",
+			"npc": "captain"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……",
+			"actions": [
+				{
+					"who": "AfterBlue",
+					"dir": "left",
+					"do": "face"
+				},
+				{
+					"who": "AfterBlue",
+					"kind": "dots",
+					"do": "bubble"
+				}
+			]
+		},
+		{
+			"actions": [
+				{
+					"time": 1.0,
+					"do": "fade_out"
+				}
+			],
+			"wait": 1.0
+		},
+		{
+			"actions": [
+				{
+					"who": "s1",
+					"do": "despawn"
+				},
+				{
+					"who": "s2",
+					"do": "despawn"
+				},
+				{
+					"who": "s3",
+					"do": "despawn"
+				},
+				{
+					"reset": true,
+					"time": 0.0,
+					"do": "camera"
+				}
+			],
+			"wait": 0.1
+		}
+	]
+}

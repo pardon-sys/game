@@ -1,0 +1,56 @@
+{
+	"name": "",
+	"entries": [
+		{
+			"node": "bed"
+		}
+	],
+	"nodes": {
+		"bed": {
+			"lines": [
+				{
+					"text": "（蓝色的被子。叠得方方正正）",
+					"speaker": ""
+				}
+			]
+		},
+		"window": {
+			"lines": [
+				{
+					"text": "（窗外是矿道口。守门的队员打了个哈欠）",
+					"speaker": ""
+				}
+			]
+		},
+		"bookshelf": {
+			"lines": [
+				{
+					"text": "（书架。一排旧图鉴，最底下压着一本画满涂鸦的练习本）",
+					"speaker": ""
+				},
+				{
+					"text": "……涂鸦。队长早上说的「满身的涂鸦」……",
+					"speaker": "公主"
+				},
+				{
+					"text": "……算了，不能乱翻别人的东西。",
+					"speaker": "公主",
+					"emotion": "shy"
+				}
+			]
+		},
+		"desk": {
+			"lines": [
+				{
+					"text": "（桌上压着几张写过又揉皱的纸）",
+					"speaker": ""
+				},
+				{
+					"text": "……偷看别人的信，不太好。",
+					"speaker": "公主",
+					"emotion": "shy"
+				}
+			]
+		}
+	}
+}

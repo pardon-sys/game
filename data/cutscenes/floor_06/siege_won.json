@@ -517,7 +517,7 @@
 			"actions": [
 				{
 					"id": "cheer_mayor",
-					"kind": "npc:merchant",
+					"kind": "npc:mayor",
 					"at": [
 						54,
 						9
@@ -641,7 +641,7 @@
 		{
 			"actions": [
 				{
-					"to": "floor_06_war",
+					"to": "floor_06_after",
 					"spawn": "from_siege",
 					"do": "goto"
 				}

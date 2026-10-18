@@ -3,6 +3,7 @@ extends RefCounted
 ## 睡觉（可复用）：淡出 → zzz → 「第 N 天」→ 天亮（剧情标记 night 关掉、vars.day + 1、回满生命 / 清空闷笑和魔力疲倦）→ 淡入 → 早上的过场。
 ##   Sleep.sleep(早上的过场 id)        直接睡（await 到早上的过场播完）
 ##   Sleep.sleep_later(早上的过场 id)  人物对话里用：等对话结束再睡（调用方不要 await）
+##   title：黑幕上的字（默认「第 N 天」）；on_dawn：天亮那一刻（黑着的时候）调一下（七日赎罪的 DayClock 在这里换时间）
 ## 第几天记在 GameState.vars["day"]（没有就算第 1 天）。
 
 const LAYER := 45
@@ -19,7 +20,7 @@ static func sleep_later(morning := "") -> void:
 	await sleep(morning)
 
 
-static func sleep(morning := "") -> void:
+static func sleep(morning := "", title := "", on_dawn := Callable()) -> void:
 	if sleeping:
 		return
 	sleeping = true
@@ -61,7 +62,9 @@ static func sleep(morning := "") -> void:
 			p.laugh.clear()
 		if p.get("fatigue"):
 			p.fatigue.clear()
-	label.text = "第 %d 天" % day()
+	if on_dawn.is_valid():
+		on_dawn.call()
+	label.text = title if title != "" else "第 %d 天" % day()
 	tw = label.create_tween()
 	tw.tween_property(label, "modulate:a", 1.0, 0.5)
 	tw.tween_interval(1.2)

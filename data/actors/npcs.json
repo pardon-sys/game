@@ -53,6 +53,10 @@
 			"name": "商贩",
 			"sprite": "res://assets/generated/npcs/merchant.png"
 		},
+		"mayor": {
+			"name": "镇长",
+			"sprite": "res://assets/generated/npcs/mayor.png"
+		},
 		"miner": {
 			"name": "矿工",
 			"sprite": "res://assets/generated/npcs/miner.png"

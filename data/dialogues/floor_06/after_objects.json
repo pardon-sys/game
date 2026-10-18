@@ -1,0 +1,110 @@
+{
+	"name": "",
+	"entries": [
+		{
+			"node": "notice"
+		}
+	],
+	"nodes": {
+		"notice": {
+			"goto": [
+				{
+					"if": {
+						"flag": "penance_book"
+					},
+					"node": "notice_book"
+				}
+			],
+			"lines": [
+				{
+					"text": "（告示板。新贴的告示上写着：「下午，广场集合」）",
+					"speaker": ""
+				}
+			]
+		},
+		"notice_book": {
+			"lines": [
+				{
+					"text": "（告示板上新贴了一张判决书：）",
+					"speaker": ""
+				},
+				{
+					"text": "（「……应于七日之内，以劳动偿还小镇工时一百。逾期未清，照老规矩补罚。」）",
+					"speaker": ""
+				},
+				{
+					"text": "（下面还有一行小字：「明早，广场足枷示众。欢迎围观」）",
+					"speaker": ""
+				},
+				{
+					"text": "……欢迎围观是什么意思啊！",
+					"speaker": "公主",
+					"emotion": "angry"
+				}
+			]
+		},
+		"totem": {
+			"lines": [
+				{
+					"text": "（狂欢图腾柱歪在一边，裂缝里还在往外漏淡紫色的光）",
+					"speaker": ""
+				},
+				{
+					"text": "（旁边立着一块牌子：「危险——待修」）",
+					"speaker": ""
+				},
+				{
+					"text": "……靠近一点，脚底板就痒痒的。离远点吧。",
+					"speaker": "公主",
+					"emotion": "shy"
+				}
+			]
+		},
+		"stocks": {
+			"lines": [
+				{
+					"text": "（广场正中间的足枷。木头被太阳晒得发白，两个脚孔磨得光溜溜的）",
+					"speaker": ""
+				},
+				{
+					"text": "……明天早上，就是这里了……",
+					"speaker": "公主",
+					"emotion": "sad"
+				}
+			]
+		},
+		"podium": {
+			"lines": [
+				{
+					"text": "（宣判台。新木料的味道还没散）",
+					"speaker": ""
+				}
+			]
+		},
+		"gate": {
+			"lines": [
+				{
+					"text": "（城门关着。外面传来队员们清理战场的声音）",
+					"speaker": ""
+				},
+				{
+					"text": "（……今天不是出去的时候）",
+					"speaker": ""
+				}
+			]
+		},
+		"lumber": {
+			"lines": [
+				{
+					"text": "（一摞新木料。上午搬的就是这个……）",
+					"speaker": ""
+				},
+				{
+					"text": "……光是看着，手臂就酸了。",
+					"speaker": "公主",
+					"emotion": "sad"
+				}
+			]
+		}
+	}
+}

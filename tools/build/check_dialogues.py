@@ -12,7 +12,9 @@ from collections import defaultdict
 from pathlib import Path
 
 os.chdir(Path(__file__).resolve().parents[2])
-CALLS = {"open_shop", "open_training", "rest", "sleep"}
+CALLS = {"open_shop", "open_training", "rest", "sleep", "open_war_shop", "go_siege", "switch_hero", "after_sleep"}
+# 代码里写的变量（不是对话的 set 写的）：七日赎罪的时钟 DayClock
+CODE_VARS = {"after_day", "after_slot"}
 
 
 def ids_in(folder):
@@ -24,7 +26,7 @@ theaters = ids_in("data/theater")
 npcs = json.loads(Path("data/actors/npcs.json").read_text())
 npcs = npcs.get("npcs", npcs)
 errors = []
-writes = set()
+writes = set(CODE_VARS)
 reads = defaultdict(set)
 files = {}
 for p in sorted(Path("data/dialogues").rglob("*.json")):

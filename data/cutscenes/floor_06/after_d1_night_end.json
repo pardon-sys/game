@@ -1,0 +1,292 @@
+{
+	"name": "裤子的梦游",
+	"letterbox": true,
+	"skippable": true,
+	"end_dark": true,
+	"steps": [
+		{
+			"actions": [
+				{
+					"time": 0.0,
+					"do": "fade_out"
+				},
+				{
+					"who": "AfterBlue",
+					"at": [
+						4,
+						4.25
+					],
+					"sleep": true,
+					"do": "lie"
+				},
+				{
+					"who": "princess",
+					"to": [
+						12,
+						4
+					],
+					"do": "move"
+				},
+				{
+					"who": "princess",
+					"dir": "left",
+					"do": "face"
+				},
+				{
+					"id": "u1",
+					"kind": "prop:pants_hand",
+					"at": [
+						5,
+						5
+					],
+					"z": 2,
+					"do": "spawn"
+				},
+				{
+					"id": "u2",
+					"kind": "prop:pants_hand",
+					"at": [
+						3,
+						5.2
+					],
+					"z": 2,
+					"do": "spawn"
+				},
+				{
+					"who": "AfterBlue",
+					"zone": "thigh",
+					"add": 1,
+					"do": "cover"
+				},
+				{
+					"to": [
+						7,
+						5
+					],
+					"zoom": 1.0,
+					"time": 0.1,
+					"do": "camera"
+				}
+			],
+			"wait": 0.3
+		},
+		{
+			"actions": [
+				{
+					"time": 1.0,
+					"do": "fade_in"
+				}
+			],
+			"wait": 1.0
+		},
+		{
+			"speaker": "",
+			"text": "（蓝色公主睡得很沉。被子底下，那些小手正懒洋洋地晃来晃去，像在等谁陪它们玩）",
+			"actions": [
+				{
+					"who": "u1",
+					"to": [
+						5.6,
+						5.4
+					],
+					"time": 0.8,
+					"do": "move"
+				},
+				{
+					"who": "u2",
+					"to": [
+						2.6,
+						5.5
+					],
+					"time": 0.8,
+					"do": "move"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "……原来你在这里。",
+			"actions": [
+				{
+					"who": "princess",
+					"to": [
+						6.5,
+						5
+					],
+					"time": 1.2,
+					"do": "move"
+				}
+			]
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……唔……不准……砍……（梦话）"
+		},
+		{
+			"speaker": "公主",
+			"text": "……噗。梦里还在护着你呢。",
+			"emotion": "happy"
+		},
+		{
+			"actions": [
+				{
+					"who": "u1",
+					"to": [
+						6.3,
+						5
+					],
+					"time": 0.5,
+					"do": "move"
+				}
+			],
+			"wait": 0.5
+		},
+		{
+			"speaker": "公主",
+			"text": "哇、等等……！别、别挠我啊……！她会被吵醒的……！",
+			"emotion": "shy",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "u1",
+					"zone": "waist",
+					"repeat": 4,
+					"interval": 0.3,
+					"add": 6,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"zone": "waist",
+					"add": 1,
+					"do": "cover"
+				}
+			]
+		},
+		{
+			"speaker": "",
+			"text": "（小手挠了两下，见她不躲，反而乖乖地停了下来，绕着她的手腕转了一圈——像一只撒娇的猫）",
+			"actions": [
+				{
+					"who": "princess",
+					"do": "uncover"
+				},
+				{
+					"who": "u1",
+					"to": [
+						6.8,
+						5.2
+					],
+					"time": 0.6,
+					"do": "move"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "……你是不是……只是想找人玩？"
+		},
+		{
+			"speaker": "",
+			"text": "（小手轻轻点了点——如果手也会点头的话）",
+			"actions": [
+				{
+					"who": "u1",
+					"do": "hop"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "好啦……明天。明天陪你玩。……今晚先让她好好睡，好不好？",
+			"emotion": "happy"
+		},
+		{
+			"actions": [
+				{
+					"who": "u1",
+					"to": [
+						4,
+						4.4
+					],
+					"time": 1.0,
+					"do": "move"
+				},
+				{
+					"who": "u2",
+					"to": [
+						4,
+						4.4
+					],
+					"time": 1.2,
+					"do": "move"
+				}
+			],
+			"wait": 1.2
+		},
+		{
+			"actions": [
+				{
+					"who": "u1",
+					"do": "despawn"
+				},
+				{
+					"who": "u2",
+					"do": "despawn"
+				},
+				{
+					"who": "AfterBlue",
+					"do": "uncover"
+				}
+			],
+			"wait": 0.4
+		},
+		{
+			"speaker": "",
+			"text": "（小手一只接一只缩回了被子里。裤脚最后晃了一下，安静了）"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……小时候……也是……这样……（梦话）"
+		},
+		{
+			"speaker": "公主",
+			"text": "……小时候？",
+			"actions": [
+				{
+					"who": "princess",
+					"kind": "question",
+					"do": "bubble"
+				}
+			]
+		},
+		{
+			"speaker": "",
+			"text": "（蓝色公主翻了个身，没有再说话）"
+		},
+		{
+			"speaker": "公主",
+			"text": "…………晚安。",
+			"emotion": "happy"
+		},
+		{
+			"actions": [
+				{
+					"time": 1.0,
+					"do": "fade_out"
+				}
+			],
+			"wait": 1.0
+		},
+		{
+			"actions": [
+				{
+					"reset": true,
+					"time": 0.0,
+					"do": "camera"
+				}
+			],
+			"wait": 0.1
+		}
+	]
+}

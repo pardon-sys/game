@@ -1,6 +1,6 @@
 class_name StoryDirector
 extends Node
-## 剧情调度（main.gd 创建，挂在主场景下）：监听「人物对话结束」「换地图」，按剧情标记推进各层的剧情脚本（F6Story……）。
+## 剧情调度（main.gd 创建，挂在主场景下）：监听「人物对话结束」「换地图」，按剧情标记推进各层的剧情脚本（F6Story、七日赎罪的 AfterStory……）。
 ## 跨地图的过场序列：run_sequence([{level, spawn, cutscene}, …])——每一段先换到那张地图（站到到达点），再播那段过场。
 
 static var instance: StoryDirector
@@ -24,16 +24,19 @@ func _exit_tree() -> void:
 
 func _on_talk_finished(file: String) -> void:
 	F6Story.on_talk_finished(file)
+	AfterStory.on_talk_finished(file)
 
 
 func _on_cutscene_finished(id: String) -> void:
 	F6Story.on_cutscene_finished(id)
+	AfterStory.on_cutscene_finished(id)
 
 
 func _on_level_changed(level: Node) -> void:
 	await get_tree().process_frame
 	if is_instance_valid(level):
 		F6Story.on_level_entered(str(level.get("floor_id")))
+		AfterStory.on_level_entered(str(level.get("floor_id")))
 
 
 ## 跨地图的过场序列。level 是楼层 id（和当前地图一样就不换），spawn 是到达点 id，cutscene 是过场 id（data/cutscenes/）。

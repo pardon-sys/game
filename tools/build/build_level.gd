@@ -69,6 +69,8 @@ const SCENES := {
 	"stalkerzone": "res://levels/floor_08/scenes/stalker_zone.tscn",
 	"f8shelter": "res://levels/floor_08/scenes/shelter_return.tscn",
 	"f6war": "res://levels/floor_06/scenes/war_town.tscn",
+	"f6after": "res://levels/floor_06/scenes/after_town.tscn",
+	"f6afterhouse": "res://levels/floor_06/scenes/after_house.tscn",
 	# 小镇攻防战（scripts/siege/）
 	"siege": "res://scenes/siege/siege_director.tscn",
 	"siegewall": "res://scenes/siege/siege_wall.tscn",
@@ -228,6 +230,7 @@ func _reset() -> void:
 	rng.seed = 20260928
 	rows = []
 	legend = {}
+	stacked = {}
 	level_meta = {}
 	width = 0
 	height = 0

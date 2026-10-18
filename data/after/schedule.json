@@ -1,0 +1,550 @@
+{
+	"_说明": [
+		"七日赎罪的日程（tools/build/gen_floor06_after.py 生成，DayClock 读）。",
+		"npcs：镇民（对话文件名）→ default / 时段 / d<N>.{all, 时段, 时段_done} 逐层覆盖的 {at 格, dir, wander, hidden, dialogue}。",
+		"days：d<N>.<时段> → {event 事件 id（AfterStory.EVENTS）, task 赎罪簿上的任务名, hours 做完减几工时}。"
+	],
+	"npcs": {
+		"after_captain": {
+			"default": {
+				"at": [
+					34,
+					29
+				],
+				"dir": "down",
+				"wander": 0,
+				"hidden": false
+			},
+			"night": {
+				"hidden": true
+			},
+			"d1": {
+				"morning": {
+					"at": [
+						32,
+						31
+					],
+					"dir": "down",
+					"wander": 0
+				},
+				"afternoon": {
+					"at": [
+						33,
+						25.5
+					],
+					"dir": "down",
+					"wander": 0,
+					"hidden": false
+				},
+				"afternoon_done": {
+					"at": [
+						34,
+						29
+					],
+					"dir": "down",
+					"wander": 0,
+					"hidden": false
+				}
+			}
+		},
+		"after_mayor": {
+			"default": {
+				"at": [
+					31,
+					29
+				],
+				"dir": "down",
+				"wander": 1,
+				"hidden": false
+			},
+			"night": {
+				"hidden": true
+			},
+			"d1": {
+				"morning": {
+					"hidden": true
+				},
+				"afternoon": {
+					"at": [
+						30,
+						24
+					],
+					"dir": "down",
+					"wander": 0,
+					"hidden": false
+				},
+				"afternoon_done": {
+					"at": [
+						31,
+						29
+					],
+					"dir": "down",
+					"wander": 1,
+					"hidden": false
+				}
+			}
+		},
+		"after_granny": {
+			"default": {
+				"at": [
+					42,
+					25
+				],
+				"dir": "down",
+				"wander": 1,
+				"hidden": false
+			},
+			"night": {
+				"hidden": true
+			},
+			"d1": {
+				"morning": {
+					"hidden": true
+				},
+				"afternoon": {
+					"at": [
+						26,
+						28
+					],
+					"dir": "up",
+					"wander": 0,
+					"hidden": false
+				},
+				"afternoon_done": {
+					"at": [
+						42,
+						25
+					],
+					"dir": "down",
+					"wander": 1,
+					"hidden": false
+				}
+			}
+		},
+		"after_merchant": {
+			"default": {
+				"at": [
+					8,
+					24
+				],
+				"dir": "down",
+				"wander": 1,
+				"hidden": false
+			},
+			"night": {
+				"hidden": true
+			},
+			"d1": {
+				"morning": {
+					"hidden": true
+				},
+				"afternoon": {
+					"at": [
+						28,
+						29.5
+					],
+					"dir": "up",
+					"wander": 0,
+					"hidden": false
+				},
+				"afternoon_done": {
+					"at": [
+						8,
+						24
+					],
+					"dir": "down",
+					"wander": 1,
+					"hidden": false
+				}
+			}
+		},
+		"after_supervisor": {
+			"default": {
+				"at": [
+					12,
+					23
+				],
+				"dir": "down",
+				"wander": 1,
+				"hidden": false
+			},
+			"night": {
+				"hidden": true
+			},
+			"d1": {
+				"morning": {
+					"hidden": true
+				},
+				"afternoon": {
+					"at": [
+						37,
+						28.5
+					],
+					"dir": "up",
+					"wander": 0,
+					"hidden": false
+				},
+				"afternoon_done": {
+					"at": [
+						12,
+						23
+					],
+					"dir": "down",
+					"wander": 1,
+					"hidden": false
+				}
+			}
+		},
+		"after_bonfire_host": {
+			"default": {
+				"at": [
+					46,
+					24
+				],
+				"dir": "down",
+				"wander": 1,
+				"hidden": false
+			},
+			"night": {
+				"hidden": true
+			},
+			"d1": {
+				"morning": {
+					"hidden": true
+				},
+				"afternoon": {
+					"at": [
+						39,
+						29.5
+					],
+					"dir": "up",
+					"wander": 0,
+					"hidden": false
+				},
+				"afternoon_done": {
+					"at": [
+						46,
+						24
+					],
+					"dir": "down",
+					"wander": 1,
+					"hidden": false
+				}
+			}
+		},
+		"after_kid_tom": {
+			"default": {
+				"at": [
+					46,
+					27
+				],
+				"dir": "down",
+				"wander": 1,
+				"hidden": false
+			},
+			"night": {
+				"hidden": true
+			},
+			"d1": {
+				"morning": {
+					"hidden": true
+				},
+				"afternoon": {
+					"at": [
+						24.5,
+						29
+					],
+					"dir": "up",
+					"wander": 0,
+					"hidden": false
+				},
+				"afternoon_done": {
+					"at": [
+						46,
+						27
+					],
+					"dir": "down",
+					"wander": 1,
+					"hidden": false
+				}
+			}
+		},
+		"after_kid_lily": {
+			"default": {
+				"at": [
+					42,
+					22
+				],
+				"dir": "down",
+				"wander": 1,
+				"hidden": false
+			},
+			"night": {
+				"hidden": true
+			},
+			"d1": {
+				"morning": {
+					"hidden": true
+				},
+				"afternoon": {
+					"at": [
+						25.5,
+						30
+					],
+					"dir": "up",
+					"wander": 0,
+					"hidden": false
+				},
+				"afternoon_done": {
+					"at": [
+						42,
+						22
+					],
+					"dir": "down",
+					"wander": 1,
+					"hidden": false
+				}
+			}
+		},
+		"after_maid": {
+			"default": {
+				"at": [
+					48,
+					25
+				],
+				"dir": "down",
+				"wander": 1,
+				"hidden": false
+			},
+			"night": {
+				"hidden": true
+			},
+			"d1": {
+				"morning": {
+					"hidden": true
+				},
+				"afternoon": {
+					"at": [
+						35,
+						30
+					],
+					"dir": "up",
+					"wander": 0,
+					"hidden": false
+				},
+				"afternoon_done": {
+					"at": [
+						48,
+						25
+					],
+					"dir": "down",
+					"wander": 1,
+					"hidden": false
+				}
+			}
+		},
+		"after_engineer": {
+			"default": {
+				"at": [
+					34,
+					36
+				],
+				"dir": "down",
+				"wander": 1,
+				"hidden": false
+			},
+			"night": {
+				"hidden": true
+			},
+			"d1": {
+				"morning": {
+					"hidden": true
+				},
+				"afternoon": {
+					"at": [
+						22,
+						28
+					],
+					"dir": "up",
+					"wander": 0,
+					"hidden": false
+				},
+				"afternoon_done": {
+					"at": [
+						34,
+						36
+					],
+					"dir": "down",
+					"wander": 1,
+					"hidden": false
+				}
+			}
+		},
+		"after_guard_gate": {
+			"default": {
+				"at": [
+					29,
+					38
+				],
+				"dir": "down",
+				"wander": 0,
+				"hidden": false
+			},
+			"night": {
+				"hidden": false
+			},
+			"d1": {
+				"morning": {
+					"at": [
+						28,
+						37
+					],
+					"dir": "right"
+				},
+				"afternoon": {}
+			}
+		},
+		"after_guard_gate2": {
+			"default": {
+				"at": [
+					35,
+					38
+				],
+				"dir": "down",
+				"wander": 0,
+				"hidden": false
+			},
+			"night": {
+				"hidden": true
+			},
+			"d1": {
+				"morning": {
+					"at": [
+						36,
+						37
+					],
+					"dir": "left"
+				},
+				"afternoon": {}
+			}
+		},
+		"after_guard_plaza": {
+			"default": {
+				"at": [
+					28,
+					31
+				],
+				"dir": "down",
+				"wander": 0,
+				"hidden": false
+			},
+			"night": {
+				"hidden": true
+			},
+			"d1": {
+				"morning": {
+					"at": [
+						29,
+						34
+					],
+					"dir": "down"
+				},
+				"afternoon": {
+					"at": [
+						27,
+						26
+					],
+					"dir": "down",
+					"wander": 0,
+					"hidden": false
+				},
+				"afternoon_done": {
+					"at": [
+						28,
+						31
+					],
+					"dir": "down",
+					"wander": 0,
+					"hidden": false
+				}
+			}
+		},
+		"after_guard_wall": {
+			"default": {
+				"at": [
+					52,
+					38
+				],
+				"dir": "down",
+				"wander": 0,
+				"hidden": false
+			},
+			"night": {
+				"hidden": true
+			},
+			"d1": {
+				"morning": {
+					"at": [
+						35,
+						34
+					],
+					"dir": "down"
+				},
+				"afternoon": {
+					"at": [
+						40,
+						27
+					],
+					"dir": "left",
+					"wander": 0,
+					"hidden": false
+				},
+				"afternoon_done": {
+					"at": [
+						52,
+						38
+					],
+					"dir": "down",
+					"wander": 0,
+					"hidden": false
+				}
+			}
+		},
+		"after_guard_house": {
+			"default": {
+				"at": [
+					40,
+					10
+				],
+				"dir": "down",
+				"wander": 0,
+				"hidden": false
+			},
+			"night": {
+				"hidden": false
+			},
+			"d1": {
+				"morning": {
+					"hidden": true
+				},
+				"afternoon": {}
+			}
+		}
+	},
+	"days": {
+		"d1": {
+			"morning": {
+				"event": "d1_open",
+				"task": "战后集合"
+			},
+			"afternoon": {
+				"event": "d1_verdict",
+				"task": "广场听候宣判"
+			},
+			"night": {
+				"event": "d1_sleepwalk",
+				"task": "回小屋睡觉"
+			}
+		}
+	}
+}

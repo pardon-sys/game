@@ -109,6 +109,7 @@ LOOKS = {
     "captain": {"hair": (230, 200, 120), "outfit": (150, 40, 60), "accent": (220, 180, 70), "style": "captain"},
     "supervisor": {"hair": (110, 70, 140), "outfit": (70, 120, 90), "accent": (240, 230, 200), "style": "supervisor"},
     "bonfire_host": {"hair": (240, 120, 60), "outfit": (230, 90, 120), "accent": (255, 220, 100), "style": "host"},
+    "mayor": {"hair": (232, 232, 238), "outfit": (96, 62, 132), "accent": (240, 200, 90), "style": "mayor"},
 }
 
 
@@ -214,6 +215,19 @@ def npc_frame(look, row, col):
         for x in range(16 - hr, 16 + hr, 3):
             d.point((x, hy - hr), fill=(255, 220, 100, 255))
             d.point((x + 1, hy - hr), fill=(255, 140, 180, 255))
+    if st == "mayor":
+        # 高礼帽 + 金色的镇长链子 + 白胡子
+        d.rectangle((16 - hr, hy - hr - 1, 16 + hr - 1, hy - hr), fill=(40, 34, 48, 255))
+        d.rectangle((16 - hr + 2, hy - hr - 7, 16 + hr - 3, hy - hr - 1), fill=(40, 34, 48, 255))
+        d.line((16 - hr + 2, hy - hr - 2, 16 + hr - 3, hy - hr - 2), fill=acc)
+        if row != 3:
+            d.arc((12, by0 - 1, 19, by0 + 5), 0, 180, fill=acc)
+            d.point((15, by0 + 5), fill=acc)
+        if row == 0:
+            d.polygon([(13, hy + 3), (19, hy + 3), (16, hy + 7)], fill=WHITE)
+        elif row in (1, 2):
+            bx = 12 if row == 1 else 17
+            d.polygon([(bx, hy + 3), (bx + 3, hy + 3), (bx + 1, hy + 6)], fill=WHITE)
     if st == "supervisor" and row == 0:
         d.rectangle((13, hy, 15, hy + 2), outline=(80, 80, 90, 255))
         d.rectangle((17, hy, 19, hy + 2), outline=(80, 80, 90, 255))
@@ -1067,6 +1081,166 @@ DECALS = [("scorch", 0), ("scorch", 1), ("ash", 0), ("ash", 1), ("footprints", 0
           ("puddle", 0), ("shards", 0), ("rag", 0)]
 
 
+
+# ------------------------------------------------------------------ 战后的小镇（七日赎罪）
+def p_house_scaffold(v):
+    """修补中的房子：熏黑的墙上钉了新木板，屋顶搭着脚手架，地上一桶钉子。"""
+    img, d = canvas(48, 48)
+    wall = (128, 108, 98, 255) if v == 0 else (112, 104, 114, 255)
+    d.rectangle((4, 20, 43, 46), fill=wall)
+    d.line((4, 46, 43, 46), fill=STONE_D)
+    for (x, y, r) in ((10, 25, 5), (36, 30, 4)):
+        d.ellipse((x - r, y - r, x + r, y + r), fill=(70, 56, 52, 170))
+    # 新钉上的木板（颜色浅）
+    for y in (22, 27, 32):
+        d.rectangle((24, y, 42, y + 3), fill=WOOD_L)
+        d.line((24, y + 3, 42, y + 3), fill=WOOD)
+        for x in (26, 40):
+            d.point((x, y + 1), fill=(90, 90, 100, 255))
+    # 屋顶：左边旧的、右边新的半截
+    d.polygon([(0, 22), (24, 3), (24, 22)], fill=(84, 60, 56, 255))
+    d.polygon([(24, 3), (47, 22), (24, 22)], fill=(176, 96, 70, 255))
+    for k in range(4):
+        d.line((26 + k * 5, 6 + k * 4, 26 + k * 5 + 6, 6 + k * 4), fill=(140, 72, 54, 255))
+    # 脚手架
+    for x in (2, 22, 45):
+        d.line((x, 10, x, 47), fill=WOOD_D, width=2)
+    for y in (18, 34):
+        d.line((1, y, 46, y), fill=WOOD, width=2)
+    d.line((2, 34, 22, 18), fill=WOOD_D)
+    d.rectangle((19, 31, 27, 46), fill=(52, 38, 34, 255))     # 门洞
+    d.rectangle((8, 27, 14, 33), fill=(46, 36, 38, 255))
+    d.ellipse((30, 41, 37, 47), fill=(120, 120, 130, 255))     # 钉子桶
+    d.line((31, 42, 36, 42), fill=(200, 200, 210, 255))
+    return add_outline(img)
+
+
+def p_lumber():
+    """一摞新木料。"""
+    img, d = canvas(24, 16)
+    for i, y in enumerate((10, 6, 2)):
+        x0 = 1 + i * 2
+        d.rectangle((x0, y, 22 - i, y + 4), fill=WOOD_L if i % 2 == 0 else WOOD)
+        d.line((x0, y + 4, 22 - i, y + 4), fill=WOOD_D)
+        d.ellipse((x0 - 1, y, x0 + 2, y + 4), fill=(230, 190, 140, 255))
+    d.line((6, 15, 18, 15), fill=(90, 60, 40, 255))
+    return add_outline(img)
+
+
+def p_totem_tilted():
+    """狂欢图腾柱（歪掉、裂开）：三张彩色的笑脸叠起来，顶上插着羽毛，裂缝里漏出淡紫色的光。"""
+    img, d = canvas(32, 52)
+    faces = [((230, 110, 150), 40), ((120, 200, 230), 27), ((250, 200, 80), 14)]
+    for k, ((r, g, b), y) in enumerate(faces):
+        x = 8 + k * 2           # 越往上越往右歪
+        d.rectangle((x, y, x + 13, y + 12), fill=(r, g, b, 255))
+        d.line((x, y + 12, x + 13, y + 12), fill=(int(r * 0.6), int(g * 0.6), int(b * 0.6), 255))
+        d.point((x + 4, y + 4), fill=EYE)
+        d.point((x + 9, y + 4), fill=EYE)
+        d.arc((x + 3, y + 5, x + 10, y + 10), 0, 180, fill=EYE)
+    d.polygon([(14, 13), (12, 3), (16, 9)], fill=(255, 140, 200, 255))
+    d.polygon([(17, 13), (19, 1), (20, 10)], fill=(140, 230, 255, 255))
+    d.polygon([(20, 14), (25, 5), (23, 13)], fill=(255, 230, 120, 255))
+    # 裂缝 + 光
+    d.line((15, 28, 18, 34, ), fill=(70, 40, 80, 255))
+    d.line((18, 34, 16, 39), fill=(70, 40, 80, 255))
+    d.point((17, 33), fill=(220, 170, 255, 255))
+    d.ellipse((4, 48, 27, 51), fill=(90, 80, 90, 160))
+    return add_outline(img)
+
+
+def p_podium():
+    """广场的宣判台：木头台子 + 两级台阶 + 镇徽小旗。"""
+    img, d = canvas(48, 32)
+    d.rectangle((2, 14, 45, 29), fill=WOOD)
+    d.rectangle((2, 12, 45, 15), fill=WOOD_L)
+    d.line((2, 29, 45, 29), fill=WOOD_D)
+    for x in (8, 22, 38):
+        d.line((x, 16, x, 29), fill=WOOD_D)
+    d.rectangle((18, 26, 29, 31), fill=WOOD_L)                 # 台阶
+    d.line((18, 31, 29, 31), fill=WOOD_D)
+    d.line((42, 0, 42, 13), fill=WOOD_D, width=2)               # 旗杆
+    d.polygon([(43, 1), (47, 3), (43, 6)], fill=(90, 120, 200, 255))
+    d.rectangle((6, 17, 15, 24), fill=(120, 40, 60, 255))       # 垂下来的红布
+    d.line((7, 20, 14, 20), fill=GOLD)
+    return add_outline(img)
+
+
+def p_notice_board():
+    """告示板：贴着几张告示（最上面那张是赎罪的判决书）。"""
+    img, d = canvas(24, 32)
+    for x in (3, 20):
+        d.line((x, 8, x, 31), fill=WOOD_D, width=2)
+    d.rectangle((1, 4, 22, 21), fill=WOOD)
+    d.rectangle((1, 2, 22, 4), fill=WOOD_D)
+    for (x, y, w, h, c) in ((4, 7, 7, 8, PAPER), (12, 6, 8, 10, (255, 236, 236, 255)), (6, 15, 6, 5, (230, 240, 255, 255))):
+        d.rectangle((x, y, x + w, y + h), fill=c)
+        d.line((x + 1, y + 2, x + w - 1, y + 2), fill=(150, 130, 120, 255))
+        d.line((x + 1, y + 4, x + w - 2, y + 4), fill=(150, 130, 120, 255))
+    d.point((16, 6), fill=(220, 40, 60, 255))                   # 红色的钉子 / 印章
+    d.ellipse((14, 12, 18, 15), outline=(200, 50, 70, 255))
+    return add_outline(img)
+
+
+def p_stocks_plaza():
+    """广场的足枷：矮木凳 + 夹脚踝的两块横木（两个脚孔），旁边钉着「示众」的小牌子。"""
+    img, d = canvas(40, 28)
+    d.rectangle((2, 16, 15, 20), fill=WOOD_L)                  # 凳子
+    d.line((4, 20, 4, 26), fill=WOOD_D, width=2)
+    d.line((13, 20, 13, 26), fill=WOOD_D, width=2)
+    for x in (22, 37):                                           # 足枷的两根立柱
+        d.line((x, 8, x, 27), fill=WOOD_D, width=2)
+    d.rectangle((20, 12, 39, 15), fill=WOOD)                    # 上横木
+    d.rectangle((20, 16, 39, 19), fill=WOOD_L)                  # 下横木
+    for x in (25, 32):
+        d.ellipse((x - 2, 13, x + 2, 18), fill=(60, 40, 30, 255))
+    d.line((20, 15, 39, 15), fill=WOOD_D)
+    d.rectangle((24, 2, 35, 8), fill=PAPER)                     # 小牌子
+    d.line((26, 4, 33, 4), fill=(180, 60, 70, 255))
+    d.line((26, 6, 31, 6), fill=(180, 60, 70, 255))
+    return add_outline(img)
+
+
+def p_pants_hand():
+    """千手痒痒裤伸出来的小手：半透明的淡蓝色，手腕上一圈裤子的蓝白条纹。"""
+    img, d = canvas(16, 16)
+    hand, hand_d = (200, 230, 255, 220), (140, 180, 235, 230)
+    d.ellipse((4, 6, 11, 13), fill=hand)
+    for k, x in enumerate((4, 6, 8, 10)):
+        d.rectangle((x, 2 + (k % 2), x + 1, 7), fill=hand)
+    d.rectangle((11, 7, 13, 9), fill=hand)                      # 大拇指
+    d.line((5, 12, 10, 12), fill=hand_d)
+    d.rectangle((5, 13, 10, 15), fill=(80, 110, 200, 255))      # 袖口条纹
+    d.line((5, 14, 10, 14), fill=(240, 245, 255, 255))
+    return add_outline(img, (60, 80, 140, 255))
+
+
+def p_handprint():
+    """地上的发光手印（夜里千手痒痒裤爬过的痕迹，淡蓝色、半透明）。"""
+    img, d = canvas(16, 16)
+    c = (150, 210, 255, 150)
+    for (ox, oy, rot) in ((2, 6, 0), (8, 2, 1)):
+        d.ellipse((ox + 1, oy + 4, ox + 5, oy + 8), fill=c)
+        for k in range(4):
+            d.point((ox + 1 + k, oy + 2 + (k % 2) * (1 - rot)), fill=c)
+            d.point((ox + 1 + k, oy + 3), fill=c)
+    return img
+
+
+def p_bunting():
+    """一串庆功的彩旗（挂在柱子之间，不挡路）。"""
+    img, d = canvas(48, 20)
+    d.line((1, 3, 1, 19), fill=WOOD_D, width=2)
+    d.line((46, 3, 46, 19), fill=WOOD_D, width=2)
+    d.arc((0, -6, 47, 12), 0, 180, fill=(90, 70, 60, 255))
+    cols = [(255, 120, 160), (120, 200, 255), (255, 220, 90), (150, 230, 140), (220, 150, 255)]
+    for k in range(7):
+        x = 5 + k * 6
+        y = 3 + int(5 * math.sin(math.pi * (x / 47.0)))
+        d.polygon([(x, y), (x + 4, y), (x + 2, y + 5)], fill=cols[k % len(cols)] + (255,))
+    return add_outline(img)
+
+
 def gen_props():
     """道具图集：每个道具一格（大小不同），town_props.json 记录区域、碰撞和发光。"""
     from PIL import Image
@@ -1130,6 +1304,17 @@ def gen_props():
     # 战时小镇的地面贴花（不挡路，在地面层）
     for k, v in DECALS:
         items.append(("decal_%s_%d" % (k, v), p_decal(k, v), {"floor": True, "under": True}))
+    # 战后的小镇（七日赎罪；加在最后，前面道具的图集位置不变）
+    items.append(("house_scaffold_0", p_house_scaffold(0), {"body": [40, 16], "body_y": -8}))
+    items.append(("house_scaffold_1", p_house_scaffold(1), {"body": [40, 16], "body_y": -8}))
+    items.append(("lumber", p_lumber(), {"body": [20, 6], "body_y": -3}))
+    items.append(("totem_tilted", p_totem_tilted(), {"body": [14, 6], "body_y": -3, "light": [0.85, 0.6, 1.0]}))
+    items.append(("podium", p_podium(), {"body": [44, 12], "body_y": -6}))
+    items.append(("notice_board", p_notice_board(), {"body": [18, 6], "body_y": -3}))
+    items.append(("stocks_plaza", p_stocks_plaza(), {"body": [36, 8], "body_y": -4}))
+    items.append(("pants_hand", p_pants_hand(), {"light": [0.6, 0.8, 1.0]}))
+    items.append(("handprint", p_handprint(), {"floor": True}))
+    items.append(("bunting", p_bunting(), {}))
     # 简单地按行排进 256 宽的图集
     x = y = row_h = 0
     meta = {}

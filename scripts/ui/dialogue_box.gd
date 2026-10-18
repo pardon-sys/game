@@ -375,6 +375,12 @@ func rest() -> void:
 	Town.rest(GameState.player)
 
 
+## 七日赎罪：小屋里的床（夜里今天的事都做完了）→ 睡到第二天早上（AfterStory.sleep）。
+func after_sleep() -> void:
+	runner.end_conversation()
+	AfterStory.sleep_later()
+
+
 ## 这行台词是哪个人物说的（line.npc，或说话人名字和人物表里的名字一样）。
 ## 当前操控角色在人物表里的 id（蓝色公主当主角时是 blue_princess；粉色公主不在人物表里，返回 ""）。
 func hero_npc() -> String:

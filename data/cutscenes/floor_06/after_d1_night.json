@@ -1,0 +1,374 @@
+{
+	"name": "半夜的手印",
+	"letterbox": true,
+	"skippable": true,
+	"steps": [
+		{
+			"actions": [
+				{
+					"time": 0.0,
+					"do": "fade_out"
+				},
+				{
+					"who": "princess",
+					"at": [
+						4,
+						4.25
+					],
+					"sleep": false,
+					"do": "lie"
+				},
+				{
+					"to": [
+						8,
+						6
+					],
+					"zoom": 1.0,
+					"time": 0.1,
+					"do": "camera"
+				}
+			],
+			"wait": 0.3
+		},
+		{
+			"actions": [
+				{
+					"time": 1.2,
+					"do": "fade_in"
+				}
+			],
+			"wait": 1.2
+		},
+		{
+			"speaker": "",
+			"text": "（夜里。蓝色公主早早上了楼，一句话都没说）"
+		},
+		{
+			"speaker": "公主",
+			"text": "（一百工时……七天……明天一早，还要被锁在广场上……）",
+			"emotion": "sad"
+		},
+		{
+			"speaker": "公主",
+			"text": "（……她说的钥匙，到底是什么意思……）",
+			"emotion": "sad"
+		},
+		{
+			"actions": [
+				{
+					"who": "princess",
+					"sleep": true,
+					"do": "lie"
+				}
+			],
+			"wait": 1.0
+		},
+		{
+			"speaker": "",
+			"text": "（夜深了。楼梯上传来「沙……沙……」的声音）",
+			"actions": [
+				{
+					"sound": "cloth",
+					"volume": -8.0,
+					"do": "sfx"
+				}
+			]
+		},
+		{
+			"actions": [
+				{
+					"id": "h1",
+					"kind": "prop:pants_hand",
+					"at": [
+						16,
+						3
+					],
+					"z": 2,
+					"do": "spawn"
+				},
+				{
+					"id": "h2",
+					"kind": "prop:pants_hand",
+					"at": [
+						16,
+						3
+					],
+					"z": 2,
+					"do": "spawn"
+				},
+				{
+					"id": "h3",
+					"kind": "prop:pants_hand",
+					"at": [
+						16,
+						3
+					],
+					"z": 2,
+					"do": "spawn"
+				},
+				{
+					"who": "h1",
+					"to": [
+						5,
+						5
+					],
+					"time": 2.4,
+					"do": "move"
+				},
+				{
+					"who": "h2",
+					"to": [
+						4,
+						5.4
+					],
+					"time": 2.8,
+					"do": "move"
+				},
+				{
+					"who": "h3",
+					"to": [
+						6,
+						5.2
+					],
+					"time": 3.2,
+					"do": "move"
+				}
+			],
+			"wait": 3.2
+		},
+		{
+			"speaker": "",
+			"text": "（几只半透明的小手，顺着楼梯一节一节爬下来，钻进了被子的另一头）"
+		},
+		{
+			"speaker": "公主",
+			"text": "唔……嗯……",
+			"emotion": "shy",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "h1",
+					"zone": "sole",
+					"repeat": 5,
+					"interval": 0.35,
+					"add": 8,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"zone": "sole",
+					"add": 2,
+					"do": "cover"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "哈……别……那里……嘻……（梦话）",
+			"emotion": "shy",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "h2",
+					"zone": "sole",
+					"repeat": 6,
+					"interval": 0.3,
+					"add": 10,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"laugh": "helpless_2",
+					"do": "lie"
+				}
+			]
+		},
+		{
+			"speaker": "",
+			"text": "（小手们一左一右扳住她的脚趾，另一只顺着脚心慢慢地画圈）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "h3",
+					"zone": "sole",
+					"repeat": 8,
+					"interval": 0.25,
+					"add": 12,
+					"do": "tickle"
+				},
+				{
+					"time": 0.3,
+					"do": "shake"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "哈、哈哈哈……！谁、谁在挠我的脚心——！",
+			"emotion": "surprise",
+			"actions": [
+				{
+					"who": "princess",
+					"sleep": false,
+					"laugh": "surprise",
+					"do": "lie"
+				},
+				{
+					"laugh": 55,
+					"do": "pose"
+				}
+			]
+		},
+		{
+			"actions": [
+				{
+					"who": "princess",
+					"on": false,
+					"do": "lie"
+				},
+				{
+					"who": "princess",
+					"to": [
+						5,
+						6
+					],
+					"time": 0.2,
+					"do": "move"
+				},
+				{
+					"who": "princess",
+					"kind": "surprise",
+					"do": "bubble"
+				},
+				{
+					"who": "princess",
+					"do": "uncover"
+				},
+				{
+					"who": "h1",
+					"to": [
+						16,
+						3
+					],
+					"time": 1.0,
+					"do": "move"
+				},
+				{
+					"who": "h2",
+					"to": [
+						16,
+						3
+					],
+					"time": 1.2,
+					"do": "move"
+				},
+				{
+					"who": "h3",
+					"to": [
+						16,
+						3
+					],
+					"time": 1.4,
+					"do": "move"
+				}
+			],
+			"wait": 1.4
+		},
+		{
+			"actions": [
+				{
+					"who": "h1",
+					"do": "despawn"
+				},
+				{
+					"who": "h2",
+					"do": "despawn"
+				},
+				{
+					"who": "h3",
+					"do": "despawn"
+				},
+				{
+					"id": "tr0",
+					"kind": "prop:handprint",
+					"at": [
+						15,
+						4
+					],
+					"do": "spawn"
+				},
+				{
+					"id": "tr1",
+					"kind": "prop:handprint",
+					"at": [
+						13,
+						6
+					],
+					"do": "spawn"
+				},
+				{
+					"id": "tr2",
+					"kind": "prop:handprint",
+					"at": [
+						10,
+						8
+					],
+					"do": "spawn"
+				},
+				{
+					"id": "tr3",
+					"kind": "prop:handprint",
+					"at": [
+						7,
+						7
+					],
+					"do": "spawn"
+				},
+				{
+					"id": "tr4",
+					"kind": "prop:handprint",
+					"at": [
+						5,
+						6
+					],
+					"do": "spawn"
+				}
+			],
+			"wait": 0.4
+		},
+		{
+			"speaker": "公主",
+			"text": "刚才那是……手？",
+			"emotion": "surprise"
+		},
+		{
+			"speaker": "公主",
+			"text": "……蓝白条纹的袖口……是那条裤子的手！",
+			"emotion": "angry"
+		},
+		{
+			"speaker": "",
+			"text": "（地板上留下了一串湿漉漉的、发着淡蓝光的小手印）"
+		},
+		{
+			"speaker": "公主",
+			"text": "……它跑到哪里去了？……跟过去看看。",
+			"actions": [
+				{
+					"laugh": 0,
+					"do": "pose"
+				}
+			]
+		},
+		{
+			"actions": [
+				{
+					"reset": true,
+					"time": 0.6,
+					"do": "camera"
+				}
+			],
+			"wait": 0.6
+		}
+	]
+}
