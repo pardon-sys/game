@@ -1,0 +1,58 @@
+{
+	"name": "蓝色的公主",
+	"npc": "blue_princess",
+	"entries": [
+		{
+			"if": {
+				"var": {
+					"after_day": [
+						"==",
+						1
+					]
+				}
+			},
+			"node": "d1"
+		},
+		{
+			"node": "default"
+		}
+	],
+	"nodes": {
+		"d1": {
+			"lines": [
+				{
+					"text": "……搬砖，累吗。"
+				},
+				{
+					"text": "累死了……手臂都不是自己的了。",
+					"speaker": "公主",
+					"emotion": "sad"
+				},
+				{
+					"text": "……明天，足枷。"
+				},
+				{
+					"text": "……我会去看。"
+				},
+				{
+					"text": "不准来看！",
+					"speaker": "公主",
+					"emotion": "angry"
+				},
+				{
+					"text": "……嗯。……那就，最后一个去。"
+				}
+			]
+		},
+		"default": {
+			"lines": [
+				{
+					"text": "……嗯？"
+				},
+				{
+					"text": "……城墙，修得很快。"
+				}
+			]
+		}
+	}
+}

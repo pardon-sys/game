@@ -142,5 +142,29 @@
 			"speaker": "告示",
 			"text": "【封锁】通往营地的路暂时封住。有事请找保卫队队长。"
 		}
+	],
+	"after_curfew": [
+		{
+			"speaker": "",
+			"text": "（宵禁了。……今晚就别出去了）"
+		}
+	],
+	"after_mine_locked": [
+		{
+			"speaker": "",
+			"text": "（通往矿道的门被木板钉死了。上面贴着封条）"
+		}
+	],
+	"after_camp_blocked": [
+		{
+			"speaker": "告示",
+			"text": "【整修中】营地正在清点伤员和装备，暂时不对外开放。"
+		}
+	],
+	"after_house_up_locked": [
+		{
+			"speaker": "",
+			"text": "（楼上是蓝色公主的房间。……没事别上去打扰她）"
+		}
 	]
 }

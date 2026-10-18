@@ -1,0 +1,116 @@
+[level]
+# 第六层·地下小镇·战后（tools/build/gen_floor06_after.py 生成，不要直接改）
+intro =
+ambient = 0.66,0.56,0.5
+night_ambient = 0.3,0.3,0.5
+no_switch = true
+[legend]
+# = wall
+. = floor
+P = player
+t = torch lit=true
+A = f6after
+C = prop type=dungeon_gate
+D = exit target=floor_06_mine locked=true dialogue=after_mine_locked
+E = prop type=house_scaffold_0
+F = prop type=house_1
+G = prop type=house_scaffold_1
+H = prop type=house_3
+I = prop type=lumber action=talk:floor_06/after_objects#lumber
+J = prop type=rubble
+K = prop type=house_blue
+L = exit target=floor_06_after_house spawn=from_town
+M = spawn id=from_house
+N = prop type=stall_0 action=shop:war_market
+O = prop type=stall_1 action=shop:war_market
+Q = prop type=stall_2 action=shop:war_market
+R = prop type=stall_broken
+S = prop type=crate
+T = prop type=bonfire_0 action=heal
+U = prop type=bench
+V = prop type=lamp
+W = prop type=well
+X = prop type=podium action=talk:floor_06/after_objects#podium
+Y = prop type=notice_board action=talk:floor_06/after_objects#notice
+Z = prop type=stocks_plaza action=talk:floor_06/after_objects#stocks
+a = prop type=bunting
+b = savepoint place=战后的广场
+c = prop type=totem_tilted action=talk:floor_06/after_objects#totem
+d = prop type=stairs_down
+e = prop type=barricade
+f = sign dialogue=after_camp_blocked
+g = prop type=sandbag
+h = prop type=tower_base
+i = prop type=tower
+j = prop type=dungeon_gate action=talk:floor_06/after_objects#gate
+k = spawn id=from_siege
+l = blue_princess follow=true ai=false
+m = npc id=captain dialogue=floor_06/after_captain wander=0
+n = npc id=mayor dialogue=floor_06/after_mayor wander=0
+o = npc id=granny dialogue=floor_06/after_granny wander=0
+p = npc id=merchant dialogue=floor_06/after_merchant wander=0
+q = npc id=supervisor dialogue=floor_06/after_supervisor wander=0
+r = npc id=bonfire_host dialogue=floor_06/after_bonfire_host wander=0
+s = npc id=kid dialogue=floor_06/after_kid_tom wander=0
+u = npc id=kid dialogue=floor_06/after_kid_lily wander=0
+v = npc id=maid dialogue=floor_06/after_maid wander=0
+w = npc id=miner dialogue=floor_06/after_engineer wander=0
+y = npc id=guard dialogue=floor_06/after_guard_gate wander=0
+z = npc id=guard dialogue=floor_06/after_guard_gate2 wander=0
+0 = npc id=guard dialogue=floor_06/after_guard_plaza wander=0
+1 = npc id=guard dialogue=floor_06/after_guard_wall wander=0
+2 = npc id=guard dialogue=floor_06/after_guard_house wander=0
+3 = prop type=decal_scorch_1
+4 = prop type=decal_straw_0
+5 = prop type=decal_puddle_0
+6 = prop type=decal_footprints_0
+7 = prop type=decal_splinters_0
+8 = prop type=decal_ash_1
+
+[map]
+################################################################
+########t###########t###########t###########t###########t#######
+##............................................................##
+##.A.......................................7...3..............##
+##.........5......3....4..............................C.4.....##
+##.............................5......................D.......##
+##.........3.......................7..........................##
+##..6.............................................6.....6.....##
+##......E.......F.......G...4...H.........K...........6.......##
+##........6...............................L...............4...##
+##.............8...............7........2.M...................##
+##..........I...............I...............5.................##
+##.............6....J.........................6...............##
+##............................................................##
+##............................................................##
+##..6...............................6......8...7.........6....##
+##.............5..............................................##
+##.............................................3.........5....##
+##.......5....................W..............4........7.......##
+##.....N...O...Q..............................................##
+##............................................................##
+##........3..............a..........a...U.......U.............##
+##..S.....................................u...................##
+##..S.......q..4...................Y..........................##
+##....3.p..............Z.............V......T.r....V..7.......##
+##............................X...........o.....v.............##
+##.....O...Q...R............................4.................##
+##...3..................................U.....s.U.............##
+##....................................................6.......##
+##.....7.......................n..m.................8.........##
+##.......................................7....6............5..##
+##..3.........8.............0.................................##
+##........3...................b...............................##
+##.................................6.....................8....##
+##...5............c...3.......................................##
+##..............................8.............................##
+##......................4.........w...........................##
+##..........h.........h.........Pl........h.......3.h..4......##
+##.........................i.y..k..z.i..............1.....e...##
+##......g.......I...............................I.......g.....##
+##...........................V..j..V.....................f.d..##
+################################################################
+##............................................................##
+##............................................................##
+################################################################
+################################################################

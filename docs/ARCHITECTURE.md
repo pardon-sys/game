@@ -316,9 +316,9 @@ HUD 背包栏会根据物品数据自动显示，不需要改 UI 代码。
 - 楼层组：`data/floors.json` 的 `group`（`Floors.group(id)`）；同组地图共用 `data/dialogues/<组>/`（`Floors.dialogue_dir`）。
 
 ### 剧情调度、睡觉、潜入、角色档案
-- `StoryDirector`（`scripts/story/story_director.gd`，main.gd 创建）：监听人物对话结束、过场结束、换地图，交给各层剧情脚本（`F6Story`）。`run_sequence([{level, spawn, cutscene, flag, keep_state}, …])`：跨地图的过场序列。
+- `StoryDirector`（`scripts/story/story_director.gd`，main.gd 创建）：监听人物对话结束、过场结束、换地图，交给各层剧情脚本（`F6Story`、`AfterStory`）。`run_sequence([{level, spawn, cutscene, flag, keep_state}, …])`：跨地图的过场序列。
 - `F6Story`（`scripts/story/f6_story.gd`）：话题问完 → 参观（`f6_tour_*` 过场）→ 小屋（`night`）→ 家具对话 `floor_06/house_objects`（骑马刷凳 → `f6_house_saddle` 小剧场 → `f6_blue_quiet` → 钥匙）→ 床 `call: sleep` → 早上 `f6_escape`；`on_caught()`（`StealthDirector.on_caught = f6`）→ 地牢惩罚 → 回小屋 → `Sleep`；`f7_pink_run` 结束 → `start_blue_arc()`（`blue_is_hero`）→ 出门 `f7_blue_argue` → 第七层。
-- `Sleep`（`scripts/story/sleep.gd`）：`sleep(早上的过场)` / `sleep_later(…)`（对话里用）；`vars.day`、关掉 `night`、回满状态。对话 handler `sleep()`。
+- `Sleep`（`scripts/story/sleep.gd`）：`sleep(早上的过场, title, on_dawn)` / `sleep_later(…)`（对话里用）；`vars.day`、关掉 `night`、回满状态；`title` 换掉黑幕上的「第 N 天」，`on_dawn` 在黑着的时候调（`DayClock` 在这里换时间）。对话 handler `sleep()`。
 - 潜入（`scripts/stealth/`）：`VisionCone`（`sees(目标)`、墙 = 碰撞层 1、`lights` 暗处视野减半、扇形用射线截断）、`PatrolGuard`（图例 `guard_patrol path=x,y;… loop wait speed view_range view_angle`；`investigate(位置)` 用 `GridPath` 寻路）、`StealthDirector`（图例 `stealth active_flag on_caught`；`alert`、`toggle_hide`（`prop action=hide`）、`throw_stone`（输入动作 `throw`，运行时加上，F 键）、`noise(位置)`、`caught` 信号）。
 - 出口 `LevelExit` 的 `lock_flag / unlock_flag / locked_dialogue / open_dialogue`；关卡 `night_ambient`（`[level]` 段，剧情标记 `night` 时换上）；`Prop` 的 `talk:<文件>#<节点>`、`hide`、`lift`（挂墙的东西）、地面道具（`floor`）挪到 FloorObjects（`under` 铺最底下）。
 - 角色档案 `Characters`（`scripts/core/characters.gd`）：按当前操控角色的 `character_id` 选数据文件——`ReactionDB`（reactions / fatigue）、`TickleZones`（ticklish）、`CG.data / CG.scenes`（cgs / nest_cgs / combo_scenes，属性按角色缓存）；`CGActor.make_princess` 在蓝色公主当主角时用她的精灵图。蓝色公主的数据在 `data/characters/blue/`（`gen_blue_character.py` 生成）。
@@ -583,7 +583,7 @@ data/cutscenes/<楼层组>/  地图内过场；data/theater/<楼层组>/  小剧
 - **胜利后**：`TownBuffs.clear_all()` 撤掉 12 个镇民支援（友军身上的 `town_*`、`vars.siege_town_buffs`）；`stage_victory()` 把操控切回粉色公主、
   两个人摆到城门前（`VICTORY_CELL` 两侧，蓝色公主节点改名 `SiegeBlue`）→ 过场 `siege_won`（`gen_floor06_siege.py` 的 `CHEERS`）：镜头拉远到整个战场，
   十二位激励镇民按波次顺序从城门出来、各说一句、站成半圆（演员 `cheer_<激励 id>`，行走图用 `town_buffs.json` 的 `sheet`），镇长宣布祭典，
-  烟花（过场动作 `fireworks`：`at` 格子列表、`count`、`time`）→ 回战时小镇。
+  烟花（过场动作 `fireworks`：`at` 格子列表、`count`、`time`）→ 战后的小镇（`floor_06_after`，见「七日赎罪」）。
 - **临时痒痒装备**：`Equipment.force` / `release` / `tick_forced`（`GameState.equip_forced`），负面装备由 `EquipFx` 定时发作 + 立绘反应（`data/equip_reactions.json`，分角色）。
 - 内容生成器：`gen_siege_monsters.py`（场景）、`gen_siege_cgs.py`（笑倒 CG，粉 / 蓝两版）、`gen_siege_scenes.py`（三来源组合小演出）、
   `gen_siege_theaters.py`（失败小剧场）、`gen_siege_reactions.py`（受挠台词）、`gen_siege_bosses.py`（Boss 技能 / 横幅、要塞数据）、
@@ -609,10 +609,33 @@ data/cutscenes/<楼层组>/  地图内过场；data/theater/<楼层组>/  小剧
 - 测试：`siege_test` / `siege2_test` / `siege3_test` / `siege5_test`（攻防战各轮），Boss 和机关的 `siege_w6_bear_test` / `siege_w9_puppet_test` /
   `siege_w12_fortress_test`、`siege_cooperation_test`、`siege_dev_test`、`siege_revision_test`（都直接继承夹具 `tests/helpers/siege_fixture.gd`）；
   `siege3_test` 的第十轮测四个大型陷阱和四个地面配合技、第十一轮测难度倍率 / 陷阱配合 / 双向传送门 / 攻城车撞塔撞人 / 投石车 / 胜利清空支援、
-  第十二轮测攻城车撞晕 / 蘑菇吸附 / 挑薄弱墙段 / 号手阵型和散乱 / 撤退不跳波；`siege_test` 的胜利段测镜头拉远和十二位镇民出场；
+  第十二轮测攻城车撞晕 / 蘑菇吸附 / 挑薄弱墙段 / 号手阵型和散乱 / 撤退不跳波；`siege_test` 的胜利段测镜头拉远、十二位镇民出场、之后去战后的小镇；
   第九轮测螃蟹规则、CG 段测四幕结构和配合技字幕；`siege_w12_fortress_test` 的 `_round10` 测要塞的新机关、护盾柱、超载和最终波车队；`siege5_test` 的组合段把 23 组三来源组合给两位公主各触发一遍
   （穿着千手痒痒裤时大腿 / 屁股的临时装备会被裤子吸收，测试按组合临时开关 `Equipment.PANTS_FLAG`）；
   截图 `capture_siege*.gd` 输出到 `tools/.cache/shots/`。
+
+## 七日赎罪：战后的小镇（levels/floor_06/scripts/after_*.gd）
+攻防战胜利的过场 `siege_won` 最后 goto `floor_06_after`（`from_siege`）。`tools/build/gen_floor06_after.py` 生成三张地图、日程、对话和过场，台词在 `tools/build/after_text/`
+（`d1.py` 第 1 天的过场、`town.py` 镇民 / 告示板、`house.py` 小屋家具和梦游的手印；生成器只负责拼装）。
+- **地图**：`floor_06_after`（和战时小镇同样的布局：脚手架、木料、歪掉的狂欢图腾柱、宣判台、告示板、广场足枷、彩旗；no_switch，蓝色公主跟着）、
+  `floor_06_after_house`（小屋楼下，夜里门锁上 = 宵禁）、`floor_06_after_house_up`（楼上，`after_house_up_open` 之后才能上）。新道具在 `tools/art/gen_town_art.py`
+  （`house_scaffold_*`、`lumber`、`totem_tilted`、`podium`、`notice_board`、`stocks_plaza`、`pants_hand`、`handprint`、`bunting`），镇长的行走图 `npcs/mayor.png`。
+- **时钟 `DayClock`**（`scripts/story/day_clock.gd`）：`vars.after_day`（1~7）+ `vars.after_slot`（0 早 / 1 午 / 2 夜，夜里开 `night`）；`set_time` 之后
+  `GameState.flag_changed` 发 `DayClock.TICK`。`pass_time(时段)`：黑幕 +「第 N 天·下午」，黑着的时候换时间、揭掉过场留下的黑幕；`sleep()`：`Sleep` 到第二天早上。
+  日程 `data/after/schedule.json`：`npcs` 镇民（键 = 对话文件名）按 default → 时段 → `d<N>.all` → `d<N>.<时段>` → 做完后的 `<时段>_done` 逐层覆盖
+  `{at, dir, wander, hidden, dialogue}`；`days.d<N>.<时段>` = `{event, task, hours}`。做完记 `after_done_d<N>_<时段>`（`done` / `mark_done`）。
+- **赎罪簿 `PenanceBook`**（`scripts/story/penance_book.gd`）：宣判时 `start()`（`penance_book`，100 工时），`add(差值, 原因)` 记 `vars.penance_log` 并提示；
+  背包的「赎罪簿」页（`Backpack.PAGE_PENANCE`，有赎罪簿后插在「物品」后面）读 `page_rows()`：剩余工时、今天的安排（✔ / ▶）、最近的记录。没有失败结局。
+- **剧情 `AfterStory`**：`EVENTS` 事件 id → 在哪张图演 + 过场；导演进图 / 时间变了时调 `run_pending(图)`，事件开始记 `after_ev_<id>`；`finish_slot()`：
+  早上做完自动到下午、下午做完提示回小屋、夜里做完回楼下的床上睡（`go_to_bed`）。进小屋 `enter_house()`：白天的事都做完 → 天黑。夜里的事件进行中开
+  `after_night_busy`（床不能睡）。床 `call: after_sleep`。旧存档（打赢攻防战还在战时小镇）进战时小镇时直接送过来。
+- **导演**：`AfterTown`（图例 `f6after`）把跟着的蓝色公主改名 `AfterBlue`、镇民改名成对话文件名（过场里直接用），按日程摆（`place`：藏起来 = `show_flag` 设成
+  永远没有的标记）；过场放完重新摆、揭开 `end_dark` 的黑幕（紧接着 `pass_time` 时交给它）。`AfterHouse`（图例 `f6afterhouse`，楼上楼下共用）：楼下进门 → `enter_house`，
+  梦游进行中摆出三处可调查的手印（`CLUES`）；楼上蓝色公主（`AfterBlue`）夜里躺床上，三处手印都看过 → `run_upstairs()`。
+- **第 1 天**：早 `after_d1_open`（千手痒痒裤当众发作、队长要砍裤子、私下特训 / 搬砖）→ 午 `after_d1_verdict`（镇长主持、队长宣读，「……那扇门，钥匙是我的」被打断，
+  发赎罪簿）→ 回小屋天黑 → 夜 `after_d1_night`（被裤子的手挠脚心挠醒）→ 手印 `after_house_objects#clue_bed / clue_tea`，最后 `clue_stairs`（→ `after_d1_clues`、
+  `after_house_up_open`）→ 楼上 `after_d1_night_end` → 第 2 天早上。第 2 天起的内容之后几批补（日程里没有事件的时段算做完）。
+- 测试：`tests/f6_after_test`（胜利去向、开场 → 宣判、日程摆位、赎罪簿和背包页、宵禁锁门、手印顺序、楼上结尾 → 第 2 天、日程逐层覆盖、旧存档）。
 
 ## 公主状态与换美术素材
 

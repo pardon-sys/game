@@ -2,7 +2,7 @@ extends Node
 ## 小镇攻防战：
 ##   城门 → 攻防战地图；导演、8 段城墙、梯子、两位公主（粉色操控、蓝色在城墙上用城墙法师 AI）。
 ##   波次：准备倒计时 → 号角提前开打 → 出怪、怪物走到墙下打墙（城墙总血量下降）→ 蓝色公主放法术打怪 → 打倒得冰晶 → 清完下一波。
-##   失败：城墙归零 → 清场 → （失败小剧场）→ 城墙修好、从这一波的准备阶段重来。胜利：最后一波（第 12 波）打完 → siege_won。
+##   失败：城墙归零 → 清场 → （失败小剧场）→ 城墙修好、从这一波的准备阶段重来。胜利：最后一波（第 12 波）打完 → siege_won → 战后的小镇。
 ##   蓝色公主：被挠下城墙 → 时间到自己走到梯子爬回去；倒下不倒计时，粉色公主按住 E 救起。粉色公主倒下 → 城门复活、城墙扣血。
 ##   C 键切换；性能：150 只怪同时在场的帧时间。
 ## 用法：Godot --headless --path . res://tests/siege_test.tscn   （退出码 0 = 全部通过）
@@ -390,7 +390,8 @@ func _run_enemy_towers() -> void:
 	var d := _dir()
 	var sites := get_tree().get_nodes_in_group("siege_enemy_site")
 	_keep_fighting(d)
-	# 自己聚集起来搭塔
+	# 自己聚集起来搭塔（地基离城墙近：蓝色公主的城墙法师 AI 会拿法术把聚过来的怪打散，这一段先让她站着）
+	d.blue.set_controller(CharacterController.new())
 	var site: EnemySite = sites[0]
 	for i in 9:
 		var m: Monster = d.spawn("slime", "site", site.global_position + Vector2(randf_range(-20, 20), randf_range(-10, 10)))
@@ -406,8 +407,7 @@ func _run_enemy_towers() -> void:
 	var near_pink := func(et: EnemyTower, off := Vector2(0, -60)):
 		d.pink.global_position = et.global_position + off
 		d.pink.camera.reset_smoothing()
-	# 各种敌塔（蓝色公主的 AI 见粉色公主被拖走 / 抓住会放清凉雪花解开，这一段先让她站着）
-	d.blue.set_controller(CharacterController.new())
+	# 各种敌塔（蓝色公主的 AI 见粉色公主被拖走 / 抓住会放清凉雪花解开，这一段也让她站着）
 	var results := {}
 	var s1: EnemySite = sites[1]
 	for kind in ["vine_pull", "glue", "net", "windmill", "sole_tower", "portal", "totem", "thigh_tower", "silence"]:
@@ -535,6 +535,11 @@ func _run_fail_and_win() -> void:
 	check("城墙归零 → 失败 → 城墙修好（%d）、怪物清空（%d）、从第 %d 波的准备阶段重来（第 %d 波 %s）" % [int(d.wall_hp), d.monsters.size(), w, d.wave, d.state],
 		d.wall_hp == d.wall_max and d.monsters.is_empty() and d.wave == w and d.state == "prep")
 	d.wave = SiegeDirector.total_waves()
+	# 胜利后去战后的小镇（七日赎罪）：第 1 天白天的剧情先记成做完，免得开场过场接着放（f6_after_test 单独测）
+	GameState.set_flag(AfterStory.STARTED)
+	DayClock.set_time(1, DayClock.AFTERNOON)
+	DayClock.mark_done(1, DayClock.MORNING)
+	DayClock.mark_done(1, DayClock.AFTERNOON)
 	d.start_now()
 	await _wait(0.3)
 	d._queue.clear()
@@ -552,11 +557,11 @@ func _run_fail_and_win() -> void:
 		for k in Cutscene.spawned:
 			if str(k).begins_with("cheer_"):
 				stats["cheer"][k] = true
-		return _level_id() == "floor_06_war"
+		return _level_id() == "floor_06_after"
 	await _advance_until(watch, 90.0)
 	check("胜利过场：镜头拉远到 %.2f 倍（看得到整个战场）、%d 位激励镇民出来祝贺" % [stats["zoom"], stats["cheer"].size()],
 		stats["zoom"] < 0.4 and stats["cheer"].size() == 12)
-	check("胜利过场后回到战时小镇（%s）" % _level_id(), _level_id() == "floor_06_war")
+	check("胜利过场后去战后的小镇（%s）" % _level_id(), _level_id() == "floor_06_after")
 
 
 # ------------------------------------------------------------------ 性能

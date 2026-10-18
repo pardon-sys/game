@@ -1,0 +1,35 @@
+{
+	"name": "蓝色的公主",
+	"npc": "blue_princess",
+	"entries": [
+		{
+			"if": {
+				"flag": "night"
+			},
+			"node": "night"
+		},
+		{
+			"node": "day"
+		}
+	],
+	"nodes": {
+		"day": {
+			"lines": [
+				{
+					"text": "……这里是我的房间。"
+				},
+				{
+					"text": "……别乱翻。"
+				}
+			]
+		},
+		"night": {
+			"lines": [
+				{
+					"text": "（她睡着了。裤脚偶尔动一下，像猫在梦里甩尾巴）",
+					"speaker": ""
+				}
+			]
+		}
+	}
+}

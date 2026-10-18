@@ -128,6 +128,27 @@
 			"music": "siege"
 		},
 		{
+			"id": "floor_06_after",
+			"name": "地下小镇·战后",
+			"scene": "res://levels/floor_06_after/floor.tscn",
+			"group": "floor_06",
+			"music": "town"
+		},
+		{
+			"id": "floor_06_after_house",
+			"name": "蓝色小屋·战后",
+			"scene": "res://levels/floor_06_after_house/floor.tscn",
+			"group": "floor_06",
+			"music": "town"
+		},
+		{
+			"id": "floor_06_after_house_up",
+			"name": "蓝色小屋·战后（楼上）",
+			"scene": "res://levels/floor_06_after_house_up/floor.tscn",
+			"group": "floor_06",
+			"music": "night_room"
+		},
+		{
 			"id": "floor_08_maze_1",
 			"name": "第八层·夜迷宫一·外环回廊",
 			"scene": "res://levels/floor_08_maze_1/floor.tscn",

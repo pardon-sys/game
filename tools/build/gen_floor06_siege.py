@@ -768,7 +768,7 @@ TOWN_BUFFS = [
        mul={"build_speed": 0.7, "engineer_speed": 0.75}),
     TB("florist", "花匠的香草", "花匠", "maid", "#a0ffa0", 10, "香草的味道，冰塔也精神起来了！", "冰塔射程 +25%，雪人召唤塔每次多召一只。",
        mul={"tower_range": 1.25}, add={"snowmen": 1}),
-    TB("mayor", "镇长的祭典狂欢", "镇长", "merchant", "#ffd700", 11, "最后一波了！全镇一起——祭典开始！", "全部友军所有属性 +20%，城墙回满。",
+    TB("mayor", "镇长的祭典狂欢", "镇长", "mayor", "#ffd700", 11, "最后一波了！全镇一起——祭典开始！", "全部友军所有属性 +20%，城墙回满。",
        buff="town_mayor", mul={"tower_dmg": 1.2, "ally_cd": 0.83, "spell_cd": 0.83, "soldier_atk": 1.2, "soldier_hp": 1.2, "detect": 1.2},
        once={"wall_full": True, "fireworks": True}),
 ]
@@ -826,7 +826,7 @@ INTRO = {"name": "攻防战：开始", "letterbox": True, "skippable": True, "st
     {"actions": [A("hint", text="C 切换操控；蓝色公主：L 瞄准施法；H 查看新情报；城门口的号角可以提前开打")], "wait": 0.2},
     {"actions": [A("set_flag", flag="siege_intro_seen")], "wait": 0.1},
 ]}
-# 胜利：镜头拉远看整个战场 → 十二位激励镇民按波次顺序从城门出来，各说一句、站成半圆 → 镇长宣布祭典 → 烟花。
+# 胜利：镜头拉远看整个战场 → 十二位激励镇民按波次顺序从城门出来，各说一句、站成半圆 → 镇长宣布祭典 → 烟花 → 战后的小镇（七日赎罪）。
 # 两位公主由 SiegeDirector.stage_victory 摆在城门前（VICTORY_CELL 两侧），蓝色公主的节点叫 SiegeBlue。
 import math  # noqa: E402
 VICTORY = (54, 13)
@@ -876,7 +876,7 @@ won_steps += [
     line(BLUE, "……谢谢。……大家。", None, [A("bubble", who="SiegeBlue", kind="happy")]),
     {"actions": [A("fireworks", at=[[VICTORY[0] - 2, VICTORY[1] - 4], [VICTORY[0] + 2, VICTORY[1] - 4]], count=8, time=2.0)], "wait": 2.2},
     {"actions": [A("fade_out", time=1.2)], "wait": 1.2},
-    {"actions": [A("goto", to="floor_06_war", spawn="from_siege")], "wait": 0.1},
+    {"actions": [A("goto", to="floor_06_after", spawn="from_siege")], "wait": 0.1},
 ]
 WON = {"name": "攻防战：胜利", "letterbox": True, "skippable": True, "steps": won_steps}
 cut = Path("data/cutscenes/floor_06")

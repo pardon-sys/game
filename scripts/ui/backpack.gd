@@ -5,6 +5,7 @@ extends CanvasLayer
 ##   状态页：闷笑值 / 魔力疲倦百分比和当前阶段说明、魔法冷却、所有增益 / 减益（data/buffs.json 的 desc）、被抓 / 定身等情况。
 ##   CG 图鉴页：笑倒 CG、巢穴过场、三来源组合演出、小剧场（第八层 Boss 战败 / 追逐失败、第六层的惩罚 / 训练等）；
 ##   看过的可以重看（测试模式下全部可看），E 播放。
+##   赎罪簿页（七日赎罪拿到赎罪簿之后，插在「物品」后面）：剩余工时、今天的安排、加减记录（PenanceBook.page_rows）。
 ## 操作：方向键选择，E 使用 / 播放，Q / R 设快捷键，Tab / I 翻到下一页（最后一页再按就关闭），~ 翻到上一页（第一页再按到最后一页），Esc 关闭。
 ## 测试模式（DevConfig.enabled）下没拿到背包也能打开。
 
@@ -13,12 +14,13 @@ signal closed
 
 const BUFF_ICONS := preload("res://assets/generated/buff_icons.png")
 ## 页签名（下标就是 PAGE_* 的值）；实际顺序看 page_order()：装备系统解锁后「装备」页插在「物品」后面
-const PAGES := ["物品", "被动技能", "状态", "CG 图鉴", "装备"]
+const PAGES := ["物品", "被动技能", "状态", "CG 图鉴", "装备", "赎罪簿"]
 const PAGE_ITEMS := 0
 const PAGE_PASSIVES := 1
 const PAGE_STATUS := 2
 const PAGE_GALLERY := 3
 const PAGE_EQUIP := 4
+const PAGE_PENANCE := 5
 ## CG 图鉴一屏显示的行数。
 const GALLERY_ROWS := 9
 const COLUMNS := 8
@@ -144,9 +146,9 @@ func _input(event: InputEvent) -> void:
 		move_selection(-1)
 	elif event.is_action("move_right") or event.is_action("ui_right"):
 		move_selection(1)
-	elif (event.is_action("move_up") or event.is_action("ui_up")) and page == PAGE_STATUS:
+	elif (event.is_action("move_up") or event.is_action("ui_up")) and page in [PAGE_STATUS, PAGE_PENANCE]:
 		status_page.scroll_by(-1)
-	elif (event.is_action("move_down") or event.is_action("ui_down")) and page == PAGE_STATUS:
+	elif (event.is_action("move_down") or event.is_action("ui_down")) and page in [PAGE_STATUS, PAGE_PENANCE]:
 		status_page.scroll_by(1)
 	elif event.is_action("move_up") or event.is_action("ui_up"):
 		move_selection(-COLUMNS)
@@ -172,8 +174,11 @@ func set_page(p: int) -> void:
 
 ## 现在有哪些页、按什么顺序（装备系统没解锁时没有「装备」页）。
 func page_order() -> Array:
-	return [PAGE_ITEMS, PAGE_EQUIP, PAGE_PASSIVES, PAGE_STATUS, PAGE_GALLERY] if Equipment.unlocked() \
+	var order := [PAGE_ITEMS, PAGE_EQUIP, PAGE_PASSIVES, PAGE_STATUS, PAGE_GALLERY] if Equipment.unlocked() \
 		else [PAGE_ITEMS, PAGE_PASSIVES, PAGE_STATUS, PAGE_GALLERY]
+	if PenanceBook.started():
+		order.insert(1, PAGE_PENANCE)
+	return order
 
 
 func _equip_action(event: InputEvent) -> String:
@@ -354,7 +359,7 @@ func _refresh() -> void:
 		return
 	items_page.visible = page == PAGE_ITEMS
 	passives_page.visible = page == PAGE_PASSIVES
-	status_page.visible = page == PAGE_STATUS
+	status_page.visible = page in [PAGE_STATUS, PAGE_PENANCE]
 	gallery_page.visible = page == PAGE_GALLERY
 	if page == PAGE_GALLERY:
 		_refresh_gallery()
@@ -365,6 +370,9 @@ func _refresh() -> void:
 	elif page == PAGE_PASSIVES:
 		_refresh_passives()
 		hint_label.text = "方向键 选择　Tab 下一页　~ 上一页　Esc 关闭"
+	elif page == PAGE_PENANCE:
+		_refresh_penance()
+		hint_label.text = "↑↓ 滚动　Tab 下一页　~ 上一页　Esc 关闭"
 	else:
 		_refresh_status()
 		hint_label.text = "↑↓ 滚动　Tab 下一页　~ 上一页　Esc 关闭"
@@ -372,7 +380,7 @@ func _refresh() -> void:
 
 # ------------------------------------------------------------------ CG 图鉴
 ## 小剧场的分类（id 前缀 → 图鉴里的分组名），按这个顺序排；没对上的归「小剧场」。
-const THEATER_GROUPS := [["siege_fail_", "攻防战失败"], ["f8_defeat_", "Boss 战败"], ["f8_chase_fail", "Boss 战败"], ["f6_caught_", "潜入失败"], ["f6_punish_", "营地惩罚"],
+const THEATER_GROUPS := [["after_", "七日赎罪"], ["siege_fail_", "攻防战失败"], ["f8_defeat_", "Boss 战败"], ["f8_chase_fail", "Boss 战败"], ["f6_caught_", "潜入失败"], ["f6_punish_", "营地惩罚"],
 	["train_", "训练"], ["", "小剧场"]]
 
 
@@ -574,6 +582,13 @@ func status_members() -> Array[PlayableCharacter]:
 		if c and c != p and c.visible and c.is_alive() and c.process_mode != Node.PROCESS_MODE_DISABLED:
 			out.append(c)
 	return out
+
+
+func _refresh_penance() -> void:
+	status_page.clear()
+	var cols := {"gold": GOLD, "pink": PINK, "dim": DIM}
+	for r in PenanceBook.page_rows():
+		status_page.add_line(str(r["text"]), cols.get(str(r.get("color", "")), TEXT))
 
 
 func _refresh_status() -> void:

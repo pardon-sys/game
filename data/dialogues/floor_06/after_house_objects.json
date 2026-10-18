@@ -1,0 +1,214 @@
+{
+	"name": "",
+	"entries": [
+		{
+			"node": "bed"
+		}
+	],
+	"nodes": {
+		"bed": {
+			"goto": [
+				{
+					"if": {
+						"flag": "night",
+						"not": "after_night_busy"
+					},
+					"node": "bed_sleep"
+				},
+				{
+					"if": {
+						"flag": "after_night_busy"
+					},
+					"node": "bed_busy"
+				},
+				{
+					"node": "bed_day"
+				}
+			]
+		},
+		"bed_day": {
+			"lines": [
+				{
+					"text": "……好想躺下。可是天还亮着，活还没干完……",
+					"speaker": "公主",
+					"emotion": "sad"
+				}
+			]
+		},
+		"bed_busy": {
+			"lines": [
+				{
+					"text": "……那些手印还没弄清楚。睡不着。",
+					"speaker": "公主",
+					"emotion": "angry"
+				}
+			]
+		},
+		"bed_sleep": {
+			"lines": [
+				{
+					"text": "……呼啊。今天就到这里吧……",
+					"speaker": "公主",
+					"emotion": "shy"
+				}
+			],
+			"set": {
+				"call": "after_sleep"
+			}
+		},
+		"window": {
+			"goto": [
+				{
+					"if": {
+						"flag": "night"
+					},
+					"node": "window_night"
+				}
+			],
+			"lines": [
+				{
+					"text": "（窗外，队员们扛着木料走来走去）",
+					"speaker": ""
+				}
+			]
+		},
+		"window_night": {
+			"lines": [
+				{
+					"text": "（窗外黑漆漆的。巡逻队员的灯笼，一晃一晃地走远了）",
+					"speaker": ""
+				}
+			]
+		},
+		"painting": {
+			"lines": [
+				{
+					"text": "（一幅画：地面上的蓝天和草地）",
+					"speaker": ""
+				},
+				{
+					"text": "……真的有这么蓝吗。",
+					"speaker": "公主"
+				}
+			]
+		},
+		"wardrobe": {
+			"lines": [
+				{
+					"text": "（衣柜。蓝色公主借给她的几件衣服，叠得整整齐齐）",
+					"speaker": ""
+				}
+			]
+		},
+		"bookshelf": {
+			"lines": [
+				{
+					"text": "（书架。《地面上的童话》被人抽出来过，放回去的时候插反了）",
+					"speaker": ""
+				}
+			]
+		},
+		"dresser": {
+			"lines": [
+				{
+					"text": "（梳妆台。镜子里的自己，一脸灰）",
+					"speaker": ""
+				},
+				{
+					"text": "……搬砖搬的。",
+					"speaker": "公主",
+					"emotion": "sad"
+				}
+			]
+		},
+		"tea": {
+			"lines": [
+				{
+					"text": "（茶几上放着一盘饼干。是面包店的奶奶送来的）",
+					"speaker": ""
+				}
+			]
+		},
+		"plant": {
+			"lines": [
+				{
+					"text": "（一盆小花。叶子上沾着一点墙灰）",
+					"speaker": ""
+				}
+			]
+		},
+		"clue_bed": {
+			"lines": [
+				{
+					"text": "（床尾的被子被掀开了一角。手印就是从这里开始的，歪歪扭扭）",
+					"speaker": ""
+				},
+				{
+					"text": "……刚才就是从这儿钻进来的。脚心到现在还麻麻的……",
+					"speaker": "公主",
+					"emotion": "shy"
+				}
+			],
+			"set": {
+				"flags": [
+					"after_d1_clue_bed"
+				]
+			}
+		},
+		"clue_tea": {
+			"lines": [
+				{
+					"text": "（茶几上的饼干少了两块。手印绕着茶几转了三圈，像小孩子在找好玩的东西）",
+					"speaker": ""
+				},
+				{
+					"text": "……偷吃饼干？这条裤子……是小孩子吗？",
+					"speaker": "公主",
+					"emotion": "surprise"
+				}
+			],
+			"set": {
+				"flags": [
+					"after_d1_clue_tea"
+				]
+			}
+		},
+		"clue_stairs": {
+			"goto": [
+				{
+					"if": {
+						"flag": [
+							"after_d1_clue_bed",
+							"after_d1_clue_tea"
+						]
+					},
+					"node": "clue_stairs_ok"
+				}
+			],
+			"lines": [
+				{
+					"text": "（楼梯上也有手印……房间里好像还有别的痕迹，先看看再上去）",
+					"speaker": ""
+				}
+			]
+		},
+		"clue_stairs_ok": {
+			"lines": [
+				{
+					"text": "（手印顺着楼梯一节一节往上爬，最后消失在蓝色公主的房门口）",
+					"speaker": ""
+				},
+				{
+					"text": "……楼上。果然。",
+					"speaker": "公主"
+				}
+			],
+			"set": {
+				"flags": [
+					"after_d1_clues",
+					"after_house_up_open"
+				]
+			}
+		}
+	}
+}

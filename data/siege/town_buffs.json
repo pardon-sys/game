@@ -168,7 +168,7 @@
 		"id": "mayor",
 		"name": "镇长的祭典狂欢",
 		"who": "镇长",
-		"sheet": "merchant",
+		"sheet": "mayor",
 		"color": "#ffd700",
 		"after_wave": 11,
 		"line": "最后一波了！全镇一起——祭典开始！",

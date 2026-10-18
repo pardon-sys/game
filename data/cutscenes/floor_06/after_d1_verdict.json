@@ -1,0 +1,457 @@
+{
+	"name": "广场宣判",
+	"letterbox": true,
+	"skippable": true,
+	"end_dark": true,
+	"steps": [
+		{
+			"actions": [
+				{
+					"time": 0.0,
+					"do": "fade_out"
+				},
+				{
+					"who": "princess",
+					"to": [
+						30,
+						27
+					],
+					"do": "move"
+				},
+				{
+					"who": "AfterBlue",
+					"to": [
+						35,
+						27.5
+					],
+					"do": "move"
+				},
+				{
+					"who": "princess",
+					"dir": "up",
+					"do": "face"
+				},
+				{
+					"who": "AfterBlue",
+					"dir": "up",
+					"do": "face"
+				},
+				{
+					"to": [
+						31,
+						28
+					],
+					"zoom": 0.8,
+					"time": 0.1,
+					"do": "camera"
+				}
+			],
+			"wait": 0.2
+		},
+		{
+			"actions": [
+				{
+					"time": 1.0,
+					"do": "fade_in"
+				},
+				{
+					"sound": "bell_jingle",
+					"volume": -8.0,
+					"do": "sfx"
+				}
+			],
+			"wait": 1.0
+		},
+		{
+			"speaker": "",
+			"text": "（下午。广场上围满了人。宣判台是早上刚用新木料搭起来的，钉子还亮闪闪的）"
+		},
+		{
+			"speaker": "公主",
+			"text": "（……搬了一上午的砖，手都抬不起来了……为什么还要站在台子底下……）",
+			"emotion": "shy"
+		},
+		{
+			"speaker": "镇长",
+			"text": "安静，安静——咳咳。",
+			"actions": [
+				{
+					"who": "after_mayor",
+					"do": "hop"
+				}
+			],
+			"npc": "mayor"
+		},
+		{
+			"speaker": "镇长",
+			"text": "首先，谢谢大家。小镇守住了，一个人都没少。祭典……本来今晚就该开的。",
+			"npc": "mayor"
+		},
+		{
+			"speaker": "镇长",
+			"text": "可是有件事，得先弄清楚。——队长。",
+			"npc": "mayor"
+		},
+		{
+			"speaker": "保卫队队长",
+			"text": "是。",
+			"actions": [
+				{
+					"who": "after_captain",
+					"to": [
+						32,
+						25.5
+					],
+					"speed": 50,
+					"do": "move"
+				},
+				{
+					"who": "after_captain",
+					"dir": "down",
+					"do": "face"
+				}
+			],
+			"npc": "captain"
+		},
+		{
+			"speaker": "保卫队队长",
+			"text": "昨天夜里，怪物最先涌上来的地方，是矿道最深处那扇封了很多年的旧门。",
+			"npc": "captain"
+		},
+		{
+			"speaker": "保卫队队长",
+			"text": "门被打开了。门口的泥地上，留着一串小小的鞋印。",
+			"npc": "captain"
+		},
+		{
+			"speaker": "保卫队队长",
+			"text": "……和你脚上的鞋子，一模一样。",
+			"npc": "captain"
+		},
+		{
+			"speaker": "",
+			"text": "（人群「哗」地一下骚动起来）",
+			"actions": [
+				{
+					"who": "after_merchant",
+					"kind": "angry",
+					"do": "bubble"
+				},
+				{
+					"who": "after_supervisor",
+					"kind": "dots",
+					"do": "bubble"
+				},
+				{
+					"who": "after_kid_tom",
+					"kind": "surprise",
+					"do": "bubble"
+				},
+				{
+					"who": "after_maid",
+					"kind": "surprise",
+					"do": "bubble"
+				},
+				{
+					"sound": "rumble",
+					"volume": -14.0,
+					"do": "sfx"
+				}
+			]
+		},
+		{
+			"speaker": "水果摊的商贩",
+			"text": "是她？！我的摊子就是那天晚上被踩烂的！",
+			"actions": [
+				{
+					"who": "after_merchant",
+					"do": "hop"
+				}
+			]
+		},
+		{
+			"speaker": "市场监督",
+			"text": "账本烧了一半……这笔账，该记在谁头上？"
+		},
+		{
+			"speaker": "公主",
+			"text": "我……我只是想回家！那扇门后面……我以为是往上走的路……！",
+			"emotion": "sad"
+		},
+		{
+			"speaker": "面包店的奶奶",
+			"text": "大家别这么凶嘛。昨天夜里，她也在城门外面守了一整晚呀。"
+		},
+		{
+			"speaker": "篝火派对的主人",
+			"text": "就是就是！冲在最前面的可是她！"
+		},
+		{
+			"speaker": "小莉莉",
+			"text": "姐姐……真的打开了那扇门吗？"
+		},
+		{
+			"speaker": "公主",
+			"text": "……",
+			"emotion": "sad"
+		},
+		{
+			"speaker": "",
+			"text": "（蓝色公主一直站在人群边上，一句话也没说。她攥着衣角，攥得指节发白）",
+			"actions": [
+				{
+					"to": [
+						33,
+						28
+					],
+					"time": 0.6,
+					"do": "camera"
+				}
+			]
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……那扇门，钥匙是我的——",
+			"actions": [
+				{
+					"who": "AfterBlue",
+					"to": [
+						34,
+						27
+					],
+					"time": 0.4,
+					"do": "move"
+				}
+			]
+		},
+		{
+			"speaker": "保卫队队长",
+			"text": "——殿下累了。请先回去休息。",
+			"actions": [
+				{
+					"who": "after_captain",
+					"dir": "right",
+					"do": "face"
+				},
+				{
+					"time": 0.12,
+					"do": "shake"
+				}
+			],
+			"npc": "captain"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……可是——"
+		},
+		{
+			"speaker": "保卫队队长",
+			"text": "门是谁推开的，大家都看见了。",
+			"npc": "captain"
+		},
+		{
+			"speaker": "",
+			"text": "（队长没有再看她，只是握着剑柄的那只手，紧了一紧）",
+			"actions": [
+				{
+					"who": "after_captain",
+					"dir": "down",
+					"do": "face"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "（……钥匙？她刚才说……钥匙？）",
+			"actions": [
+				{
+					"who": "princess",
+					"kind": "question",
+					"do": "bubble"
+				},
+				{
+					"to": [
+						31,
+						28
+					],
+					"time": 0.6,
+					"do": "camera"
+				}
+			]
+		},
+		{
+			"speaker": "镇长",
+			"text": "……咳。那么，判决。",
+			"npc": "mayor"
+		},
+		{
+			"speaker": "镇长",
+			"text": "我们小镇，不讲关牢房那一套。讲的是——欠了多少，一笔一笔还回来。",
+			"npc": "mayor"
+		},
+		{
+			"speaker": "镇长",
+			"text": "修城墙、收装备、帮大家干活……一件一件做，七天之内，把欠小镇的「工时」还清。",
+			"npc": "mayor"
+		},
+		{
+			"speaker": "保卫队队长",
+			"text": "一共一百工时。做完一件事，减；犯了错——偷懒、宵禁以后还在外面晃——加。",
+			"npc": "captain"
+		},
+		{
+			"speaker": "公主",
+			"text": "一、一百……？！",
+			"emotion": "surprise"
+		},
+		{
+			"speaker": "镇长",
+			"text": "当然，小镇的老规矩，也少不了。",
+			"npc": "mayor"
+		},
+		{
+			"speaker": "镇民们",
+			"text": "——挠痒惩罚！",
+			"actions": [
+				{
+					"who": "after_kid_tom",
+					"do": "hop"
+				},
+				{
+					"who": "after_bonfire_host",
+					"do": "hop"
+				},
+				{
+					"who": "after_granny",
+					"do": "hop"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "果、果然有这个……！",
+			"emotion": "shy"
+		},
+		{
+			"speaker": "镇长",
+			"text": "明天一早，在广场的足枷上示众半天。往后哪件事办砸了，也照老规矩来。",
+			"npc": "mayor"
+		},
+		{
+			"speaker": "",
+			"text": "（镇长把一本皮面的小册子递给队长，队长走下台，把它塞进粉色公主手里）",
+			"actions": [
+				{
+					"who": "after_captain",
+					"to": [
+						30,
+						26
+					],
+					"speed": 50,
+					"do": "move"
+				}
+			]
+		},
+		{
+			"speaker": "保卫队队长",
+			"text": "赎罪簿。还剩多少工时、每天要做的事、受过的罚，都记在上面。自己每天看。",
+			"actions": [
+				{
+					"sound": "book",
+					"do": "sfx"
+				}
+			],
+			"npc": "captain"
+		},
+		{
+			"speaker": "公主",
+			"text": "……知道了。",
+			"emotion": "sad"
+		},
+		{
+			"speaker": "镇长",
+			"text": "祭典嘛——等城墙修好、债也还清的那天晚上，全镇再一起开！散会！",
+			"actions": [
+				{
+					"who": "after_mayor",
+					"do": "hop"
+				}
+			],
+			"npc": "mayor"
+		},
+		{
+			"speaker": "",
+			"text": "（人群慢慢散开了。有人冲她叹了口气，也有人走过来，拍了拍她的肩膀）",
+			"actions": [
+				{
+					"who": "after_captain",
+					"to": [
+						33,
+						25.5
+					],
+					"speed": 50,
+					"do": "move"
+				}
+			]
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……",
+			"actions": [
+				{
+					"who": "AfterBlue",
+					"to": [
+						31.5,
+						27
+					],
+					"time": 0.8,
+					"do": "move"
+				},
+				{
+					"who": "AfterBlue",
+					"dir": "left",
+					"do": "face"
+				}
+			]
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……对不起。"
+		},
+		{
+			"speaker": "公主",
+			"text": "诶？你道什么歉呀？",
+			"emotion": "surprise",
+			"actions": [
+				{
+					"who": "princess",
+					"dir": "right",
+					"do": "face"
+				}
+			]
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……没什么。……搬砖，去吧。"
+		},
+		{
+			"actions": [
+				{
+					"time": 0.8,
+					"do": "fade_out"
+				}
+			],
+			"wait": 0.8
+		},
+		{
+			"actions": [
+				{
+					"reset": true,
+					"time": 0.0,
+					"do": "camera"
+				}
+			],
+			"wait": 0.1
+		}
+	]
+}
