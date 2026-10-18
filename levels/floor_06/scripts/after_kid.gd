@@ -96,7 +96,7 @@ func _tick(delta: float) -> void:
 				_zone = str(pick_zone.call(self)) if pick_zone.is_valid() else "waist"
 				var cap := str(caption.call(self, _zone)) if caption.is_valid() else ""
 				if cap != "":
-					GameState.notify(cap, 3.0)
+					GameState.princess_reacted.emit(cap, 3.2)
 			else:
 				velocity = global_position.direction_to(p.global_position) * RUN_SPEED
 				facing = velocity.normalized()

@@ -25,6 +25,45 @@
 				"var": {
 					"after_day": [
 						"==",
+						2
+					]
+				},
+				"not": "after_done_d2_morning"
+			},
+			"node": "d2_wait"
+		},
+		{
+			"if": {
+				"var": {
+					"after_day": [
+						"==",
+						2
+					]
+				},
+				"flag": [
+					"after_done_d2_morning",
+					"after_d2_fainted"
+				]
+			},
+			"node": "d2_faint"
+		},
+		{
+			"if": {
+				"var": {
+					"after_day": [
+						"==",
+						2
+					]
+				},
+				"flag": "after_done_d2_morning"
+			},
+			"node": "d2"
+		},
+		{
+			"if": {
+				"var": {
+					"after_day": [
+						"==",
 						1
 					]
 				},
@@ -69,6 +108,27 @@
 			"lines": [
 				{
 					"text": "哼，等着吧。我的摊子可不能白被踩烂。"
+				}
+			]
+		},
+		"d2_wait": {
+			"lines": [
+				{
+					"text": "嘿，今天可有好戏看了！我把摊子都挪到广场边上了。"
+				}
+			]
+		},
+		"d2": {
+			"lines": [
+				{
+					"text": "哈哈，那几声笑得可真响！……不过你也算是挺住了，佩服佩服。"
+				}
+			]
+		},
+		"d2_faint": {
+			"lines": [
+				{
+					"text": "笑晕过去了？……咳，那、那我摊子的账，就先少记一笔吧。"
 				}
 			]
 		},

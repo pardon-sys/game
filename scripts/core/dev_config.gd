@@ -100,6 +100,7 @@ static func skip_to(point: Dictionary) -> void:
 	var main := tree.get_first_node_in_group("main")
 	if main == null:
 		return
+	AfterStory.reset_runtime()
 	grant(rewards_for(point))
 	# 跳关点自己也可以带剧情标记 / 物品 / 变量（flags / items / vars，同 floor_rewards 的写法）
 	grant([point])

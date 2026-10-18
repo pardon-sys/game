@@ -28,9 +28,8 @@ def d2_stocks():
         line(CAP, "示众到时辰为止。按老规矩：笑出声一次，加两工时。", None, [A("face", who="after_captain", dir="right")], "captain"),
         line(CAP, "还有——挣扎可以，乱放魔法不行。放一次，加时。", None, None, "captain"),
         line(SUP, "我来记。……账本、记号笔，都准备好了。", None, [A("hop", who="after_supervisor")]),
-        {"actions": [A("move", who="after_kid_tom", to=[23, 25.6], speed=70)], "wait": 1.4},
-        line(TOM, "姐姐！我说过要拿羽毛来的！后面还有好多人排队哦！", None, [A("hop", who="after_kid_tom")]),
-        line(P, "排、排队……？！", "surprise"),
+        line(KIDS, "（远处）排队排队！一个一个来！", None, [A("hop", who="after_kid_tom"), A("hop", who="after_kid_lily")]),
+        line(P, "排、排队……？！排什么队啊！！", "surprise"),
         {"actions": [A("despawn", who="v1"), A("despawn", who="v2")], "wait": 0.2},
     ]
     return {"name": "广场足枷示众", "letterbox": True, "skippable": True, "steps": s}

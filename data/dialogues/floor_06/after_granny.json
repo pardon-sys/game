@@ -25,6 +25,45 @@
 				"var": {
 					"after_day": [
 						"==",
+						2
+					]
+				},
+				"not": "after_done_d2_morning"
+			},
+			"node": "d2_wait"
+		},
+		{
+			"if": {
+				"var": {
+					"after_day": [
+						"==",
+						2
+					]
+				},
+				"flag": [
+					"after_done_d2_morning",
+					"after_d2_fainted"
+				]
+			},
+			"node": "d2_faint"
+		},
+		{
+			"if": {
+				"var": {
+					"after_day": [
+						"==",
+						2
+					]
+				},
+				"flag": "after_done_d2_morning"
+			},
+			"node": "d2"
+		},
+		{
+			"if": {
+				"var": {
+					"after_day": [
+						"==",
 						1
 					]
 				},
@@ -74,6 +113,32 @@
 			"lines": [
 				{
 					"text": "孩子，别怕。大家都看见你在城门外守了一整晚。"
+				}
+			]
+		},
+		"d2_wait": {
+			"lines": [
+				{
+					"text": "孩子，脚底板放松。越绷得紧，越痒。"
+				},
+				{
+					"text": "……奶奶，这个建议好像没什么用……",
+					"speaker": "公主",
+					"emotion": "sad"
+				}
+			]
+		},
+		"d2": {
+			"lines": [
+				{
+					"text": "来，泡泡脚。奶奶熬了薄荷水，脚底就不麻了。"
+				}
+			]
+		},
+		"d2_faint": {
+			"lines": [
+				{
+					"text": "可怜的孩子，笑得都晕过去了……那几个小鬼头，奶奶替你骂过了。"
 				}
 			]
 		},

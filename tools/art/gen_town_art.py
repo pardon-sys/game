@@ -110,6 +110,7 @@ LOOKS = {
     "supervisor": {"hair": (110, 70, 140), "outfit": (70, 120, 90), "accent": (240, 230, 200), "style": "supervisor"},
     "bonfire_host": {"hair": (240, 120, 60), "outfit": (230, 90, 120), "accent": (255, 220, 100), "style": "host"},
     "mayor": {"hair": (232, 232, 238), "outfit": (96, 62, 132), "accent": (240, 200, 90), "style": "mayor"},
+    "pharmacist": {"hair": (215, 215, 222), "outfit": (86, 140, 104), "accent": (238, 238, 214), "style": "granny"},
 }
 
 
@@ -1241,6 +1242,74 @@ def p_bunting():
     return add_outline(img)
 
 
+
+# ------------------------------------------------------------------ 七日赎罪：药剂师工房、城门外的战场
+def p_herb_rack():
+    """药草架：三层木架，挂着一束束晒干的药草、几个小罐子。"""
+    img, d = canvas(32, 36)
+    for x in (2, 29):
+        d.line((x, 4, x, 35), fill=WOOD_D, width=2)
+    for y in (8, 18, 28):
+        d.rectangle((1, y, 30, y + 2), fill=WOOD)
+        d.line((1, y + 2, 30, y + 2), fill=WOOD_D)
+    herbs = [(70, 160, 90), (150, 120, 200), (120, 190, 220), (230, 200, 90), (220, 120, 150), (160, 110, 70)]
+    for i, (x, y) in enumerate(((6, 2), (14, 3), (22, 2), (8, 12), (18, 12), (24, 22))):
+        c = herbs[i % len(herbs)] + (255,)
+        d.line((x, y, x, y + 5), fill=(110, 80, 50, 255))
+        d.ellipse((x - 2, y + 4, x + 3, y + 8), fill=c)
+    for (x, y, c) in ((6, 22, (200, 230, 255)), (14, 23, (255, 220, 160)), (21, 13, (220, 255, 210))):
+        d.rectangle((x, y, x + 4, y + 5), fill=c + (255,))
+        d.rectangle((x + 1, y - 1, x + 3, y), fill=(150, 110, 80, 255))
+    return add_outline(img)
+
+
+def p_cauldron():
+    """药锅：黑铁锅架在小火上，冒着淡绿色的泡泡。"""
+    img, d = canvas(28, 26)
+    d.polygon([(6, 24), (10, 18), (18, 18), (22, 24)], fill=(80, 60, 50, 255))
+    d.polygon([(10, 24), (14, 17), (18, 24)], fill=(255, 140, 50, 255))
+    d.polygon([(12, 24), (14, 20), (16, 24)], fill=(255, 220, 100, 255))
+    d.ellipse((3, 7, 24, 21), fill=(55, 50, 60, 255))
+    d.ellipse((5, 7, 22, 12), fill=(120, 220, 160, 255))
+    for (x, y, r) in ((9, 5, 2), (15, 3, 2), (19, 6, 1)):
+        d.ellipse((x - r, y - r, x + r, y + r), outline=(180, 250, 210, 255))
+    return add_outline(img)
+
+
+def p_flag_broken():
+    """战场上折断的敌方小旗：歪掉的旗杆 + 破成两半的旗面。"""
+    img, d = canvas(20, 28)
+    d.line((6, 27, 12, 6), fill=WOOD_D, width=2)
+    d.polygon([(12, 6), (19, 9), (13, 13)], fill=(170, 60, 80, 255))
+    d.polygon([(13, 14), (18, 16), (14, 18)], fill=(150, 50, 70, 255))
+    d.line((14, 9, 16, 10), fill=(240, 220, 120, 255))
+    d.ellipse((2, 25, 10, 27), fill=(90, 80, 70, 160))
+    return add_outline(img)
+
+
+def p_feather_pile():
+    """一堆羽毛（攻防战留下的，被风吹成一小堆）。"""
+    img, d = canvas(22, 12)
+    cols = [(250, 245, 250), (255, 210, 230), (220, 230, 255), (255, 240, 200)]
+    for i, (x, y, a) in enumerate(((3, 8, 0.3), (8, 6, -0.4), (13, 8, 0.6), (17, 7, -0.2), (10, 9, 0.1), (6, 4, 0.8))):
+        c = cols[i % len(cols)] + (255,)
+        dx, dy = int(5 * math.cos(a)), int(5 * math.sin(a))
+        d.line((x - dx, y - dy, x + dx, y + dy), fill=c, width=2)
+        d.line((x - dx, y - dy, x + dx, y + dy), fill=(200, 190, 200, 255))
+    return add_outline(img)
+
+
+def p_bubble_frozen():
+    """被冰塔冻住的大泡泡：半透明的冰壳，里面还裹着一根羽毛。"""
+    img, d = canvas(20, 20)
+    d.ellipse((2, 2, 17, 17), fill=(190, 230, 255, 170))
+    d.ellipse((4, 4, 15, 15), outline=(235, 250, 255, 255))
+    d.line((8, 12, 12, 7), fill=(255, 220, 235, 255), width=2)
+    d.point((6, 6), fill=(255, 255, 255, 255))
+    d.point((7, 5), fill=(255, 255, 255, 255))
+    return add_outline(img)
+
+
 def gen_props():
     """道具图集：每个道具一格（大小不同），town_props.json 记录区域、碰撞和发光。"""
     from PIL import Image
@@ -1315,6 +1384,12 @@ def gen_props():
     items.append(("pants_hand", p_pants_hand(), {"light": [0.6, 0.8, 1.0]}))
     items.append(("handprint", p_handprint(), {"floor": True}))
     items.append(("bunting", p_bunting(), {}))
+    # 七日赎罪：药剂师工房、城门外的战场（加在最后）
+    items.append(("herb_rack", p_herb_rack(), {"body": [28, 8], "body_y": -4}))
+    items.append(("cauldron", p_cauldron(), {"body": [20, 8], "body_y": -4, "light": [0.6, 1.0, 0.7]}))
+    items.append(("flag_broken", p_flag_broken(), {}))
+    items.append(("feather_pile", p_feather_pile(), {"floor": True}))
+    items.append(("bubble_frozen", p_bubble_frozen(), {"body": [14, 6], "body_y": -3}))
     # 简单地按行排进 256 宽的图集
     x = y = row_h = 0
     meta = {}

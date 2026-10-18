@@ -20,7 +20,9 @@ static func say(target: Node2D, text: String, height := 30.0, duration := DURATI
 	b.name = "Speech"
 	b.duration = duration
 	b.text = text
-	b.z_index = 20
+	# 字永远画在最前面（小剧场舞台上的来源栏 / 演员 / 特效都盖不住它）
+	b.z_as_relative = false
+	b.z_index = 4000
 	b.add_theme_color_override("font_color", Color(1, 0.9, 0.96))
 	b.add_theme_color_override("font_outline_color", Color(0.3, 0.12, 0.22))
 	b.add_theme_constant_override("outline_size", 4)

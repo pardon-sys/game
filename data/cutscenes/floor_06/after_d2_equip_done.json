@@ -1,0 +1,62 @@
+{
+	"name": "装备送回去了",
+	"letterbox": true,
+	"skippable": true,
+	"steps": [
+		{
+			"actions": [
+				{
+					"who": "after_supervisor",
+					"dir": "right",
+					"do": "face"
+				},
+				{
+					"to": [
+						13,
+						25
+					],
+					"zoom": 1.0,
+					"time": 0.5,
+					"do": "camera"
+				}
+			],
+			"wait": 0.5
+		},
+		{
+			"speaker": "市场监督",
+			"text": "……六、七、八。一件不少。"
+		},
+		{
+			"speaker": "市场监督",
+			"text": "说实话，我以为你会在半路上笑倒呢。"
+		},
+		{
+			"speaker": "公主",
+			"text": "……差、差一点……脚底板到现在还在痒……",
+			"emotion": "shy"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……刷套那件，……你穿着跳了三下。……我看见了。"
+		},
+		{
+			"speaker": "公主",
+			"text": "看见了就当没看见！！",
+			"emotion": "angry"
+		},
+		{
+			"speaker": "市场监督",
+			"text": "工时我记上了。……晚上早点回去休息吧。"
+		},
+		{
+			"actions": [
+				{
+					"reset": true,
+					"time": 0.5,
+					"do": "camera"
+				}
+			],
+			"wait": 0.5
+		}
+	]
+}

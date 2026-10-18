@@ -6,6 +6,45 @@
 				"var": {
 					"after_day": [
 						"==",
+						2
+					]
+				},
+				"not": "after_done_d2_morning"
+			},
+			"node": "d2_wait"
+		},
+		{
+			"if": {
+				"var": {
+					"after_day": [
+						"==",
+						2
+					]
+				},
+				"flag": [
+					"after_done_d2_morning",
+					"after_d2_fainted"
+				]
+			},
+			"node": "d2_faint"
+		},
+		{
+			"if": {
+				"var": {
+					"after_day": [
+						"==",
+						2
+					]
+				},
+				"flag": "after_done_d2_morning"
+			},
+			"node": "d2"
+		},
+		{
+			"if": {
+				"var": {
+					"after_day": [
+						"==",
 						1
 					]
 				},
@@ -97,6 +136,36 @@
 			"lines": [
 				{
 					"text": "……还没到时候。去台子前面站好，镇长马上就来。"
+				}
+			]
+		},
+		"d2_wait": {
+			"lines": [
+				{
+					"text": "足枷就在广场正中间。自己过去，别让我派人押你。"
+				},
+				{
+					"text": "……按规矩来，不会太为难你。"
+				}
+			]
+		},
+		"d2": {
+			"lines": [
+				{
+					"text": "……示众结束了。规矩就是规矩，你也守了。"
+				},
+				{
+					"text": "……下午的活，别耽误。"
+				}
+			]
+		},
+		"d2_faint": {
+			"lines": [
+				{
+					"text": "……晕过去的事，不会写进记录。"
+				},
+				{
+					"text": "……我也没看见。什么都没看见。"
 				}
 			]
 		}

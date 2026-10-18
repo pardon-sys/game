@@ -5,11 +5,13 @@ extends TrainingStage
 ##   示众 TIME 秒倒计时，孩子一个接一个来挠（工具按 TOOLS 轮换），每个孩子自己挑一个部位（PARTS），挠完这个部位的时长换下一个。
 ##   J / E 挣扎：闷笑 −STRUGGLE（「硬撑」减半、「挑衅」×1.5），挠的手停 0.3 秒；同一部位连挣 SWITCH_AFTER 次，孩子嫌你乱动、换部位。
 ##   1~4：花一次求情（初始 PLEAS 次）把这一下引到别的部位，倒计时 +PLEA_TIME 秒。
-##   孩子换人的间隙：三选一应对（1 装没事 / 2 求饶 / 3 顶嘴，限时 RESPOND_TIME 秒，不选算装没事），挂负面状态（RESPONSES）到下一个孩子结束。
+##   孩子挠完一段：暂停示众，对话框里问怎么应对（装没事 / 求饶 / 顶嘴，选项页），挂负面状态（RESPONSES）到下一个孩子结束。
 ##   闷笑满 = 笑出声（bursts +1、闷笑回到 40%，赎罪簿另外罚工时）；魔力疲倦满 = 自动释放魔法，队长「不符合管教，加时！」倒计时 +EXTRA。
 ##   倒计时到 0 = 过关；释放超过 FAINT_AFTER 次 = 笑晕（也算过关，结局过场不一样）。
+## 演出：孩子登场、换人的应对、笑出声、魔力释放，都暂停示众（busy）在对话框里演一小段（data/after/stocks.json ← after_text/stocks.py：
+##   原来过场里的挠法描写和对话）；挠的过程中公主的反应用立绘旁的反应字（GameState.princess_reacted，不暂停）。
 ##   await play_show() → {bursts, releases, fainted, pleads_used}
-## 测试：press("J") / plead(部位序号) / respond(id) / time_scale 加速；auto_respond 让间隙自动选。
+## 测试：press("J") / plead(部位序号) / respond(id) / time_scale；auto_respond 让间隙自动选；quiet = true 不演对话（直接测数值）。
 
 const TIME := 120.0
 const EXTRA := 15.0
@@ -18,7 +20,7 @@ const STRUGGLE := 0.025
 const SWITCH_AFTER := 6
 const PLEAS := 3
 const PLEA_TIME := 2.0
-const RESPOND_TIME := 3.0
+const TEXT_PATH := "res://data/after/stocks.json"
 ## 部位：闷笑每秒涨上限的比例、魔力疲倦倍率、这个孩子挠多久
 const PARTS := [
 	{"id": "ball", "name": "前脚掌", "desc": "非常痒", "rate": 0.09, "fatigue": 1.2, "time": 5.0},
@@ -31,7 +33,7 @@ const PICK_WEIGHTS := [3.0, 3.0, 1.5, 1.0]
 const TOOLS := [
 	{"id": "feather", "name": "羽毛", "mul": 1.0, "fx": "feather", "kid": "小汤姆"},
 	{"id": "grass", "name": "狗尾巴草", "mul": 1.1, "fx": "feather", "kid": "小莉莉"},
-	{"id": "brush", "name": "小刷子", "mul": 1.25, "fx": "brush", "kid": "汤姆和莉莉"},
+	{"id": "brush", "name": "小刷子", "mul": 1.25, "fx": "brush", "kid": "派对主人和汤姆"},
 	{"id": "crowd", "name": "一群小孩", "mul": 1.45, "fx": "hand", "kid": "一群小孩"},
 ]
 const RESPONSES := {
@@ -39,10 +41,15 @@ const RESPONSES := {
 	"beg": {"name": "求饶", "debuff": "丢脸", "desc": "闷笑涨 +25%，下一个孩子时间 −30%，求情 +1"},
 	"sass": {"name": "顶嘴", "debuff": "挑衅", "desc": "两只脚一起挠、疲倦 +30%，挣扎 ×1.5，求情 −1"},
 }
+const RESPONSE_IDS := ["calm", "beg", "sass"]
 ## 魔力疲倦：涨的速度 = 闷笑涨的绝对值 × 这个系数（× 部位 / 状态倍率）
 const FATIGUE_K := 1.35
+## 挠的过程中公主的反应字隔多久冒一句
+const LIVE_EVERY := 2.4
 
 static var auto_respond := ""
+static var quiet := false
+static var _text := {}
 
 var time_left := TIME
 var bursts := 0
@@ -58,12 +65,19 @@ var debuff := ""
 var both_feet := false
 var upgrade := 0
 var responding := false
-var respond_left := 0.0
 var _pause := 0.0
 var _struggles := 0
 var _hit_t := 0.0
+var _live_t := 1.0
 var _info: Label
 var _done := false
+
+
+static func text() -> Dictionary:
+	if _text.is_empty():
+		var parsed: Variant = JSON.parse_string(FileAccess.get_file_as_string(TEXT_PATH)) if FileAccess.file_exists(TEXT_PATH) else null
+		_text = parsed if parsed is Dictionary else {}
+	return _text
 
 
 # ------------------------------------------------------------------ 流程
@@ -73,7 +87,7 @@ func play_show() -> Dictionary:
 	layer = 14
 	t = {"name": "广场足枷示众"}
 	_build_ui()
-	hint_label.text = "J / E 挣扎（降闷笑）　1~4 求情换部位　间隙里 1 装没事 / 2 求饶 / 3 顶嘴"
+	hint_label.text = "J / E 挣扎（降闷笑）　1~4 求情换部位"
 	_info = _label(TEXT, 8)
 	_info.size = panel_body.size
 	_info.autowrap_mode = TextServer.AUTOWRAP_ARBITRARY
@@ -86,7 +100,7 @@ func play_show() -> Dictionary:
 		if player.laugh:
 			player.laugh.set_value(player.laugh.max_value * 0.15)
 	_enter_game()
-	_next_kid()
+	await _next_kid()
 	while not _done:
 		await get_tree().process_frame
 	await _exit_game()
@@ -113,11 +127,25 @@ func stage_cast() -> Dictionary:
 		"v2": {"kind": "npc:maid", "at": [66, 10], "dir": "left"}}
 
 
+## 暂停示众，在对话框里演几句（quiet 时跳过）。
+func _lines(lines: Array) -> void:
+	if quiet or lines.is_empty():
+		return
+	busy = true
+	Dialogue.start_lines(lines, "stocks_show")
+	while Dialogue.is_active():
+		await get_tree().process_frame
+	GameState.in_dialogue = true
+	busy = false
+
+
 # ------------------------------------------------------------------ 孩子 / 部位
 func _next_kid() -> void:
 	tool = TOOLS[(kid_no + upgrade) % TOOLS.size()]
+	var kids: Array = text().get("kids", [])
+	var script_kid: Dictionary = kids[kid_no] if kid_no < kids.size() and kid_no < TOOLS.size() and upgrade == 0 else {}
 	kid_no += 1
-	_pick_part(-1)
+	_pick_part(-1, false)
 	part_left = float(part["time"])
 	if debuff == "beg":
 		part_left *= 0.7
@@ -125,13 +153,34 @@ func _next_kid() -> void:
 	var k2: CGActor = actors.get("kid2")
 	if k2:
 		k2.visible = both_feet or str(tool["id"]) in ["brush", "crowd"]
-	say("kid", ["这次轮到我！", "姐姐的脚好白～", "挠哪里好呢……", "嘿嘿嘿……"][kid_no % 4])
-	pop(actors.get("kid"), "%s · %s" % [tool["kid"], tool["name"]], GOLD, 1.2)
 	_refresh_info()
+	# 登场 + 开挠的描写
+	var lines: Array = []
+	if not script_kid.is_empty():
+		lines.append_array(script_kid.get("intro", []))
+	else:
+		var pool: Array = text().get("generic", {}).get("intro", {}).get(str(tool["id"]), [])
+		if not pool.is_empty():
+			lines.append_array(pool.pick_random())
+	lines.append_array(_start_lines())
+	await _lines(lines)
+	pop(actors.get("kid"), "%s · %s → %s" % [tool["kid"], tool["name"], part["name"]], GOLD, 1.4)
+
+
+## 开挠的描写：旁白（工具 × 部位）+ 公主的第一句（部位）
+func _start_lines() -> Array:
+	var out: Array = []
+	var nar := str(text().get("narration", {}).get(str(tool["id"]), {}).get(str(part["id"]), ""))
+	if nar != "":
+		out.append({"speaker": "", "text": nar})
+	var st: Array = text().get("start", {}).get(str(part["id"]), [])
+	if not st.is_empty():
+		out.append(st.pick_random())
+	return out
 
 
 ## 孩子挑部位（avoid：刚挣扎过的部位不挑）
-func _pick_part(avoid: int) -> void:
+func _pick_part(avoid: int, announce := true) -> void:
 	var total := 0.0
 	for i in PARTS.size():
 		if i != avoid:
@@ -142,15 +191,16 @@ func _pick_part(avoid: int) -> void:
 			continue
 		r -= PICK_WEIGHTS[i]
 		if r <= 0.0:
-			_set_part(i)
+			_set_part(i, announce)
 			return
-	_set_part(0 if avoid != 0 else 1)
+	_set_part(0 if avoid != 0 else 1, announce)
 
 
-func _set_part(i: int) -> void:
+func _set_part(i: int, announce := true) -> void:
 	part = PARTS[i]
 	_struggles = 0
-	pop(actors.get("princess"), "→ %s（%s）" % [part["name"], part["desc"]], PINK, 1.2)
+	if announce:
+		pop(actors.get("princess"), "→ %s（%s）" % [part["name"], part["desc"]], PINK, 1.2)
 	_refresh_info()
 
 
@@ -168,12 +218,48 @@ func plead(i: int) -> void:
 	pleads -= 1
 	pleads_used += 1
 	time_left += PLEA_TIME
-	say("princess", ["那、那里不行……换、换个地方……", "求你了，别挠那里……", "……挠这边吧……"][pleads % 3])
+	var pl: Array = text().get("plead", ["换个地方……"])
+	say("princess", str(pl[pleads % pl.size()]))
 	say("kid", "好吧～那就%s！" % PARTS[i]["name"])
 	_set_part(i)
+	var nar := str(text().get("narration", {}).get(str(tool["id"]), {}).get(str(part["id"]), ""))
+	if nar != "":
+		GameState.princess_reacted.emit(nar.trim_prefix("（").trim_suffix("）"), 2.0)
 
 
-func respond(id: String) -> void:
+## 孩子挠完一段：暂停，问怎么应对。
+func _start_respond() -> void:
+	responding = true
+	GameState.princess_reacted.emit("", 0.0)
+	say("cap", "下一个。")
+	_refresh_info()
+	var kids: Array = text().get("kids", [])
+	var idx := kid_no - 1
+	var sk: Dictionary = kids[idx] if idx < kids.size() and idx < TOOLS.size() and upgrade == 0 else {}
+	var gen: Dictionary = text().get("generic", {})
+	var prompt := str(sk.get("prompt", (gen.get("prompt", ["怎么办？"]) as Array).pick_random()))
+	var texts: Array = []
+	var opts: Array = sk.get("options", ["（装作没事）", "求、求求你们……", "哼！一点都不痒！"])
+	for i in RESPONSE_IDS.size():
+		texts.append("%s〔%s〕" % [opts[i], RESPONSES[RESPONSE_IDS[i]]["debuff"]])
+	if count_label:
+		count_label.add_theme_color_override("font_color", GOLD)
+		count_label.text = "　".join(RESPONSE_IDS.map(func(id): return "%s：%s" % [RESPONSES[id]["debuff"], RESPONSES[id]["desc"]]))
+	var pick := "calm"
+	if auto_respond != "":
+		pick = auto_respond
+	elif not quiet:
+		busy = true
+		var i: int = await Dialogue.runner.choice_menu.ask(texts, prompt)
+		pick = RESPONSE_IDS[clampi(i, 0, 2)]
+		busy = false
+	else:
+		return     # quiet：等测试调 respond()
+	if responding:
+		await respond(pick, sk)
+
+
+func respond(id: String, sk := {}) -> void:
 	if not responding or not RESPONSES.has(id):
 		return
 	responding = false
@@ -182,26 +268,19 @@ func respond(id: String) -> void:
 		pleads += 1
 	elif id == "sass" and pleads > 0:
 		pleads -= 1
-	var lines := {"calm": ["……", "（咬住嘴唇，装作没事）"], "beg": ["别、别挠了……求求你们……", "饶了我吧……"],
-		"sass": ["哼！一点都不痒！", "就这点本事吗！"]}
-	say("princess", lines[id].pick_random())
-	if id == "beg":
-		say("v1", "噗——求饶了！")
-	elif id == "sass":
-		say("kid", "她说不痒！大家一起上！")
+	var lines: Array = sk.get("replies", {}).get(id, [])
+	if lines.is_empty():
+		var pool: Array = text().get("generic", {}).get("replies", {}).get(id, [])
+		if not pool.is_empty():
+			lines = pool.pick_random()
 	pop(actors.get("princess"), "状态：%s（%s）" % [RESPONSES[id]["debuff"], RESPONSES[id]["desc"]], BAD, 1.6)
-	_next_kid()
+	await _lines(lines)
+	await _next_kid()
 
 
 # ------------------------------------------------------------------ 每帧
 func _tick(delta: float) -> void:
 	if responding:
-		respond_left -= delta
-		_refresh_info()
-		if auto_respond != "":
-			respond(auto_respond)
-		elif respond_left <= 0.0:
-			respond("calm")
 		return
 	time_left -= delta
 	if time_left <= 0.0:
@@ -229,15 +308,14 @@ func _tick(delta: float) -> void:
 		tickle("kid", "sole", rng.randf() < 0.12)
 		if both_feet:
 			tickle("kid2", "sole")
-		if rng.randf() < 0.18:
-			say("princess", _reaction())
-	_refresh_info()
-
-
-func _start_respond() -> void:
-	responding = true
-	respond_left = RESPOND_TIME
-	say("cap", "下一个。")
+	_live_t -= delta
+	if _live_t <= 0.0:
+		_live_t = LIVE_EVERY
+		var live: Array = text().get("live", {}).get(str(part["id"]), [])
+		if not live.is_empty():
+			var line := str(live.pick_random())
+			GameState.princess_reacted.emit(line, 1.6)
+			say("princess", line)
 	_refresh_info()
 
 
@@ -247,15 +325,11 @@ func _on_key(k: String) -> void:
 
 
 func _input(event: InputEvent) -> void:
-	if playing and not busy and event is InputEventKey and event.pressed and not event.echo:
+	if playing and not busy and not responding and event is InputEventKey and event.pressed and not event.echo:
 		var kc: int = (event as InputEventKey).keycode
 		if kc >= KEY_1 and kc <= KEY_4:
 			get_viewport().set_input_as_handled()
-			var n := kc - KEY_1
-			if responding:
-				respond(["calm", "beg", "sass", ""][n])
-			else:
-				plead(n)
+			plead(kc - KEY_1)
 			return
 	super(event)
 
@@ -275,24 +349,8 @@ func _struggle() -> void:
 		_pick_part(part_index())
 
 
-## 部位 × 工具的反应
-func _reaction() -> String:
-	var pid := str(part["id"])
-	var tid := str(tool["id"])
-	var lines := {
-		"ball": ["哈哈哈！前、前脚掌不行——！", "那里最痒了哈哈哈！", "脚、脚掌……别扫了哈哈！"],
-		"sole": ["唔、噗……脚心……", "哈、哈……脚心在转圈……", "别、别在脚心画圈……！"],
-		"toes": ["……好、好舒服……不对！", "脚趾缝……嗯……奇怪的感觉……", "哈……脚趾……被扒开了……"],
-		"arch": ["……这、这里还忍得住……", "唔……脚弓……还行……", "……就、就这样？"],
-	}
-	var extra := {"brush": ["刷子刷得好细……！"], "crowd": ["好多只手——！", "大家一起上犯规啦——！"], "grass": ["草穗毛茸茸的……！"]}
-	var pool: Array = lines[pid].duplicate()
-	pool.append_array(extra.get(tid, []))
-	return str(pool.pick_random())
-
-
 # ------------------------------------------------------------------ 满了
-## 闷笑满（笑出声）/ 魔力疲倦满（自动释放）
+## 闷笑满（笑出声）/ 魔力疲倦满（自动释放）：都暂停演一小段
 func _punish(kind: String) -> void:
 	busy = true
 	var p: CGActor = actors.get("princess")
@@ -301,11 +359,12 @@ func _punish(kind: String) -> void:
 		flash(Color(1, 0.7, 0.85, 0.7), 0.4)
 		Audio.play("laugh", -3.0)
 		pop(p, "笑出声了！", PINK, 1.4)
-		say("v1", ["哈哈哈，她笑出来了！", "笑了笑了！"].pick_random())
-		say("sup", "笑出声。记一笔。")
 		if player.laugh:
 			player.laugh.set_value(player.laugh.max_value * 0.4)
-		await _sleep(0.8)
+		var pool: Array = text().get("burst", [])
+		await _lines(pool[(bursts - 1) % pool.size()] if not pool.is_empty() else [])
+		if quiet:
+			await _sleep(0.8)
 	else:
 		releases += 1
 		flash(Color(1, 0.85, 1, 0.9), 0.6)
@@ -326,9 +385,12 @@ func _punish(kind: String) -> void:
 			busy = false
 			return
 		time_left += EXTRA
-		say("cap", "不符合管教！加时！")
 		pop(actors.get("cap"), "+%d 秒" % int(EXTRA), BAD, 1.4)
-		await _sleep(0.6)
+		var pool: Array = text().get("release", [])
+		await _lines(pool[(releases - 1) % pool.size()] if not pool.is_empty() else [])
+		if quiet:
+			say("cap", "不符合管教！加时！")
+			await _sleep(0.6)
 		if p:
 			p.set_pose("helpless_1", "helpless")
 	busy = false
@@ -348,13 +410,9 @@ func _refresh_info() -> void:
 		"求情 ×%d　%s" % [pleads, (RESPONSES[debuff]["debuff"] if debuff != "" else "")],
 		"笑出声 %d　释放 %d" % [bursts, releases]]
 	_info.text = "\n".join(lines)
-	if count_label:
-		if responding:
-			count_label.add_theme_color_override("font_color", GOLD)
-			count_label.text = "怎么应对？　1 装没事（硬撑）　2 求饶（丢脸）　3 顶嘴（挑衅）　%.1f 秒" % maxf(respond_left, 0.0)
-		else:
-			count_label.add_theme_color_override("font_color", TEXT)
-			count_label.text = "求情换部位：1 前脚掌　2 脚心　3 脚趾缝　4 脚弓"
+	if count_label and not responding:
+		count_label.add_theme_color_override("font_color", TEXT)
+		count_label.text = "求情换部位：1 前脚掌　2 脚心　3 脚趾缝　4 脚弓"
 
 
 func _update_count() -> void:

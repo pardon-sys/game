@@ -18,12 +18,34 @@ extends RefCounted
 const TOWN := "floor_06_after"
 const HOUSE := "floor_06_after_house"
 const HOUSE_UP := "floor_06_after_house_up"
+const PHARMACY := "floor_06_after_pharmacy"
+const FIELD := "floor_06_after_field"
 const STARTED := "after_started"
 const EVENTS := {
 	"d1_open": {"where": TOWN, "auto": true, "cutscene": "after_d1_open"},
 	"d1_verdict": {"where": TOWN, "spot": [31, 27, 2.5], "objective": "去广场的宣判台，听候宣判", "cutscene": "after_d1_verdict"},
 	"d1_sleepwalk": {"where": HOUSE, "auto": true, "objective": "回蓝色小屋", "cutscene": "after_d1_night"},
 	"d2_stocks": {"where": TOWN, "spot": [23, 25.5, 2], "objective": "去广场的足枷示众", "cutscene": "after_d2_stocks"},
+	"d2_equip": {"where": TOWN, "spot": [13, 24.5, 1.5], "objective": "去补给站找市场监督（回收痒痒装备）", "cutscene": "after_d2_equip"},
+	"d3_potion": {"where": PHARMACY, "spot": [8, 6, 1.0], "objective": "去药剂师工房试药（北边那排房子）", "cutscene": "after_d3_potion"},
+	"d3_cart": {"where": FIELD, "auto": true, "objective": "出南边的城门，去城外的战场拆攻城车", "cutscene": "after_d3_cart"},
+}
+## 小镇里通往各张图的门口（指路）、各张图回小镇的出口
+const TOWN_DOORS := {"floor_06_after_house": [42, 10], "floor_06_after_house_up": [42, 10], "floor_06_after_pharmacy": [16, 10],
+	"floor_06_after_field": [32, 38.5]}
+const ROOM_EXITS := {"floor_06_after_house": [9, 10], "floor_06_after_pharmacy": [8, 8.5], "floor_06_after_field": [21, 3]}
+## 城门：第 3 天下午拆攻城车的时候才开
+const FIELD_OPEN := "after_field_open"
+## 弥补任务进行中（不能接委托、小屋的门锁着）
+const TASK_FLAG := "after_task_active"
+## 弥补任务的玩法节点：事件 id → 脚本（实例发 finished(ok)；脚本要有静态的 reset_items() / status_text()）、失败小剧场 / 罚工时
+const TASKS := {
+	"d2_equip": {"script": "res://levels/floor_06/scripts/task_equip.gd", "name": "痒痒装备回收", "fail": "after_fail_equip", "fail_hours": 3,
+		"done": "after_d2_equip_done", "respawn": [13, 25.5]},
+	"d3_potion": {"script": "res://levels/floor_06/scripts/task_potion.gd", "name": "试药", "fail": "after_fail_potion", "fail_hours": 2,
+		"done": "after_d3_potion_done"},
+	"d3_cart": {"script": "res://levels/floor_06/scripts/task_cart.gd", "name": "拆除哑火的攻城车", "fail": "after_fail_cart", "fail_hours": 3,
+		"done": "after_d3_cart_done", "respawn": [21, 4]},
 }
 ## 指路用的格子：小镇里的小屋门口、小屋里的门、楼下的床
 const TOWN_HOUSE_DOOR := [42, 10]
@@ -79,8 +101,12 @@ static func pending_event() -> String:
 static func objective(floor_id: String) -> Dictionary:
 	if not GameState.has_flag(STARTED):
 		return {}
+	sync_doors()
 	if GameState.has_flag(NIGHT_BUSY):
 		return {"text": "顺着地上的手印找一找"}
+	var cur := current_task()
+	if cur != "":
+		return {"text": str(TASKS[cur]["name"])}
 	var ev := pending_event()
 	if ev != "":
 		var info: Dictionary = EVENTS[ev]
@@ -93,18 +119,27 @@ static func objective(floor_id: String) -> Dictionary:
 			return {"text": text} if text != "" else {}
 		return _guide(floor_id, where, text)
 	if DayClock.slot() == DayClock.NIGHT:
-		return _guide(floor_id, HOUSE, "回蓝色小屋睡觉") if floor_id != HOUSE else {"text": "上床睡觉", "cell": HOUSE_BED, "radius": 1.0}
+		if floor_id == HOUSE:
+			return {"text": "上床睡觉", "cell": HOUSE_BED, "radius": 1.0}
+		return _guide(floor_id, HOUSE if floor_id == TOWN else TOWN, "回蓝色小屋睡觉")
 	var next: String = DayClock.SLOT_NAMES[DayClock.slot() + 1]
 	return {"text": "自由活动（小屋的床上可以休息到%s）" % next}
 
 
-## 目标在别的图：小镇里指向小屋门口、小屋里指向门。
+## 目标在别的图：小镇里指向那张图的门口；别的图里指向回小镇的出口。
 static func _guide(floor_id: String, where: String, text: String) -> Dictionary:
-	if floor_id == TOWN and where in [HOUSE, HOUSE_UP]:
-		return {"text": text, "cell": TOWN_HOUSE_DOOR, "radius": 1.0}
-	if floor_id in [HOUSE, HOUSE_UP] and where == TOWN:
-		return {"text": text, "cell": HOUSE_DOOR, "radius": 1.0} if floor_id == HOUSE else {"text": text}
+	if floor_id == TOWN and TOWN_DOORS.has(where):
+		return {"text": text, "cell": TOWN_DOORS[where], "radius": 1.0}
+	if floor_id != TOWN and where != floor_id and ROOM_EXITS.has(floor_id):
+		return {"text": text, "cell": ROOM_EXITS[floor_id], "radius": 1.0}
 	return {"text": text}
+
+
+## 城门开不开：现在该去战场（拆攻城车还没做完）才开。
+static func sync_doors() -> void:
+	var want := DayClock.event() == "d3_cart" and not DayClock.done()
+	if GameState.has_flag(FIELD_OPEN) != want:
+		GameState.set_flag(FIELD_OPEN, want)
 
 
 ## 进图时：这张图上自动演的事件（auto）。
@@ -117,8 +152,16 @@ static func trigger(floor_id: String) -> void:
 	await _try(floor_id, true)
 
 
+## 测试跳关时：清掉演到一半的状态
+static func reset_runtime() -> void:
+	running = false
+
+
 static func _try(floor_id: String, by_spot: bool) -> void:
 	if running or not GameState.has_flag(STARTED):
+		return
+	if by_spot and AfterErrands.active() != "":
+		GameState.notify("先把手上的委托做完吧。")
 		return
 	var ev := pending_event()
 	if ev == "":
@@ -138,6 +181,9 @@ static func _run(ev: String, info: Dictionary) -> void:
 		GameState.vars["stocks_bursts"] = 0
 	if str(info.get("cutscene", "")) != "":
 		await Cutscene.play(str(info["cutscene"]))
+	if TASKS.has(ev):
+		await run_task(ev)
+		return
 	match ev:
 		"d1_open":
 			await finish_slot()
@@ -154,6 +200,7 @@ static func _run(ev: String, info: Dictionary) -> void:
 			var n := int(res.get("bursts", 0))
 			GameState.vars["stocks_bursts"] = n
 			GameState.vars["stocks_releases"] = int(res.get("releases", 0))
+			GameState.set_flag("after_d2_fainted", bool(res.get("fainted", false)))
 			await Cutscene.play("after_d2_stocks_faint" if bool(res.get("fainted", false)) else "after_d2_stocks_end")
 			if n > 0:
 				PenanceBook.add(n * STOCKS_BURST_HOURS, "示众时笑出声 ×%d" % n)
@@ -165,6 +212,69 @@ static func _run(ev: String, info: Dictionary) -> void:
 			GameState.set_flag(NIGHT_BUSY)
 			# 被挠醒了：顺着手印调查（三处都看过 → 楼梯解锁 → 楼上 AfterHouse 接 night_end）
 			GameState.hint("顺着地上的手印找一找")
+
+
+## 弥补任务：摆上玩法节点 → 等它做完；失败 → 失败小剧场、罚工时（PenanceBook.fail）→ 回到起点重来。
+static func run_task(ev: String) -> void:
+	var spec: Dictionary = TASKS[ev]
+	var scr: Script = load(str(spec["script"]))
+	GameState.set_flag(TASK_FLAG)
+	while true:
+		var lv: Node = StoryDirector.instance.main.get("level") if StoryDirector.instance else null
+		if lv == null:
+			break
+		var runner: Node = scr.new()
+		runner.name = "Task_" + ev
+		lv.get_node("Entities").add_child(runner)
+		var ok: bool = await runner.finished
+		if bool(runner.get("aborted")):
+			# 换图 / 读档：任务节点没了，清掉标记，走回触发点重新开始
+			GameState.set_flag(TASK_FLAG, false)
+			GameState.set_flag(ev_flag(ev), false)
+			return
+		if is_instance_valid(runner):
+			runner.queue_free()
+		if ok:
+			break
+		await PenanceBook.fail(str(spec["name"]), str(spec["fail"]), int(spec.get("fail_hours", 0)))
+		scr.call("reset_items")
+		var p := GameState.player
+		if is_instance_valid(p):
+			if p.laugh:
+				p.laugh.clear()
+			if spec.has("respawn"):
+				p.global_position = Cutscene.cell_to_world(spec["respawn"])
+	GameState.set_flag(TASK_FLAG, false)
+	if str(spec.get("done", "")) != "":
+		await Cutscene.play(str(spec["done"]))
+	await finish_slot()
+
+
+## 任务进行中的实时状态（目标提示下面一行）；没有任务时是委托的
+static func status_text() -> String:
+	var cur := current_task()
+	if cur != "":
+		return str(load(str(TASKS[cur]["script"])).call("status_text"))
+	return AfterErrands.status_text()
+
+
+## 正在做的弥补任务（这个时段的事件、已经开始、还没做完）
+static func current_task() -> String:
+	var ev := DayClock.event()
+	if GameState.has_flag(TASK_FLAG) and TASKS.has(ev) and GameState.has_flag(ev_flag(ev)) and not DayClock.done():
+		return ev
+	return ""
+
+
+## 读档 / 换图时任务演到一半（玩法节点没了）：清掉标记，走回触发点就能重新开始。
+static func recover_task() -> void:
+	if not GameState.has_flag(TASK_FLAG) or running:
+		return
+	GameState.set_flag(TASK_FLAG, false)
+	for ev in TASKS:
+		if GameState.has_flag(ev_flag(ev)) and DayClock.event() == ev and not DayClock.done():
+			GameState.set_flag(ev_flag(ev), false)
+			load(str(TASKS[ev]["script"])).call("reset_items")
 
 
 ## 楼上：梦游的结尾（AfterHouse 进楼上时调）。
@@ -247,6 +357,8 @@ static func after_wake() -> void:
 	var lv: Node = StoryDirector.instance.main.get("level") if StoryDirector.instance else null
 	if lv:
 		await run_pending(str(lv.get("floor_id")))
+	if DayClock.day() == 2 and DayClock.slot() == DayClock.MORNING and not DayClock.done():
+		GameState.notify("（蓝色公主一早就去训练室了。……桌上留了张纸条：「广场。别迟到。」）", 4.0)
 	if DayClock.event() == "":
 		GameState.notify("（%s 的剧情还在制作中……可以做做镇民委托，或者在床上休息）" % DayClock.label())
 

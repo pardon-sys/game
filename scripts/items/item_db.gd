@@ -8,6 +8,7 @@ const PATHS := {
 	"key_bronze": "res://data/items/key_bronze.tres",
 	"key_gold": "res://data/items/key_gold.tres",
 	"mint": "res://data/items/mint.tres",
+	"mint_potion": "res://data/items/mint_potion.tres",
 	"clear_dew": "res://data/items/clear_dew.tres",
 	"star_candy": "res://data/items/star_candy.tres",
 	"backpack": "res://data/items/backpack.tres",

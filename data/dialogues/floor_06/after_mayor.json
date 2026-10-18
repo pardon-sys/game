@@ -6,6 +6,45 @@
 				"var": {
 					"after_day": [
 						"==",
+						2
+					]
+				},
+				"not": "after_done_d2_morning"
+			},
+			"node": "d2_wait"
+		},
+		{
+			"if": {
+				"var": {
+					"after_day": [
+						"==",
+						2
+					]
+				},
+				"flag": [
+					"after_done_d2_morning",
+					"after_d2_fainted"
+				]
+			},
+			"node": "d2_faint"
+		},
+		{
+			"if": {
+				"var": {
+					"after_day": [
+						"==",
+						2
+					]
+				},
+				"flag": "after_done_d2_morning"
+			},
+			"node": "d2"
+		},
+		{
+			"if": {
+				"var": {
+					"after_day": [
+						"==",
 						1
 					]
 				},
@@ -53,6 +92,30 @@
 				},
 				{
 					"text": "你、你先去台子前面站好。"
+				}
+			]
+		},
+		"d2_wait": {
+			"lines": [
+				{
+					"text": "咳……示众是小镇的老传统了。忍一忍，很快就过去。"
+				},
+				{
+					"text": "……大概吧。"
+				}
+			]
+		},
+		"d2": {
+			"lines": [
+				{
+					"text": "辛苦啦辛苦啦！示众一结束，大家对你的气也消了一半。"
+				}
+			]
+		},
+		"d2_faint": {
+			"lines": [
+				{
+					"text": "听说你笑晕过去了？哎呀呀……是不是规矩定得太严了……"
 				}
 			]
 		}

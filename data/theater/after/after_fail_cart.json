@@ -1,0 +1,155 @@
+{
+	"name": "拆车失败：车斗里的刷子",
+	"cast": {
+		"princess": {
+			"kind": "princess",
+			"at": [
+				0,
+				8
+			],
+			"visual": "helpless_2",
+			"anim": "helpless",
+			"dir": "down"
+		},
+		"bucket": {
+			"kind": "trap:conveyor",
+			"at": [
+				0,
+				16
+			]
+		},
+		"cart": {
+			"kind": "monster:cart",
+			"at": [
+				-30,
+				10
+			],
+			"dir": "right"
+		}
+	},
+	"steps": [
+		{
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "fade_in"
+				},
+				{
+					"state": "giggle",
+					"do": "voice"
+				}
+			],
+			"wait": 0.5
+		},
+		{
+			"speaker": "",
+			"text": "（攻城车的车斗「哐」地合上了。她整个人陷在一堆软刷子里，只露出两只脚丫在车斗外面乱蹬）"
+		},
+		{
+			"speaker": "公主",
+			"text": "放、放我出去……！刷子……刷子在动……！",
+			"emotion": "helpless_1"
+		},
+		{
+			"speaker": "",
+			"text": "（车斗里的刷子一齐转了起来——从脚跟刷到脚趾，从脚趾刷回脚心）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "bucket",
+					"zone": "sole",
+					"fx": "lines",
+					"repeat": 8,
+					"interval": 0.2,
+					"do": "tickle"
+				}
+			],
+			"portrait": "defeat_1"
+		},
+		{
+			"speaker": "公主",
+			"text": "哈哈哈哈！脚、脚底！刷子一圈一圈地——哈哈哈哈！",
+			"actions": [
+				{
+					"who": "princess",
+					"kind": "laugh",
+					"do": "bubble"
+				},
+				{
+					"who": "princess",
+					"time": 0.5,
+					"do": "shake"
+				}
+			]
+		},
+		{
+			"speaker": "",
+			"text": "（车轮咕噜咕噜地开始转，攻城车载着她在战场上绕起了圈。每颠一下，刷子就往脚心里钻得更深）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "bucket",
+					"zone": "sole",
+					"fx": "lines",
+					"repeat": 10,
+					"interval": 0.16,
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "停、停车！这、这不是兜风——哈哈哈！脚趾缝也、也刷进来了——！",
+			"actions": [
+				{
+					"who": "princess",
+					"visual": "helpless_2",
+					"do": "pose"
+				}
+			],
+			"portrait": "defeat_2"
+		},
+		{
+			"speaker": "",
+			"text": "（绕到第三圈，车灯得意地闪了闪。刷子换成了更细的那一排，专挑脚弓最软的地方来回扫）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "bucket",
+					"zone": "sole",
+					"fx": "feather",
+					"repeat": 10,
+					"interval": 0.16,
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "哈哈哈……我、我投降……车、车先生……我再也不拆你了……",
+			"emotion": "helpless_2"
+		},
+		{
+			"speaker": "",
+			"text": "（车轮终于慢了下来。攻城车打了个响亮的饱嗝，把她「噗」地吐回了战场入口——然后又心满意足地睡着了）"
+		},
+		{
+			"speaker": "公主",
+			"text": "……呜……鞋、鞋子里全是刷毛……再、再来一次……这次一定……",
+			"emotion": "helpless_1"
+		},
+		{
+			"actions": [
+				{
+					"time": 0.6,
+					"do": "fade_out"
+				},
+				{
+					"state": "",
+					"do": "voice"
+				}
+			],
+			"wait": 0.7
+		}
+	]
+}

@@ -6,6 +6,30 @@
 				"var": {
 					"after_day": [
 						"==",
+						2
+					]
+				},
+				"not": "after_done_d2_morning"
+			},
+			"node": "d2_wait"
+		},
+		{
+			"if": {
+				"var": {
+					"after_day": [
+						"==",
+						2
+					]
+				},
+				"flag": "after_done_d2_morning"
+			},
+			"node": "d2"
+		},
+		{
+			"if": {
+				"var": {
+					"after_day": [
+						"==",
 						1
 					]
 				},
@@ -47,6 +71,20 @@
 			"lines": [
 				{
 					"text": "广场那边要宣判了。快去吧。"
+				}
+			]
+		},
+		"d2_wait": {
+			"lines": [
+				{
+					"text": "今天广场上有示众。……我在城门这里，什么都看不见。……可惜。"
+				}
+			]
+		},
+		"d2": {
+			"lines": [
+				{
+					"text": "示众结束了？……听说笑声传到城门这里来了。"
 				}
 			]
 		}

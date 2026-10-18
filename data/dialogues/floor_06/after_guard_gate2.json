@@ -6,6 +6,30 @@
 				"var": {
 					"after_day": [
 						"==",
+						2
+					]
+				},
+				"not": "after_done_d2_morning"
+			},
+			"node": "d2_wait"
+		},
+		{
+			"if": {
+				"var": {
+					"after_day": [
+						"==",
+						2
+					]
+				},
+				"flag": "after_done_d2_morning"
+			},
+			"node": "d2"
+		},
+		{
+			"if": {
+				"var": {
+					"after_day": [
+						"==",
 						1
 					]
 				},
@@ -50,6 +74,20 @@
 			"lines": [
 				{
 					"text": "……（瞄了一眼蓝色公主的裤子）……广、广场在那边！"
+				}
+			]
+		},
+		"d2_wait": {
+			"lines": [
+				{
+					"text": "……（瞄了一眼你的光脚）……没、没什么！"
+				}
+			]
+		},
+		"d2": {
+			"lines": [
+				{
+					"text": "……脚、脚还好吗？……我是说，执勤辛苦了！"
 				}
 			]
 		}
