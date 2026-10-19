@@ -1,0 +1,57 @@
+{
+	"name": "特训·第二天",
+	"letterbox": true,
+	"skippable": true,
+	"steps": [
+		{
+			"actions": [
+				{
+					"to": [
+						10,
+						7
+					],
+					"zoom": 1.0,
+					"time": 0.4,
+					"do": "camera"
+				}
+			],
+			"wait": 0.4
+		},
+		{
+			"speaker": "保卫队队长",
+			"text": "来了。……第三课，然后考核。"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……嗯。"
+		},
+		{
+			"speaker": "公主",
+			"text": "今天轮到我挠了吧！",
+			"emotion": "happy"
+		},
+		{
+			"speaker": "保卫队队长",
+			"text": "……考核的时候。第三课，你先捣乱。"
+		},
+		{
+			"speaker": "公主",
+			"text": "捣乱也行！",
+			"emotion": "happy"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……（叹气）"
+		},
+		{
+			"actions": [
+				{
+					"reset": true,
+					"time": 0.4,
+					"do": "camera"
+				}
+			],
+			"wait": 0.4
+		}
+	]
+}

@@ -1,0 +1,93 @@
+{
+	"name": "排水管通了",
+	"letterbox": true,
+	"skippable": true,
+	"steps": [
+		{
+			"actions": [
+				{
+					"to": [
+						6,
+						6
+					],
+					"zoom": 1.0,
+					"time": 0.4,
+					"do": "camera"
+				}
+			],
+			"wait": 0.4
+		},
+		{
+			"speaker": "保卫队队长",
+			"text": "（不知什么时候站在了水沟边上）……通了？"
+		},
+		{
+			"speaker": "公主",
+			"text": "通、通了……（从泥水里坐起来，满脸都是泥）",
+			"emotion": "sad"
+		},
+		{
+			"speaker": "保卫队队长",
+			"text": "……"
+		},
+		{
+			"speaker": "保卫队队长",
+			"text": "（掏出手帕，递了过来）……又是这副样子。"
+		},
+		{
+			"speaker": "公主",
+			"text": "……「又」？",
+			"emotion": "surprise"
+		},
+		{
+			"speaker": "保卫队队长",
+			"text": "……擦擦吧。下午还有活。"
+		},
+		{
+			"speaker": "",
+			"text": "（队长转过身走了。她拿着手帕，愣了一会儿）"
+		},
+		{
+			"speaker": "公主",
+			"text": "……管壁上那幅画……还有队长说的「又」……",
+			"emotion": "sad"
+		},
+		{
+			"speaker": "小汤姆",
+			"text": "姐姐！手帕上绣着字！"
+		},
+		{
+			"speaker": "",
+			"text": "（手帕的角落里，用褪了色的线绣着一个小小的、歪歪扭扭的图案——两个手拉手的小人）"
+		},
+		{
+			"speaker": "公主",
+			"text": "……",
+			"emotion": "surprise"
+		},
+		{
+			"speaker": "",
+			"text": "（她把手帕叠好，收进了口袋里）"
+		},
+		{
+			"actions": [
+				{
+					"reset": true,
+					"time": 0.4,
+					"do": "camera"
+				}
+			],
+			"wait": 0.4
+		},
+		{
+			"actions": [
+				{
+					"to": "floor_06_after",
+					"spawn": "from_drain",
+					"do": "goto"
+				}
+			],
+			"wait": 0.2
+		}
+	]
+}

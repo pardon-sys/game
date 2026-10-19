@@ -54,6 +54,9 @@ func _ready() -> void:
 		k.caption = func(_k, _z: String) -> String: return EquipKids.caption(worn())
 		k.chase_words = EquipKids.chase_words()
 		k.tickle_words = EquipKids.tickle_words()
+		var rp: Variant = EquipKids.data().get("react", {})
+		if rp is Dictionary and not (rp as Dictionary).is_empty():
+			k.react_pool = rp
 		k.on_catch = func(kid: AfterKid): SpeechBubble.say(kid, ["嘿嘿，好玩！", "下次还要！", "姐姐笑了～"].pick_random(), 26.0, 1.0)
 		kids.append(k)
 

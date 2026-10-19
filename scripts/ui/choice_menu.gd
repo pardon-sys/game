@@ -1,7 +1,7 @@
 class_name ChoiceMenu
 extends CanvasLayer
 ## 对话选项页：在对话框上方列出选项，上下键选择、E / 回车确定。await ask(选项文字, 提示) 返回选中的序号。
-## 测试 / 脚本可以直接调 choose(序号)。
+## 测试 / 脚本可以直接调 choose(序号)。打开期间 GameState.in_dialogue = true（人物不跟着上下键走）。
 
 signal chosen(index: int)
 
@@ -51,7 +51,11 @@ func ask(texts: Array, prompt := "") -> int:
 	prompt_label.visible = prompt != ""
 	_refresh()
 	panel.show()
+	# 选项页开着的时候人物不动（上下键是用来选的）；关上以后还原
+	var was := GameState.in_dialogue
+	GameState.in_dialogue = true
 	var pick: int = await chosen
+	GameState.in_dialogue = was or Dialogue.is_active() or GameState.in_cutscene
 	return pick
 
 

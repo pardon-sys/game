@@ -503,6 +503,28 @@ func pop(at: Node2D, text: String, col := TEXT, time := 0.9) -> Label:
 	return l
 
 
+## 舞台上方的一行描写（挠法、动作）：画在舞台框顶部正中，新的替换旧的，停 time 秒淡出。和人物头上的气泡分开，不会叠在一起。
+var _narr: Label
+
+
+func narrate(text: String, time := 2.4) -> void:
+	if overlay == null:
+		return
+	if is_instance_valid(_narr):
+		_narr.queue_free()
+	var l := _outlined(text, Color(0.92, 0.88, 1.0))
+	l.autowrap_mode = TextServer.AUTOWRAP_ARBITRARY
+	l.size = Vector2(FRAME_RECT.size.x - 16, 0)
+	l.reset_size()
+	l.size.x = FRAME_RECT.size.x - 16
+	l.position = Vector2(8, 4)
+	_narr = l
+	var tw := l.create_tween()
+	tw.tween_interval(time)
+	tw.tween_property(l, "modulate:a", 0.0, 0.4)
+	tw.tween_callback(l.queue_free)
+
+
 ## 演员说一句（头上的气泡，同一个人新说的替换旧的）。
 func say(who: String, text: String) -> void:
 	var a: CGActor = actors.get(who)

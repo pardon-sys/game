@@ -1,0 +1,198 @@
+{
+	"name": "通管失败：被拖出管子",
+	"cast": {
+		"princess": {
+			"kind": "princess",
+			"at": [
+				0,
+				8
+			],
+			"visual": "helpless_1",
+			"anim": "helpless",
+			"dir": "down"
+		},
+		"k1": {
+			"kind": "npc:kid",
+			"at": [
+				-20,
+				22
+			],
+			"dir": "right"
+		},
+		"k2": {
+			"kind": "npc:kid",
+			"at": [
+				0,
+				26
+			],
+			"dir": "up"
+		},
+		"k3": {
+			"kind": "npc:kid",
+			"at": [
+				20,
+				22
+			],
+			"dir": "left"
+		}
+	},
+	"steps": [
+		{
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "fade_in"
+				},
+				{
+					"state": "giggle",
+					"do": "voice"
+				}
+			],
+			"wait": 0.5
+		},
+		{
+			"speaker": "",
+			"text": "（笑得浑身发软，再也爬不动了。管口外面的小孩们一人抓住一只脚踝——）"
+		},
+		{
+			"speaker": "小孩们",
+			"text": "一、二、三——拔萝卜！"
+		},
+		{
+			"speaker": "",
+			"text": "（「哧溜」一声，她被整个儿从管道里拖了出来，仰面躺在了管口外的石板上）"
+		},
+		{
+			"speaker": "公主",
+			"text": "哇啊——！？",
+			"emotion": "surprise"
+		},
+		{
+			"speaker": "小汤姆",
+			"text": "拔出来啦！姐姐是大萝卜！"
+		},
+		{
+			"speaker": "",
+			"text": "（还没来得及爬起来，三个小孩已经扑了上来——一人抱住一只脚，一人骑在腿上）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "k1",
+					"zone": "sole",
+					"fx": "hand",
+					"repeat": 10,
+					"interval": 0.2,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"by": "k3",
+					"zone": "sole",
+					"fx": "hand",
+					"repeat": 10,
+					"interval": 0.2,
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "哈哈哈哈！不、不要一起——！我、我刚从管子里出来——！",
+			"portrait": "defeat_1"
+		},
+		{
+			"speaker": "小莉莉",
+			"text": "姐姐的脚底黑黑的……我帮你擦干净！（用袖子在脚心上来回地擦）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "k2",
+					"zone": "sole",
+					"fx": "brush",
+					"repeat": 12,
+					"interval": 0.16,
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "那、那不是擦！那是挠——哈哈哈哈！",
+			"emotion": "helpless_2"
+		},
+		{
+			"speaker": "小胖",
+			"text": "脚趾缝里也有泥！（小手指一根一根地抠进脚趾缝）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "k3",
+					"zone": "sole",
+					"fx": "hand",
+					"repeat": 12,
+					"interval": 0.16,
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "哈哈哈哈哈！脚、脚趾缝不用擦——！",
+			"portrait": "defeat_2"
+		},
+		{
+			"speaker": "小汤姆",
+			"text": "脚弓也要擦！脚跟也要擦！",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "k1",
+					"zone": "sole",
+					"fx": "feather",
+					"repeat": 12,
+					"interval": 0.16,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"visual": "helpless_2",
+					"do": "pose"
+				}
+			]
+		},
+		{
+			"speaker": "",
+			"text": "（「擦干净」变成了「挠一遍」，「挠一遍」又变成了「再挠一遍」。管口边上全是她的笑声）"
+		},
+		{
+			"speaker": "保卫队员",
+			"text": "（远远地跑过来）喂喂喂！小鬼们！让公主歇一会儿！"
+		},
+		{
+			"speaker": "小孩们",
+			"text": "……是——"
+		},
+		{
+			"speaker": "公主",
+			"text": "哈……哈……我、我歇好了……从、从头再钻……",
+			"emotion": "helpless_1"
+		},
+		{
+			"speaker": "保卫队员",
+			"text": "……先喘口气吧。管子又不会跑。"
+		},
+		{
+			"actions": [
+				{
+					"time": 0.6,
+					"do": "fade_out"
+				},
+				{
+					"state": "",
+					"do": "voice"
+				}
+			],
+			"wait": 0.7
+		}
+	]
+}

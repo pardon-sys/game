@@ -252,10 +252,12 @@ func _lick(g: MushroomGoat, kind := "", force := false) -> void:
 	ZoneFx.play(zone, p.get_parent(), ZoneFx.body_point(p, zone), 1.0, false)
 	GameState.emote("helpless_1", 1.0, false)
 	var caps: Array = lk.get("caption", [])
+	# 描写飘在羊头上、公主的反应飘在她头上（不用画面下方的反应框）
 	if not caps.is_empty():
-		GameState.princess_reacted.emit(str(caps.pick_random()), 3.0)
-	SpeechBubble.say(p, react_line(kind), 30.0, 1.6)
-	SpeechBubble.say(g, "咩～", 20.0, 0.8)
+		SpeechBubble.say(g, str(caps.pick_random()), 20.0, 2.6)
+	else:
+		SpeechBubble.say(g, "咩～", 20.0, 0.8)
+	SpeechBubble.say(p, react_line(kind), 30.0, 1.8)
 
 
 ## 反应字：按闷笑分三档

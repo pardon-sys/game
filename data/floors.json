@@ -184,6 +184,27 @@
 			"music": "town"
 		},
 		{
+			"id": "floor_06_after_drain",
+			"name": "排水管",
+			"scene": "res://levels/floor_06_after_drain/floor.tscn",
+			"group": "floor_06",
+			"music": "town"
+		},
+		{
+			"id": "floor_06_after_drill",
+			"name": "队长的训练室",
+			"scene": "res://levels/floor_06_after_drill/floor.tscn",
+			"group": "floor_06",
+			"music": "town"
+		},
+		{
+			"id": "floor_06_after_proving",
+			"name": "保卫队训练营",
+			"scene": "res://levels/floor_06_after_proving/floor.tscn",
+			"group": "floor_06",
+			"music": "town"
+		},
+		{
 			"id": "floor_08_maze_1",
 			"name": "第八层·夜迷宫一·外环回廊",
 			"scene": "res://levels/floor_08_maze_1/floor.tscn",

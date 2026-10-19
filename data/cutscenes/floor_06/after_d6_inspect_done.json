@@ -1,0 +1,71 @@
+{
+	"name": "验收结束",
+	"letterbox": true,
+	"skippable": true,
+	"steps": [
+		{
+			"actions": [
+				{
+					"to": [
+						12,
+						6
+					],
+					"zoom": 1.0,
+					"time": 0.4,
+					"do": "camera"
+				}
+			],
+			"wait": 0.4
+		},
+		{
+			"speaker": "保卫队员",
+			"text": "辛苦了！数据全都记下来了！"
+		},
+		{
+			"speaker": "保卫队员小芬",
+			"text": "我的吊环架评了什么？评了什么？"
+		},
+		{
+			"speaker": "公主",
+			"text": "……评了「太强」。",
+			"emotion": "angry"
+		},
+		{
+			"speaker": "保卫队员小芬",
+			"text": "太好了！"
+		},
+		{
+			"speaker": "公主",
+			"text": "那不是夸你！",
+			"emotion": "angry"
+		},
+		{
+			"speaker": "保卫队队长",
+			"text": "……下午，训练室。别忘了。"
+		},
+		{
+			"speaker": "公主",
+			"text": "啊，对了，今天下午是……考核！",
+			"emotion": "surprise"
+		},
+		{
+			"speaker": "保卫队队长",
+			"text": "……你挠她。"
+		},
+		{
+			"speaker": "公主",
+			"text": "……嘿嘿。",
+			"emotion": "happy"
+		},
+		{
+			"actions": [
+				{
+					"reset": true,
+					"time": 0.4,
+					"do": "camera"
+				}
+			],
+			"wait": 0.4
+		}
+	]
+}

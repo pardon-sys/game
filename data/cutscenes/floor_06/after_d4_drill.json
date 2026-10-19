@@ -1,0 +1,78 @@
+{
+	"name": "蓝色公主的特训",
+	"letterbox": true,
+	"skippable": true,
+	"steps": [
+		{
+			"actions": [
+				{
+					"to": [
+						10,
+						7
+					],
+					"zoom": 1.0,
+					"time": 0.4,
+					"do": "camera"
+				}
+			],
+			"wait": 0.4
+		},
+		{
+			"speaker": "保卫队队长",
+			"text": "来了。"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……嗯。"
+		},
+		{
+			"speaker": "公主",
+			"text": "我、我也可以来看吗？",
+			"emotion": "surprise"
+		},
+		{
+			"speaker": "保卫队队长",
+			"text": "可以。……而且你得帮忙。"
+		},
+		{
+			"speaker": "公主",
+			"text": "帮忙？",
+			"emotion": "surprise"
+		},
+		{
+			"speaker": "保卫队队长",
+			"text": "这几天，殿下每天早上都来这里。……成绩不太好。"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……（别过脸去）"
+		},
+		{
+			"speaker": "保卫队队长",
+			"text": "一个人练，总是差一口气。有个人在旁边看着，她才会真的用力。"
+		},
+		{
+			"speaker": "公主",
+			"text": "……原来你每天早上不在，是来这里特训了啊。",
+			"emotion": "surprise"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……别、说出来。"
+		},
+		{
+			"speaker": "保卫队队长",
+			"text": "今天两节课。先冻，后驯。……开始。"
+		},
+		{
+			"actions": [
+				{
+					"reset": true,
+					"time": 0.4,
+					"do": "camera"
+				}
+			],
+			"wait": 0.4
+		}
+	]
+}

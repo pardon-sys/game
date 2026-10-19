@@ -3,21 +3,28 @@ extends TrainingStage
 ## 委托「扶梯子」的小游戏（借训练小游戏的画面）：粉色公主光脚站在梯子上补屋檐，工匠在下面扶着，小孩来凑热闹。
 ##   平衡条 balance（-1 ~ 1）：自己会晃（闷笑越高晃得越厉害），← / A、→ / D 往回拨；被挠一下就猛地偏一下（tickler 的 push）。到头 = 摔进干草堆（演一段）→ 这一阶段从头来。
 ##   干活：三个阶段（data/after/errand_ladder.json 的 phases）——爬上去按 ↑ / W、修屋檐按提示键（J / K / Q / E，限时 WORK_TIME 秒）、下梯子按 ↓ / S；
-##   平衡偏得太厉害（> UNSTABLE）时按了不算、梯子还会晃一下。
-##   挠她的人按阶段轮换（ticklers），第一次出现时暂停演几句；之后边挠边说，公主的反应字按部位 × 闷笑三档（react）。
+##   平衡偏得太厉害（超出安全区 safe）时按了不算、梯子还会晃一下。安全区从 SAFE_START 开始，每完成一步缩小一截，到最后只剩 SAFE_END。
+##   每完成一步（上一级 / 钉一下 / 下一级）演一段那一步专属的挠痒情节（episodes：暂停演几句 → 挠一下、平衡条偏 push → 公主飘一句）。
+##   中间还有随机的挠（ticklers，第一次出现时暂停演几句）。公主的反应都飘在她旁边（say），不用画面下方的反应框。
 ##   闷笑满：腿一软，梯子大晃一下（闷笑回到 60%）。
 ## await play() → true（做完）。测试：quiet（不演对话）、press(键名)、time_scale。
 
 const TEXT_PATH := "res://data/after/errand_ladder.json"
 const WORK_KEYS := ["J", "K", "Q", "E"]
 const WORK_TIME := 3.0
-const UNSTABLE := 0.75
+const SAFE_START := 0.8
+const SAFE_END := 0.32
+const TOTAL_STEPS := 20
 const NUDGE := 0.14
 
 static var quiet := false
 static var _text := {}
 
 var balance := 0.0
+## 安全区（半宽，0 ~ 1）：越往后越小
+var safe := SAFE_START
+var steps_done := 0
+var episodes_played := 0
 var phase := 0
 var step := 0
 var falls := 0
@@ -44,11 +51,11 @@ class BalanceBar extends Control:
 	func _draw() -> void:
 		var w := size.x
 		draw_rect(Rect2(0, 0, w, 8), Color(0.18, 0.12, 0.22))
-		draw_rect(Rect2(w * 0.5 - w * 0.5 * LadderShow.UNSTABLE, 0, w * LadderShow.UNSTABLE, 8), Color(0.3, 0.55, 0.35))
+		draw_rect(Rect2(w * 0.5 - w * 0.5 * stage.safe, 0, w * stage.safe, 8), Color(0.3, 0.55, 0.35))
 		draw_line(Vector2(w * 0.5, -2), Vector2(w * 0.5, 10), Color(1, 1, 1, 0.6), 1.0)
 		var x := w * 0.5 + stage.balance * w * 0.5
 		draw_colored_polygon(PackedVector2Array([Vector2(x - 4, -4), Vector2(x + 4, -4), Vector2(x, 4)]),
-			Color(1, 0.4, 0.45) if absf(stage.balance) > LadderShow.UNSTABLE else Color(1, 0.86, 0.4))
+			Color(1, 0.4, 0.45) if absf(stage.balance) > stage.safe else Color(1, 0.86, 0.4))
 
 
 class Ladder extends Node2D:
@@ -179,15 +186,20 @@ func _on_key(k: String) -> void:
 
 
 func _work() -> void:
-	if absf(balance) > UNSTABLE:
+	if absf(balance) > safe:
 		balance += 0.2 * signf(balance)
 		pop(actors.get("princess"), "站不稳……先稳住！", BAD, 0.8)
 		return
 	step += 1
+	steps_done += 1
+	safe = lerpf(SAFE_START, SAFE_END, clampf(float(steps_done) / TOTAL_STEPS, 0.0, 1.0))
 	Audio.play("hit" if prompt in WORK_KEYS else "step", -8.0, 0.1)
 	var pr: CGActor = actors.get("princess")
 	if pr:
 		pr.position.y += -4.0 if prompt == "UP" else (4.0 if prompt == "DOWN" else 0.0)
+	busy = true
+	await _episode(str(cur().get("id", "")), step - 1)
+	busy = false
 	if step >= int(cur().get("steps", 1)):
 		busy = true
 		await _lines(cur().get("end", []))
@@ -220,7 +232,7 @@ func _tick(delta: float) -> void:
 	_tk_t -= delta
 	if _tk_t <= 0.0:
 		var ev: Array = cur().get("every", [3.0, 4.0])
-		_tk_t = rng.randf_range(float(ev[0]), float(ev[1]))
+		_tk_t = rng.randf_range(float(ev[0]), float(ev[1])) * 1.4
 		_tickle_once()
 	if absf(balance) >= 1.0:
 		_fall()
@@ -253,10 +265,30 @@ func _tickle_once() -> void:
 	var said: Array = tk.get("lines", [])
 	if not said.is_empty():
 		say(by, str(said.pick_random()))
-	GameState.princess_reacted.emit(react_line(), 1.8)
+	say("princess", react_line())
 	var wb: Array = text().get("wobble", [])
 	if not wb.is_empty() and absf(balance) > 0.5:
 		pop(actors.get("princess"), str(wb.pick_random()), BAD, 0.9)
+
+
+## 这一步专属的挠痒情节：暂停演几句 → 挠（all = 几个人一起）、平衡条偏 → 公主飘一句
+func _episode(phase_id: String, i: int) -> void:
+	var eps: Array = text().get("episodes", {}).get(phase_id, [])
+	if i < 0 or i >= eps.size():
+		return
+	var ep: Dictionary = eps[i]
+	episodes_played += 1
+	await _lines(ep.get("lines", []))
+	var who := str(ep.get("who", "worker"))
+	var bys: Array = ["worker", "kid1", "kid2", "kid3"] if who == "all" else [who]
+	for b in bys:
+		tickle(b, str(ep.get("zone", "sole")), who == "all")
+	balance += float(ep.get("push", 0.4)) * (1.0 if rng.randf() < 0.5 else -1.0)
+	add_laugh(laugh_max() * (0.14 if who == "all" else 0.09))
+	var after := str(ep.get("after", ""))
+	if after != "":
+		say("princess", after)
+	_tk_t = maxf(_tk_t, 1.5)
 
 
 ## 反应字：按闷笑分三档

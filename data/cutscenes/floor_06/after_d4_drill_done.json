@@ -1,0 +1,78 @@
+{
+	"name": "第一天的特训结束",
+	"letterbox": true,
+	"skippable": true,
+	"steps": [
+		{
+			"actions": [
+				{
+					"to": [
+						10,
+						7
+					],
+					"zoom": 1.0,
+					"time": 0.4,
+					"do": "camera"
+				}
+			],
+			"wait": 0.4
+		},
+		{
+			"speaker": "保卫队队长",
+			"text": "今天到此为止。……后天下午，再来。第三课和考核。"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……考核？"
+		},
+		{
+			"speaker": "保卫队队长",
+			"text": "考核。……到时候，挠你的人是她。"
+		},
+		{
+			"speaker": "公主",
+			"text": "诶？我？",
+			"emotion": "surprise"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……"
+		},
+		{
+			"speaker": "公主",
+			"text": "……嘿嘿嘿。",
+			"emotion": "happy"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……不准，笑。"
+		},
+		{
+			"speaker": "",
+			"text": "（走出训练室的时候，蓝色公主走得有点慢。粉色公主凑过去，挽住了她的胳膊）"
+		},
+		{
+			"speaker": "公主",
+			"text": "累了吧？我扶你回去。",
+			"emotion": "happy"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……不用。"
+		},
+		{
+			"speaker": "",
+			"text": "（嘴上说着不用，却没有把胳膊抽回去）"
+		},
+		{
+			"actions": [
+				{
+					"reset": true,
+					"time": 0.4,
+					"do": "camera"
+				}
+			],
+			"wait": 0.4
+		}
+	]
+}

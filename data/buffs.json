@@ -433,6 +433,29 @@
 				"speed": 0.55
 			},
 			"desc": "扛着沉甸甸的封印石：走得慢，不能攻击、冲刺、施法。"
+		},
+		"crawl": {
+			"name": "趴着爬",
+			"icon": 3,
+			"debuff": true,
+			"hidden": false,
+			"duration": -1,
+			"max_stacks": 1,
+			"modifiers": {
+				"speed": 0.45
+			},
+			"desc": "在窄窄的管道里趴着爬：又慢又不能冲刺。"
+		},
+		"pants_backlash": {
+			"name": "小手收不回来",
+			"icon": 22,
+			"debuff": true,
+			"duration": 5.0,
+			"max_stacks": 1,
+			"modifiers": {
+				"speed": 0.7
+			},
+			"desc": "千手解放的副作用：小手转过来挠自己，走得慢、闷笑一直涨。"
 		}
 	}
 }

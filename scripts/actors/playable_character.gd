@@ -319,6 +319,9 @@ func _tick(delta: float) -> void:
 						use_item()
 					elif controller.is_action_just_pressed(&"use_special"):
 						use_item("use_special")
+					elif InputMap.has_action(&"skill") and controller.is_action_just_pressed(&"skill"):
+						# 角色的主动技能（蓝色公主：千手解放，特训考核后学会）
+						PantsBurst.cast(self)
 		State.ATTACK:
 			velocity = velocity.move_toward(Vector2.ZERO, friction * delta)
 			if hitbox and _state_time >= attack_active_from and _state_time <= attack_active_to:
@@ -675,11 +678,22 @@ func _tickle_multiplier(hit: HitData) -> float:
 
 # ------------------------------------------------------------------ 装备
 func _extra_stat_add(stat: String) -> float:
-	return Equipment.stat_add(character_id, stat)
+	var v := Equipment.stat_add(character_id, stat)
+	# 被动「冰封自制」（蓝色公主，特训后学会）：闷笑涨幅 −value、千手痒痒裤的闷笑下限 −10
+	if character_id == "blue" and GameState.passives.has("ice_composure"):
+		if stat == "laugh_gain":
+			v -= PassiveDB.value("ice_composure")
+		elif stat == "laugh_floor" and has_buff("thousand_pants"):
+			v -= 10.0
+	return v
 
 
 func _extra_stat_mul(stat: String) -> float:
-	return Equipment.stat_mul(character_id, stat)
+	var v := Equipment.stat_mul(character_id, stat)
+	# 被动「冰封自制」：千手痒痒裤的减速减轻（×0.9 → ×0.97）
+	if stat == "speed" and character_id == "blue" and GameState.passives.has("ice_composure") and has_buff("thousand_pants"):
+		v *= 1.08
+	return v
 
 
 ## 装备挡下了一下挠痒：头顶冒「挡住了！」。

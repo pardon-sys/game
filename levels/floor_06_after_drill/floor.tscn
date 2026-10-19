@@ -1,0 +1,1032 @@
+[gd_scene format=4]
+
+[ext_resource type="Script" path="res://scripts/level.gd" id="1_if0km"]
+[ext_resource type="TileSet" path="res://assets/tilesets/dungeon.tres" id="2_hrmjq"]
+[ext_resource type="PackedScene" path="res://scenes/traps/feather_brush.tscn" id="3_gpr8y"]
+[ext_resource type="Script" path="res://scripts/traps/feather_brush.gd" id="4_bsbj4"]
+[ext_resource type="PackedScene" path="res://scenes/traps/powder_vent.tscn" id="5_1lson"]
+[ext_resource type="Script" path="res://scripts/traps/powder_vent.gd" id="6_05ttn"]
+[ext_resource type="PackedScene" path="res://scenes/objects/spawn_point.tscn" id="7_0dgoj"]
+[ext_resource type="Script" path="res://scripts/objects/spawn_point.gd" id="8_r0b3u"]
+[ext_resource type="PackedScene" path="res://scenes/objects/torch.tscn" id="9_w6aq1"]
+[ext_resource type="Script" path="res://scripts/objects/torch.gd" id="10_wl7bm"]
+[ext_resource type="PackedScene" path="res://scenes/objects/prop.tscn" id="11_577ct"]
+[ext_resource type="Script" path="res://scripts/objects/prop.gd" id="12_4l2ff"]
+[ext_resource type="PackedScene" path="res://levels/floor_06/scenes/after_room.tscn" id="13_udosi"]
+[ext_resource type="Script" path="res://levels/floor_06/scripts/after_room.gd" id="14_71wxl"]
+[ext_resource type="PackedScene" path="res://scenes/actors/allies/resident.tscn" id="15_ufu1c"]
+[ext_resource type="Script" path="res://scripts/actors/allies/resident.gd" id="16_n6wa1"]
+[ext_resource type="PackedScene" path="res://scenes/actors/playable/princess.tscn" id="17_f34sw"]
+[ext_resource type="Script" path="res://scripts/actors/playable/princess.gd" id="18_s7yxa"]
+[ext_resource type="PackedScene" path="res://scenes/actors/playable/blue_princess.tscn" id="19_ks5g7"]
+[ext_resource type="Script" path="res://scripts/actors/playable/blue_princess.gd" id="20_glfgp"]
+[ext_resource type="PackedScene" path="res://scenes/objects/level_exit.tscn" id="21_qkgcg"]
+[ext_resource type="Script" path="res://scripts/objects/level_exit.gd" id="22_t8n4l"]
+
+[node name="Floor06AfterDrill" type="Node2D" unique_id=266937802]
+script = ExtResource("1_if0km")
+floor_id = "floor_06_after_drill"
+intro_dialogue = ""
+no_switch = true
+
+[node name="Darkness" type="CanvasModulate" parent="." unique_id=281053165]
+color = Color(0.82, 0.86, 0.96, 1)
+
+[node name="Floor" type="TileMapLayer" parent="." unique_id=1204044273]
+tile_map_data = PackedByteArray("AAACAAIAAAACAAQAAAADAAIAAAACAAQAAAAEAAIAAAACAAQAAAAFAAIAAAACAAQAAAAGAAIAAAACAAQAAAAHAAIAAAACAAQAAAAIAAIAAAACAAQAAAAJAAIAAAACAAQAAAAKAAIAAAACAAQAAAALAAIAAAACAAQAAAAMAAIAAAACAAQAAAANAAIAAAACAAQAAAAOAAIAAAACAAQAAAAPAAIAAAACAAQAAAAQAAIAAAACAAQAAAARAAIAAAACAAQAAAACAAMAAAAAAAQAAAADAAMAAAAAAAQAAAAEAAMAAAAAAAQAAAAFAAMAAAABAAQAAAAGAAMAAAAAAAQAAAAHAAMAAAAAAAQAAAAIAAMAAAAAAAQAAAAJAAMAAAAAAAQAAAAKAAMAAAAAAAQAAAALAAMAAAAGAAMAAAAMAAMAAAAAAAQAAAANAAMAAAAAAAQAAAAOAAMAAAAAAAQAAAAPAAMAAAAGAAMAAAAQAAMAAAAAAAQAAAARAAMAAAAAAAQAAAATAAMAAAACAAQAAAAUAAMAAAACAAQAAAAVAAMAAAACAAQAAAAWAAMAAAACAAQAAAAXAAMAAAACAAQAAAAaAAMAAAACAAQAAAAbAAMAAAACAAQAAAAcAAMAAAACAAQAAAAdAAMAAAACAAQAAAAeAAMAAAACAAQAAAAfAAMAAAACAAQAAAAgAAMAAAACAAQAAAAhAAMAAAACAAQAAAAiAAMAAAACAAQAAAAjAAMAAAACAAQAAAAkAAMAAAACAAQAAAAlAAMAAAACAAQAAAAmAAMAAAACAAQAAAACAAQAAAAAAAQAAAADAAQAAAAAAAQAAAAEAAQAAAABAAQAAAAFAAQAAAAAAAQAAAAGAAQAAAAAAAQAAAAHAAQAAAAAAAQAAAAIAAQAAAAAAAQAAAAJAAQAAAADAAQAAAAKAAQAAAAAAAQAAAALAAQAAAAAAAQAAAAMAAQAAAAAAAQAAAANAAQAAAAAAAQAAAAOAAQAAAAAAAQAAAAPAAQAAAAAAAQAAAAQAAQAAAAAAAQAAAARAAQAAAAAAAQAAAATAAQAAAAGAAMAAAAUAAQAAAAGAAMAAAAVAAQAAAAAAAQAAAAWAAQAAAAAAAQAAAAXAAQAAAAAAAQAAAAaAAQAAAAAAAQAAAAbAAQAAAAAAAQAAAAcAAQAAAAAAAQAAAAdAAQAAAAAAAQAAAAeAAQAAAAGAAMAAAAfAAQAAAAAAAQAAAAgAAQAAAAAAAQAAAAhAAQAAAAAAAQAAAAiAAQAAAAAAAQAAAAjAAQAAAAAAAQAAAAkAAQAAAAAAAQAAAAlAAQAAAAAAAQAAAAmAAQAAAAAAAQAAAACAAUAAAAAAAQAAAADAAUAAAAAAAQAAAAEAAUAAAAAAAQAAAAFAAUAAAAGAAMAAAAGAAUAAAAAAAQAAAAHAAUAAAAAAAQAAAAIAAUAAAAAAAQAAAAJAAUAAAAAAAQAAAAKAAUAAAABAAQAAAALAAUAAAAAAAQAAAAMAAUAAAAAAAQAAAANAAUAAAAAAAQAAAAOAAUAAAAAAAQAAAAPAAUAAAAAAAQAAAAQAAUAAAADAAQAAAARAAUAAAAAAAQAAAATAAUAAAAAAAQAAAAUAAUAAAAAAAQAAAAVAAUAAAAAAAQAAAAWAAUAAAAAAAQAAAAXAAUAAAAAAAQAAAAaAAUAAAABAAQAAAAbAAUAAAAAAAQAAAAcAAUAAAAAAAQAAAAdAAUAAAAAAAQAAAAeAAUAAAADAAQAAAAfAAUAAAAAAAQAAAAgAAUAAAAAAAQAAAAhAAUAAAAAAAQAAAAiAAUAAAAAAAQAAAAjAAUAAAABAAQAAAAkAAUAAAAAAAQAAAAlAAUAAAAAAAQAAAAmAAUAAAADAAQAAAACAAYAAAAAAAQAAAADAAYAAAAAAAQAAAAEAAYAAAAAAAQAAAAFAAYAAAAAAAQAAAAGAAYAAAAAAAQAAAAHAAYAAAAAAAQAAAAIAAYAAAAAAAQAAAAJAAYAAAAAAAQAAAAKAAYAAAAAAAQAAAALAAYAAAAAAAQAAAAMAAYAAAAAAAQAAAANAAYAAAAAAAQAAAAOAAYAAAAAAAQAAAAPAAYAAAADAAQAAAAQAAYAAAAAAAQAAAARAAYAAAAAAAQAAAASAAYAAAACAAQAAAATAAYAAAAAAAQAAAAUAAYAAAAAAAQAAAAVAAYAAAAAAAQAAAAWAAYAAAAAAAQAAAAXAAYAAAAAAAQAAAAaAAYAAAAAAAQAAAAbAAYAAAAAAAQAAAAcAAYAAAAAAAQAAAAdAAYAAAAGAAMAAAAeAAYAAAAAAAQAAAAfAAYAAAAAAAQAAAAgAAYAAAAAAAQAAAAhAAYAAAAAAAQAAAAiAAYAAAAAAAQAAAAjAAYAAAAAAAQAAAAkAAYAAAAAAAQAAAAlAAYAAAAAAAQAAAAmAAYAAAAAAAQAAAACAAcAAAAAAAQAAAADAAcAAAAAAAQAAAAEAAcAAAAAAAQAAAAFAAcAAAAAAAQAAAAGAAcAAAADAAQAAAAHAAcAAAAAAAQAAAAIAAcAAAAAAAQAAAAJAAcAAAAAAAQAAAAKAAcAAAABAAQAAAALAAcAAAAAAAQAAAAMAAcAAAAAAAQAAAANAAcAAAAAAAQAAAAOAAcAAAAAAAQAAAAPAAcAAAAAAAQAAAAQAAcAAAAAAAQAAAARAAcAAAAAAAQAAAASAAcAAAAAAAQAAAATAAcAAAAAAAQAAAAUAAcAAAAAAAQAAAAVAAcAAAAAAAQAAAAWAAcAAAAAAAQAAAAXAAcAAAABAAQAAAAaAAcAAAAAAAQAAAAbAAcAAAAAAAQAAAAcAAcAAAAAAAQAAAAdAAcAAAAAAAQAAAAeAAcAAAAAAAQAAAAfAAcAAAAAAAQAAAAgAAcAAAAAAAQAAAAhAAcAAAAAAAQAAAAiAAcAAAAAAAQAAAAjAAcAAAAAAAQAAAAkAAcAAAAAAAQAAAAlAAcAAAAAAAQAAAAmAAcAAAAAAAQAAAACAAgAAAABAAQAAAADAAgAAAADAAQAAAAEAAgAAAAAAAQAAAAFAAgAAAAAAAQAAAAGAAgAAAAAAAQAAAAHAAgAAAAAAAQAAAAIAAgAAAAAAAQAAAAJAAgAAAAAAAQAAAAKAAgAAAABAAQAAAALAAgAAAAAAAQAAAAMAAgAAAAGAAMAAAANAAgAAAAAAAQAAAAOAAgAAAAAAAQAAAAPAAgAAAAAAAQAAAAQAAgAAAAAAAQAAAARAAgAAAAAAAQAAAASAAgAAAAAAAQAAAATAAgAAAADAAQAAAAUAAgAAAAAAAQAAAAVAAgAAAAAAAQAAAAWAAgAAAAAAAQAAAAXAAgAAAAAAAQAAAAaAAgAAAAAAAQAAAAbAAgAAAAAAAQAAAAcAAgAAAAAAAQAAAAdAAgAAAADAAQAAAAeAAgAAAAAAAQAAAAfAAgAAAAAAAQAAAAgAAgAAAAAAAQAAAAhAAgAAAAAAAQAAAAiAAgAAAAAAAQAAAAjAAgAAAAAAAQAAAAkAAgAAAAAAAQAAAAlAAgAAAAAAAQAAAAmAAgAAAAAAAQAAAACAAkAAAABAAQAAAADAAkAAAAAAAQAAAAEAAkAAAAAAAQAAAAFAAkAAAAAAAQAAAAGAAkAAAAGAAMAAAAHAAkAAAAAAAQAAAAIAAkAAAAAAAQAAAAJAAkAAAAAAAQAAAAKAAkAAAAAAAQAAAALAAkAAAAAAAQAAAAMAAkAAAAAAAQAAAANAAkAAAAAAAQAAAAOAAkAAAAAAAQAAAAPAAkAAAADAAQAAAAQAAkAAAAAAAQAAAARAAkAAAAAAAQAAAATAAkAAAAAAAQAAAAUAAkAAAAAAAQAAAAVAAkAAAAAAAQAAAAWAAkAAAAAAAQAAAAXAAkAAAAAAAQAAAAaAAkAAAAAAAQAAAAbAAkAAAAAAAQAAAAcAAkAAAAAAAQAAAAdAAkAAAAAAAQAAAAeAAkAAAAAAAQAAAAfAAkAAAAAAAQAAAAgAAkAAAAAAAQAAAAhAAkAAAAAAAQAAAAiAAkAAAAAAAQAAAAjAAkAAAAAAAQAAAAkAAkAAAABAAQAAAAlAAkAAAADAAQAAAAmAAkAAAAAAAQAAAACAAoAAAAAAAQAAAADAAoAAAAAAAQAAAAEAAoAAAAAAAQAAAAFAAoAAAAAAAQAAAAGAAoAAAAAAAQAAAAHAAoAAAAAAAQAAAAIAAoAAAAAAAQAAAAJAAoAAAAAAAQAAAAKAAoAAAAAAAQAAAALAAoAAAAAAAQAAAAMAAoAAAAAAAQAAAANAAoAAAADAAQAAAAOAAoAAAAAAAQAAAAPAAoAAAAAAAQAAAAQAAoAAAAAAAQAAAARAAoAAAADAAQAAAATAAoAAAAAAAQAAAAUAAoAAAAAAAQAAAAVAAoAAAAAAAQAAAAWAAoAAAAAAAQAAAAXAAoAAAAAAAQAAAAaAAoAAAAAAAQAAAAbAAoAAAAAAAQAAAAcAAoAAAAAAAQAAAAdAAoAAAAAAAQAAAAeAAoAAAAAAAQAAAAfAAoAAAAAAAQAAAAgAAoAAAAAAAQAAAAhAAoAAAAGAAMAAAAiAAoAAAAAAAQAAAAjAAoAAAAAAAQAAAAkAAoAAAAAAAQAAAAlAAoAAAAAAAQAAAAmAAoAAAAAAAQAAAACAAsAAAAAAAQAAAADAAsAAAAAAAQAAAAEAAsAAAAAAAQAAAAFAAsAAAAAAAQAAAAGAAsAAAAAAAQAAAAHAAsAAAAAAAQAAAAIAAsAAAAAAAQAAAAJAAsAAAAAAAQAAAAKAAsAAAAAAAQAAAALAAsAAAAAAAQAAAAMAAsAAAAAAAQAAAANAAsAAAAAAAQAAAAOAAsAAAAAAAQAAAAPAAsAAAAAAAQAAAAQAAsAAAAAAAQAAAARAAsAAAABAAQAAAAKAAwAAAAAAAQAAAA=")
+tile_set = ExtResource("2_hrmjq")
+
+[node name="Walls" type="TileMapLayer" parent="." unique_id=741290953]
+tile_map_data = PackedByteArray("AAAAAAAAAAAAAAIAAAABAAAAAQAAAAIAAAACAAAAAQAEAAIAAAADAAAAAQAEAAYAAAAEAAAAAQAEAAYAAAAFAAAAAQAEAAYAAAAGAAAAAQAEAAYAAAAHAAAAAQAEAAYAAAAIAAAAAQAEAAYAAAAJAAAAAQAEAAYAAAAKAAAAAQAEAAYAAAALAAAAAQAEAAYAAAAMAAAAAQAEAAYAAAANAAAAAQAEAAYAAAAOAAAAAQAEAAYAAAAPAAAAAQAEAAYAAAAQAAAAAQAEAAYAAAARAAAAAQAEAAQAAAASAAAAAQAAAAQAAAATAAAAAQAAAAAAAAAUAAAAAQAAAAAAAAAVAAAAAQAAAAAAAAAWAAAAAQAAAAAAAAAXAAAAAQAAAAAAAAAYAAAAAQAAAAAAAAAZAAAAAQAAAAAAAAAaAAAAAQAAAAAAAAAbAAAAAQAAAAAAAAAcAAAAAQAAAAAAAAAdAAAAAQAAAAAAAAAeAAAAAQAAAAAAAAAfAAAAAQAAAAAAAAAgAAAAAQAAAAAAAAAhAAAAAQAAAAAAAAAiAAAAAQAAAAAAAAAjAAAAAQAAAAAAAAAkAAAAAQAAAAAAAAAlAAAAAQAAAAAAAAAmAAAAAQAAAAAAAAAnAAAAAQAAAAAAAAAAAAEAAQAAAAAAAAABAAEAAQACAAIAAAACAAEAAgAAAAAAAAADAAEAAgAAAAAAAAAEAAEAAgAAAAAAAAAFAAEAAgAAAAAAAAAGAAEAAgAAAAAAAAAHAAEAAgAAAAAAAAAIAAEAAgAAAAAAAAAJAAEAAgAAAAAAAAAKAAEAAgAAAAAAAAALAAEAAgABAAAAAAAMAAEAAgAAAAAAAAANAAEAAgAAAAAAAAAOAAEAAgAAAAAAAAAPAAEAAgAAAAAAAAAQAAEAAgAAAAAAAAARAAEAAgAAAAAAAAASAAEAAQAIAAYAAAATAAEAAQAEAAIAAAAUAAEAAQAEAAYAAAAVAAEAAQAEAAYAAAAWAAEAAQAEAAYAAAAXAAEAAQAEAAQAAAAYAAEAAQAAAAQAAAAZAAEAAQAAAAIAAAAaAAEAAQAEAAIAAAAbAAEAAQAEAAYAAAAcAAEAAQAEAAYAAAAdAAEAAQAEAAYAAAAeAAEAAQAEAAYAAAAfAAEAAQAEAAYAAAAgAAEAAQAEAAYAAAAhAAEAAQAEAAYAAAAiAAEAAQAEAAYAAAAjAAEAAQAEAAYAAAAkAAEAAQAEAAYAAAAlAAEAAQAEAAYAAAAmAAEAAQAEAAQAAAAnAAEAAQAAAAQAAAAAAAIAAQAAAAAAAAABAAIAAQACAAMAAAASAAIAAQAKAA4AAAATAAIAAgAAAAAAAAAUAAIAAgAAAAAAAAAVAAIAAgAAAAAAAAAWAAIAAgAAAAAAAAAXAAIAAgAAAAAAAAAYAAIAAQAIAAQAAAAZAAIAAQACAAIAAAAaAAIAAgAAAAAAAAAbAAIAAgAAAAAAAAAcAAIAAgAAAAAAAAAdAAIAAgAAAAAAAAAeAAIAAgAAAAAAAAAfAAIAAgAAAAAAAAAgAAIAAgAAAAAAAAAhAAIAAgAAAAAAAAAiAAIAAgAAAAAAAAAjAAIAAgAAAAAAAAAkAAIAAgAAAAAAAAAlAAIAAgAAAAAAAAAmAAIAAgAAAAAAAAAnAAIAAQAIAAQAAAAAAAMAAQAAAAAAAAABAAMAAQACAAMAAAASAAMAAQAKAA8AAAAYAAMAAQAIAAwAAAAZAAMAAQACAAMAAAAnAAMAAQAIAAwAAAAAAAQAAQAAAAAAAAABAAQAAQACAAMAAAASAAQAAQAOAA8AAAAYAAQAAQAIAAwAAAAZAAQAAQACAAMAAAAnAAQAAQAIAAwAAAAAAAUAAQAAAAAAAAABAAUAAQACAAMAAAASAAUAAgAAAAYAAAAYAAUAAQAIAAwAAAAZAAUAAQACAAMAAAAnAAUAAQAIAAwAAAAAAAYAAQAAAAAAAAABAAYAAQACAAMAAAAYAAYAAQAIAAwAAAAZAAYAAQACAAMAAAAnAAYAAQAIAAwAAAAAAAcAAQAAAAAAAAABAAcAAQACAAMAAAAYAAcAAQAIAAwAAAAZAAcAAQACAAMAAAAnAAcAAQAIAAwAAAAAAAgAAQAAAAAAAAABAAgAAQACAAMAAAAYAAgAAQAIAAwAAAAZAAgAAQACAAMAAAAnAAgAAQAIAAwAAAAAAAkAAQAAAAAAAAABAAkAAQACAAMAAAASAAkAAQALAA8AAAAYAAkAAQAIAAwAAAAZAAkAAQACAAMAAAAnAAkAAQAIAAwAAAAAAAoAAQAAAAAAAAABAAoAAQACAAMAAAASAAoAAQAKAA0AAAAYAAoAAQAIAAgAAAAZAAoAAQACAAEAAAAnAAoAAQAIAAgAAAAAAAsAAQAAAAAAAAABAAsAAQACAAEAAAASAAsAAQAIAAkAAAATAAsAAQABAAEAAAAUAAsAAQABAAkAAAAVAAsAAQABAAkAAAAWAAsAAQABAAkAAAAXAAsAAQABAAgAAAAYAAsAAQAAAAgAAAAZAAsAAQAAAAEAAAAaAAsAAQABAAEAAAAbAAsAAQABAAkAAAAcAAsAAQABAAkAAAAdAAsAAQABAAkAAAAeAAsAAQABAAkAAAAfAAsAAQABAAkAAAAgAAsAAQABAAkAAAAhAAsAAQABAAkAAAAiAAsAAQABAAkAAAAjAAsAAQABAAkAAAAkAAsAAQABAAkAAAAlAAsAAQABAAkAAAAmAAsAAQABAAgAAAAnAAsAAQAAAAgAAAAAAAwAAQAAAAAAAAABAAwAAQAAAAEAAAACAAwAAQABAAEAAAADAAwAAQABAAkAAAAEAAwAAQABAAkAAAAFAAwAAQABAAkAAAAGAAwAAQABAAkAAAAHAAwAAQABAAkAAAAIAAwAAQABAAkAAAAJAAwAAQADAAkAAAALAAwAAQAJAAkAAAAMAAwAAQABAAkAAAANAAwAAQABAAkAAAAOAAwAAQABAAkAAAAPAAwAAQABAAkAAAAQAAwAAQABAAkAAAARAAwAAQABAAgAAAASAAwAAQAAAAgAAAATAAwAAQAAAAAAAAAUAAwAAQAAAAAAAAAVAAwAAQAAAAAAAAAWAAwAAQAAAAAAAAAXAAwAAQAAAAAAAAAYAAwAAQAAAAAAAAAZAAwAAQAAAAAAAAAaAAwAAQAAAAAAAAAbAAwAAQAAAAAAAAAcAAwAAAAAAAIAAAAdAAwAAQAAAAAAAAAeAAwAAQAAAAAAAAAfAAwAAQAAAAAAAAAgAAwAAQAAAAAAAAAhAAwAAQAAAAAAAAAiAAwAAQAAAAAAAAAjAAwAAQAAAAAAAAAkAAwAAQAAAAAAAAAlAAwAAQAAAAAAAAAmAAwAAQAAAAAAAAAnAAwAAQAAAAAAAAAAAA0AAQAAAAAAAAABAA0AAQAAAAAAAAACAA0AAQAAAAAAAAADAA0AAQAAAAAAAAAEAA0AAQAAAAAAAAAFAA0AAQAAAAAAAAAGAA0AAQAAAAAAAAAHAA0AAQAAAAAAAAAIAA0AAQAAAAAAAAAJAA0AAQAAAAEAAAAKAA0AAQABAAAAAAALAA0AAQAAAAgAAAAMAA0AAQAAAAAAAAANAA0AAQAAAAAAAAAOAA0AAQAAAAAAAAAPAA0AAQAAAAAAAAAQAA0AAQAAAAAAAAARAA0AAQAAAAAAAAASAA0AAQAAAAAAAAATAA0AAQAAAAAAAAAUAA0AAQAAAAAAAAAVAA0AAQAAAAAAAAAWAA0AAQAAAAAAAAAXAA0AAQAAAAAAAAAYAA0AAQAAAAAAAAAZAA0AAQAAAAAAAAAaAA0AAQAAAAAAAAAbAA0AAQAAAAAAAAAcAA0AAQAAAAAAAAAdAA0AAQAAAAAAAAAeAA0AAQAAAAAAAAAfAA0AAQAAAAAAAAAgAA0AAQAAAAAAAAAhAA0AAQAAAAAAAAAiAA0AAQAAAAAAAAAjAA0AAQAAAAAAAAAkAA0AAQAAAAAAAAAlAA0AAQAAAAAAAAAmAA0AAQAAAAAAAAAnAA0AAQAAAAAAAAA=")
+tile_set = ExtResource("2_hrmjq")
+
+[node name="FloorObjects" type="Node2D" parent="." unique_id=363707938]
+
+[node name="Brush_21_4" type="Area2D" parent="FloorObjects" unique_id=998472402 instance=ExtResource("3_gpr8y")]
+position = Vector2(344, 72)
+collision_layer = 0
+collision_mask = 6
+monitorable = false
+script = ExtResource("4_bsbj4")
+spin_speed = 1.4
+trigger_mode = 3
+hit_kind = 1
+damage = 0
+tickle = 12.0
+knockback = 120.0
+repeat_interval = 0.8
+reaction_key = "brush"
+hit_fx = "brush"
+
+[node name="Vent_35_6" type="Area2D" parent="FloorObjects" unique_id=115164452 instance=ExtResource("5_1lson")]
+position = Vector2(568, 104)
+collision_layer = 0
+collision_mask = 6
+monitorable = false
+script = ExtResource("6_05ttn")
+cloud_duration = 1.4
+hit_kind = 1
+damage = 0
+reaction_key = "vent"
+hit_fx = "sting"
+idle_time = 2.2
+warn_time = 0.6
+active_time = 0.2
+
+[node name="Brush_29_9" type="Area2D" parent="FloorObjects" unique_id=1281243527 instance=ExtResource("3_gpr8y")]
+position = Vector2(472, 152)
+collision_layer = 0
+collision_mask = 6
+monitorable = false
+script = ExtResource("4_bsbj4")
+spin_speed = -1.6
+trigger_mode = 3
+hit_kind = 1
+damage = 0
+tickle = 12.0
+knockback = 120.0
+repeat_interval = 0.8
+reaction_key = "brush"
+hit_fx = "brush"
+
+[node name="Vent_35_9" type="Area2D" parent="FloorObjects" unique_id=1360501632 instance=ExtResource("5_1lson")]
+position = Vector2(568, 152)
+collision_layer = 0
+collision_mask = 6
+monitorable = false
+script = ExtResource("6_05ttn")
+cloud_duration = 1.4
+hit_kind = 1
+damage = 0
+reaction_key = "vent"
+hit_fx = "sting"
+idle_time = 2.2
+warn_time = 0.6
+active_time = 0.2
+phase_offset = 1.1
+
+[node name="Spawn_10_11" type="Marker2D" parent="FloorObjects" unique_id=302409657 instance=ExtResource("7_0dgoj")]
+position = Vector2(168, 188)
+script = ExtResource("8_r0b3u")
+id = "from_town"
+
+[node name="Entities" type="Node2D" parent="." unique_id=14947649]
+y_sort_enabled = true
+
+[node name="Decor" type="TileMapLayer" parent="Entities" unique_id=816282728]
+y_sort_enabled = true
+tile_set = ExtResource("2_hrmjq")
+
+[node name="Torch_5_1" type="Node2D" parent="Entities" unique_id=2066099861 instance=ExtResource("9_w6aq1")]
+position = Vector2(88, 32)
+script = ExtResource("10_wl7bm")
+lit = true
+
+[node name="Torch_14_1" type="Node2D" parent="Entities" unique_id=257538748 instance=ExtResource("9_w6aq1")]
+position = Vector2(232, 32)
+script = ExtResource("10_wl7bm")
+lit = true
+
+[node name="WoodFloor_2_2" type="Node2D" parent="Entities" unique_id=113652354 instance=ExtResource("11_577ct")]
+position = Vector2(40, 48)
+script = ExtResource("12_4l2ff")
+kind = "wood_floor"
+
+[node name="F6Afterroom_2_2" type="Node2D" parent="Entities" unique_id=1541991878 instance=ExtResource("13_udosi")]
+position = Vector2(40, 48)
+script = ExtResource("14_71wxl")
+
+[node name="WoodFloor_3_2" type="Node2D" parent="Entities" unique_id=836173705 instance=ExtResource("11_577ct")]
+position = Vector2(56, 48)
+script = ExtResource("12_4l2ff")
+kind = "wood_floor"
+
+[node name="WoodFloor_4_2" type="Node2D" parent="Entities" unique_id=851059631 instance=ExtResource("11_577ct")]
+position = Vector2(72, 48)
+script = ExtResource("12_4l2ff")
+kind = "wood_floor"
+
+[node name="WoodFloor_5_2" type="Node2D" parent="Entities" unique_id=1543107546 instance=ExtResource("11_577ct")]
+position = Vector2(88, 48)
+script = ExtResource("12_4l2ff")
+kind = "wood_floor"
+
+[node name="WoodFloor_6_2" type="Node2D" parent="Entities" unique_id=2129226543 instance=ExtResource("11_577ct")]
+position = Vector2(104, 48)
+script = ExtResource("12_4l2ff")
+kind = "wood_floor"
+
+[node name="WoodFloor_7_2" type="Node2D" parent="Entities" unique_id=85290906 instance=ExtResource("11_577ct")]
+position = Vector2(120, 48)
+script = ExtResource("12_4l2ff")
+kind = "wood_floor"
+
+[node name="WoodFloor_8_2" type="Node2D" parent="Entities" unique_id=1134980460 instance=ExtResource("11_577ct")]
+position = Vector2(136, 48)
+script = ExtResource("12_4l2ff")
+kind = "wood_floor"
+
+[node name="WoodFloor_9_2" type="Node2D" parent="Entities" unique_id=509418536 instance=ExtResource("11_577ct")]
+position = Vector2(152, 48)
+script = ExtResource("12_4l2ff")
+kind = "wood_floor"
+
+[node name="Banner_9_2" type="Node2D" parent="Entities" unique_id=610672567 instance=ExtResource("11_577ct")]
+position = Vector2(152, 48)
+script = ExtResource("12_4l2ff")
+kind = "banner"
+
+[node name="WoodFloor_10_2" type="Node2D" parent="Entities" unique_id=2093686705 instance=ExtResource("11_577ct")]
+position = Vector2(168, 48)
+script = ExtResource("12_4l2ff")
+kind = "wood_floor"
+
+[node name="WoodFloor_11_2" type="Node2D" parent="Entities" unique_id=2124204661 instance=ExtResource("11_577ct")]
+position = Vector2(184, 48)
+script = ExtResource("12_4l2ff")
+kind = "wood_floor"
+
+[node name="WoodFloor_12_2" type="Node2D" parent="Entities" unique_id=57018566 instance=ExtResource("11_577ct")]
+position = Vector2(200, 48)
+script = ExtResource("12_4l2ff")
+kind = "wood_floor"
+
+[node name="WoodFloor_13_2" type="Node2D" parent="Entities" unique_id=625871002 instance=ExtResource("11_577ct")]
+position = Vector2(216, 48)
+script = ExtResource("12_4l2ff")
+kind = "wood_floor"
+
+[node name="WoodFloor_14_2" type="Node2D" parent="Entities" unique_id=1107699660 instance=ExtResource("11_577ct")]
+position = Vector2(232, 48)
+script = ExtResource("12_4l2ff")
+kind = "wood_floor"
+
+[node name="WoodFloor_15_2" type="Node2D" parent="Entities" unique_id=616567976 instance=ExtResource("11_577ct")]
+position = Vector2(248, 48)
+script = ExtResource("12_4l2ff")
+kind = "wood_floor"
+
+[node name="WoodFloor_16_2" type="Node2D" parent="Entities" unique_id=1090739020 instance=ExtResource("11_577ct")]
+position = Vector2(264, 48)
+script = ExtResource("12_4l2ff")
+kind = "wood_floor"
+
+[node name="WoodFloor_17_2" type="Node2D" parent="Entities" unique_id=1201490723 instance=ExtResource("11_577ct")]
+position = Vector2(280, 48)
+script = ExtResource("12_4l2ff")
+kind = "wood_floor"
+
+[node name="Torch_22_2" type="Node2D" parent="Entities" unique_id=1362451968 instance=ExtResource("9_w6aq1")]
+position = Vector2(360, 48)
+script = ExtResource("10_wl7bm")
+lit = true
+
+[node name="Torch_30_2" type="Node2D" parent="Entities" unique_id=1283218038 instance=ExtResource("9_w6aq1")]
+position = Vector2(488, 48)
+script = ExtResource("10_wl7bm")
+lit = true
+
+[node name="Torch_36_2" type="Node2D" parent="Entities" unique_id=290279127 instance=ExtResource("9_w6aq1")]
+position = Vector2(584, 48)
+script = ExtResource("10_wl7bm")
+lit = true
+
+[node name="WoodFloor_2_3" type="Node2D" parent="Entities" unique_id=101335910 instance=ExtResource("11_577ct")]
+position = Vector2(40, 64)
+script = ExtResource("12_4l2ff")
+kind = "wood_floor"
+
+[node name="WoodFloor_3_3" type="Node2D" parent="Entities" unique_id=846808158 instance=ExtResource("11_577ct")]
+position = Vector2(56, 64)
+script = ExtResource("12_4l2ff")
+kind = "wood_floor"
+
+[node name="WoodFloor_4_3" type="Node2D" parent="Entities" unique_id=1896012454 instance=ExtResource("11_577ct")]
+position = Vector2(72, 64)
+script = ExtResource("12_4l2ff")
+kind = "wood_floor"
+
+[node name="WoodFloor_5_3" type="Node2D" parent="Entities" unique_id=1762241353 instance=ExtResource("11_577ct")]
+position = Vector2(88, 64)
+script = ExtResource("12_4l2ff")
+kind = "wood_floor"
+
+[node name="WoodFloor_6_3" type="Node2D" parent="Entities" unique_id=1714397174 instance=ExtResource("11_577ct")]
+position = Vector2(104, 64)
+script = ExtResource("12_4l2ff")
+kind = "wood_floor"
+
+[node name="WoodFloor_7_3" type="Node2D" parent="Entities" unique_id=1393772344 instance=ExtResource("11_577ct")]
+position = Vector2(120, 64)
+script = ExtResource("12_4l2ff")
+kind = "wood_floor"
+
+[node name="WoodFloor_8_3" type="Node2D" parent="Entities" unique_id=1307625099 instance=ExtResource("11_577ct")]
+position = Vector2(136, 64)
+script = ExtResource("12_4l2ff")
+kind = "wood_floor"
+
+[node name="WoodFloor_9_3" type="Node2D" parent="Entities" unique_id=579803903 instance=ExtResource("11_577ct")]
+position = Vector2(152, 64)
+script = ExtResource("12_4l2ff")
+kind = "wood_floor"
+
+[node name="WoodFloor_10_3" type="Node2D" parent="Entities" unique_id=1828453842 instance=ExtResource("11_577ct")]
+position = Vector2(168, 64)
+script = ExtResource("12_4l2ff")
+kind = "wood_floor"
+
+[node name="WoodFloor_11_3" type="Node2D" parent="Entities" unique_id=2008315941 instance=ExtResource("11_577ct")]
+position = Vector2(184, 64)
+script = ExtResource("12_4l2ff")
+kind = "wood_floor"
+
+[node name="WoodFloor_12_3" type="Node2D" parent="Entities" unique_id=448348669 instance=ExtResource("11_577ct")]
+position = Vector2(200, 64)
+script = ExtResource("12_4l2ff")
+kind = "wood_floor"
+
+[node name="WoodFloor_13_3" type="Node2D" parent="Entities" unique_id=941170278 instance=ExtResource("11_577ct")]
+position = Vector2(216, 64)
+script = ExtResource("12_4l2ff")
+kind = "wood_floor"
+
+[node name="WoodFloor_14_3" type="Node2D" parent="Entities" unique_id=761790213 instance=ExtResource("11_577ct")]
+position = Vector2(232, 64)
+script = ExtResource("12_4l2ff")
+kind = "wood_floor"
+
+[node name="WoodFloor_15_3" type="Node2D" parent="Entities" unique_id=1555485608 instance=ExtResource("11_577ct")]
+position = Vector2(248, 64)
+script = ExtResource("12_4l2ff")
+kind = "wood_floor"
+
+[node name="WoodFloor_16_3" type="Node2D" parent="Entities" unique_id=961570220 instance=ExtResource("11_577ct")]
+position = Vector2(264, 64)
+script = ExtResource("12_4l2ff")
+kind = "wood_floor"
+
+[node name="WoodFloor_17_3" type="Node2D" parent="Entities" unique_id=1726372640 instance=ExtResource("11_577ct")]
+position = Vector2(280, 64)
+script = ExtResource("12_4l2ff")
+kind = "wood_floor"
+
+[node name="DrainLever_34_3" type="Node2D" parent="Entities" unique_id=527668067 instance=ExtResource("11_577ct")]
+position = Vector2(552, 64)
+script = ExtResource("12_4l2ff")
+kind = "drain_lever"
+
+[node name="WoodFloor_2_4" type="Node2D" parent="Entities" unique_id=1729140034 instance=ExtResource("11_577ct")]
+position = Vector2(40, 80)
+script = ExtResource("12_4l2ff")
+kind = "wood_floor"
+
+[node name="WoodFloor_3_4" type="Node2D" parent="Entities" unique_id=64853579 instance=ExtResource("11_577ct")]
+position = Vector2(56, 80)
+script = ExtResource("12_4l2ff")
+kind = "wood_floor"
+
+[node name="WoodFloor_4_4" type="Node2D" parent="Entities" unique_id=1659648173 instance=ExtResource("11_577ct")]
+position = Vector2(72, 80)
+script = ExtResource("12_4l2ff")
+kind = "wood_floor"
+
+[node name="Dummy_4_4" type="Node2D" parent="Entities" unique_id=1186672996 instance=ExtResource("11_577ct")]
+position = Vector2(72, 80)
+script = ExtResource("12_4l2ff")
+kind = "dummy"
+
+[node name="WoodFloor_5_4" type="Node2D" parent="Entities" unique_id=1482020105 instance=ExtResource("11_577ct")]
+position = Vector2(88, 80)
+script = ExtResource("12_4l2ff")
+kind = "wood_floor"
+
+[node name="WoodFloor_6_4" type="Node2D" parent="Entities" unique_id=1979521113 instance=ExtResource("11_577ct")]
+position = Vector2(104, 80)
+script = ExtResource("12_4l2ff")
+kind = "wood_floor"
+
+[node name="WoodFloor_7_4" type="Node2D" parent="Entities" unique_id=1449937242 instance=ExtResource("11_577ct")]
+position = Vector2(120, 80)
+script = ExtResource("12_4l2ff")
+kind = "wood_floor"
+
+[node name="WoodFloor_8_4" type="Node2D" parent="Entities" unique_id=1368293344 instance=ExtResource("11_577ct")]
+position = Vector2(136, 80)
+script = ExtResource("12_4l2ff")
+kind = "wood_floor"
+
+[node name="WoodFloor_9_4" type="Node2D" parent="Entities" unique_id=222255990 instance=ExtResource("11_577ct")]
+position = Vector2(152, 80)
+script = ExtResource("12_4l2ff")
+kind = "wood_floor"
+
+[node name="WoodFloor_10_4" type="Node2D" parent="Entities" unique_id=1805226670 instance=ExtResource("11_577ct")]
+position = Vector2(168, 80)
+script = ExtResource("12_4l2ff")
+kind = "wood_floor"
+
+[node name="Captain_10_4" type="CharacterBody2D" parent="Entities" unique_id=1384984840 instance=ExtResource("15_ufu1c")]
+position = Vector2(168, 76)
+collision_layer = 0
+motion_mode = 1
+script = ExtResource("16_n6wa1")
+npc_id = "captain"
+dialogue = "floor_06/after_drill_cap"
+wander = 0.0
+faction = 2
+
+[node name="WoodFloor_11_4" type="Node2D" parent="Entities" unique_id=637724956 instance=ExtResource("11_577ct")]
+position = Vector2(184, 80)
+script = ExtResource("12_4l2ff")
+kind = "wood_floor"
+
+[node name="WoodFloor_12_4" type="Node2D" parent="Entities" unique_id=269176159 instance=ExtResource("11_577ct")]
+position = Vector2(200, 80)
+script = ExtResource("12_4l2ff")
+kind = "wood_floor"
+
+[node name="WoodFloor_13_4" type="Node2D" parent="Entities" unique_id=2096815476 instance=ExtResource("11_577ct")]
+position = Vector2(216, 80)
+script = ExtResource("12_4l2ff")
+kind = "wood_floor"
+
+[node name="WoodFloor_14_4" type="Node2D" parent="Entities" unique_id=1356631662 instance=ExtResource("11_577ct")]
+position = Vector2(232, 80)
+script = ExtResource("12_4l2ff")
+kind = "wood_floor"
+
+[node name="WoodFloor_15_4" type="Node2D" parent="Entities" unique_id=482005667 instance=ExtResource("11_577ct")]
+position = Vector2(248, 80)
+script = ExtResource("12_4l2ff")
+kind = "wood_floor"
+
+[node name="Dummy_15_4" type="Node2D" parent="Entities" unique_id=1046182821 instance=ExtResource("11_577ct")]
+position = Vector2(248, 80)
+script = ExtResource("12_4l2ff")
+kind = "dummy"
+
+[node name="WoodFloor_16_4" type="Node2D" parent="Entities" unique_id=1549679024 instance=ExtResource("11_577ct")]
+position = Vector2(264, 80)
+script = ExtResource("12_4l2ff")
+kind = "wood_floor"
+
+[node name="WoodFloor_17_4" type="Node2D" parent="Entities" unique_id=1373461949 instance=ExtResource("11_577ct")]
+position = Vector2(280, 80)
+script = ExtResource("12_4l2ff")
+kind = "wood_floor"
+
+[node name="Dummy_27_4" type="Node2D" parent="Entities" unique_id=262050274 instance=ExtResource("11_577ct")]
+position = Vector2(440, 80)
+script = ExtResource("12_4l2ff")
+kind = "dummy"
+
+[node name="WoodFloor_2_5" type="Node2D" parent="Entities" unique_id=1938970679 instance=ExtResource("11_577ct")]
+position = Vector2(40, 96)
+script = ExtResource("12_4l2ff")
+kind = "wood_floor"
+
+[node name="WoodFloor_3_5" type="Node2D" parent="Entities" unique_id=2109361036 instance=ExtResource("11_577ct")]
+position = Vector2(56, 96)
+script = ExtResource("12_4l2ff")
+kind = "wood_floor"
+
+[node name="WoodFloor_4_5" type="Node2D" parent="Entities" unique_id=1188563843 instance=ExtResource("11_577ct")]
+position = Vector2(72, 96)
+script = ExtResource("12_4l2ff")
+kind = "wood_floor"
+
+[node name="WoodFloor_5_5" type="Node2D" parent="Entities" unique_id=160321853 instance=ExtResource("11_577ct")]
+position = Vector2(88, 96)
+script = ExtResource("12_4l2ff")
+kind = "wood_floor"
+
+[node name="WoodFloor_6_5" type="Node2D" parent="Entities" unique_id=695028331 instance=ExtResource("11_577ct")]
+position = Vector2(104, 96)
+script = ExtResource("12_4l2ff")
+kind = "wood_floor"
+
+[node name="WoodFloor_7_5" type="Node2D" parent="Entities" unique_id=1886752272 instance=ExtResource("11_577ct")]
+position = Vector2(120, 96)
+script = ExtResource("12_4l2ff")
+kind = "wood_floor"
+
+[node name="WoodFloor_8_5" type="Node2D" parent="Entities" unique_id=191135157 instance=ExtResource("11_577ct")]
+position = Vector2(136, 96)
+script = ExtResource("12_4l2ff")
+kind = "wood_floor"
+
+[node name="WoodFloor_9_5" type="Node2D" parent="Entities" unique_id=480689517 instance=ExtResource("11_577ct")]
+position = Vector2(152, 96)
+script = ExtResource("12_4l2ff")
+kind = "wood_floor"
+
+[node name="WoodFloor_10_5" type="Node2D" parent="Entities" unique_id=1545111313 instance=ExtResource("11_577ct")]
+position = Vector2(168, 96)
+script = ExtResource("12_4l2ff")
+kind = "wood_floor"
+
+[node name="WoodFloor_11_5" type="Node2D" parent="Entities" unique_id=818456105 instance=ExtResource("11_577ct")]
+position = Vector2(184, 96)
+script = ExtResource("12_4l2ff")
+kind = "wood_floor"
+
+[node name="WoodFloor_12_5" type="Node2D" parent="Entities" unique_id=1265840333 instance=ExtResource("11_577ct")]
+position = Vector2(200, 96)
+script = ExtResource("12_4l2ff")
+kind = "wood_floor"
+
+[node name="WoodFloor_13_5" type="Node2D" parent="Entities" unique_id=1297813681 instance=ExtResource("11_577ct")]
+position = Vector2(216, 96)
+script = ExtResource("12_4l2ff")
+kind = "wood_floor"
+
+[node name="WoodFloor_14_5" type="Node2D" parent="Entities" unique_id=2058763861 instance=ExtResource("11_577ct")]
+position = Vector2(232, 96)
+script = ExtResource("12_4l2ff")
+kind = "wood_floor"
+
+[node name="WoodFloor_15_5" type="Node2D" parent="Entities" unique_id=959341016 instance=ExtResource("11_577ct")]
+position = Vector2(248, 96)
+script = ExtResource("12_4l2ff")
+kind = "wood_floor"
+
+[node name="WoodFloor_16_5" type="Node2D" parent="Entities" unique_id=1194834163 instance=ExtResource("11_577ct")]
+position = Vector2(264, 96)
+script = ExtResource("12_4l2ff")
+kind = "wood_floor"
+
+[node name="WoodFloor_17_5" type="Node2D" parent="Entities" unique_id=1643845136 instance=ExtResource("11_577ct")]
+position = Vector2(280, 96)
+script = ExtResource("12_4l2ff")
+kind = "wood_floor"
+
+[node name="WoodFloor_2_6" type="Node2D" parent="Entities" unique_id=621436777 instance=ExtResource("11_577ct")]
+position = Vector2(40, 112)
+script = ExtResource("12_4l2ff")
+kind = "wood_floor"
+
+[node name="WoodFloor_3_6" type="Node2D" parent="Entities" unique_id=389302005 instance=ExtResource("11_577ct")]
+position = Vector2(56, 112)
+script = ExtResource("12_4l2ff")
+kind = "wood_floor"
+
+[node name="WoodFloor_4_6" type="Node2D" parent="Entities" unique_id=1539612790 instance=ExtResource("11_577ct")]
+position = Vector2(72, 112)
+script = ExtResource("12_4l2ff")
+kind = "wood_floor"
+
+[node name="WoodFloor_5_6" type="Node2D" parent="Entities" unique_id=69039511 instance=ExtResource("11_577ct")]
+position = Vector2(88, 112)
+script = ExtResource("12_4l2ff")
+kind = "wood_floor"
+
+[node name="WoodFloor_6_6" type="Node2D" parent="Entities" unique_id=1095029563 instance=ExtResource("11_577ct")]
+position = Vector2(104, 112)
+script = ExtResource("12_4l2ff")
+kind = "wood_floor"
+
+[node name="WoodFloor_7_6" type="Node2D" parent="Entities" unique_id=1306171596 instance=ExtResource("11_577ct")]
+position = Vector2(120, 112)
+script = ExtResource("12_4l2ff")
+kind = "wood_floor"
+
+[node name="WoodFloor_8_6" type="Node2D" parent="Entities" unique_id=324302249 instance=ExtResource("11_577ct")]
+position = Vector2(136, 112)
+script = ExtResource("12_4l2ff")
+kind = "wood_floor"
+
+[node name="WoodFloor_9_6" type="Node2D" parent="Entities" unique_id=751852686 instance=ExtResource("11_577ct")]
+position = Vector2(152, 112)
+script = ExtResource("12_4l2ff")
+kind = "wood_floor"
+
+[node name="WoodFloor_10_6" type="Node2D" parent="Entities" unique_id=539587938 instance=ExtResource("11_577ct")]
+position = Vector2(168, 112)
+script = ExtResource("12_4l2ff")
+kind = "wood_floor"
+
+[node name="WoodFloor_11_6" type="Node2D" parent="Entities" unique_id=1215686603 instance=ExtResource("11_577ct")]
+position = Vector2(184, 112)
+script = ExtResource("12_4l2ff")
+kind = "wood_floor"
+
+[node name="WoodFloor_12_6" type="Node2D" parent="Entities" unique_id=44905073 instance=ExtResource("11_577ct")]
+position = Vector2(200, 112)
+script = ExtResource("12_4l2ff")
+kind = "wood_floor"
+
+[node name="WoodFloor_13_6" type="Node2D" parent="Entities" unique_id=1982203779 instance=ExtResource("11_577ct")]
+position = Vector2(216, 112)
+script = ExtResource("12_4l2ff")
+kind = "wood_floor"
+
+[node name="WoodFloor_14_6" type="Node2D" parent="Entities" unique_id=642287018 instance=ExtResource("11_577ct")]
+position = Vector2(232, 112)
+script = ExtResource("12_4l2ff")
+kind = "wood_floor"
+
+[node name="WoodFloor_15_6" type="Node2D" parent="Entities" unique_id=254718516 instance=ExtResource("11_577ct")]
+position = Vector2(248, 112)
+script = ExtResource("12_4l2ff")
+kind = "wood_floor"
+
+[node name="WoodFloor_16_6" type="Node2D" parent="Entities" unique_id=599192314 instance=ExtResource("11_577ct")]
+position = Vector2(264, 112)
+script = ExtResource("12_4l2ff")
+kind = "wood_floor"
+
+[node name="WoodFloor_17_6" type="Node2D" parent="Entities" unique_id=1953800801 instance=ExtResource("11_577ct")]
+position = Vector2(280, 112)
+script = ExtResource("12_4l2ff")
+kind = "wood_floor"
+
+[node name="WoodFloor_2_7" type="Node2D" parent="Entities" unique_id=1310837279 instance=ExtResource("11_577ct")]
+position = Vector2(40, 128)
+script = ExtResource("12_4l2ff")
+kind = "wood_floor"
+
+[node name="WoodFloor_3_7" type="Node2D" parent="Entities" unique_id=1966544105 instance=ExtResource("11_577ct")]
+position = Vector2(56, 128)
+script = ExtResource("12_4l2ff")
+kind = "wood_floor"
+
+[node name="WoodFloor_4_7" type="Node2D" parent="Entities" unique_id=1310849455 instance=ExtResource("11_577ct")]
+position = Vector2(72, 128)
+script = ExtResource("12_4l2ff")
+kind = "wood_floor"
+
+[node name="WoodFloor_5_7" type="Node2D" parent="Entities" unique_id=49824695 instance=ExtResource("11_577ct")]
+position = Vector2(88, 128)
+script = ExtResource("12_4l2ff")
+kind = "wood_floor"
+
+[node name="WoodFloor_6_7" type="Node2D" parent="Entities" unique_id=1791125803 instance=ExtResource("11_577ct")]
+position = Vector2(104, 128)
+script = ExtResource("12_4l2ff")
+kind = "wood_floor"
+
+[node name="WoodFloor_7_7" type="Node2D" parent="Entities" unique_id=1505732881 instance=ExtResource("11_577ct")]
+position = Vector2(120, 128)
+script = ExtResource("12_4l2ff")
+kind = "wood_floor"
+
+[node name="WoodFloor_8_7" type="Node2D" parent="Entities" unique_id=1275265679 instance=ExtResource("11_577ct")]
+position = Vector2(136, 128)
+script = ExtResource("12_4l2ff")
+kind = "wood_floor"
+
+[node name="WoodFloor_9_7" type="Node2D" parent="Entities" unique_id=1268819695 instance=ExtResource("11_577ct")]
+position = Vector2(152, 128)
+script = ExtResource("12_4l2ff")
+kind = "wood_floor"
+
+[node name="WoodFloor_10_7" type="Node2D" parent="Entities" unique_id=1106067480 instance=ExtResource("11_577ct")]
+position = Vector2(168, 128)
+script = ExtResource("12_4l2ff")
+kind = "wood_floor"
+
+[node name="IceBlock_10_7" type="Node2D" parent="Entities" unique_id=1473900623 instance=ExtResource("11_577ct")]
+position = Vector2(168, 128)
+script = ExtResource("12_4l2ff")
+kind = "ice_block"
+action = "talk:floor_06/after_drill_objects#ice"
+
+[node name="WoodFloor_11_7" type="Node2D" parent="Entities" unique_id=778801931 instance=ExtResource("11_577ct")]
+position = Vector2(184, 128)
+script = ExtResource("12_4l2ff")
+kind = "wood_floor"
+
+[node name="WoodFloor_12_7" type="Node2D" parent="Entities" unique_id=388814414 instance=ExtResource("11_577ct")]
+position = Vector2(200, 128)
+script = ExtResource("12_4l2ff")
+kind = "wood_floor"
+
+[node name="WoodFloor_13_7" type="Node2D" parent="Entities" unique_id=1768328032 instance=ExtResource("11_577ct")]
+position = Vector2(216, 128)
+script = ExtResource("12_4l2ff")
+kind = "wood_floor"
+
+[node name="WoodFloor_14_7" type="Node2D" parent="Entities" unique_id=445338734 instance=ExtResource("11_577ct")]
+position = Vector2(232, 128)
+script = ExtResource("12_4l2ff")
+kind = "wood_floor"
+
+[node name="WoodFloor_15_7" type="Node2D" parent="Entities" unique_id=938124768 instance=ExtResource("11_577ct")]
+position = Vector2(248, 128)
+script = ExtResource("12_4l2ff")
+kind = "wood_floor"
+
+[node name="WoodFloor_16_7" type="Node2D" parent="Entities" unique_id=94642631 instance=ExtResource("11_577ct")]
+position = Vector2(264, 128)
+script = ExtResource("12_4l2ff")
+kind = "wood_floor"
+
+[node name="WoodFloor_17_7" type="Node2D" parent="Entities" unique_id=1311825820 instance=ExtResource("11_577ct")]
+position = Vector2(280, 128)
+script = ExtResource("12_4l2ff")
+kind = "wood_floor"
+
+[node name="Banner_37_7" type="Node2D" parent="Entities" unique_id=874032654 instance=ExtResource("11_577ct")]
+position = Vector2(600, 128)
+script = ExtResource("12_4l2ff")
+kind = "banner"
+
+[node name="WoodFloor_2_8" type="Node2D" parent="Entities" unique_id=1712964537 instance=ExtResource("11_577ct")]
+position = Vector2(40, 144)
+script = ExtResource("12_4l2ff")
+kind = "wood_floor"
+
+[node name="WoodFloor_3_8" type="Node2D" parent="Entities" unique_id=140540204 instance=ExtResource("11_577ct")]
+position = Vector2(56, 144)
+script = ExtResource("12_4l2ff")
+kind = "wood_floor"
+
+[node name="WoodFloor_4_8" type="Node2D" parent="Entities" unique_id=686927757 instance=ExtResource("11_577ct")]
+position = Vector2(72, 144)
+script = ExtResource("12_4l2ff")
+kind = "wood_floor"
+
+[node name="WoodFloor_5_8" type="Node2D" parent="Entities" unique_id=545285447 instance=ExtResource("11_577ct")]
+position = Vector2(88, 144)
+script = ExtResource("12_4l2ff")
+kind = "wood_floor"
+
+[node name="WoodFloor_6_8" type="Node2D" parent="Entities" unique_id=1044025384 instance=ExtResource("11_577ct")]
+position = Vector2(104, 144)
+script = ExtResource("12_4l2ff")
+kind = "wood_floor"
+
+[node name="WoodFloor_7_8" type="Node2D" parent="Entities" unique_id=327771661 instance=ExtResource("11_577ct")]
+position = Vector2(120, 144)
+script = ExtResource("12_4l2ff")
+kind = "wood_floor"
+
+[node name="WoodFloor_8_8" type="Node2D" parent="Entities" unique_id=770534725 instance=ExtResource("11_577ct")]
+position = Vector2(136, 144)
+script = ExtResource("12_4l2ff")
+kind = "wood_floor"
+
+[node name="WoodFloor_9_8" type="Node2D" parent="Entities" unique_id=1484921256 instance=ExtResource("11_577ct")]
+position = Vector2(152, 144)
+script = ExtResource("12_4l2ff")
+kind = "wood_floor"
+
+[node name="WoodFloor_10_8" type="Node2D" parent="Entities" unique_id=1638100728 instance=ExtResource("11_577ct")]
+position = Vector2(168, 144)
+script = ExtResource("12_4l2ff")
+kind = "wood_floor"
+
+[node name="WoodFloor_11_8" type="Node2D" parent="Entities" unique_id=118405730 instance=ExtResource("11_577ct")]
+position = Vector2(184, 144)
+script = ExtResource("12_4l2ff")
+kind = "wood_floor"
+
+[node name="WoodFloor_12_8" type="Node2D" parent="Entities" unique_id=477047453 instance=ExtResource("11_577ct")]
+position = Vector2(200, 144)
+script = ExtResource("12_4l2ff")
+kind = "wood_floor"
+
+[node name="WoodFloor_13_8" type="Node2D" parent="Entities" unique_id=287809083 instance=ExtResource("11_577ct")]
+position = Vector2(216, 144)
+script = ExtResource("12_4l2ff")
+kind = "wood_floor"
+
+[node name="WoodFloor_14_8" type="Node2D" parent="Entities" unique_id=1567201701 instance=ExtResource("11_577ct")]
+position = Vector2(232, 144)
+script = ExtResource("12_4l2ff")
+kind = "wood_floor"
+
+[node name="WoodFloor_15_8" type="Node2D" parent="Entities" unique_id=696892784 instance=ExtResource("11_577ct")]
+position = Vector2(248, 144)
+script = ExtResource("12_4l2ff")
+kind = "wood_floor"
+
+[node name="WoodFloor_16_8" type="Node2D" parent="Entities" unique_id=786152297 instance=ExtResource("11_577ct")]
+position = Vector2(264, 144)
+script = ExtResource("12_4l2ff")
+kind = "wood_floor"
+
+[node name="WoodFloor_17_8" type="Node2D" parent="Entities" unique_id=1431473195 instance=ExtResource("11_577ct")]
+position = Vector2(280, 144)
+script = ExtResource("12_4l2ff")
+kind = "wood_floor"
+
+[node name="WoodFloor_2_9" type="Node2D" parent="Entities" unique_id=1444021197 instance=ExtResource("11_577ct")]
+position = Vector2(40, 160)
+script = ExtResource("12_4l2ff")
+kind = "wood_floor"
+
+[node name="WoodFloor_3_9" type="Node2D" parent="Entities" unique_id=920957306 instance=ExtResource("11_577ct")]
+position = Vector2(56, 160)
+script = ExtResource("12_4l2ff")
+kind = "wood_floor"
+
+[node name="WoodFloor_4_9" type="Node2D" parent="Entities" unique_id=1810477110 instance=ExtResource("11_577ct")]
+position = Vector2(72, 160)
+script = ExtResource("12_4l2ff")
+kind = "wood_floor"
+
+[node name="Bench_4_9" type="Node2D" parent="Entities" unique_id=1510569812 instance=ExtResource("11_577ct")]
+position = Vector2(72, 160)
+script = ExtResource("12_4l2ff")
+kind = "bench"
+
+[node name="WoodFloor_5_9" type="Node2D" parent="Entities" unique_id=894844886 instance=ExtResource("11_577ct")]
+position = Vector2(88, 160)
+script = ExtResource("12_4l2ff")
+kind = "wood_floor"
+
+[node name="WoodFloor_6_9" type="Node2D" parent="Entities" unique_id=939358686 instance=ExtResource("11_577ct")]
+position = Vector2(104, 160)
+script = ExtResource("12_4l2ff")
+kind = "wood_floor"
+
+[node name="WoodFloor_7_9" type="Node2D" parent="Entities" unique_id=757726275 instance=ExtResource("11_577ct")]
+position = Vector2(120, 160)
+script = ExtResource("12_4l2ff")
+kind = "wood_floor"
+
+[node name="WoodFloor_8_9" type="Node2D" parent="Entities" unique_id=794395281 instance=ExtResource("11_577ct")]
+position = Vector2(136, 160)
+script = ExtResource("12_4l2ff")
+kind = "wood_floor"
+
+[node name="WoodFloor_9_9" type="Node2D" parent="Entities" unique_id=1723847293 instance=ExtResource("11_577ct")]
+position = Vector2(152, 160)
+script = ExtResource("12_4l2ff")
+kind = "wood_floor"
+
+[node name="WoodFloor_10_9" type="Node2D" parent="Entities" unique_id=1821360517 instance=ExtResource("11_577ct")]
+position = Vector2(168, 160)
+script = ExtResource("12_4l2ff")
+kind = "wood_floor"
+
+[node name="WoodFloor_11_9" type="Node2D" parent="Entities" unique_id=1341247906 instance=ExtResource("11_577ct")]
+position = Vector2(184, 160)
+script = ExtResource("12_4l2ff")
+kind = "wood_floor"
+
+[node name="WoodFloor_12_9" type="Node2D" parent="Entities" unique_id=1779133696 instance=ExtResource("11_577ct")]
+position = Vector2(200, 160)
+script = ExtResource("12_4l2ff")
+kind = "wood_floor"
+
+[node name="WoodFloor_13_9" type="Node2D" parent="Entities" unique_id=1253579257 instance=ExtResource("11_577ct")]
+position = Vector2(216, 160)
+script = ExtResource("12_4l2ff")
+kind = "wood_floor"
+
+[node name="WoodFloor_14_9" type="Node2D" parent="Entities" unique_id=794668920 instance=ExtResource("11_577ct")]
+position = Vector2(232, 160)
+script = ExtResource("12_4l2ff")
+kind = "wood_floor"
+
+[node name="WoodFloor_15_9" type="Node2D" parent="Entities" unique_id=2084532922 instance=ExtResource("11_577ct")]
+position = Vector2(248, 160)
+script = ExtResource("12_4l2ff")
+kind = "wood_floor"
+
+[node name="Bench_15_9" type="Node2D" parent="Entities" unique_id=1583358240 instance=ExtResource("11_577ct")]
+position = Vector2(248, 160)
+script = ExtResource("12_4l2ff")
+kind = "bench"
+
+[node name="WoodFloor_16_9" type="Node2D" parent="Entities" unique_id=20672553 instance=ExtResource("11_577ct")]
+position = Vector2(264, 160)
+script = ExtResource("12_4l2ff")
+kind = "wood_floor"
+
+[node name="WoodFloor_17_9" type="Node2D" parent="Entities" unique_id=1235125418 instance=ExtResource("11_577ct")]
+position = Vector2(280, 160)
+script = ExtResource("12_4l2ff")
+kind = "wood_floor"
+
+[node name="WoodFloor_2_10" type="Node2D" parent="Entities" unique_id=683459354 instance=ExtResource("11_577ct")]
+position = Vector2(40, 176)
+script = ExtResource("12_4l2ff")
+kind = "wood_floor"
+
+[node name="WoodFloor_3_10" type="Node2D" parent="Entities" unique_id=694016647 instance=ExtResource("11_577ct")]
+position = Vector2(56, 176)
+script = ExtResource("12_4l2ff")
+kind = "wood_floor"
+
+[node name="WoodFloor_4_10" type="Node2D" parent="Entities" unique_id=367583206 instance=ExtResource("11_577ct")]
+position = Vector2(72, 176)
+script = ExtResource("12_4l2ff")
+kind = "wood_floor"
+
+[node name="WoodFloor_5_10" type="Node2D" parent="Entities" unique_id=266946176 instance=ExtResource("11_577ct")]
+position = Vector2(88, 176)
+script = ExtResource("12_4l2ff")
+kind = "wood_floor"
+
+[node name="WoodFloor_6_10" type="Node2D" parent="Entities" unique_id=697933458 instance=ExtResource("11_577ct")]
+position = Vector2(104, 176)
+script = ExtResource("12_4l2ff")
+kind = "wood_floor"
+
+[node name="WoodFloor_7_10" type="Node2D" parent="Entities" unique_id=1516018554 instance=ExtResource("11_577ct")]
+position = Vector2(120, 176)
+script = ExtResource("12_4l2ff")
+kind = "wood_floor"
+
+[node name="WoodFloor_8_10" type="Node2D" parent="Entities" unique_id=975884464 instance=ExtResource("11_577ct")]
+position = Vector2(136, 176)
+script = ExtResource("12_4l2ff")
+kind = "wood_floor"
+
+[node name="WoodFloor_9_10" type="Node2D" parent="Entities" unique_id=1976951890 instance=ExtResource("11_577ct")]
+position = Vector2(152, 176)
+script = ExtResource("12_4l2ff")
+kind = "wood_floor"
+
+[node name="WoodFloor_10_10" type="Node2D" parent="Entities" unique_id=106475 instance=ExtResource("11_577ct")]
+position = Vector2(168, 176)
+script = ExtResource("12_4l2ff")
+kind = "wood_floor"
+
+[node name="Player_10_10" type="CharacterBody2D" parent="Entities" unique_id=1573113520 instance=ExtResource("17_f34sw")]
+position = Vector2(168, 172)
+collision_layer = 2
+motion_mode = 1
+script = ExtResource("18_s7yxa")
+channel_tiers = PackedFloat32Array(0.5, 1, 1.6)
+faction = 1
+
+[node name="WoodFloor_11_10" type="Node2D" parent="Entities" unique_id=440872072 instance=ExtResource("11_577ct")]
+position = Vector2(184, 176)
+script = ExtResource("12_4l2ff")
+kind = "wood_floor"
+
+[node name="BluePrincess_11_10" type="CharacterBody2D" parent="Entities" unique_id=1199488542 instance=ExtResource("19_ks5g7")]
+position = Vector2(184, 172)
+collision_layer = 2
+motion_mode = 1
+script = ExtResource("20_glfgp")
+ai = false
+channel_tiers = PackedFloat32Array(0.5, 1, 1.6)
+follow = true
+faction = 2
+
+[node name="WoodFloor_12_10" type="Node2D" parent="Entities" unique_id=1143902249 instance=ExtResource("11_577ct")]
+position = Vector2(200, 176)
+script = ExtResource("12_4l2ff")
+kind = "wood_floor"
+
+[node name="WoodFloor_13_10" type="Node2D" parent="Entities" unique_id=1692229280 instance=ExtResource("11_577ct")]
+position = Vector2(216, 176)
+script = ExtResource("12_4l2ff")
+kind = "wood_floor"
+
+[node name="WoodFloor_14_10" type="Node2D" parent="Entities" unique_id=691114882 instance=ExtResource("11_577ct")]
+position = Vector2(232, 176)
+script = ExtResource("12_4l2ff")
+kind = "wood_floor"
+
+[node name="WoodFloor_15_10" type="Node2D" parent="Entities" unique_id=1150424313 instance=ExtResource("11_577ct")]
+position = Vector2(248, 176)
+script = ExtResource("12_4l2ff")
+kind = "wood_floor"
+
+[node name="WoodFloor_16_10" type="Node2D" parent="Entities" unique_id=300598983 instance=ExtResource("11_577ct")]
+position = Vector2(264, 176)
+script = ExtResource("12_4l2ff")
+kind = "wood_floor"
+
+[node name="WoodFloor_17_10" type="Node2D" parent="Entities" unique_id=809488368 instance=ExtResource("11_577ct")]
+position = Vector2(280, 176)
+script = ExtResource("12_4l2ff")
+kind = "wood_floor"
+
+[node name="WoodFloor_2_11" type="Node2D" parent="Entities" unique_id=1200624139 instance=ExtResource("11_577ct")]
+position = Vector2(40, 192)
+script = ExtResource("12_4l2ff")
+kind = "wood_floor"
+
+[node name="WoodFloor_3_11" type="Node2D" parent="Entities" unique_id=1952412898 instance=ExtResource("11_577ct")]
+position = Vector2(56, 192)
+script = ExtResource("12_4l2ff")
+kind = "wood_floor"
+
+[node name="WoodFloor_4_11" type="Node2D" parent="Entities" unique_id=1375985769 instance=ExtResource("11_577ct")]
+position = Vector2(72, 192)
+script = ExtResource("12_4l2ff")
+kind = "wood_floor"
+
+[node name="WoodFloor_5_11" type="Node2D" parent="Entities" unique_id=1490674450 instance=ExtResource("11_577ct")]
+position = Vector2(88, 192)
+script = ExtResource("12_4l2ff")
+kind = "wood_floor"
+
+[node name="WoodFloor_6_11" type="Node2D" parent="Entities" unique_id=1943760202 instance=ExtResource("11_577ct")]
+position = Vector2(104, 192)
+script = ExtResource("12_4l2ff")
+kind = "wood_floor"
+
+[node name="WoodFloor_7_11" type="Node2D" parent="Entities" unique_id=881344205 instance=ExtResource("11_577ct")]
+position = Vector2(120, 192)
+script = ExtResource("12_4l2ff")
+kind = "wood_floor"
+
+[node name="WoodFloor_8_11" type="Node2D" parent="Entities" unique_id=583505252 instance=ExtResource("11_577ct")]
+position = Vector2(136, 192)
+script = ExtResource("12_4l2ff")
+kind = "wood_floor"
+
+[node name="WoodFloor_9_11" type="Node2D" parent="Entities" unique_id=663580318 instance=ExtResource("11_577ct")]
+position = Vector2(152, 192)
+script = ExtResource("12_4l2ff")
+kind = "wood_floor"
+
+[node name="WoodFloor_10_11" type="Node2D" parent="Entities" unique_id=1584987005 instance=ExtResource("11_577ct")]
+position = Vector2(168, 192)
+script = ExtResource("12_4l2ff")
+kind = "wood_floor"
+
+[node name="WoodFloor_11_11" type="Node2D" parent="Entities" unique_id=1835786855 instance=ExtResource("11_577ct")]
+position = Vector2(184, 192)
+script = ExtResource("12_4l2ff")
+kind = "wood_floor"
+
+[node name="WoodFloor_12_11" type="Node2D" parent="Entities" unique_id=1262039189 instance=ExtResource("11_577ct")]
+position = Vector2(200, 192)
+script = ExtResource("12_4l2ff")
+kind = "wood_floor"
+
+[node name="WoodFloor_13_11" type="Node2D" parent="Entities" unique_id=662698263 instance=ExtResource("11_577ct")]
+position = Vector2(216, 192)
+script = ExtResource("12_4l2ff")
+kind = "wood_floor"
+
+[node name="WoodFloor_14_11" type="Node2D" parent="Entities" unique_id=1140572232 instance=ExtResource("11_577ct")]
+position = Vector2(232, 192)
+script = ExtResource("12_4l2ff")
+kind = "wood_floor"
+
+[node name="WoodFloor_15_11" type="Node2D" parent="Entities" unique_id=291087428 instance=ExtResource("11_577ct")]
+position = Vector2(248, 192)
+script = ExtResource("12_4l2ff")
+kind = "wood_floor"
+
+[node name="WoodFloor_16_11" type="Node2D" parent="Entities" unique_id=313395194 instance=ExtResource("11_577ct")]
+position = Vector2(264, 192)
+script = ExtResource("12_4l2ff")
+kind = "wood_floor"
+
+[node name="WoodFloor_17_11" type="Node2D" parent="Entities" unique_id=2072497467 instance=ExtResource("11_577ct")]
+position = Vector2(280, 192)
+script = ExtResource("12_4l2ff")
+kind = "wood_floor"
+
+[node name="Triggers" type="Node2D" parent="." unique_id=764388706]
+
+[node name="Exit_10_12" type="Area2D" parent="Triggers" unique_id=1024107750 instance=ExtResource("21_qkgcg")]
+position = Vector2(168, 200)
+collision_layer = 0
+collision_mask = 2
+monitorable = false
+script = ExtResource("22_t8n4l")
+target_level = "res://levels/floor_06_after/floor.tscn"
+spawn = "from_drill"

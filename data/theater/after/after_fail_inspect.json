@@ -1,0 +1,171 @@
+{
+	"name": "验收失败：全套陷阱一起来",
+	"cast": {
+		"princess": {
+			"kind": "princess",
+			"at": [
+				0,
+				8
+			],
+			"visual": "helpless_1",
+			"anim": "helpless",
+			"dir": "down"
+		},
+		"rack": {
+			"kind": "trap:foot_thigh_rack",
+			"at": [
+				0,
+				10
+			]
+		},
+		"brush": {
+			"kind": "trap:brush",
+			"at": [
+				-22,
+				14
+			]
+		},
+		"feather": {
+			"kind": "trap:feather",
+			"at": [
+				22,
+				14
+			]
+		}
+	},
+	"steps": [
+		{
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "fade_in"
+				},
+				{
+					"state": "giggle",
+					"do": "voice"
+				}
+			],
+			"wait": 0.5
+		},
+		{
+			"speaker": "",
+			"text": "（笑得腿一软，她一屁股坐在了跪台和吊环架中间——两个陷阱同时「咔哒」一声启动了）"
+		},
+		{
+			"speaker": "公主",
+			"text": "等、等一下！我还没——",
+			"emotion": "surprise"
+		},
+		{
+			"speaker": "",
+			"text": "（一只脚踝被吊环套住拉了起来，另一只脚被跪台的锁扣扣住。两只脚心，一高一低，全都朝着外面）"
+		},
+		{
+			"speaker": "保卫队员小芬",
+			"text": "哇！两个陷阱的联动！我都没想到可以这样！"
+		},
+		{
+			"speaker": "",
+			"text": "（羽毛扫过吊起来的脚心，刷子刷过锁住的脚底，脚趾分隔刷的夹子也「嗖」地伸了过来）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "feather",
+					"zone": "sole",
+					"fx": "feather",
+					"repeat": 10,
+					"interval": 0.2,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"by": "brush",
+					"zone": "sole",
+					"fx": "brush",
+					"repeat": 10,
+					"interval": 0.2,
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "哈哈哈哈！三、三个一起——！数、数据不准了啦——！",
+			"portrait": "defeat_1"
+		},
+		{
+			"speaker": "保卫队员",
+			"text": "小芬！快关掉！"
+		},
+		{
+			"speaker": "保卫队员小芬",
+			"text": "可是……这个联动的数据好珍贵……我记一下……就一下……",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "brush",
+					"zone": "sole",
+					"fx": "brush",
+					"repeat": 12,
+					"interval": 0.15,
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "记什么记啊——哈哈哈哈！脚趾缝……全部……！",
+			"portrait": "defeat_2"
+		},
+		{
+			"speaker": "",
+			"text": "（夹子把脚趾一根根撑开，细刷子在趾缝里来回地刷。吊起来的那只脚被扳着脚趾，脚心绷得平平的，羽毛一圈一圈地画）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "rack",
+					"zone": "sole",
+					"fx": "feather",
+					"repeat": 14,
+					"interval": 0.14,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"visual": "helpless_2",
+					"do": "pose"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "哈……哈……投、投降……我投降……全部都太强了……！",
+			"emotion": "helpless_2"
+		},
+		{
+			"speaker": "保卫队队长",
+			"text": "……关掉。"
+		},
+		{
+			"speaker": "",
+			"text": "（陷阱终于停了下来。她瘫在台子上，两只脚还在一抽一抽的）"
+		},
+		{
+			"speaker": "保卫队队长",
+			"text": "……歇一会儿。综合演练，从头再走。"
+		},
+		{
+			"actions": [
+				{
+					"time": 0.6,
+					"do": "fade_out"
+				},
+				{
+					"state": "",
+					"do": "voice"
+				}
+			],
+			"wait": 0.7
+		}
+	]
+}

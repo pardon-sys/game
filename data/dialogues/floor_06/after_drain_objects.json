@@ -1,0 +1,23 @@
+{
+	"name": "",
+	"entries": [
+		{
+			"node": "graffiti"
+		}
+	],
+	"nodes": {
+		"graffiti": {
+			"lines": [
+				{
+					"speaker": "",
+					"text": "（两个手拉手的小女孩。一个卷发，一个直发。旁边的字被苔藓盖住了）"
+				},
+				{
+					"speaker": "公主",
+					"text": "……",
+					"emotion": "sad"
+				}
+			]
+		}
+	}
+}
