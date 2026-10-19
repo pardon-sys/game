@@ -27,7 +27,7 @@ Q = prop type=wood_floor + prop type=rug + prop type=tea_table action=talk:floor
 R = prop type=wood_floor + player
 S = prop type=wood_floor + prop type=plant action=talk:floor_06/after_house_objects#plant
 T = prop type=wood_floor + spawn id=from_town
-U = prop type=wood_floor + exit target=floor_06_after spawn=from_house lock_flag=night locked_dialogue=after_curfew
+U = prop type=wood_floor + exit target=floor_06_after spawn=from_house lock_flag=after_curfew locked_dialogue=after_curfew
 
 [map]
 ####################

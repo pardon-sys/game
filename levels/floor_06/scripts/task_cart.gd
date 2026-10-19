@@ -54,7 +54,7 @@ static func reset_items() -> void:
 
 
 static func status_text() -> String:
-	return "拆完 %d / 3 辆" % (GameState.vars.get("task_cart_done", []) as Array).size()
+	return "拆完 %d / 3 辆　车尾按住 E 拆车轴　C 换蓝色公主：按住 L 冻住车轮" % (GameState.vars.get("task_cart_done", []) as Array).size()
 
 
 func _process(delta: float) -> void:

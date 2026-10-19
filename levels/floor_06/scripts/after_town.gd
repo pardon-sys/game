@@ -112,7 +112,7 @@ func _on_flag_changed(flag: String) -> void:
 		apply_schedule()
 	if flag == DayClock.TICK or flag == PenanceBook.FLAG or flag == AfterStory.TASK_FLAG:
 		AfterErrands.refresh()
-	if flag == DayClock.TICK or flag.begins_with("after_") or flag.begins_with("errand_") or flag == PenanceBook.FLAG:
+	if flag == DayClock.TICK or flag.begins_with("after_") or flag.begins_with("errand_") or flag == PenanceBook.FLAG or flag == AfterPenance.FLAG:
 		refresh_objective.call_deferred()
 		_sync_errand.call_deferred()
 
@@ -146,6 +146,9 @@ func _sync_errand() -> void:
 		for eid in AfterErrands.ids():
 			if str(AfterErrands.info(str(eid)).get("npc", "")) == key and GameState.has_flag("errand_%s_open" % eid):
 				want = true
+		# 补罚任务：有没抵的受罚时，市场监督 / 派对主人也冒「！」
+		if key in ["after_supervisor", "after_bonfire_host"] and GameState.has_flag(AfterPenance.FLAG):
+			want = true
 		var mark := r.get_node_or_null("ErrandMark") as Label
 		if want and mark == null:
 			mark = Label.new()

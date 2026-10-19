@@ -21,9 +21,12 @@ const STAGES := [9, 14, 40, 66]
 const SLOPE_X := 66
 const GOAL_X := 88
 const PUSH := 44.0
-const SLOPE_TAP := 7.0
-const SLOPE_BACK := 12.0
-const IMP_SLOW := 0.6
+const SLOPE_TAP := 11.0
+const SLOPE_BACK := 6.0
+const IMP_SLOW := 0.75
+## 陷阱打到车上的蓝色公主：多近算打到、多久反应一次
+const BLUE_HIT_R := 30.0
+const BLUE_HIT_EVERY := 0.9
 const FREEZE_RANGE := 96.0
 const FREEZE_TIME := 5.0
 const FREEZE_CD := 4.0
@@ -52,6 +55,9 @@ var _busy := false
 var _imp_t := 1.5
 var _react_t := 0.0
 var _tick_t := 0.0
+var _blue_hit_t := 0.0
+## 测试用：蓝色公主被陷阱挠到几次
+var blue_hits := 0
 
 
 static func data() -> Dictionary:
@@ -66,7 +72,7 @@ static func reset_items() -> void:
 
 
 static func status_text() -> String:
-	return "车溜回去 %d / %d 次" % [int(GameState.vars.get("task_mine_slips", 0)), SLIPS]
+	return "车溜回去 %d / %d 次　→ 推车（上坡连按）　C 冰封、J 冻陷阱 / 拍小鬼" % [int(GameState.vars.get("task_mine_slips", 0)), SLIPS]
 
 
 func _ready() -> void:
@@ -149,6 +155,7 @@ func _process(delta: float) -> void:
 		p.global_position.x = cart_x - 12.0
 	_place_cart()
 	_imps(delta)
+	_blue_traps(delta)
 	if Input.is_action_just_pressed("attack"):
 		if freeze_mode:
 			cast_freeze()
@@ -276,6 +283,36 @@ func is_frozen(t: Trap) -> bool:
 func _blue_say(s: String) -> void:
 	if is_instance_valid(_blue):
 		SpeechBubble.say(_blue, s, 30.0, 1.4)
+
+
+## 车经过陷阱时，坐在车上的蓝色公主也会被挠到（喷口的粉雾、扫过来的羽毛刷）：冒字 + 部位特效
+func _blue_traps(delta: float) -> void:
+	_blue_hit_t -= delta
+	if _blue_hit_t > 0.0 or not is_instance_valid(_blue):
+		return
+	var at := _blue.global_position
+	var hit := false
+	for c in get_parent().find_children("*", "TickleCloud", true, false):
+		if (c as Node2D).global_position.distance_to(at) < float(c.get("radius")) + 6.0:
+			hit = true
+			break
+	if not hit:
+		for t in get_tree().get_nodes_in_group("trap"):
+			var tr := t as Trap
+			if tr and not is_frozen(tr) and tr.is_dangerous() and tr.global_position.distance_to(at) < BLUE_HIT_R + (32.0 if tr is FeatherBrush else 0.0):
+				hit = true
+				break
+	if not hit:
+		return
+	_blue_hit_t = BLUE_HIT_EVERY
+	blue_hits += 1
+	var bl: Array = data().get("imp", {}).get("blue", ["……！"])
+	_blue_say(str(bl.pick_random()))
+	var z: String = ["thigh", "waist", "butt"].pick_random()
+	ZoneFx.play(z, get_parent(), _blue.global_position + Vector2(0, -6), 1.0, false)
+	HitFx.play("feather", get_parent(), _blue.global_position + Vector2(randf_range(-4, 4), -8))
+	if _blue.laugh:
+		_blue.laugh.set_value(minf(_blue.laugh.value + _blue.laugh.max_value * 0.04, _blue.laugh.max_value * 0.9))
 
 
 # ------------------------------------------------------------------ 残党小鬼

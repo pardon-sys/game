@@ -31,6 +31,12 @@ const EVENTS := {
 	"d1_open": {"where": TOWN, "auto": true, "cutscene": "after_d1_open"},
 	"d1_verdict": {"where": TOWN, "spot": [31, 27, 2.5], "objective": "去广场的宣判台，听候宣判", "cutscene": "after_d1_verdict"},
 	"d1_sleepwalk": {"where": HOUSE, "auto": true, "objective": "回蓝色小屋", "cutscene": "after_d1_night"},
+	"d5_tom": {"where": HOUSE, "auto": true, "objective": "回蓝色小屋睡觉", "cutscene": ""},
+	# 晚上的弥补任务（宵禁前在镇上做，做完才能回小屋睡）
+	"d2_sweep": {"where": TOWN, "spot": [45, 13, 1.5], "objective": "面包店奶奶在烤炉后院（东边）喊人帮忙扫羽毛", "cutscene": ""},
+	"d3_mice": {"where": PHARMACY, "spot": [8, 6, 1.2], "objective": "药剂师奶奶的工房里好像出事了（北边那排房子）", "cutscene": ""},
+	"d4_tag": {"where": TOWN, "spot": [31, 31, 2.0], "objective": "小孩们在广场等着玩捉人游戏", "cutscene": ""},
+	"d6_lantern": {"where": TOWN, "spot": [31, 27, 2.0], "objective": "镇长在广场等你点灯笼", "cutscene": ""},
 	"d2_stocks": {"where": TOWN, "spot": [23, 25.5, 2], "objective": "去广场的足枷示众", "cutscene": "after_d2_stocks"},
 	"d2_equip": {"where": TOWN, "spot": [13, 24.5, 1.5], "objective": "去补给站找市场监督（回收痒痒装备）", "cutscene": "after_d2_equip"},
 	"d3_potion": {"where": PHARMACY, "spot": [8, 6, 1.0], "objective": "去药剂师工房试药（北边那排房子）", "cutscene": "after_d3_potion"},
@@ -47,7 +53,7 @@ const EVENTS := {
 const TOWN_DOORS := {"floor_06_after_house": [42, 10], "floor_06_after_house_up": [42, 10], "floor_06_after_pharmacy": [16, 10],
 	"floor_06_after_field": [32, 38.5], "floor_06_after_tailor": [32, 10], "floor_06_after_mine": [54, 6], "floor_06_after_totem": [3, 32], "floor_06_after_drain": [20, 38], "floor_06_after_drill": [8, 10], "floor_06_after_proving": [60, 20]}
 const ROOM_EXITS := {"floor_06_after_house": [9, 10], "floor_06_after_pharmacy": [8, 8.5], "floor_06_after_field": [21, 3],
-	"floor_06_after_tailor": [8, 10.5], "floor_06_after_mine": [3, 6], "floor_06_after_totem": [3, 12], "floor_06_after_drain": [3, 12], "floor_06_after_drill": [10, 11.5], "floor_06_after_proving": [3, 9]}
+	"floor_06_after_tailor": [8, 10.5], "floor_06_after_mine": [3, 6], "floor_06_after_totem": [3, 12], "floor_06_after_drain": [3, 12], "floor_06_after_drill": [10, 11.5], "floor_06_after_proving": [2.5, 4]}
 ## 城门：第 3 天下午拆攻城车的时候才开；矿道门：第 5 天下午护送矿车的时候才开
 const FIELD_OPEN := "after_field_open"
 const MINE_OPEN := "after_mine_open"
@@ -57,6 +63,8 @@ const TOTEM_OPEN := "after_totem_open"
 const DRAIN_OPEN := "after_drain_open"
 const DRILL_OPEN := "after_drill_open"
 const PROVING_OPEN := "after_proving_open"
+## 宵禁：夜里、而且镇上没有要做的晚上任务时，小屋的门锁上（不让出去）
+const CURFEW := "after_curfew"
 ## 弥补任务进行中（不能接委托、小屋的门锁着）
 const TASK_FLAG := "after_task_active"
 ## 弥补任务的玩法节点：事件 id → 脚本（实例发 finished(ok)；脚本要有静态的 reset_items() / status_text()）、失败小剧场 / 罚工时
@@ -76,9 +84,13 @@ const TASKS := {
 	"d4_drill": {"script": "res://levels/floor_06/scripts/task_drill.gd", "name": "蓝色公主的特训", "fail": "after_fail_drill", "fail_hours": 0,
 		"done": "after_d4_drill_done"},
 	"d6_inspect": {"script": "res://levels/floor_06/scripts/task_inspect.gd", "name": "陷阱验收", "fail": "after_fail_inspect", "fail_hours": 2,
-		"done": "after_d6_inspect_done", "respawn": [4, 9]},
+		"done": "after_d6_inspect_done", "respawn": [4, 4]},
 	"d6_drill": {"script": "res://levels/floor_06/scripts/task_drill.gd", "name": "蓝色公主的特训（考核）", "fail": "after_fail_drill", "fail_hours": 0,
 		"done": "after_d6_drill_done"},
+	"d2_sweep": {"script": "res://levels/floor_06/scripts/task_sweep.gd", "name": "羽毛大扫除", "fail": "after_fail_sweep", "fail_hours": 1, "respawn": [45, 14]},
+	"d3_mice": {"script": "res://levels/floor_06/scripts/task_mice.gd", "name": "逃跑的痒痒鼠", "fail": "after_fail_mice", "fail_hours": 1},
+	"d4_tag": {"script": "res://levels/floor_06/scripts/task_tag.gd", "name": "挠痒捉人", "fail": "after_fail_tag", "fail_hours": 1, "respawn": [31, 31]},
+	"d6_lantern": {"script": "res://levels/floor_06/scripts/task_lantern.gd", "name": "笑声灯笼", "fail": "", "fail_hours": 0},
 	# 早上开始一直做到傍晚（to_night：做完直接天黑）；修好了工时清零（clear_book）
 	"d7_totem": {"script": "res://levels/floor_06/scripts/task_totem.gd", "name": "修补狂欢图腾柱", "fail": "after_fail_totem", "fail_hours": 2,
 		"done": "after_d7_totem_done", "respawn": [8, 12], "to_night": true, "clear_book": true},
@@ -191,6 +203,10 @@ static func sync_doors() -> void:
 	var proving := DayClock.event() == "d6_inspect" and not DayClock.done()
 	if GameState.has_flag(PROVING_OPEN) != proving:
 		GameState.set_flag(PROVING_OPEN, proving)
+	var ev := pending_event()
+	var curfew := DayClock.slot() == DayClock.NIGHT and (ev == "" or str(EVENTS.get(ev, {}).get("where", "")) == HOUSE)
+	if GameState.has_flag(CURFEW) != curfew:
+		GameState.set_flag(CURFEW, curfew)
 
 
 ## 进图时：这张图上自动演的事件（auto）。
@@ -238,6 +254,13 @@ static func _run(ev: String, info: Dictionary) -> void:
 	match ev:
 		"d1_open":
 			await finish_slot()
+		"d5_tom":
+			# 第 5 天夜里：一进小屋就睡着了 → 小汤姆的恶作剧（扮演小汤姆）→ 睡到天亮
+			var show := TomPrankShow.new()
+			(Engine.get_main_loop() as SceneTree).root.add_child(show)
+			await show.play()
+			show.queue_free()
+			await finish_slot()
 		"d1_verdict":
 			PenanceBook.start()
 			GameState.hint("背包里多了一页「赎罪簿」")
@@ -270,6 +293,7 @@ static func run_task(ev: String) -> void:
 	var spec: Dictionary = TASKS[ev]
 	var scr: Script = load(str(spec["script"]))
 	GameState.set_flag(TASK_FLAG)
+	_mute_partner(true)
 	while true:
 		var lv: Node = StoryDirector.instance.main.get("level") if StoryDirector.instance else null
 		if lv == null:
@@ -281,6 +305,7 @@ static func run_task(ev: String) -> void:
 		if bool(runner.get("aborted")):
 			# 换图 / 读档：任务节点没了，清掉标记，走回触发点重新开始
 			GameState.set_flag(TASK_FLAG, false)
+			_mute_partner(false)
 			GameState.set_flag(ev_flag(ev), false)
 			return
 		if is_instance_valid(runner):
@@ -296,6 +321,7 @@ static func run_task(ev: String) -> void:
 			if spec.has("respawn"):
 				p.global_position = Cutscene.cell_to_world(spec["respawn"])
 	GameState.set_flag(TASK_FLAG, false)
+	_mute_partner(false)
 	if bool(spec.get("clear_book", false)) and PenanceBook.started() and PenanceBook.hours() > 0:
 		PenanceBook.add(-PenanceBook.hours(), str(spec["name"]) + "：工时清零", true)
 	if str(spec.get("done", "")) != "":
@@ -308,6 +334,25 @@ static func run_task(ev: String) -> void:
 		GameState.hint("天黑了。广场那边，篝火已经点起来了")
 		return
 	await finish_slot()
+
+
+## 任务进行中：跟着的蓝色公主不能按 E 说话（推车、冻陷阱、挣扎时按键不会误触发和她的对话）；结束还原。
+static var _muted := {}
+
+
+static func _mute_partner(on: bool) -> void:
+	var tree := Engine.get_main_loop() as SceneTree
+	if on:
+		for n in tree.get_nodes_in_group("ally"):
+			if n is PlayableCharacter and (n as PlayableCharacter).partner_talk != "":
+				_muted[n.get_instance_id()] = (n as PlayableCharacter).partner_talk
+				(n as PlayableCharacter).partner_talk = ""
+	else:
+		for id in _muted:
+			var n := instance_from_id(id) as PlayableCharacter
+			if is_instance_valid(n) and n.partner_talk == "":
+				n.partner_talk = str(_muted[id])
+		_muted.clear()
 
 
 ## 任务进行中的实时状态（目标提示下面一行）；没有任务时是委托的
@@ -402,6 +447,11 @@ static func go_to_bed() -> void:
 ## 床：今天的事做完了才能睡（对话里用 sleep_later）。
 static func sleep_later() -> void:
 	await TrainingDB.wait_dialogue_free()
+	# 晚上镇上还有事没做（晚上的弥补任务）：先去做，做完才能睡
+	var ev := pending_event()
+	if ev != "" and str(EVENTS.get(ev, {}).get("where", "")) != HOUSE:
+		GameState.notify("还有事没做：%s" % str(EVENTS[ev].get("objective", "")))
+		return
 	await sleep()
 
 

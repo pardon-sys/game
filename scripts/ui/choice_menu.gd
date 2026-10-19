@@ -54,8 +54,12 @@ func ask(texts: Array, prompt := "") -> int:
 	# 选项页开着的时候人物不动（上下键是用来选的）；关上以后还原
 	var was := GameState.in_dialogue
 	GameState.in_dialogue = true
+	GameState.dialogue_holds += 1
+	if is_instance_valid(GameState.player):
+		GameState.player.velocity = Vector2.ZERO
 	var pick: int = await chosen
-	GameState.in_dialogue = was or Dialogue.is_active() or GameState.in_cutscene
+	GameState.dialogue_holds = maxi(0, GameState.dialogue_holds - 1)
+	GameState.in_dialogue = was or Dialogue.is_active() or GameState.in_cutscene or GameState.dialogue_holds > 0
 	return pick
 
 

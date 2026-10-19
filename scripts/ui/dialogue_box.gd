@@ -389,6 +389,12 @@ func errand_start() -> void:
 	AfterErrands.start(str(GameState.vars.get("errand_req", "")))
 
 
+## 七日赎罪：接补罚任务（对话的 set.vars.penalty_req 写 model / dance）。
+func after_penalty() -> void:
+	runner.end_conversation()
+	AfterPenance.run(str(GameState.vars.get("penalty_req", "")))
+
+
 ## 七日赎罪：和蓝色公主玩闹（逗她笑一笑）。
 func after_play() -> void:
 	runner.end_conversation()
@@ -788,5 +794,5 @@ func _end() -> void:
 	# 稍等片刻再把控制权交还，避免同一次按键触发公主攻击/交互
 	await get_tree().create_timer(0.12).timeout
 	# 人物对话还在进行（接下来是选项或下一个节点）时不交还控制权：选项用上下键，公主不能跟着走
-	if not _active and not GameState.in_cutscene and not runner.is_running():
+	if not _active and not GameState.in_cutscene and not runner.is_running() and GameState.dialogue_holds <= 0:
 		GameState.in_dialogue = false

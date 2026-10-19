@@ -76,6 +76,10 @@ var laugh_bar: Array = []
 var actors := {}
 ## 舞台上的字（台词气泡、飘字）放在不缩放的这一层：和界面文字一样大。
 var overlay: Control
+## 小游戏的背景音乐（轻松搞怪；tools/audio/gen_music.py 的 minigame）
+const MINIGAME_MUSIC := "minigame"
+var _held := false
+var _music_was := ""
 var _bubbles := {}
 var _mood := ""
 
@@ -313,6 +317,10 @@ func _free_devices() -> void:
 
 func _enter_game() -> void:
 	GameState.in_dialogue = true
+	GameState.dialogue_holds += 1
+	_held = true
+	_music_was = Audio.music_id
+	Audio.play_music(MINIGAME_MUSIC, 0.6)
 	_build_cast(stage_cast())
 	_update_bars()
 	_update_count()
@@ -324,6 +332,9 @@ func _enter_game() -> void:
 
 func _exit_game() -> void:
 	playing = false
+	_release_hold()
+	if _music_was != "" and Audio.music_id == MINIGAME_MUSIC:
+		Audio.play_music(_music_was, 0.8)
 	var tw := create_tween()
 	tw.tween_property(root, "modulate:a", 0.0, 0.3)
 	await tw.finished
@@ -337,6 +348,16 @@ func _exit_game() -> void:
 
 
 # ------------------------------------------------------------------ 数值
+func _release_hold() -> void:
+	if _held:
+		_held = false
+		GameState.dialogue_holds = maxi(0, GameState.dialogue_holds - 1)
+
+
+func _exit_tree() -> void:
+	_release_hold()
+
+
 func add_fatigue(amount: float) -> void:
 	if not is_instance_valid(player) or player.fatigue == null:
 		return
@@ -491,48 +512,60 @@ func _outlined(text: String, col: Color) -> Label:
 	return l
 
 
-## 舞台上飘一行字（在演员头上，往上飘再淡出）。
+## 舞台上飘着的字（pop 和 say 的气泡）：放的时候避开还在的那些（往上挪，挪到顶就往下），并且夹在舞台框里面，不飘出去。
+var _floating: Array = []
+
+
+func _place(l: Label, want: Vector2) -> void:
+	var w := FRAME_RECT.size
+	var pos := Vector2(clampf(want.x, 2, w.x - l.size.x - 2), clampf(want.y, 2, w.y - l.size.y - 2))
+	_floating = _floating.filter(func(o): return is_instance_valid(o) and o != l and o.modulate.a > 0.05)
+	var step := l.size.y + 1.0
+	var dir := -1.0
+	for i in 12:
+		var r := Rect2(pos, l.size).grow(1.0)
+		var hit := false
+		for o in _floating:
+			if r.intersects(Rect2(o.position, o.size)):
+				hit = true
+				break
+		if not hit:
+			break
+		pos.y += dir * step
+		if pos.y < 2.0:
+			dir = 1.0
+			pos.y = clampf(want.y, 2, w.y - l.size.y - 2) + step
+		pos.y = clampf(pos.y, 2, w.y - l.size.y - 2)
+	l.position = pos.round()
+	_floating.append(l)
+
+
+## 舞台上飘一行字（在演员头上，往上飘一点再淡出；不和别的字叠在一起，不出舞台框）。
 func pop(at: Node2D, text: String, col := TEXT, time := 0.9) -> Label:
 	var l := _outlined(text, col)
 	var base := to_frame((at.position if at else PRINCESS_AT) + Vector2(0, -26))
-	l.position = (base - Vector2(l.size.x / 2.0, l.size.y)).round()
+	_place(l, base - Vector2(l.size.x / 2.0, l.size.y))
+	var rise := minf(8.0, l.position.y - 2.0)
 	var tw := l.create_tween()
-	tw.tween_property(l, "position:y", l.position.y - 14, time)
+	tw.tween_property(l, "position:y", l.position.y - rise, time)
 	tw.parallel().tween_property(l, "modulate:a", 0.0, time * 0.5).set_delay(time * 0.5)
 	tw.tween_callback(l.queue_free)
 	return l
 
 
-## 舞台上方的一行描写（挠法、动作）：画在舞台框顶部正中，新的替换旧的，停 time 秒淡出。和人物头上的气泡分开，不会叠在一起。
-var _narr: Label
-
-
+## 挠法 / 动作的描写：放在画面下方的反应框里（GameState.princess_reacted），舞台上只留人物说的话。
 func narrate(text: String, time := 2.4) -> void:
-	if overlay == null:
-		return
-	if is_instance_valid(_narr):
-		_narr.queue_free()
-	var l := _outlined(text, Color(0.92, 0.88, 1.0))
-	l.autowrap_mode = TextServer.AUTOWRAP_ARBITRARY
-	l.size = Vector2(FRAME_RECT.size.x - 16, 0)
-	l.reset_size()
-	l.size.x = FRAME_RECT.size.x - 16
-	l.position = Vector2(8, 4)
-	_narr = l
-	var tw := l.create_tween()
-	tw.tween_interval(time)
-	tw.tween_property(l, "modulate:a", 0.0, 0.4)
-	tw.tween_callback(l.queue_free)
+	GameState.princess_reacted.emit(text, time)
 
 
-## 演员说一句（头上的气泡，同一个人新说的替换旧的）。
+## 演员说一句（头上的气泡）：同一个人可以连着说几句（最多 3 条，最早的先消失），和别的字错开、不出舞台框。
 func say(who: String, text: String) -> void:
 	var a: CGActor = actors.get(who)
 	if a == null:
 		return
-	var old: Variant = _bubbles.get(who)
-	if is_instance_valid(old):
-		old.queue_free()
+	var mine: Array = (_bubbles.get(who, []) as Array).filter(func(o): return is_instance_valid(o)) if _bubbles.get(who) is Array else []
+	while mine.size() >= 3:
+		mine.pop_front().queue_free()
 	var l := _outlined(text, Color(1, 0.95, 0.85))
 	var sb := StyleBoxFlat.new()
 	sb.bg_color = Color(0.12, 0.08, 0.16, 0.85)
@@ -542,12 +575,13 @@ func say(who: String, text: String) -> void:
 	l.add_theme_stylebox_override("normal", sb)
 	l.reset_size()
 	var base := to_frame(a.position + Vector2(0, -a.top_height() - 2))
-	l.position = Vector2(clampf(base.x - l.size.x / 2.0, 2, FRAME_RECT.size.x - l.size.x - 2), base.y - l.size.y).round()
+	_place(l, Vector2(base.x - l.size.x / 2.0, base.y - l.size.y))
 	# 气泡（带底色）垫在最下面：飘字（pop）总在它上面，不被盖住
 	overlay.move_child(l, 0)
-	_bubbles[who] = l
+	mine.append(l)
+	_bubbles[who] = mine
 	var tw := l.create_tween()
-	tw.tween_interval(1.1)
+	tw.tween_interval(1.6)
 	tw.tween_property(l, "modulate:a", 0.0, 0.3)
 	tw.tween_callback(l.queue_free)
 

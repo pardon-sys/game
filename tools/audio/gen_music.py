@@ -5,7 +5,7 @@ API key 从项目根目录的 .env 读（ELEVENLABS=...，.env 不进版本库�
 首尾相连：生成的曲子结尾常有淡出 / 静音，所以先找循环点 T（find_loop_end：在淡出之前、节奏和开头最像的位置），
 把 T 之前 CROSSFADE 秒和开头交叉淡化（等功率），T 之后的尾声丢掉——循环播放时无缝接回开头。
 原始音频存在 tools/.cache/music/（不进版本库）。
-用法：python tools/audio/gen_music.py [dungeon] [town] [boss] [boss3] [night_room] [night_maze] [siege]（不写就全部生成；已经生成过的跳过，加 --force 重新生成）
+用法：python tools/audio/gen_music.py [dungeon] [town] [boss] [boss3] [night_room] [night_maze] [siege] [minigame]（不写就全部生成；已经生成过的跳过，加 --force 重新生成）
 """
 import json
 import os
@@ -27,6 +27,11 @@ LENGTH_MS = 140000   # 多要 20 秒：结尾的淡出尾声会被切掉，循�
 CROSSFADE = 2.5
 
 TRACKS = {
+    "minigame": ("Instrumental video game background music for silly, playful little minigames in a cute pixel-art game about ticklish "
+                 "princesses: light-hearted, bouncy and comedic, childlike and mischievous. 128 BPM, major key. Plucky pizzicato strings, "
+                 "a bright glockenspiel and xylophone melody, a bouncy tuba / bassoon bass line, kazoo-like playful accents, woodblock and "
+                 "light shaker percussion, occasional cartoon slide whistles and cheeky little pauses. Cheerful, giggly, a bit goofy, never "
+                 "scary; loops seamlessly, steady energy, no fade-in or fade-out."),
     "night_maze": ("Instrumental video game background music for exploring a dark, living labyrinth at night, alone. A quiet princess walks "
                    "through moonlit stone corridors while invisible many-handed things wander in the darkness. Mood: mysterious, cold, "
                    "tense but restrained, with a thread of melancholy and longing, same melancholic minor key as a soft night lullaby. "

@@ -40,15 +40,21 @@ func _ready() -> void:
 	await _run_play()
 	await _run_rest()
 	await _run_equip()
+	await _run_sweep()
 	await _run_potion()
 	await _run_cart()
+	await _run_mice()
 	await _run_rest_free()
 	await _run_errands2()
+	await _run_penalty()
 	await _run_drill()
+	await _run_tag()
 	await _run_tailor()
 	await _run_mine()
+	await _run_tom()
 	await _run_inspect()
 	await _run_drill2()
+	await _run_lantern()
 	await _run_totem()
 	_run_clock()
 	await _run_old_save()
@@ -473,6 +479,9 @@ func _run_equip() -> void:
 
 ## 夜里回小屋睡觉 → 第二天早上
 func _sleep_night() -> void:
+	# 晚上的弥补任务做完会自动睡到天亮：已经是早上就不用再睡
+	if DayClock.slot() == DayClock.MORNING:
+		return
 	GameState.pending_spawn = "from_town"
 	await main.change_level(Floors.scene("floor_06_after_house"))
 	await _wait(0.5)
@@ -492,8 +501,10 @@ func _run_potion() -> void:
 	var mk := _node("Objective") as ObjectiveMarker
 	check("目标：去药剂师工房（标记在工房门口）", mk.text.contains("药剂师") and mk.global_position.distance_to(Cutscene.cell_to_world([16, 10])) < 2.0)
 	GameState.vars["task_potion_recipe"] = 0
+	GameState.vars["task_potion_ok"] = 0
 	# 错三碗（第一张配方是 薄荷叶 + 冰晶草 + 薰衣草）→ 失败 → 换第二张（薄荷叶 + 冰晶草 + 蜂蜜根）→ 配对
-	TaskPotion.auto_picks = [["mint", "mushroom", "feather"], ["mint", "ice", "honey"], ["lavender", "honey", "mushroom"], ["mint", "ice", "honey"]]
+	TaskPotion.auto_picks = [["mint", "mushroom", "feather"], ["mint", "ice", "honey"], ["lavender", "honey", "mushroom"], ["mint", "ice", "honey"],
+		["ice", "lavender", "ginger"], ["mint", "lavender", "honey"]]
 	PotionTrial.auto = "bad"
 	var pd := TaskPotion.data()
 	check("配药：八味药草、每味都有自己的试药流程（开场 + 小操作 + 成功 / 失败）、配对后的成品测试",
@@ -510,8 +521,8 @@ func _run_potion() -> void:
 	TaskPotion.auto_picks = []
 	PotionTrial.auto = ""
 	check("配错的药草记进配方本（最多记了 %d 碗）" % notes["n"], notes["n"] >= 2)
-	check("错三碗 → 全身羽毛测试的失败小剧场、换一张配方（%d）" % int(GameState.vars.get("task_potion_recipe", 0)),
-		GameState.has_flag("cg_seen_theater:after_fail_potion") and int(GameState.vars.get("task_potion_recipe", 0)) == 1)
+	check("错三碗 → 全身羽毛测试的失败小剧场、换一张配方；之后配对三张才算完（配对 %d 张，到了第 %d 张配方）" % [int(GameState.vars.get("task_potion_ok", 0)), int(GameState.vars.get("task_potion_recipe", 0))],
+		GameState.has_flag("cg_seen_theater:after_fail_potion") and int(GameState.vars.get("task_potion_ok", 0)) == 3 and int(GameState.vars.get("task_potion_recipe", 0)) == 3)
 	check("配对了 → 得到薄荷止痒药 → 到下午", GameState.inventory.count("mint_potion") >= 1 and DayClock.slot() == DayClock.AFTERNOON)
 	var item := ItemDB.get_item("mint_potion")
 	GameState.player.laugh.clear()
@@ -608,8 +619,8 @@ func _run_rest_free() -> void:
 	await _wait(0.1)
 	var task := _node("Task_d4_drain") as TaskDrain
 	var p := GameState.player
-	check("进排水管 → 队员讲规矩的过场 → 趴着爬（慢、不能冲刺）", task != null and seen_cuts.has("after_d4_drain")
-		and p.buffs.has("crawl") and p.has_meta(&"busy_hands"))
+	check("进排水管 → 队员讲规矩的过场 → 趴着爬（慢、不能冲刺，但能攻击打老鼠）", task != null and seen_cuts.has("after_d4_drain")
+		and p.buffs.has("crawl") and p.has_meta(&"no_dash") and not p.has_meta(&"busy_hands"))
 	if task == null:
 		return
 	# 脚被抓
@@ -680,12 +691,15 @@ func _run_drill() -> void:
 	ice.decoy = ""
 	ice.warn_t = 0.5
 	ice.press("A")
-	check("身体图亮起左大腿 → 按 A 冻住（寒冷 %.0f）" % ice.cold, ice.frozen.has("lthigh") and ice.cold > 10.0)
+	check("身体图亮起左大腿 → 按 A 冻住", ice.frozen.has("lthigh"))
 	var face0 := ice.face
 	ice._strike("lthigh", "cap")
 	check("挠到冻住的地方：没感觉（表情不掉）", ice.face == face0 and ice.blocked == 1)
 	ice._strike("butt", "cap")
 	check("挠到没冻的地方：表情掉（%.0f）" % ice.face, ice.face < face0)
+	var c0 := ice.cold
+	ice.freeze("knee")
+	check("冻新的地方不涨寒冷（%.0f → %.0f）" % [c0, ice.cold], ice.cold <= c0)
 	ice.cold = 95.0
 	ice.freeze("knee")
 	await _wait(0.2)
@@ -774,6 +788,8 @@ func _run_ladder() -> void:
 	await _advance_until(func(): return _show(LadderShow) != null, 3.0)
 	var ls := _show(LadderShow) as LadderShow
 	check("走到梯子底下：开演扶梯子小游戏", ls != null and ls.phase == 0 and ls.prompt == "UP")
+	await _wait(0.4)
+	check("小游戏开着时：人物不能动、按 E 不会和别人说话（对话锁 %d）" % GameState.dialogue_holds, GameState.in_dialogue and GameState.dialogue_holds > 0)
 	if ls == null:
 		return
 	ls._tk_t = 99.0
@@ -1061,6 +1077,12 @@ func _run_mine() -> void:
 	task.cart_x = Cutscene.cell_to_world(Vector2i(30, 0)).x
 	p.laugh.set_value(p.laugh.max_value * 0.96)
 	await _advance_until(func(): return task.slips == 1 and not task._busy and not GameState.in_dialogue, 10.0)
+	var tc := TickleCloud.new()
+	main.level.get_node("Entities").add_child(tc)
+	tc.global_position = task._blue.global_position
+	await _wait(1.2)
+	check("陷阱打到车上的蓝色公主：她也会被挠（%d 次）" % task.blue_hits, task.blue_hits >= 1)
+	tc.queue_free()
 	check("闷笑满：车溜回这一段的起点（%.1f 格）" % task.cell_x(), task.slips == 1 and absf(task.cell_x() - TaskMine.STAGES[1]) < 0.6)
 	# 上坡：小鬼跳上车
 	task.cart_x = Cutscene.cell_to_world(Vector2i(TaskMine.SLOPE_X + 2, 0)).x
@@ -1093,10 +1115,43 @@ func _run_mine() -> void:
 	check("送到矿工营地 → 旧门的传闻 → 天黑", seen_cuts.has("after_d5_mine_done") and DayClock.slot() == DayClock.NIGHT)
 
 
+# ------------------------------------------------------------------ 第 5 天夜里：小汤姆的恶作剧
+func _run_tom() -> void:
+	print("-- 第 5 天夜里：小汤姆的恶作剧")
+	var tx := TomPrankShow.text()
+	check("恶作剧四段（观察 / 轻挠 / 橘子上场 / 一起来），脚趾缝有「又痒又舒服」的挠法",
+		(tx["phases"] as Array).size() == 4 and (tx["phases"][1]["options"] as Array).any(func(o): return o.get("special", false)))
+	TomPrankShow.quiet = true
+	TomPrankShow.auto_picks = [1, 4, 4, 4, 4, 3, 3, 3]
+	TomPrankShow.auto_release = "intensify"
+	GameState.pending_spawn = "from_town"
+	await main.change_level(Floors.scene("floor_06_after_house"))
+	await _advance_until(func(): return DayClock.day() == 6 and not Sleep.sleeping and not DayClock.passing, 60.0)
+	check("进小屋 → 扮演小汤姆：一直揉脚趾缝 + 橘子打呼噜，舒服满了魔力释放 → 加大强度 → 姐姐笑晕都没发现（%s）→ 睡到第 6 天" % str(GameState.vars.get("tom_prank_result", "")),
+		str(GameState.vars.get("tom_prank_result", "")) == "fainted" and GameState.has_flag("tom_prank_fainted") and DayClock.day() == 6)
+	# 痒满了 = 笑醒被抓（直接测小游戏）
+	TomPrankShow.auto_picks = [2, 2, 2, 2, 2, 2]
+	TomPrankShow.auto_release = ""
+	var sh := TomPrankShow.new()
+	add_child(sh)
+	var r := {}
+	(func(): r["v"] = await sh.play()).call()
+	await _advance_until(func(): return r.has("v"), 10.0)
+	check("一直挠前脚掌：痒满了，姐姐笑醒、被抓个正着（%s）" % str(r.get("v", "")), str(r.get("v", "")) == "caught")
+	sh.queue_free()
+	GameState.set_flag("tom_prank_caught", false)
+	GameState.set_flag("tom_prank_fainted")
+	var d: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://data/dialogues/floor_06/after_kid_tom.json"))
+	check("第 6 天小汤姆的话按结局变（笑晕 / 安静 / 被抓三套）", d["nodes"].has("tom_prank_fainted") and d["nodes"].has("tom_prank_quiet") and d["nodes"].has("tom_prank_caught"))
+	TomPrankShow.quiet = false
+	TomPrankShow.auto_picks = []
+
+
 # ------------------------------------------------------------------ 第 6 天早上：陷阱验收
 func _run_inspect() -> void:
 	print("-- 弥补任务：陷阱验收")
-	await _sleep_night()
+	if DayClock.day() < 6:
+		await _sleep_night()
 	check("第 6 天早上：陷阱验收", DayClock.day() == 6 and DayClock.event() == "d6_inspect")
 	GameState.pending_spawn = "from_house"
 	await main.change_level(Floors.scene("floor_06_after"))
@@ -1171,30 +1226,36 @@ func _run_drill2() -> void:
 	await main.change_level(Floors.scene("floor_06_after_drill"))
 	await _wait(0.8)
 	_go(Cutscene.cell_to_world([10, 7]))
-	await _advance_until(func(): return _node("Task_d6_drill") != null and (_node("Task_d6_drill") as TaskDrill).lesson == "hand" and not GameState.in_dialogue, 30.0)
+	await _advance_until(func(): return _node("Task_d6_drill") != null and (_node("Task_d6_drill") as TaskDrill).show is PantsHandShow, 30.0)
 	var task := _node("Task_d6_drill") as TaskDrill
-	check("第 6 天：特训第三课（换成蓝色公主、障碍场的栅栏摆好）", task != null and GameState.player.character_id == "blue" and is_instance_valid(task._gate))
+	check("第 6 天：特训第三课「借手」（换成蓝色公主、小游戏画面）", task != null and GameState.player.character_id == "blue" and task.show is PantsHandShow)
 	if task == null:
 		return
-	var blue := GameState.player
+	var hs := task.show as PantsHandShow
 	await _wait(0.2)
-	blue.global_position = Cutscene.cell_to_world(Vector2i(23, 5))
-	check("沟边按 E：小手抓住对岸把她拽过去", await task.use_hand() == "anchor" and task.crossed)
-	await _wait(0.6)
-	check("拽到对岸了", blue.global_position.x > Cutscene.cell_to_world(Vector2i(26, 0)).x)
-	blue.global_position = Cutscene.cell_to_world(Vector2i(29, 4))
-	task.obedience = 100.0
-	check("栅栏前按 E：小手拉下远处的拉杆，栅栏收起来", await task.use_hand() == "lever" and task.gate_open)
-	task.obedience = 10.0
-	await task.use_hand()
-	check("听话度太低时用：小手造反挠她", task.rebels == 1)
-	var r0 := task.raids
-	await task.raid()
-	check("粉色公主来捣乱", task.raids == r0 + 1)
-	blue.laugh.clear()
-	blue.global_position = Cutscene.cell_to_world(TaskDrill.GOAL)
+	hs.event_id = "feather_l"
+	hs.left = 1.0
+	hs.press("LEFT")
+	check("羽毛从左边飞来 → ← 让小手挡掉（处理 %d）" % hs.handled, hs.handled == 1)
+	hs.event_id = "lever_r"
+	hs.left = 1.0
+	hs.press("D")
+	hs.event_id = "sneak"
+	hs.left = 1.0
+	hs.press("DOWN")
+	check("拉杆（D）、抓住背后偷袭的粉色公主（↓）", hs.handled == 3)
+	hs.event_id = "feather_u"
+	hs.left = 1.0
+	hs.press("LEFT")
+	check("按错方向：漏掉、被挠", hs.missed == 1)
+	hs.obedience = 5.0
+	hs.event_id = "feather_r"
+	hs.left = 1.0
+	hs.press("RIGHT")
+	check("听话度太低时下指令：小手造反", hs.rebels == 1)
+	hs.handled = hs.goal()
 	await _advance_until(func(): return task.show is DrillExamShow, 15.0)
-	check("走到终点 → 第三课过关 → 考核开始", task.show is DrillExamShow)
+	check("处理够了 → 第三课过关 → 考核开始", task.show is DrillExamShow)
 	var ex := task.show as DrillExamShow
 	await _wait(0.2)
 	ex.order_guard()
@@ -1266,8 +1327,15 @@ func _run_totem() -> void:
 	var g0 := task.grass[0] as TickleGrass
 	var l0 := pink.laugh.value
 	_go(g0.global_position)
+	await _advance_until(func(): return g0.caught >= 1 and not GameState.in_dialogue, 10.0)
 	await _wait(0.6)
 	check("踩到痒痒草：缠住挠腰（闷笑 %.0f → %.0f）" % [l0, pink.laugh.value], g0.caught >= 1 and pink.laugh.value > l0)
+	check("痒痒草是隐形的，踩到一次就显形", g0.invisible and g0.revealed and not (task.grass[1] as TickleGrass).revealed)
+	await _advance_until(func(): return not GameState.in_dialogue, 5.0)
+	task.pulse_now()
+	check("图腾共振：草够得着的范围变大（×%.1f）" % (task.grass[1] as TickleGrass).reach, (task.grass[1] as TickleGrass).reach > 2.0)
+	await _wait(TaskTotem.PULSE_TIME + 0.3)
+	check("脉动过去：范围恢复", (task.grass[1] as TickleGrass).reach == 1.0)
 	await _wait(1.5)
 	pink.laugh.set_value(pink.laugh.max_value * 0.96)
 	await _advance_until(func(): return TaskTotem.drops() == 1 and not task._busy and not GameState.in_dialogue, 10.0)
@@ -1323,6 +1391,180 @@ func _run_totem() -> void:
 	await _advance_until(func(): return DayClock.slot() == DayClock.NIGHT and not Cutscene.is_playing() and not DayClock.passing, 60.0)
 	check("三块都放好 → 图腾柱扶正发光 → 工时清零 → 直接天黑（%s，剩 %d 工时）" % [DayClock.label(), PenanceBook.hours()],
 		seen_cuts.has("after_d7_totem_done") and DayClock.day() == 7 and DayClock.slot() == DayClock.NIGHT and PenanceBook.hours() == 0)
+
+
+# ------------------------------------------------------------------ 晚上的弥补任务
+## 晚上：走到委托人那里（目标圈）开始任务
+func _night_start(level: String, spawn: String, cell: Array, task_name: String) -> Node:
+	GameState.pending_spawn = spawn
+	await main.change_level(Floors.scene(level))
+	await _wait(1.0)
+	check("夜里镇上还有事：门没锁（宵禁）、床不让睡", not GameState.has_flag(AfterStory.CURFEW))
+	_go(Cutscene.cell_to_world(cell))
+	await _advance_until(func(): return _node(task_name) != null and bool(_node(task_name).get("started")) and not GameState.in_dialogue, 40.0)
+	return _node(task_name)
+
+
+func _run_sweep() -> void:
+	print("-- 第 2 天晚上：面包店奶奶的羽毛大扫除")
+	check("第 2 天晚上：要帮奶奶扫羽毛", DayClock.day() == 2 and DayClock.slot() == DayClock.NIGHT and DayClock.event() == "d2_sweep")
+	GameState.vars.erase("task_sweep_left")
+	var task := await _night_start("floor_06_after", "from_house", [45, 13], "Task_d2_sweep") as TaskSweep
+	check("走到烤炉后院 → 奶奶的开场 → 六堆羽毛", task != null and task.piles.size() == 6)
+	if task == null:
+		return
+	var p := GameState.player
+	task.gust_now()
+	check("起风：羽毛钻进脚趾缝（%d 根）" % task.feet, task.feet >= 2)
+	var f0 := task.feet
+	task.shake()
+	check("K 抖脚：掉出来一根", task.feet == f0 - 1)
+	task.pick()
+	check("按住 E 抠出来", task.feet < f0 - 1)
+	for pl in task.piles:
+		_go(pl.global_position)
+		task.sweep(4.0)
+	await _advance_until(func(): return DayClock.day() == 3 and not Sleep.sleeping and not DayClock.passing, 60.0)
+	check("六堆都扫光 → 最后一阵风（整袋羽毛扑在身上）→ 回小屋睡到第 3 天", DayClock.day() == 3 and DayClock.slot() == DayClock.MORNING)
+	p = GameState.player
+	if p.laugh:
+		p.laugh.clear()
+
+
+func _run_mice() -> void:
+	print("-- 第 3 天晚上：药剂师奶奶的逃跑的痒痒鼠")
+	MouseShow.quiet = true
+	check("第 3 天晚上：痒痒鼠", DayClock.slot() == DayClock.NIGHT and DayClock.event() == "d3_mice")
+	await _night_start("floor_06_after_pharmacy", "from_town", [8, 6], "Task_d3_mice")
+	await _advance_until(func(): return _show(MouseShow) != null, 10.0)
+	var ms := _show(MouseShow) as MouseShow
+	check("工房里 → 五只小鼠钻进衣服", ms != null and ms.mice.size() == 5)
+	if ms == null:
+		return
+	ms.mice = ["waist", "waist", "shoe", "armpit", "knee"]
+	ms.press("E")
+	check("小鼠在腰上 → 按 E 拍住一只", ms.caught == 1)
+	ms.press("Q")
+	check("袖子里没有 → 拍空、拍到自己", ms.misses == 1)
+	ms.press("E")
+	ms.press("D")
+	ms.press("W")
+	await _wait(0.2)
+	check("抓到四只 → 最后一只钻进鞋里", ms.last_phase)
+	for i in MouseShow.LAST_MASH:
+		ms.press("D")
+	await _advance_until(func(): return DayClock.day() == 4 and not Sleep.sleeping and not DayClock.passing, 60.0)
+	check("连按 D 抖出来 → 五只都进笼子 → 睡到第 4 天", DayClock.day() == 4 and DayClock.slot() == DayClock.MORNING)
+	MouseShow.quiet = false
+
+
+func _run_tag() -> void:
+	print("-- 第 4 天晚上：小孩们的挠痒捉人")
+	check("第 4 天晚上：捉人游戏", DayClock.slot() == DayClock.NIGHT and DayClock.event() == "d4_tag")
+	var task := await _night_start("floor_06_after", "from_drill", [31, 31], "Task_d4_tag") as TaskTag
+	check("广场 → 孩子们的开场 → 第一轮姐姐当鬼（四个孩子）", task != null and task.kids.size() == 4 and task.round_i == 0)
+	if task == null:
+		return
+	for k in task.kids:
+		task.tickle_kid(k)
+	await _advance_until(func(): return task.round_i == 1 and not task._busy and not GameState.in_dialogue, 20.0)
+	check("四个都挠到 → 第二轮孩子当鬼", task.round_i == 1)
+	task.catch_by(task.kids[0])
+	await _wait(0.5)
+	check("被摸到：按倒挠一阵（定身）", task.pinned_by != null and GameState.player.status.is_rooted())
+	await _wait(TaskTag.PIN_TIME)
+	task.time_left = 0.05
+	await _advance_until(func(): return task.round_i == 2 and not task._busy and not GameState.in_dialogue, 20.0)
+	check("撑到时间 → 第三轮大家一起当鬼", task.round_i == 2)
+	task.time_left = 0.05
+	await _advance_until(func(): return DayClock.day() == 5 and not Sleep.sleeping and not DayClock.passing, 60.0)
+	check("撑过第三轮 → 躺在广场上聊天 → 睡到第 5 天", DayClock.day() == 5 and DayClock.slot() == DayClock.MORNING)
+	GameState.player.laugh.clear()
+
+
+func _run_lantern() -> void:
+	print("-- 第 6 天晚上：镇长的笑声灯笼")
+	LanternShow.quiet = true
+	check("第 6 天晚上：笑声灯笼", DayClock.slot() == DayClock.NIGHT and DayClock.event() == "d6_lantern")
+	await _night_start("floor_06_after", "from_drill", [31, 27], "Task_d6_lantern")
+	await _advance_until(func(): return _show(LanternShow) != null, 10.0)
+	var ls := _show(LanternShow) as LanternShow
+	if ls == null:
+		check("开演笑声灯笼", false)
+		return
+	await _wait(0.2)
+	ls.press("UP")
+	ls.press("UP")
+	check("↑ 调刷子的强度（%s）" % ls.level_name(), ls.level == 2)
+	var p := GameState.player
+	var L: Dictionary = ls.lanterns()[0]
+	p.laugh.set_value(p.laugh.max_value * (float(L["lo"]) + float(L["hi"])) * 0.5)
+	ls.level = 1
+	await _advance_until(func(): return ls.lit >= 1, 5.0)
+	check("闷笑停在范围里几秒 → 第一盏亮了", ls.lit >= 1)
+	p.laugh.set_value(p.laugh.max_value * 0.98)
+	await _wait(0.2)
+	check("笑过头：灯泡炸了", ls.bursts >= 1)
+	ls.lit = 3
+	ls.add_fatigue(ls.fatigue_max())
+	await _wait(0.3)
+	check("魔力疲倦满释放：吹灭一半的灯（%d）" % ls.lit, ls.lit == 1 and ls.blown == 1)
+	ls.lit = ls.lanterns().size()
+	await _advance_until(func(): return DayClock.day() == 7 and not Sleep.sleeping and not DayClock.passing, 60.0)
+	check("五盏全亮 → 镇长说起「很会笑的小姑娘」→ 睡到第 7 天", DayClock.day() == 7 and DayClock.slot() == DayClock.MORNING)
+	LanternShow.quiet = false
+
+
+# ------------------------------------------------------------------ 补罚任务
+func _run_penalty() -> void:
+	print("-- 补罚任务：活体模特、罚跳舞")
+	AfterErrands.refresh()
+	var pend := AfterPenance.pending()
+	check("赎罪簿上有没抵的受罚（%d 条）→ 市场监督 / 派对主人头上冒「！」" % pend, pend > 0 and GameState.has_flag(AfterPenance.FLAG))
+	var h0 := PenanceBook.hours()
+	ModelShow.quiet = true
+	AfterPenance.run("model")
+	await _advance_until(func(): return _show(ModelShow) != null, 10.0)
+	var ms := _show(ModelShow) as ModelShow
+	if ms:
+		await _wait(0.2)
+		ms.cust = 0
+		ms.balance = 0.0
+		ms.hit_once()
+		check("顾客「试试效果」：姿势晃、表情掉", absf(ms.balance) > 0.2 and ms.face < 100.0)
+		ms.balance = 1.1
+		ms._check()
+		await _wait(0.1)
+		check("动了：市场监督加时（%d）" % ms.extras, ms.extras == 1)
+		ms.time_left = 0.05
+	await _advance_until(func(): return not AfterPenance.running, 20.0)
+	check("撑过时间 → 抵掉一笔受罚、减工时（%d → %d）" % [h0, PenanceBook.hours()], AfterPenance.settled() == 1 and PenanceBook.hours() < h0)
+	ModelShow.quiet = false
+	if AfterPenance.pending() > 0:
+		PenaltyDanceShow.quiet = true
+		AfterPenance.run("dance")
+		await _advance_until(func(): return _show(PenaltyDanceShow) != null, 10.0)
+		var ds := _show(PenaltyDanceShow) as PenaltyDanceShow
+		if ds:
+			await _wait(0.2)
+			var n0: Dictionary = ds.lane.chart[0]
+			ds.lane.time = float(n0["t"])
+			ds.press("LEFT" if str(n0["key"]) != "LEFT" else "RIGHT")
+			check("罚跳舞：跳错一拍，围观的人上来挠", ds.misses == 1)
+			var g := 0
+			while not AfterPenance.running == false and g < 400:
+				if is_instance_valid(ds) and ds.lane:
+					if not ds.lane.finished():
+						var n: Dictionary = ds.lane.chart[ds.lane._next]
+						ds.lane.time = float(n["t"])
+						ds.press(str(n["key"]))
+					else:
+						ds.lane.time = ds.lane.end_time() + 0.01
+				await get_tree().process_frame
+				g += 1
+		check("跳完 → 又抵掉一笔", AfterPenance.settled() == 2)
+		PenaltyDanceShow.quiet = false
+	GameState.player.laugh.clear()
 
 
 # ------------------------------------------------------------------ 时钟 / 日程

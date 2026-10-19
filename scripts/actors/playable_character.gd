@@ -307,7 +307,7 @@ func _tick(delta: float) -> void:
 					var hands := has_meta(&"busy_hands")
 					if controller.is_action_just_pressed(&"attack") and not hands:
 						attack()
-					elif controller.is_action_just_pressed(&"dash") and not rooted and not hands and not Equipment.has_special(character_id, "no_dash"):
+					elif controller.is_action_just_pressed(&"dash") and not rooted and not hands and not has_meta(&"no_dash") and not Equipment.has_special(character_id, "no_dash"):
 						dash(input)
 					elif controller.is_action_just_pressed(&"magic") and not hands:
 						# 关卡可以接管魔法键（攻防战：蓝色公主打开瞄准施法）

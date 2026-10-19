@@ -1,7 +1,7 @@
 class_name TaskDrain
 extends Node2D
 ## 弥补任务「疏通排水管」（第 4 天早上，排水管 floor_06_after_drain）的玩法节点（AfterStory.run_task 摆进来，发 finished(ok)）。台词 data/after/drain.json。
-##   趴着爬：粉色公主挂 meta busy_hands（不能攻击 / 冲刺）+ 状态 crawl（移速 ×0.45）。
+##   趴着爬：粉色公主挂 meta no_dash（不能冲刺，能攻击——可以打退老鼠）+ 状态 crawl（移速 ×0.45）。
 ##   三段：走到 SEG_AT[i] 演那一段的开场（第二段是管壁涂鸦）；走到堵塞（CLOGS，挡路的一团杂物）旁边按住 E 擦 SCRUB 秒 → 通了。
 ##   绒苔球（MossBall，MOSS 这些格）：碰到就贴在腿上蹭（闷笑上涨），按住 E WIPE 秒擦掉；第一次碰到演几句。
 ##   管口外的小孩抓脚（GRABS 这些格，各一次）：定身 + 挠（闷笑每秒 +GRAB_RATE），按 J 蹬 KICKS 下挣开（或者 GRAB_TIME 秒后松手）。
@@ -97,11 +97,11 @@ func _crawl(on: bool) -> void:
 	if not is_instance_valid(p):
 		return
 	if on:
-		p.set_meta(&"busy_hands", true)
+		p.set_meta(&"no_dash", true)
 		p.add_buff("crawl", -1.0)
 	else:
-		if p.has_meta(&"busy_hands"):
-			p.remove_meta(&"busy_hands")
+		if p.has_meta(&"no_dash"):
+			p.remove_meta(&"no_dash")
 		p.remove_buff("crawl")
 
 

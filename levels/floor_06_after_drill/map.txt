@@ -18,27 +18,20 @@ H = prop type=wood_floor + prop type=bench
 I = prop type=wood_floor + player
 J = prop type=wood_floor + blue_princess follow=true ai=false
 K = prop type=wood_floor + spawn id=from_town
-L = prop type=dummy
-M = prop type=drain_lever
-N = trap type=brush speed=1.4
-O = trap type=brush speed=-1.6
-Q = trap type=vent idle_time=2.2 cloud_duration=1.4 offset=0.0
-R = trap type=vent idle_time=2.2 cloud_duration=1.4 offset=1.1
-S = prop type=banner
-T = exit target=floor_06_after spawn=from_drill
+L = exit target=floor_06_after spawn=from_drill
 
 [map]
-########################################
-#####t########t#########################
-##ACCCCCCDCCCCCCCC####t#######t#####t###
-##CCCCCCCCCCCCCCCC#.....##........M....#
-##CCECCCCCFCCCCECC#..N..##.L...........#
-##CCCCCCCCCCCCCCCC#.....##.............#
-##CCCCCCCCCCCCCCCC......##.........Q...#
-##CCCCCCCCGCCCCCCC......##...........S.#
-##CCCCCCCCCCCCCCCC......##.............#
-##CCHCCCCCCCCCCHCC#.....##...O.....R...#
-##CCCCCCCCIJCCCCCC#.....##.............#
-##CCCCCCCCKCCCCCCC######################
-##########T#############################
-########################################
+####################
+#####t########t#####
+##ACCCCCCDCCCCCCCC##
+##CCCCCCCCCCCCCCCC##
+##CCECCCCCFCCCCECC##
+##CCCCCCCCCCCCCCCC##
+##CCCCCCCCCCCCCCCC##
+##CCCCCCCCGCCCCCCC##
+##CCCCCCCCCCCCCCCC##
+##CCHCCCCCCCCCCHCC##
+##CCCCCCCCIJCCCCCC##
+##CCCCCCCCKCCCCCCC##
+##########L#########
+####################

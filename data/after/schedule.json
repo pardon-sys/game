@@ -122,6 +122,17 @@
 					"wander": 1,
 					"hidden": false
 				}
+			},
+			"d6": {
+				"night": {
+					"at": [
+						31,
+						26
+					],
+					"dir": "down",
+					"wander": 0,
+					"hidden": false
+				}
 			}
 		},
 		"after_granny": {
@@ -177,6 +188,15 @@
 					],
 					"dir": "down",
 					"wander": 1,
+					"hidden": false
+				},
+				"night": {
+					"at": [
+						45,
+						12
+					],
+					"dir": "down",
+					"wander": 0,
 					"hidden": false
 				}
 			}
@@ -407,6 +427,17 @@
 					"wander": 1,
 					"hidden": false
 				}
+			},
+			"d4": {
+				"night": {
+					"at": [
+						30,
+						30
+					],
+					"dir": "down",
+					"wander": 0,
+					"hidden": false
+				}
 			}
 		},
 		"after_kid_lily": {
@@ -462,6 +493,17 @@
 					],
 					"dir": "down",
 					"wander": 1,
+					"hidden": false
+				}
+			},
+			"d4": {
+				"night": {
+					"at": [
+						32,
+						30
+					],
+					"dir": "down",
+					"wander": 0,
 					"hidden": false
 				}
 			}
@@ -757,6 +799,11 @@
 				"event": "d2_equip",
 				"task": "回收痒痒装备",
 				"hours": 10
+			},
+			"night": {
+				"event": "d2_sweep",
+				"task": "羽毛大扫除",
+				"hours": 3
 			}
 		},
 		"d3": {
@@ -769,6 +816,11 @@
 				"event": "d3_cart",
 				"task": "拆除哑火的攻城车",
 				"hours": 12
+			},
+			"night": {
+				"event": "d3_mice",
+				"task": "逃跑的痒痒鼠",
+				"hours": 3
 			}
 		},
 		"d4": {
@@ -781,6 +833,11 @@
 				"event": "d4_drill",
 				"task": "陪蓝色公主特训",
 				"hours": 6
+			},
+			"night": {
+				"event": "d4_tag",
+				"task": "挠痒捉人",
+				"hours": 3
 			}
 		},
 		"d6": {
@@ -793,6 +850,11 @@
 				"event": "d6_drill",
 				"task": "陪蓝色公主特训（考核）",
 				"hours": 6
+			},
+			"night": {
+				"event": "d6_lantern",
+				"task": "笑声灯笼",
+				"hours": 3
 			}
 		},
 		"d5": {
@@ -805,6 +867,10 @@
 				"event": "d5_mine",
 				"task": "矿车护送",
 				"hours": 12
+			},
+			"night": {
+				"event": "d5_tom",
+				"task": "回小屋睡觉"
 			}
 		},
 		"d7": {

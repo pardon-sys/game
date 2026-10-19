@@ -3,6 +3,12 @@
 	"entries": [
 		{
 			"if": {
+				"flag": "penalty_open"
+			},
+			"node": "penalty_offer"
+		},
+		{
+			"if": {
 				"var": {
 					"after_day": [
 						"==",
@@ -112,6 +118,40 @@
 					"text": "……晕过去以后的那些，我没记。不算你的。"
 				}
 			]
+		},
+		"penalty_offer": {
+			"lines": [
+				{
+					"text": "……赎罪簿上还记着受罚没抵。要来抵一笔吗？"
+				},
+				{
+					"text": "摊位上缺个模特。"
+				}
+			],
+			"prompt": "去摊位上当模特抵受罚？",
+			"choices": [
+				{
+					"text": "……当、当就当！",
+					"next": "penalty_go"
+				},
+				{
+					"text": "等一下再说",
+					"next": ""
+				}
+			]
+		},
+		"penalty_go": {
+			"lines": [
+				{
+					"text": "好。"
+				}
+			],
+			"set": {
+				"vars": {
+					"penalty_req": "model"
+				},
+				"call": "after_penalty"
+			}
 		}
 	},
 	"npc": "supervisor"

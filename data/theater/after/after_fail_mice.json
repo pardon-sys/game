@@ -1,0 +1,124 @@
+{
+	"name": "抓鼠失败：五只一起",
+	"cast": {
+		"princess": {
+			"kind": "princess",
+			"at": [
+				0,
+				8
+			],
+			"visual": "helpless_1",
+			"anim": "helpless",
+			"dir": "down"
+		},
+		"ph": {
+			"kind": "npc:pharmacist",
+			"at": [
+				-26,
+				6
+			],
+			"dir": "right"
+		},
+		"r": {
+			"kind": "monster:rat",
+			"at": [
+				14,
+				12
+			]
+		}
+	},
+	"steps": [
+		{
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "fade_in"
+				},
+				{
+					"state": "giggle",
+					"do": "voice"
+				}
+			],
+			"wait": 0.5
+		},
+		{
+			"speaker": "",
+			"text": "（笑得手软，一只也拍不中了。五只小白鼠像是开起了派对，在她身上来回乱窜）"
+		},
+		{
+			"speaker": "",
+			"text": "（袖子里一只、腋下一只、腰上一只、膝盖窝一只，还有一只在鞋子里打转）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "r",
+					"zone": "armpit",
+					"fx": "hand",
+					"repeat": 10,
+					"interval": 0.2,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"by": "r",
+					"zone": "sole",
+					"fx": "hand",
+					"repeat": 10,
+					"interval": 0.2,
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "哈哈哈哈哈！五、五只一起——！全、全身都……！",
+			"portrait": "defeat_1"
+		},
+		{
+			"speaker": "药剂师奶奶",
+			"text": "哎呀呀，它们把你当成游乐场了。"
+		},
+		{
+			"speaker": "公主",
+			"text": "奶、奶奶快帮忙——哈哈哈！",
+			"portrait": "defeat_2"
+		},
+		{
+			"speaker": "药剂师奶奶",
+			"text": "好好好……（拿出一块奶酪，在地上一放）"
+		},
+		{
+			"speaker": "",
+			"text": "（五只小鼠「吱」地一声，一齐从衣服里钻了出来，扑向了奶酪）",
+			"actions": [
+				{
+					"who": "princess",
+					"visual": "helpless_2",
+					"do": "pose"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "……早、早有奶酪的话……为什么不早拿出来……",
+			"emotion": "helpless_1"
+		},
+		{
+			"speaker": "药剂师奶奶",
+			"text": "呵呵，奶奶刚刚才想起来嘛。……歇一会儿，再来一次。"
+		},
+		{
+			"actions": [
+				{
+					"time": 0.6,
+					"do": "fade_out"
+				},
+				{
+					"state": "",
+					"do": "voice"
+				}
+			],
+			"wait": 0.7
+		}
+	]
+}

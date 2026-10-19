@@ -61,6 +61,7 @@ static func refresh() -> void:
 		var flag := "errand_%s_open" % id
 		if GameState.has_flag(flag) != want:
 			GameState.set_flag(flag, want)
+	AfterPenance.refresh()
 
 
 static func start(id: String) -> void:
