@@ -1,0 +1,97 @@
+{
+	"name": "裁缝的试衣模特",
+	"letterbox": true,
+	"skippable": true,
+	"steps": [
+		{
+			"actions": [
+				{
+					"who": "after_tailor",
+					"dir": "down",
+					"do": "face"
+				},
+				{
+					"to": [
+						9,
+						6
+					],
+					"zoom": 1.0,
+					"time": 0.4,
+					"do": "camera"
+				}
+			],
+			"wait": 0.4
+		},
+		{
+			"speaker": "裁缝",
+			"text": "来啦来啦！赎罪簿上写的「试衣模特」，就是你吧？"
+		},
+		{
+			"speaker": "公主",
+			"text": "试衣模特……？我还以为是帮忙搬布料……",
+			"emotion": "surprise"
+		},
+		{
+			"speaker": "裁缝",
+			"text": "搬布料那种粗活，学徒干就好啦。你的活儿可重要多了～"
+		},
+		{
+			"speaker": "学徒",
+			"text": "师傅在给保卫队做防痒棉衣。攻防战的时候，好多队员被敌人的羽毛挠得站都站不稳。"
+		},
+		{
+			"speaker": "裁缝",
+			"text": "所以！我做了一件「绝对挠不进去」的棉衣样品！"
+		},
+		{
+			"speaker": "公主",
+			"text": "绝对挠不进去……那很好啊。",
+			"emotion": "happy"
+		},
+		{
+			"speaker": "裁缝",
+			"text": "就是还没试过。要找一个最怕痒的人来试——怕痒的人穿着都不痒，那就是真的成功了。"
+		},
+		{
+			"speaker": "公主",
+			"text": "……为什么是我？",
+			"emotion": "sad"
+		},
+		{
+			"speaker": "裁缝",
+			"text": "队长推荐的～她说你是全镇最怕痒的。"
+		},
+		{
+			"speaker": "公主",
+			"text": "队、队长……！",
+			"emotion": "angry"
+		},
+		{
+			"speaker": "学徒",
+			"text": "队长还说，你的脚心特别……"
+		},
+		{
+			"speaker": "裁缝",
+			"text": "咳咳！那个不用说出来！"
+		},
+		{
+			"speaker": "公主",
+			"text": "（……队长到底跟多少人说过了……）",
+			"emotion": "shy"
+		},
+		{
+			"speaker": "裁缝",
+			"text": "好啦，先量尺寸！站到镜子前面来～"
+		},
+		{
+			"actions": [
+				{
+					"reset": true,
+					"time": 0.4,
+					"do": "camera"
+				}
+			],
+			"wait": 0.4
+		}
+	]
+}

@@ -1,0 +1,194 @@
+{
+	"name": "修图腾失败：被痒痒草缠在一起",
+	"cast": {
+		"princess": {
+			"kind": "princess",
+			"at": [
+				-8,
+				8
+			],
+			"visual": "helpless_1",
+			"anim": "helpless",
+			"dir": "down"
+		},
+		"blue": {
+			"kind": "npc:blue_princess",
+			"at": [
+				10,
+				8
+			],
+			"visual": "helpless_1",
+			"anim": "helpless",
+			"dir": "down"
+		},
+		"vine": {
+			"kind": "trap:vine",
+			"at": [
+				0,
+				14
+			]
+		},
+		"hands": {
+			"kind": "monster:thousand_hand",
+			"at": [
+				0,
+				-16
+			],
+			"scale": 0.4
+		}
+	},
+	"steps": [
+		{
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "fade_in"
+				},
+				{
+					"state": "giggle",
+					"do": "voice"
+				}
+			],
+			"wait": 0.5
+		},
+		{
+			"speaker": "",
+			"text": "（封印石第三次砸在地上。这一次，周围的痒痒草像是等了很久一样，一下子全都扑了上来）"
+		},
+		{
+			"speaker": "公主",
+			"text": "哇啊——！草、草——！",
+			"emotion": "surprise"
+		},
+		{
+			"speaker": "",
+			"text": "（蓝色公主冲过来想拉她，结果两个人一起被草茎缠住，背靠背地捆在了一起）"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……！"
+		},
+		{
+			"speaker": "",
+			"text": "（草叶钻进腰侧，花穗扫过脚心——两个人被捆得紧紧的，谁动一下，另一个人身上的草就缠得更紧）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "vine",
+					"zone": "waist",
+					"fx": "feather",
+					"repeat": 10,
+					"interval": 0.2,
+					"do": "tickle"
+				},
+				{
+					"who": "blue",
+					"by": "vine",
+					"zone": "thigh",
+					"fx": "feather",
+					"repeat": 10,
+					"interval": 0.2,
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "哈哈哈哈！你、你别动！你一动我这边就——哈哈哈！",
+			"portrait": "defeat_1"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……是你……在动……唔……"
+		},
+		{
+			"speaker": "",
+			"text": "（就在这时，千手痒痒裤被图腾的共振一震，小手们一齐亮了起来）",
+			"actions": [
+				{
+					"who": "hands",
+					"kind": "laugh",
+					"do": "bubble"
+				}
+			]
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……糟了。"
+		},
+		{
+			"speaker": "",
+			"text": "（小手们一半挠向蓝色公主自己的大腿，一半伸长了，越过她的肩膀，挠向背后粉色公主的胳肢窝）",
+			"actions": [
+				{
+					"who": "blue",
+					"by": "hands",
+					"zone": "butt",
+					"fx": "hand",
+					"repeat": 12,
+					"interval": 0.16,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"by": "hands",
+					"zone": "armpit",
+					"fx": "hand",
+					"repeat": 12,
+					"interval": 0.16,
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "哈哈哈哈哈！胳、胳肢窝！你的裤子在挠我胳肢窝——！",
+			"portrait": "defeat_2"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……噗。……哈……哈……",
+			"actions": [
+				{
+					"who": "blue",
+					"visual": "helpless_2",
+					"do": "pose"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "你、你笑了！你又笑了！哈哈哈……我都听见了！",
+			"emotion": "helpless_2"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……没……哈……没有……"
+		},
+		{
+			"speaker": "",
+			"text": "（草茎、花穗、小手，从腰到脚心，从大腿到胳肢窝。两个人背靠背地笑成一团，笑声在废地上回荡了好久）"
+		},
+		{
+			"speaker": "工匠",
+			"text": "（终于拿着镰刀赶过来，一根一根割断草茎）……哎呀呀。石头还在原地呢。"
+		},
+		{
+			"speaker": "工匠",
+			"text": "……歇一会儿，从这一块重新扛吧。"
+		},
+		{
+			"actions": [
+				{
+					"time": 0.6,
+					"do": "fade_out"
+				},
+				{
+					"state": "",
+					"do": "voice"
+				}
+			],
+			"wait": 0.7
+		}
+	]
+}

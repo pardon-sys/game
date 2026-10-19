@@ -26,6 +26,69 @@
 			"hours": 2,
 			"kind": "apples",
 			"objective": "捡回十个苹果（别踩痒痒草）"
+		},
+		"ladder": {
+			"name": "扶梯子",
+			"npc": "after_engineer",
+			"from": [
+				3,
+				0
+			],
+			"hours": 3,
+			"kind": "show",
+			"show": "res://levels/floor_06/scripts/ladder_show.gd",
+			"objective": "到脚手架房子底下，光脚爬梯子补屋檐",
+			"target": [
+				24,
+				10
+			]
+		},
+		"goats": {
+			"name": "赶蘑菇羊回圈",
+			"npc": "after_maid",
+			"from": [
+				3,
+				0
+			],
+			"hours": 3,
+			"kind": "goats",
+			"objective": "把五只蘑菇羊引回羊圈（别跑也别停）",
+			"target": [
+				57,
+				33
+			]
+		},
+		"dance": {
+			"name": "篝火舞会排练",
+			"npc": "after_bonfire_host",
+			"from": [
+				3,
+				0
+			],
+			"hours": 3,
+			"kind": "show",
+			"show": "res://levels/floor_06/scripts/dance_show.gd",
+			"objective": "到篝火边排练篝火舞",
+			"target": [
+				44,
+				26
+			]
+		},
+		"massage": {
+			"name": "足底按摩试新手法",
+			"npc": "after_bonfire_host",
+			"from": [
+				3,
+				0
+			],
+			"hours": 2,
+			"kind": "show",
+			"show": "res://levels/floor_06/scripts/massage_show.gd",
+			"objective": "到篝火边的长椅上坐好（鞋要脱）",
+			"target": [
+				41,
+				27
+			]
 		}
 	}
 }

@@ -410,6 +410,29 @@
 			},
 			"desc": "冰灯塔的冷光里：移动变慢。",
 			"hidden": true
+		},
+		"foot_light": {
+			"name": "脚底轻快",
+			"icon": 19,
+			"debuff": false,
+			"duration": 180.0,
+			"max_stacks": 1,
+			"modifiers": {
+				"speed": 1.2
+			},
+			"desc": "足底按摩之后脚底轻飘飘的：移动速度 +20%。"
+		},
+		"carry_stone": {
+			"name": "扛着封印石",
+			"icon": 3,
+			"debuff": true,
+			"hidden": false,
+			"duration": -1,
+			"max_stacks": 1,
+			"modifiers": {
+				"speed": 0.55
+			},
+			"desc": "扛着沉甸甸的封印石：走得慢，不能攻击、冲刺、施法。"
 		}
 	}
 }

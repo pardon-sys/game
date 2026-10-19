@@ -137,7 +137,8 @@ static func pass_time(to_slot: int, to_day := -1) -> void:
 	tw.tween_property(black, "color:a", 0.0, 0.8)
 	await tw.finished
 	layer.queue_free()
-	GameState.in_dialogue = was
+	# 不直接还原 was：开始黑幕时可能正好是一段对话收尾的 0.12 秒（那时还是 true），还原回去会一直卡着不让动
+	GameState.in_dialogue = was and (Dialogue.is_active() or GameState.in_cutscene or Dialogue.runner.is_running())
 	passing = false
 
 

@@ -1564,10 +1564,11 @@ func _run_round11() -> void:
 		m.stun(6.0)      # 战场上的怪大多被冰塔冻着：冻住的也要卷得起来
 		swept.append(m)
 	await _until(func(): return tor.warned, 3.0)
-	await _until(func(): return tor.flung_to_wall > 0, 8.0)
+	await _until(func(): return tor.flung > 0, 8.0)
 	await _wait(1.0)
-	var landed := swept.filter(func(m): return is_instance_valid(m) and m.get_meta("siege_on_wall", false)).size()
-	ok["龙卷风卷起冻住的怪、甩上墙 %d 只（真的落在墙顶上 %d 只）" % [tor.flung_to_wall, landed]] = tor.flung_to_wall > 0 and landed > 0
+	var on_wall := swept.filter(func(m): return is_instance_valid(m) and m.get_meta("siege_on_wall", false)).size()
+	var near := swept.filter(func(m): return is_instance_valid(m) and m.global_position.distance_to(p.global_position) < 60.0).size()
+	ok["龙卷风卷起冻住的怪、全部甩到粉色公主身边（甩出 %d 只，在她身边 %d 只，墙顶上 %d 只）" % [tor.flung, near, on_wall]] = tor.flung > 0 and near > 0 and on_wall == 0
 	d.clear_field()
 	_fight()
 	# 抓娃娃机：没抓到公主就抓怪扔过去

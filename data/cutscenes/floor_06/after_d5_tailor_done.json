@@ -1,0 +1,98 @@
+{
+	"name": "防痒棉衣",
+	"letterbox": true,
+	"skippable": true,
+	"steps": [
+		{
+			"actions": [
+				{
+					"who": "after_tailor",
+					"dir": "down",
+					"do": "face"
+				},
+				{
+					"to": [
+						9,
+						6
+					],
+					"zoom": 1.0,
+					"time": 0.4,
+					"do": "camera"
+				}
+			],
+			"wait": 0.4
+		},
+		{
+			"speaker": "裁缝",
+			"text": "辛苦啦，模特小姐！样品完全成功～"
+		},
+		{
+			"speaker": "裁缝",
+			"text": "这一件就送你了。（她把棉衣叠好，塞进她怀里）"
+		},
+		{
+			"speaker": "",
+			"text": "（得到了「防痒棉衣」：腋下、腰、脚心各挡下几次挠痒；在篝火 / 存档点休息时恢复）",
+			"actions": [
+				{
+					"id": "equip_tailor_coat",
+					"do": "item"
+				},
+				{
+					"sound": "pickup",
+					"do": "sfx"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "……送、送我？",
+			"emotion": "surprise"
+		},
+		{
+			"speaker": "裁缝",
+			"text": "你帮我找出了五个漏风的地方，这件是你的功劳。以后再遇到那些羽毛怪，就不怕啦～"
+		},
+		{
+			"speaker": "学徒",
+			"text": "姐姐穿着它，就算去示众……"
+		},
+		{
+			"speaker": "公主",
+			"text": "不会再去示众了！！",
+			"emotion": "angry"
+		},
+		{
+			"speaker": "裁缝",
+			"text": "呵呵。……说起来，你量尺寸的时候，我总觉得在哪里见过这个尺码。"
+		},
+		{
+			"speaker": "公主",
+			"text": "尺码？",
+			"emotion": "surprise"
+		},
+		{
+			"speaker": "裁缝",
+			"text": "很多年以前，有人来我这里订过一双小小的棉袜……也是二十二码半。……哎，记不清了，大概是我记错了。"
+		},
+		{
+			"speaker": "公主",
+			"text": "……",
+			"emotion": "sad"
+		},
+		{
+			"speaker": "裁缝",
+			"text": "好啦好啦，下午还有活儿吧？快去吧～"
+		},
+		{
+			"actions": [
+				{
+					"reset": true,
+					"time": 0.4,
+					"do": "camera"
+				}
+			],
+			"wait": 0.4
+		}
+	]
+}

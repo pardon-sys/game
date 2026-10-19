@@ -1,7 +1,7 @@
 class_name HazardTornado
 extends SiegeHazard
 ## 痒痒龙卷风：在战场上慢慢游走；卷到公主就把她卷起来转着圈挠（SPIN 秒），然后甩出去。
-## 龙卷风卷怪（怪物 + 陷阱）：经过的小怪（最多 MAX_MOBS 只）也被卷进去一起转，过一会儿一半甩上城墙顶、一半甩到粉色公主身边；
+## 龙卷风卷怪（怪物 + 陷阱）：经过的小怪（最多 MAX_MOBS 只，冻住 / 晕住的也卷）也被卷进去一起转，过一会儿全部甩到粉色公主身边（不甩上城墙）；
 ## 卷着公主时里面的怪也在挠。
 ## 陷阱组合：orbit_center 有值时绕着它转（双龙卷）；hidden_in（迷雾龙卷）时只在雾里游走、只看得到卷起的粉尘。
 
@@ -33,8 +33,8 @@ var orbit_dir := 1.0
 var hidden_in: Node2D
 var _mobs: Array = []
 var _mob_fling := 3.0
-## 测试用：甩上城墙的怪有几只
-var flung_to_wall := 0
+## 测试用：甩出去的怪有几只
+var flung := 0
 var _caught: PlayableCharacter
 var _spin_left := 0.0
 var _cool := {}
@@ -183,7 +183,7 @@ func _mob_tick(delta: float) -> void:
 		_fling_mobs()
 
 
-## 甩怪：一半甩上城墙顶（落在蓝色公主附近），一半甩到粉色公主身边。
+## 甩怪：全部甩到粉色公主身边（不甩上城墙）。
 func _fling_mobs() -> void:
 	var p := director.pink
 	for i in _mobs.size():
@@ -191,9 +191,7 @@ func _fling_mobs() -> void:
 		if not is_instance_valid(m):
 			continue
 		m.set_physics_process(true)
-		if i % 2 == 0 and SiegeHazard.fling_to_wall(m, 0.6, 80.0):
-			flung_to_wall += 1
-			continue
+		flung += 1
 		var to: Vector2 = (p.global_position if p and is_instance_valid(p) else global_position) + Vector2.from_angle(randf() * TAU) * 20.0
 		SiegeHazard.fling_to(m, to, 0.5, 40.0)
 	_mobs.clear()

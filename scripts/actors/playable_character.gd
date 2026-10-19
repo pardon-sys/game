@@ -303,11 +303,13 @@ func _tick(delta: float) -> void:
 				if can_control and (hobbled or latch_count() > 0) and (controller.is_action_just_pressed(&"attack") or controller.is_action_just_pressed(&"interact")):
 					struggle()  # 绊住 / 有东西吸着时攻击 / 交互键用来挣扎
 				elif can_control:
-					if controller.is_action_just_pressed(&"attack"):
+					# meta busy_hands：两只手占着（七日赎罪扛封印石）——不能攻击、冲刺、施法
+					var hands := has_meta(&"busy_hands")
+					if controller.is_action_just_pressed(&"attack") and not hands:
 						attack()
-					elif controller.is_action_just_pressed(&"dash") and not rooted and not Equipment.has_special(character_id, "no_dash"):
+					elif controller.is_action_just_pressed(&"dash") and not rooted and not hands and not Equipment.has_special(character_id, "no_dash"):
 						dash(input)
-					elif controller.is_action_just_pressed(&"magic"):
+					elif controller.is_action_just_pressed(&"magic") and not hands:
 						# 关卡可以接管魔法键（攻防战：蓝色公主打开瞄准施法）
 						if not (magic_override.is_valid() and magic_override.call(self)):
 							begin_channel()

@@ -546,7 +546,7 @@ data/cutscenes/<楼层组>/  地图内过场；data/theater/<楼层组>/  小剧
   弹弹蘑菇阵 `HazardMushrooms`（9 颗蘑菇，最多拐两次弯，踩到就 `force_move("bounce")` 连弹进怪堆）、挠痒传送门 `HazardPortalPair`（双向：公主和怪走进哪扇门
   都从另一扇出来；法术落在门上 `SiegeHazard.notify_spell` → `on_spell` 冰封一会儿，蓝色公主的 AI 会用冰锥雨封门）。能不能卷 / 吸 / 弹怪统一看 `SiegeTools.displaceable`。
   第十轮：大型陷阱频率约 ×2（第 3 波 3 个 → 第 12 波 7 个）、范围 ×1.4；**陷阱和怪物的配合**（共用工具在 `SiegeHazard`：`fling_to_wall` 把怪甩上墙顶、
-  `fling_to`、`ambush` 放伏兵，伏兵挂 meta `siege_hazard_spawn`）：龙卷风卷怪一半甩上墙、一半甩到粉色公主身边；抓娃娃机没抓到公主就抓一把怪
+  `fling_to`、`ambush` 放伏兵，伏兵挂 meta `siege_hazard_spawn`）：龙卷风卷怪（冻住的也卷）全部甩到粉色公主身边；抓娃娃机没抓到公主就抓一把怪
   运到墙顶 / 公主头顶扔下；流沙每 3 秒钻出伏兵、公主陷住时附近的怪全围过来；蘑菇把怪一路弹到尽头弹上墙；传送门每 4 秒从一扇门涌出小怪；
   黏网罩住公主时爆出伏兵（粉色公主挠脚鼠 / 蓝色公主腿根爬爬蛛）。
   战场：怪物出生钻地 `SiegeFx.burrow`（`quiet_spawn` 关掉）、`SiegeMind` 斜着走向目标墙段（`march_x`）+ 触须避障（`avoid`）、
@@ -648,6 +648,18 @@ data/cutscenes/<楼层组>/  地图内过场；data/theater/<楼层组>/  小剧
   - 闲逛的小孩 `AfterKid`（`after_kid.gd`，场景 `levels/floor_06/scenes/after_kid.tscn`）：`lure` 成立且公主在视野里 → 跑过去挠（闷笑最多 97%，小镇里不会笑晕）
 	→ `on_catch`；冲刺甩开 / 按 E（`on_shoo`）。`pick_zone` / `caption` 给部位和详细字幕（装备回收按穿着的装备写配合挠法）。
   - 痒痒草 `TickleGrass`（`tickle_grass.gd`）：踩进去被藤蔓缠住（定身）挠腰和脚心，冲刺躲得开。
+  - 第 3 天起白天都能接的四个委托（台词各一个文件 `after_text/errand_<id>.py` → `data/after/errand_<id>.json`，反应字按闷笑分三档 light / mid / heavy）：
+	- 「小游戏画面」型（`kind: show`）：走到 `target` 格 → `ErrandShow`（`errand_show.gd`）开演 `show` 脚本（继承 `TrainingStage`，`await play()`）→ 完成。
+	  **扶梯子**（工匠，`LadderShow`）：光脚爬梯子补屋檐，平衡条（← → 往回拨，自己会晃，闷笑越高越晃）+ 干活提示键；三个阶段（爬上去 / 修屋檐 / 下梯子），
+	  工匠的手指和刷子、小孩的草叶和羽毛轮流挠脚（第一次出现时暂停演几句），平衡到头摔进干草堆（演一段，这一段重来）；完成后工匠夸她的脚，不了了之。
+	  **足底按摩**（派对主人，`MassageShow`）：「忍住别踢」节奏条（指针扫到绿区按 J），六种手法依次越来越难，踢中三次「重来！」；完成清空疲倦、加状态 `foot_light`。
+	  **篝火舞会排练**（派对主人，`DanceShow` + 可复用的音游条 `RhythmLane`（`scripts/ui/rhythm_lane.gd`：↑↓←→ 音符从右往左滑进判定圈，perfect / good / miss，
+	  `make_chart(bpm, 拍数, 种子)`、`jitter`））：教学四拍 → 双人舞（失误挠腰）/ 举手转圈（腋下）/ 踩影子（被小孩按倒挠脚心），羽毛围巾不时扫脖子让音符抖；
+	  闷笑满这一段重跳，总分不到 60% 整首重跳。
+	- **赶蘑菇羊回圈**（女仆，`ErrandGoats` + `MushroomGoat`（`mushroom_goat.gd` / `.tscn`，行走图 `npcs/goat.png`））：先追叼走鞋的小羊羔，然后抱着盐块把羊一只只引回
+	  东边的羊圈（门口 `PEN_GATE`）。跟着的羊排成一串；冲刺 / 离太远 → 最前面那只不黏人的掉队（后面的跟着它走）；站着不动 → 跟着的羊追上来舔（部位按性格轮换：
+	  脚心 / 脚趾缝 / 手心 / 后颈 / 膝盖窝 / 腰），怕生的要站着等它；闷笑满绊倒、盐块掉地上（捡起来接着赶）。五只进圈 → 门口的「谢礼」→ 完成。
+	- 同一个委托人有两个委托时，做完以后的话排在所有「能接 / 正在做」后面（`errands.inject`），不挡住下一个。
 - **两位公主的玩闹 `AfterPlay`**（`after_play.gd`，台词 `data/after/play.json` ← `after_text/play.py`）：和跟着的蓝色公主说话「逗她笑一笑」（`call: after_play`），
   千手痒痒裤的小手按住她；最多 3 次选部位，今天的弱点（`weak_spot()` 按天变）以外的部位台词透露远近，挠中后节奏连击（`KeySequenceQTE`）成功就破功；
   每天一次（`vars.after_play_day`），成功 `blue_bond` +1。
@@ -677,19 +689,33 @@ data/cutscenes/<楼层组>/  地图内过场；data/theater/<楼层组>/  小剧
   玩法节点没做完就离开场景树（换图 / 读档 / 测试跳关）→ `aborted`，清掉标记，走回触发点重新开始（`recover_task` / `reset_runtime`）。
   目标下面的实时状态读脚本的静态 `status_text()`（`AfterStory.status_text`，没任务时是委托的）。文本在 `after_text/tasks.py`、`potion.py`、`equip_kids.py`。
   - **痒痒装备回收**（第 2 天下午，`TaskEquip`，`task_equip.gd`）：8 件临时痒痒装备（`ItemSpot`）走过去就被强制穿上（`Equipment.force`），同部位再捡一件旧的掉在脚下；
-    送到补给站（`DEPOT`）全部卸下。路上 4 个 `AfterKid`：闷笑超过 40%、装备刚发作（`EquipFx.flared`）、或戴着铃铛脚链 / 痒痒印记臀贴时跑过来，
-    按穿着的装备配合着挠（`EquipKids.caption / zone_for`，两件一起有组合挠法；描写走立绘旁的反应字）。长椅歇脚 / 井边洗脸降闷笑，被挠时 J 挣扎、E 哄走、冲刺甩掉。
-    闷笑到 90% = 失败（`after_fail_equip`）。
+	送到补给站（`DEPOT`）全部卸下。路上 4 个 `AfterKid`：闷笑超过 40%、装备刚发作（`EquipFx.flared`）、或戴着铃铛脚链 / 痒痒印记臀贴时跑过来，
+	按穿着的装备配合着挠（`EquipKids.caption / zone_for`，两件一起有组合挠法；描写走立绘旁的反应字）。长椅歇脚 / 井边洗脸降闷笑，被挠时 J 挣扎、E 哄走、冲刺甩掉。
+	闷笑到 90% = 失败（`after_fail_equip`）。
   - **药剂师的试药员**（第 3 天早上，药剂师工房 `floor_06_after_pharmacy`，`TaskPotion`）：配方本（水渍盖住的配方 + 记下的反应）→ 六味药草挑三味 → 奶奶用羽毛试，
-    配方里没有的药草各有一种可推理的反应（`data/after/potion.json`）；错三碗 = 失败（`after_fail_potion`），换下一张配方。配对 → 「薄荷止痒药」（`MintPotionItem`：
-    10 秒 `frost_guard`，闷笑不涨）。
+	配方里没有的药草各有一种可推理的反应（`data/after/potion.json`）；错三碗 = 失败（`after_fail_potion`），换下一张配方。配对 → 「薄荷止痒药」（`MintPotionItem`：
+	10 秒 `frost_guard`，闷笑不涨）。
   - **拆除哑火的攻城车**（第 3 天下午，城门外的战场 `floor_06_after_field`，城门 `after_field_open` 这时才开；`TaskCart` + `DormantCart`，图例 `f6cart index dir sweep speed range_px`）：
-    车灯（`VisionCone`）左右扫，被照到累计 0.4 秒或在附近冲刺就醒 → 捞进车斗挠 → `KeySequenceQTE` 挣扎，挣不开 = 失败（`after_fail_cart`）；车尾按住 E 三秒拆车轴。
-    蓝色公主（这张图能换人）在车旁按住技能键冻住车轮（冻着的车灯不扫），冻久了千手痒痒裤反弹（解冻、她被挠、5 秒冻不了）。
-    三辆拆完 → `after_d3_cart_done`：队长递手帕的「花猫样」口误（用户给定的台词）。
+	车灯（`VisionCone`）左右扫，被照到累计 0.4 秒或在附近冲刺就醒 → 捞进车斗挠 → `KeySequenceQTE` 挣扎，挣不开 = 失败（`after_fail_cart`）；车尾按住 E 三秒拆车轴。
+	蓝色公主（这张图能换人）在车旁按住技能键冻住车轮（冻着的车灯不扫），冻久了千手痒痒裤反弹（解冻、她被挠、5 秒冻不了）。
+	三辆拆完 → `after_d3_cart_done`：队长递手帕的「花猫样」口误（用户给定的台词）。
+  - **裁缝的试衣模特·找漏风**（第 5 天早上，裁缝铺里间 `floor_06_after_tailor`，`TaskTailor`，文本 `after_text/tailor.py`）：量尺寸（暖场）→ 腋下 / 腰 / 脚心（棉袜）
+	各四个点，裁缝拿羽毛挨个试（漏风 = 好痒、挨着没缝的漏风点 = 有一点点、别的没感觉；闷笑 ≥ 60% 时挨着的点一半可能也说好痒）→ 选项页标点（部位图 `TailorChart`
+	同步显示）→ 缝：标错的「仔细检查」（挠一阵）；可以再试一遍、喝茶降闷笑（3 次）。验收走过三个羽毛人台（`FeatherMannequin`），漏补的部位被挠、回去重找；
+	闷笑 97% = 失败（`after_fail_tailor`，漏风点重新随机）。完成得到装备「防痒棉衣」（`equip_tailor_coat`：腋下 / 腰 / 脚心各挡 2 次）。台词行里写 `"tickle": 部位`
+	时任务节点顺手挠一下（对话框的 `line_shown` 信号）。
+  - **矿车护送·双人轨道**（第 5 天下午，受损的矿道 `floor_06_after_mine`，东北角的矿道门 `after_mine_open` 这时才开；`TaskMine`，文本 `after_text/mine.py`）：
+	程序画的矿车（蓝色公主坐在上面）沿第 6 行的轨道走；按住 → 推（闷笑越高越没力，人过不去车），上坡段要连按 →、不推往回溜。C 冰封模式（车刹住）+ J 冻住车前方
+	的陷阱 5 秒（喷口的粉雾一起清掉）。上坡段残党小鬼（`CartImp`，机关小工匠的贴图染红）跳上车挠蓝色公主的大腿，车上每只让推力 ×0.6，车旁按 J 拍下去。
+	闷笑满车溜回这一段的起点，溜三次 = 失败（`after_fail_mine`）。四段（装车 / 喷口 / 刷子 / 上坡）之间两人聊矿道和小时候；到营地 → 旧门的传闻。
+  - **修补狂欢图腾柱**（第 7 天早上开始、做到傍晚，图腾柱废地 `floor_06_after_totem`，西边的小路 `after_totem_open` 这时才开；`TaskTotem`，文本 `after_text/totem.py`）：
+	三块封印石从采石角扛到图腾柱底座（E 扛起，到底座自动放下）。扛着时角色挂 meta `busy_hands`（`PlayableCharacter` 不响应攻击 / 冲刺 / 施法）+ 状态 `carry_stone`（移速 ×0.55）。
+	第一块零星的痒痒草（`TickleGrass`，`on_catch` 回调按闷笑挑反应字）；第二块起草从离她最近的草丛往她那边蔓延；第三块再加千手痒痒裤失控（发光预警 → 小手伸长挠粉色公主），
+	换成蓝色公主按住 E「安抚」够 2 秒 → 小手挠她自己、安静 12 秒。闷笑满石头摔地上，同一块摔三次 = 失败（`after_fail_totem`，放好的不用重放）。
+	每块之间歇脚（镇民送水、蓝色公主数这七天）。`TASKS` 的 `clear_book`（做完工时清零）/ `to_night`（做完早上、下午都算完，直接天黑）。
 - 小场景导演 `AfterRoom`（图例 `f6afterroom`）：目标提示、目标圈触发、进图自动演的事件、镇民改名、蓝色公主跟着。`AfterStory.TOWN_DOORS / ROOM_EXITS` 指路。
 - 小剧场 / 舞台上的字（`SpeechBubble`）画在最前面（`z_as_relative = false`、`z_index = 4000`）；训练小游戏舞台上气泡垫在飘字下面。
-- 测试：`tests/f6_after_test`（胜利去向、开场 → 宣判、日程摆位、赎罪簿和背包页、宵禁锁门、手印顺序、楼上结尾 → 第 2 天、示众小游戏（挣扎 / 求情 / 应对 / 笑出声 / 释放加时 / 笑晕）/ 罚工时 / 转盘、委托、玩闹、三个弥补任务（完成 / 失败小剧场 / 重来）、床上休息、日程逐层覆盖、旧存档、跳关）。
+- 测试：`tests/f6_after_test`（胜利去向、开场 → 宣判、日程摆位、赎罪簿和背包页、宵禁锁门、手印顺序、楼上结尾 → 第 2 天、示众小游戏（挣扎 / 求情 / 应对 / 笑出声 / 释放加时 / 笑晕）/ 罚工时 / 转盘、委托、玩闹、五个弥补任务（完成 / 失败小剧场 / 重来）、第 3 天起的四个委托、床上休息、日程逐层覆盖、旧存档、跳关）。
 
 ## 公主状态与换美术素材
 

@@ -3,6 +3,25 @@
 	"entries": [
 		{
 			"if": {
+				"flag": "errand_ladder_open"
+			},
+			"node": "errand_ladder"
+		},
+		{
+			"if": {
+				"flag": "errand_ladder_active"
+			},
+			"node": "errand_ladder_active"
+		},
+		{
+			"if": {
+				"flag": "errand_ladder_done",
+				"not": "dlg_floor_06/after_engineer_errand_ladder_done"
+			},
+			"node": "errand_ladder_done"
+		},
+		{
+			"if": {
 				"var": {
 					"after_day": [
 						"==",
@@ -110,6 +129,59 @@
 			"lines": [
 				{
 					"text": "听说你笑晕了……木料今天就算了，明天再搬。"
+				}
+			]
+		},
+		"errand_ladder": {
+			"lines": [
+				{
+					"text": "哎，姑娘！会爬梯子吗？屋檐上破了个洞，我这把老腰爬不上去了。"
+				},
+				{
+					"text": "帮个忙，我给你在赎罪簿上记三个工时。"
+				}
+			],
+			"prompt": "帮工匠补屋檐？",
+			"choices": [
+				{
+					"text": "交给我！",
+					"next": "errand_ladder_accept"
+				},
+				{
+					"text": "等一下再说",
+					"next": ""
+				}
+			]
+		},
+		"errand_ladder_accept": {
+			"lines": [
+				{
+					"text": "好嘞！梯子我已经架好了——就在那边的脚手架房子底下。"
+				}
+			],
+			"set": {
+				"vars": {
+					"errand_req": "ladder"
+				},
+				"call": "errand_start"
+			}
+		},
+		"errand_ladder_active": {
+			"lines": [
+				{
+					"text": "梯子在脚手架房子那边。上去吧，我扶着。"
+				}
+			]
+		},
+		"errand_ladder_done": {
+			"lines": [
+				{
+					"text": "屋檐补得真结实。……脚丫子还红着吗？"
+				},
+				{
+					"text": "……不准提脚！",
+					"speaker": "公主",
+					"emotion": "angry"
 				}
 			]
 		}

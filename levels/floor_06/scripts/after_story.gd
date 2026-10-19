@@ -20,6 +20,9 @@ const HOUSE := "floor_06_after_house"
 const HOUSE_UP := "floor_06_after_house_up"
 const PHARMACY := "floor_06_after_pharmacy"
 const FIELD := "floor_06_after_field"
+const TAILOR := "floor_06_after_tailor"
+const MINE := "floor_06_after_mine"
+const TOTEM := "floor_06_after_totem"
 const STARTED := "after_started"
 const EVENTS := {
 	"d1_open": {"where": TOWN, "auto": true, "cutscene": "after_d1_open"},
@@ -29,13 +32,20 @@ const EVENTS := {
 	"d2_equip": {"where": TOWN, "spot": [13, 24.5, 1.5], "objective": "去补给站找市场监督（回收痒痒装备）", "cutscene": "after_d2_equip"},
 	"d3_potion": {"where": PHARMACY, "spot": [8, 6, 1.0], "objective": "去药剂师工房试药（北边那排房子）", "cutscene": "after_d3_potion"},
 	"d3_cart": {"where": FIELD, "auto": true, "objective": "出南边的城门，去城外的战场拆攻城车", "cutscene": "after_d3_cart"},
+	"d5_tailor": {"where": TAILOR, "spot": [9, 7, 1.2], "objective": "去裁缝铺当试衣模特（北边那排最右边的房子）", "cutscene": "after_d5_tailor"},
+	"d5_mine": {"where": MINE, "auto": true, "objective": "去东北角的矿道口，护送补给矿车", "cutscene": "after_d5_mine"},
+	"d7_totem": {"where": TOTEM, "auto": true, "objective": "从西边的小路去图腾柱废地，修补狂欢图腾柱", "cutscene": "after_d7_totem"},
 }
 ## 小镇里通往各张图的门口（指路）、各张图回小镇的出口
 const TOWN_DOORS := {"floor_06_after_house": [42, 10], "floor_06_after_house_up": [42, 10], "floor_06_after_pharmacy": [16, 10],
-	"floor_06_after_field": [32, 38.5]}
-const ROOM_EXITS := {"floor_06_after_house": [9, 10], "floor_06_after_pharmacy": [8, 8.5], "floor_06_after_field": [21, 3]}
-## 城门：第 3 天下午拆攻城车的时候才开
+	"floor_06_after_field": [32, 38.5], "floor_06_after_tailor": [32, 10], "floor_06_after_mine": [54, 6], "floor_06_after_totem": [3, 32]}
+const ROOM_EXITS := {"floor_06_after_house": [9, 10], "floor_06_after_pharmacy": [8, 8.5], "floor_06_after_field": [21, 3],
+	"floor_06_after_tailor": [8, 10.5], "floor_06_after_mine": [3, 6], "floor_06_after_totem": [3, 12]}
+## 城门：第 3 天下午拆攻城车的时候才开；矿道门：第 5 天下午护送矿车的时候才开
 const FIELD_OPEN := "after_field_open"
+const MINE_OPEN := "after_mine_open"
+## 西边通往图腾柱废地的小路：第 7 天修图腾柱的时候才开
+const TOTEM_OPEN := "after_totem_open"
 ## 弥补任务进行中（不能接委托、小屋的门锁着）
 const TASK_FLAG := "after_task_active"
 ## 弥补任务的玩法节点：事件 id → 脚本（实例发 finished(ok)；脚本要有静态的 reset_items() / status_text()）、失败小剧场 / 罚工时
@@ -46,6 +56,13 @@ const TASKS := {
 		"done": "after_d3_potion_done"},
 	"d3_cart": {"script": "res://levels/floor_06/scripts/task_cart.gd", "name": "拆除哑火的攻城车", "fail": "after_fail_cart", "fail_hours": 3,
 		"done": "after_d3_cart_done", "respawn": [21, 4]},
+	"d5_tailor": {"script": "res://levels/floor_06/scripts/task_tailor.gd", "name": "裁缝的试衣模特", "fail": "after_fail_tailor", "fail_hours": 2,
+		"done": "after_d5_tailor_done", "respawn": [9, 8]},
+	"d5_mine": {"script": "res://levels/floor_06/scripts/task_mine.gd", "name": "矿车护送", "fail": "after_fail_mine", "fail_hours": 3,
+		"done": "after_d5_mine_done", "respawn": [5, 7]},
+	# 早上开始一直做到傍晚（to_night：做完直接天黑）；修好了工时清零（clear_book）
+	"d7_totem": {"script": "res://levels/floor_06/scripts/task_totem.gd", "name": "修补狂欢图腾柱", "fail": "after_fail_totem", "fail_hours": 2,
+		"done": "after_d7_totem_done", "respawn": [8, 12], "to_night": true, "clear_book": true},
 }
 ## 指路用的格子：小镇里的小屋门口、小屋里的门、楼下的床
 const TOWN_HOUSE_DOOR := [42, 10]
@@ -140,6 +157,12 @@ static func sync_doors() -> void:
 	var want := DayClock.event() == "d3_cart" and not DayClock.done()
 	if GameState.has_flag(FIELD_OPEN) != want:
 		GameState.set_flag(FIELD_OPEN, want)
+	var mine := DayClock.event() == "d5_mine" and not DayClock.done()
+	if GameState.has_flag(MINE_OPEN) != mine:
+		GameState.set_flag(MINE_OPEN, mine)
+	var totem := DayClock.event() == "d7_totem" and not DayClock.done()
+	if GameState.has_flag(TOTEM_OPEN) != totem:
+		GameState.set_flag(TOTEM_OPEN, totem)
 
 
 ## 进图时：这张图上自动演的事件（auto）。
@@ -245,8 +268,17 @@ static func run_task(ev: String) -> void:
 			if spec.has("respawn"):
 				p.global_position = Cutscene.cell_to_world(spec["respawn"])
 	GameState.set_flag(TASK_FLAG, false)
+	if bool(spec.get("clear_book", false)) and PenanceBook.started() and PenanceBook.hours() > 0:
+		PenanceBook.add(-PenanceBook.hours(), str(spec["name"]) + "：工时清零", true)
 	if str(spec.get("done", "")) != "":
 		await Cutscene.play(str(spec["done"]))
+	if bool(spec.get("to_night", false)) and DayClock.slot() == DayClock.MORNING:
+		# 一直做到傍晚：早上、下午都算做完，直接天黑
+		DayClock.mark_done()
+		DayClock.mark_done(-1, DayClock.AFTERNOON)
+		await DayClock.pass_time(DayClock.NIGHT)
+		GameState.hint("天黑了。广场那边，篝火已经点起来了")
+		return
 	await finish_slot()
 
 

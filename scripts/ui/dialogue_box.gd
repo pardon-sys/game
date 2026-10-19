@@ -6,6 +6,8 @@ extends CanvasLayer
 ## 公主立绘常驻左侧；正式对话和不阻断操作的受挠台词分别显示。
 
 signal finished(id: String)
+## 每显示一行发一次（小游戏 / 任务节点据此顺带做事：比如行里写的 "tickle": 部位）
+signal line_shown(line: Dictionary)
 
 const DATA_PATH := "res://data/dialogues/common.json"
 const PRINCESS := "公主"
@@ -307,6 +309,7 @@ func _show_line() -> void:
 	_chars = 0.0
 	_typing = true
 	arrow.visible = false
+	line_shown.emit(line)
 
 
 # ------------------------------------------------------------------ 人物对话 / 人物立绘
