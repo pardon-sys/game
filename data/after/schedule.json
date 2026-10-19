@@ -771,6 +771,25 @@
 				"hours": 12
 			}
 		},
+		"d5": {
+			"morning": {
+				"event": "d5_tailor",
+				"task": "裁缝的试衣模特",
+				"hours": 10
+			},
+			"afternoon": {
+				"event": "d5_mine",
+				"task": "矿车护送",
+				"hours": 12
+			}
+		},
+		"d7": {
+			"morning": {
+				"event": "d7_totem",
+				"task": "修补狂欢图腾柱",
+				"hours": 0
+			}
+		},
 		"d1": {
 			"morning": {
 				"event": "d1_open",

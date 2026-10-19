@@ -20,14 +20,19 @@ SIEGE = WAR + ["f6w_ready", "siege_intro_seen", "intro_done_siege_intro", "!sieg
 AFTER_RESET = ["!after_started", "!penance_book", "!after_night_busy", "!after_d1_clues", "!after_house_up_open",
                "!after_d1_clue_bed", "!after_d1_clue_tea"] + \
               ["!after_done_d1_%s" % s for s in ("morning", "afternoon", "night")] + \
-              ["!after_ev_%s" % e for e in ("d1_open", "d1_verdict", "d1_sleepwalk", "d2_stocks", "d2_equip", "d3_potion", "d3_cart")] + \
-              ["!after_done_d2_%s" % k for k in ("morning", "afternoon", "night")] + ["!after_done_d3_%s" % k for k in ("morning", "afternoon", "night")] + \
-              ["!after_task_active", "!after_field_open", "!after_d2_fainted"] + \
-              ["!errand_%s_%s" % (e, k) for e in ("cookies", "apples") for k in ("open", "active", "done")]
+              ["!after_ev_%s" % e for e in ("d1_open", "d1_verdict", "d1_sleepwalk", "d2_stocks", "d2_equip", "d3_potion", "d3_cart",
+                                             "d5_tailor", "d5_mine", "d7_totem")] + \
+              ["!after_done_d%d_%s" % (d, k) for d in (2, 3, 4, 5, 6, 7) for k in ("morning", "afternoon", "night")] + \
+              ["!after_task_active", "!after_field_open", "!after_mine_open", "!after_totem_open", "!after_d2_fainted"] + \
+              ["!errand_%s_%s" % (e, k) for e in ("cookies", "apples", "ladder", "goats", "dance", "massage") for k in ("open", "active", "done")]
 AFTER = WAR + ["siege_won"] + AFTER_RESET
 BOOK = {"penance_hours": 100, "penance_log": [], "penance_punish": [], "after_play_day": 0, "blue_bond": 0,
-        "task_cart_done": [], "task_potion_recipe": 0, "task_potion_notes": [], "task_potion_wrong": 0}
+        "task_cart_done": [], "task_potion_recipe": 0, "task_potion_notes": [], "task_potion_wrong": 0,
+        "task_tailor_measured": False, "task_tailor_tea": 3, "task_mine_slips": 0, "task_totem_placed": 0, "task_totem_drops": 0}
 D2_ALL = ["after_done_d2_morning", "after_ev_d2_stocks"]
+# 第 3 天整天做完（第 4 天以后的跳关点用）
+D3_ALL = D2_ALL + ["after_done_d2_afternoon", "after_ev_d2_equip", "after_done_d2_night", "after_done_d3_morning", "after_ev_d3_potion",
+                   "after_done_d3_afternoon", "after_ev_d3_cart", "after_done_d3_night"]
 
 
 def point(name, floor, flags, vars_=None, **kw):
@@ -65,6 +70,17 @@ POINTS = [
     point("七日赎罪·第 3 天下午（拆攻城车）", "floor_06_after", AFTER + after_done("morning", "afternoon", "night") + D2_ALL +
           ["after_done_d2_afternoon", "after_ev_d2_equip", "after_done_d2_night", "after_done_d3_morning", "after_ev_d3_potion"],
           dict({"day": 4, "after_day": 3, "after_slot": 1}, **BOOK), cell=[32, 36]),
+    point("七日赎罪·第 4 天（委托：扶梯子 / 赶羊 / 舞会 / 按摩）", "floor_06_after", AFTER + after_done("morning", "afternoon", "night") + D3_ALL,
+          dict({"day": 5, "after_day": 4, "after_slot": 0}, **BOOK), cell=[34, 36]),
+    point("七日赎罪·第 5 天早上（裁缝找漏风）", "floor_06_after_tailor", AFTER + after_done("morning", "afternoon", "night") + D3_ALL +
+          ["after_done_d4_morning", "after_done_d4_afternoon", "after_done_d4_night"],
+          dict({"day": 6, "after_day": 5, "after_slot": 0}, **BOOK), spawn="from_town"),
+    point("七日赎罪·第 5 天下午（矿车护送）", "floor_06_after", AFTER + after_done("morning", "afternoon", "night") + D3_ALL +
+          ["after_done_d4_morning", "after_done_d4_afternoon", "after_done_d4_night", "after_done_d5_morning", "after_ev_d5_tailor"],
+          dict({"day": 6, "after_day": 5, "after_slot": 1}, **BOOK), cell=[54, 7]),
+    point("七日赎罪·第 7 天（修补图腾柱）", "floor_06_after", AFTER + after_done("morning", "afternoon", "night") + D3_ALL +
+          ["after_done_d%d_%s" % (d, k) for d in (4, 5, 6) for k in ("morning", "afternoon", "night")] + ["after_ev_d5_tailor", "after_ev_d5_mine"],
+          dict({"day": 8, "after_day": 7, "after_slot": 0}, **BOOK), cell=[4, 32]),
 ]
 Path("data/dev").mkdir(parents=True, exist_ok=True)
 Path("data/dev/skip_points_more.json").write_text(json.dumps({

@@ -3,6 +3,25 @@
 	"entries": [
 		{
 			"if": {
+				"flag": "errand_goats_open"
+			},
+			"node": "errand_goats"
+		},
+		{
+			"if": {
+				"flag": "errand_goats_active"
+			},
+			"node": "errand_goats_active"
+		},
+		{
+			"if": {
+				"flag": "errand_goats_done",
+				"not": "dlg_floor_06/after_maid_errand_goats_done"
+			},
+			"node": "errand_goats_done"
+		},
+		{
+			"if": {
 				"var": {
 					"after_day": [
 						"==",
@@ -120,6 +139,59 @@
 			"lines": [
 				{
 					"text": "您醒了？鞋子刚才蓝色的那位来拿走了。……她好像很担心您。"
+				}
+			]
+		},
+		"errand_goats": {
+			"lines": [
+				{
+					"text": "……那个。羊圈的门闩松了，五只蘑菇羊全跑出去了。"
+				},
+				{
+					"text": "帮我把它们赶回来好吗？……我会跟队长说，给你记三个工时。"
+				}
+			],
+			"prompt": "帮女仆赶羊？",
+			"choices": [
+				{
+					"text": "好，交给我",
+					"next": "errand_goats_accept"
+				},
+				{
+					"text": "等一下再说",
+					"next": ""
+				}
+			]
+		},
+		"errand_goats_accept": {
+			"lines": [
+				{
+					"text": "谢谢。……盐块给你。"
+				}
+			],
+			"set": {
+				"vars": {
+					"errand_req": "goats"
+				},
+				"call": "errand_start"
+			}
+		},
+		"errand_goats_active": {
+			"lines": [
+				{
+					"text": "……慢慢走。别跑，也别停。"
+				}
+			]
+		},
+		"errand_goats_done": {
+			"lines": [
+				{
+					"text": "羊们今天都很乖。……它们好像挺喜欢你的。"
+				},
+				{
+					"text": "……我一点都不想被它们喜欢。",
+					"speaker": "公主",
+					"emotion": "sad"
 				}
 			]
 		}

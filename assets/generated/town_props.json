@@ -988,5 +988,85 @@
 			20,
 			20
 		]
+	},
+	"ladder": {
+		"region": [
+			242,
+			332,
+			14,
+			40
+		]
+	},
+	"hay": {
+		"body": [
+			16,
+			6
+		],
+		"body_y": -3,
+		"region": [
+			0,
+			372,
+			20,
+			14
+		]
+	},
+	"fabric": {
+		"body": [
+			26,
+			6
+		],
+		"body_y": -3,
+		"region": [
+			20,
+			372,
+			30,
+			30
+		]
+	},
+	"dress_form": {
+		"body": [
+			10,
+			6
+		],
+		"body_y": -3,
+		"region": [
+			50,
+			372,
+			16,
+			30
+		]
+	},
+	"mirror": {
+		"body": [
+			12,
+			4
+		],
+		"body_y": -2,
+		"region": [
+			66,
+			372,
+			16,
+			32
+		]
+	},
+	"rail": {
+		"floor": true,
+		"under": true,
+		"region": [
+			82,
+			372,
+			16,
+			16
+		]
+	},
+	"rail_slope": {
+		"floor": true,
+		"under": true,
+		"region": [
+			98,
+			372,
+			16,
+			16
+		]
 	}
 }

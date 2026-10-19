@@ -1,0 +1,18 @@
+{
+	"name": "老矿工",
+	"npc": "miner",
+	"entries": [
+		{
+			"node": "default"
+		}
+	],
+	"nodes": {
+		"default": {
+			"lines": [
+				{
+					"text": "站在车屁股后面推！冻陷阱的时候车会刹住，别慌。"
+				}
+			]
+		}
+	}
+}

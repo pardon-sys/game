@@ -1,0 +1,202 @@
+{
+	"name": "护送失败：翻车进刷子堆",
+	"cast": {
+		"princess": {
+			"kind": "princess",
+			"at": [
+				-8,
+				8
+			],
+			"visual": "helpless_1",
+			"anim": "helpless",
+			"dir": "down"
+		},
+		"blue": {
+			"kind": "npc:blue_princess",
+			"at": [
+				10,
+				8
+			],
+			"visual": "helpless_1",
+			"anim": "helpless",
+			"dir": "down"
+		},
+		"brush": {
+			"kind": "trap:brush",
+			"at": [
+				0,
+				16
+			]
+		},
+		"imp": {
+			"kind": "monster:imp",
+			"at": [
+				30,
+				6
+			]
+		}
+	},
+	"steps": [
+		{
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "fade_in"
+				},
+				{
+					"state": "giggle",
+					"do": "voice"
+				}
+			],
+			"wait": 0.5
+		},
+		{
+			"speaker": "",
+			"text": "（矿车第三次往回溜——这一次没停住。车轮一歪，「咣当」一声翻倒在轨道边上）"
+		},
+		{
+			"speaker": "公主",
+			"text": "哇啊啊啊——！",
+			"emotion": "surprise"
+		},
+		{
+			"speaker": "",
+			"text": "（两人连同一箱面包，一起滚进了轨道边上那堆废弃的羽毛刷里）"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……！"
+		},
+		{
+			"speaker": "",
+			"text": "（刷子堆被一撞，残留的机关「咔哒」一声又转了起来。十几根刷毛同时扫向两个人）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "brush",
+					"zone": "sole",
+					"fx": "brush",
+					"repeat": 10,
+					"interval": 0.2,
+					"do": "tickle"
+				},
+				{
+					"who": "blue",
+					"by": "brush",
+					"zone": "thigh",
+					"fx": "brush",
+					"repeat": 10,
+					"interval": 0.2,
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "哈哈哈哈！刷、刷子又动了——！脚、脚心——！",
+			"portrait": "defeat_1"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……唔……！……大、大腿……"
+		},
+		{
+			"speaker": "",
+			"text": "（她们想爬出去，可是刷子堆太软，手一撑就陷进去。越挣扎，刷毛扫得越欢）"
+		},
+		{
+			"speaker": "公主",
+			"text": "哈哈……你、你别乱动……你一动我这边的刷子就转起来了……！",
+			"emotion": "helpless_2"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……是你……先动的……唔……"
+		},
+		{
+			"speaker": "",
+			"text": "（一个残党小鬼从矿石堆后面探出头来，看到这一幕，拍着手跳了出来）",
+			"actions": [
+				{
+					"who": "imp",
+					"kind": "laugh",
+					"do": "bubble"
+				}
+			]
+		},
+		{
+			"speaker": "残党小鬼",
+			"text": "嘻嘻嘻！两个都掉进刷子堆了！我来帮刷子一把！"
+		},
+		{
+			"speaker": "",
+			"text": "（小鬼扑上来，一手抓住粉色公主的脚踝，一手揪起蓝色公主裤子上的小手——让它们一起挠了起来）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "imp",
+					"zone": "sole",
+					"fx": "hand",
+					"repeat": 12,
+					"interval": 0.16,
+					"do": "tickle"
+				},
+				{
+					"who": "blue",
+					"by": "imp",
+					"zone": "thigh",
+					"fx": "hand",
+					"repeat": 12,
+					"interval": 0.16,
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "哈哈哈哈哈！不、不要抓脚踝——！",
+			"portrait": "defeat_2"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……噗。……哈……",
+			"actions": [
+				{
+					"who": "blue",
+					"visual": "helpless_2",
+					"do": "pose"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "……你、你刚才笑了吧！？哈哈哈……我听到了！",
+			"emotion": "helpless_2"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……没、有……哈……"
+		},
+		{
+			"speaker": "",
+			"text": "（直到老矿工举着镐头赶过来，把小鬼赶跑，两人才被一个一个地从刷子堆里拔了出来）"
+		},
+		{
+			"speaker": "老矿工",
+			"text": "……哎呀呀。补给还在，人也还在。……从头再推一遍吧。"
+		},
+		{
+			"actions": [
+				{
+					"time": 0.6,
+					"do": "fade_out"
+				},
+				{
+					"state": "",
+					"do": "voice"
+				}
+			],
+			"wait": 0.7
+		}
+	]
+}

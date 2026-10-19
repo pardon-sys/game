@@ -1,0 +1,46 @@
+[level]
+# 第六层·地下小镇·战后（tools/build/gen_floor06_after.py 生成，不要直接改）
+intro =
+ambient = 0.5,0.46,0.54
+[legend]
+# = wall
+. = floor
+P = player
+t = torch lit=true
+A = f6afterroom
+C = exit target=floor_06_after spawn=from_mine
+D = spawn id=from_town
+E = blue_princess ai=false + prop type=rail
+F = prop type=rail
+G = prop type=rail_slope
+H = prop type=crate
+I = npc id=miner dialogue=floor_06/after_mine_miner wander=0 dir=down
+J = trap type=vent idle_time=2.0 cloud_duration=1.6 offset=0.0
+K = trap type=vent idle_time=2.0 cloud_duration=1.6 offset=0.6
+L = trap type=vent idle_time=2.0 cloud_duration=1.6 offset=1.1
+M = trap type=vent idle_time=2.0 cloud_duration=1.6 offset=1.7
+N = trap type=vent idle_time=2.0 cloud_duration=1.6 offset=0.2
+O = trap type=vent idle_time=2.0 cloud_duration=1.6 offset=0.8
+Q = trap type=brush speed=1.4
+R = trap type=brush speed=-1.5
+S = trap type=brush speed=1.7
+T = trap type=brush speed=-1.8
+U = prop type=rubble
+V = prop type=lamp
+W = prop type=tent
+X = prop type=bonfire_0
+Y = npc id=miner dialogue=floor_06/after_mine_camp wander=0 dir=left
+
+[map]
+################################################################################################
+################################################################################################
+######t#######t#######t#######t#######t#######t#######t#######t#######t#######t#######t#########
+##.A..........................................................................................##
+##....H.H...I................................Q...........S..........U.........U...........W...##
+##................J.......L.......N........................................................Y..##
+##C.FFFFFEFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFGGGGGGGGGGGGGGGGGGGGGGGGGGG.##
+##..DP................K.......M......O........................................................##
+##.........H.......................................R..........T..........U.........U.....X..W.##
+##..................V.......................V.........................V.......................##
+################################################################################################
+################################################################################################

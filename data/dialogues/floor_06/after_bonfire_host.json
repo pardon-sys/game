@@ -3,6 +3,44 @@
 	"entries": [
 		{
 			"if": {
+				"flag": "errand_massage_open"
+			},
+			"node": "errand_massage"
+		},
+		{
+			"if": {
+				"flag": "errand_massage_active"
+			},
+			"node": "errand_massage_active"
+		},
+		{
+			"if": {
+				"flag": "errand_dance_open"
+			},
+			"node": "errand_dance"
+		},
+		{
+			"if": {
+				"flag": "errand_dance_active"
+			},
+			"node": "errand_dance_active"
+		},
+		{
+			"if": {
+				"flag": "errand_massage_done",
+				"not": "dlg_floor_06/after_bonfire_host_errand_massage_done"
+			},
+			"node": "errand_massage_done"
+		},
+		{
+			"if": {
+				"flag": "errand_dance_done",
+				"not": "dlg_floor_06/after_bonfire_host_errand_dance_done"
+			},
+			"node": "errand_dance_done"
+		},
+		{
+			"if": {
 				"var": {
 					"after_day": [
 						"==",
@@ -130,6 +168,116 @@
 					"text": "没有下次了！！",
 					"speaker": "公主",
 					"emotion": "angry"
+				}
+			]
+		},
+		"errand_dance": {
+			"lines": [
+				{
+					"text": "哎呀～正好！庆功宴的篝火舞，正缺一个领舞的人！"
+				},
+				{
+					"text": "来跟我们排练一下吧？跳得好的话，给你记三个工时～"
+				}
+			],
+			"prompt": "去篝火边排练舞蹈？",
+			"choices": [
+				{
+					"text": "跳就跳！",
+					"next": "errand_dance_accept"
+				},
+				{
+					"text": "等一下再说",
+					"next": ""
+				}
+			]
+		},
+		"errand_dance_accept": {
+			"lines": [
+				{
+					"text": "好耶～篝火边见！"
+				}
+			],
+			"set": {
+				"vars": {
+					"errand_req": "dance"
+				},
+				"call": "errand_start"
+			}
+		},
+		"errand_dance_active": {
+			"lines": [
+				{
+					"text": "快来篝火边～大家都等着你呢！"
+				}
+			]
+		},
+		"errand_dance_done": {
+			"lines": [
+				{
+					"text": "领舞大人～庆功宴那天要穿漂亮点哦！"
+				},
+				{
+					"text": "……光脚的话会被踩影子吗？",
+					"speaker": "公主",
+					"emotion": "sad"
+				},
+				{
+					"text": "会～",
+					"speaker": "篝火派对的主人"
+				}
+			]
+		},
+		"errand_massage": {
+			"lines": [
+				{
+					"text": "哎呀～脸色好疲惫哦。脚底是不是很酸？"
+				},
+				{
+					"text": "我新学了一套「足疗」，正缺个试手的人。按完给你记三个工时，怎么样？"
+				}
+			],
+			"prompt": "让主人试新手法？",
+			"choices": [
+				{
+					"text": "……好吧，就一次",
+					"next": "errand_massage_accept"
+				},
+				{
+					"text": "等一下再说",
+					"next": ""
+				}
+			]
+		},
+		"errand_massage_accept": {
+			"lines": [
+				{
+					"text": "好耶～篝火边的长椅上等你！"
+				}
+			],
+			"set": {
+				"vars": {
+					"errand_req": "massage"
+				},
+				"call": "errand_start"
+			}
+		},
+		"errand_massage_active": {
+			"lines": [
+				{
+					"text": "快来长椅上坐好～鞋子记得脱哦！"
+				}
+			]
+		},
+		"errand_massage_done": {
+			"lines": [
+				{
+					"text": "脚底还轻松吗？「篝火足疗铺」随时欢迎～"
+				},
+				{
+					"text": "……不来。",
+					"speaker": "公主",
+					"emotion": "shy"
 				}
 			]
 		}

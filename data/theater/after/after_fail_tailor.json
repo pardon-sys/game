@@ -1,0 +1,219 @@
+{
+	"name": "试衣失败：全身尺码复查",
+	"cast": {
+		"princess": {
+			"kind": "princess",
+			"at": [
+				0,
+				8
+			],
+			"visual": "helpless_1",
+			"anim": "helpless",
+			"dir": "down"
+		},
+		"tl": {
+			"kind": "npc:tailor",
+			"at": [
+				-28,
+				8
+			],
+			"dir": "right"
+		},
+		"ap": {
+			"kind": "npc:apprentice",
+			"at": [
+				28,
+				8
+			],
+			"dir": "left"
+		}
+	},
+	"steps": [
+		{
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "fade_in"
+				},
+				{
+					"state": "giggle",
+					"do": "voice"
+				}
+			],
+			"wait": 0.5
+		},
+		{
+			"speaker": "裁缝",
+			"text": "哎呀呀，笑成这样，量好的尺寸全乱了。"
+		},
+		{
+			"speaker": "公主",
+			"text": "乱、乱了……？那、那要怎么办……",
+			"emotion": "surprise"
+		},
+		{
+			"speaker": "裁缝",
+			"text": "只好——「全身尺码复查」！学徒，拿软尺来～"
+		},
+		{
+			"speaker": "学徒",
+			"text": "来了！（两根软尺，一人一根）"
+		},
+		{
+			"speaker": "",
+			"text": "（裁缝的软尺绕上了腰，学徒的软尺穿过了腋下。两根尺子同时一拉——）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "tl",
+					"zone": "waist",
+					"fx": "feather",
+					"repeat": 8,
+					"interval": 0.22,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"by": "ap",
+					"zone": "armpit",
+					"fx": "feather",
+					"repeat": 8,
+					"interval": 0.22,
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "哈哈哈哈！一、一起拉是犯规的——！",
+			"actions": [
+				{
+					"who": "princess",
+					"kind": "laugh",
+					"do": "bubble"
+				},
+				{
+					"who": "princess",
+					"time": 0.5,
+					"do": "shake"
+				}
+			],
+			"portrait": "defeat_1"
+		},
+		{
+			"speaker": "裁缝",
+			"text": "腰围……哎呀，你一直在扭，量不准。学徒，按住她的手。"
+		},
+		{
+			"speaker": "学徒",
+			"text": "是！（学徒把她的两只手举过头顶，按在了人台上）"
+		},
+		{
+			"speaker": "裁缝",
+			"text": "腋下的尺寸也重新量～（软尺贴着腋窝，一寸一寸地往里挪）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "tl",
+					"zone": "armpit",
+					"fx": "feather",
+					"repeat": 12,
+					"interval": 0.18,
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "呀哈哈！胳、胳肢窝……！一寸一寸的……更痒了——！",
+			"emotion": "helpless_2"
+		},
+		{
+			"speaker": "学徒",
+			"text": "师傅，还有脚。"
+		},
+		{
+			"speaker": "裁缝",
+			"text": "对对，脚掌！刚才的数字被她笑得抖掉了。（她蹲下来，捏住一只光着的脚丫）"
+		},
+		{
+			"speaker": "",
+			"text": "（软尺从脚跟慢慢滑到脚尖，又从脚尖滑回来。尺子的边缘刮过脚心，刮过脚弓，在每一道脚趾缝里都停一下「对刻度」）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "tl",
+					"zone": "sole",
+					"fx": "feather",
+					"repeat": 16,
+					"interval": 0.16,
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "哈哈哈哈哈！对、对什么刻度啊！脚趾缝里没有刻度——！",
+			"portrait": "defeat_2"
+		},
+		{
+			"speaker": "学徒",
+			"text": "师傅，她的脚趾一直在动，量不准。"
+		},
+		{
+			"speaker": "裁缝",
+			"text": "那你帮我扳开～一根一根地量。",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "ap",
+					"zone": "sole",
+					"fx": "feather",
+					"repeat": 12,
+					"interval": 0.18,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"visual": "helpless_2",
+					"do": "pose"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "不、不要扳——哈哈哈哈！一根……一根地……呜哈哈哈……！",
+			"emotion": "helpless_2"
+		},
+		{
+			"speaker": "裁缝",
+			"text": "好～啦。腰围、腋下、脚掌，全部重新量好了。"
+		},
+		{
+			"speaker": "裁缝",
+			"text": "数字嘛……跟第一次量的一模一样。"
+		},
+		{
+			"speaker": "公主",
+			"text": "那、那刚才那些是干什么的啊……！",
+			"emotion": "angry"
+		},
+		{
+			"speaker": "裁缝",
+			"text": "复查嘛～休息一下，从头再试一遍！"
+		},
+		{
+			"actions": [
+				{
+					"time": 0.6,
+					"do": "fade_out"
+				},
+				{
+					"state": "",
+					"do": "voice"
+				}
+			],
+			"wait": 0.7
+		}
+	]
+}

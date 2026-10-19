@@ -84,6 +84,18 @@
 		"thousand_hand": {
 			"name": "千手痒痒魔",
 			"portrait": "res://assets/generated/thousand_hand_portrait.png"
+		},
+		"goat": {
+			"name": "蘑菇羊",
+			"sprite": "res://assets/generated/npcs/goat.png"
+		},
+		"tailor": {
+			"name": "裁缝",
+			"sprite": "res://assets/generated/npcs/tailor.png"
+		},
+		"apprentice": {
+			"name": "学徒",
+			"sprite": "res://assets/generated/npcs/apprentice.png"
 		}
 	}
 }

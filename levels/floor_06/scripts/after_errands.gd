@@ -8,7 +8,8 @@ extends RefCounted
 ##   对话里接委托：set {vars: {errand_req: <id>}, call: errand_start}。
 
 const PATH := "res://data/after/errands.json"
-const RUNNERS := {"cookies": "res://levels/floor_06/scripts/errand_cookies.gd", "apples": "res://levels/floor_06/scripts/errand_apples.gd"}
+const RUNNERS := {"cookies": "res://levels/floor_06/scripts/errand_cookies.gd", "apples": "res://levels/floor_06/scripts/errand_apples.gd",
+	"goats": "res://levels/floor_06/scripts/errand_goats.gd", "show": "res://levels/floor_06/scripts/errand_show.gd"}
 
 static var _data := {}
 
@@ -109,6 +110,8 @@ static func status_text() -> String:
 			return "篮子里的饼干：%d 块" % int(GameState.vars.get("errand_cookies_left", 0))
 		"apples":
 			return str(GameState.vars.get("errand_apples_text", ""))
+		"goats":
+			return str(GameState.vars.get("errand_goats_text", ""))
 	return ""
 
 

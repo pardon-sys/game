@@ -111,6 +111,8 @@ LOOKS = {
     "bonfire_host": {"hair": (240, 120, 60), "outfit": (230, 90, 120), "accent": (255, 220, 100), "style": "host"},
     "mayor": {"hair": (232, 232, 238), "outfit": (96, 62, 132), "accent": (240, 200, 90), "style": "mayor"},
     "pharmacist": {"hair": (215, 215, 222), "outfit": (86, 140, 104), "accent": (238, 238, 214), "style": "granny"},
+    "tailor": {"hair": (120, 60, 90), "outfit": (176, 96, 150), "accent": (250, 214, 80), "style": "tailor"},
+    "apprentice": {"hair": (90, 70, 50), "outfit": (110, 130, 170), "accent": (236, 226, 200), "style": "merchant"},
 }
 
 
@@ -140,7 +142,7 @@ def npc_frame(look, row, col):
         d.rectangle((14 + swing, by1, 16 + swing, 29), fill=leg)
         d.rectangle((15 - swing, by1, 17 - swing, 29), fill=_c(look["outfit"], 0.4))
     # 身体（裙子 / 衣服）
-    if st in ("maid", "host", "granny"):
+    if st in ("maid", "host", "granny", "tailor"):
         d.polygon([(11, by0), (20, by0), (22, by1 + 1), (9, by1 + 1)], fill=out)
         d.line((9, by1 + 1, 22, by1 + 1), fill=out_d)
     else:
@@ -158,6 +160,12 @@ def npc_frame(look, row, col):
     if st == "supervisor" and row != 3:
         d.rectangle((13, by0, 18, by1), fill=acc)
         d.line((15, by0, 15, by1), fill=out_d)
+    if st == "tailor" and row != 3:
+        # 脖子上挂着的黄色软尺（两头垂下来，带刻度）
+        for x0 in ((12, 19) if row == 0 else ((14,) if row == 1 else (17,))):
+            d.line((x0, by0, x0, by0 + 6), fill=acc)
+            d.point((x0, by0 + 2), fill=_c(look["accent"], 0.6))
+            d.point((x0, by0 + 4), fill=_c(look["accent"], 0.6))
     # 手臂
     arm = SKIN
     if row in (0, 3):
@@ -1310,6 +1318,138 @@ def p_bubble_frozen():
     return add_outline(img)
 
 
+def p_ladder():
+    """靠在脚手架上的木梯子。"""
+    img, d = canvas(14, 40)
+    for x in (2, 11):
+        d.line((x, 1, x, 39), fill=WOOD_D, width=2)
+    for y in range(4, 39, 6):
+        d.line((3, y, 10, y), fill=WOOD_L)
+        d.line((3, y + 1, 10, y + 1), fill=WOOD)
+    return add_outline(img)
+
+
+def p_hay():
+    """一捆干草（羊圈边上）。"""
+    img, d = canvas(20, 14)
+    d.ellipse((1, 3, 18, 13), fill=(222, 190, 96, 255))
+    for x in range(3, 17, 3):
+        d.line((x, 4, x + 1, 12), fill=(186, 150, 64, 255))
+    d.line((2, 8, 17, 8), fill=(150, 100, 60, 255))
+    for (x, y) in ((4, 2), (9, 1), (14, 2)):
+        d.line((x, y, x + 2, y + 3), fill=(240, 214, 120, 255))
+    return add_outline(img)
+
+
+def p_fabric():
+    """裁缝铺的布匹架：一卷卷彩色的布竖着靠在架子上。"""
+    img, d = canvas(30, 30)
+    d.rectangle((1, 26, 28, 29), fill=WOOD_D)
+    cols = [(220, 120, 160), (120, 170, 220), (240, 210, 110), (150, 210, 150), (200, 160, 230)]
+    for i, c in enumerate(cols):
+        x = 2 + i * 5
+        top = 4 + (i % 2) * 3
+        d.rectangle((x, top, x + 4, 26), fill=c + (255,))
+        d.line((x + 4, top, x + 4, 26), fill=_c(c, 0.7))
+        d.ellipse((x, top - 1, x + 4, top + 2), fill=_c(c, 1.15))
+    return add_outline(img)
+
+
+def p_dress_form():
+    """人台（摆设）：套着一件还没缝完的棉衣，插着几根针。"""
+    img, d = canvas(16, 30)
+    d.rectangle((4, 27, 11, 29), fill=WOOD_D)
+    d.line((7, 20, 7, 27), fill=WOOD, width=2)
+    d.polygon([(3, 8), (12, 8), (13, 14), (11, 21), (4, 21), (2, 14)], fill=(236, 230, 214, 255))
+    d.line((7, 8, 7, 21), fill=(200, 190, 176, 255))
+    d.ellipse((5, 3, 10, 8), fill=WOOD)
+    for (x, y) in ((4, 11), (11, 13), (9, 17)):
+        d.point((x, y), fill=(220, 60, 80, 255))
+        d.point((x + 1, y - 1), fill=(200, 200, 210, 255))
+    return add_outline(img)
+
+
+def p_mirror():
+    """落地镜：木框 + 淡蓝色的镜面，一道高光。"""
+    img, d = canvas(16, 32)
+    d.rectangle((2, 1, 13, 29), fill=WOOD)
+    d.rectangle((4, 3, 11, 26), fill=(180, 214, 236, 255))
+    d.line((5, 5, 8, 10), fill=(240, 250, 255, 255))
+    d.line((5, 12, 6, 14), fill=(240, 250, 255, 255))
+    d.rectangle((1, 29, 14, 31), fill=WOOD_D)
+    return add_outline(img)
+
+
+def p_rail(slope=False):
+    """矿车轨道（一格，地面层）：两根铁轨 + 枕木；上坡段的枕木更密、颜色更深。"""
+    img, d = canvas(16, 16)
+    for x in (range(1, 16, 3) if slope else range(2, 16, 5)):
+        d.rectangle((x, 4, x + 1, 11), fill=(96, 66, 44, 255) if slope else (120, 84, 54, 255))
+    for y in (5, 10):
+        d.line((0, y, 15, y), fill=(150, 150, 164, 255))
+        d.line((0, y + 1, 15, y + 1), fill=(90, 90, 104, 255))
+    return img
+
+
+def goat_frame(row, col):
+    """蘑菇羊 32x32：小白羊，头上顶着一朵红底白点的蘑菇伞；row 0 下 / 1 左 / 2 右 / 3 上，col 1、3 迈步。"""
+    img, d = canvas(32, 32)
+    wool, wool_d = (244, 240, 236, 255), (206, 198, 196, 255)
+    cap, cap_d, dot = (226, 84, 92, 255), (170, 52, 66, 255), (255, 246, 240, 255)
+    leg = (120, 96, 90, 255)
+    step = col in (1, 3)
+    sw = (1 if col == 1 else -1) if step else 0
+    if row in (1, 2):
+        face_left = row == 1
+        bx0, bx1 = 8, 24
+        d.ellipse((bx0, 15, bx1, 26), fill=wool)
+        d.ellipse((bx0 + 2, 21, bx1 - 2, 26), fill=wool_d)
+        for i, lx in enumerate((10, 13, 19, 22)):
+            off = sw if i % 2 == 0 else -sw
+            d.line((lx + off, 25, lx + off, 29), fill=leg, width=2)
+        hx = 4 if face_left else 20
+        d.ellipse((hx, 12, hx + 8, 20), fill=wool)
+        ex = hx + 2 if face_left else hx + 5
+        d.point((ex, 16), fill=(40, 30, 40, 255))
+        d.point((hx + (0 if face_left else 8), 18), fill=(230, 160, 170, 255))
+        # 蘑菇伞
+        d.ellipse((hx - 2, 6, hx + 10, 13), fill=cap)
+        d.line((hx - 1, 12, hx + 9, 12), fill=cap_d)
+        d.point((hx + 2, 8), fill=dot)
+        d.point((hx + 6, 9), fill=dot)
+        d.rectangle((hx + 3, 12, hx + 5, 14), fill=(236, 226, 210, 255))
+        # 尾巴
+        tx = bx1 - 1 if face_left else bx0 - 2
+        d.ellipse((tx, 16, tx + 3, 19), fill=wool)
+    else:
+        d.ellipse((8, 15, 24, 27), fill=wool)
+        d.ellipse((10, 22, 22, 27), fill=wool_d)
+        for i, lx in enumerate((11, 14, 18, 21)):
+            off = sw if i in (0, 3) else -sw
+            d.line((lx, 26 + (1 if off > 0 else 0), lx, 30), fill=leg, width=2)
+        if row == 0:
+            d.ellipse((11, 12, 21, 21), fill=wool)
+            d.point((13, 16), fill=(40, 30, 40, 255))
+            d.point((18, 16), fill=(40, 30, 40, 255))
+            d.line((15, 19, 16, 19), fill=(230, 150, 160, 255))
+            d.line((15, 21, 16, 23), fill=wool_d)   # 小胡子
+        else:
+            d.ellipse((12, 18, 20, 22), fill=wool_d)
+        d.ellipse((8, 6, 24, 14), fill=cap)
+        d.line((9, 13, 23, 13), fill=cap_d)
+        for (x, y) in ((12, 8), (17, 7), (20, 10), (14, 11)):
+            d.point((x, y), fill=dot)
+    return add_outline(img)
+
+
+def goat_sheet():
+    sheet = Image.new("RGBA", (128, 128), (0, 0, 0, 0))
+    for row in range(4):
+        for col in range(4):
+            sheet.alpha_composite(goat_frame(row, col), (col * 32, row * 32))
+    return sheet
+
+
 def gen_props():
     """道具图集：每个道具一格（大小不同），town_props.json 记录区域、碰撞和发光。"""
     from PIL import Image
@@ -1390,6 +1530,16 @@ def gen_props():
     items.append(("flag_broken", p_flag_broken(), {}))
     items.append(("feather_pile", p_feather_pile(), {"floor": True}))
     items.append(("bubble_frozen", p_bubble_frozen(), {"body": [14, 6], "body_y": -3}))
+    # 七日赎罪：委托（扶梯子、赶蘑菇羊；加在最后）
+    items.append(("ladder", p_ladder(), {}))
+    items.append(("hay", p_hay(), {"body": [16, 6], "body_y": -3}))
+    # 七日赎罪：裁缝铺（加在最后）
+    items.append(("fabric", p_fabric(), {"body": [26, 6], "body_y": -3}))
+    items.append(("dress_form", p_dress_form(), {"body": [10, 6], "body_y": -3}))
+    items.append(("mirror", p_mirror(), {"body": [12, 4], "body_y": -2}))
+    # 七日赎罪：受损的矿道（加在最后）
+    items.append(("rail", p_rail(), {"floor": True, "under": True}))
+    items.append(("rail_slope", p_rail(True), {"floor": True, "under": True}))
     # 简单地按行排进 256 宽的图集
     x = y = row_h = 0
     meta = {}
@@ -1416,6 +1566,7 @@ def gen_npcs():
     for nid, look in LOOKS.items():
         sheet = key_npc_sheet(nid) if nid in KEY_NPCS else npc_sheet(look)
         sheet.save(OUT / "npcs" / (nid + ".png"))
+    goat_sheet().save(OUT / "npcs" / "goat.png")
 
 
 def main():

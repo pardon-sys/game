@@ -18,12 +18,13 @@ from pathlib import Path
 os.chdir(Path(__file__).resolve().parents[2])
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-from after_text import d1, d2, equip_kids, errands, house, play, potion, punish, stocks, tasks, town  # noqa: E402
+from after_text import d1, d2, equip_kids, errand_dance, errand_goats, errand_ladder, errand_massage, errands, house, mine, play, potion, punish, stocks, tailor, tasks, totem, town  # noqa: E402
 
 POOL = list("ACDEFGHIJKLMNOQRSTUVWXYZabcdefghijklmnopqrsuvwyz0123456789!?$&*+-/:;<>@^_|~()'=,`{}\"")
 POOL += list("αβγδεζηθικλμνξοπρστυφχψωΓΔΘΛΞΠΣΦΨΩ甲乙丙丁戊己庚辛壬癸子丑寅卯辰巳午未申酉戌亥金木水火土日月山川")
 TOWN, HOUSE, HOUSE_UP = "floor_06_after", "floor_06_after_house", "floor_06_after_house_up"
 PHARMACY, FIELD = "floor_06_after_pharmacy", "floor_06_after_field"
+TAILOR, MINE, TOTEM = "floor_06_after_tailor", "floor_06_after_mine", "floor_06_after_totem"
 
 
 class Map:
@@ -75,12 +76,17 @@ m.room(2, 2, 61, 43)
 for x in (8, 20, 32, 44, 56):
     m.put(x, 1, "torch lit=true")
 m.put(3, 3, "f6after")
-# 东北角：通往矿道的门钉死了
+# 东北角：通往矿道的门（平时钉死；第 5 天下午护送矿车时打开，通往受损的矿道）
 prop(m, 54, 4, "dungeon_gate")
-m.put(54, 5, "exit target=floor_06_mine locked=true dialogue=after_mine_locked")
+m.put(54, 5, "exit target=%s spawn=from_town unlock_flag=after_mine_open locked_dialogue=after_mine_locked" % MINE)
+m.put(54, 6, "spawn id=from_mine")
 # 居民区：烧焦的房子搭上了脚手架
 for i, x in enumerate((8, 16, 24, 32)):
     prop(m, x, 8, ("house_scaffold_%d" % (i // 2)) if i % 2 == 0 else "house_%d" % i)
+# 裁缝铺（北边最右边的房子；第 5 天早上试衣）
+m.put(32, 9, "exit target=%s spawn=from_town" % TAILOR)
+m.put(32, 10, "spawn id=from_tailor")
+m.put(34, 10, "sign dialogue=after_tailor_sign")
 # 药剂师工房（北边第二座房子）
 m.put(16, 9, "exit target=%s spawn=from_town" % PHARMACY)
 m.put(16, 10, "spawn id=from_pharmacy")
@@ -107,6 +113,17 @@ for (x, y) in ((40, 21), (48, 21), (40, 27), (48, 27)):
 for (x, y) in ((37, 24), (51, 24)):
     prop(m, x, y, "lamp")
 prop(m, 30, 18, "well")
+# 脚手架房子底下的梯子（委托「扶梯子」）
+prop(m, 25, 9, "ladder")
+# 女仆照看的蘑菇羊的羊圈（委托「赶蘑菇羊回圈」；门在 (57, 32)）
+for x in range(55, 60):
+    prop(m, x, 28, "fence")
+for y in (29, 30, 31):
+    prop(m, 55, y, "fence")
+    prop(m, 59, y, "fence")
+for x in (55, 56, 58, 59):
+    prop(m, x, 32, "fence")
+prop(m, 60, 30, "hay")
 # 广场：宣判台、告示板、足枷、庆功的彩旗
 prop(m, 30, 25, "podium", OBJ + "podium")
 prop(m, 35, 23, "notice_board", OBJ + "notice")
@@ -116,6 +133,9 @@ for (x, y) in ((25, 21), (36, 21)):
 m.put(30, 32, "savepoint place=战后的广场")
 # 歪掉的狂欢图腾柱（第七天修）
 prop(m, 18, 34, "totem_tilted", OBJ + "totem")
+# 西边的小路 → 图腾柱废地（第 7 天修图腾柱的时候才开）
+m.put(2, 32, "exit target=%s spawn=from_town unlock_flag=after_totem_open locked_dialogue=after_totem_locked" % TOTEM)
+m.put(3, 32, "spawn id=from_totem")
 # 通往营地的楼梯：整修中
 prop(m, 59, 40, "stairs_down")
 prop(m, 58, 38, "barricade")
@@ -255,6 +275,91 @@ ph.put(8, 8, "spawn id=from_town")
 ph.put(7, 8, "player")
 ph.write()
 
+# ================================================================ 裁缝铺里间
+TL = "talk:floor_06/after_tailor_objects#"
+tl = Map(TAILOR, 18, 13, "intro =\nambient = 0.92,0.86,0.84\nno_switch = true")
+tl.room(2, 2, 15, 10)
+for y in range(2, 11):
+    for x in range(2, 16):
+        tl.put(x, y, "prop type=wood_floor")
+for x in (5, 12):
+    tl.put(x, 1, "torch lit=true")
+tl.put(2, 2, "f6afterroom")
+prop(tl, 4, 3, "fabric", TL + "fabric")
+prop(tl, 8, 3, "fabric", TL + "fabric")
+prop(tl, 12, 3, "dress_form", TL + "form")
+prop(tl, 14, 3, "dress_form", TL + "form")
+prop(tl, 15, 8, "mirror", TL + "mirror")
+prop(tl, 3, 6, "desk", TL + "desk")
+prop(tl, 2, 10, "plant")
+prop(tl, 6, 7, "rug")
+npc(tl, 9, 5, "tailor", "after_tailor", 0, "dir=down")
+npc(tl, 11, 5, "apprentice", "after_apprentice", 0, "dir=down")
+tl.put(8, 11, "exit target=%s spawn=from_tailor" % TOWN)
+tl.put(8, 10, "spawn id=from_town")
+tl.put(8, 9, "player")
+tl.write()
+
+# ================================================================ 受损的矿道（矿车护送）
+mn = Map(MINE, 96, 12, "intro =\nambient = 0.5,0.46,0.54")
+mn.room(2, 3, 93, 9)
+for x in range(6, 92, 8):
+    mn.put(x, 2, "torch lit=true")
+mn.put(3, 3, "f6afterroom")
+mn.put(2, 6, "exit target=%s spawn=from_mine" % TOWN)
+mn.put(4, 7, "spawn id=from_town")
+mn.put(5, 7, "player")
+mn.put(9, 6, "blue_princess ai=false")
+for x in range(4, 93):
+    mn.put(x, 6, "prop type=rail" if x < 66 else "prop type=rail_slope")
+# 装车处：补给箱、矿工
+for (x, y) in ((6, 4), (8, 4), (11, 8)):
+    prop(mn, x, y, "crate")
+npc(mn, 12, 4, "miner", "after_mine_miner", 0, "dir=down")
+# 喷口段（格 14~39）：轨道上下两边交错的痒痒粉喷口
+for i, (x, y) in enumerate(((18, 5), (22, 7), (26, 5), (30, 7), (34, 5), (37, 7))):
+    mn.put(x, y, "trap type=vent idle_time=2.0 cloud_duration=1.6 offset=%.1f" % (i * 0.55 % 2.0))
+# 刷子段（格 40~65）：轨道上下两边转着的羽毛刷，刷臂扫过轨道
+for i, (x, y) in enumerate(((45, 4), (51, 8), (57, 4), (62, 8))):
+    mn.put(x, y, "trap type=brush speed=%.1f" % ((1.4 + i * 0.15) * (1 if i % 2 == 0 else -1)))
+# 上坡（格 66~87）：两边的矿石堆（小鬼藏在后面）
+for (x, y) in ((68, 4), (73, 8), (78, 4), (83, 8)):
+    prop(mn, x, y, "rubble")
+for x in (20, 44, 70):
+    prop(mn, x, 9, "lamp")
+# 矿工营地（格 88~）
+for (x, y) in ((90, 4), (92, 8)):
+    prop(mn, x, y, "tent")
+prop(mn, 89, 8, "bonfire_0")
+npc(mn, 91, 5, "miner", "after_mine_camp", 0, "dir=left")
+mn.write()
+
+# ================================================================ 图腾柱废地（修补狂欢图腾柱）
+tt = Map(TOTEM, 42, 24, "intro =\nambient = 0.62,0.54,0.66")
+tt.room(2, 3, 39, 20)
+for x in (8, 18, 28, 36):
+    tt.put(x, 2, "torch lit=true")
+tt.put(3, 3, "f6afterroom")
+tt.put(2, 12, "exit target=%s spawn=from_totem" % TOWN)
+tt.put(4, 12, "spawn id=from_town")
+tt.put(5, 13, "player")
+tt.put(5, 11, "blue_princess follow=true ai=false")
+# 采石角：碎石、木料
+for (x, y) in ((4, 6), (4, 18), (8, 5), (8, 19)):
+    prop(tt, x, y, "rubble")
+prop(tt, 9, 10, "lumber")
+# 图腾柱（底座在 34,11 附近）
+prop(tt, 34, 9, "totem_tilted", "talk:floor_06/after_totem_objects#totem")
+for (x, y) in ((31, 13), (37, 13)):
+    prop(tt, x, y, "lamp")
+npc(tt, 30, 16, "miner", "after_totem_eng", 0, "dir=left")
+# 围观的镇民
+for (x, y, nid) in ((14, 4, "granny"), (20, 4, "merchant"), (26, 4, "kid"), (14, 19, "maid"), (24, 19, "guard")):
+    tt.put(x, y, "npc id=%s wander=0 dir=%s" % (nid, "down" if y < 10 else "up"))
+for (x, y) in ((11, 6), (19, 19), (27, 5), (33, 18)):
+    prop(tt, x, y, "decal_scorch_1")
+tt.write()
+
 # ================================================================ 城门外的战场
 fd = Map(FIELD, 44, 30, "intro =\nambient = 0.72,0.66,0.62\nnight_ambient = 0.3,0.3,0.5")
 fd.room(2, 2, 41, 27)
@@ -321,6 +426,9 @@ DAYS = {
            "afternoon": {"event": "d2_equip", "task": "回收痒痒装备", "hours": 10}},
     "d3": {"morning": {"event": "d3_potion", "task": "药剂师的试药员", "hours": 10},
            "afternoon": {"event": "d3_cart", "task": "拆除哑火的攻城车", "hours": 12}},
+    "d5": {"morning": {"event": "d5_tailor", "task": "裁缝的试衣模特", "hours": 10},
+           "afternoon": {"event": "d5_mine", "task": "矿车护送", "hours": 12}},
+    "d7": {"morning": {"event": "d7_totem", "task": "修补狂欢图腾柱", "hours": 0}},
     "d1": {"morning": {"event": "d1_open", "task": "战后集合"},
            "afternoon": {"event": "d1_verdict", "task": "广场听候宣判"},
            "night": {"event": "d1_sleepwalk", "task": "回小屋睡觉"}},
@@ -334,6 +442,16 @@ Path("data/after/stocks.json").write_text(json.dumps(dict({"_说明": "足枷示
 Path("data/after/equip_kids.json").write_text(json.dumps(dict({"_说明": "装备回收里小孩的配合挠法（after_text/equip_kids.py 生成，EquipKids 读）。"}, **equip_kids.EQUIP_KIDS),
     ensure_ascii=False, indent="\t") + "\n")
 Path("data/after/potion.json").write_text(json.dumps(dict({"_说明": "配药解谜（after_text/potion.py 生成，TaskPotion 读）。"}, **potion.POTION),
+    ensure_ascii=False, indent="\t") + "\n")
+for _name, _mod, _key, _cls in (("ladder", errand_ladder, "LADDER", "LadderShow"), ("goats", errand_goats, "GOATS", "ErrandGoats"),
+                                 ("dance", errand_dance, "DANCE", "DanceShow"), ("massage", errand_massage, "MASSAGE", "MassageShow")):
+    Path("data/after/errand_%s.json" % _name).write_text(json.dumps(dict({"_说明": "委托的台词（after_text/errand_%s.py 生成，%s 读）。" % (_name, _cls)},
+        **getattr(_mod, _key)), ensure_ascii=False, indent="\t") + "\n")
+Path("data/after/tailor.json").write_text(json.dumps(dict({"_说明": "找漏风（after_text/tailor.py 生成，TaskTailor 读）。"}, **tailor.TAILOR),
+    ensure_ascii=False, indent="\t") + "\n")
+Path("data/after/mine.json").write_text(json.dumps(dict({"_说明": "矿车护送（after_text/mine.py 生成，TaskMine 读）。"}, **mine.MINE),
+    ensure_ascii=False, indent="\t") + "\n")
+Path("data/after/totem.json").write_text(json.dumps(dict({"_说明": "修补图腾柱（after_text/totem.py 生成，TaskTotem 读）。"}, **totem.TOTEM),
     ensure_ascii=False, indent="\t") + "\n")
 Path("data/after/play.json").write_text(json.dumps(dict({"_说明": "两位公主的玩闹（after_text/play.py 生成，AfterPlay 读）。"}, **play.PLAY),
     ensure_ascii=False, indent="\t") + "\n")
@@ -350,26 +468,31 @@ errands.inject(files)
 files["after_house_objects"] = house.HOUSE
 files["after_house_up_objects"] = house.HOUSE_UP
 files["after_blue_room"] = house.BLUE_ROOM
+files.update(tailor.DIALOGUES)
+files.update(mine.DIALOGUES)
+files.update(totem.DIALOGUES)
 for name, d in files.items():
     (dlg / (name + ".json")).write_text(json.dumps(d, ensure_ascii=False, indent="\t") + "\n")
 signs_path = dlg / "signs.json"
 signs = json.loads(signs_path.read_text())
 signs.update(town.SIGNS)
+signs.update(tailor.SIGNS)
+signs.update(totem.SIGNS)
 signs_path.write_text(json.dumps(signs, ensure_ascii=False, indent="\t") + "\n")
 
 cut = Path("data/cutscenes/floor_06")
-CUTS = dict(d1.CUTSCENES, **d2.CUTSCENES, **tasks.CUTSCENES, **potion.CUTSCENES)
+CUTS = dict(d1.CUTSCENES, **d2.CUTSCENES, **tasks.CUTSCENES, **potion.CUTSCENES, **tailor.CUTSCENES, **mine.CUTSCENES, **totem.CUTSCENES)
 for cid, fn in CUTS.items():
     (cut / (cid + ".json")).write_text(json.dumps(fn(), ensure_ascii=False, indent="\t") + "\n")
 th = Path("data/theater/after")
 th.mkdir(parents=True, exist_ok=True)
-for tid, data in dict(punish.THEATERS, **tasks.THEATERS, **potion.THEATERS).items():
+for tid, data in dict(punish.THEATERS, **tasks.THEATERS, **potion.THEATERS, **tailor.THEATERS, **mine.THEATERS, **totem.THEATERS).items():
     (th / (tid + ".json")).write_text(json.dumps(data, ensure_ascii=False, indent="\t") + "\n")
 
 floors = json.loads(Path("data/floors.json").read_text())
 lst = floors["floors"]
 NEW = [(TOWN, "地下小镇·战后", "town"), (HOUSE, "蓝色小屋·战后", "town"), (HOUSE_UP, "蓝色小屋·战后（楼上）", "night_room"),
-       (PHARMACY, "药剂师工房", "town"), (FIELD, "城门外的战场", "town")]
+       (PHARMACY, "药剂师工房", "town"), (FIELD, "城门外的战场", "town"), (TAILOR, "裁缝铺", "town"), (MINE, "受损的矿道", "town"), (TOTEM, "图腾柱废地", "town")]
 at = next(i for i, f in enumerate(lst) if f["id"] == "floor_06_siege") + 1
 for fid, name, music in NEW:
     if not any(f["id"] == fid for f in lst):

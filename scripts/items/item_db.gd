@@ -22,6 +22,7 @@ const PATHS := {
 	"equip_waist_sash": "res://data/items/equip_waist_sash.tres",
 	"equip_mint_sachet": "res://data/items/equip_mint_sachet.tres",
 	"equip_chest_guard": "res://data/items/equip_chest_guard.tres",
+	"equip_tailor_coat": "res://data/items/equip_tailor_coat.tres",
 	"equip_training_wraps": "res://data/items/equip_training_wraps.tres",
 	"equip_padded_shorts": "res://data/items/equip_padded_shorts.tres",
 	"equip_party_bow": "res://data/items/equip_party_bow.tres",

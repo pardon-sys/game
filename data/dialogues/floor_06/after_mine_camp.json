@@ -1,0 +1,18 @@
+{
+	"name": "矿工",
+	"npc": "miner",
+	"entries": [
+		{
+			"node": "default"
+		}
+	],
+	"nodes": {
+		"default": {
+			"lines": [
+				{
+					"text": "往里还有一扇旧门……攻防战那几天一直在漏光。我们谁都不敢靠近。"
+				}
+			]
+		}
+	}
+}

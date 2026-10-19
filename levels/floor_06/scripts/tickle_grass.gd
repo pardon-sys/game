@@ -16,6 +16,8 @@ var _cool := 0.0
 var _hit_t := 0.0
 ## 测试用：缠住过几次
 var caught := 0
+## 缠住时调（草）：有它就不冒默认的那几句（修补图腾柱按闷笑挑反应字）
+var on_catch := Callable()
 
 
 func _ready() -> void:
@@ -49,7 +51,10 @@ func _process(delta: float) -> void:
 		caught += 1
 		if p.status:
 			p.status.apply_root(ROOT_TIME)
-		SpeechBubble.say(p, ["呀！草、草缠上来了！", "哈、哈哈……腰、腰被扫……！", "又是这个草——！"].pick_random(), 30.0, 1.2)
+		if on_catch.is_valid():
+			on_catch.call(self)
+		else:
+			SpeechBubble.say(p, ["呀！草、草缠上来了！", "哈、哈哈……腰、腰被扫……！", "又是这个草——！"].pick_random(), 30.0, 1.2)
 		GameState.emote("helpless_1", 1.2, false)
 
 
