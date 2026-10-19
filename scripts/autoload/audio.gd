@@ -105,6 +105,7 @@ const MUSIC := {
 	"night_room": "res://assets/audio/music/night_room_loop.wav",
 	"night_maze": "res://assets/audio/music/night_maze_loop.wav",
 	"siege": "res://assets/audio/music/siege_loop.wav",
+	"minigame": "res://assets/audio/music/minigame_loop.wav",
 }
 const MUSIC_DB := -6.0
 const SFX_BUS := &"SFX"

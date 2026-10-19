@@ -2,6 +2,7 @@
 # 第六层·地下小镇·战后（tools/build/gen_floor06_after.py 生成，不要直接改）
 intro =
 ambient = 0.5,0.46,0.54
+no_switch = true
 [legend]
 # = wall
 . = floor

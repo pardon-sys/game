@@ -41,6 +41,12 @@
 		},
 		{
 			"if": {
+				"flag": "penalty_open"
+			},
+			"node": "penalty_offer"
+		},
+		{
+			"if": {
 				"var": {
 					"after_day": [
 						"==",
@@ -280,6 +286,40 @@
 					"emotion": "shy"
 				}
 			]
+		},
+		"penalty_offer": {
+			"lines": [
+				{
+					"text": "哎呀～赎罪簿上还有受罚没抵？"
+				},
+				{
+					"text": "来篝火边跳支舞，就当抵罚啦～"
+				}
+			],
+			"prompt": "在篝火边罚跳舞抵受罚？",
+			"choices": [
+				{
+					"text": "跳就跳！",
+					"next": "penalty_go"
+				},
+				{
+					"text": "等一下再说",
+					"next": ""
+				}
+			]
+		},
+		"penalty_go": {
+			"lines": [
+				{
+					"text": "好。"
+				}
+			],
+			"set": {
+				"vars": {
+					"penalty_req": "dance"
+				},
+				"call": "after_penalty"
+			}
 		}
 	},
 	"npc": "bonfire_host"

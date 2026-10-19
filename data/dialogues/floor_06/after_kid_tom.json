@@ -3,6 +3,42 @@
 	"entries": [
 		{
 			"if": {
+				"flag": "tom_prank_fainted",
+				"var": {
+					"after_day": [
+						"==",
+						6
+					]
+				}
+			},
+			"node": "tom_prank_fainted"
+		},
+		{
+			"if": {
+				"flag": "tom_prank_quiet",
+				"var": {
+					"after_day": [
+						"==",
+						6
+					]
+				}
+			},
+			"node": "tom_prank_quiet"
+		},
+		{
+			"if": {
+				"flag": "tom_prank_caught",
+				"var": {
+					"after_day": [
+						"==",
+						6
+					]
+				}
+			},
+			"node": "tom_prank_caught"
+		},
+		{
+			"if": {
 				"var": {
 					"after_day": [
 						"==",
@@ -133,6 +169,81 @@
 					"text": "我、我那是晕过去了！不是睡着了！",
 					"speaker": "公主",
 					"emotion": "angry"
+				}
+			]
+		},
+		"tom_prank_caught": {
+			"lines": [
+				{
+					"text": "……姐、姐姐早。昨晚的事……对不起。",
+					"speaker": "小汤姆"
+				},
+				{
+					"text": "……下次再爬窗户，我就把你吊在城墙上。",
+					"speaker": "公主",
+					"emotion": "angry"
+				},
+				{
+					"text": "知、知道了！……可是姐姐笑醒的样子好好玩……",
+					"speaker": "小汤姆"
+				},
+				{
+					"text": "汤——姆——！",
+					"speaker": "公主",
+					"emotion": "angry"
+				}
+			]
+		},
+		"tom_prank_quiet": {
+			"lines": [
+				{
+					"text": "姐姐早！昨晚睡得好吗？",
+					"speaker": "小汤姆"
+				},
+				{
+					"text": "……嗯？挺好的。怎么了？",
+					"speaker": "公主",
+					"emotion": "surprise"
+				},
+				{
+					"text": "没什么没什么！嘿嘿……（莉莉，我就说吧！）",
+					"speaker": "小汤姆"
+				},
+				{
+					"text": "……？你在跟谁说悄悄话？",
+					"speaker": "公主",
+					"emotion": "surprise"
+				}
+			]
+		},
+		"tom_prank_fainted": {
+			"lines": [
+				{
+					"text": "姐姐早！……昨晚有没有做什么梦？",
+					"speaker": "小汤姆"
+				},
+				{
+					"text": "……梦？好像……梦见在一片羽毛地里打滚，笑了一整晚……",
+					"speaker": "公主",
+					"emotion": "shy"
+				},
+				{
+					"text": "噗——！",
+					"speaker": "小汤姆"
+				},
+				{
+					"text": "……你笑什么？",
+					"speaker": "公主",
+					"emotion": "surprise"
+				},
+				{
+					"text": "没、没有！我什么都不知道！（抱着橘子跑掉了）",
+					"speaker": "小汤姆"
+				},
+				{
+					"text": "……今天早上醒来，脚底板怎么黏黏的……",
+					"speaker": "公主",
+					"emotion": "sad"
 				}
 			]
 		}

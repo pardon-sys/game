@@ -2,7 +2,7 @@ class_name IceSitShow
 extends DrillShow
 ## 特训第一课「冰封静坐」：蓝色公主坐在冰台上，队长拿羽毛挠（粉色公主偶尔「帮忙加油」）。
 ##   队长要挠哪里，身体图（2 × 3 格，键 Q W E / A S D）上那里就先亮 warn 秒；按对应的键用冰魔法把那里冻住 FREEZE_TIME 秒（冻住的地方挠了没感觉）。
-##   冻一次寒冷值 +FREEZE_COLD，挠到冻住的地方也 +HIT_COLD；寒冷值满 = 发抖（演一段）：冻住的地方全化开、表情 −SHIVER。
+##   冻新的地方不冷；对已经冻住的地方再按一次（冻太多）寒冷值 +FREEZE_COLD；寒冷值满 = 发抖（演一段）：冻住的地方全化开、表情 −SHIVER。
 ##   挠到没冻的地方：表情 −HIT_FACE（释放后敏感 ×1.6），闷笑 / 疲倦上涨。表情掉光 = 破功记一笔（break），三笔这节课重来（redo）。
 ##   假动作（feint）：先亮一处，半路换成另一处。释放后敏感时冻住的地方化得快一倍。撑够 time 秒过关。
 
@@ -111,10 +111,14 @@ func _on_key(k: String) -> void:
 
 ## 冻住一处
 func freeze(id: String) -> void:
+	var again := frozen.has(id)
 	frozen[id] = FREEZE_TIME
-	cold += FREEZE_COLD
+	if again:
+		cold += FREEZE_COLD
+		pop(actors.get("princess"), "冻太多了……好冷……", Color(0.7, 0.9, 1.0), 0.8)
+	else:
+		pop(actors.get("princess"), "冻住：%s" % str(_spot_info(id).get("name", id)), Color(0.7, 0.9, 1.0), 0.7)
 	Audio.play("ice_crack", -12.0, 0.2)
-	pop(actors.get("princess"), "冻住：%s" % str(_spot_info(id).get("name", id)), Color(0.7, 0.9, 1.0), 0.7)
 	if cold >= 100.0:
 		_shiver()
 	_refresh()
@@ -178,12 +182,9 @@ func _strike(id: String, by: String) -> void:
 	var sp := _spot_info(id)
 	if frozen.has(id):
 		blocked += 1
-		cold += HIT_COLD
 		var fr: Array = lesson().get("frozen", ["……"])
 		say("princess", str(fr.pick_random()))
 		tickle(by, str(sp.get("zone", "thigh")))
-		if cold >= 100.0:
-			_shiver()
 		return
 	hits += 1
 	var caps: Array = lesson().get("hit", {}).get(id, [])

@@ -4,6 +4,8 @@ extends Node2D
 ##   三块封印石（采石角 QUARRY）一块一块扛到图腾柱底座（TOTEM 附近 PLACE_R 以内）：走到石头旁边按 E 扛起 / 到底座自动放下。
 ##   扛着：粉色公主身上挂 meta busy_hands（不能攻击 / 冲刺 / 施法）+ 状态 carry_stone（走得慢），石头画在头顶。
 ##   痒痒草（TickleGrass）：第一块零星几丛；第二块起每 SPREAD_EVERY 秒从离她最近的草丛往她那边长出一丛新的（最多 SPREAD_MAX 丛）；
+##   痒痒草都是隐形的（TickleGrass.invisible）：踩到一次才显形、一直显示（记路线）；看不见的时候偶尔闪一下草叶。
+##   共振节拍：图腾每 PULSE_EVERY 秒脉动一下（紫光一圈 + 描写），脉动的 PULSE_TIME 秒里所有草够得着的范围 ×PULSE_REACH——要在两次脉动之间赶路。
 ##   第三块再加千手痒痒裤失控（surge）：平静 → 发光预警 WARN_TIME 秒 → 小手伸长挠粉色公主 SURGE_TIME 秒（闷笑每秒 +SURGE_RATE）；
 ##     换成蓝色公主（C）按住 E 累计 SOOTHE_TIME 秒 → 小手转过来挠她自己（她的闷笑上涨）→ 安静 CALM_TIME 秒。
 ##   闷笑到 DROP_AT：石头摔在原地（重新扛，闷笑回到 40%）；同一块摔 DROPS 次 = 失败（after_fail_totem，放好的不用重放）。
@@ -23,6 +25,9 @@ const GRASS := [
 	[Vector2i(12, 15), Vector2i(20, 16), Vector2i(27, 13), Vector2i(17, 7), Vector2i(31, 8)],
 ]
 const SPREAD_EVERY := 2.6
+const PULSE_EVERY := 4.5
+const PULSE_TIME := 1.0
+const PULSE_REACH := 2.2
 const SPREAD_MAX := 12
 const DROP_AT := 0.95
 const DROPS := 3
@@ -51,6 +56,10 @@ var _emitted := false
 var _busy := false
 var _spread_t := 0.0
 var _say_t := 0.0
+var _pulse_t := PULSE_EVERY
+var pulsing := false
+var pulses := 0
+var _hidden_seen := false
 
 
 static func data() -> Dictionary:
@@ -132,6 +141,7 @@ func _grass_at(at: Vector2) -> TickleGrass:
 		if is_instance_valid(g) and g.global_position.distance_to(at) < 10.0:
 			return g
 	var g := TickleGrass.new()
+	g.invisible = true
 	g.on_catch = _on_grass
 	get_parent().add_child(g)
 	g.global_position = at
@@ -141,6 +151,9 @@ func _grass_at(at: Vector2) -> TickleGrass:
 
 func _on_grass(_g: TickleGrass) -> void:
 	var gr: Dictionary = data().get("grass", {})
+	if not _hidden_seen:
+		_hidden_seen = true
+		Dialogue.start_lines(data().get("hidden_first", []), "task_totem")
 	var caps: Array = gr.get("caption", [])
 	if not caps.is_empty():
 		GameState.princess_reacted.emit(str(caps.pick_random()), 2.6)
@@ -172,6 +185,7 @@ func _process(delta: float) -> void:
 			_spread_t = SPREAD_EVERY * (1.3 if placed() >= 2 else 1.0)
 			_spread()
 	_surge(delta)
+	_pulse(delta)
 	if pink.laugh and pink.laugh.value >= pink.laugh.max_value * DROP_AT:
 		if carrying:
 			drop()
@@ -271,6 +285,33 @@ func _spread() -> void:
 			var sp: Array = data().get("spread", [])
 			if not sp.is_empty():
 				GameState.notify(str(sp.pick_random()), 1.6)
+
+
+## 共振节拍：每隔一阵脉动一下，脉动的时候草够得着的范围变大
+func _pulse(delta: float) -> void:
+	_pulse_t -= delta
+	if not pulsing and _pulse_t <= 0.0:
+		pulse_now()
+	elif pulsing and _pulse_t <= -PULSE_TIME:
+		pulsing = false
+		_pulse_t = PULSE_EVERY
+		for g in grass:
+			if is_instance_valid(g):
+				g.reach = 1.0
+
+
+func pulse_now() -> void:
+	pulsing = true
+	pulses += 1
+	_pulse_t = 0.0
+	for g in grass:
+		if is_instance_valid(g):
+			g.reach = PULSE_REACH
+	SiegeFx.ring(get_parent(), Cutscene.cell_to_world(TOTEM), 220.0, Color(0.8, 0.55, 1.0, 0.7), 0.8, 0.08)
+	Audio.play("star_burst", -10.0, 0.1, 0.6)
+	var ps: Array = data().get("pulse", [])
+	if not ps.is_empty() and (pulses == 1 or randf() < 0.3):
+		GameState.princess_reacted.emit(str(ps.pick_random()), 1.4)
 
 
 # ------------------------------------------------------------------ 千手痒痒裤失控

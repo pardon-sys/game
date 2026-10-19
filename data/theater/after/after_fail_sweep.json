@@ -1,0 +1,136 @@
+{
+	"name": "扫除失败：掉进羽毛堆",
+	"cast": {
+		"princess": {
+			"kind": "princess",
+			"at": [
+				0,
+				8
+			],
+			"visual": "helpless_1",
+			"anim": "helpless",
+			"dir": "down"
+		},
+		"g": {
+			"kind": "npc:granny",
+			"at": [
+				-26,
+				6
+			],
+			"dir": "right"
+		},
+		"f": {
+			"kind": "trap:feather",
+			"at": [
+				0,
+				14
+			]
+		}
+	},
+	"steps": [
+		{
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "fade_in"
+				},
+				{
+					"state": "giggle",
+					"do": "voice"
+				}
+			],
+			"wait": 0.5
+		},
+		{
+			"speaker": "",
+			"text": "（笑得腿一软，她一屁股坐进了最大的那堆羽毛里——羽毛「哗」地淹到了腰）"
+		},
+		{
+			"speaker": "公主",
+			"text": "哇啊——！？",
+			"emotion": "surprise"
+		},
+		{
+			"speaker": "",
+			"text": "（又一阵风。羽毛堆整个转了起来，像一个羽毛旋涡，把她裹在中间）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "f",
+					"zone": "sole",
+					"fx": "feather",
+					"repeat": 10,
+					"interval": 0.2,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"by": "f",
+					"zone": "waist",
+					"fx": "feather",
+					"repeat": 10,
+					"interval": 0.2,
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "哈哈哈哈！脚、脚底下的羽毛在转——！腰、腰上也……！",
+			"portrait": "defeat_1"
+		},
+		{
+			"speaker": "面包店奶奶",
+			"text": "哎呀呀，孩子掉进去了！奶奶来拉你——（伸出鸡毛掸子）"
+		},
+		{
+			"speaker": "公主",
+			"text": "不、不要掸子——哈哈哈！那、那也是羽毛啊！",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "g",
+					"zone": "armpit",
+					"fx": "feather",
+					"repeat": 10,
+					"interval": 0.16,
+					"do": "tickle"
+				}
+			],
+			"portrait": "defeat_2"
+		},
+		{
+			"speaker": "",
+			"text": "（羽毛钻进领口、钻进袖子、钻进每一道脚趾缝。她在羽毛堆里笑得直打滚）",
+			"actions": [
+				{
+					"who": "princess",
+					"visual": "helpless_2",
+					"do": "pose"
+				}
+			]
+		},
+		{
+			"speaker": "面包店奶奶",
+			"text": "……好啦好啦，风停了。出来吧，歇一会儿再扫。"
+		},
+		{
+			"speaker": "公主",
+			"text": "哈……哈……羽、羽毛……全在衣服里……",
+			"emotion": "helpless_1"
+		},
+		{
+			"actions": [
+				{
+					"time": 0.6,
+					"do": "fade_out"
+				},
+				{
+					"state": "",
+					"do": "voice"
+				}
+			],
+			"wait": 0.7
+		}
+	]
+}

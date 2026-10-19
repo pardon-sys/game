@@ -21,15 +21,16 @@ AFTER_RESET = ["!after_started", "!penance_book", "!after_night_busy", "!after_d
                "!after_d1_clue_bed", "!after_d1_clue_tea"] + \
               ["!after_done_d1_%s" % s for s in ("morning", "afternoon", "night")] + \
               ["!after_ev_%s" % e for e in ("d1_open", "d1_verdict", "d1_sleepwalk", "d2_stocks", "d2_equip", "d3_potion", "d3_cart",
-                                             "d4_drain", "d4_drill", "d5_tailor", "d5_mine", "d6_inspect", "d6_drill", "d7_totem")] + \
+                                             "d4_drain", "d4_drill", "d5_tailor", "d5_mine", "d6_inspect", "d6_drill", "d7_totem", "d2_sweep", "d3_mice", "d4_tag", "d5_tom", "d6_lantern")] + \
               ["!after_done_d%d_%s" % (d, k) for d in (2, 3, 4, 5, 6, 7) for k in ("morning", "afternoon", "night")] + \
               ["!after_task_active", "!after_field_open", "!after_mine_open", "!after_totem_open", "!after_drain_open", "!after_drill_open", "!after_proving_open",
-               "!after_d2_fainted", "!skill_pants_burst", "!drill_exam_passed"] + \
+               "!after_d2_fainted", "!skill_pants_burst", "!drill_exam_passed", "!after_curfew", "!penalty_open",
+               "!tom_prank_caught", "!tom_prank_quiet", "!tom_prank_fainted"] + \
               ["!errand_%s_%s" % (e, k) for e in ("cookies", "apples", "ladder", "goats", "dance", "massage") for k in ("open", "active", "done")]
 AFTER = WAR + ["siege_won"] + AFTER_RESET
 BOOK = {"penance_hours": 100, "penance_log": [], "penance_punish": [], "after_play_day": 0, "blue_bond": 0,
         "task_cart_done": [], "task_potion_recipe": 0, "task_potion_notes": [], "task_potion_wrong": 0,
-        "task_tailor_measured": False, "task_tailor_tea": 3, "task_mine_slips": 0, "task_totem_placed": 0, "task_totem_drops": 0, "task_drain_cleared": 0,
+        "task_tailor_measured": False, "task_tailor_tea": 3, "task_mine_slips": 0, "task_totem_placed": 0, "task_totem_drops": 0, "task_drain_cleared": 0, "task_potion_ok": 0, "penance_settled": 0,
         "task_inspect_rates": {}, "task_inspect_tune": {}}
 D2_ALL = ["after_done_d2_morning", "after_ev_d2_stocks"]
 # 第 3 天整天做完（第 4 天以后的跳关点用）

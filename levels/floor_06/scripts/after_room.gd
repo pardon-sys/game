@@ -31,6 +31,10 @@ func _ready() -> void:
 		if not c.is_controlled():
 			c.start_following(PARTNER)
 			c.name = "AfterBlue"
+	# 没写 no_switch 的图：C 键随时换人（拆攻城车、修图腾柱……）
+	if not bool(lv.get("no_switch")):
+		lv.set_meta(&"free_switch", true)
+		Duo._bind_tab()
 	marker = ObjectiveMarker.new()
 	marker.name = "Objective"
 	marker.extra = AfterStory.status_text

@@ -18,6 +18,11 @@ var _hit_t := 0.0
 var caught := 0
 ## 缠住时调（草）：有它就不冒默认的那几句（修补图腾柱按闷笑挑反应字）
 var on_catch := Callable()
+## 隐形草（修补图腾柱）：平时看不见，缠住过一次就显形（revealed）并一直显示；看不见的时候偶尔闪一下草叶当提示
+var invisible := false
+var revealed := false
+## 够得着的范围倍率（图腾共振脉动时变大）
+var reach := 1.0
 
 
 func _ready() -> void:
@@ -46,9 +51,10 @@ func _process(delta: float) -> void:
 		if _hold <= 0.0:
 			_cool = COOL
 		return
-	if _cool <= 0.0 and not p.is_dashing() and p.global_position.distance_to(global_position) <= RADIUS:
+	if _cool <= 0.0 and not p.is_dashing() and p.global_position.distance_to(global_position) <= RADIUS * reach:
 		_hold = ROOT_TIME
 		caught += 1
+		revealed = true
 		if p.status:
 			p.status.apply_root(ROOT_TIME)
 		if on_catch.is_valid():
@@ -59,6 +65,18 @@ func _process(delta: float) -> void:
 
 
 func _draw() -> void:
+	if invisible and not revealed and _hold <= 0.0:
+		# 看不见的草：偶尔（每 3 秒左右）草叶尖闪一下，当提示
+		var blink := fmod(_t + float(get_instance_id() % 7), 3.0)
+		if blink < 0.25:
+			draw_line(Vector2(-2, 0), Vector2(-1, -4), Color(0.6, 0.9, 0.55, 0.5), 1.0)
+			draw_line(Vector2(2, 0), Vector2(3, -3), Color(0.6, 0.9, 0.55, 0.5), 1.0)
+		if reach > 1.05:
+			# 共振的时候范围变大：隐形的草也会泛起一圈淡紫色
+			draw_arc(Vector2.ZERO, RADIUS * reach, 0, TAU, 20, Color(0.8, 0.55, 1.0, 0.35), 1.0)
+		return
+	if reach > 1.05:
+		draw_arc(Vector2.ZERO, RADIUS * reach, 0, TAU, 20, Color(0.8, 0.55, 1.0, 0.45), 1.0)
 	var sway := sin(_t * 2.2) * 1.5
 	for i in 7:
 		var x := -9.0 + i * 3.0

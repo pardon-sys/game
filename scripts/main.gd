@@ -45,7 +45,8 @@ func _unhandled_input(event: InputEvent) -> void:
 			if Duo.can_switch():
 				switch_character()
 			get_viewport().set_input_as_handled()
-		elif DevConfig.enabled():
+		elif DevConfig.enabled() or (level and level.get_meta(&"free_switch", false)):
+			# 测试模式 / 允许随时换人的图（七日赎罪的小场景：AfterRoom 设 free_switch）
 			switch_character()
 			get_viewport().set_input_as_handled()
 

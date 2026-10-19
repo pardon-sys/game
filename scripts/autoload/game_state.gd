@@ -67,6 +67,8 @@ var play_time := 0.0
 var passives := {}
 var checkpoint := Vector2.ZERO
 var in_dialogue := false
+## 小游戏 / 选项页开着时 +1（关上 -1）：对话框收尾时看到它 > 0 就不把 in_dialogue 清掉（不然小游戏里人物会动、按 E 会去和人说话）
+var dialogue_holds := 0
 ## 过场演出（笑倒 CG）进行中：对话一行行结束时不交还控制权，整个演出期间游戏保持冻结。
 var in_cutscene := false
 

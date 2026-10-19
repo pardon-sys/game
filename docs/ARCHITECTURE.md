@@ -727,8 +727,8 @@ data/cutscenes/<楼层组>/  地图内过场；data/theater/<楼层组>/  小剧
 	  不算失败、结局台词不同）→ 学会被动「冰封自制」（`ice_composure`：`PlayableCharacter._extra_stat_*` 里减闷笑涨幅、减轻千手痒痒裤）和主动技能
 	  「千手解放」（`PantsBurst`，输入 `skill` = U：范围内的怪定身 3 秒、陷阱暂停；副作用 5 秒小手挠自己 + 状态 `pants_backlash`；冷却 15 秒；剧情标记 `skill_pants_burst`）。
   - **陷阱验收**（第 6 天早上，保卫队训练营 `floor_06_after_proving`，东边的门 `after_proving_open`；`TaskInspect` + `InspectShow`，文本 `after_text/inspect.py`）：
-	五个挠痒陷阱的踏板（羽毛帘 / 地洞挠挠手 / 脚趾分隔刷 / 单脚吊环架 / 跪台脚心朝天，各自的挣脱方式见 `InspectShow`）+ 三个辅助设施（泡脚盆「泡软」、精油踏板「滑溜」、
-	冷敷石板清状态），顺序自选。体验完报「太强 / 刚好 / 太弱」——要报陷阱本身的强度（屏幕给出涨了多少闷笑和身上的状态）；评「太弱」被加强、评「太强」被削弱但要再体验一次。
+	一条走廊（`TaskInspect.COURSE`）：五个挠痒陷阱的踏板（羽毛帘 / 地洞挠挠手 / 脚趾分隔刷 / 单脚吊环架 / 跪台脚心朝天，各自的挣脱方式见 `InspectShow`）+ 三个辅助设施
+	（泡脚盆「泡软」、精油踏板「滑溜」、冷敷石板清状态，踏板整条走廊宽、走过去强制施加），按顺序走。体验完报「太强 / 刚好 / 太弱」——要报陷阱本身的强度（屏幕给出涨了多少闷笑和身上的状态）；评「太弱」被加强、评「太强」被削弱但要再体验一次。
 	五个评完 → 综合演练（按评分调整过强度、闷笑不清零），笑倒 = 失败（`after_fail_inspect`，重来直接综合演练）。
 - 小游戏画面的描写：`TrainingStage.narrate(文字)` 画在舞台框顶部（新的替换旧的），人物头上的气泡只放说的话；示众、委托小游戏、特训都不再用画面下方的反应框。
   示众的应对选项不透露效果。选项页（`ChoiceMenu.ask`）打开期间 `in_dialogue = true`，人物不跟着上下键走。
@@ -737,6 +737,22 @@ data/cutscenes/<楼层组>/  地图内过场；data/theater/<楼层组>/  小剧
 - 扶梯子：每完成一步（上一级 / 钉一下 / 下一级）演那一步专属的挠痒情节（`errand_ladder.py` 的 `EPISODES`，共 20 段），平衡安全区从 0.8 缩到 0.32。
 - 配药：八味药草，每味配错时走一段试药流程（`TaskPotion._run_trial`：开场 → `PotionTrial` 的 timing / mash / rhythm 或猜痒感转移 / 三选一 → 成功 / 失败的几句），
   配对后成品测试（`final`）。
+- **晚上的弥补任务**（第 2 / 3 / 4 / 6 天晚上，宵禁前在镇上做；晚上的事没做完床不让睡（`AfterStory.sleep_later`），小屋的门只在没有夜里任务时才锁（`after_curfew`）；
+  委托人那天晚上留在外面（日程 `d<N>.night`）；做完自动回小屋睡到天亮）。台词 `after_text/night.py` → `data/after/night.json`（`AfterNight`）。
+  - 第 2 天 面包店奶奶「羽毛大扫除」（`TaskSweep`，小镇东边的烤炉后院）：按住 J 扫羽毛堆；起风时羽毛钻进脚趾缝（K 抖脚、按住 E 抠），奶奶拿鸡毛掸子「帮忙」。
+  - 第 3 天 药剂师奶奶「逃跑的痒痒鼠」（`TaskMice` → `MouseShow`）：身体图 Q W E / A S D，小鼠在格子间乱窜，拍对地方抓住，最后一只钻进鞋里连按 D。
+  - 第 4 天 小孩们「挠痒捉人」（`TaskTag` + `TaskTag.TagKid`）：姐姐当鬼（追上去 J 挠）/ 孩子当鬼（被摸到按倒挠）/ 大家一起当鬼。
+  - 第 6 天 镇长「笑声灯笼」（`TaskLantern` → `LanternShow`）：↑↓ 调欢笑踏板的刷子强度，闷笑停在每盏灯要的范围里几秒点亮，笑过头灯泡炸，疲倦释放吹灭一半。
+  「小游戏画面」型的任务用 `TaskShow`（`make_show()` → `await play()`）。
+- **第 5 天夜里 小汤姆的恶作剧**（`AfterStory` 的 `d5_tom`：进小屋就开演 `TomPrankShow`，扮演小汤姆，文本选择）：痒 / 舒服两条（借闷笑条 / 疲倦条显示），
+  四段（观察 / 轻挠 / 橘子上场 / 一起来），脚趾缝的揉法又痒又舒服；痒满笑醒被抓，舒服满魔力释放时选加大强度 = 笑晕（fainted），住手 = 被惊醒；做完都没满 = 悄悄溜走。
+  结果 `vars.tom_prank_result` + 标记 `tom_prank_<结果>`，第 6 天小汤姆的话按结局变（`after_text/tom.py`）。
+- **补罚任务**（`AfterPenance`，台词 `after_text/penalty.py`）：赎罪簿上的受罚比已经抵掉的（`vars.penance_settled`）多时开 `penalty_open`，市场监督 / 篝火派对的主人冒「！」，
+  对话里 `call: after_penalty`（`vars.penalty_req`）：`ModelShow` 活体模特（顾客轮流「试试效果」，A / D 保持姿势、J 绷住表情，动了 / 笑了加时）/
+  `PenaltyDanceShow` 罚跳舞（音游，跳错一拍围观的人挠一下，错太多加一段）。做完抵一条、减 3 工时。
+- 小游戏共同：`TrainingStage` 开演时 `GameState.dialogue_holds` +1（对话框收尾时不清 `in_dialogue`，人物不动、按 E 不会去和人说话），选项页也一样；
+  飘字（`pop` / `say`）互相错开、夹在舞台框里；挠法描写（`narrate`）进画面下方的反应框；背景音乐切到 `minigame`（`tools/audio/gen_music.py` 生成）。
+  弥补任务进行中跟着的蓝色公主不能对话（`AfterStory._mute_partner`）；没写 `no_switch` 的小场景按 C 换人（`AfterRoom` 设 `free_switch`）。
 - 小场景导演 `AfterRoom`（图例 `f6afterroom`）：目标提示、目标圈触发、进图自动演的事件、镇民改名、蓝色公主跟着。`AfterStory.TOWN_DOORS / ROOM_EXITS` 指路。
 - 小剧场 / 舞台上的字（`SpeechBubble`）画在最前面（`z_as_relative = false`、`z_index = 4000`）；训练小游戏舞台上气泡垫在飘字下面。
 - 测试：`tests/f6_after_test`（胜利去向、开场 → 宣判、日程摆位、赎罪簿和背包页、宵禁锁门、手印顺序、楼上结尾 → 第 2 天、示众小游戏（挣扎 / 求情 / 应对 / 笑出声 / 释放加时 / 笑晕）/ 罚工时 / 转盘、委托、玩闹、五个弥补任务（完成 / 失败小剧场 / 重来）、第 3 天起的四个委托、床上休息、日程逐层覆盖、旧存档、跳关）。

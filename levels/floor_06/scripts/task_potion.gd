@@ -17,6 +17,8 @@ var _emitted := false
 
 const PATH := "res://data/after/potion.json"
 const MAX_WRONG := 3
+## 要配对几张配方（每张三味药）才算做完
+const NEED_OK := 3
 const PHARM := "after_pharm"
 
 static var auto_picks: Array = []
@@ -37,13 +39,22 @@ static func recipe() -> Dictionary:
 
 ## 失败后：换下一张配方、清空配方本
 static func reset_items() -> void:
+	# 配对了的张数留着（失败只换一张配方、清空配方本）
 	GameState.vars["task_potion_recipe"] = int(GameState.vars.get("task_potion_recipe", 0)) + 1
 	GameState.vars["task_potion_notes"] = []
 	GameState.vars["task_potion_wrong"] = 0
 
 
 static func status_text() -> String:
-	return "错了 %d / %d 次" % [int(GameState.vars.get("task_potion_wrong", 0)), MAX_WRONG]
+	return "配对了 %d / %d 张　这一张错了 %d / %d 次" % [int(GameState.vars.get("task_potion_ok", 0)), NEED_OK,
+		int(GameState.vars.get("task_potion_wrong", 0)), MAX_WRONG]
+
+
+## 配对了一张以后奶奶说的话
+func _fmt_next(n: int) -> Array:
+	var lines: Array = data().get("next", [])
+	var i := clampi(n - 1, 0, lines.size() - 1)
+	return lines[i] if not lines.is_empty() else []
 
 
 var _trial: PotionTrial
@@ -66,8 +77,18 @@ func _loop() -> void:
 		var picks := await _choose()
 		var ok := await _test(picks)
 		if ok:
-			_emit(true)
-			return
+			var n := int(GameState.vars.get("task_potion_ok", 0)) + 1
+			GameState.vars["task_potion_ok"] = n
+			if n >= NEED_OK:
+				await _say(data().get("final", []))
+				_emit(true)
+				return
+			# 配对了一张：换下一张配方接着熬（配方本清空）
+			await _say(_fmt_next(n))
+			GameState.vars["task_potion_recipe"] = int(GameState.vars.get("task_potion_recipe", 0)) + 1
+			GameState.vars["task_potion_notes"] = []
+			GameState.vars["task_potion_wrong"] = 0
+			continue
 		GameState.vars["task_potion_wrong"] = int(GameState.vars.get("task_potion_wrong", 0)) + 1
 		if int(GameState.vars["task_potion_wrong"]) >= MAX_WRONG:
 			_emit(false)
@@ -109,7 +130,6 @@ func _test(picks: Array) -> bool:
 	if wrong.is_empty():
 		_tickle("sole", 2)
 		await _say(data().get("success", []))
-		await _say(data().get("final", []))
 		return true
 	var notes: Array = GameState.vars.get("task_potion_notes", [])
 	var seen: Array = []

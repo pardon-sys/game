@@ -1,0 +1,142 @@
+{
+	"name": "捉人失败：被大家压在下面",
+	"cast": {
+		"princess": {
+			"kind": "princess",
+			"at": [
+				0,
+				8
+			],
+			"visual": "helpless_1",
+			"anim": "helpless",
+			"dir": "down"
+		},
+		"k1": {
+			"kind": "npc:kid",
+			"at": [
+				-20,
+				20
+			],
+			"dir": "right"
+		},
+		"k2": {
+			"kind": "npc:kid",
+			"at": [
+				20,
+				20
+			],
+			"dir": "left"
+		},
+		"k3": {
+			"kind": "npc:kid",
+			"at": [
+				0,
+				26
+			],
+			"dir": "up"
+		}
+	},
+	"steps": [
+		{
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "fade_in"
+				},
+				{
+					"state": "giggle",
+					"do": "voice"
+				}
+			],
+			"wait": 0.5
+		},
+		{
+			"speaker": "",
+			"text": "（被抓了太多次，她笑得爬不起来。四个孩子一拥而上，把她压在了广场的石板上）"
+		},
+		{
+			"speaker": "小孩们",
+			"text": "抓到啦——！大家一起挠！"
+		},
+		{
+			"speaker": "",
+			"text": "（汤姆挠脚心、莉莉扫趾缝、小胖刷脚弓、小芽戳腰——四个人分工明确）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "k1",
+					"zone": "sole",
+					"fx": "hand",
+					"repeat": 10,
+					"interval": 0.2,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"by": "k2",
+					"zone": "sole",
+					"fx": "feather",
+					"repeat": 10,
+					"interval": 0.2,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"by": "k3",
+					"zone": "waist",
+					"fx": "hand",
+					"repeat": 10,
+					"interval": 0.2,
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "哈哈哈哈哈！犯、犯规！四、四个人一起犯规——！",
+			"portrait": "defeat_1"
+		},
+		{
+			"speaker": "小汤姆",
+			"text": "游戏规则就是被抓到就要挠嘛！"
+		},
+		{
+			"speaker": "公主",
+			"text": "规、规则是谁定的啊——哈哈哈哈！",
+			"portrait": "defeat_2"
+		},
+		{
+			"speaker": "小莉莉",
+			"text": "……是汤姆定的。"
+		},
+		{
+			"speaker": "",
+			"text": "（直到巡夜的保卫队员路过，才把四个小鬼一个个拎走）",
+			"actions": [
+				{
+					"who": "princess",
+					"visual": "helpless_2",
+					"do": "pose"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "哈……哈……再、再来一局……这次我一定……",
+			"emotion": "helpless_1"
+		},
+		{
+			"actions": [
+				{
+					"time": 0.6,
+					"do": "fade_out"
+				},
+				{
+					"state": "",
+					"do": "voice"
+				}
+			],
+			"wait": 0.7
+		}
+	]
+}

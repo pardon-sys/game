@@ -1,8 +1,8 @@
 class_name TaskInspect
 extends Node2D
 ## 弥补任务「陷阱验收」（第 6 天早上，保卫队训练营 floor_06_after_proving）的玩法节点（AfterStory.run_task 摆进来，发 finished(ok)）。台词 data/after/inspect.json。
-##   训练营里摆着五个挠痒陷阱的踏板（STATIONS）和三个辅助设施（AUX），顺序自选：
-##     辅助：走上去 → 演几句、加状态（statuses：{id: 剩余秒}；冷敷石板清掉别的状态），闷笑按 laugh 降。
+##   训练营是一条走廊（COURSE 按顺序）：辅助设施是整条走廊宽的踏板，走过去就被强制施加（躲不开）；挠痒陷阱走到就开始体验：
+##     辅助：走过 → 演几句、加状态（statuses：{id: 剩余秒}；冷敷石板清掉别的状态），闷笑按 laugh 降。
 ##     挠痒：走上去 → InspectShow 体验一遍（挠痒 × 身上状态的倍率）→ 评分（选项页：太强 / 刚好 / 太弱，提示里写涨了多少闷笑和身上的状态）：
 ##       评对 → 原样；评「太弱」（其实不弱）→ 加强 tune ×1.3；评「太强」（其实不强）→ 削弱 ×0.8，但队长让你再体验一次（重新评）。
 ##   五个都评完 → 综合演练（五个连着来，闷笑不清零、keep_laugh；倍率用评分调整后的 tune），笑倒 = 失败（after_fail_inspect，重来时从综合演练开始）。
@@ -12,8 +12,12 @@ extends Node2D
 signal finished(ok: bool)
 
 const PATH := "res://data/after/inspect.json"
-const STATIONS := {"curtain": Vector2i(8, 6), "holes": Vector2i(14, 6), "toes": Vector2i(20, 6), "hoist": Vector2i(26, 6), "kneel": Vector2i(32, 6)}
-const AUX := {"soak": Vector2i(10, 13), "oil": Vector2i(20, 13), "cool": Vector2i(30, 13)}
+## 走廊上的顺序：[类型, id, 第几列]（走廊在第 3~6 行）
+const COURSE := [["aux", "soak", 7], ["station", "curtain", 11], ["station", "holes", 15], ["aux", "oil", 19], ["station", "toes", 23],
+	["station", "hoist", 27], ["aux", "cool", 31], ["station", "kneel", 35]]
+const ROWS := Vector2i(3, 6)
+const STATIONS := {"curtain": Vector2i(11, 4), "holes": Vector2i(15, 4), "toes": Vector2i(23, 4), "hoist": Vector2i(27, 4), "kneel": Vector2i(35, 4)}
+const AUX := {"soak": Vector2i(7, 4), "oil": Vector2i(19, 4), "cool": Vector2i(31, 4)}
 const ORDER := ["curtain", "holes", "toes", "hoist", "kneel"]
 const NEAR := 12.0
 
@@ -31,6 +35,8 @@ var _cool := {}
 var _busy := false
 var _emitted := false
 var _pads: Array = []
+## 走廊上走到了第几个（COURSE 的下标）
+var step := 0
 
 
 static func data() -> Dictionary:
@@ -52,10 +58,11 @@ static func status_text() -> String:
 func _ready() -> void:
 	rated = (GameState.vars.get("task_inspect_rates", {}) as Dictionary).duplicate()
 	tune = (GameState.vars.get("task_inspect_tune", {}) as Dictionary).duplicate()
-	for id in STATIONS:
-		_pad(Cutscene.cell_to_world(STATIONS[id]), Color(1, 0.7, 0.85), str(data().get("stations", {}).get(id, {}).get("name", id)))
-	for id in AUX:
-		_pad(Cutscene.cell_to_world(AUX[id]), Color(0.6, 0.85, 1.0), str(data().get("aux", {}).get(id, {}).get("name", id)))
+	for c in COURSE:
+		var aux := str(c[0]) == "aux"
+		var nm := str(data().get("aux" if aux else "stations", {}).get(str(c[1]), {}).get("name", c[1]))
+		var at := Cutscene.cell_to_world(Vector2i(int(c[2]), ROWS.x)) + Vector2(0, (ROWS.y - ROWS.x) * 8.0)
+		_pad(at, Color(0.6, 0.85, 1.0) if aux else Color(1, 0.7, 0.85), nm, aux)
 	_start.call_deferred()
 
 
@@ -65,10 +72,12 @@ func _exit_tree() -> void:
 			p.queue_free()
 
 
-func _pad(at: Vector2, col: Color, label: String) -> void:
+func _pad(at: Vector2, col: Color, label: String, wide := false) -> void:
 	var p := Pad.new()
 	p.col = col
 	p.label = label
+	p.wide = wide
+	p.h = (ROWS.y - ROWS.x + 1) * 16.0
 	get_parent().add_child(p)
 	p.global_position = at
 	_pads.append(p)
@@ -109,14 +118,26 @@ func _process(delta: float) -> void:
 	if not is_instance_valid(p):
 		return
 	GameState.vars["task_inspect_state"] = status_names()
-	for id in AUX:
-		if not _cool.has(id) and p.global_position.distance_to(Cutscene.cell_to_world(AUX[id])) < NEAR:
-			use_aux(id)
-			return
-	for id in STATIONS:
-		if not rated.has(id) and not _cool.has(id) and p.global_position.distance_to(Cutscene.cell_to_world(STATIONS[id])) < NEAR:
-			run_station(id)
-			return
+	# 走廊：走到下一个设施的那一列就触发（辅助设施整条走廊宽，躲不开；陷阱没评完不能越过去）
+	while step < COURSE.size() and str(COURSE[step][0]) == "station" and rated.has(str(COURSE[step][1])):
+		step += 1
+	if step >= COURSE.size():
+		return
+	var c: Array = COURSE[step]
+	var x := Cutscene.cell_to_world(Vector2i(int(c[2]), 0)).x
+	if p.global_position.x >= x - 8.0:
+		step += 1
+		if str(c[0]) == "aux":
+			use_aux(str(c[1]))
+		else:
+			run_station(str(c[1]))
+		return
+	# 还没评完前面的陷阱不能往前走
+	var nxt := COURSE.slice(step).filter(func(e): return str(e[0]) == "station")
+	if not nxt.is_empty():
+		var limit := Cutscene.cell_to_world(Vector2i(int(nxt[0][2]), 0)).x + 2.0
+		if p.global_position.x > limit:
+			p.global_position.x = limit
 
 
 ## 辅助设施
@@ -242,6 +263,8 @@ func _notification(what: int) -> void:
 class Pad extends Node2D:
 	var col := Color.WHITE
 	var label := ""
+	var wide := false
+	var h := 64.0
 	var _t := 0.0
 
 	func _ready() -> void:
@@ -253,8 +276,13 @@ class Pad extends Node2D:
 
 	func _draw() -> void:
 		var a := 0.55 + 0.25 * sin(_t * 3.0)
-		draw_circle(Vector2.ZERO, 9.0, Color(col.r, col.g, col.b, 0.25))
-		draw_arc(Vector2.ZERO, 9.0, 0, TAU, 20, Color(col.r, col.g, col.b, a), 1.5)
+		if wide:
+			# 整条走廊宽的踏板（躲不开）
+			draw_rect(Rect2(-7, -h * 0.5, 14, h), Color(col.r, col.g, col.b, 0.25))
+			draw_rect(Rect2(-7, -h * 0.5, 14, h), Color(col.r, col.g, col.b, a), false, 1.5)
+		else:
+			draw_circle(Vector2.ZERO, 9.0, Color(col.r, col.g, col.b, 0.25))
+			draw_arc(Vector2.ZERO, 9.0, 0, TAU, 20, Color(col.r, col.g, col.b, a), 1.5)
 		var f := ThemeDB.fallback_font
 		var w := f.get_string_size(label, HORIZONTAL_ALIGNMENT_LEFT, -1, 7).x
-		draw_string(f, Vector2(-w * 0.5, -12), label, HORIZONTAL_ALIGNMENT_LEFT, -1, 7, Color(1, 1, 1, 0.85))
+		draw_string(f, Vector2(-w * 0.5, -h * 0.5 - 4 if wide else -12), label, HORIZONTAL_ALIGNMENT_LEFT, -1, 7, Color(1, 1, 1, 0.85))
