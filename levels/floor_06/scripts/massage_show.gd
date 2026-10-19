@@ -222,7 +222,7 @@ func _massage_tickle() -> void:
 	var said: Array = cur().get("host", [])
 	if not said.is_empty() and by == "host":
 		say("host", str(said.pick_random()))
-	GameState.princess_reacted.emit(react_line(), 1.8)
+	say("princess", react_line())
 
 
 func react_line() -> String:

@@ -771,6 +771,30 @@
 				"hours": 12
 			}
 		},
+		"d4": {
+			"morning": {
+				"event": "d4_drain",
+				"task": "疏通排水管",
+				"hours": 10
+			},
+			"afternoon": {
+				"event": "d4_drill",
+				"task": "陪蓝色公主特训",
+				"hours": 6
+			}
+		},
+		"d6": {
+			"morning": {
+				"event": "d6_inspect",
+				"task": "陷阱验收",
+				"hours": 10
+			},
+			"afternoon": {
+				"event": "d6_drill",
+				"task": "陪蓝色公主特训（考核）",
+				"hours": 6
+			}
+		},
 		"d5": {
 			"morning": {
 				"event": "d5_tailor",

@@ -1,0 +1,44 @@
+[level]
+# 第六层·地下小镇·战后（tools/build/gen_floor06_after.py 生成，不要直接改）
+intro =
+ambient = 0.82,0.86,0.96
+no_switch = true
+[legend]
+# = wall
+. = floor
+P = player
+t = torch lit=true
+A = prop type=wood_floor + f6afterroom
+C = prop type=wood_floor
+D = prop type=wood_floor + prop type=banner
+E = prop type=wood_floor + prop type=dummy
+F = prop type=wood_floor + npc id=captain dialogue=floor_06/after_drill_cap wander=0 dir=down
+G = prop type=wood_floor + prop type=ice_block action=talk:floor_06/after_drill_objects#ice
+H = prop type=wood_floor + prop type=bench
+I = prop type=wood_floor + player
+J = prop type=wood_floor + blue_princess follow=true ai=false
+K = prop type=wood_floor + spawn id=from_town
+L = prop type=dummy
+M = prop type=drain_lever
+N = trap type=brush speed=1.4
+O = trap type=brush speed=-1.6
+Q = trap type=vent idle_time=2.2 cloud_duration=1.4 offset=0.0
+R = trap type=vent idle_time=2.2 cloud_duration=1.4 offset=1.1
+S = prop type=banner
+T = exit target=floor_06_after spawn=from_drill
+
+[map]
+########################################
+#####t########t#########################
+##ACCCCCCDCCCCCCCC####t#######t#####t###
+##CCCCCCCCCCCCCCCC#.....##........M....#
+##CCECCCCCFCCCCECC#..N..##.L...........#
+##CCCCCCCCCCCCCCCC#.....##.............#
+##CCCCCCCCCCCCCCCC......##.........Q...#
+##CCCCCCCCGCCCCCCC......##...........S.#
+##CCCCCCCCCCCCCCCC......##.............#
+##CCHCCCCCCCCCCHCC#.....##...O.....R...#
+##CCCCCCCCIJCCCCCC#.....##.............#
+##CCCCCCCCKCCCCCCC######################
+##########T#############################
+########################################

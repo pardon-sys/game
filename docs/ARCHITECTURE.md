@@ -713,6 +713,30 @@ data/cutscenes/<楼层组>/  地图内过场；data/theater/<楼层组>/  小剧
 	第一块零星的痒痒草（`TickleGrass`，`on_catch` 回调按闷笑挑反应字）；第二块起草从离她最近的草丛往她那边蔓延；第三块再加千手痒痒裤失控（发光预警 → 小手伸长挠粉色公主），
 	换成蓝色公主按住 E「安抚」够 2 秒 → 小手挠她自己、安静 12 秒。闷笑满石头摔地上，同一块摔三次 = 失败（`after_fail_totem`，放好的不用重放）。
 	每块之间歇脚（镇民送水、蓝色公主数这七天）。`TASKS` 的 `clear_book`（做完工时清零）/ `to_night`（做完早上、下午都算完，直接天黑）。
+  - **疏通排水管**（第 4 天早上，排水管 `floor_06_after_drain`，南边排水口 `after_drain_open`；`TaskDrain`，文本 `after_text/drain.py`）：一格宽的管道迷宫里趴着爬
+	（meta `busy_hands` + 状态 `crawl`）；绒苔球（`TaskDrain.MossBall`）贴在腿上蹭、按住 E 擦掉；管口外的小孩抓脚（定身 + 挠，J 蹬 5 下挣开）；三段开场（第二段管壁上
+	两个手拉手的小女孩涂鸦，伏笔）、三处堵塞（`Clog`，按住 E 擦）、拉总闸放水。闷笑满 = 被拖出管子（`after_fail_drain`，通了的不用重通）。收尾队长递手帕「又是这副样子」，
+	手帕角上绣着两个手拉手的小人；最后 `goto` 回小镇。
+  - **蓝色公主的特训**（队长的训练室 `floor_06_after_drill`，西北角那座房子 `after_drill_open`；`TaskDrill`，文本 `after_text/drill.py`）：操控蓝色公主
+	（`switch_control`，结束换回）。共同底子 `DrillShow`（继承 `TrainingStage`）：魔力疲倦满自动释放 → 「释放后敏感」15 秒（挠痒 ×2、反应字换 sensitive 那套、
+	队长加码）；一节课释放超过 3 次重来（补课小剧场 `after_fail_drill`）。蓝色公主和粉色公主在舞台上用公主精灵图（`CGActor.make_princess`）。
+	- 第 4 天下午：第一课 `IceSitShow` 冰封静坐（身体图 Q W E / A S D，亮起来的地方冻住；寒冷值满发抖全化开；表情掉光记一笔，三笔重来；假动作）→ 课间 →
+	  第二课 `PantsTameShow` 驯裤（小手的手势 → W 按住 / A 安抚 / S 冻住 / D 随它去；假手势；听话度满出师）。
+	- 第 6 天下午：第三课「借手」在地图右边的障碍场里走（沟、栅栏 `TaskDrill.Gate`、手点：E 抓对岸 / 拉远处的拉杆 / 附近没有手点 = 小手护身 `ice_shield`；
+	  听话度不够用 = 造反；粉色公主定时捣乱）→ 考核 `DrillExamShow`（继承 `IceSitShow`：粉色公主挠，J 小手挡、U 千手解放，释放 = 失控加时；笑出声三次不及格，
+	  不算失败、结局台词不同）→ 学会被动「冰封自制」（`ice_composure`：`PlayableCharacter._extra_stat_*` 里减闷笑涨幅、减轻千手痒痒裤）和主动技能
+	  「千手解放」（`PantsBurst`，输入 `skill` = U：范围内的怪定身 3 秒、陷阱暂停；副作用 5 秒小手挠自己 + 状态 `pants_backlash`；冷却 15 秒；剧情标记 `skill_pants_burst`）。
+  - **陷阱验收**（第 6 天早上，保卫队训练营 `floor_06_after_proving`，东边的门 `after_proving_open`；`TaskInspect` + `InspectShow`，文本 `after_text/inspect.py`）：
+	五个挠痒陷阱的踏板（羽毛帘 / 地洞挠挠手 / 脚趾分隔刷 / 单脚吊环架 / 跪台脚心朝天，各自的挣脱方式见 `InspectShow`）+ 三个辅助设施（泡脚盆「泡软」、精油踏板「滑溜」、
+	冷敷石板清状态），顺序自选。体验完报「太强 / 刚好 / 太弱」——要报陷阱本身的强度（屏幕给出涨了多少闷笑和身上的状态）；评「太弱」被加强、评「太强」被削弱但要再体验一次。
+	五个评完 → 综合演练（按评分调整过强度、闷笑不清零），笑倒 = 失败（`after_fail_inspect`，重来直接综合演练）。
+- 小游戏画面的描写：`TrainingStage.narrate(文字)` 画在舞台框顶部（新的替换旧的），人物头上的气泡只放说的话；示众、委托小游戏、特训都不再用画面下方的反应框。
+  示众的应对选项不透露效果。选项页（`ChoiceMenu.ask`）打开期间 `in_dialogue = true`，人物不跟着上下键走。
+- 装备回收的小孩（`AfterKid`）：看得更远（160）、一次挠 4 秒、冲刺甩不掉；刚贴上来时暂停演一小段对话（小孩的话 + 挠法描写 + 公主的反应 `react_pool`），
+  两段之间至少隔 7 秒（后来的只冒气泡）。
+- 扶梯子：每完成一步（上一级 / 钉一下 / 下一级）演那一步专属的挠痒情节（`errand_ladder.py` 的 `EPISODES`，共 20 段），平衡安全区从 0.8 缩到 0.32。
+- 配药：八味药草，每味配错时走一段试药流程（`TaskPotion._run_trial`：开场 → `PotionTrial` 的 timing / mash / rhythm 或猜痒感转移 / 三选一 → 成功 / 失败的几句），
+  配对后成品测试（`final`）。
 - 小场景导演 `AfterRoom`（图例 `f6afterroom`）：目标提示、目标圈触发、进图自动演的事件、镇民改名、蓝色公主跟着。`AfterStory.TOWN_DOORS / ROOM_EXITS` 指路。
 - 小剧场 / 舞台上的字（`SpeechBubble`）画在最前面（`z_as_relative = false`、`z_index = 4000`）；训练小游戏舞台上气泡垫在飘字下面。
 - 测试：`tests/f6_after_test`（胜利去向、开场 → 宣判、日程摆位、赎罪簿和背包页、宵禁锁门、手印顺序、楼上结尾 → 第 2 天、示众小游戏（挣扎 / 求情 / 应对 / 笑出声 / 释放加时 / 笑晕）/ 罚工时 / 转盘、委托、玩闹、五个弥补任务（完成 / 失败小剧场 / 重来）、第 3 天起的四个委托、床上休息、日程逐层覆盖、旧存档、跳关）。

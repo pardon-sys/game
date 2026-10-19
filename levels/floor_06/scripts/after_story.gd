@@ -23,6 +23,9 @@ const FIELD := "floor_06_after_field"
 const TAILOR := "floor_06_after_tailor"
 const MINE := "floor_06_after_mine"
 const TOTEM := "floor_06_after_totem"
+const DRAIN := "floor_06_after_drain"
+const DRILL := "floor_06_after_drill"
+const PROVING := "floor_06_after_proving"
 const STARTED := "after_started"
 const EVENTS := {
 	"d1_open": {"where": TOWN, "auto": true, "cutscene": "after_d1_open"},
@@ -34,18 +37,26 @@ const EVENTS := {
 	"d3_cart": {"where": FIELD, "auto": true, "objective": "出南边的城门，去城外的战场拆攻城车", "cutscene": "after_d3_cart"},
 	"d5_tailor": {"where": TAILOR, "spot": [9, 7, 1.2], "objective": "去裁缝铺当试衣模特（北边那排最右边的房子）", "cutscene": "after_d5_tailor"},
 	"d5_mine": {"where": MINE, "auto": true, "objective": "去东北角的矿道口，护送补给矿车", "cutscene": "after_d5_mine"},
+	"d4_drain": {"where": DRAIN, "auto": true, "objective": "去小镇南边的排水口，疏通排水管", "cutscene": "after_d4_drain"},
+	"d4_drill": {"where": DRILL, "spot": [10, 7, 1.5], "objective": "去队长的训练室（西北角的房子），陪蓝色公主特训", "cutscene": "after_d4_drill"},
+	"d6_inspect": {"where": PROVING, "auto": true, "objective": "去东边的保卫队训练营，验收新陷阱", "cutscene": "after_d6_inspect"},
+	"d6_drill": {"where": DRILL, "spot": [10, 7, 1.5], "objective": "去队长的训练室：特训第三课和考核", "cutscene": "after_d6_drill"},
 	"d7_totem": {"where": TOTEM, "auto": true, "objective": "从西边的小路去图腾柱废地，修补狂欢图腾柱", "cutscene": "after_d7_totem"},
 }
 ## 小镇里通往各张图的门口（指路）、各张图回小镇的出口
 const TOWN_DOORS := {"floor_06_after_house": [42, 10], "floor_06_after_house_up": [42, 10], "floor_06_after_pharmacy": [16, 10],
-	"floor_06_after_field": [32, 38.5], "floor_06_after_tailor": [32, 10], "floor_06_after_mine": [54, 6], "floor_06_after_totem": [3, 32]}
+	"floor_06_after_field": [32, 38.5], "floor_06_after_tailor": [32, 10], "floor_06_after_mine": [54, 6], "floor_06_after_totem": [3, 32], "floor_06_after_drain": [20, 38], "floor_06_after_drill": [8, 10], "floor_06_after_proving": [60, 20]}
 const ROOM_EXITS := {"floor_06_after_house": [9, 10], "floor_06_after_pharmacy": [8, 8.5], "floor_06_after_field": [21, 3],
-	"floor_06_after_tailor": [8, 10.5], "floor_06_after_mine": [3, 6], "floor_06_after_totem": [3, 12]}
+	"floor_06_after_tailor": [8, 10.5], "floor_06_after_mine": [3, 6], "floor_06_after_totem": [3, 12], "floor_06_after_drain": [3, 12], "floor_06_after_drill": [10, 11.5], "floor_06_after_proving": [3, 9]}
 ## 城门：第 3 天下午拆攻城车的时候才开；矿道门：第 5 天下午护送矿车的时候才开
 const FIELD_OPEN := "after_field_open"
 const MINE_OPEN := "after_mine_open"
 ## 西边通往图腾柱废地的小路：第 7 天修图腾柱的时候才开
 const TOTEM_OPEN := "after_totem_open"
+## 南边的排水口（第 4 天早上通管）/ 队长的训练室（特训的时候）
+const DRAIN_OPEN := "after_drain_open"
+const DRILL_OPEN := "after_drill_open"
+const PROVING_OPEN := "after_proving_open"
 ## 弥补任务进行中（不能接委托、小屋的门锁着）
 const TASK_FLAG := "after_task_active"
 ## 弥补任务的玩法节点：事件 id → 脚本（实例发 finished(ok)；脚本要有静态的 reset_items() / status_text()）、失败小剧场 / 罚工时
@@ -60,6 +71,14 @@ const TASKS := {
 		"done": "after_d5_tailor_done", "respawn": [9, 8]},
 	"d5_mine": {"script": "res://levels/floor_06/scripts/task_mine.gd", "name": "矿车护送", "fail": "after_fail_mine", "fail_hours": 3,
 		"done": "after_d5_mine_done", "respawn": [5, 7]},
+	"d4_drain": {"script": "res://levels/floor_06/scripts/task_drain.gd", "name": "疏通排水管", "fail": "after_fail_drain", "fail_hours": 2,
+		"done": "after_d4_drain_done", "respawn": [4, 12]},
+	"d4_drill": {"script": "res://levels/floor_06/scripts/task_drill.gd", "name": "蓝色公主的特训", "fail": "after_fail_drill", "fail_hours": 0,
+		"done": "after_d4_drill_done"},
+	"d6_inspect": {"script": "res://levels/floor_06/scripts/task_inspect.gd", "name": "陷阱验收", "fail": "after_fail_inspect", "fail_hours": 2,
+		"done": "after_d6_inspect_done", "respawn": [4, 9]},
+	"d6_drill": {"script": "res://levels/floor_06/scripts/task_drill.gd", "name": "蓝色公主的特训（考核）", "fail": "after_fail_drill", "fail_hours": 0,
+		"done": "after_d6_drill_done"},
 	# 早上开始一直做到傍晚（to_night：做完直接天黑）；修好了工时清零（clear_book）
 	"d7_totem": {"script": "res://levels/floor_06/scripts/task_totem.gd", "name": "修补狂欢图腾柱", "fail": "after_fail_totem", "fail_hours": 2,
 		"done": "after_d7_totem_done", "respawn": [8, 12], "to_night": true, "clear_book": true},
@@ -163,6 +182,15 @@ static func sync_doors() -> void:
 	var totem := DayClock.event() == "d7_totem" and not DayClock.done()
 	if GameState.has_flag(TOTEM_OPEN) != totem:
 		GameState.set_flag(TOTEM_OPEN, totem)
+	var drain := DayClock.event() == "d4_drain" and not DayClock.done()
+	if GameState.has_flag(DRAIN_OPEN) != drain:
+		GameState.set_flag(DRAIN_OPEN, drain)
+	var drill := DayClock.event() in ["d4_drill", "d6_drill"] and not DayClock.done()
+	if GameState.has_flag(DRILL_OPEN) != drill:
+		GameState.set_flag(DRILL_OPEN, drill)
+	var proving := DayClock.event() == "d6_inspect" and not DayClock.done()
+	if GameState.has_flag(PROVING_OPEN) != proving:
+		GameState.set_flag(PROVING_OPEN, proving)
 
 
 ## 进图时：这张图上自动演的事件（auto）。

@@ -44,8 +44,11 @@ func _ready() -> void:
 	await _run_cart()
 	await _run_rest_free()
 	await _run_errands2()
+	await _run_drill()
 	await _run_tailor()
 	await _run_mine()
+	await _run_inspect()
+	await _run_drill2()
 	await _run_totem()
 	_run_clock()
 	await _run_old_save()
@@ -435,14 +438,20 @@ func _run_equip() -> void:
 	check("闷笑超过 40%%：小孩跑过来挠（%s）" % kid.mode, kid.mode == AfterKid.Mode.TICKLE)
 	kid.talk(p)
 	check("按 E 把他哄走", kid.mode == AfterKid.Mode.LEAVE)
-	# 长椅 / 井
+	# 冲刺甩不掉小孩（K 不管用），挠的时间更长、看得更远
+	check("小孩看得更远、挠得更久", AfterKid.SIGHT >= 150.0 and AfterKid.TICKLE_TIME >= 3.5)
+	# 长椅 / 井（先让小孩们别来）
+	for k in task.kids:
+		k._leave()
+		k._cool = 60.0
+	await _advance_until(func(): return not GameState.in_dialogue, 5.0)
 	p.laugh.set_value(p.laugh.max_value * 0.6)
 	_go(Cutscene.cell_to_world([40, 21.6]))
 	await _wait(2.0)
 	check("在长椅上歇着：闷笑慢慢降（%.0f%%）" % (p.laugh.ratio() * 100.0), p.laugh.ratio() < 0.55)
 	p.laugh.set_value(p.laugh.max_value * 0.6)
 	_go(Cutscene.cell_to_world([30, 19]))
-	await _wait(0.3)
+	await _advance_until(func(): return p.laugh.ratio() < 0.35, 3.0)
 	check("井边洗把脸：闷笑一下子降 30%%（%.0f%%）" % (p.laugh.ratio() * 100.0), p.laugh.ratio() < 0.35)
 	# 笑倒 = 失败 → 失败小剧场 → 装备散回原位
 	p.laugh.set_value(p.laugh.max_value * 0.95)
@@ -485,6 +494,11 @@ func _run_potion() -> void:
 	GameState.vars["task_potion_recipe"] = 0
 	# 错三碗（第一张配方是 薄荷叶 + 冰晶草 + 薰衣草）→ 失败 → 换第二张（薄荷叶 + 冰晶草 + 蜂蜜根）→ 配对
 	TaskPotion.auto_picks = [["mint", "mushroom", "feather"], ["mint", "ice", "honey"], ["lavender", "honey", "mushroom"], ["mint", "ice", "honey"]]
+	PotionTrial.auto = "bad"
+	var pd := TaskPotion.data()
+	check("配药：八味药草、每味都有自己的试药流程（开场 + 小操作 + 成功 / 失败）、配对后的成品测试",
+		(pd["order"] as Array).size() == 8 and (pd["herbs"] as Dictionary).values().all(func(h): return h.has("kind") and h["intro"].size() >= 4 and not h["ok"].is_empty() and not h["bad"].is_empty())
+		and (pd["final"] as Array).size() >= 8)
 	GameState.pending_spawn = "from_town"
 	await main.change_level(Floors.scene("floor_06_after_pharmacy"))
 	await _wait(0.8)
@@ -494,6 +508,7 @@ func _run_potion() -> void:
 		notes["n"] = maxi(notes["n"], (GameState.vars.get("task_potion_notes", []) as Array).size())
 		return DayClock.done(3, DayClock.MORNING) and not Cutscene.is_playing() and not DayClock.passing and not CG.is_busy(), 120.0)
 	TaskPotion.auto_picks = []
+	PotionTrial.auto = ""
 	check("配错的药草记进配方本（最多记了 %d 碗）" % notes["n"], notes["n"] >= 2)
 	check("错三碗 → 全身羽毛测试的失败小剧场、换一张配方（%d）" % int(GameState.vars.get("task_potion_recipe", 0)),
 		GameState.has_flag("cg_seen_theater:after_fail_potion") and int(GameState.vars.get("task_potion_recipe", 0)) == 1)
@@ -574,12 +589,145 @@ func _run_cart() -> void:
 
 # ------------------------------------------------------------------ 没有剧情的时段：床上休息
 func _run_rest_free() -> void:
-	print("-- 没有剧情的时段：床上休息")
+	print("-- 第 4 天早上：疏通排水管")
 	await _sleep_night()
-	check("第 4 天早上（还没有剧情）", DayClock.day() == 4 and DayClock.slot() == DayClock.MORNING)
+	check("第 4 天早上：要去通排水管", DayClock.day() == 4 and DayClock.slot() == DayClock.MORNING and DayClock.event() == "d4_drain")
 	await _talk("floor_06/after_house_objects", "bed", [0])
-	await _advance_until(func(): return DayClock.slot() == DayClock.AFTERNOON and not DayClock.passing, 10.0)
-	check("床上「休息到下一个时段」→ 下午（%s）" % DayClock.label(), DayClock.day() == 4 and DayClock.slot() == DayClock.AFTERNOON)
+	await _wait(0.3)
+	check("有事没做时床上不让休息", DayClock.slot() == DayClock.MORNING)
+	GameState.pending_spawn = "from_house"
+	await main.change_level(Floors.scene("floor_06_after"))
+	await _wait(1.0)
+	var mk := _node("Objective") as ObjectiveMarker
+	check("目标：南边的排水口（开了）", mk.text.contains("排水") and GameState.has_flag(AfterStory.DRAIN_OPEN)
+		and mk.global_position.distance_to(Cutscene.cell_to_world([20, 38])) < 2.0)
+	GameState.vars["task_drain_cleared"] = 0
+	GameState.pending_spawn = "from_town"
+	await main.change_level(Floors.scene("floor_06_after_drain"))
+	await _advance_until(func(): return _node("Task_d4_drain") != null and (_node("Task_d4_drain") as TaskDrain).started and not GameState.in_dialogue, 40.0)
+	await _wait(0.1)
+	var task := _node("Task_d4_drain") as TaskDrain
+	var p := GameState.player
+	check("进排水管 → 队员讲规矩的过场 → 趴着爬（慢、不能冲刺）", task != null and seen_cuts.has("after_d4_drain")
+		and p.buffs.has("crawl") and p.has_meta(&"busy_hands"))
+	if task == null:
+		return
+	# 脚被抓
+	task._grabs_left.clear()
+	var l0 := p.laugh.value
+	task.grab_now()
+	await _advance_until(func(): return not task._busy and not GameState.in_dialogue, 10.0)
+	await _wait(0.5)
+	check("管口外的小孩抓住脚：定身 + 挠（闷笑 %.0f → %.0f）" % [l0, p.laugh.value], task.grabbed and p.status.is_rooted() and p.laugh.value > l0)
+	for i in TaskDrain.KICKS:
+		task.kick()
+	check("按 J 蹬 %d 下：挣开了" % TaskDrain.KICKS, not task.grabbed and not p.status.is_rooted())
+	# 绒苔球
+	var mb: TaskDrain.MossBall = task.moss[0]
+	_go(mb.global_position)
+	await _advance_until(func(): return mb.stuck and not task._busy and not GameState.in_dialogue, 10.0)
+	check("碰到绒苔球：贴在腿上蹭（第一次演几句）", mb.stuck and task.moss_seen)
+	task.wipe(TaskDrain.WIPE + 0.1)
+	await _wait(0.1)
+	check("按住 E 擦掉", not is_instance_valid(mb))
+	# 三处堵塞（每段开场 / 涂鸦）
+	for i in TaskDrain.CLOGS.size():
+		p.laugh.clear()
+		for m in task.moss:
+			if is_instance_valid(m):
+				m.queue_free()
+		_go(Cutscene.cell_to_world(TaskDrain.SEG_AT[i]))
+		await _advance_until(func(): return task._seg_seen.has(i) and not task._busy and not GameState.in_dialogue, 20.0)
+		var c: Node2D = task.clogs[i]
+		_go(c.global_position + Vector2(-14, 0))
+		await _advance_until(func(): return task._clog_lines.has(i) and not task._busy and not GameState.in_dialogue, 20.0)
+		task.scrub(TaskDrain.SCRUB + 0.1)
+		await _advance_until(func(): return TaskDrain.cleared() == i + 1 and not task._busy and not GameState.in_dialogue, 20.0)
+	check("三段：开场（第二段管壁上的涂鸦）→ 擦通三处堵塞（%d）" % TaskDrain.cleared(), TaskDrain.cleared() == 3 and task._seg_seen.size() == 3)
+	# 失败：笑满被拖出去
+	p.laugh.set_value(p.laugh.max_value)
+	var again := func() -> bool:
+		var td := _node("Task_d4_drain") as TaskDrain
+		return GameState.has_flag("cg_seen_theater:after_fail_drain") and not CG.is_busy() and td != null and td.started and not GameState.in_dialogue
+	await _advance_until(again, 60.0)
+	task = _node("Task_d4_drain") as TaskDrain
+	check("闷笑满：被小孩抓着脚拖出管子的小剧场 → 重来（通了的还算）", GameState.has_flag("cg_seen_theater:after_fail_drain") and TaskDrain.cleared() == 3)
+	p = GameState.player
+	p.laugh.clear()
+	task.pull_lever()
+	await _advance_until(func(): return DayClock.done(4, DayClock.MORNING) and not Cutscene.is_playing() and not DayClock.passing and _level_id() == "floor_06_after", 60.0)
+	check("拉总闸放水 → 队长递手帕（「又是这副样子」）→ 回到小镇、下午", seen_cuts.has("after_d4_drain_done") and DayClock.slot() == DayClock.AFTERNOON
+		and _level_id() == "floor_06_after" and not GameState.player.buffs.has("crawl"))
+
+
+# ------------------------------------------------------------------ 第 4 天下午：蓝色公主的特训（第一、二课）
+func _run_drill() -> void:
+	print("-- 蓝色公主的特训：第一课 冰封静坐、第二课 驯裤")
+	DrillShow.quiet = true
+	GameState.pending_spawn = "from_town"
+	await main.change_level(Floors.scene("floor_06_after_drill"))
+	await _wait(0.8)
+	_go(Cutscene.cell_to_world([10, 7]))
+	await _advance_until(func(): return _node("Task_d4_drill") != null and (_node("Task_d4_drill") as TaskDrill).show != null, 30.0)
+	var task := _node("Task_d4_drill") as TaskDrill
+	check("训练室 → 特训的过场 → 换成操控蓝色公主、第一课开始", task != null and seen_cuts.has("after_d4_drill")
+		and GameState.player.character_id == "blue" and task.show is IceSitShow)
+	if task == null:
+		return
+	var ice := task.show as IceSitShow
+	await _wait(0.2)
+	ice.target = "lthigh"
+	ice.decoy = ""
+	ice.warn_t = 0.5
+	ice.press("A")
+	check("身体图亮起左大腿 → 按 A 冻住（寒冷 %.0f）" % ice.cold, ice.frozen.has("lthigh") and ice.cold > 10.0)
+	var face0 := ice.face
+	ice._strike("lthigh", "cap")
+	check("挠到冻住的地方：没感觉（表情不掉）", ice.face == face0 and ice.blocked == 1)
+	ice._strike("butt", "cap")
+	check("挠到没冻的地方：表情掉（%.0f）" % ice.face, ice.face < face0)
+	ice.cold = 95.0
+	ice.freeze("knee")
+	await _wait(0.2)
+	check("冻太多：发抖，冻住的地方全化开", ice.shivers == 1 and ice.frozen.is_empty())
+	ice.add_fatigue(ice.fatigue_max())
+	await _wait(0.3)
+	check("魔力疲倦满：自动释放 → 释放后敏感（%.0f 秒）" % ice.sensitive_t, ice.releases == 1 and ice.sensitive_t > 10.0)
+	ice.face = 100.0
+	ice.frozen.erase("rwaist")
+	var f1 := ice.face
+	ice._strike("rwaist", "cap")
+	check("释放后敏感：表情掉得更快（%.0f → %.0f）" % [f1, ice.face], f1 - ice.face > IceSitShow.HIT_FACE * 1.5)
+	for i in 3:
+		ice.add_fatigue(ice.fatigue_max())
+		await _wait(0.3)
+	check("一节课释放超过 3 次：这节课重来（%d）" % ice.redos, ice.redos == 1 and ice.releases == 0)
+	ice.time_left = 0.05
+	await _advance_until(func(): return task.show is PantsTameShow, 10.0)
+	check("撑够时间 → 下课 → 第二课 驯裤", task.show is PantsTameShow)
+	var tame := task.show as PantsTameShow
+	await _wait(0.2)
+	tame.gesture = tame._gestures()[0]
+	tame.fake = {}
+	tame.left = 1.0
+	tame.press("W")
+	check("手势「抖」→ W 按住：听话度涨（%.0f）" % tame.obedience, tame.obedience > 0.0 and tame.rights == 1)
+	var ob := tame.obedience
+	tame.gesture = tame._gestures()[1]
+	tame.fake = {}
+	tame.left = 1.0
+	tame.press("W")
+	check("手势「并拢」却下了「按住」：小手造反挠她、听话度降", tame.wrongs == 1 and tame.obedience < ob)
+	tame.gesture = tame._gestures()[2]
+	tame.fake = tame._gestures()[0]
+	tame.left = 1.0
+	tame.press("W")
+	check("假手势（先比「抖」、其实是「张开」）照着假的下指令：算错", tame.wrongs == 2)
+	tame.obedience = tame.goal()
+	await _advance_until(func(): return DayClock.done(4, DayClock.AFTERNOON) and not Cutscene.is_playing() and not DayClock.passing, 40.0)
+	check("听话度满 → 出师 → 换回粉色公主 → 后天再来的过场 → 天黑", seen_cuts.has("after_d4_drill_done") and DayClock.slot() == DayClock.NIGHT
+		and GameState.player.character_id != "blue")
+	DrillShow.quiet = false
 
 
 # ------------------------------------------------------------------ 第 3 天起的委托
@@ -820,11 +968,6 @@ func _autoplay(ds: DanceShow, cond: Callable) -> void:
 # ------------------------------------------------------------------ 第 5 天早上：裁缝找漏风
 func _run_tailor() -> void:
 	print("-- 弥补任务：裁缝的试衣模特·找漏风")
-	GameState.pending_spawn = "from_town"
-	await main.change_level(Floors.scene("floor_06_after_house"))
-	await _wait(0.4)
-	await _talk("floor_06/after_house_objects", "bed", [0])
-	await _advance_until(func(): return DayClock.slot() == DayClock.NIGHT and not DayClock.passing, 15.0)
 	await _sleep_night()
 	check("睡到第 5 天早上", DayClock.day() == 5 and DayClock.slot() == DayClock.MORNING)
 	GameState.pending_spawn = "from_house"
@@ -950,6 +1093,141 @@ func _run_mine() -> void:
 	check("送到矿工营地 → 旧门的传闻 → 天黑", seen_cuts.has("after_d5_mine_done") and DayClock.slot() == DayClock.NIGHT)
 
 
+# ------------------------------------------------------------------ 第 6 天早上：陷阱验收
+func _run_inspect() -> void:
+	print("-- 弥补任务：陷阱验收")
+	await _sleep_night()
+	check("第 6 天早上：陷阱验收", DayClock.day() == 6 and DayClock.event() == "d6_inspect")
+	GameState.pending_spawn = "from_house"
+	await main.change_level(Floors.scene("floor_06_after"))
+	await _wait(1.0)
+	var mk := _node("Objective") as ObjectiveMarker
+	check("目标：东边的训练营（开了）", mk.text.contains("训练营") and GameState.has_flag(AfterStory.PROVING_OPEN))
+	GameState.vars.erase("task_inspect_rates")
+	GameState.vars.erase("task_inspect_tune")
+	GameState.pending_spawn = "from_town"
+	await main.change_level(Floors.scene("floor_06_after_proving"))
+	await _advance_until(func(): return _node("Task_d6_inspect") != null and (_node("Task_d6_inspect") as TaskInspect).started and not GameState.in_dialogue, 40.0)
+	var task := _node("Task_d6_inspect") as TaskInspect
+	check("进训练营 → 队员讲规矩的过场 → 五个陷阱踏板 + 三个辅助设施", task != null and seen_cuts.has("after_d6_inspect") and task._pads.size() == 8)
+	if task == null:
+		return
+	var tx := TaskInspect.data()
+	check("五个挠痒陷阱（羽毛帘 / 地洞挠挠手 / 脚趾分隔刷 / 单脚吊环架 / 跪台）、三个辅助设施，各有开场和挠法描写",
+		tx["stations"].size() == 5 and tx["aux"].size() == 3 and tx["stations"].values().all(func(s): return s["intro"].size() >= 3 and s["cap"].size() >= 3))
+	task.use_aux("soak")
+	await _advance_until(func(): return task.statuses.has("soaked") and not task._busy and not GameState.in_dialogue, 10.0)
+	check("泡脚盆：舒服、留下「泡软」（挠痒 ×%.1f）" % task.status_mul(), task.statuses.has("soaked") and task.status_mul() > 1.4)
+	task.use_aux("cool")
+	await _advance_until(func(): return task.statuses.has("cooled") and not task._busy and not GameState.in_dialogue, 10.0)
+	check("冷敷石板：清掉别的状态、敏感降低（×%.1f）" % task.status_mul(), not task.statuses.has("soaked") and task.status_mul() < 1.0)
+	# 体验：吊环架真的会挠（不自动挣开）
+	var p := GameState.player
+	p.laugh.clear()
+	var sh := InspectShow.new()
+	add_child(sh)
+	var res := {}
+	(func(): res.merge(await sh.play_station("toes", tx["stations"]["toes"], 1.5, 1.0, true))).call()
+	await _wait(1.5)
+	check("脚趾分隔刷：被夹住刷趾缝、闷笑上涨（%.0f%%）" % (p.laugh.ratio() * 100.0), p.laugh.value > 0.0 and sh.grabbed)
+	for i in InspectShow.ESC_TOES:
+		sh.press("J")
+	await _advance_until(func(): return not res.is_empty(), 5.0)
+	check("连按 J 挣开：返回刚才涨了多少（%.0f%%）" % (float(res.get("gain", 0.0)) * 100.0), bool(res.get("escaped", false)) and float(res.get("gain", 0.0)) > 0.0)
+	sh.queue_free()
+	p.laugh.set_value(p.laugh.max_value * 0.97)
+	var sh2 := InspectShow.new()
+	add_child(sh2)
+	var res2 := {}
+	(func(): res2.merge(await sh2.play_station("kneel", tx["stations"]["kneel"], 1.0, 1.3, true))).call()
+	await _advance_until(func(): return not res2.is_empty(), 8.0)
+	check("综合演练里笑满：算笑倒（任务会判失败）", bool(res2.get("laughed_out", false)))
+	sh2.queue_free()
+	p.laugh.clear()
+	# 评分：评对 / 评「太弱」加强 / 评「太强」再体验一次
+	InspectShow.auto_escape = true
+	TaskInspect.auto_rate = {"curtain": "weak", "holes": "weak", "toes": "strong", "hoist": "ok", "kneel": ["strong", "ok"]}
+	for id in TaskInspect.ORDER:
+		if id == "kneel":
+			break
+		task.run_station(id)
+		await _advance_until(func(): return task.rated.has(id) and not task._busy and not GameState.in_dialogue, 20.0)
+	check("评对的原样、评「太弱」的被加强（地洞 ×%.1f）、评错成「刚好」的按真实情况调（吊环 ×%.1f）" % [task.tune["holes"], task.tune["hoist"]],
+		task.tune["curtain"] == 1.0 and task.tune["holes"] > 1.0 and task.tune["toes"] == 1.0 and task.tune["hoist"] < 1.0)
+	task.run_station("kneel")
+	await _advance_until(func(): return DayClock.done(6, DayClock.MORNING) and not Cutscene.is_playing() and not DayClock.passing, 90.0)
+	check("跪台评「太强」→ 队长让再体验一次（%d）→ 五个都评完 → 综合演练 → 收尾 → 下午" % task.extra_runs if is_instance_valid(task) else "收尾",
+		seen_cuts.has("after_d6_inspect_done") and DayClock.slot() == DayClock.AFTERNOON)
+	InspectShow.auto_escape = false
+	TaskInspect.auto_rate = {}
+	GameState.player.laugh.clear()
+
+
+# ------------------------------------------------------------------ 第 6 天下午：特训第三课 + 考核
+func _run_drill2() -> void:
+	print("-- 蓝色公主的特训：第三课 借手、考核、学会技能")
+	DrillShow.quiet = true
+	GameState.pending_spawn = "from_town"
+	await main.change_level(Floors.scene("floor_06_after_drill"))
+	await _wait(0.8)
+	_go(Cutscene.cell_to_world([10, 7]))
+	await _advance_until(func(): return _node("Task_d6_drill") != null and (_node("Task_d6_drill") as TaskDrill).lesson == "hand" and not GameState.in_dialogue, 30.0)
+	var task := _node("Task_d6_drill") as TaskDrill
+	check("第 6 天：特训第三课（换成蓝色公主、障碍场的栅栏摆好）", task != null and GameState.player.character_id == "blue" and is_instance_valid(task._gate))
+	if task == null:
+		return
+	var blue := GameState.player
+	await _wait(0.2)
+	blue.global_position = Cutscene.cell_to_world(Vector2i(23, 5))
+	check("沟边按 E：小手抓住对岸把她拽过去", await task.use_hand() == "anchor" and task.crossed)
+	await _wait(0.6)
+	check("拽到对岸了", blue.global_position.x > Cutscene.cell_to_world(Vector2i(26, 0)).x)
+	blue.global_position = Cutscene.cell_to_world(Vector2i(29, 4))
+	task.obedience = 100.0
+	check("栅栏前按 E：小手拉下远处的拉杆，栅栏收起来", await task.use_hand() == "lever" and task.gate_open)
+	task.obedience = 10.0
+	await task.use_hand()
+	check("听话度太低时用：小手造反挠她", task.rebels == 1)
+	var r0 := task.raids
+	await task.raid()
+	check("粉色公主来捣乱", task.raids == r0 + 1)
+	blue.laugh.clear()
+	blue.global_position = Cutscene.cell_to_world(TaskDrill.GOAL)
+	await _advance_until(func(): return task.show is DrillExamShow, 15.0)
+	check("走到终点 → 第三课过关 → 考核开始", task.show is DrillExamShow)
+	var ex := task.show as DrillExamShow
+	await _wait(0.2)
+	ex.order_guard()
+	ex._strike("lthigh", "pink")
+	check("J 指挥小手挡下粉色公主的一下", ex.blocks == 1 and not ex.guard)
+	ex.burst()
+	await _wait(0.2)
+	check("U 千手解放：把她推开、之后小手挠自己", ex.bursts == 1 and ex.pushed_t > 0.0 and ex.backlash_t > 0.0)
+	ex.time_left = 0.05
+	await _advance_until(func(): return DayClock.done(6, DayClock.AFTERNOON) and not Cutscene.is_playing() and not DayClock.passing, 40.0)
+	check("撑过时间 → 及格 → 学会「冰封自制」和「千手解放」→ 第七天前夜的过场 → 天黑",
+		GameState.has_flag("drill_exam_passed") and PantsBurst.learned() and GameState.passives.has("ice_composure")
+		and seen_cuts.has("after_d6_drill_done") and DayClock.slot() == DayClock.NIGHT)
+	DrillShow.quiet = false
+	# 技能：战斗里也能用
+	var b := main.level.find_child("AfterBlue", true, false) as PlayableCharacter
+	if b == null:
+		for n in main.level.find_children("*", "PlayableCharacter", true, false):
+			if (n as PlayableCharacter).character_id == "blue":
+				b = n
+	var slime := (load("res://scenes/actors/monsters/slime.tscn") as PackedScene).instantiate() as Monster
+	main.level.get_node("Entities").add_child(slime)
+	slime.global_position = b.global_position + Vector2(30, 0)
+	await _wait(0.2)
+	var cast_ok := PantsBurst.cast(b)
+	await get_tree().process_frame
+	check("千手解放：放出来了（%s）、附近的怪定身（%s）、她自己挂上「小手收不回来」（%s）" % [cast_ok, slime.is_stunned(), b.buffs.has("pants_backlash")],
+		cast_ok and b.buffs.has("pants_backlash") and slime.is_stunned())
+	check("冷却中再放不出来", not PantsBurst.cast(b))
+	slime.queue_free()
+	check("冰封自制：蓝色公主的闷笑涨幅降低（laugh_gain %.2f）" % b.stat_add("laugh_gain"), b.stat_add("laugh_gain") <= -0.09)
+
+
 # ------------------------------------------------------------------ 第 7 天：修补狂欢图腾柱
 func _rest_to_next() -> void:
 	GameState.pending_spawn = "from_town"
@@ -963,10 +1241,7 @@ func _rest_to_next() -> void:
 func _run_totem() -> void:
 	print("-- 弥补任务：修补狂欢图腾柱")
 	await _sleep_night()
-	await _rest_to_next()
-	await _rest_to_next()
-	await _sleep_night()
-	check("睡到第 7 天早上（第 6 天没有剧情，休息过去）", DayClock.day() == 7 and DayClock.slot() == DayClock.MORNING)
+	check("睡到第 7 天早上", DayClock.day() == 7 and DayClock.slot() == DayClock.MORNING)
 	GameState.pending_spawn = "from_house"
 	await main.change_level(Floors.scene("floor_06_after"))
 	await _wait(1.0)

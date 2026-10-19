@@ -9,7 +9,8 @@ extends TrainingStage
 ##   闷笑满 = 笑出声（bursts +1、闷笑回到 40%，赎罪簿另外罚工时）；魔力疲倦满 = 自动释放魔法，队长「不符合管教，加时！」倒计时 +EXTRA。
 ##   倒计时到 0 = 过关；释放超过 FAINT_AFTER 次 = 笑晕（也算过关，结局过场不一样）。
 ## 演出：孩子登场、换人的应对、笑出声、魔力释放，都暂停示众（busy）在对话框里演一小段（data/after/stocks.json ← after_text/stocks.py：
-##   原来过场里的挠法描写和对话）；挠的过程中公主的反应用立绘旁的反应字（GameState.princess_reacted，不暂停）。
+##   原来过场里的挠法描写和对话）；挠的过程中公主的反应、换部位时的挠法描写都飘在舞台上人物旁边（不用画面下方的反应框）。
+##   应对选项不透露效果（不标状态名、不写数值，选完也不提示），规则只在这里：RESPONSES。
 ##   await play_show() → {bursts, releases, fainted, pleads_used}
 ## 测试：press("J") / plead(部位序号) / respond(id) / time_scale；auto_respond 让间隙自动选；quiet = true 不演对话（直接测数值）。
 
@@ -224,7 +225,7 @@ func plead(i: int) -> void:
 	_set_part(i)
 	var nar := str(text().get("narration", {}).get(str(tool["id"]), {}).get(str(part["id"]), ""))
 	if nar != "":
-		GameState.princess_reacted.emit(nar.trim_prefix("（").trim_suffix("）"), 2.0)
+		narrate(nar)
 
 
 ## 孩子挠完一段：暂停，问怎么应对。
@@ -241,10 +242,9 @@ func _start_respond() -> void:
 	var texts: Array = []
 	var opts: Array = sk.get("options", ["（装作没事）", "求、求求你们……", "哼！一点都不痒！"])
 	for i in RESPONSE_IDS.size():
-		texts.append("%s〔%s〕" % [opts[i], RESPONSES[RESPONSE_IDS[i]]["debuff"]])
+		texts.append(str(opts[i]))
 	if count_label:
-		count_label.add_theme_color_override("font_color", GOLD)
-		count_label.text = "　".join(RESPONSE_IDS.map(func(id): return "%s：%s" % [RESPONSES[id]["debuff"], RESPONSES[id]["desc"]]))
+		count_label.text = ""
 	var pick := "calm"
 	if auto_respond != "":
 		pick = auto_respond
@@ -273,7 +273,6 @@ func respond(id: String, sk := {}) -> void:
 		var pool: Array = text().get("generic", {}).get("replies", {}).get(id, [])
 		if not pool.is_empty():
 			lines = pool.pick_random()
-	pop(actors.get("princess"), "状态：%s（%s）" % [RESPONSES[id]["debuff"], RESPONSES[id]["desc"]], BAD, 1.6)
 	await _lines(lines)
 	await _next_kid()
 
@@ -314,7 +313,6 @@ func _tick(delta: float) -> void:
 		var live: Array = text().get("live", {}).get(str(part["id"]), [])
 		if not live.is_empty():
 			var line := str(live.pick_random())
-			GameState.princess_reacted.emit(line, 1.6)
 			say("princess", line)
 	_refresh_info()
 
@@ -407,7 +405,7 @@ func _refresh_info() -> void:
 	var lines := ["剩余 %d 秒" % ceili(maxf(time_left, 0.0)),
 		"%s·%s" % [tool.get("kid", ""), tool.get("name", "")],
 		"部位：%s" % part["name"],
-		"求情 ×%d　%s" % [pleads, (RESPONSES[debuff]["debuff"] if debuff != "" else "")],
+		"求情 ×%d" % pleads,
 		"笑出声 %d　释放 %d" % [bursts, releases]]
 	_info.text = "\n".join(lines)
 	if count_label and not responding:

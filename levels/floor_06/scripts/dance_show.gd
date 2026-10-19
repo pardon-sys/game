@@ -27,6 +27,7 @@ var _done := false
 var _info: Label
 var _scarf_t := SCARF_EVERY
 var _seed := 0
+var _last_partner := "host"
 
 
 static func text() -> Dictionary:
@@ -158,13 +159,14 @@ func _partner() -> String:
 
 func _miss_tickle() -> void:
 	var z := str(cur().get("zone", "waist"))
-	tickle(_partner(), z, rng.randf() < 0.12)
+	_last_partner = _partner()
+	tickle(_last_partner, z, rng.randf() < 0.12)
 	add_laugh(laugh_max() * MISS_LAUGH)
 	var caps: Array = cur().get("miss", [])
 	var tier := _tier()
 	var pool: Array = cur().get("react", {}).get(tier, ["……"])
 	if not caps.is_empty():
-		GameState.princess_reacted.emit(str(caps.pick_random()), 2.6)
+		narrate(str(caps.pick_random()))
 	say("princess", str(pool.pick_random()))
 
 
@@ -191,7 +193,7 @@ func _scarf() -> void:
 	var caps: Array = text().get("scarf", [])
 	var rs: Array = text().get("scarf_react", [])
 	if not caps.is_empty():
-		GameState.princess_reacted.emit(str(caps.pick_random()), 1.8)
+		narrate(str(caps.pick_random()), 1.8)
 	if not rs.is_empty():
 		say("princess", str(rs.pick_random()))
 

@@ -1,0 +1,84 @@
+{
+	"name": "第七天的前夜",
+	"letterbox": true,
+	"skippable": true,
+	"steps": [
+		{
+			"actions": [
+				{
+					"to": [
+						10,
+						7
+					],
+					"zoom": 1.0,
+					"time": 0.4,
+					"do": "camera"
+				}
+			],
+			"wait": 0.4
+		},
+		{
+			"speaker": "",
+			"text": "（走出训练室的时候，天已经黑了。两个人并排走着）"
+		},
+		{
+			"speaker": "公主",
+			"text": "……明天就是第七天了。",
+			"emotion": "sad"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……嗯。"
+		},
+		{
+			"speaker": "公主",
+			"text": "图腾柱修好，工时就清了。……然后呢？",
+			"emotion": "sad"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……然后，庆功宴。"
+		},
+		{
+			"speaker": "公主",
+			"text": "庆功宴之后呢？",
+			"emotion": "sad"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……之后，再说。"
+		},
+		{
+			"speaker": "",
+			"text": "（她没再说话。可是走到小屋门口的时候，她的小手——裤子上的小手——偷偷勾住了粉色公主的小指）"
+		},
+		{
+			"speaker": "公主",
+			"text": "……诶？",
+			"emotion": "surprise"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……不是我。是裤子。"
+		},
+		{
+			"speaker": "公主",
+			"text": "……嘿嘿。",
+			"emotion": "happy"
+		},
+		{
+			"actions": [
+				{
+					"reset": true,
+					"time": 0.4,
+					"do": "camera"
+				}
+			],
+			"wait": 0.4
+		}
+	]
+}

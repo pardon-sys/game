@@ -1,0 +1,196 @@
+{
+	"name": "特训失败：补课",
+	"cast": {
+		"blue": {
+			"kind": "npc:blue_princess",
+			"at": [
+				0,
+				8
+			],
+			"visual": "helpless_1",
+			"anim": "helpless",
+			"dir": "down"
+		},
+		"cap": {
+			"kind": "npc:captain",
+			"at": [
+				-26,
+				6
+			],
+			"dir": "right"
+		},
+		"pink": {
+			"kind": "npc:pink_princess",
+			"at": [
+				26,
+				6
+			],
+			"dir": "left"
+		}
+	},
+	"steps": [
+		{
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "fade_in"
+				},
+				{
+					"state": "giggle",
+					"do": "voice"
+				}
+			],
+			"wait": 0.5
+		},
+		{
+			"speaker": "保卫队队长",
+			"text": "……今天的课，没过。"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……再、来。"
+		},
+		{
+			"speaker": "保卫队队长",
+			"text": "再来之前——补课。"
+		},
+		{
+			"speaker": "公主",
+			"text": "补、补课？",
+			"emotion": "surprise"
+		},
+		{
+			"speaker": "保卫队队长",
+			"text": "你。右边。我，左边。……殿下的问题是不知道自己哪里最怕痒。今天帮她记清楚。"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……！？"
+		},
+		{
+			"speaker": "",
+			"text": "（队长的羽毛贴上左大腿，粉色公主的手指戳上右腰。两边同时开始）",
+			"actions": [
+				{
+					"who": "blue",
+					"by": "cap",
+					"zone": "thigh",
+					"fx": "feather",
+					"repeat": 8,
+					"interval": 0.2,
+					"do": "tickle"
+				},
+				{
+					"who": "blue",
+					"by": "pink",
+					"zone": "waist",
+					"fx": "hand",
+					"repeat": 8,
+					"interval": 0.2,
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……唔、唔……！……两、两边……"
+		},
+		{
+			"speaker": "保卫队队长",
+			"text": "大腿内侧。……记住了？"
+		},
+		{
+			"speaker": "公主",
+			"text": "腰也很怕哦！你看你看，一戳就缩！",
+			"actions": [
+				{
+					"who": "blue",
+					"by": "pink",
+					"zone": "waist",
+					"fx": "hand",
+					"repeat": 10,
+					"interval": 0.16,
+					"do": "tickle"
+				}
+			],
+			"emotion": "happy"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……噗。……哈……别、戳……"
+		},
+		{
+			"speaker": "保卫队队长",
+			"text": "膝盖窝。",
+			"actions": [
+				{
+					"who": "blue",
+					"by": "cap",
+					"zone": "thigh",
+					"fx": "feather",
+					"repeat": 10,
+					"interval": 0.16,
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……哈、哈……！"
+		},
+		{
+			"speaker": "",
+			"text": "（千手痒痒裤上的小手们也凑起了热闹，在屁股上「啪嗒啪嗒」地打起了拍子）",
+			"actions": [
+				{
+					"who": "blue",
+					"by": "pink",
+					"zone": "butt",
+					"fx": "hand",
+					"repeat": 12,
+					"interval": 0.14,
+					"do": "tickle"
+				},
+				{
+					"who": "blue",
+					"visual": "helpless_2",
+					"do": "pose"
+				}
+			]
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……哈哈……裤、裤子……也……叛、徒……"
+		},
+		{
+			"speaker": "公主",
+			"text": "她笑了！队长！她真的笑出声了！",
+			"emotion": "happy"
+		},
+		{
+			"speaker": "保卫队队长",
+			"text": "……嗯。笑出来了。"
+		},
+		{
+			"speaker": "保卫队队长",
+			"text": "……能笑出来，比硬撑好。……歇一会儿，重新上课。"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……哈……哈……（瘫在冰台上，把脸埋进胳膊里）"
+		},
+		{
+			"actions": [
+				{
+					"time": 0.6,
+					"do": "fade_out"
+				},
+				{
+					"state": "",
+					"do": "voice"
+				}
+			],
+			"wait": 0.7
+		}
+	]
+}

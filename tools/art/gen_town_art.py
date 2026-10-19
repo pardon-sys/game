@@ -1391,6 +1391,49 @@ def p_rail(slope=False):
     return img
 
 
+def p_graffiti():
+    """管壁上的旧涂鸦：两个手拉手的小女孩（一个卷发粉、一个直发蓝），石子划出来的白线，长了点苔藓。"""
+    img, d = canvas(24, 18)
+    line_c = (226, 222, 214, 230)
+    for cx, hair in ((7, (240, 160, 200, 230)), (17, (140, 180, 240, 230))):
+        d.ellipse((cx - 3, 2, cx + 3, 8), outline=line_c)
+        if cx == 7:
+            for k in range(3):
+                d.point((cx - 4, 3 + k * 2), fill=hair)
+                d.point((cx + 4, 3 + k * 2), fill=hair)
+        else:
+            d.line((cx - 3, 2, cx - 3, 7), fill=hair)
+            d.line((cx + 3, 2, cx + 3, 7), fill=hair)
+        d.polygon([(cx, 9), (cx - 3, 14), (cx + 3, 14)], outline=line_c)
+        d.line((cx - 1, 14, cx - 2, 17), fill=line_c)
+        d.line((cx + 1, 14, cx + 2, 17), fill=line_c)
+    d.line((9, 11, 15, 11), fill=line_c)       # 手拉手
+    for (x, y) in ((1, 15), (3, 16), (21, 1), (22, 3), (12, 16)):
+        d.point((x, y), fill=(90, 140, 80, 200))
+    return img
+
+
+def p_drain_grate():
+    """地上的排水口铁栅栏。"""
+    img, d = canvas(16, 12)
+    d.rectangle((1, 2, 14, 10), fill=(40, 40, 48, 255))
+    for x in range(3, 14, 3):
+        d.line((x, 2, x, 10), fill=(120, 120, 132, 255))
+    d.rectangle((1, 2, 14, 10), outline=(80, 80, 92, 255))
+    return add_outline(img)
+
+
+def p_drain_lever():
+    """排水管尽头的总闸：铁盒子 + 红色拉杆。"""
+    img, d = canvas(14, 22)
+    d.rectangle((2, 10, 11, 21), fill=(96, 100, 110, 255))
+    d.rectangle((2, 10, 11, 21), outline=(60, 62, 72, 255))
+    d.line((7, 11, 10, 2), fill=(150, 150, 160, 255), width=2)
+    d.ellipse((8, 0, 12, 4), fill=(220, 60, 70, 255))
+    d.rectangle((4, 14, 9, 16), fill=(230, 200, 80, 255))
+    return add_outline(img)
+
+
 def goat_frame(row, col):
     """蘑菇羊 32x32：小白羊，头上顶着一朵红底白点的蘑菇伞；row 0 下 / 1 左 / 2 右 / 3 上，col 1、3 迈步。"""
     img, d = canvas(32, 32)
@@ -1540,6 +1583,10 @@ def gen_props():
     # 七日赎罪：受损的矿道（加在最后）
     items.append(("rail", p_rail(), {"floor": True, "under": True}))
     items.append(("rail_slope", p_rail(True), {"floor": True, "under": True}))
+    # 七日赎罪：排水管（加在最后）
+    items.append(("graffiti", p_graffiti(), {"lift": 10}))
+    items.append(("drain_grate", p_drain_grate(), {"floor": True}))
+    items.append(("drain_lever", p_drain_lever(), {"body": [10, 4], "body_y": -2}))
     # 简单地按行排进 256 宽的图集
     x = y = row_h = 0
     meta = {}
