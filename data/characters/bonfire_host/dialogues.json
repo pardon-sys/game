@@ -1,0 +1,52 @@
+{
+	"_说明": "派对主人通用对话。",
+	"got_bronze_key": [
+		{
+			"speaker": "篝火派对的主人",
+			"text": "铜钥匙收好了，看看前面哪扇门需要它。",
+			"emotion": "normal"
+		}
+	],
+	"got_gold_key": [
+		{
+			"speaker": "篝火派对的主人",
+			"text": "金钥匙！下一段路有着落啦。",
+			"emotion": "normal"
+		}
+	],
+	"locked_bronze": [
+		{
+			"speaker": "篝火派对的主人",
+			"text": "这扇门要铜钥匙。",
+			"emotion": "normal"
+		}
+	],
+	"locked_gold": [
+		{
+			"speaker": "篝火派对的主人",
+			"text": "这扇门要金钥匙。",
+			"emotion": "normal"
+		}
+	],
+	"gate_closed": [
+		{
+			"speaker": "篝火派对的主人",
+			"text": "门还关着，先找找机关吧。",
+			"emotion": "normal"
+		}
+	],
+	"laugh_recover": [
+		{
+			"speaker": "篝火派对的主人",
+			"text": "呼……主持人回来啦！下一段重新起拍。",
+			"emotion": "normal"
+		}
+	],
+	"respawn": [
+		{
+			"speaker": "篝火派对的主人",
+			"text": "灯火还在，重整一下再来！",
+			"emotion": "normal"
+		}
+	]
+}

@@ -42,7 +42,7 @@ g = prop type=dungeon_gate action=talk:floor_06/war_gate#gate
 h = spawn id=from_siege
 i = npc id=captain dialogue=floor_06/war_captain wander=0 show_flag=f6w_arrived dir=down
 j = npc id=supervisor dialogue=floor_06/war_supervisor wander=0 dir=down
-k = npc id=bonfire_host dialogue=floor_06/war_bonfire_host wander=0
+k = bonfire_host dialogue=floor_06/war_bonfire_host wander=0
 l = npc id=granny dialogue=floor_06/war_granny wander=0 dir=right
 m = npc id=kid dialogue=floor_06/war_kid_tom wander=1
 n = npc id=kid dialogue=floor_06/war_kid_lily wander=1

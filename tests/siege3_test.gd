@@ -1222,7 +1222,7 @@ func _run_round7() -> void:
 		await _wait(0.05)
 		most += 1
 	check("冰法学徒 %d 个，%d 个在帮忙，每个 %.2f / 秒（蓝色公主是 1，一半），塔造好了（%s）" % [mages.size(), n_help, rate, pd.tower != null],
-		mages.size() == 3 and n_help >= 1 and (not same or absf(rate - 0.5) < 0.1) and pd.tower != null and need > 0.0)
+		mages.size() == 5 and n_help >= 1 and (not same or absf(rate - 0.5) < 0.1) and pd.tower != null and need > 0.0)
 	# 和蓝色公主一起放：更快
 	var pd2 := BuildPad.new()
 	d.entities().add_child(pd2)
@@ -1344,12 +1344,13 @@ func _run_round8() -> void:
 
 # ------------------------------------------------------------------ 第九轮
 func _run_round9() -> void:
-	print("-- 第九 / 十一 / 十三轮：盾甲螃蟹只吃冰晶共鸣和冰陨星台（25%）和粉色公主从背后的锤子")
+	print("-- 第九 / 十一 / 十三轮：盾甲螃蟹吃冰晶共鸣和冰陨星台全额伤害，以及粉色公主从背后的锤子")
 	await _clear()
 	_fight()
 	d.blue.set_controller(CharacterController.new())
 	var at := Vector2(d.gate_pos.x - 260.0, d.wall_foot_y() + 220.0)
 	var hurt := {}
+	var expected := {}
 	for kind in ["icicle", "icicle_back", "resonance", "meteor"]:
 		var crab := d.spawn("shield_crab", "", at) as ShieldCrab
 		crab.mind = null
@@ -1359,6 +1360,9 @@ func _run_round9() -> void:
 		# 塔在螃蟹上方（正面）；icicle_back 在下方（背后）
 		var t := _make_tower(kind.trim_suffix("_back"), at + Vector2(0, 90 if kind == "icicle_back" else -90))
 		t.level = 1
+		if kind in ["resonance", "meteor"]:
+			var base := float(t.p("damage", 2 if kind == "resonance" else 4)) * t._town("tower_dmg")
+			expected[kind] = [int(floorf(base)), int(ceilf(base))]
 		var hp0 := crab.health.hp
 		if kind.begins_with("icicle"):
 			for i in 3:
@@ -1397,8 +1401,8 @@ func _run_round9() -> void:
 		hits[who] = hp1 - crab2.health.hp
 		c.global_position = keep
 	crab2.queue_free()
-	check("盾甲螃蟹：冰锥正面 %d / 背后 %d 打不动，陨石只掉 %d、冰晶共鸣只掉 %d；粉色公主正面 %d、背后 %d，蓝色公主 %d" % [hurt["icicle"], hurt["icicle_back"], hurt["meteor"], hurt["resonance"], hits["pink_front"], hits["pink_back"], hits["blue"]],
-		hurt["icicle"] == 0 and hurt["icicle_back"] == 0 and hurt["meteor"] >= 1 and hurt["meteor"] <= 3 and hurt["resonance"] >= 1 and hurt["resonance"] <= 2
+	check("盾甲螃蟹：冰锥正面 %d / 背后 %d 打不动，陨石全额 %d、冰晶共鸣全额 %d；粉色公主正面 %d、背后 %d，蓝色公主 %d" % [hurt["icicle"], hurt["icicle_back"], hurt["meteor"], hurt["resonance"], hits["pink_front"], hits["pink_back"], hits["blue"]],
+		hurt["icicle"] == 0 and hurt["icicle_back"] == 0 and hurt["meteor"] in expected["meteor"] and hurt["resonance"] in expected["resonance"]
 		and hits["pink_front"] == 0 and hits["pink_back"] > 0 and hits["blue"] == 0)
 	d.blue.set_controller(d._make_ai(d.blue))
 
@@ -1618,11 +1622,11 @@ func _run_round11() -> void:
 	var pad := tw.pad
 	var cart := d.spawn("cart", "", Vector2(lane_x, d.wall_foot_y() + 300.0)) as SiegeCart
 	var wcart: WeakRef = weakref(cart)
-	await _until(func(): return wcart.get_ref() == null or (wcart.get_ref() as SiegeCart).smashed > 0, 8.0)
-	var smashed := cart.smashed if is_instance_valid(cart) else 0
+	await _until(func(): return wcart.get_ref() == null or (wcart.get_ref() as SiegeCart).tower_hits > 0, 8.0)
+	var smashed := cart.tower_hits if is_instance_valid(cart) else 0
 	await _wait(0.2)
 	# 第十一轮起撞塔后先晕 SMASH_DAZE 秒（第十二轮单独测），晕完再冲
-	ok["攻城车撞碎冰塔（%d）、基座还在、车先晕住再冲" % smashed] = smashed == 1 and not is_instance_valid(tw) and is_instance_valid(pad) \
+	ok["攻城车扣塔25%（%d次）、基座还在、车先晕住再冲" % smashed] = smashed == 1 and is_instance_valid(tw) and tw.health.hp == tw.health.max_hp - ceili(tw.health.max_hp * 0.25) and is_instance_valid(pad) \
 		and (not is_instance_valid(cart) or cart._phase in ["dazed", "reaim", "warn2", "charge", "done"])
 	if is_instance_valid(pad):
 		pad.queue_free()
@@ -1699,12 +1703,12 @@ func _run_round12() -> void:
 	for old_tower in get_tree().get_nodes_in_group("siege_tower"):
 		old_tower.queue_free()
 	await get_tree().process_frame
-	# 攻城车撞碎冰塔后晕 3 秒，不冲
+	# 攻城车撞塔后晕 3 秒，不冲
 	var lane_x := home.x + 260.0
 	var tw := _make_tower("icicle", Vector2(lane_x, d.wall_foot_y() + 140.0))
 	var cart := d.spawn("cart", "", Vector2(lane_x, d.wall_foot_y() + 300.0)) as SiegeCart
 	p.global_position = home + Vector2(-300, 200)
-	await _until(func(): return not is_instance_valid(cart) or cart.smashed > 0, 8.0)
+	await _until(func(): return not is_instance_valid(cart) or cart.tower_hits > 0, 8.0)
 	var dazed := is_instance_valid(cart) and cart._phase == "dazed"
 	var y0 := cart.global_position.y if is_instance_valid(cart) else 0.0
 	await _wait(2.0)

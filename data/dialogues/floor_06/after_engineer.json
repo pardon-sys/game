@@ -3,6 +3,18 @@
 	"entries": [
 		{
 			"if": {
+				"flag": "errand_gate_chain_open"
+			},
+			"node": "errand_gate_chain"
+		},
+		{
+			"if": {
+				"flag": "errand_gate_chain_active"
+			},
+			"node": "errand_gate_chain_active"
+		},
+		{
+			"if": {
 				"flag": "errand_ladder_open"
 			},
 			"node": "errand_ladder"
@@ -12,6 +24,13 @@
 				"flag": "errand_ladder_active"
 			},
 			"node": "errand_ladder_active"
+		},
+		{
+			"if": {
+				"flag": "errand_gate_chain_done",
+				"not": "dlg_floor_06/after_engineer_errand_gate_chain_done"
+			},
+			"node": "errand_gate_chain_done"
 		},
 		{
 			"if": {
@@ -180,6 +199,64 @@
 				},
 				{
 					"text": "……不准提脚！",
+					"speaker": "公主",
+					"emotion": "angry"
+				}
+			]
+		},
+		"errand_gate_chain": {
+			"lines": [
+				{
+					"text": "城门能通行了，辅助链条却还挂在轮子外。想再抵三工时吗？",
+					"speaker": "工匠"
+				},
+				{
+					"text": "得有人仰面钻进检修槽里穿链，我在外面报位置。门已经用支架固定好了。",
+					"speaker": "工匠"
+				}
+			],
+			"prompt": "帮工匠重新穿好辅助链条？",
+			"choices": [
+				{
+					"text": "好，我来穿！",
+					"next": "errand_gate_chain_accept"
+				},
+				{
+					"text": "等一下再说",
+					"next": ""
+				}
+			]
+		},
+		"errand_gate_chain_accept": {
+			"lines": [
+				{
+					"text": "去城门内侧的检修槽。对了——鞋得脱，槽口卡鞋。做过的部分会锁住，中途回来也能接着做。",
+					"speaker": "工匠"
+				}
+			],
+			"set": {
+				"vars": {
+					"errand_req": "gate_chain"
+				},
+				"call": "errand_start"
+			}
+		},
+		"errand_gate_chain_active": {
+			"lines": [
+				{
+					"text": "城门内侧，检修板旁边。我的工具都摆好了。",
+					"speaker": "工匠"
+				}
+			]
+		},
+		"errand_gate_chain_done": {
+			"lines": [
+				{
+					"text": "辅助链条转得顺。你那双脚，报位置比我还准。",
+					"speaker": "工匠"
+				},
+				{
+					"text": "不许再提我的脚！",
 					"speaker": "公主",
 					"emotion": "angry"
 				}

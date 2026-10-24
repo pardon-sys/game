@@ -66,7 +66,7 @@ func _setup() -> void:
 		camera.enabled = false
 	var it := get_node_or_null("Talk") as Interactable
 	if it:
-		it.interacted.connect(func(p: Node): talk(p))
+		if not it.interacted.is_connected(talk): it.interacted.connect(talk)
 	GameState.flag_changed.connect(func(_f: String): _refresh_visibility())
 	_refresh_visibility()
 
@@ -155,6 +155,26 @@ func start_following(talk_file := "") -> void:
 	if it:
 		it.enabled = false
 	super(talk_file)
+	_refresh_visibility()
+
+
+## 从同行切回指定区域闲逛；只配置角色行为，不包含日程或剧情判断。
+func start_wandering(talk_file: String, home: Vector2, radius: int) -> void:
+	if is_controlled(): return
+	follow = false
+	partner_talk = ""
+	ai = true
+	dialogue = talk_file
+	show_flag = ""
+	hide_flags.clear()
+	var wander := controller as WanderController
+	if wander == null:
+		wander = WanderController.new()
+		set_controller(wander)
+	wander.configure_area(home, radius)
+	var it := get_node_or_null("Talk") as Interactable
+	if it and not it.interacted.is_connected(talk): it.interacted.connect(talk)
+	_refresh_partner_area()
 	_refresh_visibility()
 
 

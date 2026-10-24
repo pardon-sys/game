@@ -725,6 +725,44 @@
 		},
 		"exam": {
 			"name": "考核：反过来的玩闹",
+			"spots": [
+				{
+					"id": "lwaist",
+					"name": "左腰",
+					"key": "Q",
+					"zone": "waist"
+				},
+				{
+					"id": "butt",
+					"name": "屁股",
+					"key": "W",
+					"zone": "butt"
+				},
+				{
+					"id": "rwaist",
+					"name": "右腰",
+					"key": "E",
+					"zone": "waist"
+				},
+				{
+					"id": "lthigh",
+					"name": "左大腿",
+					"key": "A",
+					"zone": "thigh"
+				},
+				{
+					"id": "knee",
+					"name": "膝盖窝",
+					"key": "S",
+					"zone": "thigh"
+				},
+				{
+					"id": "rthigh",
+					"name": "右大腿",
+					"key": "D",
+					"zone": "thigh"
+				}
+			],
 			"intro": [
 				{
 					"speaker": "保卫队队长",

@@ -1031,7 +1031,7 @@ func partner_character() -> String:
 	for a in actors.values():
 		var w := a as CGActor
 		if w and w.kind == "npc_princess" and not _is_hero_actor(w):
-			return "blue" if w.reaction_key == "blue_princess" else "pink"
+			return str(Dialogue.NPC_CHARACTER.get(w.reaction_key, ""))
 	return ""
 
 
@@ -1042,5 +1042,4 @@ func _is_hero_actor(w: CGActor) -> bool:
 		return false
 	if w.kind == "princess":
 		return true
-	var hero_id := "blue_princess" if character_id == "blue" else "pink_princess"
-	return w.kind == "npc_princess" and w.reaction_key == hero_id
+	return w.kind == "npc_princess" and Dialogue.NPC_CHARACTER.get(w.reaction_key, "") == character_id

@@ -44,11 +44,11 @@ static func make_princess(actor_id: String, who := "") -> CGActor:
 	a.sprite = Sprite2D.new()
 	a.sprite.name = "Sprite"
 	a.sprite.texture = PRINCESS_TEX
-	# 操控的是蓝色公主时，演出里的「公主」用她的精灵图（同样的行列格式）
-	if who == "blue":
-		var blue_sheet := str(Dialogue.npcs.get("blue_princess", {}).get("sprite", ""))
-		if ResourceLoader.exists(blue_sheet):
-			a.sprite.texture = load(blue_sheet)
+	# 按原人物映射选择当前角色的精灵图，不把第三角色回退成粉色。
+	for npc_id in Dialogue.NPC_CHARACTER:
+		if Dialogue.NPC_CHARACTER[npc_id] != who: continue
+		var own_sheet := str(Dialogue.npcs.get(npc_id, {}).get("sprite", ""))
+		if ResourceLoader.exists(own_sheet): a.sprite.texture = load(own_sheet)
 	a.sprite.hframes = 16
 	a.sprite.vframes = GameState.EMOTIONS.size()
 	a.sprite.offset = Vector2(0, -16)
@@ -58,6 +58,18 @@ static func make_princess(actor_id: String, who := "") -> CGActor:
 	a.animator = SpriteSheetAnimator.new()
 	a.animator.name = "Animator"
 	a.animator.config = cfg
+	# 魔法贴图取角色场景的既有Animator覆盖，不增加另一套资源配置字段。
+	for npc_id in Dialogue.NPC_CHARACTER:
+		if Dialogue.NPC_CHARACTER[npc_id] != who: continue
+		var path := str(Dialogue.npcs.get(npc_id, {}).get("scene", ""))
+		if path != "" and ResourceLoader.exists(path):
+			var inst: Node = load(path).instantiate()
+			var source := inst.get_node_or_null("Animator") as SpriteSheetAnimator
+			if source:
+				a.animator.config = source.config.duplicate(true)
+				a.animator.config.row_names.assign(GameState.VISUALS)
+				a.animator.texture_overrides = source.texture_overrides.duplicate()
+			inst.free()
 	a.add_child(a.animator)
 	a.animator.play("helpless")
 	return a
@@ -122,11 +134,12 @@ static func atlas_region(path: String, key: String) -> Rect2:
 static func make_npc(actor_id: String, npc_id: String, info: Dictionary) -> CGActor:
 	var a: CGActor
 	if info.get("princess_sheet", false):
-		a = make_princess(actor_id)
+		a = make_princess(actor_id, str(Dialogue.NPC_CHARACTER.get(npc_id, Characters.current())))
 		if ResourceLoader.exists(str(info.get("sprite", ""))):
 			a.sprite.texture = load(str(info["sprite"]))
 		a.kind = "npc_princess"
 		a.reaction_key = npc_id
+		a.set_pose("normal", "idle")
 		return a
 	a = CGActor.new()
 	a.id = actor_id

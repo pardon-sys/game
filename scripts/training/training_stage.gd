@@ -637,6 +637,8 @@ func _build_ui() -> void:
 	flash_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	frame.add_child(flash_rect)
 	overlay = Control.new()
+	overlay.z_as_relative = false
+	overlay.z_index = 100 # 反应／台词绘制在演员、特效和UI装饰上方。
 	overlay.size = FRAME_RECT.size
 	overlay.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	frame.add_child(overlay)

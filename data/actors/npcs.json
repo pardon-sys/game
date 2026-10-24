@@ -17,13 +17,21 @@
 		},
 		"bonfire_host": {
 			"name": "篝火派对的主人",
-			"sprite": "res://assets/generated/npcs/bonfire_host.png",
+			"sprite": "res://assets/generated/bonfire_host.png",
 			"portrait": "res://assets/generated/npc_portraits/bonfire_host.png",
 			"light": [
 				1.0,
 				0.72,
 				0.4
-			]
+			],
+			"portrait_set": "bonfire_host",
+			"princess_sheet": true,
+			"scene": "res://scenes/actors/playable/bonfire_host.tscn",
+			"profile": {
+				"age": "成年",
+				"personality": "热情从容的主持人，受扰后努力圆场，忍笑到手忙脚乱。",
+				"weak": "腋下与腰侧"
+			}
 		},
 		"blue_princess": {
 			"name": "蓝色的公主",

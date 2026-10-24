@@ -7,7 +7,7 @@ extends Actor
 ##   shield  盾兵：站到受伤最重的那段城墙下，嘲讽 TAUNT 像素内的怪（lure：怪物优先挠他）；攻城车撞上来会被他挡下一次（他撤退）。
 ##   medic   医护兵：跟着粉色公主 / 受伤的士兵，每 MEDIC_GAP 秒给范围内的人降闷笑、回血；也能和长矛兵一起抬蓝色公主。
 ##   artisan 工匠：去修城墙最破的一段、修受伤的冰塔；没得修时去拆附近敌塔地基的搭建进度。
-##   mage    冰法学徒：去最近的「等冰光」的冰塔基座旁边帮忙放冰光（效率是蓝色公主的一半，BuildPad.HELPER_RATE）；没活时在岗位附近转。
+##   mage    冰吟诵学徒：去最近的「等冰光」的冰塔基座旁边帮忙放冰光（效率是蓝色公主的一半，BuildPad.HELPER_RATE）；没活时在岗位附近转。
 ## 怪物会挠士兵（他们是怪物的目标之一：SiegeDirector.extra_targets；血量 = 还能撑多久），被挠时头顶冒气泡；
 ## 撑不住了（血量到 RETREAT_HP 以下 / 归零）就跑回城门，RETURN_TIME 秒后满血回到岗位，不会真的倒下。
 ## 抬蓝色公主：SiegeDirector.call_bearers 叫两个长矛兵 / 医护兵（她倒在墙下）/ 一个弓箭手（倒在墙顶）过去：
@@ -24,11 +24,11 @@ const REPAIR_RATE := 4.0
 const RETREAT_HP := 1
 const RETURN_TIME := 20.0
 const HELP_TIME := 6.0
-## 冰法学徒离开帮忙的位置这么远才算走开
+## 冰吟诵学徒离开帮忙的位置这么远才算走开
 const MAGE_LEAVE := 16.0
 const LINES := ["哈哈别挠了！", "痒、痒——站住！", "哈哈哈……顶住！", "别挠胳肢窝……哈哈！"]
-const ROLE_NAMES := {"spear": "长矛兵", "archer": "弓箭手", "shield": "盾兵", "medic": "医护兵", "artisan": "工匠", "mage": "冰法学徒"}
-const HP := {"spear": 8, "archer": 5, "shield": 14, "medic": 5, "artisan": 6, "mage": 5}
+const ROLE_NAMES := {"spear": "长矛兵", "archer": "弓箭手", "shield": "盾兵", "medic": "医护兵", "artisan": "工匠", "mage": "冰吟诵学徒", "builder": "冰筑工匠"}
+const HP := {"spear": 8, "archer": 5, "shield": 14, "medic": 5, "artisan": 6, "mage": 5, "builder": 7}
 const ART_DIR := "res://assets/generated/siege/"
 
 @export var role := "spear"
@@ -50,6 +50,7 @@ var _help := 0.0
 var _retreat_tw: Tween
 var _job_t := 0.0
 var _job: Variant = null
+var builder: SiegeBuilder
 
 
 func _setup() -> void:
@@ -83,6 +84,7 @@ func _setup() -> void:
 		lure = TAUNT
 	post = global_position
 	_wander_to = post
+	if role == "builder": builder = SiegeBuilder.new(self)
 
 
 func _town(key: String) -> float:
@@ -126,6 +128,7 @@ func _retreat() -> void:
 	if retreating:
 		return
 	retreating = true
+	_leave_build()
 	_drop_carry()
 	SpeechBubble.say(self, "撑、撑不住了……先撤！", 26.0, 1.4)
 	var d: Node = director
@@ -145,6 +148,8 @@ func _retreat() -> void:
 
 ## 这一波失败重来：满血、回岗位、不再撤退。
 func reset_post() -> void:
+	_leave_build()
+	if builder: builder.reset()
 	if _retreat_tw and _retreat_tw.is_valid():
 		_retreat_tw.kill()
 	_drop_carry()
@@ -156,6 +161,9 @@ func reset_post() -> void:
 
 
 func _tick(delta: float) -> void:
+	if SiegeTools.paused():
+		velocity = Vector2.ZERO
+		return
 	_t += delta
 	_cd -= delta
 	refresh_max_hp()
@@ -173,6 +181,7 @@ func _tick(delta: float) -> void:
 			"medic": _medic(delta)
 			"artisan": _artisan(delta)
 			"mage": _mage(delta)
+			"builder": builder.tick(delta)
 	# 速度加成乘在这一帧算出来的速度上（先限一下长度：有的分支沿用上一帧的速度，不能越乘越大）
 	velocity = velocity.limit_length(SPEED * 1.6) * stat_mul("speed")
 	move_with_push()
@@ -386,8 +395,12 @@ func _work() -> Node2D:
 	return null
 
 
-## 冰法学徒：走到最近的等冰光的基座旁边（左右两个位置），站定后帮忙放冰光；基座造好 / 没人要了就回去。
+## 冰吟诵学徒：走到最近的等冰光的基座旁边（左右两个位置），站定后帮忙放冰光；基座造好 / 没人要了就回去。
 func _mage(delta: float) -> void:
+	if not can_build():
+		_leave_build()
+		velocity = Vector2.ZERO
+		return
 	var pad: BuildPad = null
 	if is_instance_valid(_job) and _job is BuildPad:   # 先判断还在不在（释放了的对象不能用 is）
 		pad = _job
@@ -420,6 +433,23 @@ func _mage(delta: float) -> void:
 	pad.helper_join(self)
 	if randf() < delta * 4.0:
 		Fx.burst(get_parent(), global_position + Vector2(0, -20), "crystal", 1, 10.0, 0.4, Vector2(0, -10), Color(0.7, 0.9, 1.0))
+
+
+func can_build() -> bool:
+	return is_alive() and is_physics_processing() and stat_mul("speed") > 0.0 and (status == null or not status.is_immobile())
+
+
+func build_rate() -> float:
+	return 1.0 if role == "builder" else BuildPad.HELPER_RATE
+
+
+func _leave_build() -> void:
+	if is_instance_valid(_job) and _job is BuildPad: _job.helper_leave(self)
+	_job = null
+
+
+func _exit_tree() -> void:
+	_leave_build()
 
 
 ## 最近的、还有空位的等冰光的基座。

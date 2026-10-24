@@ -3,6 +3,25 @@
 	"entries": [
 		{
 			"if": {
+				"flag": "errand_sifting_open"
+			},
+			"node": "errand_sifting"
+		},
+		{
+			"if": {
+				"flag": "errand_sifting_active"
+			},
+			"node": "errand_sifting_active"
+		},
+		{
+			"if": {
+				"flag": "errand_sifting_done",
+				"not": "dlg_floor_06/after_pharm_errand_sifting_done"
+			},
+			"node": "errand_sifting_done"
+		},
+		{
+			"if": {
 				"var": {
 					"after_day": [
 						"==",
@@ -31,6 +50,55 @@
 				},
 				{
 					"text": "……不过，都要拿工时来换哦。呵呵。"
+				}
+			]
+		},
+		"errand_sifting": {
+			"lines": [
+				{
+					"text": "工房补货，晒好的叶片要筛松再风选。到门外的晒架帮帮忙？算三工时。",
+					"speaker": "药剂师奶奶"
+				}
+			],
+			"prompt": "接下这个委托？",
+			"choices": [
+				{
+					"text": "我来！",
+					"next": "errand_sifting_accept"
+				},
+				{
+					"text": "等一下再说",
+					"next": ""
+				}
+			]
+		},
+		"errand_sifting_accept": {
+			"lines": [
+				{
+					"text": "门外晒架的风扇已经备好。听拍子筛松，再看叶片图标调风向，最后分三袋。",
+					"speaker": "药剂师奶奶"
+				}
+			],
+			"set": {
+				"vars": {
+					"errand_req": "sifting"
+				},
+				"call": "errand_start"
+			}
+		},
+		"errand_sifting_active": {
+			"lines": [
+				{
+					"text": "工房门外晒架，不在药锅旁边。",
+					"speaker": "药剂师奶奶"
+				}
+			]
+		},
+		"errand_sifting_done": {
+			"lines": [
+				{
+					"text": "三袋都齐了，标签也没串。明天补货，少不了你这一份。",
+					"speaker": "药剂师奶奶"
 				}
 			]
 		}

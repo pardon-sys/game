@@ -37,6 +37,13 @@ static func is_active(id: String) -> bool:
 	return GameState.has_flag("errand_%s_active" % id)
 
 
+## 可选前置委托；旧数据缺省无前置，开放提示和接取入口使用同一判断。
+static func prerequisites_met(id: String) -> bool:
+	for required in info(id).get("requires", []):
+		if not is_done(str(required)): return false
+	return true
+
+
 ## 正在做的委托（没有返回 ""）。
 static func active() -> String:
 	for id in ids():
@@ -47,7 +54,7 @@ static func active() -> String:
 
 ## 现在能不能接（不算「已经有别的委托在做」）。
 static func is_open(id: String) -> bool:
-	if not PenanceBook.started() or is_done(id) or is_active(id) or DayClock.slot() == DayClock.NIGHT or GameState.has_flag(AfterStory.TASK_FLAG):
+	if not PenanceBook.started() or is_done(id) or is_active(id) or not prerequisites_met(id) or DayClock.slot() == DayClock.NIGHT or GameState.has_flag(AfterStory.TASK_FLAG):
 		return false
 	var from: Array = info(id).get("from", [99, 0])
 	return DayClock.day() * 3 + DayClock.slot() >= int(from[0]) * 3 + int(from[1])
@@ -65,7 +72,7 @@ static func refresh() -> void:
 
 
 static func start(id: String) -> void:
-	if info(id).is_empty() or active() != "":
+	if info(id).is_empty() or active() != "" or not prerequisites_met(id) or is_done(id):
 		return
 	GameState.set_flag("errand_%s_active" % id)
 	refresh()
@@ -107,12 +114,22 @@ static func objective(floor_id: String) -> Dictionary:
 ## 正在做的委托的实时状态（目标提示下面一行）
 static func status_text() -> String:
 	match active():
+		"lamp_calibration":
+			return str(LampCalibrationShow.data()["count"]) % [LampCalibrationShow.saved_step(), LampCalibrationShow.TOTAL]
+		"canopy":
+			return str(CanopyShow.data()["count"]) % [CanopyShow.saved_step(), CanopyShow.TOTAL]
+		"sifting":
+			return str(SiftingShow.data()["count"]) % [SiftingShow.saved_step(), SiftingShow.TOTAL]
 		"cookies":
 			return "篮子里的饼干：%d 块" % int(GameState.vars.get("errand_cookies_left", 0))
 		"apples":
 			return str(GameState.vars.get("errand_apples_text", ""))
 		"goats":
 			return str(GameState.vars.get("errand_goats_text", ""))
+		"gate_chain":
+			return str(GateChainShow.text()["status"]) % GateChainShow.saved_step()
+		"shearing":
+			return str(ShearingShow.text()["status"]) % ShearingShow.saved_step()
 	return ""
 
 

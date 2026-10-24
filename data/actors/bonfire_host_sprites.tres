@@ -1,0 +1,24 @@
+[gd_resource type="Resource" script_class="SpriteSheetConfig" format=3 ]
+
+[ext_resource type="Script" uid="uid://b48i2hkkpgsqn" path="res://scripts/components/sprite_sheet_config.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+directions = {"down": 0, "left": 4, "right": 8, "up": 12}
+animations = {
+"idle": {"fps": 1.0, "frames": [0]},
+"walk": {"fps": 9.0, "frames": [0, 1, 2, 3]},
+"giggle": {"fps": 6.0, "frames": [0, 1, 2, 3]},
+"helpless": {"fps": 6.0, "frames": [0, 1, 2, 3]},
+"grabbed": {"fps": 10.0, "frames": [0, 1, 2, 3], "shake": 1.0},
+"attack": {"sheet": "ribbon", "fps": 10.0, "frames": [0, 1, 2], "loop": false},
+"dash": {"fps": 12.0, "frames": [1, 3]},
+"hurt": {"fps": 1.0, "frames": [0]},
+"faint": {"fps": 1.0, "frames": [0], "loop": false},
+"channel": {"sheet": "magic", "frames": [0, 1, 2, 3, 4, 5], "progress": true, "directional": false},
+"cast": {"sheet": "magic", "frames": [0, 1, 2, 3, 4, 5], "fps": 12.0, "loop": false, "directional": false}
+}
+sheets = {
+"ribbon": {"texture":"res://assets/generated/bonfire_host_attack.png", "hframes":12, "vframes":11, "offset":Vector2(0,-16), "directions":{"down":0,"left":3,"right":6,"up":9}},
+"magic": {"texture": "res://assets/generated/princess_magic.png", "hframes": 6, "vframes": 6, "offset": Vector2(0, -24), "directions": {"down": 0}, "row_names": ["chant", "burst", "damaged_chant", "damaged_giggle_chant", "damaged_burst", "damaged_giggle_burst"]}
+}

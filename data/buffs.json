@@ -23,7 +23,8 @@
 		"attack": "mul",
 		"magic_cd": "mul",
 		"laugh_decay": "add",
-		"struggle": "add"
+		"struggle": "add",
+		"damage_dealt": "mul"
 	},
 	"buffs": {
 		"strength": {
@@ -456,6 +457,30 @@
 				"speed": 0.7
 			},
 			"desc": "千手解放的副作用：小手转过来挠自己，走得慢、闷笑一直涨。"
+		},
+		"festival_ally": {
+			"name": "祭典鼓舞",
+			"icon": 23,
+			"debuff": false,
+			"duration": 0.3,
+			"max_stacks": 1,
+			"modifiers": {
+				"speed": 1.2,
+				"damage_dealt": 1.4
+			},
+			"desc": "移速+20%，普通攻击及伤害魔法+40%。"
+		},
+		"festival_enemy": {
+			"name": "祭典狂热",
+			"icon": 24,
+			"debuff": false,
+			"duration": 0.3,
+			"max_stacks": 1,
+			"modifiers": {
+				"speed": 1.2,
+				"tickle_power": 1.35
+			},
+			"desc": "移速+20%，挠痒强度+35%。"
 		}
 	}
 }

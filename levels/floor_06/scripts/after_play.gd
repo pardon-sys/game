@@ -1,10 +1,11 @@
 class_name AfterPlay
 extends RefCounted
-## 两位公主的玩闹（七日赎罪的小日常）：和跟着的蓝色公主说话选「逗她笑一笑」（对话 call after_play）。
+## 两位公主的玩闹（七日赎罪的小日常）：和蓝色公主说话选「逗她笑一笑」（对话 call after_play）。
 ##   粉色公主想让寡言的她多笑笑；蓝色公主想躲，千手痒痒裤的小手却按住了她的胳膊，只能任她摆布。
 ##   最多 TRIES 次：选部位（腰 / 大腿 / 屁股 / 膝盖窝）。今天的弱点（weak_spot，按天变）以外的部位她还忍得住，
 ##   台词会透露离弱点远近；挠中弱点 → 节奏连击（KeySequenceQTE，按 1~4）→ 成功就破功大笑。
-##   每天一次（vars.after_play_day）；成功 blue_bond +1（关系值，后面的台词读它）。
+##   失败可重试，当天获胜后不再重玩；首次获胜blue_bond+1并开放当天邀请同行。
+##   存档：after_play_day尝试日期、after_play_win_day获胜日期、after_play_bond_day奖励日期。
 ##   台词在 data/after/play.json（after_text/play.py）。
 ## 测试：auto_qte = true / false 跳过连击直接给结果；auto_picks = [部位序号…] 依次选。
 
@@ -17,6 +18,28 @@ static var auto_qte: Variant = null
 static var auto_picks: Array = []
 static var running := false
 static var _data := {}
+static var quiet := false # 专项只跳过台词，仍走实际选点／连击／结算。
+
+
+static func won_today() -> bool:
+	return int(GameState.vars.get("after_play_win_day", 0)) == DayClock.day()
+
+
+## 旧记录无法判断当天是否赢过；允许重试，但当天不补发不确定的旧关系奖励。
+static func _migrate_reward() -> void:
+	if not GameState.vars.has("after_play_bond_day"):
+		GameState.vars["after_play_bond_day"] = int(GameState.vars.get("after_play_day", 0))
+
+
+static func settle(won: bool) -> void:
+	_migrate_reward()
+	GameState.vars["after_play_day"] = DayClock.day()
+	if not won: return
+	GameState.vars["after_play_win_day"] = DayClock.day()
+	GameState.set_flag("after_blue_can_follow")
+	if int(GameState.vars.get("after_play_bond_day", 0)) != DayClock.day():
+		GameState.vars["after_play_bond_day"] = DayClock.day()
+		GameState.vars["blue_bond"] = int(GameState.vars.get("blue_bond", 0)) + 1
 
 
 static func data() -> Dictionary:
@@ -35,14 +58,16 @@ static func played_today() -> bool:
 	return int(GameState.vars.get("after_play_day", 0)) == DayClock.day()
 
 
-static func run() -> void:
+static func run() -> bool:
 	if running:
-		return
+		return false
 	await TrainingDB.wait_dialogue_free()
-	if played_today():
+	_migrate_reward()
+	if won_today():
 		await _say(data().get("again", []))
-		return
+		return true
 	running = true
+	var origin: Node = StoryDirector.instance.main.get("level") if StoryDirector.instance else null
 	GameState.in_dialogue = true
 	var d := data()
 	var weak := weak_spot()
@@ -67,15 +92,19 @@ static func run() -> void:
 			won = true
 			break
 		await _say(d.get("combo_fail", []))
+	if not is_instance_valid(origin) or not origin.is_inside_tree():
+		running = false
+		GameState.in_dialogue = Dialogue.is_active()
+		return false # 换图／测试跳关后不把旧挑战结果写进新场景。
 	_act([{"do": "uncover", "who": BLUE}, {"do": "pose", "who": BLUE, "laugh": 0}])
-	GameState.vars["after_play_day"] = DayClock.day()
+	settle(won)
 	if won:
-		GameState.vars["blue_bond"] = int(GameState.vars.get("blue_bond", 0)) + 1
 		await _say(d.get("win", []))
 	else:
 		await _say(d.get("lose", []))
 	running = false
 	GameState.in_dialogue = Dialogue.is_active()
+	return won
 
 
 ## 弱点旁边的部位（腰 ↔ 屁股 ↔ 大腿 ↔ 膝盖窝 顺着身体往下排，相邻算「近」）
@@ -107,7 +136,7 @@ static func _act(actions: Array) -> void:
 
 
 static func _say(lines: Array) -> void:
-	if lines.is_empty():
+	if quiet or lines.is_empty():
 		return
 	var tree := Engine.get_main_loop() as SceneTree
 	Dialogue.start_lines(lines, "after_play")

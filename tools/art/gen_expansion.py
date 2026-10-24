@@ -575,7 +575,7 @@ def zone_icon(kind):
     return img
 
 
-BUFF_ICON_COUNT = 23
+BUFF_ICON_COUNT = 25
 
 
 def frost_icon():
@@ -631,9 +631,24 @@ def maze5_icon(kind):
 def gen_buff_icons():
     sheet = blank(12 * BUFF_ICON_COUNT, 12)
     for i in range(BUFF_ICON_COUNT):
-        icon = buff_icon(i) if i < 9 else (zone_icon(i) if i < 18 else (frost_icon() if i == 18 else maze5_icon(i)))
+        icon = festival_icon(i == 24) if i >= 23 else (buff_icon(i) if i < 9 else (zone_icon(i) if i < 18 else (frost_icon() if i == 18 else maze5_icon(i))))
         sheet.alpha_composite(icon, (i * 12, 0))
     sheet.save(OUT / "buff_icons.png")
+
+
+def festival_icon(enemy=False):
+    """追加祭典Buff图标：友方灯笼／敌方尖角火苗，形状与颜色同时区分。"""
+    img, d = canvas(12, 12)
+    d.rounded_rectangle((0, 0, 11, 11), radius=2, fill=(70, 28, 25, 255), outline=(255, 185, 70, 255))
+    if enemy:
+        d.polygon([(2, 8), (3, 2), (5, 5), (8, 1), (9, 8), (6, 10)], fill=(255, 110, 65, 255))
+        d.point((5, 7), fill=(255, 245, 170, 255))
+    else:
+        d.arc((3, 1, 8, 5), 180, 360, fill=(255, 225, 140, 255))
+        d.ellipse((3, 3, 8, 9), fill=(255, 210, 90, 255))
+        d.line((5, 4, 5, 8), fill=(255, 250, 205, 255))
+        d.line((6, 9, 6, 10), fill=(255, 130, 60, 255))
+    return img
 
 
 # ------------------------------------------------------------------ 魔力疲倦

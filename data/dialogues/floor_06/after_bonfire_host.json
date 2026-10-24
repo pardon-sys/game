@@ -3,6 +3,18 @@
 	"entries": [
 		{
 			"if": {
+				"flag": "errand_lamp_calibration_open"
+			},
+			"node": "errand_lamp_calibration"
+		},
+		{
+			"if": {
+				"flag": "errand_lamp_calibration_active"
+			},
+			"node": "errand_lamp_calibration_active"
+		},
+		{
+			"if": {
 				"flag": "errand_massage_open"
 			},
 			"node": "errand_massage"
@@ -27,6 +39,19 @@
 		},
 		{
 			"if": {
+				"flag": "penalty_open"
+			},
+			"node": "penalty_offer"
+		},
+		{
+			"if": {
+				"flag": "errand_lamp_calibration_done",
+				"not": "dlg_floor_06/after_bonfire_host_errand_lamp_calibration_done"
+			},
+			"node": "errand_lamp_calibration_done"
+		},
+		{
+			"if": {
 				"flag": "errand_massage_done",
 				"not": "dlg_floor_06/after_bonfire_host_errand_massage_done"
 			},
@@ -38,12 +63,6 @@
 				"not": "dlg_floor_06/after_bonfire_host_errand_dance_done"
 			},
 			"node": "errand_dance_done"
-		},
-		{
-			"if": {
-				"flag": "penalty_open"
-			},
-			"node": "penalty_offer"
 		},
 		{
 			"if": {
@@ -193,6 +212,13 @@
 					"next": "errand_dance_accept"
 				},
 				{
+					"text": "先处理赎罪簿上的补罚",
+					"if": {
+						"flag": "penalty_open"
+					},
+					"next": "penalty_offer"
+				},
+				{
 					"text": "等一下再说",
 					"next": ""
 				}
@@ -250,6 +276,13 @@
 					"next": "errand_massage_accept"
 				},
 				{
+					"text": "先处理赎罪簿上的补罚",
+					"if": {
+						"flag": "penalty_open"
+					},
+					"next": "penalty_offer"
+				},
+				{
 					"text": "等一下再说",
 					"next": ""
 				}
@@ -287,20 +320,83 @@
 				}
 			]
 		},
+		"errand_lamp_calibration": {
+			"lines": [
+				{
+					"text": "篝火舞排练过了，灯轮还没校准。庆功宴上得照着图案亮，来帮我踩准十二组？抵三工时哦～",
+					"speaker": "篝火派对的主人"
+				}
+			],
+			"prompt": "接下这个委托？",
+			"choices": [
+				{
+					"text": "我来！",
+					"next": "errand_lamp_calibration_accept"
+				},
+				{
+					"text": "先处理赎罪簿上的补罚",
+					"if": {
+						"flag": "penalty_open"
+					},
+					"next": "penalty_offer"
+				},
+				{
+					"text": "等一下再说",
+					"next": ""
+				}
+			]
+		},
+		"errand_lamp_calibration_accept": {
+			"lines": [
+				{
+					"text": "到原来排练的篝火旁。踏板要光脚踩才准——我顺便考考你的稳劲，做好的图案都会记着。",
+					"speaker": "篝火派对的主人"
+				}
+			],
+			"set": {
+				"vars": {
+					"errand_req": "lamp_calibration"
+				},
+				"call": "errand_start"
+			}
+		},
+		"errand_lamp_calibration_active": {
+			"lines": [
+				{
+					"text": "篝火边的灯轮还等着呢，已校准的不用重做。",
+					"speaker": "篝火派对的主人"
+				}
+			]
+		},
+		"errand_lamp_calibration_done": {
+			"lines": [
+				{
+					"text": "十二组都记好了。到庆功宴再挂起来，现在可不提前开席～",
+					"speaker": "篝火派对的主人"
+				}
+			]
+		},
 		"penalty_offer": {
 			"lines": [
 				{
 					"text": "哎呀～赎罪簿上还有受罚没抵？"
 				},
 				{
-					"text": "来篝火边跳支舞，就当抵罚啦～"
+					"text": "来篝火边选一项练习，做完就抵掉一笔～"
 				}
 			],
-			"prompt": "在篝火边罚跳舞抵受罚？",
+			"prompt": "用哪种练习抵掉受罚？",
 			"choices": [
 				{
 					"text": "跳就跳！",
 					"next": "penalty_go"
+				},
+				{
+					"text": "练习忍笑报幕",
+					"if": {
+						"flag": "penalty_announcer_open"
+					},
+					"next": "penalty_announcer_go"
 				},
 				{
 					"text": "等一下再说",
@@ -317,6 +413,19 @@
 			"set": {
 				"vars": {
 					"penalty_req": "dance"
+				},
+				"call": "after_penalty"
+			}
+		},
+		"penalty_announcer_go": {
+			"lines": [
+				{
+					"text": "那就来报幕台，练完十二个节目抵一笔。"
+				}
+			],
+			"set": {
+				"vars": {
+					"penalty_req": "announcer"
 				},
 				"call": "after_penalty"
 			}

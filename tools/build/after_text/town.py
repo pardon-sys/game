@@ -38,8 +38,14 @@ D["after_partner"] = {
         "default": {"lines": [L("……嗯？"), L("……城墙，修得很快。")], "next": "menu"},
         "menu": {"prompt": "……还有事？", "choices": [
             {"text": "逗她笑一笑", "if": {"flag": "penance_book"}, "next": "play"},
+            {"text": "想请她一起逛逛", "if": {"flag": "penance_book", "not": "after_blue_can_follow"}, "next": "challenge"},
+            {"text": "邀请她一起逛逛", "if": {"flag": "after_blue_can_follow", "not": "after_blue_following"}, "next": "invite"},
+            {"text": "你先去忙吧", "if": {"flag": "after_blue_following"}, "next": "dismiss"},
             {"text": "没什么", "next": ""}]},
         "play": {"lines": [L("……又想干什么。")], "set": {"call": "after_play"}},
+        "challenge": {"lines": [L("……今天，先赢过我。"), L("赢了就陪我逛？说好了！", P, "happy")], "next": "play"},
+        "invite": {"lines": [L("今天算你赢。……走吧。")], "set": {"call": "after_invite_blue"}},
+        "dismiss": {"lines": [L("……嗯。我在老地方。")], "set": {"call": "after_dismiss_blue"}},
     },
 }
 

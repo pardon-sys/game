@@ -19,6 +19,7 @@ const HEAD_SHEET := preload("res://assets/generated/portrait_heads.png")
 const PORTRAIT_SETS := {
 	"pink": ["res://assets/generated/portraits.png", "res://assets/generated/portrait_heads.png"],
 	"blue": ["res://assets/generated/portraits_blue.png", "res://assets/generated/portrait_heads_blue.png"],
+	"bonfire_host": ["res://assets/generated/portraits_bonfire_host.png", "res://assets/generated/portrait_heads_bonfire_host.png"],
 }
 const TEXT_LEFT_WITH_PORTRAIT := 112.0
 ## 人物表（立绘、名字、行走图）：data/actors/npcs.json。
@@ -401,6 +402,17 @@ func after_play() -> void:
 	AfterPlay.run()
 
 
+## 七日赎罪的同行申请交给该剧情的日程节点，退出对话后再切控制器。
+func after_invite_blue() -> void:
+	runner.end_conversation()
+	AfterBlueRoutine.change_follow_later(true)
+
+
+func after_dismiss_blue() -> void:
+	runner.end_conversation()
+	AfterBlueRoutine.change_follow_later(false)
+
+
 ## 七日赎罪：小屋里的床（白天）→ 这个时段没事了就休息到下一个时段（AfterStory.rest）。
 func after_rest() -> void:
 	runner.end_conversation()
@@ -410,12 +422,17 @@ func after_rest() -> void:
 ## 这行台词是哪个人物说的（line.npc，或说话人名字和人物表里的名字一样）。
 ## 当前操控角色在人物表里的 id（蓝色公主当主角时是 blue_princess；粉色公主不在人物表里，返回 ""）。
 func hero_npc() -> String:
-	return "blue_princess" if (line_character if line_character != "" else Characters.current()) == "blue" else ""
+	var who := line_character if line_character != "" else Characters.current()
+	if who == "pink": return ""
+	for id in NPC_CHARACTER:
+		if NPC_CHARACTER[id] == who: return str(id)
+	return ""
 
 
 ## 当前主角在台词里的名字（蓝色公主当主角时是「蓝色的公主」；有的楼层的人物表里没有她，按名字认）。
 func hero_speaker() -> String:
-	return "蓝色的公主" if (line_character if line_character != "" else Characters.current()) == "blue" else ""
+	var id := hero_npc()
+	return str(npcs.get(id, {}).get("name", "蓝色的公主" if id == "blue_princess" else ""))
 
 
 func npc_of(line: Dictionary) -> String:
@@ -432,7 +449,7 @@ func npc_of(line: Dictionary) -> String:
 
 ## 人物的立绘：有 portrait_set 的（蓝色公主）按台词的 emotion 取那一套里的格子，其它人物只有一张。
 ## 人物（可操作角色的人物版）在小剧场里魔力疲倦爆发：用她自己 CG 数据里的 fatigue_burst 立绘（和组合演出里一样）。
-const NPC_CHARACTER := {"pink_princess": "pink", "blue_princess": "blue"}
+const NPC_CHARACTER := {"pink_princess": "pink", "blue_princess": "blue", "bonfire_host": "bonfire_host"}
 
 
 func npc_texture(id: String, emotion := "") -> Texture2D:

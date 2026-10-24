@@ -1,0 +1,103 @@
+{
+  "_说明": "import_bonfire_host.py；立绘来自用户提供的两张PNG，精灵沿用原imagegen源图；非运行时配置。",
+  "states": [
+    "normal",
+    "happy",
+    "angry",
+    "sad",
+    "surprise",
+    "shy",
+    "damaged",
+    "giggle",
+    "damaged_giggle",
+    "helpless_1",
+    "helpless_2"
+  ],
+  "magic": [
+    "chant",
+    "burst",
+    "damaged_chant",
+    "damaged_giggle_chant",
+    "damaged_burst",
+    "damaged_giggle_burst"
+  ],
+  "portrait_cell": [
+    228,
+    304
+  ],
+  "head": 64,
+  "density": 2,
+  "source_grids": {
+    "walk": [
+      4,
+      4
+    ],
+    "sprite_extras": [
+      4,
+      5
+    ],
+    "sprite_magic": [
+      6,
+      5
+    ],
+    "sprite_magic_last": [
+      3,
+      2
+    ],
+    "sprite_attack": [
+      3,
+      4
+    ],
+    "portraits_daily": [
+      3,
+      2
+    ],
+    "portraits_extra": [
+      3,
+      2
+    ],
+    "portraits_magic": [
+      3,
+      2
+    ],
+    "portraits_damaged_barefoot": [
+      3,
+      2
+    ]
+  },
+  "portrait_sources": {
+    "portraits1.PNG": [
+      "normal",
+      "happy",
+      "sad",
+      "surprise",
+      "angry",
+      "shy",
+      "chant",
+      "burst"
+    ],
+    "portraits2.PNG": [
+      "giggle",
+      "damaged",
+      "damaged_giggle",
+      "helpless_1",
+      "helpless_2",
+      "damaged_chant",
+      "damaged_giggle_chant",
+      "damaged_burst"
+    ]
+  },
+  "portrait_alias": {
+    "damaged_giggle_burst": "damaged_burst"
+  },
+  "barefoot_portraits": [
+    "damaged",
+    "damaged_giggle",
+    "helpless_1",
+    "helpless_2",
+    "damaged_chant",
+    "damaged_giggle_chant",
+    "damaged_burst",
+    "damaged_giggle_burst"
+  ]
+}

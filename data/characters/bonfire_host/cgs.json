@@ -1,0 +1,98 @@
+{
+	"_说明": "只提供本角色通用笑倒；专属长篇来源演出未制作。",
+	"portraits": {
+		"defeat_1": {
+			"file": "",
+			"placeholder": "helpless_1"
+		},
+		"defeat_2": {
+			"file": "",
+			"placeholder": "helpless_2"
+		},
+		"wake": {
+			"file": "",
+			"placeholder": "sad"
+		},
+		"fatigue_burst": {
+			"file": "",
+			"placeholder": "damaged_giggle_burst"
+		}
+	},
+	"actors": {},
+	"trap_actors": {},
+	"death": {
+		"default": "host_rest",
+		"by_source": {}
+	},
+	"cgs": {
+		"host_rest": {
+			"name": "主持人的中场休息",
+			"cast": {
+				"princess": {
+					"kind": "princess",
+					"at": [
+						0,
+						8
+					],
+					"visual": "helpless_1",
+					"anim": "helpless",
+					"dir": "down"
+				}
+			},
+			"steps": [
+				{
+					"actions": [
+						{
+							"do": "fade_in",
+							"time": 0.3
+						}
+					],
+					"wait": 0.3
+				},
+				{
+					"portrait": "defeat_1",
+					"speaker": "篝火派对的主人",
+					"text": "哈、哈哈……等一下，我还没把这段报完呢！",
+					"emotion": "giggle"
+				},
+				{
+					"portrait": "defeat_2",
+					"speaker": "篝火派对的主人",
+					"text": "哈哈哈！好啦，中场休息！灯笼先放稳……",
+					"emotion": "helpless_2",
+					"actions": [
+						{
+							"do": "pose",
+							"who": "princess",
+							"visual": "helpless_2",
+							"anim": "helpless"
+						}
+					]
+				},
+				{
+					"portrait": "wake",
+					"speaker": "篝火派对的主人",
+					"text": "呼，笑得全乱拍了。下一次，我要把节奏拿回来。",
+					"emotion": "shy",
+					"actions": [
+						{
+							"do": "pose",
+							"who": "princess",
+							"visual": "sad",
+							"anim": "idle"
+						}
+					]
+				},
+				{
+					"actions": [
+						{
+							"do": "fade_out",
+							"time": 0.3
+						}
+					],
+					"wait": 0.3
+				}
+			]
+		}
+	}
+}

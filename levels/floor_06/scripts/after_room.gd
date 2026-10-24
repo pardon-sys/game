@@ -26,6 +26,9 @@ func _ready() -> void:
 			r.name = r.dialogue.get_file()
 	for n in lv.find_children("*", "PlayableCharacter", true, false):
 		var c := n as PlayableCharacter
+		if c is BonfireHost:
+			if c.dialogue.begins_with("floor_06/after_"): c.name = c.dialogue.get_file()
+			continue
 		c.follow = true
 		c.partner_talk = PARTNER
 		if not c.is_controlled():

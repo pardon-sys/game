@@ -648,7 +648,7 @@ func _resonance() -> void:
 		var m: Monster = hit[i]
 		var at := FortressRules.point(m,prev) + Vector2(0, -8)
 		_arc_line(prev, at, i * 0.05)
-		# 电弧从上一只怪那里跳过来：唯一打得动盾甲螃蟹的（伤害 ×0.1，见 ShieldCrab）
+		# 电弧标签允许穿过盾甲螃蟹和暖炉史莱姆的防护，造成全额伤害。
 		var arc := HitData.make_attack(self, dmg, 0.0, true)
 		arc.tag = ShieldCrab.RESONANCE_TAG
 		m.receive_hit(arc)
@@ -733,7 +733,7 @@ func _meteor(delta: float) -> void:
 		if d:
 			for m in d.enemies_near(to, r, false):
 				var fall := HitData.make_attack(src, dmg, 160.0, true)
-				fall.tag = ShieldCrab.METEOR_TAG     # 盾甲螃蟹吃陨石的 25%
+				fall.tag = ShieldCrab.METEOR_TAG     # 盾甲螃蟹／暖炉史莱姆吃全额陨石伤害
 				m.receive_hit(fall)
 				m.stun(frz)
 			for t in parent.get_tree().get_nodes_in_group("siege_enemy_tower"):

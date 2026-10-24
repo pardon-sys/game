@@ -62,7 +62,8 @@ class Map:
 
 
 def npc(m, x, y, nid, file, wander=0, extra=""):
-    m.put(x, y, ("npc id=%s dialogue=floor_06/%s wander=%s %s" % (nid, file, wander, extra)).strip())
+    kind = "bonfire_host" if nid == "bonfire_host" else "npc id=" + nid
+    m.put(x, y, ("%s dialogue=floor_06/%s wander=%s %s" % (kind, file, wander, extra)).strip())
 
 
 def prop(m, x, y, kind, action=""):

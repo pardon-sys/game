@@ -1,7 +1,7 @@
 class_name AfterTown
 extends Node2D
 ## 地下小镇·战后（floor_06_after，七日赎罪）的导演：
-##   蓝色公主跟着粉色公主（这张图 no_switch，不能换人；和她说话是 floor_06/after_partner），节点改名 AfterBlue（过场里用）。
+##   AfterBlueRoutine管理蓝色公主的自由日程与当日获胜后邀请同行；具体任务和过场优先。
 ##   镇民（对话文件 floor_06/after_*）的节点改名成对话文件名（after_captain……：过场里直接用这个名字指挥他们），
 ##   按 DayClock 的日程摆位置 / 换朝向 / 藏起来（apply_schedule）；时间变了（DayClock.TICK）、某个时段的事做完了、过场放完，都重新摆一次。
 ##   进图：第一次进来 = 第 1 天早上（AfterStory.begin），然后演这里自动演的事件（AfterStory.run_pending）。
@@ -14,9 +14,10 @@ const PREFIX := "floor_06/after_"
 ## 藏起来的镇民：show_flag 设成一个永远不会有的标记
 const NEVER := "after_never"
 
-## 对话文件名 -> Resident
+## 对话文件名 -> Resident或BonfireHost；同一日程入口，角色自行配置原控制器。
 var residents := {}
 var blue: PlayableCharacter
+var blue_routine: AfterBlueRoutine
 var marker: ObjectiveMarker
 var _objective := {}
 
@@ -53,17 +54,21 @@ func _level() -> Node:
 func _setup(lv: Node) -> void:
 	for n in lv.find_children("*", "PlayableCharacter", true, false):
 		var c := n as PlayableCharacter
+		if c is BonfireHost:
+			c.name = c.dialogue.get_file()
+			residents[c.name] = c
+			continue
 		if c.camera:
 			c.camera.zoom = Vector2.ONE
 			c.camera.top_level = false
-		c.follow = true
-		c.partner_talk = PARTNER
 		if c.is_controlled():
 			c._refresh_partner_area()
-		else:
-			c.start_following(PARTNER)
+		elif c is BluePrincess:
 			c.name = "AfterBlue"
 			blue = c
+			blue_routine = AfterBlueRoutine.new()
+			blue_routine.blue = c as BluePrincess
+			add_child(blue_routine)
 	for n in lv.find_children("*", "Resident", true, false):
 		var r := n as Resident
 		if r.dialogue.begins_with(PREFIX):
@@ -78,19 +83,22 @@ static func blue_away() -> bool:
 
 
 func apply_schedule() -> void:
-	if is_instance_valid(blue):
-		var away := blue_away() and not Cutscene.is_playing()
-		blue.ai = away
-		blue.show_flag = NEVER if away else ""
-		blue._refresh_visibility()
+	if is_instance_valid(blue_routine): blue_routine.sync()
 	for key in residents:
-		var r: Resident = residents[key]
+		var r: Node2D = residents[key]
 		if is_instance_valid(r):
 			place(r, DayClock.npc(key))
 
 
 ## 按一条日程摆一个镇民：{at 格, dir, wander, hidden, dialogue}
-static func place(r: Resident, info: Dictionary) -> void:
+static func place(r: Node2D, info: Dictionary) -> void:
+	if r is BonfireHost:
+		r.place_schedule(info)
+		return
+	if r is Resident: _place_resident(r, info)
+
+
+static func _place_resident(r: Resident, info: Dictionary) -> void:
 	r.show_flag = NEVER if bool(info.get("hidden", false)) else ""
 	if info.has("at"):
 		var p: Vector2 = Cutscene.cell_to_world(info["at"])
@@ -110,6 +118,7 @@ static func place(r: Resident, info: Dictionary) -> void:
 func _on_flag_changed(flag: String) -> void:
 	if flag == DayClock.TICK or flag.begins_with("after_done_"):
 		apply_schedule()
+		if flag == DayClock.TICK and is_instance_valid(blue_routine): blue_routine.sync(true)
 	if flag == DayClock.TICK or flag == PenanceBook.FLAG or flag == AfterStory.TASK_FLAG:
 		AfterErrands.refresh()
 	if flag == DayClock.TICK or flag.begins_with("after_") or flag.begins_with("errand_") or flag == PenanceBook.FLAG or flag == AfterPenance.FLAG:
@@ -139,7 +148,7 @@ func _sync_errand() -> void:
 		if runner:
 			ents.add_child(runner)
 	for key in residents:
-		var r: Resident = residents[key]
+		var r: Node2D = residents[key]
 		if not is_instance_valid(r):
 			continue
 		var want := false

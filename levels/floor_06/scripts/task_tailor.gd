@@ -101,7 +101,7 @@ func _ready() -> void:
 	_layer.layer = 21
 	add_child(_layer)
 	_chart = TailorChart.new()
-	_chart.position = ((get_viewport_rect().size - Vector2(110, 96)) * Vector2(0.5, 1.0) - Vector2(0, 6)).round()
+	_chart.position = Vector2(120, 12)
 	_chart.visible = false
 	_layer.add_child(_chart)
 	Dialogue.line_shown.connect(_on_line)
@@ -259,7 +259,7 @@ func _menu(id: String, results: Dictionary, marks: Array) -> int:
 	texts.append(str(m.get("tea", "喝口茶（%d）")) % int(GameState.vars.get("task_tailor_tea", 0)))
 	texts.append(str(m.get("sew", "就缝这些！")))
 	_chart.visible = true
-	var pick: int = await Dialogue.runner.choice_menu.ask(texts, str(m.get("prompt", "%s")) % str(info.get("name", id)))
+	var pick: int = await Dialogue.runner.choice_menu.ask(texts, str(m.get("prompt", "%s")) % str(info.get("name", id)), Rect2(304, 12, 168, 164))
 	_chart.visible = false
 	return pick
 

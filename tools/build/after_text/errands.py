@@ -1,12 +1,14 @@
 """七日赎罪的镇民委托（AfterErrands）：data/after/errands.json 的数据 + 委托人对话里接委托的几个节点（generate 时插进各人的对话文件）。
   from [天, 时段]：从什么时候起能接（有赎罪簿以后、白天、做完之前）。hours：做完减几工时。kind：玩法（errand_<kind>.gd）。target：送到哪一格（目标标记）。
 """
-from . import errand_dance, errand_goats, errand_ladder, errand_massage
+from . import errand_canopy, errand_dance, errand_gate_chain, errand_goats, errand_ladder, errand_lamp_calibration, errand_massage, errand_shearing, errand_sifting
 from .common import N, P, L
 
 SHOW = "res://levels/floor_06/scripts/%s_show.gd"
 
 ERRANDS = {
+    "canopy": {"name": "棚布补漏", "npc": "after_merchant", "from": [4, 0], "hours": 3, "kind": "show", "show": SHOW % "canopy", "target": [15, 28], "objective": "到西边市场坏摊棚南侧，挂角、补缝、张紧"},
+    "sifting": {"name": "筛叶风选", "npc": "after_pharm", "from": [4, 0], "hours": 3, "kind": "show", "show": SHOW % "sifting", "target": [17, 12], "objective": "到药剂师工房门外晒架，筛松、风选、装袋"},
     "cookies": {"name": "送饼干", "npc": "after_granny", "from": [2, 1], "hours": 3, "kind": "cookies",
                 "objective": "把饼干送给守城门的队员", "target": [29, 37]},
     "apples": {"name": "捡苹果", "npc": "after_merchant", "from": [2, 1], "hours": 2, "kind": "apples",
@@ -20,10 +22,20 @@ ERRANDS = {
               "objective": "到篝火边排练篝火舞", "target": [44, 26]},
     "massage": {"name": "足底按摩试新手法", "npc": "after_bonfire_host", "from": [3, 0], "hours": 2, "kind": "show", "show": SHOW % "massage",
                 "objective": "到篝火边的长椅上坐好（鞋要脱）", "target": [41, 27]},
+    "gate_chain": {"name": "城门底下重新穿链", "npc": "after_engineer", "from": [4, 0], "hours": 3,
+                   "kind": "show", "show": SHOW % "gate_chain", "target": [31, 38],
+                   "objective": "到城门内侧检修槽，重新穿好辅助链条"},
+    "shearing": {"name": "蘑菇羊剪毛", "npc": "after_maid", "from": [4, 0], "hours": 3,
+                 "requires": ["goats"], "kind": "show", "show": SHOW % "shearing", "target": [57, 33],
+                 "objective": "到东边羊圈，帮女仆给咕咕梳结、剪毛、装袋"},
+    "lamp_calibration": {"name": "脚踏灯轮校准", "npc": "after_bonfire_host", "from": [4, 0], "hours": 3, "kind": "show", "requires": ["dance"], "show": SHOW % "lamp_calibration", "target": [44, 26], "objective": "到篝火排练处，完成十二组灯轮校准"},
 }
 
 # 委托人对话里的节点：offer 接委托 / active 正在做 / done 做完以后
 NODES = {
+    "lamp_calibration": errand_lamp_calibration.NODES,
+    "canopy": errand_canopy.NODES,
+    "sifting": errand_sifting.NODES,
     "cookies": {
         "offer": {"lines": [L("孩子，来得正好。刚烤好一篮饼干，想送给守城门的队员们——他们守了一整夜呢。"),
                             L("奶奶腿脚不方便，你帮我跑一趟？"),
@@ -50,6 +62,8 @@ NODES = {
     "goats": errand_goats.NODES,
     "dance": errand_dance.NODES,
     "massage": errand_massage.NODES,
+    "gate_chain": errand_gate_chain.NODES,
+    "shearing": errand_shearing.NODES,
 }
 
 

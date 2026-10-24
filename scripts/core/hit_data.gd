@@ -52,6 +52,14 @@ static func make_attack(src: Node, amount := 1, kb := 0.0, tower_attack := false
 	var h := HitData.new()
 	h.kind = Kind.ATTACK
 	h.damage = amount
+	# 全伤害Buff在构造时只结算一次；copy及HurtProxy转发保留已计算值。
+	# 原attack仍只由近战命中框读取，不改变装备的作用域。
+	if is_instance_valid(src) and src is Actor:
+		var mult: float = src.stat_mul("damage_dealt")
+		if not is_equal_approx(mult, 1.0):
+			var scaled := float(amount) * mult
+			var fraction := scaled-floorf(scaled)
+			h.damage = floori(scaled) + (1 if fraction > 0.0 and randf() < fraction else 0)
 	h.from_tower = tower_attack or (is_instance_valid(src) and (src.is_in_group("siege_tower") or src.is_in_group("siege_snowman")))
 	h.knockback = kb
 	h._set_source(src)

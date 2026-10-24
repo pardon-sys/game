@@ -23,6 +23,26 @@ var _last_pos := Vector2.ZERO
 var _home := Vector2.INF
 var _blocked_cache := {}
 var _rng := RandomNumberGenerator.new()
+var _area_limited := false
+var _use_world_spots := true
+
+
+## 可选的限定活动区；默认行为不变。重新配置清掉旧路线，不搬运角色。
+func configure_area(center: Vector2, radius: int, use_world_spots := false) -> void:
+	_home = center
+	home_radius = maxi(0, radius)
+	_area_limited = true
+	_use_world_spots = use_world_spots
+	path.clear()
+	target_spot = null
+	_blocked_cache.clear()
+	_move = Vector2.ZERO
+	_wait = 0.1
+
+
+func _in_area(cell: Vector2i) -> bool:
+	var offset := cell - _cell(_home)
+	return absi(offset.x) <= home_radius and absi(offset.y) <= home_radius
 
 
 func _ready() -> void:
@@ -121,9 +141,11 @@ func _pick_target() -> void:
 		return
 	var walls: TileMapLayer = lv.get_node("Walls")
 	var floor_layer: TileMapLayer = lv.get_node("Floor")
-	var spots := body.get_tree().get_nodes_in_group("wander_spot").filter(func(s): return lv.is_ancestor_of(s) and s != target_spot)
+	var spots := body.get_tree().get_nodes_in_group("wander_spot").filter(func(s): return _use_world_spots and lv.is_ancestor_of(s) and s != target_spot and (not _area_limited or _in_area(_cell(s.global_position))))
 	var goal: Vector2i
-	if not spots.is_empty():
+	if _area_limited and not _in_area(_cell(body.global_position)):
+		goal = _cell(_home) # 结束同行后先走回活动区，不突然传送。
+	elif not spots.is_empty():
 		target_spot = spots[_rng.randi() % spots.size()]
 		goal = _cell(target_spot.global_position)
 	else:
@@ -159,6 +181,8 @@ func _bfs(start: Vector2i, goal: Vector2i, walls: TileMapLayer, floor_layer: Til
 			return out
 		for d in [Vector2i.LEFT, Vector2i.RIGHT, Vector2i.UP, Vector2i.DOWN]:
 			var n: Vector2i = c + d
+			if _area_limited and _in_area(start) and not _in_area(n):
+				continue
 			if not prev.has(n) and not _blocked(n, walls, floor_layer):
 				prev[n] = c
 				queue.append(n)

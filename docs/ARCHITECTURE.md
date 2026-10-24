@@ -18,14 +18,14 @@
   2. `python tools/build/check_dialogues.py`（对话里新增的 `call` 名要加进它的 `CALLS`）；攻防战文本另有 `check_siege_text.py`。
   3. 改了地图：`Godot --headless --script tools/build/build_level.gd -- floor=<id>`。
   4. 新增 `class_name` 脚本后 `Godot --headless --import` **跑两遍**（第一遍登记类名，第二遍才能解析引用）；导入会改动 `assets/tilesets/dungeon.tres`，
-     之后 `git checkout assets/tilesets/dungeon.tres`。
+	 之后 `git checkout assets/tilesets/dungeon.tres`。
   5. 编译检查：临时写 `tests/_check_scripts.gd/.tscn`（`load` 每个改过的脚本、打印 `can_instantiate()`），跑完删掉。
 - **测试**：`Godot --headless --path . res://tests/<名字>.tscn`，输出最后一行「全部通过 / 有失败 (N 项失败)」，失败项以 `[失败]` 开头。
   - 七日赎罪的改动跑 `f6_after_test`；每批合并前回归 `cg_test story_test f6_war_test level_design_test training_test siege3_test`。
   - **不要跑第 1~5 层的测试**（`floor2~5_test`，又慢又和现在的内容无关）。
   - 测试很慢（f6_after 十几分钟），放后台跑；一个测试单独一行命令，别把 `rm` 和测试串在一条里（zsh 通配符没匹配会让整条命令失败）。
   - 截图脚本放 `tests/_shots_*.gd`，输出到 `tools/.cache/shots/`（不进仓库）；临时文件 `tests/_check_scripts.*`、`tests/_shots_*`、`tests/_probe_*`
-    提交前全部删掉。
+	提交前全部删掉。
 - **素材**：缺的图用 Python 画像素风（`tools/art/gen_*.py`）或 Godot 内置绘制（`_draw`、粒子、tween）做；音乐用 ElevenLabs（`tools/audio/gen_music.py` 的 `TRACKS`
   加一首）；第三方素材写清楚来源和许可（`assets/third_party/*/License.txt`）。
 - **文档**：每做完一批，把新系统 / 新规则补进本文对应的章节（七日赎罪的写在「七日赎罪」一节），过时的描述直接改掉，不留两种说法；
@@ -40,8 +40,7 @@
 - 做不到 / 不做的内容直接说明原因并给替代方案，不要悄悄换掉。
 
 ### 内容准则
-- 两位公主都是**成年人**（人物表 `profile`）。文本只写痒、笑、害羞、嘴硬、求饶，**不写性内容**，不写对熟睡的人带迷恋意味的行为
-  （例：用户提过「工匠夜里潜入挠舔睡着的公主」——已拒绝，不要实现；小汤姆的恶作剧是孩子气的报复，「舔」只由小猫橘子来做）。
+- 两位公主都是**成年人**（人物表 `profile`）。
 - **粉色公主**：重点写脚（脱鞋袜、掰脚趾挠趾缝、刮脚心、沿足弓刷、捏脚跟）；开朗、倔强、会叫嚷反抗、边笑边求饶。
 - **蓝色公主**：重点写大腿 / 屁股（揉腿根打圈、沿大腿内侧上移到腿根为止、轮流捏屁股、交界处轻刮）；寡言嘴硬、短句带省略号，越痒句子越碎，
   破防后小声服软；不用固定口头禅、不重复同一句。她身上的「千手痒痒裤」会自己动、挠她。
@@ -110,6 +109,8 @@ docs/ARCHITECTURE.md  本文
 Actor（角色基类，CharacterBody2D）
 ├── PlayableCharacter（可操作角色）
 │   └── Princess
+│       ├── BluePrincess（蓝色公主）
+│       └── BonfireHost（派对主人）
 ├── Monster（怪物）
 │   ├── Slime            史莱姆
 │   ├── FeatherBat       羽毛蝙蝠（盘旋 → 俯冲挠痒 → 退开）
@@ -265,7 +266,7 @@ target.receive_hit(HitData.make_tickle(self, 10.0))        # 闷笑值 +10
 **增益 / 减益**（`Actor` 基类 + `Buff` + `data/buffs.json`）
 - `buffs.json`：`stat_kinds` 定义每种属性的合成方式（`add` 相加 / `mul` 相乘 / `flag` 开关，取最小值）；`buffs` 定义每种状态 `{name, icon, debuff, duration, max_stacks, modifiers}`，`duration = -1` 表示永久。
 - 接口：`add_buff(id, 秒 = 默认, 层数 = 1)`（再次添加刷新时间、叠层到上限）、`remove_buff`、`clear_buffs(only_timed)`、`has_buff`、`buff_stacks`、`stat_add(属性)` / `stat_mul(属性)` / `stat_flag(属性)`、信号 `buffs_changed`。
-- 属性生效位置：`laugh_gain` 在 `Actor._tickle_multiplier`；`tickle_cd`、`special_chance` 在 `Monster`；`speed` 在移动；`can_channel` 在 `PlayableCharacter.can_cast()`。
+- 属性生效位置：`laugh_gain` 在 `Actor._tickle_multiplier`；`tickle_cd`、`special_chance` 在 `Monster`；`speed` 在移动；`can_channel` 在 `PlayableCharacter.can_cast()`；`damage_dealt`（mul）在 `HitData.make_attack` 构造时只结算一次，普通攻击与伤害魔法均生效，复制／代理转发不再乘。原 `attack` 仍只作用近战。
 - 计时在 `_physics_process`，对话中暂停；复活清掉限时状态、保留永久状态；`GameState.save_player_state` 跨层保存永久状态。
 - 表现：HUD `buff_row`（公主，图标 `buff_icons.png` 的第 `icon` 格）；怪物有增益时头顶 `BuffMark`。
 
@@ -423,8 +424,8 @@ HUD 背包栏会根据物品数据自动显示，不需要改 UI 代码。
 - `Sleep`（`scripts/story/sleep.gd`）：`sleep(早上的过场, title, on_dawn)` / `sleep_later(…)`（对话里用）；`vars.day`、关掉 `night`、回满状态；`title` 换掉黑幕上的「第 N 天」，`on_dawn` 在黑着的时候调（`DayClock` 在这里换时间）。对话 handler `sleep()`。
 - 潜入（`scripts/stealth/`）：`VisionCone`（`sees(目标)`、墙 = 碰撞层 1、`lights` 暗处视野减半、扇形用射线截断）、`PatrolGuard`（图例 `guard_patrol path=x,y;… loop wait speed view_range view_angle`；`investigate(位置)` 用 `GridPath` 寻路）、`StealthDirector`（图例 `stealth active_flag on_caught`；`alert`、`toggle_hide`（`prop action=hide`）、`throw_stone`（输入动作 `throw`，运行时加上，F 键）、`noise(位置)`、`caught` 信号）。
 - 出口 `LevelExit` 的 `lock_flag / unlock_flag / locked_dialogue / open_dialogue`；关卡 `night_ambient`（`[level]` 段，剧情标记 `night` 时换上）；`Prop` 的 `talk:<文件>#<节点>`、`hide`、`lift`（挂墙的东西）、地面道具（`floor`）挪到 FloorObjects（`under` 铺最底下）。
-- 角色档案 `Characters`（`scripts/core/characters.gd`）：按当前操控角色的 `character_id` 选数据文件——`ReactionDB`（reactions / fatigue）、`TickleZones`（ticklish）、`CG.data / CG.scenes`（cgs / nest_cgs / combo_scenes，属性按角色缓存）；`CGActor.make_princess` 在蓝色公主当主角时用她的精灵图。蓝色公主的数据在 `data/characters/blue/`（`gen_blue_character.py` 生成）。
-- 蓝色公主当主角：剧情标记 `blue_is_hero`；`level.gd` 载入时把粉色公主换成 `hero = true` 的 `BluePrincess`（玩家操控、相机、没有对话提示）；`main._restore_main_character` 不再切回；`Princess.fatigue_burst_visual()`（她是 `damaged_giggle_burst`）；`TrainingStats.zone_modifier` 只对粉色公主生效。
+- 角色档案 `Characters`（`scripts/core/characters.gd`）：按当前操控角色的 `character_id` 选数据文件——`ReactionDB`（reactions / fatigue）、`TickleZones`（ticklish）、`CG.data / CG.scenes`（cgs / nest_cgs / combo_scenes，属性按角色缓存）；`CGActor.make_princess` 按既有 `Dialogue.NPC_CHARACTER` 映射使用角色自身精灵图，并从人物表 `scene` 的Animator读取原有贴图覆盖。蓝色公主的数据在 `data/characters/blue/`（`gen_blue_character.py` 生成），派对主人在 `data/characters/bonfire_host/`（`gen_bonfire_host_character.py` 生成；基础档案与通用演出，不复制蓝色专属剧情）。
+- 蓝色公主当主角：剧情标记 `blue_is_hero`；`level.gd` 载入时把粉色公主换成 `hero = true` 的 `BluePrincess`（玩家操控、相机、没有对话提示）；`main._restore_main_character` 按当前剧情主角ID恢复（该标记存在时恢复蓝色，否则粉色）；`Princess.fatigue_burst_visual()`（她是 `damaged_giggle_burst`）；`TrainingStats.zone_modifier` 只对粉色公主生效。
 - 第七层 `tools/build/gen_floor07.py`：之字形高塔、`design.json` 的 8 组组合区域、两个战斗房、`f7_pink_run / f7_blue_arrive` 过场；小屋楼上 `floor_06_house_up` 和 `f7_blue_wake / f7_blue_argue` 在 `gen_floor06.py`。
 
 ### 滚动文字面板
@@ -502,11 +503,18 @@ HUD 背包栏会根据物品数据自动显示，不需要改 UI 代码。
 3. 换一种控制方式：用 `set_controller(...)` 传入一个 CharacterController 子类。
    - `PlayerInputController`：键盘和手柄
    - `ScriptedController`：测试和过场动画
-   - `WanderController`：AI，在关卡 `wander_spot` 组的点（图例 `spot`）之间溜达（Walls + 静态物体的格子 BFS 寻路，卡住换点，到点停一会儿、偶尔做表情，公主在旁边时看她；`paused` / 对话 / 过场时不动）
+   - `WanderController`：AI，在关卡 `wander_spot` 组的点（图例 `spot`）之间溜达（Walls + 静态物体的格子 BFS 寻路，卡住换点，到点停一会儿、偶尔做表情，公主在旁边时看她；`paused` / 对话 / 过场时不动）。`configure_area(center, radius, use_world_spots=false)` 可限定中心周围若干格，区内寻路不越界，区外先沿路返回；默认未配置时保持原行为。
 4. **蓝色公主**（`BluePrincess extends Princess`，场景 `blue_princess.tscn` 继承 `princess.tscn`）：精灵图换成 `princess_blue.png`，魔法图通过 Animator 的 `texture_overrides`（`{"magic": 路径}`）换成 `princess_blue_magic.png`，`portrait_set = "blue"`；默认阵营 ALLY、相机关闭、`WanderController`；`Talk` 交互区按 E 对话；`show_flag` 控制出现；`ai = false` 时是过场演员（`spawn kind=npc:blue_princess` 生成，人物表里写了 `scene`）。
    - 场景里同时有两个可操作角色时，只有 `GameState.player` 那个是「玩家」：`Princess.is_controlled()` 为假的一方不触发台词气泡、提示、语音、剧情对话；`EmotionComponent.is_global()` 只让玩家那一个响应 `GameState.emote` 并广播 `emotion_changed`。
-   - `GameState.switch_control(to)`（测试模式 F2，`main.switch_character()`）：两边交换阵营（`Actor.set_faction` 同时换节点组）、控制器（原来的那个用 `make_ai_controller()`）、相机，`player_registered` 让 HUD / 对话框重新绑定；不搬运血量 / 闷笑。换关卡前自动切回公主。
-   - 立绘套装：`Dialogue.PORTRAIT_SETS`（pink / blue），`portrait_for(表情, 套装)` / `head_for`；不写套装时用当前玩家的 `portrait_set`。人物表里写了 `portrait_set` 的人物（蓝色公主）说话时，右侧立绘按台词的 `emotion` 取格子。
+   - `GameState.switch_control(to)`（测试模式 F2，`main.switch_character()`，按场景候选顺序循环，支持第三角色）：两边交换阵营（`Actor.set_faction` 同时换节点组）、控制器（原来的那个用 `make_ai_controller()`）、相机，`player_registered` 让 HUD / 对话框重新绑定；不搬运血量 / 闷笑。换关卡前自动切回公主。
+   - 立绘套装：`Dialogue.PORTRAIT_SETS`（pink / blue / bonfire_host），`portrait_for(表情, 套装)` / `head_for`；不写套装时用当前玩家的 `portrait_set`。人物表里写了 `portrait_set` 的人物（蓝色公主）说话时，右侧立绘按台词的 `emotion` 取格子。
+
+
+5. **派对主人**（`BonfireHost extends Princess`，`scenes/actors/playable/bonfire_host.tscn`继承公主场景）：`character_id`／`portrait_set`均为`bonfire_host`，原`WanderController`／`ScriptedController`及`Talk`交互；无新增操控锁，F2可选中，业务继续遵守`no_switch`。角色生成器定向写`data/characters/bonfire_host/`、人物表对应项和两种Buff；不会执行蓝色生成器或复制其冰魔法／裤子／迷宫剧情。弱点腋下、腰侧各1.4，其余1.0；基础数值沿用公主，魔法冷却12秒。普通、战时与战后地图构建器注册`bonfire_host`图例；战后日程沿用`AfterTown.place`，派对角色交给自身`place_schedule`与原闲逛控制器，蓝色只按真实ID识别。战时导演只配置粉蓝同行，不把她带进双人队伍。
+   - **彩带普攻** `FestivalRibbon extends Projectile`：面向投掷，144像素、240像素/秒、2.5秒寿命；最多两枚、间隔0.6秒；去／回程每目标各2基础伤害和45击退，按原受击规则判定。墙体去程折返、回程阻挡消散，10像素内回收；中立木桶沿原Damageable规则可破坏，敌塔代理按原实例去重。保留Hitbox节点的原命中信号，但不再扫描近战框。独立攻击图集使用原SpriteSheetAnimator.sheets机制。
+   - **随身祭典光环** `FestivalAura`：三档64／88／112像素、4／6／8秒，跟随施法者。每0.2秒给范围内单位刷新0.3秒、最多1层Buff；友方角色／士兵／雪人`festival_ally`＝移速×1.2、普攻与伤害魔法×1.4；敌方Monster含Boss的`festival_enemy`＝移速×1.2、挠痒强度×1.35。建筑和陷阱不受影响，攻击频率、机制反伤不变。退出范围自然过期；结束／死亡／换图清理，暂停／对白／CG冻结，F2不取消。重复施法取更大范围和更长剩余时间；疲倦释放为最大范围4秒，不缩短已有更长效果。Buff图标追加23／24，原图标不换序。
+   - **资源与文本**：`import_bonfire_host.py`复用既有像素化器，32px四向11状态、48px六种施法、17张228×304全身立绘与64px头像；地图精灵源图和提示词在`tools/art/src/bonfire_host/`；立绘现改用用户提供的`assets/generated/bonfire_host_portraits/portraits1.PNG`与`portraits2.PNG`。第一表按普通、开心、难过、惊讶、愤怒、害羞、吟唱、释放切入既有状态顺序；第二表余下八张覆盖憋笑、战损、战损憋笑、两级失控及战损魔法。战损与两级失控按新源图裸足，战损憋笑释放共用战损释放；坐姿／横卧头像独立裁框，去白底和标签。`--portraits-only`只更新立绘及头像，地图精灵保留原源与鞋装；固定映射在导入器与manifest中。分开生成的施法源表先按同组中位高度归一，避免第六行缩放跳变。普通NPC兼容图仍导出4×4格式，原镇民生成器优先从新角色图集导出。立绘、CG、过场通过原人物映射、portrait_set及Animator.texture_overrides处理第三角色，不新增magic_sprite等第二套配置。专属长篇CG未制作，通用笑倒与空扩展集合防止误回退其他角色内容。
+   - **专项**：`tests/bonfire_host_test.tscn`；截图`tests/capture_bonfire_host.tscn`。参数、失败修复、生成与截图索引见`doc/bonfire_host_character_upgrade.md`，实时进度见同目录`bonfire_host_character_upgrade_progress.md`。
 
 ## 楼层与切换
 
@@ -599,8 +607,9 @@ data/cutscenes/<楼层组>/  地图内过场；data/theater/<楼层组>/  小剧
   倒下走 `death_override`（笑倒 CG 按她自己的版本；粉色公主城门复活，蓝色公主 `Downed.timeless` + `revive_after` 40 秒兜底，
   `call_bearers` 叫士兵把她抬上城墙 / 扶起来 → `revive_blue`）。L 是她自己的魔法；城墙法术用 1~4（`SpellAim`，`pose_channel` / `pose_cast` 只摆姿势）。
   没目标时都会闲逛：`CompanionController` 的 `wander`（锚点 `BattleAIHooks.wander_anchor`）、`SiegeMageController` 墙顶巡逻、雪人、士兵。
-- **友军士兵** `SiegeSoldier`（`SiegeDirector.ROSTER`：长矛兵 ×10、弓箭手 ×6、盾兵 ×3（嘲讽 `lure`、挡攻城车 `block_cart`）、医护兵 ×2、工匠 ×2；
+- **友军士兵** `SiegeSoldier`（`SiegeDirector.ROSTER`：长矛兵 ×10、弓箭手 ×6、盾兵 ×3（嘲讽 `lure`、挡攻城车 `block_cart`）、医护兵 ×2、工匠 ×2、冰吟诵学徒 ×5、冰筑工匠 ×1；
   被挠撑不住就撤回城门；`add_soldiers` 增派、`bench_soldiers` 全部下场；和公主互相穿过去）。
+- **自主建塔支援**：`SiegeBuilder`是冰筑工匠的订单组件，全部已解锁塔种、无数量上限；共用玩家冰晶且付款后保留30，完成后冷却30秒，只在fight自动下单，优先空基座，再查合法落点。塔种按数量少→解锁波次新→原表序选择，同时只处理一个订单，不升级或拆玩家塔。`BuildPad.request(kind, upgrade=false, reserve_crystals=0, announce=true)`统一校验付款；普通调用默认不变。学徒半速、工匠与蓝色同速，按实际在场人员`build_rate()`求和，最多两名地面协作者。`can_build()`拒绝撤退、冻结／定身、停止物理；位移离开工位停止贡献。暂停／对白／CG冻结冰光进度及自动冷却。撤退保留付费订单，学徒可接续。兵种情报由`gen_siege_support.py`定向更新，源`siege_text/build_support.py`；像素图使用`gen_siege_art.py`的builder角色。专项`siege_build_support_test.tscn`，不运行完整攻防战。
 - **镇民支援** `TownBuffs`（`data/siege/town_buffs.json`，12 个：开局一个、之后每进一波一个；`mul` / `add` 读数 + 给友军挂 `town_*` 状态）
   + 过场 `TownBuffShow`（暂停、镜头推到城门 → 拉远看光点飞到友军；`TownBuffShow.enabled` 测试里关掉）。
 - **小 Boss**：都继承 `SiegeBoss`（`scripts/siege/monsters/siege_boss.gd`，它继承 `TickleTroll` 的抓取 / 挣脱 / 僵直）：
@@ -662,7 +671,7 @@ data/cutscenes/<楼层组>/  地图内过场；data/theater/<楼层组>/  小剧
   小 Boss 冰塔伤害 ×0.25、狂暴前待在下半场（`TrollGeneral.min_y`）；蓝色公主看门狗 `_blue_watchdog`、`downed_never_fails`；
   活梯子打倒一只就散（`LivingLadder.start_count`）；有小 Boss 的波打倒它才进下一波（`SiegeDirector.boss_alive`）；小 Boss 被建筑挡住先绕、再穿过去（`TrollGeneral._unstick`）；
   蓝色公主的 AI `SiegeMageController` 继承 `CompanionController`（挣扎 / 闪避 / 打墙顶的怪 / 墙下救人）；敌方预警 `SiegeFx.warn/lane(..., danger = true)` 进 `danger` 组；
-  冰法学徒（士兵 `mage`）帮忙放冰光：`BuildPad` 改成进度制（蓝色公主 1 / 秒、学徒 `HELPER_RATE` 0.5 / 秒，`reserve` 认领位置）；基座贴图在 `SiegeDirector.decals()` 层；
+  冰吟诵学徒（士兵 `mage`）帮忙放冰光：`BuildPad` 改成进度制（蓝色公主 1 / 秒、学徒 `HELPER_RATE` 0.5 / 秒，`reserve` 认领位置）；基座贴图在 `SiegeDirector.decals()` 层；
   城墙灯 `SiegeWall.WallLight`（火盆在 `torch` 组）；
   物理被关掉的 Actor（活梯子里的壁虎）由接管方调用 `Actor.tick_timers` 走受击无敌 / 增益倒计时；
   蓝色公主 AI 放法术更勤（`THINK` 0.2、门槛降低，AI 施法冷却 / 疲倦 × `SiegeSpells.AI_CD` / `AI_FATIGUE`），粉色公主吟唱时 `JOIN_PINK` 50% 跟着放（`join_pink`）；敌塔整个塔身可打（`HurtProxy`）、血条、范围 / 蓄力 / 崩塌特效。
@@ -676,10 +685,11 @@ data/cutscenes/<楼层组>/  地图内过场；data/theater/<楼层组>/  小剧
   号手倒下整组挂 meta `scatter_until`（3 秒乱走，`SiegeMind.wander`），之后各自重新挑墙段。
 - **蘑菇吸附**：`HazardMushrooms` 每颗蘑菇把 `PULL_R`（帽子外一格）以内的公主（冲刺中不吸）和可推动的怪往帽上吸（`add_push`，吸力很大、走路挣不开），吸到帽上照常弹走。
 - **撤退**（暂停菜单）：`retreat()` 先 `_busy` + 切 `retreat` 状态再清场，存档 `siege_wave` 保持当前波（从准备阶段重来，不会被当成清完了跳到下一波）。
-- **攻城车**：冲锋路上 `SMASH_R` 以内的冰塔（诱饵冰雕除外）撞碎、基座留着，车撞晕 3 秒（`SMASH_DAZE`）后重新瞄准再冲；撞到粉色公主闷笑 +50%（`PINK_LAUGH`）。
+- **攻城车**：冲锋路上 `SMASH_R` 以内的冰塔（诱饵冰雕除外）每次扣最大生命25%（整数向上取整），摧毁后基座留着，车撞晕 3 秒（`SMASH_DAZE`）后重新瞄准再冲；撞到粉色公主闷笑 +50%（`PINK_LAUGH`）。
   攻城大队每 14 秒两排共 9~11 辆（`WaveFeatures.CORPS_*`）；最终波固定开着攻城大队和狂欢节（`FINAL_FIXED`，开打 2 秒就来）。
-- **盾甲螃蟹**：冰塔 / 塔弹 / 法术 / 士兵全挡；只有冰晶共鸣的电弧和冰陨星台的陨石（`HitData.tag` 是 `ShieldCrab.RESONANCE_TAG` / `METEOR_TAG`）打得动、伤害 ×0.25；
+- **盾甲螃蟹**：冰塔 / 塔弹 / 法术 / 士兵全挡；只有冰晶共鸣的电弧和冰陨星台的陨石（`HitData.tag` 是 `ShieldCrab.RESONANCE_TAG` / `METEOR_TAG`）打得动、造成100%伤害；
   粉色公主的锤子背后打得动、正面挡。
+- **暖炉史莱姆**：冰晶共鸣与冰陨星台的标签攻击造成100%伤害；仍免疫其他冰塔及蓝色公主的攻击，仍冻不住／不减速，贴塔融化规则保留。专项 `siege_special_tower_damage_test.tscn`；修订记录 `doc/siege_special_tower_damage.md`。
 - **拆塔投石车**（敌塔 `catapult`，第 6 波起）：挑射程里血最多的冰塔，落点影子亮 1.2 秒后砸下（`CatapultStone`），影子里的冰塔掉 60% 血上限；
   粉色公主站进影子替塔挡下（石头碎成羽毛挠她一下）。
 - **狂欢要塞的巡航弹 / 巨手**：巡航弹炸到人时闷笑直接涨上限的一半（`FortressOrdnance.MISSILE_LAUGH`，`explode(…, laugh_ratio)`）；
@@ -705,7 +715,7 @@ data/cutscenes/<楼层组>/  地图内过场；data/theater/<楼层组>/  小剧
   - **四幕**（CG / 小剧场 / 组合演出的每一步都标 `act`）：1 被抓住、嘴硬 → 2 弱点被找到、开始破功 → 3 魔力疲倦满了、爆发（`act = "burst"`，
 	立绘 `fatigue_burst`、星光 + 释放声、怪被震开再回来），爆发后全身更敏感、被接着挠 → 4 彻底笑倒、认输。失败小剧场里两个人各爆发一次。
 	CG 立绘按幕换：`defeat_1 → defeat_2 → fatigue_burst → defeat_2`；组合演出只在爆发那一步写立绘，其余跟着姿势走。
-  - **手法和性格**：两位公主都是成年人（人物表 `profile`），文本只写痒、笑、害羞和嘴硬。粉色公主写脚（脱鞋袜、掰脚趾挠趾缝、扳住脚背刮脚心、
+  - **手法和性格**：两位公主都是成年人（人物表 `profile`），文本写痒、笑、害羞和嘴硬。粉色公主写脚（脱鞋袜、掰脚趾挠趾缝、扳住脚背刮脚心、
 	沿足弓刷、捏脚跟），开朗倔强、叫嚷反抗、边笑边求饶；蓝色公主写大腿 / 屁股（揉腿根打圈、指尖沿大腿内侧上移到腿根为止、左右轮流捏屁股、
 	两者交界处来回轻刮），寡言嘴硬、短句带省略号，越痒句子越碎，破防后小声服软，不用固定口头禅、不重复同一句。每段都用那只怪 / 陷阱自己的工具来写。
 	组合被谁触发就播谁的版本；主要针对另一位的组合，换成针对这一位弱点的写法。
@@ -745,7 +755,7 @@ data/cutscenes/<楼层组>/  地图内过场；data/theater/<楼层组>/  小剧
 - **目标提示 `ObjectiveMarker`**（`scripts/story/objective_marker.gd`）：目标格上的光圈 + 上下跳的箭头，目标在画面外时屏幕边缘的指向箭头，右下角
   「第 N 天·时段 / 目标 / 实时状态（`extra`）」；过场 / 对话 / 黑幕时藏起来。
 - **镇民委托 `AfterErrands`**（`levels/floor_06/scripts/after_errands.gd`，数据 `data/after/errands.json` ← `after_text/errands.py`）：有赎罪簿以后、白天、到了
-  `from` 的时段开放（`errand_<id>_open`，委托人头上冒「！」，对话 entries 最前面接委托：`set {vars: {errand_req}, call: errand_start}`）；接下 `_active`，
+  `from` 的时段且满足可选的 `requires` 前置委托后开放（`errand_<id>_open`，委托人头上冒「！」，对话 entries 最前面接委托：`set {vars: {errand_req}, call: errand_start}`）；接下 `_active`，
   导演摆上玩法节点（`errand_cookies.gd` 送饼干、`errand_apples.gd` 捡苹果）；`complete` 减工时，`fail` 当场被挠一下、回到能接。一次只能接一个。
   - 闲逛的小孩 `AfterKid`（`after_kid.gd`，场景 `levels/floor_06/scenes/after_kid.tscn`）：`lure` 成立且公主在视野里 → 跑过去挠（闷笑最多 97%，小镇里不会笑晕）
 	→ `on_catch`；冲刺甩开 / 按 E（`on_shoo`）。`pick_zone` / `caption` 给部位和详细字幕（装备回收按穿着的装备写配合挠法）。
@@ -762,10 +772,33 @@ data/cutscenes/<楼层组>/  地图内过场；data/theater/<楼层组>/  小剧
 	  东边的羊圈（门口 `PEN_GATE`）。跟着的羊排成一串；冲刺 / 离太远 → 最前面那只不黏人的掉队（后面的跟着它走）；站着不动 → 跟着的羊追上来舔（部位按性格轮换：
 	  脚心 / 脚趾缝 / 手心 / 后颈 / 膝盖窝 / 腰），怕生的要站着等它；闷笑满绊倒、盐块掉地上（捡起来接着赶）。五只进圈 → 门口的「谢礼」→ 完成。
 	- 同一个委托人有两个委托时，做完以后的话排在所有「能接 / 正在做」后面（`errands.inject`），不挡住下一个。
-- **两位公主的玩闹 `AfterPlay`**（`after_play.gd`，台词 `data/after/play.json` ← `after_text/play.py`）：和跟着的蓝色公主说话「逗她笑一笑」（`call: after_play`），
+	- **劳动委托 / 补罚小游戏的共用底子 `ErrandWorkStage`**（继承 `TrainingStage`；穿链、剪毛、棚布、筛叶、灯轮、报幕都继承它，一个游戏一个脚本、一个文本文件
+	  `after_text/errand_<id>.py` → `data/after/errand_<id>.json`，报幕的文本在 `penalty.py`）：来源 / 对白 / 输入锁 / 临时闷笑疲倦的生命周期（Esc、读档、换图只释放自己持有的，
+	  `suppress_laugh_tutorials` 期间不触发世界的失控教学），加上共用流程：`start_work`（开场 / 续做对白 → 第一段；进度已满只补收尾）、`advance_step`（完成数 +1 →
+	  `save_progress` → 阶段末尾演转换对白）、`_finish_work`；子类重写 `work_text / phase_limits / save_progress / _begin_segment / _reset_segment / _stop_input / _on_phase_changed`。
+	  - 连续干扰 `WorkInterference`（`scripts/training/`，只在可操作时推进）：每 6 秒加强（提前 0.6 秒预告），0.65 秒一次命中特效，3 秒一次反应；`work_clock(dt)` 推进它，
+		加强时按 `phases[].tools` 轮换道具，命中时 `tickle(tickler, tickle_zone)`。挠痒事件 `feedback`（`common.event(阶段, 道具, 描写, 反应…, zone, fx)`：描写进下方反应框，
+		反应按闷笑分 light / mid / heavy 飘在头上），部位和特效由事件决定，不写死在代码里。只在开场、两次阶段转换、收尾演阻塞对白。
+	  - 闷笑满 → `recover`：闷笑回到 45%、当前这一段从头（文本 `full`）。魔力疲倦满 → `release`：**魔力自动释放，人会觉得舒服**（闪光、`release` 的描写 / 舒服的反应 /
+		挠她的人一句），疲倦清空、进度不退，停 1.8 秒；之后 5 秒「释放后敏感」：`work_laugh` ×1.5、反应换 `sensitive`。都不记补罚。
+	  - 四个以脚为主的游戏（粉色公主单人，手法针对脚底；蓝色公主不参与，只在报幕结尾当观众说两句）：
+		- **城门底下重新穿链**（工匠，第 4 天起白天，城门内侧 `[31,38]`，`GateChainShow`）：她仰面躺进检修槽穿链，光脚伸在槽口外。穿链 3 / 入轮 6 / 试拉 3 步，←→ 对准、J / K 力度、E 确认；
+		  道具：清灰刷 / 羽毛掸 → 润滑油刷 / 链环滚趾缝 → 手指刮脚心 / 齿轮刷滚足弓。**缩脚**（S）：预告亮着时按，这一下闷笑减半，但链头往反方向偏 ×1.5。`errand_gate_chain_step`（0~12）。
+		- **蘑菇羊剪毛**（女仆，第 4 天起白天、赶羊之后，羊圈门口 `[57,33]`，`ShearingShow`）：脚底抹了盐，咕咕边被剪毛边舔脚。梳 3 结 / 剪 4 区 / 收 3 堆，←→ 转工具、按住 J 沿箭头工作；
+		  **盐量**：盐越多咕咕越乖（抖毛间隔 9 + 盐 ×5 秒、预告更早）但舔得越勤越痒，K 擦掉一些盐，每阶段女仆再抹；装袋阶段小羊羔挤过来和咕咕轮流舔另一只脚。`errand_shearing_step`（0~10）。
+		- **脚踏灯轮校准**（派对主人，第 4 天起白天、篝火舞排练之后，篝火边 `[44,26]`，`LampCalibrationShow`）：光脚踩调光踏板，单灯 / 双灯 / 图案各 4 项，亮斑稳 3 秒；
+		  **踏板刷**：踩得越深灯越亮、滚轮毛刷也越痒（闷笑按踩下的深度额外涨）。道具：羽毛 / 彩带流苏 → 流苏 / 灯芯草钻趾缝 → 灯芯草 / 手指掰脚趾。`errand_lamp_calibration_step`（0~12）。
+		- **忍笑报幕练习**（派对主人的补罚，`AnnouncerShow`，见「补罚任务」）。
+	  - 棚布补漏（商贩，坏摊棚南侧 `[15,28]`，`CanopyShow`）：挂 3 角 / 描 4 道缝 / 张紧 3 次，`errand_canopy_step`（0~10）。筛叶风选（药剂师奶奶，工房门外 `[17,12]`，`SiftingShow`）：
+		跟拍筛 12 拍 / 调风分 24 片叶 / 装 3 袋，`errand_sifting_step`（0~5）。这两个的挠法还是腰侧，文本没重写。
+	  - 测试：`f6_after_test.tscn -- --gate-chain-only / --shearing-only / --work-errands-only（穿链 + 剪毛）/ --workshop-only / --town-workshop-only（四项）/ --festival-only（灯轮 + 报幕）`，
+		辅助脚本 `tests/helpers/f6_*.gd`；截图 `tests/capture_f6_{gate_chain,work_errands,workshop,festival}.tscn`。
+- **两位公主的玩闹 `AfterPlay`**（`after_play.gd`，台词 `data/after/play.json` ← `after_text/play.py`）：和蓝色公主说话「逗她笑一笑」（`call: after_play`），
   千手痒痒裤的小手按住她；最多 3 次选部位，今天的弱点（`weak_spot()` 按天变）以外的部位台词透露远近，挠中后节奏连击（`KeySequenceQTE`）成功就破功；
-  每天一次（`vars.after_play_day`），成功 `blue_bond` +1。
-- **导演**：`AfterTown`（图例 `f6after`）把跟着的蓝色公主改名 `AfterBlue`、镇民改名成对话文件名（过场里直接用），按日程摆（`place`：藏起来 = `show_flag` 设成
+  失败可当天重试，获胜后当天不再重玩；成功 `blue_bond` +1，每天最多一次。`vars.after_play_day` 记尝试、`after_play_win_day` 记获胜、`after_play_bond_day` 记奖励日期；旧记录无法判断胜负时允许重试，当天不补发不确定的旧关系奖励。
+- **蓝色公主自由活动 `AfterBlueRoutine`**（`levels/floor_06/scripts/after_blue_routine.gd`）：仅管理战后小镇的 `AfterBlue`，默认不跟随。日程 `schedule.json` 的 `npcs.after_blue` 由 `gen_floor06_after.py` 生成：早上训练室外 `[12,14]`、下午井边 `[33,18]`、晚上篝火旁 `[41,25]`，周围 2 格内闲逛；时段切换在时钟黑幕中换位。`BluePrincess.start_wandering()` 接回 `Talk`，`start_following()` 接回 `PartnerTalk`，避免重复交互。
+  当天挑战获胜后，对话可邀请同行或结束同行；`vars.after_blue_follow_day` 保存主动同行日期，重进小镇恢复，次日需重新获胜。`after_blue_can_follow` / `after_blue_following` 仅为对话菜单派生标记。结束同行沿路返回活动区。任务／委托优先恢复原同行，过场和CG期间不接管；第二天早上示众前仍离场。其他地图保留原导演安排。
+- **导演**：`AfterTown`（图例 `f6after`）把蓝色公主改名 `AfterBlue` 交给 `AfterBlueRoutine`、镇民改名成对话文件名（过场里直接用），按日程摆（`place`：藏起来 = `show_flag` 设成
   永远没有的标记）；过场放完重新摆、揭开 `end_dark` 的黑幕（紧接着 `pass_time` 时交给它）。`AfterHouse`（图例 `f6afterhouse`，楼上楼下共用）：楼下进门 → `enter_house`，
   梦游进行中摆出三处可调查的手印（`CLUES`）；楼上蓝色公主（`AfterBlue`）夜里躺床上，三处手印都看过 → `run_upstairs()`。
 - **第 1 天**：早 `after_d1_open`（千手痒痒裤当众发作、队长要砍裤子、私下特训 / 搬砖）→ 午 `after_d1_verdict`（镇长主持、队长宣读，「……那扇门，钥匙是我的」被打断，
@@ -803,7 +836,7 @@ data/cutscenes/<楼层组>/  地图内过场；data/theater/<楼层组>/  小剧
 	三辆拆完 → `after_d3_cart_done`：队长递手帕的「花猫样」口误（用户给定的台词）。
   - **裁缝的试衣模特·找漏风**（第 5 天早上，裁缝铺里间 `floor_06_after_tailor`，`TaskTailor`，文本 `after_text/tailor.py`）：量尺寸（暖场）→ 腋下 / 腰 / 脚心（棉袜）
 	各四个点，裁缝拿羽毛挨个试（漏风 = 好痒、挨着没缝的漏风点 = 有一点点、别的没感觉；闷笑 ≥ 60% 时挨着的点一半可能也说好痒）→ 选项页标点（部位图 `TailorChart`
-	同步显示）→ 缝：标错的「仔细检查」（挠一阵）；可以再试一遍、喝茶降闷笑（3 次）。验收走过三个羽毛人台（`FeatherMannequin`），漏补的部位被挠、回去重找；
+	同步显示）→ 缝：标错的「仔细检查」（挠一阵）；可以再试一遍、喝茶降闷笑（3 次）。部位图使用 `assets/generated/after/tailor_{armpit,waist,sole}.png`：棉衣肩腋接缝、前后腰并排、正常成年女性脚型的贴合棉袜底面。源图与提示词在 `tools/art/src/tailor_charts/`，`gen_tailor_charts.py` 规范化为 384×256；数据 `chart.texture / points_uv` 配置编号位置，颜色、选中圈和已缝 X 由界面独立覆盖。图与选项分栏，`ChoiceMenu.ask(texts, prompt, layout=Rect2())` 可指定布局，省略时保持原布局。验收走过三个羽毛人台（`FeatherMannequin`），漏补的部位被挠、回去重找；
 	闷笑 97% = 失败（`after_fail_tailor`，漏风点重新随机）。完成得到装备「防痒棉衣」（`equip_tailor_coat`：腋下 / 腰 / 脚心各挡 2 次）。台词行里写 `"tickle": 部位`
 	时任务节点顺手挠一下（对话框的 `line_shown` 信号）。
   - **矿车护送·双人轨道**（第 5 天下午，受损的矿道 `floor_06_after_mine`，东北角的矿道门 `after_mine_open` 这时才开；`TaskMine`，文本 `after_text/mine.py`）：
@@ -825,7 +858,7 @@ data/cutscenes/<楼层组>/  地图内过场；data/theater/<楼层组>/  小剧
 	- 第 4 天下午：第一课 `IceSitShow` 冰封静坐（身体图 Q W E / A S D，亮起来的地方冻住；寒冷值满发抖全化开；表情掉光记一笔，三笔重来；假动作）→ 课间 →
 	  第二课 `PantsTameShow` 驯裤（小手的手势 → W 按住 / A 安抚 / S 冻住 / D 随它去；假手势；听话度满出师）。
 	- 第 6 天下午：第三课「借手」`PantsHandShow`（小游戏画面：飞来的羽毛 ← → ↑ 挡、拉杆亮起 A / D 拉、粉色公主偷袭 ↓ 抓；每个指令花听话度，
-	  不够 = 小手造反挠她自己，漏掉 = 被挠；处理够 12 个过关；训练室只有一间）→ 考核 `DrillExamShow`（继承 `IceSitShow`：粉色公主挠，J 小手挡、U 千手解放，释放 = 失控加时；笑出声三次不及格，
+	  不够 = 小手造反挠她自己，漏掉 = 被挠；处理够 12 个过关；训练室只有一间）→ 考核 `DrillExamShow`（继承 `IceSitShow`：QWEASD 实际冻结对应六部位，考核和第一课共用 `after_text/drill.py` 的 `ICE_SPOTS`，避免考核数据漏配；粉色公主挠，J 小手挡、U 千手解放，释放 = 失控加时；笑出声三次不及格，
 	  不算失败、结局台词不同）→ 学会被动「冰封自制」（`ice_composure`：`PlayableCharacter._extra_stat_*` 里减闷笑涨幅、减轻千手痒痒裤）和主动技能
 	  「千手解放」（`PantsBurst`，输入 `skill` = U：范围内的怪定身 3 秒、陷阱暂停；副作用 5 秒小手挠自己 + 状态 `pants_backlash`；冷却 15 秒；剧情标记 `skill_pants_burst`）。
   - **陷阱验收**（第 6 天早上，保卫队训练营 `floor_06_after_proving`，东边的门 `after_proving_open`；`TaskInspect` + `InspectShow`，文本 `after_text/inspect.py`）：
@@ -844,22 +877,25 @@ data/cutscenes/<楼层组>/  地图内过场；data/theater/<楼层组>/  小剧
   - 第 2 天 面包店奶奶「羽毛大扫除」（`TaskSweep`，小镇东边的烤炉后院）：按住 J 扫羽毛堆；起风时羽毛钻进脚趾缝（K 抖脚、按住 E 抠），奶奶拿鸡毛掸子「帮忙」。
   - 第 3 天 药剂师奶奶「逃跑的痒痒鼠」（`TaskMice` → `MouseShow`）：身体图 Q W E / A S D，小鼠在格子间乱窜，拍对地方抓住，最后一只钻进鞋里连按 D。
   - 第 4 天 小孩们「挠痒捉人」（`TaskTag` + `TaskTag.TagKid`）：姐姐当鬼（追上去 J 挠）/ 孩子当鬼（被摸到按倒挠）/ 大家一起当鬼。
-  - 第 6 天 镇长「笑声灯笼」（`TaskLantern` → `LanternShow`）：↑↓ 调欢笑踏板的刷子强度，闷笑停在每盏灯要的范围里几秒点亮，笑过头灯泡炸，疲倦释放吹灭一半。
+  - 第 6 天 镇长「笑声灯笼」（`TaskLantern` → `LanternShow`）：↑↓ 调欢笑踏板的刷子强度，闷笑停在每盏灯要的范围里几秒点亮，笑过头灯泡炸；疲倦释放只随机吹灭 1–2 盏已亮灯笼（`MIN_LOSS/MAX_LOSS`），不损坏、可以重亮，无亮灯不扣，全部完成优先。
   「小游戏画面」型的任务用 `TaskShow`（`make_show()` → `await play()`）。
 - **第 5 天夜里 小汤姆的恶作剧**（`AfterStory` 的 `d5_tom`：进小屋就开演 `TomPrankShow`，扮演小汤姆，文本选择）：痒 / 舒服两条（借闷笑条 / 疲倦条显示），
   四段（观察 / 轻挠 / 橘子上场 / 一起来），脚趾缝的揉法又痒又舒服；痒满笑醒被抓，舒服满魔力释放时选加大强度 = 笑晕（fainted），住手 = 被惊醒；做完都没满 = 悄悄溜走。
   结果 `vars.tom_prank_result` + 标记 `tom_prank_<结果>`，第 6 天小汤姆的话按结局变（`after_text/tom.py`）。
 - **补罚任务**（`AfterPenance`，台词 `after_text/penalty.py`）：赎罪簿上的受罚比已经抵掉的（`vars.penance_settled`）多时开 `penalty_open`，市场监督 / 篝火派对的主人冒「！」，
   对话里 `call: after_penalty`（`vars.penalty_req`）：`ModelShow` 活体模特（顾客轮流「试试效果」，A / D 保持姿势、J 绷住表情，动了 / 笑了加时）/
-  `PenaltyDanceShow` 罚跳舞（音游，跳错一拍围观的人挠一下，错太多加一段）。做完抵一条、减 3 工时。
+  `PenaltyDanceShow` 罚跳舞（音游，跳错一拍围观的人挠一下，错太多加一段）/ `AnnouncerShow` **忍笑报幕练习**（第 4 天白天起、篝火舞排练之后，`penalty_announcer_open`）：
+  她光脚站在报幕台后，主人蹲在台下挠脚（羽毛 → 手指钻趾缝 → 掰脚趾 / 刮脚心交替）；1~3 选节目卡、指针进框按 J 鸣铃，闷笑 ≥ 70% 时鸣铃一半机会笑场重报，K 深呼吸降闷笑但下一下更狠；
+  只在当场有效，十二个报完才结算。补罚的脚本表 `AfterPenance.SHOWS`。做完抵一条、减 3 工时。
 - 小游戏共同：`TrainingStage` 开演时 `GameState.dialogue_holds` +1（对话框收尾时不清 `in_dialogue`，人物不动、按 E 不会去和人说话），选项页也一样；
   飘字（`pop` / `say`）互相错开、夹在舞台框里；挠法描写（`narrate`）进画面下方的反应框；背景音乐切到 `minigame`（`tools/audio/gen_music.py` 生成）。
-  弥补任务进行中跟着的蓝色公主不能对话（`AfterStory._mute_partner`）；没写 `no_switch` 的小场景按 C 换人（`AfterRoom` 设 `free_switch`）。
+  弥补任务进行中跟着的蓝色公主不能对话（`AfterStory._mute_partner`：先由自由日程交接为同行，静音／恢复均刷新交互区，避免只清文本却留下 E 提示）；没写 `no_switch` 的小场景按 C 换人（`AfterRoom` 设 `free_switch`）。
 - 小场景导演 `AfterRoom`（图例 `f6afterroom`）：目标提示、目标圈触发、进图自动演的事件、镇民改名、蓝色公主跟着。`AfterStory.TOWN_DOORS / ROOM_EXITS` 指路。
 - 小剧场 / 舞台上的字（`SpeechBubble`）画在最前面（`z_as_relative = false`、`z_index = 4000`）；训练小游戏舞台上气泡垫在飘字下面。
 - 测试：`tests/f6_after_test`（胜利去向、开场 → 宣判、日程摆位、赎罪簿和背包页、宵禁锁门、手印顺序、楼上结尾 → 第 2 天、示众小游戏（挣扎 / 求情 / 应对 / 笑出声 / 释放加时 / 笑晕）/ 罚工时 / 转盘、委托、玩闹、各个弥补任务（完成 / 失败小剧场 / 重来）、第 3 天起的四个委托、
   晚上的四个任务、小汤姆的恶作剧、补罚任务、小游戏输入锁、床上休息、日程逐层覆盖、旧存档、跳关）。测试一路从第 1 天走到第 7 天，
   新加的白天 / 夜里事件要插进 `_run_*` 的顺序里（夜里任务做完会自动睡到天亮，`_sleep_night` 见到已经是早上就跳过）。
+  本批日常优化专项：`res://tests/f6_after_test.tscn -- --daily-polish-only`（`tests/helpers/f6_after_daily_polish.gd`，56 项：灯笼边界、考核六键、限区日程、失败重试、每日奖励、同行重进、任务交接和旧存档、裁缝布局与输入锁）；截图入口 `tests/capture_f6_daily_polish.tscn`。实施记录、资源来源和截图索引见 `doc/f6_after_daily_polish.md` 与进度文档。
 
 ## 公主状态与换美术素材
 

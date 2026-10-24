@@ -650,7 +650,7 @@ func _burst(who: Node2D, hold: float) -> void:
 		var pc := who as PlayableCharacter
 		pc.shake(0.6)
 		var visual := str(pc.call("fatigue_burst_visual")) if pc.has_method("fatigue_burst_visual") else "damaged_burst"
-		var set_name := "blue" if pc.character_id == "blue" else "pink"
+		var set_name := str(pc.get("portrait_set")) if pc.get("portrait_set") != null else "pink"
 		var burst_tex: Texture2D = Dialogue.portrait_for(visual, set_name)
 		_cg_override = true
 		Dialogue.set_portrait_override(burst_tex)

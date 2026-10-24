@@ -406,6 +406,8 @@ func _tick_buffs(delta: float) -> void:
 		return
 	var expired: Array = []
 	for id in buffs:
+		# 祭典光环与其维护的Buff共用暂停语义，其他状态维持原计时规则。
+		if id in ["festival_ally", "festival_enemy"] and (GameState.in_cutscene or CG.is_busy()): continue
 		var b: Buff = buffs[id]
 		if not b.is_permanent():
 			b.time_left -= delta

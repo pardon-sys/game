@@ -215,7 +215,28 @@
 					"speaker": "裁缝",
 					"text": "嗯……确实没漏。那就是你标错啦～"
 				}
-			]
+			],
+			"chart": {
+				"texture": "res://assets/generated/after/tailor_armpit.png",
+				"points_uv": [
+					[
+						0.72,
+						0.23
+					],
+					[
+						0.7,
+						0.5
+					],
+					[
+						0.3,
+						0.5
+					],
+					[
+						0.28,
+						0.23
+					]
+				]
+			}
 		},
 		"waist": {
 			"name": "腰",
@@ -341,7 +362,28 @@
 					"speaker": "裁缝",
 					"text": "对呀，不漏。所以你标错了嘛～"
 				}
-			]
+			],
+			"chart": {
+				"texture": "res://assets/generated/after/tailor_waist.png",
+				"points_uv": [
+					[
+						0.43,
+						0.5
+					],
+					[
+						0.74,
+						0.5
+					],
+					[
+						0.1,
+						0.5
+					],
+					[
+						0.27,
+						0.5
+					]
+				]
+			}
 		},
 		"sole": {
 			"name": "脚心（棉袜）",
@@ -469,7 +511,28 @@
 					"speaker": "裁缝",
 					"text": "嗯，穿好的时候不漏。是你标错啦～（把袜子拉了回去）"
 				}
-			]
+			],
+			"chart": {
+				"texture": "res://assets/generated/after/tailor_sole.png",
+				"points_uv": [
+					[
+						0.5,
+						0.84
+					],
+					[
+						0.48,
+						0.58
+					],
+					[
+						0.5,
+						0.34
+					],
+					[
+						0.5,
+						0.14
+					]
+				]
+			}
 		}
 	},
 	"menu": {
@@ -642,5 +705,6 @@
 				"text": "棉袜还有漏的！坐回凳子上～"
 			}
 		]
-	}
+	},
+	"chart_legend": "红：明显　黄：轻微　绿×：已缝"
 }

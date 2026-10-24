@@ -2,7 +2,7 @@
 地图：
   floor_06_after           战后的小镇（和战时小镇同样的布局）：烧焦的房子搭上了脚手架、新木料、歪掉的狂欢图腾柱（待修）、
                            广场上的宣判台 / 告示板 / 足枷、庆功的彩旗；城门关着（打扫战场），矿道口钉死，营地在整修。
-                           蓝色公主跟着（no_switch，不能换人），导演 f6after（AfterTown）按 DayClock 的日程摆镇民。
+                           蓝色公主自由活动／当日邀请同行（no_switch，不能换人），导演 f6after（AfterTown）按 DayClock 日程摆镇民。
   floor_06_after_house     蓝色小屋楼下（粉色公主的房间）：进门时白天的事都做完了 → 天黑；夜里门锁上（宵禁）。
   floor_06_after_house_up  蓝色小屋楼上（蓝色公主的房间）：第一天夜里顺着手印上来之后才解锁。
 日程：data/after/schedule.json（DayClock）——npcs 镇民日程、days 每天每个时段的事件 / 赎罪簿上的任务。
@@ -18,7 +18,22 @@ from pathlib import Path
 os.chdir(Path(__file__).resolve().parents[2])
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-from after_text import d1, d2, equip_kids, errand_dance, errand_goats, errand_ladder, errand_massage, errands, house, mine, play, potion, punish, stocks, tailor, tasks, totem, town, drain, drill, inspect, tom, night, penalty  # noqa: E402
+from after_text import d1, d2, equip_kids, errand_dance, errand_goats, errand_ladder, errand_massage, errand_gate_chain, errand_shearing, errand_canopy, errand_sifting, errand_lamp_calibration, errands, house, mine, play, potion, punish, stocks, tailor, tasks, totem, town, drain, drill, inspect, tom, night, penalty  # noqa: E402
+
+# 只生成灯轮 / 报幕的文本（委托表、灯轮、补罚表、派对主人对话），不重新写地图、其他任务或别的镇民对白。
+if "--festival-only" in sys.argv:
+    from copy import deepcopy
+    def write_festival(path, data):
+        Path(path).write_text(json.dumps(data, ensure_ascii=False, indent="\t") + "\n")
+    write_festival("data/after/errands.json", {"_说明": "七日赎罪的镇民委托（gen_floor06_after.py 从 after_text/errands.py 生成，AfterErrands 读）。", "errands": errands.ERRANDS})
+    write_festival("data/after/errand_lamp_calibration.json", errand_lamp_calibration.LAMP)
+    write_festival("data/after/penalty.json", dict({"_说明": "补罚任务（after_text/penalty.py 生成）。"}, **penalty.PENALTY))
+    files = deepcopy(town.D)
+    errands.inject(files)
+    penalty.inject(files)
+    write_festival("data/dialogues/floor_06/after_bonfire_host.json", files["after_bonfire_host"])
+    print("祭典专项生成：委托表、灯轮、补罚表、派对主人对话")
+    sys.exit(0)
 
 POOL = list("ACDEFGHIJKLMNOQRSTUVWXYZabcdefghijklmnopqrsuvwyz0123456789!?$&*+-/:;<>@^_|~()'=,`{}\"")
 POOL += list("αβγδεζηθικλμνξοπρστυφχψωΓΔΘΛΞΠΣΦΨΩ甲乙丙丁戊己庚辛壬癸子丑寅卯辰巳午未申酉戌亥金木水火土日月山川")
@@ -66,7 +81,8 @@ def prop(m, x, y, kind, action=""):
 
 
 def npc(m, x, y, nid, file, wander=0, extra=""):
-    m.put(x, y, ("npc id=%s dialogue=floor_06/%s wander=%s %s" % (nid, file, wander, extra)).strip())
+    kind = "bonfire_host" if nid == "bonfire_host" else "npc id=" + nid
+    m.put(x, y, ("%s dialogue=floor_06/%s wander=%s %s" % (kind, file, wander, extra)).strip())
 
 
 OBJ = "talk:floor_06/after_objects#"
@@ -170,7 +186,7 @@ m.put(32, 38, "spawn id=from_siege")
 m.put(32, 39, "exit target=%s spawn=from_town unlock_flag=after_field_open locked_dialogue=after_gate_closed" % FIELD)
 m.put(33, 36, "spawn id=from_field")
 m.put(32, 37, "player")
-m.put(33, 37, "blue_princess follow=true ai=false")
+m.put(33, 37, "blue_princess ai=true dialogue=floor_06/after_partner")
 
 # 镇民：地图上的位置 = 默认位置；导演按日程再摆（节点改名成对话文件名，过场里用）
 RESIDENTS = {   # 对话文件 -> (人物图, 默认格)
@@ -493,6 +509,12 @@ for f in NPCS:
 # 晚上的弥补任务：委托人那天晚上留在外面
 for _f, _d, _at in (("after_granny", "d2", (45, 12)), ("after_kid_tom", "d4", (30, 30)), ("after_kid_lily", "d4", (32, 30)), ("after_mayor", "d6", (31, 26))):
     NPCS[_f].setdefault(_d, {})["night"] = {"at": list(_at), "dir": "down", "wander": 0, "hidden": False}
+NPCS["after_blue"] = {
+    "default": {"at": [12, 14], "dir": "down", "wander": 2, "hidden": False},
+    "morning": {"at": [12, 14], "dir": "left"},
+    "afternoon": {"at": [33, 18], "dir": "left"},
+    "night": {"at": [41, 25], "dir": "right"},
+}
 DAYS = {
     "d2": {"morning": {"event": "d2_stocks", "task": "广场足枷示众", "hours": 12},
            "afternoon": {"event": "d2_equip", "task": "回收痒痒装备", "hours": 10},
@@ -525,7 +547,12 @@ Path("data/after/equip_kids.json").write_text(json.dumps(dict({"_说明": "装�
 Path("data/after/potion.json").write_text(json.dumps(dict({"_说明": "配药解谜（after_text/potion.py 生成，TaskPotion 读）。"}, **potion.POTION),
     ensure_ascii=False, indent="\t") + "\n")
 for _name, _mod, _key, _cls in (("ladder", errand_ladder, "LADDER", "LadderShow"), ("goats", errand_goats, "GOATS", "ErrandGoats"),
-                                 ("dance", errand_dance, "DANCE", "DanceShow"), ("massage", errand_massage, "MASSAGE", "MassageShow")):
+                                 ("dance", errand_dance, "DANCE", "DanceShow"), ("massage", errand_massage, "MASSAGE", "MassageShow"),
+                                 ("gate_chain", errand_gate_chain, "GATE_CHAIN", "GateChainShow"),
+                                 ("shearing", errand_shearing, "SHEARING", "ShearingShow"),
+                                 ("canopy", errand_canopy, "CANOPY", "CanopyShow"),
+                                 ("sifting", errand_sifting, "SIFTING", "SiftingShow"),
+                                 ("lamp_calibration", errand_lamp_calibration, "LAMP", "LampCalibrationShow")):
     Path("data/after/errand_%s.json" % _name).write_text(json.dumps(dict({"_说明": "委托的台词（after_text/errand_%s.py 生成，%s 读）。" % (_name, _cls)},
         **getattr(_mod, _key)), ensure_ascii=False, indent="\t") + "\n")
 Path("data/after/tailor.json").write_text(json.dumps(dict({"_说明": "找漏风（after_text/tailor.py 生成，TaskTailor 读）。"}, **tailor.TAILOR),

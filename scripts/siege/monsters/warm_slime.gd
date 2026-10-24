@@ -1,6 +1,6 @@
 class_name WarmSlime
 extends SiegeMonster
-## 暖炉史莱姆：暖烘烘的，不怕冻（冻不住、不减速），冰锥 / 冰塔 / 蓝色公主的法术都打不动——只能粉色公主打。
+## 暖炉史莱姆：不怕冻（冻不住、不减速），冰晶共鸣／冰陨星台造成100%伤害；其他冰塔及蓝色公主的攻击仍免疫。
 ## 不攻城，专找最近的冰塔，贴上去把塔慢慢融化（MELT 每秒）。
 
 const MELT := 9.0
@@ -18,6 +18,8 @@ func add_buff(id: String, duration := -2.0, stacks := 1) -> void:
 
 
 func block_hit(hit: HitData) -> bool:
+	if hit.tag == ShieldCrab.RESONANCE_TAG or hit.tag == ShieldCrab.METEOR_TAG:
+		return false
 	var s := hit.source
 	return s is IceTower or s is Snowman or (s is PlayableCharacter and (s as PlayableCharacter).character_id == "blue")
 

@@ -64,13 +64,13 @@ z = sign dialogue=after_camp_blocked
 4 = spawn id=from_siege
 5 = exit target=floor_06_after_field spawn=from_town unlock_flag=after_field_open locked_dialogue=after_gate_closed
 6 = spawn id=from_field
-7 = blue_princess follow=true ai=false
+7 = blue_princess ai=true dialogue=floor_06/after_partner
 8 = npc id=captain dialogue=floor_06/after_captain wander=0
 9 = npc id=mayor dialogue=floor_06/after_mayor wander=0
 ! = npc id=granny dialogue=floor_06/after_granny wander=0
 ? = npc id=merchant dialogue=floor_06/after_merchant wander=0
 $ = npc id=supervisor dialogue=floor_06/after_supervisor wander=0
-& = npc id=bonfire_host dialogue=floor_06/after_bonfire_host wander=0
+& = bonfire_host dialogue=floor_06/after_bonfire_host wander=0
 * = npc id=kid dialogue=floor_06/after_kid_tom wander=0
 + = npc id=kid dialogue=floor_06/after_kid_lily wander=0
 - = npc id=maid dialogue=floor_06/after_maid wander=0

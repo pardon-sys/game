@@ -3,12 +3,14 @@ extends TrainingStage
 ## 第 6 天晚上 镇长「笑声灯笼」（借训练小游戏的画面）：两只脚伸进祖传的「欢笑踏板」，里面的软毛刷刷脚底，笑声给灯笼充能。台词 data/after/night.json 的 lantern。
 ##   ↑↓ 调刷子的强度（level 0~4）：闷笑每秒按 RATES[level] 涨落；魔力疲倦每秒 +level × FATIGUE。
 ##   每盏灯笼要求闷笑停在 [lo, hi] 里 HOLD 秒就点亮；超过 hi = 灯泡炸了（这盏重来，闷笑回落）；
-##   魔力疲倦满 = 自动释放：已经点亮的灯笼吹灭一半。五盏都点亮 = 做完（这个任务不会失败）。
+##   魔力疲倦满 = 自动释放：随机吹灭1–2盏已点亮的灯，不销毁；全部点亮优先完成。
 ## await play() → true。测试：quiet、press(键)、level。
 
 const RATES := [-0.14, -0.03, 0.05, 0.1, 0.16]
 const FATIGUE := 0.035
 const HOLD := 2.2
+const MIN_LOSS := 1
+const MAX_LOSS := 2
 
 static var quiet := false
 
@@ -17,6 +19,7 @@ var lit := 0
 var hold := 0.0
 var bursts := 0
 var blown := 0
+var last_extinguished := 0
 var _done := false
 var _info: Label
 var _gauge: Control
@@ -195,19 +198,24 @@ func _burst() -> void:
 	level = maxi(0, level - 2)
 
 
-## 魔力疲倦满：释放，吹灭一半的灯
+## 魔力疲倦满：只吹灭少量灯；完成后不再倒扣。last_extinguished供边界测试使用。
 func _punish(kind: String) -> void:
-	if kind != "fatigue":
+	if kind != "fatigue" or _done:
+		return
+	if lit >= lanterns().size():
+		_done = true
 		return
 	blown += 1
 	if player.fatigue:
 		player.fatigue.clear()
-	var bl: Array = data().get("blown", [])
+	last_extinguished = mini(lit, rng.randi_range(MIN_LOSS, MAX_LOSS))
+	var bl: Array = data().get("blown" if last_extinguished > 0 else "blown_none", [])
 	if not bl.is_empty():
-		narrate(str(bl.pick_random()), 2.0)
+		var caption := str(bl.pick_random())
+		narrate(caption % last_extinguished if last_extinguished > 0 else caption, 2.0)
 	flash(Color(1, 0.9, 1, 0.8), 0.5)
 	Audio.play("star_burst", -4.0)
-	lit = lit / 2
+	lit -= last_extinguished
 	hold = 0.0
 	_refresh()
 

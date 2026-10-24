@@ -14,6 +14,7 @@ var options: Array = []
 var panel: PanelContainer
 var box: VBoxContainer
 var prompt_label: Label
+var _layout := Rect2()
 
 
 func _ready() -> void:
@@ -44,7 +45,9 @@ func is_open() -> bool:
 	return panel.visible
 
 
-func ask(texts: Array, prompt := "") -> int:
+func ask(texts: Array, prompt := "", layout := Rect2()) -> int:
+	_layout = layout
+	panel.custom_minimum_size = layout.size
 	options = texts
 	selected = 0
 	prompt_label.text = prompt
@@ -79,12 +82,16 @@ func _refresh() -> void:
 	for i in options.size():
 		var l := Label.new()
 		l.text = ("▶ " if i == selected else "　 ") + str(options[i])
+		if _layout.has_area():
+			l.custom_minimum_size.x = _layout.size.x - 24
+			l.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+			l.add_theme_font_size_override("font_size", 8)
 		l.add_theme_color_override("font_color", PINK if i == selected else TEXT)
 		box.add_child(l)
 	await get_tree().process_frame
 	panel.reset_size()
 	var vp := get_viewport().get_visible_rect().size
-	panel.position = Vector2(vp.x - panel.size.x - 16, vp.y - 96 - panel.size.y)
+	panel.position = _layout.position if _layout.has_area() else Vector2(vp.x - panel.size.x - 16, vp.y - 96 - panel.size.y)
 
 
 func _input(event: InputEvent) -> void:

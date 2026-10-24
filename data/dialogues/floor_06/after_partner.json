@@ -106,6 +106,29 @@
 					"next": "play"
 				},
 				{
+					"text": "想请她一起逛逛",
+					"if": {
+						"flag": "penance_book",
+						"not": "after_blue_can_follow"
+					},
+					"next": "challenge"
+				},
+				{
+					"text": "邀请她一起逛逛",
+					"if": {
+						"flag": "after_blue_can_follow",
+						"not": "after_blue_following"
+					},
+					"next": "invite"
+				},
+				{
+					"text": "你先去忙吧",
+					"if": {
+						"flag": "after_blue_following"
+					},
+					"next": "dismiss"
+				},
+				{
 					"text": "没什么",
 					"next": ""
 				}
@@ -119,6 +142,39 @@
 			],
 			"set": {
 				"call": "after_play"
+			}
+		},
+		"challenge": {
+			"lines": [
+				{
+					"text": "……今天，先赢过我。"
+				},
+				{
+					"text": "赢了就陪我逛？说好了！",
+					"speaker": "公主",
+					"emotion": "happy"
+				}
+			],
+			"next": "play"
+		},
+		"invite": {
+			"lines": [
+				{
+					"text": "今天算你赢。……走吧。"
+				}
+			],
+			"set": {
+				"call": "after_invite_blue"
+			}
+		},
+		"dismiss": {
+			"lines": [
+				{
+					"text": "……嗯。我在老地方。"
+				}
+			],
+			"set": {
+				"call": "after_dismiss_blue"
 			}
 		},
 		"d1_wait": {

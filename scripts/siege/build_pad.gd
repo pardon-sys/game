@@ -3,7 +3,7 @@ extends Node2D
 ## 攻防战的冰塔基座（运行时生成：粉色公主在战场上任何能建的地方按 B，SiegeDirector.try_build）。两个人一起造：
 ##   1. 选塔（6 种，显示价格）/ 已经有塔时（站在旁边按 B 或 E）：升级（同一种再造一次 = 2 级）/ 拆掉（返还一半）；付冰晶。
 ##   2. 基座进入「等冰光」：蓝色公主（AI 自动走过来；玩家操控时走到基座正上方的城墙上按 E）从城墙射冰光——
-##      BEAM_TIME 秒，离城墙每多 BEAM_STEP 像素加 1 秒。冰法学徒（SiegeSoldier 的 mage）也会走过来帮忙，效率是蓝色公主的一半
+##      BEAM_TIME 秒，离城墙每多 BEAM_STEP 像素加 1 秒。冰吟诵学徒（SiegeSoldier 的 mage）也会走过来帮忙，效率是蓝色公主的一半
 ##      （HELPER_RATE；每座最多 MAX_HELPERS 个）；几个人一起放就加起来（progress 每秒 + 1 + 0.5 × 学徒数，够 beam_time() 就造好）。
 ##   3. 冰塔破冰而出（IceTower）。
 ## 冰塔布置随 GameState.vars["siege_towers"] 保存（[{x, y, kind, level}]），失败重来时保留。
@@ -26,7 +26,7 @@ var progress := 0.0
 var _need := 0.0
 var _blue: PlayableCharacter
 var _blue_locked := false
-## 正在帮忙的冰法学徒（站到位了的）；reserved：认领了旁边位置的（第几个就站第几个位置，不会挤在一起）
+## 正在帮忙的冰吟诵学徒（站到位了的）；reserved：认领了旁边位置的（第几个就站第几个位置，不会挤在一起）
 var helpers: Array = []
 var reserved: Array = []
 var _lines := {}
@@ -91,7 +91,7 @@ func _process(delta: float) -> void:
 	if _blue_area:
 		_blue_area.enabled = waiting and not beaming
 	_area.enabled = not waiting and not beaming
-	if waiting:
+	if waiting and not SiegeTools.paused():
 		_beam_tick(delta)
 	var pct := int(clampf(progress / maxf(_need, 0.01), 0.0, 1.0) * 100.0)
 	if not waiting:
@@ -106,8 +106,10 @@ func _process(delta: float) -> void:
 func _beam_tick(delta: float) -> void:
 	if beaming and (not is_instance_valid(_blue) or not _blue.is_alive() or Downed.is_downed(_blue)):
 		_stop_blue()
-	helpers = helpers.filter(func(h): return is_instance_valid(h) and (h as SiegeSoldier).is_alive() and not (h as SiegeSoldier).retreating)
-	var rate := (1.0 if beaming else 0.0) + HELPER_RATE * helpers.size()
+	helpers = helpers.filter(func(h): return _helper_valid(h) and reserved.has(h) and h.global_position.distance_to(helper_spot(reserved.find(h))) <= SiegeSoldier.MAGE_LEAVE)
+	reserved = reserved.filter(func(h): return _helper_valid(h))
+	var rate := 1.0 if beaming else 0.0
+	for h in helpers: rate += h.build_rate()
 	progress += rate * delta
 	_draw_lines()
 	if rate > 0.0 and randf() < delta * 8.0:
@@ -147,9 +149,9 @@ func _clear_lines() -> void:
 	_lines.clear()
 
 
-## 冰法学徒认领一个旁边的位置：返回位置序号（0 左 / 1 右），满了返回 -1。
+## 冰吟诵学徒认领一个旁边的位置：返回位置序号（0 左 / 1 右），满了返回 -1。
 func reserve(s: Node) -> int:
-	reserved = reserved.filter(func(h): return is_instance_valid(h) and not (h as SiegeSoldier).retreating)
+	reserved = reserved.filter(func(h): return _helper_valid(h))
 	if pending.is_empty():
 		return -1
 	var i := reserved.find(s)
@@ -168,7 +170,7 @@ func helper_spot(slot: int) -> Vector2:
 
 ## 站到位了：开始帮忙放冰光。
 func helper_join(s: Node) -> bool:
-	if pending.is_empty() or not reserved.has(s):
+	if pending.is_empty() or not reserved.has(s) or not _helper_valid(s):
 		return false
 	if not helpers.has(s):
 		helpers.append(s)
@@ -183,8 +185,12 @@ func helper_leave(s: Node) -> void:
 
 
 func helper_slots() -> int:
-	reserved = reserved.filter(func(h): return is_instance_valid(h) and not (h as SiegeSoldier).retreating)
+	reserved = reserved.filter(func(h): return _helper_valid(h))
 	return MAX_HELPERS - reserved.size() if not pending.is_empty() else 0
+
+
+func _helper_valid(h: Variant) -> bool:
+	return is_instance_valid(h) and h is SiegeSoldier and not h.is_queued_for_deletion() and h.can_build()
 
 
 func _stop_blue() -> void:
@@ -256,23 +262,27 @@ func _upgrade_cost(inf: Dictionary, cur_level: int) -> int:
 
 
 ## 付冰晶、等蓝色公主的冰光。返回是否成功。
-func request(kind: String, upgrade := false) -> bool:
+func request(kind: String, upgrade := false, reserve_crystals := 0, announce := true) -> bool:
 	var d := SiegeDirector.current
 	var inf := IceTower.info(kind)
+	if d == null or inf.is_empty() or not pending.is_empty() or not IceTower.unlocked(kind): return false
+	if not upgrade and is_instance_valid(tower): return false
 	var cost := _upgrade_cost(inf, tower.level) if upgrade and tower else int(inf.get("upgrade" if upgrade else "cost", 10))
-	if d == null or not d.spend(cost):
-		GameState.notify("冰晶不够（要 %d）" % cost)
-		Audio.play("locked", -6.0)
+	if d.crystals < cost + reserve_crystals or not d.spend(cost):
+		if announce:
+			GameState.notify("冰晶不够（要 %d）" % cost)
+			Audio.play("locked", -6.0)
 		return false
 	pending = {"kind": kind, "upgrade": upgrade}
 	progress = 0.0
 	_need = beam_time()
 	Audio.play("chime", -6.0, 0.0, 1.3)
+	if not announce: return true
 	var blue: PlayableCharacter = d.blue
 	if blue and blue.is_controlled():
 		GameState.rule("蓝色公主：走到冰塔基座正上方的城墙上按 E 放冰光")
 	else:
-		GameState.notify("等蓝色公主从城墙上放冰光……（冰法学徒也会来帮忙）")
+		GameState.notify("等蓝色公主从城墙上放冰光……（冰吟诵学徒也会来帮忙）")
 	return true
 
 
