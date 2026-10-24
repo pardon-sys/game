@@ -91,10 +91,12 @@ const TASKS := {
 	"d3_mice": {"script": "res://levels/floor_06/scripts/task_mice.gd", "name": "逃跑的痒痒鼠", "fail": "after_fail_mice", "fail_hours": 1},
 	"d4_tag": {"script": "res://levels/floor_06/scripts/task_tag.gd", "name": "挠痒捉人", "fail": "after_fail_tag", "fail_hours": 1, "respawn": [31, 31]},
 	"d6_lantern": {"script": "res://levels/floor_06/scripts/task_lantern.gd", "name": "笑声灯笼", "fail": "", "fail_hours": 0},
-	# 早上开始一直做到傍晚（to_night：做完直接天黑）；修好了工时清零（clear_book）
+	# 早上开始一直做到傍晚（day_end：先还这个时段的工时再演收尾，早上、下午都算做完，然后 end_of_day）
 	"d7_totem": {"script": "res://levels/floor_06/scripts/task_totem.gd", "name": "修补狂欢图腾柱", "fail": "after_fail_totem", "fail_hours": 2,
-		"done": "after_d7_totem_done", "respawn": [8, 12], "to_night": true, "clear_book": true},
+		"done": "after_d7_totem_done", "respawn": [8, 12], "day_end": true},
 }
+## 最后一天：工时还清之前，床不让睡、晚上的事件不开（补罚任务这一天工时大于 0 就能接，见 AfterPenance）
+const SETTLE_DAY := 7
 ## 指路用的格子：小镇里的小屋门口、小屋里的门、楼下的床
 const TOWN_HOUSE_DOOR := [42, 10]
 const HOUSE_DOOR := [9, 10]
@@ -142,6 +144,9 @@ static func pending_event() -> String:
 	var ev := DayClock.event()
 	if ev == "" or DayClock.done() or GameState.has_flag(ev_flag(ev)) or not EVENTS.has(ev):
 		return ""
+	# needs_clear：工时还清以后才开（最后一天晚上的庆功宴）
+	if bool(EVENTS[ev].get("needs_clear", false)) and must_settle():
+		return ""
 	return ev
 
 
@@ -166,6 +171,8 @@ static func objective(floor_id: String) -> Dictionary:
 				return {"text": text, "cell": [sp[0], sp[1]], "radius": float(sp[2]), "trigger": true}
 			return {"text": text} if text != "" else {}
 		return _guide(floor_id, where, text)
+	if must_settle() and DayClock.done(DayClock.day(), DayClock.MORNING):
+		return {"text": settle_text()}
 	if DayClock.slot() == DayClock.NIGHT:
 		if floor_id == HOUSE:
 			return {"text": "上床睡觉", "cell": HOUSE_BED, "radius": 1.0}
@@ -204,7 +211,7 @@ static func sync_doors() -> void:
 	if GameState.has_flag(PROVING_OPEN) != proving:
 		GameState.set_flag(PROVING_OPEN, proving)
 	var ev := pending_event()
-	var curfew := DayClock.slot() == DayClock.NIGHT and (ev == "" or str(EVENTS.get(ev, {}).get("where", "")) == HOUSE)
+	var curfew := DayClock.slot() == DayClock.NIGHT and (ev == "" or str(EVENTS.get(ev, {}).get("where", "")) == HOUSE) and not must_settle()
 	if GameState.has_flag(CURFEW) != curfew:
 		GameState.set_flag(CURFEW, curfew)
 
@@ -322,18 +329,44 @@ static func run_task(ev: String) -> void:
 				p.global_position = Cutscene.cell_to_world(spec["respawn"])
 	GameState.set_flag(TASK_FLAG, false)
 	_mute_partner(false)
-	if bool(spec.get("clear_book", false)) and PenanceBook.started() and PenanceBook.hours() > 0:
-		PenanceBook.add(-PenanceBook.hours(), str(spec["name"]) + "：工时清零", true)
+	var day_end := bool(spec.get("day_end", false)) and DayClock.slot() == DayClock.MORNING
+	if day_end:
+		# 收尾的过场要按还完以后的工时分支：先还
+		_pay_slot()
 	if str(spec.get("done", "")) != "":
 		await Cutscene.play(str(spec["done"]))
-	if bool(spec.get("to_night", false)) and DayClock.slot() == DayClock.MORNING:
-		# 一直做到傍晚：早上、下午都算做完，直接天黑
+	if day_end:
 		DayClock.mark_done()
 		DayClock.mark_done(-1, DayClock.AFTERNOON)
-		await DayClock.pass_time(DayClock.NIGHT)
-		GameState.hint("天黑了。广场那边，篝火已经点起来了")
+		await end_of_day()
 		return
 	await finish_slot()
+
+
+## 一直做到傍晚的任务做完：晚上有事（事件 / 分到晚上的委托）→ 天黑，停在晚上；没有 → 停在下午。
+## 最后一天工时没还清时，就停在这个时段补罚（rest / sleep 不让过）。
+static func end_of_day() -> void:
+	if night_has_content():
+		await DayClock.pass_time(DayClock.NIGHT)
+		GameState.hint("天黑了。广场那边，篝火已经点起来了")
+	else:
+		await DayClock.pass_time(DayClock.AFTERNOON)
+	if must_settle():
+		GameState.hint(settle_text())
+
+
+## 今天晚上有没有要做的事：日程里的夜间事件，或者分到晚上的委托
+static func night_has_content() -> bool:
+	return DayClock.event(DayClock.day(), DayClock.NIGHT) != "" or AfterErrands.night_open()
+
+
+## 最后一天、工时还没还清
+static func must_settle() -> bool:
+	return DayClock.day() >= SETTLE_DAY and PenanceBook.started() and PenanceBook.hours() > 0
+
+
+static func settle_text() -> String:
+	return "还有 %d 工时没还清：找市场监督或篝火派对的主人补罚（一次抵 %d 工时）" % [PenanceBook.hours(), AfterPenance.settle_hours()]
 
 
 ## 任务进行中：跟着的蓝色公主不能按 E 说话（推车、冻陷阱、挣扎时按键不会误触发和她的对话）；结束还原。
@@ -398,12 +431,17 @@ static func run_upstairs() -> void:
 
 ## 这个时段的事做完了：还工时 → 推进到下一个时段（夜里 → 睡觉）。
 static func finish_slot() -> void:
-	var info := DayClock.slot_info()
+	_pay_slot()
 	DayClock.mark_done()
+	await advance_slot()
+
+
+## 还这个时段的工时（日程的 hours）
+static func _pay_slot() -> void:
+	var info := DayClock.slot_info()
 	var hrs := int(info.get("hours", 0))
 	if hrs > 0 and PenanceBook.started():
 		PenanceBook.add(-hrs, str(info.get("task", "")))
-	await advance_slot()
 
 
 static func advance_slot() -> void:
@@ -428,6 +466,9 @@ static func rest() -> bool:
 		return false
 	if AfterErrands.active() != "":
 		GameState.notify("先把手上的委托做完吧。")
+		return false
+	if must_settle() and DayClock.done(DayClock.day(), DayClock.MORNING):
+		GameState.notify(settle_text())
 		return false
 	await advance_slot()
 	return true
@@ -454,6 +495,9 @@ static func sleep_later() -> void:
 	var ev := pending_event()
 	if ev != "" and str(EVENTS.get(ev, {}).get("where", "")) != HOUSE:
 		GameState.notify("还有事没做：%s" % str(EVENTS[ev].get("objective", "")))
+		return
+	if must_settle():
+		GameState.notify(settle_text())
 		return
 	await sleep()
 

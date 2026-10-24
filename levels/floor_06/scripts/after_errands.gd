@@ -2,7 +2,7 @@ class_name AfterErrands
 extends RefCounted
 ## 七日赎罪的小日常：镇民委托（数据 data/after/errands.json，tools/build/gen_floor06_after.py 从 after_text/errands.py 生成）。
 ##   每个委托：{name 名字, npc 谁委托的（对话文件名）, from [天, 时段] 从什么时候开始能接, hours 做完减几工时, kind 玩法, objective 目标文字}。
-##   有赎罪簿以后、白天（早上 / 下午）、到了 from 的时段、还没做完 → 开放（剧情标记 errand_<id>_open：那个镇民头上冒「！」，对话里能接）。
+##   有赎罪簿以后、白天（早上 / 下午；写了 night: true 的是晚上）、到了 from 的时段、还没做完 → 开放（剧情标记 errand_<id>_open：那个镇民头上冒「！」，对话里能接）。
 ##   接下：errand_<id>_active，导演把玩法节点（ErrandCookies / ErrandApples……）摆进地图；做完 complete()：errand_<id>_done、减工时。
 ##   失败不播小剧场：当场被挠一下，委托回到能接的状态（fail）。一次只能接一个。
 ##   对话里接委托：set {vars: {errand_req: <id>}, call: errand_start}。
@@ -52,12 +52,28 @@ static func active() -> String:
 	return ""
 
 
-## 现在能不能接（不算「已经有别的委托在做」）。
+## 现在能不能接（不算「已经有别的委托在做」）。白天的委托只在早上 / 下午接，写了 night: true 的只在晚上接。
 static func is_open(id: String) -> bool:
-	if not PenanceBook.started() or is_done(id) or is_active(id) or not prerequisites_met(id) or DayClock.slot() == DayClock.NIGHT or GameState.has_flag(AfterStory.TASK_FLAG):
+	if not PenanceBook.started() or is_done(id) or is_active(id) or not prerequisites_met(id) or GameState.has_flag(AfterStory.TASK_FLAG):
 		return false
+	if (DayClock.slot() == DayClock.NIGHT) != bool(info(id).get("night", false)):
+		return false
+	return _reached(id)
+
+
+## 今天这个时段（slot 不写 = 现在）是不是已经到了 from
+static func _reached(id: String, slot := -1) -> bool:
 	var from: Array = info(id).get("from", [99, 0])
-	return DayClock.day() * 3 + DayClock.slot() >= int(from[0]) * 3 + int(from[1])
+	return DayClock.day() * 3 + (DayClock.slot() if slot < 0 else slot) >= int(from[0]) * 3 + int(from[1])
+
+
+## 今天晚上有没有分到晚上的委托还没做（AfterStory.night_has_content 用）
+static func night_open() -> bool:
+	for id in ids():
+		var key := str(id)
+		if bool(info(key).get("night", false)) and not is_done(key) and prerequisites_met(key) and _reached(key, DayClock.NIGHT):
+			return true
+	return false
 
 
 ## 时间变了 / 委托状态变了：重算开放标记（对话的 entries 读它们）。

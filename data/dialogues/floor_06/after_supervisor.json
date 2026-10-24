@@ -3,6 +3,12 @@
 	"entries": [
 		{
 			"if": {
+				"flag": "penalty_d7"
+			},
+			"node": "penalty_offer_d7"
+		},
+		{
+			"if": {
 				"flag": "penalty_open"
 			},
 			"node": "penalty_offer"
@@ -152,6 +158,32 @@
 				},
 				"call": "after_penalty"
 			}
+		},
+		"penalty_offer_d7": {
+			"lines": [
+				{
+					"text": "……队长打过招呼了。今天是最后一天，工时还没还清？"
+				},
+				{
+					"text": "当一回模特，抵五个工时。……站稳，别笑。"
+				},
+				{
+					"text": "五个……那、那来吧！为了庆功宴！",
+					"speaker": "公主",
+					"emotion": "angry"
+				}
+			],
+			"prompt": "去摊位上当模特抵受罚？",
+			"choices": [
+				{
+					"text": "……当、当就当！",
+					"next": "penalty_go"
+				},
+				{
+					"text": "等一下再说",
+					"next": ""
+				}
+			]
 		}
 	},
 	"npc": "supervisor"

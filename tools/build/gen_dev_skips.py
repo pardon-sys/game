@@ -31,7 +31,7 @@ AFTER = WAR + ["siege_won"] + AFTER_RESET
 BOOK = {"penance_hours": 100, "penance_log": [], "penance_punish": [], "after_play_day": 0, "blue_bond": 0,
         "after_play_win_day": 0, "after_play_bond_day": 0, "after_blue_follow_day": 0, "errand_gate_chain_step": 0, "errand_shearing_step": 0, "errand_canopy_step": 0, "errand_sifting_step": 0, "errand_lamp_calibration_step": 0,
         "task_cart_done": [], "task_potion_recipe": 0, "task_potion_notes": [], "task_potion_wrong": 0,
-        "task_tailor_measured": False, "task_tailor_tea": 3, "task_mine_slips": 0, "task_totem_placed": 0, "task_totem_drops": 0, "task_drain_cleared": 0, "task_potion_ok": 0, "penance_settled": 0,
+        "task_tailor_measured": False, "task_tailor_tea": 3, "task_mine_slips": 0, "task_totem_runes": 0, "task_totem_cracks": 0, "task_drain_cleared": 0, "task_potion_ok": 0, "penance_settled": 0,
         "task_inspect_rates": {}, "task_inspect_tune": {}}
 D2_ALL = ["after_done_d2_morning", "after_ev_d2_stocks"]
 # 第 3 天整天做完（第 4 天以后的跳关点用）
