@@ -21,22 +21,32 @@ AFTER_RESET = ["!after_started", "!penance_book", "!after_night_busy", "!after_d
                "!after_d1_clue_bed", "!after_d1_clue_tea"] + \
               ["!after_done_d1_%s" % s for s in ("morning", "afternoon", "night")] + \
               ["!after_ev_%s" % e for e in ("d1_open", "d1_verdict", "d1_sleepwalk", "d2_stocks", "d2_equip", "d3_potion", "d3_cart",
-                                             "d4_drain", "d4_drill", "d5_tailor", "d5_mine", "d6_inspect", "d6_drill", "d7_totem", "d2_sweep", "d3_mice", "d4_tag", "d5_tom", "d6_lantern")] + \
+                                             "d4_drain", "d4_drill", "d5_tailor", "d5_mine", "d6_inspect", "d6_drill", "d7_totem", "d7_festival", "d2_sweep", "d3_mice", "d4_tag", "d5_tom", "d6_lantern")] + \
               ["!after_done_d%d_%s" % (d, k) for d in (2, 3, 4, 5, 6, 7) for k in ("morning", "afternoon", "night")] + \
               ["!after_task_active", "!after_field_open", "!after_mine_open", "!after_totem_open", "!after_drain_open", "!after_drill_open", "!after_proving_open",
                "!after_d2_fainted", "!skill_pants_burst", "!drill_exam_passed", "!after_curfew", "!penalty_open", "!penalty_announcer_open",
-               "!tom_prank_caught", "!tom_prank_quiet", "!tom_prank_fainted", "!after_blue_can_follow", "!after_blue_following"] + \
+               "!tom_prank_caught", "!tom_prank_quiet", "!tom_prank_fainted", "!after_blue_can_follow", "!after_blue_following", "!penalty_d7",
+               "!after_festival_on", "!festival_dance_done", "!festival_finale_done", "!knight_started",
+               "!knight_asked_night", "!knight_asked_fall", "!knight_asked_why"] + \
+              ["!stall_%s_done" % sid for sid in ("guess", "ring", "ice", "fish", "lick")] + \
               ["!errand_%s_%s" % (e, k) for e in ("cookies", "apples", "ladder", "goats", "dance", "massage", "gate_chain", "shearing", "canopy", "sifting", "lamp_calibration") for k in ("open", "active", "done")]
 AFTER = WAR + ["siege_won"] + AFTER_RESET
 BOOK = {"penance_hours": 100, "penance_log": [], "penance_punish": [], "after_play_day": 0, "blue_bond": 0,
         "after_play_win_day": 0, "after_play_bond_day": 0, "after_blue_follow_day": 0, "errand_gate_chain_step": 0, "errand_shearing_step": 0, "errand_canopy_step": 0, "errand_sifting_step": 0, "errand_lamp_calibration_step": 0,
         "task_cart_done": [], "task_potion_recipe": 0, "task_potion_notes": [], "task_potion_wrong": 0,
         "task_tailor_measured": False, "task_tailor_tea": 3, "task_mine_slips": 0, "task_totem_runes": 0, "task_totem_cracks": 0, "task_drain_cleared": 0, "task_potion_ok": 0, "penance_settled": 0,
-        "task_inspect_rates": {}, "task_inspect_tune": {}}
+        "task_inspect_rates": {}, "task_inspect_tune": {},
+        "knight_step": 0, "task_stretcher_drops": 0, "task_bait_caught": 0, "task_sneak_caught": 0}
 D2_ALL = ["after_done_d2_morning", "after_ev_d2_stocks"]
 # 第 3 天整天做完（第 4 天以后的跳关点用）
 D3_ALL = D2_ALL + ["after_done_d2_afternoon", "after_ev_d2_equip", "after_done_d2_night", "after_done_d3_morning", "after_ev_d3_potion",
                    "after_done_d3_afternoon", "after_ev_d3_cart", "after_done_d3_night"]
+
+
+# 第 4~7 天白天的事都做完（庆功宴 / 骑士篇的跳关点用）
+D7_DAYS = ["after_done_d%d_%s" % (d, k) for d in (4, 5, 6) for k in ("morning", "afternoon", "night")] + \
+          ["after_done_d7_morning", "after_done_d7_afternoon"] + \
+          ["after_ev_%s" % e for e in ("d4_drain", "d4_drill", "d5_tailor", "d5_mine", "d6_inspect", "d6_drill", "d7_totem")]
 
 
 def point(name, floor, flags, vars_=None, **kw):
@@ -99,6 +109,11 @@ POINTS = [
     point("七日赎罪·第 7 天（修补图腾柱）", "floor_06_after", AFTER + after_done("morning", "afternoon", "night") + D3_ALL +
           ["after_done_d%d_%s" % (d, k) for d in (4, 5, 6) for k in ("morning", "afternoon", "night")] + ["after_ev_d4_drain", "after_ev_d4_drill", "after_ev_d5_tailor", "after_ev_d5_mine", "after_ev_d6_inspect", "after_ev_d6_drill"],
           dict({"day": 8, "after_day": 7, "after_slot": 0}, **BOOK), cell=[4, 32]),
+    point("七日赎罪·第 7 天晚上（庆功宴）", "floor_06_after", AFTER + after_done("morning", "afternoon", "night") + D3_ALL + D7_DAYS,
+          dict(BOOK, day=8, after_day=7, after_slot=2, penance_hours=0), cell=[40, 25]),
+    point("骑士篇·开头（庆功宴之后的早上）", "floor_06_after_house", AFTER + after_done("morning", "afternoon", "night") + D3_ALL + D7_DAYS +
+          ["after_done_d7_night", "after_ev_d7_festival", "after_festival_on", "festival_dance_done", "festival_finale_done", "knight_started"],
+          dict(BOOK, day=9, after_day=8, after_slot=0, penance_hours=0, knight_step=0), cell=[5, 6]),
 ]
 Path("data/dev").mkdir(parents=True, exist_ok=True)
 Path("data/dev/skip_points_more.json").write_text(json.dumps({

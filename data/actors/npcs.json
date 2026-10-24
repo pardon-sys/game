@@ -104,6 +104,11 @@
 		"apprentice": {
 			"name": "学徒",
 			"sprite": "res://assets/generated/npcs/apprentice.png"
+		},
+		"knight": {
+			"name": "骑士",
+			"sprite": "res://assets/generated/npcs/knight.png",
+			"portrait": "res://assets/generated/npc_portraits/knight.png"
 		}
 	}
 }

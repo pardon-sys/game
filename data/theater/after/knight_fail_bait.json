@@ -1,0 +1,102 @@
+{
+	"name": "以笑为饵失败：被手印淹没",
+	"cast": {
+		"princess": {
+			"kind": "princess",
+			"at": [
+				0,
+				8
+			],
+			"visual": "helpless_2",
+			"anim": "helpless",
+			"dir": "down"
+		},
+		"blue": {
+			"kind": "npc:blue_princess",
+			"at": [
+				22,
+				8
+			],
+			"visual": "normal",
+			"anim": "idle",
+			"dir": "left"
+		},
+		"hands": {
+			"kind": "monster:thousand_hand",
+			"at": [
+				0,
+				-12
+			],
+			"scale": 0.3
+		}
+	},
+	"steps": [
+		{
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "fade_in"
+				},
+				{
+					"state": "giggle",
+					"do": "voice"
+				}
+			],
+			"wait": 0.5
+		},
+		{
+			"speaker": "",
+			"text": "（笑声太响了——广场上所有的手印都扑到了她身上，脚心、脚背、趾缝、脚踝，一只叠着一只）"
+		},
+		{
+			"speaker": "",
+			"text": "（每一只都挠得很轻，可是一起挠，就一点都不轻了）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "hands",
+					"zone": "sole",
+					"fx": "feather",
+					"repeat": 14,
+					"interval": 0.18,
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "哈哈哈哈！好、好多！太多了！轻、轻的也受不了啦——！",
+			"portrait": "defeat_2"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……！（冲过来，一挥手，一大片冰雾罩住了她的脚）"
+		},
+		{
+			"speaker": "",
+			"text": "（手印们「嗖」地一下全散开了，躲回了阴影里。……瓶子里抓到的，还在）"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……饵，不是这么当的。"
+		},
+		{
+			"speaker": "公主",
+			"text": "哈……哈……下、下次……笑得小声一点……",
+			"emotion": "helpless_1"
+		},
+		{
+			"actions": [
+				{
+					"time": 0.6,
+					"do": "fade_out"
+				},
+				{
+					"state": "",
+					"do": "voice"
+				}
+			],
+			"wait": 0.7
+		}
+	]
+}

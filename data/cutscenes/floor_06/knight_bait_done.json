@@ -1,0 +1,101 @@
+{
+	"name": "灯笼重新亮了",
+	"letterbox": true,
+	"skippable": true,
+	"steps": [
+		{
+			"speaker": "",
+			"text": "（最后一只手印被冻成一块紫色的冰，「咕咚」一声掉进了瓶子里。广场上的灯笼，一盏一盏重新亮了起来）"
+		},
+		{
+			"speaker": "面包店奶奶",
+			"text": "……哈、哈哈……能笑了！奶奶能笑出声了！"
+		},
+		{
+			"speaker": "公主",
+			"text": "呼……呼……六只……",
+			"emotion": "helpless_1"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……你的脸。"
+		},
+		{
+			"speaker": "公主",
+			"text": "嗯？",
+			"emotion": "surprise"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……被手印碰的时候。……很舒服的样子。"
+		},
+		{
+			"speaker": "公主",
+			"text": "……嗯。就是……好奇怪。它们碰别人的时候那么凶，碰我的时候……",
+			"emotion": "sad"
+		},
+		{
+			"speaker": "公主",
+			"text": "……像是认得我一样。",
+			"emotion": "sad"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……",
+			"actions": [
+				{
+					"who": "AfterBlue",
+					"dir": "down",
+					"do": "face"
+				}
+			]
+		},
+		{
+			"speaker": "保卫队队长",
+			"text": "（举着火把走过来）……你们抓了一晚上？",
+			"npc": "captain"
+		},
+		{
+			"speaker": "公主",
+			"text": "队长！让我去见他！手印是从他身上漏出来的，只要问清楚——",
+			"emotion": "angry"
+		},
+		{
+			"speaker": "保卫队队长",
+			"text": "不行。",
+			"npc": "captain"
+		},
+		{
+			"speaker": "公主",
+			"text": "为什么！",
+			"emotion": "angry"
+		},
+		{
+			"speaker": "保卫队队长",
+			"text": "……他今天看你的眼神。你自己也看见了。",
+			"npc": "captain"
+		},
+		{
+			"speaker": "",
+			"text": "（队长转身走了。火把的光越来越远）"
+		},
+		{
+			"speaker": "公主",
+			"text": "……",
+			"emotion": "sad"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……地牢。……我知道一条路。"
+		},
+		{
+			"speaker": "公主",
+			"text": "……诶？",
+			"emotion": "surprise"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……小时候。钻过。"
+		}
+	]
+}

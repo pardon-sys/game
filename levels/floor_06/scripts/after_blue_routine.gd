@@ -27,7 +27,10 @@ func _process(_delta: float) -> void:
 	sync()
 
 
+## 当天挑战获胜后主动邀请了；骑士篇（KnightStory）里一直跟着
 static func invited_today() -> bool:
+	if KnightStory.active():
+		return true
 	return AfterPlay.won_today() and int(GameState.vars.get(FOLLOW_DAY, 0)) == DayClock.day()
 
 
