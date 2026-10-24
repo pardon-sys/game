@@ -1,17 +1,15 @@
 class_name ShieldCrab
 extends SiegeMonster
 ## 盾甲螃蟹：举着一对大钳子当盾牌。冰塔、塔弹、蓝色公主的法术、士兵——全都打不动；
-## 只有冰晶共鸣塔的电弧（tag = RESONANCE_TAG）和冰陨星台的陨石（tag = METEOR_TAG）打得动，而且只有 RESONANCE_MULT 的伤害（至少 1）；
+## 冰晶共鸣塔的电弧（tag = RESONANCE_TAG）和冰陨星台的陨石（tag = METEOR_TAG）造成100%伤害；
 ## 粉色公主的锤子绕到背后（下面）打才有用，正面（朝城墙那一面）照样挡住。走到墙下用钳子夹墙（伤害更高）。
 
 const RESONANCE_TAG := "resonance"
 const METEOR_TAG := "meteor"
-const RESONANCE_MULT := 0.25
 
 
 func block_hit(hit: HitData) -> bool:
 	if hit.tag == RESONANCE_TAG or hit.tag == METEOR_TAG:
-		hit.damage = maxi(1, int(ceil(hit.damage * RESONANCE_MULT)))
 		return false
 	var src := hit.source
 	if hit.from_tower or src == null or not is_instance_valid(src) or not (src is PlayableCharacter):

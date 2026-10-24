@@ -137,7 +137,7 @@ func _tick(delta: float) -> void:
 	if expand_left > 0:
 		expand_left = maxf(0, expand_left - delta)
 	else:
-		velocity = Vector2(0, -4 if expanded else -8) if not is_stunned() else Vector2.ZERO
+		velocity = Vector2(0, -4 if expanded else -8) * stat_mul("speed") if not is_stunned() else Vector2.ZERO
 		# Impulses may retreat or move sideways, never accelerate the slow march.
 		recoil.y = maxf(0.0, recoil.y)
 		velocity += recoil

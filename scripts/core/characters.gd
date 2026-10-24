@@ -1,6 +1,6 @@
 class_name Characters
 extends RefCounted
-## 可操作角色的数据档案：粉色公主（pink）用 data/ 下原来的文件；别的角色（蓝色公主 blue）的文件放在 data/characters/<角色>/，
+## 可操作角色的数据档案：粉色公主（pink）用 data/ 下原来的文件；别的角色（蓝色公主 blue、派对主人 bonfire_host）的文件放在 data/characters/<角色>/，
 ## 同名文件存在就用它，没有就回退到粉色公主的。按「当前操控的角色」（GameState.player 的 character_id）选。
 ##   reactions.json（受挠台词，ReactionDB）、fatigue.json（疲倦爆发台词）、ticklish.json（部位表，TickleZones）、
 ##   cgs.json / nest_cgs.json / combo_scenes.json（笑倒 CG、巢穴 CG、组合演出，CG）
@@ -8,7 +8,7 @@ extends RefCounted
 
 const DIR := "res://data/characters/%s/"
 
-## 两个可操作角色同场时（第八层），每个角色处理自己的受挠 / 反应时临时把「当前角色」换成自己（scope / unscope 成对用）。
+## 多个可操作角色同场时，每个角色处理自己的受挠 / 反应时临时把「当前角色」换成自己（scope / unscope 成对用）。
 static var _scope: Array[String] = []
 
 

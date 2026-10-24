@@ -15,10 +15,29 @@
 		},
 		{
 			"if": {
+				"flag": "errand_canopy_open"
+			},
+			"node": "errand_canopy"
+		},
+		{
+			"if": {
+				"flag": "errand_canopy_active"
+			},
+			"node": "errand_canopy_active"
+		},
+		{
+			"if": {
 				"flag": "errand_apples_done",
 				"not": "dlg_floor_06/after_merchant_errand_apples_done"
 			},
 			"node": "errand_apples_done"
+		},
+		{
+			"if": {
+				"flag": "errand_canopy_done",
+				"not": "dlg_floor_06/after_merchant_errand_canopy_done"
+			},
+			"node": "errand_canopy_done"
 		},
 		{
 			"if": {
@@ -129,6 +148,55 @@
 			"lines": [
 				{
 					"text": "笑晕过去了？……咳，那、那我摊子的账，就先少记一笔吧。"
+				}
+			]
+		},
+		"errand_canopy": {
+			"lines": [
+				{
+					"text": "摊架撑起来了，棚布还漏。你把挂角、破口和拉绳修好，再抵三工时，怎么样？",
+					"speaker": "水果摊的商贩"
+				}
+			],
+			"prompt": "接下这个委托？",
+			"choices": [
+				{
+					"text": "我来！",
+					"next": "errand_canopy_accept"
+				},
+				{
+					"text": "等一下再说",
+					"next": ""
+				}
+			]
+		},
+		"errand_canopy_accept": {
+			"lines": [
+				{
+					"text": "西边市场那张坏摊棚，南侧工具箱旁。我扶布，你来缝，做好的地方都给你留着。",
+					"speaker": "水果摊的商贩"
+				}
+			],
+			"set": {
+				"vars": {
+					"errand_req": "canopy"
+				},
+				"call": "errand_start"
+			}
+		},
+		"errand_canopy_active": {
+			"lines": [
+				{
+					"text": "坏摊棚南侧，先挂角再补缝。",
+					"speaker": "水果摊的商贩"
+				}
+			]
+		},
+		"errand_canopy_done": {
+			"lines": [
+				{
+					"text": "试过了，不漏也不晃。这回下雨，苹果总算不用跟着洗澡了。",
+					"speaker": "水果摊的商贩"
 				}
 			]
 		},

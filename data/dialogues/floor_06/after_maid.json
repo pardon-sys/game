@@ -3,6 +3,18 @@
 	"entries": [
 		{
 			"if": {
+				"flag": "errand_shearing_open"
+			},
+			"node": "errand_shearing"
+		},
+		{
+			"if": {
+				"flag": "errand_shearing_active"
+			},
+			"node": "errand_shearing_active"
+		},
+		{
+			"if": {
 				"flag": "errand_goats_open"
 			},
 			"node": "errand_goats"
@@ -12,6 +24,13 @@
 				"flag": "errand_goats_active"
 			},
 			"node": "errand_goats_active"
+		},
+		{
+			"if": {
+				"flag": "errand_shearing_done",
+				"not": "dlg_floor_06/after_maid_errand_shearing_done"
+			},
+			"node": "errand_shearing_done"
 		},
 		{
 			"if": {
@@ -192,6 +211,64 @@
 					"text": "……我一点都不想被它们喜欢。",
 					"speaker": "公主",
 					"emotion": "sad"
+				}
+			]
+		},
+		"errand_shearing": {
+			"lines": [
+				{
+					"text": "上次赶回来的羊都好好的。今天帮咕咕梳结、剪毛，再把绒毛装袋吧？",
+					"speaker": "女仆"
+				},
+				{
+					"text": "……对了，咕咕剪毛时要舔着盐才乖。",
+					"speaker": "女仆"
+				}
+			],
+			"prompt": "帮女仆整理一只蘑菇羊？",
+			"choices": [
+				{
+					"text": "好，只管这一只！",
+					"next": "errand_shearing_accept"
+				},
+				{
+					"text": "等一下再说",
+					"next": ""
+				}
+			]
+		},
+		"errand_shearing_accept": {
+			"lines": [
+				{
+					"text": "到东边羊圈门口来。垫子和盐罐都准备好了，中途歇一歇也能接着做。",
+					"speaker": "女仆"
+				}
+			],
+			"set": {
+				"vars": {
+					"errand_req": "shearing"
+				},
+				"call": "errand_start"
+			}
+		},
+		"errand_shearing_active": {
+			"lines": [
+				{
+					"text": "东边羊圈门口，咕咕在垫子边等你。……还有盐罐。",
+					"speaker": "女仆"
+				}
+			]
+		},
+		"errand_shearing_done": {
+			"lines": [
+				{
+					"text": "那三袋羊毛正好拿去补冬毯。咕咕这几天一见你就舔嘴唇呢。",
+					"speaker": "女仆"
+				},
+				{
+					"text": "让它舔盐砖去！",
+					"speaker": "公主",
+					"emotion": "angry"
 				}
 			]
 		}

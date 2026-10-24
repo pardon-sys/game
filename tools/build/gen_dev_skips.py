@@ -24,11 +24,12 @@ AFTER_RESET = ["!after_started", "!penance_book", "!after_night_busy", "!after_d
                                              "d4_drain", "d4_drill", "d5_tailor", "d5_mine", "d6_inspect", "d6_drill", "d7_totem", "d2_sweep", "d3_mice", "d4_tag", "d5_tom", "d6_lantern")] + \
               ["!after_done_d%d_%s" % (d, k) for d in (2, 3, 4, 5, 6, 7) for k in ("morning", "afternoon", "night")] + \
               ["!after_task_active", "!after_field_open", "!after_mine_open", "!after_totem_open", "!after_drain_open", "!after_drill_open", "!after_proving_open",
-               "!after_d2_fainted", "!skill_pants_burst", "!drill_exam_passed", "!after_curfew", "!penalty_open",
-               "!tom_prank_caught", "!tom_prank_quiet", "!tom_prank_fainted"] + \
-              ["!errand_%s_%s" % (e, k) for e in ("cookies", "apples", "ladder", "goats", "dance", "massage") for k in ("open", "active", "done")]
+               "!after_d2_fainted", "!skill_pants_burst", "!drill_exam_passed", "!after_curfew", "!penalty_open", "!penalty_announcer_open",
+               "!tom_prank_caught", "!tom_prank_quiet", "!tom_prank_fainted", "!after_blue_can_follow", "!after_blue_following"] + \
+              ["!errand_%s_%s" % (e, k) for e in ("cookies", "apples", "ladder", "goats", "dance", "massage", "gate_chain", "shearing", "canopy", "sifting", "lamp_calibration") for k in ("open", "active", "done")]
 AFTER = WAR + ["siege_won"] + AFTER_RESET
 BOOK = {"penance_hours": 100, "penance_log": [], "penance_punish": [], "after_play_day": 0, "blue_bond": 0,
+        "after_play_win_day": 0, "after_play_bond_day": 0, "after_blue_follow_day": 0, "errand_gate_chain_step": 0, "errand_shearing_step": 0, "errand_canopy_step": 0, "errand_sifting_step": 0, "errand_lamp_calibration_step": 0,
         "task_cart_done": [], "task_potion_recipe": 0, "task_potion_notes": [], "task_potion_wrong": 0,
         "task_tailor_measured": False, "task_tailor_tea": 3, "task_mine_slips": 0, "task_totem_placed": 0, "task_totem_drops": 0, "task_drain_cleared": 0, "task_potion_ok": 0, "penance_settled": 0,
         "task_inspect_rates": {}, "task_inspect_tune": {}}
@@ -52,6 +53,12 @@ def after_done(*slots_):
 
 
 POINTS = [
+    point("七日赎罪·灯轮校准委托", "floor_06_after", AFTER + after_done("morning", "afternoon", "night") + D3_ALL +
+          ["after_done_d4_morning", "after_ev_d4_drain", "errand_dance_done", "errand_massage_done"],
+          dict(BOOK, day=5, after_day=4, after_slot=1), cell=[43, 27]),
+    point("七日赎罪·忍笑报幕补罚", "floor_06_after", AFTER + after_done("morning", "afternoon", "night") + D3_ALL +
+          ["after_done_d4_morning", "after_ev_d4_drain", "errand_dance_done", "errand_massage_done", "errand_lamp_calibration_done"],
+          dict(BOOK, day=5, after_day=4, after_slot=1, penance_punish=[{"day": 4, "slot": 1, "text": "测试待抵记录", "theater": ""}]), cell=[43, 27]),
     point("第七层·归途（开场）", "floor_07_return", BASE + ["!f7r_done", "!f6w_arrived"], {"day": 2}),
     point("地下小镇·战时（队长过场后）", "floor_06_war", WAR, {"day": 2}),
     point("攻防战·第 1 波", "floor_06_siege", SIEGE, {"day": 2, "siege_wave": 1}),

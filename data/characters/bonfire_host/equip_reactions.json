@@ -1,0 +1,235 @@
+{
+	"_说明": "派对主人装备通用反馈，保持原装备数据格式。",
+	"equip_t_feather_socks": {
+		"interval": [
+			3.5,
+			5.0
+		],
+		"amount": 2.0,
+		"zones": [
+			"sole"
+		],
+		"shake": 2.0,
+		"words": {
+			"calm": [
+				"先让我提稳灯。"
+			],
+			"giggle": [
+				"噗，别打乱节拍！"
+			],
+			"helpless": [
+				"哈哈，申请休息！"
+			]
+		},
+		"lines": [],
+		"move_scale": true
+	},
+	"equip_t_toe_brush": {
+		"interval": [
+			4.0,
+			5.5
+		],
+		"amount": 2.2,
+		"zones": [
+			"sole"
+		],
+		"shake": 2.0,
+		"words": {
+			"calm": [
+				"先让我提稳灯。"
+			],
+			"giggle": [
+				"噗，别打乱节拍！"
+			],
+			"helpless": [
+				"哈哈，申请休息！"
+			]
+		},
+		"lines": []
+	},
+	"equip_t_fluff_bra": {
+		"interval": [
+			4.5,
+			6.5
+		],
+		"amount": 1.8,
+		"zones": [
+			"chest"
+		],
+		"shake": 2.0,
+		"words": {
+			"calm": [
+				"先让我提稳灯。"
+			],
+			"giggle": [
+				"噗，别打乱节拍！"
+			],
+			"helpless": [
+				"哈哈，申请休息！"
+			]
+		},
+		"lines": []
+	},
+	"equip_t_thigh_ring": {
+		"interval": [
+			4.0,
+			6.0
+		],
+		"amount": 2.0,
+		"zones": [
+			"thigh"
+		],
+		"shake": 2.0,
+		"words": {
+			"calm": [
+				"先让我提稳灯。"
+			],
+			"giggle": [
+				"噗，别打乱节拍！"
+			],
+			"helpless": [
+				"哈哈，申请休息！"
+			]
+		},
+		"lines": []
+	},
+	"equip_t_pinch_pad": {
+		"interval": [
+			4.0,
+			6.0
+		],
+		"amount": 1.8,
+		"zones": [
+			"butt"
+		],
+		"shake": 2.0,
+		"words": {
+			"calm": [
+				"先让我提稳灯。"
+			],
+			"giggle": [
+				"噗，别打乱节拍！"
+			],
+			"helpless": [
+				"哈哈，申请休息！"
+			]
+		},
+		"lines": []
+	},
+	"equip_t_knead_tights": {
+		"interval": [
+			3.5,
+			5.0
+		],
+		"amount": 2.2,
+		"zones": [
+			"thigh",
+			"butt"
+		],
+		"shake": 2.0,
+		"words": {
+			"calm": [
+				"先让我提稳灯。"
+			],
+			"giggle": [
+				"噗，别打乱节拍！"
+			],
+			"helpless": [
+				"哈哈，申请休息！"
+			]
+		},
+		"lines": []
+	},
+	"equip_t_feather_shackles": {
+		"interval": [
+			5.0,
+			7.0
+		],
+		"amount": 1.4,
+		"zones": [
+			"sole"
+		],
+		"shake": 2.0,
+		"words": {
+			"calm": [
+				"先让我提稳灯。"
+			],
+			"giggle": [
+				"噗，别打乱节拍！"
+			],
+			"helpless": [
+				"哈哈，申请休息！"
+			]
+		},
+		"lines": []
+	},
+	"equip_t_thigh_strap": {
+		"interval": [
+			5.0,
+			7.0
+		],
+		"amount": 1.6,
+		"zones": [
+			"thigh"
+		],
+		"shake": 2.0,
+		"words": {
+			"calm": [
+				"先让我提稳灯。"
+			],
+			"giggle": [
+				"噗，别打乱节拍！"
+			],
+			"helpless": [
+				"哈哈，申请休息！"
+			]
+		},
+		"lines": []
+	},
+	"equip_t_bell_anklet": {
+		"interval": [
+			6.0,
+			8.0
+		],
+		"amount": 0.8,
+		"zones": [
+			"sole"
+		],
+		"shake": 1.5,
+		"words": {
+			"calm": [
+				"先让我提稳灯。"
+			],
+			"giggle": [
+				"噗，别打乱节拍！"
+			],
+			"helpless": [
+				"哈哈，申请休息！"
+			]
+		},
+		"lines": []
+	},
+	"equip_t_mark_patch": {
+		"interval": [
+			6.0,
+			8.0
+		],
+		"amount": 1.0,
+		"zones": [
+			"butt"
+		],
+		"shake": 1.5,
+		"words": {
+			"calm": [
+				"先让我提稳灯。"
+			],
+			"giggle": [
+				"噗，别打乱节拍！"
+			],
+			"helpless": [
+				"哈哈，申请休息！"
+			]
+		},
+		"lines": []
+	}
+}

@@ -644,6 +644,7 @@ func _status_lines(p: PlayableCharacter, members: Array[PlayableCharacter]) -> v
 	if p.is_magic_unlocked():
 		var cd := p.magic_cooldown_left()
 		var spell := "冰晶结界" if p.character_id == "blue" else "星光爆发"
+		if p is BonfireHost: spell = str(Buff.info(FestivalAura.ALLY_BUFF).get("name", ""))
 		_line(spell + "：" + ("冷却中 %.1f 秒" % cd if cd > 0.0 else "可以使用（按住 L 吟唱）"), GOLD)
 	var any := not passives.is_empty()
 	for id in p.buffs:

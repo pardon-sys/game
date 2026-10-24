@@ -36,6 +36,7 @@ func setup_partners() -> void:
 		return
 	for n in lv.find_children("*", "PlayableCharacter", true, false):
 		var c := n as PlayableCharacter
+		if c.character_id not in ["pink", "blue"]: continue
 		# 从攻防战回来：镜头倍数恢复默认
 		if c.camera:
 			c.camera.zoom = Vector2.ONE

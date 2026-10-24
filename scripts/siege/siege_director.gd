@@ -203,7 +203,7 @@ func _setup() -> void:
 		var c := n as PlayableCharacter
 		if c.character_id == "blue":
 			blue = c
-		else:
+		elif c.character_id == "pink":
 			pink = c
 	if blue and blue.has_method("start_following"):
 		blue.start_following("")
@@ -1342,7 +1342,7 @@ func on_defeat(_reason: String) -> void:
 
 # ------------------------------------------------------------------ 友军士兵
 ## 开局的士兵编制：{角色: 人数}。墙顶的（弓箭手）沿墙顶均匀排开，其余在墙下。
-const ROSTER := {"spear": 10, "archer": 6, "shield": 3, "medic": 2, "artisan": 2, "mage": 3}
+const ROSTER := {"spear": 10, "archer": 6, "shield": 3, "medic": 2, "artisan": 2, "mage": 5, "builder": 1}
 ## 蓝色公主没人来抬时，多久自己复活
 const BLUE_REVIVE := 40.0
 ## 倒地组件：两个人都倒下也不算输、对话时也倒计时（Downed 看这个）
@@ -1371,9 +1371,9 @@ func add_soldiers(role: String, n: int, announce := true) -> void:
 		entities().add_child(s)
 		var k := have + i
 		var slots := maxi(int(ROSTER.get(role, n)), k + 1)
-		var off: float = 30.0 if role == "archer" else float({"spear": 0.0, "shield": 18.0, "medic": -24.0, "artisan": 40.0, "mage": -40.0}.get(role, 0.0))
+		var off: float = 30.0 if role == "archer" else float({"spear": 0.0, "shield": 18.0, "medic": -24.0, "artisan": 40.0, "mage": -40.0, "builder": 60.0}.get(role, 0.0))
 		var x: float = ms.x * (k + 0.5) / slots + off
-		var y := wall_top_y() - 10.0 if role == "archer" else wall_foot_y() + 26.0 + (14.0 if role in ["medic", "artisan", "mage"] else 0.0)
+		var y := wall_top_y() - 10.0 if role == "archer" else wall_foot_y() + 26.0 + (14.0 if role in ["medic", "artisan", "mage", "builder"] else 0.0)
 		s.global_position = Vector2(clampf(x, 30.0, ms.x - 30.0), y)
 		s.post = s.global_position
 		soldiers.append(s)

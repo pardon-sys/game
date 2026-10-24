@@ -91,7 +91,7 @@ func talk(file: String, start := "") -> void:
 	current_file = ""
 	talk_finished.emit(file)
 	await get_tree().create_timer(0.12).timeout  # 同一次确认键不触发公主攻击 / 交互
-	if not _running and not Dialogue.is_active() and not GameState.in_cutscene:
+	if not _running and not Dialogue.is_active() and not GameState.in_cutscene and GameState.dialogue_holds <= 0:
 		GameState.in_dialogue = false
 
 

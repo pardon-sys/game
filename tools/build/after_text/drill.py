@@ -11,6 +11,16 @@ from .common import A, BLUE, CAP, N, P, line
 
 B = BLUE
 
+# 第一课与最终考核共用；生成两份运行数据，避免考核漏掉部位按键。
+ICE_SPOTS = [
+    {"id": "lwaist", "name": "左腰", "key": "Q", "zone": "waist"},
+    {"id": "butt", "name": "屁股", "key": "W", "zone": "butt"},
+    {"id": "rwaist", "name": "右腰", "key": "E", "zone": "waist"},
+    {"id": "lthigh", "name": "左大腿", "key": "A", "zone": "thigh"},
+    {"id": "knee", "name": "膝盖窝", "key": "S", "zone": "thigh"},
+    {"id": "rthigh", "name": "右大腿", "key": "D", "zone": "thigh"},
+]
+
 DRILL = {
     "release": [
         [{"speaker": N, "text": "（憋了太久的魔力「嘭」地炸开——冰晶四散，训练室里下起了一阵小小的雪）"},
@@ -56,14 +66,7 @@ DRILL = {
                 {"speaker": N, "text": "（冻住的地方挠了没感觉。对已经冻住的地方再冻一次会冻太多、越来越冷，冷到发抖也会破功。表情绷不住三次，这节课重来。撑够时间就过关）"},
                 {"speaker": CAP, "text": "……我有时候会骗你。看清楚了再冻。"},
             ],
-            "spots": [
-                {"id": "lwaist", "name": "左腰", "key": "Q", "zone": "waist"},
-                {"id": "butt", "name": "屁股", "key": "W", "zone": "butt"},
-                {"id": "rwaist", "name": "右腰", "key": "E", "zone": "waist"},
-                {"id": "lthigh", "name": "左大腿", "key": "A", "zone": "thigh"},
-                {"id": "knee", "name": "膝盖窝", "key": "S", "zone": "thigh"},
-                {"id": "rthigh", "name": "右大腿", "key": "D", "zone": "thigh"},
-            ],
+            "spots": ICE_SPOTS,
             "hit": {
                 "lwaist": ["（羽毛尖顺着左腰的曲线，从肋骨下面慢慢扫到胯骨）", "（两根手指在左腰上一戳一戳）"],
                 "rwaist": ["（羽毛在右腰上画了一个大大的圈）", "（指尖顺着右腰一路往下划）"],
@@ -328,6 +331,7 @@ DRILL["lessons"]["hand"] = {
 }
 DRILL["lessons"]["exam"] = {
     "name": "考核：反过来的玩闹",
+    "spots": ICE_SPOTS,
     "intro": [
         {"speaker": CAP, "text": "考核。"},
         {"speaker": CAP, "text": "前几天，她逗你笑，你被裤子按住，什么都做不了。"},

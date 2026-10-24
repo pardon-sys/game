@@ -32,7 +32,7 @@ X = savepoint place=集市广场
 Y = prop type=dungeon_gate
 Z = exit target=floor_06_mine locked=true dialogue=sign6_gate
 a = npc id=supervisor dialogue=floor_06/supervisor wander=0 show_flag=f6_opening_done dir=down
-b = npc id=bonfire_host dialogue=floor_06/bonfire_host wander=1
+b = bonfire_host dialogue=floor_06/bonfire_host wander=1
 c = blue_princess dialogue=floor_06/blue_princess show_flag=f6_opening_done
 d = spot
 e = npc id=granny dialogue=floor_06/granny wander=2

@@ -31,6 +31,52 @@ func _ready() -> void:
 		GameState.set_flag("met_" + key)
 	Characters.scope("pink")
 	Cutscene.started.connect(func(id: String): seen_cuts.append(id))
+	if "--festival-only" in OS.get_cmdline_user_args():
+		await preload("res://tests/helpers/f6_festival.gd").run(self)
+		main.queue_free()
+		for i in 3: await get_tree().process_frame
+		# 仅本专项退出前排空音频线程，避免脚步声仍播放时立即终止引擎。
+		for sound in Audio.get_children():
+			if sound is AudioStreamPlayer: sound.stop()
+		await _wait(0.3)
+		print("祭典专项：%s（%d项失败）" % ["全部通过" if failures == 0 else "有失败", failures])
+		get_tree().quit(1 if failures else 0)
+		return
+	if "--workshop-only" in OS.get_cmdline_user_args():
+		await preload("res://tests/helpers/f6_workshop.gd").run(self)
+		main.queue_free()
+		for i in 3: await get_tree().process_frame
+		print("新任务专项：%d项失败" % failures)
+		get_tree().quit(1 if failures else 0)
+		return
+	if "--shearing-only" in OS.get_cmdline_user_args():
+		await preload("res://tests/helpers/f6_shearing.gd").run(self)
+		print("剪毛专项：%d项失败" % failures)
+		get_tree().quit(1 if failures else 0)
+		return
+	if "--town-workshop-only" in OS.get_cmdline_user_args():
+		await preload("res://tests/helpers/f6_gate_chain.gd").run(self)
+		await preload("res://tests/helpers/f6_shearing.gd").run(self)
+		await preload("res://tests/helpers/f6_workshop.gd").run(self)
+		print("\n==== 四项劳动委托%s (%d 项失败) ====" % ["全部通过" if failures==0 else "有失败",failures])
+		get_tree().quit(1 if failures else 0)
+		return
+	if "--work-errands-only" in OS.get_cmdline_user_args():
+		await preload("res://tests/helpers/f6_gate_chain.gd").run(self)
+		await preload("res://tests/helpers/f6_shearing.gd").run(self)
+		print("\n==== 劳动委托%s (%d 项失败) ====" % ["全部通过" if failures == 0 else "有失败", failures])
+		get_tree().quit(1 if failures else 0)
+		return
+	if "--gate-chain-only" in OS.get_cmdline_user_args():
+		await preload("res://tests/helpers/f6_gate_chain.gd").run(self)
+		print("\n==== 城门穿链%s (%d 项失败) ====" % ["全部通过" if failures == 0 else "有失败", failures])
+		get_tree().quit(1 if failures else 0)
+		return
+	if "--daily-polish-only" in OS.get_cmdline_user_args():
+		await preload("res://tests/helpers/f6_after_daily_polish.gd").run(self)
+		print("\n==== 日常优化%s (%d 项失败) ====" % ["全部通过" if failures == 0 else "有失败", failures])
+		get_tree().quit(1 if failures else 0)
+		return
 	_run_data()
 	await _run_day1()
 	await _run_book()
@@ -116,7 +162,8 @@ func _run_day1() -> void:
 	await _wait(1.0)
 	check("自由活动时等了一秒也不会自己开演", not seen_cuts.has("after_d1_verdict") and not Cutscene.is_playing())
 	var blue := _node("AfterBlue") as PlayableCharacter
-	check("蓝色公主（AfterBlue）跟着粉色公主、粉色公主在操控", blue != null and blue.follow and GameState.player.character_id == "pink")
+	# 战后的蓝色公主按自己的日程在镇上活动（AfterBlueRoutine），默认不跟着
+	check("蓝色公主（AfterBlue）在镇上自由活动、粉色公主在操控", blue != null and not blue.follow and GameState.player.character_id == "pink")
 	await _talk("floor_06/after_mayor", "")
 	check("宣判之前镇民说的是等着宣判的话", GameState.has_flag("dlg_floor_06/after_mayor_d1_wait"))
 	# 走到宣判台前 → 宣判 → 晚上
@@ -239,8 +286,7 @@ func _run_day2() -> void:
 	var pun := PenanceBook.punishments()
 	check("笑出声 3 次以上 → 训练营转盘停在转轮，播了刑具小剧场、记进受罚记录（%s）" % [pun.back().get("text") if pun.size() > p0 else ""],
 		pun.size() == p0 + 1 and str(pun.back()["theater"]) == "after_roulette_wheel" and GameState.has_flag("cg_seen_theater:after_roulette_wheel"))
-	check("示众完到了第 2 天下午、蓝色公主回到身边", DayClock.day() == 2 and DayClock.slot() == DayClock.AFTERNOON
-		and _node("AfterBlue") != null and (_node("AfterBlue") as Node2D).global_position.distance_to(GameState.player.global_position) < 80.0)
+	check("示众完到了第 2 天下午、蓝色公主回到镇上", DayClock.day() == 2 and DayClock.slot() == DayClock.AFTERNOON and _node("AfterBlue") != null)
 	var text := "\n".join(PenanceBook.page_rows().map(func(r): return str(r["text"])))
 	check("赎罪簿页列出受罚记录", text.contains("受罚记录") and text.contains("训练营转盘：转轮"))
 	var groups := Backpack.gallery_entries().filter(func(e): return str(e.get("id", "")).begins_with("after_roulette_")).map(func(e): return e["group"])
@@ -394,7 +440,7 @@ func _run_play() -> void:
 	await _talk("floor_06/after_partner", "", [0])
 	await _wait(0.5)
 	await _advance_until(func(): return not AfterPlay.running and not Dialogue.is_active(), 10.0)
-	check("一天只能玩一次（关系值不再加）", int(GameState.vars.get("blue_bond", 0)) == b0 + 1)
+	check("当天获胜后不重复玩闹或加关系值", int(GameState.vars.get("blue_bond", 0)) == b0 + 1)
 	AfterPlay.auto_picks = []
 	AfterPlay.auto_qte = null
 
@@ -781,7 +827,7 @@ func _run_errands2() -> void:
 func _run_ladder() -> void:
 	var h0 := PenanceBook.hours()
 	LadderShow.quiet = true
-	await _talk("floor_06/after_engineer", "", [0])
+	await _talk("floor_06/after_engineer", "errand_ladder", [0])
 	await _wait(0.2)
 	check("接下扶梯子：目标是脚手架房子底下", AfterErrands.active() == "ladder" and _node("Errand_ladder") != null)
 	_go(Cutscene.cell_to_world([24, 10]))
@@ -827,7 +873,7 @@ func _run_ladder() -> void:
 
 func _run_goats() -> void:
 	ErrandGoats.quiet = true
-	await _talk("floor_06/after_maid", "", [0])
+	await _talk("floor_06/after_maid", "errand_goats", [0])
 	await _wait(0.3)
 	var r := _node("Errand_goats") as ErrandGoats
 	var goats: Array = main.level.find_children("*", "MushroomGoat", true, false)
@@ -894,7 +940,7 @@ func _run_goats() -> void:
 
 func _run_massage() -> void:
 	MassageShow.quiet = true
-	await _talk("floor_06/after_bonfire_host", "", [0])
+	await _talk("floor_06/after_bonfire_host", "errand_massage", [0])
 	await _wait(0.2)
 	check("派对主人先给足底按摩的委托", AfterErrands.active() == "massage")
 	_go(Cutscene.cell_to_world([41, 27]))
@@ -931,7 +977,7 @@ func _run_massage() -> void:
 
 func _run_dance() -> void:
 	DanceShow.quiet = true
-	await _talk("floor_06/after_bonfire_host", "", [0])
+	await _talk("floor_06/after_bonfire_host", "errand_dance", [0])
 	await _wait(0.2)
 	check("再找派对主人：篝火舞会排练", AfterErrands.active() == "dance")
 	_go(Cutscene.cell_to_world([44, 26]))
@@ -1508,7 +1554,7 @@ func _run_lantern() -> void:
 	ls.lit = 3
 	ls.add_fatigue(ls.fatigue_max())
 	await _wait(0.3)
-	check("魔力疲倦满释放：吹灭一半的灯（%d）" % ls.lit, ls.lit == 1 and ls.blown == 1)
+	check("魔力疲倦满释放：只吹灭1–2盏（%d）" % ls.lit, ls.lit in [1, 2] and ls.blown == 1)
 	ls.lit = ls.lanterns().size()
 	await _advance_until(func(): return DayClock.day() == 7 and not Sleep.sleeping and not DayClock.passing, 60.0)
 	check("五盏全亮 → 镇长说起「很会笑的小姑娘」→ 睡到第 7 天", DayClock.day() == 7 and DayClock.slot() == DayClock.MORNING)

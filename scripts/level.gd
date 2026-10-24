@@ -100,7 +100,7 @@ func apply_camera_limits(player: PlayableCharacter) -> void:
 ## 关卡里本来就有的蓝色公主（小镇里溜达的那个）这时不出现（BluePrincess.hide_flags）。
 func _swap_hero() -> void:
 	for n in get_tree().get_nodes_in_group("player"):
-		if n is Princess and not (n is BluePrincess) and is_ancestor_of(n):
+		if n is Princess and n.character_id == "pink" and is_ancestor_of(n):
 			var pink := n as Princess
 			var blue: BluePrincess = load("res://scenes/actors/playable/blue_princess.tscn").instantiate()
 			blue.hero = true

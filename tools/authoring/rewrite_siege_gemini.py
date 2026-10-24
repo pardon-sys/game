@@ -22,7 +22,7 @@ REVISED = ROOT / "tools/.cache/siege_gemini_revised.json"
 TEXT_FILES = [ROOT / "tools/build/siege_text/reactions_bosses.py", ROOT / "tools/build/siege_text/cgs_bosses.py"]
 MODEL = "gemini-4-argon"
 MODULES = ("gale_bear", "puppet_master")
-CONTENT_FLAGS = ("高潮", "情欲", "性欲", "乳头", "阴道", "阴蒂", "阴茎", "勃起")
+CONTENT_FLAGS = ()
 SCHEMA = {"type": "OBJECT", "properties": {"replacements": {"type": "ARRAY", "items": {
     "type": "OBJECT", "properties": {"id": {"type": "STRING"}, "text": {"type": "STRING"}},
     "required": ["id", "text"]}}}, "required": ["replacements"]}

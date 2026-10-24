@@ -52,6 +52,7 @@ const SCENES := {
 	"spawn": "res://scenes/objects/spawn_point.tscn",
 	"savepoint": "res://scenes/objects/save_point.tscn",
 	"blue_princess": "res://scenes/actors/playable/blue_princess.tscn",
+	"bonfire_host": "res://scenes/actors/playable/bonfire_host.tscn",
 	"spot": "res://scenes/objects/wander_spot.tscn",
 	# 潜入模式（scripts/stealth/）
 	"stealth": "res://scenes/stealth/stealth_director.tscn",
@@ -506,7 +507,7 @@ func _spawn(kind: String, info: Dictionary, x: int, y: int) -> Node2D:
 	inst.name = "%s_%d_%d" % [label.to_pascal_case(), x, y]
 	var base := Vector2(x * TILE + TILE / 2.0, y * TILE + TILE)
 	match kind:
-		"player", "monster", "ally", "item", "npc", "spawn", "blue_princess", "spot":
+		"player", "monster", "ally", "item", "npc", "spawn", "blue_princess", "bonfire_host", "spot":
 			inst.position = base - Vector2(0, 4)
 		"stairs":
 			inst.position = base - Vector2(0, TILE / 2.0)

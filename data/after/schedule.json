@@ -786,6 +786,38 @@
 			"d2": {
 				"morning": {}
 			}
+		},
+		"after_blue": {
+			"default": {
+				"at": [
+					12,
+					14
+				],
+				"dir": "down",
+				"wander": 2,
+				"hidden": false
+			},
+			"morning": {
+				"at": [
+					12,
+					14
+				],
+				"dir": "left"
+			},
+			"afternoon": {
+				"at": [
+					33,
+					18
+				],
+				"dir": "left"
+			},
+			"night": {
+				"at": [
+					41,
+					25
+				],
+				"dir": "right"
+			}
 		}
 	},
 	"days": {

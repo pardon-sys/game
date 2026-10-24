@@ -305,3 +305,15 @@ DIALOGUES = {
     }},
 }
 SIGNS = {"after_tailor_sign": [{"speaker": "招牌", "text": "【裁缝铺】量体裁衣、缝补、改尺寸。……现招试衣模特一名（要怕痒的）。"}]}
+
+# 图像不烘焙数字：点位与既有四个选项顺序一致，腰部图左为正面、右为背面。
+TAILOR["chart_legend"] = "红：明显　黄：轻微　绿×：已缝"
+for _key, _points in {
+    "armpit": [[0.72, 0.23], [0.70, 0.50], [0.30, 0.50], [0.28, 0.23]],
+    "waist": [[0.43, 0.50], [0.74, 0.50], [0.10, 0.50], [0.27, 0.50]],
+    "sole": [[0.50, 0.84], [0.48, 0.58], [0.50, 0.34], [0.50, 0.14]],
+}.items():
+    TAILOR["parts"][_key]["chart"] = {
+        "texture": "res://assets/generated/after/tailor_%s.png" % _key,
+        "points_uv": _points,
+    }

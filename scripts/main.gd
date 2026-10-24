@@ -35,7 +35,7 @@ func _ready() -> void:
 
 
 ## keep_state：不把当前公主的状态带过去（读档时已经从存档设好了）。
-## 测试模式：F2 在公主和蓝色公主（同一关卡里的其它可操作角色）之间切换操控。
+## 测试模式：F2 在同一关卡的可操作角色间循环；业务场景仍由no_switch等原规则限制。
 func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("switch_character") and not GameState.in_dialogue:
 		if level and level.get("no_switch") == true:
@@ -54,25 +54,25 @@ func _unhandled_input(event: InputEvent) -> void:
 func switch_character() -> bool:
 	if level == null:
 		return false
-	var others: Array = []
+	var candidates: Array[PlayableCharacter] = []
 	for n in level.find_children("*", "", true, false):
-		if n is PlayableCharacter and n != GameState.player and n.visible and n.is_alive() and not Downed.is_downed(n):
-			others.append(n)
-	if others.is_empty():
+		if n is PlayableCharacter and n.visible and n.is_alive() and not Downed.is_downed(n):
+			candidates.append(n)
+	if candidates.size() < 2:
 		GameState.notify("这里没有可以切换的角色")
 		return false
-	GameState.switch_control(others[0])
-	GameState.notify("现在操控：%s" % (others[0].call("display_name") if others[0].has_method("display_name") else "公主"))
+	var next := candidates[(candidates.find(GameState.player)+1)%candidates.size()]
+	GameState.switch_control(next)
+	GameState.notify("现在操控：%s" % next.display_name())
 	return true
 
 
 ## 换关卡前换回公主（关卡之间只带公主的状态）。
 func _restore_main_character() -> void:
-	if GameState.has_flag("blue_is_hero"):
-		return   # 蓝色公主是主角了：不切回粉色公主
-	if GameState.player is BluePrincess and level:
+	var main_id := "blue" if GameState.has_flag("blue_is_hero") else "pink"
+	if is_instance_valid(GameState.player) and GameState.player.character_id != main_id and level:
 		for n in level.find_children("*", "", true, false):
-			if n is Princess and not (n is BluePrincess):
+			if n is PlayableCharacter and n.character_id == main_id:
 				GameState.switch_control(n)
 				return
 

@@ -1611,7 +1611,13 @@ def gen_npcs():
     """普通居民用程序外观；三个关键人物按立绘单独画（立绘由 import_portraits_v2.py 从用户的插画生成）。"""
     (OUT / "npcs").mkdir(exist_ok=True)
     for nid, look in LOOKS.items():
-        sheet = key_npc_sheet(nid) if nid in KEY_NPCS else npc_sheet(look)
+        if nid == "bonfire_host" and (OUT / "bonfire_host.png").exists():
+            full = Image.open(OUT / "bonfire_host.png").convert("RGBA")
+            sheet = blank(128, 128)
+            for direction in range(4):
+                sheet.alpha_composite(full.crop((direction*128, 0, (direction+1)*128, 32)), (0, direction*32))
+        else:
+            sheet = key_npc_sheet(nid) if nid in KEY_NPCS else npc_sheet(look)
         sheet.save(OUT / "npcs" / (nid + ".png"))
     goat_sheet().save(OUT / "npcs" / "goat.png")
 

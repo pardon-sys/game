@@ -1,6 +1,38 @@
 {
 	"_说明": "七日赎罪的镇民委托（gen_floor06_after.py 从 after_text/errands.py 生成，AfterErrands 读）。",
 	"errands": {
+		"canopy": {
+			"name": "棚布补漏",
+			"npc": "after_merchant",
+			"from": [
+				4,
+				0
+			],
+			"hours": 3,
+			"kind": "show",
+			"show": "res://levels/floor_06/scripts/canopy_show.gd",
+			"target": [
+				15,
+				28
+			],
+			"objective": "到西边市场坏摊棚南侧，挂角、补缝、张紧"
+		},
+		"sifting": {
+			"name": "筛叶风选",
+			"npc": "after_pharm",
+			"from": [
+				4,
+				0
+			],
+			"hours": 3,
+			"kind": "show",
+			"show": "res://levels/floor_06/scripts/sifting_show.gd",
+			"target": [
+				17,
+				12
+			],
+			"objective": "到药剂师工房门外晒架，筛松、风选、装袋"
+		},
 		"cookies": {
 			"name": "送饼干",
 			"npc": "after_granny",
@@ -89,6 +121,60 @@
 				41,
 				27
 			]
+		},
+		"gate_chain": {
+			"name": "城门底下重新穿链",
+			"npc": "after_engineer",
+			"from": [
+				4,
+				0
+			],
+			"hours": 3,
+			"kind": "show",
+			"show": "res://levels/floor_06/scripts/gate_chain_show.gd",
+			"target": [
+				31,
+				38
+			],
+			"objective": "到城门内侧检修槽，重新穿好辅助链条"
+		},
+		"shearing": {
+			"name": "蘑菇羊剪毛",
+			"npc": "after_maid",
+			"from": [
+				4,
+				0
+			],
+			"hours": 3,
+			"requires": [
+				"goats"
+			],
+			"kind": "show",
+			"show": "res://levels/floor_06/scripts/shearing_show.gd",
+			"target": [
+				57,
+				33
+			],
+			"objective": "到东边羊圈，帮女仆给咕咕梳结、剪毛、装袋"
+		},
+		"lamp_calibration": {
+			"name": "脚踏灯轮校准",
+			"npc": "after_bonfire_host",
+			"from": [
+				4,
+				0
+			],
+			"hours": 3,
+			"kind": "show",
+			"requires": [
+				"dance"
+			],
+			"show": "res://levels/floor_06/scripts/lamp_calibration_show.gd",
+			"target": [
+				44,
+				26
+			],
+			"objective": "到篝火排练处，完成十二组灯轮校准"
 		}
 	}
 }

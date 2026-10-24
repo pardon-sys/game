@@ -343,15 +343,18 @@ static var _muted := {}
 static func _mute_partner(on: bool) -> void:
 	var tree := Engine.get_main_loop() as SceneTree
 	if on:
+		if is_instance_valid(AfterBlueRoutine.current): AfterBlueRoutine.current.force_task_follow()
 		for n in tree.get_nodes_in_group("ally"):
 			if n is PlayableCharacter and (n as PlayableCharacter).partner_talk != "":
 				_muted[n.get_instance_id()] = (n as PlayableCharacter).partner_talk
 				(n as PlayableCharacter).partner_talk = ""
+				(n as PlayableCharacter)._refresh_partner_area()
 	else:
 		for id in _muted:
 			var n := instance_from_id(id) as PlayableCharacter
 			if is_instance_valid(n) and n.partner_talk == "":
 				n.partner_talk = str(_muted[id])
+				n._refresh_partner_area()
 		_muted.clear()
 
 

@@ -136,6 +136,8 @@ func _on_tickled(hit: HitData) -> void:
 
 func _on_laugh_level_changed(level: LaughMeter.Level) -> void:
 	super(level)
+	# 小游戏的临时数值不应消耗世界教学标记，或在归还控制时插入恢复对白。
+	if bool(get_meta("suppress_laugh_tutorials", false)): return
 	if not is_controlled():
 		return
 	if level == LaughMeter.Level.HELPLESS:

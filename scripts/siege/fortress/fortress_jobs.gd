@@ -232,7 +232,7 @@ func explode(at: Vector2, radius: float, amount: float, variant: String, push :=
 	for c in people():
 		if c.global_position.distance_to(at) <= radius and SiegeTools.strike(boss, c, amount, int(clock * 4), variant):
 			if laugh_ratio > 0.0 and c.laugh:
-				c.laugh.add(c.laugh.max_value * laugh_ratio)
+				c.laugh.add(c.laugh.max_value * laugh_ratio * boss.stat_mul("tickle_power"))
 			if push > 0 and SiegeTools.can_move(boss, c):
 				c.force_move(at.direction_to(c.global_position) * (push / 0.6), 0.6, "slide")
 	burst(at, radius, variant)
