@@ -145,13 +145,17 @@ static func run(t: Node) -> void:
 	var before := PenanceBook.hours()
 	await solve_rune(t, s)
 	await t._advance_until(func(): return DayClock.done(7, DayClock.MORNING) and not Cutscene.is_playing() and not DayClock.passing and not AfterStory.running, 60.0)
-	verify(t, "三道刻好 → 图腾柱扶正 → 减 20 工时（%d → %d）→ 停在下午（%s）" % [before, PenanceBook.hours(), DayClock.label()],
-		t.seen_cuts.has("after_d7_totem_done") and PenanceBook.hours() == before - 20 and DayClock.slot() == DayClock.AFTERNOON)
+	verify(t, "三道刻好 → 图腾柱扶正 → 减 20 工时（%d → %d）→ 晚上有庆功宴：天黑、停在晚上（%s）" % [before, PenanceBook.hours(), DayClock.label()],
+		t.seen_cuts.has("after_d7_totem_done") and PenanceBook.hours() == before - 20 and DayClock.slot() == DayClock.NIGHT)
 	# 工时规则
-	verify(t, "还欠工时：最后一天要补（%d）" % PenanceBook.hours(), AfterStory.must_settle())
+	verify(t, "还欠工时：最后一天要补（%d）、庆功宴还不开" % PenanceBook.hours(), AfterStory.must_settle() and AfterStory.pending_event() == "")
+	var day := DayClock.day()
+	await AfterStory.sleep_later()
+	verify(t, "欠工时：床不让睡", DayClock.day() == day and DayClock.slot() == DayClock.NIGHT)
+	DayClock.set_time(7, DayClock.AFTERNOON)
 	var slot := DayClock.slot()
 	var rested := await AfterStory.rest()
-	verify(t, "欠工时：床不让休息", not rested and DayClock.slot() == slot)
+	verify(t, "（晚上没有安排时停在下午）欠工时：床不让休息", not rested and DayClock.slot() == slot)
 	verify(t, "目标提示改成补罚", AfterStory.objective(AfterStory.TOWN).get("text", "").contains("补罚"))
 	GameState.vars["penance_settled"] = PenanceBook.punishments().size()
 	AfterPenance.refresh()
@@ -164,6 +168,6 @@ static func run(t: Node) -> void:
 	AfterPenance.refresh()
 	verify(t, "工时还清：补罚关掉、不再要补", not AfterStory.must_settle() and not GameState.has_flag("penalty_d7"))
 	rested = await AfterStory.rest()
-	verify(t, "还清以后可以休息到晚上（%s）" % DayClock.label(), rested and DayClock.slot() == DayClock.NIGHT)
+	verify(t, "还清以后可以休息到晚上（%s），庆功宴开放" % DayClock.label(), rested and DayClock.slot() == DayClock.NIGHT and AfterStory.pending_event() == "d7_festival")
 	TotemResonanceShow.quiet = false
 	TotemResonanceShow.fixed_seed = -1

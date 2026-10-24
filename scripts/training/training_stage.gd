@@ -441,7 +441,8 @@ func _build_cast(cast: Dictionary) -> void:
 		var k := str(info.get("kind", ""))
 		var a: CGActor
 		if k == "princess":
-			a = CGActor.make_princess(who)
+			# character：用谁的精灵图（pink / blue），不写 = 现在操控的角色
+			a = CGActor.make_princess(who, str(info.get("character", "")))
 			a.set_pose(str(info.get("visual", "helpless_1")), str(info.get("anim", "helpless")), str(info.get("dir", "down")))
 		elif k.begins_with("trap:"):
 			a = CGActor.make_trap(who, k.substr(5), CG.data.get("trap_actors", {}).get(k.substr(5), {}))

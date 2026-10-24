@@ -72,6 +72,11 @@ func _ready() -> void:
 		print("\n==== 城门穿链%s (%d 项失败) ====" % ["全部通过" if failures == 0 else "有失败", failures])
 		get_tree().quit(1 if failures else 0)
 		return
+	if "--festival-night-only" in OS.get_cmdline_user_args():
+		await preload("res://tests/helpers/f6_festival_night.gd").run(self)
+		print("\n==== 庆功宴%s (%d 项失败) ====" % ["全部通过" if failures == 0 else "有失败", failures])
+		get_tree().quit(1 if failures else 0)
+		return
 	if "--totem-only" in OS.get_cmdline_user_args():
 		await preload("res://tests/helpers/f6_totem.gd").run(self)
 		print("\n==== 图腾共鸣%s (%d 项失败) ====" % ["全部通过" if failures == 0 else "有失败", failures])
@@ -1373,8 +1378,8 @@ func _run_totem() -> void:
 		await spec.solve_rune(self, s)
 	await _advance_until(func(): return DayClock.done(7, DayClock.MORNING) and not Cutscene.is_playing() and not DayClock.passing and not AfterStory.running, 60.0)
 	TotemResonanceShow.quiet = false
-	check("三道符文刻好 → 图腾柱扶正 → 减 20 工时（%d → %d）→ 第 7 天晚上没有安排：停在下午（%s）" % [hours, PenanceBook.hours(), DayClock.label()],
-		seen_cuts.has("after_d7_totem_done") and PenanceBook.hours() == maxi(0, hours - 20) and DayClock.day() == 7 and DayClock.slot() == DayClock.AFTERNOON)
+	check("三道符文刻好 → 图腾柱扶正 → 减 20 工时（%d → %d）→ 晚上有庆功宴：天黑（%s）" % [hours, PenanceBook.hours(), DayClock.label()],
+		seen_cuts.has("after_d7_totem_done") and PenanceBook.hours() == maxi(0, hours - 20) and DayClock.day() == 7 and DayClock.slot() == DayClock.NIGHT)
 
 
 # ------------------------------------------------------------------ 晚上的弥补任务
