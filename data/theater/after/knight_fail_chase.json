@@ -1,0 +1,96 @@
+{
+	"name": "镇中追逃失败：被盔甲抱住",
+	"cast": {
+		"princess": {
+			"kind": "princess",
+			"at": [
+				-4,
+				8
+			],
+			"visual": "helpless_1",
+			"anim": "helpless",
+			"dir": "down"
+		},
+		"armor": {
+			"kind": "npc:knight_cursed",
+			"at": [
+				8,
+				4
+			],
+			"dir": "left"
+		}
+	},
+	"steps": [
+		{
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "fade_in"
+				},
+				{
+					"state": "giggle",
+					"do": "voice"
+				}
+			],
+			"wait": 0.5
+		},
+		{
+			"speaker": "",
+			"text": "（第三次被抱住的时候，盔甲没有再松手。它把她搂在怀里，像抱着一件很重要的东西）"
+		},
+		{
+			"speaker": "",
+			"text": "（手印一只一只爬到她的脚上，在脚心、脚背、趾缝里慢慢地挠。很轻，很慢，一刻都不停）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "armor",
+					"zone": "sole",
+					"fx": "feather",
+					"repeat": 14,
+					"interval": 0.3,
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "哈……哈哈……别、别这么轻……这样更、更受不了……",
+			"portrait": "defeat_1"
+		},
+		{
+			"speaker": "",
+			"text": "（痒意一点一点漫上来，暖洋洋的，她的脚趾一根一根地松开了——魔力差点就这么化开）"
+		},
+		{
+			"speaker": "骑士",
+			"text": "……殿……下……"
+		},
+		{
+			"speaker": "",
+			"text": "（「哗啦」——蓝色公主的冰从脚下爬上盔甲，把它冻在了原地。粉色公主从它的怀里滑了出来）"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……起来。再引一次。"
+		},
+		{
+			"speaker": "公主",
+			"text": "哈……哈……好、好……",
+			"emotion": "helpless_1"
+		},
+		{
+			"actions": [
+				{
+					"time": 0.6,
+					"do": "fade_out"
+				},
+				{
+					"state": "",
+					"do": "voice"
+				}
+			],
+			"wait": 0.7
+		}
+	]
+}

@@ -1,0 +1,96 @@
+{
+	"name": "镇中追逃",
+	"letterbox": true,
+	"skippable": true,
+	"steps": [
+		{
+			"actions": [
+				{
+					"id": "knight",
+					"kind": "npc:knight_cursed",
+					"at": [
+						58,
+						36
+					],
+					"dir": "left",
+					"do": "spawn"
+				},
+				{
+					"to": [
+						56,
+						34
+					],
+					"zoom": 1.0,
+					"time": 0.6,
+					"do": "camera"
+				}
+			],
+			"wait": 0.6
+		},
+		{
+			"speaker": "",
+			"text": "（营地的楼梯口，一具银灰色的盔甲慢慢走了出来。盔甲上爬满了紫色的手印，一圈一圈地发着光，每一步都踩得石板咯吱作响）"
+		},
+		{
+			"speaker": "骑士",
+			"text": "……殿……下……",
+			"actions": [
+				{
+					"who": "knight",
+					"kind": "angry",
+					"do": "bubble"
+				}
+			]
+		},
+		{
+			"speaker": "",
+			"text": "（面罩的缝里透出紫光。它转过头，看向了她）"
+		},
+		{
+			"speaker": "保卫队队长",
+			"text": "（拔剑挡在前面）别过来！……那已经不是他自己在走了。",
+			"npc": "captain"
+		},
+		{
+			"speaker": "镇长",
+			"text": "（远远地喊）广场的图腾柱！把它引到图腾柱下面——图腾的光能压住诅咒！"
+		},
+		{
+			"speaker": "保卫队队长",
+			"text": "路上有三座笑声灯笼，点亮了，图腾的光才连得过去。……我们拦不住它，只能靠你引。",
+			"npc": "captain"
+		},
+		{
+			"speaker": "公主",
+			"text": "……引它？那它不是会一直追着我——",
+			"emotion": "surprise"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……追的是你。所以只有你能引。"
+		},
+		{
+			"speaker": "公主",
+			"text": "……好吧！追就追！",
+			"emotion": "angry"
+		},
+		{
+			"speaker": "",
+			"text": "（往三座信标跑，站在信标旁按住 E 几秒点亮。盔甲直线快、转弯慢，绕着房子和摊位甩开它；它甩出铁手横扫小巷之前地上有预警线。C 换蓝色公主能冻住它一会儿，冷却很长。被抓住了连按 J 挣脱，抓三次要重来）"
+		},
+		{
+			"actions": [
+				{
+					"who": "knight",
+					"do": "despawn"
+				},
+				{
+					"reset": true,
+					"time": 0.4,
+					"do": "camera"
+				}
+			],
+			"wait": 0.4
+		}
+	]
+}

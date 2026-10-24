@@ -5,7 +5,7 @@ API key 从项目根目录的 .env 读（ELEVENLABS=...，.env 不进版本库�
 首尾相连：生成的曲子结尾常有淡出 / 静音，所以先找循环点 T（find_loop_end：在淡出之前、节奏和开头最像的位置），
 把 T 之前 CROSSFADE 秒和开头交叉淡化（等功率），T 之后的尾声丢掉——循环播放时无缝接回开头。
 原始音频存在 tools/.cache/music/（不进版本库）。
-用法：python tools/audio/gen_music.py [dungeon] [town] [boss] [boss3] [night_room] [night_maze] [siege] [minigame]（不写就全部生成；已经生成过的跳过，加 --force 重新生成）
+用法：python tools/audio/gen_music.py [dungeon] [town] [boss] [boss3] [night_room] [night_maze] [siege] [minigame] [knight_boss]（不写就全部生成；已经生成过的跳过，加 --force 重新生成）
 """
 import json
 import os
@@ -27,6 +27,12 @@ LENGTH_MS = 140000   # 多要 20 秒：结尾的淡出尾声会被切掉，循�
 CROSSFADE = 2.5
 
 TRACKS = {
+    "knight_boss": ("Instrumental video game boss battle music for a cute pixel-art game: two princesses fight a cursed suit of knight armor "
+                    "possessed by glowing purple tickling hands, in a lantern-lit underground town plaza. The knight trapped inside is a loyal, "
+                    "tragic figure, so the piece is heroic and urgent but carries a sorrowful, noble undertone. 140 BPM, minor key. Driving "
+                    "staccato strings and marching snare, heavy low brass for the armor's stomps, a solemn horn melody like an old royal anthem "
+                    "played in a sad minor mode, harpsichord ostinato, sparkling celesta and bell accents for the magic, a few playful pizzicato "
+                    "flourishes so it never becomes truly grim. Builds tension, loops seamlessly, steady energy, no fade-in or fade-out."),
     "minigame": ("Instrumental video game background music for silly, playful little minigames in a cute pixel-art game about ticklish "
                  "princesses: light-hearted, bouncy and comedic, childlike and mischievous. 128 BPM, major key. Plucky pizzicato strings, "
                  "a bright glockenspiel and xylophone melody, a bouncy tuba / bassoon bass line, kazoo-like playful accents, woodblock and "

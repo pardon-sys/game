@@ -152,6 +152,18 @@
 		{
 			"actions": [
 				{
+					"who": "knight",
+					"do": "despawn"
+				},
+				{
+					"who": "g1",
+					"do": "despawn"
+				},
+				{
+					"who": "g2",
+					"do": "despawn"
+				},
+				{
 					"reset": true,
 					"time": 0.4,
 					"do": "camera"

@@ -1,0 +1,110 @@
+{
+	"name": "痒铠骑士失败：铁手套和手印",
+	"cast": {
+		"princess": {
+			"kind": "princess",
+			"at": [
+				-12,
+				8
+			],
+			"visual": "helpless_2",
+			"anim": "helpless",
+			"dir": "down"
+		},
+		"blue": {
+			"kind": "npc:blue_princess",
+			"at": [
+				12,
+				8
+			],
+			"visual": "helpless_1",
+			"anim": "helpless",
+			"dir": "down"
+		},
+		"armor": {
+			"kind": "npc:knight_cursed",
+			"at": [
+				0,
+				-6
+			],
+			"dir": "down"
+		}
+	},
+	"steps": [
+		{
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "fade_in"
+				},
+				{
+					"state": "giggle",
+					"do": "voice"
+				}
+			],
+			"wait": 0.5
+		},
+		{
+			"speaker": "",
+			"text": "（铁手套一左一右，同时抓住了两个人）"
+		},
+		{
+			"speaker": "",
+			"text": "（抓着蓝色公主的那只，在她大腿内侧飞快地挠；抓着粉色公主的那只，却只是一下一下地轻轻挠她的脚心）",
+			"actions": [
+				{
+					"who": "blue",
+					"by": "armor",
+					"zone": "thigh",
+					"fx": "hand",
+					"repeat": 12,
+					"interval": 0.16,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"by": "armor",
+					"zone": "sole",
+					"fx": "feather",
+					"repeat": 8,
+					"interval": 0.32,
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……哈……！对我……就……这么凶……！"
+		},
+		{
+			"speaker": "公主",
+			"text": "哈哈……我、我这边好轻……对不起……哈哈……！",
+			"portrait": "defeat_1"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……不准……道歉……哈……"
+		},
+		{
+			"speaker": "",
+			"text": "（图腾柱的光闪了一下，铁手套被震开了。两个人跌坐在地上喘气）"
+		},
+		{
+			"speaker": "保卫队队长",
+			"text": "（举剑挡在前面）……歇一口气！再来！"
+		},
+		{
+			"actions": [
+				{
+					"time": 0.6,
+					"do": "fade_out"
+				},
+				{
+					"state": "",
+					"do": "voice"
+				}
+			],
+			"wait": 0.7
+		}
+	]
+}
