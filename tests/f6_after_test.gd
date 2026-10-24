@@ -72,6 +72,11 @@ func _ready() -> void:
 		print("\n==== 城门穿链%s (%d 项失败) ====" % ["全部通过" if failures == 0 else "有失败", failures])
 		get_tree().quit(1 if failures else 0)
 		return
+	if "--totem-only" in OS.get_cmdline_user_args():
+		await preload("res://tests/helpers/f6_totem.gd").run(self)
+		print("\n==== 图腾共鸣%s (%d 项失败) ====" % ["全部通过" if failures == 0 else "有失败", failures])
+		get_tree().quit(1 if failures else 0)
+		return
 	if "--daily-polish-only" in OS.get_cmdline_user_args():
 		await preload("res://tests/helpers/f6_after_daily_polish.gd").run(self)
 		print("\n==== 日常优化%s (%d 项失败) ====" % ["全部通过" if failures == 0 else "有失败", failures])
@@ -1346,7 +1351,7 @@ func _rest_to_next() -> void:
 
 
 func _run_totem() -> void:
-	print("-- 弥补任务：修补狂欢图腾柱")
+	print("-- 弥补任务：修补狂欢图腾柱（图腾共鸣·双人符文）")
 	await _sleep_night()
 	check("睡到第 7 天早上", DayClock.day() == 7 and DayClock.slot() == DayClock.MORNING)
 	GameState.pending_spawn = "from_house"
@@ -1355,88 +1360,21 @@ func _run_totem() -> void:
 	var mk := _node("Objective") as ObjectiveMarker
 	check("目标：去图腾柱废地（西边的小路开了）", mk.text.contains("图腾") and GameState.has_flag(AfterStory.TOTEM_OPEN)
 		and mk.global_position.distance_to(Cutscene.cell_to_world([3, 32])) < 2.0)
-	GameState.vars["task_totem_placed"] = 0
-	GameState.vars["task_totem_drops"] = 0
-	GameState.pending_spawn = "from_town"
-	await main.change_level(Floors.scene("floor_06_after_totem"))
-	await _advance_until(func(): return _node("Task_d7_totem") != null and (_node("Task_d7_totem") as TaskTotem).started and not GameState.in_dialogue, 40.0)
-	await _wait(0.1)
-	var task := _node("Task_d7_totem") as TaskTotem
-	check("进废地 → 镇长和工匠讲共振的过场 → 第一块石头、6 丛痒痒草", task != null and seen_cuts.has("after_d7_totem")
-		and task.grass.size() == 6 and task.blue != null)
-	if task == null:
+	GameState.vars[TotemResonanceShow.SAVE_KEY] = 0
+	GameState.vars[TotemResonanceShow.CRACK_KEY] = 0
+	TotemResonanceShow.quiet = true
+	var spec := preload("res://tests/helpers/f6_totem.gd")
+	var s: TotemResonanceShow = await spec.start(self)
+	check("进废地 → 镇长和工匠讲笑声刻符文的过场 → 双人符文开演", s != null and seen_cuts.has("after_d7_totem"))
+	if s == null:
 		return
-	var pink := task.pink
-	_go(task.stone.global_position)
-	task.pick()
-	check("扛起封印石：走得慢、两只手占着（不能攻击 / 冲刺 / 施法）", task.carrying and pink.buffs.has("carry_stone") and pink.has_meta(&"busy_hands"))
-	var g0 := task.grass[0] as TickleGrass
-	var l0 := pink.laugh.value
-	_go(g0.global_position)
-	await _advance_until(func(): return g0.caught >= 1 and not GameState.in_dialogue, 10.0)
-	await _wait(0.6)
-	check("踩到痒痒草：缠住挠腰（闷笑 %.0f → %.0f）" % [l0, pink.laugh.value], g0.caught >= 1 and pink.laugh.value > l0)
-	check("痒痒草是隐形的，踩到一次就显形", g0.invisible and g0.revealed and not (task.grass[1] as TickleGrass).revealed)
-	await _advance_until(func(): return not GameState.in_dialogue, 5.0)
-	task.pulse_now()
-	check("图腾共振：草够得着的范围变大（×%.1f）" % (task.grass[1] as TickleGrass).reach, (task.grass[1] as TickleGrass).reach > 2.0)
-	await _wait(TaskTotem.PULSE_TIME + 0.3)
-	check("脉动过去：范围恢复", (task.grass[1] as TickleGrass).reach == 1.0)
-	await _wait(1.5)
-	pink.laugh.set_value(pink.laugh.max_value * 0.96)
-	await _advance_until(func(): return TaskTotem.drops() == 1 and not task._busy and not GameState.in_dialogue, 10.0)
-	check("闷笑满：石头摔在地上（这块摔了 %d 次）、手空出来了" % TaskTotem.drops(), TaskTotem.drops() == 1 and not task.carrying and not pink.has_meta(&"busy_hands"))
-	_go(task.stone.global_position)
-	task.pick()
-	_go(Cutscene.cell_to_world(TaskTotem.TOTEM))
-	await _advance_until(func(): return TaskTotem.placed() == 1 and not task._busy and not GameState.in_dialogue, 30.0)
-	check("扛到底座：第一块放好 → 歇脚的对话 → 第二块（摔的次数清零）", TaskTotem.placed() == 1 and TaskTotem.drops() == 0 and task.stone.visible)
-	_go(Cutscene.cell_to_world(Vector2i(20, 12)))
-	var n0 := task.grass.size()
-	await _wait(TaskTotem.SPREAD_EVERY * 1.6)
-	check("第二块：痒痒草往她这边蔓延（%d → %d 丛）" % [n0, task.grass.size()], task.grass.size() > n0 and task.spread > 0)
-	pink.laugh.clear()
-	_go(task.stone.global_position)
-	task.pick()
-	_go(Cutscene.cell_to_world(TaskTotem.TOTEM))
-	await _advance_until(func(): return TaskTotem.placed() == 2 and not task._busy and not GameState.in_dialogue, 30.0)
-	check("第二块放好 → 第三块：裤子开始会失控", TaskTotem.placed() == 2 and task.surge == "calm")
-	pink.laugh.clear()
-	task.surge_now()
-	await _wait(TaskTotem.WARN_TIME + 1.0)
-	check("裤子发光预警 → 小手伸长挠粉色公主（闷笑 %.0f）" % pink.laugh.value, task.surge == "surge" and pink.laugh.value > 1.0)
-	GameState.switch_control(task.blue)
-	await _wait(0.3)
-	await _advance_until(func(): return not Dialogue.is_active(), 10.0)
-	var bl0 := task.blue.laugh.value
-	task.soothe(TaskTotem.SOOTHE_TIME + 0.1)
-	check("换成蓝色公主按住 E：小手转过来挠她自己（闷笑 %.0f → %.0f）→ 安静下来" % [bl0, task.blue.laugh.value],
-		task.surge == "calm" and task.blue.laugh.value > bl0)
-	GameState.switch_control(pink)
-	await _wait(0.3)
-	# 同一块摔三次 = 失败
-	GameState.vars["task_totem_drops"] = 2
-	_go(task.stone.global_position)
-	task.pick()
-	pink.laugh.set_value(pink.laugh.max_value * 0.96)
-	var ready := func() -> bool:
-		var tt := _node("Task_d7_totem") as TaskTotem
-		return GameState.has_flag("cg_seen_theater:after_fail_totem") and not CG.is_busy() and tt != null and tt.started and not GameState.in_dialogue
-	await _advance_until(ready, 60.0)
-	task = _node("Task_d7_totem") as TaskTotem
-	check("同一块摔三次：被痒痒草缠在一起的失败小剧场 → 从这一块重新扛（放好的还在）",
-		GameState.has_flag("cg_seen_theater:after_fail_totem") and task != null and TaskTotem.placed() == 2 and TaskTotem.drops() == 0)
-	if task == null:
-		return
-	pink = task.pink
-	pink.laugh.clear()
-	task.surge = "off"
-	_go(task.stone.global_position)
-	task.pick()
-	_go(Cutscene.cell_to_world(TaskTotem.TOTEM))
-	await _advance_until(func(): return DayClock.slot() == DayClock.NIGHT and not Cutscene.is_playing() and not DayClock.passing, 60.0)
-	check("三块都放好 → 图腾柱扶正发光 → 工时清零 → 直接天黑（%s，剩 %d 工时）" % [DayClock.label(), PenanceBook.hours()],
-		seen_cuts.has("after_d7_totem_done") and DayClock.day() == 7 and DayClock.slot() == DayClock.NIGHT and PenanceBook.hours() == 0)
+	var hours := PenanceBook.hours()
+	for i in 3:
+		await spec.solve_rune(self, s)
+	await _advance_until(func(): return DayClock.done(7, DayClock.MORNING) and not Cutscene.is_playing() and not DayClock.passing and not AfterStory.running, 60.0)
+	TotemResonanceShow.quiet = false
+	check("三道符文刻好 → 图腾柱扶正 → 减 20 工时（%d → %d）→ 第 7 天晚上没有安排：停在下午（%s）" % [hours, PenanceBook.hours(), DayClock.label()],
+		seen_cuts.has("after_d7_totem_done") and PenanceBook.hours() == maxi(0, hours - 20) and DayClock.day() == 7 and DayClock.slot() == DayClock.AFTERNOON)
 
 
 # ------------------------------------------------------------------ 晚上的弥补任务

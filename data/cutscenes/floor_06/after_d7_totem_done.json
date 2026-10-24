@@ -23,25 +23,119 @@
 		},
 		{
 			"speaker": "保卫队队长",
-			"text": "（看着赎罪簿，在最后一行上画了一笔）……一百个工时。还清了。"
+			"text": "（翻开赎罪簿，在上面划了一笔）……图腾柱，二十个工时。"
+		},
+		{
+			"speaker": "保卫队队长",
+			"text": "（往下看了一眼）……一百个工时。还清了。",
+			"if": {
+				"var": {
+					"penance_hours": [
+						"<=",
+						0
+					]
+				}
+			}
 		},
 		{
 			"speaker": "公主",
 			"text": "……还、还清了？真的？",
-			"emotion": "surprise"
+			"emotion": "surprise",
+			"if": {
+				"var": {
+					"penance_hours": [
+						"<=",
+						0
+					]
+				}
+			}
 		},
 		{
 			"speaker": "保卫队队长",
-			"text": "真的。"
+			"text": "真的。",
+			"if": {
+				"var": {
+					"penance_hours": [
+						"<=",
+						0
+					]
+				}
+			}
 		},
 		{
 			"speaker": "公主",
 			"text": "太、太好了——！",
-			"emotion": "happy"
+			"emotion": "happy",
+			"if": {
+				"var": {
+					"penance_hours": [
+						"<=",
+						0
+					]
+				}
+			}
 		},
 		{
 			"speaker": "",
-			"text": "（她一下子坐倒在地上，长长地呼了一口气。镇民们欢呼着围了上来）"
+			"text": "（她一下子坐倒在地上，长长地呼了一口气。镇民们欢呼着围了上来）",
+			"if": {
+				"var": {
+					"penance_hours": [
+						"<=",
+						0
+					]
+				}
+			}
+		},
+		{
+			"speaker": "保卫队队长",
+			"text": "（往下看了一眼）……还没清。剩下的，去找市场监督和派对的主人补。",
+			"if": {
+				"var": {
+					"penance_hours": [
+						">",
+						0
+					]
+				}
+			}
+		},
+		{
+			"speaker": "公主",
+			"text": "还、还有！？",
+			"emotion": "sad",
+			"if": {
+				"var": {
+					"penance_hours": [
+						">",
+						0
+					]
+				}
+			}
+		},
+		{
+			"speaker": "保卫队队长",
+			"text": "补罚做一次，抵五个工时。补完了，回来找我——庆功宴就开。",
+			"if": {
+				"var": {
+					"penance_hours": [
+						">",
+						0
+					]
+				}
+			}
+		},
+		{
+			"speaker": "公主",
+			"text": "呜……我的脚……今天还没休息够……",
+			"emotion": "helpless_1",
+			"if": {
+				"var": {
+					"penance_hours": [
+						">",
+						0
+					]
+				}
+			}
 		},
 		{
 			"speaker": "小汤姆",
@@ -66,10 +160,6 @@
 		{
 			"speaker": "蓝色的公主",
 			"text": "……"
-		},
-		{
-			"speaker": "",
-			"text": "（天色暗了下来。广场那边，篝火已经点起来了）"
 		},
 		{
 			"actions": [

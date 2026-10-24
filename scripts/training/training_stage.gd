@@ -464,8 +464,9 @@ func device_at(key: String) -> Array:
 
 
 ## 舞台上挠公主一下：by = 演员 id，z = 部位；crit 暴击（大特效、立绘大抖）。
-func tickle(by: String, z: String, crit := false) -> void:
-	var p: CGActor = actors.get("princess")
+## target：被挠的演员（默认 princess；挠别的演员时不抖立绘、不放立绘特效）；fx：命中特效（不写用 by 演员的 hit_fx）。
+func tickle(by: String, z: String, crit := false, target := "princess", fx := "") -> void:
+	var p: CGActor = actors.get(target)
 	if p == null:
 		return
 	var b: CGActor = actors.get(by)
@@ -480,7 +481,7 @@ func tickle(by: String, z: String, crit := false) -> void:
 			var bb: CGActor = ref.get_ref()
 			if bb:
 				bb.style = "idle")
-	var kind := b.hit_fx if b and b.hit_fx != "" else "hand"
+	var kind := fx if fx != "" else (b.hit_fx if b and b.hit_fx != "" else "hand")
 	var hf := HitFx.play(kind, fx_root, Vector2.ZERO)
 	if hf:
 		hf.position = (p.position + Vector2(randf_range(-8, 8), randf_range(-18, -6))).round()
@@ -489,6 +490,8 @@ func tickle(by: String, z: String, crit := false) -> void:
 		var body: Variant = TickleZones.info(z).get("body", [0, -12])
 		var off := Vector2(float(body[0]), float(body[1])) if body is Array and body.size() == 2 else Vector2(0, -12)
 		zf.position = (p.position + off * Vector2(-1 if randf() < 0.5 else 1, 1)).round()
+	if target != "princess":
+		return
 	Dialogue.portrait_fx.cutscene_tickle(kind, z)
 	if crit:
 		Dialogue.shake_portrait(5.0, 0.3)

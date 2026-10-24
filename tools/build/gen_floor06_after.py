@@ -531,7 +531,7 @@ DAYS = {
     "d5": {"morning": {"event": "d5_tailor", "task": "裁缝的试衣模特", "hours": 10},
            "afternoon": {"event": "d5_mine", "task": "矿车护送", "hours": 12},
            "night": {"event": "d5_tom", "task": "回小屋睡觉"}},
-    "d7": {"morning": {"event": "d7_totem", "task": "修补狂欢图腾柱", "hours": 0}},
+    "d7": {"morning": {"event": "d7_totem", "task": "修补狂欢图腾柱", "hours": 20}},
     "d1": {"morning": {"event": "d1_open", "task": "战后集合"},
            "afternoon": {"event": "d1_verdict", "task": "广场听候宣判"},
            "night": {"event": "d1_sleepwalk", "task": "回小屋睡觉"}},
@@ -559,7 +559,7 @@ Path("data/after/tailor.json").write_text(json.dumps(dict({"_说明": "找漏风
     ensure_ascii=False, indent="\t") + "\n")
 Path("data/after/mine.json").write_text(json.dumps(dict({"_说明": "矿车护送（after_text/mine.py 生成，TaskMine 读）。"}, **mine.MINE),
     ensure_ascii=False, indent="\t") + "\n")
-Path("data/after/totem.json").write_text(json.dumps(dict({"_说明": "修补图腾柱（after_text/totem.py 生成，TaskTotem 读）。"}, **totem.TOTEM),
+Path("data/after/totem.json").write_text(json.dumps(dict({"_说明": "修补图腾柱（after_text/totem.py 生成，TotemResonanceShow 读）。"}, **totem.TOTEM),
     ensure_ascii=False, indent="\t") + "\n")
 night.NIGHT["react"] = night.REACT_COMMON
 for _n, _m, _k in (("drain", drain, "DRAIN"), ("drill", drill, "DRILL"), ("inspect", inspect, "INSPECT"), ("tom", tom, "TOM_PRANK"), ("night", night, "NIGHT"), ("penalty", penalty, "PENALTY")):

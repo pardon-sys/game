@@ -909,7 +909,7 @@
 			"morning": {
 				"event": "d7_totem",
 				"task": "修补狂欢图腾柱",
-				"hours": 0
+				"hours": 20
 			}
 		},
 		"d1": {

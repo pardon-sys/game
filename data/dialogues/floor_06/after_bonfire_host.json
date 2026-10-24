@@ -39,6 +39,12 @@
 		},
 		{
 			"if": {
+				"flag": "penalty_d7"
+			},
+			"node": "penalty_offer_d7"
+		},
+		{
+			"if": {
 				"flag": "penalty_open"
 			},
 			"node": "penalty_offer"
@@ -429,6 +435,42 @@
 				},
 				"call": "after_penalty"
 			}
+		},
+		"penalty_offer_d7": {
+			"lines": [
+				{
+					"text": "哎呀～还差几个工时？庆功宴可不等人哦～"
+				},
+				{
+					"text": "来篝火边练一项，一项抵五个工时～跳舞还是报幕，你挑～"
+				},
+				{
+					"text": "……为什么你看起来比我还开心。",
+					"speaker": "公主",
+					"emotion": "sad"
+				},
+				{
+					"text": "因为练完了，今晚就能看你领舞呀～"
+				}
+			],
+			"prompt": "用哪种练习抵掉受罚？",
+			"choices": [
+				{
+					"text": "跳就跳！",
+					"next": "penalty_go"
+				},
+				{
+					"text": "练习忍笑报幕",
+					"if": {
+						"flag": "penalty_announcer_open"
+					},
+					"next": "penalty_announcer_go"
+				},
+				{
+					"text": "等一下再说",
+					"next": ""
+				}
+			]
 		}
 	},
 	"npc": "bonfire_host"

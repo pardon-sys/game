@@ -1,5 +1,6 @@
 """七日赎罪的补罚任务（镇民执行惩罚，用来抵罚的工时）：data/after/penalty.json（ModelShow / PenaltyDanceShow / AfterPenance 读）+ 委托人对话里的节点。
 赎罪簿上有还没抵的受罚（示众笑出声、任务失败……）时，市场监督 / 篝火派对的主人头上冒「！」，找他们就能接（白天、晚上宵禁前都行）；做完一次抵掉一条受罚、减工时。
+第 7 天工时还没还清时（修完图腾柱还欠着）：不看受罚记录，随时能接（offer_d7 那几句），一次减 hours_d7 工时，减到 0 才能睡觉 / 开庆功宴。
   model  市场监督「活体模特」：站在摊位上给「防痒袜子」当模特，路过的顾客「试试效果」——要保持姿势（平衡 A / D）和表情（J 绷住），
          动了 / 笑了被市场监督加时；撑过时间抵掉。customers：每个顾客 name、intro 登场、desc 挠法描写、zone 部位、push 晃多少、face 掉多少表情
   dance  篝火派对的主人「罚跳舞」：篝火边罚跳（音游 RhythmLane），跳错一拍，围观的人上来挠一下（crowd：挠法 / 部位轮换），错太多加跳一段
@@ -13,6 +14,7 @@ SUP, HOST = "市场监督", "篝火派对的主人"
 
 PENALTY = {
     "hours": 3,
+    "hours_d7": 5,
     "names": {"model": "活体模特", "dance": "罚跳舞", "announcer": "忍笑报幕练习"},
     "announcer": None,   # 下面的 ANNOUNCER
     "model": {
@@ -214,8 +216,12 @@ PENALTY["announcer"] = ANNOUNCER
 # 委托人对话里的节点（gen 插进 after_supervisor / after_bonfire_host）
 NODES = {
     "after_supervisor": {"kind": "model", "offer": [L("……赎罪簿上还记着受罚没抵。要来抵一笔吗？"), L("摊位上缺个模特。")],
+                         "offer_d7": [L("……队长打过招呼了。今天是最后一天，工时还没还清？"), L("当一回模特，抵五个工时。……站稳，别笑。"),
+                                      L("五个……那、那来吧！为了庆功宴！", P, "angry")],
                          "prompt": "去摊位上当模特抵受罚？", "yes": "……当、当就当！", "no": "等一下再说"},
     "after_bonfire_host": {"kind": "dance", "offer": [L("哎呀～赎罪簿上还有受罚没抵？"), L("来篝火边选一项练习，做完就抵掉一笔～")],
+                           "offer_d7": [L("哎呀～还差几个工时？庆功宴可不等人哦～"), L("来篝火边练一项，一项抵五个工时～跳舞还是报幕，你挑～"),
+                                        L("……为什么你看起来比我还开心。", P, "sad"), L("因为练完了，今晚就能看你领舞呀～")],
                            "prompt": "用哪种练习抵掉受罚？", "yes": "跳就跳！", "no": "等一下再说"},
 }
 
@@ -238,3 +244,6 @@ def inject(dialogues):
         while i < len(d["entries"]) and str(d["entries"][i].get("node", "")).startswith("errand_") and (f != "after_bonfire_host" or not str(d["entries"][i].get("node", "")).endswith("_done")):
             i += 1
         d["entries"].insert(i, {"if": {"flag": "penalty_open"}, "node": "penalty_offer"})
+        # 第 7 天还欠工时：同一套选项，开场换成 offer_d7（排在普通补罚前面）
+        d["nodes"]["penalty_offer_d7"] = dict(d["nodes"]["penalty_offer"], lines=spec["offer_d7"])
+        d["entries"].insert(i, {"if": {"flag": "penalty_d7"}, "node": "penalty_offer_d7"})

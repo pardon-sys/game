@@ -1,6 +1,7 @@
 {
 	"_说明": "after_text/penalty.py 生成。",
 	"hours": 3,
+	"hours_d7": 5,
 	"names": {
 		"model": "活体模特",
 		"dance": "罚跳舞",
