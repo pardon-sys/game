@@ -1,0 +1,30 @@
+{
+	"name": "抬到工房",
+	"letterbox": true,
+	"skippable": true,
+	"steps": [
+		{
+			"speaker": "",
+			"text": "（担架终于抬进了药剂师工房的门。药剂师奶奶已经在里面等着了）"
+		},
+		{
+			"speaker": "保卫队员",
+			"text": "呼……到了……刚才那些手……"
+		},
+		{
+			"speaker": "公主",
+			"text": "……刚才那些手印碰到我的时候，一点都不痒。",
+			"emotion": "surprise"
+		},
+		{
+			"speaker": "保卫队员",
+			"text": "啊？我被碰到的时候差点笑得把担架扔了！"
+		},
+		{
+			"speaker": "公主",
+			"text": "……就像，在摸摸我的脚背。",
+			"emotion": "sad"
+		}
+	],
+	"end_dark": false
+}

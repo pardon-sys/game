@@ -44,7 +44,12 @@ static func slot_key(s := -1) -> String:
 
 
 static func label(d := -1, s := -1) -> String:
-	return "第 %d 天·%s" % [day() if d < 0 else d, SLOT_NAMES[clampi(slot() if s < 0 else s, 0, 2)]]
+	var dd := day() if d < 0 else d
+	var slot_name: String = SLOT_NAMES[clampi(slot() if s < 0 else s, 0, 2)]
+	# 七天以后是骑士篇（KnightStory）：不写第几天
+	if dd > DAYS:
+		return "骑士篇·%s" % slot_name
+	return "第 %d 天·%s" % [dd, slot_name]
 
 
 static func set_time(d: int, s: int) -> void:

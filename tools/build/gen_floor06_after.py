@@ -19,6 +19,7 @@ os.chdir(Path(__file__).resolve().parents[2])
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from after_text import d1, d2, equip_kids, errand_dance, errand_goats, errand_ladder, errand_massage, errand_gate_chain, errand_shearing, errand_canopy, errand_sifting, errand_lamp_calibration, errands, house, mine, play, potion, punish, stocks, tailor, tasks, totem, town, drain, drill, inspect, tom, night, penalty, festival_night, stall_guess, stall_ring, stall_ice, stall_fish, stall_lick  # noqa: E402
+from knight_text import story as knight_story, tasks as knight_tasks  # noqa: E402
 
 # 只生成灯轮 / 报幕的文本（委托表、灯轮、补罚表、派对主人对话），不重新写地图、其他任务或别的镇民对白。
 if "--festival-only" in sys.argv:
@@ -42,6 +43,7 @@ TOWN, HOUSE, HOUSE_UP = "floor_06_after", "floor_06_after_house", "floor_06_afte
 PHARMACY, FIELD = "floor_06_after_pharmacy", "floor_06_after_field"
 TAILOR, MINE, TOTEM = "floor_06_after_tailor", "floor_06_after_mine", "floor_06_after_totem"
 DRAIN, DRILL, PROVING = "floor_06_after_drain", "floor_06_after_drill", "floor_06_after_proving"
+PRISON = "floor_06_after_prison"
 
 
 class Map:
@@ -168,6 +170,8 @@ m.put(3, 32, "spawn id=from_totem")
 prop(m, 59, 40, "stairs_down")
 prop(m, 58, 38, "barricade")
 m.put(57, 40, "sign dialogue=after_camp_blocked")
+# 骑士篇：从地牢的通风口回来的地方（夜探地牢走的是路障后面的通风口，由 KnightStory 转场）
+m.put(57, 38, "spawn id=from_prison")
 # 南边城墙：在补的地方堆着木料
 for x in range(2, 62):
     m.g[41][x] = "#"
@@ -446,6 +450,46 @@ for (x, y) in ((5, 3), (40, 3)):
 prop(pv, 40, 6, "banner")
 pv.write()
 
+# ================================================================ 骑士篇：保卫队的地牢（夜探地牢，潜入）
+# 西边通风口进来（vent），南边长走廊 → 中间两条竖走廊 → 北边的牢房走廊；最里面（东北）那间关着骑士。
+# 巡逻的队员（guard_patrol）、木箱（躲）、灯（亮处看得远）；StealthDirector 一直开着（被抓交给 TaskSneak）。
+pz = Map(PRISON, 42, 22, "intro =\nambient = 0.34,0.32,0.42\nno_switch = true")
+for (x0, y0, x1, y1) in ((2, 16, 38, 19), (10, 7, 12, 16), (24, 7, 26, 16), (10, 5, 39, 7), (34, 2, 38, 3), (16, 10, 20, 14), (12, 11, 16, 12)):
+    pz.room(x0, y0, x1, y1)
+pz.put(3, 17, "f6afterroom")
+pz.put(4, 16, "stealth")
+pz.put(2, 18, "exit target=%s spawn=from_prison" % TOWN)
+pz.put(3, 18, "spawn id=vent")
+pz.put(4, 18, "player")
+for x in (8, 18, 30):
+    pz.put(x, 15, "torch lit=true")
+for x in (14, 28, 36):
+    pz.put(x, 4, "torch lit=true")
+for (x, y) in ((7, 17), (15, 19), (22, 16), (31, 19), (11, 9), (25, 12), (17, 11), (19, 13), (30, 5)):
+    prop(pz, x, y, "crate", "hide")
+for (x, y) in ((13, 18), (27, 18), (11, 12), (32, 6)):
+    prop(pz, x, y, "lamp")
+# 牢房：东北角那间关着骑士（铁栅关着），其余空着
+for x in (14, 20, 26):
+    pz.put(x, 4, "gate group=cells is_open=false")
+pz.room(13, 2, 15, 3)
+pz.room(19, 2, 21, 3)
+pz.room(25, 2, 27, 3)
+pz.put(36, 4, "gate group=knight_cell is_open=false")
+npc(pz, 36, 3, "knight", "after_knight", 0, "dir=down")
+# 审问椅（只做摆设）
+pz.put(18, 12, "trap type=cushion active=false")
+for path, extra in (
+        ("6,17;20,17", ""),                       # 南走廊西段来回
+        ("22,18;36,18", " wait=1.4"),              # 南走廊东段来回
+        ("11,15;11,8", ""),                       # 西竖走廊
+        ("25,8;25,15", " wait=1.0"),              # 东竖走廊
+        ("14,6;32,6", ""),                        # 牢房走廊
+        ("16,10;20,10;20,14;16,14", " loop=true"),  # 审问室绕圈
+):
+    pz.put(int(path.split(";")[0].split(",")[0]), int(path.split(";")[0].split(",")[1]), "guard_patrol path=" + path + extra)
+pz.write()
+
 # ================================================================ 城门外的战场
 fd = Map(FIELD, 44, 30, "intro =\nambient = 0.72,0.66,0.62\nnight_ambient = 0.3,0.3,0.5")
 fd.room(2, 2, 41, 27)
@@ -517,6 +561,9 @@ D7_NIGHT = {"after_bonfire_host": (45, 26, "left"), "after_mayor": (42, 21, "dow
             "after_supervisor": (33, 24, "right")}
 for _f, (_x, _y, _d) in D7_NIGHT.items():
     NPCS[_f].setdefault("d7", {})["night"] = {"at": [_x, _y], "dir": _d, "wander": 0, "hidden": False}
+    # 骑士篇（第 8 天起）的夜里：诅咒漏出来时镇民还在广场上（以笑为饵的手印贴着他们偷笑声）
+    if _f != "after_bonfire_host":
+        NPCS[_f].setdefault("d8", {})["night"] = {"at": [_x, _y], "dir": _d, "wander": 0, "hidden": False}
 NPCS["after_blue"] = {
     "default": {"at": [12, 14], "dir": "down", "wander": 2, "hidden": False},
     "morning": {"at": [12, 14], "dir": "left"},
@@ -584,6 +631,12 @@ for _sid, _mod, _key, _cls in STALLS.values():
     _st.setdefault("success_react", _st.get("right", []))
     Path("data/after/stall_%s.json" % _sid).write_text(json.dumps(dict({"_说明": "庆功宴摊位（after_text/stall_%s.py 生成，%s 读）。" % (_sid, _cls)}, **_st),
         ensure_ascii=False, indent="\t") + "\n")
+Path("data/after/knight.json").write_text(json.dumps(dict({"_说明": "骑士篇 A~D 的玩法文本（knight_text/tasks.py 生成，TaskStretcher / TaskBait / InterrogationChairShow 读）。"},
+    **knight_tasks.KNIGHT), ensure_ascii=False, indent="\t") + "\n")
+# 人物表：骑士（行走图 / 立绘由 tools/art/gen_knight_art.py、import_knight_portrait.py 生成）
+_npcs = json.loads(Path("data/actors/npcs.json").read_text())
+_npcs["npcs"]["knight"] = {"name": knight_story.KNIGHT, "sprite": "res://assets/generated/npcs/knight.png", "portrait": "res://assets/generated/npc_portraits/knight.png"}
+Path("data/actors/npcs.json").write_text(json.dumps(_npcs, ensure_ascii=False, indent="\t") + "\n")
 Path("data/after/play.json").write_text(json.dumps(dict({"_说明": "两位公主的玩闹（after_text/play.py 生成，AfterPlay 读）。"}, **play.PLAY),
     ensure_ascii=False, indent="\t") + "\n")
 Path("data/after/schedule.json").write_text(json.dumps({
@@ -607,6 +660,7 @@ files.update(totem.DIALOGUES)
 files.update(drain.DIALOGUES)
 files.update(drill.DIALOGUES)
 files.update(inspect.DIALOGUES)
+files["after_knight"] = knight_story.CELL
 # 第 6 天小汤姆的话：按昨晚恶作剧的结局（只在第 6 天）
 for _r, _lines in tom.TOM_NEXT_DAY.items():
     _d = files["after_kid_tom"]
@@ -625,18 +679,19 @@ signs.update(inspect.SIGNS)
 signs_path.write_text(json.dumps(signs, ensure_ascii=False, indent="\t") + "\n")
 
 cut = Path("data/cutscenes/floor_06")
-CUTS = dict(d1.CUTSCENES, **d2.CUTSCENES, **tasks.CUTSCENES, **potion.CUTSCENES, **tailor.CUTSCENES, **mine.CUTSCENES, **totem.CUTSCENES, **drain.CUTSCENES, **drill.CUTSCENES, **inspect.CUTSCENES, **festival_night.CUTSCENES)
+CUTS = dict(d1.CUTSCENES, **d2.CUTSCENES, **tasks.CUTSCENES, **potion.CUTSCENES, **tailor.CUTSCENES, **mine.CUTSCENES, **totem.CUTSCENES, **drain.CUTSCENES, **drill.CUTSCENES, **inspect.CUTSCENES, **festival_night.CUTSCENES, **knight_story.CUTSCENES)
 for cid, fn in CUTS.items():
     (cut / (cid + ".json")).write_text(json.dumps(fn(), ensure_ascii=False, indent="\t") + "\n")
 th = Path("data/theater/after")
 th.mkdir(parents=True, exist_ok=True)
-for tid, data in dict(punish.THEATERS, **tasks.THEATERS, **potion.THEATERS, **tailor.THEATERS, **mine.THEATERS, **totem.THEATERS, **drain.THEATERS, **drill.THEATERS, **inspect.THEATERS, **night.THEATERS).items():
+for tid, data in dict(punish.THEATERS, **tasks.THEATERS, **potion.THEATERS, **tailor.THEATERS, **mine.THEATERS, **totem.THEATERS, **drain.THEATERS, **drill.THEATERS, **inspect.THEATERS, **night.THEATERS, **knight_tasks.THEATERS).items():
     (th / (tid + ".json")).write_text(json.dumps(data, ensure_ascii=False, indent="\t") + "\n")
 
 floors = json.loads(Path("data/floors.json").read_text())
 lst = floors["floors"]
 NEW = [(TOWN, "地下小镇·战后", "town"), (HOUSE, "蓝色小屋·战后", "town"), (HOUSE_UP, "蓝色小屋·战后（楼上）", "night_room"),
-       (PHARMACY, "药剂师工房", "town"), (FIELD, "城门外的战场", "town"), (TAILOR, "裁缝铺", "town"), (MINE, "受损的矿道", "town"), (TOTEM, "图腾柱废地", "town"), (DRAIN, "排水管", "town"), (DRILL, "队长的训练室", "town"), (PROVING, "保卫队训练营", "town")]
+       (PHARMACY, "药剂师工房", "town"), (FIELD, "城门外的战场", "town"), (TAILOR, "裁缝铺", "town"), (MINE, "受损的矿道", "town"), (TOTEM, "图腾柱废地", "town"), (DRAIN, "排水管", "town"), (DRILL, "队长的训练室", "town"), (PROVING, "保卫队训练营", "town"),
+       (PRISON, "保卫队的地牢", "night_room")]
 at = next(i for i, f in enumerate(lst) if f["id"] == "floor_06_siege") + 1
 for fid, name, music in NEW:
     if not any(f["id"] == fid for f in lst):

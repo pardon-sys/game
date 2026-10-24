@@ -157,6 +157,8 @@ static func objective(floor_id: String) -> Dictionary:
 	if not GameState.has_flag(STARTED):
 		return {}
 	sync_doors()
+	if KnightStory.active():
+		return KnightStory.objective(floor_id)
 	if AfterFestival.active():
 		return {"text": AfterFestival.objective_text()}
 	if GameState.has_flag(NIGHT_BUSY):
@@ -215,7 +217,8 @@ static func sync_doors() -> void:
 	if GameState.has_flag(PROVING_OPEN) != proving:
 		GameState.set_flag(PROVING_OPEN, proving)
 	var ev := pending_event()
-	var curfew := DayClock.slot() == DayClock.NIGHT and (ev == "" or str(EVENTS.get(ev, {}).get("where", "")) == HOUSE) and not must_settle()
+	var curfew := DayClock.slot() == DayClock.NIGHT and (ev == "" or str(EVENTS.get(ev, {}).get("where", "")) == HOUSE) and not must_settle() \
+		and not KnightStory.active()
 	if GameState.has_flag(CURFEW) != curfew:
 		GameState.set_flag(CURFEW, curfew)
 
@@ -236,6 +239,9 @@ static func reset_runtime() -> void:
 
 
 static func _try(floor_id: String, by_spot: bool) -> void:
+	if KnightStory.active():
+		await KnightStory.try_step(floor_id, by_spot)
+		return
 	if running or not GameState.has_flag(STARTED):
 		return
 	if by_spot and AfterErrands.active() != "":
@@ -304,6 +310,25 @@ static func _run(ev: String, info: Dictionary) -> void:
 ## 弥补任务：摆上玩法节点 → 等它做完；失败 → 失败小剧场、罚工时（PenanceBook.fail）→ 回到起点重来。
 static func run_task(ev: String) -> void:
 	var spec: Dictionary = TASKS[ev]
+	if not await play_task(ev, spec):
+		return
+	var day_end := bool(spec.get("day_end", false)) and DayClock.slot() == DayClock.MORNING
+	if day_end:
+		# 收尾的过场要按还完以后的工时分支：先还
+		_pay_slot()
+	if str(spec.get("done", "")) != "":
+		await Cutscene.play(str(spec["done"]))
+	if day_end:
+		DayClock.mark_done()
+		DayClock.mark_done(-1, DayClock.AFTERNOON)
+		await end_of_day()
+		return
+	await finish_slot()
+
+
+## 任务的玩法循环（七日赎罪和骑士篇共用）：摆上玩法节点 → 等它做完；失败 → 失败小剧场（七日赎罪还要罚工时、记受罚）→ 重来。
+## 返回 true = 做完；false = 换图 / 读档中断了（标记已清掉，走回触发点重新开始）。spec 的写法同 TASKS。
+static func play_task(ev: String, spec: Dictionary) -> bool:
 	var scr: Script = load(str(spec["script"]))
 	GameState.set_flag(TASK_FLAG)
 	_mute_partner(true)
@@ -320,12 +345,15 @@ static func run_task(ev: String) -> void:
 			GameState.set_flag(TASK_FLAG, false)
 			_mute_partner(false)
 			GameState.set_flag(ev_flag(ev), false)
-			return
+			return false
 		if is_instance_valid(runner):
 			runner.queue_free()
 		if ok:
 			break
-		await PenanceBook.fail(str(spec["name"]), str(spec["fail"]), int(spec.get("fail_hours", 0)))
+		if PenanceBook.started() and not KnightStory.active():
+			await PenanceBook.fail(str(spec["name"]), str(spec["fail"]), int(spec.get("fail_hours", 0)))
+		elif str(spec.get("fail", "")) != "" and CG.has_theater(str(spec["fail"])):
+			await CG.play_theater(str(spec["fail"]))
 		scr.call("reset_items")
 		var p := GameState.player
 		if is_instance_valid(p):
@@ -335,18 +363,7 @@ static func run_task(ev: String) -> void:
 				p.global_position = Cutscene.cell_to_world(spec["respawn"])
 	GameState.set_flag(TASK_FLAG, false)
 	_mute_partner(false)
-	var day_end := bool(spec.get("day_end", false)) and DayClock.slot() == DayClock.MORNING
-	if day_end:
-		# 收尾的过场要按还完以后的工时分支：先还
-		_pay_slot()
-	if str(spec.get("done", "")) != "":
-		await Cutscene.play(str(spec["done"]))
-	if day_end:
-		DayClock.mark_done()
-		DayClock.mark_done(-1, DayClock.AFTERNOON)
-		await end_of_day()
-		return
-	await finish_slot()
+	return true
 
 
 ## 一直做到傍晚的任务做完：晚上有事（事件 / 分到晚上的委托）→ 天黑，停在晚上；没有 → 停在下午。
@@ -399,6 +416,8 @@ static func _mute_partner(on: bool) -> void:
 
 ## 任务进行中的实时状态（目标提示下面一行）；没有任务时是委托的
 static func status_text() -> String:
+	if KnightStory.active():
+		return KnightStory.status_text()
 	var cur := current_task()
 	if cur != "":
 		return str(load(str(TASKS[cur]["script"])).call("status_text"))
@@ -415,7 +434,10 @@ static func current_task() -> String:
 
 ## 读档 / 换图时任务演到一半（玩法节点没了）：清掉标记，走回触发点就能重新开始。
 static func recover_task() -> void:
-	if not GameState.has_flag(TASK_FLAG) or running:
+	if not GameState.has_flag(TASK_FLAG) or running or KnightStory.running:
+		return
+	if KnightStory.active():
+		GameState.set_flag(TASK_FLAG, false)
 		return
 	GameState.set_flag(TASK_FLAG, false)
 	for ev in TASKS:
@@ -464,7 +486,7 @@ static func advance_slot() -> void:
 
 ## 小屋的床（白天）：这个时段没有要做的事了 → 休息到下一个时段。返回休息了没有。
 static func rest() -> bool:
-	if running or DayClock.passing or DayClock.slot() == DayClock.NIGHT:
+	if running or DayClock.passing or DayClock.slot() == DayClock.NIGHT or KnightStory.active():
 		return false
 	var ev := pending_event()
 	if ev != "":
@@ -509,8 +531,13 @@ static func sleep_later() -> void:
 
 
 static func sleep() -> void:
+	if KnightStory.active():
+		GameState.notify("（现在不是睡觉的时候。）")
+		return
 	if DayClock.day() >= DayClock.DAYS and DayClock.done(DayClock.DAYS, DayClock.NIGHT):
-		GameState.notify("（七日赎罪结束了。之后的故事还在制作中……）", 3.0)
+		# 庆功宴放完烟花：睡一觉，骑士篇开始
+		if GameState.has_flag(AfterFestival.FINALE_DONE):
+			await KnightStory.begin()
 		return
 	await DayClock.sleep()
 	await after_wake()

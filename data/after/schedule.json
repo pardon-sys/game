@@ -76,6 +76,17 @@
 					"wander": 0,
 					"hidden": false
 				}
+			},
+			"d8": {
+				"night": {
+					"at": [
+						39,
+						24
+					],
+					"dir": "right",
+					"wander": 0,
+					"hidden": false
+				}
 			}
 		},
 		"after_mayor": {
@@ -146,6 +157,17 @@
 				}
 			},
 			"d7": {
+				"night": {
+					"at": [
+						42,
+						21
+					],
+					"dir": "down",
+					"wander": 0,
+					"hidden": false
+				}
+			},
+			"d8": {
 				"night": {
 					"at": [
 						42,
@@ -232,6 +254,17 @@
 					"wander": 0,
 					"hidden": false
 				}
+			},
+			"d8": {
+				"night": {
+					"at": [
+						37,
+						22
+					],
+					"dir": "down",
+					"wander": 0,
+					"hidden": false
+				}
 			}
 		},
 		"after_merchant": {
@@ -300,6 +333,17 @@
 					"wander": 0,
 					"hidden": false
 				}
+			},
+			"d8": {
+				"night": {
+					"at": [
+						36,
+						27
+					],
+					"dir": "right",
+					"wander": 0,
+					"hidden": false
+				}
 			}
 		},
 		"after_supervisor": {
@@ -359,6 +403,17 @@
 				}
 			},
 			"d7": {
+				"night": {
+					"at": [
+						33,
+						24
+					],
+					"dir": "right",
+					"wander": 0,
+					"hidden": false
+				}
+			},
+			"d8": {
 				"night": {
 					"at": [
 						33,
@@ -515,6 +570,17 @@
 					"wander": 0,
 					"hidden": false
 				}
+			},
+			"d8": {
+				"night": {
+					"at": [
+						49,
+						27
+					],
+					"dir": "left",
+					"wander": 0,
+					"hidden": false
+				}
 			}
 		},
 		"after_kid_lily": {
@@ -594,6 +660,17 @@
 					"wander": 0,
 					"hidden": false
 				}
+			},
+			"d8": {
+				"night": {
+					"at": [
+						44,
+						23
+					],
+					"dir": "down",
+					"wander": 0,
+					"hidden": false
+				}
 			}
 		},
 		"after_maid": {
@@ -662,6 +739,17 @@
 					"wander": 0,
 					"hidden": false
 				}
+			},
+			"d8": {
+				"night": {
+					"at": [
+						51,
+						25
+					],
+					"dir": "left",
+					"wander": 0,
+					"hidden": false
+				}
 			}
 		},
 		"after_engineer": {
@@ -704,6 +792,17 @@
 				"morning": {}
 			},
 			"d7": {
+				"night": {
+					"at": [
+						48,
+						22
+					],
+					"dir": "down",
+					"wander": 0,
+					"hidden": false
+				}
+			},
+			"d8": {
 				"night": {
 					"at": [
 						48,

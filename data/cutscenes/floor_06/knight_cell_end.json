@@ -1,0 +1,82 @@
+{
+	"name": "花猫样",
+	"letterbox": true,
+	"skippable": true,
+	"steps": [
+		{
+			"speaker": "",
+			"text": "（走廊尽头传来脚步声——换班的队员要来了）"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……走。"
+		},
+		{
+			"speaker": "骑士",
+			"text": "……等等。"
+		},
+		{
+			"speaker": "",
+			"text": "（他隔着栏杆，看着她沾满灰的脸。通风管里的灰，在她鼻尖上蹭了一道黑）"
+		},
+		{
+			"speaker": "骑士",
+			"text": "……又是这副花猫样。"
+		},
+		{
+			"speaker": "公主",
+			"text": "……诶？",
+			"emotion": "surprise"
+		},
+		{
+			"speaker": "骑士",
+			"text": "……没什么。走吧。"
+		},
+		{
+			"speaker": "",
+			"text": "（她跑出几步，又停下来，回头把那块旧手帕从栏杆缝里塞了进去）"
+		},
+		{
+			"speaker": "公主",
+			"text": "……这个，你掉的。",
+			"emotion": "sad"
+		},
+		{
+			"speaker": "骑士",
+			"text": "……"
+		},
+		{
+			"speaker": "",
+			"text": "（他攥住手帕，攥得很紧）"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……",
+			"actions": [
+				{
+					"who": "AfterBlue",
+					"kind": "surprise",
+					"do": "bubble"
+				}
+			]
+		},
+		{
+			"speaker": "",
+			"text": "（蓝色公主盯着那块手帕上手拉手的小人看了一眼——和队长那天递过来的那块，一模一样）"
+		},
+		{
+			"speaker": "",
+			"text": "（她什么都没说，拉着粉色公主钻回了通风口）"
+		},
+		{
+			"actions": [
+				{
+					"time": 0.8,
+					"do": "fade_out"
+				}
+			],
+			"wait": 0.8
+		}
+	],
+	"end_dark": true
+}

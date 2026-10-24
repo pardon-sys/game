@@ -1,0 +1,283 @@
+{
+	"name": "醒来",
+	"letterbox": true,
+	"skippable": true,
+	"steps": [
+		{
+			"actions": [
+				{
+					"id": "knight",
+					"kind": "npc:knight",
+					"at": [
+						11,
+						6
+					],
+					"dir": "down",
+					"do": "spawn"
+				},
+				{
+					"to": [
+						9,
+						6
+					],
+					"zoom": 1.0,
+					"time": 0.5,
+					"do": "camera"
+				}
+			],
+			"wait": 0.5
+		},
+		{
+			"speaker": "药剂师奶奶",
+			"text": "……身上没伤。累坏了，又被这些手印折腾了不知道多久。"
+		},
+		{
+			"speaker": "药剂师奶奶",
+			"text": "这种手印……奶奶活了这么久，只见过一次。……印在那条裤子上。"
+		},
+		{
+			"speaker": "",
+			"text": "（药剂师奶奶看了一眼蓝色公主的腿。千手痒痒裤上的小手，忽然全都缩了起来，一动不动）"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……",
+			"actions": [
+				{
+					"who": "AfterBlue",
+					"kind": "surprise",
+					"do": "bubble"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "……一样的手？",
+			"emotion": "surprise"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……形状。……一样。"
+		},
+		{
+			"speaker": "",
+			"text": "（话还没说完，担架上的人动了一下）",
+			"actions": [
+				{
+					"who": "knight",
+					"do": "hop"
+				}
+			]
+		},
+		{
+			"speaker": "骑士",
+			"text": "……唔……"
+		},
+		{
+			"speaker": "公主",
+			"text": "……醒了！你醒了！",
+			"emotion": "happy",
+			"actions": [
+				{
+					"who": "princess",
+					"to": [
+						10,
+						6
+					],
+					"time": 0.3,
+					"do": "move"
+				}
+			]
+		},
+		{
+			"speaker": "",
+			"text": "（面罩后面，那双眼睛慢慢睁开，对上了她的脸）"
+		},
+		{
+			"speaker": "骑士",
+			"text": "……殿……下……？"
+		},
+		{
+			"speaker": "公主",
+			"text": "是我！是我啊！你还记得我对不对！我在第一层看到你的信了，你说——",
+			"emotion": "happy"
+		},
+		{
+			"speaker": "",
+			"text": "（下一秒，他的眼神变了）",
+			"actions": [
+				{
+					"time": 0.3,
+					"strength": 2.0,
+					"do": "shake"
+				}
+			]
+		},
+		{
+			"speaker": "骑士",
+			"text": "……是你。"
+		},
+		{
+			"speaker": "骑士",
+			"text": "你这个害王国破灭的凶手！",
+			"actions": [
+				{
+					"who": "knight",
+					"to": [
+						10.4,
+						6
+					],
+					"time": 0.15,
+					"do": "move"
+				},
+				{
+					"time": 0.4,
+					"strength": 3.0,
+					"do": "shake"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "——！？",
+			"emotion": "surprise",
+			"actions": [
+				{
+					"who": "princess",
+					"to": [
+						8.5,
+						6.5
+					],
+					"time": 0.2,
+					"do": "move"
+				}
+			]
+		},
+		{
+			"speaker": "",
+			"text": "（他一把抓起靠在墙边的长矛，脚下一错，摆出了一个起手式——矛尖压低，左肩在前）"
+		},
+		{
+			"speaker": "保卫队队长",
+			"text": "……",
+			"actions": [
+				{
+					"who": "after_captain",
+					"kind": "surprise",
+					"do": "bubble"
+				}
+			],
+			"npc": "captain"
+		},
+		{
+			"speaker": "",
+			"text": "（队长的手停在了剑柄上。他盯着那个起手式，好一会儿没有动）"
+		},
+		{
+			"speaker": "保卫队员",
+			"text": "队长！？"
+		},
+		{
+			"speaker": "保卫队队长",
+			"text": "……按住他。老办法。",
+			"npc": "captain"
+		},
+		{
+			"speaker": "",
+			"text": "（三个队员一拥而上，一个夺下长矛，两个按住他的胳膊——保卫队的「老办法」：手指钻进盔甲的缝隙，在腰侧和腋下飞快地挠）"
+		},
+		{
+			"speaker": "骑士",
+			"text": "放、放开……！唔……！你们……卑鄙……！"
+		},
+		{
+			"speaker": "",
+			"text": "（他咬着牙憋了好几秒，终于从面罩后面漏出一声闷笑，手脚一软，被按倒在担架上）"
+		},
+		{
+			"speaker": "",
+			"text": "（挣扎中，一块旧手帕从他的胸甲里掉了出来，落在她的脚边。帕角上绣着两个手拉手的小人，已经褪成了灰色）"
+		},
+		{
+			"speaker": "公主",
+			"text": "……",
+			"emotion": "sad"
+		},
+		{
+			"speaker": "",
+			"text": "（她捡起手帕，下意识地攥在了手里）"
+		},
+		{
+			"speaker": "骑士",
+			"text": "……那天晚上……我都看见了……你还要装作什么都不记得……"
+		},
+		{
+			"speaker": "保卫队队长",
+			"text": "带去营地的地牢。看好他，面罩不用摘。……他不让摘，就别摘。",
+			"npc": "captain"
+		},
+		{
+			"speaker": "保卫队员",
+			"text": "是！"
+		},
+		{
+			"actions": [
+				{
+					"who": "knight",
+					"do": "despawn"
+				}
+			],
+			"wait": 0.3
+		},
+		{
+			"speaker": "公主",
+			"text": "……王国……破灭了？",
+			"emotion": "sad"
+		},
+		{
+			"speaker": "公主",
+			"text": "……我是……凶手……？",
+			"emotion": "sad"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……",
+			"actions": [
+				{
+					"who": "AfterBlue",
+					"dir": "left",
+					"do": "face"
+				}
+			]
+		},
+		{
+			"speaker": "",
+			"text": "（蓝色公主看着她，什么都没说。只是伸手，轻轻碰了碰她攥着手帕的手）"
+		},
+		{
+			"speaker": "保卫队队长",
+			"text": "……这几天，你不准靠近地牢。",
+			"npc": "captain"
+		},
+		{
+			"speaker": "公主",
+			"text": "可是——！",
+			"emotion": "angry"
+		},
+		{
+			"speaker": "保卫队队长",
+			"text": "这是命令。",
+			"npc": "captain"
+		},
+		{
+			"actions": [
+				{
+					"reset": true,
+					"time": 0.4,
+					"do": "camera"
+				}
+			],
+			"wait": 0.4
+		}
+	]
+}

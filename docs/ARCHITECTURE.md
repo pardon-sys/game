@@ -924,6 +924,30 @@ data/cutscenes/<楼层组>/  地图内过场；data/theater/<楼层组>/  小剧
   新加的白天 / 夜里事件要插进 `_run_*` 的顺序里（夜里任务做完会自动睡到天亮，`_sleep_night` 见到已经是早上就跳过）。
   本批日常优化专项：`res://tests/f6_after_test.tscn -- --daily-polish-only`（`tests/helpers/f6_after_daily_polish.gd`，56 项：灯笼边界、考核六键、限区日程、失败重试、每日奖励、同行重进、任务交接和旧存档、裁缝布局与输入锁）；截图入口 `tests/capture_f6_daily_polish.tscn`。实施记录、资源来源和截图索引见 `doc/f6_after_daily_polish.md` 与进度文档。
 
+## 骑士篇（七日赎罪之后，还在地下小镇；levels/floor_06/scripts/knight_story.gd）
+序章，只埋伏笔（写法见「剧情伏笔」的真相内核）。沿用七日赎罪的地图、导演（`AfterTown` / `AfterHouse` / `AfterRoom`）、目标提示和任务循环：
+骑士篇开始以后（标记 `knight_started`），`AfterStory` 的 `objective` / `_try`（进图、走进目标圈）/ `status_text` / `recover_task` 都转给 `KnightStory`；
+床不让睡（`sleep` / `rest`），夜里不宵禁，蓝色公主一直跟着（`AfterBlueRoutine.invited_today`）。文本在 `tools/build/knight_text/`（`story.py` 过场和地牢里骑士的对话，
+`tasks.py` 玩法文本 `data/after/knight.json` 和失败小剧场），由 `gen_floor06_after.py` 一起生成。
+- **推进**：`KnightStory.STEPS` 按顺序（`vars.knight_step`），每步 `where` / `auto` 或 `spot` / `slot` / `objective` / `cutscene` / `task`（同 `AfterStory.TASKS` 的写法，
+  由 `AfterStory.play_task` 跑：失败放小剧场、`reset_items`、回 `respawn` 重来；骑士篇不记赎罪簿）/ `done` / `then_slot` / `goto` / `sleep`。
+  时钟：`DayClock` 的第几天从 `KnightStory.DAY`（8）起，标签写「骑士篇·时段」；日程 `npcs.*.d8.night` 让镇民夜里留在广场。
+  开始：第 7 天庆功宴放完烟花回小屋，`AfterStory.sleep` → `KnightStory.begin()`（睡一觉 → 小屋里的开场）。测试 / 跳关用 `KnightStory.jump(步骤)`。
+- **人物**：骑士 `knight`（`data/actors/npcs.json`，生成器写入）：行走图 `tools/art/gen_knight_art.py`（Python 像素，`npcs/knight.png`，被诅咒附身的 `knight_cursed.png`），
+  立绘 `tools/art/src/knight/`（codex 内置 image_gen 生成，提示词见 `prompts.md`）→ `import_knight_portrait.py` 像素化成 `npc_portraits/knight.png`。
+- **A 发现骑士 + 抬担架**（小镇东北角地牢入口 `[53, 8]`，`TaskStretcher`）：队员抬前面沿 `PATH` 走，她抬后面（`busy_hands` + `carry_stone`，离太远队员停下等）；
+  诅咒手印（`CurseHand`）从骑士身上爬出来扑向队员——挡在中间，手印碰到粉色公主只是拍拍脚背就散（伏笔），碰到队员他笑倒、担架一歪；歪三次失败（`knight_fail_stretcher`）。
+  抬到工房门口 → `knight_carry_done` → 进工房。
+- **B 醒来**（工房，过场 `knight_wake`）：「你这个害王国破灭的凶手！」→ 抓起长矛的起手式让队长沉默（伏笔）→ 被挠痒压制、关进地牢；掉出的旧手帕（伏笔）→ 天黑。
+- **C 以笑为饵**（夜里的广场 `[33, 26]`，`TaskBait`）：手印贴在镇民身上偷笑声；手印怕人，只被粉色公主的笑声引来（闷笑 ≥ 25% 时 30 + 闷笑 × 150 像素内），
+  笑到 85% 全图扑来，身上同时贴 5 只失败（`knight_fail_bait`）。痒痒草 / 诅咒地纹（`CurseMark`：轻挠 + 招手印）帮她笑起来。这段小镇能换人：蓝色公主 J 冻住身边的手印、
+  K 收进瓶子，收够 6 只。手印贴在粉色身上挠得很轻、疲倦涨得多（伏笔），贴在蓝色身上狠挠大腿。
+- **D 夜探地牢**（东南角营地楼梯 `[58, 39]` → 新地图 `floor_06_after_prison`，`TaskSneak`）：`StealthDirector` / `PatrolGuard` / 木箱躲藏；被发现 → 挠痒审问椅
+  `InterrogationChairShow`（继承 `ErrandWorkStage`：撑过 14 秒，J 挣扎，笑出声加时）→ 送回通风口。走到最里面的牢房 → 对话 `after_knight` 的 `cell`：三个问题（误导证词：
+  十三下钟声和两个殿下、一千只手笑声和你一样、封印前的你和斗篷影子）问完 → 蓝色公主走出来，骑士跪下「……殿下？」又否认 → 过场 `knight_cell_end`（「又是这副花猫样」、
+  手帕和队长那块一样）→ 回小屋睡到第二天早上。
+- 测试：`f6_after_test.tscn -- --knight-only`（`tests/helpers/f6_knight.gd`）；跳关点「骑士篇·开头」。
+
 ## 公主状态与换美术素材
 
 - **魔法姿态**：`princess_visuals.json` 的 `magic_order`（`chant / burst / damaged_chant / damaged_giggle_chant / damaged_burst / damaged_giggle_burst`）。`GameState.EMOTIONS` 仍是 11 种可请求的表情；`MAGIC_VISUALS` 只由 `Princess.resolve_visual()` 在 `CHANNEL`（吟唱）/ `CAST`（释放定住 `cast_time` 0.5 秒）状态下选用，优先级最高。选用规则（`Princess.magic_visual`）：闷笑值超过憋笑阈值（35%）→ 战损闷笑版（不管有没有战损，没有未战损的闷笑素材）；否则战损 → 战损版、未战损 → 普通版。吟唱中闷笑变化会 `emotion.refresh()` 立即切换。`VISUALS = EMOTIONS + MAGIC_VISUALS` 是立绘、头像和 `EmotionComponent.row()` 的顺序。`magic_portrait_alias` 让战损闷笑释放借用战损释放的立绘。

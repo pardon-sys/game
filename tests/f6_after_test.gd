@@ -72,6 +72,11 @@ func _ready() -> void:
 		print("\n==== 城门穿链%s (%d 项失败) ====" % ["全部通过" if failures == 0 else "有失败", failures])
 		get_tree().quit(1 if failures else 0)
 		return
+	if "--knight-only" in OS.get_cmdline_user_args():
+		await preload("res://tests/helpers/f6_knight.gd").run(self)
+		print("\n==== 骑士篇%s (%d 项失败) ====" % ["全部通过" if failures == 0 else "有失败", failures])
+		get_tree().quit(1 if failures else 0)
+		return
 	if "--festival-night-only" in OS.get_cmdline_user_args():
 		await preload("res://tests/helpers/f6_festival_night.gd").run(self)
 		print("\n==== 庆功宴%s (%d 项失败) ====" % ["全部通过" if failures == 0 else "有失败", failures])

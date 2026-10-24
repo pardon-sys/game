@@ -1,0 +1,163 @@
+{
+	"name": "地牢入口的骑士",
+	"letterbox": true,
+	"skippable": true,
+	"steps": [
+		{
+			"actions": [
+				{
+					"id": "knight",
+					"kind": "npc:knight",
+					"at": [
+						54,
+						6
+					],
+					"dir": "down",
+					"do": "spawn"
+				},
+				{
+					"id": "g1",
+					"kind": "npc:guard",
+					"at": [
+						52,
+						6
+					],
+					"dir": "right",
+					"do": "spawn"
+				},
+				{
+					"id": "g2",
+					"kind": "npc:guard",
+					"at": [
+						56,
+						6
+					],
+					"dir": "left",
+					"do": "spawn"
+				},
+				{
+					"to": [
+						54,
+						6
+					],
+					"zoom": 1.0,
+					"time": 0.6,
+					"do": "camera"
+				}
+			],
+			"wait": 0.6
+		},
+		{
+			"speaker": "",
+			"text": "（地牢入口的铁门前，围着一圈保卫队员。地上躺着一个人——银灰色的盔甲，面罩拉下来遮住了脸，身上披着一件破破烂烂的披风）"
+		},
+		{
+			"speaker": "保卫队队长",
+			"text": "……来了。",
+			"npc": "captain"
+		},
+		{
+			"speaker": "保卫队队长",
+			"text": "巡逻的队员天亮时发现的。人就倒在门口。……可是封条，一条都没破。",
+			"npc": "captain"
+		},
+		{
+			"speaker": "公主",
+			"text": "没破？那他是从哪里——",
+			"emotion": "surprise"
+		},
+		{
+			"speaker": "保卫队队长",
+			"text": "不知道。门是从里面封的，钥匙在我身上。……他不可能从这扇门进来。",
+			"npc": "captain"
+		},
+		{
+			"speaker": "",
+			"text": "（盔甲的缝隙里，透出一点淡淡的紫光。仔细看，那是一个个小小的手印，印在胸甲和护腿上，像是被谁一把一把抓过）"
+		},
+		{
+			"speaker": "保卫队员",
+			"text": "队长……这些手印，在动。"
+		},
+		{
+			"speaker": "",
+			"text": "（她走近了一步，目光落在那件破披风上——磨损的布料上，绣着半个褪了色的纹章）"
+		},
+		{
+			"speaker": "公主",
+			"text": "……这个纹章……",
+			"emotion": "surprise"
+		},
+		{
+			"speaker": "",
+			"text": "（她蹲下来，看向他腰间的佩剑。剑柄上缠着的红绳，绑法很特别）"
+		},
+		{
+			"speaker": "公主",
+			"text": "……这把剑……我、我认得……",
+			"emotion": "surprise"
+		},
+		{
+			"speaker": "公主",
+			"text": "……是我的骑士。",
+			"emotion": "sad"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……",
+			"actions": [
+				{
+					"who": "AfterBlue",
+					"kind": "surprise",
+					"do": "bubble"
+				}
+			]
+		},
+		{
+			"speaker": "保卫队队长",
+			"text": "……你的骑士？",
+			"actions": [
+				{
+					"who": "after_captain",
+					"kind": "question",
+					"do": "bubble"
+				}
+			],
+			"npc": "captain"
+		},
+		{
+			"speaker": "公主",
+			"text": "王国里的……从小就跟在我身边的骑士。我在地牢第一层，还看到过他留下的信……",
+			"emotion": "sad"
+		},
+		{
+			"speaker": "公主",
+			"text": "他说，不管多深的地牢，都会来找我……",
+			"emotion": "sad"
+		},
+		{
+			"speaker": "保卫队队长",
+			"text": "……先抬去药剂师那里。这些手印不对劲。",
+			"npc": "captain"
+		},
+		{
+			"speaker": "保卫队队长",
+			"text": "你，抬后面。担架前面让队员抬。……别让那些手印碰到别人。",
+			"npc": "captain"
+		},
+		{
+			"speaker": "",
+			"text": "（抬着担架，走得慢，不能攻击、冲刺。手印会时不时从盔甲上爬出来，往前面抬担架的队员身上扑——挡在队员和手印之间，别让它碰到队员）"
+		},
+		{
+			"actions": [
+				{
+					"reset": true,
+					"time": 0.4,
+					"do": "camera"
+				}
+			],
+			"wait": 0.4
+		}
+	]
+}
