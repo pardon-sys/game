@@ -1,0 +1,182 @@
+{
+	"name": "半枚徽章",
+	"letterbox": true,
+	"skippable": false,
+	"steps": [
+		{
+			"actions": [
+				{
+					"id": "knight",
+					"kind": "npc:knight",
+					"at": [
+						41,
+						22
+					],
+					"dir": "down",
+					"do": "spawn"
+				},
+				{
+					"to": [
+						41,
+						23
+					],
+					"zoom": 1.0,
+					"time": 0.6,
+					"do": "camera"
+				}
+			],
+			"wait": 0.6
+		},
+		{
+			"speaker": "",
+			"text": "（紫光散尽。盔甲「哐」地一声跪倒在图腾柱下。面罩合上了，手印一个都不剩）"
+		},
+		{
+			"speaker": "骑士",
+			"text": "……我……"
+		},
+		{
+			"speaker": "公主",
+			"text": "……你醒了？没事了！诅咒已经——",
+			"emotion": "happy"
+		},
+		{
+			"speaker": "骑士",
+			"text": "……",
+			"actions": [
+				{
+					"who": "knight",
+					"dir": "right",
+					"do": "face"
+				}
+			]
+		},
+		{
+			"speaker": "",
+			"text": "（他没有看她。他撑着剑站起来，走到了蓝色公主面前）"
+		},
+		{
+			"speaker": "骑士",
+			"text": "……殿下。……给您添麻烦了。"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……我不是你的殿下。"
+		},
+		{
+			"speaker": "骑士",
+			"text": "……我知道。"
+		},
+		{
+			"speaker": "",
+			"text": "（他从胸甲里取出一样东西，放进蓝色公主的手心——半枚王国的徽章，断口很新）"
+		},
+		{
+			"speaker": "骑士",
+			"text": "……交给真正的殿下。"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……",
+			"actions": [
+				{
+					"who": "AfterBlue",
+					"kind": "question",
+					"do": "bubble"
+				}
+			]
+		},
+		{
+			"speaker": "骑士",
+			"text": "……我要找的人，不是她。"
+		},
+		{
+			"speaker": "",
+			"text": "（他转过身，经过粉色公主身边的时候，脚步停了一下）"
+		},
+		{
+			"speaker": "骑士",
+			"text": "……谢谢。……可是我不会原谅你。"
+		},
+		{
+			"speaker": "",
+			"text": "（他走向了营地的方向。队长跟在他后面，什么都没说）"
+		},
+		{
+			"speaker": "公主",
+			"text": "……",
+			"emotion": "sad"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……",
+			"actions": [
+				{
+					"who": "AfterBlue",
+					"dir": "left",
+					"do": "face"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "……他把徽章给了你。他叫你殿下。",
+			"emotion": "sad"
+		},
+		{
+			"speaker": "公主",
+			"text": "……那天晚上，钟楼上一个殿下，广场上一个殿下。……一个是真的，一个是冒牌货。",
+			"emotion": "sad"
+		},
+		{
+			"speaker": "公主",
+			"text": "……难道我才是那个『另一个』？",
+			"emotion": "sad"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……"
+		},
+		{
+			"speaker": "",
+			"text": "（蓝色公主低头看着手心里的半枚徽章，很久很久。然后，她把它攥紧了）"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……不知道。"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……可是，你笑起来的声音。……我认得。"
+		},
+		{
+			"speaker": "公主",
+			"text": "……诶？",
+			"emotion": "surprise"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……走吧。回家。"
+		},
+		{
+			"actions": [
+				{
+					"time": 1.2,
+					"do": "fade_out"
+				}
+			],
+			"wait": 1.2
+		},
+		{
+			"actions": [
+				{
+					"title": "骑士篇　完",
+					"subtitle": "——半枚徽章的另一半，在谁手里？",
+					"next": "floor_06_after_house",
+					"do": "chapter_end"
+				}
+			],
+			"wait": 1.4
+		}
+	]
+}

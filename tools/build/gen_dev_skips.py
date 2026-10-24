@@ -36,7 +36,8 @@ BOOK = {"penance_hours": 100, "penance_log": [], "penance_punish": [], "after_pl
         "task_cart_done": [], "task_potion_recipe": 0, "task_potion_notes": [], "task_potion_wrong": 0,
         "task_tailor_measured": False, "task_tailor_tea": 3, "task_mine_slips": 0, "task_totem_runes": 0, "task_totem_cracks": 0, "task_drain_cleared": 0, "task_potion_ok": 0, "penance_settled": 0,
         "task_inspect_rates": {}, "task_inspect_tune": {},
-        "knight_step": 0, "task_stretcher_drops": 0, "task_bait_caught": 0, "task_sneak_caught": 0}
+        "knight_step": 0, "task_stretcher_drops": 0, "task_bait_caught": 0, "task_sneak_caught": 0,
+        "task_chase_lit": 0, "task_chase_caught": 0, "task_boss_phase": 0, "task_boss_caught": 0}
 D2_ALL = ["after_done_d2_morning", "after_ev_d2_stocks"]
 # 第 3 天整天做完（第 4 天以后的跳关点用）
 D3_ALL = D2_ALL + ["after_done_d2_afternoon", "after_ev_d2_equip", "after_done_d2_night", "after_done_d3_morning", "after_ev_d3_potion",
@@ -114,6 +115,9 @@ POINTS = [
     point("骑士篇·开头（庆功宴之后的早上）", "floor_06_after_house", AFTER + after_done("morning", "afternoon", "night") + D3_ALL + D7_DAYS +
           ["after_done_d7_night", "after_ev_d7_festival", "after_festival_on", "festival_dance_done", "festival_finale_done", "knight_started"],
           dict(BOOK, day=9, after_day=8, after_slot=0, penance_hours=0, knight_step=0), cell=[5, 6]),
+    point("骑士篇·诅咒失控（追逃 + Boss）", "floor_06_after_house", AFTER + after_done("morning", "afternoon", "night") + D3_ALL + D7_DAYS +
+          ["after_done_d7_night", "after_ev_d7_festival", "after_festival_on", "festival_dance_done", "festival_finale_done", "knight_started"],
+          dict(BOOK, day=10, after_day=9, after_slot=0, penance_hours=0, knight_step=6), cell=[5, 6]),
 ]
 Path("data/dev").mkdir(parents=True, exist_ok=True)
 Path("data/dev/skip_points_more.json").write_text(json.dumps({

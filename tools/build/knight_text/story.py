@@ -54,7 +54,7 @@ def found():
         line(CAP, "……先抬去药剂师那里。这些手印不对劲。", None, None, "captain"),
         line(CAP, "你，抬后面。担架前面让队员抬。……别让那些手印碰到别人。", None, None, "captain"),
         line(N, "（抬着担架，走得慢，不能攻击、冲刺。手印会时不时从盔甲上爬出来，往前面抬担架的队员身上扑——挡在队员和手印之间，别让它碰到队员）"),
-        {"actions": [A("camera", reset=True, time=0.4)], "wait": 0.4},
+        {"actions": [A("despawn", who=K), A("despawn", who="g1"), A("despawn", who="g2"), A("camera", reset=True, time=0.4)], "wait": 0.4},
     ]
     return {"name": "地牢入口的骑士", "letterbox": True, "skippable": True, "steps": s}
 

@@ -1,0 +1,356 @@
+class_name TaskArmorChase
+extends Node2D
+## 骑士篇 E「镇中追逃」（小镇 floor_06_after）：被诅咒附身的盔甲（CursedArmor）从营地楼梯口冲出来，一直追粉色公主。台词 data/after/knight_finale.json 的 chase。
+##   开局两人在 PINK_START 附近，盔甲在营地楼梯口（START）挣扎 START_STUN 秒才追过来。
+##   点亮三座笑声灯笼信标（BEACONS，按顺序）：站在信标 BEACON_R 以内按住 E 累计 HOLD 秒（亮的一瞬间盔甲被光晃到，停 LIGHT_STUN 秒）；
+##   三座都亮了以后跑到广场图腾柱下（PLAZA）= 完成。
+##   盔甲直线快、转弯慢，会被房子挡住；隔一阵铁手横扫一行（预警线）。镇民帮忙：盔甲走近栅栏点（GATES）而她已经跑开时，栅栏关上 GATE_TIME 秒挡住它。
+##   C 换成蓝色公主：J 冻住身边 FREEZE_R 以内的盔甲 FREEZE_TIME 秒，冷却 FREEZE_COOL 秒。
+##   被抓住：盔甲抱住她轻挠——闷笑每秒 +GRAB_LAUGH（慢），疲倦每秒 +GRAB_FATIGUE（快，越来越舒服）；连按 J 够 MASH 下挣开（最多 GRAB_TIME 秒也会挣开）。
+##     被抓 CATCHES 次 = 失败（knight_fail_chase），已经点亮的信标不灭。这段任务期间能换人。
+## 状态 vars.task_chase_lit（亮了几座）、task_chase_caught（这一轮被抓了几次）。测试：armor、light(i)、grab()、mash()、freeze()、gates。
+
+signal finished(ok: bool)
+
+const START := Vector2i(57, 37)
+const PINK_START := Vector2i(47, 33)
+const START_STUN := 2.5
+const LIGHT_STUN := 1.5
+const BEACONS := [Vector2i(50, 36), Vector2i(40, 33), Vector2i(33, 30)]
+const PLAZA := Vector2i(41, 25)
+const GATES := [Vector2i(53, 34), Vector2i(45, 35), Vector2i(36, 32)]
+const BEACON_R := 16.0
+const HOLD := 1.6
+const PLAZA_R := 24.0
+const GATE_TIME := 5.0
+const GATE_NEAR := 50.0
+const FREEZE_R := 48.0
+const FREEZE_TIME := 3.0
+const FREEZE_COOL := 12.0
+const GRAB_TIME := 5.0
+const GRAB_LAUGH := 0.02
+const GRAB_FATIGUE := 0.09
+const MASH := 8
+const CATCHES := 3
+const SAFE_TIME := 2.0
+const LIT_KEY := "task_chase_lit"
+const CAUGHT_KEY := "task_chase_caught"
+
+static var _data := {}
+
+var aborted := false
+var started := false
+var pink: PlayableCharacter
+var blue: PlayableCharacter
+var armor: CursedArmor
+var beacons: Array = []
+var gates: Array = []
+var hold := 0.0
+var grabbing := false
+var grab_left := 0.0
+var mashes := 0
+var safe_left := 0.0
+var freeze_cool := 0.0
+var _emitted := false
+var _music_was := ""
+var _lv: Node
+var _was_no_switch := false
+var _had_switch := false
+var _near_t := 0.0
+
+
+static func data() -> Dictionary:
+	if _data.is_empty():
+		var parsed: Variant = JSON.parse_string(FileAccess.get_file_as_string("res://data/after/knight_finale.json")) if FileAccess.file_exists("res://data/after/knight_finale.json") else null
+		_data = parsed if parsed is Dictionary else {}
+	return _data.get("chase", {})
+
+
+static func lit() -> int:
+	return int(GameState.vars.get(LIT_KEY, 0))
+
+
+static func caught() -> int:
+	return int(GameState.vars.get(CAUGHT_KEY, 0))
+
+
+static func reset_items() -> void:
+	GameState.vars[CAUGHT_KEY] = 0
+
+
+static func status_text() -> String:
+	if lit() >= BEACONS.size():
+		return "去广场！被抓 %d / %d" % [caught(), CATCHES]
+	return "信标 %d / %d　被抓 %d / %d" % [lit(), BEACONS.size(), caught(), CATCHES]
+
+
+func _ready() -> void:
+	_lv = get_parent().get_parent()
+	for n in _lv.find_children("*", "PlayableCharacter", true, false):
+		if n is BluePrincess:
+			blue = n
+		else:
+			pink = n
+	_was_no_switch = bool(_lv.get("no_switch"))
+	_had_switch = _lv.get_meta(&"free_switch", false)
+	_lv.set("no_switch", false)
+	_lv.set_meta(&"free_switch", true)
+	for i in BEACONS.size():
+		var b := Beacon.new()
+		b.lit = i < lit()
+		get_parent().add_child(b)
+		b.global_position = Cutscene.cell_to_world(BEACONS[i])
+		beacons.append(b)
+	for c in GATES:
+		var g := Gate.new()
+		get_parent().add_child(g)
+		g.global_position = Cutscene.cell_to_world(c)
+		gates.append(g)
+	armor = CursedArmor.new()
+	get_parent().add_child(armor)
+	armor.global_position = Cutscene.cell_to_world(START)
+	armor.target = pink
+	armor.grabbed.connect(func(_w): grab())
+	armor.stun(START_STUN)
+	if is_instance_valid(pink):
+		pink.global_position = Cutscene.cell_to_world(PINK_START)
+		if pink.camera:
+			pink.camera.reset_smoothing()
+	if is_instance_valid(blue):
+		blue.global_position = Cutscene.cell_to_world(PINK_START) + Vector2(-14, 4)
+	safe_left = SAFE_TIME
+	_music_was = Audio.music_id
+	Audio.play_music("knight_boss")
+	started = true
+
+
+func _exit_tree() -> void:
+	if _music_was != "" and Audio.music_id == "knight_boss":
+		Audio.play_music(_music_was)
+	for n in beacons + gates + [armor]:
+		if is_instance_valid(n):
+			n.queue_free()
+	if is_instance_valid(_lv):
+		_lv.set("no_switch", _was_no_switch)
+		_lv.set_meta(&"free_switch", _had_switch)
+	if is_instance_valid(pink) and GameState.player != pink and is_instance_valid(GameState.player):
+		GameState.switch_control(pink)
+
+
+func _process(delta: float) -> void:
+	if _emitted or not started or GameState.in_dialogue or GameState.in_cutscene or not is_instance_valid(pink):
+		return
+	advance(delta)
+
+
+func advance(delta: float) -> void:
+	safe_left = maxf(0.0, safe_left - delta)
+	freeze_cool = maxf(0.0, freeze_cool - delta)
+	armor.paused = grabbing
+	if grabbing:
+		_grab_tick(delta)
+		return
+	if Input.is_action_just_pressed("attack") and GameState.player == blue:
+		freeze()
+	_gates()
+	var i := lit()
+	if i < BEACONS.size():
+		var b: Beacon = beacons[i]
+		if GameState.player == pink and pink.global_position.distance_to(b.global_position) <= BEACON_R and Input.is_action_pressed("interact"):
+			hold += delta
+			b.progress = hold / HOLD
+			if hold >= HOLD:
+				light(i)
+		else:
+			hold = maxf(0.0, hold - delta * 0.5)
+			b.progress = hold / HOLD
+	elif pink.global_position.distance_to(Cutscene.cell_to_world(PLAZA)) <= PLAZA_R:
+		_emit(true)
+		return
+	_near_t -= delta
+	if _near_t <= 0.0 and armor.global_position.distance_to(pink.global_position) < 60.0:
+		_near_t = 4.0
+		var pool: Array = data().get("near", [])
+		if not pool.is_empty():
+			SpeechBubble.say(armor, str(pool.pick_random()), 40.0, 1.6)
+
+
+## 点亮第 i 座信标
+func light(i: int) -> void:
+	if i != lit():
+		return
+	GameState.vars[LIT_KEY] = i + 1
+	hold = 0.0
+	(beacons[i] as Beacon).lit = true
+	armor.stun(LIGHT_STUN)
+	Audio.play("star_burst", -6.0)
+	var lines: Array = data().get("beacon_lit", [])
+	if i < lines.size():
+		GameState.princess_reacted.emit(str(lines[i]), 2.6)
+
+
+## 镇民帮忙：盔甲走近栅栏点、她已经跑开 → 关上栅栏挡一下
+func _gates() -> void:
+	for g in gates:
+		var gate := g as Gate
+		if gate.closed_left > 0.0 or gate.used:
+			continue
+		if armor.global_position.distance_to(gate.global_position) < GATE_NEAR and pink.global_position.distance_to(gate.global_position) > GATE_NEAR:
+			gate.close(GATE_TIME)
+			var pool: Array = data().get("townsfolk", [])
+			if not pool.is_empty():
+				GameState.princess_reacted.emit(str(pool.pick_random()), 2.4)
+
+
+## 蓝色公主 J：冻住身边的盔甲
+func freeze() -> bool:
+	if freeze_cool > 0.0:
+		GameState.notify(str(data().get("freeze_cool", "")), 1.0)
+		return false
+	if not is_instance_valid(blue) or blue.global_position.distance_to(armor.global_position) > FREEZE_R:
+		return false
+	freeze_cool = FREEZE_COOL
+	armor.freeze(FREEZE_TIME)
+	var pool: Array = data().get("freeze", [])
+	if not pool.is_empty():
+		GameState.princess_reacted.emit(str(pool.pick_random()), 2.0)
+	return true
+
+
+## 被抓住
+func grab() -> void:
+	if grabbing or safe_left > 0.0 or _emitted:
+		return
+	grabbing = true
+	grab_left = GRAB_TIME
+	mashes = 0
+	GameState.vars[CAUGHT_KEY] = caught() + 1
+	if GameState.player != pink:
+		GameState.switch_control(pink)
+	if pink.status:
+		pink.status.apply_root(GRAB_TIME)
+	var pool: Array = data().get("caught", [])
+	if not pool.is_empty():
+		GameState.princess_reacted.emit(str(pool.pick_random()), 3.0)
+	if caught() >= CATCHES:
+		_emit(false)
+
+
+func _grab_tick(delta: float) -> void:
+	grab_left -= delta
+	armor.global_position = armor.global_position.lerp(pink.global_position + Vector2(10, -2), 0.3)
+	if pink.laugh:
+		pink.laugh.add(pink.laugh.max_value * GRAB_LAUGH * delta)
+	if pink.fatigue:
+		pink.fatigue.add(pink.fatigue.max_value * GRAB_FATIGUE * delta)
+	if randf() < delta * 1.5:
+		ZoneFx.play("sole", pink.get_parent(), ZoneFx.body_point(pink, "sole"), 0.7, true)
+		var r: Array = data().get("caught_react", [])
+		if not r.is_empty():
+			SpeechBubble.say(pink, str(r.pick_random()), 30.0, 1.2)
+	if Input.is_action_just_pressed("attack"):
+		mash()
+	if grab_left <= 0.0:
+		_escape()
+
+
+## 连按 J
+func mash() -> void:
+	if not grabbing:
+		return
+	mashes += 1
+	pink.shake(0.1)
+	if mashes >= MASH:
+		_escape()
+
+
+func _escape() -> void:
+	grabbing = false
+	safe_left = SAFE_TIME
+	if pink.status:
+		pink.status.apply_root(0.0)
+	armor.freeze(1.2)
+	armor.global_position += pink.global_position.direction_to(armor.global_position) * 24.0
+	var pool: Array = data().get("escape", [])
+	if not pool.is_empty():
+		GameState.princess_reacted.emit(str(pool.pick_random()), 1.8)
+
+
+func _emit(ok: bool) -> void:
+	if _emitted:
+		return
+	_emitted = true
+	grabbing = false
+	if is_instance_valid(armor):
+		armor.paused = true
+	finished.emit(ok)
+
+
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_EXIT_TREE and not _emitted:
+		aborted = true
+		_emit(false)
+
+
+## 笑声灯笼信标：灯杆 + 灯笼，点亮的进度一圈，亮了以后发光
+class Beacon extends Node2D:
+	var lit := false
+	var progress := 0.0
+	var _t := 0.0
+
+	func _ready() -> void:
+		z_index = 1
+		add_to_group("chase_beacon")
+
+	func _process(delta: float) -> void:
+		_t += delta
+		queue_redraw()
+
+	func _draw() -> void:
+		draw_line(Vector2(0, 4), Vector2(0, -18), Color("6b4a32"), 2)
+		var col := Color(1, 0.8, 0.45) if lit else Color(0.4, 0.32, 0.38)
+		if lit:
+			draw_circle(Vector2(0, -20), 12 + sin(_t * 4.0) * 1.5, Color(1, 0.75, 0.4, 0.25))
+		draw_circle(Vector2(0, -20), 5, col)
+		draw_arc(Vector2(0, -21), 1.5, 0.2, PI - 0.2, 6, Color("3a2a2a"), 1)
+		if not lit and progress > 0.0:
+			draw_arc(Vector2(0, -20), 9, -PI / 2, -PI / 2 + TAU * clampf(progress, 0.0, 1.0), 16, Color(1, 0.9, 0.5), 2)
+
+
+## 镇民拉上的栅栏：关着的时候挡住盔甲（也挡人），GATE_TIME 秒后打开；每个点只帮一次
+class Gate extends StaticBody2D:
+	var closed_left := 0.0
+	var used := false
+	var _shape: CollisionShape2D
+
+	func _ready() -> void:
+		collision_layer = 0
+		collision_mask = 0
+		_shape = CollisionShape2D.new()
+		var r := RectangleShape2D.new()
+		r.size = Vector2(44, 8)
+		_shape.shape = r
+		_shape.disabled = true
+		add_child(_shape)
+
+	func close(time: float) -> void:
+		closed_left = time
+		used = true
+		collision_layer = 1
+		_shape.disabled = false
+
+	func _process(delta: float) -> void:
+		if closed_left > 0.0:
+			closed_left -= delta
+			if closed_left <= 0.0:
+				collision_layer = 0
+				_shape.disabled = true
+		queue_redraw()
+
+	func _draw() -> void:
+		if closed_left <= 0.0:
+			return
+		for i in 6:
+			draw_line(Vector2(-22 + i * 8.8, -6), Vector2(-22 + i * 8.8, 4), Color("8b6644"), 2)
+		draw_line(Vector2(-22, -3), Vector2(22, -3), Color("a47a50"), 2)
+		draw_line(Vector2(-22, 2), Vector2(22, 2), Color("a47a50"), 2)

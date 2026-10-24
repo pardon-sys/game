@@ -1,0 +1,84 @@
+{
+	"name": "痒铠骑士",
+	"letterbox": true,
+	"skippable": true,
+	"steps": [
+		{
+			"actions": [
+				{
+					"id": "knight",
+					"kind": "npc:knight_cursed",
+					"at": [
+						41,
+						21
+					],
+					"dir": "down",
+					"do": "spawn"
+				},
+				{
+					"to": [
+						41,
+						23
+					],
+					"zoom": 1.0,
+					"time": 0.6,
+					"do": "camera"
+				}
+			],
+			"wait": 0.6
+		},
+		{
+			"speaker": "",
+			"text": "（三道光在图腾柱上方汇成一圈。盔甲被光罩住，停下了脚步——下一秒，它仰起头，发出一声刺耳的笑声）"
+		},
+		{
+			"speaker": "",
+			"text": "（盔甲上的手印全都亮了。铁手套、护腿、头盔上的面罩，一件一件地「活」了过来）"
+		},
+		{
+			"speaker": "保卫队队长",
+			"text": "……诅咒附在了盔甲上。打碎盔甲上的诅咒——别伤到他本人！",
+			"npc": "captain"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……铁手套。护腿。……还有那张脸。"
+		},
+		{
+			"speaker": "公主",
+			"text": "那张脸……在笑……",
+			"emotion": "surprise"
+		},
+		{
+			"speaker": "镇长",
+			"text": "最后把它引到图腾柱前的符文圈！两个人一起，像修图腾柱那天一样——用笑声把它净化掉！"
+		},
+		{
+			"speaker": "公主",
+			"text": "……又是一起笑。",
+			"emotion": "helpless_1"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……这次，我不会裂。"
+		},
+		{
+			"speaker": "",
+			"text": "（粉色公主贴近的时候诅咒会变慢变温和——趁这时换蓝色公主冻住部件、打碎它。被抓住了连按挣脱）"
+		},
+		{
+			"actions": [
+				{
+					"who": "knight",
+					"do": "despawn"
+				},
+				{
+					"reset": true,
+					"time": 0.4,
+					"do": "camera"
+				}
+			],
+			"wait": 0.4
+		}
+	]
+}

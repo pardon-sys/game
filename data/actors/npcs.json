@@ -109,6 +109,11 @@
 			"name": "骑士",
 			"sprite": "res://assets/generated/npcs/knight.png",
 			"portrait": "res://assets/generated/npc_portraits/knight.png"
+		},
+		"knight_cursed": {
+			"name": "骑士",
+			"sprite": "res://assets/generated/npcs/knight_cursed.png",
+			"portrait": "res://assets/generated/npc_portraits/knight.png"
 		}
 	}
 }

@@ -34,6 +34,12 @@ const STEPS := [
 	{"id": "cell", "where": PRISON, "auto": true, "slot": NIGHT, "objective": "躲开巡逻，去最里面那间牢房",
 		"task": {"script": "res://levels/floor_06/scripts/task_sneak.gd", "name": "夜探地牢", "fail": "", "fail_hours": 0},
 		"done": "knight_cell_end", "goto": [HOUSE, "bed"], "sleep": true},
+	{"id": "erupt", "where": HOUSE, "auto": true, "slot": MORNING, "cutscene": "knight_erupt", "objective": "", "goto": [TOWN, "from_house"]},
+	{"id": "chase", "where": TOWN, "auto": true, "slot": MORNING, "cutscene": "knight_chase_open", "objective": "把盔甲引到广场的图腾柱下",
+		"task": {"script": "res://levels/floor_06/scripts/task_armor_chase.gd", "name": "镇中追逃", "fail": "knight_fail_chase", "fail_hours": 0, "respawn": [55, 37]}},
+	{"id": "boss", "where": TOWN, "auto": true, "slot": MORNING, "cutscene": "knight_boss_open", "objective": "打碎盔甲上的诅咒",
+		"task": {"script": "res://levels/floor_06/scripts/task_knight_boss.gd", "name": "痒铠骑士", "fail": "knight_fail_boss", "fail_hours": 0, "respawn": [41, 29]},
+		"done": "knight_epilogue"},
 ]
 
 static var running := false
@@ -137,10 +143,12 @@ static func _run(s: Dictionary) -> void:
 		return
 	if s.has("goto"):
 		await _go(s["goto"])
-		var next := step()
-		if not next.is_empty() and bool(next.get("auto", false)) and str(next["where"]) == str(s["goto"][0]):
-			running = false
-			await try_step(str(next["where"]), false)
+	# 下一步就在现在这张图、进图就演的：接着演（诅咒失控 → 追逃 → Boss）
+	var next := step()
+	var here: Node = StoryDirector.instance.main.get("level") if StoryDirector.instance else null
+	if not next.is_empty() and bool(next.get("auto", false)) and here and str(here.get("floor_id")) == str(next["where"]):
+		running = false
+		await try_step(str(next["where"]), false)
 
 
 static func _go(target: Array) -> void:
