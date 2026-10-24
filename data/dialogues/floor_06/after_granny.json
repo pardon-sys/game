@@ -3,6 +3,22 @@
 	"entries": [
 		{
 			"if": {
+				"flag": "after_festival_on",
+				"not": "stall_guess_done"
+			},
+			"node": "stall_offer"
+		},
+		{
+			"if": {
+				"flag": [
+					"after_festival_on",
+					"stall_guess_done"
+				]
+			},
+			"node": "stall_done"
+		},
+		{
+			"if": {
 				"flag": "errand_cookies_open"
 			},
 			"node": "errand_cookies"
@@ -197,6 +213,49 @@
 				},
 				{
 					"text": "……腰没被那几个小鬼挠坏吧？呵呵。"
+				}
+			]
+		},
+		"stall_offer": {
+			"lines": [
+				{
+					"text": "来玩奶奶的「脚底猜猜乐」吗？猜对三次送饼干～"
+				}
+			],
+			"prompt": "玩脚底猜猜乐？",
+			"choices": [
+				{
+					"text": "玩！",
+					"next": "stall_go"
+				},
+				{
+					"text": "等一下再说",
+					"next": ""
+				}
+			]
+		},
+		"stall_go": {
+			"lines": [
+				{
+					"text": "把脚伸进箱子里～"
+				}
+			],
+			"set": {
+				"vars": {
+					"stall_req": "guess"
+				},
+				"call": "festival_stall"
+			}
+		},
+		"stall_done": {
+			"lines": [
+				{
+					"text": "饼干好吃吗？明年还来呀～"
+				},
+				{
+					"text": "……明年的箱子里不许放羊。",
+					"speaker": "公主",
+					"emotion": "sad"
 				}
 			]
 		}

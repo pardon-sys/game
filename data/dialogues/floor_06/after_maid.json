@@ -3,6 +3,22 @@
 	"entries": [
 		{
 			"if": {
+				"flag": "after_festival_on",
+				"not": "stall_lick_done"
+			},
+			"node": "stall_offer"
+		},
+		{
+			"if": {
+				"flag": [
+					"after_festival_on",
+					"stall_lick_done"
+				]
+			},
+			"node": "stall_done"
+		},
+		{
+			"if": {
 				"flag": "errand_shearing_open"
 			},
 			"node": "errand_shearing"
@@ -269,6 +285,49 @@
 					"text": "让它舔盐砖去！",
 					"speaker": "公主",
 					"emotion": "angry"
+				}
+			]
+		},
+		"stall_offer": {
+			"lines": [
+				{
+					"text": "舔盐耐力赛，要参加吗？对手是派对主人哦～"
+				}
+			],
+			"prompt": "参加舔盐耐力赛？",
+			"choices": [
+				{
+					"text": "我不会输的！",
+					"next": "stall_go"
+				},
+				{
+					"text": "等一下再说",
+					"next": ""
+				}
+			]
+		},
+		"stall_go": {
+			"lines": [
+				{
+					"text": "好的～请坐。咕咕，准备～"
+				}
+			],
+			"set": {
+				"vars": {
+					"stall_req": "lick"
+				},
+				"call": "festival_stall"
+			}
+		},
+		"stall_done": {
+			"lines": [
+				{
+					"text": "咕咕说，今年冠军的脚最好舔～"
+				},
+				{
+					"text": "……我不想知道。",
+					"speaker": "公主",
+					"emotion": "sad"
 				}
 			]
 		}

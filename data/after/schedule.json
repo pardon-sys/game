@@ -65,6 +65,17 @@
 					"wander": 0,
 					"hidden": false
 				}
+			},
+			"d7": {
+				"night": {
+					"at": [
+						39,
+						24
+					],
+					"dir": "right",
+					"wander": 0,
+					"hidden": false
+				}
 			}
 		},
 		"after_mayor": {
@@ -128,6 +139,17 @@
 					"at": [
 						31,
 						26
+					],
+					"dir": "down",
+					"wander": 0,
+					"hidden": false
+				}
+			},
+			"d7": {
+				"night": {
+					"at": [
+						42,
+						21
 					],
 					"dir": "down",
 					"wander": 0,
@@ -199,6 +221,17 @@
 					"wander": 0,
 					"hidden": false
 				}
+			},
+			"d7": {
+				"night": {
+					"at": [
+						37,
+						22
+					],
+					"dir": "down",
+					"wander": 0,
+					"hidden": false
+				}
 			}
 		},
 		"after_merchant": {
@@ -254,6 +287,17 @@
 					],
 					"dir": "down",
 					"wander": 1,
+					"hidden": false
+				}
+			},
+			"d7": {
+				"night": {
+					"at": [
+						36,
+						27
+					],
+					"dir": "right",
+					"wander": 0,
 					"hidden": false
 				}
 			}
@@ -313,6 +357,17 @@
 					"wander": 1,
 					"hidden": false
 				}
+			},
+			"d7": {
+				"night": {
+					"at": [
+						33,
+						24
+					],
+					"dir": "right",
+					"wander": 0,
+					"hidden": false
+				}
 			}
 		},
 		"after_bonfire_host": {
@@ -368,6 +423,17 @@
 					],
 					"dir": "down",
 					"wander": 1,
+					"hidden": false
+				}
+			},
+			"d7": {
+				"night": {
+					"at": [
+						45,
+						26
+					],
+					"dir": "left",
+					"wander": 0,
 					"hidden": false
 				}
 			}
@@ -435,6 +501,17 @@
 						30
 					],
 					"dir": "down",
+					"wander": 0,
+					"hidden": false
+				}
+			},
+			"d7": {
+				"night": {
+					"at": [
+						49,
+						27
+					],
+					"dir": "left",
 					"wander": 0,
 					"hidden": false
 				}
@@ -506,6 +583,17 @@
 					"wander": 0,
 					"hidden": false
 				}
+			},
+			"d7": {
+				"night": {
+					"at": [
+						44,
+						23
+					],
+					"dir": "down",
+					"wander": 0,
+					"hidden": false
+				}
 			}
 		},
 		"after_maid": {
@@ -563,6 +651,17 @@
 					"wander": 1,
 					"hidden": false
 				}
+			},
+			"d7": {
+				"night": {
+					"at": [
+						51,
+						25
+					],
+					"dir": "left",
+					"wander": 0,
+					"hidden": false
+				}
 			}
 		},
 		"after_engineer": {
@@ -603,6 +702,17 @@
 			},
 			"d2": {
 				"morning": {}
+			},
+			"d7": {
+				"night": {
+					"at": [
+						48,
+						22
+					],
+					"dir": "down",
+					"wander": 0,
+					"hidden": false
+				}
 			}
 		},
 		"after_guard_gate": {
@@ -910,6 +1020,10 @@
 				"event": "d7_totem",
 				"task": "修补狂欢图腾柱",
 				"hours": 20
+			},
+			"night": {
+				"event": "d7_festival",
+				"task": "庆功宴"
 			}
 		},
 		"d1": {

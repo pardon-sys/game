@@ -1,0 +1,161 @@
+{
+	"name": "烟花",
+	"letterbox": true,
+	"skippable": false,
+	"steps": [
+		{
+			"actions": [
+				{
+					"to": [
+						41,
+						22
+					],
+					"zoom": 1.0,
+					"time": 0.6,
+					"do": "camera"
+				}
+			],
+			"wait": 0.6
+		},
+		{
+			"speaker": "镇长",
+			"text": "……好了。最后，放烟花吧。"
+		},
+		{
+			"speaker": "镇长",
+			"text": "这些烟花，是攻防战那天大家没舍得用掉的。……说好了，留到今天。"
+		},
+		{
+			"speaker": "",
+			"text": "（镇民们点燃了引线。一道光拖着尾巴窜上了地下小镇的穹顶——）"
+		},
+		{
+			"actions": [
+				{
+					"time": 0.4,
+					"do": "flash"
+				},
+				{
+					"sound": "star_burst",
+					"do": "sfx"
+				}
+			],
+			"wait": 0.4
+		},
+		{
+			"speaker": "",
+			"text": "（「砰」——一朵粉色的烟花在洞顶上炸开，照亮了整片岩壁。接着是金色的、蓝色的，一朵接一朵）"
+		},
+		{
+			"speaker": "镇民们",
+			"text": "哇——！"
+		},
+		{
+			"speaker": "",
+			"text": "（两个人并排坐在篝火边的长椅上，光着的脚还沾着沙子）"
+		},
+		{
+			"speaker": "公主",
+			"text": "……好漂亮。",
+			"emotion": "happy"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……嗯。"
+		},
+		{
+			"speaker": "",
+			"text": "（她看着烟花，不知不觉地哼起了一支小调。调子很短，软软的，像是哄小孩睡觉的那种）"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……这首歌。"
+		},
+		{
+			"speaker": "公主",
+			"text": "嗯？",
+			"emotion": "surprise"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……你从哪听来的。"
+		},
+		{
+			"speaker": "公主",
+			"text": "诶……？不知道。就是……会唱。",
+			"emotion": "surprise"
+		},
+		{
+			"speaker": "公主",
+			"text": "……好奇怪哦，我连自己是从哪来的都想不起来，却记得一首歌。",
+			"emotion": "sad"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……"
+		},
+		{
+			"speaker": "",
+			"text": "（蓝色公主没有再说话。她低着头，过了好一会儿，才轻轻地开口）"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……再唱一遍。"
+		},
+		{
+			"speaker": "公主",
+			"text": "……好。",
+			"emotion": "shy"
+		},
+		{
+			"actions": [
+				{
+					"time": 0.4,
+					"do": "flash"
+				},
+				{
+					"sound": "star_burst",
+					"volume": -4.0,
+					"do": "sfx"
+				}
+			],
+			"wait": 0.6
+		},
+		{
+			"speaker": "",
+			"text": "（烟花一朵接一朵地开。歌声很小，混在欢呼声里，只有坐在旁边的人听得见）"
+		},
+		{
+			"speaker": "保卫队队长",
+			"text": "（远远地看着长椅上的两个人，把赎罪簿合上，夹在了腋下）"
+		},
+		{
+			"speaker": "保卫队队长",
+			"text": "……七天。辛苦了。"
+		},
+		{
+			"actions": [
+				{
+					"time": 1.2,
+					"do": "fade_out"
+				}
+			],
+			"wait": 1.2
+		},
+		{
+			"actions": [
+				{
+					"title": "七日赎罪　完",
+					"subtitle": "——那首歌，是谁教她的？",
+					"next": "floor_06_after_house",
+					"do": "chapter_end"
+				}
+			],
+			"wait": 1.4
+		}
+	]
+}

@@ -1,0 +1,222 @@
+extends RefCounted
+## 庆功宴专项（第 7 天晚上）：工时还清才开、开场过场、领舞（三段音游 + 邀舞）、五个摊位各自的机制与通关、放烟花 → 结局画面 → 回小屋。
+static var checks := 0
+
+
+static func verify(t: Node, label: String, ok: bool) -> void:
+	checks += 1
+	t.check(label, ok)
+
+
+static func show_of(t: Node, cls: Variant) -> Node:
+	return t._show(cls)
+
+
+## 走到某个摊主身边说话（选第一项「开始」），等小游戏开演
+static func open_stall(t: Node, file: String, cls: Variant) -> Node:
+	await t._talk(file, "stall_offer", [0])
+	await t._advance_until(func(): return show_of(t, cls) != null and not show_of(t, cls).busy, 10.0)
+	return show_of(t, cls)
+
+
+static func wait_closed(t: Node, cls: Variant) -> void:
+	await t._advance_until(func(): return show_of(t, cls) == null and not AfterFestival.running, 30.0)
+
+
+static func run(t: Node) -> void:
+	checks = 0
+	for f in ["after_started", "penance_book", "f6_opening_done", "after_done_d7_morning", "after_done_d7_afternoon", "errand_dance_done"]:
+		GameState.set_flag(f)
+	for f in [AfterFestival.ON, AfterFestival.DANCE_DONE, AfterFestival.FINALE_DONE, "after_ev_d7_festival", "after_done_d7_night"]:
+		GameState.set_flag(f, false)
+	for id in AfterFestival.STALLS:
+		GameState.set_flag("stall_%s_done" % id, false)
+	DayClock.set_time(7, DayClock.NIGHT)
+	GameState.vars["penance_hours"] = 5
+	verify(t, "日程：第 7 天晚上是庆功宴（工时还清才开）", DayClock.event(7, DayClock.NIGHT) == "d7_festival" and bool(AfterStory.EVENTS["d7_festival"].get("needs_clear", false)))
+	verify(t, "还欠 5 工时：庆功宴不开、目标是补罚", AfterStory.pending_event() == "" and AfterStory.objective(AfterStory.TOWN).get("text", "").contains("补罚"))
+	GameState.vars["penance_hours"] = 0
+	verify(t, "工时还清：庆功宴开放", AfterStory.pending_event() == "d7_festival")
+	GameState.pending_spawn = "from_house"
+	await t.main.change_level(Floors.scene(AfterStory.TOWN))
+	await t._wait(0.8)
+	t._go(Cutscene.cell_to_world(AfterStory.EVENTS["d7_festival"]["spot"]))
+	await t._advance_until(func(): return GameState.has_flag(AfterFestival.ON) and not Cutscene.is_playing() and not AfterStory.running, 30.0)
+	verify(t, "走到篝火边 → 开场过场 → 庆功宴开始（床不能睡）", t.seen_cuts.has("after_d7_festival") and AfterFestival.active() and GameState.has_flag(AfterStory.NIGHT_BUSY))
+	verify(t, "目标：先去领舞", AfterStory.objective(AfterStory.TOWN).get("text", "").contains("领舞"))
+	verify(t, "派对主人的对话：领舞入口排第一", Dialogue.runner.entry_of("floor_06/after_bonfire_host") == "festival_dance")
+	verify(t, "镇长：先去跳舞", Dialogue.runner.entry_of("floor_06/after_mayor") == "festival_wait")
+	# 领舞
+	FestivalDanceShow.quiet = true
+	FestivalDanceShow.auto_picks = [0, 3, 2]
+	FestivalDanceShow.auto_combo = true
+	await t._talk("floor_06/after_bonfire_host", "festival_dance", [0])
+	await t._advance_until(func(): return show_of(t, FestivalDanceShow) != null, 5.0)
+	var d := show_of(t, FestivalDanceShow) as FestivalDanceShow
+	verify(t, "领舞开演：两位公主都在舞台上", d != null and d.actors.has("princess") and d.actors.has("blue"))
+	if d == null:
+		return
+	verify(t, "四段：领舞 / 邀舞 / 双人舞 / 全镇", d.text()["sections"].map(func(s): return s["kind"]) == ["lane", "invite", "lane", "lane"])
+	var l0 := GameState.player.laugh.value
+	d.lane.load_chart([{"t": 0.0, "key": "UP", "hit": false}])
+	d.lane.advance(1.0)
+	verify(t, "领舞踩错一拍：围观的人挠脚心，闷笑上涨", d.misses >= 1 and GameState.player.laugh.value > l0)
+	# 直接把领舞段判完：满分谱面
+	for sec in 4:
+		await t._advance_until(func(): return not d.busy or not is_instance_valid(d), 5.0)
+		if not is_instance_valid(d) or d._done:
+			break
+		if str(d.cur().get("kind", "")) == "invite":
+			continue
+		d.lane.load_chart([])
+		d.lane.time = 99.0
+		await t._wait(0.2)
+	await t._advance_until(func(): return show_of(t, FestivalDanceShow) == null and not AfterFestival.running, 20.0)
+	verify(t, "邀舞：嘴硬值挠到 0（腰 → 屁股 + 连击 → 大腿 + 连击），跳完领舞", GameState.has_flag(AfterFestival.DANCE_DONE))
+	FestivalDanceShow.quiet = false
+	FestivalDanceShow.auto_picks = []
+	FestivalDanceShow.auto_combo = null
+	verify(t, "目标：逛摊位 / 找镇长放烟花", AfterStory.objective(AfterStory.TOWN).get("text", "").contains("烟花"))
+	# 五个摊位
+	StallGuessShow.quiet = true
+	var g := await open_stall(t, "floor_06/after_granny", StallGuessShow) as StallGuessShow
+	verify(t, "脚底猜猜乐：奶奶的摊位开演，四个选项里有答案", g != null and g.options.size() == 4 and g.options.has(g.tool))
+	if g:
+		g.state_left = 0.0
+		g.simulate(0.1)
+		verify(t, "挠一阵以后轮到猜", g.state == "guess")
+		var wrong := g.options.find(g.options.filter(func(o): return o != g.tool)[0])
+		g.completed = 1
+		g.guess(wrong)
+		verify(t, "猜错：连对清零、罚挠（闷笑涨得快）", g.completed == 0 and g.state == "wrong")
+		while is_instance_valid(g) and not g._done:
+			await t._advance_until(func(): return not is_instance_valid(g) or not g.busy or g._done, 3.0)
+			if not is_instance_valid(g) or g._done:
+				break
+			g.state = "guess"
+			g.guess(g.options.find(g.tool))
+		await wait_closed(t, StallGuessShow)
+		verify(t, "连对三次：通关", AfterFestival.stall_done("guess"))
+	StallGuessShow.quiet = false
+	StallRingShow.quiet = true
+	var r := await open_stall(t, "floor_06/after_merchant", StallRingShow) as StallRingShow
+	verify(t, "忍笑套圈：商人的摊位开演", r != null)
+	if r:
+		r.aim = StallRingShow.PEGS[2]
+		r.elapsed = 0.0
+		GameState.player.laugh.set_value(0.0)
+		r.jolt_left = 0.0
+		verify(t, "准星对准木桩：套中", r.throw())
+		await t._advance_until(func(): return not r.busy, 2.0)
+		r.aim = (StallRingShow.PEGS[2] + StallRingShow.PEGS[3]) * 0.5
+		r.flying = 0.0
+		verify(t, "准星在两根木桩中间：没套中", not r.throw())
+		GameState.player.laugh.set_value(GameState.player.laugh.max_value * 0.9)
+		var a0 := r.aim_x()
+		r.elapsed = 0.12
+		verify(t, "闷笑越高准星越乱（%.1f → %.1f）" % [a0, r.aim_x()], absf(r.aim_x() - r.aim) > 0.5)
+		GameState.player.laugh.set_value(0.0)
+		var i := 0
+		while is_instance_valid(r) and not r._done:
+			await t._advance_until(func(): return not is_instance_valid(r) or not r.busy or r._done, 2.0)
+			if not is_instance_valid(r) or r._done:
+				break
+			GameState.player.laugh.set_value(0.0)
+			r.aim = StallRingShow.PEGS[i % 6]
+			r.jolt_left = 0.0
+			r.flying = 0.0
+			r.throw()
+			i += 1
+		await wait_closed(t, StallRingShow)
+		verify(t, "套中六个：通关", AfterFestival.stall_done("ring"))
+	StallRingShow.quiet = false
+	StallIceShow.quiet = true
+	var ice := await open_stall(t, "floor_06/after_engineer", StallIceShow) as StallIceShow
+	verify(t, "冰雕摊：蓝色公主上场刻冰雕，粉色公主在旁边", ice != null and ice.actors.has("blue") and ice.actors.has("pink"))
+	if ice:
+		var c0 := ice.completed
+		ice.carve(ice.want)
+		await t._advance_until(func(): return not ice.busy, 2.0)
+		verify(t, "按对方向：刻一刀", ice.completed == c0 + 1)
+		var wrong_key: String = StallIceShow.KEYS.filter(func(k): return k != ice.want)[0]
+		ice.carve(wrong_key)
+		verify(t, "按错：刀一滑", ice.slips == 1 and ice.completed == c0 + 1)
+		ice.blue_laugh = 0.8
+		verify(t, "J 冰封：蓝色公主的闷笑压下去，有冷却", ice.freeze() and ice.blue_laugh < 0.8 and not ice.freeze())
+		ice.blue_laugh = 1.0
+		ice.recovery_left = 0.0
+		ice.simulate(0.05)
+		verify(t, "她笑满：冰雕笑塌了，这一座从头刻", ice.collapses == 1 and ice.completed == ice.phase_start())
+		ice.recovery_left = 0.0
+		while is_instance_valid(ice) and not ice._done:
+			await t._advance_until(func(): return not is_instance_valid(ice) or not ice.busy or ice._done, 3.0)
+			if not is_instance_valid(ice) or ice._done:
+				break
+			ice.blue_laugh = 0.0
+			ice.carve(ice.want)
+		await wait_closed(t, StallIceShow)
+		verify(t, "三座冰雕刻完：通关", AfterFestival.stall_done("ice"))
+	StallIceShow.quiet = false
+	StallFishShow.quiet = true
+	var fs := await open_stall(t, "floor_06/after_kid_tom", StallFishShow) as StallFishShow
+	verify(t, "捞痒痒鱼：小汤姆的摊位开演，盆里 %d 条鱼" % (fs.fish.size() if fs else 0), fs != null and fs.fish.size() == StallFishShow.FISH_COUNT)
+	if fs:
+		for f in fs.fish:
+			f["pos"] = StallFishShow.FEET
+		var l1 := GameState.player.laugh.value
+		fs.simulate(0.2)
+		verify(t, "鱼聚在脚边：在啄（%d 条），闷笑上涨" % fs.nibbling(), fs.nibbling() > 0 and GameState.player.laugh.value > l1)
+		verify(t, "K 抬脚：鱼散开、不再啄", fs.lift() and fs.nibbling() == 0)
+		fs.fish[0]["pos"] = Vector2(fs.net_x, 0)
+		var w0 := fs.wear
+		verify(t, "网下面有鱼：捞到一条，网湿了一点", fs.scoop() and fs.completed == 1 and fs.wear > w0)
+		await t._advance_until(func(): return not fs.busy, 2.0)
+		fs.wear = 0.9
+		fs.fish[0]["pos"] = Vector2(-99, -99)
+		fs.scoop()
+		verify(t, "网湿透：破了，换下一张", fs.nets == StallFishShow.NETS - 1 and fs.wear == 0.0)
+		while is_instance_valid(fs) and not fs._done:
+			await t._advance_until(func(): return not is_instance_valid(fs) or not fs.busy or fs._done, 3.0)
+			if not is_instance_valid(fs) or fs._done:
+				break
+			fs.wear = 0.0
+			fs.fish[0]["pos"] = Vector2(fs.net_x, 0)
+			fs.scoop()
+		await wait_closed(t, StallFishShow)
+		verify(t, "捞够六条：通关", AfterFestival.stall_done("fish"))
+	StallFishShow.quiet = false
+	StallLickShow.quiet = true
+	var lk := await open_stall(t, "floor_06/after_maid", StallLickShow) as StallLickShow
+	verify(t, "舔盐耐力赛：女仆主持，对手派对主人", lk != null and lk.actors.has("host"))
+	if lk:
+		GameState.player.laugh.set_value(GameState.player.laugh.max_value * 0.5)
+		lk.press("J")
+		var l2 := GameState.player.laugh.value
+		lk.simulate(0.5)
+		verify(t, "J 绷住脚趾：闷笑往下压、耗体力", GameState.player.laugh.value < l2 and lk.stamina < 1.0)
+		lk.press("J")
+		GameState.player.laugh.set_value(GameState.player.laugh.max_value * 0.8)
+		var h0 := lk.host_laugh
+		lk.simulate(0.2)
+		var edge_gain := lk.host_laugh - h0
+		GameState.player.laugh.set_value(GameState.player.laugh.max_value * 0.2)
+		h0 = lk.host_laugh
+		lk.simulate(0.2)
+		verify(t, "停在临界点：主人那边涨得更快（%.3f > %.3f）" % [edge_gain, lk.host_laugh - h0], edge_gain > lk.host_laugh - h0)
+		lk.recover()
+		verify(t, "她先笑满：这一局输，重来", lk.rounds == 2 and is_equal_approx(lk.host_laugh, StallLickShow.ROUND_RESET))
+		lk.recovery_left = 0.0
+		lk.host_laugh = 0.99
+		GameState.player.laugh.set_value(0.0)
+		lk.simulate(0.5)
+		await wait_closed(t, StallLickShow)
+		verify(t, "主人先笑满：赢了", AfterFestival.stall_done("lick"))
+	StallLickShow.quiet = false
+	# 放烟花
+	verify(t, "镇长：可以放烟花了", Dialogue.runner.entry_of("floor_06/after_mayor") == "festival_finale")
+	await t._talk("floor_06/after_mayor", "festival_finale", [0])
+	await t._advance_until(func(): return Cutscene.chapter_screen.visible and not Cutscene.is_playing(), 60.0)
+	verify(t, "烟花 → 哼歌 →「七日赎罪 完」结局画面", t.seen_cuts.has("after_d7_finale") and Cutscene.chapter_title.text.contains("七日赎罪") and DayClock.done(7, DayClock.NIGHT))
+	Cutscene.continue_chapter()
+	await t._advance_until(func(): return t._level_id() == AfterStory.HOUSE and not Cutscene.chapter_screen.visible, 20.0)
+	verify(t, "按 E → 回到小屋", t._level_id() == AfterStory.HOUSE)

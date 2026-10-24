@@ -3,6 +3,22 @@
 	"entries": [
 		{
 			"if": {
+				"flag": "after_festival_on",
+				"not": "stall_ice_done"
+			},
+			"node": "stall_offer"
+		},
+		{
+			"if": {
+				"flag": [
+					"after_festival_on",
+					"stall_ice_done"
+				]
+			},
+			"node": "stall_done"
+		},
+		{
+			"if": {
 				"flag": "errand_gate_chain_open"
 			},
 			"node": "errand_gate_chain"
@@ -259,6 +275,47 @@
 					"text": "不许再提我的脚！",
 					"speaker": "公主",
 					"emotion": "angry"
+				}
+			]
+		},
+		"stall_offer": {
+			"lines": [
+				{
+					"text": "冰雕摊！要请蓝色的那位来刻——你去问问？"
+				},
+				{
+					"text": "你在旁边帮忙也行～"
+				}
+			],
+			"prompt": "让蓝色公主来刻冰雕？",
+			"choices": [
+				{
+					"text": "交给我们！",
+					"next": "stall_go"
+				},
+				{
+					"text": "等一下再说",
+					"next": ""
+				}
+			]
+		},
+		"stall_go": {
+			"lines": [
+				{
+					"text": "好嘞，冰块桌子都准备好了！"
+				}
+			],
+			"set": {
+				"vars": {
+					"stall_req": "ice"
+				},
+				"call": "festival_stall"
+			}
+		},
+		"stall_done": {
+			"lines": [
+				{
+					"text": "那三座冰雕，大家都抢着看呢。……尤其是最后那一座。"
 				}
 			]
 		}

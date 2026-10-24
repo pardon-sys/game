@@ -396,6 +396,22 @@ func after_penalty() -> void:
 	AfterPenance.run(str(GameState.vars.get("penalty_req", "")))
 
 
+## 七日赎罪：庆功宴的领舞 / 摊位（set.vars.stall_req 写摊位 id）/ 放烟花。
+func festival_dance() -> void:
+	runner.end_conversation()
+	AfterFestival.run_dance()
+
+
+func festival_stall() -> void:
+	runner.end_conversation()
+	AfterFestival.run_stall(str(GameState.vars.get("stall_req", "")))
+
+
+func festival_finale() -> void:
+	runner.end_conversation()
+	AfterFestival.run_finale()
+
+
 ## 七日赎罪：和蓝色公主玩闹（逗她笑一笑）。
 func after_play() -> void:
 	runner.end_conversation()

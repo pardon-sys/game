@@ -18,7 +18,7 @@ from pathlib import Path
 os.chdir(Path(__file__).resolve().parents[2])
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-from after_text import d1, d2, equip_kids, errand_dance, errand_goats, errand_ladder, errand_massage, errand_gate_chain, errand_shearing, errand_canopy, errand_sifting, errand_lamp_calibration, errands, house, mine, play, potion, punish, stocks, tailor, tasks, totem, town, drain, drill, inspect, tom, night, penalty  # noqa: E402
+from after_text import d1, d2, equip_kids, errand_dance, errand_goats, errand_ladder, errand_massage, errand_gate_chain, errand_shearing, errand_canopy, errand_sifting, errand_lamp_calibration, errands, house, mine, play, potion, punish, stocks, tailor, tasks, totem, town, drain, drill, inspect, tom, night, penalty, festival_night, stall_guess, stall_ring, stall_ice, stall_fish, stall_lick  # noqa: E402
 
 # 只生成灯轮 / 报幕的文本（委托表、灯轮、补罚表、派对主人对话），不重新写地图、其他任务或别的镇民对白。
 if "--festival-only" in sys.argv:
@@ -31,6 +31,7 @@ if "--festival-only" in sys.argv:
     files = deepcopy(town.D)
     errands.inject(files)
     penalty.inject(files)
+    festival_night.inject(files, {})
     write_festival("data/dialogues/floor_06/after_bonfire_host.json", files["after_bonfire_host"])
     print("祭典专项生成：委托表、灯轮、补罚表、派对主人对话")
     sys.exit(0)
@@ -509,6 +510,13 @@ for f in NPCS:
 # 晚上的弥补任务：委托人那天晚上留在外面
 for _f, _d, _at in (("after_granny", "d2", (45, 12)), ("after_kid_tom", "d4", (30, 30)), ("after_kid_lily", "d4", (32, 30)), ("after_mayor", "d6", (31, 26))):
     NPCS[_f].setdefault(_d, {})["night"] = {"at": list(_at), "dir": "down", "wander": 0, "hidden": False}
+# 第 7 天晚上：庆功宴（工时没还清时也在外面——市场监督和派对主人接补罚），摊主守在自己的摊位
+D7_NIGHT = {"after_bonfire_host": (45, 26, "left"), "after_mayor": (42, 21, "down"), "after_captain": (39, 24, "right"),
+            "after_granny": (37, 22, "down"), "after_merchant": (36, 27, "right"), "after_engineer": (48, 22, "down"),
+            "after_kid_tom": (49, 27, "left"), "after_kid_lily": (44, 23, "down"), "after_maid": (51, 25, "left"),
+            "after_supervisor": (33, 24, "right")}
+for _f, (_x, _y, _d) in D7_NIGHT.items():
+    NPCS[_f].setdefault("d7", {})["night"] = {"at": [_x, _y], "dir": _d, "wander": 0, "hidden": False}
 NPCS["after_blue"] = {
     "default": {"at": [12, 14], "dir": "down", "wander": 2, "hidden": False},
     "morning": {"at": [12, 14], "dir": "left"},
@@ -531,7 +539,8 @@ DAYS = {
     "d5": {"morning": {"event": "d5_tailor", "task": "裁缝的试衣模特", "hours": 10},
            "afternoon": {"event": "d5_mine", "task": "矿车护送", "hours": 12},
            "night": {"event": "d5_tom", "task": "回小屋睡觉"}},
-    "d7": {"morning": {"event": "d7_totem", "task": "修补狂欢图腾柱", "hours": 20}},
+    "d7": {"morning": {"event": "d7_totem", "task": "修补狂欢图腾柱", "hours": 20},
+           "night": {"event": "d7_festival", "task": "庆功宴"}},
     "d1": {"morning": {"event": "d1_open", "task": "战后集合"},
            "afternoon": {"event": "d1_verdict", "task": "广场听候宣判"},
            "night": {"event": "d1_sleepwalk", "task": "回小屋睡觉"}},
@@ -565,6 +574,16 @@ night.NIGHT["react"] = night.REACT_COMMON
 for _n, _m, _k in (("drain", drain, "DRAIN"), ("drill", drill, "DRILL"), ("inspect", inspect, "INSPECT"), ("tom", tom, "TOM_PRANK"), ("night", night, "NIGHT"), ("penalty", penalty, "PENALTY")):
     Path("data/after/%s.json" % _n).write_text(json.dumps(dict({"_说明": "after_text/%s.py 生成。" % _n}, **getattr(_m, _k)),
         ensure_ascii=False, indent="\t") + "\n")
+Path("data/after/festival_night.json").write_text(json.dumps(dict({"_说明": "庆功宴（after_text/festival_night.py 生成，AfterFestival / FestivalDanceShow 读）。"},
+    **festival_night.FESTIVAL), ensure_ascii=False, indent="\t") + "\n")
+STALLS = {"after_granny": ("guess", stall_guess, "GUESS", "StallGuessShow"), "after_merchant": ("ring", stall_ring, "RING", "StallRingShow"),
+          "after_engineer": ("ice", stall_ice, "ICE", "StallIceShow"), "after_kid_tom": ("fish", stall_fish, "FISH", "StallFishShow"),
+          "after_maid": ("lick", stall_lick, "LICK", "StallLickShow")}
+for _sid, _mod, _key, _cls in STALLS.values():
+    _st = dict(getattr(_mod, _key))
+    _st.setdefault("success_react", _st.get("right", []))
+    Path("data/after/stall_%s.json" % _sid).write_text(json.dumps(dict({"_说明": "庆功宴摊位（after_text/stall_%s.py 生成，%s 读）。" % (_sid, _cls)}, **_st),
+        ensure_ascii=False, indent="\t") + "\n")
 Path("data/after/play.json").write_text(json.dumps(dict({"_说明": "两位公主的玩闹（after_text/play.py 生成，AfterPlay 读）。"}, **play.PLAY),
     ensure_ascii=False, indent="\t") + "\n")
 Path("data/after/schedule.json").write_text(json.dumps({
@@ -578,6 +597,7 @@ dlg = Path("data/dialogues/floor_06")
 files = dict(town.D)
 errands.inject(files)
 penalty.inject(files)
+festival_night.inject(files, {f: (sid, mod.NODE) for f, (sid, mod, _k, _c) in STALLS.items()})
 files["after_house_objects"] = house.HOUSE
 files["after_house_up_objects"] = house.HOUSE_UP
 files["after_blue_room"] = house.BLUE_ROOM
@@ -605,7 +625,7 @@ signs.update(inspect.SIGNS)
 signs_path.write_text(json.dumps(signs, ensure_ascii=False, indent="\t") + "\n")
 
 cut = Path("data/cutscenes/floor_06")
-CUTS = dict(d1.CUTSCENES, **d2.CUTSCENES, **tasks.CUTSCENES, **potion.CUTSCENES, **tailor.CUTSCENES, **mine.CUTSCENES, **totem.CUTSCENES, **drain.CUTSCENES, **drill.CUTSCENES, **inspect.CUTSCENES)
+CUTS = dict(d1.CUTSCENES, **d2.CUTSCENES, **tasks.CUTSCENES, **potion.CUTSCENES, **tailor.CUTSCENES, **mine.CUTSCENES, **totem.CUTSCENES, **drain.CUTSCENES, **drill.CUTSCENES, **inspect.CUTSCENES, **festival_night.CUTSCENES)
 for cid, fn in CUTS.items():
     (cut / (cid + ".json")).write_text(json.dumps(fn(), ensure_ascii=False, indent="\t") + "\n")
 th = Path("data/theater/after")

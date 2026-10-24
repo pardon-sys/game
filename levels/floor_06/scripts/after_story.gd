@@ -48,6 +48,8 @@ const EVENTS := {
 	"d6_inspect": {"where": PROVING, "auto": true, "objective": "去东边的保卫队训练营，验收新陷阱", "cutscene": "after_d6_inspect"},
 	"d6_drill": {"where": DRILL, "spot": [10, 7, 1.5], "objective": "去队长的训练室：特训第三课和考核", "cutscene": "after_d6_drill"},
 	"d7_totem": {"where": TOTEM, "auto": true, "objective": "从西边的小路去图腾柱废地，修补狂欢图腾柱", "cutscene": "after_d7_totem"},
+	# 庆功宴：工时还清才开（needs_clear），开场以后广场自由活动（AfterFestival）
+	"d7_festival": {"where": TOWN, "spot": [40, 24, 2], "objective": "庆功宴开始了！去广场的篝火边", "cutscene": "after_d7_festival", "needs_clear": true},
 }
 ## 小镇里通往各张图的门口（指路）、各张图回小镇的出口
 const TOWN_DOORS := {"floor_06_after_house": [42, 10], "floor_06_after_house_up": [42, 10], "floor_06_after_pharmacy": [16, 10],
@@ -155,6 +157,8 @@ static func objective(floor_id: String) -> Dictionary:
 	if not GameState.has_flag(STARTED):
 		return {}
 	sync_doors()
+	if AfterFestival.active():
+		return {"text": AfterFestival.objective_text()}
 	if GameState.has_flag(NIGHT_BUSY):
 		return {"text": "顺着地上的手印找一找"}
 	var cur := current_task()
@@ -268,6 +272,8 @@ static func _run(ev: String, info: Dictionary) -> void:
 			await show.play()
 			show.queue_free()
 			await finish_slot()
+		"d7_festival":
+			AfterFestival.begin()
 		"d1_verdict":
 			PenanceBook.start()
 			GameState.hint("背包里多了一页「赎罪簿」")
@@ -504,6 +510,7 @@ static func sleep_later() -> void:
 
 static func sleep() -> void:
 	if DayClock.day() >= DayClock.DAYS and DayClock.done(DayClock.DAYS, DayClock.NIGHT):
+		GameState.notify("（七日赎罪结束了。之后的故事还在制作中……）", 3.0)
 		return
 	await DayClock.sleep()
 	await after_wake()
