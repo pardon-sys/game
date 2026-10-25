@@ -118,11 +118,16 @@ static func run(t: Node) -> void:
 	ch.advance(0.05)
 	await t._advance_until(func(): return task(t, "boss") != null and bool(task(t, "boss").started) and not Cutscene.is_playing() and not GameState.in_dialogue, 60.0)
 	var b := task(t, "boss") as TaskKnightBoss
-	verify(t, "三座信标亮了、引到广场 → Boss「痒铠骑士」开始（铁手套两只）", b != null and t.seen_cuts.has("knight_boss_open") and b.phase == 0 and b.parts.size() == 2)
+	verify(t, "三座信标亮了、引到广场 → Boss「痒铠骑士」开始（铁手套两只、场上 %d 个人）" % (b.victims.size() if b else 0), b != null
+		and t.seen_cuts.has("knight_boss_open") and b.phase == 0 and b.parts.size() == 2 and b.victims.size() >= 5)
 	if b == null:
 		return
 	pink = b.pink
-	verify(t, "Boss 战：没被操控的蓝色公主由 AI 控制", b.blue.controller is KnightAI)
+	b.curse_t = 999.0
+	for v in b.victims:
+		v.cursed = false
+	verify(t, "Boss 战：没被操控的蓝色公主由 AI 控制；C 键能换人", b.blue.controller is KnightAI
+		and InputMap.action_get_events("switch_character").any(func(e): return e is InputEventKey and e.physical_keycode == KEY_C))
 	var a0: TaskKnightBoss.BossPart = b.parts[0]
 	b.freeze_cool = 0.0
 	b.blue.global_position = a0.global_position + Vector2(0, 20)
@@ -144,18 +149,44 @@ static func run(t: Node) -> void:
 	GameState.vars[TaskKnightBoss.CAUGHT_KEY] = 0
 	GameState.switch_control(b.pink)
 	await t._wait(0.1)
+	b.attack_t = 999.0
 	a0.hp = TaskKnightBoss.PART_HP
 	a0.freeze_left = 0.0
 	b.freeze_cool = 0.0
-	var p0: TaskKnightBoss.BossPart = b.parts[0]
-	verify(t, "没冻住的部件打不动", not b.hit_part(p0) and p0.hp == TaskKnightBoss.PART_HP)
-	GameState.switch_control(b.blue)
-	await t._wait(0.2)
-	b.blue.global_position = p0.global_position + Vector2(10, 0)
-	verify(t, "蓝色公主 J：冻住身边的部件", b.freeze_part(b.blue) and p0.freeze_left > 0.0)
-	for i in TaskKnightBoss.PART_HP:
-		b.hit_part(p0)
-	verify(t, "冻住以后打三下：左铁手套碎了", p0.broken)
+	# ---- 救人
+	var vic: KnightBossFx.Victim = b.curse_victim(b.victims[0])
+	verify(t, "手印贴上了被挠倒的队员", vic.cursed)
+	pink.global_position = vic.global_position + Vector2(8, 0)
+	b.freeze_cool = 3.0
+	Input.action_press("interact")
+	for i in 30:
+		b.advance(0.05)
+	Input.action_release("interact")
+	verify(t, "走到身边按住 E 一秒：救下来 → 冻结冷却马上好、队员替她挡一次（%s）" % [vic.cursed], not vic.cursed and b.freeze_cool == 0.0 and b.shield == 1)
+	b.grab(pink)
+	verify(t, "下一次扑抓：被救的队员冲上来挡掉了", b.grabbed == null and b.shield == 0)
+	var vic2: KnightBossFx.Victim = b.curse_victim(b.victims[1])
+	vic2.cursed_t = TaskKnightBoss.ENRAGE_AFTER + 1.0
+	b.advance(0.05)
+	verify(t, "被手印贴着超过 %d 秒没人管：诅咒变强（出招变快）" % int(TaskKnightBoss.ENRAGE_AFTER), b.enraged)
+	b.blue.global_position = vic2.global_position + Vector2(10, 0)
+	b.freeze_part(b.blue)
+	verify(t, "蓝色公主冻一下也能救人 → 不再变强", not vic2.cursed and not b.enraged)
+	b.shield = 0
+	# ---- 阶段一：铁手套的新招
+	b.flick(pink)
+	var bolts: Array = b.fx.filter(func(n): return n is KnightBossFx.Bolt)
+	verify(t, "弹指：三发扇形", bolts.size() == 3)
+	pink.laugh.set_value(0.0)
+	pink.global_position = bolts[1].global_position + bolts[1].vel.normalized() * 6.0
+	b.advance(0.02)
+	verify(t, "弹指打中：小挠一下（闷笑 %.1f）" % pink.laugh.value, pink.laugh.value > 0.0)
+	b.net(pink)
+	var cells: Array = b.fx.filter(func(n): return n is KnightBossFx.NetCell)
+	verify(t, "十指痒网：脚下 3×3 的预警格（%d）" % cells.size(), cells.size() == 9 and cells.all(func(c): return c.is_in_group("danger")))
+	pink.laugh.set_value(0.0)
+	await t._wait(1.4)
+	verify(t, "格子里冒出指头：站在里面会被挠（闷笑 %.1f）" % pink.laugh.value, pink.laugh.value > 0.0)
 	# 抓人：粉色轻、蓝色狠
 	b.grab(b.blue)
 	var bl0 := b.blue.laugh.value
@@ -164,8 +195,6 @@ static func run(t: Node) -> void:
 	var blue_gain := b.blue.laugh.value - bl0
 	for i in TaskKnightBoss.MASH:
 		b.mash()
-	GameState.switch_control(pink)
-	await t._wait(0.2)
 	b.grab(pink)
 	var pl0 := pink.laugh.value
 	for i in 10:
@@ -174,26 +203,122 @@ static func run(t: Node) -> void:
 	for i in TaskKnightBoss.MASH:
 		b.mash()
 	verify(t, "铁手套抓住蓝色公主狠挠（+%.1f），抓住粉色公主很轻（+%.1f）" % [blue_gain, pink_gain], blue_gain > pink_gain * 2.0)
+	GameState.vars[TaskKnightBoss.CAUGHT_KEY] = 0
+	# ---- 反击：冻住打碎 → 破绽 → 挠骑士 → 清醒
+	var p0: TaskKnightBoss.BossPart = b.parts[0]
+	verify(t, "没冻住的部件打不动", not b.hit_part(p0) and p0.hp == TaskKnightBoss.PART_HP)
+	GameState.switch_control(b.blue)
+	await t._wait(0.2)
+	b.blue.global_position = p0.global_position + Vector2(10, 0)
+	b.freeze_cool = 0.0
+	verify(t, "蓝色公主 J：冻住身边的部件", b.freeze_part(b.blue) and p0.freeze_left > 0.0)
+	for i in TaskKnightBoss.PART_HP:
+		b.hit_part(p0)
+	verify(t, "冻住以后打三下：左铁手套碎了 → 露出破绽（手腕）", p0.broken and b.weak_left > 0.0 and is_instance_valid(b.weak_spot)
+		and b.weak_spot.spot == "手腕")
+	verify(t, "破绽成了 AI 的优先目标", hk.priority_target() == b.weak_spot)
+	for i in 4:
+		b.tickle_knight()
+	verify(t, "打破绽 = 挠骑士：骑士的笑满了 → 清醒（所有部件不冻也打得动）", b.lucid_left > 0.0 and b.weak_left <= 0.0)
 	var p1: TaskKnightBoss.BossPart = b.parts[1]
-	p1.freeze_left = 4.0
 	for i in TaskKnightBoss.PART_HP:
 		b.hit_part(p1)
-	verify(t, "两只铁手套都碎了 → 阶段二：护腿", b.phase == 1 and b.parts.size() == 2)
+	await t._advance_until(func(): return b.phase == 1 and not b.transitioning, 30.0)
+	verify(t, "两只铁手套都碎了 → 换阶段的过场（演示新招、提示玩法）→ 阶段二：护腿", b.phase == 1 and t.seen_cuts.has("knight_boss_p1") and b.parts.size() == 2)
+	GameState.switch_control(pink)
+	await t._wait(0.2)
+	b.attack_t = 999.0
+	# ---- 阶段二：护腿
 	b.stomp()
 	pink.global_position = b._body.global_position + Vector2(40, 0)
 	pink.laugh.set_value(0.0)
 	for i in 30:
 		b.advance(0.05)
-	verify(t, "跺地：痒波碰到她（闷笑 %.0f）" % pink.laugh.value, pink.laugh.value > 0.0)
+	verify(t, "跺地：痒波碰到她（闷笑 %.0f），跺完卡住露出膝盖窝" % pink.laugh.value, pink.laugh.value > 0.0 and b.weak_left > 0.0)
+	b.stuck_left = 0.0
+	b._close_weak()
+	pink.global_position = b._body.global_position + Vector2(0, 80)
+	b.blue.global_position = b._body.global_position + Vector2(-100, 0)
+	b.charge(b.blue)
+	verify(t, "冲撞：先亮预警线", str(b.warn.get("kind", "")) == "charge")
+	var body0: Vector2 = b._body.global_position
+	for i in 40:
+		b.advance(0.05)
+		if b.stuck_left > 0.0:
+			break
+	verify(t, "冲过去（%.0f 像素）→ 撞完卡住，护腿不冻也打得动" % b._body.global_position.distance_to(body0),
+		b._body.global_position.distance_to(body0) > 20.0 and b.stuck_left > 0.0 and b.parts.all(func(x): return b._soft(x)))
+	if b.grabbed:
+		b._release_grab()
+	b.sand(pink)
+	var dust: Array = b.fx.filter(func(n): return n is KnightBossFx.Dust)
+	pink.global_position = dust[0].global_position
+	pink.laugh.set_value(0.0)
+	for i in 10:
+		b.advance(0.05)
+	verify(t, "踢沙：三团痒尘，站在里面闷笑慢慢涨（%.1f）" % pink.laugh.value, dust.size() == 3 and pink.laugh.value > 0.0)
 	b.stuck_left = 2.0
 	for part in b.parts.duplicate():
 		for i in TaskKnightBoss.PART_HP:
 			b.hit_part(part)
-	verify(t, "跺完卡住：不用冻也打得动 → 护腿碎了 → 阶段三：笑面", b.phase == 2)
+	await t._advance_until(func(): return b.phase == 2 and not b.transitioning, 30.0)
+	verify(t, "护腿碎了 → 过场 → 阶段三：胸甲", b.phase == 2 and t.seen_cuts.has("knight_boss_p2") and b.parts.all(func(x): return x.id.begins_with("plate")))
+	b.attack_t = 999.0
+	# ---- 阶段三：胸甲
+	b.throw_gear(pink)
+	var gb: Array = b.fx.filter(func(n): return n is KnightBossFx.Bolt and n.icon != null)
+	verify(t, "诅咒穿戴：甩出一件痒痒装备（带装备图标）", gb.size() == 1)
+	pink.global_position = gb[0].global_position + gb[0].vel.normalized() * 6.0
+	b.advance(0.02)
+	verify(t, "甩中了：穿到她身上（%s）" % [pink.get_meta(&"knight_gear").item_id if pink.has_meta(&"knight_gear") else ""], pink.has_meta(&"knight_gear"))
+	pink.laugh.set_value(0.0)
+	for i in 10:
+		b.advance(0.05)
+	verify(t, "穿着的时候一直挠（闷笑 %.1f）" % pink.laugh.value, pink.laugh.value > 0.0)
+	for i in TaskKnightBoss.GEAR_TEARS:
+		b.tear_gear(pink)
+	verify(t, "自己连按 J：挣掉了", not pink.has_meta(&"knight_gear"))
+	b.wear_gear(pink, "equip_t_thigh_ring")
+	b.ai_enabled = true
+	b.blue.global_position = pink.global_position + Vector2(8, 0)
+	for i in 30:
+		b.advance(0.05)
+		if not pink.has_meta(&"knight_gear"):
+			break
+	b.ai_enabled = false
+	verify(t, "搭档站在身边（按住 E）：扯下来了（距离 %.0f，进度 %.2f，操控 %s）" % [b.blue.global_position.distance_to(pink.global_position),
+		pink.get_meta(&"knight_gear").pull if pink.has_meta(&"knight_gear") else 1.0, GameState.player.name], not pink.has_meta(&"knight_gear"))
+	pink.global_position = b._body.global_position + Vector2(70, 0)
+	b.blue.global_position = b._body.global_position + Vector2(-200, 0)
+	var dm0: float = pink.global_position.distance_to(b._body.global_position)
+	b.magnet()
+	for i in 10:
+		b.advance(0.05)
+	verify(t, "护心磁吸：把她往中间吸（%.0f → %.0f）" % [dm0, pink.global_position.distance_to(b._body.global_position)],
+		pink.global_position.distance_to(b._body.global_position) < dm0 - 10.0)
+	b.magnet_left = 0.0
+	b.shards()
+	verify(t, "甲片飞散：六片", b.fx.filter(func(n): return n is KnightBossFx.Shard).size() == TaskKnightBoss.SHARDS)
+	GameState.vars[TaskKnightBoss.CAUGHT_KEY] = 0
+	if b.grabbed:
+		b._release_grab()
+	for part in b.parts.duplicate():
+		part.freeze_left = 4.0
+		for i in TaskKnightBoss.PART_HP:
+			b.hit_part(part)
+	await t._advance_until(func(): return b.phase == 3 and not b.transitioning, 30.0)
+	verify(t, "胸甲碎了 → 过场 → 阶段四：笑面", b.phase == 3 and t.seen_cuts.has("knight_boss_p3"))
+	b.attack_t = 999.0
+	# ---- 阶段四：笑面
 	verify(t, "笑面打不动", not b.hit_part(b.parts[0]))
-	b.mask_t = 0.0
+	b.mirrors()
+	verify(t, "镜面笑脸：三张", b.fx.filter(func(n): return n is KnightBossFx.Mirror).size() == TaskKnightBoss.MIRRORS)
+	b.name_call()
+	verify(t, "呼唤骑士之名：冲击波 + 露出脖子", b.fx.any(func(n): return n is KnightBossFx.Ring) and b.weak_left > 0.0 and b.weak_spot.spot == "脖子")
+	for i in 4:
+		b.tickle_knight()
 	b.advance(0.05)
-	verify(t, "笑面闹一阵以后：符文圈亮起来", b.resonance)
+	verify(t, "挠满骑士的笑：笑面撑不住 → 符文圈马上亮起来", b.resonance)
 	pink.global_position = Cutscene.cell_to_world(TaskKnightBoss.RUNES[0])
 	b.blue.global_position = Cutscene.cell_to_world(TaskKnightBoss.RUNES[1])
 	pink.laugh.set_value(pink.laugh.max_value * 0.5)
