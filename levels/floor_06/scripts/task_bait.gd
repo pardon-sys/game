@@ -119,11 +119,9 @@ func _spawn(at: Vector2) -> CurseHand:
 	return h
 
 
-## 镇民（小镇导演 AfterTown 摆的那些，不算可操作角色）
+## 镇民：地图上看得见的 Resident（骑士篇夜里的小镇图 floor_06_knight_night 上摆在广场的那些）
 func _npcs() -> Array:
-	for d in _lv.find_children("*", "AfterTown", true, false):
-		return (d as AfterTown).residents.values().filter(func(n): return is_instance_valid(n) and not n is PlayableCharacter and (n as Node2D).visible)
-	return []
+	return _lv.find_children("*", "Resident", true, false).filter(func(n): return is_instance_valid(n) and (n as Node2D).visible)
 
 
 func _nearest_npc(at: Vector2, r: float) -> Node2D:

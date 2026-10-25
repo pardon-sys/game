@@ -1,0 +1,36 @@
+{
+	"name": "商人",
+	"npc": "merchant",
+	"entries": [
+		{
+			"if": {
+				"var": {
+					"knight_step": [
+						">=",
+						4
+					]
+				}
+			},
+			"node": "later"
+		},
+		{
+			"node": "earlier"
+		}
+	],
+	"nodes": {
+		"later": {
+			"lines": [
+				{
+					"text": "我的笑声回来了！哈哈！哈哈哈！……咳，太久没笑，嗓子有点哑。"
+				}
+			]
+		},
+		"earlier": {
+			"lines": [
+				{
+					"text": "……（他张着嘴，像是在笑，却一点声音都没有）"
+				}
+			]
+		}
+	}
+}

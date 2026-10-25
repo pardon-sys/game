@@ -19,7 +19,7 @@ os.chdir(Path(__file__).resolve().parents[2])
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from after_text import d1, d2, equip_kids, errand_dance, errand_goats, errand_ladder, errand_massage, errand_gate_chain, errand_shearing, errand_canopy, errand_sifting, errand_lamp_calibration, errands, house, mine, play, potion, punish, stocks, tailor, tasks, totem, town, drain, drill, inspect, tom, night, penalty, festival_night, festival_talk, stall_guess, stall_ring, stall_ice, stall_fish, stall_lick  # noqa: E402
-from knight_text import finale as knight_finale, story as knight_story, tasks as knight_tasks  # noqa: E402
+from knight_text import finale as knight_finale, story as knight_story, tasks as knight_tasks, townsfolk as knight_townsfolk  # noqa: E402
 
 # 只生成灯轮 / 报幕的文本（委托表、灯轮、补罚表、派对主人对话），不重新写地图、其他任务或别的镇民对白。
 if "--festival-only" in sys.argv:
@@ -44,6 +44,7 @@ TAILOR, MINE, TOTEM = "floor_06_after_tailor", "floor_06_after_mine", "floor_06_
 DRAIN, DRILL, PROVING = "floor_06_after_drain", "floor_06_after_drill", "floor_06_after_proving"
 PRISON = "floor_06_after_prison"
 FESTIVAL = "floor_06_festival"
+KDAY, KNIGHT_N, KCHASE = "floor_06_knight_day", "floor_06_knight_night", "floor_06_knight_chase"
 
 
 class Map:
@@ -91,108 +92,142 @@ def npc(m, x, y, nid, file, wander=0, extra=""):
 OBJ = "talk:floor_06/after_objects#"
 
 # ================================================================ 战后的小镇
+def town_layout(m, kind="town"):
+    """战后小镇的布局（墙、房子、摊位、篝火、广场、城墙……）。kind = "town"：七日赎罪的小镇（所有出口、足枷、歪掉的图腾柱）；
+    "knight"：骑士篇的三张小镇（只留小屋和工房的门，图腾柱已经修好，导演是 AfterRoom；人物各自摆）。"""
+    m.room(2, 2, 61, 43)
+    for x in (8, 20, 32, 44, 56):
+        m.put(x, 1, "torch lit=true")
+    m.put(3, 3, "f6after" if kind == "town" else "f6afterroom")
+    # 东北角：通往矿道的门（平时钉死；第 5 天下午护送矿车时打开，通往受损的矿道）
+    prop(m, 54, 4, "dungeon_gate")
+    if kind == "town":
+        m.put(54, 5, "exit target=%s spawn=from_town unlock_flag=after_mine_open locked_dialogue=after_mine_locked" % MINE)
+    m.put(54, 6, "spawn id=from_mine")
+    # 居民区：烧焦的房子搭上了脚手架
+    for i, x in enumerate((8, 16, 24, 32)):
+        prop(m, x, 8, ("house_scaffold_%d" % (i // 2)) if i % 2 == 0 else "house_%d" % i)
+    # 裁缝铺（北边最右边的房子；第 5 天早上试衣）
+    if kind == "town":
+        m.put(32, 9, "exit target=%s spawn=from_town" % TAILOR)
+    m.put(32, 10, "spawn id=from_tailor")
+    m.put(34, 10, "sign dialogue=after_tailor_sign")
+    # 队长的训练室（西北角那座搭脚手架的房子；特训的时候开门）
+    if kind == "town":
+        m.put(8, 9, "exit target=%s spawn=from_town unlock_flag=after_drill_open locked_dialogue=after_drill_locked" % DRILL)
+    m.put(8, 10, "spawn id=from_drill")
+    # 东边的保卫队训练营（第 6 天早上验收陷阱）
+    if kind == "town":
+        m.put(61, 20, "exit target=%s spawn=from_town unlock_flag=after_proving_open locked_dialogue=after_proving_locked" % PROVING)
+    m.put(60, 20, "spawn id=from_proving")
+    # 南边的排水口（第 4 天早上通管）
+    prop(m, 20, 39, "drain_grate")
+    if kind == "town":
+        m.put(20, 39, "exit target=%s spawn=from_town unlock_flag=after_drain_open locked_dialogue=after_drain_locked" % DRAIN)
+    m.put(20, 38, "spawn id=from_drain")
+    # 药剂师工房（北边第二座房子）
+    m.put(16, 9, "exit target=%s spawn=from_town" % PHARMACY)
+    m.put(16, 10, "spawn id=from_pharmacy")
+    m.put(18, 10, "sign dialogue=after_pharmacy_sign")
+    for (x, y) in ((12, 11), (28, 11)):
+        prop(m, x, y, "lumber", OBJ + "lumber")
+    prop(m, 20, 12, "rubble")
+    prop(m, 42, 8, "house_blue")
+    m.put(42, 9, "exit target=%s spawn=from_town lock_flag=after_task_active locked_dialogue=after_task_locked" % HOUSE)
+    m.put(42, 10, "spawn id=from_house")
+    # 集贸市场：补好了一个摊位，另一个还塌着
+    for row, y in enumerate((19, 26)):
+        for i, x in enumerate((7, 11, 15)):
+            if (row, i) == (1, 2):
+                prop(m, x, y, "stall_broken")
+            else:
+                prop(m, x, y, "stall_%d" % ((i + row) % 3), "shop:war_market")
+    for y in (22, 23):
+        prop(m, 4, y, "crate")
+    # 篝火
+    prop(m, 44, 24, "bonfire_0", "heal")
+    # 篝火西边：庆功宴的入口（第 7 天晚上工时还清以后才开，平时走过去什么也不发生；AfterStory.sync_doors）
+    if kind == "town":
+        m.put(40, 24, "exit target=%s spawn=from_town unlock_flag=after_festival_open" % FESTIVAL)
+    m.put(40, 26, "spawn id=from_festival")
+    for (x, y) in ((40, 21), (48, 21), (40, 27), (48, 27)):
+        prop(m, x, y, "bench")
+    for (x, y) in ((37, 24), (51, 24)):
+        prop(m, x, y, "lamp")
+    prop(m, 30, 18, "well")
+    # 脚手架房子底下的梯子（委托「扶梯子」）
+    prop(m, 25, 9, "ladder")
+    # 女仆照看的蘑菇羊的羊圈（委托「赶蘑菇羊回圈」；门在 (57, 32)）
+    for x in range(55, 60):
+        prop(m, x, 28, "fence")
+    for y in (29, 30, 31):
+        prop(m, 55, y, "fence")
+        prop(m, 59, y, "fence")
+    for x in (55, 56, 58, 59):
+        prop(m, x, 32, "fence")
+    prop(m, 60, 30, "hay")
+    # 广场：宣判台、告示板、足枷、庆功的彩旗
+    prop(m, 30, 25, "podium", OBJ + "podium")
+    prop(m, 35, 23, "notice_board", OBJ + "notice")
+    if kind == "town":
+        m.put(23, 24, "trap type=stocks active=false")      # 第 2 天早上示众用（过场 hold 锁住）
+    for (x, y) in ((25, 21), (36, 21)):
+        prop(m, x, y, "bunting")
+    m.put(30, 32, "savepoint place=战后的广场")
+    # 歪掉的狂欢图腾柱（第七天修）
+    prop(m, 18, 34, "totem_tilted" if kind == "town" else "totem_fixed", OBJ + "totem" if kind == "town" else "")
+    # 西边的小路 → 图腾柱废地（第 7 天修图腾柱的时候才开）
+    if kind == "town":
+        m.put(2, 32, "exit target=%s spawn=from_town unlock_flag=after_totem_open locked_dialogue=after_totem_locked" % TOTEM)
+    m.put(3, 32, "spawn id=from_totem")
+    # 通往营地的楼梯：整修中
+    prop(m, 59, 40, "stairs_down")
+    prop(m, 58, 38, "barricade")
+    m.put(57, 40, "sign dialogue=after_camp_blocked")
+    # 骑士篇：从地牢的通风口回来的地方（夜探地牢走的是路障后面的通风口，由 KnightStory 转场）
+    m.put(57, 38, "spawn id=from_prison")
+    # 南边城墙：在补的地方堆着木料
+    for x in range(2, 62):
+        m.g[41][x] = "#"
+    for x in (8, 56):
+        prop(m, x, 39, "sandbag")
+    for x in (16, 48):
+        prop(m, x, 39, "lumber", OBJ + "lumber")
+    for (x, y) in ((12, 37), (22, 37), (42, 37), (52, 37)):
+        prop(m, x, y, "tower_base")
+    for (x, y) in ((27, 38), (37, 38)):
+        prop(m, x, y, "tower")
+    prop(m, 32, 40, "dungeon_gate", OBJ + "gate")
+    for x in (29, 35):
+        prop(m, x, 40, "lamp")
+    m.put(32, 38, "spawn id=from_siege")
+    # 城门 → 城外的战场（第 3 天下午拆攻城车的时候才开）
+    if kind == "town":
+        m.put(32, 39, "exit target=%s spawn=from_town unlock_flag=after_field_open locked_dialogue=after_gate_closed" % FIELD)
+    m.put(33, 36, "spawn id=from_field")
+
+
+def scatter(m, seed, count):
+    """地面：剩下的焦痕、灰烬、泥脚印、碎木。"""
+    rnd = random.Random(seed)
+    kinds = ["decal_footprints_0", "decal_straw_0", "decal_puddle_0", "decal_ash_1", "decal_scorch_1", "decal_splinters_0"]
+
+    def free(x, y):
+        if not (3 <= x <= 60 and 3 <= y <= 39) or m.g[y][x] != ".":
+            return False
+        return all((x + dx, y + dy) not in m.cells for dx in (-1, 0, 1) for dy in (-1, 0, 1))
+
+    placed = tries = 0
+    while placed < count and tries < 4000:
+        tries += 1
+        x, y = rnd.randint(3, 60), rnd.randint(3, 39)
+        if free(x, y):
+            prop(m, x, y, rnd.choice(kinds))
+            placed += 1
+
+
 m = Map(TOWN, 64, 46, "intro =\nambient = 0.66,0.56,0.5\nnight_ambient = 0.3,0.3,0.5\nno_switch = true")
-m.room(2, 2, 61, 43)
-for x in (8, 20, 32, 44, 56):
-    m.put(x, 1, "torch lit=true")
-m.put(3, 3, "f6after")
-# 东北角：通往矿道的门（平时钉死；第 5 天下午护送矿车时打开，通往受损的矿道）
-prop(m, 54, 4, "dungeon_gate")
-m.put(54, 5, "exit target=%s spawn=from_town unlock_flag=after_mine_open locked_dialogue=after_mine_locked" % MINE)
-m.put(54, 6, "spawn id=from_mine")
-# 居民区：烧焦的房子搭上了脚手架
-for i, x in enumerate((8, 16, 24, 32)):
-    prop(m, x, 8, ("house_scaffold_%d" % (i // 2)) if i % 2 == 0 else "house_%d" % i)
-# 裁缝铺（北边最右边的房子；第 5 天早上试衣）
-m.put(32, 9, "exit target=%s spawn=from_town" % TAILOR)
-m.put(32, 10, "spawn id=from_tailor")
-m.put(34, 10, "sign dialogue=after_tailor_sign")
-# 队长的训练室（西北角那座搭脚手架的房子；特训的时候开门）
-m.put(8, 9, "exit target=%s spawn=from_town unlock_flag=after_drill_open locked_dialogue=after_drill_locked" % DRILL)
-m.put(8, 10, "spawn id=from_drill")
-# 东边的保卫队训练营（第 6 天早上验收陷阱）
-m.put(61, 20, "exit target=%s spawn=from_town unlock_flag=after_proving_open locked_dialogue=after_proving_locked" % PROVING)
-m.put(60, 20, "spawn id=from_proving")
-# 南边的排水口（第 4 天早上通管）
-prop(m, 20, 39, "drain_grate")
-m.put(20, 39, "exit target=%s spawn=from_town unlock_flag=after_drain_open locked_dialogue=after_drain_locked" % DRAIN)
-m.put(20, 38, "spawn id=from_drain")
-# 药剂师工房（北边第二座房子）
-m.put(16, 9, "exit target=%s spawn=from_town" % PHARMACY)
-m.put(16, 10, "spawn id=from_pharmacy")
-m.put(18, 10, "sign dialogue=after_pharmacy_sign")
-for (x, y) in ((12, 11), (28, 11)):
-    prop(m, x, y, "lumber", OBJ + "lumber")
-prop(m, 20, 12, "rubble")
-prop(m, 42, 8, "house_blue")
-m.put(42, 9, "exit target=%s spawn=from_town lock_flag=after_task_active locked_dialogue=after_task_locked" % HOUSE)
-m.put(42, 10, "spawn id=from_house")
-# 集贸市场：补好了一个摊位，另一个还塌着
-for row, y in enumerate((19, 26)):
-    for i, x in enumerate((7, 11, 15)):
-        if (row, i) == (1, 2):
-            prop(m, x, y, "stall_broken")
-        else:
-            prop(m, x, y, "stall_%d" % ((i + row) % 3), "shop:war_market")
-for y in (22, 23):
-    prop(m, 4, y, "crate")
-# 篝火
-prop(m, 44, 24, "bonfire_0", "heal")
-# 篝火西边：庆功宴的入口（第 7 天晚上工时还清以后才开，平时走过去什么也不发生；AfterStory.sync_doors）
-m.put(40, 24, "exit target=%s spawn=from_town unlock_flag=after_festival_open" % FESTIVAL)
-m.put(40, 26, "spawn id=from_festival")
-for (x, y) in ((40, 21), (48, 21), (40, 27), (48, 27)):
-    prop(m, x, y, "bench")
-for (x, y) in ((37, 24), (51, 24)):
-    prop(m, x, y, "lamp")
-prop(m, 30, 18, "well")
-# 脚手架房子底下的梯子（委托「扶梯子」）
-prop(m, 25, 9, "ladder")
-# 女仆照看的蘑菇羊的羊圈（委托「赶蘑菇羊回圈」；门在 (57, 32)）
-for x in range(55, 60):
-    prop(m, x, 28, "fence")
-for y in (29, 30, 31):
-    prop(m, 55, y, "fence")
-    prop(m, 59, y, "fence")
-for x in (55, 56, 58, 59):
-    prop(m, x, 32, "fence")
-prop(m, 60, 30, "hay")
-# 广场：宣判台、告示板、足枷、庆功的彩旗
-prop(m, 30, 25, "podium", OBJ + "podium")
-prop(m, 35, 23, "notice_board", OBJ + "notice")
-m.put(23, 24, "trap type=stocks active=false")      # 第 2 天早上示众用（过场 hold 锁住）
-for (x, y) in ((25, 21), (36, 21)):
-    prop(m, x, y, "bunting")
-m.put(30, 32, "savepoint place=战后的广场")
-# 歪掉的狂欢图腾柱（第七天修）
-prop(m, 18, 34, "totem_tilted", OBJ + "totem")
-# 西边的小路 → 图腾柱废地（第 7 天修图腾柱的时候才开）
-m.put(2, 32, "exit target=%s spawn=from_town unlock_flag=after_totem_open locked_dialogue=after_totem_locked" % TOTEM)
-m.put(3, 32, "spawn id=from_totem")
-# 通往营地的楼梯：整修中
-prop(m, 59, 40, "stairs_down")
-prop(m, 58, 38, "barricade")
-m.put(57, 40, "sign dialogue=after_camp_blocked")
-# 骑士篇：从地牢的通风口回来的地方（夜探地牢走的是路障后面的通风口，由 KnightStory 转场）
-m.put(57, 38, "spawn id=from_prison")
-# 南边城墙：在补的地方堆着木料
-for x in range(2, 62):
-    m.g[41][x] = "#"
-for x in (8, 56):
-    prop(m, x, 39, "sandbag")
-for x in (16, 48):
-    prop(m, x, 39, "lumber", OBJ + "lumber")
-for (x, y) in ((12, 37), (22, 37), (42, 37), (52, 37)):
-    prop(m, x, y, "tower_base")
-for (x, y) in ((27, 38), (37, 38)):
-    prop(m, x, y, "tower")
-prop(m, 32, 40, "dungeon_gate", OBJ + "gate")
-for x in (29, 35):
-    prop(m, x, 40, "lamp")
-m.put(32, 38, "spawn id=from_siege")
-# 城门 → 城外的战场（第 3 天下午拆攻城车的时候才开）
-m.put(32, 39, "exit target=%s spawn=from_town unlock_flag=after_field_open locked_dialogue=after_gate_closed" % FIELD)
-m.put(33, 36, "spawn id=from_field")
+town_layout(m)
 m.put(32, 37, "player")
 m.put(33, 37, "blue_princess ai=true dialogue=floor_06/after_partner")
 
@@ -211,23 +246,7 @@ for f, (nid, (x, y)) in RESIDENTS.items():
     npc(m, x, y, nid, f)
 
 # 地面：剩下的焦痕、灰烬、泥脚印、碎木（比战时少一半）
-rnd = random.Random(616)
-ANY = ["decal_footprints_0", "decal_straw_0", "decal_puddle_0", "decal_ash_1", "decal_scorch_1", "decal_splinters_0"]
-
-
-def free(x, y):
-    if not (3 <= x <= 60 and 3 <= y <= 39) or m.g[y][x] != ".":
-        return False
-    return all((x + dx, y + dy) not in m.cells for dx in (-1, 0, 1) for dy in (-1, 0, 1))
-
-
-placed = tries = 0
-while placed < 55 and tries < 4000:
-    tries += 1
-    x, y = rnd.randint(3, 60), rnd.randint(3, 39)
-    if free(x, y):
-        prop(m, x, y, rnd.choice(ANY))
-        placed += 1
+scatter(m, 616, 55)
 m.write()
 
 # ================================================================ 蓝色小屋（楼下 / 楼上）
@@ -517,6 +536,33 @@ for (x, y) in ((12, 11), (35, 18)):
     prop(fd, x, y, "sandbag")
 fd.write()
 
+# ================================================================ 骑士篇的三张小镇（布局同战后小镇 town_layout；人物各自摆，不挂委托，导演 AfterRoom）
+# 白天（发现骑士、抬担架、去工房）：保卫队和各家门口的人；夜里（以笑为饵）：镇民都在广场上；追逃 / Boss：一个镇民都没有。
+KTOWN_HEAD = "intro =\nambient = 0.66,0.56,0.5\nnight_ambient = 0.3,0.3,0.5\nno_switch = true"
+K_DAY_NPCS = {   # 对话文件 -> (人物图, 格, 朝向, 闲逛)
+    "after_k_captain": ("captain", (51, 9), "right", 0), "after_k_guard_gate": ("guard", (29, 38), "down", 0),
+    "after_k_guard_gate2": ("guard", (35, 38), "down", 0), "after_k_granny": ("granny", (45, 12), "down", 1),
+    "after_k_merchant": ("merchant", (8, 24), "down", 1), "after_k_engineer": ("miner", (34, 36), "down", 1),
+    "after_k_maid": ("maid", (57, 33), "left", 1), "after_k_mayor": ("mayor", (31, 29), "down", 0),
+    "after_k_kids": ("kid", (30, 31), "down", 2),
+}
+K_NIGHT_NPCS = {
+    "after_kn_mayor": ("mayor", (42, 21), "down", 0), "after_kn_captain": ("captain", (39, 24), "right", 0),
+    "after_kn_granny": ("granny", (37, 22), "down", 0), "after_kn_merchant": ("merchant", (36, 27), "right", 0),
+    "after_kn_engineer": ("miner", (48, 22), "down", 0), "after_kn_tom": ("kid", (49, 27), "left", 0),
+    "after_kn_lily": ("kid", (44, 23), "down", 0), "after_kn_maid": ("maid", (51, 25), "left", 0),
+    "after_kn_supervisor": ("supervisor", (33, 24), "right", 0),
+}
+for _fid, _npcs, _seed in ((KDAY, K_DAY_NPCS, 801), (KNIGHT_N, K_NIGHT_NPCS, 802), (KCHASE, {}, 803)):
+    km = Map(_fid, 64, 46, KTOWN_HEAD)
+    town_layout(km, "knight")
+    km.put(42, 11, "player")
+    km.put(43, 11, "blue_princess follow=true ai=false")
+    for _f, (_nid, (_x, _y), _d, _w) in _npcs.items():
+        npc(km, _x, _y, _nid, _f, _w, "dir=" + _d)
+    scatter(km, _seed, 55)
+    km.write()
+
 # ================================================================ 庆功宴的广场（第 7 天晚上，工时还清以后从小镇广场中间的入口过来）
 # 战后百废待兴：补了一半的城墙和脚手架、打着补丁的帐篷、碎石堆上插着笑声灯笼、木箱拼的临时摊位；中间是篝火和修好的图腾柱。
 # 摊位通关以后的装扮（show_flag = stall_<id>_done）：饼干串灯、彩色发绳 + 跑来跑去的小孩、三座冰雕、足疗鱼盆、戴铃铛的咕咕。
@@ -755,6 +801,7 @@ files.update(drain.DIALOGUES)
 files.update(drill.DIALOGUES)
 files.update(inspect.DIALOGUES)
 files["after_knight"] = knight_story.CELL
+files.update(knight_townsfolk.DIALOGUES)
 # 第 6 天小汤姆的话：按昨晚恶作剧的结局（只在第 6 天）
 for _r, _lines in tom.TOM_NEXT_DAY.items():
     _d = files["after_kid_tom"]
@@ -783,7 +830,8 @@ for tid, data in dict(punish.THEATERS, **tasks.THEATERS, **potion.THEATERS, **ta
 
 floors = json.loads(Path("data/floors.json").read_text())
 lst = floors["floors"]
-NEW = [(TOWN, "地下小镇·战后", "town"), (FESTIVAL, "庆功宴的广场", "town"), (HOUSE, "蓝色小屋·战后", "town"), (HOUSE_UP, "蓝色小屋·战后（楼上）", "night_room"),
+NEW = [(TOWN, "地下小镇·战后", "town"), (FESTIVAL, "庆功宴的广场", "town"), (KDAY, "地下小镇·骑士篇（白天）", "town"),
+       (KNIGHT_N, "地下小镇·骑士篇（夜里）", "town"), (KCHASE, "地下小镇·骑士篇（诅咒失控）", "town"), (HOUSE, "蓝色小屋·战后", "town"), (HOUSE_UP, "蓝色小屋·战后（楼上）", "night_room"),
        (PHARMACY, "药剂师工房", "town"), (FIELD, "城门外的战场", "town"), (TAILOR, "裁缝铺", "town"), (MINE, "受损的矿道", "town"), (TOTEM, "图腾柱废地", "town"), (DRAIN, "排水管", "town"), (DRILL, "队长的训练室", "town"), (PROVING, "保卫队训练营", "town"),
        (PRISON, "保卫队的地牢", "night_room")]
 at = next(i for i, f in enumerate(lst) if f["id"] == "floor_06_siege") + 1

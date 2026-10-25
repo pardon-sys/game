@@ -48,7 +48,7 @@ def found():
         line(P, "……这把剑……我、我认得……", "surprise"),
         line(P, "……是我的骑士。", "sad"),
         line(BLUE, "……", None, [A("bubble", who=B, kind="surprise")]),
-        line(CAP, "……你的骑士？", None, [A("bubble", who="after_captain", kind="question")], "captain"),
+        line(CAP, "……你的骑士？", None, [A("bubble", who="after_k_captain", kind="question")], "captain"),
         line(P, "王国里的……从小就跟在我身边的骑士。我在地牢第一层，还看到过他留下的信……", "sad"),
         line(P, "他说，不管多深的地牢，都会来找我……", "sad"),
         line(CAP, "……先抬去药剂师那里。这些手印不对劲。", None, None, "captain"),

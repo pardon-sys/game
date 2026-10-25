@@ -1,0 +1,40 @@
+{
+	"name": "女仆",
+	"npc": "maid",
+	"entries": [
+		{
+			"if": {
+				"var": {
+					"knight_step": [
+						">=",
+						4
+					]
+				}
+			},
+			"node": "later"
+		},
+		{
+			"node": "earlier"
+		}
+	],
+	"nodes": {
+		"later": {
+			"lines": [
+				{
+					"text": "……多谢。"
+				},
+				{
+					"text": "（她轻轻地笑了一下，好像在确认自己的声音还在）",
+					"speaker": ""
+				}
+			]
+		},
+		"earlier": {
+			"lines": [
+				{
+					"text": "……我的声音。……我刚才笑了，可是听不见。"
+				}
+			]
+		}
+	}
+}

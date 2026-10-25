@@ -6,8 +6,11 @@ extends Node2D
 ##   三座都亮了以后跑到广场图腾柱下（PLAZA）= 完成。
 ##   盔甲直线快、转弯慢，会被房子挡住；隔一阵铁手横扫一行（预警线）。镇民帮忙：盔甲走近栅栏点（GATES）而她已经跑开时，栅栏关上 GATE_TIME 秒挡住它。
 ##   C 换成蓝色公主：J 冻住身边 FREEZE_R 以内的盔甲 FREEZE_TIME 秒，冷却 FREEZE_COOL 秒。
+##   AI：AI_GUARD 以内盔甲在追粉色公主 → AI 蓝色公主去拦；AI_FLEE 以内 → AI 粉色公主跑开。
 ##   被抓住：盔甲抱住她轻挠——闷笑每秒 +GRAB_LAUGH（慢），疲倦每秒 +GRAB_FATIGUE（快，越来越舒服）；连按 J 够 MASH 下挣开（最多 GRAB_TIME 秒也会挣开）。
-##     被抓 CATCHES 次 = 失败（knight_fail_chase），已经点亮的信标不灭。这段任务期间能换人。
+##     被抓 CATCHES 次 = 失败（knight_fail_chase），已经点亮的信标不灭。这段任务期间能换人（只在两位公主之间）。
+##   没被操控的那位由 AI 控制（KnightAI，ai_plan）：AI 蓝色公主跟着、盔甲靠近粉色公主时冲过去，冷却一好就冻住它；
+##     AI 粉色公主（玩家换成蓝色公主时）背着盔甲跑开，离得远就跟着玩家。两人都会躲铁手横扫的预警线。
 ## 状态 vars.task_chase_lit（亮了几座）、task_chase_caught（这一轮被抓了几次）。测试：armor、light(i)、grab()、mash()、freeze()、gates。
 
 signal finished(ok: bool)
@@ -33,6 +36,11 @@ const GRAB_FATIGUE := 0.09
 const MASH := 8
 const CATCHES := 3
 const SAFE_TIME := 2.0
+const AI_GUARD := 110.0
+const AI_FLEE := 120.0
+
+## 测试：关掉 AI 搭档（没被操控的那位原地不动）
+var ai_enabled := true
 const LIT_KEY := "task_chase_lit"
 const CAUGHT_KEY := "task_chase_caught"
 
@@ -119,6 +127,7 @@ func _ready() -> void:
 	if is_instance_valid(blue):
 		blue.global_position = Cutscene.cell_to_world(PINK_START) + Vector2(-14, 4)
 	safe_left = SAFE_TIME
+	KnightAI.install([pink, blue], ai_plan, null, ["struggle", "dodge", "task", "follow"])
 	_music_was = Audio.music_id
 	Audio.play_music("knight_boss")
 	started = true
@@ -130,6 +139,7 @@ func _exit_tree() -> void:
 	for n in beacons + gates + [armor]:
 		if is_instance_valid(n):
 			n.queue_free()
+	KnightAI.uninstall()
 	if is_instance_valid(_lv):
 		_lv.set("no_switch", _was_no_switch)
 		_lv.set_meta(&"free_switch", _had_switch)
@@ -173,6 +183,25 @@ func advance(delta: float) -> void:
 		var pool: Array = data().get("near", [])
 		if not pool.is_empty():
 			SpeechBubble.say(armor, str(pool.pick_random()), 40.0, 1.6)
+
+
+## 没被操控的那位这一帧干什么（KnightAI 的 plan）
+func ai_plan(ai: PlayableCharacter) -> Dictionary:
+	if not ai_enabled or _emitted or grabbing or not is_instance_valid(armor) or not is_instance_valid(pink):
+		return {"hold": true}
+	var d_pink := armor.global_position.distance_to(pink.global_position)
+	if ai == blue:
+		if armor.freeze_left > 0.0 or freeze_cool > 0.0 or d_pink > AI_GUARD:
+			return {}
+		if blue.global_position.distance_to(armor.global_position) <= FREEZE_R - 6.0:
+			freeze()
+			return {"hold": true}
+		# 拦在盔甲和粉色公主之间
+		return {"to": armor.global_position.lerp(pink.global_position, 0.3), "near": 6.0, "dash": true}
+	if ai == pink and d_pink < AI_FLEE and armor.freeze_left <= 0.0 and armor.stun_left <= 0.0:
+		var away := armor.global_position.direction_to(pink.global_position)
+		return {"to": pink.global_position + away * 48.0, "near": 2.0, "dash": d_pink < 60.0}
+	return {}
 
 
 ## 点亮第 i 座信标

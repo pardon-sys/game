@@ -124,6 +124,11 @@ static func on_level_entered(floor_id: String) -> void:
 			StoryDirector.instance.run_sequence([{"level": TOWN, "spawn": "from_siege"}])
 
 
+## 换图之前（main.change_level → StoryDirector.redirect_level）：骑士篇里回旧小镇的转到骑士篇的小镇
+static func redirect_level(path: String) -> String:
+	return KnightStory.redirect(path)
+
+
 static func on_talk_finished(_file: String) -> void:
 	pass
 

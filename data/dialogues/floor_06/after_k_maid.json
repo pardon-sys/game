@@ -1,0 +1,39 @@
+{
+	"name": "女仆",
+	"npc": "maid",
+	"entries": [
+		{
+			"if": {
+				"var": {
+					"knight_step": [
+						">=",
+						2
+					]
+				}
+			},
+			"node": "later"
+		},
+		{
+			"node": "earlier"
+		}
+	],
+	"nodes": {
+		"later": {
+			"lines": [
+				{
+					"text": "咕咕今天早上一直对着东北角叫。"
+				},
+				{
+					"text": "……动物比人先知道不对劲。"
+				}
+			]
+		},
+		"earlier": {
+			"lines": [
+				{
+					"text": "咕咕一直对着东北角叫，怎么都哄不好。"
+				}
+			]
+		}
+	}
+}

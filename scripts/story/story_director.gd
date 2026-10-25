@@ -22,6 +22,11 @@ func _exit_tree() -> void:
 		instance = null
 
 
+## 换图之前（main.change_level）：剧情要把这次换图转到别的地图时返回新路径（七日赎罪之后的骑士篇换了小镇）
+static func redirect_level(path: String) -> String:
+	return AfterStory.redirect_level(path)
+
+
 func _on_talk_finished(file: String) -> void:
 	F6Story.on_talk_finished(file)
 	AfterStory.on_talk_finished(file)

@@ -8,6 +8,8 @@ extends Node2D
 ##   部件：平时诅咒太硬打不动，被蓝色公主冻住（她在旁边按 J，FREEZE_R 以内，冻 FREEZE_TIME 秒，冷却 FREEZE_COOL）以后，谁的普通攻击都能打（PART_HP 下碎）。
 ##     粉色公主贴近（SOFT_R 以内）时部件的出招变慢（×SOFT_SLOW），抓到她时挠得很轻（伏笔：诅咒认得她）。
 ##   被抓 / 绊倒累计 CATCHES 次 = 失败（knight_fail_boss），从这个阶段重来（打碎的部件不回来）。这段能换人。
+##   没被操控的那位由 AI 控制（KnightAI，ai_plan + Hooks）：两人都躲预警圈 / 扫腿线；AI 蓝色公主走近没冻住的部件、冷却一好就冻住；
+##     AI 粉色公主贴近本体（SOFT_R 以内，让出招变慢），有冻住 / 卡住的部件就去打（priority_target）；被抓住自己连按挣开；共鸣时站进自己的符文圈。
 ## 状态 vars.task_boss_phase、task_boss_caught。测试：parts、phase、meter、freeze_part()、hit_part()、grab(角色)、stomp()、in_runes()。
 
 signal finished(ok: bool)
@@ -43,6 +45,8 @@ const MASK_TIME := 14.0
 const RUNE_RATE := 0.05
 const TENSE := 0.12
 const CATCHES := 4
+## AI 被抓时多久挣一下
+const AI_MASH_EVERY := 0.18
 const PHASE_KEY := "task_boss_phase"
 const CAUGHT_KEY := "task_boss_caught"
 const SHEET := preload("res://assets/generated/npcs/knight_cursed.png")
@@ -117,6 +121,9 @@ func _ready() -> void:
 	_body.global_position = Cutscene.cell_to_world(CENTER)
 	phase = clampi(int(GameState.vars.get(PHASE_KEY, 0)), 0, 2)
 	_enter_phase(phase)
+	var hooks := Hooks.new()
+	hooks.task = self
+	KnightAI.install([pink, blue], ai_plan, hooks)
 	_music_was = Audio.music_id
 	Audio.play_music("knight_boss")
 	started = true
@@ -129,6 +136,7 @@ func _exit_tree() -> void:
 		if is_instance_valid(n):
 			n.queue_free()
 	_clear_warn()
+	KnightAI.uninstall()
 	if is_instance_valid(_lv):
 		_lv.set("no_switch", _was_no_switch)
 		_lv.set_meta(&"free_switch", _had_switch)
@@ -373,6 +381,14 @@ func grab(who: PlayableCharacter) -> void:
 
 func _grab_tick(delta: float) -> void:
 	grab_left -= delta
+	# 抓住的是 AI 搭档：自己连按挣开
+	if ai_enabled and grabbed != GameState.player:
+		_ai_mash_t -= delta
+		if _ai_mash_t <= 0.0:
+			_ai_mash_t = AI_MASH_EVERY
+			mash()
+			if not grabbed:
+				return
 	var soft := grabbed == pink
 	if grabbed.laugh:
 		grabbed.laugh.add(grabbed.laugh.max_value * (SOFT_LAUGH if soft else HARD_LAUGH) * delta)
@@ -399,6 +415,60 @@ func _release_grab() -> void:
 		grabbed.status.apply_root(0.0)
 	grabbed = null
 	attack_t = maxf(attack_t, 1.5)
+
+
+# ------------------------------------------------------------------ AI 搭档
+## 测试：关掉 AI 搭档（没被操控的那位原地不动）
+var ai_enabled := true
+var _ai_mash_t := 0.0
+
+
+## 没被操控的那位这一帧干什么（KnightAI 的 plan）；被抓住时的挣扎在 _grab_tick 里
+func ai_plan(ai: PlayableCharacter) -> Dictionary:
+	if not ai_enabled or _emitted or not is_instance_valid(_body) or grabbed == ai:
+		return {"hold": true}
+	if resonance:
+		return {"to": Cutscene.cell_to_world(RUNES[0 if ai == pink else 1]), "near": 2.0}
+	if ai == blue:
+		var p := _nearest_part(blue, func(x): return x.freeze_left <= 0.0 and not (phase == 1 and stuck_left > 0.0))
+		if p and freeze_cool <= 0.0:
+			if p.global_position.distance_to(blue.global_position) <= FREEZE_R - 6.0:
+				freeze_part(blue)
+				return {"hold": true}
+			return {"to": p.global_position + Vector2(0, 18), "near": 6.0, "dash": true}
+		return {}
+	if soft_target() != null:
+		return {}
+	# 粉色公主贴近本体：诅咒认得她，出招变慢
+	return {"to": _body.global_position + Vector2(0, 26), "near": SOFT_R * 0.6}
+
+
+## 现在打得动的部件（冻住了 / 护腿跺完卡住了）
+func soft_target() -> Node2D:
+	return _nearest_part(GameState.player, func(x): return x.freeze_left > 0.0 or (phase == 1 and stuck_left > 0.0))
+
+
+func _nearest_part(from: Node2D, ok: Callable) -> BossPart:
+	var best: BossPart = null
+	var best_d := INF
+	for part in parts:
+		if is_instance_valid(part) and not part.broken and part.id != "mask" and ok.call(part):
+			var d: float = part.global_position.distance_to(from.global_position) if is_instance_valid(from) else 0.0
+			if d < best_d:
+				best_d = d
+				best = part
+	return best
+
+
+## AI 的导演提示：先打冻住 / 卡住的部件
+class Hooks extends BattleAIHooks:
+	var task: TaskKnightBoss
+
+	func priority_target() -> Variant:
+		return task.soft_target() if is_instance_valid(task) else null
+
+	func engage_range() -> float:
+		return 220.0
 
 
 # ------------------------------------------------------------------ 部件
