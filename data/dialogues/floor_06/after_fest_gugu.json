@@ -1,0 +1,30 @@
+{
+	"name": "咕咕",
+	"npc": "goat_bell",
+	"entries": [
+		{
+			"node": "default"
+		}
+	],
+	"nodes": {
+		"default": {
+			"lines": [
+				{
+					"text": "咩～（脖子上的铃铛叮当一响）"
+				},
+				{
+					"text": "（它闻了闻你的脚，又舔了舔嘴巴）",
+					"speaker": ""
+				},
+				{
+					"text": "……不、不准再舔了！比赛已经结束了！",
+					"speaker": "公主",
+					"emotion": "angry"
+				},
+				{
+					"text": "咩～"
+				}
+			]
+		}
+	}
+}

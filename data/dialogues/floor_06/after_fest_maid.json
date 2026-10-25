@@ -1,0 +1,100 @@
+{
+	"name": "女仆",
+	"npc": "maid",
+	"entries": [
+		{
+			"if": {
+				"flag": "after_festival_on",
+				"not": "stall_lick_done"
+			},
+			"node": "stall_offer"
+		},
+		{
+			"if": {
+				"flag": [
+					"after_festival_on",
+					"festival_dance_done"
+				]
+			},
+			"node": "late"
+		},
+		{
+			"if": {
+				"flag": [
+					"after_festival_on",
+					"stall_lick_done"
+				]
+			},
+			"node": "stall_done"
+		},
+		{
+			"node": "default"
+		}
+	],
+	"nodes": {
+		"late": {
+			"lines": [
+				{
+					"text": "咕咕今晚舔了两个人的脚，已经心满意足地去散步了。"
+				},
+				{
+					"text": "……铃铛是我给它挑的。很衬它，对吧。"
+				},
+				{
+					"text": "（她的眼神，比平时温柔了一点点）",
+					"speaker": ""
+				}
+			]
+		},
+		"default": {
+			"lines": [
+				{
+					"text": "……"
+				}
+			]
+		},
+		"stall_offer": {
+			"lines": [
+				{
+					"text": "舔盐耐力赛，要参加吗？对手是派对主人哦～"
+				}
+			],
+			"prompt": "参加舔盐耐力赛？",
+			"choices": [
+				{
+					"text": "我不会输的！",
+					"next": "stall_go"
+				},
+				{
+					"text": "等一下再说",
+					"next": ""
+				}
+			]
+		},
+		"stall_go": {
+			"lines": [
+				{
+					"text": "好的～请坐。咕咕，准备～"
+				}
+			],
+			"set": {
+				"vars": {
+					"stall_req": "lick"
+				},
+				"call": "festival_stall"
+			}
+		},
+		"stall_done": {
+			"lines": [
+				{
+					"text": "咕咕说，今年冠军的脚最好舔～"
+				},
+				{
+					"text": "……我不想知道。",
+					"speaker": "公主",
+					"emotion": "sad"
+				}
+			]
+		}
+	}
+}

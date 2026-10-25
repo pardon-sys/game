@@ -1,0 +1,45 @@
+{
+	"name": "保卫队员",
+	"npc": "guard",
+	"entries": [
+		{
+			"if": {
+				"flag": [
+					"after_festival_on",
+					"festival_dance_done"
+				]
+			},
+			"node": "after"
+		},
+		{
+			"node": "before"
+		}
+	],
+	"nodes": {
+		"after": {
+			"lines": [
+				{
+					"text": "南边那段墙，明天接着补。"
+				},
+				{
+					"text": "……不过今晚，谁也别跟我提砖头。"
+				}
+			]
+		},
+		"before": {
+			"lines": [
+				{
+					"text": "这面墙，是咱们七天前一块砖一块砖垒起来的。"
+				},
+				{
+					"text": "你那几天搬的砖，也在里面。"
+				},
+				{
+					"text": "……嗯。",
+					"speaker": "公主",
+					"emotion": "shy"
+				}
+			]
+		}
+	}
+}

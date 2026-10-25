@@ -1,15 +1,20 @@
 class_name AfterFestival
 extends RefCounted
-## 第 7 天晚上的庆功宴（AfterStory 的事件 d7_festival 开场以后）：广场自由活动。台词 data/after/festival_night.json（← after_text/festival_night.py）。
+## 第 7 天晚上的庆功宴（AfterStory 的事件 d7_festival 开场以后）：庆功宴的广场（floor_06_festival，从小镇篝火西边的入口进）自由活动。
+## 台词 data/after/festival_night.json（← after_text/festival_night.py）；广场上每个人的对话 after_fest_*（← after_text/festival_talk.py）。
 ##   必做：派对主人那里领舞（call: festival_dance → FestivalDanceShow）→ festival_dance_done。
-##   可选：五个摊位（call: festival_stall，vars.stall_req = guess / ring / ice / fish / lick → STALLS 里的小游戏）→ stall_<id>_done。
-##   领舞以后找镇长放烟花（call: festival_finale）：烟花（FestivalFireworks）+ 过场 after_d7_finale（哼歌、「七日赎罪 完」）→ 回小屋的床。
+##   可选：五个摊位（call: festival_stall，vars.stall_req = guess / ring / ice / fish / lick → STALLS 里的小游戏）→ stall_<id>_done、
+##     奖励（festival_night.json 的 rewards：饼干、薄荷糖、纪念品）；广场上的装扮带 show_flag = stall_<id>_done（饼干串灯、冰雕……）。
+##   领舞以后找镇长放烟花（call: festival_finale）：烟花（FestivalFireworks，铺满拉远以后的镜头）+ 过场 after_d7_finale（哼歌、「七日赎罪 完」）→ 回小屋的床。
 ## 标记：after_festival_on（庆功宴进行中，对话的入口读它）、festival_finale_done。
 
 const PATH := "res://data/after/festival_night.json"
 const ON := "after_festival_on"
 const DANCE_DONE := "festival_dance_done"
 const FINALE_DONE := "festival_finale_done"
+## 烟花摆在哪（庆功宴广场篝火的位置，往上炸到图腾柱的上空）、铺多开（过场里镜头拉远到 0.55，烟花跟着铺开）
+const FIREWORKS_CELL := [22, 13]
+const FIREWORKS_SPREAD := 1.9
 const STALLS := {"guess": "res://levels/floor_06/scripts/stall_guess_show.gd", "ring": "res://levels/floor_06/scripts/stall_ring_show.gd",
 	"ice": "res://levels/floor_06/scripts/stall_ice_show.gd", "fish": "res://levels/floor_06/scripts/stall_fish_show.gd",
 	"lick": "res://levels/floor_06/scripts/stall_lick_show.gd"}
@@ -58,6 +63,13 @@ static func run_stall(id: String) -> void:
 	if await _play(load(STALLS[id]).new()):
 		GameState.set_flag("stall_%s_done" % id)
 		GameState.notify(str(data()["stall_done"]) % str(data()["stall_names"].get(id, id)))
+		give_rewards(id)
+
+
+## 摊位通关的奖励（饼干、薄荷糖、纪念品）进背包
+static func give_rewards(id: String) -> void:
+	for r in data().get("rewards", {}).get(id, []):
+		GameState.give_item(ItemDB.get_item(str(r[0])), int(r[1]), null, true)
 
 
 ## 放烟花 → 结局过场（chapter_end 进小屋）→ 这一晚算做完
@@ -74,7 +86,8 @@ static func run_finale() -> void:
 	var fw: FestivalFireworks = null
 	if lv:
 		fw = FestivalFireworks.new()
-		fw.global_position = Cutscene.cell_to_world([41, 18])
+		fw.spread = FIREWORKS_SPREAD
+		fw.global_position = Cutscene.cell_to_world(FIREWORKS_CELL)
 		lv.add_child(fw)
 	GameState.set_flag(FINALE_DONE)
 	GameState.set_flag(AfterStory.NIGHT_BUSY, false)

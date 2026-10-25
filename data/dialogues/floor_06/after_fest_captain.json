@@ -1,0 +1,109 @@
+{
+	"name": "保卫队队长",
+	"npc": "captain",
+	"entries": [
+		{
+			"if": {
+				"flag": [
+					"after_festival_on",
+					"stall_guess_done",
+					"stall_ring_done",
+					"stall_ice_done",
+					"stall_fish_done",
+					"stall_lick_done"
+				]
+			},
+			"node": "all"
+		},
+		{
+			"if": {
+				"flag": [
+					"after_festival_on",
+					"festival_dance_done"
+				]
+			},
+			"node": "after"
+		},
+		{
+			"if": {
+				"flag": "after_festival_on",
+				"not": "festival_dance_done"
+			},
+			"node": "before"
+		},
+		{
+			"node": "default"
+		}
+	],
+	"nodes": {
+		"all": {
+			"lines": [
+				{
+					"text": "……五个摊子全玩遍了？"
+				},
+				{
+					"text": "……你这七天要是有这么勤快，工时早就还完了。"
+				},
+				{
+					"text": "才不是！工时也是认真还的！",
+					"speaker": "公主",
+					"emotion": "angry"
+				},
+				{
+					"text": "……嗯。我知道。"
+				},
+				{
+					"text": "（她别过头去，嘴角好像动了一下）",
+					"speaker": ""
+				}
+			]
+		},
+		"after": {
+			"lines": [
+				{
+					"text": "……跳得不错。"
+				},
+				{
+					"text": "赎罪簿我收起来了。往后你在镇上，就是客人。"
+				},
+				{
+					"text": "……客人能不能不被挠脚心。",
+					"speaker": "公主",
+					"emotion": "sad"
+				},
+				{
+					"text": "……那要看你去不去那几个摊子。"
+				}
+			]
+		},
+		"before": {
+			"lines": [
+				{
+					"text": "……领舞的人站在这里干什么。"
+				},
+				{
+					"text": "派对主人在篝火边等你。去。"
+				},
+				{
+					"text": "队长不去跳吗？",
+					"speaker": "公主",
+					"emotion": "happy"
+				},
+				{
+					"text": "……我守夜。"
+				},
+				{
+					"text": "（她抱着手臂站在图腾柱下面，盔甲擦得锃亮，眼睛一直看着人群）",
+					"speaker": ""
+				}
+			]
+		},
+		"default": {
+			"lines": [
+				{
+					"text": "……"
+				}
+			]
+		}
+	}
+}

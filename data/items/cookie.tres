@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="HealItem" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/items/heal_item.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/generated/item_cookie.png" id="2"]
+
+[resource]
+script = ExtResource("1")
+icon = ExtResource("2")
+id = "cookie"
+display_name = "面包店奶奶的饼干"
+description = "庆功宴上奶奶塞给你的饼干，还是热的。吃下去恢复一颗心。（在背包里设为 Q 或 R 键使用）"
+category = 0
+max_stack = 9
+pickup_emotion = "happy"
+hotkey = ""
+amount = 2

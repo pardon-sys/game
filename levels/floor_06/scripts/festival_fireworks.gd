@@ -10,6 +10,9 @@ const LIFE := 1.4
 const GRAVITY := 40.0
 const COLORS := [Color("ff8fc8"), Color("ffd27a"), Color("8fc6ff"), Color("b6f0a0"), Color("d6a8ff")]
 
+## 铺多开：升起和炸开的范围、火星飞多远都乘它（镜头拉远时调大；炸开的高度最多乘 1.3，不然炸到画面外面）
+var spread := 1.0
+
 var _t := 0.0
 var _count := 0
 var _rockets: Array[Dictionary] = []
@@ -32,7 +35,7 @@ func _process(delta: float) -> void:
 	if _t <= 0.0:
 		_t = EVERY
 		_count += 1
-		_rockets.append({"from": Vector2(_rng.randf_range(-90, 90), 120), "to": Vector2(_rng.randf_range(-110, 110), _rng.randf_range(-90, -40)),
+		_rockets.append({"from": Vector2(_rng.randf_range(-90, 90), 120) * spread, "to": Vector2(_rng.randf_range(-110, 110) * spread, _rng.randf_range(-90, -40) * minf(spread, 1.3)),
 			"age": 0.0, "col": COLORS[_count % COLORS.size()]})
 	for r in _rockets.duplicate():
 		r["age"] += delta
@@ -40,7 +43,7 @@ func _process(delta: float) -> void:
 			_rockets.erase(r)
 			for i in SPARKS:
 				var dir := Vector2.from_angle(i * TAU / SPARKS + _rng.randf_range(-0.1, 0.1))
-				_sparks.append({"pos": r["to"], "vel": dir * _rng.randf_range(50, 95), "age": 0.0, "col": r["col"]})
+				_sparks.append({"pos": r["to"], "vel": dir * _rng.randf_range(50, 95) * sqrt(spread), "age": 0.0, "col": r["col"]})
 			_flashes.append({"pos": r["to"], "age": 0.0, "col": r["col"]})
 	for f in _flashes.duplicate():
 		f["age"] += delta

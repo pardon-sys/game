@@ -18,7 +18,7 @@ from pathlib import Path
 os.chdir(Path(__file__).resolve().parents[2])
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-from after_text import d1, d2, equip_kids, errand_dance, errand_goats, errand_ladder, errand_massage, errand_gate_chain, errand_shearing, errand_canopy, errand_sifting, errand_lamp_calibration, errands, house, mine, play, potion, punish, stocks, tailor, tasks, totem, town, drain, drill, inspect, tom, night, penalty, festival_night, stall_guess, stall_ring, stall_ice, stall_fish, stall_lick  # noqa: E402
+from after_text import d1, d2, equip_kids, errand_dance, errand_goats, errand_ladder, errand_massage, errand_gate_chain, errand_shearing, errand_canopy, errand_sifting, errand_lamp_calibration, errands, house, mine, play, potion, punish, stocks, tailor, tasks, totem, town, drain, drill, inspect, tom, night, penalty, festival_night, festival_talk, stall_guess, stall_ring, stall_ice, stall_fish, stall_lick  # noqa: E402
 from knight_text import finale as knight_finale, story as knight_story, tasks as knight_tasks  # noqa: E402
 
 # 只生成灯轮 / 报幕的文本（委托表、灯轮、补罚表、派对主人对话），不重新写地图、其他任务或别的镇民对白。
@@ -32,7 +32,6 @@ if "--festival-only" in sys.argv:
     files = deepcopy(town.D)
     errands.inject(files)
     penalty.inject(files)
-    festival_night.inject(files, {})
     write_festival("data/dialogues/floor_06/after_bonfire_host.json", files["after_bonfire_host"])
     print("祭典专项生成：委托表、灯轮、补罚表、派对主人对话")
     sys.exit(0)
@@ -44,6 +43,7 @@ PHARMACY, FIELD = "floor_06_after_pharmacy", "floor_06_after_field"
 TAILOR, MINE, TOTEM = "floor_06_after_tailor", "floor_06_after_mine", "floor_06_after_totem"
 DRAIN, DRILL, PROVING = "floor_06_after_drain", "floor_06_after_drill", "floor_06_after_proving"
 PRISON = "floor_06_after_prison"
+FESTIVAL = "floor_06_festival"
 
 
 class Map:
@@ -138,6 +138,9 @@ for y in (22, 23):
     prop(m, 4, y, "crate")
 # 篝火
 prop(m, 44, 24, "bonfire_0", "heal")
+# 篝火西边：庆功宴的入口（第 7 天晚上工时还清以后才开，平时走过去什么也不发生；AfterStory.sync_doors）
+m.put(40, 24, "exit target=%s spawn=from_town unlock_flag=after_festival_open" % FESTIVAL)
+m.put(40, 26, "spawn id=from_festival")
 for (x, y) in ((40, 21), (48, 21), (40, 27), (48, 27)):
     prop(m, x, y, "bench")
 for (x, y) in ((37, 24), (51, 24)):
@@ -514,6 +517,86 @@ for (x, y) in ((12, 11), (35, 18)):
     prop(fd, x, y, "sandbag")
 fd.write()
 
+# ================================================================ 庆功宴的广场（第 7 天晚上，工时还清以后从小镇广场中间的入口过来）
+# 战后百废待兴：补了一半的城墙和脚手架、打着补丁的帐篷、碎石堆上插着笑声灯笼、木箱拼的临时摊位；中间是篝火和修好的图腾柱。
+# 摊位通关以后的装扮（show_flag = stall_<id>_done）：饼干串灯、彩色发绳 + 跑来跑去的小孩、三座冰雕、足疗鱼盆、戴铃铛的咕咕。
+FOBJ = "talk:floor_06/after_fest_objects#"
+fe = Map(FESTIVAL, 44, 32, "intro =\nambient = 0.66,0.56,0.5\nnight_ambient = 0.42,0.36,0.52\nno_switch = true")
+fe.room(2, 2, 41, 29)
+for x in (6, 14, 30, 38):
+    fe.put(x, 1, "torch lit=true")
+fe.put(3, 3, "f6afterroom")
+# 北边：补了一半的城墙（脚手架上挂着灯笼）、修好的图腾柱、伤员帐篷改成的歇脚棚
+prop(fe, 7, 5, "wall_half", FOBJ + "wall")
+prop(fe, 13, 5, "house_scaffold_1")
+prop(fe, 22, 7, "totem_fixed", FOBJ + "totem")
+prop(fe, 31, 5, "tent_patched", FOBJ + "tent")
+prop(fe, 37, 5, "wall_half", FOBJ + "wall")
+for (x, y) in ((17, 4), (27, 4), (3, 9), (40, 9)):
+    prop(fe, x, y, "lantern_rubble")
+prop(fe, 26, 6, "lumber", FOBJ + "lumber")
+prop(fe, 18, 6, "rubble")
+# 广场中间：篝火、长椅、头顶的灯笼串
+prop(fe, 22, 15, "bonfire_0", "heal")
+for (x, y) in ((18, 13), (26, 13), (18, 18), (26, 18)):
+    prop(fe, x, y, "bench")
+for (x, y) in ((12, 10), (32, 10), (12, 23), (32, 23)):
+    prop(fe, x, y, "lantern_string")
+for (x, y) in ((17, 22), (27, 22)):
+    prop(fe, x, y, "bunting")
+prop(fe, 22, 24, "well")
+# 西边：奶奶的脚底猜猜乐、商人的忍笑套圈（木箱拼的临时摊位）
+prop(fe, 6, 13, "crate_stall")
+fe.put(6, 11, "prop type=cookie_lights show_flag=stall_guess_done")
+prop(fe, 6, 20, "stall_1")
+fe.put(9, 22, "prop type=ribbon_line show_flag=stall_ring_done")
+for y in (16, 17):
+    prop(fe, 3, y, "crate")
+# 东边：工匠的冰雕摊（三块冰 → 通关以后三座冰雕）、小汤姆的捞痒痒鱼
+prop(fe, 37, 12, "crate_stall")
+for x, kind in ((34, "ice_sheep"), (37, "ice_lantern"), (40, "ice_girls")):
+    fe.put(x, 15, "prop type=ice_raw hidden_flag=stall_ice_done")
+    fe.put(x, 15, "prop type=%s show_flag=stall_ice_done action=%sice_%s" % (kind, FOBJ, kind.split("_")[1]))
+prop(fe, 37, 20, "crate_stall")
+fe.put(24, 17, "prop type=fish_basin show_flag=stall_fish_done action=%sfish_basin" % FOBJ)
+# 南边：女仆的舔盐耐力赛（帐篷旁边的干草堆）、还没修完的南墙（沙袋、木料）
+prop(fe, 31, 25, "tent")
+prop(fe, 34, 26, "hay")
+for (x, y) in ((6, 27), (14, 27)):
+    prop(fe, x, y, "sandbag")
+prop(fe, 10, 27, "lumber", FOBJ + "lumber")
+prop(fe, 36, 27, "wall_half", FOBJ + "wall")
+prop(fe, 40, 25, "lantern_rubble")
+fe.put(22, 29, "exit target=%s spawn=from_festival" % TOWN)
+fe.put(22, 27, "spawn id=from_town")
+fe.put(22, 26, "player")
+fe.put(23, 26, "blue_princess follow=true ai=false")
+# 庆功宴上的人：每人一个庆功宴专属的对话文件（after_text/festival_talk.py），身上不挂委托
+FEST_NPCS = {   # 对话文件 -> (人物图, 格, 朝向, 闲逛)
+    "after_fest_host": ("bonfire_host", (24, 14), "left", 0), "after_fest_mayor": ("mayor", (22, 11), "down", 0),
+    "after_fest_captain": ("captain", (19, 11), "down", 0), "after_fest_granny": ("granny", (6, 15), "down", 0),
+    "after_fest_merchant": ("merchant", (8, 21), "down", 0), "after_fest_engineer": ("miner", (37, 14), "down", 0),
+    "after_fest_tom": ("kid", (37, 22), "down", 0), "after_fest_maid": ("maid", (33, 26), "left", 0),
+    "after_fest_lily": ("kid", (20, 19), "up", 1), "after_fest_supervisor": ("supervisor", (14, 15), "right", 1),
+    "after_fest_guard_a": ("guard", (29, 9), "down", 0), "after_fest_guard_b": ("guard", (12, 26), "up", 1),
+}
+for f, (nid, (x, y), d, wander) in FEST_NPCS.items():
+    npc(fe, x, y, nid, f, wander, "dir=" + d)
+# 装扮里会动的：套圈通关以后戴着彩色发绳跑来跑去的小孩、舔盐通关以后戴着铃铛闲逛的咕咕
+npc(fe, 15, 20, "kid", "after_fest_ribbon_kids", 3, "show_flag=stall_ring_done")
+npc(fe, 28, 19, "kid", "after_fest_ribbon_kids", 3, "show_flag=stall_ring_done")
+npc(fe, 29, 16, "goat_bell", "after_fest_gugu", 3, "show_flag=stall_lick_done")
+frnd = random.Random(707)
+FANY = ["decal_footprints_0", "decal_straw_0", "decal_ash_1", "decal_splinters_0", "decal_scorch_1"]
+fplaced = 0
+for _ in range(1500):
+    x, y = frnd.randint(3, 40), frnd.randint(3, 28)
+    if fe.g[y][x] == "." and all((x + dx, y + dy) not in fe.cells for dx in (-1, 0, 1) for dy in (-1, 0, 1)):
+        prop(fe, x, y, frnd.choice(FANY))
+        fplaced += 1
+        if fplaced >= 26:
+            break
+fe.write()
 # ================================================================ 日程（DayClock）
 HIDE = {"hidden": True}
 
@@ -554,13 +637,15 @@ for f in NPCS:
 # 晚上的弥补任务：委托人那天晚上留在外面
 for _f, _d, _at in (("after_granny", "d2", (45, 12)), ("after_kid_tom", "d4", (30, 30)), ("after_kid_lily", "d4", (32, 30)), ("after_mayor", "d6", (31, 26))):
     NPCS[_f].setdefault(_d, {})["night"] = {"at": list(_at), "dir": "down", "wander": 0, "hidden": False}
-# 第 7 天晚上：庆功宴（工时没还清时也在外面——市场监督和派对主人接补罚），摊主守在自己的摊位
+# 第 7 天晚上：工时没还清时市场监督和派对主人在广场接补罚；其他人去庆功宴的广场了（骑士篇夜里沿用这些位置）
 D7_NIGHT = {"after_bonfire_host": (45, 26, "left"), "after_mayor": (42, 21, "down"), "after_captain": (39, 24, "right"),
             "after_granny": (37, 22, "down"), "after_merchant": (36, 27, "right"), "after_engineer": (48, 22, "down"),
             "after_kid_tom": (49, 27, "left"), "after_kid_lily": (44, 23, "down"), "after_maid": (51, 25, "left"),
             "after_supervisor": (33, 24, "right")}
 for _f, (_x, _y, _d) in D7_NIGHT.items():
-    NPCS[_f].setdefault("d7", {})["night"] = {"at": [_x, _y], "dir": _d, "wander": 0, "hidden": False}
+    # 庆功宴在单独的广场图上开（floor_06_festival）：小镇上只留接补罚的市场监督和派对主人，庆功宴一开始也走（AfterTown.apply_schedule）
+    NPCS[_f].setdefault("d7", {})["night"] = ({"at": [_x, _y], "dir": _d, "wander": 0, "hidden": False}
+                                             if _f in ("after_supervisor", "after_bonfire_host") else HIDE)
     # 骑士篇（第 8 天起）的夜里：诅咒漏出来时镇民还在广场上（以笑为饵的手印贴着他们偷笑声）
     if _f != "after_bonfire_host":
         NPCS[_f].setdefault("d8", {})["night"] = {"at": [_x, _y], "dir": _d, "wander": 0, "hidden": False}
@@ -626,6 +711,9 @@ Path("data/after/festival_night.json").write_text(json.dumps(dict({"_说明": "�
 STALLS = {"after_granny": ("guess", stall_guess, "GUESS", "StallGuessShow"), "after_merchant": ("ring", stall_ring, "RING", "StallRingShow"),
           "after_engineer": ("ice", stall_ice, "ICE", "StallIceShow"), "after_kid_tom": ("fish", stall_fish, "FISH", "StallFishShow"),
           "after_maid": ("lick", stall_lick, "LICK", "StallLickShow")}
+# 摊主在庆功宴广场上的对话文件
+STALL_FILES = {"after_granny": "after_fest_granny", "after_merchant": "after_fest_merchant", "after_engineer": "after_fest_engineer",
+               "after_kid_tom": "after_fest_tom", "after_maid": "after_fest_maid"}
 for _sid, _mod, _key, _cls in STALLS.values():
     _st = dict(getattr(_mod, _key))
     _st.setdefault("success_react", _st.get("right", []))
@@ -639,6 +727,8 @@ Path("data/after/knight_finale.json").write_text(json.dumps(dict({"_说明": "�
 _npcs = json.loads(Path("data/actors/npcs.json").read_text())
 _npcs["npcs"]["knight"] = {"name": knight_story.KNIGHT, "sprite": "res://assets/generated/npcs/knight.png", "portrait": "res://assets/generated/npc_portraits/knight.png"}
 _npcs["npcs"]["knight_cursed"] = {"name": knight_story.KNIGHT, "sprite": "res://assets/generated/npcs/knight_cursed.png", "portrait": "res://assets/generated/npc_portraits/knight.png"}
+# 庆功宴：舔盐耐力赛通关以后戴着铃铛闲逛的咕咕（tools/art/gen_festival_art.py）
+_npcs["npcs"]["goat_bell"] = {"name": "咕咕", "sprite": "res://assets/generated/npcs/goat_bell.png"}
 Path("data/actors/npcs.json").write_text(json.dumps(_npcs, ensure_ascii=False, indent="\t") + "\n")
 Path("data/after/play.json").write_text(json.dumps(dict({"_说明": "两位公主的玩闹（after_text/play.py 生成，AfterPlay 读）。"}, **play.PLAY),
     ensure_ascii=False, indent="\t") + "\n")
@@ -653,7 +743,8 @@ dlg = Path("data/dialogues/floor_06")
 files = dict(town.D)
 errands.inject(files)
 penalty.inject(files)
-festival_night.inject(files, {f: (sid, mod.NODE) for f, (sid, mod, _k, _c) in STALLS.items()})
+festival_talk.inject(files)
+festival_night.inject(files, {STALL_FILES[f]: (sid, mod.NODE) for f, (sid, mod, _k, _c) in STALLS.items()})
 files["after_house_objects"] = house.HOUSE
 files["after_house_up_objects"] = house.HOUSE_UP
 files["after_blue_room"] = house.BLUE_ROOM
@@ -692,7 +783,7 @@ for tid, data in dict(punish.THEATERS, **tasks.THEATERS, **potion.THEATERS, **ta
 
 floors = json.loads(Path("data/floors.json").read_text())
 lst = floors["floors"]
-NEW = [(TOWN, "地下小镇·战后", "town"), (HOUSE, "蓝色小屋·战后", "town"), (HOUSE_UP, "蓝色小屋·战后（楼上）", "night_room"),
+NEW = [(TOWN, "地下小镇·战后", "town"), (FESTIVAL, "庆功宴的广场", "town"), (HOUSE, "蓝色小屋·战后", "town"), (HOUSE_UP, "蓝色小屋·战后（楼上）", "night_room"),
        (PHARMACY, "药剂师工房", "town"), (FIELD, "城门外的战场", "town"), (TAILOR, "裁缝铺", "town"), (MINE, "受损的矿道", "town"), (TOTEM, "图腾柱废地", "town"), (DRAIN, "排水管", "town"), (DRILL, "队长的训练室", "town"), (PROVING, "保卫队训练营", "town"),
        (PRISON, "保卫队的地牢", "night_room")]
 at = next(i for i, f in enumerate(lst) if f["id"] == "floor_06_siege") + 1

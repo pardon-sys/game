@@ -1,0 +1,99 @@
+{
+	"name": "小莉莉",
+	"npc": "kid",
+	"entries": [
+		{
+			"if": {
+				"flag": [
+					"after_festival_on",
+					"stall_guess_done",
+					"stall_ring_done",
+					"stall_ice_done",
+					"stall_fish_done",
+					"stall_lick_done"
+				]
+			},
+			"node": "all"
+		},
+		{
+			"if": {
+				"flag": [
+					"after_festival_on",
+					"festival_dance_done"
+				]
+			},
+			"node": "after"
+		},
+		{
+			"if": {
+				"flag": "after_festival_on",
+				"not": "festival_dance_done"
+			},
+			"node": "before"
+		},
+		{
+			"node": "default"
+		}
+	],
+	"nodes": {
+		"all": {
+			"lines": [
+				{
+					"text": "姐姐全部都玩过啦！好厉害！"
+				},
+				{
+					"text": "莉莉也想玩脚底猜猜乐……可是奶奶说小孩子的脚太小，猜不出来。"
+				},
+				{
+					"text": "……那是奶奶在保护你。",
+					"speaker": "公主",
+					"emotion": "sad"
+				}
+			]
+		},
+		"after": {
+			"lines": [
+				{
+					"text": "姐姐跳舞的时候，莉莉用狗尾巴草扫了好几下！"
+				},
+				{
+					"text": "姐姐笑得好大声～"
+				},
+				{
+					"text": "莉莉……那个草，交出来。",
+					"speaker": "公主",
+					"emotion": "angry"
+				},
+				{
+					"text": "不要～（把草藏到了身后）"
+				}
+			]
+		},
+		"before": {
+			"lines": [
+				{
+					"text": "姐姐要领舞了！莉莉要坐在最前面看！"
+				},
+				{
+					"text": "（她手里攥着一根狗尾巴草，眼睛亮晶晶地看着你的脚）",
+					"speaker": ""
+				},
+				{
+					"text": "……那根草是干什么用的。",
+					"speaker": "公主",
+					"emotion": "surprise"
+				},
+				{
+					"text": "帮姐姐找节奏用的！"
+				}
+			]
+		},
+		"default": {
+			"lines": [
+				{
+					"text": "嘿嘿～"
+				}
+			]
+		}
+	}
+}

@@ -1,0 +1,45 @@
+{
+	"name": "保卫队员",
+	"npc": "guard",
+	"entries": [
+		{
+			"if": {
+				"flag": [
+					"after_festival_on",
+					"festival_dance_done"
+				]
+			},
+			"node": "after"
+		},
+		{
+			"node": "before"
+		}
+	],
+	"nodes": {
+		"after": {
+			"lines": [
+				{
+					"text": "队长说今晚可以喝一杯……可是她自己一口都没喝。"
+				},
+				{
+					"text": "从攻防战那天起，她夜里就没睡过一个整觉。"
+				}
+			]
+		},
+		"before": {
+			"lines": [
+				{
+					"text": "站岗站了七天，今晚总算能看看篝火了。"
+				},
+				{
+					"text": "……你跳舞的时候，我能不能也去圈边上帮忙「找节奏」？"
+				},
+				{
+					"text": "不能！",
+					"speaker": "公主",
+					"emotion": "angry"
+				}
+			]
+		}
+	}
+}

@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="KeyItem" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/items/key_item.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/generated/item_souvenir_wood_sheep.png" id="2"]
+
+[resource]
+script = ExtResource("1")
+icon = ExtResource("2")
+id = "souvenir_wood_sheep"
+display_name = "木头小羊"
+description = "忍笑套圈的头奖：商人亲手削的木头蘑菇羊，蘑菇伞涂成了红色。（庆功宴的纪念品）"
+key_type = "souvenir"
+category = 1
+stackable = false
+show_in_hud = false
+pickup_emotion = "happy"

@@ -1587,6 +1587,9 @@ def gen_props():
     items.append(("graffiti", p_graffiti(), {"lift": 10}))
     items.append(("drain_grate", p_drain_grate(), {"floor": True}))
     items.append(("drain_lever", p_drain_lever(), {"body": [10, 4], "body_y": -2}))
+    # 第 7 天庆功宴的广场（gen_festival_art.py；加在最后）
+    from gen_festival_art import festival_props
+    items.extend(festival_props())
     # 简单地按行排进 256 宽的图集
     x = y = row_h = 0
     meta = {}

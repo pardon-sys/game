@@ -1,0 +1,104 @@
+{
+	"name": "小汤姆",
+	"npc": "kid",
+	"entries": [
+		{
+			"if": {
+				"flag": "after_festival_on",
+				"not": "stall_fish_done"
+			},
+			"node": "stall_offer"
+		},
+		{
+			"if": {
+				"flag": [
+					"after_festival_on",
+					"festival_dance_done"
+				]
+			},
+			"node": "late"
+		},
+		{
+			"if": {
+				"flag": [
+					"after_festival_on",
+					"stall_fish_done"
+				]
+			},
+			"node": "stall_done"
+		},
+		{
+			"node": "default"
+		}
+	],
+	"nodes": {
+		"late": {
+			"lines": [
+				{
+					"text": "姐姐，那条最爱啄脚心的鱼，你要好好养哦！"
+				},
+				{
+					"text": "它叫「啄啄」！我起的名字！"
+				},
+				{
+					"text": "……为什么要我养啊。",
+					"speaker": "公主",
+					"emotion": "sad"
+				},
+				{
+					"text": "因为它最喜欢姐姐的脚～"
+				}
+			]
+		},
+		"default": {
+			"lines": [
+				{
+					"text": "……"
+				}
+			]
+		},
+		"stall_offer": {
+			"lines": [
+				{
+					"text": "姐姐！来捞痒痒鱼！捞到的都送给你！"
+				}
+			],
+			"prompt": "玩捞痒痒鱼？",
+			"choices": [
+				{
+					"text": "捞！",
+					"next": "stall_go"
+				},
+				{
+					"text": "等一下再说",
+					"next": ""
+				}
+			]
+		},
+		"stall_go": {
+			"lines": [
+				{
+					"text": "脚先泡进去哦！"
+				}
+			],
+			"set": {
+				"vars": {
+					"stall_req": "fish"
+				},
+				"call": "festival_stall"
+			}
+		},
+		"stall_done": {
+			"lines": [
+				{
+					"text": "鱼鱼们说，姐姐的脚是最好吃的！"
+				},
+				{
+					"text": "……不要告诉我这个。",
+					"speaker": "公主",
+					"emotion": "sad"
+				}
+			]
+		}
+	}
+}

@@ -135,6 +135,13 @@
 			"music": "town"
 		},
 		{
+			"id": "floor_06_festival",
+			"name": "庆功宴的广场",
+			"scene": "res://levels/floor_06_festival/floor.tscn",
+			"group": "floor_06",
+			"music": "town"
+		},
+		{
 			"id": "floor_06_after_house",
 			"name": "蓝色小屋·战后",
 			"scene": "res://levels/floor_06_after_house/floor.tscn",

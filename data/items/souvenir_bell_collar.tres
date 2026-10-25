@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="KeyItem" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/items/key_item.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/generated/item_souvenir_bell_collar.png" id="2"]
+
+[resource]
+script = ExtResource("1")
+icon = ExtResource("2")
+id = "souvenir_bell_collar"
+display_name = "咕咕的铃铛项圈"
+description = "舔盐耐力赛的奖品：和咕咕脖子上那个一模一样的铃铛项圈，一晃就叮当响。（庆功宴的纪念品）"
+key_type = "souvenir"
+category = 1
+stackable = false
+show_in_hud = false
+pickup_emotion = "happy"

@@ -5,7 +5,7 @@ extends CanvasLayer
 ##   状态页：闷笑值 / 魔力疲倦百分比和当前阶段说明、魔法冷却、所有增益 / 减益（data/buffs.json 的 desc）、被抓 / 定身等情况。
 ##   CG 图鉴页：笑倒 CG、巢穴过场、三来源组合演出、小剧场（第八层 Boss 战败 / 追逐失败、第六层的惩罚 / 训练等）；
 ##   看过的可以重看（测试模式下全部可看），E 播放。
-##   赎罪簿页（七日赎罪拿到赎罪簿之后，插在「物品」后面）：剩余工时、今天的安排、加减记录（PenanceBook.page_rows）。
+##   赎罪簿页（七日赎罪拿到赎罪簿之后，插在「物品」后面；庆功宴开始以后和骑士篇里不显示）：剩余工时、今天的安排、加减记录（PenanceBook.page_rows）。
 ## 操作：方向键选择，E 使用 / 播放，Q / R 设快捷键，Tab / I 翻到下一页（最后一页再按就关闭），~ 翻到上一页（第一页再按到最后一页），Esc 关闭。
 ## 测试模式（DevConfig.enabled）下没拿到背包也能打开。
 
@@ -176,7 +176,8 @@ func set_page(p: int) -> void:
 func page_order() -> Array:
 	var order := [PAGE_ITEMS, PAGE_EQUIP, PAGE_PASSIVES, PAGE_STATUS, PAGE_GALLERY] if Equipment.unlocked() \
 		else [PAGE_ITEMS, PAGE_PASSIVES, PAGE_STATUS, PAGE_GALLERY]
-	if PenanceBook.started():
+	# 赎罪簿：庆功宴开始以后（工时已经还清）和骑士篇里不再出现
+	if PenanceBook.started() and not GameState.has_flag(AfterFestival.ON) and not KnightStory.active():
 		order.insert(1, PAGE_PENANCE)
 	return order
 
@@ -520,7 +521,8 @@ func _refresh_items() -> void:
 	if it:
 		var hk := GameState.hotkey_of(it.id)
 		detail_name.text = "%s ×%d　（%s）%s" % [it.display_name, GameState.inventory.count(it.id),
-				CATEGORY_NAMES.get(it.category, ""), ("　[%s]" % hk) if hk != "" else ""]
+				"纪念品" if it is KeyItem and (it as KeyItem).key_type == "souvenir" else CATEGORY_NAMES.get(it.category, ""),
+				("　[%s]" % hk) if hk != "" else ""]
 		detail_desc.text = it.description
 		detail_box.scroll_to_top()
 	else:

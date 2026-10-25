@@ -14,6 +14,12 @@ const PATHS := {
 	"backpack": "res://data/items/backpack.tres",
 	"mystery_key": "res://data/items/mystery_key.tres",
 	"thousand_pants": "res://data/items/thousand_pants.tres",
+	# 庆功宴摊位的奖励（tools/art/gen_festival_art.py 出图标）
+	"cookie": "res://data/items/cookie.tres",
+	"souvenir_wood_sheep": "res://data/items/souvenir_wood_sheep.tres",
+	"souvenir_ice_sheep": "res://data/items/souvenir_ice_sheep.tres",
+	"souvenir_fish_basin": "res://data/items/souvenir_fish_basin.tres",
+	"souvenir_bell_collar": "res://data/items/souvenir_bell_collar.tres",
 	# 装备（tools/build/gen_equipment.py）
 	"equip_armpit_pad": "res://data/items/equip_armpit_pad.tres",
 	"equip_scarf": "res://data/items/equip_scarf.tres",

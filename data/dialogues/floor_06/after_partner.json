@@ -4,6 +4,45 @@
 	"entries": [
 		{
 			"if": {
+				"flag": [
+					"after_festival_on",
+					"stall_guess_done",
+					"stall_ring_done",
+					"stall_ice_done",
+					"stall_fish_done",
+					"stall_lick_done"
+				]
+			},
+			"node": "fest_all"
+		},
+		{
+			"if": {
+				"flag": [
+					"after_festival_on",
+					"festival_dance_done",
+					"stall_ice_done"
+				]
+			},
+			"node": "fest_ice"
+		},
+		{
+			"if": {
+				"flag": [
+					"after_festival_on",
+					"festival_dance_done"
+				]
+			},
+			"node": "fest_after"
+		},
+		{
+			"if": {
+				"flag": "after_festival_on",
+				"not": "festival_dance_done"
+			},
+			"node": "fest_before"
+		},
+		{
+			"if": {
 				"var": {
 					"after_day": [
 						"==",
@@ -231,6 +270,92 @@
 				}
 			],
 			"next": "menu"
+		},
+		"fest_all": {
+			"lines": [
+				{
+					"text": "……五个，全玩了。",
+					"speaker": "蓝色的公主"
+				},
+				{
+					"text": "嗯！冰雕也刻了，鱼也捞了，羊也舔了……",
+					"speaker": "公主",
+					"emotion": "happy"
+				},
+				{
+					"text": "……被舔的是你。",
+					"speaker": "蓝色的公主"
+				},
+				{
+					"text": "……",
+					"speaker": "公主",
+					"emotion": "shy"
+				}
+			]
+		},
+		"fest_ice": {
+			"lines": [
+				{
+					"text": "……那两个小女孩。",
+					"speaker": "蓝色的公主"
+				},
+				{
+					"text": "嗯？冰雕吗？好可爱的！是你刻的吧？",
+					"speaker": "公主",
+					"emotion": "happy"
+				},
+				{
+					"text": "……手滑了。",
+					"speaker": "蓝色的公主"
+				},
+				{
+					"text": "手滑能滑出两个手拉手的小女孩？",
+					"speaker": "公主",
+					"emotion": "surprise"
+				},
+				{
+					"text": "……嗯。",
+					"speaker": "蓝色的公主"
+				}
+			]
+		},
+		"fest_after": {
+			"lines": [
+				{
+					"text": "……裤子，还在跳。",
+					"speaker": "蓝色的公主"
+				},
+				{
+					"text": "（千手痒痒裤的小手们，还在跟着篝火的鼓点一下一下地晃）",
+					"speaker": ""
+				},
+				{
+					"text": "嘿嘿，它们比你喜欢跳舞。",
+					"speaker": "公主",
+					"emotion": "happy"
+				},
+				{
+					"text": "……没有。",
+					"speaker": "蓝色的公主"
+				}
+			]
+		},
+		"fest_before": {
+			"lines": [
+				{
+					"text": "……主人在等。",
+					"speaker": "蓝色的公主"
+				},
+				{
+					"text": "你会来看吗？",
+					"speaker": "公主",
+					"emotion": "happy"
+				},
+				{
+					"text": "……顺便。",
+					"speaker": "蓝色的公主"
+				}
+			]
 		}
 	}
 }
