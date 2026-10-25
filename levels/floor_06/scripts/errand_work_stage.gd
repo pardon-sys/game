@@ -18,6 +18,8 @@ const RESET_LAUGH := 0.45
 const SENSITIVE_TIME := 5.0
 const SENSITIVE_MULT := 1.5
 const RELEASE_GLOW := Color(1, 0.92, 0.65, 0.8)
+## 下方描写框的字号（比对话小一号，长描写少滚几次）
+const CAPTION_FONT := 12
 
 var completed := 0
 var phase := 0
@@ -277,6 +279,7 @@ func _build_ui() -> void:
 	hint_label.z_index = 110
 	# 原反应框占 112,218 至 350,263；操作区移到右侧，保留模板边框、字体和长文滚动。
 	_action_caption = Dialogue.reaction_text
+	Dialogue.set_reaction_font(CAPTION_FONT)
 	_action_caption.z_index = 110
 	_action_caption.z_as_relative = false
 	Dialogue.show_reaction("", 0.0)
@@ -430,6 +433,7 @@ func _restore_runtime() -> void:
 		return
 	_restored = true
 	playing = false
+	Dialogue.set_reaction_font(0)
 	if not _prepared:
 		return
 	_release_hold()

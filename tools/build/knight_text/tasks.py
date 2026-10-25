@@ -106,7 +106,7 @@ def _tk(by, who="princess", zone="sole", fx="hand", n=8, iv=0.22):
 FAIL_STRETCHER = {"name": "抬担架失败：手印爬满了担架", "cast": {
     "princess": {"kind": "princess", "at": [-14, 8], "visual": "helpless_1", "anim": "helpless", "dir": "right"},
     "guard": {"kind": "npc:guard", "at": [14, 8], "dir": "left"},
-    "hands": {"kind": "monster:thousand_hand", "at": [0, -10], "scale": 0.3},
+    "hands": {"kind": "trap:maze_hand", "at": [0, -2]},
 }, "steps": [
     {"actions": [A("fade_in", time=0.5), A("voice", state="giggle")], "wait": 0.5},
     _say(N, "（担架第三次歪倒的时候，骑士盔甲上的手印像决了堤一样，一下子全涌了出来）"),
@@ -123,7 +123,7 @@ FAIL_STRETCHER = {"name": "抬担架失败：手印爬满了担架", "cast": {
 FAIL_BAIT = {"name": "以笑为饵失败：被手印淹没", "cast": {
     "princess": {"kind": "princess", "at": [0, 8], "visual": "helpless_2", "anim": "helpless", "dir": "down"},
     "blue": {"kind": "npc:blue_princess", "at": [22, 8], "visual": "normal", "anim": "idle", "dir": "left"},
-    "hands": {"kind": "monster:thousand_hand", "at": [0, -12], "scale": 0.3},
+    "hands": {"kind": "trap:maze_hand", "at": [0, -2]},
 }, "steps": [
     {"actions": [A("fade_in", time=0.5), A("voice", state="giggle")], "wait": 0.5},
     _say(N, "（笑声太响了——广场上所有的手印都扑到了她身上，脚心、脚背、趾缝、脚踝，一只叠着一只）"),

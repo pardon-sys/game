@@ -4,7 +4,8 @@ extends ErrandWorkStage
 ##   穿链 3 步 / 入轮 6 步 / 试拉 3 步：←→ / A D 对准（AIM_STEP），J / K 调力度（FORCE_STEP），两个指针都进绿区按 E。
 ##   干扰（WorkInterference）：持续的晃动和闷笑；每次加强把链头推偏、力度加重，道具按阶段轮换（清灰刷 / 羽毛掸 → 油刷 / 链环 → 手指 / 齿轮刷）。
 ##   缩脚：加强的预告亮着时按 S，这一下闷笑 ×TUCK_LAUGH_SCALE，但链头往反方向偏 ×TUCK_PUSH_SCALE。不在预告时按没有效果。
-##   失误只退当前这一步；闷笑满 / 魔力释放见 ErrandWorkStage。errand_gate_chain_step 保存完成了几步（0~12）。
+##   失误只退当前这一步；失误超过 FAIL_ERRORS 次：墙面倒塌的失败小剧场（after_fail_gate_chain），演完失误清零、扣好的节点保留、接着做。
+##   闷笑满 / 魔力释放见 ErrandWorkStage。errand_gate_chain_step 保存完成了几步（0~12）。
 ## 测试：quiet、fixed_seed、press()、apply_interference()、mistake()、cancel()。
 
 const PATH := "res://data/after/errand_gate_chain.json"
@@ -28,6 +29,8 @@ const TUCK_LAUGH_SCALE := 0.5
 const TUCK_PUSH_SCALE := 1.5
 const LIMITS := [3, 9, 12]
 const FEET := Vector2(2, 14)
+const FAIL_ERRORS := 4
+const FAIL_THEATER := "after_fail_gate_chain"
 
 static var quiet := false
 static var fixed_seed := -1
@@ -40,6 +43,7 @@ var feedback := ""
 var tool_flash := 0.0
 var tucked := false
 var tucks := 0
+var collapses := 0
 var tuck_flash := 0.0
 var _info: Label
 var _rig: ChainRig
@@ -224,7 +228,28 @@ func mistake(kind := "mistake") -> void:
 		_:
 			_reset_segment()
 			work_reaction(text(), phase, active_tool, tickler, "error_react")
+			if errors > FAIL_ERRORS:
+				collapse()
 	_refresh()
+
+
+## 失误太多：墙面倒塌的失败小剧场 → 失误清零、扣好的节点不动，接着做
+func collapse() -> void:
+	busy = true
+	_stop_input()
+	collapses += 1
+	clear_feedback()
+	if not quiet and CG.has_theater(FAIL_THEATER):
+		await CG.play_theater(FAIL_THEATER)
+	if not _alive():
+		return
+	GameState.in_dialogue = true
+	errors = 0
+	if player.laugh:
+		player.laugh.set_value(laugh_max() * 0.2)
+	if player.fatigue:
+		player.fatigue.clear()
+	_begin_segment()
 
 
 func _process(delta: float) -> void:
@@ -340,32 +365,27 @@ class ChainRig extends Node2D:
 
 ## 槽口外的两只光脚和工匠手里的道具（画在演员前面）
 class SoleRig extends Node2D:
+	## 两只光脚的像素图（codex 生成，tools/art/import_gate_chain_art.py 导入；脚跟在左、脚趾朝右，上下两只）
+	const SOLES := preload("res://assets/generated/after/gate_chain_soles.png")
 	var stage: GateChainShow
-	const SKIN := Color("f6d3c4")
-	const SKIN_DARK := Color("e7ae9f")
-
-	func draw_sole(at: Vector2, oiled: bool) -> void:
-		draw_circle(at, 2.5, SKIN)
-		draw_rect(Rect2(at + Vector2(0, -3), Vector2(5, 6)), SKIN)
-		draw_circle(at + Vector2(5, 0), 3.2, SKIN)
-		for i in 5:
-			draw_circle(at + Vector2(8.5, -3.0 + i * 1.5), 0.9, SKIN_DARK)
-		draw_line(at + Vector2(1, 0), at + Vector2(5, 0), SKIN_DARK, 1)
-		if oiled:
-			draw_line(at + Vector2(1, -2), at + Vector2(4, -2), Color(1, 1, 1, 0.7), 1)
 
 	func _draw() -> void:
 		if not stage.playing:
 			return
 		var pull := 3.0 if stage.tuck_flash > 0.0 or stage.tucked else 0.0
-		var oiled := stage.phase >= 1
-		var feet := [FEET + Vector2(1 - pull, -4), FEET + Vector2(1 - pull, 3)]
-		for f in feet:
-			draw_sole(f, oiled)
+		var origin := FEET + Vector2(-4 - pull, -15)
+		draw_texture(SOLES, origin)
+		# 两只脚心的位置（道具挠的地方）
+		var feet := [origin + Vector2(12, 8), origin + Vector2(12, 22)]
+		if stage.phase >= 1:
+			# 抹了油：脚底亮晶晶的
+			for f in feet:
+				draw_line(f + Vector2(-5, -2), f + Vector2(1, -2), Color(1, 1, 1, 0.55), 1)
+				draw_line(f + Vector2(-3, 1), f + Vector2(0, 1), Color(1, 0.95, 0.75, 0.45), 1)
 		if stage.busy or stage.recovery_left > 0.0:
 			return
 		var wobble := sin(stage.elapsed * (16.0 if stage.tool_flash > 0.0 else 9.0))
-		var target: Vector2 = feet[int(stage.elapsed * 0.7) % 2] + Vector2(5, wobble * 2.5)
+		var target: Vector2 = feet[int(stage.elapsed * 0.7) % 2] + Vector2(1, wobble * 2.5)
 		var hand := Vector2(25, 8)
 		match stage.active_tool:
 			"brush", "oil":

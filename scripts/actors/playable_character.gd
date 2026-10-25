@@ -28,6 +28,8 @@ enum State { IDLE, MOVE, ATTACK, DASH, HURT, HELPLESS, GRABBED, DEAD, CHANNEL, C
 
 @export_group("移动")
 @export var move_speed := 80.0
+## 按 C 换人时能不能换到她（派对主人这种平时由 AI 控制的人物关掉；测试模式 F2 不受限制）
+@export var switchable := true
 @export var accel := 900.0
 @export var friction := 1100.0
 @export_group("冲刺")

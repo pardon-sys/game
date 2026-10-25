@@ -42,6 +42,8 @@ static func settle_hours() -> int:
 
 ## 现在有没有能补的（没抵的受罚，或者最后一天还欠工时）
 static func can_settle() -> bool:
+	if KnightStory.active():
+		return false
 	return pending() > 0 or settle_mode()
 
 

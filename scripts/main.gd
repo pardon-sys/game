@@ -56,7 +56,8 @@ func switch_character() -> bool:
 		return false
 	var candidates: Array[PlayableCharacter] = []
 	for n in level.find_children("*", "", true, false):
-		if n is PlayableCharacter and n.visible and n.is_alive() and not Downed.is_downed(n):
+		if n is PlayableCharacter and n.visible and n.is_alive() and not Downed.is_downed(n) \
+				and ((n as PlayableCharacter).switchable or DevConfig.enabled()):
 			candidates.append(n)
 	if candidates.size() < 2:
 		GameState.notify("这里没有可以切换的角色")

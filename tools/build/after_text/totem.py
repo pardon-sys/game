@@ -328,7 +328,7 @@ FAIL_TOTEM = {"name": "修图腾失败：符文的碎光扑回来", "cast": {
     "princess": {"kind": "princess", "at": [-8, 8], "visual": "helpless_1", "anim": "helpless", "dir": "down"},
     "blue": {"kind": "npc:blue_princess", "at": [10, 8], "visual": "helpless_1", "anim": "helpless", "dir": "down"},
     "vine": {"kind": "trap:vine", "at": [0, 14]},
-    "hands": {"kind": "monster:thousand_hand", "at": [0, -16], "scale": 0.4},
+    "hands": {"kind": "trap:maze_hand", "at": [0, -2]},
 }, "steps": [
     {"actions": [A("fade_in", time=0.5), A("voice", state="giggle")], "wait": 0.5},
     _say(N, "（符文第三次裂开。这一次，碎掉的光没有散开，而是一下子全扑回了两个人身上）"),
