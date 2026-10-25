@@ -10,6 +10,8 @@
 from .common import A, BLUE, CAP, MAYOR, N, P, L, line
 
 HOST = "篝火派对的主人"
+## 放烟花时镜头拉远到多少（< 1 = 看得更多）
+FESTIVAL_ZOOM = 0.55
 MER, ENG, MAID, GRANNY = "商人", "工匠", "女仆", "面包店奶奶"
 TOM, LILY, KIDS, TOWN = "小汤姆", "小莉莉", "小孩们", "镇民们"
 
@@ -183,6 +185,9 @@ FESTIVAL = {
     },
     "stall_names": {"guess": "脚底猜猜乐", "ring": "忍笑套圈", "ice": "冰雕摊", "fish": "捞痒痒鱼", "lick": "舔盐耐力赛"},
     "stall_done": "（%s：通关了！）",
+    # 摊位通关的奖励：[物品 id, 数量]（AfterFestival.run_stall 给；data/items/ 里的物品）
+    "rewards": {"guess": [["cookie", 3]], "ring": [["mint", 2], ["souvenir_wood_sheep", 1]], "ice": [["souvenir_ice_sheep", 1]],
+                "fish": [["souvenir_fish_basin", 1]], "lick": [["souvenir_bell_collar", 1]]},
     "dance_first": "先去篝火边领舞吧——派对主人在等你。",
 }
 
@@ -190,8 +195,9 @@ FESTIVAL = {
 # ---------------------------------------------------------------- 过场
 def festival_open():
     s = [
-        {"actions": [A("camera", to=[41, 24], zoom=1.0, time=0.6)], "wait": 0.6},
-        line(N, "（天黑透了。广场上挂满了笑声灯笼，一盏接一盏，从图腾柱一直挂到城门口）"),
+        {"actions": [A("camera", to=[22, 14], zoom=1.0, time=0.6)], "wait": 0.6},
+        line(N, "（天黑透了。广场上挂满了笑声灯笼，一盏接一盏，从修好的图腾柱一直挂到补了一半的城墙上）"),
+        line(N, "（城墙还缺着一大块，脚手架还没拆，帐篷上打满了补丁，摊位是用木箱拼起来的——可是每一盏灯笼都亮着）"),
         line(N, "（篝火烧得正旺。烤饼干的香味、蘑菇羊咩咩的叫声、小孩们的笑声，全都混在一起）"),
         line(MAYOR, "……七天前，这里还是一片焦土。"),
         line(MAYOR, "城墙补好了，图腾柱扶正了，镇子……也笑回来了。"),
@@ -213,11 +219,12 @@ def festival_open():
 
 def festival_finale():
     s = [
-        {"actions": [A("camera", to=[41, 22], zoom=1.0, time=0.6)], "wait": 0.6},
+        {"actions": [A("camera", to=[22, 14], zoom=1.0, time=0.6)], "wait": 0.6},
         line(MAYOR, "……好了。最后，放烟花吧。"),
         line(MAYOR, "这些烟花，是攻防战那天大家没舍得用掉的。……说好了，留到今天。"),
         line(N, "（镇民们点燃了引线。一道光拖着尾巴窜上了地下小镇的穹顶——）"),
-        {"actions": [A("flash", time=0.4), A("sfx", sound="star_burst")], "wait": 0.4},
+        # 镜头拉远：整个广场和满天的烟花（FESTIVAL_ZOOM）
+        {"actions": [A("camera", to=[22, 11], zoom=FESTIVAL_ZOOM, time=1.6), A("flash", time=0.4), A("sfx", sound="star_burst")], "wait": 1.6},
         line(N, "（「砰」——一朵粉色的烟花在洞顶上炸开，照亮了整片岩壁。接着是金色的、蓝色的，一朵接一朵）"),
         line(TOWN, "哇——！"),
         line(N, "（两个人并排坐在篝火边的长椅上，光着的脚还沾着沙子）"),
@@ -264,12 +271,13 @@ NODES = {
 
 
 def inject(dialogues, stalls):
-    """庆功宴的入口：派对主人（领舞）、镇长（放烟花）、五个摊主（stalls：对话文件 → 摊位 id），都排在 entries 最前面。"""
-    host = dialogues["after_bonfire_host"]
+    """庆功宴的入口（都在庆功宴广场的对话文件 after_fest_*，festival_talk.inject 先建好）：派对主人（领舞）、镇长（放烟花）排在最前面；
+    五个摊主（stalls：对话文件 → (摊位 id, 摊位的 NODE)）：没通关 → 摊位入口排最前面，通关了 → 纪念排在倒数第二（late 在它前面）。"""
+    host = dialogues["after_fest_host"]
     host["nodes"].update(NODES["after_bonfire_host"])
     host["entries"][0:0] = [{"if": {"flag": "after_festival_on", "not": "festival_dance_done"}, "node": "festival_dance"},
                             {"if": {"flag": ["after_festival_on", "festival_dance_done"]}, "node": "festival_after"}]
-    mayor = dialogues["after_mayor"]
+    mayor = dialogues["after_fest_mayor"]
     mayor["nodes"].update(NODES["after_mayor"])
     mayor["entries"][0:0] = [{"if": {"flag": ["after_festival_on", "festival_dance_done"]}, "node": "festival_finale"},
                              {"if": {"flag": "after_festival_on"}, "node": "festival_wait"}]
@@ -279,5 +287,5 @@ def inject(dialogues, stalls):
                                      "choices": [{"text": spec["yes"], "next": "stall_go"}, {"text": "等一下再说", "next": ""}]}
         d["nodes"]["stall_go"] = {"lines": spec["go"], "set": {"vars": {"stall_req": sid}, "call": "festival_stall"}}
         d["nodes"]["stall_done"] = {"lines": spec["after"]}
-        d["entries"][0:0] = [{"if": {"flag": "after_festival_on", "not": "stall_%s_done" % sid}, "node": "stall_offer"},
-                             {"if": {"flag": ["after_festival_on", "stall_%s_done" % sid]}, "node": "stall_done"}]
+        d["entries"].insert(0, {"if": {"flag": "after_festival_on", "not": "stall_%s_done" % sid}, "node": "stall_offer"})
+        d["entries"].insert(len(d["entries"]) - 1, {"if": {"flag": ["after_festival_on", "stall_%s_done" % sid]}, "node": "stall_done"})

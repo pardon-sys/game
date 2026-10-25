@@ -1,7 +1,7 @@
 """穿链委托的图片：tools/art/src/gate_chain/（codex 内置 image_gen 生成，见同目录 prompts.md）→ assets/generated/after/。
   gate_chain_soles.png  槽口外的两只光脚（童趣像素风；转 90°：脚趾朝右；SOLE_SIZE + 一圈描边）。源图只有描边 / 白皮肤 / 粉脚垫三种颜色：
                         每个源像素先归类，再按格子里哪类多缩小（不取平均，形状不会糊），用固定的三色输出，最后补描边。
-  gate_wall_full / half / broken.png  失败小剧场里倒塌的墙（64×64，小剧场的道具演员 rubble_*）
+  gate_wall_full / half / broken.png  失败小剧场里倒塌的墙，底下露出一双童趣小白脚（WALL_SIZE，小剧场的道具演员 rubble_*）
 处理：去掉低透明度的光晕（alpha < ALPHA_CUT 透明）→ 按不透明部分裁边 → 缩小（BOX 取平均）→ 减色 → 透明度二值化。
 用法：python tools/art/import_gate_chain_art.py
 """
@@ -15,6 +15,9 @@ OUT = ROOT / "assets/generated/after"
 ALPHA_CUT = 200
 COLORS = 24
 SOLE_SIZE = (20, 28)
+## 墙：脚趾豆的粉色要留住，尺寸和颜色数都比一般道具多
+WALL_SIZE = (80, 80)
+WALL_COLORS = 64
 PINK_WEIGHT = 1.6
 ## 三色调色板：描边、白皮肤、粉脚垫（和源图一致）
 SOLE_PALETTE = [(70, 30, 34, 255), (255, 240, 236, 255), (246, 160, 176, 255)]
@@ -27,13 +30,13 @@ def clean(path):
     return im.crop(a.getbbox())
 
 
-def shrink(im, size):
-    """等比缩到 size 以内，居中放进 size 的透明画布；颜色减到 COLORS 种，透明度只留全透 / 不透。"""
+def shrink(im, size, colors=COLORS):
+    """等比缩到 size 以内，居中放进 size 的透明画布；颜色减到 colors 种，透明度只留全透 / 不透。"""
     w, h = im.size
     k = min(size[0] / w, size[1] / h)
     small = im.resize((max(1, round(w * k)), max(1, round(h * k))), Image.BOX)
     alpha = small.getchannel("A").point(lambda v: 255 if v >= 128 else 0)
-    rgb = small.convert("RGB").quantize(COLORS, method=Image.Quantize.MEDIANCUT).convert("RGB")
+    rgb = small.convert("RGB").quantize(colors, method=Image.Quantize.FASTOCTREE).convert("RGB")
     rgb.putalpha(alpha)
     canvas = Image.new("RGBA", size)
     canvas.alpha_composite(rgb, ((size[0] - rgb.width) // 2, size[1] - rgb.height))
@@ -132,8 +135,14 @@ def main():
     OUT.mkdir(parents=True, exist_ok=True)
     soles = clean(SRC / "soles.png").rotate(-90, expand=True)
     outline(shrink_classes(soles, SOLE_SIZE).crop((-1, -1, SOLE_SIZE[0] + 1, SOLE_SIZE[1] + 1)), SOLE_PALETTE[0]).save(OUT / "gate_chain_soles.png")
-    for n in ("full", "half", "broken"):
-        shrink(clean(SRC / ("wall_%s.png" % n)), (64, 64)).save(OUT / ("gate_wall_%s.png" % n))
+    # 三张墙用同一个裁剪框（三张的并集）：缩放一致，压在底下的脚不会在三张之间跳
+    walls = {n: Image.open(SRC / ("wall_%s.png" % n)).convert("RGBA") for n in ("full", "half", "broken")}
+    for im in walls.values():
+        im.putalpha(im.getchannel("A").point(lambda v: 255 if v >= ALPHA_CUT else 0))
+    boxes = [im.getchannel("A").getbbox() for im in walls.values()]
+    box = (min(b[0] for b in boxes), min(b[1] for b in boxes), max(b[2] for b in boxes), max(b[3] for b in boxes))
+    for n, im in walls.items():
+        shrink(im.crop(box), WALL_SIZE, WALL_COLORS).save(OUT / ("gate_wall_%s.png" % n))
     print("穿链的脚底 / 倒塌的墙：", OUT)
 
 

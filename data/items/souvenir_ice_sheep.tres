@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="KeyItem" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/items/key_item.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/generated/item_souvenir_ice_sheep.png" id="2"]
+
+[resource]
+script = ExtResource("1")
+icon = ExtResource("2")
+id = "souvenir_ice_sheep"
+display_name = "冰雕小羊"
+description = "冰雕摊的工匠用边角料刻的小冰羊。蓝色公主冻过一遍，好像一直都不会化。（庆功宴的纪念品）"
+key_type = "souvenir"
+category = 1
+stackable = false
+show_in_hud = false
+pickup_emotion = "happy"

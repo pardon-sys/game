@@ -3,22 +3,6 @@
 	"entries": [
 		{
 			"if": {
-				"flag": "after_festival_on",
-				"not": "stall_ring_done"
-			},
-			"node": "stall_offer"
-		},
-		{
-			"if": {
-				"flag": [
-					"after_festival_on",
-					"stall_ring_done"
-				]
-			},
-			"node": "stall_done"
-		},
-		{
-			"if": {
 				"flag": "errand_apples_open"
 			},
 			"node": "errand_apples"
@@ -267,49 +251,6 @@
 				},
 				{
 					"text": "……摊子被踩烂的那笔，另算。"
-				}
-			]
-		},
-		"stall_offer": {
-			"lines": [
-				{
-					"text": "来套圈吗？领舞的人免费～"
-				}
-			],
-			"prompt": "玩忍笑套圈？",
-			"choices": [
-				{
-					"text": "套！",
-					"next": "stall_go"
-				},
-				{
-					"text": "等一下再说",
-					"next": ""
-				}
-			]
-		},
-		"stall_go": {
-			"lines": [
-				{
-					"text": "好嘞～柜台后面请！"
-				}
-			],
-			"set": {
-				"vars": {
-					"stall_req": "ring"
-				},
-				"call": "festival_stall"
-			}
-		},
-		"stall_done": {
-			"lines": [
-				{
-					"text": "今年的奖品被你套走一大半啦～"
-				},
-				{
-					"text": "……下面那两个也要分一点。",
-					"speaker": "公主",
-					"emotion": "happy"
 				}
 			]
 		}

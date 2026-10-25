@@ -1,0 +1,104 @@
+{
+	"name": "商人",
+	"npc": "merchant",
+	"entries": [
+		{
+			"if": {
+				"flag": "after_festival_on",
+				"not": "stall_ring_done"
+			},
+			"node": "stall_offer"
+		},
+		{
+			"if": {
+				"flag": [
+					"after_festival_on",
+					"festival_dance_done"
+				]
+			},
+			"node": "late"
+		},
+		{
+			"if": {
+				"flag": [
+					"after_festival_on",
+					"stall_ring_done"
+				]
+			},
+			"node": "stall_done"
+		},
+		{
+			"node": "default"
+		}
+	],
+	"nodes": {
+		"late": {
+			"lines": [
+				{
+					"text": "那只木头小羊，我削了整整三个晚上。"
+				},
+				{
+					"text": "本来想挂在摊子上当招牌……送你了，送你了！"
+				},
+				{
+					"text": "……可是套圈的时候，你让小孩们挠我的脚。",
+					"speaker": "公主",
+					"emotion": "angry"
+				},
+				{
+					"text": "那叫「增加难度」，是规矩！"
+				}
+			]
+		},
+		"default": {
+			"lines": [
+				{
+					"text": "……"
+				}
+			]
+		},
+		"stall_offer": {
+			"lines": [
+				{
+					"text": "来套圈吗？领舞的人免费～"
+				}
+			],
+			"prompt": "玩忍笑套圈？",
+			"choices": [
+				{
+					"text": "套！",
+					"next": "stall_go"
+				},
+				{
+					"text": "等一下再说",
+					"next": ""
+				}
+			]
+		},
+		"stall_go": {
+			"lines": [
+				{
+					"text": "好嘞～柜台后面请！"
+				}
+			],
+			"set": {
+				"vars": {
+					"stall_req": "ring"
+				},
+				"call": "festival_stall"
+			}
+		},
+		"stall_done": {
+			"lines": [
+				{
+					"text": "今年的奖品被你套走一大半啦～"
+				},
+				{
+					"text": "……下面那两个也要分一点。",
+					"speaker": "公主",
+					"emotion": "happy"
+				}
+			]
+		}
+	}
+}

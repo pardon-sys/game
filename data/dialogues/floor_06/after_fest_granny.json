@@ -1,0 +1,102 @@
+{
+	"name": "面包店奶奶",
+	"npc": "granny",
+	"entries": [
+		{
+			"if": {
+				"flag": "after_festival_on",
+				"not": "stall_guess_done"
+			},
+			"node": "stall_offer"
+		},
+		{
+			"if": {
+				"flag": [
+					"after_festival_on",
+					"festival_dance_done"
+				]
+			},
+			"node": "late"
+		},
+		{
+			"if": {
+				"flag": [
+					"after_festival_on",
+					"stall_guess_done"
+				]
+			},
+			"node": "stall_done"
+		},
+		{
+			"node": "default"
+		}
+	],
+	"nodes": {
+		"late": {
+			"lines": [
+				{
+					"text": "饼干还够吗？不够奶奶再去烤～"
+				},
+				{
+					"text": "七天前，奶奶的烤炉被攻城车撞塌了一半。"
+				},
+				{
+					"text": "是你和那位蓝头发的姑娘，把砖一块一块搬开的。"
+				},
+				{
+					"text": "……所以今晚的饼干，管够。"
+				}
+			]
+		},
+		"default": {
+			"lines": [
+				{
+					"text": "……"
+				}
+			]
+		},
+		"stall_offer": {
+			"lines": [
+				{
+					"text": "来玩奶奶的「脚底猜猜乐」吗？猜对三次送饼干～"
+				}
+			],
+			"prompt": "玩脚底猜猜乐？",
+			"choices": [
+				{
+					"text": "玩！",
+					"next": "stall_go"
+				},
+				{
+					"text": "等一下再说",
+					"next": ""
+				}
+			]
+		},
+		"stall_go": {
+			"lines": [
+				{
+					"text": "把脚伸进箱子里～"
+				}
+			],
+			"set": {
+				"vars": {
+					"stall_req": "guess"
+				},
+				"call": "festival_stall"
+			}
+		},
+		"stall_done": {
+			"lines": [
+				{
+					"text": "饼干好吃吗？明年还来呀～"
+				},
+				{
+					"text": "……明年的箱子里不许放羊。",
+					"speaker": "公主",
+					"emotion": "sad"
+				}
+			]
+		}
+	}
+}

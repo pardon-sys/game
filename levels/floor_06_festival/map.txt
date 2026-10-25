@@ -1,0 +1,92 @@
+[level]
+# 第六层·地下小镇·战后（tools/build/gen_floor06_after.py 生成，不要直接改）
+intro =
+ambient = 0.66,0.56,0.5
+night_ambient = 0.42,0.36,0.52
+no_switch = true
+[legend]
+# = wall
+. = floor
+P = player
+t = torch lit=true
+A = f6afterroom
+C = prop type=wall_half action=talk:floor_06/after_fest_objects#wall
+D = prop type=house_scaffold_1
+E = prop type=totem_fixed action=talk:floor_06/after_fest_objects#totem
+F = prop type=tent_patched action=talk:floor_06/after_fest_objects#tent
+G = prop type=lantern_rubble
+H = prop type=lumber action=talk:floor_06/after_fest_objects#lumber
+I = prop type=rubble
+J = prop type=bonfire_0 action=heal
+K = prop type=bench
+L = prop type=lantern_string
+M = prop type=bunting
+N = prop type=well
+O = prop type=crate_stall
+Q = prop type=cookie_lights show_flag=stall_guess_done
+R = prop type=stall_1
+S = prop type=ribbon_line show_flag=stall_ring_done
+T = prop type=crate
+U = prop type=ice_raw hidden_flag=stall_ice_done + prop type=ice_sheep show_flag=stall_ice_done action=talk:floor_06/after_fest_objects#ice_sheep
+V = prop type=ice_raw hidden_flag=stall_ice_done + prop type=ice_lantern show_flag=stall_ice_done action=talk:floor_06/after_fest_objects#ice_lantern
+W = prop type=ice_raw hidden_flag=stall_ice_done + prop type=ice_girls show_flag=stall_ice_done action=talk:floor_06/after_fest_objects#ice_girls
+X = prop type=fish_basin show_flag=stall_fish_done action=talk:floor_06/after_fest_objects#fish_basin
+Y = prop type=tent
+Z = prop type=hay
+a = prop type=sandbag
+b = exit target=floor_06_after spawn=from_festival
+c = spawn id=from_town
+d = blue_princess follow=true ai=false
+e = bonfire_host dialogue=floor_06/after_fest_host wander=0 dir=left
+f = npc id=mayor dialogue=floor_06/after_fest_mayor wander=0 dir=down
+g = npc id=captain dialogue=floor_06/after_fest_captain wander=0 dir=down
+h = npc id=granny dialogue=floor_06/after_fest_granny wander=0 dir=down
+i = npc id=merchant dialogue=floor_06/after_fest_merchant wander=0 dir=down
+j = npc id=miner dialogue=floor_06/after_fest_engineer wander=0 dir=down
+k = npc id=kid dialogue=floor_06/after_fest_tom wander=0 dir=down
+l = npc id=maid dialogue=floor_06/after_fest_maid wander=0 dir=left
+m = npc id=kid dialogue=floor_06/after_fest_lily wander=1 dir=up
+n = npc id=supervisor dialogue=floor_06/after_fest_supervisor wander=1 dir=right
+o = npc id=guard dialogue=floor_06/after_fest_guard_a wander=0 dir=down
+p = npc id=guard dialogue=floor_06/after_fest_guard_b wander=1 dir=up
+q = npc id=kid dialogue=floor_06/after_fest_ribbon_kids wander=3 show_flag=stall_ring_done
+r = npc id=goat_bell dialogue=floor_06/after_fest_gugu wander=3 show_flag=stall_lick_done
+s = prop type=decal_ash_1
+u = prop type=decal_footprints_0
+v = prop type=decal_scorch_1
+w = prop type=decal_splinters_0
+y = prop type=decal_straw_0
+
+[map]
+############################################
+######t#######t###############t#######t#####
+##........................................##
+##.A.................s....................##
+##...v.........s.G.........G..............##
+##.....C.....D........v........F.....C....##
+##................I.......H...............##
+##.......y............E...................##
+##.................................u......##
+##.G.........................o..........G.##
+##..........L...................L....u....##
+##....Q............g..f...................##
+##......................v..........s.O....##
+##....O.u....v....K..y....K...............##
+##..............y.......e............j....##
+##....h.......n.......J...........U..V..W.##
+##.T.........................r............##
+##.T....w...............X.........u..u....##
+##................K.......K.............y.##
+##..................m...s...q......v......##
+##....R........q.....................O....##
+##......i.................................##
+##..s....S.......M.....u...M.w.......k....##
+##..........L.......w...........L.........##
+##...............u....N...................##
+##..................w..........Y........G.##
+##..........p.........Pd.........lZ.......##
+##....a...H...a.......c.............C.....##
+##..............................w.........##
+##....................b...................##
+############################################
+############################################

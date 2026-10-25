@@ -1,5 +1,6 @@
 extends RefCounted
-## 庆功宴专项（第 7 天晚上）：工时还清才开、开场过场、领舞（三段音游 + 邀舞）、五个摊位各自的机制与通关、放烟花 → 结局画面 → 回小屋。
+## 庆功宴专项（第 7 天晚上）：工时还清才开、从小镇篝火西边的入口进庆功宴的广场（单独一张图）、开场过场、领舞（三段音游 + 邀舞）、
+## 五个摊位各自的机制、通关的奖励和广场上的装扮、放烟花（镜头拉远）→ 结局画面 → 回小屋 → 睡觉进骑士篇。
 static var checks := 0
 
 
@@ -40,17 +41,31 @@ static func run(t: Node) -> void:
 	GameState.pending_spawn = "from_house"
 	await t.main.change_level(Floors.scene(AfterStory.TOWN))
 	await t._wait(0.8)
-	t._go(Cutscene.cell_to_world(AfterStory.EVENTS["d7_festival"]["spot"]))
-	await t._advance_until(func(): return GameState.has_flag(AfterFestival.ON) and not Cutscene.is_playing() and not AfterStory.running, 30.0)
-	verify(t, "走到篝火边 → 开场过场 → 庆功宴开始（床不能睡）", t.seen_cuts.has("after_d7_festival") and AfterFestival.active() and GameState.has_flag(AfterStory.NIGHT_BUSY))
-	verify(t, "目标：先去领舞", AfterStory.objective(AfterStory.TOWN).get("text", "").contains("领舞"))
-	verify(t, "派对主人的对话：领舞入口排第一", Dialogue.runner.entry_of("floor_06/after_bonfire_host") == "festival_dance")
-	verify(t, "镇长：先去跳舞", Dialogue.runner.entry_of("floor_06/after_mayor") == "festival_wait")
+	var door: Dictionary = AfterStory.objective(AfterStory.TOWN)
+	verify(t, "小镇上的目标指向篝火西边庆功宴的入口（%s）" % [door.get("cell")], door.get("cell") == AfterStory.TOWN_DOORS[AfterStory.FESTIVAL]
+		and GameState.has_flag(AfterStory.FESTIVAL_OPEN))
+	var towners: Array = t.main.level.find_children("*", "Resident", true, false).filter(func(n): return n.visible and str(n.name) in ["after_granny", "after_captain", "after_kid_lily"])
+	verify(t, "小镇上不再摆庆功宴的人（奶奶、队长、小莉莉都不在：%s）" % [towners.map(func(n): return n.name)], towners.is_empty())
+	t._go(Cutscene.cell_to_world(AfterStory.TOWN_DOORS[AfterStory.FESTIVAL]))
+	await t._advance_until(func(): return t._level_id() == AfterStory.FESTIVAL and GameState.has_flag(AfterFestival.ON) and not Cutscene.is_playing() and not AfterStory.running, 30.0)
+	verify(t, "走进入口 → 庆功宴的广场 → 开场过场 → 庆功宴开始（床不能睡）", t._level_id() == AfterStory.FESTIVAL and t.seen_cuts.has("after_d7_festival")
+		and AfterFestival.active() and GameState.has_flag(AfterStory.NIGHT_BUSY))
+	verify(t, "目标：先去领舞；小镇上指回庆功宴的入口", AfterStory.objective(AfterStory.FESTIVAL).get("text", "").contains("领舞")
+		and AfterStory.objective(AfterStory.TOWN).get("cell") == AfterStory.TOWN_DOORS[AfterStory.FESTIVAL])
+	verify(t, "派对主人的对话：领舞入口排第一", Dialogue.runner.entry_of("floor_06/after_fest_host") == "festival_dance")
+	verify(t, "镇长：先去跳舞", Dialogue.runner.entry_of("floor_06/after_fest_mayor") == "festival_wait")
+	verify(t, "队长、小莉莉、市场监督：庆功宴专属的对话（领舞前）", Dialogue.runner.entry_of("floor_06/after_fest_captain") == "before"
+		and Dialogue.runner.entry_of("floor_06/after_fest_lily") == "before" and Dialogue.runner.entry_of("floor_06/after_fest_supervisor") == "before")
+	var bp := Backpack.new()
+	verify(t, "背包里不再有赎罪簿页（%s）" % [bp.page_order()], not bp.page_order().has(Backpack.PAGE_PENANCE))
+	bp.free()
+	verify(t, "装扮：摊位没通关时冰块还是冰块，冰雕、饼干串灯、咕咕都不在", _prop_visible(t, "ice_raw") and not _prop_visible(t, "ice_sheep")
+		and not _prop_visible(t, "cookie_lights") and not _npc_visible(t, "after_fest_gugu"))
 	# 领舞
 	FestivalDanceShow.quiet = true
 	FestivalDanceShow.auto_picks = [0, 3, 2]
 	FestivalDanceShow.auto_combo = true
-	await t._talk("floor_06/after_bonfire_host", "festival_dance", [0])
+	await t._talk("floor_06/after_fest_host", "festival_dance", [0])
 	await t._advance_until(func(): return show_of(t, FestivalDanceShow) != null, 5.0)
 	var d := show_of(t, FestivalDanceShow) as FestivalDanceShow
 	verify(t, "领舞开演：两位公主都在舞台上", d != null and d.actors.has("princess") and d.actors.has("blue"))
@@ -76,10 +91,11 @@ static func run(t: Node) -> void:
 	FestivalDanceShow.quiet = false
 	FestivalDanceShow.auto_picks = []
 	FestivalDanceShow.auto_combo = null
-	verify(t, "目标：逛摊位 / 找镇长放烟花", AfterStory.objective(AfterStory.TOWN).get("text", "").contains("烟花"))
+	verify(t, "目标：逛摊位 / 找镇长放烟花", AfterStory.objective(AfterStory.FESTIVAL).get("text", "").contains("烟花"))
+	verify(t, "领舞以后：队长换了一套话", Dialogue.runner.entry_of("floor_06/after_fest_captain") == "after")
 	# 五个摊位
 	StallGuessShow.quiet = true
-	var g := await open_stall(t, "floor_06/after_granny", StallGuessShow) as StallGuessShow
+	var g := await open_stall(t, "floor_06/after_fest_granny", StallGuessShow) as StallGuessShow
 	verify(t, "脚底猜猜乐：奶奶的摊位开演，四个选项里有答案", g != null and g.options.size() == 4 and g.options.has(g.tool))
 	if g:
 		g.state_left = 0.0
@@ -97,9 +113,11 @@ static func run(t: Node) -> void:
 			g.guess(g.options.find(g.tool))
 		await wait_closed(t, StallGuessShow)
 		verify(t, "连对三次：通关", AfterFestival.stall_done("guess"))
+		verify(t, "奖励：奶奶的饼干 ×3；摊位上挂起了饼干串灯", GameState.inventory.count("cookie") == 3 and _prop_visible(t, "cookie_lights"))
+		verify(t, "奶奶：领舞以后再来，多聊几句（late）", Dialogue.runner.entry_of("floor_06/after_fest_granny") == "late")
 	StallGuessShow.quiet = false
 	StallRingShow.quiet = true
-	var r := await open_stall(t, "floor_06/after_merchant", StallRingShow) as StallRingShow
+	var r := await open_stall(t, "floor_06/after_fest_merchant", StallRingShow) as StallRingShow
 	verify(t, "忍笑套圈：商人的摊位开演", r != null)
 	if r:
 		r.aim = StallRingShow.PEGS[2]
@@ -129,9 +147,11 @@ static func run(t: Node) -> void:
 			i += 1
 		await wait_closed(t, StallRingShow)
 		verify(t, "套中六个：通关", AfterFestival.stall_done("ring"))
+		verify(t, "奖励：木头小羊 + 薄荷糖；戴彩色发绳的小孩跑出来了", GameState.inventory.count("souvenir_wood_sheep") == 1
+			and _prop_visible(t, "ribbon_line") and _npc_visible(t, "after_fest_ribbon_kids"))
 	StallRingShow.quiet = false
 	StallIceShow.quiet = true
-	var ice := await open_stall(t, "floor_06/after_engineer", StallIceShow) as StallIceShow
+	var ice := await open_stall(t, "floor_06/after_fest_engineer", StallIceShow) as StallIceShow
 	verify(t, "冰雕摊：蓝色公主上场刻冰雕，粉色公主在旁边", ice != null and ice.actors.has("blue") and ice.actors.has("pink"))
 	if ice:
 		var c0 := ice.completed
@@ -156,9 +176,11 @@ static func run(t: Node) -> void:
 			ice.carve(ice.want)
 		await wait_closed(t, StallIceShow)
 		verify(t, "三座冰雕刻完：通关", AfterFestival.stall_done("ice"))
+		verify(t, "奖励：冰雕小羊；广场上真的摆出了三座冰雕（冰块不见了）", GameState.inventory.count("souvenir_ice_sheep") == 1
+			and _prop_visible(t, "ice_sheep") and _prop_visible(t, "ice_lantern") and _prop_visible(t, "ice_girls") and not _prop_visible(t, "ice_raw"))
 	StallIceShow.quiet = false
 	StallFishShow.quiet = true
-	var fs := await open_stall(t, "floor_06/after_kid_tom", StallFishShow) as StallFishShow
+	var fs := await open_stall(t, "floor_06/after_fest_tom", StallFishShow) as StallFishShow
 	verify(t, "捞痒痒鱼：小汤姆的摊位开演，盆里 %d 条鱼" % (fs.fish.size() if fs else 0), fs != null and fs.fish.size() == StallFishShow.FISH_COUNT)
 	if fs:
 		for f in fs.fish:
@@ -184,9 +206,10 @@ static func run(t: Node) -> void:
 			fs.scoop()
 		await wait_closed(t, StallFishShow)
 		verify(t, "捞够六条：通关", AfterFestival.stall_done("fish"))
+		verify(t, "奖励：足疗鱼小盆；鱼盆搬到了篝火边", GameState.inventory.count("souvenir_fish_basin") == 1 and _prop_visible(t, "fish_basin"))
 	StallFishShow.quiet = false
 	StallLickShow.quiet = true
-	var lk := await open_stall(t, "floor_06/after_maid", StallLickShow) as StallLickShow
+	var lk := await open_stall(t, "floor_06/after_fest_maid", StallLickShow) as StallLickShow
 	verify(t, "舔盐耐力赛：女仆主持，对手派对主人", lk != null and lk.actors.has("host"))
 	if lk:
 		GameState.player.laugh.set_value(GameState.player.laugh.max_value * 0.5)
@@ -211,10 +234,19 @@ static func run(t: Node) -> void:
 		lk.simulate(0.5)
 		await wait_closed(t, StallLickShow)
 		verify(t, "主人先笑满：赢了", AfterFestival.stall_done("lick"))
+		verify(t, "奖励：咕咕的铃铛项圈；戴铃铛的咕咕在广场上闲逛", GameState.inventory.count("souvenir_bell_collar") == 1 and _npc_visible(t, "after_fest_gugu"))
+	verify(t, "五个摊位都通关：队长、蓝色公主有专门的话", Dialogue.runner.entry_of("floor_06/after_fest_captain") == "all"
+		and Dialogue.runner.entry_of("floor_06/after_partner") == "fest_all")
 	StallLickShow.quiet = false
 	# 放烟花
-	verify(t, "镇长：可以放烟花了", Dialogue.runner.entry_of("floor_06/after_mayor") == "festival_finale")
-	await t._talk("floor_06/after_mayor", "festival_finale", [0])
+	verify(t, "镇长：可以放烟花了", Dialogue.runner.entry_of("floor_06/after_fest_mayor") == "festival_finale")
+	var fin: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://data/cutscenes/floor_06/after_d7_finale.json"))
+	verify(t, "放烟花时镜头拉远（zoom < 1）看全景", fin["steps"].any(func(st): return st is Dictionary and st.get("actions", []).any(
+		func(a): return str(a.get("do", "")) == "camera" and float(a.get("zoom", 1.0)) < 0.7)))
+	await t._talk("floor_06/after_fest_mayor", "festival_finale", [0])
+	await t._advance_until(func(): return t.get_tree().get_first_node_in_group("main").level.find_children("*", "FestivalFireworks", true, false).size() > 0, 5.0)
+	var fws: Array = t.get_tree().get_first_node_in_group("main").level.find_children("*", "FestivalFireworks", true, false)
+	verify(t, "烟花铺开到拉远以后的镜头（spread %.1f）" % (fws[0].spread if fws.size() > 0 else 0.0), fws.size() > 0 and fws[0].spread > 1.5)
 	await t._advance_until(func(): return Cutscene.chapter_screen.visible and not Cutscene.is_playing(), 60.0)
 	verify(t, "烟花 → 哼歌 →「七日赎罪 完」结局画面", t.seen_cuts.has("after_d7_finale") and Cutscene.chapter_title.text.contains("七日赎罪") and DayClock.done(7, DayClock.NIGHT))
 	Cutscene.continue_chapter()
@@ -226,3 +258,13 @@ static func run(t: Node) -> void:
 	await t._talk("floor_06/after_house_objects", "bed")
 	await t._advance_until(func(): return KnightStory.step_id() == "found" and not Sleep.sleeping and not Cutscene.is_playing() and not KnightStory.running, 40.0)
 	verify(t, "和床说话选睡觉 → 骑士篇开始（%s）" % DayClock.label(), KnightStory.active() and DayClock.label().begins_with("骑士篇"))
+
+
+static func _prop_visible(t: Node, kind: String) -> bool:
+	var lv: Node = t.get_tree().get_first_node_in_group("main").level
+	return lv.find_children("*", "Node2D", true, false).any(func(n): return n.get_script() == preload("res://scripts/objects/prop.gd") and n.kind == kind and n.is_visible_in_tree())
+
+
+static func _npc_visible(t: Node, file: String) -> bool:
+	var lv: Node = t.get_tree().get_first_node_in_group("main").level
+	return lv.find_children("*", "Resident", true, false).any(func(n): return (n as Resident).dialogue == "floor_06/" + file and n.visible)

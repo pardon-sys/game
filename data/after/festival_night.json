@@ -688,5 +688,41 @@
 		"lick": "舔盐耐力赛"
 	},
 	"stall_done": "（%s：通关了！）",
+	"rewards": {
+		"guess": [
+			[
+				"cookie",
+				3
+			]
+		],
+		"ring": [
+			[
+				"mint",
+				2
+			],
+			[
+				"souvenir_wood_sheep",
+				1
+			]
+		],
+		"ice": [
+			[
+				"souvenir_ice_sheep",
+				1
+			]
+		],
+		"fish": [
+			[
+				"souvenir_fish_basin",
+				1
+			]
+		],
+		"lick": [
+			[
+				"souvenir_bell_collar",
+				1
+			]
+		]
+	},
 	"dance_first": "先去篝火边领舞吧——派对主人在等你。"
 }

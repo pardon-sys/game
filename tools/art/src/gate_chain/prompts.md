@@ -17,3 +17,7 @@
 第二版 soles.png（童趣风，参考图换成粉色公主的立绘和小游戏截图）：
 
 > a CUTE, CHILDLIKE, storybook-style pixel-art game sprite of TWO small bare feet side by side, seen from below so both soles face the viewer (heels at the bottom, toes at the top). They belong to the chibi princess in the first attached image (the character is an ADULT but drawn in a super-deformed chibi style), so the feet must match that cute style: small, short and rounded like little mochi or bean shapes, soft milky white skin with a faint warm pink tint, five tiny round toe beans per foot drawn as simple little circles, soft rosy pink pads on the heel and the ball of the foot, and a gentle blush. NO realistic anatomy, NO wrinkles, NO creases, NO veins, NO bony detail, NO dirt; very simple flat shading with at most 2-3 tones of skin color. Chunky clean pixels, thick dark-brown 1-pixel outline, crisp hard edges, kawaii and harmless, nonsexual cartoon game art.
+
+第二版 wall_*.png（脚换成童趣风；参考图：第二版 soles.png + 第一版三张墙，保持构图）：
+
+> Keep that composition and the brick/beam pile style for each matching stage, BUT REPLACE THE FEET with the cute storybook style of ref_feet.png: two SMALL, short, rounded mochi/bean-shaped feet, milky white skin, five tiny round pink toe beans each, soft rosy pink pads on the heel and ball, thick dark-brown 1-pixel outline, flat 2-3 tone shading, NO realistic anatomy, NO wrinkles or creases. The feet should be small relative to the pile, centered at the bottom edge of the pile, toes up, identical in all three images.

@@ -26,6 +26,7 @@ const TOTEM := "floor_06_after_totem"
 const DRAIN := "floor_06_after_drain"
 const DRILL := "floor_06_after_drill"
 const PROVING := "floor_06_after_proving"
+const FESTIVAL := "floor_06_festival"
 const STARTED := "after_started"
 const EVENTS := {
 	"d1_open": {"where": TOWN, "auto": true, "cutscene": "after_d1_open"},
@@ -48,14 +49,14 @@ const EVENTS := {
 	"d6_inspect": {"where": PROVING, "auto": true, "objective": "去东边的保卫队训练营，验收新陷阱", "cutscene": "after_d6_inspect"},
 	"d6_drill": {"where": DRILL, "spot": [10, 7, 1.5], "objective": "去队长的训练室：特训第三课和考核", "cutscene": "after_d6_drill"},
 	"d7_totem": {"where": TOTEM, "auto": true, "objective": "从西边的小路去图腾柱废地，修补狂欢图腾柱", "cutscene": "after_d7_totem"},
-	# 庆功宴：工时还清才开（needs_clear），开场以后广场自由活动（AfterFestival）
-	"d7_festival": {"where": TOWN, "spot": [40, 24, 2], "objective": "庆功宴开始了！去广场的篝火边", "cutscene": "after_d7_festival", "needs_clear": true},
+	# 庆功宴：工时还清才开（needs_clear）；从小镇篝火西边的入口进庆功宴的广场（单独一张图），进图就演开场，然后自由活动（AfterFestival）
+	"d7_festival": {"where": FESTIVAL, "auto": true, "objective": "庆功宴开始了！去篝火西边，庆功宴的广场", "cutscene": "after_d7_festival", "needs_clear": true},
 }
 ## 小镇里通往各张图的门口（指路）、各张图回小镇的出口
 const TOWN_DOORS := {"floor_06_after_house": [42, 10], "floor_06_after_house_up": [42, 10], "floor_06_after_pharmacy": [16, 10],
-	"floor_06_after_field": [32, 38.5], "floor_06_after_tailor": [32, 10], "floor_06_after_mine": [54, 6], "floor_06_after_totem": [3, 32], "floor_06_after_drain": [20, 38], "floor_06_after_drill": [8, 10], "floor_06_after_proving": [60, 20]}
+	"floor_06_after_field": [32, 38.5], "floor_06_after_tailor": [32, 10], "floor_06_after_mine": [54, 6], "floor_06_after_totem": [3, 32], "floor_06_after_drain": [20, 38], "floor_06_after_drill": [8, 10], "floor_06_after_proving": [60, 20], "floor_06_festival": [40, 24]}
 const ROOM_EXITS := {"floor_06_after_house": [9, 10], "floor_06_after_pharmacy": [8, 8.5], "floor_06_after_field": [21, 3],
-	"floor_06_after_tailor": [8, 10.5], "floor_06_after_mine": [3, 6], "floor_06_after_totem": [3, 12], "floor_06_after_drain": [3, 12], "floor_06_after_drill": [10, 11.5], "floor_06_after_proving": [2.5, 4]}
+	"floor_06_after_tailor": [8, 10.5], "floor_06_after_mine": [3, 6], "floor_06_after_totem": [3, 12], "floor_06_after_drain": [3, 12], "floor_06_after_drill": [10, 11.5], "floor_06_after_proving": [2.5, 4], "floor_06_festival": [22, 28.5]}
 ## 城门：第 3 天下午拆攻城车的时候才开；矿道门：第 5 天下午护送矿车的时候才开
 const FIELD_OPEN := "after_field_open"
 const MINE_OPEN := "after_mine_open"
@@ -65,6 +66,8 @@ const TOTEM_OPEN := "after_totem_open"
 const DRAIN_OPEN := "after_drain_open"
 const DRILL_OPEN := "after_drill_open"
 const PROVING_OPEN := "after_proving_open"
+## 庆功宴广场的入口（小镇篝火西边）：第 7 天晚上工时还清以后、放烟花之前开
+const FESTIVAL_OPEN := "after_festival_open"
 ## 宵禁：夜里、而且镇上没有要做的晚上任务时，小屋的门锁上（不让出去）
 const CURFEW := "after_curfew"
 ## 弥补任务进行中（不能接委托、小屋的门锁着）
@@ -160,7 +163,7 @@ static func objective(floor_id: String) -> Dictionary:
 	if KnightStory.active():
 		return KnightStory.objective(floor_id)
 	if AfterFestival.active():
-		return {"text": AfterFestival.objective_text()}
+		return {"text": AfterFestival.objective_text()} if floor_id == FESTIVAL else _guide(floor_id, FESTIVAL, AfterFestival.objective_text())
 	if GameState.has_flag(NIGHT_BUSY):
 		return {"text": "顺着地上的手印找一找"}
 	var cur := current_task()
@@ -216,6 +219,9 @@ static func sync_doors() -> void:
 	var proving := DayClock.event() == "d6_inspect" and not DayClock.done()
 	if GameState.has_flag(PROVING_OPEN) != proving:
 		GameState.set_flag(PROVING_OPEN, proving)
+	var fest := DayClock.event() == "d7_festival" and not DayClock.done() and not must_settle()
+	if GameState.has_flag(FESTIVAL_OPEN) != fest:
+		GameState.set_flag(FESTIVAL_OPEN, fest)
 	var ev := pending_event()
 	var curfew := DayClock.slot() == DayClock.NIGHT and (ev == "" or str(EVENTS.get(ev, {}).get("where", "")) == HOUSE) and not must_settle() \
 		and not KnightStory.active()

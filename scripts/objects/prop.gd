@@ -8,6 +8,7 @@ extends Node2D
 ##   action = talk:<文件>[#节点]  交互：人物对话（data/dialogues/<文件>.json，可以指定从哪个节点开始——房间里的家具共用一个文件）
 ##   action = hide          交互：躲进去 / 出来（潜入模式的木箱、矿车，见 StealthDirector）
 ##   action = read:<对话 id> 交互：读一段普通对话（像石碑）
+##   show_flag = 标记      有这个剧情标记才出现；hidden_flag = 标记：有就不出现（庆功宴摊位通关以后的装扮）
 
 const SHEET := preload("res://assets/generated/town_props.png")
 const META_PATH := "res://assets/generated/town_props.json"
@@ -16,6 +17,8 @@ static var _meta := {}
 
 @export var kind := "crate"
 @export var action := ""
+@export var show_flag := ""
+@export var hidden_flag := ""
 
 var sprite: Sprite2D
 ## 着火的道具（篝火、火堆、路灯）：在 torch 组里，幽灵进了光照范围就现形（TickleGhost 读 lit）
@@ -103,6 +106,16 @@ func _ready() -> void:
 		shape.position = Vector2(0, -6 + sort_shift)
 		it.add_child(shape)
 		add_child(it)
+	if show_flag != "" or hidden_flag != "":
+		_refresh_visibility()
+		GameState.flag_changed.connect(func(_f: String): _refresh_visibility())
+
+
+## 看不见的时候碰撞也关掉（PROCESS_MODE_DISABLED 会把碰撞体移出物理）
+func _refresh_visibility() -> void:
+	var show := (show_flag == "" or GameState.has_flag(show_flag)) and (hidden_flag == "" or not GameState.has_flag(hidden_flag))
+	visible = show
+	process_mode = Node.PROCESS_MODE_INHERIT if show else Node.PROCESS_MODE_DISABLED
 
 
 ## 被撞碎（攻防战的攻城车 / 巨魔将军冲锋）：只有沙袋、路障、碎石、木箱这类小东西会碎。

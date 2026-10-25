@@ -13,6 +13,8 @@ const PARTNER := "floor_06/after_partner"
 const PREFIX := "floor_06/after_"
 ## 藏起来的镇民：show_flag 设成一个永远不会有的标记
 const NEVER := "after_never"
+## 庆功宴开始以后还留在小镇上的（夜里站岗的队员）
+const FESTIVAL_STAY := ["after_guard_gate", "after_guard_house"]
 
 ## 对话文件名 -> Resident或BonfireHost；同一日程入口，角色自行配置原控制器。
 var residents := {}
@@ -84,10 +86,12 @@ static func blue_away() -> bool:
 
 func apply_schedule() -> void:
 	if is_instance_valid(blue_routine): blue_routine.sync()
+	# 庆功宴开始以后（第 7 天晚上）：大家都去庆功宴的广场了，小镇上只剩站岗的
+	var festival := GameState.has_flag(AfterFestival.ON) and DayClock.day() == AfterStory.SETTLE_DAY and not KnightStory.active()
 	for key in residents:
 		var r: Node2D = residents[key]
 		if is_instance_valid(r):
-			place(r, DayClock.npc(key))
+			place(r, {"hidden": true} if festival and not str(key) in FESTIVAL_STAY else DayClock.npc(key))
 
 
 ## 按一条日程摆一个镇民：{at 格, dir, wander, hidden, dialogue}
@@ -116,7 +120,7 @@ static func _place_resident(r: Resident, info: Dictionary) -> void:
 
 
 func _on_flag_changed(flag: String) -> void:
-	if flag == DayClock.TICK or flag.begins_with("after_done_"):
+	if flag == DayClock.TICK or flag.begins_with("after_done_") or flag == AfterFestival.ON:
 		apply_schedule()
 		if flag == DayClock.TICK and is_instance_valid(blue_routine): blue_routine.sync(true)
 	if flag == DayClock.TICK or flag == PenanceBook.FLAG or flag == AfterStory.TASK_FLAG:

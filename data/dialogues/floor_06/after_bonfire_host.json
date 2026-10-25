@@ -3,22 +3,6 @@
 	"entries": [
 		{
 			"if": {
-				"flag": "after_festival_on",
-				"not": "festival_dance_done"
-			},
-			"node": "festival_dance"
-		},
-		{
-			"if": {
-				"flag": [
-					"after_festival_on",
-					"festival_dance_done"
-				]
-			},
-			"node": "festival_after"
-		},
-		{
-			"if": {
 				"flag": "errand_lamp_calibration_open"
 			},
 			"node": "errand_lamp_calibration"
@@ -485,44 +469,6 @@
 				{
 					"text": "等一下再说",
 					"next": ""
-				}
-			]
-		},
-		"festival_dance": {
-			"lines": [
-				{
-					"text": "领舞大人～大家都等着呢！准备好了吗？"
-				}
-			],
-			"prompt": "开始领舞？",
-			"choices": [
-				{
-					"text": "跳！",
-					"next": "festival_dance_go"
-				},
-				{
-					"text": "等一下",
-					"next": ""
-				}
-			]
-		},
-		"festival_dance_go": {
-			"lines": [
-				{
-					"text": "音乐——准备～！"
-				}
-			],
-			"set": {
-				"call": "festival_dance"
-			}
-		},
-		"festival_after": {
-			"lines": [
-				{
-					"text": "哎呀～今年是我见过最热闹的篝火舞！"
-				},
-				{
-					"text": "……那两只裤子上的小手，跳得比谁都起劲呢～"
 				}
 			]
 		}

@@ -1,0 +1,93 @@
+{
+	"name": "市场监督",
+	"npc": "supervisor",
+	"entries": [
+		{
+			"if": {
+				"flag": [
+					"after_festival_on",
+					"stall_guess_done",
+					"stall_ring_done",
+					"stall_ice_done",
+					"stall_fish_done",
+					"stall_lick_done"
+				]
+			},
+			"node": "all"
+		},
+		{
+			"if": {
+				"flag": [
+					"after_festival_on",
+					"festival_dance_done"
+				]
+			},
+			"node": "after"
+		},
+		{
+			"if": {
+				"flag": "after_festival_on",
+				"not": "festival_dance_done"
+			},
+			"node": "before"
+		},
+		{
+			"node": "default"
+		}
+	],
+	"nodes": {
+		"all": {
+			"lines": [
+				{
+					"text": "五个摊位全部通关……按规定，每个摊主只能给一份奖品。"
+				},
+				{
+					"text": "……算了，今晚不查账。"
+				},
+				{
+					"text": "（他把记账本合上，塞进了外套口袋）",
+					"speaker": ""
+				}
+			]
+		},
+		"after": {
+			"lines": [
+				{
+					"text": "补罚的单子，我已经撕了。"
+				},
+				{
+					"text": "……七天里你一共被罚了多少次，我可是一笔一笔记着的。"
+				},
+				{
+					"text": "那、那个本子也撕了吧！",
+					"speaker": "公主",
+					"emotion": "angry"
+				},
+				{
+					"text": "这个要留档。"
+				}
+			]
+		},
+		"before": {
+			"lines": [
+				{
+					"text": "今晚不收补罚，摊位也不收钱。"
+				},
+				{
+					"text": "……我只负责看着那些摊主别玩得太过分。"
+				},
+				{
+					"text": "（他看了一眼女仆那边正在给蘑菇羊抹盐的摊位，叹了口气）",
+					"speaker": ""
+				}
+			]
+		},
+		"default": {
+			"lines": [
+				{
+					"text": "嗯。"
+				}
+			]
+		}
+	}
+}

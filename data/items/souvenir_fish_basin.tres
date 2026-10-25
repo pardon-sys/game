@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="KeyItem" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/items/key_item.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/generated/item_souvenir_fish_basin.png" id="2"]
+
+[resource]
+script = ExtResource("1")
+icon = ExtResource("2")
+id = "souvenir_fish_basin"
+display_name = "足疗鱼小盆"
+description = "小汤姆送的小木盆，里面游着一条最爱啄脚心的痒痒鱼。……真的要带回去吗。（庆功宴的纪念品）"
+key_type = "souvenir"
+category = 1
+stackable = false
+show_in_hud = false
+pickup_emotion = "shy"

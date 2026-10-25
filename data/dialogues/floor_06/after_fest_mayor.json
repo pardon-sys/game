@@ -1,0 +1,71 @@
+{
+	"name": "镇长",
+	"npc": "mayor",
+	"entries": [
+		{
+			"if": {
+				"flag": [
+					"after_festival_on",
+					"festival_dance_done"
+				]
+			},
+			"node": "festival_finale"
+		},
+		{
+			"if": {
+				"flag": "after_festival_on"
+			},
+			"node": "festival_wait"
+		},
+		{
+			"node": "default"
+		}
+	],
+	"nodes": {
+		"default": {
+			"lines": [
+				{
+					"text": "……能看到大家这样笑，真好。"
+				}
+			]
+		},
+		"festival_finale": {
+			"lines": [
+				{
+					"text": "……烟花都准备好了。"
+				},
+				{
+					"text": "要放了吗？"
+				}
+			],
+			"prompt": "放烟花？（庆功宴就到这里）",
+			"choices": [
+				{
+					"text": "放吧！",
+					"next": "festival_finale_go"
+				},
+				{
+					"text": "再逛一会儿",
+					"next": ""
+				}
+			]
+		},
+		"festival_finale_go": {
+			"lines": [
+				{
+					"text": "好。……大家，点火——"
+				}
+			],
+			"set": {
+				"call": "festival_finale"
+			}
+		},
+		"festival_wait": {
+			"lines": [
+				{
+					"text": "先去跳舞吧。领舞的人不在，篝火都不够旺。"
+				}
+			]
+		}
+	}
+}

@@ -68,13 +68,7 @@
 			},
 			"d7": {
 				"night": {
-					"at": [
-						39,
-						24
-					],
-					"dir": "right",
-					"wander": 0,
-					"hidden": false
+					"hidden": true
 				}
 			},
 			"d8": {
@@ -158,13 +152,7 @@
 			},
 			"d7": {
 				"night": {
-					"at": [
-						42,
-						21
-					],
-					"dir": "down",
-					"wander": 0,
-					"hidden": false
+					"hidden": true
 				}
 			},
 			"d8": {
@@ -246,13 +234,7 @@
 			},
 			"d7": {
 				"night": {
-					"at": [
-						37,
-						22
-					],
-					"dir": "down",
-					"wander": 0,
-					"hidden": false
+					"hidden": true
 				}
 			},
 			"d8": {
@@ -325,13 +307,7 @@
 			},
 			"d7": {
 				"night": {
-					"at": [
-						36,
-						27
-					],
-					"dir": "right",
-					"wander": 0,
-					"hidden": false
+					"hidden": true
 				}
 			},
 			"d8": {
@@ -562,13 +538,7 @@
 			},
 			"d7": {
 				"night": {
-					"at": [
-						49,
-						27
-					],
-					"dir": "left",
-					"wander": 0,
-					"hidden": false
+					"hidden": true
 				}
 			},
 			"d8": {
@@ -652,13 +622,7 @@
 			},
 			"d7": {
 				"night": {
-					"at": [
-						44,
-						23
-					],
-					"dir": "down",
-					"wander": 0,
-					"hidden": false
+					"hidden": true
 				}
 			},
 			"d8": {
@@ -731,13 +695,7 @@
 			},
 			"d7": {
 				"night": {
-					"at": [
-						51,
-						25
-					],
-					"dir": "left",
-					"wander": 0,
-					"hidden": false
+					"hidden": true
 				}
 			},
 			"d8": {
@@ -793,13 +751,7 @@
 			},
 			"d7": {
 				"night": {
-					"at": [
-						48,
-						22
-					],
-					"dir": "down",
-					"wander": 0,
-					"hidden": false
+					"hidden": true
 				}
 			},
 			"d8": {
