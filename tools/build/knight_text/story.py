@@ -114,6 +114,8 @@ def wake():
         line(P, "可是——！", "angry"),
         line(CAP, "这是命令。", None, None, "captain"),
         {"actions": [A("camera", reset=True, time=0.4)], "wait": 0.4},
+        line(N, "（队长走了。窗外的光一点一点暗下去——不知不觉，已经傍晚了）"),
+        line(BLUE, "……出去，透透气。"),
     ]
     return {"name": "醒来", "letterbox": True, "skippable": True, "steps": s}
 
@@ -138,8 +140,9 @@ def bait_open():
         line(BLUE, "……你，是饵。"),
         line(P, "饵就饵！早上它们碰我的时候，又不痒！", "angry"),
         line(BLUE, "……", None, [A("bubble", who=B, kind="question")]),
-        line(N, "（故意让自己笑起来——踩进痒痒草里、让小孩挠、站到诅咒的地纹上——手印会被笑声引过来。笑得越厉害，引来的越多、越远；笑过头会一下子引来一大群）"),
-        line(N, "（手印贴上来的时候，按 C 换成蓝色公主，按 J 冻住它们，再按 K 收进瓶子里。抓够六只）"),
+        line(N, "（让自己笑起来，手印就会被笑声引过来：按住 K 捂着嘴偷偷笑（按得越久笑得越响，松开慢慢停下）；也可以踩进痒痒草、站到诅咒的地纹上）"),
+        line(N, "（按 C 换成蓝色公主：在粉色公主身边按 K 挠她一下帮她笑；手印贴上来以后按 J 冻住，身边有冻住的手印时按 K 收进瓶子。抓够六只）"),
+        line(N, "（别笑过头——太响的话，全广场的手印会一下子扑过来）"),
         {"actions": [A("camera", reset=True, time=0.4)], "wait": 0.4},
     ]
     return {"name": "被偷走的笑声", "letterbox": True, "skippable": True, "steps": s}
@@ -202,6 +205,7 @@ def cell_end():
         line(N, "（蓝色公主盯着那块手帕上手拉手的小人看了一眼——和队长那天递过来的那块，一模一样）"),
         line(N, "（她什么都没说，拉着粉色公主钻回了通风口）"),
         {"actions": [A("fade_out", time=0.8)], "wait": 0.8},
+        line(N, "（两个人沿着通风管爬出营地，摸黑溜回了蓝色小屋门口。……已经很晚了）"),
     ]
     return {"name": "花猫样", "letterbox": True, "skippable": True, "steps": s, "end_dark": True}
 

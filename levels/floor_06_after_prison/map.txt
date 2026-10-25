@@ -9,7 +9,7 @@ no_switch = true
 P = player
 t = torch lit=true
 A = f6afterroom
-C = stealth
+C = stealth alert_rate=1.6 alert_decay=0.6
 D = exit target=floor_06_after spawn=from_prison
 E = spawn id=vent
 F = torch lit=true + gate group=cells is_open=false
@@ -19,12 +19,11 @@ I = prop type=lamp
 J = gate group=cells is_open=false
 K = npc id=knight dialogue=floor_06/after_knight wander=0 dir=down
 L = trap type=cushion active=false
-M = guard_patrol path=6,17;20,17
-N = guard_patrol path=22,18;36,18 wait=1.4
-O = guard_patrol path=11,15;11,8
-Q = guard_patrol path=25,8;25,15 wait=1.0
-R = guard_patrol path=14,6;32,6
-S = guard_patrol path=16,10;20,10;20,14;16,14 loop=true
+M = guard_patrol path=6,17;20,17 view_range=64 view_angle=55 speed=26 investigate_speed=44 check_chance=0.12
+N = guard_patrol path=22,18;36,18 wait=1.4 view_range=64 view_angle=55 speed=26 investigate_speed=44 check_chance=0.12
+O = guard_patrol path=11,15;11,8 view_range=64 view_angle=55 speed=26 investigate_speed=44 check_chance=0.12
+Q = guard_patrol path=25,8;25,15 wait=1.0 view_range=64 view_angle=55 speed=26 investigate_speed=44 check_chance=0.12
+R = guard_patrol path=14,6;32,6 view_range=64 view_angle=55 speed=26 investigate_speed=44 check_chance=0.12
 
 [map]
 ##########################################
@@ -37,7 +36,7 @@ S = guard_patrol path=16,10;20,10;20,14;16,14 loop=true
 ##########..............................##
 ##########...###########.Q.###############
 ##########.H.###########...###############
-##########...###S....###...###############
+##########...###.....###...###############
 ##########.......H...###...###############
 ##########.I......L..###.H.###############
 ##########...###...H.###...###############

@@ -56,7 +56,7 @@ static func run(t: Node) -> void:
 		ch.grabbing and pink.fatigue.value > pink.laugh.value and TaskArmorChase.caught() == 1)
 	for i in TaskArmorChase.MASH:
 		ch.mash()
-	verify(t, "连按 J：挣开", not ch.grabbing)
+	verify(t, "连按 J：挣开，马上能动（定身解开了）", not ch.grabbing and not pink.status.is_rooted())
 	verify(t, "没被操控的蓝色公主由 AI 控制（%s）" % ch.blue.controller, ch.blue.controller is KnightAI)
 	# AI 蓝色公主：盔甲追着粉色公主、她在旁边 → 冻住
 	ch.ai_enabled = true
@@ -110,6 +110,7 @@ static func run(t: Node) -> void:
 		and TaskArmorChase.lit() == 1 and TaskArmorChase.caught() == 0)
 	if ch == null:
 		return
+	verify(t, "重来以后粉色公主马上能动（没有残留的抱住定身）", not ch.pink.status.is_rooted())
 	ch.light(1)
 	ch.light(2)
 	ch.armor.paused = true
