@@ -5,7 +5,10 @@
 		{
 			"if": {
 				"flag": "after_festival_on",
-				"not": "stall_fish_done"
+				"not": [
+					"stall_fish_done",
+					"festival_finale_done"
+				]
 			},
 			"node": "stall_offer"
 		},
@@ -23,7 +26,8 @@
 				"flag": [
 					"after_festival_on",
 					"stall_fish_done"
-				]
+				],
+				"not": "festival_finale_done"
 			},
 			"node": "stall_done"
 		},

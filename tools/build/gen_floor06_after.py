@@ -753,7 +753,8 @@ for _n, _m, _k in (("drain", drain, "DRAIN"), ("drill", drill, "DRILL"), ("inspe
     Path("data/after/%s.json" % _n).write_text(json.dumps(dict({"_说明": "after_text/%s.py 生成。" % _n}, **getattr(_m, _k)),
         ensure_ascii=False, indent="\t") + "\n")
 Path("data/after/festival_night.json").write_text(json.dumps(dict({"_说明": "庆功宴（after_text/festival_night.py 生成，AfterFestival / FestivalDanceShow 读）。"},
-    **festival_night.FESTIVAL), ensure_ascii=False, indent="\t") + "\n")
+    **festival_night.FESTIVAL, reward_lines={m.__name__.rsplit("_", 1)[1]: m.REWARD for m in (stall_guess, stall_ring, stall_ice, stall_fish, stall_lick)}),
+    ensure_ascii=False, indent="\t") + "\n")
 STALLS = {"after_granny": ("guess", stall_guess, "GUESS", "StallGuessShow"), "after_merchant": ("ring", stall_ring, "RING", "StallRingShow"),
           "after_engineer": ("ice", stall_ice, "ICE", "StallIceShow"), "after_kid_tom": ("fish", stall_fish, "FISH", "StallFishShow"),
           "after_maid": ("lick", stall_lick, "LICK", "StallLickShow")}

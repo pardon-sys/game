@@ -270,22 +270,26 @@ NODES = {
 }
 
 
+## 放完烟花以后：庆功宴的入口都不再出现（章节结束画面按 E 的同一下不会再和镇长说起放烟花）
+FINALE = "festival_finale_done"
+
+
 def inject(dialogues, stalls):
     """庆功宴的入口（都在庆功宴广场的对话文件 after_fest_*，festival_talk.inject 先建好）：派对主人（领舞）、镇长（放烟花）排在最前面；
     五个摊主（stalls：对话文件 → (摊位 id, 摊位的 NODE)）：没通关 → 摊位入口排最前面，通关了 → 纪念排在倒数第二（late 在它前面）。"""
     host = dialogues["after_fest_host"]
     host["nodes"].update(NODES["after_bonfire_host"])
-    host["entries"][0:0] = [{"if": {"flag": "after_festival_on", "not": "festival_dance_done"}, "node": "festival_dance"},
-                            {"if": {"flag": ["after_festival_on", "festival_dance_done"]}, "node": "festival_after"}]
+    host["entries"][0:0] = [{"if": {"flag": "after_festival_on", "not": ["festival_dance_done", FINALE]}, "node": "festival_dance"},
+                            {"if": {"flag": ["after_festival_on", "festival_dance_done"], "not": FINALE}, "node": "festival_after"}]
     mayor = dialogues["after_fest_mayor"]
     mayor["nodes"].update(NODES["after_mayor"])
-    mayor["entries"][0:0] = [{"if": {"flag": ["after_festival_on", "festival_dance_done"]}, "node": "festival_finale"},
-                             {"if": {"flag": "after_festival_on"}, "node": "festival_wait"}]
+    mayor["entries"][0:0] = [{"if": {"flag": ["after_festival_on", "festival_dance_done"], "not": FINALE}, "node": "festival_finale"},
+                             {"if": {"flag": "after_festival_on", "not": FINALE}, "node": "festival_wait"}]
     for f, (sid, spec) in stalls.items():
         d = dialogues[f]
         d["nodes"]["stall_offer"] = {"lines": spec["offer"], "prompt": spec["prompt"],
                                      "choices": [{"text": spec["yes"], "next": "stall_go"}, {"text": "等一下再说", "next": ""}]}
         d["nodes"]["stall_go"] = {"lines": spec["go"], "set": {"vars": {"stall_req": sid}, "call": "festival_stall"}}
         d["nodes"]["stall_done"] = {"lines": spec["after"]}
-        d["entries"].insert(0, {"if": {"flag": "after_festival_on", "not": "stall_%s_done" % sid}, "node": "stall_offer"})
-        d["entries"].insert(len(d["entries"]) - 1, {"if": {"flag": ["after_festival_on", "stall_%s_done" % sid]}, "node": "stall_done"})
+        d["entries"].insert(0, {"if": {"flag": "after_festival_on", "not": ["stall_%s_done" % sid, FINALE]}, "node": "stall_offer"})
+        d["entries"].insert(len(d["entries"]) - 1, {"if": {"flag": ["after_festival_on", "stall_%s_done" % sid], "not": FINALE}, "node": "stall_done"})

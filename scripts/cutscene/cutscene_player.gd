@@ -349,7 +349,8 @@ func _finish(id: String, cs: Dictionary) -> void:
 		GameState.player.set("puppet_walking", false)
 	_carrier = null
 	GameState.in_cutscene = false
-	GameState.in_dialogue = Dialogue.is_active()
+	# 章节结束画面还亮着：人物不能动、不能交互（按 E 进下一章的同一下不会顺手和身边的人说话）
+	GameState.in_dialogue = Dialogue.is_active() or keep_screen
 	_playing = false
 	step_index = -1
 	finished.emit(id)
@@ -374,6 +375,7 @@ func continue_chapter() -> void:
 		await main.change_level(Floors.scene(next))
 	chapter_screen.hide()
 	curtain.color.a = 0.0
+	GameState.in_dialogue = Dialogue.is_active()
 	var hud := _hud()
 	if hud:
 		hud.show()

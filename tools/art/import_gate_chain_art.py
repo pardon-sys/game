@@ -1,5 +1,5 @@
 """穿链委托的图片：tools/art/src/gate_chain/（codex 内置 image_gen 生成，见同目录 prompts.md）→ assets/generated/after/。
-  gate_chain_soles.png  槽口外的两只光脚（童趣像素风；转 90°：脚趾朝右；SOLE_SIZE + 一圈描边）。源图只有描边 / 白皮肤 / 粉脚垫三种颜色：
+  gate_chain_soles.png  槽口外的两只光脚（童趣像素风；转 90°：脚趾朝右；SOLE_SIZE + 一圈描边，约 18×24）。源图只有描边 / 白皮肤 / 粉脚垫三种颜色：
                         每个源像素先归类，再按格子里哪类多缩小（不取平均，形状不会糊），用固定的三色输出，最后补描边。
   gate_wall_full / half / broken.png  失败小剧场里倒塌的墙，底下露出一双童趣小白脚（WALL_SIZE，小剧场的道具演员 rubble_*）
 处理：去掉低透明度的光晕（alpha < ALPHA_CUT 透明）→ 按不透明部分裁边 → 缩小（BOX 取平均）→ 减色 → 透明度二值化。
@@ -14,11 +14,11 @@ SRC = ROOT / "tools/art/src/gate_chain"
 OUT = ROOT / "assets/generated/after"
 ALPHA_CUT = 200
 COLORS = 24
-SOLE_SIZE = (20, 28)
+SOLE_SIZE = (16, 22)
 ## 墙：脚趾豆的粉色要留住，尺寸和颜色数都比一般道具多
 WALL_SIZE = (80, 80)
 WALL_COLORS = 64
-PINK_WEIGHT = 1.6
+PINK_WEIGHT = 2.0
 ## 三色调色板：描边、白皮肤、粉脚垫（和源图一致）
 SOLE_PALETTE = [(70, 30, 34, 255), (255, 240, 236, 255), (246, 160, 176, 255)]
 

@@ -4,7 +4,7 @@ extends RefCounted
 ## 台词 data/after/festival_night.json（← after_text/festival_night.py）；广场上每个人的对话 after_fest_*（← after_text/festival_talk.py）。
 ##   必做：派对主人那里领舞（call: festival_dance → FestivalDanceShow）→ festival_dance_done。
 ##   可选：五个摊位（call: festival_stall，vars.stall_req = guess / ring / ice / fish / lick → STALLS 里的小游戏）→ stall_<id>_done、
-##     奖励（festival_night.json 的 rewards：饼干、薄荷糖、纪念品）；广场上的装扮带 show_flag = stall_<id>_done（饼干串灯、冰雕……）。
+##     摊主说两句奖品（reward_lines，after_text/stall_<id>.py 的 REWARD）→ 奖励（festival_night.json 的 rewards：饼干、薄荷糖、纪念品）；广场上的装扮带 show_flag = stall_<id>_done（饼干串灯、冰雕……）。
 ##   领舞以后找镇长放烟花（call: festival_finale）：烟花（FestivalFireworks，铺满拉远以后的镜头）+ 过场 after_d7_finale（哼歌、「七日赎罪 完」）→ 回小屋的床。
 ## 标记：after_festival_on（庆功宴进行中，对话的入口读它）、festival_finale_done。
 
@@ -63,7 +63,19 @@ static func run_stall(id: String) -> void:
 	if await _play(load(STALLS[id]).new()):
 		GameState.set_flag("stall_%s_done" % id)
 		GameState.notify(str(data()["stall_done"]) % str(data()["stall_names"].get(id, id)))
+		running = true
+		await reward_scene(id)
 		give_rewards(id)
+		running = false
+
+
+## 奖品进背包之前：摊主说两句这份奖品（festival_night.json 的 reward_lines）
+static func reward_scene(id: String) -> void:
+	var lines: Array = data().get("reward_lines", {}).get(id, [])
+	if lines.is_empty() or Dialogue.is_active():
+		return
+	Dialogue.start_lines(lines, "festival_reward_" + id)
+	await Dialogue.finished
 
 
 ## 摊位通关的奖励（饼干、薄荷糖、纪念品）进背包

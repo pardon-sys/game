@@ -373,10 +373,10 @@ class SoleRig extends Node2D:
 		if not stage.playing:
 			return
 		var pull := 3.0 if stage.tuck_flash > 0.0 or stage.tucked else 0.0
-		var origin := FEET + Vector2(-4 - pull, -15)
+		var origin := FEET + Vector2(-3 - pull, -12)
 		draw_texture(SOLES, origin)
 		# 两只脚心的位置（道具挠的地方）
-		var feet := [origin + Vector2(12, 8), origin + Vector2(12, 22)]
+		var feet := [origin + Vector2(10, 6), origin + Vector2(10, 18)]
 		if stage.phase >= 1:
 			# 抹了油：脚底亮晶晶的
 			for f in feet:
