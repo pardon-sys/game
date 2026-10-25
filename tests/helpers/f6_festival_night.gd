@@ -2,6 +2,7 @@ extends RefCounted
 ## 庆功宴专项（第 7 天晚上）：工时还清才开、从小镇篝火西边的入口进庆功宴的广场（单独一张图）、开场过场、领舞（三段音游 + 邀舞）、
 ## 五个摊位各自的机制、通关的奖励和广场上的装扮、放烟花（镜头拉远）→ 结局画面 → 回小屋 → 睡觉进骑士篇。
 static var checks := 0
+static var reward_lines_seen := 0
 
 
 static func verify(t: Node, label: String, ok: bool) -> void:
@@ -20,12 +21,24 @@ static func open_stall(t: Node, file: String, cls: Variant) -> Node:
 	return show_of(t, cls)
 
 
+## 等小游戏收场：通关以后摊主说两句奖品（一路按掉），奖品进背包
 static func wait_closed(t: Node, cls: Variant) -> void:
-	await t._advance_until(func(): return show_of(t, cls) == null and not AfterFestival.running, 30.0)
+	var said := false
+	for i in 600:
+		if Dialogue.is_active():
+			said = said or str(Dialogue._id).begins_with("festival_reward_")
+			Dialogue._finish_typing()
+			Dialogue.advance()
+		if show_of(t, cls) == null and not AfterFestival.running and not Dialogue.is_active():
+			break
+		await t.get_tree().process_frame
+	if said:
+		reward_lines_seen += 1
 
 
 static func run(t: Node) -> void:
 	checks = 0
+	reward_lines_seen = 0
 	for f in ["after_started", "penance_book", "f6_opening_done", "after_done_d7_morning", "after_done_d7_afternoon", "errand_dance_done"]:
 		GameState.set_flag(f)
 	for f in [AfterFestival.ON, AfterFestival.DANCE_DONE, AfterFestival.FINALE_DONE, "after_ev_d7_festival", "after_done_d7_night"]:
@@ -235,6 +248,7 @@ static func run(t: Node) -> void:
 		await wait_closed(t, StallLickShow)
 		verify(t, "主人先笑满：赢了", AfterFestival.stall_done("lick"))
 		verify(t, "奖励：咕咕的铃铛项圈；戴铃铛的咕咕在广场上闲逛", GameState.inventory.count("souvenir_bell_collar") == 1 and _npc_visible(t, "after_fest_gugu"))
+	verify(t, "每个摊位通关：摊主都先说两句奖品（%d / 5）" % reward_lines_seen, reward_lines_seen == 5)
 	verify(t, "五个摊位都通关：队长、蓝色公主有专门的话", Dialogue.runner.entry_of("floor_06/after_fest_captain") == "all"
 		and Dialogue.runner.entry_of("floor_06/after_partner") == "fest_all")
 	StallLickShow.quiet = false
@@ -249,13 +263,36 @@ static func run(t: Node) -> void:
 	verify(t, "烟花铺开到拉远以后的镜头（spread %.1f）" % (fws[0].spread if fws.size() > 0 else 0.0), fws.size() > 0 and fws[0].spread > 1.5)
 	await t._advance_until(func(): return Cutscene.chapter_screen.visible and not Cutscene.is_playing(), 60.0)
 	verify(t, "烟花 → 哼歌 →「七日赎罪 完」结局画面", t.seen_cuts.has("after_d7_finale") and Cutscene.chapter_title.text.contains("七日赎罪") and DayClock.done(7, DayClock.NIGHT))
-	Cutscene.continue_chapter()
+	# 像真的玩一样：站在镇长身边按 E 继续（这一下不能顺手又和镇长说起放烟花）
+	var mayor: Node2D = t.main.level.find_children("*", "Resident", true, false).filter(func(n): return (n as Resident).dialogue.ends_with("after_fest_mayor"))[0]
+	t._go(mayor.global_position + Vector2(0, 14))
+	await t._wait(0.2)
+	await press(t, "interact")
 	await t._advance_until(func(): return t._level_id() == AfterStory.HOUSE and not Cutscene.chapter_screen.visible, 20.0)
 	verify(t, "按 E → 回到小屋", t._level_id() == AfterStory.HOUSE)
 	await t._wait(0.8)
+	verify(t, "回到小屋：没有又弹出镇长放烟花的对话，人能动（对话 %s，锁 %d）" % [Dialogue.runner.is_running(), GameState.dialogue_holds],
+		not Dialogue.runner.is_running() and not Dialogue.is_active() and not GameState.in_dialogue and GameState.dialogue_holds == 0)
 	verify(t, "小屋的床：庆功宴之后能睡（%s）" % Dialogue.runner.entry_of("floor_06/after_house_objects"),
 		GameState.has_flag("night") and not GameState.has_flag(AfterStory.NIGHT_BUSY))
-	await t._talk("floor_06/after_house_objects", "bed")
+	# 走到床边按 E（不是直接调对话）
+	t._go(Cutscene.cell_to_world([4, 5]))
+	GameState.player.facing = Vector2.UP
+	await t._wait(0.3)
+	var opened: Array = []
+	var on_talk := func(f: String): opened.append(f)
+	Dialogue.runner.talk_started.connect(on_talk)
+	await press(t, "interact")
+	await t._wait(0.3)
+	Dialogue.runner.talk_started.disconnect(on_talk)
+	verify(t, "在床边按 E：床的对话开了（%s）" % [opened], opened.has("floor_06/after_house_objects"))
+	for i in 40:
+		if not Dialogue.runner.is_running():
+			break
+		if Dialogue.is_active():
+			Dialogue.advance()
+			Dialogue.advance()
+		await t.get_tree().process_frame
 	await t._advance_until(func(): return KnightStory.step_id() == "found" and not Sleep.sleeping and not Cutscene.is_playing() and not KnightStory.running, 40.0)
 	verify(t, "和床说话选睡觉 → 骑士篇开始（%s）" % DayClock.label(), KnightStory.active() and DayClock.label().begins_with("骑士篇"))
 
@@ -268,3 +305,18 @@ static func _prop_visible(t: Node, kind: String) -> bool:
 static func _npc_visible(t: Node, file: String) -> bool:
 	var lv: Node = t.get_tree().get_first_node_in_group("main").level
 	return lv.find_children("*", "Resident", true, false).any(func(n): return (n as Resident).dialogue == "floor_06/" + file and n.visible)
+
+
+## 真的按一下键（走输入事件：_input 和 Input.is_action_just_pressed 都会收到）
+static func press(t: Node, action: String) -> void:
+	var ev := InputEventAction.new()
+	ev.action = action
+	ev.pressed = true
+	Input.parse_input_event(ev)
+	await t.get_tree().process_frame
+	await t.get_tree().physics_frame
+	var up := InputEventAction.new()
+	up.action = action
+	up.pressed = false
+	Input.parse_input_event(up)
+	await t.get_tree().process_frame

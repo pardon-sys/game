@@ -209,7 +209,7 @@ func _refresh() -> void:
 	if state == "guess":
 		_info.text += "\n" + str(data()["prompt"])
 		for i in options.size():
-			_info.text += "\n%s%s" % ["▶ " if i == choice else "　", tool_info(str(options[i])).get("name", "")]
+			_info.text += "\n%s%s" % ["▶" if i == choice else "　", tool_info(str(options[i])).get("name", "")]
 	count_label.text = str(data()["count"]) % completed
 	if _rig:
 		_rig.queue_redraw()

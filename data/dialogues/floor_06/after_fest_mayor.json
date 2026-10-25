@@ -7,13 +7,15 @@
 				"flag": [
 					"after_festival_on",
 					"festival_dance_done"
-				]
+				],
+				"not": "festival_finale_done"
 			},
 			"node": "festival_finale"
 		},
 		{
 			"if": {
-				"flag": "after_festival_on"
+				"flag": "after_festival_on",
+				"not": "festival_finale_done"
 			},
 			"node": "festival_wait"
 		},

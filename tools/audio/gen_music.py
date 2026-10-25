@@ -2,10 +2,11 @@
 
 API key 从项目根目录的 .env 读（ELEVENLABS=...，.env 不进版本库）；只把下面的提示词发给 ElevenLabs，不发送任何项目文件。
 接口：POST https://api.elevenlabs.io/v1/music/stream（prompt、music_length_ms、force_instrumental），output_format=pcm_44100（16 位立体声交错 PCM）。
-首尾相连：生成的曲子结尾常有淡出 / 静音，所以先找循环点 T（find_loop_end：在淡出之前、节奏和开头最像的位置），
-把 T 之前 CROSSFADE 秒和开头交叉淡化（等功率），T 之后的尾声丢掉——循环播放时无缝接回开头。
+首尾相连：生成的曲子结尾常有淡出 / 静音，所以先找循环点 T（find_loop_end：在淡出之前、节奏和和声都和开头最像的半句边界），
+把 T 之后 CROSSFADE 秒和开头交叉淡化（等功率），T 之后的尾声丢掉——循环播放时无缝接回开头。
 原始音频存在 tools/.cache/music/（不进版本库）。
-用法：python tools/audio/gen_music.py [dungeon] [town] [boss] [boss3] [night_room] [night_maze] [siege] [minigame] [knight_boss]（不写就全部生成；已经生成过的跳过，加 --force 重新生成）
+用法：python tools/audio/gen_music.py [dungeon] [town] [boss] [boss3] [night_room] [night_maze] [siege] [minigame] [knight_boss]（不写就全部生成；已经生成过的跳过，加 --force 重新生成，
+  加 --reloop 用缓存的原始音频重新切循环）
 """
 import json
 import os
@@ -24,7 +25,8 @@ CACHE = ROOT / "tools/.cache/music"
 RATE = 44100
 CHANNELS = 2
 LENGTH_MS = 140000   # 多要 20 秒：结尾的淡出尾声会被切掉，循环部分约 2 分钟
-CROSSFADE = 2.5
+## 循环点在拍子上对齐了：短短交叉淡化一下就好（太长的话两段不一样的音乐叠在一起，会听成杂音）
+CROSSFADE = 0.3
 
 TRACKS = {
     "knight_boss": ("Instrumental video game boss battle music for a cute pixel-art game: two princesses fight a cursed suit of knight armor "
@@ -136,9 +138,20 @@ def envelope(mono: np.ndarray) -> np.ndarray:
     return np.sqrt((mono[:k * HOP].reshape(k, HOP) ** 2).mean(1))
 
 
+def _spectrum(x: np.ndarray) -> np.ndarray:
+    """一小段的对数频谱（4 kHz 以下，归一化）：比较两段的和声像不像。"""
+    m = x.mean(1)
+    f = np.log1p(np.abs(np.fft.rfft(m * np.hanning(len(m))))[:int(4000 * len(m) / RATE)])
+    f = f - f.mean()
+    return f / (np.linalg.norm(f) + 1e-9)
+
+
 def find_loop_end(x: np.ndarray) -> int:
-    """循环点：先从起音包络的自相关估出拍长（60~170 BPM），按 4 小节一句（16 拍）对齐，
-    取尾声（音量掉到中位数六成以下的最后一段）之前最后一个整句（前 3 秒没有停顿）的位置，再在 ±80 毫秒内按节奏和开头最吻合的地方微调。"""
+    """循环点：先从起音包络的自相关估出拍长（60~170 BPM），在尾声（音量掉到中位数六成以下的最后一段）之前、
+    曲子 55% 以后的每个半句（8 拍）边界上打分，取最好的那个：
+      节奏：循环点之后 WINDOW 秒的起音和开头的起音像不像（在 ±80 毫秒内微调对齐）；
+      和声：循环点之后 1 秒和开头 1 秒的频谱像不像（循环时这一段会和开头交叉淡化，不像就会听成两首曲子叠在一起的杂音）。
+    循环点前 3 秒里有停顿的不要（循环时不要出现一段空白）。"""
     mono = x.mean(1)
     env = envelope(mono)
     sec = 100   # 每秒 100 格
@@ -147,7 +160,8 @@ def find_loop_end(x: np.ndarray) -> int:
     last_full = len(loud)
     while last_full > 0 and loud[last_full - 1] < med * 0.6:
         last_full -= 1
-    end_limit = min(last_full * sec, len(env) - int(CROSSFADE * sec) - 1)
+    window = 4 * sec
+    end_limit = min(last_full * sec, len(env) - window - 1)
     onset = np.maximum(0.0, np.diff(env, prepend=env[0]))
     on = onset - onset.mean()
     m = min(len(on), 60 * sec)
@@ -156,27 +170,32 @@ def find_loop_end(x: np.ndarray) -> int:
     beat = lo + int(np.argmax(ac[lo:hi]))
     l8 = np.arange(beat * 8 - 6, beat * 8 + 7)
     beat = l8[int(np.argmax(ac[l8]))] / 8.0        # 8 拍的自相关峰值求更准的拍长
-    phrase = beat * 16
-    k = int(np.floor(end_limit / phrase))
-    # 循环点前 3 秒里有停顿（0.25 秒的音量不到中位数一成）就往前退一句——循环时不要出现一段空白
-    quiet = med * 0.1
-    while k > 4 and min(env[int(k * phrase) - 3 * sec + i:int(k * phrase) - 3 * sec + i + 25].mean()
-                        for i in range(0, 3 * sec - 25, 5)) < quiet:
-        k -= 1
-    t0 = int(k * phrase)
-    ref = onset[:8 * sec]
+    half = beat * 8
+    ref = onset[:window]
     ref = (ref - ref.mean()) / (ref.std() + 1e-9)
-    best, best_t = -1e9, t0
-    for t in range(t0 - 8, t0 + 9):
-        seg = onset[t:t + 8 * sec]
-        if len(seg) < len(ref):
+    head = _spectrum(x[:RATE])
+    quiet = med * 0.1
+    best = (-1e9, 0, 0.0, 0.0)
+    for k in range(int(np.ceil(len(env) * 0.55 / half)), int(np.floor(end_limit / half)) + 1):
+        t0 = int(k * half)
+        if min(env[t0 - 3 * sec + i:t0 - 3 * sec + i + 25].mean() for i in range(0, 3 * sec - 25, 5)) < quiet:
             continue
-        seg = (seg - seg.mean()) / (seg.std() + 1e-9)
-        c = float((seg * ref).mean())
-        if c > best:
-            best, best_t = c, t
-    print("  %.1f BPM，循环点 %.2f 秒（第 %d 句末，尾声从 %.1f 秒开始，节奏吻合度 %.2f）"
-          % (6000.0 / beat, best_t / sec, round(t0 / phrase), end_limit / sec, best))
+        rhythm, at = -1e9, t0
+        for t in range(t0 - 8, t0 + 9):
+            seg = onset[t:t + window]
+            if len(seg) < window:
+                continue
+            seg = (seg - seg.mean()) / (seg.std() + 1e-9)
+            c = float((seg * ref).mean())
+            if c > rhythm:
+                rhythm, at = c, t
+        harmony = float((_spectrum(x[at * HOP:at * HOP + RATE]) * head).sum())
+        score = rhythm + 1.5 * harmony
+        if score > best[0]:
+            best = (score, at, rhythm, harmony)
+    _score, best_t, rhythm, harmony = best
+    print("  %.1f BPM，循环点 %.2f 秒（尾声从 %.1f 秒开始），节奏吻合度 %.2f，和声相似 %.2f"
+          % (6000.0 / beat, best_t / sec, end_limit / sec, rhythm, harmony))
     return best_t * HOP
 
 
@@ -208,13 +227,15 @@ def save_wav(path: Path, x: np.ndarray) -> None:
 def main():
     want = [a for a in sys.argv[1:] if not a.startswith("--")] or list(TRACKS)
     force = "--force" in sys.argv
+    # --reloop：用缓存的原始音频重新找循环点、重新切（不调接口）
+    reloop = "--reloop" in sys.argv
     OUT.mkdir(parents=True, exist_ok=True)
     CACHE.mkdir(parents=True, exist_ok=True)
     log = []
     for tid in want:
         out = OUT / ("%s_loop.wav" % tid)
         raw = CACHE / ("%s_raw.pcm" % tid)
-        if out.exists() and not force:
+        if out.exists() and not force and not reloop:
             print("跳过（已经有了）：", out.name)
             continue
         t0 = time.time()

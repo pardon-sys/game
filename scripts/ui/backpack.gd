@@ -24,6 +24,9 @@ const PAGE_PENANCE := 5
 ## CG 图鉴一屏显示的行数。
 const GALLERY_ROWS := 9
 const COLUMNS := 8
+const GRID_ROWS := 2
+const SLOT := 40
+const SLOT_GAP := 4
 const CATEGORY_NAMES := {
 	ItemData.Category.CONSUMABLE: "消耗品", ItemData.Category.KEY: "钥匙",
 	ItemData.Category.CURRENCY: "货币", ItemData.Category.INSTANT: "其它", ItemData.Category.EQUIP: "装备",
@@ -42,6 +45,8 @@ var root: Control
 var tabs_label: Label
 var items_page: Control
 var grid: GridContainer
+## 物品格放在能滚动的框里：一次显示 GRID_ROWS 行，多了用滚轮 / 方向键往下翻，不会压到下面的说明文字
+var grid_scroll: ScrollContainer
 var detail_name: Label
 var detail_desc: Label
 var hotkey_label: Label
@@ -286,11 +291,17 @@ func _build() -> void:
 	items_page.position = Vector2(12, 26)
 	items_page.size = Vector2(396, 190)
 	panel.add_child(items_page)
+	grid_scroll = ScrollContainer.new()
+	grid_scroll.position = Vector2.ZERO
+	grid_scroll.size = Vector2(396, GRID_ROWS * (SLOT + SLOT_GAP) - SLOT_GAP + 2)
+	grid_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	grid_scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_AUTO
+	items_page.add_child(grid_scroll)
 	grid = GridContainer.new()
 	grid.columns = COLUMNS
-	grid.add_theme_constant_override("h_separation", 4)
-	grid.add_theme_constant_override("v_separation", 4)
-	items_page.add_child(grid)
+	grid.add_theme_constant_override("h_separation", SLOT_GAP)
+	grid.add_theme_constant_override("v_separation", SLOT_GAP)
+	grid_scroll.add_child(grid)
 	detail_name = _label(GOLD)
 	detail_name.position = Vector2(0, 92)
 	items_page.add_child(detail_name)
@@ -489,7 +500,7 @@ func _refresh_passives() -> void:
 
 func _passive_slot(id: String, active: bool) -> Control:
 	var p := Panel.new()
-	p.custom_minimum_size = Vector2(40, 40)
+	p.custom_minimum_size = Vector2(SLOT, SLOT)
 	var sb := StyleBoxFlat.new()
 	sb.bg_color = Color(0.22, 0.14, 0.26) if active else Color(0.17, 0.11, 0.2)
 	sb.border_color = GOLD if active else Color(0.4, 0.28, 0.45)
@@ -517,6 +528,7 @@ func _refresh_items() -> void:
 		c.queue_free()
 	for i in _items.size():
 		grid.add_child(_slot(_items[i], i == selected))
+	_scroll_to_selected.call_deferred()   # 新的格子下一帧才排好，滚动范围那时候才对
 	var it := selected_item()
 	if it:
 		var hk := GameState.hotkey_of(it.id)
@@ -529,6 +541,19 @@ func _refresh_items() -> void:
 		detail_name.text = "背包是空的。"
 		detail_desc.text = ""
 	hotkey_label.text = "快捷键　Q：%s　　R：%s" % [_hotkey_name("use_item"), _hotkey_name("use_special")]
+
+
+## 选中的那一格滚进可见范围（一行 SLOT + SLOT_GAP）
+func _scroll_to_selected() -> void:
+	if not is_instance_valid(grid_scroll):
+		return
+	var row := selected / COLUMNS
+	var top := row * (SLOT + SLOT_GAP)
+	var view := int(grid_scroll.size.y)
+	if top < grid_scroll.scroll_vertical:
+		grid_scroll.scroll_vertical = top
+	elif top + SLOT > grid_scroll.scroll_vertical + view:
+		grid_scroll.scroll_vertical = top + SLOT - view
 
 
 func _hotkey_name(hotkey: String) -> String:
