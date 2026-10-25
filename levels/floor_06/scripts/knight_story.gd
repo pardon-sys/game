@@ -1,9 +1,12 @@
 class_name KnightStory
 extends RefCounted
-## 骑士篇（七日赎罪之后，还在地下小镇）的剧情调度：连续推进，不分天。沿用七日赎罪的地图、导演（AfterTown / AfterHouse / AfterRoom）、
-## 目标提示和任务的跑法（AfterStory.play_task）——骑士篇开始以后（knight_started），AfterStory 的 objective / 触发 / 状态都转到这里。
+## 骑士篇（七日赎罪之后，还在地下小镇）的剧情调度：连续推进，不分天。小镇用骑士篇自己的三张图（布局同战后小镇，人物各自摆、不挂委托，导演 AfterRoom）：
+##   KDAY 白天（发现骑士、抬担架）/ KNIGHT_N 夜里（以笑为饵、溜进地牢）/ KCHASE 诅咒失控（追逃、Boss；一个镇民都没有）。
+##   从小屋 / 工房 / 地牢的门回「小镇」时，换图会被转到这一步对应的那张（redirect：步骤的 where 是小镇图就用它，不然用 town）。
+## 沿用七日赎罪的小屋、工房、导演（AfterHouse / AfterRoom）、目标提示和任务的跑法（AfterStory.play_task）——
+## 骑士篇开始以后（knight_started），AfterStory 的 objective / 触发 / 状态都转到这里。
 ##   STEPS 按顺序推进（vars.knight_step）。每一步：
-##     where 哪张图、auto（进图就演）或 spot [格x, 格y, 半径格]（走进圈才演）、slot 这一步的时段（早 / 夜，换灯光和镇民的位置）、objective 目标文字、
+##     where 哪张图、town 不在小镇图上的步骤回小镇时去哪张、auto（进图就演）或 spot [格x, 格y, 半径格]（走进圈才演）、slot 这一步的时段（早 / 夜，换灯光和镇民的位置）、objective 目标文字、
 ##     cutscene 开场过场、task 玩法（同 AfterStory.TASKS 的写法：script / name / fail / fail_hours / respawn）、done 收尾过场、
 ##     then_slot 做完换时段、goto [图, 出生点] 做完去哪、sleep 做完回床上睡到第二天早上。
 ##   时钟：骑士篇的第几天记在 DayClock 的 after_day（DAY 起），标签写「骑士篇·时段」（DayClock.label）。没有赎罪簿和工时。
@@ -15,29 +18,36 @@ const STARTED := "knight_started"
 const STEP_VAR := "knight_step"
 const DAY := 8
 const TOWN := "floor_06_after"
+const KDAY := "floor_06_knight_day"
+const KNIGHT_N := "floor_06_knight_night"
+const KCHASE := "floor_06_knight_chase"
+const TOWNS := [KDAY, KNIGHT_N, KCHASE]
+## 小镇图上通往各处的门口（指路用，三张小镇图布局相同）、各处回小镇的出口
+const DOORS := {"floor_06_after_house": [42, 10], "floor_06_after_pharmacy": [16, 10]}
+const EXITS := {"floor_06_after_house": [9, 10], "floor_06_after_pharmacy": [8, 8.5]}
 const HOUSE := "floor_06_after_house"
 const PHARMACY := "floor_06_after_pharmacy"
 const PRISON := "floor_06_after_prison"
 const MORNING := 0
 const NIGHT := 2
 const STEPS := [
-	{"id": "morning", "where": HOUSE, "auto": true, "slot": MORNING, "cutscene": "knight_morning", "objective": "去东北角的地牢入口"},
-	{"id": "found", "where": TOWN, "spot": [53, 8, 2], "slot": MORNING, "objective": "去东北角的地牢入口（矿道口旁边）", "cutscene": "knight_found",
+	{"id": "morning", "where": HOUSE, "town": KDAY, "auto": true, "slot": MORNING, "cutscene": "knight_morning", "objective": "去东北角的地牢入口"},
+	{"id": "found", "where": KDAY, "spot": [53, 8, 2], "slot": MORNING, "objective": "去东北角的地牢入口（矿道口旁边）", "cutscene": "knight_found",
 		"task": {"script": "res://levels/floor_06/scripts/task_stretcher.gd", "name": "抬担架", "fail": "knight_fail_stretcher", "fail_hours": 0, "respawn": [52, 9]},
 		"done": "knight_carry_done", "goto": [PHARMACY, "from_town"]},
-	{"id": "wake", "where": PHARMACY, "auto": true, "slot": MORNING, "cutscene": "knight_wake", "objective": "", "then_slot": NIGHT},
-	{"id": "bait", "where": TOWN, "spot": [33, 26, 2], "slot": NIGHT, "objective": "夜里的广场好像出事了，去看看", "cutscene": "knight_bait_open",
+	{"id": "wake", "where": PHARMACY, "town": KDAY, "auto": true, "slot": MORNING, "cutscene": "knight_wake", "objective": "", "then_slot": NIGHT},
+	{"id": "bait", "where": KNIGHT_N, "spot": [33, 26, 2], "slot": NIGHT, "objective": "夜里的广场好像出事了，去看看", "cutscene": "knight_bait_open",
 		"task": {"script": "res://levels/floor_06/scripts/task_bait.gd", "name": "以笑为饵", "fail": "knight_fail_bait", "fail_hours": 0, "respawn": [33, 27]},
 		"done": "knight_bait_done"},
-	{"id": "sneak", "where": TOWN, "spot": [58, 39, 1.5], "slot": NIGHT, "objective": "去东南角营地楼梯的路障后面，从通风口溜进地牢",
+	{"id": "sneak", "where": KNIGHT_N, "spot": [58, 39, 1.5], "slot": NIGHT, "objective": "去东南角营地楼梯的路障后面，从通风口溜进地牢",
 		"cutscene": "knight_sneak_open", "goto": [PRISON, "vent"]},
-	{"id": "cell", "where": PRISON, "auto": true, "slot": NIGHT, "objective": "躲开巡逻，去最里面那间牢房",
+	{"id": "cell", "where": PRISON, "town": KNIGHT_N, "auto": true, "slot": NIGHT, "objective": "躲开巡逻，去最里面那间牢房",
 		"task": {"script": "res://levels/floor_06/scripts/task_sneak.gd", "name": "夜探地牢", "fail": "", "fail_hours": 0},
 		"done": "knight_cell_end", "goto": [HOUSE, "bed"], "sleep": true},
-	{"id": "erupt", "where": HOUSE, "auto": true, "slot": MORNING, "cutscene": "knight_erupt", "objective": "", "goto": [TOWN, "from_house"]},
-	{"id": "chase", "where": TOWN, "auto": true, "slot": MORNING, "cutscene": "knight_chase_open", "objective": "把盔甲引到广场的图腾柱下",
+	{"id": "erupt", "where": HOUSE, "town": KCHASE, "auto": true, "slot": MORNING, "cutscene": "knight_erupt", "objective": "", "goto": [KCHASE, "from_house"]},
+	{"id": "chase", "where": KCHASE, "auto": true, "slot": MORNING, "cutscene": "knight_chase_open", "objective": "把盔甲引到广场的图腾柱下",
 		"task": {"script": "res://levels/floor_06/scripts/task_armor_chase.gd", "name": "镇中追逃", "fail": "knight_fail_chase", "fail_hours": 0, "respawn": [55, 37]}},
-	{"id": "boss", "where": TOWN, "auto": true, "slot": MORNING, "cutscene": "knight_boss_open", "objective": "打碎盔甲上的诅咒",
+	{"id": "boss", "where": KCHASE, "auto": true, "slot": MORNING, "cutscene": "knight_boss_open", "objective": "打碎盔甲上的诅咒",
 		"task": {"script": "res://levels/floor_06/scripts/task_knight_boss.gd", "name": "痒铠骑士", "fail": "knight_fail_boss", "fail_hours": 0, "respawn": [41, 29]},
 		"done": "knight_epilogue"},
 ]
@@ -84,6 +94,22 @@ static func jump(id: String) -> void:
 			return
 
 
+## 现在回「小镇」该去哪张骑士篇的小镇图
+static func town_now() -> String:
+	var s := step()
+	if s.is_empty():
+		return KDAY
+	var where := str(s["where"])
+	return where if where in TOWNS else str(s.get("town", KDAY))
+
+
+## 换图时：骑士篇里去旧小镇（七日赎罪的 floor_06_after，镇民委托还在上面）→ 转到这一步的骑士篇小镇
+static func redirect(path: String) -> String:
+	if active() and path == Floors.scene(TOWN):
+		return Floors.scene(town_now())
+	return path
+
+
 static func objective(floor_id: String) -> Dictionary:
 	var s := step()
 	if s.is_empty():
@@ -97,7 +123,16 @@ static func objective(floor_id: String) -> Dictionary:
 			var sp: Array = s["spot"]
 			return {"text": text, "cell": [sp[0], sp[1]], "radius": float(sp[2]), "trigger": true}
 		return {"text": text} if text != "" else {}
-	return AfterStory._guide(floor_id, where, text)
+	return _guide(floor_id, where, text)
+
+
+## 目标在别的图：小镇图上指向那张图的门口（地牢走营地楼梯后面的通风口，算小镇图上的 spot）；别的图上指向回小镇的出口
+static func _guide(floor_id: String, where: String, text: String) -> Dictionary:
+	if floor_id in TOWNS and DOORS.has(where):
+		return {"text": text, "cell": DOORS[where], "radius": 1.0}
+	if not floor_id in TOWNS and where in TOWNS and EXITS.has(floor_id):
+		return {"text": text, "cell": EXITS[floor_id], "radius": 1.0}
+	return {"text": text}
 
 
 static func status_text() -> String:

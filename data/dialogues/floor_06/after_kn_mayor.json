@@ -1,0 +1,39 @@
+{
+	"name": "镇长",
+	"npc": "mayor",
+	"entries": [
+		{
+			"if": {
+				"var": {
+					"knight_step": [
+						">=",
+						4
+					]
+				}
+			},
+			"node": "later"
+		},
+		{
+			"node": "earlier"
+		}
+	],
+	"nodes": {
+		"later": {
+			"lines": [
+				{
+					"text": "笑声……回来了。"
+				},
+				{
+					"text": "谢谢你们。……可是那些手印，到底是从哪里来的呢。"
+				}
+			]
+		},
+		"earlier": {
+			"lines": [
+				{
+					"text": "……大家都不笑了。笑声像是被什么偷走了一样。"
+				}
+			]
+		}
+	}
+}

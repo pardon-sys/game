@@ -1,0 +1,39 @@
+{
+	"name": "工匠",
+	"npc": "miner",
+	"entries": [
+		{
+			"if": {
+				"var": {
+					"knight_step": [
+						">=",
+						4
+					]
+				}
+			},
+			"node": "later"
+		},
+		{
+			"node": "earlier"
+		}
+	],
+	"nodes": {
+		"later": {
+			"lines": [
+				{
+					"text": "那些手印……是从工房那个方向爬过来的。"
+				},
+				{
+					"text": "……我什么都没说。"
+				}
+			]
+		},
+		"earlier": {
+			"lines": [
+				{
+					"text": "别过来！你脚边……有手印在爬！"
+				}
+			]
+		}
+	}
+}

@@ -1,0 +1,39 @@
+{
+	"name": "保卫队员",
+	"npc": "guard",
+	"entries": [
+		{
+			"if": {
+				"var": {
+					"knight_step": [
+						">=",
+						2
+					]
+				}
+			},
+			"node": "later"
+		},
+		{
+			"node": "earlier"
+		}
+	],
+	"nodes": {
+		"later": {
+			"lines": [
+				{
+					"text": "听说那个骑士一醒过来就骂人了？"
+				},
+				{
+					"text": "……盔甲上还有手印在爬，我可不敢靠近。"
+				}
+			]
+		},
+		"earlier": {
+			"lines": [
+				{
+					"text": "队长一早就去东北角了，脸色可难看了。"
+				}
+			]
+		}
+	}
+}

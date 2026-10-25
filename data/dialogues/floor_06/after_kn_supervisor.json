@@ -1,0 +1,36 @@
+{
+	"name": "市场监督",
+	"npc": "supervisor",
+	"entries": [
+		{
+			"if": {
+				"var": {
+					"knight_step": [
+						">=",
+						4
+					]
+				}
+			},
+			"node": "later"
+		},
+		{
+			"node": "earlier"
+		}
+	],
+	"nodes": {
+		"later": {
+			"lines": [
+				{
+					"text": "宵禁之后还在外面晃……算了，今晚记你们一功。"
+				}
+			]
+		},
+		"earlier": {
+			"lines": [
+				{
+					"text": "夜里不许在广场上聚集。……可是大家都吓得不敢回家。"
+				}
+			]
+		}
+	}
+}

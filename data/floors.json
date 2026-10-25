@@ -142,6 +142,27 @@
 			"music": "town"
 		},
 		{
+			"id": "floor_06_knight_day",
+			"name": "地下小镇·骑士篇（白天）",
+			"scene": "res://levels/floor_06_knight_day/floor.tscn",
+			"group": "floor_06",
+			"music": "town"
+		},
+		{
+			"id": "floor_06_knight_night",
+			"name": "地下小镇·骑士篇（夜里）",
+			"scene": "res://levels/floor_06_knight_night/floor.tscn",
+			"group": "floor_06",
+			"music": "town"
+		},
+		{
+			"id": "floor_06_knight_chase",
+			"name": "地下小镇·骑士篇（诅咒失控）",
+			"scene": "res://levels/floor_06_knight_chase/floor.tscn",
+			"group": "floor_06",
+			"music": "town"
+		},
+		{
 			"id": "floor_06_after_house",
 			"name": "蓝色小屋·战后",
 			"scene": "res://levels/floor_06_after_house/floor.tscn",

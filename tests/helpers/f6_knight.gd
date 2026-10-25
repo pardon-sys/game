@@ -46,6 +46,11 @@ static func run(t: Node) -> void:
 	GameState.pending_spawn = "from_house"
 	await t.main.change_level(Floors.scene(AfterStory.TOWN))
 	await t._wait(0.8)
+	verify(t, "出小屋去旧小镇 → 转到骑士篇白天的小镇（%s）" % t._level_id(), t._level_id() == KnightStory.KDAY)
+	var folk: Array = t.main.level.find_children("*", "Resident", true, false)
+	verify(t, "白天的小镇：镇民都是骑士篇的对话、不挂委托（%d 人）" % folk.size(), not folk.is_empty()
+		and folk.all(func(n): return (n as Resident).dialogue.begins_with("floor_06/after_k_")) and not AfterErrands.is_open("dance"))
+	verify(t, "图腾柱已经修好了", t.main.level.find_children("*", "Node2D", true, false).any(func(n): return n.get("kind") == "totem_fixed"))
 	var mk := t._node("Objective") as ObjectiveMarker
 	verify(t, "小镇的目标：东北角地牢入口", mk != null and mk.text.contains("地牢入口"))
 	t._go(Cutscene.cell_to_world(KnightStory.STEPS[1]["spot"]))
@@ -92,6 +97,8 @@ static func run(t: Node) -> void:
 	GameState.pending_spawn = "from_pharmacy"
 	await t.main.change_level(Floors.scene(AfterStory.TOWN))
 	await t._wait(0.8)
+	verify(t, "出工房 → 转到骑士篇夜里的小镇（%s），镇民在广场上" % t._level_id(), t._level_id() == KnightStory.KNIGHT_N
+		and t.main.level.find_children("*", "Resident", true, false).all(func(n): return (n as Resident).dialogue.begins_with("floor_06/after_kn_")))
 	t._go(Cutscene.cell_to_world(KnightStory.STEPS[3]["spot"]))
 	var bt := await wait_task(t, "bait") as TaskBait
 	verify(t, "夜里的广场：灯笼暗了 → 以笑为饵开始（%d 只手印、痒痒草、诅咒地纹）" % (bt.hands.size() if bt else 0),

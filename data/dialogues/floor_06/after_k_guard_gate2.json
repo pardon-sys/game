@@ -1,0 +1,36 @@
+{
+	"name": "保卫队员",
+	"npc": "guard",
+	"entries": [
+		{
+			"if": {
+				"var": {
+					"knight_step": [
+						">=",
+						2
+					]
+				}
+			},
+			"node": "later"
+		},
+		{
+			"node": "earlier"
+		}
+	],
+	"nodes": {
+		"later": {
+			"lines": [
+				{
+					"text": "城门今天不开。队长的命令。"
+				}
+			]
+		},
+		"earlier": {
+			"lines": [
+				{
+					"text": "东北角的地牢入口，倒了一个穿盔甲的人。……不是咱们镇上的盔甲。"
+				}
+			]
+		}
+	}
+}

@@ -1,0 +1,41 @@
+{
+	"name": "小孩们",
+	"npc": "kid",
+	"entries": [
+		{
+			"if": {
+				"var": {
+					"knight_step": [
+						">=",
+						2
+					]
+				}
+			},
+			"node": "later"
+		},
+		{
+			"node": "earlier"
+		}
+	],
+	"nodes": {
+		"later": {
+			"lines": [
+				{
+					"text": "姐姐！听说工房里有个骑士！会不会是来抓坏人的！"
+				},
+				{
+					"text": "……他好像把我当坏人了。",
+					"speaker": "公主",
+					"emotion": "sad"
+				}
+			]
+		},
+		"earlier": {
+			"lines": [
+				{
+					"text": "姐姐！东北角好多保卫队的叔叔！"
+				}
+			]
+		}
+	}
+}

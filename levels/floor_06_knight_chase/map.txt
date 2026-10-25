@@ -1,0 +1,116 @@
+[level]
+# 第六层·地下小镇·战后（tools/build/gen_floor06_after.py 生成，不要直接改）
+intro =
+ambient = 0.66,0.56,0.5
+night_ambient = 0.3,0.3,0.5
+no_switch = true
+[legend]
+# = wall
+. = floor
+P = player
+t = torch lit=true
+A = f6afterroom
+C = prop type=dungeon_gate
+D = spawn id=from_mine
+E = prop type=house_scaffold_0
+F = prop type=house_1
+G = prop type=house_scaffold_1
+H = prop type=house_3
+I = spawn id=from_tailor
+J = sign dialogue=after_tailor_sign
+K = spawn id=from_drill
+L = spawn id=from_proving
+M = prop type=drain_grate
+N = spawn id=from_drain
+O = exit target=floor_06_after_pharmacy spawn=from_town
+Q = spawn id=from_pharmacy
+R = sign dialogue=after_pharmacy_sign
+S = prop type=lumber action=talk:floor_06/after_objects#lumber
+T = prop type=rubble
+U = prop type=house_blue
+V = exit target=floor_06_after_house spawn=from_town lock_flag=after_task_active locked_dialogue=after_task_locked
+W = spawn id=from_house
+X = prop type=stall_0 action=shop:war_market
+Y = prop type=stall_1 action=shop:war_market
+Z = prop type=stall_2 action=shop:war_market
+a = prop type=stall_broken
+b = prop type=crate
+c = prop type=bonfire_0 action=heal
+d = spawn id=from_festival
+e = prop type=bench
+f = prop type=lamp
+g = prop type=well
+h = prop type=ladder
+i = prop type=fence
+j = prop type=hay
+k = prop type=podium action=talk:floor_06/after_objects#podium
+l = prop type=notice_board action=talk:floor_06/after_objects#notice
+m = prop type=bunting
+n = savepoint place=战后的广场
+o = prop type=totem_fixed
+p = spawn id=from_totem
+q = prop type=stairs_down
+r = prop type=barricade
+s = sign dialogue=after_camp_blocked
+u = spawn id=from_prison
+v = prop type=sandbag
+w = prop type=tower_base
+y = prop type=tower
+z = prop type=dungeon_gate action=talk:floor_06/after_objects#gate
+0 = spawn id=from_siege
+1 = spawn id=from_field
+2 = blue_princess follow=true ai=false
+3 = prop type=decal_ash_1
+4 = prop type=decal_footprints_0
+5 = prop type=decal_straw_0
+6 = prop type=decal_splinters_0
+7 = prop type=decal_scorch_1
+8 = prop type=decal_puddle_0
+
+[map]
+################################################################
+########t###########t###########t###########t###########t#######
+##............................................................##
+##.A..................................6...........5...........##
+##..............................................8.....C.......##
+##...................4........................................##
+##.................................4..................D.......##
+##.................5.7........................................##
+##......E.......F.......G.......H......6..U........6..........##
+##..............O........h....5...........V.....5.............##
+##...5..K.......Q.R.............I.J.......W...........5.......##
+##..........S...............S.........6...P2..................##
+##....7........8..5.T...........5.............................##
+##...........................................8.....4..........##
+##.......3....................................................##
+##................................................3...7.......##
+##............................8...............................##
+##................................5...........................##
+##............................g..........................6....##
+##.....X...Y...Z..............................................##
+##...........6..............................................L.##
+##.......................m..........m...e.......e......8......##
+##..b.3......7.............................................7..##
+##..b......7..................8....l......5...................##
+##................3.............6....f......c......f..........##
+##............................k.........................4.....##
+##...5.Y...Z...a.......8....8...........d.....................##
+##......................................e....8..e.............##
+##.....................................................iiiii..##
+##...................4..............4............3.....i...i..##
+##.......5.............................................i...ij.##
+##...................................................6.i...i..##
+##.p..........................n........6...............ii.ii..##
+##......4........................8.4..........................##
+##................o...........................................##
+##............................................................##
+##...............8......5........1........................3...##
+##..........w.........w...................w.........w.........##
+##..................N......y....0....y.......6...........ur...##
+##......v.......S...M.....................5.....S.......v.....##
+##...........................f..z..f.....................s.q..##
+################################################################
+##............................................................##
+##............................................................##
+################################################################
+################################################################

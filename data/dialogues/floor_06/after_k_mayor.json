@@ -1,0 +1,43 @@
+{
+	"name": "镇长",
+	"npc": "mayor",
+	"entries": [
+		{
+			"if": {
+				"var": {
+					"knight_step": [
+						">=",
+						2
+					]
+				}
+			},
+			"node": "later"
+		},
+		{
+			"node": "earlier"
+		}
+	],
+	"nodes": {
+		"later": {
+			"lines": [
+				{
+					"text": "……骑士。"
+				},
+				{
+					"text": "这座镇子，很久很久没有见过骑士了。"
+				},
+				{
+					"text": "（镇长望着工房的方向，好久没有说话）",
+					"speaker": ""
+				}
+			]
+		},
+		"earlier": {
+			"lines": [
+				{
+					"text": "庆功宴才刚过，就……唉。去吧，队长在等你们。"
+				}
+			]
+		}
+	}
+}

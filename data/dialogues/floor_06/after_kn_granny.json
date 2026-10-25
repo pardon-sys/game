@@ -1,0 +1,36 @@
+{
+	"name": "面包店奶奶",
+	"npc": "granny",
+	"entries": [
+		{
+			"if": {
+				"var": {
+					"knight_step": [
+						">=",
+						4
+					]
+				}
+			},
+			"node": "later"
+		},
+		{
+			"node": "earlier"
+		}
+	],
+	"nodes": {
+		"later": {
+			"lines": [
+				{
+					"text": "哈……奶奶刚才想笑，笑不出来。现在好了，好了。"
+				}
+			]
+		},
+		"earlier": {
+			"lines": [
+				{
+					"text": "……奶奶刚才明明想笑，嘴巴张开了，可是一点声音都没有。"
+				}
+			]
+		}
+	}
+}

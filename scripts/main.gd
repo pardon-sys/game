@@ -93,6 +93,7 @@ func change_level(path: String, keep_state := false) -> void:
 		level.queue_free()
 	GameState.checkpoint = Vector2.ZERO
 	GameState.in_dialogue = false
+	path = StoryDirector.redirect_level(path)
 	level = load(path).instantiate()
 	add_child(level)
 	move_child(level, 0)

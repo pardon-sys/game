@@ -1,0 +1,42 @@
+{
+	"name": "保卫队队长",
+	"npc": "captain",
+	"entries": [
+		{
+			"if": {
+				"var": {
+					"knight_step": [
+						">=",
+						4
+					]
+				}
+			},
+			"node": "later"
+		},
+		{
+			"node": "earlier"
+		}
+	],
+	"nodes": {
+		"later": {
+			"lines": [
+				{
+					"text": "……收进瓶子里的手印，我会锁起来。"
+				},
+				{
+					"text": "回去睡觉。今晚别再出门了。"
+				}
+			]
+		},
+		"earlier": {
+			"lines": [
+				{
+					"text": "……广场上的手印，你也看见了。"
+				},
+				{
+					"text": "别逞强。"
+				}
+			]
+		}
+	}
+}

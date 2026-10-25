@@ -1,0 +1,39 @@
+{
+	"name": "商人",
+	"npc": "merchant",
+	"entries": [
+		{
+			"if": {
+				"var": {
+					"knight_step": [
+						">=",
+						2
+					]
+				}
+			},
+			"node": "later"
+		},
+		{
+			"node": "earlier"
+		}
+	],
+	"nodes": {
+		"later": {
+			"lines": [
+				{
+					"text": "一个骑士，从地牢里爬出来？"
+				},
+				{
+					"text": "……这种事，摊子上可不卖。"
+				}
+			]
+		},
+		"earlier": {
+			"lines": [
+				{
+					"text": "一大早的，保卫队就跑来跑去。出什么事了？"
+				}
+			]
+		}
+	}
+}

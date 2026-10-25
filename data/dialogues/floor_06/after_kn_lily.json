@@ -1,0 +1,37 @@
+{
+	"name": "小莉莉",
+	"npc": "kid",
+	"entries": [
+		{
+			"if": {
+				"var": {
+					"knight_step": [
+						">=",
+						4
+					]
+				}
+			},
+			"node": "later"
+		},
+		{
+			"node": "earlier"
+		}
+	],
+	"nodes": {
+		"later": {
+			"lines": [
+				{
+					"text": "莉莉的笑声回来了～嘿嘿～"
+				}
+			]
+		},
+		"earlier": {
+			"lines": [
+				{
+					"text": "（小莉莉紧紧抓着你的裙角，一句话也不说）",
+					"speaker": ""
+				}
+			]
+		}
+	}
+}

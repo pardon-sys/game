@@ -31,6 +31,9 @@ static func run(t: Node) -> void:
 	verify(t, "早上：诅咒失控 → 小镇 → 盔甲冲出营地，追逃开始", ch != null and t.seen_cuts.has("knight_erupt") and t.seen_cuts.has("knight_chase_open"))
 	if ch == null:
 		return
+	verify(t, "追逃在骑士篇专用的空小镇上（%s），一个镇民都没有" % t._level_id(), t._level_id() == KnightStory.KCHASE
+		and t.main.level.find_children("*", "Resident", true, false).is_empty())
+	ch.ai_enabled = false
 	var pink := ch.pink
 	verify(t, "开局：两人在楼梯口附近，盔甲先在楼梯口挣扎一会儿", ch.armor.stun_left > 0.0
 		and pink.global_position.distance_to(Cutscene.cell_to_world(TaskArmorChase.PINK_START)) < 8.0)
@@ -54,6 +57,33 @@ static func run(t: Node) -> void:
 	for i in TaskArmorChase.MASH:
 		ch.mash()
 	verify(t, "连按 J：挣开", not ch.grabbing)
+	verify(t, "没被操控的蓝色公主由 AI 控制（%s）" % ch.blue.controller, ch.blue.controller is KnightAI)
+	# AI 蓝色公主：盔甲追着粉色公主、她在旁边 → 冻住
+	ch.ai_enabled = true
+	ch.armor.stun_left = 0.0
+	ch.armor.freeze_left = 0.0
+	ch.freeze_cool = 0.0
+	ch.armor.global_position = ch.pink.global_position + Vector2(40, 0)
+	ch.blue.global_position = ch.armor.global_position + Vector2(-20, 6)
+	ch.ai_plan(ch.blue)
+	verify(t, "AI 蓝色公主：盔甲靠近粉色公主 → 冷却好了就冻住它", ch.armor.freeze_left > 0.0 and ch.freeze_cool > 0.0)
+	ch.armor.freeze_left = 0.0
+	ch.freeze_cool = 0.0
+	ch.blue.global_position = ch.armor.global_position + Vector2(90, 40)
+	var plan_b := ch.ai_plan(ch.blue)
+	verify(t, "AI 蓝色公主：离得远 → 冲过去拦", plan_b.has("to") and bool(plan_b.get("dash", false)))
+	# 换成蓝色公主：粉色公主由 AI 控制，背着盔甲跑
+	GameState.switch_control(ch.blue)
+	await t._wait(0.1)
+	verify(t, "按 C 换成蓝色公主：粉色公主由 AI 控制", ch.pink.controller is KnightAI and ch.blue.controller is PlayerInputController)
+	ch.armor.global_position = ch.pink.global_position + Vector2(30, 0)
+	var plan_p := ch.ai_plan(ch.pink)
+	verify(t, "AI 粉色公主：盔甲靠近 → 往反方向跑", plan_p.has("to") and (plan_p["to"] as Vector2).x < ch.pink.global_position.x)
+	GameState.switch_control(ch.pink)
+	await t._wait(0.1)
+	ch.ai_enabled = false
+	ch.freeze_cool = 0.0
+	ch.armor.freeze_left = 0.0
 	# 蓝色公主冻住
 	GameState.switch_control(ch.blue)
 	await t._wait(0.2)
@@ -91,6 +121,31 @@ static func run(t: Node) -> void:
 	if b == null:
 		return
 	pink = b.pink
+	verify(t, "Boss 战：没被操控的蓝色公主由 AI 控制", b.blue.controller is KnightAI)
+	var a0: TaskKnightBoss.BossPart = b.parts[0]
+	b.freeze_cool = 0.0
+	b.blue.global_position = a0.global_position + Vector2(0, 20)
+	b.ai_plan(b.blue)
+	verify(t, "AI 蓝色公主：走到没冻住的部件旁边 → 冻住", a0.freeze_left > 0.0)
+	var hk := (b.blue.controller as KnightAI).hooks
+	verify(t, "冻住的部件成了 AI 的优先目标", hk != null and hk.priority_target() == a0)
+	a0.freeze_left = 0.0
+	b.freeze_cool = 0.0
+	GameState.switch_control(b.blue)
+	await t._wait(0.1)
+	var plan_bp := b.ai_plan(b.pink)
+	verify(t, "换成蓝色公主：AI 粉色公主贴近本体（让出招变慢）", b.pink.controller is KnightAI and plan_bp.has("to")
+		and (plan_bp["to"] as Vector2).distance_to(b._body.global_position) < TaskKnightBoss.SOFT_R)
+	b.grab(b.pink)
+	await t._advance_until(func(): return b.grabbed == null, 3.0)
+	verify(t, "AI 粉色公主被抓：自己连按挣开（%d 下）" % b.mashes, b.grabbed == null and b.mashes >= TaskKnightBoss.MASH)
+	b.ai_enabled = false
+	GameState.vars[TaskKnightBoss.CAUGHT_KEY] = 0
+	GameState.switch_control(b.pink)
+	await t._wait(0.1)
+	a0.hp = TaskKnightBoss.PART_HP
+	a0.freeze_left = 0.0
+	b.freeze_cool = 0.0
 	var p0: TaskKnightBoss.BossPart = b.parts[0]
 	verify(t, "没冻住的部件打不动", not b.hit_part(p0) and p0.hp == TaskKnightBoss.PART_HP)
 	GameState.switch_control(b.blue)

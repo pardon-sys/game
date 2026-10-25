@@ -118,7 +118,7 @@
 			"text": "……你的骑士？",
 			"actions": [
 				{
-					"who": "after_captain",
+					"who": "after_k_captain",
 					"kind": "question",
 					"do": "bubble"
 				}
