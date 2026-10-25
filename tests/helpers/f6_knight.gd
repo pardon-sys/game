@@ -75,9 +75,21 @@ static func run(t: Node) -> void:
 	h = st.spawn_hand()
 	h.global_position = st.walker.global_position
 	st.advance(0.05)
-	verify(t, "手印碰到前面的队员：他笑倒、担架一歪（%d 次）、又多爬出一只" % TaskStretcher.drops(), TaskStretcher.drops() == 1 and st.dropped_left > 0.0)
+	verify(t, "刚爬出来的手印碰到队员还不算（她有时间去拦）", TaskStretcher.drops() == 0)
+	h.set_meta(&"age", TaskStretcher.ARM_TIME)
+	var h2 := st.spawn_hand(0.0, true)
+	var h3 := st.spawn_hand(0.0, true)
+	for x in [h2, h3]:
+		x.global_position = st.walker.global_position
+	st.advance(0.05)
+	verify(t, "三只手印同一下碰到队员：只歪一次（%d 次）、又多爬出一只" % TaskStretcher.drops(), TaskStretcher.drops() == 1 and st.dropped_left > 0.0 and st.grace_left > 0.0)
+	for i in 10:
+		st.advance(0.05)
+	verify(t, "歪了以后的缓冲时间里不再算（%d 次）" % TaskStretcher.drops(), TaskStretcher.drops() == 1)
 	GameState.vars[TaskStretcher.PATH_KEY] = 2
-	h = st.spawn_hand()
+	st.grace_left = 0.0
+	st.dropped_left = 0.0
+	h = st.spawn_hand(0.0, true)
 	h.global_position = st.walker.global_position
 	st.advance(0.05)
 	await t._advance_until(func(): return GameState.has_flag("cg_seen_theater:knight_fail_stretcher") and task(t, "found") != null and bool(task(t, "found").started) and not CG.is_busy(), 60.0)
@@ -89,24 +101,34 @@ static func run(t: Node) -> void:
 	st.walker.global_position = Cutscene.cell_to_world(TaskStretcher.PATH[-1])
 	st.pink.global_position = st.walker.global_position + Vector2(0, 16)
 	st.advance(0.05)
-	await t._advance_until(func(): return t._level_id() == KnightStory.PHARMACY and KnightStory.step_id() == "bait" and not Cutscene.is_playing() and not DayClock.passing and not KnightStory.running, 60.0)
-	verify(t, "抬到工房 → 醒来吼「凶手」→ 被关进地牢 → 天黑（%s）" % DayClock.label(),
-		t.seen_cuts.has("knight_carry_done") and t.seen_cuts.has("knight_wake") and DayClock.slot() == DayClock.NIGHT)
+	await t._advance_until(func(): return t._level_id() == KnightStory.PHARMACY and KnightStory.step_id() == "bait" and not Cutscene.is_playing() and not KnightStory.running, 60.0)
+	verify(t, "抬到工房 → 醒来吼「凶手」→ 被关进地牢 → 工房里自由活动，还没天黑（%s）" % DayClock.label(),
+		t.seen_cuts.has("knight_carry_done") and t.seen_cuts.has("knight_wake") and DayClock.slot() == DayClock.MORNING and not Sleep.sleeping)
+	var mk2 := t._node("Objective") as ObjectiveMarker
+	verify(t, "工房里的目标：出门透透气（%s）" % (mk2.text if mk2 else ""), mk2 != null and mk2.text.contains("出门"))
 	# C 以笑为饵
 	GameState.vars[TaskBait.CAUGHT_KEY] = 0
 	GameState.pending_spawn = "from_pharmacy"
 	await t.main.change_level(Floors.scene(AfterStory.TOWN))
 	await t._wait(0.8)
-	verify(t, "出工房 → 转到骑士篇夜里的小镇（%s），镇民在广场上" % t._level_id(), t._level_id() == KnightStory.KNIGHT_N
-		and t.main.level.find_children("*", "Resident", true, false).all(func(n): return (n as Resident).dialogue.begins_with("floor_06/after_kn_")))
-	t._go(Cutscene.cell_to_world(KnightStory.STEPS[3]["spot"]))
+	verify(t, "出工房 → 转到骑士篇夜里的小镇（%s），外面已经天黑（不用黑幕），镇民在广场上" % t._level_id(), t._level_id() == KnightStory.KNIGHT_N
+		and DayClock.slot() == DayClock.NIGHT and t.main.level.find_children("*", "Resident", true, false).all(func(n): return (n as Resident).dialogue.begins_with("floor_06/after_kn_")))
 	var bt := await wait_task(t, "bait") as TaskBait
 	verify(t, "夜里的广场：灯笼暗了 → 以笑为饵开始（%d 只手印、痒痒草、诅咒地纹）" % (bt.hands.size() if bt else 0),
 		bt != null and t.seen_cuts.has("knight_bait_open") and bt.hands.size() == TaskBait.HANDS and bt.marks.size() > 0 and bt.grass.size() > 0)
 	if bt == null:
 		return
 	verify(t, "手印贴着镇民偷笑声", bt.hands.any(func(x): return x.stealing))
+	verify(t, "出门就自动开演（不用走到广场）、C 键绑上了换人", t.seen_cuts.has("knight_bait_open")
+		and InputMap.action_get_events("switch_character").any(func(e): return e is InputEventKey and e.physical_keycode == KEY_C))
 	var pink := bt.pink
+	verify(t, "这段里 K 不冲刺", pink.has_meta(&"no_dash") and bt.blue.has_meta(&"no_dash"))
+	pink.laugh.set_value(0.0)
+	bt.steal_held = true
+	for i in 20:
+		await t.get_tree().process_frame
+	bt.steal_held = false
+	verify(t, "粉色公主按住 K 偷偷笑：闷笑涨起来（%.0f%%）" % (pink.laugh.ratio() * 100.0), pink.laugh.ratio() > 0.03)
 	pink.laugh.set_value(0.0)
 	var hd: CurseHand = bt.hands[0]
 	hd.release()
@@ -135,6 +157,13 @@ static func run(t: Node) -> void:
 	verify(t, "这段任务小镇能换人", t.main.level.get_meta(&"free_switch", false) and not bool(t.main.level.get("no_switch")))
 	GameState.switch_control(blue)
 	await t._wait(0.2)
+	pink.laugh.set_value(0.0)
+	pink.global_position = blue.global_position + Vector2(12, 0)
+	for x in bt.hands:
+		if is_instance_valid(x) and x.state == "frozen":
+			x.global_position = blue.global_position + Vector2(200, 0)
+	verify(t, "蓝色公主在她身边按 K：挠她一下（%s），闷笑上涨" % bt.press_k_blue(), pink.laugh.value > 0.0)
+	pink.laugh.set_value(0.0)
 	hd.global_position = blue.global_position + Vector2(8, 0)
 	var n := bt.freeze_near(blue)
 	verify(t, "蓝色公主 J：冻住身边的手印（%d 只）" % n, n >= 1 and hd.state == "frozen")
@@ -175,6 +204,23 @@ static func run(t: Node) -> void:
 		and not t.get_tree().get_nodes_in_group("patrol_guard").is_empty())
 	if sk == null:
 		return
+	var sd: StealthDirector = t.main.level.find_children("*", "StealthDirector", true, false)[0]
+	var crates: Array = t.main.level.find_children("*", "Node2D", true, false).filter(func(n): return n.get("kind") == "crate" and n.get("action") == "hide")
+	var stuck: Array = []
+	for c in crates:
+		var at: Vector2 = sd.exit_spot(GameState.player, (c as Node2D).global_position)
+		var q := PhysicsShapeQueryParameters2D.new()
+		var cs := GameState.player.get_node("Collision") as CollisionShape2D
+		q.shape = cs.shape
+		q.collision_mask = GameState.player.collision_mask
+		q.exclude = [GameState.player.get_rid()]
+		q.transform = Transform2D(0.0, at + cs.position)
+		if not GameState.player.get_world_2d().direct_space_state.intersect_shape(q, 1).is_empty():
+			stuck.append((c as Node2D).global_position)
+	verify(t, "每个木箱（%d 个）躲进去再出来都站得下，不卡墙（卡住的：%s）" % [crates.size(), stuck], crates.size() >= 5 and stuck.is_empty())
+	var guards: Array = t.get_tree().get_nodes_in_group("patrol_guard")
+	verify(t, "巡逻松一点：%d 个队员，视野 %.0f，警觉涨得慢（%.1f）" % [guards.size(), guards[0].view_range, sd.alert_rate],
+		guards.size() == 5 and guards.all(func(g): return g.view_range <= 64.0 and g.speed <= 26.0) and sd.alert_rate <= 1.6)
 	TaskSneak.auto_chair = true
 	sk.caught_now()
 	await t._wait(0.3)
@@ -185,8 +231,12 @@ static func run(t: Node) -> void:
 	await t._advance_until(func(): return t.seen_cuts.has("knight_cell_end") and not Cutscene.is_playing(), 60.0)
 	verify(t, "隔着栏杆问完三个问题（%s）→ 蓝色公主走出来 →「又是这副花猫样」→ 手帕" % [["knight_asked_night", "knight_asked_fall", "knight_asked_why"].filter(func(f): return GameState.has_flag(f))],
 		GameState.has_flag("knight_asked_night") and GameState.has_flag("knight_asked_fall") and GameState.has_flag("knight_asked_why") and t.seen_cuts.has("knight_cell_end"))
-	await t._advance_until(func(): return t._level_id() == AfterStory.HOUSE and DayClock.slot() == DayClock.MORNING and not KnightStory.running and not Sleep.sleeping, 60.0)
-	verify(t, "回小屋睡到第二天早上（%s）" % DayClock.label(), t._level_id() == AfterStory.HOUSE and DayClock.slot() == DayClock.MORNING and DayClock.day() == KnightStory.DAY + 1)
+	await t._advance_until(func(): return t._level_id() == AfterStory.HOUSE and not Cutscene.is_playing() and not KnightStory.running, 60.0)
+	await t._wait(0.5)
+	var mk3 := t._node("Objective") as ObjectiveMarker
+	verify(t, "溜回小屋门口：还是夜里，不自动睡，目标「回床上睡觉」（%s）" % (mk3.text if mk3 else ""), t._level_id() == AfterStory.HOUSE
+		and DayClock.slot() == DayClock.NIGHT and KnightStory.step_id() == "erupt" and KnightStory.can_sleep() and mk3 != null and mk3.text.contains("床"))
+	verify(t, "床上能睡（骑士篇）", KnightStory.can_sleep() and not t.seen_cuts.has("knight_erupt"))
 	# 审问椅本身
 	InterrogationChairShow.quiet = true
 	var ch := InterrogationChairShow.new()

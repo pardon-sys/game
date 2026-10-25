@@ -479,7 +479,7 @@ pz = Map(PRISON, 42, 22, "intro =\nambient = 0.34,0.32,0.42\nno_switch = true")
 for (x0, y0, x1, y1) in ((2, 16, 38, 19), (10, 7, 12, 16), (24, 7, 26, 16), (10, 5, 39, 7), (34, 2, 38, 3), (16, 10, 20, 14), (12, 11, 16, 12)):
     pz.room(x0, y0, x1, y1)
 pz.put(3, 17, "f6afterroom")
-pz.put(4, 16, "stealth")
+pz.put(4, 16, "stealth alert_rate=1.6 alert_decay=0.6")   # 骑士篇的地牢：比别的潜入关卡松一点（警觉涨得慢、退得快）
 pz.put(2, 18, "exit target=%s spawn=from_prison" % TOWN)
 pz.put(3, 18, "spawn id=vent")
 pz.put(4, 18, "player")
@@ -507,9 +507,10 @@ for path, extra in (
         ("11,15;11,8", ""),                       # 西竖走廊
         ("25,8;25,15", " wait=1.0"),              # 东竖走廊
         ("14,6;32,6", ""),                        # 牢房走廊
-        ("16,10;20,10;20,14;16,14", " loop=true"),  # 审问室绕圈
 ):
-    pz.put(int(path.split(";")[0].split(",")[0]), int(path.split(";")[0].split(",")[1]), "guard_patrol path=" + path + extra)
+    # 视野短一点、窄一点、走得慢一点，路过木箱很少去翻（审问室不再有人绕圈）
+    pz.put(int(path.split(";")[0].split(",")[0]), int(path.split(";")[0].split(",")[1]),
+           "guard_patrol path=" + path + extra + " view_range=64 view_angle=55 speed=26 investigate_speed=44 check_chance=0.12")
 pz.write()
 
 # ================================================================ 城门外的战场

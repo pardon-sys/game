@@ -8,7 +8,9 @@ extends RefCounted
 ##   STEPS 按顺序推进（vars.knight_step）。每一步：
 ##     where 哪张图、town 不在小镇图上的步骤回小镇时去哪张、auto（进图就演）或 spot [格x, 格y, 半径格]（走进圈才演）、slot 这一步的时段（早 / 夜，换灯光和镇民的位置）、objective 目标文字、
 ##     cutscene 开场过场、task 玩法（同 AfterStory.TASKS 的写法：script / name / fail / fail_hours / respawn）、done 收尾过场、
-##     then_slot 做完换时段、goto [图, 出生点] 做完去哪、sleep 做完回床上睡到第二天早上。
+##     goto [图, 出生点] 做完去哪；away：人还不在那张图上时的目标文字（比如还在工房里：「出门透透气」）；
+##     sleep_first：先回小屋的床上睡一觉才开始（睡觉不显示黑幕标题，醒来就是早上，接着自动演）。
+##   时间自然变化：不用黑幕换时段——进小镇图时按这一步的 slot 直接换成早 / 夜（sync_slot），睡觉在床上（AfterStory.sleep → sleep_now）。
 ##   时钟：骑士篇的第几天记在 DayClock 的 after_day（DAY 起），标签写「骑士篇·时段」（DayClock.label）。没有赎罪簿和工时。
 ##   蓝色公主一直跟着（AfterBlueRoutine.invited_today）。
 ## 开始：第 7 天庆功宴放完烟花、回小屋睡觉（AfterStory.sleep → begin）。
@@ -16,6 +18,8 @@ extends RefCounted
 
 const STARTED := "knight_started"
 const STEP_VAR := "knight_step"
+## 步骤变了的时候发的 flag_changed（以 after_ 开头：导演会刷新目标）
+const STEP_CHANGED := "after_knight_step"
 const DAY := 8
 const TOWN := "floor_06_after"
 const KDAY := "floor_06_knight_day"
@@ -35,16 +39,18 @@ const STEPS := [
 	{"id": "found", "where": KDAY, "spot": [53, 8, 2], "slot": MORNING, "objective": "去东北角的地牢入口（矿道口旁边）", "cutscene": "knight_found",
 		"task": {"script": "res://levels/floor_06/scripts/task_stretcher.gd", "name": "抬担架", "fail": "knight_fail_stretcher", "fail_hours": 0, "respawn": [52, 9]},
 		"done": "knight_carry_done", "goto": [PHARMACY, "from_town"]},
-	{"id": "wake", "where": PHARMACY, "town": KDAY, "auto": true, "slot": MORNING, "cutscene": "knight_wake", "objective": "", "then_slot": NIGHT},
-	{"id": "bait", "where": KNIGHT_N, "spot": [33, 26, 2], "slot": NIGHT, "objective": "夜里的广场好像出事了，去看看", "cutscene": "knight_bait_open",
+	{"id": "wake", "where": PHARMACY, "town": KDAY, "auto": true, "slot": MORNING, "cutscene": "knight_wake", "objective": ""},
+	{"id": "bait", "where": KNIGHT_N, "auto": true, "slot": NIGHT, "objective": "夜里的广场好像出事了，去看看", "away": "出门透透气（天已经黑了）",
+		"cutscene": "knight_bait_open",
 		"task": {"script": "res://levels/floor_06/scripts/task_bait.gd", "name": "以笑为饵", "fail": "knight_fail_bait", "fail_hours": 0, "respawn": [33, 27]},
 		"done": "knight_bait_done"},
 	{"id": "sneak", "where": KNIGHT_N, "spot": [58, 39, 1.5], "slot": NIGHT, "objective": "去东南角营地楼梯的路障后面，从通风口溜进地牢",
 		"cutscene": "knight_sneak_open", "goto": [PRISON, "vent"]},
 	{"id": "cell", "where": PRISON, "town": KNIGHT_N, "auto": true, "slot": NIGHT, "objective": "躲开巡逻，去最里面那间牢房",
 		"task": {"script": "res://levels/floor_06/scripts/task_sneak.gd", "name": "夜探地牢", "fail": "", "fail_hours": 0},
-		"done": "knight_cell_end", "goto": [HOUSE, "bed"], "sleep": true},
-	{"id": "erupt", "where": HOUSE, "town": KCHASE, "auto": true, "slot": MORNING, "cutscene": "knight_erupt", "objective": "", "goto": [KCHASE, "from_house"]},
+		"done": "knight_cell_end", "goto": [HOUSE, "from_town"]},
+	{"id": "erupt", "where": HOUSE, "town": KCHASE, "auto": true, "sleep_first": true, "slot": MORNING, "cutscene": "knight_erupt", "objective": "",
+		"goto": [KCHASE, "from_house"]},
 	{"id": "chase", "where": KCHASE, "auto": true, "slot": MORNING, "cutscene": "knight_chase_open", "objective": "把盔甲引到广场的图腾柱下",
 		"task": {"script": "res://levels/floor_06/scripts/task_armor_chase.gd", "name": "镇中追逃", "fail": "knight_fail_chase", "fail_hours": 0, "respawn": [55, 37]}},
 	{"id": "boss", "where": KCHASE, "auto": true, "slot": MORNING, "cutscene": "knight_boss_open", "objective": "打碎盔甲上的诅咒",
@@ -78,9 +84,9 @@ static func begin() -> void:
 		return
 	GameState.set_flag(STARTED)
 	GameState.vars[STEP_VAR] = 0
-	await Sleep.sleep("", "骑士篇", func():
+	await Sleep.sleep("", "", func():
 		DayClock.set_time(DAY, MORNING)
-		Cutscene.curtain_clear(0.01))
+		Cutscene.curtain_clear(0.01), false)
 	await try_step(HOUSE, false)
 
 
@@ -116,8 +122,14 @@ static func objective(floor_id: String) -> Dictionary:
 		return {"text": "（骑士篇的后续还在制作中……）"}
 	if GameState.has_flag(AfterStory.TASK_FLAG):
 		return {"text": str(s.get("task", {}).get("name", ""))}
+	if needs_sleep():
+		if floor_id == HOUSE:
+			return {"text": "回床上睡觉", "cell": AfterStory.HOUSE_BED, "radius": 1.0}
+		return _guide(floor_id, HOUSE, "回小屋睡觉")
 	var text := str(s.get("objective", ""))
 	var where := str(s["where"])
+	if where != floor_id and s.has("away"):
+		text = str(s["away"])
 	if where == floor_id:
 		if s.has("spot"):
 			var sp: Array = s["spot"]
@@ -142,12 +154,48 @@ static func status_text() -> String:
 	return str(load(str(task["script"])).call("status_text")) if not task.is_empty() else ""
 
 
+## 这一步要先回床上睡一觉（还没到早上）
+static func needs_sleep() -> bool:
+	return bool(step().get("sleep_first", false)) and DayClock.slot() != MORNING
+
+
+## 床：骑士篇里能不能睡（AfterStory.sleep 问）
+static func can_sleep() -> bool:
+	return active() and needs_sleep()
+
+
+## 在床上睡一觉（不显示黑幕标题）→ 早上 → 这一步接着演
+static func sleep_now() -> void:
+	await Sleep.sleep("", "", func():
+		DayClock.set_time(DayClock.day() + 1, MORNING)
+		Cutscene.curtain_clear(0.01), false)
+	await try_step(HOUSE, false)
+
+
+## 进小镇图：按这一步的时段直接换成早 / 夜（不用黑幕）——比如工房里醒来以后出门，外面已经是夜里了
+static func sync_slot(floor_id: String) -> void:
+	if not active() or not floor_id in TOWNS:
+		return
+	var s := step()
+	var want := int(s.get("slot", DayClock.slot())) if not s.is_empty() else DayClock.slot()
+	if str(s.get("where", "")) != floor_id and str(s.get("town", "")) != floor_id:
+		return
+	if DayClock.slot() != want:
+		DayClock.set_time(DayClock.day(), want)
+		if want == NIGHT:
+			GameState.hint("天已经黑了。")
+
+
 ## 进图（auto）/ 走进目标圈（spot）：演这一步
 static func try_step(floor_id: String, by_spot: bool) -> void:
+	if not by_spot:
+		sync_slot(floor_id)
 	if running or not active():
 		return
 	var s := step()
 	if s.is_empty() or str(s["where"]) != floor_id or bool(s.get("auto", false)) == by_spot:
+		return
+	if needs_sleep():
 		return
 	running = true
 	await TrainingDB.wait_dialogue_free()
@@ -165,17 +213,8 @@ static func _run(s: Dictionary) -> void:
 	if str(s.get("done", "")) != "":
 		await Cutscene.play(str(s["done"]))
 	GameState.vars[STEP_VAR] = step_index() + 1
-	if s.has("then_slot"):
-		await DayClock.pass_time(int(s["then_slot"]))
-		if int(s["then_slot"]) == NIGHT:
-			GameState.hint("天黑了。")
-	if bool(s.get("sleep", false)):
-		await _go(s.get("goto", [HOUSE, "bed"]))
-		await Sleep.sleep("", "骑士篇", func():
-			DayClock.set_time(DayClock.day() + 1, MORNING)
-			Cutscene.curtain_clear(0.01))
-		await try_step(HOUSE, false)
-		return
+	# 步骤记在变量里，不是标记：手动发一下「变了」，导演（AfterRoom / AfterHouse）刷新目标
+	GameState.flag_changed.emit(STEP_CHANGED)
 	if s.has("goto"):
 		await _go(s["goto"])
 	# 下一步就在现在这张图、进图就演的：接着演（诅咒失控 → 追逃 → Boss）

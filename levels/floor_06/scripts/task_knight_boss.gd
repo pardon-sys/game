@@ -115,6 +115,7 @@ func _ready() -> void:
 	_had_switch = _lv.get_meta(&"free_switch", false)
 	_lv.set("no_switch", false)
 	_lv.set_meta(&"free_switch", true)
+	Duo._bind_tab()   # 骑士篇的小镇图写了 no_switch，C 键原来没绑上
 	_body = Body.new()
 	(_body as Body).task = self
 	get_parent().add_child(_body)
@@ -412,7 +413,7 @@ func mash() -> void:
 
 func _release_grab() -> void:
 	if grabbed and grabbed.status:
-		grabbed.status.apply_root(0.0)
+		grabbed.status.clear_root()
 	grabbed = null
 	attack_t = maxf(attack_t, 1.5)
 

@@ -117,8 +117,27 @@ func _unhide() -> void:
 		p.process_mode = Node.PROCESS_MODE_INHERIT
 		p.visible = true
 		if is_instance_valid(spot):
-			p.global_position = spot.global_position + Vector2(0, 14)
+			p.global_position = exit_spot(p, spot.global_position)
 	Audio.play("cloth", -6.0)
+
+
+## 从躲藏点出来站哪：先试下面，再试上、左、右（近的先试），选第一个站得下、不卡墙的位置
+func exit_spot(p: PlayableCharacter, at: Vector2) -> Vector2:
+	var shape_node := p.get_node_or_null("Collision") as CollisionShape2D
+	if shape_node == null or shape_node.shape == null:
+		return at + Vector2(0, 14)
+	var space := p.get_world_2d().direct_space_state
+	var q := PhysicsShapeQueryParameters2D.new()
+	q.shape = shape_node.shape
+	q.collision_mask = p.collision_mask
+	q.exclude = [p.get_rid()]
+	for dist in [14.0, 18.0, 24.0]:
+		for dir in [Vector2.DOWN, Vector2.UP, Vector2.LEFT, Vector2.RIGHT]:
+			var pos: Vector2 = at + dir * dist
+			q.transform = Transform2D(0.0, pos + shape_node.position)
+			if space.intersect_shape(q, 1).is_empty():
+				return pos
+	return at + Vector2(0, 14)
 
 
 func _unhandled_input(event: InputEvent) -> void:

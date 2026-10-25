@@ -5,6 +5,8 @@ extends Node2D
 ##   诅咒手印：每 SPAWN_EVERY 秒从骑士身上爬出来一只（CurseHand），直奔前面的队员。挡在中间：手印碰到粉色公主就变得很温和，
 ##     轻轻拍拍她的脚背就散了（伏笔：手印认得她；闷笑 / 疲倦各涨一点）；碰到队员：他笑倒、担架一歪（drops +1），停 DROP_TIME 秒，又多爬出 SPILL 只。
 ##   担架歪 DROPS 次 = 失败（knight_fail_stretcher），从地牢入口重新抬。走到工房门口 = 完成。
+##   不会一口气歪好几次：歪了以后队员笑 DROP_TIME 秒 + DROP_GRACE 秒内不再算；新爬出来的手印要过 ARM_TIME 秒才算数
+##   （她有时间去拦）；歪了以后多爬出来的那只等这段时间过了才扑。
 ## 状态 vars.task_stretcher_drops。测试：spawn_hand()、hands、drops()、walker、advance(秒)。
 
 signal finished(ok: bool)
@@ -16,6 +18,8 @@ const SPAWN_EVERY := 4.5
 const DROP_TIME := 2.5
 const SPILL := 1
 const DROPS := 3
+const DROP_GRACE := 1.0
+const ARM_TIME := 1.5
 const PAT_LAUGH := 0.04
 const PAT_FATIGUE := 0.06
 const HAND_SPEED := 0.75
@@ -30,6 +34,8 @@ var walker: Node2D
 var hands: Array[CurseHand] = []
 var leg := 0
 var dropped_left := 0.0
+## 歪了以后多久内不再算歪
+var grace_left := 0.0
 var _spawn_t := 2.0
 var _emitted := false
 var _say_t := 0.0
@@ -97,6 +103,7 @@ func _process(delta: float) -> void:
 ## 一帧：队员往前走、手印爬、碰撞判定
 func advance(delta: float) -> void:
 	dropped_left = maxf(0.0, dropped_left - delta)
+	grace_left = maxf(0.0, grace_left - delta)
 	if dropped_left <= 0.0 and walker.global_position.distance_to(pink.global_position) <= LEASH:
 		_walk(delta)
 	elif dropped_left <= 0.0:
@@ -112,9 +119,11 @@ func advance(delta: float) -> void:
 		if not is_instance_valid(h) or h.state == "gone":
 			hands.erase(h)
 			continue
+		h.set_meta(&"age", float(h.get_meta(&"age", 0.0)) + delta)
 		if h.global_position.distance_to(pink.global_position) <= CurseHand.LATCH_R + 3.0:
 			_pat(h)
-		elif h.global_position.distance_to(walker.global_position) <= CurseHand.LATCH_R:
+		elif grace_left <= 0.0 and float(h.get_meta(&"age")) >= ARM_TIME \
+				and h.global_position.distance_to(walker.global_position) <= CurseHand.LATCH_R:
 			_drop(h)
 	if leg >= PATH.size() - 1 and walker.global_position.distance_to(Cutscene.cell_to_world(PATH[-1])) < 4.0:
 		_emit(true)
@@ -131,13 +140,19 @@ func _walk(delta: float) -> void:
 	walker.global_position += d.normalized() * minf(SPEED * delta, d.length())
 
 
-## 骑士身上爬出一只手印，直奔前面的队员
-func spawn_hand() -> CurseHand:
+## 骑士身上爬出一只手印，直奔前面的队员（wait 秒以后才扑；armed：测试里直接算数）
+func spawn_hand(wait := 0.0, armed := false) -> CurseHand:
 	var h := CurseHand.new()
 	get_parent().add_child(h)
 	h.global_position = stretcher_mid() + Vector2(randf_range(-4, 4), -4)
 	h.speed_mult = HAND_SPEED
-	h.seek(walker)
+	h.set_meta(&"age", ARM_TIME if armed else 0.0)
+	if wait > 0.0:
+		get_tree().create_timer(wait).timeout.connect(func():
+			if is_instance_valid(h) and h.state != "gone":
+				h.seek(walker))
+	else:
+		h.seek(walker)
 	hands.append(h)
 	return h
 
@@ -164,6 +179,7 @@ func _drop(h: CurseHand) -> void:
 	var n := drops() + 1
 	GameState.vars[PATH_KEY] = n
 	dropped_left = DROP_TIME
+	grace_left = DROP_TIME + DROP_GRACE
 	(walker as Walker).laugh_t = DROP_TIME
 	var lines: Array = data().get("drop", [])
 	if not lines.is_empty():
@@ -174,7 +190,7 @@ func _drop(h: CurseHand) -> void:
 		_emit(false)
 		return
 	for i in SPILL:
-		spawn_hand()
+		spawn_hand(grace_left)
 
 
 func _bubble(who: Node2D, pool: Array) -> void:

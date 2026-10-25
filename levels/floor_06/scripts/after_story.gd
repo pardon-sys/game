@@ -543,7 +543,10 @@ static func sleep_later() -> void:
 
 static func sleep() -> void:
 	if KnightStory.active():
-		GameState.notify("（现在不是睡觉的时候。）")
+		if KnightStory.can_sleep():
+			await KnightStory.sleep_now()
+		else:
+			GameState.notify("（现在不是睡觉的时候。）")
 		return
 	if DayClock.day() >= DayClock.DAYS and DayClock.done(DayClock.DAYS, DayClock.NIGHT):
 		# 庆功宴放完烟花：睡一觉，骑士篇开始

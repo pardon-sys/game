@@ -103,6 +103,7 @@ func _ready() -> void:
 	_had_switch = _lv.get_meta(&"free_switch", false)
 	_lv.set("no_switch", false)
 	_lv.set_meta(&"free_switch", true)
+	Duo._bind_tab()   # 骑士篇的小镇图写了 no_switch，C 键原来没绑上
 	for i in BEACONS.size():
 		var b := Beacon.new()
 		b.lit = i < lit()
@@ -297,7 +298,7 @@ func _escape() -> void:
 	grabbing = false
 	safe_left = SAFE_TIME
 	if pink.status:
-		pink.status.apply_root(0.0)
+		pink.status.clear_root()
 	armor.freeze(1.2)
 	armor.global_position += pink.global_position.direction_to(armor.global_position) * 24.0
 	var pool: Array = data().get("escape", [])
@@ -310,6 +311,10 @@ func _emit(ok: bool) -> void:
 		return
 	_emitted = true
 	grabbing = false
+	# 被抓住时结束（第三次被抓 = 失败）：把抱住的定身解开，不然重来以后她还要站着不动好几秒
+	for c in [pink, blue]:
+		if is_instance_valid(c) and c.status:
+			c.status.clear_root()
 	if is_instance_valid(armor):
 		armor.paused = true
 	finished.emit(ok)
