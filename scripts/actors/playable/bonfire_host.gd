@@ -10,6 +10,8 @@ const MAX_RIBBONS := 2
 @export var show_flag := ""
 @export var hide_flags: Array[String] = []
 @export var ai := true
+## 派对主人不是玩家能切换过去的人物（测试模式 F2 照旧能切）
+@export var host_switchable := false
 @export var wander := 1.0
 @export var dir := "down"
 var talking := false
@@ -20,6 +22,7 @@ var _host_home := Vector2.ZERO
 
 
 func _setup() -> void:
+	switchable = host_switchable
 	character_id = "bonfire_host"
 	portrait_set = "bonfire_host"
 	_host_home = global_position

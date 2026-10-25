@@ -20,12 +20,11 @@
 			"dir": "left"
 		},
 		"hands": {
-			"kind": "monster:thousand_hand",
+			"kind": "trap:maze_hand",
 			"at": [
 				0,
-				-10
-			],
-			"scale": 0.3
+				-2
+			]
 		}
 	},
 	"steps": [

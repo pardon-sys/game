@@ -29,12 +29,11 @@
 			]
 		},
 		"hands": {
-			"kind": "monster:thousand_hand",
+			"kind": "trap:maze_hand",
 			"at": [
 				0,
-				-16
-			],
-			"scale": 0.4
+				-2
+			]
 		}
 	},
 	"steps": [

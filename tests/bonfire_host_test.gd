@@ -192,11 +192,22 @@ func map_checks() -> void:
 	for n in main.level.find_children("*","PlayableCharacter",true,false):
 		if n.visible:all.append(n)
 	check("普通小镇包含真实第三角色",all.any(func(c):return c is BonfireHost))
+	var dev_was: Variant = DevConfig.override
+	DevConfig.override=true
 	var seen:=[]
 	for i in 3:
 		main.switch_character()
 		seen.append(GameState.player.character_id)
-	check("F2现有入口能循环三个角色",seen.has("pink") and seen.has("blue") and seen.has("bonfire_host"))
+	check("测试模式F2能循环三个角色",seen.has("pink") and seen.has("blue") and seen.has("bonfire_host"))
+	DevConfig.override=false
+	for c in all:
+		if c.character_id=="pink":GameState.switch_control(c)
+	var normal:=[]
+	for i in 3:
+		main.switch_character()
+		normal.append(GameState.player.character_id)
+	check("正常模式换人不会换到派对主人",not normal.has("bonfire_host") and normal.has("blue"))
+	DevConfig.override=dev_was
 	await main.change_level(Floors.scene("floor_06_war"))
 	await _wait(0.2)
 	var war_party: BonfireHost

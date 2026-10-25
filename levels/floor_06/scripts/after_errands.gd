@@ -54,6 +54,9 @@ static func active() -> String:
 
 ## 现在能不能接（不算「已经有别的委托在做」）。白天的委托只在早上 / 下午接，写了 night: true 的只在晚上接。
 static func is_open(id: String) -> bool:
+	# 七日赎罪结束以后（骑士篇）镇民不再挂委托
+	if KnightStory.active() or DayClock.day() > DayClock.DAYS:
+		return false
 	if not PenanceBook.started() or is_done(id) or is_active(id) or not prerequisites_met(id) or GameState.has_flag(AfterStory.TASK_FLAG):
 		return false
 	if (DayClock.slot() == DayClock.NIGHT) != bool(info(id).get("night", false)):

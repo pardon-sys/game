@@ -51,6 +51,10 @@ NO_DEATH_CG = {"thousand_hand", "glow_moth", "dream_fluff", "lamp_imp", "laugh_j
 T = "res://assets/generated/%s.png"
 MZ = "res://assets/generated/maze/%s.png"
 trap_actors = {
+    # 七日赎罪·穿链失败：倒塌的墙压住她、只露出一双光脚（完整 / 碎一半 / 全碎三张，tools/art/import_gate_chain_art.py）
+    "rubble_full": {"hit_fx": "hand", "texture": T % "after/gate_wall_full", "hframes": 1, "idle": [0], "active": [0], "z": 1, "offset": [0, -14]},
+    "rubble_half": {"hit_fx": "hand", "texture": T % "after/gate_wall_half", "hframes": 1, "idle": [0], "active": [0], "z": 1, "offset": [0, -14]},
+    "rubble_broken": {"hit_fx": "hand", "texture": T % "after/gate_wall_broken", "hframes": 1, "idle": [0], "active": [0], "z": 1, "offset": [0, -14]},
     # 第八层夜迷宫：紫手 / 手的节奏用千手的手掌图，其余用 gen_floor08_maze_art.py 的图
     "maze_hand": {"hit_fx": "hand", "texture": T % "thousand_hand_arm", "hframes": 8, "idle": [0, 1], "active": [2, 3], "fps": 4, "z": 2, "pitch": 1.1},
     "hand_rhythm": {"hit_fx": "hand", "texture": T % "thousand_hand_arm", "hframes": 8, "idle": [0], "active": [2, 3, 2, 3], "fps": 10, "z": 2, "pitch": 0.9},

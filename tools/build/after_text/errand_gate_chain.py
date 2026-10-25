@@ -5,7 +5,7 @@
   feedback：每组 = 阶段、道具、挠法描写（下方反应框）、她的反应（light / mid / heavy 各三句）。
   tuck：预告亮起时按 S 缩脚——这一下减半，但身子一缩，链头往反方向偏。release：魔力疲倦满自动释放时的舒服感；sensitive：释放后敏感的几秒。
 """
-from .common import N, P, L, event
+from .common import A, N, P, L, event
 
 W = "工匠"
 
@@ -189,3 +189,72 @@ NODES = {
     "done": {"lines": [L("辅助链条转得顺。你那双脚，报位置比我还准。", W),
                        L("不许再提我的脚！", P, "angry")]},
 }
+
+
+# ---------------------------------------------------------------- 失败小剧场：失误超过 4 次，墙面倒塌（GateChainShow 播，演完接着做、失误清零）
+def _say(sp, text, actions=None, portrait=None, emotion=None):
+    s = {"speaker": sp, "text": text}
+    if actions:
+        s["actions"] = actions
+    if portrait:
+        s["portrait"] = portrait
+    if emotion:
+        s["emotion"] = emotion
+    return s
+
+
+def _tk(by="worker", zone="sole", fx="hand", n=8, iv=0.22):
+    return A("tickle", who="princess", by=by, zone=zone, fx=fx, repeat=n, interval=iv)
+
+
+def _burst():
+    return [A("flash", time=0.5), A("sfx", sound="star_burst"), A("shake", who="worker", time=0.4), A("voice", state="laugh")]
+
+
+FAIL_GATE_CHAIN = {"name": "穿链失败：墙塌了，只剩一双脚", "cast": {
+    "princess": {"kind": "princess", "at": [0, 8], "visual": "helpless_1", "anim": "helpless", "dir": "down", "hidden": True},
+    "wall": {"kind": "trap:rubble_full", "at": [0, 10]},
+    "wall_half": {"kind": "trap:rubble_half", "at": [0, 10], "hidden": True},
+    "wall_broken": {"kind": "trap:rubble_broken", "at": [0, 10], "hidden": True},
+    "worker": {"kind": "npc:miner", "at": [26, 6], "dir": "left"},
+}, "steps": [
+    {"actions": [A("fade_in", time=0.4), A("shake", who="wall", time=0.6), A("sfx", sound="crash")], "wait": 0.6},
+    _say(N, "（链头第五次撞在轮缘上——「咔」的一声，支架一歪，城门旁边那段刚补好的墙晃了晃，整面朝检修槽倒了下来）"),
+    _say(P, "哇啊啊——！？", emotion="surprise"),
+    _say(N, "（砖块、木梁、灰土轰隆隆地压了下来。灰尘散开以后，碎墙堆底下只露出两只光着的脚，脚趾还在惊慌地乱动）"),
+    _say(P, "唔……我、我没事……就是……动不了……！", emotion="sad"),
+    _say(W, "哎呀呀！别慌，我这就把你拉出来——先拉脚！"),
+    _say(N, "（工匠蹲到砖堆前，一手握住她的脚踝。另一只手的手指，却「不小心」落在了脚心正中间）", [_tk(n=4, iv=0.3)]),
+    _say(P, "噗……！你、你拉就拉，手指别乱动——！", portrait="defeat_1"),
+    _say(W, "拉脚得找准发力点嘛。这里……还有这里……"),
+    _say(N, "（拇指沿着足弓一路往上推，四根手指在脚心里画着小圈，砖堆底下传来一阵闷闷的笑声）", [_tk(n=10, iv=0.2)]),
+    _say(P, "哈哈哈哈！那不是发力点！那是脚心！哈哈哈——！", portrait="defeat_1"),
+    _say(N, "（被压着躲不开，脚趾蜷了又张、张了又蜷。痒意一层一层往上涌，魔力疲倦越积越满——）", [_tk(fx="brush", n=10, iv=0.18)]),
+    dict(_say(P, "哈……哈哈……魔、魔力……要……满了……！", portrait="fatigue_burst"), act="burst"),
+    {"actions": _burst() + [A("exit", who="wall", time=0.3), A("enter", who="wall_half", time=0.3)], "wait": 0.5},
+    _say(N, "（「砰」——一圈金色的光从砖堆底下炸开，压在上面的砖块被震飞了一大半）"),
+    _say(N, "（释放过后，一阵暖洋洋的舒服从脚底漫上来，她的脚趾一根一根松开了，软软地摊着）"),
+    _say(P, "……呼……好……舒服……", emotion="happy"),
+    _say(W, "（眼睛一亮）……哦？释放完了，脚就软乎乎的，一点都不躲……"),
+    _say(W, "原来如此——趁这时候挠，效果最好。"),
+    _say(P, "……诶……？等、等一下，你说什么——", emotion="surprise"),
+    _say(N, "（工匠换上了那把齿轮刷，一边沿着脚弓滚，一边用指甲刮脚跟——比刚才快、比刚才重）", [_tk(fx="brush", n=14, iv=0.14)]),
+    _say(P, "哈哈哈哈哈！不、不行！刚释放完——现在最、最敏感了——哈哈哈！", portrait="defeat_2"),
+    dict(_say(N, "（才刚舒服下来的身体，又被一口气挠回了顶点。第二次，魔力满了）"), act="burst"),
+    {"actions": _burst() + [A("shake", who="wall_half", time=0.4)], "wait": 0.5},
+    _say(P, "……啊……又……舒服……", emotion="happy"),
+    _say(W, "就是现在！"),
+    _say(N, "（刷子、手指、羽毛掸——三样轮着来，专挑她舒服得发愣的那几秒，往脚心和趾缝里招呼）", [_tk(fx="feather", n=12, iv=0.14), _tk(n=12, iv=0.14)]),
+    _say(P, "哈哈哈……你、你这是……故意的……哈哈哈哈……！", portrait="defeat_2"),
+    dict(_say(N, "（第三次。舒服和痒混在一起，她已经分不清是在笑还是在叹气——）"), act="burst"),
+    {"actions": _burst() + [A("exit", who="wall_half", time=0.3), A("enter", who="wall_broken", time=0.3), A("shake", who="worker", time=0.6)], "wait": 0.6},
+    _say(N, "（最强的一圈光炸开，剩下的砖墙被完全震散，碎砖哗啦啦地滚了一地。工匠也被震得一屁股坐在了地上）"),
+    _say(W, "……咳、咳……墙、墙全开了……"),
+    _say(N, "（她仰面躺在碎砖中间，两只脚还微微抽动。脸红红的，眼神发直，嘴角挂着傻乎乎的笑）"),
+    _say(P, "……嘿……嘿嘿……痒……又……好舒服……", portrait="defeat_1"),
+    _say(P, "……脚……不是我的了……", emotion="happy"),
+    _say(W, "……咳。歇一会儿吧。链子……扣好的那几节都还在。失误？墙都震没了，不算了不算了。"),
+    {"actions": [A("fade_out", time=0.6), A("voice", state="")], "wait": 0.7},
+]}
+
+THEATERS = {"after_fail_gate_chain": FAIL_GATE_CHAIN}

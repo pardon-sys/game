@@ -220,3 +220,9 @@ static func run(t: Node) -> void:
 	Cutscene.continue_chapter()
 	await t._advance_until(func(): return t._level_id() == AfterStory.HOUSE and not Cutscene.chapter_screen.visible, 20.0)
 	verify(t, "按 E → 回到小屋", t._level_id() == AfterStory.HOUSE)
+	await t._wait(0.8)
+	verify(t, "小屋的床：庆功宴之后能睡（%s）" % Dialogue.runner.entry_of("floor_06/after_house_objects"),
+		GameState.has_flag("night") and not GameState.has_flag(AfterStory.NIGHT_BUSY))
+	await t._talk("floor_06/after_house_objects", "bed")
+	await t._advance_until(func(): return KnightStory.step_id() == "found" and not Sleep.sleeping and not Cutscene.is_playing() and not KnightStory.running, 40.0)
+	verify(t, "和床说话选睡觉 → 骑士篇开始（%s）" % DayClock.label(), KnightStory.active() and DayClock.label().begins_with("骑士篇"))

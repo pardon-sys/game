@@ -538,6 +538,54 @@
 		}
 	},
 	"trap_actors": {
+		"rubble_full": {
+			"hit_fx": "hand",
+			"texture": "res://assets/generated/after/gate_wall_full.png",
+			"hframes": 1,
+			"idle": [
+				0
+			],
+			"active": [
+				0
+			],
+			"z": 1,
+			"offset": [
+				0,
+				-14
+			]
+		},
+		"rubble_half": {
+			"hit_fx": "hand",
+			"texture": "res://assets/generated/after/gate_wall_half.png",
+			"hframes": 1,
+			"idle": [
+				0
+			],
+			"active": [
+				0
+			],
+			"z": 1,
+			"offset": [
+				0,
+				-14
+			]
+		},
+		"rubble_broken": {
+			"hit_fx": "hand",
+			"texture": "res://assets/generated/after/gate_wall_broken.png",
+			"hframes": 1,
+			"idle": [
+				0
+			],
+			"active": [
+				0
+			],
+			"z": 1,
+			"offset": [
+				0,
+				-14
+			]
+		},
 		"maze_hand": {
 			"hit_fx": "hand",
 			"texture": "res://assets/generated/thousand_hand_arm.png",

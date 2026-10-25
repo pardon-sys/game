@@ -182,11 +182,9 @@ func play_music(id: String, fade := MUSIC_FADE) -> void:
 	if id == "" or not MUSIC.has(id) or not ResourceLoader.exists(MUSIC[id]):
 		return
 	var s := load(MUSIC[id]) as AudioStream
-	if s is AudioStreamWAV:
-		s = (s as AudioStreamWAV).duplicate()
-		s.loop_mode = AudioStreamWAV.LOOP_FORWARD
-		s.loop_begin = 0
-		s.loop_end = int(round(s.get_length() * s.mix_rate))
+	# 配乐 WAV 在导入设置里就设成向前循环（.import 的 edit/loop_mode=2）；运行时复制 QOA 压缩的流再改循环点会在衔接处出杂音
+	if s is AudioStreamWAV and (s as AudioStreamWAV).loop_mode == AudioStreamWAV.LOOP_DISABLED:
+		push_warning("配乐 %s 没有在导入设置里开循环" % id)
 	elif s is AudioStreamOggVorbis or s is AudioStreamMP3:
 		s = s.duplicate()
 		s.set("loop", true)

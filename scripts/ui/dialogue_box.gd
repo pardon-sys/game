@@ -675,6 +675,8 @@ func _show_portrait(emotion: String) -> void:
 ## 被挠时下面的反应黑框：字多到超出框时自动往上滚（停一下 → 滚到底 → 停一下 → 回到顶，循环）。
 const REACT_SCROLL_SPEED := 12.0
 const REACT_PAUSE := 0.6
+## 全文高度的底部留白（滚到底时最后一行完整露出来）
+const REACT_PAD := 3.0
 var _react_clip: Control
 var _react_overflow := 0.0
 var _react_t := 0.0
@@ -698,7 +700,7 @@ func show_reaction(text: String, duration: float) -> void:
 	var box_h := _react_clip.size.y if _react_clip else reaction_text.size.y
 	reaction_text.size = Vector2(reaction_text.size.x, box_h)
 	reaction_text.position = Vector2.ZERO
-	var text_h := float(reaction_text.get_line_count() * reaction_text.get_line_height())
+	var text_h := reaction_text_height()
 	_react_overflow = maxf(0.0, text_h - box_h)
 	if _react_overflow > 0.0:
 		# 字太多：顶端对齐、按全文高度排，显示时间至少够滚完一遍
@@ -709,6 +711,21 @@ func show_reaction(text: String, duration: float) -> void:
 		reaction_text.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	_reaction_time = duration if not _active else 0.0
 	reaction_panel.visible = text != "" and _reaction_time > 0.0
+
+
+## 反应框文字的全文高度：行高 × 行数 + 行距 + 底部留白
+func reaction_text_height() -> float:
+	var n := reaction_text.get_line_count()
+	var spacing := reaction_text.get_theme_constant("line_spacing")
+	return float(n * reaction_text.get_line_height() + maxi(0, n - 1) * spacing) + REACT_PAD
+
+
+## 反应框的字号（小游戏里用小一号；0 = 还原成默认）
+func set_reaction_font(font_size: int) -> void:
+	if font_size > 0:
+		reaction_text.add_theme_font_size_override("font_size", font_size)
+	else:
+		reaction_text.remove_theme_font_size_override("font_size")
 
 
 ## 反应框里的文字现在往上滚了多少像素（测试用）。
