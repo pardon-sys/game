@@ -27,7 +27,8 @@
   - 截图脚本放 `tests/_shots_*.gd`，输出到 `tools/.cache/shots/`（不进仓库）；临时文件 `tests/_check_scripts.*`、`tests/_shots_*`、`tests/_probe_*`
 	提交前全部删掉。
 - **素材**：缺的图用 Python 画像素风（`tools/art/gen_*.py`）或 Godot 内置绘制（`_draw`、粒子、tween）做；音乐用 ElevenLabs（`tools/audio/gen_music.py` 的 `TRACKS`
-  加一首）；第三方素材写清楚来源和许可（`assets/third_party/*/License.txt`）。
+  加一首；生成后自动找循环点：节奏、和声都和开头最像的半句边界，交叉淡化 `CROSSFADE` 0.3 秒，尾声丢掉；`--reloop` 用缓存的原始音频重新切。
+  循环在 `.wav.import` 的导入设置里开，运行时不改流）；第三方素材写清楚来源和许可（`assets/third_party/*/License.txt`）。
 - **文档**：每做完一批，把新系统 / 新规则补进本文对应的章节（七日赎罪的写在「七日赎罪」一节），过时的描述直接改掉，不留两种说法；
   跳关点（`tools/build/gen_dev_skips.py`）把新加的变量 / 标记补上。
 
@@ -79,8 +80,10 @@ docs/ARCHITECTURE.md  本文
 - **七日赎罪已完成**：第 1~7 天白天的事件和弥补任务、第 2/3/4/6 天晚上的任务、第 5 天夜里小汤姆的恶作剧、镇民委托、补罚任务、两位公主的玩闹；
   第 7 天修图腾柱（减 20 工时），工时还清之前停在第 7 天补罚（见「最后一天的工时」）。
 - **七日赎罪的结局**：第 7 天晚上工时还清后的**庆功宴**（领舞 + 邀舞、五个摊位、放烟花 →「七日赎罪 完」），见「庆功宴」。
+  庆功宴在单独的庆典广场 `floor_06_festival` 开，每个人都有庆功宴专属的对话，摊位有奖品、通关后广场换装扮。
 - **骑士篇已完成**（还在地下小镇，约一层的量，序章：只埋伏笔）：发现骑士 → 醒来吼「凶手」→ 以笑为饵 → 夜探地牢 →
-  诅咒失控·镇中追逃 → Boss「痒铠骑士」→ 尾声（半枚徽章「交给真正的殿下」）。之后的剧情待定，先问用户。
+  诅咒失控·镇中追逃 → Boss「痒铠骑士」（四个阶段）→ 尾声（半枚徽章「交给真正的殿下」）。用骑士篇自己的三张小镇图，追逃和 Boss 里没被操控的那位由 AI 搭档控制。
+  之后的剧情待定，先问用户。
 
 ### 剧情伏笔（已经埋下的，写新剧情时要接得上）
 下表只记录**已经写进游戏的台词和画面**，不代表结论；真相内核见表格下面（只给开发看）。
@@ -386,7 +389,7 @@ HUD 背包栏会根据物品数据自动显示，不需要改 UI 代码。
 - 背包 `PAGE_GALLERY`：`Backpack.gallery_entries()`（`death_*`、`nest_*` CG 和 `CG.scenes`）、`gallery_unlocked(条目)`（测试模式或看过：`cg_seen_<播放 id>`）、`play_selected()`。
 
 ### 地图内过场动画
-- Autoload `Cutscene`（`scripts/cutscene/cutscene_player.gd`，CanvasLayer 12；章节结束画面在 30 层）。数据 `data/cutscenes/<楼层组>/<id>.json`（启动时递归建 `id → 路径` 索引，id 就是文件名，全局唯一）：`{name, skippable, hide_hud, steps}`，步骤格式同 CG；步骤还可以写 `"talk": {"file", "node"}`（await 人物对话，可以带选项）和 `"theater": id`（await 小剧场）。动作 `hold`（`who` 刑具，`on`、`place`）：合上刑具、把公主放上去、摆刑具的 `pose_offset / pose_rotation`、强制播被困动画（`PlayableCharacter.puppet_anim`），直到 `on=false`；`spawn kind=npc:<人物>` 生成一个不溜达的居民当演员；`chapter_end` 带 `next` 时结束画面显示「按 E 继续」（`continue_chapter()` 换到那一层）。演员：`princess`、关卡节点名（构建器命名为 `<类型>_<x>_<y>`，如 `Snare_10_7`、`Imp_68_64`）、`spawn` 生成的临时演员（`shadow` = 公主精灵蒙黑）。动作列表见脚本开头的注释；`validate(id)` 检查动作名。
+- Autoload `Cutscene`（`scripts/cutscene/cutscene_player.gd`，CanvasLayer 12；章节结束画面在 30 层）。数据 `data/cutscenes/<楼层组>/<id>.json`（启动时递归建 `id → 路径` 索引，id 就是文件名，全局唯一）：`{name, skippable, hide_hud, steps}`，步骤格式同 CG；步骤还可以写 `"talk": {"file", "node"}`（await 人物对话，可以带选项）和 `"theater": id`（await 小剧场）。动作 `hold`（`who` 刑具，`on`、`place`）：合上刑具、把公主放上去、摆刑具的 `pose_offset / pose_rotation`、强制播被困动画（`PlayableCharacter.puppet_anim`），直到 `on=false`；`spawn kind=npc:<人物>` 生成一个不溜达的居民当演员；`chapter_end` 带 `next` 时结束画面显示「按 E 继续」（`continue_chapter()` 换到那一层）；结束画面亮着时 `in_dialogue` 一直为真（`keep_screen`），人物不能动、按 E 不会顺手和身边的人说话。演员：`princess`、关卡节点名（构建器命名为 `<类型>_<x>_<y>`，如 `Snare_10_7`、`Imp_68_64`）、`spawn` 生成的临时演员（`shadow` = 公主精灵蒙黑）。动作列表见脚本开头的注释；`validate(id)` 检查动作名。
 - 播放时 `GameState.in_cutscene` + `in_dialogue` 为真（对话框不会在过场中途清掉 `in_dialogue`），所有用 `in_dialogue` 判断暂停的陷阱 / 怪物 / 状态自动暂停；公主被 `move` 时 `puppet_walking` 播走路动画。镜头动的是公主身上的 Camera2D（结束时还原到原位置和缩放）。
 - 跳过：看过的过场按 Esc，剩下步骤里的 `set_flag / chapter_end / spawn / despawn / move / carry / pose / face` 立即生效。
 - 触发：关卡 `[level]` `intro_cutscene`（`Level._ready`）、`DialogueTrigger.cutscene`（图例 `trigger cutscene=<id>`）、`TrapRoomZone.cutscene`、`Cutscene.play(id)` / `play_data(id, 数据)`。
@@ -431,8 +434,8 @@ HUD 背包栏会根据物品数据自动显示，不需要改 UI 代码。
 ### 剧情调度、睡觉、潜入、角色档案
 - `StoryDirector`（`scripts/story/story_director.gd`，main.gd 创建）：监听人物对话结束、过场结束、换地图，交给各层剧情脚本（`F6Story`、`AfterStory`）。`run_sequence([{level, spawn, cutscene, flag, keep_state}, …])`：跨地图的过场序列。
 - `F6Story`（`scripts/story/f6_story.gd`）：话题问完 → 参观（`f6_tour_*` 过场）→ 小屋（`night`）→ 家具对话 `floor_06/house_objects`（骑马刷凳 → `f6_house_saddle` 小剧场 → `f6_blue_quiet` → 钥匙）→ 床 `call: sleep` → 早上 `f6_escape`；`on_caught()`（`StealthDirector.on_caught = f6`）→ 地牢惩罚 → 回小屋 → `Sleep`；`f7_pink_run` 结束 → `start_blue_arc()`（`blue_is_hero`）→ 出门 `f7_blue_argue` → 第七层。
-- `Sleep`（`scripts/story/sleep.gd`）：`sleep(早上的过场, title, on_dawn)` / `sleep_later(…)`（对话里用）；`vars.day`、关掉 `night`、回满状态；`title` 换掉黑幕上的「第 N 天」，`on_dawn` 在黑着的时候调（`DayClock` 在这里换时间）。对话 handler `sleep()`。
-- 潜入（`scripts/stealth/`）：`VisionCone`（`sees(目标)`、墙 = 碰撞层 1、`lights` 暗处视野减半、扇形用射线截断）、`PatrolGuard`（图例 `guard_patrol path=x,y;… loop wait speed view_range view_angle`；`investigate(位置)` 用 `GridPath` 寻路）、`StealthDirector`（图例 `stealth active_flag on_caught`；`alert`、`toggle_hide`（`prop action=hide`）、`throw_stone`（输入动作 `throw`，运行时加上，F 键）、`noise(位置)`、`caught` 信号）。
+- `Sleep`（`scripts/story/sleep.gd`）：`sleep(早上的过场, title, on_dawn)` / `sleep_later(…)`（对话里用）；`vars.day`、关掉 `night`、回满状态；`title` 换掉黑幕上的「第 N 天」，`on_dawn` 在黑着的时候调（`DayClock` 在这里换时间），`show_title = false` 不显示黑幕上的字（骑士篇）。对话 handler `sleep()`。
+- 潜入（`scripts/stealth/`）：`VisionCone`（`sees(目标)`、墙 = 碰撞层 1、`lights` 暗处视野减半、扇形用射线截断）、`PatrolGuard`（图例 `guard_patrol path=x,y;… loop wait speed view_range view_angle investigate_speed check_chance`；`investigate(位置)` 用 `GridPath` 寻路）、`StealthDirector`（图例 `stealth active_flag on_caught alert_rate alert_decay`；`alert`、`toggle_hide`（`prop action=hide`，出来时 `exit_spot` 按下 / 上 / 左 / 右找站得下、不卡墙的位置）、`throw_stone`（输入动作 `throw`，运行时加上，F 键）、`noise(位置)`、`caught` 信号）。
 - 出口 `LevelExit` 的 `lock_flag / unlock_flag / locked_dialogue / open_dialogue`；关卡 `night_ambient`（`[level]` 段，剧情标记 `night` 时换上）；`Prop` 的 `talk:<文件>#<节点>`、`hide`、`lift`（挂墙的东西）、地面道具（`floor`）挪到 FloorObjects（`under` 铺最底下）。
 - 角色档案 `Characters`（`scripts/core/characters.gd`）：按当前操控角色的 `character_id` 选数据文件——`ReactionDB`（reactions / fatigue）、`TickleZones`（ticklish）、`CG.data / CG.scenes`（cgs / nest_cgs / combo_scenes，属性按角色缓存）；`CGActor.make_princess` 按既有 `Dialogue.NPC_CHARACTER` 映射使用角色自身精灵图，并从人物表 `scene` 的Animator读取原有贴图覆盖。蓝色公主的数据在 `data/characters/blue/`（`gen_blue_character.py` 生成），派对主人在 `data/characters/bonfire_host/`（`gen_bonfire_host_character.py` 生成；基础档案与通用演出，不复制蓝色专属剧情）。
 - 蓝色公主当主角：剧情标记 `blue_is_hero`；`level.gd` 载入时把粉色公主换成 `hero = true` 的 `BluePrincess`（玩家操控、相机、没有对话提示）；`main._restore_main_character` 按当前剧情主角ID恢复（该标记存在时恢复蓝色，否则粉色）；`Princess.fatigue_burst_visual()`（她是 `damaged_giggle_burst`）；`TrainingStats.zone_modifier` 只对粉色公主生效。
@@ -489,7 +492,7 @@ HUD 背包栏会根据物品数据自动显示，不需要改 UI 代码。
 6. `tests/floor3_test.gd` 会自动为每个时间窗口组合跑一遍触发测试（其它组合先进冷却），并检查它有名称和台词。
 
 ### 背包与快捷键
-- 背包界面 `Backpack`（`scenes/ui/backpack.tscn`，CanvasLayer 第 25 层，`PROCESS_MODE_ALWAYS`）：`GameState.has_backpack()`（剧情标记 `got_backpack`，`BackpackItem` 拾取即设置）之后输入 `backpack`（Tab / I / L3）打开并暂停；`_input` 先于暂停菜单截获 Esc。物品页 `use_selected()` / `assign_selected(hotkey)`，状态页读 `LaughMeter` / `MagicFatigue` / `Actor.buffs`（`buffs.json` 的 `desc`）/ `StatusComponent`。
+- 背包界面 `Backpack`（`scenes/ui/backpack.tscn`，CanvasLayer 第 25 层，`PROCESS_MODE_ALWAYS`）：`GameState.has_backpack()`（剧情标记 `got_backpack`，`BackpackItem` 拾取即设置）之后输入 `backpack`（Tab / I / L3）打开并暂停；`_input` 先于暂停菜单截获 Esc。物品页 `use_selected()` / `assign_selected(hotkey)`（物品格放在能滚动的框里，一次显示 `GRID_ROWS` 两行，选中的那格自动滚进来，不压到说明文字），状态页读 `LaughMeter` / `MagicFatigue` / `Actor.buffs`（`buffs.json` 的 `desc`）/ `StatusComponent`。
 - 快捷键绑定在 `GameState.hotkeys`（`use_item` = Q、`use_special` = R，默认 `DEFAULT_HOTKEYS`，`set_hotkey` 冲突时交换，信号 `hotkeys_changed`）；`PlayableCharacter.use_item(hotkey)` → `Inventory.use_hotkey`。`ItemData.hotkey` 只是默认值说明。
 
 ### HUD 道具栏与立绘反馈
@@ -520,7 +523,7 @@ HUD 背包栏会根据物品数据自动显示，不需要改 UI 代码。
    - 立绘套装：`Dialogue.PORTRAIT_SETS`（pink / blue / bonfire_host），`portrait_for(表情, 套装)` / `head_for`；不写套装时用当前玩家的 `portrait_set`。人物表里写了 `portrait_set` 的人物（蓝色公主）说话时，右侧立绘按台词的 `emotion` 取格子。
 
 
-5. **派对主人**（`BonfireHost extends Princess`，`scenes/actors/playable/bonfire_host.tscn`继承公主场景）：`character_id`／`portrait_set`均为`bonfire_host`，原`WanderController`／`ScriptedController`及`Talk`交互；无新增操控锁，F2可选中，业务继续遵守`no_switch`。角色生成器定向写`data/characters/bonfire_host/`、人物表对应项和两种Buff；不会执行蓝色生成器或复制其冰魔法／裤子／迷宫剧情。弱点腋下、腰侧各1.4，其余1.0；基础数值沿用公主，魔法冷却12秒。普通、战时与战后地图构建器注册`bonfire_host`图例；战后日程沿用`AfterTown.place`，派对角色交给自身`place_schedule`与原闲逛控制器，蓝色只按真实ID识别。战时导演只配置粉蓝同行，不把她带进双人队伍。
+5. **派对主人**（`BonfireHost extends Princess`，`scenes/actors/playable/bonfire_host.tscn`继承公主场景）：`character_id`／`portrait_set`均为`bonfire_host`，原`WanderController`／`ScriptedController`及`Talk`交互；F2可选中；按 C 换人不会换到她（`PlayableCharacter.switchable`，她默认 `host_switchable = false`，测试模式照旧能选），业务继续遵守`no_switch`。角色生成器定向写`data/characters/bonfire_host/`、人物表对应项和两种Buff；不会执行蓝色生成器或复制其冰魔法／裤子／迷宫剧情。弱点腋下、腰侧各1.4，其余1.0；基础数值沿用公主，魔法冷却12秒。普通、战时与战后地图构建器注册`bonfire_host`图例；战后日程沿用`AfterTown.place`，派对角色交给自身`place_schedule`与原闲逛控制器，蓝色只按真实ID识别。战时导演只配置粉蓝同行，不把她带进双人队伍。
    - **彩带普攻** `FestivalRibbon extends Projectile`：面向投掷，144像素、240像素/秒、2.5秒寿命；最多两枚、间隔0.6秒；去／回程每目标各2基础伤害和45击退，按原受击规则判定。墙体去程折返、回程阻挡消散，10像素内回收；中立木桶沿原Damageable规则可破坏，敌塔代理按原实例去重。保留Hitbox节点的原命中信号，但不再扫描近战框。独立攻击图集使用原SpriteSheetAnimator.sheets机制。
    - **随身祭典光环** `FestivalAura`：三档64／88／112像素、4／6／8秒，跟随施法者。每0.2秒给范围内单位刷新0.3秒、最多1层Buff；友方角色／士兵／雪人`festival_ally`＝移速×1.2、普攻与伤害魔法×1.4；敌方Monster含Boss的`festival_enemy`＝移速×1.2、挠痒强度×1.35。建筑和陷阱不受影响，攻击频率、机制反伤不变。退出范围自然过期；结束／死亡／换图清理，暂停／对白／CG冻结，F2不取消。重复施法取更大范围和更长剩余时间；疲倦释放为最大范围4秒，不缩短已有更长效果。Buff图标追加23／24，原图标不换序。
    - **资源与文本**：`import_bonfire_host.py`复用既有像素化器，32px四向11状态、48px六种施法、17张228×304全身立绘与64px头像；地图精灵源图和提示词在`tools/art/src/bonfire_host/`；立绘现改用用户提供的`assets/generated/bonfire_host_portraits/portraits1.PNG`与`portraits2.PNG`。第一表按普通、开心、难过、惊讶、愤怒、害羞、吟唱、释放切入既有状态顺序；第二表余下八张覆盖憋笑、战损、战损憋笑、两级失控及战损魔法。战损与两级失控按新源图裸足，战损憋笑释放共用战损释放；坐姿／横卧头像独立裁框，去白底和标签。`--portraits-only`只更新立绘及头像，地图精灵保留原源与鞋装；固定映射在导入器与manifest中。分开生成的施法源表先按同组中位高度归一，避免第六行缩放跳变。普通NPC兼容图仍导出4×4格式，原镇民生成器优先从新角色图集导出。立绘、CG、过场通过原人物映射、portrait_set及Animator.texture_overrides处理第三角色，不新增magic_sprite等第二套配置。专属长篇CG未制作，通用笑倒与空扩展集合防止误回退其他角色内容。
@@ -749,7 +752,7 @@ data/cutscenes/<楼层组>/  地图内过场；data/theater/<楼层组>/  小剧
   日程 `data/after/schedule.json`：`npcs` 镇民（键 = 对话文件名）按 default → 时段 → `d<N>.all` → `d<N>.<时段>` → 做完后的 `<时段>_done` 逐层覆盖
   `{at, dir, wander, hidden, dialogue}`；`days.d<N>.<时段>` = `{event, task, hours}`。做完记 `after_done_d<N>_<时段>`（`done` / `mark_done`）。
 - **赎罪簿 `PenanceBook`**（`scripts/story/penance_book.gd`）：宣判时 `start()`（`penance_book`，100 工时），`add(差值, 原因)` 记 `vars.penance_log` 并提示；
-  背包的「赎罪簿」页（`Backpack.PAGE_PENANCE`，有赎罪簿后插在「物品」后面）读 `page_rows()`：剩余工时、今天的安排（✔ / ▶）、最近的记录、受罚记录。没有失败结局。
+  背包的「赎罪簿」页（`Backpack.PAGE_PENANCE`，有赎罪簿后插在「物品」后面；庆功宴开始以后（`AfterFestival.ON`）和骑士篇里不显示）读 `page_rows()`：剩余工时、今天的安排（✔ / ▶）、最近的记录、受罚记录。没有失败结局。
   `punish(文字, 小剧场)` 记受罚（`vars.penance_punish`）；`fail(任务名, 小剧场, 罚工时)`：弥补任务办砸了 → 失败小剧场 → 罚工时 → 记受罚（任务自己再从头来）。
   受罚的小剧场放在 `data/theater/after/`（id 以 `after_` 开头），看过后在背包「CG 图鉴」的「七日赎罪」分组里重看。
 - **受罚转盘 `PenanceRoulette`**（`scripts/story/penance_roulette.gd`，盘面 `roulette_wheel.gd`）：`await spin(原因)` 转盘越转越慢停在四种刑具之一
@@ -765,7 +768,7 @@ data/cutscenes/<楼层组>/  地图内过场；data/theater/<楼层组>/  小剧
 - **目标提示 `ObjectiveMarker`**（`scripts/story/objective_marker.gd`）：目标格上的光圈 + 上下跳的箭头，目标在画面外时屏幕边缘的指向箭头，右下角
   「第 N 天·时段 / 目标 / 实时状态（`extra`）」；过场 / 对话 / 黑幕时藏起来。
 - **镇民委托 `AfterErrands`**（`levels/floor_06/scripts/after_errands.gd`，数据 `data/after/errands.json` ← `after_text/errands.py`）：有赎罪簿以后、白天、到了
-  `from` 的时段且满足可选的 `requires` 前置委托后开放（`errand_<id>_open`，委托人头上冒「！」，对话 entries 最前面接委托：`set {vars: {errand_req}, call: errand_start}`）；接下 `_active`，
+  `from` 的时段且满足可选的 `requires` 前置委托后开放（`errand_<id>_open`，委托人头上冒「！」，对话 entries 最前面接委托：`set {vars: {errand_req}, call: errand_start}`）；接下 `_active`；七日赎罪结束以后（第 7 天以后、骑士篇里）不再挂委托，骑士篇里补罚也不再开放。
   导演摆上玩法节点（`errand_cookies.gd` 送饼干、`errand_apples.gd` 捡苹果）；`complete` 减工时，`fail` 当场被挠一下、回到能接。一次只能接一个。
   - 闲逛的小孩 `AfterKid`（`after_kid.gd`，场景 `levels/floor_06/scenes/after_kid.tscn`）：`lure` 成立且公主在视野里 → 跑过去挠（闷笑最多 97%，小镇里不会笑晕）
 	→ `on_catch`；冲刺甩开 / 按 E（`on_shoo`）。`pick_zone` / `caption` 给部位和详细字幕（装备回收按穿着的装备写配合挠法）。
@@ -794,6 +797,9 @@ data/cutscenes/<楼层组>/  地图内过场；data/theater/<楼层组>/  小剧
 	  - 四个以脚为主的游戏（粉色公主单人，手法针对脚底；蓝色公主不参与，只在报幕结尾当观众说两句）：
 		- **城门底下重新穿链**（工匠，第 4 天起白天，城门内侧 `[31,38]`，`GateChainShow`）：她仰面躺进检修槽穿链，光脚伸在槽口外。穿链 3 / 入轮 6 / 试拉 3 步，←→ 对准、J / K 力度、E 确认；
 		  道具：清灰刷 / 羽毛掸 → 润滑油刷 / 链环滚趾缝 → 手指刮脚心 / 齿轮刷滚足弓。**缩脚**（S）：预告亮着时按，这一下闷笑减半，但链头往反方向偏 ×1.5。`errand_gate_chain_step`（0~12）。
+			  槽口外的脚底是 codex 生成的童趣像素图（`tools/art/src/gate_chain/` → `import_gate_chain_art.py` 按类多数缩小、三色输出 → `assets/generated/after/gate_chain_soles.png`）。
+			  失误超过 `FAIL_ERRORS`（4）次：墙面倒塌的失败小剧场 `after_fail_gate_chain`（只露出一双脚，工匠借口拉脚挠脚心，三次魔力释放把墙震开；墙 `gate_wall_full / half / broken.png`），
+			  演完失误清零、扣好的节点保留、接着做。
 		- **蘑菇羊剪毛**（女仆，第 4 天起白天、赶羊之后，羊圈门口 `[57,33]`，`ShearingShow`）：脚底抹了盐，咕咕边被剪毛边舔脚。梳 3 结 / 剪 4 区 / 收 3 堆，←→ 转工具、按住 J 沿箭头工作；
 		  **盐量**：盐越多咕咕越乖（抖毛间隔 9 + 盐 ×5 秒、预告更早）但舔得越勤越痒，K 擦掉一些盐，每阶段女仆再抹；装袋阶段小羊羔挤过来和咕咕轮流舔另一只脚。`errand_shearing_step`（0~10）。
 		- **脚踏灯轮校准**（派对主人，第 4 天起白天、篝火舞排练之后，篝火边 `[44,26]`，`LampCalibrationShow`）：光脚踩调光踏板，单灯 / 双灯 / 图案各 4 项，亮斑稳 3 秒；
@@ -865,16 +871,24 @@ data/cutscenes/<楼层组>/  地图内过场；data/theater/<楼层组>/  小剧
 	事件写了 `needs_clear` 的（庆功宴）工时还清才开。补罚这一天不看受罚记录、工时大于 0 就能接（`AfterPenance.settle_mode`，对话入口 `penalty_offer_d7`，标记 `penalty_d7`），
 	报幕晚上也能接，一次减 `hours_d7`（5）工时，有没抵的受罚时顺便抵一条。
   - **庆功宴**（第 7 天晚上的事件 `d7_festival`，`needs_clear`：工时还清才开；广场篝火边 `[40, 24]`；`AfterFestival`，文本 `after_text/festival_night.py`、`stall_<id>.py`）：
-	开场过场 `after_d7_festival` → `AfterFestival.begin()`（标记 `after_festival_on` + `after_night_busy`，床不能睡）→ 广场自由活动，摊主和派对主人的对话最前面换成庆功宴的入口
-	（`festival_night.inject`，对话 `call: festival_dance / festival_stall（vars.stall_req） / festival_finale`）。日程 `d7.night` 把摊主摆在篝火周围。
+	开场过场 `after_d7_festival` → `AfterFestival.begin()`（标记 `after_festival_on` + `after_night_busy`，床不能睡）→ 自由活动，摊主和派对主人的对话最前面换成庆功宴的入口
+	（`festival_night.inject`，对话 `call: festival_dance / festival_stall（vars.stall_req） / festival_finale`）。
+	- **庆典广场** `floor_06_festival`（`gen_floor06_after.py` 的 `fe`）：从小镇篝火西边的入口 `[40, 24]` 进（`after_festival_open` 之后才开），战后百废待兴的样子
+	  （补了一半的城墙、脚手架、打补丁的帐篷、碎石堆上的笑声灯笼、木箱摊位、修好的图腾柱）。小镇上只留接补罚的市场监督和派对主人，庆功宴一开始也走（`AfterTown.apply_schedule`）。
+	- **广场上的人**：每人一个庆功宴专属的对话文件 `after_fest_<人>`（`after_text/festival_talk.py`，身上不挂委托）：摊主 = 摊位入口 / 通关后的纪念 / 领舞以后的闲聊；
+	  其他人 = 领舞前 / 领舞后 / 五个摊位都通关。队长、市场监督、队员、小莉莉的话和蓝色公主同行的搭话都换成庆功宴的。
+	- **奖品和装扮**：摊位通关后摊主先说两句奖品（`stall_<id>.py` 的 `REWARD` → `festival_night.json` 的 `reward_lines`），再进背包（`rewards`：饼干 ×3、薄荷糖 ×2、
+	  木头小羊、冰雕小羊、足疗鱼小盆、咕咕的铃铛项圈）。广场装扮用道具的 `show_flag / hidden_flag = stall_<id>_done`：饼干串灯、彩色发绳、三块冰 → 三座冰雕、足疗鱼盆，
+	  还有戴发绳跑来跑去的小孩、戴铃铛的咕咕。小镇道具也支持 `show_flag / hidden_flag`。
 	- **篝火领舞**（必做，`FestivalDanceShow`，复用 `RhythmLane`）：领舞（光脚，失误 → 围观的人挠脚心）→ 邀舞（蓝色公主的嘴硬值，`ChoiceMenu` 选部位，大腿 / 屁股接一串短谱面连击，
 	  脚心不怕；每次挠完千手痒痒裤的小手帮倒忙挠粉色）→ 双人舞（失误 → 小手挠粉色的趾缝或蓝色的大腿）→ 全镇一起跳。每段得分 < 50% 重跳，闷笑满脚下一绊重跳。→ `festival_dance_done`。
 	- **五个摊位**（可选，都继承 `ErrandWorkStage`，不存档，通关记 `stall_<id>_done`）：脚底猜猜乐（奶奶，`StallGuessShow`：脚伸进帘子后的箱子，挠一阵四选一，连对三次）/
 	  忍笑套圈（商人，`StallRingShow`：准星左右晃，闷笑越高越乱，柜台下的小孩加强时准星猛偏，12 个圈套中 6 个）/ 冰雕摊（工匠，`StallIceShow`：操控蓝色公主按方向刻冰，
 	  粉色公主和小手挠她的大腿屁股，J 冰封压笑有冷却，笑满冰雕塌）/ 捞痒痒鱼（小汤姆，`StallFishShow`：光脚泡在盆里被鱼啄，← → 挪网 J 捞，网会湿会破，K 抬脚鱼散开）/
 	  舔盐耐力赛（女仆，`StallLickShow`：和派对主人比谁先笑，J 绷住耗体力、K 放松，自己的闷笑停在临界点时主人那边涨得更快）。
-	- **放烟花**（领舞以后找镇长）：`FestivalFireworks`（纯 `_draw` 烟花）+ 过场 `after_d7_finale`（哼歌伏笔、队长合上赎罪簿）→ `chapter_end`「七日赎罪　完」→ 按 E 回小屋的床。
-	  测试：`f6_after_test.tscn -- --festival-night-only`（`tests/helpers/f6_festival_night.gd`）。
+	- **放烟花**（领舞以后找镇长）：`FestivalFireworks`（纯 `_draw` 烟花；过场里镜头拉远到 0.55，烟花跟着铺满画面）+ 过场 `after_d7_finale`（哼歌伏笔、队长合上赎罪簿）
+	  → `chapter_end`「七日赎罪　完」→ 按 E 回小屋的床，睡觉进骑士篇。放完烟花以后庆功宴的入口都不再出现。
+	  测试：`f6_after_test.tscn -- --festival-night-only`（`tests/helpers/f6_festival_night.gd`：五个摊位、奖品和装扮、放烟花 → 结局画面 → 回小屋 → 真的按键和床说话睡觉 → 骑士篇开始）。
   - **疏通排水管**（第 4 天早上，排水管 `floor_06_after_drain`，南边排水口 `after_drain_open`；`TaskDrain`，文本 `after_text/drain.py`）：一格宽的管道迷宫里趴着爬
 	（meta `busy_hands` + 状态 `crawl`）；绒苔球（`TaskDrain.MossBall`）贴在腿上蹭、按住 E 擦掉；管口外的小孩抓脚（定身 + 挠，J 蹬 5 下挣开）；三段开场（第二段管壁上
 	两个手拉手的小女孩涂鸦，伏笔）、三处堵塞（`Clog`，按住 E 擦）、拉总闸放水。闷笑满 = 被拖出管子（`after_fail_drain`，通了的不用重通）。收尾队长递手帕「又是这副样子」，
@@ -915,7 +929,9 @@ data/cutscenes/<楼层组>/  地图内过场；data/theater/<楼层组>/  小剧
   她光脚站在报幕台后，主人蹲在台下挠脚（羽毛 → 手指钻趾缝 → 掰脚趾 / 刮脚心交替）；1~3 选节目卡、指针进框按 J 鸣铃，闷笑 ≥ 70% 时鸣铃一半机会笑场重报，K 深呼吸降闷笑但下一下更狠；
   只在当场有效，十二个报完才结算。补罚的脚本表 `AfterPenance.SHOWS`。做完抵一条、减 3 工时。
 - 小游戏共同：`TrainingStage` 开演时 `GameState.dialogue_holds` +1（对话框收尾时不清 `in_dialogue`，人物不动、按 E 不会去和人说话），选项页也一样；
-  飘字（`pop` / `say`）互相错开、夹在舞台框里；挠法描写（`narrate`）进画面下方的反应框；背景音乐切到 `minigame`（`tools/audio/gen_music.py` 生成）。
+  飘字（`pop` / `say`）互相错开、夹在舞台框里；挠法描写（`narrate`）进画面下方的反应框（劳动小游戏的描写框字号小一号，滚到底时最后一行完整显示）；
+  背景音乐切到 `minigame`（`tools/audio/gen_music.py` 生成）。舞台演员可以写 `character`（pink / blue）指定用谁的精灵图，不写 = 现在操控的角色。
+  抬担架、以笑为饵、图腾柱的失败小剧场里只出现千手的手。
   弥补任务进行中跟着的蓝色公主不能对话（`AfterStory._mute_partner`：先由自由日程交接为同行，静音／恢复均刷新交互区，避免只清文本却留下 E 提示）；没写 `no_switch` 的小场景按 C 换人（`AfterRoom` 设 `free_switch`）。
 - 小场景导演 `AfterRoom`（图例 `f6afterroom`）：目标提示、目标圈触发、进图自动演的事件、镇民改名、蓝色公主跟着。`AfterStory.TOWN_DOORS / ROOM_EXITS` 指路。
 - 小剧场 / 舞台上的字（`SpeechBubble`）画在最前面（`z_as_relative = false`、`z_index = 4000`）；训练小游戏舞台上气泡垫在飘字下面。
@@ -925,39 +941,68 @@ data/cutscenes/<楼层组>/  地图内过场；data/theater/<楼层组>/  小剧
   本批日常优化专项：`res://tests/f6_after_test.tscn -- --daily-polish-only`（`tests/helpers/f6_after_daily_polish.gd`，56 项：灯笼边界、考核六键、限区日程、失败重试、每日奖励、同行重进、任务交接和旧存档、裁缝布局与输入锁）；截图入口 `tests/capture_f6_daily_polish.tscn`。实施记录、资源来源和截图索引见 `doc/f6_after_daily_polish.md` 与进度文档。
 
 ## 骑士篇（七日赎罪之后，还在地下小镇；levels/floor_06/scripts/knight_story.gd）
-序章，只埋伏笔（写法见「剧情伏笔」的真相内核）。沿用七日赎罪的地图、导演（`AfterTown` / `AfterHouse` / `AfterRoom`）、目标提示和任务循环：
+序章，只埋伏笔（写法见「剧情伏笔」的真相内核）。连续推进、不分天；沿用七日赎罪的小屋、工房、导演（`AfterHouse` / `AfterRoom`）、目标提示和任务循环：
 骑士篇开始以后（标记 `knight_started`），`AfterStory` 的 `objective` / `_try`（进图、走进目标圈）/ `status_text` / `recover_task` 都转给 `KnightStory`；
-床不让睡（`sleep` / `rest`），夜里不宵禁，蓝色公主一直跟着（`AfterBlueRoutine.invited_today`）。文本在 `tools/build/knight_text/`（`story.py` 过场和地牢里骑士的对话，
-`tasks.py` 玩法文本 `data/after/knight.json` 和失败小剧场），由 `gen_floor06_after.py` 一起生成。
-- **推进**：`KnightStory.STEPS` 按顺序（`vars.knight_step`），每步 `where` / `auto` 或 `spot` / `slot` / `objective` / `cutscene` / `task`（同 `AfterStory.TASKS` 的写法，
-  由 `AfterStory.play_task` 跑：失败放小剧场、`reset_items`、回 `respawn` 重来；骑士篇不记赎罪簿）/ `done` / `then_slot` / `goto` / `sleep`。
-  时钟：`DayClock` 的第几天从 `KnightStory.DAY`（8）起，标签写「骑士篇·时段」；日程 `npcs.*.d8.night` 让镇民夜里留在广场。
-  开始：第 7 天庆功宴放完烟花回小屋，`AfterStory.sleep` → `KnightStory.begin()`（睡一觉 → 小屋里的开场）。测试 / 跳关用 `KnightStory.jump(步骤)`。
+夜里不宵禁，蓝色公主一直跟着（`AfterBlueRoutine.invited_today`），没有赎罪簿和工时，镇民不挂委托、不开补罚。文本在 `tools/build/knight_text/`（`story.py` 过场和地牢里骑士的对话，
+`tasks.py` A~D 的玩法文本 `data/after/knight.json` 和失败小剧场，`finale.py` E~G 的 `data/after/knight_finale.json`、过场和失败小剧场，`townsfolk.py` 镇民的对话），由 `gen_floor06_after.py` 一起生成。
+- **三张骑士篇的小镇**（`KnightStory.TOWNS`；生成器把战后小镇的布局抽成 `town_layout(m, kind)`，三张图布局相同、图腾柱已经修好、`no_switch`，导演 `AfterRoom`）：
+  `floor_06_knight_day` 白天（保卫队和各家门口的人，对话 `after_k_*`）/ `floor_06_knight_night` 夜里（镇民都在广场上，`after_kn_*`）/ `floor_06_knight_chase` 追逃和 Boss（一个镇民都没有）。
+  从小屋 / 工房 / 地牢回「小镇」时，换图会转到这一步对应的那张：`main.change_level` → `StoryDirector.redirect_level` → `AfterStory.redirect_level`
+  （步骤的 `where` 是小镇图就用它，不然用步骤的 `town`）。小镇图虽然写了 `no_switch`，以笑为饵 / 追逃 / Boss 期间任务开 `free_switch`，按 C 只在两位公主之间换。
+- **推进**：`KnightStory.STEPS` 按顺序（`vars.knight_step`）：morning → found（抬担架）→ wake（工房）→ bait（以笑为饵）→ sneak → cell（地牢）→ erupt → chase → boss。
+  每步 `where` / `town` / `auto` 或 `spot` / `slot` / `objective` / `away`（人还不在那张图上时的目标文字，比如「出门透透气（天已经黑了）」）/ `cutscene` /
+  `task`（同 `AfterStory.TASKS` 的写法，由 `AfterStory.play_task` 跑：失败放小剧场、`reset_items`、回 `respawn` 重来；骑士篇不记赎罪簿）/ `done` / `goto` / `sleep_first`。
+  **时间自然变化**：不用黑幕换时段，进小镇图时按这一步的 `slot` 直接换成早 / 夜（`sync_slot`）——工房醒来以后自由活动，出门就是夜里，以笑为饵进图自动开演；
+  `sleep_first` 的步骤（erupt）要先回小屋自己上床睡（`AfterStory.sleep` → `sleep_now`，`Sleep.sleep(show_title = false)` 不显示黑幕标题），醒来接着演。
+  时钟：`DayClock` 的第几天从 `KnightStory.DAY`（8）起，标签写「骑士篇·时段」。开始：第 7 天庆功宴放完烟花回小屋睡觉，`AfterStory.sleep` → `KnightStory.begin()`。
+  测试 / 跳关用 `KnightStory.jump(步骤 id)`。
 - **人物**：骑士 `knight`（`data/actors/npcs.json`，生成器写入）：行走图 `tools/art/gen_knight_art.py`（Python 像素，`npcs/knight.png`，被诅咒附身的 `knight_cursed.png`），
   立绘 `tools/art/src/knight/`（codex 内置 image_gen 生成，提示词见 `prompts.md`）→ `import_knight_portrait.py` 像素化成 `npc_portraits/knight.png`。
-- **A 发现骑士 + 抬担架**（小镇东北角地牢入口 `[53, 8]`，`TaskStretcher`）：队员抬前面沿 `PATH` 走，她抬后面（`busy_hands` + `carry_stone`，离太远队员停下等）；
+- **AI 搭档 `KnightAI`**（`levels/floor_06/scripts/knight_ai.gd`）：追逃和 Boss 里没被操控的那位公主。复用 `CompanionController` 的挣扎 / 躲预警（`danger` 组）/ 打怪 / 跟随，
+  中间插一个 task 行为：每帧问任务给的 `plan`（`Callable(ai) -> Dictionary`）：`{to, near, dash}` 走过去、`{hold: true}` 原地不动、`{}` 交给后面的行为。
+  冻住、挣扎之类的动作由任务在 plan 里直接调（AI 不按键，任务的按键只认玩家）。`KnightAI.install([粉色, 蓝色], plan, hooks, behaviours)`：换人时没被操控的那位自动用它
+  （`PlayableCharacter.ai_factory`）；任务结束 `uninstall()` 换回平时的跟随。挣开、重来时用 `clear_root` 解开定身（`apply_root(0)` 不生效）。
+- **A 发现骑士 + 抬担架**（白天小镇东北角地牢入口 `[53, 8]`，`TaskStretcher`）：队员抬前面沿 `PATH` 走，她抬后面（`busy_hands` + `carry_stone`，离太远队员停下等）；
   诅咒手印（`CurseHand`）从骑士身上爬出来扑向队员——挡在中间，手印碰到粉色公主只是拍拍脚背就散（伏笔），碰到队员他笑倒、担架一歪；歪三次失败（`knight_fail_stretcher`）。
+  不会一口气连歪：歪了以后队员笑 `DROP_TIME` + `DROP_GRACE` 秒内不再算，新爬出来的手印过 `ARM_TIME` 秒才算数，多爬出来的那只等缓冲过了才扑。
   抬到工房门口 → `knight_carry_done` → 进工房。
-- **B 醒来**（工房，过场 `knight_wake`）：「你这个害王国破灭的凶手！」→ 抓起长矛的起手式让队长沉默（伏笔）→ 被挠痒压制、关进地牢；掉出的旧手帕（伏笔）→ 天黑。
+- **B 醒来**（工房，过场 `knight_wake`）：「你这个害王国破灭的凶手！」→ 抓起长矛的起手式让队长沉默（伏笔）→ 被挠痒压制、关进地牢；掉出的旧手帕（伏笔）→ 自由活动，出门就是夜里。
 - **C 以笑为饵**（夜里的广场 `[33, 26]`，`TaskBait`）：手印贴在镇民身上偷笑声；手印怕人，只被粉色公主的笑声引来（闷笑 ≥ 25% 时 30 + 闷笑 × 150 像素内），
-  笑到 85% 全图扑来，身上同时贴 5 只失败（`knight_fail_bait`）。痒痒草 / 诅咒地纹（`CurseMark`：轻挠 + 招手印）帮她笑起来。这段小镇能换人：蓝色公主 J 冻住身边的手印、
-  K 收进瓶子，收够 6 只。手印贴在粉色身上挠得很轻、疲倦涨得多（伏笔），贴在蓝色身上狠挠大腿。
-- **D 夜探地牢**（东南角营地楼梯 `[58, 39]` → 新地图 `floor_06_after_prison`，`TaskSneak`）：`StealthDirector` / `PatrolGuard` / 木箱躲藏；被发现 → 挠痒审问椅
+  笑到 85% 全图扑来，身上同时贴 5 只失败（`knight_fail_bait`）。让自己笑起来：粉色公主按住 K「偷偷笑」（捂着嘴笑，闷笑每秒 +`STEAL_RATE`，松开慢慢落下来）；
+  蓝色公主在她身边按 K 挠她一下（身边有冻住的手印时 K 先收瓶）；痒痒草 / 诅咒地纹（`CurseMark`：轻挠 + 招手印，夜里也看得清、放大）。这段 K 不冲刺（`no_dash`）。
+  蓝色公主 J 冻住身边的手印、K 收进瓶子，收够 6 只。手印贴在粉色身上挠得很轻、疲倦涨得多（伏笔），贴在蓝色身上狠挠大腿。
+- **D 夜探地牢**（东南角营地楼梯 `[58, 39]` → `floor_06_after_prison`，`TaskSneak`）：`StealthDirector` / `PatrolGuard` / 木箱躲藏（守卫视野 64、角度 55、走得慢，
+  警觉 `alert_rate` 1.6 / `alert_decay` 0.6；从木箱出来找站得下的位置）；被发现 → 挠痒审问椅
   `InterrogationChairShow`（继承 `ErrandWorkStage`：撑过 14 秒，J 挣扎，笑出声加时）→ 送回通风口。走到最里面的牢房 → 对话 `after_knight` 的 `cell`：三个问题（误导证词：
   十三下钟声和两个殿下、一千只手笑声和你一样、封印前的你和斗篷影子）问完 → 蓝色公主走出来，骑士跪下「……殿下？」又否认 → 过场 `knight_cell_end`（「又是这副花猫样」、
-  手帕和队长那块一样）→ 回小屋睡到第二天早上。
-- **E 诅咒失控·镇中追逃**（第二天早上，小屋 `knight_erupt` → 小镇 `knight_chase_open`，`TaskArmorChase` + `CursedArmor`）：盔甲（`CharacterBody2D`，撞墙会滑、
+  手帕和队长那块一样）→ 回小屋门口，自己上床睡，醒来接着演。
+- **E 诅咒失控·镇中追逃**（第二天早上，小屋 `knight_erupt` → `floor_06_knight_chase` 的 `knight_chase_open`，`TaskArmorChase` + `CursedArmor`）：盔甲（`CharacterBody2D`，撞墙会滑、
   直线比她快一点、转弯慢）开局在营地楼梯口挣扎 2.5 秒；按顺序点亮三座笑声灯笼信标（按住 E 1.6 秒，亮的一瞬间盔甲被晃停 1.5 秒），再跑到广场图腾柱下。
   盔甲每隔一阵在她那一行 / 列亮预警线（`danger` 组）再用铁手横扫（挠一下、减速）；盔甲走近栅栏点而她已经跑开时，镇民关上栅栏挡 5 秒（每处一次）；
-  能换人：蓝色公主 J 冻住盔甲 3 秒（冷却 12 秒）。被抱住：轻挠——闷笑涨得慢、疲倦涨得快（伏笔），连按 J 挣开；抓 3 次失败（`knight_fail_chase`），点亮的信标不灭。
-- **F Boss「痒铠骑士」**（广场，`knight_boss_open`，`TaskKnightBoss`）：盔甲跪在广场中间，只能打诅咒部件（`BossPart`：`receive_hit` → `hit_part`，平时打不动，
-  蓝色公主在旁边按 J 冻住以后谁的攻击都能打，3 下碎）。阶段一铁手套（扑抓：预警圈 → 圈里的人被抓住挠；扫腿：一行预警 → 绊倒挠脚心）；阶段二护腿（跺地痒波 + 召 3 只手印，
-  跺完卡住时不用冻也打得动）；阶段三笑面（打不动；吐笑气，骑士的声音冲出来），14 秒后两个符文圈亮起：没被操控的那位自动站进自己的圈，把操控的那位带进另一个圈，
-  用 `ResonanceMeter`（两人真实的闷笑，在圈里被符文挠，J 绷住 / 冰封压一截）充满 → 光柱净化。粉色公主贴近时出招变慢、被抓到时挠得很轻（伏笔）；
-  被抓累计 4 次失败（`knight_fail_boss`），从这个阶段重来。追逃和 Boss 放 `knight_boss` 曲（ElevenLabs 生成，`gen_music.py` 的 `TRACKS`）。
+  蓝色公主 J 冻住盔甲 3 秒（冷却 12 秒）。被抱住：轻挠——闷笑涨得慢、疲倦涨得快（伏笔），连按 J 挣开；抓 3 次失败（`knight_fail_chase`），点亮的信标不灭。
+  AI：蓝色公主跟着、盔甲靠近粉色公主时冲过去，冷却一好就冻住它；粉色公主背着盔甲跑开。
+- **F Boss「痒铠骑士」**（广场，`knight_boss_open`，`TaskKnightBoss`；场上的东西都是程序画的，放在 `knight_boss_fx.gd` 的 `KnightBossFx`：`Bolt` / `NetCell` / `Dust` / `Shard` /
+  `Ring` / `Mirror` / `Gear` / `WeakSpot` / `Victim`，伤害判定由 `TaskKnightBoss` 每帧问它们）：盔甲跪在广场中间，骑士本人不掉血，只能打诅咒部件（`BossPart`：`receive_hit` → `hit_part`）。
+  - **四个阶段**，每个拆掉一套盔甲：铁手套 → 护腿 → 胸甲 → 头盔笑面（拆不掉，最后靠符文圈共鸣净化）。每拆完一套演一段换阶段过场（`knight_boss_p1~p3`：演示新招、最后提示玩法），
+	左上角也有当前阶段的提示。部件平时打不动：被蓝色公主冻住（J）、护腿跺完 / 冲撞完卡住（`stuck`）、骑士清醒（`lucid`）时，谁的普通攻击都能打。
+  - **出招**（每 `ATTACK_EVERY` 秒从这个阶段的 `SKILLS` 里挑，不连着用同一招；粉色公主贴近 `SOFT_R` 以内时变慢）：
+	铁手套：扑抓（预警圈 → 抓住挠，连按 J 挣开）/ 扫腿（一行预警，绊倒挠脚心）/ 弹指（三发扇形）/ 十指痒网（3×3 预警格）；
+	护腿：跺地痒波 + 召手印 / 冲撞（预警线 → 直冲，撞到人抓住；撞完卡住 = 破绽）/ 踢沙（三团痒尘：闷笑慢慢涨、减速）；
+	胸甲：诅咒穿戴（甩出一件痒痒装备穿到她身上一直挠、减速，图标用现有的痒痒装备；搭档在身边按住 E 扯下来，或者她连按 J 挣掉）/ 护心磁吸（往中间吸，吸到跟前就抓住）/ 甲片飞散（六片弹来弹去）；
+	笑面：吐笑气 / 呼唤骑士之名（冲击波把人往中间推，喊完露出破绽）/ 镜面笑脸（三张笑脸先绕圈再追人）。
+  - **反击 = 挠骑士**：掉一个部件、护腿卡住、喊完骑士之名会露出破绽（`WeakSpot`：手腕 / 膝盖窝 / 腰侧 / 脖子）`WEAK_TIME` 秒，打破绽 = 骑士的笑 `knight_laugh` +`KNIGHT_TICKLE`；
+	满了骑士清醒 `LUCID_TIME` 秒（「快……趁现在……」），所有部件不冻也打得动；头盔阶段挠满：笑面撑不住，符文圈马上亮。
+  - **场上的人**（`Victim`）：逃跑的镇民、被挠倒的队员、护着镇民的队员。手印会贴上去（最多 `MAX_CURSED` 个），走到身边按住 E 1 秒（AI 搭档站在旁边也算）或者蓝色公主冻一下 = 救下来：
+	冻结冷却马上好，被救的队员替公主挡一次扑抓 / 冲撞；有人被贴着超过 `ENRAGE_AFTER`（15）秒没人管，诅咒变强（出招间隔 ×`ENRAGE`），直到救下一个。
+  - **笑面阶段**：`MASK_TIME` 秒后（或挠满骑士）两个符文圈亮起，没被操控的那位自动站进自己的圈（粉色 `RUNES[0]`、蓝色 `RUNES[1]`），把操控的那位带进另一个圈，
+	用 `ResonanceMeter`（两人真实的闷笑，在圈里被符文挠，J 绷住 / 冰封压一截）充满 → 光柱净化。
+  - AI：两人都躲预警；蓝色公主冻没冻的部件、去冻贴着人的手印；粉色公主贴近本体（出招变慢）、有破绽 / 冻住的部件就去打、去扯搭档身上的诅咒装备、被抓住自己连按挣开。
+  - 被抓 / 绊倒累计 `CATCHES` 次失败（`knight_fail_boss`），从这个阶段重来（打碎的部件不回来）。状态 `vars.task_boss_phase`（0~3）、`task_boss_caught`。
+	追逃和 Boss 放 `knight_boss` 曲（ElevenLabs 生成，`gen_music.py` 的 `TRACKS`）。
 - **G 尾声**（`knight_epilogue`）：骑士清醒，只对蓝色公主说话，留下半枚王国徽章「交给真正的殿下」；粉色公主「……难道我才是那个『另一个』？」→ `chapter_end`「骑士篇　完」→ 小屋。
   之后的步骤还没做（目标提示「骑士篇的后续还在制作中」）。
-- 测试：`f6_after_test.tscn -- --knight-only`（A~D，`tests/helpers/f6_knight.gd`）、`--knight-finale-only`（E~G，`f6_knight_finale.gd`）；跳关点「骑士篇·开头」「骑士篇·诅咒失控」。
+- 测试：`f6_after_test.tscn -- --knight-only`（A~D，`tests/helpers/f6_knight.gd`）、`--knight-finale-only`（E~G，`f6_knight_finale.gd`：每招、破绽、救人、诅咒装备、AI 搭档、四个阶段）；
+  跳关点「骑士篇·开头」「骑士篇·诅咒失控」。
 
 ## 公主状态与换美术素材
 
