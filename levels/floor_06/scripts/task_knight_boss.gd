@@ -29,7 +29,9 @@ extends Node2D
 ##   没被操控的那位由 AI 控制（KnightAI，ai_plan + Hooks）：两人都躲预警；AI 蓝色公主冻没冻的部件、去冻贴着人的手印、去冻触手、合适的时候放千手解放；
 ##     AI 粉色公主贴近本体（出招变慢）、有破绽 / 冻住的部件就去打、搭档身上有诅咒装备就去扯、被抓住自己连按挣开；最后阶段两人都去没亮的灯笼下笑。
 ## 状态 vars.task_boss_phase（0~3）、task_boss_caught。
-## 测试：parts、phase、lanterns、tentacles、crates、freeze_part()、hit_part()、grab(角色)、mash()、stomp()、flick()、net()、charge()、sand()、leap()、
+##   **诅咒爆发 / 盯上镇民**（KnightCurse，curse）：每个阶段开始一次、耐久掉一半一次，爆发期间部件打不动、靠近闷笑狂涨、吸到笑声回耐久，
+##     每个阶段破解办法不同（手印风暴 / 痒波地脉 / 护心诅咒；笑面阶段是定时的「吸笑」，站进亮灯笼的光里）；平时隔一阵盯上一个镇民去偷笑声，按住 Y 笑把它引回来。
+## 测试：curse、parts、phase、lanterns、tentacles、crates、freeze_part()、hit_part()、grab(角色)、mash()、stomp()、flick()、net()、charge()、sand()、leap()、
 ##   throw_gear()、wear_gear()、magnet()、shards()、name_call()、mirrors()、send_tentacle()、tickle_knight()、curse_victim()、rescue()、talk_to()、
 ##   durability()、ai_plan()、ai_enabled、skip_cutscenes、windup_left、body_mode。
 
@@ -37,7 +39,7 @@ signal finished(ok: bool)
 
 const CENTER := Vector2i(41, 22)
 const ARENA := Vector2(140, 100)
-const PART_HP := 3
+const PART_HP := 6
 const FREEZE_R := 44.0
 const FREEZE_TIME := 4.0
 const FREEZE_COOL := 5.0
@@ -129,7 +131,7 @@ const TRANS_STAGGER := 1.6
 const HITSTOP := 0.06
 ## 最后阶段：灯笼、帮手、触手
 const LANTERN_R := 22.0
-const LANTERN_RATE := 0.12
+const LANTERN_RATE := 0.09
 const LANTERN_AI_RATE := 0.06
 const HELPER_MULT := 2.0
 const HELPER_SOLO := 0.03
@@ -226,6 +228,7 @@ var _decor: KnightBossFx.Decor
 var _hud: KnightBossHud
 var _t := 0.0
 var _tips := {}
+var curse: KnightCurse
 
 
 static func data() -> Dictionary:
@@ -276,6 +279,10 @@ func _ready() -> void:
 	_decor.global_position = _home
 	_decor.spots.assign(DECOR.map(func(o): return _home + (o as Vector2)))
 	_spawn_victims()
+	curse = KnightCurse.new()
+	curse.task = self
+	get_parent().add_child(curse)
+	curse.global_position = Vector2.ZERO
 	add_to_group(PantsBurst.KNIGHT_GROUP)
 	# 支线「队长的旧剑术」：到时候我会在——队长替她挡一次
 	shield = 1 if KnightQuests.is_done("spear") else 0
@@ -297,7 +304,7 @@ func _exit_tree() -> void:
 	if _music_was != "" and Audio.music_id == "knight_boss":
 		Audio.play_music(_music_was)
 	_clear_field()
-	for n in parts + victims + crates + lanterns + helpers + [_body, _decor, _shadow]:
+	for n in parts + victims + crates + lanterns + helpers + [_body, _decor, _shadow, curse]:
 		if is_instance_valid(n):
 			n.queue_free()
 	KnightAI.uninstall()
@@ -340,6 +347,8 @@ func _enter_phase(p: int) -> void:
 		GameState.princess_reacted.emit(str(lines[p][0]), 3.0)
 	if p == PHASES - 1:
 		_start_lanterns()
+	if is_instance_valid(curse):
+		curse.phase_started(p)
 
 
 ## 拆完一套：清场 → 部件炸开（顿帧、震屏）→ 骑士踉跄、喊一句 → 下一阶段（不黑屏、不演过场）
@@ -349,6 +358,7 @@ func _transition(p: int) -> void:
 	if grabbed:
 		_release_grab()
 	body_mode = "stagger"
+	KnightFx.play(get_parent(), "curse_burst", _body.global_position + Vector2(0, -20), {"size": 120.0, "fps": 12.0, "z": 5})
 	var info: Array = data().get("transition", [])
 	var tr: Dictionary = info[p] if p < info.size() else {}
 	_burst(_body.global_position + Vector2(0, -20), KnightBossFx.PURPLE)
@@ -373,6 +383,9 @@ func _transition(p: int) -> void:
 
 func _clear_field() -> void:
 	_clear_warn()
+	if is_instance_valid(curse):
+		curse.end(true)
+		curse._end_hunt()
 	for n in hands + gases + fx + tentacles:
 		if is_instance_valid(n):
 			n.queue_free()
@@ -422,6 +435,8 @@ func advance(delta: float) -> void:
 		talk_near(GameState.player)
 	_tick_gears(delta)
 	_tick_victims(delta)
+	if is_instance_valid(curse) and not grabbed:
+		curse.tick(delta)
 	if grabbed:
 		_grab_tick(delta)
 		return
@@ -556,7 +571,10 @@ func _move(delta: float) -> void:
 	_body.global_position = _clamp_arena(at + step)
 
 
-func _focus() -> PlayableCharacter:
+## 往哪儿走：盯上了镇民就走向他，不然跟着玩家
+func _focus() -> Node2D:
+	if is_instance_valid(curse) and is_instance_valid(curse.hunt):
+		return curse.hunt
 	return GameState.player if is_instance_valid(GameState.player) else pink
 
 
@@ -855,6 +873,7 @@ func _tick_leap(delta: float) -> void:
 	_shake(0.35, 4.0)
 	Audio.play("break", -6.0)
 	Fx.burst(get_parent(), leap_to, "dust", 16, 70.0, 0.6, Vector2.ZERO, Color(0.8, 0.7, 0.6))
+	KnightFx.play(get_parent(), "dust_land", leap_to, {"size": LEAP_R * 2.6, "squash": 0.75, "z": 0})
 	_say(data().get("land", []))
 	for c in _players():
 		if c.global_position.distance_to(leap_to) <= LEAP_R and _hit(c, LEAP_LAUGH, "sole") and c.status:
@@ -994,6 +1013,7 @@ func _ring() -> void:
 	r.set_meta("kind", "ring")
 	r.gaps = warn.get("gaps", [])
 	_add_fx(r, _body.global_position)
+	KnightFx.play(get_parent(), "shockwave", _body.global_position, {"size": 200.0, "squash": 0.6, "z": 0})
 	_shake(0.25, 2.5)
 	open_weak(Vector2(0, -26))
 
@@ -1213,6 +1233,9 @@ func _tick_lanterns(delta: float) -> void:
 					c.laugh.add(c.laugh.max_value * KnightLaugh.RATE * 0.5 * delta)
 		if _helper_at(l.index):
 			rate = rate * HELPER_MULT + HELPER_SOLO
+		# 笑面吸笑的时候：灯笼不长（KnightCurse 让没亮的往下掉）
+		if is_instance_valid(curse) and curse.surge == "drain":
+			rate = minf(rate, 0.0)
 		var stolen := tentacles.any(func(tn): return is_instance_valid(tn) and tn.attached and tn.lantern == l and not tn.frozen)
 		l.stealing = stolen
 		if stolen:
@@ -1245,6 +1268,9 @@ func _light(l: KnightBossFx.Lantern, amount: float) -> void:
 			GameState.princess_reacted.emit(str(lines[lit - 1]), 2.6)
 		Audio.play("star_burst", -4.0)
 		Fx.burst(get_parent(), l.global_position + Vector2(0, -28), "spark", 16, 60.0, 0.8, Vector2(0, -20), Color(1, 0.9, 0.6))
+		var pillar := KnightFx.play(get_parent(), "lantern_pillar", l.global_position + Vector2(0, -34), {"size": 64.0, "loop": true, "fps": 10.0})
+		if pillar:
+			fx.append(pillar)
 		if is_instance_valid(_decor):
 			_decor.fade = 1.0 - float(lit) / float(lanterns.size())
 
@@ -1293,6 +1319,7 @@ func _purify() -> void:
 	for l in lanterns:
 		if is_instance_valid(l):
 			l.finale = true
+	KnightFx.play(get_parent(), "purify", _body.global_position + Vector2(0, -24), {"size": 200.0, "fps": 9.0, "z": 5})
 	_shake(0.6, 3.0)
 	if not skip_cutscenes and Cutscene.has_cutscene("knight_purify"):
 		await get_tree().create_timer(0.8).timeout
@@ -1533,6 +1560,15 @@ func _ai_move(ai: PlayableCharacter) -> Dictionary:
 	# 搭档身上有诅咒装备：过去扯下来（站在旁边就在扯）
 	if is_instance_valid(other) and other.has_meta(&"knight_gear"):
 		return {"to": other.global_position, "near": RESCUE_R * 0.6, "dash": true}
+	if ai == blue and is_instance_valid(curse) and curse.surge == "heart":
+		# 护心诅咒：去冻还没冻住的那颗核心
+		for c in curse.cores:
+			if float(c["frozen"]) <= 0.0:
+				var cp := curse.core_pos(c)
+				if cp.distance_to(blue.global_position) <= KnightCurse.CORE_FREEZE_R - 4.0:
+					freeze_part(blue)
+					return {"hold": true}
+				return {"to": cp, "near": 4.0, "dash": true}
 	if ai == blue:
 		# 触手缠着灯笼：去冻
 		for tn in tentacles:
@@ -1617,6 +1653,10 @@ class Hooks extends BattleAIHooks:
 # ------------------------------------------------------------------ 部件
 ## 蓝色公主 J：冻住身边的部件（贴在镇民身上的手印也一起冻掉 = 救下来；最后阶段冻住触手）
 func freeze_part(who: PlayableCharacter) -> bool:
+	# 护心诅咒：冻核心不吃冷却（三秒内要冻两颗）
+	if is_instance_valid(curse) and is_instance_valid(who) and curse.freeze_cores(who):
+		Audio.play("chime", -4.0)
+		return true
 	if freeze_cool > 0.0 or not is_instance_valid(who):
 		return false
 	var hit := _freeze_tentacles(who)
@@ -1643,6 +1683,9 @@ func freeze_part(who: PlayableCharacter) -> bool:
 func hit_part(part: BossPart) -> bool:
 	if not is_instance_valid(part) or part.broken:
 		return false
+	if is_instance_valid(curse) and curse.invulnerable():
+		GameState.notify("诅咒爆发中，打不动！先破解诅咒", 1.0)
+		return false
 	if part.id == "mask" or not _soft(part):
 		GameState.notify("诅咒太硬了……先冻住它！", 1.0)
 		return false
@@ -1655,6 +1698,7 @@ func hit_part(part: BossPart) -> bool:
 			GameState.princess_reacted.emit(str(lines[0]) % str(data().get("parts", {}).get(part.id, "")), 2.0)
 		Audio.play("break", -4.0)
 		_burst(part.global_position, Color(0.75, 0.8, 0.9))
+		KnightFx.play(get_parent(), "part_break", part.global_position, {"size": 64.0, "z": 5})
 		_shake(0.2, 3.0)
 		_hitstop()
 		if parts.all(func(p): return not is_instance_valid(p) or p.broken or p.id == "mask"):

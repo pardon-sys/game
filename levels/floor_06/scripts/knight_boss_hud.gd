@@ -51,6 +51,19 @@ class Bar extends Control:
 			x += seg_w
 		var name := "诅咒盔甲 · %s" % TaskKnightBoss.PHASE_NAMES[task.phase]
 		draw_string(font, Vector2(X, Y + 6), name, HORIZONTAL_ALIGNMENT_LEFT, -1, 8, Color(1, 0.9, 1.0))
+		# 诅咒爆发：耐久条罩一层发亮的紫色、写上破解的进度
+		var cu := task.curse
+		if is_instance_valid(cu) and cu.surge != "":
+			var pulse := 0.35 + 0.2 * sin(Time.get_ticks_msec() / 120.0)
+			draw_rect(Rect2(X - 2, Y + 8, W + 4, 10), Color(0.7, 0.2, 1.0, pulse))
+			var prog := ""
+			match cu.surge:
+				"hands": prog = "救下 %d / 3" % cu.surge_victims.filter(func(v): return is_instance_valid(v) and not v.cursed).size()
+				"veins": prog = "木桩 %d / %d" % [cu.stake_hits, KnightCurse.STAKE_HITS]
+				"heart": prog = "心核 %d / 2" % cu.cores.filter(func(c): return float(c["frozen"]) > 0.0).size()
+				"drain": prog = "躲进灯笼光里！"
+			var label := ("吸笑！" if cu.surge == "drain" else "诅咒爆发！打不动") + "　" + prog
+			draw_string(font, Vector2(X + W - 150, Y + 6), label, HORIZONTAL_ALIGNMENT_RIGHT, 150, 8, Color(1, 0.6, 1.0))
 		# 骑士的笑
 		draw_rect(Rect2(X + W * 0.25, Y + 21, W * 0.5, 4), Color(0.08, 0.05, 0.1, 0.85))
 		draw_rect(Rect2(X + W * 0.25, Y + 21, W * 0.5 * task.knight_laugh, 4), Color(1, 0.85, 0.4))

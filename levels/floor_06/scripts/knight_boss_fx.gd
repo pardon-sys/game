@@ -279,6 +279,8 @@ class Victim extends Node2D:
 	const RUN := 46.0
 	const SCARE_R := 56.0
 	var sheet: Texture2D
+	## 被盔甲盯上了（KnightCurse.hunt）：吓得缩在原地发抖，不跑
+	var hunted := false
 	var kind := "runner"
 	var who := "kid"
 	var covers: Array = []
@@ -322,7 +324,7 @@ class Victim extends Node2D:
 		if cursed:
 			cursed_t += delta
 			return
-		if kind == "fallen" or GameState.in_cutscene:
+		if kind == "fallen" or GameState.in_cutscene or hunted:
 			return
 		# 盔甲靠近：逃到离它最远的掩体
 		if is_instance_valid(threat) and threat.global_position.distance_to(global_position) <= SCARE_R and state != "flee":
@@ -349,7 +351,12 @@ class Victim extends Node2D:
 		var col := int(_t * 7.0) % 4 if moving else 0
 		var row := _dir if moving else (0 if sin(_t * 1.3) > 0.0 else 3)
 		var src := Rect2(col * FRAME, row * FRAME, FRAME, FRAME)
-		if kind == "fallen" or cursed:
+		if hunted and not cursed and kind != "fallen":
+			# 被盯上：缩成一团发抖
+			draw_set_transform(Vector2(sin(_t * 40.0), 3), 0.0, Vector2(1.0, 0.85))
+			draw_texture_rect_region(sheet, Rect2(-16, -28, 32, 32), src)
+			draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
+		elif kind == "fallen" or cursed:
 			# 倒在地上笑 / 被手印贴着笑得发抖
 			draw_set_transform(Vector2(0, -4), PI / 2 if kind == "fallen" else sin(_t * 30.0) * 0.08, Vector2.ONE)
 			draw_texture_rect_region(sheet, Rect2(-16, -28, 32, 32), src)
@@ -379,6 +386,8 @@ class Victim extends Node2D:
 class Crate extends StaticBody2D:
 	const R := 10.0
 	var broken := false
+	## 诅咒爆发「痒波地脉」时镇民搬来的木桩（画成木桩，撞断的算数）
+	var stake := false
 	var _shake := 0.0
 
 	func _ready() -> void:
@@ -404,6 +413,12 @@ class Crate extends StaticBody2D:
 		_shake = maxf(0.0, _shake - delta)
 
 	func _draw() -> void:
+		if stake:
+			draw_rect(Rect2(-4, -22, 8, 22), Color(0.6, 0.4, 0.24))
+			draw_rect(Rect2(-4, -22, 8, 22), Color(0.36, 0.22, 0.13), false, 1.0)
+			draw_colored_polygon(PackedVector2Array([Vector2(-4, -22), Vector2(0, -27), Vector2(4, -22)]), Color(0.7, 0.5, 0.3))
+			draw_line(Vector2(-4, -12), Vector2(4, -10), Color(0.85, 0.75, 0.4), 2.0)
+			return
 		draw_rect(Rect2(-9, -16, 18, 16), Color(0.62, 0.42, 0.26))
 		draw_rect(Rect2(-9, -16, 18, 16), Color(0.38, 0.24, 0.15), false, 1.0)
 		draw_line(Vector2(-9, -16), Vector2(9, 0), Color(0.45, 0.3, 0.18), 1.0)
