@@ -17,6 +17,8 @@ var tickle_pitch := 1.0
 ## 挠公主时立绘上的命中特效种类（怪物取 MonsterStats.hit_fx，陷阱取 trap_actors 的 hit_fx）。
 var hit_fx := ""
 var sprite: Sprite2D
+## 镇民的行走图（4×4：行 = 下 / 左 / 右 / 上）：按朝向换行，不翻转
+var rows4 := false
 var animator: SpriteSheetAnimator
 var visual := "helpless_1"
 var dir := "down"
@@ -152,6 +154,7 @@ static func make_npc(actor_id: String, npc_id: String, info: Dictionary) -> CGAc
 		a.sprite.hframes = 4
 		a.sprite.vframes = 4
 	a.sprite.offset = Vector2(0, -14)
+	a.rows4 = a.sprite.vframes == 4
 	a.hit_fx = "hand"
 	a.add_child(a.sprite)
 	return a
@@ -255,12 +258,69 @@ func set_dir(d: String) -> void:
 	dir = d
 	if d in ["left", "right"]:
 		facing_left = d == "left"
-		if kind == "monster":
+		if kind == "monster" and not rows4:
 			sprite.flip_h = facing_left
 
 
 func shake(time := 0.3) -> void:
 	_shake = maxf(_shake, time)
+
+
+## 跳舞的一步（庆功宴领舞的舞台）：0 跳一下、1 原地转一圈（四个朝向轮一遍）、2 踏步（播走路动画、往旁边挪一步再回来）、3 左右摇摆。
+## big：大一号的动作（跳得高、转两圈）。每一步都从站位 _dance_home 出发、回到站位，连着跳不会越跳越偏
+## （上一步还没跳完就打断、回到站位；跳完了以后被走位挪过，就以新的位置当站位）。
+var _dance_home := Vector2.ZERO
+var _dance_tw: Tween
+
+
+## 停下正在跳的那一步，回到站位（要挪位置之前调）
+func dance_stop() -> void:
+	if _dance_tw and _dance_tw.is_valid() and _dance_tw.is_running():
+		_dance_tw.kill()
+		position = _dance_home
+	rotation = 0.0
+	scale = Vector2.ONE
+
+
+func dance_move(step: int, big := false) -> void:
+	if _dance_tw and _dance_tw.is_valid() and _dance_tw.is_running():
+		_dance_tw.kill()
+		position = _dance_home
+	else:
+		_dance_home = position
+	rotation = 0.0
+	scale = Vector2.ONE
+	var tw := create_tween()
+	_dance_tw = tw
+	match step % 4:
+		0:
+			var h := 10.0 if big else 6.0
+			tw.tween_property(self, "scale", Vector2(1.15, 0.85), 0.05)
+			tw.tween_property(self, "scale", Vector2(0.9, 1.1), 0.05)
+			tw.parallel().tween_property(self, "position:y", _dance_home.y - h, 0.12).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_SINE)
+			tw.tween_property(self, "position:y", _dance_home.y, 0.12).set_ease(Tween.EASE_IN).set_trans(Tween.TRANS_SINE)
+			tw.parallel().tween_property(self, "scale", Vector2.ONE, 0.12)
+		1:
+			var back := dir
+			var dirs := ["left", "up", "right", "down"]
+			for i in (2 if big else 1):
+				for d in dirs:
+					tw.tween_callback(set_dir.bind(d))
+					tw.tween_interval(0.06)
+			tw.tween_callback(set_dir.bind(back))
+		2:
+			var side := 5.0 if dir != "left" else -5.0
+			if animator:
+				animator.play("walk")
+			tw.tween_property(self, "position:x", _dance_home.x + side, 0.14).set_trans(Tween.TRANS_SINE)
+			tw.tween_property(self, "position:x", _dance_home.x, 0.14).set_trans(Tween.TRANS_SINE)
+			if animator:
+				tw.tween_callback(animator.play.bind("idle"))
+		_:
+			var r := 0.22 if big else 0.14
+			tw.tween_property(self, "rotation", r, 0.08)
+			tw.tween_property(self, "rotation", -r, 0.14)
+			tw.tween_property(self, "rotation", 0.0, 0.08)
 
 
 ## 头顶表情气泡。
@@ -305,7 +365,8 @@ func _process(delta: float) -> void:
 				sprite.rotation = 0.0
 				sprite.offset = _base_offset + Vector2(0, roundf(sin(_t * 3.0)))
 		if _hframes > 1:
-			sprite.frame = int(_t * 6.0) % _hframes
+			var row := (["down", "left", "right", "up"].find(dir) if rows4 else 0)
+			sprite.frame = maxi(row, 0) * _hframes + int(_t * 6.0) % _hframes
 	if _shake > 0.0:
 		_shake -= delta
 		sprite.position.x = [-1.0, 1.0][int(_t * 40.0) % 2]

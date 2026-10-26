@@ -26,14 +26,16 @@ func _ready() -> void:
 	_hud.layer = 8
 	add_child(_hud)
 	_label = Label.new()
-	_label.add_theme_font_size_override("font_size", 10)
+	_label.add_theme_font_size_override("font_size", 8)
 	_label.add_theme_color_override("font_color", COL)
 	_label.add_theme_color_override("font_outline_color", Color(0.1, 0.05, 0.1))
 	_label.add_theme_constant_override("outline_size", 3)
 	_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 	_label.vertical_alignment = VERTICAL_ALIGNMENT_BOTTOM
-	_label.position = Vector2(110, 210)
-	_label.size = Vector2(364, 54)
+	# 右下角一小块：太长就换行（宽 190，往上长）
+	_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	_label.position = Vector2(284, 200)
+	_label.size = Vector2(190, 64)
 	_hud.add_child(_label)
 	_edge = Polygon2D.new()
 	_edge.polygon = PackedVector2Array([Vector2(8, 0), Vector2(-5, -6), Vector2(-5, 6)])

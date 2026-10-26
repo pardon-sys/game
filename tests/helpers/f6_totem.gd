@@ -135,6 +135,8 @@ static func run(t: Node) -> void:
 	s.player.laugh.set_value(s.laugh_max() * 0.95)
 	s.simulate(0.1)
 	verify(t, "同一道裂开第三次：失败", s.failed)
+	# 最后一道照实演（带对白），和玩家玩的一样
+	TotemResonanceShow.quiet = false
 	var hours0 := PenanceBook.hours()
 	await t._advance_until(func(): return GameState.has_flag("cg_seen_theater:after_fail_totem") and find_show(t) != null and not find_show(t).busy and not CG.is_busy(), 60.0)
 	s = find_show(t)
@@ -147,6 +149,25 @@ static func run(t: Node) -> void:
 	await t._advance_until(func(): return DayClock.done(7, DayClock.MORNING) and not Cutscene.is_playing() and not DayClock.passing and not AfterStory.running, 60.0)
 	verify(t, "三道刻好 → 图腾柱扶正 → 减 20 工时（%d → %d）→ 晚上有庆功宴：天黑、停在晚上（%s）" % [before, PenanceBook.hours(), DayClock.label()],
 		t.seen_cuts.has("after_d7_totem_done") and PenanceBook.hours() == before - 20 and DayClock.slot() == DayClock.NIGHT)
+	# 修完以后能走回小镇（以前会卡在图腾柱废地）
+	await t._wait(0.5)
+	var p := GameState.player
+	var pos0 := p.global_position
+	Input.action_press("move_right")
+	await t._wait(0.4)
+	Input.action_release("move_right")
+	verify(t, "修完以后能动（in_dialogue %s、holds %d、对话 %s、动了 %.0f 像素）" % [GameState.in_dialogue, GameState.dialogue_holds,
+		Dialogue.is_active(), p.global_position.distance_to(pos0)],
+		not GameState.in_dialogue and not Dialogue.is_active() and p.global_position.distance_to(pos0) > 4.0)
+	TotemResonanceShow.quiet = true
+	t._go(Cutscene.cell_to_world(Vector2i(2, 12)) + Vector2(6, 0))
+	Input.action_press("move_left")
+	await t._advance_until(func(): return t._level_id() == AfterStory.TOWN, 5.0)
+	Input.action_release("move_left")
+	verify(t, "走到西边的出口：回到小镇（%s）" % t._level_id(), t._level_id() == AfterStory.TOWN)
+	GameState.pending_spawn = "from_town"
+	await t.main.change_level(Floors.scene("floor_06_after_totem"))
+	await t._wait(0.5)
 	# 工时规则
 	verify(t, "还欠工时：最后一天要补（%d）、庆功宴还不开" % PenanceBook.hours(), AfterStory.must_settle() and AfterStory.pending_event() == "")
 	var day := DayClock.day()

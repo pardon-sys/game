@@ -16,7 +16,7 @@ extends Node2D
 ##   反击——挠骑士：每掉一个部件（还有卡住、喊完骑士之名、千手解放、完美闪避）露出破绽（WeakSpot）WEAK_TIME 秒，打破绽 = 骑士的笑 +KNIGHT_TICKLE；
 ##     满了：骑士清醒 LUCID_TIME 秒（第一次清醒时有安神香的话自动点上，再多 INCENSE_BONUS 秒）；笑面阶段挠满：触手全缩回去、每盏没亮的灯笼 +LUCID_LANTERN。
 ##   **换阶段不黑屏**（_transition）：清场 → 部件炸开（Burst、顿帧 HITSTOP、震屏）→ 骑士踉跄 TRANS_STAGGER 秒、喊一句、两位公主各一句 → 下一阶段（左上角提示）。
-##   **最后阶段「全镇的笑声」**：广场四角四盏被吸暗的灯笼（LANTERNS）。站在灯笼旁按住 E 故意笑（KnightLaugh）→ 灯笼每秒 +LANTERN_RATE；
+##   **最后阶段「全镇的笑声」**：广场四角四盏被吸暗的灯笼（LANTERNS）。站在灯笼旁按住 Y 故意笑（KnightLaugh）→ 灯笼每秒 +LANTERN_RATE；
 ##     做过的支线（KnightQuests.helpers：灯笼顺序 shoes / samples / spear / fence）那个人跑到他那盏灯笼下陪着笑：×HELPER_MULT，没人在也自己慢慢亮（HELPER_SOLO）。
 ##     笑面每 TENTACLE_EVERY 秒伸一条触手（Tentacle）爬向一盏没亮的灯笼，缠住以后每秒 −TENTACLE_DRAIN；蓝色公主 J 冻住它（碎）、千手解放全缩回去。
 ##     骑士照样出招，随时可以离开灯笼去躲。四盏都亮 → 光柱汇到盔甲上 → 过场 knight_purify（手帕）→ 胜利。
@@ -1696,15 +1696,34 @@ class Body extends Node2D:
 	var hop := 0.0
 	var _trail: Array = []
 	var _t := 0.0
+	## 行走图：朝向（行 0 下 / 1 左 / 2 右 / 3 上）、走路的帧（动了才换帧）
+	var _row := 0
+	var _walk := 0.0
+	var _last := Vector2.INF
 
 	func _ready() -> void:
 		z_index = 2
+
+	## 这一帧的源矩形：按移动方向挑行，走着的时候按走过的路换帧，站着停在第 0 帧
+	func frame() -> Rect2:
+		var col := 0 if _walk <= 0.0 else int(_walk / 7.0) % 4
+		return Rect2(col * 32, _row * 32, 32, 32)
 
 	func trail(at: Vector2) -> void:
 		_trail.append({"at": at, "t": 0.0})
 
 	func _process(delta: float) -> void:
 		_t += delta
+		var step := Vector2.ZERO if _last == Vector2.INF else global_position - _last
+		_last = global_position
+		if step.length() > 0.05 and hop <= 0.0:
+			if absf(step.x) > absf(step.y):
+				_row = 1 if step.x < 0 else 2
+			else:
+				_row = 3 if step.y < 0 else 0
+			_walk += step.length()
+		else:
+			_walk = 0.0
 		for p in _trail:
 			p["t"] = float(p["t"]) + delta
 		_trail = _trail.filter(func(p): return float(p["t"]) < 0.35)
@@ -1716,7 +1735,7 @@ class Body extends Node2D:
 		# 冲撞的残影
 		for p in _trail:
 			var a := 0.35 * (1.0 - float(p["t"]) / 0.35)
-			draw_texture_rect_region(SHEET, Rect2((p["at"] as Vector2) - global_position + Vector2(-32, -60), Vector2(64, 64)), Rect2(0, 0, 32, 32), Color(0.8, 0.5, 1.0, a))
+			draw_texture_rect_region(SHEET, Rect2((p["at"] as Vector2) - global_position + Vector2(-32, -60), Vector2(64, 64)), frame(), Color(0.8, 0.5, 1.0, a))
 		# 影子（跳起来的时候留在地上）
 		draw_circle(Vector2(0, 2), 14.0 - hop * 0.12, Color(0.1, 0.05, 0.15, 0.35))
 		var up := Vector2(0, -hop)
@@ -1734,7 +1753,7 @@ class Body extends Node2D:
 			tint = Color(1.4, 1.1, 1.4)
 		elif task.body_mode == "stagger":
 			tint = Color(1.6, 1.6, 1.6) if int(_t * 16.0) % 2 == 0 else Color.WHITE
-		draw_texture_rect_region(SHEET, Rect2(up + Vector2(-32, -60), Vector2(64, 64)), Rect2(0, 0, 32, 32), tint)
+		draw_texture_rect_region(SHEET, Rect2(up + Vector2(-32, -60), Vector2(64, 64)), frame(), tint)
 		if task.body_mode == "windup":
 			draw_arc(up + Vector2(0, -26), 30, 0, TAU, 24, Color(1, 0.6, 0.9, 0.7), 2.0)
 		# 骑士的笑（挠破绽涨）：头顶一条金色的条；清醒的时候整个身子发金光

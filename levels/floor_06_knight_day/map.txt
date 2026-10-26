@@ -18,7 +18,7 @@ G = prop type=house_scaffold_1
 H = prop type=house_3
 I = spawn id=from_tailor
 J = sign dialogue=after_tailor_sign
-K = exit target=floor_06_after_drill spawn=from_town unlock_flag=kq_spear_active locked_dialogue=after_kdrill_locked
+K = exit target=floor_06_after_drill spawn=from_town
 L = spawn id=from_drill
 M = spawn id=from_proving
 N = prop type=drain_grate

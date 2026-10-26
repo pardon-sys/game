@@ -409,6 +409,12 @@ func kq_abandon() -> void:
 	KnightQuests.abandon(str(GameState.vars.get("kq_req", "")))
 
 
+## 训练室：做完「队长的旧剑术」以后再练一次（不给奖励）
+func kq_spear_replay() -> void:
+	runner.end_conversation()
+	QuestSpear.start_replay()
+
+
 ## 七日赎罪：接镇民委托（对话的 set.vars.errand_req 写委托 id）。
 func errand_start() -> void:
 	AfterErrands.start(str(GameState.vars.get("errand_req", "")))

@@ -1,7 +1,7 @@
 extends RefCounted
 ## 骑士篇 A~D 专项：从庆功宴之后的早上开始，一步一步走（主线每一步都要和人说话 / 调查道具才开始）：
 ## 小屋里醒来、自由活动 → 和地牢入口的队员说话 → 抬担架（手印对粉色温和、碰到队员担架歪、歪三次失败重来）
-## → 工房里醒来（「凶手」）→ 下午自由活动、床上休息到晚上 → 调查暗掉的灯笼 → 以笑为饵（按住 E 偷偷笑、手印怕人、被笑声引来、
+## → 工房里醒来（「凶手」）→ 下午自由活动、床上休息到晚上 → 调查暗掉的灯笼 → 以笑为饵（按住 Y 偷偷笑、手印怕人、被笑声引来、
 ## 笑过头一群扑来、蓝色 J 冻住 / 挠她、E 收瓶、千手解放扒手印、被淹没失败）→ 调查路障 → 夜探地牢（审问椅、
 ## 骑士只回答一个问题、拿出手帕、蓝色公主出来时他懵了）→ 回小屋睡觉 → 第二天早上。
 static var checks := 0
@@ -60,7 +60,7 @@ static func run(t: Node) -> void:
 	verify(t, "庆功宴之后睡一觉：骑士篇开始（%s）→ 小屋里醒来，没人敲门，自由活动" % DayClock.label(),
 		KnightStory.active() and DayClock.label().begins_with("骑士篇") and t.seen_cuts.has("knight_morning") and KnightStory.step_id() == "found"
 		and not t.seen_cuts.has("knight_found"))
-	verify(t, "蓝色公主一直跟着", AfterBlueRoutine.invited_today())
+	verify(t, "蓝色公主默认不跟着（在镇上闲逛）", not AfterBlueRoutine.invited_today())
 	# A 抬担架
 	GameState.vars[TaskStretcher.PATH_KEY] = 0
 	GameState.pending_spawn = "from_house"
@@ -71,6 +71,28 @@ static func run(t: Node) -> void:
 	verify(t, "白天的小镇：镇民都是骑士篇的对话、不挂委托（%d 人）" % folk.size(), not folk.is_empty()
 		and folk.all(func(n): return (n as Resident).dialogue.begins_with("floor_06/after_k_")) and not AfterErrands.is_open("dance"))
 	verify(t, "图腾柱已经修好了", t.main.level.find_children("*", "Node2D", true, false).any(func(n): return n.get("kind") == "totem_fixed"))
+	# 蓝色公主：平时闲逛，说话邀请 → 跟着；「你先去忙吧」→ 回去闲逛
+	var kb := t._node("AfterBlue") as BluePrincess
+	await t._wait(0.3)
+	verify(t, "白天的小镇：蓝色公主在镇上闲逛（follow %s）" % [kb.follow if kb else null], kb != null and not kb.follow and AfterBlueRoutine.current != null)
+	await t._talk("floor_06/after_partner", "k_talk", [0])
+	await t._advance_until(func(): return kb.follow, 3.0)
+	verify(t, "和她说「一起走吧」→ 跟上来", kb.follow and AfterBlueRoutine.invited_today())
+	await t._talk("floor_06/after_partner", "k_talk", [0])
+	await t._advance_until(func(): return not kb.follow, 3.0)
+	verify(t, "「你先去忙吧」→ 回去闲逛", not kb.follow and not AfterBlueRoutine.invited_today())
+	# 故意笑是 Y（E 只管互动）；背包最后一页是键位表，页签一行放得下
+	var ykeys := InputMap.action_get_events("laugh").map(func(e): return (e as InputEventKey).physical_keycode)
+	verify(t, "故意笑的键是 Y（%s）" % [ykeys], ykeys.has(KEY_Y))
+	var bp: Backpack = t.main.get_node("Backpack")
+	bp.open()
+	bp.set_page(Backpack.PAGE_KEYS)
+	await t._wait(0.2)
+	var key_text := "\n".join(bp.status_page.box.get_children().map(func(l): return (l as Label).text))
+	var tabs_w := bp.tabs_label.get_theme_font("font").get_string_size(bp.tabs_label.text, HORIZONTAL_ALIGNMENT_LEFT, -1, bp.tabs_label.get_theme_font_size("font_size")).x
+	verify(t, "背包的键位页：列出故意笑 Y、互动 E、冲刺 K（页签宽 %.0f）" % tabs_w, bp.page_order().back() == Backpack.PAGE_KEYS
+		and key_text.contains("故意笑") and key_text.contains("Y") and key_text.contains("E") and key_text.contains("K") and tabs_w <= 396.0)
+	bp.close()
 	var mk := t._node("Objective") as ObjectiveMarker
 	verify(t, "小镇的目标：自由活动，东北角地牢入口有人在喊", mk != null and mk.text.contains("自由活动") and mk.text.contains("地牢入口"))
 	var gd := t._node("after_k_guard_dungeon") as Node2D
@@ -165,7 +187,7 @@ static func run(t: Node) -> void:
 	KnightLaugh.force_hold = true
 	await t._wait(0.8)
 	KnightLaugh.force_hold = false
-	verify(t, "粉色公主按住 E 偷偷笑：闷笑涨起来（%.0f%%）" % (pink.laugh.ratio() * 100.0), pink.laugh.ratio() > 0.03)
+	verify(t, "粉色公主按住 Y 偷偷笑：闷笑涨起来（%.0f%%）" % (pink.laugh.ratio() * 100.0), pink.laugh.ratio() > 0.03)
 	pink.laugh.set_value(0.0)
 	KnightLaugh.reset()
 	KnightLaugh.force_hold = true

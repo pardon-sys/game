@@ -5,7 +5,7 @@ extends RefCounted
 ##   必做：派对主人那里领舞（call: festival_dance → FestivalDanceShow）→ festival_dance_done。
 ##   可选：五个摊位（call: festival_stall，vars.stall_req = guess / ring / ice / fish / lick → STALLS 里的小游戏）→ stall_<id>_done、
 ##     摊主说两句奖品（reward_lines，after_text/stall_<id>.py 的 REWARD）→ 奖励（festival_night.json 的 rewards：饼干、薄荷糖、纪念品）；广场上的装扮带 show_flag = stall_<id>_done（饼干串灯、冰雕……）。
-##   领舞以后找镇长放烟花（call: festival_finale）：烟花（FestivalFireworks，铺满拉远以后的镜头）+ 过场 after_d7_finale（哼歌、「七日赎罪 完」）→ 回小屋的床。
+##   领舞以后找镇长放烟花（call: festival_finale）：烟花（FestivalFireworks，铺满拉远以后的镜头）+ 过场 after_d7_finale（哼歌、「七日赎罪 完」）→ 按 E 回小屋 → 直接接骑士篇的早上（AfterStory.enter_house）。
 ## 标记：after_festival_on（庆功宴进行中，对话的入口读它）、festival_finale_done。
 
 const PATH := "res://data/after/festival_night.json"
@@ -84,7 +84,7 @@ static func give_rewards(id: String) -> void:
 		GameState.give_item(ItemDB.get_item(str(r[0])), int(r[1]), null, true)
 
 
-## 放烟花 → 结局过场（chapter_end 进小屋）→ 这一晚算做完
+## 放烟花 → 结局过场（chapter_end 进小屋，进门就开始骑士篇）→ 这一晚算做完
 static func run_finale() -> void:
 	if running or not active():
 		return

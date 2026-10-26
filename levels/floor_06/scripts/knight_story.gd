@@ -17,7 +17,7 @@ extends RefCounted
 ##     goto [图, 出生点] 做完去哪；away：人还不在那张图上时的目标文字。
 ##   时间自然变化：做完一步，下一步的时段在同一天里更晚时直接换过去；进小镇图时也按这一步的 slot 对齐（sync_slot）。
 ##   时钟：骑士篇的第几天记在 DayClock 的 after_day（DAY 起），标签写「骑士篇·时段」（DayClock.label）。没有赎罪簿和工时。
-##   蓝色公主一直跟着（AfterBlueRoutine.invited_today）。
+##   蓝色公主平时在镇上闲逛，主线任务 / 要她帮忙的支线自己跟上，说话能邀请同行（AfterBlueRoutine）。
 ##   旧存档（vars.knight_steps_v 不是 VERSION）：按 OLD_IDS 把旧的下标换成同一步在新列表里的下标。
 ## 开始：第 7 天庆功宴放完烟花、回小屋睡觉（AfterStory.sleep → begin）：睡一觉 → 小屋里醒来（knight_morning）→ 自由活动。
 ## 测试：jump(步骤 id)、step_id()、go()、STEPS、index_of()。
@@ -173,7 +173,15 @@ static func objective(floor_id: String) -> Dictionary:
 	if s.is_empty():
 		return {"text": "（骑士篇的后续还在制作中……）"}
 	if GameState.has_flag(AfterStory.TASK_FLAG):
-		return {"text": str(s.get("task", {}).get("name", ""))}
+		# 任务节点自己知道该往哪儿走（追逃：下一座信标 / 广场）→ 指过去
+		var out := {"text": str(s.get("task", {}).get("name", ""))}
+		var lv: Node = StoryDirector.instance.main.get("level") if StoryDirector.instance else null
+		var tk: Node = lv.find_child("Task_*", true, false) if lv else null
+		if tk and tk.has_method("target_cell"):
+			var c: Vector2i = tk.call("target_cell")
+			out["cell"] = [c.x, c.y]
+			out["radius"] = 1.0
+		return out
 	if KnightQuests.active() != "":
 		return KnightQuests.objective(floor_id)
 	var text := str(s.get("objective", "")) + KnightQuests.open_text()

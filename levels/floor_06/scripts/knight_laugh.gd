@@ -1,10 +1,9 @@
 class_name KnightLaugh
 extends RefCounted
-## 骑士篇的「故意笑」（以笑为饵、引手印碎片、Boss 最后点灯笼都用它）：按住 E（互动键）超过 HOLD 秒，就捂着嘴偷偷笑——
+## 骑士篇的「故意笑」（以笑为饵、引手印碎片、Boss 点灯笼 / 引开骑士都用它）：按住 Y（动作 laugh）超过 HOLD 秒，就捂着嘴偷偷笑——
 ##   闷笑每秒 +RATE（按得越久越响），松开以后闷笑自己慢慢落下来；隔一会儿冒一句气泡、换成憋笑的表情。
-##   E 的优先级：短按 = 和人 / 道具互动（PlayableCharacter.interact）；面前有能互动的东西（interact_target）时按住也不笑；
-##   任务要把「按住 E」先拿去做别的（救人……）时，tick 的 allow 传 false。
-## 测试：force_hold（这一帧当成按住了 E）。
+##   任务要把这一下先拿去做别的时，tick 的 allow 传 false。
+## 测试：force_hold（这一帧当成按住了 Y）。
 
 const HOLD := 0.25
 const RATE := 0.22
@@ -22,7 +21,7 @@ static func reset() -> void:
 
 
 static func pressed() -> bool:
-	return force_hold or Input.is_action_pressed("interact")
+	return force_hold or Input.is_action_pressed("laugh")
 
 
 ## 每帧调：c 这一帧在故意笑就返回 true（闷笑已经加上了）
@@ -31,7 +30,7 @@ static func tick(c: PlayableCharacter, delta: float, allow := true) -> bool:
 		_held = 0.0
 		return false
 	_held += delta
-	if _held < HOLD or not allow or (c.interact_target() != null and not force_hold):
+	if _held < HOLD or not allow:
 		return false
 	laugh(c, delta)
 	return true

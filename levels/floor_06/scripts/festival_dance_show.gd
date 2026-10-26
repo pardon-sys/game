@@ -150,6 +150,7 @@ func _pair_up() -> void:
 	var b: CGActor = actors.get("blue")
 	var p: CGActor = actors.get("princess")
 	if b and p:
+		b.dance_stop()
 		b.position = Vector2(14, 10)
 		b.set_dir("left")
 		p.set_dir("right")
@@ -184,9 +185,23 @@ func _on_judged(res: String, _n: Dictionary) -> void:
 		var pool: Array = text().get("praise", {}).get(res, [])
 		if rng.randf() < 0.2 and not pool.is_empty():
 			say("host", str(pool.pick_random()))
-		if pr and section == 0:
-			pr.set_dir(["left", "right", "down", "up"][rng.randi() % 4])
+		_dance(res == "perfect")
 	_refresh()
+
+
+## 踩中一拍：台上的人跟着跳一步（粉色公主、派对的主人；邀舞以后蓝色公主也跳），每人错开一种舞步；完美 = 大一号的动作
+var _step := 0
+
+
+func _dance(big: bool) -> void:
+	_step += 1
+	var who := ["princess", "host"]
+	if section >= 2:
+		who.append("blue")
+	for i in who.size():
+		var a: CGActor = actors.get(who[i])
+		if a:
+			a.dance_move(_step + i, big)
 
 
 ## 失误：这一段的 miss 里挑一条（who = pink / blue），被挠的人冒反应；挠粉色的闷笑上涨

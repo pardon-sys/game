@@ -123,6 +123,43 @@ static func run(t: Node) -> void:
 	# 信标
 	ch.light(0)
 	verify(t, "点亮第一座信标：盔甲被光晃了一下", TaskArmorChase.lit() == 1 and (ch.beacons[0] as TaskArmorChase.Beacon).lit and ch.armor.stun_left > 0.0)
+	# 四座信标分在镇上各处、彼此隔得远；目标提示指向下一座
+	var far := true
+	for i in TaskArmorChase.BEACONS.size():
+		for j in i:
+			far = far and Vector2(TaskArmorChase.BEACONS[i]).distance_to(Vector2(TaskArmorChase.BEACONS[j])) >= 18.0
+	verify(t, "四座信标、彼此至少隔 18 格", TaskArmorChase.BEACONS.size() == 4 and far)
+	var mk := t._node("Objective") as ObjectiveMarker
+	await t._wait(0.2)
+	var obj := KnightStory.objective(KnightStory.KCHASE)
+	verify(t, "目标提示指向第二座信标（%s）" % [obj.get("cell")], obj.get("cell", []) == [TaskArmorChase.BEACONS[1].x, TaskArmorChase.BEACONS[1].y] and mk != null)
+	# 扔陷阱：落点先有影子，落地变成地牢里的陷阱；第一次扔这一种，粉色公主吐槽；到时间收走
+	var said: Array = []
+	var on_said := func(text: String, _t2: float): said.append(text)
+	GameState.princess_reacted.connect(on_said)
+	ch.armor.stun_left = 0.0
+	ch.throw_left = 999.0
+	var th := ch.throw_trap("snare", pink.global_position + Vector2(48, 0))
+	verify(t, "盔甲扔出绳套：落点先亮影子", th != null and is_instance_valid(th))
+	await t._wait(TaskArmorChase.THROW_FLY + 0.3)
+	var landed: Array = ch.traps.filter(func(x): return str(x.get("kind", "")) == "snare")
+	verify(t, "落地变成倒吊绳套（SnareTrap）", landed.size() == 1 and landed[0]["node"] is SnareTrap)
+	verify(t, "第一次扔绳套：粉色公主吐槽（%s）" % [said], said.any(func(x): return str(x).contains("绳套")))
+	said.clear()
+	ch.throw_trap("snare", pink.global_position + Vector2(-48, 0))
+	await t._wait(TaskArmorChase.THROW_FLY + 0.3)
+	verify(t, "再扔一样的：不再吐槽", not said.any(func(x): return str(x).contains("绳套")))
+	GameState.princess_reacted.disconnect(on_said)
+	for kind in TaskArmorChase.THROWS:
+		if kind != "snare":
+			ch.land(kind, pink.global_position + Vector2(0, 120))
+	verify(t, "八种陷阱都落得下来（%d 个）" % ch.traps.size(), ch.traps.filter(func(x): return x.has("kind")).size() == 9)
+	for x in ch.traps:
+		x["left"] = 0.0
+	pink.global_position += Vector2(0, -60)
+	ch._trap_tick(0.1)
+	await t._wait(0.1)
+	verify(t, "到时间：地上的陷阱收走（还剩 %d）" % ch.traps.size(), ch.traps.is_empty())
 	# 抓三次失败
 	GameState.vars[TaskArmorChase.CAUGHT_KEY] = 2
 	ch.safe_left = 0.0
@@ -134,14 +171,15 @@ static func run(t: Node) -> void:
 	if ch == null:
 		return
 	verify(t, "重来以后粉色公主马上能动（没有残留的抱住定身）", not ch.pink.status.is_rooted())
-	ch.light(1)
-	ch.light(2)
+	for i in range(1, TaskArmorChase.BEACONS.size()):
+		ch.light(i)
+	verify(t, "四座都亮了：目标提示指回广场", KnightStory.objective(KnightStory.KCHASE).get("cell", []) == [TaskArmorChase.PLAZA.x, TaskArmorChase.PLAZA.y])
 	ch.armor.paused = true
 	ch.pink.global_position = Cutscene.cell_to_world(TaskArmorChase.PLAZA)
 	ch.advance(0.05)
 	await t._advance_until(func(): return task(t, "boss") != null and bool(task(t, "boss").started) and not Cutscene.is_playing() and not GameState.in_dialogue, 60.0)
 	var b := task(t, "boss") as TaskKnightBoss
-	verify(t, "三座信标亮了、引到广场 → Boss「痒铠骑士」开始（铁手套两只、场上 %d 个人）" % (b.victims.size() if b else 0), b != null
+	verify(t, "四座信标亮了、引到广场 → Boss「痒铠骑士」开始（铁手套两只、场上 %d 个人）" % (b.victims.size() if b else 0), b != null
 		and t.seen_cuts.has("knight_boss_open") and b.phase == 0 and b.parts.size() == 2 and b.victims.size() >= 5)
 	if b == null:
 		return
@@ -457,7 +495,7 @@ static func run(t: Node) -> void:
 	for i in 20:
 		b.advance(0.05)
 	KnightLaugh.force_hold = false
-	verify(t, "站在灯笼旁按住 E 笑：灯笼一点点亮起来（%.2f）" % l0.progress, l0.progress > 0.05)
+	verify(t, "站在灯笼旁按住 Y 笑：灯笼一点点亮起来（%.2f）" % l0.progress, l0.progress > 0.05)
 	var hl: KnightBossFx.Lantern = b.lanterns[0]
 	await t._advance_until(func(): return b._helper_at(0), 6.0)
 	var hp0: float = hl.progress

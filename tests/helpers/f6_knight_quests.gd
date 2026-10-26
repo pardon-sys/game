@@ -165,7 +165,7 @@ static func run(t: Node) -> void:
 	t._go(sh.home + Vector2(30, 0))
 	KnightLaugh.force_hold = true
 	await t._advance_until(func(): return sh.state in ["peek", "crawl", "caught"], 3.0)
-	verify(t, "按住 E 故意笑：碎片探头（%s）" % sh.state, sh.state in ["peek", "crawl", "caught"])
+	verify(t, "按住 Y 故意笑：碎片探头（%s）" % sh.state, sh.state in ["peek", "crawl", "caught"])
 	await t._advance_until(func(): return KnightQuests.stage("samples") == 1, 6.0)
 	KnightLaugh.force_hold = false
 	KnightLaugh.reset()
@@ -268,11 +268,32 @@ static func run(t: Node) -> void:
 	await t._advance_until(func(): return t.seen_cuts.has("kq_spear_done") and not Cutscene.is_playing(), 20.0)
 	await t._wait(0.3)
 	verify(t, "实战轮躲够、完美闪避够 → 做完：护手绳、「到时候我会在」", KnightQuests.is_done("spear") and t.seen_cuts.has("kq_spear_done") and not GameState.has_flag("kq_spear_active"))
+	# 做完以后：找训练室里的队长「再来一次」→ 同样三轮，练完不推进支线、不给奖励
+	await t._wait(0.5)
+	await t._talk("floor_06/after_drill_cap", "", [0])
+	await t._advance_until(func(): return t._node("Replay_spear") != null, 3.0)
+	var rpl := t._node("Replay_spear") as QuestSpear
+	verify(t, "做完以后找队长「再来一次」：又开练（replay）", rpl != null and rpl.replay)
+	if rpl:
+		await t._advance_until(func(): return rpl._paused < 900.0, 5.0)
+		rpl._paused = 10.0
+		rpl.round_i = 2
+		rpl.dodged = QuestSpear.ROUNDS[2]["count"]
+		rpl.perfects = QuestSpear.ROUNDS[2]["perfect"] - 1
+		pink.global_position = rpl.origin() + Vector2(0, 50)
+		rpl.attack("thrust")
+		pink.dash(Vector2.RIGHT)
+		rpl.dash_at = rpl._t
+		rpl.resolve()
+		await t._wait(0.3)
+		verify(t, "再练一次练完：收走，支线还是做完的", not is_instance_valid(rpl) and KnightQuests.is_done("spear") and KnightQuests.active() == "")
 	# ---------------------------------------------------------------- ④ 夜里的栅栏
 	KnightStory.jump("sneak")
 	await go_town(t, "from_drill")
 	KnightQuests.refresh()
 	verify(t, "夜里（以笑为饵以后）：栅栏开了，白天的都关了", KnightQuests.is_open("fence") and not KnightQuests.is_open("spear"))
+	var drill_door: Array = t.main.level.find_children("*", "Area2D", true, false).filter(func(n): return str(n.get("target_level")).contains(KnightStory.DRILL))
+	verify(t, "训练室的门一直开着（做完支线以后也能进）", drill_door.size() == 1 and not drill_door[0].is_locked_now())
 	await t._talk("floor_06/after_kn_engineer", "")
 	await t._wait(0.5)
 	var rf := runner(t, "fence") as QuestFence
@@ -290,8 +311,14 @@ static func run(t: Node) -> void:
 	for i in EaveHand.MASH:
 		e.mash()
 	verify(t, "连按 J：挣开", e.state == "cool" and not pink.status.is_rooted())
-	t._go(rf.lumber_at())
-	verify(t, "城墙脚下扛起木板：两手占着、走得慢", rf.pick() and pink.has_meta(&"busy_hands") and pink.has_buff("carry_stone"))
+	# 像真的玩一样：走到木板堆前面，面向它按 E（以前按 E 先开了木料道具的调查对话，扛不起来）
+	t._go(rf.lumber_at() + Vector2(0, 14))
+	pink.facing = Vector2.UP
+	await t._wait(0.3)
+	verify(t, "木板堆前出「E」提示（%s）" % pink.interact_target(), pink.interact_target() != null and pink.interact_target().get_parent() is QuestFence.LumberPile)
+	await (load("res://tests/helpers/f6_festival_night.gd")).press(t, "interact")
+	await t._wait(0.2)
+	verify(t, "城墙脚下按 E 扛起木板：两手占着、走得慢（对话 %s）" % Dialogue.is_active(), rf.carrying and pink.has_meta(&"busy_hands") and pink.has_buff("carry_stone") and not Dialogue.is_active())
 	for i in 3:
 		t._go(rf.gate_at(i))
 		await t._advance_until(func(): return rf.hammering, 2.0)

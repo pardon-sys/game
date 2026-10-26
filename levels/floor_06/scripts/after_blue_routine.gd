@@ -27,10 +27,16 @@ func _process(_delta: float) -> void:
 	sync()
 
 
-## 当天挑战获胜后主动邀请了；骑士篇（KnightStory）里一直跟着
+## 骑士篇里（不用先赢玩闹）主动邀请了，一直跟到「先分开」
+const KNIGHT_FOLLOW := "knight_blue_follow"
+## 骑士篇里要蓝色公主帮忙的支线（冻手印、栅栏的夜里）：进行中自己跟上
+const KNIGHT_QUESTS := ["samples", "fence"]
+
+
+## 当天挑战获胜后主动邀请了；骑士篇里：说话邀请过（KNIGHT_FOLLOW）
 static func invited_today() -> bool:
 	if KnightStory.active():
-		return true
+		return GameState.has_flag(KNIGHT_FOLLOW)
 	return AfterPlay.won_today() and int(GameState.vars.get(FOLLOW_DAY, 0)) == DayClock.day()
 
 
@@ -46,19 +52,31 @@ static func change_follow_later(on: bool) -> void:
 
 
 func _task_active() -> bool:
+	if KnightStory.active() and KnightQuests.active() in KNIGHT_QUESTS:
+		return true
 	return GameState.has_flag(AfterStory.TASK_FLAG) or AfterErrands.active() != ""
 
 
+static func can_invite() -> bool:
+	return KnightStory.active() or AfterPlay.won_today()
+
+
 func invite() -> bool:
-	if not is_instance_valid(blue) or not AfterPlay.won_today() or _task_active() or AfterStory.running or AfterTown.blue_away():
+	if not is_instance_valid(blue) or not can_invite() or _task_active() or AfterStory.running or AfterTown.blue_away():
 		return false
-	GameState.vars[FOLLOW_DAY] = DayClock.day()
+	if KnightStory.active():
+		GameState.set_flag(KNIGHT_FOLLOW)
+	else:
+		GameState.vars[FOLLOW_DAY] = DayClock.day()
 	sync(true)
 	return true
 
 
 func dismiss() -> void:
-	GameState.vars[FOLLOW_DAY] = 0
+	if KnightStory.active():
+		GameState.set_flag(KNIGHT_FOLLOW, false)
+	else:
+		GameState.vars[FOLLOW_DAY] = 0
 	sync(true)
 
 
@@ -74,8 +92,8 @@ func force_task_follow() -> void:
 func sync(force := false) -> void:
 	if not is_instance_valid(blue) or blue.is_controlled():
 		return
-	if GameState.has_flag("after_blue_can_follow") != AfterPlay.won_today():
-		GameState.set_flag("after_blue_can_follow", AfterPlay.won_today())
+	if GameState.has_flag("after_blue_can_follow") != can_invite():
+		GameState.set_flag("after_blue_can_follow", can_invite())
 	if GameState.has_flag("after_blue_following") != invited_today():
 		GameState.set_flag("after_blue_following", invited_today())
 	if GameState.in_cutscene or Cutscene.is_playing() or CG.is_busy():
@@ -88,6 +106,9 @@ func sync(force := false) -> void:
 		if _state != "task":
 			force_task_follow()
 		return
+	if _state == "task":
+		# 任务做完：从跟着换回闲逛 / 同行（下面按现在的状态重摆）
+		_state = ""
 	var slot_key := "%d:%d" % [DayClock.day(), DayClock.slot()]
 	if AfterTown.blue_away():
 		if _state != "away":

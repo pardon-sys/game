@@ -556,7 +556,7 @@ static func sleep() -> void:
 			GameState.notify(KnightStory.bed_text())
 		return
 	if DayClock.day() >= DayClock.DAYS and DayClock.done(DayClock.DAYS, DayClock.NIGHT):
-		# 庆功宴放完烟花：睡一觉，骑士篇开始
+		# 庆功宴放完烟花：骑士篇开始（一般回小屋时就开始了，这里兜底）
 		if GameState.has_flag(AfterFestival.FINALE_DONE):
 			await KnightStory.begin()
 		return
@@ -576,5 +576,10 @@ static func after_wake() -> void:
 
 
 ## 进小屋：这张图上自动演的事件（夜里的事件）。
+## 庆功宴放完烟花（「七日赎罪 完」按 E 回到小屋）：不用再上床，直接接骑士篇的早上。
 static func enter_house() -> void:
+	if GameState.has_flag(AfterFestival.FINALE_DONE) and not KnightStory.active():
+		await TrainingDB.wait_dialogue_free()
+		await KnightStory.begin()
+		return
 	await run_pending(HOUSE)

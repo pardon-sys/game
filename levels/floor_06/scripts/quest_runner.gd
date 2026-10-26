@@ -15,7 +15,8 @@ var _stage := -1
 
 
 func _ready() -> void:
-	quest_id = str(name).trim_prefix("Quest_")
+	# Replay_<id>：做完以后再玩一次（不推进支线，AfterRoom 也不会当成别的支线收走）
+	quest_id = str(name).trim_prefix("Quest_").trim_prefix("Replay_")
 	q = KnightQuests.info(quest_id)
 	_lv = get_parent().get_parent()
 	for c in get_tree().get_nodes_in_group("player_chars"):

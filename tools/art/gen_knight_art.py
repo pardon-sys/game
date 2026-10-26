@@ -20,6 +20,29 @@ CURSE = (160, 110, 210, 255)
 VISOR = (36, 34, 46, 255)
 
 
+BOOT = (58, 50, 56, 255)
+
+
+def _knight_legs(d, row, swing):
+    """腿甲（亮一点的钢色 + 深色铁靴，从披风下面露出来，走路看得清）：正面 / 背面抬起的那条短 3 像素，侧面前后迈开 ±3 像素。"""
+    if row in (0, 3):
+        for x0, lift in ((12, swing > 0), (17, swing < 0)):
+            y1 = 30 - (3 if lift else 0)
+            d.rectangle((x0, 24, x0 + 2, y1), fill=STEEL)
+            d.line((x0, 24, x0, y1), fill=STEEL_D)
+            d.rectangle((x0 - (1 if x0 < 15 else 0), y1 - 1, x0 + 2 + (0 if x0 < 15 else 1), y1), fill=BOOT)
+            d.point((x0 + 1, 26), fill=STEEL_L)
+    else:
+        fwd = 1 if row == 2 else -1
+        back_x = 15 - swing * 3
+        front_x = 15 + swing * 3
+        d.rectangle((back_x - 1, 24, back_x + 1, 30 - (1 if swing else 0)), fill=STEEL_D)
+        d.rectangle((back_x - 1 + fwd, 29 - (1 if swing else 0), back_x + 1 + fwd, 30 - (1 if swing else 0)), fill=BOOT)
+        d.rectangle((front_x - 1, 24, front_x + 1, 30), fill=STEEL)
+        d.rectangle((front_x - 1 + fwd, 29, front_x + 1 + fwd, 30), fill=BOOT)
+        d.point((front_x, 26), fill=STEEL_L)
+
+
 def knight_frame(row, col):
     img, d = canvas(32, 32)
     swing = (1 if col == 1 else -1) if col in (1, 3) else 0
@@ -33,7 +56,7 @@ def knight_frame(row, col):
         d.line((9, 16, 9, 26), fill=GOLD_FADED)
     else:
         d.polygon([(8, 14), (23, 14)] + list(reversed(hem)), fill=CAPE_D)
-    _legs(d, row, swing, 24, 29, STEEL_D)
+    _knight_legs(d, row, swing)
     # 铠甲
     d.rectangle((11, 14, 20, 24), fill=STEEL)
     d.line((11, 18, 20, 18), fill=GOLD_FADED)

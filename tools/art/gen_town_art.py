@@ -320,8 +320,9 @@ def _walk_fx(img, col, hem_y0, hem_y1, leg_y0):
     return out
 
 
-def captain_frame(row, col):
-    """保卫队队长：银白铠甲 + 金边，深蓝披风（米白里衬、金边），粉红短发低马尾，手按长剑。"""
+def captain_frame(row, col, sword=True, outline=True):
+    """保卫队队长：银白铠甲 + 金边，深蓝披风（米白里衬、金边），粉红短发低马尾，手按长剑。
+    sword=False：不画剑和手（出招图 gen_captain_cast.py 另画木矛）；outline=False：不描边（拼好以后再一起描）。"""
     img, d = canvas(32, 32)
     swing = (1 if col == 1 else -1) if col in (1, 3) else 0
     hy = 8
@@ -351,7 +352,7 @@ def captain_frame(row, col):
     d.point((10, 14), fill=GOLD)
     d.point((21, 14), fill=GOLD)
     # 手臂 + 长剑（剑尖朝下，在身侧）
-    if row != 3:
+    if row != 3 and sword:
         sx = 24 if row in (0, 2) else 7
         sy = swing if row == 0 else 0           # 正面走路时剑跟着手上下晃
         sx += swing if row in (1, 2) else 0     # 侧面走路时剑前后摆
@@ -369,7 +370,8 @@ def captain_frame(row, col):
     else:
         d.line((12, hy - 1, 14, hy - 2), fill=ROSE_D)   # 皱着的眉
         d.line((17, hy - 2, 19, hy - 1), fill=ROSE_D)
-    return add_outline(_walk_fx(img, col, 25, 29, 24))
+    img = _walk_fx(img, col, 25, 29, 24)
+    return add_outline(img) if outline else img
 
 
 def supervisor_frame(row, col):
