@@ -4,6 +4,27 @@
 	"entries": [
 		{
 			"if": {
+				"flag": "kq_fence_active",
+				"eq": {
+					"kq_fence_stage": 3
+				}
+			},
+			"node": "kq_fence_report"
+		},
+		{
+			"if": {
+				"flag": "kq_fence_active"
+			},
+			"node": "kq_fence_busy"
+		},
+		{
+			"if": {
+				"flag": "kq_fence_open"
+			},
+			"node": "kq_fence_offer"
+		},
+		{
+			"if": {
 				"var": {
 					"knight_step": [
 						">=",
@@ -32,6 +53,83 @@
 			"lines": [
 				{
 					"text": "别过来！你脚边……有手印在爬！"
+				}
+			]
+		},
+		"kq_fence_report": {
+			"lines": [
+				{
+					"text": "三道。……好。"
+				},
+				{
+					"text": "我再去把广场的灯笼架加固一下。……那东西要是真冲出来，至少灯笼不会倒。"
+				},
+				{
+					"text": "谢谢你。……你的手怎么在抖？",
+					"speaker": "公主",
+					"emotion": "surprise"
+				},
+				{
+					"text": "……没什么。夜里冷。"
+				}
+			],
+			"set": {
+				"vars": {
+					"kq_req": "fence"
+				},
+				"call": "kq_report"
+			}
+		},
+		"kq_fence_busy": {
+			"lines": [
+				{
+					"text": "木板在南边城墙脚下。扛起来走，扛到路口我帮你钉。"
+				},
+				{
+					"text": "……小心房檐。今晚房檐上，有东西。"
+				}
+			],
+			"prompt": "（夜里的栅栏）",
+			"choices": [
+				{
+					"text": "知道了"
+				},
+				{
+					"text": "（先放一放）",
+					"set": {
+						"vars": {
+							"kq_req": "fence"
+						},
+						"call": "kq_abandon"
+					}
+				}
+			]
+		},
+		"kq_fence_offer": {
+			"lines": [
+				{
+					"text": "……喂，你。抓了一晚上手印的那个。"
+				},
+				{
+					"text": "瓶子里那几只，一直在哐哐地撞。……我总觉得，今晚还没完。"
+				},
+				{
+					"text": "营地那边过来的三条路，我想先装上栅栏门。木板在城墙脚下。……搭把手？"
+				}
+			],
+			"prompt": "帮工匠装栅栏门？",
+			"choices": [
+				{
+					"text": "好！",
+					"set": {
+						"vars": {
+							"kq_req": "fence"
+						},
+						"call": "kq_start"
+					}
+				},
+				{
+					"text": "等一下"
 				}
 			]
 		}

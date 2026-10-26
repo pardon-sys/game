@@ -391,6 +391,24 @@ func knight_go() -> void:
 	KnightStory.go()
 
 
+## 骑士篇支线（对话的 set.vars.kq_req 写支线 id）：接下 / 回去报告做完 / 先放一放。
+func kq_start() -> void:
+	runner.end_conversation()
+	KnightQuests.start(str(GameState.vars.get("kq_req", "")))
+
+
+func kq_report() -> void:
+	runner.end_conversation()
+	var id := str(GameState.vars.get("kq_req", ""))
+	if KnightQuests.is_active(id) and bool(KnightQuests.stage_info(id).get("report", false)):
+		KnightQuests.advance(id)
+
+
+func kq_abandon() -> void:
+	runner.end_conversation()
+	KnightQuests.abandon(str(GameState.vars.get("kq_req", "")))
+
+
 ## 七日赎罪：接镇民委托（对话的 set.vars.errand_req 写委托 id）。
 func errand_start() -> void:
 	AfterErrands.start(str(GameState.vars.get("errand_req", "")))

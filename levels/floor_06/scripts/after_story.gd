@@ -502,7 +502,7 @@ static func rest() -> bool:
 		if KnightStory.can_rest():
 			return await KnightStory.rest_now()
 		if not running and not DayClock.passing:
-			GameState.notify("（现在不是休息的时候。）")
+			GameState.notify(KnightStory.bed_text() if KnightQuests.active() != "" else "（现在不是休息的时候。）")
 		return false
 	if running or DayClock.passing or DayClock.slot() == DayClock.NIGHT:
 		return false
@@ -553,7 +553,7 @@ static func sleep() -> void:
 		if KnightStory.can_sleep():
 			await KnightStory.sleep_now()
 		else:
-			GameState.notify("（现在不是睡觉的时候。）")
+			GameState.notify(KnightStory.bed_text())
 		return
 	if DayClock.day() >= DayClock.DAYS and DayClock.done(DayClock.DAYS, DayClock.NIGHT):
 		# 庆功宴放完烟花：睡一觉，骑士篇开始

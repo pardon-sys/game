@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="KeyItem" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/items/key_item.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/generated/item_calm_incense.png" id="2"]
+
+[resource]
+script = ExtResource("1")
+icon = ExtResource("2")
+id = "calm_incense"
+display_name = "安神香"
+description = "药剂师奶奶用手印样本熬出来的香。普通的火点不着，要用真心的笑声点燃。点上以后，诅咒的手印会安静一会儿。（和骑士战斗时，他第一次清醒过来会自动点上，让他多清醒一会儿）"
+key_type = "quest"
+category = 1
+stackable = false
+show_in_hud = false
+pickup_emotion = "surprise"

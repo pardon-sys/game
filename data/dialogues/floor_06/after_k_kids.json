@@ -4,6 +4,18 @@
 	"entries": [
 		{
 			"if": {
+				"flag": "kq_shoes_active"
+			},
+			"node": "kq_shoes_busy"
+		},
+		{
+			"if": {
+				"flag": "kq_shoes_open"
+			},
+			"node": "kq_shoes_offer"
+		},
+		{
+			"if": {
 				"var": {
 					"knight_step": [
 						">=",
@@ -34,6 +46,65 @@
 			"lines": [
 				{
 					"text": "姐姐！东北角好多保卫队的叔叔！"
+				}
+			]
+		},
+		"kq_shoes_busy": {
+			"lines": [
+				{
+					"text": "公主！快去找你的鞋！"
+				},
+				{
+					"text": "（纸条上的谜语还记得吗？）",
+					"speaker": ""
+				}
+			],
+			"prompt": "（骑士救公主）",
+			"choices": [
+				{
+					"text": "知道了"
+				},
+				{
+					"text": "（先放一放）",
+					"set": {
+						"vars": {
+							"kq_req": "shoes"
+						},
+						"call": "kq_abandon"
+					}
+				}
+			]
+		},
+		"kq_shoes_offer": {
+			"lines": [
+				{
+					"text": "姐姐姐姐！我们在玩「骑士救公主」！"
+				},
+				{
+					"text": "你来当公主好不好！公主要被恶龙关起来，然后——"
+				},
+				{
+					"text": "……然后？",
+					"speaker": "公主",
+					"emotion": "surprise"
+				},
+				{
+					"text": "然后公主的鞋要被恶龙抢走！"
+				}
+			],
+			"prompt": "陪孩子们玩「骑士救公主」？",
+			"choices": [
+				{
+					"text": "好呀，公主就公主！",
+					"set": {
+						"vars": {
+							"kq_req": "shoes"
+						},
+						"call": "kq_start"
+					}
+				},
+				{
+					"text": "等一下再玩"
 				}
 			]
 		}

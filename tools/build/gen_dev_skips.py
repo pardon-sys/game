@@ -29,6 +29,8 @@ AFTER_RESET = ["!after_started", "!penance_book", "!after_night_busy", "!after_d
                "!after_festival_on", "!festival_dance_done", "!festival_finale_done", "!knight_started",
                "!knight_asked_night", "!knight_asked_fall", "!knight_asked_why", "!knight_asked_hanky", "!knight_answered", "!knight_refused"] + \
               ["!stall_%s_done" % sid for sid in ("guess", "ring", "ice", "fish", "lick")] + \
+              ["!kq_%s_%s" % (q, k) for q in ("shoes", "samples", "spear", "fence") for k in ("open", "active", "done")] + \
+              ["!kq_active", "!kq_spear_intro", "!kq_samples_cellar"] + \
               ["!errand_%s_%s" % (e, k) for e in ("cookies", "apples", "ladder", "goats", "dance", "massage", "gate_chain", "shearing", "canopy", "sifting", "lamp_calibration") for k in ("open", "active", "done")]
 AFTER = WAR + ["siege_won"] + AFTER_RESET
 BOOK = {"penance_hours": 100, "penance_log": [], "penance_punish": [], "after_play_day": 0, "blue_bond": 0,
@@ -71,7 +73,8 @@ KNIGHT = AFTER + after_done("morning", "afternoon", "night") + D3_ALL + D7_DAYS 
 
 
 def knight_vars(day, slot, step):
-    return dict(BOOK, day=day + 1, after_day=day, after_slot=slot, penance_hours=0, knight_step=step, knight_steps_v=2)
+    return dict(BOOK, day=day + 1, after_day=day, after_slot=slot, penance_hours=0, knight_step=step, knight_steps_v=2,
+                **{"kq_%s_stage" % q: 0 for q in ("shoes", "samples", "spear", "fence")})
 
 
 POINTS = [

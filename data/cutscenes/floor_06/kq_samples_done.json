@@ -1,0 +1,45 @@
+{
+	"name": "安神香",
+	"letterbox": true,
+	"skippable": true,
+	"steps": [
+		{
+			"speaker": "药剂师奶奶",
+			"text": "……奶奶熬一锅药。你在旁边等着。",
+			"npc": "pharmacist"
+		},
+		{
+			"speaker": "",
+			"text": "（锅里的药咕嘟咕嘟地冒泡。瓶子里的三只小手印贴着玻璃，一直朝着营地的方向）"
+		},
+		{
+			"speaker": "药剂师奶奶",
+			"text": "……好了。安神香。",
+			"npc": "pharmacist"
+		},
+		{
+			"speaker": "药剂师奶奶",
+			"text": "点上它，那些手印会安静一会儿。可是普通的火点不着它。",
+			"npc": "pharmacist"
+		},
+		{
+			"speaker": "公主",
+			"text": "那要用什么点？",
+			"emotion": "surprise"
+		},
+		{
+			"speaker": "药剂师奶奶",
+			"text": "……真心的笑声。被偷走的笑声做成的东西，只有真的笑声压得住。",
+			"npc": "pharmacist"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……笑声。……像灯笼一样。"
+		},
+		{
+			"speaker": "药剂师奶奶",
+			"text": "对。就像镇上的笑声灯笼。……带着吧。用得上的时候，你会知道的。",
+			"npc": "pharmacist"
+		}
+	]
+}

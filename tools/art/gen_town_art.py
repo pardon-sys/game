@@ -1590,6 +1590,9 @@ def gen_props():
     # 第 7 天庆功宴的广场（gen_festival_art.py；加在最后）
     from gen_festival_art import festival_props
     items.extend(festival_props())
+    # 骑士篇的四个支线（gen_knight_quest_art.py；加在最后）
+    from gen_knight_quest_art import knight_quest_props
+    items.extend(knight_quest_props())
     # 简单地按行排进 256 宽的图集
     x = y = row_h = 0
     meta = {}

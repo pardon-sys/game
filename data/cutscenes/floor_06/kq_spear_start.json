@@ -1,0 +1,31 @@
+{
+	"name": "旧剑术",
+	"letterbox": true,
+	"skippable": true,
+	"steps": [
+		{
+			"speaker": "",
+			"text": "（训练室里，队长拿着一根包了布的木矛。他脚下一错，矛尖压低，左肩在前——和那个骑士一模一样的起手式）"
+		},
+		{
+			"speaker": "保卫队队长",
+			"text": "……这个起手式。",
+			"npc": "captain"
+		},
+		{
+			"speaker": "保卫队队长",
+			"text": "我从来没学过。……可是一拿起矛，身体就自己摆成这样。",
+			"npc": "captain"
+		},
+		{
+			"speaker": "公主",
+			"text": "……自己？",
+			"emotion": "surprise"
+		},
+		{
+			"speaker": "保卫队队长",
+			"text": "……别问了。我也不知道。……站好。",
+			"npc": "captain"
+		}
+	]
+}

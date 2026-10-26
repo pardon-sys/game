@@ -973,6 +973,37 @@ data/cutscenes/<楼层组>/  地图内过场；data/theater/<楼层组>/  小剧
 - **蓝色公主的千手解放在骑士篇里也生效**：骑士篇的诅咒都不是 `Monster`，放进 `PantsBurst.KNIGHT_GROUP`（`knight_cursed`）组、实现 `on_pants_burst(burst)`：
   `CurseHand` 被扒下来、冻住（能收瓶）；`CurseMark` 暂停；`CursedArmor` 定住 3 秒（和 J 的冻住分开算冷却）；Boss 踉跄 `BURST_STAGGER` 秒、露出破绽，全场贴人的手印扒下来。
   `KnightAI` 的 plan 可以带 `skill: true`（这一帧按技能键）：追逃 / Boss 里的 AI 蓝色公主在合适的时候放（`_ai_burst`）。
+- **四个支线 `KnightQuests`**（`levels/floor_06/scripts/knight_quests.gd`，数据 `data/after/knight_quests.json` ← `tools/build/knight_text/quests.py`）：可选，
+  串成一条线「被偷走的笑声」——诅咒手印偷的是笑声；每个支线做完（`kq_<id>_done`），那个人在 Boss 最后阶段来帮忙点亮一盏笑声灯笼（`KnightQuests.helpers()`）。
+  - 开放（`kq_<id>_open`，委托人头上冒「！」）：步骤下标在 `[opens_at, closes_at)`、时段在 `slots` 里、没做完、没有别的支线在做（一次只做一个）。
+	注意 JSON 读出来的数字是 float，比时段要逐个 `int()`（`Array.has` 不把 0 和 0.0 当成一样）。
+  - 接下 / 报告 / 先放一放：`quests.inject` 往委托人对话最前面插 offer（`call: kq_start`）/ busy（选项「先放一放」`call: kq_abandon`）/
+	最后一段 `report` 的 `call: kq_report`；`dialogue_box` 的 `kq_start / kq_report / kq_abandon`（`vars.kq_req`）。进行中：`kq_<id>_active` + `kq_active`，阶段 `vars.kq_<id>_stage`。
+	做支线时主线的触发不出现（对话条件 `not kq_active`），`KnightStory.go()` 也拒绝，床上不能休息 / 睡觉（`KnightStory.bed_text()`）。错过时间窗口的进行中支线自动放下。
+  - 每一段 `stages[]`：`where` / `cell` / `text`（目标提示，`KnightQuests.objective`，别的图上用 `KnightStory.guide` 指路：训练室、地窖先指工房的门、工房里指活板门）、
+	`unlock`（这一段才开的门的标记，比如 `kq_samples_cellar`）、`report`（回去找委托人）。主线目标后面挂「（支线：…）」（`open_text`）。
+  - 玩法节点：`AfterRoom._sync_quest` 在这一段所在的图上摆 `KnightQuests.make_runner`（`RUNNERS[id]`，节点名 `Quest_<id>`，脚本的静态 `runs_on(图, 阶段)`）；
+	共用底子 `QuestRunner`（`quest_runner.gd`：`setup()` 摆东西、`cleanup()` 还原、`put()` 摆的东西跟着收走、阶段变了重新 setup 或者自己收走、`status()` 显示在目标下面）。
+  - ① **骑士救公主**（小汤姆、小莉莉，第一天早上起，`QuestShoes`）：孩子们抢走鞋（`kq_shoes_start`），光着脚（meta `barefoot` + 状态 `barefoot`）找三处：
+	草垛（按住 E 翻）→ 彩带（站在羽毛堆上按住 E 够）→ 鹅卵石小路尽头和小莉莉比「谁先笑」（`LilyDuelShow`：A / S / D 挠她喊漏嘴的弱点、被挠时亮「!」按 J 缩脚）
+	→ 骑士勋章（`knight_medal`）+ 小汤姆说地牢入口捡到「真骑士的红绳」。一直摆着三片光脚地面和三个举羽毛「长矛」偷袭的小孩（`AfterKid`）。
+  - ② **手印样本**（药剂师奶奶，骑士醒来以后，`QuestSamples`）：石板路 / 地牢铁门（几块石头只有一块藏着碎片）/ 工房的地窖（新地图 `floor_06_after_cellar`，
+	工房的活板门 `[12, 8]` 只在这一段开；一团手印 `HandCluster`）→ 回去交给奶奶 → 笑声做的、一直往盔甲那边爬 → 安神香（`calm_incense`，要用真心的笑声点燃）。
+  - ③ **队长的旧剑术**（队长，骑士醒来以后，`QuestSpear`，训练室 `floor_06_after_drill`：骑士篇小镇的训练室门 `unlock_flag = kq_spear_active`）：
+	第一次进门演起手式的开场（`kq_spear_start`，「我也不知道我为什么会」）；三轮（刺击线 / 扫腿圈 / 实战）躲预警，挨打够上限重来这一轮，
+	命中前 `PERFECT`（0.25）秒内冲刺 = 完美闪避反挠队长；实战轮要 2 次完美闪避 → 护手绳、「到时候我会在」。
+  - ④ **夜里的栅栏**（工匠，以笑为饵以后、只在第一天夜里，`QuestFence`）：城墙脚下扛木板（`busy_hands` + `carry_stone`）→ 三个路口钉门
+	（`RhythmLane`，6 个音符命中 4 个；就是追逃里的三道栅栏 `TaskArmorChase.GATES`）→ 回去找工匠。房檐上 5 只爬墙手印。
+- **新陷阱 / 怪物**（都在 `PantsBurst.KNIGHT_GROUP`，千手解放能定住）：
+  - `BareFloor`（光脚地面，只对光着脚的粉色公主；铺在关卡的 `FloorObjects`）：稻草垫每走 10 像素闷笑 +1.5%；羽毛堆每秒 +4%、状态 `feather_floor`（×0.6）；
+	鹅卵石每秒在「闷笑 +3%」和「疲倦 +3%（舒服）」之间换。图用小镇道具图集的 `straw_mat` / `feather_pile` / `pebble_path`。
+  - `HandShard`（手印碎片）：躲在石头 / 木桶底下（走近会晃）；粉色公主 60 像素内故意笑 → 探头 2 秒 → 爬到她脚边拍拍脚背、进瓶子（伏笔）；
+	蓝色公主走到 40 像素内就逃，追着逃 1.5 秒还贴着 → 扑上去挠她的大腿（+8%）；冻住 5 秒，走过去按 E 装瓶。
+  - `HandCluster`（手印团）：冻住 / 拍散 / 千手解放 → 裂成 3 块碎片；靠近会伸手挠一下。
+  - `EaveHand`（爬墙手印）：从房檐底下走 → 落点亮影子 0.8 秒 → 掉下来抓脚（定身 2 秒、每秒闷笑 +5%），连按 J 5 下挣开，6 秒冷却。
+  - 诅咒小手统一用 `CurseHand.draw_hand` 画。新道具 `barrel` / `trapdoor` / `straw_mat` / `pebble_path` / `plank_bundle` / `fence_gate` 和两个图标在 `tools/art/gen_knight_quest_art.py`
+	（`gen_town_art.gen_props` 加在图集最后，前面道具的位置不变）。
+  - 测试：`f6_after_test.tscn -- --knight-quests-only`（`tests/helpers/f6_knight_quests.gd`）；截图 `tests/capture_knight_quests.tscn` → `tools/.cache/shots/knight_quests/`。
 - **人物**：骑士 `knight`（`data/actors/npcs.json`，生成器写入）：行走图 `tools/art/gen_knight_art.py`（Python 像素，`npcs/knight.png`，被诅咒附身的 `knight_cursed.png`），
   立绘 `tools/art/src/knight/`（codex 内置 image_gen 生成，提示词见 `prompts.md`）→ `import_knight_portrait.py` 像素化成 `npc_portraits/knight.png`。
 - **AI 搭档 `KnightAI`**（`levels/floor_06/scripts/knight_ai.gd`）：追逃和 Boss 里没被操控的那位公主。复用 `CompanionController` 的挣扎 / 躲预警（`danger` 组）/ 打怪 / 跟随，
