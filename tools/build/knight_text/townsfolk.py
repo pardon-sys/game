@@ -3,7 +3,7 @@
   第一天早上 found（和地牢入口的队员说话才开始）→ wake（工房）→ 下午 afternoon（自由活动，床上休息到晚上）
   → 夜里 bait（调查广场上暗掉的灯笼）→ sneak（调查营地楼梯的路障）→ cell（地牢里）→ sleep（回小屋睡觉）
   → 第二天早上 report（和营地楼梯口的队员说话）→ chase → boss。追逃那张图上没有镇民。
-主线触发：这一步要说话的人 / 调查的道具，对话最前面插一句（条件 eq knight_step = 下标），set {call: knight_go}。
+主线触发：这一步要说话的人 / 调查的道具，对话最前面插一句（条件 eq knight_step = 下标、没有正在做的支线 kq_active），set {call: knight_go}。
 白天（floor_06_knight_day）：found 之前「东北角出事了」/ 抬回工房以后「那个骑士」/ 第二天早上「昨晚的灯笼」。
 夜里（floor_06_knight_night）：以笑为饵之前「广场上怪怪的」/ 之后「笑声被偷走了」。
 """
@@ -37,7 +37,7 @@ def talk(name, npc, *tiers):
 
 def trigger(d, step_id, lines):
     """主线触发：这一步和他说话时先说 lines，然后开演（KnightStory.go）。"""
-    d["entries"].insert(0, {"if": step_is(step_id), "node": "go"})
+    d["entries"].insert(0, {"if": dict(step_is(step_id), **{"not": "kq_active"}), "node": "go"})
     d["nodes"]["go"] = {"lines": lines, "set": {"call": "knight_go"}}
     return d
 
@@ -122,11 +122,11 @@ NIGHT = {
 OBJECTS = {
     "name": "", "entries": [{"node": "lantern"}],
     "nodes": {
-        "lantern": {"goto": [{"if": step_is("bait"), "node": "lantern_go"}], "lines": [L("（一盏笑声灯笼，静静地亮着）", N)]},
+        "lantern": {"goto": [{"if": dict(step_is("bait"), **{"not": "kq_active"}), "node": "lantern_go"}], "lines": [L("（一盏笑声灯笼，静静地亮着）", N)]},
         "lantern_go": {"lines": [L("（灯笼里的光一点一点暗了下去。灯罩上，贴着一个紫色的小手印——它在吸灯里的笑声）", N),
                                  L("……这是什么？", P, "surprise"), L("……别碰。", BLUE)],
                        "set": {"call": "knight_go"}},
-        "vent": {"goto": [{"if": step_is("sneak"), "node": "vent_go"}], "lines": [L("（营地楼梯的路障。……木板后面好像有一道缝，有风吹出来）", N)]},
+        "vent": {"goto": [{"if": dict(step_is("sneak"), **{"not": "kq_active"}), "node": "vent_go"}], "lines": [L("（营地楼梯的路障。……木板后面好像有一道缝，有风吹出来）", N)]},
         "vent_go": {"lines": [L("（蓝色公主蹲下来，摸到路障最下面那块木板，轻轻一推——木板松了，后面露出一道窄窄的通风口）", N)],
                     "set": {"call": "knight_go"}},
     },

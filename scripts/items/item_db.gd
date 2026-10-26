@@ -20,6 +20,9 @@ const PATHS := {
 	"souvenir_ice_sheep": "res://data/items/souvenir_ice_sheep.tres",
 	"souvenir_fish_basin": "res://data/items/souvenir_fish_basin.tres",
 	"souvenir_bell_collar": "res://data/items/souvenir_bell_collar.tres",
+	# 骑士篇支线的奖励（tools/art/gen_knight_quest_art.py 出图标）
+	"knight_medal": "res://data/items/knight_medal.tres",
+	"calm_incense": "res://data/items/calm_incense.tres",
 	# 装备（tools/build/gen_equipment.py）
 	"equip_armpit_pad": "res://data/items/equip_armpit_pad.tres",
 	"equip_scarf": "res://data/items/equip_scarf.tres",

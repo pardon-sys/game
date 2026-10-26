@@ -6,7 +6,8 @@
 			"if": {
 				"eq": {
 					"knight_step": 0
-				}
+				},
+				"not": "kq_active"
 			},
 			"node": "go"
 		},

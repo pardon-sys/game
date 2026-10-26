@@ -12,7 +12,8 @@
 					"if": {
 						"eq": {
 							"knight_step": 3
-						}
+						},
+						"not": "kq_active"
 					},
 					"node": "lantern_go"
 				}
@@ -50,7 +51,8 @@
 					"if": {
 						"eq": {
 							"knight_step": 4
-						}
+						},
+						"not": "kq_active"
 					},
 					"node": "vent_go"
 				}

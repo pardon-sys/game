@@ -3,7 +3,8 @@ extends Node2D
 ## 七日赎罪的小场景导演（药剂师工房 floor_06_after_pharmacy、城门外的战场 floor_06_after_field……）：
 ##   目标提示（ObjectiveMarker，AfterStory.objective）、走进目标圈演那个事件（AfterStory.trigger）、进图自动演的事件（AfterStory.run_pending）。
 ##   跟着的蓝色公主（节点改名 AfterBlue）：这张图可以换人（[level] 没写 no_switch 时按 C）。
-##   骑士篇的小镇：有事找的人（KnightStory.marked_npcs：这一步要和他说话的人）头上冒「！」。
+##   骑士篇：有事找的人（KnightStory.marked_npcs：这一步要和他说话的人、支线的委托人）头上冒「！」；
+##   进行中的支线这一段在这张图上的话，摆上它的玩法节点（KnightQuests.make_runner，节点名 Quest_<id>）。
 ## 图例：X = f6afterroom
 
 const PARTNER := "floor_06/after_partner"
@@ -73,6 +74,8 @@ func _sync_marks() -> void:
 	var lv := _level()
 	if lv == null or not KnightStory.active():
 		return
+	KnightQuests.refresh()
+	_sync_quest(lv)
 	var want := KnightStory.marked_npcs()
 	for n in lv.find_children("*", "Resident", true, false):
 		AfterTown.set_mark(n, str(n.name) in want)
@@ -88,3 +91,17 @@ func _process(_delta: float) -> void:
 		_objective = {}
 		await AfterStory.trigger(_floor)
 		refresh_objective()
+
+
+func _sync_quest(lv: Node) -> void:
+	var ents := lv.get_node_or_null("Entities")
+	if ents == null:
+		return
+	var id := KnightQuests.active()
+	for n in ents.get_children():
+		if str(n.name).begins_with("Quest_") and str(n.name) != "Quest_" + id:
+			n.queue_free()
+	if id != "" and ents.get_node_or_null("Quest_" + id) == null:
+		var runner := KnightQuests.make_runner(_floor)
+		if runner:
+			ents.add_child(runner)

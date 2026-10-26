@@ -164,18 +164,22 @@ func _tickle(who: Node2D) -> void:
 	Audio.play("tickle", -12.0 if is_pink(pc) else -7.0, 0.1)
 
 
+## 画一只诅咒小手（掌心 + 五根小手指）：手印碎片、手印团、爬墙手印都用它
+static func draw_hand(ci: CanvasItem, at: Vector2, k: float, col: Color, core: Color, a: float, wob: float, ang0 := -PI * 0.85) -> void:
+	ci.draw_circle(at, 3.2 * k, Color(col, a))
+	for i in 5:
+		var ang := ang0 + i * PI * 0.17
+		var tip := at + Vector2.from_angle(ang) * (6.0 + (wob if i % 2 else -wob) * 0.5) * k
+		ci.draw_line(at + Vector2.from_angle(ang) * 2.5 * k, tip, Color(col, a), 1.6 * k)
+	ci.draw_circle(at, 1.4 * k, Color(core, a))
+
+
 func _draw() -> void:
 	var col := ICE if state == "frozen" else COL
 	draw_circle(Vector2.ZERO, 7.0, Color(col, 0.18))
 	var a := 0.55 + 0.25 * sin(_t * 5.0) if state != "frozen" else 0.9
 	var wob := sin(_t * 9.0) * (0.0 if state == "frozen" else 1.0)
-	# 掌心 + 五根小手指
-	draw_circle(Vector2.ZERO, 3.2, Color(col, a))
-	for i in 5:
-		var ang := -PI * 0.85 + i * PI * 0.17
-		var tip := Vector2.from_angle(ang) * (6.0 + (wob if i % 2 else -wob) * 0.5)
-		draw_line(Vector2.from_angle(ang) * 2.5, tip, Color(col, a), 1.6)
-	draw_circle(Vector2.ZERO, 1.4, Color(COL_D if state != "frozen" else Color(0.45, 0.65, 0.85), a))
+	draw_hand(self, Vector2.ZERO, 1.0, col, COL_D if state != "frozen" else Color(0.45, 0.65, 0.85), a, wob)
 	if state == "frozen":
 		draw_arc(Vector2.ZERO, 7.5, 0, TAU, 14, Color(ICE, 0.6), 1.0)
 	if stealing:

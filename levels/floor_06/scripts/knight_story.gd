@@ -37,11 +37,15 @@ const KNIGHT_N := "floor_06_knight_night"
 const KCHASE := "floor_06_knight_chase"
 const TOWNS := [KDAY, KNIGHT_N, KCHASE]
 ## 小镇图上通往各处的门口（指路用，三张小镇图布局相同）、各处回小镇的出口
-const DOORS := {"floor_06_after_house": [42, 10], "floor_06_after_pharmacy": [16, 10]}
-const EXITS := {"floor_06_after_house": [9, 10], "floor_06_after_pharmacy": [8, 8.5]}
+const DOORS := {"floor_06_after_house": [42, 10], "floor_06_after_pharmacy": [16, 10], "floor_06_after_drill": [8, 10]}
+const EXITS := {"floor_06_after_house": [9, 10], "floor_06_after_pharmacy": [8, 8.5], "floor_06_after_drill": [10, 11.5], "floor_06_after_cellar": [8, 8.5]}
+## 工房里通往地窖的活板门
+const CELLAR_DOOR := [12, 8]
 const HOUSE := "floor_06_after_house"
 const PHARMACY := "floor_06_after_pharmacy"
 const PRISON := "floor_06_after_prison"
+const CELLAR := "floor_06_after_cellar"
+const DRILL := "floor_06_after_drill"
 const MORNING := 0
 const AFTERNOON := 1
 const NIGHT := 2
@@ -114,10 +118,11 @@ static func trigger() -> String:
 	return str(step().get("trigger", ""))
 
 
-## 头上冒「！」的人（对话文件名）：这一步要和他说话的那个
+## 头上冒「！」的人（对话文件名）：这一步要和他说话的那个（没有在做支线时），加上支线的委托人（KnightQuests）
 static func marked_npcs() -> Array:
 	var s := step()
-	return [str(s["npc"])] if trigger() == "talk" and s.has("npc") else []
+	var out: Array = [str(s["npc"])] if trigger() == "talk" and s.has("npc") and KnightQuests.active() == "" else []
+	return out + KnightQuests.marked_npcs()
 
 
 ## 庆功宴之后睡一觉：骑士篇开始（第二天早上，小屋里醒来，然后自由活动）
@@ -169,12 +174,14 @@ static func objective(floor_id: String) -> Dictionary:
 		return {"text": "（骑士篇的后续还在制作中……）"}
 	if GameState.has_flag(AfterStory.TASK_FLAG):
 		return {"text": str(s.get("task", {}).get("name", ""))}
-	var text := str(s.get("objective", ""))
+	if KnightQuests.active() != "":
+		return KnightQuests.objective(floor_id)
+	var text := str(s.get("objective", "")) + KnightQuests.open_text()
 	var where := str(s["where"])
 	if trigger() in ["rest", "sleep"]:
 		if floor_id == HOUSE:
 			return {"text": text, "cell": AfterStory.HOUSE_BED, "radius": 1.0}
-		return _guide(floor_id, HOUSE, text)
+		return guide(floor_id, HOUSE, text)
 	if where != floor_id and s.has("away"):
 		text = str(s["away"])
 	if where == floor_id:
@@ -182,32 +189,43 @@ static func objective(floor_id: String) -> Dictionary:
 			var c: Array = s["cell"]
 			return {"text": text, "cell": [c[0], c[1]], "radius": 1.0}
 		return {"text": text} if text != "" else {}
-	return _guide(floor_id, where, text)
+	return guide(floor_id, where, text)
 
 
-## 目标在别的图：小镇图上指向那张图的门口；别的图上指向回小镇的出口
-static func _guide(floor_id: String, where: String, text: String) -> Dictionary:
-	if floor_id in TOWNS and DOORS.has(where):
-		return {"text": text, "cell": DOORS[where], "radius": 1.0}
-	if not floor_id in TOWNS and where in TOWNS and EXITS.has(floor_id):
+## 目标在别的图：小镇图上指向那张图的门口（地窖先指工房的门）；工房里指向地窖的活板门；别的图上指向回去的出口
+static func guide(floor_id: String, where: String, text: String) -> Dictionary:
+	if where == CELLAR and floor_id == PHARMACY:
+		return {"text": text, "cell": CELLAR_DOOR, "radius": 1.0}
+	var door := PHARMACY if where == CELLAR else where
+	if floor_id in TOWNS and DOORS.has(door):
+		return {"text": text, "cell": DOORS[door], "radius": 1.0}
+	if floor_id != where and EXITS.has(floor_id):
 		return {"text": text, "cell": EXITS[floor_id], "radius": 1.0}
 	return {"text": text}
 
 
 static func status_text() -> String:
 	if not GameState.has_flag(AfterStory.TASK_FLAG):
-		return ""
+		return KnightQuests.status_text()
 	var task: Dictionary = step().get("task", {})
 	return str(load(str(task["script"])).call("status_text")) if not task.is_empty() else ""
 
 
-## 床：骑士篇里能不能睡 / 休息（AfterStory.sleep / rest 问）
+## 床：骑士篇里能不能睡 / 休息（AfterStory.sleep / rest 问）；在做支线时不行
 static func can_sleep() -> bool:
-	return active() and trigger() == "sleep"
+	return active() and trigger() == "sleep" and KnightQuests.active() == ""
 
 
 static func can_rest() -> bool:
-	return active() and trigger() == "rest" and DayClock.slot() != NIGHT
+	return active() and trigger() == "rest" and DayClock.slot() != NIGHT and KnightQuests.active() == ""
+
+
+## 床上睡不了 / 休息不了的时候说什么
+static func bed_text() -> String:
+	var q := KnightQuests.active()
+	if q != "":
+		return "（先把「%s」做完吧——不想做了，可以去找委托人先放一放。）" % str(KnightQuests.info(q).get("name", ""))
+	return "（现在不是睡觉的时候。）"
 
 
 ## 白天在床上休息：→ 下一个时段，这一步算做完
@@ -267,6 +285,9 @@ static func try_step(floor_id: String, by_spot: bool) -> void:
 ## 对话里调查 / 说话（call: knight_go）：这一步是 talk / inspect 的就开演。返回开演了没有。
 static func go() -> bool:
 	if running or not active() or not trigger() in ["talk", "inspect"]:
+		return false
+	if KnightQuests.active() != "":
+		GameState.notify(bed_text())
 		return false
 	running = true
 	await TrainingDB.wait_dialogue_free()

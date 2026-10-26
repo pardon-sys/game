@@ -1,0 +1,40 @@
+{
+	"name": "到时候我会在",
+	"letterbox": true,
+	"skippable": true,
+	"steps": [
+		{
+			"speaker": "保卫队队长",
+			"text": "……够了。",
+			"npc": "captain"
+		},
+		{
+			"speaker": "",
+			"text": "（他放下木矛，从怀里摸出一根旧旧的护手绳，递给她）"
+		},
+		{
+			"speaker": "保卫队队长",
+			"text": "缠在手腕上。……闪的时候，手不会抖。",
+			"npc": "captain"
+		},
+		{
+			"speaker": "公主",
+			"text": "……谢谢队长。",
+			"emotion": "happy"
+		},
+		{
+			"speaker": "保卫队队长",
+			"text": "那个骑士……要是哪天真冲出来了。",
+			"npc": "captain"
+		},
+		{
+			"speaker": "保卫队队长",
+			"text": "……到时候，我会在。",
+			"npc": "captain"
+		},
+		{
+			"speaker": "",
+			"text": "（学会了「完美闪避」：在快被打中的一瞬间冲刺，躲开以后能反挠对方一下。和骑士打的时候，会让他露出破绽）"
+		}
+	]
+}

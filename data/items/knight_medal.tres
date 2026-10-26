@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="KeyItem" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/items/key_item.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/generated/item_knight_medal.png" id="2"]
+
+[resource]
+script = ExtResource("1")
+icon = ExtResource("2")
+id = "knight_medal"
+display_name = "骑士勋章"
+description = "小汤姆和小莉莉用瓶盖和红布条做的「勋章」，背面歪歪扭扭地写着「勇者」。（骑士篇·支线「骑士救公主」）"
+key_type = "souvenir"
+category = 1
+stackable = false
+show_in_hud = false
+pickup_emotion = "happy"

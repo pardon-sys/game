@@ -77,6 +77,11 @@ func _ready() -> void:
 		print("\n==== 骑士篇后半%s (%d 项失败) ====" % ["全部通过" if failures == 0 else "有失败", failures])
 		get_tree().quit(1 if failures else 0)
 		return
+	if "--knight-quests-only" in OS.get_cmdline_user_args():
+		await preload("res://tests/helpers/f6_knight_quests.gd").run(self)
+		print("\n==== 骑士篇支线%s (%d 项失败) ====" % ["全部通过" if failures == 0 else "有失败", failures])
+		get_tree().quit(1 if failures else 0)
+		return
 	if "--knight-only" in OS.get_cmdline_user_args():
 		await preload("res://tests/helpers/f6_knight.gd").run(self)
 		print("\n==== 骑士篇%s (%d 项失败) ====" % ["全部通过" if failures == 0 else "有失败", failures])

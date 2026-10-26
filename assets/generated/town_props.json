@@ -1293,5 +1293,73 @@
 			26,
 			16
 		]
+	},
+	"barrel": {
+		"body": [
+			10,
+			6
+		],
+		"body_y": -3,
+		"region": [
+			98,
+			466,
+			14,
+			18
+		]
+	},
+	"trapdoor": {
+		"floor": true,
+		"region": [
+			112,
+			466,
+			16,
+			16
+		]
+	},
+	"straw_mat": {
+		"floor": true,
+		"under": true,
+		"region": [
+			128,
+			466,
+			32,
+			16
+		]
+	},
+	"pebble_path": {
+		"floor": true,
+		"under": true,
+		"region": [
+			160,
+			466,
+			32,
+			16
+		]
+	},
+	"plank_bundle": {
+		"body": [
+			20,
+			6
+		],
+		"body_y": -3,
+		"region": [
+			192,
+			466,
+			24,
+			12
+		]
+	},
+	"fence_gate": {
+		"body": [
+			28,
+			6
+		],
+		"body_y": -3,
+		"region": [
+			216,
+			466,
+			32,
+			20
+		]
 	}
 }

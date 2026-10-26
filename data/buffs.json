@@ -481,6 +481,28 @@
 				"tickle_power": 1.35
 			},
 			"desc": "移速+20%，挠痒强度+35%。"
+		},
+		"barefoot": {
+			"name": "光着脚",
+			"icon": 3,
+			"debuff": true,
+			"hidden": false,
+			"duration": -1,
+			"max_stacks": 1,
+			"modifiers": {},
+			"desc": "鞋被孩子们抢走了：踩到稻草、羽毛、鹅卵石，脚底都会发痒。"
+		},
+		"feather_floor": {
+			"name": "陷在羽毛堆里",
+			"icon": 3,
+			"debuff": true,
+			"hidden": false,
+			"duration": 0.3,
+			"max_stacks": 1,
+			"modifiers": {
+				"speed": 0.6
+			},
+			"desc": "光脚踩进软绵绵的羽毛堆：脚底被羽毛扫得发痒，走不快。"
 		}
 	}
 }

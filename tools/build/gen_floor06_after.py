@@ -19,7 +19,7 @@ os.chdir(Path(__file__).resolve().parents[2])
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from after_text import d1, d2, equip_kids, errand_dance, errand_goats, errand_ladder, errand_massage, errand_gate_chain, errand_shearing, errand_canopy, errand_sifting, errand_lamp_calibration, errands, house, mine, play, potion, punish, stocks, tailor, tasks, totem, town, drain, drill, inspect, tom, night, penalty, festival_night, festival_talk, stall_guess, stall_ring, stall_ice, stall_fish, stall_lick  # noqa: E402
-from knight_text import finale as knight_finale, story as knight_story, tasks as knight_tasks, townsfolk as knight_townsfolk  # noqa: E402
+from knight_text import finale as knight_finale, quests as knight_quests, story as knight_story, tasks as knight_tasks, townsfolk as knight_townsfolk  # noqa: E402
 
 # 只生成灯轮 / 报幕的文本（委托表、灯轮、补罚表、派对主人对话），不重新写地图、其他任务或别的镇民对白。
 if "--festival-only" in sys.argv:
@@ -42,6 +42,7 @@ TOWN, HOUSE, HOUSE_UP = "floor_06_after", "floor_06_after_house", "floor_06_afte
 PHARMACY, FIELD = "floor_06_after_pharmacy", "floor_06_after_field"
 TAILOR, MINE, TOTEM = "floor_06_after_tailor", "floor_06_after_mine", "floor_06_after_totem"
 DRAIN, DRILL, PROVING = "floor_06_after_drain", "floor_06_after_drill", "floor_06_after_proving"
+CELLAR = "floor_06_after_cellar"
 PRISON = "floor_06_after_prison"
 FESTIVAL = "floor_06_festival"
 KDAY, KNIGHT_N, KCHASE = "floor_06_knight_day", "floor_06_knight_night", "floor_06_knight_chase"
@@ -116,6 +117,9 @@ def town_layout(m, kind="town"):
     # 队长的训练室（西北角那座搭脚手架的房子；特训的时候开门）
     if kind == "town":
         m.put(8, 9, "exit target=%s spawn=from_town unlock_flag=after_drill_open locked_dialogue=after_drill_locked" % DRILL)
+    else:
+        # 骑士篇：支线「队长的旧剑术」进行中才开（KnightQuests 设 kq_spear_active）
+        m.put(8, 9, "exit target=%s spawn=from_town unlock_flag=kq_spear_active locked_dialogue=after_kdrill_locked" % DRILL)
     m.put(8, 10, "spawn id=from_drill")
     # 东边的保卫队训练营（第 6 天早上验收陷阱）
     if kind == "town":
@@ -326,6 +330,10 @@ prop(ph, 13, 9, "plant")
 prop(ph, 2, 9, "plant")
 prop(ph, 9, 7, "candle")
 npc(ph, 8, 5, "pharmacist", "after_pharm", 0, "dir=down")
+# 骑士篇：通往地窖的活板门（支线「手印样本」收到地窖那一段才开）
+prop(ph, 12, 8, "trapdoor")
+ph.put(12, 8, "exit target=%s spawn=from_pharmacy unlock_flag=kq_samples_cellar locked_dialogue=after_cellar_locked" % CELLAR)
+ph.put(11, 8, "spawn id=from_cellar")
 ph.put(8, 9, "exit target=%s spawn=from_pharmacy" % TOWN)
 ph.put(8, 8, "spawn id=from_town")
 ph.put(7, 8, "player")
@@ -457,6 +465,23 @@ dl.put(10, 11, "spawn id=from_town")
 dl.put(10, 10, "player")
 dl.put(11, 10, "blue_princess follow=true ai=false")
 dl.write()
+
+# ================================================================ 药剂师工房的地窖（骑士篇支线「手印样本」：一团手印钻进来了）
+ce = Map(CELLAR, 16, 11, "intro =\nambient = 0.42,0.42,0.52\nno_switch = false")
+ce.room(2, 2, 13, 8)
+for x in (5, 10):
+    ce.put(x, 1, "torch lit=true")
+ce.put(2, 2, "f6afterroom")
+for (x, y) in ((3, 3), (4, 3), (12, 3), (3, 7), (12, 7), (9, 3)):
+    prop(ce, x, y, "barrel")
+for (x, y) in ((6, 3), (12, 5)):
+    prop(ce, x, y, "crate")
+prop(ce, 8, 7, "herb_rack")
+ce.put(8, 9, "exit target=%s spawn=from_cellar" % PHARMACY)
+ce.put(8, 8, "spawn id=from_pharmacy")
+ce.put(7, 8, "player")
+ce.put(9, 8, "blue_princess follow=true ai=false")
+ce.write()
 
 # ================================================================ 保卫队训练营（陷阱验收；踏板由任务摆）
 pv = Map(PROVING, 44, 10, "intro =\nambient = 0.78,0.74,0.7")
@@ -776,6 +801,8 @@ for _sid, _mod, _key, _cls in STALLS.values():
         ensure_ascii=False, indent="\t") + "\n")
 Path("data/after/knight.json").write_text(json.dumps(dict({"_说明": "骑士篇 A~D 的玩法文本（knight_text/tasks.py 生成，TaskStretcher / TaskBait / InterrogationChairShow 读）。"},
     **knight_tasks.KNIGHT), ensure_ascii=False, indent="\t") + "\n")
+Path("data/after/knight_quests.json").write_text(json.dumps(dict({"_说明": "骑士篇的四个支线（knight_text/quests.py 生成，KnightQuests 和支线的玩法节点读）。"},
+    quests=knight_quests.QUESTS), ensure_ascii=False, indent="\t") + "\n")
 Path("data/after/knight_finale.json").write_text(json.dumps(dict({"_说明": "骑士篇 E~G 的玩法文本（knight_text/finale.py 生成，TaskArmorChase / TaskKnightBoss 读）。"},
     **knight_finale.FINALE), ensure_ascii=False, indent="\t") + "\n")
 # 人物表：骑士（行走图 / 立绘由 tools/art/gen_knight_art.py、import_knight_portrait.py 生成）
@@ -811,6 +838,7 @@ files.update(drill.DIALOGUES)
 files.update(inspect.DIALOGUES)
 files["after_knight"] = knight_story.CELL
 files.update(knight_townsfolk.DIALOGUES)
+knight_quests.inject(files)
 # 第 6 天小汤姆的话：按昨晚恶作剧的结局（只在第 6 天）
 for _r, _lines in tom.TOM_NEXT_DAY.items():
     _d = files["after_kid_tom"]
@@ -826,10 +854,11 @@ signs.update(totem.SIGNS)
 signs.update(drain.SIGNS)
 signs.update(drill.SIGNS)
 signs.update(inspect.SIGNS)
+signs.update(knight_quests.SIGNS)
 signs_path.write_text(json.dumps(signs, ensure_ascii=False, indent="\t") + "\n")
 
 cut = Path("data/cutscenes/floor_06")
-CUTS = dict(d1.CUTSCENES, **d2.CUTSCENES, **tasks.CUTSCENES, **potion.CUTSCENES, **tailor.CUTSCENES, **mine.CUTSCENES, **totem.CUTSCENES, **drain.CUTSCENES, **drill.CUTSCENES, **inspect.CUTSCENES, **festival_night.CUTSCENES, **knight_story.CUTSCENES, **knight_finale.CUTSCENES)
+CUTS = dict(d1.CUTSCENES, **d2.CUTSCENES, **tasks.CUTSCENES, **potion.CUTSCENES, **tailor.CUTSCENES, **mine.CUTSCENES, **totem.CUTSCENES, **drain.CUTSCENES, **drill.CUTSCENES, **inspect.CUTSCENES, **festival_night.CUTSCENES, **knight_story.CUTSCENES, **knight_finale.CUTSCENES, **knight_quests.CUTSCENES)
 for cid, fn in CUTS.items():
     (cut / (cid + ".json")).write_text(json.dumps(fn(), ensure_ascii=False, indent="\t") + "\n")
 th = Path("data/theater/after")
@@ -842,7 +871,7 @@ lst = floors["floors"]
 NEW = [(TOWN, "地下小镇·战后", "town"), (FESTIVAL, "庆功宴的广场", "town"), (KDAY, "地下小镇·骑士篇（白天）", "town"),
        (KNIGHT_N, "地下小镇·骑士篇（夜里）", "town"), (KCHASE, "地下小镇·骑士篇（诅咒失控）", "town"), (HOUSE, "蓝色小屋·战后", "town"), (HOUSE_UP, "蓝色小屋·战后（楼上）", "night_room"),
        (PHARMACY, "药剂师工房", "town"), (FIELD, "城门外的战场", "town"), (TAILOR, "裁缝铺", "town"), (MINE, "受损的矿道", "town"), (TOTEM, "图腾柱废地", "town"), (DRAIN, "排水管", "town"), (DRILL, "队长的训练室", "town"), (PROVING, "保卫队训练营", "town"),
-       (PRISON, "保卫队的地牢", "night_room")]
+       (PRISON, "保卫队的地牢", "night_room"), (CELLAR, "药剂师工房的地窖", "night_room")]
 at = next(i for i, f in enumerate(lst) if f["id"] == "floor_06_siege") + 1
 for fid, name, music in NEW:
     if not any(f["id"] == fid for f in lst):

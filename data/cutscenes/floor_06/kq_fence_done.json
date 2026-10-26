@@ -1,0 +1,25 @@
+{
+	"name": "栅栏门",
+	"letterbox": true,
+	"skippable": true,
+	"steps": [
+		{
+			"speaker": "",
+			"text": "（三道栅栏门都立起来了。工匠拍了拍最后一道门，又抬头看了看广场上的灯笼架）"
+		},
+		{
+			"speaker": "工匠",
+			"text": "……行了。剩下的，我自己来。",
+			"npc": "miner"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……那些手印。……房檐上，越来越多了。"
+		},
+		{
+			"speaker": "公主",
+			"text": "……嗯。像是……在等什么。",
+			"emotion": "sad"
+		}
+	]
+}

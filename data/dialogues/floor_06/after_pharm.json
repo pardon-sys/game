@@ -3,6 +3,27 @@
 	"entries": [
 		{
 			"if": {
+				"flag": "kq_samples_active",
+				"eq": {
+					"kq_samples_stage": 3
+				}
+			},
+			"node": "kq_samples_report"
+		},
+		{
+			"if": {
+				"flag": "kq_samples_active"
+			},
+			"node": "kq_samples_busy"
+		},
+		{
+			"if": {
+				"flag": "kq_samples_open"
+			},
+			"node": "kq_samples_offer"
+		},
+		{
+			"if": {
 				"flag": "errand_sifting_open"
 			},
 			"node": "errand_sifting"
@@ -99,6 +120,101 @@
 				{
 					"text": "三袋都齐了，标签也没串。明天补货，少不了你这一份。",
 					"speaker": "药剂师奶奶"
+				}
+			]
+		},
+		"kq_samples_report": {
+			"lines": [
+				{
+					"text": "……三块。好孩子。"
+				},
+				{
+					"text": "（奶奶把瓶子凑到灯下，眯着眼看了好久）",
+					"speaker": ""
+				},
+				{
+					"text": "……这东西，是笑声做的。"
+				},
+				{
+					"text": "笑声？",
+					"speaker": "公主",
+					"emotion": "surprise"
+				},
+				{
+					"text": "被偷走的笑声。挤在一起，就变成了手。……它们一直想往一个方向爬。"
+				},
+				{
+					"text": "……盔甲那边。",
+					"speaker": "公主",
+					"emotion": "sad"
+				}
+			],
+			"set": {
+				"vars": {
+					"kq_req": "samples"
+				},
+				"call": "kq_report"
+			}
+		},
+		"kq_samples_busy": {
+			"lines": [
+				{
+					"text": "担架走过的石板路、地牢入口的铁门……还有，奶奶的地窖里，昨晚好像也钻进去了一团。"
+				},
+				{
+					"text": "（藏着手印的石头、木桶，靠近了会晃。按住 E 笑一笑，它就会爬出来）",
+					"speaker": ""
+				}
+			],
+			"prompt": "（手印样本）",
+			"choices": [
+				{
+					"text": "知道了"
+				},
+				{
+					"text": "（先放一放）",
+					"set": {
+						"vars": {
+							"kq_req": "samples"
+						},
+						"call": "kq_abandon"
+					}
+				}
+			]
+		},
+		"kq_samples_offer": {
+			"lines": [
+				{
+					"text": "……孩子，来得正好。"
+				},
+				{
+					"text": "那个骑士身上的手印，奶奶想配一味安神的药。"
+				},
+				{
+					"text": "可是没有样本。……你能帮奶奶去收几块吗？"
+				},
+				{
+					"text": "收手印？……它们会跑吧。",
+					"speaker": "公主",
+					"emotion": "surprise"
+				},
+				{
+					"text": "会跑。所以要找对办法。……它们，好像喜欢笑声。"
+				}
+			],
+			"prompt": "帮奶奶收手印样本？",
+			"choices": [
+				{
+					"text": "交给我！",
+					"set": {
+						"vars": {
+							"kq_req": "samples"
+						},
+						"call": "kq_start"
+					}
+				},
+				{
+					"text": "等一下"
 				}
 			]
 		}
