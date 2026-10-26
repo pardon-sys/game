@@ -3522,10 +3522,7 @@
 				"after_ev_d6_drill"
 			],
 			"vars": {
-				"day": 8,
-				"after_day": 7,
-				"after_slot": 0,
-				"penance_hours": 100,
+				"penance_hours": 20,
 				"penance_log": [],
 				"penance_punish": [],
 				"after_play_day": 0,
@@ -3559,7 +3556,10 @@
 				"task_chase_lit": 0,
 				"task_chase_caught": 0,
 				"task_boss_phase": 0,
-				"task_boss_caught": 0
+				"task_boss_caught": 0,
+				"day": 8,
+				"after_day": 7,
+				"after_slot": 0
 			},
 			"cell": [
 				4,

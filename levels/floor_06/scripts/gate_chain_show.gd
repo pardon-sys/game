@@ -47,7 +47,7 @@ var collapses := 0
 var tuck_flash := 0.0
 var _info: Label
 var _rig: ChainRig
-var _soles: SoleRig
+var _tools: ToolRig
 var _gauges: ChainGauges
 
 
@@ -112,10 +112,10 @@ func play() -> bool:
 	_rig.stage = self
 	view.add_child(_rig)
 	view.move_child(_rig, 1)
-	_soles = SoleRig.new()
-	_soles.stage = self
-	_soles.z_index = 3
-	view.add_child(_soles)
+	_tools = ToolRig.new()
+	_tools.stage = self
+	_tools.z_index = 3
+	view.add_child(_tools)
 	rotate_tool()
 	if not await start_work():
 		return false
@@ -151,8 +151,8 @@ func _before_finish() -> void:
 		actor.rotation = 0.0
 		actor.position = Vector2(-12, 16)
 		actor.set_pose("normal", "idle", "right")
-	if _soles:
-		_soles.hide()
+	if _tools:
+		_tools.hide()
 
 
 ## 一次加强：链头推偏、力度加重、闷笑和疲倦上涨；预告时缩了脚的话闷笑减半，但链头往反方向偏得更多。
@@ -299,8 +299,8 @@ func _refresh() -> void:
 		_gauges.queue_redraw()
 	if _rig:
 		_rig.queue_redraw()
-	if _soles:
-		_soles.queue_redraw()
+	if _tools:
+		_tools.queue_redraw()
 
 
 ## 左上面板的两根判定表（对准 / 力度）
@@ -363,53 +363,53 @@ class ChainRig extends Node2D:
 		draw_rect(Rect2(tip - Vector2(2, 2), Vector2(5, 5)), Color("ffe59a"))
 
 
-## 槽口外的两只光脚和工匠手里的道具（画在演员前面）
-class SoleRig extends Node2D:
-	## 两只光脚的像素图（codex 生成，tools/art/import_gate_chain_art.py 导入；脚跟在左、脚趾朝右，上下两只）
-	const SOLES := preload("res://assets/generated/after/gate_chain_soles.png")
+## 工匠手里的道具，挠在趴着的公主人物图的脚上（画在演员前面；不另画脚底图）
+class ToolRig extends Node2D:
 	var stage: GateChainShow
 
 	func _draw() -> void:
 		if not stage.playing:
 			return
-		var pull := 3.0 if stage.tuck_flash > 0.0 or stage.tucked else 0.0
-		var origin := FEET + Vector2(-3 - pull, -12)
-		draw_texture(SOLES, origin)
-		# 两只脚心的位置（道具挠的地方）
-		var feet := [origin + Vector2(10, 6), origin + Vector2(10, 18)]
+		# 缩脚：人物图往槽里缩一点
+		var pull := 2.0 if stage.tuck_flash > 0.0 or stage.tucked else 0.0
+		var actor: Node2D = stage.actors.get("princess")
+		if actor:
+			actor.position.x = FEET.x - pull
+		# 两只脚的位置（人物图转了 -90°：脚在右边、上下两只），道具挠的地方
+		var feet := [FEET + Vector2(-1 - pull, -3), FEET + Vector2(-1 - pull, 3)]
 		if stage.phase >= 1:
 			# 抹了油：脚底亮晶晶的
 			for f in feet:
-				draw_line(f + Vector2(-5, -2), f + Vector2(1, -2), Color(1, 1, 1, 0.55), 1)
-				draw_line(f + Vector2(-3, 1), f + Vector2(0, 1), Color(1, 0.95, 0.75, 0.45), 1)
+				draw_line(f + Vector2(-3, -1), f + Vector2(0, -1), Color(1, 1, 1, 0.55), 1)
+				draw_line(f + Vector2(-1, 1), f + Vector2(1, 1), Color(1, 0.95, 0.75, 0.45), 1)
 		if stage.busy or stage.recovery_left > 0.0:
 			return
 		var wobble := sin(stage.elapsed * (16.0 if stage.tool_flash > 0.0 else 9.0))
-		var target: Vector2 = feet[int(stage.elapsed * 0.7) % 2] + Vector2(1, wobble * 2.5)
+		var target: Vector2 = feet[int(stage.elapsed * 0.7) % 2] + Vector2(0.5, wobble * 1.5)
 		var hand := Vector2(25, 8)
 		match stage.active_tool:
 			"brush", "oil":
-				draw_line(hand, target + Vector2(4, 0), Color("c7a371"), 2)
-				draw_rect(Rect2(target + Vector2(1, -2), Vector2(4, 5)), Color("e4c89e"))
-				for i in 4:
-					draw_line(target + Vector2(1, -2 + i * 1.5), target + Vector2(-1, -2 + i * 1.5), Color("d6b07c"), 1)
+				draw_line(hand, target + Vector2(3, 0), Color("c7a371"), 1)
+				draw_rect(Rect2(target + Vector2(0.5, -1.5), Vector2(2.5, 3)), Color("e4c89e"))
+				for i in 3:
+					draw_line(target + Vector2(0.5, -1.5 + i), target + Vector2(-0.5, -1.5 + i), Color("d6b07c"), 1)
 				if stage.active_tool == "oil":
-					draw_circle(target + Vector2(2, 4 + wobble), 0.9, Color("f3c56a"))
+					draw_circle(target + Vector2(1.5, 2.5 + wobble * 0.5), 0.6, Color("f3c56a"))
 			"feather":
-				draw_line(hand, target + Vector2(6, -1), Color("c7a371"), 1)
-				draw_line(target + Vector2(6, -1), target, Color(1, 1, 1), 2)
-				for i in 3:
-					draw_line(target + Vector2(1.5 + i * 1.5, -1), target + Vector2(1 + i * 1.5, -3), Color(0.95, 0.95, 1), 1)
+				draw_line(hand, target + Vector2(4, -0.5), Color("c7a371"), 1)
+				draw_line(target + Vector2(4, -0.5), target, Color(1, 1, 1), 1.5)
+				for i in 2:
+					draw_line(target + Vector2(1 + i * 1.5, -0.5), target + Vector2(0.5 + i * 1.5, -2), Color(0.95, 0.95, 1), 1)
 			"chain":
-				draw_line(hand, target + Vector2(4, 0), Color("efbdab"), 2)
+				draw_line(hand, target + Vector2(3, 0), Color("efbdab"), 1.5)
 				for i in 3:
-					draw_rect(Rect2(target + Vector2(3 - i * 2, -1 + wobble * 0.5), Vector2(2, 2)), Color("ddd1c4"), false, 1)
+					draw_rect(Rect2(target + Vector2(2 - i * 1.5, -0.5 + wobble * 0.3), Vector2(1.5, 1.5)), Color("ddd1c4"), false, 1)
 			"finger":
-				draw_line(hand, target + Vector2(3, 0), Color("efbdab"), 3)
-				draw_circle(target + Vector2(2, 0), 1.5, Color("f4c6b4"))
+				draw_line(hand, target + Vector2(2, 0), Color("efbdab"), 2)
+				draw_circle(target + Vector2(1.5, 0), 1.0, Color("f4c6b4"))
 			"gear":
-				draw_line(hand, target + Vector2(4, 0), Color("c7a371"), 2)
-				draw_circle(target + Vector2(2, 0), 2.5, Color("b9b0a6"))
+				draw_line(hand, target + Vector2(3, 0), Color("c7a371"), 1)
+				draw_circle(target + Vector2(1.5, 0), 1.5, Color("b9b0a6"))
 				for i in 6:
 					var a := stage.elapsed * 8.0 + i * TAU / 6.0
-					draw_line(target + Vector2(2, 0), target + Vector2(2, 0) + Vector2.from_angle(a) * 3.5, Color("8f857d"), 1)
+					draw_line(target + Vector2(1.5, 0), target + Vector2(1.5, 0) + Vector2.from_angle(a) * 2.2, Color("8f857d"), 1)

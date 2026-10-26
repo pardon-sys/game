@@ -7,6 +7,7 @@ API key 从项目根目录的 .env 读（ELEVENLABS=...，.env 不进版本库�
 原始音频存在 tools/.cache/music/（不进版本库）。
 用法：python tools/audio/gen_music.py [dungeon] [town] [boss] [boss3] [night_room] [night_maze] [siege] [minigame] [knight_boss]（不写就全部生成；已经生成过的跳过，加 --force 重新生成，
   加 --reloop 用缓存的原始音频重新切循环）
+导入：assets/audio/music/*.wav.import 用无损（compress/mode=0）+ 向前循环（edit/loop_mode=2）——QOA 有损压缩会给高频多的曲子添沙沙声。
 """
 import json
 import os
@@ -35,11 +36,13 @@ TRACKS = {
                     "staccato strings and marching snare, heavy low brass for the armor's stomps, a solemn horn melody like an old royal anthem "
                     "played in a sad minor mode, harpsichord ostinato, sparkling celesta and bell accents for the magic, a few playful pizzicato "
                     "flourishes so it never becomes truly grim. Builds tension, loops seamlessly, steady energy, no fade-in or fade-out."),
+    # 第一版有卡祖笛、沙锤、滑哨：嗡嗡沙沙的音色在游戏里听着像杂音，换成柔和的音色
     "minigame": ("Instrumental video game background music for silly, playful little minigames in a cute pixel-art game about ticklish "
-                 "princesses: light-hearted, bouncy and comedic, childlike and mischievous. 128 BPM, major key. Plucky pizzicato strings, "
-                 "a bright glockenspiel and xylophone melody, a bouncy tuba / bassoon bass line, kazoo-like playful accents, woodblock and "
-                 "light shaker percussion, occasional cartoon slide whistles and cheeky little pauses. Cheerful, giggly, a bit goofy, never "
-                 "scary; loops seamlessly, steady energy, no fade-in or fade-out."),
+                 "princesses: light-hearted, bouncy and comedic, childlike and mischievous. 128 BPM, major key. Soft plucky pizzicato strings, "
+                 "a warm marimba and gentle music-box melody, a bouncy bassoon / tuba bass line, a mellow clarinet answering the melody, "
+                 "soft felt-mallet woodblock on the beat and cheeky little pauses. Warm, rounded, mellow mix with a soft high end: "
+                 "NO cymbals, NO hi-hats, NO shakers, NO kazoo, NO whistles, NO noise or buzzing sounds. Cheerful, giggly, a bit goofy, "
+                 "never scary; loops seamlessly, steady energy, no fade-in or fade-out."),
     "night_maze": ("Instrumental video game background music for exploring a dark, living labyrinth at night, alone. A quiet princess walks "
                    "through moonlit stone corridors while invisible many-handed things wander in the darkness. Mood: mysterious, cold, "
                    "tense but restrained, with a thread of melancholy and longing, same melancholic minor key as a soft night lullaby. "
