@@ -3,7 +3,7 @@
 工具：codex CLI（`codex exec`）调用内置 image_gen，参考图是游戏截图和骑士的行走图（只用来对齐像素风格）。透明底，没有下载外部素材。
 导入：`tools/art/import_gate_chain_art.py` 去掉低透明度的光晕、缩小、减色。
 
-- `soles.png` → `assets/generated/after/gate_chain_soles.png`（转 90°，脚趾朝右，22×30）：小游戏里槽口外的两只光脚。第一版写实脚底用户觉得吓人，改成童趣风重新生成（提示词见下方「第二版」）
+- `soles.png`：曾经用作小游戏里槽口外的两只光脚，现在不用了（用户要求只显示趴着的人物图）；留作墙图的参考。第一版写实脚底用户觉得吓人，改成童趣风重新生成（提示词见下方「第二版」）
 - `wall_full.png` / `wall_half.png` / `wall_broken.png` → `assets/generated/after/gate_wall_*.png`（64×64）：失败小剧场里倒塌的墙（完整 / 碎一半 / 全碎）
 
 提示词（一次生成四张）：

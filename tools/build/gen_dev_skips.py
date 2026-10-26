@@ -109,7 +109,8 @@ POINTS = [
           "after_done_d6_morning", "after_ev_d6_inspect"], dict({"day": 7, "after_day": 6, "after_slot": 1}, **BOOK), cell=[8, 11]),
     point("七日赎罪·第 7 天（修补图腾柱）", "floor_06_after", AFTER + after_done("morning", "afternoon", "night") + D3_ALL +
           ["after_done_d%d_%s" % (d, k) for d in (4, 5, 6) for k in ("morning", "afternoon", "night")] + ["after_ev_d4_drain", "after_ev_d4_drill", "after_ev_d5_tailor", "after_ev_d5_mine", "after_ev_d6_inspect", "after_ev_d6_drill"],
-          dict({"day": 8, "after_day": 7, "after_slot": 0}, **BOOK), cell=[4, 32]),
+          # 工时按正常玩到第 7 天的样子给：图腾柱（20）做完刚好还清
+          dict(BOOK, day=8, after_day=7, after_slot=0, penance_hours=20), cell=[4, 32]),
     point("七日赎罪·第 7 天晚上（庆功宴）", "floor_06_after", AFTER + after_done("morning", "afternoon", "night") + D3_ALL + D7_DAYS,
           dict(BOOK, day=8, after_day=7, after_slot=2, penance_hours=0), cell=[40, 25]),
     point("骑士篇·开头（庆功宴之后的早上）", "floor_06_after_house", AFTER + after_done("morning", "afternoon", "night") + D3_ALL + D7_DAYS +

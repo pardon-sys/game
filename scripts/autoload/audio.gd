@@ -95,7 +95,7 @@ var _laugh_players: Array[AudioStreamPlayer] = []
 
 # ------------------------------------------------------------------ 背景音乐
 ## 配乐（tools/audio/gen_music.py 用 ElevenLabs 生成，2 分钟首尾相连）：地牢层 dungeon、地下小镇 town、攻防战 siege。
-## 关卡载入时按 data/floors.json 的 music 切换（play_music），换曲时淡入淡出；CG / 过场 / 对话剧场时压低（DUCK_DB）。
+## 关卡载入时按 data/floors.json 的 music 切换（play_music），换曲时先淡出旧曲再淡入新曲（不叠放）；CG / 过场 / 对话剧场时压低（DUCK_DB）。
 ## 音乐音量 music_volume（0~1）存在玩家数据目录的 settings.cfg（暂停菜单调）。
 const MUSIC := {
 	"dungeon": "res://assets/audio/music/dungeon_loop.wav",
@@ -170,19 +170,26 @@ func set_music_pitch(pitch: float) -> void:
 		m.pitch_scale = pitch
 
 
+## 换曲：先把旧曲淡出（fade 的一半），再从头淡入新曲（另一半）——两首不同的曲子不叠在一起放（叠着听像杂音）。
 func play_music(id: String, fade := MUSIC_FADE) -> void:
-	if id == music_id and (id == "" or _music[_music_cur].playing):
+	var tw_cur := _music_tw[_music_cur]
+	if id == music_id and (id == "" or _music[_music_cur].playing or (tw_cur != null and tw_cur.is_running())):
 		return
 	music_id = id
 	var old := _music[_music_cur]
+	var gap := 0.0
+	# 上一首还在等着开播（连着换了两次曲）：取消它，不然过一会儿它又自己放起来
+	if not old.playing and tw_cur != null and tw_cur.is_valid():
+		tw_cur.kill()
 	if old.playing:
+		gap = fade * 0.5
 		var tw := _music_tween(_music_cur)
-		tw.tween_property(old, "volume_db", -60.0, fade)
+		tw.tween_property(old, "volume_db", -60.0, gap)
 		tw.tween_callback(old.stop)
 	if id == "" or not MUSIC.has(id) or not ResourceLoader.exists(MUSIC[id]):
 		return
 	var s := load(MUSIC[id]) as AudioStream
-	# 配乐 WAV 在导入设置里就设成向前循环（.import 的 edit/loop_mode=2）；运行时复制 QOA 压缩的流再改循环点会在衔接处出杂音
+	# 配乐 WAV 用无损导入（.import 的 compress/mode=0，QOA 有损压缩会给高频多的曲子添沙沙声），导入设置里就设成向前循环（edit/loop_mode=2）
 	if s is AudioStreamWAV and (s as AudioStreamWAV).loop_mode == AudioStreamWAV.LOOP_DISABLED:
 		push_warning("配乐 %s 没有在导入设置里开循环" % id)
 	elif s is AudioStreamOggVorbis or s is AudioStreamMP3:
@@ -193,8 +200,13 @@ func play_music(id: String, fade := MUSIC_FADE) -> void:
 	var tw := _music_tween(_music_cur)
 	p.stream = s
 	p.volume_db = -60.0
-	p.play()
-	tw.tween_property(p, "volume_db", _music_target_db(), fade)
+	if gap > 0.0:
+		p.stop()
+		tw.tween_interval(gap)
+		tw.tween_callback(p.play)
+	else:
+		p.play()
+	tw.tween_property(p, "volume_db", _music_target_db(), fade - gap)
 
 
 ## 停掉配乐（淡出），music_id 清空——之后 play_music 同一首也会重新放。

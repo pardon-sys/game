@@ -160,7 +160,19 @@ static func run(t: Node) -> void:
 	GameState.vars["penance_settled"] = PenanceBook.punishments().size()
 	AfterPenance.refresh()
 	verify(t, "补罚不看受罚记录也能接（penalty_open / penalty_d7）", AfterPenance.pending() == 0 and GameState.has_flag(AfterPenance.FLAG) and GameState.has_flag("penalty_d7"))
-	verify(t, "补罚一次抵 5 工时", AfterPenance.settle_hours() == 5)
+	var owed := PenanceBook.hours()
+	verify(t, "补罚一次抵开始补时欠的三分之一、至少 5（欠 %d → 一次 %d）" % [owed, AfterPenance.settle_hours()], AfterPenance.settle_hours() == maxi(5, ceili(owed / 3.0)))
+	# 跳关点曾经给 100 工时（图腾柱以后还欠 80）：要补 16 次，等于卡死。现在欠多少都是三次还清
+	GameState.vars["penance_hours"] = 80
+	GameState.vars.erase(AfterPenance.DEBT_KEY)
+	var times := 0
+	while AfterStory.must_settle() and times < 10:
+		PenanceBook.add(-AfterPenance.settle_hours(), "补罚（测试）", true)
+		times += 1
+	verify(t, "欠 80 工时：补罚三次就还清（%d 次）" % times, times == 3 and PenanceBook.hours() == 0)
+	GameState.vars["penance_hours"] = owed
+	GameState.vars.erase(AfterPenance.DEBT_KEY)
+	AfterPenance.refresh()
 	DayClock.set_time(7, DayClock.NIGHT)
 	verify(t, "欠着工时的晚上：报幕也能接、小屋不宵禁", AfterPenance.available("announcer") == AfterErrands.is_done("dance") and AfterStory.objective(AfterStory.TOWN).get("text", "").contains("补罚") and not GameState.has_flag(AfterStory.CURFEW))
 	DayClock.set_time(7, DayClock.AFTERNOON)

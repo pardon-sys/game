@@ -3,10 +3,12 @@ extends RefCounted
 ## 七日赎罪的补罚任务（镇民执行惩罚，抵罚的工时）：赎罪簿上的受罚（PenanceBook.punishments）比已经抵掉的多时，开 penalty_open
 ## （市场监督 / 篝火派对的主人头上冒「！」，对话里接：set {vars: {penalty_req: model / dance / announcer}, call: after_penalty}）。
 ##   model → ModelShow（活体模特）、dance → PenaltyDanceShow（罚跳舞）、announcer → AnnouncerShow（第4天白天起，原舞会排练后）。做完：抵掉一条（vars.penance_settled +1）、减 hours 工时。
-## 最后一天（AfterStory.must_settle：第 7 天、工时还没还清）：不看受罚记录，工时大于 0 就能接（报幕晚上也能接），一次减 hours_d7 工时；
+## 最后一天（AfterStory.must_settle：第 7 天、工时还没还清）：不看受罚记录，工时大于 0 就能接（报幕晚上也能接），一次减 settle_hours()（开始补时欠的三分之一，至少 hours_d7：三次还清）；
 ##   有没抵的受罚时顺便抵一条。对话里的入口换成 penalty_d7 那一套（标记 penalty_d7）。
 ## 台词 data/after/penalty.json（← after_text/penalty.py）。
 
+## 最后一天开始补的时候欠了多少工时（settle_hours 按它的三分之一抵）
+const DEBT_KEY := "penance_d7_debt"
 const PATH := "res://data/after/penalty.json"
 const FLAG := "penalty_open"
 const SHOWS := {"model": "res://levels/floor_06/scripts/model_show.gd", "dance": "res://levels/floor_06/scripts/penalty_dance_show.gd", "announcer": "res://levels/floor_06/scripts/announcer_show.gd"}
@@ -36,8 +38,11 @@ static func settle_mode() -> bool:
 	return AfterStory.must_settle()
 
 
+## 最后一天一次抵几工时：开始补的时候欠的工时（vars.penance_d7_debt，中途又加了工时就按新的算）的三分之一，至少 hours_d7——欠多少都是三次还清
 static func settle_hours() -> int:
-	return int(data().get("hours_d7", 5))
+	var debt := maxi(int(GameState.vars.get(DEBT_KEY, 0)), PenanceBook.hours())
+	GameState.vars[DEBT_KEY] = debt
+	return maxi(int(data().get("hours_d7", 5)), ceili(debt / 3.0))
 
 
 ## 现在有没有能补的（没抵的受罚，或者最后一天还欠工时）

@@ -28,7 +28,8 @@
 	提交前全部删掉。
 - **素材**：缺的图用 Python 画像素风（`tools/art/gen_*.py`）或 Godot 内置绘制（`_draw`、粒子、tween）做；音乐用 ElevenLabs（`tools/audio/gen_music.py` 的 `TRACKS`
   加一首；生成后自动找循环点：节奏、和声都和开头最像的半句边界，交叉淡化 `CROSSFADE` 0.3 秒，尾声丢掉；`--reloop` 用缓存的原始音频重新切。
-  循环在 `.wav.import` 的导入设置里开，运行时不改流）；第三方素材写清楚来源和许可（`assets/third_party/*/License.txt`）。
+  循环在 `.wav.import` 的导入设置里开，运行时不改流；配乐一律无损导入 `compress/mode=0`——QOA 有损压缩会给高频多的曲子添沙沙声。
+  提示词别写卡祖笛、沙锤、滑哨、镲片这类嗡嗡沙沙的音色，游戏里听着像杂音；换曲时 `Audio.play_music` 先淡出旧曲再淡入新曲，不叠放）；第三方素材写清楚来源和许可（`assets/third_party/*/License.txt`）。
 - **文档**：每做完一批，把新系统 / 新规则补进本文对应的章节（七日赎罪的写在「七日赎罪」一节），过时的描述直接改掉，不留两种说法；
   跳关点（`tools/build/gen_dev_skips.py`）把新加的变量 / 标记补上。
 
@@ -797,7 +798,7 @@ data/cutscenes/<楼层组>/  地图内过场；data/theater/<楼层组>/  小剧
 	  - 四个以脚为主的游戏（粉色公主单人，手法针对脚底；蓝色公主不参与，只在报幕结尾当观众说两句）：
 		- **城门底下重新穿链**（工匠，第 4 天起白天，城门内侧 `[31,38]`，`GateChainShow`）：她仰面躺进检修槽穿链，光脚伸在槽口外。穿链 3 / 入轮 6 / 试拉 3 步，←→ 对准、J / K 力度、E 确认；
 		  道具：清灰刷 / 羽毛掸 → 润滑油刷 / 链环滚趾缝 → 手指刮脚心 / 齿轮刷滚足弓。**缩脚**（S）：预告亮着时按，这一下闷笑减半，但链头往反方向偏 ×1.5。`errand_gate_chain_step`（0~12）。
-			  槽口外的脚底是 codex 生成的童趣像素图（`tools/art/src/gate_chain/` → `import_gate_chain_art.py` 按类多数缩小、三色输出 → `assets/generated/after/gate_chain_soles.png`）。
+			  不另画脚底图（用户要求）：舞台上只有转了 -90° 趴着的公主人物图，`ToolRig` 把道具画在人物图的脚上，缩脚时人物图往槽里缩一点。
 			  失误超过 `FAIL_ERRORS`（4）次：墙面倒塌的失败小剧场 `after_fail_gate_chain`（只露出一双脚，工匠借口拉脚挠脚心，三次魔力释放把墙震开；墙 `gate_wall_full / half / broken.png`），
 			  演完失误清零、扣好的节点保留、接着做。
 		- **蘑菇羊剪毛**（女仆，第 4 天起白天、赶羊之后，羊圈门口 `[57,33]`，`ShearingShow`）：脚底抹了盐，咕咕边被剪毛边舔脚。梳 3 结 / 剪 4 区 / 收 3 堆，←→ 转工具、按住 J 沿箭头工作；
@@ -869,7 +870,8 @@ data/cutscenes/<楼层组>/  地图内过场；data/theater/<楼层组>/  小剧
   - **最后一天的工时**（`AfterStory.SETTLE_DAY` = 7，`must_settle()`：第 7 天、工时 > 0）：图腾柱做完后，晚上有事（日程的夜间事件，或 `errands.json` 里 `night: true` 的委托，
 	`night_has_content()`）就天黑、停在晚上，否则停在下午；欠工时时床不让休息 / 睡觉（`rest` / `sleep_later` 提示 `settle_text()`），目标提示改成补罚，晚上不宵禁，
 	事件写了 `needs_clear` 的（庆功宴）工时还清才开。补罚这一天不看受罚记录、工时大于 0 就能接（`AfterPenance.settle_mode`，对话入口 `penalty_offer_d7`，标记 `penalty_d7`），
-	报幕晚上也能接，一次减 `hours_d7`（5）工时，有没抵的受罚时顺便抵一条。
+	报幕晚上也能接，一次减 `settle_hours()`：开始补的时候欠的工时（`vars.penance_d7_debt`，中途又加了就按新的算）的三分之一、至少 `hours_d7`（5），
+	欠多少都是三次还清；有没抵的受罚时顺便抵一条。跳关点「第 7 天（修补图腾柱）」给 20 工时（图腾柱刚好还清），曾经给 100 导致要补 16 次。
   - **庆功宴**（第 7 天晚上的事件 `d7_festival`，`needs_clear`：工时还清才开；广场篝火边 `[40, 24]`；`AfterFestival`，文本 `after_text/festival_night.py`、`stall_<id>.py`）：
 	开场过场 `after_d7_festival` → `AfterFestival.begin()`（标记 `after_festival_on` + `after_night_busy`，床不能睡）→ 自由活动，摊主和派对主人的对话最前面换成庆功宴的入口
 	（`festival_night.inject`，对话 `call: festival_dance / festival_stall（vars.stall_req） / festival_finale`）。
