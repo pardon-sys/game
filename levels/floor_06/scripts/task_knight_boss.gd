@@ -16,7 +16,7 @@ extends Node2D
 ##   反击——挠骑士：每掉一个部件（还有卡住、喊完骑士之名、千手解放、完美闪避）露出破绽（WeakSpot）WEAK_TIME 秒，打破绽 = 骑士的笑 +KNIGHT_TICKLE；
 ##     满了：骑士清醒 LUCID_TIME 秒（第一次清醒时有安神香的话自动点上，再多 INCENSE_BONUS 秒）；笑面阶段挠满：触手全缩回去、每盏没亮的灯笼 +LUCID_LANTERN。
 ##   **换阶段不黑屏**（_transition）：清场 → 部件炸开（Burst、顿帧 HITSTOP、震屏）→ 骑士踉跄 TRANS_STAGGER 秒、喊一句、两位公主各一句 → 下一阶段（左上角提示）。
-##   **最后阶段「全镇的笑声」**：广场四角四盏被吸暗的灯笼（LANTERNS）。站在灯笼旁按住 E 故意笑（KnightLaugh）→ 灯笼每秒 +LANTERN_RATE；
+##   **最后阶段「全镇的笑声」**：广场四角四盏被吸暗的灯笼（LANTERNS）。站在灯笼旁按住 Y 故意笑（KnightLaugh）→ 灯笼每秒 +LANTERN_RATE；
 ##     做过的支线（KnightQuests.helpers：灯笼顺序 shoes / samples / spear / fence）那个人跑到他那盏灯笼下陪着笑：×HELPER_MULT，没人在也自己慢慢亮（HELPER_SOLO）。
 ##     笑面每 TENTACLE_EVERY 秒伸一条触手（Tentacle）爬向一盏没亮的灯笼，缠住以后每秒 −TENTACLE_DRAIN；蓝色公主 J 冻住它（碎）、千手解放全缩回去。
 ##     骑士照样出招，随时可以离开灯笼去躲。四盏都亮 → 光柱汇到盔甲上 → 过场 knight_purify（手帕）→ 胜利。
@@ -25,11 +25,13 @@ extends Node2D
 ##     冻结冷却马上好，被救的队员替公主挡一次扑抓 / 冲撞（shield）；有人被贴着超过 ENRAGE_AFTER 秒没人管：诅咒变强（出招间隔 ×ENRAGE）。
 ##     没被贴的人短按 E 说话（talk）：奶奶递薄荷糖（闷笑 −TALK_MINT）、队员替你挡一下（shield，每人每阶段一次）、其他人喊一句提示。
 ##   支线的帮手：「队长的旧剑术」→ 完美闪避（命中前 PERFECT 秒内才冲刺）露出破绽，开场 shield +1（队长挡一次）；「手印样本」→ 安神香。
-##   被抓 / 绊倒累计 CATCHES 次 = 失败（knight_fail_boss），从这个阶段重来（打碎的部件不回来）。这段能换人（C，只在两位公主之间）。
+##   被抓 / 绊倒累计 CATCHES 次 = 失败（按阶段的四幕小剧场 fail_theater），从这个阶段重来（打碎的部件不回来）。这段能换人（C，只在两位公主之间）。
 ##   没被操控的那位由 AI 控制（KnightAI，ai_plan + Hooks）：两人都躲预警；AI 蓝色公主冻没冻的部件、去冻贴着人的手印、去冻触手、合适的时候放千手解放；
 ##     AI 粉色公主贴近本体（出招变慢）、有破绽 / 冻住的部件就去打、搭档身上有诅咒装备就去扯、被抓住自己连按挣开；最后阶段两人都去没亮的灯笼下笑。
 ## 状态 vars.task_boss_phase（0~3）、task_boss_caught。
-## 测试：parts、phase、lanterns、tentacles、crates、freeze_part()、hit_part()、grab(角色)、mash()、stomp()、flick()、net()、charge()、sand()、leap()、
+##   **诅咒爆发 / 盯上镇民**（KnightCurse，curse）：每个阶段开始一次、耐久掉一半一次，爆发期间部件打不动、靠近闷笑狂涨、吸到笑声回耐久，
+##     每个阶段破解办法不同（手印风暴 / 痒波地脉 / 护心诅咒；笑面阶段是定时的「吸笑」，站进亮灯笼的光里）；平时隔一阵盯上一个镇民去偷笑声，按住 Y 笑把它引回来。
+## 测试：curse、parts、phase、lanterns、tentacles、crates、freeze_part()、hit_part()、grab(角色)、mash()、stomp()、flick()、net()、charge()、sand()、leap()、
 ##   throw_gear()、wear_gear()、magnet()、shards()、name_call()、mirrors()、send_tentacle()、tickle_knight()、curse_victim()、rescue()、talk_to()、
 ##   durability()、ai_plan()、ai_enabled、skip_cutscenes、windup_left、body_mode。
 
@@ -37,7 +39,7 @@ signal finished(ok: bool)
 
 const CENTER := Vector2i(41, 22)
 const ARENA := Vector2(140, 100)
-const PART_HP := 3
+const PART_HP := 6
 const FREEZE_R := 44.0
 const FREEZE_TIME := 4.0
 const FREEZE_COOL := 5.0
@@ -129,7 +131,7 @@ const TRANS_STAGGER := 1.6
 const HITSTOP := 0.06
 ## 最后阶段：灯笼、帮手、触手
 const LANTERN_R := 22.0
-const LANTERN_RATE := 0.12
+const LANTERN_RATE := 0.09
 const LANTERN_AI_RATE := 0.06
 const HELPER_MULT := 2.0
 const HELPER_SOLO := 0.03
@@ -226,6 +228,7 @@ var _decor: KnightBossFx.Decor
 var _hud: KnightBossHud
 var _t := 0.0
 var _tips := {}
+var curse: KnightCurse
 
 
 static func data() -> Dictionary:
@@ -237,6 +240,12 @@ static func data() -> Dictionary:
 
 static func caught() -> int:
 	return int(GameState.vars.get(CAUGHT_KEY, 0))
+
+
+## 失败小剧场按阶段换（AfterStory.play_task 问）：铁手套 / 护腿 → knight_fail_boss，胸甲 → _2，笑面 → _3
+static func fail_theater() -> String:
+	var p := int(GameState.vars.get(PHASE_KEY, 0))
+	return "knight_fail_boss" if p <= 1 else "knight_fail_boss_%d" % (p)
 
 
 static func reset_items() -> void:
@@ -276,6 +285,10 @@ func _ready() -> void:
 	_decor.global_position = _home
 	_decor.spots.assign(DECOR.map(func(o): return _home + (o as Vector2)))
 	_spawn_victims()
+	curse = KnightCurse.new()
+	curse.task = self
+	get_parent().add_child(curse)
+	curse.global_position = Vector2.ZERO
 	add_to_group(PantsBurst.KNIGHT_GROUP)
 	# 支线「队长的旧剑术」：到时候我会在——队长替她挡一次
 	shield = 1 if KnightQuests.is_done("spear") else 0
@@ -297,7 +310,7 @@ func _exit_tree() -> void:
 	if _music_was != "" and Audio.music_id == "knight_boss":
 		Audio.play_music(_music_was)
 	_clear_field()
-	for n in parts + victims + crates + lanterns + helpers + [_body, _decor, _shadow]:
+	for n in parts + victims + crates + lanterns + helpers + [_body, _decor, _shadow, curse]:
 		if is_instance_valid(n):
 			n.queue_free()
 	KnightAI.uninstall()
@@ -340,6 +353,8 @@ func _enter_phase(p: int) -> void:
 		GameState.princess_reacted.emit(str(lines[p][0]), 3.0)
 	if p == PHASES - 1:
 		_start_lanterns()
+	if is_instance_valid(curse):
+		curse.phase_started(p)
 
 
 ## 拆完一套：清场 → 部件炸开（顿帧、震屏）→ 骑士踉跄、喊一句 → 下一阶段（不黑屏、不演过场）
@@ -349,6 +364,7 @@ func _transition(p: int) -> void:
 	if grabbed:
 		_release_grab()
 	body_mode = "stagger"
+	KnightFx.play(get_parent(), "curse_burst", _body.global_position + Vector2(0, -20), {"size": 120.0, "fps": 12.0, "z": 5})
 	var info: Array = data().get("transition", [])
 	var tr: Dictionary = info[p] if p < info.size() else {}
 	_burst(_body.global_position + Vector2(0, -20), KnightBossFx.PURPLE)
@@ -373,6 +389,9 @@ func _transition(p: int) -> void:
 
 func _clear_field() -> void:
 	_clear_warn()
+	if is_instance_valid(curse):
+		curse.end(true)
+		curse._end_hunt()
 	for n in hands + gases + fx + tentacles:
 		if is_instance_valid(n):
 			n.queue_free()
@@ -422,6 +441,8 @@ func advance(delta: float) -> void:
 		talk_near(GameState.player)
 	_tick_gears(delta)
 	_tick_victims(delta)
+	if is_instance_valid(curse) and not grabbed:
+		curse.tick(delta)
 	if grabbed:
 		_grab_tick(delta)
 		return
@@ -556,7 +577,10 @@ func _move(delta: float) -> void:
 	_body.global_position = _clamp_arena(at + step)
 
 
-func _focus() -> PlayableCharacter:
+## 往哪儿走：盯上了镇民就走向他，不然跟着玩家
+func _focus() -> Node2D:
+	if is_instance_valid(curse) and is_instance_valid(curse.hunt):
+		return curse.hunt
 	return GameState.player if is_instance_valid(GameState.player) else pink
 
 
@@ -855,6 +879,7 @@ func _tick_leap(delta: float) -> void:
 	_shake(0.35, 4.0)
 	Audio.play("break", -6.0)
 	Fx.burst(get_parent(), leap_to, "dust", 16, 70.0, 0.6, Vector2.ZERO, Color(0.8, 0.7, 0.6))
+	KnightFx.play(get_parent(), "dust_land", leap_to, {"size": LEAP_R * 2.6, "squash": 0.75, "z": 0})
 	_say(data().get("land", []))
 	for c in _players():
 		if c.global_position.distance_to(leap_to) <= LEAP_R and _hit(c, LEAP_LAUGH, "sole") and c.status:
@@ -994,6 +1019,7 @@ func _ring() -> void:
 	r.set_meta("kind", "ring")
 	r.gaps = warn.get("gaps", [])
 	_add_fx(r, _body.global_position)
+	KnightFx.play(get_parent(), "shockwave", _body.global_position, {"size": 200.0, "squash": 0.6, "z": 0})
 	_shake(0.25, 2.5)
 	open_weak(Vector2(0, -26))
 
@@ -1213,6 +1239,9 @@ func _tick_lanterns(delta: float) -> void:
 					c.laugh.add(c.laugh.max_value * KnightLaugh.RATE * 0.5 * delta)
 		if _helper_at(l.index):
 			rate = rate * HELPER_MULT + HELPER_SOLO
+		# 笑面吸笑的时候：灯笼不长（KnightCurse 让没亮的往下掉）
+		if is_instance_valid(curse) and curse.surge == "drain":
+			rate = minf(rate, 0.0)
 		var stolen := tentacles.any(func(tn): return is_instance_valid(tn) and tn.attached and tn.lantern == l and not tn.frozen)
 		l.stealing = stolen
 		if stolen:
@@ -1245,6 +1274,9 @@ func _light(l: KnightBossFx.Lantern, amount: float) -> void:
 			GameState.princess_reacted.emit(str(lines[lit - 1]), 2.6)
 		Audio.play("star_burst", -4.0)
 		Fx.burst(get_parent(), l.global_position + Vector2(0, -28), "spark", 16, 60.0, 0.8, Vector2(0, -20), Color(1, 0.9, 0.6))
+		var pillar := KnightFx.play(get_parent(), "lantern_pillar", l.global_position + Vector2(0, -34), {"size": 64.0, "loop": true, "fps": 10.0})
+		if pillar:
+			fx.append(pillar)
 		if is_instance_valid(_decor):
 			_decor.fade = 1.0 - float(lit) / float(lanterns.size())
 
@@ -1293,6 +1325,7 @@ func _purify() -> void:
 	for l in lanterns:
 		if is_instance_valid(l):
 			l.finale = true
+	KnightFx.play(get_parent(), "purify", _body.global_position + Vector2(0, -24), {"size": 200.0, "fps": 9.0, "z": 5})
 	_shake(0.6, 3.0)
 	if not skip_cutscenes and Cutscene.has_cutscene("knight_purify"):
 		await get_tree().create_timer(0.8).timeout
@@ -1533,6 +1566,15 @@ func _ai_move(ai: PlayableCharacter) -> Dictionary:
 	# 搭档身上有诅咒装备：过去扯下来（站在旁边就在扯）
 	if is_instance_valid(other) and other.has_meta(&"knight_gear"):
 		return {"to": other.global_position, "near": RESCUE_R * 0.6, "dash": true}
+	if ai == blue and is_instance_valid(curse) and curse.surge == "heart":
+		# 护心诅咒：去冻还没冻住的那颗核心
+		for c in curse.cores:
+			if float(c["frozen"]) <= 0.0:
+				var cp := curse.core_pos(c)
+				if cp.distance_to(blue.global_position) <= KnightCurse.CORE_FREEZE_R - 4.0:
+					freeze_part(blue)
+					return {"hold": true}
+				return {"to": cp, "near": 4.0, "dash": true}
 	if ai == blue:
 		# 触手缠着灯笼：去冻
 		for tn in tentacles:
@@ -1617,6 +1659,10 @@ class Hooks extends BattleAIHooks:
 # ------------------------------------------------------------------ 部件
 ## 蓝色公主 J：冻住身边的部件（贴在镇民身上的手印也一起冻掉 = 救下来；最后阶段冻住触手）
 func freeze_part(who: PlayableCharacter) -> bool:
+	# 护心诅咒：冻核心不吃冷却（三秒内要冻两颗）
+	if is_instance_valid(curse) and is_instance_valid(who) and curse.freeze_cores(who):
+		Audio.play("chime", -4.0)
+		return true
 	if freeze_cool > 0.0 or not is_instance_valid(who):
 		return false
 	var hit := _freeze_tentacles(who)
@@ -1643,6 +1689,9 @@ func freeze_part(who: PlayableCharacter) -> bool:
 func hit_part(part: BossPart) -> bool:
 	if not is_instance_valid(part) or part.broken:
 		return false
+	if is_instance_valid(curse) and curse.invulnerable():
+		GameState.notify("诅咒爆发中，打不动！先破解诅咒", 1.0)
+		return false
 	if part.id == "mask" or not _soft(part):
 		GameState.notify("诅咒太硬了……先冻住它！", 1.0)
 		return false
@@ -1655,6 +1704,7 @@ func hit_part(part: BossPart) -> bool:
 			GameState.princess_reacted.emit(str(lines[0]) % str(data().get("parts", {}).get(part.id, "")), 2.0)
 		Audio.play("break", -4.0)
 		_burst(part.global_position, Color(0.75, 0.8, 0.9))
+		KnightFx.play(get_parent(), "part_break", part.global_position, {"size": 64.0, "z": 5})
 		_shake(0.2, 3.0)
 		_hitstop()
 		if parts.all(func(p): return not is_instance_valid(p) or p.broken or p.id == "mask"):
@@ -1696,15 +1746,34 @@ class Body extends Node2D:
 	var hop := 0.0
 	var _trail: Array = []
 	var _t := 0.0
+	## 行走图：朝向（行 0 下 / 1 左 / 2 右 / 3 上）、走路的帧（动了才换帧）
+	var _row := 0
+	var _walk := 0.0
+	var _last := Vector2.INF
 
 	func _ready() -> void:
 		z_index = 2
+
+	## 这一帧的源矩形：按移动方向挑行，走着的时候按走过的路换帧，站着停在第 0 帧
+	func frame() -> Rect2:
+		var col := 0 if _walk <= 0.0 else int(_walk / 7.0) % 4
+		return Rect2(col * 32, _row * 32, 32, 32)
 
 	func trail(at: Vector2) -> void:
 		_trail.append({"at": at, "t": 0.0})
 
 	func _process(delta: float) -> void:
 		_t += delta
+		var step := Vector2.ZERO if _last == Vector2.INF else global_position - _last
+		_last = global_position
+		if step.length() > 0.05 and hop <= 0.0:
+			if absf(step.x) > absf(step.y):
+				_row = 1 if step.x < 0 else 2
+			else:
+				_row = 3 if step.y < 0 else 0
+			_walk += step.length()
+		else:
+			_walk = 0.0
 		for p in _trail:
 			p["t"] = float(p["t"]) + delta
 		_trail = _trail.filter(func(p): return float(p["t"]) < 0.35)
@@ -1716,7 +1785,7 @@ class Body extends Node2D:
 		# 冲撞的残影
 		for p in _trail:
 			var a := 0.35 * (1.0 - float(p["t"]) / 0.35)
-			draw_texture_rect_region(SHEET, Rect2((p["at"] as Vector2) - global_position + Vector2(-32, -60), Vector2(64, 64)), Rect2(0, 0, 32, 32), Color(0.8, 0.5, 1.0, a))
+			draw_texture_rect_region(SHEET, Rect2((p["at"] as Vector2) - global_position + Vector2(-32, -60), Vector2(64, 64)), frame(), Color(0.8, 0.5, 1.0, a))
 		# 影子（跳起来的时候留在地上）
 		draw_circle(Vector2(0, 2), 14.0 - hop * 0.12, Color(0.1, 0.05, 0.15, 0.35))
 		var up := Vector2(0, -hop)
@@ -1734,7 +1803,7 @@ class Body extends Node2D:
 			tint = Color(1.4, 1.1, 1.4)
 		elif task.body_mode == "stagger":
 			tint = Color(1.6, 1.6, 1.6) if int(_t * 16.0) % 2 == 0 else Color.WHITE
-		draw_texture_rect_region(SHEET, Rect2(up + Vector2(-32, -60), Vector2(64, 64)), Rect2(0, 0, 32, 32), tint)
+		draw_texture_rect_region(SHEET, Rect2(up + Vector2(-32, -60), Vector2(64, 64)), frame(), tint)
 		if task.body_mode == "windup":
 			draw_arc(up + Vector2(0, -26), 30, 0, TAU, 24, Color(1, 0.6, 0.9, 0.7), 2.0)
 		# 骑士的笑（挠破绽涨）：头顶一条金色的条；清醒的时候整个身子发金光

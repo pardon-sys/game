@@ -118,8 +118,8 @@ def town_layout(m, kind="town"):
     if kind == "town":
         m.put(8, 9, "exit target=%s spawn=from_town unlock_flag=after_drill_open locked_dialogue=after_drill_locked" % DRILL)
     else:
-        # 骑士篇：支线「队长的旧剑术」进行中才开（KnightQuests 设 kq_spear_active）
-        m.put(8, 9, "exit target=%s spawn=from_town unlock_flag=kq_spear_active locked_dialogue=after_kdrill_locked" % DRILL)
+        # 骑士篇：一直开着（支线「队长的旧剑术」在里面练；做完以后找队长还能再练）
+        m.put(8, 9, "exit target=%s spawn=from_town" % DRILL)
     m.put(8, 10, "spawn id=from_drill")
     # 东边的保卫队训练营（第 6 天早上验收陷阱）
     if kind == "town":

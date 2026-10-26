@@ -4,6 +4,12 @@
 	"entries": [
 		{
 			"if": {
+				"flag": "knight_started"
+			},
+			"node": "k_talk"
+		},
+		{
+			"if": {
 				"flag": [
 					"after_festival_on",
 					"stall_guess_done",
@@ -356,6 +362,60 @@
 					"speaker": "蓝色的公主"
 				}
 			]
+		},
+		"k_talk": {
+			"lines": [
+				{
+					"text": "……嗯？"
+				},
+				{
+					"text": "……那个骑士。……我在想他的事。"
+				}
+			],
+			"prompt": "……有事？",
+			"choices": [
+				{
+					"text": "一起走吧",
+					"if": {
+						"not": "after_blue_following"
+					},
+					"next": "k_invite"
+				},
+				{
+					"text": "你先去忙吧",
+					"if": {
+						"flag": "after_blue_following"
+					},
+					"next": "k_dismiss"
+				},
+				{
+					"text": "没什么",
+					"next": ""
+				}
+			]
+		},
+		"k_invite": {
+			"lines": [
+				{
+					"text": "……好。"
+				},
+				{
+					"text": "你一个人，会被手印抓走的。"
+				}
+			],
+			"set": {
+				"call": "after_invite_blue"
+			}
+		},
+		"k_dismiss": {
+			"lines": [
+				{
+					"text": "……嗯。我在附近转转。……有事叫我。"
+				}
+			],
+			"set": {
+				"call": "after_dismiss_blue"
+			}
 		}
 	}
 }

@@ -2,8 +2,10 @@ class_name TaskArmorChase
 extends Node2D
 ## 骑士篇 E「镇中追逃」（小镇 floor_06_after）：被诅咒附身的盔甲（CursedArmor）从营地楼梯口冲出来，一直追粉色公主。台词 data/after/knight_finale.json 的 chase。
 ##   开局两人在 PINK_START 附近，盔甲在营地楼梯口（START）挣扎 START_STUN 秒才追过来。
-##   点亮三座笑声灯笼信标（BEACONS，按顺序）：站在信标 BEACON_R 以内按住 E 累计 HOLD 秒（亮的一瞬间盔甲被光晃到，停 LIGHT_STUN 秒）；
-##   三座都亮了以后跑到广场图腾柱下（PLAZA）= 完成。
+##   点亮四座笑声灯笼信标（BEACONS，分在镇上东北 / 西北 / 西边市场 / 南边城墙，按顺序，目标提示指过去 target_cell）：
+##   站在信标 BEACON_R 以内按住 E 累计 HOLD 秒（亮的一瞬间盔甲被光晃到，停 LIGHT_STUN 秒）；四座都亮了以后跑回广场图腾柱下（PLAZA，也指路）= 完成。
+##   扔陷阱：每 THROW_EVERY 秒（离她 THROW_MIN ~ THROW_MAX 之间、没被冻 / 晃）盔甲把地牢里的陷阱（THROWS 八种）扔到她前面的路上：
+##     落点先亮影子 THROW_FLY 秒（Throw），落地变成真的陷阱场景，TRAP_LIFE 秒后收走（她正被这个陷阱缠着就等她脱身）；第一次扔某一种时粉色公主吐槽。
 ##   盔甲直线快、转弯慢，会被房子挡住；隔一阵铁手横扫一行（预警线）。镇民帮忙：盔甲走近栅栏点（GATES）而她已经跑开时，栅栏关上 GATE_TIME 秒挡住它。
 ##     栅栏门是支线「夜里的栅栏」装的：没做那个支线就没有栅栏（KnightQuests.is_done("fence")）。
 ##   做过支线「队长的旧剑术」：队长替她挡一次抱住（captain_block，盔甲被他顶开、晃 LIGHT_STUN 秒）。冲刺无敌的时候抓不住、横扫扫不到。
@@ -21,7 +23,7 @@ const START := Vector2i(57, 37)
 const PINK_START := Vector2i(47, 33)
 const START_STUN := 2.5
 const LIGHT_STUN := 1.5
-const BEACONS := [Vector2i(50, 36), Vector2i(40, 33), Vector2i(33, 30)]
+const BEACONS := [Vector2i(56, 12), Vector2i(14, 5), Vector2i(6, 24), Vector2i(26, 35)]
 const PLAZA := Vector2i(41, 25)
 const GATES := [Vector2i(53, 34), Vector2i(45, 35), Vector2i(36, 32)]
 const BEACON_R := 16.0
@@ -40,6 +42,24 @@ const CATCHES := 3
 const SAFE_TIME := 2.0
 const AI_GUARD := 110.0
 const AI_FLEE := 120.0
+## 扔陷阱：种类 → 陷阱场景和要改的属性（绊索连着一个瞄准她的落笼；地洞里住着小触手）
+const THROWS := {
+	"tripwire": {"scene": "tripwire", "props": {"tiles_w": 3}},
+	"pit": {"scene": "pit", "props": {"content": "tentacle"}},
+	"powder_vent": {"scene": "powder_vent", "props": {}},
+	"tickle_vine": {"scene": "tickle_vine", "props": {}},
+	"mud": {"scene": "mud", "props": {"tiles_w": 2, "tiles_h": 1}},
+	"sticky_carpet": {"scene": "sticky_carpet", "props": {"tiles_w": 2, "tiles_h": 2}},
+	"cage": {"scene": "cage", "props": {}},
+	"snare": {"scene": "snare", "props": {}},
+}
+const THROW_EVERY := 5.0
+const THROW_FIRST := 6.0
+const THROW_MIN := 50.0
+const THROW_MAX := 260.0
+const THROW_FLY := 0.9
+const THROW_AHEAD := 44.0
+const TRAP_LIFE := 10.0
 
 ## 测试：关掉 AI 搭档（没被操控的那位原地不动）
 var ai_enabled := true
@@ -68,6 +88,11 @@ var _lv: Node
 var _was_no_switch := false
 var _had_switch := false
 var _near_t := 0.0
+## 扔陷阱：下一次还有几秒、地上的陷阱 [{node, left}]、这一轮扔过的种类（第一次扔才吐槽）、按顺序轮着扔
+var throw_left := THROW_FIRST
+var traps: Array = []
+var thrown_kinds: Array = []
+var _throw_i := 0
 
 
 static func data() -> Dictionary:
@@ -91,7 +116,7 @@ static func reset_items() -> void:
 
 static func status_text() -> String:
 	if lit() >= BEACONS.size():
-		return "去广场！被抓 %d / %d" % [caught(), CATCHES]
+		return "回广场的图腾柱下！被抓 %d / %d" % [caught(), CATCHES]
 	return "信标 %d / %d　被抓 %d / %d" % [lit(), BEACONS.size(), caught(), CATCHES]
 
 
@@ -142,6 +167,9 @@ func _ready() -> void:
 func _exit_tree() -> void:
 	if _music_was != "" and Audio.music_id == "knight_boss":
 		Audio.play_music(_music_was)
+	for t in traps:
+		if is_instance_valid(t["node"]):
+			(t["node"] as Node).queue_free()
 	for n in beacons + gates + [armor]:
 		if is_instance_valid(n):
 			n.queue_free()
@@ -183,6 +211,8 @@ func advance(delta: float) -> void:
 	elif pink.global_position.distance_to(Cutscene.cell_to_world(PLAZA)) <= PLAZA_R:
 		_emit(true)
 		return
+	_throw_tick(delta)
+	_trap_tick(delta)
 	_near_t -= delta
 	if _near_t <= 0.0 and armor.global_position.distance_to(pink.global_position) < 60.0:
 		_near_t = 4.0
@@ -240,6 +270,128 @@ func light(i: int) -> void:
 	var lines: Array = data().get("beacon_lit", [])
 	if i < lines.size():
 		GameState.princess_reacted.emit(str(lines[i]), 2.6)
+	KnightFx.play(get_parent(), "beacon_light", (beacons[i] as Node2D).global_position + Vector2(0, -14), {"size": 56.0})
+	if lit() >= BEACONS.size():
+		GameState.hint(str(data().get("to_plaza", "")))
+	_refresh_objective()
+
+
+## 目标提示指向：下一座信标 / 四座都亮了以后的广场（KnightStory.objective 读）
+func target_cell() -> Vector2i:
+	return BEACONS[lit()] if lit() < BEACONS.size() else PLAZA
+
+
+func _refresh_objective() -> void:
+	if is_instance_valid(_lv):
+		for n in _lv.find_children("*", "", true, false):
+			if n.has_method("refresh_objective"):
+				n.call("refresh_objective")
+				break
+
+
+## 扔陷阱的计时：到点了、离她不远不近、没被冻住 / 晃住 → 扔一个
+func _throw_tick(delta: float) -> void:
+	throw_left -= delta
+	if throw_left > 0.0 or armor.freeze_left > 0.0 or armor.stun_left > 0.0:
+		return
+	var d := armor.global_position.distance_to(pink.global_position)
+	if d < THROW_MIN or d > THROW_MAX:
+		return
+	throw_left = THROW_EVERY
+	var kinds := THROWS.keys()
+	throw_trap(str(kinds[_throw_i % kinds.size()]))
+	_throw_i += 1
+
+
+## 往她前面的路上扔一个 kind 的陷阱：落点 = 她走的方向前面 THROW_AHEAD（站着不动就是脚下）；落点在墙里就换近一点的
+func throw_trap(kind: String, at := Vector2.INF) -> Throw:
+	if not THROWS.has(kind) or not is_instance_valid(armor):
+		return null
+	if at == Vector2.INF:
+		var ahead := pink.velocity.normalized() * THROW_AHEAD if pink.velocity.length() > 5.0 else Vector2.ZERO
+		at = _free_spot(pink.global_position + ahead)
+	var th := Throw.new()
+	th.from = armor.global_position + Vector2(0, -20)
+	th.to = at
+	th.kind = kind
+	th.task = self
+	get_parent().add_child(th)
+	armor.stun(0.35)
+	SpeechBubble.say(armor, "……！", 30.0, 0.8)
+	if not thrown_kinds.has(kind):
+		thrown_kinds.append(kind)
+		var first: Dictionary = data().get("throw_first", {})
+		if first.has(kind):
+			GameState.princess_reacted.emit(str(first[kind]), 2.8)
+		if thrown_kinds.size() == 3 and is_instance_valid(blue):
+			SpeechBubble.say(blue, str(data().get("throw_blue", "")), 30.0, 2.6)
+	return th
+
+
+## 落点附近一个没被墙 / 道具挡住的格子中心
+func _free_spot(want: Vector2) -> Vector2:
+	var space := get_world_2d().direct_space_state
+	for r in [0.0, 16.0, 32.0]:
+		for k in 8:
+			var p: Vector2 = want + Vector2.RIGHT.rotated(k * TAU / 8.0) * float(r)
+			var c := Cutscene.cell_to_world(_cell_of(p))
+			var q := PhysicsPointQueryParameters2D.new()
+			q.position = c
+			q.collision_mask = 1
+			if space.intersect_point(q, 1).is_empty():
+				return c
+			if r == 0.0:
+				break
+	return Cutscene.cell_to_world(_cell_of(pink.global_position))
+
+
+static func _cell_of(p: Vector2) -> Vector2i:
+	return Vector2i(floori(p.x / 16.0), floori((p.y - 4.0) / 16.0))
+
+
+## 落地：变成真的陷阱场景
+func land(kind: String, at: Vector2) -> Node:
+	var spec: Dictionary = THROWS[kind]
+	var scn := load("res://scenes/traps/%s.tscn" % spec["scene"]) as PackedScene
+	if scn == null:
+		return null
+	var n := scn.instantiate()
+	for k in spec["props"]:
+		n.set(k, spec["props"][k])
+	var ents := get_parent()
+	if kind == "tripwire":
+		# 绊索：连着一个瞄准她的落笼（绊到了笼子就掉下来）
+		var grp := "chase_trip_%d" % get_instance_id()
+		n.set("targets", grp)
+		var cage := (load("res://scenes/traps/cage.tscn") as PackedScene).instantiate()
+		cage.set("group_name", grp)
+		cage.set("aim", true)
+		cage.set("trigger_mode", Trap.TriggerMode.MANUAL)
+		ents.add_child(cage)
+		cage.global_position = at
+		traps.append({"node": cage, "left": TRAP_LIFE})
+	ents.add_child(n)
+	(n as Node2D).global_position = at
+	traps.append({"node": n, "left": TRAP_LIFE, "kind": kind})
+	KnightFx.play(ents, "trap_land", at, {"size": 40.0, "z": 0})
+	Audio.play("drop", -6.0)
+	return n
+
+
+## 地上的陷阱到时间收走（她还被它缠着 / 站在上面就等一等）
+func _trap_tick(delta: float) -> void:
+	for t in traps.duplicate():
+		var n: Node2D = t["node"] if is_instance_valid(t["node"]) else null
+		if n == null:
+			traps.erase(t)
+			continue
+		t["left"] = float(t["left"]) - delta
+		if float(t["left"]) > 0.0:
+			continue
+		if pink.global_position.distance_to(n.global_position) < 28.0 and float(t["left"]) > -8.0:
+			continue
+		n.queue_free()
+		traps.erase(t)
 
 
 ## 镇民帮忙：盔甲走近栅栏点、她已经跑开 → 关上栅栏挡一下
@@ -381,6 +533,42 @@ class Beacon extends Node2D:
 		draw_arc(Vector2(0, -21), 1.5, 0.2, PI - 0.2, 6, Color("3a2a2a"), 1)
 		if not lit and progress > 0.0:
 			draw_arc(Vector2(0, -20), 9, -PI / 2, -PI / 2 + TAU * clampf(progress, 0.0, 1.0), 16, Color(1, 0.9, 0.5), 2)
+
+
+## 扔过来的陷阱：落点的影子越来越大（THROW_FLY 秒），一团紫色的东西沿着抛物线飞过去（throw_trail 特效），落地 → task.land
+class Throw extends Node2D:
+	var from := Vector2.ZERO
+	var to := Vector2.ZERO
+	var kind := ""
+	var task: TaskArmorChase
+	var _t := 0.0
+	var _fx: KnightFx
+
+	func _ready() -> void:
+		z_index = 3
+		global_position = to
+		_fx = KnightFx.play(self, "throw_trail", from, {"size": 30.0, "loop": true, "z": 4})
+
+	func _process(delta: float) -> void:
+		_t += delta
+		var k := clampf(_t / TaskArmorChase.THROW_FLY, 0.0, 1.0)
+		if is_instance_valid(_fx):
+			var p := from.lerp(to, k) + Vector2(0, -sin(k * PI) * 46.0)
+			_fx.global_position = p
+			_fx.rotation = (to - from).angle()
+		queue_redraw()
+		if k >= 1.0:
+			if is_instance_valid(task):
+				task.land(kind, to)
+			queue_free()
+
+	func _draw() -> void:
+		var k := clampf(_t / TaskArmorChase.THROW_FLY, 0.0, 1.0)
+		var r := 4.0 + 10.0 * k
+		draw_set_transform(Vector2.ZERO, 0.0, Vector2(1.0, 0.55))
+		draw_circle(Vector2.ZERO, r, Color(0.25, 0.05, 0.3, 0.25 + 0.35 * k))
+		draw_arc(Vector2.ZERO, 14.0, 0, TAU, 20, Color(0.85, 0.4, 1.0, 0.5 + 0.4 * k), 1.5)
+		draw_set_transform(Vector2.ZERO)
 
 
 ## 镇民拉上的栅栏：关着的时候挡住盔甲（也挡人），GATE_TIME 秒后打开；每个点只帮一次

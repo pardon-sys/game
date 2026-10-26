@@ -52,6 +52,10 @@ func setup() -> void:
 		eaves.append(e)
 	_rig = put(FenceRig.new(), Vector2.ZERO) as FenceRig
 	_rig.runner = self
+	# 木板堆自己带「E」提示（以前木板点和地图上会调查的木料道具重在一起，按 E 先开了调查的对话，扛不起来）
+	var pile := LumberPile.new()
+	pile.runner = self
+	put(pile, lumber_at())
 
 
 func cleanup() -> void:
@@ -62,7 +66,7 @@ func cleanup() -> void:
 
 
 func lumber_at() -> Vector2:
-	return cell(q.get("lumber", [48, 39]))
+	return cell(q.get("lumber", [45, 40]))
 
 
 func gate_at(i: int) -> Vector2:
@@ -90,9 +94,7 @@ func _process(delta: float) -> void:
 		return
 	if GameState.in_dialogue or GameState.in_cutscene or not is_instance_valid(pink) or GameState.player != pink:
 		return
-	if not carrying and Input.is_action_just_pressed("interact") and pink.global_position.distance_to(lumber_at()) <= PICK_R:
-		pick()
-	elif carrying and pink.global_position.distance_to(gate_at(stage())) <= GATE_R:
+	if carrying and pink.global_position.distance_to(gate_at(stage())) <= GATE_R:
 		start_hammer()
 
 
@@ -155,6 +157,28 @@ func _end_lane() -> void:
 		_layer.queue_free()
 	_layer = null
 	lane = null
+
+
+## 城墙脚下的木板堆：靠近面向它出「E」，按 E 扛起一捆
+class LumberPile extends Node2D:
+	var runner: QuestFence
+	var area: Interactable
+
+	func _ready() -> void:
+		area = Interactable.new()
+		var shape := CollisionShape2D.new()
+		var c := CircleShape2D.new()
+		c.radius = QuestFence.PICK_R * 0.7
+		shape.shape = c
+		area.add_child(shape)
+		add_child(area)
+
+	func _process(_delta: float) -> void:
+		area.enabled = is_instance_valid(runner) and not runner.carrying and not runner.hammering
+
+	func on_interact(_player: Node) -> void:
+		if is_instance_valid(runner) and runner.pink == GameState.player:
+			runner.pick()
 
 
 ## 木板堆、这一段的路口（一闪一闪）、已经钉好的门

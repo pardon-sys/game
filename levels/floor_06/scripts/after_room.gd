@@ -34,8 +34,15 @@ func _ready() -> void:
 		c.follow = true
 		c.partner_talk = PARTNER
 		if not c.is_controlled():
-			c.start_following(PARTNER)
 			c.name = "AfterBlue"
+			# 骑士篇的小镇（白天 / 夜里）：蓝色公主平时在镇上闲逛，主线任务和要她帮忙的支线自己跟上，平时说话能邀请（AfterBlueRoutine）
+			if c is BluePrincess and KnightStory.active() and _floor in [KnightStory.KDAY, KnightStory.KNIGHT_N]:
+				var routine := AfterBlueRoutine.new()
+				routine.blue = c as BluePrincess
+				add_child(routine)
+				routine.sync(true)
+			else:
+				c.start_following(PARTNER)
 	# 没写 no_switch 的图：C 键随时换人（拆攻城车、修图腾柱……）
 	if not bool(lv.get("no_switch")):
 		lv.set_meta(&"free_switch", true)

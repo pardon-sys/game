@@ -145,7 +145,7 @@ func _draw() -> void:
 		row = 1 if heading.x < 0 else 2
 	elif heading.y < 0:
 		row = 3
-	var col := 0 if freeze_left > 0.0 else int(_t * 8.0) % 4
+	var col := 0 if freeze_left > 0.0 or velocity.length() < 2.0 else int(_t * 8.0) % 4
 	var tint := Color(0.7, 0.9, 1.0) if freeze_left > 0.0 else (Color(1.5, 1.2, 1.6) if _flash > 0.0 else Color.WHITE)
 	draw_circle(Vector2(0, 2), 9, Color(0.6, 0.3, 0.9, 0.25 + 0.1 * sin(_t * 6.0)))
 	draw_texture_rect_region(TEX, Rect2(-24, -42, 48, 48), Rect2(col * 32, row * 32, 32, 32), tint)

@@ -123,6 +123,43 @@ static func run(t: Node) -> void:
 	# 信标
 	ch.light(0)
 	verify(t, "点亮第一座信标：盔甲被光晃了一下", TaskArmorChase.lit() == 1 and (ch.beacons[0] as TaskArmorChase.Beacon).lit and ch.armor.stun_left > 0.0)
+	# 四座信标分在镇上各处、彼此隔得远；目标提示指向下一座
+	var far := true
+	for i in TaskArmorChase.BEACONS.size():
+		for j in i:
+			far = far and Vector2(TaskArmorChase.BEACONS[i]).distance_to(Vector2(TaskArmorChase.BEACONS[j])) >= 18.0
+	verify(t, "四座信标、彼此至少隔 18 格", TaskArmorChase.BEACONS.size() == 4 and far)
+	var mk := t._node("Objective") as ObjectiveMarker
+	await t._wait(0.2)
+	var obj := KnightStory.objective(KnightStory.KCHASE)
+	verify(t, "目标提示指向第二座信标（%s）" % [obj.get("cell")], obj.get("cell", []) == [TaskArmorChase.BEACONS[1].x, TaskArmorChase.BEACONS[1].y] and mk != null)
+	# 扔陷阱：落点先有影子，落地变成地牢里的陷阱；第一次扔这一种，粉色公主吐槽；到时间收走
+	var said: Array = []
+	var on_said := func(text: String, _t2: float): said.append(text)
+	GameState.princess_reacted.connect(on_said)
+	ch.armor.stun_left = 0.0
+	ch.throw_left = 999.0
+	var th := ch.throw_trap("snare", pink.global_position + Vector2(48, 0))
+	verify(t, "盔甲扔出绳套：落点先亮影子", th != null and is_instance_valid(th))
+	await t._wait(TaskArmorChase.THROW_FLY + 0.3)
+	var landed: Array = ch.traps.filter(func(x): return str(x.get("kind", "")) == "snare")
+	verify(t, "落地变成倒吊绳套（SnareTrap）", landed.size() == 1 and landed[0]["node"] is SnareTrap)
+	verify(t, "第一次扔绳套：粉色公主吐槽（%s）" % [said], said.any(func(x): return str(x).contains("绳套")))
+	said.clear()
+	ch.throw_trap("snare", pink.global_position + Vector2(-48, 0))
+	await t._wait(TaskArmorChase.THROW_FLY + 0.3)
+	verify(t, "再扔一样的：不再吐槽", not said.any(func(x): return str(x).contains("绳套")))
+	GameState.princess_reacted.disconnect(on_said)
+	for kind in TaskArmorChase.THROWS:
+		if kind != "snare":
+			ch.land(kind, pink.global_position + Vector2(0, 120))
+	verify(t, "八种陷阱都落得下来（%d 个）" % ch.traps.size(), ch.traps.filter(func(x): return x.has("kind")).size() == 9)
+	for x in ch.traps:
+		x["left"] = 0.0
+	pink.global_position += Vector2(0, -60)
+	ch._trap_tick(0.1)
+	await t._wait(0.1)
+	verify(t, "到时间：地上的陷阱收走（还剩 %d）" % ch.traps.size(), ch.traps.is_empty())
 	# 抓三次失败
 	GameState.vars[TaskArmorChase.CAUGHT_KEY] = 2
 	ch.safe_left = 0.0
@@ -134,19 +171,24 @@ static func run(t: Node) -> void:
 	if ch == null:
 		return
 	verify(t, "重来以后粉色公主马上能动（没有残留的抱住定身）", not ch.pink.status.is_rooted())
-	ch.light(1)
-	ch.light(2)
+	for i in range(1, TaskArmorChase.BEACONS.size()):
+		ch.light(i)
+	verify(t, "四座都亮了：目标提示指回广场", KnightStory.objective(KnightStory.KCHASE).get("cell", []) == [TaskArmorChase.PLAZA.x, TaskArmorChase.PLAZA.y])
 	ch.armor.paused = true
 	ch.pink.global_position = Cutscene.cell_to_world(TaskArmorChase.PLAZA)
 	ch.advance(0.05)
 	await t._advance_until(func(): return task(t, "boss") != null and bool(task(t, "boss").started) and not Cutscene.is_playing() and not GameState.in_dialogue, 60.0)
 	var b := task(t, "boss") as TaskKnightBoss
-	verify(t, "三座信标亮了、引到广场 → Boss「痒铠骑士」开始（铁手套两只、场上 %d 个人）" % (b.victims.size() if b else 0), b != null
+	verify(t, "四座信标亮了、引到广场 → Boss「痒铠骑士」开始（铁手套两只、场上 %d 个人）" % (b.victims.size() if b else 0), b != null
 		and t.seen_cuts.has("knight_boss_open") and b.phase == 0 and b.parts.size() == 2 and b.victims.size() >= 5)
 	if b == null:
 		return
 	pink = b.pink
 	b.curse_t = 999.0
+	# 老的用例不要自动爆发 / 盯镇民（下面专门测）
+	KnightCurse.auto = false
+	b.curse.end(true)
+	b.curse._end_hunt()
 	for v in b.victims:
 		v.cursed = false
 	verify(t, "Boss 战：没被操控的蓝色公主由 AI 控制；C 键能换人", b.blue.controller is KnightAI
@@ -208,7 +250,7 @@ static func run(t: Node) -> void:
 	# ---- 镇民：乱跑、救人、说话
 	var runner: KnightBossFx.Victim = b.victims.filter(func(v): return v.kind == "runner")[0]
 	var r0: Vector2 = runner.global_position
-	await t._wait(0.6)
+	await t._advance_until(func(): return runner.global_position.distance_to(r0) > 2.0, 5.0)
 	verify(t, "镇民在掩体之间跑（不沿固定的圈）", runner.global_position.distance_to(r0) > 2.0 and runner.covers.size() == TaskKnightBoss.COVERS.size())
 	runner.state = "hide"
 	runner.global_position = b._body.global_position + Vector2(20, 0)
@@ -298,6 +340,51 @@ static func run(t: Node) -> void:
 		b.mash()
 	verify(t, "铁手套抓住蓝色公主狠挠（+%.1f），抓住粉色公主很轻（+%.1f）" % [blue_gain, pink_gain], blue_gain > pink_gain * 2.0)
 	GameState.vars[TaskKnightBoss.CAUGHT_KEY] = 0
+	# ---- 诅咒爆发「手印风暴」：打不动、靠近闷笑狂涨、吸到笑声回耐久；三个被贴的镇民都救下来才破
+	GameState.switch_control(pink)
+	await t._wait(0.2)
+	b.attack_t = 999.0
+	var cu := b.curse
+	for v in b.victims:
+		v.cursed = false
+	var pa: TaskKnightBoss.BossPart = b.parts[0]
+	pa.hp = TaskKnightBoss.PART_HP - 2
+	cu.start()
+	verify(t, "诅咒爆发（铁手套）：手印风暴，三个镇民被贴上（%d）" % cu.surge_victims.size(), cu.surge == "hands" and cu.surge_victims.size() == 3
+		and cu.surge_victims.all(func(v): return v.cursed))
+	pa.freeze_left = 4.0
+	verify(t, "爆发中：冻住了也打不动", not b.hit_part(pa) and pa.hp == TaskKnightBoss.PART_HP - 2)
+	pa.freeze_left = 0.0
+	pink.laugh.set_value(0.0)
+	pink.global_position = b._body.global_position + Vector2(0, 30)
+	for i in 20:
+		cu.tick(0.1)
+	verify(t, "站在诅咒圈里：闷笑狂涨（%.0f%%），笑声被吸走 → 部件回耐久（%d）" % [pink.laugh.ratio() * 100.0, pa.hp],
+		pink.laugh.ratio() > 0.3 and pa.hp > TaskKnightBoss.PART_HP - 2)
+	pink.laugh.set_value(0.0)
+	for v in cu.surge_victims.duplicate():
+		b.rescue(v)
+	cu.tick(0.05)
+	verify(t, "三个人都救下来：诅咒散了，骑士露出破绽", cu.surge == "" and b.weak_left > 0.0)
+	b._close_weak()
+	# ---- 盯上镇民：走到了偷笑声回耐久；按住 Y 笑把它引回来
+	var runners: Array = b.victims.filter(func(x): return x.kind != "fallen")
+	var hv: Node2D = cu.start_hunt(runners[0])
+	verify(t, "盔甲盯上一个镇民：吓得缩在原地，盔甲朝他走", hv != null and hv.hunted and b._focus() == hv)
+	pa.hp = TaskKnightBoss.PART_HP - 3
+	b._body.global_position = hv.global_position + Vector2(8, 0)
+	cu.tick(0.05)
+	verify(t, "走到了：偷走他的笑声，部件回耐久（%d）" % pa.hp, cu.hunt == null and not hv.hunted and pa.hp == TaskKnightBoss.PART_HP - 3 + KnightCurse.HUNT_HEAL)
+	b._body.global_position = b._home
+	cu.start_hunt(runners[1])
+	pink.global_position = b._body.global_position + Vector2(0, 60)
+	KnightLaugh.force_hold = true
+	for i in 3:
+		cu.tick(0.15)
+	KnightLaugh.force_hold = false
+	verify(t, "粉色公主按住 Y 笑：盔甲被引回来，放过了镇民", cu.hunt == null and b._focus() == pink)
+	pa.hp = TaskKnightBoss.PART_HP
+	pink.laugh.set_value(0.0)
 	# ---- 反击：冻住打碎 → 破绽 → 挠骑士 → 清醒
 	var p0: TaskKnightBoss.BossPart = b.parts[0]
 	p0.freeze_left = 0.0
@@ -311,7 +398,7 @@ static func run(t: Node) -> void:
 	var dur0 := b.durability()
 	for i in TaskKnightBoss.PART_HP:
 		b.hit_part(p0)
-	verify(t, "冻住以后打三下：左铁手套碎了 → 露出破绽（手腕）、耐久条掉了一段（%.2f → %.2f）" % [dur0, b.durability()], p0.broken and b.weak_left > 0.0
+	verify(t, "冻住以后打满耐久：左铁手套碎了 → 露出破绽（手腕）、耐久条掉了一段（%.2f → %.2f）" % [dur0, b.durability()], p0.broken and b.weak_left > 0.0
 		and is_instance_valid(b.weak_spot) and b.weak_spot.spot == "手腕" and b.durability() < dur0 - 0.05)
 	verify(t, "破绽成了 AI 的优先目标", hk.priority_target() == b.weak_spot)
 	if GameState.inventory.count("calm_incense") == 0:
@@ -329,6 +416,39 @@ static func run(t: Node) -> void:
 	GameState.switch_control(pink)
 	await t._wait(0.2)
 	b.attack_t = 999.0
+	# ---- 诅咒爆发「痒波地脉」：笑着引它冲撞，撞断三根木桩
+	cu.start()
+	verify(t, "诅咒爆发（护腿）：地脉 %d 道、镇民搬来 %d 根木桩" % [cu.veins.size(), cu.stakes.size()], cu.surge == "veins"
+		and cu.stakes.size() == 3 and cu.veins.size() == KnightCurse.VEINS and cu.stakes.all(func(x): return b.crates.has(x)))
+	var st0: KnightBossFx.Crate = cu.stakes[0]
+	st0.global_position = b._body.global_position + Vector2(0, 40)
+	pink.global_position = b._body.global_position + Vector2(0, 90)
+	cu._lure_cool = 0.0
+	KnightLaugh.force_hold = true
+	for i in 3:
+		cu.tick(0.15)
+	KnightLaugh.force_hold = false
+	verify(t, "靠近按住 Y 笑：盔甲朝她冲撞（%s；卡住 %.1f 跳 %.1f 冲 %.1f 冷却 %.1f 操控粉色 %s 对话 %s）" % [b.warn.get("kind", ""), b.stuck_left, b.leap_left,
+		b.charge_left, cu._lure_cool, GameState.player == pink, GameState.in_dialogue], str(b.warn.get("kind", "")) == "charge")
+	if str(b.warn.get("kind", "")) == "charge":
+		b.warn["left"] = 0.0
+		b._tick_warn(0.01)
+	pink.global_position += Vector2(60, 0)
+	for i in 30:
+		b._tick_charge(0.05)
+		if b.stuck_left > 0.0:
+			break
+	cu.tick(0.05)
+	verify(t, "躲开：它撞断了一根木桩、卡住（%d / 3）" % cu.stake_hits, cu.stake_hits == 1 and b.stuck_left > 0.0)
+	b.stuck_left = 0.0
+	for st in cu.stakes:
+		if is_instance_valid(st):
+			st.smash()
+	cu.tick(0.05)
+	verify(t, "三根都撞断：地脉碎了", cu.surge == "" and cu.stakes.is_empty() and cu.veins.is_empty())
+	b._close_weak()
+	b._body.global_position = b._home
+	b.charge_left = 0.0
 	# ---- 阶段二：护腿
 	b.stomp()
 	pink.global_position = b._body.global_position + Vector2(40, 0)
@@ -380,6 +500,22 @@ static func run(t: Node) -> void:
 			b.hit_part(part)
 	await t._advance_until(func(): return b.phase == 2 and not b.transitioning, 10.0)
 	verify(t, "护腿碎了 → 阶段三：胸甲（场内换阶段）", b.phase == 2 and b.parts.all(func(x): return x.id.begins_with("plate")))
+	# ---- 诅咒爆发「护心诅咒」：蓝色公主三秒内冻住两颗心核
+	cu.start()
+	verify(t, "诅咒爆发（胸甲）：两颗心核绕着胸口转", cu.surge == "heart" and cu.cores.size() == 2)
+	GameState.switch_control(b.blue)
+	await t._wait(0.2)
+	b.blue.global_position = cu.core_pos(cu.cores[0])
+	b.freeze_part(b.blue)
+	cu.tick(0.05)
+	verify(t, "冻住一颗：还不够", float(cu.cores[0]["frozen"]) > 0.0 and cu.surge == "heart")
+	b.blue.global_position = cu.core_pos(cu.cores[1])
+	b.freeze_part(b.blue)
+	cu.tick(0.05)
+	verify(t, "三秒内两颗都冻住：护心诅咒碎了", cu.surge == "")
+	b._close_weak()
+	GameState.switch_control(pink)
+	await t._wait(0.2)
 	b.attack_t = 999.0
 	# ---- 阶段三：胸甲
 	b.throw_gear(pink)
@@ -457,12 +593,32 @@ static func run(t: Node) -> void:
 	for i in 20:
 		b.advance(0.05)
 	KnightLaugh.force_hold = false
-	verify(t, "站在灯笼旁按住 E 笑：灯笼一点点亮起来（%.2f）" % l0.progress, l0.progress > 0.05)
+	verify(t, "站在灯笼旁按住 Y 笑：灯笼一点点亮起来（%.2f）" % l0.progress, l0.progress > 0.05)
 	var hl: KnightBossFx.Lantern = b.lanterns[0]
 	await t._advance_until(func(): return b._helper_at(0), 6.0)
 	var hp0: float = hl.progress
 	b.advance(1.0)
 	verify(t, "帮手（小汤姆和小莉莉）在那盏灯笼下：自己也慢慢亮（%.2f → %.2f）" % [hp0, hl.progress], hl.progress > hp0)
+	# ---- 笑面「吸笑」：站在亮着的灯笼光里才安全
+	var lit0: KnightBossFx.Lantern = b.lanterns[0]
+	b._light(lit0, 1.0)
+	cu.start()
+	verify(t, "笑面吸笑开始", cu.surge == "drain")
+	var dark: KnightBossFx.Lantern = b.lanterns[2]
+	dark.progress = 0.5
+	pink.global_position = dark.global_position + Vector2(0, 40)
+	pink.laugh.set_value(0.0)
+	for i in 5:
+		cu.tick(0.2)
+	verify(t, "光外面：闷笑被吸着涨（%.0f%%）、没亮的灯笼暗下去（%.2f）" % [pink.laugh.ratio() * 100.0, dark.progress], pink.laugh.ratio() > 0.05 and dark.progress < 0.5)
+	pink.global_position = lit0.global_position
+	pink.laugh.set_value(0.0)
+	for i in 3:
+		cu.tick(0.2)
+	verify(t, "亮着的灯笼光里：不受影响", pink.laugh.value == 0.0)
+	for i in 30:
+		cu.tick(0.2)
+	verify(t, "吸笑过去了", cu.surge == "")
 	var tn := b.send_tentacle()
 	verify(t, "笑面伸出触手，爬向一盏灯笼", tn != null and tn.lantern != null)
 	tn.left = 0.0
@@ -496,6 +652,29 @@ static func run(t: Node) -> void:
 	KnightLaugh.force_hold = false
 	b.advance(0.05)
 	verify(t, "四盏都亮了：光柱汇到盔甲上", b.finale and b.lanterns.all(func(l): return l.lit and l.finale))
+	KnightCurse.auto = true
+	# 战败小剧场：追逃 1 个 + Boss 按阶段 3 个，都是四幕；两位公主都被挠（粉色脚心、蓝色大腿和屁股），第三幕两个人都释放
+	var ids := ["knight_fail_chase", "knight_fail_boss", "knight_fail_boss_2", "knight_fail_boss_3"]
+	var shape_ok := true
+	for id in ids:
+		var thd: Dictionary = {}
+		if CG.has_theater(id):
+			thd = JSON.parse_string(FileAccess.get_file_as_string(CG.theater_index()[id]))
+		var steps: Array = thd.get("steps", [])
+		var acts := steps.filter(func(st): return st is Dictionary and str(st.get("text", "")).begins_with("—— 第")).size()
+		var blue_hit := steps.any(func(st): return st is Dictionary and (st.get("actions", []) as Array).any(func(x): return str(x.get("who", "")) == "blue" and str(x.get("zone", "")) in ["thigh", "butt"]))
+		var burst := steps.any(func(st): return st is Dictionary and str(st.get("act", "")) == "burst")
+		var comfy := steps.any(func(st): return st is Dictionary and str(st.get("text", "")).contains("舒服"))
+		if acts != 4 or not blue_hit or not burst or not comfy:
+			shape_ok = false
+			print("  小剧场 %s：%d 幕 蓝色被挠 %s 释放 %s 舒服 %s" % [id, acts, blue_hit, burst, comfy])
+	verify(t, "四个战败小剧场都是四幕、两位公主都被挠、第三幕魔力释放的舒服", shape_ok and ids.all(func(i): return CG.has_theater(i)))
+	var fmap := []
+	for ph in 4:
+		GameState.vars[TaskKnightBoss.PHASE_KEY] = ph
+		fmap.append(TaskKnightBoss.fail_theater())
+	GameState.vars[TaskKnightBoss.PHASE_KEY] = 3
+	verify(t, "Boss 失败按阶段挑小剧场（%s）" % [fmap], fmap == ["knight_fail_boss", "knight_fail_boss", "knight_fail_boss_2", "knight_fail_boss_3"])
 	await t._advance_until(func(): return Cutscene.chapter_screen.visible and not Cutscene.is_playing(), 90.0)
 	verify(t, "手帕 → 净化（knight_purify）→ 尾声（半枚徽章）→「骑士篇 完」", t.seen_cuts.has("knight_purify") and t.seen_cuts.has("knight_epilogue")
 		and Cutscene.chapter_title.text.contains("骑士篇"))

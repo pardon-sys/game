@@ -14,13 +14,24 @@ signal closed
 
 const BUFF_ICONS := preload("res://assets/generated/buff_icons.png")
 ## 页签名（下标就是 PAGE_* 的值）；实际顺序看 page_order()：装备系统解锁后「装备」页插在「物品」后面
-const PAGES := ["物品", "被动技能", "状态", "CG 图鉴", "装备", "赎罪簿"]
+const PAGES := ["物品", "被动技能", "状态", "CG 图鉴", "装备", "赎罪簿", "键位"]
 const PAGE_ITEMS := 0
 const PAGE_PASSIVES := 1
 const PAGE_STATUS := 2
 const PAGE_GALLERY := 3
 const PAGE_EQUIP := 4
 const PAGE_PENANCE := 5
+const PAGE_KEYS := 6
+## 键位页：[分组, [[说明, 动作, 列几个键], ...]]（按键从 InputMap 读，改了键位跟着变）
+const KEY_ROWS := [
+	["移动和战斗", [["移动", "move_up|move_left|move_down|move_right", 1], ["攻击 / 挣脱（连按）", "attack", 1], ["冲刺 / 闪避", "dash", 2],
+		["魔法", "magic", 1], ["技能", "skill", 1], ["憋笑（按住）", "hold_laugh", 1]]],
+	["互动", [["说话 / 调查 / 救人 / 拿东西", "interact", 1], ["故意笑（骑士篇，按住）", "laugh", 1], ["换人操控", "switch_character", 1],
+		["道具快捷键", "use_item", 1], ["特殊道具快捷键", "use_special", 1]]],
+	["界面", [["背包 / 下一页", "backpack", 2], ["上一页", "prev_page", 1], ["情报", "intel", 1], ["暂停 / 关闭", "pause", 1],
+		["镜头缩放", "zoom_in|zoom_out", 1], ["全景", "overview", 1]]],
+	["攻防战", [["放冰塔 / 升级", "siege_build", 1], ["城墙法术", "siege_spell_1|siege_spell_7", 1], ["旋转", "rotate_left|rotate_right", 1]]],
+]
 ## CG 图鉴一屏显示的行数。
 const GALLERY_ROWS := 9
 const COLUMNS := 8
@@ -151,9 +162,9 @@ func _input(event: InputEvent) -> void:
 		move_selection(-1)
 	elif event.is_action("move_right") or event.is_action("ui_right"):
 		move_selection(1)
-	elif (event.is_action("move_up") or event.is_action("ui_up")) and page in [PAGE_STATUS, PAGE_PENANCE]:
+	elif (event.is_action("move_up") or event.is_action("ui_up")) and page in [PAGE_STATUS, PAGE_PENANCE, PAGE_KEYS]:
 		status_page.scroll_by(-1)
-	elif (event.is_action("move_down") or event.is_action("ui_down")) and page in [PAGE_STATUS, PAGE_PENANCE]:
+	elif (event.is_action("move_down") or event.is_action("ui_down")) and page in [PAGE_STATUS, PAGE_PENANCE, PAGE_KEYS]:
 		status_page.scroll_by(1)
 	elif event.is_action("move_up") or event.is_action("ui_up"):
 		move_selection(-COLUMNS)
@@ -184,6 +195,7 @@ func page_order() -> Array:
 	# 赎罪簿：庆功宴开始以后（工时已经还清）和骑士篇里不再出现
 	if PenanceBook.started() and not GameState.has_flag(AfterFestival.ON) and not KnightStory.active():
 		order.insert(1, PAGE_PENANCE)
+	order.append(PAGE_KEYS)
 	return order
 
 
@@ -356,6 +368,13 @@ func _refresh() -> void:
 	for i in page_order():
 		parts.append(("【%s】" if i == page else " %s ") % PAGES[i])
 	tabs_label.text = "冒险背包　" + "  ".join(parts)
+	# 页多了一行放不下：字号往小调到放得下（不超出背包的边框）
+	var font := tabs_label.get_theme_font("font")
+	tabs_label.remove_theme_font_size_override("font_size")
+	var fs := tabs_label.get_theme_font_size("font_size")
+	while fs > 8 and font.get_string_size(tabs_label.text, HORIZONTAL_ALIGNMENT_LEFT, -1, fs).x > 396.0:
+		fs -= 1
+	tabs_label.add_theme_font_size_override("font_size", fs)
 	equip_page.visible = page == PAGE_EQUIP
 	if page == PAGE_EQUIP:
 		# 第一次翻到装备页：先看现在操控的这个人
@@ -371,7 +390,7 @@ func _refresh() -> void:
 		return
 	items_page.visible = page == PAGE_ITEMS
 	passives_page.visible = page == PAGE_PASSIVES
-	status_page.visible = page in [PAGE_STATUS, PAGE_PENANCE]
+	status_page.visible = page in [PAGE_STATUS, PAGE_PENANCE, PAGE_KEYS]
 	gallery_page.visible = page == PAGE_GALLERY
 	if page == PAGE_GALLERY:
 		_refresh_gallery()
@@ -382,6 +401,9 @@ func _refresh() -> void:
 	elif page == PAGE_PASSIVES:
 		_refresh_passives()
 		hint_label.text = "方向键 选择　Tab 下一页　~ 上一页　Esc 关闭"
+	elif page == PAGE_KEYS:
+		_refresh_keys()
+		hint_label.text = "↑↓ 滚动　Tab 下一页　~ 上一页　Esc 关闭"
 	elif page == PAGE_PENANCE:
 		_refresh_penance()
 		hint_label.text = "↑↓ 滚动　Tab 下一页　~ 上一页　Esc 关闭"
@@ -616,6 +638,18 @@ func _refresh_penance() -> void:
 	var cols := {"gold": GOLD, "pink": PINK, "dim": DIM}
 	for r in PenanceBook.page_rows():
 		status_page.add_line(str(r["text"]), cols.get(str(r.get("color", "")), TEXT))
+
+
+func _refresh_keys() -> void:
+	status_page.clear()
+	for g in KEY_ROWS:
+		_line("【%s】" % g[0], GOLD)
+		for r in g[1]:
+			var acts := str(r[1]).split("|")
+			var keys: Array[String] = []
+			for a in acts:
+				keys.append(SiegeIntel.keys_of(a, int(r[2])))
+			_line("　%s　%s" % [r[0], (" ~ " if acts.size() == 2 and str(r[1]).contains("spell") else " / ").join(keys)], TEXT)
 
 
 func _refresh_status() -> void:

@@ -363,8 +363,11 @@ static func play_task(ev: String, spec: Dictionary) -> bool:
 			break
 		if PenanceBook.started() and not KnightStory.active():
 			await PenanceBook.fail(str(spec["name"]), str(spec["fail"]), int(spec.get("fail_hours", 0)))
-		elif str(spec.get("fail", "")) != "" and CG.has_theater(str(spec["fail"])):
-			await CG.play_theater(str(spec["fail"]))
+		elif str(spec.get("fail", "")) != "":
+			# 任务脚本可以按进度换失败小剧场（骑士 Boss 按阶段）
+			var fail := str(scr.call("fail_theater")) if scr.has_method("fail_theater") else str(spec["fail"])
+			if CG.has_theater(fail):
+				await CG.play_theater(fail)
 		scr.call("reset_items")
 		var p := GameState.player
 		if is_instance_valid(p):
@@ -556,7 +559,7 @@ static func sleep() -> void:
 			GameState.notify(KnightStory.bed_text())
 		return
 	if DayClock.day() >= DayClock.DAYS and DayClock.done(DayClock.DAYS, DayClock.NIGHT):
-		# 庆功宴放完烟花：睡一觉，骑士篇开始
+		# 庆功宴放完烟花：骑士篇开始（一般回小屋时就开始了，这里兜底）
 		if GameState.has_flag(AfterFestival.FINALE_DONE):
 			await KnightStory.begin()
 		return
@@ -576,5 +579,10 @@ static func after_wake() -> void:
 
 
 ## 进小屋：这张图上自动演的事件（夜里的事件）。
+## 庆功宴放完烟花（「七日赎罪 完」按 E 回到小屋）：不用再上床，直接接骑士篇的早上。
 static func enter_house() -> void:
+	if GameState.has_flag(AfterFestival.FINALE_DONE) and not KnightStory.active():
+		await TrainingDB.wait_dialogue_free()
+		await KnightStory.begin()
+		return
 	await run_pending(HOUSE)

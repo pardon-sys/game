@@ -24,6 +24,9 @@ extends Area2D
 @export var open_dialogue := ""
 
 var _used := false
+var _retry := 0.0
+## 上次走进来时没处理（正在对话 / main 正忙），人还在里面就再试
+var _pending := false
 
 
 func _ready() -> void:
@@ -36,8 +39,28 @@ func _ready() -> void:
 	body_entered.connect(_on_body_entered)
 
 
+## 走进来那一刻正好有对话 / 换图被拒（main 正忙）时，人还站在出口里：空下来以后再试一次（以前会一直卡在出口上走不了）
+func _physics_process(delta: float) -> void:
+	if _used or not _pending:
+		return
+	_retry -= delta
+	if _retry > 0.0:
+		return
+	_retry = 0.3
+	if Dialogue.is_active() or GameState.in_dialogue or GameState.in_cutscene:
+		return
+	_pending = false
+	for b in get_overlapping_bodies():
+		if b.is_in_group("player"):
+			_on_body_entered(b)
+			return
+
+
 func _on_body_entered(body: Node) -> void:
-	if _used or not body.is_in_group("player") or Dialogue.is_active():
+	if _used or not body.is_in_group("player"):
+		return
+	if Dialogue.is_active():
+		_pending = true
 		return
 	_used = true
 	var is_locked := is_locked_now()
@@ -56,6 +79,12 @@ func _on_body_entered(body: Node) -> void:
 	var path := resolve_target()
 	var main := get_tree().get_first_node_in_group("main")
 	if main and path != "":
+		if bool(main.get("_busy")):
+			# 正在换别的图：这次不算，等一会儿再试
+			await get_tree().create_timer(0.5).timeout
+			_used = false
+			_pending = true
+			return
 		main.change_level(path)
 
 

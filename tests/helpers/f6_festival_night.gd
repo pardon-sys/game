@@ -1,6 +1,6 @@
 extends RefCounted
 ## 庆功宴专项（第 7 天晚上）：工时还清才开、从小镇篝火西边的入口进庆功宴的广场（单独一张图）、开场过场、领舞（三段音游 + 邀舞）、
-## 五个摊位各自的机制、通关的奖励和广场上的装扮、放烟花（镜头拉远）→ 结局画面 → 回小屋 → 睡觉进骑士篇。
+## 五个摊位各自的机制、通关的奖励和广场上的装扮、放烟花（镜头拉远）→ 结局画面 → 回小屋 → 直接进骑士篇。
 static var checks := 0
 static var reward_lines_seen := 0
 
@@ -89,6 +89,17 @@ static func run(t: Node) -> void:
 	d.lane.load_chart([{"t": 0.0, "key": "UP", "hit": false}])
 	d.lane.advance(1.0)
 	verify(t, "领舞踩错一拍：围观的人挠脚心，闷笑上涨", d.misses >= 1 and GameState.player.laugh.value > l0)
+	# 踩中一拍：粉色公主、派对的主人跟着跳一步（每一步换一种舞步，完美是大动作）
+	var pr: CGActor = d.actors.get("princess")
+	var host: CGActor = d.actors.get("host")
+	var moved := []
+	for i in 4:
+		d._on_judged("perfect" if i % 2 == 0 else "good", {})
+		var look := [pr.position, pr.rotation, pr.scale, pr.dir, host.position, host.rotation, host.scale, host.dir]
+		await t._wait(0.07)
+		moved.append(look != [pr.position, pr.rotation, pr.scale, pr.dir, host.position, host.rotation, host.scale, host.dir])
+		await t._wait(0.45)
+	verify(t, "踩中一拍：台上的人跳舞（跳、转圈、踏步、摇摆：%s）" % [moved], moved.all(func(m): return m))
 	# 直接把领舞段判完：满分谱面
 	for sec in 4:
 		await t._advance_until(func(): return not d.busy or not is_instance_valid(d), 5.0)
@@ -270,31 +281,11 @@ static func run(t: Node) -> void:
 	await press(t, "interact")
 	await t._advance_until(func(): return t._level_id() == AfterStory.HOUSE and not Cutscene.chapter_screen.visible, 20.0)
 	verify(t, "按 E → 回到小屋", t._level_id() == AfterStory.HOUSE)
-	await t._wait(0.8)
-	verify(t, "回到小屋：没有又弹出镇长放烟花的对话，人能动（对话 %s，锁 %d）" % [Dialogue.runner.is_running(), GameState.dialogue_holds],
-		not Dialogue.runner.is_running() and not Dialogue.is_active() and not GameState.in_dialogue and GameState.dialogue_holds == 0)
-	verify(t, "小屋的床：庆功宴之后能睡（%s）" % Dialogue.runner.entry_of("floor_06/after_house_objects"),
-		GameState.has_flag("night") and not GameState.has_flag(AfterStory.NIGHT_BUSY))
-	# 走到床边按 E（不是直接调对话）
-	t._go(Cutscene.cell_to_world([4, 5]))
-	GameState.player.facing = Vector2.UP
-	await t._wait(0.3)
-	var opened: Array = []
-	var on_talk := func(f: String): opened.append(f)
-	Dialogue.runner.talk_started.connect(on_talk)
-	await press(t, "interact")
-	await t._wait(0.3)
-	Dialogue.runner.talk_started.disconnect(on_talk)
-	verify(t, "在床边按 E：床的对话开了（%s）" % [opened], opened.has("floor_06/after_house_objects"))
-	for i in 40:
-		if not Dialogue.runner.is_running():
-			break
-		if Dialogue.is_active():
-			Dialogue.advance()
-			Dialogue.advance()
-		await t.get_tree().process_frame
 	await t._advance_until(func(): return KnightStory.step_id() == "found" and not Sleep.sleeping and not Cutscene.is_playing() and not KnightStory.running, 40.0)
-	verify(t, "和床说话选睡觉 → 骑士篇开始（%s）" % DayClock.label(), KnightStory.active() and DayClock.label().begins_with("骑士篇"))
+	verify(t, "回到小屋 → 不用上床，直接接骑士篇的早上（%s）" % DayClock.label(), KnightStory.active() and DayClock.label().begins_with("骑士篇"))
+	await t._wait(0.5)
+	verify(t, "骑士篇开场以后人能动（对话 %s，锁 %d）" % [Dialogue.runner.is_running(), GameState.dialogue_holds],
+		not Dialogue.runner.is_running() and not Dialogue.is_active() and not GameState.in_dialogue and GameState.dialogue_holds == 0)
 
 
 static func _prop_visible(t: Node, kind: String) -> bool:

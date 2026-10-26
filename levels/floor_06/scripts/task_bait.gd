@@ -5,7 +5,7 @@ extends Node2D
 ##     粉色公主的闷笑到 LURE_AT 以上时，LURE_BASE + 闷笑 × LURE_PER 以内的手印会扔下镇民爬向她（贴上来挠得很轻，疲倦涨得多）；
 ##     闷笑到 SWARM_AT 以上 = 笑过头：全图的手印一起扑过来。身上同时贴着 SWAMP 只 = 失败（knight_fail_bait，抓到的不退）。
 ##   让自己笑起来：
-##     粉色公主按住 E「偷偷笑」（KnightLaugh：捂着嘴笑，按得越久越响，松开以后闷笑自己慢慢落下来）；
+##     粉色公主按住 Y「偷偷笑」（KnightLaugh：捂着嘴笑，按得越久越响，松开以后闷笑自己慢慢落下来）；
 ##     蓝色公主在她身边（TICKLE_R 以内）、身边又没有能冻的手印时按 J：挠她一下（闷笑 +BLUE_TICKLE）；
 ##     广场上的痒痒草（TickleGrass）、诅咒地纹（CurseMark，踩上去还会把最近的手印招过来）。夜里也看得清（不受光照影响、放大）。
 ##   抓：C 换成蓝色公主，按 J 冻住身边 FREEZE_R 以内的手印（贴在谁身上都冻得掉，冷却 FREEZE_COOL 秒），再按 E 把身边冻住的收进瓶子（两个人都能收）。
@@ -49,7 +49,7 @@ var _lv: Node
 var _had_switch := false
 var _was_no_switch := false
 var _say_t := 0.0
-## 测试：这一帧当成按住 E（粉色公主偷偷笑）
+## 测试：这一帧当成按住 Y（粉色公主偷偷笑）
 var steal_held := false
 
 
@@ -69,7 +69,7 @@ static func reset_items() -> void:
 
 
 static func status_text() -> String:
-	return "收瓶 %d / %d　粉色：按住 E 偷偷笑　蓝色：J 冻住 / 挠她　E 收瓶" % [caught(), GOAL]
+	return "收瓶 %d / %d　粉色：按住 Y 偷偷笑　蓝色：J 冻住 / 挠她　E 收瓶" % [caught(), GOAL]
 
 
 func _ready() -> void:
@@ -157,7 +157,7 @@ func _process(delta: float) -> void:
 	if _emitted or not started or GameState.in_dialogue or GameState.in_cutscene or not is_instance_valid(pink):
 		return
 	advance(delta)
-	# 粉色公主按住 E：捂着嘴偷偷笑（笑声把手印引过来）
+	# 粉色公主按住 Y：捂着嘴偷偷笑（笑声把手印引过来）
 	if steal_held:
 		KnightLaugh.laugh(pink, delta)
 	else:

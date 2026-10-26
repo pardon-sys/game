@@ -3,7 +3,7 @@ extends QuestRunner
 ## 支线「手印样本」的玩法：收三块手印碎片给药剂师奶奶配安神药。
 ##   0 担架走过的石板路（白天的小镇）/ 1 地牢入口的铁门边（白天的小镇）：几块石头里只有一块底下藏着碎片（HandShard，走近会晃），其余是装样子的；
 ##   2 工房的地窖（floor_06_after_cellar）：一团手印（HandCluster），冻住或者拍散 → 裂成 HandCluster.SPLIT 块，都收进瓶子才算。
-##   收法：粉色公主在旁边按住 E 故意笑（KnightLaugh）→ 碎片探头、爬到她脚边进瓶子；蓝色公主 J 冻住、E 装瓶（她靠近时碎片会逃，逼急了挠她大腿）。
+##   收法：粉色公主在旁边按住 Y 故意笑（KnightLaugh）→ 碎片探头、爬到她脚边进瓶子；蓝色公主 J 冻住、E 装瓶（她靠近时碎片会逃，逼急了挠她大腿）。
 ##   千手解放也能冻住。最后一段：回工房找奶奶说话（report）。
 ## 测试：shards、cluster、need、got、freeze_near(角色)、bottle_near(角色)。
 

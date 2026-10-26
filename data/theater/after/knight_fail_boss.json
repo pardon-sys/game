@@ -1,11 +1,11 @@
 {
-	"name": "痒铠骑士失败：铁手套和手印",
+	"name": "痒铠骑士失败①：铁手套和护腿",
 	"cast": {
 		"princess": {
 			"kind": "princess",
 			"at": [
-				-12,
-				8
+				-14,
+				10
 			],
 			"visual": "helpless_2",
 			"anim": "helpless",
@@ -14,8 +14,8 @@
 		"blue": {
 			"kind": "npc:blue_princess",
 			"at": [
-				12,
-				8
+				14,
+				10
 			],
 			"visual": "helpless_1",
 			"anim": "helpless",
@@ -46,11 +46,52 @@
 		},
 		{
 			"speaker": "",
-			"text": "（铁手套一左一右，同时抓住了两个人）"
+			"text": "—— 第一幕　按倒 ——"
 		},
 		{
 			"speaker": "",
-			"text": "（抓着蓝色公主的那只，在她大腿内侧飞快地挠；抓着粉色公主的那只，却只是一下一下地轻轻挠她的脚心）",
+			"text": "（护腿一跺，两个人脚下的石板一起翻了起来——还没站稳，铁手套就一左一右按了下来）"
+		},
+		{
+			"speaker": "",
+			"text": "（粉色公主被按着脚踝，脚心朝天；蓝色公主被按着腰，趴在了地上）"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……放、开……"
+		},
+		{
+			"speaker": "公主",
+			"text": "这个姿势……好、好危险……",
+			"emotion": "surprise"
+		},
+		{
+			"speaker": "",
+			"text": "—— 第二幕　十根铁指 ——"
+		},
+		{
+			"speaker": "",
+			"text": "（铁手套的十根指头一起动了。按着粉色公主的那只，指尖在她的脚心上一下一下地轻轻刮）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "armor",
+					"zone": "sole",
+					"fx": "hand",
+					"repeat": 10,
+					"interval": 0.28,
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "噗……哈哈……好、好轻……轻得更痒……！",
+			"portrait": "defeat_1"
+		},
+		{
+			"speaker": "",
+			"text": "（按着蓝色公主的那只却快得多：指头在她的大腿后面飞快地跑，跑到屁股上又绕回来）",
 			"actions": [
 				{
 					"who": "blue",
@@ -62,19 +103,19 @@
 					"do": "tickle"
 				},
 				{
-					"who": "princess",
+					"who": "blue",
 					"by": "armor",
-					"zone": "sole",
-					"fx": "feather",
+					"zone": "butt",
+					"fx": "hand",
 					"repeat": 8,
-					"interval": 0.32,
+					"interval": 0.2,
 					"do": "tickle"
 				}
 			]
 		},
 		{
 			"speaker": "蓝色的公主",
-			"text": "……哈……！对我……就……这么凶……！"
+			"text": "……哈……！对我……就……这么凶……！哈哈……"
 		},
 		{
 			"speaker": "公主",
@@ -83,15 +124,156 @@
 		},
 		{
 			"speaker": "蓝色的公主",
-			"text": "……不准……道歉……哈……"
+			"text": "……不准……道歉……哈……哈哈……！"
 		},
 		{
 			"speaker": "",
-			"text": "（图腾柱的光闪了一下，铁手套被震开了。两个人跌坐在地上喘气）"
+			"text": "（护腿上的地脉爬过来，紫色的痒波顺着地面一阵一阵地涌，两个人的脚底一起发麻）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "armor",
+					"zone": "sole",
+					"fx": "feather",
+					"repeat": 10,
+					"interval": 0.2,
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "",
+			"text": "—— 第三幕　满了 ——"
+		},
+		{
+			"speaker": "公主",
+			"text": "哈哈哈……魔力……满、满了……！",
+			"portrait": "fatigue_burst",
+			"act": "burst"
+		},
+		{
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "flash"
+				},
+				{
+					"sound": "star_burst",
+					"do": "sfx"
+				},
+				{
+					"who": "armor",
+					"time": 0.4,
+					"do": "shake"
+				},
+				{
+					"state": "laugh",
+					"do": "voice"
+				}
+			],
+			"wait": 0.5
+		},
+		{
+			"speaker": "",
+			"text": "（粉色的光炸开。释放过后，暖洋洋的舒服从脚底漫上来，她的脚趾一根一根松开了，软软地摊着）"
+		},
+		{
+			"speaker": "公主",
+			"text": "……呼……好……舒服……",
+			"emotion": "happy"
+		},
+		{
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "flash"
+				},
+				{
+					"sound": "star_burst",
+					"do": "sfx"
+				},
+				{
+					"who": "armor",
+					"time": 0.4,
+					"do": "shake"
+				},
+				{
+					"state": "laugh",
+					"do": "voice"
+				},
+				{
+					"who": "blue",
+					"time": 0.4,
+					"do": "shake"
+				}
+			],
+			"wait": 0.5
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……哈……我……也……"
+		},
+		{
+			"speaker": "",
+			"text": "（淡蓝的光跟着亮起。蓝色公主的腿一松，整个人瘫在石板上，舒服得眯起了眼睛）"
+		},
+		{
+			"speaker": "",
+			"text": "（铁手套却没有停：它们换成了指腹，一下一下、慢慢地挠——挠在刚释放完、最软的地方）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "armor",
+					"zone": "sole",
+					"fx": "hand",
+					"repeat": 10,
+					"interval": 0.3,
+					"do": "tickle"
+				},
+				{
+					"who": "blue",
+					"by": "armor",
+					"zone": "thigh",
+					"fx": "hand",
+					"repeat": 10,
+					"interval": 0.3,
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "……哈……别……现在……碰哪里都……哈哈……",
+			"portrait": "defeat_2"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……哈……哈……好……奇怪……又舒服……又痒……"
+		},
+		{
+			"speaker": "",
+			"text": "—— 第四幕　光 ——"
+		},
+		{
+			"speaker": "",
+			"text": "（图腾柱的光闪了一下。铁手套被震开，盔甲踉跄着退了两步）"
 		},
 		{
 			"speaker": "保卫队队长",
 			"text": "（举剑挡在前面）……歇一口气！再来！"
+		},
+		{
+			"speaker": "",
+			"text": "（两个人互相扶着坐起来。腿还是软的，嘴角还挂着没笑完的笑）"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……下一次……先冻手。"
+		},
+		{
+			"speaker": "公主",
+			"text": "嗯……这次换我引它！",
+			"emotion": "angry"
 		},
 		{
 			"actions": [

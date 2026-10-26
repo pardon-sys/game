@@ -63,7 +63,7 @@ QUESTS = {
                   L("收手印？……它们会跑吧。", P, "surprise"), L("会跑。所以要找对办法。……它们，好像喜欢笑声。")],
         "prompt": "帮奶奶收手印样本？", "yes": "交给我！", "no": "等一下",
         "busy": [L("担架走过的石板路、地牢入口的铁门……还有，奶奶的地窖里，昨晚好像也钻进去了一团。"),
-                 L("（藏着手印的石头、木桶，靠近了会晃。按住 E 笑一笑，它就会爬出来）", N)],
+                 L("（藏着手印的石头、木桶，靠近了会晃。按住 Y 笑一笑，它就会爬出来）", N)],
         "done_cut": "kq_samples_done", "reward": {"calm_incense": 1},
         "stages": [
             {"where": KDAY, "cell": [40, 14], "text": "【手印样本】担架走过的石板路：哪块石头在晃？"},
@@ -125,7 +125,7 @@ QUESTS = {
             {"where": KNIGHT_N, "cell": [36, 32], "text": "【夜里的栅栏】去城墙脚下扛木板（%d / 3）→ 广场东南的路口"},
             {"where": KNIGHT_N, "cell": [48, 23], "text": "【夜里的栅栏】回去告诉工匠", "report": True},
         ],
-        "lumber": [48, 39], "pick": "（扛起一捆木板。……好重。手腾不出来了）", "pick_hint": "按 E 扛起木板",
+        "lumber": [45, 40], "pick": "（扛起一捆木板。……好重。手腾不出来了）", "pick_hint": "按 E 扛起木板",
         "eave_drop": ["（头顶的房檐上，一只手印「啪嗒」掉了下来，正好抓住她的脚踝）", "（房檐的阴影里伸出一只手，一把攥住了她光着的脚）"],
         "eave_react": ["哈哈！脚、脚踝……放开……！", "噗哈哈……木板要掉了……！", "别挠脚心……我、我手上拿着东西……！"],
         "hammer": {"title": "钉栅栏门", "hint": "跟着节拍按方向键（↑↓←→）钉钉子", "ok": "（叮！钉进去了）", "miss": "（钉子歪了……）",
@@ -239,6 +239,25 @@ def inject(files):
             {"text": q["yes"], "set": {"vars": {"kq_req": qid}, "call": "kq_start"}},
             {"text": q["no"]}]}
         d["entries"] = entries + d["entries"]
+    # 训练室里的队长（骑士篇训练室一直开着）：练剑进行中 → 准备；做完了 → 可以再练一次（不给奖励）；还没接 → 闲话
+    d = files["after_drill_cap"]
+    d["entries"] = [{"if": {"flag": "kq_spear_active"}, "node": "k_spear_ready"},
+                    {"if": {"flag": "kq_spear_done"}, "node": "k_spear_again"},
+                    {"if": {"flag": "knight_started"}, "node": "k_idle"}] + d["entries"]
+    d["nodes"]["k_spear_ready"] = {"lines": [L("……站好。看矛尖。")]}
+    d["nodes"]["k_spear_again"] = {"lines": [L("……又来了。"), L("那个起手式，我还没练够。")], "prompt": "再陪队长练一次？", "choices": [
+        {"text": "再来一次！", "set": {"call": "kq_spear_replay"}},
+        {"text": "下次吧"}]}
+    d["nodes"]["k_idle"] = {"lines": [L("……门开着，是我开的。"), L("想练的时候，自己进来。")]}
+    # 骑士篇的蓝色公主：平时在镇上闲逛，说话可以邀请一起走 / 先分开（不用先赢玩闹；AfterBlueRoutine.KNIGHT_FOLLOW）
+    d = files["after_partner"]
+    d["entries"] = [{"if": {"flag": "knight_started"}, "node": "k_talk"}] + d["entries"]
+    d["nodes"]["k_talk"] = {"lines": [L("……嗯？"), L("……那个骑士。……我在想他的事。")], "prompt": "……有事？", "choices": [
+        {"text": "一起走吧", "if": {"not": "after_blue_following"}, "next": "k_invite"},
+        {"text": "你先去忙吧", "if": {"flag": "after_blue_following"}, "next": "k_dismiss"},
+        {"text": "没什么", "next": ""}]}
+    d["nodes"]["k_invite"] = {"lines": [L("……好。"), L("你一个人，会被手印抓走的。")], "set": {"call": "after_invite_blue"}}
+    d["nodes"]["k_dismiss"] = {"lines": [L("……嗯。我在附近转转。……有事叫我。")], "set": {"call": "after_dismiss_blue"}}
 
 
 # 门上的提示（signs.json）：骑士篇的训练室（队长的旧剑术进行中才开）、工房的地窖（手印样本收到地窖那一段才开）

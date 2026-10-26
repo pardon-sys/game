@@ -4,18 +4,26 @@
 		"princess": {
 			"kind": "princess",
 			"at": [
-				-4,
+				-10,
 				8
 			],
 			"visual": "helpless_1",
 			"anim": "helpless",
 			"dir": "down"
 		},
+		"blue": {
+			"kind": "npc:blue_princess",
+			"at": [
+				18,
+				6
+			],
+			"dir": "left"
+		},
 		"armor": {
 			"kind": "npc:knight_cursed",
 			"at": [
-				8,
-				4
+				2,
+				2
 			],
 			"dir": "left"
 		}
@@ -36,19 +44,27 @@
 		},
 		{
 			"speaker": "",
-			"text": "（第三次被抱住的时候，盔甲没有再松手。它把她搂在怀里，像抱着一件很重要的东西）"
+			"text": "—— 第一幕　抱住 ——"
 		},
 		{
 			"speaker": "",
-			"text": "（手印一只一只爬到她的脚上，在脚心、脚背、趾缝里慢慢地挠。很轻，很慢，一刻都不停）",
+			"text": "（第三次被抱住的时候，盔甲没有再松手。它把她搂在怀里，像抱着一件很重要、很怕摔碎的东西）"
+		},
+		{
+			"speaker": "骑士",
+			"text": "……殿……下……别……跑……"
+		},
+		{
+			"speaker": "",
+			"text": "（手印一只一只从盔甲上爬下来，爬到她光着的脚上，在脚心轻轻地画圈）",
 			"actions": [
 				{
 					"who": "princess",
 					"by": "armor",
 					"zone": "sole",
 					"fx": "feather",
-					"repeat": 14,
-					"interval": 0.3,
+					"repeat": 8,
+					"interval": 0.35,
 					"do": "tickle"
 				}
 			]
@@ -59,24 +75,233 @@
 			"portrait": "defeat_1"
 		},
 		{
+			"speaker": "蓝色的公主",
+			"text": "……放开她。"
+		},
+		{
 			"speaker": "",
-			"text": "（痒意一点一点漫上来，暖洋洋的，她的脚趾一根一根地松开了——魔力差点就这么化开）"
+			"text": "—— 第二幕　两个人 ——"
+		},
+		{
+			"speaker": "",
+			"text": "（蓝色公主冲上来抬手要冻——盔甲的另一只铁手套却先一步伸了过去，一把捞住了她的腰）"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……！放、放手……"
+		},
+		{
+			"speaker": "",
+			"text": "（几只手印顺着她的裙摆爬上去，贴在她的大腿上，一下一下地挠；还有两只，悄悄爬到了她的屁股上）",
+			"actions": [
+				{
+					"who": "blue",
+					"by": "armor",
+					"zone": "thigh",
+					"fx": "hand",
+					"repeat": 10,
+					"interval": 0.2,
+					"do": "tickle"
+				},
+				{
+					"who": "blue",
+					"by": "armor",
+					"zone": "butt",
+					"fx": "hand",
+					"repeat": 6,
+					"interval": 0.3,
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……哈……！那、那里……不准……噗……！"
+		},
+		{
+			"speaker": "",
+			"text": "（抱着粉色公主的那只手也不闲着：手印钻进她的趾缝，一根一根地挠过去，再沿着脚弓慢慢往脚跟推）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "armor",
+					"zone": "sole",
+					"fx": "hand",
+					"repeat": 12,
+					"interval": 0.2,
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "哈哈哈哈！趾、趾缝不行——！脚弓也不行——！",
+			"portrait": "defeat_2"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……你……笑得……好大声……哈……害、害得我也……"
+		},
+		{
+			"speaker": "",
+			"text": "—— 第三幕　满了 ——"
+		},
+		{
+			"speaker": "",
+			"text": "（两个人的笑声叠在一起，痒意一层一层往上涌——魔力疲倦越积越满）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "armor",
+					"zone": "sole",
+					"fx": "feather",
+					"repeat": 10,
+					"interval": 0.18,
+					"do": "tickle"
+				},
+				{
+					"who": "blue",
+					"by": "armor",
+					"zone": "thigh",
+					"fx": "hand",
+					"repeat": 10,
+					"interval": 0.18,
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "哈……哈哈……魔、魔力……要……满了……！",
+			"portrait": "fatigue_burst",
+			"act": "burst"
+		},
+		{
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "flash"
+				},
+				{
+					"sound": "star_burst",
+					"do": "sfx"
+				},
+				{
+					"who": "armor",
+					"time": 0.4,
+					"do": "shake"
+				},
+				{
+					"state": "laugh",
+					"do": "voice"
+				}
+			],
+			"wait": 0.5
+		},
+		{
+			"speaker": "",
+			"text": "（「嗡」——粉色公主身上一圈粉色的光炸开。释放的那一刻，脚底的麻痒忽然化成了一阵暖洋洋的舒服，她的脚趾一根一根松开了，软软地摊在盔甲的臂弯里）"
+		},
+		{
+			"speaker": "公主",
+			"text": "……呼……好……舒服……",
+			"emotion": "happy"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……我……也……不行了……"
+		},
+		{
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "flash"
+				},
+				{
+					"sound": "star_burst",
+					"do": "sfx"
+				},
+				{
+					"who": "armor",
+					"time": 0.4,
+					"do": "shake"
+				},
+				{
+					"state": "laugh",
+					"do": "voice"
+				},
+				{
+					"who": "blue",
+					"time": 0.4,
+					"do": "shake"
+				}
+			],
+			"wait": 0.5
+		},
+		{
+			"speaker": "",
+			"text": "（蓝色公主身上也亮起一圈淡蓝的光。她的腿一下子没了力气，整个人挂在铁手套上，长长地舒了一口气）"
+		},
+		{
+			"speaker": "",
+			"text": "（可手印没有停。它们趁两个人软成一团，挠得更轻、更慢——舒服和痒混在一起，分不清是哪一种）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "armor",
+					"zone": "sole",
+					"fx": "feather",
+					"repeat": 10,
+					"interval": 0.3,
+					"do": "tickle"
+				},
+				{
+					"who": "blue",
+					"by": "armor",
+					"zone": "butt",
+					"fx": "hand",
+					"repeat": 8,
+					"interval": 0.35,
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "……哈……别……刚、刚释放完……现在最、最敏感了……哈哈……",
+			"portrait": "defeat_2"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……唔……哈……这样……更……"
+		},
+		{
+			"speaker": "",
+			"text": "—— 第四幕　逃 ——"
+		},
+		{
+			"speaker": "",
+			"text": "（「嗖」——一根包着布的木矛横着捅进了盔甲的臂弯）"
+		},
+		{
+			"speaker": "保卫队队长",
+			"text": "……松手。"
+		},
+		{
+			"speaker": "",
+			"text": "（盔甲被顶得一晃，两个人从它怀里滑了出来，跌坐在石板路上，还在小声地笑）"
 		},
 		{
 			"speaker": "骑士",
 			"text": "……殿……下……"
 		},
 		{
-			"speaker": "",
-			"text": "（「哗啦」——蓝色公主的冰从脚下爬上盔甲，把它冻在了原地。粉色公主从它的怀里滑了出来）"
-		},
-		{
 			"speaker": "蓝色的公主",
-			"text": "……起来。再引一次。"
+			"text": "……起来。……再引一次。"
 		},
 		{
 			"speaker": "公主",
-			"text": "哈……哈……好、好……",
+			"text": "哈……哈……好、好……脚还是软的……",
 			"emotion": "helpless_1"
 		},
 		{

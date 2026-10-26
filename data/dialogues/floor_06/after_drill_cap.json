@@ -3,6 +3,24 @@
 	"npc": "captain",
 	"entries": [
 		{
+			"if": {
+				"flag": "kq_spear_active"
+			},
+			"node": "k_spear_ready"
+		},
+		{
+			"if": {
+				"flag": "kq_spear_done"
+			},
+			"node": "k_spear_again"
+		},
+		{
+			"if": {
+				"flag": "knight_started"
+			},
+			"node": "k_idle"
+		},
+		{
 			"node": "default"
 		}
 	],
@@ -11,6 +29,45 @@
 			"lines": [
 				{
 					"text": "……训练室不是玩的地方。"
+				}
+			]
+		},
+		"k_spear_ready": {
+			"lines": [
+				{
+					"text": "……站好。看矛尖。"
+				}
+			]
+		},
+		"k_spear_again": {
+			"lines": [
+				{
+					"text": "……又来了。"
+				},
+				{
+					"text": "那个起手式，我还没练够。"
+				}
+			],
+			"prompt": "再陪队长练一次？",
+			"choices": [
+				{
+					"text": "再来一次！",
+					"set": {
+						"call": "kq_spear_replay"
+					}
+				},
+				{
+					"text": "下次吧"
+				}
+			]
+		},
+		"k_idle": {
+			"lines": [
+				{
+					"text": "……门开着，是我开的。"
+				},
+				{
+					"text": "想练的时候，自己进来。"
 				}
 			]
 		}
