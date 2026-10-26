@@ -5,6 +5,8 @@ extends Node2D
 ##   点亮三座笑声灯笼信标（BEACONS，按顺序）：站在信标 BEACON_R 以内按住 E 累计 HOLD 秒（亮的一瞬间盔甲被光晃到，停 LIGHT_STUN 秒）；
 ##   三座都亮了以后跑到广场图腾柱下（PLAZA）= 完成。
 ##   盔甲直线快、转弯慢，会被房子挡住；隔一阵铁手横扫一行（预警线）。镇民帮忙：盔甲走近栅栏点（GATES）而她已经跑开时，栅栏关上 GATE_TIME 秒挡住它。
+##     栅栏门是支线「夜里的栅栏」装的：没做那个支线就没有栅栏（KnightQuests.is_done("fence")）。
+##   做过支线「队长的旧剑术」：队长替她挡一次抱住（captain_block，盔甲被他顶开、晃 LIGHT_STUN 秒）。冲刺无敌的时候抓不住、横扫扫不到。
 ##   C 换成蓝色公主：J 冻住身边 FREEZE_R 以内的盔甲 FREEZE_TIME 秒，冷却 FREEZE_COOL 秒。
 ##   AI：AI_GUARD 以内盔甲在追粉色公主 → AI 蓝色公主去拦；AI_FLEE 以内 → AI 粉色公主跑开。
 ##   被抓住：盔甲抱住她轻挠——闷笑每秒 +GRAB_LAUGH（慢），疲倦每秒 +GRAB_FATIGUE（快，越来越舒服）；连按 J 够 MASH 下挣开（最多 GRAB_TIME 秒也会挣开）。
@@ -59,6 +61,7 @@ var grab_left := 0.0
 var mashes := 0
 var safe_left := 0.0
 var freeze_cool := 0.0
+var captain_block := 0
 var _emitted := false
 var _music_was := ""
 var _lv: Node
@@ -110,7 +113,8 @@ func _ready() -> void:
 		get_parent().add_child(b)
 		b.global_position = Cutscene.cell_to_world(BEACONS[i])
 		beacons.append(b)
-	for c in GATES:
+	# 栅栏门：支线「夜里的栅栏」钉的那三道
+	for c in (GATES if KnightQuests.is_done("fence") else []):
 		var g := Gate.new()
 		get_parent().add_child(g)
 		g.global_position = Cutscene.cell_to_world(c)
@@ -128,6 +132,7 @@ func _ready() -> void:
 	if is_instance_valid(blue):
 		blue.global_position = Cutscene.cell_to_world(PINK_START) + Vector2(-14, 4)
 	safe_left = SAFE_TIME
+	captain_block = 1 if KnightQuests.is_done("spear") else 0
 	KnightAI.install([pink, blue], ai_plan, null, ["struggle", "dodge", "task", "follow"])
 	_music_was = Audio.music_id
 	Audio.play_music("knight_boss")
@@ -268,6 +273,15 @@ func freeze() -> bool:
 ## 被抓住
 func grab() -> void:
 	if grabbing or safe_left > 0.0 or _emitted:
+		return
+	if captain_block > 0:
+		# 支线「队长的旧剑术」：「到时候我会在」——队长冲上来，用矛杆把盔甲顶开
+		captain_block -= 1
+		safe_left = SAFE_TIME
+		armor.stun(LIGHT_STUN)
+		var line: Array = data().get("captain_block", ["（一根木矛横着插了进来——队长用矛杆把盔甲顶开了！「……我说过，我会在。」）"])
+		GameState.princess_reacted.emit(str(line.pick_random()), 3.0)
+		Audio.play("hit", -4.0)
 		return
 	grabbing = true
 	grab_left = GRAB_TIME
