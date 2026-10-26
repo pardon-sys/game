@@ -5,6 +5,7 @@ extends CompanionController
 ##   {"to": 世界坐标, "near": 到了多近就停（默认 8）, "dash": 远的时候冲刺}  走过去
 ##   {"hold": true}                                                         原地不动
 ##   {}                                                                     交给后面的行为（打 hooks.priority_target、跟着玩家）
+##   以上都可以再带 {"skill": true}：这一帧按一下技能键（蓝色公主：千手解放）
 ## 冻住、挣扎之类的动作由任务在 plan 里直接调（AI 不按键，任务的按键只认玩家）。
 ## 用法：KnightAI.install([粉色, 蓝色], plan, hooks, behaviours)：换人时没被操控的那位自动用它（PlayableCharacter.ai_factory），现在没被操控的那位马上装上；
 ##   KnightAI.uninstall()：还原（任务结束时，没被操控的那位换回平时的跟随）。
@@ -60,6 +61,9 @@ func _task(me: PlayableCharacter) -> bool:
 	if not plan.is_valid():
 		return false
 	var r: Dictionary = plan.call(me)
+	# 放主动技能（蓝色公主的千手解放）：任务在 plan 里写 skill = true（冷却、学没学会由 PantsBurst.cast 管）
+	if bool(r.get("skill", false)):
+		_pressed[&"skill"] = true
 	if bool(r.get("hold", false)):
 		intent = "task"
 		return true

@@ -1,5 +1,5 @@
 extends RefCounted
-## 骑士篇 E~G 专项：诅咒失控 → 镇中追逃（信标、盔甲追、栅栏、冻住、被抱住轻挠和挣脱、抓三次失败）→ Boss「痒铠骑士」
+## 骑士篇 E~G 专项：第二天早上和营地楼梯口的队员说话 → 诅咒失控 → 镇中追逃（信标、盔甲追、栅栏、冻住、被抱住轻挠和挣脱、抓三次失败）→ Boss「痒铠骑士」
 ## （冻住才打得动、护腿跺完卡住、笑面打不动、符文圈共鸣净化）→ 尾声（半枚徽章、「骑士篇 完」）。
 static var checks := 0
 
@@ -21,14 +21,19 @@ static func run(t: Node) -> void:
 	GameState.vars[TaskArmorChase.CAUGHT_KEY] = 0
 	GameState.vars[TaskKnightBoss.PHASE_KEY] = 0
 	GameState.vars[TaskKnightBoss.CAUGHT_KEY] = 0
-	verify(t, "骑士篇后半的步骤：%s" % [KnightStory.STEPS.map(func(s): return s["id"]).slice(6)],
-		KnightStory.STEPS.map(func(s): return s["id"]).slice(6) == ["erupt", "chase", "boss"])
-	KnightStory.jump("erupt")
-	GameState.pending_spawn = "bed"
-	await t.main.change_level(Floors.scene(AfterStory.HOUSE))
+	verify(t, "骑士篇后半的步骤：%s" % [KnightStory.STEPS.map(func(s): return s["id"]).slice(7)],
+		KnightStory.STEPS.map(func(s): return s["id"]).slice(7) == ["report", "chase", "boss"])
+	KnightStory.jump("report")
+	GameState.pending_spawn = "from_house"
+	await t.main.change_level(Floors.scene(AfterStory.TOWN))
+	await t._wait(0.8)
+	var gc := t._node("after_k_guard_camp") as Node2D
+	verify(t, "第二天早上：白天的小镇（%s），营地楼梯口的队员头上冒「！」" % t._level_id(), t._level_id() == KnightStory.KDAY
+		and gc != null and gc.get_node_or_null("ErrandMark") != null and not t.seen_cuts.has("knight_erupt"))
+	await t._talk("floor_06/after_k_guard_camp", "")
 	await t._advance_until(func(): return task(t, "chase") != null and bool(task(t, "chase").started) and not Cutscene.is_playing() and not GameState.in_dialogue, 60.0)
 	var ch := task(t, "chase") as TaskArmorChase
-	verify(t, "早上：诅咒失控 → 小镇 → 盔甲冲出营地，追逃开始", ch != null and t.seen_cuts.has("knight_erupt") and t.seen_cuts.has("knight_chase_open"))
+	verify(t, "和楼梯口的队员说话 → 诅咒失控 → 盔甲冲出营地，追逃开始", ch != null and t.seen_cuts.has("knight_erupt") and t.seen_cuts.has("knight_chase_open"))
 	if ch == null:
 		return
 	verify(t, "追逃在骑士篇专用的空小镇上（%s），一个镇民都没有" % t._level_id(), t._level_id() == KnightStory.KCHASE

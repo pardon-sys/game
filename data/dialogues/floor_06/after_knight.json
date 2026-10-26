@@ -10,18 +10,25 @@
 		"cell": {
 			"lines": [
 				{
-					"text": "……你来干什么。"
+					"text": "（最里面那间牢房。他背对着栏杆坐在地上，盔甲上的手印已经不动了。听见脚步声，他没有回头）",
+					"speaker": ""
 				},
 				{
-					"text": "我……我想知道那天晚上到底发生了什么。",
+					"text": "……来灭口吗，凶手。"
+				},
+				{
+					"text": "不是！我……我只是想知道，那天晚上到底发生了什么。",
 					"speaker": "公主",
 					"emotion": "sad"
+				},
+				{
+					"text": "……装得真像。"
 				}
 			],
 			"next": "ask"
 		},
 		"ask": {
-			"prompt": "问他什么？",
+			"prompt": "……（他不会回答很多问题）",
 			"choices": [
 				{
 					"text": "那天晚上，你看见了什么？",
@@ -48,73 +55,184 @@
 					}
 				},
 				{
-					"text": "（听到身后有脚步声）",
+					"text": "（拿出那块旧手帕）",
+					"next": "hanky",
+					"return": true,
+					"if": {
+						"not": "knight_asked_hanky"
+					}
+				},
+				{
+					"text": "（身后传来了脚步声）",
 					"next": "blue",
 					"if": {
-						"flag": [
-							"knight_asked_night",
-							"knight_asked_fall",
-							"knight_asked_why"
+						"any": [
+							{
+								"flag": "knight_asked_hanky"
+							},
+							{
+								"flag": "knight_answered"
+							}
 						]
 					}
 				}
 			]
 		},
-		"night": {
+		"hanky": {
 			"lines": [
 				{
-					"text": "……那天夜里，王城的钟敲了十三下。"
+					"text": "（她把那块旧手帕从怀里掏出来，隔着栏杆递了过去）",
+					"speaker": ""
 				},
 				{
-					"text": "十三下？钟不是只敲十二下吗？",
+					"text": "……这个。你昏倒的时候掉的。",
 					"speaker": "公主",
-					"emotion": "surprise"
+					"emotion": "sad"
 				},
 				{
-					"text": "……所以我才抬头看。"
+					"text": "（他猛地转过身，铁链「哗啦」一响，一把从她手里把手帕夺了过去）",
+					"speaker": ""
 				},
 				{
-					"text": "钟楼上站着殿下。……广场上，也站着殿下。"
+					"text": "……别用你的手碰它！"
 				},
 				{
-					"text": "……两个？",
-					"speaker": "公主",
-					"emotion": "surprise"
+					"text": "（他攥着手帕，指节都发白了。面罩后面的呼吸乱了好几下）",
+					"speaker": ""
 				},
 				{
-					"text": "两个。一模一样的脸，一模一样的裙子。……两个，都在笑。"
+					"text": "……这是殿下亲手缝的。……那时候，她才这么高……"
 				},
 				{
-					"text": "……我分不清。……到现在都分不清。"
+					"text": "（说到一半，他忽然停住了，像是说漏了什么）",
+					"speaker": ""
+				},
+				{
+					"text": "……跟你没关系。"
 				}
 			],
 			"set": {
 				"flags": [
-					"knight_asked_night"
+					"knight_asked_hanky"
+				]
+			}
+		},
+		"blue": {
+			"lines": [
+				{
+					"text": "（身后的阴影里，有人走了过来。火把的光落在蓝色公主的脸上）",
+					"speaker": ""
+				},
+				{
+					"text": "……巡逻，快回来了。",
+					"speaker": "蓝色的公主"
+				},
+				{
+					"text": "（骑士抬起头，看见了她。他整个人僵住了）",
+					"speaker": ""
+				},
+				{
+					"text": "……？"
+				},
+				{
+					"text": "（他看看蓝色公主，又看看粉色公主，再看回蓝色公主。铁链在他手腕上一下一下地抖）",
+					"speaker": ""
+				},
+				{
+					"text": "……两个……？"
+				},
+				{
+					"text": "……一样的……脸……"
+				},
+				{
+					"text": "（他往后退，一直退到墙角，后背重重地撞在石壁上）",
+					"speaker": ""
+				},
+				{
+					"text": "……又是这样……那天晚上……也是两个……"
+				},
+				{
+					"text": "你们……到底哪一个才是……！"
+				},
+				{
+					"text": "……？",
+					"speaker": "蓝色的公主"
+				},
+				{
+					"text": "……幻术。……又是幻术！别过来！"
+				},
+				{
+					"text": "来人——！！有人闯进来了！！"
+				}
+			]
+		},
+		"night": {
+			"goto": [
+				{
+					"if": {
+						"flag": "knight_answered"
+					},
+					"node": "night_no"
+				}
+			],
+			"lines": [
+				{
+					"text": "……你问我？"
+				},
+				{
+					"text": "钟敲了十三下。……你站在钟楼上，往下看着我们，在笑。"
+				},
+				{
+					"text": "十三下……？我、我不记得……",
+					"speaker": "公主",
+					"emotion": "sad"
+				},
+				{
+					"text": "你当然不记得。……凶手都这么说。"
+				}
+			],
+			"set": {
+				"flags": [
+					"knight_asked_night",
+					"knight_answered"
+				]
+			}
+		},
+		"night_no": {
+			"lines": [
+				{
+					"text": "（他转过身去，背对着她）",
+					"speaker": ""
+				},
+				{
+					"text": "……凶手，没资格再问。"
+				}
+			],
+			"set": {
+				"flags": [
+					"knight_asked_night",
+					"knight_refused"
 				]
 			}
 		},
 		"fall": {
+			"goto": [
+				{
+					"if": {
+						"flag": "knight_answered"
+					},
+					"node": "fall_no"
+				}
+			],
 			"lines": [
 				{
-					"text": "……从城堡底下，涌出来一只怪物。"
+					"text": "……你自己放出来的东西，还要问我？"
 				},
 				{
-					"text": "它有一千只手。……全城的人，都被它挠着，笑到停不下来。"
+					"text": "一千只手。……整座城都在笑，笑到再也站不起来。"
 				},
 				{
-					"text": "笑到……再也站不起来。"
-				},
-				{
-					"text": "一千只手……",
-					"speaker": "公主",
-					"emotion": "surprise"
-				},
-				{
-					"text": "……它笑起来的声音。"
-				},
-				{
-					"text": "……和你，一模一样。"
+					"text": "……那些笑声里，有一个，和你一模一样。"
 				},
 				{
 					"text": "……！",
@@ -124,91 +242,71 @@
 			],
 			"set": {
 				"flags": [
-					"knight_asked_fall"
+					"knight_asked_fall",
+					"knight_answered"
 				]
 			}
 		},
-		"why": {
+		"fall_no": {
 			"lines": [
 				{
-					"text": "……城堡底下的封印。只有王族的手，才打得开。"
+					"text": "（他转过身去，背对着她）",
+					"speaker": ""
 				},
 				{
-					"text": "我赶到的时候，封印已经开了。……站在封印前面的，是你。"
-				},
-				{
-					"text": "你身后，还站着一个披斗篷的影子。……走路没有声音。"
-				},
-				{
-					"text": "……斗篷的影子……",
-					"speaker": "公主",
-					"emotion": "surprise"
-				},
-				{
-					"text": "……你转过头来看我。你在笑。"
-				},
-				{
-					"text": "我、我不记得……我真的什么都不记得……",
-					"speaker": "公主",
-					"emotion": "sad"
-				},
-				{
-					"text": "……那就去问那个影子吧。……如果你找得到它。"
+					"text": "……凶手，没资格再问。"
 				}
 			],
 			"set": {
 				"flags": [
-					"knight_asked_why"
+					"knight_asked_fall",
+					"knight_refused"
 				]
 			}
 		},
-		"blue": {
+		"why": {
+			"goto": [
+				{
+					"if": {
+						"flag": "knight_answered"
+					},
+					"node": "why_no"
+				}
+			],
 			"lines": [
 				{
-					"text": "（蓝色公主从她身后的阴影里走了出来。火把的光落在她脸上）",
-					"speaker": ""
+					"text": "……城堡底下的封印，只有王族的手打得开。"
 				},
 				{
-					"text": "……",
-					"speaker": "蓝色的公主"
+					"text": "我赶到的时候，站在封印前面的——是你。"
 				},
 				{
-					"text": "（骑士猛地站了起来，铁链「哗啦」一响）",
-					"speaker": ""
-				},
-				{
-					"text": "……殿下？"
-				},
-				{
-					"text": "（他单膝跪了下去，跪在栏杆后面，低下了头）",
-					"speaker": ""
-				},
-				{
-					"text": "……殿下。您……您还……"
-				},
-				{
-					"text": "……",
-					"speaker": "蓝色的公主"
-				},
-				{
-					"text": "（他抬起头，隔着面罩看了她很久。然后，慢慢地站了起来）",
-					"speaker": ""
-				},
-				{
-					"text": "……不。……头发不对。"
-				},
-				{
-					"text": "……认错了。……抱歉。"
-				},
-				{
-					"text": "……",
-					"speaker": "蓝色的公主"
-				},
-				{
-					"text": "（他看着蓝色公主时，声音放得很轻；转过头看向粉色公主时，又冷了下去）",
-					"speaker": ""
+					"text": "……还要我说得更清楚吗？"
 				}
-			]
+			],
+			"set": {
+				"flags": [
+					"knight_asked_why",
+					"knight_answered"
+				]
+			}
+		},
+		"why_no": {
+			"lines": [
+				{
+					"text": "（他转过身去，背对着她）",
+					"speaker": ""
+				},
+				{
+					"text": "……凶手，没资格再问。"
+				}
+			],
+			"set": {
+				"flags": [
+					"knight_asked_why",
+					"knight_refused"
+				]
+			}
 		}
 	}
 }

@@ -432,6 +432,11 @@ func interact() -> void:
 		_target.interact(self)
 
 
+## 现在面前能按 E 互动的东西（没有 / 关着的返回 null）：骑士篇的「按住 E 故意笑」用它分辨「互动」和「笑」
+func interact_target() -> Interactable:
+	return _target if is_instance_valid(_target) and _target.enabled else null
+
+
 ## 使用背包里第一个可用的消耗品（目前是薄荷糖）。
 func use_item(hotkey := "use_item") -> bool:
 	if state == State.DEAD:

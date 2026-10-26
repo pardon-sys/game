@@ -1,5 +1,5 @@
 {
-	"name": "倒下的人",
+	"name": "庆功宴的第二天",
 	"letterbox": true,
 	"skippable": true,
 	"steps": [
@@ -22,36 +22,26 @@
 			"emotion": "sad"
 		},
 		{
-			"actions": [
-				{
-					"sound": "door",
-					"volume": -4.0,
-					"do": "sfx"
-				}
-			],
-			"wait": 0.3
-		},
-		{
-			"speaker": "保卫队员",
-			"text": "（门被「砰砰」地敲响了）两位！队长请你们马上去东北角——地牢入口那边！"
+			"speaker": "蓝色的公主",
+			"text": "……醒了。"
 		},
 		{
 			"speaker": "公主",
-			"text": "地牢入口？出什么事了？",
-			"emotion": "surprise"
-		},
-		{
-			"speaker": "保卫队员",
-			"text": "……发现了一个人。倒在门口，穿着盔甲，叫不醒。"
+			"text": "早……昨晚跳得腿都软了……",
+			"emotion": "helpless_1"
 		},
 		{
 			"speaker": "蓝色的公主",
-			"text": "……（已经穿好了外套，站在楼梯口）走。"
+			"text": "……外面，吵吵嚷嚷的。"
 		},
 		{
 			"speaker": "公主",
-			"text": "等、等我穿鞋！",
-			"emotion": "surprise"
+			"text": "庆功宴的东西还没收完吧？出去走走！",
+			"emotion": "happy"
+		},
+		{
+			"speaker": "",
+			"text": "（可以在镇上自由走走。东北角那边好像有人在喊）"
 		}
 	]
 }

@@ -162,19 +162,24 @@ func _sync_errand() -> void:
 		# 补罚任务：有没抵的受罚时，市场监督 / 派对主人也冒「！」
 		if key in ["after_supervisor", "after_bonfire_host"] and GameState.has_flag(AfterPenance.FLAG):
 			want = true
-		var mark := r.get_node_or_null("ErrandMark") as Label
-		if want and mark == null:
-			mark = Label.new()
-			mark.name = "ErrandMark"
-			mark.text = "！"
-			mark.add_theme_font_size_override("font_size", 12)
-			mark.add_theme_color_override("font_color", Color(1, 0.86, 0.3))
-			mark.add_theme_color_override("font_outline_color", Color(0.15, 0.08, 0.1))
-			mark.add_theme_constant_override("outline_size", 3)
-			mark.position = Vector2(-5, -46)
-			r.add_child(mark)
-		elif not want and mark:
-			mark.queue_free()
+		set_mark(r, want)
+
+
+## 人物头上的「！」（有事找他：能接的委托、补罚、骑士篇的主线 / 支线）
+static func set_mark(r: Node2D, want: bool) -> void:
+	var mark := r.get_node_or_null("ErrandMark") as Label
+	if want and mark == null:
+		mark = Label.new()
+		mark.name = "ErrandMark"
+		mark.text = "！"
+		mark.add_theme_font_size_override("font_size", 12)
+		mark.add_theme_color_override("font_color", Color(1, 0.86, 0.3))
+		mark.add_theme_color_override("font_outline_color", Color(0.15, 0.08, 0.1))
+		mark.add_theme_constant_override("outline_size", 3)
+		mark.position = Vector2(-5, -46)
+		r.add_child(mark)
+	elif not want and mark:
+		mark.queue_free()
 
 
 ## 走进目标圈：演那个事件。

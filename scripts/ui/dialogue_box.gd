@@ -385,6 +385,12 @@ func after_sleep() -> void:
 	AfterStory.sleep_later()
 
 
+## 骑士篇：和人说话 / 调查道具开始这一步主线（KnightStory.go；生成器只往这一步的人物 / 道具对话里注入）。
+func knight_go() -> void:
+	runner.end_conversation()
+	KnightStory.go()
+
+
 ## 七日赎罪：接镇民委托（对话的 set.vars.errand_req 写委托 id）。
 func errand_start() -> void:
 	AfterErrands.start(str(GameState.vars.get("errand_req", "")))

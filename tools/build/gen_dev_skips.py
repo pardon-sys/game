@@ -27,7 +27,7 @@ AFTER_RESET = ["!after_started", "!penance_book", "!after_night_busy", "!after_d
                "!after_d2_fainted", "!skill_pants_burst", "!drill_exam_passed", "!after_curfew", "!penalty_open", "!penalty_announcer_open",
                "!tom_prank_caught", "!tom_prank_quiet", "!tom_prank_fainted", "!after_blue_can_follow", "!after_blue_following", "!penalty_d7",
                "!after_festival_on", "!festival_dance_done", "!festival_finale_done", "!knight_started",
-               "!knight_asked_night", "!knight_asked_fall", "!knight_asked_why"] + \
+               "!knight_asked_night", "!knight_asked_fall", "!knight_asked_why", "!knight_asked_hanky", "!knight_answered", "!knight_refused"] + \
               ["!stall_%s_done" % sid for sid in ("guess", "ring", "ice", "fish", "lick")] + \
               ["!errand_%s_%s" % (e, k) for e in ("cookies", "apples", "ladder", "goats", "dance", "massage", "gate_chain", "shearing", "canopy", "sifting", "lamp_calibration") for k in ("open", "active", "done")]
 AFTER = WAR + ["siege_won"] + AFTER_RESET
@@ -61,6 +61,17 @@ def point(name, floor, flags, vars_=None, **kw):
 def after_done(*slots_):
     return ["after_started", "penance_book"] + ["after_done_d1_%s" % s for s in slots_] + \
            ["after_ev_%s" % e for e, s in (("d1_open", "morning"), ("d1_verdict", "afternoon"), ("d1_sleepwalk", "night")) if s in slots_]
+
+
+## 第 6 天特训考核以后蓝色公主学会的：主动技能「千手解放」（标记）和被动「冰封自制」
+SKILLS = ["skill_pants_burst", "drill_exam_passed"]
+PASSIVES = ["ice_composure"]
+KNIGHT = AFTER + after_done("morning", "afternoon", "night") + D3_ALL + D7_DAYS + SKILLS + \
+    ["after_done_d7_night", "after_ev_d7_festival", "after_festival_on", "festival_dance_done", "festival_finale_done", "knight_started"]
+
+
+def knight_vars(day, slot, step):
+    return dict(BOOK, day=day + 1, after_day=day, after_slot=slot, penance_hours=0, knight_step=step, knight_steps_v=2)
 
 
 POINTS = [
@@ -108,17 +119,16 @@ POINTS = [
           ["after_done_d%d_%s" % (d, k) for d in (4, 5) for k in ("morning", "afternoon", "night")] + ["after_ev_d4_drain", "after_ev_d4_drill", "after_ev_d5_tailor", "after_ev_d5_mine",
           "after_done_d6_morning", "after_ev_d6_inspect"], dict({"day": 7, "after_day": 6, "after_slot": 1}, **BOOK), cell=[8, 11]),
     point("七日赎罪·第 7 天（修补图腾柱）", "floor_06_after", AFTER + after_done("morning", "afternoon", "night") + D3_ALL +
-          ["after_done_d%d_%s" % (d, k) for d in (4, 5, 6) for k in ("morning", "afternoon", "night")] + ["after_ev_d4_drain", "after_ev_d4_drill", "after_ev_d5_tailor", "after_ev_d5_mine", "after_ev_d6_inspect", "after_ev_d6_drill"],
+          ["after_done_d%d_%s" % (d, k) for d in (4, 5, 6) for k in ("morning", "afternoon", "night")] + ["after_ev_d4_drain", "after_ev_d4_drill", "after_ev_d5_tailor", "after_ev_d5_mine", "after_ev_d6_inspect", "after_ev_d6_drill"] + SKILLS,
           # 工时按正常玩到第 7 天的样子给：图腾柱（20）做完刚好还清
-          dict(BOOK, day=8, after_day=7, after_slot=0, penance_hours=20), cell=[4, 32]),
-    point("七日赎罪·第 7 天晚上（庆功宴）", "floor_06_after", AFTER + after_done("morning", "afternoon", "night") + D3_ALL + D7_DAYS,
-          dict(BOOK, day=8, after_day=7, after_slot=2, penance_hours=0), cell=[40, 25]),
-    point("骑士篇·开头（庆功宴之后的早上）", "floor_06_after_house", AFTER + after_done("morning", "afternoon", "night") + D3_ALL + D7_DAYS +
-          ["after_done_d7_night", "after_ev_d7_festival", "after_festival_on", "festival_dance_done", "festival_finale_done", "knight_started"],
-          dict(BOOK, day=9, after_day=8, after_slot=0, penance_hours=0, knight_step=0), cell=[5, 6]),
-    point("骑士篇·诅咒失控（追逃 + Boss）", "floor_06_after_house", AFTER + after_done("morning", "afternoon", "night") + D3_ALL + D7_DAYS +
-          ["after_done_d7_night", "after_ev_d7_festival", "after_festival_on", "festival_dance_done", "festival_finale_done", "knight_started"],
-          dict(BOOK, day=10, after_day=9, after_slot=0, penance_hours=0, knight_step=6), cell=[5, 6]),
+          dict(BOOK, day=8, after_day=7, after_slot=0, penance_hours=20), cell=[4, 32], passives=PASSIVES),
+    point("七日赎罪·第 7 天晚上（庆功宴）", "floor_06_after", AFTER + after_done("morning", "afternoon", "night") + D3_ALL + D7_DAYS + SKILLS,
+          dict(BOOK, day=8, after_day=7, after_slot=2, penance_hours=0), cell=[40, 25], passives=PASSIVES),
+    # 骑士篇（KnightStory.STEPS 的下标：found 0、afternoon 2、bait 3、report 7）
+    point("骑士篇·开头（庆功宴之后的早上）", "floor_06_after_house", KNIGHT, knight_vars(9, 0, 0), cell=[5, 6], passives=PASSIVES),
+    point("骑士篇·第一天下午（骑士醒来以后）", "floor_06_after_house", KNIGHT, knight_vars(9, 1, 2), cell=[5, 6], passives=PASSIVES),
+    point("骑士篇·第一天夜里（以笑为饵之前）", "floor_06_after_house", KNIGHT, knight_vars(9, 2, 3), cell=[5, 6], passives=PASSIVES),
+    point("骑士篇·诅咒失控（第二天早上，找队长之前）", "floor_06_knight_day", KNIGHT, knight_vars(10, 0, 7), cell=[52, 36], passives=PASSIVES),
 ]
 Path("data/dev").mkdir(parents=True, exist_ok=True)
 Path("data/dev/skip_points_more.json").write_text(json.dumps({

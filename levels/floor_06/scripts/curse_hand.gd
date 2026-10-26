@@ -46,8 +46,17 @@ func _ready() -> void:
 	mat.light_mode = CanvasItemMaterial.LIGHT_MODE_UNSHADED
 	material = mat
 	add_to_group("curse_hand")
+	add_to_group(PantsBurst.KNIGHT_GROUP)
 	_rng.randomize()
 	_dir = Vector2.from_angle(_rng.randf() * TAU)
+
+
+## 蓝色公主的千手解放扫到：贴在人身上的被扒下来，冻住 PantsBurst.STUN 秒（冻住的可以收进瓶子）
+func on_pants_burst(burst: PantsBurst) -> void:
+	if state == "gone" or global_position.distance_to(burst.global_position) > PantsBurst.RADIUS:
+		return
+	release()
+	freeze(PantsBurst.STUN)
 
 
 func is_pink(who: Node) -> bool:

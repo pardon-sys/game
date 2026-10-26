@@ -5,13 +5,13 @@ extends Node2D
 ##     粉色公主的闷笑到 LURE_AT 以上时，LURE_BASE + 闷笑 × LURE_PER 以内的手印会扔下镇民爬向她（贴上来挠得很轻，疲倦涨得多）；
 ##     闷笑到 SWARM_AT 以上 = 笑过头：全图的手印一起扑过来。身上同时贴着 SWAMP 只 = 失败（knight_fail_bait，抓到的不退）。
 ##   让自己笑起来：
-##     粉色公主按住 K「偷偷笑」：捂着嘴笑，闷笑每秒 +STEAL_RATE（按得越久越响，松开以后闷笑自己慢慢落下来）；
-##     蓝色公主在她身边（TICKLE_R 以内）按 K：挠她一下（闷笑 +BLUE_TICKLE）——身边有冻住的手印时 K 先收瓶；
+##     粉色公主按住 E「偷偷笑」（KnightLaugh：捂着嘴笑，按得越久越响，松开以后闷笑自己慢慢落下来）；
+##     蓝色公主在她身边（TICKLE_R 以内）、身边又没有能冻的手印时按 J：挠她一下（闷笑 +BLUE_TICKLE）；
 ##     广场上的痒痒草（TickleGrass）、诅咒地纹（CurseMark，踩上去还会把最近的手印招过来）。夜里也看得清（不受光照影响、放大）。
-##   这段任务里 K 不冲刺（no_dash）。
-##   抓：C 换成蓝色公主，按 J 冻住身边 FREEZE_R 以内的手印（贴在谁身上都冻得掉，冷却 FREEZE_COOL 秒），再按 K 把身边冻住的收进瓶子。
+##   抓：C 换成蓝色公主，按 J 冻住身边 FREEZE_R 以内的手印（贴在谁身上都冻得掉，冷却 FREEZE_COOL 秒），再按 E 把身边冻住的收进瓶子（两个人都能收）。
+##   蓝色公主的千手解放（U）也能定住、扒下范围内的手印（PantsBurst → CurseHand.on_pants_burst）。
 ##   收够 GOAL 只 = 完成。这段任务期间小镇能换人（free_switch）。
-## 状态 vars.task_bait_caught。测试：hands、caught()、freeze_near(角色)、bottle_near(角色)、advance(秒)、pink / blue。
+## 状态 vars.task_bait_caught。测试：hands、caught()、freeze_near(角色)、bottle_near(角色)、blue_j()、steal_held、advance(秒)、pink / blue。
 
 signal finished(ok: bool)
 
@@ -29,10 +29,8 @@ const SWAMP := 5
 const FREEZE_R := 30.0
 const FREEZE_COOL := 1.5
 const BOTTLE_R := 20.0
-const STEAL_RATE := 0.22
 const TICKLE_R := 30.0
 const BLUE_TICKLE := 0.12
-const STEAL_LINES := ["……噗、噗嗤……", "……嘻嘻……（捂住嘴）", "……哈……忍、忍不住……", "嘿嘿……来呀……"]
 const CAUGHT_KEY := "task_bait_caught"
 
 static var _data := {}
@@ -51,8 +49,7 @@ var _lv: Node
 var _had_switch := false
 var _was_no_switch := false
 var _say_t := 0.0
-var _steal_t := 0.0
-## 测试：这一帧当成按住 K（粉色公主偷偷笑）
+## 测试：这一帧当成按住 E（粉色公主偷偷笑）
 var steal_held := false
 
 
@@ -72,7 +69,7 @@ static func reset_items() -> void:
 
 
 static func status_text() -> String:
-	return "收瓶 %d / %d　粉色：按住 K 偷偷笑　蓝色：J 冻住 K 收瓶 / 挠她" % [caught(), GOAL]
+	return "收瓶 %d / %d　粉色：按住 E 偷偷笑　蓝色：J 冻住 / 挠她　E 收瓶" % [caught(), GOAL]
 
 
 func _ready() -> void:
@@ -92,10 +89,6 @@ func _ready() -> void:
 	_lv.set("no_switch", false)
 	_lv.set_meta(&"free_switch", true)
 	Duo._bind_tab()   # 骑士篇的小镇图写了 no_switch，C 键原来没绑上
-	# K 在这里是「偷偷笑 / 收瓶 / 挠她」，不冲刺
-	for c in [pink, blue]:
-		if is_instance_valid(c):
-			c.set_meta(&"no_dash", true)
 	for c in SPAWN.slice(0, HANDS):
 		_spawn(Cutscene.cell_to_world(c))
 	for c in GRASS:
@@ -120,9 +113,6 @@ func _exit_tree() -> void:
 	for n in hands + grass + marks:
 		if is_instance_valid(n):
 			n.queue_free()
-	for c in [pink, blue]:
-		if is_instance_valid(c):
-			c.remove_meta(&"no_dash")
 	if is_instance_valid(_lv):
 		_lv.set("no_switch", _was_no_switch)
 		_lv.set_meta(&"free_switch", _had_switch)
@@ -167,39 +157,23 @@ func _process(delta: float) -> void:
 	if _emitted or not started or GameState.in_dialogue or GameState.in_cutscene or not is_instance_valid(pink):
 		return
 	advance(delta)
-	if GameState.player == pink and (steal_held or Input.is_key_pressed(KEY_K)):
-		steal(delta)
+	# 粉色公主按住 E：捂着嘴偷偷笑（笑声把手印引过来）
+	if steal_held:
+		KnightLaugh.laugh(pink, delta)
+	else:
+		KnightLaugh.tick(pink, delta)
+	if Input.is_action_just_pressed("interact") and is_instance_valid(GameState.player):
+		bottle_near(GameState.player)
 	if Input.is_action_just_pressed("attack") and GameState.player == blue:
+		blue_j()
+
+
+## 蓝色公主按 J：身边有能冻的手印就冻住；没有、粉色公主又在身边的话，挠她一下帮她笑
+func blue_j() -> String:
+	var near := hands.any(func(h): return is_instance_valid(h) and h.state not in ["gone", "frozen"] and h.global_position.distance_to(blue.global_position) <= FREEZE_R)
+	if near:
 		freeze_near(blue)
-
-
-func _unhandled_input(event: InputEvent) -> void:
-	if _emitted or GameState.in_dialogue:
-		return
-	if event is InputEventKey and event.pressed and not event.echo and (event as InputEventKey).physical_keycode == KEY_K:
-		if GameState.player == blue:
-			press_k_blue()
-		elif is_instance_valid(GameState.player):
-			bottle_near(GameState.player)
-		get_viewport().set_input_as_handled()
-
-
-## 粉色公主按住 K：捂着嘴偷偷笑（笑声把手印引过来）
-func steal(delta: float) -> void:
-	if not pink.laugh:
-		return
-	pink.laugh.add(pink.laugh.max_value * STEAL_RATE * delta)
-	_steal_t -= delta
-	if _steal_t <= 0.0:
-		_steal_t = 1.1
-		SpeechBubble.say(pink, str(STEAL_LINES.pick_random()), 30.0, 1.0)
-		GameState.emote("giggle", 1.0, false)
-
-
-## 蓝色公主按 K：身边有冻住的手印就收瓶，没有就挠一下身边的粉色公主
-func press_k_blue() -> String:
-	if bottle_near(blue) > 0:
-		return "bottle"
+		return "freeze"
 	if pink.global_position.distance_to(blue.global_position) <= TICKLE_R and pink.laugh:
 		pink.laugh.add(pink.laugh.max_value * BLUE_TICKLE)
 		pink.shake(0.15)

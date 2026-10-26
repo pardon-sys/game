@@ -90,6 +90,7 @@ def npc(m, x, y, nid, file, wander=0, extra=""):
 
 
 OBJ = "talk:floor_06/after_objects#"
+KOBJ = "talk:floor_06/after_k_objects#"
 
 # ================================================================ 战后的小镇
 def town_layout(m, kind="town"):
@@ -182,7 +183,8 @@ def town_layout(m, kind="town"):
     m.put(3, 32, "spawn id=from_totem")
     # 通往营地的楼梯：整修中
     prop(m, 59, 40, "stairs_down")
-    prop(m, 58, 38, "barricade")
+    # 骑士篇：路障可以调查（第一天夜里调查它 → 通风口 → 夜探地牢，knight_text/townsfolk.py 的 OBJECTS）
+    prop(m, 58, 38, "barricade", KOBJ + "vent" if kind == "knight" else "")
     m.put(57, 40, "sign dialogue=after_camp_blocked")
     # 骑士篇：从地牢的通风口回来的地方（夜探地牢走的是路障后面的通风口，由 KnightStory 转场）
     m.put(57, 38, "spawn id=from_prison")
@@ -546,6 +548,8 @@ K_DAY_NPCS = {   # 对话文件 -> (人物图, 格, 朝向, 闲逛)
     "after_k_merchant": ("merchant", (8, 24), "down", 1), "after_k_engineer": ("miner", (34, 36), "down", 1),
     "after_k_maid": ("maid", (57, 33), "left", 1), "after_k_mayor": ("mayor", (31, 29), "down", 0),
     "after_k_kids": ("kid", (30, 31), "down", 2),
+    # 主线触发：和他们说话才开始（第一天早上发现骑士、第二天早上诅咒失控）
+    "after_k_guard_dungeon": ("guard", (54, 10), "left", 0), "after_k_guard_camp": ("guard", (55, 38), "right", 0),
 }
 K_NIGHT_NPCS = {
     "after_kn_mayor": ("mayor", (42, 21), "down", 0), "after_kn_captain": ("captain", (39, 24), "right", 0),
@@ -561,6 +565,9 @@ for _fid, _npcs, _seed in ((KDAY, K_DAY_NPCS, 801), (KNIGHT_N, K_NIGHT_NPCS, 802
     km.put(43, 11, "blue_princess follow=true ai=false")
     for _f, (_nid, (_x, _y), _d, _w) in _npcs.items():
         npc(km, _x, _y, _nid, _f, _w, "dir=" + _d)
+    if _fid == KNIGHT_N:
+        # 广场上暗掉的那盏笑声灯笼：调查它 → 以笑为饵
+        prop(km, 34, 26, "lamp", KOBJ + "lantern")
     scatter(km, _seed, 55)
     km.write()
 

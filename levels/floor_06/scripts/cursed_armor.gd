@@ -43,11 +43,18 @@ func _ready() -> void:
 	add_child(shape)
 	z_index = 2
 	add_to_group("cursed_armor")
+	add_to_group(PantsBurst.KNIGHT_GROUP)
 
 
 func stun(time: float) -> void:
 	stun_left = maxf(stun_left, time)
 	_flash = 0.3
+
+
+## 蓝色公主的千手解放扫到：定住 PantsBurst.STUN 秒（和 J 的冻住分开算冷却）
+func on_pants_burst(burst: PantsBurst) -> void:
+	if global_position.distance_to(burst.global_position) <= PantsBurst.RADIUS:
+		stun(PantsBurst.STUN)
 
 
 func freeze(time: float) -> void:
