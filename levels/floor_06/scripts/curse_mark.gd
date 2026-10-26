@@ -23,6 +23,14 @@ func _ready() -> void:
 	mat.light_mode = CanvasItemMaterial.LIGHT_MODE_UNSHADED
 	material = mat
 	add_to_group("curse_mark")
+	add_to_group(PantsBurst.KNIGHT_GROUP)
+
+
+## 蓝色公主的千手解放扫到：地纹暂停 PantsBurst.TRAP_OFF 秒（踩上去不挠、不招手印）
+func on_pants_burst(burst: PantsBurst) -> void:
+	if global_position.distance_to(burst.global_position) <= PantsBurst.RADIUS:
+		_cool = maxf(_cool, PantsBurst.TRAP_OFF)
+		_flash = 0.5
 
 
 func _process(delta: float) -> void:

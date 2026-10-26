@@ -98,6 +98,7 @@ const RESCUE_R := 22.0
 const RESCUE_TIME := 1.0
 const ENRAGE_AFTER := 15.0
 const ENRAGE := 0.75
+const BURST_STAGGER := 2.0
 ## AI 被抓 / 被穿上诅咒装备时多久挣一下
 const AI_MASH_EVERY := 0.18
 const PHASE_KEY := "task_boss_phase"
@@ -196,6 +197,7 @@ func _ready() -> void:
 	_home = Cutscene.cell_to_world(CENTER)
 	_body.global_position = _home
 	_spawn_victims()
+	add_to_group(PantsBurst.KNIGHT_GROUP)
 	phase = clampi(int(GameState.vars.get(PHASE_KEY, 0)), 0, PHASES - 1)
 	_enter_phase(phase)
 	var hooks := Hooks.new()
@@ -906,6 +908,22 @@ func rescue(v: KnightBossFx.Victim) -> void:
 	Audio.play("star_burst", -8.0)
 
 
+## 蓝色公主的千手解放：骑士踉跄 BURST_STAGGER 秒、露出破绽（离得够近才算），全场贴在人身上的手印都被扒下来
+func on_pants_burst(burst: PantsBurst) -> void:
+	if _emitted or transitioning:
+		return
+	for v in victims:
+		if is_instance_valid(v) and v.cursed:
+			v.cursed = false
+			v.cursed_t = 0.0
+			v.rescue = 0.0
+	enraged = false
+	if is_instance_valid(_body) and _body.global_position.distance_to(burst.global_position) <= PantsBurst.RADIUS + 24.0:
+		stuck_left = maxf(stuck_left, BURST_STAGGER)
+		open_weak(Vector2(0, -14))
+		_say(data().get("burst", ["（千手痒痒裤的小手一下子缠住了盔甲——它踉跄着，动不了了）"]))
+
+
 ## 被救的队员冲上来挡一下（扑抓 / 冲撞 / 磁吸抓人之前问）
 func _block(c: PlayableCharacter) -> bool:
 	if shield <= 0:
@@ -980,6 +998,25 @@ var _ai_mash_t := 0.0
 
 ## 没被操控的那位这一帧干什么（KnightAI 的 plan）；被抓住、被穿上诅咒装备时的挣扎在 _grab_tick / _tick_gears 里
 func ai_plan(ai: PlayableCharacter) -> Dictionary:
+	var r := _ai_move(ai)
+	if ai == blue and _ai_burst():
+		r = r.duplicate()
+		r["skill"] = true
+	return r
+
+
+## AI 蓝色公主放千手解放：粉色公主被抓住、场上有两个人被手印贴着，或者盔甲就在身边而且没有破绽的时候
+func _ai_burst() -> bool:
+	if not ai_enabled or _emitted or transitioning or not is_instance_valid(_body) or not is_instance_valid(blue) or not PantsBurst.learned():
+		return false
+	if PantsBurst.cooldown_left(blue) > 0.0 or grabbed == blue:
+		return false
+	var cursed := victims.filter(func(x): return is_instance_valid(x) and x.cursed).size()
+	var close := blue.global_position.distance_to(_body.global_position) <= PantsBurst.RADIUS
+	return grabbed == pink or cursed >= 2 or (close and stuck_left <= 0.0 and weak_left <= 0.0)
+
+
+func _ai_move(ai: PlayableCharacter) -> Dictionary:
 	if not ai_enabled or _emitted or transitioning or not is_instance_valid(_body) or grabbed == ai:
 		return {"hold": true}
 	if resonance:

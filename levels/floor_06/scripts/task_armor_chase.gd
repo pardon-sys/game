@@ -188,6 +188,24 @@ func advance(delta: float) -> void:
 
 ## 没被操控的那位这一帧干什么（KnightAI 的 plan）
 func ai_plan(ai: PlayableCharacter) -> Dictionary:
+	var r := _ai_move(ai)
+	if ai == blue and _ai_burst():
+		r = r.duplicate()
+		r["skill"] = true
+	return r
+
+
+## AI 蓝色公主放千手解放：J 还在冷却、盔甲又在她身边，而且正扑向粉色公主（或者已经抱住了她）
+func _ai_burst() -> bool:
+	if not ai_enabled or _emitted or not is_instance_valid(armor) or not is_instance_valid(blue) or not PantsBurst.learned():
+		return false
+	if PantsBurst.cooldown_left(blue) > 0.0 or armor.stun_left > 0.0 or armor.freeze_left > 0.0:
+		return false
+	var near := blue.global_position.distance_to(armor.global_position) <= PantsBurst.RADIUS - 8.0
+	return near and (grabbing or (freeze_cool > 0.0 and armor.global_position.distance_to(pink.global_position) < AI_GUARD))
+
+
+func _ai_move(ai: PlayableCharacter) -> Dictionary:
 	if not ai_enabled or _emitted or grabbing or not is_instance_valid(armor) or not is_instance_valid(pink):
 		return {"hold": true}
 	var d_pink := armor.global_position.distance_to(pink.global_position)

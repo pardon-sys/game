@@ -7,18 +7,18 @@
 				"var": {
 					"knight_step": [
 						">=",
-						2
+						1
 					]
 				}
 			},
-			"node": "later"
+			"node": "t0"
 		},
 		{
-			"node": "earlier"
+			"node": "t1"
 		}
 	],
 	"nodes": {
-		"later": {
+		"t0": {
 			"lines": [
 				{
 					"text": "一个骑士，从地牢里爬出来？"
@@ -28,7 +28,7 @@
 				}
 			]
 		},
-		"earlier": {
+		"t1": {
 			"lines": [
 				{
 					"text": "一大早的，保卫队就跑来跑去。出什么事了？"

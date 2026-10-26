@@ -1,0 +1,77 @@
+{
+	"name": "",
+	"entries": [
+		{
+			"node": "lantern"
+		}
+	],
+	"nodes": {
+		"lantern": {
+			"goto": [
+				{
+					"if": {
+						"eq": {
+							"knight_step": 3
+						}
+					},
+					"node": "lantern_go"
+				}
+			],
+			"lines": [
+				{
+					"text": "（一盏笑声灯笼，静静地亮着）",
+					"speaker": ""
+				}
+			]
+		},
+		"lantern_go": {
+			"lines": [
+				{
+					"text": "（灯笼里的光一点一点暗了下去。灯罩上，贴着一个紫色的小手印——它在吸灯里的笑声）",
+					"speaker": ""
+				},
+				{
+					"text": "……这是什么？",
+					"speaker": "公主",
+					"emotion": "surprise"
+				},
+				{
+					"text": "……别碰。",
+					"speaker": "蓝色的公主"
+				}
+			],
+			"set": {
+				"call": "knight_go"
+			}
+		},
+		"vent": {
+			"goto": [
+				{
+					"if": {
+						"eq": {
+							"knight_step": 4
+						}
+					},
+					"node": "vent_go"
+				}
+			],
+			"lines": [
+				{
+					"text": "（营地楼梯的路障。……木板后面好像有一道缝，有风吹出来）",
+					"speaker": ""
+				}
+			]
+		},
+		"vent_go": {
+			"lines": [
+				{
+					"text": "（蓝色公主蹲下来，摸到路障最下面那块木板，轻轻一推——木板松了，后面露出一道窄窄的通风口）",
+					"speaker": ""
+				}
+			],
+			"set": {
+				"call": "knight_go"
+			}
+		}
+	}
+}

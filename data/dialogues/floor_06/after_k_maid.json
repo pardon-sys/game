@@ -7,28 +7,28 @@
 				"var": {
 					"knight_step": [
 						">=",
-						2
+						1
 					]
 				}
 			},
-			"node": "later"
+			"node": "t0"
 		},
 		{
-			"node": "earlier"
+			"node": "t1"
 		}
 	],
 	"nodes": {
-		"later": {
+		"t0": {
 			"lines": [
 				{
-					"text": "咕咕今天早上一直对着东北角叫。"
+					"text": "咕咕今天一直对着工房叫。"
 				},
 				{
 					"text": "……动物比人先知道不对劲。"
 				}
 			]
 		},
-		"earlier": {
+		"t1": {
 			"lines": [
 				{
 					"text": "咕咕一直对着东北角叫，怎么都哄不好。"

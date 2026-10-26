@@ -3,6 +3,7 @@ extends Node2D
 ## 七日赎罪的小场景导演（药剂师工房 floor_06_after_pharmacy、城门外的战场 floor_06_after_field……）：
 ##   目标提示（ObjectiveMarker，AfterStory.objective）、走进目标圈演那个事件（AfterStory.trigger）、进图自动演的事件（AfterStory.run_pending）。
 ##   跟着的蓝色公主（节点改名 AfterBlue）：这张图可以换人（[level] 没写 no_switch 时按 C）。
+##   骑士篇的小镇：有事找的人（KnightStory.marked_npcs：这一步要和他说话的人）头上冒「！」。
 ## 图例：X = f6afterroom
 
 const PARTNER := "floor_06/after_partner"
@@ -65,6 +66,16 @@ func refresh_objective() -> void:
 	if is_instance_valid(marker):
 		_objective = AfterStory.objective(_floor)
 		marker.set_target(_objective)
+	_sync_marks()
+
+
+func _sync_marks() -> void:
+	var lv := _level()
+	if lv == null or not KnightStory.active():
+		return
+	var want := KnightStory.marked_npcs()
+	for n in lv.find_children("*", "Resident", true, false):
+		AfterTown.set_mark(n, str(n.name) in want)
 
 
 func _process(_delta: float) -> void:

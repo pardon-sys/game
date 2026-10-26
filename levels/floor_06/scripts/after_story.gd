@@ -497,7 +497,14 @@ static func advance_slot() -> void:
 
 ## 小屋的床（白天）：这个时段没有要做的事了 → 休息到下一个时段。返回休息了没有。
 static func rest() -> bool:
-	if running or DayClock.passing or DayClock.slot() == DayClock.NIGHT or KnightStory.active():
+	if KnightStory.active():
+		# 骑士篇：这一步是「白天休息到下一个时段」的才能休息
+		if KnightStory.can_rest():
+			return await KnightStory.rest_now()
+		if not running and not DayClock.passing:
+			GameState.notify("（现在不是休息的时候。）")
+		return false
+	if running or DayClock.passing or DayClock.slot() == DayClock.NIGHT:
 		return false
 	var ev := pending_event()
 	if ev != "":

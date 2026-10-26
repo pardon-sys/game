@@ -4,6 +4,7 @@ extends Node2D
 ##   千手痒痒裤的小手全部伸长，一圈扫出去（RADIUS）——范围内的怪定身 STUN 秒、陷阱暂停 TRAP_OFF 秒；
 ##   副作用：之后 BACKLASH 秒小手收不回来，转过来挠她自己的大腿和屁股（闷笑每秒 +BACKLASH_RATE，状态 pants_backlash 走得慢）。冷却 COOLDOWN 秒。
 ## PantsBurst.cast(角色) → 释放成功返回 true（没学会 / 冷却中 / 不是蓝色公主返回 false）。可以挂额外的目标回调 extra（考核里推开粉色公主）。
+## 骑士篇的诅咒（手印、地纹、盔甲、Boss……都不是 Monster）：在 KNIGHT_GROUP 组里，实现 on_pants_burst(本节点)，自己按距离决定怎么反应。
 
 const FLAG := "skill_pants_burst"
 const RADIUS := 72.0
@@ -12,6 +13,7 @@ const TRAP_OFF := 3.0
 const BACKLASH := 5.0
 const BACKLASH_RATE := 0.06
 const COOLDOWN := 15.0
+const KNIGHT_GROUP := "knight_cursed"
 
 static var _ready_at := {}
 
@@ -51,6 +53,9 @@ func _ready() -> void:
 		if m is Monster and is_instance_valid(m) and (m as Node2D).global_position.distance_to(global_position) <= RADIUS:
 			(m as Monster).stun(STUN)
 			HitFx.play("hand", get_parent(), (m as Node2D).global_position + Vector2(0, -8))
+	for k in get_tree().get_nodes_in_group(KNIGHT_GROUP):
+		if is_instance_valid(k) and k.has_method("on_pants_burst"):
+			k.on_pants_burst(self)
 	for t in get_tree().get_nodes_in_group("trap"):
 		var tr := t as Trap
 		if tr and tr.active and tr.global_position.distance_to(global_position) <= RADIUS:

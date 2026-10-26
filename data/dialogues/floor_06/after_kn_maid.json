@@ -11,14 +11,14 @@
 					]
 				}
 			},
-			"node": "later"
+			"node": "t0"
 		},
 		{
-			"node": "earlier"
+			"node": "t1"
 		}
 	],
 	"nodes": {
-		"later": {
+		"t0": {
 			"lines": [
 				{
 					"text": "……多谢。"
@@ -29,7 +29,7 @@
 				}
 			]
 		},
-		"earlier": {
+		"t1": {
 			"lines": [
 				{
 					"text": "……我的声音。……我刚才笑了，可是听不见。"

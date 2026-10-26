@@ -14,14 +14,18 @@ K = "knight"
 
 # ---------------------------------------------------------------- E 诅咒失控（第二天早上）
 def erupt():
+    """第二天早上，在营地楼梯口和队员说话以后：地牢里的盔甲挣断铁链冲上来。"""
     s = [
-        {"actions": [A("fade_in", time=0.6)], "wait": 0.6},
-        line(N, "（天刚亮，营地方向传来「轰」的一声闷响，整个小镇都晃了一下）"),
-        line(GUARD, "（撞开小屋的门）不、不好了！地牢的那个人——盔甲自己动起来了！"),
+        {"actions": [A("camera", to=[56, 37], zoom=1.0, time=0.5)], "wait": 0.5},
+        line(N, "（话还没说完，脚下的石板「轰」地一震，整个小镇都晃了一下）", None, [A("shake", time=0.5, strength=3.0)]),
+        line(GUARD, "什么声音——！"),
+        line(N, "（营地的楼梯底下，传来铁链一根根崩断的声音。接着是一声沉重的、金属撞在石头上的闷响）"),
+        line(CAP, "（从楼梯底下冲上来）退后！都退后！地牢的那个人——盔甲自己动起来了！", None, None, "captain"),
         line(P, "盔甲自己……？", "surprise"),
-        line(GUARD, "紫色的手印把他整个人都裹住了！牢门被撞开了，他……它正往镇上来！"),
-        line(GUARD, "队长说——它在找你。"),
+        line(CAP, "紫色的手印把他整个人都裹住了。牢门被撞开了，它……正往上来。", None, None, "captain"),
+        line(CAP, "……它在找你。", None, None, "captain"),
         line(BLUE, "……走。"),
+        {"actions": [A("camera", reset=True, time=0.3)], "wait": 0.3},
     ]
     return {"name": "诅咒失控", "letterbox": True, "skippable": True, "steps": s}
 

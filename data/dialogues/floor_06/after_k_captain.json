@@ -7,18 +7,39 @@
 				"var": {
 					"knight_step": [
 						">=",
-						2
+						7
 					]
 				}
 			},
-			"node": "later"
+			"node": "t0"
 		},
 		{
-			"node": "earlier"
+			"if": {
+				"var": {
+					"knight_step": [
+						">=",
+						1
+					]
+				}
+			},
+			"node": "t1"
+		},
+		{
+			"node": "t2"
 		}
 	],
 	"nodes": {
-		"later": {
+		"t0": {
+			"lines": [
+				{
+					"text": "……你们来了。"
+				},
+				{
+					"text": "昨晚的事，我听说了。……先别说，楼梯口那边有人在等你们。"
+				}
+			]
+		},
+		"t1": {
 			"lines": [
 				{
 					"text": "……那个骑士，在工房里。"
@@ -31,7 +52,7 @@
 				}
 			]
 		},
-		"earlier": {
+		"t2": {
 			"lines": [
 				{
 					"text": "……来了。"
