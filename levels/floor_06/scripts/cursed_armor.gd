@@ -82,7 +82,8 @@ func _physics_process(delta: float) -> void:
 	if get_slide_collision_count() > 0:
 		# 撞到墙：顺着墙转向她那边
 		heading = heading.slerp(want, 0.3).normalized()
-	if global_position.distance_to(target.global_position) <= CATCH_R:
+	# 冲刺无敌的时候抓不住（冲刺穿过去躲开）
+	if global_position.distance_to(target.global_position) <= CATCH_R and not target.is_fully_invulnerable():
 		grabbed.emit(target)
 	_sweep(delta)
 
@@ -124,7 +125,7 @@ func _do_sweep() -> void:
 	_flash = 0.3
 	for c in get_tree().get_nodes_in_group("player_chars"):
 		var pc := c as PlayableCharacter
-		if pc and warn_rect.has_point(pc.global_position):
+		if pc and warn_rect.has_point(pc.global_position) and not pc.is_fully_invulnerable():
 			if pc.laugh:
 				pc.laugh.add(pc.laugh.max_value * SWEEP_LAUGH)
 			if pc.status:
