@@ -209,8 +209,6 @@ var tentacle_t := TENTACLE_EVERY * 0.5
 var used_skills := {}
 var phase_attacks := 0
 var incense_used := false
-var dash_at := {}
-var _was_dashing := {}
 var _perfect_cool := 0.0
 var _side_t := SIDESTEP_EVERY
 var _side_left := 0.0
@@ -340,9 +338,6 @@ func _enter_phase(p: int) -> void:
 	var lines: Array = data().get("phase_intro", [])
 	if p < lines.size() and not (lines[p] as Array).is_empty():
 		GameState.princess_reacted.emit(str(lines[p][0]), 3.0)
-	var tips: Array = data().get("phase_tips", [])
-	if p < tips.size():
-		GameState.notify(str(tips[p]), 3.5)
 	if p == PHASES - 1:
 		_start_lanterns()
 
@@ -411,7 +406,6 @@ func advance(delta: float) -> void:
 	stuck_left = maxf(0.0, stuck_left - delta)
 	lucid_left = maxf(0.0, lucid_left - delta)
 	_perfect_cool = maxf(0.0, _perfect_cool - delta)
-	_track_dash()
 	if weak_left > 0.0:
 		weak_left -= delta
 		if weak_left <= 0.0:
@@ -596,7 +590,7 @@ func _warn_mult(skill: String) -> float:
 	used_skills[skill] = true
 	var line := str(data().get("first_use", ""))
 	if line != "":
-		GameState.notify(line, 1.6)
+		SpeechBubble.say(_body, line, 46.0, 1.6)
 	return FIRST_SLOW
 
 
@@ -688,21 +682,12 @@ func _add_fx(n: Node2D, at: Vector2) -> Node2D:
 	return n
 
 
-## 冲刺开始的那一刻（完美闪避用）
-func _track_dash() -> void:
-	for c in _players():
-		var d: bool = c.is_dashing()
-		if d and not bool(_was_dashing.get(c.get_instance_id(), false)):
-			dash_at[c.get_instance_id()] = _t
-		_was_dashing[c.get_instance_id()] = d
-
-
 ## 这一下躲开了没有：冲刺无敌就躲开；刚刚才冲刺的 = 完美闪避（学过队长的旧剑术）→ 骑士露出破绽
 func _dodged(c: PlayableCharacter) -> bool:
 	if not (c.is_dashing() or c.is_fully_invulnerable()):
 		return false
 	if KnightQuests.is_done("spear") and c == GameState.player and _perfect_cool <= 0.0 \
-			and _t - float(dash_at.get(c.get_instance_id(), -10.0)) <= PERFECT and weak_left <= 0.0 and phase < PHASES - 1:
+			and (Time.get_ticks_msec() - c.last_dash_msec) / 1000.0 <= PERFECT and weak_left <= 0.0 and phase < PHASES - 1:
 		_perfect_cool = 3.0
 		_say(data().get("perfect", []))
 		open_weak(Vector2(0, -6))
@@ -1863,13 +1848,24 @@ class NameWarn extends Node2D:
 		queue_redraw()
 
 	func _draw() -> void:
-		draw_arc(Vector2.ZERO, 30 + _t * 30.0, 0, TAU, 40, Color(1, 0.6, 0.95, 0.6), 2.0)
+		# 外圈：冲击波会扫到的范围（红），缺口的方向画成亮绿的扇形 + 描边（站在那个方向上安全）
+		var r := KnightBossFx.Ring.MAX_R
+		var steps := 72
+		for i in steps:
+			var a0 := TAU * i / steps
+			var a1 := TAU * (i + 1) / steps
+			var mid := (a0 + a1) * 0.5
+			if gaps.any(func(g): return absf(angle_difference(mid, float(g))) <= KnightBossFx.Ring.GAP):
+				continue
+			draw_arc(Vector2.ZERO, r, a0, a1, 2, Color(1, 0.3, 0.45, 0.55 + 0.3 * sin(_t * 12.0)), 2.0)
+		draw_arc(Vector2.ZERO, 24 + fmod(_t * 60.0, r - 24.0), 0, TAU, 40, Color(1, 0.5, 0.8, 0.5), 1.5)
 		for g in gaps:
 			var a := float(g)
 			var pts := PackedVector2Array([Vector2.ZERO])
-			for i in 7:
-				pts.append(Vector2.from_angle(a - KnightBossFx.Ring.GAP + i * KnightBossFx.Ring.GAP * 2.0 / 6.0) * 120.0)
-			draw_colored_polygon(pts, Color(0.6, 1.0, 0.8, 0.12 + 0.06 * sin(_t * 10.0)))
+			for i in 9:
+				pts.append(Vector2.from_angle(a - KnightBossFx.Ring.GAP + i * KnightBossFx.Ring.GAP * 2.0 / 8.0) * r)
+			draw_colored_polygon(pts, Color(0.45, 1.0, 0.7, 0.28 + 0.1 * sin(_t * 10.0)))
+			draw_polyline(pts + PackedVector2Array([Vector2.ZERO]), Color(0.6, 1.0, 0.8, 0.9), 1.5)
 
 
 ## 笑面吐出来的笑气（GAS_LIFE 秒后散掉）

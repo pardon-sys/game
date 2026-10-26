@@ -109,6 +109,8 @@ static var latch_dash_chance := 0.4
 var state := State.IDLE
 var _state_time := 0.0
 var _dash_cd := 0.0
+## 上一次冲刺是什么时候（Time.get_ticks_msec）：骑士 Boss 的完美闪避看「快打中才冲刺」
+var last_dash_msec := -100000
 var _dash_dir := Vector2.DOWN
 var _ghost_time := 0.0
 var _step_time := 0.0
@@ -418,6 +420,7 @@ func dash(input := Vector2.ZERO) -> void:
 		return
 	_dash_dir = input.normalized() if input != Vector2.ZERO else facing
 	_dash_cd = dash_cooldown
+	last_dash_msec = Time.get_ticks_msec()
 	set_invulnerable(dash_invuln, true)
 	_ghost_time = 0.0
 	_set_state(State.DASH)
