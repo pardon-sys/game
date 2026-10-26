@@ -131,7 +131,7 @@ func start() -> void:
 	task._shake(0.4, 3.0)
 	Audio.play("rumble", -4.0)
 	if surge != "drain":
-		_aura = KnightFx.play(task._body, "curse_burst", task._body.global_position + Vector2(0, -16), {"size": SURGE_R * 2.2, "loop": true, "fps": 10.0, "color": Color(1, 1, 1, 0.85), "z": -1})
+		_aura = KnightFx.play(task.get_parent(), "curse_burst", task._body.global_position + Vector2(0, -16), {"size": SURGE_R * 2.2, "loop": true, "fps": 10.0, "color": Color(1.2, 1.0, 1.3, 0.95), "z": 3})
 	match surge:
 		"hands":
 			surge_victims.clear()

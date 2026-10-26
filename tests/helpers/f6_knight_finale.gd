@@ -653,6 +653,28 @@ static func run(t: Node) -> void:
 	b.advance(0.05)
 	verify(t, "四盏都亮了：光柱汇到盔甲上", b.finale and b.lanterns.all(func(l): return l.lit and l.finale))
 	KnightCurse.auto = true
+	# 战败小剧场：追逃 1 个 + Boss 按阶段 3 个，都是四幕；两位公主都被挠（粉色脚心、蓝色大腿和屁股），第三幕两个人都释放
+	var ids := ["knight_fail_chase", "knight_fail_boss", "knight_fail_boss_2", "knight_fail_boss_3"]
+	var shape_ok := true
+	for id in ids:
+		var thd: Dictionary = {}
+		if CG.has_theater(id):
+			thd = JSON.parse_string(FileAccess.get_file_as_string(CG.theater_index()[id]))
+		var steps: Array = thd.get("steps", [])
+		var acts := steps.filter(func(st): return st is Dictionary and str(st.get("text", "")).begins_with("—— 第")).size()
+		var blue_hit := steps.any(func(st): return st is Dictionary and (st.get("actions", []) as Array).any(func(x): return str(x.get("who", "")) == "blue" and str(x.get("zone", "")) in ["thigh", "butt"]))
+		var burst := steps.any(func(st): return st is Dictionary and str(st.get("act", "")) == "burst")
+		var comfy := steps.any(func(st): return st is Dictionary and str(st.get("text", "")).contains("舒服"))
+		if acts != 4 or not blue_hit or not burst or not comfy:
+			shape_ok = false
+			print("  小剧场 %s：%d 幕 蓝色被挠 %s 释放 %s 舒服 %s" % [id, acts, blue_hit, burst, comfy])
+	verify(t, "四个战败小剧场都是四幕、两位公主都被挠、第三幕魔力释放的舒服", shape_ok and ids.all(func(i): return CG.has_theater(i)))
+	var fmap := []
+	for ph in 4:
+		GameState.vars[TaskKnightBoss.PHASE_KEY] = ph
+		fmap.append(TaskKnightBoss.fail_theater())
+	GameState.vars[TaskKnightBoss.PHASE_KEY] = 3
+	verify(t, "Boss 失败按阶段挑小剧场（%s）" % [fmap], fmap == ["knight_fail_boss", "knight_fail_boss", "knight_fail_boss_2", "knight_fail_boss_3"])
 	await t._advance_until(func(): return Cutscene.chapter_screen.visible and not Cutscene.is_playing(), 90.0)
 	verify(t, "手帕 → 净化（knight_purify）→ 尾声（半枚徽章）→「骑士篇 完」", t.seen_cuts.has("knight_purify") and t.seen_cuts.has("knight_epilogue")
 		and Cutscene.chapter_title.text.contains("骑士篇"))

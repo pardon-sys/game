@@ -132,7 +132,10 @@ POINTS = [
     point("骑士篇·第一天下午（骑士醒来以后）", "floor_06_after_house", KNIGHT, knight_vars(9, 1, 2), cell=[5, 6], passives=PASSIVES),
     point("骑士篇·第一天夜里（以笑为饵之前）", "floor_06_after_house", KNIGHT, knight_vars(9, 2, 3), cell=[5, 6], passives=PASSIVES),
     point("骑士篇·诅咒失控（第二天早上，找队长之前）", "floor_06_knight_day", KNIGHT, knight_vars(10, 0, 7), cell=[52, 36], passives=PASSIVES),
+    point("骑士篇·镇中追逃（四座信标）", "floor_06_knight_chase", KNIGHT, dict(knight_vars(10, 0, 8), task_chase_lit=0, task_chase_caught=0), cell=[55, 37], passives=PASSIVES),
     point("骑士篇·Boss「痒铠骑士」", "floor_06_knight_chase", KNIGHT, dict(knight_vars(10, 0, 9), task_boss_phase=0, task_boss_caught=0), cell=[41, 29], passives=PASSIVES),
+    point("骑士篇·Boss 第三阶段（胸甲）", "floor_06_knight_chase", KNIGHT, dict(knight_vars(10, 0, 9), task_boss_phase=2, task_boss_caught=0), cell=[41, 29], passives=PASSIVES),
+    point("骑士篇·Boss 最后阶段（笑面、灯笼）", "floor_06_knight_chase", KNIGHT, dict(knight_vars(10, 0, 9), task_boss_phase=3, task_boss_caught=0), cell=[41, 29], passives=PASSIVES),
 ]
 Path("data/dev").mkdir(parents=True, exist_ok=True)
 Path("data/dev/skip_points_more.json").write_text(json.dumps({

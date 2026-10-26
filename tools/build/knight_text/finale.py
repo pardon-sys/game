@@ -9,6 +9,7 @@
 from after_text.common import A, BLUE, BLUE_NODE as B, CAP, MAYOR, N, P, L, line, event
 
 KNIGHT = "骑士"
+LILY = "小莉莉"
 GUARD = "保卫队员"
 K = "knight"
 
@@ -313,37 +314,184 @@ def _tk(by, who="princess", zone="sole", fx="hand", n=8, iv=0.22):
     return A("tickle", who=who, by=by, zone=zone, fx=fx, repeat=n, interval=iv)
 
 
+def _act(title):
+    """幕间标题（旁白一行）"""
+    return _say(N, "—— %s ——" % title)
+
+
+def _release(who="armor"):
+    """魔力疲倦满：自动释放（金光、震一下、笑出声）"""
+    return [A("flash", time=0.5), A("sfx", sound="star_burst"), A("shake", who=who, time=0.4), A("voice", state="laugh")]
+
+
+# 战败小剧场（四幕）：追逃 1 个、Boss 按阶段 3 个（TaskKnightBoss.fail_theater）。
+# 都是一个套路的四幕：①被抓住 ②加码（粉色公主挠脚心、蓝色公主挠大腿和屁股）③两个人的魔力疲倦都满了、自动释放——舒服得软下来，可还在被挠
+# ④有人赶来 / 盔甲失神，逃出来。只写痒、笑、释放后的舒服，不往别处写；两位公主都是成年人。
 FAIL_CHASE = {"name": "镇中追逃失败：被盔甲抱住", "cast": {
-    "princess": {"kind": "princess", "at": [-4, 8], "visual": "helpless_1", "anim": "helpless", "dir": "down"},
-    "armor": {"kind": "npc:knight_cursed", "at": [8, 4], "dir": "left"},
+    "princess": {"kind": "princess", "at": [-10, 8], "visual": "helpless_1", "anim": "helpless", "dir": "down"},
+    "blue": {"kind": "npc:blue_princess", "at": [18, 6], "dir": "left"},
+    "armor": {"kind": "npc:knight_cursed", "at": [2, 2], "dir": "left"},
 }, "steps": [
     {"actions": [A("fade_in", time=0.5), A("voice", state="giggle")], "wait": 0.5},
-    _say(N, "（第三次被抱住的时候，盔甲没有再松手。它把她搂在怀里，像抱着一件很重要的东西）"),
-    _say(N, "（手印一只一只爬到她的脚上，在脚心、脚背、趾缝里慢慢地挠。很轻，很慢，一刻都不停）", [_tk("armor", fx="feather", n=14, iv=0.3)]),
+    _act("第一幕　抱住"),
+    _say(N, "（第三次被抱住的时候，盔甲没有再松手。它把她搂在怀里，像抱着一件很重要、很怕摔碎的东西）"),
+    _say(KNIGHT, "……殿……下……别……跑……"),
+    _say(N, "（手印一只一只从盔甲上爬下来，爬到她光着的脚上，在脚心轻轻地画圈）", [_tk("armor", fx="feather", n=8, iv=0.35)]),
     _say(P, "哈……哈哈……别、别这么轻……这样更、更受不了……", portrait="defeat_1"),
-    _say(N, "（痒意一点一点漫上来，暖洋洋的，她的脚趾一根一根地松开了——魔力差点就这么化开）"),
+    _say(BLUE, "……放开她。"),
+    _act("第二幕　两个人"),
+    _say(N, "（蓝色公主冲上来抬手要冻——盔甲的另一只铁手套却先一步伸了过去，一把捞住了她的腰）"),
+    _say(BLUE, "……！放、放手……"),
+    _say(N, "（几只手印顺着她的裙摆爬上去，贴在她的大腿上，一下一下地挠；还有两只，悄悄爬到了她的屁股上）",
+         [_tk("armor", who="blue", zone="thigh", n=10, iv=0.2), _tk("armor", who="blue", zone="butt", n=6, iv=0.3)]),
+    _say(BLUE, "……哈……！那、那里……不准……噗……！"),
+    _say(N, "（抱着粉色公主的那只手也不闲着：手印钻进她的趾缝，一根一根地挠过去，再沿着脚弓慢慢往脚跟推）",
+         [_tk("armor", fx="hand", n=12, iv=0.2)]),
+    _say(P, "哈哈哈哈！趾、趾缝不行——！脚弓也不行——！", portrait="defeat_2"),
+    _say(BLUE, "……你……笑得……好大声……哈……害、害得我也……"),
+    _act("第三幕　满了"),
+    _say(N, "（两个人的笑声叠在一起，痒意一层一层往上涌——魔力疲倦越积越满）", [_tk("armor", fx="feather", n=10, iv=0.18),
+         _tk("armor", who="blue", zone="thigh", n=10, iv=0.18)]),
+    dict(_say(P, "哈……哈哈……魔、魔力……要……满了……！", portrait="fatigue_burst"), act="burst"),
+    {"actions": _release(), "wait": 0.5},
+    _say(N, "（「嗡」——粉色公主身上一圈粉色的光炸开。释放的那一刻，脚底的麻痒忽然化成了一阵暖洋洋的舒服，她的脚趾一根一根松开了，软软地摊在盔甲的臂弯里）"),
+    _say(P, "……呼……好……舒服……", emotion="happy"),
+    _say(BLUE, "……我……也……不行了……"),
+    {"actions": _release() + [A("shake", who="blue", time=0.4)], "wait": 0.5},
+    _say(N, "（蓝色公主身上也亮起一圈淡蓝的光。她的腿一下子没了力气，整个人挂在铁手套上，长长地舒了一口气）"),
+    _say(N, "（可手印没有停。它们趁两个人软成一团，挠得更轻、更慢——舒服和痒混在一起，分不清是哪一种）",
+         [_tk("armor", fx="feather", n=10, iv=0.3), _tk("armor", who="blue", zone="butt", n=8, iv=0.35)]),
+    _say(P, "……哈……别……刚、刚释放完……现在最、最敏感了……哈哈……", portrait="defeat_2"),
+    _say(BLUE, "……唔……哈……这样……更……"),
+    _act("第四幕　逃"),
+    _say(N, "（「嗖」——一根包着布的木矛横着捅进了盔甲的臂弯）"),
+    _say(CAP, "……松手。"),
+    _say(N, "（盔甲被顶得一晃，两个人从它怀里滑了出来，跌坐在石板路上，还在小声地笑）"),
     _say(KNIGHT, "……殿……下……"),
-    _say(N, "（「哗啦」——蓝色公主的冰从脚下爬上盔甲，把它冻在了原地。粉色公主从它的怀里滑了出来）"),
-    _say(BLUE, "……起来。再引一次。"),
-    _say(P, "哈……哈……好、好……", emotion="helpless_1"),
+    _say(BLUE, "……起来。……再引一次。"),
+    _say(P, "哈……哈……好、好……脚还是软的……", emotion="helpless_1"),
     {"actions": [A("fade_out", time=0.6), A("voice", state="")], "wait": 0.7},
 ]}
 
-FAIL_BOSS = {"name": "痒铠骑士失败：铁手套和手印", "cast": {
-    "princess": {"kind": "princess", "at": [-12, 8], "visual": "helpless_2", "anim": "helpless", "dir": "down"},
-    "blue": {"kind": "npc:blue_princess", "at": [12, 8], "visual": "helpless_1", "anim": "helpless", "dir": "down"},
+# Boss 第一、二阶段（铁手套 / 护腿）：被按在地上
+FAIL_BOSS_1 = {"name": "痒铠骑士失败①：铁手套和护腿", "cast": {
+    "princess": {"kind": "princess", "at": [-14, 10], "visual": "helpless_2", "anim": "helpless", "dir": "down"},
+    "blue": {"kind": "npc:blue_princess", "at": [14, 10], "visual": "helpless_1", "anim": "helpless", "dir": "down"},
     "armor": {"kind": "npc:knight_cursed", "at": [0, -6], "dir": "down"},
 }, "steps": [
     {"actions": [A("fade_in", time=0.5), A("voice", state="giggle")], "wait": 0.5},
-    _say(N, "（铁手套一左一右，同时抓住了两个人）"),
-    _say(N, "（抓着蓝色公主的那只，在她大腿内侧飞快地挠；抓着粉色公主的那只，却只是一下一下地轻轻挠她的脚心）",
-         [_tk("armor", who="blue", zone="thigh", n=12, iv=0.16), _tk("armor", zone="sole", fx="feather", n=8, iv=0.32)]),
-    _say(BLUE, "……哈……！对我……就……这么凶……！"),
+    _act("第一幕　按倒"),
+    _say(N, "（护腿一跺，两个人脚下的石板一起翻了起来——还没站稳，铁手套就一左一右按了下来）"),
+    _say(N, "（粉色公主被按着脚踝，脚心朝天；蓝色公主被按着腰，趴在了地上）"),
+    _say(BLUE, "……放、开……"),
+    _say(P, "这个姿势……好、好危险……", emotion="surprise"),
+    _act("第二幕　十根铁指"),
+    _say(N, "（铁手套的十根指头一起动了。按着粉色公主的那只，指尖在她的脚心上一下一下地轻轻刮）", [_tk("armor", fx="hand", n=10, iv=0.28)]),
+    _say(P, "噗……哈哈……好、好轻……轻得更痒……！", portrait="defeat_1"),
+    _say(N, "（按着蓝色公主的那只却快得多：指头在她的大腿后面飞快地跑，跑到屁股上又绕回来）",
+         [_tk("armor", who="blue", zone="thigh", n=12, iv=0.16), _tk("armor", who="blue", zone="butt", n=8, iv=0.2)]),
+    _say(BLUE, "……哈……！对我……就……这么凶……！哈哈……"),
     _say(P, "哈哈……我、我这边好轻……对不起……哈哈……！", portrait="defeat_1"),
-    _say(BLUE, "……不准……道歉……哈……"),
-    _say(N, "（图腾柱的光闪了一下，铁手套被震开了。两个人跌坐在地上喘气）"),
+    _say(BLUE, "……不准……道歉……哈……哈哈……！"),
+    _say(N, "（护腿上的地脉爬过来，紫色的痒波顺着地面一阵一阵地涌，两个人的脚底一起发麻）", [_tk("armor", fx="feather", n=10, iv=0.2)]),
+    _act("第三幕　满了"),
+    dict(_say(P, "哈哈哈……魔力……满、满了……！", portrait="fatigue_burst"), act="burst"),
+    {"actions": _release(), "wait": 0.5},
+    _say(N, "（粉色的光炸开。释放过后，暖洋洋的舒服从脚底漫上来，她的脚趾一根一根松开了，软软地摊着）"),
+    _say(P, "……呼……好……舒服……", emotion="happy"),
+    {"actions": _release() + [A("shake", who="blue", time=0.4)], "wait": 0.5},
+    _say(BLUE, "……哈……我……也……"),
+    _say(N, "（淡蓝的光跟着亮起。蓝色公主的腿一松，整个人瘫在石板上，舒服得眯起了眼睛）"),
+    _say(N, "（铁手套却没有停：它们换成了指腹，一下一下、慢慢地挠——挠在刚释放完、最软的地方）",
+         [_tk("armor", fx="hand", n=10, iv=0.3), _tk("armor", who="blue", zone="thigh", n=10, iv=0.3)]),
+    _say(P, "……哈……别……现在……碰哪里都……哈哈……", portrait="defeat_2"),
+    _say(BLUE, "……哈……哈……好……奇怪……又舒服……又痒……"),
+    _act("第四幕　光"),
+    _say(N, "（图腾柱的光闪了一下。铁手套被震开，盔甲踉跄着退了两步）"),
     _say(CAP, "（举剑挡在前面）……歇一口气！再来！"),
+    _say(N, "（两个人互相扶着坐起来。腿还是软的，嘴角还挂着没笑完的笑）"),
+    _say(BLUE, "……下一次……先冻手。"),
+    _say(P, "嗯……这次换我引它！", emotion="angry"),
     {"actions": [A("fade_out", time=0.6), A("voice", state="")], "wait": 0.7},
 ]}
 
-THEATERS = {"knight_fail_chase": FAIL_CHASE, "knight_fail_boss": FAIL_BOSS}
+# Boss 第三阶段（胸甲）：被诅咒装备穿满
+FAIL_BOSS_2 = {"name": "痒铠骑士失败②：胸甲的诅咒装备", "cast": {
+    "princess": {"kind": "princess", "at": [-14, 10], "visual": "helpless_1", "anim": "helpless", "dir": "down"},
+    "blue": {"kind": "npc:blue_princess", "at": [14, 10], "visual": "helpless_1", "anim": "helpless", "dir": "down"},
+    "armor": {"kind": "npc:knight_cursed", "at": [0, -8], "dir": "down"},
+}, "steps": [
+    {"actions": [A("fade_in", time=0.5), A("voice", state="giggle")], "wait": 0.5},
+    _act("第一幕　穿上"),
+    _say(N, "（胸甲「咔」地裂开，一件接一件的痒痒装备从缝里飞出来——羽毛袜、趾缝刷、大腿圈，全是地牢里见过的东西）"),
+    _say(P, "这、这些不是地牢里的……怎么又……！", emotion="surprise"),
+    _say(N, "（羽毛袜套上了粉色公主的脚，大腿圈「咔哒」一声扣在了蓝色公主的腿上）"),
+    _act("第二幕　动起来"),
+    _say(N, "（护心磁吸把两个人往盔甲身边拉。装备一靠近诅咒，就自己动了起来）"),
+    _say(N, "（袜子里的羽毛在脚心上一圈一圈地扫，趾缝刷钻进趾缝来回地刷）", [_tk("armor", fx="feather", n=12, iv=0.2)]),
+    _say(P, "哈哈哈哈！袜、袜子在挠——！脱不掉——！", portrait="defeat_2"),
+    _say(N, "（大腿圈里的小毛刷转了起来，从大腿一路刷到屁股，再刷回来）",
+         [_tk("armor", who="blue", zone="thigh", n=12, iv=0.18), _tk("armor", who="blue", zone="butt", n=8, iv=0.22)]),
+    _say(BLUE, "……哈……这个……裤子……的、的同伙……！哈哈……"),
+    _say(KNIGHT, "……殿……下……的……笑……声……"),
+    _act("第三幕　满了"),
+    dict(_say(P, "哈……哈……不、不行了……魔力……！", portrait="fatigue_burst"), act="burst"),
+    {"actions": _release(), "wait": 0.5},
+    _say(N, "（粉色的光炸开，羽毛袜被震松了一半。释放后的舒服一下子涌上来，她靠在盔甲上，脚趾软软地翘着）"),
+    _say(P, "……啊……好……暖……", emotion="happy"),
+    {"actions": _release() + [A("shake", who="blue", time=0.4)], "wait": 0.5},
+    _say(N, "（蓝色公主也亮了。她闭着眼睛，长长地呼出一口气——大腿圈却还在慢悠悠地转）",
+         [_tk("armor", who="blue", zone="thigh", n=8, iv=0.35)]),
+    _say(BLUE, "……舒……服……可是……还在……哈……刷……"),
+    _say(N, "（剩下一半的羽毛袜也没闲着：羽毛贴着最软的脚心，一根一根慢慢地扫——舒服和痒一起往上涌）", [_tk("armor", fx="feather", n=10, iv=0.32)]),
+    _say(P, "……哈哈……别……刚舒服完……又、又要……", portrait="defeat_2"),
+    _act("第四幕　扯下来"),
+    _say(N, "（「咔嚓」——工匠举着钳子冲进来，一钳剪断了大腿圈。小莉莉扑上去，一把把羽毛袜扯了下来）"),
+    _say(LILY, "姐姐！装备我扯掉了！快跑！"),
+    _say(N, "（两个人手拉着手，踉踉跄跄地跑出了磁吸的圈）"),
+    _say(BLUE, "……下次……它甩装备……我先冻。"),
+    _say(P, "我、我先躲！……脚还在麻……", emotion="helpless_1"),
+    {"actions": [A("fade_out", time=0.6), A("voice", state="")], "wait": 0.7},
+]}
+
+# Boss 第四阶段（笑面）：笑声被笑面吸走
+FAIL_BOSS_3 = {"name": "痒铠骑士失败③：笑面吸走的笑声", "cast": {
+    "princess": {"kind": "princess", "at": [-14, 10], "visual": "helpless_2", "anim": "helpless", "dir": "down"},
+    "blue": {"kind": "npc:blue_princess", "at": [14, 10], "visual": "helpless_2", "anim": "helpless", "dir": "down"},
+    "armor": {"kind": "npc:knight_cursed", "at": [0, -10], "dir": "down"},
+}, "steps": [
+    {"actions": [A("fade_in", time=0.5), A("voice", state="giggle")], "wait": 0.5},
+    _act("第一幕　吸"),
+    _say(N, "（笑面张大了嘴。灯笼的光一盏一盏地暗下去，两个人的笑声被一缕一缕地往它身上吸）"),
+    _say(P, "笑声……被、被抽走了……可是……好痒……！", emotion="surprise"),
+    _say(N, "（笑面伸出两条紫色的触手，缠住了两个人的脚踝，把她们拖到了自己跟前）"),
+    _act("第二幕　要更多"),
+    _say(KNIGHT, "……还……要……更……多……笑……声……"),
+    _say(N, "（触手的尖端变成了小小的手，一只在粉色公主的脚心上挠圈，一只顺着蓝色公主的大腿往上爬）",
+         [_tk("armor", fx="hand", n=12, iv=0.2), _tk("armor", who="blue", zone="thigh", n=12, iv=0.2)]),
+    _say(P, "哈哈哈哈！脚、脚心——！笑得越多它吸得越多——停不下来——！", portrait="defeat_2"),
+    _say(N, "（爬到蓝色公主屁股上的那只手，捏了一下，又挠了一下）", [_tk("armor", who="blue", zone="butt", n=8, iv=0.22)]),
+    _say(BLUE, "……哈……哈哈……！这、这里……真的……不行……！"),
+    _say(N, "（被吸走的笑声化成粉紫色的光带，一条一条飘进笑面的嘴里。笑面笑得更大了）"),
+    _act("第三幕　满了"),
+    dict(_say(P, "哈……魔、魔力……要……！", portrait="fatigue_burst"), act="burst"),
+    {"actions": _release(), "wait": 0.5},
+    _say(N, "（粉色的光一炸开，被吸走的笑声停了一瞬。释放后的舒服软软地裹住了她，她瘫在触手里，脚趾一根一根松开）"),
+    _say(P, "……呼……哈……好……舒服……", emotion="happy"),
+    {"actions": _release() + [A("shake", who="blue", time=0.4)], "wait": 0.5},
+    _say(BLUE, "……我……也……满……了……"),
+    _say(N, "（淡蓝的光跟着亮起。蓝色公主靠在粉色公主肩上，舒服得一动不动）"),
+    _say(N, "（可笑面还在吸。触手的小手贴着刚释放完、最软的地方，慢慢地、一下一下地挠——挠出来的笑声又被吸走）",
+         [_tk("armor", fx="feather", n=10, iv=0.3), _tk("armor", who="blue", zone="thigh", n=8, iv=0.35)]),
+    _say(P, "……哈哈……好舒服……又好痒……分、分不清了……", portrait="defeat_2"),
+    _say(BLUE, "……哈……哈……不……要……停……不对……要停……"),
+    _act("第四幕　一瞬"),
+    _say(N, "（笑面忽然顿住了。面罩的缝里，一瞬间透出了不是紫色的光）"),
+    _say(KNIGHT, "……我……在……干……什……么……"),
+    _say(N, "（触手松开了。两个人跌坐在灯笼下面，被吸走的笑声一点一点飘回了灯笼里）"),
+    _say(CAP, "……他还在里面。……站起来，点灯！"),
+    _say(P, "……嗯！这次……站在光里笑！", emotion="angry"),
+    {"actions": [A("fade_out", time=0.6), A("voice", state="")], "wait": 0.7},
+]}
+
+THEATERS = {"knight_fail_chase": FAIL_CHASE, "knight_fail_boss": FAIL_BOSS_1, "knight_fail_boss_2": FAIL_BOSS_2, "knight_fail_boss_3": FAIL_BOSS_3}

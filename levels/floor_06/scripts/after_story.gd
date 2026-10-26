@@ -363,8 +363,11 @@ static func play_task(ev: String, spec: Dictionary) -> bool:
 			break
 		if PenanceBook.started() and not KnightStory.active():
 			await PenanceBook.fail(str(spec["name"]), str(spec["fail"]), int(spec.get("fail_hours", 0)))
-		elif str(spec.get("fail", "")) != "" and CG.has_theater(str(spec["fail"])):
-			await CG.play_theater(str(spec["fail"]))
+		elif str(spec.get("fail", "")) != "":
+			# 任务脚本可以按进度换失败小剧场（骑士 Boss 按阶段）
+			var fail := str(scr.call("fail_theater")) if scr.has_method("fail_theater") else str(spec["fail"])
+			if CG.has_theater(fail):
+				await CG.play_theater(fail)
 		scr.call("reset_items")
 		var p := GameState.player
 		if is_instance_valid(p):

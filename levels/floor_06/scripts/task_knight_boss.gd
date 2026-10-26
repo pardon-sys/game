@@ -25,7 +25,7 @@ extends Node2D
 ##     冻结冷却马上好，被救的队员替公主挡一次扑抓 / 冲撞（shield）；有人被贴着超过 ENRAGE_AFTER 秒没人管：诅咒变强（出招间隔 ×ENRAGE）。
 ##     没被贴的人短按 E 说话（talk）：奶奶递薄荷糖（闷笑 −TALK_MINT）、队员替你挡一下（shield，每人每阶段一次）、其他人喊一句提示。
 ##   支线的帮手：「队长的旧剑术」→ 完美闪避（命中前 PERFECT 秒内才冲刺）露出破绽，开场 shield +1（队长挡一次）；「手印样本」→ 安神香。
-##   被抓 / 绊倒累计 CATCHES 次 = 失败（knight_fail_boss），从这个阶段重来（打碎的部件不回来）。这段能换人（C，只在两位公主之间）。
+##   被抓 / 绊倒累计 CATCHES 次 = 失败（按阶段的四幕小剧场 fail_theater），从这个阶段重来（打碎的部件不回来）。这段能换人（C，只在两位公主之间）。
 ##   没被操控的那位由 AI 控制（KnightAI，ai_plan + Hooks）：两人都躲预警；AI 蓝色公主冻没冻的部件、去冻贴着人的手印、去冻触手、合适的时候放千手解放；
 ##     AI 粉色公主贴近本体（出招变慢）、有破绽 / 冻住的部件就去打、搭档身上有诅咒装备就去扯、被抓住自己连按挣开；最后阶段两人都去没亮的灯笼下笑。
 ## 状态 vars.task_boss_phase（0~3）、task_boss_caught。
@@ -240,6 +240,12 @@ static func data() -> Dictionary:
 
 static func caught() -> int:
 	return int(GameState.vars.get(CAUGHT_KEY, 0))
+
+
+## 失败小剧场按阶段换（AfterStory.play_task 问）：铁手套 / 护腿 → knight_fail_boss，胸甲 → _2，笑面 → _3
+static func fail_theater() -> String:
+	var p := int(GameState.vars.get(PHASE_KEY, 0))
+	return "knight_fail_boss" if p <= 1 else "knight_fail_boss_%d" % (p)
 
 
 static func reset_items() -> void:
