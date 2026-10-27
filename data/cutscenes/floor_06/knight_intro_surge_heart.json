@@ -1,0 +1,30 @@
+{
+	"name": "机制：诅咒爆发·护心诅咒",
+	"letterbox": true,
+	"skippable": true,
+	"steps": [
+		{
+			"speaker": "",
+			"text": "（胸甲裂开一道缝，两颗紫色的心核飞出来，绕着胸口打转）"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……跟冻手印样本一样。两颗，三秒之内，一起冻。",
+			"if": {
+				"flag": "kq_samples_done"
+			}
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……两颗心核。三秒之内，一起冻住。",
+			"if": {
+				"not": "kq_samples_done"
+			}
+		},
+		{
+			"speaker": "公主",
+			"text": "那我贴着它！我在旁边，它转得慢！",
+			"emotion": "angry"
+		}
+	]
+}

@@ -140,6 +140,12 @@ func freeze() -> void:
 	Audio.play("chime", -8.0)
 
 
+## 冰晶结界：范围里的碎片冻住
+func on_ice_barrier(center: Vector2, r: float, _time: float) -> void:
+	if state != "caught" and global_position.distance_to(center) <= r:
+		freeze()
+
+
 ## 走过去按 E：冻住的装进瓶子
 func bottle(by: PlayableCharacter) -> bool:
 	if state != "frozen" or by.global_position.distance_to(global_position) > BOTTLE_R:

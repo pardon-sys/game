@@ -142,17 +142,23 @@ const TENTACLE_DRAIN := 0.08
 const TENTACLE_FREEZE_R := 30.0
 ## AI 被抓 / 被穿上诅咒装备时多久挣一下
 const AI_MASH_EVERY := 0.18
+## 召出来的小手：活 HAND_LIFE 秒自己散；爬进亮着的灯笼光里就化掉；被扫帚扫（BROOM_R）
+const HAND_LIFE := 15.0
+const BROOM_R := 56.0
 const PHASE_KEY := "task_boss_phase"
 const CAUGHT_KEY := "task_boss_caught"
 const SHEET := preload("res://assets/generated/npcs/knight_cursed.png")
 ## 场上的人：[人物图, 样子, 相对广场中间的位置]
 const VICTIMS := [["guard", "fallen", Vector2(-92, 40)], ["guard", "fallen", Vector2(96, -34)], ["guard", "guard", Vector2(-104, -40)],
-	["kid", "runner", Vector2(-120, 70)], ["granny", "runner", Vector2(120, 70)]]
+	["kid", "runner", Vector2(-120, 70)], ["granny", "runner", Vector2(120, 70)],
+	["merchant", "runner", Vector2(-150, -10)], ["miner", "runner", Vector2(150, -50)], ["maid", "runner", Vector2(40, 100)],
+	["supervisor", "runner", Vector2(-40, -70)], ["kid", "runner", Vector2(60, -80)]]
 ## 广场上的木箱（相对广场中间）
 const CRATES := [Vector2(-80, -16), Vector2(80, -32), Vector2(-48, 64), Vector2(80, 64)]
 ## 镇民躲的地方（相对广场中间：木箱后面、长椅后面、灯柱边）
 const COVERS := [Vector2(-80, -4), Vector2(80, -20), Vector2(-48, 76), Vector2(80, 76), Vector2(-16, -10), Vector2(112, -10),
-	Vector2(-64, 18), Vector2(160, 30), Vector2(-120, 30), Vector2(16, 90)]
+	Vector2(-64, 18), Vector2(160, 30), Vector2(-120, 30), Vector2(16, 90),
+	Vector2(-160, -40), Vector2(150, -70), Vector2(-30, -80), Vector2(60, 110)]
 ## 四盏灯笼（相对广场中间：东北、西北、西南、东南——和支线帮手的顺序对应：shoes、samples、spear、fence）
 const LANTERNS := [Vector2(112, -64), Vector2(-112, -64), Vector2(-112, 96), Vector2(112, 96)]
 const HELPER_ORDER := ["shoes", "samples", "spear", "fence"]
@@ -368,6 +374,15 @@ func _transition(p: int) -> void:
 	var info: Array = data().get("transition", [])
 	var tr: Dictionary = info[p] if p < info.size() else {}
 	_burst(_body.global_position + Vector2(0, -20), KnightBossFx.PURPLE)
+	# 换阶段：贴在镇民身上的手印也一起散掉、墙根的诅咒小手淡一截
+	for v in victims:
+		if is_instance_valid(v) and v.cursed:
+			v.cursed = false
+			v.cursed_t = 0.0
+			v.rescue = 0.0
+	enraged = false
+	if is_instance_valid(_decor):
+		_decor.fade = minf(_decor.fade, 1.0 - 0.2 * float(p))
 	_shake(0.4, 4.0)
 	_hitstop()
 	if str(tr.get("stagger", "")) != "":
@@ -392,7 +407,10 @@ func _clear_field() -> void:
 	if is_instance_valid(curse):
 		curse.end(true)
 		curse._end_hunt()
-	for n in hands + gases + fx + tentacles:
+	for h in hands:
+		if is_instance_valid(h):
+			(h as CurseHand).puff()
+	for n in gases + fx + tentacles:
 		if is_instance_valid(n):
 			n.queue_free()
 	hands.clear()
@@ -523,13 +541,26 @@ func _target() -> PlayableCharacter:
 	return ps[randi() % ps.size()] if not ps.is_empty() else pink
 
 
+## 第一次出现的机制：演一段介绍过场（knight_intro_<key>，战斗跟着暂停——_process 碰到 in_cutscene 就停）。
+## 看过就不再演（标记 knight_intro_seen_<key>）；不再出黄字。追逃也用它（throw）。测试关掉：intros = false。
+static var intros := true
+
+
+static func intro(key: String) -> bool:
+	var id := "knight_intro_" + key
+	var flag := "knight_intro_seen_" + key
+	if not intros or skip_cutscenes or GameState.has_flag(flag) or not Cutscene.has_cutscene(id):
+		return false
+	GameState.set_flag(flag)
+	Cutscene.play(id)
+	return true
+
+
 func _tip(key: String) -> void:
 	if _tips.has(key):
 		return
 	_tips[key] = true
-	var t: String = str(data().get("tips", {}).get(key, ""))
-	if t != "":
-		GameState.notify(t, 3.0)
+	intro(key)
 
 
 func _shake(time: float, power: float) -> void:
@@ -763,6 +794,7 @@ func stomp() -> void:
 	stuck_left = STUCK_TIME + WAVE_TIME
 	_shake(0.3, 3.0)
 	_say(data().get("stomp", []))
+	_tip("hands")
 	for i in SUMMON:
 		var h := CurseHand.new()
 		get_parent().add_child(h)
@@ -770,6 +802,7 @@ func stomp() -> void:
 		var ps := _players()
 		if not ps.is_empty():
 			h.seek(ps[i % ps.size()])
+		h.life = HAND_LIFE
 		hands.append(h)
 
 
@@ -1113,6 +1146,31 @@ func _tick_hands() -> void:
 	for h in hands.duplicate():
 		if not is_instance_valid(h) or h.state == "gone":
 			hands.erase(h)
+			continue
+		# 爬进亮着的灯笼光里：化掉
+		if lanterns.any(func(l): return is_instance_valid(l) and l.lit and l.global_position.distance_to(h.global_position) <= KnightCurse.LIGHT_SAFE_R):
+			h.puff()
+			hands.erase(h)
+			continue
+		# 说过话的商人 / 奶奶：这一阶段帮你扫一次身边的小手
+		for v in victims:
+			if is_instance_valid(v) and v.broom and v.global_position.distance_to(h.global_position) <= BROOM_R:
+				sweep(v)
+				break
+
+
+## 镇民拿扫帚扫掉身边的小手（每个阶段一次，和他说过话以后）
+func sweep(v: KnightBossFx.Victim) -> int:
+	v.broom = false
+	var n := 0
+	for h in hands.duplicate():
+		if is_instance_valid(h) and h.state != "gone" and h.global_position.distance_to(v.global_position) <= BROOM_R:
+			h.puff()
+			hands.erase(h)
+			n += 1
+	SpeechBubble.say(v, str((data().get("broom", ["去去去！别碰她！"]) as Array).pick_random()), 30.0, 1.6)
+	Audio.play("swish", -4.0)
+	return n
 
 
 func _voice(delta: float) -> void:
@@ -1426,8 +1484,13 @@ func talk_to(v: KnightBossFx.Victim, who: PlayableCharacter) -> String:
 	var pool: Array = data().get("talk", {}).get(key, data().get("talk", {}).get("guard", []))
 	if not pool.is_empty():
 		SpeechBubble.say(v, str(pool.pick_random()), 30.0, 2.4)
-	_tip("talk")
 	var got := "line"
+	if v.who in ["granny", "merchant"] and v.broom_phase != phase:
+		# 扫帚：这一阶段帮你扫一次身边的小手
+		v.broom_phase = phase
+		v.broom = true
+		if not hands.is_empty():
+			sweep(v)
 	if v.who == "granny" and not v.helped and who.laugh:
 		v.helped = true
 		who.laugh.set_value(maxf(0.0, who.laugh.value - who.laugh.max_value * TALK_MINT))
@@ -1455,10 +1518,34 @@ func on_pants_burst(burst: PantsBurst) -> void:
 		if is_instance_valid(tn):
 			tn.queue_free()
 	tentacles.clear()
+	for part in parts:
+		if is_instance_valid(part) and not part.broken and part.global_position.distance_to(burst.global_position) <= PantsBurst.RADIUS + 20.0:
+			part.freeze_left = maxf(part.freeze_left, FREEZE_TIME)
 	if is_instance_valid(_body) and _body.global_position.distance_to(burst.global_position) <= PantsBurst.RADIUS + 24.0:
 		stuck_left = maxf(stuck_left, BURST_STAGGER)
 		open_weak(Vector2(0, -14))
 		_say(data().get("burst", ["（千手痒痒裤的小手一下子缠住了盔甲——它踉跄着，动不了了）"]))
+
+
+## 蓝色公主的冰晶结界（L，IceBarrier）：范围里的部件冻住（冻住能打）、触手冻碎、心核冻住、被贴着的镇民救下来。小手自己（CurseHand.on_ice_barrier）冻。
+func on_ice_barrier(center: Vector2, r: float, time: float) -> void:
+	if _emitted or transitioning or finale:
+		return
+	for part in parts:
+		if is_instance_valid(part) and not part.broken and part.global_position.distance_to(center) <= r + 20.0:
+			part.freeze_left = maxf(part.freeze_left, maxf(time, FREEZE_TIME))
+	for tn in tentacles.duplicate():
+		if is_instance_valid(tn) and not tn.frozen and tn.head().distance_to(center) <= r:
+			tn.frozen = true
+			tentacles.erase(tn)
+			var tw: Tween = tn.create_tween()
+			tw.tween_property(tn, "modulate:a", 0.0, 0.4)
+			tw.tween_callback(tn.queue_free)
+	if is_instance_valid(curse):
+		curse.freeze_cores_at(center, r)
+	for v in victims:
+		if is_instance_valid(v) and v.cursed and v.global_position.distance_to(center) <= r:
+			rescue(v)
 
 
 ## 被救的队员冲上来挡一下（扑抓 / 冲撞 / 磁吸抓人之前问）

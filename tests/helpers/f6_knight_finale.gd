@@ -23,6 +23,8 @@ static func run(t: Node) -> void:
 	GameState.vars[TaskArmorChase.CAUGHT_KEY] = 0
 	GameState.vars[TaskKnightBoss.PHASE_KEY] = 0
 	GameState.vars[TaskKnightBoss.CAUGHT_KEY] = 0
+	# 机制介绍过场：老的用例里关掉（下面专门测一次）
+	TaskKnightBoss.intros = false
 	verify(t, "骑士篇后半的步骤：%s" % [KnightStory.STEPS.map(func(s): return s["id"]).slice(7)],
 		KnightStory.STEPS.map(func(s): return s["id"]).slice(7) == ["report", "chase", "boss"])
 	KnightStory.jump("report")
@@ -160,6 +162,16 @@ static func run(t: Node) -> void:
 	ch._trap_tick(0.1)
 	await t._wait(0.1)
 	verify(t, "到时间：地上的陷阱收走（还剩 %d）" % ch.traps.size(), ch.traps.is_empty())
+	# 扔得更勤、更多、会预判
+	verify(t, "扔陷阱的间隔：开局 %.1f 秒 → 全亮 %.1f 秒" % [TaskArmorChase.THROW_EVERY, TaskArmorChase.THROW_FAST],
+		is_equal_approx(ch.throw_interval(), lerpf(TaskArmorChase.THROW_EVERY, TaskArmorChase.THROW_FAST, float(TaskArmorChase.lit()) / 4.0)) and TaskArmorChase.THROW_FAST < TaskArmorChase.THROW_EVERY)
+	pink.velocity = Vector2(80, 0)
+	var aims: Array = ch.aim_points()
+	verify(t, "预判：落点在她前进方向的前面（%.0f 像素）" % (aims[0].x - pink.global_position.x), aims[0].x > pink.global_position.x + 40.0)
+	GameState.vars[TaskArmorChase.LIT_KEY] = 3
+	verify(t, "亮了 3 座：一次扔 3 个（第二个拦在去下一座信标的路上）", ch.aim_points().size() == 3)
+	GameState.vars[TaskArmorChase.LIT_KEY] = 1
+	pink.velocity = Vector2.ZERO
 	# 抓三次失败
 	GameState.vars[TaskArmorChase.CAUGHT_KEY] = 2
 	ch.safe_left = 0.0
@@ -340,6 +352,17 @@ static func run(t: Node) -> void:
 		b.mash()
 	verify(t, "铁手套抓住蓝色公主狠挠（+%.1f），抓住粉色公主很轻（+%.1f）" % [blue_gain, pink_gain], blue_gain > pink_gain * 2.0)
 	GameState.vars[TaskKnightBoss.CAUGHT_KEY] = 0
+	# ---- 机制介绍：第一次演过场（战斗暂停），第二次不演
+	GameState.set_flag("knight_intro_seen_hunt", false)
+	TaskKnightBoss.intros = true
+	b.curse.start_hunt(b.victims.filter(func(x): return x.kind != "fallen")[0])
+	verify(t, "第一次盯上镇民：演介绍过场（%s），战斗暂停" % Cutscene.current, Cutscene.is_playing() and Cutscene.current == "knight_intro_hunt")
+	await t._advance_until(func(): return not Cutscene.is_playing() and not GameState.in_dialogue, 20.0)
+	b.curse._end_hunt()
+	b.curse.start_hunt(b.victims.filter(func(x): return x.kind != "fallen")[0])
+	verify(t, "第二次：不再演", not Cutscene.is_playing())
+	b.curse._end_hunt()
+	TaskKnightBoss.intros = false
 	# ---- 诅咒爆发「手印风暴」：打不动、靠近闷笑狂涨、吸到笑声回耐久；三个被贴的镇民都救下来才破
 	GameState.switch_control(pink)
 	await t._wait(0.2)
@@ -456,6 +479,30 @@ static func run(t: Node) -> void:
 	for i in 30:
 		b.advance(0.05)
 	verify(t, "跺地：痒波碰到她（闷笑 %.0f），跺完卡住露出膝盖窝" % pink.laugh.value, pink.laugh.value > 0.0 and b.weak_left > 0.0)
+	# ---- 召出来的小手：15 秒自己散、蓝色公主的冰晶结界冻住、镇民的扫帚扫掉
+	var hs: Array = b.hands.filter(func(h): return is_instance_valid(h) and h.state != "gone")
+	verify(t, "跺地召出小手（%d 只），都有寿命" % hs.size(), hs.size() == TaskKnightBoss.SUMMON and hs.all(func(h): return h.life > 0.0))
+	var h0: CurseHand = hs[0]
+	IceBarrier.cast_with(b.blue, 200.0, 3.0, 3, h0.global_position)
+	verify(t, "冰晶结界（L）：范围里的小手冻住", h0.state == "frozen")
+	for c in [pink, b.blue]:
+		c.remove_buff("frost_guard")
+	h0.life = 0.05
+	await t._wait(0.3)
+	verify(t, "到时间：小手自己散了", not is_instance_valid(h0) or h0.state == "gone")
+	var mer: KnightBossFx.Victim = b.victims.filter(func(v): return v.who == "merchant")[0]
+	b.talk_to(mer, pink)
+	var h1: CurseHand = b.hands.filter(func(h): return is_instance_valid(h) and h.state != "gone")[0]
+	h1.global_position = mer.global_position + Vector2(20, 0)
+	b._tick_hands()
+	verify(t, "和商人说过话：小手爬到他身边，被扫帚扫掉", h1.state == "gone" and not mer.broom)
+	b.stomp()
+	b.stuck_left = 0.0
+	var left_before := b.hands.filter(func(h): return is_instance_valid(h) and h.state != "gone").size()
+	b._clear_field()
+	await t._wait(0.5)
+	verify(t, "换阶段清场：小手一只不剩（之前 %d 只）" % left_before, left_before > 0 and b.hands.is_empty() or b.hands.all(func(h): return not is_instance_valid(h) or h.state == "gone"))
+	b.wave_left = 0.0
 	b.stuck_left = 0.0
 	b._close_weak()
 	pink.global_position = b._body.global_position + Vector2(0, 80)
@@ -619,6 +666,12 @@ static func run(t: Node) -> void:
 	for i in 30:
 		cu.tick(0.2)
 	verify(t, "吸笑过去了", cu.surge == "")
+	var hl0 := CurseHand.new()
+	b.get_parent().add_child(hl0)
+	hl0.global_position = lit0.global_position + Vector2(8, 0)
+	b.hands.append(hl0)
+	b._tick_hands()
+	verify(t, "小手爬进亮着的灯笼光里：化掉", hl0.state == "gone")
 	var tn := b.send_tentacle()
 	verify(t, "笑面伸出触手，爬向一盏灯笼", tn != null and tn.lantern != null)
 	tn.left = 0.0

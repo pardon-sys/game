@@ -1,0 +1,30 @@
+{
+	"name": "机制：诅咒爆发·痒波地脉",
+	"letterbox": true,
+	"skippable": true,
+	"steps": [
+		{
+			"speaker": "",
+			"text": "（护腿重重一跺，紫色的痒波顺着石缝爬满了广场）"
+		},
+		{
+			"speaker": "工匠",
+			"text": "栅栏是我钉的，木桩也是我打的——笑着把它引过来，让它撞！",
+			"if": {
+				"flag": "kq_fence_done"
+			}
+		},
+		{
+			"speaker": "工匠",
+			"text": "我会打木桩！你笑着把它引过来，让它撞上去！",
+			"if": {
+				"not": "kq_fence_done"
+			}
+		},
+		{
+			"speaker": "公主",
+			"text": "笑着引……又是我！（靠近它按住 Y，躲开冲撞）",
+			"emotion": "sad"
+		}
+	]
+}

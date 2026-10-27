@@ -126,8 +126,9 @@ func start() -> void:
 	_drain_t = DRAIN_EVERY
 	_end_hunt()
 	var tx: Dictionary = text().get(surge, {})
-	GameState.princess_reacted.emit(str(tx.get("start", "")), 3.4)
-	GameState.notify(str(tx.get("hint", "")), 4.0)
+	# 第一次：演介绍过场；之后只冒一句旁白
+	if not TaskKnightBoss.intro("surge_" + surge):
+		GameState.princess_reacted.emit(str(tx.get("start", "")), 3.4)
 	task._shake(0.4, 3.0)
 	Audio.play("rumble", -4.0)
 	if surge != "drain":
@@ -333,6 +334,15 @@ func freeze_cores(who: PlayableCharacter) -> bool:
 	return hit
 
 
+## 冰晶结界：范围里的心核都冻住
+func freeze_cores_at(center: Vector2, r: float) -> void:
+	if surge != "heart":
+		return
+	for c in cores:
+		if core_pos(c).distance_to(center) <= r:
+			c["frozen"] = CORE_WINDOW
+
+
 func core_pos(c: Dictionary) -> Vector2:
 	return task._body.global_position + Vector2(0, -22) + Vector2.from_angle(float(c["a"])) * Vector2(CORE_ORBIT, CORE_ORBIT * 0.6)
 
@@ -372,7 +382,8 @@ func start_hunt(v: Node2D = null) -> Node2D:
 	hunt_left = HUNT_GIVEUP
 	var tx: Dictionary = TaskKnightBoss.data().get("hunt", {})
 	SpeechBubble.say(task._body, str((tx.get("bark", ["……笑……声……"]) as Array).pick_random()), 46.0, 1.4)
-	GameState.princess_reacted.emit(str(tx.get("warn", "")), 2.6)
+	if not TaskKnightBoss.intro("hunt"):
+		GameState.princess_reacted.emit(str(tx.get("warn", "")), 2.6)
 	return hunt
 
 

@@ -9,6 +9,7 @@
 from after_text.common import A, BLUE, BLUE_NODE as B, CAP, MAYOR, N, P, L, line, event
 
 KNIGHT = "骑士"
+GRANNY, TOM, LILY_N, ENGINEER = "面包店奶奶", "小汤姆", "小莉莉", "工匠"
 LILY = "小莉莉"
 GUARD = "保卫队员"
 K = "knight"
@@ -102,10 +103,10 @@ def boss_open():
         line(N, "（广场边上，好几个队员已经被挠倒在地上，镇民们一边尖叫一边找地方躲。手印正朝他们爬过去——）"),
         line(GUARD, "哈、哈哈……别管我们……先、先救镇民……！"),
         line(P, "……一个都不会丢下！", "angry"),
-        {"actions": [A("despawn", who=K), A("camera", reset=True, time=0.4),
-                     A("notify", text="部件太硬：换蓝色公主按 J 冻住，再打（攻击）。掉一个部件露出破绽——打破绽 = 挠骑士。地上亮起预警就躲开，冲刺的时候打不中你")],
-         "wait": 0.4},
-        {"actions": [A("notify", text="镇民被手印贴上：走过去按住 E 救人。没被贴的镇民按 E 能说话，有人会帮你一把")], "wait": 0.2},
+        line(BLUE, "……盔甲太硬。我先冻住它（换我，按 J；我的冰晶结界 L 也行），你再打。"),
+        line(CAP, "地上亮起来的地方，是它要打的地方。冲刺的那一下，什么都碰不到你。", None, None, "captain"),
+        line(GRANNY, "我们还没跑！姑娘，有事过来说一声（按 E）——能帮的都帮！"),
+        {"actions": [A("despawn", who=K), A("camera", reset=True, time=0.4)], "wait": 0.4},
     ]
     return {"name": "痒铠骑士", "letterbox": True, "skippable": True, "steps": s}
 
@@ -251,8 +252,13 @@ BOSS = {
         "guard": ["盾给你！下一下我替你挡！", "膝盖窝！撞到箱子它就卡住了！", "别管我们，先打碎它的部件！"],
         "fallen": ["哈……呼……被挠得站不起来了……你、你先上……", "它的手腕……掉了铁手套就是破绽……"],
         "kid": ["姐姐！它跳起来的时候看影子！", "笑脸会追人——跑起来就追不上！", "灯笼！用笑声点灯笼！"],
-        "granny": ["来，含一颗薄荷糖，憋住笑！", "奶奶这把老骨头帮不上忙……拿着这个！"],
+        "granny": ["来，含一颗薄荷糖，憋住笑！奶奶的扫帚也在——小手过来我替你扫！", "奶奶这把老骨头帮不上忙……拿着这个！"],
+        "merchant": ["我的扫帚呢——在这！那些小手过来，我给你扫掉！", "生意不做了！先把这玩意儿赶走！"],
+        "miner": ["矿道里也见过这种紫光……别靠它太近！", "我挖了一辈子的洞，没见过会跳的盔甲……"],
+        "maid": ["它、它刚才看了我一眼……我要回去擦地了……", "姑娘，灯笼！灯笼亮了小手就不敢过来！"],
+        "supervisor": ["……记下了。打碎的部件，全记在骑士账上。", "别往盔甲正面冲，绕到侧面。"],
     },
+    "broom": ["去去去！别碰她！", "扫——！小手都给我出去！", "看我的扫帚！"],
     "talk_mint": "（奶奶塞给她一颗薄荷糖——凉丝丝的，闷笑一下子压下去了一截）",
     "talk_shield": "（队员举起盾站到了她身后：下一下扑抓他来挡）",
     "panic": ["哇啊啊！它过来了！", "快躲到箱子后面！", "妈妈——！", "别、别看我……！"],
@@ -295,7 +301,79 @@ def epilogue():
     return {"name": "半枚徽章", "letterbox": True, "skippable": False, "steps": s}
 
 
-CUTSCENES = {"knight_erupt": erupt, "knight_chase_open": chase_open, "knight_boss_open": boss_open, "knight_purify": purify, "knight_epilogue": epilogue}
+# ---------------------------------------------------------------- 机制介绍（第一次出现时演，战斗暂停；TaskKnightBoss.intro / TaskArmorChase）
+# 台词呼应以前做过的主线 / 支线（if 按做没做过换版本）；之后只在 HUD 上留小进度、冒一句气泡，不再出黄字。
+DONE = lambda q: {"flag": "kq_%s_done" % q}
+NOT_DONE = lambda q: {"not": "kq_%s_done" % q}
+
+
+def _intro(name, *steps):
+    return {"name": name, "letterbox": True, "skippable": True, "steps": list(steps)}
+
+
+def _if(step, cond):
+    return dict(step, **{"if": cond})
+
+
+INTROS = {
+    "rescue": lambda: _intro("机制：救人",
+        line(N, "（一只紫色的手印扑到了躲着的镇民身上——他笑得站都站不稳）"),
+        line(CAP, "还记得以笑为饵那晚吗？手印贴在人身上偷笑声。……走过去，按住 E，把它扒下来！", None, None, "captain"),
+        line(BLUE, "……冻一下，也扒得下来。")),
+    "talk": lambda: _intro("机制：镇民",
+        line(GRANNY, "姑娘！我们还没跑——过来说句话，能帮你一把的就帮！"),
+        line(P, "（没被手印贴着的人，靠近按 E 能说话）")),
+    "weak": lambda: _intro("机制：破绽",
+        line(N, "（铁手套碎开的地方，露出了一截手腕——是他自己的）"),
+        line(CAP, "盔甲缝里露出来的，是他本人。……挠他。让他笑出来，诅咒就松。", None, None, "captain"),
+        _if(line(CAP, "练剑的时候教过你——快打中了再闪开，他就会露出破绽。", None, None, "captain"), DONE("spear"))),
+    "lucid": lambda: _intro("机制：清醒",
+        line(N, "（骑士笑出了声。盔甲上的紫光，一下子暗了下去）"),
+        line(BLUE, "……他醒了一点。现在，哪里都打得动。快。")),
+    "gear": lambda: _intro("机制：诅咒装备",
+        line(P, "这、这是地牢里的痒痒装备！被穿上了！", "surprise"),
+        line(BLUE, "……站过来。我帮你扯。……你自己连按 J 也挣得掉。")),
+    "hands": lambda: _intro("机制：小手",
+        line(N, "（护腿一跺，地上爬出好几只紫色的小手）"),
+        line(GRANNY, "这些小东西怕光！躲到亮着的灯笼底下——它们爬进光里就化了！"),
+        line(GRANNY, "奶奶的扫帚也在。跟奶奶、跟卖东西的那位说句话，小手过来我们给你扫掉！"),
+        line(N, "（小手爬不了多久，自己也会散掉）")),
+    "lantern": lambda: _intro("机制：灯笼",
+        line(MAYOR, "灯笼！就像点灯笼那晚一样——用笑声把它们一盏一盏点亮！"),
+        line(P, "笑……对着灯笼笑！（站在灯笼旁按住 Y）", "happy"),
+        _if(line(TOM, "姐姐！我们也来陪你笑！"), DONE("shoes")),
+        line(BLUE, "……触手来偷的时候，我冻。")),
+    "hunt": lambda: _intro("机制：盯上镇民",
+        line(N, "（盔甲转过头，朝躲在角落里的镇民走了过去。镇民吓得一动不敢动）"),
+        line(TOM, "姐姐！上次你笑一笑，手印就过来了——再笑一次，把它引回来！"),
+        line(P, "……引过来就引过来！（靠近它按住 Y 笑）", "angry")),
+    "surge_hands": lambda: _intro("机制：诅咒爆发·手印风暴",
+        line(N, "（铁手套猛地张开，三只手印飞出去扑在了三个镇民身上。盔甲周身的诅咒浓得像墨——打上去一点用都没有）"),
+        line(CAP, "诅咒在吃他们的笑声！以笑为饵那晚怎么救的，现在就怎么救——三个人，全扒下来！", None, None, "captain"),
+        line(BLUE, "……别靠它太近。圈里，笑声会被吸走。")),
+    "surge_veins": lambda: _intro("机制：诅咒爆发·痒波地脉",
+        line(N, "（护腿重重一跺，紫色的痒波顺着石缝爬满了广场）"),
+        _if(line(ENGINEER, "栅栏是我钉的，木桩也是我打的——笑着把它引过来，让它撞！"), DONE("fence")),
+        _if(line(ENGINEER, "我会打木桩！你笑着把它引过来，让它撞上去！"), NOT_DONE("fence")),
+        line(P, "笑着引……又是我！（靠近它按住 Y，躲开冲撞）", "sad")),
+    "surge_heart": lambda: _intro("机制：诅咒爆发·护心诅咒",
+        line(N, "（胸甲裂开一道缝，两颗紫色的心核飞出来，绕着胸口打转）"),
+        _if(line(BLUE, "……跟冻手印样本一样。两颗，三秒之内，一起冻。"), DONE("samples")),
+        _if(line(BLUE, "……两颗心核。三秒之内，一起冻住。"), NOT_DONE("samples")),
+        line(P, "那我贴着它！我在旁边，它转得慢！", "angry")),
+    "surge_drain": lambda: _intro("机制：吸笑",
+        line(N, "（笑面张大了嘴——全场的笑声都被往它身上吸）"),
+        line(MAYOR, "躲进灯笼的光里！点灯笼那晚，光一直护着大家！"),
+        line(P, "亮着的灯笼……光里！", "surprise")),
+    "throw": lambda: _intro("机制：扔陷阱",
+        line(N, "（盔甲从背后摸出一样东西，朝她前面的路上扔了过来）"),
+        line(P, "这不是地牢里放的嘛……怎么都被他拿了！", "surprise"),
+        line(BLUE, "……它扔到哪，地上先有影子。看影子，绕开。……它还会扔到你要去的地方。")),
+}
+INTRO_CUTS = {"knight_intro_" + k: v for k, v in INTROS.items()}
+
+
+CUTSCENES = {"knight_erupt": erupt, "knight_chase_open": chase_open, "knight_boss_open": boss_open, "knight_purify": purify, "knight_epilogue": epilogue, **INTRO_CUTS}
 FINALE = {"chase": CHASE, "boss": BOSS}
 
 
