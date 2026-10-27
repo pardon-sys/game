@@ -4,7 +4,8 @@ extends QuestRunner
 ##   一直摆着：三片光脚地面（BareFloor：草垛院子的稻草垫、广场彩带下的羽毛堆、西边的鹅卵石小路）、举着羽毛「长矛」偷袭的小孩（AfterKid，光着脚就扑上来挠脚心）。
 ##   0 草垛：站在草垛边按住 E 翻 SEARCH_TIME 秒（翻的时候脚下的稻草一直扎）。
 ##   1 彩带：站在羽毛堆上按住 E 够 REACH_TIME 秒。
-##   2 小路尽头：走到小莉莉身边 → 「谁先笑」（LilyDuelShow），赢了就做完（鞋还回来、骑士勋章、红绳 → 引向主线）。
+##   2 小路尽头：走到小莉莉身边 → 「谁先笑」（LilyDuelShow），赢了鞋还回来 → 过场 kq_shoes_invite（大人不让玩的游戏）。
+##   3 没有灯的小巷「灯全灭了」（QuestHide）/ 4 集市里追回小莉莉的宝贝盒（QuestBox）→ 做完（骑士勋章、红绳 → 引向主线）。
 ## 测试：search_held（这一帧当成按住了 E）、progress、spot、lily、duel()。
 
 const SEARCH_TIME := 1.6
@@ -115,6 +116,10 @@ func duel() -> bool:
 	if is_instance_valid(show):
 		show.queue_free()
 	if ok:
+		reset_items()
+		if Cutscene.has_cutscene("kq_shoes_invite"):
+			await TrainingDB.wait_dialogue_free()
+			await Cutscene.play("kq_shoes_invite")
 		await advance()
 	elif is_instance_valid(pink) and is_instance_valid(lily):
 		pink.global_position = lily.global_position + Vector2(36, 10)

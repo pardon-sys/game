@@ -7,7 +7,11 @@ extends RefCounted
 ##   做的时候：导演（AfterRoom._sync_quest）在这一段所在的图上摆玩法节点（RUNNERS[id]，节点名 Quest_<id>）；玩法节点自己推进阶段（advance）、做完（complete）。
 ##   最后一段写了 report 的：回去找委托人说话（call: kq_report）才算做完。可以先放一放（call: kq_abandon：阶段清零，回到能接）。
 ##   一次只能做一个支线；做支线的时候主线的触发不出现（对话条件 not kq_active），床上不能休息 / 睡觉。
-## 测试：start(id)、advance(id)、complete(id)、stage(id)、refresh()。
+##   段落（stages[]）：where（图；"town" = 现在这一步的骑士篇小镇，白天夜里都行）、cell、text；
+##     runner：这一段用别的玩法节点脚本（不写就用 RUNNERS[id]；没有 runs_on 的按 where 判断）；
+##     talk：{npc, lines, cut}——找这个人说话推进（生成器注入对话，call: kq_next；cut 说完演的过场）；report：最后一段回去找委托人；unlock：这一段才开的门。
+##   时间窗口：offer 按 slots 和步骤；接下以后只要还在步骤范围里就不放下（多段的支线会跨白天黑夜）。
+## 测试：start(id)、advance(id)、complete(id)、stage(id)、refresh()、talk_next(id)。
 
 const PATH := "res://data/after/knight_quests.json"
 const ACTIVE_FLAG := "kq_active"
@@ -62,14 +66,26 @@ static func stage_info(id: String) -> Dictionary:
 	return st[i] if i < st.size() else {}
 
 
-## 这个支线现在的时间窗口里能不能做（步骤、时段）
-static func in_window(id: String) -> bool:
+## 这一段在哪张图（"town" = 现在这一步的骑士篇小镇）
+static func stage_where(id: String) -> String:
+	var w := str(stage_info(id).get("where", ""))
+	return KnightStory.town_now() if w == "town" else w
+
+
+## 步骤在 [opens_at, closes_at) 里
+static func in_steps(id: String) -> bool:
 	if not KnightStory.active():
 		return false
 	var q := info(id)
 	var i := KnightStory.step_index()
-	if i < KnightStory.index_of(str(q.get("opens_at", ""))) or i >= KnightStory.index_of(str(q.get("closes_at", ""))):
+	return i >= KnightStory.index_of(str(q.get("opens_at", ""))) and i < KnightStory.index_of(str(q.get("closes_at", "")))
+
+
+## 这个支线现在的时间窗口里能不能接（步骤、时段）
+static func in_window(id: String) -> bool:
+	if not in_steps(id):
 		return false
+	var q := info(id)
 	# JSON 里的数字读出来是 float，Array.has 不把 0 和 0.0 当成一样：逐个比
 	return (q.get("slots", []) as Array).any(func(s): return int(s) == DayClock.slot())
 
@@ -93,9 +109,9 @@ static func refresh() -> void:
 				var on := is_active(str(id)) and stage(str(id)) == i
 				if GameState.has_flag(flag) != on:
 					GameState.set_flag(flag, on)
-	# 进行中的支线错过了时间窗口（比如夜里的栅栏到第二天）：自动放下，回到能接（窗口过了也就不会再开）
+	# 进行中的支线过了步骤范围（比如夜里的栅栏到第二天）：自动放下，回到能接（窗口过了也就不会再开）；只是换了时段不放下
 	var a := active()
-	if a != "" and not in_window(a) and not KnightStory.running:
+	if a != "" and not in_steps(a) and not KnightStory.running:
 		abandon(a)
 
 
@@ -106,6 +122,8 @@ static func marked_npcs() -> Array:
 		var q := info(str(id))
 		if is_open(str(id)) or (is_active(str(id)) and bool(stage_info(str(id)).get("report", false))):
 			out.append(str(q.get("npc", "")))
+		elif is_active(str(id)) and stage_info(str(id)).has("talk"):
+			out.append(str((stage_info(str(id))["talk"] as Dictionary).get("npc", "")))
 	return out
 
 
@@ -179,7 +197,7 @@ static func objective(floor_id: String) -> Dictionary:
 	var scr := _runner_script(id)
 	if scr and scr.has_method("objective_text"):
 		text = str(scr.call("objective_text", text))
-	var where := str(st.get("where", ""))
+	var where := stage_where(id)
 	if where == floor_id:
 		var c: Array = st.get("cell", [])
 		return {"text": text, "cell": c, "radius": 1.0} if c.size() == 2 else {"text": text}
@@ -210,12 +228,41 @@ static func make_runner(floor_id: String) -> Node:
 	var id := active()
 	if id == "":
 		return null
-	var scr := _runner_script(id)
-	if scr == null or not bool(scr.call("runs_on", floor_id, stage(id))):
+	var scr := stage_script(id)
+	if scr == null or not runs_on(scr, id, floor_id):
 		return null
 	var n: Node = scr.new()
 	n.name = "Quest_" + id
 	return n
+
+
+## 这一段的玩法节点脚本：段落写了 runner 就用它，不然用 RUNNERS[id]
+static func stage_script(id: String) -> Script:
+	var r := str(stage_info(id).get("runner", ""))
+	if r != "":
+		return load(r) if ResourceLoader.exists(r) else null
+	return _runner_script(id)
+
+
+## 这一段的玩法节点在不在这张图上：脚本有 runs_on 就问它，没有就按段落的 where
+static func runs_on(scr: Script, id: String, floor_id: String) -> bool:
+	if str(stage_info(id).get("runner", "")) == "" and scr.has_method("runs_on"):
+		return bool(scr.call("runs_on", floor_id, stage(id)))
+	return stage_where(id) == floor_id
+
+
+## 说话推进的一段（talk）：说完演过场（cut），这一段做完
+static func talk_next(id: String) -> void:
+	if not is_active(id):
+		return
+	var t: Dictionary = stage_info(id).get("talk", {})
+	if t.is_empty():
+		return
+	var cut := str(t.get("cut", ""))
+	if cut != "" and Cutscene.has_cutscene(cut):
+		await TrainingDB.wait_dialogue_free()
+		await Cutscene.play(cut)
+	await advance(id)
 
 
 ## Boss 最后阶段：做过的支线来帮忙的人（灯笼顺序：shoes、samples、spear、fence）

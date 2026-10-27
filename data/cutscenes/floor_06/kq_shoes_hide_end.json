@@ -1,0 +1,48 @@
+{
+	"name": "那一天的躲猫猫",
+	"letterbox": true,
+	"skippable": true,
+	"steps": [
+		{
+			"speaker": "",
+			"text": "（最后一个小孩刚被找出来，巷口亮起一盏油灯）"
+		},
+		{
+			"speaker": "面包店奶奶",
+			"text": "——谁教你们玩这个的！",
+			"npc": "granny"
+		},
+		{
+			"speaker": "小汤姆",
+			"text": "奶、奶奶……",
+			"npc": "kid"
+		},
+		{
+			"speaker": "面包店奶奶",
+			"text": "回家！都回家！这个游戏，以后谁也不许玩！",
+			"npc": "granny"
+		},
+		{
+			"speaker": "",
+			"text": "（奶奶一手一个拎起小孩。走到巷口，她回头看了蓝色公主一眼——然后很快地低下了头）"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……"
+		},
+		{
+			"speaker": "公主",
+			"text": "……奶奶怎么了？",
+			"emotion": "surprise"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……走吧。"
+		},
+		{
+			"speaker": "小莉莉",
+			"text": "（被拎走之前，回头小声喊）姐姐！莉莉的宝贝盒——明天给你看！",
+			"npc": "kid"
+		}
+	]
+}

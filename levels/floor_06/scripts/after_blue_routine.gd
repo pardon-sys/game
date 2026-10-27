@@ -30,7 +30,7 @@ func _process(_delta: float) -> void:
 ## 骑士篇里（不用先赢玩闹）主动邀请了，一直跟到「先分开」
 const KNIGHT_FOLLOW := "knight_blue_follow"
 ## 骑士篇里要蓝色公主帮忙的支线（冻手印、栅栏的夜里）：进行中自己跟上
-const KNIGHT_QUESTS := ["samples", "fence"]
+const KNIGHT_QUESTS := ["shoes", "samples", "fence"]
 
 
 ## 当天挑战获胜后主动邀请了；骑士篇里：说话邀请过（KNIGHT_FOLLOW）

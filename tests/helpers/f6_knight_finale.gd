@@ -443,6 +443,7 @@ static func run(t: Node) -> void:
 	cu.start()
 	verify(t, "诅咒爆发（护腿）：地脉 %d 道、镇民搬来 %d 根木桩" % [cu.veins.size(), cu.stakes.size()], cu.surge == "veins"
 		and cu.stakes.size() == 3 and cu.veins.size() == KnightCurse.VEINS and cu.stakes.all(func(x): return b.crates.has(x)))
+	b._body.global_position = b._home
 	var st0: KnightBossFx.Crate = cu.stakes[0]
 	st0.global_position = b._body.global_position + Vector2(0, 40)
 	pink.global_position = b._body.global_position + Vector2(0, 90)
@@ -491,11 +492,13 @@ static func run(t: Node) -> void:
 	await t._wait(0.3)
 	verify(t, "到时间：小手自己散了", not is_instance_valid(h0) or h0.state == "gone")
 	var mer: KnightBossFx.Victim = b.victims.filter(func(v): return v.who == "merchant")[0]
+	mer.cursed = false
+	mer.broom_phase = -1
 	b.talk_to(mer, pink)
 	var h1: CurseHand = b.hands.filter(func(h): return is_instance_valid(h) and h.state != "gone")[0]
 	h1.global_position = mer.global_position + Vector2(20, 0)
 	b._tick_hands()
-	verify(t, "和商人说过话：小手爬到他身边，被扫帚扫掉", h1.state == "gone" and not mer.broom)
+	verify(t, "和商人说过话：小手爬到他身边，被扫帚扫掉（%s，扫帚 %s，阶段 %d/%d，距离 %.0f）" % [h1.state, mer.broom, mer.broom_phase, b.phase, h1.global_position.distance_to(mer.global_position)], h1.state == "gone" and not mer.broom)
 	b.stomp()
 	b.stuck_left = 0.0
 	var left_before := b.hands.filter(func(h): return is_instance_valid(h) and h.state != "gone").size()

@@ -9,7 +9,7 @@
 from after_text.common import A, BLUE, BLUE_NODE as B, CAP, MAYOR, N, P, L, line, event
 
 KNIGHT = "骑士"
-GRANNY, TOM, LILY_N, ENGINEER = "面包店奶奶", "小汤姆", "小莉莉", "工匠"
+GRANNY, TOM, LILY_N, ENGINEER, PHARM_N = "面包店奶奶", "小汤姆", "小莉莉", "工匠", "药剂师奶奶"
 LILY = "小莉莉"
 GUARD = "保卫队员"
 K = "knight"
@@ -336,6 +336,7 @@ INTROS = {
     "hands": lambda: _intro("机制：小手",
         line(N, "（护腿一跺，地上爬出好几只紫色的小手）"),
         line(GRANNY, "这些小东西怕光！躲到亮着的灯笼底下——它们爬进光里就化了！"),
+        _if(line(LILY_N, "姐姐！像玩「灯全灭了」那样——有光的地方，它们就不敢过来！"), DONE("shoes")),
         line(GRANNY, "奶奶的扫帚也在。跟奶奶、跟卖东西的那位说句话，小手过来我们给你扫掉！"),
         line(N, "（小手爬不了多久，自己也会散掉）")),
     "lantern": lambda: _intro("机制：灯笼",
@@ -350,20 +351,24 @@ INTROS = {
     "surge_hands": lambda: _intro("机制：诅咒爆发·手印风暴",
         line(N, "（铁手套猛地张开，三只手印飞出去扑在了三个镇民身上。盔甲周身的诅咒浓得像墨——打上去一点用都没有）"),
         line(CAP, "诅咒在吃他们的笑声！以笑为饵那晚怎么救的，现在就怎么救——三个人，全扒下来！", None, None, "captain"),
-        line(BLUE, "……别靠它太近。圈里，笑声会被吸走。")),
+        line(BLUE, "……别靠它太近。圈里，笑声会被吸走。"),
+        _if(line(CAP, "……守夜那晚怎么躲的，现在就怎么躲。听它的手。", None, None, "captain"), DONE("spear"))),
     "surge_veins": lambda: _intro("机制：诅咒爆发·痒波地脉",
         line(N, "（护腿重重一跺，紫色的痒波顺着石缝爬满了广场）"),
         _if(line(ENGINEER, "栅栏是我钉的，木桩也是我打的——笑着把它引过来，让它撞！"), DONE("fence")),
         _if(line(ENGINEER, "我会打木桩！你笑着把它引过来，让它撞上去！"), NOT_DONE("fence")),
+        _if(line(ENGINEER, "……跟旧会堂底下那几根封印钉一样。撞断一根，诅咒就松一截！"), DONE("fence")),
         line(P, "笑着引……又是我！（靠近它按住 Y，躲开冲撞）", "sad")),
     "surge_heart": lambda: _intro("机制：诅咒爆发·护心诅咒",
         line(N, "（胸甲裂开一道缝，两颗紫色的心核飞出来，绕着胸口打转）"),
         _if(line(BLUE, "……跟冻手印样本一样。两颗，三秒之内，一起冻。"), DONE("samples")),
         _if(line(BLUE, "……两颗心核。三秒之内，一起冻住。"), NOT_DONE("samples")),
-        line(P, "那我贴着它！我在旁边，它转得慢！", "angry")),
+        line(P, "那我贴着它！我在旁边，它转得慢！", "angry"),
+        _if(line(PHARM_N, "孩子们！熬药的时候怎么憋住的，现在就怎么憋——别让它吸走笑声！"), DONE("samples"))),
     "surge_drain": lambda: _intro("机制：吸笑",
         line(N, "（笑面张大了嘴——全场的笑声都被往它身上吸）"),
         line(MAYOR, "躲进灯笼的光里！点灯笼那晚，光一直护着大家！"),
+        _if(line(TOM, "跟躲猫猫一样！灯光里最安全！"), DONE("shoes")),
         line(P, "亮着的灯笼……光里！", "surprise")),
     "throw": lambda: _intro("机制：扔陷阱",
         line(N, "（盔甲从背后摸出一样东西，朝她前面的路上扔了过来）"),

@@ -135,14 +135,93 @@ static func run(t: Node) -> void:
 		duel.lily_laugh = 0.95
 		duel._press = 0.0
 		duel.press(["A", "S", "D"][duel.weak])
+	await t._advance_until(func(): return KnightQuests.stage("shoes") == 3 and not Cutscene.is_playing(), 20.0)
+	verify(t, "莉莉先笑满：鞋还回来（%s）→ 邀请去没有灯的小巷" % pink.has_meta(&"barefoot"), KnightQuests.stage("shoes") == 3 and t.seen_cuts.has("kq_shoes_invite")
+		and not pink.has_meta(&"barefoot") and KnightQuests.is_active("shoes"))
+	var go_alley := KnightStory.guide(KnightStory.KDAY, KnightStory.ALLEY, "")
+	verify(t, "目标指向小镇西边的小巷入口（%s）" % [go_alley.get("cell")], go_alley.get("cell") == KnightStory.DOORS[KnightStory.ALLEY])
+	# 3 灯全灭了（黑暗躲猫猫）
+	GameState.pending_spawn = "from_town"
+	await t.main.change_level(Floors.scene(KnightStory.ALLEY))
+	await t._advance_until(func(): return runner(t, "shoes") is QuestHide and not Cutscene.is_playing() and not GameState.in_dialogue, 20.0)
+	var rh := runner(t, "shoes") as QuestHide
+	verify(t, "小巷：开场「灯全灭了」，%d 个小孩藏好、%d 只影子手、她提着灯" % [rh.hiders.size() if rh else 0, rh.shadows.size() if rh else 0],
+		rh != null and t.seen_cuts.has("kq_shoes_hide_start") and rh.hiders.size() == QuestHide.FIND and rh.shadows.size() == QuestHide.SHADOW_AT.size()
+		and rh.pink.get_node_or_null("HideLamp") != null)
+	if rh == null:
+		return
+	pink = rh.pink
+	pink.laugh.set_value(0.0)
+	var hd0: QuestHide.Hider = rh.hiders[0]
+	pink.global_position = hd0.global_position + Vector2(6, 0)
+	rh.tick(0.05)
+	verify(t, "走到藏着的小孩身边：找到了，扑上来挠脚心（闷笑 %.0f%%）" % (pink.laugh.ratio() * 100.0), hd0.found and rh.found == 1 and pink.laugh.value > 0.0)
+	var spots_before: Array = rh.hiders.filter(func(x): return not x.found).map(func(x): return x.spot)
+	pink.laugh.set_value(pink.laugh.max_value * 0.7)
+	rh._heard = 0.0
+	pink.global_position = Cutscene.cell_to_world(QuestHide.ENTRANCE)
+	rh.tick(0.05)
+	verify(t, "笑出声：剩下的小孩换地方藏", rh._heard > 0.0 and rh.hiders.filter(func(x): return not x.found).map(func(x): return x.spot) != spots_before)
+	pink.laugh.set_value(0.0)
+	rh.dim_left = 0.0
+	rh._dim_t = 0.01
+	rh.tick(0.05)
+	verify(t, "灯芯暗下去：灯光缩小（%.0f）" % rh.lamp_r, rh.lamp_r == QuestHide.DIM_R)
+	await t._advance_until(func(): return not GameState.in_dialogue, 5.0)
+	var shd: ShadowHand = rh.shadows[0]
+	shd.state = "creep"
+	shd.lamp_r = QuestHide.DIM_R
+	shd.global_position = pink.global_position + Vector2(30, 0)
+	var l0 := pink.laugh.value
+	for i in 30:
+		shd._process(0.05)
+	verify(t, "灯暗的时候影子手伸出来挠一下（%.1f → %.1f，%s，对话 %s，距离 %.0f）" % [l0, pink.laugh.value, shd.state, GameState.in_dialogue, shd.global_position.distance_to(pink.global_position)], pink.laugh.value > l0 and shd.state == "shrink")
+	shd.state = "creep"
+	shd.lamp_r = QuestHide.LAMP_R
+	shd.global_position = pink.global_position + Vector2(20, 0)
+	shd._process(0.05)
+	verify(t, "灯亮着：影子手一照到就缩回去", shd.state == "shrink")
+	pink.laugh.set_value(pink.laugh.max_value * 0.99)
+	rh.tick(0.05)
+	verify(t, "笑满：鬼被抓走，重新藏、重来", rh.found == 0 and pink.laugh.ratio() < 0.5)
+	for x in rh.hiders:
+		rh.find(x)
+	await t._advance_until(func(): return KnightQuests.stage("shoes") == 4 and not Cutscene.is_playing(), 20.0)
+	verify(t, "5 个都找到：奶奶「谁教你们玩这个的！」→ 下一段宝贝盒", KnightQuests.stage("shoes") == 4 and t.seen_cuts.has("kq_shoes_hide_end"))
+	# 4 小莉莉的宝贝盒
+	await go_town(t, "from_alley")
+	await t._advance_until(func(): return runner(t, "shoes") is QuestBox and not GameState.in_dialogue, 10.0)
+	var rb := runner(t, "shoes") as QuestBox
+	if rb:
+		pink = rb.pink
+	verify(t, "回到小镇：集市的货摊底下躲着 %d 只搬着盒子碎片的手印" % (rb.shards.size() if rb else 0), rb != null and rb.shards.size() == QuestBox.PIECES)
+	if rb == null:
+		return
+	var bs: HandShard = rb.shards[0]
+	pink.global_position = bs.home + Vector2(20, 0)
+	bs.lure(pink)
+	bs.state = "crawl"
+	pink.laugh.set_value(0.0)
+	for i in 40:
+		bs._process(0.05)
+		if bs.state == "frozen":
+			break
+	verify(t, "笑着引出来：它爬过来挠一下脚心，然后抱着碎片晃悠（%s）" % bs.state, bs.state == "frozen" and pink.laugh.value > 0.0)
+	verify(t, "按 E：抢回一块（%d）" % rb.take_near(pink), rb.got == 1)
+	for x in rb.shards:
+		if x.state != "caught":
+			x.freeze()
+			x.global_position = pink.global_position
+			rb.take_near(pink)
 	await t._advance_until(func(): return GameState.inventory.count("knight_medal") > 0 and not Cutscene.is_playing(), 20.0)
 	await t._wait(0.3)
-	verify(t, "莉莉先笑满：鞋还回来、骑士勋章、红绳（引向主线）%s" % [[KnightQuests.is_done("shoes"), t.seen_cuts.has("kq_shoes_done"), GameState.inventory.count("knight_medal"), pink.has_meta(&"barefoot"), KnightQuests.is_active("shoes")]], KnightQuests.is_done("shoes") and t.seen_cuts.has("kq_shoes_done")
+	verify(t, "宝贝盒拿齐：发卡（花纹和派对姐姐的花冠一样）→ 骑士勋章、红绳（引向主线）%s" % [[KnightQuests.is_done("shoes"), t.seen_cuts.has("kq_shoes_done"), GameState.inventory.count("knight_medal"), pink.has_meta(&"barefoot"), KnightQuests.is_active("shoes")]], KnightQuests.is_done("shoes") and t.seen_cuts.has("kq_shoes_done")
 		and GameState.inventory.count("knight_medal") == 1 and not pink.has_meta(&"barefoot") and not KnightQuests.is_active("shoes"))
 	LilyDuelShow.quiet = false
 	LilyDuelShow.fixed_seed = -1
 	await t._wait(0.3)
-	verify(t, "做完以后：玩法节点收走、主线的「！」回来了", runner(t, "shoes") == null and gd.get_node_or_null("ErrandMark") != null)
+	gd = t._node("after_k_guard_dungeon") as Node2D
+	verify(t, "做完以后：玩法节点收走、主线的「！」回来了", runner(t, "shoes") == null and gd != null and gd.get_node_or_null("ErrandMark") != null)
 	# ---------------------------------------------------------------- ② 手印样本（下午）
 	KnightStory.jump("afternoon")
 	GameState.pending_spawn = "from_town"
@@ -208,8 +287,82 @@ static func run(t: Node) -> void:
 	await t.main.change_level(Floors.scene(KnightStory.PHARMACY))
 	await t._wait(0.6)
 	await t._talk("floor_06/after_pharm", "")
-	await t._advance_until(func(): return GameState.inventory.count("calm_incense") > 0 and not Cutscene.is_playing(), 20.0)
-	verify(t, "交给奶奶：笑声做的、一直往盔甲那边爬 → 安神香", KnightQuests.is_done("samples") and GameState.inventory.count("calm_incense") == 1
+	await t._advance_until(func(): return KnightQuests.stage("samples") == 4 and not Cutscene.is_playing(), 10.0)
+	verify(t, "交给奶奶：笑声做的、一直往盔甲那边爬 → 还缺三味药，草药洞的门开了", KnightQuests.stage("samples") == 4 and GameState.has_flag("kq_samples_herbs")
+		and not KnightQuests.is_done("samples"))
+	# 4 草药洞
+	GameState.pending_spawn = "from_cellar"
+	await t.main.change_level(Floors.scene(KnightStory.HERBCAVE))
+	await t._advance_until(func(): return runner(t, "samples") is QuestHerbs, 5.0)
+	var rhb := runner(t, "samples") as QuestHerbs
+	verify(t, "草药洞：三种药草各 %d 丛、%d 只手印，光着脚" % [QuestHerbs.PATCHES["bell"].size(), rhb.hands.size() if rhb else 0], rhb != null
+		and rhb.patches.size() == 12 and rhb.hands.size() == QuestHerbs.HANDS.size() and rhb.pink.has_meta(&"barefoot"))
+	if rhb == null:
+		return
+	pink = rhb.pink
+	pink.laugh.set_value(0.0)
+	var bell: HerbPatch = rhb.patches.filter(func(x): return x.kind == "bell")[0]
+	pink.global_position = bell.global_position
+	for i in 40:
+		rhb.tick(0.05, true)
+	verify(t, "站在笑铃草上按住 E：一边挠脚心（%.0f%%）一边摘下来" % (pink.laugh.ratio() * 100.0), rhb.got["bell"] == 1 and bell.picked and pink.laugh.value > 0.0)
+	var yawn: HerbPatch = rhb.patches.filter(func(x): return x.kind == "yawn")[0]
+	var hand0: CurseHand = rhb.hands[0]
+	hand0.global_position = yawn.global_position + Vector2(30, 0)
+	pink.global_position = yawn.global_position
+	pink.status.clear_root()
+	yawn._cool = 0.0
+	rhb.tick(0.05, false)
+	verify(t, "踩到哈欠花：喷粉打哈欠、动不了，附近的手印扑上来（%s）" % hand0.state, pink.status.is_rooted() and hand0.state == "seek")
+	var moss: HerbPatch = rhb.patches.filter(func(x): return x.kind == "moss")[0]
+	pink.status.clear_root()
+	pink.global_position = moss.global_position
+	moss._cool = 0.0
+	rhb.tick(0.05, false)
+	verify(t, "踩到软须苔：缠住脚趾（定身）", pink.status.is_rooted())
+	pink.status.clear_root()
+	pink.laugh.set_value(pink.laugh.max_value)
+	rhb.tick(0.05, false)
+	verify(t, "笑满：一屁股坐下，撒了一株（%s），那一丛长回来" % [rhb.got], rhb.got["bell"] == 0 and not bell.picked and pink.laugh.ratio() < 0.5)
+	rhb.got = {"bell": QuestHerbs.NEED, "moss": QuestHerbs.NEED, "yawn": QuestHerbs.NEED - 1}
+	var last: HerbPatch = rhb.patches.filter(func(x): return x.kind == "yawn" and not x.picked)[0]
+	rhb.pick_at(last)
+	verify(t, "三味药都齐了 → 回工房熬药；光着脚收走", KnightQuests.stage("samples") == 5 and not pink.has_meta(&"barefoot"))
+	# 5 熬药
+	BrewShow.quiet = true
+	GameState.pending_spawn = "from_town"
+	await t.main.change_level(Floors.scene(KnightStory.PHARMACY))
+	await t._advance_until(func(): return runner(t, "samples") is QuestBrew, 5.0)
+	var rbw := runner(t, "samples") as QuestBrew
+	verify(t, "工房：药锅旁边有提示", rbw != null and is_instance_valid(rbw.pot))
+	if rbw == null:
+		return
+	t._go(rbw.pot.global_position)
+	await t._advance_until(func(): return t._show(BrewShow) != null and not (t._show(BrewShow) as BrewShow).busy, 8.0)
+	var bw := t._show(BrewShow) as BrewShow
+	verify(t, "走到药锅旁：开始熬药（三锅）", bw != null and bw.section == 0)
+	if bw:
+		var pr0 := bw.prompt_now("princess")
+		verify(t, "药味冲上来：冒出方向提示，按对了压住", bw.answer(str(pr0["key"])) and bw.overflow == 0)
+		var pr1 := bw.prompt_now("blue")
+		var wrong: String = BrewShow.KEYS[(BrewShow.KEYS.find(str(pr1["key"])) + 1) % 4]
+		bw.answer(wrong)
+		verify(t, "按错 / 没压住：笑出来，药溢了一点（%d）" % bw.overflow, bw.overflow == 1)
+		bw.overflow = BrewShow.OVERFLOW_MAX - 1
+		bw._spill(1)
+		await t._wait(0.3)
+		verify(t, "溢锅 %d 次：这一锅重熬" % BrewShow.OVERFLOW_MAX, bw.overflow == 0 and bw.section == 0)
+		for sec in 3:
+			await t._advance_until(func(): return not bw.busy or not is_instance_valid(bw), 5.0)
+			if not is_instance_valid(bw) or bw._done:
+				break
+			bw.prompt = {}
+			bw.lane.load_chart([])
+			bw.lane.time = 99.0
+			await t._wait(0.3)
+	await t._advance_until(func(): return GameState.inventory.count("calm_incense") > 0 and not Cutscene.is_playing(), 30.0)
+	BrewShow.quiet = false
+	verify(t, "三锅熬完 → 安神香（支线做完）", KnightQuests.is_done("samples") and GameState.inventory.count("calm_incense") == 1
 		and t.seen_cuts.has("kq_samples_done"))
 	# ---------------------------------------------------------------- ③ 队长的旧剑术
 	await go_town(t, "from_pharmacy")
@@ -265,9 +418,67 @@ static func run(t: Node) -> void:
 	pink.dash(Vector2.RIGHT)
 	rq.dash_at = rq._t
 	rq.resolve()
+	await t._advance_until(func(): return KnightQuests.stage("spear") == 1 and not GameState.in_dialogue, 20.0)
+	verify(t, "三轮练完：队长叫她上城墙守夜（梯子开了）", KnightQuests.stage("spear") == 1 and GameState.has_flag("kq_spear_wall"))
+	# 1 守夜
+	GameState.pending_spawn = "from_town"
+	await t.main.change_level(Floors.scene(KnightStory.WALL))
+	await t._advance_until(func(): return runner(t, "spear") is QuestWatch and not GameState.in_dialogue, 10.0)
+	var rw := runner(t, "spear") as QuestWatch
+	verify(t, "城墙上：房檐挂着 %d 只手印、哨塔下站着队长" % (rw.eaves.size() if rw else 0), rw != null and rw.eaves.size() == QuestWatch.EAVES.size())
+	if rw == null:
+		return
+	pink = rw.pink
+	rw.start_blind()
+	verify(t, "到哨塔下：蒙上眼睛（画面变黑），开始听声躲矛", rw.blind and pink.status.is_rooted())
+	rw.next_cue("left")
+	verify(t, "响在左边：往右躲 = 躲开", rw.answer("right") and rw.dodged == 1)
+	rw.next_cue("right")
+	var lw0 := pink.laugh.value
+	rw.answer("right")
+	verify(t, "往同一边躲：被戳中，挠腰（闷笑 +%.0f）" % (pink.laugh.value - lw0), rw.hits == 1 and pink.laugh.value > lw0)
+	rw.next_cue("left")
+	rw.tick(QuestWatch.REACT + 0.1)
+	verify(t, "没躲：也被戳中", rw.hits == 2)
+	rw.next_cue("left")
+	rw.answer("left")
+	verify(t, "挨打 %d 下：重来这一轮" % QuestWatch.MAX_HITS, rw.hits == 0 and rw.dodged == 0)
+	for i in QuestWatch.NEED:
+		rw.next_cue("left")
+		rw.answer("right")
+	await t._advance_until(func(): return KnightQuests.stage("spear") == 2 and not Cutscene.is_playing(), 20.0)
+	verify(t, "躲够 %d 下：墙头上「那天我抱出来两个孩子」→ 下一段二对一" % QuestWatch.NEED, KnightQuests.stage("spear") == 2 and t.seen_cuts.has("kq_spear_watch_end")
+		and not pink.status.is_rooted())
+	# 2 二对一
+	GameState.pending_spawn = "from_town"
+	await t.main.change_level(Floors.scene(KnightStory.DRILL))
+	await t._advance_until(func(): return runner(t, "spear") is QuestDuo and not GameState.in_dialogue, 10.0)
+	var rd := runner(t, "spear") as QuestDuo
+	verify(t, "训练室：二对一（这里能换人）", rd != null and bool(rd._lv.get_meta(&"free_switch", false)))
+	if rd == null:
+		return
+	pink = rd._pink0
+	rd._paused = 99.0
+	pink.global_position = rd.origin() + Vector2(0, 60)
+	rd.attack("sweep")
+	pink.global_position += Vector2(60, 0)
+	rd.resolve()
+	verify(t, "躲开：他收矛慢半拍（空档 %.1f 秒）" % rd.open_left, rd.open_left > 0.0)
+	pink.global_position = rd.captain.global_position + Vector2(0, 16)
+	verify(t, "空档里走到他身边按攻击：挠到了（忍笑 %.0f%%）" % (rd.cap_laugh * 100.0), rd.tickle_cap(pink) and rd.cap_laugh > 0.0)
+	GameState.switch_control(rd.blue)
+	await t._wait(0.2)
+	rd.blue.global_position = rd.captain.global_position + Vector2(0, 20)
+	verify(t, "换成蓝色公主 J：冻住他的矛（这几秒不出招）", rd.freeze_spear(rd.blue) and rd._paused >= QuestDuo.FREEZE)
+	GameState.switch_control(pink)
+	await t._wait(0.2)
+	rd.cap_laugh = 0.9
+	rd.open_left = 1.0
+	rd.tickle_cap(pink)
 	await t._advance_until(func(): return t.seen_cuts.has("kq_spear_done") and not Cutscene.is_playing(), 20.0)
 	await t._wait(0.3)
-	verify(t, "实战轮躲够、完美闪避够 → 做完：护手绳、「到时候我会在」", KnightQuests.is_done("spear") and t.seen_cuts.has("kq_spear_done") and not GameState.has_flag("kq_spear_active"))
+	verify(t, "队长笑出来：手帕（「一个很爱笑的小姑娘给的」）→ 护手绳、「到时候我会在」", KnightQuests.is_done("spear") and t.seen_cuts.has("kq_spear_duo_end")
+		and t.seen_cuts.has("kq_spear_done") and not GameState.has_flag("kq_spear_active"))
 	# 做完以后：找训练室里的队长「再来一次」→ 同样三轮，练完不推进支线、不给奖励
 	await t._wait(0.5)
 	await t._talk("floor_06/after_drill_cap", "", [0])
@@ -305,7 +516,7 @@ static func run(t: Node) -> void:
 	pink.laugh.set_value(0.0)
 	t._go(e.global_position + Vector2(0, 8))
 	await t._advance_until(func(): return e.state == "warn", 2.0)
-	verify(t, "从房檐底下走：地上先亮影子", e.state == "warn")
+	verify(t, "从房檐底下走：地上先亮影子（锁 %d）" % GameState.dialogue_holds, e.state == "warn")
 	await t._advance_until(func(): return e.state == "hold", 2.0)
 	verify(t, "站着不动：掉下来抓住脚（定身、闷笑上涨）", e.state == "hold" and pink.status.is_rooted())
 	for i in EaveHand.MASH:
@@ -332,8 +543,69 @@ static func run(t: Node) -> void:
 		rf = runner(t, "fence") as QuestFence
 		if rf and i < 2:
 			rf.pick()
-	verify(t, "三道门钉好 → 回去找工匠", KnightQuests.stage("fence") == 3 and KnightQuests.marked_npcs().has("after_kn_engineer")
-		and not GameState.player.has_meta(&"busy_hands"))
+	await t._advance_until(func(): return KnightQuests.stage("fence") == 3 and not Cutscene.is_playing(), 20.0)
+	verify(t, "三道门钉好：广场边的裂缝漏紫光（下面是旧会堂）→ 裂缝开了", KnightQuests.stage("fence") == 3 and t.seen_cuts.has("kq_fence_crack")
+		and GameState.has_flag("kq_fence_crack") and not GameState.player.has_meta(&"busy_hands"))
+	# 3 裂缝
+	GameState.pending_spawn = "from_town"
+	await t.main.change_level(Floors.scene(KnightStory.CRACK))
+	await t._advance_until(func(): return runner(t, "fence") is QuestCrack and not GameState.in_dialogue, 10.0)
+	var rc := runner(t, "fence") as QuestCrack
+	verify(t, "裂缝里：趴着爬，%d 个软苔小球" % (rc.moss.size() if rc else 0), rc != null and rc.pink.has_buff("crawl") and rc.moss.size() == QuestCrack.MOSS.size())
+	if rc == null:
+		return
+	pink = rc.pink
+	pink.global_position = (rc.moss[0] as Node2D).global_position
+	rc.tick(0.05, false)
+	var lc0 := pink.laugh.value
+	rc.tick(0.5, false)
+	verify(t, "碰到软苔小球：贴在腿上蹭（闷笑涨）", rc.stuck.size() == 1 and pink.laugh.value > lc0)
+	rc.tick(QuestCrack.WIPE + 0.1, true)
+	verify(t, "按住 E：擦掉", rc.stuck.is_empty())
+	rc._hand_t = 0.0
+	rc.tick(0.05, false)
+	var hc: CurseHand = rc.hands.back()
+	hc.latch(pink)
+	verify(t, "缝里伸出手印贴上来，按 J 抖下去", rc.shake_off() == 1 and hc.state == "flee")
+	for i in 3:
+		pink.global_position = Cutscene.cell_to_world(QuestCrack.NAILS[i])
+		rc.tick(0.05, false)
+		if i == 0:
+			verify(t, "爬到封印钉旁：节拍条敲钉子", rc.hammering and rc.lane != null)
+			verify(t, "敲歪了：再来", not rc.finish_hammer(1))
+			pink.global_position = Cutscene.cell_to_world(QuestCrack.NAILS[i])
+			rc.tick(0.05, false)
+		rc.finish_hammer(QuestCrack.HAMMER_BEATS)
+	await t._advance_until(func(): return KnightQuests.stage("fence") == 4, 5.0)
+	verify(t, "三根封印钉敲回去：尽头的旧门开了，不用再爬", KnightQuests.stage("fence") == 4 and GameState.has_flag("kq_fence_hall") and not pink.has_buff("crawl"))
+	# 4 旧会堂
+	GameState.pending_spawn = "from_crack"
+	await t.main.change_level(Floors.scene(KnightStory.OLDHALL))
+	await t._advance_until(func(): return runner(t, "fence") is QuestOldHall and not GameState.in_dialogue, 10.0)
+	var ro := runner(t, "fence") as QuestOldHall
+	verify(t, "旧会堂：举着火把，%d 只手印、高台底下一团手印" % (ro.hands.size() if ro else 0), ro != null and ro.pink.get_node_or_null("HallTorch") != null
+		and ro.hands.size() == QuestOldHall.HANDS.size() and is_instance_valid(ro.cluster))
+	if ro == null:
+		return
+	pink = ro.pink
+	var ho: CurseHand = ro.hands[0]
+	ho.global_position = pink.global_position + Vector2(20, 0)
+	ro.tick(0.05)
+	verify(t, "火光照到手印：它躲开", ho.state == "flee")
+	ro.fuel = 0.001
+	ho.state = "wander"
+	ho.global_position = pink.global_position + Vector2(60, 0)
+	ro.tick(0.1)
+	verify(t, "火把烧完：手印扑上来", ro.fuel == 0.0 and ho.state == "seek")
+	pink.global_position = Cutscene.cell_to_world(QuestOldHall.CANDLES[0])
+	verify(t, "在旧烛台旁按 E：续满", ro.refuel_near(pink) and ro.fuel == 1.0)
+	var pieces: Array = ro.cluster.split()
+	for x in pieces:
+		x._caught_by_pink(pink)
+	await t._advance_until(func(): return KnightQuests.stage("fence") == 5 and not Cutscene.is_playing(), 20.0)
+	verify(t, "手印团的碎片收齐：壁画上的人像全被刮花了 → 回去找工匠", KnightQuests.stage("fence") == 5 and t.seen_cuts.has("kq_fence_hall_end")
+		and KnightQuests.marked_npcs().has("after_kn_engineer"))
+	await go_town(t, "from_crack")
 	await t._talk("floor_06/after_kn_engineer", "")
 	await t._advance_until(func(): return t.seen_cuts.has("kq_fence_done") and not Cutscene.is_playing(), 20.0)
 	verify(t, "工匠：灯笼架也加固了 → 做完", KnightQuests.is_done("fence") and t.seen_cuts.has("kq_fence_done"))

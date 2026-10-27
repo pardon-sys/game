@@ -1,0 +1,24 @@
+[level]
+# 第六层·地下小镇·战后（tools/build/gen_floor06_after.py 生成，不要直接改）
+intro =
+ambient = 0.3,0.22,0.36
+no_switch = false
+[legend]
+# = wall
+. = floor
+P = player
+t = torch lit=true
+A = exit target=floor_06_after spawn=from_crack
+C = spawn id=from_town
+D = blue_princess follow=true ai=false
+E = f6afterroom
+F = exit target=floor_06_after_oldhall spawn=from_crack unlock_flag=kq_fence_hall locked_dialogue=after_hall_locked
+G = spawn id=from_hall
+
+[map]
+##############################################
+##############################################
+##ACP.....................................GF##
+##.ED.......................................##
+##############################################
+##############################################

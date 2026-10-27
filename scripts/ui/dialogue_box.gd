@@ -404,6 +404,12 @@ func kq_report() -> void:
 		KnightQuests.advance(id)
 
 
+## 骑士篇支线：说话推进的一段（stages[].talk）
+func kq_next() -> void:
+	runner.end_conversation()
+	KnightQuests.talk_next(str(GameState.vars.get("kq_req", "")))
+
+
 func kq_abandon() -> void:
 	runner.end_conversation()
 	KnightQuests.abandon(str(GameState.vars.get("kq_req", "")))

@@ -1477,7 +1477,15 @@ func talk_near(who: PlayableCharacter) -> KnightBossFx.Victim:
 
 ## 和场上的人说话：喊一句提示；奶奶递薄荷糖、队员替你挡一下（每人每阶段一次）
 func talk_to(v: KnightBossFx.Victim, who: PlayableCharacter) -> String:
-	if v.talk_cool > 0.0 or v.cursed:
+	if v.cursed:
+		return ""
+	if v.who in ["granny", "merchant"] and v.broom_phase != phase:
+		# 扫帚：这一阶段帮你扫一次身边的小手（不看说话的冷却）
+		v.broom_phase = phase
+		v.broom = true
+		if hands.any(func(h): return is_instance_valid(h) and h.state != "gone" and h.global_position.distance_to(v.global_position) <= BROOM_R):
+			sweep(v)
+	if v.talk_cool > 0.0:
 		return ""
 	v.talk_cool = TALK_COOL
 	var key := "fallen" if v.kind == "fallen" else v.who
@@ -1485,12 +1493,6 @@ func talk_to(v: KnightBossFx.Victim, who: PlayableCharacter) -> String:
 	if not pool.is_empty():
 		SpeechBubble.say(v, str(pool.pick_random()), 30.0, 2.4)
 	var got := "line"
-	if v.who in ["granny", "merchant"] and v.broom_phase != phase:
-		# 扫帚：这一阶段帮你扫一次身边的小手
-		v.broom_phase = phase
-		v.broom = true
-		if not hands.is_empty():
-			sweep(v)
 	if v.who == "granny" and not v.helped and who.laugh:
 		v.helped = true
 		who.laugh.set_value(maxf(0.0, who.laugh.value - who.laugh.max_value * TALK_MINT))

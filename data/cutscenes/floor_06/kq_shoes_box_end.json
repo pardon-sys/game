@@ -1,0 +1,45 @@
+{
+	"name": "小莉莉的宝贝盒",
+	"letterbox": true,
+	"skippable": true,
+	"steps": [
+		{
+			"speaker": "小莉莉",
+			"text": "宝贝盒回来啦！谢谢姐姐！",
+			"npc": "kid"
+		},
+		{
+			"speaker": "",
+			"text": "（小莉莉打开盒子：玻璃珠、羽毛、半块饼干——还有一枚生锈的小发卡）"
+		},
+		{
+			"speaker": "小莉莉",
+			"text": "这个最宝贝！是在派对姐姐的帐篷后面捡的。",
+			"npc": "kid"
+		},
+		{
+			"speaker": "小莉莉",
+			"text": "姐姐说不是她的。可是花纹跟她头上的花冠一样哦！",
+			"npc": "kid"
+		},
+		{
+			"speaker": "公主",
+			"text": "……真的诶，花纹好旧。",
+			"emotion": "surprise"
+		},
+		{
+			"speaker": "小汤姆",
+			"text": "莉莉！那个给姐姐吧！谢礼！",
+			"npc": "kid"
+		},
+		{
+			"speaker": "小莉莉",
+			"text": "……嗯！给姐姐！",
+			"npc": "kid"
+		},
+		{
+			"speaker": "",
+			"text": "（她把发卡收了起来。没有人再提它）"
+		}
+	]
+}

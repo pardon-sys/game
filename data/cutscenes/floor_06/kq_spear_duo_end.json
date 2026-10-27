@@ -1,0 +1,38 @@
+{
+	"name": "二对一",
+	"letterbox": true,
+	"skippable": true,
+	"steps": [
+		{
+			"speaker": "",
+			"text": "（队长终于「噗」地笑出了声——又立刻板起脸，咳了两下）"
+		},
+		{
+			"speaker": "保卫队队长",
+			"text": "……没笑。",
+			"npc": "captain"
+		},
+		{
+			"speaker": "公主",
+			"text": "你笑了！我们都听见了！",
+			"emotion": "happy"
+		},
+		{
+			"speaker": "",
+			"text": "（他从怀里掏出一块手帕擦汗。手帕角上，绣着两个手拉手的小女孩）"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……这个图案。你从哪里来的。"
+		},
+		{
+			"speaker": "保卫队队长",
+			"text": "……一个很爱笑的小姑娘给的。",
+			"npc": "captain"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……"
+		}
+	]
+}

@@ -1,0 +1,28 @@
+{
+	"name": "旧会堂",
+	"letterbox": true,
+	"skippable": true,
+	"steps": [
+		{
+			"speaker": "",
+			"text": "（最后一块碎片收进了瓶子。大厅安静了下来）"
+		},
+		{
+			"speaker": "",
+			"text": "（火光照着墙上那幅大壁画。人像全被刮花了，什么也看不出来）"
+		},
+		{
+			"speaker": "公主",
+			"text": "……这是谁画的？",
+			"emotion": "surprise"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……走吧。"
+		},
+		{
+			"speaker": "",
+			"text": "（她们回到广场的时候，工匠还站在裂缝旁边，一直没走）"
+		}
+	]
+}

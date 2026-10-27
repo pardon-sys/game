@@ -37,8 +37,19 @@ const KNIGHT_N := "floor_06_knight_night"
 const KCHASE := "floor_06_knight_chase"
 const TOWNS := [KDAY, KNIGHT_N, KCHASE]
 ## 小镇图上通往各处的门口（指路用，三张小镇图布局相同）、各处回小镇的出口
-const DOORS := {"floor_06_after_house": [42, 10], "floor_06_after_pharmacy": [16, 10], "floor_06_after_drill": [8, 10]}
-const EXITS := {"floor_06_after_house": [9, 10], "floor_06_after_pharmacy": [8, 8.5], "floor_06_after_drill": [10, 11.5], "floor_06_after_cellar": [8, 8.5]}
+const DOORS := {"floor_06_after_house": [42, 10], "floor_06_after_pharmacy": [16, 10], "floor_06_after_drill": [8, 10], "floor_06_knight_alley": [2, 16],
+	"floor_06_knight_wall": [12, 40], "floor_06_after_crack": [38, 29]}
+const EXITS := {"floor_06_after_house": [9, 10], "floor_06_after_pharmacy": [8, 8.5], "floor_06_after_drill": [10, 11.5], "floor_06_after_cellar": [8, 8.5],
+	"floor_06_knight_alley": [2, 5], "floor_06_after_herbcave": [2, 8], "floor_06_knight_wall": [2, 3], "floor_06_after_crack": [2, 2],
+	"floor_06_after_oldhall": [13, 17]}
+## 套在别的图里面的图：子图 → [父图, 父图里通往它的门]（指路一层一层往里指：小镇 → 工房 → 地窖 → 草药洞）
+const NESTED := {"floor_06_after_cellar": ["floor_06_after_pharmacy", [12, 8]], "floor_06_after_herbcave": ["floor_06_after_cellar", [13, 5]],
+	"floor_06_after_oldhall": ["floor_06_after_crack", [43, 2]]}
+const ALLEY := "floor_06_knight_alley"
+const HERBCAVE := "floor_06_after_herbcave"
+const WALL := "floor_06_knight_wall"
+const CRACK := "floor_06_after_crack"
+const OLDHALL := "floor_06_after_oldhall"
 ## 工房里通往地窖的活板门
 const CELLAR_DOOR := [12, 8]
 const HOUSE := "floor_06_after_house"
@@ -202,9 +213,13 @@ static func objective(floor_id: String) -> Dictionary:
 
 ## 目标在别的图：小镇图上指向那张图的门口（地窖先指工房的门）；工房里指向地窖的活板门；别的图上指向回去的出口
 static func guide(floor_id: String, where: String, text: String) -> Dictionary:
-	if where == CELLAR and floor_id == PHARMACY:
-		return {"text": text, "cell": CELLAR_DOOR, "radius": 1.0}
-	var door := PHARMACY if where == CELLAR else where
+	# 套着的图：一层一层往外找，找到「这张图里通往它的门」就指那扇门
+	var w := where
+	while NESTED.has(w):
+		if NESTED[w][0] == floor_id:
+			return {"text": text, "cell": NESTED[w][1], "radius": 1.0}
+		w = NESTED[w][0]
+	var door := w
 	if floor_id in TOWNS and DOORS.has(door):
 		return {"text": text, "cell": DOORS[door], "radius": 1.0}
 	if floor_id != where and EXITS.has(floor_id):
