@@ -1,0 +1,31 @@
+{
+	"name": "坏掉的八音盒",
+	"letterbox": true,
+	"skippable": true,
+	"steps": [
+		{
+			"speaker": "派对主人",
+			"text": "……谢谢你们！彩带、点心、蜡烛，都齐了！",
+			"npc": "bonfire_host"
+		},
+		{
+			"speaker": "",
+			"text": "（她从帐篷里捧出一个旧旧的八音盒，转了转发条——只响了两个音，就「咔」地卡住了）"
+		},
+		{
+			"speaker": "派对主人",
+			"text": "……啊。坏了。",
+			"npc": "bonfire_host"
+		},
+		{
+			"speaker": "派对主人",
+			"text": "这是我从小带在身边的东西。……大家找到我的时候，我手里就攥着它。",
+			"npc": "bonfire_host"
+		},
+		{
+			"speaker": "公主",
+			"text": "……找工匠大叔修修看吧！",
+			"emotion": "happy"
+		}
+	]
+}

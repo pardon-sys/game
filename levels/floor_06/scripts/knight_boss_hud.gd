@@ -13,7 +13,8 @@ var _bar: Bar
 
 
 func _ready() -> void:
-	layer = 9
+	# 盖在别的 HUD、头顶气泡、特效上面：耐久条永远看得清
+	layer = 11
 	_bar = Bar.new()
 	_bar.hud = self
 	_bar.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -39,6 +40,10 @@ class Bar extends Control:
 		var total := 0
 		for n in TaskKnightBoss.PHASE_PARTS:
 			total += int(n)
+		# 深色的底板（世界里的气泡 / 特效从后面透不过来）
+		var h := 46.0 if not task.lanterns.is_empty() else 32.0
+		draw_rect(Rect2(X - 46, Y - 4, W + 56, h), Color(0.06, 0.03, 0.08, 0.82))
+		draw_rect(Rect2(X - 46, Y - 4, W + 56, h), Color(0.75, 0.45, 0.95, 0.5), false, 1.0)
 		draw_rect(Rect2(X - 2, Y + 8, W + 4, 10), Color(0.08, 0.05, 0.1, 0.85))
 		var left := task.durability() * total
 		var x := X

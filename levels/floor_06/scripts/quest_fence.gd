@@ -1,6 +1,7 @@
 class_name QuestFence
 extends QuestRunner
 ## 支线「夜里的栅栏」的玩法（夜里的骑士篇小镇 floor_06_knight_night）：在营地通往小镇的三个路口装栅栏门（就是追逃里镇民拉上的那三道，TaskArmorChase.GATES）。
+##   钉完三道门：广场边的裂缝漏出紫光（kq_fence_crack）→ 第四段 QuestCrack、第五段 QuestOldHall、最后回去找工匠。
 ##   城墙脚下的木板堆（q.lumber）旁按 E 扛起一捆木板（两手占着 busy_hands、走得慢 carry_stone）→ 走到这一段的路口（GATE_R 以内）→ 钉门：
 ##   跟节拍按方向键（RhythmLane，HAMMER_BEATS 个音符，perfect / good 够 HAMMER_PASS 个就钉好；不够重钉，木板还在手上）→ 这一段做完。
 ##   路上的房檐有爬墙手印（EaveHand）：从底下走会掉下来抓脚。三道都钉好 → 回去找工匠说话（最后一段 report）。
@@ -148,8 +149,17 @@ func finish_hammer(hits: int) -> bool:
 	carrying = false
 	if is_instance_valid(pink):
 		_drop(pink)
-	advance()
+	_after_gate()
 	return true
+
+
+## 钉好一道门：第三道钉完，广场边的裂缝漏出紫光（过场 kq_fence_crack）→ 下一段（爬进裂缝）
+func _after_gate() -> void:
+	var last := stage() == 2
+	if last and Cutscene.has_cutscene(str(q.get("crack_cut", ""))):
+		await TrainingDB.wait_dialogue_free()
+		await Cutscene.play(str(q["crack_cut"]))
+	advance()
 
 
 func _end_lane() -> void:

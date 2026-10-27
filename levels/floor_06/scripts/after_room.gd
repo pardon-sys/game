@@ -86,6 +86,9 @@ func _sync_marks() -> void:
 	var want := KnightStory.marked_npcs()
 	for n in lv.find_children("*", "Resident", true, false):
 		AfterTown.set_mark(n, str(n.name) in want)
+	# 派对主人（可操作角色，不是 Resident）：她的支线也冒「！」
+	for n in lv.find_children("*", "BonfireHost", true, false):
+		AfterTown.set_mark(n, str(n.name) in want)
 
 
 func _process(_delta: float) -> void:

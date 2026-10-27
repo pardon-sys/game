@@ -33,6 +33,8 @@ var flee_from := Vector2.ZERO
 var frozen_left := 0.0
 var stealing := false
 var speed_mult := 1.0
+## 还能活几秒（< 0 = 一直在；Boss 召的小手 15 秒自己散）
+var life := -1.0
 var _t := 0.0
 var _tick := TICK
 var _dir := Vector2.RIGHT
@@ -57,6 +59,14 @@ func on_pants_burst(burst: PantsBurst) -> void:
 		return
 	release()
 	freeze(PantsBurst.STUN)
+
+
+## 蓝色公主的冰晶结界（IceBarrier）：范围里的手印冻住（贴着人的也被冻下来）
+func on_ice_barrier(center: Vector2, r: float, time: float) -> void:
+	if state == "gone" or global_position.distance_to(center) > r:
+		return
+	release()
+	freeze(maxf(time, FROZEN_TIME))
 
 
 func is_pink(who: Node) -> bool:
@@ -98,7 +108,15 @@ func freeze(time := FROZEN_TIME) -> void:
 	stealing = false
 	state = "frozen"
 	frozen_left = time
-	Audio.play("ice", -6.0, 0.1)
+	Audio.play("chime", -6.0, 0.1)
+
+
+## 散掉的时候冒一团紫烟（Boss 的小手：到时间 / 进了灯笼光 / 被扫帚扫 / 换阶段）
+func puff() -> void:
+	if state == "gone":
+		return
+	Fx.burst(get_parent(), global_position, "dust", 8, 30.0, 0.5, Vector2(0, -20), Color(0.75, 0.45, 1.0))
+	dispel()
 
 
 func dispel() -> void:
@@ -114,6 +132,11 @@ func _process(delta: float) -> void:
 	queue_redraw()
 	if GameState.in_cutscene or state == "gone":
 		return
+	if life > 0.0:
+		life -= delta
+		if life <= 0.0:
+			puff()
+			return
 	match state:
 		"frozen":
 			frozen_left -= delta

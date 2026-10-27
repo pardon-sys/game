@@ -17,89 +17,94 @@
 [ext_resource type="PackedScene" path="res://scenes/objects/level_exit.tscn" id="15_qfyks"]
 [ext_resource type="Script" path="res://scripts/objects/level_exit.gd" id="16_n0k4f"]
 
-[node name="Floor06AfterCellar" type="Node2D" unique_id=1147004584]
+[node name="Floor06AfterCellar" type="Node2D" unique_id=1990503935]
 script = ExtResource("1_dkfd1")
 floor_id = "floor_06_after_cellar"
 intro_dialogue = ""
 
-[node name="Darkness" type="CanvasModulate" parent="." unique_id=1382833608]
+[node name="Darkness" type="CanvasModulate" parent="." unique_id=364884138]
 color = Color(0.42, 0.42, 0.52, 1)
 
-[node name="Floor" type="TileMapLayer" parent="." unique_id=429106010]
+[node name="Floor" type="TileMapLayer" parent="." unique_id=1531982437]
 tile_map_data = PackedByteArray("AAACAAIAAAACAAQAAAADAAIAAAACAAQAAAAEAAIAAAACAAQAAAAFAAIAAAACAAQAAAAGAAIAAAACAAQAAAAHAAIAAAACAAQAAAAIAAIAAAACAAQAAAAJAAIAAAACAAQAAAAKAAIAAAACAAQAAAALAAIAAAACAAQAAAAMAAIAAAACAAQAAAANAAIAAAACAAQAAAACAAMAAAAAAAQAAAADAAMAAAAAAAQAAAAEAAMAAAAAAAQAAAAFAAMAAAAAAAQAAAAGAAMAAAAAAAQAAAAHAAMAAAAAAAQAAAAIAAMAAAAAAAQAAAAJAAMAAAAAAAQAAAAKAAMAAAAAAAQAAAALAAMAAAAAAAQAAAAMAAMAAAAAAAQAAAANAAMAAAAAAAQAAAACAAQAAAAAAAQAAAADAAQAAAAAAAQAAAAEAAQAAAAAAAQAAAAFAAQAAAAAAAQAAAAGAAQAAAAAAAQAAAAHAAQAAAAAAAQAAAAIAAQAAAAAAAQAAAAJAAQAAAAAAAQAAAAKAAQAAAAGAAMAAAALAAQAAAAAAAQAAAAMAAQAAAAAAAQAAAANAAQAAAAAAAQAAAACAAUAAAABAAQAAAADAAUAAAAAAAQAAAAEAAUAAAAAAAQAAAAFAAUAAAAAAAQAAAAGAAUAAAAAAAQAAAAHAAUAAAAAAAQAAAAIAAUAAAAAAAQAAAAJAAUAAAAAAAQAAAAKAAUAAAAAAAQAAAALAAUAAAAAAAQAAAAMAAUAAAABAAQAAAANAAUAAAAAAAQAAAACAAYAAAAAAAQAAAADAAYAAAAAAAQAAAAEAAYAAAAAAAQAAAAFAAYAAAAAAAQAAAAGAAYAAAAAAAQAAAAHAAYAAAAAAAQAAAAIAAYAAAAAAAQAAAAJAAYAAAABAAQAAAAKAAYAAAAGAAMAAAALAAYAAAAAAAQAAAAMAAYAAAAAAAQAAAANAAYAAAAAAAQAAAACAAcAAAAAAAQAAAADAAcAAAAAAAQAAAAEAAcAAAAAAAQAAAAFAAcAAAAAAAQAAAAGAAcAAAABAAQAAAAHAAcAAAAAAAQAAAAIAAcAAAAAAAQAAAAJAAcAAAAAAAQAAAAKAAcAAAAAAAQAAAALAAcAAAAAAAQAAAAMAAcAAAAAAAQAAAANAAcAAAAAAAQAAAACAAgAAAAAAAQAAAADAAgAAAABAAQAAAAEAAgAAAAAAAQAAAAFAAgAAAAAAAQAAAAGAAgAAAAAAAQAAAAHAAgAAAABAAQAAAAIAAgAAAAAAAQAAAAJAAgAAAAAAAQAAAAKAAgAAAAAAAQAAAALAAgAAAAAAAQAAAAMAAgAAAABAAQAAAANAAgAAAAAAAQAAAAIAAkAAAAAAAQAAAA=")
 tile_set = ExtResource("2_lld2r")
 
-[node name="Walls" type="TileMapLayer" parent="." unique_id=1381510725]
-tile_map_data = PackedByteArray("AAAAAAAAAAAAAAEAAAABAAAAAQAAAAIAAAACAAAAAQAEAAIAAAADAAAAAQAEAAYAAAAEAAAAAQAEAAYAAAAFAAAAAQAEAAYAAAAGAAAAAQAEAAYAAAAHAAAAAQAEAAYAAAAIAAAAAQAEAAYAAAAJAAAAAQAEAAYAAAAKAAAAAQAEAAYAAAALAAAAAQAEAAYAAAAMAAAAAQAEAAYAAAANAAAAAQAEAAQAAAAOAAAAAQAAAAQAAAAPAAAAAQAAAAAAAAAAAAEAAQAAAAAAAAABAAEAAQACAAIAAAACAAEAAgAAAAAAAAADAAEAAgAAAAAAAAAEAAEAAgAAAAAAAAAFAAEAAgAAAAAAAAAGAAEAAgAAAAAAAAAHAAEAAgAAAAAAAAAIAAEAAgAAAAAAAAAJAAEAAgAAAAAAAAAKAAEAAgAAAAAAAAALAAEAAgAAAAAAAAAMAAEAAgAAAAAAAAANAAEAAgAAAAAAAAAOAAEAAQAIAAQAAAAPAAEAAQAAAAAAAAAAAAIAAQAAAAAAAAABAAIAAQACAAMAAAAOAAIAAQAIAAwAAAAPAAIAAQAAAAAAAAAAAAMAAQAAAAAAAAABAAMAAQACAAMAAAAOAAMAAQAIAAwAAAAPAAMAAQAAAAAAAAAAAAQAAQAAAAAAAAABAAQAAQACAAMAAAAOAAQAAQAIAAwAAAAPAAQAAQAAAAAAAAAAAAUAAQAAAAAAAAABAAUAAQACAAMAAAAOAAUAAQAIAAwAAAAPAAUAAQAAAAAAAAAAAAYAAQAAAAAAAAABAAYAAQACAAMAAAAOAAYAAQAIAAwAAAAPAAYAAQAAAAAAAAAAAAcAAQAAAAAAAAABAAcAAQACAAMAAAAOAAcAAQAIAAwAAAAPAAcAAQAAAAAAAAAAAAgAAQAAAAAAAAABAAgAAQACAAEAAAAOAAgAAQAIAAgAAAAPAAgAAQAAAAAAAAAAAAkAAQAAAAAAAAABAAkAAQAAAAEAAAACAAkAAQABAAEAAAADAAkAAQABAAkAAAAEAAkAAQABAAkAAAAFAAkAAQABAAkAAAAGAAkAAQABAAkAAAAHAAkAAQADAAkAAAAJAAkAAQAJAAkAAAAKAAkAAQABAAkAAAALAAkAAQABAAkAAAAMAAkAAQABAAkAAAANAAkAAQABAAgAAAAOAAkAAQAAAAgAAAAPAAkAAQAAAAAAAAAAAAoAAQAAAAAAAAABAAoAAQAAAAAAAAACAAoAAQAAAAAAAAADAAoAAQAAAAAAAAAEAAoAAQAAAAAAAAAFAAoAAQAAAAAAAAAGAAoAAQAAAAAAAAAHAAoAAQAAAAEAAAAIAAoAAQABAAAAAAAJAAoAAQAAAAgAAAAKAAoAAAAAAAEAAAALAAoAAQAAAAAAAAAMAAoAAQAAAAAAAAANAAoAAQAAAAAAAAAOAAoAAQAAAAAAAAAPAAoAAQAAAAAAAAA=")
+[node name="Walls" type="TileMapLayer" parent="." unique_id=1181075628]
+tile_map_data = PackedByteArray("AAAAAAAAAAAAAAIAAAABAAAAAQAAAAIAAAACAAAAAQAEAAIAAAADAAAAAQAEAAYAAAAEAAAAAQAEAAYAAAAFAAAAAQAEAAYAAAAGAAAAAQAEAAYAAAAHAAAAAQAEAAYAAAAIAAAAAQAEAAYAAAAJAAAAAQAEAAYAAAAKAAAAAQAEAAYAAAALAAAAAQAEAAYAAAAMAAAAAQAEAAYAAAANAAAAAQAEAAQAAAAOAAAAAQAAAAQAAAAPAAAAAQAAAAAAAAAAAAEAAQAAAAAAAAABAAEAAQACAAIAAAACAAEAAgAAAAAAAAADAAEAAgAAAAAAAAAEAAEAAgAAAAAAAAAFAAEAAgAAAAAAAAAGAAEAAgAAAAAAAAAHAAEAAgAAAAAAAAAIAAEAAgAAAAAAAAAJAAEAAgAAAAAAAAAKAAEAAgAAAAAAAAALAAEAAgAAAAAAAAAMAAEAAgAAAAAAAAANAAEAAgAAAAAAAAAOAAEAAQAIAAQAAAAPAAEAAQAAAAAAAAAAAAIAAQAAAAAAAAABAAIAAQACAAMAAAAOAAIAAQAIAAwAAAAPAAIAAQAAAAAAAAAAAAMAAQAAAAAAAAABAAMAAQACAAMAAAAOAAMAAQAIAAwAAAAPAAMAAQAAAAAAAAAAAAQAAQAAAAAAAAABAAQAAQACAAMAAAAOAAQAAQAIAAwAAAAPAAQAAQAAAAAAAAAAAAUAAQAAAAAAAAABAAUAAQACAAMAAAAOAAUAAQAIAAwAAAAPAAUAAQAAAAAAAAAAAAYAAQAAAAAAAAABAAYAAQACAAMAAAAOAAYAAQAIAAwAAAAPAAYAAQAAAAAAAAAAAAcAAQAAAAAAAAABAAcAAQACAAMAAAAOAAcAAQAIAAwAAAAPAAcAAQAAAAAAAAAAAAgAAQAAAAAAAAABAAgAAQACAAEAAAAOAAgAAQAIAAgAAAAPAAgAAQAAAAAAAAAAAAkAAQAAAAAAAAABAAkAAQAAAAEAAAACAAkAAQABAAEAAAADAAkAAQABAAkAAAAEAAkAAQABAAkAAAAFAAkAAQABAAkAAAAGAAkAAQABAAkAAAAHAAkAAQADAAkAAAAJAAkAAQAJAAkAAAAKAAkAAQABAAkAAAALAAkAAQABAAkAAAAMAAkAAQABAAkAAAANAAkAAQABAAgAAAAOAAkAAQAAAAgAAAAPAAkAAQAAAAAAAAAAAAoAAQAAAAAAAAABAAoAAQAAAAAAAAACAAoAAQAAAAAAAAADAAoAAQAAAAAAAAAEAAoAAQAAAAAAAAAFAAoAAQAAAAAAAAAGAAoAAQAAAAAAAAAHAAoAAQAAAAEAAAAIAAoAAQABAAAAAAAJAAoAAQAAAAgAAAAKAAoAAAAAAAIAAAALAAoAAQAAAAAAAAAMAAoAAQAAAAAAAAANAAoAAQAAAAAAAAAOAAoAAQAAAAAAAAAPAAoAAQAAAAAAAAA=")
 tile_set = ExtResource("2_lld2r")
 
-[node name="FloorObjects" type="Node2D" parent="." unique_id=360080544]
+[node name="FloorObjects" type="Node2D" parent="." unique_id=12667983]
 
-[node name="Spawn_8_8" type="Marker2D" parent="FloorObjects" unique_id=478992070 instance=ExtResource("3_8g7v2")]
+[node name="Spawn_12_5" type="Marker2D" parent="FloorObjects" unique_id=534021077 instance=ExtResource("3_8g7v2")]
+position = Vector2(200, 92)
+script = ExtResource("4_xsco6")
+id = "from_herbcave"
+
+[node name="Spawn_8_8" type="Marker2D" parent="FloorObjects" unique_id=44416103 instance=ExtResource("3_8g7v2")]
 position = Vector2(136, 140)
 script = ExtResource("4_xsco6")
 id = "from_pharmacy"
 
-[node name="Entities" type="Node2D" parent="." unique_id=1111523238]
+[node name="Entities" type="Node2D" parent="." unique_id=1619362819]
 y_sort_enabled = true
 
-[node name="Decor" type="TileMapLayer" parent="Entities" unique_id=626656404]
+[node name="Decor" type="TileMapLayer" parent="Entities" unique_id=536511274]
 y_sort_enabled = true
 tile_set = ExtResource("2_lld2r")
 
-[node name="Torch_5_1" type="Node2D" parent="Entities" unique_id=657210859 instance=ExtResource("5_omgm3")]
+[node name="Torch_5_1" type="Node2D" parent="Entities" unique_id=2079378730 instance=ExtResource("5_omgm3")]
 position = Vector2(88, 32)
 script = ExtResource("6_g3ns4")
 lit = true
 
-[node name="Torch_10_1" type="Node2D" parent="Entities" unique_id=1577990746 instance=ExtResource("5_omgm3")]
+[node name="Torch_10_1" type="Node2D" parent="Entities" unique_id=697195419 instance=ExtResource("5_omgm3")]
 position = Vector2(168, 32)
 script = ExtResource("6_g3ns4")
 lit = true
 
-[node name="F6Afterroom_2_2" type="Node2D" parent="Entities" unique_id=805044862 instance=ExtResource("7_7dotw")]
+[node name="F6Afterroom_2_2" type="Node2D" parent="Entities" unique_id=955777774 instance=ExtResource("7_7dotw")]
 position = Vector2(40, 48)
 script = ExtResource("8_78rk8")
 
-[node name="Barrel_3_3" type="Node2D" parent="Entities" unique_id=886040496 instance=ExtResource("9_kud2c")]
+[node name="Barrel_3_3" type="Node2D" parent="Entities" unique_id=1808277966 instance=ExtResource("9_kud2c")]
 position = Vector2(56, 64)
 script = ExtResource("10_afx65")
 kind = "barrel"
 
-[node name="Barrel_4_3" type="Node2D" parent="Entities" unique_id=1513777171 instance=ExtResource("9_kud2c")]
+[node name="Barrel_4_3" type="Node2D" parent="Entities" unique_id=1725573833 instance=ExtResource("9_kud2c")]
 position = Vector2(72, 64)
 script = ExtResource("10_afx65")
 kind = "barrel"
 
-[node name="Crate_6_3" type="Node2D" parent="Entities" unique_id=2109674960 instance=ExtResource("9_kud2c")]
+[node name="Crate_6_3" type="Node2D" parent="Entities" unique_id=1256424768 instance=ExtResource("9_kud2c")]
 position = Vector2(104, 64)
 script = ExtResource("10_afx65")
 
-[node name="Barrel_9_3" type="Node2D" parent="Entities" unique_id=1122603998 instance=ExtResource("9_kud2c")]
+[node name="Barrel_9_3" type="Node2D" parent="Entities" unique_id=1642507242 instance=ExtResource("9_kud2c")]
 position = Vector2(152, 64)
 script = ExtResource("10_afx65")
 kind = "barrel"
 
-[node name="Barrel_12_3" type="Node2D" parent="Entities" unique_id=139155303 instance=ExtResource("9_kud2c")]
+[node name="Barrel_12_3" type="Node2D" parent="Entities" unique_id=2097299189 instance=ExtResource("9_kud2c")]
 position = Vector2(200, 64)
 script = ExtResource("10_afx65")
 kind = "barrel"
 
-[node name="Crate_12_5" type="Node2D" parent="Entities" unique_id=1112133445 instance=ExtResource("9_kud2c")]
+[node name="Crate_12_5" type="Node2D" parent="Entities" unique_id=2103970028 instance=ExtResource("9_kud2c")]
 position = Vector2(200, 96)
 script = ExtResource("10_afx65")
 
-[node name="Barrel_3_7" type="Node2D" parent="Entities" unique_id=297699058 instance=ExtResource("9_kud2c")]
+[node name="Barrel_3_7" type="Node2D" parent="Entities" unique_id=1546805554 instance=ExtResource("9_kud2c")]
 position = Vector2(56, 128)
 script = ExtResource("10_afx65")
 kind = "barrel"
 
-[node name="HerbRack_8_7" type="Node2D" parent="Entities" unique_id=2052040064 instance=ExtResource("9_kud2c")]
+[node name="HerbRack_8_7" type="Node2D" parent="Entities" unique_id=677997900 instance=ExtResource("9_kud2c")]
 position = Vector2(136, 128)
 script = ExtResource("10_afx65")
 kind = "herb_rack"
 
-[node name="Barrel_12_7" type="Node2D" parent="Entities" unique_id=24744593 instance=ExtResource("9_kud2c")]
+[node name="Barrel_12_7" type="Node2D" parent="Entities" unique_id=455820516 instance=ExtResource("9_kud2c")]
 position = Vector2(200, 128)
 script = ExtResource("10_afx65")
 kind = "barrel"
@@ -112,7 +117,7 @@ script = ExtResource("12_j3ehb")
 channel_tiers = PackedFloat32Array(0.5, 1, 1.6)
 faction = 1
 
-[node name="BluePrincess_9_8" type="CharacterBody2D" parent="Entities" unique_id=1771279702 instance=ExtResource("13_4jobr")]
+[node name="BluePrincess_9_8" type="CharacterBody2D" parent="Entities" unique_id=323681689 instance=ExtResource("13_4jobr")]
 position = Vector2(152, 140)
 collision_layer = 2
 motion_mode = 1
@@ -122,9 +127,20 @@ channel_tiers = PackedFloat32Array(0.5, 1, 1.6)
 follow = true
 faction = 2
 
-[node name="Triggers" type="Node2D" parent="." unique_id=627867697]
+[node name="Triggers" type="Node2D" parent="." unique_id=1637201666]
 
-[node name="Exit_8_9" type="Area2D" parent="Triggers" unique_id=954598540 instance=ExtResource("15_qfyks")]
+[node name="Exit_13_5" type="Area2D" parent="Triggers" unique_id=40881341 instance=ExtResource("15_qfyks")]
+position = Vector2(216, 88)
+collision_layer = 0
+collision_mask = 2
+monitorable = false
+script = ExtResource("16_n0k4f")
+target_level = "res://levels/floor_06_after_herbcave/floor.tscn"
+spawn = "from_cellar"
+unlock_flag = "kq_samples_herbs"
+locked_dialogue = "after_herb_locked"
+
+[node name="Exit_8_9" type="Area2D" parent="Triggers" unique_id=570591992 instance=ExtResource("15_qfyks")]
 position = Vector2(136, 152)
 collision_layer = 0
 collision_mask = 2

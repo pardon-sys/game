@@ -57,9 +57,15 @@ func on_pants_burst(burst: PantsBurst) -> void:
 		stun(PantsBurst.STUN)
 
 
+## 冰晶结界：盔甲冻住
+func on_ice_barrier(center: Vector2, r: float, time: float) -> void:
+	if global_position.distance_to(center) <= r + 12.0:
+		freeze(time)
+
+
 func freeze(time: float) -> void:
 	freeze_left = time
-	Audio.play("ice", -4.0)
+	Audio.play("chime", -4.0)
 
 
 func _physics_process(delta: float) -> void:

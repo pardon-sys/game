@@ -10,6 +10,13 @@ stages 每一段的目标（where 哪张图、cell 指哪一格、text 目标文
 from after_text.common import A, BLUE, BLUE_NODE as B, CAP, N, P, L, line
 
 KDAY, KNIGHT_N, DRILL, PHARMACY, CELLAR = "floor_06_knight_day", "floor_06_knight_night", "floor_06_after_drill", "floor_06_after_pharmacy", "floor_06_after_cellar"
+ALLEY, HERBCAVE = "floor_06_knight_alley", "floor_06_after_herbcave"
+WALL, CRACK, OLDHALL = "floor_06_knight_wall", "floor_06_after_crack", "floor_06_after_oldhall"
+WAREHOUSE = "floor_06_after_warehouse"
+STORAGE, BRIDGE = "floor_06_knight_storage", "floor_06_knight_bridge"
+HOST = "派对主人"
+RUN = "res://levels/floor_06/scripts/%s.gd"
+GRANNY = "面包店奶奶"
 TOM, LILY, PHARM, ENG = "小汤姆", "小莉莉", "药剂师奶奶", "工匠"
 MORNING, AFTERNOON, NIGHT = 0, 1, 2
 
@@ -26,6 +33,9 @@ QUESTS = {
             {"where": KDAY, "cell": [51, 30], "text": "【骑士救公主】「草堆里扎扎的，羊咩咩睡觉的地方」——羊圈旁边的草垛（光着脚，小心草）"},
             {"where": KDAY, "cell": [37, 22], "text": "【骑士救公主】「彩带高高挂，羽毛软软堆」——广场的彩带下面"},
             {"where": KDAY, "cell": [6, 30], "text": "【骑士救公主】「圆圆石头路，走到头有公主守着」——西边鹅卵石小路的尽头"},
+            # 第四段：小巷里的「灯全灭了」（QuestHide，暗）；第五段：集市里追回小莉莉的宝贝盒（QuestBox，白天夜里都行）
+            {"where": ALLEY, "cell": [5, 6], "text": "【骑士救公主】小镇西边那条没有灯的小巷：玩「灯全灭了」（找出 5 个小孩）", "runner": RUN % "quest_hide"},
+            {"where": "town", "cell": [10, 25], "text": "【骑士救公主】小莉莉的宝贝盒被手印搬走了——西边的集市", "runner": RUN % "quest_box"},
         ],
         "found": ["（草垛里摸到一只鞋！……还有一大把草叶扎在脚心上）", "（够到了！第二只鞋从彩带上掉下来，正砸在她头上）"],
         "search": "翻找……", "reach": "够……",
@@ -55,6 +65,30 @@ QUESTS = {
                       L("……你确定？我可是很能忍的哦。", P, "happy"), L("嘻嘻，莉莉也是！", LILY, None, "kid")],
         },
         "helper": "公主姐姐！我们来啦——一起笑，哈哈哈哈！",
+        # 第四段「那一天的躲猫猫」（QuestHide）
+        "hide": {
+            "intro_cut": "kq_shoes_hide_start", "end_cut": "kq_shoes_hide_end",
+            "found": ["（灯光扫过木桶——后面缩着一个小孩！）", "（被照到了！小孩尖叫着扑上来）", "（箱子后面露出一双光脚丫）"],
+            "pounce": ["抓到鬼的脚啦！", "嘿嘿，挠挠鬼！", "鬼不许笑！"],
+            "pounce_cap": ["（小孩扑上来，抱住她的脚就挠脚心）", "（两只小手钻进她的脚趾缝里）"],
+            "giggle": ["嘻……", "（黑暗里传来一声憋不住的笑）", "噗……"],
+            "heard": ["（她笑出了声——黑暗里一阵窸窸窣窣，小孩们全换了地方）", "（「鬼笑啦！快跑！」小孩们四散开）"],
+            "caught": "（她笑得蹲在地上——「鬼被抓走啦！」小孩们一拥而上……重新开始）",
+            "dim": ["（灯芯「噗」地暗了一下）", "（灯晃了晃，差点灭掉）"],
+            "shadow": ["（黑暗里伸出一只影子手，摸了摸她的脚背）", "（影子手从脚下的黑里冒出来，挠了一下）"],
+            "status": "找到 %d / %d　灯光：%s",
+        },
+        # 第五段「小莉莉的宝贝盒」（QuestBox）
+        "box": {
+            "intro": [L("呜……莉莉的宝贝盒！被手印搬走啦！", LILY, None, "kid"), L("它们躲进集市的货摊里了！", TOM, None, "kid"),
+                      L("（笑一笑，手印就会探出头。蓝色公主冻住它，过去按 E 拿回盒子的碎片）", N)],
+            "peek": ["（货摊的布帘动了一下——一只搬着木片的手印探出头，朝她的笑声爬过来）"],
+            "tickle": ["（手印扛着羽毛掸子，往她脚心上扫了一下就跑）", "（手印从摊位底下伸出来，挠了一下她的脚踝）"],
+            "frozen": ["（冻住了！它怀里还抱着一块盒子的碎片）"],
+            "got": ["（拿回了一块！）", "（又一块！）", "（最后一块！）"],
+            "status": "盒子的碎片 %d / %d",
+            "end_cut": "kq_shoes_box_end",
+        },
     },
     # ---------------------------------------------------------------- ② 手印样本
     "samples": {
@@ -70,6 +104,9 @@ QUESTS = {
             {"where": KDAY, "cell": [52, 7], "text": "【手印样本】地牢入口的铁门边"},
             {"where": CELLAR, "cell": [7, 5], "text": "【手印样本】药剂师工房的地窖（工房里的活板门）", "unlock": "kq_samples_cellar"},
             {"where": PHARMACY, "cell": [8, 5], "text": "【手印样本】把样本交给药剂师奶奶", "report": True},
+            # 第五段：草药洞采三味药（QuestHerbs）；第六段：回工房熬药（QuestBrew → BrewShow）
+            {"where": HERBCAVE, "cell": [8, 8], "text": "【手印样本】地窖最里面的小门 → 草药洞：笑铃草、软须苔、哈欠花各 3 株", "runner": RUN % "quest_herbs", "unlock": "kq_samples_herbs"},
+            {"where": PHARMACY, "cell": [8, 5], "text": "【手印样本】回工房，和奶奶一起熬药（走到药锅旁边）", "runner": RUN % "quest_brew"},
         ],
         "wobble": "（石头轻轻晃了一下……底下有东西）",
         "peek": ["（一只紫色的小手印从石头缝里探出头，朝她的笑声爬了过来）", "（木桶后面，小手印犹犹豫豫地伸出一根手指）"],
@@ -81,8 +118,45 @@ QUESTS = {
         "split": "（手印团「啪」地裂开了，三只小手印四散逃开）",
         "report": [L("……三块。好孩子。"), L("（奶奶把瓶子凑到灯下，眯着眼看了好久）", N), L("……这东西，是笑声做的。"),
                    L("笑声？", P, "surprise"), L("被偷走的笑声。挤在一起，就变成了手。……它们一直想往一个方向爬。"),
-                   L("……盔甲那边。", P, "sad")],
+                   L("……盔甲那边。", P, "sad"),
+                   L("要压住它们，得配安神香。……可是还缺三味药。"),
+                   L("笑铃草、软须苔、哈欠花。……地窖最里面那道小门，通到矿道深处的草药洞。"),
+                   L("奶奶腿脚不行了。……光着脚去，别怕痒。", None, None),
+                   L("……为什么要光着脚？", P, "surprise"), L("那几味药，认人的脚。穿鞋的，它们不让摘。")],
         "helper": "孩子——奶奶的安神香，用笑声点燃它！",
+        # 第五段 草药洞（QuestHerbs）
+        "herbs": {
+            "names": {"bell": "笑铃草", "moss": "软须苔", "yawn": "哈欠花"},
+            "pick": "摘……", "status": "笑铃草 %d / 3　软须苔 %d / 3　哈欠花 %d / 3",
+            "bell": ["（叮铃——笑铃草一碰就响，铃铛似的花瓣在脚心上直打转）", "（叮叮铃铃……脚底下一片铃声，痒得站不住）"],
+            "moss": ["（软须苔一下子缠住了脚趾，细细的须钻进趾缝里）", "（脚陷进软绵绵的苔里，须子从脚趾缝里挠上来）"],
+            "yawn": ["（哈欠花「噗」地喷出一团粉——哈……哈欠……打、打不完……）", "（花粉钻进鼻子，她张大嘴打了个哈欠——这一下，手印扑上来了）"],
+            "react": ["哈哈……这、这是药草吗……！", "脚……脚趾缝不行……！", "嘻……铃、铃铛……别响了……！"],
+            "spill": "（她笑得一屁股坐在地上——怀里的药草撒了一株）",
+            "done": "（三味药都齐了。草药洞深处，好像有一点微弱的光在跳）",
+        },
+        # 第六段 熬药（BrewShow）
+        "brew": {
+            "name": "熬安神药", "hint": "跟着节拍按方向键搅药；冒出「阿嚏」或「好痒」的提示时，赶快按它给的方向键压住",
+            "intro": [L("（药锅架在炉子上。奶奶把三味药一样一样放进去，又从药方本里翻出一页）", N),
+                      L("（那本药方本里，夹着一页被撕掉的方子。残角上只剩几个字：「……退烧……殿……」）", N),
+                      L("……老东西了。", PHARM, None, "pharmacist"),
+                      L("搅吧。顺着拍子搅，别停。……药味冲上来的时候，憋住。", PHARM, None, "pharmacist"),
+                      L("姐姐！我们来帮忙！（小汤姆和小莉莉拿着药草叶子，蹲到了她们脚边）", TOM, None, "kid")],
+            "sections": ["第一锅：化开", "第二锅：熬浓", "第三锅：收汁"],
+            "sneeze_pink": ["阿、阿嚏——！", "哈……哈欠……不、阿嚏！"], "sneeze_blue": ["……！……（憋）", "……阿、……嚏。"],
+            "itch": ["（药草叶子扫过脚心——！）", "（小孩的叶子钻进了脚趾缝）", "（叶尖在大腿后面扫来扫去）"],
+            "ok": ["（压住了！）", "（忍住了——勺子还在转）"],
+            "spill": ["（一笑，手一抖——药溢出来了！）", "（锅里「咕嘟」一声，药汁漫过了锅沿）"],
+            "fail": "（药溢了一地。奶奶叹了口气：「重来。」）",
+            "panel": "%s\n溢锅 %d / %d　完美 %d　失误 %d",
+            "lullaby": [L("……很多年前，奶奶也给一个发烧的小姑娘熬过这个。", PHARM, None, "pharmacist"),
+                        L("她不肯喝，非要先听人哼那首摇篮曲。", PHARM, None, "pharmacist"),
+                        L("那首歌……现在只有派对那个丫头，还会从头唱到尾了。", PHARM, None, "pharmacist"),
+                        L("（粉色公主一边搅，一边随口哼了两句）", N),
+                        L("（奶奶的勺子，停了一下）", N),
+                        L("……搅吧。别停。", PHARM, None, "pharmacist")],
+        },
     },
     # ---------------------------------------------------------------- ③ 队长的旧剑术
     "spear": {
@@ -93,7 +167,10 @@ QUESTS = {
         "busy": [L("训练室的门开着。……进去等我。")],
         # 开场过场（训练室里的起手式）由玩法节点在第一次进训练室时演（intro_cut），不在接下的时候演
         "intro_cut": "kq_spear_start", "done_cut": "kq_spear_done", "reward": {},
-        "stages": [{"where": DRILL, "cell": [10, 8], "text": "【队长的旧剑术】去西北角的训练室"}],
+        "stages": [{"where": DRILL, "cell": [10, 8], "text": "【队长的旧剑术】去西北角的训练室"},
+                   # 第二段：城墙上守夜（QuestWatch）；第三段：二对一（QuestDuo，训练室）
+                   {"where": WALL, "cell": [5, 3], "text": "【队长的旧剑术】南边城墙的梯子 → 和队长一起上城墙守夜", "runner": RUN % "quest_watch", "unlock": "kq_spear_wall"},
+                   {"where": DRILL, "cell": [10, 8], "text": "【队长的旧剑术】回训练室：两个人一起，和队长练一场", "runner": RUN % "quest_duo"}],
         # TaskSpearDrill
         "drill": {
             "rounds": ["第一轮：刺击", "第二轮：扫腿", "第三轮：实战"],
@@ -110,6 +187,169 @@ QUESTS = {
             "perfect_need": "　完美闪避 %d / %d",
         },
         "helper": "……我说过，到时候我会在。",
+        "watch_invite": [L("……还行。", CAP, None, "captain"), L("天快黑了。哨塔的灯坏了两盏。……跟我上城墙看看。", CAP, None, "captain"),
+                         L("城墙？现在？", P, "surprise"), L("……南边城墙下面有梯子。我在上面等你。", CAP, None, "captain")],
+        # 第二段 守夜（QuestWatch）
+        "watch": {
+            "intro": [L("（城墙上很黑，风从墙缝里钻过来。队长提着一盏没点的灯，站在哨塔下面）", N),
+                      L("房檐上有手印。走路看脚下的影子。……到哨塔这边来。", CAP, None, "captain")],
+            "blind_intro": [L("……站好。", CAP, None, "captain"), L("（队长解下护腕上的布条，蒙住了她的眼睛）", N),
+                            L("骑士出招之前，矛杆会响。……听。从哪边响，就往另一边躲。", CAP, None, "captain"),
+                            L("（屏幕一片黑。听声音、看边上一闪的提示——响在左边就按 →，响在右边就按 ←）", N)],
+            "cue": {"left": "（左边——矛杆「嗡」地一响）", "right": "（右边——矛杆「嗡」地一响）"},
+            "dodge": ["（躲开了！木矛擦着衣角过去）", "（脚下一错——躲开了）"],
+            "hit": ["（没躲开！队长的手指钻进她的腰侧——保卫队的老办法）", "（「慢了。」他挠了一下她的腰）"],
+            "hit_react": ["哈哈！看、看不见还挠——！", "噗……腰、腰不行……！"],
+            "fail": "（挨了三下。队长把布条解开又系上：「再来。」）",
+            "status": "躲开 %d / %d　挨打 %d / %d",
+        },
+        "watch_end": "kq_spear_watch_end",
+        # 第三段 二对一（QuestDuo）
+        "duo": {
+            "intro": [L("（训练室里，队长把两根木矛都拿了出来）", N), L("……两个人。一起来。", CAP, None, "captain"),
+                      L("躲开以后有一下空档——挠他！（攻击）蓝色公主可以冻住他的矛（J）", N),
+                      L("……我不会笑的。", CAP, None, "captain"), L("嘿嘿，这可是你说的！", P, "happy")],
+            "open": ["（空档！）", "（他收矛慢了半拍——现在！）"],
+            "tickle": ["（她的手指钻进了队长的胳肢窝）", "（腰侧——正中！）", "（她一把抓住他的腰）"],
+            "cap_react": ["……咳。", "……没、没笑。", "……！……犯规。", "……（他的嘴角抖了一下）"],
+            "freeze": ["（冰顺着矛杆爬上去，木矛冻在了他手里）"],
+            "status": "队长的忍笑 %d%%",
+        },
+        "duo_end": "kq_spear_duo_end",
+    },
+    # ---------------------------------------------------------------- ⑤ 没有名字的生日（派对主人）
+    "host": {
+        "name": "没有名字的生日", "npc": "after_k_host", "opens_at": "afternoon", "closes_at": "chase", "slots": [MORNING, AFTERNOON],
+        "offer": [L("……今天，好像就是「那一天」。"), L("那一天？", P, "surprise"),
+                  L("大家找到我的那一天。……我不知道自己是哪天生的，就把那一天当成生日。"),
+                  L("可是每年一到这一天，大家都不说话。……我也不问。"),
+                  L("今年，我想偷偷给自己办一场生日派对。……你们愿意帮我吗？")],
+        "prompt": "帮派对主人准备生日？", "yes": "当然！", "no": "等一下",
+        "busy": [L("彩带、点心、蜡烛……卖东西的大叔、女仆姐姐、工匠大叔那里都有。"), L("借的时候……他们大概会要你帮个忙。")],
+        "done_cut": "kq_host_done", "reward": {},
+        "stages": [
+            {"where": "town", "cell": [8, 24], "text": "【没有名字的生日】借东西：彩带（商人）、点心（女仆）、蜡烛（工匠）——走到他们身边按 E", "runner": RUN % "quest_borrow"},
+            {"where": "town", "cell": [34, 36], "text": "【没有名字的生日】派对主人的八音盒坏了——找工匠修",
+             "talk": {"npc": "after_k_engineer", "lines": [L("八音盒？……我看看。"), L("（工匠转了转发条，里面「咔啦」一声）"),
+                                                       L("里面掉了三个零件。……训练室后面那间旧仓库里，以前堆着好多旧玩具，拆下来就能用。"),
+                                                       L("……那仓库里的东西，有点怪。音乐一停，它们就会动。小心点。")]}},
+            {"where": WAREHOUSE, "cell": [4, 6], "text": "【没有名字的生日】训练室后面的旧仓库：找三个零件（音乐停的时候别乱跑）", "runner": RUN % "quest_warehouse", "unlock": "kq_host_warehouse"},
+            {"where": "town", "cell": [46, 24], "text": "【没有名字的生日】把八音盒修好，还给派对主人",
+             "talk": {"npc": "after_k_host", "lines": [L("……修好了？！"), L("（她小心地转了转发条）")], "cut": "kq_host_lullaby"}},
+            {"where": "town", "cell": [44, 26], "text": "【没有名字的生日】篝火边：生日舞排练", "runner": RUN % "quest_party"},
+            {"where": "town", "cell": [44, 26], "text": "【没有名字的生日】生日派对：吹蜡烛之前，忍笑许愿", "runner": RUN % "quest_party"},
+        ],
+        "borrow": {
+            "spots": {"duster": "after_k_merchant", "taste": "after_k_maid", "wheel": "after_k_engineer"},
+            "names": {"duster": "彩带", "taste": "点心", "wheel": "蜡烛"},
+            "prompt": "按 E 借%s", "got": "（借到了%s！）", "status": "彩带 %s　点心 %s　蜡烛 %s",
+            "broke_cut": "kq_host_box",
+        },
+        "shows": {
+            "duster": {"name": "试新羽毛掸子", "hint": "冒出 A / S / D（脚趾 / 脚心 / 脚跟）时按它绷住那一处",
+                       "intro": [L("彩带？可以啊。……先帮我试试这把新掸子。", "卖东西的大叔", None, "merchant"),
+                                 L("站着别动。我看看它扫起来顺不顺。", "卖东西的大叔", None, "merchant"),
+                                 L("扫……扫哪里？", P, "surprise"), L("……脚心。客人都是光着脚试鞋的嘛。", "卖东西的大叔", None, "merchant")],
+                       "ok": ["（绷住了！）", "（脚趾一蜷，躲过了这一下）"],
+                       "hit": ["（羽毛掸子从脚跟一路扫到脚趾）", "（软软的羽毛在脚心上打了个转）"],
+                       "react": ["哈哈……掸子好软……！", "噗……别、别扫脚心……！", "这、这根本不是在试掸子……！"],
+                       "fail": "（她笑得蹲了下去。大叔挠挠头：「……再试一次？」）",
+                       "win": [L("……顺。很顺。彩带拿去吧。", "卖东西的大叔", None, "merchant")]},
+            "taste": {"name": "不许笑的试吃", "hint": "按 E 吃一口；亮「！」的时候按 J 缩脚（这时候别吃，会呛笑）",
+                      "intro": [L("点心？给派对主人？……那你先帮我试吃。", "女仆姐姐", None, "maid"),
+                                L("规矩是——吃的时候不许笑。", "女仆姐姐", None, "maid"),
+                                L("（她手里拿着一把小刷子，笑眯眯地蹲到了她脚边）", N)],
+                      "tuck": ["（缩脚！小刷子扑了个空）"], "choke": "（一口点心呛在嗓子里——笑出来了！）",
+                      "hit": ["（小刷子刷过脚心）", "（刷子尖在脚趾缝里转了一圈）"],
+                      "react": ["噗——咳、咳……！", "嘻……点、点心要掉了……！"],
+                      "fail": "（「笑了～重来～」女仆姐姐又端上一盘）",
+                      "win": [L("……居然一口都没笑。点心拿去吧，派对主人最喜欢这个。", "女仆姐姐", None, "maid")]},
+            "wheel": {"name": "脚底按摩器", "hint": "踩着转轮跟节拍按方向键", "intro": [
+                          L("蜡烛？有。……不过我新做了个东西，你先踩踩看。", ENG, None, "miner"),
+                          L("（一个带软刺的木转轮。光脚踩上去，它就跟着拍子转）", N)],
+                      "hit": ["（踩空了——软刺从脚心上碾过去）"], "react": ["哈哈！刺、刺刺的……！", "这、这是按摩还是挠痒……！"],
+                      "fail": "（「……再来。」工匠在小本子上记了一笔）",
+                      "win": [L("……能用。蜡烛拿去。", ENG, None, "miner")]},
+            "dance": {"name": "生日舞排练", "hint": "跟着节拍按方向键；三个人一起跳",
+                      "intro": [L("生日舞！是我自己编的！你们跟着跳就好！", HOST, None, "bonfire_host"),
+                                L("……我也要跳？", BLUE), L("当然！", HOST, None, "bonfire_host")],
+                      "hit": ["（踩错一步——围观的小孩挠了一下她的脚心）"], "react": ["哈哈！别、别挠……我在跳舞……！"],
+                      "fail": "（三个人笑成一团。「……再来一次！」）",
+                      "win": [L("……好棒！就这样跳！", HOST, None, "bonfire_host")]},
+            "wish": {"name": "忍笑许愿", "hint": "亮「！」时按 J 缩脚；撑到蓝色公主先笑出来",
+                     "intro": [L("（篝火边摆好了蛋糕。镇民们围了过来——手里都拿着羽毛）", N),
+                               L("派对的老规矩：吹蜡烛之前，大家挠寿星和她的朋友。最后一个笑出来的人许愿！", HOST, None, "bonfire_host"),
+                               L("……那最后一个笑的，应该是寿星吧。", P),
+                               L("……我明白了。先把那个冰块脸挠笑。", P, "happy"), L("……你说谁冰块脸。", BLUE)],
+                     "tuck": ["（缩脚！羽毛扫了个空）"], "hit": ["（三根羽毛一起扫过她的脚心）"],
+                     "react": ["哈、哈哈……我要撑住……！", "噗……蓝、蓝色的还没笑……！"],
+                     "fail": "（她先笑出来了——「重来重来！」）",
+                     "win": [L("（蓝色公主终于「噗」地笑出了声，捂住了嘴）", N), L("……好了。轮到寿星了！", P, "happy")]},
+        },
+        "helper": "八音盒——响起来吧！大家别慌！",
+    },
+    # ---------------------------------------------------------------- ⑥ 点灯笼的小姑娘（蓝色公主，夜里）
+    "blue": {
+        "name": "点灯笼的小姑娘", "npc": "after_kn_granny", "opens_at": "bait", "closes_at": "cell", "slots": [NIGHT],
+        "offer": [L("……姑娘。和你一起的那孩子呢？"), L("……刚才，一个人往广场西南角那边走了。"),
+                  L("那边有一盏很旧的石灯笼。……好多年没人点了。"), L("（地上，有一串淡淡的冰晶脚印）", N)],
+        "prompt": "跟着冰晶脚印去找蓝色公主？", "yes": "去找她！", "no": "等一下",
+        "busy": [L("……那孩子小时候，最喜欢那盏灯笼了。"), L("……我什么都没说。")],
+        "done_cut": "kq_blue_done", "reward": {},
+        "stages": [
+            {"where": KNIGHT_N, "cell": [7, 31], "text": "【点灯笼的小姑娘】跟着地上的冰晶脚印走", "runner": RUN % "quest_footprints"},
+            {"where": KNIGHT_N, "cell": [7, 31], "text": "【点灯笼的小姑娘】旧石灯笼：逗她笑", "runner": RUN % "quest_blue_lantern"},
+            {"where": KNIGHT_N, "cell": [26, 14], "text": "【点灯笼的小姑娘】回忆①：井边的冰面（收 5 个笑声铃铛）", "runner": RUN % "quest_well"},
+            {"where": STORAGE, "cell": [3, 4], "text": "【点灯笼的小姑娘】回忆②：西南角的储物间，找旧布偶", "runner": RUN % "quest_storage", "unlock": "kq_blue_storage"},
+            {"where": BRIDGE, "cell": [3, 4], "text": "【点灯笼的小姑娘】回忆③：小桥——手拉着手走过去", "runner": RUN % "quest_bridge", "unlock": "kq_blue_bridge"},
+            {"where": KNIGHT_N, "cell": [7, 31], "text": "【点灯笼的小姑娘】回到旧石灯笼：一起笑", "runner": RUN % "quest_blue_lantern"},
+        ],
+        "found_cut": "kq_blue_lantern",
+        "tickle": {
+            "name": "逗她笑", "hint": "A 大腿 / S 屁股 / D 腰（听她漏嘴的弱点）；亮「！」时按 J 把手缩回来，不然会被冻住",
+            "intro": [L("……你干什么。", BLUE), L("逗你笑！灯笼要笑声才点得亮嘛！", P, "happy"), L("……我不会笑的。", BLUE)],
+            "spots": ["大腿", "屁股", "腰"],
+            "weak_hint": {"大腿": ["……腿……不、不要碰……", "……（她把腿并紧了）"], "屁股": ["……那里……不准……", "……！（她往后缩了缩）"],
+                          "腰": ["……腰……没、没事……", "……（她的腰绷得紧紧的）"]},
+            "hit": ["（正中！她「噗」地漏出一点声音，又咬住了嘴唇）", "（她整个人一缩——憋住了）"],
+            "miss": ["（……她面无表情。）", "（「……不痒。」）"],
+            "freeze": ["（她手一挥——冰顺着你的手指爬上来，冻住了！）"], "pull": ["（缩回来了！）"],
+            "panel": "%s\n她的忍笑 %d%%",
+            "short": [L("（她的嘴角动了动——灯笼亮了一下，又暗了下去）", N), L("……不够。……我笑不出来。", BLUE),
+                      L("……以前，明明很会笑的。", BLUE), L("那我们去找「以前」！你小时候去过的地方！", P, "happy")],
+        },
+        "both": {
+            "name": "一起笑", "hint": "轮到你挠：A / S / D 挠她的弱点；轮到她挠你：亮「！」时按 J 缩脚",
+            "intro": [L("（回到石灯笼前。蓝色公主抱着那只旧布偶，坐在灯笼底下）", N), L("……这次，一起。", BLUE),
+                      L("一起？", P, "surprise"), L("……我挠你。你挠我。……谁也不准忍。", BLUE)],
+            "turn_attack": "轮到你挠她！", "turn_defend": "她挠回来了！",
+            "pink_hit": ["（冰凉的手指在脚心上画圈）", "（她捏住你的脚趾，一根一根地挠）"],
+            "panel": "%s\n你 %d%%　她 %d%%",
+            "lit": [L("（两个人的笑声叠在一起——旧石灯笼「呼」地亮了）", N)],
+        },
+        "well": {
+            "intro": [L("（井边的地面结了一层冰。……是她小时候练冰魔法冻的？）", N), L("……我在这里，一个人练了很多年。", BLUE),
+                      L("（冰面上散着几个小铃铛。一滑过去，就会「叮铃」地笑一声）", N)],
+            "bell": ["（叮铃——！）", "（铃铛笑了一声）"], "snow": ["（滑过头了——一头扎进雪堆，冰晶钻进了脚心！）"],
+            "memory": [L("（铃铛的声音里，好像混着一个小女孩的笑声）", N), L("……那时候，有人在旁边看着我练。", BLUE),
+                       L("每次冻歪了，她就笑。……笑得比我还大声。", BLUE), L("……她是谁？", P), L("……想不起来了。", BLUE)],
+            "status": "笑声铃铛 %d / %d",
+        },
+        "storage": {
+            "intro": [L("（一间很小的储物间，墙上挂满了旧刷子、旧扫帚）", N), L("……我小时候，躲在这里哭过。", BLUE)],
+            "brush": ["（墙上的旧刷子「唰」地扫过大腿！）", "（刷子从脚心上蹭过去）"],
+            "found": [L("（角落的箱子里，有一只缝补过很多次的旧布偶）", N), L("……还在。", BLUE),
+                      L("哭的时候，有人塞给我这个。说——「抱着它，就不怕了」。", BLUE), L("（她把布偶抱得紧紧的）", N)],
+        },
+        "bridge": {
+            "intro": [L("（排水渠上一座窄窄的小木桥）", N), L("……这里。我小时候，和谁手拉着手走过。", BLUE),
+                      L("那就再走一次！手给我！", P, "happy"), L("（桥板缝里，有手印在动——别松手）", N)],
+            "grab": ["（桥板缝里伸出一只手，挠了一下脚心！）", "（手印抓住了脚踝——！）"],
+            "let_go": "（手一松——两个人都退回了桥头）",
+            "done": [L("（走到了桥那头。蓝色公主低头看着两个人牵在一起的手）", N), L("……就是这样。", BLUE),
+                     L("……那时候，她的手也是这么暖的。", BLUE)],
+        },
+        "helper": "……灯笼，我来守。",
     },
     # ---------------------------------------------------------------- ④ 夜里的栅栏
     "fence": {
@@ -123,6 +363,9 @@ QUESTS = {
             {"where": KNIGHT_N, "cell": [53, 34], "text": "【夜里的栅栏】去城墙脚下扛木板（%d / 3）→ 营地边的路口"},
             {"where": KNIGHT_N, "cell": [45, 35], "text": "【夜里的栅栏】去城墙脚下扛木板（%d / 3）→ 南边城墙下的路口"},
             {"where": KNIGHT_N, "cell": [36, 32], "text": "【夜里的栅栏】去城墙脚下扛木板（%d / 3）→ 广场东南的路口"},
+            # 第四段：广场底下的裂缝（QuestCrack）；第五段：旧会堂（QuestOldHall）
+            {"where": CRACK, "cell": [4, 2], "text": "【夜里的栅栏】广场边的裂缝在漏紫光——爬进去，把封印钉敲回去", "runner": RUN % "quest_crack", "unlock": "kq_fence_crack"},
+            {"where": OLDHALL, "cell": [13, 15], "text": "【夜里的栅栏】裂缝尽头：旧会堂。找到手印漏出来的地方", "runner": RUN % "quest_oldhall", "unlock": "kq_fence_hall"},
             {"where": KNIGHT_N, "cell": [48, 23], "text": "【夜里的栅栏】回去告诉工匠", "report": True},
         ],
         "lumber": [45, 40], "pick": "（扛起一捆木板。……好重。手腾不出来了）", "pick_hint": "按 E 扛起木板",
@@ -131,9 +374,32 @@ QUESTS = {
         "hammer": {"title": "钉栅栏门", "hint": "跟着节拍按方向键（↑↓←→）钉钉子", "ok": "（叮！钉进去了）", "miss": "（钉子歪了……）",
                    "done": "（栅栏门立起来了，「咔哒」一声扣上）"},
         # 三道门就是追逃里镇民拉上的那三道栅栏（TaskArmorChase.GATES，同一批格子）
-        "report": [L("三道。……好。"), L("我再去把广场的灯笼架加固一下。……那东西要是真冲出来，至少灯笼不会倒。"),
+        "report": [L("……你们，下去了？"), L("……旧会堂。我爷爷封的。「那件事」以后，就没人下去过。"), L("……算了。敲回去了就好。"),
+                   L("三道门。……好。"), L("我再去把广场的灯笼架加固一下。……那东西要是真冲出来，至少灯笼不会倒。"),
                    L("谢谢你。……你的手怎么在抖？", P, "surprise"), L("……没什么。夜里冷。")],
         "helper": "灯笼架我加固过的——撑得住！笑吧！",
+        "crack_cut": "kq_fence_crack",
+        # 第四段 裂缝（QuestCrack）
+        "crack": {
+            "intro": [L("（裂缝窄得只能趴着爬。缝里很潮，墙上长着软乎乎的苔）", N), L("（前面有三根松掉的封印钉。爬过去，敲回去）", N)],
+            "moss": ["（软苔小球「啪」地贴到了腿上，蹭来蹭去）", "（苔球贴在大腿后面，痒得直缩）"],
+            "wipe": "擦掉……", "hand": ["（缝里伸出一只手印，挠了一下她的脚心）", "（墙缝里的手印抓住了她的脚踝）"],
+            "nail_ok": "（「叮」——封印钉敲回去了）", "nail_miss": "（钉子歪了……再来）",
+            "hammer": {"title": "敲封印钉", "hint": "跟着节拍按方向键（↑↓←→）"},
+            "status": "封印钉 %d / 3", "done": "（三根都敲回去了。裂缝尽头，有一道门开了一条缝）",
+        },
+        # 第五段 旧会堂（QuestOldHall）
+        "hall": {
+            "intro": [L("（门后是一间塌了一半的大厅。长椅倒在地上，墙上挂着一幅很大的壁画——上面的人像全被刮花了）", N),
+                      L("……旧会堂。", BLUE), L("（她手里的火把晃了晃。黑暗里，好几只手印在往这边爬）", N),
+                      L("（火光照到的地方，手印会退开。火把会烧完——墙边的烛台能续上）", N)],
+            "dim": ["（火把快烧完了……）"], "out": "（火灭了——黑暗里，手印一起扑了上来！）",
+            "relit": "（续上了。火光一亮，手印缩回了黑暗里）",
+            "cluster": "（大厅尽头的高台底下，一大团手印挤在一起——就是它们漏出来的地方）",
+            "split": "（手印团裂开了，几块碎片四散逃开）",
+            "status": "火把 %d%%　碎片 %d / %d",
+        },
+        "hall_end": "kq_fence_hall_end",
     },
 }
 
@@ -154,7 +420,7 @@ def shoes_start():
 
 def shoes_done():
     s = [
-        line(LILY, "……鞋、鞋还给公主……嘻嘻……", None, None, "kid"),
+        line(LILY, "鞋、宝贝盒，都回来啦……嘻嘻……", None, None, "kid"),
         line(TOM, "公主好厉害！这个给你——骑士勋章！我们自己做的！", None, None, "kid"),
         line(N, "（一枚用瓶盖和红布条做的「勋章」，歪歪扭扭地写着「勇者」）"),
         line(P, "……谢谢。我会好好收着的。", "happy"),
@@ -167,10 +433,60 @@ def shoes_done():
     return {"name": "骑士勋章", "letterbox": True, "skippable": True, "steps": s}
 
 
+def shoes_hide_start():
+    s = [
+        line(N, "（小镇西边那条巷子没有灯。小汤姆和小莉莉压低了声音）"),
+        line(TOM, "这个游戏叫「灯全灭了」。大人说，「那一天」所有的灯都灭了，大家躲在黑里，捂着嘴——", None, None, "kid"),
+        line(LILY, "谁笑出声，谁就会被抓走！", None, None, "kid"),
+        line(P, "……抓走？被谁？", "surprise"),
+        line(TOM, "不知道！大人不肯说！所以才好玩嘛！姐姐当鬼，提着灯来找我们！", None, None, "kid"),
+        line(BLUE, "……"),
+        line(N, "（找出藏起来的 5 个小孩。灯光照到才看得见；自己笑出声，小孩们会换地方；黑里有影子手）"),
+    ]
+    return {"name": "灯全灭了", "letterbox": True, "skippable": True, "steps": s}
+
+
+def shoes_hide_end():
+    s = [
+        line(N, "（最后一个小孩刚被找出来，巷口亮起一盏油灯）"),
+        line(GRANNY, "——谁教你们玩这个的！", None, None, "granny"),
+        line(TOM, "奶、奶奶……", None, None, "kid"),
+        line(GRANNY, "回家！都回家！这个游戏，以后谁也不许玩！", None, None, "granny"),
+        line(N, "（奶奶一手一个拎起小孩。走到巷口，她回头看了蓝色公主一眼——然后很快地低下了头）"),
+        line(BLUE, "……"),
+        line(P, "……奶奶怎么了？", "surprise"),
+        line(BLUE, "……走吧。"),
+        line(LILY, "（被拎走之前，回头小声喊）姐姐！莉莉的宝贝盒——明天给你看！", None, None, "kid"),
+    ]
+    return {"name": "那一天的躲猫猫", "letterbox": True, "skippable": True, "steps": s}
+
+
+def shoes_box_end():
+    s = [
+        line(LILY, "宝贝盒回来啦！谢谢姐姐！", None, None, "kid"),
+        line(N, "（小莉莉打开盒子：玻璃珠、羽毛、半块饼干——还有一枚生锈的小发卡）"),
+        line(LILY, "这个最宝贝！是在派对姐姐的帐篷后面捡的。", None, None, "kid"),
+        line(LILY, "姐姐说不是她的。可是花纹跟她头上的花冠一样哦！", None, None, "kid"),
+        line(P, "……真的诶，花纹好旧。", "surprise"),
+        line(TOM, "莉莉！那个给姐姐吧！谢礼！", None, None, "kid"),
+        line(LILY, "……嗯！给姐姐！", None, None, "kid"),
+        line(N, "（她把发卡收了起来。没有人再提它）"),
+    ]
+    return {"name": "小莉莉的宝贝盒", "letterbox": True, "skippable": True, "steps": s}
+
+
+def shoes_invite():
+    s = [
+        line(TOM, "公主赢了！……嘘——", None, None, "kid"),
+        line(TOM, "姐姐，我们还有一个游戏，大人不让玩的！去西边那条没有灯的小巷！", None, None, "kid"),
+        line(LILY, "鞋先还给你！光着脚玩才好玩——啊不对，鞋还你，你自己选！", None, None, "kid"),
+    ]
+    return {"name": "大人不让玩的游戏", "letterbox": True, "skippable": True, "steps": s}
+
+
 def samples_done():
     s = [
-        line(PHARM, "……奶奶熬一锅药。你在旁边等着。", None, None, "pharmacist"),
-        line(N, "（锅里的药咕嘟咕嘟地冒泡。瓶子里的三只小手印贴着玻璃，一直朝着营地的方向）"),
+        line(N, "（锅里的药熬成了一小块淡紫色的香。瓶子里的三只小手印贴着玻璃，一直朝着营地的方向）"),
         line(PHARM, "……好了。安神香。", None, None, "pharmacist"),
         line(PHARM, "点上它，那些手印会安静一会儿。可是普通的火点不着它。", None, None, "pharmacist"),
         line(P, "那要用什么点？", "surprise"),
@@ -215,7 +531,124 @@ def fence_done():
     return {"name": "栅栏门", "letterbox": True, "skippable": True, "steps": s}
 
 
-CUTSCENES = {"kq_shoes_start": shoes_start, "kq_shoes_done": shoes_done, "kq_samples_done": samples_done,
+def blue_lantern():
+    s = [
+        line(N, "（冰晶脚印一直走到广场西南角。蓝色公主站在一盏很旧的石灯笼前面，一动不动）"),
+        line(P, "……找到你了！", "happy"),
+        line(BLUE, "……小时候，每年都是我点它。"),
+        line(BLUE, "……现在，点不亮了。"),
+        line(P, "……这也是笑声灯笼？", "surprise"),
+        line(BLUE, "……嗯。要笑声。"),
+    ]
+    return {"name": "旧石灯笼", "letterbox": True, "skippable": True, "steps": s}
+
+
+def blue_done():
+    s = [
+        line(N, "（旧石灯笼亮着暖暖的光。底座上刻着一行字，被磨得只剩一个「给」）"),
+        line(P, "……「给」……给谁的？", "surprise"),
+        line(BLUE, "……"),
+        line(N, "（蓝色公主很小声地笑了一下）"),
+        line(BLUE, "……谢谢。"),
+        line(P, "你刚刚笑了！", "happy"),
+        line(BLUE, "……没有。"),
+    ]
+    return {"name": "点灯笼的小姑娘", "letterbox": True, "skippable": True, "steps": s}
+
+
+def host_box():
+    s = [
+        line(HOST, "……谢谢你们！彩带、点心、蜡烛，都齐了！", None, None, "bonfire_host"),
+        line(N, "（她从帐篷里捧出一个旧旧的八音盒，转了转发条——只响了两个音，就「咔」地卡住了）"),
+        line(HOST, "……啊。坏了。", None, None, "bonfire_host"),
+        line(HOST, "这是我从小带在身边的东西。……大家找到我的时候，我手里就攥着它。", None, None, "bonfire_host"),
+        line(P, "……找工匠大叔修修看吧！", "happy"),
+    ]
+    return {"name": "坏掉的八音盒", "letterbox": True, "skippable": True, "steps": s}
+
+
+def host_lullaby():
+    s = [
+        {"actions": [A("sfx", sound="music_box")], "wait": 0.6},
+        line(N, "（八音盒响了起来。是一首很慢、很软的曲子）"),
+        line(P, "……啊。", "surprise"),
+        line(N, "（粉色公主不自觉地跟着哼了起来——一个音都没错）"),
+        line(HOST, "……你也会这首？", None, None, "bonfire_host"),
+        line(P, "……不知道。就会唱。", "helpless_1"),
+        line(BLUE, "……"),
+        line(N, "（蓝色公主一句话都没说，转身走开了）"),
+        line(HOST, "……她怎么了？", None, None, "bonfire_host"),
+        line(P, "……不知道。", "sad"),
+    ]
+    return {"name": "八音盒的曲子", "letterbox": True, "skippable": True, "steps": s}
+
+
+def host_done():
+    s = [
+        line(N, "（蛋糕上的蜡烛一根一根亮着。派对主人闭上眼睛）"),
+        line(HOST, "……希望明年，也有人记得今天。", None, None, "bonfire_host"),
+        line(N, "（她一口气吹灭了蜡烛。镇民们拍着手）"),
+        line(N, "（人群外面，面包店奶奶和镇长对视了一眼。谁都没说话，只是轻轻叹了口气）"),
+        line(HOST, "谢谢你们！……这是我过得最开心的一个生日！", None, None, "bonfire_host"),
+        line(BLUE, "……生日快乐。"),
+    ]
+    return {"name": "没有名字的生日", "letterbox": True, "skippable": True, "steps": s}
+
+
+def spear_watch_end():
+    s = [
+        line(N, "（布条解开了。两个人坐在哨塔的墙头上，底下是黑漆漆的小镇）"),
+        line(CAP, "……我是那一年入的队。", None, None, "captain"),
+        line(P, "那一年？", "surprise"),
+        line(CAP, "……那天，我从塌了的地方抱出来两个孩子。", None, None, "captain"),
+        line(CAP, "一个一直哭。一个一直笑。", None, None, "captain"),
+        line(BLUE, "……"),
+        line(P, "……后来呢？", "sad"),
+        line(CAP, "……下去吧。明天，在训练室。两个人一起来。", None, None, "captain"),
+    ]
+    return {"name": "守夜", "letterbox": True, "skippable": True, "steps": s}
+
+
+def spear_duo_end():
+    s = [
+        line(N, "（队长终于「噗」地笑出了声——又立刻板起脸，咳了两下）"),
+        line(CAP, "……没笑。", None, None, "captain"),
+        line(P, "你笑了！我们都听见了！", "happy"),
+        line(N, "（他从怀里掏出一块手帕擦汗。手帕角上，绣着两个手拉手的小女孩）"),
+        line(BLUE, "……这个图案。你从哪里来的。"),
+        line(CAP, "……一个很爱笑的小姑娘给的。", None, None, "captain"),
+        line(BLUE, "……"),
+    ]
+    return {"name": "二对一", "letterbox": True, "skippable": True, "steps": s}
+
+
+def fence_crack():
+    s = [
+        line(N, "（最后一道门刚立起来，广场边的石板缝里漏出一缕紫光）"),
+        line(ENG, "……又漏了。", None, None, "miner"),
+        line(P, "下面有什么？", "surprise"),
+        line(ENG, "……旧会堂。我爷爷在「那件事」以后，把下面整个封了。没人愿意下去。", None, None, "miner"),
+        line(ENG, "封印钉松了。……手印就是从那儿爬出来的。", None, None, "miner"),
+        line(BLUE, "……我们下去。"),
+    ]
+    return {"name": "广场底下的裂缝", "letterbox": True, "skippable": True, "steps": s}
+
+
+def fence_hall_end():
+    s = [
+        line(N, "（最后一块碎片收进了瓶子。大厅安静了下来）"),
+        line(N, "（火光照着墙上那幅大壁画。人像全被刮花了，什么也看不出来）"),
+        line(P, "……这是谁画的？", "surprise"),
+        line(BLUE, "……走吧。"),
+        line(N, "（她们回到广场的时候，工匠还站在裂缝旁边，一直没走）"),
+    ]
+    return {"name": "旧会堂", "letterbox": True, "skippable": True, "steps": s}
+
+
+CUTSCENES = {"kq_blue_lantern": blue_lantern, "kq_blue_done": blue_done, "kq_host_box": host_box, "kq_host_lullaby": host_lullaby, "kq_host_done": host_done,
+             "kq_spear_watch_end": spear_watch_end, "kq_spear_duo_end": spear_duo_end, "kq_fence_crack": fence_crack, "kq_fence_hall_end": fence_hall_end,
+             "kq_shoes_hide_start": shoes_hide_start, "kq_shoes_hide_end": shoes_hide_end, "kq_shoes_box_end": shoes_box_end,
+             "kq_shoes_invite": shoes_invite, "kq_shoes_start": shoes_start, "kq_shoes_done": shoes_done, "kq_samples_done": samples_done,
              "kq_spear_start": spear_start, "kq_spear_done": spear_done, "kq_fence_done": fence_done}
 
 
@@ -225,11 +658,23 @@ def inject(files):
     最后一段要回去找委托人的（report）→ 说完 call: kq_report。"""
     for qid, q in QUESTS.items():
         d = files[q["npc"]]
-        last = len(q["stages"]) - 1
         entries = []
-        if q["stages"][last].get("report"):
-            entries.append({"if": {"flag": "kq_%s_active" % qid, "eq": {"kq_%s_stage" % qid: last}}, "node": "kq_%s_report" % qid})
-            d["nodes"]["kq_%s_report" % qid] = {"lines": q["report"], "set": {"vars": {"kq_req": qid}, "call": "kq_report"}}
+        for i, st in enumerate(q["stages"]):
+            cond = {"flag": "kq_%s_active" % qid, "eq": {"kq_%s_stage" % qid: i}}
+            if st.get("report"):
+                entries.append({"if": cond, "node": "kq_%s_report%d" % (qid, i)})
+                d["nodes"]["kq_%s_report%d" % (qid, i)] = {"lines": q["report"], "set": {"vars": {"kq_req": qid}, "call": "kq_report"}}
+            # 说话推进的一段：注入到那个人的对话最前面（call: kq_next）
+            if st.get("talk"):
+                t = st["talk"]
+                td = files[t["npc"]]
+                entry = {"if": cond, "node": "kq_%s_t%d" % (qid, i)}
+                # 找委托人自己说话的那一段：排在「进行中」的闲话前面
+                if t["npc"] == q["npc"]:
+                    entries.append(entry)
+                else:
+                    td["entries"] = [entry] + td["entries"]
+                td["nodes"]["kq_%s_t%d" % (qid, i)] = {"lines": t["lines"], "set": {"vars": {"kq_req": qid}, "call": "kq_next"}}
         entries.append({"if": {"flag": "kq_%s_active" % qid}, "node": "kq_%s_busy" % qid})
         entries.append({"if": {"flag": "kq_%s_open" % qid}, "node": "kq_%s_offer" % qid})
         d["nodes"]["kq_%s_busy" % qid] = {"lines": q["busy"], "prompt": "（%s）" % q["name"], "choices": [
@@ -264,4 +709,11 @@ def inject(files):
 SIGNS = {
     "after_kdrill_locked": [{"speaker": N, "text": "（训练室的门关着。……队长好像有话想说，去找他聊聊？）"}],
     "after_cellar_locked": [{"speaker": N, "text": "（地板上有一块活动的木板，底下是地窖。……奶奶说过，没事别下去）"}],
+    "after_herb_locked": [{"speaker": N, "text": "（地窖最里面有一道小门，上了锁。门缝里飘出一股青草味）"}],
+    "after_wall_locked": [{"speaker": N, "text": "（通往城墙上面的梯子。保卫队的人不让随便上去）"}],
+    "after_crack_locked": [{"speaker": N, "text": "（石板缝里，偶尔漏出一点紫光。……缝太窄了，钻不进去）"}],
+    "after_hall_locked": [{"speaker": N, "text": "（裂缝尽头是一道旧门，门上钉着封印钉）"}],
+    "after_warehouse_locked": [{"speaker": N, "text": "（训练室后面的旧仓库，门锁着。里面好像堆满了旧玩具）"}],
+    "after_storage_locked": [{"speaker": N, "text": "（一间很小的储物间，门关着）"}],
+    "after_bridge_locked": [{"speaker": N, "text": "（通往排水渠的小路。黑漆漆的）"}],
 }

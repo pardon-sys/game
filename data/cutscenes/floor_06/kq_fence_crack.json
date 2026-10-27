@@ -1,0 +1,35 @@
+{
+	"name": "广场底下的裂缝",
+	"letterbox": true,
+	"skippable": true,
+	"steps": [
+		{
+			"speaker": "",
+			"text": "（最后一道门刚立起来，广场边的石板缝里漏出一缕紫光）"
+		},
+		{
+			"speaker": "工匠",
+			"text": "……又漏了。",
+			"npc": "miner"
+		},
+		{
+			"speaker": "公主",
+			"text": "下面有什么？",
+			"emotion": "surprise"
+		},
+		{
+			"speaker": "工匠",
+			"text": "……旧会堂。我爷爷在「那件事」以后，把下面整个封了。没人愿意下去。",
+			"npc": "miner"
+		},
+		{
+			"speaker": "工匠",
+			"text": "封印钉松了。……手印就是从那儿爬出来的。",
+			"npc": "miner"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……我们下去。"
+		}
+	]
+}

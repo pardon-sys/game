@@ -1,0 +1,57 @@
+{
+	"name": "八音盒的曲子",
+	"letterbox": true,
+	"skippable": true,
+	"steps": [
+		{
+			"actions": [
+				{
+					"sound": "music_box",
+					"do": "sfx"
+				}
+			],
+			"wait": 0.6
+		},
+		{
+			"speaker": "",
+			"text": "（八音盒响了起来。是一首很慢、很软的曲子）"
+		},
+		{
+			"speaker": "公主",
+			"text": "……啊。",
+			"emotion": "surprise"
+		},
+		{
+			"speaker": "",
+			"text": "（粉色公主不自觉地跟着哼了起来——一个音都没错）"
+		},
+		{
+			"speaker": "派对主人",
+			"text": "……你也会这首？",
+			"npc": "bonfire_host"
+		},
+		{
+			"speaker": "公主",
+			"text": "……不知道。就会唱。",
+			"emotion": "helpless_1"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……"
+		},
+		{
+			"speaker": "",
+			"text": "（蓝色公主一句话都没说，转身走开了）"
+		},
+		{
+			"speaker": "派对主人",
+			"text": "……她怎么了？",
+			"npc": "bonfire_host"
+		},
+		{
+			"speaker": "公主",
+			"text": "……不知道。",
+			"emotion": "sad"
+		}
+	]
+}

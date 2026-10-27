@@ -281,6 +281,9 @@ class Victim extends Node2D:
 	var sheet: Texture2D
 	## 被盔甲盯上了（KnightCurse.hunt）：吓得缩在原地发抖，不跑
 	var hunted := false
+	## 拿着扫帚，靠近的小手会被扫掉（TaskKnightBoss.sweep，每个阶段一次）；broom_phase 这一阶段给过了
+	var broom := false
+	var broom_phase := -1
 	var kind := "runner"
 	var who := "kid"
 	var covers: Array = []

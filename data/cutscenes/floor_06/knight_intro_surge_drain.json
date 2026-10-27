@@ -1,0 +1,27 @@
+{
+	"name": "机制：吸笑",
+	"letterbox": true,
+	"skippable": true,
+	"steps": [
+		{
+			"speaker": "",
+			"text": "（笑面张大了嘴——全场的笑声都被往它身上吸）"
+		},
+		{
+			"speaker": "镇长",
+			"text": "躲进灯笼的光里！点灯笼那晚，光一直护着大家！"
+		},
+		{
+			"speaker": "小汤姆",
+			"text": "跟躲猫猫一样！灯光里最安全！",
+			"if": {
+				"flag": "kq_shoes_done"
+			}
+		},
+		{
+			"speaker": "公主",
+			"text": "亮着的灯笼……光里！",
+			"emotion": "surprise"
+		}
+	]
+}

@@ -1,0 +1,15 @@
+{
+	"name": "机制：镇民",
+	"letterbox": true,
+	"skippable": true,
+	"steps": [
+		{
+			"speaker": "面包店奶奶",
+			"text": "姑娘！我们还没跑——过来说句话，能帮你一把的就帮！"
+		},
+		{
+			"speaker": "公主",
+			"text": "（没被手印贴着的人，靠近按 E 能说话）"
+		}
+	]
+}

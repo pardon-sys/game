@@ -8,7 +8,7 @@
 					"kq_samples_stage": 3
 				}
 			},
-			"node": "kq_samples_report"
+			"node": "kq_samples_report3"
 		},
 		{
 			"if": {
@@ -123,7 +123,7 @@
 				}
 			]
 		},
-		"kq_samples_report": {
+		"kq_samples_report3": {
 			"lines": [
 				{
 					"text": "……三块。好孩子。"
@@ -147,6 +147,23 @@
 					"text": "……盔甲那边。",
 					"speaker": "公主",
 					"emotion": "sad"
+				},
+				{
+					"text": "要压住它们，得配安神香。……可是还缺三味药。"
+				},
+				{
+					"text": "笑铃草、软须苔、哈欠花。……地窖最里面那道小门，通到矿道深处的草药洞。"
+				},
+				{
+					"text": "奶奶腿脚不行了。……光着脚去，别怕痒。"
+				},
+				{
+					"text": "……为什么要光着脚？",
+					"speaker": "公主",
+					"emotion": "surprise"
+				},
+				{
+					"text": "那几味药，认人的脚。穿鞋的，它们不让摘。"
 				}
 			],
 			"set": {

@@ -11,10 +11,12 @@ t = torch lit=true
 A = f6afterroom
 C = prop type=barrel
 D = prop type=crate
-E = prop type=herb_rack
-F = exit target=floor_06_after_pharmacy spawn=from_cellar
-G = spawn id=from_pharmacy
-H = blue_princess follow=true ai=false
+E = prop type=crate + spawn id=from_herbcave
+F = prop type=herb_rack
+G = exit target=floor_06_after_pharmacy spawn=from_cellar
+H = exit target=floor_06_after_herbcave spawn=from_cellar unlock_flag=kq_samples_herbs locked_dialogue=after_herb_locked
+I = spawn id=from_pharmacy
+J = blue_princess follow=true ai=false
 
 [map]
 ################
@@ -22,9 +24,9 @@ H = blue_princess follow=true ai=false
 ##A...........##
 ##.CC.D..C..C.##
 ##............##
-##..........D.##
+##..........EH##
 ##............##
-##.C....E...C.##
-##.....PGH....##
-########F#######
+##.C....F...C.##
+##.....PIJ....##
+########G#######
 ################

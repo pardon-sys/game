@@ -226,5 +226,47 @@
 			"speaker": "",
 			"text": "（地板上有一块活动的木板，底下是地窖。……奶奶说过，没事别下去）"
 		}
+	],
+	"after_herb_locked": [
+		{
+			"speaker": "",
+			"text": "（地窖最里面有一道小门，上了锁。门缝里飘出一股青草味）"
+		}
+	],
+	"after_wall_locked": [
+		{
+			"speaker": "",
+			"text": "（通往城墙上面的梯子。保卫队的人不让随便上去）"
+		}
+	],
+	"after_crack_locked": [
+		{
+			"speaker": "",
+			"text": "（石板缝里，偶尔漏出一点紫光。……缝太窄了，钻不进去）"
+		}
+	],
+	"after_hall_locked": [
+		{
+			"speaker": "",
+			"text": "（裂缝尽头是一道旧门，门上钉着封印钉）"
+		}
+	],
+	"after_warehouse_locked": [
+		{
+			"speaker": "",
+			"text": "（训练室后面的旧仓库，门锁着。里面好像堆满了旧玩具）"
+		}
+	],
+	"after_storage_locked": [
+		{
+			"speaker": "",
+			"text": "（一间很小的储物间，门关着）"
+		}
+	],
+	"after_bridge_locked": [
+		{
+			"speaker": "",
+			"text": "（通往排水渠的小路。黑漆漆的）"
+		}
 	]
 }

@@ -6,10 +6,10 @@
 			"if": {
 				"flag": "kq_fence_active",
 				"eq": {
-					"kq_fence_stage": 3
+					"kq_fence_stage": 5
 				}
 			},
-			"node": "kq_fence_report"
+			"node": "kq_fence_report5"
 		},
 		{
 			"if": {
@@ -56,10 +56,19 @@
 				}
 			]
 		},
-		"kq_fence_report": {
+		"kq_fence_report5": {
 			"lines": [
 				{
-					"text": "三道。……好。"
+					"text": "……你们，下去了？"
+				},
+				{
+					"text": "……旧会堂。我爷爷封的。「那件事」以后，就没人下去过。"
+				},
+				{
+					"text": "……算了。敲回去了就好。"
+				},
+				{
+					"text": "三道门。……好。"
 				},
 				{
 					"text": "我再去把广场的灯笼架加固一下。……那东西要是真冲出来，至少灯笼不会倒。"

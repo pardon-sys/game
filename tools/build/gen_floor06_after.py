@@ -43,6 +43,14 @@ PHARMACY, FIELD = "floor_06_after_pharmacy", "floor_06_after_field"
 TAILOR, MINE, TOTEM = "floor_06_after_tailor", "floor_06_after_mine", "floor_06_after_totem"
 DRAIN, DRILL, PROVING = "floor_06_after_drain", "floor_06_after_drill", "floor_06_after_proving"
 CELLAR = "floor_06_after_cellar"
+# 骑士篇支线的新图：小镇西边没有灯的小巷（① 灯全灭了）、矿道深处的草药洞（② 采药）
+ALLEY, HERBCAVE = "floor_06_knight_alley", "floor_06_after_herbcave"
+# ③ 城墙上（守夜）、④ 广场底下的裂缝、旧会堂
+WALL, CRACK, OLDHALL = "floor_06_knight_wall", "floor_06_after_crack", "floor_06_after_oldhall"
+# ⑤ 训练室后面的旧仓库（派对主人的八音盒零件）
+WAREHOUSE = "floor_06_after_warehouse"
+# ⑥ 西南角的储物间、排水渠上的小桥（蓝色公主的回忆）
+STORAGE, BRIDGE = "floor_06_knight_storage", "floor_06_knight_bridge"
 PRISON = "floor_06_after_prison"
 FESTIVAL = "floor_06_festival"
 KDAY, KNIGHT_N, KCHASE = "floor_06_knight_day", "floor_06_knight_night", "floor_06_knight_chase"
@@ -106,6 +114,24 @@ def town_layout(m, kind="town"):
     if kind == "town":
         m.put(54, 5, "exit target=%s spawn=from_town unlock_flag=after_mine_open locked_dialogue=after_mine_locked" % MINE)
     m.put(54, 6, "spawn id=from_mine")
+    if kind == "knight":
+        # 西边：没有灯的小巷（支线「骑士救公主」玩「灯全灭了」）
+        m.put(2, 16, "exit target=%s spawn=from_town" % ALLEY)
+        m.put(3, 16, "spawn id=from_alley")
+        # 南边城墙下的梯子（支线「队长的旧剑术」守夜那一段才开）
+        m.put(12, 40, "exit target=%s spawn=from_town unlock_flag=kq_spear_wall locked_dialogue=after_wall_locked" % WALL)
+        m.put(12, 39, "spawn id=from_wall")
+        # 广场边石板缝里的裂缝（支线「夜里的栅栏」裂缝那一段才开）
+        m.put(38, 29, "exit target=%s spawn=from_town unlock_flag=kq_fence_crack locked_dialogue=after_crack_locked" % CRACK)
+        m.put(38, 28, "spawn id=from_crack")
+        # 训练室后面的旧仓库（支线「没有名字的生日」找零件那一段才开）
+        m.put(4, 12, "exit target=%s spawn=from_town unlock_flag=kq_host_warehouse locked_dialogue=after_warehouse_locked" % WAREHOUSE)
+        m.put(4, 13, "spawn id=from_warehouse")
+        # 西南角：通往排水渠小桥的小路、储物间（支线「点灯笼的小姑娘」回忆那两段才开）
+        m.put(2, 30, "exit target=%s spawn=from_town unlock_flag=kq_blue_bridge locked_dialogue=after_bridge_locked" % BRIDGE)
+        m.put(3, 30, "spawn id=from_bridge")
+        m.put(2, 34, "exit target=%s spawn=from_town unlock_flag=kq_blue_storage locked_dialogue=after_storage_locked" % STORAGE)
+        m.put(3, 34, "spawn id=from_storage")
     # 居民区：烧焦的房子搭上了脚手架
     for i, x in enumerate((8, 16, 24, 32)):
         prop(m, x, 8, ("house_scaffold_%d" % (i // 2)) if i % 2 == 0 else "house_%d" % i)
@@ -478,10 +504,140 @@ for (x, y) in ((6, 3), (12, 5)):
     prop(ce, x, y, "crate")
 prop(ce, 8, 7, "herb_rack")
 ce.put(8, 9, "exit target=%s spawn=from_cellar" % PHARMACY)
+# 最里面的小门：通往草药洞（支线「手印样本」采药那一段才开）
+ce.put(13, 5, "exit target=%s spawn=from_cellar unlock_flag=kq_samples_herbs locked_dialogue=after_herb_locked" % HERBCAVE)
+ce.put(12, 5, "spawn id=from_herbcave")
 ce.put(8, 8, "spawn id=from_pharmacy")
 ce.put(7, 8, "player")
 ce.put(9, 8, "blue_princess follow=true ai=false")
 ce.write()
+
+# ================================================================ 没有灯的小巷（骑士篇支线「骑士救公主」第四段：灯全灭了）
+al = Map(ALLEY, 36, 11, "intro =\nambient = 0.1,0.09,0.15\nno_switch = false")
+al.room(2, 3, 33, 7)
+al.put(3, 3, "f6afterroom")
+al.put(2, 5, "exit target=%s spawn=from_alley" % TOWN)
+al.put(3, 5, "spawn id=from_town")
+al.put(4, 5, "player")
+al.put(4, 6, "blue_princess follow=true ai=false")
+# 躲人的地方：木桶、木箱、挂着的布、破推车（QuestHide.SPOTS 就在这些东西旁边）
+for (x, y) in ((8, 3), (13, 7), (17, 3), (21, 7), (25, 3), (29, 7), (31, 4)):
+    prop(al, x, y, "barrel")
+for (x, y) in ((10, 7), (19, 3), (27, 6), (32, 6)):
+    prop(al, x, y, "crate")
+prop(al, 15, 4, "fabric")
+prop(al, 23, 5, "cart")
+for (x, y) in ((12, 5), (26, 5)):
+    prop(al, x, y, "decal_puddle_0")
+al.write()
+
+# ================================================================ 矿道深处的草药洞（骑士篇支线「手印样本」第五段：采三味药；药草由 QuestHerbs 摆）
+hc = Map(HERBCAVE, 30, 16, "intro =\nambient = 0.46,0.6,0.5\nno_switch = false")
+hc.room(2, 2, 27, 13)
+for x in (8, 16, 24):
+    hc.put(x, 1, "torch lit=true")
+hc.put(3, 3, "f6afterroom")
+hc.put(2, 8, "exit target=%s spawn=from_herbcave" % CELLAR)
+hc.put(3, 8, "spawn id=from_cellar")
+hc.put(4, 8, "player")
+hc.put(4, 9, "blue_princess follow=true ai=false")
+for (x, y) in ((6, 3), (12, 12), (20, 3), (25, 11), (14, 2)):
+    prop(hc, x, y, "rubble")
+for (x, y) in ((10, 5), (18, 10), (23, 6)):
+    prop(hc, x, y, "flowers")
+prop(hc, 26, 3, "herb_rack")
+hc.write()
+
+# ================================================================ 城墙上（骑士篇支线「队长的旧剑术」守夜：房檐手印、哨塔下蒙眼听声躲矛）
+wl = Map(WALL, 52, 7, "intro =\nambient = 0.26,0.27,0.42\nno_switch = false")
+wl.room(2, 2, 49, 4)
+for x in (10, 22, 34, 46):
+    wl.put(x, 1, "torch lit=false")
+wl.put(2, 3, "exit target=%s spawn=from_wall" % TOWN)
+wl.put(3, 3, "spawn id=from_town")
+wl.put(4, 3, "player")
+wl.put(4, 4, "blue_princess follow=true ai=false")
+wl.put(3, 2, "f6afterroom")
+prop(wl, 47, 2, "tower")
+for (x, y) in ((14, 2), (28, 4), (40, 2)):
+    prop(wl, x, y, "sandbag")
+wl.write()
+
+# ================================================================ 广场底下的裂缝（骑士篇支线「夜里的栅栏」：趴着爬、软苔小球、敲三根封印钉）
+ck = Map(CRACK, 46, 6, "intro =\nambient = 0.3,0.22,0.36\nno_switch = false")
+ck.room(2, 2, 43, 3)
+ck.put(2, 2, "exit target=%s spawn=from_crack" % TOWN)
+ck.put(3, 2, "spawn id=from_town")
+ck.put(4, 2, "player")
+ck.put(4, 3, "blue_princess follow=true ai=false")
+ck.put(3, 3, "f6afterroom")
+ck.put(43, 2, "exit target=%s spawn=from_crack unlock_flag=kq_fence_hall locked_dialogue=after_hall_locked" % OLDHALL)
+ck.put(42, 2, "spawn id=from_hall")
+ck.write()
+
+# ================================================================ 旧会堂（骑士篇支线「夜里的栅栏」：举火把、烛台续火、高台底下的手印团；壁画上的人像全被刮花了）
+oh = Map(OLDHALL, 28, 20, "intro =\nambient = 0.1,0.08,0.13\nno_switch = false")
+oh.room(2, 2, 25, 17)
+oh.put(13, 17, "exit target=%s spawn=from_hall" % CRACK)
+oh.put(13, 16, "spawn id=from_crack")
+oh.put(12, 16, "player")
+oh.put(14, 16, "blue_princess follow=true ai=false")
+oh.put(3, 3, "f6afterroom")
+for (x, y) in ((4, 5), (23, 5), (4, 12), (23, 12), (13, 8)):
+    prop(oh, x, y, "candle")
+for (x, y) in ((7, 9), (10, 11), (17, 10), (20, 13), (8, 14)):
+    prop(oh, x, y, "bench")
+prop(oh, 13, 2, "painting")
+prop(oh, 13, 4, "podium")
+for (x, y) in ((5, 8), (21, 9), (16, 15)):
+    prop(oh, x, y, "rubble")
+oh.write()
+
+# ================================================================ 训练室后面的旧仓库（骑士篇支线「没有名字的生日」：发条小手、三个零件；零件和小手由 QuestWarehouse 摆）
+wh = Map(WAREHOUSE, 26, 16, "intro =\nambient = 0.4,0.36,0.42\nno_switch = false")
+wh.room(2, 2, 23, 13)
+for x in (8, 18):
+    wh.put(x, 1, "torch lit=true")
+wh.put(3, 3, "f6afterroom")
+wh.put(2, 7, "exit target=%s spawn=from_warehouse" % TOWN)
+wh.put(3, 7, "spawn id=from_town")
+wh.put(4, 7, "player")
+wh.put(4, 8, "blue_princess follow=true ai=false")
+for (x, y) in ((8, 4), (12, 9), (16, 5), (20, 10), (9, 12), (19, 3)):
+    prop(wh, x, y, "crate")
+for (x, y) in ((14, 3), (6, 11), (22, 7)):
+    prop(wh, x, y, "barrel")
+prop(wh, 13, 12, "music_box")
+wh.write()
+
+# ================================================================ 西南角的储物间（骑士篇支线「点灯笼的小姑娘」：墙上的旧痒痒刷、角落里的旧布偶）
+sr = Map(STORAGE, 18, 8, "intro =\nambient = 0.3,0.28,0.4\nno_switch = false")
+sr.room(2, 2, 15, 5)
+sr.put(2, 3, "exit target=%s spawn=from_storage" % TOWN)
+sr.put(3, 3, "spawn id=from_town")
+sr.put(4, 3, "player")
+sr.put(4, 4, "blue_princess follow=true ai=false")
+sr.put(3, 2, "f6afterroom")
+for (x, y) in ((15, 2), (15, 5), (12, 5)):
+    prop(sr, x, y, "crate")
+prop(sr, 14, 3, "barrel")
+sr.write()
+
+# ================================================================ 排水渠上的小桥（骑士篇支线「点灯笼的小姑娘」：手拉手过桥，桥下的手印）
+bg = Map(BRIDGE, 34, 9, "intro =\nambient = 0.28,0.3,0.45\nno_switch = false")
+bg.room(2, 2, 31, 6)
+bg.put(2, 4, "exit target=%s spawn=from_bridge" % TOWN)
+bg.put(3, 4, "spawn id=from_town")
+bg.put(4, 4, "player")
+bg.put(4, 5, "blue_princess follow=true ai=false")
+bg.put(3, 2, "f6afterroom")
+# 中间这一段只剩一格宽的木桥（两边是水渠，当墙）
+for x in range(8, 26):
+    for y in (2, 3, 5, 6):
+        bg.g[y][x] = "#"
+for (x, y) in ((7, 4), (26, 4)):
+    prop(bg, x, y, "lamp")
+bg.write()
 
 # ================================================================ 保卫队训练营（陷阱验收；踏板由任务摆）
 pv = Map(PROVING, 44, 10, "intro =\nambient = 0.78,0.74,0.7")
@@ -573,6 +729,7 @@ K_DAY_NPCS = {   # 对话文件 -> (人物图, 格, 朝向, 闲逛)
     "after_k_merchant": ("merchant", (8, 24), "down", 1), "after_k_engineer": ("miner", (34, 36), "down", 1),
     "after_k_maid": ("maid", (57, 33), "left", 1), "after_k_mayor": ("mayor", (31, 29), "down", 0),
     "after_k_kids": ("kid", (30, 31), "down", 2),
+    "after_k_host": ("bonfire_host", (46, 24), "left", 0),
     # 主线触发：和他们说话才开始（第一天早上发现骑士、第二天早上诅咒失控）
     "after_k_guard_dungeon": ("guard", (54, 10), "left", 0), "after_k_guard_camp": ("guard", (55, 38), "right", 0),
 }
@@ -871,7 +1028,10 @@ lst = floors["floors"]
 NEW = [(TOWN, "地下小镇·战后", "town"), (FESTIVAL, "庆功宴的广场", "town"), (KDAY, "地下小镇·骑士篇（白天）", "town"),
        (KNIGHT_N, "地下小镇·骑士篇（夜里）", "town"), (KCHASE, "地下小镇·骑士篇（诅咒失控）", "town"), (HOUSE, "蓝色小屋·战后", "town"), (HOUSE_UP, "蓝色小屋·战后（楼上）", "night_room"),
        (PHARMACY, "药剂师工房", "town"), (FIELD, "城门外的战场", "town"), (TAILOR, "裁缝铺", "town"), (MINE, "受损的矿道", "town"), (TOTEM, "图腾柱废地", "town"), (DRAIN, "排水管", "town"), (DRILL, "队长的训练室", "town"), (PROVING, "保卫队训练营", "town"),
-       (PRISON, "保卫队的地牢", "night_room"), (CELLAR, "药剂师工房的地窖", "night_room")]
+       (PRISON, "保卫队的地牢", "night_room"), (CELLAR, "药剂师工房的地窖", "night_room"),
+       (ALLEY, "没有灯的小巷", "night_room"), (HERBCAVE, "草药洞", "night_room"),
+       (WALL, "城墙上", "night_room"), (CRACK, "广场底下的裂缝", "night_room"), (OLDHALL, "旧会堂", "night_room"),
+       (WAREHOUSE, "旧仓库", "night_room"), (STORAGE, "储物间", "night_room"), (BRIDGE, "排水渠上的小桥", "night_room")]
 at = next(i for i, f in enumerate(lst) if f["id"] == "floor_06_siege") + 1
 for fid, name, music in NEW:
     if not any(f["id"] == fid for f in lst):

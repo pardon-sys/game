@@ -126,8 +126,9 @@ func start() -> void:
 	_drain_t = DRAIN_EVERY
 	_end_hunt()
 	var tx: Dictionary = text().get(surge, {})
-	GameState.princess_reacted.emit(str(tx.get("start", "")), 3.4)
-	GameState.notify(str(tx.get("hint", "")), 4.0)
+	# 第一次：演介绍过场；之后只冒一句旁白
+	if not TaskKnightBoss.intro("surge_" + surge):
+		GameState.princess_reacted.emit(str(tx.get("start", "")), 3.4)
 	task._shake(0.4, 3.0)
 	Audio.play("rumble", -4.0)
 	if surge != "drain":
@@ -259,7 +260,7 @@ func _tick_surge(delta: float) -> void:
 
 ## 在亮着的灯笼光里（笑面吸笑的时候安全）
 func _in_light(c: Node2D) -> bool:
-	return task.lanterns.any(func(l): return is_instance_valid(l) and l.lit and l.global_position.distance_to(c.global_position) <= LIGHT_SAFE_R)
+	return task.lights().any(func(l): return l.global_position.distance_to(c.global_position) <= LIGHT_SAFE_R)
 
 
 ## 吸笑声的光带（从被吸的人飘到盔甲身上）
@@ -319,6 +320,16 @@ func lure() -> bool:
 	return true
 
 
+## 帮手（小孩们）替她把盔甲引开：不看距离，盯着的镇民放掉
+func lure_by(who: Node2D) -> bool:
+	if not is_instance_valid(hunt):
+		return false
+	_end_hunt()
+	hunt_t = HUNT_EVERY
+	SpeechBubble.say(task._body, str((TaskKnightBoss.data().get("hunt", {}).get("lured", ["……"]) as Array).pick_random()), 46.0, 1.4)
+	return true
+
+
 ## 蓝色公主 J：冻住身边的诅咒核心（TaskKnightBoss.freeze_part 先问这里）
 func freeze_cores(who: PlayableCharacter) -> bool:
 	if surge != "heart":
@@ -331,6 +342,15 @@ func freeze_cores(who: PlayableCharacter) -> bool:
 	if hit:
 		Fx.burst(task.get_parent(), task._body.global_position + Vector2(0, -20), "drop", 10, 30.0, 0.4, Vector2(0, -10), Color(0.8, 0.95, 1.0))
 	return hit
+
+
+## 冰晶结界：范围里的心核都冻住
+func freeze_cores_at(center: Vector2, r: float) -> void:
+	if surge != "heart":
+		return
+	for c in cores:
+		if core_pos(c).distance_to(center) <= r:
+			c["frozen"] = CORE_WINDOW
 
 
 func core_pos(c: Dictionary) -> Vector2:
@@ -372,7 +392,8 @@ func start_hunt(v: Node2D = null) -> Node2D:
 	hunt_left = HUNT_GIVEUP
 	var tx: Dictionary = TaskKnightBoss.data().get("hunt", {})
 	SpeechBubble.say(task._body, str((tx.get("bark", ["……笑……声……"]) as Array).pick_random()), 46.0, 1.4)
-	GameState.princess_reacted.emit(str(tx.get("warn", "")), 2.6)
+	if not TaskKnightBoss.intro("hunt"):
+		GameState.princess_reacted.emit(str(tx.get("warn", "")), 2.6)
 	return hunt
 
 
@@ -416,7 +437,6 @@ func _draw() -> void:
 		draw_rect(Rect2(h + Vector2(-1.5, 1), Vector2(3, 3)), Color(0.85, 0.35, 1.0))
 	# 笑面吸笑：亮着的灯笼脚下一圈安全的光
 	if surge == "drain":
-		for l in task.lanterns:
-			if is_instance_valid(l) and l.lit:
-				draw_circle(to_local(l.global_position), LIGHT_SAFE_R, Color(1, 0.85, 0.45, 0.18 + 0.06 * sin(_t * 6.0)))
-				draw_arc(to_local(l.global_position), LIGHT_SAFE_R, 0, TAU, 32, Color(1, 0.9, 0.55, 0.8), 1.5)
+		for l in task.lights():
+			draw_circle(to_local(l.global_position), LIGHT_SAFE_R, Color(1, 0.85, 0.45, 0.18 + 0.06 * sin(_t * 6.0)))
+			draw_arc(to_local(l.global_position), LIGHT_SAFE_R, 0, TAU, 32, Color(1, 0.9, 0.55, 0.8), 1.5)

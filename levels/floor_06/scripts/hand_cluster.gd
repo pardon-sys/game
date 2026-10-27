@@ -61,6 +61,12 @@ func on_pants_burst(burst: PantsBurst) -> void:
 		split()
 
 
+## 冰晶结界：冻裂成碎片
+func on_ice_barrier(center: Vector2, r: float, _time: float) -> void:
+	if not done and global_position.distance_to(center) <= r:
+		split()
+
+
 ## 冻住 / 拍散：裂成几块碎片四散
 func split() -> Array:
 	if done:

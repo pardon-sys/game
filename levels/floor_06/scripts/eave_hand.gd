@@ -126,6 +126,12 @@ func on_pants_burst(burst: PantsBurst) -> void:
 		_release()
 
 
+## 冰晶结界：抓着人的手印冻得松开
+func on_ice_barrier(center: Vector2, r: float, _time: float) -> void:
+	if global_position.distance_to(center) <= r + HANG:
+		_release()
+
+
 func _draw() -> void:
 	var col := CurseHand.COL
 	match state:

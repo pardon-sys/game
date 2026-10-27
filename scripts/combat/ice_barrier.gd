@@ -5,6 +5,7 @@ extends Node2D
 ##   她自己被困 / 被吸附的状态解除；她和范围内的友军都得到「冰晶守护」（frost_guard：期间闷笑不涨，
 ##   而且自然消减快 LaughMeter.FROST_DECAY 倍、不用等被挠后的延迟）。
 ##   会魔法反应的东西（MagicReactive）同样收到一次 on_magic_burst（和星光爆发一样能解谜）。
+##   骑士篇的诅咒（PantsBurst.KNIGHT_GROUP 组，实现 on_ice_barrier(中心, 半径, 时间)）：手印、盔甲、Boss 的部件 / 小手 / 触手 / 心核都冻住。
 ##   特效：冰蓝色的圆环扩散 + 冰晶 / 雪花粒子，冻住的陷阱也蒙上冰色。
 
 const TIERS := [
@@ -62,6 +63,11 @@ static func cast_with(caster: Node2D, r: float, time: float, t := 3, at: Variant
 	for n in tree.get_nodes_in_group("magic_reactive"):
 		if n is Node2D and Contracts.is_magic_reactive(n) and (n as Node2D).global_position.distance_to(center) <= r:
 			n.on_magic_burst(t, caster)
+	# 骑士篇的诅咒（手印、盔甲、Boss 部件……不是 Monster）：自己按距离决定冻什么
+	for n in tree.get_nodes_in_group(PantsBurst.KNIGHT_GROUP):
+		if n.has_method("on_ice_barrier"):
+			n.on_ice_barrier(center, r, time)
+			hit.append(n)
 	var pc := caster as PlayableCharacter
 	if pc and pc.global_position.distance_to(center) <= r + StarBurst.BODY_ALLOWANCE:
 		if pc.status and pc.status.is_grabbed():

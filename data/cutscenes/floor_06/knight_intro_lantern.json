@@ -1,0 +1,27 @@
+{
+	"name": "机制：灯笼",
+	"letterbox": true,
+	"skippable": true,
+	"steps": [
+		{
+			"speaker": "镇长",
+			"text": "灯笼！就像点灯笼那晚一样——用笑声把它们一盏一盏点亮！"
+		},
+		{
+			"speaker": "公主",
+			"text": "笑……对着灯笼笑！（站在灯笼旁按住 Y）",
+			"emotion": "happy"
+		},
+		{
+			"speaker": "小汤姆",
+			"text": "姐姐！我们也来陪你笑！",
+			"if": {
+				"flag": "kq_shoes_done"
+			}
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……触手来偷的时候，我冻。"
+		}
+	]
+}

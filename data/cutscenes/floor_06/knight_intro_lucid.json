@@ -1,0 +1,15 @@
+{
+	"name": "机制：清醒",
+	"letterbox": true,
+	"skippable": true,
+	"steps": [
+		{
+			"speaker": "",
+			"text": "（骑士笑出了声。盔甲上的紫光，一下子暗了下去）"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……他醒了一点。现在，哪里都打得动。快。"
+		}
+	]
+}

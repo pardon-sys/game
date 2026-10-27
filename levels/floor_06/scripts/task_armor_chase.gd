@@ -6,6 +6,7 @@ extends Node2D
 ##   站在信标 BEACON_R 以内按住 E 累计 HOLD 秒（亮的一瞬间盔甲被光晃到，停 LIGHT_STUN 秒）；四座都亮了以后跑回广场图腾柱下（PLAZA，也指路）= 完成。
 ##   扔陷阱：每 THROW_EVERY 秒（离她 THROW_MIN ~ THROW_MAX 之间、没被冻 / 晃）盔甲把地牢里的陷阱（THROWS 八种）扔到她前面的路上：
 ##     落点先亮影子 THROW_FLY 秒（Throw），落地变成真的陷阱场景，TRAP_LIFE 秒后收走（她正被这个陷阱缠着就等她脱身）；第一次扔某一种时粉色公主吐槽。
+##     会预判（aim_points）：落点 = 她的位置 + 速度 × 飞行时间；有时拦在她和下一座信标之间的路上；刚冲刺完就落在冲刺的终点。
 ##   盔甲直线快、转弯慢，会被房子挡住；隔一阵铁手横扫一行（预警线）。镇民帮忙：盔甲走近栅栏点（GATES）而她已经跑开时，栅栏关上 GATE_TIME 秒挡住它。
 ##     栅栏门是支线「夜里的栅栏」装的：没做那个支线就没有栅栏（KnightQuests.is_done("fence")）。
 ##   做过支线「队长的旧剑术」：队长替她挡一次抱住（captain_block，盔甲被他顶开、晃 LIGHT_STUN 秒）。冲刺无敌的时候抓不住、横扫扫不到。
@@ -53,12 +54,14 @@ const THROWS := {
 	"cage": {"scene": "cage", "props": {}},
 	"snare": {"scene": "snare", "props": {}},
 }
-const THROW_EVERY := 5.0
-const THROW_FIRST := 6.0
+## 扔陷阱的间隔：开局 THROW_EVERY 秒，亮的信标越多越快（四座全亮 THROW_FAST 秒）；亮了 2 座一次扔 2 个，3 座以后扇形扔 3 个；场上最多 MAX_TRAPS 个
+const THROW_EVERY := 3.2
+const THROW_FAST := 2.2
+const THROW_FIRST := 5.0
+const MAX_TRAPS := 8
 const THROW_MIN := 50.0
 const THROW_MAX := 260.0
 const THROW_FLY := 0.9
-const THROW_AHEAD := 44.0
 const TRAP_LIFE := 10.0
 
 ## 测试：关掉 AI 搭档（没被操控的那位原地不动）
@@ -297,27 +300,55 @@ func _throw_tick(delta: float) -> void:
 	var d := armor.global_position.distance_to(pink.global_position)
 	if d < THROW_MIN or d > THROW_MAX:
 		return
-	throw_left = THROW_EVERY
+	throw_left = throw_interval()
 	var kinds := THROWS.keys()
-	throw_trap(str(kinds[_throw_i % kinds.size()]))
-	_throw_i += 1
+	var room := MAX_TRAPS - traps.filter(func(x): return x.has("kind")).size()
+	for at in aim_points().slice(0, maxi(0, room)):
+		throw_trap(str(kinds[_throw_i % kinds.size()]), _free_spot(at))
+		_throw_i += 1
 
 
-## 往她前面的路上扔一个 kind 的陷阱：落点 = 她走的方向前面 THROW_AHEAD（站着不动就是脚下）；落点在墙里就换近一点的
+## 这一次扔的间隔：亮的信标越多越快
+func throw_interval() -> float:
+	return lerpf(THROW_EVERY, THROW_FAST, float(lit()) / float(BEACONS.size()))
+
+
+## 这一次扔到哪几个地方（预判）：亮了 2 座扔 2 个、3 座以后 3 个扇形
+func aim_points() -> Array:
+	var p := pink.global_position
+	var lead := pink.velocity * THROW_FLY
+	# 刚冲刺完：落在冲刺的终点
+	if pink.is_dashing():
+		lead = pink.velocity.normalized() * 56.0
+	var main := p + lead
+	var out := [main]
+	var n := 1 + (1 if lit() >= 2 else 0) + (1 if lit() >= 3 else 0)
+	if n >= 2:
+		# 拦路：她和下一座信标（全亮了是广场）之间
+		var goal := Cutscene.cell_to_world(target_cell())
+		out.append(p + p.direction_to(goal) * minf(80.0, p.distance_to(goal) * 0.5))
+	if n >= 3:
+		var side := (main - armor.global_position).orthogonal().normalized() * 40.0
+		out.append(main + side)
+	return out
+
+
+## 扔一个 kind 的陷阱：at 不给就按预判的第一个落点（aim_points）；落点在墙里就换近一点的
 func throw_trap(kind: String, at := Vector2.INF) -> Throw:
 	if not THROWS.has(kind) or not is_instance_valid(armor):
 		return null
 	if at == Vector2.INF:
-		var ahead := pink.velocity.normalized() * THROW_AHEAD if pink.velocity.length() > 5.0 else Vector2.ZERO
-		at = _free_spot(pink.global_position + ahead)
+		at = _free_spot(aim_points()[0])
 	var th := Throw.new()
-	th.from = armor.global_position + Vector2(0, -20)
+	th.from = armor.global_position + Vector2(randf_range(-8, 8), -20)
 	th.to = at
 	th.kind = kind
 	th.task = self
 	get_parent().add_child(th)
 	armor.stun(0.35)
 	SpeechBubble.say(armor, "……！", 30.0, 0.8)
+	if thrown_kinds.is_empty():
+		TaskKnightBoss.intro("throw")
 	if not thrown_kinds.has(kind):
 		thrown_kinds.append(kind)
 		var first: Dictionary = data().get("throw_first", {})

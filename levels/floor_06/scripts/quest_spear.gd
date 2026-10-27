@@ -231,7 +231,7 @@ func resolve() -> String:
 			GameState.notify("（三轮练完了。队长：「……还行。」）", 2.5)
 			queue_free()
 		else:
-			advance()
+			_to_watch()
 	elif dodged >= int(cfg["count"]):
 		# 实战轮：躲够了但完美闪避不够，接着来
 		pass
@@ -251,6 +251,18 @@ func _strike_fx() -> void:
 		_pose(2, 0.35)
 		KnightFx.play(get_parent(), "spear_sweep", warn["at"], {"size": SWEEP_R * 2.0 + 24.0, "squash": 0.7})
 	Audio.play("swing", -6.0)
+
+
+## 三轮练完：队长叫她晚上上城墙守夜（下一段 QuestWatch）
+func _to_watch() -> void:
+	warn = {}
+	_paused = 999.0
+	_pose(-1)
+	await TrainingDB.wait_dialogue_free()
+	Dialogue.start_lines(q.get("watch_invite", []), "kq_watch_invite")
+	while Dialogue.is_active():
+		await get_tree().process_frame
+	advance()
 
 
 func status() -> String:

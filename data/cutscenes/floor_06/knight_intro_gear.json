@@ -1,0 +1,16 @@
+{
+	"name": "机制：诅咒装备",
+	"letterbox": true,
+	"skippable": true,
+	"steps": [
+		{
+			"speaker": "公主",
+			"text": "这、这是地牢里的痒痒装备！被穿上了！",
+			"emotion": "surprise"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……站过来。我帮你扯。……你自己连按 J 也挣得掉。"
+		}
+	]
+}

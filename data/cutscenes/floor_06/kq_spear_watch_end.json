@@ -1,0 +1,45 @@
+{
+	"name": "守夜",
+	"letterbox": true,
+	"skippable": true,
+	"steps": [
+		{
+			"speaker": "",
+			"text": "（布条解开了。两个人坐在哨塔的墙头上，底下是黑漆漆的小镇）"
+		},
+		{
+			"speaker": "保卫队队长",
+			"text": "……我是那一年入的队。",
+			"npc": "captain"
+		},
+		{
+			"speaker": "公主",
+			"text": "那一年？",
+			"emotion": "surprise"
+		},
+		{
+			"speaker": "保卫队队长",
+			"text": "……那天，我从塌了的地方抱出来两个孩子。",
+			"npc": "captain"
+		},
+		{
+			"speaker": "保卫队队长",
+			"text": "一个一直哭。一个一直笑。",
+			"npc": "captain"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……"
+		},
+		{
+			"speaker": "公主",
+			"text": "……后来呢？",
+			"emotion": "sad"
+		},
+		{
+			"speaker": "保卫队队长",
+			"text": "……下去吧。明天，在训练室。两个人一起来。",
+			"npc": "captain"
+		}
+	]
+}

@@ -247,6 +247,62 @@
 			"music": "night_room"
 		},
 		{
+			"id": "floor_06_knight_alley",
+			"name": "没有灯的小巷",
+			"scene": "res://levels/floor_06_knight_alley/floor.tscn",
+			"group": "floor_06",
+			"music": "night_room"
+		},
+		{
+			"id": "floor_06_after_herbcave",
+			"name": "草药洞",
+			"scene": "res://levels/floor_06_after_herbcave/floor.tscn",
+			"group": "floor_06",
+			"music": "night_room"
+		},
+		{
+			"id": "floor_06_knight_wall",
+			"name": "城墙上",
+			"scene": "res://levels/floor_06_knight_wall/floor.tscn",
+			"group": "floor_06",
+			"music": "night_room"
+		},
+		{
+			"id": "floor_06_after_crack",
+			"name": "广场底下的裂缝",
+			"scene": "res://levels/floor_06_after_crack/floor.tscn",
+			"group": "floor_06",
+			"music": "night_room"
+		},
+		{
+			"id": "floor_06_after_oldhall",
+			"name": "旧会堂",
+			"scene": "res://levels/floor_06_after_oldhall/floor.tscn",
+			"group": "floor_06",
+			"music": "night_room"
+		},
+		{
+			"id": "floor_06_after_warehouse",
+			"name": "旧仓库",
+			"scene": "res://levels/floor_06_after_warehouse/floor.tscn",
+			"group": "floor_06",
+			"music": "night_room"
+		},
+		{
+			"id": "floor_06_knight_storage",
+			"name": "储物间",
+			"scene": "res://levels/floor_06_knight_storage/floor.tscn",
+			"group": "floor_06",
+			"music": "night_room"
+		},
+		{
+			"id": "floor_06_knight_bridge",
+			"name": "排水渠上的小桥",
+			"scene": "res://levels/floor_06_knight_bridge/floor.tscn",
+			"group": "floor_06",
+			"music": "night_room"
+		},
+		{
 			"id": "floor_08_maze_1",
 			"name": "第八层·夜迷宫一·外环回廊",
 			"scene": "res://levels/floor_08_maze_1/floor.tscn",

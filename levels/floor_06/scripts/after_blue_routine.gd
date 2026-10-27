@@ -30,7 +30,7 @@ func _process(_delta: float) -> void:
 ## 骑士篇里（不用先赢玩闹）主动邀请了，一直跟到「先分开」
 const KNIGHT_FOLLOW := "knight_blue_follow"
 ## 骑士篇里要蓝色公主帮忙的支线（冻手印、栅栏的夜里）：进行中自己跟上
-const KNIGHT_QUESTS := ["samples", "fence"]
+const KNIGHT_QUESTS := ["shoes", "samples", "fence", "blue"]
 
 
 ## 当天挑战获胜后主动邀请了；骑士篇里：说话邀请过（KNIGHT_FOLLOW）
@@ -101,6 +101,16 @@ func sync(force := false) -> void:
 	if not force and (GameState.in_dialogue or DayClock.passing or AfterPlay.running):
 		return
 	if not force and AfterStory.running and not _task_active():
+		return
+	# 支线「点灯笼的小姑娘」第一段：她一个人站在西南角的旧石灯笼前（等粉色公主跟着冰晶脚印找过来）
+	if KnightStory.active() and KnightQuests.active() == "blue" and KnightQuests.stage("blue") == 0:
+		if _state != "lantern":
+			var at := Cutscene.cell_to_world(QuestFootprints.LANTERN) + Vector2(12, 2)
+			blue.global_position = at
+			blue.velocity = Vector2.ZERO
+			blue.facing = Vector2.LEFT
+			blue.start_wandering(PARTNER, at, 0)
+			_state = "lantern"
 		return
 	if _task_active():
 		if _state != "task":

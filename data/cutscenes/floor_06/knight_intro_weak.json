@@ -1,0 +1,24 @@
+{
+	"name": "机制：破绽",
+	"letterbox": true,
+	"skippable": true,
+	"steps": [
+		{
+			"speaker": "",
+			"text": "（铁手套碎开的地方，露出了一截手腕——是他自己的）"
+		},
+		{
+			"speaker": "保卫队队长",
+			"text": "盔甲缝里露出来的，是他本人。……挠他。让他笑出来，诅咒就松。",
+			"npc": "captain"
+		},
+		{
+			"speaker": "保卫队队长",
+			"text": "练剑的时候教过你——快打中了再闪开，他就会露出破绽。",
+			"npc": "captain",
+			"if": {
+				"flag": "kq_spear_done"
+			}
+		}
+	]
+}

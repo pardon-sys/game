@@ -33,6 +33,13 @@ func on_pants_burst(burst: PantsBurst) -> void:
 		_flash = 0.5
 
 
+## 冰晶结界：地纹冻住一会儿（不挠人）
+func on_ice_barrier(center: Vector2, r: float, time: float) -> void:
+	if global_position.distance_to(center) <= r:
+		_cool = maxf(_cool, time)
+		_flash = 0.5
+
+
 func _process(delta: float) -> void:
 	_t += delta
 	_cool = maxf(0.0, _cool - delta)

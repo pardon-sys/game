@@ -46,10 +46,26 @@ func _on_flag(flag: String) -> void:
 		return
 	_stage = stage()
 	_clear()
-	if bool(get_script().call("runs_on", str(_lv.get("floor_id")), _stage)):
+	# 下一段换了玩法节点（段落的 runner）或者不在这张图上：自己收走，让导演按下一段重新摆
+	if KnightQuests.stage_script(quest_id) == get_script() and KnightQuests.runs_on(get_script(), quest_id, str(_lv.get("floor_id"))):
 		setup()
 	else:
+		name = String(name) + "_done"
 		queue_free()
+		_resync.call_deferred()
+
+
+## 这个节点还是不是现在这一段的玩法（做完 / 换段以后，收走之前的这一小会儿不要再触发东西）
+func live() -> bool:
+	return KnightQuests.is_active(quest_id) and stage() == _stage
+
+
+func _resync() -> void:
+	if is_instance_valid(_lv):
+		for n in _lv.find_children("*", "", true, false):
+			if n.has_method("refresh_objective"):
+				n.call("refresh_objective")
+				return
 
 
 ## 子类：摆这一段的东西
