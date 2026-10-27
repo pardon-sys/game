@@ -206,7 +206,7 @@ static func run(t: Node) -> void:
 	verify(t, "Boss 战：没被操控的蓝色公主由 AI 控制；C 键能换人", b.blue.controller is KnightAI
 		and InputMap.action_get_events("switch_character").any(func(e): return e is InputEventKey and e.physical_keycode == KEY_C))
 	verify(t, "屏幕上方有盔甲耐久条（满的：%.2f）" % b.durability(), is_instance_valid(b._hud) and is_equal_approx(b.durability(), 1.0))
-	verify(t, "广场上有 %d 个木箱" % b.crates.size(), b.crates.size() == TaskKnightBoss.CRATES.size())
+	verify(t, "广场上有 %d 个木箱（另有工匠打的木桩）" % b.crates.size(), b.crates.filter(func(c): return not c.stake).size() == TaskKnightBoss.CRATES.size())
 	# ---- 盔甲会走
 	b.ai_enabled = false
 	b.attack_t = 999.0
@@ -739,4 +739,59 @@ static func run(t: Node) -> void:
 	verify(t, "按 E 回小屋；骑士篇这一段结束（%s）" % KnightStory.objective(AfterStory.HOUSE).get("text", ""),
 		t._level_id() == AfterStory.HOUSE and KnightStory.step().is_empty())
 	for q in ["shoes", "samples", "spear"]:
+		GameState.set_flag("kq_%s_done" % q, false)
+	# ---------------------------------------------------------------- 六个支线都做过：最后一战的帮手都在场上
+	for q in ["shoes", "samples", "spear", "fence", "host", "blue"]:
+		GameState.set_flag("kq_%s_done" % q)
+	GameState.vars[TaskKnightBoss.PHASE_KEY] = 0
+	GameState.vars[TaskKnightBoss.CAUGHT_KEY] = 0
+	KnightCurse.auto = false
+	KnightStory.jump("boss")
+	GameState.pending_spawn = "from_prison"
+	await t.main.change_level(Floors.scene(KnightStory.KCHASE))
+	await t._advance_until(func(): return task(t, "boss") != null and bool(task(t, "boss").started) and not Cutscene.is_playing() and not GameState.in_dialogue, 60.0)
+	var b2 := task(t, "boss") as TaskKnightBoss
+	verify(t, "再打一次 Boss（六个支线都做过）", b2 != null)
+	if b2 == null:
+		KnightCurse.auto = true
+		return
+	var fh := b2.field_helpers
+	verify(t, "帮手都在场上：小孩们、奶奶、队长、工匠、派对主人、旧石灯笼（%s）" % [fh.field.keys()], fh.field.has("tom") and fh.field.has("lily")
+		and fh.field.has("granny") and fh.field.has("captain") and fh.field.has("engineer") and is_instance_valid(fh.host) and is_instance_valid(fh.old_lantern))
+	verify(t, "派对主人用 KnightAI（和蓝色公主一样的 AI），按 C 换不到她", fh.host.controller is KnightAI and not fh.host.switchable)
+	verify(t, "做过旧剑术：开场就有一次挡", b2.shield >= 1)
+	var stakes := b2.crates.filter(func(c): return is_instance_valid(c) and c.stake)
+	verify(t, "工匠在场上打好了 %d 根木桩" % stakes.size(), stakes.size() == KnightHelpers.STAKES_PER_PHASE)
+	var pk := b2.pink
+	pk.laugh.set_value(pk.laugh.max_value * 0.8)
+	fh.granny_mint_cool = 0.0
+	fh.tick(0.05)
+	verify(t, "闷笑过七成：奶奶扔来薄荷糖（%.0f%%）" % (pk.laugh.ratio() * 100.0), pk.laugh.ratio() < 0.7 and fh.granny_mint_cool > 0.0)
+	b2.stomp()
+	b2.stuck_left = 0.0
+	b2.wave_left = 0.0
+	fh.music()
+	verify(t, "派对主人放八音盒：全场的小手都停住了", b2.hands.all(func(h): return not is_instance_valid(h) or h.state == "frozen"))
+	var hm: CurseHand = b2.hands[0]
+	hm.global_position = fh.old_lantern.global_position + Vector2(6, 0)
+	b2._tick_hands()
+	verify(t, "旧石灯笼（第五盏灯）一开场就亮着：小手爬进光里化掉", hm.state == "gone")
+	verify(t, "做过点灯笼的小姑娘：蓝色公主的冻结范围大一圈（%.0f）" % b2.freeze_reach(), b2.freeze_reach() > TaskKnightBoss.FREEZE_R)
+	b2.curse.start_hunt(b2.victims.filter(func(x): return x.kind != "fallen")[0])
+	fh.tick(0.05)
+	verify(t, "盔甲盯上镇民：小孩们笑着把它引开了", b2.curse.hunt == null)
+	var vk: KnightBossFx.Victim = b2.victims[0]
+	b2.curse_victim(vk)
+	(fh.field["tom"] as Node2D).global_position = vk.global_position
+	b2._tick_victims(0.3)
+	verify(t, "小孩们跑去帮着扒手印（%.2f）" % vk.rescue, vk.rescue > 0.0 or not vk.cursed)
+	var pc: TaskKnightBoss.BossPart = b2.parts[0]
+	pc.freeze_left = 4.0
+	(fh.field["captain"] as Node2D).global_position = pc.global_position + Vector2(10, 0)
+	var chp := pc.hp
+	fh._cap_hit = 0.0
+	fh.tick(0.05)
+	verify(t, "冻住的部件：队长也上去打了一下（%d → %d）" % [chp, pc.hp], pc.hp == chp - 1)
+	KnightCurse.auto = true
+	for q in ["shoes", "samples", "spear", "host", "blue"]:
 		GameState.set_flag("kq_%s_done" % q, false)

@@ -270,9 +270,9 @@ static func talk_next(id: String) -> void:
 	await advance(id)
 
 
-## Boss 最后阶段：做过的支线来帮忙的人（灯笼顺序：shoes、samples、spear、fence）
+## Boss 里来帮忙的人：做过的支线（灯笼顺序：shoes、samples、spear、fence；再加 host 派对主人、blue 旧石灯笼）
 static func helpers() -> Array:
-	return ["shoes", "samples", "spear", "fence"].filter(func(id): return is_done(id))
+	return ["shoes", "samples", "spear", "fence", "host", "blue"].filter(func(id): return is_done(id))
 
 
 static func _runner_script(id: String) -> Script:

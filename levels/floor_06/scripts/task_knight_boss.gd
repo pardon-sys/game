@@ -235,6 +235,9 @@ var _hud: KnightBossHud
 var _t := 0.0
 var _tips := {}
 var curse: KnightCurse
+## 做过支线的人在场上帮忙（KnightHelpers）
+var field_helpers: KnightHelpers
+var _ai_hooks: BattleAIHooks
 
 
 static func data() -> Dictionary:
@@ -302,7 +305,12 @@ func _ready() -> void:
 	_enter_phase(phase)
 	var hooks := Hooks.new()
 	hooks.task = self
+	_ai_hooks = hooks
 	KnightAI.install([pink, blue], ai_plan, hooks)
+	field_helpers = KnightHelpers.new()
+	field_helpers.task = self
+	add_child(field_helpers)
+	field_helpers.setup()
 	_hud = KnightBossHud.new()
 	_hud.task = self
 	add_child(_hud)
@@ -315,7 +323,9 @@ func _exit_tree() -> void:
 	Engine.time_scale = 1.0
 	if _music_was != "" and Audio.music_id == "knight_boss":
 		Audio.play_music(_music_was)
-	_clear_field()
+	_clear_field(true)
+	if is_instance_valid(field_helpers):
+		field_helpers.cleanup()
 	for n in parts + victims + crates + lanterns + helpers + [_body, _decor, _shadow, curse]:
 		if is_instance_valid(n):
 			n.queue_free()
@@ -361,6 +371,8 @@ func _enter_phase(p: int) -> void:
 		_start_lanterns()
 	if is_instance_valid(curse):
 		curse.phase_started(p)
+	if is_instance_valid(field_helpers):
+		field_helpers.phase_started(p)
 
 
 ## 拆完一套：清场 → 部件炸开（顿帧、震屏）→ 骑士踉跄、喊一句 → 下一阶段（不黑屏、不演过场）
@@ -402,14 +414,18 @@ func _transition(p: int) -> void:
 	transitioning = false
 
 
-func _clear_field() -> void:
+## 清场；quiet：整个任务收走的时候（不冒烟、不加特效）
+func _clear_field(quiet := false) -> void:
 	_clear_warn()
 	if is_instance_valid(curse):
 		curse.end(true)
 		curse._end_hunt()
 	for h in hands:
 		if is_instance_valid(h):
-			(h as CurseHand).puff()
+			if quiet:
+				(h as Node).queue_free()
+			else:
+				(h as CurseHand).puff()
 	for n in gases + fx + tentacles:
 		if is_instance_valid(n):
 			n.queue_free()
@@ -461,6 +477,8 @@ func advance(delta: float) -> void:
 	_tick_victims(delta)
 	if is_instance_valid(curse) and not grabbed:
 		curse.tick(delta)
+	if is_instance_valid(field_helpers):
+		field_helpers.tick(delta)
 	if grabbed:
 		_grab_tick(delta)
 		return
@@ -1148,7 +1166,7 @@ func _tick_hands() -> void:
 			hands.erase(h)
 			continue
 		# 爬进亮着的灯笼光里：化掉
-		if lanterns.any(func(l): return is_instance_valid(l) and l.lit and l.global_position.distance_to(h.global_position) <= KnightCurse.LIGHT_SAFE_R):
+		if lights().any(func(l): return l.global_position.distance_to(h.global_position) <= KnightCurse.LIGHT_SAFE_R):
 			h.puff()
 			hands.erase(h)
 			continue
@@ -1253,6 +1271,8 @@ func _start_lanterns() -> void:
 		lanterns.append(l)
 	_say(data().get("lanterns_start", []))
 	_tip("lantern")
+	if is_instance_valid(field_helpers):
+		field_helpers.to_lanterns()
 	# 做过的支线：那个人跑到他那盏灯笼下陪着笑
 	var info: Dictionary = data().get("helpers", {})
 	for i in HELPER_ORDER.size():
@@ -1442,7 +1462,10 @@ func _tick_victims(delta: float) -> void:
 			if c.global_position.distance_to(v.global_position) <= RESCUE_R:
 				if (c == GameState.player and Input.is_action_pressed("interact")) or (c != GameState.player and ai_enabled):
 					helping = true
-		v.rescue = minf(1.0, v.rescue + delta / RESCUE_TIME) if helping else maxf(0.0, v.rescue - delta * 0.5)
+		# 做过「骑士救公主」：小孩们跑过来帮着扒（快一倍；没人在扒也会慢慢扒下来）
+		var kids := is_instance_valid(field_helpers) and field_helpers.kid_near(v.global_position)
+		var rate := (1.0 if helping else 0.0) + (KnightHelpers.KID_RESCUE - 1.0 if kids else 0.0)
+		v.rescue = minf(1.0, v.rescue + delta / RESCUE_TIME * rate) if rate > 0.0 else maxf(0.0, v.rescue - delta * 0.5)
 		if v.rescue >= 1.0:
 			rescue(v)
 
@@ -1754,17 +1777,18 @@ func freeze_part(who: PlayableCharacter) -> bool:
 		return true
 	if freeze_cool > 0.0 or not is_instance_valid(who):
 		return false
+	var reach := freeze_reach()
 	var hit := _freeze_tentacles(who)
 	for part in parts:
-		if is_instance_valid(part) and not part.broken and part.global_position.distance_to(who.global_position) <= FREEZE_R:
+		if is_instance_valid(part) and not part.broken and part.global_position.distance_to(who.global_position) <= reach:
 			part.freeze_left = FREEZE_TIME
 			hit = true
 	for h in hands:
-		if is_instance_valid(h) and h.global_position.distance_to(who.global_position) <= FREEZE_R:
+		if is_instance_valid(h) and h.global_position.distance_to(who.global_position) <= reach:
 			h.freeze()
 			hit = true
 	for v in victims:
-		if is_instance_valid(v) and v.cursed and v.global_position.distance_to(who.global_position) <= FREEZE_R:
+		if is_instance_valid(v) and v.cursed and v.global_position.distance_to(who.global_position) <= reach:
 			rescue(v)
 			return true
 	if hit:
@@ -1772,6 +1796,19 @@ func freeze_part(who: PlayableCharacter) -> bool:
 		Audio.play("chime", -4.0)
 		Fx.burst(who.get_parent(), who.global_position, "drop", 8, 30.0, 0.4, Vector2(0, -10), Color(0.8, 0.95, 1.0))
 	return hit
+
+
+## 蓝色公主 J 的冻结范围（做过「点灯笼的小姑娘」：大一圈）
+func freeze_reach() -> float:
+	return FREEZE_R * (KnightHelpers.BLUE_REACH if KnightQuests.is_done("blue") else 1.0)
+
+
+## 亮着的光：四盏灯笼里亮了的 + 做过「点灯笼的小姑娘」的旧石灯笼（一开场就亮）
+func lights() -> Array:
+	var out: Array = lanterns.filter(func(l): return is_instance_valid(l) and l.lit)
+	if is_instance_valid(field_helpers) and is_instance_valid(field_helpers.old_lantern):
+		out.append(field_helpers.old_lantern)
+	return out
 
 
 ## 打部件（测试也直接调）：冻住了 / 护腿卡住了 / 骑士清醒时才打得动；掉一个露出破绽，一套拆完换阶段
