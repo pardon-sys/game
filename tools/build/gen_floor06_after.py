@@ -47,6 +47,8 @@ CELLAR = "floor_06_after_cellar"
 ALLEY, HERBCAVE = "floor_06_knight_alley", "floor_06_after_herbcave"
 # ③ 城墙上（守夜）、④ 广场底下的裂缝、旧会堂
 WALL, CRACK, OLDHALL = "floor_06_knight_wall", "floor_06_after_crack", "floor_06_after_oldhall"
+# ⑤ 训练室后面的旧仓库（派对主人的八音盒零件）
+WAREHOUSE = "floor_06_after_warehouse"
 PRISON = "floor_06_after_prison"
 FESTIVAL = "floor_06_festival"
 KDAY, KNIGHT_N, KCHASE = "floor_06_knight_day", "floor_06_knight_night", "floor_06_knight_chase"
@@ -120,6 +122,9 @@ def town_layout(m, kind="town"):
         # 广场边石板缝里的裂缝（支线「夜里的栅栏」裂缝那一段才开）
         m.put(38, 29, "exit target=%s spawn=from_town unlock_flag=kq_fence_crack locked_dialogue=after_crack_locked" % CRACK)
         m.put(38, 28, "spawn id=from_crack")
+        # 训练室后面的旧仓库（支线「没有名字的生日」找零件那一段才开）
+        m.put(4, 12, "exit target=%s spawn=from_town unlock_flag=kq_host_warehouse locked_dialogue=after_warehouse_locked" % WAREHOUSE)
+        m.put(4, 13, "spawn id=from_warehouse")
     # 居民区：烧焦的房子搭上了脚手架
     for i, x in enumerate((8, 16, 24, 32)):
         prop(m, x, 8, ("house_scaffold_%d" % (i // 2)) if i % 2 == 0 else "house_%d" % i)
@@ -581,6 +586,23 @@ for (x, y) in ((5, 8), (21, 9), (16, 15)):
     prop(oh, x, y, "rubble")
 oh.write()
 
+# ================================================================ 训练室后面的旧仓库（骑士篇支线「没有名字的生日」：发条小手、三个零件；零件和小手由 QuestWarehouse 摆）
+wh = Map(WAREHOUSE, 26, 16, "intro =\nambient = 0.4,0.36,0.42\nno_switch = false")
+wh.room(2, 2, 23, 13)
+for x in (8, 18):
+    wh.put(x, 1, "torch lit=true")
+wh.put(3, 3, "f6afterroom")
+wh.put(2, 7, "exit target=%s spawn=from_warehouse" % TOWN)
+wh.put(3, 7, "spawn id=from_town")
+wh.put(4, 7, "player")
+wh.put(4, 8, "blue_princess follow=true ai=false")
+for (x, y) in ((8, 4), (12, 9), (16, 5), (20, 10), (9, 12), (19, 3)):
+    prop(wh, x, y, "crate")
+for (x, y) in ((14, 3), (6, 11), (22, 7)):
+    prop(wh, x, y, "barrel")
+prop(wh, 13, 12, "music_box")
+wh.write()
+
 # ================================================================ 保卫队训练营（陷阱验收；踏板由任务摆）
 pv = Map(PROVING, 44, 10, "intro =\nambient = 0.78,0.74,0.7")
 # 一条走廊（第 3~6 行）：辅助设施的踏板整条宽，躲不开；陷阱的踏板在路中间
@@ -671,6 +693,7 @@ K_DAY_NPCS = {   # 对话文件 -> (人物图, 格, 朝向, 闲逛)
     "after_k_merchant": ("merchant", (8, 24), "down", 1), "after_k_engineer": ("miner", (34, 36), "down", 1),
     "after_k_maid": ("maid", (57, 33), "left", 1), "after_k_mayor": ("mayor", (31, 29), "down", 0),
     "after_k_kids": ("kid", (30, 31), "down", 2),
+    "after_k_host": ("bonfire_host", (46, 24), "left", 0),
     # 主线触发：和他们说话才开始（第一天早上发现骑士、第二天早上诅咒失控）
     "after_k_guard_dungeon": ("guard", (54, 10), "left", 0), "after_k_guard_camp": ("guard", (55, 38), "right", 0),
 }
@@ -971,7 +994,8 @@ NEW = [(TOWN, "地下小镇·战后", "town"), (FESTIVAL, "庆功宴的广场", 
        (PHARMACY, "药剂师工房", "town"), (FIELD, "城门外的战场", "town"), (TAILOR, "裁缝铺", "town"), (MINE, "受损的矿道", "town"), (TOTEM, "图腾柱废地", "town"), (DRAIN, "排水管", "town"), (DRILL, "队长的训练室", "town"), (PROVING, "保卫队训练营", "town"),
        (PRISON, "保卫队的地牢", "night_room"), (CELLAR, "药剂师工房的地窖", "night_room"),
        (ALLEY, "没有灯的小巷", "night_room"), (HERBCAVE, "草药洞", "night_room"),
-       (WALL, "城墙上", "night_room"), (CRACK, "广场底下的裂缝", "night_room"), (OLDHALL, "旧会堂", "night_room")]
+       (WALL, "城墙上", "night_room"), (CRACK, "广场底下的裂缝", "night_room"), (OLDHALL, "旧会堂", "night_room"),
+       (WAREHOUSE, "旧仓库", "night_room")]
 at = next(i for i, f in enumerate(lst) if f["id"] == "floor_06_siege") + 1
 for fid, name, music in NEW:
     if not any(f["id"] == fid for f in lst):

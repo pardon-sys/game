@@ -12,6 +12,8 @@ from after_text.common import A, BLUE, BLUE_NODE as B, CAP, N, P, L, line
 KDAY, KNIGHT_N, DRILL, PHARMACY, CELLAR = "floor_06_knight_day", "floor_06_knight_night", "floor_06_after_drill", "floor_06_after_pharmacy", "floor_06_after_cellar"
 ALLEY, HERBCAVE = "floor_06_knight_alley", "floor_06_after_herbcave"
 WALL, CRACK, OLDHALL = "floor_06_knight_wall", "floor_06_after_crack", "floor_06_after_oldhall"
+WAREHOUSE = "floor_06_after_warehouse"
+HOST = "派对主人"
 RUN = "res://levels/floor_06/scripts/%s.gd"
 GRANNY = "面包店奶奶"
 TOM, LILY, PHARM, ENG = "小汤姆", "小莉莉", "药剂师奶奶", "工匠"
@@ -214,6 +216,77 @@ QUESTS = {
         },
         "duo_end": "kq_spear_duo_end",
     },
+    # ---------------------------------------------------------------- ⑤ 没有名字的生日（派对主人）
+    "host": {
+        "name": "没有名字的生日", "npc": "after_k_host", "opens_at": "afternoon", "closes_at": "chase", "slots": [MORNING, AFTERNOON],
+        "offer": [L("……今天，好像就是「那一天」。"), L("那一天？", P, "surprise"),
+                  L("大家找到我的那一天。……我不知道自己是哪天生的，就把那一天当成生日。"),
+                  L("可是每年一到这一天，大家都不说话。……我也不问。"),
+                  L("今年，我想偷偷给自己办一场生日派对。……你们愿意帮我吗？")],
+        "prompt": "帮派对主人准备生日？", "yes": "当然！", "no": "等一下",
+        "busy": [L("彩带、点心、蜡烛……卖东西的大叔、女仆姐姐、工匠大叔那里都有。"), L("借的时候……他们大概会要你帮个忙。")],
+        "done_cut": "kq_host_done", "reward": {},
+        "stages": [
+            {"where": "town", "cell": [8, 24], "text": "【没有名字的生日】借东西：彩带（商人）、点心（女仆）、蜡烛（工匠）——走到他们身边按 E", "runner": RUN % "quest_borrow"},
+            {"where": "town", "cell": [34, 36], "text": "【没有名字的生日】派对主人的八音盒坏了——找工匠修",
+             "talk": {"npc": "after_k_engineer", "lines": [L("八音盒？……我看看。"), L("（工匠转了转发条，里面「咔啦」一声）"),
+                                                       L("里面掉了三个零件。……训练室后面那间旧仓库里，以前堆着好多旧玩具，拆下来就能用。"),
+                                                       L("……那仓库里的东西，有点怪。音乐一停，它们就会动。小心点。")]}},
+            {"where": WAREHOUSE, "cell": [4, 6], "text": "【没有名字的生日】训练室后面的旧仓库：找三个零件（音乐停的时候别乱跑）", "runner": RUN % "quest_warehouse", "unlock": "kq_host_warehouse"},
+            {"where": "town", "cell": [46, 24], "text": "【没有名字的生日】把八音盒修好，还给派对主人",
+             "talk": {"npc": "after_k_host", "lines": [L("……修好了？！"), L("（她小心地转了转发条）")], "cut": "kq_host_lullaby"}},
+            {"where": "town", "cell": [44, 26], "text": "【没有名字的生日】篝火边：生日舞排练", "runner": RUN % "quest_party"},
+            {"where": "town", "cell": [44, 26], "text": "【没有名字的生日】生日派对：吹蜡烛之前，忍笑许愿", "runner": RUN % "quest_party"},
+        ],
+        "borrow": {
+            "spots": {"duster": "after_k_merchant", "taste": "after_k_maid", "wheel": "after_k_engineer"},
+            "names": {"duster": "彩带", "taste": "点心", "wheel": "蜡烛"},
+            "prompt": "按 E 借%s", "got": "（借到了%s！）", "status": "彩带 %s　点心 %s　蜡烛 %s",
+            "broke_cut": "kq_host_box",
+        },
+        "shows": {
+            "duster": {"name": "试新羽毛掸子", "hint": "冒出 A / S / D（脚趾 / 脚心 / 脚跟）时按它绷住那一处",
+                       "intro": [L("彩带？可以啊。……先帮我试试这把新掸子。", "卖东西的大叔", None, "merchant"),
+                                 L("站着别动。我看看它扫起来顺不顺。", "卖东西的大叔", None, "merchant"),
+                                 L("扫……扫哪里？", P, "surprise"), L("……脚心。客人都是光着脚试鞋的嘛。", "卖东西的大叔", None, "merchant")],
+                       "ok": ["（绷住了！）", "（脚趾一蜷，躲过了这一下）"],
+                       "hit": ["（羽毛掸子从脚跟一路扫到脚趾）", "（软软的羽毛在脚心上打了个转）"],
+                       "react": ["哈哈……掸子好软……！", "噗……别、别扫脚心……！", "这、这根本不是在试掸子……！"],
+                       "fail": "（她笑得蹲了下去。大叔挠挠头：「……再试一次？」）",
+                       "win": [L("……顺。很顺。彩带拿去吧。", "卖东西的大叔", None, "merchant")]},
+            "taste": {"name": "不许笑的试吃", "hint": "按 E 吃一口；亮「！」的时候按 J 缩脚（这时候别吃，会呛笑）",
+                      "intro": [L("点心？给派对主人？……那你先帮我试吃。", "女仆姐姐", None, "maid"),
+                                L("规矩是——吃的时候不许笑。", "女仆姐姐", None, "maid"),
+                                L("（她手里拿着一把小刷子，笑眯眯地蹲到了她脚边）", N)],
+                      "tuck": ["（缩脚！小刷子扑了个空）"], "choke": "（一口点心呛在嗓子里——笑出来了！）",
+                      "hit": ["（小刷子刷过脚心）", "（刷子尖在脚趾缝里转了一圈）"],
+                      "react": ["噗——咳、咳……！", "嘻……点、点心要掉了……！"],
+                      "fail": "（「笑了～重来～」女仆姐姐又端上一盘）",
+                      "win": [L("……居然一口都没笑。点心拿去吧，派对主人最喜欢这个。", "女仆姐姐", None, "maid")]},
+            "wheel": {"name": "脚底按摩器", "hint": "踩着转轮跟节拍按方向键", "intro": [
+                          L("蜡烛？有。……不过我新做了个东西，你先踩踩看。", ENG, None, "miner"),
+                          L("（一个带软刺的木转轮。光脚踩上去，它就跟着拍子转）", N)],
+                      "hit": ["（踩空了——软刺从脚心上碾过去）"], "react": ["哈哈！刺、刺刺的……！", "这、这是按摩还是挠痒……！"],
+                      "fail": "（「……再来。」工匠在小本子上记了一笔）",
+                      "win": [L("……能用。蜡烛拿去。", ENG, None, "miner")]},
+            "dance": {"name": "生日舞排练", "hint": "跟着节拍按方向键；三个人一起跳",
+                      "intro": [L("生日舞！是我自己编的！你们跟着跳就好！", HOST, None, "bonfire_host"),
+                                L("……我也要跳？", BLUE), L("当然！", HOST, None, "bonfire_host")],
+                      "hit": ["（踩错一步——围观的小孩挠了一下她的脚心）"], "react": ["哈哈！别、别挠……我在跳舞……！"],
+                      "fail": "（三个人笑成一团。「……再来一次！」）",
+                      "win": [L("……好棒！就这样跳！", HOST, None, "bonfire_host")]},
+            "wish": {"name": "忍笑许愿", "hint": "亮「！」时按 J 缩脚；撑到蓝色公主先笑出来",
+                     "intro": [L("（篝火边摆好了蛋糕。镇民们围了过来——手里都拿着羽毛）", N),
+                               L("派对的老规矩：吹蜡烛之前，大家挠寿星和她的朋友。最后一个笑出来的人许愿！", HOST, None, "bonfire_host"),
+                               L("……那最后一个笑的，应该是寿星吧。", P),
+                               L("……我明白了。先把那个冰块脸挠笑。", P, "happy"), L("……你说谁冰块脸。", BLUE)],
+                     "tuck": ["（缩脚！羽毛扫了个空）"], "hit": ["（三根羽毛一起扫过她的脚心）"],
+                     "react": ["哈、哈哈……我要撑住……！", "噗……蓝、蓝色的还没笑……！"],
+                     "fail": "（她先笑出来了——「重来重来！」）",
+                     "win": [L("（蓝色公主终于「噗」地笑出了声，捂住了嘴）", N), L("……好了。轮到寿星了！", P, "happy")]},
+        },
+        "helper": "八音盒——响起来吧！大家别慌！",
+    },
     # ---------------------------------------------------------------- ④ 夜里的栅栏
     "fence": {
         "name": "夜里的栅栏", "npc": "after_kn_engineer", "opens_at": "sneak", "closes_at": "cell", "slots": [NIGHT],
@@ -394,6 +467,45 @@ def fence_done():
     return {"name": "栅栏门", "letterbox": True, "skippable": True, "steps": s}
 
 
+def host_box():
+    s = [
+        line(HOST, "……谢谢你们！彩带、点心、蜡烛，都齐了！", None, None, "bonfire_host"),
+        line(N, "（她从帐篷里捧出一个旧旧的八音盒，转了转发条——只响了两个音，就「咔」地卡住了）"),
+        line(HOST, "……啊。坏了。", None, None, "bonfire_host"),
+        line(HOST, "这是我从小带在身边的东西。……大家找到我的时候，我手里就攥着它。", None, None, "bonfire_host"),
+        line(P, "……找工匠大叔修修看吧！", "happy"),
+    ]
+    return {"name": "坏掉的八音盒", "letterbox": True, "skippable": True, "steps": s}
+
+
+def host_lullaby():
+    s = [
+        {"actions": [A("sfx", sound="music_box")], "wait": 0.6},
+        line(N, "（八音盒响了起来。是一首很慢、很软的曲子）"),
+        line(P, "……啊。", "surprise"),
+        line(N, "（粉色公主不自觉地跟着哼了起来——一个音都没错）"),
+        line(HOST, "……你也会这首？", None, None, "bonfire_host"),
+        line(P, "……不知道。就会唱。", "helpless_1"),
+        line(BLUE, "……"),
+        line(N, "（蓝色公主一句话都没说，转身走开了）"),
+        line(HOST, "……她怎么了？", None, None, "bonfire_host"),
+        line(P, "……不知道。", "sad"),
+    ]
+    return {"name": "八音盒的曲子", "letterbox": True, "skippable": True, "steps": s}
+
+
+def host_done():
+    s = [
+        line(N, "（蛋糕上的蜡烛一根一根亮着。派对主人闭上眼睛）"),
+        line(HOST, "……希望明年，也有人记得今天。", None, None, "bonfire_host"),
+        line(N, "（她一口气吹灭了蜡烛。镇民们拍着手）"),
+        line(N, "（人群外面，面包店奶奶和镇长对视了一眼。谁都没说话，只是轻轻叹了口气）"),
+        line(HOST, "谢谢你们！……这是我过得最开心的一个生日！", None, None, "bonfire_host"),
+        line(BLUE, "……生日快乐。"),
+    ]
+    return {"name": "没有名字的生日", "letterbox": True, "skippable": True, "steps": s}
+
+
 def spear_watch_end():
     s = [
         line(N, "（布条解开了。两个人坐在哨塔的墙头上，底下是黑漆漆的小镇）"),
@@ -444,7 +556,8 @@ def fence_hall_end():
     return {"name": "旧会堂", "letterbox": True, "skippable": True, "steps": s}
 
 
-CUTSCENES = {"kq_spear_watch_end": spear_watch_end, "kq_spear_duo_end": spear_duo_end, "kq_fence_crack": fence_crack, "kq_fence_hall_end": fence_hall_end,
+CUTSCENES = {"kq_host_box": host_box, "kq_host_lullaby": host_lullaby, "kq_host_done": host_done,
+             "kq_spear_watch_end": spear_watch_end, "kq_spear_duo_end": spear_duo_end, "kq_fence_crack": fence_crack, "kq_fence_hall_end": fence_hall_end,
              "kq_shoes_hide_start": shoes_hide_start, "kq_shoes_hide_end": shoes_hide_end, "kq_shoes_box_end": shoes_box_end,
              "kq_shoes_invite": shoes_invite, "kq_shoes_start": shoes_start, "kq_shoes_done": shoes_done, "kq_samples_done": samples_done,
              "kq_spear_start": spear_start, "kq_spear_done": spear_done, "kq_fence_done": fence_done}
@@ -466,7 +579,12 @@ def inject(files):
             if st.get("talk"):
                 t = st["talk"]
                 td = files[t["npc"]]
-                td["entries"] = [{"if": cond, "node": "kq_%s_t%d" % (qid, i)}] + td["entries"]
+                entry = {"if": cond, "node": "kq_%s_t%d" % (qid, i)}
+                # 找委托人自己说话的那一段：排在「进行中」的闲话前面
+                if t["npc"] == q["npc"]:
+                    entries.append(entry)
+                else:
+                    td["entries"] = [entry] + td["entries"]
                 td["nodes"]["kq_%s_t%d" % (qid, i)] = {"lines": t["lines"], "set": {"vars": {"kq_req": qid}, "call": "kq_next"}}
         entries.append({"if": {"flag": "kq_%s_active" % qid}, "node": "kq_%s_busy" % qid})
         entries.append({"if": {"flag": "kq_%s_open" % qid}, "node": "kq_%s_offer" % qid})
@@ -506,4 +624,5 @@ SIGNS = {
     "after_wall_locked": [{"speaker": N, "text": "（通往城墙上面的梯子。保卫队的人不让随便上去）"}],
     "after_crack_locked": [{"speaker": N, "text": "（石板缝里，偶尔漏出一点紫光。……缝太窄了，钻不进去）"}],
     "after_hall_locked": [{"speaker": N, "text": "（裂缝尽头是一道旧门，门上钉着封印钉）"}],
+    "after_warehouse_locked": [{"speaker": N, "text": "（训练室后面的旧仓库，门锁着。里面好像堆满了旧玩具）"}],
 }

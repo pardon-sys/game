@@ -38,10 +38,10 @@ const KCHASE := "floor_06_knight_chase"
 const TOWNS := [KDAY, KNIGHT_N, KCHASE]
 ## 小镇图上通往各处的门口（指路用，三张小镇图布局相同）、各处回小镇的出口
 const DOORS := {"floor_06_after_house": [42, 10], "floor_06_after_pharmacy": [16, 10], "floor_06_after_drill": [8, 10], "floor_06_knight_alley": [2, 16],
-	"floor_06_knight_wall": [12, 40], "floor_06_after_crack": [38, 29]}
+	"floor_06_knight_wall": [12, 40], "floor_06_after_crack": [38, 29], "floor_06_after_warehouse": [4, 12]}
 const EXITS := {"floor_06_after_house": [9, 10], "floor_06_after_pharmacy": [8, 8.5], "floor_06_after_drill": [10, 11.5], "floor_06_after_cellar": [8, 8.5],
 	"floor_06_knight_alley": [2, 5], "floor_06_after_herbcave": [2, 8], "floor_06_knight_wall": [2, 3], "floor_06_after_crack": [2, 2],
-	"floor_06_after_oldhall": [13, 17]}
+	"floor_06_after_oldhall": [13, 17], "floor_06_after_warehouse": [2, 7]}
 ## 套在别的图里面的图：子图 → [父图, 父图里通往它的门]（指路一层一层往里指：小镇 → 工房 → 地窖 → 草药洞）
 const NESTED := {"floor_06_after_cellar": ["floor_06_after_pharmacy", [12, 8]], "floor_06_after_herbcave": ["floor_06_after_cellar", [13, 5]],
 	"floor_06_after_oldhall": ["floor_06_after_crack", [43, 2]]}
@@ -50,6 +50,7 @@ const HERBCAVE := "floor_06_after_herbcave"
 const WALL := "floor_06_knight_wall"
 const CRACK := "floor_06_after_crack"
 const OLDHALL := "floor_06_after_oldhall"
+const WAREHOUSE := "floor_06_after_warehouse"
 ## 工房里通往地窖的活板门
 const CELLAR_DOOR := [12, 8]
 const HOUSE := "floor_06_after_house"

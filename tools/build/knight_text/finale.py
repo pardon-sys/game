@@ -9,7 +9,7 @@
 from after_text.common import A, BLUE, BLUE_NODE as B, CAP, MAYOR, N, P, L, line, event
 
 KNIGHT = "骑士"
-GRANNY, TOM, LILY_N, ENGINEER, PHARM_N = "面包店奶奶", "小汤姆", "小莉莉", "工匠", "药剂师奶奶"
+GRANNY, TOM, LILY_N, ENGINEER, PHARM_N, HOST_N = "面包店奶奶", "小汤姆", "小莉莉", "工匠", "药剂师奶奶", "派对主人"
 LILY = "小莉莉"
 GUARD = "保卫队员"
 K = "knight"
@@ -347,7 +347,8 @@ INTROS = {
     "hunt": lambda: _intro("机制：盯上镇民",
         line(N, "（盔甲转过头，朝躲在角落里的镇民走了过去。镇民吓得一动不敢动）"),
         line(TOM, "姐姐！上次你笑一笑，手印就过来了——再笑一次，把它引回来！"),
-        line(P, "……引过来就引过来！（靠近它按住 Y 笑）", "angry")),
+        line(P, "……引过来就引过来！（靠近它按住 Y 笑）", "angry"),
+        _if(line(HOST_N, "我放音乐！八音盒一响，大家别慌——小手也会停下来的！"), DONE("host"))),
     "surge_hands": lambda: _intro("机制：诅咒爆发·手印风暴",
         line(N, "（铁手套猛地张开，三只手印飞出去扑在了三个镇民身上。盔甲周身的诅咒浓得像墨——打上去一点用都没有）"),
         line(CAP, "诅咒在吃他们的笑声！以笑为饵那晚怎么救的，现在就怎么救——三个人，全扒下来！", None, None, "captain"),

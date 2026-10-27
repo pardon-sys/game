@@ -1,0 +1,35 @@
+[level]
+# 第六层·地下小镇·战后（tools/build/gen_floor06_after.py 生成，不要直接改）
+intro =
+ambient = 0.4,0.36,0.42
+no_switch = false
+[legend]
+# = wall
+. = floor
+P = player
+t = torch lit=true
+A = f6afterroom
+C = exit target=floor_06_after spawn=from_warehouse
+D = spawn id=from_town
+E = blue_princess follow=true ai=false
+F = prop type=crate
+G = prop type=barrel
+H = prop type=music_box
+
+[map]
+##########################
+########t#########t#######
+##......................##
+##.A..........G....F....##
+##......F...............##
+##..............F.......##
+##......................##
+##CDP.................G.##
+##..E...................##
+##..........F...........##
+##..................F...##
+##....G.................##
+##.......F...H..........##
+##......................##
+##########################
+##########################

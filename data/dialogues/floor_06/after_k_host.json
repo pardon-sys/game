@@ -1,0 +1,140 @@
+{
+	"name": "派对主人",
+	"npc": "bonfire_host",
+	"entries": [
+		{
+			"if": {
+				"flag": "kq_host_active",
+				"eq": {
+					"kq_host_stage": 3
+				}
+			},
+			"node": "kq_host_t3"
+		},
+		{
+			"if": {
+				"flag": "kq_host_active"
+			},
+			"node": "kq_host_busy"
+		},
+		{
+			"if": {
+				"flag": "kq_host_open"
+			},
+			"node": "kq_host_offer"
+		},
+		{
+			"if": {
+				"var": {
+					"knight_step": [
+						">=",
+						1
+					]
+				}
+			},
+			"node": "t0"
+		},
+		{
+			"node": "t1"
+		}
+	],
+	"nodes": {
+		"t0": {
+			"lines": [
+				{
+					"text": "……骑士？我小时候听人讲过骑士的故事。"
+				},
+				{
+					"text": "可是没人讲完过。讲到一半，大家就不说了。"
+				}
+			]
+		},
+		"t1": {
+			"lines": [
+				{
+					"text": "……嗯？哦，是你们呀。"
+				},
+				{
+					"text": "篝火还在烧，可是今天大家都没心思跳舞。"
+				}
+			]
+		},
+		"kq_host_t3": {
+			"lines": [
+				{
+					"text": "……修好了？！"
+				},
+				{
+					"text": "（她小心地转了转发条）"
+				}
+			],
+			"set": {
+				"vars": {
+					"kq_req": "host"
+				},
+				"call": "kq_next"
+			}
+		},
+		"kq_host_busy": {
+			"lines": [
+				{
+					"text": "彩带、点心、蜡烛……卖东西的大叔、女仆姐姐、工匠大叔那里都有。"
+				},
+				{
+					"text": "借的时候……他们大概会要你帮个忙。"
+				}
+			],
+			"prompt": "（没有名字的生日）",
+			"choices": [
+				{
+					"text": "知道了"
+				},
+				{
+					"text": "（先放一放）",
+					"set": {
+						"vars": {
+							"kq_req": "host"
+						},
+						"call": "kq_abandon"
+					}
+				}
+			]
+		},
+		"kq_host_offer": {
+			"lines": [
+				{
+					"text": "……今天，好像就是「那一天」。"
+				},
+				{
+					"text": "那一天？",
+					"speaker": "公主",
+					"emotion": "surprise"
+				},
+				{
+					"text": "大家找到我的那一天。……我不知道自己是哪天生的，就把那一天当成生日。"
+				},
+				{
+					"text": "可是每年一到这一天，大家都不说话。……我也不问。"
+				},
+				{
+					"text": "今年，我想偷偷给自己办一场生日派对。……你们愿意帮我吗？"
+				}
+			],
+			"prompt": "帮派对主人准备生日？",
+			"choices": [
+				{
+					"text": "当然！",
+					"set": {
+						"vars": {
+							"kq_req": "host"
+						},
+						"call": "kq_start"
+					}
+				},
+				{
+					"text": "等一下"
+				}
+			]
+		}
+	}
+}

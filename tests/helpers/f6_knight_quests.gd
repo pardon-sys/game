@@ -31,7 +31,7 @@ static func run(t: Node) -> void:
 			GameState.set_flag("kq_%s_%s" % [id, k], false)
 		GameState.vars.erase("kq_%s_stage" % id)
 	GameState.set_flag(KnightQuests.ACTIVE_FLAG, false)
-	verify(t, "四个支线的数据（%s）" % [KnightQuests.ids()], KnightQuests.ids().size() == 4 and KnightQuests.info("shoes").has("duel"))
+	verify(t, "支线的数据（%s）" % [KnightQuests.ids()], ["shoes", "samples", "spear", "fence", "host"].all(func(x): return KnightQuests.ids().has(x)) and KnightQuests.info("shoes").has("duel"))
 	# 第一天早上：只开骑士救公主
 	KnightStory.jump("found")
 	await go_town(t)
@@ -498,6 +498,122 @@ static func run(t: Node) -> void:
 		rpl.resolve()
 		await t._wait(0.3)
 		verify(t, "再练一次练完：收走，支线还是做完的", not is_instance_valid(rpl) and KnightQuests.is_done("spear") and KnightQuests.active() == "")
+	# ---------------------------------------------------------------- ⑤ 没有名字的生日（派对主人）
+	await go_town(t, "from_drill")
+	KnightQuests.refresh()
+	verify(t, "下午：派对主人的支线开了（她头上冒「！」）", KnightQuests.is_open("host") and KnightQuests.marked_npcs().has("after_k_host"))
+	await t._talk("floor_06/after_k_host", "", [0])
+	await t._advance_until(func(): return runner(t, "host") is QuestBorrow, 5.0)
+	var rbo := runner(t, "host") as QuestBorrow
+	verify(t, "接下：彩带、点心、蜡烛三个人身边冒「借」", rbo != null and rbo.spots.size() == 3)
+	if rbo == null:
+		return
+	pink = rbo.pink
+	PartyShow.quiet = true
+	for mode in ["duster", "taste", "wheel"]:
+		rbo.borrow(mode)
+		await t._advance_until(func(): return t._show(PartyShow) != null and not (t._show(PartyShow) as PartyShow).busy, 5.0)
+		var ps := t._show(PartyShow) as PartyShow
+		if ps == null:
+			verify(t, "借%s：开始小游戏" % mode, false)
+			continue
+		match mode:
+			"duster":
+				var lh0 := ps.player.laugh.value
+				ps.next_prompt("S")
+				ps.press_key("A")
+				verify(t, "试羽毛掸子：按错 = 扫个正着（闷笑 +%.0f）" % (ps.player.laugh.value - lh0), ps.player.laugh.value > lh0 and ps.score == 0)
+				ps.next_prompt("D")
+				ps.press_key("D")
+				verify(t, "按对 = 绷住", ps.score == 1)
+				ps.score = ps.need - 1
+				ps.next_prompt("A")
+				ps.press_key("A")
+			"taste":
+				ps.warn_left = 0.5
+				var lh1 := ps.player.laugh.value
+				ps.press_key("E")
+				verify(t, "试吃：亮「！」的时候吃 = 呛笑（闷笑 +%.0f）" % (ps.player.laugh.value - lh1), ps.player.laugh.value > lh1 and ps.score == 0)
+				ps.warn_left = 0.5
+				ps.press_key("J")
+				verify(t, "亮「！」按 J 缩脚：躲开", ps.warn_left == 0.0)
+				ps.score = ps.need - 1
+				ps._bite = 0.0
+				ps.press_key("E")
+			"wheel":
+				ps.lane.load_chart([])
+				ps.lane.time = 99.0
+		await t._advance_until(func(): return t._show(PartyShow) == null, 10.0)
+	await t._advance_until(func(): return KnightQuests.stage("host") == 1 and not Cutscene.is_playing(), 10.0)
+	verify(t, "三样都借到（%s）→ 她的八音盒坏了，去找工匠" % [QuestBorrow.got()], QuestBorrow.got().size() == 3 and KnightQuests.stage("host") == 1
+		and t.seen_cuts.has("kq_host_box") and KnightQuests.marked_npcs().has("after_k_engineer"))
+	await t._talk("floor_06/after_k_engineer", "")
+	await t._advance_until(func(): return KnightQuests.stage("host") == 2, 5.0)
+	verify(t, "工匠：缺三个零件，训练室后面的旧仓库（门开了）", KnightQuests.stage("host") == 2 and GameState.has_flag("kq_host_warehouse"))
+	GameState.pending_spawn = "from_town"
+	await t.main.change_level(Floors.scene(KnightStory.WAREHOUSE))
+	await t._advance_until(func(): return runner(t, "host") is QuestWarehouse, 5.0)
+	var rwh := runner(t, "host") as QuestWarehouse
+	verify(t, "旧仓库：%d 只发条小手、%d 个零件" % [rwh.hands.size() if rwh else 0, rwh.parts.size() if rwh else 0], rwh != null and rwh.hands.size() == QuestWarehouse.HANDS.size() and rwh.parts.size() == 3)
+	if rwh == null:
+		return
+	pink = rwh.pink
+	var wh0: WindupHand = rwh.hands[0]
+	pink.global_position = Cutscene.cell_to_world(Vector2i(14, 7))
+	wh0.global_position = pink.global_position + Vector2(40, 0)
+	rwh.set_music(true)
+	rwh.tick(0.05)
+	wh0._process(0.05)
+	verify(t, "音乐响着：发条小手不动", wh0.state == "still")
+	rwh.set_music(false)
+	rwh.tick(0.05)
+	wh0._process(0.05)
+	verify(t, "音乐一停：看得见她就爬过来", wh0.state == "chase")
+	pink.global_position = Cutscene.cell_to_world(QuestWarehouse.COVERS[1]) + Vector2(8, 0)
+	rwh.tick(0.05)
+	wh0._process(0.05)
+	verify(t, "躲在箱子旁边：它看不见她", wh0.state == "still")
+	for prt in rwh.parts:
+		pink.global_position = prt.global_position
+		rwh.take_near(pink)
+	await t._advance_until(func(): return KnightQuests.stage("host") == 3, 5.0)
+	verify(t, "三个零件找齐 → 把八音盒还给派对主人", KnightQuests.stage("host") == 3 and KnightQuests.marked_npcs().has("after_k_host"))
+	await go_town(t, "from_warehouse")
+	await t._talk("floor_06/after_k_host", "")
+	await t._advance_until(func(): return KnightQuests.stage("host") == 4 and not Cutscene.is_playing(), 15.0)
+	verify(t, "八音盒响起那首曲子：「你也会这首？」「不知道，就会唱。」（蓝色公主走开了）", KnightQuests.stage("host") == 4 and t.seen_cuts.has("kq_host_lullaby"))
+	await t._advance_until(func(): return runner(t, "host") is QuestParty, 5.0)
+	var rpa := runner(t, "host") as QuestParty
+	verify(t, "篝火边：生日舞排练", rpa != null and rpa.mode() == "dance")
+	if rpa == null:
+		return
+	rpa.play_show()
+	await t._advance_until(func(): return t._show(PartyShow) != null and not (t._show(PartyShow) as PartyShow).busy, 5.0)
+	var pd := t._show(PartyShow) as PartyShow
+	if pd:
+		for i in 2:
+			pd.lane.load_chart([])
+			pd.lane.time = 99.0
+			await t._wait(0.2)
+	await t._advance_until(func(): return KnightQuests.stage("host") == 5, 10.0)
+	verify(t, "跳完两段 → 生日派对：忍笑许愿", KnightQuests.stage("host") == 5)
+	await t._wait(0.3)
+	rpa = runner(t, "host") as QuestParty
+	if rpa and not rpa.playing:
+		rpa.play_show()
+	await t._advance_until(func(): return t._show(PartyShow) != null and not (t._show(PartyShow) as PartyShow).busy, 5.0)
+	var pw := t._show(PartyShow) as PartyShow
+	verify(t, "许愿：大家一起挠，她要撑到蓝色公主先笑", pw != null and pw.mode == "wish")
+	if pw:
+		pw.warn_left = 0.3
+		pw.press_key("J")
+		verify(t, "亮「！」按 J 缩脚", pw.warn_left == 0.0)
+		pw.blue_laugh = 0.99
+		await t._wait(0.5)
+	await t._advance_until(func(): return t.seen_cuts.has("kq_host_done") and not Cutscene.is_playing(), 15.0)
+	PartyShow.quiet = false
+	verify(t, "蓝色公主先笑了 → 寿星许愿「希望明年也有人记得今天」→ 做完（对话 %s，锁 %d）" % [GameState.in_dialogue, GameState.dialogue_holds],
+		KnightQuests.is_done("host") and t.seen_cuts.has("kq_host_done"))
 	# ---------------------------------------------------------------- ④ 夜里的栅栏
 	KnightStory.jump("sneak")
 	await go_town(t, "from_drill")
@@ -609,7 +725,7 @@ static func run(t: Node) -> void:
 	await t._talk("floor_06/after_kn_engineer", "")
 	await t._advance_until(func(): return t.seen_cuts.has("kq_fence_done") and not Cutscene.is_playing(), 20.0)
 	verify(t, "工匠：灯笼架也加固了 → 做完", KnightQuests.is_done("fence") and t.seen_cuts.has("kq_fence_done"))
-	verify(t, "最后一战的帮手：%s" % [KnightQuests.helpers()], KnightQuests.helpers() == ["shoes", "samples", "spear", "fence"])
+	verify(t, "最后一战的帮手：%s" % [KnightQuests.helpers()], ["shoes", "samples", "spear", "fence"].all(func(x): return KnightQuests.helpers().has(x)))
 	# 错过时间窗口：栅栏只在第一天夜里
 	KnightStory.jump("cell")
 	KnightQuests.refresh()

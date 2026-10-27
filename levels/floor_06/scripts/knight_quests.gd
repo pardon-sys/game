@@ -21,6 +21,7 @@ const RUNNERS := {
 	"samples": "res://levels/floor_06/scripts/quest_samples.gd",
 	"spear": "res://levels/floor_06/scripts/quest_spear.gd",
 	"fence": "res://levels/floor_06/scripts/quest_fence.gd",
+	"host": "res://levels/floor_06/scripts/quest_borrow.gd",
 }
 
 static var _data := {}
@@ -227,6 +228,9 @@ static func open_text() -> String:
 static func make_runner(floor_id: String) -> Node:
 	var id := active()
 	if id == "":
+		return null
+	# 说话推进的一段没有玩法节点
+	if stage_info(id).has("talk"):
 		return null
 	var scr := stage_script(id)
 	if scr == null or not runs_on(scr, id, floor_id):
