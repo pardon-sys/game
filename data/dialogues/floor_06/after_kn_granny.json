@@ -4,6 +4,18 @@
 	"entries": [
 		{
 			"if": {
+				"flag": "kq_blue_active"
+			},
+			"node": "kq_blue_busy"
+		},
+		{
+			"if": {
+				"flag": "kq_blue_open"
+			},
+			"node": "kq_blue_offer"
+		},
+		{
+			"if": {
 				"var": {
 					"knight_step": [
 						">=",
@@ -29,6 +41,63 @@
 			"lines": [
 				{
 					"text": "……奶奶刚才明明想笑，嘴巴张开了，可是一点声音都没有。"
+				}
+			]
+		},
+		"kq_blue_busy": {
+			"lines": [
+				{
+					"text": "……那孩子小时候，最喜欢那盏灯笼了。"
+				},
+				{
+					"text": "……我什么都没说。"
+				}
+			],
+			"prompt": "（点灯笼的小姑娘）",
+			"choices": [
+				{
+					"text": "知道了"
+				},
+				{
+					"text": "（先放一放）",
+					"set": {
+						"vars": {
+							"kq_req": "blue"
+						},
+						"call": "kq_abandon"
+					}
+				}
+			]
+		},
+		"kq_blue_offer": {
+			"lines": [
+				{
+					"text": "……姑娘。和你一起的那孩子呢？"
+				},
+				{
+					"text": "……刚才，一个人往广场西南角那边走了。"
+				},
+				{
+					"text": "那边有一盏很旧的石灯笼。……好多年没人点了。"
+				},
+				{
+					"text": "（地上，有一串淡淡的冰晶脚印）",
+					"speaker": ""
+				}
+			],
+			"prompt": "跟着冰晶脚印去找蓝色公主？",
+			"choices": [
+				{
+					"text": "去找她！",
+					"set": {
+						"vars": {
+							"kq_req": "blue"
+						},
+						"call": "kq_start"
+					}
+				},
+				{
+					"text": "等一下"
 				}
 			]
 		}

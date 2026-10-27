@@ -256,5 +256,17 @@
 			"speaker": "",
 			"text": "（训练室后面的旧仓库，门锁着。里面好像堆满了旧玩具）"
 		}
+	],
+	"after_storage_locked": [
+		{
+			"speaker": "",
+			"text": "（一间很小的储物间，门关着）"
+		}
+	],
+	"after_bridge_locked": [
+		{
+			"speaker": "",
+			"text": "（通往排水渠的小路。黑漆漆的）"
+		}
 	]
 }

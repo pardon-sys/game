@@ -1149,6 +1149,331 @@
 			},
 			"helper": "八音盒——响起来吧！大家别慌！"
 		},
+		"blue": {
+			"name": "点灯笼的小姑娘",
+			"npc": "after_kn_granny",
+			"opens_at": "bait",
+			"closes_at": "cell",
+			"slots": [
+				2
+			],
+			"offer": [
+				{
+					"text": "……姑娘。和你一起的那孩子呢？"
+				},
+				{
+					"text": "……刚才，一个人往广场西南角那边走了。"
+				},
+				{
+					"text": "那边有一盏很旧的石灯笼。……好多年没人点了。"
+				},
+				{
+					"text": "（地上，有一串淡淡的冰晶脚印）",
+					"speaker": ""
+				}
+			],
+			"prompt": "跟着冰晶脚印去找蓝色公主？",
+			"yes": "去找她！",
+			"no": "等一下",
+			"busy": [
+				{
+					"text": "……那孩子小时候，最喜欢那盏灯笼了。"
+				},
+				{
+					"text": "……我什么都没说。"
+				}
+			],
+			"done_cut": "kq_blue_done",
+			"reward": {},
+			"stages": [
+				{
+					"where": "floor_06_knight_night",
+					"cell": [
+						7,
+						31
+					],
+					"text": "【点灯笼的小姑娘】跟着地上的冰晶脚印走",
+					"runner": "res://levels/floor_06/scripts/quest_footprints.gd"
+				},
+				{
+					"where": "floor_06_knight_night",
+					"cell": [
+						7,
+						31
+					],
+					"text": "【点灯笼的小姑娘】旧石灯笼：逗她笑",
+					"runner": "res://levels/floor_06/scripts/quest_blue_lantern.gd"
+				},
+				{
+					"where": "floor_06_knight_night",
+					"cell": [
+						26,
+						14
+					],
+					"text": "【点灯笼的小姑娘】回忆①：井边的冰面（收 5 个笑声铃铛）",
+					"runner": "res://levels/floor_06/scripts/quest_well.gd"
+				},
+				{
+					"where": "floor_06_knight_storage",
+					"cell": [
+						3,
+						4
+					],
+					"text": "【点灯笼的小姑娘】回忆②：西南角的储物间，找旧布偶",
+					"runner": "res://levels/floor_06/scripts/quest_storage.gd",
+					"unlock": "kq_blue_storage"
+				},
+				{
+					"where": "floor_06_knight_bridge",
+					"cell": [
+						3,
+						4
+					],
+					"text": "【点灯笼的小姑娘】回忆③：小桥——手拉着手走过去",
+					"runner": "res://levels/floor_06/scripts/quest_bridge.gd",
+					"unlock": "kq_blue_bridge"
+				},
+				{
+					"where": "floor_06_knight_night",
+					"cell": [
+						7,
+						31
+					],
+					"text": "【点灯笼的小姑娘】回到旧石灯笼：一起笑",
+					"runner": "res://levels/floor_06/scripts/quest_blue_lantern.gd"
+				}
+			],
+			"found_cut": "kq_blue_lantern",
+			"tickle": {
+				"name": "逗她笑",
+				"hint": "A 大腿 / S 屁股 / D 腰（听她漏嘴的弱点）；亮「！」时按 J 把手缩回来，不然会被冻住",
+				"intro": [
+					{
+						"text": "……你干什么。",
+						"speaker": "蓝色的公主"
+					},
+					{
+						"text": "逗你笑！灯笼要笑声才点得亮嘛！",
+						"speaker": "公主",
+						"emotion": "happy"
+					},
+					{
+						"text": "……我不会笑的。",
+						"speaker": "蓝色的公主"
+					}
+				],
+				"spots": [
+					"大腿",
+					"屁股",
+					"腰"
+				],
+				"weak_hint": {
+					"大腿": [
+						"……腿……不、不要碰……",
+						"……（她把腿并紧了）"
+					],
+					"屁股": [
+						"……那里……不准……",
+						"……！（她往后缩了缩）"
+					],
+					"腰": [
+						"……腰……没、没事……",
+						"……（她的腰绷得紧紧的）"
+					]
+				},
+				"hit": [
+					"（正中！她「噗」地漏出一点声音，又咬住了嘴唇）",
+					"（她整个人一缩——憋住了）"
+				],
+				"miss": [
+					"（……她面无表情。）",
+					"（「……不痒。」）"
+				],
+				"freeze": [
+					"（她手一挥——冰顺着你的手指爬上来，冻住了！）"
+				],
+				"pull": [
+					"（缩回来了！）"
+				],
+				"panel": "%s\n她的忍笑 %d%%",
+				"short": [
+					{
+						"text": "（她的嘴角动了动——灯笼亮了一下，又暗了下去）",
+						"speaker": ""
+					},
+					{
+						"text": "……不够。……我笑不出来。",
+						"speaker": "蓝色的公主"
+					},
+					{
+						"text": "……以前，明明很会笑的。",
+						"speaker": "蓝色的公主"
+					},
+					{
+						"text": "那我们去找「以前」！你小时候去过的地方！",
+						"speaker": "公主",
+						"emotion": "happy"
+					}
+				]
+			},
+			"both": {
+				"name": "一起笑",
+				"hint": "轮到你挠：A / S / D 挠她的弱点；轮到她挠你：亮「！」时按 J 缩脚",
+				"intro": [
+					{
+						"text": "（回到石灯笼前。蓝色公主抱着那只旧布偶，坐在灯笼底下）",
+						"speaker": ""
+					},
+					{
+						"text": "……这次，一起。",
+						"speaker": "蓝色的公主"
+					},
+					{
+						"text": "一起？",
+						"speaker": "公主",
+						"emotion": "surprise"
+					},
+					{
+						"text": "……我挠你。你挠我。……谁也不准忍。",
+						"speaker": "蓝色的公主"
+					}
+				],
+				"turn_attack": "轮到你挠她！",
+				"turn_defend": "她挠回来了！",
+				"pink_hit": [
+					"（冰凉的手指在脚心上画圈）",
+					"（她捏住你的脚趾，一根一根地挠）"
+				],
+				"panel": "%s\n你 %d%%　她 %d%%",
+				"lit": [
+					{
+						"text": "（两个人的笑声叠在一起——旧石灯笼「呼」地亮了）",
+						"speaker": ""
+					}
+				]
+			},
+			"well": {
+				"intro": [
+					{
+						"text": "（井边的地面结了一层冰。……是她小时候练冰魔法冻的？）",
+						"speaker": ""
+					},
+					{
+						"text": "……我在这里，一个人练了很多年。",
+						"speaker": "蓝色的公主"
+					},
+					{
+						"text": "（冰面上散着几个小铃铛。一滑过去，就会「叮铃」地笑一声）",
+						"speaker": ""
+					}
+				],
+				"bell": [
+					"（叮铃——！）",
+					"（铃铛笑了一声）"
+				],
+				"snow": [
+					"（滑过头了——一头扎进雪堆，冰晶钻进了脚心！）"
+				],
+				"memory": [
+					{
+						"text": "（铃铛的声音里，好像混着一个小女孩的笑声）",
+						"speaker": ""
+					},
+					{
+						"text": "……那时候，有人在旁边看着我练。",
+						"speaker": "蓝色的公主"
+					},
+					{
+						"text": "每次冻歪了，她就笑。……笑得比我还大声。",
+						"speaker": "蓝色的公主"
+					},
+					{
+						"text": "……她是谁？",
+						"speaker": "公主"
+					},
+					{
+						"text": "……想不起来了。",
+						"speaker": "蓝色的公主"
+					}
+				],
+				"status": "笑声铃铛 %d / %d"
+			},
+			"storage": {
+				"intro": [
+					{
+						"text": "（一间很小的储物间，墙上挂满了旧刷子、旧扫帚）",
+						"speaker": ""
+					},
+					{
+						"text": "……我小时候，躲在这里哭过。",
+						"speaker": "蓝色的公主"
+					}
+				],
+				"brush": [
+					"（墙上的旧刷子「唰」地扫过大腿！）",
+					"（刷子从脚心上蹭过去）"
+				],
+				"found": [
+					{
+						"text": "（角落的箱子里，有一只缝补过很多次的旧布偶）",
+						"speaker": ""
+					},
+					{
+						"text": "……还在。",
+						"speaker": "蓝色的公主"
+					},
+					{
+						"text": "哭的时候，有人塞给我这个。说——「抱着它，就不怕了」。",
+						"speaker": "蓝色的公主"
+					},
+					{
+						"text": "（她把布偶抱得紧紧的）",
+						"speaker": ""
+					}
+				]
+			},
+			"bridge": {
+				"intro": [
+					{
+						"text": "（排水渠上一座窄窄的小木桥）",
+						"speaker": ""
+					},
+					{
+						"text": "……这里。我小时候，和谁手拉着手走过。",
+						"speaker": "蓝色的公主"
+					},
+					{
+						"text": "那就再走一次！手给我！",
+						"speaker": "公主",
+						"emotion": "happy"
+					},
+					{
+						"text": "（桥板缝里，有手印在动——别松手）",
+						"speaker": ""
+					}
+				],
+				"grab": [
+					"（桥板缝里伸出一只手，挠了一下脚心！）",
+					"（手印抓住了脚踝——！）"
+				],
+				"let_go": "（手一松——两个人都退回了桥头）",
+				"done": [
+					{
+						"text": "（走到了桥那头。蓝色公主低头看着两个人牵在一起的手）",
+						"speaker": ""
+					},
+					{
+						"text": "……就是这样。",
+						"speaker": "蓝色的公主"
+					},
+					{
+						"text": "……那时候，她的手也是这么暖的。",
+						"speaker": "蓝色的公主"
+					}
+				]
+			},
+			"helper": "……灯笼，我来守。"
+		},
 		"fence": {
 			"name": "夜里的栅栏",
 			"npc": "after_kn_engineer",

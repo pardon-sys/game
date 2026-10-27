@@ -1,0 +1,37 @@
+{
+	"name": "点灯笼的小姑娘",
+	"letterbox": true,
+	"skippable": true,
+	"steps": [
+		{
+			"speaker": "",
+			"text": "（旧石灯笼亮着暖暖的光。底座上刻着一行字，被磨得只剩一个「给」）"
+		},
+		{
+			"speaker": "公主",
+			"text": "……「给」……给谁的？",
+			"emotion": "surprise"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……"
+		},
+		{
+			"speaker": "",
+			"text": "（蓝色公主很小声地笑了一下）"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……谢谢。"
+		},
+		{
+			"speaker": "公主",
+			"text": "你刚刚笑了！",
+			"emotion": "happy"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……没有。"
+		}
+	]
+}

@@ -13,6 +13,7 @@ KDAY, KNIGHT_N, DRILL, PHARMACY, CELLAR = "floor_06_knight_day", "floor_06_knigh
 ALLEY, HERBCAVE = "floor_06_knight_alley", "floor_06_after_herbcave"
 WALL, CRACK, OLDHALL = "floor_06_knight_wall", "floor_06_after_crack", "floor_06_after_oldhall"
 WAREHOUSE = "floor_06_after_warehouse"
+STORAGE, BRIDGE = "floor_06_knight_storage", "floor_06_knight_bridge"
 HOST = "派对主人"
 RUN = "res://levels/floor_06/scripts/%s.gd"
 GRANNY = "面包店奶奶"
@@ -287,6 +288,69 @@ QUESTS = {
         },
         "helper": "八音盒——响起来吧！大家别慌！",
     },
+    # ---------------------------------------------------------------- ⑥ 点灯笼的小姑娘（蓝色公主，夜里）
+    "blue": {
+        "name": "点灯笼的小姑娘", "npc": "after_kn_granny", "opens_at": "bait", "closes_at": "cell", "slots": [NIGHT],
+        "offer": [L("……姑娘。和你一起的那孩子呢？"), L("……刚才，一个人往广场西南角那边走了。"),
+                  L("那边有一盏很旧的石灯笼。……好多年没人点了。"), L("（地上，有一串淡淡的冰晶脚印）", N)],
+        "prompt": "跟着冰晶脚印去找蓝色公主？", "yes": "去找她！", "no": "等一下",
+        "busy": [L("……那孩子小时候，最喜欢那盏灯笼了。"), L("……我什么都没说。")],
+        "done_cut": "kq_blue_done", "reward": {},
+        "stages": [
+            {"where": KNIGHT_N, "cell": [7, 31], "text": "【点灯笼的小姑娘】跟着地上的冰晶脚印走", "runner": RUN % "quest_footprints"},
+            {"where": KNIGHT_N, "cell": [7, 31], "text": "【点灯笼的小姑娘】旧石灯笼：逗她笑", "runner": RUN % "quest_blue_lantern"},
+            {"where": KNIGHT_N, "cell": [26, 14], "text": "【点灯笼的小姑娘】回忆①：井边的冰面（收 5 个笑声铃铛）", "runner": RUN % "quest_well"},
+            {"where": STORAGE, "cell": [3, 4], "text": "【点灯笼的小姑娘】回忆②：西南角的储物间，找旧布偶", "runner": RUN % "quest_storage", "unlock": "kq_blue_storage"},
+            {"where": BRIDGE, "cell": [3, 4], "text": "【点灯笼的小姑娘】回忆③：小桥——手拉着手走过去", "runner": RUN % "quest_bridge", "unlock": "kq_blue_bridge"},
+            {"where": KNIGHT_N, "cell": [7, 31], "text": "【点灯笼的小姑娘】回到旧石灯笼：一起笑", "runner": RUN % "quest_blue_lantern"},
+        ],
+        "found_cut": "kq_blue_lantern",
+        "tickle": {
+            "name": "逗她笑", "hint": "A 大腿 / S 屁股 / D 腰（听她漏嘴的弱点）；亮「！」时按 J 把手缩回来，不然会被冻住",
+            "intro": [L("……你干什么。", BLUE), L("逗你笑！灯笼要笑声才点得亮嘛！", P, "happy"), L("……我不会笑的。", BLUE)],
+            "spots": ["大腿", "屁股", "腰"],
+            "weak_hint": {"大腿": ["……腿……不、不要碰……", "……（她把腿并紧了）"], "屁股": ["……那里……不准……", "……！（她往后缩了缩）"],
+                          "腰": ["……腰……没、没事……", "……（她的腰绷得紧紧的）"]},
+            "hit": ["（正中！她「噗」地漏出一点声音，又咬住了嘴唇）", "（她整个人一缩——憋住了）"],
+            "miss": ["（……她面无表情。）", "（「……不痒。」）"],
+            "freeze": ["（她手一挥——冰顺着你的手指爬上来，冻住了！）"], "pull": ["（缩回来了！）"],
+            "panel": "%s\n她的忍笑 %d%%",
+            "short": [L("（她的嘴角动了动——灯笼亮了一下，又暗了下去）", N), L("……不够。……我笑不出来。", BLUE),
+                      L("……以前，明明很会笑的。", BLUE), L("那我们去找「以前」！你小时候去过的地方！", P, "happy")],
+        },
+        "both": {
+            "name": "一起笑", "hint": "轮到你挠：A / S / D 挠她的弱点；轮到她挠你：亮「！」时按 J 缩脚",
+            "intro": [L("（回到石灯笼前。蓝色公主抱着那只旧布偶，坐在灯笼底下）", N), L("……这次，一起。", BLUE),
+                      L("一起？", P, "surprise"), L("……我挠你。你挠我。……谁也不准忍。", BLUE)],
+            "turn_attack": "轮到你挠她！", "turn_defend": "她挠回来了！",
+            "pink_hit": ["（冰凉的手指在脚心上画圈）", "（她捏住你的脚趾，一根一根地挠）"],
+            "panel": "%s\n你 %d%%　她 %d%%",
+            "lit": [L("（两个人的笑声叠在一起——旧石灯笼「呼」地亮了）", N)],
+        },
+        "well": {
+            "intro": [L("（井边的地面结了一层冰。……是她小时候练冰魔法冻的？）", N), L("……我在这里，一个人练了很多年。", BLUE),
+                      L("（冰面上散着几个小铃铛。一滑过去，就会「叮铃」地笑一声）", N)],
+            "bell": ["（叮铃——！）", "（铃铛笑了一声）"], "snow": ["（滑过头了——一头扎进雪堆，冰晶钻进了脚心！）"],
+            "memory": [L("（铃铛的声音里，好像混着一个小女孩的笑声）", N), L("……那时候，有人在旁边看着我练。", BLUE),
+                       L("每次冻歪了，她就笑。……笑得比我还大声。", BLUE), L("……她是谁？", P), L("……想不起来了。", BLUE)],
+            "status": "笑声铃铛 %d / %d",
+        },
+        "storage": {
+            "intro": [L("（一间很小的储物间，墙上挂满了旧刷子、旧扫帚）", N), L("……我小时候，躲在这里哭过。", BLUE)],
+            "brush": ["（墙上的旧刷子「唰」地扫过大腿！）", "（刷子从脚心上蹭过去）"],
+            "found": [L("（角落的箱子里，有一只缝补过很多次的旧布偶）", N), L("……还在。", BLUE),
+                      L("哭的时候，有人塞给我这个。说——「抱着它，就不怕了」。", BLUE), L("（她把布偶抱得紧紧的）", N)],
+        },
+        "bridge": {
+            "intro": [L("（排水渠上一座窄窄的小木桥）", N), L("……这里。我小时候，和谁手拉着手走过。", BLUE),
+                      L("那就再走一次！手给我！", P, "happy"), L("（桥板缝里，有手印在动——别松手）", N)],
+            "grab": ["（桥板缝里伸出一只手，挠了一下脚心！）", "（手印抓住了脚踝——！）"],
+            "let_go": "（手一松——两个人都退回了桥头）",
+            "done": [L("（走到了桥那头。蓝色公主低头看着两个人牵在一起的手）", N), L("……就是这样。", BLUE),
+                     L("……那时候，她的手也是这么暖的。", BLUE)],
+        },
+        "helper": "……灯笼，我来守。",
+    },
     # ---------------------------------------------------------------- ④ 夜里的栅栏
     "fence": {
         "name": "夜里的栅栏", "npc": "after_kn_engineer", "opens_at": "sneak", "closes_at": "cell", "slots": [NIGHT],
@@ -467,6 +531,31 @@ def fence_done():
     return {"name": "栅栏门", "letterbox": True, "skippable": True, "steps": s}
 
 
+def blue_lantern():
+    s = [
+        line(N, "（冰晶脚印一直走到广场西南角。蓝色公主站在一盏很旧的石灯笼前面，一动不动）"),
+        line(P, "……找到你了！", "happy"),
+        line(BLUE, "……小时候，每年都是我点它。"),
+        line(BLUE, "……现在，点不亮了。"),
+        line(P, "……这也是笑声灯笼？", "surprise"),
+        line(BLUE, "……嗯。要笑声。"),
+    ]
+    return {"name": "旧石灯笼", "letterbox": True, "skippable": True, "steps": s}
+
+
+def blue_done():
+    s = [
+        line(N, "（旧石灯笼亮着暖暖的光。底座上刻着一行字，被磨得只剩一个「给」）"),
+        line(P, "……「给」……给谁的？", "surprise"),
+        line(BLUE, "……"),
+        line(N, "（蓝色公主很小声地笑了一下）"),
+        line(BLUE, "……谢谢。"),
+        line(P, "你刚刚笑了！", "happy"),
+        line(BLUE, "……没有。"),
+    ]
+    return {"name": "点灯笼的小姑娘", "letterbox": True, "skippable": True, "steps": s}
+
+
 def host_box():
     s = [
         line(HOST, "……谢谢你们！彩带、点心、蜡烛，都齐了！", None, None, "bonfire_host"),
@@ -556,7 +645,7 @@ def fence_hall_end():
     return {"name": "旧会堂", "letterbox": True, "skippable": True, "steps": s}
 
 
-CUTSCENES = {"kq_host_box": host_box, "kq_host_lullaby": host_lullaby, "kq_host_done": host_done,
+CUTSCENES = {"kq_blue_lantern": blue_lantern, "kq_blue_done": blue_done, "kq_host_box": host_box, "kq_host_lullaby": host_lullaby, "kq_host_done": host_done,
              "kq_spear_watch_end": spear_watch_end, "kq_spear_duo_end": spear_duo_end, "kq_fence_crack": fence_crack, "kq_fence_hall_end": fence_hall_end,
              "kq_shoes_hide_start": shoes_hide_start, "kq_shoes_hide_end": shoes_hide_end, "kq_shoes_box_end": shoes_box_end,
              "kq_shoes_invite": shoes_invite, "kq_shoes_start": shoes_start, "kq_shoes_done": shoes_done, "kq_samples_done": samples_done,
@@ -625,4 +714,6 @@ SIGNS = {
     "after_crack_locked": [{"speaker": N, "text": "（石板缝里，偶尔漏出一点紫光。……缝太窄了，钻不进去）"}],
     "after_hall_locked": [{"speaker": N, "text": "（裂缝尽头是一道旧门，门上钉着封印钉）"}],
     "after_warehouse_locked": [{"speaker": N, "text": "（训练室后面的旧仓库，门锁着。里面好像堆满了旧玩具）"}],
+    "after_storage_locked": [{"speaker": N, "text": "（一间很小的储物间，门关着）"}],
+    "after_bridge_locked": [{"speaker": N, "text": "（通往排水渠的小路。黑漆漆的）"}],
 }

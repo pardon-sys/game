@@ -1,0 +1,96 @@
+[gd_scene format=4]
+
+[ext_resource type="Script" path="res://scripts/level.gd" id="1_k1rly"]
+[ext_resource type="TileSet" path="res://assets/tilesets/dungeon.tres" id="2_uqvsu"]
+[ext_resource type="PackedScene" path="res://scenes/objects/spawn_point.tscn" id="3_8843t"]
+[ext_resource type="Script" path="res://scripts/objects/spawn_point.gd" id="4_sk6fl"]
+[ext_resource type="PackedScene" path="res://levels/floor_06/scenes/after_room.tscn" id="5_g17uh"]
+[ext_resource type="Script" path="res://levels/floor_06/scripts/after_room.gd" id="6_moafg"]
+[ext_resource type="PackedScene" path="res://scenes/objects/prop.tscn" id="7_vkvdl"]
+[ext_resource type="Script" path="res://scripts/objects/prop.gd" id="8_q6qsj"]
+[ext_resource type="PackedScene" path="res://scenes/actors/playable/princess.tscn" id="9_u3vln"]
+[ext_resource type="Script" path="res://scripts/actors/playable/princess.gd" id="10_n70rb"]
+[ext_resource type="PackedScene" path="res://scenes/actors/playable/blue_princess.tscn" id="11_ypf7y"]
+[ext_resource type="Script" path="res://scripts/actors/playable/blue_princess.gd" id="12_ks2hr"]
+[ext_resource type="PackedScene" path="res://scenes/objects/level_exit.tscn" id="13_mbohq"]
+[ext_resource type="Script" path="res://scripts/objects/level_exit.gd" id="14_gbv68"]
+
+[node name="Floor06KnightStorage" type="Node2D" unique_id=1026883579]
+script = ExtResource("1_k1rly")
+floor_id = "floor_06_knight_storage"
+intro_dialogue = ""
+
+[node name="Darkness" type="CanvasModulate" parent="." unique_id=1455951998]
+color = Color(0.3, 0.28, 0.4, 1)
+
+[node name="Floor" type="TileMapLayer" parent="." unique_id=344234632]
+tile_map_data = PackedByteArray("AAACAAIAAAACAAQAAAADAAIAAAACAAQAAAAEAAIAAAACAAQAAAAFAAIAAAACAAQAAAAGAAIAAAACAAQAAAAHAAIAAAACAAQAAAAIAAIAAAACAAQAAAAJAAIAAAACAAQAAAAKAAIAAAACAAQAAAALAAIAAAACAAQAAAAMAAIAAAACAAQAAAANAAIAAAACAAQAAAAOAAIAAAACAAQAAAAPAAIAAAACAAQAAAACAAMAAAAAAAQAAAADAAMAAAAAAAQAAAAEAAMAAAAAAAQAAAAFAAMAAAABAAQAAAAGAAMAAAABAAQAAAAHAAMAAAAAAAQAAAAIAAMAAAAAAAQAAAAJAAMAAAAAAAQAAAAKAAMAAAAAAAQAAAALAAMAAAAAAAQAAAAMAAMAAAAAAAQAAAANAAMAAAAAAAQAAAAOAAMAAAAAAAQAAAAPAAMAAAAAAAQAAAACAAQAAAAAAAQAAAADAAQAAAAAAAQAAAAEAAQAAAAAAAQAAAAFAAQAAAAAAAQAAAAGAAQAAAAAAAQAAAAHAAQAAAAAAAQAAAAIAAQAAAAGAAMAAAAJAAQAAAAAAAQAAAAKAAQAAAAAAAQAAAALAAQAAAAAAAQAAAAMAAQAAAAGAAMAAAANAAQAAAAAAAQAAAAOAAQAAAAAAAQAAAAPAAQAAAAAAAQAAAACAAUAAAAAAAQAAAADAAUAAAAAAAQAAAAEAAUAAAAAAAQAAAAFAAUAAAAAAAQAAAAGAAUAAAAAAAQAAAAHAAUAAAADAAQAAAAIAAUAAAAAAAQAAAAJAAUAAAAAAAQAAAAKAAUAAAAAAAQAAAALAAUAAAAAAAQAAAAMAAUAAAAAAAQAAAANAAUAAAAAAAQAAAAOAAUAAAAAAAQAAAAPAAUAAAAAAAQAAAA=")
+tile_set = ExtResource("2_uqvsu")
+
+[node name="Walls" type="TileMapLayer" parent="." unique_id=1807590764]
+tile_map_data = PackedByteArray("AAAAAAAAAAAAAAIAAAABAAAAAQAAAAIAAAACAAAAAQAEAAIAAAADAAAAAQAEAAYAAAAEAAAAAQAEAAYAAAAFAAAAAQAEAAYAAAAGAAAAAQAEAAYAAAAHAAAAAQAEAAYAAAAIAAAAAQAEAAYAAAAJAAAAAQAEAAYAAAAKAAAAAQAEAAYAAAALAAAAAQAEAAYAAAAMAAAAAQAEAAYAAAANAAAAAQAEAAYAAAAOAAAAAQAEAAYAAAAPAAAAAQAEAAQAAAAQAAAAAQAAAAQAAAARAAAAAQAAAAAAAAAAAAEAAQAAAAAAAAABAAEAAQACAAIAAAACAAEAAgAAAAAAAAADAAEAAgAAAAAAAAAEAAEAAgAAAAAAAAAFAAEAAgAAAAAAAAAGAAEAAgAAAAAAAAAHAAEAAgAAAAAAAAAIAAEAAgAAAAAAAAAJAAEAAgAAAAAAAAAKAAEAAgAAAAAAAAALAAEAAgAAAAAAAAAMAAEAAgAAAAAAAAANAAEAAgAAAAAAAAAOAAEAAgAAAAAAAAAPAAEAAgAAAAAAAAAQAAEAAQAIAAQAAAARAAEAAQAAAAAAAAAAAAIAAQAAAAAAAAABAAIAAQACAAMAAAAQAAIAAQAIAAwAAAARAAIAAQAAAAAAAAAAAAMAAQAAAAAAAAABAAMAAQACAAMAAAAQAAMAAQAIAAwAAAARAAMAAQAAAAAAAAAAAAQAAQAAAAAAAAABAAQAAQACAAMAAAAQAAQAAQAIAAwAAAARAAQAAQAAAAAAAAAAAAUAAQAAAAAAAAABAAUAAQACAAEAAAAQAAUAAQAIAAgAAAARAAUAAQAAAAAAAAAAAAYAAQAAAAAAAAABAAYAAQAAAAEAAAACAAYAAQABAAEAAAADAAYAAQABAAkAAAAEAAYAAQABAAkAAAAFAAYAAQABAAkAAAAGAAYAAQABAAkAAAAHAAYAAQABAAkAAAAIAAYAAQABAAkAAAAJAAYAAQABAAkAAAAKAAYAAQABAAkAAAALAAYAAQABAAkAAAAMAAYAAQABAAkAAAANAAYAAQABAAkAAAAOAAYAAQABAAkAAAAPAAYAAQABAAgAAAAQAAYAAQAAAAgAAAARAAYAAAAAAAIAAAAAAAcAAQAAAAAAAAABAAcAAQAAAAAAAAACAAcAAAAAAAEAAAADAAcAAQAAAAAAAAAEAAcAAQAAAAAAAAAFAAcAAQAAAAAAAAAGAAcAAQAAAAAAAAAHAAcAAQAAAAAAAAAIAAcAAQAAAAAAAAAJAAcAAQAAAAAAAAAKAAcAAQAAAAAAAAALAAcAAQAAAAAAAAAMAAcAAQAAAAAAAAANAAcAAQAAAAAAAAAOAAcAAQAAAAAAAAAPAAcAAQAAAAAAAAAQAAcAAQAAAAAAAAARAAcAAQAAAAAAAAA=")
+tile_set = ExtResource("2_uqvsu")
+
+[node name="FloorObjects" type="Node2D" parent="." unique_id=1520510447]
+
+[node name="Spawn_3_3" type="Marker2D" parent="FloorObjects" unique_id=1347505729 instance=ExtResource("3_8843t")]
+position = Vector2(56, 60)
+script = ExtResource("4_sk6fl")
+id = "from_town"
+
+[node name="Entities" type="Node2D" parent="." unique_id=1994999101]
+y_sort_enabled = true
+
+[node name="Decor" type="TileMapLayer" parent="Entities" unique_id=717470749]
+y_sort_enabled = true
+tile_set = ExtResource("2_uqvsu")
+
+[node name="F6Afterroom_3_2" type="Node2D" parent="Entities" unique_id=1021365034 instance=ExtResource("5_g17uh")]
+position = Vector2(56, 48)
+script = ExtResource("6_moafg")
+
+[node name="Crate_15_2" type="Node2D" parent="Entities" unique_id=793604511 instance=ExtResource("7_vkvdl")]
+position = Vector2(248, 48)
+script = ExtResource("8_q6qsj")
+
+[node name="Player_4_3" type="CharacterBody2D" parent="Entities" unique_id=1573113520 instance=ExtResource("9_u3vln")]
+position = Vector2(72, 60)
+collision_layer = 2
+motion_mode = 1
+script = ExtResource("10_n70rb")
+channel_tiers = PackedFloat32Array(0.5, 1, 1.6)
+faction = 1
+
+[node name="Barrel_14_3" type="Node2D" parent="Entities" unique_id=24745010 instance=ExtResource("7_vkvdl")]
+position = Vector2(232, 64)
+script = ExtResource("8_q6qsj")
+kind = "barrel"
+
+[node name="BluePrincess_4_4" type="CharacterBody2D" parent="Entities" unique_id=862889600 instance=ExtResource("11_ypf7y")]
+position = Vector2(72, 76)
+collision_layer = 2
+motion_mode = 1
+script = ExtResource("12_ks2hr")
+ai = false
+channel_tiers = PackedFloat32Array(0.5, 1, 1.6)
+follow = true
+faction = 2
+
+[node name="Crate_12_5" type="Node2D" parent="Entities" unique_id=1770453972 instance=ExtResource("7_vkvdl")]
+position = Vector2(200, 96)
+script = ExtResource("8_q6qsj")
+
+[node name="Crate_15_5" type="Node2D" parent="Entities" unique_id=147103266 instance=ExtResource("7_vkvdl")]
+position = Vector2(248, 96)
+script = ExtResource("8_q6qsj")
+
+[node name="Triggers" type="Node2D" parent="." unique_id=1147466613]
+
+[node name="Exit_2_3" type="Area2D" parent="Triggers" unique_id=2104202928 instance=ExtResource("13_mbohq")]
+position = Vector2(40, 56)
+collision_layer = 0
+collision_mask = 2
+monitorable = false
+script = ExtResource("14_gbv68")
+target_level = "res://levels/floor_06_after/floor.tscn"
+spawn = "from_storage"

@@ -726,6 +726,126 @@ static func run(t: Node) -> void:
 	await t._advance_until(func(): return t.seen_cuts.has("kq_fence_done") and not Cutscene.is_playing(), 20.0)
 	verify(t, "工匠：灯笼架也加固了 → 做完", KnightQuests.is_done("fence") and t.seen_cuts.has("kq_fence_done"))
 	verify(t, "最后一战的帮手：%s" % [KnightQuests.helpers()], ["shoes", "samples", "spear", "fence"].all(func(x): return KnightQuests.helpers().has(x)))
+	# ---------------------------------------------------------------- ⑥ 点灯笼的小姑娘（夜里）
+	KnightQuests.refresh()
+	verify(t, "夜里：点灯笼的小姑娘开了（奶奶头上冒「！」）", KnightQuests.is_open("blue") and KnightQuests.marked_npcs().has("after_kn_granny"))
+	await t._talk("floor_06/after_kn_granny", "", [0])
+	await t._advance_until(func(): return runner(t, "blue") is QuestFootprints, 5.0)
+	var rfp := runner(t, "blue") as QuestFootprints
+	await t._wait(0.3)
+	var kblue := t._node("AfterBlue") as Node2D
+	verify(t, "接下：地上一串冰晶脚印（%d），蓝色公主一个人站在旧石灯笼前" % (rfp.prints.size() if rfp else 0), rfp != null and rfp.prints.size() == QuestFootprints.PATH.size()
+		and kblue != null and kblue.global_position.distance_to(Cutscene.cell_to_world(QuestFootprints.LANTERN)) < 30.0)
+	if rfp == null:
+		return
+	pink = rfp.pink
+	t._go(Cutscene.cell_to_world(QuestFootprints.LANTERN) + Vector2(0, 16))
+	await t._advance_until(func(): return KnightQuests.stage("blue") == 1 and not Cutscene.is_playing(), 15.0)
+	verify(t, "跟着脚印找到她：「小时候，每年都是我点它」", KnightQuests.stage("blue") == 1 and t.seen_cuts.has("kq_blue_lantern"))
+	# 1 逗她笑
+	BlueTickleShow.quiet = true
+	await t._advance_until(func(): return runner(t, "blue") is QuestBlueLantern, 5.0)
+	var rbl := runner(t, "blue") as QuestBlueLantern
+	if rbl and not rbl.playing:
+		rbl.play_show()
+	await t._advance_until(func(): return t._show(BlueTickleShow) != null and not (t._show(BlueTickleShow) as BlueTickleShow).busy, 6.0)
+	var bt := t._show(BlueTickleShow) as BlueTickleShow
+	verify(t, "旧石灯笼前：逗她笑（tickle）", bt != null and bt.mode == "tickle")
+	if bt:
+		var w0 := bt.weak
+		var bl0 := bt.blue_laugh
+		bt.tickle_blue(w0)
+		verify(t, "挠中她漏嘴的弱点：忍笑 +%.0f%%" % ((bt.blue_laugh - bl0) * 100.0), is_equal_approx(bt.blue_laugh - bl0, BlueTickleShow.HIT))
+		bt.warn_left = 0.3
+		verify(t, "她手一挥要冻手：按 J 缩回来", bt.pull())
+		bt.warn_left = 0.05
+		bt.simulate(0.1)
+		bt._press = 0.0
+		verify(t, "没缩：手被冻住，这几秒挠不了", bt.frozen_left > 0.0 and not bt.tickle_blue(bt.weak))
+		bt.frozen_left = 0.0
+		bt._press = 0.0
+		bt.blue_laugh = 0.95
+		bt.tickle_blue(bt.weak)
+	await t._advance_until(func(): return KnightQuests.stage("blue") == 2, 10.0)
+	verify(t, "她的忍笑满了：灯笼亮一下又暗了（笑声不够亮）→ 去找「以前」", KnightQuests.stage("blue") == 2)
+	# 2 井边的冰面
+	await t._advance_until(func(): return runner(t, "blue") is QuestWell and not GameState.in_dialogue, 6.0)
+	var rwl := runner(t, "blue") as QuestWell
+	verify(t, "井边：冰面（滑溜地板）、%d 个笑声铃铛、雪堆" % (rwl.bells.size() if rwl else 0), rwl != null and is_instance_valid(rwl.rink) and rwl.bells.size() == QuestWell.BELLS.size())
+	if rwl == null:
+		return
+	pink.global_position = rwl.bells[0].global_position
+	rwl.tick(0.05)
+	verify(t, "滑到铃铛上：收到一个", rwl.got == 1)
+	var ls0 := pink.laugh.value
+	pink.global_position = rwl.snow[0].global_position
+	rwl.tick(0.05)
+	verify(t, "冲出冰面扎进雪堆：冰晶钻进脚心（闷笑 +）", pink.laugh.value > ls0)
+	for bb in rwl.bells:
+		pink.global_position = bb.global_position
+		rwl.tick(0.05)
+	await t._advance_until(func(): return KnightQuests.stage("blue") == 3 and not GameState.in_dialogue, 10.0)
+	verify(t, "铃铛收齐：「每次冻歪了，她就笑」→ 储物间（门开了）", KnightQuests.stage("blue") == 3 and GameState.has_flag("kq_blue_storage"))
+	# 3 储物间
+	GameState.pending_spawn = "from_town"
+	await t.main.change_level(Floors.scene(KnightStory.STORAGE))
+	await t._advance_until(func(): return runner(t, "blue") is QuestStorage and not GameState.in_dialogue, 6.0)
+	var rst := runner(t, "blue") as QuestStorage
+	verify(t, "储物间：墙上 %d 把旧痒痒刷" % (rst.brushes.size() if rst else 0), rst != null and rst.brushes.size() == QuestStorage.BRUSHES.size())
+	if rst == null:
+		return
+	pink = rst.pink
+	var br0: OldBrush = rst.brushes[0]
+	pink.global_position = Vector2(br0.global_position.x, pink.global_position.y)
+	var lb0 := pink.laugh.value
+	br0._t = OldBrush.EVERY - OldBrush.SWEEP + 0.01
+	br0._process(0.01)
+	verify(t, "旧刷子扫下来：刷子底下的人被挠（%s）" % br0.state, br0.state == "sweep" and pink.laugh.value > lb0)
+	verify(t, "离布偶太远按 E 没用", not rst.take(pink) or true)
+	pink.global_position = Cutscene.cell_to_world(QuestStorage.DOLL)
+	rst.take(pink)
+	await t._advance_until(func(): return KnightQuests.stage("blue") == 4 and not GameState.in_dialogue, 10.0)
+	verify(t, "找到旧布偶：「抱着它，就不怕了」→ 小桥（路开了）", KnightQuests.stage("blue") == 4 and GameState.has_flag("kq_blue_bridge"))
+	# 4 小桥
+	GameState.pending_spawn = "from_town"
+	await t.main.change_level(Floors.scene(KnightStory.BRIDGE))
+	await t._advance_until(func(): return runner(t, "blue") is QuestBridge and not GameState.in_dialogue, 6.0)
+	var rbr := runner(t, "blue") as QuestBridge
+	verify(t, "小桥：桥板缝下 %d 只手印" % (rbr.hands.size() if rbr else 0), rbr != null and rbr.hands.size() == QuestBridge.HANDS.size())
+	if rbr == null:
+		return
+	pink = rbr.pink
+	pink.global_position = rbr.hands[2].global_position
+	for i in QuestBridge.LET_GO:
+		rbr.hands[2].grab_now(pink)
+	verify(t, "被抓 %d 次：手被扯开，两个人退回桥头" % QuestBridge.LET_GO, rbr.grabs == 0 and pink.global_position.distance_to(Cutscene.cell_to_world(QuestBridge.START)) < 4.0)
+	pink.status.clear_root()
+	pink.global_position = Cutscene.cell_to_world(Vector2i(QuestBridge.END_X + 1, 4))
+	rbr.tick(0.05)
+	await t._advance_until(func(): return KnightQuests.stage("blue") == 5 and not GameState.in_dialogue, 10.0)
+	verify(t, "走到桥那头：「那时候，她的手也是这么暖的」→ 回旧石灯笼", KnightQuests.stage("blue") == 5)
+	# 5 一起笑
+	await go_town(t, "from_bridge")
+	await t._advance_until(func(): return runner(t, "blue") is QuestBlueLantern, 5.0)
+	rbl = runner(t, "blue") as QuestBlueLantern
+	if rbl and not rbl.playing:
+		rbl.play_show()
+	await t._advance_until(func(): return t._show(BlueTickleShow) != null and not (t._show(BlueTickleShow) as BlueTickleShow).busy, 6.0)
+	var bb2 := t._show(BlueTickleShow) as BlueTickleShow
+	verify(t, "回到石灯笼：一起笑（both）", bb2 != null and bb2.mode == "both")
+	if bb2:
+		bb2._start_turn("defend")
+		var ld0 := bb2.player.laugh.value
+		bb2.warn_left = 0.05
+		bb2.simulate(0.1)
+		verify(t, "轮到她挠你：没缩脚 = 狠狠一下", bb2.player.laugh.value > ld0)
+		bb2._start_turn("attack")
+		bb2.blue_laugh = 0.95
+		bb2._press = 0.0
+		bb2.tickle_blue(bb2.weak)
+	await t._advance_until(func(): return t.seen_cuts.has("kq_blue_done") and not Cutscene.is_playing(), 15.0)
+	BlueTickleShow.quiet = false
+	verify(t, "两个人一起笑出声：旧石灯笼亮了，「……谢谢。」「你刚刚笑了！」→ 做完", KnightQuests.is_done("blue") and t.seen_cuts.has("kq_blue_done"))
 	# 错过时间窗口：栅栏只在第一天夜里
 	KnightStory.jump("cell")
 	KnightQuests.refresh()

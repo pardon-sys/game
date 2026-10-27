@@ -1,0 +1,33 @@
+{
+	"name": "旧石灯笼",
+	"letterbox": true,
+	"skippable": true,
+	"steps": [
+		{
+			"speaker": "",
+			"text": "（冰晶脚印一直走到广场西南角。蓝色公主站在一盏很旧的石灯笼前面，一动不动）"
+		},
+		{
+			"speaker": "公主",
+			"text": "……找到你了！",
+			"emotion": "happy"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……小时候，每年都是我点它。"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……现在，点不亮了。"
+		},
+		{
+			"speaker": "公主",
+			"text": "……这也是笑声灯笼？",
+			"emotion": "surprise"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……嗯。要笑声。"
+		}
+	]
+}

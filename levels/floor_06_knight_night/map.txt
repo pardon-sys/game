@@ -20,114 +20,118 @@ I = exit target=floor_06_after_crack spawn=from_town unlock_flag=kq_fence_crack 
 J = spawn id=from_crack
 K = exit target=floor_06_after_warehouse spawn=from_town unlock_flag=kq_host_warehouse locked_dialogue=after_warehouse_locked
 L = spawn id=from_warehouse
-M = prop type=house_scaffold_0
-N = prop type=house_1
-O = prop type=house_scaffold_1
-Q = prop type=house_3
-R = spawn id=from_tailor
-S = sign dialogue=after_tailor_sign
-T = exit target=floor_06_after_drill spawn=from_town
-U = spawn id=from_drill
-V = spawn id=from_proving
-W = prop type=drain_grate
-X = spawn id=from_drain
-Y = exit target=floor_06_after_pharmacy spawn=from_town
-Z = spawn id=from_pharmacy
-a = sign dialogue=after_pharmacy_sign
-b = prop type=lumber action=talk:floor_06/after_objects#lumber
-c = prop type=rubble
-d = prop type=house_blue
-e = exit target=floor_06_after_house spawn=from_town lock_flag=after_task_active locked_dialogue=after_task_locked
-f = spawn id=from_house
-g = prop type=stall_0 action=shop:war_market
-h = prop type=stall_1 action=shop:war_market
-i = prop type=stall_2 action=shop:war_market
-j = prop type=stall_broken
-k = prop type=crate
-l = prop type=bonfire_0 action=heal
-m = spawn id=from_festival
-n = prop type=bench
-o = prop type=lamp
-p = prop type=well
-q = prop type=ladder
-r = prop type=fence
-s = prop type=hay
-u = prop type=podium action=talk:floor_06/after_objects#podium
-v = prop type=notice_board action=talk:floor_06/after_objects#notice
-w = prop type=bunting
-y = savepoint place=战后的广场
-z = prop type=totem_fixed
-0 = spawn id=from_totem
-1 = prop type=stairs_down
-2 = prop type=barricade action=talk:floor_06/after_k_objects#vent
-3 = sign dialogue=after_camp_blocked
-4 = spawn id=from_prison
-5 = prop type=sandbag
-6 = prop type=tower_base
-7 = prop type=tower
-8 = prop type=dungeon_gate action=talk:floor_06/after_objects#gate
-9 = spawn id=from_siege
-! = spawn id=from_field
-? = blue_princess follow=true ai=false
-$ = npc id=mayor dialogue=floor_06/after_kn_mayor wander=0 dir=down
-& = npc id=captain dialogue=floor_06/after_kn_captain wander=0 dir=right
-* = npc id=granny dialogue=floor_06/after_kn_granny wander=0 dir=down
-+ = npc id=merchant dialogue=floor_06/after_kn_merchant wander=0 dir=right
-- = npc id=miner dialogue=floor_06/after_kn_engineer wander=0 dir=down
-/ = npc id=kid dialogue=floor_06/after_kn_tom wander=0 dir=left
-: = npc id=kid dialogue=floor_06/after_kn_lily wander=0 dir=down
-; = npc id=maid dialogue=floor_06/after_kn_maid wander=0 dir=left
-< = npc id=supervisor dialogue=floor_06/after_kn_supervisor wander=0 dir=right
-> = prop type=lamp action=talk:floor_06/after_k_objects#lantern
-@ = prop type=decal_scorch_1
-^ = prop type=decal_puddle_0
-_ = prop type=decal_ash_1
-| = prop type=decal_splinters_0
-~ = prop type=decal_footprints_0
-( = prop type=decal_straw_0
+M = exit target=floor_06_knight_bridge spawn=from_town unlock_flag=kq_blue_bridge locked_dialogue=after_bridge_locked
+N = spawn id=from_bridge
+O = exit target=floor_06_knight_storage spawn=from_town unlock_flag=kq_blue_storage locked_dialogue=after_storage_locked
+Q = spawn id=from_storage
+R = prop type=house_scaffold_0
+S = prop type=house_1
+T = prop type=house_scaffold_1
+U = prop type=house_3
+V = spawn id=from_tailor
+W = sign dialogue=after_tailor_sign
+X = exit target=floor_06_after_drill spawn=from_town
+Y = spawn id=from_drill
+Z = spawn id=from_proving
+a = prop type=drain_grate
+b = spawn id=from_drain
+c = exit target=floor_06_after_pharmacy spawn=from_town
+d = spawn id=from_pharmacy
+e = sign dialogue=after_pharmacy_sign
+f = prop type=lumber action=talk:floor_06/after_objects#lumber
+g = prop type=rubble
+h = prop type=house_blue
+i = exit target=floor_06_after_house spawn=from_town lock_flag=after_task_active locked_dialogue=after_task_locked
+j = spawn id=from_house
+k = prop type=stall_0 action=shop:war_market
+l = prop type=stall_1 action=shop:war_market
+m = prop type=stall_2 action=shop:war_market
+n = prop type=stall_broken
+o = prop type=crate
+p = prop type=bonfire_0 action=heal
+q = spawn id=from_festival
+r = prop type=bench
+s = prop type=lamp
+u = prop type=well
+v = prop type=ladder
+w = prop type=fence
+y = prop type=hay
+z = prop type=podium action=talk:floor_06/after_objects#podium
+0 = prop type=notice_board action=talk:floor_06/after_objects#notice
+1 = prop type=bunting
+2 = savepoint place=战后的广场
+3 = prop type=totem_fixed
+4 = spawn id=from_totem
+5 = prop type=stairs_down
+6 = prop type=barricade action=talk:floor_06/after_k_objects#vent
+7 = sign dialogue=after_camp_blocked
+8 = spawn id=from_prison
+9 = prop type=sandbag
+! = prop type=tower_base
+? = prop type=tower
+$ = prop type=dungeon_gate action=talk:floor_06/after_objects#gate
+& = spawn id=from_siege
+* = spawn id=from_field
++ = blue_princess follow=true ai=false
+- = npc id=mayor dialogue=floor_06/after_kn_mayor wander=0 dir=down
+/ = npc id=captain dialogue=floor_06/after_kn_captain wander=0 dir=right
+: = npc id=granny dialogue=floor_06/after_kn_granny wander=0 dir=down
+; = npc id=merchant dialogue=floor_06/after_kn_merchant wander=0 dir=right
+< = npc id=miner dialogue=floor_06/after_kn_engineer wander=0 dir=down
+> = npc id=kid dialogue=floor_06/after_kn_tom wander=0 dir=left
+@ = npc id=kid dialogue=floor_06/after_kn_lily wander=0 dir=down
+^ = npc id=maid dialogue=floor_06/after_kn_maid wander=0 dir=left
+_ = npc id=supervisor dialogue=floor_06/after_kn_supervisor wander=0 dir=right
+| = prop type=lamp action=talk:floor_06/after_k_objects#lantern
+~ = prop type=decal_scorch_1
+( = prop type=decal_puddle_0
+) = prop type=decal_ash_1
+' = prop type=decal_splinters_0
+= = prop type=decal_footprints_0
+, = prop type=decal_straw_0
 
 [map]
 ################################################################
 ########t###########t###########t###########t###########t#######
 ##............................................................##
-##.A..............._........_.................................##
-##........................|...........................C.......##
-##....^.............(.........................................##
-##...........~.................@.~..^.................D.......##
-##........................._........................_......@..##
-##.@....M...|...N.......O.......Q..._.....d...........@.......##
-##......T.......Y........q................e...................##
-##......U.......Z.a.............R.S.......f...................##
-##..........b..........._...b.............P?..................##
-##..K...............c.................@.....................@.##
-##..L..(...........................@...........|.@............##
+##.A...............)........).................................##
+##........................'...........................C.......##
+##....(.............,.........................................##
+##...........=.................~.=..(.................D.......##
+##.........................)........................)......~..##
+##.~....R...'...S.......T.......U...).....h...........~.......##
+##......X.......c........v................i...................##
+##......Y.......d.e.............V.W.......j...................##
+##..........f...........)...f.............P+..................##
+##..K...............g.................~.....................~.##
+##..L..,...........................~...........'.~............##
 ##............................................................##
-##..................................|................._.......##
-##EF.................~........................................##
-##.................................................^.......~..##
-##.....................~......p...........(..@................##
-##..^..g...h...i..............................................##
-##...................^......................................V.##
-##.......................w....^.....w...n.$.....n.............##
-##..k._...........@..................*........@.-.............##
-##..k....................^.(.......v.....^..:.................##
-##...............................<...o.&....l._....o..........##
-##...............(............u....................;..........##
-##.....h...i...j..................>.....m.....................##
-##.......(........^.................+...n.......n/............##
-##....................................J....^...........rrrrr..##
-##....................................I.........(......r...r..##
-##..................._.................................r...rs.##
-##.....................................................r...r..##
-##.0........................^.y.....|..................rr.rr..##
-##..........................................._................##
-##................z..................................@........##
+##..................................'.................).......##
+##EF.................=........................................##
+##.................................................(.......=..##
+##.....................=......u...........,..~................##
+##..(..k...l...m..............................................##
+##...................(......................................Z.##
+##.......................1....(.....1...r.-.....r.............##
+##..o.)...........~..................:........~.<.............##
+##..o....................(.,.......0.....(..@.................##
+##..............................._...s./....p.)....s..........##
+##...............,............z....................^..........##
+##.....l...m...n..................|.....q.....................##
+##.......,........(.................;...r.......r>............##
+##....................................J....(...........wwwww..##
+##....................................I.........,......w...w..##
+##MN.................).................................w...wy.##
+##.....................................................w...w..##
+##.4........................(.2.....'..................ww.ww..##
+##...........................................)................##
+##OQ..............3..................................~........##
 ##............................................................##
-##...............................!.........................._.##
-##.....~....6.........6.......~...........6.........6.........##
-##..................X......7....9....7...................42...##
-##....(.5...H...b...W...........................b.......5.....##
-##..........G................o..8..o.....................3.1..##
+##...............................*..........................).##
+##.....=....!.........!.......=...........!.........!.........##
+##..................b......?....&....?...................86...##
+##....,.9...H...f...a...........................f.......9.....##
+##..........G................s..$..s.....................7.5..##
 ################################################################
 ##............................................................##
 ##............................................................##

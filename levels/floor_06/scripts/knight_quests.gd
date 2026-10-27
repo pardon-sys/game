@@ -22,6 +22,7 @@ const RUNNERS := {
 	"spear": "res://levels/floor_06/scripts/quest_spear.gd",
 	"fence": "res://levels/floor_06/scripts/quest_fence.gd",
 	"host": "res://levels/floor_06/scripts/quest_borrow.gd",
+	"blue": "res://levels/floor_06/scripts/quest_footprints.gd",
 }
 
 static var _data := {}
