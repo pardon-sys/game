@@ -1,20 +1,20 @@
 class_name QuestWarehouse
 extends QuestRunner
-## 支线「没有名字的生日」第三段「旧仓库」（floor_06_after_warehouse）：找三个八音盒零件（PARTS 里随机三处，一闪一闪），走过去按 E 捡。
+## 支线「没有名字的生日」第三段「旧仓库」（floor_06_after_warehouse）：找四个八音盒零件（PARTS 里随机 NEED 处，一闪一闪），走过去按 E 捡。
 ##   仓库角落里的旧八音盒一阵一阵地响（PLAY 秒响、STOP 秒停）：响的时候发条小手（WindupHand，HANDS）一动不动；
 ##   一停，看得见她的小手就爬过来挠脚心。躲在箱子 / 木桶旁边（COVERS，COVER_R 以内）它们就看不见她。
 ##   捡齐 → 这一段做完。
 ## 测试：hands、parts、got、music、take_near(角色)、set_music(on)。
 
-const PARTS := [Vector2i(10, 4), Vector2i(18, 11), Vector2i(21, 4), Vector2i(7, 10), Vector2i(15, 8)]
-const HANDS := [Vector2i(11, 7), Vector2i(17, 6), Vector2i(20, 8), Vector2i(13, 11)]
-const COVERS := [Vector2i(8, 4), Vector2i(12, 9), Vector2i(16, 5), Vector2i(20, 10), Vector2i(9, 12), Vector2i(19, 3),
-	Vector2i(14, 3), Vector2i(6, 11), Vector2i(22, 7)]
+## 地图上的点（QuestMaps：旧仓库的布局在 tools/build/quest_maps.py）
+static var PARTS: Array[Vector2i] = QuestMaps.cells("floor_06_after_warehouse", "parts")
+static var HANDS: Array[Vector2i] = QuestMaps.cells("floor_06_after_warehouse", "hands")
+static var COVERS: Array[Vector2i] = QuestMaps.cells("floor_06_after_warehouse", "covers")
 const COVER_R := 16.0
-const PLAY := 3.2
-const STOP := 2.2
+const PLAY := 2.8
+const STOP := 3.0
 const PICK_R := 14.0
-const NEED := 3
+const NEED := 4
 
 var hands: Array = []
 var parts: Array = []
@@ -36,6 +36,17 @@ func setup() -> void:
 	for i in NEED:
 		parts.append(put(PartMark.new(), Cutscene.cell_to_world(pool[i])))
 	set_music(true)
+	_intro()
+
+
+## 第一次进旧仓库：开场（q.warehouse_intro）
+func _intro() -> void:
+	if GameState.has_flag("kq_host_wh_intro"):
+		return
+	GameState.set_flag("kq_host_wh_intro")
+	await get_tree().process_frame
+	await TrainingDB.wait_dialogue_free()
+	Dialogue.start_lines(q.get("warehouse_intro", []), "kq_warehouse_intro")
 
 
 func status() -> String:
@@ -82,7 +93,7 @@ func take_near(who: Node2D) -> bool:
 			Audio.play("pickup", -4.0)
 			GameState.notify("零件 %d / %d" % [got, NEED], 1.2)
 			if got >= NEED:
-				say("（三个零件都找到了。角落里的八音盒「叮」地停住了）", 2.4)
+				say("（零件都找到了。角落里的八音盒「叮」地停住了）", 2.4)
 				advance()
 			return true
 	return false

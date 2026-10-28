@@ -10,11 +10,11 @@ extends TrainingStage
 
 const SPOTS := {"A": 0, "S": 1, "D": 2}
 const ZONES := ["thigh", "butt", "waist"]
-const HIT := 0.14
+const HIT := 0.11
 const MISS := 0.03
 const PRESS_COOL := 0.3
 const WARN := 0.8
-const WARN_EVERY := 3.0
+const WARN_EVERY := 2.5
 const FROZEN := 1.5
 const TURN := 6.0
 const DEFEND_RATE := 0.03

@@ -1,0 +1,53 @@
+{
+	"name": "一脚泥",
+	"letterbox": true,
+	"skippable": true,
+	"steps": [
+		{
+			"speaker": "",
+			"text": "（竹篮装满了。她光着的脚上，沾满了泥和花粉）"
+		},
+		{
+			"speaker": "公主",
+			"text": "呼……总算……",
+			"emotion": "helpless_1"
+		},
+		{
+			"actions": [
+				{
+					"time": 0.4,
+					"do": "fade_out"
+				}
+			],
+			"wait": 0.5
+		},
+		{
+			"speaker": "",
+			"text": "（回到工房。奶奶低头看了看她的脚——「噗」地笑出了声）"
+		},
+		{
+			"actions": [
+				{
+					"time": 0.4,
+					"do": "fade_in"
+				}
+			],
+			"wait": 0.4
+		},
+		{
+			"speaker": "药剂师奶奶",
+			"text": "哈哈……奶奶年轻时候，也是这一脚泥回来的。",
+			"npc": "pharmacist"
+		},
+		{
+			"speaker": "公主",
+			"text": "奶奶笑了！",
+			"emotion": "happy"
+		},
+		{
+			"speaker": "药剂师奶奶",
+			"text": "……咳。药锅烧好了。过来吧。",
+			"npc": "pharmacist"
+		}
+	]
+}

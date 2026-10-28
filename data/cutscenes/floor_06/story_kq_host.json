@@ -1,0 +1,86 @@
+{
+	"name": "没有名字的生日",
+	"order": 50,
+	"letterbox": false,
+	"skippable": true,
+	"steps": [
+		{
+			"actions": [
+				{
+					"img": "kq_host",
+					"pan": "in",
+					"do": "bg"
+				}
+			],
+			"wait": 0.8
+		},
+		{
+			"speaker": "",
+			"text": "（篝火噼啪地响。蜡烛吹灭以后，大家围坐在一起分蛋糕）"
+		},
+		{
+			"speaker": "派对主人",
+			"text": "对了！你们的生日是哪天？",
+			"npc": "bonfire_host"
+		},
+		{
+			"speaker": "公主",
+			"text": "……诶？",
+			"emotion": "surprise"
+		},
+		{
+			"speaker": "公主",
+			"text": "……我好像，也不记得了。",
+			"emotion": "helpless_1"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……我知道我的。"
+		},
+		{
+			"speaker": "派对主人",
+			"text": "那太好了！不记得的人和我一样——那今天，我们三个一起过！",
+			"npc": "bonfire_host"
+		},
+		{
+			"speaker": "公主",
+			"text": "……一起过？",
+			"emotion": "surprise"
+		},
+		{
+			"speaker": "派对主人",
+			"text": "嗯！以后每年的今天，都是我们三个人的生日！",
+			"npc": "bonfire_host"
+		},
+		{
+			"speaker": "",
+			"text": "（八音盒在她手边轻轻地转着）"
+		},
+		{
+			"speaker": "镇长",
+			"text": "（人群后面，很小声地）……今天，本来就是……",
+			"npc": "mayor"
+		},
+		{
+			"speaker": "",
+			"text": "（镇长的话，被小孩们的欢呼声盖过去了）"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……"
+		},
+		{
+			"speaker": "派对主人",
+			"text": "来！再许一个愿！三个人一起！",
+			"npc": "bonfire_host"
+		},
+		{
+			"actions": [
+				{
+					"do": "bg_clear"
+				}
+			],
+			"wait": 0.5
+		}
+	]
+}

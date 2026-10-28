@@ -7,15 +7,16 @@ extends QuestRunner
 ##   三根都敲回去 → 这一段做完（尽头的旧门开了：kq_fence_hall）。
 ## 测试：moss、stuck、wipe、hands、nails_done、hammering、lane、start_hammer()、finish_hammer(命中数)、shake_off()。
 
-const MOSS := [Vector2i(9, 2), Vector2i(14, 3), Vector2i(20, 2), Vector2i(27, 3), Vector2i(33, 2), Vector2i(38, 3)]
-const NAILS := [Vector2i(12, 2), Vector2i(25, 3), Vector2i(39, 2)]
+## 地图上的点（QuestMaps：裂缝的布局在 tools/build/quest_maps.py；封印钉按爬过去的顺序）
+static var MOSS: Array[Vector2i] = QuestMaps.cells("floor_06_after_crack", "moss")
+static var NAILS: Array[Vector2i] = QuestMaps.cells("floor_06_after_crack", "nails")
 const NAIL_R := 14.0
 const MOSS_R := 9.0
 const MOSS_RATE := 0.04
 const WIPE := 1.0
-const HAND_EVERY := 6.0
-const HAMMER_BEATS := 6
-const HAMMER_PASS := 4
+const HAND_EVERY := 4.5
+const HAMMER_BEATS := 8
+const HAMMER_PASS := 6
 
 var moss: Array = []
 var stuck: Array = []
@@ -25,6 +26,8 @@ var nails_done := 0
 var hammering := false
 var lane: RhythmLane
 var _hand_t := HAND_EVERY
+## 离下一根钉子还远的时候她站过的地方（敲歪了退回这里；裂缝拐来拐去，不能直接往左挪）
+var _safe := Vector2.ZERO
 var _layer: CanvasLayer
 
 
@@ -117,8 +120,12 @@ func tick(delta: float, holding: bool) -> void:
 		hands.append(h)
 		say(c().get("hand", []), 1.4)
 	# 封印钉
-	if nails_done < NAILS.size() and pink.global_position.distance_to(Cutscene.cell_to_world(NAILS[nails_done])) <= NAIL_R:
-		start_hammer()
+	if nails_done < NAILS.size():
+		var d := pink.global_position.distance_to(Cutscene.cell_to_world(NAILS[nails_done]))
+		if d <= NAIL_R:
+			start_hammer()
+		elif d >= NAIL_R + 10.0:
+			_safe = pink.global_position
 
 
 ## 按 J：把贴着的手印抖下去
@@ -175,7 +182,7 @@ func finish_hammer(hits: int) -> bool:
 	if hits < HAMMER_PASS:
 		say(c().get("nail_miss", ""), 1.6)
 		if is_instance_valid(pink):
-			pink.global_position = Cutscene.cell_to_world(NAILS[nails_done]) + Vector2(-NAIL_R - 8.0, 0)
+			pink.global_position = _safe if _safe != Vector2.ZERO else Cutscene.cell_to_world(QuestMaps.cell("floor_06_after_crack", "start"))
 		return false
 	nails_done += 1
 	say(c().get("nail_ok", ""), 1.6)

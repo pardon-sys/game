@@ -1,0 +1,73 @@
+{
+	"name": "灯笼架",
+	"order": 40,
+	"letterbox": false,
+	"skippable": true,
+	"steps": [
+		{
+			"actions": [
+				{
+					"img": "kq_fence",
+					"pan": "in",
+					"do": "bg"
+				}
+			],
+			"wait": 0.8
+		},
+		{
+			"speaker": "",
+			"text": "（封好的裂缝不再漏光了。工匠扛着锤子，抬头看着广场上一排排灯笼架）"
+		},
+		{
+			"speaker": "工匠",
+			"text": "……这些灯笼，每一盏都是爷爷亲手做的。",
+			"npc": "miner"
+		},
+		{
+			"speaker": "工匠",
+			"text": "他做一盏，就在架子底下刻个名字。谁家的灯，谁来点。",
+			"npc": "miner"
+		},
+		{
+			"speaker": "公主",
+			"text": "那西南角那盏旧石灯笼呢？",
+			"emotion": "surprise"
+		},
+		{
+			"speaker": "工匠",
+			"text": "……那盏不一样。是石头的。爷爷说，那是给一个小姑娘做的。",
+			"npc": "miner"
+		},
+		{
+			"speaker": "工匠",
+			"text": "底座上还刻了字。",
+			"npc": "miner"
+		},
+		{
+			"speaker": "公主",
+			"text": "给谁的？"
+		},
+		{
+			"speaker": "工匠",
+			"text": "……爷爷没说。我问了一辈子，他都没说。",
+			"npc": "miner"
+		},
+		{
+			"speaker": "",
+			"text": "（蓝色公主看着西南角的方向，没有说话）"
+		},
+		{
+			"speaker": "工匠",
+			"text": "……回去吧。今晚，门会替你们守着。",
+			"npc": "miner"
+		},
+		{
+			"actions": [
+				{
+					"do": "bg_clear"
+				}
+			],
+			"wait": 0.5
+		}
+	]
+}

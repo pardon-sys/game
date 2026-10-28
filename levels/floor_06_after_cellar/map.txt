@@ -8,25 +8,24 @@ no_switch = false
 . = floor
 P = player
 t = torch lit=true
-A = f6afterroom
-C = prop type=barrel
+A = prop type=barrel
+C = prop type=herb_rack
 D = prop type=crate
-E = prop type=crate + spawn id=from_herbcave
-F = prop type=herb_rack
-G = exit target=floor_06_after_pharmacy spawn=from_cellar
-H = exit target=floor_06_after_herbcave spawn=from_cellar unlock_flag=kq_samples_herbs locked_dialogue=after_herb_locked
-I = spawn id=from_pharmacy
-J = blue_princess follow=true ai=false
+E = f6afterroom + blue_princess follow=true ai=false
+F = exit target=floor_06_after_pharmacy spawn=from_cellar
+G = exit target=floor_06_after_herbcave spawn=from_cellar unlock_flag=kq_samples_herbs locked_dialogue=after_herb_locked
+H = spawn id=from_herbcave
+I = spawn id=from_pharmacy + player
 
 [map]
-################
-#####t####t#####
-##A...........##
-##.CC.D..C..C.##
-##............##
-##..........EH##
-##............##
-##.C....F...C.##
-##.....PIJ....##
-########G#######
-################
+#########################
+###t#############t#######
+###A..C..D###...A....####
+###......#t#.........####
+###.CC..CC.....CC.CC.####
+###................HG####
+###.CC..CC##...CC.CC.####
+###.......##.........####
+###D..A...##..D...A..####
+######..FIE.....#########
+#########################

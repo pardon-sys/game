@@ -219,6 +219,8 @@ static func run(t: Node) -> void:
 		and GameState.inventory.count("knight_medal") == 1 and not pink.has_meta(&"barefoot") and not KnightQuests.is_active("shoes"))
 	LilyDuelShow.quiet = false
 	LilyDuelShow.fixed_seed = -1
+	var shoes_cuts := ["kq_shoes_to1", "kq_shoes_to2", "kq_shoes_invite", "kq_shoes_to4", "story_kq_shoes"]
+	verify(t, "转阶段都有过场、结尾接着背景大图过场（%s）" % [shoes_cuts.filter(func(c): return not t.seen_cuts.has(c))], shoes_cuts.all(func(c): return t.seen_cuts.has(c)))
 	await t._wait(0.3)
 	gd = t._node("after_k_guard_dungeon") as Node2D
 	verify(t, "做完以后：玩法节点收走、主线的「！」回来了", runner(t, "shoes") == null and gd != null and gd.get_node_or_null("ErrandMark") != null)
@@ -290,13 +292,14 @@ static func run(t: Node) -> void:
 	await t._advance_until(func(): return KnightQuests.stage("samples") == 4 and not Cutscene.is_playing(), 10.0)
 	verify(t, "交给奶奶：笑声做的、一直往盔甲那边爬 → 还缺三味药，草药洞的门开了", KnightQuests.stage("samples") == 4 and GameState.has_flag("kq_samples_herbs")
 		and not KnightQuests.is_done("samples"))
+	verify(t, "草药洞那一段：工房的活板门（地窖）还开着，才走得进草药洞", GameState.has_flag("kq_samples_cellar"))
 	# 4 草药洞
 	GameState.pending_spawn = "from_cellar"
 	await t.main.change_level(Floors.scene(KnightStory.HERBCAVE))
 	await t._advance_until(func(): return runner(t, "samples") is QuestHerbs, 5.0)
 	var rhb := runner(t, "samples") as QuestHerbs
 	verify(t, "草药洞：三种药草各 %d 丛、%d 只手印，光着脚" % [QuestHerbs.PATCHES["bell"].size(), rhb.hands.size() if rhb else 0], rhb != null
-		and rhb.patches.size() == 12 and rhb.hands.size() == QuestHerbs.HANDS.size() and rhb.pink.has_meta(&"barefoot"))
+		and rhb.patches.size() == QuestHerbs.PATCHES.values().reduce(func(a, v): return a + v.size(), 0) and rhb.hands.size() == QuestHerbs.HANDS.size() and rhb.pink.has_meta(&"barefoot"))
 	if rhb == null:
 		return
 	pink = rhb.pink
@@ -327,7 +330,9 @@ static func run(t: Node) -> void:
 	rhb.got = {"bell": QuestHerbs.NEED, "moss": QuestHerbs.NEED, "yawn": QuestHerbs.NEED - 1}
 	var last: HerbPatch = rhb.patches.filter(func(x): return x.kind == "yawn" and not x.picked)[0]
 	rhb.pick_at(last)
-	verify(t, "三味药都齐了 → 回工房熬药；光着脚收走", KnightQuests.stage("samples") == 5 and not pink.has_meta(&"barefoot"))
+	await t._advance_until(func(): return KnightQuests.stage("samples") == 5, 20.0)
+	verify(t, "三味药都齐了 → 一脚泥回工房（过场 kq_samples_to5）→ 熬药；光着脚收走", KnightQuests.stage("samples") == 5 and not pink.has_meta(&"barefoot")
+		and t.seen_cuts.has("kq_samples_to5"))
 	# 5 熬药
 	BrewShow.quiet = true
 	GameState.pending_spawn = "from_town"
@@ -363,7 +368,9 @@ static func run(t: Node) -> void:
 	await t._advance_until(func(): return GameState.inventory.count("calm_incense") > 0 and not Cutscene.is_playing(), 30.0)
 	BrewShow.quiet = false
 	verify(t, "三锅熬完 → 安神香（支线做完）", KnightQuests.is_done("samples") and GameState.inventory.count("calm_incense") == 1
-		and t.seen_cuts.has("kq_samples_done"))
+		and t.seen_cuts.has("kq_samples_done") and not GameState.has_flag("kq_samples_cellar"))
+	var samples_cuts := ["kq_samples_to1", "kq_samples_to2", "kq_samples_to3", "kq_samples_to4", "kq_samples_to5", "story_kq_samples"]
+	verify(t, "转阶段都有过场、结尾接着背景大图过场（%s）" % [samples_cuts.filter(func(c): return not t.seen_cuts.has(c))], samples_cuts.all(func(c): return t.seen_cuts.has(c)))
 	# ---------------------------------------------------------------- ③ 队长的旧剑术
 	await go_town(t, "from_pharmacy")
 	await t._talk("floor_06/after_k_captain", "")
@@ -449,6 +456,7 @@ static func run(t: Node) -> void:
 	await t._advance_until(func(): return KnightQuests.stage("spear") == 2 and not Cutscene.is_playing(), 20.0)
 	verify(t, "躲够 %d 下：墙头上「那天我抱出来两个孩子」→ 下一段二对一" % QuestWatch.NEED, KnightQuests.stage("spear") == 2 and t.seen_cuts.has("kq_spear_watch_end")
 		and not pink.status.is_rooted())
+	verify(t, "③ 训练轮之间有点评、去训练室的路上有过场（kq_spear_to2）", t.seen_cuts.has("kq_spear_to2"))
 	# 2 二对一
 	GameState.pending_spawn = "from_town"
 	await t.main.change_level(Floors.scene(KnightStory.DRILL))
@@ -475,7 +483,7 @@ static func run(t: Node) -> void:
 	rd.cap_laugh = 0.9
 	rd.open_left = 1.0
 	rd.tickle_cap(pink)
-	await t._advance_until(func(): return t.seen_cuts.has("kq_spear_done") and not Cutscene.is_playing(), 20.0)
+	await t._advance_until(func(): return t.seen_cuts.has("story_kq_spear") and not Cutscene.is_playing(), 20.0)
 	await t._wait(0.3)
 	verify(t, "队长笑出来：手帕（「一个很爱笑的小姑娘给的」）→ 护手绳、「到时候我会在」", KnightQuests.is_done("spear") and t.seen_cuts.has("kq_spear_duo_end")
 		and t.seen_cuts.has("kq_spear_done") and not GameState.has_flag("kq_spear_active"))
@@ -549,12 +557,12 @@ static func run(t: Node) -> void:
 		and t.seen_cuts.has("kq_host_box") and KnightQuests.marked_npcs().has("after_k_engineer"))
 	await t._talk("floor_06/after_k_engineer", "")
 	await t._advance_until(func(): return KnightQuests.stage("host") == 2, 5.0)
-	verify(t, "工匠：缺三个零件，训练室后面的旧仓库（门开了）", KnightQuests.stage("host") == 2 and GameState.has_flag("kq_host_warehouse"))
+	verify(t, "工匠：缺四个零件，训练室后面的旧仓库（门开了）", KnightQuests.stage("host") == 2 and GameState.has_flag("kq_host_warehouse"))
 	GameState.pending_spawn = "from_town"
 	await t.main.change_level(Floors.scene(KnightStory.WAREHOUSE))
-	await t._advance_until(func(): return runner(t, "host") is QuestWarehouse, 5.0)
+	await t._advance_until(func(): return runner(t, "host") is QuestWarehouse and GameState.has_flag("kq_host_wh_intro") and not GameState.in_dialogue, 10.0)
 	var rwh := runner(t, "host") as QuestWarehouse
-	verify(t, "旧仓库：%d 只发条小手、%d 个零件" % [rwh.hands.size() if rwh else 0, rwh.parts.size() if rwh else 0], rwh != null and rwh.hands.size() == QuestWarehouse.HANDS.size() and rwh.parts.size() == 3)
+	verify(t, "旧仓库：%d 只发条小手、%d 个零件" % [rwh.hands.size() if rwh else 0, rwh.parts.size() if rwh else 0], rwh != null and rwh.hands.size() == QuestWarehouse.HANDS.size() and rwh.parts.size() == QuestWarehouse.NEED)
 	if rwh == null:
 		return
 	pink = rwh.pink
@@ -610,10 +618,12 @@ static func run(t: Node) -> void:
 		verify(t, "亮「！」按 J 缩脚", pw.warn_left == 0.0)
 		pw.blue_laugh = 0.99
 		await t._wait(0.5)
-	await t._advance_until(func(): return t.seen_cuts.has("kq_host_done") and not Cutscene.is_playing(), 15.0)
+	await t._advance_until(func(): return t.seen_cuts.has("story_kq_host") and not Cutscene.is_playing(), 40.0)
 	PartyShow.quiet = false
 	verify(t, "蓝色公主先笑了 → 寿星许愿「希望明年也有人记得今天」→ 做完（对话 %s，锁 %d）" % [GameState.in_dialogue, GameState.dialogue_holds],
 		KnightQuests.is_done("host") and t.seen_cuts.has("kq_host_done"))
+	var host_cuts := ["kq_host_box", "kq_host_to3", "kq_host_lullaby", "kq_host_to4", "kq_host_to5", "story_kq_host"]
+	verify(t, "⑤ 转阶段都有过场、结尾接大图过场（%s）" % [host_cuts.filter(func(c): return not t.seen_cuts.has(c))], host_cuts.all(func(c): return t.seen_cuts.has(c)))
 	# ---------------------------------------------------------------- ④ 夜里的栅栏
 	KnightStory.jump("sneak")
 	await go_town(t, "from_drill")
@@ -692,8 +702,9 @@ static func run(t: Node) -> void:
 			pink.global_position = Cutscene.cell_to_world(QuestCrack.NAILS[i])
 			rc.tick(0.05, false)
 		rc.finish_hammer(QuestCrack.HAMMER_BEATS)
-	await t._advance_until(func(): return KnightQuests.stage("fence") == 4, 5.0)
+	await t._advance_until(func(): return KnightQuests.stage("fence") == 4 and not Cutscene.is_playing(), 20.0)
 	verify(t, "三根封印钉敲回去：尽头的旧门开了，不用再爬", KnightQuests.stage("fence") == 4 and GameState.has_flag("kq_fence_hall") and not pink.has_buff("crawl"))
+	verify(t, "旧会堂那一段：广场边的裂缝还开着，出去了也能爬回来", GameState.has_flag("kq_fence_crack"))
 	# 4 旧会堂
 	GameState.pending_spawn = "from_crack"
 	await t.main.change_level(Floors.scene(KnightStory.OLDHALL))
@@ -721,9 +732,11 @@ static func run(t: Node) -> void:
 	await t._advance_until(func(): return KnightQuests.stage("fence") == 5 and not Cutscene.is_playing(), 20.0)
 	verify(t, "手印团的碎片收齐：壁画上的人像全被刮花了 → 回去找工匠", KnightQuests.stage("fence") == 5 and t.seen_cuts.has("kq_fence_hall_end")
 		and KnightQuests.marked_npcs().has("after_kn_engineer"))
+	var fence_cuts := ["kq_fence_to1", "kq_fence_to2", "kq_fence_crack", "kq_fence_to4", "kq_fence_hall_end"]
+	verify(t, "④ 转阶段都有过场（%s）" % [fence_cuts.filter(func(c): return not t.seen_cuts.has(c))], fence_cuts.all(func(c): return t.seen_cuts.has(c)))
 	await go_town(t, "from_crack")
 	await t._talk("floor_06/after_kn_engineer", "")
-	await t._advance_until(func(): return t.seen_cuts.has("kq_fence_done") and not Cutscene.is_playing(), 20.0)
+	await t._advance_until(func(): return t.seen_cuts.has("story_kq_fence") and not Cutscene.is_playing(), 20.0)
 	verify(t, "工匠：灯笼架也加固了 → 做完", KnightQuests.is_done("fence") and t.seen_cuts.has("kq_fence_done"))
 	verify(t, "最后一战的帮手：%s" % [KnightQuests.helpers()], ["shoes", "samples", "spear", "fence"].all(func(x): return KnightQuests.helpers().has(x)))
 	# ---------------------------------------------------------------- ⑥ 点灯笼的小姑娘（夜里）
@@ -820,7 +833,7 @@ static func run(t: Node) -> void:
 		rbr.hands[2].grab_now(pink)
 	verify(t, "被抓 %d 次：手被扯开，两个人退回桥头" % QuestBridge.LET_GO, rbr.grabs == 0 and pink.global_position.distance_to(Cutscene.cell_to_world(QuestBridge.START)) < 4.0)
 	pink.status.clear_root()
-	pink.global_position = Cutscene.cell_to_world(Vector2i(QuestBridge.END_X + 1, 4))
+	pink.global_position = Cutscene.cell_to_world(QuestBridge.END)
 	rbr.tick(0.05)
 	await t._advance_until(func(): return KnightQuests.stage("blue") == 5 and not GameState.in_dialogue, 10.0)
 	verify(t, "走到桥那头：「那时候，她的手也是这么暖的」→ 回旧石灯笼", KnightQuests.stage("blue") == 5)
@@ -843,9 +856,11 @@ static func run(t: Node) -> void:
 		bb2.blue_laugh = 0.95
 		bb2._press = 0.0
 		bb2.tickle_blue(bb2.weak)
-	await t._advance_until(func(): return t.seen_cuts.has("kq_blue_done") and not Cutscene.is_playing(), 15.0)
+	await t._advance_until(func(): return t.seen_cuts.has("story_kq_blue") and not Cutscene.is_playing(), 40.0)
 	BlueTickleShow.quiet = false
 	verify(t, "两个人一起笑出声：旧石灯笼亮了，「……谢谢。」「你刚刚笑了！」→ 做完", KnightQuests.is_done("blue") and t.seen_cuts.has("kq_blue_done"))
+	var blue_cuts := ["kq_blue_lantern", "kq_blue_to2", "kq_blue_to3", "kq_blue_to4", "kq_blue_to5", "story_kq_blue"]
+	verify(t, "⑥ 转阶段都有过场、结尾接大图过场（%s）" % [blue_cuts.filter(func(c): return not t.seen_cuts.has(c))], blue_cuts.all(func(c): return t.seen_cuts.has(c)))
 	# 错过时间窗口：栅栏只在第一天夜里
 	KnightStory.jump("cell")
 	KnightQuests.refresh()

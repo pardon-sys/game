@@ -8,7 +8,7 @@ extends QuestSpear
 
 const OPEN := 1.2
 const CAP_R := 30.0
-const TICKLE := 0.15
+const TICKLE := 0.12
 const PERFECT_TICKLE := 0.2
 const FREEZE := 3.0
 const FREEZE_COOL := 8.0

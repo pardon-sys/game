@@ -1,0 +1,65 @@
+{
+	"name": "脚底全是草",
+	"letterbox": true,
+	"skippable": true,
+	"steps": [
+		{
+			"speaker": "小汤姆",
+			"text": "公主找到啦！……哈哈哈，脚底全是草！",
+			"npc": "kid"
+		},
+		{
+			"speaker": "公主",
+			"text": "都怪谁啊！",
+			"emotion": "angry"
+		},
+		{
+			"speaker": "",
+			"text": "（蓝色公主蹲下来，把她脚趾缝里的草叶一根一根摘掉）"
+		},
+		{
+			"speaker": "公主",
+			"text": "……谢、谢谢。",
+			"emotion": "happy"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……别动。还有一根。"
+		},
+		{
+			"speaker": "公主",
+			"text": "哈……痒……！",
+			"emotion": "surprise",
+			"actions": [
+				{
+					"who": "princess",
+					"kind": "laugh",
+					"do": "bubble"
+				}
+			]
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……是你自己踩的。"
+		},
+		{
+			"speaker": "小莉莉",
+			"text": "（远远地喊）第二句！「彩带高高挂，羽毛软软堆」！",
+			"npc": "kid"
+		},
+		{
+			"speaker": "公主",
+			"text": "彩带……广场上挂着彩带！",
+			"emotion": "surprise"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……羽毛堆。你又要光脚踩上去了。"
+		},
+		{
+			"speaker": "公主",
+			"text": "……别说出来啦。",
+			"emotion": "helpless_1"
+		}
+	]
+}

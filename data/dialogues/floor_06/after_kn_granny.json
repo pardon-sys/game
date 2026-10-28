@@ -4,6 +4,60 @@
 	"entries": [
 		{
 			"if": {
+				"flag": "kq_blue_active",
+				"eq": {
+					"kq_blue_stage": 0
+				}
+			},
+			"node": "kq_blue_busy0"
+		},
+		{
+			"if": {
+				"flag": "kq_blue_active",
+				"eq": {
+					"kq_blue_stage": 1
+				}
+			},
+			"node": "kq_blue_busy1"
+		},
+		{
+			"if": {
+				"flag": "kq_blue_active",
+				"eq": {
+					"kq_blue_stage": 2
+				}
+			},
+			"node": "kq_blue_busy2"
+		},
+		{
+			"if": {
+				"flag": "kq_blue_active",
+				"eq": {
+					"kq_blue_stage": 3
+				}
+			},
+			"node": "kq_blue_busy3"
+		},
+		{
+			"if": {
+				"flag": "kq_blue_active",
+				"eq": {
+					"kq_blue_stage": 4
+				}
+			},
+			"node": "kq_blue_busy4"
+		},
+		{
+			"if": {
+				"flag": "kq_blue_active",
+				"eq": {
+					"kq_blue_stage": 5
+				}
+			},
+			"node": "kq_blue_busy5"
+		},
+		{
+			"if": {
 				"flag": "kq_blue_active"
 			},
 			"node": "kq_blue_busy"
@@ -44,6 +98,159 @@
 				}
 			]
 		},
+		"kq_blue_busy0": {
+			"lines": [
+				{
+					"text": "……地上的冰晶脚印，跟着走就好。"
+				},
+				{
+					"text": "……那孩子小时候，最喜欢那盏灯笼了。"
+				},
+				{
+					"text": "……我什么都没说。"
+				}
+			],
+			"prompt": "（点灯笼的小姑娘）",
+			"choices": [
+				{
+					"text": "知道了"
+				},
+				{
+					"text": "（先放一放）",
+					"set": {
+						"vars": {
+							"kq_req": "blue"
+						},
+						"call": "kq_abandon"
+					}
+				}
+			]
+		},
+		"kq_blue_busy1": {
+			"lines": [
+				{
+					"text": "……找到她了？"
+				},
+				{
+					"text": "……那就好。陪着她。"
+				}
+			],
+			"prompt": "（点灯笼的小姑娘）",
+			"choices": [
+				{
+					"text": "知道了"
+				},
+				{
+					"text": "（先放一放）",
+					"set": {
+						"vars": {
+							"kq_req": "blue"
+						},
+						"call": "kq_abandon"
+					}
+				}
+			]
+		},
+		"kq_blue_busy2": {
+			"lines": [
+				{
+					"text": "……井边？那孩子以前天天在那里冻水玩。"
+				},
+				{
+					"text": "井台上的冰，到现在都没化干净。"
+				}
+			],
+			"prompt": "（点灯笼的小姑娘）",
+			"choices": [
+				{
+					"text": "知道了"
+				},
+				{
+					"text": "（先放一放）",
+					"set": {
+						"vars": {
+							"kq_req": "blue"
+						},
+						"call": "kq_abandon"
+					}
+				}
+			]
+		},
+		"kq_blue_busy3": {
+			"lines": [
+				{
+					"text": "……储物间？……那孩子在那里哭过。"
+				},
+				{
+					"text": "……不止一次。"
+				}
+			],
+			"prompt": "（点灯笼的小姑娘）",
+			"choices": [
+				{
+					"text": "知道了"
+				},
+				{
+					"text": "（先放一放）",
+					"set": {
+						"vars": {
+							"kq_req": "blue"
+						},
+						"call": "kq_abandon"
+					}
+				}
+			]
+		},
+		"kq_blue_busy4": {
+			"lines": [
+				{
+					"text": "……小桥？……排水渠上那座？"
+				},
+				{
+					"text": "……以前，她总和另一个孩子手拉着手从那里走过去。"
+				}
+			],
+			"prompt": "（点灯笼的小姑娘）",
+			"choices": [
+				{
+					"text": "知道了"
+				},
+				{
+					"text": "（先放一放）",
+					"set": {
+						"vars": {
+							"kq_req": "blue"
+						},
+						"call": "kq_abandon"
+					}
+				}
+			]
+		},
+		"kq_blue_busy5": {
+			"lines": [
+				{
+					"text": "……灯笼，亮了吗？"
+				},
+				{
+					"text": "……去吧。一起。"
+				}
+			],
+			"prompt": "（点灯笼的小姑娘）",
+			"choices": [
+				{
+					"text": "知道了"
+				},
+				{
+					"text": "（先放一放）",
+					"set": {
+						"vars": {
+							"kq_req": "blue"
+						},
+						"call": "kq_abandon"
+					}
+				}
+			]
+		},
 		"kq_blue_busy": {
 			"lines": [
 				{
@@ -79,6 +286,12 @@
 				},
 				{
 					"text": "那边有一盏很旧的石灯笼。……好多年没人点了。"
+				},
+				{
+					"text": "以前每年祭典，都是「殿下」去点它。踮着脚，够都够不着，还非要自己点。"
+				},
+				{
+					"text": "……「那一天」以后，就再没人点过了。"
 				},
 				{
 					"text": "（地上，有一串淡淡的冰晶脚印）",

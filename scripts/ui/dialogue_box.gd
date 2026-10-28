@@ -391,6 +391,12 @@ func knight_go() -> void:
 	KnightStory.go()
 
 
+## 骑士篇：夜探地牢中途出来了，从通风口钻回去（KnightStory.reenter）。
+func knight_reenter() -> void:
+	runner.end_conversation()
+	KnightStory.reenter()
+
+
 ## 骑士篇支线（对话的 set.vars.kq_req 写支线 id）：接下 / 回去报告做完 / 先放一放。
 func kq_start() -> void:
 	runner.end_conversation()

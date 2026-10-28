@@ -6,10 +6,55 @@
 			"if": {
 				"flag": "kq_host_active",
 				"eq": {
+					"kq_host_stage": 0
+				}
+			},
+			"node": "kq_host_busy0"
+		},
+		{
+			"if": {
+				"flag": "kq_host_active",
+				"eq": {
+					"kq_host_stage": 1
+				}
+			},
+			"node": "kq_host_busy1"
+		},
+		{
+			"if": {
+				"flag": "kq_host_active",
+				"eq": {
+					"kq_host_stage": 2
+				}
+			},
+			"node": "kq_host_busy2"
+		},
+		{
+			"if": {
+				"flag": "kq_host_active",
+				"eq": {
 					"kq_host_stage": 3
 				}
 			},
 			"node": "kq_host_t3"
+		},
+		{
+			"if": {
+				"flag": "kq_host_active",
+				"eq": {
+					"kq_host_stage": 4
+				}
+			},
+			"node": "kq_host_busy4"
+		},
+		{
+			"if": {
+				"flag": "kq_host_active",
+				"eq": {
+					"kq_host_stage": 5
+				}
+			},
+			"node": "kq_host_busy5"
 		},
 		{
 			"if": {
@@ -59,6 +104,84 @@
 				}
 			]
 		},
+		"kq_host_busy0": {
+			"lines": [
+				{
+					"text": "彩带、点心、蜡烛……卖东西的大叔、女仆姐姐、工匠大叔那里都有。"
+				},
+				{
+					"text": "借的时候……他们大概会要你帮个忙。"
+				},
+				{
+					"text": "……别告诉他们是给我过生日哦。会不好意思的。"
+				}
+			],
+			"prompt": "（没有名字的生日）",
+			"choices": [
+				{
+					"text": "知道了"
+				},
+				{
+					"text": "（先放一放）",
+					"set": {
+						"vars": {
+							"kq_req": "host"
+						},
+						"call": "kq_abandon"
+					}
+				}
+			]
+		},
+		"kq_host_busy1": {
+			"lines": [
+				{
+					"text": "工匠大叔会修吗……"
+				},
+				{
+					"text": "……修不好也没关系的。真的。"
+				}
+			],
+			"prompt": "（没有名字的生日）",
+			"choices": [
+				{
+					"text": "知道了"
+				},
+				{
+					"text": "（先放一放）",
+					"set": {
+						"vars": {
+							"kq_req": "host"
+						},
+						"call": "kq_abandon"
+					}
+				}
+			]
+		},
+		"kq_host_busy2": {
+			"lines": [
+				{
+					"text": "旧仓库……我小时候进去过一次。里面的玩具都在看我。"
+				},
+				{
+					"text": "……小心哦。"
+				}
+			],
+			"prompt": "（没有名字的生日）",
+			"choices": [
+				{
+					"text": "知道了"
+				},
+				{
+					"text": "（先放一放）",
+					"set": {
+						"vars": {
+							"kq_req": "host"
+						},
+						"call": "kq_abandon"
+					}
+				}
+			]
+		},
 		"kq_host_t3": {
 			"lines": [
 				{
@@ -74,6 +197,56 @@
 				},
 				"call": "kq_next"
 			}
+		},
+		"kq_host_busy4": {
+			"lines": [
+				{
+					"text": "生日舞！是我自己编的！"
+				},
+				{
+					"text": "……跳错了不许笑我。"
+				}
+			],
+			"prompt": "（没有名字的生日）",
+			"choices": [
+				{
+					"text": "知道了"
+				},
+				{
+					"text": "（先放一放）",
+					"set": {
+						"vars": {
+							"kq_req": "host"
+						},
+						"call": "kq_abandon"
+					}
+				}
+			]
+		},
+		"kq_host_busy5": {
+			"lines": [
+				{
+					"text": "……蜡烛，好多。"
+				},
+				{
+					"text": "最后一个笑出来的人许愿哦！"
+				}
+			],
+			"prompt": "（没有名字的生日）",
+			"choices": [
+				{
+					"text": "知道了"
+				},
+				{
+					"text": "（先放一放）",
+					"set": {
+						"vars": {
+							"kq_req": "host"
+						},
+						"call": "kq_abandon"
+					}
+				}
+			]
 		},
 		"kq_host_busy": {
 			"lines": [
@@ -114,7 +287,13 @@
 					"text": "大家找到我的那一天。……我不知道自己是哪天生的，就把那一天当成生日。"
 				},
 				{
-					"text": "可是每年一到这一天，大家都不说话。……我也不问。"
+					"text": "我给全镇办过好多好多场派对。丰收的、庆功的、谁家小孩会走路了的……"
+				},
+				{
+					"text": "可是从来没有人给我办过。……每年一到这一天，大家都不说话。我也不问。"
+				},
+				{
+					"text": "我连自己几岁都不知道。……大概，和你们差不多大吧。"
 				},
 				{
 					"text": "今年，我想偷偷给自己办一场生日派对。……你们愿意帮我吗？"

@@ -17,8 +17,21 @@
 			"emotion": "surprise"
 		},
 		{
+			"speaker": "公主",
+			"text": "刮得这么干净……一定是很用力地刮的。"
+		},
+		{
 			"speaker": "蓝色的公主",
 			"text": "……走吧。"
+		},
+		{
+			"speaker": "公主",
+			"text": "等一下，那边还有——",
+			"emotion": "surprise"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……走吧。火把快灭了。"
 		},
 		{
 			"speaker": "",

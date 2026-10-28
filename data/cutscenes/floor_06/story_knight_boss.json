@@ -1,0 +1,127 @@
+{
+	"name": "背靠背",
+	"order": 90,
+	"letterbox": false,
+	"skippable": true,
+	"steps": [
+		{
+			"actions": [
+				{
+					"img": "knight_boss",
+					"pan": "in",
+					"do": "bg"
+				}
+			],
+			"wait": 0.8
+		},
+		{
+			"speaker": "",
+			"text": "（紫色的光爬满了洞顶。四盏灯笼全暗了，广场上只剩盔甲身上那一道道裂缝在发光）"
+		},
+		{
+			"speaker": "",
+			"text": "（木箱后面，镇民们挤成一团，大气都不敢出）"
+		},
+		{
+			"speaker": "公主",
+			"text": "……喂。",
+			"emotion": "helpless_1"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……嗯。"
+		},
+		{
+			"speaker": "公主",
+			"text": "你说，那里面……他还听得见吗？",
+			"emotion": "sad"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……听得见。"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "手帕还在他手里攥着。……攥得那么紧的人，不会什么都听不见。"
+		},
+		{
+			"speaker": "",
+			"text": "（两个人慢慢退到一起，后背贴上了后背）"
+		},
+		{
+			"speaker": "公主",
+			"text": "而且这次……不只是我们两个。",
+			"emotion": "happy",
+			"if": {
+				"any": [
+					{
+						"flag": "kq_shoes_done"
+					},
+					{
+						"flag": "kq_samples_done"
+					},
+					{
+						"flag": "kq_spear_done"
+					},
+					{
+						"flag": "kq_fence_done"
+					},
+					{
+						"flag": "kq_host_done"
+					},
+					{
+						"flag": "kq_blue_done"
+					}
+				]
+			}
+		},
+		{
+			"speaker": "",
+			"text": "（广场边上，一个又一个熟悉的身影跑了过来）",
+			"if": {
+				"any": [
+					{
+						"flag": "kq_shoes_done"
+					},
+					{
+						"flag": "kq_samples_done"
+					},
+					{
+						"flag": "kq_spear_done"
+					},
+					{
+						"flag": "kq_fence_done"
+					},
+					{
+						"flag": "kq_host_done"
+					},
+					{
+						"flag": "kq_blue_done"
+					}
+				]
+			}
+		},
+		{
+			"speaker": "公主",
+			"text": "那就——用笑声把他叫醒！",
+			"emotion": "angry"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……我冻住它。你别笑太早。"
+		},
+		{
+			"speaker": "公主",
+			"text": "那可不一定！",
+			"emotion": "happy"
+		},
+		{
+			"actions": [
+				{
+					"do": "bg_clear"
+				}
+			],
+			"wait": 0.5
+		}
+	]
+}

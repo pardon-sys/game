@@ -9,9 +9,9 @@ extends QuestRunner
 ##   做完以后找训练室里的队长「再来一次」（start_replay）：同样三轮，练完不给奖励、不推进支线（replay）。
 ## 测试：round_i、dodged、hits、perfects、warn、attack(种类)、resolve()、dash_at。
 
-const ROUNDS := [{"kinds": ["thrust"], "count": 5, "max_hits": 3, "perfect": 0, "gap": 1.6},
-	{"kinds": ["sweep"], "count": 5, "max_hits": 3, "perfect": 0, "gap": 1.6},
-	{"kinds": ["thrust", "sweep"], "count": 7, "max_hits": 3, "perfect": 2, "gap": 1.2}]
+const ROUNDS := [{"kinds": ["thrust"], "count": 7, "max_hits": 2, "perfect": 0, "gap": 1.4},
+	{"kinds": ["sweep"], "count": 7, "max_hits": 2, "perfect": 0, "gap": 1.4},
+	{"kinds": ["thrust", "sweep"], "count": 9, "max_hits": 2, "perfect": 2, "gap": 1.1}]
 const THRUST_WARN := 0.8
 const SWEEP_WARN := 1.0
 const THRUST_LEN := 140.0
@@ -127,6 +127,10 @@ func _start_round(i: int) -> void:
 	var drill: Dictionary = q.get("drill", {})
 	GameState.notify(str(drill["rounds"][i]), 2.0)
 	say(drill["round_tip"][i], 3.2)
+	# 两轮之间队长点评几句（再练一次的时候不说）
+	var between: Array = drill.get("between", [])
+	if i > 0 and not replay and i - 1 < between.size():
+		Dialogue.start_lines(between[i - 1], "kq_spear_between")
 
 
 func origin() -> Vector2:

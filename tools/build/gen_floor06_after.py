@@ -19,7 +19,8 @@ os.chdir(Path(__file__).resolve().parents[2])
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from after_text import d1, d2, equip_kids, errand_dance, errand_goats, errand_ladder, errand_massage, errand_gate_chain, errand_shearing, errand_canopy, errand_sifting, errand_lamp_calibration, errands, house, mine, play, potion, punish, stocks, tailor, tasks, totem, town, drain, drill, inspect, tom, night, penalty, festival_night, festival_talk, stall_guess, stall_ring, stall_ice, stall_fish, stall_lick  # noqa: E402
-from knight_text import finale as knight_finale, quests as knight_quests, story as knight_story, tasks as knight_tasks, townsfolk as knight_townsfolk  # noqa: E402
+import quest_maps as qmaps  # noqa: E402
+from knight_text import finale as knight_finale, quests as knight_quests, story as knight_story, story_cg as knight_story_cg, tasks as knight_tasks, townsfolk as knight_townsfolk  # noqa: E402
 
 # 只生成灯轮 / 报幕的文本（委托表、灯轮、补罚表、派对主人对话），不重新写地图、其他任务或别的镇民对白。
 if "--festival-only" in sys.argv:
@@ -54,6 +55,10 @@ STORAGE, BRIDGE = "floor_06_knight_storage", "floor_06_knight_bridge"
 PRISON = "floor_06_after_prison"
 FESTIVAL = "floor_06_festival"
 KDAY, KNIGHT_N, KCHASE = "floor_06_knight_day", "floor_06_knight_night", "floor_06_knight_chase"
+
+
+# 骑士篇支线小地图的标记点（quest_maps.py 画的图；写进 data/after/quest_maps.json，QuestMaps 读）
+QMARKS = {}
 
 
 class Map:
@@ -492,151 +497,101 @@ dl.put(10, 10, "player")
 dl.put(11, 10, "blue_princess follow=true ai=false")
 dl.write()
 
-# ================================================================ 药剂师工房的地窖（骑士篇支线「手印样本」：一团手印钻进来了）
-ce = Map(CELLAR, 16, 11, "intro =\nambient = 0.42,0.42,0.52\nno_switch = false")
-ce.room(2, 2, 13, 8)
-for x in (5, 10):
-    ce.put(x, 1, "torch lit=true")
-ce.put(2, 2, "f6afterroom")
-for (x, y) in ((3, 3), (4, 3), (12, 3), (3, 7), (12, 7), (9, 3)):
-    prop(ce, x, y, "barrel")
-for (x, y) in ((6, 3), (12, 5)):
-    prop(ce, x, y, "crate")
-prop(ce, 8, 7, "herb_rack")
-ce.put(8, 9, "exit target=%s spawn=from_cellar" % PHARMACY)
+# ================================================================ 药剂师工房的地窖（骑士篇支线「手印样本」：药架隔出来的小过道，一团手印缩在最里面；布局见 quest_maps.py）
+ce, cm = qmaps.build(Map, CELLAR, "intro =\nambient = 0.42,0.42,0.52\nno_switch = false", prop, "torch lit=true", 7)
+QMARKS[CELLAR] = cm
+ce.put(*cm["blue"][0], "f6afterroom")
+ce.put(*cm["exit"][0], "exit target=%s spawn=from_cellar" % PHARMACY)
 # 最里面的小门：通往草药洞（支线「手印样本」采药那一段才开）
-ce.put(13, 5, "exit target=%s spawn=from_cellar unlock_flag=kq_samples_herbs locked_dialogue=after_herb_locked" % HERBCAVE)
-ce.put(12, 5, "spawn id=from_herbcave")
-ce.put(8, 8, "spawn id=from_pharmacy")
-ce.put(7, 8, "player")
-ce.put(9, 8, "blue_princess follow=true ai=false")
+hx, hy = cm["herb_door"][0]
+ce.put(hx, hy, "exit target=%s spawn=from_cellar unlock_flag=kq_samples_herbs locked_dialogue=after_herb_locked" % HERBCAVE)
+ce.put(hx - 1, hy, "spawn id=from_herbcave")
+ce.put(*cm["start"][0], "spawn id=from_pharmacy")
+ce.put(*cm["start"][0], "player")
+ce.put(*cm["blue"][0], "blue_princess follow=true ai=false")
 ce.write()
 
-# ================================================================ 没有灯的小巷（骑士篇支线「骑士救公主」第四段：灯全灭了）
-al = Map(ALLEY, 36, 11, "intro =\nambient = 0.1,0.09,0.15\nno_switch = false")
-al.room(2, 3, 33, 7)
-al.put(3, 3, "f6afterroom")
-al.put(2, 5, "exit target=%s spawn=from_alley" % TOWN)
-al.put(3, 5, "spawn id=from_town")
-al.put(4, 5, "player")
-al.put(4, 6, "blue_princess follow=true ai=false")
-# 躲人的地方：木桶、木箱、挂着的布、破推车（QuestHide.SPOTS 就在这些东西旁边）
-for (x, y) in ((8, 3), (13, 7), (17, 3), (21, 7), (25, 3), (29, 7), (31, 4)):
-    prop(al, x, y, "barrel")
-for (x, y) in ((10, 7), (19, 3), (27, 6), (32, 6)):
-    prop(al, x, y, "crate")
-prop(al, 15, 4, "fabric")
-prop(al, 23, 5, "cart")
-for (x, y) in ((12, 5), (26, 5)):
-    prop(al, x, y, "decal_puddle_0")
+# ================================================================ 没有灯的小巷（骑士篇支线「骑士救公主」第四段：灯全灭了；东西向的主巷子 + 死胡同、小院、环路）
+al, am = qmaps.build(Map, ALLEY, "intro =\nambient = 0.1,0.09,0.15\nno_switch = false", prop)
+QMARKS[ALLEY] = am
+al.put(*am["blue"][0], "f6afterroom")
+al.put(*am["exit"][0], "exit target=%s spawn=from_alley" % TOWN)
+al.put(*am["start"][0], "spawn id=from_town")
+al.put(*am["start"][0], "player")
+al.put(*am["blue"][0], "blue_princess follow=true ai=false")
 al.write()
 
-# ================================================================ 矿道深处的草药洞（骑士篇支线「手印样本」第五段：采三味药；药草由 QuestHerbs 摆）
-hc = Map(HERBCAVE, 30, 16, "intro =\nambient = 0.46,0.6,0.5\nno_switch = false")
-hc.room(2, 2, 27, 13)
-for x in (8, 16, 24):
-    hc.put(x, 1, "torch lit=true")
-hc.put(3, 3, "f6afterroom")
-hc.put(2, 8, "exit target=%s spawn=from_herbcave" % CELLAR)
-hc.put(3, 8, "spawn id=from_cellar")
-hc.put(4, 8, "player")
-hc.put(4, 9, "blue_princess follow=true ai=false")
-for (x, y) in ((6, 3), (12, 12), (20, 3), (25, 11), (14, 2)):
-    prop(hc, x, y, "rubble")
-for (x, y) in ((10, 5), (18, 10), (23, 6)):
-    prop(hc, x, y, "flowers")
-prop(hc, 26, 3, "herb_rack")
+# ================================================================ 矿道深处的草药洞（骑士篇支线「手印样本」第五段：三个洞室连着窄道；药草由 QuestHerbs 按标记点摆）
+hc, hm = qmaps.build(Map, HERBCAVE, "intro =\nambient = 0.46,0.6,0.5\nno_switch = false", prop, "torch lit=true", 8)
+QMARKS[HERBCAVE] = hm
+hc.put(*hm["blue"][0], "f6afterroom")
+hc.put(*hm["exit"][0], "exit target=%s spawn=from_herbcave" % CELLAR)
+hc.put(*hm["start"][0], "spawn id=from_cellar")
+hc.put(*hm["start"][0], "player")
+hc.put(*hm["blue"][0], "blue_princess follow=true ai=false")
 hc.write()
 
-# ================================================================ 城墙上（骑士篇支线「队长的旧剑术」守夜：房檐手印、哨塔下蒙眼听声躲矛）
-wl = Map(WALL, 52, 7, "intro =\nambient = 0.26,0.27,0.42\nno_switch = false")
-wl.room(2, 2, 49, 4)
-for x in (10, 22, 34, 46):
-    wl.put(x, 1, "torch lit=false")
-wl.put(2, 3, "exit target=%s spawn=from_wall" % TOWN)
-wl.put(3, 3, "spawn id=from_town")
-wl.put(4, 3, "player")
-wl.put(4, 4, "blue_princess follow=true ai=false")
-wl.put(3, 2, "f6afterroom")
-prop(wl, 47, 2, "tower")
-for (x, y) in ((14, 2), (28, 4), (40, 2)):
-    prop(wl, x, y, "sandbag")
+# ================================================================ 城墙上（骑士篇支线「队长的旧剑术」守夜：绕着小镇南边的城墙，拐弯、台阶，尽头是哨塔）
+wl, wm = qmaps.build(Map, WALL, "intro =\nambient = 0.26,0.27,0.42\nno_switch = false", prop, "torch lit=false", 12)
+QMARKS[WALL] = wm
+wl.put(*wm["blue"][0], "f6afterroom")
+wl.put(*wm["exit"][0], "exit target=%s spawn=from_wall" % TOWN)
+wl.put(*wm["start"][0], "spawn id=from_town")
+wl.put(*wm["start"][0], "player")
+wl.put(*wm["blue"][0], "blue_princess follow=true ai=false")
 wl.write()
 
-# ================================================================ 广场底下的裂缝（骑士篇支线「夜里的栅栏」：趴着爬、软苔小球、敲三根封印钉）
-ck = Map(CRACK, 46, 6, "intro =\nambient = 0.3,0.22,0.36\nno_switch = false")
-ck.room(2, 2, 43, 3)
-ck.put(2, 2, "exit target=%s spawn=from_crack" % TOWN)
-ck.put(3, 2, "spawn id=from_town")
-ck.put(4, 2, "player")
-ck.put(4, 3, "blue_princess follow=true ai=false")
-ck.put(3, 3, "f6afterroom")
-ck.put(43, 2, "exit target=%s spawn=from_crack unlock_flag=kq_fence_hall locked_dialogue=after_hall_locked" % OLDHALL)
-ck.put(42, 2, "spawn id=from_hall")
+# ================================================================ 广场底下的裂缝（骑士篇支线「夜里的栅栏」：趴着爬的窄缝，左右拐、有死角；软苔小球、三根封印钉）
+ck, km = qmaps.build(Map, CRACK, "intro =\nambient = 0.3,0.22,0.36\nno_switch = false", prop)
+QMARKS[CRACK] = km
+ck.put(*km["exit"][0], "exit target=%s spawn=from_crack" % TOWN)
+ck.put(*km["start"][0], "spawn id=from_town")
+ck.put(*km["start"][0], "player")
+ck.put(*km["blue"][0], "blue_princess follow=true ai=false")
+ck.put(*km["blue"][0], "f6afterroom")
+dx, dy = km["hall_door"][0]
+ck.put(dx, dy, "exit target=%s spawn=from_crack unlock_flag=kq_fence_hall locked_dialogue=after_hall_locked" % OLDHALL)
+ck.put(dx - 1, dy, "spawn id=from_hall")
 ck.write()
 
-# ================================================================ 旧会堂（骑士篇支线「夜里的栅栏」：举火把、烛台续火、高台底下的手印团；壁画上的人像全被刮花了）
-oh = Map(OLDHALL, 28, 20, "intro =\nambient = 0.1,0.08,0.13\nno_switch = false")
-oh.room(2, 2, 25, 17)
-oh.put(13, 17, "exit target=%s spawn=from_hall" % CRACK)
-oh.put(13, 16, "spawn id=from_crack")
-oh.put(12, 16, "player")
-oh.put(14, 16, "blue_princess follow=true ai=false")
-oh.put(3, 3, "f6afterroom")
-for (x, y) in ((4, 5), (23, 5), (4, 12), (23, 12), (13, 8)):
-    prop(oh, x, y, "candle")
-for (x, y) in ((7, 9), (10, 11), (17, 10), (20, 13), (8, 14)):
-    prop(oh, x, y, "bench")
-prop(oh, 13, 2, "painting")
-prop(oh, 13, 4, "podium")
-for (x, y) in ((5, 8), (21, 9), (16, 15)):
-    prop(oh, x, y, "rubble")
+# ================================================================ 旧会堂（骑士篇支线「夜里的栅栏」：塌了一半的大厅，两排柱子、耳房、倒下的长椅；壁画上的人像全被刮花了）
+oh, om = qmaps.build(Map, OLDHALL, "intro =\nambient = 0.1,0.08,0.13\nno_switch = false", prop)
+QMARKS[OLDHALL] = om
+oh.put(*om["exit"][0], "exit target=%s spawn=from_hall" % CRACK)
+oh.put(*om["start"][0], "spawn id=from_crack")
+oh.put(*om["start"][0], "player")
+oh.put(*om["blue"][0], "blue_princess follow=true ai=false")
+oh.put(*om["blue"][0], "f6afterroom")
 oh.write()
 
-# ================================================================ 训练室后面的旧仓库（骑士篇支线「没有名字的生日」：发条小手、三个零件；零件和小手由 QuestWarehouse 摆）
-wh = Map(WAREHOUSE, 26, 16, "intro =\nambient = 0.4,0.36,0.42\nno_switch = false")
-wh.room(2, 2, 23, 13)
-for x in (8, 18):
-    wh.put(x, 1, "torch lit=true")
-wh.put(3, 3, "f6afterroom")
-wh.put(2, 7, "exit target=%s spawn=from_warehouse" % TOWN)
-wh.put(3, 7, "spawn id=from_town")
-wh.put(4, 7, "player")
-wh.put(4, 8, "blue_princess follow=true ai=false")
-for (x, y) in ((8, 4), (12, 9), (16, 5), (20, 10), (9, 12), (19, 3)):
-    prop(wh, x, y, "crate")
-for (x, y) in ((14, 3), (6, 11), (22, 7)):
-    prop(wh, x, y, "barrel")
-prop(wh, 13, 12, "music_box")
+# ================================================================ 训练室后面的旧仓库（骑士篇支线「没有名字的生日」：货架隔出的过道、发条小手、零件；零件和小手由 QuestWarehouse 按标记点摆）
+wh, whm = qmaps.build(Map, WAREHOUSE, "intro =\nambient = 0.4,0.36,0.42\nno_switch = false", prop, "torch lit=true", 9)
+QMARKS[WAREHOUSE] = whm
+wh.put(*whm["exit"][0], "exit target=%s spawn=from_warehouse" % TOWN)
+wh.put(*whm["start"][0], "spawn id=from_town")
+wh.put(*whm["start"][0], "player")
+wh.put(*whm["blue"][0], "blue_princess follow=true ai=false")
+wh.put(*whm["blue"][0], "f6afterroom")
 wh.write()
 
-# ================================================================ 西南角的储物间（骑士篇支线「点灯笼的小姑娘」：墙上的旧痒痒刷、角落里的旧布偶）
-sr = Map(STORAGE, 18, 8, "intro =\nambient = 0.3,0.28,0.4\nno_switch = false")
-sr.room(2, 2, 15, 5)
-sr.put(2, 3, "exit target=%s spawn=from_storage" % TOWN)
-sr.put(3, 3, "spawn id=from_town")
-sr.put(4, 3, "player")
-sr.put(4, 4, "blue_princess follow=true ai=false")
-sr.put(3, 2, "f6afterroom")
-for (x, y) in ((15, 2), (15, 5), (12, 5)):
-    prop(sr, x, y, "crate")
-prop(sr, 14, 3, "barrel")
+# ================================================================ 西南角的储物间（骑士篇支线「点灯笼的小姑娘」：上下两条储物走道，墙上的旧痒痒刷、尽头的旧布偶）
+sr, srm = qmaps.build(Map, STORAGE, "intro =\nambient = 0.3,0.28,0.4\nno_switch = false", prop)
+QMARKS[STORAGE] = srm
+sr.put(*srm["exit"][0], "exit target=%s spawn=from_storage" % TOWN)
+sr.put(*srm["start"][0], "spawn id=from_town")
+sr.put(*srm["start"][0], "player")
+sr.put(*srm["blue"][0], "blue_princess follow=true ai=false")
+sr.put(*srm["blue"][0], "f6afterroom")
 sr.write()
 
-# ================================================================ 排水渠上的小桥（骑士篇支线「点灯笼的小姑娘」：手拉手过桥，桥下的手印）
-bg = Map(BRIDGE, 34, 9, "intro =\nambient = 0.28,0.3,0.45\nno_switch = false")
-bg.room(2, 2, 31, 6)
-bg.put(2, 4, "exit target=%s spawn=from_bridge" % TOWN)
-bg.put(3, 4, "spawn id=from_town")
-bg.put(4, 4, "player")
-bg.put(4, 5, "blue_princess follow=true ai=false")
-bg.put(3, 2, "f6afterroom")
-# 中间这一段只剩一格宽的木桥（两边是水渠，当墙）
-for x in range(8, 26):
-    for y in (2, 3, 5, 6):
-        bg.g[y][x] = "#"
-for (x, y) in ((7, 4), (26, 4)):
-    prop(bg, x, y, "lamp")
+# ================================================================ 排水渠上的小桥（骑士篇支线「点灯笼的小姑娘」：一格宽的木桥，中间拐一个弯，桥下的手印）
+bg, bgm = qmaps.build(Map, BRIDGE, "intro =\nambient = 0.28,0.3,0.45\nno_switch = false", prop)
+QMARKS[BRIDGE] = bgm
+bg.put(*bgm["exit"][0], "exit target=%s spawn=from_bridge" % TOWN)
+bg.put(*bgm["start"][0], "spawn id=from_town")
+bg.put(*bgm["start"][0], "player")
+bg.put(*bgm["blue"][0], "blue_princess follow=true ai=false")
+bg.put(*bgm["blue"][0], "f6afterroom")
 bg.write()
 
 # ================================================================ 保卫队训练营（陷阱验收；踏板由任务摆）
@@ -958,6 +913,7 @@ for _sid, _mod, _key, _cls in STALLS.values():
         ensure_ascii=False, indent="\t") + "\n")
 Path("data/after/knight.json").write_text(json.dumps(dict({"_说明": "骑士篇 A~D 的玩法文本（knight_text/tasks.py 生成，TaskStretcher / TaskBait / InterrogationChairShow 读）。"},
     **knight_tasks.KNIGHT), ensure_ascii=False, indent="\t") + "\n")
+Path("data/after/quest_maps.json").write_text(json.dumps(dict({"_说明": "骑士篇支线小地图的标记点（tools/build/quest_maps.py 画的图，gen_floor06_after.py 生成，QuestMaps 读）。"}, **QMARKS), ensure_ascii=False) + "\n")
 Path("data/after/knight_quests.json").write_text(json.dumps(dict({"_说明": "骑士篇的四个支线（knight_text/quests.py 生成，KnightQuests 和支线的玩法节点读）。"},
     quests=knight_quests.QUESTS), ensure_ascii=False, indent="\t") + "\n")
 Path("data/after/knight_finale.json").write_text(json.dumps(dict({"_说明": "骑士篇 E~G 的玩法文本（knight_text/finale.py 生成，TaskArmorChase / TaskKnightBoss 读）。"},
@@ -1015,7 +971,7 @@ signs.update(knight_quests.SIGNS)
 signs_path.write_text(json.dumps(signs, ensure_ascii=False, indent="\t") + "\n")
 
 cut = Path("data/cutscenes/floor_06")
-CUTS = dict(d1.CUTSCENES, **d2.CUTSCENES, **tasks.CUTSCENES, **potion.CUTSCENES, **tailor.CUTSCENES, **mine.CUTSCENES, **totem.CUTSCENES, **drain.CUTSCENES, **drill.CUTSCENES, **inspect.CUTSCENES, **festival_night.CUTSCENES, **knight_story.CUTSCENES, **knight_finale.CUTSCENES, **knight_quests.CUTSCENES)
+CUTS = dict(d1.CUTSCENES, **d2.CUTSCENES, **tasks.CUTSCENES, **potion.CUTSCENES, **tailor.CUTSCENES, **mine.CUTSCENES, **totem.CUTSCENES, **drain.CUTSCENES, **drill.CUTSCENES, **inspect.CUTSCENES, **festival_night.CUTSCENES, **knight_story.CUTSCENES, **knight_finale.CUTSCENES, **knight_quests.CUTSCENES, **knight_story_cg.CUTSCENES)
 for cid, fn in CUTS.items():
     (cut / (cid + ".json")).write_text(json.dumps(fn(), ensure_ascii=False, indent="\t") + "\n")
 th = Path("data/theater/after")

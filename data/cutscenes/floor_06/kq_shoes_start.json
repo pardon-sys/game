@@ -5,6 +5,33 @@
 	"steps": [
 		{
 			"speaker": "小汤姆",
+			"text": "姐姐当公主！……蓝色的姐姐，当恶龙的守卫！",
+			"npc": "kid"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……我不玩。"
+		},
+		{
+			"speaker": "小莉莉",
+			"text": "守卫只要站着就好！站着、凶凶的！",
+			"npc": "kid"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……（她看了粉色公主一眼）……站着就好？"
+		},
+		{
+			"speaker": "公主",
+			"text": "你本来就很凶嘛。",
+			"emotion": "happy"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……"
+		},
+		{
+			"speaker": "小汤姆",
 			"text": "（从背后扑上来）恶龙来啦——！",
 			"npc": "kid"
 		},
@@ -15,7 +42,13 @@
 		{
 			"speaker": "公主",
 			"text": "等、等一下！我的鞋——！",
-			"emotion": "surprise"
+			"emotion": "surprise",
+			"actions": [
+				{
+					"who": "princess",
+					"do": "hop"
+				}
+			]
 		},
 		{
 			"speaker": "小莉莉",
@@ -25,6 +58,15 @@
 		{
 			"speaker": "",
 			"text": "（一张皱巴巴的纸条飘到她脚边，上面用歪歪扭扭的字写着三句谜语）"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……守卫，要拦你吗。"
+		},
+		{
+			"speaker": "公主",
+			"text": "你到底是哪边的啦！",
+			"emotion": "angry"
 		},
 		{
 			"speaker": "蓝色的公主",

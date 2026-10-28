@@ -6,8 +6,8 @@
 		{
 			"actions": [
 				{
-					"sound": "music_box",
-					"do": "sfx"
+					"do": "sfx",
+					"sound": "music_box"
 				}
 			],
 			"wait": 0.6
@@ -36,6 +36,11 @@
 			"emotion": "helpless_1"
 		},
 		{
+			"speaker": "派对主人",
+			"text": "我只记得这一首。……别的歌，学了就忘，只有这首忘不掉。",
+			"npc": "bonfire_host"
+		},
+		{
 			"speaker": "蓝色的公主",
 			"text": "……"
 		},
@@ -50,7 +55,7 @@
 		},
 		{
 			"speaker": "公主",
-			"text": "……不知道。",
+			"text": "……我去看看。",
 			"emotion": "sad"
 		}
 	]

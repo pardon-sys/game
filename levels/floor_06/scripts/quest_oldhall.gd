@@ -7,10 +7,11 @@ extends QuestRunner
 ##   收齐 → 过场 kq_fence_hall_end（壁画上的人像全被刮花了）→ 这一段做完。
 ## 测试：fuel、light_r()、hands、cluster、shards、got、refuel_near()。
 
-const CANDLES := [Vector2i(4, 5), Vector2i(23, 5), Vector2i(4, 12), Vector2i(23, 12), Vector2i(13, 8)]
-const HANDS := [Vector2i(6, 7), Vector2i(20, 7), Vector2i(9, 13), Vector2i(18, 12), Vector2i(13, 5)]
-const CLUSTER := Vector2i(13, 4)
-const BURN := 28.0
+## 地图上的点（QuestMaps：旧会堂的布局在 tools/build/quest_maps.py）
+static var CANDLES: Array[Vector2i] = QuestMaps.cells("floor_06_after_oldhall", "candles")
+static var HANDS: Array[Vector2i] = QuestMaps.cells("floor_06_after_oldhall", "hands")
+static var CLUSTER: Vector2i = QuestMaps.cell("floor_06_after_oldhall", "cluster")
+const BURN := 22.0
 const LIGHT_MIN := 14.0
 const LIGHT_MAX := 56.0
 const CANDLE_R := 18.0

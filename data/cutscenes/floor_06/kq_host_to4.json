@@ -1,0 +1,45 @@
+{
+	"name": "别在我面前唱",
+	"letterbox": true,
+	"skippable": true,
+	"steps": [
+		{
+			"speaker": "",
+			"text": "（篝火的光照不到的地方，蓝色公主一个人站着）"
+		},
+		{
+			"speaker": "公主",
+			"text": "……喂。怎么了？"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……那首歌。"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……别在我面前唱。"
+		},
+		{
+			"speaker": "公主",
+			"text": "……为什么？",
+			"emotion": "surprise"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……"
+		},
+		{
+			"speaker": "",
+			"text": "（她没有回答。过了很久，她转过身，往篝火那边走回去）"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……走吧。她在等我们排练。"
+		},
+		{
+			"speaker": "派对主人",
+			"text": "（远远地挥手）快来——生日舞要开始排练啦！",
+			"npc": "bonfire_host"
+		}
+	]
+}

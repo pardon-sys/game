@@ -7,8 +7,8 @@ extends QuestRunner
 
 const RINK := Vector2i(22, 13)
 const RINK_SIZE := Vector2i(8, 3)
-const BELLS := [Vector2i(23, 14), Vector2i(26, 13), Vector2i(29, 15), Vector2i(24, 15), Vector2i(28, 14)]
-const SNOW := [Vector2i(21, 14), Vector2i(30, 14), Vector2i(21, 13), Vector2i(30, 15)]
+const BELLS := [Vector2i(23, 14), Vector2i(26, 13), Vector2i(29, 15), Vector2i(24, 15), Vector2i(28, 14), Vector2i(25, 14), Vector2i(27, 15)]
+const SNOW := [Vector2i(21, 14), Vector2i(30, 14), Vector2i(21, 13), Vector2i(30, 15), Vector2i(21, 15), Vector2i(30, 13)]
 const BELL_R := 9.0
 const SNOW_R := 10.0
 const SNOW_LAUGH := 0.08

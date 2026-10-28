@@ -1,0 +1,59 @@
+{
+	"name": "公主守着公主的鞋",
+	"letterbox": true,
+	"skippable": true,
+	"steps": [
+		{
+			"speaker": "",
+			"text": "（第二只鞋从彩带上掉下来，「啪」地砸在她头上）"
+		},
+		{
+			"speaker": "小莉莉",
+			"text": "最后一只鞋——在莉莉这里！",
+			"npc": "kid"
+		},
+		{
+			"speaker": "小莉莉",
+			"text": "「圆圆石头路，走到头有公主守着」！莉莉就是那个公主！",
+			"npc": "kid"
+		},
+		{
+			"speaker": "",
+			"text": "（小莉莉抱着鞋跑远了，两条小辫子一甩一甩的）"
+		},
+		{
+			"speaker": "公主",
+			"text": "公主守着公主的鞋……？",
+			"emotion": "surprise"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……小孩子的游戏。不讲道理。"
+		},
+		{
+			"speaker": "公主",
+			"text": "你小时候也玩这种游戏吗？"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……不玩。"
+		},
+		{
+			"speaker": "公主",
+			"text": "那你玩什么？"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……点灯笼。"
+		},
+		{
+			"speaker": "公主",
+			"text": "……点灯笼？",
+			"emotion": "surprise"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……走吧。鹅卵石路，在西边。"
+		}
+	]
+}

@@ -13,7 +13,7 @@ extends RefCounted
 ##       auto            进图就演（连续的剧情：抬到工房以后醒来、溜进地牢、追逃接 Boss）
 ##       rest            白天在小屋的床上休息 → 下一个时段（AfterStory.rest → rest_now）
 ##       sleep           夜里在小屋的床上睡觉 → 第二天早上（AfterStory.sleep → sleep_now，不显示黑幕标题）
-##     cutscene 开场过场、task 玩法（同 AfterStory.TASKS 的写法：script / name / fail / fail_hours / respawn）、done 收尾过场、
+##     cutscene 开场过场、story 开场过场后接着演的背景大图过场（剧情回顾）、task 玩法（同 AfterStory.TASKS 的写法：script / name / fail / fail_hours / respawn）、done 收尾过场、
 ##     goto [图, 出生点] 做完去哪；away：人还不在那张图上时的目标文字。
 ##   时间自然变化：做完一步，下一步的时段在同一天里更晚时直接换过去；进小镇图时也按这一步的 slot 对齐（sync_slot）。
 ##   时钟：骑士篇的第几天记在 DayClock 的 after_day（DAY 起），标签写「骑士篇·时段」（DayClock.label）。没有赎罪簿和工时。
@@ -40,12 +40,12 @@ const TOWNS := [KDAY, KNIGHT_N, KCHASE]
 const DOORS := {"floor_06_after_house": [42, 10], "floor_06_after_pharmacy": [16, 10], "floor_06_after_drill": [8, 10], "floor_06_knight_alley": [2, 16],
 	"floor_06_knight_wall": [12, 40], "floor_06_after_crack": [38, 29], "floor_06_after_warehouse": [4, 12],
 	"floor_06_knight_storage": [2, 34], "floor_06_knight_bridge": [2, 30]}
-const EXITS := {"floor_06_after_house": [9, 10], "floor_06_after_pharmacy": [8, 8.5], "floor_06_after_drill": [10, 11.5], "floor_06_after_cellar": [8, 8.5],
-	"floor_06_knight_alley": [2, 5], "floor_06_after_herbcave": [2, 8], "floor_06_knight_wall": [2, 3], "floor_06_after_crack": [2, 2],
-	"floor_06_after_oldhall": [13, 17], "floor_06_after_warehouse": [2, 7], "floor_06_knight_storage": [2, 3], "floor_06_knight_bridge": [2, 4]}
+const EXITS := {"floor_06_after_house": [9, 10], "floor_06_after_pharmacy": [8, 8.5], "floor_06_after_drill": [10, 11.5], "floor_06_after_cellar": [8, 9],
+	"floor_06_knight_alley": [1, 7], "floor_06_after_herbcave": [1, 7], "floor_06_knight_wall": [1, 6], "floor_06_after_crack": [2, 2],
+	"floor_06_after_oldhall": [18, 17], "floor_06_after_warehouse": [1, 7], "floor_06_knight_storage": [1, 3], "floor_06_knight_bridge": [1, 4]}
 ## 套在别的图里面的图：子图 → [父图, 父图里通往它的门]（指路一层一层往里指：小镇 → 工房 → 地窖 → 草药洞）
-const NESTED := {"floor_06_after_cellar": ["floor_06_after_pharmacy", [12, 8]], "floor_06_after_herbcave": ["floor_06_after_cellar", [13, 5]],
-	"floor_06_after_oldhall": ["floor_06_after_crack", [43, 2]]}
+const NESTED := {"floor_06_after_cellar": ["floor_06_after_pharmacy", [12, 8]], "floor_06_after_herbcave": ["floor_06_after_cellar", [20, 5]],
+	"floor_06_after_oldhall": ["floor_06_after_crack", [52, 2]]}
 const ALLEY := "floor_06_knight_alley"
 const HERBCAVE := "floor_06_after_herbcave"
 const WALL := "floor_06_knight_wall"
@@ -92,6 +92,7 @@ const STEPS := [
 	{"id": "chase", "where": KCHASE, "trigger": "auto", "slot": MORNING, "cutscene": "knight_chase_open", "objective": "把盔甲引到广场的图腾柱下",
 		"task": {"script": "res://levels/floor_06/scripts/task_armor_chase.gd", "name": "镇中追逃", "fail": "knight_fail_chase", "fail_hours": 0, "respawn": [55, 37]}},
 	{"id": "boss", "where": KCHASE, "trigger": "auto", "slot": MORNING, "cutscene": "knight_boss_open", "objective": "打碎盔甲上的诅咒",
+		"story": "story_knight_boss",
 		"task": {"script": "res://levels/floor_06/scripts/task_knight_boss.gd", "name": "痒铠骑士", "fail": "knight_fail_boss", "fail_hours": 0, "respawn": [41, 29]},
 		"done": "knight_epilogue"},
 ]
@@ -323,9 +324,21 @@ static func go() -> bool:
 	return true
 
 
+## 夜探地牢（cell）中途走出来了：从营地楼梯的通风口钻回去，进图以后任务照常从入口重新开始
+static func reenter() -> bool:
+	if running or not active() or str(step().get("id", "")) != "cell":
+		return false
+	await TrainingDB.wait_dialogue_free()
+	await _go([PRISON, "vent"])
+	return true
+
+
 static func _run(s: Dictionary) -> void:
 	if str(s.get("cutscene", "")) != "":
 		await Cutscene.play(str(s["cutscene"]))
+	# 背景大图过场（剧情回顾）：开场过场演完、开打之前
+	if str(s.get("story", "")) != "" and Cutscene.has_cutscene(str(s["story"])):
+		await Cutscene.play(str(s["story"]))
 	var task: Dictionary = s.get("task", {})
 	if not task.is_empty():
 		if not await AfterStory.play_task(str(s["id"]), task):

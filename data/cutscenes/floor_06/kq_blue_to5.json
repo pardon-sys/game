@@ -1,0 +1,38 @@
+{
+	"name": "这次，一起",
+	"letterbox": true,
+	"skippable": true,
+	"steps": [
+		{
+			"speaker": "",
+			"text": "（从桥上下来，蓝色公主一直没有松开她的手）"
+		},
+		{
+			"speaker": "公主",
+			"text": "……那个，手……",
+			"emotion": "surprise"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……回灯笼那里。"
+		},
+		{
+			"speaker": "",
+			"text": "（她拉着她往回走。走得很快，脸转向另一边）"
+		},
+		{
+			"speaker": "公主",
+			"text": "……嘿嘿。",
+			"emotion": "happy"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……笑什么。"
+		},
+		{
+			"speaker": "公主",
+			"text": "没什么～",
+			"emotion": "happy"
+		}
+	]
+}

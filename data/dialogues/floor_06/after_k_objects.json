@@ -55,6 +55,15 @@
 						"not": "kq_active"
 					},
 					"node": "vent_go"
+				},
+				{
+					"if": {
+						"eq": {
+							"knight_step": 5
+						},
+						"not": "kq_active"
+					},
+					"node": "vent_back"
 				}
 			],
 			"lines": [
@@ -73,6 +82,21 @@
 			],
 			"set": {
 				"call": "knight_go"
+			}
+		},
+		"vent_back": {
+			"lines": [
+				{
+					"text": "（通风口的木板还歪在一边。里面黑漆漆的，巡逻的脚步声远远地响着）",
+					"speaker": ""
+				},
+				{
+					"text": "……再进去一次吧。这回小心一点。",
+					"speaker": "蓝色公主"
+				}
+			],
+			"set": {
+				"call": "knight_reenter"
 			}
 		}
 	}

@@ -10,7 +10,7 @@ extends QuestRunner
 const DECOYS := 2
 const FREEZE_R := 30.0
 const SPOTS := [[Vector2i(40, 14), Vector2i(38, 15), Vector2i(42, 15)], [Vector2i(52, 7), Vector2i(50, 8), Vector2i(56, 8)]]
-const CLUSTER := Vector2i(7, 5)
+static var CLUSTER: Vector2i = QuestMaps.cell("floor_06_after_cellar", "cluster")
 
 var shards: Array = []
 var cluster: HandCluster

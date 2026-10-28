@@ -1,0 +1,37 @@
+{
+	"name": "这里，我来过吗",
+	"letterbox": true,
+	"skippable": true,
+	"steps": [
+		{
+			"speaker": "",
+			"text": "（三根钉子都敲回去了。裂缝尽头，一道旧门开了一条缝，冷风从里面吹出来）"
+		},
+		{
+			"speaker": "公主",
+			"text": "门后面……好大的地方。",
+			"emotion": "surprise"
+		},
+		{
+			"speaker": "",
+			"text": "（蓝色公主停在门口，手扶着门框）"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……这里，我来过吗。"
+		},
+		{
+			"speaker": "公主",
+			"text": "……你问我？",
+			"emotion": "surprise"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……没什么。进去吧。拿着火把。"
+		}
+	]
+}

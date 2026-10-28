@@ -1,0 +1,45 @@
+{
+	"name": "去找以前",
+	"letterbox": true,
+	"skippable": true,
+	"steps": [
+		{
+			"speaker": "公主",
+			"text": "以前你会笑的地方……一定有！"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……井边。我在那里练冰魔法。"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……储物间。我躲在那里哭过。"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……排水渠上的小桥。我和谁……一起走过。"
+		},
+		{
+			"speaker": "公主",
+			"text": "那就一个一个去！先去井边！",
+			"emotion": "happy"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……你为什么这么起劲。"
+		},
+		{
+			"speaker": "公主",
+			"text": "因为我想看你笑啊。",
+			"emotion": "happy"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……"
+		}
+	]
+}

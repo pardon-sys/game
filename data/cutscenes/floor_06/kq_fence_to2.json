@@ -1,0 +1,40 @@
+{
+	"name": "门板上的刻痕",
+	"letterbox": true,
+	"skippable": true,
+	"steps": [
+		{
+			"speaker": "",
+			"text": "（第二道门立起来了。门框上有一道很旧的刻痕，像是被什么划过）"
+		},
+		{
+			"speaker": "公主",
+			"text": "这是什么？",
+			"emotion": "surprise"
+		},
+		{
+			"speaker": "工匠",
+			"text": "……爷爷那时候刻的。那天晚上，大家从这里往下走，一个一个数人头。",
+			"npc": "miner"
+		},
+		{
+			"speaker": "工匠",
+			"text": "刻一道，就是过去了一个。",
+			"npc": "miner"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……"
+		},
+		{
+			"speaker": "公主",
+			"text": "……刻了好多道。",
+			"emotion": "sad"
+		},
+		{
+			"speaker": "工匠",
+			"text": "……最后一道门。广场东南角。钉完就回去睡觉。",
+			"npc": "miner"
+		}
+	]
+}

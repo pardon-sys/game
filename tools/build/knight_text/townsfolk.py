@@ -129,9 +129,14 @@ OBJECTS = {
         "lantern_go": {"lines": [L("（灯笼里的光一点一点暗了下去。灯罩上，贴着一个紫色的小手印——它在吸灯里的笑声）", N),
                                  L("……这是什么？", P, "surprise"), L("……别碰。", BLUE)],
                        "set": {"call": "knight_go"}},
-        "vent": {"goto": [{"if": dict(step_is("sneak"), **{"not": "kq_active"}), "node": "vent_go"}], "lines": [L("（营地楼梯的路障。……木板后面好像有一道缝，有风吹出来）", N)]},
+        "vent": {"goto": [{"if": dict(step_is("sneak"), **{"not": "kq_active"}), "node": "vent_go"},
+                          {"if": dict(step_is("cell"), **{"not": "kq_active"}), "node": "vent_back"}], "lines": [L("（营地楼梯的路障。……木板后面好像有一道缝，有风吹出来）", N)]},
         "vent_go": {"lines": [L("（蓝色公主蹲下来，摸到路障最下面那块木板，轻轻一推——木板松了，后面露出一道窄窄的通风口）", N)],
                     "set": {"call": "knight_go"}},
+        # 夜探地牢中途出来了：从通风口钻回去（任务从入口重新开始）
+        "vent_back": {"lines": [L("（通风口的木板还歪在一边。里面黑漆漆的，巡逻的脚步声远远地响着）", N),
+                                L("……再进去一次吧。这回小心一点。", "蓝色公主")],
+                      "set": {"call": "knight_reenter"}},
     },
 }
 

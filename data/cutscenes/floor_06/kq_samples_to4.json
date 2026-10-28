@@ -1,0 +1,45 @@
+{
+	"name": "小竹篮",
+	"letterbox": true,
+	"skippable": true,
+	"steps": [
+		{
+			"speaker": "",
+			"text": "（奶奶从柜子里拿出一只小竹篮，塞到她手里）"
+		},
+		{
+			"speaker": "药剂师奶奶",
+			"text": "笑铃草，别用手抓，用脚尖勾。一抓它就响个不停。",
+			"npc": "pharmacist"
+		},
+		{
+			"speaker": "药剂师奶奶",
+			"text": "软须苔，站稳了再摘。它缠脚趾，越挣越紧。",
+			"npc": "pharmacist"
+		},
+		{
+			"speaker": "药剂师奶奶",
+			"text": "哈欠花……摘之前憋住气。打了哈欠，手印就扑上来了。",
+			"npc": "pharmacist"
+		},
+		{
+			"speaker": "公主",
+			"text": "……听起来每一样都很痒。",
+			"emotion": "helpless_1"
+		},
+		{
+			"speaker": "药剂师奶奶",
+			"text": "药嘛。哪有不苦的。……这几味，是痒的。",
+			"npc": "pharmacist"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……我在洞口守着。手印出来，我冻住。"
+		},
+		{
+			"speaker": "药剂师奶奶",
+			"text": "去吧。……奶奶给你们留着灯。",
+			"npc": "pharmacist"
+		}
+	]
+}

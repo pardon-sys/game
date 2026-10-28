@@ -4,6 +4,33 @@
 	"entries": [
 		{
 			"if": {
+				"flag": "kq_spear_active",
+				"eq": {
+					"kq_spear_stage": 0
+				}
+			},
+			"node": "kq_spear_busy0"
+		},
+		{
+			"if": {
+				"flag": "kq_spear_active",
+				"eq": {
+					"kq_spear_stage": 1
+				}
+			},
+			"node": "kq_spear_busy1"
+		},
+		{
+			"if": {
+				"flag": "kq_spear_active",
+				"eq": {
+					"kq_spear_stage": 2
+				}
+			},
+			"node": "kq_spear_busy2"
+		},
+		{
+			"if": {
 				"flag": "kq_spear_active"
 			},
 			"node": "kq_spear_busy"
@@ -74,6 +101,81 @@
 				}
 			]
 		},
+		"kq_spear_busy0": {
+			"lines": [
+				{
+					"text": "训练室的门开着。……进去等我。"
+				},
+				{
+					"text": "……看矛尖。别看我。"
+				}
+			],
+			"prompt": "（队长的旧剑术）",
+			"choices": [
+				{
+					"text": "知道了"
+				},
+				{
+					"text": "（先放一放）",
+					"set": {
+						"vars": {
+							"kq_req": "spear"
+						},
+						"call": "kq_abandon"
+					}
+				}
+			]
+		},
+		"kq_spear_busy1": {
+			"lines": [
+				{
+					"text": "南边城墙下面有梯子。我在上面等。"
+				},
+				{
+					"text": "……房檐上有手印。走路看脚下的影子。"
+				}
+			],
+			"prompt": "（队长的旧剑术）",
+			"choices": [
+				{
+					"text": "知道了"
+				},
+				{
+					"text": "（先放一放）",
+					"set": {
+						"vars": {
+							"kq_req": "spear"
+						},
+						"call": "kq_abandon"
+					}
+				}
+			]
+		},
+		"kq_spear_busy2": {
+			"lines": [
+				{
+					"text": "……两个人一起来。"
+				},
+				{
+					"text": "我不会笑的。……你们最好也别笑。"
+				}
+			],
+			"prompt": "（队长的旧剑术）",
+			"choices": [
+				{
+					"text": "知道了"
+				},
+				{
+					"text": "（先放一放）",
+					"set": {
+						"vars": {
+							"kq_req": "spear"
+						},
+						"call": "kq_abandon"
+					}
+				}
+			]
+		},
 		"kq_spear_busy": {
 			"lines": [
 				{
@@ -103,6 +205,12 @@
 				},
 				{
 					"text": "那个骑士的起手式……矛尖压低，左肩在前。"
+				},
+				{
+					"text": "他被抬出来的时候，手还是那个架势。……昏过去了，都没松。"
+				},
+				{
+					"text": "……我见过这个架势。可是想不起来，在哪见过。"
 				},
 				{
 					"text": "……我想再练一遍。缺个靶子。"

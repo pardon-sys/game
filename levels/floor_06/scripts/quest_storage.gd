@@ -4,11 +4,22 @@ extends QuestRunner
 ##   走到最里面的箱子旁（DOLL，DOLL_R）按 E 找到旧布偶 → 回忆的台词（「抱着它，就不怕了」）→ 这一段做完。
 ## 测试：brushes、take()。
 
-const BRUSHES := [[Vector2i(6, 2), true, 0.0], [Vector2i(8, 5), false, 0.8], [Vector2i(10, 2), true, 1.6], [Vector2i(12, 5), false, 0.4]]
-const DOLL := Vector2i(14, 4)
+## 地图上的点（QuestMaps：储物间的布局在 tools/build/quest_maps.py）：刷子 [格, 从上面扫下来?, 错开的时间]
+static var BRUSHES: Array = _brushes()
+static var DOLL: Vector2i = QuestMaps.cell("floor_06_knight_storage", "doll")
 const DOLL_R := 16.0
 
 var brushes: Array = []
+
+
+static func _brushes() -> Array:
+	var out := []
+	var i := 0
+	for key in ["brush_down", "brush_up"]:
+		for c in QuestMaps.cells("floor_06_knight_storage", key):
+			out.append([c, key == "brush_down", fmod(i * 0.7, OldBrush.EVERY)])
+			i += 1
+	return out
 var _done := false
 
 

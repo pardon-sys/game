@@ -23,9 +23,28 @@
 			"npc": "bonfire_host"
 		},
 		{
+			"speaker": "派对主人",
+			"text": "听说那时候我一声都不哭。就攥着它，攥得紧紧的。",
+			"npc": "bonfire_host"
+		},
+		{
 			"speaker": "公主",
-			"text": "……找工匠大叔修修看吧！",
+			"text": "……一定很重要吧。",
+			"emotion": "sad"
+		},
+		{
+			"speaker": "派对主人",
+			"text": "嗯。……虽然我也不知道为什么重要。",
+			"npc": "bonfire_host"
+		},
+		{
+			"speaker": "公主",
+			"text": "找工匠大叔修修看吧！",
 			"emotion": "happy"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……工匠在城墙那边。"
 		}
 	]
 }
