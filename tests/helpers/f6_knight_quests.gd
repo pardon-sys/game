@@ -290,6 +290,7 @@ static func run(t: Node) -> void:
 	await t._advance_until(func(): return KnightQuests.stage("samples") == 4 and not Cutscene.is_playing(), 10.0)
 	verify(t, "交给奶奶：笑声做的、一直往盔甲那边爬 → 还缺三味药，草药洞的门开了", KnightQuests.stage("samples") == 4 and GameState.has_flag("kq_samples_herbs")
 		and not KnightQuests.is_done("samples"))
+	verify(t, "草药洞那一段：工房的活板门（地窖）还开着，才走得进草药洞", GameState.has_flag("kq_samples_cellar"))
 	# 4 草药洞
 	GameState.pending_spawn = "from_cellar"
 	await t.main.change_level(Floors.scene(KnightStory.HERBCAVE))
@@ -363,7 +364,7 @@ static func run(t: Node) -> void:
 	await t._advance_until(func(): return GameState.inventory.count("calm_incense") > 0 and not Cutscene.is_playing(), 30.0)
 	BrewShow.quiet = false
 	verify(t, "三锅熬完 → 安神香（支线做完）", KnightQuests.is_done("samples") and GameState.inventory.count("calm_incense") == 1
-		and t.seen_cuts.has("kq_samples_done"))
+		and t.seen_cuts.has("kq_samples_done") and not GameState.has_flag("kq_samples_cellar"))
 	# ---------------------------------------------------------------- ③ 队长的旧剑术
 	await go_town(t, "from_pharmacy")
 	await t._talk("floor_06/after_k_captain", "")
@@ -694,6 +695,7 @@ static func run(t: Node) -> void:
 		rc.finish_hammer(QuestCrack.HAMMER_BEATS)
 	await t._advance_until(func(): return KnightQuests.stage("fence") == 4, 5.0)
 	verify(t, "三根封印钉敲回去：尽头的旧门开了，不用再爬", KnightQuests.stage("fence") == 4 and GameState.has_flag("kq_fence_hall") and not pink.has_buff("crawl"))
+	verify(t, "旧会堂那一段：广场边的裂缝还开着，出去了也能爬回来", GameState.has_flag("kq_fence_crack"))
 	# 4 旧会堂
 	GameState.pending_spawn = "from_crack"
 	await t.main.change_level(Floors.scene(KnightStory.OLDHALL))

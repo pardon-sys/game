@@ -323,6 +323,15 @@ static func go() -> bool:
 	return true
 
 
+## 夜探地牢（cell）中途走出来了：从营地楼梯的通风口钻回去，进图以后任务照常从入口重新开始
+static func reenter() -> bool:
+	if running or not active() or str(step().get("id", "")) != "cell":
+		return false
+	await TrainingDB.wait_dialogue_free()
+	await _go([PRISON, "vent"])
+	return true
+
+
 static func _run(s: Dictionary) -> void:
 	if str(s.get("cutscene", "")) != "":
 		await Cutscene.play(str(s["cutscene"]))

@@ -289,6 +289,17 @@ static func run(t: Node) -> void:
 		and not t.get_tree().get_nodes_in_group("patrol_guard").is_empty())
 	if sk == null:
 		return
+	# 中途从地牢出口走出去：回到夜里的小镇，通风口能钻回去，任务从入口重新开始
+	GameState.pending_spawn = "from_prison"
+	await t.main.change_level(Floors.scene("floor_06_after"))
+	await t._advance_until(func(): return not Cutscene.is_playing() and not GameState.in_dialogue and task(t, "cell") == null, 20.0)
+	verify(t, "夜探中途出来：回到夜里的小镇（%s），步骤还在夜探" % t._level_id(), t._level_id() == KnightStory.KNIGHT_N and KnightStory.step()["id"] == "cell" and not KnightStory.running)
+	await t._talk("floor_06/after_k_objects", "vent")
+	await t._advance_until(func(): return t._level_id() == KnightStory.PRISON and task(t, "cell") != null and bool(task(t, "cell").started) and not Cutscene.is_playing(), 60.0)
+	sk = task(t, "cell") as TaskSneak
+	verify(t, "再调查通风口：钻回地牢，夜探重新开始", sk != null)
+	if sk == null:
+		return
 	var sd: StealthDirector = t.main.level.find_children("*", "StealthDirector", true, false)[0]
 	var crates: Array = t.main.level.find_children("*", "Node2D", true, false).filter(func(n): return n.get("kind") == "crate" and n.get("action") == "hide")
 	var stuck: Array = []

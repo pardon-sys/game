@@ -102,13 +102,13 @@ static func refresh() -> void:
 		var want := is_open(str(id))
 		if GameState.has_flag("kq_%s_open" % id) != want:
 			GameState.set_flag("kq_%s_open" % id, want)
-	# 这一段才开的门（stages[].unlock：比如工房的地窖）
+	# 这一段才开的门（stages[].unlock：比如工房的地窖）：开了以后到支线做完 / 放下都开着（套着的图要一路走进去：地窖 → 草药洞、裂缝 → 旧会堂）
 	for id in ids():
 		var st: Array = info(str(id)).get("stages", [])
 		for i in st.size():
 			var flag := str((st[i] as Dictionary).get("unlock", ""))
 			if flag != "":
-				var on := is_active(str(id)) and stage(str(id)) == i
+				var on := is_active(str(id)) and stage(str(id)) >= i
 				if GameState.has_flag(flag) != on:
 					GameState.set_flag(flag, on)
 	# 进行中的支线过了步骤范围（比如夜里的栅栏到第二天）：自动放下，回到能接（窗口过了也就不会再开）；只是换了时段不放下
