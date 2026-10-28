@@ -11,7 +11,7 @@ from PIL import Image
 SRC = Path("tools/art/src/story_scenes")
 OUT = Path("assets/generated/story_scenes")
 NAMES = ["knight_boss", "kq_shoes", "kq_samples", "kq_spear", "kq_fence", "kq_host", "kq_blue"]
-FOCUS = {}
+FOCUS = {"kq_shoes": 0.1}
 W, H = 1536, 864
 
 

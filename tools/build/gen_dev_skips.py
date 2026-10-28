@@ -5,7 +5,11 @@
 """
 import json
 import os
+import sys
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import quest_maps  # noqa: E402
 
 os.chdir(Path(__file__).resolve().parents[2])
 
@@ -77,6 +81,9 @@ def knight_vars(day, slot, step):
                 **{"kq_%s_stage" % q: 0 for q in ("shoes", "samples", "spear", "fence", "host", "blue")})
 
 
+QM = {fid: quest_maps.marks(fid) for fid in quest_maps.LAYOUTS}
+
+
 def quest_point(name, fid, q, stage, day, slot, step, cell, extra_vars=None):
     """骑士篇支线的中段：这个支线进行中、停在第 stage 段"""
     v = dict(knight_vars(day, slot, step), **{"kq_%s_stage" % q: stage})
@@ -140,12 +147,20 @@ POINTS = [
     point("骑士篇·第一天夜里（以笑为饵之前）", "floor_06_after_house", KNIGHT, knight_vars(9, 2, 3), cell=[5, 6], passives=PASSIVES),
     point("骑士篇·诅咒失控（第二天早上，找队长之前）", "floor_06_knight_day", KNIGHT, knight_vars(10, 0, 7), cell=[52, 36], passives=PASSIVES),
     point("骑士篇·镇中追逃（四座信标）", "floor_06_knight_chase", KNIGHT, dict(knight_vars(10, 0, 8), task_chase_lit=0, task_chase_caught=0), cell=[55, 37], passives=PASSIVES),
-    quest_point("骑士篇·支线①灯全灭了（小巷躲猫猫）", "floor_06_knight_alley", "shoes", 3, 9, 0, 0, [5, 5]),
-    quest_point("骑士篇·支线②草药洞采药", "floor_06_after_herbcave", "samples", 4, 9, 1, 2, [4, 8]),
-    quest_point("骑士篇·支线③城墙守夜", "floor_06_knight_wall", "spear", 1, 9, 1, 2, [4, 3]),
-    quest_point("骑士篇·支线④旧会堂", "floor_06_after_oldhall", "fence", 4, 9, 2, 4, [12, 16]),
-    quest_point("骑士篇·支线⑤旧仓库（派对主人）", "floor_06_after_warehouse", "host", 2, 9, 1, 2, [4, 7], {"kq_host_got": ["duster", "taste", "wheel"]}),
+    # 支线的中段（新地图的入口）
+    quest_point("骑士篇·支线①灯全灭了（小巷躲猫猫）", "floor_06_knight_alley", "shoes", 3, 9, 0, 0, QM["floor_06_knight_alley"]["start"][0]),
+    quest_point("骑士篇·支线②草药洞采药", "floor_06_after_herbcave", "samples", 4, 9, 1, 2, QM["floor_06_after_herbcave"]["start"][0]),
+    quest_point("骑士篇·支线③城墙守夜", "floor_06_knight_wall", "spear", 1, 9, 1, 2, QM["floor_06_knight_wall"]["start"][0]),
+    quest_point("骑士篇·支线④旧会堂", "floor_06_after_oldhall", "fence", 4, 9, 2, 4, QM["floor_06_after_oldhall"]["start"][0]),
+    quest_point("骑士篇·支线⑤旧仓库（派对主人）", "floor_06_after_warehouse", "host", 2, 9, 1, 2, QM["floor_06_after_warehouse"]["start"][0], {"kq_host_got": ["duster", "taste", "wheel"]}),
     quest_point("骑士篇·支线⑥井边的冰面（蓝色公主）", "floor_06_knight_night", "blue", 2, 9, 2, 4, [26, 16]),
+    # 支线的最后一段（做完就看收尾过场和背景大图过场）
+    quest_point("骑士篇·支线①结尾前（宝贝盒）", "floor_06_knight_day", "shoes", 4, 9, 0, 0, [10, 25]),
+    quest_point("骑士篇·支线②结尾前（熬药）", "floor_06_after_pharmacy", "samples", 5, 9, 1, 2, [8, 6]),
+    quest_point("骑士篇·支线③结尾前（二对一）", "floor_06_after_drill", "spear", 2, 9, 1, 2, [10, 8]),
+    quest_point("骑士篇·支线④结尾前（回去找工匠）", "floor_06_knight_night", "fence", 5, 9, 2, 4, [48, 24]),
+    quest_point("骑士篇·支线⑤结尾前（忍笑许愿）", "floor_06_knight_day", "host", 5, 9, 1, 2, [44, 28], {"kq_host_got": ["duster", "taste", "wheel"]}),
+    quest_point("骑士篇·支线⑥结尾前（一起笑）", "floor_06_knight_night", "blue", 5, 9, 2, 4, [9, 31]),
     point("骑士篇·Boss「痒铠骑士」", "floor_06_knight_chase", KNIGHT, dict(knight_vars(10, 0, 9), task_boss_phase=0, task_boss_caught=0), cell=[41, 29], passives=PASSIVES),
     point("骑士篇·Boss 第三阶段（胸甲）", "floor_06_knight_chase", KNIGHT, dict(knight_vars(10, 0, 9), task_boss_phase=2, task_boss_caught=0), cell=[41, 29], passives=PASSIVES),
     point("骑士篇·Boss 最后阶段（笑面、灯笼）", "floor_06_knight_chase", KNIGHT, dict(knight_vars(10, 0, 9), task_boss_phase=3, task_boss_caught=0), cell=[41, 29], passives=PASSIVES),

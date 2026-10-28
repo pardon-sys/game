@@ -108,6 +108,7 @@ docs/ARCHITECTURE.md  本文
 | 手帕的来历 | 支线 ③ 二对一 | 「……一个很爱笑的小姑娘给的。」蓝色公主问图案从哪来 |
 | 点灯笼的小姑娘 | 支线 ⑥ | 蓝色公主小时候每年点西南角的旧石灯笼，以前很爱笑；井边练冰魔法时有人在旁边笑得比她还大声；储物间里「抱着它就不怕了」的布偶；小桥上手拉手的人；灯笼底座被磨掉的字只剩「给」 |
 | 发卡 | 支线 ① 宝贝盒 | 小莉莉在派对主人帐篷后面捡的旧发卡，花纹和派对主人的花冠一样（她说不是她的） |
+| 结尾的暗线（第四轮） | 六个支线的大图过场 | 只点到、可以误导：「骑士，不会被人认错」「派对姐姐又不是公主」（①）；奶奶「怎么想，都对不上了」看了两位公主（②）；队长说手帕上的两个小女孩「不像」你们，一个头发短、一个笑起来眯眼（③）；工匠的爷爷给「一个小姑娘」做了石灯笼（④）；派对主人和粉色都不记得生日、镇长「今天，本来就是……」被欢呼盖过（⑤）；蓝色公主记得陪她点灯的人会唱一首歌，粉色哼起了摇篮曲（⑥） |
 | 摇篮曲 | 支线 ② 熬药、⑤ 八音盒 | 奶奶：「那首歌……现在只有派对那个丫头还会从头唱到尾」；派对主人从小攥着的八音盒放的就是粉色公主哼的那首（蓝色公主听完走开）；药方本里撕掉的一页「……退烧……殿……」 |
 
 **真相内核（只给开发看，游戏里不揭开；用户给定，2026-10）**——写新剧情时按它埋线索，但台词里不要说破：
@@ -404,6 +405,12 @@ HUD 背包栏会根据物品数据自动显示，不需要改 UI 代码。
 - 播放时 `GameState.in_cutscene` + `in_dialogue` 为真（对话框不会在过场中途清掉 `in_dialogue`），所有用 `in_dialogue` 判断暂停的陷阱 / 怪物 / 状态自动暂停；公主被 `move` 时 `puppet_walking` 播走路动画。镜头动的是公主身上的 Camera2D（结束时还原到原位置和缩放）。
 - 跳过：看过的过场按 Esc，剩下步骤里的 `set_flag / chapter_end / spawn / despawn / move / carry / pose / face` 立即生效。
 - 触发：关卡 `[level]` `intro_cutscene`（`Level._ready`）、`DialogueTrigger.cutscene`（图例 `trigger cutscene=<id>`）、`TrapRoomZone.cutscene`、`Cutscene.play(id)` / `play_data(id, 数据)`。
+- **背景大图过场（剧情回顾）**：动作 `bg`（`img` = `assets/generated/story_scenes/<名字>.png`，`pan` = in / out / left / right / up / none）摆上整屏一张高清插画，
+  `bg_clear` 收起（过场结束也自动收起）。`StoryBackdrop`（`scripts/ui/story_backdrop.gd`，Cutscene 的子节点，CanvasLayer 19，对话框 20 在它上面）：
+  按 16:9 铺满、线性过滤 + mipmap（高清图不按像素放大）、慢慢推近 / 平移、换图交叉淡入淡出。只有大图和台词、id 以 `story_` 开头的过场 = **剧情回顾**：
+  背包 CG 图鉴的「剧情回顾」分组（`Backpack.gallery_entries`，按过场数据的 `order` 排，看过的标记就是 `cutscene_seen_<id>`），任何时候都能回放。
+  大图用 codex 内置 image_gen 生成（`tools/art/src/story_scenes/prompts.md`，参考图 `ref_style.png` 画风、`ref_characters.png` 人物），
+  `tools/art/import_story_scenes.py` 裁成 1536×864；骑士篇的大图过场写在 `tools/build/knight_text/story_cg.py`（`story_base.story()` 包一层 bg / bg_clear）。
 
 ### 人物对话（DialogueRunner）
 - `DialogueRunner`（`scripts/dialogue/dialogue_runner.gd`）挂在 `Dialogue` 下：`await Dialogue.talk("floor_06/captain"[, 起始节点])`。台词复用对话框（`Dialogue.start_lines`），选项用 `ChoiceMenu`（`scripts/ui/choice_menu.gd`，`await ask(选项文本, 提示) -> 序号`）。
@@ -1001,6 +1008,17 @@ data/cutscenes/<楼层组>/  地图内过场；data/theater/<楼层组>/  小剧
 	做支线时主线的触发不出现（对话条件 `not kq_active`），`KnightStory.go()` 也拒绝，床上不能休息 / 睡觉（`KnightStory.bed_text()`）。错过时间窗口的进行中支线自动放下。
   - 每一段 `stages[]`：`where` / `cell` / `text`（目标提示，`KnightQuests.objective`，别的图上用 `KnightStory.guide` 指路：训练室、地窖先指工房的门、工房里指活板门）、
 	`unlock`（这一段才开的门的标记，比如 `kq_samples_cellar`）、`report`（回去找委托人）。主线目标后面挂「（支线：…）」（`open_text`）。
+  - **剧情**（每个支线一个文件 `tools/build/knight_text/kq_<id>.py`，`quests.py` 的 `_merge_more` 合进去）：
+	每一段的 `enter`（进这一段的过场 → `kq_<id>_to<i>`，`stages[].enter_cut`；`KnightQuests.advance` 先演完再进下一段，演的时候再推进不算）、
+	`busy`（这一段里找委托人说的话，生成器按段注入，排在通用 busy 前面）、`chat`（玩的时候的闲聊：`[["p" / "b", 台词]…]`，
+	`QuestRunner` 每 11 秒按顺序冒一句头顶气泡，蓝色公主要在身边，说到哪记在 `vars.kq_chat_<id>_<段>`）；替换的过场 `CUTS`；
+	收尾 `done_cut` 演完接着演背景大图过场 `story_kq_<id>`（`KnightQuests.complete`）。Boss 开场 `knight_boss_open` 之后、开打之前演 `story_knight_boss`
+	（主线步骤的 `story` 字段）。暗线只在结尾点到（间接或误导），见上面的伏笔表。
+  - **小地图**（小巷、草药洞、地窖、城墙、裂缝、旧会堂、旧仓库、储物间、小桥）：`tools/build/quest_maps.py` 用 ASCII 画（`#` 墙、`.` 地面、小写 = 道具、
+	大写 = 标记点），生成时检查每个标记点从入口走得到；标记点按从入口走过去的远近排，写进 `data/after/quest_maps.json`，
+	玩法节点用 `QuestMaps.cells(图, 名字)`（`levels/floor_06/scripts/quest_maps.gd`）读（`QuestHide.SPOTS`、`QuestCrack.NAILS` 这些都是 static var）。
+	改布局只改 `quest_maps.py`，再跑生成器和 `build_level`；目标格（`stages[].cell`）也从标记点取（`quests.py` 的 `QM`）。
+  - 这一段才开的门（`unlock`）开了以后到做完 / 放下都开着（以前过了那一段就关，套着的图走不进去：地窖 → 草药洞、裂缝 → 旧会堂）。
   - 段落还可以写：`runner`（这一段换一个玩法节点脚本）、`where = "town"`（现在这一步的骑士篇小镇，白天夜里都行）、
 	`talk: {npc, lines, cut}`（找某人说话推进，注入 `call: kq_next`；找委托人自己的排在「进行中」闲话前面）、多个 `report`。
 	接下以后只在步骤范围外才自动放下（多段的支线会跨白天黑夜）。套着的图（地窖 → 草药洞、裂缝 → 旧会堂）指路一层一层往里指（`KnightStory.NESTED`）。
@@ -1068,7 +1086,7 @@ data/cutscenes/<楼层组>/  地图内过场；data/theater/<楼层组>/  小剧
   笑到 85% 全图扑来，身上同时贴 5 只失败（`knight_fail_bait`）。让自己笑起来：粉色公主按住 E「偷偷笑」（`KnightLaugh`）；
   蓝色公主身边没有手印时在她身边按 J 挠她一下；痒痒草 / 诅咒地纹（`CurseMark`：轻挠 + 招手印，夜里也看得清、放大）。
   蓝色公主 J 冻住身边的手印（U 千手解放一下子扒下一圈），冻住的走过去按 E 收进瓶子（两个人都能收），收够 6 只。手印贴在粉色身上挠得很轻、疲倦涨得多（伏笔），贴在蓝色身上狠挠大腿。
-- **D 夜探地牢**（调查东南角营地楼梯的路障 `[58, 38]` → 通风口 → `floor_06_after_prison`，`TaskSneak`）：`StealthDirector` / `PatrolGuard` / 木箱躲藏（守卫视野 64、角度 55、走得慢，
+- **D 夜探地牢**（调查东南角营地楼梯的路障 `[58, 38]` → 通风口 → `floor_06_after_prison`，`TaskSneak`；中途从地牢出口出来了，再调查通风口「钻回去」`call: knight_reenter` → `KnightStory.reenter()`，任务从入口重新开始）：`StealthDirector` / `PatrolGuard` / 木箱躲藏（守卫视野 64、角度 55、走得慢，
   警觉 `alert_rate` 1.6 / `alert_decay` 0.6；从木箱出来找站得下的位置）；被发现 → 挠痒审问椅
   `InterrogationChairShow`（继承 `ErrandWorkStage`：撑过 14 秒，J 挣扎，笑出声加时）→ 送回通风口。走到最里面的牢房 → 对话 `after_knight` 的 `cell`：他把她当灭国的凶手（「来灭口吗，凶手」），
   三个问题（误导证词：十三下钟声、一千只手的笑声和你一样、封印前站着的是你）**最多回答一个**（`knight_answered`），之后一律「凶手，没资格再问」（`knight_refused`）；
