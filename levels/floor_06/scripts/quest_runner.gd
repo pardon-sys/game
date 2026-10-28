@@ -4,6 +4,8 @@ extends Node2D
 ##   quest_id、q（这个支线的数据）、pink / blue、_lv；子类重写 setup()（摆东西）、静态 runs_on(图, 阶段)（这一段在不在这张图上）。
 ##   advance()：这一段做完（KnightQuests.advance）。阶段变了：下一段还在这张图上就收掉摆的东西重新 setup()，不在就自己收走。
 ##   离开场景树时摆的东西（spawned）跟着收走；子类要还原的状态写在 cleanup()。
+##   玩的时候的闲聊（stages[].chat：[["p" / "b", 台词], …]）：每 CHAT_EVERY 秒按顺序冒一句头顶气泡（p 粉色、b 蓝色，那位不在就跳过），
+##     说到哪一句记在 vars.kq_chat_<id>_<段>（出去再进来接着说，说完就不说了）。
 
 var quest_id := ""
 var q := {}
@@ -12,6 +14,10 @@ var blue: PlayableCharacter
 var spawned: Array = []
 var _lv: Node
 var _stage := -1
+var _chat_t := 0.0
+
+const CHAT_EVERY := 11.0
+const CHAT_FIRST := 4.0
 
 
 func _ready() -> void:
@@ -25,8 +31,14 @@ func _ready() -> void:
 		elif not c is BonfireHost:
 			pink = c
 	_stage = stage()
+	_chat_t = CHAT_FIRST
 	GameState.flag_changed.connect(_on_flag)
 	setup()
+	var tk := Timer.new()
+	tk.wait_time = 0.5
+	tk.timeout.connect(_chat_tick.bind(0.5))
+	add_child(tk)
+	tk.start()
 
 
 func _exit_tree() -> void:
@@ -92,6 +104,32 @@ func put(n: Node, at: Vector2) -> Node:
 	(n as Node2D).global_position = at
 	spawned.append(n)
 	return n
+
+
+## 玩的时候的闲聊：下一句（没有了返回 false）
+func chat_next() -> bool:
+	var lines: Array = KnightQuests.stage_info(quest_id).get("chat", [])
+	var key := "kq_chat_%s_%d" % [quest_id, stage()]
+	var i := int(GameState.vars.get(key, 0))
+	while i < lines.size():
+		var who: Node2D = pink if str(lines[i][0]) == "p" else blue
+		i += 1
+		GameState.vars[key] = i
+		# 蓝色公主要在身边（没跟着走、离得远就跳过她的话）
+		if is_instance_valid(who) and who.is_inside_tree() and who.visible and (who == pink or not is_instance_valid(pink)
+				or who.global_position.distance_to(pink.global_position) <= 120.0):
+			SpeechBubble.say(who, str(lines[i - 1][1]), 30.0, 3.2)
+			return true
+	return false
+
+
+func _chat_tick(delta: float) -> void:
+	if not live() or GameState.in_dialogue or GameState.in_cutscene:
+		return
+	_chat_t -= delta
+	if _chat_t <= 0.0:
+		_chat_t = CHAT_EVERY
+		chat_next()
 
 
 func say(pool: Variant, time := 2.6) -> void:

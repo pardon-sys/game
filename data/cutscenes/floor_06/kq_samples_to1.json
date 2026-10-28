@@ -1,0 +1,56 @@
+{
+	"name": "它不凶",
+	"letterbox": true,
+	"skippable": true,
+	"steps": [
+		{
+			"speaker": "",
+			"text": "（小手印拍了拍她的脚背，才「咕咚」一声钻进瓶子）"
+		},
+		{
+			"speaker": "公主",
+			"text": "……它刚才，是在跟我打招呼吗？",
+			"emotion": "surprise"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……不凶。"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……可是会挠人。"
+		},
+		{
+			"speaker": "公主",
+			"text": "你被挠过？"
+		},
+		{
+			"speaker": "",
+			"text": "（蓝色公主别过头去）"
+		},
+		{
+			"speaker": "公主",
+			"text": "被挠过！",
+			"emotion": "happy",
+			"actions": [
+				{
+					"who": "princess",
+					"kind": "happy",
+					"do": "bubble"
+				}
+			]
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……下一处。地牢的铁门。"
+		},
+		{
+			"speaker": "公主",
+			"text": "瓶子里的那只，在轻轻地敲玻璃……像在问「去哪里呀」。"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……别跟手印说话。"
+		}
+	]
+}

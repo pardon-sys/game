@@ -1,0 +1,45 @@
+{
+	"name": "裙摆",
+	"letterbox": true,
+	"skippable": true,
+	"steps": [
+		{
+			"speaker": "",
+			"text": "（蓝色公主一直板着脸，裙摆还在微微发抖）"
+		},
+		{
+			"speaker": "公主",
+			"text": "……刚才那只，钻进你裙子里了吧？",
+			"emotion": "happy"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……没有。"
+		},
+		{
+			"speaker": "公主",
+			"text": "你笑出声了哦。「噗」的一下。"
+		},
+		{
+			"speaker": "",
+			"text": "（蓝色公主冷冷地瞪了她一眼）"
+		},
+		{
+			"speaker": "公主",
+			"text": "好、好，没有没有。",
+			"emotion": "helpless_1"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……最后一处。奶奶的地窖。"
+		},
+		{
+			"speaker": "公主",
+			"text": "奶奶说地窖里有一大团……"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……那就冻住一大团。"
+		}
+	]
+}

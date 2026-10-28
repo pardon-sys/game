@@ -6,7 +6,7 @@ extends QuestRunner
 ##   蓝色公主冻住（J / 冰晶结界）也能按 E 拿。拿齐 → 过场 kq_shoes_box_end（发卡）→ 这一段做完（也是支线的最后一段）。
 ## 测试：shards、got、take_near(角色)。
 
-const PIECES := 3
+const PIECES := 4
 const STALLS := [Vector2i(8, 23), Vector2i(12, 23), Vector2i(6, 27), Vector2i(10, 27), Vector2i(14, 26)]
 const FREEZE_R := 30.0
 

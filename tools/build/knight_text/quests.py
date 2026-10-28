@@ -8,6 +8,7 @@
 stages 每一段的目标（where 哪张图、cell 指哪一格、text 目标文字、unlock 这一段打开的门的标记、report 回去找委托人）、offer / accept / busy / done 台词、start_cut / done_cut 过场、reward 奖励、helper 最后一战的帮手台词。
 """
 from after_text.common import A, BLUE, BLUE_NODE as B, CAP, N, P, L, line
+from knight_text import kq_samples, kq_shoes
 
 KDAY, KNIGHT_N, DRILL, PHARMACY, CELLAR = "floor_06_knight_day", "floor_06_knight_night", "floor_06_after_drill", "floor_06_after_pharmacy", "floor_06_after_cellar"
 ALLEY, HERBCAVE = "floor_06_knight_alley", "floor_06_after_herbcave"
@@ -85,7 +86,7 @@ QUESTS = {
             "peek": ["（货摊的布帘动了一下——一只搬着木片的手印探出头，朝她的笑声爬过来）"],
             "tickle": ["（手印扛着羽毛掸子，往她脚心上扫了一下就跑）", "（手印从摊位底下伸出来，挠了一下她的脚踝）"],
             "frozen": ["（冻住了！它怀里还抱着一块盒子的碎片）"],
-            "got": ["（拿回了一块！）", "（又一块！）", "（最后一块！）"],
+            "got": ["（拿回了一块！）", "（又一块！）", "（还差一块！）", "（最后一块！）"],
             "status": "盒子的碎片 %d / %d",
             "end_cut": "kq_shoes_box_end",
         },
@@ -105,7 +106,7 @@ QUESTS = {
             {"where": CELLAR, "cell": [7, 5], "text": "【手印样本】药剂师工房的地窖（工房里的活板门）", "unlock": "kq_samples_cellar"},
             {"where": PHARMACY, "cell": [8, 5], "text": "【手印样本】把样本交给药剂师奶奶", "report": True},
             # 第五段：草药洞采三味药（QuestHerbs）；第六段：回工房熬药（QuestBrew → BrewShow）
-            {"where": HERBCAVE, "cell": [8, 8], "text": "【手印样本】地窖最里面的小门 → 草药洞：笑铃草、软须苔、哈欠花各 3 株", "runner": RUN % "quest_herbs", "unlock": "kq_samples_herbs"},
+            {"where": HERBCAVE, "cell": [8, 8], "text": "【手印样本】地窖最里面的小门 → 草药洞：笑铃草、软须苔、哈欠花各 4 株", "runner": RUN % "quest_herbs", "unlock": "kq_samples_herbs"},
             {"where": PHARMACY, "cell": [8, 5], "text": "【手印样本】回工房，和奶奶一起熬药（走到药锅旁边）", "runner": RUN % "quest_brew"},
         ],
         "wobble": "（石头轻轻晃了一下……底下有东西）",
@@ -127,7 +128,7 @@ QUESTS = {
         # 第五段 草药洞（QuestHerbs）
         "herbs": {
             "names": {"bell": "笑铃草", "moss": "软须苔", "yawn": "哈欠花"},
-            "pick": "摘……", "status": "笑铃草 %d / 3　软须苔 %d / 3　哈欠花 %d / 3",
+            "pick": "摘……", "status": "笑铃草 %d / 4　软须苔 %d / 4　哈欠花 %d / 4",
             "bell": ["（叮铃——笑铃草一碰就响，铃铛似的花瓣在脚心上直打转）", "（叮叮铃铃……脚底下一片铃声，痒得站不住）"],
             "moss": ["（软须苔一下子缠住了脚趾，细细的须钻进趾缝里）", "（脚陷进软绵绵的苔里，须子从脚趾缝里挠上来）"],
             "yawn": ["（哈欠花「噗」地喷出一团粉——哈……哈欠……打、打不完……）", "（花粉钻进鼻子，她张大嘴打了个哈欠——这一下，手印扑上来了）"],
@@ -405,96 +406,6 @@ QUESTS = {
 
 
 # ---------------------------------------------------------------- 支线的过场（data/cutscenes/floor_06/kq_*.json）
-def shoes_start():
-    s = [
-        line(TOM, "（从背后扑上来）恶龙来啦——！", None, None, "kid"),
-        line(N, "（小汤姆一把抓住她的脚踝，小莉莉趁机扯下了她的鞋，两个人抱着鞋撒腿就跑）"),
-        line(P, "等、等一下！我的鞋——！", "surprise"),
-        line(LILY, "公主的鞋被恶龙抢走啦！想要回来，就照纸条找！", None, None, "kid"),
-        line(N, "（一张皱巴巴的纸条飘到她脚边，上面用歪歪扭扭的字写着三句谜语）"),
-        line(BLUE, "……光脚。……小心点。"),
-        line(N, "（光着脚走路，稻草、羽毛、鹅卵石都会让脚底发痒。孩子们还会举着羽毛「长矛」偷袭）"),
-    ]
-    return {"name": "恶龙抢走了鞋", "letterbox": True, "skippable": True, "steps": s}
-
-
-def shoes_done():
-    s = [
-        line(LILY, "鞋、宝贝盒，都回来啦……嘻嘻……", None, None, "kid"),
-        line(TOM, "公主好厉害！这个给你——骑士勋章！我们自己做的！", None, None, "kid"),
-        line(N, "（一枚用瓶盖和红布条做的「勋章」，歪歪扭扭地写着「勇者」）"),
-        line(P, "……谢谢。我会好好收着的。", "happy"),
-        line(TOM, "对了！我们今天早上在地牢入口那边，还捡到一根红绳子！", None, None, "kid"),
-        line(TOM, "绑法好奇怪的——队长说，那是真骑士的东西！", None, None, "kid"),
-        line(P, "……红绳。", "sad"),
-        line(N, "（她想起了那把剑柄上缠着的红绳）"),
-        line(LILY, "姐姐，以后还来玩好不好！下次莉莉当公主！", None, None, "kid"),
-    ]
-    return {"name": "骑士勋章", "letterbox": True, "skippable": True, "steps": s}
-
-
-def shoes_hide_start():
-    s = [
-        line(N, "（小镇西边那条巷子没有灯。小汤姆和小莉莉压低了声音）"),
-        line(TOM, "这个游戏叫「灯全灭了」。大人说，「那一天」所有的灯都灭了，大家躲在黑里，捂着嘴——", None, None, "kid"),
-        line(LILY, "谁笑出声，谁就会被抓走！", None, None, "kid"),
-        line(P, "……抓走？被谁？", "surprise"),
-        line(TOM, "不知道！大人不肯说！所以才好玩嘛！姐姐当鬼，提着灯来找我们！", None, None, "kid"),
-        line(BLUE, "……"),
-        line(N, "（找出藏起来的 5 个小孩。灯光照到才看得见；自己笑出声，小孩们会换地方；黑里有影子手）"),
-    ]
-    return {"name": "灯全灭了", "letterbox": True, "skippable": True, "steps": s}
-
-
-def shoes_hide_end():
-    s = [
-        line(N, "（最后一个小孩刚被找出来，巷口亮起一盏油灯）"),
-        line(GRANNY, "——谁教你们玩这个的！", None, None, "granny"),
-        line(TOM, "奶、奶奶……", None, None, "kid"),
-        line(GRANNY, "回家！都回家！这个游戏，以后谁也不许玩！", None, None, "granny"),
-        line(N, "（奶奶一手一个拎起小孩。走到巷口，她回头看了蓝色公主一眼——然后很快地低下了头）"),
-        line(BLUE, "……"),
-        line(P, "……奶奶怎么了？", "surprise"),
-        line(BLUE, "……走吧。"),
-        line(LILY, "（被拎走之前，回头小声喊）姐姐！莉莉的宝贝盒——明天给你看！", None, None, "kid"),
-    ]
-    return {"name": "那一天的躲猫猫", "letterbox": True, "skippable": True, "steps": s}
-
-
-def shoes_box_end():
-    s = [
-        line(LILY, "宝贝盒回来啦！谢谢姐姐！", None, None, "kid"),
-        line(N, "（小莉莉打开盒子：玻璃珠、羽毛、半块饼干——还有一枚生锈的小发卡）"),
-        line(LILY, "这个最宝贝！是在派对姐姐的帐篷后面捡的。", None, None, "kid"),
-        line(LILY, "姐姐说不是她的。可是花纹跟她头上的花冠一样哦！", None, None, "kid"),
-        line(P, "……真的诶，花纹好旧。", "surprise"),
-        line(TOM, "莉莉！那个给姐姐吧！谢礼！", None, None, "kid"),
-        line(LILY, "……嗯！给姐姐！", None, None, "kid"),
-        line(N, "（她把发卡收了起来。没有人再提它）"),
-    ]
-    return {"name": "小莉莉的宝贝盒", "letterbox": True, "skippable": True, "steps": s}
-
-
-def shoes_invite():
-    s = [
-        line(TOM, "公主赢了！……嘘——", None, None, "kid"),
-        line(TOM, "姐姐，我们还有一个游戏，大人不让玩的！去西边那条没有灯的小巷！", None, None, "kid"),
-        line(LILY, "鞋先还给你！光着脚玩才好玩——啊不对，鞋还你，你自己选！", None, None, "kid"),
-    ]
-    return {"name": "大人不让玩的游戏", "letterbox": True, "skippable": True, "steps": s}
-
-
-def samples_done():
-    s = [
-        line(N, "（锅里的药熬成了一小块淡紫色的香。瓶子里的三只小手印贴着玻璃，一直朝着营地的方向）"),
-        line(PHARM, "……好了。安神香。", None, None, "pharmacist"),
-        line(PHARM, "点上它，那些手印会安静一会儿。可是普通的火点不着它。", None, None, "pharmacist"),
-        line(P, "那要用什么点？", "surprise"),
-        line(PHARM, "……真心的笑声。被偷走的笑声做成的东西，只有真的笑声压得住。", None, None, "pharmacist"),
-        line(BLUE, "……笑声。……像灯笼一样。"),
-        line(PHARM, "对。就像镇上的笑声灯笼。……带着吧。用得上的时候，你会知道的。", None, None, "pharmacist"),
-    ]
-    return {"name": "安神香", "letterbox": True, "skippable": True, "steps": s}
 
 
 def spear_start():
@@ -647,8 +558,6 @@ def fence_hall_end():
 
 CUTSCENES = {"kq_blue_lantern": blue_lantern, "kq_blue_done": blue_done, "kq_host_box": host_box, "kq_host_lullaby": host_lullaby, "kq_host_done": host_done,
              "kq_spear_watch_end": spear_watch_end, "kq_spear_duo_end": spear_duo_end, "kq_fence_crack": fence_crack, "kq_fence_hall_end": fence_hall_end,
-             "kq_shoes_hide_start": shoes_hide_start, "kq_shoes_hide_end": shoes_hide_end, "kq_shoes_box_end": shoes_box_end,
-             "kq_shoes_invite": shoes_invite, "kq_shoes_start": shoes_start, "kq_shoes_done": shoes_done, "kq_samples_done": samples_done,
              "kq_spear_start": spear_start, "kq_spear_done": spear_done, "kq_fence_done": fence_done}
 
 
@@ -675,6 +584,12 @@ def inject(files):
                 else:
                     td["entries"] = [entry] + td["entries"]
                 td["nodes"]["kq_%s_t%d" % (qid, i)] = {"lines": t["lines"], "set": {"vars": {"kq_req": qid}, "call": "kq_next"}}
+            # 这一段里找委托人：按段换的话（stages[].busy），没写的用通用的 busy
+            if st.get("busy"):
+                entries.append({"if": cond, "node": "kq_%s_busy%d" % (qid, i)})
+                d["nodes"]["kq_%s_busy%d" % (qid, i)] = {"lines": st["busy"], "prompt": "（%s）" % q["name"], "choices": [
+                    {"text": "知道了"},
+                    {"text": "（先放一放）", "set": {"vars": {"kq_req": qid}, "call": "kq_abandon"}}]}
         entries.append({"if": {"flag": "kq_%s_active" % qid}, "node": "kq_%s_busy" % qid})
         entries.append({"if": {"flag": "kq_%s_open" % qid}, "node": "kq_%s_offer" % qid})
         d["nodes"]["kq_%s_busy" % qid] = {"lines": q["busy"], "prompt": "（%s）" % q["name"], "choices": [
@@ -717,3 +632,35 @@ SIGNS = {
     "after_storage_locked": [{"speaker": N, "text": "（一间很小的储物间，门关着）"}],
     "after_bridge_locked": [{"speaker": N, "text": "（通往排水渠的小路。黑漆漆的）"}],
 }
+
+
+# ---------------------------------------------------------------- 加长的剧情（每个支线一个文件 kq_<id>.py）：按段的 busy / chat / enter、替换的过场、加长的台词
+def _merge_more():
+    for qid, mod in (("shoes", kq_shoes), ("samples", kq_samples)):
+        q = QUESTS[qid]
+        for i, extra in mod.STAGES.items():
+            q["stages"][i].update(extra)
+        CUTSCENES.update(mod.CUTS)
+        for key in ("OFFER", "REPORT"):
+            if hasattr(mod, key):
+                q[key.lower()] = getattr(mod, key)
+    intro = QUESTS["samples"]["brew"]["intro"]
+    QUESTS["samples"]["brew"]["intro"] = intro[:3] + kq_samples.BREW_INTRO + intro[3:]
+
+
+_merge_more()
+
+
+# ---------------------------------------------------------------- 转阶段的过场：stages[i]["enter"]（返回过场数据的函数）→ 过场 kq_<id>_to<i>、stages[i]["enter_cut"]
+def _register_enter_cuts():
+    for qid, q in QUESTS.items():
+        for i, st in enumerate(q["stages"]):
+            fn = st.pop("enter", None)
+            if fn:
+                cid = "kq_%s_to%d" % (qid, i)
+                st["enter_cut"] = cid
+                CUTSCENES[cid] = fn
+
+
+_register_enter_cuts()
+

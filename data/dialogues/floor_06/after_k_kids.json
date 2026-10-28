@@ -4,6 +4,51 @@
 	"entries": [
 		{
 			"if": {
+				"flag": "kq_shoes_active",
+				"eq": {
+					"kq_shoes_stage": 0
+				}
+			},
+			"node": "kq_shoes_busy0"
+		},
+		{
+			"if": {
+				"flag": "kq_shoes_active",
+				"eq": {
+					"kq_shoes_stage": 1
+				}
+			},
+			"node": "kq_shoes_busy1"
+		},
+		{
+			"if": {
+				"flag": "kq_shoes_active",
+				"eq": {
+					"kq_shoes_stage": 2
+				}
+			},
+			"node": "kq_shoes_busy2"
+		},
+		{
+			"if": {
+				"flag": "kq_shoes_active",
+				"eq": {
+					"kq_shoes_stage": 3
+				}
+			},
+			"node": "kq_shoes_busy3"
+		},
+		{
+			"if": {
+				"flag": "kq_shoes_active",
+				"eq": {
+					"kq_shoes_stage": 4
+				}
+			},
+			"node": "kq_shoes_busy4"
+		},
+		{
+			"if": {
 				"flag": "kq_shoes_active"
 			},
 			"node": "kq_shoes_busy"
@@ -46,6 +91,186 @@
 			"lines": [
 				{
 					"text": "姐姐！东北角好多保卫队的叔叔！"
+				}
+			]
+		},
+		"kq_shoes_busy0": {
+			"lines": [
+				{
+					"text": "第一句谜语！「草堆里扎扎的，羊咩咩睡觉的地方」！",
+					"speaker": "小汤姆",
+					"npc": "kid"
+				},
+				{
+					"text": "公主光着脚走路好好笑，一跳一跳的～",
+					"speaker": "小莉莉",
+					"npc": "kid"
+				},
+				{
+					"text": "还不是你们抢的！",
+					"speaker": "公主",
+					"emotion": "angry"
+				},
+				{
+					"text": "恶龙不负责还鞋！",
+					"speaker": "小汤姆",
+					"npc": "kid"
+				}
+			],
+			"prompt": "（骑士救公主）",
+			"choices": [
+				{
+					"text": "知道了"
+				},
+				{
+					"text": "（先放一放）",
+					"set": {
+						"vars": {
+							"kq_req": "shoes"
+						},
+						"call": "kq_abandon"
+					}
+				}
+			]
+		},
+		"kq_shoes_busy1": {
+			"lines": [
+				{
+					"text": "彩带下面有好多好多羽毛！是庆功宴剩下的！",
+					"speaker": "小莉莉",
+					"npc": "kid"
+				},
+				{
+					"text": "公主要踮脚才够得到！踮脚的时候，脚底最痒啦！",
+					"speaker": "小汤姆",
+					"npc": "kid"
+				},
+				{
+					"text": "……你们是故意的吧。",
+					"speaker": "公主",
+					"emotion": "helpless_1"
+				},
+				{
+					"text": "嘻嘻～",
+					"speaker": "小莉莉",
+					"npc": "kid"
+				}
+			],
+			"prompt": "（骑士救公主）",
+			"choices": [
+				{
+					"text": "知道了"
+				},
+				{
+					"text": "（先放一放）",
+					"set": {
+						"vars": {
+							"kq_req": "shoes"
+						},
+						"call": "kq_abandon"
+					}
+				}
+			]
+		},
+		"kq_shoes_busy2": {
+			"lines": [
+				{
+					"text": "莉莉在石头路尽头等你！她超级会忍笑的！",
+					"speaker": "小汤姆",
+					"npc": "kid"
+				},
+				{
+					"text": "我跟她比过十次……输了十次……",
+					"speaker": "小汤姆",
+					"npc": "kid"
+				},
+				{
+					"text": "那我更要赢了！",
+					"speaker": "公主",
+					"emotion": "happy"
+				}
+			],
+			"prompt": "（骑士救公主）",
+			"choices": [
+				{
+					"text": "知道了"
+				},
+				{
+					"text": "（先放一放）",
+					"set": {
+						"vars": {
+							"kq_req": "shoes"
+						},
+						"call": "kq_abandon"
+					}
+				}
+			]
+		},
+		"kq_shoes_busy3": {
+			"lines": [
+				{
+					"text": "小巷！小巷！姐姐快来当鬼！",
+					"speaker": "小汤姆",
+					"npc": "kid"
+				},
+				{
+					"text": "要提着灯哦，巷子里一点光都没有……",
+					"speaker": "小莉莉",
+					"npc": "kid"
+				}
+			],
+			"prompt": "（骑士救公主）",
+			"choices": [
+				{
+					"text": "知道了"
+				},
+				{
+					"text": "（先放一放）",
+					"set": {
+						"vars": {
+							"kq_req": "shoes"
+						},
+						"call": "kq_abandon"
+					}
+				}
+			]
+		},
+		"kq_shoes_busy4": {
+			"lines": [
+				{
+					"text": "盒子是木头的，上面画着小花……",
+					"speaker": "小莉莉",
+					"npc": "kid"
+				},
+				{
+					"text": "我在集市入口守着！手印别想跑出来！",
+					"speaker": "小汤姆",
+					"npc": "kid"
+				},
+				{
+					"text": "小汤姆好可靠。",
+					"speaker": "公主",
+					"emotion": "happy"
+				},
+				{
+					"text": "嘿嘿……骑士嘛！",
+					"speaker": "小汤姆",
+					"npc": "kid"
+				}
+			],
+			"prompt": "（骑士救公主）",
+			"choices": [
+				{
+					"text": "知道了"
+				},
+				{
+					"text": "（先放一放）",
+					"set": {
+						"vars": {
+							"kq_req": "shoes"
+						},
+						"call": "kq_abandon"
+					}
 				}
 			]
 		},

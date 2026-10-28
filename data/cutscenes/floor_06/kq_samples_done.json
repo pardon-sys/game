@@ -28,6 +28,29 @@
 			"npc": "pharmacist"
 		},
 		{
+			"speaker": "公主",
+			"text": "那我现在笑一个试试——哈、哈哈！",
+			"emotion": "happy"
+		},
+		{
+			"speaker": "",
+			"text": "（香头冒了一缕细细的烟，又灭了）"
+		},
+		{
+			"speaker": "药剂师奶奶",
+			"text": "……不是这种。",
+			"npc": "pharmacist"
+		},
+		{
+			"speaker": "公主",
+			"text": "我很真心啊！",
+			"emotion": "angry"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……你在假笑。"
+		},
+		{
 			"speaker": "蓝色的公主",
 			"text": "……笑声。……像灯笼一样。"
 		},

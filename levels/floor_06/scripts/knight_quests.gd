@@ -9,6 +9,7 @@ extends RefCounted
 ##   一次只能做一个支线；做支线的时候主线的触发不出现（对话条件 not kq_active），床上不能休息 / 睡觉。
 ##   段落（stages[]）：where（图；"town" = 现在这一步的骑士篇小镇，白天夜里都行）、cell、text；
 ##     runner：这一段用别的玩法节点脚本（不写就用 RUNNERS[id]；没有 runs_on 的按 where 判断）；
+##     enter_cut：进这一段时演的过场（kq_<id>_to<i>）；busy：这一段里找委托人说的话（生成器按段注入）；
 ##     talk：{npc, lines, cut}——找这个人说话推进（生成器注入对话，call: kq_next；cut 说完演的过场）；report：最后一段回去找委托人；unlock：这一段才开的门。
 ##   时间窗口：offer 按 slots 和步骤；接下以后只要还在步骤范围里就不放下（多段的支线会跨白天黑夜）。
 ## 测试：start(id)、advance(id)、complete(id)、stage(id)、refresh()、talk_next(id)。
@@ -144,11 +145,29 @@ static func start(id: String) -> void:
 
 
 ## 这一段做完：阶段 +1（到头了就做完）
+## 正在演转阶段过场的支线（这期间再推进不算）
+static var _advancing := {}
+
+
 static func advance(id: String) -> void:
 	if not is_active(id):
 		return
-	GameState.vars["kq_%s_stage" % id] = stage(id) + 1
-	if stage(id) >= (info(id).get("stages", []) as Array).size():
+	if _advancing.has(id):
+		return
+	var nxt := stage(id) + 1
+	var st: Array = info(id).get("stages", [])
+	# 转阶段的过场（stages[].enter_cut = kq_<id>_to<i>）：先演完再进下一段（交代为什么去下一处、委托人和两位公主的对话）
+	if nxt < st.size():
+		var cut := str((st[nxt] as Dictionary).get("enter_cut", ""))
+		if cut != "" and Cutscene.has_cutscene(cut):
+			_advancing[id] = true
+			await TrainingDB.wait_dialogue_free()
+			await Cutscene.play(cut)
+			_advancing.erase(id)
+			if not is_active(id) or stage(id) != nxt - 1:
+				return
+	GameState.vars["kq_%s_stage" % id] = nxt
+	if nxt >= st.size():
 		await complete(id)
 		return
 	_changed()
@@ -166,6 +185,9 @@ static func complete(id: String) -> void:
 	if cut != "" and Cutscene.has_cutscene(cut):
 		await TrainingDB.wait_dialogue_free()
 		await Cutscene.play(cut)
+	# 收尾的背景大图过场（剧情回顾 story_kq_<id>）
+	if Cutscene.has_cutscene("story_kq_" + id):
+		await Cutscene.play("story_kq_" + id)
 	for item in rewards:
 		var it := ItemDB.get_item(str(item))
 		if it:

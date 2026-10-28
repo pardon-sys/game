@@ -5,10 +5,55 @@
 			"if": {
 				"flag": "kq_samples_active",
 				"eq": {
+					"kq_samples_stage": 0
+				}
+			},
+			"node": "kq_samples_busy0"
+		},
+		{
+			"if": {
+				"flag": "kq_samples_active",
+				"eq": {
+					"kq_samples_stage": 1
+				}
+			},
+			"node": "kq_samples_busy1"
+		},
+		{
+			"if": {
+				"flag": "kq_samples_active",
+				"eq": {
+					"kq_samples_stage": 2
+				}
+			},
+			"node": "kq_samples_busy2"
+		},
+		{
+			"if": {
+				"flag": "kq_samples_active",
+				"eq": {
 					"kq_samples_stage": 3
 				}
 			},
 			"node": "kq_samples_report3"
+		},
+		{
+			"if": {
+				"flag": "kq_samples_active",
+				"eq": {
+					"kq_samples_stage": 4
+				}
+			},
+			"node": "kq_samples_busy4"
+		},
+		{
+			"if": {
+				"flag": "kq_samples_active",
+				"eq": {
+					"kq_samples_stage": 5
+				}
+			},
+			"node": "kq_samples_busy5"
 		},
 		{
 			"if": {
@@ -123,6 +168,81 @@
 				}
 			]
 		},
+		"kq_samples_busy0": {
+			"lines": [
+				{
+					"text": "担架走过的石板路。哪块石头在晃，就是哪块。"
+				},
+				{
+					"text": "笑一笑，它就会出来。不用怕，它们不咬人。"
+				}
+			],
+			"prompt": "（手印样本）",
+			"choices": [
+				{
+					"text": "知道了"
+				},
+				{
+					"text": "（先放一放）",
+					"set": {
+						"vars": {
+							"kq_req": "samples"
+						},
+						"call": "kq_abandon"
+					}
+				}
+			]
+		},
+		"kq_samples_busy1": {
+			"lines": [
+				{
+					"text": "地牢入口的铁门……那边阴，手印喜欢待在阴的地方。"
+				},
+				{
+					"text": "蓝色的那孩子，别太靠近。它们好像……怕她。"
+				}
+			],
+			"prompt": "（手印样本）",
+			"choices": [
+				{
+					"text": "知道了"
+				},
+				{
+					"text": "（先放一放）",
+					"set": {
+						"vars": {
+							"kq_req": "samples"
+						},
+						"call": "kq_abandon"
+					}
+				}
+			]
+		},
+		"kq_samples_busy2": {
+			"lines": [
+				{
+					"text": "地窖里那一团，奶奶昨晚下去拿药，被它挠得差点没爬上来。"
+				},
+				{
+					"text": "活板门开着。……小心楼梯，有一级是松的。"
+				}
+			],
+			"prompt": "（手印样本）",
+			"choices": [
+				{
+					"text": "知道了"
+				},
+				{
+					"text": "（先放一放）",
+					"set": {
+						"vars": {
+							"kq_req": "samples"
+						},
+						"call": "kq_abandon"
+					}
+				}
+			]
+		},
 		"kq_samples_report3": {
 			"lines": [
 				{
@@ -149,6 +269,17 @@
 					"emotion": "sad"
 				},
 				{
+					"text": "笑声被偷走的人，夜里会做噩梦。……那个骑士，一晚上说了好多梦话。"
+				},
+				{
+					"text": "……说了什么？",
+					"speaker": "公主",
+					"emotion": "surprise"
+				},
+				{
+					"text": "听不清。……一直在叫一个人。"
+				},
+				{
 					"text": "要压住它们，得配安神香。……可是还缺三味药。"
 				},
 				{
@@ -172,6 +303,56 @@
 				},
 				"call": "kq_report"
 			}
+		},
+		"kq_samples_busy4": {
+			"lines": [
+				{
+					"text": "笑铃草、软须苔、哈欠花。地窖最里面那道小门。"
+				},
+				{
+					"text": "光着脚，别怕痒。……奶奶年轻的时候，也是这样一株一株摘的。"
+				}
+			],
+			"prompt": "（手印样本）",
+			"choices": [
+				{
+					"text": "知道了"
+				},
+				{
+					"text": "（先放一放）",
+					"set": {
+						"vars": {
+							"kq_req": "samples"
+						},
+						"call": "kq_abandon"
+					}
+				}
+			]
+		},
+		"kq_samples_busy5": {
+			"lines": [
+				{
+					"text": "药锅烧好了。过来吧。"
+				},
+				{
+					"text": "……三味药都齐了？好孩子。"
+				}
+			],
+			"prompt": "（手印样本）",
+			"choices": [
+				{
+					"text": "知道了"
+				},
+				{
+					"text": "（先放一放）",
+					"set": {
+						"vars": {
+							"kq_req": "samples"
+						},
+						"call": "kq_abandon"
+					}
+				}
+			]
 		},
 		"kq_samples_busy": {
 			"lines": [
@@ -205,6 +386,13 @@
 					"text": "……孩子，来得正好。"
 				},
 				{
+					"text": "（工房的里屋，那个骑士还睡着。奶奶刚给他换过额头上的毛巾）",
+					"speaker": ""
+				},
+				{
+					"text": "他睡着的时候，一直攥着拳头。……掰都掰不开。"
+				},
+				{
 					"text": "那个骑士身上的手印，奶奶想配一味安神的药。"
 				},
 				{
@@ -217,6 +405,12 @@
 				},
 				{
 					"text": "会跑。所以要找对办法。……它们，好像喜欢笑声。"
+				},
+				{
+					"text": "……奶奶在镇上熬了一辈子药。「那一年」以后，来看病的人排到了门外头。"
+				},
+				{
+					"text": "这些手印……让奶奶想起那时候。"
 				}
 			],
 			"prompt": "帮奶奶收手印样本？",

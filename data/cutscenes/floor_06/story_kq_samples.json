@@ -1,0 +1,90 @@
+{
+	"name": "夜里的工房",
+	"order": 20,
+	"letterbox": false,
+	"skippable": true,
+	"steps": [
+		{
+			"actions": [
+				{
+					"img": "kq_samples",
+					"pan": "in",
+					"do": "bg"
+				}
+			],
+			"wait": 0.8
+		},
+		{
+			"speaker": "",
+			"text": "（炉火噼啪地响。奶奶把安神香包进油纸，系上一根细绳）"
+		},
+		{
+			"speaker": "药剂师奶奶",
+			"text": "……以前啊，镇上的笑声，能一直传到矿道里去。",
+			"npc": "pharmacist"
+		},
+		{
+			"speaker": "药剂师奶奶",
+			"text": "谁家孩子笑了，整条街都听得见。",
+			"npc": "pharmacist"
+		},
+		{
+			"speaker": "公主",
+			"text": "现在呢？"
+		},
+		{
+			"speaker": "药剂师奶奶",
+			"text": "……现在大家都不太敢大声笑了。",
+			"npc": "pharmacist"
+		},
+		{
+			"speaker": "",
+			"text": "（瓶子里的小手印贴着玻璃，朝她们挥了挥手）"
+		},
+		{
+			"speaker": "公主",
+			"text": "……它在挥手！",
+			"emotion": "happy"
+		},
+		{
+			"speaker": "",
+			"text": "（粉色公主也朝它挥了挥手）"
+		},
+		{
+			"speaker": "药剂师奶奶",
+			"text": "很多年前，奶奶给一个发烧的小姑娘熬过药。病好了以后，她天天跑来工房玩。",
+			"npc": "pharmacist"
+		},
+		{
+			"speaker": "药剂师奶奶",
+			"text": "就坐在灶台边上，晃着脚，什么都要问。",
+			"npc": "pharmacist"
+		},
+		{
+			"speaker": "",
+			"text": "（奶奶说着，看了蓝色公主一眼，又看了粉色公主一眼）"
+		},
+		{
+			"speaker": "药剂师奶奶",
+			"text": "……老了，记性不好。……怎么想，都对不上了。",
+			"npc": "pharmacist"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……"
+		},
+		{
+			"speaker": "药剂师奶奶",
+			"text": "去吧。……照顾好彼此。",
+			"npc": "pharmacist"
+		},
+		{
+			"actions": [
+				{
+					"do": "bg_clear"
+				}
+			],
+			"wait": 0.5
+		}
+	]
+}

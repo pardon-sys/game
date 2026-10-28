@@ -1,0 +1,33 @@
+{
+	"name": "朝着同一边",
+	"letterbox": true,
+	"skippable": true,
+	"steps": [
+		{
+			"speaker": "",
+			"text": "（三个瓶子摆在地窖的台阶上。里面的小手印，都贴着瓶子的同一边）"
+		},
+		{
+			"speaker": "公主",
+			"text": "……它们都朝着一个方向。",
+			"emotion": "surprise"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……营地。"
+		},
+		{
+			"speaker": "公主",
+			"text": "营地那边……是盔甲。",
+			"emotion": "sad"
+		},
+		{
+			"speaker": "",
+			"text": "（她把瓶子转了个方向。小手印们慢慢爬过去，又贴回了那一边）"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……回去问奶奶。"
+		}
+	]
+}

@@ -1,0 +1,91 @@
+{
+	"name": "黄昏的小路",
+	"order": 10,
+	"letterbox": false,
+	"skippable": true,
+	"steps": [
+		{
+			"actions": [
+				{
+					"img": "kq_shoes",
+					"pan": "in",
+					"do": "bg"
+				}
+			],
+			"wait": 0.8
+		},
+		{
+			"speaker": "",
+			"text": "（灯笼一盏一盏亮起来。四个人挤在小路尽头的大石头上，晃着脚）"
+		},
+		{
+			"speaker": "小汤姆",
+			"text": "我长大以后要进保卫队！像队长那样，一矛——刷！",
+			"npc": "kid"
+		},
+		{
+			"speaker": "小莉莉",
+			"text": "莉莉要当公主！像两个姐姐一样！",
+			"npc": "kid"
+		},
+		{
+			"speaker": "公主",
+			"text": "公主其实很累的哦。要被恶龙抓，还要光着脚找鞋。",
+			"emotion": "happy"
+		},
+		{
+			"speaker": "小莉莉",
+			"text": "那莉莉也要当！",
+			"npc": "kid"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……当骑士吧。"
+		},
+		{
+			"speaker": "小莉莉",
+			"text": "为什么？",
+			"npc": "kid"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……骑士，不会被人认错。"
+		},
+		{
+			"speaker": "小汤姆",
+			"text": "奶奶说，以前的公主每年都会点灯笼！点得整条街都亮亮的！",
+			"npc": "kid"
+		},
+		{
+			"speaker": "小莉莉",
+			"text": "派对姐姐点灯笼也很亮哦！",
+			"npc": "kid"
+		},
+		{
+			"speaker": "小汤姆",
+			"text": "那不一样啦，派对姐姐又不是公主。",
+			"npc": "kid"
+		},
+		{
+			"speaker": "",
+			"text": "（小莉莉举起那枚旧发卡，对着灯笼的光看。花纹在光里一闪一闪的）"
+		},
+		{
+			"speaker": "公主",
+			"text": "……好漂亮。",
+			"emotion": "happy"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……天黑了。回家吧。"
+		},
+		{
+			"actions": [
+				{
+					"do": "bg_clear"
+				}
+			],
+			"wait": 0.5
+		}
+	]
+}

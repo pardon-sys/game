@@ -13,7 +13,7 @@ extends RefCounted
 ##       auto            进图就演（连续的剧情：抬到工房以后醒来、溜进地牢、追逃接 Boss）
 ##       rest            白天在小屋的床上休息 → 下一个时段（AfterStory.rest → rest_now）
 ##       sleep           夜里在小屋的床上睡觉 → 第二天早上（AfterStory.sleep → sleep_now，不显示黑幕标题）
-##     cutscene 开场过场、task 玩法（同 AfterStory.TASKS 的写法：script / name / fail / fail_hours / respawn）、done 收尾过场、
+##     cutscene 开场过场、story 开场过场后接着演的背景大图过场（剧情回顾）、task 玩法（同 AfterStory.TASKS 的写法：script / name / fail / fail_hours / respawn）、done 收尾过场、
 ##     goto [图, 出生点] 做完去哪；away：人还不在那张图上时的目标文字。
 ##   时间自然变化：做完一步，下一步的时段在同一天里更晚时直接换过去；进小镇图时也按这一步的 slot 对齐（sync_slot）。
 ##   时钟：骑士篇的第几天记在 DayClock 的 after_day（DAY 起），标签写「骑士篇·时段」（DayClock.label）。没有赎罪簿和工时。
@@ -92,6 +92,7 @@ const STEPS := [
 	{"id": "chase", "where": KCHASE, "trigger": "auto", "slot": MORNING, "cutscene": "knight_chase_open", "objective": "把盔甲引到广场的图腾柱下",
 		"task": {"script": "res://levels/floor_06/scripts/task_armor_chase.gd", "name": "镇中追逃", "fail": "knight_fail_chase", "fail_hours": 0, "respawn": [55, 37]}},
 	{"id": "boss", "where": KCHASE, "trigger": "auto", "slot": MORNING, "cutscene": "knight_boss_open", "objective": "打碎盔甲上的诅咒",
+		"story": "story_knight_boss",
 		"task": {"script": "res://levels/floor_06/scripts/task_knight_boss.gd", "name": "痒铠骑士", "fail": "knight_fail_boss", "fail_hours": 0, "respawn": [41, 29]},
 		"done": "knight_epilogue"},
 ]
@@ -335,6 +336,9 @@ static func reenter() -> bool:
 static func _run(s: Dictionary) -> void:
 	if str(s.get("cutscene", "")) != "":
 		await Cutscene.play(str(s["cutscene"]))
+	# 背景大图过场（剧情回顾）：开场过场演完、开打之前
+	if str(s.get("story", "")) != "" and Cutscene.has_cutscene(str(s["story"])):
+		await Cutscene.play(str(s["story"]))
 	var task: Dictionary = s.get("task", {})
 	if not task.is_empty():
 		if not await AfterStory.play_task(str(s["id"]), task):

@@ -8,14 +8,14 @@ extends QuestRunner
 ##   三种都够了 → 这一段做完（光着脚的状态收走）。
 ## 测试：patches、hands、got、held（这一帧当成按住了 E）、progress、pick_at(丛)、spill()。
 
-const NEED := 3
+const NEED := 4
 const PICK_TIME := 1.4
 const SPILL_AT := 0.97
 const SPILL_RESET := 0.4
 const PATCHES := {"bell": [Vector2i(7, 4), Vector2i(12, 6), Vector2i(9, 11), Vector2i(15, 9)],
 	"moss": [Vector2i(17, 4), Vector2i(20, 8), Vector2i(13, 12), Vector2i(24, 4)],
 	"yawn": [Vector2i(22, 11), Vector2i(26, 8), Vector2i(18, 12), Vector2i(11, 3)]}
-const HANDS := [Vector2i(14, 7), Vector2i(21, 5), Vector2i(19, 11)]
+const HANDS := [Vector2i(14, 7), Vector2i(21, 5), Vector2i(19, 11), Vector2i(9, 8), Vector2i(24, 10)]
 const SEEK_R := 80.0
 
 var patches: Array = []

@@ -8,11 +8,11 @@ extends TrainingStage
 ## 测试：quiet、lane、overflow、prompt（{who, key, left}）、prompt_now(who)、answer(key)、section。
 
 const PATH := "res://data/after/knight_quests.json"
-const SNEEZE_EVERY := 4.5
+const SNEEZE_EVERY := 3.8
 const PROMPT_TIME := 1.1
 const PROMPT_LAUGH := 0.1
 const KID_RATE := 0.012
-const OVERFLOW_MAX := 4
+const OVERFLOW_MAX := 3
 const KEYS := ["UP", "DOWN", "LEFT", "RIGHT"]
 const ARROWS := {"UP": "↑", "DOWN": "↓", "LEFT": "←", "RIGHT": "→"}
 

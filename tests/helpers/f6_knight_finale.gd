@@ -189,7 +189,12 @@ static func run(t: Node) -> void:
 	ch.armor.paused = true
 	ch.pink.global_position = Cutscene.cell_to_world(TaskArmorChase.PLAZA)
 	ch.advance(0.05)
+	await t._advance_until(func(): return Cutscene.current == "story_knight_boss" and Cutscene.is_playing() and Cutscene.backdrop.is_shown(), 40.0)
+	verify(t, "Boss 开场演完：背景大图过场「背靠背」（整屏大图 %s）" % Cutscene.backdrop.current, t.seen_cuts.has("knight_boss_open")
+		and Cutscene.current == "story_knight_boss" and Cutscene.backdrop.current == "knight_boss")
 	await t._advance_until(func(): return task(t, "boss") != null and bool(task(t, "boss").started) and not Cutscene.is_playing() and not GameState.in_dialogue, 60.0)
+	verify(t, "大图过场演完收起；剧情回顾里「背靠背」解锁了", not Cutscene.backdrop.is_shown()
+		and Backpack.gallery_entries().any(func(e): return e["kind"] == "story" and e["id"] == "story_knight_boss" and e["name"] == "背靠背" and GameState.has_flag(str(e["flag"]))))
 	var b := task(t, "boss") as TaskKnightBoss
 	verify(t, "四座信标亮了、引到广场 → Boss「痒铠骑士」开始（铁手套两只、场上 %d 个人）" % (b.victims.size() if b else 0), b != null
 		and t.seen_cuts.has("knight_boss_open") and b.phase == 0 and b.parts.size() == 2 and b.victims.size() >= 5)

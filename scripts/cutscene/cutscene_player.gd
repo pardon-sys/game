@@ -20,6 +20,8 @@ extends CanvasLayer
 ##   uncover（who）：身上的手散开   burst（who, hold 秒）：魔力疲倦爆发的表现（闪光、星爆 + 泄力声、爆发立绘 hold 秒、地上一滩紫水）
 ##   cg（key = data/cgs.json 的 portraits 键；空 = 恢复）：对话框换成大立绘   hint（text）：屏幕中间的黄字
 ##   hop（who）：原地跳一下（被吓到、被冻得一跳）
+##   bg（img = assets/generated/story_scenes/ 下的文件名，pan = in / out / left / right / up / none）：整屏背景大图（StoryBackdrop，对话框在上面）；
+##   bg_clear：收起大图（过场结束也会自动收起）。只有大图和台词、以 story_ 开头的过场 = 剧情回顾（背包 CG 图鉴里能回看，带 name）
 ##   item（id）：拿到道具   buff（who, id, on）：加 / 去掉状态   crack（long, fade 秒）：蓝色公主笑出声（轻笑 / long = 大笑；fade = 淡出）
 ## 步骤还可以写：
 ##   if（条件，同人物对话的 if：DialogueRunner.check）：不满足就跳过这一步（按之前的选择分支）
@@ -35,7 +37,7 @@ const DIR := "res://data/cutscenes/"
 const BAR_H := 28.0
 const ACTIONS := ["move", "face", "pose", "camera", "shake", "fade_out", "fade_in", "flash", "bubble", "say", "tickle", "trap",
 	"spawn", "despawn", "carry", "wait", "sfx", "voice", "set_flag", "notify", "chapter_end", "hold", "goto", "lie",
-	"cover", "uncover", "burst", "cg", "hint", "item", "buff", "crack", "hop", "words", "fireworks"]
+	"cover", "uncover", "burst", "cg", "hint", "item", "buff", "crack", "hop", "words", "fireworks", "bg", "bg_clear"]
 const BUBBLE_TEXT := {"surprise": "！", "question": "？", "laugh": "哈哈哈", "dots": "……", "sad": "呜……", "angry": "哼！", "shy": "///", "happy": "♪"}
 ## free_camera 过场开始前镜头的边界（结束时恢复）
 var _cam_limits: Array = []
@@ -73,6 +75,7 @@ var chapter_next := ""
 ## goto 动作：过场结束后换到这一层（{floor, spawn}）
 var _goto := {}
 var chapter_title: Label
+var backdrop: StoryBackdrop
 var chapter_sub: Label
 
 
@@ -83,6 +86,8 @@ func _ready() -> void:
 
 
 func _build() -> void:
+	backdrop = StoryBackdrop.new()
+	add_child(backdrop)
 	curtain = _rect(Color(0.03, 0.02, 0.05, 0.0))
 	curtain.set_anchors_preset(Control.PRESET_FULL_RECT)
 	flash_rect = _rect(Color(1, 1, 1, 0.0))
@@ -333,6 +338,8 @@ func _finish(id: String, cs: Dictionary) -> void:
 		_cg_override = false
 		Dialogue.set_portrait_override(null)
 	Dialogue.portrait_fx.end_cutscene_cg()
+	if backdrop.is_shown():
+		backdrop.clear(0.4)
 	var tw := create_tween().set_parallel()
 	tw.tween_property(top_bar, "position:y", -BAR_H, 0.35)
 	tw.tween_property(bottom_bar, "position:y", 270.0, 0.35)
@@ -565,6 +572,11 @@ func _do(a: Dictionary, instant: bool) -> float:
 		"burst":
 			if not instant:
 				_burst(who, float(a.get("hold", 3.0)))
+		"bg":
+			backdrop.show_image(str(a.get("img", "")), str(a.get("pan", "in")), instant)
+			return 0.0 if instant else StoryBackdrop.FADE
+		"bg_clear":
+			backdrop.clear(0.0 if instant else StoryBackdrop.FADE)
 		"cg":
 			var key := str(a.get("key", ""))
 			var info: Dictionary = CG.data.get("portraits", {}).get(key, {})

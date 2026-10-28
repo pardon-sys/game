@@ -8,8 +8,8 @@ extends QuestRunner
 ##   3 没有灯的小巷「灯全灭了」（QuestHide）/ 4 集市里追回小莉莉的宝贝盒（QuestBox）→ 做完（骑士勋章、红绳 → 引向主线）。
 ## 测试：search_held（这一帧当成按住了 E）、progress、spot、lily、duel()。
 
-const SEARCH_TIME := 1.6
-const REACH_TIME := 1.2
+const SEARCH_TIME := 2.2
+const REACH_TIME := 1.6
 const SPOT_R := 14.0
 const DUEL_R := 20.0
 ## 三片光脚地面：[种类, 左上角的格, 大小（格）]

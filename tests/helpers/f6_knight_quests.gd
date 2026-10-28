@@ -219,6 +219,8 @@ static func run(t: Node) -> void:
 		and GameState.inventory.count("knight_medal") == 1 and not pink.has_meta(&"barefoot") and not KnightQuests.is_active("shoes"))
 	LilyDuelShow.quiet = false
 	LilyDuelShow.fixed_seed = -1
+	var shoes_cuts := ["kq_shoes_to1", "kq_shoes_to2", "kq_shoes_invite", "kq_shoes_to4", "story_kq_shoes"]
+	verify(t, "转阶段都有过场、结尾接着背景大图过场（%s）" % [shoes_cuts.filter(func(c): return not t.seen_cuts.has(c))], shoes_cuts.all(func(c): return t.seen_cuts.has(c)))
 	await t._wait(0.3)
 	gd = t._node("after_k_guard_dungeon") as Node2D
 	verify(t, "做完以后：玩法节点收走、主线的「！」回来了", runner(t, "shoes") == null and gd != null and gd.get_node_or_null("ErrandMark") != null)
@@ -328,7 +330,9 @@ static func run(t: Node) -> void:
 	rhb.got = {"bell": QuestHerbs.NEED, "moss": QuestHerbs.NEED, "yawn": QuestHerbs.NEED - 1}
 	var last: HerbPatch = rhb.patches.filter(func(x): return x.kind == "yawn" and not x.picked)[0]
 	rhb.pick_at(last)
-	verify(t, "三味药都齐了 → 回工房熬药；光着脚收走", KnightQuests.stage("samples") == 5 and not pink.has_meta(&"barefoot"))
+	await t._advance_until(func(): return KnightQuests.stage("samples") == 5, 20.0)
+	verify(t, "三味药都齐了 → 一脚泥回工房（过场 kq_samples_to5）→ 熬药；光着脚收走", KnightQuests.stage("samples") == 5 and not pink.has_meta(&"barefoot")
+		and t.seen_cuts.has("kq_samples_to5"))
 	# 5 熬药
 	BrewShow.quiet = true
 	GameState.pending_spawn = "from_town"
@@ -365,6 +369,8 @@ static func run(t: Node) -> void:
 	BrewShow.quiet = false
 	verify(t, "三锅熬完 → 安神香（支线做完）", KnightQuests.is_done("samples") and GameState.inventory.count("calm_incense") == 1
 		and t.seen_cuts.has("kq_samples_done") and not GameState.has_flag("kq_samples_cellar"))
+	var samples_cuts := ["kq_samples_to1", "kq_samples_to2", "kq_samples_to3", "kq_samples_to4", "kq_samples_to5", "story_kq_samples"]
+	verify(t, "转阶段都有过场、结尾接着背景大图过场（%s）" % [samples_cuts.filter(func(c): return not t.seen_cuts.has(c))], samples_cuts.all(func(c): return t.seen_cuts.has(c)))
 	# ---------------------------------------------------------------- ③ 队长的旧剑术
 	await go_town(t, "from_pharmacy")
 	await t._talk("floor_06/after_k_captain", "")
