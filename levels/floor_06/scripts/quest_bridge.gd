@@ -2,16 +2,25 @@ class_name QuestBridge
 extends QuestRunner
 ## 支线「点灯笼的小姑娘」第五段「小桥」（floor_06_knight_bridge）：两个人手拉着手（蓝色公主紧跟着）走过排水渠上一格宽的小木桥。
 ##   桥板缝里的手印（BridgeHand，HANDS）一阵一阵伸上来抓脚：被抓到 = 挠一下；被抓 LET_GO 次 / 冲刺（一冲就松手了）/ 闷笑过 LET_GO_LAUGH
-##   = 手被扯开：两个人都退回桥头（START），重来。走到桥那头（END_X 以右）→ 回忆的台词（「那时候，她的手也是这么暖的」）→ 这一段做完。
+##   = 手被扯开：两个人都退回桥头（START），重来。走到桥那头（END，END_R 以内）→ 回忆的台词（「那时候，她的手也是这么暖的」）→ 这一段做完。
 ## 测试：hands、grabs、let_go()、tick(秒)。
 
-const HANDS := [[Vector2i(10, 4), 0.0], [Vector2i(13, 4), 1.1], [Vector2i(16, 4), 0.5], [Vector2i(19, 4), 1.6], [Vector2i(22, 4), 0.9], [Vector2i(24, 4), 2.0]]
-const START := Vector2i(5, 4)
-const END_X := 26
-const LET_GO := 3
+## 地图上的点（QuestMaps：小桥的布局在 tools/build/quest_maps.py，中间拐一个弯）：手印 [格, 错开的时间]
+static var HANDS: Array = _hands()
+static var START: Vector2i = QuestMaps.cell("floor_06_knight_bridge", "start")
+static var END: Vector2i = QuestMaps.cell("floor_06_knight_bridge", "end")
+const END_R := 14.0
+const LET_GO := 2
 const LET_GO_LAUGH := 0.75
 
 var hands: Array = []
+
+
+static func _hands() -> Array:
+	var out := []
+	for c in QuestMaps.cells("floor_06_knight_bridge", "hands"):
+		out.append([c, fmod(out.size() * 0.55, BridgeHand.EVERY)])
+	return out
 var grabs := 0
 var _done := false
 
@@ -52,11 +61,11 @@ func _process(delta: float) -> void:
 
 
 func tick(_delta: float) -> void:
-	var on_bridge := pink.global_position.x > Cutscene.cell_to_world(Vector2i(8, 4)).x
+	var on_bridge := pink.global_position.x > Cutscene.cell_to_world(START + Vector2i(4, 0)).x
 	if on_bridge and (pink.is_dashing() or (pink.laugh and pink.laugh.ratio() >= LET_GO_LAUGH)):
 		let_go()
 		return
-	if pink.global_position.x >= Cutscene.cell_to_world(Vector2i(END_X, 4)).x:
+	if pink.global_position.distance_to(Cutscene.cell_to_world(END)) <= END_R:
 		_finish()
 
 
@@ -77,7 +86,7 @@ func let_go() -> void:
 	if pink.status:
 		pink.status.clear_root()
 	if is_instance_valid(blue):
-		blue.global_position = Cutscene.cell_to_world(START) + Vector2(-12, 0)
+		blue.global_position = Cutscene.cell_to_world(START) + Vector2(0, 14)
 
 
 func _finish() -> void:

@@ -564,50 +564,34 @@ oh.put(*om["blue"][0], "blue_princess follow=true ai=false")
 oh.put(*om["blue"][0], "f6afterroom")
 oh.write()
 
-# ================================================================ 训练室后面的旧仓库（骑士篇支线「没有名字的生日」：发条小手、三个零件；零件和小手由 QuestWarehouse 摆）
-wh = Map(WAREHOUSE, 26, 16, "intro =\nambient = 0.4,0.36,0.42\nno_switch = false")
-wh.room(2, 2, 23, 13)
-for x in (8, 18):
-    wh.put(x, 1, "torch lit=true")
-wh.put(3, 3, "f6afterroom")
-wh.put(2, 7, "exit target=%s spawn=from_warehouse" % TOWN)
-wh.put(3, 7, "spawn id=from_town")
-wh.put(4, 7, "player")
-wh.put(4, 8, "blue_princess follow=true ai=false")
-for (x, y) in ((8, 4), (12, 9), (16, 5), (20, 10), (9, 12), (19, 3)):
-    prop(wh, x, y, "crate")
-for (x, y) in ((14, 3), (6, 11), (22, 7)):
-    prop(wh, x, y, "barrel")
-prop(wh, 13, 12, "music_box")
+# ================================================================ 训练室后面的旧仓库（骑士篇支线「没有名字的生日」：货架隔出的过道、发条小手、零件；零件和小手由 QuestWarehouse 按标记点摆）
+wh, whm = qmaps.build(Map, WAREHOUSE, "intro =\nambient = 0.4,0.36,0.42\nno_switch = false", prop, "torch lit=true", 9)
+QMARKS[WAREHOUSE] = whm
+wh.put(*whm["exit"][0], "exit target=%s spawn=from_warehouse" % TOWN)
+wh.put(*whm["start"][0], "spawn id=from_town")
+wh.put(*whm["start"][0], "player")
+wh.put(*whm["blue"][0], "blue_princess follow=true ai=false")
+wh.put(*whm["blue"][0], "f6afterroom")
 wh.write()
 
-# ================================================================ 西南角的储物间（骑士篇支线「点灯笼的小姑娘」：墙上的旧痒痒刷、角落里的旧布偶）
-sr = Map(STORAGE, 18, 8, "intro =\nambient = 0.3,0.28,0.4\nno_switch = false")
-sr.room(2, 2, 15, 5)
-sr.put(2, 3, "exit target=%s spawn=from_storage" % TOWN)
-sr.put(3, 3, "spawn id=from_town")
-sr.put(4, 3, "player")
-sr.put(4, 4, "blue_princess follow=true ai=false")
-sr.put(3, 2, "f6afterroom")
-for (x, y) in ((15, 2), (15, 5), (12, 5)):
-    prop(sr, x, y, "crate")
-prop(sr, 14, 3, "barrel")
+# ================================================================ 西南角的储物间（骑士篇支线「点灯笼的小姑娘」：上下两条储物走道，墙上的旧痒痒刷、尽头的旧布偶）
+sr, srm = qmaps.build(Map, STORAGE, "intro =\nambient = 0.3,0.28,0.4\nno_switch = false", prop)
+QMARKS[STORAGE] = srm
+sr.put(*srm["exit"][0], "exit target=%s spawn=from_storage" % TOWN)
+sr.put(*srm["start"][0], "spawn id=from_town")
+sr.put(*srm["start"][0], "player")
+sr.put(*srm["blue"][0], "blue_princess follow=true ai=false")
+sr.put(*srm["blue"][0], "f6afterroom")
 sr.write()
 
-# ================================================================ 排水渠上的小桥（骑士篇支线「点灯笼的小姑娘」：手拉手过桥，桥下的手印）
-bg = Map(BRIDGE, 34, 9, "intro =\nambient = 0.28,0.3,0.45\nno_switch = false")
-bg.room(2, 2, 31, 6)
-bg.put(2, 4, "exit target=%s spawn=from_bridge" % TOWN)
-bg.put(3, 4, "spawn id=from_town")
-bg.put(4, 4, "player")
-bg.put(4, 5, "blue_princess follow=true ai=false")
-bg.put(3, 2, "f6afterroom")
-# 中间这一段只剩一格宽的木桥（两边是水渠，当墙）
-for x in range(8, 26):
-    for y in (2, 3, 5, 6):
-        bg.g[y][x] = "#"
-for (x, y) in ((7, 4), (26, 4)):
-    prop(bg, x, y, "lamp")
+# ================================================================ 排水渠上的小桥（骑士篇支线「点灯笼的小姑娘」：一格宽的木桥，中间拐一个弯，桥下的手印）
+bg, bgm = qmaps.build(Map, BRIDGE, "intro =\nambient = 0.28,0.3,0.45\nno_switch = false", prop)
+QMARKS[BRIDGE] = bgm
+bg.put(*bgm["exit"][0], "exit target=%s spawn=from_bridge" % TOWN)
+bg.put(*bgm["start"][0], "spawn id=from_town")
+bg.put(*bgm["start"][0], "player")
+bg.put(*bgm["blue"][0], "blue_princess follow=true ai=false")
+bg.put(*bgm["blue"][0], "f6afterroom")
 bg.write()
 
 # ================================================================ 保卫队训练营（陷阱验收；踏板由任务摆）

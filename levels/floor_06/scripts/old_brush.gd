@@ -5,7 +5,7 @@ extends Node2D
 ##   千手解放 / 冰晶结界：冻住 FROZEN 秒，不扫。
 ## 测试：state（idle / warn / sweep / frozen）、phase_offset、hit(角色)。
 
-const EVERY := 2.4
+const EVERY := 2.0
 const WARN := 0.45
 const SWEEP := 0.55
 const WIDTH := 14.0

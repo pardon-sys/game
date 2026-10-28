@@ -557,12 +557,12 @@ static func run(t: Node) -> void:
 		and t.seen_cuts.has("kq_host_box") and KnightQuests.marked_npcs().has("after_k_engineer"))
 	await t._talk("floor_06/after_k_engineer", "")
 	await t._advance_until(func(): return KnightQuests.stage("host") == 2, 5.0)
-	verify(t, "工匠：缺三个零件，训练室后面的旧仓库（门开了）", KnightQuests.stage("host") == 2 and GameState.has_flag("kq_host_warehouse"))
+	verify(t, "工匠：缺四个零件，训练室后面的旧仓库（门开了）", KnightQuests.stage("host") == 2 and GameState.has_flag("kq_host_warehouse"))
 	GameState.pending_spawn = "from_town"
 	await t.main.change_level(Floors.scene(KnightStory.WAREHOUSE))
-	await t._advance_until(func(): return runner(t, "host") is QuestWarehouse, 5.0)
+	await t._advance_until(func(): return runner(t, "host") is QuestWarehouse and GameState.has_flag("kq_host_wh_intro") and not GameState.in_dialogue, 10.0)
 	var rwh := runner(t, "host") as QuestWarehouse
-	verify(t, "旧仓库：%d 只发条小手、%d 个零件" % [rwh.hands.size() if rwh else 0, rwh.parts.size() if rwh else 0], rwh != null and rwh.hands.size() == QuestWarehouse.HANDS.size() and rwh.parts.size() == 3)
+	verify(t, "旧仓库：%d 只发条小手、%d 个零件" % [rwh.hands.size() if rwh else 0, rwh.parts.size() if rwh else 0], rwh != null and rwh.hands.size() == QuestWarehouse.HANDS.size() and rwh.parts.size() == QuestWarehouse.NEED)
 	if rwh == null:
 		return
 	pink = rwh.pink
@@ -618,10 +618,12 @@ static func run(t: Node) -> void:
 		verify(t, "亮「！」按 J 缩脚", pw.warn_left == 0.0)
 		pw.blue_laugh = 0.99
 		await t._wait(0.5)
-	await t._advance_until(func(): return t.seen_cuts.has("kq_host_done") and not Cutscene.is_playing(), 15.0)
+	await t._advance_until(func(): return t.seen_cuts.has("story_kq_host") and not Cutscene.is_playing(), 40.0)
 	PartyShow.quiet = false
 	verify(t, "蓝色公主先笑了 → 寿星许愿「希望明年也有人记得今天」→ 做完（对话 %s，锁 %d）" % [GameState.in_dialogue, GameState.dialogue_holds],
 		KnightQuests.is_done("host") and t.seen_cuts.has("kq_host_done"))
+	var host_cuts := ["kq_host_box", "kq_host_to3", "kq_host_lullaby", "kq_host_to4", "kq_host_to5", "story_kq_host"]
+	verify(t, "⑤ 转阶段都有过场、结尾接大图过场（%s）" % [host_cuts.filter(func(c): return not t.seen_cuts.has(c))], host_cuts.all(func(c): return t.seen_cuts.has(c)))
 	# ---------------------------------------------------------------- ④ 夜里的栅栏
 	KnightStory.jump("sneak")
 	await go_town(t, "from_drill")
@@ -831,7 +833,7 @@ static func run(t: Node) -> void:
 		rbr.hands[2].grab_now(pink)
 	verify(t, "被抓 %d 次：手被扯开，两个人退回桥头" % QuestBridge.LET_GO, rbr.grabs == 0 and pink.global_position.distance_to(Cutscene.cell_to_world(QuestBridge.START)) < 4.0)
 	pink.status.clear_root()
-	pink.global_position = Cutscene.cell_to_world(Vector2i(QuestBridge.END_X + 1, 4))
+	pink.global_position = Cutscene.cell_to_world(QuestBridge.END)
 	rbr.tick(0.05)
 	await t._advance_until(func(): return KnightQuests.stage("blue") == 5 and not GameState.in_dialogue, 10.0)
 	verify(t, "走到桥那头：「那时候，她的手也是这么暖的」→ 回旧石灯笼", KnightQuests.stage("blue") == 5)
@@ -854,9 +856,11 @@ static func run(t: Node) -> void:
 		bb2.blue_laugh = 0.95
 		bb2._press = 0.0
 		bb2.tickle_blue(bb2.weak)
-	await t._advance_until(func(): return t.seen_cuts.has("kq_blue_done") and not Cutscene.is_playing(), 15.0)
+	await t._advance_until(func(): return t.seen_cuts.has("story_kq_blue") and not Cutscene.is_playing(), 40.0)
 	BlueTickleShow.quiet = false
 	verify(t, "两个人一起笑出声：旧石灯笼亮了，「……谢谢。」「你刚刚笑了！」→ 做完", KnightQuests.is_done("blue") and t.seen_cuts.has("kq_blue_done"))
+	var blue_cuts := ["kq_blue_lantern", "kq_blue_to2", "kq_blue_to3", "kq_blue_to4", "kq_blue_to5", "story_kq_blue"]
+	verify(t, "⑥ 转阶段都有过场、结尾接大图过场（%s）" % [blue_cuts.filter(func(c): return not t.seen_cuts.has(c))], blue_cuts.all(func(c): return t.seen_cuts.has(c)))
 	# 错过时间窗口：栅栏只在第一天夜里
 	KnightStory.jump("cell")
 	KnightQuests.refresh()

@@ -12,18 +12,18 @@ extends TrainingStage
 ##   闷笑满 = 这一局输，重来。赢了 await play() 返回 true。
 ## 测试：quiet、mode、score、need、prompt、warn_left、blue_laugh、press_key(键)、lane。
 
-const PROMPT_TIME := 1.0
+const PROMPT_TIME := 0.85
 const HIT_LAUGH := 0.12
-const DUSTER_COUNT := 10
-const BITES := 8
+const DUSTER_COUNT := 12
+const BITES := 10
 const BITE_COOL := 0.35
 const WARN := 0.7
-const WARN_EVERY := 2.2
+const WARN_EVERY := 1.9
 const TUCK_MISS := 0.1
 const CHOKE := 0.16
 const LANE_MISS := 0.1
 const PASSIVE := 0.02
-const WISH_BLUE_RATE := 0.07
+const WISH_BLUE_RATE := 0.055
 const KEYS := {"A": "脚趾", "S": "脚心", "D": "脚跟"}
 
 static var quiet := false

@@ -1,0 +1,54 @@
+{
+	"name": "大家都来了",
+	"letterbox": true,
+	"skippable": true,
+	"steps": [
+		{
+			"speaker": "派对主人",
+			"text": "……跳、跳完了！我跳得怎么样？",
+			"npc": "bonfire_host"
+		},
+		{
+			"speaker": "公主",
+			"text": "超棒的！",
+			"emotion": "happy"
+		},
+		{
+			"speaker": "",
+			"text": "（篝火边，不知道什么时候围了一圈人。卖东西的大叔、女仆姐姐、工匠……还有面包店奶奶和镇长）"
+		},
+		{
+			"speaker": "派对主人",
+			"text": "……大家？",
+			"npc": "bonfire_host"
+		},
+		{
+			"speaker": "卖东西的大叔",
+			"text": "……咳。路过。",
+			"npc": "merchant"
+		},
+		{
+			"speaker": "女仆姐姐",
+			"text": "点心都摆好了哦～",
+			"npc": "maid"
+		},
+		{
+			"speaker": "",
+			"text": "（蛋糕摆了上来。上面插满了蜡烛，数都数不清）"
+		},
+		{
+			"speaker": "工匠",
+			"text": "……不知道几岁，就插满。",
+			"npc": "miner"
+		},
+		{
+			"speaker": "派对主人",
+			"text": "……",
+			"npc": "bonfire_host"
+		},
+		{
+			"speaker": "",
+			"text": "（派对主人用手背擦了擦眼睛，又笑了起来）"
+		}
+	]
+}

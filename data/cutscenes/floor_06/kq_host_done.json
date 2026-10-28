@@ -28,6 +28,11 @@
 		{
 			"speaker": "蓝色的公主",
 			"text": "……生日快乐。"
+		},
+		{
+			"speaker": "公主",
+			"text": "生日快乐！",
+			"emotion": "happy"
 		}
 	]
 }

@@ -1,0 +1,75 @@
+{
+	"name": "点灯笼的小姑娘",
+	"order": 60,
+	"letterbox": false,
+	"skippable": true,
+	"steps": [
+		{
+			"actions": [
+				{
+					"img": "kq_blue",
+					"pan": "in",
+					"do": "bg"
+				}
+			],
+			"wait": 0.8
+		},
+		{
+			"speaker": "",
+			"text": "（两个人坐在灯笼底下的石阶上。蓝色公主抱着那只旧布偶）"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……小时候，我不是一个人点灯笼的。"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……有人一直在旁边。笑得比我还大声。"
+		},
+		{
+			"speaker": "公主",
+			"text": "是谁？"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……想不起来她的脸。"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……只记得，她会唱一首歌。"
+		},
+		{
+			"speaker": "",
+			"text": "（粉色公主没有说话。过了一会儿，她不自觉地哼起了一首很慢、很软的曲子）"
+		},
+		{
+			"speaker": "",
+			"text": "（蓝色公主转过头，看着她）"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……"
+		},
+		{
+			"speaker": "公主",
+			"text": "……怎么了？",
+			"emotion": "surprise"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……没什么。"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……再唱一遍。"
+		},
+		{
+			"actions": [
+				{
+					"do": "bg_clear"
+				}
+			],
+			"wait": 0.5
+		}
+	]
+}

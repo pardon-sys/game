@@ -8,19 +8,22 @@ no_switch = false
 . = floor
 P = player
 t = torch lit=true
-A = exit target=floor_06_after spawn=from_storage
-C = spawn id=from_town
-D = blue_princess follow=true ai=false
-E = f6afterroom
-F = prop type=crate
-G = prop type=barrel
+A = prop type=crate
+C = prop type=barrel
+D = exit target=floor_06_after spawn=from_storage
+E = spawn id=from_town + player
+F = blue_princess follow=true ai=false + f6afterroom
 
 [map]
-##################
-##################
-##.E...........F##
-##ACP.........G.##
-##..D...........##
-##..........F..F##
-##################
-##################
+################################
+################################
+##.A.................C......####
+#DEF........................####
+##..........................####
+##..C.......................####
+#######################.....####
+##.A...................A....####
+##..........................####
+##..........................####
+##..C....................C..####
+################################

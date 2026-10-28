@@ -8,7 +8,7 @@
 stages 每一段的目标（where 哪张图、cell 指哪一格、text 目标文字、unlock 这一段打开的门的标记、report 回去找委托人）、offer / accept / busy / done 台词、start_cut / done_cut 过场、reward 奖励、helper 最后一战的帮手台词。
 """
 from after_text.common import A, BLUE, BLUE_NODE as B, CAP, N, P, L, line
-from knight_text import kq_fence, kq_samples, kq_shoes, kq_spear
+from knight_text import kq_blue, kq_fence, kq_host, kq_samples, kq_shoes, kq_spear
 import quest_maps
 
 KDAY, KNIGHT_N, DRILL, PHARMACY, CELLAR = "floor_06_knight_day", "floor_06_knight_night", "floor_06_after_drill", "floor_06_after_pharmacy", "floor_06_after_cellar"
@@ -235,9 +235,9 @@ QUESTS = {
             {"where": "town", "cell": [8, 24], "text": "【没有名字的生日】借东西：彩带（商人）、点心（女仆）、蜡烛（工匠）——走到他们身边按 E", "runner": RUN % "quest_borrow"},
             {"where": "town", "cell": [34, 36], "text": "【没有名字的生日】派对主人的八音盒坏了——找工匠修",
              "talk": {"npc": "after_k_engineer", "lines": [L("八音盒？……我看看。"), L("（工匠转了转发条，里面「咔啦」一声）"),
-                                                       L("里面掉了三个零件。……训练室后面那间旧仓库里，以前堆着好多旧玩具，拆下来就能用。"),
+                                                       L("里面掉了四个零件。……训练室后面那间旧仓库里，以前堆着好多旧玩具，拆下来就能用。"),
                                                        L("……那仓库里的东西，有点怪。音乐一停，它们就会动。小心点。")]}},
-            {"where": WAREHOUSE, "cell": [4, 6], "text": "【没有名字的生日】训练室后面的旧仓库：找三个零件（音乐停的时候别乱跑）", "runner": RUN % "quest_warehouse", "unlock": "kq_host_warehouse"},
+            {"where": WAREHOUSE, "cell": QM[WAREHOUSE]["start"][0], "text": "【没有名字的生日】训练室后面的旧仓库：找四个零件（音乐停的时候别乱跑）", "runner": RUN % "quest_warehouse", "unlock": "kq_host_warehouse"},
             {"where": "town", "cell": [46, 24], "text": "【没有名字的生日】把八音盒修好，还给派对主人",
              "talk": {"npc": "after_k_host", "lines": [L("……修好了？！"), L("（她小心地转了转发条）")], "cut": "kq_host_lullaby"}},
             {"where": "town", "cell": [44, 26], "text": "【没有名字的生日】篝火边：生日舞排练", "runner": RUN % "quest_party"},
@@ -303,9 +303,9 @@ QUESTS = {
         "stages": [
             {"where": KNIGHT_N, "cell": [7, 31], "text": "【点灯笼的小姑娘】跟着地上的冰晶脚印走", "runner": RUN % "quest_footprints"},
             {"where": KNIGHT_N, "cell": [7, 31], "text": "【点灯笼的小姑娘】旧石灯笼：逗她笑", "runner": RUN % "quest_blue_lantern"},
-            {"where": KNIGHT_N, "cell": [26, 14], "text": "【点灯笼的小姑娘】回忆①：井边的冰面（收 5 个笑声铃铛）", "runner": RUN % "quest_well"},
-            {"where": STORAGE, "cell": [3, 4], "text": "【点灯笼的小姑娘】回忆②：西南角的储物间，找旧布偶", "runner": RUN % "quest_storage", "unlock": "kq_blue_storage"},
-            {"where": BRIDGE, "cell": [3, 4], "text": "【点灯笼的小姑娘】回忆③：小桥——手拉着手走过去", "runner": RUN % "quest_bridge", "unlock": "kq_blue_bridge"},
+            {"where": KNIGHT_N, "cell": [26, 14], "text": "【点灯笼的小姑娘】回忆①：井边的冰面（收 7 个笑声铃铛）", "runner": RUN % "quest_well"},
+            {"where": STORAGE, "cell": QM[STORAGE]["doll"][0], "text": "【点灯笼的小姑娘】回忆②：西南角的储物间，找旧布偶", "runner": RUN % "quest_storage", "unlock": "kq_blue_storage"},
+            {"where": BRIDGE, "cell": QM[BRIDGE]["end"][0], "text": "【点灯笼的小姑娘】回忆③：小桥——手拉着手走过去", "runner": RUN % "quest_bridge", "unlock": "kq_blue_bridge"},
             {"where": KNIGHT_N, "cell": [7, 31], "text": "【点灯笼的小姑娘】回到旧石灯笼：一起笑", "runner": RUN % "quest_blue_lantern"},
         ],
         "found_cut": "kq_blue_lantern",
@@ -422,72 +422,7 @@ def spear_start():
     return {"name": "旧剑术", "letterbox": True, "skippable": True, "steps": s}
 
 
-def blue_lantern():
-    s = [
-        line(N, "（冰晶脚印一直走到广场西南角。蓝色公主站在一盏很旧的石灯笼前面，一动不动）"),
-        line(P, "……找到你了！", "happy"),
-        line(BLUE, "……小时候，每年都是我点它。"),
-        line(BLUE, "……现在，点不亮了。"),
-        line(P, "……这也是笑声灯笼？", "surprise"),
-        line(BLUE, "……嗯。要笑声。"),
-    ]
-    return {"name": "旧石灯笼", "letterbox": True, "skippable": True, "steps": s}
-
-
-def blue_done():
-    s = [
-        line(N, "（旧石灯笼亮着暖暖的光。底座上刻着一行字，被磨得只剩一个「给」）"),
-        line(P, "……「给」……给谁的？", "surprise"),
-        line(BLUE, "……"),
-        line(N, "（蓝色公主很小声地笑了一下）"),
-        line(BLUE, "……谢谢。"),
-        line(P, "你刚刚笑了！", "happy"),
-        line(BLUE, "……没有。"),
-    ]
-    return {"name": "点灯笼的小姑娘", "letterbox": True, "skippable": True, "steps": s}
-
-
-def host_box():
-    s = [
-        line(HOST, "……谢谢你们！彩带、点心、蜡烛，都齐了！", None, None, "bonfire_host"),
-        line(N, "（她从帐篷里捧出一个旧旧的八音盒，转了转发条——只响了两个音，就「咔」地卡住了）"),
-        line(HOST, "……啊。坏了。", None, None, "bonfire_host"),
-        line(HOST, "这是我从小带在身边的东西。……大家找到我的时候，我手里就攥着它。", None, None, "bonfire_host"),
-        line(P, "……找工匠大叔修修看吧！", "happy"),
-    ]
-    return {"name": "坏掉的八音盒", "letterbox": True, "skippable": True, "steps": s}
-
-
-def host_lullaby():
-    s = [
-        {"actions": [A("sfx", sound="music_box")], "wait": 0.6},
-        line(N, "（八音盒响了起来。是一首很慢、很软的曲子）"),
-        line(P, "……啊。", "surprise"),
-        line(N, "（粉色公主不自觉地跟着哼了起来——一个音都没错）"),
-        line(HOST, "……你也会这首？", None, None, "bonfire_host"),
-        line(P, "……不知道。就会唱。", "helpless_1"),
-        line(BLUE, "……"),
-        line(N, "（蓝色公主一句话都没说，转身走开了）"),
-        line(HOST, "……她怎么了？", None, None, "bonfire_host"),
-        line(P, "……不知道。", "sad"),
-    ]
-    return {"name": "八音盒的曲子", "letterbox": True, "skippable": True, "steps": s}
-
-
-def host_done():
-    s = [
-        line(N, "（蛋糕上的蜡烛一根一根亮着。派对主人闭上眼睛）"),
-        line(HOST, "……希望明年，也有人记得今天。", None, None, "bonfire_host"),
-        line(N, "（她一口气吹灭了蜡烛。镇民们拍着手）"),
-        line(N, "（人群外面，面包店奶奶和镇长对视了一眼。谁都没说话，只是轻轻叹了口气）"),
-        line(HOST, "谢谢你们！……这是我过得最开心的一个生日！", None, None, "bonfire_host"),
-        line(BLUE, "……生日快乐。"),
-    ]
-    return {"name": "没有名字的生日", "letterbox": True, "skippable": True, "steps": s}
-
-
-CUTSCENES = {"kq_blue_lantern": blue_lantern, "kq_blue_done": blue_done, "kq_host_box": host_box, "kq_host_lullaby": host_lullaby, "kq_host_done": host_done,
-             "kq_spear_start": spear_start}
+CUTSCENES = {"kq_spear_start": spear_start}
 
 
 # ---------------------------------------------------------------- 委托人对话里的入口（gen 插到对话最前面）
@@ -565,7 +500,7 @@ SIGNS = {
 
 # ---------------------------------------------------------------- 加长的剧情（每个支线一个文件 kq_<id>.py）：按段的 busy / chat / enter、替换的过场、加长的台词
 def _merge_more():
-    for qid, mod in (("shoes", kq_shoes), ("samples", kq_samples), ("spear", kq_spear), ("fence", kq_fence)):
+    for qid, mod in (("shoes", kq_shoes), ("samples", kq_samples), ("spear", kq_spear), ("fence", kq_fence), ("host", kq_host), ("blue", kq_blue)):
         q = QUESTS[qid]
         for i, extra in mod.STAGES.items():
             q["stages"][i].update(extra)
@@ -578,6 +513,21 @@ def _merge_more():
     QUESTS["spear"]["drill"]["between"] = kq_spear.BETWEEN
     QUESTS["spear"]["watch_invite"] = kq_spear.WATCH_INVITE
     QUESTS["spear"]["watch"]["blind_intro"] = kq_spear.WATCH_BLIND
+    host = QUESTS["host"]
+    for k, more in kq_host.SHOWS.items():
+        show = host["shows"][k]
+        if k in ("dance", "wish", "taste"):
+            show["intro"] = show["intro"] + more.get("intro_more", [])
+        else:
+            show["intro"] = more.get("intro_more", []) + show["intro"]
+        if "win" in show:
+            show["win"] = show["win"] + more.get("win_more", [])
+    host["stages"][1]["talk"]["lines"] = kq_host.ENGINEER
+    host["warehouse_intro"] = kq_host.WAREHOUSE_INTRO
+    blue = QUESTS["blue"]
+    blue["well"]["memory"] = kq_blue.WELL_MEMORY
+    blue["storage"]["found"] = kq_blue.STORAGE_FOUND
+    blue["bridge"]["done"] = kq_blue.BRIDGE_DONE
 
 
 _merge_more()
