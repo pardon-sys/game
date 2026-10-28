@@ -1,0 +1,50 @@
+{
+	"name": "一直笑的那个",
+	"letterbox": true,
+	"skippable": true,
+	"steps": [
+		{
+			"speaker": "",
+			"text": "（从城墙上下来，两个人慢慢往回走。蓝色公主一直没说话）"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……我以前，很爱笑。"
+		},
+		{
+			"speaker": "公主",
+			"text": "……诶？",
+			"emotion": "surprise"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……奶奶说的。小时候，整条街都听得见我笑。"
+		},
+		{
+			"speaker": "公主",
+			"text": "那……队长抱出来的那个一直笑的孩子……",
+			"emotion": "surprise"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……"
+		},
+		{
+			"speaker": "公主",
+			"text": "那一直哭的那个呢？"
+		},
+		{
+			"speaker": "",
+			"text": "（蓝色公主没有回答。她看了粉色公主一眼，又很快地移开了目光）"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……明天。训练室。"
+		},
+		{
+			"speaker": "公主",
+			"text": "……嗯。两个人一起，把队长挠笑！",
+			"emotion": "happy"
+		}
+	]
+}

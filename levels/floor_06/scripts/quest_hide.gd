@@ -10,10 +10,10 @@ extends QuestRunner
 ## 测试：hiders、found、lamp_r、dim_left、find(hider)、heard()、caught()、shadows。
 
 const FIND := 6
-const SPOTS := [Vector2i(8, 4), Vector2i(13, 6), Vector2i(17, 4), Vector2i(21, 6), Vector2i(25, 4), Vector2i(29, 6), Vector2i(31, 5),
-	Vector2i(10, 6), Vector2i(19, 4), Vector2i(27, 5), Vector2i(15, 5), Vector2i(23, 4)]
-const SHADOW_AT := [Vector2i(11, 5), Vector2i(16, 6), Vector2i(18, 6), Vector2i(24, 4), Vector2i(26, 6), Vector2i(30, 5)]
-const ENTRANCE := Vector2i(4, 5)
+## 地图上的点（QuestMaps：小巷的布局在 tools/build/quest_maps.py）
+static var SPOTS: Array[Vector2i] = QuestMaps.cells("floor_06_knight_alley", "spots")
+static var SHADOW_AT: Array[Vector2i] = QuestMaps.cells("floor_06_knight_alley", "shadows")
+static var ENTRANCE: Vector2i = QuestMaps.cell("floor_06_knight_alley", "start")
 const LAMP_R := 46.0
 const DIM_R := 16.0
 const DIM_EVERY := 5.5
@@ -76,11 +76,9 @@ func _intro() -> void:
 
 ## 小孩们藏起来（已经找到的不动）
 func _hide_all() -> void:
+	# 没找到的小孩换个地方（可以换回原地，SPOTS 比小孩多）
 	var free := SPOTS.duplicate()
 	free.shuffle()
-	for hd in hiders:
-		if is_instance_valid(hd) and not hd.found:
-			free.erase(hd.spot)
 	while hiders.size() < FIND:
 		var hd := put(Hider.new(), Vector2.ZERO) as Hider
 		hd.runner = self

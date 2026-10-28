@@ -6,6 +6,51 @@
 			"if": {
 				"flag": "kq_fence_active",
 				"eq": {
+					"kq_fence_stage": 0
+				}
+			},
+			"node": "kq_fence_busy0"
+		},
+		{
+			"if": {
+				"flag": "kq_fence_active",
+				"eq": {
+					"kq_fence_stage": 1
+				}
+			},
+			"node": "kq_fence_busy1"
+		},
+		{
+			"if": {
+				"flag": "kq_fence_active",
+				"eq": {
+					"kq_fence_stage": 2
+				}
+			},
+			"node": "kq_fence_busy2"
+		},
+		{
+			"if": {
+				"flag": "kq_fence_active",
+				"eq": {
+					"kq_fence_stage": 3
+				}
+			},
+			"node": "kq_fence_busy3"
+		},
+		{
+			"if": {
+				"flag": "kq_fence_active",
+				"eq": {
+					"kq_fence_stage": 4
+				}
+			},
+			"node": "kq_fence_busy4"
+		},
+		{
+			"if": {
+				"flag": "kq_fence_active",
+				"eq": {
 					"kq_fence_stage": 5
 				}
 			},
@@ -56,6 +101,131 @@
 				}
 			]
 		},
+		"kq_fence_busy0": {
+			"lines": [
+				{
+					"text": "木板在南边城墙脚下。扛起来走，扛到路口我帮你钉。"
+				},
+				{
+					"text": "……小心房檐。今晚房檐上，有东西。"
+				}
+			],
+			"prompt": "（夜里的栅栏）",
+			"choices": [
+				{
+					"text": "知道了"
+				},
+				{
+					"text": "（先放一放）",
+					"set": {
+						"vars": {
+							"kq_req": "fence"
+						},
+						"call": "kq_abandon"
+					}
+				}
+			]
+		},
+		"kq_fence_busy1": {
+			"lines": [
+				{
+					"text": "第二道，南边城墙下面。"
+				},
+				{
+					"text": "门框我先量好了。你扛来，我就钉。"
+				}
+			],
+			"prompt": "（夜里的栅栏）",
+			"choices": [
+				{
+					"text": "知道了"
+				},
+				{
+					"text": "（先放一放）",
+					"set": {
+						"vars": {
+							"kq_req": "fence"
+						},
+						"call": "kq_abandon"
+					}
+				}
+			]
+		},
+		"kq_fence_busy2": {
+			"lines": [
+				{
+					"text": "最后一道。广场东南角。"
+				},
+				{
+					"text": "……钉完就回去睡觉。别在外面晃。"
+				}
+			],
+			"prompt": "（夜里的栅栏）",
+			"choices": [
+				{
+					"text": "知道了"
+				},
+				{
+					"text": "（先放一放）",
+					"set": {
+						"vars": {
+							"kq_req": "fence"
+						},
+						"call": "kq_abandon"
+					}
+				}
+			]
+		},
+		"kq_fence_busy3": {
+			"lines": [
+				{
+					"text": "……我不下去。爷爷说不许。"
+				},
+				{
+					"text": "缝很窄，只能趴着爬。……锤子拿好。"
+				}
+			],
+			"prompt": "（夜里的栅栏）",
+			"choices": [
+				{
+					"text": "知道了"
+				},
+				{
+					"text": "（先放一放）",
+					"set": {
+						"vars": {
+							"kq_req": "fence"
+						},
+						"call": "kq_abandon"
+					}
+				}
+			]
+		},
+		"kq_fence_busy4": {
+			"lines": [
+				{
+					"text": "……下面怎么样了？"
+				},
+				{
+					"text": "……别待太久。火把烧不了多久。"
+				}
+			],
+			"prompt": "（夜里的栅栏）",
+			"choices": [
+				{
+					"text": "知道了"
+				},
+				{
+					"text": "（先放一放）",
+					"set": {
+						"vars": {
+							"kq_req": "fence"
+						},
+						"call": "kq_abandon"
+					}
+				}
+			]
+		},
 		"kq_fence_report5": {
 			"lines": [
 				{
@@ -63,6 +233,20 @@
 				},
 				{
 					"text": "……旧会堂。我爷爷封的。「那件事」以后，就没人下去过。"
+				},
+				{
+					"text": "爷爷说，下面的东西，不是给我们看的。"
+				},
+				{
+					"text": "……看见什么了？"
+				},
+				{
+					"text": "一幅壁画。……上面的人像，全被刮花了。",
+					"speaker": "公主",
+					"emotion": "sad"
+				},
+				{
+					"text": "……"
 				},
 				{
 					"text": "……算了。敲回去了就好。"
@@ -121,6 +305,9 @@
 				},
 				{
 					"text": "瓶子里那几只，一直在哐哐地撞。……我总觉得，今晚还没完。"
+				},
+				{
+					"text": "广场的灯笼架、城墙下面的栅栏门，都是我爷爷那辈的手艺。……我只是修修补补。"
 				},
 				{
 					"text": "营地那边过来的三条路，我想先装上栅栏门。木板在城墙脚下。……搭把手？"

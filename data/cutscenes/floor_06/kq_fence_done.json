@@ -20,6 +20,16 @@
 			"speaker": "公主",
 			"text": "……嗯。像是……在等什么。",
 			"emotion": "sad"
+		},
+		{
+			"speaker": "工匠",
+			"text": "等什么都好。……门在，灯在，人就在。",
+			"npc": "miner"
+		},
+		{
+			"speaker": "工匠",
+			"text": "爷爷就是这么说的。",
+			"npc": "miner"
 		}
 	]
 }

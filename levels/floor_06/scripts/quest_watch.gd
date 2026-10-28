@@ -7,14 +7,15 @@ extends QuestRunner
 ##     CUES 下里躲开 NEED 下 = 过；挨打 MAX_HITS 下 = 重来这一轮。过了 → 过场 kq_spear_watch_end（「两个孩子」）→ 这一段做完。
 ## 测试：eaves、blind、cue（{side, left}）、dodged、hits、start_blind()、answer("left"/"right")。
 
-const EAVES := [Vector2i(10, 3), Vector2i(16, 3), Vector2i(22, 3), Vector2i(28, 3), Vector2i(34, 3), Vector2i(40, 3)]
-const TOWER := Vector2i(46, 3)
+## 地图上的点（QuestMaps：城墙的布局在 tools/build/quest_maps.py）
+static var EAVES: Array[Vector2i] = QuestMaps.cells("floor_06_knight_wall", "eaves")
+static var TOWER: Vector2i = QuestMaps.cell("floor_06_knight_wall", "tower")
 const TOWER_R := 22.0
-const CUES := 8
-const NEED := 6
+const CUES := 10
+const NEED := 8
 const MAX_HITS := 3
-const CUE_GAP := 1.0
-const REACT := 1.0
+const CUE_GAP := 0.8
+const REACT := 0.8
 const HIT_LAUGH := 0.1
 const CAP_SHEET := preload("res://assets/generated/npcs/captain.png")
 

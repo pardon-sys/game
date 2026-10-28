@@ -1,0 +1,35 @@
+{
+	"name": "爷爷的手艺",
+	"letterbox": true,
+	"skippable": true,
+	"steps": [
+		{
+			"speaker": "",
+			"text": "（第一道栅栏门「咔哒」一声扣上。工匠用手掌拍了拍门板）"
+		},
+		{
+			"speaker": "工匠",
+			"text": "……这种扣法，是我爷爷想出来的。从外面推不开，从里面一拉就开。",
+			"npc": "miner"
+		},
+		{
+			"speaker": "公主",
+			"text": "呼……木板好重……",
+			"emotion": "helpless_1"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……房檐上那只，我冻住了。"
+		},
+		{
+			"speaker": "公主",
+			"text": "谢谢……我手腾不出来……",
+			"emotion": "happy"
+		},
+		{
+			"speaker": "工匠",
+			"text": "下一道，南边城墙下面。……走那边别贴着房檐。",
+			"npc": "miner"
+		}
+	]
+}

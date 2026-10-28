@@ -23,6 +23,19 @@
 			"emotion": "happy"
 		},
 		{
+			"speaker": "蓝色的公主",
+			"text": "……我呢。"
+		},
+		{
+			"speaker": "保卫队队长",
+			"text": "……你不用。你的手从来不抖。",
+			"npc": "captain"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……"
+		},
+		{
 			"speaker": "保卫队队长",
 			"text": "那个骑士……要是哪天真冲出来了。",
 			"npc": "captain"

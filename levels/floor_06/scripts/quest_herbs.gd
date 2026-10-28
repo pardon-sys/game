@@ -12,10 +12,9 @@ const NEED := 4
 const PICK_TIME := 1.4
 const SPILL_AT := 0.97
 const SPILL_RESET := 0.4
-const PATCHES := {"bell": [Vector2i(7, 4), Vector2i(12, 6), Vector2i(9, 11), Vector2i(15, 9)],
-	"moss": [Vector2i(17, 4), Vector2i(20, 8), Vector2i(13, 12), Vector2i(24, 4)],
-	"yawn": [Vector2i(22, 11), Vector2i(26, 8), Vector2i(18, 12), Vector2i(11, 3)]}
-const HANDS := [Vector2i(14, 7), Vector2i(21, 5), Vector2i(19, 11), Vector2i(9, 8), Vector2i(24, 10)]
+## 地图上的点（QuestMaps：草药洞的布局在 tools/build/quest_maps.py）
+static var PATCHES := {"bell": QuestMaps.cells("floor_06_after_herbcave", "bell"), "moss": QuestMaps.cells("floor_06_after_herbcave", "moss"), "yawn": QuestMaps.cells("floor_06_after_herbcave", "yawn")}
+static var HANDS: Array[Vector2i] = QuestMaps.cells("floor_06_after_herbcave", "hands")
 const SEEK_R := 80.0
 
 var patches: Array = []

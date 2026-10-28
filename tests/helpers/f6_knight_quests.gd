@@ -299,7 +299,7 @@ static func run(t: Node) -> void:
 	await t._advance_until(func(): return runner(t, "samples") is QuestHerbs, 5.0)
 	var rhb := runner(t, "samples") as QuestHerbs
 	verify(t, "草药洞：三种药草各 %d 丛、%d 只手印，光着脚" % [QuestHerbs.PATCHES["bell"].size(), rhb.hands.size() if rhb else 0], rhb != null
-		and rhb.patches.size() == 12 and rhb.hands.size() == QuestHerbs.HANDS.size() and rhb.pink.has_meta(&"barefoot"))
+		and rhb.patches.size() == QuestHerbs.PATCHES.values().reduce(func(a, v): return a + v.size(), 0) and rhb.hands.size() == QuestHerbs.HANDS.size() and rhb.pink.has_meta(&"barefoot"))
 	if rhb == null:
 		return
 	pink = rhb.pink
@@ -456,6 +456,7 @@ static func run(t: Node) -> void:
 	await t._advance_until(func(): return KnightQuests.stage("spear") == 2 and not Cutscene.is_playing(), 20.0)
 	verify(t, "躲够 %d 下：墙头上「那天我抱出来两个孩子」→ 下一段二对一" % QuestWatch.NEED, KnightQuests.stage("spear") == 2 and t.seen_cuts.has("kq_spear_watch_end")
 		and not pink.status.is_rooted())
+	verify(t, "③ 训练轮之间有点评、去训练室的路上有过场（kq_spear_to2）", t.seen_cuts.has("kq_spear_to2"))
 	# 2 二对一
 	GameState.pending_spawn = "from_town"
 	await t.main.change_level(Floors.scene(KnightStory.DRILL))
@@ -482,7 +483,7 @@ static func run(t: Node) -> void:
 	rd.cap_laugh = 0.9
 	rd.open_left = 1.0
 	rd.tickle_cap(pink)
-	await t._advance_until(func(): return t.seen_cuts.has("kq_spear_done") and not Cutscene.is_playing(), 20.0)
+	await t._advance_until(func(): return t.seen_cuts.has("story_kq_spear") and not Cutscene.is_playing(), 20.0)
 	await t._wait(0.3)
 	verify(t, "队长笑出来：手帕（「一个很爱笑的小姑娘给的」）→ 护手绳、「到时候我会在」", KnightQuests.is_done("spear") and t.seen_cuts.has("kq_spear_duo_end")
 		and t.seen_cuts.has("kq_spear_done") and not GameState.has_flag("kq_spear_active"))
@@ -699,7 +700,7 @@ static func run(t: Node) -> void:
 			pink.global_position = Cutscene.cell_to_world(QuestCrack.NAILS[i])
 			rc.tick(0.05, false)
 		rc.finish_hammer(QuestCrack.HAMMER_BEATS)
-	await t._advance_until(func(): return KnightQuests.stage("fence") == 4, 5.0)
+	await t._advance_until(func(): return KnightQuests.stage("fence") == 4 and not Cutscene.is_playing(), 20.0)
 	verify(t, "三根封印钉敲回去：尽头的旧门开了，不用再爬", KnightQuests.stage("fence") == 4 and GameState.has_flag("kq_fence_hall") and not pink.has_buff("crawl"))
 	verify(t, "旧会堂那一段：广场边的裂缝还开着，出去了也能爬回来", GameState.has_flag("kq_fence_crack"))
 	# 4 旧会堂
@@ -729,9 +730,11 @@ static func run(t: Node) -> void:
 	await t._advance_until(func(): return KnightQuests.stage("fence") == 5 and not Cutscene.is_playing(), 20.0)
 	verify(t, "手印团的碎片收齐：壁画上的人像全被刮花了 → 回去找工匠", KnightQuests.stage("fence") == 5 and t.seen_cuts.has("kq_fence_hall_end")
 		and KnightQuests.marked_npcs().has("after_kn_engineer"))
+	var fence_cuts := ["kq_fence_to1", "kq_fence_to2", "kq_fence_crack", "kq_fence_to4", "kq_fence_hall_end"]
+	verify(t, "④ 转阶段都有过场（%s）" % [fence_cuts.filter(func(c): return not t.seen_cuts.has(c))], fence_cuts.all(func(c): return t.seen_cuts.has(c)))
 	await go_town(t, "from_crack")
 	await t._talk("floor_06/after_kn_engineer", "")
-	await t._advance_until(func(): return t.seen_cuts.has("kq_fence_done") and not Cutscene.is_playing(), 20.0)
+	await t._advance_until(func(): return t.seen_cuts.has("story_kq_fence") and not Cutscene.is_playing(), 20.0)
 	verify(t, "工匠：灯笼架也加固了 → 做完", KnightQuests.is_done("fence") and t.seen_cuts.has("kq_fence_done"))
 	verify(t, "最后一战的帮手：%s" % [KnightQuests.helpers()], ["shoes", "samples", "spear", "fence"].all(func(x): return KnightQuests.helpers().has(x)))
 	# ---------------------------------------------------------------- ⑥ 点灯笼的小姑娘（夜里）

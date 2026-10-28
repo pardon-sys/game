@@ -5,7 +5,7 @@
 """
 from after_text.common import BLUE, N, P, line
 from knight_text.story_base import DONE, _if, story
-from knight_text import kq_samples, kq_shoes
+from knight_text import kq_fence, kq_samples, kq_shoes, kq_spear
 
 
 # ---------------------------------------------------------------- Boss 开打之前：背靠背
@@ -28,4 +28,5 @@ def knight_boss():
     return story("背靠背", "knight_boss", 90, s, pan="in")
 
 
-CUTSCENES = {"story_knight_boss": knight_boss, "story_kq_shoes": kq_shoes.story_cut, "story_kq_samples": kq_samples.story_cut}
+CUTSCENES = {"story_knight_boss": knight_boss, "story_kq_shoes": kq_shoes.story_cut, "story_kq_samples": kq_samples.story_cut,
+             "story_kq_spear": kq_spear.story_cut, "story_kq_fence": kq_fence.story_cut}

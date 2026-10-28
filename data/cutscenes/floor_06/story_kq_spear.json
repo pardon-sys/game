@@ -1,0 +1,85 @@
+{
+	"name": "旧手帕",
+	"order": 30,
+	"letterbox": false,
+	"skippable": true,
+	"steps": [
+		{
+			"actions": [
+				{
+					"img": "kq_spear",
+					"pan": "in",
+					"do": "bg"
+				}
+			],
+			"wait": 0.8
+		},
+		{
+			"speaker": "",
+			"text": "（训练室的灯笼晃着。队长靠着墙，手里攥着那块旧手帕）"
+		},
+		{
+			"speaker": "保卫队队长",
+			"text": "……带了很多年了。洗了很多次，还是一股灯油味。",
+			"npc": "captain"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……给我看看。"
+		},
+		{
+			"speaker": "",
+			"text": "（蓝色公主接过手帕，用手指一点一点地描着帕角那两个手拉手的小女孩）"
+		},
+		{
+			"speaker": "公主",
+			"text": "这两个小女孩……像不像我们？",
+			"emotion": "happy"
+		},
+		{
+			"speaker": "",
+			"text": "（队长看了她们很久）"
+		},
+		{
+			"speaker": "保卫队队长",
+			"text": "……不像。",
+			"npc": "captain"
+		},
+		{
+			"speaker": "公主",
+			"text": "诶——一点都不像吗？",
+			"emotion": "surprise"
+		},
+		{
+			"speaker": "保卫队队长",
+			"text": "……左边那个，头发要短一点。",
+			"npc": "captain"
+		},
+		{
+			"speaker": "保卫队队长",
+			"text": "……右边那个，笑起来，眼睛会眯成一条线。",
+			"npc": "captain"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……"
+		},
+		{
+			"speaker": "",
+			"text": "（蓝色公主把手帕叠好，还给了他）"
+		},
+		{
+			"speaker": "保卫队队长",
+			"text": "……收好你们的护手绳。到时候，我会在。",
+			"npc": "captain"
+		},
+		{
+			"actions": [
+				{
+					"do": "bg_clear"
+				}
+			],
+			"wait": 0.5
+		}
+	]
+}

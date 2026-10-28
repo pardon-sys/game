@@ -9,11 +9,11 @@ extends QuestRunner
 
 const PICK_R := 20.0
 const GATE_R := 18.0
-const HAMMER_BEATS := 6
-const HAMMER_PASS := 4
+const HAMMER_BEATS := 8
+const HAMMER_PASS := 6
 ## 小镇道具的图集（prop.gd 没有 class_name）
 const PROP := preload("res://scripts/objects/prop.gd")
-const EAVES := [Vector2i(50, 33), Vector2i(47, 37), Vector2i(41, 34), Vector2i(39, 30), Vector2i(56, 36)]
+const EAVES := [Vector2i(50, 33), Vector2i(47, 37), Vector2i(41, 34), Vector2i(39, 30), Vector2i(56, 36), Vector2i(44, 33), Vector2i(53, 36)]
 
 var carrying := false
 var hammering := false

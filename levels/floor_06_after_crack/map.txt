@@ -9,16 +9,17 @@ no_switch = false
 P = player
 t = torch lit=true
 A = exit target=floor_06_after spawn=from_crack
-C = spawn id=from_town
-D = blue_princess follow=true ai=false
-E = f6afterroom
-F = exit target=floor_06_after_oldhall spawn=from_crack unlock_flag=kq_fence_hall locked_dialogue=after_hall_locked
-G = spawn id=from_hall
+C = spawn id=from_town + player
+D = blue_princess follow=true ai=false + f6afterroom
+E = exit target=floor_06_after_oldhall spawn=from_crack unlock_flag=kq_fence_hall locked_dialogue=after_hall_locked
+F = spawn id=from_hall
 
 [map]
-##############################################
-##############################################
-##ACP.....................................GF##
-##.ED.......................................##
-##############################################
-##############################################
+##########################################################
+##########################################################
+##ACD........####.......######..........######.....FE.####
+#####.###.......#..##..#.##..##..#####...#.#...#####.#####
+#####...###.####..####...##..##........#...#...##.....####
+######......####..##.........##.####.###.###...##.#..#####
+##########.......###.##..........####..........##.##.#####
+##########################################################

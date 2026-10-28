@@ -40,12 +40,12 @@ const TOWNS := [KDAY, KNIGHT_N, KCHASE]
 const DOORS := {"floor_06_after_house": [42, 10], "floor_06_after_pharmacy": [16, 10], "floor_06_after_drill": [8, 10], "floor_06_knight_alley": [2, 16],
 	"floor_06_knight_wall": [12, 40], "floor_06_after_crack": [38, 29], "floor_06_after_warehouse": [4, 12],
 	"floor_06_knight_storage": [2, 34], "floor_06_knight_bridge": [2, 30]}
-const EXITS := {"floor_06_after_house": [9, 10], "floor_06_after_pharmacy": [8, 8.5], "floor_06_after_drill": [10, 11.5], "floor_06_after_cellar": [8, 8.5],
-	"floor_06_knight_alley": [2, 5], "floor_06_after_herbcave": [2, 8], "floor_06_knight_wall": [2, 3], "floor_06_after_crack": [2, 2],
-	"floor_06_after_oldhall": [13, 17], "floor_06_after_warehouse": [2, 7], "floor_06_knight_storage": [2, 3], "floor_06_knight_bridge": [2, 4]}
+const EXITS := {"floor_06_after_house": [9, 10], "floor_06_after_pharmacy": [8, 8.5], "floor_06_after_drill": [10, 11.5], "floor_06_after_cellar": [8, 9],
+	"floor_06_knight_alley": [1, 7], "floor_06_after_herbcave": [1, 7], "floor_06_knight_wall": [1, 6], "floor_06_after_crack": [2, 2],
+	"floor_06_after_oldhall": [18, 17], "floor_06_after_warehouse": [2, 7], "floor_06_knight_storage": [2, 3], "floor_06_knight_bridge": [2, 4]}
 ## 套在别的图里面的图：子图 → [父图, 父图里通往它的门]（指路一层一层往里指：小镇 → 工房 → 地窖 → 草药洞）
-const NESTED := {"floor_06_after_cellar": ["floor_06_after_pharmacy", [12, 8]], "floor_06_after_herbcave": ["floor_06_after_cellar", [13, 5]],
-	"floor_06_after_oldhall": ["floor_06_after_crack", [43, 2]]}
+const NESTED := {"floor_06_after_cellar": ["floor_06_after_pharmacy", [12, 8]], "floor_06_after_herbcave": ["floor_06_after_cellar", [20, 5]],
+	"floor_06_after_oldhall": ["floor_06_after_crack", [52, 2]]}
 const ALLEY := "floor_06_knight_alley"
 const HERBCAVE := "floor_06_after_herbcave"
 const WALL := "floor_06_knight_wall"

@@ -8,7 +8,8 @@
 stages 每一段的目标（where 哪张图、cell 指哪一格、text 目标文字、unlock 这一段打开的门的标记、report 回去找委托人）、offer / accept / busy / done 台词、start_cut / done_cut 过场、reward 奖励、helper 最后一战的帮手台词。
 """
 from after_text.common import A, BLUE, BLUE_NODE as B, CAP, N, P, L, line
-from knight_text import kq_samples, kq_shoes
+from knight_text import kq_fence, kq_samples, kq_shoes, kq_spear
+import quest_maps
 
 KDAY, KNIGHT_N, DRILL, PHARMACY, CELLAR = "floor_06_knight_day", "floor_06_knight_night", "floor_06_after_drill", "floor_06_after_pharmacy", "floor_06_after_cellar"
 ALLEY, HERBCAVE = "floor_06_knight_alley", "floor_06_after_herbcave"
@@ -20,6 +21,8 @@ RUN = "res://levels/floor_06/scripts/%s.gd"
 GRANNY = "面包店奶奶"
 TOM, LILY, PHARM, ENG = "小汤姆", "小莉莉", "药剂师奶奶", "工匠"
 MORNING, AFTERNOON, NIGHT = 0, 1, 2
+# 支线小地图的标记点（quest_maps.py）：目标指向这些点
+QM = {fid: quest_maps.marks(fid) for fid in quest_maps.LAYOUTS}
 
 QUESTS = {
     # ---------------------------------------------------------------- ① 骑士救公主
@@ -35,7 +38,7 @@ QUESTS = {
             {"where": KDAY, "cell": [37, 22], "text": "【骑士救公主】「彩带高高挂，羽毛软软堆」——广场的彩带下面"},
             {"where": KDAY, "cell": [6, 30], "text": "【骑士救公主】「圆圆石头路，走到头有公主守着」——西边鹅卵石小路的尽头"},
             # 第四段：小巷里的「灯全灭了」（QuestHide，暗）；第五段：集市里追回小莉莉的宝贝盒（QuestBox，白天夜里都行）
-            {"where": ALLEY, "cell": [5, 6], "text": "【骑士救公主】小镇西边那条没有灯的小巷：玩「灯全灭了」（找出 5 个小孩）", "runner": RUN % "quest_hide"},
+            {"where": ALLEY, "cell": QM[ALLEY]["start"][0], "text": "【骑士救公主】小镇西边那条没有灯的小巷：玩「灯全灭了」（找出 6 个小孩）", "runner": RUN % "quest_hide"},
             {"where": "town", "cell": [10, 25], "text": "【骑士救公主】小莉莉的宝贝盒被手印搬走了——西边的集市", "runner": RUN % "quest_box"},
         ],
         "found": ["（草垛里摸到一只鞋！……还有一大把草叶扎在脚心上）", "（够到了！第二只鞋从彩带上掉下来，正砸在她头上）"],
@@ -103,10 +106,10 @@ QUESTS = {
         "stages": [
             {"where": KDAY, "cell": [40, 14], "text": "【手印样本】担架走过的石板路：哪块石头在晃？"},
             {"where": KDAY, "cell": [52, 7], "text": "【手印样本】地牢入口的铁门边"},
-            {"where": CELLAR, "cell": [7, 5], "text": "【手印样本】药剂师工房的地窖（工房里的活板门）", "unlock": "kq_samples_cellar"},
+            {"where": CELLAR, "cell": QM[CELLAR]["cluster"][0], "text": "【手印样本】药剂师工房的地窖（工房里的活板门）", "unlock": "kq_samples_cellar"},
             {"where": PHARMACY, "cell": [8, 5], "text": "【手印样本】把样本交给药剂师奶奶", "report": True},
             # 第五段：草药洞采三味药（QuestHerbs）；第六段：回工房熬药（QuestBrew → BrewShow）
-            {"where": HERBCAVE, "cell": [8, 8], "text": "【手印样本】地窖最里面的小门 → 草药洞：笑铃草、软须苔、哈欠花各 4 株", "runner": RUN % "quest_herbs", "unlock": "kq_samples_herbs"},
+            {"where": HERBCAVE, "cell": QM[HERBCAVE]["start"][0], "text": "【手印样本】地窖最里面的小门 → 草药洞：笑铃草、软须苔、哈欠花各 4 株", "runner": RUN % "quest_herbs", "unlock": "kq_samples_herbs"},
             {"where": PHARMACY, "cell": [8, 5], "text": "【手印样本】回工房，和奶奶一起熬药（走到药锅旁边）", "runner": RUN % "quest_brew"},
         ],
         "wobble": "（石头轻轻晃了一下……底下有东西）",
@@ -170,7 +173,7 @@ QUESTS = {
         "intro_cut": "kq_spear_start", "done_cut": "kq_spear_done", "reward": {},
         "stages": [{"where": DRILL, "cell": [10, 8], "text": "【队长的旧剑术】去西北角的训练室"},
                    # 第二段：城墙上守夜（QuestWatch）；第三段：二对一（QuestDuo，训练室）
-                   {"where": WALL, "cell": [5, 3], "text": "【队长的旧剑术】南边城墙的梯子 → 和队长一起上城墙守夜", "runner": RUN % "quest_watch", "unlock": "kq_spear_wall"},
+                   {"where": WALL, "cell": QM[WALL]["tower"][0], "text": "【队长的旧剑术】南边城墙的梯子 → 和队长一起上城墙守夜", "runner": RUN % "quest_watch", "unlock": "kq_spear_wall"},
                    {"where": DRILL, "cell": [10, 8], "text": "【队长的旧剑术】回训练室：两个人一起，和队长练一场", "runner": RUN % "quest_duo"}],
         # TaskSpearDrill
         "drill": {
@@ -365,8 +368,8 @@ QUESTS = {
             {"where": KNIGHT_N, "cell": [45, 35], "text": "【夜里的栅栏】去城墙脚下扛木板（%d / 3）→ 南边城墙下的路口"},
             {"where": KNIGHT_N, "cell": [36, 32], "text": "【夜里的栅栏】去城墙脚下扛木板（%d / 3）→ 广场东南的路口"},
             # 第四段：广场底下的裂缝（QuestCrack）；第五段：旧会堂（QuestOldHall）
-            {"where": CRACK, "cell": [4, 2], "text": "【夜里的栅栏】广场边的裂缝在漏紫光——爬进去，把封印钉敲回去", "runner": RUN % "quest_crack", "unlock": "kq_fence_crack"},
-            {"where": OLDHALL, "cell": [13, 15], "text": "【夜里的栅栏】裂缝尽头：旧会堂。找到手印漏出来的地方", "runner": RUN % "quest_oldhall", "unlock": "kq_fence_hall"},
+            {"where": CRACK, "cell": QM[CRACK]["nails"][0], "text": "【夜里的栅栏】广场边的裂缝在漏紫光——爬进去，把封印钉敲回去", "runner": RUN % "quest_crack", "unlock": "kq_fence_crack"},
+            {"where": OLDHALL, "cell": QM[OLDHALL]["cluster"][0], "text": "【夜里的栅栏】裂缝尽头：旧会堂。找到手印漏出来的地方", "runner": RUN % "quest_oldhall", "unlock": "kq_fence_hall"},
             {"where": KNIGHT_N, "cell": [48, 23], "text": "【夜里的栅栏】回去告诉工匠", "report": True},
         ],
         "lumber": [45, 40], "pick": "（扛起一捆木板。……好重。手腾不出来了）", "pick_hint": "按 E 扛起木板",
@@ -417,29 +420,6 @@ def spear_start():
         line(CAP, "……别问了。我也不知道。……站好。", None, None, "captain"),
     ]
     return {"name": "旧剑术", "letterbox": True, "skippable": True, "steps": s}
-
-
-def spear_done():
-    s = [
-        line(CAP, "……够了。", None, None, "captain"),
-        line(N, "（他放下木矛，从怀里摸出一根旧旧的护手绳，递给她）"),
-        line(CAP, "缠在手腕上。……闪的时候，手不会抖。", None, None, "captain"),
-        line(P, "……谢谢队长。", "happy"),
-        line(CAP, "那个骑士……要是哪天真冲出来了。", None, None, "captain"),
-        line(CAP, "……到时候，我会在。", None, None, "captain"),
-        line(N, "（学会了「完美闪避」：在快被打中的一瞬间冲刺，躲开以后能反挠对方一下。和骑士打的时候，会让他露出破绽）"),
-    ]
-    return {"name": "到时候我会在", "letterbox": True, "skippable": True, "steps": s}
-
-
-def fence_done():
-    s = [
-        line(N, "（三道栅栏门都立起来了。工匠拍了拍最后一道门，又抬头看了看广场上的灯笼架）"),
-        line(ENG, "……行了。剩下的，我自己来。", None, None, "miner"),
-        line(BLUE, "……那些手印。……房檐上，越来越多了。"),
-        line(P, "……嗯。像是……在等什么。", "sad"),
-    ]
-    return {"name": "栅栏门", "letterbox": True, "skippable": True, "steps": s}
 
 
 def blue_lantern():
@@ -506,59 +486,8 @@ def host_done():
     return {"name": "没有名字的生日", "letterbox": True, "skippable": True, "steps": s}
 
 
-def spear_watch_end():
-    s = [
-        line(N, "（布条解开了。两个人坐在哨塔的墙头上，底下是黑漆漆的小镇）"),
-        line(CAP, "……我是那一年入的队。", None, None, "captain"),
-        line(P, "那一年？", "surprise"),
-        line(CAP, "……那天，我从塌了的地方抱出来两个孩子。", None, None, "captain"),
-        line(CAP, "一个一直哭。一个一直笑。", None, None, "captain"),
-        line(BLUE, "……"),
-        line(P, "……后来呢？", "sad"),
-        line(CAP, "……下去吧。明天，在训练室。两个人一起来。", None, None, "captain"),
-    ]
-    return {"name": "守夜", "letterbox": True, "skippable": True, "steps": s}
-
-
-def spear_duo_end():
-    s = [
-        line(N, "（队长终于「噗」地笑出了声——又立刻板起脸，咳了两下）"),
-        line(CAP, "……没笑。", None, None, "captain"),
-        line(P, "你笑了！我们都听见了！", "happy"),
-        line(N, "（他从怀里掏出一块手帕擦汗。手帕角上，绣着两个手拉手的小女孩）"),
-        line(BLUE, "……这个图案。你从哪里来的。"),
-        line(CAP, "……一个很爱笑的小姑娘给的。", None, None, "captain"),
-        line(BLUE, "……"),
-    ]
-    return {"name": "二对一", "letterbox": True, "skippable": True, "steps": s}
-
-
-def fence_crack():
-    s = [
-        line(N, "（最后一道门刚立起来，广场边的石板缝里漏出一缕紫光）"),
-        line(ENG, "……又漏了。", None, None, "miner"),
-        line(P, "下面有什么？", "surprise"),
-        line(ENG, "……旧会堂。我爷爷在「那件事」以后，把下面整个封了。没人愿意下去。", None, None, "miner"),
-        line(ENG, "封印钉松了。……手印就是从那儿爬出来的。", None, None, "miner"),
-        line(BLUE, "……我们下去。"),
-    ]
-    return {"name": "广场底下的裂缝", "letterbox": True, "skippable": True, "steps": s}
-
-
-def fence_hall_end():
-    s = [
-        line(N, "（最后一块碎片收进了瓶子。大厅安静了下来）"),
-        line(N, "（火光照着墙上那幅大壁画。人像全被刮花了，什么也看不出来）"),
-        line(P, "……这是谁画的？", "surprise"),
-        line(BLUE, "……走吧。"),
-        line(N, "（她们回到广场的时候，工匠还站在裂缝旁边，一直没走）"),
-    ]
-    return {"name": "旧会堂", "letterbox": True, "skippable": True, "steps": s}
-
-
 CUTSCENES = {"kq_blue_lantern": blue_lantern, "kq_blue_done": blue_done, "kq_host_box": host_box, "kq_host_lullaby": host_lullaby, "kq_host_done": host_done,
-             "kq_spear_watch_end": spear_watch_end, "kq_spear_duo_end": spear_duo_end, "kq_fence_crack": fence_crack, "kq_fence_hall_end": fence_hall_end,
-             "kq_spear_start": spear_start, "kq_spear_done": spear_done, "kq_fence_done": fence_done}
+             "kq_spear_start": spear_start}
 
 
 # ---------------------------------------------------------------- 委托人对话里的入口（gen 插到对话最前面）
@@ -636,7 +565,7 @@ SIGNS = {
 
 # ---------------------------------------------------------------- 加长的剧情（每个支线一个文件 kq_<id>.py）：按段的 busy / chat / enter、替换的过场、加长的台词
 def _merge_more():
-    for qid, mod in (("shoes", kq_shoes), ("samples", kq_samples)):
+    for qid, mod in (("shoes", kq_shoes), ("samples", kq_samples), ("spear", kq_spear), ("fence", kq_fence)):
         q = QUESTS[qid]
         for i, extra in mod.STAGES.items():
             q["stages"][i].update(extra)
@@ -646,6 +575,9 @@ def _merge_more():
                 q[key.lower()] = getattr(mod, key)
     intro = QUESTS["samples"]["brew"]["intro"]
     QUESTS["samples"]["brew"]["intro"] = intro[:3] + kq_samples.BREW_INTRO + intro[3:]
+    QUESTS["spear"]["drill"]["between"] = kq_spear.BETWEEN
+    QUESTS["spear"]["watch_invite"] = kq_spear.WATCH_INVITE
+    QUESTS["spear"]["watch"]["blind_intro"] = kq_spear.WATCH_BLIND
 
 
 _merge_more()
