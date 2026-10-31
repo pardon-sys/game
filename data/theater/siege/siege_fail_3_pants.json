@@ -83,12 +83,14 @@
 		{
 			"act": 1,
 			"speaker": "公主",
-			"text": "好、好大的个子……蓝色的，那个戴头盔的是头头！"
+			"text": "好、好大的个子……蓝色的，那个戴头盔的是头头！",
+			"emotion": "angry"
 		},
 		{
 			"act": 1,
 			"speaker": "蓝色的公主",
-			"text": "……巨魔将军。……它在……喊口号。"
+			"text": "……巨魔将军。……它在……喊口号。",
+			"emotion": "normal"
 		},
 		{
 			"act": 1,
@@ -118,7 +120,19 @@
 		{
 			"act": 1,
 			"speaker": "公主",
-			"text": "放、放我下来！我自己会走！"
+			"text": "放、放我下来！我自己会走！",
+			"emotion": "angry",
+			"actions": [
+				{
+					"do": "tickle",
+					"who": "pink",
+					"by": "foe1",
+					"repeat": 5,
+					"interval": 0.22,
+					"fx": "hand",
+					"zone": "sole"
+				}
+			]
 		},
 		{
 			"act": 1,
@@ -144,7 +158,19 @@
 		{
 			"act": 2,
 			"speaker": "公主",
-			"text": "嘻嘻嘻！手、手指好粗——一刮就是一整个脚底哈哈哈！"
+			"text": "嘻嘻嘻！手、手指好粗——一刮就是一整个脚底哈哈哈！",
+			"emotion": "giggle",
+			"actions": [
+				{
+					"do": "tickle",
+					"who": "pink",
+					"by": "foe1",
+					"repeat": 5,
+					"interval": 0.22,
+					"fx": "hand",
+					"zone": "sole"
+				}
+			]
 		},
 		{
 			"act": 2,
@@ -165,12 +191,25 @@
 		{
 			"act": 2,
 			"speaker": "蓝色的公主",
-			"text": "……裤子……和巨魔……抢着揉……腿根……被挤扁了……"
+			"text": "……裤子……和巨魔……抢着揉……腿根……被挤扁了……",
+			"emotion": "giggle",
+			"actions": [
+				{
+					"do": "tickle",
+					"who": "blue",
+					"by": "foe2",
+					"repeat": 5,
+					"interval": 0.22,
+					"fx": "brush",
+					"zone": "thigh"
+				}
+			]
 		},
 		{
 			"act": 2,
 			"speaker": "公主",
 			"text": "噗哈哈哈！蓝色的被当成面团了！",
+			"emotion": "giggle",
 			"actions": [
 				{
 					"do": "bubble",
@@ -181,13 +220,34 @@
 					"do": "bubble",
 					"who": "blue",
 					"kind": "laugh"
+				},
+				{
+					"do": "tickle",
+					"who": "pink",
+					"by": "foe1",
+					"repeat": 5,
+					"interval": 0.22,
+					"fx": "hand",
+					"zone": "sole"
 				}
 			]
 		},
 		{
 			"act": 2,
 			"speaker": "蓝色的公主",
-			"text": "……你也是。……裤子说……你的脚……像饺子。"
+			"text": "……你也是。……裤子说……你的脚……像饺子。",
+			"emotion": "giggle",
+			"actions": [
+				{
+					"do": "tickle",
+					"who": "blue",
+					"by": "foe2",
+					"repeat": 5,
+					"interval": 0.22,
+					"fx": "brush",
+					"zone": "thigh"
+				}
+			]
 		},
 		{
 			"act": 3,
@@ -213,7 +273,19 @@
 		{
 			"act": 3,
 			"speaker": "公主",
-			"text": "不、不行了——蓝色的，一起！"
+			"text": "不、不行了——蓝色的，一起！",
+			"emotion": "helpless_1",
+			"actions": [
+				{
+					"do": "tickle",
+					"who": "pink",
+					"by": "foe1",
+					"repeat": 5,
+					"interval": 0.22,
+					"fx": "hand",
+					"zone": "sole"
+				}
+			]
 		},
 		{
 			"act": "burst",
@@ -268,7 +340,8 @@
 		{
 			"act": 3,
 			"speaker": "蓝色的公主",
-			"text": "……一起。……裤子……替我……数到三……"
+			"text": "……一起。……裤子……替我……数到三……",
+			"emotion": "helpless_1"
 		},
 		{
 			"act": "burst",
@@ -323,7 +396,8 @@
 		{
 			"act": 3,
 			"speaker": "公主",
-			"text": "呼……冻住了！它的棒子冻住了！"
+			"text": "呼……冻住了！它的棒子冻住了！",
+			"emotion": "helpless_2"
 		},
 		{
 			"act": 3,
@@ -372,6 +446,7 @@
 			"act": 3,
 			"speaker": "公主",
 			"text": "呀啊——！粗、粗手指……比刚才痒好多！哈哈哈哈！",
+			"emotion": "helpless_2",
 			"actions": [
 				{
 					"do": "bubble",
@@ -382,18 +457,109 @@
 					"do": "bubble",
 					"who": "blue",
 					"kind": "laugh"
+				},
+				{
+					"do": "tickle",
+					"who": "pink",
+					"by": "foe1",
+					"repeat": 5,
+					"interval": 0.22,
+					"fx": "hand",
+					"zone": "sole"
 				}
 			]
 		},
 		{
 			"act": 3,
 			"speaker": "蓝色的公主",
-			"text": "……哈哈……裤子……给巨魔……带路……哈哈哈哈！"
+			"text": "……哈哈……裤子……给巨魔……带路……哈哈哈哈！",
+			"emotion": "helpless_2",
+			"actions": [
+				{
+					"do": "tickle",
+					"who": "blue",
+					"by": "foe2",
+					"repeat": 5,
+					"interval": 0.22,
+					"fx": "brush",
+					"zone": "butt"
+				}
+			]
+		},
+		{
+			"act": 3,
+			"speaker": "",
+			"text": "（巨魔将军用两根粗手指掰开她的脚趾，指甲在趾缝里一道一道地刮；军鼓一响，另一只手就捏一下蓝色公主的屁股）",
+			"actions": [
+				{
+					"do": "tickle",
+					"who": "pink",
+					"by": "foe1",
+					"repeat": 8,
+					"interval": 0.22,
+					"fx": "hand",
+					"zone": "sole"
+				},
+				{
+					"do": "tickle",
+					"who": "blue",
+					"by": "foe2",
+					"repeat": 8,
+					"interval": 0.22,
+					"fx": "brush",
+					"zone": "butt"
+				}
+			]
+		},
+		{
+			"act": 3,
+			"speaker": "公主",
+			"text": "哈哈哈哈！指、指甲刮趾缝——将军大人饶命！我、我再也不叫你大个子了哈哈哈！",
+			"emotion": "helpless_2",
+			"actions": [
+				{
+					"do": "bubble",
+					"who": "pink",
+					"kind": "laugh"
+				},
+				{
+					"do": "bubble",
+					"who": "blue",
+					"kind": "laugh"
+				},
+				{
+					"do": "tickle",
+					"who": "pink",
+					"by": "foe1",
+					"repeat": 5,
+					"interval": 0.22,
+					"fx": "hand",
+					"zone": "sole"
+				}
+			]
+		},
+		{
+			"act": 3,
+			"speaker": "蓝色的公主",
+			"text": "……鼓一响……裤子的手……也……跟着节拍……捏……",
+			"emotion": "helpless_2",
+			"actions": [
+				{
+					"do": "tickle",
+					"who": "blue",
+					"by": "foe2",
+					"repeat": 5,
+					"interval": 0.22,
+					"fx": "brush",
+					"zone": "butt"
+				}
+			]
 		},
 		{
 			"act": 4,
 			"speaker": "",
 			"text": "（巨魔将军亲自上阵，一只大手抓住两只脚刮脚心，另一只手的手指按着军鼓的节奏在蓝色公主的腿根上戳）",
+			"portrait": "siege_fail_3",
 			"actions": [
 				{
 					"do": "pose",
@@ -436,12 +602,25 @@
 		{
 			"act": 4,
 			"speaker": "公主",
-			"text": "哈哈哈哈！将军大人——认输！我们认输！"
+			"text": "哈哈哈哈！将军大人——认输！我们认输！",
+			"emotion": "helpless_2",
+			"actions": [
+				{
+					"do": "tickle",
+					"who": "pink",
+					"by": "foe1",
+					"repeat": 5,
+					"interval": 0.22,
+					"fx": "hand",
+					"zone": "sole"
+				}
+			]
 		},
 		{
 			"act": 4,
 			"speaker": "蓝色的公主",
 			"text": "……哈哈……将军……和裤子……都……赢了……哈哈哈……",
+			"emotion": "helpless_2",
 			"actions": [
 				{
 					"do": "bubble",
@@ -452,6 +631,15 @@
 					"do": "bubble",
 					"who": "blue",
 					"kind": "laugh"
+				},
+				{
+					"do": "tickle",
+					"who": "blue",
+					"by": "foe2",
+					"repeat": 5,
+					"interval": 0.22,
+					"fx": "brush",
+					"zone": "butt"
 				}
 			]
 		},
@@ -463,12 +651,14 @@
 		{
 			"act": 4,
 			"speaker": "公主",
-			"text": "哈……哈……下次……先把扔小怪的巨魔打倒……"
+			"text": "哈……哈……下次……先把扔小怪的巨魔打倒……",
+			"emotion": "damaged"
 		},
 		{
 			"act": 4,
 			"speaker": "蓝色的公主",
-			"text": "……将军……用冰链。……绑住……再打。"
+			"text": "……将军……用冰链。……绑住……再打。",
+			"emotion": "shy"
 		},
 		{
 			"act": 4,

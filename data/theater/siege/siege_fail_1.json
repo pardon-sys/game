@@ -83,12 +83,14 @@
 		{
 			"act": 1,
 			"speaker": "公主",
-			"text": "泡、泡泡！我被关在泡泡里了——蓝色的，你那边呢？"
+			"text": "泡、泡泡！我被关在泡泡里了——蓝色的，你那边呢？",
+			"emotion": "angry"
 		},
 		{
 			"act": 1,
 			"speaker": "蓝色的公主",
-			"text": "……也在里面。……飘起来了。"
+			"text": "……也在里面。……飘起来了。",
+			"emotion": "normal"
 		},
 		{
 			"act": 1,
@@ -118,12 +120,36 @@
 		{
 			"act": 1,
 			"speaker": "公主",
-			"text": "鞋子被卷走了！泡泡里怎么还能伸进触手来啊！"
+			"text": "鞋子被卷走了！泡泡里怎么还能伸进触手来啊！",
+			"emotion": "angry",
+			"actions": [
+				{
+					"do": "tickle",
+					"who": "pink",
+					"by": "foe1",
+					"repeat": 5,
+					"interval": 0.22,
+					"fx": "hand",
+					"zone": "sole"
+				}
+			]
 		},
 		{
 			"act": 1,
 			"speaker": "蓝色的公主",
-			"text": "……泡泡……是软的。……挡不住。"
+			"text": "……泡泡……是软的。……挡不住。",
+			"emotion": "normal",
+			"actions": [
+				{
+					"do": "tickle",
+					"who": "blue",
+					"by": "foe2",
+					"repeat": 5,
+					"interval": 0.22,
+					"fx": "brush",
+					"zone": "thigh"
+				}
+			]
 		},
 		{
 			"act": 2,
@@ -144,7 +170,19 @@
 		{
 			"act": 2,
 			"speaker": "公主",
-			"text": "嘻嘻嘻！隔、隔着泡泡也痒——脚趾别拔哈哈哈！"
+			"text": "嘻嘻嘻！隔、隔着泡泡也痒——脚趾别拔哈哈哈！",
+			"emotion": "giggle",
+			"actions": [
+				{
+					"do": "tickle",
+					"who": "pink",
+					"by": "foe1",
+					"repeat": 5,
+					"interval": 0.22,
+					"fx": "hand",
+					"zone": "sole"
+				}
+			]
 		},
 		{
 			"act": 2,
@@ -165,12 +203,25 @@
 		{
 			"act": 2,
 			"speaker": "蓝色的公主",
-			"text": "……啵……啵……一路……吸上来……数、数不过来……"
+			"text": "……啵……啵……一路……吸上来……数、数不过来……",
+			"emotion": "giggle",
+			"actions": [
+				{
+					"do": "tickle",
+					"who": "blue",
+					"by": "foe2",
+					"repeat": 5,
+					"interval": 0.22,
+					"fx": "brush",
+					"zone": "thigh"
+				}
+			]
 		},
 		{
 			"act": 2,
 			"speaker": "公主",
 			"text": "蓝色的！你那个泡泡在发抖！哈哈哈……我的也在抖！",
+			"emotion": "giggle",
 			"actions": [
 				{
 					"do": "bubble",
@@ -181,13 +232,34 @@
 					"do": "bubble",
 					"who": "blue",
 					"kind": "laugh"
+				},
+				{
+					"do": "tickle",
+					"who": "pink",
+					"by": "foe1",
+					"repeat": 5,
+					"interval": 0.22,
+					"fx": "hand",
+					"zone": "sole"
 				}
 			]
 		},
 		{
 			"act": 2,
 			"speaker": "蓝色的公主",
-			"text": "……是泡泡……自己……在晃。"
+			"text": "……是泡泡……自己……在晃。",
+			"emotion": "giggle",
+			"actions": [
+				{
+					"do": "tickle",
+					"who": "blue",
+					"by": "foe2",
+					"repeat": 5,
+					"interval": 0.22,
+					"fx": "brush",
+					"zone": "thigh"
+				}
+			]
 		},
 		{
 			"act": 3,
@@ -213,7 +285,19 @@
 		{
 			"act": 3,
 			"speaker": "公主",
-			"text": "要、要炸了——这次是真的要炸了——！"
+			"text": "要、要炸了——这次是真的要炸了——！",
+			"emotion": "helpless_1",
+			"actions": [
+				{
+					"do": "tickle",
+					"who": "pink",
+					"by": "foe1",
+					"repeat": 5,
+					"interval": 0.22,
+					"fx": "hand",
+					"zone": "sole"
+				}
+			]
 		},
 		{
 			"act": "burst",
@@ -268,7 +352,8 @@
 		{
 			"act": 3,
 			"speaker": "蓝色的公主",
-			"text": "……我的……也……撑不住了……"
+			"text": "……我的……也……撑不住了……",
+			"emotion": "helpless_1"
 		},
 		{
 			"act": "burst",
@@ -323,7 +408,8 @@
 		{
 			"act": 3,
 			"speaker": "公主",
-			"text": "呼……掉、掉下来了……摔得好疼……"
+			"text": "呼……掉、掉下来了……摔得好疼……",
+			"emotion": "helpless_2"
 		},
 		{
 			"act": 3,
@@ -372,6 +458,7 @@
 			"act": 3,
 			"speaker": "公主",
 			"text": "呀啊——！刚放完……脚心……一碰就……哈哈哈哈！",
+			"emotion": "helpless_2",
 			"actions": [
 				{
 					"do": "bubble",
@@ -382,18 +469,109 @@
 					"do": "bubble",
 					"who": "blue",
 					"kind": "laugh"
+				},
+				{
+					"do": "tickle",
+					"who": "pink",
+					"by": "foe1",
+					"repeat": 5,
+					"interval": 0.22,
+					"fx": "hand",
+					"zone": "sole"
 				}
 			]
 		},
 		{
 			"act": 3,
 			"speaker": "蓝色的公主",
-			"text": "……哈哈……吸盘……按在……屁股上……哈哈哈哈！"
+			"text": "……哈哈……吸盘……按在……屁股上……哈哈哈哈！",
+			"emotion": "helpless_2",
+			"actions": [
+				{
+					"do": "tickle",
+					"who": "blue",
+					"by": "foe2",
+					"repeat": 5,
+					"interval": 0.22,
+					"fx": "brush",
+					"zone": "butt"
+				}
+			]
+		},
+		{
+			"act": 3,
+			"speaker": "",
+			"text": "（章鱼的触手卷住她的脚踝把脚掌翻过来，吸盘一颗一颗按在脚心上；另一根触手的尖端在蓝色公主的腿根上打着圈，越圈越小）",
+			"actions": [
+				{
+					"do": "tickle",
+					"who": "pink",
+					"by": "foe1",
+					"repeat": 8,
+					"interval": 0.22,
+					"fx": "hand",
+					"zone": "sole"
+				},
+				{
+					"do": "tickle",
+					"who": "blue",
+					"by": "foe2",
+					"repeat": 8,
+					"interval": 0.22,
+					"fx": "brush",
+					"zone": "thigh"
+				}
+			]
+		},
+		{
+			"act": 3,
+			"speaker": "公主",
+			"text": "哈哈哈哈！吸、吸盘别按脚心——一颗一颗的——我错了我错了，泡泡我不戳了哈哈哈！",
+			"emotion": "helpless_2",
+			"actions": [
+				{
+					"do": "bubble",
+					"who": "pink",
+					"kind": "laugh"
+				},
+				{
+					"do": "bubble",
+					"who": "blue",
+					"kind": "laugh"
+				},
+				{
+					"do": "tickle",
+					"who": "pink",
+					"by": "foe1",
+					"repeat": 5,
+					"interval": 0.22,
+					"fx": "hand",
+					"zone": "sole"
+				}
+			]
+		},
+		{
+			"act": 3,
+			"speaker": "蓝色的公主",
+			"text": "……别……打圈……腿根……那里……不……不行……",
+			"emotion": "helpless_2",
+			"actions": [
+				{
+					"do": "tickle",
+					"who": "blue",
+					"by": "foe2",
+					"repeat": 5,
+					"interval": 0.22,
+					"fx": "brush",
+					"zone": "butt"
+				}
+			]
 		},
 		{
 			"act": 4,
 			"speaker": "",
 			"text": "（泡泡鱼吐出一个大泡泡把两个人一起裹进去，章鱼的八条触手全伸了进来，一条挠脚心，一条揉腿根，轮流着来）",
+			"portrait": "siege_fail_1",
 			"actions": [
 				{
 					"do": "pose",
@@ -436,12 +614,25 @@
 		{
 			"act": 4,
 			"speaker": "公主",
-			"text": "哈哈哈哈！挤、挤在一个泡泡里——认输！认输啦！"
+			"text": "哈哈哈哈！挤、挤在一个泡泡里——认输！认输啦！",
+			"emotion": "helpless_2",
+			"actions": [
+				{
+					"do": "tickle",
+					"who": "pink",
+					"by": "foe1",
+					"repeat": 5,
+					"interval": 0.22,
+					"fx": "hand",
+					"zone": "sole"
+				}
+			]
 		},
 		{
 			"act": 4,
 			"speaker": "蓝色的公主",
 			"text": "……哈哈……泡泡里……没地方……躲……哈哈哈……",
+			"emotion": "helpless_2",
 			"actions": [
 				{
 					"do": "bubble",
@@ -452,6 +643,15 @@
 					"do": "bubble",
 					"who": "blue",
 					"kind": "laugh"
+				},
+				{
+					"do": "tickle",
+					"who": "blue",
+					"by": "foe2",
+					"repeat": 5,
+					"interval": 0.22,
+					"fx": "brush",
+					"zone": "butt"
 				}
 			]
 		},
@@ -463,12 +663,14 @@
 		{
 			"act": 4,
 			"speaker": "公主",
-			"text": "哈……哈……下次……泡泡飘过来，我先用锤子戳破……"
+			"text": "哈……哈……下次……泡泡飘过来，我先用锤子戳破……",
+			"emotion": "damaged"
 		},
 		{
 			"act": 4,
 			"speaker": "蓝色的公主",
-			"text": "……泡泡鱼……用冰锥。……在潮水……上岸之前。"
+			"text": "……泡泡鱼……用冰锥。……在潮水……上岸之前。",
+			"emotion": "shy"
 		},
 		{
 			"act": 4,

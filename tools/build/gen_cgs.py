@@ -126,6 +126,15 @@ for _k in ("boss8_p2", "boss8_duo_1", "boss8_duo_2", "boss8_duo_3", "boss8_resis
         portraits[_k]["wide"] = True
 
 
+# 攻防战失败小剧场的战败 CG（tools/art/import_cg.py 从 assets/generated/SIEGE_CG/ 生成 siege_fail_<N>.png）：第 4 幕的横版大图
+for _n in range(1, 13):
+    _k = "siege_fail_%d" % _n
+    _f = "res://assets/cg/portraits/%s.png" % _k
+    portraits[_k] = {"file": _f, "placeholder": "helpless_2"}
+    if os.path.exists(_f.replace("res://", "")):
+        portraits[_k]["wide"] = True
+
+
 def pt(key):
     portraits[key + "_1"] = {"file": "res://assets/cg/portraits/%s_1.png" % key, "placeholder": "helpless_1"}
     portraits[key + "_2"] = {"file": "res://assets/cg/portraits/%s_2.png" % key, "placeholder": "helpless_2"}
