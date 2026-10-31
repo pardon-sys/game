@@ -3855,219 +3855,6 @@
 			]
 		},
 		{
-			"id": "eq_anklet_rat",
-			"category": "装备",
-			"equip": [
-				"equip_feather_anklet"
-			],
-			"keys": [
-				[
-					"rat"
-				],
-				[
-					"*trap"
-				]
-			],
-			"window": 2.5,
-			"cooldown": 10.0,
-			"effects": [
-				{
-					"type": "burst",
-					"amount": 18
-				},
-				{
-					"type": "special_next",
-					"count": 3
-				},
-				{
-					"type": "focus"
-				}
-			]
-		},
-		{
-			"id": "eq_bow_fairy",
-			"category": "装备",
-			"equip": [
-				"equip_party_bow"
-			],
-			"keys": [
-				[
-					"fairy"
-				],
-				[
-					"*"
-				]
-			],
-			"window": 2.5,
-			"cooldown": 10.0,
-			"effects": [
-				{
-					"type": "burst",
-					"amount": 14
-				},
-				{
-					"type": "rally",
-					"radius": 200.0
-				},
-				{
-					"type": "dot",
-					"rate": 3.0,
-					"duration": 3.0
-				},
-				{
-					"type": "focus"
-				}
-			]
-		},
-		{
-			"id": "eq_pad_glove",
-			"category": "装备",
-			"equip": [
-				"equip_armpit_pad:spent"
-			],
-			"keys": [
-				[
-					"glove"
-				],
-				[
-					"*"
-				]
-			],
-			"window": 2.5,
-			"cooldown": 10.0,
-			"effects": [
-				{
-					"type": "burst",
-					"amount": 16
-				},
-				{
-					"type": "expose",
-					"zone": "armpit",
-					"mult": 1.6,
-					"duration": 6.0
-				},
-				{
-					"type": "focus"
-				}
-			]
-		},
-		{
-			"id": "eq_socks_stocks",
-			"category": "装备",
-			"equip": [
-				"equip_wool_socks"
-			],
-			"keys": [
-				[
-					"stocks"
-				],
-				[
-					"rat"
-				]
-			],
-			"window": 2.5,
-			"cooldown": 10.0,
-			"effects": [
-				{
-					"type": "burst",
-					"amount": 14
-				},
-				{
-					"type": "expose",
-					"zone": "sole",
-					"mult": 1.7,
-					"duration": 6.0
-				},
-				{
-					"type": "dot",
-					"rate": 4.0,
-					"duration": 3.0
-				},
-				{
-					"type": "focus"
-				}
-			]
-		},
-		{
-			"id": "eq_pants_crawl",
-			"category": "装备",
-			"equip": [
-				"thousand_pants"
-			],
-			"keys": [
-				[
-					"caterpillar"
-				],
-				[
-					"squirrel"
-				]
-			],
-			"window": 2.5,
-			"cooldown": 10.0,
-			"effects": [
-				{
-					"type": "burst",
-					"amount": 20
-				},
-				{
-					"type": "root",
-					"duration": 1.5
-				},
-				{
-					"type": "special_next",
-					"count": 2
-				},
-				{
-					"type": "focus"
-				}
-			]
-		},
-		{
-			"id": "eq_pants_bind",
-			"category": "装备",
-			"equip": [
-				"thousand_pants"
-			],
-			"keys": [
-				[
-					"snare",
-					"cuffs",
-					"stocks",
-					"binding",
-					"legloop",
-					"clamp",
-					"supine",
-					"prone",
-					"wardrobe",
-					"thigh_pincer",
-					"wall_brush",
-					"hanging_hands"
-				],
-				[
-					"*"
-				]
-			],
-			"window": 2.5,
-			"cooldown": 10.0,
-			"effects": [
-				{
-					"type": "burst",
-					"amount": 18
-				},
-				{
-					"type": "grab_extend",
-					"duration": 1.5
-				},
-				{
-					"type": "crit_storm",
-					"duration": 2.5
-				},
-				{
-					"type": "focus"
-				}
-			]
-		},
-		{
 			"id": "sg_foot_assault",
 			"category": "攻防战",
 			"equip": [
@@ -4919,6 +4706,219 @@
 				{
 					"type": "siege_fx",
 					"kind": "mark_trail"
+				},
+				{
+					"type": "focus"
+				}
+			]
+		},
+		{
+			"id": "eq_anklet_rat",
+			"category": "装备",
+			"equip": [
+				"equip_feather_anklet"
+			],
+			"keys": [
+				[
+					"rat"
+				],
+				[
+					"*trap"
+				]
+			],
+			"window": 2.5,
+			"cooldown": 10.0,
+			"effects": [
+				{
+					"type": "burst",
+					"amount": 18
+				},
+				{
+					"type": "special_next",
+					"count": 3
+				},
+				{
+					"type": "focus"
+				}
+			]
+		},
+		{
+			"id": "eq_bow_fairy",
+			"category": "装备",
+			"equip": [
+				"equip_party_bow"
+			],
+			"keys": [
+				[
+					"fairy"
+				],
+				[
+					"*"
+				]
+			],
+			"window": 2.5,
+			"cooldown": 10.0,
+			"effects": [
+				{
+					"type": "burst",
+					"amount": 14
+				},
+				{
+					"type": "rally",
+					"radius": 200.0
+				},
+				{
+					"type": "dot",
+					"rate": 3.0,
+					"duration": 3.0
+				},
+				{
+					"type": "focus"
+				}
+			]
+		},
+		{
+			"id": "eq_pad_glove",
+			"category": "装备",
+			"equip": [
+				"equip_armpit_pad:spent"
+			],
+			"keys": [
+				[
+					"glove"
+				],
+				[
+					"*"
+				]
+			],
+			"window": 2.5,
+			"cooldown": 10.0,
+			"effects": [
+				{
+					"type": "burst",
+					"amount": 16
+				},
+				{
+					"type": "expose",
+					"zone": "armpit",
+					"mult": 1.6,
+					"duration": 6.0
+				},
+				{
+					"type": "focus"
+				}
+			]
+		},
+		{
+			"id": "eq_socks_stocks",
+			"category": "装备",
+			"equip": [
+				"equip_wool_socks"
+			],
+			"keys": [
+				[
+					"stocks"
+				],
+				[
+					"rat"
+				]
+			],
+			"window": 2.5,
+			"cooldown": 10.0,
+			"effects": [
+				{
+					"type": "burst",
+					"amount": 14
+				},
+				{
+					"type": "expose",
+					"zone": "sole",
+					"mult": 1.7,
+					"duration": 6.0
+				},
+				{
+					"type": "dot",
+					"rate": 4.0,
+					"duration": 3.0
+				},
+				{
+					"type": "focus"
+				}
+			]
+		},
+		{
+			"id": "eq_pants_crawl",
+			"category": "装备",
+			"equip": [
+				"thousand_pants"
+			],
+			"keys": [
+				[
+					"caterpillar"
+				],
+				[
+					"squirrel"
+				]
+			],
+			"window": 2.5,
+			"cooldown": 10.0,
+			"effects": [
+				{
+					"type": "burst",
+					"amount": 20
+				},
+				{
+					"type": "root",
+					"duration": 1.5
+				},
+				{
+					"type": "special_next",
+					"count": 2
+				},
+				{
+					"type": "focus"
+				}
+			]
+		},
+		{
+			"id": "eq_pants_bind",
+			"category": "装备",
+			"equip": [
+				"thousand_pants"
+			],
+			"keys": [
+				[
+					"snare",
+					"cuffs",
+					"stocks",
+					"binding",
+					"legloop",
+					"clamp",
+					"supine",
+					"prone",
+					"wardrobe",
+					"thigh_pincer",
+					"wall_brush",
+					"hanging_hands"
+				],
+				[
+					"*"
+				]
+			],
+			"window": 2.5,
+			"cooldown": 10.0,
+			"effects": [
+				{
+					"type": "burst",
+					"amount": 18
+				},
+				{
+					"type": "grab_extend",
+					"seconds": 1.5
+				},
+				{
+					"type": "crit_storm",
+					"duration": 2.5
 				},
 				{
 					"type": "focus"
