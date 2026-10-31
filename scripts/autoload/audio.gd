@@ -110,6 +110,8 @@ const MUSIC := {
 	"siege": "res://assets/audio/music/siege_loop.wav",
 	"minigame": "res://assets/audio/music/minigame_loop.wav",
 	"knight_boss": "res://assets/audio/music/knight_boss_loop.wav",
+	# 骑士 Boss 最后阶段「笑雾之中」：原曲 + 宿命感、诡异、迷惑
+	"knight_fog": "res://assets/audio/music/knight_fog_loop.wav",
 }
 const MUSIC_DB := -6.0
 const SFX_BUS := &"SFX"

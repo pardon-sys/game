@@ -111,6 +111,37 @@ def boss_open():
     return {"name": "痒铠骑士", "letterbox": True, "skippable": True, "steps": s}
 
 
+# 胸甲阶段打完：笑面放声大笑，笑雾和黑雾从石板缝里涌出来，把两位公主和帮手都吞了进去（接着换到「笑雾之中」floor_06_knight_fog）
+def fog_rise():
+    s = [
+        {"actions": [A("camera", to=[41, 22], zoom=1.0, time=0.5), A("shake", time=0.8, strength=3.0)], "wait": 0.5},
+        line(N, "（胸甲碎成了两半。盔甲踉跄了一步——然后，那张笑面仰起头，发出了一声长长的、不像人的笑）"),
+        line(N, "（石板的缝里冒出了雾。一缕是粉紫色的笑雾，一缕是浓得化不开的黑雾——它们缠在一起，从四面八方涌向广场中央）"),
+        line(P, "雾……雾在动！它在笑——！", "surprise"),
+        line(BLUE, "……退后。别碰那团黑的。"),
+        line(CAP, "所有人靠拢！别被雾冲散——！", None, None, "captain"),
+        line(N, "（来不及了。黑雾像一张巨大的手掌合拢过来，把两位公主、队长、镇民们，连同那副盔甲一起——吞了进去）"),
+        {"actions": [A("fade_out", time=0.8)], "wait": 0.9},
+    ]
+    return {"name": "笑雾涌起", "letterbox": True, "skippable": True, "steps": s}
+
+
+# 雾里：广场的倒影。骑士被黑雾托在半空，周围飘着笑声；四角的灯笼又暗了
+def fog_open():
+    s = [
+        {"actions": [A("fade_in", time=0.8), A("camera", to=[41, 22], zoom=1.0, time=0.6)], "wait": 0.8},
+        line(N, "（睁开眼，还是广场——可一切都褪了颜色，像倒映在一池紫色的水里。脚下没有地面，只有缓缓流动的雾）"),
+        line(N, "（广场中央，盔甲悬在半空。黑雾从它的每一道缝里溢出来，托着它，牵着它，像牵着一只木偶）"),
+        line(KNIGHT, "……哈……哈哈……殿……下……哈哈哈……", None, None, "knight_possessed"),
+        line(P, "……他在笑。可是……听起来好难过。", "sad"),
+        line(BLUE, "……够不着。在天上，打不到。"),
+        line(MAYOR, "四角的灯笼也暗了！雾里也一样——用笑声把它们点亮！"),
+        line(CAP, "外圈那层黑雾在往里收。被它碰到……会痒得站不住。每点亮一盏，它就退一圈！", None, None, "captain"),
+        line(P, "……好！这次，把他从雾里拉回来！", "angry"),
+    ]
+    return {"name": "笑雾之中", "letterbox": True, "skippable": True, "steps": s}
+
+
 # 四盏灯笼都亮了：光汇到盔甲上 → 他攥着的手帕从铁手套里飘出来 → 净化（knight_purify；接着是尾声 knight_epilogue）
 def purify():
     s = [
@@ -133,6 +164,21 @@ def be(phase, tool, caption, *replies, zone="sole"):
 
 BOSS = {
     "name": "痒铠骑士",
+    # 最后阶段「笑雾之中」（floor_06_knight_fog，TaskKnightBoss 第 3 阶段在雾里）：浮空的骑士、雾圈收缩、点灯、落地以后驱散
+    "fog": {
+        "tip": "笑雾之中：骑士浮在空中打不到——点亮四角的灯笼（按住 Y 笑）；别碰外圈的黑雾（会痒），每点亮一盏，雾就退一圈",
+        "words": ["哈哈", "嘻嘻", "哈哈哈", "呵呵", "嘿嘿……", "哈——"],
+        "ring": ["（黑雾贴上来了——脚底一阵发痒！）", "（雾里伸出无数根看不见的手指，在脚背上划了一下）", "（被雾碰到的地方，痒得发麻）"],
+        "ring_push": ["（灯笼亮了！黑雾被光推开了一圈）", "（暖光照过的地方，黑雾嘶嘶地退开了）"],
+        "land": ["（四道光同时照在骑士身上——他从半空中坠了下来，单膝跪在地上。可黑雾还死死缠着他）"],
+        "dispel_start": [L("……雾还缠着他。我来吹散它——你帮我挡住那些手！", P, "angry"), L("……交给我。一只都不会让它碰到你。", BLUE)],
+        "dispel_tip": "驱散：粉色公主在骑士身边吟唱驱散黑雾——操控蓝色公主拦住扑向她的黑气小手（攻击 / J 冻住），按 C 可以换人",
+        "interrupt": ["呀——！手、手钻进来了……哈哈……！", "唔……被、被打断了……再来！", "哈哈……脚心……不、不许挠……我在念咒……！"],
+        "blue_block": ["……别碰她。", "……退下。", "……这边。"],
+        "release": ["（她笑得魔力都满了——粉色的光炸开，黑气小手被震散了一圈。可释放后的身体，碰一下就痒得发抖）"],
+        "progress": ["……快了……他身上的雾在变薄……！", "……再一点……！"],
+        "success": [L("……散……开……吧——！", P, "angry")],
+    },
     "parts": {"gauntlet_l": "左铁手套", "gauntlet_r": "右铁手套", "greave_l": "左护腿", "greave_r": "右护腿",
               "plate_l": "左胸甲", "plate_r": "右胸甲", "mask": "笑面"},
     "phase_intro": [
@@ -389,7 +435,8 @@ INTROS = {
 INTRO_CUTS = {"knight_intro_" + k: v for k, v in INTROS.items()}
 
 
-CUTSCENES = {"knight_erupt": erupt, "knight_chase_open": chase_open, "knight_boss_open": boss_open, "knight_purify": purify, "knight_epilogue": epilogue, **INTRO_CUTS}
+CUTSCENES = {"knight_erupt": erupt, "knight_chase_open": chase_open, "knight_boss_open": boss_open, "knight_purify": purify,
+             "knight_fog_rise": fog_rise, "knight_fog_open": fog_open, "knight_epilogue": epilogue, **INTRO_CUTS}
 FINALE = {"chase": CHASE, "boss": BOSS}
 
 
@@ -588,4 +635,46 @@ FAIL_BOSS_3 = {"name": "痒铠骑士失败③：笑面吸走的笑声", "cast": 
     {"actions": [A("fade_out", time=0.6), A("voice", state="")], "wait": 0.7},
 ]}
 
-THEATERS = {"knight_fail_chase": FAIL_CHASE, "knight_fail_boss": FAIL_BOSS_1, "knight_fail_boss_2": FAIL_BOSS_2, "knight_fail_boss_3": FAIL_BOSS_3}
+# 驱散失败（笑雾之中，粉色公主的闷笑第二次满了）：黑气小手把两人托到半空，浮空的骑士低头看着
+FAIL_FOG = {"name": "笑雾之中失败：被雾托起来的两个人", "cast": {
+    "princess": {"kind": "princess", "at": [-14, 10], "visual": "helpless_1", "anim": "helpless", "dir": "down"},
+    "blue": {"kind": "npc:blue_princess", "at": [14, 10], "visual": "helpless_1", "anim": "helpless", "dir": "down"},
+    "armor": {"kind": "npc:knight_possessed", "at": [0, -14], "dir": "down"},
+}, "steps": [
+    {"actions": [A("fade_in", time=0.5), A("voice", state="giggle")], "wait": 0.5},
+    _act("第一幕　断了"),
+    _say(N, "（咒语断了。黑雾一下子涌了回来，无数只黑气小手从雾里伸出来，抓住了两个人的手腕和脚踝）"),
+    _say(P, "放、放开！咒还没念完——他就差一点点了！", emotion="angry"),
+    _say(BLUE, "……被……抓住了。……对不起。"),
+    _say(N, "（小手把她们托离了地面，一直托到半空——和浮着的骑士一样高）", [A("hop", who="princess"), A("hop", who="blue")]),
+    _act("第二幕　雾里的手"),
+    _say(KNIGHT, "……哈……哈哈……一……起……笑……吧……"),
+    _say(N, "（黑气小手扒开她的脚趾，一只钻进趾缝，一只在脚心上画圈，一只捏着脚跟不放）", [_tk("armor", fx="hand", n=12, iv=0.18)]),
+    _say(P, "哈哈哈哈！趾、趾缝——！不、不行——雾里的手怎么这么多——！", [_tk("armor", fx="hand", n=8, iv=0.2)], portrait="defeat_1"),
+    _say(N, "（蓝色公主那边，几只小手顺着她的大腿内侧慢慢往上爬，爬到腿根就停下来打圈）", [_tk("armor", who="blue", zone="thigh", n=12, iv=0.2)]),
+    _say(BLUE, "……哈……那……里……不……许……", [_tk("armor", who="blue", zone="thigh", n=8, iv=0.22)]),
+    _say(N, "（又有两只小手绕到后面，左右轮流捏了捏她的屁股）", [_tk("armor", who="blue", zone="butt", n=8, iv=0.22)]),
+    _say(BLUE, "……！哈、哈哈……不、不要……轮流……", portrait="defeat_2"),
+    _say(P, "哈哈哈……蓝色的……我们……都被雾吃掉了……哈哈哈……！", [_tk("armor", fx="feather", n=8, iv=0.2)]),
+    _act("第三幕　满了"),
+    dict(_say(P, "哈……魔、魔力……要出来了……！", portrait="fatigue_burst"), act="burst"),
+    {"actions": _release(), "wait": 0.5},
+    _say(N, "（粉色的光炸开，托着她的小手被震散了一片。释放后的舒服软软地化开，她在半空里蜷起脚趾，长长地呼了一口气）"),
+    _say(P, "……呼……哈……好……舒服……", emotion="happy"),
+    {"actions": _release() + [A("shake", who="blue", time=0.4)], "wait": 0.5},
+    _say(BLUE, "……我……也……"),
+    _say(N, "（淡蓝的光跟着亮起，又很快被黑雾吞了回去。两个人刚放空魔力、最敏感的时候，小手又一只一只地爬了回来）",
+         [_tk("armor", fx="hand", n=10, iv=0.25), _tk("armor", who="blue", zone="thigh", n=10, iv=0.25)]),
+    _say(P, "呀啊——！刚、刚释放完……一碰就……哈哈哈哈——！", [_tk("armor", fx="hand", n=10, iv=0.18)]),
+    _say(BLUE, "……哈……哈哈……不、不行……认……认输……", [_tk("armor", who="blue", zone="butt", n=8, iv=0.2)]),
+    _act("第四幕　一缕光"),
+    _say(N, "（骑士的面罩里，忽然透出了一点不是紫色的光。黑雾抖了一下）"),
+    _say(KNIGHT, "……别……碰……她……们……"),
+    _say(N, "（托着她们的小手一松，两个人落回了雾里。四角的灯笼还亮着，暖光一点一点地把她们拉了回来）"),
+    _say(CAP, "……他在帮你们！再来一次——这次我们都守着！"),
+    _say(P, "……嗯。蓝色的，帮我挡住它们。这次一定念完！", emotion="angry"),
+    _say(BLUE, "……嗯。一只都不放过去。"),
+    {"actions": [A("fade_out", time=0.6), A("voice", state="")], "wait": 0.7},
+]}
+
+THEATERS = {"knight_fail_fog": FAIL_FOG, "knight_fail_chase": FAIL_CHASE, "knight_fail_boss": FAIL_BOSS_1, "knight_fail_boss_2": FAIL_BOSS_2, "knight_fail_boss_3": FAIL_BOSS_3}

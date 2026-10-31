@@ -55,6 +55,7 @@ STORAGE, BRIDGE = "floor_06_knight_storage", "floor_06_knight_bridge"
 PRISON = "floor_06_after_prison"
 FESTIVAL = "floor_06_festival"
 KDAY, KNIGHT_N, KCHASE = "floor_06_knight_day", "floor_06_knight_night", "floor_06_knight_chase"
+KFOG = "floor_06_knight_fog"
 
 
 # 骑士篇支线小地图的标记点（quest_maps.py 画的图；写进 data/after/quest_maps.json，QuestMaps 读）
@@ -710,6 +711,20 @@ for _fid, _npcs, _seed in ((KDAY, K_DAY_NPCS, 801), (KNIGHT_N, K_NIGHT_NPCS, 802
     scatter(km, _seed, 55)
     km.write()
 
+# ================================================================ 笑雾之中（骑士 Boss 最后阶段）：广场的倒影——和诅咒失控的小镇同一个格局，等距画面、黑雾主题
+# TaskKnightBoss 在这张图上从第 3 阶段接着打（坐标和广场一样：骑士 CENTER、灯笼、掩体都沿用）；不挂冷光，灯笼就是光
+kf = Map(KFOG, 64, 46, "intro =\nambient = 0.2,0.14,0.28\nno_switch = true\nstyle = iso\niso_theme = laugh_fog\niso_rotate = false\ncarry_light = false")
+town_layout(kf, "knight")
+# 雾里没有门：出口全去掉（只是倒影）
+for _c in list(kf.cells):
+    kf.cells[_c] = [sp for sp in kf.cells[_c] if not sp.startswith("exit ")]
+    if not kf.cells[_c]:
+        del kf.cells[_c]
+kf.put(41, 29, "player")
+kf.put(43, 29, "blue_princess follow=true ai=false")
+kf.put(41, 29, "spawn id=start")
+kf.write()
+
 # ================================================================ 庆功宴的广场（第 7 天晚上，工时还清以后从小镇广场中间的入口过来）
 # 战后百废待兴：补了一半的城墙和脚手架、打着补丁的帐篷、碎石堆上插着笑声灯笼、木箱拼的临时摊位；中间是篝火和修好的图腾柱。
 # 摊位通关以后的装扮（show_flag = stall_<id>_done）：饼干串灯、彩色发绳 + 跑来跑去的小孩、三座冰雕、足疗鱼盆、戴铃铛的咕咕。
@@ -924,6 +939,8 @@ Path("data/after/knight_finale.json").write_text(json.dumps(dict({"_说明": "�
 _npcs = json.loads(Path("data/actors/npcs.json").read_text())
 _npcs["npcs"]["knight"] = {"name": knight_story.KNIGHT, "sprite": "res://assets/generated/npcs/knight.png", "portrait": "res://assets/generated/npc_portraits/knight.png"}
 _npcs["npcs"]["knight_cursed"] = {"name": knight_story.KNIGHT, "sprite": "res://assets/generated/npcs/knight_cursed.png", "portrait": "res://assets/generated/npc_portraits/knight.png"}
+# 笑雾之中：被黑雾操控、浮在半空的骑士（精灵图 4×2 格 80 像素：上排浮空、下排落地被解脱；立绘被黑雾缠着）
+_npcs["npcs"]["knight_possessed"] = {"name": knight_story.KNIGHT, "sprite": "res://assets/generated/npcs/knight_cursed.png", "portrait": "res://assets/generated/npc_portraits/knight_possessed.png"}
 # 庆功宴：舔盐耐力赛通关以后戴着铃铛闲逛的咕咕（tools/art/gen_festival_art.py）
 _npcs["npcs"]["goat_bell"] = {"name": "咕咕", "sprite": "res://assets/generated/npcs/goat_bell.png"}
 Path("data/actors/npcs.json").write_text(json.dumps(_npcs, ensure_ascii=False, indent="\t") + "\n")
@@ -977,7 +994,9 @@ signs_path.write_text(json.dumps(signs, ensure_ascii=False, indent="\t") + "\n")
 #   收尾过场：六成处的台词前用 cg 动作换上大图（横版大框，挠痒贴片 / 抖动跟着），最后一步收回。
 AFTER_CG_FAIL = {"after_fail_equip": "after_equip_fail", "after_fail_potion": "after_potion_fail", "after_fail_cart": "after_cart_fail",
                  "after_fail_drain": "after_drain_fail", "after_fail_drill": "after_drill_fail", "after_fail_tailor": "after_tailor_fail",
-                 "after_fail_mine": "after_mine_fail", "after_fail_inspect": "after_inspect_fail", "after_fail_totem": "after_totem_fail"}
+                 "after_fail_mine": "after_mine_fail", "after_fail_inspect": "after_inspect_fail", "after_fail_totem": "after_totem_fail",
+                 # 骑士 Boss 的战败 CG（KNIGHT_CG，import_cg.py --knight）
+                 "knight_fail_boss": "knight_fail_1", "knight_fail_boss_2": "knight_fail_2", "knight_fail_boss_3": "knight_fail_3", "knight_fail_fog": "knight_fail_fog"}
 AFTER_CG_DONE = {"after_d2_equip_done": "after_equip_ok", "after_d3_potion_done": "after_potion_ok", "after_d3_cart_done": "after_cart_ok",
                  "after_d4_drain_done": "after_drain_ok", "after_d4_drill_done": "after_drill_ok", "after_d5_tailor_done": "after_tailor_ok",
                  "after_d5_mine_done": "after_mine_ok", "after_d6_inspect_done": "after_inspect_ok", "after_d6_drill_done": "after_exam_ok",
@@ -1022,7 +1041,7 @@ for tid, data in dict(punish.THEATERS, **tasks.THEATERS, **potion.THEATERS, **ta
 floors = json.loads(Path("data/floors.json").read_text())
 lst = floors["floors"]
 NEW = [(TOWN, "地下小镇·战后", "town"), (FESTIVAL, "庆功宴的广场", "town"), (KDAY, "地下小镇·骑士篇（白天）", "town"),
-       (KNIGHT_N, "地下小镇·骑士篇（夜里）", "town"), (KCHASE, "地下小镇·骑士篇（诅咒失控）", "town"), (HOUSE, "蓝色小屋·战后", "town"), (HOUSE_UP, "蓝色小屋·战后（楼上）", "night_room"),
+       (KNIGHT_N, "地下小镇·骑士篇（夜里）", "town"), (KCHASE, "地下小镇·骑士篇（诅咒失控）", "town"), (KFOG, "笑雾之中", "knight_fog"), (HOUSE, "蓝色小屋·战后", "town"), (HOUSE_UP, "蓝色小屋·战后（楼上）", "night_room"),
        (PHARMACY, "药剂师工房", "town"), (FIELD, "城门外的战场", "town"), (TAILOR, "裁缝铺", "town"), (MINE, "受损的矿道", "town"), (TOTEM, "图腾柱废地", "town"), (DRAIN, "排水管", "town"), (DRILL, "队长的训练室", "town"), (PROVING, "保卫队训练营", "town"),
        (PRISON, "保卫队的地牢", "night_room"), (CELLAR, "药剂师工房的地窖", "night_room"),
        (ALLEY, "没有灯的小巷", "night_room"), (HERBCAVE, "草药洞", "night_room"),

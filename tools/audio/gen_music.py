@@ -8,7 +8,7 @@ API key 从项目根目录的 .env 读（ELEVENLABS=...，.env 不进版本库�
   ③ 文件 = 原始音频 [0, T)，最后一拍（CROSSFADE，按拍长算）和 B 之前的同样长的一段交叉淡化——播到结尾跳回 B 时是连续的；
   ④ 把 edit/loop_begin = B（采样）写进 .wav.import，Godot 从 B 开始向前循环。T 之后的尾声丢掉。
 原始音频存在 tools/.cache/music/（不进版本库）。
-用法：python tools/audio/gen_music.py [dungeon] [town] [boss] [boss3] [night_room] [night_maze] [siege] [minigame] [knight_boss]（不写就全部生成；已经生成过的跳过，加 --force 重新生成，
+用法：python tools/audio/gen_music.py [dungeon] [town] [boss] [boss3] [night_room] [night_maze] [siege] [minigame] [knight_boss] [knight_fog]（不写就全部生成；已经生成过的跳过，加 --force 重新生成，
   加 --reloop 用缓存的原始音频重新切循环）
 导入：assets/audio/music/*.wav.import 用无损（compress/mode=0）+ 向前循环（edit/loop_mode=2、loop_begin 由本脚本写）——QOA 有损压缩会给高频多的曲子添沙沙声。
 """
@@ -44,6 +44,17 @@ ALIGN_SEARCH = 441
 ALIGN_WINDOW = 4096
 
 TRACKS = {
+    # 骑士 Boss 最后阶段「笑雾之中」：原曲的英雄悲壮 + 宿命 + 战斗 + 危险 + 诡异（第二版：更有战斗感和压迫感）
+    "knight_fog": ("Instrumental video game FINAL BOSS battle music, last phase: inside a violet sea of laughing black fog, a cursed suit of knight armor "
+                   "floats in the air like a puppet of fate while two princesses fight desperately to free him. Intense, driving and dangerous, "
+                   "but with a tragic, fateful and eerie core. 150 BPM, minor key. COMBAT: relentless driving staccato strings and spiccato ostinato, "
+                   "pounding taiko and orchestral toms, heavy marching snare, powerful low brass stabs and a heroic but desperate horn line. "
+                   "DANGER: rising tension, dissonant brass clusters swelling, sudden accents, a racing contrabass ostinato. "
+                   "FATE: an inevitable descending bass line that keeps returning, a solemn dark wordless choir chanting on long chords like destiny closing in, "
+                   "the old royal anthem melody played in a grim minor mode. EERIE: a detuned antique music box fragment of a lullaby cutting through, "
+                   "glassy celesta and bowed vibraphone, strings that swell like reversed echoes, unsettling chromatic turns. "
+                   "Full, powerful, cinematic; warm rounded mix with clear low end: NO cymbal crashes, NO hi-hats, NO shakers, NO buzzing or noisy sounds. "
+                   "Loops seamlessly, steady high energy throughout, no fade-in or fade-out."),
     "knight_boss": ("Instrumental video game boss battle music for a cute pixel-art game: two princesses fight a cursed suit of knight armor "
                     "possessed by glowing purple tickling hands, in a lantern-lit underground town plaza. The knight trapped inside is a loyal, "
                     "tragic figure, so the piece is heroic and urgent but carries a sorrowful, noble undertone. 140 BPM, minor key. Driving "

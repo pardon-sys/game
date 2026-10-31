@@ -87,7 +87,7 @@ docs/POLISH_RULES.md  共性优化需求（UI / 演出 / 生成图的通用要�
 - **七日赎罪的结局**：第 7 天晚上工时还清后的**庆功宴**（领舞 + 邀舞、五个摊位、放烟花 →「七日赎罪 完」），见「庆功宴」。
   庆功宴在单独的庆典广场 `floor_06_festival` 开，每个人都有庆功宴专属的对话，摊位有奖品、通关后广场换装扮。
 - **骑士篇已完成**（还在地下小镇，约一层的量，序章：只埋伏笔）：发现骑士 → 醒来吼「凶手」→ 以笑为饵 → 夜探地牢 →
-  诅咒失控·镇中追逃 → Boss「痒铠骑士」（四个阶段，最后点亮四盏笑声灯笼）→ 尾声（半枚徽章「交给真正的殿下」）。两天，主线每一步都要交互才开始；
+  诅咒失控·镇中追逃 → Boss「痒铠骑士」（四个阶段，最后一个阶段在「笑雾之中」：点亮四盏笑声灯笼、驱散骑士身上的黑雾）→ 尾声（半枚徽章「交给真正的殿下」）。两天，主线每一步都要交互才开始；
   中间穿插六个可选支线（骑士救公主、手印样本、队长的旧剑术、夜里的栅栏、没有名字的生日、点灯笼的小姑娘；每个约 20 分钟），做过的人会在最后一战来帮忙。用骑士篇自己的三张小镇图，追逃和 Boss 里没被操控的那位由 AI 搭档控制。
   之后的剧情待定，先问用户。
 
@@ -1148,7 +1148,20 @@ data/cutscenes/<楼层组>/  地图内过场；data/theater/<楼层组>/  小剧
   - **反击 = 挠骑士**：掉一个部件 / 卡住 / 喊完骑士之名 / 千手解放 / 完美闪避（学过支线「队长的旧剑术」：命中前 `PERFECT` 秒内才冲刺，
 	看 `PlayableCharacter.last_dash_msec`）→ 露出破绽（`WeakSpot`：手腕 / 膝盖窝 / 腰侧 / 脖子）`WEAK_TIME` 秒，打破绽 = 骑士的笑 +`KNIGHT_TICKLE`；
 	满了骑士清醒 `LUCID_TIME` 秒（有安神香的话第一次清醒自动点上，多 `INCENSE_BONUS` 秒）；笑面阶段挠满：触手全缩回去、每盏没亮的灯笼 +`LUCID_LANTERN`。
-  - **最后阶段「全镇的笑声」**（替换了原来的符文圈共鸣）：广场四角四盏被吸暗的笑声灯笼（`LANTERNS`），站在旁边按住 E 故意笑（`KnightLaugh`）→ 每秒 +`LANTERN_RATE`；
+  - **最后阶段在「笑雾之中」**（`floor_06_knight_fog`，剧情步骤 `boss` → `boss_fog`）：广场上胸甲打完不在广场打笑面——`_split_to_fog` 把 `PHASE_KEY` 记成 3、
+	发 `finished(true)` 结束 `boss` 这一步 → 过场 `knight_fog_rise`（笑雾和黑雾从石板缝里涌出，把两位公主和帮手吞进去）→ 换图 → `knight_fog_open` →
+	`boss_fog` 用同一个 `TaskKnightBoss` 从第 3 阶段接着打（`on_fog()`）。新图是诅咒失控小镇的同一个格局（坐标、掩体、灯笼位都一样），等距 `laugh_fog` 主题、不能转镜头、不挂冷光；
+	配乐 `knight_fog`（原曲 + 宿命、战斗、危险、诡异）。骑士被黑雾托在半空（`floating`：画 `npcs/knight_possessed.png` 上排的浮空帧、周围飘笑声字；笑面本来就打不动），
+	新立绘 `npc_portraits/knight_possessed.png`（人物表 `knight_possessed`）。外圈黑雾 `KnightFogRing`：半径从 `R0` 每秒收 `SHRINK`，每亮一盏灯笼推回 `PUSH`，
+	圈外的人闷笑涨、挂 `fog_tickle`（`buffs.json`）。点灯规则照下面的「全镇的笑声」。
+	四盏都亮 → 骑士落地（下排帧）→ **驱散** `KnightDispel`：粉色公主站在骑士身边吟唱（`DISPEL_TIME`，玩家操控她时要站着不动），玩家操控蓝色公主拦黑气小手
+	（`FogHand`，从雾圈边上沿格子路扑向粉色公主；攻击 / J 冻碎，AI 蓝色贴近就拍散），右上角 `SideWindow` 小窗看粉色公主读条（C 换人时小窗换成看另一个）。
+	小手碰到粉色公主：读条 −`HIT_SETBACK`、闷笑涨、`INTERRUPT` 秒后重新起唱；粉色公主闷笑第一次满 = 魔力释放（小手全散、之后更敏感），第二次满 = 失败
+	（`task_boss_dispel` 记着 → 小剧场 `knight_fail_fog` → 重来时灯笼直接亮着、从驱散开始）。读满 → `_purify`（原来的净化过场和结局）。
+	`SideWindow` 在等距楼层里镜头跟着投影后的位置。跳关点有「笑雾之中（点灯）/（驱散）」两个。
+  - **骑士战败 CG**：四个失败小剧场（`knight_fail_boss` / `_2` / `_3` / `_fog`）的高潮那一步换上横版大图（`assets/generated/KNIGHT_CG/`，codex 生成，
+	提示词 `tools/art/src/knight_cg/`，`import_cg.py --knight`；`gen_floor06_after.py` 的 `AFTER_CG_FAIL` 挂上）。
+  - **「全镇的笑声」（点灯）**（替换了原来的符文圈共鸣）：四角四盏被吸暗的笑声灯笼（`LANTERNS`），站在旁边按住 E 故意笑（`KnightLaugh`）→ 每秒 +`LANTERN_RATE`；
 	AI 搭档站在灯笼下陪着笑（+`LANTERN_AI_RATE`）；做过的支线（`KnightQuests.helpers()`，灯笼顺序 shoes / samples / spear / fence）那个人跑到他那盏灯笼下：
 	×`HELPER_MULT`，没人在也自己慢慢亮（`HELPER_SOLO`）。笑面每 `TENTACLE_EVERY` 秒伸一条触手爬向亮得最多的那盏，缠住以后每秒 −`TENTACLE_DRAIN`；
 	蓝色公主 J 冻碎、千手解放全缩回去。骑士照样出招，随时可以离开灯笼去躲。四盏都亮 → 光柱汇到盔甲上 → 过场 `knight_purify`（他攥着的手帕从铁手套里飘出来，

@@ -28,7 +28,13 @@ extends Node2D
 ##   被抓 / 绊倒累计 CATCHES 次 = 失败（按阶段的四幕小剧场 fail_theater），从这个阶段重来（打碎的部件不回来）。这段能换人（C，只在两位公主之间）。
 ##   没被操控的那位由 AI 控制（KnightAI，ai_plan + Hooks）：两人都躲预警；AI 蓝色公主冻没冻的部件、去冻贴着人的手印、去冻触手、合适的时候放千手解放；
 ##     AI 粉色公主贴近本体（出招变慢）、有破绽 / 冻住的部件就去打、搭档身上有诅咒装备就去扯、被抓住自己连按挣开；最后阶段两人都去没亮的灯笼下笑。
-## 状态 vars.task_boss_phase（0~3）、task_boss_caught。
+## **最后阶段在「笑雾之中」**（KnightStory 步骤 boss → boss_fog）：广场上胸甲打完（_transition 到第 3 阶段）不在广场打笑面——
+##   PHASE_KEY 记成 3、发 finished(true) 结束这一步（_split_to_fog）→ 过场 knight_fog_rise → 换到等距的新图 floor_06_knight_fog（广场的倒影，坐标一样）→
+##   同一个脚本从第 3 阶段接着打（on_fog()）：配乐 knight_fog；骑士被黑雾托在半空（floating：画 npcs/knight_possessed.png 的浮空帧、周围飘笑声字，打不到）；
+##   外圈黑雾 KnightFogRing 慢慢收紧（圈外痒、挂 fog_tickle；每亮一盏灯笼往外推）；点灯照旧（帮手、触手、诅咒）。
+##   四盏都亮 → 骑士落地 → 驱散 KnightDispel（粉色公主吟唱、玩家操控蓝色公主拦黑气小手、小窗看读条）：读满 → 净化（_purify）；
+##   粉色公主闷笑第二次满 → 失败（DISPEL_KEY 记着，失败小剧场 knight_fail_fog，重来时灯笼直接亮着、从驱散开始）。
+## 状态 vars.task_boss_phase（0~3）、task_boss_caught、task_boss_dispel（驱散阶段失败过：重来从驱散开始）。
 ##   **诅咒爆发 / 盯上镇民**（KnightCurse，curse）：每个阶段开始一次、耐久掉一半一次，爆发期间部件打不动、靠近闷笑狂涨、吸到笑声回耐久，
 ##     每个阶段破解办法不同（手印风暴 / 痒波地脉 / 护心诅咒；笑面阶段是定时的「吸笑」，站进亮灯笼的光里）；平时隔一阵盯上一个镇民去偷笑声，按住 Y 笑把它引回来。
 ## 测试：curse、parts、phase、lanterns、tentacles、crates、freeze_part()、hit_part()、grab(角色)、mash()、stomp()、flick()、net()、charge()、sand()、leap()、
@@ -148,6 +154,15 @@ const BROOM_R := 56.0
 const PHASE_KEY := "task_boss_phase"
 const CAUGHT_KEY := "task_boss_caught"
 const SHEET := preload("res://assets/generated/npcs/knight_cursed.png")
+## 笑雾之中
+const FOG_FLOOR := "floor_06_knight_fog"
+const DISPEL_KEY := "task_boss_dispel"
+const POSSESSED_SHEET := preload("res://assets/generated/npcs/knight_possessed.png")
+const POSSESSED_CELL := 80
+## 浮空的高度、上下浮动的幅度；落地动画的秒数
+const FLOAT_H := 30.0
+const FLOAT_BOB := 4.0
+const LAND_TIME := 1.2
 ## 场上的人：[人物图, 样子, 相对广场中间的位置]
 const VICTIMS := [["guard", "fallen", Vector2(-92, 40)], ["guard", "fallen", Vector2(96, -34)], ["guard", "guard", Vector2(-104, -40)],
 	["kid", "runner", Vector2(-120, 70)], ["granny", "runner", Vector2(120, 70)],
@@ -237,6 +252,12 @@ var _tips := {}
 var curse: KnightCurse
 ## 做过支线的人在场上帮忙（KnightHelpers）
 var field_helpers: KnightHelpers
+## 笑雾之中：浮在半空 / 落地动画剩下的秒数 / 雾圈 / 驱散
+var floating := false
+var land_left := 0.0
+var fog_ring: KnightFogRing
+var dispel: KnightDispel
+var _split := false
 var _ai_hooks: BattleAIHooks
 
 
@@ -253,6 +274,8 @@ static func caught() -> int:
 
 ## 失败小剧场按阶段换（AfterStory.play_task 问）：铁手套 / 护腿 → knight_fail_boss，胸甲 → _2，笑面 → _3
 static func fail_theater() -> String:
+	if bool(GameState.vars.get(DISPEL_KEY, false)):
+		return "knight_fail_fog"
 	var p := int(GameState.vars.get(PHASE_KEY, 0))
 	return "knight_fail_boss" if p <= 1 else "knight_fail_boss_%d" % (p)
 
@@ -315,7 +338,9 @@ func _ready() -> void:
 	_hud.task = self
 	add_child(_hud)
 	_music_was = Audio.music_id
-	Audio.play_music("knight_boss")
+	Audio.play_music("knight_fog" if on_fog() else "knight_boss")
+	if on_fog() and phase == PHASES - 1:
+		_setup_fog()
 	started = true
 
 
@@ -375,6 +400,74 @@ func _enter_phase(p: int) -> void:
 		field_helpers.phase_started(p)
 
 
+## 现在是不是在「笑雾之中」那张图
+func on_fog() -> bool:
+	return is_instance_valid(_lv) and str(_lv.get("floor_id")) == FOG_FLOOR
+
+
+func level() -> Node:
+	return _lv
+
+
+## 骑士本体的位置（驱散时粉色公主要站到他身边）
+func body_pos() -> Vector2:
+	return _body.global_position if is_instance_valid(_body) else _home
+
+
+## 进了笑雾：骑士浮起来、外圈黑雾、提示；驱散失败过的话灯笼直接亮着、马上驱散
+func _setup_fog() -> void:
+	floating = true
+	fog_ring = KnightFogRing.new()
+	fog_ring.task = self
+	get_parent().add_child(fog_ring)
+	fog_ring.global_position = _home
+	var tip := str(data().get("fog", {}).get("tip", ""))
+	if tip != "":
+		GameState.notify(tip)
+	if bool(GameState.vars.get(DISPEL_KEY, false)):
+		for l in lanterns:
+			if is_instance_valid(l) and not l.lit:
+				_light(l, 1.0)
+
+
+## 广场上胸甲打完：这一步到这里结束（PHASE_KEY 留在 3），剧情演笑雾涌起、换图，在雾里接着打
+func _split_to_fog() -> void:
+	_split = true
+	GameState.vars[PHASE_KEY] = PHASES - 1
+	_emit(true)
+
+
+## 四盏灯笼都亮了（雾里）：骑士落地 → 驱散
+func _start_dispel() -> void:
+	if is_instance_valid(dispel) or finale:
+		return
+	floating = false
+	land_left = LAND_TIME
+	GameState.vars[DISPEL_KEY] = true
+	if is_instance_valid(fog_ring):
+		fog_ring.frozen = true
+	for tn in tentacles:
+		if is_instance_valid(tn):
+			tn.queue_free()
+	tentacles.clear()
+	var lines: Array = data().get("fog", {}).get("land", [])
+	if not lines.is_empty():
+		GameState.princess_reacted.emit(str(lines[0]), 3.0)
+	_shake(0.4, 3.0)
+	dispel = KnightDispel.new()
+	dispel.task = self
+	add_child(dispel)
+
+
+func _dispel_done() -> void:
+	GameState.vars[DISPEL_KEY] = false
+	await _purify()
+
+
+func _dispel_failed() -> void:
+	_emit(false)
+
+
 ## 拆完一套：清场 → 部件炸开（顿帧、震屏）→ 骑士踉跄、喊一句 → 下一阶段（不黑屏、不演过场）
 func _transition(p: int) -> void:
 	transitioning = true
@@ -409,6 +502,9 @@ func _transition(p: int) -> void:
 			SpeechBubble.say(pair[0], str(tr[pair[1]]), 30.0, 2.0)
 	await get_tree().create_timer(TRANS_STAGGER * 0.5).timeout
 	if not is_inside_tree() or _emitted:
+		return
+	if p == PHASES - 1 and not on_fog():
+		_split_to_fog()
 		return
 	_enter_phase(p)
 	transitioning = false
@@ -1296,7 +1392,7 @@ func _helper_at(i: int) -> bool:
 
 
 func _tick_lanterns(delta: float) -> void:
-	if lanterns.is_empty() or finale:
+	if lanterns.is_empty() or finale or is_instance_valid(dispel):
 		return
 	var me := GameState.player
 	var near_cursed := victims.any(func(v): return is_instance_valid(v) and v.cursed and is_instance_valid(me) and v.global_position.distance_to(me.global_position) <= RESCUE_R)
@@ -1338,7 +1434,10 @@ func _tick_lanterns(delta: float) -> void:
 				tn.queue_free()
 			tentacles.erase(tn)
 	if lanterns.all(func(l): return is_instance_valid(l) and l.lit):
-		_purify()
+		if on_fog():
+			_start_dispel()
+		else:
+			_purify()
 
 
 ## 灯笼亮一截（amount 可以是负的：被触手偷）；满了就亮
@@ -1346,6 +1445,8 @@ func _light(l: KnightBossFx.Lantern, amount: float) -> void:
 	l.progress = clampf(l.progress + amount, 0.0, 1.0)
 	if l.progress >= 1.0 and not l.lit:
 		l.lit = true
+		if is_instance_valid(fog_ring):
+			fog_ring.push()
 		var lit := lanterns.filter(func(x): return is_instance_valid(x) and x.lit).size()
 		var lines: Array = data().get("lantern_lit", [])
 		if lit - 1 < lines.size():
@@ -1652,6 +1753,8 @@ var _ai_mash_t := 0.0
 
 ## 没被操控的那位这一帧干什么（KnightAI 的 plan）；被抓住、被穿上诅咒装备时的挣扎在 _grab_tick / _tick_gears 里
 func ai_plan(ai: PlayableCharacter) -> Dictionary:
+	if is_instance_valid(dispel) and not dispel.done:
+		return dispel.ai_plan(ai)
 	var r := _ai_move(ai)
 	if ai == blue and _ai_burst():
 		r = r.duplicate()
@@ -1762,6 +1865,8 @@ class Hooks extends BattleAIHooks:
 	var task: TaskKnightBoss
 
 	func priority_target() -> Variant:
+		if is_instance_valid(task) and is_instance_valid(task.dispel) and not task.dispel.done:
+			return task.dispel.nearest_hand(task.pink)
 		return task.soft_target() if is_instance_valid(task) else null
 
 	func engage_range() -> float:
@@ -1779,6 +1884,8 @@ func freeze_part(who: PlayableCharacter) -> bool:
 		return false
 	var reach := freeze_reach()
 	var hit := _freeze_tentacles(who)
+	if is_instance_valid(dispel) and dispel.freeze_hands(who, reach):
+		hit = true
 	for part in parts:
 		if is_instance_valid(part) and not part.broken and part.global_position.distance_to(who.global_position) <= reach:
 			part.freeze_left = FREEZE_TIME
@@ -1855,8 +1962,9 @@ func _emit(ok: bool) -> void:
 		_release_grab()
 	for c in _players():
 		_take_gear(c)
-	if ok:
+	if ok and not _split:
 		GameState.vars[PHASE_KEY] = 0
+		GameState.vars[DISPEL_KEY] = false
 	finished.emit(ok)
 
 
@@ -1908,6 +2016,9 @@ class Body extends Node2D:
 	func _draw() -> void:
 		if not is_instance_valid(task):
 			return
+		if task.on_fog() and task.phase == PHASES - 1:
+			_draw_possessed()
+			return
 		# 冲撞的残影
 		for p in _trail:
 			var a := 0.35 * (1.0 - float(p["t"]) / 0.35)
@@ -1940,6 +2051,36 @@ class Body extends Node2D:
 			draw_circle(up + Vector2(0, -20), 30 + sin(_t * 8.0) * 3.0, Color(1, 0.9, 0.5, 0.18))
 		if task.enraged:
 			draw_arc(up + Vector2(0, -20), 34, 0, TAU, 24, Color(0.9, 0.3, 0.6, 0.5 + 0.3 * sin(_t * 12.0)), 2.0)
+
+
+	## 笑雾之中：被黑雾托在半空的骑士（npcs/knight_possessed.png：上排浮空 4 帧、下排落地被解脱 4 帧），周围飘笑声字
+	func _draw_possessed() -> void:
+		var cell := float(POSSESSED_CELL)
+		var src := Rect2()
+		var up := Vector2.ZERO
+		if task.floating:
+			up = Vector2(0, -FLOAT_H - sin(_t * 2.0) * FLOAT_BOB)
+			src = Rect2(int(_t * 6.0) % 4 * cell, 0, cell, cell)
+		else:
+			# 落地：0→1 帧；驱散时按读条 1→3 帧（黑雾越来越淡）
+			var col := 0
+			if task.land_left > 0.0:
+				task.land_left = maxf(0.0, task.land_left - get_process_delta_time())
+				col = 0 if task.land_left > LAND_TIME * 0.5 else 1
+				up = Vector2(0, -FLOAT_H * task.land_left / LAND_TIME)
+			elif is_instance_valid(task.dispel):
+				col = 1 + int(clampf(task.dispel.progress, 0.0, 0.99) * 3.0)
+			src = Rect2(col * cell, cell, cell, cell)
+		draw_circle(Vector2(0, 2), 16.0, Color(0.08, 0.03, 0.12, 0.45))
+		draw_texture_rect_region(POSSESSED_SHEET, Rect2(up + Vector2(-cell / 2.0, -cell + 6.0), Vector2(cell, cell)), src)
+		if task.floating:
+			# 飘着的笑声字
+			var words: Array = TaskKnightBoss.data().get("fog", {}).get("words", ["哈哈"])
+			for i in 6:
+				var k := fmod(_t * 0.35 + i / 6.0, 1.0)
+				var at := up + Vector2(sin(i * 2.3 + _t * 0.8) * 46.0, -40.0 - k * 50.0)
+				draw_string(ThemeDB.fallback_font, at, str(words[i % words.size()]), HORIZONTAL_ALIGNMENT_CENTER, -1, 10,
+					Color(0.9, 0.7, 1.0, 0.7 * sin(k * PI)))
 
 
 ## 诅咒部件：平时打不动（诅咒太硬），冻住（或护腿卡住）以后普通攻击就能打碎；跟着本体走

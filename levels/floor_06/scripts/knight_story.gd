@@ -34,6 +34,8 @@ const DAY := 8
 const TOWN := "floor_06_after"
 const KDAY := "floor_06_knight_day"
 const KNIGHT_N := "floor_06_knight_night"
+## 骑士 Boss 最后阶段「笑雾之中」（广场的倒影，等距）
+const KFOG := "floor_06_knight_fog"
 const KCHASE := "floor_06_knight_chase"
 const TOWNS := [KDAY, KNIGHT_N, KCHASE]
 ## 小镇图上通往各处的门口（指路用，三张小镇图布局相同）、各处回小镇的出口
@@ -91,9 +93,14 @@ const STEPS := [
 		"objective": "去营地楼梯口，把昨晚的事告诉队长", "cutscene": "knight_erupt", "goto": [KCHASE, "from_prison"]},
 	{"id": "chase", "where": KCHASE, "trigger": "auto", "slot": MORNING, "cutscene": "knight_chase_open", "objective": "把盔甲引到广场的图腾柱下",
 		"task": {"script": "res://levels/floor_06/scripts/task_armor_chase.gd", "name": "镇中追逃", "fail": "knight_fail_chase", "fail_hours": 0, "respawn": [55, 37]}},
+	# Boss 前三个阶段（铁手套 / 护腿 / 胸甲）在广场；胸甲打完 → 笑雾涌起（done）→ 换到「笑雾之中」接着打最后阶段
 	{"id": "boss", "where": KCHASE, "trigger": "auto", "slot": MORNING, "cutscene": "knight_boss_open", "objective": "打碎盔甲上的诅咒",
 		"story": "story_knight_boss",
 		"task": {"script": "res://levels/floor_06/scripts/task_knight_boss.gd", "name": "痒铠骑士", "fail": "knight_fail_boss", "fail_hours": 0, "respawn": [41, 29]},
+		"done": "knight_fog_rise", "goto": [KFOG, "start"]},
+	# 最后阶段「笑雾之中」（TaskKnightBoss 第 3 阶段：浮空的骑士、点灯、雾圈收缩，落地以后驱散）
+	{"id": "boss_fog", "where": KFOG, "trigger": "auto", "slot": MORNING, "cutscene": "knight_fog_open", "objective": "点亮笑声灯笼，驱散骑士身上的黑雾",
+		"task": {"script": "res://levels/floor_06/scripts/task_knight_boss.gd", "name": "笑雾之中", "fail": "knight_fail_boss_3", "fail_hours": 0, "respawn": [41, 29]},
 		"done": "knight_epilogue"},
 ]
 

@@ -7,7 +7,7 @@ extends CanvasLayer
 ##   w.retarget(node)         换跟随的目标
 ##   w.close()                关闭（淡出）
 ##   opts.half = true：占右半屏、全高（和主画面并列一样大，巨石追逐战用），没有标题栏，只有一条细分隔线。
-## 第八层的献祭挣扎、巨石追逐战都用它。CG / 过场播放时自动隐藏。同时只开一个（再开会先关掉旧的）。
+## 第八层的献祭挣扎、巨石追逐战、骑士 Boss 笑雾之中的驱散都用它（等距楼层里镜头跟着投影后的位置）。CG / 过场播放时自动隐藏。同时只开一个（再开会先关掉旧的）。
 
 const LAYER := 12
 const MARGIN := 6.0
@@ -153,7 +153,11 @@ func close(instant := false) -> void:
 
 func _follow() -> void:
 	if cam and is_instance_valid(target):
-		cam.global_position = target.global_position + cam_offset
+		# 等距楼层：画面是投影过的，小窗镜头跟着目标投影后的位置（骑士 Boss 笑雾之中的驱散小窗）
+		if IsoView.current and IsoView.current.is_inside_tree():
+			cam.global_position = IsoView.current.screen_pos(target) + cam_offset
+		else:
+			cam.global_position = target.global_position + cam_offset
 
 
 func _process(_delta: float) -> void:

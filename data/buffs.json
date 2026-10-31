@@ -503,6 +503,18 @@
 				"speed": 0.6
 			},
 			"desc": "光脚踩进软绵绵的羽毛堆：脚底被羽毛扫得发痒，走不快。"
+		},
+		"fog_tickle": {
+			"name": "黑雾缠身",
+			"icon": 3,
+			"debuff": true,
+			"hidden": false,
+			"duration": 1.0,
+			"max_stacks": 1,
+			"modifiers": {
+				"speed": 0.85
+			},
+			"desc": "碰到了笑雾之中外圈的黑雾：脚底痒得发麻，走不快。回到雾圈里面就好。"
 		}
 	}
 }

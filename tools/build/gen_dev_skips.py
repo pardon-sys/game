@@ -43,7 +43,7 @@ BOOK = {"penance_hours": 100, "penance_log": [], "penance_punish": [], "after_pl
         "task_tailor_measured": False, "task_tailor_tea": 3, "task_mine_slips": 0, "task_totem_runes": 0, "task_totem_cracks": 0, "task_drain_cleared": 0, "task_potion_ok": 0, "penance_settled": 0,
         "task_inspect_rates": {}, "task_inspect_tune": {},
         "knight_step": 0, "task_stretcher_drops": 0, "task_bait_caught": 0, "task_sneak_caught": 0,
-        "task_chase_lit": 0, "task_chase_caught": 0, "task_boss_phase": 0, "task_boss_caught": 0}
+        "task_chase_lit": 0, "task_chase_caught": 0, "task_boss_phase": 0, "task_boss_caught": 0, "task_boss_dispel": False}
 D2_ALL = ["after_done_d2_morning", "after_ev_d2_stocks"]
 # 第 3 天整天做完（第 4 天以后的跳关点用）
 D3_ALL = D2_ALL + ["after_done_d2_afternoon", "after_ev_d2_equip", "after_done_d2_night", "after_done_d3_morning", "after_ev_d3_potion",
@@ -141,7 +141,7 @@ POINTS = [
           dict(BOOK, day=8, after_day=7, after_slot=0, penance_hours=20), cell=[4, 32], passives=PASSIVES),
     point("七日赎罪·第 7 天晚上（庆功宴）", "floor_06_after", AFTER + after_done("morning", "afternoon", "night") + D3_ALL + D7_DAYS + SKILLS,
           dict(BOOK, day=8, after_day=7, after_slot=2, penance_hours=0), cell=[40, 25], passives=PASSIVES),
-    # 骑士篇（KnightStory.STEPS 的下标：found 0、afternoon 2、bait 3、report 7、boss 9）
+    # 骑士篇（KnightStory.STEPS 的下标：found 0、afternoon 2、bait 3、report 7、boss 9、boss_fog 10）
     point("骑士篇·开头（庆功宴之后的早上）", "floor_06_after_house", KNIGHT, knight_vars(9, 0, 0), cell=[5, 6], passives=PASSIVES),
     point("骑士篇·第一天下午（骑士醒来以后）", "floor_06_after_house", KNIGHT, knight_vars(9, 1, 2), cell=[5, 6], passives=PASSIVES),
     point("骑士篇·第一天夜里（以笑为饵之前）", "floor_06_after_house", KNIGHT, knight_vars(9, 2, 3), cell=[5, 6], passives=PASSIVES),
@@ -163,7 +163,8 @@ POINTS = [
     quest_point("骑士篇·支线⑥结尾前（一起笑）", "floor_06_knight_night", "blue", 5, 9, 2, 4, [9, 31]),
     point("骑士篇·Boss「痒铠骑士」", "floor_06_knight_chase", KNIGHT, dict(knight_vars(10, 0, 9), task_boss_phase=0, task_boss_caught=0), cell=[41, 29], passives=PASSIVES),
     point("骑士篇·Boss 第三阶段（胸甲）", "floor_06_knight_chase", KNIGHT, dict(knight_vars(10, 0, 9), task_boss_phase=2, task_boss_caught=0), cell=[41, 29], passives=PASSIVES),
-    point("骑士篇·Boss 最后阶段（笑面、灯笼）", "floor_06_knight_chase", KNIGHT, dict(knight_vars(10, 0, 9), task_boss_phase=3, task_boss_caught=0), cell=[41, 29], passives=PASSIVES),
+    point("骑士篇·Boss 最后阶段「笑雾之中」（点灯）", "floor_06_knight_fog", KNIGHT, dict(knight_vars(10, 0, 10), task_boss_phase=3, task_boss_caught=0, task_boss_dispel=False), cell=[41, 29], passives=PASSIVES),
+    point("骑士篇·Boss 最后阶段「笑雾之中」（驱散）", "floor_06_knight_fog", KNIGHT, dict(knight_vars(10, 0, 10), task_boss_phase=3, task_boss_caught=0, task_boss_dispel=True), cell=[41, 29], passives=PASSIVES),
 ]
 Path("data/dev").mkdir(parents=True, exist_ok=True)
 Path("data/dev/skip_points_more.json").write_text(json.dumps({

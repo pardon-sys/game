@@ -237,6 +237,26 @@
 			"placeholder": "happy",
 			"wide": true
 		},
+		"knight_fail_1": {
+			"file": "res://assets/cg/portraits/knight_fail_1.png",
+			"placeholder": "helpless_2",
+			"wide": true
+		},
+		"knight_fail_2": {
+			"file": "res://assets/cg/portraits/knight_fail_2.png",
+			"placeholder": "helpless_2",
+			"wide": true
+		},
+		"knight_fail_3": {
+			"file": "res://assets/cg/portraits/knight_fail_3.png",
+			"placeholder": "helpless_2",
+			"wide": true
+		},
+		"knight_fail_fog": {
+			"file": "res://assets/cg/portraits/knight_fail_fog.png",
+			"placeholder": "helpless_2",
+			"wide": true
+		},
 		"slime_1": {
 			"file": "res://assets/cg/portraits/slime_1.png",
 			"placeholder": "helpless_1"
