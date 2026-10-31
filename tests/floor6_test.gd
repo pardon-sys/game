@@ -194,7 +194,7 @@ func _run_town() -> void:
 	check("蓝色公主是可操作角色（PlayableCharacter），平时 AI 控制：友军、不是玩家、相机关着",
 		blue is PlayableCharacter and blue.faction == Faction.Type.ALLY and GameState.player != blue
 		and blue.controller is WanderController and not blue.camera.enabled and blue.portrait_set == "blue")
-	check("蓝色公主用自己的精灵图和魔法图", blue.sprite.texture.resource_path.ends_with("princess_blue.png")
+	check("蓝色公主用自己的精灵图和魔法图", blue.sprite.texture.resource_path.replace("_hd.png", ".png").ends_with("princess_blue.png")
 		and blue.animator.texture_overrides.get("magic", "").ends_with("princess_blue_magic.png"))
 	# 自由行动：几秒内走到别的溜达点
 	var b0 := blue.global_position

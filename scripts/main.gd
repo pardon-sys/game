@@ -14,6 +14,10 @@ func _ready() -> void:
 	var director := StoryDirector.new()
 	director.name = "StoryDirector"
 	add_child(director)
+	# P 键设置菜单（角色画风、显示常驻立绘）
+	var settings := SettingsMenu.new()
+	settings.name = "SettingsMenu"
+	add_child(settings)
 	for c in get_children():
 		if c.has_node("Walls"):
 			level = c

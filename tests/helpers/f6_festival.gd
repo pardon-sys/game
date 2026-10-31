@@ -69,7 +69,7 @@ static func run(t: Node) -> void:
 	verify(t,"真实对话接取并到篝火开演灯轮",s!=null and AfterErrands.active()=="lamp_calibration")
 	if s==null:return
 	s.set_process(false)
-	verify(t,"灯轮演员只有粉色和派对主人",s.actors.size()==2 and s.actors["worker"].sprite.texture.resource_path.ends_with("bonfire_host.png"))
+	verify(t,"灯轮演员只有粉色和派对主人",s.actors.size()==2 and s.actors["worker"].sprite.texture.resource_path.replace("_hd.png", ".png").ends_with("bonfire_host.png"))
 	s.lamps.x = 1.0 if s.target_lamps.x<0.5 else 0.0
 	s.simulate(0.2)
 	verify(t,"不对准不能直接计稳定时间",s.progress==0 and s.completed==0)

@@ -803,7 +803,15 @@ func player_behind_portrait() -> bool:
 	return body.intersects(Rect2(portrait.global_position, portrait.size))
 
 
+## 设置里关掉了「显示常驻立绘」（UserSettings.show_portrait）：游戏中不显示左下角的立绘（对话、CG、小剧场、横版大图时照常）
+func resident_hidden() -> bool:
+	return not UserSettings.show_portrait() and not _active and not _wide and _portrait_override == null and not GameState.in_cutscene
+
+
 func _update_portrait_fade(delta: float) -> void:
+	if resident_hidden():
+		portrait.self_modulate.a = 0.0
+		return
 	var target := PORTRAIT_FADE_ALPHA if (not _active and player_behind_portrait()) else 1.0
 	portrait.self_modulate.a = move_toward(portrait.self_modulate.a, target, delta * 3.0)
 

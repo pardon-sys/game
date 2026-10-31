@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" uid="uid://bm3txkyd3b5u1" path="res://scripts/actors/playable/princess.gd" id="1"]
 [ext_resource type="Script" uid="uid://cmf42fj20742d" path="res://scripts/components/emotion_component.gd" id="2"]
+[ext_resource type="Texture2D" uid="uid://cuq4r2x4d3gjo" path="res://assets/generated/princess.png" id="princess_tex"]
 [ext_resource type="Texture2D" uid="uid://ce4rj85oiwhvg" path="res://assets/generated/emotes.png" id="4"]
 [ext_resource type="Texture2D" uid="uid://ol47didvtocq" path="res://assets/generated/fx.png" id="5"]
 [ext_resource type="Texture2D" uid="uid://xh3nsag5jpj5" path="res://assets/generated/items.png" id="6"]
@@ -23,9 +24,6 @@ shader = ExtResource("7")
 shader_parameter/flash = 0.0
 shader_parameter/flash_color = Color(1, 1, 1, 1)
 
-[sub_resource type="CompressedTexture2D" id="CompressedTexture2D_274go"]
-load_path = "res://.godot/imported/princess.png-8e564db485fd0d7243a1abb6cdccf952.ctex"
-
 [sub_resource type="RectangleShape2D" id="feet"]
 size = Vector2(10, 6)
 
@@ -43,7 +41,7 @@ faction = 1
 
 [node name="Sprite" type="Sprite2D" parent="." unique_id=1174290609]
 material = SubResource("flash_mat")
-texture = SubResource("CompressedTexture2D_274go")
+texture = ExtResource("princess_tex")
 offset = Vector2(0, -16)
 hframes = 16
 vframes = 11

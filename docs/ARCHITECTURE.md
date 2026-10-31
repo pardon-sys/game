@@ -515,7 +515,7 @@ HUD 背包栏会根据物品数据自动显示，不需要改 UI 代码。
 
 ### 背包与快捷键
 - 背包界面 `Backpack`（`scenes/ui/backpack.tscn`，CanvasLayer 第 25 层，`PROCESS_MODE_ALWAYS`）：`GameState.has_backpack()`（剧情标记 `got_backpack`，`BackpackItem` 拾取即设置）之后输入 `backpack`（Tab / I / L3）打开并暂停；`_input` 先于暂停菜单截获 Esc。物品页 `use_selected()` / `assign_selected(hotkey)`（物品格放在能滚动的框里，一次显示 `GRID_ROWS` 两行，选中的那格自动滚进来，不压到说明文字），状态页读 `LaughMeter` / `MagicFatigue` / `Actor.buffs`（`buffs.json` 的 `desc`）/ `StatusComponent`；←→ 只在同行的人之间切换（`status_members()` = `Party.members`，见「可操作角色」）。
-- 快捷键绑定在 `GameState.hotkeys`（`use_item` = Q、`use_special` = R，默认 `DEFAULT_HOTKEYS`，`set_hotkey` 冲突时交换，信号 `hotkeys_changed`）；`PlayableCharacter.use_item(hotkey)` → `Inventory.use_hotkey`。`ItemData.hotkey` 只是默认值说明。
+- 设置菜单 P（`SettingsMenu`，见「公主状态与换美术素材」）。快捷键绑定在 `GameState.hotkeys`（`use_item` = Q、`use_special` = R，默认 `DEFAULT_HOTKEYS`，`set_hotkey` 冲突时交换，信号 `hotkeys_changed`）；`PlayableCharacter.use_item(hotkey)` → `Inventory.use_hotkey`。`ItemData.hotkey` 只是默认值说明。
 
 ### HUD 道具栏与立绘反馈
 - HUD 道具栏（`HUD._refresh_inventory`）：最多 `BAR_SLOTS`（3）格；`GameState.hotkeys` 绑定且有货的道具固定在前（`pinned_items`），其余进轮播（`carousel_items`，裁剪窗口里的长条每 `CAROUSEL_TIME` 秒滑一格，末尾补开头几格无缝循环）；新增 / 数量增加的道具直接转到窗口。`visible_item_ids()`、`more_count()` 给测试用。
@@ -542,9 +542,9 @@ HUD 背包栏会根据物品数据自动显示，不需要改 UI 代码。
 4. **蓝色公主**（`BluePrincess extends Princess`，场景 `blue_princess.tscn` 继承 `princess.tscn`）：精灵图换成 `princess_blue.png`，魔法图通过 Animator 的 `texture_overrides`（`{"magic": 路径}`）换成 `princess_blue_magic.png`，`portrait_set = "blue"`；默认阵营 ALLY、相机关闭、`WanderController`；`Talk` 交互区按 E 对话；`show_flag` 控制出现；`ai = false` 时是过场演员（`spawn kind=npc:blue_princess` 生成，人物表里写了 `scene`）。
    - 场景里同时有两个可操作角色时，只有 `GameState.player` 那个是「玩家」：`Princess.is_controlled()` 为假的一方不触发台词气泡、提示、语音、剧情对话；`EmotionComponent.is_global()` 只让玩家那一个响应 `GameState.emote` 并广播 `emotion_changed`。
    - **同行的人** `Party`（`scripts/core/party.gd`）：背包状态页能看谁、按 C 能换到谁由地图元数据决定——操控的角色、跟着走的同行者（`follow`）、
-     地图 `[level]` 段 `party = 人物 id,…`（`character_id`：pink / blue / bonfire_host，构建器写进 `level.gd` 的 `party`）列出的人、
-     允许换人的场景（关卡 meta `free_switch`、`Duo.active`）里 `switchable` 的人。小镇里闲逛的派对主人等不算同行；`party` 里列出的人即使 `switchable` 关着也能换。
-     测试模式 F2 不受限。现在没有地图写 `party`（需要「这一段能切到派对主人」时在那张图的生成器 `[level]` 头里加）。
+	 地图 `[level]` 段 `party = 人物 id,…`（`character_id`：pink / blue / bonfire_host，构建器写进 `level.gd` 的 `party`）列出的人、
+	 允许换人的场景（关卡 meta `free_switch`、`Duo.active`）里 `switchable` 的人。小镇里闲逛的派对主人等不算同行；`party` 里列出的人即使 `switchable` 关着也能换。
+	 测试模式 F2 不受限。现在没有地图写 `party`（需要「这一段能切到派对主人」时在那张图的生成器 `[level]` 头里加）。
    - `GameState.switch_control(to)`（测试模式 F2，`main.switch_character()`，按场景候选顺序循环，支持第三角色；正常模式候选 = `Party.members` 里 `Party.can_switch_to` 的人）：两边交换阵营（`Actor.set_faction` 同时换节点组）、控制器（原来的那个用 `make_ai_controller()`）、相机，`player_registered` 让 HUD / 对话框重新绑定；不搬运血量 / 闷笑。换关卡前自动切回公主。
    - 立绘套装：`Dialogue.PORTRAIT_SETS`（pink / blue / bonfire_host），`portrait_for(表情, 套装)` / `head_for`；不写套装时用当前玩家的 `portrait_set`。人物表里写了 `portrait_set` 的人物（蓝色公主）说话时，右侧立绘按台词的 `emotion` 取格子。
 
@@ -1170,6 +1170,14 @@ data/cutscenes/<楼层组>/  地图内过场；data/theater/<楼层组>/  小剧
 
 ## 公主状态与换美术素材
 
+- **角色画风（高清 / 像素）**：粉色 / 蓝色公主、派对主人各有一套非像素的高清图集 `*_hd.png`（格子是像素版的 3 倍：行走 96、魔法 144；原像素图一张不动，随时切回）。
+  `tools/art/import_sprites_hd.py`（两位公主：和像素版同一批手绘源图、同一套切帧映射，只是不像素化、平滑缩小；粉色普通憋笑用平常装束的「开心」组，
+  战损 / 战损憋笑两行按立绘重画 `tools/art/src/hd_sprites/pink_damaged.png`）、`import_bonfire_host.py --hd`（派对主人，源图本身偏像素风）。
+  运行时 `SpriteSheetAnimator._use_sheet` 按 `UserSettings.styled_path` 换成同名 `_hd.png`（缺图回退像素版），Sprite 缩到 1/`HD_SCALE`、offset 放大同样倍数、平滑过滤，
+  `UserSettings.revision` 变了下一帧重选；CG 舞台的公主演员走同一套。`princess.tscn` 的贴图改成引用 `princess.png`（以前是内嵌的导入贴图，找不到同名高清图）。
+- **设置菜单**（P，动作 `settings`）：`SettingsMenu`（`scripts/ui/settings_menu.gd`，`main.gd` 进场时加上，CanvasLayer 31，打开时暂停；对话 / 过场 / 别的菜单开着时不响应）：
+  「角色画风：高清 / 像素」「显示常驻立绘：开 / 关」。设置在 `UserSettings`（`scripts/core/user_settings.gd`，settings.cfg 的 `[display]` 段，先读再改、不覆盖 Audio 的 `[audio]`）。
+  关掉常驻立绘：`Dialogue.resident_hidden()`（游戏中、不在对话 / CG / 横版大图 / 过场时）把立绘透明掉，`PortraitFx.active()` 也不放贴片；对话、CG、小剧场里照常。测试 `tests/settings_test`。
 - **魔法姿态**：`princess_visuals.json` 的 `magic_order`（`chant / burst / damaged_chant / damaged_giggle_chant / damaged_burst / damaged_giggle_burst`）。`GameState.EMOTIONS` 仍是 11 种可请求的表情；`MAGIC_VISUALS` 只由 `Princess.resolve_visual()` 在 `CHANNEL`（吟唱）/ `CAST`（释放定住 `cast_time` 0.5 秒）状态下选用，优先级最高。选用规则（`Princess.magic_visual`）：闷笑值超过憋笑阈值（35%）→ 战损闷笑版（不管有没有战损，没有未战损的闷笑素材）；否则战损 → 战损版、未战损 → 普通版。吟唱中闷笑变化会 `emotion.refresh()` 立即切换。`VISUALS = EMOTIONS + MAGIC_VISUALS` 是立绘、头像和 `EmotionComponent.row()` 的顺序。`magic_portrait_alias` 让战损闷笑释放借用战损释放的立绘。
 - **多图集动画**：`SpriteSheetConfig.sheets` 定义额外图集（texture、hframes、vframes、offset、directions、row_names）。动画写 `"sheet": "magic"` 就换用该图集，行号按当前视觉状态名在它的 `row_names` 里找；不写 `sheet` 时恢复 Sprite 原来的图集。`"progress": true` 的动画帧号取 `SpriteSheetAnimator.progress`（0~1），吟唱时由 `PlayableCharacter` 设为蓄力进度。
 - 魔法图集 `princess_magic.png`：48×48，每行一种魔法姿态，列 = 下/左/右/上各 8 帧；Sprite offset (0, -24)，与 32 格行走帧 (0, -16) 的脚底对齐。

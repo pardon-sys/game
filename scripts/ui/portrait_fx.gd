@@ -119,6 +119,8 @@ func setup(p: TextureRect) -> void:
 func active() -> bool:
 	if portrait == null or not portrait.visible:
 		return false
+	if Dialogue.resident_hidden():   # 设置里关掉了常驻立绘：不在空着的地方放贴片和飘字
+		return false
 	if cg_mode or cutscene_cg:
 		return true
 	return (not GameState.in_cutscene or Cutscene.is_playing()) and not Dialogue.is_portrait_wide()
