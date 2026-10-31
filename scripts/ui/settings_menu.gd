@@ -1,7 +1,7 @@
 class_name SettingsMenu
 extends CanvasLayer
 ## 设置菜单（P 键，动作 settings）：打开时暂停游戏。两项（↑↓ 选，←→ / 回车 / 点一下 切换，P / Esc 关）：
-##   「角色画风」高清 / 像素：UserSettings.art_style（粉色 / 蓝色公主、派对主人的地图精灵图和 CG 舞台小人换成 *_hd.png 非像素图集；原像素图保留，随时切回）；
+##   「角色画风」精细像素 / 原像素：UserSettings.art_style（粉色 / 蓝色公主、派对主人的地图精灵图和 CG 舞台小人换成 *_hd.png——codex 直接画的 64 格像素风；原 32 格像素图保留，随时切回）；
 ##   「显示常驻立绘」开 / 关：UserSettings.show_portrait（游戏中左下角的角色立绘；对话、CG、小剧场里的立绘照常显示）。
 ## 设置存在 settings.cfg 的 [display] 段。对话 / 过场 / CG / 别的菜单（暂停菜单、背包）开着时不响应。
 ## main.gd 进场时 add_child(SettingsMenu.new())。测试：open() / close()、toggle_row(i)、rows、index、is_open()。
@@ -14,7 +14,7 @@ const PINK := Color(0.96, 0.6, 0.76)
 const PANEL_SIZE := Vector2(240, 104)
 ## 每一项：[标题, 设置键, [显示文字…], [对应的值…]]
 const ROWS := [
-	["角色画风", "art_style", ["高清", "像素"], ["hd", "pixel"]],
+	["角色画风", "art_style", ["精细像素", "原像素"], ["hd", "pixel"]],
 	["显示常驻立绘", "show_portrait", ["开", "关"], [true, false]],
 ]
 

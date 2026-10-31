@@ -1187,13 +1187,14 @@ data/cutscenes/<楼层组>/  地图内过场；data/theater/<楼层组>/  小剧
 
 ## 公主状态与换美术素材
 
-- **角色画风（高清 / 像素）**：粉色 / 蓝色公主、派对主人各有一套非像素的高清图集 `*_hd.png`（格子是像素版的 3 倍：行走 96、魔法 144；原像素图一张不动，随时切回）。
-  `tools/art/import_sprites_hd.py`（两位公主：和像素版同一批手绘源图、同一套切帧映射，只是不像素化、平滑缩小；粉色普通憋笑用平常装束的「开心」组，
-  战损 / 战损憋笑两行按立绘重画 `tools/art/src/hd_sprites/pink_damaged.png`）、`import_bonfire_host.py --hd`（派对主人，源图本身偏像素风）。
-  运行时 `SpriteSheetAnimator._use_sheet` 按 `UserSettings.styled_path` 换成同名 `_hd.png`（缺图回退像素版），Sprite 缩到 1/`HD_SCALE`、offset 放大同样倍数、平滑过滤，
-  `UserSettings.revision` 变了下一帧重选；CG 舞台的公主演员走同一套。`princess.tscn` 的贴图改成引用 `princess.png`（以前是内嵌的导入贴图，找不到同名高清图）。
+- **角色画风（精细像素 / 原像素）**：粉色 / 蓝色公主、派对主人各有一套 64 格的精细像素图集 `*_hd.png`（行走 64 格、魔法 96 格，派对主人另有攻击图；原 32 格像素图一张不动，随时切回）。
+  源图是 **codex 直接画的像素风**（`tools/art/src/px64/`，提示词同目录 `prompts.md`；用户确认过的画风是 `ref_style_walk.png`）：每个角色 6 张——走路 4×4、站着的表情 2×4、
+  战损走路 + 战损憋笑 5×4、失控 2×4、魔法 3×6 两张（派对主人再加攻击 4×3）。侧面走路四帧左右脚交替（不是平移）。
+  `tools/art/import_sprites_px64.py` 只做网格对齐：切帧（`import_sprites_v2.Sheet`）→ 按身体高度换算每张源表的像素块大小 → 最近邻取块中心（不平滑、不重新量化）→ 排进 64 格。
+  运行时 `SpriteSheetAnimator._use_sheet` 按 `UserSettings.styled_path` 换成同名 `_hd.png`（缺图回退原像素图），Sprite 缩到 1/`HD_SCALE`（2）、offset 放大同样倍数、最近邻过滤，
+  `UserSettings.revision` 变了下一帧重选；CG 舞台的公主演员走同一套。`princess.tscn` 的贴图引用 `princess.png`（以前是内嵌的导入贴图，找不到同名图）。
 - **设置菜单**（P，动作 `settings`）：`SettingsMenu`（`scripts/ui/settings_menu.gd`，`main.gd` 进场时加上，CanvasLayer 31，打开时暂停；对话 / 过场 / 别的菜单开着时不响应）：
-  「角色画风：高清 / 像素」「显示常驻立绘：开 / 关」。设置在 `UserSettings`（`scripts/core/user_settings.gd`，settings.cfg 的 `[display]` 段，先读再改、不覆盖 Audio 的 `[audio]`）。
+  「角色画风：精细像素 / 原像素」「显示常驻立绘：开 / 关」。设置在 `UserSettings`（`scripts/core/user_settings.gd`，settings.cfg 的 `[display]` 段，先读再改、不覆盖 Audio 的 `[audio]`）。
   关掉常驻立绘：`Dialogue.resident_hidden()`（游戏中、不在对话 / CG / 横版大图 / 过场时）把立绘透明掉，`PortraitFx.active()` 也不放贴片；对话、CG、小剧场里照常。测试 `tests/settings_test`。
 - **魔法姿态**：`princess_visuals.json` 的 `magic_order`（`chant / burst / damaged_chant / damaged_giggle_chant / damaged_burst / damaged_giggle_burst`）。`GameState.EMOTIONS` 仍是 11 种可请求的表情；`MAGIC_VISUALS` 只由 `Princess.resolve_visual()` 在 `CHANNEL`（吟唱）/ `CAST`（释放定住 `cast_time` 0.5 秒）状态下选用，优先级最高。选用规则（`Princess.magic_visual`）：闷笑值超过憋笑阈值（35%）→ 战损闷笑版（不管有没有战损，没有未战损的闷笑素材）；否则战损 → 战损版、未战损 → 普通版。吟唱中闷笑变化会 `emotion.refresh()` 立即切换。`VISUALS = EMOTIONS + MAGIC_VISUALS` 是立绘、头像和 `EmotionComponent.row()` 的顺序。`magic_portrait_alias` 让战损闷笑释放借用战损释放的立绘。
 - **多图集动画**：`SpriteSheetConfig.sheets` 定义额外图集（texture、hframes、vframes、offset、directions、row_names）。动画写 `"sheet": "magic"` 就换用该图集，行号按当前视觉状态名在它的 `row_names` 里找；不写 `sheet` 时恢复 Sprite 原来的图集。`"progress": true` 的动画帧号取 `SpriteSheetAnimator.progress`（0~1），吟唱时由 `PlayableCharacter` 设为蓄力进度。

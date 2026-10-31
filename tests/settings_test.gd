@@ -1,5 +1,5 @@
 extends Node
-## 设置菜单（P 键）和角色画风切换：UserSettings 读写（不丢 Audio 的音量）、高清图集（*_hd.png，Sprite 缩到 1/3、平滑过滤、缺图回退像素版）、
+## 设置菜单（P 键）和角色画风切换：UserSettings 读写（不丢 Audio 的音量）、精细像素图集（*_hd.png 64 格，Sprite 缩到 1/2、最近邻、缺图回退原像素图）、
 ## 菜单开关和切换、关掉常驻立绘。用法：Godot --headless --path . res://tests/settings_test.tscn
 
 var main: Node
@@ -30,9 +30,10 @@ func _ready() -> void:
 	var p := GameState.player
 	var anim: SpriteSheetAnimator = p.animator
 	await _wait(0.2)
-	check("高清画风：粉色公主用 princess_hd.png、缩到 1/3、平滑过滤（%s）" % p.sprite.texture.resource_path,
-		anim.hd and p.sprite.texture.resource_path.ends_with("princess_hd.png") and is_equal_approx(p.sprite.scale.x, 1.0 / 3.0)
-		and p.sprite.texture_filter == CanvasItem.TEXTURE_FILTER_LINEAR and is_equal_approx(p.sprite.offset.y, -48.0))
+	check("精细像素：粉色公主用 princess_hd.png（64 格）、缩到 1/2、最近邻（%s）" % p.sprite.texture.resource_path,
+		anim.hd and p.sprite.texture.resource_path.ends_with("princess_hd.png") and is_equal_approx(p.sprite.scale.x, 0.5)
+		and p.sprite.texture_filter == CanvasItem.TEXTURE_FILTER_NEAREST and is_equal_approx(p.sprite.offset.y, -32.0)
+		and p.sprite.texture.get_width() == 64 * 16)
 	var cfg := ConfigFile.new()
 	cfg.load(UserSettings.path())
 	check("设置写进 settings.cfg 的 [display] 段，[audio] 音量还在", str(cfg.get_value("display", "art_style", "")) == "hd"
@@ -42,17 +43,17 @@ func _ready() -> void:
 	menu.open()
 	check("P 键菜单打开时暂停游戏、两项设置", menu.is_open() and get_tree().paused and menu.rows.size() == 2)
 	menu.toggle_row(0)
-	check("切换「角色画风」→ 像素", not UserSettings.hd())
+	check("切换「角色画风」→ 原像素", not UserSettings.hd())
 	menu.close()
 	check("关掉菜单恢复游戏", not menu.is_open() and not get_tree().paused)
 	await _wait(0.2)
-	check("像素画风：换回 princess.png、原大小（%s）" % p.sprite.texture.resource_path,
+	check("原像素：换回 princess.png、原大小（%s）" % p.sprite.texture.resource_path,
 		not anim.hd and p.sprite.texture.resource_path.ends_with("princess.png") and is_equal_approx(p.sprite.scale.x, 1.0) and is_equal_approx(p.sprite.offset.y, -16.0))
 	# 魔法图集也跟着换
 	UserSettings.set_value("art_style", "hd")
 	anim.play("channel")
 	anim.update(0.05, "down", false, 0)
-	check("魔法图集也换高清（%s）" % p.sprite.texture.resource_path, p.sprite.texture.resource_path.ends_with("princess_magic_hd.png") and anim.hd)
+	check("魔法图集也换精细像素（%s）" % p.sprite.texture.resource_path, p.sprite.texture.resource_path.ends_with("princess_magic_hd.png") and anim.hd)
 	anim.play("idle")
 	# 缺高清图时回退
 	check("没有 *_hd.png 的图集用原图", UserSettings.styled_path("res://assets/generated/slime.png") == "res://assets/generated/slime.png")
