@@ -1,0 +1,118 @@
+[level]
+# 第六层·地下小镇·战后（tools/build/gen_floor06_after.py 生成，不要直接改）
+intro =
+ambient = 0.2,0.14,0.28
+no_switch = true
+style = iso
+iso_theme = laugh_fog
+iso_rotate = false
+carry_light = false
+[legend]
+# = wall
+. = floor
+P = player
+t = torch lit=true
+A = f6afterroom
+C = prop type=dungeon_gate
+D = spawn id=from_mine
+E = spawn id=from_alley
+F = spawn id=from_wall
+G = spawn id=from_crack
+H = spawn id=from_warehouse
+I = spawn id=from_bridge
+J = spawn id=from_storage
+K = prop type=house_scaffold_0
+L = prop type=house_1
+M = prop type=house_scaffold_1
+N = prop type=house_3
+O = spawn id=from_tailor
+Q = sign dialogue=after_tailor_sign
+R = spawn id=from_drill
+S = spawn id=from_proving
+T = prop type=drain_grate
+U = spawn id=from_drain
+V = spawn id=from_pharmacy
+W = sign dialogue=after_pharmacy_sign
+X = prop type=lumber action=talk:floor_06/after_objects#lumber
+Y = prop type=rubble
+Z = prop type=house_blue
+a = spawn id=from_house
+b = prop type=stall_0 action=shop:war_market
+c = prop type=stall_1 action=shop:war_market
+d = prop type=stall_2 action=shop:war_market
+e = prop type=stall_broken
+f = prop type=crate
+g = prop type=bonfire_0 action=heal
+h = spawn id=from_festival
+i = prop type=bench
+j = prop type=lamp
+k = prop type=well
+l = prop type=ladder
+m = prop type=fence
+n = prop type=hay
+o = prop type=podium action=talk:floor_06/after_objects#podium
+p = prop type=notice_board action=talk:floor_06/after_objects#notice
+q = prop type=bunting
+r = savepoint place=战后的广场
+s = prop type=totem_fixed
+u = spawn id=from_totem
+v = prop type=stairs_down
+w = prop type=barricade action=talk:floor_06/after_k_objects#vent
+y = sign dialogue=after_camp_blocked
+z = spawn id=from_prison
+0 = prop type=sandbag
+1 = prop type=tower_base
+2 = prop type=tower
+3 = prop type=dungeon_gate action=talk:floor_06/after_objects#gate
+4 = spawn id=from_siege
+5 = spawn id=from_field
+6 = player + spawn id=start
+7 = blue_princess follow=true ai=false
+
+[map]
+################################################################
+########t###########t###########t###########t###########t#######
+##............................................................##
+##.A..........................................................##
+##....................................................C.......##
+##............................................................##
+##....................................................D.......##
+##............................................................##
+##......K.......L.......M.......N.........Z...................##
+##.......................l....................................##
+##......R.......V.W.............O.Q.......a...................##
+##..........X...............X.................................##
+##..................Y.........................................##
+##..H.........................................................##
+##............................................................##
+##............................................................##
+##.E..........................................................##
+##............................................................##
+##............................k...............................##
+##.....b...c...d..............................................##
+##..........................................................S.##
+##.......................q..........q...i.......i.............##
+##..f.........................................................##
+##..f..............................p..........................##
+##...................................j......g......j..........##
+##............................o...............................##
+##.....c...d...e........................h.....................##
+##......................................i.......i.............##
+##....................................G................mmmmm..##
+##.......................................6.7...........m...m..##
+##.I...................................................m...mn.##
+##.....................................................m...m..##
+##.u..........................r........................mm.mm..##
+##............................................................##
+##.J..............s...........................................##
+##............................................................##
+##...............................5............................##
+##..........1.........1...................1.........1.........##
+##..................U......2....4....2...................zw...##
+##......0...F...X...T...........................X.......0.....##
+##...........................j..3..j.....................y.v..##
+################################################################
+##............................................................##
+##............................................................##
+################################################################
+################################################################

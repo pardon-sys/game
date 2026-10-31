@@ -8,7 +8,8 @@
 游戏里 SpriteSheetAnimator 在「角色画风：精细像素」时换上这些图（Sprite 缩到 1/8 再放大 HD_ENLARGE 倍、线性过滤），缺图用原来的 32 格像素图。
 源图（每个角色）：<p>_walk 4×4（下 / 左 / 右 / 上走路）、<p>_expr 2×4（站着的表情：普通 开心 生气 难过 / 惊讶 害羞 憋笑 大笑）、
   <p>_damaged 5×4（战损走路四向 + 第 5 行战损憋笑正面）、<p>_helpless 2×4（失控一 坐地笑 / 失控二 躺地蹬脚）、<p>_magic1 / _magic2 3×6（魔法姿态）。
-用法：python tools/art/import_sprites_px64.py [pink] [blue] [host] [--preview]（检查图在 tools/.cache/px64/）
+笑雾之中的骑士：knight_possessed.png（2×4：浮空 / 落地被解脱）→ npcs/knight_possessed.png（80 格）。
+用法：python tools/art/import_sprites_px64.py [pink] [blue] [host] [knight] [--preview]（检查图在 tools/.cache/px64/）
 """
 import sys
 from pathlib import Path
@@ -30,7 +31,7 @@ HELPLESS_W = 248
 HELPLESS_H = 200
 WALK_DIRS = ["down", "left", "right", "up"]
 # 每种源表：行数 × 每行帧数
-LAYOUT = {"walk": [4] * 4, "expr": [4] * 2, "damaged": [4] * 5, "helpless": [4] * 2, "magic1": [6] * 3, "magic2": [6] * 3, "attack": [3] * 4}
+LAYOUT = {"possessed": [4] * 2, "walk": [4] * 4, "expr": [4] * 2, "damaged": [4] * 5, "helpless": [4] * 2, "magic1": [6] * 3, "magic2": [6] * 3, "attack": [3] * 4}
 # 站着的表情（expr 表的格子）→ 状态
 EXPR = {"normal": 0, "happy": 1, "angry": 2, "sad": 3, "surprise": 4, "shy": 5, "giggle": 6}
 # 魔法：magic1 三行 + magic2 三行 = magic_order
@@ -122,6 +123,24 @@ def build(char):
     print("%s：每张源表的像素块 %s，%s_hd.png%s" % (char, {k: round(v, 2) for k, v in scales.items()}, out_name, "、magic" if "magic1" in snapped else ""))
 
 
+## 笑雾之中的骑士（源图 knight_possessed.png：上排浮空 4 帧、下排落地被解脱 4 帧）→ npcs/knight_possessed.png，4×2 格 KNIGHT_CELL
+KNIGHT_CELL = 80
+KNIGHT_H = 72
+
+
+def build_knight():
+    raw = frames("knight", "possessed")
+    allf = [f for row in raw for f in row]
+    s = float(np.median([f.height for f in raw[0]])) / KNIGHT_H
+    out = Image.new("RGBA", (KNIGHT_CELL * 4, KNIGHT_CELL * 2))
+    for r, row in enumerate(raw):
+        for c, f in enumerate(row):
+            out.alpha_composite(place(snap(f, s), KNIGHT_CELL), (c * KNIGHT_CELL, r * KNIGHT_CELL))
+    (OUT / "npcs").mkdir(exist_ok=True)
+    out.save(OUT / "npcs" / "knight_possessed.png")
+    print("骑士（笑雾之中）：像素块 %.2f，npcs/knight_possessed.png" % s)
+
+
 def preview(char):
     PREVIEW.mkdir(parents=True, exist_ok=True)
     out_name = CHARS[char][1]
@@ -136,6 +155,9 @@ def preview(char):
 
 def main():
     want = [a for a in sys.argv[1:] if not a.startswith("--")] or list(CHARS)
+    if "knight" in want:
+        build_knight()
+        want.remove("knight")
     for c in want:
         if (SRC / ("%s_walk.png" % CHARS[c][0])).exists():
             build(c)

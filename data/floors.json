@@ -163,6 +163,13 @@
 			"music": "town"
 		},
 		{
+			"id": "floor_06_knight_fog",
+			"name": "笑雾之中",
+			"scene": "res://levels/floor_06_knight_fog/floor.tscn",
+			"group": "floor_06",
+			"music": "knight_fog"
+		},
+		{
 			"id": "floor_06_after_house",
 			"name": "蓝色小屋·战后",
 			"scene": "res://levels/floor_06_after_house/floor.tscn",

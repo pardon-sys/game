@@ -1,0 +1,351 @@
+{
+	"name": "笑雾之中失败：被雾托起来的两个人",
+	"cast": {
+		"princess": {
+			"kind": "princess",
+			"at": [
+				-14,
+				10
+			],
+			"visual": "helpless_1",
+			"anim": "helpless",
+			"dir": "down"
+		},
+		"blue": {
+			"kind": "npc:blue_princess",
+			"at": [
+				14,
+				10
+			],
+			"visual": "helpless_1",
+			"anim": "helpless",
+			"dir": "down"
+		},
+		"armor": {
+			"kind": "npc:knight_possessed",
+			"at": [
+				0,
+				-14
+			],
+			"dir": "down"
+		}
+	},
+	"steps": [
+		{
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "fade_in"
+				},
+				{
+					"state": "giggle",
+					"do": "voice"
+				}
+			],
+			"wait": 0.5
+		},
+		{
+			"speaker": "",
+			"text": "—— 第一幕　断了 ——"
+		},
+		{
+			"speaker": "",
+			"text": "（咒语断了。黑雾一下子涌了回来，无数只黑气小手从雾里伸出来，抓住了两个人的手腕和脚踝）"
+		},
+		{
+			"speaker": "公主",
+			"text": "放、放开！咒还没念完——他就差一点点了！",
+			"emotion": "angry"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……被……抓住了。……对不起。"
+		},
+		{
+			"speaker": "",
+			"text": "（小手把她们托离了地面，一直托到半空——和浮着的骑士一样高）",
+			"actions": [
+				{
+					"who": "princess",
+					"do": "hop"
+				},
+				{
+					"who": "blue",
+					"do": "hop"
+				}
+			]
+		},
+		{
+			"speaker": "",
+			"text": "—— 第二幕　雾里的手 ——"
+		},
+		{
+			"speaker": "骑士",
+			"text": "……哈……哈哈……一……起……笑……吧……"
+		},
+		{
+			"speaker": "",
+			"text": "（黑气小手扒开她的脚趾，一只钻进趾缝，一只在脚心上画圈，一只捏着脚跟不放）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "armor",
+					"zone": "sole",
+					"fx": "hand",
+					"repeat": 12,
+					"interval": 0.18,
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "哈哈哈哈！趾、趾缝——！不、不行——雾里的手怎么这么多——！",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "armor",
+					"zone": "sole",
+					"fx": "hand",
+					"repeat": 8,
+					"interval": 0.2,
+					"do": "tickle"
+				}
+			],
+			"portrait": "defeat_1"
+		},
+		{
+			"speaker": "",
+			"text": "（蓝色公主那边，几只小手顺着她的大腿内侧慢慢往上爬，爬到腿根就停下来打圈）",
+			"actions": [
+				{
+					"who": "blue",
+					"by": "armor",
+					"zone": "thigh",
+					"fx": "hand",
+					"repeat": 12,
+					"interval": 0.2,
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……哈……那……里……不……许……",
+			"actions": [
+				{
+					"who": "blue",
+					"by": "armor",
+					"zone": "thigh",
+					"fx": "hand",
+					"repeat": 8,
+					"interval": 0.22,
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "",
+			"text": "（又有两只小手绕到后面，左右轮流捏了捏她的屁股）",
+			"actions": [
+				{
+					"who": "blue",
+					"by": "armor",
+					"zone": "butt",
+					"fx": "hand",
+					"repeat": 8,
+					"interval": 0.22,
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……！哈、哈哈……不、不要……轮流……",
+			"portrait": "knight_fail_fog"
+		},
+		{
+			"speaker": "公主",
+			"text": "哈哈哈……蓝色的……我们……都被雾吃掉了……哈哈哈……！",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "armor",
+					"zone": "sole",
+					"fx": "feather",
+					"repeat": 8,
+					"interval": 0.2,
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "",
+			"text": "—— 第三幕　满了 ——"
+		},
+		{
+			"speaker": "公主",
+			"text": "哈……魔、魔力……要出来了……！",
+			"portrait": "fatigue_burst",
+			"act": "burst"
+		},
+		{
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "flash"
+				},
+				{
+					"sound": "star_burst",
+					"do": "sfx"
+				},
+				{
+					"who": "armor",
+					"time": 0.4,
+					"do": "shake"
+				},
+				{
+					"state": "laugh",
+					"do": "voice"
+				}
+			],
+			"wait": 0.5
+		},
+		{
+			"speaker": "",
+			"text": "（粉色的光炸开，托着她的小手被震散了一片。释放后的舒服软软地化开，她在半空里蜷起脚趾，长长地呼了一口气）"
+		},
+		{
+			"speaker": "公主",
+			"text": "……呼……哈……好……舒服……",
+			"emotion": "happy"
+		},
+		{
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "flash"
+				},
+				{
+					"sound": "star_burst",
+					"do": "sfx"
+				},
+				{
+					"who": "armor",
+					"time": 0.4,
+					"do": "shake"
+				},
+				{
+					"state": "laugh",
+					"do": "voice"
+				},
+				{
+					"who": "blue",
+					"time": 0.4,
+					"do": "shake"
+				}
+			],
+			"wait": 0.5
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……我……也……"
+		},
+		{
+			"speaker": "",
+			"text": "（淡蓝的光跟着亮起，又很快被黑雾吞了回去。两个人刚放空魔力、最敏感的时候，小手又一只一只地爬了回来）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "armor",
+					"zone": "sole",
+					"fx": "hand",
+					"repeat": 10,
+					"interval": 0.25,
+					"do": "tickle"
+				},
+				{
+					"who": "blue",
+					"by": "armor",
+					"zone": "thigh",
+					"fx": "hand",
+					"repeat": 10,
+					"interval": 0.25,
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "呀啊——！刚、刚释放完……一碰就……哈哈哈哈——！",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "armor",
+					"zone": "sole",
+					"fx": "hand",
+					"repeat": 10,
+					"interval": 0.18,
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……哈……哈哈……不、不行……认……认输……",
+			"actions": [
+				{
+					"who": "blue",
+					"by": "armor",
+					"zone": "butt",
+					"fx": "hand",
+					"repeat": 8,
+					"interval": 0.2,
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "",
+			"text": "—— 第四幕　一缕光 ——"
+		},
+		{
+			"speaker": "",
+			"text": "（骑士的面罩里，忽然透出了一点不是紫色的光。黑雾抖了一下）"
+		},
+		{
+			"speaker": "骑士",
+			"text": "……别……碰……她……们……"
+		},
+		{
+			"speaker": "",
+			"text": "（托着她们的小手一松，两个人落回了雾里。四角的灯笼还亮着，暖光一点一点地把她们拉了回来）"
+		},
+		{
+			"speaker": "保卫队队长",
+			"text": "……他在帮你们！再来一次——这次我们都守着！"
+		},
+		{
+			"speaker": "公主",
+			"text": "……嗯。蓝色的，帮我挡住它们。这次一定念完！",
+			"emotion": "angry"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……嗯。一只都不放过去。"
+		},
+		{
+			"actions": [
+				{
+					"time": 0.6,
+					"do": "fade_out"
+				},
+				{
+					"state": "",
+					"do": "voice"
+				}
+			],
+			"wait": 0.7
+		}
+	]
+}

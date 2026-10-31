@@ -147,6 +147,14 @@ for _k in ("equip", "potion", "cart", "drain", "drill", "tailor", "mine", "inspe
             portraits[_id]["wide"] = True
 
 
+# 骑士 Boss 的战败 CG（tools/art/import_cg.py --knight 从 assets/generated/KNIGHT_CG/ 生成）：四个失败小剧场的高潮
+for _k in ("knight_fail_1", "knight_fail_2", "knight_fail_3", "knight_fail_fog"):
+    _f = "res://assets/cg/portraits/%s.png" % _k
+    portraits[_k] = {"file": _f, "placeholder": "helpless_2"}
+    if os.path.exists(_f.replace("res://", "")):
+        portraits[_k]["wide"] = True
+
+
 def pt(key):
     portraits[key + "_1"] = {"file": "res://assets/cg/portraits/%s_1.png" % key, "placeholder": "helpless_1"}
     portraits[key + "_2"] = {"file": "res://assets/cg/portraits/%s_2.png" % key, "placeholder": "helpless_2"}

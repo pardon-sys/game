@@ -10,7 +10,8 @@
 | `night_maze_loop.wav` | 第八层·夜迷宫 | 5.1 + 116.6 秒 |
 | `siege_loop.wav` | 小镇攻防战 | 11.7 + 105.0 秒 |
 | `minigame_loop.wav` | 小游戏 / 弥补任务 | 7.5 + 105.0 秒（128 BPM） |
-| `knight_boss_loop.wav` | 骑士篇 Boss「痒铠骑士」 | 14.6 + 89.1 秒（70 BPM） |
+| `knight_boss_loop.wav` | 骑士篇 Boss「痒铠骑士」前三个阶段 | 14.6 + 89.1 秒（70 BPM） |
+| `knight_fog_loop.wav` | 骑士篇 Boss 最后阶段「笑雾之中」（原曲 + 宿命、战斗、危险、诡异） | 7.0 + 77.9 秒（约 142 BPM） |
 
 - 来源：ElevenLabs 音乐生成（Eleven Music，`POST /v1/music/stream`），2026-10-04 用项目所有者的账号生成（boss 同日稍后生成），使用按该账号的 ElevenLabs 条款。
 - 生成和做循环：`python tools/audio/gen_music.py [dungeon] [town] [--force]`（API key 从项目根目录 `.env` 的 `ELEVENLABS` 读，`.env` 不进版本库；只发送下面的提示词）。

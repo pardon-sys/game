@@ -118,6 +118,11 @@
 		"goat_bell": {
 			"name": "咕咕",
 			"sprite": "res://assets/generated/npcs/goat_bell.png"
+		},
+		"knight_possessed": {
+			"name": "骑士",
+			"sprite": "res://assets/generated/npcs/knight_cursed.png",
+			"portrait": "res://assets/generated/npc_portraits/knight_possessed.png"
 		}
 	}
 }

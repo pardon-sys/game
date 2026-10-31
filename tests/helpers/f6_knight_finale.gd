@@ -26,7 +26,7 @@ static func run(t: Node) -> void:
 	# 机制介绍过场：老的用例里关掉（下面专门测一次）
 	TaskKnightBoss.intros = false
 	verify(t, "骑士篇后半的步骤：%s" % [KnightStory.STEPS.map(func(s): return s["id"]).slice(7)],
-		KnightStory.STEPS.map(func(s): return s["id"]).slice(7) == ["report", "chase", "boss"])
+		KnightStory.STEPS.map(func(s): return s["id"]).slice(7) == ["report", "chase", "boss", "boss_fog"])
 	KnightStory.jump("report")
 	GameState.pending_spawn = "from_house"
 	await t.main.change_level(Floors.scene(AfterStory.TOWN))
@@ -500,8 +500,11 @@ static func run(t: Node) -> void:
 	mer.cursed = false
 	mer.broom_phase = -1
 	b.talk_to(mer, pink)
+	# 站到离所有亮光都远的地方（不然小手先被灯光化掉，轮不到扫帚）
+	mer.global_position = b._home + Vector2(0, 30)
 	var h1: CurseHand = b.hands.filter(func(h): return is_instance_valid(h) and h.state != "gone")[0]
 	h1.global_position = mer.global_position + Vector2(20, 0)
+	h1.state = "wander"   # 前面冰晶结界可能把它冻住了
 	b._tick_hands()
 	verify(t, "和商人说过话：小手爬到他身边，被扫帚扫掉（%s，扫帚 %s，阶段 %d/%d，距离 %.0f）" % [h1.state, mer.broom, mer.broom_phase, b.phase, h1.global_position.distance_to(mer.global_position)], h1.state == "gone" and not mer.broom)
 	b.stomp()
@@ -617,9 +620,31 @@ static func run(t: Node) -> void:
 		part.freeze_left = 4.0
 		for i in TaskKnightBoss.PART_HP:
 			b.hit_part(part)
-	await t._advance_until(func(): return b.phase == 3 and not b.transitioning, 10.0)
-	verify(t, "胸甲碎了 → 阶段四：笑面，四盏灯笼暗着（%d）" % b.lanterns.size(), b.phase == 3 and b.lanterns.size() == 4
-		and b.lanterns.all(func(l): return not l.lit))
+	# 胸甲碎了：笑雾涌起 → 换到「笑雾之中」（广场的倒影，等距），同一个 Boss 从第 3 阶段接着打
+	KnightDispel.quiet = true
+	var in_fog := func() -> bool: return t._level_id() == KnightStory.KFOG and task(t, "boss_fog") != null and bool(task(t, "boss_fog").started) and not Cutscene.is_playing() and not GameState.in_dialogue
+	await t._advance_until(in_fog, 90.0)
+	verify(t, "胸甲碎了 → 笑雾涌起（knight_fog_rise）→ 换到笑雾之中（%s，等距 %s）" % [t._level_id(), str(t.main.level.get("style"))],
+		t.seen_cuts.has("knight_fog_rise") and t.seen_cuts.has("knight_fog_open") and t._level_id() == KnightStory.KFOG and str(t.main.level.get("style")) == "iso")
+	b = task(t, "boss_fog") as TaskKnightBoss
+	pink = b.pink
+	cu = b.curse
+	TaskKnightBoss.skip_cutscenes = true
+	verify(t, "雾里：阶段四（笑面），四盏灯笼暗着（%d）、骑士浮在半空、外圈黑雾、配乐 knight_fog（%s）" % [b.lanterns.size(), Audio.music_id],
+		b.phase == 3 and b.lanterns.size() == 4 and b.lanterns.all(func(l): return not l.lit) and b.floating and is_instance_valid(b.fog_ring)
+		and Audio.music_id == "knight_fog")
+	# 外圈黑雾：慢慢收紧，圈外痒；点亮一盏往外推
+	var fr := b.fog_ring
+	var fog_r0 := fr.radius
+	fr.tick(2.0)
+	verify(t, "黑雾慢慢收紧（%.0f → %.0f）" % [fog_r0, fr.radius], fr.radius < fog_r0)
+	pink.global_position = fr.global_position + Vector2(fr.radius + 30.0, 0)
+	pink.laugh.set_value(0.0)
+	fr._tick = 0.0
+	fr.tick(0.05)
+	verify(t, "站在黑雾里：闷笑涨（%.0f%%）、挂上「黑雾缠身」" % (pink.laugh.ratio() * 100.0), pink.laugh.value > 0.0 and pink.has_buff("fog_tickle"))
+	pink.global_position = fr.global_position
+	pink.laugh.set_value(0.0)
 	verify(t, "做过的三个支线（骑士救公主、手印样本、夜里的栅栏）：帮手跑到他那盏灯笼下（%d）" % b.helpers.size(), b.helpers.size() == 3)
 	b.attack_t = 999.0
 	b._clear_field()
@@ -712,10 +737,58 @@ static func run(t: Node) -> void:
 		b._light(l, 0.02)
 	KnightLaugh.force_hold = false
 	b.advance(0.05)
-	verify(t, "四盏都亮了：光柱汇到盔甲上", b.finale and b.lanterns.all(func(l): return l.lit and l.finale))
+	verify(t, "雾里四盏都亮了：骑士落地、外圈黑雾停住、开始驱散（玩家操控蓝色公主）", is_instance_valid(b.dispel) and not b.floating
+		and b.fog_ring.frozen and GameState.player == b.blue and bool(GameState.vars.get(TaskKnightBoss.DISPEL_KEY, false)))
+	var dsp := b.dispel
+	# 粉色公主站在骑士身边吟唱：读条涨
+	pink.global_position = b.body_pos() + Vector2(0, 20)
+	pink.laugh.set_value(0.0)
+	dsp.interrupt_left = 0.0
+	var dp0 := dsp.progress
+	dsp.tick(1.0)
+	verify(t, "粉色公主在骑士身边吟唱：读条涨（%.2f → %.2f）" % [dp0, dsp.progress], dsp.channeling and dsp.progress > dp0)
+	# 黑气小手碰到她：打断、读条倒退、闷笑涨
+	dsp.progress = 0.5
+	var fh0 := dsp.spawn_hand()
+	fh0.global_position = pink.global_position
+	dsp.tick(0.05)
+	verify(t, "黑气小手碰到粉色公主：打断，读条 −15%%（%.2f）、闷笑涨（%.0f%%）" % [dsp.progress, pink.laugh.ratio() * 100.0],
+		absf(dsp.progress - 0.35) < 0.02 and dsp.interrupt_left > 0.0 and pink.laugh.value > 0.0 and not dsp.hands.has(fh0))
+	# 蓝色公主 J：冻碎身边的小手
+	var fh1 := dsp.spawn_hand()
+	fh1.global_position = b.blue.global_position + Vector2(6, 0)
+	b.freeze_cool = 0.0
+	verify(t, "蓝色公主 J：冻碎身边的黑气小手", b.freeze_part(b.blue) and not dsp.hands.has(fh1))
+	# 闷笑第一次满：魔力释放（小手震散、闷笑回落、之后更敏感）
+	dsp.spawn_hand()
+	pink.laugh.set_value(pink.laugh.max_value * 0.99)
+	dsp.tick(0.05)
+	verify(t, "粉色公主闷笑第一次满：魔力释放（小手全散、闷笑 %.0f%%、更敏感 %.1f 秒）" % [pink.laugh.ratio() * 100.0, dsp.sensitive_left],
+		dsp.bursts == 1 and dsp.hands.is_empty() and pink.laugh.ratio() < 0.5 and dsp.sensitive_left > 0.0)
+	verify(t, "驱散阶段失败挑「笑雾之中」的小剧场", TaskKnightBoss.fail_theater() == "knight_fail_fog")
+	# 第二次满：失败 → 小剧场 → 从驱散重来（灯笼直接亮着）
+	pink.laugh.set_value(pink.laugh.max_value * 0.99)
+	dsp.tick(0.05)
+	var old_b := b
+	var retried := func() -> bool: return task(t, "boss_fog") != null and task(t, "boss_fog") != old_b and is_instance_valid((task(t, "boss_fog") as TaskKnightBoss).dispel) and not Cutscene.is_playing() and not CG.is_busy()
+	await t._advance_until(retried, 60.0)
+	var b3 := task(t, "boss_fog") as TaskKnightBoss
+	verify(t, "第二次满：驱散失败 → 小剧场 knight_fail_fog → 重来直接从驱散开始（灯笼都亮着）", b3 != null and b3 != b
+		and is_instance_valid(b3.dispel) and b3.lanterns.all(func(l): return l.lit))
+	b = b3
+	pink = b.pink
+	# 读满：驱散成功 → 净化
+	TaskKnightBoss.skip_cutscenes = false
+	var d3 := b.dispel
+	pink.global_position = b.body_pos() + Vector2(0, 20)
+	pink.laugh.set_value(0.0)
+	d3.interrupt_left = 0.0
+	d3.progress = 0.99
+	d3.tick(1.0)
+	verify(t, "读条满：黑雾散了 → 净化（光柱汇到盔甲上）", d3.done and b.finale)
 	KnightCurse.auto = true
 	# 战败小剧场：追逃 1 个 + Boss 按阶段 3 个，都是四幕；两位公主都被挠（粉色脚心、蓝色大腿和屁股），第三幕两个人都释放
-	var ids := ["knight_fail_chase", "knight_fail_boss", "knight_fail_boss_2", "knight_fail_boss_3"]
+	var ids := ["knight_fail_chase", "knight_fail_boss", "knight_fail_boss_2", "knight_fail_boss_3", "knight_fail_fog"]
 	var shape_ok := true
 	for id in ids:
 		var thd: Dictionary = {}
@@ -730,6 +803,7 @@ static func run(t: Node) -> void:
 			shape_ok = false
 			print("  小剧场 %s：%d 幕 蓝色被挠 %s 释放 %s 舒服 %s" % [id, acts, blue_hit, burst, comfy])
 	verify(t, "四个战败小剧场都是四幕、两位公主都被挠、第三幕魔力释放的舒服", shape_ok and ids.all(func(i): return CG.has_theater(i)))
+	GameState.vars[TaskKnightBoss.DISPEL_KEY] = false
 	var fmap := []
 	for ph in 4:
 		GameState.vars[TaskKnightBoss.PHASE_KEY] = ph
