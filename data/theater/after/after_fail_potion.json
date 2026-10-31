@@ -135,7 +135,7 @@
 					"do": "tickle"
 				}
 			],
-			"portrait": "defeat_2"
+			"portrait": "after_potion_fail"
 		},
 		{
 			"speaker": "",

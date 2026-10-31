@@ -159,7 +159,7 @@
 					"do": "pose"
 				}
 			],
-			"portrait": "defeat_2"
+			"portrait": "after_equip_fail"
 		},
 		{
 			"speaker": "",

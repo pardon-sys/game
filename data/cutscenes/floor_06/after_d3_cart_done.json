@@ -101,6 +101,10 @@
 			"text": "……认错人了。手帕不用还。",
 			"actions": [
 				{
+					"do": "cg",
+					"key": "after_cart_ok"
+				},
+				{
 					"who": "cap",
 					"dir": "up",
 					"do": "face"
@@ -182,6 +186,15 @@
 				}
 			],
 			"wait": 0.5
+		},
+		{
+			"actions": [
+				{
+					"do": "cg",
+					"key": ""
+				}
+			],
+			"wait": 0.1
 		}
 	]
 }

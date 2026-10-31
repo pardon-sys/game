@@ -107,7 +107,7 @@
 					"do": "pose"
 				}
 			],
-			"portrait": "defeat_2"
+			"portrait": "after_cart_fail"
 		},
 		{
 			"speaker": "",

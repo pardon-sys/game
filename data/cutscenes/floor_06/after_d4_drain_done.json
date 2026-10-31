@@ -50,7 +50,13 @@
 		{
 			"speaker": "公主",
 			"text": "……管壁上那幅画……还有队长说的「又」……",
-			"emotion": "sad"
+			"emotion": "sad",
+			"actions": [
+				{
+					"do": "cg",
+					"key": "after_drain_ok"
+				}
+			]
 		},
 		{
 			"speaker": "小汤姆",
@@ -88,6 +94,15 @@
 				}
 			],
 			"wait": 0.2
+		},
+		{
+			"actions": [
+				{
+					"do": "cg",
+					"key": ""
+				}
+			],
+			"wait": 0.1
 		}
 	]
 }
