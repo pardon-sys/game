@@ -114,7 +114,12 @@ func tick(delta: float, holding: bool) -> void:
 	_hand_t -= delta
 	if _hand_t <= 0.0:
 		_hand_t = HAND_EVERY
-		var h := put(CurseHand.new(), pink.global_position + Vector2(randf_range(-30, 30), -18)) as CurseHand
+		var at := pink.global_position + Vector2(randf_range(-30, 30), -18)
+		for i in 8:
+			if GridPath.walkable(_lv, GridPath.cell(at)):
+				break
+			at = pink.global_position + Vector2(randf_range(-30, 30), randf_range(-24, 24))
+		var h := put(CurseHand.new(), at) as CurseHand
 		h.seek(pink)
 		h.life = 12.0
 		hands.append(h)

@@ -3,6 +3,8 @@
 intro =
 ambient = 0.28,0.3,0.45
 no_switch = false
+style = iso
+iso_theme = drain_water
 [legend]
 # = wall
 . = floor

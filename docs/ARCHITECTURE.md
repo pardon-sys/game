@@ -1029,6 +1029,11 @@ data/cutscenes/<楼层组>/  地图内过场；data/theater/<楼层组>/  小剧
 	`QuestRunner` 每 11 秒按顺序冒一句头顶气泡，蓝色公主要在身边，说到哪记在 `vars.kq_chat_<id>_<段>`）；替换的过场 `CUTS`；
 	收尾 `done_cut` 演完接着演背景大图过场 `story_kq_<id>`（`KnightQuests.complete`）。Boss 开场 `knight_boss_open` 之后、开打之前演 `story_knight_boss`
 	（主线步骤的 `story` 字段）。暗线只在结尾点到（间接或误导），见上面的伏笔表。
+  - **夜里支线的专属图都是等距画面**（`style = iso`）：城墙 `rampart`（矮垛口，墙高 12）、储物间 `storage_wood`、小桥 `drain_water`（两边矮墙当水渠）、
+	裂缝 `crack_cave`、旧会堂 `old_hall`（`carry_light = false`，只靠任务给的火把）；加上暗巷 `alley_brick`。主题在 `tools/art/gen_iso_theme.py` 的 `THEMES`。
+	等距下的写法：在本地坐标里画「地面上的线 / 圈」用 `IsoView.offset` / `ground_scale`（房檐手印的落点圈、旧刷子的扫动、桥板缝），抬高的东西放精灵 offset（守夜的队长），
+	`CurseHand` / `HandShard` 被墙挡住不穿过去（追人改走 `GridPath`），`ZoneFx.body_point`、目标箭头（`ObjectiveMarker`）、任务手提灯的光圈、挂画的 `lift` 都按等距换算。
+	守夜蒙眼时不能转镜头（`IsoView.can_rotate`）。
   - **小地图**（小巷、草药洞、地窖、城墙、裂缝、旧会堂、旧仓库、储物间、小桥）：`tools/build/quest_maps.py` 用 ASCII 画（`#` 墙、`.` 地面、小写 = 道具、
 	大写 = 标记点），生成时检查每个标记点从入口走得到；标记点按从入口走过去的远近排，写进 `data/after/quest_maps.json`，
 	玩法节点用 `QuestMaps.cells(图, 名字)`（`levels/floor_06/scripts/quest_maps.gd`）读（`QuestHide.SPOTS`、`QuestCrack.NAILS` 这些都是 static var）。

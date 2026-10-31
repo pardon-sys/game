@@ -60,7 +60,7 @@ func _ready() -> void:
 	var lift := float(info.get("lift", 0))
 	sprite.offset.y -= lift
 	var sort_shift := 0.0
-	if lift > 0.0:
+	if lift > 0.0 and not IsoView.enabled:
 		sort_shift = lift + 10.0
 		position.y -= sort_shift
 		sprite.offset.y += sort_shift

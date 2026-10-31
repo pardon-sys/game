@@ -3,6 +3,8 @@
 intro =
 ambient = 0.3,0.22,0.36
 no_switch = false
+style = iso
+iso_theme = crack_cave
 [legend]
 # = wall
 . = floor

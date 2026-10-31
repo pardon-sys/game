@@ -513,6 +513,7 @@ ce.write()
 
 # ================================================================ 没有灯的小巷（骑士篇支线「骑士救公主」第四段：灯全灭了；一格宽的主巷子 + 窄道、死胡同、小院、环路）
 # 等距画面（暖褐砖墙主题 alley_brick），不挂冷光：只靠 QuestHide 给的手提灯照明
+# 骑士篇夜里支线的专属图都是等距：城墙 rampart、裂缝 crack_cave、旧会堂 old_hall（手提火把，不挂冷光）、储物间 storage_wood、小桥 drain_water
 al, am = qmaps.build(Map, ALLEY, "intro =\nambient = 0.1,0.09,0.15\nno_switch = false\nstyle = iso\niso_theme = alley_brick\ncarry_light = false", prop)
 QMARKS[ALLEY] = am
 al.put(*am["blue"][0], "f6afterroom")
@@ -533,7 +534,7 @@ hc.put(*hm["blue"][0], "blue_princess follow=true ai=false")
 hc.write()
 
 # ================================================================ 城墙上（骑士篇支线「队长的旧剑术」守夜：绕着小镇南边的城墙，拐弯、台阶，尽头是哨塔）
-wl, wm = qmaps.build(Map, WALL, "intro =\nambient = 0.26,0.27,0.42\nno_switch = false", prop, "torch lit=false", 12)
+wl, wm = qmaps.build(Map, WALL, "intro =\nambient = 0.26,0.27,0.42\nno_switch = false\nstyle = iso\niso_theme = rampart", prop, "torch lit=false", 12)
 QMARKS[WALL] = wm
 wl.put(*wm["blue"][0], "f6afterroom")
 wl.put(*wm["exit"][0], "exit target=%s spawn=from_wall" % TOWN)
@@ -543,7 +544,7 @@ wl.put(*wm["blue"][0], "blue_princess follow=true ai=false")
 wl.write()
 
 # ================================================================ 广场底下的裂缝（骑士篇支线「夜里的栅栏」：趴着爬的窄缝，左右拐、有死角；软苔小球、三根封印钉）
-ck, km = qmaps.build(Map, CRACK, "intro =\nambient = 0.3,0.22,0.36\nno_switch = false", prop)
+ck, km = qmaps.build(Map, CRACK, "intro =\nambient = 0.3,0.22,0.36\nno_switch = false\nstyle = iso\niso_theme = crack_cave", prop)
 QMARKS[CRACK] = km
 ck.put(*km["exit"][0], "exit target=%s spawn=from_crack" % TOWN)
 ck.put(*km["start"][0], "spawn id=from_town")
@@ -556,7 +557,7 @@ ck.put(dx - 1, dy, "spawn id=from_hall")
 ck.write()
 
 # ================================================================ 旧会堂（骑士篇支线「夜里的栅栏」：塌了一半的大厅，两排柱子、耳房、倒下的长椅；壁画上的人像全被刮花了）
-oh, om = qmaps.build(Map, OLDHALL, "intro =\nambient = 0.1,0.08,0.13\nno_switch = false", prop)
+oh, om = qmaps.build(Map, OLDHALL, "intro =\nambient = 0.1,0.08,0.13\nno_switch = false\nstyle = iso\niso_theme = old_hall\ncarry_light = false", prop)
 QMARKS[OLDHALL] = om
 oh.put(*om["exit"][0], "exit target=%s spawn=from_hall" % CRACK)
 oh.put(*om["start"][0], "spawn id=from_crack")
@@ -576,7 +577,7 @@ wh.put(*whm["blue"][0], "f6afterroom")
 wh.write()
 
 # ================================================================ 西南角的储物间（骑士篇支线「点灯笼的小姑娘」：上下两条储物走道，墙上的旧痒痒刷、尽头的旧布偶）
-sr, srm = qmaps.build(Map, STORAGE, "intro =\nambient = 0.3,0.28,0.4\nno_switch = false", prop)
+sr, srm = qmaps.build(Map, STORAGE, "intro =\nambient = 0.3,0.28,0.4\nno_switch = false\nstyle = iso\niso_theme = storage_wood", prop)
 QMARKS[STORAGE] = srm
 sr.put(*srm["exit"][0], "exit target=%s spawn=from_storage" % TOWN)
 sr.put(*srm["start"][0], "spawn id=from_town")
@@ -586,7 +587,7 @@ sr.put(*srm["blue"][0], "f6afterroom")
 sr.write()
 
 # ================================================================ 排水渠上的小桥（骑士篇支线「点灯笼的小姑娘」：一格宽的木桥，中间拐一个弯，桥下的手印）
-bg, bgm = qmaps.build(Map, BRIDGE, "intro =\nambient = 0.28,0.3,0.45\nno_switch = false", prop)
+bg, bgm = qmaps.build(Map, BRIDGE, "intro =\nambient = 0.28,0.3,0.45\nno_switch = false\nstyle = iso\niso_theme = drain_water", prop)
 QMARKS[BRIDGE] = bgm
 bg.put(*bgm["exit"][0], "exit target=%s spawn=from_bridge" % TOWN)
 bg.put(*bgm["start"][0], "spawn id=from_town")

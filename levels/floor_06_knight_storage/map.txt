@@ -3,6 +3,8 @@
 intro =
 ambient = 0.3,0.28,0.4
 no_switch = false
+style = iso
+iso_theme = storage_wood
 [legend]
 # = wall
 . = floor

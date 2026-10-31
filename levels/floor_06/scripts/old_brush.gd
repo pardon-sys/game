@@ -84,10 +84,13 @@ func _draw() -> void:
 			swing = 1.0
 	var reach := 6.0 + 22.0 * swing
 	var dir := 1.0 if down else -1.0
-	# 挂钩 + 刷柄 + 一排刷毛
+	# 挂钩 + 刷柄 + 一排刷毛（逻辑坐标的线段用 IsoView.offset 换成画面偏移：等距楼层里扫动方向和判定一致）
+	var o := func(v: Vector2) -> Vector2: return IsoView.offset(v)
 	draw_circle(Vector2.ZERO, 1.5, Color("8a7a66"))
-	draw_line(Vector2.ZERO, Vector2(0, reach * dir), Color("8b6644"), 2.0)
+	draw_line(Vector2.ZERO, o.call(Vector2(0, reach * dir)), Color("8b6644"), 2.0)
 	for i in 5:
-		draw_line(Vector2(-4 + i * 2, reach * dir), Vector2(-4 + i * 2, (reach + 5.0) * dir), Color("e8d7b0") if state != "frozen" else Color(0.75, 0.92, 1.0), 1.0)
+		draw_line(o.call(Vector2(-4 + i * 2, reach * dir)), o.call(Vector2(-4 + i * 2, (reach + 5.0) * dir)), Color("e8d7b0") if state != "frozen" else Color(0.75, 0.92, 1.0), 1.0)
 	if state == "warn":
-		draw_rect(Rect2(-WIDTH * 0.5, 4 * dir if down else -32, WIDTH, 28), Color(1, 0.5, 0.6, 0.12))
+		var y0 := 4.0 * dir if down else -32.0
+		var pts := PackedVector2Array([o.call(Vector2(-WIDTH * 0.5, y0)), o.call(Vector2(WIDTH * 0.5, y0)), o.call(Vector2(WIDTH * 0.5, y0 + 28)), o.call(Vector2(-WIDTH * 0.5, y0 + 28))])
+		draw_colored_polygon(pts, Color(1, 0.5, 0.6, 0.12))
