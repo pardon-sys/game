@@ -2,8 +2,9 @@ class_name SpriteSheetAnimator
 extends Node
 ## 按 SpriteSheetConfig 驱动 Sprite2D 的帧（朝向 x 表情行 x 动画）。节点名 "Animator"。
 ## 动画可以指定 "sheet" 改用另一张图集（尺寸、帧数、朝向起始列、行名都可以不同），不指定时用 Sprite 原来的图集。
-## 角色画风（UserSettings.art_style，P 键菜单）：「精细像素」时每张图集换成同名的 *_hd.png（codex 直接画的像素风，格子是原像素图的 HD_SCALE 倍：64 / 96 格），
-##   Sprite 缩到 1 / HD_SCALE、offset 放大同样倍数（显示大小、脚底位置不变），最近邻过滤（像素保持方正）；没有 *_hd.png 的图集照旧用原像素图。
+## 角色画风（UserSettings.art_style，P 键菜单）：「精细像素」时每张图集换成同名的 *_hd.png（codex 直接画的像素风，直接导入，格子是原像素图的 HD_SCALE 倍：256 / 384 格），
+##   Sprite 缩到 HD_ENLARGE / HD_SCALE（人物比原像素图大一圈）、offset 放大 HD_SCALE 倍（脚底位置不变），线性过滤（画面按窗口分辨率渲染，缩小时细节不丢）；
+##   没有 *_hd.png 的图集照旧用原像素图。
 ##   UserSettings.revision 变了（菜单里切换）就在下一帧重新选。
 
 @export var config: SpriteSheetConfig
@@ -20,8 +21,9 @@ var progress := 0.0
 var sheet := ""
 var _default := {}
 var _textures := {}
-## 精细像素图集是原像素图的几倍（64 格 / 32 格）
-const HD_SCALE := 2.0
+## 精细像素图集是原像素图的几倍（256 格 / 32 格）；显示时人物放大的倍数
+const HD_SCALE := 8.0
+const HD_ENLARGE := 1.25
 var _base_scale := Vector2.ONE
 var _base_filter := CanvasItem.TEXTURE_FILTER_PARENT_NODE
 var _revision := -1
@@ -139,8 +141,8 @@ func _use_sheet(name: String) -> Dictionary:
 ## 精细像素图集：Sprite 缩小、最近邻过滤；2.5D / 等距楼层的光照材质按新的脚底位置更新
 func _set_hd(on: bool) -> void:
 	hd = on
-	sprite.scale = _base_scale / HD_SCALE if on else _base_scale
-	sprite.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST if on else _base_filter
+	sprite.scale = _base_scale * HD_ENLARGE / HD_SCALE if on else _base_scale
+	sprite.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR if on else _base_filter
 	var mat := sprite.material as ShaderMaterial
 	if mat and sprite.has_meta("lit"):
 		mat.set_shader_parameter("feet_y", sprite.get_rect().end.y)

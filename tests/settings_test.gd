@@ -1,5 +1,5 @@
 extends Node
-## 设置菜单（P 键）和角色画风切换：UserSettings 读写（不丢 Audio 的音量）、精细像素图集（*_hd.png 64 格，Sprite 缩到 1/2、最近邻、缺图回退原像素图）、
+## 设置菜单（P 键）和角色画风切换：UserSettings 读写（不丢 Audio 的音量）、精细像素图集（*_hd.png 256 格直接导入，显示放大 HD_ENLARGE、线性过滤、缺图回退原像素图）、
 ## 菜单开关和切换、关掉常驻立绘。用法：Godot --headless --path . res://tests/settings_test.tscn
 
 var main: Node
@@ -30,10 +30,10 @@ func _ready() -> void:
 	var p := GameState.player
 	var anim: SpriteSheetAnimator = p.animator
 	await _wait(0.2)
-	check("精细像素：粉色公主用 princess_hd.png（64 格）、缩到 1/2、最近邻（%s）" % p.sprite.texture.resource_path,
-		anim.hd and p.sprite.texture.resource_path.ends_with("princess_hd.png") and is_equal_approx(p.sprite.scale.x, 0.5)
-		and p.sprite.texture_filter == CanvasItem.TEXTURE_FILTER_NEAREST and is_equal_approx(p.sprite.offset.y, -32.0)
-		and p.sprite.texture.get_width() == 64 * 16)
+	check("精细像素：粉色公主用 princess_hd.png（256 格，直接导入）、显示比原像素图大 %.2f 倍、线性过滤（%s）" % [SpriteSheetAnimator.HD_ENLARGE, p.sprite.texture.resource_path],
+		anim.hd and p.sprite.texture.resource_path.ends_with("princess_hd.png") and is_equal_approx(p.sprite.scale.x, SpriteSheetAnimator.HD_ENLARGE / SpriteSheetAnimator.HD_SCALE)
+		and p.sprite.texture_filter == CanvasItem.TEXTURE_FILTER_LINEAR and is_equal_approx(p.sprite.offset.y, -16.0 * SpriteSheetAnimator.HD_SCALE)
+		and p.sprite.texture.get_width() == 256 * 16)
 	var cfg := ConfigFile.new()
 	cfg.load(UserSettings.path())
 	check("设置写进 settings.cfg 的 [display] 段，[audio] 音量还在", str(cfg.get_value("display", "art_style", "")) == "hd"
