@@ -55,6 +55,10 @@ func _ready() -> void:
 	anim.update(0.05, "down", false, 0)
 	check("魔法图集也换精细像素（%s）" % p.sprite.texture.resource_path, p.sprite.texture.resource_path.ends_with("princess_magic_hd.png") and anim.hd)
 	anim.play("idle")
+	# 闪避残影照抄精灵的缩放（精细像素图集贴图大 8 倍，不抄会特别大）
+	p._spawn_ghost()
+	var ghosts: Array = p.get_parent().get_children().filter(func(g): return g is Sprite2D and g.texture == p.sprite.texture and g != p.sprite)
+	check("精细像素下闪避残影和人物一样大（%s）" % [ghosts[-1].scale if not ghosts.is_empty() else "无"], not ghosts.is_empty() and ghosts[-1].scale == p.sprite.scale)
 	# 缺高清图时回退
 	check("没有 *_hd.png 的图集用原图", UserSettings.styled_path("res://assets/generated/slime.png") == "res://assets/generated/slime.png")
 	# 常驻立绘

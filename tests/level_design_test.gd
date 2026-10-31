@@ -775,6 +775,13 @@ func _run_air_walls(id: String) -> void:
 		var drawn := (caps != null and caps.get_cell_source_id(c) != -1) or (terrain != null and terrain.cubes.has(c))
 		if not drawn and not (living.has(c) and (living[c] as LivingWall).up):
 			bad.append(c)
+	# 等距楼层：装饰图层（Decor）被隐藏、IsoTerrain 也不画——上面有碰撞的格子就是看不见的墙
+	var decor := level.get_node_or_null("Decor") as TileMapLayer
+	if style == "iso" and decor:
+		for c in decor.get_used_cells():
+			var td := decor.get_cell_tile_data(c)
+			if td and decor.tile_set.get_physics_layers_count() > 0 and td.get_collision_polygons_count(0) > 0:
+				bad.append(c)
 	var invisible: Array[String] = []
 	for n in level.find_children("*", "StaticBody2D", true, false):
 		# 自己身上的贴图；道具（碰撞体是精灵的兄弟节点）看父节点的直接子节点

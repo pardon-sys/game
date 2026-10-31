@@ -356,10 +356,10 @@ func _apply_effects(c: Dictionary, source: Node) -> void:
 				FatiguePuddle.spawn(_actor.get_parent(), _actor.global_position, float(e.get("life", 12.0)), float(e.get("radius", 20.0)))
 			"grab_extend":
 				if st:
-					st.extend_grab(float(e["seconds"]))
+					st.extend_grab(float(e.get("seconds", e.get("duration", 1.0))))
 			"grab_presses":
 				if st:
-					st.extend_grab(0.0, int(e["count"]))
+					st.extend_grab(0.0, int(e.get("count", 1)))
 			"lift":
 				_lift(float(e.get("duration", 2.0)), k)
 			"confuse":

@@ -1034,6 +1034,9 @@ data/cutscenes/<楼层组>/  地图内过场；data/theater/<楼层组>/  小剧
 	等距下的写法：在本地坐标里画「地面上的线 / 圈」用 `IsoView.offset` / `ground_scale`（房檐手印的落点圈、旧刷子的扫动、桥板缝），抬高的东西放精灵 offset（守夜的队长），
 	`CurseHand` / `HandShard` 被墙挡住不穿过去（追人改走 `GridPath`），`ZoneFx.body_point`、目标箭头（`ObjectiveMarker`）、任务手提灯的光圈、挂画的 `lift` 都按等距换算。
 	守夜蒙眼时不能转镜头（`IsoView.can_rotate`）。
+  - 等距走廊的墙角辅助 `IsoMover.corner`：只沿一个轴走被墙角卡住、前面那一格是通的 → 往那一格的中线挪（1 格宽的口子没对准也钻得进去）；等距楼层道具碰撞盒收窄到 `Prop.ISO_BODY_MAX`。
+	**空气墙的教训**：CG / 训练小游戏舞台里铺的地牢 TileMapLayer 在 CanvasLayer 里，可 CanvasLayer 不隔开物理——图块碰撞会在关卡同一坐标留下空气墙（守夜城墙卡住过）。
+	运行时为画面铺的图块（CG 舞台、训练舞台、IsoTerrain）一律 `collision_enabled = false`（`cg_test` 检查）。
   - **小地图**（小巷、草药洞、地窖、城墙、裂缝、旧会堂、旧仓库、储物间、小桥）：`tools/build/quest_maps.py` 用 ASCII 画（`#` 墙、`.` 地面、小写 = 道具、
 	大写 = 标记点），生成时检查每个标记点从入口走得到；标记点按从入口走过去的远近排，写进 `data/after/quest_maps.json`，
 	玩法节点用 `QuestMaps.cells(图, 名字)`（`levels/floor_06/scripts/quest_maps.gd`）读（`QuestHide.SPOTS`、`QuestCrack.NAILS` 这些都是 static var）。

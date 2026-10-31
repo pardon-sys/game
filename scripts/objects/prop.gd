@@ -10,6 +10,8 @@ extends Node2D
 ##   action = read:<对话 id> 交互：读一段普通对话（像石碑）
 ##   show_flag = 标记      有这个剧情标记才出现；hidden_flag = 标记：有就不出现（庆功宴摊位通关以后的装扮）
 
+## 等距楼层里道具碰撞盒的最大边长（像素）
+const ISO_BODY_MAX := 14.0
 const SHEET := preload("res://assets/generated/town_props.png")
 const META_PATH := "res://assets/generated/town_props.json"
 
@@ -74,6 +76,10 @@ func _ready() -> void:
 		var rect := RectangleShape2D.new()
 		var b: Array = info["body"]
 		rect.size = Vector2(float(b[0]), float(b[1]))
+		# 等距楼层：碰撞在逻辑格子里、贴图是直立的，宽的碰撞盒投影出去会伸到贴图外面（像空气墙）——收窄到格子中间
+		if IsoView.enabled:
+			rect.size.x = minf(rect.size.x, ISO_BODY_MAX)
+			rect.size.y = minf(rect.size.y, ISO_BODY_MAX)
 		shape.shape = rect
 		shape.position = Vector2(0, float(info.get("body_y", -3)))
 		body.add_child(shape)
