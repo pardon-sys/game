@@ -20,6 +20,8 @@ extends Node2D
 @export var iso_rotate := true
 ## 2.5D 楼层：冷光从满到空的秒数（0 = 不消耗）
 @export var light_drain := 0.0
+## 2.5D / 等距楼层：操控的角色带不带冷光（[level] 段 carry_light = false 关掉；骑士篇的暗巷只靠任务给的手提灯照明）
+@export var has_carry_light := true
 
 var _day_ambient := Color.WHITE
 
@@ -171,7 +173,7 @@ func _on_node_added_25d(n: Node) -> void:
 
 ## 冷光跟着当前操控的角色（换人时移过去，冷光值一起带过去）。
 func _attach_carry_light(p: Node) -> void:
-	if not (p is Node2D) or not is_ancestor_of(p):
+	if not has_carry_light or not (p is Node2D) or not is_ancestor_of(p):
 		return
 	var keep := 1.0
 	for l in find_children("CarryLight", "", true, false):

@@ -511,8 +511,9 @@ ce.put(*cm["start"][0], "player")
 ce.put(*cm["blue"][0], "blue_princess follow=true ai=false")
 ce.write()
 
-# ================================================================ 没有灯的小巷（骑士篇支线「骑士救公主」第四段：灯全灭了；东西向的主巷子 + 死胡同、小院、环路）
-al, am = qmaps.build(Map, ALLEY, "intro =\nambient = 0.1,0.09,0.15\nno_switch = false", prop)
+# ================================================================ 没有灯的小巷（骑士篇支线「骑士救公主」第四段：灯全灭了；一格宽的主巷子 + 窄道、死胡同、小院、环路）
+# 等距画面（暖褐砖墙主题 alley_brick），不挂冷光：只靠 QuestHide 给的手提灯照明
+al, am = qmaps.build(Map, ALLEY, "intro =\nambient = 0.1,0.09,0.15\nno_switch = false\nstyle = iso\niso_theme = alley_brick\ncarry_light = false", prop)
 QMARKS[ALLEY] = am
 al.put(*am["blue"][0], "f6afterroom")
 al.put(*am["exit"][0], "exit target=%s spawn=from_alley" % TOWN)

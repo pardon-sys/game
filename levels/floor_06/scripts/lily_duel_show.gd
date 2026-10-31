@@ -1,16 +1,30 @@
 class_name LilyDuelShow
 extends ErrandWorkStage
 ## 支线「骑士救公主」第三处：和小莉莉比「谁先笑」，两人坐在鹅卵石小路尽头，光着脚轮流挠对方的脚心。台词 knight_quests.json 的 shoes.duel。
-##   挠她（TURN_TIME 秒）：她的弱点每回合换一处（脚趾 / 脚心 / 脚跟），回合开始时她会喊漏嘴（weak_hint）；
-##     A / S / D 挠脚趾 / 脚心 / 脚跟：挠中弱点 莉莉的笑 +HIT，挠错 +MISS；两下之间至少隔 PRESS_COOL 秒。
+##   挠她（TURN_TIME 秒）：她的弱点每回合换一处（脚趾 / 脚心 / 脚跟）。回合开始时只给动作暗示（weak_hint：脚趾蜷紧、缩脚心、脚跟往回收……），
+##     有 FAKE_HINT_CHANCE 的机会是假动作（暗示的是别处，fake_hint 记着）；她嘴上只会逞强（bluff）。
+##     A / S / D 挠脚趾 / 脚心 / 脚跟：挠中弱点 莉莉的笑 +HIT；同一个弱点挠中 GUARD_AFTER 次，她护住那里、弱点换地方（guard）。
+##     挠错 = 被反挠：小莉莉趁机抓住她的脚挠回来（闷笑 +MISS_BACKLASH，莉莉缓过来 −MISS_RELIEF，backlash 描写 / 三档反应）。两下之间至少隔 PRESS_COOL 秒。
 ##   忍住（TURN_TIME 秒）：莉莉挠回来，闷笑每秒 +DEFEND_RATE；每 POKE_EVERY 秒亮一次「！」（WARN 秒）然后狠狠一下（+POKE_LAUGH），
 ##     亮着的时候按 J 缩脚就躲开这一下。
-##   莉莉笑满 = 赢；她先笑满（ErrandWorkStage 的闷笑满）= 这一局输，两人回到 ROUND_RESET 重来。魔力释放见 ErrandWorkStage。不存档。
-## 测试：quiet、fixed_seed、press()、simulate()、lily_laugh、turn、weak、warn_left。
+##   她第一次笑满：魔力疲倦释放（星光、释放声、burst 立绘；闷笑回到 BURST_LAUGH），之后 BURST_SENSITIVE 秒全身更敏感，
+##     莉莉追着挠（直接换成忍住回合，「！」间隔 ×CHASE_POKE，描写和反应换 sensitive 那一套）；这一局里第二次笑满才算输，两人回到 ROUND_RESET 重来。
+##   莉莉笑满 = 赢。魔力疲倦自己满了的释放见 ErrandWorkStage（文本同一套 release）。不存档。
+## 测试：quiet、fixed_seed、press()、simulate()、lily_laugh、turn、weak、warn_left、fake_hint、weak_hits、bursts、sensitive_left。
 
 const TURN_TIME := 5.0
 const HIT := 0.14
-const MISS := 0.03
+## 挠错被反挠：她的闷笑涨多少（× 闷笑上限）、莉莉的笑回落多少
+const MISS_BACKLASH := 0.08
+const MISS_RELIEF := 0.04
+## 同一个弱点挠中几次后她护住、换地方
+const GUARD_AFTER := 3
+## 回合开始的暗示是假动作的机会
+const FAKE_HINT_CHANCE := 0.25
+## 第一次笑满时魔力释放：闷笑回到多少、之后敏感几秒、追着挠时「！」的间隔倍数
+const BURST_LAUGH := 0.55
+const BURST_SENSITIVE := 6.0
+const CHASE_POKE := 0.6
 const PRESS_COOL := 0.35
 const DEFEND_RATE := 0.035
 const POKE_EVERY := 1.4
@@ -29,6 +43,12 @@ var turn_left := TURN_TIME
 var weak := 0
 var rounds := 1
 var warn_left := 0.0
+## 这回合的暗示是不是假动作
+var fake_hint := false
+## 当前弱点被挠中了几次
+var weak_hits := 0
+## 这一局里笑满后已经魔力释放过几次（每局第一次释放、第二次才输）
+var bursts := 0
 var _poke := POKE_EVERY
 var _press := 0.0
 var _info: Label
@@ -40,7 +60,8 @@ static func data() -> Dictionary:
 		var d: Dictionary = KnightQuests.info("shoes").get("duel", {})
 		_text = {"name": d.get("name", "谁先笑"), "hint": d.get("hint", ""), "phases": [{"name": d.get("name", "")}],
 			"intro": d.get("intro", []), "done": [{"speaker": "", "text": str((d.get("win", [""]) as Array)[0])}],
-			"full": {"desc": str((d.get("lose", [""]) as Array)[0]), "react": d.get("pink_react", [[], [], []])[2]}, "duel": d}
+			"full": {"desc": str((d.get("lose", [""]) as Array)[0]), "react": d.get("pink_react", [[], [], []])[2]},
+			"release": d.get("release", {}), "sensitive": d.get("sensitive", {}), "duel": d}
 	return _text
 
 
@@ -95,15 +116,33 @@ func _start_turn(t: String) -> void:
 	warn_left = 0.0
 	_poke = POKE_EVERY
 	if t == "attack":
-		weak = rng.randi_range(0, 2)
-		var spot := str(duel()["spots"][weak])
-		var hints: Array = duel()["weak_hint"].get(spot, [])
-		if not hints.is_empty():
-			say("lily", str(hints[rng.randi_range(0, hints.size() - 1)]))
-		narrate(str(duel()["turn_attack"]), 1.6, true)
+		_pick_weak(-1)
+		_hint()
+		var bluff: Array = duel().get("bluff", [])
+		if not bluff.is_empty():
+			say("lily", str(bluff[rng.randi_range(0, bluff.size() - 1)]))
 	else:
 		narrate(str(duel()["turn_defend"]), 1.6, true)
 	_refresh()
+
+
+## 换一个弱点（不和 avoid 一样）
+func _pick_weak(avoid: int) -> void:
+	weak = rng.randi_range(0, 2)
+	while weak == avoid:
+		weak = rng.randi_range(0, 2)
+	weak_hits = 0
+
+
+## 回合开始的动作暗示：FAKE_HINT_CHANCE 的机会暗示的是别处
+func _hint() -> void:
+	fake_hint = rng.randf() < FAKE_HINT_CHANCE
+	var shown := weak
+	if fake_hint:
+		shown = (weak + rng.randi_range(1, 2)) % 3
+	var hints: Array = duel()["weak_hint"].get(str(duel()["spots"][shown]), [])
+	var cue := str(hints[rng.randi_range(0, hints.size() - 1)]) if not hints.is_empty() else ""
+	narrate(str(duel()["turn_attack"]) + "　" + cue, 2.4, true)
 
 
 func _on_key(k: String) -> void:
@@ -115,21 +154,57 @@ func _on_key(k: String) -> void:
 		tuck()
 
 
-## 挠莉莉的一处（0 脚趾 / 1 脚心 / 2 脚跟）
+## 挠莉莉的一处（0 脚趾 / 1 脚心 / 2 脚跟）：挠中弱点她笑，挠错被她反挠
 func tickle_lily(spot: int) -> void:
 	if _press > 0.0:
 		return
 	_press = PRESS_COOL
-	var good := spot == weak
-	lily_laugh = minf(1.0, lily_laugh + (HIT if good else MISS))
-	var pool: Array = duel()["hit" if good else "miss"]
+	if spot != weak:
+		backlash()
+		return
+	lily_laugh = minf(1.0, lily_laugh + HIT)
+	weak_hits += 1
+	tickle("princess", "sole", false, "lily", "hand")
+	var pool: Array = duel()["hit"]
 	narrate(str(pool[rng.randi_range(0, pool.size() - 1)]), 1.2, true)
-	if good:
-		var r: Array = duel()["lily_react"]
-		say("lily", str(r[rng.randi_range(0, r.size() - 1)]))
+	var r: Array = duel()["lily_react"]
+	say("lily", str(r[rng.randi_range(0, r.size() - 1)]))
 	if lily_laugh >= 1.0:
 		advance_step()
+	elif weak_hits >= GUARD_AFTER:
+		# 挠中太多次：她护住那里，弱点换地方（新的地方给一个真的暗示）
+		_pick_weak(weak)
+		var g: Array = duel().get("guard", [])
+		var hints: Array = duel()["weak_hint"].get(str(duel()["spots"][weak]), [])
+		narrate((str(g[rng.randi_range(0, g.size() - 1)]) if not g.is_empty() else "") + "　"
+			+ (str(hints[rng.randi_range(0, hints.size() - 1)]) if not hints.is_empty() else ""), 2.4, true)
+		fake_hint = false
 	_refresh()
+
+
+## 挠错了：小莉莉趁机抓住她的脚挠回来
+func backlash() -> void:
+	lily_laugh = maxf(0.0, lily_laugh - MISS_RELIEF)
+	work_laugh(laugh_max() * MISS_BACKLASH)
+	tickle("lily", "sole")
+	var caps: Array = duel().get("backlash", duel()["miss"])
+	narrate(str(caps[rng.randi_range(0, caps.size() - 1)]), 1.6, true)
+	var taunt: Array = duel().get("backlash_taunt", [])
+	if not taunt.is_empty():
+		say("lily", str(taunt[rng.randi_range(0, taunt.size() - 1)]))
+	_pop_random(_react_tier(), PINK, 1.2)
+	_refresh()
+
+
+## 她现在该用哪一档反应（释放后敏感时换 sensitive 那一套）
+func _react_tier() -> Array:
+	var i := clampi(int(player.laugh.ratio() * 3.0) if player.laugh else 0, 0, 2)
+	if sensitive_left > 0.0:
+		var sens: Dictionary = duel().get("sensitive", {})
+		var tier: Array = sens.get(["light", "mid", "heavy"][i], [])
+		if not tier.is_empty():
+			return tier
+	return duel()["pink_react"][i]
 
 
 ## 莉莉挠回来时亮「！」：按 J 缩脚躲开这一下
@@ -137,23 +212,47 @@ func tuck() -> bool:
 	if warn_left <= 0.0:
 		return false
 	warn_left = 0.0
-	_poke = POKE_EVERY
+	_poke = POKE_EVERY * (CHASE_POKE if sensitive_left > 0.0 else 1.0)
 	var ok: Array = duel()["tuck_ok"]
 	narrate(str(ok[rng.randi_range(0, ok.size() - 1)]), 1.0, true)
 	_refresh()
 	return true
 
 
-## 她先笑满：这一局输，两人都回到起点重来
+## 她笑满了：这一局第一次 = 魔力疲倦释放、之后更敏感被莉莉追着挠；第二次 = 这一局输，两人都回到起点重来
 func recover() -> void:
+	if bursts == 0:
+		burst()
+		return
+	bursts = 0
 	rounds += 1
 	lily_laugh = ROUND_RESET
 	recovery_left = RECOVER_TIME
+	sensitive_left = 0.0
 	if player.laugh:
 		player.laugh.set_value(laugh_max() * ROUND_RESET)
 	var lose: Array = duel()["lose"]
 	narrate(str(lose[0]), RECOVER_TIME + 0.6, true)
 	_start_turn("attack")
+
+
+## 第一次笑满：魔力疲倦释放（星光、释放声、burst 立绘），痒意化开一下，然后全身更敏感、莉莉追着挠
+func burst() -> void:
+	bursts += 1
+	release()
+	Audio.play("water_release", -6.0)
+	sensitive_left = BURST_SENSITIVE
+	if player.laugh:
+		player.laugh.set_value(laugh_max() * BURST_LAUGH)
+	var p: CGActor = actors.get("princess")
+	if p:
+		p.set_pose("burst", "cast")
+	Dialogue.shake_portrait(4.0, 0.4)
+	turn = "defend"
+	turn_left = RELEASE_TIME + BURST_SENSITIVE
+	warn_left = 0.0
+	_poke = POKE_EVERY * CHASE_POKE
+	_refresh()
 
 
 func _process(delta: float) -> void:
@@ -189,21 +288,21 @@ func simulate(delta: float) -> void:
 		else:
 			_poke -= dt
 			if _poke <= 0.0:
-				warn_left = WARN
+				warn_left = WARN * (CHASE_POKE if sensitive_left > 0.0 else 1.0)
 	if turn_left <= 0.0:
 		_start_turn("defend" if turn == "attack" else "attack")
 	_refresh()
 
 
 func _poke_now() -> void:
-	_poke = POKE_EVERY
+	_poke = POKE_EVERY * (CHASE_POKE if sensitive_left > 0.0 else 1.0)
 	work_laugh(laugh_max() * POKE_LAUGH)
 	tickle("lily", "sole")
 	var desc: Array = duel()["tickle_desc"]
+	if sensitive_left > 0.0:
+		desc = duel().get("sensitive", {}).get("desc", desc)
 	narrate(str(desc[rng.randi_range(0, desc.size() - 1)]), 1.4)
-	var tiers: Array = duel()["pink_react"]
-	var tier: Array = tiers[clampi(int(player.laugh.ratio() * 3.0) if player.laugh else 0, 0, 2)]
-	_pop_random(tier, PINK, 1.2)
+	_pop_random(_react_tier(), PINK, 1.2)
 
 
 func _refresh() -> void:

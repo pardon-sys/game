@@ -3,6 +3,7 @@ extends Node2D
 ## 影子小手（骑士篇支线「骑士救公主」·灯全灭了，没有灯的小巷）：只在黑里出现——平时缩在地上的影子里，只露一对淡紫色的小点。
 ##   灯光（lamp_r 以内）照得到它：缩回去、躲开灯光；灯一暗（灯芯晃，QuestHide 把 lamp_r 调小）它就从黑里伸出来，摸到她就挠一下脚背 / 脚心，然后缩回去冷却。
 ##   不是 Monster：打不到，只能靠灯光逼开；千手解放 / 冰晶结界让它缩回去一会儿。
+##   在巷子里走：伸过去 / 缩回去都沿着格子路（GridPath，每 REPATH 秒重算一次），不穿墙；平时只在自己那一格附近晃（WANDER）。
 ## 测试：target、lamp_r（由任务每帧给）、state（lurk / creep / touch / shrink）、touch()。
 
 signal touched(who: Node2D)
@@ -11,7 +12,10 @@ const SPEED := 34.0
 const REACH := 10.0
 const COOL := 3.0
 const LAUGH := 0.06
-const WANDER := 26.0
+## 平时在影子里晃的幅度（小巷只有一格宽，晃大了会画进墙里）
+const WANDER := 4.0
+## 伸过去 / 缩回去时多久重算一次路
+const REPATH := 0.5
 
 var target: Node2D
 ## 她的灯照多远（任务每帧更新）；在这个半径里它就缩回去
@@ -20,6 +24,8 @@ var state := "lurk"
 var home := Vector2.ZERO
 var _cool := 0.0
 var _t := 0.0
+var _path: Array[Vector2] = []
+var _repath := 0.0
 
 
 func _ready() -> void:
@@ -44,6 +50,17 @@ func on_ice_barrier(center: Vector2, r: float, time: float) -> void:
 func shrink(time := COOL) -> void:
 	state = "shrink"
 	_cool = time
+	_repath = 0.0
+
+
+## 沿着格子路往 to 走一步（每 REPATH 秒重算路）
+func _walk(to: Vector2, speed: float, delta: float) -> void:
+	_repath -= delta
+	if _repath <= 0.0 or _path.is_empty():
+		_repath = REPATH
+		_path = GridPath.find(Party.level_of(self), global_position, to)
+		_path.append(to)
+	GridPath.follow(self, _path, speed, delta)
 
 
 func _process(delta: float) -> void:
@@ -60,7 +77,7 @@ func _process(delta: float) -> void:
 	match state:
 		"shrink":
 			# 退回自己的影子里
-			global_position = global_position.move_toward(home, SPEED * 1.4 * delta)
+			_walk(home, SPEED * 1.4, delta)
 			if _cool <= 0.0:
 				state = "lurk"
 		"lurk":
@@ -71,7 +88,7 @@ func _process(delta: float) -> void:
 			if lit:
 				shrink(1.2)
 				return
-			global_position = global_position.move_toward(target.global_position, SPEED * delta)
+			_walk(target.global_position, SPEED, delta)
 			if d <= REACH:
 				touch()
 

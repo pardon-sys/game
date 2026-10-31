@@ -122,8 +122,38 @@ static func run(t: Node) -> void:
 		duel._press = 0.0
 		var wrong: String = ["A", "S", "D"][(duel.weak + 1) % 3]
 		lily0 = duel.lily_laugh
+		var pl0: float = duel.player.laugh.value
 		duel.press(wrong)
-		verify(t, "挠错地方：只 +%.0f%%" % ((duel.lily_laugh - lily0) * 100.0), is_equal_approx(duel.lily_laugh - lily0, LilyDuelShow.MISS))
+		verify(t, "挠错地方：被反挠（莉莉的笑 %+.0f%%，她的闷笑 +%.0f）" % [(duel.lily_laugh - lily0) * 100.0, duel.player.laugh.value - pl0],
+			is_equal_approx(lily0 - duel.lily_laugh, LilyDuelShow.MISS_RELIEF) and duel.player.laugh.value - pl0 >= duel.laugh_max() * LilyDuelShow.MISS_BACKLASH * 0.9)
+		# 同一个弱点挠中 GUARD_AFTER 次：她护住那里，弱点换地方
+		duel._start_turn("attack")
+		duel.lily_laugh = 0.1
+		var w0 := duel.weak
+		for i in LilyDuelShow.GUARD_AFTER:
+			duel._press = 0.0
+			duel.press(["A", "S", "D"][w0])
+		verify(t, "同一个弱点挠中 %d 次：她护住、弱点换地方（%d → %d）" % [LilyDuelShow.GUARD_AFTER, w0, duel.weak], duel.weak != w0 and duel.weak_hits == 0)
+		# 回合开始的暗示有时是假动作
+		var fakes := 0
+		for i in 40:
+			duel._start_turn("attack")
+			fakes += 1 if duel.fake_hint else 0
+		verify(t, "回合开始的动作暗示有时是假动作（40 回合里 %d 次）" % fakes, fakes > 0 and fakes < 40)
+		# 第一次笑满：魔力释放、之后敏感被追着挠；第二次笑满才算这一局输
+		var r0 := duel.rounds
+		duel.recover()
+		verify(t, "第一次笑满：魔力疲倦释放（释放 %d 次），之后敏感 %.1f 秒、被莉莉追着挠，这一局还没输" % [duel.releases, duel.sensitive_left],
+			duel.bursts == 1 and duel.releases >= 1 and duel.sensitive_left > 0.0 and duel.turn == "defend" and duel.rounds == r0
+			and duel.player.laugh.ratio() > 0.5)
+		duel.recovery_left = 0.0
+		var ps0: float = duel.player.laugh.value
+		duel.warn_left = 0.01
+		duel.simulate(0.05)
+		verify(t, "释放后更敏感：狠狠一下涨得更多（+%.0f）" % (duel.player.laugh.value - ps0), duel.player.laugh.value - ps0 >= duel.laugh_max() * LilyDuelShow.POKE_LAUGH * 1.4)
+		duel.recover()
+		verify(t, "这一局第二次笑满：才算输，重来（第 %d 回合）" % duel.rounds, duel.rounds == r0 + 1 and duel.bursts == 0 and duel.sensitive_left <= 0.0)
+		duel.recovery_left = 0.0
 		duel._start_turn("defend")
 		duel.warn_left = LilyDuelShow.WARN
 		verify(t, "被挠的时候亮「！」按 J 缩脚：躲开这一下", duel.tuck() and duel.warn_left <= 0.0)
@@ -156,6 +186,30 @@ static func run(t: Node) -> void:
 	pink.global_position = hd0.global_position + Vector2(6, 0)
 	rh.tick(0.05)
 	verify(t, "走到藏着的小孩身边：找到了，扑上来挠脚心（闷笑 %.0f%%）" % (pink.laugh.ratio() * 100.0), hd0.found and rh.found == 1 and pink.laugh.value > 0.0)
+	# 找到的小孩沿着巷子走回巷口：每个路径点都能走（不穿墙）
+	var alley_lv := Party.level_of(pink)
+	var path_ok := hd0.walking() and hd0.path.size() >= 2
+	for i in hd0.path.size() - 1:
+		path_ok = path_ok and GridPath.walkable(alley_lv, GridPath.cell(hd0.path[i]))
+	for i in hd0.path.size() - 2:
+		path_ok = path_ok and hd0.path[i].distance_to(hd0.path[i + 1]) <= GridPath.TILE + 0.1
+	verify(t, "找到的小孩沿着巷子走回巷口（%d 个路径点，都在路上、一格一格走）" % hd0.path.size(), path_ok)
+	verify(t, "小巷是等距画面、一格宽的窄巷、不挂冷光", str(alley_lv.get("style")) == "iso" and str(alley_lv.get("iso_theme")) == "alley_brick"
+		and alley_lv.get("has_carry_light") == false and pink.get_node_or_null("CarryLight") == null)
+	# 隔着墙找不到
+	var hd1: QuestHide.Hider = rh.hiders[1]
+	var wall_side := Vector2.INF
+	for dv: Vector2 in [Vector2(16, 0), Vector2(-16, 0), Vector2(0, 16), Vector2(0, -16)]:
+		var c: Vector2i = GridPath.cell(hd1.global_position + dv)
+		if not GridPath.walkable(alley_lv, c):
+			var beyond: Vector2 = hd1.global_position + dv * 2.0
+			if GridPath.walkable(alley_lv, GridPath.cell(beyond)):
+				wall_side = beyond
+				break
+	if wall_side != Vector2.INF:
+		pink.global_position = wall_side
+		rh.tick(0.05)
+		verify(t, "隔着一堵墙站在小孩旁边：找不到", not hd1.found)
 	var spots_before: Array = rh.hiders.filter(func(x): return not x.found).map(func(x): return x.spot)
 	pink.laugh.set_value(pink.laugh.max_value * 0.7)
 	rh._heard = 0.0
@@ -183,11 +237,12 @@ static func run(t: Node) -> void:
 	verify(t, "灯亮着：影子手一照到就缩回去", shd.state == "shrink")
 	pink.laugh.set_value(pink.laugh.max_value * 0.99)
 	rh.tick(0.05)
-	verify(t, "笑满：鬼被抓走，重新藏、重来", rh.found == 0 and pink.laugh.ratio() < 0.5)
+	verify(t, "笑满：鬼被抓走，重新藏、重来；小孩停在藏身处，不会接着往巷口走", rh.found == 0 and pink.laugh.ratio() < 0.5
+		and rh.hiders.all(func(x): return not x.walking() and x.global_position == Cutscene.cell_to_world(x.spot)))
 	for x in rh.hiders:
 		rh.find(x)
 	await t._advance_until(func(): return KnightQuests.stage("shoes") == 4 and not Cutscene.is_playing(), 20.0)
-	verify(t, "5 个都找到：奶奶「谁教你们玩这个的！」→ 下一段宝贝盒", KnightQuests.stage("shoes") == 4 and t.seen_cuts.has("kq_shoes_hide_end"))
+	verify(t, "%d 个都找到：奶奶" % QuestHide.FIND + "「谁教你们玩这个的！」→ 下一段宝贝盒", KnightQuests.stage("shoes") == 4 and t.seen_cuts.has("kq_shoes_hide_end"))
 	# 4 小莉莉的宝贝盒
 	await go_town(t, "from_alley")
 	await t._advance_until(func(): return runner(t, "shoes") is QuestBox and not GameState.in_dialogue, 10.0)

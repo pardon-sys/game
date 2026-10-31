@@ -1,8 +1,11 @@
 class_name GridPath
 extends RefCounted
-## 格子寻路（巡逻士兵去查看石子落点 / 回到路线用）：按关卡的 Floor / Walls 图块做 BFS，返回一串世界坐标（每格中心）。
+## 格子寻路（巡逻士兵去查看石子落点 / 回到路线用；骑士篇暗巷里跑回巷口的小孩、影子手也用）：按关卡的 Floor / Walls 图块做 BFS，返回一串世界坐标（每格中心）。
+## clear_line(level, a, b)：两点之间没有隔着墙（沿线每 LINE_STEP 像素取一格都能走）。
+## follow(node, path, speed, delta)：沿路径点走一步，走到的点从 path 里删掉；返回是否走完。
 
 const TILE := 16.0
+const LINE_STEP := 4.0
 
 
 static func cell(p: Vector2) -> Vector2i:
@@ -50,3 +53,27 @@ static func find(level: Node, from: Vector2, to: Vector2, limit := 4000) -> Arra
 				prev[nb] = c
 				queue.append(nb)
 	return out
+
+
+## a、b 之间没有隔着墙
+static func clear_line(level: Node, a: Vector2, b: Vector2) -> bool:
+	var n := maxi(1, ceili(a.distance_to(b) / LINE_STEP))
+	for i in n + 1:
+		if not walkable(level, cell(a.lerp(b, float(i) / n))):
+			return false
+	return true
+
+
+## 沿路径点走一步（贴着格子中心走，不穿墙）；走完返回 true
+static func follow(node: Node2D, path: Array[Vector2], speed: float, delta: float) -> bool:
+	var step := speed * delta
+	while not path.is_empty() and step > 0.0:
+		var d := node.global_position.distance_to(path[0])
+		if d <= step:
+			node.global_position = path[0]
+			path.pop_front()
+			step -= d
+		else:
+			node.global_position = node.global_position.move_toward(path[0], step)
+			step = 0.0
+	return path.is_empty()
