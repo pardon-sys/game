@@ -8,7 +8,7 @@
 游戏里 SpriteSheetAnimator 在「角色画风：精细像素」时换上这些图（Sprite 缩到 1/8 再放大 HD_ENLARGE 倍、线性过滤），缺图用原来的 32 格像素图。
 源图（每个角色）：<p>_walk 4×4（下 / 左 / 右 / 上走路）、<p>_expr 2×4（站着的表情：普通 开心 生气 难过 / 惊讶 害羞 憋笑 大笑）、
   <p>_damaged 5×4（战损走路四向 + 第 5 行战损憋笑正面）、<p>_helpless 2×4（失控一 坐地笑 / 失控二 躺地蹬脚）、<p>_magic1 / _magic2 3×6（魔法姿态）。
-  待机眨眼：图集多两列（第 16 列半闭眼、第 17 列闭眼），直接在每行正面待机帧上合上眼睛（close_eyes），SpriteSheetAnimator 在正面待机时隔几秒插一下。
+  待机眨眼：图集多两列（第 16 列半闭眼、第 17 列闭眼）；走路眨眼：正面 / 左 / 右走的 4 帧闭眼版在第 18-29 列；直接在每行正面待机帧上合上眼睛（close_eyes），SpriteSheetAnimator 在正面待机时隔几秒插一下。
 笑雾之中的骑士：knight_possessed.png（2×4：浮空 / 落地被解脱）→ npcs/knight_possessed.png（80 格）。
 用法：python tools/art/import_sprites_px64.py [pink] [blue] [host] [knight] [--preview]（检查图在 tools/.cache/px64/）
 """
@@ -37,6 +37,9 @@ LAYOUT = {"possessed": [4] * 2, "walk": [4] * 4, "expr": [4] * 2, "damaged": [4]
 # 找不到两只眼睛的行（本来就闭着眼、失控……）复制待机帧（不眨）
 BLINK_HALF_COL = 16
 BLINK_SHUT_COL = 17
+# 走路也眨眼：正面 / 左 / 右走的 4 帧各有一张闭眼版，排在第 18 列以后（下 18-21、左 22-25、右 26-29）；侧面只有一只眼睛
+WALK_SHUT_BASE = 18
+WALK_BLINK_DIRS = 3
 # 站着的表情（expr 表的格子）→ 状态
 EXPR = {"normal": 0, "happy": 1, "angry": 2, "sad": 3, "surprise": 4, "shy": 5, "giggle": 6}
 # 魔法：magic1 三行 + magic2 三行 = magic_order
@@ -77,7 +80,7 @@ def snap(im, s):
     return out.crop(out.getbbox()) if out.getbbox() else out
 
 
-def find_eyes(a):
+def find_eyes(a, need=2):
     """正面待机帧里两只眼睛的瞳孔框 (y0, y1, x0, x1)：头部那一段里、蓝色饱和、不大、颜色深的连通块，中线左右各取最大的一块。"""
     from scipy import ndimage
     al = a[..., 3] > 128
@@ -103,6 +106,12 @@ def find_eyes(a):
         if yy.max() - yy.min() + 1 > 30 or xx.max() - xx.min() + 1 > 26 or mx[yy, xx].mean() > 0.8:
             continue
         comps.append((len(yy), yy.min(), yy.max(), xx.min(), xx.max()))
+    if need == 1:
+        # 侧面：只看得见一只眼睛，取最大的一块
+        if not comps:
+            return []
+        c = max(comps)
+        return [(c[1], c[2], c[3], c[4])]
     out = []
     for side in ([c for c in comps if 0 < cx - (c[3] + c[4]) / 2 < 60], [c for c in comps if 0 <= (c[3] + c[4]) / 2 - cx < 60]):
         if side:
@@ -111,10 +120,10 @@ def find_eyes(a):
     return out if len(out) == 2 else []
 
 
-def close_eyes(a, mode):
+def close_eyes(a, mode, need=2):
     """合上眼睛（mode = half 半闭 / shut 闭眼）：眼睛那一块「像眼睛」的像素（深色描边、蓝色、眼白）盖成下面的皮肤色，再画一道睫毛线（闭眼往下弯）。"""
     a = a.copy()
-    for (y0, y1, x0, x1) in find_eyes(a):
+    for (y0, y1, x0, x1) in find_eyes(a, need):
         reg_s = a[y1 + 2:y1 + 10, x0:x1 + 1, :3].reshape(-1, 3).astype(int)
         ok = reg_s[(reg_s[:, 0] > 190) & (reg_s[:, 0] > reg_s[:, 2] + 10) & (reg_s[:, 1] > 140)]
         skin = np.median(ok, 0).astype(int) if len(ok) else np.array([255, 224, 210])
@@ -160,7 +169,7 @@ def build(char):
     snapped = {k: [[snap(f, scales[k]) for f in row] for row in rows] for k, rows in src.items()}
     s = scales["walk"]
     W, E, D, H = snapped["walk"], snapped["expr"], snapped["damaged"], snapped["helpless"]
-    cols = 18
+    cols = WALK_SHUT_BASE + WALK_BLINK_DIRS * 4
     sheet = Image.new("RGBA", (CELL * cols, CELL * len(EMOTIONS)))
     for r, name in enumerate(EMOTIONS):
         for d in range(4):
@@ -179,6 +188,11 @@ def build(char):
         idle = np.asarray(sheet.crop((0, r * CELL, CELL, (r + 1) * CELL)))
         for col, mode in ((BLINK_HALF_COL, "half"), (BLINK_SHUT_COL, "shut")):
             sheet.alpha_composite(Image.fromarray(close_eyes(idle, mode)), (col * CELL, r * CELL))
+        for d in range(WALK_BLINK_DIRS):
+            for f in range(4):
+                src_col = d * 4 + f
+                cell = np.asarray(sheet.crop((src_col * CELL, r * CELL, (src_col + 1) * CELL, (r + 1) * CELL)))
+                sheet.alpha_composite(Image.fromarray(close_eyes(cell, "shut", 2 if d == 0 else 1)), ((WALK_SHUT_BASE + src_col) * CELL, r * CELL))
     sheet.save(OUT / ("%s_hd.png" % out_name))
     if "magic1" in snapped and "magic2" in snapped:
         magic = Image.new("RGBA", (MAGIC_CELL * 6, MAGIC_CELL * len(MAGIC)))
