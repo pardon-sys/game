@@ -31,6 +31,8 @@
   （波形互相关精确到采样），文件最后一拍（0.4~0.9 秒）和 B 之前的一拍交叉淡化，尾声丢掉；`--reloop` 用缓存的原始音频重新切。
   循环在 `.wav.import` 的导入设置里开（脚本写 `edit/loop_begin = B`），运行时不改流；配乐一律无损导入 `compress/mode=0`——QOA 有损压缩会给高频多的曲子添沙沙声。
   提示词别写卡祖笛、沙锤、滑哨、镲片这类嗡嗡沙沙的音色，游戏里听着像杂音；换曲时 `Audio.play_music` 旧曲淡出到 `MUSIC_OVERLAP`（三成）时新曲才从头淡入，只在都很轻时短暂重叠；淡入淡出补线性振幅、正弦缓入缓出）；第三方素材写清楚来源和许可（`assets/third_party/*/License.txt`）。
+- **共性优化需求**：`docs/POLISH_RULES.md`（UI 文字不出框、超出滚动且滚动条在顶端；小剧场 / CG 立绘和精灵动态、挠痒特效叠在图上、流程长、至少一次魔力释放后被挠；
+  生成人物图的服装与画风）。做 UI、演出、生成人物图前先过一遍；用户再提共性要求就追加进去。本机的 Claude Code 技能 `.claude/skills/polish-rules/` 指向它。
 - **文档**：每做完一批，把新系统 / 新规则补进本文对应的章节（七日赎罪的写在「七日赎罪」一节），过时的描述直接改掉，不留两种说法；
   跳关点（`tools/build/gen_dev_skips.py`）把新加的变量 / 标记补上。
 
@@ -73,6 +75,7 @@ tools/build/        生成器 gen_*.py + 文本 after_text/ siege_text/ + 检查
 tools/art/          像素图生成 / 导入；tools/audio/ 音乐音效；tools/authoring/ 写作辅助（不在生成流程里）
 tests/              每个区域一个 *_test.gd/.tscn；夹具 tests/helpers/；截图 capture_*.gd
 docs/ARCHITECTURE.md  本文
+docs/POLISH_RULES.md  共性优化需求（UI / 演出 / 生成图的通用要求）
 ```
 
 ### 项目现状（截至 2026-10）

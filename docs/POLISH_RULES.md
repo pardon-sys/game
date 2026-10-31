@@ -1,0 +1,65 @@
+# 共性优化需求
+
+用户反复提到的、所有新内容都要满足的要求。做 UI、对话框、提示框、小剧场、CG、演出时先过一遍这份清单；
+用户再提新的共性需求，就追加到对应的一节（写清楚是什么、为什么、怎么检查），不要另起文件。
+本机的 Claude Code 技能 `.claude/skills/polish-rules/` 会让 Claude 在这些场合先读本文（`.claude/` 不进仓库，规则正文以本文为准）。
+
+## 1. UI 文字不出框
+
+**要求**：对话框、提示框、选项菜单、情报、背包说明、商店、训练面板……所有文字都不能超出它的方框。放不下的部分改成**滚动**，
+而且每次打开 / 换内容时滚动条在**最上面**（从第一行开始看）。
+
+**怎么做**：
+- 多行文字优先用 `ScrollTextBox`（`scripts/ui/scroll_text_box.gd`）：`ScrollTextBox.make(Rect2)` 固定大小、自动换行、内容高了出现像素风滚动条；
+  换内容先 `clear()` 再加，最后 `scroll_to_top()`（或 `scroll_vertical = 0`）。
+- 自己写的 `ScrollContainer` / `RichTextLabel`：换内容时把 `scroll_vertical` 设回 0（`RichTextLabel` 用 `scroll_to_line(0)`）；
+  只有「刷新同一页的数值」（例如背包状态页每帧刷新）才保留原来的滚动位置。
+- 滚动条样式统一用 `ScrollTextBox.style_scrollbar(bar)`。
+- 不要用 `clip_text`、`visible_characters` 截断或缩小字号来塞进框里；单行标题放不下就换行或加宽框。
+- 键盘 / 手柄能滚：↑↓（`scroll_by`）或翻页键；鼠标滚轮可滚。
+
+**检查**：用最长的那条文字截图看一遍（`tests/_shots_*.gd` → `tools/.cache/shots/`）；打开、关掉再打开，确认滚动条回到顶端。
+
+## 2. 小剧场 / CG / 演出的演绎
+
+**要求**：
+1. **立绘和精灵图都是动态的**：
+   - 舞台上的人物要走位、蹦、抖、换姿势（`enter / move / hop / shake / pose`）；
+   - 立绘跟着剧情换表情（`portrait` / `emotion`），不要一张立绘从头站到尾。
+2. **挠痒特效、抖动都要出现在图上**：
+   - 每一句「正在挠」的台词，都配一条 `tickle` 指令（`who / by / repeat / interval / fx`）；
+   - 横版 CG 大图上的命中贴片、抖动、飘字由 `cg_tickle` / `Dialogue.shake_portrait` 自动处理，前提是那一步有 `tickle`；
+   - 爆发时配 `flash`、`sfx`。
+3. **流程要长**：
+   - 一段完整的挠痒演绎参照现有长度：笑倒 CG 约 29 句，攻防战失败小剧场 27 句，弥补任务的失败小剧场二十句以上；
+   - 不要三五句就结束。
+4. **至少有一次魔力疲倦满了释放、释放后被接着挠**，按四幕走（每一步标 `act`）：
+   1. 被抓住、嘴硬；
+   2. 弱点被找到、开始破功；
+   3. 魔力疲倦满、爆发：用 `tools/build/burst_lines.py` 的 `burst_steps(...)`，`act = "burst"`，立绘 `fatigue_burst`，`sfx star_burst` + `water_release`，怪被震开再回来。爆发后全身更敏感，被接着挠；
+   4. 彻底笑倒、认输。
+   - 两个人同框时，两个人各爆发一次。
+   - 立绘按幕换：`defeat_1 → defeat_2 → fatigue_burst → defeat_2`。
+   - 参照：笑倒 CG（`gen_cgs.py`）、组合演出（`gen_combo_scenes.py`）、攻防战失败小剧场（`siege_text/theaters.py`）。
+5. **人物性格和弱点**照 `ARCHITECTURE.md`「内容准则」：
+   - **粉色公主**写脚（脱鞋袜、掰脚趾挠趾缝、刮脚心、沿足弓刷、捏脚跟）。开朗倔强，叫嚷反抗，边笑边求饶。
+   - **蓝色公主**写大腿 / 屁股（揉腿根打圈、沿大腿内侧上移到腿根为止、轮流捏屁股、交界处轻刮）。寡言嘴硬，短句带省略号，越痒句子越碎，破防后小声服软，不用固定口头禅、不重复同一句。
+   - 每段都用那个人 / 怪 / 陷阱**自己的工具**写具体手法；反应分 `light / mid / heavy`（释放后 `sensitive`）三档，同一档给足变化。
+6. 细节（几幕、谁先爆发、哪张 CG 放哪一幕）不确定时，先用选项式提问向用户确认。
+
+**检查**：
+- `CG.validate()`（`cg_test`）检查引用；攻防战文本跑 `check_siege_text.py`。
+- 截图看一遍每一幕：大图有没有抖、贴片有没有出来、立绘有没有换。
+
+## 3. 生成的人物图
+
+- 服装照立绘：两位公主和派对主人都穿露肩装、前短的裙子（正面能看到一点大腿）。
+  - 粉色：白色中长筒袜、粉色蝴蝶结玛丽珍鞋；
+  - 蓝色：白色荷叶边短袜、蓝鞋、两侧小发髻；
+  - 派对主人：红色绑带凉鞋、金色小王冠配红花。
+- 参考图用立绘：`assets/generated/portraits.png`、`assets/generated/blue_princess/魔法吟诵.png`、`assets/generated/bonfire_host_portraits/portraits1.PNG`。
+- 画风：
+  - 地图上的像素图走 Q 版像素风，不要写实；
+  - 剧情大图 / CG 走动漫插画风（参照 `assets/generated/BOSS_CG/`）。
+  - 都是成年人，姿势自然、不性化。
+- 新图先拼一张总览给用户确认服装和弱点，再导入游戏。原图保留，方便回退。
