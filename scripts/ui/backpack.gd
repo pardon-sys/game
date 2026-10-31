@@ -629,21 +629,9 @@ func _slot(it: ItemData, active: bool) -> Control:
 	return p
 
 
-## 状态页能看的人：操控的角色在前，同一关卡里一起行动的可操作角色（跟着的蓝色公主）在后。
+## 状态页能看的人：同行的人（Party.members：操控的角色、跟着走的同行者、地图 party 里列出的人、允许换人的场景里能换的人）。
 func status_members() -> Array[PlayableCharacter]:
-	var out: Array[PlayableCharacter] = []
-	var p := GameState.player
-	if not is_instance_valid(p):
-		return out
-	out.append(p)
-	var lv := p.get_parent()
-	while lv and not lv.has_node("Walls"):
-		lv = lv.get_parent()
-	for n in (lv.find_children("*", "PlayableCharacter", true, false) if lv else []):
-		var c := n as PlayableCharacter
-		if c and c != p and c.visible and c.is_alive() and c.process_mode != Node.PROCESS_MODE_DISABLED:
-			out.append(c)
-	return out
+	return Party.members(GameState.player)
 
 
 func _refresh_penance() -> void:

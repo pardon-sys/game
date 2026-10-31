@@ -10,6 +10,8 @@ extends Node2D
 @export var night_ambient := Color(0, 0, 0, 0)
 ## 这一关不能切换操控的角色（[level] 段 no_switch = true；第八层的小房间）
 @export var no_switch := false
+## 同行的人（[level] 段 party = 人物 id,…）：除了跟着走的同行者，这些可操作角色也能在背包状态页看、能换过去（见 scripts/core/party.gd）
+@export var party := PackedStringArray()
 ## 画面风格（[level] 段 style）：""（默认）/ "2.5d"（法线贴图图块 + 人物实时光照 + 跟着角色的冷光 + 透视倾斜）/
 ##   "iso"（同样的光照，画面换成等距 45° + 方块墙 + Z / X 转镜头：scripts/iso/ 的 IsoView + IsoTerrain；第八层的夜迷宫）
 @export var style := ""

@@ -204,6 +204,7 @@ var legend := {}
 ## 同一格叠放的其它实体：字符 -> [info, ...]（legend 里用 " + " 连接，例如 "K = trap type=stocks + trap type=vortex radius=3"）。
 var stacked := {}
 ## [level] 段：intro（开场对话 id）、ambient（环境光 r,g,b）、night_ambient（夜晚的环境光，剧情标记 night 时用）、no_switch = true（不能切换操控角色）、
+##   party = 人物 id,…（同行的人：背包状态页能看、能换过去的可操作角色，例如 party = bonfire_host；见 scripts/core/party.gd）、
 ##   style = 2.5d（法线贴图图块集 dungeon_25d.tres + 很暗的环境光 + 墙上的幽光点；关卡进场时人物套实时光照、操控的角色带冷光）、
 ##   style = iso（同样的光照，画面是等距 45° + 方块墙 + 转镜头：scripts/iso/；iso_theme = 主题名、iso_rotate = false 关掉转镜头）、
 ##   light_drain = 秒（2.5D 楼层冷光从满到空的时间，0 = 不消耗）
@@ -259,6 +260,10 @@ func build(floor_id: String) -> int:
 	root.set("intro_dialogue", level_meta.get("intro", "intro"))
 	root.set("intro_cutscene", level_meta.get("intro_cutscene", ""))
 	root.set("no_switch", str(level_meta.get("no_switch", "")) == "true")
+	var party := PackedStringArray()
+	for id in str(level_meta.get("party", "")).split(",", false):
+		party.append(id.strip_edges())
+	root.set("party", party)
 	root.set("style", style)
 	root.set("iso_theme", str(level_meta.get("iso_theme", "")))
 	root.set("iso_rotate", str(level_meta.get("iso_rotate", "true")) != "false")
