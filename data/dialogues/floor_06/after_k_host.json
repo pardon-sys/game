@@ -6,6 +6,26 @@
 			"if": {
 				"flag": "kq_host_active",
 				"eq": {
+					"kq_host_stage": 5,
+					"kq_host_gate": 5
+				}
+			},
+			"node": "kq_host_g5"
+		},
+		{
+			"if": {
+				"flag": "kq_host_active",
+				"eq": {
+					"kq_host_stage": 4,
+					"kq_host_gate": 4
+				}
+			},
+			"node": "kq_host_g4"
+		},
+		{
+			"if": {
+				"flag": "kq_host_active",
+				"eq": {
 					"kq_host_stage": 0
 				}
 			},
@@ -314,6 +334,59 @@
 					"text": "等一下"
 				}
 			]
+		},
+		"kq_host_g4": {
+			"lines": [
+				{
+					"text": "八音盒响了……生日舞也能配着跳了！",
+					"speaker": "派对主人",
+					"npc": "bonfire_host"
+				},
+				{
+					"text": "现在就排练？",
+					"speaker": "公主"
+				},
+				{
+					"text": "嗯！篝火边，跟着我的步子来！",
+					"speaker": "派对主人",
+					"npc": "bonfire_host"
+				}
+			],
+			"set": {
+				"vars": {
+					"kq_req": "host"
+				},
+				"call": "kq_gate"
+			}
+		},
+		"kq_host_g5": {
+			"lines": [
+				{
+					"text": "呼……跳得真好！",
+					"speaker": "派对主人",
+					"npc": "bonfire_host"
+				},
+				{
+					"text": "蛋糕已经摆好了。……要开始了哦。",
+					"speaker": "派对主人",
+					"npc": "bonfire_host"
+				},
+				{
+					"text": "……开始什么？",
+					"speaker": "蓝色的公主"
+				},
+				{
+					"text": "派对的老规矩！",
+					"speaker": "派对主人",
+					"npc": "bonfire_host"
+				}
+			],
+			"set": {
+				"vars": {
+					"kq_req": "host"
+				},
+				"call": "kq_gate"
+			}
 		}
 	}
 }

@@ -4,6 +4,16 @@
 	"entries": [
 		{
 			"if": {
+				"flag": "kq_blue_active",
+				"eq": {
+					"kq_blue_stage": 1,
+					"kq_blue_gate": 1
+				}
+			},
+			"node": "kq_blue_g1"
+		},
+		{
+			"if": {
 				"flag": "knight_started"
 			},
 			"node": "k_talk"
@@ -415,6 +425,37 @@
 			],
 			"set": {
 				"call": "after_dismiss_blue"
+			}
+		},
+		"kq_blue_g1": {
+			"lines": [
+				{
+					"text": "……这盏灯笼。",
+					"speaker": "蓝色的公主"
+				},
+				{
+					"text": "……小时候……每年都是我点的。",
+					"speaker": "蓝色的公主"
+				},
+				{
+					"text": "那……现在也点一次？",
+					"speaker": "公主"
+				},
+				{
+					"text": "……点不亮的。……我已经，不会那样笑了。",
+					"speaker": "蓝色的公主"
+				},
+				{
+					"text": "那就让我来逗你笑！",
+					"speaker": "公主",
+					"emotion": "happy"
+				}
+			],
+			"set": {
+				"vars": {
+					"kq_req": "blue"
+				},
+				"call": "kq_gate"
 			}
 		}
 	}

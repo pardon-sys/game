@@ -1030,6 +1030,11 @@ data/cutscenes/<楼层组>/  地图内过场；data/theater/<楼层组>/  小剧
 	玩法节点用 `QuestMaps.cells(图, 名字)`（`levels/floor_06/scripts/quest_maps.gd`）读（`QuestHide.SPOTS`、`QuestCrack.NAILS` 这些都是 static var）。
 	改布局只改 `quest_maps.py`，再跑生成器和 `build_level`；目标格（`stages[].cell`）也从标记点取（`quests.py` 的 `QM`）。
   - 这一段才开的门（`unlock`）开了以后到做完 / 放下都开着（以前过了那一段就关，套着的图走不进去：地窖 → 草药洞、裂缝 → 旧会堂）。
+  - **阶段门槛** `gate`（`quests.py` 的 `GATES`）：上一段做完不马上开演，`vars.kq_<id>_gate = i` 记着「这一段在等门槛」——没有玩法节点（不演开场、不开玩法）、
+	目标指向门槛；`{"cell", "r"}` 走进圈里（`AfterRoom` / `AfterTown._process` 看到目标的 `quest_gate` 调 `KnightQuests.pass_gate`），
+	`{"talk": 对话文件, "lines"}` 找这个人说话（注入到他的对话最前面，`call: kq_gate`，头上冒「!」）。阶段编号不变（runner 里写死的阶段号不受影响）。
+	现在的门槛：骑士救公主 宝贝盒前找小莉莉、队长的旧剑术 第一次进训练室和二对一前找队长、没有名字的生日 排练前和许愿前找派对主人、
+	点灯笼的小姑娘 逗她笑前找蓝色公主、井边那段走到井边。转阶段的过场（`enter_cut`）还在上一段做完时演（交代下一步去哪），开场 / 玩法在过门槛以后。
   - 段落还可以写：`runner`（这一段换一个玩法节点脚本）、`where = "town"`（现在这一步的骑士篇小镇，白天夜里都行）、
 	`talk: {npc, lines, cut}`（找某人说话推进，注入 `call: kq_next`；找委托人自己的排在「进行中」闲话前面）、多个 `report`。
 	接下以后只在步骤范围外才自动放下（多段的支线会跨白天黑夜）。套着的图（地窖 → 草药洞、裂缝 → 旧会堂）指路一层一层往里指（`KnightStory.NESTED`）。

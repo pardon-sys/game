@@ -6,6 +6,16 @@
 			"if": {
 				"flag": "kq_shoes_active",
 				"eq": {
+					"kq_shoes_stage": 4,
+					"kq_shoes_gate": 4
+				}
+			},
+			"node": "kq_shoes_g4"
+		},
+		{
+			"if": {
+				"flag": "kq_shoes_active",
+				"eq": {
 					"kq_shoes_stage": 0
 				}
 			},
@@ -332,6 +342,35 @@
 					"text": "等一下再玩"
 				}
 			]
+		},
+		"kq_shoes_g4": {
+			"lines": [
+				{
+					"text": "呜……姐姐……",
+					"speaker": "小莉莉",
+					"npc": "kid"
+				},
+				{
+					"text": "莉莉的宝贝盒……被手印搬走了……",
+					"speaker": "小莉莉",
+					"npc": "kid"
+				},
+				{
+					"text": "……别哭别哭。在哪儿？姐姐帮你找回来。",
+					"speaker": "公主"
+				},
+				{
+					"text": "西、西边的集市……",
+					"speaker": "小莉莉",
+					"npc": "kid"
+				}
+			],
+			"set": {
+				"vars": {
+					"kq_req": "shoes"
+				},
+				"call": "kq_gate"
+			}
 		}
 	}
 }

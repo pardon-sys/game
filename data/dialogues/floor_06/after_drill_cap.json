@@ -4,6 +4,26 @@
 	"entries": [
 		{
 			"if": {
+				"flag": "kq_spear_active",
+				"eq": {
+					"kq_spear_stage": 2,
+					"kq_spear_gate": 2
+				}
+			},
+			"node": "kq_spear_g2"
+		},
+		{
+			"if": {
+				"flag": "kq_spear_active",
+				"eq": {
+					"kq_spear_stage": 0,
+					"kq_spear_gate": 0
+				}
+			},
+			"node": "kq_spear_g0"
+		},
+		{
+			"if": {
 				"flag": "kq_spear_active"
 			},
 			"node": "k_spear_ready"
@@ -70,6 +90,50 @@
 					"text": "想练的时候，自己进来。"
 				}
 			]
+		},
+		"kq_spear_g0": {
+			"lines": [
+				{
+					"text": "……来了。"
+				},
+				{
+					"text": "木矛在架子上。……先看我做一遍。"
+				},
+				{
+					"text": "……好！",
+					"speaker": "公主",
+					"emotion": "happy"
+				}
+			],
+			"set": {
+				"vars": {
+					"kq_req": "spear"
+				},
+				"call": "kq_gate"
+			}
+		},
+		"kq_spear_g2": {
+			"lines": [
+				{
+					"text": "……守了一夜，还站得住？"
+				},
+				{
+					"text": "这次你们两个一起上。……别手下留情。"
+				},
+				{
+					"text": "……手下留情的，是你吧。",
+					"speaker": "蓝色的公主"
+				},
+				{
+					"text": "……哼。站好。"
+				}
+			],
+			"set": {
+				"vars": {
+					"kq_req": "spear"
+				},
+				"call": "kq_gate"
+			}
 		}
 	}
 }

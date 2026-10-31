@@ -447,6 +447,33 @@ def spear_start():
 CUTSCENES = {"kq_spear_start": spear_start}
 
 
+# ---------------------------------------------------------------- 阶段门槛（stages[i]["gate"]）：上一段做完不马上开演，走到 / 找到人才开始
+# talk：找这个人说话（注入到他的对话最前面，call: kq_gate）；cell：走进圈里。text 是门槛没过时的目标文字。
+GATES = {
+    ("shoes", 4): {"talk": "after_k_kids", "text": "【骑士救公主】回小镇找小莉莉——她好像在哭",
+                   "lines": [L("呜……姐姐……", LILY, None, "kid"), L("莉莉的宝贝盒……被手印搬走了……", LILY, None, "kid"),
+                             L("……别哭别哭。在哪儿？姐姐帮你找回来。", P), L("西、西边的集市……", LILY, None, "kid")]},
+    ("spear", 0): {"talk": "after_drill_cap", "text": "【队长的旧剑术】去西北角的训练室，找队长说话",
+                   "lines": [L("……来了。"), L("木矛在架子上。……先看我做一遍。"), L("……好！", P, "happy")]},
+    ("spear", 2): {"talk": "after_drill_cap", "text": "【队长的旧剑术】回训练室：找队长说话，两个人一起和他练一场",
+                   "lines": [L("……守了一夜，还站得住？"), L("这次你们两个一起上。……别手下留情。"),
+                             L("……手下留情的，是你吧。", BLUE), L("……哼。站好。")]},
+    ("host", 4): {"talk": "after_k_host", "text": "【没有名字的生日】篝火边：找派对主人，开始排练生日舞",
+                  "lines": [L("八音盒响了……生日舞也能配着跳了！", HOST, None, "bonfire_host"),
+                            L("现在就排练？", P), L("嗯！篝火边，跟着我的步子来！", HOST, None, "bonfire_host")]},
+    ("host", 5): {"talk": "after_k_host", "text": "【没有名字的生日】跳完了——找派对主人，开始生日派对",
+                  "lines": [L("呼……跳得真好！", HOST, None, "bonfire_host"), L("蛋糕已经摆好了。……要开始了哦。", HOST, None, "bonfire_host"),
+                            L("……开始什么？", BLUE), L("派对的老规矩！", HOST, None, "bonfire_host")]},
+    ("blue", 1): {"talk": "after_partner", "text": "【点灯笼的小姑娘】旧石灯笼：和蓝色公主说话",
+                  "lines": [L("……这盏灯笼。", BLUE), L("……小时候……每年都是我点的。", BLUE),
+                            L("那……现在也点一次？", P), L("……点不亮的。……我已经，不会那样笑了。", BLUE),
+                            L("那就让我来逗你笑！", P, "happy")]},
+    ("blue", 2): {"cell": [26, 14], "r": 2.0, "text": "【点灯笼的小姑娘】回忆①：走到井边"},
+}
+for (_qid, _i), _g in GATES.items():
+    QUESTS[_qid]["stages"][_i]["gate"] = _g
+
+
 # ---------------------------------------------------------------- 委托人对话里的入口（gen 插到对话最前面）
 def inject(files):
     """每个支线：开放时 offer（接下 → call: kq_start），进行中 busy（可以先放一放 → call: kq_abandon），
@@ -504,6 +531,19 @@ def inject(files):
         {"text": "没什么", "next": ""}]}
     d["nodes"]["k_invite"] = {"lines": [L("……好。"), L("你一个人，会被手印抓走的。")], "set": {"call": "after_invite_blue"}}
     d["nodes"]["k_dismiss"] = {"lines": [L("……嗯。我在附近转转。……有事叫我。")], "set": {"call": "after_dismiss_blue"}}
+    _inject_gates(files)   # 最后注入：排在训练室队长、蓝色公主的骑士篇对话前面
+
+
+def _inject_gates(files):
+    """找人说话的门槛：这一段、门槛没过时排在那个人对话的最前面（call: kq_gate）。在 inject 最后调，排在其它注入的前面。"""
+    for (qid, i), g in GATES.items():
+        if "talk" not in g:
+            continue
+        d = files[g["talk"]]
+        node = "kq_%s_g%d" % (qid, i)
+        cond = {"flag": "kq_%s_active" % qid, "eq": {"kq_%s_stage" % qid: i, "kq_%s_gate" % qid: i}}
+        d["nodes"][node] = {"lines": g["lines"], "set": {"vars": {"kq_req": qid}, "call": "kq_gate"}}
+        d["entries"] = [{"if": cond, "node": node}] + d["entries"]
 
 
 # 门上的提示（signs.json）：骑士篇的训练室（队长的旧剑术进行中才开）、工房的地窖（手印样本收到地窖那一段才开）

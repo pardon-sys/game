@@ -12,9 +12,9 @@ from collections import defaultdict
 from pathlib import Path
 
 os.chdir(Path(__file__).resolve().parents[2])
-CALLS = {"open_shop", "open_training", "rest", "sleep", "open_war_shop", "go_siege", "switch_hero", "after_sleep", "after_rest", "errand_start", "after_play", "after_penalty", "after_invite_blue", "after_dismiss_blue", "festival_dance", "festival_stall", "festival_finale", "knight_go", "knight_reenter", "kq_start", "kq_report", "kq_abandon", "kq_spear_replay", "kq_next"}
+CALLS = {"open_shop", "open_training", "rest", "sleep", "open_war_shop", "go_siege", "switch_hero", "after_sleep", "after_rest", "errand_start", "after_play", "after_penalty", "after_invite_blue", "after_dismiss_blue", "festival_dance", "festival_stall", "festival_finale", "knight_go", "knight_reenter", "kq_start", "kq_report", "kq_abandon", "kq_spear_replay", "kq_next", "kq_gate"}
 # 代码里写的变量（不是对话的 set 写的）：七日赎罪的时钟 DayClock、骑士篇的步骤 KnightStory
-CODE_VARS = {"after_day", "after_slot", "errand_req", "knight_step", "kq_samples_stage", "kq_fence_stage", "kq_shoes_stage", "kq_spear_stage", "kq_host_stage", "kq_blue_stage"}
+CODE_VARS = {"after_day", "after_slot", "errand_req", "knight_step", "kq_samples_stage", "kq_fence_stage", "kq_shoes_stage", "kq_spear_stage", "kq_host_stage", "kq_blue_stage", "kq_shoes_gate", "kq_spear_gate", "kq_host_gate", "kq_blue_gate"}
 
 
 def ids_in(folder):

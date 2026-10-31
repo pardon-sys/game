@@ -416,6 +416,12 @@ func kq_next() -> void:
 	KnightQuests.talk_next(str(GameState.vars.get("kq_req", "")))
 
 
+## 骑士篇支线：这一段的门槛是找这个人说话（stages[].gate.talk）
+func kq_gate() -> void:
+	runner.end_conversation()
+	KnightQuests.pass_gate(str(GameState.vars.get("kq_req", "")))
+
+
 func kq_abandon() -> void:
 	runner.end_conversation()
 	KnightQuests.abandon(str(GameState.vars.get("kq_req", "")))

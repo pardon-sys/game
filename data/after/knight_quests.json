@@ -312,6 +312,31 @@
 					],
 					"text": "【骑士救公主】小莉莉的宝贝盒被手印搬走了——西边的集市",
 					"runner": "res://levels/floor_06/scripts/quest_box.gd",
+					"gate": {
+						"talk": "after_k_kids",
+						"text": "【骑士救公主】回小镇找小莉莉——她好像在哭",
+						"lines": [
+							{
+								"text": "呜……姐姐……",
+								"speaker": "小莉莉",
+								"npc": "kid"
+							},
+							{
+								"text": "莉莉的宝贝盒……被手印搬走了……",
+								"speaker": "小莉莉",
+								"npc": "kid"
+							},
+							{
+								"text": "……别哭别哭。在哪儿？姐姐帮你找回来。",
+								"speaker": "公主"
+							},
+							{
+								"text": "西、西边的集市……",
+								"speaker": "小莉莉",
+								"npc": "kid"
+							}
+						]
+					},
 					"busy": [
 						{
 							"text": "盒子是木头的，上面画着小花……",
@@ -1193,6 +1218,23 @@
 						8
 					],
 					"text": "【队长的旧剑术】去西北角的训练室",
+					"gate": {
+						"talk": "after_drill_cap",
+						"text": "【队长的旧剑术】去西北角的训练室，找队长说话",
+						"lines": [
+							{
+								"text": "……来了。"
+							},
+							{
+								"text": "木矛在架子上。……先看我做一遍。"
+							},
+							{
+								"text": "……好！",
+								"speaker": "公主",
+								"emotion": "happy"
+							}
+						]
+					},
 					"busy": [
 						{
 							"text": "训练室的门开着。……进去等我。"
@@ -1296,6 +1338,25 @@
 					],
 					"text": "【队长的旧剑术】回训练室：两个人一起，和队长练一场",
 					"runner": "res://levels/floor_06/scripts/quest_duo.gd",
+					"gate": {
+						"talk": "after_drill_cap",
+						"text": "【队长的旧剑术】回训练室：找队长说话，两个人一起和他练一场",
+						"lines": [
+							{
+								"text": "……守了一夜，还站得住？"
+							},
+							{
+								"text": "这次你们两个一起上。……别手下留情。"
+							},
+							{
+								"text": "……手下留情的，是你吧。",
+								"speaker": "蓝色的公主"
+							},
+							{
+								"text": "……哼。站好。"
+							}
+						]
+					},
 					"busy": [
 						{
 							"text": "……两个人一起来。"
@@ -1820,6 +1881,26 @@
 					],
 					"text": "【没有名字的生日】篝火边：生日舞排练",
 					"runner": "res://levels/floor_06/scripts/quest_party.gd",
+					"gate": {
+						"talk": "after_k_host",
+						"text": "【没有名字的生日】篝火边：找派对主人，开始排练生日舞",
+						"lines": [
+							{
+								"text": "八音盒响了……生日舞也能配着跳了！",
+								"speaker": "派对主人",
+								"npc": "bonfire_host"
+							},
+							{
+								"text": "现在就排练？",
+								"speaker": "公主"
+							},
+							{
+								"text": "嗯！篝火边，跟着我的步子来！",
+								"speaker": "派对主人",
+								"npc": "bonfire_host"
+							}
+						]
+					},
 					"busy": [
 						{
 							"text": "生日舞！是我自己编的！"
@@ -1838,6 +1919,31 @@
 					],
 					"text": "【没有名字的生日】生日派对：吹蜡烛之前，忍笑许愿",
 					"runner": "res://levels/floor_06/scripts/quest_party.gd",
+					"gate": {
+						"talk": "after_k_host",
+						"text": "【没有名字的生日】跳完了——找派对主人，开始生日派对",
+						"lines": [
+							{
+								"text": "呼……跳得真好！",
+								"speaker": "派对主人",
+								"npc": "bonfire_host"
+							},
+							{
+								"text": "蛋糕已经摆好了。……要开始了哦。",
+								"speaker": "派对主人",
+								"npc": "bonfire_host"
+							},
+							{
+								"text": "……开始什么？",
+								"speaker": "蓝色的公主"
+							},
+							{
+								"text": "派对的老规矩！",
+								"speaker": "派对主人",
+								"npc": "bonfire_host"
+							}
+						]
+					},
 					"busy": [
 						{
 							"text": "……蜡烛，好多。"
@@ -2232,6 +2338,33 @@
 					],
 					"text": "【点灯笼的小姑娘】旧石灯笼：逗她笑",
 					"runner": "res://levels/floor_06/scripts/quest_blue_lantern.gd",
+					"gate": {
+						"talk": "after_partner",
+						"text": "【点灯笼的小姑娘】旧石灯笼：和蓝色公主说话",
+						"lines": [
+							{
+								"text": "……这盏灯笼。",
+								"speaker": "蓝色的公主"
+							},
+							{
+								"text": "……小时候……每年都是我点的。",
+								"speaker": "蓝色的公主"
+							},
+							{
+								"text": "那……现在也点一次？",
+								"speaker": "公主"
+							},
+							{
+								"text": "……点不亮的。……我已经，不会那样笑了。",
+								"speaker": "蓝色的公主"
+							},
+							{
+								"text": "那就让我来逗你笑！",
+								"speaker": "公主",
+								"emotion": "happy"
+							}
+						]
+					},
 					"busy": [
 						{
 							"text": "……找到她了？"
@@ -2249,6 +2382,14 @@
 					],
 					"text": "【点灯笼的小姑娘】回忆①：井边的冰面（收 7 个笑声铃铛）",
 					"runner": "res://levels/floor_06/scripts/quest_well.gd",
+					"gate": {
+						"cell": [
+							26,
+							14
+						],
+						"r": 2.0,
+						"text": "【点灯笼的小姑娘】回忆①：走到井边"
+					},
 					"busy": [
 						{
 							"text": "……井边？那孩子以前天天在那里冻水玩。"
