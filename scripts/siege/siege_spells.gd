@@ -350,6 +350,8 @@ class IceMirror extends Actor:
 			sprite.offset = caster.sprite.offset
 			sprite.region_enabled = caster.sprite.region_enabled
 			sprite.region_rect = caster.sprite.region_rect
+			sprite.scale = caster.sprite.scale
+			sprite.texture_filter = caster.sprite.texture_filter
 		sprite.modulate = Color(0.7, 0.9, 1.4, 0.75)
 		add_child(sprite)
 		var lt := PointLight2D.new()

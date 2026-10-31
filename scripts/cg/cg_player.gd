@@ -172,6 +172,8 @@ func _build() -> void:
 	frame.add_child(view)
 	var floor := TileMapLayer.new()
 	floor.tile_set = TILESET
+	# 舞台只是画面：CanvasLayer 不隔开物理，墙图块的碰撞会变成关卡里同一坐标的空气墙——关掉碰撞
+	floor.collision_enabled = false
 	view.add_child(floor)
 	var rng := RandomNumberGenerator.new()
 	rng.seed = 7

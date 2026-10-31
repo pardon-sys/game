@@ -36,6 +36,9 @@ func _ready() -> void:
 	await _run_real_monsters()
 	_run_portrait_interface()
 	await _run_cg_portrait_fx()
+	# CG 舞台的地牢房间只是画面：图块不能有碰撞（CanvasLayer 不隔开物理，会变成关卡里同一坐标的空气墙）
+	var stage_maps: Array = CG.find_children("*", "TileMapLayer", true, false)
+	check("CG 舞台的图块没有碰撞（不在关卡里留空气墙）", not stage_maps.is_empty() and stage_maps.all(func(m): return not m.collision_enabled))
 	print("\n==== %s (%d 项失败) ====" % ["全部通过" if failures == 0 else "有失败", failures])
 	get_tree().quit(1 if failures else 0)
 

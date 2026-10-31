@@ -128,7 +128,7 @@ COMBOS = {
     "eq_pants_bind": {
         "name": "动弹不得的裤子", "desc": "被束缚陷阱困住动不了，千手痒痒裤趁机一起发作，旁边的怪物也凑了上来。",
         "equip": ["thousand_pants"], "keys": [RESTRAINTS, ["*"]],
-        "effects": [{"type": "burst", "amount": 18}, {"type": "grab_extend", "duration": 1.5}, {"type": "crit_storm", "duration": 2.5},
+        "effects": [{"type": "burst", "amount": 18}, {"type": "grab_extend", "seconds": 1.5}, {"type": "crit_storm", "duration": 2.5},
                     {"type": "focus"}],
         "cast": [("trap", "stocks", "束缚陷阱"), ("monster", "slime", "史莱姆")], "who": "blue",
         "blue": [(N, "（被陷阱扣住，一动也不能动。就在这时，痒痒裤里的手指像是等了很久似的——一起动了）"),

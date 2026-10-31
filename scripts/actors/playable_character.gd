@@ -1228,9 +1228,12 @@ func _spawn_ghost() -> void:
 	g.frame = sprite.frame
 	g.flip_h = sprite.flip_h
 	g.offset = sprite.offset
+	# 精细像素图集的贴图大 8 倍、精灵缩小显示：残影也要照抄缩放和过滤，不然特别大
+	g.scale = sprite.scale
+	g.texture_filter = sprite.texture_filter
 	g.modulate = Color(1.0, 0.55, 0.85, 0.55)
 	get_parent().add_child(g)
-	g.global_position = global_position
+	g.global_position = global_position + sprite.position
 	var tw := g.create_tween()
 	tw.tween_property(g, "modulate:a", 0.0, 0.25)
 	tw.tween_callback(g.queue_free)

@@ -62,6 +62,7 @@ func _ready() -> void:
 	floor_layer = TileMapLayer.new()
 	floor_layer.name = LAYER_NAME
 	floor_layer.tile_set = _make_tileset()
+	floor_layer.collision_enabled = false   # 只是画面（碰撞在原来的 Walls 图层）
 	floor_layer.add_to_group(IsoView.SCREEN_GROUP)
 	decals = Node2D.new()
 	decals.name = "IsoDecals"

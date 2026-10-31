@@ -1029,8 +1029,11 @@ func make_shadow() -> Node2D:
 		spr.offset = p.sprite.offset
 		spr.region_enabled = p.sprite.region_enabled
 		spr.region_rect = p.sprite.region_rect
+		spr.scale = p.sprite.scale * 1.15   # 精细像素图集：贴图大、精灵缩小显示
+		spr.texture_filter = p.sprite.texture_filter
+	else:
+		spr.scale = Vector2(1.15, 1.15)
 	spr.modulate = SHADOW_COLOR
-	spr.scale = Vector2(1.15, 1.15)
 	root.add_child(spr)
 	Fx.emitter(root, "dust", 10, 1.0, {"offset": Vector2(0, -4), "extents": Vector2(6, 2), "dir": Vector2.UP, "speed": [6.0, 14.0],
 			"color": Color(0.35, 0.1, 0.5, 0.8), "z": 1})

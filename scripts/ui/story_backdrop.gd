@@ -3,12 +3,14 @@ extends CanvasLayer
 ## 剧情过场的背景大图（Cutscene 的子节点；过场动作 bg / bg_clear）：整屏铺满一张高清插画，对话框（layer 20）照旧在上面。
 ## 图在 assets/generated/story_scenes/<名字>.png（16:9，codex 生成，见 tools/art/src/story_scenes/prompts.md）。
 ## 线性过滤（高清图不按像素放大）；摆上来以后慢慢推近 / 平移（pan：in 推近、out 拉远、left / right 横移、up 往上摇）；换图交叉淡入淡出。
+## 推近只推 ZOOM_TIME 秒、推到 1 + ZOOM 就停住（缓出），不会一直放大。
 
 const DIR := "res://assets/generated/story_scenes/"
 const SIZE := Vector2(480, 270)
 const FADE := 0.6
-## 推近 / 平移的幅度和时间
-const ZOOM := 0.08
+## 推近 / 平移的幅度和时间（推近：ZOOM_TIME 秒缓出推到 1 + ZOOM 停住；平移：DRIFT_TIME 秒）
+const ZOOM := 0.06
+const ZOOM_TIME := 6.0
 const DRIFT := 18.0
 const DRIFT_TIME := 14.0
 
@@ -78,7 +80,8 @@ func _drift(r: TextureRect, pan: String) -> void:
 	match pan:
 		"out":
 			r.scale = Vector2.ONE * (1.0 + ZOOM)
-			tw.tween_property(r, "scale", Vector2.ONE, DRIFT_TIME)
+			tw.set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+			tw.tween_property(r, "scale", Vector2.ONE, ZOOM_TIME)
 		"left":
 			r.position = p0 + Vector2(DRIFT, 0)
 			tw.tween_property(r, "position", p0 - Vector2(DRIFT, 0), DRIFT_TIME)
@@ -91,7 +94,9 @@ func _drift(r: TextureRect, pan: String) -> void:
 		"none":
 			pass
 		_:
-			tw.tween_property(r, "scale", Vector2.ONE * (1.0 + ZOOM), DRIFT_TIME)
+			# 推近：往中间慢慢放大一点，缓出停住
+			tw.set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+			tw.tween_property(r, "scale", Vector2.ONE * (1.0 + ZOOM), ZOOM_TIME)
 
 
 ## 收起（淡出）
