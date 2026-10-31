@@ -24,7 +24,7 @@ func _ready() -> void:
 	check("NPC舞台默认普通待机，角色身份固定",actor.visual=="normal" and actor.animator!=null and actor.reaction_key=="bonfire_host")
 	actor.set_pose("chant","channel")
 	actor.animator.update(0.1,"down",false,GameState.VISUALS.find("chant"))
-	check("舞台使用自己魔法图，不回退粉蓝贴图",actor.sprite.texture.resource_path.ends_with("bonfire_host_magic.png"))
+	check("舞台使用自己魔法图，不回退粉蓝贴图",actor.sprite.texture.resource_path.replace("_hd.png", ".png").ends_with("bonfire_host_magic.png"))
 	actor.queue_free()
 	Dialogue.line_character="bonfire_host"
 	check("派对主人说话身份按原人物表识别",Dialogue.hero_npc()=="bonfire_host" and Dialogue.hero_speaker()==host.display_name())
@@ -34,7 +34,7 @@ func _ready() -> void:
 		add_child(old_actor)
 		old_actor.set_pose("chant","channel")
 		old_actor.animator.update(0.1,"down",false,GameState.VISUALS.find("chant"))
-		check("原角色魔法图不被替换："+who, old_actor.sprite.texture.resource_path.ends_with("princess_blue_magic.png" if who=="blue" else "princess_magic.png"))
+		check("原角色魔法图不被替换："+who, old_actor.sprite.texture.resource_path.replace("_hd.png", ".png").ends_with("princess_blue_magic.png" if who=="blue" else "princess_magic.png"))
 		old_actor.queue_free()
 	await ribbon_checks()
 	await aura_checks()

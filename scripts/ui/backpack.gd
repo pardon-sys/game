@@ -26,7 +26,7 @@ const PAGE_KEYS := 6
 const KEY_ROWS := [
 	["移动和战斗", [["移动", "move_up|move_left|move_down|move_right", 1], ["攻击 / 挣脱（连按）", "attack", 1], ["冲刺 / 闪避", "dash", 2],
 		["魔法", "magic", 1], ["技能", "skill", 1], ["憋笑（按住）", "hold_laugh", 1]]],
-	["互动", [["说话 / 调查 / 救人 / 拿东西", "interact", 1], ["故意笑（骑士篇，按住）", "laugh", 1], ["换人操控", "switch_character", 1],
+	["互动", [["说话 / 调查 / 救人 / 拿东西", "interact", 1], ["故意笑（骑士篇，按住）", "laugh", 1], ["换人操控", "switch_character", 1], ["设置（画风 / 常驻立绘）", "settings", 1],
 		["道具快捷键", "use_item", 1], ["特殊道具快捷键", "use_special", 1]]],
 	["界面", [["背包 / 下一页", "backpack", 2], ["上一页", "prev_page", 1], ["情报", "intel", 1], ["暂停 / 关闭", "pause", 1],
 		["镜头缩放", "zoom_in|zoom_out", 1], ["全景", "overview", 1]]],
