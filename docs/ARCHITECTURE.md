@@ -27,9 +27,10 @@
   - 截图脚本放 `tests/_shots_*.gd`，输出到 `tools/.cache/shots/`（不进仓库）；临时文件 `tests/_check_scripts.*`、`tests/_shots_*`、`tests/_probe_*`
 	提交前全部删掉。
 - **素材**：缺的图用 Python 画像素风（`tools/art/gen_*.py`）或 Godot 内置绘制（`_draw`、粒子、tween）做；音乐用 ElevenLabs（`tools/audio/gen_music.py` 的 `TRACKS`
-  加一首；生成后自动找循环点：节奏、和声都和开头最像的半句边界，交叉淡化 `CROSSFADE` 0.3 秒，尾声丢掉；`--reloop` 用缓存的原始音频重新切。
-  循环在 `.wav.import` 的导入设置里开，运行时不改流；配乐一律无损导入 `compress/mode=0`——QOA 有损压缩会给高频多的曲子添沙沙声。
-  提示词别写卡祖笛、沙锤、滑哨、镲片这类嗡嗡沙沙的音色，游戏里听着像杂音；换曲时 `Audio.play_music` 先淡出旧曲再淡入新曲，不叠放）；第三方素材写清楚来源和许可（`assets/third_party/*/License.txt`）。
+  加一首；生成后自动切循环：前奏只放一次，循环起点 B = 拍点网格上之后 2 秒响度回到正常的小节线（试 4 个），终点 T = B 之后节奏、和声最像的半句边界
+  （波形互相关精确到采样），文件最后一拍（0.4~0.9 秒）和 B 之前的一拍交叉淡化，尾声丢掉；`--reloop` 用缓存的原始音频重新切。
+  循环在 `.wav.import` 的导入设置里开（脚本写 `edit/loop_begin = B`），运行时不改流；配乐一律无损导入 `compress/mode=0`——QOA 有损压缩会给高频多的曲子添沙沙声。
+  提示词别写卡祖笛、沙锤、滑哨、镲片这类嗡嗡沙沙的音色，游戏里听着像杂音；换曲时 `Audio.play_music` 旧曲淡出到 `MUSIC_OVERLAP`（三成）时新曲才从头淡入，只在都很轻时短暂重叠；淡入淡出补线性振幅、正弦缓入缓出）；第三方素材写清楚来源和许可（`assets/third_party/*/License.txt`）。
 - **文档**：每做完一批，把新系统 / 新规则补进本文对应的章节（七日赎罪的写在「七日赎罪」一节），过时的描述直接改掉，不留两种说法；
   跳关点（`tools/build/gen_dev_skips.py`）把新加的变量 / 标记补上。
 
