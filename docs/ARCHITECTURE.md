@@ -568,7 +568,7 @@ data/dialogues/<楼层组>/signs.json  石碑；story.json 剧情；<人物>.jso
 data/cutscenes/<楼层组>/  地图内过场；data/theater/<楼层组>/  小剧场
 ```
 
-- `map.txt`：可选的 `[level]` 段（`intro` 开场对话、`ambient` 环境光、`no_switch` 不能换人、`party` 同行的人、`style` / `iso_theme` 画面风格）、`[legend]` 图例、`[map]` 地图。
+- `map.txt`：可选的 `[level]` 段（`intro` 开场对话、`ambient` 环境光、`no_switch` 不能换人、`party` 同行的人、`style` / `iso_theme` 画面风格、`carry_light = false` 不挂冷光）、`[legend]` 图例、`[map]` 地图。
 - 构建：`build_level.gd -- floor=floor_02` 构建一层，`-- all` 构建 floors.json 里的全部楼层；产物 `floor.tscn` 的根节点名为 `Floor02`，并记录 `floor_id`。
 - 对话：楼层根节点（`scripts/level.gd`）进入时调用 `Dialogue.load_floor(floor_id)`，把 `data/dialogues/<楼层组>/` 里的普通对话文件合并到通用对话上；离开后上一层的专属对话卸载。对话 id 全局唯一，与通用对话重名会报错。
 - `scripts/main.gd`（主场景，组名 `main`）提供 `change_level(path)`：淡出 → 保存公主状态（`GameState.save_player_state()`：血量、闷笑值、战损）→ 换关卡 → 新关卡的公主注册时恢复 → 淡入。背包与剧情标记本来就在 GameState 中。
@@ -1031,9 +1031,13 @@ data/cutscenes/<楼层组>/  地图内过场；data/theater/<楼层组>/  小剧
   - 玩法节点：`AfterRoom._sync_quest` 在这一段所在的图上摆 `KnightQuests.make_runner`（`RUNNERS[id]`，节点名 `Quest_<id>`，脚本的静态 `runs_on(图, 阶段)`）；
 	共用底子 `QuestRunner`（`quest_runner.gd`：`setup()` 摆东西、`cleanup()` 还原、`put()` 摆的东西跟着收走、阶段变了重新 setup 或者自己收走、`status()` 显示在目标下面）。
   - ① **骑士救公主**（小汤姆、小莉莉，第一天早上起，`QuestShoes`）：孩子们抢走鞋（`kq_shoes_start`），光着脚（meta `barefoot` + 状态 `barefoot`）找三处：
-	草垛（按住 E 翻）→ 彩带（站在羽毛堆上按住 E 够）→ 鹅卵石小路尽头和小莉莉比「谁先笑」（`LilyDuelShow`：A / S / D 挠她喊漏嘴的弱点、被挠时亮「!」按 J 缩脚）
-	→ 鞋还回来、邀请去小巷 → 「那一天的躲猫猫」（没有灯的小巷 `floor_06_knight_alley`，`QuestHide`：提着小灯找 5 个小孩，找到的扑上来挠脚心，
-	笑出声小孩们换地方、笑满重来，灯芯一阵一阵变暗、黑里的 `ShadowHand` 趁机挠；奶奶「谁教你们玩这个的！」）→ 「小莉莉的宝贝盒」（集市，`QuestBox`：
+	草垛（按住 E 翻）→ 彩带（站在羽毛堆上按住 E 够）→ 鹅卵石小路尽头和小莉莉比「谁先笑」（`LilyDuelShow`：A / S / D 挠她的弱点——回合开始只给动作暗示（脚趾蜷紧 / 缩脚心 / 脚跟往回收），
+	`FAKE_HINT_CHANCE` 是假动作；同一弱点挠中 `GUARD_AFTER` 次她护住、换地方；挠错被反挠（闷笑 +`MISS_BACKLASH`、莉莉 −`MISS_RELIEF`）；被挠时亮「!」按 J 缩脚；
+	她第一次笑满 = 魔力疲倦释放（`burst()`：星光、释放声、burst 姿势，之后 `BURST_SENSITIVE` 秒更敏感、莉莉追着挠，「!」间隔 ×`CHASE_POKE`），这一局第二次笑满才算输）
+	→ 鞋还回来、邀请去小巷 → 「那一天的躲猫猫」（没有灯的小巷 `floor_06_knight_alley`：等距画面 `style = iso`、暖褐砖墙主题 `alley_brick`、主路和岔口都只有一格宽，
+	`carry_light = false` 不挂冷光；`QuestHide`：提着小灯找 `FIND`（6）个小孩，`FOUND_R` 以内且中间没隔墙（`GridPath.clear_line`）才算找到，找到的扑上来挠脚心、
+	再沿着巷子寻路走回巷口（`GridPath.find` + `GridPath.follow`，不穿墙；重新藏时 `Hider.stop()`），
+	笑出声小孩们换地方、笑满重来，灯芯一阵一阵变暗、黑里的 `ShadowHand` 趁机挠（伸过去 / 缩回去也沿格子路走）；奶奶「谁教你们玩这个的！」）→ 「小莉莉的宝贝盒」（集市，`QuestBox`：
 	搬着碎片的手印 `HandShard.tease` 躲在货摊布帘下，笑着引出来、挠一下以后抱着碎片晃悠时按 E 抢回来；发卡）
 	→ 骑士勋章（`knight_medal`）+ 小汤姆说地牢入口捡到「真骑士的红绳」。前三段一直摆着三片光脚地面和三个举羽毛「长矛」偷袭的小孩（`AfterKid`）。
   - ② **手印样本**（药剂师奶奶，骑士醒来以后，`QuestSamples`）：石板路 / 地牢铁门（几块石头只有一块藏着碎片）/ 工房的地窖（新地图 `floor_06_after_cellar`，

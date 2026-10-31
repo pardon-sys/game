@@ -207,7 +207,7 @@ var stacked := {}
 ##   party = 人物 id,…（同行的人：背包状态页能看、能换过去的可操作角色，例如 party = bonfire_host；见 scripts/core/party.gd）、
 ##   style = 2.5d（法线贴图图块集 dungeon_25d.tres + 很暗的环境光 + 墙上的幽光点；关卡进场时人物套实时光照、操控的角色带冷光）、
 ##   style = iso（同样的光照，画面是等距 45° + 方块墙 + 转镜头：scripts/iso/；iso_theme = 主题名、iso_rotate = false 关掉转镜头）、
-##   light_drain = 秒（2.5D 楼层冷光从满到空的时间，0 = 不消耗）
+##   light_drain = 秒（2.5D 楼层冷光从满到空的时间，0 = 不消耗）、carry_light = false（2.5D / 等距楼层不给操控的角色挂冷光）
 var level_meta := {}
 var width := 0
 var height := 0
@@ -268,6 +268,7 @@ func build(floor_id: String) -> int:
 	root.set("iso_theme", str(level_meta.get("iso_theme", "")))
 	root.set("iso_rotate", str(level_meta.get("iso_rotate", "true")) != "false")
 	root.set("light_drain", float(level_meta.get("light_drain", 0.0)))
+	root.set("has_carry_light", str(level_meta.get("carry_light", "true")) != "false")
 
 	var cm := CanvasModulate.new()
 	cm.name = "Darkness"
