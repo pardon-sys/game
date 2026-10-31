@@ -1,16 +1,22 @@
 # 背景音乐
 
-| 文件 | 用在哪里 | 循环长度 |
+| 文件 | 用在哪里 | 前奏 + 循环段（2026-10-30 重切） |
 |---|---|---|
-| `dungeon_loop.wav` | 所有地牢层（第一~五层、第六层的营地地牢 / 矿道 / 训练场、第七层） | 115.2 秒（100 BPM，12 句） |
-| `town_loop.wav` | 第六层·地下小镇（小镇、篝火营地、蓝色小屋） | 128.0 秒（90 BPM，12 句） |
-| `boss_loop.wav` | 第八层 Boss 战的阶段一、二（千手痒痒魔现身后） | 122.2 秒（110 BPM，14 句） |
-| `boss3_loop.wav` | 第八层 Boss 战的阶段三（进入阶段三的过场里 2 秒交叉淡入）和巨石追逐战 | 115.5 秒（约 108 BPM，13 句） |
-| `night_room_loop.wav` | 第八层·小房间（追逐逃出来后过夜） | 128.0 秒（慢板，无打击乐） |
+| `dungeon_loop.wav` | 所有地牢层（第一~五层、第六层的营地地牢 / 矿道 / 训练场、第七层） | 16.8 秒前奏 + 67.2 秒循环（100 BPM） |
+| `town_loop.wav` | 第六层·地下小镇（小镇、篝火营地、蓝色小屋） | 10.7 + 117.3 秒（90 BPM） |
+| `boss_loop.wav` | 第八层 Boss 战的阶段一、二（千手痒痒魔现身后） | 8.8 + 113.4 秒（110 BPM） |
+| `boss3_loop.wav` | 第八层 Boss 战的阶段三（进入阶段三的过场里 2 秒交叉淡入）和巨石追逐战 | 22.5 + 80.0 秒（约 108 BPM） |
+| `night_room_loop.wav` | 第八层·小房间（追逐逃出来后过夜） | 6.0 + 80.0 秒（慢板，无打击乐） |
+| `night_maze_loop.wav` | 第八层·夜迷宫 | 5.1 + 116.6 秒 |
+| `siege_loop.wav` | 小镇攻防战 | 11.7 + 105.0 秒 |
+| `minigame_loop.wav` | 小游戏 / 弥补任务 | 7.5 + 105.0 秒（128 BPM） |
+| `knight_boss_loop.wav` | 骑士篇 Boss「痒铠骑士」 | 14.6 + 89.1 秒（70 BPM） |
 
 - 来源：ElevenLabs 音乐生成（Eleven Music，`POST /v1/music/stream`），2026-10-04 用项目所有者的账号生成（boss 同日稍后生成），使用按该账号的 ElevenLabs 条款。
 - 生成和做循环：`python tools/audio/gen_music.py [dungeon] [town] [--force]`（API key 从项目根目录 `.env` 的 `ELEVENLABS` 读，`.env` 不进版本库；只发送下面的提示词）。
-  每首要 140 秒，结尾的淡出尾声切掉：按估出的拍速对齐到尾声前最后一个整句（4 小节），循环点前 2.5 秒和开头等功率交叉淡化。原始 PCM 存在 `tools/.cache/music/`（不进版本库）。
+  每首要 140 秒。循环不回到开头：前奏只放一次，循环起点 B 是拍点网格上第一批「之后 2 秒响度回到正常」的小节线，终点 T 是 B 之后节奏 / 和声最像的半句边界
+  （波形互相关精确到采样），尾声丢掉；文件最后一拍和 B 之前的一拍交叉淡化，`.wav.import` 里写 `edit/loop_begin = B`（采样）。
+  `--reloop` 用缓存的原始 PCM 重切（`tools/.cache/music/`，不进版本库）。
 - 哪层放哪首：`data/floors.json` 的 `music`；`Audio.play_music()` 换曲淡入淡出，CG / 过场时压低，暂停菜单「音乐」调音量。
 
 提示词（英文原文在 `tools/audio/gen_music.py` 的 `TRACKS`）：

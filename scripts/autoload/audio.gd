@@ -94,8 +94,11 @@ var _crack_tw: Tween
 var _laugh_players: Array[AudioStreamPlayer] = []
 
 # ------------------------------------------------------------------ 背景音乐
-## 配乐（tools/audio/gen_music.py 用 ElevenLabs 生成，2 分钟首尾相连）：地牢层 dungeon、地下小镇 town、攻防战 siege。
-## 关卡载入时按 data/floors.json 的 music 切换（play_music），换曲时先淡出旧曲再淡入新曲（不叠放）；CG / 过场 / 对话剧场时压低（DUCK_DB）。
+## 配乐（tools/audio/gen_music.py 用 ElevenLabs 生成，2 分钟可循环）：地牢层 dungeon、地下小镇 town、攻防战 siege。
+## 关卡载入时按 data/floors.json 的 music 切换（play_music）；CG / 过场 / 对话剧场时压低（DUCK_DB）。
+## 循环：.wav.import 里 edit/loop_begin = 循环起点（前奏只放一次，之后在正文里循环），文件结尾已经和循环起点之前的一拍交叉淡化好。
+## 换曲：旧曲淡出（fade 的一半），淡到 MUSIC_OVERLAP 时新曲从头淡入——只在两边都很轻的时候短暂重叠，不会两首叠着放、也不会中间空一段。
+## 淡入淡出补的是线性振幅 _fade[i]（0~1，正弦缓入缓出），每帧在 _update_music 里和目标音量、压低量合成 volume_db。
 ## 音乐音量 music_volume（0~1）存在玩家数据目录的 settings.cfg（暂停菜单调）。
 const MUSIC := {
 	"dungeon": "res://assets/audio/music/dungeon_loop.wav",
@@ -112,12 +115,16 @@ const MUSIC_DB := -6.0
 const SFX_BUS := &"SFX"
 const DUCK_DB := -6.0
 const MUSIC_FADE := 1.2
+## 旧曲淡出到这个比例（剩下的振幅）时新曲开始淡入
+const MUSIC_OVERLAP := 0.3
 var music_volume := 0.7
 var sfx_volume := 1.0
 var music_id := ""
 var _music: Array[AudioStreamPlayer] = []
 var _music_cur := 0
 var _duck := 0.0
+## 两个播放器各自的淡入淡出振幅（0~1）
+var _fade: Array[float] = [0.0, 0.0]
 
 
 static func settings_path() -> String:
@@ -127,8 +134,6 @@ static func settings_path() -> String:
 func set_music_volume(v: float) -> void:
 	music_volume = clampf(v, 0.0, 1.0)
 	_save_volume("music_volume", music_volume)
-	if music_id != "" and _music[_music_cur].playing:
-		_music_tween(_music_cur).tween_property(_music[_music_cur], "volume_db", _music_target_db(), 0.1)
 
 
 ## 音效、机关循环声和人物声音统一经过 SFX 总线，保留各播放器自己的音量与淡出。
@@ -161,7 +166,13 @@ func _music_tween(i: int) -> Tween:
 	if _music_tw[i] and _music_tw[i].is_valid():
 		_music_tw[i].kill()
 	_music_tw[i] = _music[i].create_tween()
+	_music_tw[i].set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
 	return _music_tw[i]
+
+
+## tween_method 的回调：bind 的参数排在补间值后面
+func _set_fade(v: float, i: int) -> void:
+	_fade[i] = v
 
 
 ## 配乐音高（攻防战狂欢节 1.06，换波 / 离开时回到 1）。
@@ -170,21 +181,23 @@ func set_music_pitch(pitch: float) -> void:
 		m.pitch_scale = pitch
 
 
-## 换曲：先把旧曲淡出（fade 的一半），再从头淡入新曲（另一半）——两首不同的曲子不叠在一起放（叠着听像杂音）。
 func play_music(id: String, fade := MUSIC_FADE) -> void:
 	var tw_cur := _music_tw[_music_cur]
 	if id == music_id and (id == "" or _music[_music_cur].playing or (tw_cur != null and tw_cur.is_running())):
 		return
 	music_id = id
-	var old := _music[_music_cur]
-	var gap := 0.0
+	var cur := _music_cur
+	var old := _music[cur]
+	var wait := 0.0
 	# 上一首还在等着开播（连着换了两次曲）：取消它，不然过一会儿它又自己放起来
 	if not old.playing and tw_cur != null and tw_cur.is_valid():
 		tw_cur.kill()
 	if old.playing:
-		gap = fade * 0.5
-		var tw := _music_tween(_music_cur)
-		tw.tween_property(old, "volume_db", -60.0, gap)
+		var out_time := fade * 0.5 * _fade[cur]
+		# 正弦缓出：振幅降到 MUSIC_OVERLAP 大约用掉淡出时间的 (1 - MUSIC_OVERLAP) 左右
+		wait = out_time * (1.0 - MUSIC_OVERLAP)
+		var tw := _music_tween(cur)
+		tw.tween_method(_set_fade.bind(cur), _fade[cur], 0.0, out_time)
 		tw.tween_callback(old.stop)
 	if id == "" or not MUSIC.has(id) or not ResourceLoader.exists(MUSIC[id]):
 		return
@@ -195,18 +208,20 @@ func play_music(id: String, fade := MUSIC_FADE) -> void:
 	elif s is AudioStreamOggVorbis or s is AudioStreamMP3:
 		s = s.duplicate()
 		s.set("loop", true)
-	_music_cur = 1 - _music_cur
-	var p := _music[_music_cur]
-	var tw := _music_tween(_music_cur)
+	_music_cur = 1 - cur
+	var i := _music_cur
+	var p := _music[i]
+	var tw := _music_tween(i)
 	p.stream = s
-	p.volume_db = -60.0
-	if gap > 0.0:
+	_fade[i] = 0.0
+	p.volume_db = -80.0
+	if wait > 0.0:
 		p.stop()
-		tw.tween_interval(gap)
+		tw.tween_interval(wait)
 		tw.tween_callback(p.play)
 	else:
 		p.play()
-	tw.tween_property(p, "volume_db", _music_target_db(), fade - gap)
+	tw.tween_method(_set_fade.bind(i), 0.0, 1.0, maxf(fade - wait, 0.05))
 
 
 ## 停掉配乐（淡出），music_id 清空——之后 play_music 同一首也会重新放。
@@ -231,13 +246,14 @@ func _music_ducked() -> bool:
 	return (cg != null and cg.is_playing()) or (cs != null and cs.is_playing())
 
 
+## 每帧：目标音量（音乐音量 + 压低）× 淡入淡出振幅 → volume_db（两个播放器都算，淡出中的旧曲也跟着压低）。
 func _update_music(delta: float) -> void:
 	_duck = move_toward(_duck, DUCK_DB if _music_ducked() else 0.0, 24.0 * delta)
-	var p := _music[_music_cur]
-	# 淡入的补间结束后才接手音量（不和补间抢）
-	var tw := _music_tw[_music_cur]
-	if music_id != "" and p.playing and (tw == null or not tw.is_running()):
-		p.volume_db = _music_target_db()
+	var base := _music_target_db()
+	for i in _music.size():
+		var p := _music[i]
+		if p.playing:
+			p.volume_db = -80.0 if _fade[i] <= 0.001 or base <= -79.0 else base + linear_to_db(_fade[i])
 
 
 func _ready() -> void:

@@ -2,12 +2,15 @@
 
 API key 从项目根目录的 .env 读（ELEVENLABS=...，.env 不进版本库）；只把下面的提示词发给 ElevenLabs，不发送任何项目文件。
 接口：POST https://api.elevenlabs.io/v1/music/stream（prompt、music_length_ms、force_instrumental），output_format=pcm_44100（16 位立体声交错 PCM）。
-首尾相连：生成的曲子结尾常有淡出 / 静音，所以先找循环点 T（find_loop_end：在淡出之前、节奏和和声都和开头最像的半句边界），
-把 T 之后 CROSSFADE 秒和开头交叉淡化（等功率），T 之后的尾声丢掉——循环播放时无缝接回开头。
+循环：生成的曲子开头常有一段很轻的前奏（甚至近乎静音），结尾常有淡出，所以循环不回到开头，而是
+  ① 循环起点 B（find_loop_begin：拍点网格上第一个「之后 2 秒响度回到正常」的小节线，前奏只放一次）；
+  ② 循环终点 T（find_loop_end：B 之后的半句边界里，节奏、和声都和 B 之后最像的那个，再用波形互相关精确到采样）；
+  ③ 文件 = 原始音频 [0, T)，最后一拍（CROSSFADE，按拍长算）和 B 之前的同样长的一段交叉淡化——播到结尾跳回 B 时是连续的；
+  ④ 把 edit/loop_begin = B（采样）写进 .wav.import，Godot 从 B 开始向前循环。T 之后的尾声丢掉。
 原始音频存在 tools/.cache/music/（不进版本库）。
 用法：python tools/audio/gen_music.py [dungeon] [town] [boss] [boss3] [night_room] [night_maze] [siege] [minigame] [knight_boss]（不写就全部生成；已经生成过的跳过，加 --force 重新生成，
   加 --reloop 用缓存的原始音频重新切循环）
-导入：assets/audio/music/*.wav.import 用无损（compress/mode=0）+ 向前循环（edit/loop_mode=2）——QOA 有损压缩会给高频多的曲子添沙沙声。
+导入：assets/audio/music/*.wav.import 用无损（compress/mode=0）+ 向前循环（edit/loop_mode=2、loop_begin 由本脚本写）——QOA 有损压缩会给高频多的曲子添沙沙声。
 """
 import json
 import os
@@ -26,8 +29,19 @@ CACHE = ROOT / "tools/.cache/music"
 RATE = 44100
 CHANNELS = 2
 LENGTH_MS = 140000   # 多要 20 秒：结尾的淡出尾声会被切掉，循环部分约 2 分钟
-## 循环点在拍子上对齐了：短短交叉淡化一下就好（太长的话两段不一样的音乐叠在一起，会听成杂音）
-CROSSFADE = 0.3
+## 交叉淡化的长度 = 一拍，夹在这个范围里（秒）：太短接缝处的音色 / 音量变化藏不住，太长两段不一样的音乐叠在一起会听成杂音
+CROSSFADE_MIN = 0.4
+CROSSFADE_MAX = 0.9
+## 循环起点：之后 BEGIN_HOLD 秒的平均响度要回到中位数的 BEGIN_LOUD 倍；最晚不超过曲子的 BEGIN_MAX_RATIO
+BEGIN_LOUD = 0.7
+BEGIN_HOLD = 2.0
+BEGIN_MAX_RATIO = 0.3
+## 试几个循环起点（连续的小节线），和终点一起挑分数最高的一对；循环越长加一点分（LENGTH_BONUS × 循环占全曲的比例）
+BEGIN_TRIES = 4
+LENGTH_BONUS = 0.4
+## 循环终点用波形互相关微调的范围（采样）和比较窗口
+ALIGN_SEARCH = 441
+ALIGN_WINDOW = 4096
 
 TRACKS = {
     "knight_boss": ("Instrumental video game boss battle music for a cute pixel-art game: two princesses fight a cursed suit of knight armor "
@@ -149,22 +163,8 @@ def _spectrum(x: np.ndarray) -> np.ndarray:
     return f / (np.linalg.norm(f) + 1e-9)
 
 
-def find_loop_end(x: np.ndarray) -> int:
-    """循环点：先从起音包络的自相关估出拍长（60~170 BPM），在尾声（音量掉到中位数六成以下的最后一段）之前、
-    曲子 55% 以后的每个半句（8 拍）边界上打分，取最好的那个：
-      节奏：循环点之后 WINDOW 秒的起音和开头的起音像不像（在 ±80 毫秒内微调对齐）；
-      和声：循环点之后 1 秒和开头 1 秒的频谱像不像（循环时这一段会和开头交叉淡化，不像就会听成两首曲子叠在一起的杂音）。
-    循环点前 3 秒里有停顿的不要（循环时不要出现一段空白）。"""
-    mono = x.mean(1)
-    env = envelope(mono)
-    sec = 100   # 每秒 100 格
-    loud = np.array([env[i:i + sec].mean() for i in range(0, len(env) - sec, sec)])
-    med = float(np.median(loud))
-    last_full = len(loud)
-    while last_full > 0 and loud[last_full - 1] < med * 0.6:
-        last_full -= 1
-    window = 4 * sec
-    end_limit = min(last_full * sec, len(env) - window - 1)
+def _beat_grid(env: np.ndarray, sec: int) -> tuple:
+    """从起音包络的自相关估出拍长（60~170 BPM，单位 = 10 毫秒格，带小数），再找拍点网格的相位（起音落在网格上最多的那个偏移）。"""
     onset = np.maximum(0.0, np.diff(env, prepend=env[0]))
     on = onset - onset.mean()
     m = min(len(on), 60 * sec)
@@ -173,14 +173,64 @@ def find_loop_end(x: np.ndarray) -> int:
     beat = lo + int(np.argmax(ac[lo:hi]))
     l8 = np.arange(beat * 8 - 6, beat * 8 + 7)
     beat = l8[int(np.argmax(ac[l8]))] / 8.0        # 8 拍的自相关峰值求更准的拍长
+    best_phase, best_sum = 0.0, -1.0
+    for ph in np.arange(0.0, beat, 1.0):
+        idx = (np.arange(ph, len(onset) - 1, beat)).astype(int)
+        v = float(onset[idx].sum())
+        if v > best_sum:
+            best_phase, best_sum = ph, v
+    return beat, best_phase, onset
+
+
+def _loudness(env: np.ndarray, sec: int) -> tuple:
+    loud = np.array([env[i:i + sec].mean() for i in range(0, len(env) - sec, sec)])
+    return loud, float(np.median(loud))
+
+
+def find_loop_begins(env: np.ndarray, beat: float, phase: float, med: float, min_cells: int) -> list:
+    """循环起点的候选（10 毫秒格）：拍点网格上的小节线（4 拍）里，之后 BEGIN_HOLD 秒平均响度 ≥ 中位数 × BEGIN_LOUD 的前 BEGIN_TRIES 个；
+    至少 min_cells（要给交叉淡化留出 B 之前的一拍），最晚 BEGIN_MAX_RATIO。一个都没有就用 min_cells 之后的第一条小节线。"""
+    sec = 100
+    hold = int(BEGIN_HOLD * sec)
+    bar = beat * 4
+    limit = int(len(env) * BEGIN_MAX_RATIO)
+    out = []
+    first = None
+    k = 0
+    while len(out) < BEGIN_TRIES:
+        t = int(round(phase + k * bar))
+        k += 1
+        if t < min_cells:
+            continue
+        if first is None:
+            first = t
+        if t > limit:
+            break
+        if env[t:t + hold].mean() >= med * BEGIN_LOUD:
+            out.append(t)
+    return out or [first]
+
+
+def find_loop_end(x: np.ndarray, env: np.ndarray, beat: float, onset: np.ndarray, med: float, loud: np.ndarray, b: int) -> tuple:
+    """循环终点（10 毫秒格）：在尾声（音量掉到中位数六成以下的最后一段）之前、曲子 55% 以后、从 B 数起的每个半句（8 拍）边界上打分：
+      节奏：T 之后 WINDOW 秒的起音和 B 之后的起音像不像（在 ±80 毫秒内微调对齐）；
+      和声：T 之后 1 秒和 B 之后 1 秒的频谱像不像（交叉淡化时不像就会听成两首曲子叠在一起）。
+    T 前 3 秒里有停顿的不要（循环时不要出现一段空白）。"""
+    sec = 100
+    last_full = len(loud)
+    while last_full > 0 and loud[last_full - 1] < med * 0.6:
+        last_full -= 1
+    window = 4 * sec
+    end_limit = min(last_full * sec, len(env) - window - 1)
     half = beat * 8
-    ref = onset[:window]
+    ref = onset[b:b + window]
     ref = (ref - ref.mean()) / (ref.std() + 1e-9)
-    head = _spectrum(x[:RATE])
+    head = _spectrum(x[b * HOP:b * HOP + RATE])
     quiet = med * 0.1
     best = (-1e9, 0, 0.0, 0.0)
-    for k in range(int(np.ceil(len(env) * 0.55 / half)), int(np.floor(end_limit / half)) + 1):
-        t0 = int(k * half)
+    k0 = int(np.ceil((len(env) * 0.55 - b) / half))
+    for k in range(max(k0, 1), int(np.floor((end_limit - b) / half)) + 1):
+        t0 = int(round(b + k * half))
         if min(env[t0 - 3 * sec + i:t0 - 3 * sec + i + 25].mean() for i in range(0, 3 * sec - 25, 5)) < quiet:
             continue
         rhythm, at = -1e9, t0
@@ -193,29 +243,73 @@ def find_loop_end(x: np.ndarray) -> int:
             if c > rhythm:
                 rhythm, at = c, t
         harmony = float((_spectrum(x[at * HOP:at * HOP + RATE]) * head).sum())
-        score = rhythm + 1.5 * harmony
+        score = rhythm + 1.5 * harmony + LENGTH_BONUS * (at - b) / len(env)
         if score > best[0]:
             best = (score, at, rhythm, harmony)
-    _score, best_t, rhythm, harmony = best
-    print("  %.1f BPM，循环点 %.2f 秒（尾声从 %.1f 秒开始），节奏吻合度 %.2f，和声相似 %.2f"
-          % (6000.0 / beat, best_t / sec, end_limit / sec, rhythm, harmony))
-    return best_t * HOP
+    return best
 
 
-def make_loop(pcm: bytes) -> np.ndarray:
+def align(x: np.ndarray, t: int, b: int) -> int:
+    """把 T（采样）在 ±ALIGN_SEARCH 内微调到和 B 处的波形最吻合（互相关最大）：跳回去时相位对得上，交叉淡化不会抵消变薄。"""
+    m = x.mean(1)
+    ref = m[b:b + ALIGN_WINDOW]
+    best, best_c = t, -1e9
+    for d in range(-ALIGN_SEARCH, ALIGN_SEARCH + 1):
+        seg = m[t + d:t + d + ALIGN_WINDOW]
+        if len(seg) < ALIGN_WINDOW:
+            continue
+        c = float(np.dot(seg, ref) / (np.linalg.norm(seg) * np.linalg.norm(ref) + 1e-9))
+        if c > best_c:
+            best, best_c = t + d, c
+    return best
+
+
+def make_loop(pcm: bytes) -> tuple:
+    """返回 (音频, 循环起点采样 B)。文件长度 = T，播到结尾跳回 B。"""
     x = np.frombuffer(pcm[:len(pcm) // (2 * CHANNELS) * 2 * CHANNELS], dtype="<i2").astype(np.float32) / 32768.0
     x = x.reshape(-1, CHANNELS)
-    n = int(CROSSFADE * RATE)
-    if len(x) < n * 4:
-        return x
-    x = x[:find_loop_end(x) + n]       # T 之后 CROSSFADE 秒和开头重叠；再往后的尾声丢掉
-    head, body, tail = x[:n], x[n:-n], x[-n:]
-    t = np.linspace(0.0, np.pi / 2.0, n, dtype=np.float32)[:, None]
-    mixed = tail * np.cos(t) + head * np.sin(t)      # 结尾淡出、开头淡入（等功率）
-    # 循环：mixed 接在开头位置，后面是正文；正文的最后一个样本自然接回 mixed 的开头（= 原结尾）
-    out = np.concatenate([mixed, body])
+    sec = 100
+    env = envelope(x.mean(1))
+    loud, med = _loudness(env, sec)
+    beat, phase, onset = _beat_grid(env, sec)
+    n = int(np.clip(beat / sec, CROSSFADE_MIN, CROSSFADE_MAX) * RATE)
+    if len(x) < n * 8:
+        return x, 0
+    best = None
+    for bc in find_loop_begins(env, beat, phase, med, int(np.ceil(n / HOP)) + 1):
+        r = find_loop_end(x, env, beat, onset, med, loud, bc)
+        if best is None or r[0] > best[0][0]:
+            best = (r, bc)
+    (_score, tc, rhythm, harmony), bc = best
+    print("  %.1f BPM，循环 %.2f → %.2f 秒，节奏吻合度 %.2f，和声相似 %.2f" % (6000.0 / beat, bc / 100, tc / 100, rhythm, harmony))
+    b = bc * HOP
+    t = align(x, tc * HOP, b)
+    out = x[:t].copy()
+    # 结尾一拍：原来的结尾淡出 + B 之前的那一拍淡入（相位已经对齐，用等增益 cos² / sin²）——播到结尾时听到的已经是「B 之前」，跳回 B 接着放
+    w = np.linspace(0.0, np.pi / 2.0, n, dtype=np.float32)[:, None]
+    out[t - n:t] = x[t - n:t] * np.cos(w) ** 2 + x[b - n:b] * np.sin(w) ** 2
     peak = float(np.max(np.abs(out))) or 1.0
-    return out * min(1.0, 0.95 / peak)
+    print("  循环起点 %.2f 秒，终点 %.2f 秒，交叉淡化 %.2f 秒" % (b / RATE, t / RATE, n / RATE))
+    return out * min(1.0, 0.95 / peak), b
+
+
+def write_import(path: Path, loop_begin: int) -> None:
+    """改 .wav.import：向前循环、从 loop_begin（采样）开始、到文件结尾；无损导入。没有 .import 时写一个最小的（Godot 导入时会补全）。"""
+    imp = path.with_name(path.name + ".import")
+    want = {"edit/loop_mode": "2", "edit/loop_begin": str(loop_begin), "edit/loop_end": "-1", "compress/mode": "0"}
+    if not imp.exists():
+        imp.write_text('[remap]\n\nimporter="wav"\ntype="AudioStreamWAV"\n\n[params]\n\n'
+                       + "".join("%s=%s\n" % kv for kv in want.items()), encoding="utf-8")
+        return
+    lines = imp.read_text(encoding="utf-8").splitlines()
+    seen = set()
+    for i, line in enumerate(lines):
+        k = line.split("=", 1)[0]
+        if k in want:
+            lines[i] = "%s=%s" % (k, want[k])
+            seen.add(k)
+    lines += ["%s=%s" % (k, v) for k, v in want.items() if k not in seen]
+    imp.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
 
 def save_wav(path: Path, x: np.ndarray) -> None:
@@ -248,8 +342,9 @@ def main():
             print("生成中：%s ……" % tid, flush=True)
             pcm = compose(TRACKS[tid][0] if isinstance(TRACKS[tid], tuple) else TRACKS[tid])
             raw.write_bytes(pcm)
-        loop = make_loop(pcm)
+        loop, begin = make_loop(pcm)
         save_wav(out, loop)
+        write_import(out, begin)
         print("%s：原始 %.1f 秒 → 循环 %.1f 秒（用时 %.0f 秒）" % (tid, len(pcm) / 2 / CHANNELS / RATE, len(loop) / RATE, time.time() - t0))
         log.append((tid, len(loop) / RATE))
     return log
