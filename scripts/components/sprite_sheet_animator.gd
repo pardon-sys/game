@@ -24,6 +24,12 @@ var _textures := {}
 ## 精细像素图集是原像素图的几倍（256 格 / 32 格）；显示时人物放大的倍数
 const HD_SCALE := 8.0
 const HD_ENLARGE := 1.25
+## 待机眨眼（精细像素图集多出来的两列：半闭眼 / 闭眼，只有正面待机用）：每隔 BLINK_EVERY 秒（随机）眨一下，一下 BLINK_TIME 秒
+const BLINK_HALF_COL := 16
+const BLINK_SHUT_COL := 17
+const BLINK_EVERY := Vector2(2.8, 5.0)
+const BLINK_TIME := 0.16
+var _blink_t := 3.0
 var _base_scale := Vector2.ONE
 var _base_filter := CanvasItem.TEXTURE_FILTER_PARENT_NODE
 var _revision := -1
@@ -86,9 +92,25 @@ func update(delta: float, dir_name: String, facing_left: bool, emotion_row: int)
 	if row >= sprite.vframes:  # 这张图集没有该状态的行（例如切换瞬间）：用第一行
 		row = 0
 	sprite.flip_h = directional and dir_name == "side" and facing_left and not explicit_side
+	col = _blink(col, delta, direction, a)
 	sprite.frame_coords = Vector2i(col, row)
 	var shake: float = a.get("shake", 0.0)
 	sprite.position.x = roundf(sin(time * 45.0) * shake) if shake > 0.0 else 0.0
+
+
+## 正面待机时眨眼（精细像素图集有眨眼列才眨）：返回这一帧用的列
+func _blink(col: int, delta: float, direction: String, a: Dictionary) -> int:
+	if not hd or sheet != "" or current != "idle" or direction != "down" or sprite.hframes <= BLINK_SHUT_COL:
+		return col
+	_blink_t -= delta
+	if _blink_t > 0.0:
+		return col
+	if _blink_t < -BLINK_TIME:
+		_blink_t = randf_range(BLINK_EVERY.x, BLINK_EVERY.y)
+		return col
+	# 半闭 → 闭 → 半闭
+	var k := -_blink_t / BLINK_TIME
+	return BLINK_SHUT_COL if k > 0.33 and k < 0.67 else BLINK_HALF_COL
 
 
 ## 临时换成一张单帧图（睡着的样子等）；之后 update 会自动换回正常的图集。
@@ -133,12 +155,28 @@ func _use_sheet(name: String) -> Dictionary:
 			if not _textures.has(styled):
 				_textures[styled] = load(styled)
 			sprite.texture = _textures[styled]
+		if use_hd and sprite.texture:
+			# 精细像素图集的格子 = 原图格子 × HD_SCALE；列数按贴图宽算（多出来的眨眼列）
+			var cell_w := float(_orig_size(path).x) / float(sprite.hframes) * HD_SCALE
+			if cell_w > 0.0:
+				sprite.hframes = maxi(1, roundi(sprite.texture.get_width() / cell_w))
 		_set_hd(use_hd)
 		sprite.offset = offset * (HD_SCALE if use_hd else 1.0)
 	return info
 
 
-## 精细像素图集：Sprite 缩小、最近邻过滤；2.5D / 等距楼层的光照材质按新的脚底位置更新
+## 原图（像素版）的尺寸（算精细像素图集的列数用）
+var _orig_sizes := {}
+
+
+func _orig_size(path: String) -> Vector2i:
+	if not _orig_sizes.has(path):
+		var t := load(path) as Texture2D
+		_orig_sizes[path] = Vector2i(t.get_width(), t.get_height()) if t else Vector2i.ZERO
+	return _orig_sizes[path]
+
+
+## 精细像素图集：Sprite 缩小显示、线性过滤；2.5D / 等距楼层的光照材质按新的脚底位置更新
 func _set_hd(on: bool) -> void:
 	hd = on
 	sprite.scale = _base_scale * HD_ENLARGE / HD_SCALE if on else _base_scale

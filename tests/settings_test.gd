@@ -33,7 +33,7 @@ func _ready() -> void:
 	check("精细像素：粉色公主用 princess_hd.png（256 格，直接导入）、显示比原像素图大 %.2f 倍、线性过滤（%s）" % [SpriteSheetAnimator.HD_ENLARGE, p.sprite.texture.resource_path],
 		anim.hd and p.sprite.texture.resource_path.ends_with("princess_hd.png") and is_equal_approx(p.sprite.scale.x, SpriteSheetAnimator.HD_ENLARGE / SpriteSheetAnimator.HD_SCALE)
 		and p.sprite.texture_filter == CanvasItem.TEXTURE_FILTER_LINEAR and is_equal_approx(p.sprite.offset.y, -16.0 * SpriteSheetAnimator.HD_SCALE)
-		and p.sprite.texture.get_width() == 256 * 16)
+		and p.sprite.texture.get_width() == 256 * 18)   # 16 列 + 2 列眨眼
 	var cfg := ConfigFile.new()
 	cfg.load(UserSettings.path())
 	check("设置写进 settings.cfg 的 [display] 段，[audio] 音量还在", str(cfg.get_value("display", "art_style", "")) == "hd"
@@ -55,6 +55,16 @@ func _ready() -> void:
 	anim.update(0.05, "down", false, 0)
 	check("魔法图集也换精细像素（%s）" % p.sprite.texture.resource_path, p.sprite.texture.resource_path.ends_with("princess_magic_hd.png") and anim.hd)
 	anim.play("idle")
+	anim.update(0.016, "down", false, 0)
+	# 待机眨眼：精细像素图集多两列（半闭 / 闭眼），正面待机时隔几秒插一下
+	check("精细像素图集有眨眼列（%d 列）" % p.sprite.hframes, p.sprite.hframes > SpriteSheetAnimator.BLINK_SHUT_COL)
+	var seen_blink := false
+	for i in 400:
+		anim.update(0.016, "down", false, 0)
+		if p.sprite.frame_coords.x >= SpriteSheetAnimator.BLINK_HALF_COL:
+			seen_blink = true
+			break
+	check("正面站着不动：会眨眼", seen_blink)
 	# 闪避残影照抄精灵的缩放（精细像素图集贴图大 8 倍，不抄会特别大）
 	p._spawn_ghost()
 	var ghosts: Array = p.get_parent().get_children().filter(func(g): return g is Sprite2D and g.texture == p.sprite.texture and g != p.sprite)

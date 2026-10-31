@@ -1230,6 +1230,9 @@ data/cutscenes/<楼层组>/  地图内过场；data/theater/<楼层组>/  小剧
   源图是 **codex 直接画的像素风**（`tools/art/src/px64/`，提示词同目录 `prompts.md`；用户确认过的画风是 `ref_style_walk.png`）：每个角色 6 张——走路 4×4、站着的表情 2×4、
   战损走路 + 战损憋笑 5×4、失控 2×4、魔法 3×6 两张（派对主人再加攻击 4×3）。侧面走路四帧左右脚交替（不是平移）。
   `tools/art/import_sprites_px64.py` 直接导入（源图本身就是像素风，不再压成一个色块一个像素）：切帧（`import_sprites_v2.Sheet`）→ 按人物身体高度把各张源表统一到 `BODY_H`（216，最近邻、缩放比接近 1）→ 排进 256 格。
+  **待机眨眼**：精细像素行走图集是 18 列（16 列 + 第 16 列半闭眼、第 17 列闭眼）；导入器 `close_eyes` 直接在每行正面待机帧上合上眼睛（和走路图同一张画，不跳画风；找不到两只眼睛的行复制待机帧），
+  `SpriteSheetAnimator._blink` 在正面待机时每 `BLINK_EVERY` 秒（随机）插一次半闭 → 闭 → 半闭（`BLINK_TIME`）；列数按贴图宽算，原像素图不眨。
+  粉色 / 蓝色公主的走路、魔法（普通 / 战损的吟唱、释放，战损光脚）第四版对着立绘重画（参考图：画风小人 + 普通立绘 + 魔法立绘）。
   运行时 `SpriteSheetAnimator._use_sheet` 按 `UserSettings.styled_path` 换成同名 `_hd.png`（缺图回退原像素图），Sprite 缩到 `HD_ENLARGE`（1.25）/ `HD_SCALE`（8）——人物比原像素图大一圈，offset 放大 `HD_SCALE` 倍（脚底不变），线性过滤（画面按窗口分辨率渲染，缩小时细节不丢），
   `UserSettings.revision` 变了下一帧重选；CG 舞台的公主演员走同一套。`princess.tscn` 的贴图引用 `princess.png`（以前是内嵌的导入贴图，找不到同名图）。
 - **设置菜单**（P，动作 `settings`）：`SettingsMenu`（`scripts/ui/settings_menu.gd`，`main.gd` 进场时加上，CanvasLayer 31，打开时暂停；对话 / 过场 / 别的菜单开着时不响应）：
