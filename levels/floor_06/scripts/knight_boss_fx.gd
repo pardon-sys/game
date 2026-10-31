@@ -173,11 +173,15 @@ class Ring extends Node2D:
 			draw_arc(Vector2.ZERO, r - 4.0, a0, a1, 2, Color(0.75, 0.4, 1.0, a * 0.6), 2.0)
 
 
+## 镜面笑脸：绕着盔甲转、半径一呼一吸（ORBIT_MIN~ORBIT_MAX），不追人（追人那段去掉了：跟着人一直涨闷笑太赖）；LIFE 秒后散掉
 class Mirror extends Node2D:
+	const LIFE := 7.0
+	const ORBIT_MIN := 30.0
+	const ORBIT_MAX := 64.0
 	var center: Node2D
 	var angle := 0.0
-	var orbit := 2.0
-	var chase := 5.0
+	var orbit := LIFE
+	var chase := 0.0
 	var target: Node2D
 	var _t := 0.0
 
@@ -186,17 +190,13 @@ class Mirror extends Node2D:
 
 	func _process(delta: float) -> void:
 		_t += delta
-		if orbit > 0.0:
-			orbit -= delta
-			angle += delta * 2.6
-			if is_instance_valid(center):
-				global_position = center.global_position + Vector2.from_angle(angle) * 40.0 + Vector2(0, -20)
-		else:
-			chase -= delta
-			if is_instance_valid(target):
-				global_position = global_position.move_toward(target.global_position + Vector2(0, -8), 45.0 * delta)
-			if chase <= 0.0:
-				queue_free()
+		orbit -= delta
+		angle += delta * 2.2
+		if is_instance_valid(center):
+			var r := lerpf(ORBIT_MIN, ORBIT_MAX, 0.5 + 0.5 * sin(_t * 1.6))
+			global_position = center.global_position + Vector2.from_angle(angle) * r + Vector2(0, -12)
+		if orbit <= 0.0:
+			queue_free()
 		queue_redraw()
 
 	func _draw() -> void:

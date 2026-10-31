@@ -72,7 +72,8 @@ const GRAB_TIME := 3.5
 const MASH := 7
 const HARD_LAUGH := 0.12
 const SOFT_LAUGH := 0.04
-const SOFT_FATIGUE := 0.1
+## 粉色公主被抱住：疲倦另外乘的倍数（普通流程疲倦 = 闷笑 × 0.5；原来手写每秒 +10% 疲倦，换算下来约 16 倍）
+const SOFT_FATIGUE_MULT := 16.0
 const SWEEP_LEN := 200.0
 const SWEEP_W := 14.0
 const WAVE_R := 110.0
@@ -258,6 +259,9 @@ var land_left := 0.0
 var fog_ring: KnightFogRing
 var dispel: KnightDispel
 var _split := false
+## 右上角另一位公主的状态面板（千手战的 PartnerPanel，不用 Duo）；Boss 战里关掉跟随瞬移（记下原来的 follow）
+var partner_panel: PartnerPanel
+var _follow_was := {}
 var _ai_hooks: BattleAIHooks
 
 
@@ -337,6 +341,15 @@ func _ready() -> void:
 	_hud = KnightBossHud.new()
 	_hud.task = self
 	add_child(_hud)
+	partner_panel = PartnerPanel.new()
+	partner_panel.pair = [pink, blue]
+	partner_panel.top = 52.0   # 让开顶部的耐久条
+	add_child(partner_panel)
+	# Boss 战里不瞬移：离太远时 AI 自己走过去（剧情跟随的瞬移在 _exit_tree 恢复）
+	for c in [pink, blue]:
+		if is_instance_valid(c):
+			_follow_was[c] = c.follow
+			c.follow = false
 	_music_was = Audio.music_id
 	Audio.play_music("knight_fog" if on_fog() else "knight_boss")
 	if on_fog() and phase == PHASES - 1:
@@ -345,8 +358,11 @@ func _ready() -> void:
 
 
 func _exit_tree() -> void:
+	for c in _follow_was:
+		if is_instance_valid(c):
+			c.follow = bool(_follow_was[c])
 	Engine.time_scale = 1.0
-	if _music_was != "" and Audio.music_id == "knight_boss":
+	if _music_was != "" and Audio.music_id in ["knight_boss", "knight_fog"]:
 		Audio.play_music(_music_was)
 	_clear_field(true)
 	if is_instance_valid(field_helpers):
@@ -677,6 +693,36 @@ func _tip(key: String) -> void:
 	intro(key)
 
 
+## 招式的分量（技能 → 特效 / 音效的对照表在 ARCHITECTURE.md 骑士 Boss 一节）：
+## 重击（跺地 / 落地 / 撞墙）：SiegeFx.impact 裂地 + 碎石 + 尘土（strong 时震屏 + 顿帧）、白闪一下、音效；轻的只有圈和音效。
+const IMPACT_COL := Color(0.85, 0.55, 1.0)
+
+
+func _impact(at: Vector2, r: float, strong: bool, sound := "wall_crash", vol := -2.0) -> void:
+	SiegeFx.impact(get_parent(), at, r, strong, IMPACT_COL)
+	if strong:
+		_flash_body()
+	if sound != "":
+		Audio.play(sound, vol, 0.06)
+
+
+## 出招 / 重击时盔甲白闪一下
+func _flash_body() -> void:
+	if is_instance_valid(_body):
+		_body.modulate = Color(2.2, 2.0, 2.4)
+		_body.create_tween().tween_property(_body, "modulate", Color.WHITE, 0.18)
+
+
+## 招式起手：音效 + 紫色的蓄力圈往里收（让人一眼看出「要来了」）
+func _windup_fx(sound: String, r := 34.0, vol := -4.0) -> void:
+	if sound != "":
+		Audio.play(sound, vol, 0.05)
+	var ringn := SiegeFx.ring(get_parent(), _body.global_position + Vector2(0, -4), r, Color(0.9, 0.45, 1.0, 0.9), 0.45, 0.1)
+	if ringn:
+		ringn.scale = Vector2(1.6, 1.2)
+		ringn.create_tween().tween_property(ringn, "scale", Vector2(0.6, 0.45), 0.4).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
+
+
 func _shake(time: float, power: float) -> void:
 	for c in _players():
 		if c == GameState.player:
@@ -867,8 +913,8 @@ func _dodged(c: PlayableCharacter) -> bool:
 func _hit(c: PlayableCharacter, laugh: float, zone := "sole") -> bool:
 	if not is_instance_valid(c) or _dodged(c):
 		return false
-	if c.laugh:
-		c.laugh.add(c.laugh.max_value * laugh)
+	# 走普通挠痒流程：部位、装备、疲倦加成、暴击都算，魔力疲倦跟着涨（KnightTickle）
+	KnightTickle.hit(c, laugh, _body, zone)
 	ZoneFx.play(zone, c.get_parent(), ZoneFx.body_point(c, zone), 0.9, false)
 	return true
 
@@ -882,6 +928,8 @@ func flick(who: PlayableCharacter) -> void:
 		p.vel = dir.rotated(a) * FLICK_SPEED
 		p.set_meta("kind", "flick")
 		_add_fx(p, from)
+	_windup_fx("swing", 26.0)
+	_flash_body()
 	_say(data().get("flick", []))
 
 
@@ -898,6 +946,7 @@ func net(who: PlayableCharacter) -> void:
 			cell.set_meta("radius", KnightBossFx.NetCell.SIZE * 0.6)
 			_add_fx(cell, c + Vector2(x, y) * KnightBossFx.NetCell.SIZE)
 			i += 1
+	_windup_fx("web", 30.0)
 	_say(data().get("net", []))
 
 
@@ -906,7 +955,9 @@ func stomp() -> void:
 	wave_left = WAVE_TIME
 	wave_r = 0.0
 	stuck_left = STUCK_TIME + WAVE_TIME
-	_shake(0.3, 3.0)
+	_shake(0.45, 5.0)
+	_impact(_body.global_position, WAVE_R * 0.6, true)
+	KnightFx.play(get_parent(), "shockwave", _body.global_position, {"size": WAVE_R * 2.4, "squash": 0.6, "z": 0})
 	_say(data().get("stomp", []))
 	_tip("hands")
 	for i in SUMMON:
@@ -954,6 +1005,7 @@ func charge(who: PlayableCharacter) -> void:
 	get_parent().add_child(line)
 	line.global_position = Vector2.ZERO
 	warn = {"kind": "charge", "left": CHARGE_WARN * _warn_mult("charge"), "node": line}
+	_windup_fx("cart_rumble", 30.0, -6.0)
 	_say(data().get("charge", []))
 
 
@@ -979,8 +1031,9 @@ func _tick_charge(delta: float) -> void:
 	if charge_left <= 0.0 or clamped != to or hit_crate:
 		charge_left = 0.0
 		stuck_left = STUCK_TIME
-		_shake(0.35, 4.0)
-		Audio.play("break", -6.0)
+		_shake(0.5, 6.0)
+		_impact(_body.global_position + charge_dir * 10.0, 40.0, true)
+		Audio.play("break", -4.0)
 		_say(data().get("crate" if hit_crate else "charge_stuck", []))
 		open_weak(Vector2(0, 12))
 
@@ -990,6 +1043,8 @@ func sand(who: PlayableCharacter) -> void:
 	for i in 3:
 		var d := KnightBossFx.Dust.new()
 		_add_fx(d, who.global_position + Vector2.from_angle(randf() * TAU) * randf_range(0, 24))
+	Audio.play("wind", -4.0, 0.06)
+	Fx.burst(get_parent(), _body.global_position + Vector2(0, -2), "dust", 22, 70.0, 0.7, Vector2(0, 20), Color(0.85, 0.75, 0.6))
 	_say(data().get("sand", []))
 
 
@@ -1004,6 +1059,7 @@ func leap(who: PlayableCharacter) -> void:
 	_shadow.left = leap_left
 	get_parent().add_child(_shadow)
 	_shadow.global_position = leap_to
+	_windup_fx("swish", 30.0)
 	_say(data().get("leap", []))
 
 
@@ -1023,8 +1079,9 @@ func _tick_leap(delta: float) -> void:
 	if is_instance_valid(_shadow):
 		_shadow.queue_free()
 	_shadow = null
-	_shake(0.35, 4.0)
-	Audio.play("break", -6.0)
+	_shake(0.55, 6.5)
+	_impact(leap_to, LEAP_R * 1.4, true)
+	Audio.play("break", -4.0)
 	Fx.burst(get_parent(), leap_to, "dust", 16, 70.0, 0.6, Vector2.ZERO, Color(0.8, 0.7, 0.6))
 	KnightFx.play(get_parent(), "dust_land", leap_to, {"size": LEAP_R * 2.6, "squash": 0.75, "z": 0})
 	_say(data().get("land", []))
@@ -1042,6 +1099,7 @@ func throw_gear(who: PlayableCharacter) -> void:
 	p.vel = from.direction_to(who.global_position) * GEAR_SPEED
 	p.icon = ItemDB.get_item(id).icon if ItemDB.get_item(id) else null
 	p.set_meta("kind", "gear")
+	Audio.play("hook_throw", -3.0, 0.06)
 	p.set_meta("item", id)
 	p.life = 3.0
 	_add_fx(p, from)
@@ -1094,8 +1152,7 @@ func _tick_gears(delta: float) -> void:
 		var g: Variant = c.get_meta(&"knight_gear") if c.has_meta(&"knight_gear") else null
 		if not is_instance_valid(g):
 			continue
-		if c.laugh:
-			c.laugh.add(c.laugh.max_value * GEAR_LAUGH * delta)
+		KnightTickle.over(c, GEAR_LAUGH, delta, _body, "gear", "waist")
 		if c.status and fmod(_t, 0.3) < delta:
 			c.status.apply_slow(0.7, 0.4)
 		if randf() < delta * 2.0:
@@ -1119,6 +1176,12 @@ func _tick_gears(delta: float) -> void:
 ## 胸甲：护心磁吸——把身边的人往中间吸（比走路慢，往外走就走得掉），吸到跟前就抓住
 func magnet() -> void:
 	magnet_left = MAGNET_TIME
+	Audio.play("rumble", -2.0)
+	# 往里收的吸力圈（两圈错开）
+	for k in 2:
+		var ringn := SiegeFx.ring(get_parent(), _body.global_position, MAGNET_R, Color(0.95, 0.4, 0.8, 0.8), MAGNET_TIME, 0.06)
+		if ringn:
+			ringn.create_tween().tween_property(ringn, "scale", Vector2(0.15, 0.15), MAGNET_TIME * (0.6 + 0.4 * k)).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
 	_say(data().get("magnet", []))
 
 
@@ -1144,6 +1207,8 @@ func shards() -> void:
 		s.vel = Vector2.from_angle(i * TAU / SHARDS + randf_range(-0.2, 0.2)) * 90.0
 		s.bounds = Rect2(_home - ARENA, ARENA * 2.0)
 		_add_fx(s, _body.global_position + Vector2(0, -16))
+	_impact(_body.global_position + Vector2(0, -8), 36.0, false, "break", -3.0)
+	_flash_body()
 	_say(data().get("shards", []))
 
 
@@ -1158,6 +1223,7 @@ func name_call() -> void:
 	get_parent().add_child(node)
 	node.global_position = _body.global_position
 	warn = {"kind": "name", "left": NAME_WINDUP * _warn_mult("name"), "node": node, "gaps": gaps}
+	_windup_fx("rumble", 46.0, -1.0)
 	_say(data().get("name_call", []))
 
 
@@ -1166,8 +1232,9 @@ func _ring() -> void:
 	r.set_meta("kind", "ring")
 	r.gaps = warn.get("gaps", [])
 	_add_fx(r, _body.global_position)
-	KnightFx.play(get_parent(), "shockwave", _body.global_position, {"size": 200.0, "squash": 0.6, "z": 0})
-	_shake(0.25, 2.5)
+	KnightFx.play(get_parent(), "shockwave", _body.global_position, {"size": 240.0, "squash": 0.6, "z": 0})
+	_impact(_body.global_position, 60.0, true, "wall_crash", -1.0)
+	_shake(0.5, 5.0)
 	open_weak(Vector2(0, -26))
 
 
@@ -1179,6 +1246,7 @@ func mirrors() -> void:
 		m.angle = i * TAU / MIRRORS
 		m.target = _players()[i % _players().size()]
 		_add_fx(m, _body.global_position)
+	_windup_fx("brush_spin", 40.0)
 	_say(data().get("mirror", []))
 
 
@@ -1187,6 +1255,8 @@ func _gas() -> void:
 	get_parent().add_child(g)
 	g.global_position = _target().global_position + Vector2(randf_range(-10, 10), randf_range(-10, 10))
 	gases.append(g)
+	Audio.play("puff", -2.0, 0.08)
+	Fx.burst(get_parent(), g.global_position, "dust", 14, 40.0, 0.8, Vector2(0, -10), Color(0.8, 0.5, 0.95))
 	_say(data().get("gas", []))
 
 
@@ -1197,7 +1267,7 @@ func _tick_gas(delta: float) -> void:
 			continue
 		for c in _players():
 			if c.global_position.distance_to(g.global_position) <= GAS_R and c.laugh and not c.is_dashing():
-				c.laugh.add(c.laugh.max_value * GAS_RATE * delta)
+				KnightTickle.over(c, GAS_RATE, delta, _body, "gas", "waist")
 
 
 ## 场上的弹幕：碰到谁
@@ -1229,7 +1299,7 @@ func _tick_fx(delta: float) -> void:
 		elif n is KnightBossFx.Dust:
 			for c in _players():
 				if c.global_position.distance_to(n.global_position) <= KnightBossFx.Dust.RADIUS and c.laugh and not c.is_dashing():
-					c.laugh.add(c.laugh.max_value * DUST_RATE * delta)
+					KnightTickle.over(c, DUST_RATE, delta, _body, "dust", "sole")
 					if c.status and fmod(_t, 0.3) < delta:
 						c.status.apply_slow(0.75, 0.4)
 		elif n is KnightBossFx.Shard:
@@ -1251,7 +1321,7 @@ func _tick_fx(delta: float) -> void:
 		elif n is KnightBossFx.Mirror:
 			for c in _players():
 				if c.global_position.distance_to(n.global_position) <= 12.0 and c.laugh and not c.is_dashing():
-					c.laugh.add(c.laugh.max_value * MIRROR_RATE * delta)
+					KnightTickle.over(c, MIRROR_RATE, delta, _body, "mirror", "waist")
 					if randf() < delta * 2.0:
 						ZoneFx.play("waist", c.get_parent(), ZoneFx.body_point(c, "waist"), 0.7, false)
 
@@ -1693,6 +1763,9 @@ func grab(who: PlayableCharacter) -> void:
 	grabbed = who
 	grab_left = GRAB_TIME
 	mashes = 0
+	Audio.play("hand_grab", -2.0, 0.05)
+	_shake(0.25, 3.5)
+	_flash_body()
 	body_mode = "walk"
 	GameState.vars[CAUGHT_KEY] = caught() + 1
 	if who.status:
@@ -1715,10 +1788,9 @@ func _grab_tick(delta: float) -> void:
 			if not grabbed:
 				return
 	var soft := grabbed == pink
-	if grabbed.laugh:
-		grabbed.laugh.add(grabbed.laugh.max_value * (SOFT_LAUGH if soft else HARD_LAUGH) * delta)
-	if soft and grabbed.fatigue:
-		grabbed.fatigue.add(grabbed.fatigue.max_value * SOFT_FATIGUE * delta)
+	# 粉色公主被抱住：闷笑涨得慢、疲倦涨得快（手印认得她）——疲倦另乘 SOFT_FATIGUE_MULT
+	KnightTickle.over(grabbed, SOFT_LAUGH if soft else HARD_LAUGH, delta, _body, "grab",
+		"" if soft else ("thigh" if grabbed is BluePrincess else "waist"), 1.0, SOFT_FATIGUE_MULT if soft else 1.0)   # 抱粉色公主是轻轻的：不按部位放大
 	if randf() < delta * 2.0:
 		var zone := "sole" if soft else ("thigh" if grabbed is BluePrincess else "waist")
 		ZoneFx.play(zone, grabbed.get_parent(), ZoneFx.body_point(grabbed, zone), 0.8 if soft else 1.1, soft)

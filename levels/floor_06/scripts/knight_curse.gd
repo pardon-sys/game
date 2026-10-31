@@ -209,11 +209,11 @@ func _tick_surge(delta: float) -> void:
 		if surge == "drain":
 			hit = not _in_light(c)
 			if hit and c.laugh:
-				c.laugh.add(c.laugh.max_value * MASK_DRAIN_LAUGH * delta)
+				KnightTickle.over(c, MASK_DRAIN_LAUGH, delta, task._body, "drain")
 		elif c.global_position.distance_to(body) <= SURGE_R:
 			hit = true
 			if c.laugh:
-				c.laugh.add(c.laugh.max_value * SURGE_LAUGH * delta)
+				KnightTickle.over(c, SURGE_LAUGH, delta, task._body, "surge")
 		if hit:
 			drained.append(c)
 		_drain_line(c, hit)
@@ -232,7 +232,7 @@ func _tick_surge(delta: float) -> void:
 					continue
 				for c in task._players():
 					if c.global_position.distance_to((n as Node2D).global_position) <= VEIN_R and c.laugh:
-						c.laugh.add(c.laugh.max_value * VEIN_LAUGH * delta)
+						KnightTickle.over(c, VEIN_LAUGH, delta, task._body, "vein", "sole")
 			# 粉色公主按住 Y 笑（AI 粉色公主走近了就笑）→ 引它冲过来
 			var ai_pink := task.pink != GameState.player and task.ai_enabled and task.pink.global_position.distance_to(task._body.global_position) <= LURE_R
 			if (task.pink == GameState.player and KnightLaugh.tick(task.pink, delta)) or ai_pink:

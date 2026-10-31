@@ -1162,6 +1162,29 @@ data/cutscenes/<楼层组>/  地图内过场；data/theater/<楼层组>/  小剧
 	小手碰到粉色公主：读条 −`HIT_SETBACK`、闷笑涨、`INTERRUPT` 秒后重新起唱；粉色公主闷笑第一次满 = 魔力释放（小手全散、之后更敏感），第二次满 = 失败
 	（`task_boss_dispel` 记着 → 小剧场 `knight_fail_fog` → 重来时灯笼直接亮着、从驱散开始）。读满 → `_purify`（原来的净化过场和结局）。
 	`SideWindow` 在等距楼层里镜头跟着投影后的位置。跳关点有「笑雾之中（点灯）/（驱散）」两个。
+  - **挠痒结算**：Boss 战里所有被挠（技能命中、被抓、毒气 / 沙尘 / 诅咒穿戴、诅咒光环 / 脉络 / 吸笑、黑雾圈、黑气小手）都走 `KnightTickle`
+	（`levels/floor_06/scripts/knight_tickle.gd`）→ `Actor.receive_hit`：部位敏感、装备挡、疲倦的闷笑加成都算，魔力疲倦按实际涨的闷笑涨（普通 ×0.5、暴击 ×2.0），
+	暴击率 `BOSS_CRIT` 0.2（闷笑 ×2、金色「暴击！」）；持续型的按 `TICK` 0.5 秒攒一跳。粉色公主被抱住：疲倦另乘 `SOFT_FATIGUE_MULT`（闷笑慢、疲倦快）。
+	故意笑（`KnightLaugh`、AI 陪笑）不算被挠。**以后加新的挠痒来源也要走它，别直接 `laugh.add`。**
+  - **Boss 战里不瞬移**：开场把两位公主的 `follow` 关掉（离太远时 AI 自己走过去），结束时恢复；剧情跟随的瞬移照旧。
+  - **右上角另一位公主的状态**：千手战的 `PartnerPanel`，不用 `Duo`——设 `pair = [粉, 蓝]`、`top` 让开顶部的耐久条；显示没被操控的那个（C 换人时跟着换）。
+  - **镜面笑脸**只绕着盔甲转（半径一呼一吸），不追人。**亮着的灯笼光里**（`KnightCurse.LIGHT_SAFE_R`）不受黑雾侵蚀，雾里给亮灯笼画一圈暖光。
+  - **技能的特效和音效**（`_impact`：`SiegeFx.impact` 裂地碎石尘土 + 强的震屏顿帧 + 盔甲白闪；`_windup_fx`：起手音效 + 往里收的蓄力圈）：
+	| 技能 | 起手 | 命中 / 落地 |
+	|---|---|---|
+	| 扑抓 / 抓住 | 预警 | `hand_grab`、震屏、白闪 |
+	| 弹指 | `swing` + 蓄力圈、白闪 | 三发扇形 |
+	| 十指痒网 | `web` + 蓄力圈 | 一格格冒指头 |
+	| 跺地 | — | `_impact` 强（`wall_crash`）、冲击波条 `shockwave`、震屏 |
+	| 冲撞 | `cart_rumble` + 蓄力圈 | 撞墙 / 木箱：`_impact` 强 + `break`、震屏 |
+	| 踢沙 | `wind` + 扬尘 | 三团痒尘 |
+	| 跳起来砸地 | `swish` + 蓄力圈 | `_impact` 强 + `break`、`dust_land`、震屏 |
+	| 诅咒穿戴 | `hook_throw` | 甩出装备 |
+	| 护心磁吸 | `rumble` + 两圈往里收的吸力圈 | 吸到身边抓住 |
+	| 甲片飞散 | `_impact` 弱（`break`）、白闪 | 六片弹来弹去 |
+	| 呼唤骑士之名 | `rumble` + 大蓄力圈 | `_impact` 强、冲击波 240、震屏 |
+	| 镜面笑脸 | `brush_spin` + 蓄力圈 | 三张笑脸绕着转 |
+	| 吐笑气 | `puff` + 紫烟 | 毒气团 |
   - **骑士战败 CG**：四个失败小剧场（`knight_fail_boss` / `_2` / `_3` / `_fog`）的高潮那一步换上横版大图（`assets/generated/KNIGHT_CG/`，codex 生成，
 	提示词 `tools/art/src/knight_cg/`，`import_cg.py --knight`；`gen_floor06_after.py` 的 `AFTER_CG_FAIL` 挂上）。
   - **「全镇的笑声」（点灯）**（替换了原来的符文圈共鸣）：四角四盏被吸暗的笑声灯笼（`LANTERNS`），站在旁边按住 E 故意笑（`KnightLaugh`）→ 每秒 +`LANTERN_RATE`；

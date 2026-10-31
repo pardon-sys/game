@@ -160,9 +160,7 @@ func hit_pink(h: FogHand) -> void:
 	var pink := task.pink
 	progress = maxf(0.0, progress - HIT_SETBACK)
 	interrupt_left = INTERRUPT
-	if pink.laugh:
-		var add := pink.laugh.max_value * HIT_LAUGH * (SENSITIVE_MULT if sensitive_left > 0.0 else 1.0)
-		pink.laugh.add(minf(add, maxf(0.0, pink.laugh.max_value * 0.985 - pink.laugh.value)))
+	KnightTickle.hit(pink, HIT_LAUGH * (SENSITIVE_MULT if sensitive_left > 0.0 else 1.0), h, "sole", KnightTickle.BOSS_CRIT, 0.985)
 	ZoneFx.play("sole", pink.get_parent(), ZoneFx.body_point(pink, "sole"), 1.0, false)
 	Audio.play("tickle", -4.0, 0.1)
 	if not quiet:

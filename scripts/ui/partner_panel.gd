@@ -3,6 +3,7 @@ extends CanvasLayer
 ## 双人模式的搭档面板（右上角表情头像的左边）：搭档的头像和名字、心形血量、闷笑条、魔力疲倦条（带百分比）、现在在做什么
 ## （攻击中 / 被抓住了 / 笑到失控 / 倒地 xx 秒 / 献祭中），右下角「[C]切换」。
 ## 切换操控时自动换成另一个人（显示的总是没被操控的那个）。
+## 不用 Duo 的双人战也能用：设 pair = [角色 A, 角色 B]（骑士 Boss），显示 pair 里不是玩家的那个；top 是面板的纵坐标（让开顶部的 Boss 血条）。
 
 const W := 132.0
 const H := 60.0
@@ -17,6 +18,10 @@ var fatigue_bar: ColorRect
 var fatigue_pct: Label
 var state_label: Label
 var box: Panel
+## 不用 Duo 时手动指定的两个人
+var pair: Array = []
+## 面板的纵坐标
+var top := 4.0
 
 
 func _ready() -> void:
@@ -28,7 +33,7 @@ func _ready() -> void:
 	sb.set_border_width_all(1)
 	sb.set_corner_radius_all(3)
 	box.add_theme_stylebox_override("panel", sb)
-	box.position = Vector2(get_viewport().get_visible_rect().size.x - 44.0 - W - 6.0, 4)
+	box.position = Vector2(get_viewport().get_visible_rect().size.x - 44.0 - W - 6.0, top)
 	box.size = Vector2(W, H)
 	add_child(box)
 	head = TextureRect.new()
@@ -76,6 +81,11 @@ func _bar(pos: Vector2, col: Color) -> ColorRect:
 
 
 func partner() -> PlayableCharacter:
+	if not pair.is_empty():
+		for c in pair:
+			if is_instance_valid(c) and c != GameState.player:
+				return c
+		return null
 	return Duo.partner_of(GameState.player)
 
 
@@ -97,14 +107,14 @@ static func activity(p: PlayableCharacter) -> String:
 	var ai := p.controller as CompanionController
 	if ai:
 		return {"revive": "去救你", "plate": "去站板子", "dodge": "躲开", "attack": "攻击中", "struggle": "挣扎",
-			"magic": "吟唱中"}.get(ai.intent, "跟着你")
+			"magic": "吟唱中", "task": "在帮忙"}.get(ai.intent, "跟着你")
 	return ""
 
 
 func _process(_delta: float) -> void:
 	var p := partner()
 	var cg := get_node_or_null("/root/CG")
-	visible = Duo.active and p != null and not (cg != null and cg.is_playing())
+	visible = (Duo.active or not pair.is_empty()) and p != null and not (cg != null and cg.is_playing()) and not GameState.in_cutscene
 	if not visible:
 		return
 	var emo := p.emotion.current if p.emotion else "normal"
