@@ -8,6 +8,7 @@
 游戏里 SpriteSheetAnimator 在「角色画风：精细像素」时换上这些图（Sprite 缩到 1/8 再放大 HD_ENLARGE 倍、线性过滤），缺图用原来的 32 格像素图。
 源图（每个角色）：<p>_walk 4×4（下 / 左 / 右 / 上走路）、<p>_expr 2×4（站着的表情：普通 开心 生气 难过 / 惊讶 害羞 憋笑 大笑）、
   <p>_damaged 5×4（战损走路四向 + 第 5 行战损憋笑正面）、<p>_helpless 2×4（失控一 坐地笑 / 失控二 躺地蹬脚）、<p>_magic1 / _magic2 3×6（魔法姿态）。
+  待机眨眼：图集多两列（第 16 列半闭眼、第 17 列闭眼），直接在每行正面待机帧上合上眼睛（close_eyes），SpriteSheetAnimator 在正面待机时隔几秒插一下。
 笑雾之中的骑士：knight_possessed.png（2×4：浮空 / 落地被解脱）→ npcs/knight_possessed.png（80 格）。
 用法：python tools/art/import_sprites_px64.py [pink] [blue] [host] [knight] [--preview]（检查图在 tools/.cache/px64/）
 """
@@ -32,6 +33,10 @@ HELPLESS_H = 200
 WALK_DIRS = ["down", "left", "right", "up"]
 # 每种源表：行数 × 每行帧数
 LAYOUT = {"possessed": [4] * 2, "walk": [4] * 4, "expr": [4] * 2, "damaged": [4] * 5, "helpless": [4] * 2, "magic1": [6] * 3, "magic2": [6] * 3, "attack": [3] * 4}
+# 待机眨眼 → 图集第 16 / 17 列：半闭眼 / 闭眼（只有正面待机用）。直接在每行正面待机帧上合上眼睛（close_eyes），和走路图一模一样不跳画风；
+# 找不到两只眼睛的行（本来就闭着眼、失控……）复制待机帧（不眨）
+BLINK_HALF_COL = 16
+BLINK_SHUT_COL = 17
 # 站着的表情（expr 表的格子）→ 状态
 EXPR = {"normal": 0, "happy": 1, "angry": 2, "sad": 3, "surprise": 4, "shy": 5, "giggle": 6}
 # 魔法：magic1 三行 + magic2 三行 = magic_order
@@ -72,6 +77,73 @@ def snap(im, s):
     return out.crop(out.getbbox()) if out.getbbox() else out
 
 
+def find_eyes(a):
+    """正面待机帧里两只眼睛的瞳孔框 (y0, y1, x0, x1)：头部那一段里、蓝色饱和、不大、颜色深的连通块，中线左右各取最大的一块。"""
+    from scipy import ndimage
+    al = a[..., 3] > 128
+    ys, xs = np.where(al)
+    if len(ys) == 0:
+        return []
+    top, bot = ys.min(), ys.max()
+    h = bot - top
+    cx = (xs.min() + xs.max()) / 2
+    rgb = a[..., :3].astype(float) / 255
+    mx = rgb.max(-1)
+    mn = rgb.min(-1)
+    sat = np.where(mx > 0, (mx - mn) / np.maximum(mx, 1e-6), 0)
+    blue = (rgb[..., 2] > rgb[..., 0] + 0.15) & (rgb[..., 2] >= rgb[..., 1]) & (sat > 0.45) & (mx > 0.3) & al
+    band = np.zeros_like(blue)
+    band[int(top + h * 0.12):int(top + h * 0.42), :] = True
+    lab, n = ndimage.label(blue & band)
+    comps = []
+    for i in range(1, n + 1):
+        yy, xx = np.where(lab == i)
+        if len(yy) < 12:
+            continue
+        if yy.max() - yy.min() + 1 > 30 or xx.max() - xx.min() + 1 > 26 or mx[yy, xx].mean() > 0.8:
+            continue
+        comps.append((len(yy), yy.min(), yy.max(), xx.min(), xx.max()))
+    out = []
+    for side in ([c for c in comps if 0 < cx - (c[3] + c[4]) / 2 < 60], [c for c in comps if 0 <= (c[3] + c[4]) / 2 - cx < 60]):
+        if side:
+            c = max(side)
+            out.append((c[1], c[2], c[3], c[4]))
+    return out if len(out) == 2 else []
+
+
+def close_eyes(a, mode):
+    """合上眼睛（mode = half 半闭 / shut 闭眼）：眼睛那一块「像眼睛」的像素（深色描边、蓝色、眼白）盖成下面的皮肤色，再画一道睫毛线（闭眼往下弯）。"""
+    a = a.copy()
+    for (y0, y1, x0, x1) in find_eyes(a):
+        reg_s = a[y1 + 2:y1 + 10, x0:x1 + 1, :3].reshape(-1, 3).astype(int)
+        ok = reg_s[(reg_s[:, 0] > 190) & (reg_s[:, 0] > reg_s[:, 2] + 10) & (reg_s[:, 1] > 140)]
+        skin = np.median(ok, 0).astype(int) if len(ok) else np.array([255, 224, 210])
+        by, bx = y0 - 5, x0 - 3
+        reg = a[by:y1 + 2, bx:x1 + 4].copy()
+        rgb = reg[..., :3].astype(int)
+        eyeish = ((rgb.sum(-1) < 330) | (rgb[..., 2] > rgb[..., 0] + 10) | ((rgb.min(-1) > 215) & (rgb[..., 2] >= rgb[..., 0] - 5))) & (reg[..., 3] > 128)
+        lash = rgb.reshape(-1, 3)[rgb.sum(-1).argmin()]
+        ys, xs = np.where(eyeish)
+        if len(ys) == 0:
+            continue
+        ey0, hgt = ys.min(), ys.max() - ys.min() + 1
+        cut = ey0 + (hgt if mode == "shut" else int(hgt * 0.5))
+        for yy, xx in zip(ys, xs):
+            if yy < cut:
+                a[by + yy, bx + xx, :3] = skin
+        th = max(2, hgt // 8)
+        xl, w = xs.min(), max(1, xs.max() - xs.min())
+        ly = ey0 + int(hgt * (0.6 if mode == "shut" else 0.5))
+        for x in range(xl, xs.max() + 1):
+            t = (x - xl) / w
+            dy = int(round((1 - (2 * t - 1) ** 2) * th)) if mode == "shut" else 0
+            for k in range(th):
+                yy, xx = by + ly + dy + k - th // 2, bx + x
+                if a[yy, xx, 3] > 128:
+                    a[yy, xx, :3] = lash
+    return a
+
+
 def place(im, cell, margin=4):
     if im.height > cell - margin or im.width > cell:
         k = min((cell - margin) / im.height, cell / im.width)
@@ -88,7 +160,8 @@ def build(char):
     snapped = {k: [[snap(f, scales[k]) for f in row] for row in rows] for k, rows in src.items()}
     s = scales["walk"]
     W, E, D, H = snapped["walk"], snapped["expr"], snapped["damaged"], snapped["helpless"]
-    sheet = Image.new("RGBA", (CELL * 16, CELL * len(EMOTIONS)))
+    cols = 18
+    sheet = Image.new("RGBA", (CELL * cols, CELL * len(EMOTIONS)))
     for r, name in enumerate(EMOTIONS):
         for d in range(4):
             for f in range(4):
@@ -103,6 +176,9 @@ def build(char):
                 else:
                     img = H[1][f]
                 sheet.alpha_composite(place(img, CELL), ((d * 4 + f) * CELL, r * CELL))
+        idle = np.asarray(sheet.crop((0, r * CELL, CELL, (r + 1) * CELL)))
+        for col, mode in ((BLINK_HALF_COL, "half"), (BLINK_SHUT_COL, "shut")):
+            sheet.alpha_composite(Image.fromarray(close_eyes(idle, mode)), (col * CELL, r * CELL))
     sheet.save(OUT / ("%s_hd.png" % out_name))
     if "magic1" in snapped and "magic2" in snapped:
         magic = Image.new("RGBA", (MAGIC_CELL * 6, MAGIC_CELL * len(MAGIC)))
