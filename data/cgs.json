@@ -82,6 +82,66 @@
 			"placeholder": "helpless_2",
 			"wide": true
 		},
+		"siege_fail_1": {
+			"file": "res://assets/cg/portraits/siege_fail_1.png",
+			"placeholder": "helpless_2",
+			"wide": true
+		},
+		"siege_fail_2": {
+			"file": "res://assets/cg/portraits/siege_fail_2.png",
+			"placeholder": "helpless_2",
+			"wide": true
+		},
+		"siege_fail_3": {
+			"file": "res://assets/cg/portraits/siege_fail_3.png",
+			"placeholder": "helpless_2",
+			"wide": true
+		},
+		"siege_fail_4": {
+			"file": "res://assets/cg/portraits/siege_fail_4.png",
+			"placeholder": "helpless_2",
+			"wide": true
+		},
+		"siege_fail_5": {
+			"file": "res://assets/cg/portraits/siege_fail_5.png",
+			"placeholder": "helpless_2",
+			"wide": true
+		},
+		"siege_fail_6": {
+			"file": "res://assets/cg/portraits/siege_fail_6.png",
+			"placeholder": "helpless_2",
+			"wide": true
+		},
+		"siege_fail_7": {
+			"file": "res://assets/cg/portraits/siege_fail_7.png",
+			"placeholder": "helpless_2",
+			"wide": true
+		},
+		"siege_fail_8": {
+			"file": "res://assets/cg/portraits/siege_fail_8.png",
+			"placeholder": "helpless_2",
+			"wide": true
+		},
+		"siege_fail_9": {
+			"file": "res://assets/cg/portraits/siege_fail_9.png",
+			"placeholder": "helpless_2",
+			"wide": true
+		},
+		"siege_fail_10": {
+			"file": "res://assets/cg/portraits/siege_fail_10.png",
+			"placeholder": "helpless_2",
+			"wide": true
+		},
+		"siege_fail_11": {
+			"file": "res://assets/cg/portraits/siege_fail_11.png",
+			"placeholder": "helpless_2",
+			"wide": true
+		},
+		"siege_fail_12": {
+			"file": "res://assets/cg/portraits/siege_fail_12.png",
+			"placeholder": "helpless_2",
+			"wide": true
+		},
 		"slime_1": {
 			"file": "res://assets/cg/portraits/slime_1.png",
 			"placeholder": "helpless_1"

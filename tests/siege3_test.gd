@@ -1863,13 +1863,26 @@ func _run_cg() -> void:
 			var lines := steps.filter(func(st): return st.has("text")).size()
 			if not (acts.has("1") and acts.has("2") and acts.has("3") and acts.has("4") and acts.has("burst")) or lines < 28:
 				short.append("%s:%s(%d)" % [path.get_file(), id, lines])
+	var no_cg := []
+	var untickled := []
 	for n in range(1, 13):
 		for suffix in ["", "_pants"]:
 			var th: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://data/theater/siege/siege_fail_%d%s.json" % [n, suffix]))
 			var bursts: int = th["steps"].filter(func(st): return str(st.get("act", "")) == "burst").size()
 			if bursts < 2 or th["steps"].filter(func(st): return st.has("text")).size() < 24:
 				short.append("siege_fail_%d%s" % [n, suffix])
+			# 第 4 幕第一步换上这一波的战败 CG（横版大图）；被抓住以后公主说话的每一句都接着被挠
+			var cg_step: Array = th["steps"].filter(func(st): return str(st.get("portrait", "")) == "siege_fail_%d" % n)
+			if cg_step.size() != 1 or not (cg_step[0].get("act") is float and int(cg_step[0]["act"]) == 4) or not CG.portrait_texture("siege_fail_%d" % n):
+				no_cg.append("siege_fail_%d%s" % [n, suffix])
+			for st in th["steps"]:
+				if st.get("act") is float and int(st["act"]) == 2 and str(st.get("speaker", "")) in ["公主", "蓝色的公主"] \
+						and not (st.get("actions", []) as Array).any(func(a): return a.get("do") == "tickle"):
+					untickled.append("siege_fail_%d%s" % [n, suffix])
+					break
 	check("笑倒 CG / 组合演出 / 失败小剧场都是四幕 + 魔力爆发、句数够（不够的：%s）" % [short], short.is_empty())
+	check("失败小剧场第 4 幕换上这一波的战败 CG（缺：%s）" % [no_cg], no_cg.is_empty())
+	check("失败小剧场被抓住以后公主说话也接着被挠（缺：%s）" % [untickled], untickled.is_empty())
 	var mute := []
 	var teams: Array = (JSON.parse_string(FileAccess.get_file_as_string("res://data/teamwork.json")) as Dictionary)["teams"]
 	for who in ["pink", "blue"]:

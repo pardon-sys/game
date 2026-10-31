@@ -8,8 +8,10 @@
 占比超过 HUE_BAD_RATIO 时，改用八叉树调色板（色相偏差更小才换）。
 一个怪物有两张 CG 图时命名为 <来源键>_1.png / <来源键>_2.png，分别输出 <来源键>_3（第三幕）和 <来源键>_4（第四幕）。
 第八层的战败 CG 在 assets/generated/BOSS_CG/（中文原图名，按 BOSS_KEYS 输出 boss8_*.png），给第八层的战败小剧场用。
+攻防战的战败 CG 在 assets/generated/SIEGE_CG/siege_fail_<N>.png（codex 生成，提示词 tools/art/src/siege_fail/prompts.md），同名输出，给攻防战失败小剧场的第 4 幕用。
 扩展名大小写都可以（.png / .PNG）。
-用法：python tools/art/import_cg.py [--preview]
+用法：python tools/art/import_cg.py [--preview] [--siege]
+  --siege 只转攻防战的战败 CG（SIEGE_CG）
   --preview 在 tools/.cache/cg/ 输出原图与像素化结果的对比图
 """
 import sys
@@ -78,9 +80,21 @@ BOSS_KEYS = {
 }
 
 
+# 攻防战失败小剧场的战败 CG（assets/generated/SIEGE_CG/，同样有 .gdignore）：文件名就是输出的键
+SIEGE_SRC = OUT / "SIEGE_CG"
+
+
 def main():
     DST.mkdir(parents=True, exist_ok=True)
     done = []
+    only_siege = "--siege" in sys.argv
+    if only_siege:
+        for path in sorted(p for p in SIEGE_SRC.iterdir() if p.suffix.lower() == ".png"):
+            out = pixelize(Image.open(path))
+            out.save(DST / f"{path.stem}.png")
+            done.append((path.stem, path, out))
+        print("CG 图：", ", ".join(f"{k} {o.size[0]}x{o.size[1]}" for k, _, o in done))
+        return
     for path in sorted(p for p in SRC.iterdir() if p.suffix.lower() == ".png"):
         out_key = target_key(path.stem)
         out = pixelize(Image.open(path))
@@ -95,6 +109,11 @@ def main():
             out = pixelize(Image.open(path))
             out.save(DST / f"{out_key}.png")
             done.append((out_key, path, out))
+    if SIEGE_SRC.exists():
+        for path in sorted(p for p in SIEGE_SRC.iterdir() if p.suffix.lower() == ".png"):
+            out = pixelize(Image.open(path))
+            out.save(DST / f"{path.stem}.png")
+            done.append((path.stem, path, out))
     if "--preview" in sys.argv:
         PREVIEW.mkdir(parents=True, exist_ok=True)
         for key, path, out in done:

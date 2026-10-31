@@ -738,6 +738,9 @@ data/cutscenes/<楼层组>/  地图内过场；data/theater/<楼层组>/  小剧
   十二位激励镇民按波次顺序从城门出来、各说一句、站成半圆（演员 `cheer_<激励 id>`，行走图用 `town_buffs.json` 的 `sheet`），镇长宣布祭典，
   烟花（过场动作 `fireworks`：`at` 格子列表、`count`、`time`）→ 战后的小镇（`floor_06_after`，见「七日赎罪」）。
 - **临时痒痒装备**：`Equipment.force` / `release` / `tick_forced`（`GameState.equip_forced`），负面装备由 `EquipFx` 定时发作 + 立绘反应（`data/equip_reactions.json`，分角色）。
+- **战败 CG**（失败小剧场第 4 幕的横版大图，一波一张）：原图 `assets/generated/SIEGE_CG/siege_fail_<N>.png`（codex 内置 image_gen 生成，1536×1024，
+  提示词和参考图在 `tools/art/src/siege_fail/`：两人释放过魔力、被这一波的怪接着挠——粉色被挠光脚、蓝色被挠大腿；服装照立绘，不画千手痒痒裤，`_pants` 版也用同一张）
+  → `tools/art/import_cg.py --siege` 像素化到 `assets/cg/portraits/siege_fail_<N>.png` → `gen_cgs.py` 登记立绘 id（有图时 `wide`）。
 - 内容生成器：`gen_siege_monsters.py`（场景）、`gen_siege_cgs.py`（笑倒 CG，粉 / 蓝两版）、`gen_siege_scenes.py`（三来源组合小演出）、
   `gen_siege_theaters.py`（失败小剧场）、`gen_siege_reactions.py`（受挠台词）、`gen_siege_bosses.py`（Boss 技能 / 横幅、要塞数据）、
   `gen_teamwork.py`（配合技，联合配合的数据在 `siege_cooperation_data.py`）、`tools/art/gen_siege_art.py`（像素图）、`gen_fortress_v2.py`（要塞美术）。
@@ -747,7 +750,7 @@ data/cutscenes/<楼层组>/  地图内过场；data/theater/<楼层组>/  小剧
   | 文件 | 内容 | 拼装 |
   |---|---|---|
   | `cgs_1/2/3.py`、`cgs_bosses.py` | 16 段笑倒 CG（12 种攻城怪约 29 句、4 个 Boss 约 40 句） | `gen_siege_cgs.py` → `data/siege_cgs.json`（+ 蓝色版） |
-  | `theaters.py` | 12 段失败小剧场（27 句，照每一波的特色写：泡泡潮 / 空降 / 巨魔军团 / 迷雾 / 攻城大队 / 狂风 / 装备日 + 藤蔓 / 工兵 + 抢掠 / 魔偶师 + 羽毛雪 / 狂欢节 / 风卷巨魔泡泡 / 要塞操作台；蓝色公主的句子另有千手痒痒裤版） | `gen_siege_theaters.py` → `data/theater/siege/` |
+  | `theaters.py` | 12 段失败小剧场（30 句，照每一波的特色写：泡泡潮 / 空降 / 巨魔军团 / 迷雾 / 攻城大队 / 狂风 / 装备日 + 藤蔓 / 工兵 + 抢掠 / 魔偶师 + 羽毛雪 / 狂欢节 / 风卷巨魔泡泡 / 要塞操作台；蓝色公主的句子另有千手痒痒裤版；两人爆发、怪回来以后有一段「释放后被接着挠」：怪用自己的工具专挑弱点，粉色边笑边求饶、蓝色越说越碎） | `gen_siege_theaters.py` → `data/theater/siege/`（被抓住后公主说话的每一句自动补 `tickle`；立绘按幕换表情 `EMOTION`；第 4 幕第一步换上战败 CG `siege_fail_<N>`） |
   | `scenes_1/2/3.py` | 23 组三来源组合演出（约 32 句；机制在 `gen_siege_scenes.py` 的 `MECH`） | `gen_siege_scenes.py` → `data/siege_scenes.json`（+ 蓝色版）、`combos.json` |
   | `reactions_1/2.py`、`reactions_bosses.py` | 攻城怪 / 敌塔 / 陷阱 / 临时装备 / Boss（按技能）的受挠台词 | `gen_siege_reactions.py`（`siege_sources(who)`）→ 两份 `reactions.json` |
   | `team_lines.py` | 39 个配合技的发动字幕 + 怪物回嘴 | 同上 |

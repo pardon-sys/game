@@ -83,12 +83,14 @@
 		{
 			"act": 1,
 			"speaker": "公主",
-			"text": "蓝、蓝色的？你在哪？雾太大了！"
+			"text": "蓝、蓝色的？你在哪？雾太大了！",
+			"emotion": "angry"
 		},
 		{
 			"act": 1,
 			"speaker": "蓝色的公主",
-			"text": "……在你……左边。……三步。……别动。"
+			"text": "……在你……左边。……三步。……别动。",
+			"emotion": "normal"
 		},
 		{
 			"act": 1,
@@ -118,12 +120,36 @@
 		{
 			"act": 1,
 			"speaker": "公主",
-			"text": "冰、冰凉凉的手！是谁！"
+			"text": "冰、冰凉凉的手！是谁！",
+			"emotion": "angry",
+			"actions": [
+				{
+					"do": "tickle",
+					"who": "pink",
+					"by": "foe1",
+					"repeat": 5,
+					"interval": 0.22,
+					"fx": "hand",
+					"zone": "sole"
+				}
+			]
 		},
 		{
 			"act": 1,
 			"speaker": "蓝色的公主",
-			"text": "……是幽灵。……两只。……一模一样。"
+			"text": "……是幽灵。……两只。……一模一样。",
+			"emotion": "normal",
+			"actions": [
+				{
+					"do": "tickle",
+					"who": "blue",
+					"by": "foe2",
+					"repeat": 5,
+					"interval": 0.22,
+					"fx": "brush",
+					"zone": "thigh"
+				}
+			]
 		},
 		{
 			"act": 2,
@@ -144,7 +170,19 @@
 		{
 			"act": 2,
 			"speaker": "公主",
-			"text": "嘻嘻嘻！看、看不见在哪里挠——更痒了哈哈哈！"
+			"text": "嘻嘻嘻！看、看不见在哪里挠——更痒了哈哈哈！",
+			"emotion": "giggle",
+			"actions": [
+				{
+					"do": "tickle",
+					"who": "pink",
+					"by": "foe1",
+					"repeat": 5,
+					"interval": 0.22,
+					"fx": "hand",
+					"zone": "sole"
+				}
+			]
 		},
 		{
 			"act": 2,
@@ -165,12 +203,25 @@
 		{
 			"act": 2,
 			"speaker": "蓝色的公主",
-			"text": "……左……右……一样的……节拍……躲哪边……都……"
+			"text": "……左……右……一样的……节拍……躲哪边……都……",
+			"emotion": "giggle",
+			"actions": [
+				{
+					"do": "tickle",
+					"who": "blue",
+					"by": "foe2",
+					"repeat": 5,
+					"interval": 0.22,
+					"fx": "brush",
+					"zone": "thigh"
+				}
+			]
 		},
 		{
 			"act": 2,
 			"speaker": "公主",
 			"text": "哈哈哈……我听见你在笑了！雾里也听得见！",
+			"emotion": "giggle",
 			"actions": [
 				{
 					"do": "bubble",
@@ -181,13 +232,34 @@
 					"do": "bubble",
 					"who": "blue",
 					"kind": "laugh"
+				},
+				{
+					"do": "tickle",
+					"who": "pink",
+					"by": "foe1",
+					"repeat": 5,
+					"interval": 0.22,
+					"fx": "hand",
+					"zone": "sole"
 				}
 			]
 		},
 		{
 			"act": 2,
 			"speaker": "蓝色的公主",
-			"text": "……是回声。……雾里……回声大。"
+			"text": "……是回声。……雾里……回声大。",
+			"emotion": "giggle",
+			"actions": [
+				{
+					"do": "tickle",
+					"who": "blue",
+					"by": "foe2",
+					"repeat": 5,
+					"interval": 0.22,
+					"fx": "brush",
+					"zone": "thigh"
+				}
+			]
 		},
 		{
 			"act": 3,
@@ -213,7 +285,19 @@
 		{
 			"act": 3,
 			"speaker": "公主",
-			"text": "要、要满了——雾、雾快散开——！"
+			"text": "要、要满了——雾、雾快散开——！",
+			"emotion": "helpless_1",
+			"actions": [
+				{
+					"do": "tickle",
+					"who": "pink",
+					"by": "foe1",
+					"repeat": 5,
+					"interval": 0.22,
+					"fx": "hand",
+					"zone": "sole"
+				}
+			]
 		},
 		{
 			"act": "burst",
@@ -268,7 +352,8 @@
 		{
 			"act": 3,
 			"speaker": "蓝色的公主",
-			"text": "……看见了。……我也……满了。"
+			"text": "……看见了。……我也……满了。",
+			"emotion": "helpless_1"
 		},
 		{
 			"act": "burst",
@@ -323,7 +408,8 @@
 		{
 			"act": 3,
 			"speaker": "公主",
-			"text": "呼……雾、雾散了……可是……又飘回来了……"
+			"text": "呼……雾、雾散了……可是……又飘回来了……",
+			"emotion": "helpless_2"
 		},
 		{
 			"act": 3,
@@ -372,6 +458,7 @@
 			"act": 3,
 			"speaker": "公主",
 			"text": "呀啊——！又、又看不见了——脚心……哈哈哈哈！",
+			"emotion": "helpless_2",
 			"actions": [
 				{
 					"do": "bubble",
@@ -382,18 +469,109 @@
 					"do": "bubble",
 					"who": "blue",
 					"kind": "laugh"
+				},
+				{
+					"do": "tickle",
+					"who": "pink",
+					"by": "foe1",
+					"repeat": 5,
+					"interval": 0.22,
+					"fx": "hand",
+					"zone": "sole"
 				}
 			]
 		},
 		{
 			"act": 3,
 			"speaker": "蓝色的公主",
-			"text": "……哈哈……凉、凉的……贴在屁股上……哈哈哈哈！"
+			"text": "……哈哈……凉、凉的……贴在屁股上……哈哈哈哈！",
+			"emotion": "helpless_2",
+			"actions": [
+				{
+					"do": "tickle",
+					"who": "blue",
+					"by": "foe2",
+					"repeat": 5,
+					"interval": 0.22,
+					"fx": "brush",
+					"zone": "butt"
+				}
+			]
+		},
+		{
+			"act": 3,
+			"speaker": "",
+			"text": "（雾里的手越来越多：几根手指揪住她的脚趾往后掰，指尖贴着绷紧的脚心飞快地挠；蓝色公主那边，两只手一边一个揉着她的腿根）",
+			"actions": [
+				{
+					"do": "tickle",
+					"who": "pink",
+					"by": "foe1",
+					"repeat": 8,
+					"interval": 0.22,
+					"fx": "hand",
+					"zone": "sole"
+				},
+				{
+					"do": "tickle",
+					"who": "blue",
+					"by": "foe2",
+					"repeat": 8,
+					"interval": 0.22,
+					"fx": "brush",
+					"zone": "thigh"
+				}
+			]
+		},
+		{
+			"act": 3,
+			"speaker": "公主",
+			"text": "哈哈哈哈！脚心绷、绷紧了好痒——别掰了别掰了，我投降——雾、雾快散吧哈哈哈！",
+			"emotion": "helpless_2",
+			"actions": [
+				{
+					"do": "bubble",
+					"who": "pink",
+					"kind": "laugh"
+				},
+				{
+					"do": "bubble",
+					"who": "blue",
+					"kind": "laugh"
+				},
+				{
+					"do": "tickle",
+					"who": "pink",
+					"by": "foe1",
+					"repeat": 5,
+					"interval": 0.22,
+					"fx": "hand",
+					"zone": "sole"
+				}
+			]
+		},
+		{
+			"act": 3,
+			"speaker": "蓝色的公主",
+			"text": "……两边……一起……揉……我……我说……不出……话……",
+			"emotion": "helpless_2",
+			"actions": [
+				{
+					"do": "tickle",
+					"who": "blue",
+					"by": "foe2",
+					"repeat": 5,
+					"interval": 0.22,
+					"fx": "brush",
+					"zone": "butt"
+				}
+			]
 		},
 		{
 			"act": 4,
 			"speaker": "",
 			"text": "（雾里伸出一双又一双半透明的手，有的挠脚心，有的挠腿根，谁也不知道下一只手从哪里来）",
+			"portrait": "siege_fail_4",
 			"actions": [
 				{
 					"do": "pose",
@@ -436,12 +614,25 @@
 		{
 			"act": 4,
 			"speaker": "公主",
-			"text": "哈哈哈哈！到、到底有几只——认输！认输啦！"
+			"text": "哈哈哈哈！到、到底有几只——认输！认输啦！",
+			"emotion": "helpless_2",
+			"actions": [
+				{
+					"do": "tickle",
+					"who": "pink",
+					"by": "foe1",
+					"repeat": 5,
+					"interval": 0.22,
+					"fx": "hand",
+					"zone": "sole"
+				}
+			]
 		},
 		{
 			"act": 4,
 			"speaker": "蓝色的公主",
 			"text": "……哈哈……数不清……认……认了……哈哈哈……",
+			"emotion": "helpless_2",
 			"actions": [
 				{
 					"do": "bubble",
@@ -452,6 +643,15 @@
 					"do": "bubble",
 					"who": "blue",
 					"kind": "laugh"
+				},
+				{
+					"do": "tickle",
+					"who": "blue",
+					"by": "foe2",
+					"repeat": 5,
+					"interval": 0.22,
+					"fx": "brush",
+					"zone": "butt"
 				}
 			]
 		},
@@ -463,12 +663,14 @@
 		{
 			"act": 4,
 			"speaker": "公主",
-			"text": "哈……哈……下次……起雾的时候我们站在一起……"
+			"text": "哈……哈……下次……起雾的时候我们站在一起……",
+			"emotion": "damaged"
 		},
 		{
 			"act": 4,
 			"speaker": "蓝色的公主",
-			"text": "……雾里……用冰光塔。……照得见……就打得着。"
+			"text": "……雾里……用冰光塔。……照得见……就打得着。",
+			"emotion": "shy"
 		},
 		{
 			"act": 4,

@@ -83,12 +83,14 @@
 		{
 			"act": 1,
 			"speaker": "公主",
-			"text": "它们在搬镇上的东西！那是面包店的面包！"
+			"text": "它们在搬镇上的东西！那是面包店的面包！",
+			"emotion": "angry"
 		},
 		{
 			"act": 1,
 			"speaker": "蓝色的公主",
-			"text": "……抢掠小队。……工兵……在后面……搭塔。"
+			"text": "……抢掠小队。……工兵……在后面……搭塔。",
+			"emotion": "normal"
 		},
 		{
 			"act": 1,
@@ -118,12 +120,36 @@
 		{
 			"act": 1,
 			"speaker": "公主",
-			"text": "我、我们不是战利品！放下来！"
+			"text": "我、我们不是战利品！放下来！",
+			"emotion": "angry",
+			"actions": [
+				{
+					"do": "tickle",
+					"who": "pink",
+					"by": "foe1",
+					"repeat": 5,
+					"interval": 0.22,
+					"fx": "hand",
+					"zone": "sole"
+				}
+			]
 		},
 		{
 			"act": 1,
 			"speaker": "蓝色的公主",
-			"text": "……被……当成……木料了。"
+			"text": "……被……当成……木料了。",
+			"emotion": "normal",
+			"actions": [
+				{
+					"do": "tickle",
+					"who": "blue",
+					"by": "foe2",
+					"repeat": 5,
+					"interval": 0.22,
+					"fx": "brush",
+					"zone": "thigh"
+				}
+			]
 		},
 		{
 			"act": 2,
@@ -144,7 +170,19 @@
 		{
 			"act": 2,
 			"speaker": "公主",
-			"text": "嘻嘻嘻！嘿、嘿咻一声刷一下——哈哈哈好痒！"
+			"text": "嘻嘻嘻！嘿、嘿咻一声刷一下——哈哈哈好痒！",
+			"emotion": "giggle",
+			"actions": [
+				{
+					"do": "tickle",
+					"who": "pink",
+					"by": "foe1",
+					"repeat": 5,
+					"interval": 0.22,
+					"fx": "hand",
+					"zone": "sole"
+				}
+			]
 		},
 		{
 			"act": 2,
@@ -165,12 +203,25 @@
 		{
 			"act": 2,
 			"speaker": "蓝色的公主",
-			"text": "……旗角在外……裤子在里……旗……升到……腿根了……"
+			"text": "……旗角在外……裤子在里……旗……升到……腿根了……",
+			"emotion": "giggle",
+			"actions": [
+				{
+					"do": "tickle",
+					"who": "blue",
+					"by": "foe2",
+					"repeat": 5,
+					"interval": 0.22,
+					"fx": "brush",
+					"zone": "thigh"
+				}
+			]
 		},
 		{
 			"act": 2,
 			"speaker": "公主",
 			"text": "哈哈哈……蓝色的，你、你被插上红旗了！",
+			"emotion": "giggle",
 			"actions": [
 				{
 					"do": "bubble",
@@ -181,13 +232,34 @@
 					"do": "bubble",
 					"who": "blue",
 					"kind": "laugh"
+				},
+				{
+					"do": "tickle",
+					"who": "pink",
+					"by": "foe1",
+					"repeat": 5,
+					"interval": 0.22,
+					"fx": "hand",
+					"zone": "sole"
 				}
 			]
 		},
 		{
 			"act": 2,
 			"speaker": "蓝色的公主",
-			"text": "……被占领了。……裤子……先投降的。"
+			"text": "……被占领了。……裤子……先投降的。",
+			"emotion": "giggle",
+			"actions": [
+				{
+					"do": "tickle",
+					"who": "blue",
+					"by": "foe2",
+					"repeat": 5,
+					"interval": 0.22,
+					"fx": "brush",
+					"zone": "thigh"
+				}
+			]
 		},
 		{
 			"act": 3,
@@ -213,7 +285,19 @@
 		{
 			"act": 3,
 			"speaker": "蓝色的公主",
-			"text": "……要出来了。……裤子……把红旗……顶飞了……"
+			"text": "……要出来了。……裤子……把红旗……顶飞了……",
+			"emotion": "helpless_1",
+			"actions": [
+				{
+					"do": "tickle",
+					"who": "blue",
+					"by": "foe2",
+					"repeat": 5,
+					"interval": 0.22,
+					"fx": "brush",
+					"zone": "butt"
+				}
+			]
 		},
 		{
 			"act": "burst",
@@ -268,7 +352,8 @@
 		{
 			"act": 3,
 			"speaker": "公主",
-			"text": "塔、塔塌了——我也要满了——！"
+			"text": "塔、塔塌了——我也要满了——！",
+			"emotion": "helpless_1"
 		},
 		{
 			"act": "burst",
@@ -323,7 +408,8 @@
 		{
 			"act": 3,
 			"speaker": "蓝色的公主",
-			"text": "……呼。……面包……捡回来。……一会儿。"
+			"text": "……呼。……面包……捡回来。……一会儿。",
+			"emotion": "helpless_2"
 		},
 		{
 			"act": 3,
@@ -372,6 +458,7 @@
 			"act": 3,
 			"speaker": "公主",
 			"text": "呀啊——！刷、刷子……比刚才痒好多！哈哈哈哈！",
+			"emotion": "helpless_2",
 			"actions": [
 				{
 					"do": "bubble",
@@ -382,18 +469,109 @@
 					"do": "bubble",
 					"who": "blue",
 					"kind": "laugh"
+				},
+				{
+					"do": "tickle",
+					"who": "pink",
+					"by": "foe1",
+					"repeat": 5,
+					"interval": 0.22,
+					"fx": "hand",
+					"zone": "sole"
 				}
 			]
 		},
 		{
 			"act": 3,
 			"speaker": "蓝色的公主",
-			"text": "……哈哈……号子一喊……裤子……也跟着……哈哈哈哈！"
+			"text": "……哈哈……号子一喊……裤子……也跟着……哈哈哈哈！",
+			"emotion": "helpless_2",
+			"actions": [
+				{
+					"do": "tickle",
+					"who": "blue",
+					"by": "foe2",
+					"repeat": 5,
+					"interval": 0.22,
+					"fx": "brush",
+					"zone": "butt"
+				}
+			]
+		},
+		{
+			"act": 3,
+			"speaker": "",
+			"text": "（地精工兵拿刷木料的硬毛刷沿着她的足弓来回刷，搬运小鬼扛着长杆子，用杆头的羽毛扫蓝色公主的屁股，一边扫一边喊号子）",
+			"actions": [
+				{
+					"do": "tickle",
+					"who": "pink",
+					"by": "foe1",
+					"repeat": 8,
+					"interval": 0.22,
+					"fx": "hand",
+					"zone": "sole"
+				},
+				{
+					"do": "tickle",
+					"who": "blue",
+					"by": "foe2",
+					"repeat": 8,
+					"interval": 0.22,
+					"fx": "brush",
+					"zone": "butt"
+				}
+			]
+		},
+		{
+			"act": 3,
+			"speaker": "公主",
+			"text": "哈哈哈哈！硬、硬毛刷——我的脚不是木头——别刷了，塔给你们搭，给你们搭哈哈哈！",
+			"emotion": "helpless_2",
+			"actions": [
+				{
+					"do": "bubble",
+					"who": "pink",
+					"kind": "laugh"
+				},
+				{
+					"do": "bubble",
+					"who": "blue",
+					"kind": "laugh"
+				},
+				{
+					"do": "tickle",
+					"who": "pink",
+					"by": "foe1",
+					"repeat": 5,
+					"interval": 0.22,
+					"fx": "hand",
+					"zone": "sole"
+				}
+			]
+		},
+		{
+			"act": 3,
+			"speaker": "蓝色的公主",
+			"text": "……号子一喊……裤子的手……就……跟着……捏……",
+			"emotion": "helpless_2",
+			"actions": [
+				{
+					"do": "tickle",
+					"who": "blue",
+					"by": "foe2",
+					"repeat": 5,
+					"interval": 0.22,
+					"fx": "brush",
+					"zone": "butt"
+				}
+			]
 		},
 		{
 			"act": 4,
 			"speaker": "",
 			"text": "（工兵们把两个人绑在新搭的敌塔上，一层一层往上搭，每搭一层，就有一把刷子刷脚心、一面红旗扫腿根）",
+			"portrait": "siege_fail_8",
 			"actions": [
 				{
 					"do": "pose",
@@ -436,12 +614,25 @@
 		{
 			"act": 4,
 			"speaker": "公主",
-			"text": "哈哈哈哈！塔、塔越搭越高——认输！认输啦！"
+			"text": "哈哈哈哈！塔、塔越搭越高——认输！认输啦！",
+			"emotion": "helpless_2",
+			"actions": [
+				{
+					"do": "tickle",
+					"who": "pink",
+					"by": "foe1",
+					"repeat": 5,
+					"interval": 0.22,
+					"fx": "hand",
+					"zone": "sole"
+				}
+			]
 		},
 		{
 			"act": 4,
 			"speaker": "蓝色的公主",
 			"text": "……哈哈……塔顶上……裤子……插、插旗……哈哈哈……",
+			"emotion": "helpless_2",
 			"actions": [
 				{
 					"do": "bubble",
@@ -452,6 +643,15 @@
 					"do": "bubble",
 					"who": "blue",
 					"kind": "laugh"
+				},
+				{
+					"do": "tickle",
+					"who": "blue",
+					"by": "foe2",
+					"repeat": 5,
+					"interval": 0.22,
+					"fx": "brush",
+					"zone": "butt"
 				}
 			]
 		},
@@ -463,12 +663,14 @@
 		{
 			"act": 4,
 			"speaker": "公主",
-			"text": "哈……哈……下次……工兵一扛木料过来就打……"
+			"text": "哈……哈……下次……工兵一扛木料过来就打……",
+			"emotion": "damaged"
 		},
 		{
 			"act": 4,
 			"speaker": "蓝色的公主",
-			"text": "……举红旗的……先拦。……面包……要抢回来。"
+			"text": "……举红旗的……先拦。……面包……要抢回来。",
+			"emotion": "shy"
 		},
 		{
 			"act": 4,

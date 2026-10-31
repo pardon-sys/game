@@ -83,12 +83,14 @@
 		{
 			"act": 1,
 			"speaker": "公主",
-			"text": "丝、丝线！它在操纵大家！"
+			"text": "丝、丝线！它在操纵大家！",
+			"emotion": "angry"
 		},
 		{
 			"act": 1,
 			"speaker": "蓝色的公主",
-			"text": "……羽毛……挡视线。……丝线……看不清。"
+			"text": "……羽毛……挡视线。……丝线……看不清。",
+			"emotion": "normal"
 		},
 		{
 			"act": 1,
@@ -118,12 +120,36 @@
 		{
 			"act": 1,
 			"speaker": "公主",
-			"text": "动、动不了！我的手自己举起来了！"
+			"text": "动、动不了！我的手自己举起来了！",
+			"emotion": "angry",
+			"actions": [
+				{
+					"do": "tickle",
+					"who": "pink",
+					"by": "foe1",
+					"repeat": 5,
+					"interval": 0.22,
+					"fx": "hand",
+					"zone": "sole"
+				}
+			]
 		},
 		{
 			"act": 1,
 			"speaker": "蓝色的公主",
-			"text": "……被……提线了。……脚……也是。"
+			"text": "……被……提线了。……脚……也是。",
+			"emotion": "normal",
+			"actions": [
+				{
+					"do": "tickle",
+					"who": "blue",
+					"by": "foe2",
+					"repeat": 5,
+					"interval": 0.22,
+					"fx": "brush",
+					"zone": "thigh"
+				}
+			]
 		},
 		{
 			"act": 2,
@@ -144,7 +170,19 @@
 		{
 			"act": 2,
 			"speaker": "公主",
-			"text": "嘻嘻嘻！脚、脚自己抬起来接羽毛——哈哈哈好痒！"
+			"text": "嘻嘻嘻！脚、脚自己抬起来接羽毛——哈哈哈好痒！",
+			"emotion": "giggle",
+			"actions": [
+				{
+					"do": "tickle",
+					"who": "pink",
+					"by": "foe1",
+					"repeat": 5,
+					"interval": 0.22,
+					"fx": "hand",
+					"zone": "sole"
+				}
+			]
 		},
 		{
 			"act": 2,
@@ -165,12 +203,25 @@
 		{
 			"act": 2,
 			"speaker": "蓝色的公主",
-			"text": "……摆好了……姿势……我……自己……没摆……"
+			"text": "……摆好了……姿势……我……自己……没摆……",
+			"emotion": "giggle",
+			"actions": [
+				{
+					"do": "tickle",
+					"who": "blue",
+					"by": "foe2",
+					"repeat": 5,
+					"interval": 0.22,
+					"fx": "brush",
+					"zone": "thigh"
+				}
+			]
 		},
 		{
 			"act": 2,
 			"speaker": "公主",
 			"text": "哈哈哈……蓝色的，你、你在跳舞！",
+			"emotion": "giggle",
 			"actions": [
 				{
 					"do": "bubble",
@@ -181,13 +232,34 @@
 					"do": "bubble",
 					"who": "blue",
 					"kind": "laugh"
+				},
+				{
+					"do": "tickle",
+					"who": "pink",
+					"by": "foe1",
+					"repeat": 5,
+					"interval": 0.22,
+					"fx": "hand",
+					"zone": "sole"
 				}
 			]
 		},
 		{
 			"act": 2,
 			"speaker": "蓝色的公主",
-			"text": "……是它……在跳。……我……只是……线。"
+			"text": "……是它……在跳。……我……只是……线。",
+			"emotion": "giggle",
+			"actions": [
+				{
+					"do": "tickle",
+					"who": "blue",
+					"by": "foe2",
+					"repeat": 5,
+					"interval": 0.22,
+					"fx": "brush",
+					"zone": "thigh"
+				}
+			]
 		},
 		{
 			"act": 3,
@@ -213,7 +285,19 @@
 		{
 			"act": 3,
 			"speaker": "公主",
-			"text": "要、要满了——丝线全都给我断掉——！"
+			"text": "要、要满了——丝线全都给我断掉——！",
+			"emotion": "helpless_1",
+			"actions": [
+				{
+					"do": "tickle",
+					"who": "pink",
+					"by": "foe1",
+					"repeat": 5,
+					"interval": 0.22,
+					"fx": "hand",
+					"zone": "sole"
+				}
+			]
 		},
 		{
 			"act": "burst",
@@ -268,7 +352,8 @@
 		{
 			"act": 3,
 			"speaker": "蓝色的公主",
-			"text": "……线断了。……我……也……满了。"
+			"text": "……线断了。……我……也……满了。",
+			"emotion": "helpless_1"
 		},
 		{
 			"act": "burst",
@@ -323,7 +408,8 @@
 		{
 			"act": 3,
 			"speaker": "公主",
-			"text": "呼……雪、雪停了……"
+			"text": "呼……雪、雪停了……",
+			"emotion": "helpless_2"
 		},
 		{
 			"act": 3,
@@ -372,6 +458,7 @@
 			"act": 3,
 			"speaker": "公主",
 			"text": "呀啊——！又、又被提起来了——脚心……哈哈哈哈！",
+			"emotion": "helpless_2",
 			"actions": [
 				{
 					"do": "bubble",
@@ -382,18 +469,109 @@
 					"do": "bubble",
 					"who": "blue",
 					"kind": "laugh"
+				},
+				{
+					"do": "tickle",
+					"who": "pink",
+					"by": "foe1",
+					"repeat": 5,
+					"interval": 0.22,
+					"fx": "hand",
+					"zone": "sole"
 				}
 			]
 		},
 		{
 			"act": 3,
 			"speaker": "蓝色的公主",
-			"text": "……哈哈……线……绕着……屁股……一圈……哈哈哈哈！"
+			"text": "……哈哈……线……绕着……屁股……一圈……哈哈哈哈！",
+			"emotion": "helpless_2",
+			"actions": [
+				{
+					"do": "tickle",
+					"who": "blue",
+					"by": "foe2",
+					"repeat": 5,
+					"interval": 0.22,
+					"fx": "brush",
+					"zone": "butt"
+				}
+			]
+		},
+		{
+			"act": 3,
+			"speaker": "",
+			"text": "（魔偶师用丝线把她的脚尖提起来，脚心朝天，妖精们拿着软刷排队刷过去；另一根丝线绕着蓝色公主的大腿一圈圈收紧，线上的绒球来回蹭）",
+			"actions": [
+				{
+					"do": "tickle",
+					"who": "pink",
+					"by": "foe1",
+					"repeat": 8,
+					"interval": 0.22,
+					"fx": "hand",
+					"zone": "sole"
+				},
+				{
+					"do": "tickle",
+					"who": "blue",
+					"by": "foe2",
+					"repeat": 8,
+					"interval": 0.22,
+					"fx": "brush",
+					"zone": "thigh"
+				}
+			]
+		},
+		{
+			"act": 3,
+			"speaker": "公主",
+			"text": "哈哈哈哈！脚、脚心朝天了——刷子排队刷——我不跳了！线、线快剪断哈哈哈！",
+			"emotion": "helpless_2",
+			"actions": [
+				{
+					"do": "bubble",
+					"who": "pink",
+					"kind": "laugh"
+				},
+				{
+					"do": "bubble",
+					"who": "blue",
+					"kind": "laugh"
+				},
+				{
+					"do": "tickle",
+					"who": "pink",
+					"by": "foe1",
+					"repeat": 5,
+					"interval": 0.22,
+					"fx": "hand",
+					"zone": "sole"
+				}
+			]
+		},
+		{
+			"act": 3,
+			"speaker": "蓝色的公主",
+			"text": "……绒球……绕着……大腿……蹭……线……别、别收紧……",
+			"emotion": "helpless_2",
+			"actions": [
+				{
+					"do": "tickle",
+					"who": "blue",
+					"by": "foe2",
+					"repeat": 5,
+					"interval": 0.22,
+					"fx": "brush",
+					"zone": "butt"
+				}
+			]
 		},
 		{
 			"act": 4,
 			"speaker": "",
 			"text": "（魔偶师让两个人面对面跳起了圆舞，每转一圈，妖精们就在脚心和腿根上各扫一下，羽毛雪落个不停）",
+			"portrait": "siege_fail_9",
 			"actions": [
 				{
 					"do": "pose",
@@ -436,12 +614,25 @@
 		{
 			"act": 4,
 			"speaker": "公主",
-			"text": "哈哈哈哈！跳、跳不动了——认输！认输啦！"
+			"text": "哈哈哈哈！跳、跳不动了——认输！认输啦！",
+			"emotion": "helpless_2",
+			"actions": [
+				{
+					"do": "tickle",
+					"who": "pink",
+					"by": "foe1",
+					"repeat": 5,
+					"interval": 0.22,
+					"fx": "hand",
+					"zone": "sole"
+				}
+			]
 		},
 		{
 			"act": 4,
 			"speaker": "蓝色的公主",
 			"text": "……哈哈……谢幕……认输……谢幕……哈哈哈……",
+			"emotion": "helpless_2",
 			"actions": [
 				{
 					"do": "bubble",
@@ -452,6 +643,15 @@
 					"do": "bubble",
 					"who": "blue",
 					"kind": "laugh"
+				},
+				{
+					"do": "tickle",
+					"who": "blue",
+					"by": "foe2",
+					"repeat": 5,
+					"interval": 0.22,
+					"fx": "brush",
+					"zone": "butt"
 				}
 			]
 		},
@@ -463,12 +663,14 @@
 		{
 			"act": 4,
 			"speaker": "公主",
-			"text": "哈……哈……下次……我先剪断丝线……"
+			"text": "哈……哈……下次……我先剪断丝线……",
+			"emotion": "damaged"
 		},
 		{
 			"act": 4,
 			"speaker": "蓝色的公主",
-			"text": "……羽毛雪……用暴风雪……对冲。……魔偶师……看准……再打。"
+			"text": "……羽毛雪……用暴风雪……对冲。……魔偶师……看准……再打。",
+			"emotion": "shy"
 		},
 		{
 			"act": 4,

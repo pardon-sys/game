@@ -83,12 +83,14 @@
 		{
 			"act": 1,
 			"speaker": "公主",
-			"text": "打、打不动！它们的盾牌太硬了！"
+			"text": "打、打不动！它们的盾牌太硬了！",
+			"emotion": "angry"
 		},
 		{
 			"act": 1,
 			"speaker": "蓝色的公主",
-			"text": "……盾牌……正面……没用。……要绕到……背后。"
+			"text": "……盾牌……正面……没用。……要绕到……背后。",
+			"emotion": "normal"
 		},
 		{
 			"act": 1,
@@ -118,12 +120,36 @@
 		{
 			"act": 1,
 			"speaker": "公主",
-			"text": "车、车斗！又是车斗！"
+			"text": "车、车斗！又是车斗！",
+			"emotion": "angry",
+			"actions": [
+				{
+					"do": "tickle",
+					"who": "pink",
+					"by": "foe1",
+					"repeat": 5,
+					"interval": 0.22,
+					"fx": "hand",
+					"zone": "sole"
+				}
+			]
 		},
 		{
 			"act": 1,
 			"speaker": "蓝色的公主",
-			"text": "……盾牌……围成墙。……出不去。"
+			"text": "……盾牌……围成墙。……出不去。",
+			"emotion": "normal",
+			"actions": [
+				{
+					"do": "tickle",
+					"who": "blue",
+					"by": "foe2",
+					"repeat": 5,
+					"interval": 0.22,
+					"fx": "brush",
+					"zone": "thigh"
+				}
+			]
 		},
 		{
 			"act": 2,
@@ -144,7 +170,19 @@
 		{
 			"act": 2,
 			"speaker": "公主",
-			"text": "嘻嘻嘻！钳、钳子从缝里伸进来——哈哈哈好痒！"
+			"text": "嘻嘻嘻！钳、钳子从缝里伸进来——哈哈哈好痒！",
+			"emotion": "giggle",
+			"actions": [
+				{
+					"do": "tickle",
+					"who": "pink",
+					"by": "foe1",
+					"repeat": 5,
+					"interval": 0.22,
+					"fx": "hand",
+					"zone": "sole"
+				}
+			]
 		},
 		{
 			"act": 2,
@@ -165,12 +203,25 @@
 		{
 			"act": 2,
 			"speaker": "蓝色的公主",
-			"text": "……颠一下……爬一截……这条路……不平……"
+			"text": "……颠一下……爬一截……这条路……不平……",
+			"emotion": "giggle",
+			"actions": [
+				{
+					"do": "tickle",
+					"who": "blue",
+					"by": "foe2",
+					"repeat": 5,
+					"interval": 0.22,
+					"fx": "brush",
+					"zone": "thigh"
+				}
+			]
 		},
 		{
 			"act": 2,
 			"speaker": "公主",
 			"text": "哈哈哈……蓝色的，你、你在数颠了几下吗！",
+			"emotion": "giggle",
 			"actions": [
 				{
 					"do": "bubble",
@@ -181,13 +232,34 @@
 					"do": "bubble",
 					"who": "blue",
 					"kind": "laugh"
+				},
+				{
+					"do": "tickle",
+					"who": "pink",
+					"by": "foe1",
+					"repeat": 5,
+					"interval": 0.22,
+					"fx": "hand",
+					"zone": "sole"
 				}
 			]
 		},
 		{
 			"act": 2,
 			"speaker": "蓝色的公主",
-			"text": "……十七。……路……太烂。"
+			"text": "……十七。……路……太烂。",
+			"emotion": "giggle",
+			"actions": [
+				{
+					"do": "tickle",
+					"who": "blue",
+					"by": "foe2",
+					"repeat": 5,
+					"interval": 0.22,
+					"fx": "brush",
+					"zone": "thigh"
+				}
+			]
 		},
 		{
 			"act": 3,
@@ -213,7 +285,19 @@
 		{
 			"act": 3,
 			"speaker": "蓝色的公主",
-			"text": "……要出来了。……盾牌……挡不住……魔力。"
+			"text": "……要出来了。……盾牌……挡不住……魔力。",
+			"emotion": "helpless_1",
+			"actions": [
+				{
+					"do": "tickle",
+					"who": "blue",
+					"by": "foe2",
+					"repeat": 5,
+					"interval": 0.22,
+					"fx": "brush",
+					"zone": "butt"
+				}
+			]
 		},
 		{
 			"act": "burst",
@@ -268,7 +352,8 @@
 		{
 			"act": 3,
 			"speaker": "公主",
-			"text": "盾、盾牌放下了——我也要满了——！"
+			"text": "盾、盾牌放下了——我也要满了——！",
+			"emotion": "helpless_1"
 		},
 		{
 			"act": "burst",
@@ -323,7 +408,8 @@
 		{
 			"act": 3,
 			"speaker": "蓝色的公主",
-			"text": "……背后。……露出来了。……可是……没力气……打了。"
+			"text": "……背后。……露出来了。……可是……没力气……打了。",
+			"emotion": "helpless_2"
 		},
 		{
 			"act": 3,
@@ -372,6 +458,7 @@
 			"act": 3,
 			"speaker": "公主",
 			"text": "呀啊——！钳、钳尖……碰一下就……哈哈哈哈！",
+			"emotion": "helpless_2",
 			"actions": [
 				{
 					"do": "bubble",
@@ -382,18 +469,109 @@
 					"do": "bubble",
 					"who": "blue",
 					"kind": "laugh"
+				},
+				{
+					"do": "tickle",
+					"who": "pink",
+					"by": "foe1",
+					"repeat": 5,
+					"interval": 0.22,
+					"fx": "hand",
+					"zone": "sole"
 				}
 			]
 		},
 		{
 			"act": 3,
 			"speaker": "蓝色的公主",
-			"text": "……哈哈……车、车一颠……屁股……就……哈哈哈哈！"
+			"text": "……哈哈……车、车一颠……屁股……就……哈哈哈哈！",
+			"emotion": "helpless_2",
+			"actions": [
+				{
+					"do": "tickle",
+					"who": "blue",
+					"by": "foe2",
+					"repeat": 5,
+					"interval": 0.22,
+					"fx": "brush",
+					"zone": "butt"
+				}
+			]
+		},
+		{
+			"act": 3,
+			"speaker": "",
+			"text": "（螃蟹的钳子夹住她的脚跟固定住，另一只钳子的尖儿沿着足弓来回划；车斗里的小木手抓着蓝色公主的屁股，跟着车轮的颠簸一捏一捏）",
+			"actions": [
+				{
+					"do": "tickle",
+					"who": "pink",
+					"by": "foe1",
+					"repeat": 8,
+					"interval": 0.22,
+					"fx": "hand",
+					"zone": "sole"
+				},
+				{
+					"do": "tickle",
+					"who": "blue",
+					"by": "foe2",
+					"repeat": 8,
+					"interval": 0.22,
+					"fx": "brush",
+					"zone": "butt"
+				}
+			]
+		},
+		{
+			"act": 3,
+			"speaker": "公主",
+			"text": "哈哈哈哈！足、足弓——钳子尖别划了——停车！我下车！我认输下车哈哈哈！",
+			"emotion": "helpless_2",
+			"actions": [
+				{
+					"do": "bubble",
+					"who": "pink",
+					"kind": "laugh"
+				},
+				{
+					"do": "bubble",
+					"who": "blue",
+					"kind": "laugh"
+				},
+				{
+					"do": "tickle",
+					"who": "pink",
+					"by": "foe1",
+					"repeat": 5,
+					"interval": 0.22,
+					"fx": "hand",
+					"zone": "sole"
+				}
+			]
+		},
+		{
+			"act": 3,
+			"speaker": "蓝色的公主",
+			"text": "……颠一下……捏一下……我……受、受不了……",
+			"emotion": "helpless_2",
+			"actions": [
+				{
+					"do": "tickle",
+					"who": "blue",
+					"by": "foe2",
+					"repeat": 5,
+					"interval": 0.22,
+					"fx": "brush",
+					"zone": "butt"
+				}
+			]
 		},
 		{
 			"act": 4,
 			"speaker": "",
 			"text": "（攻城车绕着广场转圈，螃蟹们举着盾牌跟在旁边跑，钳子挠脚心，小手揉腿根，一刻不停）",
+			"portrait": "siege_fail_5",
 			"actions": [
 				{
 					"do": "pose",
@@ -436,12 +614,25 @@
 		{
 			"act": 4,
 			"speaker": "公主",
-			"text": "哈哈哈哈！转、转晕了——认输！认输啦！"
+			"text": "哈哈哈哈！转、转晕了——认输！认输啦！",
+			"emotion": "helpless_2",
+			"actions": [
+				{
+					"do": "tickle",
+					"who": "pink",
+					"by": "foe1",
+					"repeat": 5,
+					"interval": 0.22,
+					"fx": "hand",
+					"zone": "sole"
+				}
+			]
 		},
 		{
 			"act": 4,
 			"speaker": "蓝色的公主",
 			"text": "……哈哈……停车……认输……停车……哈哈哈……",
+			"emotion": "helpless_2",
 			"actions": [
 				{
 					"do": "bubble",
@@ -452,6 +643,15 @@
 					"do": "bubble",
 					"who": "blue",
 					"kind": "laugh"
+				},
+				{
+					"do": "tickle",
+					"who": "blue",
+					"by": "foe2",
+					"repeat": 5,
+					"interval": 0.22,
+					"fx": "brush",
+					"zone": "butt"
 				}
 			]
 		},
@@ -463,12 +663,14 @@
 		{
 			"act": 4,
 			"speaker": "公主",
-			"text": "哈……哈……下次……我从背后敲螃蟹……"
+			"text": "哈……哈……下次……我从背后敲螃蟹……",
+			"emotion": "damaged"
 		},
 		{
 			"act": 4,
 			"speaker": "蓝色的公主",
-			"text": "……攻城车……先冻车轮。……螃蟹……交给……冰晶共鸣。"
+			"text": "……攻城车……先冻车轮。……螃蟹……交给……冰晶共鸣。",
+			"emotion": "shy"
 		},
 		{
 			"act": 4,
