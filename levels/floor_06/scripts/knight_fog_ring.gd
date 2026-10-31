@@ -2,7 +2,8 @@ class_name KnightFogRing
 extends Node2D
 ## 「笑雾之中」外圈的黑雾（TaskKnightBoss 在雾里摆上，圆心是骑士的位置 _home）：半径从 R0 每秒收 SHRINK，最小 R_MIN；
 ##   每点亮一盏灯笼往外推 PUSH（push()）；驱散阶段停住不收。
-##   圈外（radius 以外）的可操作角色每 TICK 秒闷笑 +LAUGH（不超过 MAX_LAUGH）、挂状态 fog_tickle（buffs.json），冒一句 ring 台词。
+##   圈外（radius 以外）、又不在亮着的灯笼光里（KnightCurse.LIGHT_SAFE_R）的可操作角色每 TICK 秒被挠一下（KnightTickle：+LAUGH，不超过 MAX_LAUGH，疲倦跟着涨）、
+##   挂状态 fog_tickle（buffs.json），冒一句 ring 台词。亮着的灯笼周围画一圈暖光（安全区）。
 ##   画法：等距地面上的暗紫雾圈（IsoView.ground_scale）+ 往里飘的雾团。
 ## 测试：radius、frozen、push()、tick(dt)。
 
@@ -56,8 +57,10 @@ func tick(delta: float) -> void:
 		var pc := c as PlayableCharacter
 		if pc == null or not pc.is_alive() or pc.global_position.distance_to(global_position) <= radius:
 			continue
-		if pc.laugh and pc.laugh.value < pc.laugh.max_value * MAX_LAUGH:
-			pc.laugh.add(minf(pc.laugh.max_value * LAUGH, pc.laugh.max_value * MAX_LAUGH - pc.laugh.value))
+		# 亮着的灯笼光里（KnightCurse.LIGHT_SAFE_R）不受黑雾侵蚀
+		if is_instance_valid(task) and task.lights().any(func(l): return l.global_position.distance_to(pc.global_position) <= KnightCurse.LIGHT_SAFE_R):
+			continue
+		KnightTickle.hit(pc, LAUGH, task._body if is_instance_valid(task) else self, "sole", KnightTickle.BOSS_CRIT, MAX_LAUGH)
 		pc.add_buff("fog_tickle", BUFF_TIME)
 		if pc == GameState.player and _say <= 0.0:
 			_say = 3.0
@@ -77,3 +80,11 @@ func _draw() -> void:
 		var r := radius + 6.0 + sin(_t * 2.0 + i) * 5.0
 		draw_circle(Vector2.from_angle(a) * r, 6.0 + sin(_t * 3.0 + i * 1.3) * 2.0, Color(0.14, 0.05, 0.2, 0.55))
 	draw_set_transform(Vector2.ZERO)
+	# 亮着的灯笼：一圈暖光（安全区，黑雾进不来）
+	if is_instance_valid(task):
+		for l in task.lights():
+			var at := IsoView.offset((l as Node2D).global_position - global_position)
+			draw_set_transform(at, 0.0, IsoView.ground_scale())
+			draw_circle(Vector2.ZERO, KnightCurse.LIGHT_SAFE_R, Color(1.0, 0.85, 0.5, 0.12 + 0.04 * sin(_t * 2.0)))
+			draw_arc(Vector2.ZERO, KnightCurse.LIGHT_SAFE_R, 0, TAU, 32, Color(1.0, 0.9, 0.6, 0.55), 1.5)
+			draw_set_transform(Vector2.ZERO)

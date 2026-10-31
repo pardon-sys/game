@@ -212,9 +212,33 @@ static func run(t: Node) -> void:
 		and InputMap.action_get_events("switch_character").any(func(e): return e is InputEventKey and e.physical_keycode == KEY_C))
 	verify(t, "屏幕上方有盔甲耐久条（满的：%.2f）" % b.durability(), is_instance_valid(b._hud) and is_equal_approx(b.durability(), 1.0))
 	verify(t, "广场上有 %d 个木箱（另有工匠打的木桩）" % b.crates.size(), b.crates.filter(func(c): return not c.stake).size() == TaskKnightBoss.CRATES.size())
-	# ---- 盔甲会走
+	# ---- 这一轮的修正：Boss 战里不瞬移、右上角显示另一位、挠痒同时涨疲倦（暴击更多）
+	verify(t, "Boss 战里两位公主都不跟随瞬移（follow 关掉）", not pink.follow and not b.blue.follow)
+	verify(t, "右上角状态面板显示另一位公主（%s）" % (b.partner_panel.partner().display_name() if b.partner_panel and b.partner_panel.partner() else "无"),
+		is_instance_valid(b.partner_panel) and b.partner_panel.partner() == (b.blue if GameState.player == pink else pink))
+	KnightTickle.no_crit = true
+	pink.laugh.set_value(0.0)
+	pink.fatigue.clear()
+	b._hit(pink, 0.1, "sole")
+	var l1 := pink.laugh.value
+	var f1 := pink.fatigue.value
+	verify(t, "技能命中走普通挠痒流程：闷笑涨（%.1f）、魔力疲倦一起涨（%.1f）" % [l1, f1], l1 > 0.0 and f1 > 0.0)
+	pink.laugh.set_value(0.0)
+	pink.fatigue.clear()
+	pink.forced_specials = 1
+	b._hit(pink, 0.1, "sole")
+	verify(t, "暴击：闷笑和疲倦都更多（%.1f / %.1f）" % [pink.laugh.value, pink.fatigue.value], pink.laugh.value > l1 * 1.5 and pink.fatigue.value > f1 * 2.5)
+	pink.laugh.set_value(0.0)
+	pink.fatigue.clear()
+	KnightTickle.no_crit = false
+	# ---- 盔甲会走（先清掉侧跳 / 预警 / 卡住，不然这几秒可能正在干别的）
 	b.ai_enabled = false
 	b.attack_t = 999.0
+	b._clear_warn()
+	b.stuck_left = 0.0
+	b._side_left = 0.0
+	b._side_t = 99.0
+	b.body_mode = "walk"
 	pink.global_position = b._body.global_position + Vector2(120, 0)
 	var d_walk: float = b._body.global_position.distance_to(pink.global_position)
 	for i in 20:
@@ -341,6 +365,8 @@ static func run(t: Node) -> void:
 	await t._wait(2.4)
 	verify(t, "格子里冒出指头：站在里面会被挠（闷笑 %.1f）" % pink.laugh.value, pink.laugh.value > 0.0)
 	b._clear_field()
+	KnightTickle.no_crit = true
+	KnightTickle.reset()
 	b.grab(b.blue)
 	var bl0 := b.blue.laugh.value
 	for i in 10:
@@ -350,11 +376,15 @@ static func run(t: Node) -> void:
 		b.mash()
 	b.grab(pink)
 	var pl0 := pink.laugh.value
+	var pf0 := pink.fatigue.value
 	for i in 10:
 		b.advance(0.05)
 	var pink_gain := pink.laugh.value - pl0
+	var pink_fat := pink.fatigue.value - pf0
 	for i in TaskKnightBoss.MASH:
 		b.mash()
+	KnightTickle.no_crit = false
+	verify(t, "粉色公主被抱住：闷笑慢、魔力疲倦涨得快（0.5 秒疲倦 +%.1f，原来手写约 +25）" % pink_fat, pink_fat > pink_gain * 2.0 and pink_fat < 60.0)
 	verify(t, "铁手套抓住蓝色公主狠挠（+%.1f），抓住粉色公主很轻（+%.1f）" % [blue_gain, pink_gain], blue_gain > pink_gain * 2.0)
 	GameState.vars[TaskKnightBoss.CAUGHT_KEY] = 0
 	# ---- 机制介绍：第一次演过场（战斗暂停），第二次不演
@@ -404,13 +434,17 @@ static func run(t: Node) -> void:
 	cu.tick(0.05)
 	verify(t, "走到了：偷走他的笑声，部件回耐久（%d）" % pa.hp, cu.hunt == null and not hv.hunted and pa.hp == TaskKnightBoss.PART_HP - 3 + KnightCurse.HUNT_HEAL)
 	b._body.global_position = b._home
+	# 前面闷笑涨过：可能弹出了第一次失控的提示对话，等它放完（对话里不能故意笑）
+	t._finish()
+	await t._advance_until(func(): return not GameState.in_dialogue, 5.0)
+	cu._lure_cool = 0.0
 	cu.start_hunt(runners[1])
 	pink.global_position = b._body.global_position + Vector2(0, 60)
 	KnightLaugh.force_hold = true
 	for i in 3:
 		cu.tick(0.15)
 	KnightLaugh.force_hold = false
-	verify(t, "粉色公主按住 Y 笑：盔甲被引回来，放过了镇民", cu.hunt == null and b._focus() == pink)
+	verify(t, "粉色公主按住 Y 笑：盔甲被引回来，放过了镇民（对话 %s，操控 %s）" % [GameState.in_dialogue, GameState.player.display_name()], cu.hunt == null and b._focus() == pink)
 	pa.hp = TaskKnightBoss.PART_HP
 	pink.laugh.set_value(0.0)
 	# ---- 反击：冻住打碎 → 破绽 → 挠骑士 → 清醒
@@ -643,6 +677,19 @@ static func run(t: Node) -> void:
 	fr._tick = 0.0
 	fr.tick(0.05)
 	verify(t, "站在黑雾里：闷笑涨（%.0f%%）、挂上「黑雾缠身」" % (pink.laugh.ratio() * 100.0), pink.laugh.value > 0.0 and pink.has_buff("fog_tickle"))
+	# 亮着的灯笼光里：不受黑雾侵蚀
+	var safe_l: KnightBossFx.Lantern = b.lanterns[0]
+	b._light(safe_l, 1.0)
+	fr.radius = KnightFogRing.R_MIN
+	pink.global_position = safe_l.global_position
+	pink.laugh.set_value(0.0)
+	pink.remove_buff("fog_tickle")
+	fr._tick = 0.0
+	fr.tick(0.05)
+	verify(t, "亮着的灯笼光里：黑雾侵蚀不到（%.0f%%）" % (pink.laugh.ratio() * 100.0), pink.laugh.value == 0.0 and not pink.has_buff("fog_tickle"))
+	safe_l.lit = false
+	safe_l.progress = 0.0
+	fr.radius = KnightFogRing.R0
 	pink.global_position = fr.global_position
 	pink.laugh.set_value(0.0)
 	verify(t, "做过的三个支线（骑士救公主、手印样本、夜里的栅栏）：帮手跑到他那盏灯笼下（%d）" % b.helpers.size(), b.helpers.size() == 3)
@@ -652,6 +699,10 @@ static func run(t: Node) -> void:
 	verify(t, "笑面打不动", not b.hit_part(b.parts[0]))
 	b.mirrors()
 	verify(t, "镜面笑脸：三张", b.fx.filter(func(n): return n is KnightBossFx.Mirror).size() == TaskKnightBoss.MIRRORS)
+	var mm: KnightBossFx.Mirror = b.fx.filter(func(n): return n is KnightBossFx.Mirror)[0]
+	mm._process(3.0)
+	verify(t, "镜面笑脸只绕着盔甲转，不追人（离盔甲 %.0f）" % mm.global_position.distance_to(b._body.global_position),
+		mm.global_position.distance_to(b._body.global_position) <= KnightBossFx.Mirror.ORBIT_MAX + 16.0)
 	b._clear_field()
 	b.name_call()
 	verify(t, "呼唤骑士之名：先蓄力，标出 %d 个缺口" % TaskKnightBoss.RING_GAPS, str(b.warn.get("kind", "")) == "name" and (b.warn["gaps"] as Array).size() == TaskKnightBoss.RING_GAPS)

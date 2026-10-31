@@ -8854,7 +8854,13 @@
 				"after_festival_on",
 				"festival_dance_done",
 				"festival_finale_done",
-				"knight_started"
+				"knight_started",
+				"kq_shoes_done",
+				"kq_samples_done",
+				"kq_spear_done",
+				"kq_fence_done",
+				"kq_host_done",
+				"kq_blue_done"
 			],
 			"vars": {
 				"penance_hours": 0,
@@ -8910,7 +8916,10 @@
 			],
 			"passives": [
 				"ice_composure"
-			]
+			],
+			"items": {
+				"calm_incense": 1
+			}
 		},
 		{
 			"name": "骑士篇·Boss 第三阶段（胸甲）",
@@ -9118,7 +9127,13 @@
 				"after_festival_on",
 				"festival_dance_done",
 				"festival_finale_done",
-				"knight_started"
+				"knight_started",
+				"kq_shoes_done",
+				"kq_samples_done",
+				"kq_spear_done",
+				"kq_fence_done",
+				"kq_host_done",
+				"kq_blue_done"
 			],
 			"vars": {
 				"penance_hours": 0,
@@ -9174,7 +9189,10 @@
 			],
 			"passives": [
 				"ice_composure"
-			]
+			],
+			"items": {
+				"calm_incense": 1
+			}
 		},
 		{
 			"name": "骑士篇·Boss 最后阶段「笑雾之中」（点灯）",
@@ -9382,7 +9400,13 @@
 				"after_festival_on",
 				"festival_dance_done",
 				"festival_finale_done",
-				"knight_started"
+				"knight_started",
+				"kq_shoes_done",
+				"kq_samples_done",
+				"kq_spear_done",
+				"kq_fence_done",
+				"kq_host_done",
+				"kq_blue_done"
 			],
 			"vars": {
 				"penance_hours": 0,
@@ -9438,7 +9462,10 @@
 			],
 			"passives": [
 				"ice_composure"
-			]
+			],
+			"items": {
+				"calm_incense": 1
+			}
 		},
 		{
 			"name": "骑士篇·Boss 最后阶段「笑雾之中」（驱散）",
@@ -9646,7 +9673,13 @@
 				"after_festival_on",
 				"festival_dance_done",
 				"festival_finale_done",
-				"knight_started"
+				"knight_started",
+				"kq_shoes_done",
+				"kq_samples_done",
+				"kq_spear_done",
+				"kq_fence_done",
+				"kq_host_done",
+				"kq_blue_done"
 			],
 			"vars": {
 				"penance_hours": 0,
@@ -9702,7 +9735,10 @@
 			],
 			"passives": [
 				"ice_composure"
-			]
+			],
+			"items": {
+				"calm_incense": 1
+			}
 		}
 	]
 }

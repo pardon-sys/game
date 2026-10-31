@@ -74,6 +74,9 @@ SKILLS = ["skill_pants_burst", "drill_exam_passed"]
 PASSIVES = ["ice_composure"]
 KNIGHT = AFTER + after_done("morning", "afternoon", "night") + D3_ALL + D7_DAYS + SKILLS + \
     ["after_done_d7_night", "after_ev_d7_festival", "after_festival_on", "festival_dance_done", "festival_finale_done", "knight_started"]
+# 跳骑士 Boss 时默认六个支线都做过（帮手都在场上、安神香在背包里）
+KQ_ALL_DONE = ["kq_%s_done" % q for q in ("shoes", "samples", "spear", "fence", "host", "blue")]
+BOSS_ITEMS = {"calm_incense": 1}
 
 
 def knight_vars(day, slot, step):
@@ -161,10 +164,10 @@ POINTS = [
     quest_point("骑士篇·支线④结尾前（回去找工匠）", "floor_06_knight_night", "fence", 5, 9, 2, 4, [48, 24]),
     quest_point("骑士篇·支线⑤结尾前（忍笑许愿）", "floor_06_knight_day", "host", 5, 9, 1, 2, [44, 28], {"kq_host_got": ["duster", "taste", "wheel"]}),
     quest_point("骑士篇·支线⑥结尾前（一起笑）", "floor_06_knight_night", "blue", 5, 9, 2, 4, [9, 31]),
-    point("骑士篇·Boss「痒铠骑士」", "floor_06_knight_chase", KNIGHT, dict(knight_vars(10, 0, 9), task_boss_phase=0, task_boss_caught=0), cell=[41, 29], passives=PASSIVES),
-    point("骑士篇·Boss 第三阶段（胸甲）", "floor_06_knight_chase", KNIGHT, dict(knight_vars(10, 0, 9), task_boss_phase=2, task_boss_caught=0), cell=[41, 29], passives=PASSIVES),
-    point("骑士篇·Boss 最后阶段「笑雾之中」（点灯）", "floor_06_knight_fog", KNIGHT, dict(knight_vars(10, 0, 10), task_boss_phase=3, task_boss_caught=0, task_boss_dispel=False), cell=[41, 29], passives=PASSIVES),
-    point("骑士篇·Boss 最后阶段「笑雾之中」（驱散）", "floor_06_knight_fog", KNIGHT, dict(knight_vars(10, 0, 10), task_boss_phase=3, task_boss_caught=0, task_boss_dispel=True), cell=[41, 29], passives=PASSIVES),
+    point("骑士篇·Boss「痒铠骑士」", "floor_06_knight_chase", KNIGHT + KQ_ALL_DONE, dict(knight_vars(10, 0, 9), task_boss_phase=0, task_boss_caught=0), cell=[41, 29], passives=PASSIVES, items=BOSS_ITEMS),
+    point("骑士篇·Boss 第三阶段（胸甲）", "floor_06_knight_chase", KNIGHT + KQ_ALL_DONE, dict(knight_vars(10, 0, 9), task_boss_phase=2, task_boss_caught=0), cell=[41, 29], passives=PASSIVES, items=BOSS_ITEMS),
+    point("骑士篇·Boss 最后阶段「笑雾之中」（点灯）", "floor_06_knight_fog", KNIGHT + KQ_ALL_DONE, dict(knight_vars(10, 0, 10), task_boss_phase=3, task_boss_caught=0, task_boss_dispel=False), cell=[41, 29], passives=PASSIVES, items=BOSS_ITEMS),
+    point("骑士篇·Boss 最后阶段「笑雾之中」（驱散）", "floor_06_knight_fog", KNIGHT + KQ_ALL_DONE, dict(knight_vars(10, 0, 10), task_boss_phase=3, task_boss_caught=0, task_boss_dispel=True), cell=[41, 29], passives=PASSIVES, items=BOSS_ITEMS),
 ]
 Path("data/dev").mkdir(parents=True, exist_ok=True)
 Path("data/dev/skip_points_more.json").write_text(json.dumps({
