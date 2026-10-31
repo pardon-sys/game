@@ -1,11 +1,11 @@
 """精细像素精灵图（64 格）：codex 直接画的像素风源图（tools/art/src/px64/，提示词同目录 prompts.md）→ 游戏用图集。不做程序像素化：
   1. 切帧：沿用 import_sprites_v2.Sheet（白底，按「行数 × 每行帧数」均分，切线挪到最空的列 / 行，每格只留人物和贴着的特效）；
-  2. 网格对齐：源图里一个「像素」是一块约 4 屏幕像素的色块（生成图常常不是整数、还带细小噪点，没法逐块量）。按人物身体高度换算每张源表的块大小
-     （sheet_scale：站着 / 施法身体高 BODY_H），最近邻缩小、每个像素取那一块正中间的颜色（不平滑、不重新量化调色板），透明度按一半二值化；
+  2. 直接导入：源图本身就是像素风，不再压成「一个色块一个像素」——只按人物身体高度把各张源表统一到 BODY_H（缩放比接近 1，最近邻，
+     不平滑、不重新量化调色板），透明度按一半二值化；
   3. 排进图集：脚底居中贴着格子底边（留 1 像素），比格子还大时按最近邻缩小（一般用不到）。
-输出（assets/generated/）：<角色>_hd.png（行走 64 格，11 行 × 16 列，状态顺序 princess_visuals.json，方向 下 / 左 / 右 / 上 各 4 帧）、
-  <角色>_magic_hd.png（96 格，6 × 6）、派对主人另有 bonfire_host_attack_hd.png（64 格，11 行 × 12 列，每行同一套攻击帧）。
-游戏里 SpriteSheetAnimator 在「角色画风：精细像素」时换上这些图（Sprite 缩到 1/2、最近邻），缺图用原来的 32 格像素图。
+输出（assets/generated/）：<角色>_hd.png（行走 256 格，11 行 × 16 列，状态顺序 princess_visuals.json，方向 下 / 左 / 右 / 上 各 4 帧）、
+  <角色>_magic_hd.png（384 格，6 × 6）、派对主人另有 bonfire_host_attack_hd.png（256 格，11 行 × 12 列，每行同一套攻击帧）。
+游戏里 SpriteSheetAnimator 在「角色画风：精细像素」时换上这些图（Sprite 缩到 1/8 再放大 HD_ENLARGE 倍、线性过滤），缺图用原来的 32 格像素图。
 源图（每个角色）：<p>_walk 4×4（下 / 左 / 右 / 上走路）、<p>_expr 2×4（站着的表情：普通 开心 生气 难过 / 惊讶 害羞 憋笑 大笑）、
   <p>_damaged 5×4（战损走路四向 + 第 5 行战损憋笑正面）、<p>_helpless 2×4（失控一 坐地笑 / 失控二 躺地蹬脚）、<p>_magic1 / _magic2 3×6（魔法姿态）。
 用法：python tools/art/import_sprites_px64.py [pink] [blue] [host] [--preview]（检查图在 tools/.cache/px64/）
@@ -21,12 +21,13 @@ from import_princess2 import EMOTIONS, MAGIC, OUT, ROOT, body_bbox
 
 SRC = ROOT / "tools/art/src/px64"
 PREVIEW = ROOT / "tools/.cache/px64"
-CELL = 64
-MAGIC_CELL = 96
-## 站着 / 施法时身体的高度（像素，64 格里脚底留 1 像素，头顶留给发饰）；失控（坐 / 躺）放进的宽高
-BODY_H = 54
-HELPLESS_W = 62
-HELPLESS_H = 50
+CELL = 256
+MAGIC_CELL = 384
+## 站着 / 施法时身体的高度（像素，256 格里脚底留 4 像素，头顶留给发饰）；失控（坐 / 躺）放进的宽高。
+## 源图里人物本来就是两百多像素高的像素画：按这个高度统一（缩放比接近 1），不把一个色块压成一个像素
+BODY_H = 216
+HELPLESS_W = 248
+HELPLESS_H = 200
 WALK_DIRS = ["down", "left", "right", "up"]
 # 每种源表：行数 × 每行帧数
 LAYOUT = {"walk": [4] * 4, "expr": [4] * 2, "damaged": [4] * 5, "helpless": [4] * 2, "magic1": [6] * 3, "magic2": [6] * 3, "attack": [3] * 4}
@@ -56,8 +57,9 @@ def sheet_scale(kind, imgs):
     按人物身体高度换算——站着 / 施法的身体高 BODY_H 像素；失控（坐 / 躺）的放得进 HELPLESS_W × HELPLESS_H。"""
     if kind == "helpless":
         return max(float(np.median([im.width for im in imgs])) / HELPLESS_W, float(np.median([im.height for im in imgs])) / HELPLESS_H)
-    hs = [body_bbox(im) for im in imgs]
-    return float(np.median([b[3] - b[1] for b in hs])) / BODY_H
+    # 人物本体（最大连通块）的高度：表情图的特效 / 爱心不算进去；用较高的那一半取中位数（个别帧被特效切开时不算矮）
+    hs = sorted(b[3] - b[1] for b in (body_bbox(im) for im in imgs))
+    return float(np.median(hs[len(hs) // 2:])) / BODY_H
 
 
 def snap(im, s):
@@ -69,7 +71,7 @@ def snap(im, s):
     return out.crop(out.getbbox()) if out.getbbox() else out
 
 
-def place(im, cell, margin=1):
+def place(im, cell, margin=4):
     if im.height > cell - margin or im.width > cell:
         k = min((cell - margin) / im.height, cell / im.width)
         im = im.resize((max(1, int(im.width * k)), max(1, int(im.height * k))), Image.NEAREST)
