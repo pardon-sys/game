@@ -59,7 +59,8 @@ func _on_flag(flag: String) -> void:
 	_stage = stage()
 	_clear()
 	# 下一段换了玩法节点（段落的 runner）或者不在这张图上：自己收走，让导演按下一段重新摆
-	if KnightQuests.stage_script(quest_id) == get_script() and KnightQuests.runs_on(get_script(), quest_id, str(_lv.get("floor_id"))):
+	# 下一段有门槛（KnightQuests.gated）：先收走，过了门槛导演再摆（开场 / 玩法那时才开始）
+	if not KnightQuests.gated(quest_id) and KnightQuests.stage_script(quest_id) == get_script() and KnightQuests.runs_on(get_script(), quest_id, str(_lv.get("floor_id"))):
 		setup()
 	else:
 		name = String(name) + "_done"

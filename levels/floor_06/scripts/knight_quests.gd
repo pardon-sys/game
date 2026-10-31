@@ -11,8 +11,12 @@ extends RefCounted
 ##     runner：这一段用别的玩法节点脚本（不写就用 RUNNERS[id]；没有 runs_on 的按 where 判断）；
 ##     enter_cut：进这一段时演的过场（kq_<id>_to<i>）；busy：这一段里找委托人说的话（生成器按段注入）；
 ##     talk：{npc, lines, cut}——找这个人说话推进（生成器注入对话，call: kq_next；cut 说完演的过场）；report：最后一段回去找委托人；unlock：这一段才开的门。
+##     gate：这一段开始的门槛——上一段做完以后不马上开演，等玩家走到 / 找到人：
+##       {"cell": [x, y], "r": 格, "where": 图（不写 = 这一段的 where）, "text": 目标文字} 走进圈里才开始；
+##       {"talk": 委托对话文件, "lines": [...], "text": 目标文字} 找这个人说话（生成器注入对话，call: kq_gate）才开始；
+##       门槛没过时 vars.kq_<id>_gate = 这一段的下标：没有玩法节点（不演开场、不开玩法），目标指向门槛；pass_gate(id) 过门槛。
 ##   时间窗口：offer 按 slots 和步骤；接下以后只要还在步骤范围里就不放下（多段的支线会跨白天黑夜）。
-## 测试：start(id)、advance(id)、complete(id)、stage(id)、refresh()、talk_next(id)。
+## 测试：start(id)、advance(id)、complete(id)、stage(id)、refresh()、talk_next(id)、gated(id)、pass_gate(id)。
 
 const PATH := "res://data/after/knight_quests.json"
 const ACTIVE_FLAG := "kq_active"
@@ -125,6 +129,8 @@ static func marked_npcs() -> Array:
 		var q := info(str(id))
 		if is_open(str(id)) or (is_active(str(id)) and bool(stage_info(str(id)).get("report", false))):
 			out.append(str(q.get("npc", "")))
+		elif is_active(str(id)) and gated(str(id)) and gate_info(str(id)).has("talk"):
+			out.append(str(gate_info(str(id))["talk"]))
 		elif is_active(str(id)) and stage_info(str(id)).has("talk"):
 			out.append(str((stage_info(str(id))["talk"] as Dictionary).get("npc", "")))
 	return out
@@ -134,6 +140,7 @@ static func start(id: String) -> void:
 	if not is_open(id):
 		return
 	GameState.vars["kq_%s_stage" % id] = 0
+	_set_gate(id, 0)
 	GameState.set_flag("kq_%s_active" % id)
 	GameState.set_flag(ACTIVE_FLAG)
 	refresh()
@@ -170,6 +177,36 @@ static func advance(id: String) -> void:
 	if nxt >= st.size():
 		await complete(id)
 		return
+	_set_gate(id, nxt)
+	_changed()
+
+
+## 这一段的门槛（没写 = 空字典）
+static func gate_info(id: String) -> Dictionary:
+	return stage_info(id).get("gate", {})
+
+
+## 这一段的门槛还没过
+static func gated(id: String) -> bool:
+	return is_active(id) and int(GameState.vars.get("kq_%s_gate" % id, -1)) == stage(id) and not gate_info(id).is_empty()
+
+
+## 进第 i 段：有门槛就记上（没过之前不摆玩法节点）
+static func _set_gate(id: String, i: int) -> void:
+	var st: Array = info(id).get("stages", [])
+	var has_gate := i < st.size() and not ((st[i] as Dictionary).get("gate", {}) as Dictionary).is_empty()
+	GameState.vars["kq_%s_gate" % id] = i if has_gate else -1
+
+
+## 过门槛：清掉，导演按这一段摆玩法节点（开场 / 玩法这时才开始）
+static func pass_gate(id: String) -> void:
+	if not gated(id):
+		return
+	GameState.vars["kq_%s_gate" % id] = -1
+	var cut := str(gate_info(id).get("cut", ""))
+	if cut != "" and Cutscene.has_cutscene(cut):
+		await TrainingDB.wait_dialogue_free()
+		await Cutscene.play(cut)
 	_changed()
 
 
@@ -180,6 +217,7 @@ static func complete(id: String) -> void:
 	GameState.set_flag("kq_%s_active" % id, false)
 	GameState.set_flag(ACTIVE_FLAG, false)
 	GameState.set_flag("kq_%s_done" % id)
+	GameState.vars["kq_%s_gate" % id] = -1
 	var rewards: Dictionary = info(id).get("reward", {})
 	var cut := str(info(id).get("done_cut", ""))
 	if cut != "" and Cutscene.has_cutscene(cut):
@@ -204,6 +242,7 @@ static func abandon(id: String) -> void:
 	GameState.set_flag("kq_%s_active" % id, false)
 	GameState.set_flag(ACTIVE_FLAG, false)
 	GameState.vars["kq_%s_stage" % id] = 0
+	GameState.vars["kq_%s_gate" % id] = -1
 	var scr := _runner_script(id)
 	if scr and scr.has_method("reset_items"):
 		scr.call("reset_items")
@@ -217,6 +256,20 @@ static func objective(floor_id: String) -> Dictionary:
 	if id == "":
 		return {}
 	var st := stage_info(id)
+	if gated(id):
+		# 门槛没过：指向门槛（走进圈里 = 过门槛；找人说话的指向那个人站的格子，不自动触发）
+		var g := gate_info(id)
+		var gtext := str(g.get("text", st.get("text", "")))
+		var gwhere := str(g.get("where", stage_where(id)))
+		if gwhere != floor_id:
+			return KnightStory.guide(floor_id, gwhere, gtext)
+		var gc: Array = g.get("cell", st.get("cell", []))
+		if gc.size() != 2:
+			return {"text": gtext}
+		var o := {"text": gtext, "cell": gc, "radius": float(g.get("r", 1.5))}
+		if not g.has("talk"):
+			o["quest_gate"] = id
+		return o
 	var text := str(st.get("text", info(id).get("name", "")))
 	var scr := _runner_script(id)
 	if scr and scr.has_method("objective_text"):
@@ -252,8 +305,8 @@ static func make_runner(floor_id: String) -> Node:
 	var id := active()
 	if id == "":
 		return null
-	# 说话推进的一段没有玩法节点
-	if stage_info(id).has("talk"):
+	# 说话推进的一段、门槛还没过的一段没有玩法节点
+	if stage_info(id).has("talk") or gated(id):
 		return null
 	var scr := stage_script(id)
 	if scr == null or not runs_on(scr, id, floor_id):

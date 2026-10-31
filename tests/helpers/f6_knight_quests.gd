@@ -245,7 +245,12 @@ static func run(t: Node) -> void:
 	verify(t, "%d 个都找到：奶奶" % QuestHide.FIND + "「谁教你们玩这个的！」→ 下一段宝贝盒", KnightQuests.stage("shoes") == 4 and t.seen_cuts.has("kq_shoes_hide_end"))
 	# 4 小莉莉的宝贝盒
 	await go_town(t, "from_alley")
+	await t._wait(0.5)
+	verify(t, "躲猫猫做完不马上开始宝贝盒：门槛没过、没有玩法节点，小莉莉头上冒「！」",
+		KnightQuests.gated("shoes") and runner(t, "shoes") == null and KnightQuests.marked_npcs().has("after_k_kids"))
+	await t._talk("floor_06/after_k_kids", "")
 	await t._advance_until(func(): return runner(t, "shoes") is QuestBox and not GameState.in_dialogue, 10.0)
+	verify(t, "找小莉莉说话（「宝贝盒被搬走了」）→ 宝贝盒这一段开始", not KnightQuests.gated("shoes") and runner(t, "shoes") is QuestBox)
 	var rb := runner(t, "shoes") as QuestBox
 	if rb:
 		pink = rb.pink
@@ -434,6 +439,10 @@ static func run(t: Node) -> void:
 	GameState.pending_spawn = "from_town"
 	await t.main.change_level(Floors.scene(KnightStory.DRILL))
 	await t._wait(0.6)
+	verify(t, "进训练室不马上开练：先找队长说话（门槛）", KnightQuests.gated("spear") and runner(t, "spear") == null
+		and not t.seen_cuts.has("kq_spear_start") and KnightQuests.marked_npcs().has("after_drill_cap"))
+	await t._talk("floor_06/after_drill_cap", "")
+	await t._wait(0.6)
 	var rq := runner(t, "spear") as QuestSpear
 	if rq:
 		await t._advance_until(func(): return rq._paused < 900.0 and not Cutscene.is_playing(), 20.0)
@@ -515,6 +524,9 @@ static func run(t: Node) -> void:
 	# 2 二对一
 	GameState.pending_spawn = "from_town"
 	await t.main.change_level(Floors.scene(KnightStory.DRILL))
+	await t._wait(0.6)
+	verify(t, "回训练室不马上开打：找队长说话才开始二对一", KnightQuests.gated("spear") and runner(t, "spear") == null)
+	await t._talk("floor_06/after_drill_cap", "")
 	await t._advance_until(func(): return runner(t, "spear") is QuestDuo and not GameState.in_dialogue, 10.0)
 	var rd := runner(t, "spear") as QuestDuo
 	verify(t, "训练室：二对一（这里能换人）", rd != null and bool(rd._lv.get_meta(&"free_switch", false)))
@@ -645,6 +657,9 @@ static func run(t: Node) -> void:
 	await t._talk("floor_06/after_k_host", "")
 	await t._advance_until(func(): return KnightQuests.stage("host") == 4 and not Cutscene.is_playing(), 15.0)
 	verify(t, "八音盒响起那首曲子：「你也会这首？」「不知道，就会唱。」（蓝色公主走开了）", KnightQuests.stage("host") == 4 and t.seen_cuts.has("kq_host_lullaby"))
+	await t._wait(0.5)
+	verify(t, "八音盒修好以后不马上排练：门槛没过（找派对主人说话）", KnightQuests.gated("host") and runner(t, "host") == null)
+	await t._talk("floor_06/after_k_host", "")
 	await t._advance_until(func(): return runner(t, "host") is QuestParty, 5.0)
 	var rpa := runner(t, "host") as QuestParty
 	verify(t, "篝火边：生日舞排练", rpa != null and rpa.mode() == "dance")
@@ -660,7 +675,11 @@ static func run(t: Node) -> void:
 			await t._wait(0.2)
 	await t._advance_until(func(): return KnightQuests.stage("host") == 5, 10.0)
 	verify(t, "跳完两段 → 生日派对：忍笑许愿", KnightQuests.stage("host") == 5)
-	await t._wait(0.3)
+	await t._wait(0.5)
+	verify(t, "跳完舞不会马上开始许愿：门槛没过、没有许愿的小游戏", KnightQuests.gated("host") and runner(t, "host") == null
+		and (t._show(PartyShow) == null or (t._show(PartyShow) as PartyShow).mode != "wish"))
+	await t._talk("floor_06/after_k_host", "")
+	await t._advance_until(func(): return runner(t, "host") is QuestParty, 5.0)
 	rpa = runner(t, "host") as QuestParty
 	if rpa and not rpa.playing:
 		rpa.play_show()
@@ -812,6 +831,10 @@ static func run(t: Node) -> void:
 	verify(t, "跟着脚印找到她：「小时候，每年都是我点它」", KnightQuests.stage("blue") == 1 and t.seen_cuts.has("kq_blue_lantern"))
 	# 1 逗她笑
 	BlueTickleShow.quiet = true
+	await t._wait(0.5)
+	verify(t, "找到灯笼不马上开始逗她笑：先和她说话（门槛）", KnightQuests.gated("blue") and runner(t, "blue") == null
+		and KnightQuests.marked_npcs().has("after_partner"))
+	await t._talk("floor_06/after_partner", "")
 	await t._advance_until(func(): return runner(t, "blue") is QuestBlueLantern, 5.0)
 	var rbl := runner(t, "blue") as QuestBlueLantern
 	if rbl and not rbl.playing:
@@ -837,7 +860,11 @@ static func run(t: Node) -> void:
 	await t._advance_until(func(): return KnightQuests.stage("blue") == 2, 10.0)
 	verify(t, "她的忍笑满了：灯笼亮一下又暗了（笑声不够亮）→ 去找「以前」", KnightQuests.stage("blue") == 2)
 	# 2 井边的冰面
-	await t._advance_until(func(): return runner(t, "blue") is QuestWell and not GameState.in_dialogue, 6.0)
+	await t._wait(0.5)
+	verify(t, "灯笼那段做完不马上开始井边：走到井边才开始（门槛）", KnightQuests.gated("blue") and runner(t, "blue") == null
+		and bool(KnightQuests.objective(KnightStory.KNIGHT_N).get("quest_gate", "") == "blue"))
+	t._go(Cutscene.cell_to_world([26, 14]))
+	await t._advance_until(func(): return runner(t, "blue") is QuestWell and not GameState.in_dialogue, 8.0)
 	var rwl := runner(t, "blue") as QuestWell
 	verify(t, "井边：冰面（滑溜地板）、%d 个笑声铃铛、雪堆" % (rwl.bells.size() if rwl else 0), rwl != null and is_instance_valid(rwl.rink) and rwl.bells.size() == QuestWell.BELLS.size())
 	if rwl == null:
