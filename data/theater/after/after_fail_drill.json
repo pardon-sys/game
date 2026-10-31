@@ -132,7 +132,8 @@
 					"interval": 0.16,
 					"do": "tickle"
 				}
-			]
+			],
+			"portrait": "after_drill_fail"
 		},
 		{
 			"speaker": "蓝色的公主",

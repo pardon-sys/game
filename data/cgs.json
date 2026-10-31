@@ -142,6 +142,101 @@
 			"placeholder": "helpless_2",
 			"wide": true
 		},
+		"after_equip_ok": {
+			"file": "res://assets/cg/portraits/after_equip_ok.png",
+			"placeholder": "happy",
+			"wide": true
+		},
+		"after_equip_fail": {
+			"file": "res://assets/cg/portraits/after_equip_fail.png",
+			"placeholder": "helpless_2",
+			"wide": true
+		},
+		"after_potion_ok": {
+			"file": "res://assets/cg/portraits/after_potion_ok.png",
+			"placeholder": "happy",
+			"wide": true
+		},
+		"after_potion_fail": {
+			"file": "res://assets/cg/portraits/after_potion_fail.png",
+			"placeholder": "helpless_2",
+			"wide": true
+		},
+		"after_cart_ok": {
+			"file": "res://assets/cg/portraits/after_cart_ok.png",
+			"placeholder": "happy",
+			"wide": true
+		},
+		"after_cart_fail": {
+			"file": "res://assets/cg/portraits/after_cart_fail.png",
+			"placeholder": "helpless_2",
+			"wide": true
+		},
+		"after_drain_ok": {
+			"file": "res://assets/cg/portraits/after_drain_ok.png",
+			"placeholder": "happy",
+			"wide": true
+		},
+		"after_drain_fail": {
+			"file": "res://assets/cg/portraits/after_drain_fail.png",
+			"placeholder": "helpless_2",
+			"wide": true
+		},
+		"after_drill_ok": {
+			"file": "res://assets/cg/portraits/after_drill_ok.png",
+			"placeholder": "happy",
+			"wide": true
+		},
+		"after_drill_fail": {
+			"file": "res://assets/cg/portraits/after_drill_fail.png",
+			"placeholder": "helpless_2",
+			"wide": true
+		},
+		"after_tailor_ok": {
+			"file": "res://assets/cg/portraits/after_tailor_ok.png",
+			"placeholder": "happy",
+			"wide": true
+		},
+		"after_tailor_fail": {
+			"file": "res://assets/cg/portraits/after_tailor_fail.png",
+			"placeholder": "helpless_2",
+			"wide": true
+		},
+		"after_mine_ok": {
+			"file": "res://assets/cg/portraits/after_mine_ok.png",
+			"placeholder": "happy",
+			"wide": true
+		},
+		"after_mine_fail": {
+			"file": "res://assets/cg/portraits/after_mine_fail.png",
+			"placeholder": "helpless_2",
+			"wide": true
+		},
+		"after_inspect_ok": {
+			"file": "res://assets/cg/portraits/after_inspect_ok.png",
+			"placeholder": "happy",
+			"wide": true
+		},
+		"after_inspect_fail": {
+			"file": "res://assets/cg/portraits/after_inspect_fail.png",
+			"placeholder": "helpless_2",
+			"wide": true
+		},
+		"after_totem_ok": {
+			"file": "res://assets/cg/portraits/after_totem_ok.png",
+			"placeholder": "happy",
+			"wide": true
+		},
+		"after_totem_fail": {
+			"file": "res://assets/cg/portraits/after_totem_fail.png",
+			"placeholder": "helpless_2",
+			"wide": true
+		},
+		"after_exam_ok": {
+			"file": "res://assets/cg/portraits/after_exam_ok.png",
+			"placeholder": "happy",
+			"wide": true
+		},
 		"slime_1": {
 			"file": "res://assets/cg/portraits/slime_1.png",
 			"placeholder": "helpless_1"

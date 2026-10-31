@@ -971,14 +971,52 @@ signs.update(inspect.SIGNS)
 signs.update(knight_quests.SIGNS)
 signs_path.write_text(json.dumps(signs, ensure_ascii=False, indent="\t") + "\n")
 
+# 七日赎罪主线委托的 CG（tools/art/import_cg.py --after 生成 assets/cg/portraits/after_<任务>_ok / _fail.png；gen_cgs.py 登记立绘 id）：
+#   失败小剧场：最后一次换上 defeat_2 的那一步（高潮）改成这张大图（没写 defeat_2 的取六成处）；
+#   收尾过场：六成处的台词前用 cg 动作换上大图（横版大框，挠痒贴片 / 抖动跟着），最后一步收回。
+AFTER_CG_FAIL = {"after_fail_equip": "after_equip_fail", "after_fail_potion": "after_potion_fail", "after_fail_cart": "after_cart_fail",
+                 "after_fail_drain": "after_drain_fail", "after_fail_drill": "after_drill_fail", "after_fail_tailor": "after_tailor_fail",
+                 "after_fail_mine": "after_mine_fail", "after_fail_inspect": "after_inspect_fail", "after_fail_totem": "after_totem_fail"}
+AFTER_CG_DONE = {"after_d2_equip_done": "after_equip_ok", "after_d3_potion_done": "after_potion_ok", "after_d3_cart_done": "after_cart_ok",
+                 "after_d4_drain_done": "after_drain_ok", "after_d4_drill_done": "after_drill_ok", "after_d5_tailor_done": "after_tailor_ok",
+                 "after_d5_mine_done": "after_mine_ok", "after_d6_inspect_done": "after_inspect_ok", "after_d6_drill_done": "after_exam_ok",
+                 "after_d7_totem_done": "after_totem_ok"}
+
+
+def _with_fail_cg(tid, data):
+    key = AFTER_CG_FAIL.get(tid)
+    if not key:
+        return data
+    steps = data["steps"]
+    hits = [i for i, st in enumerate(steps) if st.get("portrait") == "defeat_2"]
+    if hits:
+        steps[hits[-1]]["portrait"] = key
+    else:
+        texts = [i for i, st in enumerate(steps) if st.get("text")]
+        steps[texts[int(len(texts) * 0.6)]]["portrait"] = key
+    return data
+
+
+def _with_done_cg(cid, data):
+    key = AFTER_CG_DONE.get(cid)
+    if not key:
+        return data
+    steps = data["steps"]
+    texts = [i for i, st in enumerate(steps) if st.get("text")]
+    at = texts[min(len(texts) - 1, int(len(texts) * 0.6))]
+    steps[at].setdefault("actions", []).insert(0, {"do": "cg", "key": key})
+    steps.append({"actions": [{"do": "cg", "key": ""}], "wait": 0.1})
+    return data
+
+
 cut = Path("data/cutscenes/floor_06")
 CUTS = dict(d1.CUTSCENES, **d2.CUTSCENES, **tasks.CUTSCENES, **potion.CUTSCENES, **tailor.CUTSCENES, **mine.CUTSCENES, **totem.CUTSCENES, **drain.CUTSCENES, **drill.CUTSCENES, **inspect.CUTSCENES, **festival_night.CUTSCENES, **knight_story.CUTSCENES, **knight_finale.CUTSCENES, **knight_quests.CUTSCENES, **knight_story_cg.CUTSCENES)
 for cid, fn in CUTS.items():
-    (cut / (cid + ".json")).write_text(json.dumps(fn(), ensure_ascii=False, indent="\t") + "\n")
+    (cut / (cid + ".json")).write_text(json.dumps(_with_done_cg(cid, fn()), ensure_ascii=False, indent="\t") + "\n")
 th = Path("data/theater/after")
 th.mkdir(parents=True, exist_ok=True)
 for tid, data in dict(punish.THEATERS, **tasks.THEATERS, **potion.THEATERS, **tailor.THEATERS, **mine.THEATERS, **totem.THEATERS, **drain.THEATERS, **drill.THEATERS, **inspect.THEATERS, **night.THEATERS, **knight_tasks.THEATERS, **knight_finale.THEATERS, **errand_gate_chain.THEATERS).items():
-    (th / (tid + ".json")).write_text(json.dumps(data, ensure_ascii=False, indent="\t") + "\n")
+    (th / (tid + ".json")).write_text(json.dumps(_with_fail_cg(tid, data), ensure_ascii=False, indent="\t") + "\n")
 
 floors = json.loads(Path("data/floors.json").read_text())
 lst = floors["floors"]

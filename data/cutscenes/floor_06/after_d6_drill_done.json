@@ -50,7 +50,13 @@
 		},
 		{
 			"speaker": "蓝色的公主",
-			"text": "……之后，再说。"
+			"text": "……之后，再说。",
+			"actions": [
+				{
+					"do": "cg",
+					"key": "after_exam_ok"
+				}
+			]
 		},
 		{
 			"speaker": "",
@@ -79,6 +85,15 @@
 				}
 			],
 			"wait": 0.4
+		},
+		{
+			"actions": [
+				{
+					"do": "cg",
+					"key": ""
+				}
+			],
+			"wait": 0.1
 		}
 	]
 }

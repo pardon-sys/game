@@ -45,7 +45,13 @@
 		},
 		{
 			"speaker": "蓝色的公主",
-			"text": "……不准，笑。"
+			"text": "……不准，笑。",
+			"actions": [
+				{
+					"do": "cg",
+					"key": "after_drill_ok"
+				}
+			]
 		},
 		{
 			"speaker": "",
@@ -73,6 +79,15 @@
 				}
 			],
 			"wait": 0.4
+		},
+		{
+			"actions": [
+				{
+					"do": "cg",
+					"key": ""
+				}
+			],
+			"wait": 0.1
 		}
 	]
 }

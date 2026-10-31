@@ -135,6 +135,18 @@ for _n in range(1, 13):
         portraits[_k]["wide"] = True
 
 
+# 七日赎罪主线委托的 CG（tools/art/import_cg.py --after 从 assets/generated/AFTER_CG/ 生成）：成功（收尾过场 cg 动作）/ 失败（失败小剧场高潮）
+for _k in ("equip", "potion", "cart", "drain", "drill", "tailor", "mine", "inspect", "totem", "exam"):
+    for _s in ("ok", "fail"):
+        if _k == "exam" and _s == "fail":
+            continue
+        _id = "after_%s_%s" % (_k, _s)
+        _f = "res://assets/cg/portraits/%s.png" % _id
+        portraits[_id] = {"file": _f, "placeholder": "helpless_2" if _s == "fail" else "happy"}
+        if os.path.exists(_f.replace("res://", "")):
+            portraits[_id]["wide"] = True
+
+
 def pt(key):
     portraits[key + "_1"] = {"file": "res://assets/cg/portraits/%s_1.png" % key, "placeholder": "helpless_1"}
     portraits[key + "_2"] = {"file": "res://assets/cg/portraits/%s_2.png" % key, "placeholder": "helpless_2"}

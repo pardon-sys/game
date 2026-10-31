@@ -937,6 +937,10 @@ data/cutscenes/<楼层组>/  地图内过场；data/theater/<楼层组>/  小剧
 	一条走廊（`TaskInspect.COURSE`）：五个挠痒陷阱的踏板（羽毛帘 / 地洞挠挠手 / 脚趾分隔刷 / 单脚吊环架 / 跪台脚心朝天，各自的挣脱方式见 `InspectShow`）+ 三个辅助设施
 	（泡脚盆「泡软」、精油踏板「滑溜」、冷敷石板清状态，踏板整条走廊宽、走过去强制施加），按顺序走。体验完报「太强 / 刚好 / 太弱」——要报陷阱本身的强度（屏幕给出涨了多少闷笑和身上的状态）；评「太弱」被加强、评「太强」被削弱但要再体验一次。
 	五个评完 → 综合演练（按评分调整过强度、闷笑不清零），笑倒 = 失败（`after_fail_inspect`，重来直接综合演练）。
+- **弥补任务的 CG**（白天 10 个主线委托，每个一张成功、一张失败；第 6 天考核的失败和第 4 天特训共用）：原图 `assets/generated/AFTER_CG/after_<任务>_ok / _fail.png`
+  （codex image_gen，提示词和参考图 `tools/art/src/after_cg/`，规则见 `docs/POLISH_RULES.md`）→ `import_cg.py --after` → `gen_cgs.py` 登记立绘 id。
+  `gen_floor06_after.py` 的 `AFTER_CG_FAIL` / `AFTER_CG_DONE` 自动挂上：失败小剧场最后一次换 `defeat_2` 的那一步（高潮）换成这张大图（没有的取六成处），
+  收尾过场 `after_d*_done` 六成处的台词前加 `{"do": "cg", "key": ...}`（横版大框），最后一步收回。
 - 小游戏画面的描写：`TrainingStage.narrate(文字)` 发 `GameState.princess_reacted`，显示在画面下方的反应框（不放舞台顶部，那里看不清）；人物头上的气泡只放说的话。
   示众的应对选项不透露效果。选项页（`ChoiceMenu.ask`）打开期间 `in_dialogue = true`（`dialogue_holds`），人物不跟着上下键走、速度清零。
 - 装备回收的小孩（`AfterKid`）：看得更远（160）、一次挠 4 秒、冲刺甩不掉；刚贴上来时暂停演一小段对话（小孩的话 + 挠法描写 + 公主的反应 `react_pool`），
