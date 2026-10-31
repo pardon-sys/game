@@ -35,7 +35,7 @@ func _ready() -> void:
 
 
 ## keep_state：不把当前公主的状态带过去（读档时已经从存档设好了）。
-## 测试模式：F2 在同一关卡的可操作角色间循环；业务场景仍由no_switch等原规则限制。
+## 测试模式：F2 在同一关卡的可操作角色间循环；业务场景仍由no_switch等原规则限制，候选只在同行的人里（Party）。
 func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("switch_character") and not GameState.in_dialogue:
 		if level and level.get("no_switch") == true:
@@ -55,10 +55,16 @@ func switch_character() -> bool:
 	if level == null:
 		return false
 	var candidates: Array[PlayableCharacter] = []
-	for n in level.find_children("*", "", true, false):
-		if n is PlayableCharacter and n.visible and n.is_alive() and not Downed.is_downed(n) \
-				and ((n as PlayableCharacter).switchable or DevConfig.enabled()):
-			candidates.append(n)
+	if DevConfig.enabled():
+		# 测试模式：同一关卡的所有可操作角色
+		for n in level.find_children("*", "", true, false):
+			if n is PlayableCharacter and n.visible and n.is_alive() and not Downed.is_downed(n):
+				candidates.append(n)
+	else:
+		# 正常游戏：只在同行的人里换（Party：跟着走的、地图 party 里列出的、允许换人的场景里能换的）
+		for c in Party.members(GameState.player):
+			if Party.can_switch_to(GameState.player, c):
+				candidates.append(c)
 	if candidates.size() < 2:
 		GameState.notify("这里没有可以切换的角色")
 		return false

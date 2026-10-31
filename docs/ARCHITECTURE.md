@@ -511,7 +511,7 @@ HUD 背包栏会根据物品数据自动显示，不需要改 UI 代码。
 6. `tests/floor3_test.gd` 会自动为每个时间窗口组合跑一遍触发测试（其它组合先进冷却），并检查它有名称和台词。
 
 ### 背包与快捷键
-- 背包界面 `Backpack`（`scenes/ui/backpack.tscn`，CanvasLayer 第 25 层，`PROCESS_MODE_ALWAYS`）：`GameState.has_backpack()`（剧情标记 `got_backpack`，`BackpackItem` 拾取即设置）之后输入 `backpack`（Tab / I / L3）打开并暂停；`_input` 先于暂停菜单截获 Esc。物品页 `use_selected()` / `assign_selected(hotkey)`（物品格放在能滚动的框里，一次显示 `GRID_ROWS` 两行，选中的那格自动滚进来，不压到说明文字），状态页读 `LaughMeter` / `MagicFatigue` / `Actor.buffs`（`buffs.json` 的 `desc`）/ `StatusComponent`。
+- 背包界面 `Backpack`（`scenes/ui/backpack.tscn`，CanvasLayer 第 25 层，`PROCESS_MODE_ALWAYS`）：`GameState.has_backpack()`（剧情标记 `got_backpack`，`BackpackItem` 拾取即设置）之后输入 `backpack`（Tab / I / L3）打开并暂停；`_input` 先于暂停菜单截获 Esc。物品页 `use_selected()` / `assign_selected(hotkey)`（物品格放在能滚动的框里，一次显示 `GRID_ROWS` 两行，选中的那格自动滚进来，不压到说明文字），状态页读 `LaughMeter` / `MagicFatigue` / `Actor.buffs`（`buffs.json` 的 `desc`）/ `StatusComponent`；←→ 只在同行的人之间切换（`status_members()` = `Party.members`，见「可操作角色」）。
 - 快捷键绑定在 `GameState.hotkeys`（`use_item` = Q、`use_special` = R，默认 `DEFAULT_HOTKEYS`，`set_hotkey` 冲突时交换，信号 `hotkeys_changed`）；`PlayableCharacter.use_item(hotkey)` → `Inventory.use_hotkey`。`ItemData.hotkey` 只是默认值说明。
 
 ### HUD 道具栏与立绘反馈
@@ -538,7 +538,11 @@ HUD 背包栏会根据物品数据自动显示，不需要改 UI 代码。
    - `WanderController`：AI，在关卡 `wander_spot` 组的点（图例 `spot`）之间溜达（Walls + 静态物体的格子 BFS 寻路，卡住换点，到点停一会儿、偶尔做表情，公主在旁边时看她；`paused` / 对话 / 过场时不动）。`configure_area(center, radius, use_world_spots=false)` 可限定中心周围若干格，区内寻路不越界，区外先沿路返回；默认未配置时保持原行为。
 4. **蓝色公主**（`BluePrincess extends Princess`，场景 `blue_princess.tscn` 继承 `princess.tscn`）：精灵图换成 `princess_blue.png`，魔法图通过 Animator 的 `texture_overrides`（`{"magic": 路径}`）换成 `princess_blue_magic.png`，`portrait_set = "blue"`；默认阵营 ALLY、相机关闭、`WanderController`；`Talk` 交互区按 E 对话；`show_flag` 控制出现；`ai = false` 时是过场演员（`spawn kind=npc:blue_princess` 生成，人物表里写了 `scene`）。
    - 场景里同时有两个可操作角色时，只有 `GameState.player` 那个是「玩家」：`Princess.is_controlled()` 为假的一方不触发台词气泡、提示、语音、剧情对话；`EmotionComponent.is_global()` 只让玩家那一个响应 `GameState.emote` 并广播 `emotion_changed`。
-   - `GameState.switch_control(to)`（测试模式 F2，`main.switch_character()`，按场景候选顺序循环，支持第三角色）：两边交换阵营（`Actor.set_faction` 同时换节点组）、控制器（原来的那个用 `make_ai_controller()`）、相机，`player_registered` 让 HUD / 对话框重新绑定；不搬运血量 / 闷笑。换关卡前自动切回公主。
+   - **同行的人** `Party`（`scripts/core/party.gd`）：背包状态页能看谁、按 C 能换到谁由地图元数据决定——操控的角色、跟着走的同行者（`follow`）、
+     地图 `[level]` 段 `party = 人物 id,…`（`character_id`：pink / blue / bonfire_host，构建器写进 `level.gd` 的 `party`）列出的人、
+     允许换人的场景（关卡 meta `free_switch`、`Duo.active`）里 `switchable` 的人。小镇里闲逛的派对主人等不算同行；`party` 里列出的人即使 `switchable` 关着也能换。
+     测试模式 F2 不受限。现在没有地图写 `party`（需要「这一段能切到派对主人」时在那张图的生成器 `[level]` 头里加）。
+   - `GameState.switch_control(to)`（测试模式 F2，`main.switch_character()`，按场景候选顺序循环，支持第三角色；正常模式候选 = `Party.members` 里 `Party.can_switch_to` 的人）：两边交换阵营（`Actor.set_faction` 同时换节点组）、控制器（原来的那个用 `make_ai_controller()`）、相机，`player_registered` 让 HUD / 对话框重新绑定；不搬运血量 / 闷笑。换关卡前自动切回公主。
    - 立绘套装：`Dialogue.PORTRAIT_SETS`（pink / blue / bonfire_host），`portrait_for(表情, 套装)` / `head_for`；不写套装时用当前玩家的 `portrait_set`。人物表里写了 `portrait_set` 的人物（蓝色公主）说话时，右侧立绘按台词的 `emotion` 取格子。
 
 
@@ -564,7 +568,7 @@ data/dialogues/<楼层组>/signs.json  石碑；story.json 剧情；<人物>.jso
 data/cutscenes/<楼层组>/  地图内过场；data/theater/<楼层组>/  小剧场
 ```
 
-- `map.txt`：可选的 `[level]` 段（`intro` 开场对话、`ambient` 环境光）、`[legend]` 图例、`[map]` 地图。
+- `map.txt`：可选的 `[level]` 段（`intro` 开场对话、`ambient` 环境光、`no_switch` 不能换人、`party` 同行的人、`style` / `iso_theme` 画面风格）、`[legend]` 图例、`[map]` 地图。
 - 构建：`build_level.gd -- floor=floor_02` 构建一层，`-- all` 构建 floors.json 里的全部楼层；产物 `floor.tscn` 的根节点名为 `Floor02`，并记录 `floor_id`。
 - 对话：楼层根节点（`scripts/level.gd`）进入时调用 `Dialogue.load_floor(floor_id)`，把 `data/dialogues/<楼层组>/` 里的普通对话文件合并到通用对话上；离开后上一层的专属对话卸载。对话 id 全局唯一，与通用对话重名会报错。
 - `scripts/main.gd`（主场景，组名 `main`）提供 `change_level(path)`：淡出 → 保存公主状态（`GameState.save_player_state()`：血量、闷笑值、战损）→ 换关卡 → 新关卡的公主注册时恢复 → 淡入。背包与剧情标记本来就在 GameState 中。

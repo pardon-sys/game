@@ -206,7 +206,20 @@ func map_checks() -> void:
 	for i in 3:
 		main.switch_character()
 		normal.append(GameState.player.character_id)
-	check("正常模式换人不会换到派对主人",not normal.has("bonfire_host") and normal.has("blue"))
+	check("正常模式换人不会换到派对主人（小镇里闲逛的人不算同行）",not normal.has("bonfire_host"))
+	var bp:=get_tree().root.find_child("Backpack",true,false)
+	var shown:Array=bp.status_members() if bp else []
+	check("背包状态页只列同行的人：小镇里闲逛的派对主人看不到",bp!=null and shown.size()>=1 and shown[0]==GameState.player and not shown.any(func(c):return c is BonfireHost))
+	main.level.set("party",PackedStringArray(["bonfire_host"]))
+	shown=bp.status_members()
+	var to_host:=false
+	for i in 3:
+		main.switch_character()
+		to_host=to_host or GameState.player.character_id=="bonfire_host"
+	check("地图 party 写了 bonfire_host：状态页能看到她、换人能换到她",shown.any(func(c):return c is BonfireHost) and to_host)
+	main.level.set("party",PackedStringArray())
+	for c in all:
+		if c.character_id=="pink":GameState.switch_control(c)
 	DevConfig.override=dev_was
 	await main.change_level(Floors.scene("floor_06_war"))
 	await _wait(0.2)
