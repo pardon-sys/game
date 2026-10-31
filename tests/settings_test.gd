@@ -33,7 +33,7 @@ func _ready() -> void:
 	check("精细像素：粉色公主用 princess_hd.png（256 格，直接导入）、显示比原像素图大 %.2f 倍、线性过滤（%s）" % [SpriteSheetAnimator.HD_ENLARGE, p.sprite.texture.resource_path],
 		anim.hd and p.sprite.texture.resource_path.ends_with("princess_hd.png") and is_equal_approx(p.sprite.scale.x, SpriteSheetAnimator.HD_ENLARGE / SpriteSheetAnimator.HD_SCALE)
 		and p.sprite.texture_filter == CanvasItem.TEXTURE_FILTER_LINEAR and is_equal_approx(p.sprite.offset.y, -16.0 * SpriteSheetAnimator.HD_SCALE)
-		and p.sprite.texture.get_width() == 256 * 18)   # 16 列 + 2 列眨眼
+		and p.sprite.texture.get_width() == 256 * 30)   # 16 列 + 2 列待机眨眼 + 12 列走路闭眼
 	var cfg := ConfigFile.new()
 	cfg.load(UserSettings.path())
 	check("设置写进 settings.cfg 的 [display] 段，[audio] 音量还在", str(cfg.get_value("display", "art_style", "")) == "hd"
@@ -65,6 +65,17 @@ func _ready() -> void:
 			seen_blink = true
 			break
 	check("正面站着不动：会眨眼", seen_blink)
+	# 往左 / 往右走、往下走：也会眨眼（换成同一帧的闭眼版）
+	anim.play("walk")
+	for dir_case in [["side", true, "左"], ["side", false, "右"], ["down", false, "下"]]:
+		var blinked := false
+		for i in 500:
+			anim.update(0.016, dir_case[0], dir_case[1], 0)
+			if p.sprite.frame_coords.x >= SpriteSheetAnimator.WALK_SHUT_BASE:
+				blinked = true
+				break
+		check("往%s走：也会眨眼" % dir_case[2], blinked)
+	anim.play("idle")
 	# 闪避残影照抄精灵的缩放（精细像素图集贴图大 8 倍，不抄会特别大）
 	p._spawn_ghost()
 	var ghosts: Array = p.get_parent().get_children().filter(func(g): return g is Sprite2D and g.texture == p.sprite.texture and g != p.sprite)

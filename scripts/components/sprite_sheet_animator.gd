@@ -27,6 +27,9 @@ const HD_ENLARGE := 1.25
 ## 待机眨眼（精细像素图集多出来的两列：半闭眼 / 闭眼，只有正面待机用）：每隔 BLINK_EVERY 秒（随机）眨一下，一下 BLINK_TIME 秒
 const BLINK_HALF_COL := 16
 const BLINK_SHUT_COL := 17
+## 走路也眨眼：正面 / 左 / 右走 4 帧的闭眼版从第 18 列起（下 18-21、左 22-25、右 26-29），眨那一下换成闭眼帧
+const WALK_SHUT_BASE := 18
+const WALK_SHUT_DIRS := {"down": 0, "left": 1, "right": 2}
 const BLINK_EVERY := Vector2(2.8, 5.0)
 const BLINK_TIME := 0.16
 var _blink_t := 3.0
@@ -98,9 +101,13 @@ func update(delta: float, dir_name: String, facing_left: bool, emotion_row: int)
 	sprite.position.x = roundf(sin(time * 45.0) * shake) if shake > 0.0 else 0.0
 
 
-## 正面待机时眨眼（精细像素图集有眨眼列才眨）：返回这一帧用的列
+## 待机 / 走路时眨眼（精细像素图集有眨眼列才眨）：返回这一帧用的列。
+## 正面待机：半闭 → 闭 → 半闭（第 16 / 17 列）；左右待机、正面 / 左右走：换成同一帧的闭眼版（WALK_SHUT_BASE 起）
 func _blink(col: int, delta: float, direction: String, a: Dictionary) -> int:
-	if not hd or sheet != "" or current != "idle" or direction != "down" or sprite.hframes <= BLINK_SHUT_COL:
+	if not hd or sheet != "" or not current in ["idle", "walk"] or not WALK_SHUT_DIRS.has(direction):
+		return col
+	var walk_cols := sprite.hframes >= WALK_SHUT_BASE + WALK_SHUT_DIRS.size() * 4
+	if sprite.hframes <= BLINK_SHUT_COL or (direction != "down" or current == "walk") and not walk_cols:
 		return col
 	_blink_t -= delta
 	if _blink_t > 0.0:
@@ -108,9 +115,13 @@ func _blink(col: int, delta: float, direction: String, a: Dictionary) -> int:
 	if _blink_t < -BLINK_TIME:
 		_blink_t = randf_range(BLINK_EVERY.x, BLINK_EVERY.y)
 		return col
-	# 半闭 → 闭 → 半闭
-	var k := -_blink_t / BLINK_TIME
-	return BLINK_SHUT_COL if k > 0.33 and k < 0.67 else BLINK_HALF_COL
+	if current == "idle" and direction == "down":
+		var k := -_blink_t / BLINK_TIME
+		return BLINK_SHUT_COL if k > 0.33 and k < 0.67 else BLINK_HALF_COL
+	# 走路 / 左右待机：这一帧（方向起始列 + 帧号）的闭眼版
+	var base := int(config.directions.get(direction, 0))
+	var f := clampi(col - base, 0, 3)
+	return WALK_SHUT_BASE + int(WALK_SHUT_DIRS[direction]) * 4 + f
 
 
 ## 临时换成一张单帧图（睡着的样子等）；之后 update 会自动换回正常的图集。
