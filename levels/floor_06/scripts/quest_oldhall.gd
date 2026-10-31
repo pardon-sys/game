@@ -97,7 +97,7 @@ func _process(delta: float) -> void:
 func tick(delta: float) -> void:
 	fuel = maxf(0.0, fuel - delta / BURN)
 	if is_instance_valid(_light):
-		_light.texture_scale = light_r() * 1.4 / 80.0 + 0.05 * sin(Time.get_ticks_msec() / 70.0)
+		_light.texture_scale = (light_r() * 1.4 / 80.0 + 0.05 * sin(Time.get_ticks_msec() / 70.0)) * IsoView.ground_scale().x
 		_light.visible = fuel > 0.0
 	if fuel < 0.25 and not _warned:
 		_warned = true

@@ -115,8 +115,11 @@ func _process(delta: float) -> void:
 				state = "hidden"
 				global_position = home
 				return
-			global_position += b.global_position.direction_to(global_position) * FLEE_SPEED * delta
-			global_position = global_position.clamp(home - Vector2(48, 48), home + Vector2(48, 48))
+			var np := (global_position + b.global_position.direction_to(global_position) * FLEE_SPEED * delta).clamp(home - Vector2(48, 48), home + Vector2(48, 48))
+			# 逃跑不穿墙（等距楼层的墙是方块）
+			var lv := Party.level_of(self)
+			if lv == null or GridPath.walkable(lv, GridPath.cell(np)):
+				global_position = np
 			_flee_t += delta
 			if _flee_t >= CORNER_TIME and d <= CORNER_R:
 				_corner(b)

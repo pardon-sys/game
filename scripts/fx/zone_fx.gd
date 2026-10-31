@@ -50,6 +50,9 @@ static func body_point(actor: Node2D, z: String) -> Vector2:
 	var off := Vector2(float(b[0]), float(b[1])) if b is Array and b.size() == 2 else Vector2(0, -12)
 	if randf() < 0.5:
 		off.x = -off.x
+	# off 是画面里的偏移；等距楼层的节点位置要投影，先换回逻辑偏移
+	if IsoView.current:
+		off = IsoView.current.unlinear(off)
 	return actor.global_position + off
 
 

@@ -69,7 +69,7 @@ func grab_now(c: PlayableCharacter) -> void:
 
 func _draw() -> void:
 	# 桥板缝
-	draw_line(Vector2(-6, 2), Vector2(6, 2), Color(0.2, 0.15, 0.12), 1.0)
+	draw_line(IsoView.offset(Vector2(-6, 2)), IsoView.offset(Vector2(6, 2)), Color(0.2, 0.15, 0.12), 1.0)
 	match state:
 		"warn":
 			for i in 3:

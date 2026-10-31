@@ -63,7 +63,7 @@ func _process(delta: float) -> void:
 	if has_cell and not busy:
 		queue_redraw()
 		var vp := get_viewport()
-		var screen := vp.get_canvas_transform() * global_position
+		var screen := IsoView.canvas_pos(self) if IsoView.current else vp.get_canvas_transform() * global_position
 		var rect := vp.get_visible_rect().grow(-14.0)
 		if not rect.has_point(screen):
 			var c := rect.get_center()

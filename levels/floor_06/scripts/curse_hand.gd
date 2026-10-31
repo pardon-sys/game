@@ -39,6 +39,10 @@ var _t := 0.0
 var _tick := TICK
 var _dir := Vector2.RIGHT
 var _rng := RandomNumberGenerator.new()
+## 被墙挡住时追人改走格子路（GridPath），每 REPATH 秒重算
+const REPATH := 0.5
+var _path: Array[Vector2] = []
+var _repath := 0.0
 
 
 func _ready() -> void:
@@ -160,15 +164,33 @@ func _process(delta: float) -> void:
 				latch(target)
 				return
 			_dir = to.normalized()
-			global_position += _dir * SPEED * speed_mult * delta
+			if not _try_move(_dir * SPEED * speed_mult * delta):
+				# 中间隔着墙：沿格子路绕过去
+				_repath -= delta
+				if _path.is_empty() or _repath <= 0.0:
+					_repath = REPATH
+					_path = GridPath.find(Party.level_of(self), global_position, target.global_position)
+				GridPath.follow(self, _path, SPEED * speed_mult, delta)
 		"flee":
 			var away := global_position - flee_from
 			_dir = away.normalized() if away.length() > 0.1 else Vector2.from_angle(_rng.randf() * TAU)
-			global_position += _dir * FLEE_SPEED * speed_mult * delta
+			if not _try_move(_dir * FLEE_SPEED * speed_mult * delta):
+				_dir = _dir.rotated(PI * 0.5 * (1.0 if _rng.randf() < 0.5 else -1.0))
 		_:
 			if _rng.randf() < delta * 0.8:
 				_dir = _dir.rotated(_rng.randf_range(-1.4, 1.4))
-			global_position += _dir * SPEED * 0.35 * delta
+			if not _try_move(_dir * SPEED * 0.35 * delta):
+				_dir = _dir.rotated(PI * (0.5 + _rng.randf()))
+
+
+## 往前挪一步；前面那一格是墙就不过去（等距楼层的墙是方块，穿过去很显眼）。本来就在墙里（刚生成）的随它出来。
+func _try_move(step: Vector2) -> bool:
+	var lv := Party.level_of(self)
+	var np := global_position + step
+	if lv == null or GridPath.walkable(lv, GridPath.cell(np)) or not GridPath.walkable(lv, GridPath.cell(global_position)):
+		global_position = np
+		return true
+	return false
 
 
 ## 贴着人挠一下：粉色公主轻轻的（疲倦涨得多），别的可操作角色狠一点，镇民只是被偷走笑声

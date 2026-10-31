@@ -119,7 +119,7 @@ func tick(delta: float) -> void:
 			say(h().get("dim", []), 1.4)
 	lamp_r = DIM_R if dim_left > 0.0 else LAMP_R
 	if is_instance_valid(_light):
-		_light.texture_scale = lamp_r * 1.4 / 80.0 + 0.04 * sin(Time.get_ticks_msec() / 90.0)
+		_light.texture_scale = (lamp_r * 1.4 / 80.0 + 0.04 * sin(Time.get_ticks_msec() / 90.0)) * IsoView.ground_scale().x
 	for sh in shadows:
 		if is_instance_valid(sh):
 			sh.lamp_r = lamp_r

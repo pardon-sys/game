@@ -943,6 +943,15 @@ static func run(t: Node) -> void:
 	verify(t, "两个人一起笑出声：旧石灯笼亮了，「……谢谢。」「你刚刚笑了！」→ 做完", KnightQuests.is_done("blue") and t.seen_cuts.has("kq_blue_done"))
 	var blue_cuts := ["kq_blue_lantern", "kq_blue_to2", "kq_blue_to3", "kq_blue_to4", "kq_blue_to5", "story_kq_blue"]
 	verify(t, "⑥ 转阶段都有过场、结尾接大图过场（%s）" % [blue_cuts.filter(func(c): return not t.seen_cuts.has(c))], blue_cuts.all(func(c): return t.seen_cuts.has(c)))
+	# 夜里支线的专属图都是等距画面，没有漏投影的东西
+	for fid in [KnightStory.WALL, "floor_06_knight_storage", "floor_06_knight_bridge", "floor_06_after_crack", "floor_06_after_oldhall"]:
+		GameState.pending_spawn = ""
+		await t.main.change_level(Floors.scene(fid))
+		await t._wait(0.6)
+		var v := IsoView.current
+		var leaks: Array = v.unprojected_visible() if v else [null]
+		verify(t, "%s 是等距画面（%s），没有漏投影的东西（%s）" % [fid, str(t.main.level.get("iso_theme")), leaks], str(t.main.level.get("style")) == "iso" and v != null and leaks.is_empty())
+	await go_town(t, "from_drill")
 	# 错过时间窗口：栅栏只在第一天夜里
 	KnightStory.jump("cell")
 	KnightQuests.refresh()

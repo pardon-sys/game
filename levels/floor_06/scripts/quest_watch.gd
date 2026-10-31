@@ -44,7 +44,8 @@ func setup() -> void:
 		e.lines = q
 		put(e, Cutscene.cell_to_world(c))
 		eaves.append(e)
-	_captain = put(Sprite2D.new(), Cutscene.cell_to_world(TOWER) + Vector2(0, -12)) as Sprite2D
+	_captain = put(Sprite2D.new(), Cutscene.cell_to_world(TOWER)) as Sprite2D
+	_captain.offset = Vector2(0, -12)   # 站在塔上：画面里往上抬（不挪节点，等距楼层投影不会斜着偏）
 	_captain.texture = CAP_SHEET
 	_captain.hframes = 4
 	_captain.vframes = 4
@@ -98,6 +99,9 @@ func _begin() -> void:
 ## 蒙上眼睛：画面变黑，开始听声躲矛
 func start_blind() -> void:
 	blind = true
+	# 蒙着眼听左右：等距楼层这时不能转镜头（左右要和画面一致）
+	if IsoView.current:
+		IsoView.current.can_rotate = false
 	dodged = 0
 	hits = 0
 	given = 0
@@ -191,6 +195,8 @@ func _hit() -> void:
 func _check() -> void:
 	if dodged >= NEED:
 		blind = false
+		if IsoView.current:
+			IsoView.current.can_rotate = true
 		_lights_on()
 		_finish()
 	elif given >= CUES and dodged + (CUES - given) < NEED:

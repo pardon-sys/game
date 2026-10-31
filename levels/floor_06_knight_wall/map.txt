@@ -3,6 +3,8 @@
 intro =
 ambient = 0.26,0.27,0.42
 no_switch = false
+style = iso
+iso_theme = rampart
 [legend]
 # = wall
 . = floor

@@ -3,6 +3,9 @@
 intro =
 ambient = 0.1,0.08,0.13
 no_switch = false
+style = iso
+iso_theme = old_hall
+carry_light = false
 [legend]
 # = wall
 . = floor

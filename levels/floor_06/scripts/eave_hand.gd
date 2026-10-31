@@ -140,11 +140,14 @@ func _draw() -> void:
 			CurseHand.draw_hand(self, Vector2(0, -HANG), 0.8, col, CurseHand.COL_D, a, sin(_t * 4.0), PI * 0.15)
 		"warn":
 			var k := 1.0 - _left / WARN
-			var at := target - global_position
-			draw_circle(at, CATCH_R, Color(0.55, 0.2, 0.75, 0.25 + 0.35 * k))
-			draw_arc(at, CATCH_R, 0, TAU, 16, Color(0.85, 0.5, 1.0, 0.8), 1.0)
+			# 落点（逻辑偏移，等距楼层换算成画面偏移；预警圈画成地面上的椭圆）
+			var at := IsoView.offset(target - global_position)
+			draw_set_transform(at, 0.0, IsoView.ground_scale())
+			draw_circle(Vector2.ZERO, CATCH_R, Color(0.55, 0.2, 0.75, 0.25 + 0.35 * k))
+			draw_arc(Vector2.ZERO, CATCH_R, 0, TAU, 16, Color(0.85, 0.5, 1.0, 0.8), 1.0)
+			draw_set_transform(Vector2.ZERO)
 			CurseHand.draw_hand(self, Vector2(0, -HANG).lerp(at, k * k), 0.8, col, CurseHand.COL_D, 0.85, sin(_t * 12.0), PI * 0.15)
 		"hold":
 			if is_instance_valid(victim):
-				var at2 := victim.global_position - global_position + Vector2(0, -2)
+				var at2 := IsoView.offset(victim.global_position - global_position) + Vector2(0, -2)
 				CurseHand.draw_hand(self, at2, 0.9, col, CurseHand.COL_D, 0.9, sin(_t * 16.0))
