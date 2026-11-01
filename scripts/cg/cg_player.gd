@@ -565,6 +565,8 @@ func _play_cg(cg: Dictionary, id: String, source: String, skippable: bool, fx_le
 		step_started.emit(i, step)
 		_apply_portrait(step)
 		var dur := _run_actions(step.get("actions", []))
+		if str(step.get("act", "")) == "burst":
+			_burst_pose(step.get("actions", []))
 		if step.get("await_actions", false):
 			await _sleep(dur)
 		if _skip:
@@ -1015,6 +1017,21 @@ func _spawn_fx(target: CGActor, kind: String, tool := "", zone := "") -> void:
 	tw.tween_property(s, "position:y", s.position.y - 6, 0.25)
 	tw.parallel().tween_property(s, "modulate:a", 0.0, 0.25)
 	tw.tween_callback(s.queue_free)
+
+
+## 魔力释放那一步（act = burst）：被抖的公主（shake 的 who；没写就是台上所有公主）换成「战损憋笑魔力释放」
+## （魔法图集的 damaged_giggle_burst 行，动画 cast）；之后被挠时 start_giggle 回到战损憋笑（POLISH_RULES）
+func _burst_pose(acts: Array) -> void:
+	var who: Array = []
+	for a in acts:
+		if str(a.get("do", "")) == "shake" and actors.has(str(a.get("who", ""))):
+			who.append(actors[str(a["who"])])
+	if who.is_empty():
+		who = actors.values()
+	for w in who:
+		var c := w as CGActor
+		if c and c.kind in ["princess", "npc_princess"]:
+			c.set_pose("damaged_giggle_burst", "cast")
 
 
 ## 笑声跟着人物的姿势自动切（POLISH_RULES：小剧场里失控就要有笑声）：舞台上任何一位公主是失控一 / 失控二 → 大笑（laugh），

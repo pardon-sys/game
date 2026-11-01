@@ -7,7 +7,7 @@
 				-14,
 				10
 			],
-			"visual": "helpless_2",
+			"visual": "helpless_1",
 			"anim": "helpless",
 			"dir": "down"
 		},
@@ -17,7 +17,7 @@
 				14,
 				10
 			],
-			"visual": "helpless_2",
+			"visual": "helpless_1",
 			"anim": "helpless",
 			"dir": "down"
 		},
@@ -46,10 +46,6 @@
 		},
 		{
 			"speaker": "",
-			"text": "—— 第一幕　吸 ——"
-		},
-		{
-			"speaker": "",
 			"text": "（笑面张大了嘴。灯笼的光一盏一盏地暗下去，两个人的笑声被一缕一缕地往它身上吸）"
 		},
 		{
@@ -59,11 +55,16 @@
 		},
 		{
 			"speaker": "",
-			"text": "（笑面伸出两条紫色的触手，缠住了两个人的脚踝，把她们拖到了自己跟前）"
+			"text": "（笑面伸出两条紫色的气带，缠住了两个人的脚踝，把她们拖到了自己跟前，吊在了半空）"
 		},
 		{
-			"speaker": "",
-			"text": "—— 第二幕　要更多 ——"
+			"speaker": "蓝色的公主",
+			"text": "……倒、倒过来了……裙子……"
+		},
+		{
+			"speaker": "公主",
+			"text": "按住！快按住裙子！……我、我也按着……！",
+			"emotion": "surprise"
 		},
 		{
 			"speaker": "骑士",
@@ -71,7 +72,7 @@
 		},
 		{
 			"speaker": "",
-			"text": "（触手的尖端变成了小小的手，一只在粉色公主的脚心上挠圈，一只顺着蓝色公主的大腿往上爬）",
+			"text": "（气带的尖端变成了小小的手。一只托住粉色公主的脚掌，五根指头在脚心上慢慢地画圈）",
 			"actions": [
 				{
 					"who": "princess",
@@ -81,7 +82,18 @@
 					"repeat": 12,
 					"interval": 0.2,
 					"do": "tickle"
-				},
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "噗……不、不笑……笑了它就吸……我、我忍着……！",
+			"portrait": "defeat_1"
+		},
+		{
+			"speaker": "",
+			"text": "（另一只顺着蓝色公主的大腿内侧往上爬，爬一下停一下，像是在等她先忍不住）",
+			"actions": [
 				{
 					"who": "blue",
 					"by": "armor",
@@ -89,6 +101,34 @@
 					"fx": "hand",
 					"repeat": 12,
 					"interval": 0.2,
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……忍……忍……我……不会……笑的……"
+		},
+		{
+			"speaker": "",
+			"text": "（小手在两个人的痒处同时一捏——）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "armor",
+					"zone": "sole",
+					"fx": "hand",
+					"repeat": 8,
+					"interval": 0.15,
+					"do": "tickle"
+				},
+				{
+					"who": "blue",
+					"by": "armor",
+					"zone": "butt",
+					"fx": "hand",
+					"repeat": 8,
+					"interval": 0.15,
 					"do": "tickle"
 				}
 			]
@@ -96,22 +136,7 @@
 		{
 			"speaker": "公主",
 			"text": "哈哈哈哈！脚、脚心——！笑得越多它吸得越多——停不下来——！",
-			"portrait": "defeat_2"
-		},
-		{
-			"speaker": "",
-			"text": "（爬到蓝色公主屁股上的那只手，捏了一下，又挠了一下）",
-			"actions": [
-				{
-					"who": "blue",
-					"by": "armor",
-					"zone": "butt",
-					"fx": "hand",
-					"repeat": 8,
-					"interval": 0.22,
-					"do": "tickle"
-				}
-			]
+			"portrait": "knight_fail_3"
 		},
 		{
 			"speaker": "蓝色的公主",
@@ -119,93 +144,73 @@
 		},
 		{
 			"speaker": "",
-			"text": "（被吸走的笑声化成粉紫色的光带，一条一条飘进笑面的嘴里。笑面笑得更大了）"
+			"text": "（被吸走的笑声化成粉紫色的光带，一条一条飘进笑面的嘴里。笑面笑得更大了，伸出来的小手也更多了）"
 		},
 		{
 			"speaker": "",
-			"text": "—— 第三幕　满了 ——"
-		},
-		{
-			"speaker": "公主",
-			"text": "哈……魔、魔力……要……！",
-			"portrait": "fatigue_burst",
-			"act": "burst",
+			"text": "（三只小手排在粉色公主的脚底：一只扒开脚趾，一只钻趾缝，一只用指甲沿着脚弓从脚跟刮到脚尖）",
 			"actions": [
 				{
-					"do": "voice",
-					"state": "laugh"
+					"who": "princess",
+					"by": "armor",
+					"zone": "sole",
+					"fx": "hand",
+					"repeat": 14,
+					"interval": 0.13,
+					"do": "tickle"
 				}
 			]
 		},
 		{
+			"speaker": "公主",
+			"text": "哈哈哈哈！三、三只——排、排队也不行——！呜……笑声……被吸走了……还是好痒……！",
 			"actions": [
 				{
-					"time": 0.5,
-					"do": "flash"
-				},
-				{
-					"sound": "star_burst",
-					"do": "sfx"
-				},
-				{
-					"who": "armor",
-					"time": 0.4,
-					"do": "shake"
-				},
-				{
-					"state": "laugh",
-					"do": "voice"
+					"who": "princess",
+					"kind": "laugh",
+					"do": "bubble"
 				}
-			],
-			"wait": 0.5
+			]
 		},
 		{
 			"speaker": "",
-			"text": "（粉色的光一炸开，被吸走的笑声停了一瞬。释放后的舒服软软地裹住了她，她瘫在触手里，脚趾一根一根松开）"
-		},
-		{
-			"speaker": "公主",
-			"text": "……呼……哈……好……舒服……",
-			"emotion": "happy"
-		},
-		{
+			"text": "（蓝色公主那边，小手爬到了腿根，在那一圈软软的地方打转；另一只绕到后面，左右轮流捏她的屁股）",
 			"actions": [
 				{
-					"time": 0.5,
-					"do": "flash"
-				},
-				{
-					"sound": "star_burst",
-					"do": "sfx"
-				},
-				{
-					"who": "armor",
-					"time": 0.4,
-					"do": "shake"
-				},
-				{
-					"state": "laugh",
-					"do": "voice"
+					"who": "blue",
+					"by": "armor",
+					"zone": "thigh",
+					"fx": "hand",
+					"repeat": 12,
+					"interval": 0.15,
+					"do": "tickle"
 				},
 				{
 					"who": "blue",
-					"time": 0.4,
-					"do": "shake"
+					"by": "armor",
+					"zone": "butt",
+					"fx": "hand",
+					"repeat": 10,
+					"interval": 0.16,
+					"do": "tickle"
 				}
-			],
-			"wait": 0.5
+			]
 		},
 		{
 			"speaker": "蓝色的公主",
-			"text": "……我……也……满……了……"
+			"text": "……！……左、右……轮流……不、不准……这样……哈哈哈……"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……粉色的……不、不要……听……我、我现在的……声音……"
+		},
+		{
+			"speaker": "公主",
+			"text": "我、我在捂耳朵……可、可是手被吊着……哈哈……捂不住……！"
 		},
 		{
 			"speaker": "",
-			"text": "（淡蓝的光跟着亮起。蓝色公主靠在粉色公主肩上，舒服得一动不动）"
-		},
-		{
-			"speaker": "",
-			"text": "（可笑面还在吸。触手的小手贴着刚释放完、最软的地方，慢慢地、一下一下地挠——挠出来的笑声又被吸走）",
+			"text": "（笑面低下头，面罩几乎贴到了两个人的脸上。吸走的笑声越来越多，两个人的身体越来越烫）",
 			"actions": [
 				{
 					"who": "princess",
@@ -213,7 +218,100 @@
 					"zone": "sole",
 					"fx": "feather",
 					"repeat": 10,
-					"interval": 0.3,
+					"interval": 0.18,
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "哈……魔、魔力……要……！",
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "flash"
+				},
+				{
+					"sound": "star_burst",
+					"do": "sfx"
+				},
+				{
+					"sound": "water_release",
+					"volume": -2.0,
+					"do": "sfx"
+				},
+				{
+					"who": "princess",
+					"time": 0.4,
+					"do": "shake"
+				},
+				{
+					"state": "laugh",
+					"do": "voice"
+				}
+			],
+			"act": "burst",
+			"wait": 1.0
+		},
+		{
+			"speaker": "",
+			"text": "（粉色的光一炸开，被吸走的笑声停了一瞬。释放后的舒服软软地裹住了她，她瘫在气带里，脚趾一根一根松开）"
+		},
+		{
+			"speaker": "公主",
+			"text": "……呼……哈……好……舒服……",
+			"emotion": "happy"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……我……也……满……了……",
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "flash"
+				},
+				{
+					"sound": "star_burst",
+					"do": "sfx"
+				},
+				{
+					"sound": "water_release",
+					"volume": -2.0,
+					"do": "sfx"
+				},
+				{
+					"who": "blue",
+					"time": 0.4,
+					"do": "shake"
+				},
+				{
+					"state": "laugh",
+					"do": "voice"
+				}
+			],
+			"act": "burst",
+			"wait": 1.0
+		},
+		{
+			"speaker": "",
+			"text": "（淡蓝的光跟着亮起。蓝色公主靠在粉色公主肩上，舒服得一动不动，连脸红都忘了）"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……暖……",
+			"emotion": "happy"
+		},
+		{
+			"speaker": "",
+			"text": "（可笑面还在吸。小手贴着刚释放完、最软的地方，慢慢地、一下一下地挠——挠出来的笑声又被吸走）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "armor",
+					"zone": "sole",
+					"fx": "feather",
+					"repeat": 12,
+					"interval": 0.22,
 					"do": "tickle"
 				},
 				{
@@ -221,24 +319,28 @@
 					"by": "armor",
 					"zone": "thigh",
 					"fx": "hand",
-					"repeat": 8,
-					"interval": 0.35,
+					"repeat": 10,
+					"interval": 0.25,
 					"do": "tickle"
 				}
 			]
 		},
 		{
 			"speaker": "公主",
-			"text": "……哈哈……好舒服……又好痒……分、分不清了……",
-			"portrait": "knight_fail_3"
+			"text": "……哈哈……好舒服……又好痒……分、分不清了……刚放完……一碰就……！",
+			"emotion": "helpless_2"
 		},
 		{
 			"speaker": "蓝色的公主",
-			"text": "……哈……哈……不……要……停……不对……要停……"
+			"text": "……哈……哈……不……要……停……不对……要停……刚、刚才那句……没说……"
 		},
 		{
-			"speaker": "",
-			"text": "—— 第四幕　一瞬 ——"
+			"speaker": "公主",
+			"text": "我、我听见了……哈哈……"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……忘……掉。"
 		},
 		{
 			"speaker": "",
@@ -250,7 +352,7 @@
 		},
 		{
 			"speaker": "",
-			"text": "（触手松开了。两个人跌坐在灯笼下面，被吸走的笑声一点一点飘回了灯笼里）"
+			"text": "（气带松开了。两个人跌坐在灯笼下面，被吸走的笑声一点一点飘回了灯笼里）"
 		},
 		{
 			"speaker": "保卫队队长",

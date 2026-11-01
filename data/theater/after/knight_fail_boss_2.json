@@ -46,10 +46,6 @@
 		},
 		{
 			"speaker": "",
-			"text": "—— 第一幕　穿上 ——"
-		},
-		{
-			"speaker": "",
 			"text": "（胸甲「咔」地裂开，一件接一件的痒痒装备从缝里飞出来——羽毛袜、趾缝刷、大腿圈，全是地牢里见过的东西）"
 		},
 		{
@@ -59,19 +55,24 @@
 		},
 		{
 			"speaker": "",
-			"text": "（羽毛袜套上了粉色公主的脚，大腿圈「咔哒」一声扣在了蓝色公主的腿上）"
+			"text": "（护心磁吸一拉，两个人脚下一滑，被吸到了盔甲跟前。羽毛袜趁机套上了粉色公主的光脚，大腿圈「咔哒」一声扣在了蓝色公主的腿上）"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……又……是……这种……东西。"
+		},
+		{
+			"speaker": "公主",
+			"text": "脱、脱不下来……袜口自己收紧了……！",
+			"emotion": "angry"
+		},
+		{
+			"speaker": "骑士",
+			"text": "……给……殿……下……穿……上……"
 		},
 		{
 			"speaker": "",
-			"text": "—— 第二幕　动起来 ——"
-		},
-		{
-			"speaker": "",
-			"text": "（护心磁吸把两个人往盔甲身边拉。装备一靠近诅咒，就自己动了起来）"
-		},
-		{
-			"speaker": "",
-			"text": "（袜子里的羽毛在脚心上一圈一圈地扫，趾缝刷钻进趾缝来回地刷）",
+			"text": "（装备一靠近诅咒，就自己动了起来。袜子里的羽毛在脚心上一圈一圈地扫）",
 			"actions": [
 				{
 					"who": "princess",
@@ -86,12 +87,31 @@
 		},
 		{
 			"speaker": "公主",
-			"text": "哈哈哈哈！袜、袜子在挠——！脱不掉——！",
-			"portrait": "defeat_2"
+			"text": "噗……哈……不、不痒……羽毛而已……我、我早就习惯了……！",
+			"portrait": "defeat_1"
 		},
 		{
 			"speaker": "",
-			"text": "（大腿圈里的小毛刷转了起来，从大腿一路刷到屁股，再刷回来）",
+			"text": "（趾缝刷「嗖」地钻进了她的脚趾缝，来回地刷。她的嘴硬只撑了半句）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "armor",
+					"zone": "sole",
+					"fx": "lines",
+					"repeat": 12,
+					"interval": 0.16,
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "哈哈哈哈！收回——刚、刚才那句收回——！"
+		},
+		{
+			"speaker": "",
+			"text": "（大腿圈里的小毛刷转了起来，从膝盖窝一路刷上大腿内侧，刷到裙摆底下才转回来）",
 			"actions": [
 				{
 					"who": "blue",
@@ -115,29 +135,89 @@
 		},
 		{
 			"speaker": "蓝色的公主",
-			"text": "……哈……这个……裤子……的、的同伙……！哈哈……"
-		},
-		{
-			"speaker": "骑士",
-			"text": "……殿……下……的……笑……声……"
+			"text": "……哈……这个……裤子……的、的同伙……！不、不许……往上……",
+			"actions": [
+				{
+					"who": "blue",
+					"by": "armor",
+					"zone": "thigh",
+					"fx": "hand",
+					"repeat": 10,
+					"interval": 0.16,
+					"do": "tickle"
+				}
+			],
+			"portrait": "knight_fail_2"
 		},
 		{
 			"speaker": "",
-			"text": "—— 第三幕　满了 ——"
+			"text": "（她两只手死死压着裙摆，膝盖并得紧紧的——可大腿圈本来就扣在里面，压也压不住）"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……别……看……这边……"
 		},
 		{
 			"speaker": "公主",
-			"text": "哈……哈……不、不行了……魔力……！",
-			"portrait": "fatigue_burst",
-			"act": "burst",
+			"text": "我、我没看……！我在看我自己的脚……哈哈……袜子在动……！"
+		},
+		{
+			"speaker": "",
+			"text": "（胸甲的缝里又飞出一件：一对软毛脚环，「啪」地套在粉色公主的脚踝上，环里的软毛贴着脚跟一圈一圈地转）",
 			"actions": [
 				{
-					"do": "voice",
-					"state": "laugh"
+					"who": "princess",
+					"by": "armor",
+					"zone": "sole",
+					"fx": "feather",
+					"repeat": 14,
+					"interval": 0.14,
+					"do": "tickle"
 				}
 			]
 		},
 		{
+			"speaker": "公主",
+			"text": "哈哈哈哈——！脚、脚跟也——！羽毛袜加脚环——犯规——！",
+			"actions": [
+				{
+					"who": "princess",
+					"kind": "laugh",
+					"do": "bubble"
+				}
+			]
+		},
+		{
+			"speaker": "骑士",
+			"text": "……殿……下……的……笑……声……好……听……"
+		},
+		{
+			"speaker": "公主",
+			"text": "好、好听也不许——哈哈——不许夸——！",
+			"emotion": "helpless_2"
+		},
+		{
+			"speaker": "",
+			"text": "（大腿圈的毛刷越转越快，刷到了腿根那一圈最软的地方，又顺势滑到屁股下面的交界上打转）",
+			"actions": [
+				{
+					"who": "blue",
+					"by": "armor",
+					"zone": "butt",
+					"fx": "hand",
+					"repeat": 12,
+					"interval": 0.14,
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……哈……哈哈……！那、那里……不……行……我、我要……"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……魔力……出……来……了……",
 			"actions": [
 				{
 					"time": 0.5,
@@ -148,7 +228,12 @@
 					"do": "sfx"
 				},
 				{
-					"who": "armor",
+					"sound": "water_release",
+					"volume": -2.0,
+					"do": "sfx"
+				},
+				{
+					"who": "blue",
 					"time": 0.4,
 					"do": "shake"
 				},
@@ -157,7 +242,66 @@
 					"do": "voice"
 				}
 			],
-			"wait": 0.5
+			"act": "burst",
+			"wait": 1.0
+		},
+		{
+			"speaker": "",
+			"text": "（淡蓝的光炸开，大腿圈结了一层霜，毛刷卡住了。她闭着眼睛，长长地呼出一口气，腿软软地放松下来）"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……舒……服……",
+			"emotion": "happy"
+		},
+		{
+			"speaker": "",
+			"text": "（羽毛袜和脚环还在粉色公主脚上转，一个刷脚心，一个刷脚跟，趾缝刷在中间来回地钻）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "armor",
+					"zone": "sole",
+					"fx": "feather",
+					"repeat": 14,
+					"interval": 0.13,
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "哈……哈哈……我、我也……不行了……！"
+		},
+		{
+			"speaker": "公主",
+			"text": "哈……要、要出来了——！",
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "flash"
+				},
+				{
+					"sound": "star_burst",
+					"do": "sfx"
+				},
+				{
+					"sound": "water_release",
+					"volume": -2.0,
+					"do": "sfx"
+				},
+				{
+					"who": "princess",
+					"time": 0.4,
+					"do": "shake"
+				},
+				{
+					"state": "laugh",
+					"do": "voice"
+				}
+			],
+			"act": "burst",
+			"wait": 1.0
 		},
 		{
 			"speaker": "",
@@ -169,78 +313,45 @@
 			"emotion": "happy"
 		},
 		{
-			"actions": [
-				{
-					"time": 0.5,
-					"do": "flash"
-				},
-				{
-					"sound": "star_burst",
-					"do": "sfx"
-				},
-				{
-					"who": "armor",
-					"time": 0.4,
-					"do": "shake"
-				},
-				{
-					"state": "laugh",
-					"do": "voice"
-				},
-				{
-					"who": "blue",
-					"time": 0.4,
-					"do": "shake"
-				}
-			],
-			"wait": 0.5
-		},
-		{
 			"speaker": "",
-			"text": "（蓝色公主也亮了。她闭着眼睛，长长地呼出一口气——大腿圈却还在慢悠悠地转）",
-			"actions": [
-				{
-					"who": "blue",
-					"by": "armor",
-					"zone": "thigh",
-					"fx": "hand",
-					"repeat": 8,
-					"interval": 0.35,
-					"do": "tickle"
-				}
-			]
-		},
-		{
-			"speaker": "蓝色的公主",
-			"text": "……舒……服……可是……还在……哈……刷……"
-		},
-		{
-			"speaker": "",
-			"text": "（剩下一半的羽毛袜也没闲着：羽毛贴着最软的脚心，一根一根慢慢地扫——舒服和痒一起往上涌）",
+			"text": "（可剩下一半的羽毛袜没闲着：羽毛贴着刚释放完、最软的脚心，一根一根慢慢地扫；大腿圈上的霜也化了，毛刷「咔」地又转了起来）",
 			"actions": [
 				{
 					"who": "princess",
 					"by": "armor",
 					"zone": "sole",
 					"fx": "feather",
-					"repeat": 10,
-					"interval": 0.32,
+					"repeat": 12,
+					"interval": 0.2,
+					"do": "tickle"
+				},
+				{
+					"who": "blue",
+					"by": "armor",
+					"zone": "thigh",
+					"fx": "hand",
+					"repeat": 12,
+					"interval": 0.2,
 					"do": "tickle"
 				}
 			]
 		},
 		{
 			"speaker": "公主",
-			"text": "……哈哈……别……刚舒服完……又、又要……",
-			"portrait": "knight_fail_2"
+			"text": "……哈哈……别……刚舒服完……又、又要……比刚才还痒……！",
+			"emotion": "helpless_2"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……哈……哈……刚、刚放完……碰一下……就……别、别看我的脸……"
+		},
+		{
+			"speaker": "公主",
+			"text": "你、你也别看我的……哈哈……我们一起……闭眼……！"
 		},
 		{
 			"speaker": "",
-			"text": "—— 第四幕　扯下来 ——"
-		},
-		{
-			"speaker": "",
-			"text": "（「咔嚓」——工匠举着钳子冲进来，一钳剪断了大腿圈。小莉莉扑上去，一把把羽毛袜扯了下来）"
+			"text": "（「咔嚓」——工匠举着钳子冲进来，一钳剪断了大腿圈。小莉莉扑上去，一把把羽毛袜和脚环扯了下来）"
 		},
 		{
 			"speaker": "小莉莉",
@@ -248,7 +359,7 @@
 		},
 		{
 			"speaker": "",
-			"text": "（两个人手拉着手，踉踉跄跄地跑出了磁吸的圈）"
+			"text": "（两个人手拉着手，踉踉跄跄地跑出了磁吸的圈，谁也没说话，耳朵都红红的）"
 		},
 		{
 			"speaker": "蓝色的公主",

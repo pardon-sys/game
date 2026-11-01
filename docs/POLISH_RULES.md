@@ -33,6 +33,7 @@
      - **不要**给失控 / 憋笑状态写 `anim: idle`（idle 只有一帧）。
      - 教训（攻防战失败小剧场的精灵定格过）：`cg_player._build_cast` 的 npc 分支以前忽略 `visual` / `anim`，`CGActor.make_npc` 强制 `idle`（只有一帧），`pose` 动作只换行不换动画。
      - 自动检查：`cg_test` 的「小剧场里的精灵都会动」遍历所有 `data/theater/**`。
+   - **魔力释放那一步的精灵是「战损憋笑魔力释放」**（魔法图集的 `damaged_giggle_burst` 行，动画 `cast`）：`CGPlayer._burst_pose` 在 `act = "burst"` 的那一步给被 `shake` 的公主换上，之后被挠时回到战损憋笑。不用每段手写 `pose`。
    - **小剧场里要有角色的笑声**：憋笑放憋笑声（`voice giggle`），失控一 / 失控二放大笑声（`voice laugh`）。
      - 笑声是靠步骤里的 `voice` 动作放的（这个设计保留）：**新写的小剧场要写 `voice`**——开头 `giggle`，换成失控 / 魔力释放那一步 `laugh`，结尾 `""`；
      - 生成器兜底：`gen_floor06_after.py` 的 `_with_voice` 给换成失控（`pose helpless_*`）/ 魔力释放（`act = burst`）而没写 `voice` 的那一步补 `voice laugh`、换成憋笑的补 `voice giggle`；
