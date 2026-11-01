@@ -391,6 +391,12 @@ func knight_go() -> void:
 	KnightStory.go()
 
 
+## 骑士篇·夜探地牢：牢房里的挠痒鼠尖叫，把附近的守卫引过来（PrisonOddities.alarm）。
+func prison_alarm() -> void:
+	runner.end_conversation()
+	PrisonOddities.alarm()
+
+
 ## 骑士篇：夜探地牢中途出来了，从通风口钻回去（KnightStory.reenter）。
 func knight_reenter() -> void:
 	runner.end_conversation()

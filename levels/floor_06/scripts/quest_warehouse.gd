@@ -13,6 +13,8 @@ static var COVERS: Array[Vector2i] = QuestMaps.cells("floor_06_after_warehouse",
 const COVER_R := 16.0
 const PLAY := 2.8
 const STOP := 3.0
+## 音乐快停的时候（最后 WARN_LEFT 秒）：曲子变慢、状态栏提醒——发条小手比人快得多，要提前躲
+const WARN_LEFT := 1.0
 const PICK_R := 14.0
 const NEED := 4
 
@@ -50,7 +52,8 @@ func _intro() -> void:
 
 
 func status() -> String:
-	return "零件 %d / %d　%s" % [got, NEED, "♪ 音乐响着" if music else "音乐停了！"]
+	var st := ("♪ 曲子慢下来了——快躲！" if _left <= WARN_LEFT else "♪ 音乐响着") if music else "音乐停了！"
+	return "零件 %d / %d　%s" % [got, NEED, st]
 
 
 func set_music(on: bool) -> void:
@@ -76,7 +79,10 @@ func _process(delta: float) -> void:
 
 
 func tick(delta: float) -> void:
+	var was := _left
 	_left -= delta
+	if music and was > WARN_LEFT and _left <= WARN_LEFT:
+		Audio.play("music_box", -14.0, 0.0, 0.7)   # 曲子慢下来：快停了
 	if _left <= 0.0:
 		set_music(not music)
 	var hid := hidden_now()

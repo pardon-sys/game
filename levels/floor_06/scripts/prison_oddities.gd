@@ -1,0 +1,79 @@
+class_name PrisonOddities
+extends Node2D
+## 夜探地牢的牢房里那些奇怪的东西（TaskSneak 开始时摆上；台词和小剧场在 tools/build/knight_text/prison.py）：
+##   挠痒鼠（第一间牢房，隔着栏杆按 E）、被没收的痒痒手套（第二间牢房的墙上）、坏掉的审讯椅（审问室）：按 E 说话 / 调查（对话 floor_06/after_prison_*）；
+##   马凳（审问室角落）：走到旁边（SADDLE_R 以内）自动触发小剧场 prison_saddle（只一次）。
+##   挠痒鼠没放出来会尖叫把守卫引来（对话 set.call = prison_alarm → alarm()）。
+## 测试：spots、saddle_done、alarm()、spot(id)。
+
+const SPOTS := {
+	"rat": {"actor": Vector2i(14, 3), "talk": Vector2i(14, 5), "dialogue": "floor_06/after_prison_rat", "kind": "monster", "key": "rat"},
+	"glove": {"actor": Vector2i(20, 2), "talk": Vector2i(20, 5), "dialogue": "floor_06/after_prison_glove", "kind": "monster", "key": "glove"},
+	"chair": {"actor": Vector2i(18, 12), "talk": Vector2i(18, 12), "dialogue": "floor_06/after_prison_chair", "kind": "", "key": ""},
+}
+const SADDLE_AT := Vector2i(16, 13)
+const SADDLE_R := 14.0
+const ALARM_R := 220.0
+
+var spots := {}
+var saddle: Node2D
+var saddle_done := false
+
+
+func _ready() -> void:
+	for id in SPOTS:
+		var info: Dictionary = SPOTS[id]
+		var actor_cell: Vector2i = info["actor"]
+		if str(info["kind"]) == "monster":
+			var a := CGActor.make_monster("prison_" + id, str(info["key"]), CG.data.get("actors", {}).get(str(info["key"]), {}))
+			add_child(a)
+			a.global_position = Cutscene.cell_to_world(actor_cell)
+		var sp := Spot.new()
+		sp.dialogue = str(info["dialogue"])
+		add_child(sp)
+		sp.global_position = Cutscene.cell_to_world(info["talk"])
+		spots[id] = sp
+	saddle = CGActor.make_trap("prison_saddle", "saddle_bench", CG.data.get("trap_actors", {}).get("saddle_bench", {}))
+	add_child(saddle)
+	saddle.global_position = Cutscene.cell_to_world(SADDLE_AT)
+	saddle_done = GameState.has_flag("cg_seen_theater:prison_saddle")
+
+
+func spot(id: String) -> Node2D:
+	return spots.get(id)
+
+
+func _process(_delta: float) -> void:
+	if saddle_done or GameState.in_dialogue or GameState.in_cutscene or CG.is_busy():
+		return
+	var p := GameState.player
+	if is_instance_valid(p) and p.global_position.distance_to(saddle.global_position) <= SADDLE_R:
+		saddle_done = true
+		CG.play_theater("prison_saddle")
+
+
+## 挠痒鼠尖叫：附近的守卫都过来查看
+static func alarm() -> int:
+	var d := StealthDirector.current
+	var p := GameState.player
+	if d == null or not is_instance_valid(p):
+		return 0
+	return d.noise(p.global_position, ALARM_R)
+
+
+## 按 E 说话 / 调查的点
+class Spot extends Node2D:
+	var dialogue := ""
+
+	func _ready() -> void:
+		var area := Interactable.new()
+		var shape := CollisionShape2D.new()
+		var c := CircleShape2D.new()
+		c.radius = 9.0
+		shape.shape = c
+		area.add_child(shape)
+		add_child(area)
+
+	func on_interact(_player: Node) -> void:
+		if not Dialogue.is_active():
+			Dialogue.talk(dialogue)

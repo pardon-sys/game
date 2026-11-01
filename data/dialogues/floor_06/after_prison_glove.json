@@ -1,0 +1,28 @@
+{
+	"name": "痒痒手套",
+	"entries": [
+		{
+			"node": "default"
+		}
+	],
+	"nodes": {
+		"default": {
+			"lines": [
+				{
+					"text": "（墙上挂着一只被没收的痒痒手套，贴着标签「没收品·勿碰」。……它的手指动了一下）",
+					"speaker": ""
+				}
+			],
+			"theater": "prison_glove",
+			"next": "after"
+		},
+		"after": {
+			"lines": [
+				{
+					"text": "（南边走廊的守卫走到东头会停一会儿……记住了）",
+					"speaker": ""
+				}
+			]
+		}
+	}
+}

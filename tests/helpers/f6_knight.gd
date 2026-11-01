@@ -33,12 +33,13 @@ static func run(t: Node) -> void:
 		and ResourceLoader.exists(str(Dialogue.npcs.get("knight", {}).get("portrait", ""))))
 	verify(t, "保卫队的地牢在楼层表里", Floors.ids().has(KnightStory.PRISON))
 	verify(t, "骑士篇的步骤：%s" % [KnightStory.STEPS.map(func(s): return s["id"])],
-		KnightStory.STEPS.map(func(s): return s["id"]) == ["found", "wake", "afternoon", "bait", "sneak", "cell", "sleep", "report", "chase", "boss"])
+		KnightStory.STEPS.map(func(s): return s["id"]) == ["found", "wake", "afternoon", "bait", "sneak", "cell", "sleep", "report", "chase", "boss", "boss_fog"])
 	# 生成器注入的主线触发条件（eq knight_step = 下标）要和 STEPS 对得上
 	var trig := []
-	for pair in [["after_k_guard_dungeon", "found"], ["after_k_guard_camp", "report"]]:
+	for pair in [["after_k_guard_dungeon", "found"], ["after_k_captain", "report"]]:
 		var d: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://data/dialogues/floor_06/%s.json" % pair[0]))
-		trig.append(int(d["entries"][0]["if"]["eq"]["knight_step"]) == KnightStory.index_of(pair[1]))
+		# 主线触发的条目（go）要排在最前面（支线的对话不能挡住它）
+		trig.append(str(d["entries"][0].get("node", "")) == "go" and int(d["entries"][0]["if"]["eq"]["knight_step"]) == KnightStory.index_of(pair[1]))
 	var objs: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://data/dialogues/floor_06/after_k_objects.json"))
 	trig.append(int(objs["nodes"]["lantern"]["goto"][0]["if"]["eq"]["knight_step"]) == KnightStory.index_of("bait"))
 	trig.append(int(objs["nodes"]["vent"]["goto"][0]["if"]["eq"]["knight_step"]) == KnightStory.index_of("sneak"))
@@ -317,6 +318,19 @@ static func run(t: Node) -> void:
 	var guards: Array = t.get_tree().get_nodes_in_group("patrol_guard")
 	verify(t, "巡逻松一点：%d 个队员，视野 %.0f，警觉涨得慢（%.1f）" % [guards.size(), guards[0].view_range, sd.alert_rate],
 		guards.size() == 5 and guards.all(func(g): return g.view_range <= 64.0 and g.speed <= 26.0) and sd.alert_rate <= 1.6)
+	# 牢房里那些奇怪的东西
+	await t._wait(0.2)
+	var od := sk.oddities
+	verify(t, "牢房里摆了挠痒鼠、痒痒手套、审讯椅（按 E）和马凳", is_instance_valid(od) and od.spots.size() == 3 and is_instance_valid(od.saddle))
+	if is_instance_valid(od):
+		var gp0: Array = guards.map(func(g): return g.state if "state" in g else 0)
+		var n_alarm := PrisonOddities.alarm()
+		verify(t, "挠痒鼠没放出来就尖叫：把附近的守卫引过来（%d 个）" % n_alarm, n_alarm >= 0)
+		GameState.player.global_position = od.saddle.global_position + Vector2(8, 0)
+		await t._advance_until(func(): return GameState.has_flag("cg_seen_theater:prison_saddle") and not CG.is_busy(), 60.0)
+		verify(t, "走到马凳旁边：触发小剧场（她说绝对不坐 → 守卫来了 → 又坐上去）", GameState.has_flag("cg_seen_theater:prison_saddle") and od.saddle_done)
+		GameState.player.global_position = Cutscene.cell_to_world(TaskSneak.SPAWN)
+		await t._wait(0.3)
 	TaskSneak.auto_chair = true
 	sk.caught_now()
 	await t._wait(0.3)

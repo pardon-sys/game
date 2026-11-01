@@ -1,0 +1,50 @@
+{
+	"name": "审讯椅",
+	"entries": [
+		{
+			"node": "default"
+		}
+	],
+	"nodes": {
+		"default": {
+			"lines": [
+				{
+					"text": "（一把带皮带和脚枷的椅子，椅背上贴着一张纸：「坏掉了，勿用」）",
+					"speaker": ""
+				}
+			],
+			"prompt": "坐上去试试？",
+			"choices": [
+				{
+					"text": "……坏掉的，坐一下应该没事吧",
+					"next": "sit"
+				},
+				{
+					"text": "不坐，看看旁边的纸条",
+					"next": "note"
+				}
+			]
+		},
+		"sit": {
+			"lines": [
+				{
+					"text": "……就坐一下。腿好酸。",
+					"speaker": "公主"
+				}
+			],
+			"theater": "prison_chair"
+		},
+		"note": {
+			"lines": [
+				{
+					"text": "（纸条上歪歪扭扭地写着：「换班——南走廊、东竖走廊，敲钟以后两个人一起去吃夜宵」）",
+					"speaker": ""
+				},
+				{
+					"text": "……敲钟以后，有一阵子没人。",
+					"speaker": "公主"
+				}
+			]
+		}
+	}
+}

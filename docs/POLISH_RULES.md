@@ -33,6 +33,12 @@
      - **不要**给失控 / 憋笑状态写 `anim: idle`（idle 只有一帧）。
      - 教训（攻防战失败小剧场的精灵定格过）：`cg_player._build_cast` 的 npc 分支以前忽略 `visual` / `anim`，`CGActor.make_npc` 强制 `idle`（只有一帧），`pose` 动作只换行不换动画。
      - 自动检查：`cg_test` 的「小剧场里的精灵都会动」遍历所有 `data/theater/**`。
+   - **小游戏窗口里的人物也要跟着闷笑度换姿势**（憋笑 → 失控一 → 失控二）：
+     - 小游戏（`TrainingStage` / `ErrandWorkStage` 子类）里的人物是 `CGActor` 木偶，开场摆个 `normal` 以后不会自己变；
+     - 打开 `follow_laugh = true`（在 `_init` 里设），`TrainingStage._update_bars` 每帧按 `actor_laugh_ratio(id)` 同步姿势（`sync_actor_poses`）；
+     - 玩家那位（`princess`）默认读真闷笑；双人的小游戏覆盖 `actor_laugh_ratio`，让另一位跟她自己的数值（如 `blue_laugh`）；
+     - 爆发、施法等特殊姿势不会被覆盖。
+     - 教训：骑士篇支线的熬药 / 派对 / 点灯笼 / 莉莉对决开场 `set_pose("normal")` 以后一直不变，而且覆盖了 `_punish`，连失控姿势都没有。
 2. **挠痒特效、抖动都要出现在图上**：
    - 每一句「正在挠」的台词，都配一条 `tickle` 指令（`who / by / repeat / interval / fx`）；
    - 横版 CG 大图上的命中贴片、抖动、飘字由 `cg_tickle` / `Dialogue.shake_portrait` 自动处理，前提是那一步有 `tickle`；

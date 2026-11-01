@@ -130,9 +130,9 @@ def hide_end():
 
 # ---------------------------------------------------------------- 小巷 → 宝贝盒被搬走
 def to4():
+    # 和小莉莉说过话以后才演（阶段门槛的 cut）：提示「去集市」要在对话之后才出现
     return cut("宝贝盒不见了", [
-        line(N, "（没过多久，小莉莉哭着跑了回来，后面跟着气呼呼的小汤姆）"),
-        lily("呜……宝贝盒……莉莉的宝贝盒不见了！"),
+        line(N, "（小汤姆气呼呼地跑了过来，木剑还攥在手里）"),
         tom("是手印！我看见了！一串手印抬着盒子，跑进集市了！"),
         tom("我去拿木剑——把它们全打跑！"),
         line(P, "等等等等！", "surprise"),
@@ -237,8 +237,8 @@ STAGES = {
         "chat": [["p", "货摊的布帘在动……"], ["b", "……它抱着东西，跑不快。"], ["p", "你冻住它，我去拿！"], ["b", "……嗯。"],
                  ["p", "哈……它拿掸子扫我脚心……！"], ["b", "……它在逗你。"], ["p", "手印也会逗人？"],
                  ["b", "……被偷走的笑声。……当然会。"], ["p", "还差几块……莉莉在等呢。"]],
-        "enter": to4},
+    },
 }
 
-CUTS = {"kq_shoes_start": start, "kq_shoes_invite": invite, "kq_shoes_hide_start": hide_start, "kq_shoes_hide_end": hide_end,
+CUTS = {"kq_shoes_to4": to4, "kq_shoes_start": start, "kq_shoes_invite": invite, "kq_shoes_hide_start": hide_start, "kq_shoes_hide_end": hide_end,
         "kq_shoes_box_end": box_end, "kq_shoes_done": done}

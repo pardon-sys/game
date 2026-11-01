@@ -1,0 +1,145 @@
+{
+	"name": "坏掉的审讯椅",
+	"cast": {
+		"princess": {
+			"kind": "princess",
+			"at": [
+				0,
+				8
+			],
+			"visual": "normal",
+			"anim": "idle",
+			"dir": "down"
+		},
+		"chair": {
+			"kind": "trap:cushion",
+			"at": [
+				0,
+				10
+			]
+		}
+	},
+	"steps": [
+		{
+			"act": 1,
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "fade_in"
+				},
+				{
+					"state": "giggle",
+					"do": "voice"
+				}
+			],
+			"wait": 0.5
+		},
+		{
+			"speaker": "",
+			"text": "（她小心地在椅子上坐下来——椅子「咔哒」响了一声）",
+			"act": 1
+		},
+		{
+			"speaker": "公主",
+			"text": "……坏掉的，对吧？标签上写着「坏掉了」。",
+			"emotion": "surprise"
+		},
+		{
+			"speaker": "",
+			"text": "（扶手上的皮带「啪」地扣住了她的手腕，脚下弹出一对脚枷，把她的脚踝扣了进去）",
+			"actions": [
+				{
+					"who": "princess",
+					"time": 0.4,
+					"do": "shake"
+				}
+			],
+			"act": 2
+		},
+		{
+			"speaker": "公主",
+			"text": "一、一点都没坏啊——！"
+		},
+		{
+			"speaker": "",
+			"text": "（脚枷的内侧伸出一圈软刷，把鞋子顶掉，贴着光着的脚心转了起来）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "chair",
+					"zone": "sole",
+					"fx": "lines",
+					"repeat": 10,
+					"interval": 0.18,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"visual": "giggle",
+					"do": "pose"
+				}
+			],
+			"act": 3
+		},
+		{
+			"speaker": "公主",
+			"text": "嘻嘻……！刷、刷子……！停下……我只是坐一下而已……！",
+			"emotion": "giggle"
+		},
+		{
+			"speaker": "",
+			"text": "（刷子越转越快，从脚跟刷到脚尖，又在脚趾缝里一下一下地拨）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "chair",
+					"zone": "sole",
+					"fx": "lines",
+					"repeat": 14,
+					"interval": 0.14,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"visual": "helpless_1",
+					"do": "pose"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "哈哈……哈……不、不行……会被听见的……嗯嗯嗯……！",
+			"emotion": "helpless_1"
+		},
+		{
+			"speaker": "",
+			"text": "（「咔」——椅子里的齿轮卡住了。刷子慢慢停了下来，皮带和脚枷也松开了）",
+			"actions": [
+				{
+					"who": "princess",
+					"visual": "normal",
+					"do": "pose"
+				}
+			],
+			"act": 4
+		},
+		{
+			"speaker": "公主",
+			"text": "……它是「坏掉」的意思……原来是停不下来的时候才会坏……",
+			"emotion": "sad"
+		},
+		{
+			"actions": [
+				{
+					"state": "",
+					"do": "voice"
+				},
+				{
+					"time": 0.6,
+					"do": "fade_out"
+				}
+			],
+			"wait": 0.7
+		}
+	]
+}

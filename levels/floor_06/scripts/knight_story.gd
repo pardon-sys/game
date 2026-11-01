@@ -88,9 +88,9 @@ const STEPS := [
 		"task": {"script": "res://levels/floor_06/scripts/task_sneak.gd", "name": "夜探地牢", "fail": "", "fail_hours": 0},
 		"done": "knight_cell_end", "goto": [HOUSE, "from_town"]},
 	{"id": "sleep", "where": HOUSE, "town": KNIGHT_N, "trigger": "sleep", "slot": NIGHT, "objective": "回小屋的床上睡觉"},
-	# 第二天·早上：自由活动；去营地楼梯口找队长 → 诅咒失控
-	{"id": "report", "where": KDAY, "trigger": "talk", "npc": "after_k_guard_camp", "slot": MORNING, "cell": [55, 38],
-		"objective": "去营地楼梯口，把昨晚的事告诉队长", "cutscene": "knight_erupt", "goto": [KCHASE, "from_prison"]},
+	# 第二天·早上：自由活动；找保卫队队长说昨晚的事 → 诅咒失控（追逐战）
+	{"id": "report", "where": KDAY, "trigger": "talk", "npc": "after_k_captain", "slot": MORNING, "cell": [51, 9],
+		"objective": "去地牢入口找保卫队队长，把昨晚的事告诉他", "cutscene": "knight_erupt", "goto": [KCHASE, "from_prison"]},
 	{"id": "chase", "where": KCHASE, "trigger": "auto", "slot": MORNING, "cutscene": "knight_chase_open", "objective": "把盔甲引到广场的图腾柱下",
 		"task": {"script": "res://levels/floor_06/scripts/task_armor_chase.gd", "name": "镇中追逃", "fail": "knight_fail_chase", "fail_hours": 0, "respawn": [55, 37]}},
 	# Boss 前三个阶段（铁手套 / 护腿 / 胸甲）在广场；胸甲打完 → 笑雾涌起（done）→ 换到「笑雾之中」接着打最后阶段

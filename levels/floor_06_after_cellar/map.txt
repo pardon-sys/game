@@ -16,16 +16,19 @@ F = exit target=floor_06_after_pharmacy spawn=from_cellar
 G = exit target=floor_06_after_herbcave spawn=from_cellar unlock_flag=kq_samples_herbs locked_dialogue=after_herb_locked
 H = spawn id=from_herbcave
 I = spawn id=from_pharmacy + player
+J = monster type=rat
+K = monster type=spider
+L = trap type=brush
 
 [map]
 #########################
 ###t#############t#######
 ###A..C..D###...A....####
 ###......#t#.........####
-###.CC..CC.....CC.CC.####
+###LCC..CC.....CC.CC.####
 ###................HG####
 ###.CC..CC##...CC.CC.####
-###.......##.........####
-###D..A...##..D...A..####
+###.......##K........####
+###D.JA...##..D...AJ.####
 ######..FIE.....#########
 #########################

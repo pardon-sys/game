@@ -1,0 +1,389 @@
+{
+	"name": "审问室角落的马凳",
+	"cast": {
+		"princess": {
+			"kind": "princess",
+			"at": [
+				0,
+				8
+			],
+			"visual": "normal",
+			"anim": "idle",
+			"dir": "down"
+		},
+		"saddle": {
+			"kind": "trap:saddle_bench",
+			"at": [
+				0,
+				12
+			]
+		},
+		"guard": {
+			"kind": "npc:guard",
+			"at": [
+				70,
+				6
+			],
+			"dir": "left",
+			"hidden": true
+		}
+	},
+	"steps": [
+		{
+			"act": 1,
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "fade_in"
+				},
+				{
+					"state": "giggle",
+					"do": "voice"
+				}
+			],
+			"wait": 0.5
+		},
+		{
+			"speaker": "",
+			"text": "（审问室的角落里，立着一张她见过的凳子——窄窄的凳面，两侧伸出一排软刷）",
+			"act": 1
+		},
+		{
+			"speaker": "公主",
+			"text": "……这个。",
+			"emotion": "surprise"
+		},
+		{
+			"speaker": "公主",
+			"text": "第六层的卧室里，也有一张一模一样的。……那次我坐上去，整整笑了一刻钟。"
+		},
+		{
+			"speaker": "公主",
+			"text": "绝对、绝对不会再坐了。看都不看。走了走了。",
+			"emotion": "angry"
+		},
+		{
+			"speaker": "",
+			"text": "（她刚转过身——走廊里传来了脚步声。哒、哒、哒，越来越近）",
+			"actions": [
+				{
+					"sound": "step",
+					"volume": -4.0,
+					"do": "sfx"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "守、守卫！？躲、躲哪里——！",
+			"actions": [
+				{
+					"who": "princess",
+					"time": 0.4,
+					"do": "shake"
+				}
+			],
+			"emotion": "surprise"
+		},
+		{
+			"speaker": "",
+			"text": "（审问室里没有木箱。她慌慌张张往后退，脚后跟一绊——整个人一屁股坐在了马凳上）",
+			"actions": [
+				{
+					"who": "princess",
+					"to": [
+						0,
+						6
+					],
+					"time": 0.3,
+					"do": "move"
+				}
+			],
+			"act": 2
+		},
+		{
+			"speaker": "公主",
+			"text": "……啊。",
+			"emotion": "surprise"
+		},
+		{
+			"speaker": "",
+			"text": "（「咔哒」。凳子两侧的扣环合上，扣住了她的脚踝。两排软刷慢慢转了起来，先把鞋子顶了下去）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "saddle",
+					"zone": "sole",
+					"fx": "lines",
+					"repeat": 6,
+					"interval": 0.25,
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "保卫队员",
+			"text": "……嗯？审问室里有动静？",
+			"actions": [
+				{
+					"who": "guard",
+					"to": [
+						44,
+						6
+					],
+					"time": 0.8,
+					"do": "enter"
+				}
+			]
+		},
+		{
+			"speaker": "",
+			"text": "（守卫提着灯站在门口，往里照了照。她屏住呼吸，一动也不敢动——可是刷子不管这些）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "saddle",
+					"zone": "sole",
+					"fx": "lines",
+					"repeat": 10,
+					"interval": 0.18,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"visual": "giggle",
+					"do": "pose"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "（……不、不能笑……不能笑……脚心……刷子在刷脚心……！）",
+			"emotion": "giggle"
+		},
+		{
+			"speaker": "",
+			"text": "（软刷贴着光着的脚心一圈一圈地转，刷毛尖钻进脚趾缝里拨弄。她咬住嘴唇，十根脚趾蜷得紧紧的）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "saddle",
+					"zone": "sole",
+					"fx": "lines",
+					"repeat": 12,
+					"interval": 0.15,
+					"do": "tickle"
+				}
+			],
+			"act": 3
+		},
+		{
+			"speaker": "保卫队员",
+			"text": "……奇怪。明明听见有人在哼哼。"
+		},
+		{
+			"speaker": "公主",
+			"text": "（……哼、哼哼是什么……我没有……嗯嗯嗯……！）",
+			"actions": [
+				{
+					"who": "princess",
+					"visual": "helpless_1",
+					"do": "pose"
+				}
+			],
+			"emotion": "helpless_1"
+		},
+		{
+			"speaker": "",
+			"text": "（刷子换了个方向，从脚跟一路刷到脚尖，再从脚尖刷回脚跟。憋住的笑声在身体里越积越多，魔力疲倦一点点涨满）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "saddle",
+					"zone": "sole",
+					"fx": "lines",
+					"repeat": 14,
+					"interval": 0.13,
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "保卫队员",
+			"text": "……我再走近点看看。",
+			"actions": [
+				{
+					"who": "guard",
+					"to": [
+						34,
+						6
+					],
+					"time": 0.6,
+					"do": "move"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "（不行了……要、要满出来了……！）",
+			"emotion": "helpless_2"
+		},
+		{
+			"speaker": "",
+			"text": "（星光从她身上炸开，扣环被冲得弹开，马凳的刷子全炸成了一团毛球，守卫手里的灯「啪」地灭了）",
+			"actions": [
+				{
+					"time": 0.8,
+					"do": "flash"
+				},
+				{
+					"sound": "star_burst",
+					"volume": -1.0,
+					"do": "sfx"
+				},
+				{
+					"sound": "water_release",
+					"volume": -2.0,
+					"do": "sfx"
+				},
+				{
+					"who": "princess",
+					"time": 0.5,
+					"do": "shake"
+				},
+				{
+					"who": "princess",
+					"kind": "surprise",
+					"do": "bubble"
+				},
+				{
+					"who": "guard",
+					"to": [
+						60,
+						4
+					],
+					"time": 0.25,
+					"do": "move"
+				}
+			],
+			"act": "burst"
+		},
+		{
+			"speaker": "公主",
+			"text": "（哈啊……魔力……全放出去了……身体轻飘飘的……好舒服……）",
+			"emotion": "happy"
+		},
+		{
+			"speaker": "保卫队员",
+			"text": "什、什么东西发光了！？……灯、灯灭了……！",
+			"actions": [
+				{
+					"who": "guard",
+					"time": 0.4,
+					"do": "shake"
+				}
+			]
+		},
+		{
+			"speaker": "",
+			"text": "（可马凳还没有坏。炸成毛球的刷子抖了抖，又慢慢转了起来——这一次，贴上的是刚放完魔力、敏感得发烫的脚心）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "saddle",
+					"zone": "sole",
+					"fx": "feather",
+					"repeat": 10,
+					"interval": 0.16,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"visual": "helpless_2",
+					"do": "pose"
+				}
+			],
+			"act": 4
+		},
+		{
+			"speaker": "公主",
+			"text": "（呀……！放、放完以后……轻轻刷一下……就……比刚才痒好几倍……！）",
+			"emotion": "helpless_2"
+		},
+		{
+			"speaker": "",
+			"text": "（毛茸茸的刷子在脚心正中央打着圈，又钻进每一道趾缝里轻轻地挠。她整个人缩在凳子上抖，眼泪都憋出来了）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "saddle",
+					"zone": "sole",
+					"fx": "feather",
+					"repeat": 14,
+					"interval": 0.13,
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "……噗……哈……哈哈……不、不行……！",
+			"actions": [
+				{
+					"who": "princess",
+					"kind": "laugh",
+					"do": "bubble"
+				}
+			]
+		},
+		{
+			"speaker": "保卫队员",
+			"text": "……黑、黑暗里有人在笑……！？地牢里……闹、闹鬼了——！",
+			"actions": [
+				{
+					"who": "guard",
+					"to": [
+						90,
+						4
+					],
+					"time": 0.5,
+					"do": "move"
+				}
+			]
+		},
+		{
+			"speaker": "",
+			"text": "（守卫丢下灯，头也不回地跑了。刷子又转了好一会儿，才「咔」地停住，扣环也松开了）",
+			"actions": [
+				{
+					"who": "princess",
+					"visual": "helpless_1",
+					"do": "pose"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "……哈……哈……我、我说过……绝对不会再坐的……",
+			"emotion": "helpless_1"
+		},
+		{
+			"speaker": "公主",
+			"text": "……不过……守卫跑掉了。……就当是……作战成功吧……",
+			"emotion": "sad"
+		},
+		{
+			"actions": [
+				{
+					"state": "",
+					"do": "voice"
+				},
+				{
+					"time": 0.6,
+					"do": "fade_out"
+				}
+			],
+			"wait": 0.7
+		}
+	]
+}
