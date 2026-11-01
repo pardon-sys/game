@@ -1,0 +1,62 @@
+{
+	"name": "挠痒鼠",
+	"entries": [
+		{
+			"node": "default"
+		}
+	],
+	"nodes": {
+		"default": {
+			"lines": [
+				{
+					"text": "（牢房里关着一只挠痒鼠。它扒着栏杆，眼睛亮晶晶地看着她）",
+					"speaker": ""
+				},
+				{
+					"text": "吱吱……公主，放我出去吧……我就关了三天，什么坏事都没干……",
+					"speaker": "挠痒鼠"
+				}
+			],
+			"prompt": "放它出来？",
+			"choices": [
+				{
+					"text": "……好吧，放你出来",
+					"next": "free"
+				},
+				{
+					"text": "不行",
+					"next": "refuse"
+				}
+			]
+		},
+		"free": {
+			"lines": [
+				{
+					"text": "……就这一次哦。小声点。",
+					"speaker": "公主"
+				}
+			],
+			"theater": "prison_rat"
+		},
+		"refuse": {
+			"lines": [
+				{
+					"text": "……不行。你出来一定会捣乱。",
+					"speaker": "公主"
+				},
+				{
+					"text": "吱——！！吱吱吱吱——！！（它扯着嗓子尖叫起来）",
+					"speaker": "挠痒鼠"
+				},
+				{
+					"text": "哇、哇啊！别叫——守卫要过来了！",
+					"speaker": "公主",
+					"emotion": "surprise"
+				}
+			],
+			"set": {
+				"call": "prison_alarm"
+			}
+		}
+	}
+}

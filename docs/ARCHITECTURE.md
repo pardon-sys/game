@@ -1242,6 +1242,12 @@ data/cutscenes/<楼层组>/  地图内过场；data/theater/<楼层组>/  小剧
   `tools/art/import_sprites_px64.py` 直接导入（源图本身就是像素风，不再压成一个色块一个像素）：切帧（`import_sprites_v2.Sheet`）→ 按人物身体高度把各张源表统一到 `BODY_H`（216，最近邻、缩放比接近 1）→ 排进 256 格。
   **眨眼**：精细像素行走图集是 30 列（16 列 + 第 16 列半闭眼、第 17 列闭眼 + 第 18-29 列正面 / 左 / 右走 4 帧的闭眼版）；走路和左右待机时眨那一下换成同一帧的闭眼版（`WALK_SHUT_BASE`，侧面只有一只眼睛）；导入器 `close_eyes` 直接在每行正面待机帧上合上眼睛（和走路图同一张画，不跳画风；找不到两只眼睛的行复制待机帧），
   `SpriteSheetAnimator._blink` 在正面待机时每 `BLINK_EVERY` 秒（随机）插一次半闭 → 闭 → 半闭（`BLINK_TIME`）；列数按贴图宽算，原像素图不眨。
+  粉色公主的战损走路第五版重画（参考立绘战损格 `ref_pink_damaged.png` + 新走路图；去掉了飘在头外面的汗滴），战损憋笑那一行沿用原来那版（`pink_damaged_v1.png` 第 5 行，导入器自动换上；旧图都留着方便回退）。
+- **骑士篇支线（第六轮）**：熬药只留音游（去掉打喷嚏提示和小孩被动挠）；骑士救公主第 4 段「去集市」的过场挪到和小莉莉说话之后（gate.cut）；
+  追逐战改成和保卫队队长说话触发（主线触发的 go 条目永远排在对话最前面，支线对话挡不住）；生日派对：和工匠说话前加衔接、仓库的发条小手 160（比人快，音乐快停时曲子变慢提醒）、
+  许愿改成蜡烛音游（风来时突然冒出 RhythmLane，按错火苗变小）；点灯笼：第 1 段「找痒点」（A/D 移光标找痒点、S 挠、J 护住，比谁先笑满）、第 5 段「一起笑」改成共鸣（ResonanceMeter）；
+  和蓝色公主说话：做完哪个支线多一段（`BLUE_TALK`，六个都做完有特别一段）；支线的 9 张地图各放 4~5 个怪物 / 陷阱（`QUEST_FOES` / `scatter_foes`，小桥太窄放了 2 个）。
+  小游戏窗口里的木偶跟着闷笑换姿势：`TrainingStage.follow_laugh` + `actor_laugh_ratio`（见 POLISH_RULES）。
   粉色 / 蓝色公主的走路、魔法（普通 / 战损的吟唱、释放，战损光脚）第四版对着立绘重画（参考图：画风小人 + 普通立绘 + 魔法立绘）。
   运行时 `SpriteSheetAnimator._use_sheet` 按 `UserSettings.styled_path` 换成同名 `_hd.png`（缺图回退原像素图），Sprite 缩到 `HD_ENLARGE`（1.25）/ `HD_SCALE`（8）——人物比原像素图大一圈，offset 放大 `HD_SCALE` 倍（脚底不变），线性过滤（画面按窗口分辨率渲染，缩小时细节不丢），
   `UserSettings.revision` 变了下一帧重选；CG 舞台的公主演员走同一套。`princess.tscn` 的贴图引用 `princess.png`（以前是内嵌的导入贴图，找不到同名图）。

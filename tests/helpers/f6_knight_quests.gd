@@ -174,8 +174,11 @@ static func run(t: Node) -> void:
 	GameState.pending_spawn = "from_town"
 	await t.main.change_level(Floors.scene(KnightStory.ALLEY))
 	await t._advance_until(func(): return runner(t, "shoes") is QuestHide and not Cutscene.is_playing() and not GameState.in_dialogue, 20.0)
+	# 开场过场要等一帧才开始：等它放过
+	await t._advance_until(func(): return t.seen_cuts.has("kq_shoes_hide_start") and not Cutscene.is_playing() and not GameState.in_dialogue, 20.0)
 	var rh := runner(t, "shoes") as QuestHide
-	verify(t, "小巷：开场「灯全灭了」，%d 个小孩藏好、%d 只影子手、她提着灯" % [rh.hiders.size() if rh else 0, rh.shadows.size() if rh else 0],
+	verify(t, "小巷：开场「灯全灭了」，%d 个小孩藏好、%d 只影子手、她提着灯（开场过场 %s、灯 %s）" % [rh.hiders.size() if rh else 0, rh.shadows.size() if rh else 0,
+		t.seen_cuts.has("kq_shoes_hide_start"), rh != null and rh.pink.get_node_or_null("HideLamp") != null],
 		rh != null and t.seen_cuts.has("kq_shoes_hide_start") and rh.hiders.size() == QuestHide.FIND and rh.shadows.size() == QuestHide.SHADOW_AT.size()
 		and rh.pink.get_node_or_null("HideLamp") != null)
 	if rh == null:
@@ -407,12 +410,9 @@ static func run(t: Node) -> void:
 	var bw := t._show(BrewShow) as BrewShow
 	verify(t, "走到药锅旁：开始熬药（三锅）", bw != null and bw.section == 0)
 	if bw:
-		var pr0 := bw.prompt_now("princess")
-		verify(t, "药味冲上来：冒出方向提示，按对了压住", bw.answer(str(pr0["key"])) and bw.overflow == 0)
-		var pr1 := bw.prompt_now("blue")
-		var wrong: String = BrewShow.KEYS[(BrewShow.KEYS.find(str(pr1["key"])) + 1) % 4]
-		bw.answer(wrong)
-		verify(t, "按错 / 没压住：笑出来，药溢了一点（%d）" % bw.overflow, bw.overflow == 1)
+		verify(t, "熬药只有音游：没有打喷嚏的方向提示", not "prompt" in bw)
+		bw._on_judged("miss", {})
+		verify(t, "按错一拍：药溢了一点（%d）" % bw.overflow, bw.overflow == 1)
 		bw.overflow = BrewShow.OVERFLOW_MAX - 1
 		bw._spill(1)
 		await t._wait(0.3)
@@ -421,7 +421,6 @@ static func run(t: Node) -> void:
 			await t._advance_until(func(): return not bw.busy or not is_instance_valid(bw), 5.0)
 			if not is_instance_valid(bw) or bw._done:
 				break
-			bw.prompt = {}
 			bw.lane.load_chart([])
 			bw.lane.time = 99.0
 			await t._wait(0.3)
@@ -685,16 +684,25 @@ static func run(t: Node) -> void:
 		rpa.play_show()
 	await t._advance_until(func(): return t._show(PartyShow) != null and not (t._show(PartyShow) as PartyShow).busy, 5.0)
 	var pw := t._show(PartyShow) as PartyShow
-	verify(t, "许愿：大家一起挠，她要撑到蓝色公主先笑", pw != null and pw.mode == "wish")
+	verify(t, "许愿：蜡烛音游（风来了才冒出音游条）", pw != null and pw.mode == "wish" and not pw.gust_on() and is_instance_valid(pw.candle))
 	if pw:
-		pw.warn_left = 0.3
-		pw.press_key("J")
-		verify(t, "亮「！」按 J 缩脚", pw.warn_left == 0.0)
-		pw.blue_laugh = 0.99
+		pw._gust_t = 0.0
+		pw._tick_wish(0.01)
+		verify(t, "一阵风吹来：屏幕上突然冒出音游条", pw.gust_on())
+		var f0 := pw.flame
+		pw._on_judged("miss", {})
+		verify(t, "按错一拍：火苗变小（%.2f → %.2f）、蓝色公主也被挠得笑起来" % [f0, pw.flame], pw.flame < f0 and pw.blue_laugh > 0.0)
+		# 三阵风都挺过去
+		for g in PartyShow.GUSTS:
+			pw.lane.load_chart([])
+			pw.lane.time = 99.0
+			pw._tick_wish(0.01)
+			pw._gust_t = 0.0
+			pw._tick_wish(0.01)
 		await t._wait(0.5)
 	await t._advance_until(func(): return t.seen_cuts.has("story_kq_host") and not Cutscene.is_playing(), 40.0)
 	PartyShow.quiet = false
-	verify(t, "蓝色公主先笑了 → 寿星许愿「希望明年也有人记得今天」→ 做完（对话 %s，锁 %d）" % [GameState.in_dialogue, GameState.dialogue_holds],
+	verify(t, "三阵风都挺过去、火苗还亮着 → 寿星许愿 → 做完（对话 %s，锁 %d）" % [GameState.in_dialogue, GameState.dialogue_holds],
 		KnightQuests.is_done("host") and t.seen_cuts.has("kq_host_done"))
 	var host_cuts := ["kq_host_box", "kq_host_to3", "kq_host_lullaby", "kq_host_to4", "kq_host_to5", "story_kq_host"]
 	verify(t, "⑤ 转阶段都有过场、结尾接大图过场（%s）" % [host_cuts.filter(func(c): return not t.seen_cuts.has(c))], host_cuts.all(func(c): return t.seen_cuts.has(c)))
@@ -843,20 +851,42 @@ static func run(t: Node) -> void:
 	var bt := t._show(BlueTickleShow) as BlueTickleShow
 	verify(t, "旧石灯笼前：逗她笑（tickle）", bt != null and bt.mode == "tickle")
 	if bt:
-		var w0 := bt.weak
+		# 小游戏里的木偶跟着闷笑换姿势（蓝色公主跟 blue_laugh，粉色公主跟真闷笑）
+		var bl_save := bt.blue_laugh
+		bt.blue_laugh = 0.6
+		var pl_save := bt.player.laugh.value
+		bt.player.laugh.set_value(bt.player.laugh.max_value * 0.4)
+		bt.sync_actor_poses()
+		verify(t, "小游戏里的人物跟着闷笑换姿势（蓝 %s、粉 %s）" % [bt.actors["blue"].visual, bt.actors["princess"].visual],
+			bt.actors["blue"].visual == "helpless_1" and bt.actors["princess"].visual == "giggle")
+		bt.blue_laugh = bl_save
+		bt.player.laugh.set_value(pl_save)
+		bt.sync_actor_poses()
+		verify(t, "找痒点：两人背靠背，她身上五处、光标在中间", bt.spots().size() == 5 and bt.cursor == 2)
+		bt.weak = 4
+		bt.cursor = 0
+		bt._press = 0.0
 		var bl0 := bt.blue_laugh
-		bt.tickle_blue(w0)
-		verify(t, "挠中她漏嘴的弱点：忍笑 +%.0f%%" % ((bt.blue_laugh - bl0) * 100.0), is_equal_approx(bt.blue_laugh - bl0, BlueTickleShow.HIT))
+		verify(t, "离痒点远：挠了也不痒", bt.tickle_now() == "miss" and bt.blue_laugh == bl0)
+		bt.move(1)
+		bt.move(1)
+		bt.move(1)
+		bt._press = 0.0
+		verify(t, "A / D 移到痒点旁边：光点闪得更快、挠一下涨一点", bt.distance() == 1 and bt.tickle_now() == "near" and bt.blue_laugh > bl0)
+		bt.move(1)
+		bt._press = 0.0
+		var bl1 := bt.blue_laugh
+		verify(t, "正中痒点：涨得多（+%.0f%%）" % ((bt.blue_laugh - bl1) * 100.0), bt.tickle_now() == "hit" and is_equal_approx(bt.blue_laugh - bl1, BlueTickleShow.HIT))
 		bt.warn_left = 0.3
-		verify(t, "她手一挥要冻手：按 J 缩回来", bt.pull())
+		verify(t, "她回挠：按 J 护住", bt.pull())
+		var lp0 := bt.player.laugh.value
 		bt.warn_left = 0.05
 		bt.simulate(0.1)
-		bt._press = 0.0
-		verify(t, "没缩：手被冻住，这几秒挠不了", bt.frozen_left > 0.0 and not bt.tickle_blue(bt.weak))
-		bt.frozen_left = 0.0
-		bt._press = 0.0
+		verify(t, "没护住：被挠一下（闷笑涨）", bt.player.laugh.value > lp0)
 		bt.blue_laugh = 0.95
-		bt.tickle_blue(bt.weak)
+		bt.weak = bt.cursor
+		bt._press = 0.0
+		bt.tickle_now()
 	await t._advance_until(func(): return KnightQuests.stage("blue") == 2, 10.0)
 	verify(t, "她的忍笑满了：灯笼亮一下又暗了（笑声不够亮）→ 去找「以前」", KnightQuests.stage("blue") == 2)
 	# 2 井边的冰面
@@ -929,15 +959,26 @@ static func run(t: Node) -> void:
 	var bb2 := t._show(BlueTickleShow) as BlueTickleShow
 	verify(t, "回到石灯笼：一起笑（both）", bb2 != null and bb2.mode == "both")
 	if bb2:
-		bb2._start_turn("defend")
-		var ld0 := bb2.player.laugh.value
-		bb2.warn_left = 0.05
-		bb2.simulate(0.1)
-		verify(t, "轮到她挠你：没缩脚 = 狠狠一下", bb2.player.laugh.value > ld0)
-		bb2._start_turn("attack")
-		bb2.blue_laugh = 0.95
-		bb2._press = 0.0
-		bb2.tickle_blue(bb2.weak)
+		verify(t, "一起笑：两个人的笑声条 + 金线区间（共鸣）", bb2.meter != null and bb2.meter.charge == 0.0)
+		bb2.set_mode("pink", 1)
+		bb2.set_mode("blue", 1)
+		verify(t, "D / K：挠重一点", bb2.pink_mode == 1 and bb2.blue_mode == 1)
+		bb2.set_mode("pink", 1)
+		verify(t, "同一个键再按一次：回到平常", bb2.pink_mode == 0)
+		bb2.player.laugh.set_value(bb2.player.laugh.max_value * 0.55)
+		bb2.blue_laugh = 0.55
+		bb2.set_mode("blue", 0)
+		var c0 := bb2.meter.charge
+		bb2._tick_both(0.5)
+		verify(t, "两个人都在区间里：攒笑声（%.2f → %.2f）" % [c0, bb2.meter.charge], bb2.meter.charge > c0)
+		bb2.meter.charge = 0.6
+		bb2.blue_laugh = 0.97
+		bb2._tick_both(0.05)
+		verify(t, "她笑过头了：攒的笑声散了一截（%.2f）" % bb2.meter.charge, bb2.meter.charge < 0.6)
+		bb2.player.laugh.set_value(bb2.player.laugh.max_value * 0.55)
+		bb2.blue_laugh = 0.55
+		bb2.meter.charge = 0.99
+		bb2._tick_both(0.5)
 	await t._advance_until(func(): return t.seen_cuts.has("story_kq_blue") and not Cutscene.is_playing(), 40.0)
 	BlueTickleShow.quiet = false
 	verify(t, "两个人一起笑出声：旧石灯笼亮了，「……谢谢。」「你刚刚笑了！」→ 做完", KnightQuests.is_done("blue") and t.seen_cuts.has("kq_blue_done"))

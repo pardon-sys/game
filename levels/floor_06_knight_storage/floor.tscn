@@ -1,133 +1,203 @@
 [gd_scene format=4]
 
-[ext_resource type="Script" path="res://scripts/level.gd" id="1_uqvsu"]
-[ext_resource type="TileSet" path="res://assets/tilesets/dungeon_25d.tres" id="2_8843t"]
-[ext_resource type="PackedScene" path="res://scenes/objects/spawn_point.tscn" id="3_sk6fl"]
-[ext_resource type="Script" path="res://scripts/objects/spawn_point.gd" id="4_g17uh"]
-[ext_resource type="PackedScene" path="res://scenes/objects/prop.tscn" id="5_moafg"]
-[ext_resource type="Script" path="res://scripts/objects/prop.gd" id="6_vkvdl"]
-[ext_resource type="PackedScene" path="res://scenes/actors/playable/princess.tscn" id="7_q6qsj"]
-[ext_resource type="Script" path="res://scripts/actors/playable/princess.gd" id="8_u3vln"]
-[ext_resource type="PackedScene" path="res://scenes/actors/playable/blue_princess.tscn" id="9_n70rb"]
-[ext_resource type="Script" path="res://scripts/actors/playable/blue_princess.gd" id="10_ypf7y"]
-[ext_resource type="PackedScene" path="res://levels/floor_06/scenes/after_room.tscn" id="11_ks2hr"]
-[ext_resource type="Script" path="res://levels/floor_06/scripts/after_room.gd" id="12_mbohq"]
-[ext_resource type="PackedScene" path="res://scenes/objects/level_exit.tscn" id="13_gbv68"]
-[ext_resource type="Script" path="res://scripts/objects/level_exit.gd" id="14_256r6"]
-[ext_resource type="Texture2D" path="res://assets/lights/light_soft.tres" id="15_p0bmg"]
+[ext_resource type="Script" path="res://scripts/level.gd" id="1_ks2hr"]
+[ext_resource type="TileSet" path="res://assets/tilesets/dungeon_25d.tres" id="2_mbohq"]
+[ext_resource type="PackedScene" path="res://scenes/objects/spawn_point.tscn" id="3_gbv68"]
+[ext_resource type="Script" path="res://scripts/objects/spawn_point.gd" id="4_256r6"]
+[ext_resource type="PackedScene" path="res://scenes/traps/feather_brush.tscn" id="5_p0bmg"]
+[ext_resource type="Script" path="res://scripts/traps/feather_brush.gd" id="6_jbgyw"]
+[ext_resource type="PackedScene" path="res://scenes/traps/teaser.tscn" id="7_n3f1i"]
+[ext_resource type="Script" path="res://scripts/traps/teaser.gd" id="8_2jr4y"]
+[ext_resource type="PackedScene" path="res://scenes/objects/prop.tscn" id="9_mbrew"]
+[ext_resource type="Script" path="res://scripts/objects/prop.gd" id="10_ddg0v"]
+[ext_resource type="PackedScene" path="res://scenes/actors/monsters/ghost_glove.tscn" id="11_pnyjw"]
+[ext_resource type="Script" path="res://scripts/actors/monsters/ghost_glove.gd" id="12_klsaq"]
+[ext_resource type="Resource" path="res://data/monsters/ghost_glove.tres" id="13_i1rsi"]
+[ext_resource type="PackedScene" path="res://scenes/actors/playable/princess.tscn" id="14_egl7g"]
+[ext_resource type="Script" path="res://scripts/actors/playable/princess.gd" id="15_uinr4"]
+[ext_resource type="PackedScene" path="res://scenes/actors/playable/blue_princess.tscn" id="16_f6t63"]
+[ext_resource type="Script" path="res://scripts/actors/playable/blue_princess.gd" id="17_bvvwk"]
+[ext_resource type="PackedScene" path="res://levels/floor_06/scenes/after_room.tscn" id="18_qmen8"]
+[ext_resource type="Script" path="res://levels/floor_06/scripts/after_room.gd" id="19_ati3n"]
+[ext_resource type="PackedScene" path="res://scenes/actors/monsters/brush_squirrel.tscn" id="20_nn01g"]
+[ext_resource type="Script" path="res://scripts/actors/monsters/brush_squirrel.gd" id="21_hbuvo"]
+[ext_resource type="Resource" path="res://data/monsters/brush_squirrel.tres" id="22_c57fm"]
+[ext_resource type="PackedScene" path="res://scenes/objects/level_exit.tscn" id="23_ryygn"]
+[ext_resource type="Script" path="res://scripts/objects/level_exit.gd" id="24_fu1sf"]
+[ext_resource type="Texture2D" path="res://assets/lights/light_soft.tres" id="25_tk6y3"]
 
-[node name="Floor06KnightStorage" type="Node2D" unique_id=55466645]
-script = ExtResource("1_uqvsu")
+[node name="Floor06KnightStorage" type="Node2D" unique_id=1191606942]
+script = ExtResource("1_ks2hr")
 floor_id = "floor_06_knight_storage"
 intro_dialogue = ""
 party = PackedStringArray()
 style = "iso"
 iso_theme = "storage_wood"
 
-[node name="Darkness" type="CanvasModulate" parent="." unique_id=176949521]
+[node name="Darkness" type="CanvasModulate" parent="." unique_id=558383293]
 color = Color(0.3, 0.28, 0.4, 1)
 
-[node name="Floor" type="TileMapLayer" parent="." unique_id=2040032305]
+[node name="Floor" type="TileMapLayer" parent="." unique_id=31074275]
 tile_map_data = PackedByteArray("AAACAAIAAAACAAQAAAADAAIAAAACAAQAAAAEAAIAAAACAAQAAAAFAAIAAAACAAQAAAAGAAIAAAACAAQAAAAHAAIAAAACAAQAAAAIAAIAAAACAAQAAAAJAAIAAAACAAQAAAAKAAIAAAACAAQAAAALAAIAAAACAAQAAAAMAAIAAAACAAQAAAANAAIAAAACAAQAAAAOAAIAAAACAAQAAAAPAAIAAAACAAQAAAAQAAIAAAACAAQAAAARAAIAAAACAAQAAAASAAIAAAACAAQAAAATAAIAAAACAAQAAAAUAAIAAAACAAQAAAAVAAIAAAACAAQAAAAWAAIAAAACAAQAAAAXAAIAAAACAAQAAAAYAAIAAAACAAQAAAAZAAIAAAACAAQAAAAaAAIAAAACAAQAAAAbAAIAAAACAAQAAAABAAMAAAACAAQAAAACAAMAAAAAAAQAAAADAAMAAAAAAAQAAAAEAAMAAAAAAAQAAAAFAAMAAAAAAAQAAAAGAAMAAAAAAAQAAAAHAAMAAAAAAAQAAAAIAAMAAAAAAAQAAAAJAAMAAAAAAAQAAAAKAAMAAAAAAAQAAAALAAMAAAABAAQAAAAMAAMAAAAAAAQAAAANAAMAAAAAAAQAAAAOAAMAAAAAAAQAAAAPAAMAAAAAAAQAAAAQAAMAAAAAAAQAAAARAAMAAAAGAAMAAAASAAMAAAAAAAQAAAATAAMAAAAAAAQAAAAUAAMAAAAAAAQAAAAVAAMAAAAGAAMAAAAWAAMAAAAAAAQAAAAXAAMAAAAAAAQAAAAYAAMAAAAAAAQAAAAZAAMAAAAAAAQAAAAaAAMAAAAAAAQAAAAbAAMAAAAAAAQAAAACAAQAAAAAAAQAAAADAAQAAAAAAAQAAAAEAAQAAAABAAQAAAAFAAQAAAAAAAQAAAAGAAQAAAAAAAQAAAAHAAQAAAAAAAQAAAAIAAQAAAAAAAQAAAAJAAQAAAAAAAQAAAAKAAQAAAAAAAQAAAALAAQAAAAAAAQAAAAMAAQAAAAAAAQAAAANAAQAAAAGAAMAAAAOAAQAAAAGAAMAAAAPAAQAAAAAAAQAAAAQAAQAAAAAAAQAAAARAAQAAAAAAAQAAAASAAQAAAAAAAQAAAATAAQAAAAAAAQAAAAUAAQAAAAAAAQAAAAVAAQAAAAAAAQAAAAWAAQAAAAGAAMAAAAXAAQAAAAAAAQAAAAYAAQAAAAAAAQAAAAZAAQAAAAAAAQAAAAaAAQAAAAAAAQAAAAbAAQAAAAAAAQAAAACAAUAAAAAAAQAAAADAAUAAAAAAAQAAAAEAAUAAAAAAAQAAAAFAAUAAAAAAAQAAAAGAAUAAAAAAAQAAAAHAAUAAAAGAAMAAAAIAAUAAAAAAAQAAAAJAAUAAAAAAAQAAAAKAAUAAAAAAAQAAAALAAUAAAAAAAQAAAAMAAUAAAABAAQAAAANAAUAAAAAAAQAAAAOAAUAAAAAAAQAAAAPAAUAAAAAAAQAAAAQAAUAAAAAAAQAAAARAAUAAAAAAAQAAAASAAUAAAADAAQAAAATAAUAAAAAAAQAAAAUAAUAAAAAAAQAAAAVAAUAAAAAAAQAAAAWAAUAAAAAAAQAAAAXAAUAAAAAAAQAAAAYAAUAAAAAAAQAAAAZAAUAAAABAAQAAAAaAAUAAAAAAAQAAAAbAAUAAAAAAAQAAAAXAAYAAAABAAQAAAAYAAYAAAAAAAQAAAAZAAYAAAAAAAQAAAAaAAYAAAAAAAQAAAAbAAYAAAAAAAQAAAACAAcAAAACAAQAAAADAAcAAAACAAQAAAAEAAcAAAACAAQAAAAFAAcAAAACAAQAAAAGAAcAAAACAAQAAAAHAAcAAAACAAQAAAAIAAcAAAACAAQAAAAJAAcAAAACAAQAAAAKAAcAAAACAAQAAAALAAcAAAACAAQAAAAMAAcAAAACAAQAAAANAAcAAAACAAQAAAAOAAcAAAACAAQAAAAPAAcAAAACAAQAAAAQAAcAAAACAAQAAAARAAcAAAACAAQAAAASAAcAAAACAAQAAAATAAcAAAACAAQAAAAUAAcAAAACAAQAAAAVAAcAAAACAAQAAAAWAAcAAAACAAQAAAAXAAcAAAAAAAQAAAAYAAcAAAADAAQAAAAZAAcAAAAAAAQAAAAaAAcAAAAAAAQAAAAbAAcAAAAAAAQAAAACAAgAAAAAAAQAAAADAAgAAAAAAAQAAAAEAAgAAAAAAAQAAAAFAAgAAAAAAAQAAAAGAAgAAAAAAAQAAAAHAAgAAAAAAAQAAAAIAAgAAAAAAAQAAAAJAAgAAAAAAAQAAAAKAAgAAAAAAAQAAAALAAgAAAADAAQAAAAMAAgAAAAAAAQAAAANAAgAAAAAAAQAAAAOAAgAAAAAAAQAAAAPAAgAAAAAAAQAAAAQAAgAAAAAAAQAAAARAAgAAAAAAAQAAAASAAgAAAAAAAQAAAATAAgAAAAAAAQAAAAUAAgAAAAAAAQAAAAVAAgAAAAAAAQAAAAWAAgAAAAGAAMAAAAXAAgAAAAAAAQAAAAYAAgAAAAAAAQAAAAZAAgAAAAAAAQAAAAaAAgAAAAAAAQAAAAbAAgAAAAAAAQAAAACAAkAAAAAAAQAAAADAAkAAAAAAAQAAAAEAAkAAAAAAAQAAAAFAAkAAAAAAAQAAAAGAAkAAAAAAAQAAAAHAAkAAAAAAAQAAAAIAAkAAAAAAAQAAAAJAAkAAAADAAQAAAAKAAkAAAAAAAQAAAALAAkAAAAAAAQAAAAMAAkAAAAAAAQAAAANAAkAAAABAAQAAAAOAAkAAAAAAAQAAAAPAAkAAAAAAAQAAAAQAAkAAAAAAAQAAAARAAkAAAAAAAQAAAASAAkAAAAAAAQAAAATAAkAAAAAAAQAAAAUAAkAAAAAAAQAAAAVAAkAAAAAAAQAAAAWAAkAAAAAAAQAAAAXAAkAAAAAAAQAAAAYAAkAAAAAAAQAAAAZAAkAAAAAAAQAAAAaAAkAAAABAAQAAAAbAAkAAAAAAAQAAAACAAoAAAAAAAQAAAADAAoAAAAAAAQAAAAEAAoAAAAAAAQAAAAFAAoAAAAAAAQAAAAGAAoAAAAAAAQAAAAHAAoAAAAAAAQAAAAIAAoAAAAAAAQAAAAJAAoAAAAAAAQAAAAKAAoAAAAAAAQAAAALAAoAAAAAAAQAAAAMAAoAAAAAAAQAAAANAAoAAAABAAQAAAAOAAoAAAADAAQAAAAPAAoAAAAAAAQAAAAQAAoAAAAAAAQAAAARAAoAAAAAAAQAAAASAAoAAAAAAAQAAAATAAoAAAAAAAQAAAAUAAoAAAAAAAQAAAAVAAoAAAABAAQAAAAWAAoAAAAAAAQAAAAXAAoAAAAGAAMAAAAYAAoAAAAAAAQAAAAZAAoAAAAAAAQAAAAaAAoAAAAAAAQAAAAbAAoAAAAAAAQAAAA=")
-tile_set = ExtResource("2_8843t")
+tile_set = ExtResource("2_mbohq")
 
-[node name="Walls" type="TileMapLayer" parent="." unique_id=1405317632]
+[node name="Walls" type="TileMapLayer" parent="." unique_id=117153335]
 tile_map_data = PackedByteArray("AAAAAAAAAAAAAAEAAAABAAAAAQAAAAIAAAACAAAAAQAEAAIAAAADAAAAAQAEAAYAAAAEAAAAAQAEAAYAAAAFAAAAAQAEAAYAAAAGAAAAAQAEAAYAAAAHAAAAAQAEAAYAAAAIAAAAAQAEAAYAAAAJAAAAAQAEAAYAAAAKAAAAAQAEAAYAAAALAAAAAQAEAAYAAAAMAAAAAQAEAAYAAAANAAAAAQAEAAYAAAAOAAAAAQAEAAYAAAAPAAAAAQAEAAYAAAAQAAAAAQAEAAYAAAARAAAAAQAEAAYAAAASAAAAAQAEAAYAAAATAAAAAQAEAAYAAAAUAAAAAQAEAAYAAAAVAAAAAQAEAAYAAAAWAAAAAQAEAAYAAAAXAAAAAQAEAAYAAAAYAAAAAQAEAAYAAAAZAAAAAQAEAAYAAAAaAAAAAQAEAAYAAAAbAAAAAQAEAAQAAAAcAAAAAQAAAAQAAAAdAAAAAQAAAAAAAAAeAAAAAQAAAAAAAAAfAAAAAQAAAAAAAAAAAAEAAQAAAAIAAAABAAEAAQAGAAIAAAACAAEAAgAAAAAAAAADAAEAAgAAAAAAAAAEAAEAAgAAAAAAAAAFAAEAAgAAAAAAAAAGAAEAAgAAAAAAAAAHAAEAAgAAAAAAAAAIAAEAAgAAAAAAAAAJAAEAAgAAAAAAAAAKAAEAAgAAAAAAAAALAAEAAgAAAAAAAAAMAAEAAgAAAAAAAAANAAEAAgAAAAAAAAAOAAEAAgAAAAAAAAAPAAEAAgAAAAAAAAAQAAEAAgAAAAAAAAARAAEAAgAAAAAAAAASAAEAAgAAAAAAAAATAAEAAgAAAAAAAAAUAAEAAgAAAAAAAAAVAAEAAgAAAAAAAAAWAAEAAgAAAAAAAAAXAAEAAgAAAAAAAAAYAAEAAgAAAAAAAAAZAAEAAgAAAAAAAAAaAAEAAgAAAAAAAAAbAAEAAgAAAAAAAAAcAAEAAQAIAAQAAAAdAAEAAQAAAAAAAAAeAAEAAAAAAAIAAAAfAAEAAQAAAAAAAAAAAAIAAQACAAIAAAABAAIAAgAAAAQAAAAcAAIAAQAIAAwAAAAdAAIAAQAAAAAAAAAeAAIAAQAAAAAAAAAfAAIAAQAAAAAAAAAAAAMAAQACAAEAAAAcAAMAAQAIAAwAAAAdAAMAAQAAAAAAAAAeAAMAAQAAAAAAAAAfAAMAAQAAAAAAAAAAAAQAAQAAAAEAAAABAAQAAQADAAMAAAAcAAQAAQAIAAwAAAAdAAQAAQAAAAAAAAAeAAQAAQAAAAAAAAAfAAQAAQAAAAAAAAAAAAUAAQAAAAAAAAABAAUAAQACAAMAAAAcAAUAAQAIAAwAAAAdAAUAAQAAAAAAAAAeAAUAAQAAAAAAAAAfAAUAAQAAAAAAAAAAAAYAAQAAAAAAAAABAAYAAQACAAMAAAACAAYAAgAAAAEAAAADAAYAAgAAAAEAAAAEAAYAAgAAAAEAAAAFAAYAAgAAAAEAAAAGAAYAAgAAAAEAAAAHAAYAAgAAAAEAAAAIAAYAAgAAAAEAAAAJAAYAAgAAAAEAAAAKAAYAAgAAAAEAAAALAAYAAgAAAAEAAAAMAAYAAgAAAAEAAAANAAYAAgAAAAEAAAAOAAYAAgAAAAEAAAAPAAYAAgAAAAEAAAAQAAYAAgAAAAEAAAARAAYAAgAAAAEAAAASAAYAAgAAAAEAAAATAAYAAgAAAAEAAAAUAAYAAgAAAAEAAAAVAAYAAgAAAAEAAAAWAAYAAgAAAAUAAAAcAAYAAQAIAAwAAAAdAAYAAAAAAAIAAAAeAAYAAQAAAAAAAAAfAAYAAQAAAAAAAAAAAAcAAQAAAAAAAAABAAcAAQACAAMAAAAcAAcAAQAIAAwAAAAdAAcAAQAAAAAAAAAeAAcAAQAAAAAAAAAfAAcAAQAAAAAAAAAAAAgAAQAAAAAAAAABAAgAAQACAAMAAAAcAAgAAQAIAAwAAAAdAAgAAQAAAAAAAAAeAAgAAQAAAAAAAAAfAAgAAQAAAAAAAAAAAAkAAQAAAAAAAAABAAkAAQACAAMAAAAcAAkAAQAIAAwAAAAdAAkAAQAAAAAAAAAeAAkAAQAAAAAAAAAfAAkAAQAAAAAAAAAAAAoAAQAAAAAAAAABAAoAAQACAAEAAAAcAAoAAQAIAAgAAAAdAAoAAQAAAAAAAAAeAAoAAQAAAAAAAAAfAAoAAQAAAAAAAAAAAAsAAQAAAAAAAAABAAsAAQAAAAEAAAACAAsAAQABAAEAAAADAAsAAQABAAkAAAAEAAsAAQABAAkAAAAFAAsAAQABAAkAAAAGAAsAAQABAAkAAAAHAAsAAQABAAkAAAAIAAsAAQABAAkAAAAJAAsAAQABAAkAAAAKAAsAAQABAAkAAAALAAsAAQABAAkAAAAMAAsAAQABAAkAAAANAAsAAQABAAkAAAAOAAsAAQABAAkAAAAPAAsAAQABAAkAAAAQAAsAAQABAAkAAAARAAsAAQABAAkAAAASAAsAAQABAAkAAAATAAsAAQABAAkAAAAUAAsAAQABAAkAAAAVAAsAAQABAAkAAAAWAAsAAQABAAkAAAAXAAsAAQABAAkAAAAYAAsAAQABAAkAAAAZAAsAAQABAAkAAAAaAAsAAQABAAkAAAAbAAsAAQABAAgAAAAcAAsAAQAAAAgAAAAdAAsAAQAAAAAAAAAeAAsAAQAAAAAAAAAfAAsAAQAAAAAAAAA=")
-tile_set = ExtResource("2_8843t")
+tile_set = ExtResource("2_mbohq")
 
-[node name="FloorObjects" type="Node2D" parent="." unique_id=1520998543]
+[node name="FloorObjects" type="Node2D" parent="." unique_id=1211755119]
 
-[node name="Spawn_2_3" type="Marker2D" parent="FloorObjects" unique_id=998929301 instance=ExtResource("3_sk6fl")]
+[node name="Spawn_2_3" type="Marker2D" parent="FloorObjects" unique_id=56724019 instance=ExtResource("3_gbv68")]
 position = Vector2(40, 60)
-script = ExtResource("4_g17uh")
+script = ExtResource("4_256r6")
 id = "from_town"
 
-[node name="Entities" type="Node2D" parent="." unique_id=2100526969]
+[node name="Brush_10_8" type="Area2D" parent="FloorObjects" unique_id=587955649 instance=ExtResource("5_p0bmg")]
+position = Vector2(168, 136)
+collision_layer = 0
+collision_mask = 6
+monitorable = false
+script = ExtResource("6_jbgyw")
+trigger_mode = 3
+hit_kind = 1
+damage = 0
+tickle = 12.0
+knockback = 120.0
+repeat_interval = 0.8
+reaction_key = "brush"
+hit_fx = "brush"
+
+[node name="Teaser_27_9" type="Area2D" parent="FloorObjects" unique_id=114370931 instance=ExtResource("7_n3f1i")]
+position = Vector2(440, 152)
+collision_layer = 0
+collision_mask = 2
+monitorable = false
+script = ExtResource("8_2jr4y")
+trigger_mode = 3
+hit_kind = 1
+damage = 0
+tickle = 2.5
+reaction_key = "teaser"
+
+[node name="Entities" type="Node2D" parent="." unique_id=418315372]
 y_sort_enabled = true
 
-[node name="Decor" type="TileMapLayer" parent="Entities" unique_id=2043991087]
+[node name="Decor" type="TileMapLayer" parent="Entities" unique_id=987205451]
 y_sort_enabled = true
-tile_set = ExtResource("2_8843t")
+tile_set = ExtResource("2_mbohq")
 
-[node name="Crate_3_2" type="Node2D" parent="Entities" unique_id=1360756599 instance=ExtResource("5_moafg")]
+[node name="Crate_3_2" type="Node2D" parent="Entities" unique_id=1211572966 instance=ExtResource("9_mbrew")]
 position = Vector2(56, 48)
-script = ExtResource("6_vkvdl")
+script = ExtResource("10_ddg0v")
 
-[node name="Barrel_21_2" type="Node2D" parent="Entities" unique_id=1218599866 instance=ExtResource("5_moafg")]
+[node name="Barrel_21_2" type="Node2D" parent="Entities" unique_id=1427468535 instance=ExtResource("9_mbrew")]
 position = Vector2(344, 48)
-script = ExtResource("6_vkvdl")
+script = ExtResource("10_ddg0v")
 kind = "barrel"
 
-[node name="Player_2_3" type="CharacterBody2D" parent="Entities" unique_id=1573113520 instance=ExtResource("7_q6qsj")]
+[node name="Glove_23_2" type="CharacterBody2D" parent="Entities" unique_id=300781756 instance=ExtResource("11_pnyjw")]
+position = Vector2(376, 44)
+collision_layer = 4
+collision_mask = 5
+motion_mode = 1
+script = ExtResource("12_klsaq")
+stats = ExtResource("13_i1rsi")
+faction = 3
+hurt_invuln_time = 0.1
+flash_color = Color(1, 1, 1, 1)
+
+[node name="Player_2_3" type="CharacterBody2D" parent="Entities" unique_id=1573113520 instance=ExtResource("14_egl7g")]
 position = Vector2(40, 60)
 collision_layer = 2
 motion_mode = 1
-script = ExtResource("8_u3vln")
+script = ExtResource("15_uinr4")
 channel_tiers = PackedFloat32Array(0.5, 1, 1.6)
 faction = 1
 
-[node name="BluePrincess_3_3" type="CharacterBody2D" parent="Entities" unique_id=144210521 instance=ExtResource("9_n70rb")]
+[node name="BluePrincess_3_3" type="CharacterBody2D" parent="Entities" unique_id=2055774716 instance=ExtResource("16_f6t63")]
 position = Vector2(56, 60)
 collision_layer = 2
 motion_mode = 1
-script = ExtResource("10_ypf7y")
+script = ExtResource("17_bvvwk")
 ai = false
 channel_tiers = PackedFloat32Array(0.5, 1, 1.6)
 follow = true
 faction = 2
 
-[node name="F6Afterroom_3_3" type="Node2D" parent="Entities" unique_id=1547886894 instance=ExtResource("11_ks2hr")]
+[node name="F6Afterroom_3_3" type="Node2D" parent="Entities" unique_id=239568445 instance=ExtResource("18_qmen8")]
 position = Vector2(56, 64)
-script = ExtResource("12_mbohq")
+script = ExtResource("19_ati3n")
 
-[node name="Barrel_4_5" type="Node2D" parent="Entities" unique_id=2061478585 instance=ExtResource("5_moafg")]
+[node name="Squirrel_15_3" type="CharacterBody2D" parent="Entities" unique_id=849504822 instance=ExtResource("20_nn01g")]
+position = Vector2(248, 60)
+collision_layer = 4
+collision_mask = 5
+motion_mode = 1
+script = ExtResource("21_hbuvo")
+stats = ExtResource("22_c57fm")
+faction = 3
+hurt_invuln_time = 0.1
+flash_color = Color(1, 1, 1, 1)
+
+[node name="Barrel_4_5" type="Node2D" parent="Entities" unique_id=1891124802 instance=ExtResource("9_mbrew")]
 position = Vector2(72, 96)
-script = ExtResource("6_vkvdl")
+script = ExtResource("10_ddg0v")
 kind = "barrel"
 
-[node name="Crate_3_7" type="Node2D" parent="Entities" unique_id=1441806729 instance=ExtResource("5_moafg")]
+[node name="Glove_25_5" type="CharacterBody2D" parent="Entities" unique_id=508553028 instance=ExtResource("11_pnyjw")]
+position = Vector2(408, 92)
+collision_layer = 4
+collision_mask = 5
+motion_mode = 1
+script = ExtResource("12_klsaq")
+stats = ExtResource("13_i1rsi")
+faction = 3
+hurt_invuln_time = 0.1
+flash_color = Color(1, 1, 1, 1)
+
+[node name="Crate_3_7" type="Node2D" parent="Entities" unique_id=279198417 instance=ExtResource("9_mbrew")]
 position = Vector2(56, 128)
-script = ExtResource("6_vkvdl")
+script = ExtResource("10_ddg0v")
 
-[node name="Crate_23_7" type="Node2D" parent="Entities" unique_id=264014741 instance=ExtResource("5_moafg")]
+[node name="Crate_23_7" type="Node2D" parent="Entities" unique_id=1896232305 instance=ExtResource("9_mbrew")]
 position = Vector2(376, 128)
-script = ExtResource("6_vkvdl")
+script = ExtResource("10_ddg0v")
 
-[node name="Barrel_4_10" type="Node2D" parent="Entities" unique_id=613912457 instance=ExtResource("5_moafg")]
+[node name="Barrel_4_10" type="Node2D" parent="Entities" unique_id=1834781228 instance=ExtResource("9_mbrew")]
 position = Vector2(72, 176)
-script = ExtResource("6_vkvdl")
+script = ExtResource("10_ddg0v")
 kind = "barrel"
 
-[node name="Barrel_25_10" type="Node2D" parent="Entities" unique_id=371847674 instance=ExtResource("5_moafg")]
+[node name="Barrel_25_10" type="Node2D" parent="Entities" unique_id=1825439673 instance=ExtResource("9_mbrew")]
 position = Vector2(408, 176)
-script = ExtResource("6_vkvdl")
+script = ExtResource("10_ddg0v")
 kind = "barrel"
 
-[node name="Triggers" type="Node2D" parent="." unique_id=274549373]
+[node name="Triggers" type="Node2D" parent="." unique_id=1621329780]
 
-[node name="Exit_1_3" type="Area2D" parent="Triggers" unique_id=2014781835 instance=ExtResource("13_gbv68")]
+[node name="Exit_1_3" type="Area2D" parent="Triggers" unique_id=783230076 instance=ExtResource("23_ryygn")]
 position = Vector2(24, 56)
 collision_layer = 0
 collision_mask = 2
 monitorable = false
-script = ExtResource("14_256r6")
+script = ExtResource("24_fu1sf")
 target_level = "res://levels/floor_06_after/floor.tscn"
 spawn = "from_storage"
 
-[node name="WallGlows" type="Node2D" parent="." unique_id=102879867]
+[node name="WallGlows" type="Node2D" parent="." unique_id=1028484220]
 
-[node name="Glow_2_1" type="PointLight2D" parent="WallGlows" unique_id=355608459]
+[node name="Glow_2_1" type="PointLight2D" parent="WallGlows" unique_id=2094367870]
 position = Vector2(40, 34)
 color = Color(0.75, 0.5, 1, 1)
 energy = 0.24870503
-texture = ExtResource("15_p0bmg")
+texture = ExtResource("25_tk6y3")
 texture_scale = 0.41542068
 height = 20.0
 
-[node name="Glow_22_1" type="PointLight2D" parent="WallGlows" unique_id=1908239012]
+[node name="Glow_22_1" type="PointLight2D" parent="WallGlows" unique_id=812883459]
 position = Vector2(360, 34)
 color = Color(0.45, 0.75, 1, 1)
 energy = 0.28858182
-texture = ExtResource("15_p0bmg")
+texture = ExtResource("25_tk6y3")
 texture_scale = 0.40733168
 height = 20.0

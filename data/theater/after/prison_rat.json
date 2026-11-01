@@ -1,0 +1,182 @@
+{
+	"name": "牢房里的挠痒鼠",
+	"cast": {
+		"princess": {
+			"kind": "princess",
+			"at": [
+				0,
+				8
+			],
+			"visual": "normal",
+			"anim": "idle",
+			"dir": "down"
+		},
+		"rat": {
+			"kind": "monster:rat",
+			"at": [
+				26,
+				12
+			],
+			"dir": "left"
+		}
+	},
+	"steps": [
+		{
+			"act": 1,
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "fade_in"
+				},
+				{
+					"state": "giggle",
+					"do": "voice"
+				}
+			],
+			"wait": 0.5
+		},
+		{
+			"speaker": "",
+			"text": "（她踮着脚拉开牢门的插销。门刚开一条缝，挠痒鼠「嗖」地一下钻了出来）",
+			"act": 1
+		},
+		{
+			"speaker": "挠痒鼠",
+			"text": "吱吱！自由啦！谢谢公主！……作为谢礼——"
+		},
+		{
+			"speaker": "公主",
+			"text": "谢、谢礼就不用了！你快走吧，小声点——",
+			"emotion": "surprise"
+		},
+		{
+			"speaker": "",
+			"text": "（挠痒鼠没走。它顺着她的裙摆爬下去，一头钻进了她的鞋里）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "rat",
+					"zone": "sole",
+					"fx": "hand",
+					"repeat": 5,
+					"interval": 0.25,
+					"do": "tickle"
+				}
+			],
+			"act": 2
+		},
+		{
+			"speaker": "公主",
+			"text": "呀——！？出、出来！鞋里不行——！",
+			"actions": [
+				{
+					"who": "princess",
+					"visual": "giggle",
+					"do": "pose"
+				},
+				{
+					"who": "princess",
+					"time": 0.4,
+					"do": "shake"
+				}
+			]
+		},
+		{
+			"speaker": "挠痒鼠",
+			"text": "吱吱～关了三天，爪子都痒了～",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "rat",
+					"zone": "sole",
+					"fx": "hand",
+					"repeat": 10,
+					"interval": 0.16,
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "",
+			"text": "（小爪子在鞋子里扒拉着，把她的袜子扒到脚踝，尾巴尖在光着的脚心上扫来扫去）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "rat",
+					"zone": "sole",
+					"fx": "hand",
+					"repeat": 12,
+					"interval": 0.15,
+					"do": "tickle"
+				}
+			],
+			"act": 3
+		},
+		{
+			"speaker": "公主",
+			"text": "噗……嗯嗯嗯……！（她死死捂住嘴，蹲在牢门边上发抖）",
+			"actions": [
+				{
+					"who": "princess",
+					"visual": "helpless_1",
+					"do": "pose"
+				}
+			],
+			"emotion": "helpless_1"
+		},
+		{
+			"speaker": "",
+			"text": "（爪子钻进了脚趾缝，一道一道地刨。走廊尽头，守卫的脚步声近了又远）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "rat",
+					"zone": "sole",
+					"fx": "hand",
+					"repeat": 12,
+					"interval": 0.14,
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "……求、求你了……出来……守卫会听见的……！",
+			"emotion": "helpless_2"
+		},
+		{
+			"speaker": "挠痒鼠",
+			"text": "吱～好吧好吧。谢礼送完啦！",
+			"act": 4
+		},
+		{
+			"speaker": "",
+			"text": "（挠痒鼠从鞋口钻出来，抖了抖胡子，一溜烟跑进了墙缝。她靠着牢门喘了好一会儿）",
+			"actions": [
+				{
+					"who": "princess",
+					"visual": "normal",
+					"do": "pose"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "……再、再也不随便放东西出来了……",
+			"emotion": "sad"
+		},
+		{
+			"actions": [
+				{
+					"state": "",
+					"do": "voice"
+				},
+				{
+					"time": 0.6,
+					"do": "fade_out"
+				}
+			],
+			"wait": 0.7
+		}
+	]
+}

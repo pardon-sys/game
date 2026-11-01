@@ -20,6 +20,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from after_text import d1, d2, equip_kids, errand_dance, errand_goats, errand_ladder, errand_massage, errand_gate_chain, errand_shearing, errand_canopy, errand_sifting, errand_lamp_calibration, errands, house, mine, play, potion, punish, stocks, tailor, tasks, totem, town, drain, drill, inspect, tom, night, penalty, festival_night, festival_talk, stall_guess, stall_ring, stall_ice, stall_fish, stall_lick  # noqa: E402
 import quest_maps as qmaps  # noqa: E402
+from knight_text import prison as knight_prison  # noqa: E402
 from knight_text import finale as knight_finale, quests as knight_quests, story as knight_story, story_cg as knight_story_cg, tasks as knight_tasks, townsfolk as knight_townsfolk  # noqa: E402
 
 # 只生成灯轮 / 报幕的文本（委托表、灯轮、补罚表、派对主人对话），不重新写地图、其他任务或别的镇民对白。
@@ -499,6 +500,46 @@ dl.put(11, 10, "blue_princess follow=true ai=false")
 dl.write()
 
 # ================================================================ 药剂师工房的地窖（骑士篇支线「手印样本」：药架隔出来的小过道，一团手印缩在最里面；布局见 quest_maps.py）
+# ---------------------------------------------------------------- 支线地图里放之前的怪物 / 陷阱（每张 4~6 个，用户要求）
+# 不放在：机关 / 出口 / 起点等标记点 3 格以内、已经有东西的格子、一格宽的走廊（周围地面少于 5 格，免得挡路）；彼此隔开 5 格；位置固定（种子）
+QUEST_FOES = {
+    CELLAR: ["monster type=rat", "monster type=spider", "trap type=brush", "monster type=rat"],
+    ALLEY: ["monster type=rat", "monster type=bat", "monster type=rat", "trap type=feather", "monster type=bat"],
+    HERBCAVE: ["monster type=caterpillar", "monster type=frog", "monster type=hedgehog", "trap type=vent idle_time=2.2 cloud_duration=1.2 offset=0.6"],
+    WALL: ["monster type=imp", "trap type=brush", "monster type=glove", "monster type=imp", "trap type=feather"],
+    CRACK: ["monster type=spider", "monster type=caterpillar", "monster type=spider", "trap type=vent idle_time=2.4 cloud_duration=1.2 offset=1.1"],
+    OLDHALL: ["monster type=ghost", "monster type=ghost", "monster type=spider", "trap type=feather", "monster type=caterpillar"],
+    WAREHOUSE: ["monster type=squirrel", "trap type=brush", "monster type=squirrel", "trap type=teaser"],
+    STORAGE: ["monster type=glove", "trap type=brush", "monster type=glove", "trap type=teaser", "monster type=squirrel"],
+    BRIDGE: ["monster type=slime", "monster type=bubble_fish", "monster type=frog", "monster type=slime", "monster type=crab"],
+}
+
+
+def scatter_foes(m, marks, specs, seed):
+    import random
+    rnd = random.Random(seed)
+    near = [tuple(c) for cells in marks.values() for c in cells]
+    def floor(x, y):
+        return 0 <= y < m.h and 0 <= x < m.w and m.g[y][x] == "."
+    def open_cell(x, y, need):
+        return sum(1 for dy in (-1, 0, 1) for dx in (-1, 0, 1) if (dx or dy) and floor(x + dx, y + dy)) >= need
+    picked = []
+    # 先挑宽的地方；窄的地图（暗巷、小桥）一档一档放宽：离标记点的距离、周围地面格数、彼此间隔
+    for mark_d, need, gap in ((3, 5, 5), (3, 3, 5), (2, 3, 4)):
+        cand = [(x, y) for y in range(m.h) for x in range(m.w) if floor(x, y) and (x, y) not in m.cells
+                and all(abs(x - a) + abs(y - b) > mark_d for a, b in near)]
+        rnd.shuffle(cand)
+        for c in cand:
+            if len(picked) >= len(specs):
+                break
+            if c not in picked and open_cell(c[0], c[1], need) and all(abs(c[0] - a) + abs(c[1] - b) >= gap for a, b in picked):
+                picked.append(c)
+    print("  %s：放了 %d / %d 个怪物 / 陷阱" % (m.fid, len(picked), len(specs)))
+    for (x, y), spec in zip(picked, specs):
+        m.put(x, y, spec)
+    return len(picked)
+
+
 ce, cm = qmaps.build(Map, CELLAR, "intro =\nambient = 0.42,0.42,0.52\nno_switch = false", prop, "torch lit=true", 7)
 QMARKS[CELLAR] = cm
 ce.put(*cm["blue"][0], "f6afterroom")
@@ -510,6 +551,7 @@ ce.put(hx - 1, hy, "spawn id=from_herbcave")
 ce.put(*cm["start"][0], "spawn id=from_pharmacy")
 ce.put(*cm["start"][0], "player")
 ce.put(*cm["blue"][0], "blue_princess follow=true ai=false")
+scatter_foes(ce, cm, QUEST_FOES[CELLAR], 557)
 ce.write()
 
 # ================================================================ 没有灯的小巷（骑士篇支线「骑士救公主」第四段：灯全灭了；一格宽的主巷子 + 窄道、死胡同、小院、环路）
@@ -522,6 +564,7 @@ al.put(*am["exit"][0], "exit target=%s spawn=from_alley" % TOWN)
 al.put(*am["start"][0], "spawn id=from_town")
 al.put(*am["start"][0], "player")
 al.put(*am["blue"][0], "blue_princess follow=true ai=false")
+scatter_foes(al, am, QUEST_FOES[ALLEY], 51)
 al.write()
 
 # ================================================================ 矿道深处的草药洞（骑士篇支线「手印样本」第五段：三个洞室连着窄道；药草由 QuestHerbs 按标记点摆）
@@ -532,6 +575,7 @@ hc.put(*hm["exit"][0], "exit target=%s spawn=from_herbcave" % CELLAR)
 hc.put(*hm["start"][0], "spawn id=from_cellar")
 hc.put(*hm["start"][0], "player")
 hc.put(*hm["blue"][0], "blue_princess follow=true ai=false")
+scatter_foes(hc, hm, QUEST_FOES[HERBCAVE], 738)
 hc.write()
 
 # ================================================================ 城墙上（骑士篇支线「队长的旧剑术」守夜：绕着小镇南边的城墙，拐弯、台阶，尽头是哨塔）
@@ -542,6 +586,7 @@ wl.put(*wm["exit"][0], "exit target=%s spawn=from_wall" % TOWN)
 wl.put(*wm["start"][0], "spawn id=from_town")
 wl.put(*wm["start"][0], "player")
 wl.put(*wm["blue"][0], "blue_princess follow=true ai=false")
+scatter_foes(wl, wm, QUEST_FOES[WALL], 703)
 wl.write()
 
 # ================================================================ 广场底下的裂缝（骑士篇支线「夜里的栅栏」：趴着爬的窄缝，左右拐、有死角；软苔小球、三根封印钉）
@@ -555,6 +600,7 @@ ck.put(*km["blue"][0], "f6afterroom")
 dx, dy = km["hall_door"][0]
 ck.put(dx, dy, "exit target=%s spawn=from_crack unlock_flag=kq_fence_hall locked_dialogue=after_hall_locked" % OLDHALL)
 ck.put(dx - 1, dy, "spawn id=from_hall")
+scatter_foes(ck, km, QUEST_FOES[CRACK], 962)
 ck.write()
 
 # ================================================================ 旧会堂（骑士篇支线「夜里的栅栏」：塌了一半的大厅，两排柱子、耳房、倒下的长椅；壁画上的人像全被刮花了）
@@ -565,6 +611,7 @@ oh.put(*om["start"][0], "spawn id=from_crack")
 oh.put(*om["start"][0], "player")
 oh.put(*om["blue"][0], "blue_princess follow=true ai=false")
 oh.put(*om["blue"][0], "f6afterroom")
+scatter_foes(oh, om, QUEST_FOES[OLDHALL], 195)
 oh.write()
 
 # ================================================================ 训练室后面的旧仓库（骑士篇支线「没有名字的生日」：货架隔出的过道、发条小手、零件；零件和小手由 QuestWarehouse 按标记点摆）
@@ -575,6 +622,7 @@ wh.put(*whm["start"][0], "spawn id=from_town")
 wh.put(*whm["start"][0], "player")
 wh.put(*whm["blue"][0], "blue_princess follow=true ai=false")
 wh.put(*whm["blue"][0], "f6afterroom")
+scatter_foes(wh, whm, QUEST_FOES[WAREHOUSE], 457)
 wh.write()
 
 # ================================================================ 西南角的储物间（骑士篇支线「点灯笼的小姑娘」：上下两条储物走道，墙上的旧痒痒刷、尽头的旧布偶）
@@ -585,6 +633,7 @@ sr.put(*srm["start"][0], "spawn id=from_town")
 sr.put(*srm["start"][0], "player")
 sr.put(*srm["blue"][0], "blue_princess follow=true ai=false")
 sr.put(*srm["blue"][0], "f6afterroom")
+scatter_foes(sr, srm, QUEST_FOES[STORAGE], 201)
 sr.write()
 
 # ================================================================ 排水渠上的小桥（骑士篇支线「点灯笼的小姑娘」：一格宽的木桥，中间拐一个弯，桥下的手印）
@@ -595,6 +644,7 @@ bg.put(*bgm["start"][0], "spawn id=from_town")
 bg.put(*bgm["start"][0], "player")
 bg.put(*bgm["blue"][0], "blue_princess follow=true ai=false")
 bg.put(*bgm["blue"][0], "f6afterroom")
+scatter_foes(bg, bgm, QUEST_FOES[BRIDGE], 263)
 bg.write()
 
 # ================================================================ 保卫队训练营（陷阱验收；踏板由任务摆）
@@ -970,6 +1020,7 @@ files.update(drill.DIALOGUES)
 files.update(inspect.DIALOGUES)
 files["after_knight"] = knight_story.CELL
 files.update(knight_townsfolk.DIALOGUES)
+files.update(knight_prison.DIALOGUES)
 knight_quests.inject(files)
 # 第 6 天小汤姆的话：按昨晚恶作剧的结局（只在第 6 天）
 for _r, _lines in tom.TOM_NEXT_DAY.items():
@@ -1039,7 +1090,7 @@ for cid, fn in CUTS.items():
     (cut / (cid + ".json")).write_text(json.dumps(_with_done_cg(cid, fn()), ensure_ascii=False, indent="\t") + "\n")
 th = Path("data/theater/after")
 th.mkdir(parents=True, exist_ok=True)
-for tid, data in dict(punish.THEATERS, **tasks.THEATERS, **potion.THEATERS, **tailor.THEATERS, **mine.THEATERS, **totem.THEATERS, **drain.THEATERS, **drill.THEATERS, **inspect.THEATERS, **night.THEATERS, **knight_tasks.THEATERS, **knight_finale.THEATERS, **errand_gate_chain.THEATERS).items():
+for tid, data in dict(punish.THEATERS, **tasks.THEATERS, **potion.THEATERS, **tailor.THEATERS, **mine.THEATERS, **totem.THEATERS, **drain.THEATERS, **drill.THEATERS, **inspect.THEATERS, **night.THEATERS, **knight_tasks.THEATERS, **knight_finale.THEATERS, **errand_gate_chain.THEATERS, **knight_prison.THEATERS).items():
     (th / (tid + ".json")).write_text(json.dumps(_with_fail_cg(tid, data), ensure_ascii=False, indent="\t") + "\n")
 
 floors = json.loads(Path("data/floors.json").read_text())

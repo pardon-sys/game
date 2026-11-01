@@ -7,10 +7,11 @@ extends TrainingStage
 ##     亮的时候按 J 缩脚躲开；没躲 = 刷个正着；亮着的时候还在吃 = 一口呛笑出来（闷笑多涨一截）。
 ##   wheel 借蜡烛（矿工的脚底按摩器）：踩着转轮跟节拍（RhythmLane），失误 = 转轮上的软刺挠一下。
 ##   dance 生日舞排练：三个人一起跳（RhythmLane，两段），失误 = 围观的人挠。
-##   wish 忍笑许愿：大家挠寿星和两位公主——她要撑到蓝色公主先笑出来（蓝色的笑条到顶），然后把许愿让给寿星：
-##     亮「！」时按 J 缩脚，没缩 = 狠狠一下；一直在慢慢涨。
+##   wish 蜡烛许愿：寿星捧着蛋糕许愿，风一阵一阵吹来（GUSTS 阵）——每阵风来时屏幕上突然冒出音游条（RhythmLane，像夜里栅栏那样），
+##     跟着节拍按方向键护住火苗；按错 = 火苗变小（flame −FLAME_MISS）、围着的大家趁机挠一下；完美 = 火苗回一点。
+##     风停的空当里大家挠两位公主（蓝色公主的笑 blue_laugh 跟着涨，木偶跟着换姿势）。三阵风都挺过去、火苗还亮着 = 许愿成功；火苗灭了 = 重来。
 ##   闷笑满 = 这一局输，重来。赢了 await play() 返回 true。
-## 测试：quiet、mode、score、need、prompt、warn_left、blue_laugh、press_key(键)、lane。
+## 测试：quiet、mode、score、need、prompt、warn_left、blue_laugh、flame、gust_on()、press_key(键)、lane。
 
 const PROMPT_TIME := 0.85
 const HIT_LAUGH := 0.12
@@ -23,7 +24,11 @@ const TUCK_MISS := 0.1
 const CHOKE := 0.16
 const LANE_MISS := 0.1
 const PASSIVE := 0.02
-const WISH_BLUE_RATE := 0.055
+const WISH_BLUE_RATE := 0.03
+const GUSTS := 3
+const FLAME_MISS := 0.22
+const FLAME_PERFECT := 0.04
+const GUST_GAP := 2.2
 const KEYS := {"A": "脚趾", "S": "脚心", "D": "脚跟"}
 
 static var quiet := false
@@ -35,7 +40,10 @@ var prompt := ""
 var prompt_left := 0.0
 var warn_left := 0.0
 var blue_laugh := 0.0
+var flame := 1.0
 var lane: RhythmLane
+var candle: CandleRig
+var _gust_t := 1.5
 var section := 0
 var _warn_t := WARN_EVERY
 var _bite := 0.0
@@ -47,6 +55,18 @@ var _info: Label
 
 static func text() -> Dictionary:
 	return KnightQuests.info("host").get("shows", {})
+
+
+
+func _init() -> void:
+	follow_laugh = true   # 木偶跟着闷笑换姿势
+
+
+## 蓝色公主的木偶跟她自己的笑声（blue_laugh）走
+func actor_laugh_ratio(id: String) -> float:
+	if id == "blue":
+		return clampf(blue_laugh, 0.0, 1.0)
+	return super(id)
 
 
 func tx() -> Dictionary:
@@ -101,12 +121,17 @@ func play() -> bool:
 	_info.size = panel_body.size
 	_info.autowrap_mode = TextServer.AUTOWRAP_ARBITRARY
 	panel_body.add_child(_info)
-	if mode in ["wheel", "dance"]:
+	if mode in ["wheel", "dance", "wish"]:
 		lane = RhythmLane.new()
 		lane.position = Vector2(FRAME_RECT.position.x, FRAME_RECT.end.y - 22)
 		lane.size = Vector2(FRAME_RECT.size.x, 20)
 		root.add_child(lane)
 		lane.judged.connect(_on_judged)
+	if mode == "wish":
+		candle = CandleRig.new()
+		candle.show_ref = self
+		candle.position = Vector2(28, -22)
+		cast_root.add_child(candle)
 	if is_instance_valid(player):
 		_start_fatigue = player.fatigue.value if player.fatigue else 0.0
 		_start_laugh = player.laugh.value if player.laugh else 0.0
@@ -168,7 +193,11 @@ func _reset_round() -> void:
 			need = 2
 			lane.load_chart(RhythmLane.make_chart(110.0, 14, rng.randi()))
 		"wish":
-			need = 1
+			need = GUSTS
+			flame = 1.0
+			_gust_t = 1.5
+			lane.visible = false
+			lane.load_chart([])
 	if is_instance_valid(player) and player.laugh:
 		player.laugh.set_value(0.0)
 	_refresh()
@@ -189,7 +218,9 @@ func _refresh() -> void:
 			if mode == "dance":
 				s += "\n第 %d / 2 段" % (section + 1)
 		"wish":
-			s += "蓝色公主的笑 %d%%" % int(blue_laugh * 100.0)
+			s += "第 %d / %d 阵风　火苗 %d%%" % [mini(section + 1, need), need, int(flame * 100.0)]
+			if gust_on():
+				s += "\n风来了——护住火苗！"
 	_info.text = s
 
 
@@ -229,15 +260,25 @@ func press_key(k: String) -> void:
 				warn_left = 0.0
 				narrate(str((tx().get("tuck", [""]) as Array).pick_random()), 0.8)
 		"wish":
-			if k == "J" and warn_left > 0.0:
-				warn_left = 0.0
-				narrate(str((tx().get("tuck", [""]) as Array).pick_random()), 0.8)
+			if gust_on():
+				lane.press(k)
 		"wheel", "dance":
 			lane.press(k)
 	_refresh()
 
 
 func _on_judged(res: String, _n: Dictionary) -> void:
+	if mode == "wish":
+		if res == "miss":
+			flame = maxf(0.0, flame - FLAME_MISS)
+			blue_laugh = minf(1.0, blue_laugh + 0.06)
+			_hit(LANE_MISS)
+			if flame <= 0.0:
+				_candle_out()
+		else:
+			flame = minf(1.0, flame + FLAME_PERFECT * (1.0 if res == "perfect" else 0.5))
+			pop(actors.get("princess"), "完美！" if res == "perfect" else "不错", GOLD if res == "perfect" else GOOD, 0.5)
+		return
 	if res == "miss":
 		_hit(LANE_MISS)
 	else:
@@ -289,7 +330,9 @@ func _tick(delta: float) -> void:
 				_gap -= delta
 				if _gap <= 0.0:
 					next_prompt()
-		"taste", "wish":
+		"wish":
+			_tick_wish(delta)
+		"taste":
 			if warn_left > 0.0:
 				warn_left -= delta
 				if warn_left <= 0.0:
@@ -300,10 +343,6 @@ func _tick(delta: float) -> void:
 					_warn_t = WARN_EVERY + rng.randf_range(-0.6, 0.6)
 					warn_left = WARN
 					pop(actors.get("princess"), "！", GOLD, WARN)
-			if mode == "wish":
-				blue_laugh = minf(1.0, blue_laugh + WISH_BLUE_RATE * delta)
-				if blue_laugh >= 1.0:
-					_win()
 		"wheel", "dance":
 			lane.advance(delta)
 			if lane.finished() and lane.time >= lane.end_time():
@@ -313,6 +352,47 @@ func _tick(delta: float) -> void:
 				else:
 					_win()
 	_refresh()
+
+
+## wish：现在有没有风（音游条亮着）
+func gust_on() -> bool:
+	return lane != null and lane.visible
+
+
+func _tick_wish(delta: float) -> void:
+	blue_laugh = minf(1.0, blue_laugh + WISH_BLUE_RATE * delta)
+	if not gust_on():
+		_gust_t -= delta
+		if _gust_t <= 0.0:
+			# 一阵风：音游条突然冒出来
+			lane.load_chart(RhythmLane.make_chart(98.0 + section * 12.0, 8 + section * 2, rng.randi(), 0.9))
+			lane.visible = true
+			Audio.play("wind", -4.0)
+			narrate(str((tx().get("gust", ["（一阵风吹过来——火苗一歪！）"]) as Array).pick_random()), 1.4)
+		elif fmod(_gust_t, 0.7) < delta:
+			# 风停的空当：大家挠两位公主
+			tickle("", "sole", false, "princess", "feather")
+			tickle("", "thigh", false, "blue", "feather")
+		return
+	lane.advance(delta)
+	if lane.finished() and lane.time >= lane.end_time():
+		lane.visible = false
+		section += 1
+		if section >= need:
+			_win()
+			return
+		_gust_t = GUST_GAP
+		narrate(str((tx().get("calm", ["（风停了一下。大家的羽毛趁机伸了过来）"]) as Array).pick_random()), 1.4)
+
+
+## 火苗灭了：这一局重来
+func _candle_out() -> void:
+	busy = true
+	lane.visible = false
+	narrate(str(tx().get("out", "（火苗「噗」地灭了——「重来重来！」大家笑着又点上了）")), 1.6)
+	await get_tree().create_timer(0.1 if quiet else 1.2).timeout
+	_reset_round()
+	busy = false
 
 
 ## duster：冒下一个要绷住的地方（测试也直接调）
@@ -334,3 +414,29 @@ func _punish(kind: String) -> void:
 	await get_tree().create_timer(0.1 if quiet else 1.2).timeout
 	_reset_round()
 	busy = false
+
+
+## 许愿的蜡烛（舞台上寿星手边）：火苗大小跟 flame 走，一闪一闪；有风的时候歪向一边
+class CandleRig extends Node2D:
+	var show_ref: PartyShow
+	var _t := 0.0
+
+	func _ready() -> void:
+		z_index = 6
+
+	func _process(delta: float) -> void:
+		_t += delta
+		queue_redraw()
+
+	func _draw() -> void:
+		draw_rect(Rect2(-6, 2, 12, 5), Color(0.95, 0.85, 0.75))          # 蛋糕
+		draw_rect(Rect2(-6, 2, 12, 1), Color(1.0, 0.6, 0.75))
+		draw_rect(Rect2(-1, -6, 2, 8), Color(1.0, 0.95, 0.85))           # 蜡烛
+		if not is_instance_valid(show_ref) or show_ref.flame <= 0.0:
+			return
+		var f := show_ref.flame
+		var lean := (sin(_t * 9.0) * 2.0 + 2.5) if show_ref.gust_on() else sin(_t * 3.0) * 0.5
+		var h := (3.0 + 4.0 * f) * (1.0 + 0.12 * sin(_t * 17.0))
+		var top := Vector2(lean, -6.0 - h)
+		draw_colored_polygon(PackedVector2Array([Vector2(-1.8 * f - 0.6, -6), top, Vector2(1.8 * f + 0.6, -6)]), Color(1.0, 0.65, 0.2, 0.9))
+		draw_circle(Vector2(lean * 0.4, -7.0 - h * 0.3), 0.9 + f, Color(1.0, 0.95, 0.6))

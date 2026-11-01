@@ -6,7 +6,8 @@ extends Node2D
 ##   冰晶结界 / 千手解放：冻住 FROZEN 秒。
 ## 测试：music、unseen、target、state（still / chase / recoil / frozen）、touch()。
 
-const SPEED := 40.0
+## 比人跑得快得多（人物 80）：音乐一停只能靠躲进掩体，不能靠跑
+const SPEED := 160.0
 const REACH := 9.0
 const LAUGH := 0.08
 const RECOIL := 1.5

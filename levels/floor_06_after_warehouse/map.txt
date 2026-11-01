@@ -14,18 +14,21 @@ D = prop type=music_box
 E = exit target=floor_06_after spawn=from_warehouse
 F = spawn id=from_town + player
 G = blue_princess follow=true ai=false + f6afterroom
+H = monster type=squirrel
+I = trap type=brush
+J = trap type=teaser
 
 [map]
 ####################################
 ##########t########t########t#######
 ###A......A.C.....A......C..A..#####
-###............................#####
-###.AA.AA.###.AA.AA.###.AA.AA..#####
+###J.......H...................#####
+###.AA.AA.###.AA.AA.###.AA.AA.H#####
 ###.......###.......###........#####
 #t#.AA.AA.###.AA.AA.###.AA.AA..#####
 #EFG...........................#####
 ###.AA.AA.###.AA.AA.###.AA.AA..#####
-###.......###.......###........#####
+###.......###.......###.......I#####
 ###.AA.AA.###.AA.AA.###.AA.AA..#####
 ###.............................####
 ###C..D..A..##.....##...C.....A.####

@@ -20,6 +20,7 @@ var talking := false
 var _emitted := false
 var _busy := false
 var _director: StealthDirector
+var oddities: PrisonOddities
 
 
 static func caught() -> int:
@@ -42,6 +43,9 @@ func _ready() -> void:
 		_director.caught.connect(_on_caught)
 	for f in ["knight_asked_night", "knight_asked_fall", "knight_asked_why"]:
 		GameState.set_flag(f, false)
+	# 牢房里那些奇怪的东西（挠痒鼠、痒痒手套、审讯椅、马凳）
+	oddities = PrisonOddities.new()
+	get_parent().add_child.call_deferred(oddities)
 	started = true
 
 

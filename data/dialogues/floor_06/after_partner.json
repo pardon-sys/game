@@ -14,6 +14,63 @@
 		},
 		{
 			"if": {
+				"flag": [
+					"knight_started",
+					"kq_blue_done",
+					"kq_host_done",
+					"kq_fence_done",
+					"kq_spear_done",
+					"kq_samples_done",
+					"kq_shoes_done"
+				],
+				"not": "k_talk_seen_all"
+			},
+			"node": "k_talk_all"
+		},
+		{
+			"if": {
+				"flag": "kq_blue_done",
+				"not": "k_talk_seen_blue"
+			},
+			"node": "k_talk_blue"
+		},
+		{
+			"if": {
+				"flag": "kq_host_done",
+				"not": "k_talk_seen_host"
+			},
+			"node": "k_talk_host"
+		},
+		{
+			"if": {
+				"flag": "kq_fence_done",
+				"not": "k_talk_seen_fence"
+			},
+			"node": "k_talk_fence"
+		},
+		{
+			"if": {
+				"flag": "kq_spear_done",
+				"not": "k_talk_seen_spear"
+			},
+			"node": "k_talk_spear"
+		},
+		{
+			"if": {
+				"flag": "kq_samples_done",
+				"not": "k_talk_seen_samples"
+			},
+			"node": "k_talk_samples"
+		},
+		{
+			"if": {
+				"flag": "kq_shoes_done",
+				"not": "k_talk_seen_shoes"
+			},
+			"node": "k_talk_shoes"
+		},
+		{
+			"if": {
 				"flag": "knight_started"
 			},
 			"node": "k_talk"
@@ -370,6 +427,191 @@
 				{
 					"text": "……顺便。",
 					"speaker": "蓝色的公主"
+				}
+			]
+		},
+		"k_talk_shoes": {
+			"lines": [
+				{
+					"text": "……那双鞋。"
+				},
+				{
+					"text": "小莉莉藏鞋的时候……眼睛一直在看你的脚。"
+				},
+				{
+					"text": "……她不是想藏鞋。是想有人陪她玩。"
+				},
+				{
+					"text": "……你陪她玩了。……很好。"
+				}
+			],
+			"set": {
+				"flags": [
+					"k_talk_seen_shoes"
+				]
+			},
+			"next": "k_talk_menu"
+		},
+		"k_talk_samples": {
+			"lines": [
+				{
+					"text": "……奶奶的药方本里，有一页被撕掉了。"
+				},
+				{
+					"text": "……「退烧」。……「殿」。"
+				},
+				{
+					"text": "……我认得那个字。"
+				},
+				{
+					"text": "……没什么。……那味药，闻起来很熟悉。"
+				}
+			],
+			"set": {
+				"flags": [
+					"k_talk_seen_samples"
+				]
+			},
+			"next": "k_talk_menu"
+		},
+		"k_talk_spear": {
+			"lines": [
+				{
+					"text": "……队长的那个起手式。"
+				},
+				{
+					"text": "……他教过别人。很多年前。"
+				},
+				{
+					"text": "……他不说。我也不问。"
+				},
+				{
+					"text": "……可是他练的时候，一直在看王宫的方向。"
+				}
+			],
+			"set": {
+				"flags": [
+					"k_talk_seen_spear"
+				]
+			},
+			"next": "k_talk_menu"
+		},
+		"k_talk_fence": {
+			"lines": [
+				{
+					"text": "……那天晚上，你钉栅栏钉得很响。"
+				},
+				{
+					"text": "……工匠说，那是给「回不来的人」留的门。"
+				},
+				{
+					"text": "……门没锁。"
+				},
+				{
+					"text": "……他一直在等。……等谁呢。"
+				}
+			],
+			"set": {
+				"flags": [
+					"k_talk_seen_fence"
+				]
+			},
+			"next": "k_talk_menu"
+		},
+		"k_talk_host": {
+			"lines": [
+				{
+					"text": "……生日快乐。……我说了。"
+				},
+				{
+					"text": "……你听见了吧。"
+				},
+				{
+					"text": "……别笑。"
+				},
+				{
+					"text": "……那首八音盒的曲子。……我以前，也听人哼过。"
+				}
+			],
+			"set": {
+				"flags": [
+					"k_talk_seen_host"
+				]
+			},
+			"next": "k_talk_menu"
+		},
+		"k_talk_blue": {
+			"lines": [
+				{
+					"text": "……灯笼亮了。"
+				},
+				{
+					"text": "……我以为，我再也不会那样笑了。"
+				},
+				{
+					"text": "……谢谢。"
+				},
+				{
+					"text": "……下次，换我逗你。……做好准备。"
+				}
+			],
+			"set": {
+				"flags": [
+					"k_talk_seen_blue"
+				]
+			},
+			"next": "k_talk_menu"
+		},
+		"k_talk_all": {
+			"lines": [
+				{
+					"text": "……全镇的人，都帮过了。"
+				},
+				{
+					"text": "……你知道吗。他们每个人，都在等一个回不来的人。"
+				},
+				{
+					"text": "……那个骑士也是。"
+				},
+				{
+					"text": "……所以。"
+				},
+				{
+					"text": "……这次，我们把他带回来。"
+				}
+			],
+			"set": {
+				"flags": [
+					"k_talk_seen_all"
+				]
+			},
+			"next": "k_talk_menu"
+		},
+		"k_talk_menu": {
+			"lines": [
+				{
+					"text": "……嗯。"
+				}
+			],
+			"prompt": "……还有事？",
+			"choices": [
+				{
+					"text": "一起走吧",
+					"if": {
+						"not": "after_blue_following"
+					},
+					"next": "k_invite"
+				},
+				{
+					"text": "你先去忙吧",
+					"if": {
+						"flag": "after_blue_following"
+					},
+					"next": "k_dismiss"
+				},
+				{
+					"text": "没什么",
+					"next": ""
 				}
 			]
 		},
