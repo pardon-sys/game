@@ -244,14 +244,27 @@ func _ready() -> void:
 	_hframes = sprite.hframes
 
 
-## 公主：换视觉状态 / 动画 / 朝向。
+## 小剧场里的精灵一定要动（POLISH_RULES）：换到这些视觉状态时没指定动画，自动配上循环动画（不定格在 idle 的一帧上）
+const LOOP_ANIM := {"helpless_1": "helpless", "helpless_2": "helpless", "giggle": "giggle", "damaged_giggle": "giggle"}
+
+
+## 公主：换视觉状态 / 动画 / 朝向。失控 / 憋笑类的视觉状态没给动画时自动播循环动画（LOOP_ANIM）。
 func set_pose(new_visual: String, anim := "", new_dir := "") -> void:
 	if new_visual != "":
 		visual = new_visual
+		if anim == "":
+			anim = str(LOOP_ANIM.get(new_visual, ""))
 	if new_dir != "":
 		set_dir(new_dir)
 	if animator and anim != "":
 		animator.play(anim)
+
+
+## 被挠的时候：站着（没在笑）的公主换成憋笑循环（战损的换战损憋笑），已经在笑 / 失控的不动
+func start_giggle() -> void:
+	if not kind in ["princess", "npc_princess"] or LOOP_ANIM.has(visual):
+		return
+	set_pose("damaged_giggle" if visual.begins_with("damaged") else "giggle")
 
 
 func set_dir(d: String) -> void:

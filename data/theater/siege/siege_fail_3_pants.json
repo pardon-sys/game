@@ -82,20 +82,19 @@
 		},
 		{
 			"act": 1,
+			"speaker": "巨魔将军",
+			"text": "哈哈！小公主们，尝尝本将军的巨魔挠痒阵！"
+		},
+		{
+			"act": 1,
 			"speaker": "公主",
-			"text": "好、好大的个子……蓝色的，那个戴头盔的是头头！",
+			"text": "放、放我下来！我自己会走！",
 			"emotion": "angry"
 		},
 		{
 			"act": 1,
-			"speaker": "蓝色的公主",
-			"text": "……巨魔将军。……它在……喊口号。",
-			"emotion": "normal"
-		},
-		{
-			"act": 1,
 			"speaker": "",
-			"text": "（巨魔将军一挥手，两只巨魔一人抓起一个，像拎小猫一样把两个人拎到将军面前）",
+			"text": "（两只巨魔一人抓起一个，像拎小猫一样把两个人拎到将军面前，顺手扯掉了她的鞋）",
 			"actions": [
 				{
 					"do": "tickle",
@@ -116,28 +115,6 @@
 					"zone": "thigh"
 				}
 			]
-		},
-		{
-			"act": 1,
-			"speaker": "公主",
-			"text": "放、放我下来！我自己会走！",
-			"emotion": "angry",
-			"actions": [
-				{
-					"do": "tickle",
-					"who": "pink",
-					"by": "foe1",
-					"repeat": 5,
-					"interval": 0.22,
-					"fx": "hand",
-					"zone": "sole"
-				}
-			]
-		},
-		{
-			"act": 1,
-			"speaker": "巨魔将军",
-			"text": "哈哈！小公主们，尝尝本将军的巨魔挠痒阵！"
 		},
 		{
 			"act": 2,
@@ -233,26 +210,9 @@
 			]
 		},
 		{
-			"act": 2,
-			"speaker": "蓝色的公主",
-			"text": "……你也是。……裤子说……你的脚……像饺子。",
-			"emotion": "giggle",
-			"actions": [
-				{
-					"do": "tickle",
-					"who": "blue",
-					"by": "foe2",
-					"repeat": 5,
-					"interval": 0.22,
-					"fx": "brush",
-					"zone": "thigh"
-				}
-			]
-		},
-		{
 			"act": 3,
 			"speaker": "",
-			"text": "（巨魔们哼着军歌，挠痒也跟着节拍。两个人的疲倦同时冲到了顶）",
+			"text": "（巨魔们哼着军歌，挠痒也跟着节拍。粉色公主的魔力疲倦先冲到了顶）",
 			"actions": [
 				{
 					"do": "pose",
@@ -273,7 +233,7 @@
 		{
 			"act": 3,
 			"speaker": "公主",
-			"text": "不、不行了——蓝色的，一起！",
+			"text": "不、不行了——军歌给我停下——！",
 			"emotion": "helpless_1",
 			"actions": [
 				{
@@ -290,7 +250,7 @@
 		{
 			"act": "burst",
 			"speaker": "",
-			"text": "（星光从她身上炸开，抓着她的巨魔被冲得一屁股坐倒）",
+			"text": "（星光从她身上炸开，抓着她的巨魔被冲得一屁股坐倒，地面都震了一下）",
 			"actions": [
 				{
 					"do": "flash",
@@ -338,71 +298,10 @@
 			"wait": 1.0
 		},
 		{
-			"act": 3,
-			"speaker": "蓝色的公主",
-			"text": "……一起。……裤子……替我……数到三……",
-			"emotion": "helpless_1"
-		},
-		{
-			"act": "burst",
+			"act": 4,
 			"speaker": "",
-			"text": "（冰蓝色的星光同时炸开，将军的狼牙棒被冻在了地上，拔都拔不起来）",
-			"actions": [
-				{
-					"do": "flash",
-					"time": 0.8
-				},
-				{
-					"do": "sfx",
-					"sound": "star_burst",
-					"volume": -1.0
-				},
-				{
-					"do": "sfx",
-					"sound": "water_release",
-					"volume": -2.0
-				},
-				{
-					"do": "shake",
-					"who": "blue",
-					"time": 0.5
-				},
-				{
-					"do": "bubble",
-					"who": "blue",
-					"kind": "surprise"
-				},
-				{
-					"do": "move",
-					"who": "foe1",
-					"to": [
-						-94,
-						-6
-					],
-					"time": 0.25
-				},
-				{
-					"do": "move",
-					"who": "foe2",
-					"to": [
-						94,
-						-6
-					],
-					"time": 0.25
-				}
-			],
-			"wait": 1.0
-		},
-		{
-			"act": 3,
-			"speaker": "公主",
-			"text": "呼……冻住了！它的棒子冻住了！",
-			"emotion": "helpless_2"
-		},
-		{
-			"act": 3,
-			"speaker": "",
-			"text": "（将军气得直跺脚，冰裂开了。巨魔们重新围上来，刚放空魔力的两个人一碰就叫）",
+			"text": "（将军气得直跺脚：「抓回来！」坐倒的巨魔爬起来，一把又把她倒提了起来，两根粗手指直接按上了脚心）",
+			"portrait": "siege_fail_3",
 			"actions": [
 				{
 					"do": "move",
@@ -443,9 +342,9 @@
 			]
 		},
 		{
-			"act": 3,
+			"act": 4,
 			"speaker": "公主",
-			"text": "呀啊——！粗、粗手指……比刚才痒好多！哈哈哈哈！",
+			"text": "呀啊——！粗、粗手指……比刚才痒好多！放完魔力的脚好敏感哈哈哈哈！",
 			"emotion": "helpless_2",
 			"actions": [
 				{
@@ -470,26 +369,9 @@
 			]
 		},
 		{
-			"act": 3,
-			"speaker": "蓝色的公主",
-			"text": "……哈哈……裤子……给巨魔……带路……哈哈哈哈！",
-			"emotion": "helpless_2",
-			"actions": [
-				{
-					"do": "tickle",
-					"who": "blue",
-					"by": "foe2",
-					"repeat": 5,
-					"interval": 0.22,
-					"fx": "brush",
-					"zone": "butt"
-				}
-			]
-		},
-		{
-			"act": 3,
+			"act": 4,
 			"speaker": "",
-			"text": "（巨魔将军用两根粗手指掰开她的脚趾，指甲在趾缝里一道一道地刮；军鼓一响，另一只手就捏一下蓝色公主的屁股）",
+			"text": "（巨魔用两根粗手指掰开她的脚趾，指甲在趾缝里一道一道地刮；脚心被绷得紧紧的，另一只手的指腹按在上面慢慢地搓）",
 			"actions": [
 				{
 					"do": "tickle",
@@ -499,20 +381,11 @@
 					"interval": 0.22,
 					"fx": "hand",
 					"zone": "sole"
-				},
-				{
-					"do": "tickle",
-					"who": "blue",
-					"by": "foe2",
-					"repeat": 8,
-					"interval": 0.22,
-					"fx": "brush",
-					"zone": "butt"
 				}
 			]
 		},
 		{
-			"act": 3,
+			"act": 4,
 			"speaker": "公主",
 			"text": "哈哈哈哈！指、指甲刮趾缝——将军大人饶命！我、我再也不叫你大个子了哈哈哈！",
 			"emotion": "helpless_2",
@@ -539,7 +412,23 @@
 			]
 		},
 		{
-			"act": 3,
+			"act": 4,
+			"speaker": "",
+			"text": "（军鼓一响，将军的另一只大手就捏一下蓝色公主的屁股；鼓点停了，拇指又回到腿根上接着揉）",
+			"actions": [
+				{
+					"do": "tickle",
+					"who": "blue",
+					"by": "foe2",
+					"repeat": 8,
+					"interval": 0.22,
+					"fx": "brush",
+					"zone": "butt"
+				}
+			]
+		},
+		{
+			"act": 4,
 			"speaker": "蓝色的公主",
 			"text": "……鼓一响……裤子的手……也……跟着节拍……捏……",
 			"emotion": "helpless_2",
@@ -557,9 +446,300 @@
 		},
 		{
 			"act": 4,
+			"speaker": "公主",
+			"text": "蓝色的……哈哈……你、你被捏得跳起来了……跟着鼓点跳……！",
+			"emotion": "helpless_2",
+			"actions": [
+				{
+					"do": "bubble",
+					"who": "pink",
+					"kind": "laugh"
+				},
+				{
+					"do": "bubble",
+					"who": "blue",
+					"kind": "laugh"
+				},
+				{
+					"do": "tickle",
+					"who": "pink",
+					"by": "foe1",
+					"repeat": 5,
+					"interval": 0.22,
+					"fx": "hand",
+					"zone": "sole"
+				}
+			]
+		},
+		{
+			"act": 4,
+			"speaker": "蓝色的公主",
+			"text": "……你的脚……也在抽。……裤子……在打拍子。",
+			"emotion": "helpless_2",
+			"actions": [
+				{
+					"do": "tickle",
+					"who": "blue",
+					"by": "foe2",
+					"repeat": 5,
+					"interval": 0.22,
+					"fx": "brush",
+					"zone": "butt"
+				}
+			]
+		},
+		{
+			"act": 4,
+			"speaker": "巨魔将军",
+			"text": "哈哈哈！这个也快满了！再加把劲，把她也挠炸！"
+		},
+		{
+			"act": 4,
+			"speaker": "",
+			"text": "（将军亲手掐住蓝色公主的两条大腿，十根手指同时在腿根的内侧挠动，一点不留情。她的魔力疲倦也满了）",
+			"actions": [
+				{
+					"do": "tickle",
+					"who": "blue",
+					"by": "foe2",
+					"repeat": 8,
+					"interval": 0.22,
+					"fx": "brush",
+					"zone": "thigh"
+				},
+				{
+					"do": "flash",
+					"time": 0.3
+				}
+			]
+		},
+		{
+			"act": 4,
+			"speaker": "蓝色的公主",
+			"text": "……将军……你和裤子……自找的……",
+			"emotion": "helpless_2",
+			"actions": [
+				{
+					"do": "tickle",
+					"who": "blue",
+					"by": "foe2",
+					"repeat": 5,
+					"interval": 0.22,
+					"fx": "brush",
+					"zone": "butt"
+				}
+			]
+		},
+		{
+			"act": "burst",
+			"speaker": "",
+			"text": "（冰蓝色的星光炸开，将军的狼牙棒被冻在了地上，拔都拔不起来；它自己的胳膊也结了一层霜）",
+			"actions": [
+				{
+					"do": "flash",
+					"time": 0.8
+				},
+				{
+					"do": "sfx",
+					"sound": "star_burst",
+					"volume": -1.0
+				},
+				{
+					"do": "sfx",
+					"sound": "water_release",
+					"volume": -2.0
+				},
+				{
+					"do": "shake",
+					"who": "blue",
+					"time": 0.5
+				},
+				{
+					"do": "bubble",
+					"who": "blue",
+					"kind": "surprise"
+				},
+				{
+					"do": "move",
+					"who": "foe1",
+					"to": [
+						-94,
+						-6
+					],
+					"time": 0.25
+				},
+				{
+					"do": "move",
+					"who": "foe2",
+					"to": [
+						94,
+						-6
+					],
+					"time": 0.25
+				}
+			],
+			"wait": 1.0
+		},
+		{
+			"act": 4,
+			"speaker": "",
+			"text": "（将军用力一挣，冰裂开了。巨魔们重新围上来，四只粗手抓住两个刚放空魔力、软得站都站不稳的人）",
+			"actions": [
+				{
+					"do": "move",
+					"who": "foe1",
+					"to": [
+						-44,
+						0
+					],
+					"time": 0.6
+				},
+				{
+					"do": "move",
+					"who": "foe2",
+					"to": [
+						44,
+						0
+					],
+					"time": 0.6
+				},
+				{
+					"do": "tickle",
+					"who": "pink",
+					"by": "foe1",
+					"repeat": 8,
+					"interval": 0.22,
+					"fx": "hand",
+					"zone": "sole"
+				},
+				{
+					"do": "tickle",
+					"who": "blue",
+					"by": "foe2",
+					"repeat": 8,
+					"interval": 0.22,
+					"fx": "brush",
+					"zone": "butt"
+				}
+			]
+		},
+		{
+			"act": 4,
+			"speaker": "蓝色的公主",
+			"text": "……哈哈……放完……裤子……给巨魔……带路……哈哈哈哈……！",
+			"emotion": "helpless_2",
+			"actions": [
+				{
+					"do": "bubble",
+					"who": "pink",
+					"kind": "laugh"
+				},
+				{
+					"do": "bubble",
+					"who": "blue",
+					"kind": "laugh"
+				},
+				{
+					"do": "tickle",
+					"who": "blue",
+					"by": "foe2",
+					"repeat": 5,
+					"interval": 0.22,
+					"fx": "brush",
+					"zone": "butt"
+				}
+			]
+		},
+		{
+			"act": 4,
+			"speaker": "公主",
+			"text": "哈哈哈！你看——放完更痒吧——呀啊脚跟——脚跟也不行！",
+			"emotion": "helpless_2",
+			"actions": [
+				{
+					"do": "tickle",
+					"who": "pink",
+					"by": "foe1",
+					"repeat": 5,
+					"interval": 0.22,
+					"fx": "hand",
+					"zone": "sole"
+				}
+			]
+		},
+		{
+			"act": 4,
+			"speaker": "",
+			"text": "（一只巨魔捧着她的脚，指甲沿着足弓一路刮到脚跟，再从脚跟刮回脚趾；另一只的大拇指按在蓝色公主的腿根，跟着军鼓一下一下地揉）",
+			"actions": [
+				{
+					"do": "tickle",
+					"who": "pink",
+					"by": "foe1",
+					"repeat": 8,
+					"interval": 0.22,
+					"fx": "hand",
+					"zone": "sole"
+				},
+				{
+					"do": "tickle",
+					"who": "blue",
+					"by": "foe2",
+					"repeat": 8,
+					"interval": 0.22,
+					"fx": "brush",
+					"zone": "thigh"
+				}
+			]
+		},
+		{
+			"act": 4,
+			"speaker": "公主",
+			"text": "哈哈哈哈！足、足弓——求你们——我投降投降投降！",
+			"emotion": "helpless_2",
+			"actions": [
+				{
+					"do": "bubble",
+					"who": "pink",
+					"kind": "laugh"
+				},
+				{
+					"do": "bubble",
+					"who": "blue",
+					"kind": "laugh"
+				},
+				{
+					"do": "tickle",
+					"who": "pink",
+					"by": "foe1",
+					"repeat": 5,
+					"interval": 0.22,
+					"fx": "hand",
+					"zone": "sole"
+				}
+			]
+		},
+		{
+			"act": 4,
+			"speaker": "蓝色的公主",
+			"text": "……揉一下……裤子……就……替我……求一次……",
+			"emotion": "helpless_2",
+			"actions": [
+				{
+					"do": "tickle",
+					"who": "blue",
+					"by": "foe2",
+					"repeat": 5,
+					"interval": 0.22,
+					"fx": "brush",
+					"zone": "butt"
+				}
+			]
+		},
+		{
+			"act": 4,
 			"speaker": "",
 			"text": "（巨魔将军亲自上阵，一只大手抓住两只脚刮脚心，另一只手的手指按着军鼓的节奏在蓝色公主的腿根上戳）",
-			"portrait": "siege_fail_3",
 			"actions": [
 				{
 					"do": "pose",

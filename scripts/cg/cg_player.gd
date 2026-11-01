@@ -693,6 +693,9 @@ func _build_cast(cast: Dictionary) -> void:
 			a = CGActor.make_npc(who, k.substr(4), Dialogue.npcs.get(k.substr(4), {}))
 			if info.has("dir"):
 				a.set_dir(str(info["dir"]))
+			# 公主以 npc 形式上场（攻防战 / 七日赎罪的蓝色公主、第八层双人）：也套用 visual / anim，不然定格在 idle 一帧
+			if a.kind == "npc_princess" and (info.has("visual") or info.has("anim")):
+				a.set_pose(str(info.get("visual", "")), str(info.get("anim", "")), str(info.get("dir", "")))
 		else:
 			var key := source_key if k == "source" else k.substr(8)
 			var actor_info: Dictionary = data.get("actors", {}).get(key, data.get("actors", {}).get("slime", {}))
@@ -896,6 +899,9 @@ func _act(a: Dictionary) -> float:
 			var fx := str(a.get("fx", "lines"))
 			var tool := str(a.get("tool", ""))
 			t = n * every
+			# 被挠的公主站着没在笑：换成憋笑循环（精灵要动）
+			if who:
+				who.start_giggle()
 			if by:
 				by.style = "wiggle"
 				if by.kind == "trap":

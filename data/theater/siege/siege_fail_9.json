@@ -95,7 +95,7 @@
 		{
 			"act": 1,
 			"speaker": "",
-			"text": "（丝线悄悄缠上两个人的手腕和脚踝，魔偶师手指一勾，两个人就被提成了木偶的姿势；恶作剧妖精们捧着羽毛飞过来）",
+			"text": "（丝线悄悄缠上两个人的手腕和脚踝，魔偶师手指一勾，两个人就被提成了木偶的姿势，她的鞋子被丝线一挑，飞了出去）",
 			"actions": [
 				{
 					"do": "tickle",
@@ -111,40 +111,6 @@
 					"who": "blue",
 					"by": "foe2",
 					"repeat": 8,
-					"interval": 0.22,
-					"fx": "brush",
-					"zone": "thigh"
-				}
-			]
-		},
-		{
-			"act": 1,
-			"speaker": "公主",
-			"text": "动、动不了！我的手自己举起来了！",
-			"emotion": "angry",
-			"actions": [
-				{
-					"do": "tickle",
-					"who": "pink",
-					"by": "foe1",
-					"repeat": 5,
-					"interval": 0.22,
-					"fx": "hand",
-					"zone": "sole"
-				}
-			]
-		},
-		{
-			"act": 1,
-			"speaker": "蓝色的公主",
-			"text": "……被……提线了。……脚……也是。",
-			"emotion": "normal",
-			"actions": [
-				{
-					"do": "tickle",
-					"who": "blue",
-					"by": "foe2",
-					"repeat": 5,
 					"interval": 0.22,
 					"fx": "brush",
 					"zone": "thigh"
@@ -187,7 +153,7 @@
 		{
 			"act": 2,
 			"speaker": "",
-			"text": "（丝线一拉，蓝色公主的腿被摆成了跳舞的姿势，妖精们排成一排，用羽毛沿着大腿内侧一路扫到腿根，再从屁股下面的交界扫回来）",
+			"text": "（丝线一拉，蓝色公主的腿被摆成了跳舞的姿势，妖精们排成一排，用羽毛沿着大腿内侧一路扫到腿根）",
 			"actions": [
 				{
 					"do": "tickle",
@@ -245,26 +211,9 @@
 			]
 		},
 		{
-			"act": 2,
-			"speaker": "蓝色的公主",
-			"text": "……是它……在跳。……我……只是……线。",
-			"emotion": "giggle",
-			"actions": [
-				{
-					"do": "tickle",
-					"who": "blue",
-					"by": "foe2",
-					"repeat": 5,
-					"interval": 0.22,
-					"fx": "brush",
-					"zone": "thigh"
-				}
-			]
-		},
-		{
 			"act": 3,
 			"speaker": "",
-			"text": "（羽毛雪越下越大，魔偶师的手指越动越快。粉色公主的疲倦先满了）",
+			"text": "（羽毛雪越下越大，魔偶师的手指越动越快。粉色公主的魔力疲倦先满了）",
 			"actions": [
 				{
 					"do": "pose",
@@ -350,10 +299,232 @@
 			"wait": 1.0
 		},
 		{
-			"act": 3,
+			"act": 4,
+			"speaker": "",
+			"text": "（魔偶师优雅地抖了抖手，新的丝线又从雾里垂下来，把她的脚尖提得高高的，脚心正对着妖精们的软刷）",
+			"portrait": "siege_fail_9",
+			"actions": [
+				{
+					"do": "move",
+					"who": "foe1",
+					"to": [
+						-44,
+						0
+					],
+					"time": 0.6
+				},
+				{
+					"do": "move",
+					"who": "foe2",
+					"to": [
+						44,
+						0
+					],
+					"time": 0.6
+				},
+				{
+					"do": "tickle",
+					"who": "pink",
+					"by": "foe1",
+					"repeat": 8,
+					"interval": 0.22,
+					"fx": "hand",
+					"zone": "sole"
+				},
+				{
+					"do": "tickle",
+					"who": "blue",
+					"by": "foe2",
+					"repeat": 8,
+					"interval": 0.22,
+					"fx": "brush",
+					"zone": "butt"
+				}
+			]
+		},
+		{
+			"act": 4,
+			"speaker": "公主",
+			"text": "呀啊——！又、又被提起来了——放完魔力的脚心——刷子一碰就……哈哈哈哈！",
+			"emotion": "helpless_2",
+			"actions": [
+				{
+					"do": "bubble",
+					"who": "pink",
+					"kind": "laugh"
+				},
+				{
+					"do": "bubble",
+					"who": "blue",
+					"kind": "laugh"
+				},
+				{
+					"do": "tickle",
+					"who": "pink",
+					"by": "foe1",
+					"repeat": 5,
+					"interval": 0.22,
+					"fx": "hand",
+					"zone": "sole"
+				}
+			]
+		},
+		{
+			"act": 4,
+			"speaker": "",
+			"text": "（妖精们拿着软刷排队刷过去，一只刷足弓，一只刷脚跟，最小的那只钻到脚趾缝里，用刷子尖一道一道地拨）",
+			"actions": [
+				{
+					"do": "tickle",
+					"who": "pink",
+					"by": "foe1",
+					"repeat": 8,
+					"interval": 0.22,
+					"fx": "hand",
+					"zone": "sole"
+				}
+			]
+		},
+		{
+			"act": 4,
+			"speaker": "公主",
+			"text": "哈哈哈哈！脚、脚心朝天了——刷子排队刷——我不跳了！线、线快剪断哈哈哈！",
+			"emotion": "helpless_2",
+			"actions": [
+				{
+					"do": "bubble",
+					"who": "pink",
+					"kind": "laugh"
+				},
+				{
+					"do": "bubble",
+					"who": "blue",
+					"kind": "laugh"
+				},
+				{
+					"do": "tickle",
+					"who": "pink",
+					"by": "foe1",
+					"repeat": 5,
+					"interval": 0.22,
+					"fx": "hand",
+					"zone": "sole"
+				}
+			]
+		},
+		{
+			"act": 4,
+			"speaker": "",
+			"text": "（另一根丝线绕着蓝色公主的大腿一圈圈收紧，线上串着的绒球贴着屁股下面的交界来回蹭，魔偶师的手指一勾，绒球就滚一圈）",
+			"actions": [
+				{
+					"do": "tickle",
+					"who": "blue",
+					"by": "foe2",
+					"repeat": 8,
+					"interval": 0.22,
+					"fx": "brush",
+					"zone": "butt"
+				}
+			]
+		},
+		{
+			"act": 4,
 			"speaker": "蓝色的公主",
-			"text": "……线断了。……我……也……满了。",
-			"emotion": "helpless_1"
+			"text": "……绒球……绕着……交界……滚……线……别、别收紧……",
+			"emotion": "helpless_2",
+			"actions": [
+				{
+					"do": "tickle",
+					"who": "blue",
+					"by": "foe2",
+					"repeat": 5,
+					"interval": 0.22,
+					"fx": "brush",
+					"zone": "butt"
+				}
+			]
+		},
+		{
+			"act": 4,
+			"speaker": "公主",
+			"text": "蓝色的……哈哈哈……你、你的腿在跳踢踏舞……！",
+			"emotion": "helpless_2",
+			"actions": [
+				{
+					"do": "bubble",
+					"who": "pink",
+					"kind": "laugh"
+				},
+				{
+					"do": "bubble",
+					"who": "blue",
+					"kind": "laugh"
+				},
+				{
+					"do": "tickle",
+					"who": "pink",
+					"by": "foe1",
+					"repeat": 5,
+					"interval": 0.22,
+					"fx": "hand",
+					"zone": "sole"
+				}
+			]
+		},
+		{
+			"act": 4,
+			"speaker": "蓝色的公主",
+			"text": "……是……它……编的舞。……我……只是……木、木偶……",
+			"emotion": "helpless_2",
+			"actions": [
+				{
+					"do": "tickle",
+					"who": "blue",
+					"by": "foe2",
+					"repeat": 5,
+					"interval": 0.22,
+					"fx": "brush",
+					"zone": "butt"
+				}
+			]
+		},
+		{
+			"act": 4,
+			"speaker": "",
+			"text": "（魔偶师让她的腿慢慢分开，妖精们一拥而上，羽毛从膝弯一路扫到腿根，扫到最里面就转圈。她的魔力疲倦也满了）",
+			"actions": [
+				{
+					"do": "tickle",
+					"who": "blue",
+					"by": "foe2",
+					"repeat": 8,
+					"interval": 0.22,
+					"fx": "brush",
+					"zone": "thigh"
+				},
+				{
+					"do": "flash",
+					"time": 0.3
+				}
+			]
+		},
+		{
+			"act": 4,
+			"speaker": "蓝色的公主",
+			"text": "……谢……幕……之前……先……炸……",
+			"emotion": "helpless_2",
+			"actions": [
+				{
+					"do": "tickle",
+					"who": "blue",
+					"by": "foe2",
+					"repeat": 5,
+					"interval": 0.22,
+					"fx": "brush",
+					"zone": "butt"
+				}
+			]
 		},
 		{
 			"act": "burst",
@@ -406,15 +577,9 @@
 			"wait": 1.0
 		},
 		{
-			"act": 3,
-			"speaker": "公主",
-			"text": "呼……雪、雪停了……",
-			"emotion": "helpless_2"
-		},
-		{
-			"act": 3,
+			"act": 4,
 			"speaker": "",
-			"text": "（魔偶师抖了抖手，冰碎了，新的丝线又从雾里垂下来。刚放空魔力的两个人敏感得要命）",
+			"text": "（魔偶师对着手指哈了口气，冰化开了。丝线重新缠上两个刚放空魔力、软得像布偶一样的人，把她们摆成了面对面的姿势）",
 			"actions": [
 				{
 					"do": "move",
@@ -455,9 +620,9 @@
 			]
 		},
 		{
-			"act": 3,
-			"speaker": "公主",
-			"text": "呀啊——！又、又被提起来了——脚心……哈哈哈哈！",
+			"act": 4,
+			"speaker": "蓝色的公主",
+			"text": "……哈哈……放、放完……羽毛……一扫……就……哈哈哈哈……！",
 			"emotion": "helpless_2",
 			"actions": [
 				{
@@ -470,23 +635,6 @@
 					"who": "blue",
 					"kind": "laugh"
 				},
-				{
-					"do": "tickle",
-					"who": "pink",
-					"by": "foe1",
-					"repeat": 5,
-					"interval": 0.22,
-					"fx": "hand",
-					"zone": "sole"
-				}
-			]
-		},
-		{
-			"act": 3,
-			"speaker": "蓝色的公主",
-			"text": "……哈哈……线……绕着……屁股……一圈……哈哈哈哈！",
-			"emotion": "helpless_2",
-			"actions": [
 				{
 					"do": "tickle",
 					"who": "blue",
@@ -499,9 +647,26 @@
 			]
 		},
 		{
-			"act": 3,
+			"act": 4,
+			"speaker": "公主",
+			"text": "哈哈哈！面、面对面了——蓝色的你别看我——我笑得好丑——呀啊又刷——！",
+			"emotion": "helpless_2",
+			"actions": [
+				{
+					"do": "tickle",
+					"who": "pink",
+					"by": "foe1",
+					"repeat": 5,
+					"interval": 0.22,
+					"fx": "hand",
+					"zone": "sole"
+				}
+			]
+		},
+		{
+			"act": 4,
 			"speaker": "",
-			"text": "（魔偶师用丝线把她的脚尖提起来，脚心朝天，妖精们拿着软刷排队刷过去；另一根丝线绕着蓝色公主的大腿一圈圈收紧，线上的绒球来回蹭）",
+			"text": "（丝线把两个人的脚和腿交叉摆在一起：她的脚心贴着蓝色公主的膝盖，妖精们一边刷脚心，一边顺路扫蓝色公主的大腿内侧）",
 			"actions": [
 				{
 					"do": "tickle",
@@ -524,9 +689,9 @@
 			]
 		},
 		{
-			"act": 3,
+			"act": 4,
 			"speaker": "公主",
-			"text": "哈哈哈哈！脚、脚心朝天了——刷子排队刷——我不跳了！线、线快剪断哈哈哈！",
+			"text": "哈哈哈哈！一、一起刷——求求你们——我们认输——放我们下来——！",
 			"emotion": "helpless_2",
 			"actions": [
 				{
@@ -551,9 +716,9 @@
 			]
 		},
 		{
-			"act": 3,
+			"act": 4,
 			"speaker": "蓝色的公主",
-			"text": "……绒球……绕着……大腿……蹭……线……别、别收紧……",
+			"text": "……你的……脚……在……我腿上……抽……我、我也……求……",
 			"emotion": "helpless_2",
 			"actions": [
 				{
@@ -571,7 +736,6 @@
 			"act": 4,
 			"speaker": "",
 			"text": "（魔偶师让两个人面对面跳起了圆舞，每转一圈，妖精们就在脚心和腿根上各扫一下，羽毛雪落个不停）",
-			"portrait": "siege_fail_9",
 			"actions": [
 				{
 					"do": "pose",

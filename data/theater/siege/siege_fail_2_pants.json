@@ -95,7 +95,7 @@
 		{
 			"act": 1,
 			"speaker": "",
-			"text": "（蝠群俯冲下来，抓住两个人的衣领拎上半空；钩索在下面一甩，缠住了两个人的脚踝）",
+			"text": "（蝠群俯冲下来，抓住两个人的衣领拎上半空；钩索在下面一甩，缠住了两个人的脚踝，她的鞋子也被甩飞了）",
 			"actions": [
 				{
 					"do": "tickle",
@@ -111,40 +111,6 @@
 					"who": "blue",
 					"by": "foe2",
 					"repeat": 8,
-					"interval": 0.22,
-					"fx": "brush",
-					"zone": "thigh"
-				}
-			]
-		},
-		{
-			"act": 1,
-			"speaker": "公主",
-			"text": "我、我被吊起来了！脚、脚还被钩住了！",
-			"emotion": "angry",
-			"actions": [
-				{
-					"do": "tickle",
-					"who": "pink",
-					"by": "foe1",
-					"repeat": 5,
-					"interval": 0.22,
-					"fx": "hand",
-					"zone": "sole"
-				}
-			]
-		},
-		{
-			"act": 1,
-			"speaker": "蓝色的公主",
-			"text": "……上面……拽。……下面……也拽。",
-			"emotion": "normal",
-			"actions": [
-				{
-					"do": "tickle",
-					"who": "blue",
-					"by": "foe2",
-					"repeat": 5,
 					"interval": 0.22,
 					"fx": "brush",
 					"zone": "thigh"
@@ -245,26 +211,9 @@
 			]
 		},
 		{
-			"act": 2,
-			"speaker": "蓝色的公主",
-			"text": "……是裤子……在调整。……我……没动。",
-			"emotion": "giggle",
-			"actions": [
-				{
-					"do": "tickle",
-					"who": "blue",
-					"by": "foe2",
-					"repeat": 5,
-					"interval": 0.22,
-					"fx": "brush",
-					"zone": "thigh"
-				}
-			]
-		},
-		{
 			"act": 3,
 			"speaker": "",
-			"text": "（吊在半空中，躲也没处躲。蓝色公主的疲倦先满了）",
+			"text": "（吊在半空中，躲也没处躲。粉色公主的魔力疲倦先满了）",
 			"actions": [
 				{
 					"do": "pose",
@@ -284,76 +233,20 @@
 		},
 		{
 			"act": 3,
-			"speaker": "蓝色的公主",
-			"text": "……魔力……和裤子的手……一起……往外挤……",
+			"speaker": "公主",
+			"text": "掉、掉下去也好——我要炸了——！",
 			"emotion": "helpless_1",
 			"actions": [
 				{
 					"do": "tickle",
-					"who": "blue",
-					"by": "foe2",
+					"who": "pink",
+					"by": "foe1",
 					"repeat": 5,
 					"interval": 0.22,
-					"fx": "brush",
-					"zone": "butt"
+					"fx": "hand",
+					"zone": "sole"
 				}
 			]
-		},
-		{
-			"act": "burst",
-			"speaker": "",
-			"text": "（冰蓝色的星光炸开，蝠群被冻成冰坨，一坨一坨砸在地上）",
-			"actions": [
-				{
-					"do": "flash",
-					"time": 0.8
-				},
-				{
-					"do": "sfx",
-					"sound": "star_burst",
-					"volume": -1.0
-				},
-				{
-					"do": "sfx",
-					"sound": "water_release",
-					"volume": -2.0
-				},
-				{
-					"do": "shake",
-					"who": "blue",
-					"time": 0.5
-				},
-				{
-					"do": "bubble",
-					"who": "blue",
-					"kind": "surprise"
-				},
-				{
-					"do": "move",
-					"who": "foe1",
-					"to": [
-						-94,
-						-6
-					],
-					"time": 0.25
-				},
-				{
-					"do": "move",
-					"who": "foe2",
-					"to": [
-						94,
-						-6
-					],
-					"time": 0.25
-				}
-			],
-			"wait": 1.0
-		},
-		{
-			"act": 3,
-			"speaker": "公主",
-			"text": "掉、掉下去了——呜哇，我也满了——！",
-			"emotion": "helpless_1"
 		},
 		{
 			"act": "burst",
@@ -406,15 +299,10 @@
 			"wait": 1.0
 		},
 		{
-			"act": 3,
-			"speaker": "蓝色的公主",
-			"text": "……呼。……着陆了。……姿势……不太好看。",
-			"emotion": "helpless_2"
-		},
-		{
-			"act": 3,
+			"act": 4,
 			"speaker": "",
-			"text": "（蝠群扑棱棱重新飞起来，又一筐小怪从天上扔下来，壁虎们重新爬上钩索。刚放空魔力的两个人敏感得要命）",
+			"text": "（她刚落地，蝠群扑棱棱重新飞起来，又一筐小怪从天上扔下来，壁虎们一只接一只重新爬上她的脚背）",
+			"portrait": "siege_fail_2",
 			"actions": [
 				{
 					"do": "move",
@@ -455,9 +343,9 @@
 			]
 		},
 		{
-			"act": 3,
+			"act": 4,
 			"speaker": "公主",
-			"text": "呀啊——！天上又掉下来了！脚、脚心……哈哈哈哈！",
+			"text": "呀啊——！刚、刚放完魔力——脚心好奇怪——一碰就麻到头顶哈哈哈哈！",
 			"emotion": "helpless_2",
 			"actions": [
 				{
@@ -482,9 +370,68 @@
 			]
 		},
 		{
-			"act": 3,
+			"act": 4,
+			"speaker": "",
+			"text": "（三只壁虎排成一排趴在她脚底：一只钻趾缝、一只扫足弓、一只拿尾巴尖戳脚跟，戳一下，她的脚趾就蜷一下）",
+			"actions": [
+				{
+					"do": "tickle",
+					"who": "pink",
+					"by": "foe1",
+					"repeat": 8,
+					"interval": 0.22,
+					"fx": "hand",
+					"zone": "sole"
+				}
+			]
+		},
+		{
+			"act": 4,
+			"speaker": "公主",
+			"text": "哈哈哈！趾、趾缝不许钻——脚跟也不许——排、排队也不行！放空魔力的脚你们也好意思挠哈哈哈！",
+			"emotion": "helpless_2",
+			"actions": [
+				{
+					"do": "bubble",
+					"who": "pink",
+					"kind": "laugh"
+				},
+				{
+					"do": "bubble",
+					"who": "blue",
+					"kind": "laugh"
+				},
+				{
+					"do": "tickle",
+					"who": "pink",
+					"by": "foe1",
+					"repeat": 5,
+					"interval": 0.22,
+					"fx": "hand",
+					"zone": "sole"
+				}
+			]
+		},
+		{
+			"act": 4,
+			"speaker": "",
+			"text": "（还吊在半空的蓝色公主更惨：蝙蝠们围着她转圈，每只叼一根羽毛，沿着大腿内侧轮流往上蹭，蹭到腿根就换下一只）",
+			"actions": [
+				{
+					"do": "tickle",
+					"who": "blue",
+					"by": "foe2",
+					"repeat": 8,
+					"interval": 0.22,
+					"fx": "brush",
+					"zone": "thigh"
+				}
+			]
+		},
+		{
+			"act": 4,
 			"speaker": "蓝色的公主",
-			"text": "……哈哈……天上掉的……和裤子里的……会合了……哈哈哈哈！",
+			"text": "……一只换一只……裤子的手……也……排、排进去了……",
 			"emotion": "helpless_2",
 			"actions": [
 				{
@@ -499,9 +446,227 @@
 			]
 		},
 		{
-			"act": 3,
+			"act": 4,
+			"speaker": "公主",
+			"text": "蓝色的！你、你撑住——我这就……哈哈哈……我这就爬上去救你……哈哈哈起不来……！",
+			"emotion": "helpless_2",
+			"actions": [
+				{
+					"do": "bubble",
+					"who": "pink",
+					"kind": "laugh"
+				},
+				{
+					"do": "bubble",
+					"who": "blue",
+					"kind": "laugh"
+				},
+				{
+					"do": "tickle",
+					"who": "pink",
+					"by": "foe1",
+					"repeat": 5,
+					"interval": 0.22,
+					"fx": "hand",
+					"zone": "sole"
+				}
+			]
+		},
+		{
+			"act": 4,
+			"speaker": "蓝色的公主",
+			"text": "……你先救你的脚……我……和裤子……还、还撑得住……",
+			"emotion": "helpless_2",
+			"actions": [
+				{
+					"do": "tickle",
+					"who": "blue",
+					"by": "foe2",
+					"repeat": 5,
+					"interval": 0.22,
+					"fx": "brush",
+					"zone": "butt"
+				}
+			]
+		},
+		{
+			"act": 4,
 			"speaker": "",
-			"text": "（三只壁虎排成一排趴在她脚底：一只钻趾缝、一只扫足弓、一只拿尾巴尖戳脚跟；蝙蝠的羽毛沿着蓝色公主的大腿内侧慢慢往上蹭）",
+			"text": "（羽毛一路蹭到屁股下面的交界，在那里来回刷。她死死并着腿，可吊在半空根本使不上力。她的魔力疲倦也满了）",
+			"actions": [
+				{
+					"do": "tickle",
+					"who": "blue",
+					"by": "foe2",
+					"repeat": 8,
+					"interval": 0.22,
+					"fx": "brush",
+					"zone": "butt"
+				},
+				{
+					"do": "flash",
+					"time": 0.3
+				}
+			]
+		},
+		{
+			"act": 4,
+			"speaker": "蓝色的公主",
+			"text": "……魔力……和裤子的手……一起……往外挤……",
+			"emotion": "helpless_2",
+			"actions": [
+				{
+					"do": "tickle",
+					"who": "blue",
+					"by": "foe2",
+					"repeat": 5,
+					"interval": 0.22,
+					"fx": "brush",
+					"zone": "butt"
+				}
+			]
+		},
+		{
+			"act": "burst",
+			"speaker": "",
+			"text": "（冰蓝色的星光炸开，蝠群被冻成冰坨，一坨一坨砸在地上，她也跟着摔进了草垛里）",
+			"actions": [
+				{
+					"do": "flash",
+					"time": 0.8
+				},
+				{
+					"do": "sfx",
+					"sound": "star_burst",
+					"volume": -1.0
+				},
+				{
+					"do": "sfx",
+					"sound": "water_release",
+					"volume": -2.0
+				},
+				{
+					"do": "shake",
+					"who": "blue",
+					"time": 0.5
+				},
+				{
+					"do": "bubble",
+					"who": "blue",
+					"kind": "surprise"
+				},
+				{
+					"do": "move",
+					"who": "foe1",
+					"to": [
+						-94,
+						-6
+					],
+					"time": 0.25
+				},
+				{
+					"do": "move",
+					"who": "foe2",
+					"to": [
+						94,
+						-6
+					],
+					"time": 0.25
+				}
+			],
+			"wait": 1.0
+		},
+		{
+			"act": 4,
+			"speaker": "",
+			"text": "（冰坨在太阳底下化开，蝙蝠们抖抖翅膀又飞了起来，和壁虎一起扑向两个刚放空魔力、全身发软的人）",
+			"actions": [
+				{
+					"do": "move",
+					"who": "foe1",
+					"to": [
+						-44,
+						0
+					],
+					"time": 0.6
+				},
+				{
+					"do": "move",
+					"who": "foe2",
+					"to": [
+						44,
+						0
+					],
+					"time": 0.6
+				},
+				{
+					"do": "tickle",
+					"who": "pink",
+					"by": "foe1",
+					"repeat": 8,
+					"interval": 0.22,
+					"fx": "hand",
+					"zone": "sole"
+				},
+				{
+					"do": "tickle",
+					"who": "blue",
+					"by": "foe2",
+					"repeat": 8,
+					"interval": 0.22,
+					"fx": "brush",
+					"zone": "butt"
+				}
+			]
+		},
+		{
+			"act": 4,
+			"speaker": "蓝色的公主",
+			"text": "……哈哈……放完……裤子……比我……先笑……哈哈哈哈……！",
+			"emotion": "helpless_2",
+			"actions": [
+				{
+					"do": "bubble",
+					"who": "pink",
+					"kind": "laugh"
+				},
+				{
+					"do": "bubble",
+					"who": "blue",
+					"kind": "laugh"
+				},
+				{
+					"do": "tickle",
+					"who": "blue",
+					"by": "foe2",
+					"repeat": 5,
+					"interval": 0.22,
+					"fx": "brush",
+					"zone": "butt"
+				}
+			]
+		},
+		{
+			"act": 4,
+			"speaker": "公主",
+			"text": "哈哈哈！对、对吧！放完以后更痒对吧！我没骗你——呀啊又来了——！",
+			"emotion": "helpless_2",
+			"actions": [
+				{
+					"do": "tickle",
+					"who": "pink",
+					"by": "foe1",
+					"repeat": 5,
+					"interval": 0.22,
+					"fx": "hand",
+					"zone": "sole"
+				}
+			]
+		},
+		{
+			"act": 4,
+			"speaker": "",
+			"text": "（壁虎们把她的脚趾一根一根掰开，尾巴尖插进每一道趾缝里来回拨；蝙蝠们把羽毛插在蓝色公主的腿根，翅膀一扇羽毛就转）",
 			"actions": [
 				{
 					"do": "tickle",
@@ -524,9 +689,9 @@
 			]
 		},
 		{
-			"act": 3,
+			"act": 4,
 			"speaker": "公主",
-			"text": "哈哈哈！趾、趾缝不许钻——脚跟也不许——求求你们，排、排队也不行哈哈哈！",
+			"text": "哈哈哈哈！每、每一道趾缝都——饶命——我认、认……哈哈哈说不完整！",
 			"emotion": "helpless_2",
 			"actions": [
 				{
@@ -551,9 +716,9 @@
 			]
 		},
 		{
-			"act": 3,
+			"act": 4,
 			"speaker": "蓝色的公主",
-			"text": "……羽毛在外面……裤子的手……在里面……夹、夹着……",
+			"text": "……羽毛转……裤子的手……也转……停、停不下来……",
 			"emotion": "helpless_2",
 			"actions": [
 				{
@@ -571,7 +736,6 @@
 			"act": 4,
 			"speaker": "",
 			"text": "（蝠群在头顶盘旋，每转一圈就撒一阵羽毛；壁虎们排着队爬上来，一只接一只从两个人的脚心和腿根上踩过去）",
-			"portrait": "siege_fail_2",
 			"actions": [
 				{
 					"do": "pose",
@@ -658,7 +822,7 @@
 		{
 			"act": 4,
 			"speaker": "",
-			"text": "（蝠群叼着空筐子飞走了。城墙上挂满了断掉的钩索）"
+			"text": "（蝠群叼着空筐子飞走了。城墙上挂满了断掉的钩索，两个人躺在草垛里，头发里插满了羽毛）"
 		},
 		{
 			"act": 4,

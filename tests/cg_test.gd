@@ -36,6 +36,8 @@ func _ready() -> void:
 	await _run_real_monsters()
 	_run_portrait_interface()
 	await _run_cg_portrait_fx()
+	_run_theater_sprites_move()
+	_run_long_fail_theaters()
 	# CG 舞台的地牢房间只是画面：图块不能有碰撞（CanvasLayer 不隔开物理，会变成关卡里同一坐标的空气墙）
 	var stage_maps: Array = CG.find_children("*", "TileMapLayer", true, false)
 	check("CG 舞台的图块没有碰撞（不在关卡里留空气墙）", not stage_maps.is_empty() and stage_maps.all(func(m): return not m.collision_enabled))
@@ -487,3 +489,77 @@ func _finish_dialogue() -> void:
 
 func _wait(sec: float) -> void:
 	await get_tree().create_timer(sec).timeout
+
+
+## 小剧场里的精灵一定要动（POLISH_RULES）：所有小剧场里的公主演员（princess / 公主行走图的 npc），
+## 在失控 / 憋笑类视觉状态上实际播的动画要有不止一帧；npc 公主也要套用 cast 里的 visual / anim。
+func _run_theater_sprites_move() -> void:
+	var cfg := load("res://data/actors/princess_sprites.tres") as SpriteSheetConfig
+	var princess_npcs := Dialogue.npcs.keys().filter(func(k): return bool(Dialogue.npcs[k].get("princess_sheet", false)))
+	var bad: Array[String] = []
+	var n := 0
+	var dirs := ["res://data/theater/"]
+	while not dirs.is_empty():
+		var d: String = dirs.pop_back()
+		for sub in DirAccess.get_directories_at(d):
+			dirs.append(d + sub + "/")
+		for f in DirAccess.get_files_at(d):
+			if not f.ends_with(".json"):
+				continue
+			var j: Variant = JSON.parse_string(FileAccess.get_file_as_string(d + f))
+			if not j is Dictionary:
+				continue
+			var cast: Dictionary = j.get("cast", {})
+			var princesses := {}
+			for who in cast:
+				var k := str(cast[who].get("kind", ""))
+				if k == "princess" or (k.begins_with("npc:") and princess_npcs.has(k.substr(4))):
+					princesses[who] = true
+					_check_loop(cfg, str(cast[who].get("visual", "")), str(cast[who].get("anim", "")), "%s %s 开场" % [f, who], bad)
+			for st in j.get("steps", []):
+				for a in st.get("actions", []):
+					if str(a.get("do", "")) == "pose" and princesses.has(str(a.get("who", ""))):
+						_check_loop(cfg, str(a.get("visual", "")), str(a.get("anim", "")), "%s %s pose" % [f, a.get("who", "")], bad)
+			n += 1
+	check("小剧场里的精灵都会动：%d 个剧场，失控 / 憋笑时播的动画都不止一帧（定格的 %s）" % [n, bad.slice(0, 4)], n > 0 and bad.is_empty())
+	# npc 形式的公主套用 cast 的 visual / anim（攻防战里的蓝色公主以前定格在 idle 一帧）
+	var a := CGActor.make_npc("blue", "blue_princess", Dialogue.npcs.get("blue_princess", {}))
+	a.set_pose("helpless_2", "", "")
+	check("公主 npc 换到失控姿势自动播循环动画（%s）" % a.animator.current, a.animator.current == "helpless")
+	a.free()
+
+
+func _check_loop(cfg: SpriteSheetConfig, visual: String, anim: String, where: String, bad: Array[String]) -> void:
+	if not CGActor.LOOP_ANIM.has(visual):
+		return
+	var eff := anim if anim != "" else str(CGActor.LOOP_ANIM[visual])
+	if (cfg.get_animation(eff).get("frames", [0]) as Array).size() <= 1:
+		bad.append("%s（%s / %s）" % [where, visual, eff])
+
+
+## 失败小剧场够长、CG 后文本占大头、有魔力释放（POLISH_RULES §2）：
+## 攻防战 12 波（CG 后 ≥ 20 句、两人各释放一次）；七日赎罪 9 个（≥ 28 句、CG 后 ≥ 18 句、至少一次释放）
+func _run_long_fail_theaters() -> void:
+	var bad: Array[String] = []
+	for n in range(1, 13):
+		_check_long("res://data/theater/siege/siege_fail_%d.json" % n, 32, 20, 2, bad)
+	for k in ["equip", "potion", "cart", "drain", "drill", "tailor", "mine", "inspect", "totem"]:
+		_check_long("res://data/theater/after/after_fail_%s.json" % k, 28, 18, 1, bad)
+	check("失败小剧场够长、CG 后文本多、有魔力释放（不够的 %s）" % [bad.slice(0, 4)], bad.is_empty())
+
+
+func _check_long(path: String, min_lines: int, min_after: int, min_burst: int, bad: Array[String]) -> void:
+	var j: Variant = JSON.parse_string(FileAccess.get_file_as_string(path))
+	if not j is Dictionary:
+		bad.append(path.get_file() + " 读不到")
+		return
+	var lines: Array = (j["steps"] as Array).filter(func(s): return str(s.get("text", "")) != "")
+	var cg := -1
+	for i in lines.size():
+		var pt := str(lines[i].get("portrait", ""))
+		if pt.begins_with("siege_fail_") or pt.begins_with("after_"):
+			cg = i
+			break
+	var bursts := (j["steps"] as Array).filter(func(s): return str(s.get("act", "")) == "burst").size()
+	if lines.size() < min_lines or cg < 0 or lines.size() - cg < min_after or bursts < min_burst:
+		bad.append("%s（%d 句、CG 后 %d、释放 %d）" % [path.get_file(), lines.size(), lines.size() - cg if cg >= 0 else 0, bursts])
