@@ -74,6 +74,10 @@ var hint_label: Label
 var fatigue_bar: Array = []
 var laugh_bar: Array = []
 var actors := {}
+## 舞台上的公主木偶跟着闷笑换姿势（POLISH_RULES：小游戏里精灵要跟闷笑度变化）：开着的小游戏每帧按 actor_laugh_ratio 同步
+## normal / giggle / helpless_1 / helpless_2（战损的换 damaged / damaged_giggle）；爆发、施法等特殊姿势不动
+var follow_laugh := false
+const FOLLOW_POSES := ["normal", "giggle", "helpless_1", "helpless_2", "damaged", "damaged_giggle"]
 ## 舞台上的字（台词气泡、飘字）放在不缩放的这一层：和界面文字一样大。
 var overlay: Control
 ## 小游戏的背景音乐（轻松搞怪；tools/audio/gen_music.py 的 minigame）
@@ -133,6 +137,28 @@ func decay(base_rate: float) -> float:
 ## 随成功次数递增的整数（如连喊个数）：successes × ramp / every。
 func grow(every: float) -> int:
 	return int(successes * ramp() / every)
+
+
+## 舞台木偶 id 的闷笑比例（0~1，-1 = 不跟）：默认只有玩家那位（"princess"）读真闷笑；双人小游戏覆盖它返回另一位的数值
+func actor_laugh_ratio(id: String) -> float:
+	if id == "princess" and is_instance_valid(player) and player.laugh:
+		return player.laugh.ratio()
+	return -1.0
+
+
+## 按闷笑比例给公主木偶换姿势（阈值同 LaughMeter：憋笑 0.35、失控 0.55、失控二 0.7）
+func sync_actor_poses() -> void:
+	for id in actors:
+		var a := actors[id] as CGActor
+		if a == null or not a.kind in ["princess", "npc_princess"] or not a.visual in FOLLOW_POSES:
+			continue
+		var r := actor_laugh_ratio(str(id))
+		if r < 0.0:
+			continue
+		var dmg := a.visual.begins_with("damaged")
+		var want := ("damaged" if dmg else "normal") if r < 0.35 else (("damaged_giggle" if dmg else "giggle") if r < 0.55 else ("helpless_1" if r < 0.7 else "helpless_2"))
+		if want != a.visual:
+			a.set_pose(want, "idle" if want in ["normal", "damaged"] else "")
 
 
 ## 立绘表情跟着哪个数值走（0~1）：默认闷笑，训练一是魔力疲倦。
@@ -733,6 +759,8 @@ func _set_bar(b: Array, v: float, m: float) -> void:
 func _update_bars() -> void:
 	if not is_instance_valid(player):
 		return
+	if follow_laugh:
+		sync_actor_poses()
 	var r := mood_ratio()
 	var mood := "giggle" if r < 0.4 else ("helpless_1" if r < 0.75 else "helpless_2")
 	if mood != _mood:

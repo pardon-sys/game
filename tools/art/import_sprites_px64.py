@@ -32,7 +32,7 @@ HELPLESS_W = 248
 HELPLESS_H = 200
 WALK_DIRS = ["down", "left", "right", "up"]
 # 每种源表：行数 × 每行帧数
-LAYOUT = {"possessed": [4] * 2, "walk": [4] * 4, "expr": [4] * 2, "damaged": [4] * 5, "helpless": [4] * 2, "magic1": [6] * 3, "magic2": [6] * 3, "attack": [3] * 4}
+LAYOUT = {"possessed": [4] * 2, "walk": [4] * 4, "expr": [4] * 2, "damaged": [4] * 5, "damaged_v1": [4] * 5, "helpless": [4] * 2, "magic1": [6] * 3, "magic2": [6] * 3, "attack": [3] * 4}
 # 待机眨眼 → 图集第 16 / 17 列：半闭眼 / 闭眼（只有正面待机用）。直接在每行正面待机帧上合上眼睛（close_eyes），和走路图一模一样不跳画风；
 # 找不到两只眼睛的行（本来就闭着眼、失控……）复制待机帧（不眨）
 BLINK_HALF_COL = 16
@@ -164,11 +164,14 @@ def place(im, cell, margin=4):
 
 def build(char):
     prefix, out_name = CHARS[char]
-    src = {k: frames(prefix, k) for k in ("walk", "expr", "damaged", "helpless", "magic1", "magic2") if (SRC / ("%s_%s.png" % (prefix, k))).exists()}
+    src = {k: frames(prefix, k) for k in ("walk", "expr", "damaged", "damaged_v1", "helpless", "magic1", "magic2") if (SRC / ("%s_%s.png" % (prefix, k))).exists()}
     scales = {k: sheet_scale(k, [f for row in rows for f in row]) for k, rows in src.items()}
     snapped = {k: [[snap(f, scales[k]) for f in row] for row in rows] for k, rows in src.items()}
     s = scales["walk"]
     W, E, D, H = snapped["walk"], snapped["expr"], snapped["damaged"], snapped["helpless"]
+    # 战损憋笑（正面那一行）用原来那版（<p>_damaged_v1.png 第 5 行，用户喜欢原来的憋笑）；战损走路用新画的
+    if "damaged_v1" in snapped:
+        D = D[:4] + [snapped["damaged_v1"][4]]
     cols = WALK_SHUT_BASE + WALK_BLINK_DIRS * 4
     sheet = Image.new("RGBA", (CELL * cols, CELL * len(EMOTIONS)))
     for r, name in enumerate(EMOTIONS):

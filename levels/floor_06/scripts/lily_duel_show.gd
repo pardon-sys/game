@@ -65,6 +65,11 @@ static func data() -> Dictionary:
 	return _text
 
 
+
+func _init() -> void:
+	follow_laugh = true   # 木偶跟着闷笑换姿势
+
+
 func duel() -> Dictionary:
 	return data().get("duel", {})
 
