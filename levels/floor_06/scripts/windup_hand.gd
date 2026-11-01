@@ -6,11 +6,13 @@ extends Node2D
 ##   冰晶结界 / 千手解放：冻住 FROZEN 秒。
 ## 测试：music、unseen、target、state（still / chase / recoil / frozen）、touch()。
 
-## 比人跑得快得多（人物 80）：音乐一停只能靠躲进掩体，不能靠跑
-const SPEED := 160.0
+## 比人跑得快得多（人物 80）：音乐一停只能靠躲进掩体，不能靠跑。
+## 第七轮：以前挠到人以后会用 0.8 倍速往回弹 1.5 秒（一下弹出快 200 像素），等它走回来音乐又响了，看起来总是追不上——弹开改短、改慢
+const SPEED := 200.0
+const RECOIL_SPEED := 0.3
 const REACH := 9.0
 const LAUGH := 0.08
-const RECOIL := 1.5
+const RECOIL := 0.6
 const FROZEN := 4.0
 
 var target: Node2D
@@ -48,7 +50,7 @@ func _process(delta: float) -> void:
 		"frozen", "recoil":
 			_left -= delta
 			if state == "recoil":
-				global_position += _dir * SPEED * 0.8 * delta
+				global_position += _dir * SPEED * RECOIL_SPEED * delta
 			if _left <= 0.0:
 				state = "still"
 		"still":
