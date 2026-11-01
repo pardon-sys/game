@@ -321,7 +321,8 @@ static func run(t: Node) -> void:
 	# 牢房里那些奇怪的东西
 	await t._wait(0.2)
 	var od := sk.oddities
-	verify(t, "牢房里摆了挠痒鼠、痒痒手套、审讯椅（按 E）和马凳", is_instance_valid(od) and od.spots.size() == 3 and is_instance_valid(od.saddle))
+	verify(t, "牢房里摆了挠痒鼠、痒痒手套、审讯椅（按 E）和马凳（马凳画在地板之上：z %d、看得见 %s）" % [od.saddle.z_index if is_instance_valid(od) else -9, is_instance_valid(od) and od.saddle.is_visible_in_tree()],
+		is_instance_valid(od) and od.spots.size() == 3 and is_instance_valid(od.saddle) and od.saddle.z_index >= 1 and od.saddle.is_visible_in_tree())
 	if is_instance_valid(od):
 		# 挠痒鼠 / 手套关在牢房里：调查牢门（按 E）触发它们，不再是「门锁着」
 		var rat_gate_on := false
