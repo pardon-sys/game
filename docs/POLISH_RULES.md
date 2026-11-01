@@ -26,12 +26,20 @@
 1. **立绘和精灵图都是动态的**：
    - 舞台上的人物要走位、蹦、抖、换姿势（`enter / move / hop / shake / pose`）；
    - 立绘跟着剧情换表情（`portrait` / `emotion`），不要一张立绘从头站到尾。
+   - **精灵图一定要动，不能定格在一帧**：失控、憋笑、被挠的人播循环动画（`helpless` / `giggle`，`princess_sprites.tres` 里 4 帧循环）。
+     - `CGActor.set_pose` 换到失控 / 憋笑类视觉状态（`CGActor.LOOP_ANIM`）时没指定动画，会自动配上循环动画；
+     - `tickle` 时被挠的人如果站着没在笑，自动换成憋笑循环（`CGActor.start_giggle`）；
+     - 公主以 npc 形式上场（`kind: npc:blue_princess` 等）也套用 cast 里的 `visual` / `anim`；
+     - **不要**给失控 / 憋笑状态写 `anim: idle`（idle 只有一帧）。
+     - 教训（攻防战失败小剧场的精灵定格过）：`cg_player._build_cast` 的 npc 分支以前忽略 `visual` / `anim`，`CGActor.make_npc` 强制 `idle`（只有一帧），`pose` 动作只换行不换动画。
+     - 自动检查：`cg_test` 的「小剧场里的精灵都会动」遍历所有 `data/theater/**`。
 2. **挠痒特效、抖动都要出现在图上**：
    - 每一句「正在挠」的台词，都配一条 `tickle` 指令（`who / by / repeat / interval / fx`）；
    - 横版 CG 大图上的命中贴片、抖动、飘字由 `cg_tickle` / `Dialogue.shake_portrait` 自动处理，前提是那一步有 `tickle`；
    - 爆发时配 `flash`、`sfx`。
 3. **流程要长**：
-   - 一段完整的挠痒演绎参照现有长度：笑倒 CG 约 29 句，攻防战失败小剧场 27 句，弥补任务的失败小剧场二十句以上；
+   - 一段完整的挠痒演绎参照现有长度：笑倒 CG 约 29 句，攻防战失败小剧场约 34 句（CG 前约 12、CG 后约 22），七日赎罪的失败小剧场约 30 句（CG 前约 10、CG 后约 20）；
+   - **CG 放出后要有大量文本**（大头在 CG 后），CG 前的正常状态少一点；
    - 不要三五句就结束。
 4. **至少有一次魔力疲倦满了释放、释放后被接着挠**，按四幕走（每一步标 `act`）：
    1. 被抓住、嘴硬；

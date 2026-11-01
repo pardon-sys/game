@@ -21,7 +21,7 @@ LEG = ("腿根", "内侧", "屁股", "交界", "大腿")
 TRAD = set("這個們來說時會對還樣點開關讓過頭腳嗎麼為與東車長風飛實現發經見認識間聽覺學體從後邊兩隻癢擊撓戰鬥塊護隊禮爾們總彈網線織蟲貓魚鳥龍雙觸緊靈寶門萬幾臉語")
 KANA = re.compile(r"[぀-ヿ]")
 MAX_NOT_ITCHY = 3
-CG_MIN, BOSS_MIN, THEATER_MIN, SCENE_MIN = 28, 38, 24, 28
+CG_MIN, BOSS_MIN, THEATER_MIN, SCENE_MIN = 28, 38, 32, 28
 BOSSES = ("troll_general", "gale_bear", "puppet_master", "carnival_fortress")
 
 problems = []

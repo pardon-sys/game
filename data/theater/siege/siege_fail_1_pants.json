@@ -58,7 +58,7 @@
 		{
 			"act": 1,
 			"speaker": "",
-			"text": "（城墙塌了一角，泡泡潮顺着缺口涌进来。泡泡鱼吐出一串串大泡泡，把两个人各自裹了进去）",
+			"text": "（城墙塌了一角，泡泡潮顺着缺口涌进来。泡泡鱼吐出一串串大泡泡，把两个人各自裹了进去，晃晃悠悠飘上半空）",
 			"actions": [
 				{
 					"do": "enter",
@@ -89,13 +89,13 @@
 		{
 			"act": 1,
 			"speaker": "蓝色的公主",
-			"text": "……也在里面。……飘起来了。",
+			"text": "……也在里面。……脚下……踩不到东西。",
 			"emotion": "normal"
 		},
 		{
 			"act": 1,
 			"speaker": "",
-			"text": "（泡泡晃晃悠悠飘到半空，吸盘章鱼伸出触手钻进泡泡，一根卷走她的鞋，一根缠住蓝色公主的膝弯）",
+			"text": "（吸盘章鱼伸出触手钻进泡泡，一根卷走她的鞋，一根缠住蓝色公主的膝弯往上一提）",
 			"actions": [
 				{
 					"do": "tickle",
@@ -118,43 +118,9 @@
 			]
 		},
 		{
-			"act": 1,
-			"speaker": "公主",
-			"text": "鞋子被卷走了！泡泡里怎么还能伸进触手来啊！",
-			"emotion": "angry",
-			"actions": [
-				{
-					"do": "tickle",
-					"who": "pink",
-					"by": "foe1",
-					"repeat": 5,
-					"interval": 0.22,
-					"fx": "hand",
-					"zone": "sole"
-				}
-			]
-		},
-		{
-			"act": 1,
-			"speaker": "蓝色的公主",
-			"text": "……泡泡……是软的。……挡不住。",
-			"emotion": "normal",
-			"actions": [
-				{
-					"do": "tickle",
-					"who": "blue",
-					"by": "foe2",
-					"repeat": 5,
-					"interval": 0.22,
-					"fx": "brush",
-					"zone": "thigh"
-				}
-			]
-		},
-		{
 			"act": 2,
 			"speaker": "",
-			"text": "（泡泡鱼贴着泡泡壁游过来，隔着一层薄膜用鱼鳍一下一下地扫她的脚心，章鱼的吸盘吸住脚趾，一颗一颗往外拔）",
+			"text": "（泡泡鱼贴着泡泡壁游过来，隔着一层薄膜用鱼鳍扫她的脚心，章鱼的吸盘吸住脚趾，一颗一颗往外拔）",
 			"actions": [
 				{
 					"do": "tickle",
@@ -170,7 +136,7 @@
 		{
 			"act": 2,
 			"speaker": "公主",
-			"text": "嘻嘻嘻！隔、隔着泡泡也痒——脚趾别拔哈哈哈！",
+			"text": "嘻嘻嘻！隔、隔着泡泡也痒——脚趾别拔、别拔哈哈哈！",
 			"emotion": "giggle",
 			"actions": [
 				{
@@ -187,7 +153,7 @@
 		{
 			"act": 2,
 			"speaker": "",
-			"text": "（触手顺着蓝色公主的大腿内侧往上缠，吸盘「啵、啵」地一路吸到腿根，尾端还在屁股下面的交界上打着卷）",
+			"text": "（触手顺着蓝色公主的大腿内侧往上缠，吸盘「啵、啵」地一路吸到腿根）",
 			"actions": [
 				{
 					"do": "tickle",
@@ -203,7 +169,7 @@
 		{
 			"act": 2,
 			"speaker": "蓝色的公主",
-			"text": "……裤子里的手……听见吸盘声……也跟着……啵啵地捏……",
+			"text": "……啵啵……裤子里的手……听见吸盘声……也跟着……捏……",
 			"emotion": "giggle",
 			"actions": [
 				{
@@ -245,26 +211,9 @@
 			]
 		},
 		{
-			"act": 2,
-			"speaker": "蓝色的公主",
-			"text": "……是泡泡……被裤子……踢得晃。",
-			"emotion": "giggle",
-			"actions": [
-				{
-					"do": "tickle",
-					"who": "blue",
-					"by": "foe2",
-					"repeat": 5,
-					"interval": 0.22,
-					"fx": "brush",
-					"zone": "thigh"
-				}
-			]
-		},
-		{
 			"act": 3,
 			"speaker": "",
-			"text": "（泡泡里装满了笑声，越鼓越大。粉色公主的疲倦先满了）",
+			"text": "（泡泡里装满了笑声，越鼓越大。粉色公主的魔力疲倦先满了）",
 			"actions": [
 				{
 					"do": "pose",
@@ -350,15 +299,254 @@
 			"wait": 1.0
 		},
 		{
-			"act": 3,
+			"act": 4,
+			"speaker": "",
+			"text": "（她「扑通」掉进泡泡潮里，还没爬起来，泡泡鱼又吐出一个大泡泡把她兜住；章鱼甩掉墨汁，八条触手重新伸了进来）",
+			"portrait": "siege_fail_1",
+			"actions": [
+				{
+					"do": "move",
+					"who": "foe1",
+					"to": [
+						-44,
+						0
+					],
+					"time": 0.6
+				},
+				{
+					"do": "move",
+					"who": "foe2",
+					"to": [
+						44,
+						0
+					],
+					"time": 0.6
+				},
+				{
+					"do": "tickle",
+					"who": "pink",
+					"by": "foe1",
+					"repeat": 8,
+					"interval": 0.22,
+					"fx": "hand",
+					"zone": "sole"
+				},
+				{
+					"do": "tickle",
+					"who": "blue",
+					"by": "foe2",
+					"repeat": 8,
+					"interval": 0.22,
+					"fx": "brush",
+					"zone": "thigh"
+				}
+			]
+		},
+		{
+			"act": 4,
+			"speaker": "公主",
+			"text": "呀啊——！刚、刚放完……脚心……一碰就……哈哈哈哈！",
+			"emotion": "helpless_2",
+			"actions": [
+				{
+					"do": "bubble",
+					"who": "pink",
+					"kind": "laugh"
+				},
+				{
+					"do": "bubble",
+					"who": "blue",
+					"kind": "laugh"
+				},
+				{
+					"do": "tickle",
+					"who": "pink",
+					"by": "foe1",
+					"repeat": 5,
+					"interval": 0.22,
+					"fx": "hand",
+					"zone": "sole"
+				}
+			]
+		},
+		{
+			"act": 4,
+			"speaker": "公主",
+			"text": "怎、怎么回事……比刚才痒好几倍……脚底像是没有皮了一样……！",
+			"emotion": "helpless_2",
+			"actions": [
+				{
+					"do": "tickle",
+					"who": "pink",
+					"by": "foe1",
+					"repeat": 5,
+					"interval": 0.22,
+					"fx": "hand",
+					"zone": "sole"
+				}
+			]
+		},
+		{
+			"act": 4,
+			"speaker": "",
+			"text": "（触手卷住她的脚踝把脚掌翻过来，吸盘一颗一颗按在脚心上，吸住、松开，再吸住；吸盘边缘的软肉在足弓里蹭来蹭去）",
+			"actions": [
+				{
+					"do": "tickle",
+					"who": "pink",
+					"by": "foe1",
+					"repeat": 8,
+					"interval": 0.22,
+					"fx": "hand",
+					"zone": "sole"
+				}
+			]
+		},
+		{
+			"act": 4,
+			"speaker": "公主",
+			"text": "哈哈哈哈！吸、吸盘一颗一颗的——「啵」一下我就跳一下——别吸脚心了！泡泡我再也不戳了哈哈哈！",
+			"emotion": "helpless_2",
+			"actions": [
+				{
+					"do": "bubble",
+					"who": "pink",
+					"kind": "laugh"
+				},
+				{
+					"do": "bubble",
+					"who": "blue",
+					"kind": "laugh"
+				},
+				{
+					"do": "tickle",
+					"who": "pink",
+					"by": "foe1",
+					"repeat": 5,
+					"interval": 0.22,
+					"fx": "hand",
+					"zone": "sole"
+				}
+			]
+		},
+		{
+			"act": 4,
+			"speaker": "",
+			"text": "（另一根触手的尖端探进蓝色公主的裙摆，在腿根上打着圈，越圈越小，吸盘时不时在屁股下面的交界上「啵」地吸一口）",
+			"actions": [
+				{
+					"do": "tickle",
+					"who": "blue",
+					"by": "foe2",
+					"repeat": 8,
+					"interval": 0.22,
+					"fx": "brush",
+					"zone": "butt"
+				}
+			]
+		},
+		{
+			"act": 4,
 			"speaker": "蓝色的公主",
-			"text": "……裤子……先撑破了……我的魔力……跟着……",
-			"emotion": "helpless_1"
+			"text": "……触手在外面打圈……裤子在里面……跟着……画、画同一个圈……",
+			"emotion": "helpless_2",
+			"actions": [
+				{
+					"do": "tickle",
+					"who": "blue",
+					"by": "foe2",
+					"repeat": 5,
+					"interval": 0.22,
+					"fx": "brush",
+					"zone": "butt"
+				}
+			]
+		},
+		{
+			"act": 4,
+			"speaker": "公主",
+			"text": "蓝、蓝色的……你的脸好红……哈哈哈……你也很痒对不对！",
+			"emotion": "helpless_2",
+			"actions": [
+				{
+					"do": "bubble",
+					"who": "pink",
+					"kind": "laugh"
+				},
+				{
+					"do": "bubble",
+					"who": "blue",
+					"kind": "laugh"
+				},
+				{
+					"do": "tickle",
+					"who": "pink",
+					"by": "foe1",
+					"repeat": 5,
+					"interval": 0.22,
+					"fx": "hand",
+					"zone": "sole"
+				}
+			]
+		},
+		{
+			"act": 4,
+			"speaker": "蓝色的公主",
+			"text": "……是光。……还有……裤子……照的。……不……不是我……",
+			"emotion": "helpless_2",
+			"actions": [
+				{
+					"do": "tickle",
+					"who": "blue",
+					"by": "foe2",
+					"repeat": 5,
+					"interval": 0.22,
+					"fx": "brush",
+					"zone": "butt"
+				}
+			]
+		},
+		{
+			"act": 4,
+			"speaker": "",
+			"text": "（章鱼嫌她嘴硬，三根触手一起缠上她的两条大腿，吸盘沿着内侧从膝弯一路吸到腿根，再吸回来。她的魔力疲倦也满了）",
+			"actions": [
+				{
+					"do": "tickle",
+					"who": "blue",
+					"by": "foe2",
+					"repeat": 8,
+					"interval": 0.22,
+					"fx": "brush",
+					"zone": "thigh"
+				},
+				{
+					"do": "flash",
+					"time": 0.3
+				}
+			]
+		},
+		{
+			"act": 4,
+			"speaker": "蓝色的公主",
+			"text": "……裤子……先挡不住了……我的……也……",
+			"emotion": "helpless_2",
+			"actions": [
+				{
+					"do": "tickle",
+					"who": "blue",
+					"by": "foe2",
+					"repeat": 5,
+					"interval": 0.22,
+					"fx": "brush",
+					"zone": "butt"
+				}
+			]
 		},
 		{
 			"act": "burst",
 			"speaker": "",
-			"text": "（冰蓝色的星光接着炸开，满天的泡泡冻成了冰球，泡泡鱼被冻在里面瞪着眼）",
+			"text": "（冰蓝色的星光炸开，满天的泡泡冻成了冰球，泡泡鱼被冻在里面瞪着眼，章鱼的触手冻成了八根冰棍）",
 			"actions": [
 				{
 					"do": "flash",
@@ -406,15 +594,9 @@
 			"wait": 1.0
 		},
 		{
-			"act": 3,
-			"speaker": "公主",
-			"text": "呼……掉、掉下来了……摔得好疼……",
-			"emotion": "helpless_2"
-		},
-		{
-			"act": 3,
+			"act": 4,
 			"speaker": "",
-			"text": "（冰球化开，泡泡潮又涌了一波上来。泡泡鱼和章鱼趁两个人刚放空魔力，一起扑了上来）",
+			"text": "（冰球没撑多久就化开了。泡泡潮又涌上来一波，泡泡鱼和章鱼趁两个人刚放空魔力、全身软绵绵的，一起扑了上来）",
 			"actions": [
 				{
 					"do": "move",
@@ -455,9 +637,9 @@
 			]
 		},
 		{
-			"act": 3,
-			"speaker": "公主",
-			"text": "呀啊——！刚放完……脚心……一碰就……哈哈哈哈！",
+			"act": 4,
+			"speaker": "蓝色的公主",
+			"text": "……哈哈……刚放完……裤子……也醒了……哈哈哈哈……！",
 			"emotion": "helpless_2",
 			"actions": [
 				{
@@ -470,23 +652,6 @@
 					"who": "blue",
 					"kind": "laugh"
 				},
-				{
-					"do": "tickle",
-					"who": "pink",
-					"by": "foe1",
-					"repeat": 5,
-					"interval": 0.22,
-					"fx": "hand",
-					"zone": "sole"
-				}
-			]
-		},
-		{
-			"act": 3,
-			"speaker": "蓝色的公主",
-			"text": "……哈哈……裤子和章鱼……一边一个……哈哈哈哈！",
-			"emotion": "helpless_2",
-			"actions": [
 				{
 					"do": "tickle",
 					"who": "blue",
@@ -499,9 +664,26 @@
 			]
 		},
 		{
-			"act": 3,
+			"act": 4,
+			"speaker": "公主",
+			"text": "哈哈哈！蓝色的你也笑出声了——我、我听见了——呀啊脚趾缝——！",
+			"emotion": "helpless_2",
+			"actions": [
+				{
+					"do": "tickle",
+					"who": "pink",
+					"by": "foe1",
+					"repeat": 5,
+					"interval": 0.22,
+					"fx": "hand",
+					"zone": "sole"
+				}
+			]
+		},
+		{
+			"act": 4,
 			"speaker": "",
-			"text": "（章鱼的触手卷住她的脚踝把脚掌翻过来，吸盘一颗一颗按在脚心上；另一根触手的尖端在蓝色公主的腿根上打着圈，越圈越小）",
+			"text": "（一根触手钻进她的趾缝，一道一道挨个挤过去；泡泡鱼贴着蓝色公主的屁股吐出一串小泡泡，在腿根上「啪、啪」一颗一颗地破）",
 			"actions": [
 				{
 					"do": "tickle",
@@ -519,14 +701,14 @@
 					"repeat": 8,
 					"interval": 0.22,
 					"fx": "brush",
-					"zone": "thigh"
+					"zone": "butt"
 				}
 			]
 		},
 		{
-			"act": 3,
+			"act": 4,
 			"speaker": "公主",
-			"text": "哈哈哈哈！吸、吸盘别按脚心——一颗一颗的——我错了我错了，泡泡我不戳了哈哈哈！",
+			"text": "哈哈哈哈！趾、趾缝里一道一道的——饶了我——求求你们——！",
 			"emotion": "helpless_2",
 			"actions": [
 				{
@@ -551,9 +733,9 @@
 			]
 		},
 		{
-			"act": 3,
+			"act": 4,
 			"speaker": "蓝色的公主",
-			"text": "……触手……和裤子的手……一起……打圈……不、不行……",
+			"text": "……泡泡啪一颗……裤子的手……就捏一下……求、求你们……",
 			"emotion": "helpless_2",
 			"actions": [
 				{
@@ -570,8 +752,7 @@
 		{
 			"act": 4,
 			"speaker": "",
-			"text": "（泡泡鱼吐出一个大泡泡把两个人一起裹进去，章鱼的八条触手全伸了进来，一条挠脚心，一条揉腿根，轮流着来）",
-			"portrait": "siege_fail_1",
+			"text": "（泡泡鱼吐出一个特大号的泡泡把两个人一起裹进去，八条触手全伸了进来，一条挠脚心，一条揉腿根，轮流着来）",
 			"actions": [
 				{
 					"do": "pose",
@@ -631,7 +812,7 @@
 		{
 			"act": 4,
 			"speaker": "蓝色的公主",
-			"text": "……哈哈……一个泡泡……装不下……裤子的手……哈哈哈……",
+			"text": "……哈哈……一个泡泡……装不下……裤子的手……认输……",
 			"emotion": "helpless_2",
 			"actions": [
 				{
@@ -658,7 +839,7 @@
 		{
 			"act": 4,
 			"speaker": "",
-			"text": "（泡泡潮慢慢退下去，留下两个湿漉漉的人和一地的鞋子）"
+			"text": "（泡泡潮慢慢退下去，留下两个湿漉漉的人，一地的鞋子，和一滩还在冒泡的墨汁）"
 		},
 		{
 			"act": 4,

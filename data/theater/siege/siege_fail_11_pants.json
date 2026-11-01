@@ -95,7 +95,7 @@
 		{
 			"act": 1,
 			"speaker": "",
-			"text": "（巨魔一手抓一个，把两个人塞进泡泡鱼吐出的大泡泡里；龙卷风一卷，泡泡就飞了起来）",
+			"text": "（巨魔一手抓一个，把两个人塞进泡泡鱼吐出的大泡泡里，她的鞋卡在泡泡外面；龙卷风一卷，泡泡就飞了起来）",
 			"actions": [
 				{
 					"do": "tickle",
@@ -111,40 +111,6 @@
 					"who": "blue",
 					"by": "foe2",
 					"repeat": 8,
-					"interval": 0.22,
-					"fx": "brush",
-					"zone": "thigh"
-				}
-			]
-		},
-		{
-			"act": 1,
-			"speaker": "公主",
-			"text": "又、又是泡泡！还在转！",
-			"emotion": "angry",
-			"actions": [
-				{
-					"do": "tickle",
-					"who": "pink",
-					"by": "foe1",
-					"repeat": 5,
-					"interval": 0.22,
-					"fx": "hand",
-					"zone": "sole"
-				}
-			]
-		},
-		{
-			"act": 1,
-			"speaker": "蓝色的公主",
-			"text": "……泡泡……加风……加巨魔……三样。",
-			"emotion": "normal",
-			"actions": [
-				{
-					"do": "tickle",
-					"who": "blue",
-					"by": "foe2",
-					"repeat": 5,
 					"interval": 0.22,
 					"fx": "brush",
 					"zone": "thigh"
@@ -245,26 +211,9 @@
 			]
 		},
 		{
-			"act": 2,
-			"speaker": "蓝色的公主",
-			"text": "……你也在滚。……裤子说……我们是汤圆。",
-			"emotion": "giggle",
-			"actions": [
-				{
-					"do": "tickle",
-					"who": "blue",
-					"by": "foe2",
-					"repeat": 5,
-					"interval": 0.22,
-					"fx": "brush",
-					"zone": "thigh"
-				}
-			]
-		},
-		{
 			"act": 3,
 			"speaker": "",
-			"text": "（泡泡转得越来越快。蓝色公主的疲倦先满了）",
+			"text": "（泡泡转得越来越快。粉色公主的魔力疲倦先满了）",
 			"actions": [
 				{
 					"do": "pose",
@@ -284,81 +233,25 @@
 		},
 		{
 			"act": 3,
-			"speaker": "蓝色的公主",
-			"text": "……要出来了。……裤子……先把泡泡……撑破……",
+			"speaker": "公主",
+			"text": "转、转晕了——要炸了——！",
 			"emotion": "helpless_1",
 			"actions": [
 				{
 					"do": "tickle",
-					"who": "blue",
-					"by": "foe2",
+					"who": "pink",
+					"by": "foe1",
 					"repeat": 5,
 					"interval": 0.22,
-					"fx": "brush",
-					"zone": "butt"
+					"fx": "hand",
+					"zone": "sole"
 				}
 			]
 		},
 		{
 			"act": "burst",
 			"speaker": "",
-			"text": "（冰蓝色的星光炸开，泡泡冻成了一颗冰球，巨魔的手指被冻在里面拔不出来）",
-			"actions": [
-				{
-					"do": "flash",
-					"time": 0.8
-				},
-				{
-					"do": "sfx",
-					"sound": "star_burst",
-					"volume": -1.0
-				},
-				{
-					"do": "sfx",
-					"sound": "water_release",
-					"volume": -2.0
-				},
-				{
-					"do": "shake",
-					"who": "blue",
-					"time": 0.5
-				},
-				{
-					"do": "bubble",
-					"who": "blue",
-					"kind": "surprise"
-				},
-				{
-					"do": "move",
-					"who": "foe1",
-					"to": [
-						-94,
-						-6
-					],
-					"time": 0.25
-				},
-				{
-					"do": "move",
-					"who": "foe2",
-					"to": [
-						94,
-						-6
-					],
-					"time": 0.25
-				}
-			],
-			"wait": 1.0
-		},
-		{
-			"act": 3,
-			"speaker": "公主",
-			"text": "冻、冻住了——我也要满了——！",
-			"emotion": "helpless_1"
-		},
-		{
-			"act": "burst",
-			"speaker": "",
-			"text": "（星光从她身上炸开，冰球碎成满天冰渣，巨魔被冲得一屁股坐进了龙卷风里，转着圈飞走了）",
+			"text": "（星光从她身上炸开，泡泡碎成满天水珠，巨魔被冲得一屁股坐进了龙卷风里，转着圈飞走了）",
 			"actions": [
 				{
 					"do": "flash",
@@ -406,15 +299,10 @@
 			"wait": 1.0
 		},
 		{
-			"act": 3,
-			"speaker": "蓝色的公主",
-			"text": "……飞走了。……一只。",
-			"emotion": "helpless_2"
-		},
-		{
-			"act": 3,
+			"act": 4,
 			"speaker": "",
-			"text": "（龙卷风又转了回来，带着新的巨魔和新的泡泡。刚放空魔力的两个人敏感得要命）",
+			"text": "（可龙卷风又转了回来，带着新的巨魔和新的泡泡。她刚落地就被重新塞进泡泡，巨魔的手指捏住了她的脚趾）",
+			"portrait": "siege_fail_11",
 			"actions": [
 				{
 					"do": "move",
@@ -455,9 +343,9 @@
 			]
 		},
 		{
-			"act": 3,
+			"act": 4,
 			"speaker": "公主",
-			"text": "呀啊——！又、又回来了！脚心……哈哈哈哈！",
+			"text": "呀啊——！又、又回来了！放完魔力的脚……一捏就……哈哈哈哈！",
 			"emotion": "helpless_2",
 			"actions": [
 				{
@@ -482,26 +370,9 @@
 			]
 		},
 		{
-			"act": 3,
-			"speaker": "蓝色的公主",
-			"text": "……哈哈……泡泡里……裤子……滚、滚得最欢……哈哈哈哈！",
-			"emotion": "helpless_2",
-			"actions": [
-				{
-					"do": "tickle",
-					"who": "blue",
-					"by": "foe2",
-					"repeat": 5,
-					"interval": 0.22,
-					"fx": "brush",
-					"zone": "butt"
-				}
-			]
-		},
-		{
-			"act": 3,
+			"act": 4,
 			"speaker": "",
-			"text": "（巨魔的手指戳破泡泡伸进来，捏住她的脚趾一根一根地揉；泡泡鱼贴在蓝色公主的屁股下面，用鱼鳍扇出一串小泡泡，在腿根上一颗一颗地破）",
+			"text": "（巨魔捏住她的脚趾一根一根地揉，揉到小脚趾就多揉两下；泡泡鱼贴着泡泡壁，鱼鳍在她绷直的脚心上来回扫）",
 			"actions": [
 				{
 					"do": "tickle",
@@ -511,20 +382,11 @@
 					"interval": 0.22,
 					"fx": "hand",
 					"zone": "sole"
-				},
-				{
-					"do": "tickle",
-					"who": "blue",
-					"by": "foe2",
-					"repeat": 8,
-					"interval": 0.22,
-					"fx": "brush",
-					"zone": "thigh"
 				}
 			]
 		},
 		{
-			"act": 3,
+			"act": 4,
 			"speaker": "公主",
 			"text": "哈哈哈哈！脚、脚趾一根一根揉——放过我的小脚趾——那根最怕了哈哈哈！",
 			"emotion": "helpless_2",
@@ -551,9 +413,312 @@
 			]
 		},
 		{
-			"act": 3,
+			"act": 4,
+			"speaker": "",
+			"text": "（泡泡鱼钻到蓝色公主的屁股下面，用鱼鳍扇出一串小泡泡，在交界上一颗一颗地破，破一颗她就弹一下）",
+			"actions": [
+				{
+					"do": "tickle",
+					"who": "blue",
+					"by": "foe2",
+					"repeat": 8,
+					"interval": 0.22,
+					"fx": "brush",
+					"zone": "butt"
+				}
+			]
+		},
+		{
+			"act": 4,
 			"speaker": "蓝色的公主",
-			"text": "……泡泡……啪一声……裤子的手……就……抓一下……",
+			"text": "……泡泡啪一声……裤子的手……就……抓一下……",
+			"emotion": "helpless_2",
+			"actions": [
+				{
+					"do": "tickle",
+					"who": "blue",
+					"by": "foe2",
+					"repeat": 5,
+					"interval": 0.22,
+					"fx": "brush",
+					"zone": "butt"
+				}
+			]
+		},
+		{
+			"act": 4,
+			"speaker": "公主",
+			"text": "蓝色的——哈哈哈——你在泡泡里弹来弹去——像、像汤圆在锅里——！",
+			"emotion": "helpless_2",
+			"actions": [
+				{
+					"do": "bubble",
+					"who": "pink",
+					"kind": "laugh"
+				},
+				{
+					"do": "bubble",
+					"who": "blue",
+					"kind": "laugh"
+				},
+				{
+					"do": "tickle",
+					"who": "pink",
+					"by": "foe1",
+					"repeat": 5,
+					"interval": 0.22,
+					"fx": "hand",
+					"zone": "sole"
+				}
+			]
+		},
+		{
+			"act": 4,
+			"speaker": "蓝色的公主",
+			"text": "……你才是汤圆。……裤子说……你是……芝麻馅的……",
+			"emotion": "helpless_2",
+			"actions": [
+				{
+					"do": "tickle",
+					"who": "blue",
+					"by": "foe2",
+					"repeat": 5,
+					"interval": 0.22,
+					"fx": "brush",
+					"zone": "butt"
+				}
+			]
+		},
+		{
+			"act": 4,
+			"speaker": "",
+			"text": "（巨魔把整只手伸进她的泡泡，粗手指沿着大腿内侧一路揉到腿根，泡泡转一圈，它就揉一圈。她的魔力疲倦也满了）",
+			"actions": [
+				{
+					"do": "tickle",
+					"who": "blue",
+					"by": "foe2",
+					"repeat": 8,
+					"interval": 0.22,
+					"fx": "brush",
+					"zone": "thigh"
+				},
+				{
+					"do": "flash",
+					"time": 0.3
+				}
+			]
+		},
+		{
+			"act": 4,
+			"speaker": "蓝色的公主",
+			"text": "……裤子……先把泡泡……撑破……我……也要……",
+			"emotion": "helpless_2",
+			"actions": [
+				{
+					"do": "tickle",
+					"who": "blue",
+					"by": "foe2",
+					"repeat": 5,
+					"interval": 0.22,
+					"fx": "brush",
+					"zone": "butt"
+				}
+			]
+		},
+		{
+			"act": "burst",
+			"speaker": "",
+			"text": "（冰蓝色的星光炸开，泡泡冻成了一颗冰球，巨魔的手指被冻在里面拔不出来，泡泡鱼被冻在外面吐着冰泡泡）",
+			"actions": [
+				{
+					"do": "flash",
+					"time": 0.8
+				},
+				{
+					"do": "sfx",
+					"sound": "star_burst",
+					"volume": -1.0
+				},
+				{
+					"do": "sfx",
+					"sound": "water_release",
+					"volume": -2.0
+				},
+				{
+					"do": "shake",
+					"who": "blue",
+					"time": 0.5
+				},
+				{
+					"do": "bubble",
+					"who": "blue",
+					"kind": "surprise"
+				},
+				{
+					"do": "move",
+					"who": "foe1",
+					"to": [
+						-94,
+						-6
+					],
+					"time": 0.25
+				},
+				{
+					"do": "move",
+					"who": "foe2",
+					"to": [
+						94,
+						-6
+					],
+					"time": 0.25
+				}
+			],
+			"wait": 1.0
+		},
+		{
+			"act": 4,
+			"speaker": "",
+			"text": "（巨魔用力一甩，冰球碎了。龙卷风卷着它和泡泡鱼又扑了上来，两个刚放空魔力的人在风里连站都站不稳）",
+			"actions": [
+				{
+					"do": "move",
+					"who": "foe1",
+					"to": [
+						-44,
+						0
+					],
+					"time": 0.6
+				},
+				{
+					"do": "move",
+					"who": "foe2",
+					"to": [
+						44,
+						0
+					],
+					"time": 0.6
+				},
+				{
+					"do": "tickle",
+					"who": "pink",
+					"by": "foe1",
+					"repeat": 8,
+					"interval": 0.22,
+					"fx": "hand",
+					"zone": "sole"
+				},
+				{
+					"do": "tickle",
+					"who": "blue",
+					"by": "foe2",
+					"repeat": 8,
+					"interval": 0.22,
+					"fx": "brush",
+					"zone": "butt"
+				}
+			]
+		},
+		{
+			"act": 4,
+			"speaker": "蓝色的公主",
+			"text": "……哈哈……泡泡里……裤子……滚、滚得最欢……哈哈哈哈……！",
+			"emotion": "helpless_2",
+			"actions": [
+				{
+					"do": "bubble",
+					"who": "pink",
+					"kind": "laugh"
+				},
+				{
+					"do": "bubble",
+					"who": "blue",
+					"kind": "laugh"
+				},
+				{
+					"do": "tickle",
+					"who": "blue",
+					"by": "foe2",
+					"repeat": 5,
+					"interval": 0.22,
+					"fx": "brush",
+					"zone": "butt"
+				}
+			]
+		},
+		{
+			"act": 4,
+			"speaker": "公主",
+			"text": "哈哈哈！你也笑出来了——我们两个汤圆——呀啊脚跟——！",
+			"emotion": "helpless_2",
+			"actions": [
+				{
+					"do": "tickle",
+					"who": "pink",
+					"by": "foe1",
+					"repeat": 5,
+					"interval": 0.22,
+					"fx": "hand",
+					"zone": "sole"
+				}
+			]
+		},
+		{
+			"act": 4,
+			"speaker": "",
+			"text": "（巨魔一只手捏着她的脚跟，指甲沿着足弓刮到脚尖；泡泡鱼在蓝色公主的腿根上吐了一圈小泡泡，一颗接一颗地破）",
+			"actions": [
+				{
+					"do": "tickle",
+					"who": "pink",
+					"by": "foe1",
+					"repeat": 8,
+					"interval": 0.22,
+					"fx": "hand",
+					"zone": "sole"
+				},
+				{
+					"do": "tickle",
+					"who": "blue",
+					"by": "foe2",
+					"repeat": 8,
+					"interval": 0.22,
+					"fx": "brush",
+					"zone": "thigh"
+				}
+			]
+		},
+		{
+			"act": 4,
+			"speaker": "公主",
+			"text": "哈哈哈哈！刮、刮到脚尖了——饶了我——我不叫你笨巨魔了——！",
+			"emotion": "helpless_2",
+			"actions": [
+				{
+					"do": "bubble",
+					"who": "pink",
+					"kind": "laugh"
+				},
+				{
+					"do": "bubble",
+					"who": "blue",
+					"kind": "laugh"
+				},
+				{
+					"do": "tickle",
+					"who": "pink",
+					"by": "foe1",
+					"repeat": 5,
+					"interval": 0.22,
+					"fx": "hand",
+					"zone": "sole"
+				}
+			]
+		},
+		{
+			"act": 4,
+			"speaker": "蓝色的公主",
+			"text": "……泡泡全破了……裤子的手……全醒了……求、求你……",
 			"emotion": "helpless_2",
 			"actions": [
 				{
@@ -571,7 +736,6 @@
 			"act": 4,
 			"speaker": "",
 			"text": "（龙卷风卷着巨魔和泡泡一圈圈转，两个人在泡泡里被巨魔的手指和鱼鳍轮流挠着脚心和腿根）",
-			"portrait": "siege_fail_11",
 			"actions": [
 				{
 					"do": "pose",

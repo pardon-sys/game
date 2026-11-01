@@ -95,7 +95,7 @@
 		{
 			"act": 1,
 			"speaker": "",
-			"text": "（攻城车把两个人铲进车斗，蝠群从上面扔下彩带，把两个人绑成了两个礼物）",
+			"text": "（攻城车把两个人铲进车斗，蝠群从上面扔下彩带，把两个人绑成了两个礼物，蝴蝶结系在脚踝上）",
 			"actions": [
 				{
 					"do": "tickle",
@@ -111,40 +111,6 @@
 					"who": "blue",
 					"by": "foe2",
 					"repeat": 8,
-					"interval": 0.22,
-					"fx": "brush",
-					"zone": "thigh"
-				}
-			]
-		},
-		{
-			"act": 1,
-			"speaker": "公主",
-			"text": "礼、礼物？我才不是礼物！",
-			"emotion": "angry",
-			"actions": [
-				{
-					"do": "tickle",
-					"who": "pink",
-					"by": "foe1",
-					"repeat": 5,
-					"interval": 0.22,
-					"fx": "hand",
-					"zone": "sole"
-				}
-			]
-		},
-		{
-			"act": 1,
-			"speaker": "蓝色的公主",
-			"text": "……蝴蝶结……系在……脚踝上。",
-			"emotion": "normal",
-			"actions": [
-				{
-					"do": "tickle",
-					"who": "blue",
-					"by": "foe2",
-					"repeat": 5,
 					"interval": 0.22,
 					"fx": "brush",
 					"zone": "thigh"
@@ -245,26 +211,9 @@
 			]
 		},
 		{
-			"act": 2,
-			"speaker": "蓝色的公主",
-			"text": "……是图腾……在打。……我……被打拍子。",
-			"emotion": "giggle",
-			"actions": [
-				{
-					"do": "tickle",
-					"who": "blue",
-					"by": "foe2",
-					"repeat": 5,
-					"interval": 0.22,
-					"fx": "brush",
-					"zone": "thigh"
-				}
-			]
-		},
-		{
 			"act": 3,
 			"speaker": "",
-			"text": "（鼓点越敲越急，车斗跟着节拍颠。两个人的疲倦同时满了）",
+			"text": "（鼓点越敲越急，车斗跟着节拍颠。粉色公主的魔力疲倦先满了）",
 			"actions": [
 				{
 					"do": "pose",
@@ -285,7 +234,7 @@
 		{
 			"act": 3,
 			"speaker": "公主",
-			"text": "一、一起——把鼓声盖过去！",
+			"text": "鼓、鼓声给我盖过去——！",
 			"emotion": "helpless_1",
 			"actions": [
 				{
@@ -350,15 +299,237 @@
 			"wait": 1.0
 		},
 		{
-			"act": 3,
+			"act": 4,
+			"speaker": "",
+			"text": "（鼓声没停，反而更急了。攻城车掉头回来把她重新铲进车斗，花车上的小木手跟着鼓点一下一下往她脚心上落）",
+			"portrait": "siege_fail_10",
+			"actions": [
+				{
+					"do": "move",
+					"who": "foe1",
+					"to": [
+						-44,
+						0
+					],
+					"time": 0.6
+				},
+				{
+					"do": "move",
+					"who": "foe2",
+					"to": [
+						44,
+						0
+					],
+					"time": 0.6
+				},
+				{
+					"do": "tickle",
+					"who": "pink",
+					"by": "foe1",
+					"repeat": 8,
+					"interval": 0.22,
+					"fx": "hand",
+					"zone": "sole"
+				},
+				{
+					"do": "tickle",
+					"who": "blue",
+					"by": "foe2",
+					"repeat": 8,
+					"interval": 0.22,
+					"fx": "brush",
+					"zone": "butt"
+				}
+			]
+		},
+		{
+			"act": 4,
+			"speaker": "公主",
+			"text": "呀啊——！鼓、鼓点更快了——刚放完魔力——脚心跟不上哈哈哈哈！",
+			"emotion": "helpless_2",
+			"actions": [
+				{
+					"do": "bubble",
+					"who": "pink",
+					"kind": "laugh"
+				},
+				{
+					"do": "bubble",
+					"who": "blue",
+					"kind": "laugh"
+				},
+				{
+					"do": "tickle",
+					"who": "pink",
+					"by": "foe1",
+					"repeat": 5,
+					"interval": 0.22,
+					"fx": "hand",
+					"zone": "sole"
+				}
+			]
+		},
+		{
+			"act": 4,
+			"speaker": "",
+			"text": "（小木手越挠越快：咚一下挠脚心，咚咚两下刮足弓，咚咚咚三下就掰开脚趾在趾缝里抓）",
+			"actions": [
+				{
+					"do": "tickle",
+					"who": "pink",
+					"by": "foe1",
+					"repeat": 8,
+					"interval": 0.22,
+					"fx": "hand",
+					"zone": "sole"
+				}
+			]
+		},
+		{
+			"act": 4,
+			"speaker": "公主",
+			"text": "哈哈哈哈！鼓、鼓点太快了——脚心跟不上——别敲了，求求你们别敲了哈哈哈！",
+			"emotion": "helpless_2",
+			"actions": [
+				{
+					"do": "bubble",
+					"who": "pink",
+					"kind": "laugh"
+				},
+				{
+					"do": "bubble",
+					"who": "blue",
+					"kind": "laugh"
+				},
+				{
+					"do": "tickle",
+					"who": "pink",
+					"by": "foe1",
+					"repeat": 5,
+					"interval": 0.22,
+					"fx": "hand",
+					"zone": "sole"
+				}
+			]
+		},
+		{
+			"act": 4,
+			"speaker": "",
+			"text": "（蝠群叼着彩带，流苏扫过蓝色公主的腿根，绕到屁股后面再扫回来，一圈接一圈，跟着鼓点越绕越紧）",
+			"actions": [
+				{
+					"do": "tickle",
+					"who": "blue",
+					"by": "foe2",
+					"repeat": 8,
+					"interval": 0.22,
+					"fx": "brush",
+					"zone": "butt"
+				}
+			]
+		},
+		{
+			"act": 4,
 			"speaker": "蓝色的公主",
-			"text": "……一起。……踩着……鼓点。",
-			"emotion": "helpless_1"
+			"text": "……流苏……绕……到……后面……又……回来……不……不要……回来……",
+			"emotion": "helpless_2",
+			"actions": [
+				{
+					"do": "tickle",
+					"who": "blue",
+					"by": "foe2",
+					"repeat": 5,
+					"interval": 0.22,
+					"fx": "brush",
+					"zone": "butt"
+				}
+			]
+		},
+		{
+			"act": 4,
+			"speaker": "公主",
+			"text": "蓝色的——哈哈——你被包成礼物了——蝴蝶结还在抖——！",
+			"emotion": "helpless_2",
+			"actions": [
+				{
+					"do": "bubble",
+					"who": "pink",
+					"kind": "laugh"
+				},
+				{
+					"do": "bubble",
+					"who": "blue",
+					"kind": "laugh"
+				},
+				{
+					"do": "tickle",
+					"who": "pink",
+					"by": "foe1",
+					"repeat": 5,
+					"interval": 0.22,
+					"fx": "hand",
+					"zone": "sole"
+				}
+			]
+		},
+		{
+			"act": 4,
+			"speaker": "蓝色的公主",
+			"text": "……礼物……不收。……退、退货……",
+			"emotion": "helpless_2",
+			"actions": [
+				{
+					"do": "tickle",
+					"who": "blue",
+					"by": "foe2",
+					"repeat": 5,
+					"interval": 0.22,
+					"fx": "brush",
+					"zone": "butt"
+				}
+			]
+		},
+		{
+			"act": 4,
+			"speaker": "",
+			"text": "（蝠群扇着翅膀把彩色羽毛一根根插进她的裙摆，鼓点每响一下，羽毛就在腿根内侧转一圈。她的魔力疲倦也满了）",
+			"actions": [
+				{
+					"do": "tickle",
+					"who": "blue",
+					"by": "foe2",
+					"repeat": 8,
+					"interval": 0.22,
+					"fx": "brush",
+					"zone": "thigh"
+				},
+				{
+					"do": "flash",
+					"time": 0.3
+				}
+			]
+		},
+		{
+			"act": 4,
+			"speaker": "蓝色的公主",
+			"text": "……最后……一拍。……踩着……鼓点……",
+			"emotion": "helpless_2",
+			"actions": [
+				{
+					"do": "tickle",
+					"who": "blue",
+					"by": "foe2",
+					"repeat": 5,
+					"interval": 0.22,
+					"fx": "brush",
+					"zone": "butt"
+				}
+			]
 		},
 		{
 			"act": "burst",
 			"speaker": "",
-			"text": "（冰蓝色的星光同时炸开，狂欢图腾结了一层冰，鼓声「咚」地一下卡住了）",
+			"text": "（冰蓝色的星光炸开，狂欢图腾结了一层冰，鼓声「咚」地一下卡住了，蝠群冻成了一串彩色的冰铃铛）",
 			"actions": [
 				{
 					"do": "flash",
@@ -406,15 +577,9 @@
 			"wait": 1.0
 		},
 		{
-			"act": 3,
-			"speaker": "公主",
-			"text": "呼……鼓、鼓声停了……",
-			"emotion": "helpless_2"
-		},
-		{
-			"act": 3,
+			"act": 4,
 			"speaker": "",
-			"text": "（冰裂开，鼓声又响了起来，比刚才还急。攻城车掉头回来，蝠群又扔下一筐小怪。刚放空魔力的两个人一碰就叫）",
+			"text": "（冰裂开，鼓声又响了起来，比刚才还急。攻城车掉头回来，蝠群又扔下一筐小怪，扑向两个刚放空魔力的人）",
 			"actions": [
 				{
 					"do": "move",
@@ -455,9 +620,9 @@
 			]
 		},
 		{
-			"act": 3,
-			"speaker": "公主",
-			"text": "呀啊——！鼓、鼓点更快了——脚心……哈哈哈哈！",
+			"act": 4,
+			"speaker": "蓝色的公主",
+			"text": "……哈哈……放、放完……鼓点……每一下……都……哈哈哈哈……！",
 			"emotion": "helpless_2",
 			"actions": [
 				{
@@ -470,23 +635,6 @@
 					"who": "blue",
 					"kind": "laugh"
 				},
-				{
-					"do": "tickle",
-					"who": "pink",
-					"by": "foe1",
-					"repeat": 5,
-					"interval": 0.22,
-					"fx": "hand",
-					"zone": "sole"
-				}
-			]
-		},
-		{
-			"act": 3,
-			"speaker": "蓝色的公主",
-			"text": "……哈哈……鼓点……每一下……都……落在腿根……哈哈哈哈！",
-			"emotion": "helpless_2",
-			"actions": [
 				{
 					"do": "tickle",
 					"who": "blue",
@@ -499,9 +647,26 @@
 			]
 		},
 		{
-			"act": 3,
+			"act": 4,
+			"speaker": "公主",
+			"text": "哈哈哈！你也跟上鼓点了——呀啊——它们在加速——！",
+			"emotion": "helpless_2",
+			"actions": [
+				{
+					"do": "tickle",
+					"who": "pink",
+					"by": "foe1",
+					"repeat": 5,
+					"interval": 0.22,
+					"fx": "hand",
+					"zone": "sole"
+				}
+			]
+		},
+		{
+			"act": 4,
 			"speaker": "",
-			"text": "（花车上的小木手跟着鼓点一下一下挠她的脚心，鼓点越来越快；蝠群叼着彩带，流苏扫过蓝色公主的腿根，绕到屁股后面再扫回来）",
+			"text": "（花车上的小木手捧着她的脚，跟着越来越快的鼓点在脚心上打起了鼓；彩带的流苏在蓝色公主的腿根上缠成了一个蝴蝶结）",
 			"actions": [
 				{
 					"do": "tickle",
@@ -519,14 +684,14 @@
 					"repeat": 8,
 					"interval": 0.22,
 					"fx": "brush",
-					"zone": "butt"
+					"zone": "thigh"
 				}
 			]
 		},
 		{
-			"act": 3,
+			"act": 4,
 			"speaker": "公主",
-			"text": "哈哈哈哈！鼓、鼓点太快了——脚心跟不上——别敲了，求求你们别敲了哈哈哈！",
+			"text": "哈哈哈哈！把、把我的脚当鼓打——不许打——求求你——！",
 			"emotion": "helpless_2",
 			"actions": [
 				{
@@ -551,9 +716,9 @@
 			]
 		},
 		{
-			"act": 3,
+			"act": 4,
 			"speaker": "蓝色的公主",
-			"text": "……流苏……绕……到……后面……又……回来……不……不要……回来……",
+			"text": "……蝴蝶结……系在……那里……拆、拆掉……求……",
 			"emotion": "helpless_2",
 			"actions": [
 				{
@@ -571,7 +736,6 @@
 			"act": 4,
 			"speaker": "",
 			"text": "（小镇的广场变成了狂欢节的舞台，两个人被绑在车斗上绕场游行，小手跟着鼓点挠脚心，羽毛跟着鼓点扫腿根）",
-			"portrait": "siege_fail_10",
 			"actions": [
 				{
 					"do": "pose",

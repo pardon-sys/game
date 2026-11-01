@@ -95,7 +95,7 @@
 		{
 			"act": 1,
 			"speaker": "",
-			"text": "（龙卷风把两个人卷上半空转着圈，羽毛蝙蝠顺着风势扑过来，一只抓住一只脚）",
+			"text": "（龙卷风把两个人卷上半空转着圈，鞋子先被风刮跑了；羽毛蝙蝠顺着风势扑过来，一只抓住一只脚）",
 			"actions": [
 				{
 					"do": "tickle",
@@ -111,40 +111,6 @@
 					"who": "blue",
 					"by": "foe2",
 					"repeat": 8,
-					"interval": 0.22,
-					"fx": "brush",
-					"zone": "thigh"
-				}
-			]
-		},
-		{
-			"act": 1,
-			"speaker": "公主",
-			"text": "转、转起来了！呜哇——！",
-			"emotion": "angry",
-			"actions": [
-				{
-					"do": "tickle",
-					"who": "pink",
-					"by": "foe1",
-					"repeat": 5,
-					"interval": 0.22,
-					"fx": "hand",
-					"zone": "sole"
-				}
-			]
-		},
-		{
-			"act": 1,
-			"speaker": "蓝色的公主",
-			"text": "……转……太快了……看不清……",
-			"emotion": "normal",
-			"actions": [
-				{
-					"do": "tickle",
-					"who": "blue",
-					"by": "foe2",
-					"repeat": 5,
 					"interval": 0.22,
 					"fx": "brush",
 					"zone": "thigh"
@@ -245,26 +211,9 @@
 			]
 		},
 		{
-			"act": 2,
-			"speaker": "蓝色的公主",
-			"text": "……你的……裙子……也是。",
-			"emotion": "giggle",
-			"actions": [
-				{
-					"do": "tickle",
-					"who": "blue",
-					"by": "foe2",
-					"repeat": 5,
-					"interval": 0.22,
-					"fx": "brush",
-					"zone": "thigh"
-				}
-			]
-		},
-		{
 			"act": 3,
 			"speaker": "",
-			"text": "（龙卷风越转越快，笑声被风撕成一段一段。粉色公主的疲倦先满了）",
+			"text": "（龙卷风越转越快，笑声被风撕成一段一段。粉色公主的魔力疲倦先满了）",
 			"actions": [
 				{
 					"do": "pose",
@@ -350,15 +299,237 @@
 			"wait": 1.0
 		},
 		{
-			"act": 3,
+			"act": 4,
+			"speaker": "",
+			"text": "（风暴熊吼了一声，龙卷风重新立了起来。熊掌一把抓住她的脚踝把她倒提起来，蝙蝠们也顺着风飞了回来）",
+			"portrait": "siege_fail_6",
+			"actions": [
+				{
+					"do": "move",
+					"who": "foe1",
+					"to": [
+						-44,
+						0
+					],
+					"time": 0.6
+				},
+				{
+					"do": "move",
+					"who": "foe2",
+					"to": [
+						44,
+						0
+					],
+					"time": 0.6
+				},
+				{
+					"do": "tickle",
+					"who": "pink",
+					"by": "foe1",
+					"repeat": 8,
+					"interval": 0.22,
+					"fx": "hand",
+					"zone": "sole"
+				},
+				{
+					"do": "tickle",
+					"who": "blue",
+					"by": "foe2",
+					"repeat": 8,
+					"interval": 0.22,
+					"fx": "brush",
+					"zone": "butt"
+				}
+			]
+		},
+		{
+			"act": 4,
+			"speaker": "公主",
+			"text": "呀啊——！倒、倒过来了——刚放完魔力——脚底一碰就要命哈哈哈哈！",
+			"emotion": "helpless_2",
+			"actions": [
+				{
+					"do": "bubble",
+					"who": "pink",
+					"kind": "laugh"
+				},
+				{
+					"do": "bubble",
+					"who": "blue",
+					"kind": "laugh"
+				},
+				{
+					"do": "tickle",
+					"who": "pink",
+					"by": "foe1",
+					"repeat": 5,
+					"interval": 0.22,
+					"fx": "hand",
+					"zone": "sole"
+				}
+			]
+		},
+		{
+			"act": 4,
+			"speaker": "",
+			"text": "（风暴熊用熊掌的软垫按着她的脚心转圈揉，揉一圈，爪尖就从脚跟刮到脚趾一次；蝙蝠在旁边用翅膀扇她绷直的足弓）",
+			"actions": [
+				{
+					"do": "tickle",
+					"who": "pink",
+					"by": "foe1",
+					"repeat": 8,
+					"interval": 0.22,
+					"fx": "hand",
+					"zone": "sole"
+				}
+			]
+		},
+		{
+			"act": 4,
+			"speaker": "公主",
+			"text": "哈哈哈哈！熊掌别转了——脚心要化了——放我下来，求你了哈哈哈！",
+			"emotion": "helpless_2",
+			"actions": [
+				{
+					"do": "bubble",
+					"who": "pink",
+					"kind": "laugh"
+				},
+				{
+					"do": "bubble",
+					"who": "blue",
+					"kind": "laugh"
+				},
+				{
+					"do": "tickle",
+					"who": "pink",
+					"by": "foe1",
+					"repeat": 5,
+					"interval": 0.22,
+					"fx": "hand",
+					"zone": "sole"
+				}
+			]
+		},
+		{
+			"act": 4,
+			"speaker": "",
+			"text": "（风里的羽毛一股脑钻进蓝色公主的裙摆，在大腿和屁股的交界处打旋，风往上吹，羽毛就往上钻）",
+			"actions": [
+				{
+					"do": "tickle",
+					"who": "blue",
+					"by": "foe2",
+					"repeat": 8,
+					"interval": 0.22,
+					"fx": "brush",
+					"zone": "butt"
+				}
+			]
+		},
+		{
+			"act": 4,
 			"speaker": "蓝色的公主",
-			"text": "……我也……满了。……风……停。",
-			"emotion": "helpless_1"
+			"text": "……羽毛……在……交界……打旋……停、停下……风……",
+			"emotion": "helpless_2",
+			"actions": [
+				{
+					"do": "tickle",
+					"who": "blue",
+					"by": "foe2",
+					"repeat": 5,
+					"interval": 0.22,
+					"fx": "brush",
+					"zone": "butt"
+				}
+			]
+		},
+		{
+			"act": 4,
+			"speaker": "公主",
+			"text": "蓝色的……你裙子……被风吹成……哈哈哈……吹成灯笼了……！",
+			"emotion": "helpless_2",
+			"actions": [
+				{
+					"do": "bubble",
+					"who": "pink",
+					"kind": "laugh"
+				},
+				{
+					"do": "bubble",
+					"who": "blue",
+					"kind": "laugh"
+				},
+				{
+					"do": "tickle",
+					"who": "pink",
+					"by": "foe1",
+					"repeat": 5,
+					"interval": 0.22,
+					"fx": "hand",
+					"zone": "sole"
+				}
+			]
+		},
+		{
+			"act": 4,
+			"speaker": "蓝色的公主",
+			"text": "……不要……描述。……按、按住……按不住……",
+			"emotion": "helpless_2",
+			"actions": [
+				{
+					"do": "tickle",
+					"who": "blue",
+					"by": "foe2",
+					"repeat": 5,
+					"interval": 0.22,
+					"fx": "brush",
+					"zone": "butt"
+				}
+			]
+		},
+		{
+			"act": 4,
+			"speaker": "",
+			"text": "（风暴熊把她也拎了起来，两只熊掌一边一个按住她的大腿，爪尖在腿根的内侧来回刮。她的魔力疲倦也满了）",
+			"actions": [
+				{
+					"do": "tickle",
+					"who": "blue",
+					"by": "foe2",
+					"repeat": 8,
+					"interval": 0.22,
+					"fx": "brush",
+					"zone": "thigh"
+				},
+				{
+					"do": "flash",
+					"time": 0.3
+				}
+			]
+		},
+		{
+			"act": 4,
+			"speaker": "蓝色的公主",
+			"text": "……风……停。……熊……也……停。",
+			"emotion": "helpless_2",
+			"actions": [
+				{
+					"do": "tickle",
+					"who": "blue",
+					"by": "foe2",
+					"repeat": 5,
+					"interval": 0.22,
+					"fx": "brush",
+					"zone": "butt"
+				}
+			]
 		},
 		{
 			"act": "burst",
 			"speaker": "",
-			"text": "（冰蓝色的星光炸开，风暴熊的爪子被冻在了地上，龙卷风缩成了一团小旋风）",
+			"text": "（冰蓝色的星光炸开，风暴熊的爪子被冻在了地上，龙卷风缩成了一团小旋风，绕着两个人打转）",
 			"actions": [
 				{
 					"do": "flash",
@@ -406,15 +577,9 @@
 			"wait": 1.0
 		},
 		{
-			"act": 3,
-			"speaker": "公主",
-			"text": "呼……落、落地了……头好晕……",
-			"emotion": "helpless_2"
-		},
-		{
-			"act": 3,
+			"act": 4,
 			"speaker": "",
-			"text": "（风暴熊吼了一声震碎了冰，新的龙卷风又转了起来。刚放空魔力的两个人敏感得要命）",
+			"text": "（风暴熊吼了一声震碎了冰，小旋风又长成了龙卷风，把两个刚放空魔力、四肢发软的人重新卷上了天）",
 			"actions": [
 				{
 					"do": "move",
@@ -455,9 +620,9 @@
 			]
 		},
 		{
-			"act": 3,
-			"speaker": "公主",
-			"text": "呀啊——！又、又转起来了！脚心……哈哈哈哈！",
+			"act": 4,
+			"speaker": "蓝色的公主",
+			"text": "……哈哈……放、放完……风一吹……就……哈哈哈哈……！",
 			"emotion": "helpless_2",
 			"actions": [
 				{
@@ -470,23 +635,6 @@
 					"who": "blue",
 					"kind": "laugh"
 				},
-				{
-					"do": "tickle",
-					"who": "pink",
-					"by": "foe1",
-					"repeat": 5,
-					"interval": 0.22,
-					"fx": "hand",
-					"zone": "sole"
-				}
-			]
-		},
-		{
-			"act": 3,
-			"speaker": "蓝色的公主",
-			"text": "……哈哈……风……从、从屁股下面……往上吹……哈哈哈哈！",
-			"emotion": "helpless_2",
-			"actions": [
 				{
 					"do": "tickle",
 					"who": "blue",
@@ -499,9 +647,26 @@
 			]
 		},
 		{
-			"act": 3,
+			"act": 4,
+			"speaker": "公主",
+			"text": "哈哈哈！放完就是会这样——呀啊蝙蝠又来了——别咬羽毛扫——！",
+			"emotion": "helpless_2",
+			"actions": [
+				{
+					"do": "tickle",
+					"who": "pink",
+					"by": "foe1",
+					"repeat": 5,
+					"interval": 0.22,
+					"fx": "hand",
+					"zone": "sole"
+				}
+			]
+		},
+		{
+			"act": 4,
 			"speaker": "",
-			"text": "（风暴熊把她倒提起来，熊掌的软垫按着脚心转圈揉；风里的羽毛一股脑钻进蓝色公主的裙摆，在大腿和屁股的交界处打旋）",
+			"text": "（蝙蝠们叼着羽毛钻她的趾缝，一道一道地拨；风暴熊的爪子沿着蓝色公主的大腿内侧往上刮，刮到腿根就画个圈）",
 			"actions": [
 				{
 					"do": "tickle",
@@ -519,14 +684,14 @@
 					"repeat": 8,
 					"interval": 0.22,
 					"fx": "brush",
-					"zone": "butt"
+					"zone": "thigh"
 				}
 			]
 		},
 		{
-			"act": 3,
+			"act": 4,
 			"speaker": "公主",
-			"text": "哈哈哈哈！倒、倒过来了——熊掌别转了——脚心要化了——放我下来，求你了哈哈哈！",
+			"text": "哈哈哈哈！趾、趾缝——熊大人我错了——我再也不说你胖了哈哈哈！",
 			"emotion": "helpless_2",
 			"actions": [
 				{
@@ -551,9 +716,9 @@
 			]
 		},
 		{
-			"act": 3,
+			"act": 4,
 			"speaker": "蓝色的公主",
-			"text": "……羽毛……在……交界……打旋……停、停下……风……",
+			"text": "……画……圈……又……画……我……求……求……",
 			"emotion": "helpless_2",
 			"actions": [
 				{
@@ -571,7 +736,6 @@
 			"act": 4,
 			"speaker": "",
 			"text": "（两个人在龙卷风里转着圈，每转一圈蝙蝠就扫一遍脚心，风暴熊的爪子就刮一遍腿根）",
-			"portrait": "siege_fail_6",
 			"actions": [
 				{
 					"do": "pose",

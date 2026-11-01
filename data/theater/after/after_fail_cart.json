@@ -106,18 +106,243 @@
 					"visual": "helpless_2",
 					"do": "pose"
 				}
-			],
-			"portrait": "after_cart_fail"
+			]
 		},
 		{
 			"speaker": "",
-			"text": "（绕到第三圈，车灯得意地闪了闪。刷子换成了更细的那一排，专挑脚弓最软的地方来回扫）",
+			"text": "（她两只手撑着车斗边想往外爬，可车一颠，又滑回了刷子堆里，脚丫翘得更高了）"
+		},
+		{
+			"speaker": "公主",
+			"text": "呜……车、车先生……我、我不拆你了……真的不拆了……",
+			"emotion": "helpless_2"
+		},
+		{
+			"speaker": "",
+			"text": "（车灯得意地闪了闪。车斗里「咔哒」一响，刷子换成了更细的那一排）"
+		},
+		{
+			"speaker": "公主",
+			"text": "换、换刷子了……？等一下……那一排看起来……更、更痒……"
+		},
+		{
+			"speaker": "",
+			"text": "（细刷子专挑脚弓最软的地方来回扫，刷毛尖一根根钻进趾缝，又在脚心正中央聚成一个小漩涡，一圈一圈地转）",
 			"actions": [
 				{
 					"who": "princess",
 					"by": "bucket",
 					"zone": "sole",
 					"fx": "feather",
+					"repeat": 14,
+					"interval": 0.14,
+					"do": "tickle"
+				}
+			],
+			"portrait": "after_cart_fail"
+		},
+		{
+			"speaker": "公主",
+			"text": "哈哈哈哈！漩、漩涡——脚心中间不行——那里——那里最——哈哈哈哈！",
+			"actions": [
+				{
+					"who": "princess",
+					"kind": "laugh",
+					"do": "bubble"
+				}
+			]
+		},
+		{
+			"speaker": "",
+			"text": "（绕到第三圈，攻城车开上了碎石路。车斗一颠一颠，刷子一下深一下浅，她的脚趾跟着蜷起又张开）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "bucket",
+					"zone": "sole",
+					"fx": "lines",
+					"repeat": 12,
+					"interval": 0.15,
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "碎、碎石路是故意的吧——你、你绝对是故意的——哈哈哈——！",
+			"actions": [
+				{
+					"who": "princess",
+					"time": 0.5,
+					"do": "shake"
+				}
+			]
+		},
+		{
+			"speaker": "",
+			"text": "（车灯闪了两下，像是在笑。刷子转得更快了，从脚跟到脚尖，再从脚尖到脚跟，一刻也不停）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "bucket",
+					"zone": "sole",
+					"fx": "feather",
+					"repeat": 12,
+					"interval": 0.14,
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "哈哈……哈……不、不行了……魔力……满、满出来了——车先生你自找的——！",
+			"emotion": "helpless_2"
+		},
+		{
+			"speaker": "",
+			"text": "（星光从车斗里炸开，车斗的盖子被冲飞了，刷子撒了一地，攻城车被震得原地转了三圈）",
+			"actions": [
+				{
+					"time": 0.8,
+					"do": "flash"
+				},
+				{
+					"sound": "star_burst",
+					"volume": -1.0,
+					"do": "sfx"
+				},
+				{
+					"sound": "water_release",
+					"volume": -2.0,
+					"do": "sfx"
+				},
+				{
+					"who": "princess",
+					"time": 0.5,
+					"do": "shake"
+				},
+				{
+					"who": "princess",
+					"kind": "surprise",
+					"do": "bubble"
+				},
+				{
+					"who": "cart",
+					"to": [
+						-80,
+						4
+					],
+					"time": 0.25,
+					"do": "move"
+				}
+			],
+			"act": "burst",
+			"wait": 1.0
+		},
+		{
+			"speaker": "公主",
+			"text": "哈啊……魔力全放出去了……躺在刷毛上……软绵绵的……好舒服……",
+			"emotion": "happy"
+		},
+		{
+			"speaker": "",
+			"text": "（攻城车晃了晃车灯，又咕噜咕噜地开了回来，车斗「哐」地一声重新扣住了她，剩下的刷子又转了起来）",
+			"actions": [
+				{
+					"who": "cart",
+					"to": [
+						-30,
+						10
+					],
+					"time": 0.6,
+					"do": "move"
+				},
+				{
+					"who": "princess",
+					"by": "bucket",
+					"zone": "sole",
+					"fx": "lines",
+					"repeat": 6,
+					"interval": 0.2,
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "呀啊——！放、放完魔力……刷毛碰一下……就……比刚才痒好几倍——！",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "bucket",
+					"zone": "sole",
+					"fx": "lines",
+					"repeat": 8,
+					"interval": 0.16,
+					"do": "tickle"
+				}
+			],
+			"emotion": "helpless_2"
+		},
+		{
+			"speaker": "",
+			"text": "（放空魔力的脚心敏感得发烫，连刷毛轻轻擦过都像被电了一下。她的脚背绷得笔直，十根脚趾张得开开的，躲都躲不开）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "bucket",
+					"zone": "sole",
+					"fx": "feather",
+					"repeat": 12,
+					"interval": 0.14,
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "哈哈哈哈！敏、敏感死了——车先生——求求你——我、我投降——我再也不拆你了——！",
+			"actions": [
+				{
+					"who": "princess",
+					"kind": "laugh",
+					"do": "bubble"
+				},
+				{
+					"who": "princess",
+					"time": 0.6,
+					"do": "shake"
+				}
+			]
+		},
+		{
+			"speaker": "",
+			"text": "（刷子听见「投降」两个字，转得更欢了，还多伸出一排软毛，在脚趾根上一下一下地点）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "bucket",
+					"zone": "sole",
+					"fx": "lines",
+					"repeat": 10,
+					"interval": 0.15,
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "点、点脚趾根是什么新花样——哈哈哈——这辆车……学坏了……！"
+		},
+		{
+			"speaker": "",
+			"text": "（攻城车慢悠悠地又绕了一圈，刷子一边转一边哼哼，像是在唱摇篮曲）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "bucket",
+					"zone": "sole",
+					"fx": "lines",
 					"repeat": 10,
 					"interval": 0.16,
 					"do": "tickle"
@@ -126,8 +351,26 @@
 		},
 		{
 			"speaker": "公主",
-			"text": "哈哈哈……我、我投降……车、车先生……我再也不拆你了……",
-			"emotion": "helpless_2"
+			"text": "哈……哈……摇、摇篮曲……这种时候……谁睡得着啊……哈哈……"
+		},
+		{
+			"speaker": "",
+			"text": "（她偷偷伸手去够车斗边，刷子立刻追过来，在脚心上扫了一个大大的圈）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "bucket",
+					"zone": "sole",
+					"fx": "feather",
+					"repeat": 8,
+					"interval": 0.16,
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "哈哈哈！我、我不跑了——不跑了——你、你别追——！"
 		},
 		{
 			"speaker": "",

@@ -118,40 +118,6 @@
 			]
 		},
 		{
-			"act": 1,
-			"speaker": "公主",
-			"text": "羽、羽毛袜！谁让你给我穿的！",
-			"emotion": "angry",
-			"actions": [
-				{
-					"do": "tickle",
-					"who": "pink",
-					"by": "foe1",
-					"repeat": 5,
-					"interval": 0.22,
-					"fx": "hand",
-					"zone": "sole"
-				}
-			]
-		},
-		{
-			"act": 1,
-			"speaker": "蓝色的公主",
-			"text": "……护腿。……里面……全是……绒毛。",
-			"emotion": "normal",
-			"actions": [
-				{
-					"do": "tickle",
-					"who": "blue",
-					"by": "foe2",
-					"repeat": 5,
-					"interval": 0.22,
-					"fx": "brush",
-					"zone": "thigh"
-				}
-			]
-		},
-		{
 			"act": 2,
 			"speaker": "",
 			"text": "（羽毛袜里的羽毛自己动了起来，贴着她的脚心来回扫；痒痒手套隔着袜子捏住脚趾，一根一根地揉）",
@@ -245,26 +211,9 @@
 			]
 		},
 		{
-			"act": 2,
-			"speaker": "蓝色的公主",
-			"text": "……裁缝……手艺好。……裤子……不服气。",
-			"emotion": "giggle",
-			"actions": [
-				{
-					"do": "tickle",
-					"who": "blue",
-					"by": "foe2",
-					"repeat": 5,
-					"interval": 0.22,
-					"fx": "brush",
-					"zone": "thigh"
-				}
-			]
-		},
-		{
 			"act": 3,
 			"speaker": "",
-			"text": "（装备一件件发作，藤蔓越缠越紧。两个人的疲倦同时满了）",
+			"text": "（装备一件件发作，藤蔓越缠越紧。粉色公主的魔力疲倦先满了）",
 			"actions": [
 				{
 					"do": "pose",
@@ -285,7 +234,7 @@
 		{
 			"act": 3,
 			"speaker": "公主",
-			"text": "一、一起——把这些装备都炸掉！",
+			"text": "这、这双袜子——我要把它炸上天——！",
 			"emotion": "helpless_1",
 			"actions": [
 				{
@@ -350,15 +299,237 @@
 			"wait": 1.0
 		},
 		{
-			"act": 3,
+			"act": 4,
+			"speaker": "",
+			"text": "（她光着的脚还没落地，手套就从箱子里翻出一双新的羽毛袜套了上来，藤蔓重新把她的脚踝捆在一起）",
+			"portrait": "siege_fail_7",
+			"actions": [
+				{
+					"do": "move",
+					"who": "foe1",
+					"to": [
+						-44,
+						0
+					],
+					"time": 0.6
+				},
+				{
+					"do": "move",
+					"who": "foe2",
+					"to": [
+						44,
+						0
+					],
+					"time": 0.6
+				},
+				{
+					"do": "tickle",
+					"who": "pink",
+					"by": "foe1",
+					"repeat": 8,
+					"interval": 0.22,
+					"fx": "hand",
+					"zone": "sole"
+				},
+				{
+					"do": "tickle",
+					"who": "blue",
+					"by": "foe2",
+					"repeat": 8,
+					"interval": 0.22,
+					"fx": "brush",
+					"zone": "butt"
+				}
+			]
+		},
+		{
+			"act": 4,
+			"speaker": "公主",
+			"text": "呀啊——！新、新的袜子——放完魔力穿上这个——比刚才那双痒十倍哈哈哈哈！",
+			"emotion": "helpless_2",
+			"actions": [
+				{
+					"do": "bubble",
+					"who": "pink",
+					"kind": "laugh"
+				},
+				{
+					"do": "bubble",
+					"who": "blue",
+					"kind": "laugh"
+				},
+				{
+					"do": "tickle",
+					"who": "pink",
+					"by": "foe1",
+					"repeat": 5,
+					"interval": 0.22,
+					"fx": "hand",
+					"zone": "sole"
+				}
+			]
+		},
+		{
+			"act": 4,
+			"speaker": "",
+			"text": "（痒痒手套隔着新袜子用十根手指在她的脚心上弹琴，袜子里的羽毛跟着琴声一根根竖起来，往趾缝里钻）",
+			"actions": [
+				{
+					"do": "tickle",
+					"who": "pink",
+					"by": "foe1",
+					"repeat": 8,
+					"interval": 0.22,
+					"fx": "hand",
+					"zone": "sole"
+				}
+			]
+		},
+		{
+			"act": 4,
+			"speaker": "公主",
+			"text": "哈哈哈哈！羽、羽毛袜在里面扎——手套还在外面弹——脱、脱掉！我不穿了哈哈哈！",
+			"emotion": "helpless_2",
+			"actions": [
+				{
+					"do": "bubble",
+					"who": "pink",
+					"kind": "laugh"
+				},
+				{
+					"do": "bubble",
+					"who": "blue",
+					"kind": "laugh"
+				},
+				{
+					"do": "tickle",
+					"who": "pink",
+					"by": "foe1",
+					"repeat": 5,
+					"interval": 0.22,
+					"fx": "hand",
+					"zone": "sole"
+				}
+			]
+		},
+		{
+			"act": 4,
+			"speaker": "",
+			"text": "（手套又给蓝色公主套上一条绒毛短裙，裙里的绒毛贴着屁股和大腿的交界来回蹭，藤蔓在外面把裙子勒紧）",
+			"actions": [
+				{
+					"do": "tickle",
+					"who": "blue",
+					"by": "foe2",
+					"repeat": 8,
+					"interval": 0.22,
+					"fx": "brush",
+					"zone": "butt"
+				}
+			]
+		},
+		{
+			"act": 4,
 			"speaker": "蓝色的公主",
-			"text": "……一起。……护腿……和裤子……都……炸开……",
-			"emotion": "helpless_1"
+			"text": "……这件……和裤子……打起来了……我……夹在中间……",
+			"emotion": "helpless_2",
+			"actions": [
+				{
+					"do": "tickle",
+					"who": "blue",
+					"by": "foe2",
+					"repeat": 5,
+					"interval": 0.22,
+					"fx": "brush",
+					"zone": "butt"
+				}
+			]
+		},
+		{
+			"act": 4,
+			"speaker": "公主",
+			"text": "蓝色的——哈哈哈——那条裙子好可爱——可是你的腿在抖——！",
+			"emotion": "helpless_2",
+			"actions": [
+				{
+					"do": "bubble",
+					"who": "pink",
+					"kind": "laugh"
+				},
+				{
+					"do": "bubble",
+					"who": "blue",
+					"kind": "laugh"
+				},
+				{
+					"do": "tickle",
+					"who": "pink",
+					"by": "foe1",
+					"repeat": 5,
+					"interval": 0.22,
+					"fx": "hand",
+					"zone": "sole"
+				}
+			]
+		},
+		{
+			"act": 4,
+			"speaker": "蓝色的公主",
+			"text": "……可爱不重要。……裤子……说它……不同意……",
+			"emotion": "helpless_2",
+			"actions": [
+				{
+					"do": "tickle",
+					"who": "blue",
+					"by": "foe2",
+					"repeat": 5,
+					"interval": 0.22,
+					"fx": "brush",
+					"zone": "butt"
+				}
+			]
+		},
+		{
+			"act": 4,
+			"speaker": "",
+			"text": "（藤蔓的嫩芽钻到她的膝弯，顺着大腿内侧一路往上爬，爬到腿根就开出一朵毛茸茸的小花。她的魔力疲倦也满了）",
+			"actions": [
+				{
+					"do": "tickle",
+					"who": "blue",
+					"by": "foe2",
+					"repeat": 8,
+					"interval": 0.22,
+					"fx": "brush",
+					"zone": "thigh"
+				},
+				{
+					"do": "flash",
+					"time": 0.3
+				}
+			]
+		},
+		{
+			"act": 4,
+			"speaker": "蓝色的公主",
+			"text": "……花……开在裤子里……不、不可以……",
+			"emotion": "helpless_2",
+			"actions": [
+				{
+					"do": "tickle",
+					"who": "blue",
+					"by": "foe2",
+					"repeat": 5,
+					"interval": 0.22,
+					"fx": "brush",
+					"zone": "butt"
+				}
+			]
 		},
 		{
 			"act": "burst",
 			"speaker": "",
-			"text": "（冰蓝色的星光同时炸开，藤蔓冻成了冰柱，「咔嚓」一声断成了好几截）",
+			"text": "（冰蓝色的星光炸开，藤蔓冻成了冰柱，「咔嚓」一声断成了好几截，绒毛短裙也冻成了一块冰壳）",
 			"actions": [
 				{
 					"do": "flash",
@@ -406,15 +577,9 @@
 			"wait": 1.0
 		},
 		{
-			"act": 3,
-			"speaker": "公主",
-			"text": "呼……袜子……没了……",
-			"emotion": "helpless_2"
-		},
-		{
-			"act": 3,
+			"act": 4,
 			"speaker": "",
-			"text": "（断掉的藤蔓又抽出新芽，手套从箱子里翻出新的装备套了上来。刚放空魔力的两个人一碰就叫）",
+			"text": "（断掉的藤蔓又抽出新芽，手套把装备箱整个倒了过来。两个刚放空魔力的人瘫在一堆痒痒装备里，躲都没处躲）",
 			"actions": [
 				{
 					"do": "move",
@@ -455,9 +620,9 @@
 			]
 		},
 		{
-			"act": 3,
-			"speaker": "公主",
-			"text": "呀啊——！新、新的袜子——比刚才那双还痒！哈哈哈哈！",
+			"act": 4,
+			"speaker": "蓝色的公主",
+			"text": "……哈哈……放完……新装备……和裤子……打起来了……哈哈哈哈……！",
 			"emotion": "helpless_2",
 			"actions": [
 				{
@@ -470,23 +635,6 @@
 					"who": "blue",
 					"kind": "laugh"
 				},
-				{
-					"do": "tickle",
-					"who": "pink",
-					"by": "foe1",
-					"repeat": 5,
-					"interval": 0.22,
-					"fx": "hand",
-					"zone": "sole"
-				}
-			]
-		},
-		{
-			"act": 3,
-			"speaker": "蓝色的公主",
-			"text": "……哈哈……新装备……和裤子……打起来了……哈哈哈哈！",
-			"emotion": "helpless_2",
-			"actions": [
 				{
 					"do": "tickle",
 					"who": "blue",
@@ -499,9 +647,26 @@
 			]
 		},
 		{
-			"act": 3,
+			"act": 4,
+			"speaker": "公主",
+			"text": "哈哈哈！你看——放完以后什么都痒——呀啊袜子又在动——！",
+			"emotion": "helpless_2",
+			"actions": [
+				{
+					"do": "tickle",
+					"who": "pink",
+					"by": "foe1",
+					"repeat": 5,
+					"interval": 0.22,
+					"fx": "hand",
+					"zone": "sole"
+				}
+			]
+		},
+		{
+			"act": 4,
 			"speaker": "",
-			"text": "（痒痒手套把一只羽毛袜套上她的脚，又隔着袜子用十根手指在脚心上弹琴；藤蔓的嫩芽钻到蓝色公主的膝弯，一路顺着大腿内侧往上爬）",
+			"text": "（手套把一只羽毛手套套在她的脚上，五根羽毛指头一根插进一道趾缝；藤蔓的嫩芽在蓝色公主的腿根上一圈圈地绕）",
 			"actions": [
 				{
 					"do": "tickle",
@@ -524,9 +689,9 @@
 			]
 		},
 		{
-			"act": 3,
+			"act": 4,
 			"speaker": "公主",
-			"text": "哈哈哈哈！羽、羽毛袜在里面扎——手套还在外面弹——脱、脱掉！我不穿了哈哈哈！",
+			"text": "哈哈哈哈！一、一根一道趾缝——全部插满了——求求你脱掉——！",
 			"emotion": "helpless_2",
 			"actions": [
 				{
@@ -551,9 +716,9 @@
 			]
 		},
 		{
-			"act": 3,
+			"act": 4,
 			"speaker": "蓝色的公主",
-			"text": "……藤蔓……碰到裤子……裤子的手……抓住它……一、一起……往上……",
+			"text": "……嫩芽绕……裤子的手……也绕……求、求你……",
 			"emotion": "helpless_2",
 			"actions": [
 				{
@@ -571,7 +736,6 @@
 			"act": 4,
 			"speaker": "",
 			"text": "（手套把装备一件接一件往两个人身上套，袜子、护腿、羽毛围巾，藤蔓在外面再捆一圈）",
-			"portrait": "siege_fail_7",
 			"actions": [
 				{
 					"do": "pose",

@@ -129,12 +129,8 @@
 			"emotion": "helpless_2"
 		},
 		{
-			"speaker": "学徒",
-			"text": "师傅，还有脚。"
-		},
-		{
 			"speaker": "裁缝",
-			"text": "对对，脚掌！刚才的数字被她笑得抖掉了。（她蹲下来，捏住一只光着的脚丫）"
+			"text": "还有脚掌！刚才的数字被你笑得抖掉了。（她蹲下来，捏住一只光着的脚丫）"
 		},
 		{
 			"speaker": "",
@@ -149,12 +145,19 @@
 					"interval": 0.16,
 					"do": "tickle"
 				}
-			]
+			],
+			"portrait": "after_tailor_fail"
 		},
 		{
 			"speaker": "公主",
 			"text": "哈哈哈哈哈！对、对什么刻度啊！脚趾缝里没有刻度——！",
-			"portrait": "after_tailor_fail"
+			"actions": [
+				{
+					"who": "princess",
+					"kind": "laugh",
+					"do": "bubble"
+				}
+			]
 		},
 		{
 			"speaker": "学徒",
@@ -184,6 +187,257 @@
 			"speaker": "公主",
 			"text": "不、不要扳——哈哈哈哈！一根……一根地……呜哈哈哈……！",
 			"emotion": "helpless_2"
+		},
+		{
+			"speaker": "",
+			"text": "（学徒把她的脚趾一根一根扳开，裁缝的软尺就在每一道趾缝里来回拉一下，「嗯——这道宽两分」「这道窄一分」，量得一本正经）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "ap",
+					"zone": "sole",
+					"fx": "feather",
+					"repeat": 10,
+					"interval": 0.16,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"by": "tl",
+					"zone": "sole",
+					"fx": "feather",
+					"repeat": 10,
+					"interval": 0.16,
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "哈哈哈哈！谁、谁要知道趾缝多宽啊——做鞋也用不着——！",
+			"actions": [
+				{
+					"who": "princess",
+					"time": 0.5,
+					"do": "shake"
+				}
+			]
+		},
+		{
+			"speaker": "裁缝",
+			"text": "做袜子用得着呀～分趾袜，要合脚的。",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "tl",
+					"zone": "sole",
+					"fx": "feather",
+					"repeat": 8,
+					"interval": 0.18,
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "我、我不要分趾袜——哈哈哈——那、那个会更痒的吧——！"
+		},
+		{
+			"speaker": "",
+			"text": "（量完左脚量右脚，量完脚掌量脚背。一圈下来，被挠出来的魔力疲倦在身体里越积越满，她的指尖开始冒出粉色的光点）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "tl",
+					"zone": "sole",
+					"fx": "feather",
+					"repeat": 8,
+					"interval": 0.18,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"by": "ap",
+					"zone": "sole",
+					"fx": "feather",
+					"repeat": 8,
+					"interval": 0.18,
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "等、等一下……魔力……满了……要、要炸开了——！"
+		},
+		{
+			"speaker": "",
+			"text": "（星光从她身上炸开，软尺被冲得满屋乱飞，裁缝的针线盒翻了个底朝天，学徒一屁股坐在了布料堆里）",
+			"actions": [
+				{
+					"time": 0.8,
+					"do": "flash"
+				},
+				{
+					"sound": "star_burst",
+					"volume": -1.0,
+					"do": "sfx"
+				},
+				{
+					"sound": "water_release",
+					"volume": -2.0,
+					"do": "sfx"
+				},
+				{
+					"who": "princess",
+					"time": 0.5,
+					"do": "shake"
+				},
+				{
+					"who": "princess",
+					"kind": "surprise",
+					"do": "bubble"
+				},
+				{
+					"who": "tl",
+					"to": [
+						-78,
+						2
+					],
+					"time": 0.25,
+					"do": "move"
+				},
+				{
+					"who": "ap",
+					"to": [
+						78,
+						2
+					],
+					"time": 0.25,
+					"do": "move"
+				}
+			],
+			"act": "burst",
+			"wait": 1.0
+		},
+		{
+			"speaker": "公主",
+			"text": "哈啊……魔力一下子全出去了……身上好轻……像穿了一件很合身的衣服……好舒服……",
+			"emotion": "happy"
+		},
+		{
+			"speaker": "裁缝",
+			"text": "哎呀～量到一半爆尺码了。……不过放完魔力，身子是最敏感的时候，正适合量最精细的地方～",
+			"actions": [
+				{
+					"who": "tl",
+					"to": [
+						-28,
+						8
+					],
+					"time": 0.6,
+					"do": "move"
+				},
+				{
+					"who": "ap",
+					"to": [
+						28,
+						8
+					],
+					"time": 0.6,
+					"do": "move"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "最、最精细的……？呀啊——！软尺……只是碰到脚心……就……哈哈哈哈！",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "tl",
+					"zone": "sole",
+					"fx": "feather",
+					"repeat": 8,
+					"interval": 0.18,
+					"do": "tickle"
+				}
+			],
+			"emotion": "helpless_2"
+		},
+		{
+			"speaker": "学徒",
+			"text": "师傅，她现在碰一下就跳，比刚才好量多了——一跳就知道是哪里。",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "ap",
+					"zone": "sole",
+					"fx": "feather",
+					"repeat": 6,
+					"interval": 0.2,
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "",
+			"text": "（裁缝拿出最细的一根丝带尺，沿着脚弓最软的那一道慢慢拉过去；学徒捏着另一只脚的脚跟，用尺子的金属头在上面一点一点地「找零刻度」）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "tl",
+					"zone": "sole",
+					"fx": "feather",
+					"repeat": 12,
+					"interval": 0.15,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"by": "ap",
+					"zone": "sole",
+					"fx": "hand",
+					"repeat": 12,
+					"interval": 0.15,
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "哈哈哈哈！零、零刻度不在脚跟上——求、求你们——敏感得要死了——我认输——尺码你们随便写——！",
+			"actions": [
+				{
+					"who": "princess",
+					"kind": "laugh",
+					"do": "bubble"
+				},
+				{
+					"who": "princess",
+					"time": 0.6,
+					"do": "shake"
+				}
+			]
+		},
+		{
+			"speaker": "裁缝",
+			"text": "随便写可不行～最后量一下腋下，就收工。",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "tl",
+					"zone": "armpit",
+					"fx": "feather",
+					"repeat": 10,
+					"interval": 0.16,
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "腋、腋下又来——哈哈哈——裁缝铺……我再也不来了……！"
 		},
 		{
 			"speaker": "裁缝",

@@ -10,7 +10,7 @@
   aux        辅助设施：name、status、enter 踩上去时的几句
   status     状态：name、mul（之后挠痒的倍率）、time 秒、desc
 """
-from .common import A, CAP, N, P, line
+from .common import A, CAP, N, P, back, burst, line
 
 G = "保卫队员"
 G2 = "保卫队员小芬"
@@ -193,12 +193,32 @@ FAIL_INSPECT = {"name": "验收失败：全套陷阱一起来", "cast": {
     _say(P, "哈哈哈哈！三、三个一起——！数、数据不准了啦——！", portrait="defeat_1"),
     _say(G, "小芬！快关掉！"),
     _say(G2, "可是……这个联动的数据好珍贵……我记一下……就一下……", [_tk("brush", n=12, iv=0.15)]),
-    _say(P, "记什么记啊——哈哈哈哈！脚趾缝……全部……！", portrait="defeat_2"),
-    _say(N, "（夹子把脚趾一根根撑开，细刷子在趾缝里来回地刷。吊起来的那只脚被扳着脚趾，脚心绷得平平的，羽毛一圈一圈地画）", [_tk("rack", fx="feather", n=14, iv=0.14), A("pose", who="princess", visual="helpless_2")]),
-    _say(P, "哈……哈……投、投降……我投降……全部都太强了……！", emotion="helpless_2"),
+    _say(P, "记什么记啊——哈哈哈哈！", emotion="helpless_2"),
+    _say(N, "（小芬掏出小本子蹲到台子前，一边写一边往夹子的旋钮上拧了半圈——「再强一档，看看极限在哪」）"),
+    dict(_say(N, "（夹子把脚趾一根根撑开，细刷子在趾缝里来回地刷。吊起来的那只脚被扳着脚趾，脚心绷得平平的，羽毛一圈一圈地画）",
+              [_tk("rack", fx="feather", n=14, iv=0.14), A("pose", who="princess", visual="helpless_2")], portrait="defeat_2"), cg=True),
+    _say(P, "哈哈哈哈！极、极限早就到了——脚趾缝……全部……一起刷——！", [A("bubble", who="princess", kind="laugh")]),
+    _say(G2, "左脚每三秒抽一下，右脚每两秒……哇，右脚比左脚怕痒！", [_tk("brush", n=10, iv=0.16)]),
+    _say(P, "这、这种事情不要记下来啊哈哈哈——！", [A("shake", who="princess", time=0.5)]),
+    _say(G, "小芬……你再不关，队长要来了……"),
+    _say(G2, "最后一组！羽毛和刷子换个位置！", [_tk("feather", fx="feather", n=10, iv=0.16), _tk("brush", n=10, iv=0.16)]),
+    _say(N, "（羽毛换到了被锁住的脚上，刷子换到了吊起来的脚上。换了位置的痒法让她的脚趾乱蜷乱张，身体里的魔力疲倦一下子顶到了头）",
+         [_tk("feather", fx="feather", n=10, iv=0.15), _tk("brush", n=10, iv=0.15)]),
+    _say(P, "等、等等……魔力……满了……陷阱……要被我……炸掉了——！"),
+    dict(_say(N, "（星光从她身上炸开，吊环的绳子「嘣」地断了，跪台的锁扣弹开，羽毛和刷子被冲得满场乱飞，小芬的本子飞上了屋顶）",
+              burst("princess", [("brush", [-22, 14]), ("feather", [22, 14])])), act="burst", wait=1.0),
+    _say(P, "哈啊……魔力全放出去了……脚终于放下来了……好、好舒服……", emotion="happy"),
+    _say(G2, "我的本子——！……没关系，陷阱还能动！最后一组数据：放完魔力以后的敏感度！", back([("brush", [-22, 14]), ("feather", [22, 14])])),
+    _say(P, "什、什么——呀啊——！羽毛……只扫了一下……怎么……这么痒——！", [_tk("feather", fx="feather", n=6, iv=0.2)], emotion="helpless_2"),
+    _say(N, "（被冲歪的吊环又把她的脚踝套了回去。放空魔力的脚心敏感得发烫，羽毛轻轻一扫，她整个人就从台子上弹起来）", [_tk("rack", fx="feather", n=10, iv=0.15)]),
+    _say(G2, "敏感度……比刚才高了三倍！不对，四倍！", [_tk("brush", n=8, iv=0.16)]),
+    _say(P, "哈哈哈哈！不、不要数了——我投降——验收不合格是我——是我不合格——！", [A("bubble", who="princess", kind="laugh"), A("shake", who="princess", time=0.6)]),
+    _say(N, "（刷子顺着足弓刷到脚跟，再刷回趾缝；羽毛在脚心正中央一圈一圈地画，越画越小，越画越慢）",
+         [_tk("brush", n=12, iv=0.15), _tk("feather", fx="feather", n=12, iv=0.15)]),
+    _say(P, "哈……哈……小、小芬……你……你记住了……我、我一定会报仇的……！", emotion="helpless_2"),
     _say(CAP, "……关掉。"),
     _say(N, "（陷阱终于停了下来。她瘫在台子上，两只脚还在一抽一抽的）"),
-    _say(CAP, "……歇一会儿。综合演练，从头再走。"),
+    _say(CAP, "……小芬，本子拿下来。……公主，歇一会儿。综合演练，从头再走。"),
     {"actions": [A("fade_out", time=0.6), A("voice", state="")], "wait": 0.7},
 ]}
 

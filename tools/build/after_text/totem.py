@@ -10,7 +10,7 @@
   release：魔力疲倦满自动释放——舒服；同时「共鸣爆发」给符文充一截。sensitive：释放后敏感（粉色）。crack：符文裂开。
   每道符文之间（phases[].end）歇脚：镇民送水，蓝色公主数这七天。
 """
-from .common import A, BLUE, MAYOR, N, P, L, event, line
+from .common import A, BLUE, MAYOR, N, P, L, back, burst, event, line
 
 ENG = "工匠"
 TOWN = "镇民们"
@@ -341,13 +341,37 @@ FAIL_TOTEM = {"name": "修图腾失败：符文的碎光扑回来", "cast": {
     _say(BLUE, "……是你……在动……唔……"),
     _say(N, "（连线还没断。千手痒痒裤被图腾的共振一震，小手们一齐亮了起来）", [A("bubble", who="hands", kind="laugh")]),
     _say(BLUE, "……糟了。"),
-    _say(N, "（小手们一半捏向蓝色公主自己的屁股，一半顺着连线爬过去，掰开粉色公主的脚趾挠趾缝）",
-         [_tk("hands", who="blue", zone="butt", fx="pinch", n=12, iv=0.16), _tk("hands", zone="sole", fx="hand", n=12, iv=0.16)]),
-    _say(P, "哈哈哈哈哈！趾、趾缝！你的裤子在挠我的趾缝——！", portrait="defeat_2"),
+    dict(_say(N, "（小手们一半捏向蓝色公主自己的屁股，一半顺着连线爬过去，掰开粉色公主的脚趾挠趾缝）",
+              [_tk("hands", who="blue", zone="butt", fx="pinch", n=12, iv=0.16), _tk("hands", zone="sole", fx="hand", n=12, iv=0.16)], portrait="defeat_2"), cg=True),
+    _say(P, "哈哈哈哈哈！趾、趾缝！你的裤子在挠我的趾缝——！", [A("bubble", who="princess", kind="laugh")]),
     _say(BLUE, "……噗。……哈……哈……", [A("pose", who="blue", visual="helpless_2")]),
     _say(P, "你、你笑了！你又笑了！哈哈哈……我都听见了！", emotion="helpless_2"),
-    _say(BLUE, "……没……哈……没有……"),
-    _say(N, "（光羽毛、小手、连线，从脚心到趾缝，从大腿到屁股。两个人背靠背地笑成一团，笑声在废地上回荡了好久，图腾柱倒是吃得很饱）"),
+    _say(BLUE, "……没……哈……没有……裤子……不是我……"),
+    _say(N, "（小手们像是听懂了，一齐转向蓝色公主自己：几只揉腿根，几只沿着大腿内侧往上爬，剩下的在屁股和大腿的交界上一下一下地捏）",
+         [_tk("hands", who="blue", zone="thigh", fx="pinch", n=12, iv=0.15), _tk("hands", who="blue", zone="butt", fx="pinch", n=12, iv=0.15)]),
+    _say(BLUE, "……叛……徒……全、全是……叛徒……哈哈……"),
+    _say(P, "哈哈哈！你也有今天——呀啊！光羽毛又扫我脚心了——！", [_tk("vine", zone="sole", n=10, iv=0.16)]),
+    _say(N, "（光羽毛顺着她的脚弓来回扫，扫一下，背后的蓝色公主就被光绳带着抖一下。两个人的笑声叠在一起，粉色公主的魔力疲倦先满了）",
+         [_tk("vine", zone="sole", n=10, iv=0.15), _tk("vine", who="blue", zone="thigh", n=8, iv=0.16)]),
+    _say(P, "要、要满了——蓝色的你别回头——我要炸了——！"),
+    dict(_say(N, "（星光从她身上炸开，背后的光绳被冲断了一半，光羽毛四散飞开，像下了一场粉色的雪）",
+              burst("princess", [("vine", [0, 14])])), act="burst", wait=1.0),
+    _say(P, "哈啊……魔力全放出去了……背靠着你……暖暖的……好舒服……", emotion="happy"),
+    _say(N, "（可图腾的余光还在。散开的碎光又聚了回来，重新缠住两个人——这一次，它们专挑刚放完魔力、敏感得发烫的脚心）",
+         back([("vine", [0, 14])]) + [_tk("vine", zone="sole", n=8, iv=0.18)]),
+    _say(P, "呀啊——！放、放完以后……一碰就……比刚才痒好多好多哈哈哈哈！", [_tk("vine", zone="sole", n=10, iv=0.15)], emotion="helpless_2"),
+    _say(BLUE, "……你……放完了……我……也……裤子……挤……出来了……"),
+    dict(_say(N, "（冰蓝色的星光跟着炸开，光绳冻成了一圈冰环，裤子上的小手被冻成了一排冰手指，一动也不能动）",
+              burst("blue", [("hands", [0, -2])])), act="burst", wait=1.0),
+    _say(BLUE, "……呼。……冰……很凉。……身体……空空的……很……舒服……"),
+    _say(N, "（冰环一化，小手们抖了抖手指又醒了过来。两个刚放空魔力的人背靠着背，谁也逃不开）",
+         back([("hands", [0, -2])]) + [_tk("hands", who="blue", zone="butt", fx="pinch", n=8, iv=0.16), _tk("hands", zone="sole", fx="hand", n=8, iv=0.16)]),
+    _say(BLUE, "……哈哈哈……放、放完……捏、捏一下……就……哈哈哈……！"),
+    _say(P, "哈哈哈！放完以后……更怕痒吧……我、我早就说了——呀啊趾缝——！"),
+    _say(N, "（光羽毛、小手、连线，从脚心到趾缝，从大腿到屁股。两个人背靠背地笑成一团，笑声在废地上回荡了好久，图腾柱倒是吃得很饱）",
+         [_tk("vine", zone="sole", n=10, iv=0.15), _tk("hands", who="blue", zone="thigh", fx="pinch", n=10, iv=0.15)]),
+    _say(P, "哈哈哈哈……认、认输……图腾大人……我们认输……！", [A("bubble", who="princess", kind="laugh")]),
+    _say(BLUE, "……认……输。……裤子……也……认……"),
     _say(ENG, "（等光绳自己散了，才敢凑过来）……哎呀呀。这一道得重刻了。"),
     _say(ENG, "……歇一会儿，从这一道重新来吧。刻好的那几道还亮着。"),
     {"actions": [A("fade_out", time=0.6), A("voice", state="")], "wait": 0.7},

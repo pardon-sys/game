@@ -738,6 +738,10 @@ data/cutscenes/<楼层组>/  地图内过场；data/theater/<楼层组>/  小剧
   十二位激励镇民按波次顺序从城门出来、各说一句、站成半圆（演员 `cheer_<激励 id>`，行走图用 `town_buffs.json` 的 `sheet`），镇长宣布祭典，
   烟花（过场动作 `fireworks`：`at` 格子列表、`count`、`time`）→ 战后的小镇（`floor_06_after`，见「七日赎罪」）。
 - **临时痒痒装备**：`Equipment.force` / `release` / `tick_forced`（`GameState.equip_forced`），负面装备由 `EquipFx` 定时发作 + 立绘反应（`data/equip_reactions.json`，分角色）。
+- **失败小剧场的长度**（`siege_text/theaters.py`，第十五轮加长）：每波约 36 句——CG 前约 12 句（被抓、弱点、粉色公主先释放），第 4 幕第一步换上战败 CG，
+  CG 后约 24 句（释放后更敏感被接着挠、两人互动、蓝色公主在 CG 后释放、再被挠、求饶认输、收尾）。第 4 幕里旁白都要带动作标签，只有最后那句不带标签的旁白算「收尾」。
+- **小剧场里的精灵一定要动**：`CGActor.set_pose` 换到失控 / 憋笑类视觉状态时自动播循环动画（`LOOP_ANIM`），被挠时站着的公主换憋笑循环（`start_giggle`），
+  npc 形式上场的公主也套用 cast 的 `visual` / `anim`（`cg_player._build_cast`）；`cg_test`「小剧场里的精灵都会动」遍历全部剧场。
 - **战败 CG**（失败小剧场第 4 幕的横版大图，一波一张）：原图 `assets/generated/SIEGE_CG/siege_fail_<N>.png`（codex 内置 image_gen 生成，1536×1024，
   提示词和参考图在 `tools/art/src/siege_fail/`：两人释放过魔力、被这一波的怪接着挠——粉色被挠光脚、蓝色被挠大腿；服装照立绘，不画千手痒痒裤，`_pants` 版也用同一张）
   → `tools/art/import_cg.py --siege` 像素化到 `assets/cg/portraits/siege_fail_<N>.png` → `gen_cgs.py` 登记立绘 id（有图时 `wide`）。
@@ -939,7 +943,9 @@ data/cutscenes/<楼层组>/  地图内过场；data/theater/<楼层组>/  小剧
 	五个评完 → 综合演练（按评分调整过强度、闷笑不清零），笑倒 = 失败（`after_fail_inspect`，重来直接综合演练）。
 - **弥补任务的 CG**（白天 10 个主线委托，每个一张成功、一张失败；第 6 天考核的失败和第 4 天特训共用）：原图 `assets/generated/AFTER_CG/after_<任务>_ok / _fail.png`
   （codex image_gen，提示词和参考图 `tools/art/src/after_cg/`，规则见 `docs/POLISH_RULES.md`）→ `import_cg.py --after` → `gen_cgs.py` 登记立绘 id。
-  `gen_floor06_after.py` 的 `AFTER_CG_FAIL` / `AFTER_CG_DONE` 自动挂上：失败小剧场最后一次换 `defeat_2` 的那一步（高潮）换成这张大图（没有的取六成处），
+  `gen_floor06_after.py` 的 `AFTER_CG_FAIL` / `AFTER_CG_DONE` 自动挂上：失败小剧场里标了 `"cg": True` 的那一步优先（9 个失败剧场加长版：CG 前约 10 句、CG 后约 20 句，
+  中间一次魔力释放 `act = "burst"`（`after_text/common.py` 的 `burst()` / `back()`），两位公主同框的两人各释放一次，`cg_test` 检查句数和释放）；
+  没标的用最后一次换 `defeat_2` 的那一步（高潮）（再没有的取六成处），
   收尾过场 `after_d*_done` 六成处的台词前加 `{"do": "cg", "key": ...}`（横版大框），最后一步收回。
 - 小游戏画面的描写：`TrainingStage.narrate(文字)` 发 `GameState.princess_reacted`，显示在画面下方的反应框（不放舞台顶部，那里看不清）；人物头上的气泡只放说的话。
   示众的应对选项不透露效果。选项页（`ChoiceMenu.ask`）打开期间 `in_dialogue = true`（`dialogue_holds`），人物不跟着上下键走、速度清零。

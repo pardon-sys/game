@@ -121,6 +121,10 @@
 			"emotion": "helpless_2"
 		},
 		{
+			"speaker": "",
+			"text": "（小胖蹲到她脚边，盯着她蜷成一团的脚趾看了半天，慢慢伸出了一根小手指）"
+		},
+		{
 			"speaker": "小胖",
 			"text": "脚趾缝里也有泥！（小手指一根一根地抠进脚趾缝）",
 			"actions": [
@@ -133,12 +137,19 @@
 					"interval": 0.16,
 					"do": "tickle"
 				}
-			]
+			],
+			"portrait": "after_drain_fail"
 		},
 		{
 			"speaker": "公主",
-			"text": "哈哈哈哈哈！脚、脚趾缝不用擦——！",
-			"portrait": "after_drain_fail"
+			"text": "哈哈哈哈哈！脚、脚趾缝不用擦——那里没有泥——真的没有——！",
+			"actions": [
+				{
+					"who": "princess",
+					"kind": "laugh",
+					"do": "bubble"
+				}
+			]
 		},
 		{
 			"speaker": "小汤姆",
@@ -162,7 +173,285 @@
 		},
 		{
 			"speaker": "",
-			"text": "（「擦干净」变成了「挠一遍」，「挠一遍」又变成了「再挠一遍」。管口边上全是她的笑声）"
+			"text": "（汤姆用一根捡来的羽毛顺着她的脚弓来回扫，莉莉的袖子在脚心上画圈，小胖的手指还卡在趾缝里，一道一道地抠）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "k1",
+					"zone": "sole",
+					"fx": "feather",
+					"repeat": 10,
+					"interval": 0.16,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"by": "k3",
+					"zone": "sole",
+					"fx": "hand",
+					"repeat": 10,
+					"interval": 0.16,
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "哈哈哈！三、三个人分工——不公平——我只有两只脚——！"
+		},
+		{
+			"speaker": "小莉莉",
+			"text": "那正好！一只脚一个半人！",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "k2",
+					"zone": "sole",
+					"fx": "brush",
+					"repeat": 10,
+					"interval": 0.16,
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "一、一个半人是什么啊哈哈哈！小胖你——你的手指别在里面转——！",
+			"actions": [
+				{
+					"who": "princess",
+					"time": 0.5,
+					"do": "shake"
+				}
+			]
+		},
+		{
+			"speaker": "",
+			"text": "（「擦干净」变成了「挠一遍」，「挠一遍」又变成了「再挠一遍」。钻管子时攒下的魔力疲倦被一点点挠满，她的身体开始发光）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "k1",
+					"zone": "sole",
+					"fx": "hand",
+					"repeat": 8,
+					"interval": 0.18,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"by": "k3",
+					"zone": "sole",
+					"fx": "hand",
+					"repeat": 8,
+					"interval": 0.18,
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "等、等等……魔力……要出来了……你们快退开——！"
+		},
+		{
+			"speaker": "",
+			"text": "（星光从她身上炸开，三个小孩被冲得一屁股坐倒，羽毛和袖子上的泥点飞了一地）",
+			"actions": [
+				{
+					"time": 0.8,
+					"do": "flash"
+				},
+				{
+					"sound": "star_burst",
+					"volume": -1.0,
+					"do": "sfx"
+				},
+				{
+					"sound": "water_release",
+					"volume": -2.0,
+					"do": "sfx"
+				},
+				{
+					"who": "princess",
+					"time": 0.5,
+					"do": "shake"
+				},
+				{
+					"who": "princess",
+					"kind": "surprise",
+					"do": "bubble"
+				},
+				{
+					"who": "k1",
+					"to": [
+						-70,
+						16
+					],
+					"time": 0.25,
+					"do": "move"
+				},
+				{
+					"who": "k2",
+					"to": [
+						50,
+						20
+					],
+					"time": 0.25,
+					"do": "move"
+				},
+				{
+					"who": "k3",
+					"to": [
+						70,
+						16
+					],
+					"time": 0.25,
+					"do": "move"
+				}
+			],
+			"act": "burst",
+			"wait": 1.0
+		},
+		{
+			"speaker": "公主",
+			"text": "哈啊……魔力……一口气全放出去了……躺在石板上……凉凉的……好舒服……",
+			"emotion": "happy"
+		},
+		{
+			"speaker": "小汤姆",
+			"text": "哇——！姐姐会发光！再发一次！",
+			"actions": [
+				{
+					"who": "k1",
+					"to": [
+						-20,
+						22
+					],
+					"time": 0.6,
+					"do": "move"
+				},
+				{
+					"who": "k2",
+					"to": [
+						0,
+						26
+					],
+					"time": 0.6,
+					"do": "move"
+				},
+				{
+					"who": "k3",
+					"to": [
+						20,
+						22
+					],
+					"time": 0.6,
+					"do": "move"
+				},
+				{
+					"who": "k1",
+					"do": "hop"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "不、不会再发了……呀啊——！只、只是碰一下脚心……怎么痒成这样——！",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "k1",
+					"zone": "sole",
+					"fx": "hand",
+					"repeat": 6,
+					"interval": 0.2,
+					"do": "tickle"
+				}
+			],
+			"emotion": "helpless_2"
+		},
+		{
+			"speaker": "小胖",
+			"text": "姐姐变得更怕痒了！刚才要挠十下，现在一下就够！",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "k3",
+					"zone": "sole",
+					"fx": "hand",
+					"repeat": 6,
+					"interval": 0.2,
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "",
+			"text": "（放空魔力的身体敏感得要命。小孩们发现了新玩法：轻轻一碰，她就弹起来——碰一下脚跟，碰一下脚趾，碰一下足弓，像在弹一架会笑的琴）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "k1",
+					"zone": "sole",
+					"fx": "hand",
+					"repeat": 10,
+					"interval": 0.15,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"by": "k2",
+					"zone": "sole",
+					"fx": "feather",
+					"repeat": 10,
+					"interval": 0.15,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"by": "k3",
+					"zone": "sole",
+					"fx": "hand",
+					"repeat": 10,
+					"interval": 0.15,
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "哈哈哈哈！别、别弹琴——我不是琴——求求你们——姐姐认输了——！",
+			"actions": [
+				{
+					"who": "princess",
+					"kind": "laugh",
+					"do": "bubble"
+				},
+				{
+					"who": "princess",
+					"time": 0.6,
+					"do": "shake"
+				}
+			]
+		},
+		{
+			"speaker": "小莉莉",
+			"text": "认输就要唱歌！唱完才放你！",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "k2",
+					"zone": "sole",
+					"fx": "brush",
+					"repeat": 8,
+					"interval": 0.18,
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "唱、唱什么啊……哈哈……啦、啦啦……哈哈哈唱不下去——！"
 		},
 		{
 			"speaker": "保卫队员",

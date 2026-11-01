@@ -656,7 +656,7 @@ func _run_cart() -> void:
 	_go(c1.global_position + c1.front.normalized() * 40.0)
 	c1.cone.facing = c1.front
 	c1._t = 0.0
-	await _advance_until(func(): return GameState.has_flag("cg_seen_theater:after_fail_cart") and not CG.is_busy() and _node("Task_d3_cart") != null, 40.0)
+	await _advance_until(func(): return GameState.has_flag("cg_seen_theater:after_fail_cart") and not CG.is_busy() and _node("Task_d3_cart") != null, 90.0)
 	check("挣不开：车斗里刷子的失败小剧场 → 回到战场入口重来，拆完的车不用重拆",
 		GameState.has_flag("cg_seen_theater:after_fail_cart") and (_node("Task_d3_cart") as TaskCart).carts[0].done)
 	TaskCart.auto_struggle = null
@@ -1175,7 +1175,7 @@ func _run_mine() -> void:
 	task.slips = 2
 	GameState.vars["task_mine_slips"] = 2
 	p.laugh.set_value(p.laugh.max_value * 0.96)
-	await _advance_until(func(): return GameState.has_flag("cg_seen_theater:after_fail_mine") and not CG.is_busy() and _node("Task_d5_mine") != null, 40.0)
+	await _advance_until(func(): return GameState.has_flag("cg_seen_theater:after_fail_mine") and not CG.is_busy() and _node("Task_d5_mine") != null, 90.0)
 	task = _node("Task_d5_mine") as TaskMine
 	check("溜回去第三次：翻车进刷子堆的失败小剧场 → 回到起点重来（溜车次数清零）",
 		GameState.has_flag("cg_seen_theater:after_fail_mine") and task != null and task.slips == 0 and task.cell_x() < 10.0)

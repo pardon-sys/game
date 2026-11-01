@@ -118,40 +118,6 @@
 			]
 		},
 		{
-			"act": 1,
-			"speaker": "公主",
-			"text": "车、车斗！又是车斗！",
-			"emotion": "angry",
-			"actions": [
-				{
-					"do": "tickle",
-					"who": "pink",
-					"by": "foe1",
-					"repeat": 5,
-					"interval": 0.22,
-					"fx": "hand",
-					"zone": "sole"
-				}
-			]
-		},
-		{
-			"act": 1,
-			"speaker": "蓝色的公主",
-			"text": "……盾牌……围成墙。……出不去。",
-			"emotion": "normal",
-			"actions": [
-				{
-					"do": "tickle",
-					"who": "blue",
-					"by": "foe2",
-					"repeat": 5,
-					"interval": 0.22,
-					"fx": "brush",
-					"zone": "thigh"
-				}
-			]
-		},
-		{
 			"act": 2,
 			"speaker": "",
 			"text": "（车斗里的小手扒掉她的鞋，螃蟹的钳子从盾牌缝里伸进来，钳尖在她的脚心上一夹一松）",
@@ -245,26 +211,9 @@
 			]
 		},
 		{
-			"act": 2,
-			"speaker": "蓝色的公主",
-			"text": "……十七。……路……太烂。",
-			"emotion": "giggle",
-			"actions": [
-				{
-					"do": "tickle",
-					"who": "blue",
-					"by": "foe2",
-					"repeat": 5,
-					"interval": 0.22,
-					"fx": "brush",
-					"zone": "thigh"
-				}
-			]
-		},
-		{
 			"act": 3,
 			"speaker": "",
-			"text": "（车子一路颠，盾牌一路叮当响。蓝色公主的疲倦先满了）",
+			"text": "（车子一路颠，盾牌一路叮当响。粉色公主的魔力疲倦先满了）",
 			"actions": [
 				{
 					"do": "pose",
@@ -284,76 +233,20 @@
 		},
 		{
 			"act": 3,
-			"speaker": "蓝色的公主",
-			"text": "……要出来了。……盾牌……挡不住……魔力。",
+			"speaker": "公主",
+			"text": "停、停车——不停我就把车斗炸了——！",
 			"emotion": "helpless_1",
 			"actions": [
 				{
 					"do": "tickle",
-					"who": "blue",
-					"by": "foe2",
+					"who": "pink",
+					"by": "foe1",
 					"repeat": 5,
 					"interval": 0.22,
-					"fx": "brush",
-					"zone": "butt"
+					"fx": "hand",
+					"zone": "sole"
 				}
 			]
-		},
-		{
-			"act": "burst",
-			"speaker": "",
-			"text": "（冰蓝色的星光炸开，螃蟹们的盾牌结了一层厚冰，沉得举不起来）",
-			"actions": [
-				{
-					"do": "flash",
-					"time": 0.8
-				},
-				{
-					"do": "sfx",
-					"sound": "star_burst",
-					"volume": -1.0
-				},
-				{
-					"do": "sfx",
-					"sound": "water_release",
-					"volume": -2.0
-				},
-				{
-					"do": "shake",
-					"who": "blue",
-					"time": 0.5
-				},
-				{
-					"do": "bubble",
-					"who": "blue",
-					"kind": "surprise"
-				},
-				{
-					"do": "move",
-					"who": "foe1",
-					"to": [
-						-94,
-						-6
-					],
-					"time": 0.25
-				},
-				{
-					"do": "move",
-					"who": "foe2",
-					"to": [
-						94,
-						-6
-					],
-					"time": 0.25
-				}
-			],
-			"wait": 1.0
-		},
-		{
-			"act": 3,
-			"speaker": "公主",
-			"text": "盾、盾牌放下了——我也要满了——！",
-			"emotion": "helpless_1"
 		},
 		{
 			"act": "burst",
@@ -406,15 +299,10 @@
 			"wait": 1.0
 		},
 		{
-			"act": 3,
-			"speaker": "蓝色的公主",
-			"text": "……背后。……露出来了。……可是……没力气……打了。",
-			"emotion": "helpless_2"
-		},
-		{
-			"act": 3,
+			"act": 4,
 			"speaker": "",
-			"text": "（螃蟹们翻回来，攻城车掉了个头又冲了回来。刚放空魔力的两个人一碰就叫）",
+			"text": "（螃蟹们挥着腿翻回来，攻城车掉了个头又冲了回来，一个急刹把她重新铲回了车斗，钳子立刻夹住了她的脚跟）",
+			"portrait": "siege_fail_5",
 			"actions": [
 				{
 					"do": "move",
@@ -455,9 +343,9 @@
 			]
 		},
 		{
-			"act": 3,
+			"act": 4,
 			"speaker": "公主",
-			"text": "呀啊——！钳、钳尖……碰一下就……哈哈哈哈！",
+			"text": "呀啊——！钳、钳尖……碰一下就……放完魔力怎么这么痒哈哈哈哈！",
 			"emotion": "helpless_2",
 			"actions": [
 				{
@@ -482,26 +370,9 @@
 			]
 		},
 		{
-			"act": 3,
-			"speaker": "蓝色的公主",
-			"text": "……哈哈……车、车一颠……屁股……就……哈哈哈哈！",
-			"emotion": "helpless_2",
-			"actions": [
-				{
-					"do": "tickle",
-					"who": "blue",
-					"by": "foe2",
-					"repeat": 5,
-					"interval": 0.22,
-					"fx": "brush",
-					"zone": "butt"
-				}
-			]
-		},
-		{
-			"act": 3,
+			"act": 4,
 			"speaker": "",
-			"text": "（螃蟹的钳子夹住她的脚跟固定住，另一只钳子的尖儿沿着足弓来回划；车斗里的小木手抓着蓝色公主的屁股，跟着车轮的颠簸一捏一捏）",
+			"text": "（螃蟹的钳子夹住她的脚跟固定住，另一只钳子的尖儿沿着足弓来回划，划到脚趾根，就夹住一根小脚趾轻轻地拧）",
 			"actions": [
 				{
 					"do": "tickle",
@@ -511,22 +382,13 @@
 					"interval": 0.22,
 					"fx": "hand",
 					"zone": "sole"
-				},
-				{
-					"do": "tickle",
-					"who": "blue",
-					"by": "foe2",
-					"repeat": 8,
-					"interval": 0.22,
-					"fx": "brush",
-					"zone": "butt"
 				}
 			]
 		},
 		{
-			"act": 3,
+			"act": 4,
 			"speaker": "公主",
-			"text": "哈哈哈哈！足、足弓——钳子尖别划了——停车！我下车！我认输下车哈哈哈！",
+			"text": "哈哈哈哈！足、足弓——钳子尖别划了——小脚趾不许夹！停车！我下车！我认输下车哈哈哈！",
 			"emotion": "helpless_2",
 			"actions": [
 				{
@@ -551,7 +413,23 @@
 			]
 		},
 		{
-			"act": 3,
+			"act": 4,
+			"speaker": "",
+			"text": "（车斗里的小木手抓着蓝色公主的屁股，跟着车轮的颠簸一捏一捏；颠得越厉害，捏得越用力）",
+			"actions": [
+				{
+					"do": "tickle",
+					"who": "blue",
+					"by": "foe2",
+					"repeat": 8,
+					"interval": 0.22,
+					"fx": "brush",
+					"zone": "butt"
+				}
+			]
+		},
+		{
+			"act": 4,
 			"speaker": "蓝色的公主",
 			"text": "……颠一下……捏一下……我……受、受不了……",
 			"emotion": "helpless_2",
@@ -569,9 +447,295 @@
 		},
 		{
 			"act": 4,
+			"speaker": "公主",
+			"text": "蓝色的……哈哈……你的脸……一颠一红……一颠一红……！",
+			"emotion": "helpless_2",
+			"actions": [
+				{
+					"do": "bubble",
+					"who": "pink",
+					"kind": "laugh"
+				},
+				{
+					"do": "bubble",
+					"who": "blue",
+					"kind": "laugh"
+				},
+				{
+					"do": "tickle",
+					"who": "pink",
+					"by": "foe1",
+					"repeat": 5,
+					"interval": 0.22,
+					"fx": "hand",
+					"zone": "sole"
+				}
+			]
+		},
+		{
+			"act": 4,
+			"speaker": "蓝色的公主",
+			"text": "……你……的脚趾……一颠……一蜷。……我……看、看见了……",
+			"emotion": "helpless_2",
+			"actions": [
+				{
+					"do": "tickle",
+					"who": "blue",
+					"by": "foe2",
+					"repeat": 5,
+					"interval": 0.22,
+					"fx": "brush",
+					"zone": "butt"
+				}
+			]
+		},
+		{
+			"act": 4,
+			"speaker": "",
+			"text": "（攻城车专挑石子路开，小木手追着腿根和交界来回捏，螃蟹的钳子也伸进来夹她的大腿内侧。她的魔力疲倦也满了）",
+			"actions": [
+				{
+					"do": "tickle",
+					"who": "blue",
+					"by": "foe2",
+					"repeat": 8,
+					"interval": 0.22,
+					"fx": "brush",
+					"zone": "thigh"
+				},
+				{
+					"do": "flash",
+					"time": 0.3
+				}
+			]
+		},
+		{
+			"act": 4,
+			"speaker": "蓝色的公主",
+			"text": "……这条路……走到……头了……",
+			"emotion": "helpless_2",
+			"actions": [
+				{
+					"do": "tickle",
+					"who": "blue",
+					"by": "foe2",
+					"repeat": 5,
+					"interval": 0.22,
+					"fx": "brush",
+					"zone": "butt"
+				}
+			]
+		},
+		{
+			"act": "burst",
+			"speaker": "",
+			"text": "（冰蓝色的星光炸开，螃蟹们的盾牌结了一层厚冰，沉得举不起来，攻城车的车轮也冻在了地上）",
+			"actions": [
+				{
+					"do": "flash",
+					"time": 0.8
+				},
+				{
+					"do": "sfx",
+					"sound": "star_burst",
+					"volume": -1.0
+				},
+				{
+					"do": "sfx",
+					"sound": "water_release",
+					"volume": -2.0
+				},
+				{
+					"do": "shake",
+					"who": "blue",
+					"time": 0.5
+				},
+				{
+					"do": "bubble",
+					"who": "blue",
+					"kind": "surprise"
+				},
+				{
+					"do": "move",
+					"who": "foe1",
+					"to": [
+						-94,
+						-6
+					],
+					"time": 0.25
+				},
+				{
+					"do": "move",
+					"who": "foe2",
+					"to": [
+						94,
+						-6
+					],
+					"time": 0.25
+				}
+			],
+			"wait": 1.0
+		},
+		{
+			"act": 4,
+			"speaker": "",
+			"text": "（车轮上的冰被硬生生碾碎，攻城车又开动了。两个刚放空魔力的人瘫在车斗里，小手和钳子一起伸了过来）",
+			"actions": [
+				{
+					"do": "move",
+					"who": "foe1",
+					"to": [
+						-44,
+						0
+					],
+					"time": 0.6
+				},
+				{
+					"do": "move",
+					"who": "foe2",
+					"to": [
+						44,
+						0
+					],
+					"time": 0.6
+				},
+				{
+					"do": "tickle",
+					"who": "pink",
+					"by": "foe1",
+					"repeat": 8,
+					"interval": 0.22,
+					"fx": "hand",
+					"zone": "sole"
+				},
+				{
+					"do": "tickle",
+					"who": "blue",
+					"by": "foe2",
+					"repeat": 8,
+					"interval": 0.22,
+					"fx": "brush",
+					"zone": "butt"
+				}
+			]
+		},
+		{
+			"act": 4,
+			"speaker": "蓝色的公主",
+			"text": "……哈哈……放完……车、车一颠……屁股……就……哈哈哈哈……！",
+			"emotion": "helpless_2",
+			"actions": [
+				{
+					"do": "bubble",
+					"who": "pink",
+					"kind": "laugh"
+				},
+				{
+					"do": "bubble",
+					"who": "blue",
+					"kind": "laugh"
+				},
+				{
+					"do": "tickle",
+					"who": "blue",
+					"by": "foe2",
+					"repeat": 5,
+					"interval": 0.22,
+					"fx": "brush",
+					"zone": "butt"
+				}
+			]
+		},
+		{
+			"act": 4,
+			"speaker": "公主",
+			"text": "哈哈哈！放完就是这样的——全身都变成脚心了——呀啊别夹——！",
+			"emotion": "helpless_2",
+			"actions": [
+				{
+					"do": "tickle",
+					"who": "pink",
+					"by": "foe1",
+					"repeat": 5,
+					"interval": 0.22,
+					"fx": "hand",
+					"zone": "sole"
+				}
+			]
+		},
+		{
+			"act": 4,
+			"speaker": "",
+			"text": "（钳子轮流夹她的每一根脚趾，夹一下松一下；小木手在蓝色公主的腿根上抓挠，车一颠就滑到屁股上，再爬回腿根）",
+			"actions": [
+				{
+					"do": "tickle",
+					"who": "pink",
+					"by": "foe1",
+					"repeat": 8,
+					"interval": 0.22,
+					"fx": "hand",
+					"zone": "sole"
+				},
+				{
+					"do": "tickle",
+					"who": "blue",
+					"by": "foe2",
+					"repeat": 8,
+					"interval": 0.22,
+					"fx": "brush",
+					"zone": "thigh"
+				}
+			]
+		},
+		{
+			"act": 4,
+			"speaker": "公主",
+			"text": "哈哈哈哈！一、一根一根夹——我数到五了——求求你们别夹第六根——我只有五根哈哈哈！",
+			"emotion": "helpless_2",
+			"actions": [
+				{
+					"do": "bubble",
+					"who": "pink",
+					"kind": "laugh"
+				},
+				{
+					"do": "bubble",
+					"who": "blue",
+					"kind": "laugh"
+				},
+				{
+					"do": "tickle",
+					"who": "pink",
+					"by": "foe1",
+					"repeat": 5,
+					"interval": 0.22,
+					"fx": "hand",
+					"zone": "sole"
+				}
+			]
+		},
+		{
+			"act": 4,
+			"speaker": "蓝色的公主",
+			"text": "……滑下去……爬、爬回来……又……滑……求……求你……停……",
+			"emotion": "helpless_2",
+			"actions": [
+				{
+					"do": "tickle",
+					"who": "blue",
+					"by": "foe2",
+					"repeat": 5,
+					"interval": 0.22,
+					"fx": "brush",
+					"zone": "butt"
+				}
+			]
+		},
+		{
+			"act": 4,
 			"speaker": "",
 			"text": "（攻城车绕着广场转圈，螃蟹们举着盾牌跟在旁边跑，钳子挠脚心，小手揉腿根，一刻不停）",
-			"portrait": "siege_fail_5",
 			"actions": [
 				{
 					"do": "pose",

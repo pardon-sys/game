@@ -12,7 +12,7 @@
           test 裁缝试一个点时的话（%s = 点名）、react 公主的反应（strong 好痒 / weak 有一点点 / none 完全没感觉）、
           fixed 缝对了、check 缝错了的「仔细检查」（%s = 点名）
 """
-from .common import A, N, P, line
+from .common import A, N, P, back, burst, line
 
 TAILOR_N = "裁缝"
 APP = "学徒"
@@ -261,13 +261,33 @@ FAIL_TAILOR = {"name": "试衣失败：全身尺码复查", "cast": {
     _say(APP, "是！（学徒把她的两只手举过头顶，按在了人台上）"),
     _say(TAILOR_N, "腋下的尺寸也重新量～（软尺贴着腋窝，一寸一寸地往里挪）", [_tk("tl", zone="armpit", n=12, iv=0.18)]),
     _say(P, "呀哈哈！胳、胳肢窝……！一寸一寸的……更痒了——！", emotion="helpless_2"),
-    _say(APP, "师傅，还有脚。"),
-    _say(TAILOR_N, "对对，脚掌！刚才的数字被她笑得抖掉了。（她蹲下来，捏住一只光着的脚丫）"),
-    _say(N, "（软尺从脚跟慢慢滑到脚尖，又从脚尖滑回来。尺子的边缘刮过脚心，刮过脚弓，在每一道脚趾缝里都停一下「对刻度」）", [_tk("tl", zone="sole", n=16, iv=0.16)]),
-    _say(P, "哈哈哈哈哈！对、对什么刻度啊！脚趾缝里没有刻度——！", portrait="defeat_2"),
+    _say(TAILOR_N, "还有脚掌！刚才的数字被你笑得抖掉了。（她蹲下来，捏住一只光着的脚丫）"),
+    dict(_say(N, "（软尺从脚跟慢慢滑到脚尖，又从脚尖滑回来。尺子的边缘刮过脚心，刮过脚弓，在每一道脚趾缝里都停一下「对刻度」）",
+              [_tk("tl", zone="sole", n=16, iv=0.16)], portrait="defeat_2"), cg=True),
+    _say(P, "哈哈哈哈哈！对、对什么刻度啊！脚趾缝里没有刻度——！", [A("bubble", who="princess", kind="laugh")]),
     _say(APP, "师傅，她的脚趾一直在动，量不准。"),
     _say(TAILOR_N, "那你帮我扳开～一根一根地量。", [_tk("ap", zone="sole", n=12, iv=0.18), A("pose", who="princess", visual="helpless_2")]),
     _say(P, "不、不要扳——哈哈哈哈！一根……一根地……呜哈哈哈……！", emotion="helpless_2"),
+    _say(N, "（学徒把她的脚趾一根一根扳开，裁缝的软尺就在每一道趾缝里来回拉一下，「嗯——这道宽两分」「这道窄一分」，量得一本正经）",
+         [_tk("ap", zone="sole", n=10, iv=0.16), _tk("tl", zone="sole", n=10, iv=0.16)]),
+    _say(P, "哈哈哈哈！谁、谁要知道趾缝多宽啊——做鞋也用不着——！", [A("shake", who="princess", time=0.5)]),
+    _say(TAILOR_N, "做袜子用得着呀～分趾袜，要合脚的。", [_tk("tl", zone="sole", n=8, iv=0.18)]),
+    _say(P, "我、我不要分趾袜——哈哈哈——那、那个会更痒的吧——！"),
+    _say(N, "（量完左脚量右脚，量完脚掌量脚背。一圈下来，被挠出来的魔力疲倦在身体里越积越满，她的指尖开始冒出粉色的光点）",
+         [_tk("tl", zone="sole", n=8, iv=0.18), _tk("ap", zone="sole", n=8, iv=0.18)]),
+    _say(P, "等、等一下……魔力……满了……要、要炸开了——！"),
+    dict(_say(N, "（星光从她身上炸开，软尺被冲得满屋乱飞，裁缝的针线盒翻了个底朝天，学徒一屁股坐在了布料堆里）",
+              burst("princess", [("tl", [-28, 8]), ("ap", [28, 8])])), act="burst", wait=1.0),
+    _say(P, "哈啊……魔力一下子全出去了……身上好轻……像穿了一件很合身的衣服……好舒服……", emotion="happy"),
+    _say(TAILOR_N, "哎呀～量到一半爆尺码了。……不过放完魔力，身子是最敏感的时候，正适合量最精细的地方～", back([("tl", [-28, 8]), ("ap", [28, 8])])),
+    _say(P, "最、最精细的……？呀啊——！软尺……只是碰到脚心……就……哈哈哈哈！", [_tk("tl", zone="sole", n=8, iv=0.18)], emotion="helpless_2"),
+    _say(APP, "师傅，她现在碰一下就跳，比刚才好量多了——一跳就知道是哪里。", [_tk("ap", zone="sole", n=6, iv=0.2)]),
+    _say(N, "（裁缝拿出最细的一根丝带尺，沿着脚弓最软的那一道慢慢拉过去；学徒捏着另一只脚的脚跟，用尺子的金属头在上面一点一点地「找零刻度」）",
+         [_tk("tl", zone="sole", n=12, iv=0.15), _tk("ap", zone="sole", fx="hand", n=12, iv=0.15)]),
+    _say(P, "哈哈哈哈！零、零刻度不在脚跟上——求、求你们——敏感得要死了——我认输——尺码你们随便写——！",
+         [A("bubble", who="princess", kind="laugh"), A("shake", who="princess", time=0.6)]),
+    _say(TAILOR_N, "随便写可不行～最后量一下腋下，就收工。", [_tk("tl", zone="armpit", n=10, iv=0.16)]),
+    _say(P, "腋、腋下又来——哈哈哈——裁缝铺……我再也不来了……！"),
     _say(TAILOR_N, "好～啦。腰围、腋下、脚掌，全部重新量好了。"),
     _say(TAILOR_N, "数字嘛……跟第一次量的一模一样。"),
     _say(P, "那、那刚才那些是干什么的啊……！", emotion="angry"),

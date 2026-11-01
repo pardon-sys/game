@@ -2,7 +2,7 @@
   herbs     六种药草：name、wrong（配方里没有它、却放进去喝下时的反应：奶奶的观察 + 公主的话，带挠的部位）
   recipes   三张配方（失败一次换下一张）：answer 正确的三种、blurred 被水渍盖住的配方字
 """
-from .common import A, N, P, line
+from .common import A, N, P, back, burst, line
 
 PHARM = "药剂师奶奶"
 
@@ -224,10 +224,31 @@ FAIL_POTION = {"name": "试药失败：全身羽毛测试", "cast": {
     _say(PHARM, "手心还没散。那，脖子。", [_tk("ph", zone="neck", n=8, iv=0.22)], portrait="defeat_1"),
     _say(P, "哈哈哈！脖子不行！缩、缩不起来——！", [A("bubble", who="princess", kind="laugh"), A("shake", who="princess", time=0.5)]),
     _say(PHARM, "腰也没散。……脚心呢？把鞋脱了，奶奶看看。", [_tk("ph", zone="waist", n=6, iv=0.25)]),
-    _say(P, "脚、脚心肯定没散啊！不用试了——哈哈哈哈！", [_tk("ph", zone="sole", n=12, iv=0.16)], portrait="defeat_2"),
-    _say(N, "（羽毛顺着脚弓慢慢扫到前脚掌，又在脚趾缝里轻轻转了一圈。三碗药的药效一起发作，痒得她连脚趾都不知道该往哪边蜷）"),
-    _say(PHARM, "嗯……全身都没散。那就只好等它自己散啦。……要等一个时辰哦。", [A("pose", who="princess", visual="helpless_2")]),
-    _say(P, "一、一个时辰……！？哈哈……奶奶你在笑吧……你绝对在偷笑吧……！", emotion="helpless_2"),
+    _say(P, "不、不用试了……脚心肯定没散……我自己知道的……", emotion="shy"),
+    _say(N, "（奶奶笑眯眯地握住她的脚踝，把光着的脚丫按在软垫上。十根脚趾不安地缩成一团，脚心却露得明明白白）"),
+    dict(_say(P, "呀啊——！脚、脚心肯定没散啊——哈哈哈哈！", [_tk("ph", zone="sole", n=12, iv=0.16)], portrait="defeat_2"), cg=True),
+    _say(N, "（羽毛顺着脚弓慢慢扫到前脚掌，又在脚趾缝里轻轻转了一圈。三碗药的药效一起发作，痒得她连脚趾都不知道该往哪边蜷）",
+         [_tk("ph", zone="sole", n=10, iv=0.18), A("pose", who="princess", visual="helpless_2")]),
+    _say(P, "哈哈哈哈！奶、奶奶——趾缝里不行——那里是第二碗药——！", [A("bubble", who="princess", kind="laugh")]),
+    _say(PHARM, "哦？第二碗是在趾缝里发作的呀。奶奶记下来。……再试一次，看看记得对不对。", [_tk("ph", zone="sole", n=8, iv=0.2)]),
+    _say(P, "记、记什么啊——不要拿我的脚做笔记哈哈哈！", [A("shake", who="princess", time=0.5)]),
+    _say(N, "（奶奶换了一把小刷子，一手握着她的脚踝，一手用刷子尖在每一道趾缝里点一下，点一下就在本子上画一个勾）", [_tk("ph", zone="sole", fx="lines", n=10, iv=0.2)]),
+    _say(P, "一、一个勾……又一个勾……奶奶你画得好慢……哈哈哈……我、我要……", emotion="helpless_2"),
+    _say(N, "（三碗药的药效被挠得在身体里翻腾，魔力疲倦一下子涨满了，她的身体开始一闪一闪地发光）", [_tk("ph", zone="sole", n=6, iv=0.2)]),
+    _say(P, "魔、魔力……要满出来了……奶奶快躲开——！"),
+    dict(_say(N, "（星光从她身上炸开，椅垫被冲得飞了起来，奶奶的老花镜歪到了一边，羽毛和小刷子撒了一地）", burst("princess", [("ph", [-30, 10])])), act="burst", wait=1.0),
+    _say(P, "哈啊……魔力……全放出去了……身体轻飘飘的……好舒服……", emotion="happy"),
+    _say(PHARM, "哎哟哟，药效被冲出来一点了呢。……不过，放完魔力的身子最敏感了，正好接着试。", back([("ph", [-30, 10])])),
+    _say(P, "等、等一下……我刚刚……呀啊——！羽毛只碰了一下脚跟——怎么这么痒——！", [_tk("ph", zone="sole", n=10, iv=0.16)], emotion="helpless_2"),
+    _say(PHARM, "看吧。放完魔力以后呀，一根羽毛顶得上平时三根。", [_tk("ph", zone="sole", n=8, iv=0.18)]),
+    _say(N, "（奶奶把三根羽毛并成一把，从脚跟慢慢刷到脚尖，再刷回来。她的脚背绷得笔直，十根脚趾张开又蜷起，敏感得一碰就抖）", [_tk("ph", zone="sole", n=12, iv=0.15)]),
+    _say(P, "哈哈哈哈！敏、敏感得要命——全身都——求求你奶奶——我认输——配方我重新抄——！", [A("bubble", who="princess", kind="laugh"), A("shake", who="princess", time=0.6)]),
+    _say(PHARM, "认输可不行，药效还没散呢。……腋下也再试一下。", [_tk("ph", zone="armpit", n=8, iv=0.2)]),
+    _say(P, "腋、腋下也……哈哈哈哈……奶奶……你绝对在偷笑……你的肩膀在抖……！"),
+    _say(N, "（羽毛在腋下和脚心之间来回换，换一下她就跳一下。小屋里只剩下她停不下来的笑声，和奶奶慢悠悠的哼歌声）",
+         [_tk("ph", zone="sole", n=8, iv=0.18), _tk("ph", zone="armpit", n=6, iv=0.2)]),
+    _say(PHARM, "嗯……全身都没散。那就只好等它自己散啦。……要等一个时辰哦。"),
+    _say(P, "一、一个时辰……！？哈哈……一个时辰……我会笑到飞走的……", emotion="helpless_2"),
     _say(PHARM, "呵呵呵。……散了以后，换一张配方，重新来。"),
     {"actions": [A("fade_out", time=0.6), A("voice", state="")], "wait": 0.7},
 ]}

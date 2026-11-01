@@ -137,12 +137,19 @@
 					"interval": 0.16,
 					"do": "tickle"
 				}
-			]
+			],
+			"portrait": "after_totem_fail"
 		},
 		{
 			"speaker": "公主",
 			"text": "哈哈哈哈哈！趾、趾缝！你的裤子在挠我的趾缝——！",
-			"portrait": "after_totem_fail"
+			"actions": [
+				{
+					"who": "princess",
+					"kind": "laugh",
+					"do": "bubble"
+				}
+			]
 		},
 		{
 			"speaker": "蓝色的公主",
@@ -162,11 +169,293 @@
 		},
 		{
 			"speaker": "蓝色的公主",
-			"text": "……没……哈……没有……"
+			"text": "……没……哈……没有……裤子……不是我……"
 		},
 		{
 			"speaker": "",
-			"text": "（光羽毛、小手、连线，从脚心到趾缝，从大腿到屁股。两个人背靠背地笑成一团，笑声在废地上回荡了好久，图腾柱倒是吃得很饱）"
+			"text": "（小手们像是听懂了，一齐转向蓝色公主自己：几只揉腿根，几只沿着大腿内侧往上爬，剩下的在屁股和大腿的交界上一下一下地捏）",
+			"actions": [
+				{
+					"who": "blue",
+					"by": "hands",
+					"zone": "thigh",
+					"fx": "pinch",
+					"repeat": 12,
+					"interval": 0.15,
+					"do": "tickle"
+				},
+				{
+					"who": "blue",
+					"by": "hands",
+					"zone": "butt",
+					"fx": "pinch",
+					"repeat": 12,
+					"interval": 0.15,
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……叛……徒……全、全是……叛徒……哈哈……"
+		},
+		{
+			"speaker": "公主",
+			"text": "哈哈哈！你也有今天——呀啊！光羽毛又扫我脚心了——！",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "vine",
+					"zone": "sole",
+					"fx": "feather",
+					"repeat": 10,
+					"interval": 0.16,
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "",
+			"text": "（光羽毛顺着她的脚弓来回扫，扫一下，背后的蓝色公主就被光绳带着抖一下。两个人的笑声叠在一起，粉色公主的魔力疲倦先满了）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "vine",
+					"zone": "sole",
+					"fx": "feather",
+					"repeat": 10,
+					"interval": 0.15,
+					"do": "tickle"
+				},
+				{
+					"who": "blue",
+					"by": "vine",
+					"zone": "thigh",
+					"fx": "feather",
+					"repeat": 8,
+					"interval": 0.16,
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "要、要满了——蓝色的你别回头——我要炸了——！"
+		},
+		{
+			"speaker": "",
+			"text": "（星光从她身上炸开，背后的光绳被冲断了一半，光羽毛四散飞开，像下了一场粉色的雪）",
+			"actions": [
+				{
+					"time": 0.8,
+					"do": "flash"
+				},
+				{
+					"sound": "star_burst",
+					"volume": -1.0,
+					"do": "sfx"
+				},
+				{
+					"sound": "water_release",
+					"volume": -2.0,
+					"do": "sfx"
+				},
+				{
+					"who": "princess",
+					"time": 0.5,
+					"do": "shake"
+				},
+				{
+					"who": "princess",
+					"kind": "surprise",
+					"do": "bubble"
+				},
+				{
+					"who": "vine",
+					"to": [
+						50,
+						8
+					],
+					"time": 0.25,
+					"do": "move"
+				}
+			],
+			"act": "burst",
+			"wait": 1.0
+		},
+		{
+			"speaker": "公主",
+			"text": "哈啊……魔力全放出去了……背靠着你……暖暖的……好舒服……",
+			"emotion": "happy"
+		},
+		{
+			"speaker": "",
+			"text": "（可图腾的余光还在。散开的碎光又聚了回来，重新缠住两个人——这一次，它们专挑刚放完魔力、敏感得发烫的脚心）",
+			"actions": [
+				{
+					"who": "vine",
+					"to": [
+						0,
+						14
+					],
+					"time": 0.6,
+					"do": "move"
+				},
+				{
+					"who": "princess",
+					"by": "vine",
+					"zone": "sole",
+					"fx": "feather",
+					"repeat": 8,
+					"interval": 0.18,
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "呀啊——！放、放完以后……一碰就……比刚才痒好多好多哈哈哈哈！",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "vine",
+					"zone": "sole",
+					"fx": "feather",
+					"repeat": 10,
+					"interval": 0.15,
+					"do": "tickle"
+				}
+			],
+			"emotion": "helpless_2"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……你……放完了……我……也……裤子……挤……出来了……"
+		},
+		{
+			"speaker": "",
+			"text": "（冰蓝色的星光跟着炸开，光绳冻成了一圈冰环，裤子上的小手被冻成了一排冰手指，一动也不能动）",
+			"actions": [
+				{
+					"time": 0.8,
+					"do": "flash"
+				},
+				{
+					"sound": "star_burst",
+					"volume": -1.0,
+					"do": "sfx"
+				},
+				{
+					"sound": "water_release",
+					"volume": -2.0,
+					"do": "sfx"
+				},
+				{
+					"who": "blue",
+					"time": 0.5,
+					"do": "shake"
+				},
+				{
+					"who": "blue",
+					"kind": "surprise",
+					"do": "bubble"
+				},
+				{
+					"who": "hands",
+					"to": [
+						50,
+						-8
+					],
+					"time": 0.25,
+					"do": "move"
+				}
+			],
+			"act": "burst",
+			"wait": 1.0
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……呼。……冰……很凉。……身体……空空的……很……舒服……"
+		},
+		{
+			"speaker": "",
+			"text": "（冰环一化，小手们抖了抖手指又醒了过来。两个刚放空魔力的人背靠着背，谁也逃不开）",
+			"actions": [
+				{
+					"who": "hands",
+					"to": [
+						0,
+						-2
+					],
+					"time": 0.6,
+					"do": "move"
+				},
+				{
+					"who": "blue",
+					"by": "hands",
+					"zone": "butt",
+					"fx": "pinch",
+					"repeat": 8,
+					"interval": 0.16,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"by": "hands",
+					"zone": "sole",
+					"fx": "hand",
+					"repeat": 8,
+					"interval": 0.16,
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……哈哈哈……放、放完……捏、捏一下……就……哈哈哈……！"
+		},
+		{
+			"speaker": "公主",
+			"text": "哈哈哈！放完以后……更怕痒吧……我、我早就说了——呀啊趾缝——！"
+		},
+		{
+			"speaker": "",
+			"text": "（光羽毛、小手、连线，从脚心到趾缝，从大腿到屁股。两个人背靠背地笑成一团，笑声在废地上回荡了好久，图腾柱倒是吃得很饱）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "vine",
+					"zone": "sole",
+					"fx": "feather",
+					"repeat": 10,
+					"interval": 0.15,
+					"do": "tickle"
+				},
+				{
+					"who": "blue",
+					"by": "hands",
+					"zone": "thigh",
+					"fx": "pinch",
+					"repeat": 10,
+					"interval": 0.15,
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "哈哈哈哈……认、认输……图腾大人……我们认输……！",
+			"actions": [
+				{
+					"who": "princess",
+					"kind": "laugh",
+					"do": "bubble"
+				}
+			]
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……认……输。……裤子……也……认……"
 		},
 		{
 			"speaker": "工匠",
