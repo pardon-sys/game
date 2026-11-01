@@ -127,6 +127,10 @@
 					"who": "princess",
 					"visual": "helpless_1",
 					"do": "pose"
+				},
+				{
+					"do": "voice",
+					"state": "laugh"
 				}
 			]
 		},
@@ -154,6 +158,51 @@
 			"speaker": "公主",
 			"text": "大、大腿也……！这把椅子……到底哪里坏了……哈哈……！",
 			"emotion": "helpless_2"
+		},
+		{
+			"speaker": "",
+			"text": "（椅背里传出「咔、咔」的齿轮声，像是在换档。脚枷里的刷子换了个方向，从脚趾往脚跟倒着刷）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "chair",
+					"zone": "sole",
+					"fx": "lines",
+					"repeat": 12,
+					"interval": 0.14,
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "倒、倒着刷更痒……！谁、谁设计的这种椅子……！",
+			"actions": [
+				{
+					"who": "princess",
+					"kind": "laugh",
+					"do": "bubble"
+				}
+			]
+		},
+		{
+			"speaker": "",
+			"text": "（羽毛扫过膝盖窝，又绕到大腿内侧，在那里轻轻地画着圈）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "chair",
+					"zone": "thigh",
+					"fx": "feather",
+					"repeat": 12,
+					"interval": 0.14,
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "哈哈……哈……不、不要画圈……！会、会被听见的……！"
 		},
 		{
 			"speaker": "",

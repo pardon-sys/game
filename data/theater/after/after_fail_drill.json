@@ -232,6 +232,10 @@
 					"who": "blue",
 					"visual": "helpless_2",
 					"do": "pose"
+				},
+				{
+					"do": "voice",
+					"state": "laugh"
 				}
 			]
 		},

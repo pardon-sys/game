@@ -526,6 +526,19 @@ func _run_theater_sprites_move() -> void:
 	var a := CGActor.make_npc("blue", "blue_princess", Dialogue.npcs.get("blue_princess", {}))
 	a.set_pose("helpless_2", "", "")
 	check("公主 npc 换到失控姿势自动播循环动画（%s）" % a.animator.current, a.animator.current == "helpless")
+	# 笑声跟着姿势：失控 → 大笑、憋笑 → 憋笑声（只往上切）
+	var saved: Dictionary = CG.actors
+	CG.actors = {"blue": a}
+	CG.voice_state = ""
+	a.set_pose("giggle", "", "")
+	CG._auto_voice()
+	var v1 := CG.voice_state
+	a.set_pose("helpless_2", "", "")
+	CG._auto_voice()
+	var v2 := CG.voice_state
+	CG._set_voice("")
+	CG.actors = saved
+	check("小剧场的笑声跟着姿势：憋笑 → %s、失控 → %s" % [v1, v2], v1 == "giggle" and v2 == "laugh")
 	a.free()
 
 

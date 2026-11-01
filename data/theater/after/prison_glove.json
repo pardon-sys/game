@@ -126,6 +126,10 @@
 					"who": "princess",
 					"visual": "helpless_1",
 					"do": "pose"
+				},
+				{
+					"do": "voice",
+					"state": "laugh"
 				}
 			],
 			"emotion": "helpless_1"
@@ -164,6 +168,45 @@
 			"speaker": "公主",
 			"text": "哈……哈……那、那你就停下啊……这、这根本不是一会儿……！",
 			"emotion": "helpless_2"
+		},
+		{
+			"speaker": "痒痒手套",
+			"text": "咦，殿下的脚弓好软。……这里是不是比脚心还怕？"
+		},
+		{
+			"speaker": "",
+			"text": "（指腹贴着足弓最凹的那一道，慢慢地、一点一点地往上推，推到脚趾根又轻轻刮回来）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "glove",
+					"zone": "sole",
+					"fx": "hand",
+					"repeat": 12,
+					"interval": 0.14,
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "不、不知道……！别、别做实验……哈……哈哈……！",
+			"actions": [
+				{
+					"who": "princess",
+					"kind": "laugh",
+					"do": "bubble"
+				}
+			]
+		},
+		{
+			"speaker": "痒痒手套",
+			"text": "看来是的～记下来，交给守卫做审讯记录～"
+		},
+		{
+			"speaker": "公主",
+			"text": "不许记——！",
+			"emotion": "angry"
 		},
 		{
 			"speaker": "痒痒手套",

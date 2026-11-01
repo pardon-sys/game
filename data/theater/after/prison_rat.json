@@ -164,6 +164,10 @@
 					"who": "princess",
 					"visual": "helpless_1",
 					"do": "pose"
+				},
+				{
+					"do": "voice",
+					"state": "laugh"
 				}
 			],
 			"emotion": "helpless_1"
@@ -185,12 +189,138 @@
 		},
 		{
 			"speaker": "挠痒鼠",
-			"text": "吱～公主的脚趾缝好香，是面包的味道～"
+			"text": "吱？……吱吱！公主的脚趾缝好香，是面包的味道～"
 		},
 		{
 			"speaker": "公主",
-			"text": "才、才没有……那是晚饭……哈……哈……别闻了……！",
+			"text": "才、才没有……那是晚饭的时候……哈……哈……别闻了……！",
 			"emotion": "helpless_2"
+		},
+		{
+			"speaker": "挠痒鼠",
+			"text": "到底是哪一道最香呢？吱～挠痒鼠的鼻子，一道一道闻过去就知道了～"
+		},
+		{
+			"speaker": "",
+			"text": "（它扒开她的大脚趾和第二根脚趾，把尖尖的小鼻子凑进去嗅了嗅，又伸出小舌头飞快地舔了一下）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "rat",
+					"zone": "sole",
+					"fx": "hand",
+					"repeat": 8,
+					"interval": 0.16,
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "呀……！舔、舔了……！不许舔……！",
+			"actions": [
+				{
+					"who": "princess",
+					"time": 0.4,
+					"do": "shake"
+				}
+			]
+		},
+		{
+			"speaker": "挠痒鼠",
+			"text": "唔……这一道是麦子味。下一道！",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "rat",
+					"zone": "sole",
+					"fx": "hand",
+					"repeat": 6,
+					"interval": 0.18,
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "",
+			"text": "（第二道、第三道……它一道一道地钻进去，嗅一嗅、舔一舔，胡子扫得她整只脚都在抖）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "rat",
+					"zone": "sole",
+					"fx": "hand",
+					"repeat": 12,
+					"interval": 0.13,
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "哈……哈……不、不要一道一道来……每一道都……好痒……！嗯嗯嗯……！",
+			"emotion": "helpless_2"
+		},
+		{
+			"speaker": "挠痒鼠",
+			"text": "第四道有黄油味……可是还不够！最后一道——",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "rat",
+					"zone": "sole",
+					"fx": "hand",
+					"repeat": 6,
+					"interval": 0.18,
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "",
+			"text": "（它钻到小脚趾和第四根脚趾中间那一道，最窄、最软的地方，舔了一下，又舔了一下，满意地「吱」了一声）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "rat",
+					"zone": "sole",
+					"fx": "hand",
+					"repeat": 12,
+					"interval": 0.12,
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "挠痒鼠",
+			"text": "找到了！这一道最香！是刚出炉的面包！再闻十下！"
+		},
+		{
+			"speaker": "公主",
+			"text": "十、十下……！？不……那、那一道最怕痒……哈哈……求你了……！",
+			"actions": [
+				{
+					"who": "princess",
+					"kind": "laugh",
+					"do": "bubble"
+				}
+			],
+			"emotion": "helpless_2"
+		},
+		{
+			"speaker": "",
+			"text": "（小舌头在那道最窄的趾缝里来回舔，尾巴还在脚心上一下一下地扫。她蜷成一团缩在牢门边，捂着嘴的手都在抖）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "rat",
+					"zone": "sole",
+					"fx": "hand",
+					"repeat": 14,
+					"interval": 0.12,
+					"do": "tickle"
+				}
+			]
 		},
 		{
 			"speaker": "",

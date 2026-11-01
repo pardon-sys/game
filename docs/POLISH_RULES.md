@@ -33,6 +33,12 @@
      - **不要**给失控 / 憋笑状态写 `anim: idle`（idle 只有一帧）。
      - 教训（攻防战失败小剧场的精灵定格过）：`cg_player._build_cast` 的 npc 分支以前忽略 `visual` / `anim`，`CGActor.make_npc` 强制 `idle`（只有一帧），`pose` 动作只换行不换动画。
      - 自动检查：`cg_test` 的「小剧场里的精灵都会动」遍历所有 `data/theater/**`。
+   - **小剧场里要有角色的笑声**：憋笑放憋笑声（`voice giggle`），失控一 / 失控二放大笑声（`voice laugh`）。
+     - 笑声是靠步骤里的 `voice` 动作放的（这个设计保留）：**新写的小剧场要写 `voice`**——开头 `giggle`，换成失控 / 魔力释放那一步 `laugh`，结尾 `""`；
+     - 生成器兜底：`gen_floor06_after.py` 的 `_with_voice` 给换成失控（`pose helpless_*`）/ 魔力释放（`act = burst`）而没写 `voice` 的那一步补 `voice laugh`、换成憋笑的补 `voice giggle`；
+     - 运行时再兜底：`CGPlayer._auto_voice` 在换姿势和被挠以后按舞台上公主的姿势往上切（默认设置）；剧场自己写的 `voice` 照旧生效；
+     - 教训：以前只有开头那句 `voice giggle`，人物笑到失控了还是憋笑声，听起来像没在笑。
+     - 自动检查：`cg_test` 的「小剧场的笑声跟着姿势」。
    - **小游戏窗口里的人物也要跟着闷笑度换姿势**（憋笑 → 失控一 → 失控二）：
      - 小游戏（`TrainingStage` / `ErrandWorkStage` 子类）里的人物是 `CGActor` 木偶，开场摆个 `normal` 以后不会自己变；
      - 打开 `follow_laugh = true`（在 `_init` 里设），`TrainingStage._update_bars` 每帧按 `actor_laugh_ratio(id)` 同步姿势（`sync_actor_poses`）；

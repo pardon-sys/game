@@ -205,6 +205,10 @@
 					"who": "princess",
 					"visual": "helpless_1",
 					"do": "pose"
+				},
+				{
+					"do": "voice",
+					"state": "laugh"
 				}
 			],
 			"emotion": "helpless_1"
@@ -216,6 +220,30 @@
 		{
 			"speaker": "公主",
 			"text": "（……哼、哼哼是什么……我没有……嗯嗯嗯……！）",
+			"emotion": "helpless_1"
+		},
+		{
+			"speaker": "保卫队员",
+			"text": "……是老鼠吗？还是风？……我记得这间屋子的通风口坏了。"
+		},
+		{
+			"speaker": "",
+			"text": "（守卫没走，在门口来回踱步。刷子也没停，两侧那排一下一下地刷着大腿内侧，节奏慢得要命）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "saddle",
+					"zone": "thigh",
+					"fx": "feather",
+					"repeat": 10,
+					"interval": 0.18,
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "（快、快走啊……慢慢刷比快刷还难受……！）",
 			"emotion": "helpless_1"
 		},
 		{

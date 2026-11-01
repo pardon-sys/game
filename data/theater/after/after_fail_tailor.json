@@ -180,6 +180,10 @@
 					"who": "princess",
 					"visual": "helpless_2",
 					"do": "pose"
+				},
+				{
+					"do": "voice",
+					"state": "laugh"
 				}
 			]
 		},

@@ -680,6 +680,7 @@ func _camera_target(zoom: float, focus: Vector2, anchor := ORIGIN) -> Array:
 
 
 func _build_cast(cast: Dictionary) -> void:
+	voice_state = ""
 	for who in cast:
 		var info: Dictionary = cast[who]
 		var k := str(info.get("kind", ""))
@@ -882,6 +883,7 @@ func _act(a: Dictionary) -> float:
 					Dialogue.portrait_fx.set_cg_level(2)
 			else:
 				who.style = str(a.get("style", "idle"))
+			_auto_voice()
 		"sources":
 			_set_sources(a.get("list", []))
 		"light":
@@ -902,6 +904,7 @@ func _act(a: Dictionary) -> float:
 			# 被挠的公主站着没在笑：换成憋笑循环（精灵要动）
 			if who:
 				who.start_giggle()
+				_auto_voice()
 			if by:
 				by.style = "wiggle"
 				if by.kind == "trap":
@@ -1014,7 +1017,28 @@ func _spawn_fx(target: CGActor, kind: String, tool := "", zone := "") -> void:
 	tw.tween_callback(s.queue_free)
 
 
+## 笑声跟着人物的姿势自动切（POLISH_RULES：小剧场里失控就要有笑声）：舞台上任何一位公主是失控一 / 失控二 → 大笑（laugh），
+## 憋笑 → 憋笑声（giggle）；只往上切（剧场自己写的 voice 动作照旧生效，写 "" 停掉）
+const VOICE_RANK := {"": 0, "giggle": 1, "laugh": 2}
+var voice_state := ""
+
+
+func _auto_voice() -> void:
+	var want := ""
+	for a in actors.values():
+		var w := a as CGActor
+		if w == null or not w.kind in ["princess", "npc_princess"]:
+			continue
+		if w.visual.begins_with("helpless"):
+			want = "laugh"
+		elif w.visual in ["giggle", "damaged_giggle"] and want == "":
+			want = "giggle"
+	if int(VOICE_RANK.get(want, 0)) > int(VOICE_RANK.get(voice_state, 0)):
+		_set_voice(want)
+
+
 func _set_voice(state: String) -> void:
+	voice_state = state
 	if state == "":
 		voice.stop()
 		voice2.stop()
