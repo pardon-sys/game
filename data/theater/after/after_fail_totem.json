@@ -136,6 +136,20 @@
 					"repeat": 12,
 					"interval": 0.16,
 					"do": "tickle"
+				},
+				{
+					"do": "pose",
+					"who": "princess",
+					"visual": "helpless_2"
+				},
+				{
+					"do": "pose",
+					"who": "blue",
+					"visual": "helpless_2"
+				},
+				{
+					"do": "voice",
+					"state": "laugh"
 				}
 			],
 			"portrait": "after_totem_fail"
@@ -159,10 +173,6 @@
 					"who": "blue",
 					"visual": "helpless_2",
 					"do": "pose"
-				},
-				{
-					"do": "voice",
-					"state": "laugh"
 				}
 			]
 		},
@@ -313,6 +323,11 @@
 					"repeat": 8,
 					"interval": 0.18,
 					"do": "tickle"
+				},
+				{
+					"do": "pose",
+					"who": "princess",
+					"visual": "helpless_2"
 				}
 			]
 		},
@@ -411,6 +426,11 @@
 					"repeat": 8,
 					"interval": 0.16,
 					"do": "tickle"
+				},
+				{
+					"do": "pose",
+					"who": "blue",
+					"visual": "helpless_2"
 				}
 			]
 		},

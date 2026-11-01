@@ -312,7 +312,8 @@
 		{
 			"speaker": "",
 			"text": "（才刚舒服下来的身体，又被一口气挠回了顶点。第二次，魔力满了）",
-			"act": "burst"
+			"act": "burst",
+			"actions": []
 		},
 		{
 			"actions": [
@@ -396,7 +397,8 @@
 		{
 			"speaker": "",
 			"text": "（第三次。舒服和痒混在一起，她已经分不清是在笑还是在叹气——）",
-			"act": "burst"
+			"act": "burst",
+			"actions": []
 		},
 		{
 			"actions": [

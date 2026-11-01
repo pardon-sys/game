@@ -127,6 +127,20 @@
 					"repeat": 10,
 					"interval": 0.16,
 					"do": "tickle"
+				},
+				{
+					"do": "pose",
+					"who": "blue",
+					"visual": "helpless_2"
+				},
+				{
+					"do": "pose",
+					"who": "pink",
+					"visual": "helpless_2"
+				},
+				{
+					"do": "voice",
+					"state": "laugh"
 				}
 			],
 			"portrait": "after_drill_fail"
@@ -232,10 +246,6 @@
 					"who": "blue",
 					"visual": "helpless_2",
 					"do": "pose"
-				},
-				{
-					"do": "voice",
-					"state": "laugh"
 				}
 			]
 		},
@@ -361,6 +371,11 @@
 					"repeat": 6,
 					"interval": 0.2,
 					"do": "tickle"
+				},
+				{
+					"do": "pose",
+					"who": "blue",
+					"visual": "helpless_2"
 				}
 			]
 		},

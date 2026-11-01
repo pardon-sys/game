@@ -103,6 +103,7 @@ var curtain: ColorRect
 var flash_rect: ColorRect
 var skip_label: Label
 var voice: AudioStreamPlayer
+var _border: Panel
 ## 另一个公主的笑声（舞台上两个公主都在时：第八层战败剧场），比主角低 3 dB
 var voice2: AudioStreamPlayer
 ## 舞台顶部的来源栏（组合演出：三个来源的图标 + 名字，加入时点亮）。
@@ -247,6 +248,7 @@ func _build() -> void:
 	border.size = FRAME_RECT.size + Vector2(4, 4)
 	border.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(border)
+	_border = border
 	source_bar = HBoxContainer.new()
 	source_bar.name = "Sources"
 	source_bar.position = FRAME_RECT.position + Vector2(8, 6)
@@ -597,6 +599,7 @@ func _finish() -> void:
 	var id := current
 	Dialogue.close()
 	Dialogue.set_portrait_override(null)
+	_set_stage_wide(false, 0.0)
 	voice.stop()
 	voice2.stop()
 	for a in actors.values():
@@ -652,7 +655,10 @@ func _apply_portrait(step: Dictionary) -> void:
 		return
 	# 横版大图只有在正式素材存在时才用大框；缺素材时的占位是普通立绘
 	var wide: bool = data.get("portraits", {}).get(p, {}).get("wide", false) and has_portrait_file(p)
-	Dialogue.set_portrait_override(portrait_texture(p), wide)
+	var tex := portrait_texture(p)
+	Dialogue.set_portrait_override(tex, wide)
+	# 横版大图占了左边一大块：舞台收窄、挪到大图右边（不被盖住）
+	_set_stage_wide(wide and tex != null, roundf(Dialogue.WIDE_HEIGHT * tex.get_width() / tex.get_height()) if wide and tex else 0.0)
 	# 立绘反馈按幕递进；醒来时归零。第二幕起切幕有金色星环（等大框展开完）
 	if p == "wake":
 		_fx_act = 0
@@ -672,13 +678,48 @@ func _follow_pose(visual: String) -> void:
 
 func _reset_view() -> void:
 	view.scale = Vector2(BASE_ZOOM, BASE_ZOOM)
-	view.position = (ORIGIN - Vector2(0, -12) * BASE_ZOOM).round()
+	view.position = (ORIGIN + Vector2(stage_shift, 0) - Vector2(0, -12) * BASE_ZOOM).round()
+
+
+## 横版大图出来时（第七轮）：舞台框收窄、挪到大图右边；舞台中心跟着挪（stage_shift，镜头也按它算）。on = false 还原
+var stage_shift := 0.0
+var _stage_tween: Tween
+
+
+func _set_stage_wide(on: bool, cg_w: float) -> void:
+	var r := FRAME_RECT
+	if on:
+		var left := Dialogue.WIDE_POS.x + cg_w + 8.0
+		r = Rect2(left, FRAME_RECT.position.y, maxf(140.0, 476.0 - left), FRAME_RECT.size.y)
+	var shift := r.size.x * 0.5 - ORIGIN.x
+	var dx := shift - stage_shift
+	stage_shift = shift
+	if _stage_tween:
+		_stage_tween.kill()
+	_stage_tween = create_tween().set_parallel().set_trans(Tween.TRANS_QUAD)
+	_stage_tween.tween_property(frame, "position", r.position, 0.25)
+	_stage_tween.tween_property(frame, "size", r.size, 0.25)
+	_stage_tween.tween_property(view, "position:x", view.position.x + dx, 0.25)
+	for n in [night_tint, flash_rect, curtain]:
+		if is_instance_valid(n):
+			_stage_tween.tween_property(n, "size", r.size, 0.25)
+	for n in frame.get_children():
+		if n is TextureRect and n != night_tint:
+			_stage_tween.tween_property(n, "size", r.size, 0.25)
+	if is_instance_valid(_border):
+		_stage_tween.tween_property(_border, "position", r.position - Vector2(2, 2), 0.25)
+		_stage_tween.tween_property(_border, "size", r.size + Vector2(4, 4), 0.25)
+	_stage_tween.tween_property(source_bar, "position", r.position + Vector2(8, 6), 0.25)
+	_stage_tween.tween_property(skip_label, "position", r.position + Vector2(r.size.x - 64, 4), 0.25)
 
 
 ## 镜头：zoom（相对基础倍数）把舞台坐标 focus 对准舞台框里的 anchor 位置（默认舞台中心）。
 func _camera_target(zoom: float, focus: Vector2, anchor := ORIGIN) -> Array:
 	var s := maxf(1.0, roundf(BASE_ZOOM * zoom))
-	return [Vector2(s, s), (anchor - focus * s).round()]
+	# 舞台已经挪到横版大图右边、收窄：旧数据里「往右挪」的 anchor 不再需要，横向居中
+	if stage_shift != 0.0:
+		anchor = Vector2(ORIGIN.x, anchor.y)
+	return [Vector2(s, s), (anchor + Vector2(stage_shift, 0) - focus * s).round()]
 
 
 func _build_cast(cast: Dictionary) -> void:

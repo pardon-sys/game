@@ -136,6 +136,15 @@
 					"repeat": 12,
 					"interval": 0.16,
 					"do": "tickle"
+				},
+				{
+					"do": "pose",
+					"who": "princess",
+					"visual": "helpless_2"
+				},
+				{
+					"do": "voice",
+					"state": "laugh"
 				}
 			],
 			"portrait": "after_drain_fail"
@@ -168,10 +177,6 @@
 					"who": "princess",
 					"visual": "helpless_2",
 					"do": "pose"
-				},
-				{
-					"do": "voice",
-					"state": "laugh"
 				}
 			]
 		},
@@ -370,6 +375,11 @@
 					"repeat": 6,
 					"interval": 0.2,
 					"do": "tickle"
+				},
+				{
+					"do": "pose",
+					"who": "princess",
+					"visual": "helpless_2"
 				}
 			],
 			"emotion": "helpless_2"
