@@ -1,14 +1,15 @@
 class_name PrisonOddities
 extends Node2D
 ## 夜探地牢的牢房里那些奇怪的东西（TaskSneak 开始时摆上；台词和小剧场在 tools/build/knight_text/prison.py）：
-##   挠痒鼠（第一间牢房，隔着栏杆按 E）、被没收的痒痒手套（第二间牢房的墙上）、坏掉的审讯椅（审问室）：按 E 说话 / 调查（对话 floor_06/after_prison_*）；
+##   挠痒鼠（第一间牢房）、被没收的痒痒手套（第二间牢房的墙上）：它们关在牢房里，调查那间牢房的铁门（按 E）就触发——
+##     牢门自己的「门锁着」调查关掉，换成这里的调查点（不然按 E 总是先碰到门）；坏掉的审讯椅（审问室）：按 E 调查（对话 floor_06/after_prison_*）；
 ##   马凳（审问室角落）：走到旁边（SADDLE_R 以内）自动触发小剧场 prison_saddle（只一次）。
 ##   挠痒鼠没放出来会尖叫把守卫引来（对话 set.call = prison_alarm → alarm()）。
 ## 测试：spots、saddle_done、alarm()、spot(id)。
 
 const SPOTS := {
-	"rat": {"actor": Vector2i(14, 3), "talk": Vector2i(14, 5), "dialogue": "floor_06/after_prison_rat", "kind": "monster", "key": "rat"},
-	"glove": {"actor": Vector2i(20, 2), "talk": Vector2i(20, 5), "dialogue": "floor_06/after_prison_glove", "kind": "monster", "key": "glove"},
+	"rat": {"actor": Vector2i(14, 3), "talk": Vector2i(14, 4), "dialogue": "floor_06/after_prison_rat", "kind": "monster", "key": "rat"},
+	"glove": {"actor": Vector2i(20, 2), "talk": Vector2i(20, 4), "dialogue": "floor_06/after_prison_glove", "kind": "monster", "key": "glove"},
 	"chair": {"actor": Vector2i(18, 12), "talk": Vector2i(18, 12), "dialogue": "floor_06/after_prison_chair", "kind": "", "key": ""},
 }
 const SADDLE_AT := Vector2i(16, 13)
@@ -28,6 +29,8 @@ func _ready() -> void:
 			var a := CGActor.make_monster("prison_" + id, str(info["key"]), CG.data.get("actors", {}).get(str(info["key"]), {}))
 			add_child(a)
 			a.global_position = Cutscene.cell_to_world(actor_cell)
+		# 关在牢房里的：牢门自己的调查（门锁着）关掉，调查牢门就触发它们
+		_mute_gate(info["talk"])
 		var sp := Spot.new()
 		sp.dialogue = str(info["dialogue"])
 		add_child(sp)
@@ -37,6 +40,21 @@ func _ready() -> void:
 	add_child(saddle)
 	saddle.global_position = Cutscene.cell_to_world(SADDLE_AT)
 	saddle_done = GameState.has_flag("cg_seen_theater:prison_saddle")
+
+
+## 那一格的牢门：关掉它自己的「门锁着」调查
+func _mute_gate(cell: Vector2i) -> void:
+	var lv := get_parent()
+	while lv and lv.get_node_or_null("Entities") == null and lv.get_parent():
+		lv = lv.get_parent()
+	if lv == null:
+		return
+	var at := Cutscene.cell_to_world(cell)
+	for g in lv.find_children("*", "", true, false):
+		if g.get_script() and str(g.get_script().resource_path).ends_with("gate.gd") and (g as Node2D).global_position.distance_to(at) <= 10.0:
+			var it := g.get_node_or_null("Interactable") as Interactable
+			if it:
+				it.enabled = false
 
 
 func spot(id: String) -> Node2D:
@@ -69,7 +87,7 @@ class Spot extends Node2D:
 		var area := Interactable.new()
 		var shape := CollisionShape2D.new()
 		var c := CircleShape2D.new()
-		c.radius = 9.0
+		c.radius = 12.0
 		shape.shape = c
 		area.add_child(shape)
 		add_child(area)

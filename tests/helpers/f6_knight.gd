@@ -323,6 +323,13 @@ static func run(t: Node) -> void:
 	var od := sk.oddities
 	verify(t, "牢房里摆了挠痒鼠、痒痒手套、审讯椅（按 E）和马凳", is_instance_valid(od) and od.spots.size() == 3 and is_instance_valid(od.saddle))
 	if is_instance_valid(od):
+		# 挠痒鼠 / 手套关在牢房里：调查牢门（按 E）触发它们，不再是「门锁着」
+		var rat_gate_on := false
+		for g in t.main.level.find_children("*", "", true, false):
+			if g.get_script() and str(g.get_script().resource_path).ends_with("gate.gd") and (g as Node2D).global_position.distance_to(Cutscene.cell_to_world(Vector2i(14, 4))) <= 10.0:
+				rat_gate_on = (g.get_node("Interactable") as Interactable).enabled
+		verify(t, "挠痒鼠的牢门：门自己的「门锁着」调查关掉了，调查点就在牢门上", not rat_gate_on
+			and od.spot("rat").global_position.distance_to(Cutscene.cell_to_world(Vector2i(14, 4))) < 2.0)
 		var gp0: Array = guards.map(func(g): return g.state if "state" in g else 0)
 		var n_alarm := PrisonOddities.alarm()
 		verify(t, "挠痒鼠没放出来就尖叫：把附近的守卫引过来（%d 个）" % n_alarm, n_alarm >= 0)
