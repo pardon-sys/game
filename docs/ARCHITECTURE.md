@@ -1143,13 +1143,13 @@ data/cutscenes/<楼层组>/  地图内过场；data/theater/<楼层组>/  小剧
   AI：蓝色公主跟着、盔甲靠近粉色公主时冲过去，冷却一好就冻住它；粉色公主背着盔甲跑开。
 - **骑士 Boss 化简（第六轮，以这一段为准，下面旧条目里提到的已去掉的机制不再生效）**：
   - **核心三件事**：① 蓝色公主 J 冻住部件 → 打它（冻住 / 卡住 / 破绽时才打得动）；打破绽让骑士笑出声 → 直接震碎一截部件（`WEAK_BREAK`，不再有「清醒」时间、安神香加时）；
-    ② 被抓连按挣脱（诅咒装备只能自己连按挣，没有搭档拉扯）；③ 笑声灯笼：亮着的灯笼光圈（`KnightCurse.LIGHT_SAFE_R`）里闷笑每秒降 `LANTERN_CALM`、黑雾进不来、小手进来就化。
+	② 被抓连按挣脱（诅咒装备只能自己连按挣，没有搭档拉扯）；③ 笑声灯笼：亮着的灯笼光圈（`KnightCurse.LIGHT_SAFE_R`）里闷笑每秒降 `LANTERN_CALM`、黑雾进不来、小手进来就化。
   - **去掉了**：清醒 / 安神香加时、盔甲盯着镇民走（`KnightCurse.hunt_auto = false`）、扫帚、和镇民说话的奖励（只喊一句提示）、狂暴、触手、平时随机给镇民贴手印。
   - **诅咒爆发轮换**（`KnightCurse.ROTATE`）：前三个阶段每次从「救下被贴的镇民 hands / 引它撞木桩 veins / 冻住两颗诅咒核心 heart」里挑，不和上一次重复；最后阶段固定「吸笑 drain」。
-    每种第一次出现放介绍过场（`knight_intro_surge_*`）。测试用 `start(kind)` 或 `force_kind` 指定。
+	每种第一次出现放介绍过场（`knight_intro_surge_*`）。测试用 `start(kind)` 或 `force_kind` 指定。
   - **引怪**：粉色公主按 Y，骑士在忙就记着（`lure_pending`），空下来立刻**直接朝她**冲（`charge(who, aimed)`，不再只横竖）；地脉爆发时 `_focus` 盯着粉色公主。
   - **AI 在爆发里**（`_ai_surge`）：手印风暴去扒被贴的镇民；地脉时粉色站到「木桩在她和骑士中间」的位置再笑、蓝色躲开；核心时蓝色去冻、粉色躲出光环；吸笑时站进灯笼光里。
-    爆发中 `soft_target` 返回空（不打打不动的部件）。
+	爆发中 `soft_target` 返回空（不打打不动的部件）。
   - **支线奖励的帮手保留**：小孩、奶奶（薄荷糖 / 烟）、工匠（木桩、修木箱）、派对主人、旧石灯笼、完美闪避；**队长**改成跟着盔甲上去打（不再跟着粉色公主挡招；做过旧剑术开场那一次盾保留）。
 - **F Boss「痒铠骑士」**（广场，`knight_boss_open`，`TaskKnightBoss`；场上的东西都是程序画的，放在 `knight_boss_fx.gd` 的 `KnightBossFx`：`Bolt` / `NetCell` / `Dust` / `Shard` /
   `Ring`（有缺口）/ `Mirror` / `Gear` / `WeakSpot` / `Victim` / `Crate` / `LeapShadow` / `Lantern` / `Tentacle` / `Helper` / `Decor` / `Burst`，伤害判定由 `TaskKnightBoss` 每帧问它们；
