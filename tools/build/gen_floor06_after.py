@@ -1054,6 +1054,32 @@ AFTER_CG_DONE = {"after_d2_equip_done": "after_equip_ok", "after_d3_potion_done"
                  "after_d7_totem_done": "after_totem_ok"}
 
 
+def _with_voice(data):
+    """小剧场的笑声（POLISH_RULES）：换成失控一 / 失控二的那一步补 voice laugh、换成憋笑的补 voice giggle（这一步自己写了 voice 就不动）；
+    魔力释放那一步（act = burst）也是大笑。只往上切，结尾的 voice "" 照旧。运行时 CGPlayer._auto_voice 是同样规则的兜底。"""
+    rank = {"": 0, "giggle": 1, "laugh": 2}
+    cur = ""
+    for st in data.get("steps", []):
+        acts = st.get("actions", [])
+        if any(a.get("do") == "voice" for a in acts):
+            cur = next(str(a.get("state", "")) for a in acts if a.get("do") == "voice")
+            continue
+        want = ""
+        for a in acts:
+            if a.get("do") == "pose":
+                v = str(a.get("visual", ""))
+                if v.startswith("helpless"):
+                    want = "laugh"
+                elif v in ("giggle", "damaged_giggle") and want == "":
+                    want = "giggle"
+        if st.get("act") == "burst":
+            want = "laugh"
+        if rank.get(want, 0) > rank.get(cur, 0):
+            st.setdefault("actions", []).append({"do": "voice", "state": want})
+            cur = want
+    return data
+
+
 def _with_fail_cg(tid, data):
     key = AFTER_CG_FAIL.get(tid)
     if not key:
@@ -1091,7 +1117,7 @@ for cid, fn in CUTS.items():
 th = Path("data/theater/after")
 th.mkdir(parents=True, exist_ok=True)
 for tid, data in dict(punish.THEATERS, **tasks.THEATERS, **potion.THEATERS, **tailor.THEATERS, **mine.THEATERS, **totem.THEATERS, **drain.THEATERS, **drill.THEATERS, **inspect.THEATERS, **night.THEATERS, **knight_tasks.THEATERS, **knight_finale.THEATERS, **errand_gate_chain.THEATERS, **knight_prison.THEATERS).items():
-    (th / (tid + ".json")).write_text(json.dumps(_with_fail_cg(tid, data), ensure_ascii=False, indent="\t") + "\n")
+    (th / (tid + ".json")).write_text(json.dumps(_with_voice(_with_fail_cg(tid, data)), ensure_ascii=False, indent="\t") + "\n")
 
 floors = json.loads(Path("data/floors.json").read_text())
 lst = floors["floors"]

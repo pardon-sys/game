@@ -129,7 +129,13 @@
 			"speaker": "公主",
 			"text": "哈……哈……不、不行了……魔力……！",
 			"portrait": "fatigue_burst",
-			"act": "burst"
+			"act": "burst",
+			"actions": [
+				{
+					"do": "voice",
+					"state": "laugh"
+				}
+			]
 		},
 		{
 			"actions": [

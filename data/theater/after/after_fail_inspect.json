@@ -138,6 +138,10 @@
 					"who": "princess",
 					"visual": "helpless_2",
 					"do": "pose"
+				},
+				{
+					"do": "voice",
+					"state": "laugh"
 				}
 			],
 			"portrait": "after_inspect_fail"
