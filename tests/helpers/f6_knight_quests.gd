@@ -643,6 +643,16 @@ static func run(t: Node) -> void:
 	rwh.tick(0.05)
 	wh0._process(0.05)
 	verify(t, "音乐一停：看得见她就爬过来", wh0.state == "chase")
+	wh0.global_position = pink.global_position + Vector2(120, 0)
+	var dw0 := wh0.global_position.distance_to(pink.global_position)
+	for i in 10:
+		wh0._process(0.05)
+	verify(t, "发条小手比人快得多：半秒追近一大截（%.0f → %.0f）" % [dw0, wh0.global_position.distance_to(pink.global_position)], dw0 - wh0.global_position.distance_to(pink.global_position) >= 80.0)
+	wh0.global_position = pink.global_position + Vector2(5, 0)
+	wh0._process(0.05)
+	for i in 14:
+		wh0._process(0.05)
+	verify(t, "挠到以后只弹开一小段、很快又追上来（离她 %.0f，状态 %s）" % [wh0.global_position.distance_to(pink.global_position), wh0.state], wh0.global_position.distance_to(pink.global_position) < 40.0)
 	pink.global_position = Cutscene.cell_to_world(QuestWarehouse.COVERS[1]) + Vector2(8, 0)
 	rwh.tick(0.05)
 	wh0._process(0.05)
@@ -968,6 +978,16 @@ static func run(t: Node) -> void:
 		bb2.player.laugh.set_value(bb2.player.laugh.max_value * 0.55)
 		bb2.blue_laugh = 0.55
 		bb2.set_mode("blue", 0)
+		# 按 D 挠重一点：粉色的笑声明显往上（不被自然消退抵掉）
+		bb2.player.laugh.set_value(bb2.player.laugh.max_value * 0.3)
+		bb2.set_mode("pink", 1)
+		for i in 40:
+			bb2._tick_both(0.05)
+		var pr_up := bb2.player.laugh.ratio()
+		bb2.set_mode("pink", 1)
+		verify(t, "按 D 两秒：粉色的笑声明显往上（30%% → %.0f%%）" % (pr_up * 100.0), pr_up > 0.42)
+		bb2.player.laugh.set_value(bb2.player.laugh.max_value * 0.55)
+		bb2.blue_laugh = 0.55
 		var c0 := bb2.meter.charge
 		bb2._tick_both(0.5)
 		verify(t, "两个人都在区间里：攒笑声（%.2f → %.2f）" % [c0, bb2.meter.charge], bb2.meter.charge > c0)

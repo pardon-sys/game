@@ -539,6 +539,14 @@ func _run_theater_sprites_move() -> void:
 	CG._set_voice("")
 	CG.actors = saved
 	check("小剧场的笑声跟着姿势：憋笑 → %s、失控 → %s" % [v1, v2], v1 == "giggle" and v2 == "laugh")
+	# 魔力释放那一步：被抖的公主换成「战损憋笑魔力释放」（魔法图集 damaged_giggle_burst，动画 cast），之后被挠回到战损憋笑
+	CG.actors = {"blue": a}
+	CG._burst_pose([{"do": "shake", "who": "blue"}])
+	var bv := a.visual
+	var ba := a.animator.current
+	a.start_giggle()
+	CG.actors = saved
+	check("魔力释放：战损憋笑魔力释放的精灵（%s / %s），之后被挠回到 %s" % [bv, ba, a.visual], bv == "damaged_giggle_burst" and ba == "cast" and a.visual == "damaged_giggle")
 	a.free()
 
 
@@ -558,6 +566,9 @@ func _run_long_fail_theaters() -> void:
 		_check_long("res://data/theater/siege/siege_fail_%d.json" % n, 32, 20, 2, bad)
 	for k in ["equip", "potion", "cart", "drain", "drill", "tailor", "mine", "inspect", "totem"]:
 		_check_long("res://data/theater/after/after_fail_%s.json" % k, 28, 18, 1, bad)
+	# 骑士 Boss 的 4 段战败小剧场（第七轮加长）：≥ 36 句、CG 后 ≥ 24、两人各释放一次
+	for k in ["knight_fail_boss", "knight_fail_boss_2", "knight_fail_boss_3", "knight_fail_fog"]:
+		_check_long("res://data/theater/after/%s.json" % k, 36, 24, 2, bad)
 	check("失败小剧场够长、CG 后文本多、有魔力释放（不够的 %s）" % [bad.slice(0, 4)], bad.is_empty())
 
 
@@ -570,7 +581,7 @@ func _check_long(path: String, min_lines: int, min_after: int, min_burst: int, b
 	var cg := -1
 	for i in lines.size():
 		var pt := str(lines[i].get("portrait", ""))
-		if pt.begins_with("siege_fail_") or pt.begins_with("after_"):
+		if pt.begins_with("siege_fail_") or pt.begins_with("after_") or pt.begins_with("knight_fail_"):
 			cg = i
 			break
 	var bursts := (j["steps"] as Array).filter(func(s): return str(s.get("act", "")) == "burst").size()

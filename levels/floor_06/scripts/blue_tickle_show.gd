@@ -19,9 +19,10 @@ const PRESS_COOL := 0.22
 const WARN := 0.8
 const WARN_EVERY := 2.6
 const POKE := 0.09
-const PINK_RATES := {-1: -0.07, 0: 0.02, 1: 0.085}
-const BLUE_RATES := {-1: -0.07, 0: 0.02, 1: 0.085}
-const DRIFT := 0.035
+## 档位（第七轮：以前 D 只有 +8.5%，闷笑条又每秒自然消退 6.7%，涨得慢、有时还往回退）：挠着的时候不自然消退（notify_attacked），D / K 明显往上
+const PINK_RATES := {-1: -0.08, 0: 0.015, 1: 0.10}
+const BLUE_RATES := {-1: -0.08, 0: 0.015, 1: 0.10}
+const DRIFT := 0.025
 const HOLD := 12.0
 const CRACK_LOSS := 0.35
 
@@ -290,6 +291,7 @@ func _tick_both(delta: float) -> void:
 	var dp := float(PINK_RATES[pink_mode]) + DRIFT * sin(_t * 1.3)
 	var db := float(BLUE_RATES[blue_mode]) + DRIFT * sin(_t * 1.7 + 1.0)
 	if is_instance_valid(player) and player.laugh:
+		player.laugh.notify_attacked()   # 两个人在互相挠：闷笑条不自然消退
 		player.laugh.set_value(clampf(player.laugh.value + player.laugh.max_value * dp * delta, 0.0, player.laugh.max_value * 0.99))
 	blue_laugh = clampf(blue_laugh + db * delta, 0.0, 1.0)
 	if fmod(_t, 0.8) < delta:

@@ -367,7 +367,6 @@ func _tick_wish(delta: float) -> void:
 			# 一阵风：音游条突然冒出来
 			lane.load_chart(RhythmLane.make_chart(98.0 + section * 12.0, 8 + section * 2, rng.randi(), 0.9))
 			lane.visible = true
-			Audio.play("wind", -4.0)
 			narrate(str((tx().get("gust", ["（一阵风吹过来——火苗一歪！）"]) as Array).pick_random()), 1.4)
 		elif fmod(_gust_t, 0.7) < delta:
 			# 风停的空当：大家挠两位公主

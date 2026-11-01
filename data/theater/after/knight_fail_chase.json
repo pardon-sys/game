@@ -44,10 +44,6 @@
 		},
 		{
 			"speaker": "",
-			"text": "—— 第一幕　抱住 ——"
-		},
-		{
-			"speaker": "",
 			"text": "（第三次被抱住的时候，盔甲没有再松手。它把她搂在怀里，像抱着一件很重要、很怕摔碎的东西）"
 		},
 		{
@@ -77,10 +73,6 @@
 		{
 			"speaker": "蓝色的公主",
 			"text": "……放开她。"
-		},
-		{
-			"speaker": "",
-			"text": "—— 第二幕　两个人 ——"
 		},
 		{
 			"speaker": "",
@@ -144,10 +136,6 @@
 		},
 		{
 			"speaker": "",
-			"text": "—— 第三幕　满了 ——"
-		},
-		{
-			"speaker": "",
 			"text": "（两个人的笑声叠在一起，痒意一层一层往上涌——魔力疲倦越积越满）",
 			"actions": [
 				{
@@ -193,7 +181,12 @@
 					"do": "sfx"
 				},
 				{
-					"who": "armor",
+					"sound": "water_release",
+					"volume": -2.0,
+					"do": "sfx"
+				},
+				{
+					"who": "princess",
 					"time": 0.4,
 					"do": "shake"
 				},
@@ -228,7 +221,12 @@
 					"do": "sfx"
 				},
 				{
-					"who": "armor",
+					"sound": "water_release",
+					"volume": -2.0,
+					"do": "sfx"
+				},
+				{
+					"who": "princess",
 					"time": 0.4,
 					"do": "shake"
 				},
@@ -280,10 +278,6 @@
 		{
 			"speaker": "蓝色的公主",
 			"text": "……唔……哈……这样……更……"
-		},
-		{
-			"speaker": "",
-			"text": "—— 第四幕　逃 ——"
 		},
 		{
 			"speaker": "",

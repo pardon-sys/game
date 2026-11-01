@@ -293,7 +293,8 @@ static func run(t: Node) -> void:
 	var runner: KnightBossFx.Victim = b.victims.filter(func(v): return v.kind == "runner")[0]
 	var r0: Vector2 = runner.global_position
 	await t._advance_until(func(): return runner.global_position.distance_to(r0) > 2.0, 5.0)
-	verify(t, "镇民在掩体之间跑（不沿固定的圈）", runner.global_position.distance_to(r0) > 2.0 and runner.covers.size() == TaskKnightBoss.COVERS.size())
+	verify(t, "镇民在掩体之间跑（不沿固定的圈；活动范围大一点：%d 处掩体）" % runner.covers.size(), runner.global_position.distance_to(r0) > 2.0
+		and runner.covers.size() == TaskKnightBoss.COVERS.size() + TaskKnightBoss.FAR_COVERS.size())
 	runner.state = "hide"
 	runner.global_position = b._body.global_position + Vector2(20, 0)
 	await t._wait(0.1)
@@ -465,6 +466,18 @@ static func run(t: Node) -> void:
 	b.blue.global_position = p0.global_position + Vector2(10, 0)
 	b.freeze_cool = 0.0
 	verify(t, "蓝色公主 J：冻住身边的部件", b.freeze_part(b.blue) and p0.freeze_left > 0.0)
+	# 减伤：蓝色公主（非粉色）打一下只算三分之一，三下才掉 1 点；粉色公主一下 1 点
+	var hp_before := p0.hp
+	b.hit_part(p0, false, b.blue)
+	b.hit_part(p0, false, b.blue)
+	var after_two := p0.hp
+	b.hit_part(p0, false, b.blue)
+	verify(t, "非粉色公主打部件只算三分之一：两下不掉（%d）、三下掉 1（%d → %d）" % [after_two, hp_before, p0.hp], after_two == hp_before and p0.hp == hp_before - 1)
+	b.hit_part(p0, false, pink)
+	verify(t, "粉色公主打一下就掉 1 点（%d）" % p0.hp, p0.hp == hp_before - 2)
+	p0.hp = TaskKnightBoss.PART_HP
+	p0.chip = 0.0
+	p0.freeze_left = 4.0
 	var dur0 := b.durability()
 	for i in TaskKnightBoss.PART_HP:
 		b.hit_part(p0)
@@ -809,6 +822,10 @@ static func run(t: Node) -> void:
 	verify(t, "雾里四盏都亮了：骑士落地、外圈黑雾停住、开始驱散（玩家操控蓝色公主）", is_instance_valid(b.dispel) and not b.floating
 		and b.fog_ring.frozen and GameState.player == b.blue and bool(GameState.vars.get(TaskKnightBoss.DISPEL_KEY, false)))
 	var dsp := b.dispel
+	verify(t, "驱散里黑雾小手刷得更勤（每 %.1f 秒，后半段 %.1f 秒）" % [KnightDispel.HAND_EVERY, KnightDispel.HAND_EVERY_LATE], KnightDispel.HAND_EVERY <= 1.3 and KnightDispel.HAND_EVERY_LATE <= 0.9)
+	var mon := dsp.spawn_monster("rat")
+	verify(t, "雾里钻出现有的怪（%s）" % [mon.name if mon else "无"], mon != null and dsp.monsters.has(mon))
+	dsp._clear_monsters()
 	# 粉色公主站在骑士身边吟唱：读条涨
 	pink.global_position = b.body_pos() + Vector2(0, 20)
 	pink.laugh.set_value(0.0)
@@ -856,7 +873,7 @@ static func run(t: Node) -> void:
 	d3.tick(1.0)
 	verify(t, "读条满：黑雾散了 → 净化（光柱汇到盔甲上）", d3.done and b.finale)
 	KnightCurse.auto = true
-	# 战败小剧场：追逃 1 个 + Boss 按阶段 3 个，都是四幕；两位公主都被挠（粉色脚心、蓝色大腿和屁股），第三幕两个人都释放
+	# 战败小剧场：追逃 1 个 + Boss 4 个；不写「第几幕」标题（第七轮）；两位公主都被挠（粉色脚心、蓝色大腿和屁股），有魔力释放的舒服
 	var ids := ["knight_fail_chase", "knight_fail_boss", "knight_fail_boss_2", "knight_fail_boss_3", "knight_fail_fog"]
 	var shape_ok := true
 	for id in ids:
@@ -868,10 +885,10 @@ static func run(t: Node) -> void:
 		var blue_hit := steps.any(func(st): return st is Dictionary and (st.get("actions", []) as Array).any(func(x): return str(x.get("who", "")) == "blue" and str(x.get("zone", "")) in ["thigh", "butt"]))
 		var burst := steps.any(func(st): return st is Dictionary and str(st.get("act", "")) == "burst")
 		var comfy := steps.any(func(st): return st is Dictionary and str(st.get("text", "")).contains("舒服"))
-		if acts != 4 or not blue_hit or not burst or not comfy:
+		if acts != 0 or not blue_hit or not burst or not comfy:
 			shape_ok = false
 			print("  小剧场 %s：%d 幕 蓝色被挠 %s 释放 %s 舒服 %s" % [id, acts, blue_hit, burst, comfy])
-	verify(t, "四个战败小剧场都是四幕、两位公主都被挠、第三幕魔力释放的舒服", shape_ok and ids.all(func(i): return CG.has_theater(i)))
+	verify(t, "战败小剧场都没有「第几幕」标题、两位公主都被挠、有魔力释放的舒服", shape_ok and ids.all(func(i): return CG.has_theater(i)))
 	GameState.vars[TaskKnightBoss.DISPEL_KEY] = false
 	var fmap := []
 	for ph in 4:
@@ -926,6 +943,17 @@ static func run(t: Node) -> void:
 	verify(t, "旧石灯笼（第五盏灯）一开场就亮着：小手爬进光里化掉", hm.state == "gone")
 	verify(t, "做过点灯笼的小姑娘：蓝色公主的冻结范围大一圈（%.0f）" % b2.freeze_reach(), b2.freeze_reach() > TaskKnightBoss.FREEZE_R)
 	verify(t, "队长不再跟着粉色公主，而是跟着盔甲上去打", (fh.field["captain"] as Node2D).get("follow") == b2._body)
+	# 最后阶段（笑雾之中从第 3 阶段接着打）开场：灯笼下已有帮手，场上不再摆第二个队长
+	var ph_save := b2.phase
+	b2.phase = TaskKnightBoss.PHASES - 1
+	var fh2 := KnightHelpers.new()
+	fh2.task = b2
+	b2.add_child(fh2)
+	fh2.setup()
+	verify(t, "最后阶段开场：场上不再摆队长 / 小孩 / 奶奶 / 工匠（只留灯笼下的那一个）", not fh2.field.has("captain") and not fh2.field.has("tom") and not fh2.field.has("granny"))
+	fh2.cleanup()
+	fh2.queue_free()
+	b2.phase = ph_save
 	var vk: KnightBossFx.Victim = b2.victims[0]
 	b2.curse_victim(vk)
 	(fh.field["tom"] as Node2D).global_position = vk.global_position
@@ -935,8 +963,9 @@ static func run(t: Node) -> void:
 	pc.freeze_left = 4.0
 	(fh.field["captain"] as Node2D).global_position = pc.global_position + Vector2(10, 0)
 	var chp := pc.hp
-	fh._cap_hit = 0.0
-	fh.tick(0.05)
+	for k in 3:   # 队长和别的非粉色公主一样只算三分之一：三下掉 1 点
+		fh._cap_hit = 0.0
+		fh.tick(0.05)
 	verify(t, "冻住的部件：队长也上去打了一下（%d → %d）" % [chp, pc.hp], pc.hp == chp - 1)
 	# ---- 派对主人：攻击目标、自己挣扎、彩带打部件、放庆典光环、笑倒不算失败、C 切不到
 	var ho := fh.host
@@ -976,11 +1005,11 @@ static func run(t: Node) -> void:
 	ho.attack()
 	for i in 20:
 		await t.get_tree().physics_frame
-		if pr.hp < rhp:
+		if pr.hp < rhp or pr.chip > 0.0:
 			break
 	hai.behaviours.insert(2, "magic")
 	verify(t, "派对主人的彩带打中冻住的部件（%d → %d；诅咒无敌 %s、软 %s、能出手 %s、状态 %s、彩带 %d）" % [rhp, pr.hp, b2.curse.invulnerable() if is_instance_valid(b2.curse) else false,
-		b2._soft(pr), ho.can_act(), ho.state, t.get_tree().get_nodes_in_group("festival_ribbon").size()], pr.hp < rhp)
+		b2._soft(pr), ho.can_act(), ho.state, t.get_tree().get_nodes_in_group("festival_ribbon").size()], pr.hp < rhp or pr.chip > 0.0)
 	FestivalAura.cast(ho, 200.0, 2.0)
 	KnightTickle.no_crit = true
 	pk.laugh.set_value(0.0)

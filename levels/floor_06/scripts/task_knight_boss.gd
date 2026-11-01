@@ -96,7 +96,9 @@ const KNIGHT_TICKLE := 0.25
 const LUCID_TIME := 5.0
 const INCENSE_BONUS := 3.0
 ## 打破绽让骑士笑出声：直接掉这么多耐久（代替原来的「清醒」）
-const WEAK_BREAK := 2
+const WEAK_BREAK := 1
+## 除粉色公主以外的人打部件：只算三分之一（第七轮：Boss 掉血太快）
+const OTHER_DMG := 1.0 / 3.0
 ## 亮着的灯笼光圈里：闷笑每秒降这么多（比例），黑雾也进不来
 const LANTERN_CALM := 0.06
 const PERFECT := 0.25
@@ -179,6 +181,9 @@ const CRATES := [Vector2(-80, -16), Vector2(80, -32), Vector2(-48, 64), Vector2(
 const COVERS := [Vector2(-80, -4), Vector2(80, -20), Vector2(-48, 76), Vector2(80, 76), Vector2(-16, -10), Vector2(112, -10),
 	Vector2(-64, 18), Vector2(160, 30), Vector2(-120, 30), Vector2(16, 90),
 	Vector2(-160, -40), Vector2(150, -70), Vector2(-30, -80), Vector2(60, 110)]
+## 镇民的活动范围往外铺的倍数，和再远一点的几处掩体（第七轮：人群活动范围大一点）
+const COVER_SPREAD := 1.35
+const FAR_COVERS := [Vector2(-190, 60), Vector2(190, 50), Vector2(-170, -90), Vector2(180, -100), Vector2(0, 140), Vector2(-90, 140), Vector2(110, 140)]
 ## 四盏灯笼（相对广场中间：东北、西北、西南、东南——和支线帮手的顺序对应：shoes、samples、spear、fence）
 const LANTERNS := [Vector2(112, -64), Vector2(-112, -64), Vector2(-112, 96), Vector2(112, 96)]
 const HELPER_ORDER := ["shoes", "samples", "spear", "fence"]
@@ -1586,7 +1591,10 @@ func _purify() -> void:
 
 # ------------------------------------------------------------------ 场上的人：救人、说话
 func _spawn_victims() -> void:
-	var covers := COVERS.map(func(o): return _home + (o as Vector2))
+	# 镇民跑得开一点（第七轮）：掩体往外铺 COVER_SPREAD 倍，再加几处远的；落在墙上的往广场中间收到能走的格子
+	var covers: Array = []
+	for o in COVERS + FAR_COVERS:
+		covers.append(_walkable_toward_home(_home + (o as Vector2) * COVER_SPREAD))
 	for spec in VICTIMS:
 		var v := KnightBossFx.Victim.new()
 		v.sheet = load("res://assets/generated/npcs/%s.png" % spec[0])
@@ -1595,8 +1603,18 @@ func _spawn_victims() -> void:
 		v.covers = covers
 		v.threat = _body
 		get_parent().add_child(v)
-		v.global_position = _home + (spec[2] as Vector2)
+		v.global_position = _walkable_toward_home(_home + (spec[2] as Vector2) * COVER_SPREAD)
 		victims.append(v)
+
+
+## 这个点不能走（墙、水）：往广场中间一点一点收，直到能走
+func _walkable_toward_home(at: Vector2) -> Vector2:
+	var lv := level()
+	for i in 12:
+		if lv == null or GridPath.walkable(lv, GridPath.cell(at)):
+			return at
+		at = at.lerp(_home, 0.15)
+	return at
 
 
 ## 手印贴上一个人（测试也直接调）
@@ -2027,7 +2045,8 @@ func lights() -> Array:
 
 
 ## 打部件（测试也直接调）：冻住了 / 护腿卡住了 / 骑士清醒时才打得动；掉一个露出破绽，一套拆完换阶段
-func hit_part(part: BossPart, force := false) -> bool:
+## by：谁打的。粉色公主（诅咒认得她）/ force / 没写（测试直接调）一下掉 1 点；别人（蓝色公主、派对主人、队长……）只算 OTHER_DMG（攒够 1 才掉）
+func hit_part(part: BossPart, force := false, by: Node = null) -> bool:
 	if not is_instance_valid(part) or part.broken:
 		return false
 	if not force and is_instance_valid(curse) and curse.invulnerable():
@@ -2036,8 +2055,14 @@ func hit_part(part: BossPart, force := false) -> bool:
 	if part.id == "mask" or (not force and not _soft(part)):
 		GameState.notify("诅咒太硬了……先冻住它！", 1.0)
 		return false
-	part.hp -= 1
 	part.flash = 0.15
+	if not force and by != null and by != pink:
+		part.chip += OTHER_DMG
+		if part.chip < 1.0 - 0.001:
+			Audio.play("hit", -10.0, 0.1)
+			return true
+		part.chip = 0.0
+	part.hp -= 1
 	if part.hp <= 0:
 		part.broken = true
 		var lines: Array = data().get("break", [])
@@ -2197,6 +2222,7 @@ class BossPart extends CharacterBody2D:
 	var id := ""
 	var offset := Vector2.ZERO
 	var hp := PART_HP
+	var chip := 0.0
 	var broken := false
 	var freeze_left := 0.0
 	var flash := 0.0
@@ -2218,8 +2244,8 @@ class BossPart extends CharacterBody2D:
 	func is_alive() -> bool:
 		return not broken
 
-	func receive_hit(_hit: HitData) -> bool:
-		return is_instance_valid(task) and task.hit_part(self)
+	func receive_hit(hit: HitData) -> bool:
+		return is_instance_valid(task) and task.hit_part(self, false, hit.source if hit else null)
 
 	func _process(delta: float) -> void:
 		_t += delta

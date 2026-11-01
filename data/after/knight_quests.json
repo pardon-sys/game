@@ -927,8 +927,8 @@
 				{
 					"where": "floor_06_after_pharmacy",
 					"cell": [
-						8,
-						5
+						11,
+						6
 					],
 					"text": "【手印样本】回工房，和奶奶一起熬药（走到药锅旁边）",
 					"runner": "res://levels/floor_06/scripts/quest_brew.gd",

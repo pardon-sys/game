@@ -132,7 +132,7 @@ QUESTS = {
             {"where": PHARMACY, "cell": [8, 5], "text": "【手印样本】把样本交给药剂师奶奶", "report": True},
             # 第五段：草药洞采三味药（QuestHerbs）；第六段：回工房熬药（QuestBrew → BrewShow）
             {"where": HERBCAVE, "cell": QM[HERBCAVE]["start"][0], "text": "【手印样本】地窖最里面的小门 → 草药洞：笑铃草、软须苔、哈欠花各 4 株", "runner": RUN % "quest_herbs", "unlock": "kq_samples_herbs"},
-            {"where": PHARMACY, "cell": [8, 5], "text": "【手印样本】回工房，和奶奶一起熬药（走到药锅旁边）", "runner": RUN % "quest_brew"},
+            {"where": PHARMACY, "cell": [11, 6], "text": "【手印样本】回工房，和奶奶一起熬药（走到药锅旁边）", "runner": RUN % "quest_brew"},
         ],
         "wobble": "（石头轻轻晃了一下……底下有东西）",
         "peek": ["（一只紫色的小手印从石头缝里探出头，朝她的笑声爬了过来）", "（木桶后面，小手印犹犹豫豫地伸出一根手指）"],
