@@ -1054,6 +1054,39 @@ AFTER_CG_DONE = {"after_d2_equip_done": "after_equip_ok", "after_d3_potion_done"
                  "after_d7_totem_done": "after_totem_ok"}
 
 
+def _with_h2(data):
+    """小剧场的精灵进入失控二（POLISH_RULES）：CG 大图那一步（portrait 换成 CG / 标了 cg）台上公主都换 helpless_2；
+    魔力释放（act = burst，被抖的那位换战损憋笑魔力释放）以后，那位下一次被挠时换回 helpless_2。这一步自己写了 pose 的不动。"""
+    cast = data.get("cast", {})
+    princesses = [w for w, c in cast.items() if str(c.get("kind", "")) == "princess" or str(c.get("kind", "")) in ("npc:blue_princess", "npc:pink_princess")]
+    if not princesses:
+        return data
+    pending = set()
+    for st in data.get("steps", []):
+        acts = st.setdefault("actions", [])
+        posed = {a.get("who") for a in acts if a.get("do") == "pose"}
+        pt = str(st.get("portrait", ""))
+        if st.get("cg") or pt.startswith(("knight_fail", "after_", "siege_fail")):
+            for w in princesses:
+                if w not in posed:
+                    acts.append({"do": "pose", "who": w, "visual": "helpless_2"})
+                    posed.add(w)
+        if st.get("act") == "burst":
+            for a in acts:
+                if a.get("do") == "shake" and a.get("who") in princesses:
+                    pending.add(a.get("who"))
+            continue
+        for a in list(acts):
+            w = a.get("who")
+            if a.get("do") == "tickle" and w in pending and w not in posed:
+                acts.append({"do": "pose", "who": w, "visual": "helpless_2"})
+                posed.add(w)
+                pending.discard(w)
+        if not acts:
+            st.pop("actions")
+    return data
+
+
 def _with_voice(data):
     """小剧场的笑声（POLISH_RULES）：换成失控一 / 失控二的那一步补 voice laugh、换成憋笑的补 voice giggle（这一步自己写了 voice 就不动）；
     魔力释放那一步（act = burst）也是大笑。只往上切，结尾的 voice "" 照旧。运行时 CGPlayer._auto_voice 是同样规则的兜底。"""
@@ -1117,7 +1150,7 @@ for cid, fn in CUTS.items():
 th = Path("data/theater/after")
 th.mkdir(parents=True, exist_ok=True)
 for tid, data in dict(punish.THEATERS, **tasks.THEATERS, **potion.THEATERS, **tailor.THEATERS, **mine.THEATERS, **totem.THEATERS, **drain.THEATERS, **drill.THEATERS, **inspect.THEATERS, **night.THEATERS, **knight_tasks.THEATERS, **knight_finale.THEATERS, **errand_gate_chain.THEATERS, **knight_prison.THEATERS).items():
-    (th / (tid + ".json")).write_text(json.dumps(_with_voice(_with_fail_cg(tid, data)), ensure_ascii=False, indent="\t") + "\n")
+    (th / (tid + ".json")).write_text(json.dumps(_with_voice(_with_h2(_with_fail_cg(tid, data))), ensure_ascii=False, indent="\t") + "\n")
 
 floors = json.loads(Path("data/floors.json").read_text())
 lst = floors["floors"]

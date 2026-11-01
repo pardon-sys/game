@@ -37,6 +37,7 @@ func _ready() -> void:
 	_run_portrait_interface()
 	await _run_cg_portrait_fx()
 	_run_theater_sprites_move()
+	await _run_wide_stage()
 	_run_long_fail_theaters()
 	# CG 舞台的地牢房间只是画面：图块不能有碰撞（CanvasLayer 不隔开物理，会变成关卡里同一坐标的空气墙）
 	var stage_maps: Array = CG.find_children("*", "TileMapLayer", true, false)
@@ -201,7 +202,8 @@ func _run_playback() -> void:
 				var tex := CG.portrait_texture("slime_3")
 				checks_done["wide"] = Dialogue.is_portrait_wide() and Dialogue.current_portrait() == tex \
 					and Dialogue.portrait.size.is_equal_approx(Vector2(roundf(180.0 * tex.get_width() / tex.get_height()), 180.0))
-				checks_done["stage_right"] = CG.view.position.x > 200.0
+				# 舞台整个挪到大图右边（屏幕坐标：舞台中心在大图右边）
+				checks_done["stage_right"] = CG.frame.position.x + CG.view.position.x > 200.0 and CG.frame.position.x >= Dialogue.portrait.size.x
 				# 挠痒时横版 CG 图抖动：采样一段时间内的位置，应该偏离过基准位置
 				var moved := false
 				for k in 20:
@@ -587,3 +589,21 @@ func _check_long(path: String, min_lines: int, min_after: int, min_burst: int, b
 	var bursts := (j["steps"] as Array).filter(func(s): return str(s.get("act", "")) == "burst").size()
 	if lines.size() < min_lines or cg < 0 or lines.size() - cg < min_after or bursts < min_burst:
 		bad.append("%s（%d 句、CG 后 %d、释放 %d）" % [path.get_file(), lines.size(), lines.size() - cg if cg >= 0 else 0, bursts])
+
+
+## 横版大图出来时舞台收窄、挪到大图右边；骑士 Boss 的战败小剧场里 CG 之后人物进入失控二
+func _run_wide_stage() -> void:
+	CG._set_stage_wide(true, 270.0)
+	await _wait(0.35)
+	var fr: Control = CG.frame
+	check("横版大图出来：舞台挪到大图右边、收窄（x %.0f、宽 %.0f）" % [fr.position.x, fr.size.x], fr.position.x >= 270.0 and fr.size.x < CG.FRAME_RECT.size.x and fr.position.x + fr.size.x <= 480.0)
+	CG._set_stage_wide(false, 0.0)
+	await _wait(0.35)
+	check("大图收起：舞台还原（x %.0f、宽 %.0f）" % [fr.position.x, fr.size.x], is_equal_approx(fr.position.x, CG.FRAME_RECT.position.x) and is_equal_approx(fr.size.x, CG.FRAME_RECT.size.x))
+	var bad: Array[String] = []
+	for k in ["knight_fail_boss", "knight_fail_boss_2", "knight_fail_boss_3", "knight_fail_fog"]:
+		var j: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://data/theater/after/%s.json" % k))
+		var h2 := (j["steps"] as Array).filter(func(st): return (st.get("actions", []) as Array).any(func(a): return str(a.get("do", "")) == "pose" and str(a.get("visual", "")) == "helpless_2")).size()
+		if h2 < 2:
+			bad.append(k)
+	check("骑士 Boss 战败小剧场：CG 之后人物进入失控二（缺的 %s）" % [bad], bad.is_empty())

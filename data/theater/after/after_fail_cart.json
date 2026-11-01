@@ -141,6 +141,11 @@
 					"repeat": 14,
 					"interval": 0.14,
 					"do": "tickle"
+				},
+				{
+					"do": "pose",
+					"who": "princess",
+					"visual": "helpless_2"
 				}
 			],
 			"portrait": "after_cart_fail"
@@ -269,6 +274,11 @@
 					"repeat": 6,
 					"interval": 0.2,
 					"do": "tickle"
+				},
+				{
+					"do": "pose",
+					"who": "princess",
+					"visual": "helpless_2"
 				}
 			]
 		},

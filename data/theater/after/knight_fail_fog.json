@@ -144,6 +144,20 @@
 					"repeat": 12,
 					"interval": 0.15,
 					"do": "tickle"
+				},
+				{
+					"do": "pose",
+					"who": "princess",
+					"visual": "helpless_2"
+				},
+				{
+					"do": "pose",
+					"who": "blue",
+					"visual": "helpless_2"
+				},
+				{
+					"do": "voice",
+					"state": "laugh"
 				}
 			],
 			"portrait": "knight_fail_fog"
@@ -276,6 +290,11 @@
 					"repeat": 10,
 					"interval": 0.2,
 					"do": "tickle"
+				},
+				{
+					"do": "pose",
+					"who": "princess",
+					"visual": "helpless_2"
 				}
 			]
 		},
@@ -341,6 +360,11 @@
 					"repeat": 10,
 					"interval": 0.2,
 					"do": "tickle"
+				},
+				{
+					"do": "pose",
+					"who": "blue",
+					"visual": "helpless_2"
 				}
 			]
 		},

@@ -193,6 +193,11 @@
 					"repeat": 12,
 					"interval": 0.15,
 					"do": "tickle"
+				},
+				{
+					"do": "pose",
+					"who": "princess",
+					"visual": "helpless_2"
 				}
 			],
 			"portrait": "after_equip_fail"
@@ -391,6 +396,11 @@
 					"repeat": 8,
 					"interval": 0.18,
 					"do": "tickle"
+				},
+				{
+					"do": "pose",
+					"who": "princess",
+					"visual": "helpless_2"
 				}
 			],
 			"emotion": "helpless_2"

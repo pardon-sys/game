@@ -144,6 +144,15 @@
 					"repeat": 16,
 					"interval": 0.16,
 					"do": "tickle"
+				},
+				{
+					"do": "pose",
+					"who": "princess",
+					"visual": "helpless_2"
+				},
+				{
+					"do": "voice",
+					"state": "laugh"
 				}
 			],
 			"portrait": "after_tailor_fail"
@@ -180,10 +189,6 @@
 					"who": "princess",
 					"visual": "helpless_2",
 					"do": "pose"
-				},
-				{
-					"do": "voice",
-					"state": "laugh"
 				}
 			]
 		},
@@ -365,6 +370,11 @@
 					"repeat": 8,
 					"interval": 0.18,
 					"do": "tickle"
+				},
+				{
+					"do": "pose",
+					"who": "princess",
+					"visual": "helpless_2"
 				}
 			],
 			"emotion": "helpless_2"

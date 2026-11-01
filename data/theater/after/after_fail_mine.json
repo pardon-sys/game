@@ -149,6 +149,20 @@
 					"repeat": 12,
 					"interval": 0.16,
 					"do": "tickle"
+				},
+				{
+					"do": "pose",
+					"who": "princess",
+					"visual": "helpless_2"
+				},
+				{
+					"do": "pose",
+					"who": "blue",
+					"visual": "helpless_2"
+				},
+				{
+					"do": "voice",
+					"state": "laugh"
 				}
 			],
 			"portrait": "after_mine_fail"
@@ -172,10 +186,6 @@
 					"who": "blue",
 					"visual": "helpless_2",
 					"do": "pose"
-				},
-				{
-					"do": "voice",
-					"state": "laugh"
 				}
 			]
 		},
@@ -328,6 +338,11 @@
 					"repeat": 6,
 					"interval": 0.2,
 					"do": "tickle"
+				},
+				{
+					"do": "pose",
+					"who": "princess",
+					"visual": "helpless_2"
 				}
 			]
 		},
@@ -441,6 +456,11 @@
 					"repeat": 8,
 					"interval": 0.16,
 					"do": "tickle"
+				},
+				{
+					"do": "pose",
+					"who": "blue",
+					"visual": "helpless_2"
 				}
 			]
 		},
