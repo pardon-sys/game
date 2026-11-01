@@ -97,6 +97,16 @@ func _sweep(from: Vector2, to: Vector2, who: PlayableCharacter) -> void:
 		_hit_target(a, who, from)
 
 
+	# 不是 Actor 的敌方部件（骑士 Boss 的盔甲部件 BossPart：enemy 组、有 receive_hit、meta hit_radius）
+	for n in get_tree().get_nodes_in_group("enemy"):
+		if n is Actor or not n is Node2D or not n.has_method("receive_hit") or (n.has_method("is_alive") and not n.is_alive()):
+			continue
+		var at: Vector2 = (n as Node2D).global_position
+		var r := float(n.get_meta("hit_radius", 8.0)) + 6.0
+		if at.distance_to(Geometry2D.get_closest_point_to_segment(at, from, to)) <= r:
+			_hit_target(n, who, from)
+
+
 func _hit_target(target: Node, who: PlayableCharacter, from: Vector2) -> void:
 	if _phase_hits.has(target.get_instance_id()):
 		return

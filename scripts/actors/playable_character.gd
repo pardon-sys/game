@@ -883,6 +883,10 @@ func _on_died() -> void:
 	_end_channel()
 	_set_state(State.DEAD)
 	_end_attack()
+	# 只管这一个人的倒下（meta on_down = Callable(角色) -> bool；骑士 Boss 的派对主人：坐地笑一会儿再起来）
+	var own: Variant = get_meta(&"on_down") if has_meta(&"on_down") else null
+	if own is Callable and (own as Callable).is_valid() and (own as Callable).call(self):
+		return
 	# 关卡自己接管倒下（第八层夜迷宫：笑倒小剧场 → 回到上一盏月光灯；攻防战：笑倒 CG → 城门复活 / 倒地等救援）；
 	# 返回 true 就由它负责之后的 respawn
 	if death_override.is_valid() and death_override.call(self):

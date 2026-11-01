@@ -23,6 +23,7 @@ static func params(tier: int) -> Dictionary:
 
 static func cast(who: PlayableCharacter, r: float, duration: float) -> FestivalAura:
 	var a := FestivalAura.new()
+	a.add_to_group("festival_aura")   # 不是 Actor 的 Boss（骑士）按位置查自己在不在光环里
 	a.caster = weakref(who)
 	a.radius = r
 	a.time_left = duration
@@ -30,6 +31,18 @@ static func cast(who: PlayableCharacter, r: float, duration: float) -> FestivalA
 	a.global_position = who.global_position
 	a.scan()
 	return a
+
+
+## 某个位置在不在任何一个庆典光环里（不是 Actor 的 Boss 用：骑士站在光环里挠人 ×ENEMY_TICKLE）
+const ENEMY_TICKLE := 1.35
+
+
+static func covers(tree: SceneTree, at: Vector2) -> bool:
+	for n in tree.get_nodes_in_group("festival_aura"):
+		var a := n as FestivalAura
+		if a and a.time_left > 0.0 and a.global_position.distance_to(at) <= a.radius:
+			return true
+	return false
 
 
 func refresh(r: float, duration: float) -> void:

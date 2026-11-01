@@ -6,7 +6,9 @@ extends Node2D
 ##   samples 药剂师奶奶：站在场边（GRANNY_AT）；谁的闷笑过 MINT_AT 就扔一颗薄荷糖（−MINT，冷却 MINT_COOL）；点着安神香，烟（Smoke）慢慢飘，烟里的小手变慢。
 ##   spear   队长：跟着粉色公主；每 BLOCK_EVERY 秒替她挡一次扑抓 / 冲撞（task.shield）；冻住的部件他也上去打（每 CAP_HIT_EVERY 秒 1 点）。
 ##   fence   工匠：每个阶段打 STAKES_PER_PHASE 根木桩（Crate.stake，冲撞撞上就卡住）；痒波地脉多扛一根；每 REPAIR_EVERY 秒修好一个被撞碎的木箱。
-##   host    派对主人：可操作角色（bonfire_host 场景），用 KnightAI 和蓝色公主同一套 AI（躲预警、打冻住的部件、扯诅咒装备、最后阶段去灯笼下笑）；
+##   host    派对主人：可操作角色（bonfire_host 场景），C 键切不到她（meta no_switch）；KnightAI（HOST_BEHAVIOURS：挣扎、躲预警、放庆典光环、
+##           任务、主动攻击——彩带打冻住 / 露出破绽的部件）。她也是骑士的攻击目标（TaskKnightBoss._players），被抓 / 穿上诅咒装备自己挣；
+##           被抓不算 Boss 战失败；笑倒了坐地笑 HOST_DOWN 秒再起来（meta on_down，不放笑倒 CG）。庆典光环照原描述双方加成。
 ##           每 MUSIC_EVERY 秒放一次八音盒：全场小手停住（冻 MUSIC_FREEZE 秒）、骑士出招慢一拍。
 ##   blue    （蓝色公主本来就在）旧石灯笼：从开场就亮着的第五盏灯（old_lantern，躲进光里安全、小手进来就化）；她的冻结范围 ×BLUE_REACH。
 ##   最后阶段（灯笼）开始时，①～④ 的人跑去自己那盏灯笼下陪着笑（原来的 KnightBossFx.Helper），场上的这几个收走。
@@ -28,6 +30,9 @@ const MUSIC_FREEZE := 4.0
 const BLUE_REACH := 1.3
 const OLD_LANTERN_AT := Vector2(0, 112)
 const LURE_COOL := 6.0
+## 派对主人的 AI：比公主多一个放魔法；笑倒了坐地笑几秒再起来
+const HOST_BEHAVIOURS: Array[String] = ["struggle", "dodge", "magic", "task", "attack", "follow"]
+const HOST_DOWN := 6.0
 
 var task: TaskKnightBoss
 var present: Array = []
@@ -105,13 +110,28 @@ func _spawn_host(at: Vector2) -> void:
 	task.get_parent().add_child(host)
 	host.global_position = at
 	host.set_faction(Faction.Type.ALLY)
+	host.set_meta(&"no_switch", true)
+	host.set_meta(&"on_down", _host_down)
 	var ai := KnightAI.new()
 	ai.plan = task.ai_plan
 	ai.hooks = task._ai_hooks
-	ai.behaviours.assign(KnightAI.BEHAVIOURS)
+	ai.behaviours.assign(HOST_BEHAVIOURS)
 	host.set_controller(ai)
 	field["host"] = host
 	host.set_meta("quest", "host")
+
+
+## 派对主人笑倒：坐地笑 HOST_DOWN 秒，闷笑清零、满血起来（不放笑倒 CG、不算失败）
+func _host_down(c: PlayableCharacter) -> bool:
+	SpeechBubble.say(c, "哈哈哈……让、让我缓一下……！", 30.0, 2.0)
+	get_tree().create_timer(HOST_DOWN).timeout.connect(func():
+		if is_instance_valid(c):
+			c.revive()
+			if c.laugh:
+				c.laugh.set_value(0.0)
+			c.set_invulnerable(1.5, true)
+			c._set_state(PlayableCharacter.State.IDLE))
+	return true
 
 
 func cleanup() -> void:
