@@ -1008,8 +1008,12 @@ def _with_fail_cg(tid, data):
     if not key:
         return data
     steps = data["steps"]
+    # 文本里标了 "cg": True 的那步优先（加长版：CG 前约 10 句、CG 后约 20 句，释放后立绘不再换回 defeat_2）
+    marked = [i for i, st in enumerate(steps) if st.pop("cg", False)]
     hits = [i for i, st in enumerate(steps) if st.get("portrait") == "defeat_2"]
-    if hits:
+    if marked:
+        steps[marked[0]]["portrait"] = key
+    elif hits:
         steps[hits[-1]]["portrait"] = key
     else:
         texts = [i for i, st in enumerate(steps) if st.get("text")]

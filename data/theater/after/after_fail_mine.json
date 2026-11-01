@@ -150,12 +150,19 @@
 					"interval": 0.16,
 					"do": "tickle"
 				}
-			]
+			],
+			"portrait": "after_mine_fail"
 		},
 		{
 			"speaker": "公主",
 			"text": "哈哈哈哈哈！不、不要抓脚踝——！",
-			"portrait": "after_mine_fail"
+			"actions": [
+				{
+					"who": "princess",
+					"kind": "laugh",
+					"do": "bubble"
+				}
+			]
 		},
 		{
 			"speaker": "蓝色的公主",
@@ -175,7 +182,321 @@
 		},
 		{
 			"speaker": "蓝色的公主",
-			"text": "……没、有……哈……"
+			"text": "……没、有……哈……是……刷子的……声音……"
+		},
+		{
+			"speaker": "残党小鬼",
+			"text": "嘻嘻，嘴硬的那个——刷子往上挪一挪！",
+			"actions": [
+				{
+					"who": "blue",
+					"by": "imp",
+					"zone": "butt",
+					"fx": "brush",
+					"repeat": 10,
+					"interval": 0.16,
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "",
+			"text": "（小鬼把一根长刷子塞进蓝色公主的裙摆，顺着大腿内侧推上去，推到屁股下面的交界就来回拉锯；另一只手还攥着粉色公主的脚踝，用指甲刮脚心）",
+			"actions": [
+				{
+					"who": "blue",
+					"by": "imp",
+					"zone": "butt",
+					"fx": "brush",
+					"repeat": 12,
+					"interval": 0.15,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"by": "imp",
+					"zone": "sole",
+					"fx": "hand",
+					"repeat": 12,
+					"interval": 0.15,
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……拉、拉锯……不……要……哈……哈哈……"
+		},
+		{
+			"speaker": "公主",
+			"text": "哈哈哈！你也笑出来了——我们、我们一起——呀啊脚趾缝——！",
+			"actions": [
+				{
+					"who": "princess",
+					"time": 0.5,
+					"do": "shake"
+				}
+			]
+		},
+		{
+			"speaker": "",
+			"text": "（刷子堆被两个人的笑声震得越转越快。粉色公主的魔力疲倦先满了，身上亮起了粉色的光）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "brush",
+					"zone": "sole",
+					"fx": "brush",
+					"repeat": 8,
+					"interval": 0.18,
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "要、要满了——蓝色的你抓紧——我要炸了——！"
+		},
+		{
+			"speaker": "",
+			"text": "（星光从她身上炸开，刷子堆被冲得飞了一半，小鬼在空中翻了三个跟头，「啪叽」摔在矿石堆上）",
+			"actions": [
+				{
+					"time": 0.8,
+					"do": "flash"
+				},
+				{
+					"sound": "star_burst",
+					"volume": -1.0,
+					"do": "sfx"
+				},
+				{
+					"sound": "water_release",
+					"volume": -2.0,
+					"do": "sfx"
+				},
+				{
+					"who": "princess",
+					"time": 0.5,
+					"do": "shake"
+				},
+				{
+					"who": "princess",
+					"kind": "surprise",
+					"do": "bubble"
+				},
+				{
+					"who": "imp",
+					"to": [
+						80,
+						0
+					],
+					"time": 0.25,
+					"do": "move"
+				}
+			],
+			"act": "burst",
+			"wait": 1.0
+		},
+		{
+			"speaker": "公主",
+			"text": "哈啊……放出去了……躺在刷毛上……软软的……好舒服……",
+			"emotion": "happy"
+		},
+		{
+			"speaker": "残党小鬼",
+			"text": "嘻……嘻嘻！没关系！刷子还剩一半！",
+			"actions": [
+				{
+					"who": "imp",
+					"to": [
+						30,
+						6
+					],
+					"time": 0.6,
+					"do": "move"
+				},
+				{
+					"who": "princess",
+					"by": "brush",
+					"zone": "sole",
+					"fx": "brush",
+					"repeat": 6,
+					"interval": 0.2,
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "呀啊——！放、放完魔力……刷毛扫一下……就……比刚才痒十倍哈哈哈哈！",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "brush",
+					"zone": "sole",
+					"fx": "brush",
+					"repeat": 8,
+					"interval": 0.16,
+					"do": "tickle"
+				}
+			],
+			"emotion": "helpless_2"
+		},
+		{
+			"speaker": "",
+			"text": "（剩下的刷子全朝她涌过来，把她敏感得发烫的脚心团团围住；蓝色公主那边，小鬼骑在她腿上，两只手一起在腿根上挠）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "brush",
+					"zone": "sole",
+					"fx": "brush",
+					"repeat": 12,
+					"interval": 0.14,
+					"do": "tickle"
+				},
+				{
+					"who": "blue",
+					"by": "imp",
+					"zone": "thigh",
+					"fx": "hand",
+					"repeat": 12,
+					"interval": 0.14,
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……你……放完了……轮到……我……也……满……"
+		},
+		{
+			"speaker": "",
+			"text": "（冰蓝色的星光炸开，刷子堆冻成了一座刺猬形状的冰雕，小鬼的手被冻在半空中，「哇」地哭了出来）",
+			"actions": [
+				{
+					"time": 0.8,
+					"do": "flash"
+				},
+				{
+					"sound": "star_burst",
+					"volume": -1.0,
+					"do": "sfx"
+				},
+				{
+					"sound": "water_release",
+					"volume": -2.0,
+					"do": "sfx"
+				},
+				{
+					"who": "blue",
+					"time": 0.5,
+					"do": "shake"
+				},
+				{
+					"who": "blue",
+					"kind": "surprise",
+					"do": "bubble"
+				},
+				{
+					"who": "imp",
+					"to": [
+						80,
+						0
+					],
+					"time": 0.25,
+					"do": "move"
+				}
+			],
+			"act": "burst",
+			"wait": 1.0
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……呼……全……出去了。……冰……凉凉的……很……舒服……"
+		},
+		{
+			"speaker": "残党小鬼",
+			"text": "呜……冰化了……我、我要报仇！",
+			"actions": [
+				{
+					"who": "imp",
+					"to": [
+						30,
+						6
+					],
+					"time": 0.6,
+					"do": "move"
+				},
+				{
+					"who": "blue",
+					"by": "imp",
+					"zone": "thigh",
+					"fx": "hand",
+					"repeat": 8,
+					"interval": 0.16,
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……哈哈哈……放、放完……碰、碰一下……就……停……停下……哈哈哈……！"
+		},
+		{
+			"speaker": "公主",
+			"text": "哈哈哈！你看……放完以后……更、更怕痒吧……我没骗你……呀啊——！",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "imp",
+					"zone": "sole",
+					"fx": "hand",
+					"repeat": 8,
+					"interval": 0.16,
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "",
+			"text": "（两个人在刷子堆里滚成一团，一个护着脚丫，一个夹紧大腿，小鬼左一下右一下，挠得不亦乐乎）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "imp",
+					"zone": "sole",
+					"fx": "hand",
+					"repeat": 10,
+					"interval": 0.15,
+					"do": "tickle"
+				},
+				{
+					"who": "blue",
+					"by": "imp",
+					"zone": "butt",
+					"fx": "hand",
+					"repeat": 10,
+					"interval": 0.15,
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "哈哈哈哈……认、认输……我们认输……！",
+			"actions": [
+				{
+					"who": "princess",
+					"kind": "laugh",
+					"do": "bubble"
+				}
+			]
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……认……输……这次……认……"
 		},
 		{
 			"speaker": "",

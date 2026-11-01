@@ -117,11 +117,7 @@
 		},
 		{
 			"speaker": "蓝色的公主",
-			"text": "……噗。……哈……别、戳……"
-		},
-		{
-			"speaker": "保卫队队长",
-			"text": "膝盖窝。",
+			"text": "……噗。……哈……别、戳……那里……不、不算……",
 			"actions": [
 				{
 					"who": "blue",
@@ -136,8 +132,88 @@
 			"portrait": "after_drill_fail"
 		},
 		{
+			"speaker": "保卫队队长",
+			"text": "膝盖窝。",
+			"actions": [
+				{
+					"who": "blue",
+					"by": "cap",
+					"zone": "thigh",
+					"fx": "feather",
+					"repeat": 10,
+					"interval": 0.16,
+					"do": "tickle"
+				}
+			]
+		},
+		{
 			"speaker": "蓝色的公主",
-			"text": "……哈、哈……！"
+			"text": "……哈、哈……！……膝、膝盖窝……不在……课表上……"
+		},
+		{
+			"speaker": "保卫队队长",
+			"text": "现在在了。……往上，一寸一寸记。",
+			"actions": [
+				{
+					"who": "blue",
+					"by": "cap",
+					"zone": "thigh",
+					"fx": "feather",
+					"repeat": 10,
+					"interval": 0.18,
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "",
+			"text": "（队长的羽毛从膝盖窝一路扫上去，在大腿内侧停一停，再往上一寸。每往上一寸，殿下的腿就抖得更厉害一些）",
+			"actions": [
+				{
+					"who": "blue",
+					"by": "cap",
+					"zone": "thigh",
+					"fx": "feather",
+					"repeat": 12,
+					"interval": 0.16,
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "哇……蓝色的，你的腿在抖诶。……我也帮忙！",
+			"actions": [
+				{
+					"who": "blue",
+					"by": "pink",
+					"zone": "waist",
+					"fx": "hand",
+					"repeat": 8,
+					"interval": 0.18,
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……你……是哪边的……人……哈……哈……"
+		},
+		{
+			"speaker": "公主",
+			"text": "我是你这边的！所以才要帮你记清楚嘛！",
+			"actions": [
+				{
+					"who": "blue",
+					"by": "pink",
+					"zone": "waist",
+					"fx": "hand",
+					"repeat": 10,
+					"interval": 0.16,
+					"do": "tickle"
+				}
+			],
+			"emotion": "happy"
 		},
 		{
 			"speaker": "",
@@ -164,17 +240,202 @@
 			"text": "……哈哈……裤、裤子……也……叛、徒……"
 		},
 		{
+			"speaker": "",
+			"text": "（羽毛、手指、裤子上的小手，三样一起。冰台上的殿下终于绷不住了，魔力疲倦满得溢出了冷冷的蓝光）",
+			"actions": [
+				{
+					"who": "blue",
+					"by": "cap",
+					"zone": "thigh",
+					"fx": "feather",
+					"repeat": 8,
+					"interval": 0.16,
+					"do": "tickle"
+				},
+				{
+					"who": "blue",
+					"by": "pink",
+					"zone": "butt",
+					"fx": "hand",
+					"repeat": 8,
+					"interval": 0.16,
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……魔力……出……出来了……你们……退……"
+		},
+		{
+			"speaker": "",
+			"text": "（冰蓝色的星光炸开，冰台上结出一圈冰花，队长的羽毛冻成了冰羽，粉色公主被冲得往后一坐）",
+			"actions": [
+				{
+					"time": 0.8,
+					"do": "flash"
+				},
+				{
+					"sound": "star_burst",
+					"volume": -1.0,
+					"do": "sfx"
+				},
+				{
+					"sound": "water_release",
+					"volume": -2.0,
+					"do": "sfx"
+				},
+				{
+					"who": "blue",
+					"time": 0.5,
+					"do": "shake"
+				},
+				{
+					"who": "blue",
+					"kind": "surprise",
+					"do": "bubble"
+				},
+				{
+					"who": "cap",
+					"to": [
+						-76,
+						0
+					],
+					"time": 0.25,
+					"do": "move"
+				},
+				{
+					"who": "pink",
+					"to": [
+						76,
+						0
+					],
+					"time": 0.25,
+					"do": "move"
+				}
+			],
+			"act": "burst",
+			"wait": 1.0
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……呼……全……放出去了。……凉凉的……身体……很轻……很……舒服……"
+		},
+		{
+			"speaker": "公主",
+			"text": "好、好冰！……可是蓝色的，你的表情好放松哦。",
+			"actions": [
+				{
+					"who": "cap",
+					"to": [
+						-26,
+						6
+					],
+					"time": 0.6,
+					"do": "move"
+				},
+				{
+					"who": "pink",
+					"to": [
+						26,
+						6
+					],
+					"time": 0.6,
+					"do": "move"
+				}
+			]
+		},
+		{
+			"speaker": "保卫队队长",
+			"text": "……放完魔力的时候，最敏感。……正好，复习。",
+			"actions": [
+				{
+					"who": "blue",
+					"by": "cap",
+					"zone": "thigh",
+					"fx": "feather",
+					"repeat": 6,
+					"interval": 0.2,
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……等……刚放完……碰、碰一下……就……哈……哈哈……！"
+		},
+		{
+			"speaker": "",
+			"text": "（冰羽化开，队长换了一根新的羽毛，只是轻轻在腿根点了一下，殿下就像被电到一样弹了起来）",
+			"actions": [
+				{
+					"who": "blue",
+					"by": "cap",
+					"zone": "thigh",
+					"fx": "feather",
+					"repeat": 10,
+					"interval": 0.15,
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "哇，一碰就弹起来了！我也试试——屁股这边！",
+			"actions": [
+				{
+					"who": "blue",
+					"by": "pink",
+					"zone": "butt",
+					"fx": "hand",
+					"repeat": 10,
+					"interval": 0.15,
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……哈哈哈……不、不要……两边……我、我……认……认……",
+			"actions": [
+				{
+					"who": "blue",
+					"by": "cap",
+					"zone": "thigh",
+					"fx": "feather",
+					"repeat": 8,
+					"interval": 0.16,
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "保卫队队长",
+			"text": "……认什么。说完整。",
+			"actions": [
+				{
+					"who": "blue",
+					"by": "cap",
+					"zone": "thigh",
+					"fx": "feather",
+					"repeat": 8,
+					"interval": 0.16,
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……认……输……哈哈……今天……认……输……"
+		},
+		{
 			"speaker": "公主",
 			"text": "她笑了！队长！她真的笑出声了！",
 			"emotion": "happy"
 		},
 		{
 			"speaker": "保卫队队长",
-			"text": "……嗯。笑出来了。"
-		},
-		{
-			"speaker": "保卫队队长",
-			"text": "……能笑出来，比硬撑好。……歇一会儿，重新上课。"
+			"text": "……嗯。笑出来了。……能笑出来，比硬撑好。……歇一会儿，重新上课。"
 		},
 		{
 			"speaker": "蓝色的公主",

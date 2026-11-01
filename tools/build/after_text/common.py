@@ -79,3 +79,18 @@ WORKSHOP_UI = {
                   "mid": ["哈哈……现在不行……！", "噗……一碰就……！"],
                   "heavy": ["哈哈哈……太、太敏感了……！", "哈哈……等一下……！"]},
 }
+
+
+def burst(who="princess", foes=(), push=50):
+    """魔力疲倦满了、释放（失败小剧场的 act = "burst" 那一步的动作，POLISH_RULES §2）：白光、星光爆发 + 释放的水声、抖、惊讶气泡，
+    在场的怪 / 人被震开（foes：[(演员 id, 原位 [x, y])]，原位在左边往左推、在右边往右推）。之后用 back(foes) 让它们回来。"""
+    acts = [A("flash", time=0.8), A("sfx", sound="star_burst", volume=-1.0), A("sfx", sound="water_release", volume=-2.0),
+            A("shake", who=who, time=0.5), A("bubble", who=who, kind="surprise")]
+    for fid, at in foes:
+        acts.append(A("move", who=fid, to=[at[0] + (-push if at[0] < 0 else push), at[1] - 6], time=0.25))
+    return acts
+
+
+def back(foes=()):
+    """被震开的怪 / 人回到原位（释放后接着挠）。"""
+    return [A("move", who=fid, to=list(at), time=0.6) for fid, at in foes]

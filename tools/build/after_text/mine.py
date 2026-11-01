@@ -7,7 +7,7 @@
   stages   每段：id、name、start / end 演的几句（两人在车上车下聊天）
   imp      小鬼：caption 挠蓝色公主的旁白、blue 她的反应、pants 裤子起哄、swat 拍下去时的字
 """
-from .common import A, BLUE, N, P, line
+from .common import A, BLUE, N, P, back, burst, line
 
 MINER = "老矿工"
 MINER2 = "矿工"
@@ -183,6 +183,9 @@ def _tk(by, who="princess", zone="sole", fx="brush", n=8, iv=0.22):
     return A("tickle", who=who, by=by, zone=zone, fx=fx, repeat=n, interval=iv)
 
 
+IMP = "残党小鬼"
+
+
 FAIL_MINE = {"name": "护送失败：翻车进刷子堆", "cast": {
     "princess": {"kind": "princess", "at": [-8, 8], "visual": "helpless_1", "anim": "helpless", "dir": "down"},
     "blue": {"kind": "npc:blue_princess", "at": [10, 8], "visual": "helpless_1", "anim": "helpless", "dir": "down"},
@@ -201,12 +204,38 @@ FAIL_MINE = {"name": "护送失败：翻车进刷子堆", "cast": {
     _say(P, "哈哈……你、你别乱动……你一动我这边的刷子就转起来了……！", emotion="helpless_2"),
     _say(BLUE, "……是你……先动的……唔……"),
     _say(N, "（一个残党小鬼从矿石堆后面探出头来，看到这一幕，拍着手跳了出来）", [A("bubble", who="imp", kind="laugh")]),
-    _say("残党小鬼", "嘻嘻嘻！两个都掉进刷子堆了！我来帮刷子一把！"),
-    _say(N, "（小鬼扑上来，一手抓住粉色公主的脚踝，一手揪起蓝色公主裤子上的小手——让它们一起挠了起来）", [_tk("imp", zone="sole", fx="hand", n=12, iv=0.16), _tk("imp", who="blue", zone="thigh", fx="hand", n=12, iv=0.16)]),
-    _say(P, "哈哈哈哈哈！不、不要抓脚踝——！", portrait="defeat_2"),
+    _say(IMP, "嘻嘻嘻！两个都掉进刷子堆了！我来帮刷子一把！"),
+    dict(_say(N, "（小鬼扑上来，一手抓住粉色公主的脚踝，一手揪起蓝色公主裤子上的小手——让它们一起挠了起来）",
+              [_tk("imp", zone="sole", fx="hand", n=12, iv=0.16), _tk("imp", who="blue", zone="thigh", fx="hand", n=12, iv=0.16)], portrait="defeat_2"), cg=True),
+    _say(P, "哈哈哈哈哈！不、不要抓脚踝——！", [A("bubble", who="princess", kind="laugh")]),
     _say(BLUE, "……噗。……哈……", [A("pose", who="blue", visual="helpless_2")]),
     _say(P, "……你、你刚才笑了吧！？哈哈哈……我听到了！", emotion="helpless_2"),
-    _say(BLUE, "……没、有……哈……"),
+    _say(BLUE, "……没、有……哈……是……刷子的……声音……"),
+    _say(IMP, "嘻嘻，嘴硬的那个——刷子往上挪一挪！", [_tk("imp", who="blue", zone="butt", fx="brush", n=10, iv=0.16)]),
+    _say(N, "（小鬼把一根长刷子塞进蓝色公主的裙摆，顺着大腿内侧推上去，推到屁股下面的交界就来回拉锯；另一只手还攥着粉色公主的脚踝，用指甲刮脚心）",
+         [_tk("imp", who="blue", zone="butt", n=12, iv=0.15), _tk("imp", zone="sole", fx="hand", n=12, iv=0.15)]),
+    _say(BLUE, "……拉、拉锯……不……要……哈……哈哈……"),
+    _say(P, "哈哈哈！你也笑出来了——我们、我们一起——呀啊脚趾缝——！", [A("shake", who="princess", time=0.5)]),
+    _say(N, "（刷子堆被两个人的笑声震得越转越快。粉色公主的魔力疲倦先满了，身上亮起了粉色的光）", [_tk("brush", zone="sole", n=8, iv=0.18)]),
+    _say(P, "要、要满了——蓝色的你抓紧——我要炸了——！"),
+    dict(_say(N, "（星光从她身上炸开，刷子堆被冲得飞了一半，小鬼在空中翻了三个跟头，「啪叽」摔在矿石堆上）",
+              burst("princess", [("imp", [30, 6])])), act="burst", wait=1.0),
+    _say(P, "哈啊……放出去了……躺在刷毛上……软软的……好舒服……", emotion="happy"),
+    _say(IMP, "嘻……嘻嘻！没关系！刷子还剩一半！", back([("imp", [30, 6])]) + [_tk("brush", zone="sole", n=6, iv=0.2)]),
+    _say(P, "呀啊——！放、放完魔力……刷毛扫一下……就……比刚才痒十倍哈哈哈哈！", [_tk("brush", zone="sole", n=8, iv=0.16)], emotion="helpless_2"),
+    _say(N, "（剩下的刷子全朝她涌过来，把她敏感得发烫的脚心团团围住；蓝色公主那边，小鬼骑在她腿上，两只手一起在腿根上挠）",
+         [_tk("brush", zone="sole", n=12, iv=0.14), _tk("imp", who="blue", zone="thigh", fx="hand", n=12, iv=0.14)]),
+    _say(BLUE, "……你……放完了……轮到……我……也……满……"),
+    dict(_say(N, "（冰蓝色的星光炸开，刷子堆冻成了一座刺猬形状的冰雕，小鬼的手被冻在半空中，「哇」地哭了出来）",
+              burst("blue", [("imp", [30, 6])])), act="burst", wait=1.0),
+    _say(BLUE, "……呼……全……出去了。……冰……凉凉的……很……舒服……"),
+    _say(IMP, "呜……冰化了……我、我要报仇！", back([("imp", [30, 6])]) + [_tk("imp", who="blue", zone="thigh", fx="hand", n=8, iv=0.16)]),
+    _say(BLUE, "……哈哈哈……放、放完……碰、碰一下……就……停……停下……哈哈哈……！"),
+    _say(P, "哈哈哈！你看……放完以后……更、更怕痒吧……我没骗你……呀啊——！", [_tk("imp", zone="sole", fx="hand", n=8, iv=0.16)]),
+    _say(N, "（两个人在刷子堆里滚成一团，一个护着脚丫，一个夹紧大腿，小鬼左一下右一下，挠得不亦乐乎）",
+         [_tk("imp", zone="sole", fx="hand", n=10, iv=0.15), _tk("imp", who="blue", zone="butt", fx="hand", n=10, iv=0.15)]),
+    _say(P, "哈哈哈哈……认、认输……我们认输……！", [A("bubble", who="princess", kind="laugh")]),
+    _say(BLUE, "……认……输……这次……认……"),
     _say(N, "（直到老矿工举着镐头赶过来，把小鬼赶跑，两人才被一个一个地从刷子堆里拔了出来）"),
     _say(MINER, "……哎呀呀。补给还在，人也还在。……从头再推一遍吧。"),
     {"actions": [A("fade_out", time=0.6), A("voice", state="")], "wait": 0.7},

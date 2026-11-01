@@ -158,8 +158,7 @@
 					"visual": "helpless_2",
 					"do": "pose"
 				}
-			],
-			"portrait": "after_equip_fail"
+			]
 		},
 		{
 			"speaker": "",
@@ -167,20 +166,51 @@
 		},
 		{
 			"speaker": "小孩",
-			"text": "再来一遍！这次从脚跟开始！",
+			"text": "再来一遍！这次从脚跟开始！"
+		},
+		{
+			"speaker": "",
+			"text": "（羽毛袜里的羽毛从脚跟一路搓到脚尖，刷套的硬毛钻进每一道脚趾缝里转圈，铃铛一响，两样一起加速）",
 			"actions": [
 				{
 					"who": "princess",
 					"by": "k2",
 					"zone": "sole",
 					"fx": "lines",
-					"repeat": 10,
-					"interval": 0.16,
+					"repeat": 12,
+					"interval": 0.15,
 					"do": "tickle"
 				},
 				{
 					"who": "princess",
 					"by": "k3",
+					"zone": "sole",
+					"fx": "feather",
+					"repeat": 12,
+					"interval": 0.15,
+					"do": "tickle"
+				}
+			],
+			"portrait": "after_equip_fail"
+		},
+		{
+			"speaker": "公主",
+			"text": "哈哈哈哈！加、加速是犯规的——脚跟——脚跟最怕了——！",
+			"actions": [
+				{
+					"who": "princess",
+					"kind": "laugh",
+					"do": "bubble"
+				}
+			]
+		},
+		{
+			"speaker": "小孩",
+			"text": "姐姐的脚趾在跳舞！一张一合的！",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "k1",
 					"zone": "sole",
 					"fx": "feather",
 					"repeat": 10,
@@ -191,7 +221,284 @@
 		},
 		{
 			"speaker": "公主",
-			"text": "哈哈哈……投、投降……我投降……装备……谁来帮我卸下来……",
+			"text": "那、那不是跳舞——是痒得没办法——哈哈哈——你们不要看了——！",
+			"actions": [
+				{
+					"who": "princess",
+					"time": 0.5,
+					"do": "shake"
+				}
+			]
+		},
+		{
+			"speaker": "小孩",
+			"text": "我知道了！扳开脚趾，一根一根挠，就不会跳了！",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "k2",
+					"zone": "sole",
+					"fx": "hand",
+					"repeat": 10,
+					"interval": 0.16,
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "",
+			"text": "（最大的那个孩子真的把她的脚趾一根一根扳开了，另外两个对着露出来的趾缝，一个用羽毛，一个用手指，轮流着来）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "k1",
+					"zone": "sole",
+					"fx": "feather",
+					"repeat": 12,
+					"interval": 0.14,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"by": "k3",
+					"zone": "sole",
+					"fx": "hand",
+					"repeat": 12,
+					"interval": 0.14,
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "哈哈哈哈！轮、轮流也不行——我、我……魔力……要满了——你们快跑——！",
+			"emotion": "helpless_2"
+		},
+		{
+			"speaker": "",
+			"text": "（星光从她身上炸开，三个小孩被冲得坐了个屁股墩，羽毛袜和刷套飞上了天，铃铛「叮」地滚到了摊位底下）",
+			"actions": [
+				{
+					"time": 0.8,
+					"do": "flash"
+				},
+				{
+					"sound": "star_burst",
+					"volume": -1.0,
+					"do": "sfx"
+				},
+				{
+					"sound": "water_release",
+					"volume": -2.0,
+					"do": "sfx"
+				},
+				{
+					"who": "princess",
+					"time": 0.5,
+					"do": "shake"
+				},
+				{
+					"who": "princess",
+					"kind": "surprise",
+					"do": "bubble"
+				},
+				{
+					"who": "k1",
+					"to": [
+						-76,
+						6
+					],
+					"time": 0.25,
+					"do": "move"
+				},
+				{
+					"who": "k2",
+					"to": [
+						76,
+						6
+					],
+					"time": 0.25,
+					"do": "move"
+				},
+				{
+					"who": "k3",
+					"to": [
+						50,
+						20
+					],
+					"time": 0.25,
+					"do": "move"
+				}
+			],
+			"act": "burst",
+			"wait": 1.0
+		},
+		{
+			"speaker": "公主",
+			"text": "哈啊……魔力全放出去了……坐在石板上……凉凉的……好舒服……",
+			"emotion": "happy"
+		},
+		{
+			"speaker": "小孩",
+			"text": "哇！姐姐放烟花了！……袜子掉下来了，再穿上！",
+			"actions": [
+				{
+					"who": "k1",
+					"to": [
+						-26,
+						12
+					],
+					"time": 0.6,
+					"do": "move"
+				},
+				{
+					"who": "k2",
+					"to": [
+						26,
+						12
+					],
+					"time": 0.6,
+					"do": "move"
+				},
+				{
+					"who": "k3",
+					"to": [
+						0,
+						26
+					],
+					"time": 0.6,
+					"do": "move"
+				},
+				{
+					"who": "k2",
+					"do": "hop"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "不、不要穿——呀啊——！只、只是套上袜子……脚心就……痒成这样——！",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "k1",
+					"zone": "sole",
+					"fx": "feather",
+					"repeat": 8,
+					"interval": 0.18,
+					"do": "tickle"
+				}
+			],
+			"emotion": "helpless_2"
+		},
+		{
+			"speaker": "小孩",
+			"text": "姐姐变得超级怕痒了！吹一口气都会笑！",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "k3",
+					"zone": "sole",
+					"fx": "feather",
+					"repeat": 6,
+					"interval": 0.2,
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "小孩",
+			"text": "我来试试！呼——（对着脚心吹了一口长长的气）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "k1",
+					"zone": "sole",
+					"fx": "feather",
+					"repeat": 6,
+					"interval": 0.2,
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "呀哈哈！吹、吹气也……放完魔力连风都……痒——！",
+			"actions": [
+				{
+					"who": "princess",
+					"time": 0.4,
+					"do": "shake"
+				}
+			]
+		},
+		{
+			"speaker": "",
+			"text": "（放空魔力的脚心敏感得发烫。小孩们找到了新游戏：一个吹气，一个用羽毛尖点脚心，一个在脚跟上画小圈，看谁让姐姐笑得最大声）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "k1",
+					"zone": "sole",
+					"fx": "feather",
+					"repeat": 12,
+					"interval": 0.14,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"by": "k2",
+					"zone": "sole",
+					"fx": "hand",
+					"repeat": 12,
+					"interval": 0.14,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"by": "k3",
+					"zone": "sole",
+					"fx": "feather",
+					"repeat": 12,
+					"interval": 0.14,
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "哈哈哈哈！比、比赛也不行——姐姐认输——三个都赢了——都赢了好不好——！",
+			"actions": [
+				{
+					"who": "princess",
+					"kind": "laugh",
+					"do": "bubble"
+				},
+				{
+					"who": "princess",
+					"time": 0.6,
+					"do": "shake"
+				}
+			]
+		},
+		{
+			"speaker": "小孩",
+			"text": "那赢了有奖品吗？姐姐再笑一次就是奖品！",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "k2",
+					"zone": "sole",
+					"fx": "lines",
+					"repeat": 8,
+					"interval": 0.16,
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "哈……哈……投、投降……我投降……装备……谁来帮我卸下来……",
 			"emotion": "helpless_2"
 		},
 		{

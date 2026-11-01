@@ -114,8 +114,12 @@
 		},
 		{
 			"speaker": "公主",
-			"text": "记什么记啊——哈哈哈哈！脚趾缝……全部……！",
-			"portrait": "after_inspect_fail"
+			"text": "记什么记啊——哈哈哈哈！",
+			"emotion": "helpless_2"
+		},
+		{
+			"speaker": "",
+			"text": "（小芬掏出小本子蹲到台子前，一边写一边往夹子的旋钮上拧了半圈——「再强一档，看看极限在哪」）"
 		},
 		{
 			"speaker": "",
@@ -135,11 +139,270 @@
 					"visual": "helpless_2",
 					"do": "pose"
 				}
+			],
+			"portrait": "after_inspect_fail"
+		},
+		{
+			"speaker": "公主",
+			"text": "哈哈哈哈！极、极限早就到了——脚趾缝……全部……一起刷——！",
+			"actions": [
+				{
+					"who": "princess",
+					"kind": "laugh",
+					"do": "bubble"
+				}
+			]
+		},
+		{
+			"speaker": "保卫队员小芬",
+			"text": "左脚每三秒抽一下，右脚每两秒……哇，右脚比左脚怕痒！",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "brush",
+					"zone": "sole",
+					"fx": "brush",
+					"repeat": 10,
+					"interval": 0.16,
+					"do": "tickle"
+				}
 			]
 		},
 		{
 			"speaker": "公主",
-			"text": "哈……哈……投、投降……我投降……全部都太强了……！",
+			"text": "这、这种事情不要记下来啊哈哈哈——！",
+			"actions": [
+				{
+					"who": "princess",
+					"time": 0.5,
+					"do": "shake"
+				}
+			]
+		},
+		{
+			"speaker": "保卫队员",
+			"text": "小芬……你再不关，队长要来了……"
+		},
+		{
+			"speaker": "保卫队员小芬",
+			"text": "最后一组！羽毛和刷子换个位置！",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "feather",
+					"zone": "sole",
+					"fx": "feather",
+					"repeat": 10,
+					"interval": 0.16,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"by": "brush",
+					"zone": "sole",
+					"fx": "brush",
+					"repeat": 10,
+					"interval": 0.16,
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "",
+			"text": "（羽毛换到了被锁住的脚上，刷子换到了吊起来的脚上。换了位置的痒法让她的脚趾乱蜷乱张，身体里的魔力疲倦一下子顶到了头）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "feather",
+					"zone": "sole",
+					"fx": "feather",
+					"repeat": 10,
+					"interval": 0.15,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"by": "brush",
+					"zone": "sole",
+					"fx": "brush",
+					"repeat": 10,
+					"interval": 0.15,
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "等、等等……魔力……满了……陷阱……要被我……炸掉了——！"
+		},
+		{
+			"speaker": "",
+			"text": "（星光从她身上炸开，吊环的绳子「嘣」地断了，跪台的锁扣弹开，羽毛和刷子被冲得满场乱飞，小芬的本子飞上了屋顶）",
+			"actions": [
+				{
+					"time": 0.8,
+					"do": "flash"
+				},
+				{
+					"sound": "star_burst",
+					"volume": -1.0,
+					"do": "sfx"
+				},
+				{
+					"sound": "water_release",
+					"volume": -2.0,
+					"do": "sfx"
+				},
+				{
+					"who": "princess",
+					"time": 0.5,
+					"do": "shake"
+				},
+				{
+					"who": "princess",
+					"kind": "surprise",
+					"do": "bubble"
+				},
+				{
+					"who": "brush",
+					"to": [
+						-72,
+						8
+					],
+					"time": 0.25,
+					"do": "move"
+				},
+				{
+					"who": "feather",
+					"to": [
+						72,
+						8
+					],
+					"time": 0.25,
+					"do": "move"
+				}
+			],
+			"act": "burst",
+			"wait": 1.0
+		},
+		{
+			"speaker": "公主",
+			"text": "哈啊……魔力全放出去了……脚终于放下来了……好、好舒服……",
+			"emotion": "happy"
+		},
+		{
+			"speaker": "保卫队员小芬",
+			"text": "我的本子——！……没关系，陷阱还能动！最后一组数据：放完魔力以后的敏感度！",
+			"actions": [
+				{
+					"who": "brush",
+					"to": [
+						-22,
+						14
+					],
+					"time": 0.6,
+					"do": "move"
+				},
+				{
+					"who": "feather",
+					"to": [
+						22,
+						14
+					],
+					"time": 0.6,
+					"do": "move"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "什、什么——呀啊——！羽毛……只扫了一下……怎么……这么痒——！",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "feather",
+					"zone": "sole",
+					"fx": "feather",
+					"repeat": 6,
+					"interval": 0.2,
+					"do": "tickle"
+				}
+			],
+			"emotion": "helpless_2"
+		},
+		{
+			"speaker": "",
+			"text": "（被冲歪的吊环又把她的脚踝套了回去。放空魔力的脚心敏感得发烫，羽毛轻轻一扫，她整个人就从台子上弹起来）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "rack",
+					"zone": "sole",
+					"fx": "feather",
+					"repeat": 10,
+					"interval": 0.15,
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "保卫队员小芬",
+			"text": "敏感度……比刚才高了三倍！不对，四倍！",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "brush",
+					"zone": "sole",
+					"fx": "brush",
+					"repeat": 8,
+					"interval": 0.16,
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "哈哈哈哈！不、不要数了——我投降——验收不合格是我——是我不合格——！",
+			"actions": [
+				{
+					"who": "princess",
+					"kind": "laugh",
+					"do": "bubble"
+				},
+				{
+					"who": "princess",
+					"time": 0.6,
+					"do": "shake"
+				}
+			]
+		},
+		{
+			"speaker": "",
+			"text": "（刷子顺着足弓刷到脚跟，再刷回趾缝；羽毛在脚心正中央一圈一圈地画，越画越小，越画越慢）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "brush",
+					"zone": "sole",
+					"fx": "brush",
+					"repeat": 12,
+					"interval": 0.15,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"by": "feather",
+					"zone": "sole",
+					"fx": "feather",
+					"repeat": 12,
+					"interval": 0.15,
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "哈……哈……小、小芬……你……你记住了……我、我一定会报仇的……！",
 			"emotion": "helpless_2"
 		},
 		{
@@ -152,7 +415,7 @@
 		},
 		{
 			"speaker": "保卫队队长",
-			"text": "……歇一会儿。综合演练，从头再走。"
+			"text": "……小芬，本子拿下来。……公主，歇一会儿。综合演练，从头再走。"
 		},
 		{
 			"actions": [
