@@ -27,6 +27,7 @@ func _ready() -> void:
 		var actor_cell: Vector2i = info["actor"]
 		if str(info["kind"]) == "monster":
 			var a := CGActor.make_monster("prison_" + id, str(info["key"]), CG.data.get("actors", {}).get(str(info["key"]), {}))
+			a.z_index = maxi(a.z_index, 1)
 			add_child(a)
 			a.global_position = Cutscene.cell_to_world(actor_cell)
 		# 关在牢房里的：牢门自己的调查（门锁着）关掉，调查牢门就触发它们
@@ -37,6 +38,8 @@ func _ready() -> void:
 		sp.global_position = Cutscene.cell_to_world(info["talk"])
 		spots[id] = sp
 	saddle = CGActor.make_trap("prison_saddle", "saddle_bench", CG.data.get("trap_actors", {}).get("saddle_bench", {}))
+	# CG 舞台用的陷阱演员 z = -1（舞台上压在人物下面）：放到地图上会被地板盖住，调回地板之上
+	saddle.z_index = 1
 	add_child(saddle)
 	saddle.global_position = Cutscene.cell_to_world(SADDLE_AT)
 	saddle_done = GameState.has_flag("cg_seen_theater:prison_saddle")
