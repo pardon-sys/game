@@ -8,14 +8,26 @@ extends Node
 ##   粉色公主闷笑到 FAIL_AT：第一次 = 魔力释放（小手全震散、闷笑回到 RELEASE_LAUGH，之后 SENSITIVE_TIME 秒更敏感）；第二次 = 驱散失败
 ##     （TaskKnightBoss._dispel_failed → 失败小剧场 knight_fail_fog → 从驱散重来，灯笼保持点亮）。
 ##   开始时操控交给蓝色公主（玩家拦小手），右上角小窗（SideWindow）看粉色公主读条；按 C 换人，小窗换成看另一个人。
-## 测试：quiet（不开小窗、不说台词）、progress、hands、bursts、channeling、tick(dt)、spawn_hand()、hit_pink(手)、freeze_hands(谁, 范围)、ai_plan(谁)。
+##   雾里还会钻出现有的怪（MONSTERS，每 MONSTER_EVERY 秒一只、最多 MONSTER_MAX 只），平常的怪物 AI 去挠离得近的人；驱散结束全部收走。
+## 测试：quiet（不开小窗、不说台词）、progress、hands、monsters、bursts、channeling、tick(dt)、spawn_hand()、spawn_monster(种类)、hit_pink(手)、freeze_hands(谁, 范围)、ai_plan(谁)。
 
 const DISPEL_TIME := 20.0
 const DISPEL_R := 30.0
-const HAND_EVERY := 2.2
+const HAND_EVERY := 1.3
 ## 读条过半以后小手来得更勤
-const HAND_EVERY_LATE := 1.6
-const HAND_SPEED := 34.0
+const HAND_EVERY_LATE := 0.9
+const HAND_SPEED := 42.0
+## 雾里钻出来的怪（第七轮：驱散里干扰太少）：每 MONSTER_EVERY 秒随机放一只现有的怪，场上最多 MONSTER_MAX 只
+const MONSTER_EVERY := 6.0
+const MONSTER_FIRST := 3.0
+const MONSTER_MAX := 3
+const MONSTERS := {
+	"ghost": "res://scenes/actors/monsters/tickle_ghost.tscn",
+	"glove": "res://scenes/actors/monsters/ghost_glove.tscn",
+	"bat": "res://scenes/actors/monsters/feather_bat.tscn",
+	"caterpillar": "res://scenes/actors/monsters/caterpillar.tscn",
+	"rat": "res://scenes/actors/monsters/foot_rat.tscn",
+}
 const HAND_HIT_R := 9.0
 const HAND_KILL_R := 18.0
 const AI_KILL_R := 12.0
@@ -36,6 +48,8 @@ static var quiet := false
 var task: TaskKnightBoss
 var progress := 0.0
 var hands: Array = []
+var monsters: Array = []
+var _mon_t := MONSTER_FIRST
 var bursts := 0
 var sensitive_left := 0.0
 var interrupt_left := 0.0
@@ -71,6 +85,7 @@ func _exit_tree() -> void:
 	for h in hands:
 		if is_instance_valid(h):
 			h.queue_free()
+	_clear_monsters()
 
 
 func _process(delta: float) -> void:
@@ -118,6 +133,16 @@ func tick(delta: float) -> void:
 	if _hand_t <= 0.0:
 		_hand_t = HAND_EVERY_LATE if progress > 0.5 else HAND_EVERY
 		spawn_hand()
+		# 后半段：一次一到两只
+		if progress > 0.5 and randf() < 0.5:
+			spawn_hand()
+	# 雾里钻出来的怪
+	monsters = monsters.filter(func(m): return is_instance_valid(m) and m.is_alive())
+	_mon_t -= delta
+	if _mon_t <= 0.0:
+		_mon_t = MONSTER_EVERY
+		if monsters.size() < MONSTER_MAX:
+			spawn_monster()
 	var blue := task.blue
 	var attacking := is_instance_valid(blue) and blue.state == PlayableCharacter.State.ATTACK
 	for h in hands.duplicate():
@@ -153,6 +178,38 @@ func spawn_hand() -> FogHand:
 	h.lv = task.level()
 	hands.append(h)
 	return h
+
+
+## 雾圈边上钻出一只现有的怪（随机），平常的怪物 AI 会去挠离得近的人；返回它
+func spawn_monster(key := "") -> Node2D:
+	if key == "":
+		key = MONSTERS.keys()[randi() % MONSTERS.size()]
+	var scn := load(str(MONSTERS[key])) as PackedScene
+	if scn == null:
+		return null
+	var m := scn.instantiate() as Node2D
+	var lv := task.level()
+	var parent: Node = lv.get_node_or_null("Entities") if lv else null
+	if parent == null:
+		parent = task.get_parent()
+	parent.add_child(m)
+	var r := task.fog_ring.radius if is_instance_valid(task.fog_ring) else SPAWN_R
+	var at := body_pos()
+	for i in 10:
+		at = body_pos() + Vector2.from_angle(randf() * TAU) * r
+		if GridPath.walkable(lv, GridPath.cell(at)):
+			break
+	m.global_position = at
+	Fx.burst(task.get_parent(), at, "dust", 10, 30.0, 0.5, Vector2(0, -10), Color(0.4, 0.2, 0.55))
+	monsters.append(m)
+	return m
+
+
+func _clear_monsters() -> void:
+	for m in monsters:
+		if is_instance_valid(m):
+			(m as Node).queue_free()
+	monsters.clear()
 
 
 ## 小手碰到粉色公主：打断，读条倒退，闷笑涨
@@ -236,11 +293,13 @@ func _overflow() -> void:
 				GameState.princess_reacted.emit(str(lines[0]), 3.0)
 		return
 	done = true
+	_clear_monsters()
 	task._dispel_failed()
 
 
 func _finish() -> void:
 	done = true
+	_clear_monsters()
 	for h in hands.duplicate():
 		_pop(h, false)
 	if is_instance_valid(task.pink):

@@ -4,7 +4,7 @@ extends Node2D
 ##   shoes   小汤姆、小莉莉（FieldHelper）：在掩体之间跑；盔甲盯上镇民时每个阶段一次替她笑着把它引开（KnightCurse.lure_by）；
 ##           跑去帮着扒被手印贴着的镇民（救人 ×KID_RESCUE，TaskKnightBoss._tick_victims 问 kid_near）。
 ##   samples 药剂师奶奶：站在场边（GRANNY_AT）；谁的闷笑过 MINT_AT 就扔一颗薄荷糖（−MINT，冷却 MINT_COOL）；点着安神香，烟（Smoke）慢慢飘，烟里的小手变慢。
-##   spear   队长：（第六轮）不再跟着粉色公主挡招，而是跟着盔甲上去打——冻住 / 露出破绽的部件每 CAP_HIT_EVERY 秒打 1 点（开场那一次盾保留，在 TaskKnightBoss）。
+##   spear   队长：（第六轮）不再跟着粉色公主挡招，而是跟着盔甲上去打——冻住 / 露出破绽的部件每 CAP_HIT_EVERY 秒打一下（和别的非粉色公主一样只算三分之一）（开场那一次盾保留，在 TaskKnightBoss）。
 ##   fence   工匠：每个阶段打 STAKES_PER_PHASE 根木桩（Crate.stake，冲撞撞上就卡住）；痒波地脉多扛一根；每 REPAIR_EVERY 秒修好一个被撞碎的木箱。
 ##   host    派对主人：可操作角色（bonfire_host 场景），C 键切不到她（meta no_switch）；KnightAI（HOST_BEHAVIOURS：挣扎、躲预警、放庆典光环、
 ##           任务、主动攻击——彩带打冻住 / 露出破绽的部件）。她也是骑士的攻击目标（TaskKnightBoss._players），被抓 / 穿上诅咒装备自己挣；
@@ -82,6 +82,9 @@ func setup() -> void:
 		task.get_parent().add_child(old_lantern)
 		old_lantern.global_position = home + OLD_LANTERN_AT
 	phase_started(task.phase)
+	# 已经是最后阶段（笑雾之中从第 3 阶段接着打）：灯笼下的帮手已经摆好了，场上的几位收走（不然会出现两个队长）
+	if task.phase >= TaskKnightBoss.PHASES - 1:
+		to_lanterns()
 	# 登场：每个人喊一句
 	var lines: Dictionary = text().get("arrive", {})
 	for k in field:
@@ -241,7 +244,7 @@ func tick(delta: float) -> void:
 			var cap: Node2D = field["captain"]
 			for part in task.parts:
 				if is_instance_valid(part) and not part.broken and task._soft(part) and part.global_position.distance_to(cap.global_position) <= CAP_REACH:
-					if task.hit_part(part):
+					if task.hit_part(part, false, cap):
 						SpeechBubble.say(cap, "……哼。", 30.0, 0.8)
 					break
 	# 工匠：修木箱
