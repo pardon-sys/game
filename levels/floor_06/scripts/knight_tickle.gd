@@ -23,6 +23,9 @@ static func hit(c: PlayableCharacter, ratio: float, src: Node, zone := "", crit 
 		return false
 	if c.laugh.value >= c.laugh.max_value * cap:
 		return false
+	# 骑士站在派对主人的庆典光环里：挠人也加成（光环照原描述双方加成）
+	if src is Node2D and src.is_inside_tree() and FestivalAura.covers(src.get_tree(), (src as Node2D).global_position):
+		ratio *= FestivalAura.ENEMY_TICKLE
 	var special := c.forced_specials > 0 or (not no_crit and randf() < crit)
 	if c.forced_specials > 0:
 		c.forced_specials -= 1

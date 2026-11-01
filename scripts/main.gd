@@ -62,7 +62,7 @@ func switch_character() -> bool:
 	if DevConfig.enabled():
 		# 测试模式：同一关卡的所有可操作角色
 		for n in level.find_children("*", "", true, false):
-			if n is PlayableCharacter and n.visible and n.is_alive() and not Downed.is_downed(n):
+			if n is PlayableCharacter and n.visible and n.is_alive() and not Downed.is_downed(n) and not n.has_meta(&"no_switch"):
 				candidates.append(n)
 	else:
 		# 正常游戏：只在同行的人里换（Party：跟着走的、地图 party 里列出的、允许换人的场景里能换的）

@@ -662,8 +662,17 @@ func _pink_near() -> bool:
 	return pink.global_position.distance_to(_body.global_position) <= SOFT_R + 16.0
 
 
+## 场上能被骑士打到的人：两位公主 + 在场的派对主人（支线⑤做过）
 func _players() -> Array:
-	return [pink, blue].filter(func(c): return is_instance_valid(c))
+	var ps := [pink, blue]
+	if is_instance_valid(field_helpers) and is_instance_valid(field_helpers.host) and field_helpers.host.is_alive():
+		ps.append(field_helpers.host)
+	return ps.filter(func(c): return is_instance_valid(c))
+
+
+## 被抓次数只算两位公主（派对主人被抓不算 Boss 战失败）
+func _counts_catch(c: PlayableCharacter) -> bool:
+	return c == pink or c == blue
 
 
 func _target() -> PlayableCharacter:
@@ -1158,7 +1167,7 @@ func _tick_gears(delta: float) -> void:
 		if randf() < delta * 2.0:
 			ZoneFx.play(g.zone, c.get_parent(), ZoneFx.body_point(c, g.zone), 0.8, false)
 		# 搭档在身边：按住 E（AI 搭档站在旁边就算）把它扯下来
-		var other: PlayableCharacter = blue if c == pink else pink
+		var other: PlayableCharacter = blue if c == pink else pink   # 派对主人：粉色公主来扯
 		var pulling := is_instance_valid(other) and other.global_position.distance_to(c.global_position) <= RESCUE_R \
 			and ((other == GameState.player and Input.is_action_pressed("interact")) or (other != GameState.player and ai_enabled))
 		g.pull = minf(1.0, g.pull + delta / GEAR_PULL) if pulling else maxf(0.0, g.pull - delta)
@@ -1767,12 +1776,13 @@ func grab(who: PlayableCharacter) -> void:
 	_shake(0.25, 3.5)
 	_flash_body()
 	body_mode = "walk"
-	GameState.vars[CAUGHT_KEY] = caught() + 1
+	if _counts_catch(who):
+		GameState.vars[CAUGHT_KEY] = caught() + 1
 	if who.status:
 		who.status.apply_root(GRAB_TIME)
 	var soft := who == pink
 	_say(data().get("grab_soft" if soft else "grab", []))
-	if caught() >= CATCHES:
+	if _counts_catch(who) and caught() >= CATCHES:
 		_emit(false)
 
 
@@ -1943,6 +1953,14 @@ class Hooks extends BattleAIHooks:
 
 	func engage_range() -> float:
 		return 220.0
+
+	## AI 放魔法的目标（派对主人的庆典光环）：骑士露出破绽 / 有冻住的部件时，对着盔甲放
+	func magic_target(ai: PlayableCharacter) -> Variant:
+		if not is_instance_valid(task) or task.finale or task.grabbed == ai:
+			return null
+		if task.weak_left > 0.0 or task.parts.any(func(p): return is_instance_valid(p) and not p.broken and p.freeze_left > 0.0):
+			return task._body
+		return null
 
 
 # ------------------------------------------------------------------ 部件

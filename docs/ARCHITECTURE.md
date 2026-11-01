@@ -1166,6 +1166,10 @@ data/cutscenes/<楼层组>/  地图内过场；data/theater/<楼层组>/  小剧
 	（`levels/floor_06/scripts/knight_tickle.gd`）→ `Actor.receive_hit`：部位敏感、装备挡、疲倦的闷笑加成都算，魔力疲倦按实际涨的闷笑涨（普通 ×0.5、暴击 ×2.0），
 	暴击率 `BOSS_CRIT` 0.2（闷笑 ×2、金色「暴击！」）；持续型的按 `TICK` 0.5 秒攒一跳。粉色公主被抱住：疲倦另乘 `SOFT_FATIGUE_MULT`（闷笑慢、疲倦快）。
 	故意笑（`KnightLaugh`、AI 陪笑）不算被挠。**以后加新的挠痒来源也要走它，别直接 `laugh.add`。**
+  - **派对主人（支线⑤）**：C 键（含测试模式 F2）切不到她（meta `no_switch`）；`KnightAI` + `KnightHelpers.HOST_BEHAVIOURS`（挣扎、躲预警、放庆典光环、任务、主动攻击）。
+	她也在 `_players()` 里，骑士的招、手印、抱住、诅咒穿戴都可能落到她身上；被抓不算公主被抓（`_counts_catch`）；笑倒了坐地缓 `HOST_DOWN` 秒再起来
+	（每个角色自己的倒下钩子 meta `on_down`，`PlayableCharacter._on_died` 先问它）。彩带（`FestivalRibbon`）也扫 `enemy` 组里不是 Actor 的部件（`BossPart.receive_hit`）。
+	庆典光环照原描述双方加成：骑士不是 Actor，站在光环里（`FestivalAura.covers`）挠人 ×`ENEMY_TICKLE`（`KnightTickle.hit`）；`Hooks.magic_target`：骑士露出破绽 / 有冻住的部件时放。
   - **Boss 战里不瞬移**：开场把两位公主的 `follow` 关掉（离太远时 AI 自己走过去），结束时恢复；剧情跟随的瞬移照旧。
   - **右上角另一位公主的状态**：千手战的 `PartnerPanel`，不用 `Duo`——设 `pair = [粉, 蓝]`、`top` 让开顶部的耐久条；显示没被操控的那个（C 换人时跟着换）。
   - **镜面笑脸**只绕着盔甲转（半径一呼一吸），不追人。**亮着的灯笼光里**（`KnightCurse.LIGHT_SAFE_R`）不受黑雾侵蚀，雾里给亮灯笼画一圈暖光。

@@ -243,7 +243,8 @@ static func run(t: Node) -> void:
 	var d_walk: float = b._body.global_position.distance_to(pink.global_position)
 	for i in 20:
 		b.advance(0.05)
-	verify(t, "盔甲朝她走过来（%.0f → %.0f），不站在原地" % [d_walk, b._body.global_position.distance_to(pink.global_position)],
+	verify(t, "盔甲朝她走过来（%.0f → %.0f），不站在原地（抓着 %s 姿态 %s 卡住 %.1f 冲 %.1f 跳 %.1f 磁 %.1f 预警 %s 爆发 %s 转阶段 %s）" % [d_walk, b._body.global_position.distance_to(pink.global_position),
+		b.grabbed != null, b.body_mode, b.stuck_left, b.charge_left, b.leap_left, b.magnet_left, b.warn.get("kind", ""), b.curse.surge if is_instance_valid(b.curse) else "", b.transitioning],
 		b._body.global_position.distance_to(pink.global_position) < d_walk - 10.0)
 	# ---- 出招前站定发光
 	b.attack_t = 0.0
@@ -375,6 +376,7 @@ static func run(t: Node) -> void:
 	for i in TaskKnightBoss.MASH:
 		b.mash()
 	b.grab(pink)
+	pink.fatigue.clear()   # 前面攒满了会在这里触发魔力释放、疲倦归零
 	var pl0 := pink.laugh.value
 	var pf0 := pink.fatigue.value
 	for i in 10:
@@ -497,12 +499,17 @@ static func run(t: Node) -> void:
 		b.warn["left"] = 0.0
 		b._tick_warn(0.01)
 	pink.global_position += Vector2(60, 0)
+	# 冲撞路线上不能有别人 / 别的木箱（AI 蓝色公主偶尔走到路上会先被抓住）
+	b.blue.global_position = b._home + Vector2(-140, -60)
+	for c in b.crates:
+		if is_instance_valid(c) and c != st0 and absf(c.global_position.x - b._body.global_position.x) < 30.0:
+			c.global_position += Vector2(80, 0)
 	for i in 30:
 		b._tick_charge(0.05)
 		if b.stuck_left > 0.0:
 			break
 	cu.tick(0.05)
-	verify(t, "躲开：它撞断了一根木桩、卡住（%d / 3）" % cu.stake_hits, cu.stake_hits == 1 and b.stuck_left > 0.0)
+	verify(t, "躲开：它撞断了一根木桩、卡住（%d / 3；抓着 %s）" % [cu.stake_hits, b.grabbed.display_name() if b.grabbed else "没人"], cu.stake_hits == 1 and b.stuck_left > 0.0)
 	b.stuck_left = 0.0
 	for st in cu.stakes:
 		if is_instance_valid(st):
@@ -922,6 +929,69 @@ static func run(t: Node) -> void:
 	fh._cap_hit = 0.0
 	fh.tick(0.05)
 	verify(t, "冻住的部件：队长也上去打了一下（%d → %d）" % [chp, pc.hp], pc.hp == chp - 1)
+	# ---- 派对主人：攻击目标、自己挣扎、彩带打部件、放庆典光环、笑倒不算失败、C 切不到
+	var ho := fh.host
+	verify(t, "派对主人带 no_switch（测试模式的 F2 也切不到）、AI 有放魔法", ho.has_meta(&"no_switch") and (ho.controller as KnightAI).behaviours.has("magic"))
+	verify(t, "派对主人也是骑士的攻击目标", b2._players().has(ho))
+	if b2.grabbed:
+		b2._release_grab()
+	var caught0 := TaskKnightBoss.caught()
+	b2.shield = 0
+	fh.captain_cool = 99.0
+	b2.grab(ho)
+	verify(t, "骑士抱住派对主人：不算公主被抓（%d → %d）" % [caught0, TaskKnightBoss.caught()], b2.grabbed == ho and TaskKnightBoss.caught() == caught0)
+	for i in 80:
+		b2.advance(0.05)
+		if not b2.grabbed:
+			break
+	verify(t, "派对主人被抱住：自己连按挣开", b2.grabbed == null)
+	var pr: TaskKnightBoss.BossPart = b2.parts.filter(func(x): return is_instance_valid(x) and not x.broken)[0]
+	pr.freeze_left = 4.0
+	var rhp := pr.hp
+	# 刚被抱住挠过：闷笑清零、状态复位（失控时出不了手）
+	ho.laugh.set_value(0.0)
+	if ho.status:
+		ho.status.clear()
+	# 部件一冻住她的 AI 就去放庆典光环（吟唱中出不了彩带）：这一项先停掉她的放魔法
+	var hai := ho.controller as KnightAI
+	hai.behaviours.erase("magic")
+	ho._end_channel()
+	ho._set_state(PlayableCharacter.State.IDLE)
+	ho.set("_ribbon_wait", 0.0)
+	if is_instance_valid(b2.curse):
+		b2.curse.end(true)
+	await t._wait(0.1)
+	pr.freeze_left = 4.0
+	ho.global_position = pr.global_position + Vector2(-30, 0)
+	ho.facing = Vector2.RIGHT
+	ho.attack()
+	for i in 20:
+		await t.get_tree().physics_frame
+		if pr.hp < rhp:
+			break
+	hai.behaviours.insert(2, "magic")
+	verify(t, "派对主人的彩带打中冻住的部件（%d → %d；诅咒无敌 %s、软 %s、能出手 %s、状态 %s、彩带 %d）" % [rhp, pr.hp, b2.curse.invulnerable() if is_instance_valid(b2.curse) else false,
+		b2._soft(pr), ho.can_act(), ho.state, t.get_tree().get_nodes_in_group("festival_ribbon").size()], pr.hp < rhp)
+	FestivalAura.cast(ho, 200.0, 2.0)
+	KnightTickle.no_crit = true
+	pk.laugh.set_value(0.0)
+	KnightTickle.hit(pk, 0.1, b2._body, "")
+	var in_aura := pk.laugh.value
+	for a in t.get_tree().get_nodes_in_group("festival_aura"):
+		a.queue_free()
+	await t.get_tree().process_frame
+	pk.laugh.set_value(0.0)
+	KnightTickle.hit(pk, 0.1, b2._body, "")
+	verify(t, "骑士站在庆典光环里挠人更狠（%.1f > %.1f）" % [in_aura, pk.laugh.value], in_aura > pk.laugh.value * 1.2)
+	pk.laugh.set_value(0.0)
+	KnightTickle.no_crit = false
+	pr.freeze_left = 4.0
+	verify(t, "部件冻住时 AI 有放魔法的目标（庆典光环）", b2._ai_hooks.magic_target(ho) != null)
+	ho.health.damage(ho.health.hp)
+	await t._wait(0.2)
+	verify(t, "派对主人笑倒：坐地缓一会儿（不放 CG、Boss 战没结束）", not ho.is_alive() and not b2._emitted and not CG.is_busy())
+	await t._wait(KnightHelpers.HOST_DOWN + 0.5)
+	verify(t, "缓过来了：派对主人重新站起来", ho.is_alive() and ho.laugh.value == 0.0)
 	KnightCurse.auto = true
 	for q in ["shoes", "samples", "spear", "host", "blue"]:
 		GameState.set_flag("kq_%s_done" % q, false)
