@@ -42,13 +42,22 @@ const HUNT_STEAL_R := 22.0
 const HUNT_HEAL := 2
 const HUNT_GIVEUP := 12.0
 const KINDS := ["hands", "veins", "heart", "drain"]
+## 前三个阶段的爆发从这三种里轮换（不和上一次重复）：救下被贴的镇民 / 引它撞木桩 / 冻住两颗诅咒核心；每种第一次出现放介绍过场
+const ROTATE := ["hands", "veins", "heart"]
 ## 测试：关掉自动爆发 / 自动盯镇民（专门的用例自己调 start() / start_hunt()）
 static var auto := true
+## 化简（第六轮）：盔甲不再自己盯着镇民走（测试可以打开）
+static var hunt_auto := false
+## 测试：指定下一次爆发的种类
+static var force_kind := ""
 
 var task: TaskKnightBoss
 var surge := ""
 ## 这一阶段爆发过几次（开始一次、半血一次）
 var surges := 0
+var _last_kind := ""
+## 粉色公主按 Y 引它冲撞：骑士在忙就记着，空下来立刻冲（不浪费冷却）
+var lure_pending := false
 var surge_victims: Array = []
 var stakes: Array = []
 var stake_hits := 0
@@ -117,11 +126,19 @@ func _maybe_start(delta: float) -> void:
 		start()
 
 
-## 爆发（测试也直接调）
-func start() -> void:
+## 爆发（测试也直接调；kind 不写 = 前三个阶段从 ROTATE 里挑一种，不和上一次重复；最后阶段固定吸笑）
+func start(kind := "") -> void:
 	if surge != "":
 		return
-	surge = KINDS[mini(task.phase, KINDS.size() - 1)]
+	if kind == "":
+		if task.phase >= TaskKnightBoss.PHASES - 1:
+			kind = "drain"
+		else:
+			var pool := ROTATE.duplicate()
+			pool.erase(_last_kind)
+			kind = str(pool[randi() % pool.size()]) if force_kind == "" else force_kind
+	surge = kind
+	_last_kind = kind
 	surges += 1
 	_drain_t = DRAIN_EVERY
 	_end_hunt()
@@ -227,6 +244,7 @@ func _tick_surge(delta: float) -> void:
 			if surge_victims.all(func(v): return not is_instance_valid(v) or not v.cursed):
 				end()
 		"veins":
+			_try_lure_charge()
 			for n in veins:
 				if not is_instance_valid(n):
 					continue
@@ -313,10 +331,25 @@ func lure() -> bool:
 		_end_hunt()
 		hunt_t = HUNT_EVERY
 		SpeechBubble.say(task._body, str((TaskKnightBoss.data().get("hunt", {}).get("lured", ["……殿……下……"]) as Array).pick_random()), 46.0, 1.4)
-	if surge == "veins" and task.warn.is_empty() and task.charge_left <= 0.0 and task.stuck_left <= 0.0 and task.leap_left <= 0.0:
-		task.body_mode = "walk"
-		task.windup_left = 0.0
-		task.charge(task.pink)
+	if surge == "veins":
+		# 骑士在忙（预警 / 冲撞 / 卡住 / 跳）就记着，空下来立刻转向冲她（_tick_lure）
+		lure_pending = true
+		_try_lure_charge()
+	return true
+
+
+## 记着的引怪：骑士空下来就朝粉色公主冲（冲的方向直接对着她，不再只横竖）
+func _try_lure_charge() -> bool:
+	if not lure_pending or surge != "veins" or task.grabbed:
+		return false
+	if not task.warn.is_empty() and str(task.warn.get("kind", "")) != "charge":
+		task._clear_warn()   # 普通的招在预警：打断，转去冲她
+	if not task.warn.is_empty() or task.charge_left > 0.0 or task.stuck_left > 0.0 or task.leap_left > 0.0:
+		return false
+	lure_pending = false
+	task.body_mode = "walk"
+	task.windup_left = 0.0
+	task.charge(task.pink, true)
 	return true
 
 
@@ -359,7 +392,8 @@ func core_pos(c: Dictionary) -> Vector2:
 
 # ------------------------------------------------------------------ 盯上镇民
 func _tick_hunt(delta: float) -> void:
-	if task.finale or task.transitioning:
+	# 化简（第六轮）：盔甲不再盯着镇民走（hunt 去掉），只留测试直接调的 start_hunt
+	if not hunt_auto or task.finale or task.transitioning:
 		return
 	if is_instance_valid(hunt):
 		hunt_left -= delta

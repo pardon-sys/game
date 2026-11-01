@@ -31,13 +31,13 @@ static func run(t: Node) -> void:
 	GameState.pending_spawn = "from_house"
 	await t.main.change_level(Floors.scene(AfterStory.TOWN))
 	await t._wait(0.8)
-	var gc := t._node("after_k_guard_camp") as Node2D
-	verify(t, "第二天早上：白天的小镇（%s），营地楼梯口的队员头上冒「！」" % t._level_id(), t._level_id() == KnightStory.KDAY
+	var gc := t._node("after_k_captain") as Node2D
+	verify(t, "第二天早上：白天的小镇（%s），地牢入口的保卫队队长头上冒「！」" % t._level_id(), t._level_id() == KnightStory.KDAY
 		and gc != null and gc.get_node_or_null("ErrandMark") != null and not t.seen_cuts.has("knight_erupt"))
-	await t._talk("floor_06/after_k_guard_camp", "")
+	await t._talk("floor_06/after_k_captain", "")
 	await t._advance_until(func(): return task(t, "chase") != null and bool(task(t, "chase").started) and not Cutscene.is_playing() and not GameState.in_dialogue, 60.0)
 	var ch := task(t, "chase") as TaskArmorChase
-	verify(t, "和楼梯口的队员说话 → 诅咒失控 → 盔甲冲出营地，追逃开始", ch != null and t.seen_cuts.has("knight_erupt") and t.seen_cuts.has("knight_chase_open"))
+	verify(t, "和保卫队队长说话 → 诅咒失控 → 盔甲冲出营地，追逃开始", ch != null and t.seen_cuts.has("knight_erupt") and t.seen_cuts.has("knight_chase_open"))
 	if ch == null:
 		return
 	verify(t, "追逃在骑士篇专用的空小镇上（%s），一个镇民都没有" % t._level_id(), t._level_id() == KnightStory.KCHASE
@@ -312,10 +312,14 @@ static func run(t: Node) -> void:
 	var vic2: KnightBossFx.Victim = b.curse_victim(b.victims[1])
 	vic2.cursed_t = TaskKnightBoss.ENRAGE_AFTER + 1.0
 	b.advance(0.05)
-	verify(t, "被手印贴着超过 %d 秒没人管：诅咒变强（出招变快）" % int(TaskKnightBoss.ENRAGE_AFTER), b.enraged)
+	verify(t, "化简：没有狂暴（被贴久了也不变强）", not b.enraged)
 	b.blue.global_position = vic2.global_position + Vector2(10, 0)
 	b.freeze_part(b.blue)
-	verify(t, "蓝色公主冻一下也能救人 → 不再变强", not vic2.cursed and not b.enraged)
+	verify(t, "蓝色公主冻一下也能救人", not vic2.cursed)
+	var c_before := b.victims.filter(func(x): return is_instance_valid(x) and x.cursed).size()
+	for i in 30:
+		b._tick_victims(1.0)
+	verify(t, "化简：平时不再随机给镇民贴手印", b.victims.filter(func(x): return is_instance_valid(x) and x.cursed).size() == c_before)
 	for v in b.victims:
 		v.talk_cool = 0.0
 		v.helped = false
@@ -323,11 +327,10 @@ static func run(t: Node) -> void:
 	var granny: KnightBossFx.Victim = b.victims.filter(func(v): return v.who == "granny")[0]
 	pink.laugh.set_value(pink.laugh.max_value * 0.5)
 	var lg0 := pink.laugh.value
-	verify(t, "和奶奶说话：递薄荷糖（%s），闷笑降一截" % b.talk_to(granny, pink), pink.laugh.value < lg0)
+	verify(t, "化简：和镇民说话只喊一句提示，没有薄荷糖（%s）" % b.talk_to(granny, pink), pink.laugh.value == lg0)
 	var guard: KnightBossFx.Victim = b.victims.filter(func(v): return v.who == "guard" and v.kind == "guard")[0]
 	b.shield = 0
-	verify(t, "和护着镇民的队员说话：他替你挡一下（%s）" % b.talk_to(guard, pink), b.shield == 1)
-	verify(t, "说过话有冷却", b.talk_to(guard, pink) == "")
+	verify(t, "化简：队员也不替你挡（%s）" % b.talk_to(guard, pink), b.shield == 0)
 	b.shield = 0
 	# ---- 冲刺无敌、完美闪避（蓝色公主站远一点，扑抓不会落到她身上）
 	b.blue.global_position = pink.global_position + Vector2(-150, 0)
@@ -389,16 +392,27 @@ static func run(t: Node) -> void:
 	verify(t, "粉色公主被抱住：闷笑慢、魔力疲倦涨得快（0.5 秒疲倦 +%.1f，原来手写约 +25）" % pink_fat, pink_fat > pink_gain * 2.0 and pink_fat < 60.0)
 	verify(t, "铁手套抓住蓝色公主狠挠（+%.1f），抓住粉色公主很轻（+%.1f）" % [blue_gain, pink_gain], blue_gain > pink_gain * 2.0)
 	GameState.vars[TaskKnightBoss.CAUGHT_KEY] = 0
-	# ---- 机制介绍：第一次演过场（战斗暂停），第二次不演
-	GameState.set_flag("knight_intro_seen_hunt", false)
+	# ---- 诅咒爆发的种类轮换 + 每种第一次出现演介绍过场
+	var kinds := {}
+	var last := ""
+	var no_repeat := true
+	for i in 12:
+		b.curse.start()
+		kinds[b.curse.surge] = true
+		if b.curse.surge == last:
+			no_repeat = false
+		last = b.curse.surge
+		b.curse.end(true)
+	verify(t, "前三个阶段的爆发在三种里轮换、不连着重复（%s）" % [kinds.keys()], kinds.size() == 3 and kinds.has("hands") and kinds.has("veins") and kinds.has("heart") and no_repeat)
+	GameState.set_flag("knight_intro_seen_surge_heart", false)
 	TaskKnightBoss.intros = true
-	b.curse.start_hunt(b.victims.filter(func(x): return x.kind != "fallen")[0])
-	verify(t, "第一次盯上镇民：演介绍过场（%s），战斗暂停" % Cutscene.current, Cutscene.is_playing() and Cutscene.current == "knight_intro_hunt")
+	b.curse.start("heart")
+	verify(t, "第一次「诅咒核心」：演介绍过场（%s），战斗暂停" % Cutscene.current, Cutscene.is_playing() and Cutscene.current == "knight_intro_surge_heart")
 	await t._advance_until(func(): return not Cutscene.is_playing() and not GameState.in_dialogue, 20.0)
-	b.curse._end_hunt()
-	b.curse.start_hunt(b.victims.filter(func(x): return x.kind != "fallen")[0])
+	b.curse.end(true)
+	b.curse.start("heart")
 	verify(t, "第二次：不再演", not Cutscene.is_playing())
-	b.curse._end_hunt()
+	b.curse.end(true)
 	TaskKnightBoss.intros = false
 	# ---- 诅咒爆发「手印风暴」：打不动、靠近闷笑狂涨、吸到笑声回耐久；三个被贴的镇民都救下来才破
 	GameState.switch_control(pink)
@@ -409,7 +423,7 @@ static func run(t: Node) -> void:
 		v.cursed = false
 	var pa: TaskKnightBoss.BossPart = b.parts[0]
 	pa.hp = TaskKnightBoss.PART_HP - 2
-	cu.start()
+	cu.start("hands")
 	verify(t, "诅咒爆发（铁手套）：手印风暴，三个镇民被贴上（%d）" % cu.surge_victims.size(), cu.surge == "hands" and cu.surge_victims.size() == 3
 		and cu.surge_victims.all(func(v): return v.cursed))
 	pa.freeze_left = 4.0
@@ -427,26 +441,18 @@ static func run(t: Node) -> void:
 	cu.tick(0.05)
 	verify(t, "三个人都救下来：诅咒散了，骑士露出破绽", cu.surge == "" and b.weak_left > 0.0)
 	b._close_weak()
-	# ---- 盯上镇民：走到了偷笑声回耐久；按住 Y 笑把它引回来
-	var runners: Array = b.victims.filter(func(x): return x.kind != "fallen")
-	var hv: Node2D = cu.start_hunt(runners[0])
-	verify(t, "盔甲盯上一个镇民：吓得缩在原地，盔甲朝他走", hv != null and hv.hunted and b._focus() == hv)
-	pa.hp = TaskKnightBoss.PART_HP - 3
-	b._body.global_position = hv.global_position + Vector2(8, 0)
+	# ---- 化简：盔甲不再自己盯着镇民走；爆发中 AI 不打打不动的部件、去救被贴的人
+	verify(t, "化简：盔甲不会自己盯着镇民走（hunt 关掉）", not KnightCurse.hunt_auto)
+	cu.start("hands")
+	b.ai_enabled = true
+	var hkp := b.soft_target()
+	var surge_plan := b._ai_move(b.blue)
+	verify(t, "手印风暴里：AI 不去打部件（%s），蓝色公主去扒被贴的镇民" % [hkp], hkp == null and (surge_plan.get("hold", false) or surge_plan.has("to")))
+	for v in cu.surge_victims.duplicate():
+		b.rescue(v)
 	cu.tick(0.05)
-	verify(t, "走到了：偷走他的笑声，部件回耐久（%d）" % pa.hp, cu.hunt == null and not hv.hunted and pa.hp == TaskKnightBoss.PART_HP - 3 + KnightCurse.HUNT_HEAL)
-	b._body.global_position = b._home
-	# 前面闷笑涨过：可能弹出了第一次失控的提示对话，等它放完（对话里不能故意笑）
-	t._finish()
-	await t._advance_until(func(): return not GameState.in_dialogue, 5.0)
-	cu._lure_cool = 0.0
-	cu.start_hunt(runners[1])
-	pink.global_position = b._body.global_position + Vector2(0, 60)
-	KnightLaugh.force_hold = true
-	for i in 3:
-		cu.tick(0.15)
-	KnightLaugh.force_hold = false
-	verify(t, "粉色公主按住 Y 笑：盔甲被引回来，放过了镇民（对话 %s，操控 %s）" % [GameState.in_dialogue, GameState.player.display_name()], cu.hunt == null and b._focus() == pink)
+	b._close_weak()
+	b.ai_enabled = false
 	pa.hp = TaskKnightBoss.PART_HP
 	pink.laugh.set_value(0.0)
 	# ---- 反击：冻住打碎 → 破绽 → 挠骑士 → 清醒
@@ -465,12 +471,11 @@ static func run(t: Node) -> void:
 	verify(t, "冻住以后打满耐久：左铁手套碎了 → 露出破绽（手腕）、耐久条掉了一段（%.2f → %.2f）" % [dur0, b.durability()], p0.broken and b.weak_left > 0.0
 		and is_instance_valid(b.weak_spot) and b.weak_spot.spot == "手腕" and b.durability() < dur0 - 0.05)
 	verify(t, "破绽成了 AI 的优先目标", hk.priority_target() == b.weak_spot)
-	if GameState.inventory.count("calm_incense") == 0:
-		GameState.inventory.add(ItemDB.get_item("calm_incense"), 1)
+	var p1hp: int = b.parts[1].hp
 	for i in 4:
 		b.tickle_knight()
-	verify(t, "打破绽 = 挠骑士：骑士的笑满了 → 清醒（%.1f 秒，安神香多 %.0f 秒）" % [b.lucid_left, TaskKnightBoss.INCENSE_BONUS],
-		b.lucid_left > TaskKnightBoss.LUCID_TIME and b.weak_left <= 0.0 and b.incense_used)
+	verify(t, "打破绽 = 挠骑士：骑士笑出声 → 直接震碎一截部件（%d → %d，不再有「清醒」）" % [p1hp, b.parts[1].hp],
+		b.parts[1].hp <= p1hp - TaskKnightBoss.WEAK_BREAK and b.weak_left <= 0.0)
 	var p1: TaskKnightBoss.BossPart = b.parts[1]
 	for i in TaskKnightBoss.PART_HP:
 		b.hit_part(p1)
@@ -481,7 +486,7 @@ static func run(t: Node) -> void:
 	await t._wait(0.2)
 	b.attack_t = 999.0
 	# ---- 诅咒爆发「痒波地脉」：笑着引它冲撞，撞断三根木桩
-	cu.start()
+	cu.start("veins")
 	verify(t, "诅咒爆发（护腿）：地脉 %d 道、镇民搬来 %d 根木桩" % [cu.veins.size(), cu.stakes.size()], cu.surge == "veins"
 		and cu.stakes.size() == 3 and cu.veins.size() == KnightCurse.VEINS and cu.stakes.all(func(x): return b.crates.has(x)))
 	b._body.global_position = b._home
@@ -517,6 +522,25 @@ static func run(t: Node) -> void:
 	cu.tick(0.05)
 	verify(t, "三根都撞断：地脉碎了", cu.surge == "" and cu.stakes.is_empty() and cu.veins.is_empty())
 	b._close_weak()
+	# 引怪修好：骑士忙的时候按 Y 不浪费，空下来立刻斜着冲向粉色公主
+	b._body.global_position = b._home
+	b.stuck_left = 0.0
+	b.charge_left = 0.0
+	b._clear_warn()
+	cu.start("veins")
+	b.stuck_left = 1.5
+	pink.global_position = b._body.global_position + Vector2(50, 60)
+	cu._lure_cool = 0.0
+	cu.lure()
+	verify(t, "骑士卡住的时候按 Y：先记着（不浪费），还没冲", cu.lure_pending and str(b.warn.get("kind", "")) != "charge")
+	b.stuck_left = 0.0
+	cu.tick(0.05)
+	verify(t, "空下来立刻转向冲她，方向直接对着她（%.2f, %.2f）" % [b.charge_dir.x, b.charge_dir.y], str(b.warn.get("kind", "")) == "charge"
+		and not cu.lure_pending and absf(b.charge_dir.x) > 0.1 and absf(b.charge_dir.y) > 0.1)
+	verify(t, "地脉爆发时骑士盯着粉色公主走", b._focus() == pink)
+	b._clear_warn()
+	cu.end(true)
+	b._close_weak()
 	b._body.global_position = b._home
 	b.charge_left = 0.0
 	# ---- 阶段二：护腿
@@ -526,7 +550,7 @@ static func run(t: Node) -> void:
 	for i in 30:
 		b.advance(0.05)
 	verify(t, "跺地：痒波碰到她（闷笑 %.0f），跺完卡住露出膝盖窝" % pink.laugh.value, pink.laugh.value > 0.0 and b.weak_left > 0.0)
-	# ---- 召出来的小手：15 秒自己散、蓝色公主的冰晶结界冻住、镇民的扫帚扫掉
+	# ---- 召出来的小手：15 秒自己散、蓝色公主的冰晶结界冻住
 	var hs: Array = b.hands.filter(func(h): return is_instance_valid(h) and h.state != "gone")
 	verify(t, "跺地召出小手（%d 只），都有寿命" % hs.size(), hs.size() == TaskKnightBoss.SUMMON and hs.all(func(h): return h.life > 0.0))
 	var h0: CurseHand = hs[0]
@@ -537,17 +561,6 @@ static func run(t: Node) -> void:
 	h0.life = 0.05
 	await t._wait(0.3)
 	verify(t, "到时间：小手自己散了", not is_instance_valid(h0) or h0.state == "gone")
-	var mer: KnightBossFx.Victim = b.victims.filter(func(v): return v.who == "merchant")[0]
-	mer.cursed = false
-	mer.broom_phase = -1
-	b.talk_to(mer, pink)
-	# 站到离所有亮光都远的地方（不然小手先被灯光化掉，轮不到扫帚）
-	mer.global_position = b._home + Vector2(0, 30)
-	var h1: CurseHand = b.hands.filter(func(h): return is_instance_valid(h) and h.state != "gone")[0]
-	h1.global_position = mer.global_position + Vector2(20, 0)
-	h1.state = "wander"   # 前面冰晶结界可能把它冻住了
-	b._tick_hands()
-	verify(t, "和商人说过话：小手爬到他身边，被扫帚扫掉（%s，扫帚 %s，阶段 %d/%d，距离 %.0f）" % [h1.state, mer.broom, mer.broom_phase, b.phase, h1.global_position.distance_to(mer.global_position)], h1.state == "gone" and not mer.broom)
 	b.stomp()
 	b.stuck_left = 0.0
 	var left_before := b.hands.filter(func(h): return is_instance_valid(h) and h.state != "gone").size()
@@ -600,7 +613,7 @@ static func run(t: Node) -> void:
 	await t._advance_until(func(): return b.phase == 2 and not b.transitioning, 10.0)
 	verify(t, "护腿碎了 → 阶段三：胸甲（场内换阶段）", b.phase == 2 and b.parts.all(func(x): return x.id.begins_with("plate")))
 	# ---- 诅咒爆发「护心诅咒」：蓝色公主三秒内冻住两颗心核
-	cu.start()
+	cu.start("heart")
 	verify(t, "诅咒爆发（胸甲）：两颗心核绕着胸口转", cu.surge == "heart" and cu.cores.size() == 2)
 	GameState.switch_control(b.blue)
 	await t._wait(0.2)
@@ -638,7 +651,8 @@ static func run(t: Node) -> void:
 		if not pink.has_meta(&"knight_gear"):
 			break
 	b.ai_enabled = false
-	verify(t, "搭档站在身边（按住 E）：扯下来了", not pink.has_meta(&"knight_gear"))
+	verify(t, "化简：搭档站在身边也扯不下来（只能自己连按挣掉）", pink.has_meta(&"knight_gear"))
+	b._take_gear(pink)
 	pink.global_position = b._body.global_position + Vector2(70, 0)
 	b.blue.global_position = b._body.global_position + Vector2(-200, 0)
 	var dm0: float = pink.global_position.distance_to(b._body.global_position)
@@ -763,19 +777,16 @@ static func run(t: Node) -> void:
 	b.hands.append(hl0)
 	b._tick_hands()
 	verify(t, "小手爬进亮着的灯笼光里：化掉", hl0.state == "gone")
-	var tn := b.send_tentacle()
-	verify(t, "笑面伸出触手，爬向一盏灯笼", tn != null and tn.lantern != null)
-	tn.left = 0.0
-	tn.attached = true
-	tn.lantern.progress = 0.5
-	b.advance(0.05)
-	b.advance(0.5)
-	verify(t, "触手缠住：灯笼的光被吸走（%.2f）" % tn.lantern.progress, tn.lantern.progress < 0.5)
-	GameState.switch_control(b.blue)
+	# 化简：没有触手；亮着的灯笼光圈里闷笑慢慢下降
+	verify(t, "化简：笑面不再伸触手", b.tentacles.is_empty())
+	GameState.switch_control(pink)
 	await t._wait(0.2)
-	b.blue.global_position = tn.head()
-	b.freeze_cool = 0.0
-	verify(t, "蓝色公主 J：冻住触手，碎了", b.freeze_part(b.blue) and not b.tentacles.has(tn))
+	pink.global_position = lit0.global_position + Vector2(6, 0)
+	pink.laugh.set_value(pink.laugh.max_value * 0.6)
+	var lc0 := pink.laugh.value
+	b._tick_lantern_calm(1.0)
+	verify(t, "站在亮着的灯笼光里：闷笑慢慢下降（%.0f → %.0f）" % [lc0, pink.laugh.value], pink.laugh.value < lc0)
+	pink.laugh.set_value(0.0)
 	GameState.switch_control(pink)
 	await t._wait(0.2)
 	b.weak_left = 2.0
@@ -914,9 +925,7 @@ static func run(t: Node) -> void:
 	b2._tick_hands()
 	verify(t, "旧石灯笼（第五盏灯）一开场就亮着：小手爬进光里化掉", hm.state == "gone")
 	verify(t, "做过点灯笼的小姑娘：蓝色公主的冻结范围大一圈（%.0f）" % b2.freeze_reach(), b2.freeze_reach() > TaskKnightBoss.FREEZE_R)
-	b2.curse.start_hunt(b2.victims.filter(func(x): return x.kind != "fallen")[0])
-	fh.tick(0.05)
-	verify(t, "盔甲盯上镇民：小孩们笑着把它引开了", b2.curse.hunt == null)
+	verify(t, "队长不再跟着粉色公主，而是跟着盔甲上去打", (fh.field["captain"] as Node2D).get("follow") == b2._body)
 	var vk: KnightBossFx.Victim = b2.victims[0]
 	b2.curse_victim(vk)
 	(fh.field["tom"] as Node2D).global_position = vk.global_position

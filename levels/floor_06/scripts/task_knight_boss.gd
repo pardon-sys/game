@@ -95,6 +95,10 @@ const WEAK_TIME := 4.0
 const KNIGHT_TICKLE := 0.25
 const LUCID_TIME := 5.0
 const INCENSE_BONUS := 3.0
+## 打破绽让骑士笑出声：直接掉这么多耐久（代替原来的「清醒」）
+const WEAK_BREAK := 2
+## 亮着的灯笼光圈里：闷笑每秒降这么多（比例），黑雾也进不来
+const LANTERN_CALM := 0.06
 const PERFECT := 0.25
 ## 弹指 / 诅咒装备 / 甲片 / 痒尘 / 冲击波 / 镜面笑脸
 const FLICK_SPEED := 130.0
@@ -604,6 +608,7 @@ func advance(delta: float) -> void:
 	_tick_hands()
 	_voice(delta)
 	if phase == PHASES - 1:
+		_tick_lantern_calm(delta)
 		_tick_lanterns(delta)
 		if finale or _emitted:
 			return
@@ -777,8 +782,10 @@ func _move(delta: float) -> void:
 	_body.global_position = _clamp_arena(at + step)
 
 
-## 往哪儿走：盯上了镇民就走向他，不然跟着玩家
+## 往哪儿走：「痒波地脉」爆发时盯着粉色公主（她笑着引它）；盯上了镇民就走向他；不然跟着玩家
 func _focus() -> Node2D:
+	if is_instance_valid(curse) and curse.surge == "veins" and is_instance_valid(pink):
+		return pink
 	if is_instance_valid(curse) and is_instance_valid(curse.hunt):
 		return curse.hunt
 	return GameState.player if is_instance_valid(GameState.player) else pink
@@ -996,23 +1003,31 @@ func _tick_wave(delta: float) -> void:
 
 
 ## 护腿：冲撞——预警线 → 直冲过去，撞到人就抓住；撞到木箱 / 场边卡住（破绽）
-func charge(who: PlayableCharacter) -> void:
+## aimed：粉色公主笑着引它（诅咒爆发「痒波地脉」）——直接朝她冲，不取横竖主方向（好让她把木桩挡在中间）
+func charge(who: PlayableCharacter, aimed := false) -> void:
 	charge_dir = _body.global_position.direction_to(who.global_position)
 	if charge_dir == Vector2.ZERO:
 		charge_dir = Vector2.RIGHT
 	var a := _body.global_position
 	var line := CursedArmor.WarnLine.new()
 	var w := 18.0
-	# 预警线：沿冲的方向（只画成横 / 竖的矩形，取主方向）
-	var rect := Rect2(a.x, a.y - w * 0.5, CHARGE_LEN * signf(charge_dir.x), w) if absf(charge_dir.x) >= absf(charge_dir.y) \
-		else Rect2(a.x - w * 0.5, a.y, w, CHARGE_LEN * signf(charge_dir.y))
-	rect = rect.abs()
-	charge_dir = Vector2(signf(charge_dir.x), 0) if absf(charge_dir.x) >= absf(charge_dir.y) else Vector2(0, signf(charge_dir.y))
-	line.rect = rect
-	line.add_to_group("danger")
-	line.set_meta("rect", rect)
-	get_parent().add_child(line)
-	line.global_position = Vector2.ZERO
+	if aimed:
+		# 斜着的预警线：本地坐标画矩形，整条转过去
+		line.rect = Rect2(0, -w * 0.5, CHARGE_LEN, w)
+		get_parent().add_child(line)
+		line.global_position = a
+		line.rotation = charge_dir.angle()
+	else:
+		# 预警线：沿冲的方向（只画成横 / 竖的矩形，取主方向）
+		var rect := Rect2(a.x, a.y - w * 0.5, CHARGE_LEN * signf(charge_dir.x), w) if absf(charge_dir.x) >= absf(charge_dir.y) \
+			else Rect2(a.x - w * 0.5, a.y, w, CHARGE_LEN * signf(charge_dir.y))
+		rect = rect.abs()
+		charge_dir = Vector2(signf(charge_dir.x), 0) if absf(charge_dir.x) >= absf(charge_dir.y) else Vector2(0, signf(charge_dir.y))
+		line.rect = rect
+		line.add_to_group("danger")
+		line.set_meta("rect", rect)
+		get_parent().add_child(line)
+		line.global_position = Vector2.ZERO
 	warn = {"kind": "charge", "left": CHARGE_WARN * _warn_mult("charge"), "node": line}
 	_windup_fx("cart_rumble", 30.0, -6.0)
 	_say(data().get("charge", []))
@@ -1166,14 +1181,7 @@ func _tick_gears(delta: float) -> void:
 			c.status.apply_slow(0.7, 0.4)
 		if randf() < delta * 2.0:
 			ZoneFx.play(g.zone, c.get_parent(), ZoneFx.body_point(c, g.zone), 0.8, false)
-		# 搭档在身边：按住 E（AI 搭档站在旁边就算）把它扯下来
-		var other: PlayableCharacter = blue if c == pink else pink   # 派对主人：粉色公主来扯
-		var pulling := is_instance_valid(other) and other.global_position.distance_to(c.global_position) <= RESCUE_R \
-			and ((other == GameState.player and Input.is_action_pressed("interact")) or (other != GameState.player and ai_enabled))
-		g.pull = minf(1.0, g.pull + delta / GEAR_PULL) if pulling else maxf(0.0, g.pull - delta)
-		if g.pull >= 1.0:
-			_take_gear(c, "gear_pulled")
-			continue
+		# 化简（第六轮）：没有搭档拉扯，只能自己连按 J 挣掉
 		# 被穿着的是 AI 搭档：自己挣
 		if c != GameState.player and ai_enabled:
 			_ai_mash_t -= delta
@@ -1345,11 +1353,6 @@ func _tick_hands() -> void:
 			h.puff()
 			hands.erase(h)
 			continue
-		# 说过话的商人 / 奶奶：这一阶段帮你扫一次身边的小手
-		for v in victims:
-			if is_instance_valid(v) and v.broom and v.global_position.distance_to(h.global_position) <= BROOM_R:
-				sweep(v)
-				break
 
 
 ## 镇民拿扫帚扫掉身边的小手（每个阶段一次，和他说过话以后）
@@ -1414,22 +1417,16 @@ func tickle_knight() -> bool:
 		knight_laugh = 0.0
 		_close_weak()
 		_say(data().get("lucid", []))
-		lucid_left = LUCID_TIME
-		# 支线「手印样本」的安神香：第一次清醒时自动点上，多清醒一会儿
-		if not incense_used and GameState.inventory.count("calm_incense") > 0:
-			incense_used = true
-			lucid_left += INCENSE_BONUS
-			GameState.princess_reacted.emit(str(data().get("incense", "")), 2.6)
+		# 化简（第六轮）：骑士笑出声的那一下，直接震碎一截部件（不再有「清醒」时间、安神香加时、触手）
 		if phase == PHASES - 1:
-			for tn in tentacles:
-				if is_instance_valid(tn):
-					tn.queue_free()
-			tentacles.clear()
 			for l in lanterns:
 				if is_instance_valid(l) and not l.lit:
 					_light(l, LUCID_LANTERN)
 		else:
-			_tip("lucid")
+			var pt := _nearest_part(_body, func(x): return not x.broken and x.id != "mask")
+			for i in WEAK_BREAK:
+				if is_instance_valid(pt) and not pt.broken:
+					hit_part(pt, true)
 	return true
 
 
@@ -1495,23 +1492,7 @@ func _tick_lanterns(delta: float) -> void:
 		# 笑面吸笑的时候：灯笼不长（KnightCurse 让没亮的往下掉）
 		if is_instance_valid(curse) and curse.surge == "drain":
 			rate = minf(rate, 0.0)
-		var stolen := tentacles.any(func(tn): return is_instance_valid(tn) and tn.attached and tn.lantern == l and not tn.frozen)
-		l.stealing = stolen
-		if stolen:
-			rate -= TENTACLE_DRAIN
-			if randf() < delta * 0.3:
-				_say(data().get("tentacle_steal", []))
 		_light(l, rate * delta)
-	# 触手
-	tentacle_t -= delta
-	if tentacle_t <= 0.0:
-		tentacle_t = TENTACLE_EVERY
-		send_tentacle()
-	for tn in tentacles.duplicate():
-		if not is_instance_valid(tn) or not is_instance_valid(tn.lantern) or tn.lantern.lit:
-			if is_instance_valid(tn):
-				tn.queue_free()
-			tentacles.erase(tn)
 	if lanterns.all(func(l): return is_instance_valid(l) and l.lit):
 		if on_fog():
 			_start_dispel()
@@ -1519,7 +1500,17 @@ func _tick_lanterns(delta: float) -> void:
 			_purify()
 
 
-## 灯笼亮一截（amount 可以是负的：被触手偷）；满了就亮
+## 亮着的灯笼光圈里（KnightCurse.LIGHT_SAFE_R）：闷笑慢慢往下降（广场和笑雾之中都算）
+func _tick_lantern_calm(delta: float) -> void:
+	var ls := lights()
+	if ls.is_empty():
+		return
+	for c in _players():
+		if c.laugh and c != grabbed and ls.any(func(l): return is_instance_valid(l) and (l as Node2D).global_position.distance_to(c.global_position) <= KnightCurse.LIGHT_SAFE_R):
+			c.laugh.set_value(maxf(0.0, c.laugh.value - c.laugh.max_value * LANTERN_CALM * delta))
+
+
+## 灯笼亮一截；满了就亮
 func _light(l: KnightBossFx.Lantern, amount: float) -> void:
 	l.progress = clampf(l.progress + amount, 0.0, 1.0)
 	if l.progress >= 1.0 and not l.lit:
@@ -1626,16 +1617,9 @@ func curse_victim(v: KnightBossFx.Victim = null) -> KnightBossFx.Victim:
 func _tick_victims(delta: float) -> void:
 	if finale:
 		return
-	curse_t -= delta
+	# 化简（第六轮）：平时不再随机给镇民贴手印、也没有狂暴——手印只在「手印风暴」爆发里出现
 	var cursed: Array = victims.filter(func(x): return is_instance_valid(x) and x.cursed)
-	if curse_t <= 0.0:
-		curse_t = CURSE_EVERY
-		if cursed.size() < MAX_CURSED:
-			curse_victim()
-	var was := enraged
-	enraged = cursed.any(func(x): return x.cursed_t > ENRAGE_AFTER)
-	if enraged and not was:
-		_say(data().get("enrage", []))
+	enraged = false
 	for v in cursed:
 		var helping := false
 		for c in _players():
@@ -1682,12 +1666,6 @@ func talk_near(who: PlayableCharacter) -> KnightBossFx.Victim:
 func talk_to(v: KnightBossFx.Victim, who: PlayableCharacter) -> String:
 	if v.cursed:
 		return ""
-	if v.who in ["granny", "merchant"] and v.broom_phase != phase:
-		# 扫帚：这一阶段帮你扫一次身边的小手（不看说话的冷却）
-		v.broom_phase = phase
-		v.broom = true
-		if hands.any(func(h): return is_instance_valid(h) and h.state != "gone" and h.global_position.distance_to(v.global_position) <= BROOM_R):
-			sweep(v)
 	if v.talk_cool > 0.0:
 		return ""
 	v.talk_cool = TALK_COOL
@@ -1695,18 +1673,8 @@ func talk_to(v: KnightBossFx.Victim, who: PlayableCharacter) -> String:
 	var pool: Array = data().get("talk", {}).get(key, data().get("talk", {}).get("guard", []))
 	if not pool.is_empty():
 		SpeechBubble.say(v, str(pool.pick_random()), 30.0, 2.4)
-	var got := "line"
-	if v.who == "granny" and not v.helped and who.laugh:
-		v.helped = true
-		who.laugh.set_value(maxf(0.0, who.laugh.value - who.laugh.max_value * TALK_MINT))
-		GameState.princess_reacted.emit(str(data().get("talk_mint", "")), 2.4)
-		got = "mint"
-	elif v.who == "guard" and v.kind != "fallen" and not v.helped:
-		v.helped = true
-		shield = maxi(shield, 1)
-		GameState.princess_reacted.emit(str(data().get("talk_shield", "")), 2.4)
-		got = "shield"
-	return got
+	# 化简（第六轮）：和镇民说话只喊一句提示，没有薄荷糖 / 挡一下的奖励（奶奶的薄荷糖归支线帮手 KnightHelpers）
+	return "line"
 
 
 ## 蓝色公主的千手解放：骑士踉跄 BURST_STAGGER 秒、露出破绽（离得够近才算），全场贴在人身上的手印都被扒下来，触手全缩回去
@@ -1859,10 +1827,12 @@ func _ai_burst() -> bool:
 func _ai_move(ai: PlayableCharacter) -> Dictionary:
 	if not ai_enabled or _emitted or transitioning or finale or not is_instance_valid(_body) or grabbed == ai:
 		return {"hold": true}
-	var other: PlayableCharacter = blue if ai == pink else pink
-	# 搭档身上有诅咒装备：过去扯下来（站在旁边就在扯）
-	if is_instance_valid(other) and other.has_meta(&"knight_gear"):
-		return {"to": other.global_position, "near": RESCUE_R * 0.6, "dash": true}
+	# 诅咒爆发：干破解这一种爆发的事，不去打打不动的部件
+	if is_instance_valid(curse) and curse.surge != "" and curse.surge != "heart":
+		return _ai_surge(ai)
+	if ai != blue and is_instance_valid(curse) and curse.surge == "heart":
+		# 护心诅咒：粉色公主站到诅咒光环外面（核心交给蓝色公主冻）
+		return _ai_away(ai, KnightCurse.SURGE_R + 12.0)
 	if ai == blue and is_instance_valid(curse) and curse.surge == "heart":
 		# 护心诅咒：去冻还没冻住的那颗核心
 		for c in curse.cores:
@@ -1873,13 +1843,6 @@ func _ai_move(ai: PlayableCharacter) -> Dictionary:
 					return {"hold": true}
 				return {"to": cp, "near": 4.0, "dash": true}
 	if ai == blue:
-		# 触手缠着灯笼：去冻
-		for tn in tentacles:
-			if is_instance_valid(tn) and not tn.frozen and freeze_cool <= 0.0:
-				if tn.head().distance_to(blue.global_position) <= TENTACLE_FREEZE_R - 6.0:
-					freeze_part(blue)
-					return {"hold": true}
-				return {"to": tn.head(), "near": 8.0, "dash": true}
 		var cursed: Array = victims.filter(func(x): return is_instance_valid(x) and x.cursed)
 		if not cursed.is_empty() and freeze_cool <= 0.0:
 			var v: Node2D = cursed[0]
@@ -1906,6 +1869,59 @@ func _ai_move(ai: PlayableCharacter) -> Dictionary:
 	return {"to": _body.global_position + Vector2(0, 26), "near": SOFT_R * 0.6}
 
 
+## AI 在诅咒爆发里（hands / veins / drain）该干什么
+func _ai_surge(ai: PlayableCharacter) -> Dictionary:
+	match curse.surge:
+		"hands":
+			# 手印风暴：去扒离自己最近的被贴镇民（站在旁边就在扒；蓝色公主冻得到就冻）
+			var best: Node2D = null
+			for v in curse.surge_victims:
+				if is_instance_valid(v) and v.cursed and (best == null or v.global_position.distance_to(ai.global_position) < best.global_position.distance_to(ai.global_position)):
+					best = v
+			if best:
+				if ai == blue and freeze_cool <= 0.0 and best.global_position.distance_to(blue.global_position) <= FREEZE_R - 8.0:
+					freeze_part(blue)
+					return {"hold": true}
+				return {"to": best.global_position, "near": RESCUE_R * 0.6, "dash": true}
+			return _ai_away(ai, KnightCurse.SURGE_R + 12.0)
+		"veins":
+			if ai == pink:
+				# 痒波地脉：站到「木桩在她和骑士中间」的位置，再笑着引它冲（KnightCurse 里 AI 粉色走近了就笑）
+				var st := _nearest_stake(pink)
+				if st:
+					var spot := st.global_position + _body.global_position.direction_to(st.global_position) * 44.0
+					return {"to": _clamp_arena(spot), "near": 8.0, "dash": true}
+			return _ai_away(ai, KnightCurse.SURGE_R + 20.0)
+		"drain":
+			# 吸笑：站进最近的亮灯笼光里
+			var l: Node2D = null
+			for x in lights():
+				if is_instance_valid(x) and (l == null or (x as Node2D).global_position.distance_to(ai.global_position) < l.global_position.distance_to(ai.global_position)):
+					l = x
+			if l:
+				return {"to": l.global_position + Vector2(0, 6), "near": KnightCurse.LIGHT_SAFE_R * 0.5}
+	return {"hold": true}
+
+
+## 离骑士至少 dist 远（往远离它的方向走）
+func _ai_away(ai: PlayableCharacter, dist: float) -> Dictionary:
+	var d := ai.global_position.distance_to(_body.global_position)
+	if d >= dist:
+		return {"hold": true}
+	var dir := _body.global_position.direction_to(ai.global_position)
+	if dir == Vector2.ZERO:
+		dir = Vector2.DOWN
+	return {"to": _clamp_arena(_body.global_position + dir * (dist + 8.0)), "near": 6.0, "dash": true}
+
+
+func _nearest_stake(from: Node2D) -> Node2D:
+	var best: Node2D = null
+	for st in curse.stakes:
+		if is_instance_valid(st) and not st.broken and (best == null or (st as Node2D).global_position.distance_to(from.global_position) < best.global_position.distance_to(from.global_position)):
+			best = st
+	return best
+
+
 func _ai_lantern(ai: PlayableCharacter) -> KnightBossFx.Lantern:
 	var best: KnightBossFx.Lantern = null
 	var me := GameState.player
@@ -1921,6 +1937,8 @@ func _ai_lantern(ai: PlayableCharacter) -> KnightBossFx.Lantern:
 
 ## 现在打得动的：破绽（挠骑士）优先，再是冻住 / 卡住 / 骑士清醒时的部件
 func soft_target() -> Node2D:
+	if is_instance_valid(curse) and curse.invulnerable():
+		return null   # 爆发中打不动：AI 不去打
 	if weak_left > 0.0 and is_instance_valid(weak_spot):
 		return weak_spot
 	return _nearest_part(GameState.player, func(x): return _soft(x))
@@ -2009,13 +2027,13 @@ func lights() -> Array:
 
 
 ## 打部件（测试也直接调）：冻住了 / 护腿卡住了 / 骑士清醒时才打得动；掉一个露出破绽，一套拆完换阶段
-func hit_part(part: BossPart) -> bool:
+func hit_part(part: BossPart, force := false) -> bool:
 	if not is_instance_valid(part) or part.broken:
 		return false
-	if is_instance_valid(curse) and curse.invulnerable():
+	if not force and is_instance_valid(curse) and curse.invulnerable():
 		GameState.notify("诅咒爆发中，打不动！先破解诅咒", 1.0)
 		return false
-	if part.id == "mask" or not _soft(part):
+	if part.id == "mask" or (not force and not _soft(part)):
 		GameState.notify("诅咒太硬了……先冻住它！", 1.0)
 		return false
 	part.hp -= 1
