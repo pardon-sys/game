@@ -168,6 +168,10 @@ POINTS = [
     point("骑士篇·Boss 第三阶段（胸甲）", "floor_06_knight_chase", KNIGHT + KQ_ALL_DONE, dict(knight_vars(10, 0, 9), task_boss_phase=2, task_boss_caught=0), cell=[41, 29], passives=PASSIVES, items=BOSS_ITEMS),
     point("骑士篇·Boss 最后阶段「笑雾之中」（点灯）", "floor_06_knight_fog", KNIGHT + KQ_ALL_DONE, dict(knight_vars(10, 0, 10), task_boss_phase=3, task_boss_caught=0, task_boss_dispel=False), cell=[41, 29], passives=PASSIVES, items=BOSS_ITEMS),
     point("骑士篇·Boss 最后阶段「笑雾之中」（驱散）", "floor_06_knight_fog", KNIGHT + KQ_ALL_DONE, dict(knight_vars(10, 0, 10), task_boss_phase=3, task_boss_caught=0, task_boss_dispel=True), cell=[41, 29], passives=PASSIVES, items=BOSS_ITEMS),
+    # 反省篇第一章（骑士篇之后）：吵架（医务帐篷，进图就演）/ 反省牢房（跳过吵架和进门独白）
+    point("反省篇·第一章 吵架（医务帐篷）", "floor_06_penance_tent", KNIGHT + KQ_ALL_DONE + ["knight_boss_done"], knight_vars(10, 2, 10), passives=PASSIVES),
+    point("反省篇·第一章 反省牢房", "floor_06_penance_cell", KNIGHT + KQ_ALL_DONE + ["knight_boss_done", "intro_done_penance_argue", "intro_done_penance_cell_in"],
+          knight_vars(10, 2, 10), cell=[10, 9], passives=PASSIVES),
 ]
 Path("data/dev").mkdir(parents=True, exist_ok=True)
 Path("data/dev/skip_points_more.json").write_text(json.dumps({

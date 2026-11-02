@@ -11,7 +11,9 @@ ICONS = ["armpit_pad", "scarf", "wool_socks", "dance_shoes", "waist_sash", "mint
          "training_wraps", "padded_shorts", "party_bow", "feather_anklet", "ice_hairpin", "thousand_pants",
          # 攻防战里被敌人强制穿上的临时痒痒装备（粉紫色调）
          "t_feather_socks", "t_toe_brush", "t_fluff_bra", "t_thigh_ring", "t_pinch_pad", "t_knead_tights",
-         "t_feather_shackles", "t_thigh_strap", "t_bell_anklet", "t_mark_patch"]
+         "t_feather_shackles", "t_thigh_strap", "t_bell_anklet", "t_mark_patch",
+         # 反省篇：挠脚鼠住在里面的鼠鼠装（诅咒）
+         "mouse_shorts", "mouse_paw_shoes"]
 
 
 def canvas():
@@ -68,6 +70,21 @@ def icon(name):
         d.polygon([(3, 7), (7, 7), (7, 12), (2, 12)], fill=(250, 220, 235, 255))
         d.polygon([(8, 7), (12, 7), (13, 12), (8, 12)], fill=(250, 220, 235, 255))
         d.line((3, 4, 12, 4), fill=(255, 160, 200, 255))
+    elif name == "mouse_shorts":    # 鼠鼠短裤：灰色毛绒短裤 + 一条卷尾巴 + 探出头的小老鼠
+        d.rectangle((3, 4, 12, 7), fill=(160, 160, 170, 255))
+        d.polygon([(3, 7), (7, 7), (7, 12), (2, 12)], fill=(160, 160, 170, 255))
+        d.polygon([(8, 7), (12, 7), (13, 12), (8, 12)], fill=(160, 160, 170, 255))
+        d.line((3, 4, 12, 4), fill=(255, 190, 210, 255))
+        d.arc((11, 7, 16, 13), 270, 160, fill=(230, 170, 190, 255))
+        d.ellipse((5, 1, 9, 5), fill=(190, 190, 200, 255))
+        d.point((6, 3), fill=(30, 30, 40, 255))
+    elif name == "mouse_paw_shoes":  # 鼠爪鞋：灰色拖鞋，前面露出脚趾、粉色肉垫
+        d.polygon([(2, 9), (11, 9), (14, 12), (14, 14), (2, 14)], fill=(150, 150, 160, 255))
+        for x in (10, 12, 14):
+            d.ellipse((x - 2, 11, x, 13), fill=(255, 210, 200, 255))
+        d.ellipse((4, 11, 7, 13), fill=(255, 170, 200, 255))
+        d.ellipse((3, 5, 7, 9), fill=(180, 180, 190, 255))
+        d.ellipse((8, 5, 12, 9), fill=(180, 180, 190, 255))
     elif name == "party_bow":     # 派对彩带蝴蝶结：彩色蝴蝶结 + 小铃铛
         d.polygon([(8, 7), (2, 3), (2, 11)], fill=(255, 120, 170, 255))
         d.polygon([(8, 7), (14, 3), (14, 11)], fill=(120, 200, 255, 255))

@@ -106,6 +106,12 @@ trap_actors = {
     "spring_seat": {"hit_fx": "brush", "texture": T % "spring_seat", "hframes": 2, "idle": [0], "active": [1], "z": -1, "pitch": 1.3},
     "saddle_bench": {"hit_fx": "brush", "texture": T % "saddle_bench", "hframes": 2, "idle": [0], "active": [0, 1], "fps": 6, "z": -1, "pitch": 1.2},
     "scissor_stand": {"hit_fx": "brush", "texture": T % "scissor_stand", "hframes": 3, "idle": [0], "active": [1, 0], "fps": 5, "z": -1, "pitch": 1.3},
+    # 反省篇第一章：反省牢房的道具（tools/art/gen_penance_art.py）
+    "plush_doll": {"hit_fx": "hand", "texture": T % "plush_doll", "hframes": 2, "idle": [0], "active": [0, 1], "fps": 6, "z": 1, "pitch": 1.3},
+    "cat_guard": {"hit_fx": "feather", "texture": T % "cat_guard", "hframes": 2, "idle": [0], "active": [0, 1], "fps": 5, "z": 1, "pitch": 1.6},
+    "trophy_chest": {"hit_fx": "hand", "texture": T % "trophy_chest", "hframes": 2, "idle": [0], "active": [1], "z": 1, "pitch": 1.2},
+    "penance_bed": {"hit_fx": "feather", "texture": T % "penance_bed", "hframes": 2, "idle": [0], "active": [1], "z": -1, "pitch": 1.3},
+    "wall_crack": {"hit_fx": "brush", "texture": T % "wall_crack", "hframes": 2, "idle": [0], "active": [1], "z": 1, "pitch": 1.8},
 }
 P = "公主"
 portraits = {
@@ -148,7 +154,8 @@ for _k in ("equip", "potion", "cart", "drain", "drill", "tailor", "mine", "inspe
 
 
 # 骑士 Boss 的战败 CG（tools/art/import_cg.py --knight 从 assets/generated/KNIGHT_CG/ 生成）：四个失败小剧场的高潮
-for _k in ("knight_fail_1", "knight_fail_2", "knight_fail_3", "knight_fail_fog"):
+# 反省篇第一章：反省牢房·功能拘束挠痒床（import_cg.py --penance 从 assets/generated/PENANCE_CG/）
+for _k in ("knight_fail_1", "knight_fail_2", "knight_fail_3", "knight_fail_fog", "penance_bed"):
     _f = "res://assets/cg/portraits/%s.png" % _k
     portraits[_k] = {"file": _f, "placeholder": "helpless_2"}
     if os.path.exists(_f.replace("res://", "")):

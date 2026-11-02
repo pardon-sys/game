@@ -1,0 +1,425 @@
+{
+	"name": "反省足枷凳",
+	"cast": {
+		"princess": {
+			"kind": "princess",
+			"at": [
+				0,
+				6
+			],
+			"visual": "normal",
+			"anim": "idle",
+			"dir": "down"
+		},
+		"stool": {
+			"kind": "trap:stocks",
+			"at": [
+				0,
+				12
+			]
+		}
+	},
+	"steps": [
+		{
+			"act": 1,
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "fade_in"
+				},
+				{
+					"state": "giggle",
+					"do": "voice"
+				}
+			],
+			"wait": 0.5
+		},
+		{
+			"speaker": "",
+			"text": "（一张矮矮的木凳，前面竖着一块带两个半圆缺口的木板。木板上刻着一行字：「坐下，说出你的错」）",
+			"act": 1
+		},
+		{
+			"speaker": "公主",
+			"text": "……说出你的错？我没有错。",
+			"emotion": "angry"
+		},
+		{
+			"speaker": "公主",
+			"text": "坐一下又不会怎么样。我就坐着，什么都不说，它能拿我怎么样。",
+			"emotion": "angry"
+		},
+		{
+			"speaker": "",
+			"text": "（她刚坐下，木板「咔哒」一声落下来，正好扣住了两只脚踝。鞋子被轻轻一顶，掉在了地上）",
+			"actions": [
+				{
+					"sound": "stocks",
+					"volume": -4.0,
+					"do": "sfx"
+				},
+				{
+					"who": "princess",
+					"time": 0.3,
+					"do": "shake"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "诶！？扣、扣住了！？",
+			"emotion": "surprise"
+		},
+		{
+			"speaker": "",
+			"text": "（木板底下伸出一把小小的软刷，在她的脚心上「沙」地刷了一下，又停住了。像是在等她说话）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "stool",
+					"zone": "sole",
+					"fx": "lines",
+					"repeat": 3,
+					"interval": 0.3,
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "……哼。我才不说。",
+			"emotion": "angry"
+		},
+		{
+			"speaker": "",
+			"text": "（刷子又「沙沙」刷了两下——比刚才快了一点）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "stool",
+					"zone": "sole",
+					"fx": "lines",
+					"repeat": 5,
+					"interval": 0.22,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"visual": "giggle",
+					"do": "pose"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "……呜。不说话也刷？那、那我说：「我没错！」",
+			"emotion": "angry"
+		},
+		{
+			"speaker": "",
+			"text": "（刷子一下子快了一档，从脚跟一路刷到脚尖，再从脚尖刷回脚跟）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "stool",
+					"zone": "sole",
+					"fx": "lines",
+					"repeat": 10,
+					"interval": 0.16,
+					"do": "tickle"
+				}
+			],
+			"act": 2
+		},
+		{
+			"speaker": "公主",
+			"text": "噫……！说、说了也刷！？这凳子不讲道理！",
+			"emotion": "giggle"
+		},
+		{
+			"speaker": "",
+			"text": "（又快了一档。第二把刷子从木板另一边伸出来，专门去拨她的脚趾缝）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "stool",
+					"zone": "sole",
+					"fx": "brush",
+					"repeat": 12,
+					"interval": 0.14,
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "（……原、原来是……嘴硬一句……就快一档……！）",
+			"emotion": "giggle"
+		},
+		{
+			"speaker": "公主",
+			"text": "那、那我不说了！一句都不说了……！",
+			"actions": [
+				{
+					"who": "princess",
+					"visual": "helpless_1",
+					"do": "pose"
+				},
+				{
+					"do": "voice",
+					"state": "laugh"
+				}
+			],
+			"emotion": "helpless_1"
+		},
+		{
+			"speaker": "",
+			"text": "（她紧紧闭上嘴。刷子慢了下来，慢得要命——一根一根刷毛，慢慢地划过脚心最软的那一块）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "stool",
+					"zone": "sole",
+					"fx": "feather",
+					"repeat": 8,
+					"interval": 0.3,
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "（……慢、慢慢刷……比快的还……！）",
+			"emotion": "helpless_1"
+		},
+		{
+			"speaker": "",
+			"text": "（她憋得肩膀直抖。脚趾蜷起来又张开，张开又蜷起来，刷子就趁着张开的时候钻进缝里）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "stool",
+					"zone": "sole",
+					"fx": "brush",
+					"repeat": 10,
+					"interval": 0.22,
+					"do": "tickle"
+				}
+			],
+			"act": 3
+		},
+		{
+			"speaker": "公主",
+			"text": "……臭……臭队长……！",
+			"emotion": "helpless_1"
+		},
+		{
+			"speaker": "",
+			"text": "（这一句骂出口，两把刷子同时快到了最高档）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "stool",
+					"zone": "sole",
+					"fx": "lines",
+					"repeat": 16,
+					"interval": 0.1,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"visual": "helpless_2",
+					"do": "pose"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "噗——哈哈哈！不算！刚才那句不算——哈哈哈哈！",
+			"emotion": "helpless_2"
+		},
+		{
+			"speaker": "",
+			"text": "（「不算」也是嘴硬。刷子又快了一点点。她仰着头笑，两只脚在木板的缺口里扭来扭去，可怎么也抽不出来）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "stool",
+					"zone": "sole",
+					"fx": "lines",
+					"repeat": 16,
+					"interval": 0.1,
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "我、我错了！我错了行了吧——哈哈哈哈！",
+			"emotion": "helpless_2"
+		},
+		{
+			"speaker": "",
+			"text": "（刷子停了半秒……像是在想这句是不是真心的。然后又刷了起来）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "stool",
+					"zone": "sole",
+					"fx": "brush",
+					"repeat": 12,
+					"interval": 0.12,
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "它听得出来——！它听得出来我不是真心的——哈哈哈！",
+			"emotion": "helpless_2"
+		},
+		{
+			"speaker": "",
+			"text": "（憋不住的笑声和魔力一起往上涌，越积越多，越积越多——）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "stool",
+					"zone": "sole",
+					"fx": "lines",
+					"repeat": 14,
+					"interval": 0.1,
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "（星光一下子炸开，把木板都震得「嗡嗡」响……哈啊……全放出去了……脚底下暖洋洋的……好舒服……）",
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "flash"
+				},
+				{
+					"sound": "star_burst",
+					"do": "sfx"
+				},
+				{
+					"sound": "water_release",
+					"volume": -2.0,
+					"do": "sfx"
+				},
+				{
+					"who": "princess",
+					"time": 0.4,
+					"do": "shake"
+				},
+				{
+					"state": "laugh",
+					"do": "voice"
+				}
+			],
+			"act": "burst",
+			"wait": 1.0
+		},
+		{
+			"speaker": "",
+			"text": "（可木板没有松开。刷子抖了抖身上的星光，贴上了刚释放完、敏感得发烫的脚心）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "stool",
+					"zone": "sole",
+					"fx": "feather",
+					"repeat": 10,
+					"interval": 0.16,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"visual": "helpless_2",
+					"do": "pose"
+				}
+			],
+			"act": 4
+		},
+		{
+			"speaker": "公主",
+			"text": "呀啊……！放、放完以后……轻轻一下就……！",
+			"emotion": "helpless_2"
+		},
+		{
+			"speaker": "",
+			"text": "（刷子不急不慢，在脚心正中央画着小圈，画完一个，又在趾根上画一个）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "stool",
+					"zone": "sole",
+					"fx": "feather",
+					"repeat": 14,
+					"interval": 0.13,
+					"do": "tickle"
+				},
+				{
+					"do": "pose",
+					"who": "princess",
+					"visual": "helpless_2"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "……哈哈……哈……不嘴硬了……一句都不说了……让、让我歇一下……",
+			"emotion": "helpless_2"
+		},
+		{
+			"speaker": "",
+			"text": "（她安安静静地笑着，一句硬话都没说。刷子终于慢下来，「咔」地缩回了木板底下，枷板也抬起来了）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "stool",
+					"zone": "sole",
+					"fx": "feather",
+					"repeat": 4,
+					"interval": 0.3,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"visual": "helpless_1",
+					"do": "pose"
+				}
+			]
+		},
+		{
+			"speaker": "",
+			"text": "（她抱着膝盖坐在凳子上，揉了好半天脚心，才把鞋穿回去）"
+		},
+		{
+			"speaker": "公主",
+			"text": "……哈……哈……这凳子……是队长做的吧。一模一样的不讲道理。",
+			"emotion": "sad"
+		},
+		{
+			"speaker": "公主",
+			"text": "……不过。我才不会认错。……小声说的，它听不见。",
+			"emotion": "angry"
+		},
+		{
+			"actions": [
+				{
+					"state": "",
+					"do": "voice"
+				},
+				{
+					"time": 0.6,
+					"do": "fade_out"
+				}
+			],
+			"wait": 0.7
+		}
+	]
+}

@@ -1,0 +1,60 @@
+{
+	"name": "床头的布偶",
+	"entries": [
+		{
+			"if": {
+				"flag": "cg_seen_theater:penance_doll"
+			},
+			"node": "again"
+		},
+		{
+			"node": "default"
+		}
+	],
+	"nodes": {
+		"default": {
+			"lines": [
+				{
+					"text": "（床头坐着一只旧布偶，纽扣眼睛亮亮的）",
+					"speaker": ""
+				}
+			],
+			"prompt": "抱着它睡一会儿？",
+			"choices": [
+				{
+					"text": "……反正也睡不着。",
+					"next": "go"
+				},
+				{
+					"text": "……先不了",
+					"next": "no"
+				}
+			]
+		},
+		"go": {
+			"lines": [
+				{
+					"text": "……反正也睡不着。",
+					"speaker": "公主"
+				}
+			],
+			"theater": "penance_doll"
+		},
+		"no": {
+			"lines": [
+				{
+					"text": "……我才不上当。",
+					"speaker": "公主"
+				}
+			]
+		},
+		"again": {
+			"lines": [
+				{
+					"text": "（布偶背后绣着两个手拉手的小人。它好像朝她眨了一下眼睛）",
+					"speaker": ""
+				}
+			]
+		}
+	}
+}

@@ -172,7 +172,7 @@
 				{
 					"title": "骑士篇　完",
 					"subtitle": "——半枚徽章的另一半，在谁手里？",
-					"next": "floor_06_after_house",
+					"next": "floor_06_penance_tent",
 					"do": "chapter_end"
 				}
 			],

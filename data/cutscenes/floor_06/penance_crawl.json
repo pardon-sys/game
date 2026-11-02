@@ -1,0 +1,160 @@
+{
+	"name": "钻进墙缝",
+	"letterbox": true,
+	"skippable": false,
+	"steps": [
+		{
+			"actions": [
+				{
+					"to": [
+						16,
+						3
+					],
+					"zoom": 1.2,
+					"time": 0.5,
+					"do": "camera"
+				}
+			],
+			"wait": 0.5
+		},
+		{
+			"speaker": "",
+			"text": "（挠脚鼠从墙缝里钻出来，「嗖」地顺着她的腿爬了上去）"
+		},
+		{
+			"speaker": "公主",
+			"text": "呀、呀啊！爬、爬上来了！",
+			"emotion": "surprise",
+			"actions": [
+				{
+					"who": "princess",
+					"time": 0.4,
+					"do": "shake"
+				}
+			]
+		},
+		{
+			"speaker": "挠脚鼠",
+			"text": "别动别动。……「家」来啦。",
+			"actions": [
+				{
+					"time": 0.4,
+					"do": "flash"
+				},
+				{
+					"sound": "puff",
+					"volume": -3.0,
+					"do": "sfx"
+				}
+			]
+		},
+		{
+			"speaker": "",
+			"text": "（一阵白烟。等烟散开，她的鞋子变成了一双露着脚趾的灰色鼠爪拖鞋，裙子底下多了一条毛茸茸的鼠鼠短裤，后面还拖着一条会动的尾巴）"
+		},
+		{
+			"speaker": "公主",
+			"text": "……这、这是什么啊——！！",
+			"emotion": "surprise"
+		},
+		{
+			"speaker": "挠脚鼠",
+			"text": "（从短裤里探出头）吱吱。鼠鼠短裤，鼠爪鞋。我的家。……很合身吧？",
+			"actions": [
+				{
+					"who": "princess",
+					"kind": "shy",
+					"do": "bubble"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "脱、脱不下来！？",
+			"emotion": "angry",
+			"actions": [
+				{
+					"who": "princess",
+					"time": 0.3,
+					"do": "shake"
+				}
+			]
+		},
+		{
+			"speaker": "挠脚鼠",
+			"text": "出了洞才能脱。……对了，我住在里面，偶尔会跑一跑。别介意。"
+		},
+		{
+			"speaker": "",
+			"text": "（短裤里，有什么东西「嗖」地从屁股窜到了大腿根）",
+			"actions": [
+				{
+					"who": "princess",
+					"zone": "thigh",
+					"fx": "hand",
+					"repeat": 6,
+					"interval": 0.15,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"time": 0.4,
+					"do": "shake"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "噫——！哈、哈哈……这叫「偶尔」！？",
+			"emotion": "helpless_1"
+		},
+		{
+			"speaker": "挠脚鼠",
+			"text": "吱吱。走吧，公主。洞口在这里。"
+		},
+		{
+			"speaker": "",
+			"text": "（她趴下来，把头钻进墙缝。缝比看起来宽一点点——刚好够一个人爬进去）",
+			"actions": [
+				{
+					"who": "princess",
+					"to": [
+						17,
+						2
+					],
+					"time": 0.8,
+					"do": "move"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "……队长。我没有认错。……我是去找答案的。",
+			"emotion": "sad"
+		},
+		{
+			"speaker": "",
+			"text": "（橘猫在门口睁开了一只眼睛，看着那条毛茸茸的尾巴消失在墙缝里，舔了舔嘴巴）"
+		},
+		{
+			"actions": [
+				{
+					"time": 1.0,
+					"do": "fade_out"
+				}
+			],
+			"wait": 1.0
+		},
+		{
+			"actions": [
+				{
+					"title": "第一章　反省牢房　完",
+					"subtitle": "——墙缝的另一头，是一条很老很老的洞",
+					"next": "floor_06_after_house",
+					"do": "chapter_end"
+				}
+			],
+			"wait": 1.4
+		}
+	]
+}

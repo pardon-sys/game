@@ -21,6 +21,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from after_text import d1, d2, equip_kids, errand_dance, errand_goats, errand_ladder, errand_massage, errand_gate_chain, errand_shearing, errand_canopy, errand_sifting, errand_lamp_calibration, errands, house, mine, play, potion, punish, stocks, tailor, tasks, totem, town, drain, drill, inspect, tom, night, penalty, festival_night, festival_talk, stall_guess, stall_ring, stall_ice, stall_fish, stall_lick, done_folk  # noqa: E402
 import quest_maps as qmaps  # noqa: E402
 from knight_text import prison as knight_prison  # noqa: E402
+from penance_text import argue as penance_argue, cell as penance_cell  # noqa: E402
 from knight_text import finale as knight_finale, quests as knight_quests, story as knight_story, story_cg as knight_story_cg, tasks as knight_tasks, townsfolk as knight_townsfolk  # noqa: E402
 
 # 只生成灯轮 / 报幕的文本（委托表、灯轮、补罚表、派对主人对话），不重新写地图、其他任务或别的镇民对白。
@@ -57,6 +58,8 @@ PRISON = "floor_06_after_prison"
 FESTIVAL = "floor_06_festival"
 KDAY, KNIGHT_N, KCHASE = "floor_06_knight_day", "floor_06_knight_night", "floor_06_knight_chase"
 KFOG = "floor_06_knight_fog"
+# 反省篇第一章（骑士篇之后）：营地医务帐篷（吵架）→ 反省牢房（docs/STORY_AFTER_KNIGHT.md）
+PTENT, PCELL = "floor_06_penance_tent", "floor_06_penance_cell"
 
 
 # 骑士篇支线小地图的标记点（quest_maps.py 画的图；写进 data/after/quest_maps.json，QuestMaps 读）
@@ -704,6 +707,32 @@ for path, extra in (
            "guard_patrol path=" + path + extra + " view_range=64 view_angle=55 speed=26 investigate_speed=44 check_chance=0.12")
 pz.write()
 
+# ================================================================ 反省篇第一章：营地医务帐篷 / 反省牢房（文本在 tools/build/penance_text/）
+# 医务帐篷：骑士昏迷躺在行军床上；进图就演吵架（penance_argue），演完被关进反省牢房。
+pt = Map(PTENT, 18, 12, "intro =\nintro_cutscene = penance_argue\nambient = 0.62,0.55,0.55\nno_switch = true")
+pt.room(2, 2, 15, 9)
+pt.put(8, 7, "player")
+pt.put(9, 7, "spawn id=from_cell")
+prop(pt, 4, 3, "princess_bed")
+for (x, y) in ((13, 3), (14, 3)):
+    prop(pt, x, y, "crate")
+prop(pt, 3, 8, "barrel")
+for x in (5, 12):
+    pt.put(x, 1, "torch lit=true")
+pt.write()
+
+# 反省牢房：一个单屏的小房间，只有粉色公主。六件道具（PenanceCell 摆演员 + 调查点；格子在 penance_cell.gd 的 SPOTS 里），
+# 六件都玩过以后东北角的墙缝里冒出挠脚鼠。南墙一道锁着的牢门（调查：门锁着）。
+pc = Map(PCELL, 20, 14, "intro =\nintro_cutscene = penance_cell_in\nambient = 0.46,0.42,0.52\nno_switch = true")
+pc.room(2, 2, 17, 11)
+pc.put(10, 10, "player")
+pc.put(10, 9, "spawn id=from_tent")
+pc.put(3, 3, "penancecell")
+prop(pc, 10, 12, "dungeon_gate", "talk:floor_06/penance_objects#gate")
+for x in (6, 14):
+    pc.put(x, 1, "torch lit=true")
+pc.write()
+
 # ================================================================ 城门外的战场
 fd = Map(FIELD, 44, 30, "intro =\nambient = 0.72,0.66,0.62\nnight_ambient = 0.3,0.3,0.5")
 fd.room(2, 2, 41, 27)
@@ -1021,6 +1050,7 @@ files.update(inspect.DIALOGUES)
 files["after_knight"] = knight_story.CELL
 files.update(knight_townsfolk.DIALOGUES)
 files.update(knight_prison.DIALOGUES)
+files.update(penance_cell.DIALOGUES)
 knight_quests.inject(files)
 # 第 6 天小汤姆的话：按昨晚恶作剧的结局（只在第 6 天）
 for _r, _lines in tom.TOM_NEXT_DAY.items():
@@ -1047,7 +1077,9 @@ AFTER_CG_FAIL = {"after_fail_equip": "after_equip_fail", "after_fail_potion": "a
                  "after_fail_drain": "after_drain_fail", "after_fail_drill": "after_drill_fail", "after_fail_tailor": "after_tailor_fail",
                  "after_fail_mine": "after_mine_fail", "after_fail_inspect": "after_inspect_fail", "after_fail_totem": "after_totem_fail",
                  # 骑士 Boss 的战败 CG（KNIGHT_CG，import_cg.py --knight）
-                 "knight_fail_boss": "knight_fail_1", "knight_fail_boss_2": "knight_fail_2", "knight_fail_boss_3": "knight_fail_3", "knight_fail_fog": "knight_fail_fog"}
+                 "knight_fail_boss": "knight_fail_1", "knight_fail_boss_2": "knight_fail_2", "knight_fail_boss_3": "knight_fail_3", "knight_fail_fog": "knight_fail_fog",
+                 # 反省篇第一章：反省牢房·功能拘束挠痒床（PENANCE_CG，import_cg.py --penance）
+                 "penance_bed": "penance_bed"}
 AFTER_CG_DONE = {"after_d2_equip_done": "after_equip_ok", "after_d3_potion_done": "after_potion_ok", "after_d3_cart_done": "after_cart_ok",
                  "after_d4_drain_done": "after_drain_ok", "after_d4_drill_done": "after_drill_ok", "after_d5_tailor_done": "after_tailor_ok",
                  "after_d5_mine_done": "after_mine_ok", "after_d6_inspect_done": "after_inspect_ok", "after_d6_drill_done": "after_exam_ok",
@@ -1144,12 +1176,12 @@ def _with_done_cg(cid, data):
 
 
 cut = Path("data/cutscenes/floor_06")
-CUTS = dict(d1.CUTSCENES, **d2.CUTSCENES, **tasks.CUTSCENES, **potion.CUTSCENES, **tailor.CUTSCENES, **mine.CUTSCENES, **totem.CUTSCENES, **drain.CUTSCENES, **drill.CUTSCENES, **inspect.CUTSCENES, **festival_night.CUTSCENES, **knight_story.CUTSCENES, **knight_finale.CUTSCENES, **knight_quests.CUTSCENES, **knight_story_cg.CUTSCENES)
+CUTS = dict(d1.CUTSCENES, **d2.CUTSCENES, **tasks.CUTSCENES, **potion.CUTSCENES, **tailor.CUTSCENES, **mine.CUTSCENES, **totem.CUTSCENES, **drain.CUTSCENES, **drill.CUTSCENES, **inspect.CUTSCENES, **festival_night.CUTSCENES, **knight_story.CUTSCENES, **knight_finale.CUTSCENES, **knight_quests.CUTSCENES, **knight_story_cg.CUTSCENES, **penance_argue.CUTSCENES, **penance_cell.CUTSCENES)
 for cid, fn in CUTS.items():
     (cut / (cid + ".json")).write_text(json.dumps(_with_done_cg(cid, done_folk.apply(cid, fn())), ensure_ascii=False, indent="\t") + "\n")
 th = Path("data/theater/after")
 th.mkdir(parents=True, exist_ok=True)
-for tid, data in dict(punish.THEATERS, **tasks.THEATERS, **potion.THEATERS, **tailor.THEATERS, **mine.THEATERS, **totem.THEATERS, **drain.THEATERS, **drill.THEATERS, **inspect.THEATERS, **night.THEATERS, **knight_tasks.THEATERS, **knight_finale.THEATERS, **errand_gate_chain.THEATERS, **knight_prison.THEATERS).items():
+for tid, data in dict(punish.THEATERS, **tasks.THEATERS, **potion.THEATERS, **tailor.THEATERS, **mine.THEATERS, **totem.THEATERS, **drain.THEATERS, **drill.THEATERS, **inspect.THEATERS, **night.THEATERS, **knight_tasks.THEATERS, **knight_finale.THEATERS, **errand_gate_chain.THEATERS, **knight_prison.THEATERS, **penance_cell.THEATERS).items():
     (th / (tid + ".json")).write_text(json.dumps(_with_voice(_with_h2(_with_fail_cg(tid, data))), ensure_ascii=False, indent="\t") + "\n")
 
 floors = json.loads(Path("data/floors.json").read_text())
@@ -1160,7 +1192,8 @@ NEW = [(TOWN, "地下小镇·战后", "town"), (FESTIVAL, "庆功宴的广场", 
        (PRISON, "保卫队的地牢", "night_room"), (CELLAR, "药剂师工房的地窖", "night_room"),
        (ALLEY, "没有灯的小巷", "night_room"), (HERBCAVE, "草药洞", "night_room"),
        (WALL, "城墙上", "night_room"), (CRACK, "广场底下的裂缝", "night_room"), (OLDHALL, "旧会堂", "night_room"),
-       (WAREHOUSE, "旧仓库", "night_room"), (STORAGE, "储物间", "night_room"), (BRIDGE, "排水渠上的小桥", "night_room")]
+       (WAREHOUSE, "旧仓库", "night_room"), (STORAGE, "储物间", "night_room"), (BRIDGE, "排水渠上的小桥", "night_room"),
+       (PTENT, "保卫队营地·医务帐篷", "night_room"), (PCELL, "反省牢房", "night_room")]
 at = next(i for i, f in enumerate(lst) if f["id"] == "floor_06_siege") + 1
 for fid, name, music in NEW:
     if not any(f["id"] == fid for f in lst):

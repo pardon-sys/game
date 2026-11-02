@@ -546,6 +546,12 @@ func _do(a: Dictionary, instant: bool) -> float:
 		"lie":
 			if who is PlayableCharacter:
 				_lie(who as PlayableCharacter, a)
+			elif who:
+				# 镇民 / 骑士这类人物：小人横过来（躺着、昏迷），on = false 扶起来
+				var lie_spr := who.get_node_or_null("Sprite") as Node2D
+				if lie_spr:
+					lie_spr.rotation = -PI / 2.0 if bool(a.get("on", true)) else 0.0
+					lie_spr.modulate = Color(0.85, 0.85, 0.9) if bool(a.get("on", true)) else Color.WHITE
 		"goto":
 			# 过场结束后换关卡（to = 楼层 id，spawn = 到达点）
 			_goto = {"floor": str(a.get("to", "")), "spawn": str(a.get("spawn", ""))}

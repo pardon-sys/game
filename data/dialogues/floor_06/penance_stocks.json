@@ -1,0 +1,60 @@
+{
+	"name": "反省足枷凳",
+	"entries": [
+		{
+			"if": {
+				"flag": "cg_seen_theater:penance_stocks"
+			},
+			"node": "again"
+		},
+		{
+			"node": "default"
+		}
+	],
+	"nodes": {
+		"default": {
+			"lines": [
+				{
+					"text": "（一张矮木凳，前面一块带缺口的木板。「坐下，说出你的错」）",
+					"speaker": ""
+				}
+			],
+			"prompt": "坐上去？",
+			"choices": [
+				{
+					"text": "……坐一下而已。",
+					"next": "go"
+				},
+				{
+					"text": "……先不了",
+					"next": "no"
+				}
+			]
+		},
+		"go": {
+			"lines": [
+				{
+					"text": "……坐一下而已。",
+					"speaker": "公主"
+				}
+			],
+			"theater": "penance_stocks"
+		},
+		"no": {
+			"lines": [
+				{
+					"text": "……我才不上当。",
+					"speaker": "公主"
+				}
+			]
+		},
+		"again": {
+			"lines": [
+				{
+					"text": "（刻字底下多了一道新的划痕。……是她刚才踢的）",
+					"speaker": ""
+				}
+			]
+		}
+	}
+}

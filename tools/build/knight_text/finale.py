@@ -352,7 +352,7 @@ def epilogue():
         line(P, "……诶？", "surprise"),
         line(BLUE, "……走吧。回家。"),
         {"actions": [A("fade_out", time=1.2)], "wait": 1.2},
-        {"actions": [A("chapter_end", title="骑士篇　完", subtitle="——半枚徽章的另一半，在谁手里？", next="floor_06_after_house")], "wait": 1.4},
+        {"actions": [A("chapter_end", title="骑士篇　完", subtitle="——半枚徽章的另一半，在谁手里？", next="floor_06_penance_tent")], "wait": 1.4},
     ]
     return {"name": "半枚徽章", "letterbox": True, "skippable": False, "steps": s}
 

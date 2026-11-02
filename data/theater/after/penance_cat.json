@@ -1,0 +1,365 @@
+{
+	"name": "门口的橘猫",
+	"cast": {
+		"princess": {
+			"kind": "princess",
+			"at": [
+				-8,
+				8
+			],
+			"visual": "normal",
+			"anim": "idle",
+			"dir": "down"
+		},
+		"cat": {
+			"kind": "trap:cat_guard",
+			"at": [
+				12,
+				10
+			]
+		}
+	},
+	"steps": [
+		{
+			"act": 1,
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "fade_in"
+				},
+				{
+					"state": "giggle",
+					"do": "voice"
+				}
+			],
+			"wait": 0.5
+		},
+		{
+			"speaker": "",
+			"text": "（门口趴着一只胖乎乎的橘猫。它脖子上挂着一个小铃铛，铃铛旁边……拴着一把钥匙）",
+			"act": 1
+		},
+		{
+			"speaker": "公主",
+			"text": "……钥匙！",
+			"emotion": "surprise"
+		},
+		{
+			"speaker": "公主",
+			"text": "猫咪～猫咪乖～把钥匙给姐姐好不好～",
+			"emotion": "happy"
+		},
+		{
+			"speaker": "橘猫",
+			"text": "喵。"
+		},
+		{
+			"speaker": "",
+			"text": "（橘猫看了她一眼，打了个哈欠，把头埋回了爪子里）"
+		},
+		{
+			"speaker": "公主",
+			"text": "……它在瞧不起我。",
+			"emotion": "angry"
+		},
+		{
+			"speaker": "公主",
+			"text": "哼，我可是很会哄小动物的。……来，挠挠下巴……",
+			"emotion": "happy"
+		},
+		{
+			"speaker": "",
+			"text": "（她蹲下来伸出手。橘猫抬起头，蹭了蹭她的手指——然后顺势一翻身，把她的手压在了肚子底下）",
+			"actions": [
+				{
+					"who": "princess",
+					"time": 0.3,
+					"do": "shake"
+				}
+			],
+			"act": 2
+		},
+		{
+			"speaker": "公主",
+			"text": "诶？压、压住了！好重！你好重！",
+			"emotion": "surprise"
+		},
+		{
+			"speaker": "",
+			"text": "（她一屁股坐在地上，想把手抽出来。橘猫慢悠悠地转过头，看见了她晃来晃去的脚）"
+		},
+		{
+			"speaker": "公主",
+			"text": "……你看哪里。你在看哪里。",
+			"emotion": "surprise"
+		},
+		{
+			"speaker": "",
+			"text": "（橘猫用爪子把她的鞋扒了下来，凑过去闻了闻脚心……然后伸出粗粗的小舌头，「唰」地舔了一下）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "cat",
+					"zone": "sole",
+					"fx": "lines",
+					"repeat": 4,
+					"interval": 0.25,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"visual": "giggle",
+					"do": "pose"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "呀啊！舌、舌头好粗——！",
+			"emotion": "giggle"
+		},
+		{
+			"speaker": "",
+			"text": "（猫舌头上全是小倒刺。一下，两下，像一把小小的软刷，从脚跟舔到脚尖）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "cat",
+					"zone": "sole",
+					"fx": "lines",
+					"repeat": 10,
+					"interval": 0.18,
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "嘻嘻……嘻……不、不要舔……我又不是小鱼干……！",
+			"emotion": "giggle"
+		},
+		{
+			"speaker": "",
+			"text": "（橘猫的尾巴也闲不住，绕过来，毛茸茸的尾巴尖在她小腿和膝盖窝上扫来扫去）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "cat",
+					"zone": "thigh",
+					"fx": "feather",
+					"repeat": 10,
+					"interval": 0.16,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"visual": "helpless_1",
+					"do": "pose"
+				},
+				{
+					"do": "voice",
+					"state": "laugh"
+				}
+			],
+			"act": 3
+		},
+		{
+			"speaker": "公主",
+			"text": "哈……哈哈……尾巴……尾巴也来……你到底有几只手啊……！",
+			"emotion": "helpless_1"
+		},
+		{
+			"speaker": "",
+			"text": "（她另一只手去推猫——橘猫「喵」地一声，干脆整只趴到她的腿上，压住了，然后继续舔另一只脚）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "cat",
+					"zone": "sole",
+					"fx": "lines",
+					"repeat": 12,
+					"interval": 0.14,
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "趾、趾缝！不要一根一根地舔——哈哈哈！",
+			"emotion": "helpless_1"
+		},
+		{
+			"speaker": "",
+			"text": "（舌头钻进脚趾缝里，粗粗地刷过去。尾巴一下一下地扫着膝盖窝。铃铛叮铃叮铃地响）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "cat",
+					"zone": "sole",
+					"fx": "lines",
+					"repeat": 14,
+					"interval": 0.11,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"by": "cat",
+					"zone": "thigh",
+					"fx": "feather",
+					"repeat": 14,
+					"interval": 0.11,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"visual": "helpless_2",
+					"do": "pose"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "哈哈哈哈！投、投降！我不要钥匙了！不要了——哈哈哈哈！",
+			"emotion": "helpless_2"
+		},
+		{
+			"speaker": "橘猫",
+			"text": "喵～"
+		},
+		{
+			"speaker": "",
+			"text": "（它听起来很得意。舌头一刻也没停）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "cat",
+					"zone": "sole",
+					"fx": "lines",
+					"repeat": 14,
+					"interval": 0.1,
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "（星光「砰」地炸开，橘猫被吓得毛全竖了起来，「喵嗷」一声跳到了一边……哈啊……哈……全放出去了……好舒服……）",
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "flash"
+				},
+				{
+					"sound": "star_burst",
+					"do": "sfx"
+				},
+				{
+					"sound": "water_release",
+					"volume": -2.0,
+					"do": "sfx"
+				},
+				{
+					"who": "princess",
+					"time": 0.4,
+					"do": "shake"
+				},
+				{
+					"state": "laugh",
+					"do": "voice"
+				}
+			],
+			"act": "burst",
+			"wait": 1.0
+		},
+		{
+			"speaker": "",
+			"text": "（橘猫舔了舔爪子，冷静下来，又迈着步子走了回来——这一次，它凑近的是刚释放完、红通通的脚心）",
+			"actions": [
+				{
+					"who": "princess",
+					"visual": "helpless_2",
+					"do": "pose"
+				}
+			],
+			"act": 4
+		},
+		{
+			"speaker": "公主",
+			"text": "不、不要……现在……现在真的不行……！",
+			"emotion": "helpless_2"
+		},
+		{
+			"speaker": "",
+			"text": "（「唰」——只舔了一下。她整个人在地上缩成了一团，笑得说不出话）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "cat",
+					"zone": "sole",
+					"fx": "lines",
+					"repeat": 6,
+					"interval": 0.14,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"time": 0.5,
+					"do": "shake"
+				},
+				{
+					"do": "pose",
+					"who": "princess",
+					"visual": "helpless_2"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "……哈哈哈……哈……一下就……猫、猫大人……饶了我……",
+			"emotion": "helpless_2"
+		},
+		{
+			"speaker": "",
+			"text": "（橘猫又舔了好几下，舔够了，才心满意足地回到门口，把钥匙压在肚子底下，眯起了眼睛）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "cat",
+					"zone": "sole",
+					"fx": "lines",
+					"repeat": 8,
+					"interval": 0.18,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"visual": "helpless_1",
+					"do": "pose"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "……这只猫……绝对是队长养的。一样的坏心眼。",
+			"emotion": "angry"
+		},
+		{
+			"speaker": "公主",
+			"text": "……我才不会认错。……也不会再跟猫抢钥匙了。",
+			"emotion": "sad"
+		},
+		{
+			"actions": [
+				{
+					"state": "",
+					"do": "voice"
+				},
+				{
+					"time": 0.6,
+					"do": "fade_out"
+				}
+			],
+			"wait": 0.7
+		}
+	]
+}

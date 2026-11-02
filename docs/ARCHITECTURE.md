@@ -1251,6 +1251,20 @@ data/cutscenes/<楼层组>/  地图内过场；data/theater/<楼层组>/  小剧
 - 测试：`f6_after_test.tscn -- --knight-only`（A~D，`tests/helpers/f6_knight.gd`）、`--knight-finale-only`（E~G，`f6_knight_finale.gd`：每招、破绽、救人、诅咒装备、AI 搭档、四个阶段）；
   跳关点「骑士篇·开头」「骑士篇·诅咒失控」。
 
+## 反省篇第一章（骑士篇之后；设计稿 docs/STORY_AFTER_KNIGHT.md）
+- 流程：骑士篇尾声 `knight_epilogue` 的章末画面 `next = floor_06_penance_tent` → **医务帐篷**（进图就演 `penance_argue`：骑士昏迷躺着、
+  粉色公主和队长吵架、蓝色公主插不上嘴、被关起来）→ `goto floor_06_penance_cell` → **反省牢房**（进图演 `penance_cell_in`）。
+- `PenanceCell`（`levels/floor_06/scripts/penance_cell.gd`，地图 legend `penancecell`）：六件道具 `SPOTS`（陷阱演员 + 调查点，
+  对话 `floor_06/penance_<id>`：没玩过 → 小剧场 `penance_<id>`，玩过 → 一句）；六件都玩过（`cg_seen_theater:penance_*`）→ 标记 `penance_all_done`、
+  墙缝探出挠脚鼠（`floor_06/penance_rat`：按 `cg_seen_theater:prison_rat` 分「认得她 / 记仇」两种开场）→ 答应 → 对话 call `penance_rat_outfit`
+  → `PenanceCell.crawl()`：`wear_mouse` → 过场 `penance_crawl`（章末「第一章　反省牢房　完」）→ 第二章还没做：标记 `penance_ch1_done`、`take_off_mouse` 还原。
+- 鼠鼠装（`equip_mouse_shorts` 大腿 + 屁股、`equip_mouse_paw_shoes` 脚心；诅咒、攻击 ×0.8）：`EquipFx` 按 `data/equip_reactions.json` 每 8~15 秒发作，
+  反应里 `crit = true` → 这一下是暴击（`HitData.special`、`tickle_special` 音效、魔力疲倦 ×`fatigue_mult`）；短裤 `special = mouse_scent`
+  → `EquipFx._mouse_scent` 每 `SCENT_EVERY` 秒把 `SCENT_R` 内的怪 `rally_to` 过来。换上 / 脱下：`PenanceCell.wear_mouse / take_off_mouse`（原装备记在 `vars.penance_prev_equip`）。
+- 文本：`tools/build/penance_text/`（`argue.py` 帐篷 / 进门，`cell.py` 六段小剧场 / 调查点 / 挠脚鼠 / 钻墙缝）；拘束床的 CG `penance_bed`
+  （codex，提示词 `tools/art/src/penance_cg/prompts.md`，`import_cg.py --penance`）；道具像素图 `tools/art/gen_penance_art.py`。
+- 过场的 `lie` 对镇民 / 骑士也能用（小人横过来）。测试：`f6_after_test -- --penance-only`；跳关点「反省篇·第一章 …」。
+
 ## 公主状态与换美术素材
 
 - **角色画风（精细像素 / 原像素）**：粉色 / 蓝色公主、派对主人各有一套精细像素图集 `*_hd.png`（行走 256 格、魔法 384 格，派对主人另有攻击图；原 32 格像素图一张不动，随时切回）。

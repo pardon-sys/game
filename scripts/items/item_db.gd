@@ -47,6 +47,8 @@ const PATHS := {
 	"equip_t_thigh_strap": "res://data/items/equip_t_thigh_strap.tres",
 	"equip_t_bell_anklet": "res://data/items/equip_t_bell_anklet.tres",
 	"equip_t_mark_patch": "res://data/items/equip_t_mark_patch.tres",
+	"equip_mouse_shorts": "res://data/items/equip_mouse_shorts.tres",
+	"equip_mouse_paw_shoes": "res://data/items/equip_mouse_paw_shoes.tres",
 }
 
 static var _cache := {}

@@ -1,0 +1,153 @@
+{
+	"name": "挠脚鼠",
+	"entries": [
+		{
+			"if": {
+				"flag": [
+					"penance_all_done",
+					"cg_seen_theater:prison_rat"
+				]
+			},
+			"node": "met"
+		},
+		{
+			"if": {
+				"flag": "penance_all_done"
+			},
+			"node": "stranger"
+		},
+		{
+			"node": "squeak"
+		}
+	],
+	"nodes": {
+		"squeak": {
+			"lines": [
+				{
+					"text": "（墙角有一道裂缝。里面传来细细的「吱吱」声……好像有什么东西在等着）",
+					"speaker": ""
+				}
+			]
+		},
+		"met": {
+			"lines": [
+				{
+					"text": "吱吱！又是你！公主！",
+					"speaker": "挠脚鼠"
+				},
+				{
+					"text": "……地牢里那只挠痒鼠！？你怎么在这里！",
+					"speaker": "公主",
+					"emotion": "surprise"
+				},
+				{
+					"text": "叫我挠脚鼠。挠痒鼠是小名。……上次放我出来的谢礼，还满意吗？吱吱。",
+					"speaker": "挠脚鼠"
+				},
+				{
+					"text": "一、一点都不满意！你钻进鞋里挠了我一路！",
+					"speaker": "公主",
+					"emotion": "angry"
+				},
+				{
+					"text": "那是谢礼呀。挠脚鼠一族，有恩必报。……这次也报。",
+					"speaker": "挠脚鼠"
+				}
+			],
+			"next": "offer"
+		},
+		"stranger": {
+			"lines": [
+				{
+					"text": "吱。哼。原来是你。",
+					"speaker": "挠脚鼠"
+				},
+				{
+					"text": "……地牢里那只挠痒鼠！？",
+					"speaker": "公主",
+					"emotion": "surprise"
+				},
+				{
+					"text": "是挠脚鼠。……上次你不放我出来，害我被守卫抓住，又关了三天。三天！",
+					"speaker": "挠脚鼠"
+				},
+				{
+					"text": "那、那是因为你会捣乱嘛……",
+					"speaker": "公主",
+					"emotion": "sad"
+				},
+				{
+					"text": "哼。不过挠脚鼠一族心胸宽广。……想出去？我可以帮你。只是——要收报酬。",
+					"speaker": "挠脚鼠"
+				}
+			],
+			"next": "offer"
+		},
+		"offer": {
+			"lines": [
+				{
+					"text": "这道缝后面，有一条很老很老的洞，能通到外面。只有我知道怎么走。",
+					"speaker": "挠脚鼠"
+				},
+				{
+					"text": "……能出去？真的？",
+					"speaker": "公主",
+					"emotion": "surprise"
+				},
+				{
+					"text": "真的。不过洞很窄，你得把鞋子和裤子换了——换成我的「家」。我住在你身上，给你带路。",
+					"speaker": "挠脚鼠"
+				},
+				{
+					"text": "……住、住在我身上？",
+					"speaker": "公主",
+					"emotion": "surprise"
+				},
+				{
+					"text": "吱吱。就这么说定了？",
+					"speaker": "挠脚鼠"
+				}
+			],
+			"prompt": "答应挠脚鼠？",
+			"choices": [
+				{
+					"text": "……成交。我要出去。",
+					"next": "deal"
+				},
+				{
+					"text": "再、再想一想",
+					"next": "wait"
+				}
+			]
+		},
+		"deal": {
+			"lines": [
+				{
+					"text": "……成交。只要能出去，什么都行。",
+					"speaker": "公主",
+					"emotion": "angry"
+				},
+				{
+					"text": "吱吱！有恩必报，有约必守！",
+					"speaker": "挠脚鼠"
+				}
+			],
+			"set": {
+				"call": "penance_rat_outfit"
+			}
+		},
+		"wait": {
+			"lines": [
+				{
+					"text": "……我再想一想。",
+					"speaker": "公主",
+					"emotion": "sad"
+				},
+				{
+					"text": "吱。我就在这里。反正你也跑不掉。",
+					"speaker": "挠脚鼠"
+				}
+			]
+		}
+	}
+}

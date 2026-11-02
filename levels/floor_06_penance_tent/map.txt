@@ -1,0 +1,29 @@
+[level]
+# 第六层·地下小镇·战后（tools/build/gen_floor06_after.py 生成，不要直接改）
+intro =
+intro_cutscene = penance_argue
+ambient = 0.62,0.55,0.55
+no_switch = true
+[legend]
+# = wall
+. = floor
+P = player
+t = torch lit=true
+A = spawn id=from_cell
+C = prop type=princess_bed
+D = prop type=crate
+E = prop type=barrel
+
+[map]
+##################
+#####t######t#####
+##..............##
+##..C........DD.##
+##..............##
+##..............##
+##..............##
+##......PA......##
+##.E............##
+##..............##
+##################
+##################

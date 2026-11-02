@@ -1,0 +1,28 @@
+[gd_resource type="Resource" script_class="EquipData" format=3]
+
+[ext_resource type="Script" path="res://scripts/items/equip_data.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/generated/equip_icons.png" id="2"]
+
+[sub_resource type="AtlasTexture" id="icon"]
+atlas = ExtResource("2")
+region = Rect2(368, 0, 16, 16)
+
+[resource]
+script = ExtResource("1")
+id = "equip_mouse_shorts"
+display_name = "鼠鼠短裤"
+description = "毛茸茸的灰色鼠鼠短裤，后面拖着一条会动的尾巴。挠脚鼠就住在里面——它说这是「报酬」。"
+icon = SubResource("icon")
+category = 4
+stackable = false
+show_in_hud = false
+pickup_emotion = "shy"
+slots = Array[String](["thigh", "butt"])
+owner_id = "pink"
+modifiers = {"attack": 0.8}
+zone_mods = {"thigh": 0.2, "butt": 0.2}
+block = {}
+cursed = true
+special = "mouse_scent"
+pros = "（无）"
+cons = "脱不下；攻击 ×0.8；挠脚鼠时不时乱窜（暴击）；鼠味把附近的怪引过来"

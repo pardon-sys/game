@@ -11,6 +11,8 @@ extends Node
 ## 加成 add_mod(键, 频率倍数, 力度倍数, 秒)：攻防战的狂欢图腾（一直有效）、千手痒痒裤吸收临时装备（20 秒）……
 ##   rate_mul / power_mul 是所有加成的乘积；千手痒痒裤的发作间隔 / 力度也读它们。
 ## 被强制穿上的临时装备也在这里倒计时（Equipment.tick_forced）。
+## 反应数据里 crit = true（鼠鼠装：挠脚鼠乱窜）：这一下是暴击（HitData.special：金色暴击星环 + 暴击音效），魔力疲倦按 fatigue_mult 倍积累。
+## 装备 special = mouse_scent（鼠鼠短裤）：每 SCENT_EVERY 秒把 SCENT_R 以内的怪引过来（Monster.rally_to）。
 
 signal flared(id: String, zone: String)
 
@@ -20,6 +22,8 @@ const BUBBLE_GAP := 6.0
 ## 发作那一下的闷笑倍数（原来的 amount 太小，几乎看不出涨）
 const FLARE_MULT := 2.5
 ## 装备 → 手法特效（HitFx 的种类）
+const SCENT_EVERY := 1.5
+const SCENT_R := 90.0
 const WAY_FX := {"feather": ["feather_socks", "fluff", "feather_shackles"], "brush": ["toe_brush"], "pinch": ["pinch_pad", "knead"],
 	"hand": ["thigh_ring", "thigh_strap", "pants"], "bubble": ["bell"], "curse": ["mark"]}
 
@@ -95,6 +99,7 @@ func _process(delta: float) -> void:
 	if who and not GameState.in_cutscene and not CG.is_busy():
 		Equipment.tick_forced(who.character_id, delta)
 	_bell_move(delta)
+	_mouse_scent(delta)
 	if who == null or not who.is_alive() or GameState.in_dialogue or GameState.in_cutscene or CG.is_busy():
 		return
 	var live := {}
@@ -131,6 +136,27 @@ func _bell_move(delta: float) -> void:
 		who.call("_ring_bell")
 
 
+var _scent_t := 0.0
+
+
+## 鼠鼠短裤（special = mouse_scent）：身上的鼠味把附近一小圈的怪引过来。返回引过来几只（测试用）。
+func _mouse_scent(delta: float) -> int:
+	_scent_t -= delta
+	if who == null or _scent_t > 0.0 or not who.is_alive() or not Equipment.has_special(who.character_id, "mouse_scent"):
+		return 0
+	_scent_t = SCENT_EVERY
+	return scent_now()
+
+
+func scent_now() -> int:
+	var n := 0
+	for m in who.get_tree().get_nodes_in_group("enemy"):
+		if m is Monster and (m as Node2D).global_position.distance_to(who.global_position) <= SCENT_R:
+			(m as Monster).rally_to(who)
+			n += 1
+	return n
+
+
 func _next_interval(e: Dictionary) -> float:
 	var iv: Variant = e.get("interval", [8.0, 12.0])
 	if iv is Array and iv.size() >= 2:
@@ -156,6 +182,10 @@ func flare(id: String, zone: String, way := "", tickle := true) -> String:
 		var h := HitData.make_tickle(_source(id), amount * FLARE_MULT)
 		h.zone = zone
 		h.ignore_block = true   # 装备自己挠自己：防护装备挡不住
+		if bool(e.get("crit", false)):
+			h.special = true
+			h.fatigue_mult = float(e.get("fatigue_mult", 2.0))
+			Audio.play("tickle_special", -4.0, 0.08)
 		who.receive_hit(h)
 		# 小人身上那个部位：手法特效 + 抖一下
 		if who.is_inside_tree():

@@ -1,0 +1,424 @@
+{
+	"name": "吵架",
+	"letterbox": true,
+	"skippable": true,
+	"steps": [
+		{
+			"actions": [
+				{
+					"id": "PtKnight",
+					"kind": "npc:knight",
+					"at": [
+						4,
+						3
+					],
+					"dir": "down",
+					"do": "spawn"
+				},
+				{
+					"who": "PtKnight",
+					"do": "lie"
+				},
+				{
+					"id": "PtCaptain",
+					"kind": "npc:captain",
+					"at": [
+						11,
+						4
+					],
+					"dir": "left",
+					"do": "spawn"
+				},
+				{
+					"id": "PtBlue",
+					"kind": "npc:blue_princess",
+					"at": [
+						6,
+						6
+					],
+					"dir": "up",
+					"do": "spawn"
+				},
+				{
+					"to": [
+						8,
+						5
+					],
+					"zoom": 1.0,
+					"time": 0.5,
+					"do": "camera"
+				}
+			],
+			"wait": 0.6
+		},
+		{
+			"speaker": "",
+			"text": "（营地的医务帐篷里点着一盏油灯。骑士躺在角落的行军床上，盔甲卸在一边——他走到营地门口，就一头栽倒了，到现在都没醒）"
+		},
+		{
+			"speaker": "",
+			"text": "（药剂师奶奶来看过，说他只是累坏了：诅咒在身体里待了太久，要睡很久很久）"
+		},
+		{
+			"speaker": "公主",
+			"text": "……他会醒的，对吧？",
+			"emotion": "sad"
+		},
+		{
+			"speaker": "保卫队队长",
+			"text": "……会。"
+		},
+		{
+			"speaker": "公主",
+			"text": "那等他醒了，我想问他那天晚上的事。还有那半枚徽章——",
+			"emotion": "sad"
+		},
+		{
+			"speaker": "保卫队队长",
+			"text": "不用等他。……你们俩，明天开始照常过日子。"
+		},
+		{
+			"speaker": "公主",
+			"text": "……照常？",
+			"emotion": "surprise"
+		},
+		{
+			"speaker": "公主",
+			"text": "队长，我想回地面。",
+			"actions": [
+				{
+					"who": "princess",
+					"dir": "right",
+					"do": "face"
+				}
+			]
+		},
+		{
+			"speaker": "保卫队队长",
+			"text": "……",
+			"actions": [
+				{
+					"who": "PtCaptain",
+					"dir": "left",
+					"do": "face"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "我想知道我是谁。为什么醒来就在地底下，为什么大家都叫我公主，王国为什么会没了——",
+			"emotion": "angry"
+		},
+		{
+			"speaker": "公主",
+			"text": "骑士叫她殿下，你说我小时候钻管道，奶奶说我像「小时候的那孩子」……大家都知道些什么，就我不知道！",
+			"emotion": "angry"
+		},
+		{
+			"speaker": "保卫队队长",
+			"text": "不行。"
+		},
+		{
+			"speaker": "公主",
+			"text": "为什么！",
+			"emotion": "angry"
+		},
+		{
+			"speaker": "保卫队队长",
+			"text": "地面上什么都没有了。"
+		},
+		{
+			"speaker": "公主",
+			"text": "那我就去看看「什么都没有」是什么样子！",
+			"emotion": "angry"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……那个……",
+			"actions": [
+				{
+					"who": "PtBlue",
+					"kind": "dots",
+					"do": "bubble"
+				}
+			]
+		},
+		{
+			"speaker": "保卫队队长",
+			"text": "你不懂。那天晚上——",
+			"actions": [
+				{
+					"who": "PtCaptain",
+					"dir": "down",
+					"do": "face"
+				}
+			]
+		},
+		{
+			"speaker": "",
+			"text": "（队长的话停在了一半。他攥紧了拳头，又松开）"
+		},
+		{
+			"speaker": "公主",
+			"text": "那天晚上怎么了？你说呀！每次都说一半！",
+			"emotion": "angry"
+		},
+		{
+			"speaker": "保卫队队长",
+			"text": "……我说过的话，就是全部。"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……我觉得……",
+			"actions": [
+				{
+					"who": "PtBlue",
+					"kind": "dots",
+					"do": "bubble"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "你骗人！那块手帕上绣的两个小人——",
+			"emotion": "angry"
+		},
+		{
+			"speaker": "保卫队队长",
+			"text": "……手帕给了你，就是你的。别的不要问。",
+			"actions": [
+				{
+					"who": "PtCaptain",
+					"dir": "left",
+					"do": "face"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "……又是这样！",
+			"emotion": "angry"
+		},
+		{
+			"speaker": "保卫队队长",
+			"text": "……总之，不行。地面上的路早就塌了，上去的人一个都没回来。"
+		},
+		{
+			"speaker": "公主",
+			"text": "那是他们不够努力！我会憋笑、会冲刺、会魔力释放——",
+			"emotion": "angry"
+		},
+		{
+			"speaker": "保卫队队长",
+			"text": "然后在半路上笑倒，被什么东西抓去挠一整晚？"
+		},
+		{
+			"speaker": "公主",
+			"text": "……那、那也是我的事！",
+			"emotion": "angry"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……两个人……都……",
+			"actions": [
+				{
+					"who": "PtBlue",
+					"kind": "sad",
+					"do": "bubble"
+				}
+			]
+		},
+		{
+			"speaker": "",
+			"text": "（两个人的声音越来越大，把蓝色公主那句小小的话整个盖了过去。她张了张嘴，又闭上了）"
+		},
+		{
+			"speaker": "保卫队队长",
+			"text": "你的事？七天前你还是被罚在广场上的赎罪犯人。"
+		},
+		{
+			"speaker": "公主",
+			"text": "罚完了！一百个工时，一个不少！",
+			"emotion": "angry"
+		},
+		{
+			"speaker": "保卫队队长",
+			"text": "……你倒是记得清楚。"
+		},
+		{
+			"speaker": "公主",
+			"text": "你不让我去，我就自己去！今天晚上就走！",
+			"emotion": "angry"
+		},
+		{
+			"speaker": "骑士",
+			"text": "……唔……",
+			"actions": [
+				{
+					"who": "PtKnight",
+					"kind": "dots",
+					"do": "bubble"
+				}
+			]
+		},
+		{
+			"speaker": "",
+			"text": "（行军床上的骑士皱了皱眉，又沉沉地睡了过去。帐篷里一下子安静了）"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……小声……",
+			"actions": [
+				{
+					"who": "PtBlue",
+					"dir": "right",
+					"do": "face"
+				}
+			]
+		},
+		{
+			"speaker": "保卫队队长",
+			"text": "……",
+			"actions": [
+				{
+					"who": "PtCaptain",
+					"dir": "left",
+					"do": "face"
+				}
+			]
+		},
+		{
+			"speaker": "保卫队队长",
+			"text": "……好。既然你听不进去，就去一个安静的地方，好好想一想。"
+		},
+		{
+			"speaker": "公主",
+			"text": "……什么意思？",
+			"emotion": "surprise"
+		},
+		{
+			"speaker": "保卫队队长",
+			"text": "来人。",
+			"actions": [
+				{
+					"id": "PtGuard1",
+					"kind": "npc:guard",
+					"at": [
+						14,
+						8
+					],
+					"dir": "left",
+					"do": "spawn"
+				},
+				{
+					"id": "PtGuard2",
+					"kind": "npc:guard",
+					"at": [
+						14,
+						9
+					],
+					"dir": "left",
+					"do": "spawn"
+				}
+			]
+		},
+		{
+			"speaker": "",
+			"text": "（两个保卫队员掀开帘子走了进来，一左一右站到了她身边）",
+			"actions": [
+				{
+					"who": "PtGuard1",
+					"to": [
+						9,
+						7
+					],
+					"time": 0.6,
+					"do": "move"
+				},
+				{
+					"who": "PtGuard2",
+					"to": [
+						7,
+						8
+					],
+					"time": 0.6,
+					"do": "move"
+				}
+			]
+		},
+		{
+			"speaker": "保卫队队长",
+			"text": "把她关进反省室。……让她好好反省。想通了再出来。"
+		},
+		{
+			"speaker": "公主",
+			"text": "反、反省室！？我又没做错事！放开——！",
+			"emotion": "angry",
+			"actions": [
+				{
+					"who": "princess",
+					"time": 0.4,
+					"do": "shake"
+				}
+			]
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……等……",
+			"actions": [
+				{
+					"who": "PtBlue",
+					"to": [
+						7,
+						6
+					],
+					"time": 0.3,
+					"do": "move"
+				}
+			]
+		},
+		{
+			"speaker": "保卫队队长",
+			"text": "你也回去睡觉。"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……",
+			"actions": [
+				{
+					"who": "PtBlue",
+					"kind": "dots",
+					"do": "bubble"
+				}
+			]
+		},
+		{
+			"speaker": "",
+			"text": "（蓝色公主站在原地，攥着手心里的半枚徽章。她看了看被架走的粉色公主，又看了看队长的背影，什么都没有说出来）"
+		},
+		{
+			"speaker": "公主",
+			"text": "臭队长——！我才不会认错的——！",
+			"emotion": "angry"
+		},
+		{
+			"actions": [
+				{
+					"time": 0.8,
+					"do": "fade_out"
+				}
+			],
+			"wait": 0.8
+		},
+		{
+			"actions": [
+				{
+					"to": "floor_06_penance_cell",
+					"spawn": "from_tent",
+					"do": "goto"
+				}
+			],
+			"wait": 0.2
+		}
+	]
+}

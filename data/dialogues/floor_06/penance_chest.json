@@ -1,0 +1,60 @@
+{
+	"name": "队长的旧战利品箱",
+	"entries": [
+		{
+			"if": {
+				"flag": "cg_seen_theater:penance_chest"
+			},
+			"node": "again"
+		},
+		{
+			"node": "default"
+		}
+	],
+	"nodes": {
+		"default": {
+			"lines": [
+				{
+					"text": "（一口旧木箱，锁头锈得快掉了。「没收品——别碰」）",
+					"speaker": ""
+				}
+			],
+			"prompt": "打开看看？",
+			"choices": [
+				{
+					"text": "「别碰」就是让人碰的意思。",
+					"next": "go"
+				},
+				{
+					"text": "……先不了",
+					"next": "no"
+				}
+			]
+		},
+		"go": {
+			"lines": [
+				{
+					"text": "「别碰」就是让人碰的意思。",
+					"speaker": "公主"
+				}
+			],
+			"theater": "penance_chest"
+		},
+		"no": {
+			"lines": [
+				{
+					"text": "……我才不上当。",
+					"speaker": "公主"
+				}
+			]
+		},
+		"again": {
+			"lines": [
+				{
+					"text": "（照片收好了。年轻的队长、小女孩、王宫的大门……）",
+					"speaker": ""
+				}
+			]
+		}
+	}
+}

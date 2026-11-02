@@ -1,0 +1,60 @@
+{
+	"name": "门口的橘猫",
+	"entries": [
+		{
+			"if": {
+				"flag": "cg_seen_theater:penance_cat"
+			},
+			"node": "again"
+		},
+		{
+			"node": "default"
+		}
+	],
+	"nodes": {
+		"default": {
+			"lines": [
+				{
+					"text": "（门口趴着一只胖橘猫，铃铛旁边拴着一把钥匙）",
+					"speaker": ""
+				}
+			],
+			"prompt": "哄它把钥匙给你？",
+			"choices": [
+				{
+					"text": "猫咪～猫咪乖～",
+					"next": "go"
+				},
+				{
+					"text": "……先不了",
+					"next": "no"
+				}
+			]
+		},
+		"go": {
+			"lines": [
+				{
+					"text": "猫咪～猫咪乖～",
+					"speaker": "公主"
+				}
+			],
+			"theater": "penance_cat"
+		},
+		"no": {
+			"lines": [
+				{
+					"text": "……我才不上当。",
+					"speaker": "公主"
+				}
+			]
+		},
+		"again": {
+			"lines": [
+				{
+					"text": "（橘猫把钥匙压在肚子底下，眯着眼睛看她。……不去了，不去了）",
+					"speaker": ""
+				}
+			]
+		}
+	}
+}

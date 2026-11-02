@@ -1,0 +1,449 @@
+{
+	"name": "功能拘束挠痒床",
+	"cast": {
+		"princess": {
+			"kind": "princess",
+			"at": [
+				0,
+				6
+			],
+			"visual": "normal",
+			"anim": "idle",
+			"dir": "down"
+		},
+		"bed": {
+			"kind": "trap:penance_bed",
+			"at": [
+				0,
+				12
+			]
+		}
+	},
+	"steps": [
+		{
+			"act": 1,
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "fade_in"
+				},
+				{
+					"state": "giggle",
+					"do": "voice"
+				}
+			],
+			"wait": 0.5
+		},
+		{
+			"speaker": "",
+			"text": "（屋子最里面是一张长长的木床。粉色的床垫，床尾一块带两个缺口的木板，床边一根红色的拉杆，旁边钉着一张说明）",
+			"act": 1
+		},
+		{
+			"speaker": "",
+			"text": "（「反省床。分四档：一档，二档，三档，四档。拉杆往下：停止。」）"
+		},
+		{
+			"speaker": "公主",
+			"text": "……四档是什么的四档啊。说明写得也太随便了吧。",
+			"emotion": "angry"
+		},
+		{
+			"speaker": "公主",
+			"text": "反正有停止。躺一下看看，不对劲就拉杆。……我很聪明的。",
+			"emotion": "happy"
+		},
+		{
+			"speaker": "",
+			"text": "（她躺上去。床垫软软的，枕头也软软的。……然后「咔哒」一声，床尾的木板扣住了两只脚踝，鞋子被顶落到地上）",
+			"actions": [
+				{
+					"sound": "stocks",
+					"volume": -4.0,
+					"do": "sfx"
+				},
+				{
+					"who": "princess",
+					"time": 0.3,
+					"do": "shake"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "又来！？这里的东西为什么都要先扣脚！",
+			"emotion": "surprise"
+		},
+		{
+			"speaker": "",
+			"text": "（「一档」。床尾伸出一排白色的羽毛排刷，在光着的脚心上，从左扫到右，再从右扫到左）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "bed",
+					"zone": "sole",
+					"fx": "feather",
+					"repeat": 10,
+					"interval": 0.2,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"visual": "giggle",
+					"do": "pose"
+				}
+			],
+			"act": 2
+		},
+		{
+			"speaker": "公主",
+			"text": "……嘻……嘻嘻……一档……还好……还好……",
+			"emotion": "giggle"
+		},
+		{
+			"speaker": "",
+			"text": "（「二档」。床板轻轻一翻，把她翻成了趴着。羽毛排刷换了个方向，顺着大腿后侧，从膝盖窝一直刷到大腿根）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "bed",
+					"zone": "thigh",
+					"fx": "feather",
+					"repeat": 12,
+					"interval": 0.16,
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "翻、翻过来了！？大腿后面……那里我自己都没碰过……！",
+			"emotion": "surprise"
+		},
+		{
+			"speaker": "",
+			"text": "（羽毛一根一根地从腿后面扫过去，扫到最上面，就在那一圈软软的地方打个转）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "bed",
+					"zone": "thigh",
+					"fx": "feather",
+					"repeat": 14,
+					"interval": 0.14,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"visual": "helpless_1",
+					"do": "pose"
+				},
+				{
+					"do": "voice",
+					"state": "laugh"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "（不行……要拉杆……拉杆在……！）",
+			"emotion": "helpless_1"
+		},
+		{
+			"speaker": "",
+			"text": "（她伸长了手去够那根红色的拉杆，指尖勾住了，用力往下一拉——）",
+			"actions": [
+				{
+					"sound": "lever",
+					"volume": -2.0,
+					"do": "sfx"
+				}
+			]
+		},
+		{
+			"speaker": "",
+			"text": "（……床板「咔」地翻回来，两侧伸出了两把圆圆的软刷。说明上的字，原来是反着贴的：往下，是「加速」）",
+			"actions": [
+				{
+					"who": "princess",
+					"time": 0.4,
+					"do": "shake"
+				}
+			],
+			"act": 3
+		},
+		{
+			"speaker": "公主",
+			"text": "说明是反的——！？谁贴的——！！",
+			"emotion": "surprise"
+		},
+		{
+			"speaker": "",
+			"text": "（「三档」「四档」一起来了。羽毛排刷扫着脚心和每一道趾缝，两把软刷贴着腰的两侧一圈一圈地揉）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "bed",
+					"zone": "sole",
+					"fx": "feather",
+					"repeat": 16,
+					"interval": 0.1,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"by": "bed",
+					"zone": "waist",
+					"fx": "brush",
+					"repeat": 16,
+					"interval": 0.1,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"visual": "helpless_2",
+					"do": "pose"
+				}
+			],
+			"portrait": "penance_bed"
+		},
+		{
+			"speaker": "公主",
+			"text": "噗——哈哈哈哈！脚心！腰！一、一起来不行——哈哈哈哈！",
+			"emotion": "helpless_2"
+		},
+		{
+			"speaker": "",
+			"text": "（她在床上扭来扭去，可脚踝被扣着，腰往左躲左边的刷子在等，往右躲右边的刷子在等）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "bed",
+					"zone": "waist",
+					"fx": "brush",
+					"repeat": 14,
+					"interval": 0.1,
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "停、停下来——拉杆！拉杆往上——哈哈哈！够、够不着——！",
+			"emotion": "helpless_2"
+		},
+		{
+			"speaker": "",
+			"text": "（羽毛排刷像是认得她的脚，专挑最怕的地方：脚心正中央、脚趾根、两只脚的小脚趾外侧）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "bed",
+					"zone": "sole",
+					"fx": "feather",
+					"repeat": 16,
+					"interval": 0.1,
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "我、我错了！我反省！我反省还不行吗——哈哈哈哈！",
+			"emotion": "helpless_2"
+		},
+		{
+			"speaker": "",
+			"text": "（反省床没有耳朵。它只是在「四档」上，认认真真地工作着）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "bed",
+					"zone": "sole",
+					"fx": "feather",
+					"repeat": 14,
+					"interval": 0.1,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"by": "bed",
+					"zone": "waist",
+					"fx": "brush",
+					"repeat": 14,
+					"interval": 0.1,
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "眼泪……眼泪都出来了……哈哈哈……肚子……笑得肚子疼……！",
+			"emotion": "helpless_2"
+		},
+		{
+			"speaker": "",
+			"text": "（魔力在身体里翻涌，笑声一阵比一阵大，满了，满了——）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "bed",
+					"zone": "sole",
+					"fx": "feather",
+					"repeat": 12,
+					"interval": 0.1,
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "（星光从床上整个炸开，羽毛被吹得满屋子飘……哈啊……哈……全、全放出去了……身体好轻……好舒服……）",
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "flash"
+				},
+				{
+					"sound": "star_burst",
+					"do": "sfx"
+				},
+				{
+					"sound": "water_release",
+					"volume": -2.0,
+					"do": "sfx"
+				},
+				{
+					"who": "princess",
+					"time": 0.4,
+					"do": "shake"
+				},
+				{
+					"state": "laugh",
+					"do": "voice"
+				}
+			],
+			"act": "burst",
+			"wait": 1.0
+		},
+		{
+			"speaker": "",
+			"text": "（羽毛慢慢落下来。床尾的木板还扣着。排刷抖掉身上的星光，又贴了上来——轻轻的，一档的力道）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "bed",
+					"zone": "sole",
+					"fx": "feather",
+					"repeat": 8,
+					"interval": 0.2,
+					"do": "tickle"
+				},
+				{
+					"do": "pose",
+					"who": "princess",
+					"visual": "helpless_2"
+				}
+			],
+			"act": 4
+		},
+		{
+			"speaker": "公主",
+			"text": "……一档……一档就……为什么一档就这么……！",
+			"emotion": "helpless_2"
+		},
+		{
+			"speaker": "",
+			"text": "（刚释放完的脚心敏感得发烫，羽毛轻轻一扫，就像刚才四档那么痒）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "bed",
+					"zone": "sole",
+					"fx": "feather",
+					"repeat": 14,
+					"interval": 0.13,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"time": 0.3,
+					"do": "shake"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "哈哈……哈哈哈……求、求你……就一档也不行……",
+			"emotion": "helpless_2"
+		},
+		{
+			"speaker": "",
+			"text": "（腰侧的软刷也凑过来，只碰了一下——她「呀」地一声整个人弹起来，笑得把枕头都踢到了床下）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "bed",
+					"zone": "waist",
+					"fx": "brush",
+					"repeat": 8,
+					"interval": 0.14,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"time": 0.5,
+					"do": "shake"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "我……我投降……反省床大人……我投降……哈哈哈……",
+			"emotion": "helpless_2"
+		},
+		{
+			"speaker": "",
+			"text": "（不知过了多久，床「叮」地响了一声，所有的刷子都缩了回去，木板也抬了起来。说明的背面，还有一行小字：「反省时间：一刻钟」）",
+			"actions": [
+				{
+					"who": "princess",
+					"visual": "helpless_1",
+					"do": "pose"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "……一刻钟……刚、刚才那些……只有一刻钟……？",
+			"emotion": "helpless_1"
+		},
+		{
+			"speaker": "",
+			"text": "（她瘫在床上，脚心还一跳一跳地发麻，好半天才爬起来，把那张说明撕下来，揉成一团）"
+		},
+		{
+			"speaker": "公主",
+			"text": "……这张床，以后谁也别想让我躺。",
+			"emotion": "angry"
+		},
+		{
+			"speaker": "公主",
+			"text": "……我才不会认错。……真的不会。……一刻钟也不会。",
+			"emotion": "sad"
+		},
+		{
+			"actions": [
+				{
+					"state": "",
+					"do": "voice"
+				},
+				{
+					"time": 0.6,
+					"do": "fade_out"
+				}
+			],
+			"wait": 0.7
+		}
+	]
+}

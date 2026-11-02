@@ -1,0 +1,60 @@
+{
+	"name": "反省床",
+	"entries": [
+		{
+			"if": {
+				"flag": "cg_seen_theater:penance_bed"
+			},
+			"node": "again"
+		},
+		{
+			"node": "default"
+		}
+	],
+	"nodes": {
+		"default": {
+			"lines": [
+				{
+					"text": "（一张长木床，床尾一块带缺口的木板，床边一根红色拉杆。「反省床，分四档」）",
+					"speaker": ""
+				}
+			],
+			"prompt": "躺上去试试？",
+			"choices": [
+				{
+					"text": "……有停止拉杆，不怕。",
+					"next": "go"
+				},
+				{
+					"text": "……先不了",
+					"next": "no"
+				}
+			]
+		},
+		"go": {
+			"lines": [
+				{
+					"text": "……有停止拉杆，不怕。",
+					"speaker": "公主"
+				}
+			],
+			"theater": "penance_bed"
+		},
+		"no": {
+			"lines": [
+				{
+					"text": "……我才不上当。",
+					"speaker": "公主"
+				}
+			]
+		},
+		"again": {
+			"lines": [
+				{
+					"text": "（说明被她揉成一团扔在角落里。……拉杆往下是加速，记住了）",
+					"speaker": ""
+				}
+			]
+		}
+	}
+}
