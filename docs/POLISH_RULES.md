@@ -33,6 +33,8 @@
      - **不要**给失控 / 憋笑状态写 `anim: idle`（idle 只有一帧）。
      - 教训（攻防战失败小剧场的精灵定格过）：`cg_player._build_cast` 的 npc 分支以前忽略 `visual` / `anim`，`CGActor.make_npc` 强制 `idle`（只有一帧），`pose` 动作只换行不换动画。
      - 自动检查：`cg_test` 的「小剧场里的精灵都会动」遍历所有 `data/theater/**`。
+   - **另一位公主的立绘也跟着姿势变**：没写 `emotion` 的台词，说话的是台上的公主演员时，`CGPlayer._speaker_emotion` 用她当前的姿势当表情（失控一 / 失控二 / 憋笑 / 释放）。
+   - **双人小剧场不会出现两个同一位公主**：蓝色公主触发、台上又有 `npc:blue_princess` 时，`CGPlayer._duo_character` 把这段改按粉色来。
    - **失控一 / 失控二都要出现**：CG 大图那一步台上公主进入失控二，魔力释放以后再被挠也回到失控二。生成器 `gen_floor06_after._with_h2` 自动补 `pose helpless_2`（自己写了 pose 的那一步不动）。
    - **横版大图出来时，舞台挪到大图右边、收窄**（`CGPlayer._set_stage_wide`，镜头中心跟着挪），不被大图盖住；大图收起时还原。
    - **魔力释放那一步的精灵是「战损憋笑魔力释放」**（魔法图集的 `damaged_giggle_burst` 行，动画 `cast`）：`CGPlayer._burst_pose` 在 `act = "burst"` 的那一步给被 `shake` 的公主换上，之后被挠时回到战损憋笑。不用每段手写 `pose`。
