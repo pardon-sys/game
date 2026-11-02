@@ -596,7 +596,7 @@ func advance(delta: float) -> void:
 		talk_near(GameState.player)
 	_tick_gears(delta)
 	_tick_victims(delta)
-	if is_instance_valid(curse) and not grabbed:
+	if is_instance_valid(curse) and not grabbed and not is_instance_valid(dispel):
 		curse.tick(delta)
 	if is_instance_valid(field_helpers):
 		field_helpers.tick(delta)
@@ -617,6 +617,9 @@ func advance(delta: float) -> void:
 		_tick_lanterns(delta)
 		if finale or _emitted:
 			return
+	# 驱散中（第八轮）：骑士落地不动、不出招，只吸引怪物（KnightDispel）
+	if is_instance_valid(dispel):
+		return
 	_move(delta)
 	if body_mode == "windup":
 		windup_left -= delta
@@ -1921,15 +1924,31 @@ func _ai_surge(ai: PlayableCharacter) -> Dictionary:
 	return {"hold": true}
 
 
-## 离骑士至少 dist 远（往远离它的方向走）
+## 离骑士远远地四处逃（第八轮：诅咒爆发时不负责破解的那位不再慢慢走）：在离骑士 dist~dist+70 的一圈里每 FLEE_EVERY 秒换一个落点，一路冲刺；
+## 避开地脉和诅咒光环
+const FLEE_EVERY := 1.2
+var _flee := {}
+
+
 func _ai_away(ai: PlayableCharacter, dist: float) -> Dictionary:
-	var d := ai.global_position.distance_to(_body.global_position)
-	if d >= dist:
-		return {"hold": true}
-	var dir := _body.global_position.direction_to(ai.global_position)
-	if dir == Vector2.ZERO:
-		dir = Vector2.DOWN
-	return {"to": _clamp_arena(_body.global_position + dir * (dist + 8.0)), "near": 6.0, "dash": true}
+	var st: Dictionary = _flee.get(ai, {"t": 0.0, "at": ai.global_position})
+	st["t"] = float(st["t"]) - get_process_delta_time()
+	var at: Vector2 = st["at"]
+	if float(st["t"]) <= 0.0 or ai.global_position.distance_to(at) <= 8.0 or at.distance_to(_body.global_position) < dist:
+		st["t"] = FLEE_EVERY + randf_range(-0.3, 0.3)
+		for i in 8:
+			var cand := _walkable_toward_home(_clamp_arena(_body.global_position + Vector2.from_angle(randf() * TAU) * randf_range(dist, dist + 70.0)))
+			var bad := cand.distance_to(_body.global_position) < dist - 4.0
+			if is_instance_valid(curse):
+				for n in curse.veins:
+					if is_instance_valid(n) and (n as Node2D).global_position.distance_to(cand) <= KnightCurse.VEIN_R + 6.0:
+						bad = true
+			if not bad:
+				at = cand
+				break
+		st["at"] = at
+	_flee[ai] = st
+	return {"to": at, "near": 6.0, "dash": true}
 
 
 func _nearest_stake(from: Node2D) -> Node2D:

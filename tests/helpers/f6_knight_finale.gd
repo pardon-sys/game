@@ -503,6 +503,15 @@ static func run(t: Node) -> void:
 	verify(t, "诅咒爆发（护腿）：地脉 %d 道、镇民搬来 %d 根木桩" % [cu.veins.size(), cu.stakes.size()], cu.surge == "veins"
 		and cu.stakes.size() == 3 and cu.veins.size() == KnightCurse.VEINS and cu.stakes.all(func(x): return b.crates.has(x)))
 	b._body.global_position = b._home
+	# 第八轮：不负责破解的那位（AI 蓝色公主）冲刺四处逃、不停换落点
+	b._flee.clear()
+	var fl0 := b._ai_surge(b.blue)
+	if b._flee.has(b.blue):
+		(b._flee[b.blue] as Dictionary)["t"] = 0.0
+	var fl1 := b._ai_surge(b.blue)
+	var fl_far: bool = fl0.has("to") and (fl0["to"] as Vector2).distance_to(b._body.global_position) >= KnightCurse.SURGE_R + 10.0
+	verify(t, "地脉爆发：AI 蓝色公主冲刺四处逃（离骑士 %.0f、换了落点 %s）" % [(fl0.get("to", Vector2.ZERO) as Vector2).distance_to(b._body.global_position), fl0.get("to") != fl1.get("to")],
+		fl0.get("dash", false) and fl1.get("dash", false) and fl_far and fl0.get("to") != fl1.get("to"))
 	var st0: KnightBossFx.Crate = cu.stakes[0]
 	st0.global_position = b._body.global_position + Vector2(0, 40)
 	pink.global_position = b._body.global_position + Vector2(0, 90)
@@ -822,10 +831,60 @@ static func run(t: Node) -> void:
 	verify(t, "雾里四盏都亮了：骑士落地、外圈黑雾停住、开始驱散（玩家操控蓝色公主）", is_instance_valid(b.dispel) and not b.floating
 		and b.fog_ring.frozen and GameState.player == b.blue and bool(GameState.vars.get(TaskKnightBoss.DISPEL_KEY, false)))
 	var dsp := b.dispel
-	verify(t, "驱散里黑雾小手刷得更勤（每 %.1f 秒，后半段 %.1f 秒）" % [KnightDispel.HAND_EVERY, KnightDispel.HAND_EVERY_LATE], KnightDispel.HAND_EVERY <= 1.3 and KnightDispel.HAND_EVERY_LATE <= 0.9)
-	var mon := dsp.spawn_monster("rat")
-	verify(t, "雾里钻出现有的怪（%s）" % [mon.name if mon else "无"], mon != null and dsp.monsters.has(mon))
+	# 第八轮：没有分屏；骑士不动不出招；召怪雾口 / 笑声潮汐 / 怪多读条慢
+	var win_open := t.get_tree().root.find_children("*", "SideWindow", true, false).size() > 0
+	verify(t, "驱散：不开分屏小窗、画出雾口 %d 个" % dsp.mouths.size(), not win_open and dsp.mouths.size() == KnightDispel.MOUTHS)
+	var bp0 := b._body.global_position
+	b.attack_t = 0.0
+	var warn0 := str(b.warn.get("kind", ""))
+	for i in 20:
+		b.advance(0.1)
+	verify(t, "驱散：骑士落地不动、不出招（挪了 %.1f、预警 %s）" % [b._body.global_position.distance_to(bp0), b.warn.get("kind", "")],
+		b._body.global_position.distance_to(bp0) < 0.5 and str(b.warn.get("kind", "")) == warn0)
+	var mo0: Node2D = dsp.mouths[0]
+	mo0.left = 0.0
+	dsp.tick(0.01)
+	verify(t, "雾口吐出现有的怪（%d 只）" % dsp.monsters.size(), dsp.monsters.size() >= 1)
+	for i in KnightDispel.MOUTH_HP:
+		dsp.hit_mouth(mo0)
+	dsp.tick(0.01)
+	var next_left: float = (dsp.mouths[0] as Node2D).get("left")
+	(dsp.mouths[0] as Node2D).set("left", 0.0)
+	dsp.tick(0.01)
+	var slower: float = (dsp.mouths[0] as Node2D).get("left")
+	verify(t, "蓝色公主打碎一个雾口：剩 %d 个，刷得更慢（间隔 %.1f 秒）" % [dsp.mouths.size(), slower], dsp.mouths.size() == KnightDispel.MOUTHS - 1 and slower > KnightDispel.MOUTH_EVERY + 0.5 and next_left >= 0.0)
+	# 笑声潮汐：预警 → 怪加速冲向粉色公主
+	var mon := dsp.monsters[0] as Node2D
+	mon.global_position = pink.global_position + Vector2(120, 0)
+	dsp.start_tide()
+	verify(t, "笑声潮汐：先预警（%.1f 秒）" % dsp.tide_warn, dsp.tide_warn > 0.0)
+	dsp._tick_tide(KnightDispel.TIDE_WARN + 0.01, pink)
+	var md0 := mon.global_position.distance_to(pink.global_position)
+	dsp._tick_tide(0.5, pink)
+	verify(t, "潮汐来了：怪加速冲向粉色公主（%.0f → %.0f）" % [md0, mon.global_position.distance_to(pink.global_position)], dsp.tide_left > 0.0 and mon.global_position.distance_to(pink.global_position) < md0 - 20.0)
+	dsp.tide_left = 0.0
+	dsp.tide_t = 999.0
+	# 怪多读条慢
+	dsp._hand_t = 999.0
+	for h in dsp.hands.duplicate():
+		dsp._pop(h, false)
+	pink.global_position = b.body_pos() + Vector2(0, 20)
+	pink.laugh.set_value(0.0)
+	dsp.interrupt_left = 0.0
+	mon.global_position = pink.global_position + Vector2(12, 0)
+	for m in dsp.mouths:
+		(m as Node2D).set("left", 999.0)
+	var sp0 := dsp.progress
+	dsp.tick(1.0)
+	var slow_gain := dsp.progress - sp0
 	dsp._clear_monsters()
+	sp0 = dsp.progress
+	dsp.tick(1.0)
+	var fast_gain := dsp.progress - sp0
+	verify(t, "身边有怪：吟唱变慢（%.3f vs 没怪 %.3f）" % [slow_gain, fast_gain], slow_gain > 0.0 and slow_gain < fast_gain * 0.7)
+	dsp.progress = 0.0
+	for m in dsp.mouths:
+		(m as Node2D).set("left", 999.0)
 	# 粉色公主站在骑士身边吟唱：读条涨
 	pink.global_position = b.body_pos() + Vector2(0, 20)
 	pink.laugh.set_value(0.0)
