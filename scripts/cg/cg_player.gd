@@ -514,7 +514,7 @@ func _request(req: Dictionary, priority: bool) -> void:
 
 
 func _run(req: Dictionary) -> void:
-	character_id = str(req["character_id"])
+	character_id = _duo_character(req["cg"], str(req["character_id"]))
 	_generation += 1
 	if req.has("combo"):
 		GameState.set_flag("combo_scene_" + str(req["combo"]))
@@ -577,6 +577,10 @@ func _play_cg(cg: Dictionary, id: String, source: String, skippable: bool, fx_le
 			var line := {"speaker": step.get("speaker", ""), "text": step["text"]}
 			if step.has("emotion"):
 				line["emotion"] = step["emotion"]
+			else:
+				var se := _speaker_emotion(str(line["speaker"]))
+				if se != "":
+					line["emotion"] = se
 			Dialogue.start_lines([line], "cg:" + id, character_id)
 			if step.has("auto"):
 				_auto_advance(float(step["auto"]), i)
@@ -1058,6 +1062,41 @@ func _spawn_fx(target: CGActor, kind: String, tool := "", zone := "") -> void:
 	tw.tween_property(s, "position:y", s.position.y - 6, 0.25)
 	tw.parallel().tween_property(s, "modulate:a", 0.0, 0.25)
 	tw.tween_callback(s.queue_free)
+
+
+## 双人小剧场（台上有另一位公主的人物演员）：要是那个人物演员正好是当前操控的角色本人（蓝色公主触发、台上又有 npc:blue_princess），
+## 「公主」演员就会也是她，台上出现两个蓝色公主——这段改按另一位来（POLISH_RULES）
+func _duo_character(cg: Dictionary, who: String) -> String:
+	var others := {"pink": "blue", "blue": "pink"}
+	for c in (cg.get("cast", {}) as Dictionary).values():
+		var k := str(c.get("kind", ""))
+		if k.begins_with("npc:") and str(Dialogue.NPC_CHARACTER.get(k.substr(4), "")) == who and others.has(who):
+			var has_hero := (cg.get("cast", {}) as Dictionary).values().any(func(x): return str(x.get("kind", "")) == "princess")
+			if has_hero:
+				return str(others[who])
+	return who
+
+
+## 台上的公主演员说话（这一步没写 emotion）：立绘表情跟着她现在的姿势（失控一 / 失控二 / 憋笑 / 释放）
+func _speaker_emotion(speaker: String) -> String:
+	for a in actors.values():
+		var w := a as CGActor
+		if w == null or not w.kind in ["princess", "npc_princess"]:
+			continue
+		var who := character_id if w.kind == "princess" else str(Dialogue.NPC_CHARACTER.get(w.reaction_key, ""))
+		var match_pink := who == "pink" and speaker in ["公主", "粉色的公主"]
+		var match_blue := who == "blue" and speaker in ["蓝色的公主"]
+		if match_pink or match_blue:
+			return _visual_emotion(w.visual)
+	return ""
+
+
+static func _visual_emotion(v: String) -> String:
+	if v.begins_with("helpless") or v in ["giggle", "damaged_giggle", "damaged"]:
+		return v
+	if v.ends_with("burst"):
+		return "fatigue_burst"
+	return ""
 
 
 ## 魔力释放那一步（act = burst）：被抖的公主（shake 的 who；没写就是台上所有公主）换成「战损憋笑魔力释放」

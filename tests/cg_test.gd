@@ -607,3 +607,17 @@ func _run_wide_stage() -> void:
 		if h2 < 2:
 			bad.append(k)
 	check("骑士 Boss 战败小剧场：CG 之后人物进入失控二（缺的 %s）" % [bad], bad.is_empty())
+	# 蓝色公主触发双人小剧场（台上有 npc:blue_princess）：改按粉色来，台上一粉一蓝，不是两个蓝色
+	var duo: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://data/theater/after/knight_fail_boss.json"))
+	check("蓝色公主触发双人小剧场：这段改按粉色来（不会出现两个蓝色公主）", CG._duo_character(duo, "blue") == "pink" and CG._duo_character(duo, "pink") == "pink")
+	# 另一位公主说话（没写表情）：立绘跟着她的姿势
+	var bp := CGActor.make_npc("blue", "blue_princess", Dialogue.npcs.get("blue_princess", {}))
+	var saved2: Dictionary = CG.actors
+	CG.actors = {"blue": bp}
+	bp.set_pose("helpless_2", "", "")
+	var e2 := CG._speaker_emotion("蓝色的公主")
+	bp.set_pose("giggle", "", "")
+	var e1 := CG._speaker_emotion("蓝色的公主")
+	CG.actors = saved2
+	bp.free()
+	check("另一位公主说话：立绘表情跟着她的姿势（失控二 → %s、憋笑 → %s）" % [e2, e1], e2 == "helpless_2" and e1 == "giggle")
