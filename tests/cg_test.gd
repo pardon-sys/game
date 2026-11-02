@@ -607,6 +607,17 @@ func _run_wide_stage() -> void:
 		if h2 < 2:
 			bad.append(k)
 	check("骑士 Boss 战败小剧场：CG 之后人物进入失控二（缺的 %s）" % [bad], bad.is_empty())
+	# 七日赎罪的委托成功过场（第八轮）：每段 15~20 句、中间有 CG、带一段小镇民风
+	var done_bad := []
+	for cid in ["after_d2_equip_done", "after_d3_potion_done", "after_d3_cart_done", "after_d4_drain_done", "after_d4_drill_done",
+			"after_d5_tailor_done", "after_d5_mine_done", "after_d6_inspect_done", "after_d6_drill_done", "after_d7_totem_done"]:
+		var cd: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://data/cutscenes/floor_06/%s.json" % cid))
+		var dsteps: Array = cd.get("steps", [])
+		var n := dsteps.filter(func(st): return str(st.get("text", "")) != "").size()
+		var has_cg := dsteps.any(func(st): return (st.get("actions", []) as Array).any(func(a): return str(a.get("do", "")) == "cg" and str(a.get("key", "")) != ""))
+		if n < 15 or n > 20 or not has_cg:
+			done_bad.append("%s(%d)" % [cid, n])
+	check("七日赎罪的委托成功过场都是 15~20 句、中间有 CG（不合格 %s）" % [done_bad], done_bad.is_empty())
 	# 蓝色公主触发双人小剧场（台上有 npc:blue_princess）：改按粉色来，台上一粉一蓝，不是两个蓝色
 	var duo: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://data/theater/after/knight_fail_boss.json"))
 	check("蓝色公主触发双人小剧场：这段改按粉色来（不会出现两个蓝色公主）", CG._duo_character(duo, "blue") == "pink" and CG._duo_character(duo, "pink") == "pink")

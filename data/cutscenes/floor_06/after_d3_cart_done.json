@@ -101,10 +101,6 @@
 			"text": "……认错人了。手帕不用还。",
 			"actions": [
 				{
-					"do": "cg",
-					"key": "after_cart_ok"
-				},
-				{
 					"who": "cap",
 					"dir": "up",
 					"do": "face"
@@ -162,6 +158,10 @@
 			"emotion": "surprise",
 			"actions": [
 				{
+					"do": "cg",
+					"key": "after_cart_ok"
+				},
+				{
 					"who": "princess",
 					"dir": "right",
 					"do": "face"
@@ -176,6 +176,28 @@
 			"speaker": "公主",
 			"text": "连你也说！",
 			"emotion": "angry"
+		},
+		{
+			"speaker": "",
+			"text": "（三个车夫走过来，各自扶住自己的车，用拳头在车轮上「咚、咚、咚」敲了三下）"
+		},
+		{
+			"speaker": "公主",
+			"text": "……他们在干嘛？",
+			"emotion": "question"
+		},
+		{
+			"speaker": "小莉莉",
+			"text": "敲车轮！车修好了，要敲三下——一下谢车，一下谢路，一下谢修车的人！"
+		},
+		{
+			"speaker": "",
+			"text": "（车夫们敲完，转过身来，朝她也「咚咚咚」地拍了三下手）"
+		},
+		{
+			"speaker": "公主",
+			"text": "……谢、谢谢……（脸上的车油还没擦干净，就这么红了）",
+			"emotion": "shy"
 		},
 		{
 			"actions": [
