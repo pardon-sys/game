@@ -1,0 +1,404 @@
+{
+	"name": "痒痒浴桶",
+	"cast": {
+		"princess": {
+			"kind": "princess",
+			"at": [
+				0,
+				8
+			],
+			"visual": "normal",
+			"anim": "idle",
+			"dir": "down"
+		},
+		"tub": {
+			"kind": "trap:sitz_bath",
+			"at": [
+				0,
+				12
+			]
+		}
+	},
+	"steps": [
+		{
+			"act": 1,
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "fade_in"
+				},
+				{
+					"state": "giggle",
+					"do": "voice"
+				}
+			],
+			"wait": 0.5
+		},
+		{
+			"speaker": "",
+			"text": "（角落里摆着一只大木桶，冒着热气。桶边挂着一块木牌：「洗洗脑子。——队长」）",
+			"act": 1
+		},
+		{
+			"speaker": "公主",
+			"text": "……洗洗脑子。他是在骂我吧。",
+			"emotion": "angry"
+		},
+		{
+			"speaker": "公主",
+			"text": "……不过，热水。……泡一下脚，应该没关系吧。今天走了好多路。",
+			"emotion": "happy"
+		},
+		{
+			"speaker": "",
+			"text": "（她脱下鞋袜，坐在桶边，把两只脚慢慢放进热水里。暖暖的，舒服得她眯起了眼睛）"
+		},
+		{
+			"speaker": "公主",
+			"text": "……哈……这个好。这个可以。……就这个，我不跟队长计较了。",
+			"emotion": "happy"
+		},
+		{
+			"speaker": "",
+			"text": "（桶底「咕嘟」冒出一串泡泡。泡泡贴着她的脚底往上浮，一颗一颗在脚心上破掉）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "tub",
+					"zone": "sole",
+					"fx": "lines",
+					"repeat": 6,
+					"interval": 0.25,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"visual": "giggle",
+					"do": "pose"
+				}
+			],
+			"act": 2
+		},
+		{
+			"speaker": "公主",
+			"text": "嘻……泡泡……痒痒的……",
+			"emotion": "giggle"
+		},
+		{
+			"speaker": "",
+			"text": "（泡泡越冒越多。然后，桶底的一圈软刷慢慢转了起来，贴着脚底板一圈一圈地刷）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "tub",
+					"zone": "sole",
+					"fx": "brush",
+					"repeat": 10,
+					"interval": 0.18,
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "诶？刷、刷子？桶底下有刷子！？",
+			"emotion": "surprise"
+		},
+		{
+			"speaker": "",
+			"text": "（她想把脚抽出来，可桶边太滑，屁股一溜，整个人「扑通」一下坐进了桶里）",
+			"actions": [
+				{
+					"sound": "puddle",
+					"volume": -2.0,
+					"do": "sfx"
+				},
+				{
+					"who": "princess",
+					"time": 0.4,
+					"do": "shake"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "呀——！衣、衣服都湿了——！",
+			"emotion": "surprise"
+		},
+		{
+			"speaker": "",
+			"text": "（这下好了。桶壁上的软刷也转了起来，泡泡从四面八方冒出来——脚底、小腿、大腿根，泡泡和刷子轮流来）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "tub",
+					"zone": "sole",
+					"fx": "brush",
+					"repeat": 12,
+					"interval": 0.14,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"by": "tub",
+					"zone": "thigh",
+					"fx": "lines",
+					"repeat": 12,
+					"interval": 0.14,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"visual": "helpless_1",
+					"do": "pose"
+				},
+				{
+					"do": "voice",
+					"state": "laugh"
+				}
+			],
+			"act": 3
+		},
+		{
+			"speaker": "公主",
+			"text": "哈……哈哈……腿、腿根那里冒泡泡……不行……！",
+			"emotion": "helpless_1"
+		},
+		{
+			"speaker": "",
+			"text": "（她扶着桶边想站起来——水太滑，又坐了回去。站起来，坐回去，站起来，又坐回去）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "tub",
+					"zone": "thigh",
+					"fx": "lines",
+					"repeat": 10,
+					"interval": 0.14,
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "这个桶……是专门让人站不起来的吧……哈哈哈……！",
+			"emotion": "helpless_1"
+		},
+		{
+			"speaker": "",
+			"text": "（桶壁上贴着一张泡皱了的小纸条：「站起来一次，刷子快一点」）"
+		},
+		{
+			"speaker": "公主",
+			"text": "……又是这种规矩！这里的东西，全都是一个人做的吧！",
+			"emotion": "helpless_1"
+		},
+		{
+			"speaker": "",
+			"text": "（她不敢站了。可是坐着不动，泡泡就专挑大腿根冒，刷子就专挑脚心转）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "tub",
+					"zone": "sole",
+					"fx": "brush",
+					"repeat": 12,
+					"interval": 0.13,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"by": "tub",
+					"zone": "thigh",
+					"fx": "lines",
+					"repeat": 12,
+					"interval": 0.13,
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "站也不行……坐也不行……那我到底该怎么样啊……哈哈哈！",
+			"emotion": "helpless_1"
+		},
+		{
+			"speaker": "",
+			"text": "（刷子越转越快。泡泡钻进脚趾缝里「啵、啵」地破，大腿根下面的那排冒泡口一阵一阵地喷）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "tub",
+					"zone": "sole",
+					"fx": "brush",
+					"repeat": 16,
+					"interval": 0.1,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"by": "tub",
+					"zone": "thigh",
+					"fx": "lines",
+					"repeat": 16,
+					"interval": 0.1,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"visual": "helpless_2",
+					"do": "pose"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "哈哈哈哈！脑、脑子洗干净了！洗得一干二净了！放我出去——哈哈哈！",
+			"emotion": "helpless_2"
+		},
+		{
+			"speaker": "公主",
+			"text": "我、我认错——不对，我不认错——哈哈哈，我也不知道了——！",
+			"emotion": "helpless_2"
+		},
+		{
+			"speaker": "",
+			"text": "（热水、泡泡、刷子，一起往上涌的还有魔力——）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "tub",
+					"zone": "sole",
+					"fx": "brush",
+					"repeat": 12,
+					"interval": 0.1,
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "（星光在水面上炸开，热水「哗」地溅了满地……哈啊……哈……暖暖的……全放出去了……好舒服……）",
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "flash"
+				},
+				{
+					"sound": "star_burst",
+					"do": "sfx"
+				},
+				{
+					"sound": "water_release",
+					"volume": -2.0,
+					"do": "sfx"
+				},
+				{
+					"who": "princess",
+					"time": 0.4,
+					"do": "shake"
+				},
+				{
+					"state": "laugh",
+					"do": "voice"
+				}
+			],
+			"act": "burst",
+			"wait": 1.0
+		},
+		{
+			"speaker": "",
+			"text": "（木桶「咕嘟」一声，又冒出一大串泡泡。刚释放完的身体泡在热水里，每一颗泡泡破掉都像有人在挠）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "tub",
+					"zone": "sole",
+					"fx": "lines",
+					"repeat": 12,
+					"interval": 0.13,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"visual": "helpless_2",
+					"do": "pose"
+				}
+			],
+			"act": 4
+		},
+		{
+			"speaker": "公主",
+			"text": "……泡、泡泡也……一颗一颗地……哈哈……！",
+			"emotion": "helpless_2"
+		},
+		{
+			"speaker": "",
+			"text": "（软刷又贴着脚心转了一圈，慢慢的，像是在给她擦干净）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "tub",
+					"zone": "sole",
+					"fx": "brush",
+					"repeat": 10,
+					"interval": 0.16,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"by": "tub",
+					"zone": "thigh",
+					"fx": "lines",
+					"repeat": 8,
+					"interval": 0.16,
+					"do": "tickle"
+				},
+				{
+					"do": "pose",
+					"who": "princess",
+					"visual": "helpless_2"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "哈哈……哈……慢、慢慢的更……不要擦了……我自己擦……！",
+			"emotion": "helpless_2"
+		},
+		{
+			"speaker": "",
+			"text": "（水终于凉了。泡泡停了，刷子也停了。她趴在桶边，湿淋淋地喘着气）",
+			"actions": [
+				{
+					"who": "princess",
+					"visual": "helpless_1",
+					"do": "pose"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "……洗洗脑子……洗得我……脑子里全是泡泡……",
+			"emotion": "helpless_1"
+		},
+		{
+			"speaker": "公主",
+			"text": "……我才不会认错。……可是衣服要晾一晾。",
+			"emotion": "sad"
+		},
+		{
+			"actions": [
+				{
+					"state": "",
+					"do": "voice"
+				},
+				{
+					"time": 0.6,
+					"do": "fade_out"
+				}
+			],
+			"wait": 0.7
+		}
+	]
+}

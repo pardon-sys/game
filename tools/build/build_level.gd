@@ -74,6 +74,7 @@ const SCENES := {
 	"f6afterhouse": "res://levels/floor_06/scenes/after_house.tscn",
 	"f6afterroom": "res://levels/floor_06/scenes/after_room.tscn",
 	"f6cart": "res://levels/floor_06/scenes/dormant_cart.tscn",
+	"penancecell": "res://levels/floor_06/scenes/penance_cell.tscn",
 	# 小镇攻防战（scripts/siege/）
 	"siege": "res://scenes/siege/siege_director.tscn",
 	"siegewall": "res://scenes/siege/siege_wall.tscn",

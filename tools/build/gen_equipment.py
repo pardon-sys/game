@@ -14,7 +14,8 @@ os.chdir(Path(__file__).resolve().parents[2])
 ICONS = ["armpit_pad", "scarf", "wool_socks", "dance_shoes", "waist_sash", "mint_sachet", "chest_guard",
          "training_wraps", "padded_shorts", "party_bow", "feather_anklet", "ice_hairpin", "thousand_pants",
          "t_feather_socks", "t_toe_brush", "t_fluff_bra", "t_thigh_ring", "t_pinch_pad", "t_knead_tights",
-         "t_feather_shackles", "t_thigh_strap", "t_bell_anklet", "t_mark_patch"]
+         "t_feather_shackles", "t_thigh_strap", "t_bell_anklet", "t_mark_patch",
+         "mouse_shorts", "mouse_paw_shoes"]
 
 # 名字 -> (显示名, 部位, 谁能穿, 属性, 部位加减, 挡下次数, 诅咒, 特殊, 好处, 代价, 说明, 价格(0 = 不卖))
 EQUIP = {
@@ -58,6 +59,16 @@ EQUIP = {
                        "（无）", "脱不下；闷笑最低 20、移动 ×0.9、魔法 10% 失败",
                        "走出夜迷宫时，几只没有散去的手悄悄缠在蓝色公主的大腿上，变成了一层薄薄的紫色紧身裤——裹着屁股和大腿，脱不下来，时不时还会动一下。", 0),
 }
+# 反省篇（骑士篇之后）：钻鼠洞的报酬——挠脚鼠住在身上，裤子 / 鞋子被强制换成这一套（诅咒，出了鼠洞才能脱）。
+# 攻击 ×0.8；发作 = 挠脚鼠乱窜（EquipFx：equip_reactions 的 crit → 暴击，魔力疲倦大涨）；短裤 special = mouse_scent（附近一小圈的怪被引过来）
+EQUIP.update({
+    "mouse_shorts": ("鼠鼠短裤", ["thigh", "butt"], "pink", {"attack": 0.8}, {"thigh": 0.2, "butt": 0.2}, {}, True, "mouse_scent",
+                     "（无）", "脱不下；攻击 ×0.8；挠脚鼠时不时乱窜（暴击）；鼠味把附近的怪引过来",
+                     "毛茸茸的灰色鼠鼠短裤，后面拖着一条会动的尾巴。挠脚鼠就住在里面——它说这是「报酬」。", 0),
+    "mouse_paw_shoes": ("鼠爪鞋", ["sole"], "pink", {}, {"sole": 0.25}, {}, True, "",
+                        "（无）", "脱不下；脚心敏感 +0.25；挠脚鼠时不时钻进鞋里",
+                        "露着脚趾的鼠爪拖鞋，鞋底有粉色的肉垫。挠脚鼠最喜欢从短裤一路钻下来，躲进这里。", 0),
+})
 # 攻防战的临时痒痒装备（被痒痒裁缝铺 / 捆绑藤怪强制穿上 20 秒；不卖、不进背包）：名字 -> (显示名, 部位, 类别, 属性, 部位加减, 特殊, 好处, 代价, 说明)
 TEMP = {
     "t_feather_socks": ("羽毛袜", ["sole"], "tickle", {"speed": 0.8}, {"sole": 0.3}, "",

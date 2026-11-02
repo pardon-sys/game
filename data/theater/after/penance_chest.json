@@ -1,0 +1,462 @@
+{
+	"name": "队长的旧战利品箱",
+	"cast": {
+		"princess": {
+			"kind": "princess",
+			"at": [
+				0,
+				8
+			],
+			"visual": "normal",
+			"anim": "idle",
+			"dir": "down"
+		},
+		"chest": {
+			"kind": "trap:trophy_chest",
+			"at": [
+				14,
+				10
+			]
+		}
+	},
+	"steps": [
+		{
+			"act": 1,
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "fade_in"
+				},
+				{
+					"state": "giggle",
+					"do": "voice"
+				}
+			],
+			"wait": 0.5
+		},
+		{
+			"speaker": "",
+			"text": "（角落里有一口旧木箱，锁头锈得一碰就掉。箱盖上贴着一张褪色的纸：「没收品——别碰」）",
+			"act": 1
+		},
+		{
+			"speaker": "公主",
+			"text": "别碰。……「别碰」就是让人碰的意思。",
+			"emotion": "happy"
+		},
+		{
+			"speaker": "",
+			"text": "（箱子里整整齐齐叠着几件奇怪的东西：一对长袖套、一双白袜子、一条旧短裤。每件上面都挂着小牌子，写着从谁那里收来的）",
+			"actions": [
+				{
+					"who": "chest",
+					"visual": "active",
+					"do": "pose"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "……队长年轻的时候，收了这么多痒痒装备啊。……试一下，就试一下。",
+			"emotion": "happy"
+		},
+		{
+			"speaker": "",
+			"text": "（第一件：笑笑袖套。小牌子上写着「从笑声小偷那里收来的」。她把袖套套上胳膊——里面一层软毛，暖暖的）"
+		},
+		{
+			"speaker": "公主",
+			"text": "……还挺舒服的嘛。",
+			"emotion": "happy"
+		},
+		{
+			"speaker": "",
+			"text": "（她一抬手。袖套内侧的软毛「唰」地蹭过了腋窝和腰侧）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "chest",
+					"zone": "armpit",
+					"fx": "feather",
+					"repeat": 6,
+					"interval": 0.2,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"visual": "giggle",
+					"do": "pose"
+				}
+			],
+			"act": 2
+		},
+		{
+			"speaker": "公主",
+			"text": "呀！胳、胳肢窝！",
+			"emotion": "giggle"
+		},
+		{
+			"speaker": "",
+			"text": "（她赶紧想把袖套扒下来——可要脱袖套，就得把胳膊抬起来；一抬起来，软毛就蹭得更厉害）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "chest",
+					"zone": "armpit",
+					"fx": "feather",
+					"repeat": 10,
+					"interval": 0.15,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"by": "chest",
+					"zone": "waist",
+					"fx": "feather",
+					"repeat": 8,
+					"interval": 0.18,
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "越、越想脱越痒……这是什么坏心眼的设计……嘻嘻嘻……！",
+			"emotion": "giggle"
+		},
+		{
+			"speaker": "",
+			"text": "（她夹着胳膊，扭着身子，用牙咬着袖口，一点一点把它拽了下来）"
+		},
+		{
+			"speaker": "公主",
+			"text": "……呼……呼……下一件……下一件肯定正常。",
+			"emotion": "giggle"
+		},
+		{
+			"speaker": "",
+			"text": "（第二件：一双白袜子。小牌子上写着「会笑的袜子」，尺码那一栏写着——「二十二码半」）"
+		},
+		{
+			"speaker": "公主",
+			"text": "……二十二码半。……和我的脚一样大。",
+			"emotion": "surprise"
+		},
+		{
+			"speaker": "",
+			"text": "（她换上袜子。刚好。……然后袜子自己「咯咯」地笑了起来）",
+			"actions": [
+				{
+					"sound": "giggle",
+					"volume": -6.0,
+					"do": "sfx"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "袜、袜子在笑！？",
+			"emotion": "surprise"
+		},
+		{
+			"speaker": "",
+			"text": "（袜底的线头像活过来一样，在脚心上蹭来蹭去，钻进每一道趾缝里扭）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "chest",
+					"zone": "sole",
+					"fx": "lines",
+					"repeat": 12,
+					"interval": 0.14,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"visual": "helpless_1",
+					"do": "pose"
+				},
+				{
+					"do": "voice",
+					"state": "laugh"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "噗……哈哈……袜子笑……我也笑……我笑袜子也笑……哈哈哈！",
+			"emotion": "helpless_1"
+		},
+		{
+			"speaker": "",
+			"text": "（她坐在地上扯袜子，袜子笑得更欢了，线头在脚心正中央打起了转）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "chest",
+					"zone": "sole",
+					"fx": "lines",
+					"repeat": 14,
+					"interval": 0.12,
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "脱、脱下来了……！哈……哈……袜子还在地上笑……",
+			"emotion": "helpless_1"
+		},
+		{
+			"speaker": "",
+			"text": "（第三件：一条旧的潜行短裤。小牌子上没写从谁那里收来的，只写着：「最后一件。不要穿。」）",
+			"act": 3
+		},
+		{
+			"speaker": "公主",
+			"text": "……写得这么吓人。越写不要，越想试。",
+			"emotion": "question"
+		},
+		{
+			"speaker": "",
+			"text": "（她套上短裤。里面一层软软的衬里——不对，是十几只小小的布手，整整齐齐地缝在里面。它们一起，轻轻地，握了握她的大腿）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "chest",
+					"zone": "thigh",
+					"fx": "hand",
+					"repeat": 8,
+					"interval": 0.16,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"visual": "helpless_1",
+					"do": "pose"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "……握、握手？短裤在跟我握手……？",
+			"emotion": "surprise"
+		},
+		{
+			"speaker": "",
+			"text": "（握完手，小布手们就开始挠了。大腿根、屁股，十几只手一起，每只都很小，每只都很认真）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "chest",
+					"zone": "thigh",
+					"fx": "hand",
+					"repeat": 14,
+					"interval": 0.11,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"by": "chest",
+					"zone": "butt",
+					"fx": "hand",
+					"repeat": 14,
+					"interval": 0.11,
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "哈哈哈哈！十几只——十几只一起——哈哈哈哈！",
+			"emotion": "helpless_1"
+		},
+		{
+			"speaker": "",
+			"text": "（她想夹紧腿挡住——小手们反而更勤快了，夹得越紧，挠得越快）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "chest",
+					"zone": "thigh",
+					"fx": "hand",
+					"repeat": 16,
+					"interval": 0.1,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"visual": "helpless_2",
+					"do": "pose"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "夹、夹腿没用——哈哈哈！越夹越快——脱、脱不下来——哈哈哈哈！",
+			"emotion": "helpless_2"
+		},
+		{
+			"speaker": "",
+			"text": "（她在地上滚来滚去，小手们一路跟着挠：腿根、屁股、腿根、屁股……魔力一点一点地涨满了）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "chest",
+					"zone": "butt",
+					"fx": "hand",
+					"repeat": 14,
+					"interval": 0.1,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"by": "chest",
+					"zone": "thigh",
+					"fx": "hand",
+					"repeat": 14,
+					"interval": 0.1,
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "（星光「轰」地炸开，短裤被冲得松开，小布手们一只只松了手……哈啊……全放出去了……好舒服……）",
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "flash"
+				},
+				{
+					"sound": "star_burst",
+					"do": "sfx"
+				},
+				{
+					"sound": "water_release",
+					"volume": -2.0,
+					"do": "sfx"
+				},
+				{
+					"who": "princess",
+					"time": 0.4,
+					"do": "shake"
+				},
+				{
+					"state": "laugh",
+					"do": "voice"
+				}
+			],
+			"act": "burst",
+			"wait": 1.0
+		},
+		{
+			"speaker": "",
+			"text": "（可还有三只小手没松开。它们挂在短裤边上，轻轻地、慢慢地，挠着刚释放完、敏感得发烫的腿根）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "chest",
+					"zone": "thigh",
+					"fx": "hand",
+					"repeat": 10,
+					"interval": 0.15,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"visual": "helpless_2",
+					"do": "pose"
+				}
+			],
+			"act": 4
+		},
+		{
+			"speaker": "公主",
+			"text": "……三、三只也……三只也不行……哈哈哈……！",
+			"emotion": "helpless_2"
+		},
+		{
+			"speaker": "",
+			"text": "（她咬着牙，一只一只地把小手掰开。最后一只松开以前，还在她的屁股上捏了一下，像是在道别）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "chest",
+					"zone": "butt",
+					"fx": "hand",
+					"repeat": 4,
+					"interval": 0.2,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"time": 0.3,
+					"do": "shake"
+				},
+				{
+					"do": "pose",
+					"who": "princess",
+					"visual": "helpless_2"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "……哈……哈……总、总算脱下来了……",
+			"emotion": "helpless_1"
+		},
+		{
+			"speaker": "",
+			"text": "（她把短裤翻过来。内侧用褪了色的线，绣着一行小小的字：「给小不点——等你长大了再穿」）",
+			"actions": [
+				{
+					"who": "princess",
+					"visual": "helpless_1",
+					"do": "pose"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "……小不点？",
+			"emotion": "question"
+		},
+		{
+			"speaker": "",
+			"text": "（箱子最底下，压着一张旧照片。照片上，年轻的队长抱着一个小女孩，站在一扇很大很大的门前。门上，是王宫的徽记）"
+		},
+		{
+			"speaker": "",
+			"text": "（小女孩的脸看不清。只看得见，她扎着两个小辫子，脚上穿着一双白色的小袜子）"
+		},
+		{
+			"speaker": "公主",
+			"text": "……这是……",
+			"emotion": "surprise"
+		},
+		{
+			"speaker": "公主",
+			"text": "……",
+			"emotion": "sad"
+		},
+		{
+			"speaker": "公主",
+			"text": "……我才不会认错。……可是，这张照片，我要问清楚。",
+			"emotion": "sad"
+		},
+		{
+			"actions": [
+				{
+					"state": "",
+					"do": "voice"
+				},
+				{
+					"time": 0.6,
+					"do": "fade_out"
+				}
+			],
+			"wait": 0.7
+		}
+	]
+}

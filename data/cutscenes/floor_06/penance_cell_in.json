@@ -1,0 +1,72 @@
+{
+	"name": "反省室",
+	"letterbox": true,
+	"skippable": true,
+	"steps": [
+		{
+			"actions": [
+				{
+					"to": [
+						10,
+						7
+					],
+					"zoom": 1.0,
+					"time": 0.4,
+					"do": "camera"
+				}
+			],
+			"wait": 0.4
+		},
+		{
+			"speaker": "",
+			"text": "（「哐当」。铁门在身后锁上了。保卫队员的脚步声越走越远）"
+		},
+		{
+			"speaker": "公主",
+			"text": "……反省室。",
+			"emotion": "angry"
+		},
+		{
+			"speaker": "",
+			"text": "（一间小小的石头屋子。一张床、一个木桶、一张奇怪的凳子、一口旧箱子……门口还趴着一只橘猫，懒洋洋地看着她）"
+		},
+		{
+			"speaker": "公主",
+			"text": "……这哪里是反省室。这些东西，怎么看都是……",
+			"emotion": "sad"
+		},
+		{
+			"speaker": "公主",
+			"text": "……挠痒用的吧。",
+			"emotion": "sad"
+		},
+		{
+			"speaker": "公主",
+			"text": "哼。我才不会反省。我就坐在这里，一动不动，等到天亮。",
+			"emotion": "angry"
+		},
+		{
+			"speaker": "",
+			"text": "（……十秒钟以后，她已经开始在屋子里转来转去了）"
+		},
+		{
+			"speaker": "公主",
+			"text": "……就、就看一看。看一看又不会怎么样。",
+			"emotion": "shy"
+		},
+		{
+			"actions": [
+				{
+					"reset": true,
+					"time": 0.4,
+					"do": "camera"
+				},
+				{
+					"text": "调查反省室里的东西（按 E）",
+					"do": "notify"
+				}
+			],
+			"wait": 0.4
+		}
+	]
+}

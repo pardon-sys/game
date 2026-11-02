@@ -11,7 +11,7 @@
 攻防战的战败 CG 在 assets/generated/SIEGE_CG/siege_fail_<N>.png（codex 生成，提示词 tools/art/src/siege_fail/prompts.md），同名输出，给攻防战失败小剧场的第 4 幕用。
 扩展名大小写都可以（.png / .PNG）。
 用法：python tools/art/import_cg.py [--preview] [--siege]
-  --siege 只转攻防战的战败 CG（SIEGE_CG）；--after 只转七日赎罪主线委托的 CG（AFTER_CG）；--knight 只转骑士 Boss 的战败 CG（KNIGHT_CG）
+  --siege 只转攻防战的战败 CG（SIEGE_CG）；--after 只转七日赎罪主线委托的 CG（AFTER_CG）；--knight 只转骑士 Boss 的战败 CG（KNIGHT_CG）；--penance 只转反省篇的 CG（PENANCE_CG）
   --preview 在 tools/.cache/cg/ 输出原图与像素化结果的对比图
 """
 import sys
@@ -86,12 +86,15 @@ SIEGE_SRC = OUT / "SIEGE_CG"
 AFTER_SRC = OUT / "AFTER_CG"
 # 骑士 Boss 的战败 CG（assets/generated/KNIGHT_CG/，.gdignore）：文件名就是输出的键（knight_fail_1 / _2 / _3 / _fog）
 KNIGHT_SRC = OUT / "KNIGHT_CG"
+# 反省篇的 CG（assets/generated/PENANCE_CG/，.gdignore；提示词 tools/art/src/penance_cg/prompts.md）：文件名就是输出的键（penance_bed）
+PENANCE_SRC = OUT / "PENANCE_CG"
 
 
 def main():
     DST.mkdir(parents=True, exist_ok=True)
     done = []
-    only = SIEGE_SRC if "--siege" in sys.argv else (AFTER_SRC if "--after" in sys.argv else (KNIGHT_SRC if "--knight" in sys.argv else None))
+    only = SIEGE_SRC if "--siege" in sys.argv else (AFTER_SRC if "--after" in sys.argv else (KNIGHT_SRC if "--knight" in sys.argv else
+                                                                                         (PENANCE_SRC if "--penance" in sys.argv else None)))
     if only:
         for path in sorted(p for p in only.iterdir() if p.suffix.lower() == ".png"):
             out = pixelize(Image.open(path))

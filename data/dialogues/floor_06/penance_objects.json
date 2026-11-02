@@ -1,0 +1,35 @@
+{
+	"name": "反省室",
+	"entries": [
+		{
+			"node": "default"
+		}
+	],
+	"nodes": {
+		"default": {
+			"lines": [
+				{
+					"text": "（牢门）",
+					"speaker": ""
+				}
+			]
+		},
+		"gate": {
+			"lines": [
+				{
+					"text": "（铁门锁得死死的。门外传来保卫队员打呵欠的声音）",
+					"speaker": ""
+				},
+				{
+					"text": "……放我出去——！",
+					"speaker": "公主",
+					"emotion": "angry"
+				},
+				{
+					"text": "（……没人理她）",
+					"speaker": ""
+				}
+			]
+		}
+	}
+}

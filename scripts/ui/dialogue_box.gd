@@ -397,6 +397,12 @@ func prison_alarm() -> void:
 	PrisonOddities.alarm()
 
 
+## 反省篇第一章：答应墙缝里的挠脚鼠——换上鼠鼠装、钻进墙缝（PenanceCell.crawl）。
+func penance_rat_outfit() -> void:
+	runner.end_conversation()
+	PenanceCell.crawl()
+
+
 ## 骑士篇：夜探地牢中途出来了，从通风口钻回去（KnightStory.reenter）。
 func knight_reenter() -> void:
 	runner.end_conversation()

@@ -1,0 +1,30 @@
+[level]
+# 第六层·地下小镇·战后（tools/build/gen_floor06_after.py 生成，不要直接改）
+intro =
+intro_cutscene = penance_cell_in
+ambient = 0.46,0.42,0.52
+no_switch = true
+[legend]
+# = wall
+. = floor
+P = player
+t = torch lit=true
+A = spawn id=from_tent
+C = penancecell
+D = prop type=dungeon_gate action=talk:floor_06/penance_objects#gate
+
+[map]
+####################
+######t#######t#####
+##................##
+##.C..............##
+##................##
+##................##
+##................##
+##................##
+##................##
+##........A.......##
+##........P.......##
+##................##
+##########D#########
+####################

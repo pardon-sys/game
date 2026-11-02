@@ -1,0 +1,393 @@
+{
+	"name": "床头的旧布偶",
+	"cast": {
+		"princess": {
+			"kind": "princess",
+			"at": [
+				0,
+				8
+			],
+			"visual": "normal",
+			"anim": "idle",
+			"dir": "down"
+		},
+		"doll": {
+			"kind": "trap:plush_doll",
+			"at": [
+				10,
+				6
+			]
+		}
+	},
+	"steps": [
+		{
+			"act": 1,
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "fade_in"
+				},
+				{
+					"state": "giggle",
+					"do": "voice"
+				}
+			],
+			"wait": 0.5
+		},
+		{
+			"speaker": "",
+			"text": "（床头坐着一只旧布偶。毛线织的耳朵，脸上补过好几回，纽扣做的眼睛亮亮的）",
+			"act": 1
+		},
+		{
+			"speaker": "公主",
+			"text": "……好旧。谁的呀，放在反省室里。",
+			"emotion": "question"
+		},
+		{
+			"speaker": "公主",
+			"text": "……嘿嘿，有点可爱。反正也睡不着，借我抱一下。",
+			"emotion": "happy"
+		},
+		{
+			"speaker": "",
+			"text": "（她抱着布偶躺到床上，把脸埋进它软软的肚子里。闻起来有一点点灰尘的味道，还有一点点……像是很久以前的被子的味道）"
+		},
+		{
+			"speaker": "公主",
+			"text": "……奇怪。好像……以前也抱过这样的……",
+			"emotion": "sad"
+		},
+		{
+			"speaker": "",
+			"text": "（眼皮越来越重。她迷迷糊糊地睡着了——）",
+			"actions": [
+				{
+					"time": 0.4,
+					"do": "fade_out"
+				}
+			],
+			"act": 2
+		},
+		{
+			"speaker": "",
+			"text": "（……腰上，有什么东西轻轻地戳了一下）",
+			"actions": [
+				{
+					"time": 0.4,
+					"do": "fade_in"
+				},
+				{
+					"who": "princess",
+					"by": "doll",
+					"zone": "waist",
+					"fx": "hand",
+					"repeat": 3,
+					"interval": 0.3,
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "……嗯……别闹……",
+			"emotion": "giggle"
+		},
+		{
+			"speaker": "",
+			"text": "（又戳了一下。然后是两下、三下。一只软软的布手，沿着腰侧一节一节地往下捏）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "doll",
+					"zone": "waist",
+					"fx": "hand",
+					"repeat": 8,
+					"interval": 0.2,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"visual": "giggle",
+					"do": "pose"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "……嘻……嘻嘻……在做梦……一定是在做梦……",
+			"emotion": "giggle"
+		},
+		{
+			"speaker": "",
+			"text": "（布手顺着腰滑下去，钻进膝盖窝，用毛线做的指头在那里挠圈圈）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "doll",
+					"zone": "thigh",
+					"fx": "hand",
+					"repeat": 10,
+					"interval": 0.18,
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "噗……！哈……膝、膝盖窝……！",
+			"actions": [
+				{
+					"who": "princess",
+					"time": 0.3,
+					"do": "shake"
+				}
+			],
+			"emotion": "giggle"
+		},
+		{
+			"speaker": "",
+			"text": "（她笑醒了。……布偶好好地被她抱在怀里，一动不动，纽扣眼睛无辜地看着天花板）"
+		},
+		{
+			"speaker": "公主",
+			"text": "……？",
+			"emotion": "question"
+		},
+		{
+			"speaker": "公主",
+			"text": "……一定是做梦。再睡。",
+			"emotion": "sad"
+		},
+		{
+			"speaker": "",
+			"text": "（第二次，布手从大腿外侧慢慢爬上来，爬到腿根那里，用小小的指尖一下一下地点）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "doll",
+					"zone": "thigh",
+					"fx": "hand",
+					"repeat": 12,
+					"interval": 0.16,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"visual": "helpless_1",
+					"do": "pose"
+				},
+				{
+					"do": "voice",
+					"state": "laugh"
+				}
+			],
+			"act": 3
+		},
+		{
+			"speaker": "公主",
+			"text": "……哈……哈哈……腿……腿根不行……！",
+			"emotion": "helpless_1"
+		},
+		{
+			"speaker": "",
+			"text": "（她又笑醒了。布偶还是一动不动。只是……它的一只手，好像比刚才更靠近她的腰了一点点）"
+		},
+		{
+			"speaker": "公主",
+			"text": "……你。是你吧。",
+			"emotion": "angry"
+		},
+		{
+			"speaker": "布偶",
+			"text": "……"
+		},
+		{
+			"speaker": "公主",
+			"text": "我不睡了！我盯着你！",
+			"emotion": "angry"
+		},
+		{
+			"speaker": "",
+			"text": "（……盯了三分钟。眼皮又打架了。第三次——这一次，两只布手一起动了：一只挠腰，一只钻膝盖窝，像是怕她再醒过来，挠得又轻又快）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "doll",
+					"zone": "waist",
+					"fx": "hand",
+					"repeat": 14,
+					"interval": 0.12,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"by": "doll",
+					"zone": "thigh",
+					"fx": "hand",
+					"repeat": 14,
+					"interval": 0.12,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"visual": "helpless_2",
+					"do": "pose"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "哈哈哈哈！抓、抓到你了——哈哈哈！放、放手——不对，是我放手……我放不开——哈哈哈！",
+			"emotion": "helpless_2"
+		},
+		{
+			"speaker": "",
+			"text": "（她想把布偶扔开，可两只布手紧紧勾着她的衣服。越挣越痒，越痒越使不上劲）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "doll",
+					"zone": "waist",
+					"fx": "hand",
+					"repeat": 14,
+					"interval": 0.11,
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "（一圈星光从怀里炸开，把布偶弹到了床尾……哈……哈啊……身体轻飘飘的……好舒服……）",
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "flash"
+				},
+				{
+					"sound": "star_burst",
+					"do": "sfx"
+				},
+				{
+					"sound": "water_release",
+					"volume": -2.0,
+					"do": "sfx"
+				},
+				{
+					"who": "princess",
+					"time": 0.4,
+					"do": "shake"
+				},
+				{
+					"state": "laugh",
+					"do": "voice"
+				}
+			],
+			"act": "burst",
+			"wait": 1.0
+		},
+		{
+			"speaker": "",
+			"text": "（布偶在床尾翻了个身，又慢吞吞地爬了回来，趴在她刚释放完、软得发烫的腿上）",
+			"actions": [
+				{
+					"who": "princess",
+					"visual": "helpless_2",
+					"do": "pose"
+				}
+			],
+			"act": 4
+		},
+		{
+			"speaker": "公主",
+			"text": "……不、不要过来……现在碰哪里都……！",
+			"emotion": "helpless_2"
+		},
+		{
+			"speaker": "",
+			"text": "（毛线指头在膝盖窝里轻轻一勾——就一下。她整个人弹了起来）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "doll",
+					"zone": "thigh",
+					"fx": "hand",
+					"repeat": 8,
+					"interval": 0.14,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"time": 0.4,
+					"do": "shake"
+				},
+				{
+					"do": "pose",
+					"who": "princess",
+					"visual": "helpless_2"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "哈哈哈哈！一下就……一下就受不了……哈哈哈！",
+			"emotion": "helpless_2"
+		},
+		{
+			"speaker": "",
+			"text": "（布偶挠了好一会儿，才心满意足地松开手，躺回床头，纽扣眼睛又亮晶晶地看着天花板）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "doll",
+					"zone": "waist",
+					"fx": "hand",
+					"repeat": 6,
+					"interval": 0.2,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"visual": "helpless_1",
+					"do": "pose"
+				}
+			]
+		},
+		{
+			"speaker": "",
+			"text": "（她把布偶拎起来，想狠狠地瞪它一眼——然后看见了它背后的绣花）"
+		},
+		{
+			"speaker": "",
+			"text": "（褪了色的线，歪歪扭扭地绣着两个手拉手的小人。……和排水管那块手帕上的，一模一样）"
+		},
+		{
+			"speaker": "公主",
+			"text": "……这个……",
+			"emotion": "surprise"
+		},
+		{
+			"speaker": "公主",
+			"text": "……队长的东西。又是队长的东西。",
+			"emotion": "sad"
+		},
+		{
+			"speaker": "公主",
+			"text": "……我才不会认错。……可是，这只布偶，我先替你保管着。",
+			"emotion": "sad"
+		},
+		{
+			"actions": [
+				{
+					"state": "",
+					"do": "voice"
+				},
+				{
+					"time": 0.6,
+					"do": "fade_out"
+				}
+			],
+			"wait": 0.7
+		}
+	]
+}

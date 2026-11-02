@@ -257,6 +257,11 @@
 			"placeholder": "helpless_2",
 			"wide": true
 		},
+		"penance_bed": {
+			"file": "res://assets/cg/portraits/penance_bed.png",
+			"placeholder": "helpless_2",
+			"wide": true
+		},
 		"slime_1": {
 			"file": "res://assets/cg/portraits/slime_1.png",
 			"placeholder": "helpless_1"
@@ -1466,6 +1471,75 @@
 			"fps": 5,
 			"z": -1,
 			"pitch": 1.3
+		},
+		"plush_doll": {
+			"hit_fx": "hand",
+			"texture": "res://assets/generated/plush_doll.png",
+			"hframes": 2,
+			"idle": [
+				0
+			],
+			"active": [
+				0,
+				1
+			],
+			"fps": 6,
+			"z": 1,
+			"pitch": 1.3
+		},
+		"cat_guard": {
+			"hit_fx": "feather",
+			"texture": "res://assets/generated/cat_guard.png",
+			"hframes": 2,
+			"idle": [
+				0
+			],
+			"active": [
+				0,
+				1
+			],
+			"fps": 5,
+			"z": 1,
+			"pitch": 1.6
+		},
+		"trophy_chest": {
+			"hit_fx": "hand",
+			"texture": "res://assets/generated/trophy_chest.png",
+			"hframes": 2,
+			"idle": [
+				0
+			],
+			"active": [
+				1
+			],
+			"z": 1,
+			"pitch": 1.2
+		},
+		"penance_bed": {
+			"hit_fx": "feather",
+			"texture": "res://assets/generated/penance_bed.png",
+			"hframes": 2,
+			"idle": [
+				0
+			],
+			"active": [
+				1
+			],
+			"z": -1,
+			"pitch": 1.3
+		},
+		"wall_crack": {
+			"hit_fx": "brush",
+			"texture": "res://assets/generated/wall_crack.png",
+			"hframes": 2,
+			"idle": [
+				0
+			],
+			"active": [
+				1
+			],
+			"z": 1,
+			"pitch": 1.8
 		}
 	},
 	"death": {
