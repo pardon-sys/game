@@ -50,13 +50,7 @@
 		{
 			"speaker": "公主",
 			"text": "……管壁上那幅画……还有队长说的「又」……",
-			"emotion": "sad",
-			"actions": [
-				{
-					"do": "cg",
-					"key": "after_drain_ok"
-				}
-			]
+			"emotion": "sad"
 		},
 		{
 			"speaker": "小汤姆",
@@ -69,11 +63,42 @@
 		{
 			"speaker": "公主",
 			"text": "……",
-			"emotion": "surprise"
+			"emotion": "surprise",
+			"actions": [
+				{
+					"do": "cg",
+					"key": "after_drain_ok"
+				}
+			]
 		},
 		{
 			"speaker": "",
 			"text": "（她把手帕叠好，收进了口袋里）"
+		},
+		{
+			"speaker": "",
+			"text": "（水沟里的水哗啦啦地流了起来。巷子口跑来一群孩子，每个人手里都捧着一只纸船）"
+		},
+		{
+			"speaker": "小孩们",
+			"text": "通啦——！放船啦——！"
+		},
+		{
+			"speaker": "保卫队员",
+			"text": "这是镇上的老习惯。水道一通，孩子们就放纸船，船上写一个愿望，顺着水漂到地底下。"
+		},
+		{
+			"speaker": "小汤姆",
+			"text": "姐姐！第一只船给你！是你把水弄通的！"
+		},
+		{
+			"speaker": "公主",
+			"text": "……我、我写什么好呢……",
+			"emotion": "shy"
+		},
+		{
+			"speaker": "",
+			"text": "（她想了很久，在纸船上写了一行小小的字，然后轻轻放进了水里。谁也没看见她写了什么）"
 		},
 		{
 			"actions": [
