@@ -402,6 +402,25 @@ func prison_alarm() -> void:
 	PrisonOddities.alarm()
 
 
+## 反省篇第四章·旧王宫：拉唤人铃 / 拿钥匙（仆人回廊）、水槽洗脚（厨房）
+func palace_bell() -> void:
+	runner.end_conversation()
+	if PalaceServants.current:
+		PalaceServants.current.ring_bell()
+
+
+func palace_key() -> void:
+	if PalaceServants.current:
+		PalaceServants.current.take_key()
+
+
+func palace_wash() -> void:
+	for k in get_tree().root.find_children("*", "", true, false):
+		if k is PalaceKitchen:
+			for m in (k as PalaceKitchen).members():
+				(k as PalaceKitchen).wash(m)
+
+
 ## 反省篇第一章：答应墙缝里的挠脚鼠——换上鼠鼠装、钻进墙缝（PenanceCell.crawl）。
 func penance_rat_outfit() -> void:
 	runner.end_conversation()

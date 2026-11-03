@@ -1,0 +1,21 @@
+{
+	"name": "钥匙",
+	"entries": [
+		{
+			"node": "default"
+		}
+	],
+	"nodes": {
+		"default": {
+			"lines": [
+				{
+					"text": "（女仆长的腰带上原来挂着的钥匙，现在就在桌上）",
+					"speaker": ""
+				}
+			],
+			"set": {
+				"call": "palace_key"
+			}
+		}
+	}
+}

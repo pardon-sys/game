@@ -345,6 +345,27 @@
 			"music": "night_maze"
 		},
 		{
+			"id": "floor_06_palace_bath",
+			"name": "旧王宫·旧浴场",
+			"scene": "res://levels/floor_06_palace_bath/floor.tscn",
+			"group": "floor_06",
+			"music": "old_palace"
+		},
+		{
+			"id": "floor_06_palace_servants",
+			"name": "旧王宫·仆人回廊",
+			"scene": "res://levels/floor_06_palace_servants/floor.tscn",
+			"group": "floor_06",
+			"music": "old_palace"
+		},
+		{
+			"id": "floor_06_palace_kitchen",
+			"name": "旧王宫·厨房",
+			"scene": "res://levels/floor_06_palace_kitchen/floor.tscn",
+			"group": "floor_06",
+			"music": "old_palace"
+		},
+		{
 			"id": "floor_08_maze_1",
 			"name": "第八层·夜迷宫一·外环回廊",
 			"scene": "res://levels/floor_08_maze_1/floor.tscn",

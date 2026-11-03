@@ -277,6 +277,16 @@
 			"placeholder": "helpless_2",
 			"wide": true
 		},
+		"bath_friendship": {
+			"file": "res://assets/cg/portraits/bath_friendship.png",
+			"placeholder": "helpless_2",
+			"wide": true
+		},
+		"servants_hide": {
+			"file": "res://assets/cg/portraits/servants_hide.png",
+			"placeholder": "helpless_2",
+			"wide": true
+		},
 		"slime_1": {
 			"file": "res://assets/cg/portraits/slime_1.png",
 			"placeholder": "helpless_1"

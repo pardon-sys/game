@@ -1,0 +1,172 @@
+{
+	"name": "又被人偶女仆发现了",
+	"cast": {
+		"princess": {
+			"kind": "princess",
+			"at": [
+				-14,
+				8
+			],
+			"visual": "helpless_1",
+			"anim": "helpless",
+			"dir": "right"
+		},
+		"blue": {
+			"kind": "npc:blue_princess",
+			"at": [
+				14,
+				8
+			],
+			"visual": "helpless_1",
+			"anim": "helpless",
+			"dir": "left"
+		},
+		"pants": {
+			"kind": "trap:hand",
+			"at": [
+				20,
+				10
+			]
+		},
+		"rat": {
+			"kind": "monster:rat",
+			"at": [
+				-26,
+				12
+			],
+			"dir": "right"
+		},
+		"maid": {
+			"kind": "npc:doll_maid",
+			"at": [
+				0,
+				-4
+			],
+			"dir": "down"
+		}
+	},
+	"steps": [
+		{
+			"act": 1,
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "fade_in"
+				},
+				{
+					"state": "giggle",
+					"do": "voice"
+				}
+			],
+			"wait": 0.5
+		},
+		{
+			"speaker": "人偶女仆",
+			"text": "……又是……灰尘。……打扫。",
+			"act": 1
+		},
+		{
+			"speaker": "",
+			"text": "（鸡毛掸子熟门熟路地掸过两个人的脚底和膝盖窝）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "maid",
+					"zone": "sole",
+					"fx": "feather",
+					"repeat": 10,
+					"interval": 0.12,
+					"do": "tickle"
+				},
+				{
+					"who": "blue",
+					"by": "maid",
+					"zone": "thigh",
+					"fx": "feather",
+					"repeat": 8,
+					"interval": 0.12,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"visual": "helpless_2",
+					"do": "pose"
+				},
+				{
+					"who": "blue",
+					"visual": "helpless_2",
+					"do": "pose"
+				},
+				{
+					"do": "voice",
+					"state": "laugh"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "哈哈哈！又、又来——！",
+			"emotion": "helpless_2"
+		},
+		{
+			"speaker": "公主",
+			"text": "（星光一闪……哈啊……）",
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "flash"
+				},
+				{
+					"sound": "star_burst",
+					"do": "sfx"
+				},
+				{
+					"sound": "water_release",
+					"volume": -2.0,
+					"do": "sfx"
+				},
+				{
+					"who": "princess",
+					"time": 0.4,
+					"do": "shake"
+				},
+				{
+					"state": "laugh",
+					"do": "voice"
+				}
+			],
+			"act": "burst",
+			"wait": 1.0
+		},
+		{
+			"speaker": "",
+			"text": "（又被拎回了入口）",
+			"actions": [
+				{
+					"who": "princess",
+					"visual": "helpless_1",
+					"do": "pose"
+				},
+				{
+					"who": "blue",
+					"visual": "helpless_1",
+					"do": "pose"
+				}
+			],
+			"act": 4
+		},
+		{
+			"actions": [
+				{
+					"state": "",
+					"do": "voice"
+				},
+				{
+					"time": 0.6,
+					"do": "fade_out"
+				}
+			],
+			"wait": 0.7
+		}
+	]
+}

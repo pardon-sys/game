@@ -21,7 +21,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from after_text import d1, d2, equip_kids, errand_dance, errand_goats, errand_ladder, errand_massage, errand_gate_chain, errand_shearing, errand_canopy, errand_sifting, errand_lamp_calibration, errands, house, mine, play, potion, punish, stocks, tailor, tasks, totem, town, drain, drill, inspect, tom, night, penalty, festival_night, festival_talk, stall_guess, stall_ring, stall_ice, stall_fish, stall_lick, done_folk  # noqa: E402
 import quest_maps as qmaps  # noqa: E402
 from knight_text import prison as knight_prison  # noqa: E402
-from penance_text import argue as penance_argue, cell as penance_cell, tunnel as penance_tunnel, meet as penance_meet, waterway as penance_waterway  # noqa: E402
+from penance_text import argue as penance_argue, cell as penance_cell, tunnel as penance_tunnel, meet as penance_meet, waterway as penance_waterway, palace as penance_palace  # noqa: E402
 from knight_text import finale as knight_finale, quests as knight_quests, story as knight_story, story_cg as knight_story_cg, tasks as knight_tasks, townsfolk as knight_townsfolk  # noqa: E402
 
 # 只生成灯轮 / 报幕的文本（委托表、灯轮、补罚表、派对主人对话），不重新写地图、其他任务或别的镇民对白。
@@ -66,6 +66,8 @@ RTUNNEL = "floor_06_rat_tunnel"
 WEXIT = "floor_06_waterway_exit"
 # 反省篇第三章：废弃水道（等距 drain_water；quest_maps._waterway；WaterwayDirector + SluiceKeeper）
 WATERWAY = "floor_06_waterway"
+# 反省篇第四章（上）：旧王宫·旧浴场 / 仆人回廊 / 厨房（等距；quest_maps._palace_*；PalaceBath / PalaceServants / PalaceKitchen）
+PBATH, PSERV, PKITCH = "floor_06_palace_bath", "floor_06_palace_servants", "floor_06_palace_kitchen"
 
 
 # 骑士篇支线小地图的标记点（quest_maps.py 画的图；写进 data/after/quest_maps.json，QuestMaps 读）
@@ -768,6 +770,53 @@ for (x, y), foe in zip(wm["foes"], ["monster type=bubble_fish", "monster type=cr
     ww.put(x, y, foe)
 ww.write()
 
+# ---------------------------------------------------------------- 第四章（上）：旧王宫（三张连在一起，来回都能走）
+PAL_HEAD = "ambient = 0.6,0.55,0.62\nno_switch = false\nstyle = iso\niso_theme = old_hall"
+pb, pbm = qmaps.build(Map, PBATH, "intro =\nintro_cutscene = palace_bath_in\n" + PAL_HEAD, prop)
+QMARKS[PBATH] = pbm
+pb.put(*pbm["start"][0], "player")
+pb.put(*pbm["start"][0], "spawn id=from_waterway")
+pb.put(4, 4, "blue_princess follow=true ai=false")
+pb.put(2, 2, "palacebath")
+pb.put(*pbm["east"][0], "exit target=%s spawn=from_bath unlock_flag=palace_bath_key locked_dialogue=palace_bath_door" % PSERV)
+pb.put(66, 11, "spawn id=from_servants")
+pb.write()
+
+ps, psm = qmaps.build(Map, PSERV, "intro =\nintro_cutscene = palace_servants_in\n" + PAL_HEAD.replace("0.6,0.55,0.62", "0.42,0.4,0.5"), prop)
+QMARKS[PSERV] = psm
+ps.put(*psm["start"][0], "player")
+ps.put(*psm["start"][0], "spawn id=from_bath")
+ps.put(4, 16, "blue_princess follow=true ai=false")
+ps.put(2, 15, "palaceservants")
+ps.put(3, 15, "stealth on_caught=palace alert_rate=1.8 alert_decay=0.5")
+ps.put(*psm["west"][0], "exit target=%s spawn=from_servants" % PBATH)
+ps.put(*psm["east"][0], "exit target=%s spawn=from_servants unlock_flag=palace_servants_key locked_dialogue=palace_servants_door" % PKITCH)
+ps.put(76, 17, "spawn id=from_kitchen")
+for (x, y) in psm["hides"] + psm["hide_event"]:
+    prop(ps, x, y, "crate", "hide")
+for (x, y) in ((20, 16), (44, 18), (62, 17)):
+    prop(ps, x, y, "crate", "hide")
+MAID_SHEET = "res://assets/generated/npcs/doll_maid.png" if os.path.exists("assets/generated/npcs/doll_maid.png") else "res://assets/generated/npcs/maid.png"
+MAID = " sheet=" + MAID_SHEET + " doll=true view_range=70 view_angle=60 speed=28 investigate_speed=46 check_chance=0.2"
+for path, extra in (("8,17;30,17", ""), ("32,16;56,16", " wait=1.4"), ("58,18;72,18", ""), ("13,7;13,11", " wait=1.6"), ("31,23;31,27", " wait=1.6")):
+    ps.put(*[int(v) for v in path.split(";")[0].split(",")], "guard_patrol path=" + path + extra + MAID)
+hx, hy = psm["head_maid"][0]
+ps.put(hx, hy, ("guard_patrol path=%d,%d;%d,%d wait=3.0 sheet=" % (hx, hy, hx + 1, hy)) + MAID_SHEET + " doll=true view_range=96 view_angle=80 speed=24 investigate_speed=40 check_chance=0.4")
+for (x, y) in ((8, 15), (30, 15), (54, 19), (66, 9)):
+    prop(ps, x, y, "lamp")
+ps.write()
+
+pk, pkm = qmaps.build(Map, PKITCH, "intro =\nintro_cutscene = palace_kitchen_in\n" + PAL_HEAD.replace("0.6,0.55,0.62", "0.66,0.6,0.55"), prop)
+QMARKS[PKITCH] = pkm
+pk.put(*pkm["start"][0], "player")
+pk.put(*pkm["start"][0], "spawn id=from_servants")
+pk.put(4, 5, "blue_princess follow=true ai=false")
+pk.put(2, 4, "palacekitchen")
+pk.put(*pkm["west"][0], "exit target=%s spawn=from_kitchen" % PSERV)
+for (x, y) in pkm["rats"]:
+    pk.put(x, y, "monster type=rat")
+pk.write()
+
 # ================================================================ 城门外的战场
 fd = Map(FIELD, 44, 30, "intro =\nambient = 0.72,0.66,0.62\nnight_ambient = 0.3,0.3,0.5")
 fd.room(2, 2, 41, 27)
@@ -1044,6 +1093,8 @@ for _sid, _mod, _key, _cls in STALLS.values():
         ensure_ascii=False, indent="\t") + "\n")
 Path("data/after/knight.json").write_text(json.dumps(dict({"_说明": "骑士篇 A~D 的玩法文本（knight_text/tasks.py 生成，TaskStretcher / TaskBait / InterrogationChairShow 读）。"},
     **knight_tasks.KNIGHT), ensure_ascii=False, indent="\t") + "\n")
+Path("data/after/palace.json").write_text(json.dumps(dict({"_说明": "反省篇第四章·旧王宫玩法里的短台词（penance_text/palace.py 生成，PalaceRoom 读）。"},
+    **penance_palace.TEXT), ensure_ascii=False, indent="\t") + "\n")
 Path("data/after/waterway.json").write_text(json.dumps(dict({"_说明": "反省篇第三章·废弃水道玩法里的短台词（penance_text/waterway.py 生成，WaterwayDirector / SluiceKeeper 读）。"},
     **penance_waterway.TEXT), ensure_ascii=False, indent="\t") + "\n")
 Path("data/after/tunnel.json").write_text(json.dumps(dict({"_说明": "反省篇第二章·鼠洞玩法里的短台词（penance_text/tunnel.py 生成，RatTunnel 读）。"},
@@ -1061,6 +1112,8 @@ _npcs["npcs"]["knight_cursed"] = {"name": knight_story.KNIGHT, "sprite": "res://
 _npcs["npcs"]["knight_possessed"] = {"name": knight_story.KNIGHT, "sprite": "res://assets/generated/npcs/knight_cursed.png", "portrait": "res://assets/generated/npc_portraits/knight_possessed.png"}
 # 庆功宴：舔盐耐力赛通关以后戴着铃铛闲逛的咕咕（tools/art/gen_festival_art.py）
 _npcs["npcs"]["goat_bell"] = {"name": "咕咕", "sprite": "res://assets/generated/npcs/goat_bell.png"}
+# 反省篇第四章：旧王宫的人偶女仆（tools/art/gen_palace_sprites.py），小剧场里用 npc:doll_maid
+_npcs["npcs"]["doll_maid"] = {"name": "人偶女仆", "sprite": "res://assets/generated/npcs/doll_maid.png"}
 Path("data/actors/npcs.json").write_text(json.dumps(_npcs, ensure_ascii=False, indent="\t") + "\n")
 Path("data/after/play.json").write_text(json.dumps(dict({"_说明": "两位公主的玩闹（after_text/play.py 生成，AfterPlay 读）。"}, **play.PLAY),
     ensure_ascii=False, indent="\t") + "\n")
@@ -1091,6 +1144,7 @@ files.update(knight_townsfolk.DIALOGUES)
 files.update(knight_prison.DIALOGUES)
 files.update(penance_cell.DIALOGUES)
 files.update(penance_tunnel.DIALOGUES)
+files.update(penance_palace.DIALOGUES)
 knight_quests.inject(files)
 # 第 6 天小汤姆的话：按昨晚恶作剧的结局（只在第 6 天）
 for _r, _lines in tom.TOM_NEXT_DAY.items():
@@ -1104,6 +1158,7 @@ signs = json.loads(signs_path.read_text())
 signs.update(town.SIGNS)
 signs.update(tailor.SIGNS)
 signs.update(totem.SIGNS)
+signs.update(penance_palace.SIGNS)
 signs.update(drain.SIGNS)
 signs.update(drill.SIGNS)
 signs.update(inspect.SIGNS)
@@ -1123,7 +1178,9 @@ AFTER_CG_FAIL = {"after_fail_equip": "after_equip_fail", "after_fail_potion": "a
                  # 反省篇第二章：鼠洞的竖井（PENANCE_CG）
                  "tunnel_shaft": "tunnel_shaft",
                  # 反省篇第三章：水闸守门人（PENANCE_CG）
-                 "keeper_fail": "keeper_fail"}
+                 "keeper_fail": "keeper_fail",
+                 # 反省篇第四章（上）：温泉 / 帘子后面（PENANCE_CG）
+                 "bath_friendship": "bath_friendship", "servants_hide": "servants_hide"}
 AFTER_CG_DONE = {"after_d2_equip_done": "after_equip_ok", "after_d3_potion_done": "after_potion_ok", "after_d3_cart_done": "after_cart_ok",
                  "after_d4_drain_done": "after_drain_ok", "after_d4_drill_done": "after_drill_ok", "after_d5_tailor_done": "after_tailor_ok",
                  "after_d5_mine_done": "after_mine_ok", "after_d6_inspect_done": "after_inspect_ok", "after_d6_drill_done": "after_exam_ok",
@@ -1220,12 +1277,12 @@ def _with_done_cg(cid, data):
 
 
 cut = Path("data/cutscenes/floor_06")
-CUTS = dict(d1.CUTSCENES, **d2.CUTSCENES, **tasks.CUTSCENES, **potion.CUTSCENES, **tailor.CUTSCENES, **mine.CUTSCENES, **totem.CUTSCENES, **drain.CUTSCENES, **drill.CUTSCENES, **inspect.CUTSCENES, **festival_night.CUTSCENES, **knight_story.CUTSCENES, **knight_finale.CUTSCENES, **knight_quests.CUTSCENES, **knight_story_cg.CUTSCENES, **penance_argue.CUTSCENES, **penance_cell.CUTSCENES, **penance_tunnel.CUTSCENES, **penance_meet.CUTSCENES, **penance_waterway.CUTSCENES)
+CUTS = dict(d1.CUTSCENES, **d2.CUTSCENES, **tasks.CUTSCENES, **potion.CUTSCENES, **tailor.CUTSCENES, **mine.CUTSCENES, **totem.CUTSCENES, **drain.CUTSCENES, **drill.CUTSCENES, **inspect.CUTSCENES, **festival_night.CUTSCENES, **knight_story.CUTSCENES, **knight_finale.CUTSCENES, **knight_quests.CUTSCENES, **knight_story_cg.CUTSCENES, **penance_argue.CUTSCENES, **penance_cell.CUTSCENES, **penance_tunnel.CUTSCENES, **penance_meet.CUTSCENES, **penance_waterway.CUTSCENES, **penance_palace.CUTSCENES)
 for cid, fn in CUTS.items():
     (cut / (cid + ".json")).write_text(json.dumps(_with_done_cg(cid, done_folk.apply(cid, fn())), ensure_ascii=False, indent="\t") + "\n")
 th = Path("data/theater/after")
 th.mkdir(parents=True, exist_ok=True)
-for tid, data in dict(punish.THEATERS, **tasks.THEATERS, **potion.THEATERS, **tailor.THEATERS, **mine.THEATERS, **totem.THEATERS, **drain.THEATERS, **drill.THEATERS, **inspect.THEATERS, **night.THEATERS, **knight_tasks.THEATERS, **knight_finale.THEATERS, **errand_gate_chain.THEATERS, **knight_prison.THEATERS, **penance_cell.THEATERS, **penance_tunnel.THEATERS, **penance_meet.THEATERS, **penance_waterway.THEATERS).items():
+for tid, data in dict(punish.THEATERS, **tasks.THEATERS, **potion.THEATERS, **tailor.THEATERS, **mine.THEATERS, **totem.THEATERS, **drain.THEATERS, **drill.THEATERS, **inspect.THEATERS, **night.THEATERS, **knight_tasks.THEATERS, **knight_finale.THEATERS, **errand_gate_chain.THEATERS, **knight_prison.THEATERS, **penance_cell.THEATERS, **penance_tunnel.THEATERS, **penance_meet.THEATERS, **penance_waterway.THEATERS, **penance_palace.THEATERS).items():
     (th / (tid + ".json")).write_text(json.dumps(_with_voice(_with_h2(_with_fail_cg(tid, data))), ensure_ascii=False, indent="\t") + "\n")
 
 floors = json.loads(Path("data/floors.json").read_text())
@@ -1238,7 +1295,8 @@ NEW = [(TOWN, "地下小镇·战后", "town"), (FESTIVAL, "庆功宴的广场", 
        (WALL, "城墙上", "night_room"), (CRACK, "广场底下的裂缝", "night_room"), (OLDHALL, "旧会堂", "night_room"),
        (WAREHOUSE, "旧仓库", "night_room"), (STORAGE, "储物间", "night_room"), (BRIDGE, "排水渠上的小桥", "night_room"),
        (PTENT, "保卫队营地·医务帐篷", "night_room"), (PCELL, "反省牢房", "night_room"),
-       (RTUNNEL, "鼠洞", "night_room"), (WEXIT, "废弃水道的出口", "night_room"), (WATERWAY, "废弃水道", "night_maze")]
+       (RTUNNEL, "鼠洞", "night_room"), (WEXIT, "废弃水道的出口", "night_room"), (WATERWAY, "废弃水道", "night_maze"),
+       (PBATH, "旧王宫·旧浴场", "old_palace"), (PSERV, "旧王宫·仆人回廊", "old_palace"), (PKITCH, "旧王宫·厨房", "old_palace")]
 at = next(i for i, f in enumerate(lst) if f["id"] == "floor_06_siege") + 1
 for fid, name, music in NEW:
     if not any(f["id"] == fid for f in lst):

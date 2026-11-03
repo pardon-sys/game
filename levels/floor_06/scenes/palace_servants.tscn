@@ -1,0 +1,6 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://levels/floor_06/scripts/palace_servants.gd" id="1"]
+
+[node name="PalaceServants" type="Node2D"]
+script = ExtResource("1")

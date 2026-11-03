@@ -1,0 +1,318 @@
+{
+	"name": "旧浴场：滑进泡泡浴池",
+	"cast": {
+		"princess": {
+			"kind": "princess",
+			"at": [
+				-14,
+				8
+			],
+			"visual": "helpless_1",
+			"anim": "helpless",
+			"dir": "right"
+		},
+		"blue": {
+			"kind": "npc:blue_princess",
+			"at": [
+				14,
+				8
+			],
+			"visual": "normal",
+			"anim": "idle",
+			"dir": "left"
+		},
+		"pants": {
+			"kind": "trap:hand",
+			"at": [
+				20,
+				10
+			]
+		},
+		"rat": {
+			"kind": "monster:rat",
+			"at": [
+				-26,
+				12
+			],
+			"dir": "right"
+		},
+		"pool": {
+			"kind": "trap:sitz_bath",
+			"at": [
+				-10,
+				12
+			]
+		}
+	},
+	"steps": [
+		{
+			"act": 1,
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "fade_in"
+				},
+				{
+					"state": "giggle",
+					"do": "voice"
+				}
+			],
+			"wait": 0.5
+		},
+		{
+			"speaker": "",
+			"text": "（肥皂泡地板一路滑到底——「扑通」一声，粉色公主整个人栽进了旁边的泡泡浴池）",
+			"actions": [
+				{
+					"sound": "puddle",
+					"volume": -2.0,
+					"do": "sfx"
+				},
+				{
+					"who": "princess",
+					"time": 0.4,
+					"do": "shake"
+				}
+			],
+			"act": 1
+		},
+		{
+			"speaker": "公主",
+			"text": "噗哈——！泡、泡泡！全是泡泡！",
+			"emotion": "surprise"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……（蹲在池边）……没事吧。"
+		},
+		{
+			"speaker": "",
+			"text": "（池底「咕嘟咕嘟」地冒起了泡。几百年没人用过的浴池，机关还活着——一圈软刷贴着池底转了起来）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "pool",
+					"zone": "sole",
+					"fx": "lines",
+					"repeat": 8,
+					"interval": 0.18,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"visual": "giggle",
+					"do": "pose"
+				}
+			],
+			"act": 2
+		},
+		{
+			"speaker": "公主",
+			"text": "嘻……嘻嘻……池底有刷子……！脚底被刷了……！",
+			"emotion": "giggle"
+		},
+		{
+			"speaker": "",
+			"text": "（泡泡一颗一颗在脚心、脚趾缝、小腿上破掉。她想爬出来，扶着池边的手一滑，又坐了回去）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "pool",
+					"zone": "sole",
+					"fx": "lines",
+					"repeat": 12,
+					"interval": 0.13,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"visual": "helpless_1",
+					"do": "pose"
+				},
+				{
+					"do": "voice",
+					"state": "laugh"
+				}
+			]
+		},
+		{
+			"speaker": "挠脚鼠",
+			"text": "（从短裤里探出头，浑身湿透）吱吱！我、我不会游泳——！",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "rat",
+					"zone": "thigh",
+					"fx": "hand",
+					"repeat": 8,
+					"interval": 0.14,
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "哈哈哈！你别在里面乱扑腾——腿根——哈哈哈！",
+			"emotion": "helpless_1",
+			"act": 3
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……手。给我。"
+		},
+		{
+			"speaker": "",
+			"text": "（蓝色公主伸手去拉——池边的肥皂泡一滑，她也「扑通」一声栽了进去）",
+			"actions": [
+				{
+					"sound": "puddle",
+					"volume": -2.0,
+					"do": "sfx"
+				},
+				{
+					"who": "blue",
+					"time": 0.4,
+					"do": "shake"
+				},
+				{
+					"who": "blue",
+					"visual": "helpless_1",
+					"do": "pose"
+				}
+			]
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……",
+			"actions": [
+				{
+					"who": "blue",
+					"by": "pants",
+					"zone": "thigh",
+					"fx": "hand",
+					"repeat": 10,
+					"interval": 0.14,
+					"do": "tickle"
+				},
+				{
+					"who": "blue",
+					"by": "pool",
+					"zone": "sole",
+					"fx": "lines",
+					"repeat": 6,
+					"interval": 0.18,
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……泡、泡泡……裤子……都……哈、哈哈……",
+			"actions": [
+				{
+					"who": "blue",
+					"visual": "helpless_2",
+					"do": "pose"
+				}
+			]
+		},
+		{
+			"speaker": "",
+			"text": "（两个人在泡泡里笑成一团，刷子和泡泡一点都不客气）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "pool",
+					"zone": "sole",
+					"fx": "lines",
+					"repeat": 14,
+					"interval": 0.1,
+					"do": "tickle"
+				},
+				{
+					"who": "blue",
+					"by": "pants",
+					"zone": "thigh",
+					"fx": "hand",
+					"repeat": 12,
+					"interval": 0.1,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"visual": "helpless_2",
+					"do": "pose"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "（星光把一池子泡泡全炸飞了……哈啊……放出去了……）",
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "flash"
+				},
+				{
+					"sound": "star_burst",
+					"do": "sfx"
+				},
+				{
+					"sound": "water_release",
+					"volume": -2.0,
+					"do": "sfx"
+				},
+				{
+					"who": "princess",
+					"time": 0.4,
+					"do": "shake"
+				},
+				{
+					"state": "laugh",
+					"do": "voice"
+				}
+			],
+			"act": "burst",
+			"wait": 1.0
+		},
+		{
+			"speaker": "",
+			"text": "（等泡泡落下来，两个人湿淋淋地爬出浴池，坐在池边喘了好一会儿）",
+			"actions": [
+				{
+					"who": "princess",
+					"visual": "helpless_1",
+					"do": "pose"
+				},
+				{
+					"who": "blue",
+					"visual": "helpless_1",
+					"do": "pose"
+				}
+			],
+			"act": 4
+		},
+		{
+			"speaker": "公主",
+			"text": "……这地板，绕着走。",
+			"emotion": "sad"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……嗯。"
+		},
+		{
+			"actions": [
+				{
+					"state": "",
+					"do": "voice"
+				},
+				{
+					"time": 0.6,
+					"do": "fade_out"
+				}
+			],
+			"wait": 0.7
+		}
+	]
+}

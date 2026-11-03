@@ -1,0 +1,48 @@
+{
+	"name": "唤人铃",
+	"entries": [
+		{
+			"node": "default"
+		}
+	],
+	"nodes": {
+		"default": {
+			"lines": [
+				{
+					"text": "（墙上挂着一根拉绳，连着走廊里的铃铛。拉一下，女仆们就会过来）",
+					"speaker": ""
+				}
+			],
+			"prompt": "拉铃？",
+			"choices": [
+				{
+					"text": "拉一下",
+					"next": "ring"
+				},
+				{
+					"text": "不拉",
+					"next": "no"
+				}
+			]
+		},
+		"ring": {
+			"lines": [
+				{
+					"text": "（叮铃铃——！）",
+					"speaker": ""
+				}
+			],
+			"set": {
+				"call": "palace_bell"
+			}
+		},
+		"no": {
+			"lines": [
+				{
+					"text": "……再等等。",
+					"speaker": "公主"
+				}
+			]
+		}
+	}
+}

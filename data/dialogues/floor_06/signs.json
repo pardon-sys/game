@@ -268,5 +268,23 @@
 			"speaker": "",
 			"text": "（通往排水渠的小路。黑漆漆的）"
 		}
+	],
+	"palace_bath_door": [
+		{
+			"speaker": "",
+			"text": "（门锁着。锁孔的形状……和雕像手里的东西很像）"
+		}
+	],
+	"palace_servants_door": [
+		{
+			"speaker": "",
+			"text": "（通往厨房的门锁着。钥匙……大概在女仆长那里）"
+		}
+	],
+	"palace_kitchen_north": [
+		{
+			"speaker": "",
+			"text": "（北门后面是一条长长的走廊，堆满了倒下的书架。……要先把这里的事办完）"
+		}
 	]
 }

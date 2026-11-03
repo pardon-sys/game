@@ -1,0 +1,21 @@
+{
+	"name": "水槽",
+	"entries": [
+		{
+			"node": "default"
+		}
+	],
+	"nodes": {
+		"default": {
+			"lines": [
+				{
+					"text": "（水龙头还能出水。哗啦啦——脚底的奶油洗掉了）",
+					"speaker": ""
+				}
+			],
+			"set": {
+				"call": "palace_wash"
+			}
+		}
+	}
+}

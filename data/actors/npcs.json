@@ -123,6 +123,10 @@
 			"name": "骑士",
 			"sprite": "res://assets/generated/npcs/knight_cursed.png",
 			"portrait": "res://assets/generated/npc_portraits/knight_possessed.png"
+		},
+		"doll_maid": {
+			"name": "人偶女仆",
+			"sprite": "res://assets/generated/npcs/doll_maid.png"
 		}
 	}
 }

@@ -1,0 +1,65 @@
+{
+	"name": "旧浴场",
+	"letterbox": true,
+	"skippable": true,
+	"steps": [
+		{
+			"actions": [
+				{
+					"to": [
+						4,
+						4
+					],
+					"zoom": 1.0,
+					"time": 0.4,
+					"do": "camera"
+				}
+			],
+			"wait": 0.4
+		},
+		{
+			"speaker": "",
+			"text": "（缝的另一头，是一间又高又大的屋子。大理石的地板，金色的柱子，到处都是白茫茫的蒸汽）"
+		},
+		{
+			"speaker": "公主",
+			"text": "……这里是……浴场？王宫的浴场？",
+			"emotion": "surprise"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……好大。"
+		},
+		{
+			"speaker": "挠脚鼠",
+			"text": "（探出头，嗅了嗅）吱吱。热水的味道。还有肥皂。还有……很多很多年没有人来过的味道。"
+		},
+		{
+			"speaker": "",
+			"text": "（蒸汽深处，远远地传来一阵小孩的笑声。……嘻嘻嘻……）"
+		},
+		{
+			"speaker": "公主",
+			"text": "……有人在笑？",
+			"emotion": "surprise"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……跟着声音走。"
+		},
+		{
+			"actions": [
+				{
+					"reset": true,
+					"time": 0.4,
+					"do": "camera"
+				},
+				{
+					"text": "穿过旧浴场（雾里跟着笑声走；肥皂泡地板会一直滑）",
+					"do": "notify"
+				}
+			],
+			"wait": 0.4
+		}
+	]
+}

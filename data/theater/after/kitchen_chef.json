@@ -1,0 +1,384 @@
+{
+	"name": "厨房：糕点师的试吃",
+	"cast": {
+		"princess": {
+			"kind": "princess",
+			"at": [
+				-14,
+				8
+			],
+			"visual": "normal",
+			"anim": "idle",
+			"dir": "right"
+		},
+		"blue": {
+			"kind": "npc:blue_princess",
+			"at": [
+				14,
+				8
+			],
+			"visual": "normal",
+			"anim": "idle",
+			"dir": "left"
+		},
+		"pants": {
+			"kind": "trap:hand",
+			"at": [
+				20,
+				10
+			]
+		},
+		"rat": {
+			"kind": "monster:rat",
+			"at": [
+				-26,
+				12
+			],
+			"dir": "right"
+		},
+		"chef": {
+			"kind": "npc:doll_maid",
+			"at": [
+				0,
+				-6
+			],
+			"dir": "down"
+		},
+		"mice": {
+			"kind": "monster:rat",
+			"at": [
+				-20,
+				14
+			],
+			"dir": "right"
+		}
+	},
+	"steps": [
+		{
+			"act": 1,
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "fade_in"
+				},
+				{
+					"state": "giggle",
+					"do": "voice"
+				}
+			],
+			"wait": 0.5
+		},
+		{
+			"speaker": "糕点师人偶",
+			"text": "（戴着高高厨师帽的人偶慢慢转过头）……客人。……试、吃。",
+			"act": 1
+		},
+		{
+			"speaker": "公主",
+			"text": "试吃？……有吃的？",
+			"emotion": "happy"
+		},
+		{
+			"speaker": "糕点师人偶",
+			"text": "……新品。……奶油。……请、躺下。"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……躺下？"
+		},
+		{
+			"speaker": "",
+			"text": "（人偶不由分说，把两个人一左一右按在了长桌上，两双脚并排搁在桌边。她拿起一把裱花袋）",
+			"actions": [
+				{
+					"who": "princess",
+					"time": 0.3,
+					"do": "shake"
+				}
+			],
+			"act": 2
+		},
+		{
+			"speaker": "",
+			"text": "（「噗」——一圈雪白的奶油挤在了粉色公主光着的脚心上。凉凉的，滑滑的）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "chef",
+					"zone": "sole",
+					"fx": "lines",
+					"repeat": 4,
+					"interval": 0.25,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"visual": "giggle",
+					"do": "pose"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "呀！凉、凉的！为什么挤在脚上——！",
+			"emotion": "giggle"
+		},
+		{
+			"speaker": "糕点师人偶",
+			"text": "……请、品尝。",
+			"actions": [
+				{
+					"who": "blue",
+					"by": "chef",
+					"zone": "sole",
+					"fx": "lines",
+					"repeat": 4,
+					"interval": 0.25,
+					"do": "tickle"
+				},
+				{
+					"who": "blue",
+					"visual": "giggle",
+					"do": "pose"
+				}
+			]
+		},
+		{
+			"speaker": "",
+			"text": "（「品尝」的不是她们。桌子底下钻出来一群小老鼠，闻着奶油的香味，一只一只爬上桌——开始舔）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "mice",
+					"zone": "sole",
+					"fx": "lines",
+					"repeat": 10,
+					"interval": 0.14,
+					"do": "tickle"
+				},
+				{
+					"who": "blue",
+					"by": "mice",
+					"zone": "sole",
+					"fx": "lines",
+					"repeat": 8,
+					"interval": 0.15,
+					"do": "tickle"
+				}
+			],
+			"act": 3
+		},
+		{
+			"speaker": "公主",
+			"text": "哈哈哈！老、老鼠在舔——脚心——趾缝——哈哈哈！",
+			"actions": [
+				{
+					"who": "princess",
+					"visual": "helpless_1",
+					"do": "pose"
+				},
+				{
+					"do": "voice",
+					"state": "laugh"
+				}
+			],
+			"emotion": "helpless_1"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……舌、舌头……好小……好痒……哈、哈哈……",
+			"actions": [
+				{
+					"who": "blue",
+					"visual": "helpless_1",
+					"do": "pose"
+				}
+			]
+		},
+		{
+			"speaker": "挠脚鼠",
+			"text": "（从短裤里冲出来）吱吱！那是我的奶油！"
+		},
+		{
+			"speaker": "",
+			"text": "（挠脚鼠也加入了「品尝」。小老鼠们舔得更起劲了，奶油舔完了，人偶又补上一圈）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "mice",
+					"zone": "sole",
+					"fx": "lines",
+					"repeat": 14,
+					"interval": 0.1,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"by": "rat",
+					"zone": "sole",
+					"fx": "lines",
+					"repeat": 10,
+					"interval": 0.12,
+					"do": "tickle"
+				},
+				{
+					"who": "blue",
+					"by": "mice",
+					"zone": "sole",
+					"fx": "lines",
+					"repeat": 12,
+					"interval": 0.1,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"visual": "helpless_2",
+					"do": "pose"
+				},
+				{
+					"who": "blue",
+					"visual": "helpless_2",
+					"do": "pose"
+				}
+			]
+		},
+		{
+			"speaker": "糕点师人偶",
+			"text": "……反、应……很好。……再、来一份。"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……哈……哈哈……不、不要再来一份了……（冰晶炸开，奶油都冻成了冰淇淋……）",
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "flash"
+				},
+				{
+					"sound": "ice_crack",
+					"volume": -2.0,
+					"do": "sfx"
+				},
+				{
+					"sound": "water_release",
+					"volume": -2.0,
+					"do": "sfx"
+				},
+				{
+					"who": "blue",
+					"time": 0.4,
+					"do": "shake"
+				},
+				{
+					"state": "laugh",
+					"do": "voice"
+				}
+			],
+			"act": "burst",
+			"wait": 1.0
+		},
+		{
+			"speaker": "公主",
+			"text": "（星光跟着炸开……哈啊……放出去了……脚底甜甜的……）",
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "flash"
+				},
+				{
+					"sound": "star_burst",
+					"do": "sfx"
+				},
+				{
+					"sound": "water_release",
+					"volume": -2.0,
+					"do": "sfx"
+				},
+				{
+					"who": "princess",
+					"time": 0.4,
+					"do": "shake"
+				},
+				{
+					"state": "laugh",
+					"do": "voice"
+				}
+			],
+			"act": "burst",
+			"wait": 1.0
+		},
+		{
+			"speaker": "",
+			"text": "（冻成冰淇淋的奶油，小老鼠们舔得更开心了——刚释放完的脚心敏感得发烫，每一口都让两个人在桌上弹一下）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "mice",
+					"zone": "sole",
+					"fx": "lines",
+					"repeat": 8,
+					"interval": 0.15,
+					"do": "tickle"
+				},
+				{
+					"who": "blue",
+					"by": "mice",
+					"zone": "sole",
+					"fx": "lines",
+					"repeat": 8,
+					"interval": 0.15,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"visual": "helpless_2",
+					"do": "pose"
+				},
+				{
+					"who": "blue",
+					"visual": "helpless_2",
+					"do": "pose"
+				}
+			],
+			"act": 4
+		},
+		{
+			"speaker": "糕点师人偶",
+			"text": "……试吃……结、束。……谢谢、惠顾。"
+		},
+		{
+			"speaker": "",
+			"text": "（两个人从桌上滑下来，脚底还是黏黏的、甜甜的）",
+			"actions": [
+				{
+					"who": "princess",
+					"visual": "helpless_1",
+					"do": "pose"
+				},
+				{
+					"who": "blue",
+					"visual": "helpless_1",
+					"do": "pose"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "……去水槽把脚洗了吧。……不然老鼠会一直跟着我们。",
+			"emotion": "sad"
+		},
+		{
+			"actions": [
+				{
+					"state": "",
+					"do": "voice"
+				},
+				{
+					"time": 0.6,
+					"do": "fade_out"
+				}
+			],
+			"wait": 0.7
+		}
+	]
+}

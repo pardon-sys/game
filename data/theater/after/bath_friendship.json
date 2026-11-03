@@ -1,0 +1,429 @@
+{
+	"name": "旧浴场：温泉",
+	"cast": {
+		"princess": {
+			"kind": "princess",
+			"at": [
+				-14,
+				8
+			],
+			"visual": "normal",
+			"anim": "idle",
+			"dir": "right"
+		},
+		"blue": {
+			"kind": "npc:blue_princess",
+			"at": [
+				14,
+				8
+			],
+			"visual": "normal",
+			"anim": "idle",
+			"dir": "left"
+		},
+		"pants": {
+			"kind": "trap:hand",
+			"at": [
+				20,
+				10
+			]
+		},
+		"rat": {
+			"kind": "monster:rat",
+			"at": [
+				-26,
+				12
+			],
+			"dir": "right"
+		},
+		"pool": {
+			"kind": "trap:foot_bath",
+			"at": [
+				0,
+				14
+			]
+		}
+	},
+	"steps": [
+		{
+			"act": 1,
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "fade_in"
+				},
+				{
+					"state": "giggle",
+					"do": "voice"
+				}
+			],
+			"wait": 0.5
+		},
+		{
+			"speaker": "",
+			"text": "（浴场最里面，一口圆圆的温泉还在冒着热气。狮子头出水口里，温水「哗哗」地流着）",
+			"act": 1
+		},
+		{
+			"speaker": "公主",
+			"text": "……温泉！还是热的！",
+			"emotion": "happy"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……（闻了闻自己的袖子）……水道的味道。"
+		},
+		{
+			"speaker": "公主",
+			"text": "……我也是。……从鼠洞到水道，我身上全是泥和老鼠的味道……",
+			"emotion": "sad"
+		},
+		{
+			"speaker": "挠脚鼠",
+			"text": "（探出头）吱？老鼠的味道怎么了。"
+		},
+		{
+			"speaker": "公主",
+			"text": "……洗一洗吧。就一会儿。",
+			"emotion": "shy"
+		},
+		{
+			"speaker": "",
+			"text": "（池边的架子上叠着一摞旧浴巾，居然还是软软的。两个人各裹了一条，坐到池边，把腿伸进了温水里）",
+			"act": 2
+		},
+		{
+			"speaker": "",
+			"text": "（温水一下子漫过了脚踝，暖意顺着腿一点一点往上爬。两个人同时长长地呼了一口气）",
+			"portrait": "bath_friendship"
+		},
+		{
+			"speaker": "公主",
+			"text": "……呼……好舒服……",
+			"emotion": "happy"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……嗯。"
+		},
+		{
+			"speaker": "公主",
+			"text": "……我说。……你一直在出口等我，等了多久？",
+			"emotion": "shy"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……不知道。……水声，响了很多遍。"
+		},
+		{
+			"speaker": "公主",
+			"text": "……笨蛋。",
+			"emotion": "shy"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……你才是。……被关起来，还钻老鼠洞。"
+		},
+		{
+			"speaker": "公主",
+			"text": "……嘿嘿。",
+			"emotion": "happy"
+		},
+		{
+			"speaker": "",
+			"text": "（粉色公主把头靠在了蓝色公主的肩膀上。蓝色公主僵了一下，没有躲开）"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……小时候。……好像，也这样泡过。"
+		},
+		{
+			"speaker": "公主",
+			"text": "……诶？",
+			"emotion": "surprise"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……不记得了。……只是觉得。"
+		},
+		{
+			"speaker": "公主",
+			"text": "……我也是。……总觉得，好像很久以前，也有人这样让我靠着。",
+			"emotion": "sad"
+		},
+		{
+			"speaker": "",
+			"text": "（两个人都没再说话。温泉的水声里，只有偶尔一两声狮子头的「咕嘟」）"
+		},
+		{
+			"speaker": "",
+			"text": "（……然后，粉色公主泡在水里的脚边，冒出了一个湿漉漉的小脑袋）",
+			"act": 3
+		},
+		{
+			"speaker": "挠脚鼠",
+			"text": "吱吱！我也要洗！"
+		},
+		{
+			"speaker": "公主",
+			"text": "你、你什么时候跳下去的——呀！",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "rat",
+					"zone": "sole",
+					"fx": "lines",
+					"repeat": 8,
+					"interval": 0.14,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"visual": "giggle",
+					"do": "pose"
+				}
+			],
+			"emotion": "giggle"
+		},
+		{
+			"speaker": "",
+			"text": "（挠脚鼠扒着她的脚，用湿漉漉的胡子在脚心上扫来扫去——「洗脚」洗得特别认真）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "rat",
+					"zone": "sole",
+					"fx": "lines",
+					"repeat": 12,
+					"interval": 0.12,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"visual": "helpless_1",
+					"do": "pose"
+				},
+				{
+					"do": "voice",
+					"state": "laugh"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "哈哈哈！不、不要这样洗——脚心——哈哈哈！",
+			"emotion": "helpless_1"
+		},
+		{
+			"speaker": "",
+			"text": "（她一蹬腿，「哗」地溅起一大片水花，全泼在了蓝色公主脸上）",
+			"actions": [
+				{
+					"sound": "puddle",
+					"volume": -2.0,
+					"do": "sfx"
+				},
+				{
+					"who": "blue",
+					"time": 0.3,
+					"do": "shake"
+				}
+			]
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……",
+			"actions": [
+				{
+					"who": "blue",
+					"visual": "normal",
+					"do": "pose"
+				}
+			]
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……噗。",
+			"actions": [
+				{
+					"who": "blue",
+					"visual": "giggle",
+					"do": "pose"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "你笑了！你刚才又笑了！",
+			"emotion": "happy"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……没有。……哈、哈哈……",
+			"actions": [
+				{
+					"who": "blue",
+					"by": "pants",
+					"zone": "thigh",
+					"fx": "hand",
+					"repeat": 6,
+					"interval": 0.18,
+					"do": "tickle"
+				},
+				{
+					"who": "blue",
+					"visual": "helpless_1",
+					"do": "pose"
+				}
+			]
+		},
+		{
+			"speaker": "",
+			"text": "（千手痒痒裤听见笑声也凑起了热闹，裤子里的手在浴巾底下揉了揉她的大腿——这下她再也绷不住了）",
+			"actions": [
+				{
+					"who": "blue",
+					"by": "pants",
+					"zone": "thigh",
+					"fx": "hand",
+					"repeat": 10,
+					"interval": 0.14,
+					"do": "tickle"
+				},
+				{
+					"who": "blue",
+					"visual": "helpless_2",
+					"do": "pose"
+				}
+			]
+		},
+		{
+			"speaker": "",
+			"text": "（两个人裹着浴巾，在温泉边笑得东倒西歪，水花溅得到处都是）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "rat",
+					"zone": "sole",
+					"fx": "lines",
+					"repeat": 10,
+					"interval": 0.12,
+					"do": "tickle"
+				},
+				{
+					"who": "blue",
+					"by": "pants",
+					"zone": "thigh",
+					"fx": "hand",
+					"repeat": 10,
+					"interval": 0.12,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"visual": "helpless_2",
+					"do": "pose"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "（星光「噗」地一下在温泉上炸开，把满池的热气都染成了粉色……哈啊……放出去了……泡着热水，好舒服……）",
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "flash"
+				},
+				{
+					"sound": "star_burst",
+					"do": "sfx"
+				},
+				{
+					"sound": "water_release",
+					"volume": -2.0,
+					"do": "sfx"
+				},
+				{
+					"who": "princess",
+					"time": 0.4,
+					"do": "shake"
+				},
+				{
+					"state": "laugh",
+					"do": "voice"
+				}
+			],
+			"act": "burst",
+			"wait": 1.0
+		},
+		{
+			"speaker": "",
+			"text": "（挠脚鼠被星光吹得翻了个跟头，又湿漉漉地爬回来，在刚释放完、软乎乎的脚心上最后扫了一下——她「呀」地缩成了一团）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "rat",
+					"zone": "sole",
+					"fx": "lines",
+					"repeat": 6,
+					"interval": 0.15,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"time": 0.4,
+					"do": "shake"
+				},
+				{
+					"do": "pose",
+					"who": "princess",
+					"visual": "helpless_2"
+				}
+			]
+		},
+		{
+			"speaker": "挠脚鼠",
+			"text": "吱吱！洗得真干净！",
+			"act": 4
+		},
+		{
+			"speaker": "公主",
+			"text": "……哈……哈……洗是洗干净了……可是笑得好累……",
+			"actions": [
+				{
+					"who": "princess",
+					"visual": "helpless_1",
+					"do": "pose"
+				},
+				{
+					"who": "blue",
+					"visual": "helpless_1",
+					"do": "pose"
+				}
+			],
+			"emotion": "helpless_1"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……下次。……不带老鼠。"
+		},
+		{
+			"speaker": "公主",
+			"text": "……嗯。下次只有我们两个。",
+			"emotion": "happy"
+		},
+		{
+			"actions": [
+				{
+					"state": "",
+					"do": "voice"
+				},
+				{
+					"time": 0.6,
+					"do": "fade_out"
+				}
+			],
+			"wait": 0.7
+		}
+	]
+}
