@@ -1,0 +1,299 @@
+{
+	"name": "仆人回廊：帘子后面",
+	"cast": {
+		"princess": {
+			"kind": "princess",
+			"at": [
+				-14,
+				8
+			],
+			"visual": "normal",
+			"anim": "idle",
+			"dir": "right"
+		},
+		"blue": {
+			"kind": "npc:blue_princess",
+			"at": [
+				14,
+				8
+			],
+			"visual": "normal",
+			"anim": "idle",
+			"dir": "left"
+		},
+		"pants": {
+			"kind": "trap:hand",
+			"at": [
+				20,
+				10
+			]
+		},
+		"rat": {
+			"kind": "monster:rat",
+			"at": [
+				-26,
+				12
+			],
+			"dir": "right"
+		},
+		"maid": {
+			"kind": "npc:doll_maid",
+			"at": [
+				40,
+				-6
+			],
+			"dir": "left",
+			"hidden": true
+		}
+	},
+	"steps": [
+		{
+			"act": 1,
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "fade_in"
+				},
+				{
+					"state": "giggle",
+					"do": "voice"
+				}
+			],
+			"wait": 0.5
+		},
+		{
+			"speaker": "",
+			"text": "（两个人挤进了一面厚厚的丝绒帘子后面。帘子外，人偶女仆咔哒、咔哒地走了过来）",
+			"act": 1
+		},
+		{
+			"speaker": "公主",
+			"text": "（……别出声……等她走过去……）",
+			"emotion": "sad"
+		},
+		{
+			"speaker": "人偶女仆",
+			"text": "……巡、逻。……巡、逻。",
+			"actions": [
+				{
+					"who": "maid",
+					"to": [
+						24,
+						-6
+					],
+					"time": 1.0,
+					"do": "enter"
+				}
+			]
+		},
+		{
+			"speaker": "",
+			"text": "（就在这时候，蓝色公主腿上的千手痒痒裤，「蠕」地动了一下）",
+			"actions": [
+				{
+					"who": "blue",
+					"by": "pants",
+					"zone": "thigh",
+					"fx": "hand",
+					"repeat": 4,
+					"interval": 0.25,
+					"do": "tickle"
+				}
+			],
+			"act": 2
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "（……！……不、不是现在……）",
+			"actions": [
+				{
+					"who": "blue",
+					"visual": "giggle",
+					"do": "pose"
+				}
+			]
+		},
+		{
+			"speaker": "",
+			"text": "（裤子里的手像是知道现在不能出声，偏偏挑这个时候，在大腿内侧一圈一圈地揉）",
+			"actions": [
+				{
+					"who": "blue",
+					"by": "pants",
+					"zone": "thigh",
+					"fx": "hand",
+					"repeat": 10,
+					"interval": 0.15,
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "（……唔……唔唔……）",
+			"actions": [
+				{
+					"who": "blue",
+					"visual": "helpless_1",
+					"do": "pose"
+				},
+				{
+					"do": "voice",
+					"state": "laugh"
+				}
+			],
+			"portrait": "servants_hide"
+		},
+		{
+			"speaker": "",
+			"text": "（她两只手死死捂着嘴，眼泪都憋出来了，肩膀一抖一抖。帘子跟着她一起，轻轻地晃）"
+		},
+		{
+			"speaker": "人偶女仆",
+			"text": "……帘、子……在动？",
+			"actions": [
+				{
+					"who": "maid",
+					"to": [
+						18,
+						-6
+					],
+					"time": 0.6,
+					"do": "move"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "（……糟了……再这样下去，两个人都会被发现……）",
+			"emotion": "sad"
+		},
+		{
+			"speaker": "公主",
+			"text": "（小声）……你在这里待着。我去把她引开。",
+			"emotion": "angry",
+			"act": 3
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "（……！……可是……）"
+		},
+		{
+			"speaker": "公主",
+			"text": "（小声）放心。……我有挠脚鼠。",
+			"emotion": "happy"
+		},
+		{
+			"speaker": "挠脚鼠",
+			"text": "（小声）吱。……终于轮到我上场了。"
+		},
+		{
+			"speaker": "",
+			"text": "（粉色公主从帘子另一头悄悄钻出去，故意踢了一下墙角的铁桶——「哐当」）",
+			"actions": [
+				{
+					"sound": "gate",
+					"volume": -2.0,
+					"do": "sfx"
+				}
+			]
+		},
+		{
+			"speaker": "人偶女仆",
+			"text": "……那、边。……灰尘。",
+			"actions": [
+				{
+					"who": "maid",
+					"to": [
+						60,
+						-6
+					],
+					"time": 0.8,
+					"do": "move"
+				}
+			]
+		},
+		{
+			"speaker": "",
+			"text": "（人偶女仆咔哒咔哒地追了过去。粉色公主一边跑一边回头冲她做鬼脸，鼠爪鞋踩得啪嗒啪嗒响）"
+		},
+		{
+			"speaker": "",
+			"text": "（帘子后面，蓝色公主终于松开手，捂着肚子，无声地笑了好一会儿）",
+			"actions": [
+				{
+					"who": "blue",
+					"by": "pants",
+					"zone": "thigh",
+					"fx": "hand",
+					"repeat": 8,
+					"interval": 0.15,
+					"do": "tickle"
+				},
+				{
+					"who": "blue",
+					"visual": "helpless_2",
+					"do": "pose"
+				}
+			]
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……哈……哈……（小声）……笨蛋。……跑那么快。"
+		},
+		{
+			"speaker": "",
+			"text": "（过了好一阵，帘子外传来啪嗒啪嗒的脚步声。粉色公主喘着气钻了回来，头发上还沾着一根鸡毛）",
+			"actions": [
+				{
+					"who": "blue",
+					"visual": "helpless_1",
+					"do": "pose"
+				}
+			],
+			"act": 4
+		},
+		{
+			"speaker": "公主",
+			"text": "……甩、甩掉了。……她在储藏间里转圈呢。",
+			"emotion": "happy"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……",
+			"actions": [
+				{
+					"who": "blue",
+					"visual": "normal",
+					"do": "pose"
+				}
+			]
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……谢谢。"
+		},
+		{
+			"speaker": "公主",
+			"text": "……嘿嘿。下次换你引开，我来憋笑。",
+			"emotion": "happy"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……（小声）……好。"
+		},
+		{
+			"actions": [
+				{
+					"state": "",
+					"do": "voice"
+				},
+				{
+					"time": 0.6,
+					"do": "fade_out"
+				}
+			],
+			"wait": 0.7
+		}
+	]
+}

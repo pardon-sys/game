@@ -267,6 +267,129 @@ static func run(t: Node) -> void:
 	await t._advance_until(func(): return Cutscene.chapter_screen.visible and Cutscene.chapter_title.text.contains("废弃水道") and not Cutscene.is_playing(), 180.0)
 	verify(t, "三个阀门都关上：被困住、踩着肩膀爬上去 → 旧王宫的走廊 → 「第三章　废弃水道　完」（%s）、鼠鼠装还穿着" % Cutscene.chapter_title.text,
 		GameState.has_flag("cg_seen_theater:keeper_win") and GameState.has_flag(SluiceKeeper.DONE_FLAG) and Cutscene.chapter_title.text.contains("废弃水道") and PenanceCell.wearing_mouse())
+	verify(t, "第三章章末接旧王宫·旧浴场（%s）" % Cutscene.chapter_next, Cutscene.chapter_next == "floor_06_palace_bath")
+	# ---- 第四章（上）：旧浴场
+	for f in ["intro_done_palace_bath_in", PalaceBath.KEY_FLAG, "cg_seen_theater:bath_pool", "cg_seen_theater:bath_friendship",
+			"intro_done_palace_servants_in", PalaceServants.KEY_FLAG, "cg_seen_theater:servants_hide", "cg_seen_theater:servants_caught_first",
+			"intro_done_palace_kitchen_in", "cg_seen_theater:kitchen_promoter", "cg_seen_theater:kitchen_farewell", PalaceKitchen.FAREWELL_FLAG,
+			PalaceKitchen.PAID_FLAG, PalaceKitchen.END_FLAG]:
+		GameState.set_flag(f, false)
+	Cutscene.continue_chapter()
+	await t._advance_until(func(): return t._level_id() == "floor_06_palace_bath" and not Cutscene.is_playing() and t.seen_cuts.has("palace_bath_in"), 60.0)
+	var pb := _room(t, "PalaceBath") as PalaceBath
+	await t.get_tree().process_frame
+	verify(t, "旧王宫·旧浴场：开场、两人同行、鼠鼠装还穿着", pb != null and Duo.active and PenanceCell.wearing_mouse())
+	var bp := GameState.player as PlayableCharacter
+	bp.global_position = Cutscene.cell_to_world(pb.cells("steam")[5])
+	pb._process(0.1)
+	verify(t, "走进蒸汽：四周起雾", pb.fog_on)
+	# 肥皂泡地板：往西滑 → 掉进泡泡浴池 → 小剧场
+	var soap: Array[Vector2i] = pb.cells("soap")
+	var west := soap[0]
+	for c in soap:
+		if c.x < west.x or (c.x == west.x and c.y == 18):
+			west = c
+	bp.global_position = Cutscene.cell_to_world(Vector2i(west.x + 3, 18))
+	bp.velocity = Vector2(-60, 0)
+	pb._tick_soap(bp, 0.05)
+	verify(t, "踩上肥皂泡地板：顺着进来的方向滑（%s）" % [pb.slide_dir.get(bp, Vector2.ZERO)], pb.slide_dir.get(bp, Vector2.ZERO) == Vector2.LEFT)
+	for i in 60:
+		if CG.is_busy():
+			break
+		pb._tick_soap(bp, 0.05)
+	await t._advance_until(func(): return GameState.has_flag("cg_seen_theater:bath_pool") and not CG.is_busy() and not Dialogue.is_active(), 120.0)
+	verify(t, "往西滑出去：掉进泡泡浴池（小剧场）", GameState.has_flag("cg_seen_theater:bath_pool"))
+	# 雕像钥匙 / 湿毛巾怪
+	var ks: PalaceBath.Statue = null
+	for st in pb.statues:
+		if (st as PalaceBath.Statue).key:
+			ks = st
+	bp.global_position = ks.position + Vector2(0, 8)
+	bp._set_state(PlayableCharacter.State.ATTACK)
+	ks.step(0.05)
+	verify(t, "攻击那尊雕像：碎了，掉出钥匙（东门能开了）", GameState.has_flag(PalaceBath.KEY_FLAG) and ks.broken)
+	bp._set_state(PlayableCharacter.State.IDLE)
+	var tw := pb.towels[0] as PalaceBath.Towel
+	bp.global_position = tw.position + Vector2(6, 0)
+	tw._cool = 0.0
+	tw.step(0.05)
+	verify(t, "湿毛巾怪碰到人：缠住腿（定身）", bp.status.is_rooted())
+	bp.status.clear_root()
+	# 温泉：两个人一起泡（CG）
+	bp.global_position = Cutscene.cell_to_world(pb.cells("bath")[0])
+	await t._advance_until(func(): return GameState.has_flag("cg_seen_theater:bath_friendship") and not CG.is_busy() and not Dialogue.is_active(), 180.0)
+	verify(t, "走到温泉：两个人一起泡温泉的小剧场（CG、友情、挠脚鼠来捣乱）", GameState.has_flag("cg_seen_theater:bath_friendship"))
+	# ---- 仆人回廊（潜入）
+	GameState.pending_spawn = "from_bath"
+	await t.main.change_level(Floors.scene("floor_06_palace_servants"))
+	await t._advance_until(func(): return t._level_id() == "floor_06_palace_servants" and not Cutscene.is_playing() and t.seen_cuts.has("palace_servants_in"), 60.0)
+	var ps := _room(t, "PalaceServants") as PalaceServants
+	await t.get_tree().process_frame
+	var sd := StealthDirector.current
+	var maids := t.get_tree().get_nodes_in_group("patrol_guard").size()
+	verify(t, "仆人回廊：潜入（人偶女仆 %d 个，被发现交给 palace）" % maids, ps != null and sd != null and sd.on_caught == "palace" and maids >= 5)
+	var sp := GameState.player as PlayableCharacter
+	# 尘土堆：打喷嚏
+	sp.global_position = Cutscene.cell_to_world(ps.cells("dust")[0])
+	sp.velocity = Vector2(40, 0)
+	ps._process(0.1)
+	verify(t, "走过尘土堆：打喷嚏（声音会引来人偶）", not ps.dust_t.is_empty() and ps.dust_t.values().any(func(v): return float(v) > 0.0))
+	# 躲藏点：千手裤发作，粉色公主去引开（CG）
+	var dummy := Node2D.new()
+	t.get_tree().current_scene.add_child(dummy)
+	dummy.global_position = Cutscene.cell_to_world(ps.cells("hide_event")[0])
+	sd.hidden_in = dummy
+	ps._process(0.1)
+	sd.hidden_in = null
+	await t._advance_until(func(): return GameState.has_flag("cg_seen_theater:servants_hide") and not CG.is_busy() and not Dialogue.is_active(), 180.0)
+	dummy.queue_free()
+	verify(t, "躲进那个帘子后面：千手裤发作、粉色公主自告奋勇去引开女仆（CG 剧情）", GameState.has_flag("cg_seen_theater:servants_hide"))
+	# 被发现 → 小剧场 → 回入口
+	ps.caught()
+	await t._advance_until(func(): return GameState.has_flag("cg_seen_theater:servants_caught_first") and not CG.is_busy() and not Dialogue.is_active() and not ps._defeat_busy, 120.0)
+	verify(t, "被人偶女仆发现：按在地上用掸子「打扫」的小剧场 → 回入口", GameState.has_flag("cg_seen_theater:servants_caught_first")
+		and sp.global_position.distance_to(Cutscene.cell_to_world(ps.cells("start")[0])) < 2.0)
+	# 唤人铃 → 拿钥匙
+	var lured := ps.ring_bell()
+	ps.take_key()
+	verify(t, "拉唤人铃：女仆长过去查看（%d 个）→ 拿到钥匙" % lured, lured >= 1 and GameState.has_flag(PalaceServants.KEY_FLAG))
+	# ---- 厨房
+	GameState.pending_spawn = "from_servants"
+	await t.main.change_level(Floors.scene("floor_06_palace_kitchen"))
+	await t._advance_until(func(): return t._level_id() == "floor_06_palace_kitchen" and not Cutscene.is_playing() and t.seen_cuts.has("palace_kitchen_in"), 60.0)
+	var kr := _room(t, "PalaceKitchen") as PalaceKitchen
+	await t.get_tree().process_frame
+	var kp2 := GameState.player as PlayableCharacter
+	kp2.global_position = Cutscene.cell_to_world(kr.cells("cream")[0])
+	kr._process(0.1)
+	verify(t, "踩到奶油：脚底变甜（老鼠会追）", kr.sweet.has(kp2))
+	kp2.global_position = Cutscene.cell_to_world(kr.cells("sink")[0])
+	kr._process(0.1)
+	verify(t, "去水槽：洗掉了", not kr.sweet.has(kp2))
+	var ice: Vector2i = kr.cells("ice")[3]
+	kp2.global_position = Cutscene.cell_to_world(ice)
+	var x0 := kp2.global_position.x
+	kr._process(0.2)
+	verify(t, "冰窖滑道：站上去往东滑（%.0f → %.0f）" % [x0, kp2.global_position.x], kp2.global_position.x > x0 + 10.0)
+	var mints0 := GameState.inventory.count("mint")
+	await t._talk("floor_06/kitchen_booth", "", [0])
+	await t._advance_until(func(): return GameState.has_flag("cg_seen_theater:kitchen_promoter") and GameState.has_flag(PalaceKitchen.PAID_FLAG) and not CG.is_busy() and not Dialogue.is_active(), 150.0)
+	verify(t, "当试吃推销员（身上放食物让动物吃）→ 拿到薄荷糖 ×%d" % (GameState.inventory.count("mint") - mints0), GameState.inventory.count("mint") - mints0 == PalaceKitchen.MINTS)
+	# 大奶酪：挠脚鼠告别，脱下鼠鼠装
+	kp2.global_position = Cutscene.cell_to_world(kr.cells("cheese")[0])
+	await t._advance_until(func(): return GameState.has_flag("cg_seen_theater:kitchen_farewell") and not CG.is_busy() and not Dialogue.is_active(), 180.0)
+	kr._process(0.1)
+	verify(t, "储藏间的大奶酪：挠脚鼠告别 → 脱下鼠鼠装、换回原来的装备", PalaceKitchen.farewell_done() and not PenanceCell.wearing_mouse())
+	kp2.global_position = Cutscene.cell_to_world(kr.cells("north")[0])
+	await t._advance_until(func(): return Cutscene.chapter_screen.visible and Cutscene.chapter_title.text.contains("旧王宫") and not Cutscene.is_playing(), 60.0)
+	verify(t, "北门：图书馆的门口 →「第四章　旧王宫（上）」（%s）" % Cutscene.chapter_title.text, Cutscene.chapter_title.text.contains("旧王宫"))
 	Cutscene.chapter_screen.hide()
 	Cutscene.chapter_next = ""
-	PenanceCell.take_off_mouse()
+
+
+static func _room(t: Node, cls: String) -> Node:
+	for nd in t.get_tree().root.find_children("*", "", true, false):
+		if nd.get_script() and str(nd.get_script().get_global_name()) == cls:
+			return nd
+	return null
+

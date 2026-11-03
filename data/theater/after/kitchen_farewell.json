@@ -1,0 +1,323 @@
+{
+	"name": "厨房：挠脚鼠的告别",
+	"cast": {
+		"princess": {
+			"kind": "princess",
+			"at": [
+				-14,
+				8
+			],
+			"visual": "normal",
+			"anim": "idle",
+			"dir": "right"
+		},
+		"blue": {
+			"kind": "npc:blue_princess",
+			"at": [
+				14,
+				8
+			],
+			"visual": "normal",
+			"anim": "idle",
+			"dir": "left"
+		},
+		"pants": {
+			"kind": "trap:hand",
+			"at": [
+				20,
+				10
+			]
+		},
+		"rat": {
+			"kind": "monster:rat",
+			"at": [
+				-26,
+				12
+			],
+			"dir": "right"
+		},
+		"cheese": {
+			"kind": "trap:trophy_chest",
+			"at": [
+				0,
+				-8
+			]
+		}
+	},
+	"steps": [
+		{
+			"act": 1,
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "fade_in"
+				},
+				{
+					"state": "giggle",
+					"do": "voice"
+				}
+			],
+			"wait": 0.5
+		},
+		{
+			"speaker": "",
+			"text": "（储藏间的最里面，有一块比人还大的奶酪。几百年了，居然还香喷喷的）",
+			"act": 1
+		},
+		{
+			"speaker": "挠脚鼠",
+			"text": "（从短裤里窜出来，扑到奶酪上）吱——！！！奶酪！！！这么大的奶酪！！！"
+		},
+		{
+			"speaker": "公主",
+			"text": "……你的眼睛在发光。",
+			"emotion": "question"
+		},
+		{
+			"speaker": "挠脚鼠",
+			"text": "……公主。我决定了。我要住在这里。"
+		},
+		{
+			"speaker": "公主",
+			"text": "……诶？",
+			"emotion": "surprise"
+		},
+		{
+			"speaker": "挠脚鼠",
+			"text": "这块奶酪，够我吃一辈子了。……而且，这里是王宫。挖那条洞的小姑娘，说不定以前就住在这里。"
+		},
+		{
+			"speaker": "公主",
+			"text": "……这样啊。……那，鼠鼠短裤和鼠爪鞋……",
+			"emotion": "sad"
+		},
+		{
+			"speaker": "挠脚鼠",
+			"text": "吱。报酬付清了。还给你原来的样子。……不过走之前——",
+			"act": 2
+		},
+		{
+			"speaker": "公主",
+			"text": "……「不过走之前」……我有不好的预感……",
+			"emotion": "sad"
+		},
+		{
+			"speaker": "挠脚鼠",
+			"text": "告别仪式！挠脚鼠一族送别人，要把一路走过的地方都再挠一遍！"
+		},
+		{
+			"speaker": "",
+			"text": "（它「嗖」地钻回短裤里——先是大腿根，那是鼠洞里那道低矮的缝）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "rat",
+					"zone": "thigh",
+					"fx": "hand",
+					"repeat": 8,
+					"interval": 0.14,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"visual": "giggle",
+					"do": "pose"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "噫——！又、又来——！",
+			"emotion": "giggle"
+		},
+		{
+			"speaker": "",
+			"text": "（然后是脚心和趾缝，那是卡住的窄缝，一个缝一个缝地闻过去）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "rat",
+					"zone": "sole",
+					"fx": "lines",
+					"repeat": 10,
+					"interval": 0.13,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"visual": "helpless_1",
+					"do": "pose"
+				},
+				{
+					"do": "voice",
+					"state": "laugh"
+				}
+			]
+		},
+		{
+			"speaker": "挠脚鼠",
+			"text": "小脚趾那个缝，还是最香。吱吱。"
+		},
+		{
+			"speaker": "公主",
+			"text": "哈哈哈！别、别闻了——！",
+			"emotion": "helpless_1",
+			"act": 3
+		},
+		{
+			"speaker": "",
+			"text": "（再然后，从脚底一路窜到腰上，又从腰上窜回脚底——那是竖井。一趟，两趟，三趟）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "rat",
+					"zone": "sole",
+					"fx": "lines",
+					"repeat": 8,
+					"interval": 0.12,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"by": "rat",
+					"zone": "waist",
+					"fx": "hand",
+					"repeat": 8,
+					"interval": 0.12,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"visual": "helpless_2",
+					"do": "pose"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "哈哈哈哈！上上下下——又来了——哈哈哈！",
+			"emotion": "helpless_2"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……（在旁边看着）……噗。",
+			"actions": [
+				{
+					"who": "blue",
+					"visual": "giggle",
+					"do": "pose"
+				}
+			]
+		},
+		{
+			"speaker": "",
+			"text": "（听见蓝色公主的笑声，千手痒痒裤也来凑热闹——这下两个人一起笑倒在了奶酪旁边）",
+			"actions": [
+				{
+					"who": "blue",
+					"by": "pants",
+					"zone": "thigh",
+					"fx": "hand",
+					"repeat": 10,
+					"interval": 0.12,
+					"do": "tickle"
+				},
+				{
+					"who": "blue",
+					"visual": "helpless_2",
+					"do": "pose"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "（星光炸开，奶酪上落了一层亮晶晶的星屑……哈啊……放出去了……）",
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "flash"
+				},
+				{
+					"sound": "star_burst",
+					"do": "sfx"
+				},
+				{
+					"sound": "water_release",
+					"volume": -2.0,
+					"do": "sfx"
+				},
+				{
+					"who": "princess",
+					"time": 0.4,
+					"do": "shake"
+				},
+				{
+					"state": "laugh",
+					"do": "voice"
+				}
+			],
+			"act": "burst",
+			"wait": 1.0
+		},
+		{
+			"speaker": "",
+			"text": "（星光散去的时候，鼠鼠短裤和鼠爪鞋化成一阵白烟，不见了。粉色公主又穿回了原来的裙子和袜子）",
+			"actions": [
+				{
+					"time": 0.4,
+					"do": "flash"
+				},
+				{
+					"who": "princess",
+					"visual": "helpless_1",
+					"do": "pose"
+				},
+				{
+					"who": "blue",
+					"visual": "helpless_1",
+					"do": "pose"
+				}
+			],
+			"act": 4
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……（把一双粉色的小鞋放在她面前）……一直替你拿着。"
+		},
+		{
+			"speaker": "公主",
+			"text": "……谢谢。",
+			"emotion": "happy"
+		},
+		{
+			"speaker": "",
+			"text": "（她穿上鞋，站起来，跺了跺脚。……好久没有这么踏实的感觉了）"
+		},
+		{
+			"speaker": "挠脚鼠",
+			"text": "（坐在奶酪顶上）吱。公主，你笑起来很好听。……别忘了，还有人在等你。"
+		},
+		{
+			"speaker": "公主",
+			"text": "……嗯。谢谢你，挠脚鼠。……虽然你挠了我一路。",
+			"emotion": "happy"
+		},
+		{
+			"speaker": "挠脚鼠",
+			"text": "吱吱。那是谢礼呀。"
+		},
+		{
+			"actions": [
+				{
+					"state": "",
+					"do": "voice"
+				},
+				{
+					"time": 0.6,
+					"do": "fade_out"
+				}
+			],
+			"wait": 0.7
+		}
+	]
+}

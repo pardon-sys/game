@@ -1,0 +1,31 @@
+{
+	"name": "旧排班表",
+	"entries": [
+		{
+			"node": "default"
+		}
+	],
+	"nodes": {
+		"default": {
+			"lines": [
+				{
+					"text": "（墙上钉着一张发黄的排班表）",
+					"speaker": ""
+				},
+				{
+					"text": "（「早：两位小殿下的洗脚水（温，加薄荷）。晚：给小殿下读故事，读到她们睡着为止」）",
+					"speaker": ""
+				},
+				{
+					"text": "……两位小殿下。",
+					"speaker": "公主",
+					"emotion": "surprise"
+				},
+				{
+					"text": "……两位。",
+					"speaker": "蓝色的公主"
+				}
+			]
+		}
+	}
+}

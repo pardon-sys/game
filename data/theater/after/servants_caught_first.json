@@ -1,0 +1,252 @@
+{
+	"name": "仆人回廊：被发现了",
+	"cast": {
+		"princess": {
+			"kind": "princess",
+			"at": [
+				-14,
+				8
+			],
+			"visual": "helpless_1",
+			"anim": "helpless",
+			"dir": "right"
+		},
+		"blue": {
+			"kind": "npc:blue_princess",
+			"at": [
+				14,
+				8
+			],
+			"visual": "helpless_1",
+			"anim": "helpless",
+			"dir": "left"
+		},
+		"pants": {
+			"kind": "trap:hand",
+			"at": [
+				20,
+				10
+			]
+		},
+		"rat": {
+			"kind": "monster:rat",
+			"at": [
+				-26,
+				12
+			],
+			"dir": "right"
+		},
+		"maid": {
+			"kind": "npc:doll_maid",
+			"at": [
+				0,
+				-4
+			],
+			"dir": "down"
+		}
+	},
+	"steps": [
+		{
+			"act": 1,
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "fade_in"
+				},
+				{
+					"state": "giggle",
+					"do": "voice"
+				}
+			],
+			"wait": 0.5
+		},
+		{
+			"speaker": "人偶女仆",
+			"text": "（玻璃眼珠「咔」地转了过来）……发现……灰尘……两、粒。",
+			"act": 1
+		},
+		{
+			"speaker": "公主",
+			"text": "我、我们不是灰尘——！",
+			"emotion": "surprise"
+		},
+		{
+			"speaker": "人偶女仆",
+			"text": "……打扫……开始。"
+		},
+		{
+			"speaker": "",
+			"text": "（人偶女仆的力气大得吓人。她一手一个，把两个人按在了地毯上，举起了手里的鸡毛掸子）",
+			"actions": [
+				{
+					"who": "princess",
+					"time": 0.4,
+					"do": "shake"
+				}
+			],
+			"act": 2
+		},
+		{
+			"speaker": "",
+			"text": "（掸子从粉色公主的脚底一路掸上去，又在蓝色公主的膝盖窝里掸了掸——一下一下，打扫得一丝不苟）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "maid",
+					"zone": "sole",
+					"fx": "feather",
+					"repeat": 10,
+					"interval": 0.15,
+					"do": "tickle"
+				},
+				{
+					"who": "blue",
+					"by": "maid",
+					"zone": "thigh",
+					"fx": "feather",
+					"repeat": 8,
+					"interval": 0.15,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"visual": "helpless_2",
+					"do": "pose"
+				},
+				{
+					"who": "blue",
+					"visual": "helpless_2",
+					"do": "pose"
+				},
+				{
+					"do": "voice",
+					"state": "laugh"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "哈哈哈！鸡、鸡毛掸子——脚底——哈哈哈！",
+			"emotion": "helpless_2"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……膝……膝盖窝……哈、哈哈……"
+		},
+		{
+			"speaker": "人偶女仆",
+			"text": "……灰尘……很、顽固。……加、强。",
+			"act": 3
+		},
+		{
+			"speaker": "",
+			"text": "（掸子换成了软毛刷，刷子换成了羽毛——人偶女仆一样一样地试，直到两个人笑得说不出话）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "maid",
+					"zone": "sole",
+					"fx": "feather",
+					"repeat": 14,
+					"interval": 0.1,
+					"do": "tickle"
+				},
+				{
+					"who": "blue",
+					"by": "maid",
+					"zone": "thigh",
+					"fx": "feather",
+					"repeat": 12,
+					"interval": 0.1,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"by": "rat",
+					"zone": "thigh",
+					"fx": "hand",
+					"repeat": 6,
+					"interval": 0.15,
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "（星光炸开，人偶女仆被吹得转了三圈……哈啊……放出去了……）",
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "flash"
+				},
+				{
+					"sound": "star_burst",
+					"do": "sfx"
+				},
+				{
+					"sound": "water_release",
+					"volume": -2.0,
+					"do": "sfx"
+				},
+				{
+					"who": "princess",
+					"time": 0.4,
+					"do": "shake"
+				},
+				{
+					"state": "laugh",
+					"do": "voice"
+				}
+			],
+			"act": "burst",
+			"wait": 1.0
+		},
+		{
+			"speaker": "人偶女仆",
+			"text": "……打扫……完毕。……垃、圾……送回……入口。",
+			"act": 4
+		},
+		{
+			"speaker": "",
+			"text": "（她把两个人一手一个拎起来，送回了回廊的入口，鞠了一躬，咔哒咔哒地走了）",
+			"actions": [
+				{
+					"who": "princess",
+					"visual": "helpless_1",
+					"do": "pose"
+				},
+				{
+					"who": "blue",
+					"visual": "helpless_1",
+					"do": "pose"
+				}
+			]
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……慢一点走。……躲进箱子。"
+		},
+		{
+			"speaker": "公主",
+			"text": "……还有，按 F，让挠脚鼠跑出去引开她们。",
+			"emotion": "sad"
+		},
+		{
+			"speaker": "挠脚鼠",
+			"text": "吱吱！包在我身上！"
+		},
+		{
+			"actions": [
+				{
+					"state": "",
+					"do": "voice"
+				},
+				{
+					"time": 0.6,
+					"do": "fade_out"
+				}
+			],
+			"wait": 0.7
+		}
+	]
+}

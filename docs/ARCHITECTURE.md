@@ -1287,6 +1287,15 @@ data/cutscenes/<楼层组>/  地图内过场；data/theater/<楼层组>/  小剧
 - **水闸守门人** `SluiceKeeper`（走进场地创建）：三个阀门（站上去关，两人快一倍；AI 去关最近的）；招式轮换 刷子臂横扫（预警带 danger 组）/ 泡泡弹幕 / 黑泥喷口，
   每关一个阀门放水淹场（石堆上安全）。输：`keeper_fail`（四幕 + CG `keeper_fail`）→ 复位；赢：`keeper_win`（闸门落下、踩着肩膀爬上去 → 旧王宫走廊）→ `waterway_end`
   （「第三章　废弃水道　完」，`next = floor_06_after_house`，第四章做好后改成旧王宫）。文本 `tools/build/penance_text/waterway.py`。
+- **第四章（上）·旧王宫**（等距 old_hall，配乐 `old_palace`；三张连通、来回都能走）：公共基类 `PalaceRoom`（Duo、检查点、两个都倒下 → `palace_down`、短台词 `data/after/palace.json`）。
+  - `PalaceBath`（`floor_06_palace_bath`）：蒸汽（`SteamFog` 四周白雾）+ 按顺序的笑声指路、肥皂泡地板一路滑（往西滑进泡泡浴池 → `bath_pool`）、湿毛巾怪（缠腿）、
+	雕像刷池（站 → 预警 → 弯腰刷；钥匙雕像攻击碎掉 → `palace_bath_key`，东门要钥匙）、起雾的镜子（线索）、温泉（`bath_friendship`，CG）。
+  - `PalaceServants`（`floor_06_palace_servants`）：复用潜入（`StealthDirector on_caught=palace` → `servants_caught(_first)` → 回入口；
+	`patrol_guard` 新参数 `sheet` / `doll` = 人偶女仆）；躲藏点 hide_event → `servants_hide`（CG，剧情）；尘土堆打喷嚏（noise）、扫帚、
+	F 丢出去的是挠脚鼠（穿着鼠鼠装时）、旧排班表 / 日记、唤人铃（call `palace_bell` → 女仆长去查看）→ 钥匙（call `palace_key`），厨房门要钥匙。
+  - `PalaceKitchen`（`floor_06_palace_kitchen`）：糕点师「试吃」（`kitchen_chef`）、试吃推销员（`kitchen_promoter` → 薄荷糖 ×3）、奶油（脚底变甜，老鼠追；水槽 call `palace_wash` 洗掉）、
+	冰窖滑道（往东滑 + 羽毛扇）、大奶酪（`kitchen_farewell`：挠脚鼠告别、`take_off_mouse`）、北门 → `palace_part1_end`（「第四章　旧王宫（上）」待续，`next = floor_06_after_house`）。
+  - 文本 `tools/build/penance_text/palace.py`；第三章章末 `next = floor_06_palace_bath`。
 - 配乐（`tools/audio/gen_music.py`，ElevenLabs）：`old_palace` 旧王宫探索（荒凉、破旧、往日的华丽）、`palace_boss` 王座间 Boss「封笑的女王画像」，登记在 `Audio.MUSIC`，第四章用。
 
 ## 公主状态与换美术素材

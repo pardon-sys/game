@@ -1,0 +1,307 @@
+{
+	"name": "厨房：试吃推销员",
+	"cast": {
+		"princess": {
+			"kind": "princess",
+			"at": [
+				-14,
+				8
+			],
+			"visual": "normal",
+			"anim": "idle",
+			"dir": "right"
+		},
+		"blue": {
+			"kind": "npc:blue_princess",
+			"at": [
+				14,
+				8
+			],
+			"visual": "normal",
+			"anim": "idle",
+			"dir": "left"
+		},
+		"pants": {
+			"kind": "trap:hand",
+			"at": [
+				20,
+				10
+			]
+		},
+		"rat": {
+			"kind": "monster:rat",
+			"at": [
+				-26,
+				12
+			],
+			"dir": "right"
+		},
+		"mice": {
+			"kind": "monster:rat",
+			"at": [
+				-20,
+				14
+			],
+			"dir": "right"
+		},
+		"cat": {
+			"kind": "trap:cat_guard",
+			"at": [
+				22,
+				14
+			]
+		}
+	},
+	"steps": [
+		{
+			"act": 1,
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "fade_in"
+				},
+				{
+					"state": "giggle",
+					"do": "voice"
+				}
+			],
+			"wait": 0.5
+		},
+		{
+			"speaker": "",
+			"text": "（小摊的木牌上写着褪色的字：「试吃推销员招募中。报酬：薄荷糖一罐」）",
+			"act": 1
+		},
+		{
+			"speaker": "公主",
+			"text": "薄荷糖！含着就能憋住笑的那种！",
+			"emotion": "happy"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……推销员。……要做什么。"
+		},
+		{
+			"speaker": "",
+			"text": "（摊子后面的人偶递来两条围裙，还有一托盘小点心：饼干屑、奶酪丁、小鱼干、蜂蜜）"
+		},
+		{
+			"speaker": "糕点师人偶",
+			"text": "……把、试吃品……放在、身上。……让客人……品尝。"
+		},
+		{
+			"speaker": "公主",
+			"text": "……客人是谁？",
+			"emotion": "question"
+		},
+		{
+			"speaker": "",
+			"text": "（客人来了。厨房各个角落里，小老鼠、一只肥猫、还有几只不知道从哪里冒出来的小鸟，齐刷刷地看着她们）",
+			"act": 2
+		},
+		{
+			"speaker": "",
+			"text": "（饼干屑撒在粉色公主的脚背上，奶酪丁放在脚趾缝里；小鱼干搁在蓝色公主的膝盖上，蜂蜜抹了一点点在脚心）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "mice",
+					"zone": "sole",
+					"fx": "lines",
+					"repeat": 6,
+					"interval": 0.2,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"visual": "giggle",
+					"do": "pose"
+				},
+				{
+					"who": "blue",
+					"visual": "giggle",
+					"do": "pose"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "嘻……好、好多客人……一起来……",
+			"emotion": "giggle"
+		},
+		{
+			"speaker": "",
+			"text": "（小老鼠们抢着啃脚趾缝里的奶酪，小鸟啄着脚背上的饼干屑；肥猫跳上蓝色公主的膝盖，叼走小鱼干，顺便舔了一口脚心上的蜂蜜）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "mice",
+					"zone": "sole",
+					"fx": "lines",
+					"repeat": 12,
+					"interval": 0.12,
+					"do": "tickle"
+				},
+				{
+					"who": "blue",
+					"by": "cat",
+					"zone": "sole",
+					"fx": "lines",
+					"repeat": 10,
+					"interval": 0.12,
+					"do": "tickle"
+				}
+			],
+			"act": 3
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……猫、猫舌头……粗……哈、哈哈……",
+			"actions": [
+				{
+					"who": "blue",
+					"visual": "helpless_1",
+					"do": "pose"
+				},
+				{
+					"do": "voice",
+					"state": "laugh"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "哈哈哈！小鸟啄——老鼠啃——不、不要一起——！",
+			"actions": [
+				{
+					"who": "princess",
+					"visual": "helpless_1",
+					"do": "pose"
+				}
+			],
+			"emotion": "helpless_1"
+		},
+		{
+			"speaker": "糕点师人偶",
+			"text": "……推销、口号。……「好吃、请买」。"
+		},
+		{
+			"speaker": "公主",
+			"text": "好、好吃……请买……哈哈哈……！",
+			"emotion": "helpless_2"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……好……吃……请……哈哈……买……",
+			"actions": [
+				{
+					"who": "blue",
+					"visual": "helpless_2",
+					"do": "pose"
+				}
+			]
+		},
+		{
+			"speaker": "",
+			"text": "（客人越来越多。等托盘上的试吃品全被吃完，两个人已经笑得瘫在了摊子上）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "mice",
+					"zone": "sole",
+					"fx": "lines",
+					"repeat": 12,
+					"interval": 0.1,
+					"do": "tickle"
+				},
+				{
+					"who": "blue",
+					"by": "cat",
+					"zone": "sole",
+					"fx": "lines",
+					"repeat": 12,
+					"interval": 0.1,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"visual": "helpless_2",
+					"do": "pose"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "（星光一闪，客人们一哄而散……哈啊……放出去了……）",
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "flash"
+				},
+				{
+					"sound": "star_burst",
+					"do": "sfx"
+				},
+				{
+					"sound": "water_release",
+					"volume": -2.0,
+					"do": "sfx"
+				},
+				{
+					"who": "princess",
+					"time": 0.4,
+					"do": "shake"
+				},
+				{
+					"state": "laugh",
+					"do": "voice"
+				}
+			],
+			"act": "burst",
+			"wait": 1.0
+		},
+		{
+			"speaker": "糕点师人偶",
+			"text": "……推销、成功。……报、酬。",
+			"act": 4
+		},
+		{
+			"speaker": "",
+			"text": "（人偶递过来一个小罐子。打开一看，里面是一颗颗凉丝丝的薄荷糖）",
+			"actions": [
+				{
+					"who": "princess",
+					"visual": "helpless_1",
+					"do": "pose"
+				},
+				{
+					"who": "blue",
+					"visual": "helpless_1",
+					"do": "pose"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "……薄荷糖……拿到了……用笑换来的……",
+			"emotion": "helpless_1"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……省着用。"
+		},
+		{
+			"actions": [
+				{
+					"state": "",
+					"do": "voice"
+				},
+				{
+					"time": 0.6,
+					"do": "fade_out"
+				}
+			],
+			"wait": 0.7
+		}
+	]
+}

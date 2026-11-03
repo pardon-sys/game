@@ -168,6 +168,10 @@ func throw_stone() -> bool:
 	stone.name = "Stone"
 	stone.texture = Fx.PARTICLES["chip"]
 	stone.modulate = Color(0.75, 0.72, 0.7)
+	# 穿着鼠鼠装（反省篇）：丢出去的是挠脚鼠——它跑过去吱吱叫，把守卫 / 人偶引开
+	if p is PlayableCharacter and Equipment.outfit((p as PlayableCharacter).character_id) == "mouse":
+		stone.modulate = Color(0.7, 0.7, 0.78)
+		SpeechBubble.say(p, "挠脚鼠，去！", 28.0, 1.2)
 	stone.scale = Vector2(2, 2)
 	stone.z_index = 5
 	get_parent().add_child(stone)
@@ -289,6 +293,8 @@ func _caught(by: Node) -> void:
 	match on_caught:
 		"f6":
 			F6Story.on_caught()
+		"palace":
+			PalaceServants.on_caught_static()
 
 
 func _build_hud() -> void:

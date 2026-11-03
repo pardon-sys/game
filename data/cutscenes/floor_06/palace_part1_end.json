@@ -1,0 +1,40 @@
+{
+	"name": "图书馆的门",
+	"letterbox": true,
+	"skippable": false,
+	"steps": [
+		{
+			"speaker": "",
+			"text": "（北门后面，倒下的书架堆成了一座小山。书页从缝里散出来，落了一地）"
+		},
+		{
+			"speaker": "公主",
+			"text": "……图书馆？",
+			"emotion": "surprise"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……王国的书。……说不定，有那天晚上的事。"
+		},
+		{
+			"actions": [
+				{
+					"time": 1.0,
+					"do": "fade_out"
+				}
+			],
+			"wait": 1.0
+		},
+		{
+			"actions": [
+				{
+					"title": "第四章　旧王宫（上）",
+					"subtitle": "——（待续）书页上，写着两个小殿下的名字",
+					"next": "floor_06_after_house",
+					"do": "chapter_end"
+				}
+			],
+			"wait": 1.4
+		}
+	]
+}

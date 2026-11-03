@@ -78,6 +78,9 @@ const SCENES := {
 	"rattunnel": "res://levels/floor_06/scenes/rat_tunnel.tscn",
 	"meetexit": "res://levels/floor_06/scenes/meet_exit.tscn",
 	"waterwaydir": "res://levels/floor_06/scenes/waterway_director.tscn",
+	"palacebath": "res://levels/floor_06/scenes/palace_bath.tscn",
+	"palaceservants": "res://levels/floor_06/scenes/palace_servants.tscn",
+	"palacekitchen": "res://levels/floor_06/scenes/palace_kitchen.tscn",
 	# 小镇攻防战（scripts/siege/）
 	"siege": "res://scenes/siege/siege_director.tscn",
 	"siegewall": "res://scenes/siege/siege_wall.tscn",

@@ -9,6 +9,9 @@ const SHEET := "res://assets/generated/npcs/guard.png"
 const DIR_ROW := {"down": 0, "left": 1, "right": 2, "up": 3}
 
 @export var path := ""
+## 换外观：别的 NPC 图集（同样 4x4 格，例如旧王宫的人偶女仆 = npcs/maid.png）；doll = true 时整个人偏苍白（人偶）
+@export var sheet := ""
+@export var doll := false
 @export var loop := false
 @export var wait := 1.2
 @export var speed := 34.0
@@ -43,10 +46,13 @@ func _ready() -> void:
 	cone.angle_deg = view_angle
 	add_child(cone)
 	sprite = Sprite2D.new()
-	if ResourceLoader.exists(SHEET):
-		sprite.texture = load(SHEET)
+	var sheet_path := sheet if sheet != "" and ResourceLoader.exists(sheet) else SHEET
+	if ResourceLoader.exists(sheet_path):
+		sprite.texture = load(sheet_path)
 		sprite.hframes = 4
 		sprite.vframes = 4
+	if doll:
+		sprite.modulate = Color(0.92, 0.9, 1.0)
 	sprite.offset = Vector2(0, -14)
 	add_child(sprite)
 	for part in path.split(";", false):

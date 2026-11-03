@@ -178,7 +178,7 @@ def keeper_intro():
 def waterway_end():
     s = [
         {"actions": [A("fade_out", time=1.0)], "wait": 1.0},
-        {"actions": [A("chapter_end", title="第三章　废弃水道　完", subtitle="——褪色的红地毯，一直铺到看不见的地方", next="floor_06_after_house")], "wait": 1.4},
+        {"actions": [A("chapter_end", title="第三章　废弃水道　完", subtitle="——褪色的红地毯，一直铺到看不见的地方", next="floor_06_palace_bath")], "wait": 1.4},
     ]
     return {"name": "旧王宫", "letterbox": True, "skippable": False, "steps": s}
 

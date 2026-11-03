@@ -166,6 +166,12 @@ MARKS = {
     "floor_06_after_warehouse": {"R": "parts", "H": "hands", "C": "covers"},
     "floor_06_knight_storage": {"V": "brush_down", "A": "brush_up", "D": "doll"},
     "floor_06_knight_bridge": {"H": "hands", "E": "end"},
+    "floor_06_palace_bath": {"V": "steam", "H": "laughs", "Q": "bubble_pool", "Y": "soap", "W": "towels", "M": "mirror", "T": "statues",
+                             "J": "key_statue", "O": "pool", "B": "bath", "G": "door", "X": "east"},
+    "floor_06_palace_servants": {"U": "hides", "Y": "west", "X": "east", "C": "clues", "S": "hide_event", "D": "dust", "Z": "brooms", "B": "head_maid",
+                                 "K": "key", "L": "bell"},
+    "floor_06_palace_kitchen": {"X": "west", "N": "north", "A": "chef", "T": "booth", "Y": "cream", "S": "sink", "Z": "rats", "I": "ice",
+                                "F": "fans", "K": "cheese"},
     "floor_06_waterway": {"L": "lions", "D": "deep", "O": "logs", "G": "wheels", "U": "grate", "S": "shallow", "F": "fountain",
                           "M": "mud", "Z": "foes", "C": "checkpoints", "A": "arena", "K": "keeper", "V": "valves", "R": "rocks",
                           "N": "nozzles", "E": "end"},
@@ -302,6 +308,127 @@ def _waterway():
 
 
 LAYOUTS["floor_06_waterway"] = _waterway()
+
+
+def _canvas(w, h):
+    g = [["#"] * w for _ in range(h)]
+
+    def room(x0, y0, x1, y1, ch="."):
+        for y in range(y0, y1 + 1):
+            for x in range(x0, x1 + 1):
+                g[y][x] = ch
+
+    def put(x, y, ch):
+        g[y][x] = ch
+
+    return g, room, put
+
+
+def _palace_bath():
+    """第四章①·旧浴场（王宫入口）：从水闸上面的缝掉进来（P）→ 西边一大片蒸汽迷宫（V 蒸汽格；H 远处的笑声，跟着走）
+    → 中间的大浴室：肥皂泡滑地板（Y，踩上去一路滑；旁边 Q 泡泡浴池，滑进去就是小剧场）、湿毛巾怪（W）、起雾的镜子（M 线索）
+    → 东边的雕像刷池：池边一排雕像（T，按节奏弯腰刷脚底；J 那一尊打碎掉钥匙）→ 南边温泉池（O 水；B 两人一起洗澡的小剧场 + CG）
+    → 东墙锁着的门（G，钥匙开）→ 出口 X（仆人回廊）。"""
+    g, room, put = _canvas(72, 36)
+    room(2, 2, 6, 5)                       # 掉进来的角落
+    # 蒸汽迷宫（一格宽的弯路）
+    for (x0, y0, x1, y1) in ((6, 4, 20, 4), (20, 4, 20, 10), (8, 10, 20, 10), (8, 10, 8, 18), (8, 18, 22, 18), (14, 12, 14, 18),
+                             (22, 18, 22, 24), (4, 24, 22, 24), (4, 14, 4, 24), (12, 6, 12, 10), (14, 13, 16, 13), (16, 13, 16, 16), (22, 24, 26, 24)):
+        room(x0, y0, x1, y1, "V")
+    room(26, 6, 46, 28)                    # 大浴室
+    room(28, 16, 34, 22, "Q")              # 泡泡浴池（紧挨着肥皂泡地板的西边：往西滑出去就掉进去）
+    room(36, 16, 44, 24, "Y")              # 肥皂泡地板
+    room(47, 6, 64, 14)                    # 雕像刷池的池边走道
+    room(50, 8, 62, 12, "O")               # 刷池
+    room(50, 15, 66, 30)                   # 温泉
+    room(53, 20, 63, 27, "O")
+    room(65, 10, 69, 12)                   # 东门外
+    put(3, 3, "P")
+    for (x, y) in ((14, 4), (8, 14), (18, 18), (4, 20)):
+        put(x, y, "H")
+    for (x, y) in ((30, 10), (42, 10), (38, 26)):
+        put(x, y, "W")
+    put(45, 7, "M")
+    for x in (50, 53, 56, 59, 62):
+        put(x, 7, "T")
+        put(x, 13, "T")
+    put(56, 13, "J")
+    put(58, 18, "B")
+    put(65, 11, "G")
+    put(68, 11, "X")
+    return ["".join(r) for r in g]
+
+
+def _palace_servants():
+    """第四章②·仆人回廊（潜入）：从浴场的门进来（P）→ 长长的回廊（人偶女仆巡逻，路线在生成器里）、两侧一间间仆人房（C 旧排班表）
+    → 木箱 / 窗帘（U：按 E 躲进去；S 那一处躲进去会触发「千手裤发作、粉色公主去引开」的过场 + CG）→ 尘土堆（D：踩上去打喷嚏，声音会引来人偶）
+    → 会动的扫帚（Z）→ 回廊尽头：女仆长人偶守着钥匙（B；L 叮铃铃的唤人铃：一个人去拉铃把她引开，另一个去拿钥匙 K）→ 出口 X（厨房）；Y 回浴场。"""
+    g, room, put = _canvas(80, 34)
+    room(2, 15, 6, 19)                     # 进门
+    room(6, 16, 74, 18)                    # 主回廊（三格宽）
+    for x0 in (10, 22, 34, 46):            # 北边的仆人房
+        room(x0, 6, x0 + 7, 12)
+        room(x0 + 3, 13, x0 + 4, 15)
+    for x0 in (16, 28, 40, 52):            # 南边的仆人房
+        room(x0, 22, x0 + 7, 28)
+        room(x0 + 3, 19, x0 + 4, 21)
+    room(60, 4, 74, 14)                    # 女仆长的房间（北）
+    room(66, 15, 67, 15)
+    room(75, 16, 78, 18)                   # 出口
+    put(3, 17, "P")
+    put(2, 17, "Y")
+    put(77, 17, "X")
+    put(13, 8, "C")
+    put(43, 26, "C")
+    for (x, y) in ((24, 10), (30, 24), (49, 8), (55, 26)):
+        put(x, y, "S" if (x, y) == (30, 24) else "U")
+    for (x, y) in ((12, 17), (26, 16), (38, 18), (50, 17), (58, 16)):
+        put(x, y, "D")
+    for (x, y) in ((18, 9), (44, 24)):
+        put(x, y, "Z")
+    put(67, 6, "B")
+    put(72, 12, "K")
+    put(61, 13, "L")
+    return ["".join(r) for r in g]
+
+
+def _palace_kitchen():
+    """第四章③·厨房：从回廊进来（P）→ 大厨房：糕点师人偶的台子（A：「试吃」小剧场）、试吃推销员的小摊（T：身上放食物让动物吃，换薄荷糖）、
+    打翻的奶油（Y：踩到脚底变甜，老鼠群追着舔；S 水槽洗脚）、老鼠（Z）→ 西南的冰窖：一条长长的冰滑道（I，滑下去停不住；F 两侧的羽毛扇）
+    → 厨房深处的大奶酪（K：挠脚鼠告别，脱下鼠鼠装、换上鞋）→ 北门 N（通往图书馆，下一批做）；X 回回廊。"""
+    g, room, put = _canvas(70, 36)
+    room(2, 4, 6, 8)                       # 进门
+    room(6, 3, 44, 20)                     # 大厨房
+    room(8, 5, 14, 7, "#")                 # 灶台（挡路）
+    room(20, 5, 26, 6, "#")
+    room(30, 10, 38, 11, "#")              # 中间的长桌
+    room(45, 8, 60, 14)                    # 储藏间（大奶酪）
+    room(10, 21, 12, 23)                   # 冰窖的楼梯
+    room(10, 24, 60, 26, "I")              # 冰滑道（三格宽，往东滑）
+    room(61, 23, 66, 28)                   # 滑道尽头
+    room(64, 15, 66, 22)                   # 冰窖回厨房的路
+    room(60, 15, 63, 15)
+    room(24, 1, 26, 2)                     # 北门
+    put(3, 6, "P")
+    put(2, 6, "X")
+    put(25, 1, "N")
+    put(16, 10, "A")
+    put(40, 16, "T")
+    for (x, y) in ((20, 14), (22, 15), (28, 17), (33, 15)):
+        put(x, y, "Y")
+    put(8, 17, "S")
+    for (x, y) in ((24, 18), (36, 6)):
+        put(x, y, "Z")
+    for x in (18, 28, 38, 48):
+        put(x, 24, "F")
+        put(x + 4, 26, "F")
+    put(57, 11, "K")
+    return ["".join(r) for r in g]
+
+
+LAYOUTS["floor_06_palace_bath"] = _palace_bath()
+LAYOUTS["floor_06_palace_servants"] = _palace_servants()
+LAYOUTS["floor_06_palace_kitchen"] = _palace_kitchen()
 
 
 def grid(fid):
