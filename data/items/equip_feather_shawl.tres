@@ -1,0 +1,28 @@
+[gd_resource type="Resource" script_class="EquipData" format=3]
+
+[ext_resource type="Script" path="res://scripts/items/equip_data.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/generated/equip_icons.png" id="2"]
+
+[sub_resource type="AtlasTexture" id="icon"]
+atlas = ExtResource("2")
+region = Rect2(464, 0, 16, 16)
+
+[resource]
+script = ExtResource("1")
+id = "equip_feather_shawl"
+display_name = "羽毛披肩"
+description = "冻住的羽毛披肩鬼化成的披肩，安安静静的。软乎乎的羽毛围着脖子——偶尔还会自己蹭一下。"
+icon = SubResource("icon")
+category = 4
+stackable = false
+show_in_hud = false
+pickup_emotion = "happy"
+slots = Array[String](["neck"])
+owner_id = ""
+modifiers = {"laugh_decay": -0.05}
+zone_mods = {}
+block = {"neck": 4}
+cursed = false
+special = ""
+pros = "挡下 4 次脖子的挠痒"
+cons = "闷笑消减 −5%"

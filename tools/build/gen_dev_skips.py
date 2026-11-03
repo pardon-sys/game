@@ -177,6 +177,8 @@ POINTS = [
           knight_vars(10, 2, 10), passives=PASSIVES),
     point("反省篇·第四章 旧王宫·旧浴场", "floor_06_palace_bath", KNIGHT + KQ_ALL_DONE + ["knight_boss_done", "penance_ch1_done", "penance_mouse_dev", "meet_exit_done",
           "waterway_keeper_done", "intro_done_palace_bath_in"], knight_vars(10, 2, 10), passives=PASSIVES),
+    point("反省篇·第四章 旧王宫·图书馆", "floor_06_palace_library", KNIGHT + KQ_ALL_DONE + ["knight_boss_done", "penance_ch1_done", "meet_exit_done",
+          "waterway_keeper_done", "palace_mouse_farewell", "palace_bath_key", "palace_servants_key", "intro_done_palace_library_in"], knight_vars(10, 2, 10), passives=PASSIVES),
     point("反省篇·第三章 废弃水道", "floor_06_waterway", KNIGHT + KQ_ALL_DONE + ["knight_boss_done", "penance_ch1_done", "penance_mouse_dev", "meet_exit_done", "intro_done_waterway_in"],
           knight_vars(10, 2, 10), passives=PASSIVES),
 ]

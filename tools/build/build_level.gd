@@ -81,6 +81,9 @@ const SCENES := {
 	"palacebath": "res://levels/floor_06/scenes/palace_bath.tscn",
 	"palaceservants": "res://levels/floor_06/scenes/palace_servants.tscn",
 	"palacekitchen": "res://levels/floor_06/scenes/palace_kitchen.tscn",
+	"palacelibrary": "res://levels/floor_06/scenes/palace_library.tscn",
+	"palacewardrobe": "res://levels/floor_06/scenes/palace_wardrobe.tscn",
+	"palacetraining": "res://levels/floor_06/scenes/palace_training.tscn",
 	# 小镇攻防战（scripts/siege/）
 	"siege": "res://scenes/siege/siege_director.tscn",
 	"siegewall": "res://scenes/siege/siege_wall.tscn",

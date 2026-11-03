@@ -1,0 +1,35 @@
+{
+	"name": "首饰盒",
+	"entries": [
+		{
+			"if": {
+				"flag": "palace_trap_active"
+			},
+			"node": "search"
+		},
+		{
+			"node": "default"
+		}
+	],
+	"nodes": {
+		"default": {
+			"lines": [
+				{
+					"text": "（梳妆台上的首饰盒。……没什么特别的）",
+					"speaker": ""
+				}
+			]
+		},
+		"search": {
+			"lines": [
+				{
+					"text": "（翻了翻首饰盒——）",
+					"speaker": ""
+				}
+			],
+			"set": {
+				"call": "palace_search_3"
+			}
+		}
+	}
+}

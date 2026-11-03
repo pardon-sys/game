@@ -1,0 +1,62 @@
+{
+	"name": "习武鸣钟",
+	"entries": [
+		{
+			"if": {
+				"flag": "palace_training_cleared"
+			},
+			"node": "done"
+		},
+		{
+			"node": "default"
+		}
+	],
+	"nodes": {
+		"default": {
+			"lines": [
+				{
+					"text": "（训练场中央挂着一口铜钟。钟下的牌子：「敲钟者，接受考验」）",
+					"speaker": ""
+				}
+			],
+			"prompt": "敲钟？",
+			"choices": [
+				{
+					"text": "敲！",
+					"next": "go"
+				},
+				{
+					"text": "不敲",
+					"next": "no"
+				}
+			]
+		},
+		"go": {
+			"lines": [
+				{
+					"text": "（「铛——」）",
+					"speaker": ""
+				}
+			],
+			"set": {
+				"call": "palace_bell_fight"
+			}
+		},
+		"no": {
+			"lines": [
+				{
+					"text": "……先准备一下。",
+					"speaker": "公主"
+				}
+			]
+		},
+		"done": {
+			"lines": [
+				{
+					"text": "（铜钟静静地挂着。考验已经过了）",
+					"speaker": ""
+				}
+			]
+		}
+	}
+}

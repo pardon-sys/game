@@ -366,6 +366,27 @@
 			"music": "old_palace"
 		},
 		{
+			"id": "floor_06_palace_library",
+			"name": "旧王宫·图书馆",
+			"scene": "res://levels/floor_06_palace_library/floor.tscn",
+			"group": "floor_06",
+			"music": "old_palace"
+		},
+		{
+			"id": "floor_06_palace_wardrobe",
+			"name": "旧王宫·衣帽间",
+			"scene": "res://levels/floor_06_palace_wardrobe/floor.tscn",
+			"group": "floor_06",
+			"music": "old_palace"
+		},
+		{
+			"id": "floor_06_palace_training",
+			"name": "旧王宫·骑士训练场",
+			"scene": "res://levels/floor_06_palace_training/floor.tscn",
+			"group": "floor_06",
+			"music": "old_palace"
+		},
+		{
 			"id": "floor_08_maze_1",
 			"name": "第八层·夜迷宫一·外环回廊",
 			"scene": "res://levels/floor_08_maze_1/floor.tscn",

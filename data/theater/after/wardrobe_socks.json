@@ -1,0 +1,251 @@
+{
+	"name": "衣帽间：自动穿袜机",
+	"cast": {
+		"princess": {
+			"kind": "princess",
+			"at": [
+				-14,
+				8
+			],
+			"visual": "normal",
+			"anim": "idle",
+			"dir": "right"
+		},
+		"blue": {
+			"kind": "npc:blue_princess",
+			"at": [
+				14,
+				8
+			],
+			"visual": "normal",
+			"anim": "idle",
+			"dir": "left"
+		},
+		"pants": {
+			"kind": "trap:hand",
+			"at": [
+				20,
+				10
+			]
+		},
+		"sock": {
+			"kind": "trap:foot_bath",
+			"at": [
+				-10,
+				12
+			]
+		}
+	},
+	"steps": [
+		{
+			"act": 1,
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "fade_in"
+				},
+				{
+					"state": "giggle",
+					"do": "voice"
+				}
+			],
+			"wait": 0.5
+		},
+		{
+			"speaker": "",
+			"text": "（墙角有一台黄铜做的老机器，前面两个圆洞，牌子上写着：「自动穿袜机——请把脚放进来」）",
+			"act": 1
+		},
+		{
+			"speaker": "公主",
+			"text": "……自动穿袜子？好方便！",
+			"emotion": "happy"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……看起来，不太对劲。"
+		},
+		{
+			"speaker": "公主",
+			"text": "试一下嘛。……脱鞋，放进去——",
+			"emotion": "happy"
+		},
+		{
+			"speaker": "",
+			"text": "（「咔哒」。两个圆洞一收，轻轻卡住了她的脚踝。机器「嗡」地响了起来）",
+			"actions": [
+				{
+					"sound": "conveyor",
+					"volume": -4.0,
+					"do": "sfx"
+				}
+			],
+			"act": 2
+		},
+		{
+			"speaker": "穿袜机",
+			"text": "（机械的声音）……穿袜前、清洁程序。……开始。"
+		},
+		{
+			"speaker": "公主",
+			"text": "清、清洁！？",
+			"emotion": "surprise"
+		},
+		{
+			"speaker": "",
+			"text": "（一排小软刷从洞里伸出来，贴着光着的脚心刷了起来。先是脚跟，然后是脚心，然后是每一道趾缝）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "sock",
+					"zone": "sole",
+					"fx": "lines",
+					"repeat": 10,
+					"interval": 0.15,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"visual": "giggle",
+					"do": "pose"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "嘻嘻……刷、刷子……只是穿袜子而已……！",
+			"emotion": "giggle"
+		},
+		{
+			"speaker": "穿袜机",
+			"text": "……清洁度、不足。……加强。"
+		},
+		{
+			"speaker": "",
+			"text": "（软刷换成了打着泡泡的海绵，海绵换成了羽毛掸子——每换一种，都在脚心上来来回回地「清洁」好久）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "sock",
+					"zone": "sole",
+					"fx": "feather",
+					"repeat": 14,
+					"interval": 0.11,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"visual": "helpless_1",
+					"do": "pose"
+				},
+				{
+					"do": "voice",
+					"state": "laugh"
+				}
+			],
+			"act": 3
+		},
+		{
+			"speaker": "公主",
+			"text": "哈哈哈！泡泡——羽毛——全都来——！",
+			"emotion": "helpless_1"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……（蹲下来看了看机器）……停止键。……这个？"
+		},
+		{
+			"speaker": "",
+			"text": "（蓝色公主按了一下。……机器「叮」地一声——清洁速度提高到了最高档）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "sock",
+					"zone": "sole",
+					"fx": "lines",
+					"repeat": 16,
+					"interval": 0.09,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"visual": "helpless_2",
+					"do": "pose"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "哈哈哈哈！那、那是加速——！这个王宫的按钮为什么都是反的——！",
+			"emotion": "helpless_2"
+		},
+		{
+			"speaker": "公主",
+			"text": "（星光炸开，机器冒出一股白烟……哈啊……放出去了……）",
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "flash"
+				},
+				{
+					"sound": "star_burst",
+					"do": "sfx"
+				},
+				{
+					"sound": "water_release",
+					"volume": -2.0,
+					"do": "sfx"
+				},
+				{
+					"who": "princess",
+					"time": 0.4,
+					"do": "shake"
+				},
+				{
+					"state": "laugh",
+					"do": "voice"
+				}
+			],
+			"act": "burst",
+			"wait": 1.0
+		},
+		{
+			"speaker": "穿袜机",
+			"text": "……清洁、完成。……穿袜。",
+			"act": 4
+		},
+		{
+			"speaker": "",
+			"text": "（一双淡紫色的丝袜被轻轻地套了上来，滑滑的、凉凉的，刚刚被刷得发烫的脚心一下子舒服多了）",
+			"actions": [
+				{
+					"who": "princess",
+					"visual": "helpless_1",
+					"do": "pose"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "……哈……哈……袜子……倒是很舒服……",
+			"emotion": "helpless_1"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……（小声）……按钮，我下次会看清楚。"
+		},
+		{
+			"actions": [
+				{
+					"state": "",
+					"do": "voice"
+				},
+				{
+					"time": 0.6,
+					"do": "fade_out"
+				}
+			],
+			"wait": 0.7
+		}
+	]
+}

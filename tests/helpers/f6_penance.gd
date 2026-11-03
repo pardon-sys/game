@@ -272,7 +272,11 @@ static func run(t: Node) -> void:
 	for f in ["intro_done_palace_bath_in", PalaceBath.KEY_FLAG, "cg_seen_theater:bath_pool", "cg_seen_theater:bath_friendship",
 			"intro_done_palace_servants_in", PalaceServants.KEY_FLAG, "cg_seen_theater:servants_hide", "cg_seen_theater:servants_caught_first",
 			"intro_done_palace_kitchen_in", "cg_seen_theater:kitchen_promoter", "cg_seen_theater:kitchen_farewell", PalaceKitchen.FAREWELL_FLAG,
-			PalaceKitchen.PAID_FLAG, PalaceKitchen.END_FLAG]:
+			PalaceKitchen.PAID_FLAG, PalaceLibrary.CIPHER_FLAG, PalaceLibrary.STUDY_FLAG, "palace_frag_1", "palace_frag_2", "palace_frag_3",
+			"cg_seen_theater:library_bookmonster", "cg_seen_theater:wardrobe_measure", "cg_seen_theater:wardrobe_tryon", "cg_seen_theater:wardrobe_trap_out",
+			"cg_seen_theater:wardrobe_try_1", "cg_seen_theater:wardrobe_socks", PalaceWardrobe.SHAWL_FLAG, PalaceWardrobe.TRAP_FLAG,
+			PalaceTraining.DUMMY_FLAG, PalaceTraining.CLEAR_FLAG, "cg_seen_theater:training_stocks", "cg_seen_theater:training_lose",
+			"intro_done_palace_library_in", "intro_done_palace_wardrobe_in", "intro_done_palace_training_in"]:
 		GameState.set_flag(f, false)
 	Cutscene.continue_chapter()
 	await t._advance_until(func(): return t._level_id() == "floor_06_palace_bath" and not Cutscene.is_playing() and t.seen_cuts.has("palace_bath_in"), 60.0)
@@ -381,10 +385,181 @@ static func run(t: Node) -> void:
 	kr._process(0.1)
 	verify(t, "储藏间的大奶酪：挠脚鼠告别 → 脱下鼠鼠装、换回原来的装备", PalaceKitchen.farewell_done() and not PenanceCell.wearing_mouse())
 	kp2.global_position = Cutscene.cell_to_world(kr.cells("north")[0])
-	await t._advance_until(func(): return Cutscene.chapter_screen.visible and Cutscene.chapter_title.text.contains("旧王宫") and not Cutscene.is_playing(), 60.0)
-	verify(t, "北门：图书馆的门口 →「第四章　旧王宫（上）」（%s）" % Cutscene.chapter_title.text, Cutscene.chapter_title.text.contains("旧王宫"))
-	Cutscene.chapter_screen.hide()
-	Cutscene.chapter_next = ""
+	await t._advance_until(func(): return t._level_id() == "floor_06_palace_library" and not Cutscene.is_playing() and t.seen_cuts.has("palace_library_in"), 60.0)
+	verify(t, "北门：没有「待续」章末画面，直接走进图书馆（%s）" % t._level_id(), t._level_id() == "floor_06_palace_library" and not Cutscene.chapter_screen.visible)
+	await _palace_b(t)
+
+
+## 第四章（中）：图书馆 → 衣帽间 → 骑士训练场
+static func _palace_b(t: Node) -> void:
+	GameState.vars.erase("palace_frags")
+	GameState.passives.erase("knight_endurance")
+	var lr := _room(t, "PalaceLibrary") as PalaceLibrary
+	await t.get_tree().process_frame
+	verify(t, "图书馆：两人同行", lr != null and Duo.active)
+	if lr == null:
+		return
+	var lp := GameState.player as PlayableCharacter
+	var mate := Duo.partner_of(lp)
+	# 书架里的手
+	lp.global_position = Cutscene.cell_to_world(lr.cells("shelf_hands")[0])
+	lr._tick_hands(lp, 0.05)
+	verify(t, "从书架旁边走过：手伸出来抓住脚踝（定身）", lp.status.is_rooted())
+	lp.status.clear_root()
+	# 书山：埋住 → 搭档挖出来
+	mate.global_position = Vector2(-9999, -9999)
+	lp.global_position = Cutscene.cell_to_world(lr.cells("book_piles")[0])
+	lr._tick_piles(lp, 0.05)
+	verify(t, "踩到书山：塌下来埋住半身", lr.buried.has(lp))
+	mate.global_position = lp.global_position + Vector2(8, 0)
+	for i in 40:
+		lr._tick_piles(lp, 0.05)
+	verify(t, "搭档走过来：%.1f 秒挖出来" % PalaceLibrary.DIG_TIME, not lr.buried.has(lp))
+	verify(t, "AI 搭档的目标：被埋住的那个人", (lr.ai_hooks() as BattleAIHooks).objective_for(mate) == null)
+	lr.buried[lp] = 0.0
+	verify(t, "（被埋住时 AI 搭档会跑过来挖）", (lr.ai_hooks() as BattleAIHooks).objective_for(mate) == lp.global_position)
+	lr.dig(lp)
+	# 书虫
+	var w := lr.worms[0] as PalaceLibrary.Worm
+	lp.global_position = w.position + Vector2(4, 0)
+	w._cool = 0.0
+	w.step(0.05)
+	verify(t, "书虫追上来：钻进袜子里（%s）" % (w._in != null), w._in == lp)
+	# 书（打码）、残页
+	var d6: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://data/dialogues/floor_06/library_book_6.json"))
+	var txt0 := JSON.stringify(d6["nodes"]["frag0"])
+	verify(t, "书房管理记录：残页 0 张时三行都打了码（□）", txt0.count("□") >= 20 and JSON.stringify(d6["nodes"]["frag3"]).count("□") == 0)
+	await t._talk("floor_06/library_fragment", "")
+	verify(t, "书山下的残页：残页 +1（%s）" % GameState.vars.get("palace_frags"), int(GameState.vars.get("palace_frags", 0)) == 1 and GameState.has_flag("palace_frag_1"))
+	# 密码门：错一次、对一次
+	await t._talk("floor_06/library_door", "", [1])
+	verify(t, "密码门：转错了，门不开", not GameState.has_flag(PalaceLibrary.CIPHER_FLAG))
+	await t._talk("floor_06/library_door", "", [0, 2, 3, 1])
+	verify(t, "密码门：2-5-7-3（浴场镜子 / 排班表 / 礼服尺码 / 刻痕）→ 门开了", GameState.has_flag(PalaceLibrary.CIPHER_FLAG) and not is_instance_valid(lr._door))
+	lp.global_position = Cutscene.cell_to_world(lr.cells("study")[0])
+	await t._advance_until(func(): return t.seen_cuts.has("library_study") and not Cutscene.is_playing(), 60.0)
+	verify(t, "私人书房：女王的画、没写完的信、两个半圆凹槽（背景大图）", t.seen_cuts.has("library_study") and GameState.has_flag(PalaceLibrary.STUDY_FLAG))
+	# 金色大书：投影 → 书怪
+	await t._talk("floor_06/library_golden", "", [0])
+	await t._advance_until(func(): return GameState.has_flag("cg_seen_theater:library_bookmonster") and not CG.is_busy() and not Dialogue.is_active() and not Cutscene.is_playing(), 180.0)
+	verify(t, "金色大书：投影「那天晚上」→ 恶作剧书怪的小剧场", t.seen_cuts.has("library_flashback") and GameState.has_flag("cg_seen_theater:library_bookmonster"))
+	# ---- 衣帽间
+	GameState.pending_spawn = "from_library"
+	await t.main.change_level(Floors.scene("floor_06_palace_wardrobe"))
+	await t._advance_until(func(): return t._level_id() == "floor_06_palace_wardrobe" and not Cutscene.is_playing() and t.seen_cuts.has("palace_wardrobe_in"), 60.0)
+	var wr := _room(t, "PalaceWardrobe") as PalaceWardrobe
+	await t.get_tree().process_frame
+	verify(t, "衣帽间：开场、两人同行、羽毛披肩鬼在飘", wr != null and Duo.active and is_instance_valid(wr._shawl))
+	if wr == null:
+		return
+	await t._talk("floor_06/wardrobe_mannequin", "", [0])
+	await t._advance_until(func(): return GameState.has_flag("cg_seen_theater:wardrobe_measure") and not CG.is_busy() and not Dialogue.is_active(), 120.0)
+	verify(t, "礼服人台：量尺寸的小剧场", GameState.has_flag("cg_seen_theater:wardrobe_measure"))
+	var rib0 := GameState.inventory.count("equip_palace_ribbon")
+	await t._talk("floor_06/wardrobe_rack_1", "", [0])
+	await t._advance_until(func(): return GameState.has_flag("cg_seen_theater:wardrobe_try_1") and not CG.is_busy() and not Dialogue.is_active(), 120.0)
+	verify(t, "旧衣架：试穿一小段 → 拿到「小殿下的发带」", GameState.inventory.count("equip_palace_ribbon") == rib0 + 1)
+	var st0 := GameState.inventory.count("equip_palace_stockings")
+	await t._talk("floor_06/wardrobe_socks", "", [0])
+	await t._advance_until(func(): return GameState.has_flag("cg_seen_theater:wardrobe_socks") and not CG.is_busy() and not Dialogue.is_active(), 150.0)
+	verify(t, "自动穿袜机：「清洁」脚底 → 宫廷丝袜", GameState.inventory.count("equip_palace_stockings") == st0 + 1)
+	await t._talk("floor_06/wardrobe_favorite", "", [0])
+	await t._advance_until(func(): return GameState.has_flag("cg_seen_theater:wardrobe_tryon") and not CG.is_busy() and not Dialogue.is_active(), 180.0)
+	verify(t, "玫瑰色的礼服：试穿、蓝色公主借量尺寸挠她（CG）", GameState.has_flag("cg_seen_theater:wardrobe_tryon"))
+	# 羽毛披肩鬼：蓝色公主攻击 → 冻住
+	var bl := wr.blue
+	wr._shawl.position = bl.global_position + Vector2(6, 0)
+	bl._set_state(PlayableCharacter.State.ATTACK)
+	wr._shawl.step(0.05)
+	bl._set_state(PlayableCharacter.State.IDLE)
+	verify(t, "蓝色公主攻击羽毛披肩鬼：冻住 → 掉下「羽毛披肩」", wr.shawl_frozen and GameState.inventory.has("equip_feather_shawl"))
+	# 衣柜陷阱
+	if GameState.player != wr.pink:
+		GameState.switch_control(wr.pink)
+	await t._talk("floor_06/wardrobe_trap", "", [0])
+	await t._advance_until(func(): return wr.trap_active and not CG.is_busy() and not Dialogue.is_active(), 150.0)
+	verify(t, "衣柜陷阱：粉色公主被关进去（CG）→ 换蓝色公主操控", wr.trap_active and GameState.player == wr.blue and GameState.has_flag("cg_seen_theater:wardrobe_trap_in"))
+	var lg0 := wr.pink.laugh.value
+	for i in 20:
+		wr._process(0.1)
+	verify(t, "柜子里：粉色公主的闷笑一直涨（%.0f → %.0f）" % [lg0, wr.pink.laugh.value], wr.pink.laugh.value > lg0)
+	await t._talk("floor_06/wardrobe_trap", "")
+	verify(t, "没钥匙：回到衣柜打不开", wr.trap_active)
+	var wrong := (wr.key_at + 1) % 3
+	await t._talk("floor_06/wardrobe_key_%d" % (wrong + 1), "")
+	verify(t, "翻错了地方：没有钥匙", not wr.has_key)
+	await t._talk("floor_06/wardrobe_key_%d" % (wr.key_at + 1), "")
+	verify(t, "翻对了地方：找到钥匙", wr.has_key)
+	await t._talk("floor_06/wardrobe_trap", "")
+	await t._advance_until(func(): return not wr.trap_active and not CG.is_busy() and not Dialogue.is_active(), 150.0)
+	verify(t, "回到衣柜开门：救出来的小剧场（她倒出来、蓝色公主戳她脚心）", not wr.trap_active and GameState.has_flag("cg_seen_theater:wardrobe_trap_out") and is_equal_approx(wr.pink.modulate.a, 1.0))
+	await t._talk("floor_06/wardrobe_fragment", "")
+	verify(t, "大衣口袋里的残页（%s）" % GameState.vars.get("palace_frags"), int(GameState.vars.get("palace_frags", 0)) == 2)
+	# ---- 骑士训练场
+	GameState.pending_spawn = "from_library"
+	await t.main.change_level(Floors.scene("floor_06_palace_training"))
+	await t._advance_until(func(): return t._level_id() == "floor_06_palace_training" and not Cutscene.is_playing() and t.seen_cuts.has("palace_training_in"), 60.0)
+	var tr := _room(t, "PalaceTraining") as PalaceTraining
+	await t.get_tree().process_frame
+	verify(t, "骑士训练场：开场、4 个稻草人、%d 把羽毛剑" % (tr.swords.size() if tr else 0), tr != null and tr.dummies.size() == 4 and tr.swords.size() >= 3)
+	if tr == null:
+		return
+	var tp := GameState.player as PlayableCharacter
+	var tl0 := tp.laugh.value
+	verify(t, "打错了稻草人：还手挠一下、顺序重来", not tr.hit_dummy(1, tp) and tr.order_i == 0 and tp.laugh.value > tl0)
+	var mint0 := GameState.inventory.count("mint")
+	for i in PalaceTraining.ORDER:
+		tr.hit_dummy(i, tp)
+	verify(t, "按木牌的顺序（最左 → 最右 → 中间从右往左）打完：薄荷糖", GameState.has_flag(PalaceTraining.DUMMY_FLAG) and GameState.inventory.count("mint") == mint0 + 1)
+	var sw := tr.swords[0] as PalaceTraining.Sword
+	sw.t = PalaceTraining.SWORD_CYCLE * 0.5
+	tp.global_position = sw.position
+	var tl1 := tp.laugh.value
+	for i in 12:
+		tr._process(0.02)
+		sw.t = PalaceTraining.SWORD_CYCLE * 0.5
+	verify(t, "羽毛剑挥到底：扫到脚底（%.0f → %.0f）" % [tl1, tp.laugh.value], tp.laugh.value > tl1)
+	# 对练擂台
+	BlueTickleShow.quiet = true
+	tr.spar()
+	await t._advance_until(func(): return t._show(BlueTickleShow) != null and not (t._show(BlueTickleShow) as BlueTickleShow).busy, 60.0)
+	var bt := t._show(BlueTickleShow) as BlueTickleShow
+	verify(t, "对练擂台：找痒点（擂台的台词，不是灯笼）", bt != null and str(bt.tx().get("name", "")) == "骑士对练")
+	if bt:
+		bt.blue_laugh = 0.95
+		bt.weak = bt.cursor
+		bt._press = 0.0
+		bt.tickle_now()
+	await t._advance_until(func(): return tr.spar_result != "" and not CG.is_busy() and not Dialogue.is_active(), 150.0)
+	verify(t, "她先笑满：对练赢了的小剧场（%s）" % tr.spar_result, tr.spar_result == "win" and GameState.has_flag("cg_seen_theater:training_spar_win"))
+	# 遭遇战：输一次、再赢
+	await t._talk("floor_06/training_bell", "", [0])
+	await t._advance_until(func(): return tr.fighting, 60.0)
+	verify(t, "敲钟：门关上、第一波（%d 只）" % tr.spawned.size(), tr.fighting and tr.wave == 0 and tr.spawned.size() == 4 and tr._gates.size() == 2)
+	tr.on_defeat("both_down")
+	await t._advance_until(func(): return GameState.has_flag("cg_seen_theater:training_lose") and not CG.is_busy() and not tr._defeat_busy, 150.0)
+	verify(t, "遭遇战里两个都倒下：补课的小剧场 → 怪清掉、门打开、可以再敲", not tr.fighting and tr._gates.is_empty() and not GameState.has_flag(PalaceTraining.CLEAR_FLAG))
+	await t._talk("floor_06/training_bell", "", [0])
+	await t._advance_until(func(): return tr.fighting, 60.0)
+	var waves := []
+	for k in 3:
+		waves.append(tr.spawned.size())
+		for m in tr.spawned:
+			(m as Node).queue_free()
+		await t.get_tree().process_frame
+		tr._tick_fight()
+	await t._advance_until(func(): return not Cutscene.is_playing(), 30.0)
+	verify(t, "三波（%s）全打倒：考验通过、门打开" % [waves], waves == [4, 4, 1] and GameState.has_flag(PalaceTraining.CLEAR_FLAG) and tr._gates.is_empty())
+	await t._talk("floor_06/training_chest", "")
+	verify(t, "旧箱子打开：最后一张残页（%s）" % GameState.vars.get("palace_frags"), int(GameState.vars.get("palace_frags", 0)) == 3 and GameState.has_flag("palace_frag_3"))
+	# 耐痒训练台：被动
+	var g0 := tp._extra_stat_add("laugh_gain")
+	await t._talk("floor_06/training_stocks", "", [0])
+	await t._advance_until(func(): return GameState.has_flag("cg_seen_theater:training_stocks") and not CG.is_busy() and not Dialogue.is_active(), 150.0)
+	verify(t, "耐痒训练台：小剧场 → 被动「骑士的忍耐」（闷笑涨幅 %.2f → %.2f）" % [g0, tp._extra_stat_add("laugh_gain")],
+		GameState.passives.has("knight_endurance") and tp._extra_stat_add("laugh_gain") < g0 - 0.05)
+	await t._talk("floor_06/training_diary", "")
+	verify(t, "北门是锁着的封印门（不是「待续」画面）", not Cutscene.chapter_screen.visible)
 
 
 static func _room(t: Node, cls: String) -> Node:

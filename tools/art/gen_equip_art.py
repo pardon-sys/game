@@ -13,7 +13,9 @@ ICONS = ["armpit_pad", "scarf", "wool_socks", "dance_shoes", "waist_sash", "mint
          "t_feather_socks", "t_toe_brush", "t_fluff_bra", "t_thigh_ring", "t_pinch_pad", "t_knead_tights",
          "t_feather_shackles", "t_thigh_strap", "t_bell_anklet", "t_mark_patch",
          # 反省篇：挠脚鼠住在里面的鼠鼠装（诅咒）
-         "mouse_shorts", "mouse_paw_shoes"]
+         "mouse_shorts", "mouse_paw_shoes",
+         # 第四章·旧王宫衣帽间：试穿的旧装备、自动穿袜机的丝袜、羽毛披肩鬼掉下来的披肩
+         "palace_ribbon", "palace_corset", "palace_boots", "palace_stockings", "feather_shawl"]
 
 
 def canvas():
@@ -85,6 +87,32 @@ def icon(name):
         d.ellipse((4, 11, 7, 13), fill=(255, 170, 200, 255))
         d.ellipse((3, 5, 7, 9), fill=(180, 180, 190, 255))
         d.ellipse((8, 5, 12, 9), fill=(180, 180, 190, 255))
+    elif name == "palace_ribbon":   # 小殿下的发带：粉蓝两色的小蝴蝶结
+        d.polygon([(8, 7), (2, 3), (3, 11)], fill=(255, 150, 190, 255))
+        d.polygon([(8, 7), (14, 3), (13, 11)], fill=(140, 190, 255, 255))
+        d.ellipse((6, 5, 10, 9), fill=(255, 225, 120, 255))
+        d.line((7, 9, 5, 14), fill=(255, 150, 190, 255))
+        d.line((9, 9, 11, 14), fill=(140, 190, 255, 255))
+    elif name == "palace_corset":   # 女仆长的束腰：深蓝束腰 + 白色系带
+        d.rectangle((3, 4, 12, 12), fill=(50, 60, 110, 255))
+        for y in range(5, 12, 2):
+            d.line((6, y, 9, y + 1), fill=(240, 240, 250, 255))
+        d.line((3, 4, 12, 4), fill=(200, 180, 120, 255))
+    elif name == "palace_boots":    # 宫廷长靴：白色高筒靴 + 金扣
+        d.rectangle((4, 2, 8, 12), fill=(235, 232, 240, 255))
+        d.polygon([(4, 12), (8, 12), (12, 14), (4, 14)], fill=(235, 232, 240, 255))
+        d.line((4, 6, 8, 6), fill=(220, 180, 80, 255))
+        d.line((4, 9, 8, 9), fill=(220, 180, 80, 255))
+    elif name == "palace_stockings":  # 宫廷丝袜：淡紫色、袜口一圈蕾丝
+        d.rectangle((5, 2, 9, 10), fill=(215, 200, 240, 255))
+        d.polygon([(5, 10), (9, 10), (13, 13), (13, 14), (5, 14)], fill=(215, 200, 240, 255))
+        for x in range(5, 10, 2):
+            d.point((x, 2), fill=(255, 255, 255, 255))
+    elif name == "feather_shawl":   # 羽毛披肩：一圈白羽毛
+        d.arc((1, 3, 15, 15), 180, 360, fill=(250, 248, 255, 255), width=3)
+        for x in (3, 6, 10, 13):
+            d.line((x, 7, x - 1, 11), fill=(240, 236, 250, 255))
+        d.ellipse((7, 3, 9, 5), fill=(255, 200, 220, 255))
     elif name == "party_bow":     # 派对彩带蝴蝶结：彩色蝴蝶结 + 小铃铛
         d.polygon([(8, 7), (2, 3), (2, 11)], fill=(255, 120, 170, 255))
         d.polygon([(8, 7), (14, 3), (14, 11)], fill=(120, 200, 255, 255))

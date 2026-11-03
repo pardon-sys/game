@@ -1,0 +1,255 @@
+{
+	"name": "训练场：耐痒训练台",
+	"cast": {
+		"princess": {
+			"kind": "princess",
+			"at": [
+				-14,
+				8
+			],
+			"visual": "normal",
+			"anim": "idle",
+			"dir": "right"
+		},
+		"blue": {
+			"kind": "npc:blue_princess",
+			"at": [
+				14,
+				8
+			],
+			"visual": "normal",
+			"anim": "idle",
+			"dir": "left"
+		},
+		"pants": {
+			"kind": "trap:hand",
+			"at": [
+				20,
+				10
+			]
+		},
+		"st": {
+			"kind": "trap:stocks",
+			"at": [
+				0,
+				12
+			]
+		}
+	},
+	"steps": [
+		{
+			"act": 1,
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "fade_in"
+				},
+				{
+					"state": "giggle",
+					"do": "voice"
+				}
+			],
+			"wait": 0.5
+		},
+		{
+			"speaker": "",
+			"text": "（墙角一张磨得发亮的足枷台。牌子上写着：「骑士耐痒训练——坚持一刻钟不笑出声者，可称骑士」）",
+			"act": 1
+		},
+		{
+			"speaker": "公主",
+			"text": "……骑士的训练？……试试！",
+			"emotion": "happy"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……我陪你。"
+		},
+		{
+			"speaker": "",
+			"text": "（两个人并排坐上训练台，四只脚踝被枷板扣住。台子底下伸出两排羽毛刷，慢慢地、慢慢地扫了起来）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "st",
+					"zone": "sole",
+					"fx": "feather",
+					"repeat": 8,
+					"interval": 0.2,
+					"do": "tickle"
+				},
+				{
+					"who": "blue",
+					"by": "st",
+					"zone": "sole",
+					"fx": "feather",
+					"repeat": 6,
+					"interval": 0.22,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"visual": "giggle",
+					"do": "pose"
+				},
+				{
+					"who": "blue",
+					"visual": "giggle",
+					"do": "pose"
+				}
+			],
+			"act": 2
+		},
+		{
+			"speaker": "公主",
+			"text": "（……忍住……骑士都忍得住……）",
+			"emotion": "giggle"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "（……数数。……一、二、三……）"
+		},
+		{
+			"speaker": "",
+			"text": "（羽毛扫得越来越快，又越来越慢。快的时候还好，慢的时候简直要命）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "st",
+					"zone": "sole",
+					"fx": "feather",
+					"repeat": 12,
+					"interval": 0.14,
+					"do": "tickle"
+				},
+				{
+					"who": "blue",
+					"by": "st",
+					"zone": "sole",
+					"fx": "feather",
+					"repeat": 10,
+					"interval": 0.14,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"visual": "helpless_1",
+					"do": "pose"
+				},
+				{
+					"who": "blue",
+					"visual": "helpless_1",
+					"do": "pose"
+				},
+				{
+					"do": "voice",
+					"state": "laugh"
+				}
+			],
+			"act": 3
+		},
+		{
+			"speaker": "公主",
+			"text": "（……慢、慢慢扫……比快的还……）",
+			"emotion": "helpless_1"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "（……二十七……二十……八……）"
+		},
+		{
+			"speaker": "",
+			"text": "（两个人咬着嘴唇，互相看了一眼——都憋得满脸通红。……就在这时候，两个人同时「噗」地笑了出来）",
+			"actions": [
+				{
+					"who": "princess",
+					"visual": "helpless_2",
+					"do": "pose"
+				},
+				{
+					"who": "blue",
+					"visual": "helpless_2",
+					"do": "pose"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "哈哈哈！你、你的脸——太好笑了——！",
+			"emotion": "helpless_2"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……你、你才是……哈哈哈……"
+		},
+		{
+			"speaker": "公主",
+			"text": "（星光炸开，羽毛刷被吹得四处乱飞……哈啊……放出去了……）",
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "flash"
+				},
+				{
+					"sound": "star_burst",
+					"do": "sfx"
+				},
+				{
+					"sound": "water_release",
+					"volume": -2.0,
+					"do": "sfx"
+				},
+				{
+					"who": "princess",
+					"time": 0.4,
+					"do": "shake"
+				},
+				{
+					"state": "laugh",
+					"do": "voice"
+				}
+			],
+			"act": "burst",
+			"wait": 1.0
+		},
+		{
+			"speaker": "",
+			"text": "（训练台「咔」地松开了枷板。牌子底下，一行小字慢慢亮了起来：「笑着坚持到最后的人，也是骑士」）",
+			"actions": [
+				{
+					"who": "princess",
+					"visual": "helpless_1",
+					"do": "pose"
+				},
+				{
+					"who": "blue",
+					"visual": "helpless_1",
+					"do": "pose"
+				}
+			],
+			"act": 4
+		},
+		{
+			"speaker": "公主",
+			"text": "……笑着坚持到最后。……这个规则我喜欢。",
+			"emotion": "happy"
+		},
+		{
+			"speaker": "",
+			"text": "（两个人都觉得，身体里有什么东西变得结实了一点）"
+		},
+		{
+			"actions": [
+				{
+					"state": "",
+					"do": "voice"
+				},
+				{
+					"time": 0.6,
+					"do": "fade_out"
+				}
+			],
+			"wait": 0.7
+		}
+	]
+}

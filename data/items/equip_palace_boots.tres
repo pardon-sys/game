@@ -1,0 +1,28 @@
+[gd_resource type="Resource" script_class="EquipData" format=3]
+
+[ext_resource type="Script" path="res://scripts/items/equip_data.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/generated/equip_icons.png" id="2"]
+
+[sub_resource type="AtlasTexture" id="icon"]
+atlas = ExtResource("2")
+region = Rect2(432, 0, 16, 16)
+
+[resource]
+script = ExtResource("1")
+id = "equip_palace_boots"
+display_name = "宫廷长靴"
+description = "鞋底厚厚的白色高筒靴。挠脚心的手先碰到的是靴底——就是太重了，跑不快。"
+icon = SubResource("icon")
+category = 4
+stackable = false
+show_in_hud = false
+pickup_emotion = "happy"
+slots = Array[String](["sole"])
+owner_id = ""
+modifiers = {"speed": 0.92}
+zone_mods = {}
+block = {"sole": 4}
+cursed = false
+special = ""
+pros = "挡下 4 次脚心的挠痒"
+cons = "移动 ×0.92"

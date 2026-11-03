@@ -15,7 +15,7 @@ ICONS = ["armpit_pad", "scarf", "wool_socks", "dance_shoes", "waist_sash", "mint
          "training_wraps", "padded_shorts", "party_bow", "feather_anklet", "ice_hairpin", "thousand_pants",
          "t_feather_socks", "t_toe_brush", "t_fluff_bra", "t_thigh_ring", "t_pinch_pad", "t_knead_tights",
          "t_feather_shackles", "t_thigh_strap", "t_bell_anklet", "t_mark_patch",
-         "mouse_shorts", "mouse_paw_shoes"]
+         "mouse_shorts", "mouse_paw_shoes", "palace_ribbon", "palace_corset", "palace_boots", "palace_stockings", "feather_shawl"]
 
 # 名字 -> (显示名, 部位, 谁能穿, 属性, 部位加减, 挡下次数, 诅咒, 特殊, 好处, 代价, 说明, 价格(0 = 不卖))
 EQUIP = {
@@ -68,6 +68,24 @@ EQUIP.update({
     "mouse_paw_shoes": ("鼠爪鞋", ["sole"], "pink", {}, {"sole": 0.25}, {}, True, "",
                         "（无）", "脱不下；脚心敏感 +0.25；挠脚鼠时不时钻进鞋里",
                         "露着脚趾的鼠爪拖鞋，鞋底有粉色的肉垫。挠脚鼠最喜欢从短裤一路钻下来，躲进这里。", 0),
+})
+# 第四章·旧王宫的衣帽间：试穿的三件旧装备（衣架）、自动穿袜机给的丝袜、冻住羽毛披肩鬼掉下来的披肩
+EQUIP.update({
+    "palace_ribbon": ("小殿下的发带", ["neck"], "", {"magic_cd": 0.9}, {"neck": 0.15}, {}, False, "",
+                      "魔法冷却 −10%", "脖子敏感 +0.15",
+                      "衣帽间角落里一条粉蓝两色的小发带。系上以后脑袋暖暖的——就是发带的流苏总蹭到后颈。", 0),
+    "palace_corset": ("女仆长的束腰", ["waist"], "", {"laugh_gain": -0.05, "speed": 0.95}, {"waist": -0.2, "belly": 0.15}, {}, False, "",
+                      "闷笑涨幅 −5%、腰敏感 −0.2", "移动 ×0.95、肚子敏感 +0.15",
+                      "勒得紧紧的深蓝束腰。腰挠不进去了，可是肚子被挤得更怕痒，走路也挺得笔直。", 0),
+    "palace_boots": ("宫廷长靴", ["sole"], "", {"speed": 0.92}, {}, {"sole": 4}, False, "",
+                     "挡下 4 次脚心的挠痒", "移动 ×0.92",
+                     "鞋底厚厚的白色高筒靴。挠脚心的手先碰到的是靴底——就是太重了，跑不快。", 0),
+    "palace_stockings": ("宫廷丝袜", ["sole"], "", {"laugh_decay": 0.1}, {"sole": -0.2}, {}, False, "",
+                         "脚心敏感 −0.2、闷笑消减 +10%", "（无）",
+                         "自动穿袜机「清洁」完脚底以后给套上的淡紫色丝袜。滑滑的，隔着它挠就没那么痒了。", 0),
+    "feather_shawl": ("羽毛披肩", ["neck"], "", {"laugh_decay": -0.05}, {}, {"neck": 4}, False, "",
+                      "挡下 4 次脖子的挠痒", "闷笑消减 −5%",
+                      "冻住的羽毛披肩鬼化成的披肩，安安静静的。软乎乎的羽毛围着脖子——偶尔还会自己蹭一下。", 0),
 })
 # 攻防战的临时痒痒装备（被痒痒裁缝铺 / 捆绑藤怪强制穿上 20 秒；不卖、不进背包）：名字 -> (显示名, 部位, 类别, 属性, 部位加减, 特殊, 好处, 代价, 说明)
 TEMP = {

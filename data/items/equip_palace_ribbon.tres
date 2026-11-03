@@ -1,0 +1,28 @@
+[gd_resource type="Resource" script_class="EquipData" format=3]
+
+[ext_resource type="Script" path="res://scripts/items/equip_data.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/generated/equip_icons.png" id="2"]
+
+[sub_resource type="AtlasTexture" id="icon"]
+atlas = ExtResource("2")
+region = Rect2(400, 0, 16, 16)
+
+[resource]
+script = ExtResource("1")
+id = "equip_palace_ribbon"
+display_name = "小殿下的发带"
+description = "衣帽间角落里一条粉蓝两色的小发带。系上以后脑袋暖暖的——就是发带的流苏总蹭到后颈。"
+icon = SubResource("icon")
+category = 4
+stackable = false
+show_in_hud = false
+pickup_emotion = "happy"
+slots = Array[String](["neck"])
+owner_id = ""
+modifiers = {"magic_cd": 0.9}
+zone_mods = {"neck": 0.15}
+block = {}
+cursed = false
+special = ""
+pros = "魔法冷却 −10%"
+cons = "脖子敏感 +0.15"

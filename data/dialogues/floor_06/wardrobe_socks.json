@@ -1,0 +1,65 @@
+{
+	"name": "自动穿袜机",
+	"entries": [
+		{
+			"if": {
+				"flag": "cg_seen_theater:wardrobe_socks"
+			},
+			"node": "again"
+		},
+		{
+			"node": "default"
+		}
+	],
+	"nodes": {
+		"default": {
+			"lines": [
+				{
+					"text": "（一台黄铜做的老机器：「自动穿袜机——请把脚放进来」）",
+					"speaker": ""
+				}
+			],
+			"prompt": "把脚放进去？",
+			"choices": [
+				{
+					"text": "……试一下。",
+					"next": "go"
+				},
+				{
+					"text": "……先不了",
+					"next": "no"
+				}
+			]
+		},
+		"go": {
+			"lines": [
+				{
+					"text": "……试一下。",
+					"speaker": "公主"
+				}
+			],
+			"theater": "wardrobe_socks",
+			"set": {
+				"give_item": {
+					"equip_palace_stockings": 1
+				}
+			}
+		},
+		"no": {
+			"lines": [
+				{
+					"text": "……等一下再说。",
+					"speaker": "公主"
+				}
+			]
+		},
+		"again": {
+			"lines": [
+				{
+					"text": "（穿袜机「嗡」地响了一声，冒出一股白烟。……还是别再试了）",
+					"speaker": ""
+				}
+			]
+		}
+	}
+}

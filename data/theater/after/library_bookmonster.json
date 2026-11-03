@@ -1,0 +1,391 @@
+{
+	"name": "图书馆：恶作剧书怪",
+	"cast": {
+		"princess": {
+			"kind": "princess",
+			"at": [
+				-14,
+				8
+			],
+			"visual": "normal",
+			"anim": "idle",
+			"dir": "right"
+		},
+		"blue": {
+			"kind": "npc:blue_princess",
+			"at": [
+				14,
+				8
+			],
+			"visual": "normal",
+			"anim": "idle",
+			"dir": "left"
+		},
+		"pants": {
+			"kind": "trap:hand",
+			"at": [
+				20,
+				10
+			]
+		},
+		"book": {
+			"kind": "monster:mimic",
+			"at": [
+				0,
+				-4
+			],
+			"dir": "down"
+		}
+	},
+	"steps": [
+		{
+			"act": 1,
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "fade_in"
+				},
+				{
+					"state": "giggle",
+					"do": "voice"
+				}
+			],
+			"wait": 0.5
+		},
+		{
+			"speaker": "",
+			"text": "（投影里的走廊、月光、两个小小的背影慢慢淡去。金色大书「啪」地合上了——然后，自己长出了两排纸做的牙）",
+			"act": 1
+		},
+		{
+			"speaker": "恶作剧书怪",
+			"text": "（哗啦啦地翻页）嘻嘻嘻！偷看的人！偷看禁书的人！要罚！"
+		},
+		{
+			"speaker": "公主",
+			"text": "书、书说话了！？",
+			"emotion": "surprise"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……罚什么。"
+		},
+		{
+			"speaker": "恶作剧书怪",
+			"text": "罚——读书会！嘻嘻嘻，一页一页地读给你们的脚底听！"
+		},
+		{
+			"speaker": "",
+			"text": "（书页像舌头一样卷过来，缠住了两个人的脚踝，把她们拖倒在书堆上。一页一页的纸，轻轻地刷过脚心）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "book",
+					"zone": "sole",
+					"fx": "feather",
+					"repeat": 8,
+					"interval": 0.18,
+					"do": "tickle"
+				},
+				{
+					"who": "blue",
+					"by": "book",
+					"zone": "sole",
+					"fx": "feather",
+					"repeat": 6,
+					"interval": 0.2,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"visual": "giggle",
+					"do": "pose"
+				},
+				{
+					"who": "blue",
+					"visual": "giggle",
+					"do": "pose"
+				}
+			],
+			"act": 2
+		},
+		{
+			"speaker": "公主",
+			"text": "嘻……纸、纸好薄……蹭得好痒……！",
+			"emotion": "giggle"
+		},
+		{
+			"speaker": "恶作剧书怪",
+			"text": "第一章：脚心！第二章：趾缝！第三章：膝盖窝！嘻嘻嘻！"
+		},
+		{
+			"speaker": "",
+			"text": "（它真的按章节来。书页钻进趾缝里翻过去，又卷成小筒在膝盖窝里滚）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "book",
+					"zone": "sole",
+					"fx": "lines",
+					"repeat": 12,
+					"interval": 0.13,
+					"do": "tickle"
+				},
+				{
+					"who": "blue",
+					"by": "book",
+					"zone": "thigh",
+					"fx": "feather",
+					"repeat": 10,
+					"interval": 0.14,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"visual": "helpless_1",
+					"do": "pose"
+				},
+				{
+					"who": "blue",
+					"visual": "helpless_1",
+					"do": "pose"
+				},
+				{
+					"do": "voice",
+					"state": "laugh"
+				}
+			]
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……第、第三章……跳过……哈、哈……"
+		},
+		{
+			"speaker": "恶作剧书怪",
+			"text": "不准跳！好书要一字一字地读！",
+			"act": 3
+		},
+		{
+			"speaker": "",
+			"text": "（千手痒痒裤也凑了过来——书页刷外侧，裤子的手揉里侧，蓝色公主一下子并紧了膝盖）",
+			"actions": [
+				{
+					"who": "blue",
+					"by": "pants",
+					"zone": "thigh",
+					"fx": "hand",
+					"repeat": 12,
+					"interval": 0.11,
+					"do": "tickle"
+				},
+				{
+					"who": "blue",
+					"visual": "helpless_2",
+					"do": "pose"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "哈哈哈！第、第四章是什么——不要第四章——！",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "book",
+					"zone": "sole",
+					"fx": "feather",
+					"repeat": 14,
+					"interval": 0.1,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"visual": "helpless_2",
+					"do": "pose"
+				}
+			],
+			"emotion": "helpless_2"
+		},
+		{
+			"speaker": "恶作剧书怪",
+			"text": "第四章：全文朗读！"
+		},
+		{
+			"speaker": "",
+			"text": "（一整本书的书页同时翻了起来，哗啦啦啦——几百页纸一起刷过脚底、腿弯、腰侧）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "book",
+					"zone": "sole",
+					"fx": "lines",
+					"repeat": 16,
+					"interval": 0.09,
+					"do": "tickle"
+				},
+				{
+					"who": "blue",
+					"by": "book",
+					"zone": "sole",
+					"fx": "lines",
+					"repeat": 14,
+					"interval": 0.09,
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……哈……哈哈……不、不读了……（冰晶炸开，书页全冻成了薄薄的冰片……）",
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "flash"
+				},
+				{
+					"sound": "ice_crack",
+					"volume": -2.0,
+					"do": "sfx"
+				},
+				{
+					"sound": "water_release",
+					"volume": -2.0,
+					"do": "sfx"
+				},
+				{
+					"who": "blue",
+					"time": 0.4,
+					"do": "shake"
+				},
+				{
+					"state": "laugh",
+					"do": "voice"
+				}
+			],
+			"act": "burst",
+			"wait": 1.0
+		},
+		{
+			"speaker": "公主",
+			"text": "（星光跟着炸开，冰片碎成了一地闪闪的纸屑……哈啊……放出去了……）",
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "flash"
+				},
+				{
+					"sound": "star_burst",
+					"do": "sfx"
+				},
+				{
+					"sound": "water_release",
+					"volume": -2.0,
+					"do": "sfx"
+				},
+				{
+					"who": "princess",
+					"time": 0.4,
+					"do": "shake"
+				},
+				{
+					"state": "laugh",
+					"do": "voice"
+				}
+			],
+			"act": "burst",
+			"wait": 1.0
+		},
+		{
+			"speaker": "恶作剧书怪",
+			"text": "（冻得直哆嗦）嘻、嘻嘻……附、附录……还有附录……",
+			"act": 4
+		},
+		{
+			"speaker": "",
+			"text": "（剩下的几页书页软软地蹭了蹭两个人刚释放完、敏感得发烫的脚心——两个人一起缩成一团，笑着把它踢开了）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "book",
+					"zone": "sole",
+					"fx": "feather",
+					"repeat": 6,
+					"interval": 0.18,
+					"do": "tickle"
+				},
+				{
+					"who": "blue",
+					"by": "book",
+					"zone": "sole",
+					"fx": "feather",
+					"repeat": 6,
+					"interval": 0.18,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"time": 0.3,
+					"do": "shake"
+				},
+				{
+					"who": "blue",
+					"time": 0.3,
+					"do": "shake"
+				},
+				{
+					"do": "pose",
+					"who": "princess",
+					"visual": "helpless_2"
+				},
+				{
+					"do": "pose",
+					"who": "blue",
+					"visual": "helpless_2"
+				}
+			]
+		},
+		{
+			"speaker": "恶作剧书怪",
+			"text": "……读、读书会结束……下次再来……（变回了一本普通的金色大书）"
+		},
+		{
+			"speaker": "公主",
+			"text": "……哈……哈……刚才那个投影……那两个小女孩……",
+			"actions": [
+				{
+					"who": "princess",
+					"visual": "helpless_1",
+					"do": "pose"
+				},
+				{
+					"who": "blue",
+					"visual": "helpless_1",
+					"do": "pose"
+				}
+			],
+			"emotion": "sad"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……一个粉色头发。……一个蓝色头发。"
+		},
+		{
+			"speaker": "公主",
+			"text": "……",
+			"emotion": "sad"
+		},
+		{
+			"actions": [
+				{
+					"state": "",
+					"do": "voice"
+				},
+				{
+					"time": 0.6,
+					"do": "fade_out"
+				}
+			],
+			"wait": 0.7
+		}
+	]
+}

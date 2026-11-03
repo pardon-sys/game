@@ -1,0 +1,63 @@
+{
+	"name": "耐痒训练台",
+	"entries": [
+		{
+			"if": {
+				"flag": "cg_seen_theater:training_stocks"
+			},
+			"node": "again"
+		},
+		{
+			"node": "default"
+		}
+	],
+	"nodes": {
+		"default": {
+			"lines": [
+				{
+					"text": "（「骑士耐痒训练——坚持一刻钟不笑出声者，可称骑士」）",
+					"speaker": ""
+				}
+			],
+			"prompt": "坐上去试试？",
+			"choices": [
+				{
+					"text": "……试试看。",
+					"next": "go"
+				},
+				{
+					"text": "……先不了",
+					"next": "no"
+				}
+			]
+		},
+		"go": {
+			"lines": [
+				{
+					"text": "……试试看。",
+					"speaker": "公主"
+				}
+			],
+			"theater": "training_stocks",
+			"set": {
+				"passive": "knight_endurance"
+			}
+		},
+		"no": {
+			"lines": [
+				{
+					"text": "……等一下再说。",
+					"speaker": "公主"
+				}
+			]
+		},
+		"again": {
+			"lines": [
+				{
+					"text": "（训练台空着。牌子底下那行小字还亮着：「笑着坚持到最后的人，也是骑士」）",
+					"speaker": ""
+				}
+			]
+		}
+	}
+}

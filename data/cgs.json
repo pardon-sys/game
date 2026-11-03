@@ -287,6 +287,16 @@
 			"placeholder": "helpless_2",
 			"wide": true
 		},
+		"wardrobe_tryon": {
+			"file": "res://assets/cg/portraits/wardrobe_tryon.png",
+			"placeholder": "helpless_2",
+			"wide": true
+		},
+		"wardrobe_trap": {
+			"file": "res://assets/cg/portraits/wardrobe_trap.png",
+			"placeholder": "helpless_2",
+			"wide": true
+		},
 		"slime_1": {
 			"file": "res://assets/cg/portraits/slime_1.png",
 			"placeholder": "helpless_1"

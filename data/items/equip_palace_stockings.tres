@@ -1,0 +1,28 @@
+[gd_resource type="Resource" script_class="EquipData" format=3]
+
+[ext_resource type="Script" path="res://scripts/items/equip_data.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/generated/equip_icons.png" id="2"]
+
+[sub_resource type="AtlasTexture" id="icon"]
+atlas = ExtResource("2")
+region = Rect2(448, 0, 16, 16)
+
+[resource]
+script = ExtResource("1")
+id = "equip_palace_stockings"
+display_name = "宫廷丝袜"
+description = "自动穿袜机「清洁」完脚底以后给套上的淡紫色丝袜。滑滑的，隔着它挠就没那么痒了。"
+icon = SubResource("icon")
+category = 4
+stackable = false
+show_in_hud = false
+pickup_emotion = "happy"
+slots = Array[String](["sole"])
+owner_id = ""
+modifiers = {"laugh_decay": 0.1}
+zone_mods = {"sole": -0.2}
+block = {}
+cursed = false
+special = ""
+pros = "脚心敏感 −0.2、闷笑消减 +10%"
+cons = "（无）"

@@ -1,0 +1,200 @@
+{
+	"name": "衣帽间：衣柜陷阱",
+	"cast": {
+		"princess": {
+			"kind": "princess",
+			"at": [
+				-14,
+				8
+			],
+			"visual": "normal",
+			"anim": "idle",
+			"dir": "right"
+		},
+		"blue": {
+			"kind": "npc:blue_princess",
+			"at": [
+				14,
+				8
+			],
+			"visual": "normal",
+			"anim": "idle",
+			"dir": "left"
+		},
+		"pants": {
+			"kind": "trap:hand",
+			"at": [
+				20,
+				10
+			]
+		},
+		"wd": {
+			"kind": "trap:wardrobe",
+			"at": [
+				-8,
+				4
+			]
+		},
+		"imp": {
+			"kind": "monster:imp",
+			"at": [
+				-18,
+				14
+			],
+			"dir": "right"
+		},
+		"glove": {
+			"kind": "monster:glove",
+			"at": [
+				4,
+				14
+			],
+			"dir": "left"
+		}
+	},
+	"steps": [
+		{
+			"act": 1,
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "fade_in"
+				},
+				{
+					"state": "giggle",
+					"do": "voice"
+				}
+			],
+			"wait": 0.5
+		},
+		{
+			"speaker": "",
+			"text": "（一个雕着花的大衣柜。柜门上挂着一张泛黄的纸条：「捉迷藏专用——请勿关门」）",
+			"act": 1
+		},
+		{
+			"speaker": "公主",
+			"text": "……捉迷藏专用？……我看看里面。",
+			"emotion": "question"
+		},
+		{
+			"speaker": "",
+			"text": "（她刚钻进去，「砰」——柜门在身后自己关上了。锁孔里亮起一圈紫光，「咔哒」锁死了）",
+			"actions": [
+				{
+					"sound": "gate",
+					"volume": -2.0,
+					"do": "sfx"
+				},
+				{
+					"who": "princess",
+					"time": 0.4,
+					"do": "shake"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "诶！？锁、锁上了！？",
+			"emotion": "surprise"
+		},
+		{
+			"speaker": "",
+			"text": "（柜门下面的两块木板一翻，正好卡住了她的两只脚踝。鞋袜被轻轻一扯，掉在了柜子外面——两只光着的脚，从柜门底下的两个圆洞里伸了出来）",
+			"act": 2
+		},
+		{
+			"speaker": "公主",
+			"text": "……脚、脚露在外面了！？这是什么柜子——！",
+			"actions": [
+				{
+					"who": "princess",
+					"visual": "helpless_1",
+					"do": "pose"
+				},
+				{
+					"do": "voice",
+					"state": "laugh"
+				}
+			],
+			"emotion": "surprise"
+		},
+		{
+			"speaker": "",
+			"text": "（柜子周围的影子里，一只只小怪物探出了头：拿着鸡毛掸子的小鬼、浮在半空的手套、还有一只毛毛虫）"
+		},
+		{
+			"speaker": "",
+			"text": "（它们围到那两只脚跟前，你看看我、我看看你——然后一起动了手）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "imp",
+					"zone": "sole",
+					"fx": "feather",
+					"repeat": 10,
+					"interval": 0.14,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"by": "glove",
+					"zone": "sole",
+					"fx": "hand",
+					"repeat": 10,
+					"interval": 0.14,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"visual": "helpless_2",
+					"do": "pose"
+				}
+			],
+			"act": 3
+		},
+		{
+			"speaker": "公主",
+			"text": "哈哈哈！掸、掸子——手套——脚心——哈哈哈！",
+			"emotion": "helpless_2"
+		},
+		{
+			"speaker": "",
+			"text": "（柜门上的心形小窗里，露出她笑得满脸通红的脸。柜子外面，小怪物们围成一圈，玩得正开心）",
+			"portrait": "wardrobe_trap"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……！……等我。……钥匙，我去找。",
+			"actions": [
+				{
+					"who": "blue",
+					"visual": "normal",
+					"do": "pose"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "快、快一点——哈哈哈——它们越来越多了——！",
+			"emotion": "helpless_2"
+		},
+		{
+			"speaker": "",
+			"text": "（蓝色公主转身跑进了衣帽间深处。柜子里，笑声一阵比一阵大）"
+		},
+		{
+			"actions": [
+				{
+					"state": "",
+					"do": "voice"
+				},
+				{
+					"time": 0.6,
+					"do": "fade_out"
+				}
+			],
+			"wait": 0.7
+		}
+	]
+}

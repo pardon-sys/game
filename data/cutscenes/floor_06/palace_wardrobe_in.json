@@ -1,0 +1,29 @@
+{
+	"name": "衣帽间",
+	"letterbox": true,
+	"skippable": true,
+	"steps": [
+		{
+			"speaker": "",
+			"text": "（东门后面是衣帽间。一排排衣架挂满了旧礼服，墙上是一人高的穿衣镜，镜子里映出无数个她们）"
+		},
+		{
+			"speaker": "公主",
+			"text": "……哇。好多漂亮的衣服……",
+			"emotion": "happy"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……镜子。……有点多。"
+		},
+		{
+			"actions": [
+				{
+					"text": "调查衣帽间",
+					"do": "notify"
+				}
+			],
+			"wait": 0.3
+		}
+	]
+}

@@ -10,8 +10,8 @@ from PIL import Image
 
 SRC = Path("tools/art/src/story_scenes")
 OUT = Path("assets/generated/story_scenes")
-NAMES = ["knight_boss", "kq_shoes", "kq_samples", "kq_spear", "kq_fence", "kq_host", "kq_blue", "blue_pov_host", "blue_pov_shoes"]
-FOCUS = {"kq_spear": 0.85, "kq_samples": 1.0, "kq_blue": 0.1, "kq_shoes": 0.15, "kq_host": 0.15, "knight_boss": 0.15, "kq_fence": 0.25, "blue_pov_host": 0.2, "blue_pov_shoes": 0.2}
+NAMES = ["knight_boss", "kq_shoes", "kq_samples", "kq_spear", "kq_fence", "kq_host", "kq_blue", "blue_pov_host", "blue_pov_shoes", "library_flashback", "library_study"]
+FOCUS = {"kq_spear": 0.85, "kq_samples": 1.0, "kq_blue": 0.1, "kq_shoes": 0.15, "kq_host": 0.15, "knight_boss": 0.15, "kq_fence": 0.25, "blue_pov_host": 0.2, "blue_pov_shoes": 0.2, "library_flashback": 0.3, "library_study": 0.3}
 W, H = 1536, 864
 
 

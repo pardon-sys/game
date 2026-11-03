@@ -1,0 +1,218 @@
+{
+	"name": "衣帽间：打开衣柜",
+	"cast": {
+		"princess": {
+			"kind": "princess",
+			"at": [
+				-14,
+				8
+			],
+			"visual": "helpless_2",
+			"anim": "helpless",
+			"dir": "right"
+		},
+		"blue": {
+			"kind": "npc:blue_princess",
+			"at": [
+				14,
+				8
+			],
+			"visual": "normal",
+			"anim": "idle",
+			"dir": "left"
+		},
+		"pants": {
+			"kind": "trap:hand",
+			"at": [
+				20,
+				10
+			]
+		},
+		"wd": {
+			"kind": "trap:wardrobe",
+			"at": [
+				-8,
+				4
+			]
+		},
+		"imp": {
+			"kind": "monster:imp",
+			"at": [
+				-18,
+				14
+			],
+			"dir": "right"
+		},
+		"glove": {
+			"kind": "monster:glove",
+			"at": [
+				4,
+				14
+			],
+			"dir": "left"
+		}
+	},
+	"steps": [
+		{
+			"act": 1,
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "fade_in"
+				},
+				{
+					"state": "giggle",
+					"do": "voice"
+				}
+			],
+			"wait": 0.5
+		},
+		{
+			"speaker": "",
+			"text": "（蓝色公主喘着气跑回来，手里攥着一把小小的铜钥匙）",
+			"act": 1
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……找到了。……在大衣口袋里。……（看了一眼那两只还在被挠的脚）……"
+		},
+		{
+			"speaker": "公主",
+			"text": "（柜子里）哈哈……快……快开门……！",
+			"emotion": "helpless_2"
+		},
+		{
+			"speaker": "",
+			"text": "（小怪物们看见她，一哄而散——那只毛毛虫跑得最慢，被蓝色公主一指冻在了原地）",
+			"actions": [
+				{
+					"sound": "ice_crack",
+					"volume": -4.0,
+					"do": "sfx"
+				}
+			],
+			"act": 2
+		},
+		{
+			"speaker": "",
+			"text": "（钥匙插进锁孔，紫光「噗」地灭了。柜门打开，粉色公主整个人软软地倒了出来）",
+			"actions": [
+				{
+					"sound": "unlock",
+					"volume": -2.0,
+					"do": "sfx"
+				},
+				{
+					"who": "princess",
+					"visual": "helpless_1",
+					"do": "pose"
+				},
+				{
+					"do": "voice",
+					"state": "laugh"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "……哈……哈……得、得救了……",
+			"emotion": "helpless_1"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……（扶住她）……脚。……还好吗。"
+		},
+		{
+			"speaker": "公主",
+			"text": "……一点都不好……从脚跟到趾缝……全被挠了一遍……",
+			"emotion": "sad"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……",
+			"act": 3
+		},
+		{
+			"speaker": "",
+			"text": "（蓝色公主低头看着她红通通的脚心，伸出一根手指——在脚心正中央，轻轻戳了一下）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "blue",
+					"zone": "sole",
+					"fx": "hand",
+					"repeat": 2,
+					"interval": 0.2,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"time": 0.4,
+					"do": "shake"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "呀——！！你、你——！",
+			"emotion": "surprise"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……（转过头）……检查一下。……还痒不痒。"
+		},
+		{
+			"speaker": "公主",
+			"text": "你绝对是故意的！",
+			"emotion": "angry"
+		},
+		{
+			"speaker": "",
+			"text": "（粉色公主扑过去要报仇。蓝色公主往后一躲，千手痒痒裤正好在这时候发作——两个人一起滚倒在衣服堆里，笑作一团）",
+			"actions": [
+				{
+					"who": "blue",
+					"by": "pants",
+					"zone": "thigh",
+					"fx": "hand",
+					"repeat": 8,
+					"interval": 0.15,
+					"do": "tickle"
+				},
+				{
+					"who": "blue",
+					"visual": "helpless_1",
+					"do": "pose"
+				},
+				{
+					"who": "princess",
+					"visual": "giggle",
+					"do": "pose"
+				}
+			],
+			"act": 4
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……哈、哈哈……裤子……不是我……"
+		},
+		{
+			"speaker": "公主",
+			"text": "……哈哈……报应！这就是报应！",
+			"emotion": "happy"
+		},
+		{
+			"actions": [
+				{
+					"state": "",
+					"do": "voice"
+				},
+				{
+					"time": 0.6,
+					"do": "fade_out"
+				}
+			],
+			"wait": 0.7
+		}
+	]
+}

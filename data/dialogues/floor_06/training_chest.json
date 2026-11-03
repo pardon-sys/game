@@ -1,0 +1,64 @@
+{
+	"name": "旧箱子",
+	"entries": [
+		{
+			"if": {
+				"flag": "palace_frag_3"
+			},
+			"node": "again"
+		},
+		{
+			"if": {
+				"flag": "palace_training_cleared"
+			},
+			"node": "open"
+		},
+		{
+			"node": "default"
+		}
+	],
+	"nodes": {
+		"default": {
+			"lines": [
+				{
+					"text": "（一口上了锁的旧箱子。锁上刻着一口小钟的图案）",
+					"speaker": ""
+				},
+				{
+					"text": "……要先通过钟的考验？",
+					"speaker": "公主",
+					"emotion": "question"
+				}
+			]
+		},
+		"open": {
+			"lines": [
+				{
+					"text": "（箱子的锁「咔」地弹开了。里面放着一张撕破的纸）",
+					"speaker": ""
+				},
+				{
+					"text": "……最后一张残页！",
+					"speaker": "公主",
+					"emotion": "surprise"
+				}
+			],
+			"set": {
+				"flags": [
+					"palace_frag_3"
+				],
+				"add": {
+					"palace_frags": 1
+				}
+			}
+		},
+		"again": {
+			"lines": [
+				{
+					"text": "（箱子空了）",
+					"speaker": ""
+				}
+			]
+		}
+	}
+}

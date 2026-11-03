@@ -1,0 +1,45 @@
+{
+	"name": "书山下的残页",
+	"entries": [
+		{
+			"if": {
+				"flag": "palace_frag_1"
+			},
+			"node": "again"
+		},
+		{
+			"node": "default"
+		}
+	],
+	"nodes": {
+		"default": {
+			"lines": [
+				{
+					"text": "（倒下的书山底下，压着一张撕破的纸）",
+					"speaker": ""
+				},
+				{
+					"text": "……是记录簿上撕下来的那一页！",
+					"speaker": "公主",
+					"emotion": "surprise"
+				}
+			],
+			"set": {
+				"flags": [
+					"palace_frag_1"
+				],
+				"add": {
+					"palace_frags": 1
+				}
+			}
+		},
+		"again": {
+			"lines": [
+				{
+					"text": "（残页已经拿走了）",
+					"speaker": ""
+				}
+			]
+		}
+	}
+}
