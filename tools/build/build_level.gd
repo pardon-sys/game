@@ -77,6 +77,7 @@ const SCENES := {
 	"penancecell": "res://levels/floor_06/scenes/penance_cell.tscn",
 	"rattunnel": "res://levels/floor_06/scenes/rat_tunnel.tscn",
 	"meetexit": "res://levels/floor_06/scenes/meet_exit.tscn",
+	"waterwaydir": "res://levels/floor_06/scenes/waterway_director.tscn",
 	# 小镇攻防战（scripts/siege/）
 	"siege": "res://scenes/siege/siege_director.tscn",
 	"siegewall": "res://scenes/siege/siege_wall.tscn",

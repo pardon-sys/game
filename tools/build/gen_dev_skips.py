@@ -175,6 +175,8 @@ POINTS = [
     # 第二章·鼠洞：穿着鼠鼠装进（跳关时 PenanceCell 没机会换装：标记 penance_mouse_dev 让 RatTunnel 进图时补穿）
     point("反省篇·第二章 鼠洞", "floor_06_rat_tunnel", KNIGHT + KQ_ALL_DONE + ["knight_boss_done", "penance_ch1_done", "penance_mouse_dev"],
           knight_vars(10, 2, 10), passives=PASSIVES),
+    point("反省篇·第三章 废弃水道", "floor_06_waterway", KNIGHT + KQ_ALL_DONE + ["knight_boss_done", "penance_ch1_done", "penance_mouse_dev", "meet_exit_done", "intro_done_waterway_in"],
+          knight_vars(10, 2, 10), passives=PASSIVES),
 ]
 Path("data/dev").mkdir(parents=True, exist_ok=True)
 Path("data/dev/skip_points_more.json").write_text(json.dumps({

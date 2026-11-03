@@ -1,8 +1,8 @@
 class_name MeetExit
 extends Node2D
 ## 反省篇第三章·开场（floor_06_waterway_exit；地图 legend meetexit；台词 tools/build/penance_text/meet.py）：
-##   进图依次放：过场 meet_in（蓝色公主提着鞋在出口等）→ 小剧场 meet_pants（互相调侃裤子：千手痒痒裤挠蓝色公主、挠脚鼠不甘示弱挠粉色公主）
-##   → 过场 meet_out（章末「第三章　汇合」待续）。做过一次就记 DONE_FLAG，不再放。鼠鼠装一直穿着。
+##   进图依次放：过场 blue_pov（蓝色公主视角：问派对主人、溜进营地拿鞋，背景大图）→ 过场 meet_in（蓝色公主提着鞋在出口等）→ 小剧场 meet_pants（互相调侃裤子：千手痒痒裤挠蓝色公主、挠脚鼠不甘示弱挠粉色公主）
+##   → 过场 meet_out（两个人一起走进水道 → floor_06_waterway）。做过一次就记 DONE_FLAG，不再放。鼠鼠装一直穿着。
 const DONE_FLAG := "meet_exit_done"
 var running := false
 
@@ -17,6 +17,9 @@ func run() -> void:
 		return
 	running = true
 	await get_tree().create_timer(0.3).timeout
+	await Cutscene.play("blue_pov")
+	while Cutscene.is_playing():
+		await get_tree().process_frame
 	await Cutscene.play("meet_in")
 	while Cutscene.is_playing():
 		await get_tree().process_frame

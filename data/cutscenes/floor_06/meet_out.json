@@ -19,22 +19,21 @@
 		{
 			"actions": [
 				{
-					"time": 1.0,
+					"time": 0.8,
 					"do": "fade_out"
 				}
 			],
-			"wait": 1.0
+			"wait": 0.8
 		},
 		{
 			"actions": [
 				{
-					"title": "第三章　汇合",
-					"subtitle": "——（待续）废弃水道的深处，传来了哗哗的水声",
-					"next": "floor_06_after_house",
-					"do": "chapter_end"
+					"to": "floor_06_waterway",
+					"spawn": "from_exit",
+					"do": "goto"
 				}
 			],
-			"wait": 1.4
+			"wait": 0.2
 		}
 	]
 }

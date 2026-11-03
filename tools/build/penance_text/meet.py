@@ -106,8 +106,8 @@ def meet_out():
         line(N, "（两个人并肩站起来，看向水道的深处。很远很远的地方，好像有什么东西在发着微弱的光）"),
         line(BLUE, "……走吧。"),
         line(P, "……嗯！一起走。", "happy"),
-        {"actions": [A("fade_out", time=1.0)], "wait": 1.0},
-        {"actions": [A("chapter_end", title="第三章　汇合", subtitle="——（待续）废弃水道的深处，传来了哗哗的水声", next="floor_06_after_house")], "wait": 1.4},
+        {"actions": [A("fade_out", time=0.8)], "wait": 0.8},
+        {"actions": [A("goto", to="floor_06_waterway", spawn="from_exit")], "wait": 0.2},
     ]
     return {"name": "一起走", "letterbox": True, "skippable": False, "steps": s}
 

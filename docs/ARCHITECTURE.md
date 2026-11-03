@@ -1277,6 +1277,16 @@ data/cutscenes/<楼层组>/  地图内过场；data/theater/<楼层组>/  小剧
 - **第三章开场·水道的出口** `floor_06_waterway_exit`（等距 drain_water）：`MeetExit`（legend `meetexit`）进图依次放 `meet_in` → 小剧场 `meet_pants`
   （蓝色公主笑鼠鼠短裤 → 粉色公主回嘴提到千手痒痒裤 → 裤子的手挠蓝色公主 → 挠脚鼠听见笑声不甘示弱挠粉色公主，两人各释放一次）→ `meet_out`
   （章末「第三章　汇合」待续，`next = floor_06_after_house`）。文本 `tools/build/penance_text/meet.py`。
+- **第三章** 流程改为：水道出口 `MeetExit` 依次放 `blue_pov`（蓝色公主视角：背景大图 `blue_pov_host / blue_pov_shoes`，纯过场）→ `meet_in` → 小剧场 `meet_pants`
+  → `meet_out`（goto 废弃水道）。
+- **废弃水道** `floor_06_waterway`（等距 drain_water；布局 `quest_maps._waterway`；进图演 `waterway_in`）：`WaterwayDirector`（legend `waterwaydir`）开 `Duo`
+  （按 C 换人、AI 搭档 `WaterwayHooks`：戳泡泡 / 一起转轮盘 / 蓝色公主冰掉搭档身上的黑泥 / 打黑泥小人；两个都倒下或都被裹住 → `waterway_down(_first)` → 回检查点）。
+  机关：水位（`vars.waterway_high`；深水渠一直挡、浮木高水位能走且会翻、格栅通道低水位能走，挡路用看不见的 StaticBody2D）、轮盘（一人 4 秒 / 两人 1.5 秒）、
+  狮子头吐泡泡（裹住 = 定身 + 闷笑涨，搭档戳破）、浅水小鱼群（越站越多，冲刺甩掉）、黑泥小人（变慢 + 闷笑涨，清水池 / 蓝色公主的冰洗掉）。
+  等距注意：要单独投影的画面节点挂在 Entities 下（`RatTunnel` 的滴水管 / 猫也改成这样了）。
+- **水闸守门人** `SluiceKeeper`（走进场地创建）：三个阀门（站上去关，两人快一倍；AI 去关最近的）；招式轮换 刷子臂横扫（预警带 danger 组）/ 泡泡弹幕 / 黑泥喷口，
+  每关一个阀门放水淹场（石堆上安全）。输：`keeper_fail`（四幕 + CG `keeper_fail`）→ 复位；赢：`keeper_win`（闸门落下、踩着肩膀爬上去 → 旧王宫走廊）→ `waterway_end`
+  （「第三章　废弃水道　完」，`next = floor_06_after_house`，第四章做好后改成旧王宫）。文本 `tools/build/penance_text/waterway.py`。
 - 配乐（`tools/audio/gen_music.py`，ElevenLabs）：`old_palace` 旧王宫探索（荒凉、破旧、往日的华丽）、`palace_boss` 王座间 Boss「封笑的女王画像」，登记在 `Audio.MUSIC`，第四章用。
 
 ## 公主状态与换美术素材

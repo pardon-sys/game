@@ -1,0 +1,228 @@
+{
+	"name": "闸门落下",
+	"cast": {
+		"princess": {
+			"kind": "princess",
+			"at": [
+				-14,
+				8
+			],
+			"visual": "normal",
+			"anim": "idle",
+			"dir": "right"
+		},
+		"blue": {
+			"kind": "npc:blue_princess",
+			"at": [
+				14,
+				8
+			],
+			"visual": "normal",
+			"anim": "idle",
+			"dir": "left"
+		},
+		"pants": {
+			"kind": "trap:hand",
+			"at": [
+				20,
+				10
+			]
+		},
+		"rat": {
+			"kind": "monster:rat",
+			"at": [
+				-26,
+				12
+			],
+			"dir": "right"
+		}
+	},
+	"steps": [
+		{
+			"act": 1,
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "fade_in"
+				},
+				{
+					"state": "giggle",
+					"do": "voice"
+				}
+			],
+			"wait": 0.5
+		},
+		{
+			"speaker": "",
+			"text": "（最后一个阀门关上，守门人的齿轮发出一声长长的叹息，停了下来）",
+			"act": 1
+		},
+		{
+			"speaker": "水闸守门人",
+			"text": "……阀门……全部……关闭……守门……结束……"
+		},
+		{
+			"speaker": "公主",
+			"text": "……赢、赢了？",
+			"emotion": "happy"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……嗯。"
+		},
+		{
+			"speaker": "",
+			"text": "（「轰」——身后的闸门突然落了下来，把来路堵得严严实实。脚下的水开始慢慢往上涨）",
+			"actions": [
+				{
+					"who": "princess",
+					"time": 0.5,
+					"do": "shake"
+				},
+				{
+					"sound": "rumble",
+					"volume": -2.0,
+					"do": "sfx"
+				}
+			],
+			"act": 2
+		},
+		{
+			"speaker": "公主",
+			"text": "诶！？堵、堵住了！？水在涨！",
+			"emotion": "surprise"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……出口。……在上面。"
+		},
+		{
+			"speaker": "",
+			"text": "（闸门上方很高的地方，有一道窄窄的缝，透出一点点光。光里飘着一股很旧很旧的、像是花香的味道）"
+		},
+		{
+			"speaker": "挠脚鼠",
+			"text": "（从短裤里探出头）吱吱！那上面！我闻到了，是很老很老的石头的味道——还有地毯！"
+		},
+		{
+			"speaker": "公主",
+			"text": "地毯？……这底下哪来的地毯？",
+			"emotion": "question"
+		},
+		{
+			"speaker": "",
+			"text": "（水已经没过了膝盖。蓝色公主看了看那道缝，又看了看粉色公主）",
+			"act": 3
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……踩我。……上去。"
+		},
+		{
+			"speaker": "公主",
+			"text": "诶？踩、踩你？",
+			"emotion": "surprise"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……快。"
+		},
+		{
+			"speaker": "",
+			"text": "（粉色公主踩着蓝色公主的肩膀往上爬。鼠爪鞋的肉垫软软地踩在肩上，挠脚鼠在短裤里一激动，又窜了一下）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "rat",
+					"zone": "thigh",
+					"fx": "hand",
+					"repeat": 6,
+					"interval": 0.15,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"visual": "giggle",
+					"do": "pose"
+				},
+				{
+					"who": "blue",
+					"visual": "giggle",
+					"do": "pose"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "噫——！别、别在这时候——会掉下去的！",
+			"emotion": "giggle"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……肩、肩膀……肉垫……好痒……别乱动……"
+		},
+		{
+			"speaker": "",
+			"text": "（千手痒痒裤听见「痒」字，也跟着揉了一下。底下的人一抖，上面的人一晃——两个人笑着，一点一点地挪到了缝口）",
+			"actions": [
+				{
+					"who": "blue",
+					"by": "pants",
+					"zone": "thigh",
+					"fx": "hand",
+					"repeat": 6,
+					"interval": 0.15,
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "……抓、抓到了！来，手给我！",
+			"emotion": "happy",
+			"act": 4
+		},
+		{
+			"speaker": "",
+			"text": "（粉色公主趴在缝口，把蓝色公主拉了上来。两个人一起滚进了缝的另一头——）",
+			"actions": [
+				{
+					"who": "princess",
+					"visual": "normal",
+					"do": "pose"
+				},
+				{
+					"who": "blue",
+					"visual": "normal",
+					"do": "pose"
+				}
+			]
+		},
+		{
+			"speaker": "",
+			"text": "（……是一条长长的走廊。褪了色的红地毯一直铺到看不见的地方，墙上挂着落满灰的金色画框，画里的人都没有脸）"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……这里是。"
+		},
+		{
+			"speaker": "公主",
+			"text": "……旧王宫。",
+			"emotion": "surprise"
+		},
+		{
+			"actions": [
+				{
+					"state": "",
+					"do": "voice"
+				},
+				{
+					"time": 0.6,
+					"do": "fade_out"
+				}
+			],
+			"wait": 0.7
+		}
+	]
+}
