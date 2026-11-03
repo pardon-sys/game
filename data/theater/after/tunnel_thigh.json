@@ -1,0 +1,369 @@
+{
+	"name": "鼠洞①：低矮的缝",
+	"cast": {
+		"princess": {
+			"kind": "princess",
+			"at": [
+				0,
+				8
+			],
+			"visual": "normal",
+			"anim": "idle",
+			"dir": "down"
+		},
+		"rat": {
+			"kind": "monster:rat",
+			"at": [
+				12,
+				10
+			],
+			"dir": "left"
+		}
+	},
+	"steps": [
+		{
+			"act": 1,
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "fade_in"
+				},
+				{
+					"state": "giggle",
+					"do": "voice"
+				}
+			],
+			"wait": 0.5
+		},
+		{
+			"speaker": "",
+			"text": "（洞越走越矮。到这里，已经只能趴下来，用胳膊肘一点一点往前挪了）",
+			"act": 1
+		},
+		{
+			"speaker": "公主",
+			"text": "……好窄。头发都蹭到顶上了……",
+			"emotion": "sad"
+		},
+		{
+			"speaker": "挠脚鼠",
+			"text": "（从短裤里探出头）吱吱。别停，再往前爬一段就宽了。"
+		},
+		{
+			"speaker": "公主",
+			"text": "你、你给我老实待着。不许乱动。",
+			"emotion": "angry"
+		},
+		{
+			"speaker": "挠脚鼠",
+			"text": "我很老实呀。……就是这里有点闷。我出来透透气。"
+		},
+		{
+			"speaker": "",
+			"text": "（短裤里有什么东西拱了一下。毛茸茸的一团，从屁股这边慢慢挪到了大腿根）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "rat",
+					"zone": "thigh",
+					"fx": "hand",
+					"repeat": 4,
+					"interval": 0.3,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"visual": "giggle",
+					"do": "pose"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "噫……！你说透气，为什么往那边跑！",
+			"emotion": "giggle"
+		},
+		{
+			"speaker": "挠脚鼠",
+			"text": "这边比较凉快嘛。吱。"
+		},
+		{
+			"speaker": "",
+			"text": "（她一下子僵住了。缝太矮，翻不了身，也伸不过手去——只能趴着，任由那团毛在腿根上转圈）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "rat",
+					"zone": "thigh",
+					"fx": "feather",
+					"repeat": 8,
+					"interval": 0.2,
+					"do": "tickle"
+				}
+			],
+			"act": 2
+		},
+		{
+			"speaker": "公主",
+			"text": "（……别动……别动……一动就卡住了……）",
+			"emotion": "giggle"
+		},
+		{
+			"speaker": "",
+			"text": "（挠脚鼠的小爪子一下一下地踩，胡子尖扫过腿根最软的那一圈）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "rat",
+					"zone": "thigh",
+					"fx": "feather",
+					"repeat": 10,
+					"interval": 0.16,
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "嘻……嘻嘻……胡、胡子……不要用胡子……！",
+			"emotion": "giggle"
+		},
+		{
+			"speaker": "挠脚鼠",
+			"text": "不用胡子怎么认路呀。吱吱。"
+		},
+		{
+			"speaker": "公主",
+			"text": "你在短裤里认什么路——！",
+			"emotion": "angry"
+		},
+		{
+			"speaker": "",
+			"text": "（她想往前爬快一点，膝盖一用力，腿一夹——那团毛被夹住了，吱地叫了一声，开始拼命往外挤）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "rat",
+					"zone": "thigh",
+					"fx": "hand",
+					"repeat": 12,
+					"interval": 0.12,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"visual": "helpless_1",
+					"do": "pose"
+				},
+				{
+					"do": "voice",
+					"state": "laugh"
+				}
+			],
+			"act": 3
+		},
+		{
+			"speaker": "公主",
+			"text": "哈……哈哈……别、别挤……越挤越……！",
+			"emotion": "helpless_1"
+		},
+		{
+			"speaker": "挠脚鼠",
+			"text": "是你夹住我的！吱！松开松开！"
+		},
+		{
+			"speaker": "",
+			"text": "（她一松腿，挠脚鼠就顺着腿根「嗖」地钻到了另一边，又从另一边钻回来，来回好几趟）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "rat",
+					"zone": "thigh",
+					"fx": "feather",
+					"repeat": 14,
+					"interval": 0.11,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"by": "rat",
+					"zone": "butt",
+					"fx": "hand",
+					"repeat": 8,
+					"interval": 0.14,
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "哈哈哈哈！两边……两边来回跑……！趴着动不了……哈哈哈！",
+			"actions": [
+				{
+					"who": "princess",
+					"visual": "helpless_2",
+					"do": "pose"
+				}
+			],
+			"emotion": "helpless_2"
+		},
+		{
+			"speaker": "",
+			"text": "（缝太矮了。她笑得直捶地，脑袋「咚」地撞到了顶上，又笑得更厉害了）",
+			"actions": [
+				{
+					"who": "princess",
+					"time": 0.4,
+					"do": "shake"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "撞、撞到头了……哈哈……好痛……可是好痒……哈哈哈！",
+			"emotion": "helpless_2"
+		},
+		{
+			"speaker": "挠脚鼠",
+			"text": "吱吱，别笑那么大声嘛，顶上的土要掉下来了。"
+		},
+		{
+			"speaker": "",
+			"text": "（土簌簌地往下掉。魔力也跟着笑声一起，一点一点地满了上来）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "rat",
+					"zone": "thigh",
+					"fx": "feather",
+					"repeat": 12,
+					"interval": 0.1,
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "（星光在窄窄的缝里炸开，照亮了整条洞……哈啊……放出去了……身体暖洋洋的……好舒服……）",
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "flash"
+				},
+				{
+					"sound": "star_burst",
+					"do": "sfx"
+				},
+				{
+					"sound": "water_release",
+					"volume": -2.0,
+					"do": "sfx"
+				},
+				{
+					"who": "princess",
+					"time": 0.4,
+					"do": "shake"
+				},
+				{
+					"state": "laugh",
+					"do": "voice"
+				}
+			],
+			"act": "burst",
+			"wait": 1.0
+		},
+		{
+			"speaker": "",
+			"text": "（挠脚鼠被星光吓了一跳，一头钻回了短裤深处——正好贴着刚释放完、敏感得发烫的腿根）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "rat",
+					"zone": "thigh",
+					"fx": "hand",
+					"repeat": 8,
+					"interval": 0.15,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"visual": "helpless_2",
+					"do": "pose"
+				}
+			],
+			"act": 4
+		},
+		{
+			"speaker": "公主",
+			"text": "呀……！现、现在不要动……一点点都不行……！",
+			"emotion": "helpless_2"
+		},
+		{
+			"speaker": "挠脚鼠",
+			"text": "我在发抖嘛！你的魔法好可怕！吱吱吱！"
+		},
+		{
+			"speaker": "",
+			"text": "（它一抖，小爪子就在腿根上抖出一串痒。她趴在地上，一边笑一边求饶）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "rat",
+					"zone": "thigh",
+					"fx": "feather",
+					"repeat": 12,
+					"interval": 0.12,
+					"do": "tickle"
+				},
+				{
+					"do": "pose",
+					"who": "princess",
+					"visual": "helpless_2"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "……哈哈……别抖了……我、我不放魔法了……你也别抖了……",
+			"emotion": "helpless_2"
+		},
+		{
+			"speaker": "",
+			"text": "（好一会儿，那团毛才安静下来，在短裤里蜷成一个球。前面的缝也终于宽了一点）",
+			"actions": [
+				{
+					"who": "princess",
+					"visual": "helpless_1",
+					"do": "pose"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "……哈……哈……出去以后……我第一件事就是把这条短裤扔掉……",
+			"emotion": "helpless_1"
+		},
+		{
+			"speaker": "挠脚鼠",
+			"text": "吱。那我住哪里呀。"
+		},
+		{
+			"speaker": "公主",
+			"text": "……爱住哪住哪！",
+			"emotion": "angry"
+		},
+		{
+			"actions": [
+				{
+					"state": "",
+					"do": "voice"
+				},
+				{
+					"time": 0.6,
+					"do": "fade_out"
+				}
+			],
+			"wait": 0.7
+		}
+	]
+}

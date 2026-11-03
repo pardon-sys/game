@@ -1,0 +1,63 @@
+{
+	"name": "出口",
+	"letterbox": true,
+	"skippable": false,
+	"steps": [
+		{
+			"actions": [
+				{
+					"time": 0.4,
+					"do": "fade_out"
+				}
+			],
+			"wait": 0.4
+		},
+		{
+			"speaker": "",
+			"text": "（井口外面，是一条很宽很宽的旧水道。水声哗哗地响，远处有一点点灯光）"
+		},
+		{
+			"speaker": "公主",
+			"text": "……出来了。",
+			"emotion": "happy"
+		},
+		{
+			"speaker": "挠脚鼠",
+			"text": "吱。这里就是外面了——至少，是离外面近一点的地方。"
+		},
+		{
+			"speaker": "公主",
+			"text": "……谢谢你，挠脚鼠。虽然你挠了我一路。",
+			"emotion": "shy"
+		},
+		{
+			"speaker": "挠脚鼠",
+			"text": "吱吱。不客气。……不过短裤还不能还我。前面的路，我还要带你走一段。"
+		},
+		{
+			"speaker": "公主",
+			"text": "还、还要穿着！？",
+			"emotion": "surprise"
+		},
+		{
+			"speaker": "",
+			"text": "（灯光那边，水道的出口处，好像站着一个人影。那个人影手里，提着一双鞋）"
+		},
+		{
+			"speaker": "公主",
+			"text": "……那是……",
+			"emotion": "surprise"
+		},
+		{
+			"actions": [
+				{
+					"title": "第二章　鼠洞　完",
+					"subtitle": "——出口的灯光里，站着一个熟悉的身影",
+					"next": "floor_06_after_house",
+					"do": "chapter_end"
+				}
+			],
+			"wait": 1.4
+		}
+	]
+}

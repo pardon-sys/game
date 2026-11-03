@@ -73,6 +73,8 @@ static func make_princess(actor_id: String, who := "") -> CGActor:
 				a.animator.texture_overrides = source.texture_overrides.duplicate()
 			inst.free()
 	a.add_child(a.animator)
+	# 服装造型（反省篇的鼠鼠装）：小剧场里也穿着
+	a.animator.outfit = Equipment.outfit(who)
 	a.animator.play("helpless")
 	return a
 

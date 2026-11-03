@@ -324,6 +324,13 @@
 			"music": "night_room"
 		},
 		{
+			"id": "floor_06_rat_tunnel",
+			"name": "鼠洞",
+			"scene": "res://levels/floor_06_rat_tunnel/floor.tscn",
+			"group": "floor_06",
+			"music": "night_room"
+		},
+		{
 			"id": "floor_08_maze_1",
 			"name": "第八层·夜迷宫一·外环回廊",
 			"scene": "res://levels/floor_08_maze_1/floor.tscn",

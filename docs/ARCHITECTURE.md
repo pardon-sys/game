@@ -1263,7 +1263,15 @@ data/cutscenes/<楼层组>/  地图内过场；data/theater/<楼层组>/  小剧
   → `EquipFx._mouse_scent` 每 `SCENT_EVERY` 秒把 `SCENT_R` 内的怪 `rally_to` 过来。换上 / 脱下：`PenanceCell.wear_mouse / take_off_mouse`（原装备记在 `vars.penance_prev_equip`）。
 - 文本：`tools/build/penance_text/`（`argue.py` 帐篷 / 进门，`cell.py` 六段小剧场 / 调查点 / 挠脚鼠 / 钻墙缝）；拘束床的 CG `penance_bed`
   （codex，提示词 `tools/art/src/penance_cg/prompts.md`，`import_cg.py --penance`）；道具像素图 `tools/art/gen_penance_art.py`。
-- 过场的 `lie` 对镇民 / 骑士也能用（小人横过来）。测试：`f6_after_test -- --penance-only`；跳关点「反省篇·第一章 …」。
+- 过场的 `lie` 对镇民 / 骑士也能用（小人横过来）。测试：`f6_after_test -- --penance-only`（第一、二章）；跳关点「反省篇·第一章 …」「反省篇·第二章 鼠洞」。
+- 第一章章末 `next = floor_06_rat_tunnel`，鼠鼠装一直穿着（到第三章出了水道才 `take_off_mouse`）。
+- **鼠鼠装的造型**：`Equipment.outfit(角色)` = "mouse" 时，`SpriteSheetAnimator.set_outfit` 把每张图集换成 `*_mouse.png`（高清 `*_mouse_hd.png`；
+  `PlayableCharacter.refresh_outfit` 跟着 `equipment_changed`，小剧场的 `CGActor.make_princess` 也套上），对话立绘换 `pink_mouse`（`portraits_mouse.png`）。
+  美术：`tools/art/import_mouse_outfit.py`（立绘 = codex 按原立绘只改腿脚，提示词 `src/mouse_outfit/prompts.md`；行走 / 魔法图 = 程序把脚下那一截的白袜换成光腿、红鞋换成灰鼠拖鞋、加尾巴）。
+- **第二章·鼠洞** `floor_06_rat_tunnel`（等距 crack_cave，布局 `quest_maps._tunnel`，进图演 `tunnel_in`）：`RatTunnel`（地图 legend `rattunnel`）——
+  走到 thigh / sole / shaft 演 `tunnel_thigh / tunnel_sole / tunnel_shaft`（竖井是章末大段 + CG `tunnel_shaft`，演完 `tunnel_out` 章末「第二章　鼠洞　完」）；
+  滴水管 `Drip`（先出影子，滴到她 → 鼠鼠装发作一次）；检查点；猫咪追逐 `TunnelCat`（走到 cat_start 从身后的检查点追出来，`CAT_SPEED` 介于走和冲刺之间，
+  跑到 cat_end 安全；追上 → `tunnel_cat_first` / `tunnel_cat` → 回检查点）；老鼠窝 / 刻字（`floor_06/tunnel_nest`、`tunnel_clue`）。短台词 `data/after/tunnel.json`。
 
 ## 公主状态与换美术素材
 

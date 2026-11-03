@@ -1,0 +1,79 @@
+{
+	"name": "鼠洞",
+	"letterbox": true,
+	"skippable": true,
+	"steps": [
+		{
+			"actions": [
+				{
+					"to": [
+						5,
+						3
+					],
+					"zoom": 1.0,
+					"time": 0.4,
+					"do": "camera"
+				}
+			],
+			"wait": 0.4
+		},
+		{
+			"speaker": "",
+			"text": "（墙缝的另一头，是一条又黑又窄的土洞。空气里有一股潮湿的泥土味）"
+		},
+		{
+			"speaker": "挠脚鼠",
+			"text": "（从短裤里探出头）吱吱。欢迎来到我的家。"
+		},
+		{
+			"speaker": "公主",
+			"text": "……你的家也太窄了吧。",
+			"emotion": "sad"
+		},
+		{
+			"speaker": "挠脚鼠",
+			"text": "先说好三件事。第一，我住在你身上，偶尔会跑一跑。"
+		},
+		{
+			"speaker": "公主",
+			"text": "「偶尔」……",
+			"emotion": "angry"
+		},
+		{
+			"speaker": "挠脚鼠",
+			"text": "第二，洞顶的水管会漏水。滴到身上，我会被吓到——被吓到就会乱窜。"
+		},
+		{
+			"speaker": "挠脚鼠",
+			"text": "第三……那只橘猫，它闻得到我的味道。它会追进来的。"
+		},
+		{
+			"speaker": "公主",
+			"text": "……全是你的问题吧！？",
+			"emotion": "angry"
+		},
+		{
+			"speaker": "挠脚鼠",
+			"text": "吱吱。所以要快点爬呀。看见猫就冲刺，钻进小洞它就进不来了。"
+		},
+		{
+			"speaker": "公主",
+			"text": "……走就走。",
+			"emotion": "angry"
+		},
+		{
+			"actions": [
+				{
+					"reset": true,
+					"time": 0.4,
+					"do": "camera"
+				},
+				{
+					"text": "穿过鼠洞（滴水的地方看准了再走；被猫追就冲刺）",
+					"do": "notify"
+				}
+			],
+			"wait": 0.4
+		}
+	]
+}

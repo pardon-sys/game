@@ -1,0 +1,405 @@
+{
+	"name": "鼠洞③：竖井",
+	"cast": {
+		"princess": {
+			"kind": "princess",
+			"at": [
+				0,
+				6
+			],
+			"visual": "normal",
+			"anim": "idle",
+			"dir": "down"
+		},
+		"rat": {
+			"kind": "monster:rat",
+			"at": [
+				12,
+				4
+			],
+			"dir": "left"
+		}
+	},
+	"steps": [
+		{
+			"act": 1,
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "fade_in"
+				},
+				{
+					"state": "giggle",
+					"do": "voice"
+				}
+			],
+			"wait": 0.5
+		},
+		{
+			"speaker": "",
+			"text": "（洞的尽头是一口竖井。抬头看上去，很高很高的地方，有一点点光）",
+			"act": 1
+		},
+		{
+			"speaker": "挠脚鼠",
+			"text": "吱吱。爬上去就到了。最后一段啦。"
+		},
+		{
+			"speaker": "公主",
+			"text": "……终于。再忍一会儿，就能把这条短裤扔掉了。",
+			"emotion": "happy"
+		},
+		{
+			"speaker": "挠脚鼠",
+			"text": "可是我舍不得你呀。吱。……最后一段，我们好好告个别吧。"
+		},
+		{
+			"speaker": "公主",
+			"text": "……你说的「告别」，我怎么听着这么不对劲。",
+			"emotion": "question"
+		},
+		{
+			"speaker": "",
+			"text": "（她踩着井壁上的凹坑往上爬。爬到一半，两只手两只脚都撑在井壁上——一点都腾不出来）",
+			"act": 2
+		},
+		{
+			"speaker": "",
+			"text": "（短裤里，那团毛动了。它从屁股出发，「嗖」地一路窜到了大腿根）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "rat",
+					"zone": "thigh",
+					"fx": "hand",
+					"repeat": 6,
+					"interval": 0.15,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"visual": "giggle",
+					"do": "pose"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "呀！现、现在不行！我两只手都……！",
+			"emotion": "giggle"
+		},
+		{
+			"speaker": "挠脚鼠",
+			"text": "所以才是现在呀。吱吱。"
+		},
+		{
+			"speaker": "",
+			"text": "（它没有停。顺着腿一路滑下去，钻进鼠爪鞋里，在脚心上踩了两圈——又顺着腿一路窜回腰上）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "rat",
+					"zone": "sole",
+					"fx": "lines",
+					"repeat": 6,
+					"interval": 0.14,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"by": "rat",
+					"zone": "waist",
+					"fx": "hand",
+					"repeat": 6,
+					"interval": 0.14,
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "噫——！下、下去又上来……你在我身上跑来跑去……！",
+			"emotion": "giggle"
+		},
+		{
+			"speaker": "",
+			"text": "（腰、腿根、膝盖窝、脚心。再从脚心、膝盖窝、腿根、腰。一趟，两趟，三趟）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "rat",
+					"zone": "waist",
+					"fx": "hand",
+					"repeat": 8,
+					"interval": 0.12,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"by": "rat",
+					"zone": "thigh",
+					"fx": "feather",
+					"repeat": 8,
+					"interval": 0.12,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"by": "rat",
+					"zone": "sole",
+					"fx": "lines",
+					"repeat": 8,
+					"interval": 0.12,
+					"do": "tickle"
+				}
+			],
+			"act": 3
+		},
+		{
+			"speaker": "公主",
+			"text": "哈哈哈哈！上上下下的——停、停一下！我要掉下去了——哈哈哈！",
+			"actions": [
+				{
+					"who": "princess",
+					"visual": "helpless_2",
+					"do": "pose"
+				},
+				{
+					"do": "voice",
+					"state": "laugh"
+				}
+			],
+			"emotion": "helpless_2",
+			"portrait": "tunnel_shaft"
+		},
+		{
+			"speaker": "挠脚鼠",
+			"text": "掉不下去的，你抓得可紧了。吱吱。"
+		},
+		{
+			"speaker": "",
+			"text": "（她笑得脚下一滑——只剩两只手死死抓着一根树根，整个人吊在了井的半中间，两条腿在半空里乱蹬，一只鼠爪鞋也蹬掉了）",
+			"actions": [
+				{
+					"who": "princess",
+					"time": 0.4,
+					"do": "shake"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "哈……哈哈……吊、吊着了……这一路……我就没有不狼狈的时候……！",
+			"emotion": "helpless_2"
+		},
+		{
+			"speaker": "",
+			"text": "（挠脚鼠趁机扒在了那只光着的脚上。胡子贴着脚心扫来扫去，两只小前爪捧着她的脚趾，一根一根地掰开，在每一道缝里轻轻地挠）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "rat",
+					"zone": "sole",
+					"fx": "lines",
+					"repeat": 16,
+					"interval": 0.1,
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "哈哈哈哈！脚趾……一根一根……不要……！",
+			"emotion": "helpless_2"
+		},
+		{
+			"speaker": "挠脚鼠",
+			"text": "这是告别的仪式。吱。挠脚鼠一族，送别人的时候，要把每个脚趾缝都挠一遍。"
+		},
+		{
+			"speaker": "公主",
+			"text": "哪、哪有这种仪式——哈哈哈！你现编的吧——！",
+			"emotion": "helpless_2"
+		},
+		{
+			"speaker": "",
+			"text": "（挠完脚趾，它又「嗖」地窜回大腿根，在那里转了好几圈，尾巴扫来扫去）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "rat",
+					"zone": "thigh",
+					"fx": "feather",
+					"repeat": 14,
+					"interval": 0.1,
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "我、我认输……挠脚鼠大人……我认输……哈哈哈……眼泪都……！",
+			"emotion": "helpless_2"
+		},
+		{
+			"speaker": "",
+			"text": "（笑声在竖井里一圈一圈地回荡，越来越响。魔力也跟着一圈一圈往上涨——）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "rat",
+					"zone": "sole",
+					"fx": "lines",
+					"repeat": 12,
+					"interval": 0.1,
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "（星光从井底一直冲到井口，把整口竖井照得亮堂堂的……哈啊……哈……好、好舒服……身体轻飘飘的……）",
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "flash"
+				},
+				{
+					"sound": "star_burst",
+					"do": "sfx"
+				},
+				{
+					"sound": "water_release",
+					"volume": -2.0,
+					"do": "sfx"
+				},
+				{
+					"who": "princess",
+					"time": 0.4,
+					"do": "shake"
+				},
+				{
+					"state": "laugh",
+					"do": "voice"
+				}
+			],
+			"act": "burst",
+			"wait": 1.0
+		},
+		{
+			"speaker": "",
+			"text": "（星光托着她往上一送，她终于够到了井口的边。……可挠脚鼠还在。它爬到她刚释放完、敏感得发烫的腰上，轻轻地挠了一下）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "rat",
+					"zone": "waist",
+					"fx": "hand",
+					"repeat": 6,
+					"interval": 0.15,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"visual": "helpless_2",
+					"do": "pose"
+				}
+			],
+			"act": 4
+		},
+		{
+			"speaker": "公主",
+			"text": "呀啊……！不、不要……释放完以后……一下都……！",
+			"emotion": "helpless_2"
+		},
+		{
+			"speaker": "挠脚鼠",
+			"text": "最后一下，最后一下。吱。"
+		},
+		{
+			"speaker": "",
+			"text": "（「最后一下」变成了最后十下。腰侧、腿根、脚心，它把这一路走过的地方又挨个告别了一遍）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "rat",
+					"zone": "waist",
+					"fx": "hand",
+					"repeat": 8,
+					"interval": 0.12,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"by": "rat",
+					"zone": "thigh",
+					"fx": "feather",
+					"repeat": 8,
+					"interval": 0.12,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"by": "rat",
+					"zone": "sole",
+					"fx": "lines",
+					"repeat": 8,
+					"interval": 0.12,
+					"do": "tickle"
+				},
+				{
+					"do": "pose",
+					"who": "princess",
+					"visual": "helpless_2"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "哈哈哈……骗子……你这个……哈哈哈……小骗子……！",
+			"emotion": "helpless_2"
+		},
+		{
+			"speaker": "",
+			"text": "（她扒着井口的边，笑得一点力气都没有，好半天才一点一点地翻了上去，仰面躺在地上）",
+			"actions": [
+				{
+					"who": "princess",
+					"visual": "helpless_1",
+					"do": "pose"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "……哈……哈……爬、爬出来了……",
+			"emotion": "helpless_1"
+		},
+		{
+			"speaker": "挠脚鼠",
+			"text": "（从短裤里探出头，舔了舔鼻子）吱吱。你笑起来很好听。……和以前那个小姑娘一模一样。"
+		},
+		{
+			"speaker": "公主",
+			"text": "……以前那个？",
+			"emotion": "question"
+		},
+		{
+			"speaker": "挠脚鼠",
+			"text": "挖这条洞的小姑娘。她也是一边爬一边笑，说要去找她的姐姐。……吱。走吧，外面就是了。"
+		},
+		{
+			"actions": [
+				{
+					"state": "",
+					"do": "voice"
+				},
+				{
+					"time": 0.6,
+					"do": "fade_out"
+				}
+			],
+			"wait": 0.7
+		}
+	]
+}

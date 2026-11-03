@@ -1,0 +1,196 @@
+{
+	"name": "鼠洞里的橘猫",
+	"cast": {
+		"princess": {
+			"kind": "princess",
+			"at": [
+				0,
+				8
+			],
+			"visual": "helpless_1",
+			"anim": "helpless",
+			"dir": "down"
+		},
+		"cat": {
+			"kind": "trap:cat_guard",
+			"at": [
+				12,
+				10
+			]
+		}
+	},
+	"steps": [
+		{
+			"act": 1,
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "fade_in"
+				},
+				{
+					"state": "giggle",
+					"do": "voice"
+				}
+			],
+			"wait": 0.5
+		},
+		{
+			"speaker": "",
+			"text": "（橘猫一个飞扑，把她压在了地上。它不是来抓她的——它是来抓短裤里那只老鼠的）",
+			"actions": [
+				{
+					"who": "princess",
+					"time": 0.4,
+					"do": "shake"
+				}
+			],
+			"act": 1
+		},
+		{
+			"speaker": "橘猫",
+			"text": "喵！喵喵！"
+		},
+		{
+			"speaker": "挠脚鼠",
+			"text": "（在短裤里）吱吱吱！别让它进来！别让它进来！"
+		},
+		{
+			"speaker": "",
+			"text": "（猫爪子扒着短裤，扒不进去，就在大腿根上扒来扒去；尾巴扫着膝盖窝）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "cat",
+					"zone": "thigh",
+					"fx": "feather",
+					"repeat": 10,
+					"interval": 0.15,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"visual": "helpless_1",
+					"do": "pose"
+				},
+				{
+					"do": "voice",
+					"state": "laugh"
+				}
+			],
+			"act": 2
+		},
+		{
+			"speaker": "公主",
+			"text": "哈哈……别、别扒那里……老鼠在里面……不对，你也别抓老鼠……哈哈！",
+			"emotion": "helpless_1"
+		},
+		{
+			"speaker": "",
+			"text": "（挠脚鼠吓得一路逃到了鼠爪鞋里。橘猫立刻追过去，对着鞋——连着鞋里的脚心——一口一口地舔）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "cat",
+					"zone": "sole",
+					"fx": "lines",
+					"repeat": 12,
+					"interval": 0.12,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"visual": "helpless_2",
+					"do": "pose"
+				}
+			],
+			"act": 3
+		},
+		{
+			"speaker": "公主",
+			"text": "哈哈哈哈！舌头……舌头好粗——脚心——哈哈哈！",
+			"emotion": "helpless_2"
+		},
+		{
+			"speaker": "挠脚鼠",
+			"text": "吱吱吱！我在这里……不对，我不在这里！"
+		},
+		{
+			"speaker": "公主",
+			"text": "（星光「砰」地炸开，橘猫被吓得毛全竖了起来……哈啊……放出去了……好舒服……）",
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "flash"
+				},
+				{
+					"sound": "star_burst",
+					"do": "sfx"
+				},
+				{
+					"sound": "water_release",
+					"volume": -2.0,
+					"do": "sfx"
+				},
+				{
+					"who": "princess",
+					"time": 0.4,
+					"do": "shake"
+				},
+				{
+					"state": "laugh",
+					"do": "voice"
+				}
+			],
+			"act": "burst",
+			"wait": 1.0
+		},
+		{
+			"speaker": "",
+			"text": "（猫跳开了，又迈着步子走回来，在刚释放完、敏感得发烫的脚心上慢悠悠地舔了一口，才心满意足地走了）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "cat",
+					"zone": "sole",
+					"fx": "lines",
+					"repeat": 6,
+					"interval": 0.18,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"visual": "helpless_2",
+					"do": "pose"
+				}
+			],
+			"act": 4
+		},
+		{
+			"speaker": "公主",
+			"text": "……哈……哈……这只猫……从牢房一路追到这里……",
+			"emotion": "helpless_1"
+		},
+		{
+			"speaker": "挠脚鼠",
+			"text": "吱……它会在前面等着的。下次跑快点——冲刺！"
+		},
+		{
+			"speaker": "公主",
+			"text": "……知道了。……回刚才那里重新跑。",
+			"emotion": "angry"
+		},
+		{
+			"actions": [
+				{
+					"state": "",
+					"do": "voice"
+				},
+				{
+					"time": 0.6,
+					"do": "fade_out"
+				}
+			],
+			"wait": 0.7
+		}
+	]
+}

@@ -1,0 +1,176 @@
+{
+	"name": "又被橘猫追上了",
+	"cast": {
+		"princess": {
+			"kind": "princess",
+			"at": [
+				0,
+				8
+			],
+			"visual": "helpless_1",
+			"anim": "helpless",
+			"dir": "down"
+		},
+		"cat": {
+			"kind": "trap:cat_guard",
+			"at": [
+				12,
+				10
+			]
+		}
+	},
+	"steps": [
+		{
+			"act": 1,
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "fade_in"
+				},
+				{
+					"state": "giggle",
+					"do": "voice"
+				}
+			],
+			"wait": 0.5
+		},
+		{
+			"speaker": "",
+			"text": "（又被扑倒了。橘猫熟门熟路地扒掉一只鼠爪鞋，开始舔脚心）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "cat",
+					"zone": "sole",
+					"fx": "lines",
+					"repeat": 8,
+					"interval": 0.14,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"visual": "helpless_1",
+					"do": "pose"
+				},
+				{
+					"do": "voice",
+					"state": "laugh"
+				}
+			],
+			"act": 1
+		},
+		{
+			"speaker": "公主",
+			"text": "哈哈……又、又来……！",
+			"emotion": "helpless_1"
+		},
+		{
+			"speaker": "挠脚鼠",
+			"text": "吱吱吱！冲刺！冲刺呀！"
+		},
+		{
+			"speaker": "",
+			"text": "（舌头一下一下地刷过脚心，尾巴扫着腿根。她笑得一点力气都没有）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "cat",
+					"zone": "sole",
+					"fx": "lines",
+					"repeat": 12,
+					"interval": 0.11,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"by": "cat",
+					"zone": "thigh",
+					"fx": "feather",
+					"repeat": 8,
+					"interval": 0.13,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"visual": "helpless_2",
+					"do": "pose"
+				}
+			],
+			"act": 3
+		},
+		{
+			"speaker": "公主",
+			"text": "哈哈哈！投降……我投降……！",
+			"emotion": "helpless_2"
+		},
+		{
+			"speaker": "公主",
+			"text": "（星光一闪，猫「喵嗷」一声跳开了……哈啊……又放出去了……）",
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "flash"
+				},
+				{
+					"sound": "star_burst",
+					"do": "sfx"
+				},
+				{
+					"sound": "water_release",
+					"volume": -2.0,
+					"do": "sfx"
+				},
+				{
+					"who": "princess",
+					"time": 0.4,
+					"do": "shake"
+				},
+				{
+					"state": "laugh",
+					"do": "voice"
+				}
+			],
+			"act": "burst",
+			"wait": 1.0
+		},
+		{
+			"speaker": "",
+			"text": "（猫舔了舔嘴巴，慢悠悠地走开了。她揉着脚心，回到刚才的地方）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "cat",
+					"zone": "sole",
+					"fx": "lines",
+					"repeat": 4,
+					"interval": 0.2,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"visual": "helpless_1",
+					"do": "pose"
+				}
+			],
+			"act": 4
+		},
+		{
+			"speaker": "公主",
+			"text": "……下次一定跑得掉。",
+			"emotion": "angry"
+		},
+		{
+			"actions": [
+				{
+					"state": "",
+					"do": "voice"
+				},
+				{
+					"time": 0.6,
+					"do": "fade_out"
+				}
+			],
+			"wait": 0.7
+		}
+	]
+}

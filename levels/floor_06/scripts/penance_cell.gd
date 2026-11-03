@@ -5,7 +5,7 @@ extends Node2D
 ##   （没玩过：放小剧场 penance_<id>；玩过：一句短台词）。玩过 = 剧情标记 cg_seen_theater:penance_<id>。
 ##   六件都玩过（ALL_FLAG）：东北角的墙缝里探出挠脚鼠（wall_crack 演员换成有老鼠的那一帧），调查墙缝 → 对话 floor_06/penance_rat
 ##   （按以前在地牢放没放过它分两种开场；没玩完六件时只有吱吱声）。答应它 → 对话 set.call = penance_rat_outfit
-##   （DialogueBox → crawl()：强制换上鼠鼠装 → 过场 penance_crawl（钻进墙缝 → 章末画面）→ 第二章还没做，先把原来的装备还回去）。
+##   （DialogueBox → crawl()：强制换上鼠鼠装 → 过场 penance_crawl（钻进墙缝 → 章末画面 → 按 E 进第二章·鼠洞）；鼠鼠装一直穿着，章末也不脱）。
 ## 鼠鼠装：wear_mouse / take_off_mouse（原来的裤子 / 鞋子记在 vars.PREV_VAR，脱下时还回去）。
 ## 测试：spots、crack_open、spot(id)、all_done()、wear_mouse()、take_off_mouse()。
 
@@ -140,11 +140,8 @@ static func wearing_mouse(who := "pink") -> bool:
 	return w.values().has(SHORTS) and w.values().has(SHOES)
 
 
-## 答应挠脚鼠：换上鼠鼠装 → 钻墙缝的过场（结尾是章末画面）→ 第二章还没做：先把原来的装备还回去
+## 答应挠脚鼠：换上鼠鼠装 → 钻墙缝的过场（结尾是章末画面，按 E 进鼠洞）。鼠鼠装不脱（到第三章出了水道才脱，take_off_mouse）
 static func crawl() -> void:
 	wear_mouse()
-	Cutscene.play("penance_crawl")
-	while Cutscene.is_playing():
-		await Engine.get_main_loop().process_frame
 	GameState.set_flag(DONE_FLAG)
-	take_off_mouse()
+	Cutscene.play("penance_crawl")

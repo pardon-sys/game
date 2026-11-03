@@ -19,6 +19,8 @@ const HEAD_SHEET := preload("res://assets/generated/portrait_heads.png")
 const PORTRAIT_SETS := {
 	"pink": ["res://assets/generated/portraits.png", "res://assets/generated/portrait_heads.png"],
 	"blue": ["res://assets/generated/portraits_blue.png", "res://assets/generated/portrait_heads_blue.png"],
+	# 反省篇的鼠鼠装（Equipment.outfit = "mouse"）：粉色公主的立绘换这一套，头像不变
+	"pink_mouse": ["res://assets/generated/portraits_mouse.png", "res://assets/generated/portrait_heads.png"],
 	"bonfire_host": ["res://assets/generated/portraits_bonfire_host.png", "res://assets/generated/portrait_heads_bonfire_host.png"],
 }
 const TEXT_LEFT_WITH_PORTRAIT := 112.0
@@ -203,7 +205,10 @@ func active_set() -> String:
 
 ## 全身立绘（对话框用）。set_name 为空 = 当前操控角色的那一套。
 func portrait_for(emotion: String, set_name := "") -> AtlasTexture:
-	var arr: Array = _sets[set_name if _sets.has(set_name) else active_set()]["portraits"]
+	var sn := set_name if _sets.has(set_name) else active_set()
+	if sn == "pink" and Equipment.outfit("pink") == "mouse" and _sets.has("pink_mouse"):
+		sn = "pink_mouse"
+	var arr: Array = _sets[sn]["portraits"]
 	return arr[maxi(_portrait_order.find(emotion), 0)]
 
 

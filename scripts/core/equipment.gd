@@ -294,6 +294,11 @@ static func restore_charges() -> void:
 		GameState.equip_charges[who] = ch
 
 
+## 服装造型（换整套精灵图 / 立绘的装备）："mouse" = 反省篇的鼠鼠装（精灵 *_mouse.png、立绘 portraits_mouse.png）；"" = 平常的衣服
+static func outfit(who: String) -> String:
+	return "mouse" if worn(who).values().has("equip_mouse_shorts") else ""
+
+
 static func has_special(who: String, special: String) -> bool:
 	return items_of(who).any(func(it: EquipData) -> bool: return it.special == special)
 

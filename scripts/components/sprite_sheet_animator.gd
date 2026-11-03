@@ -6,6 +6,8 @@ extends Node
 ##   Sprite 缩到 HD_ENLARGE / HD_SCALE（人物比原像素图大一圈）、offset 放大 HD_SCALE 倍（脚底位置不变），线性过滤（画面按窗口分辨率渲染，缩小时细节不丢）；
 ##   没有 *_hd.png 的图集照旧用原像素图。
 ##   UserSettings.revision 变了（菜单里切换）就在下一帧重新选。
+## 服装（outfit，例如反省篇的鼠鼠装 "mouse"）：每张图集先换成同名的 *_<outfit>.png（princess.png → princess_mouse.png，
+##   高清版 princess_mouse_hd.png），没有就用原图；set_outfit 换了以后下一帧重新选贴图。
 
 @export var config: SpriteSheetConfig
 @export var sprite_path := NodePath("../Sprite")
@@ -38,6 +40,16 @@ var _base_filter := CanvasItem.TEXTURE_FILTER_PARENT_NODE
 var _revision := -1
 ## 现在用的是不是高清图集
 var hd := false
+## 服装后缀（"" = 平常的衣服）
+var outfit := ""
+
+
+func set_outfit(o: String) -> void:
+	if o == outfit:
+		return
+	outfit = o
+	if sheet != "__still":
+		sheet = "__restyle"
 
 
 func _ready() -> void:
@@ -158,6 +170,11 @@ func _use_sheet(name: String) -> Dictionary:
 			sprite.hframes = int(info["hframes"])
 			sprite.vframes = int(info["vframes"])
 			offset = info.get("offset", _default["offset"])
+		var orig := path
+		if outfit != "" and path != "":
+			var dressed := path.get_basename() + "_" + outfit + "." + path.get_extension()
+			if ResourceLoader.exists(dressed):
+				path = dressed
 		var styled := UserSettings.styled_path(path)
 		var use_hd := styled != path
 		if path == "":
@@ -168,7 +185,7 @@ func _use_sheet(name: String) -> Dictionary:
 			sprite.texture = _textures[styled]
 		if use_hd and sprite.texture:
 			# 精细像素图集的格子 = 原图格子 × HD_SCALE；列数按贴图宽算（多出来的眨眼列）
-			var cell_w := float(_orig_size(path).x) / float(sprite.hframes) * HD_SCALE
+			var cell_w := float(_orig_size(orig).x) / float(sprite.hframes) * HD_SCALE
 			if cell_w > 0.0:
 				sprite.hframes = maxi(1, roundi(sprite.texture.get_width() / cell_w))
 		_set_hd(use_hd)

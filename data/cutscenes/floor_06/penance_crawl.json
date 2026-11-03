@@ -150,7 +150,7 @@
 				{
 					"title": "第一章　反省牢房　完",
 					"subtitle": "——墙缝的另一头，是一条很老很老的洞",
-					"next": "floor_06_after_house",
+					"next": "floor_06_rat_tunnel",
 					"do": "chapter_end"
 				}
 			],
