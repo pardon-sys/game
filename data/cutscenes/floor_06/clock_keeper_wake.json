@@ -1,0 +1,33 @@
+{
+	"name": "守钟人偶",
+	"letterbox": true,
+	"skippable": false,
+	"steps": [
+		{
+			"speaker": "",
+			"text": "（回廊的尽头，一个穿着燕尾服的大人偶靠墙站着，胸口嵌着一个停了的钟面）"
+		},
+		{
+			"speaker": "",
+			"text": "（「咔哒」。钟面上的指针动了一格。人偶慢慢地抬起头，眼睛亮了起来）"
+		},
+		{
+			"speaker": "守钟人偶",
+			"text": "……有人……在钟楼里……乱跑。"
+		},
+		{
+			"speaker": "公主",
+			"text": "……跑！",
+			"emotion": "surprise"
+		},
+		{
+			"actions": [
+				{
+					"text": "快跑！经过闸门的时候闸门会落下来挡它一会儿",
+					"do": "notify"
+				}
+			],
+			"wait": 0.2
+		}
+	]
+}

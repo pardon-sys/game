@@ -1,0 +1,132 @@
+{
+	"name": "王座间：逃出画",
+	"cast": {
+		"princess": {
+			"kind": "princess",
+			"at": [
+				-14,
+				8
+			],
+			"visual": "helpless_1",
+			"anim": "helpless",
+			"dir": "right"
+		},
+		"blue": {
+			"kind": "npc:blue_princess",
+			"at": [
+				14,
+				8
+			],
+			"visual": "normal",
+			"anim": "idle",
+			"dir": "left"
+		},
+		"pants": {
+			"kind": "trap:hand",
+			"at": [
+				20,
+				10
+			]
+		}
+	},
+	"steps": [
+		{
+			"act": 1,
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "fade_in"
+				},
+				{
+					"state": "giggle",
+					"do": "voice"
+				}
+			],
+			"wait": 0.5
+		},
+		{
+			"speaker": "",
+			"text": "（她一头撞进画框出口的光里——「噗」地一声，从大画像的画框里摔了出来）",
+			"act": 1
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……！……（伸手接住）……抓到了。"
+		},
+		{
+			"speaker": "公主",
+			"text": "……哈……哈……出、出来了……身上全是颜料……",
+			"actions": [
+				{
+					"who": "princess",
+					"visual": "helpless_1",
+					"do": "pose"
+				},
+				{
+					"do": "voice",
+					"state": "laugh"
+				}
+			],
+			"emotion": "helpless_1"
+		},
+		{
+			"speaker": "",
+			"text": "（她的胳膊上还留着一朵画了一半的小花，腰上一道歪歪扭扭的波浪线）",
+			"act": 2
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……（用手指蹭了蹭那朵小花）……擦不掉。"
+		},
+		{
+			"speaker": "公主",
+			"text": "呀——！别、别蹭腰……还痒着呢……！",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "blue",
+					"zone": "waist",
+					"fx": "hand",
+					"repeat": 4,
+					"interval": 0.2,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"visual": "giggle",
+					"do": "pose"
+				}
+			],
+			"emotion": "giggle"
+		},
+		{
+			"speaker": "女王画像",
+			"text": "……跑掉了。……笑声……跑掉了。",
+			"act": 3
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……现在。……一起。",
+			"actions": [
+				{
+					"who": "blue",
+					"visual": "normal",
+					"do": "pose"
+				}
+			]
+		},
+		{
+			"actions": [
+				{
+					"state": "",
+					"do": "voice"
+				},
+				{
+					"time": 0.6,
+					"do": "fade_out"
+				}
+			],
+			"wait": 0.7
+		}
+	]
+}

@@ -1,0 +1,319 @@
+{
+	"name": "密室：女王寝室的羽毛被子",
+	"cast": {
+		"princess": {
+			"kind": "princess",
+			"at": [
+				-14,
+				8
+			],
+			"visual": "normal",
+			"anim": "idle",
+			"dir": "right"
+		},
+		"blue": {
+			"kind": "npc:blue_princess",
+			"at": [
+				14,
+				8
+			],
+			"visual": "normal",
+			"anim": "idle",
+			"dir": "left"
+		},
+		"pants": {
+			"kind": "trap:hand",
+			"at": [
+				20,
+				10
+			]
+		},
+		"bed": {
+			"kind": "trap:supine",
+			"at": [
+				0,
+				0
+			]
+		}
+	},
+	"steps": [
+		{
+			"act": 1,
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "fade_in"
+				},
+				{
+					"state": "giggle",
+					"do": "voice"
+				}
+			],
+			"wait": 0.5
+		},
+		{
+			"speaker": "",
+			"text": "（暗道尽头是一间寝室。一张挂着褪色玫瑰帐子的大床，床上铺着一条又厚又软的白羽毛被子）",
+			"act": 1
+		},
+		{
+			"speaker": "公主",
+			"text": "……好软的被子。……躺一下，就一下。",
+			"emotion": "happy"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……我也。……走了好久。"
+		},
+		{
+			"speaker": "",
+			"text": "（两个人刚躺上去，被子就「呼」地卷了起来——像包春卷一样，把两个人一起裹了进去，只剩两颗脑袋露在外面）",
+			"actions": [
+				{
+					"who": "princess",
+					"time": 0.4,
+					"do": "shake"
+				},
+				{
+					"who": "blue",
+					"time": 0.4,
+					"do": "shake"
+				}
+			],
+			"act": 2
+		},
+		{
+			"speaker": "公主",
+			"text": "诶！？被、被子卷起来了！",
+			"emotion": "surprise"
+		},
+		{
+			"speaker": "",
+			"text": "（被子里的羽毛一根根竖了起来，开始在两个人身上慢慢地蹭。腰、肋下、膝盖窝、脚心——被子里哪里都是）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "bed",
+					"zone": "sole",
+					"fx": "feather",
+					"repeat": 10,
+					"interval": 0.15,
+					"do": "tickle"
+				},
+				{
+					"who": "blue",
+					"by": "bed",
+					"zone": "waist",
+					"fx": "feather",
+					"repeat": 8,
+					"interval": 0.15,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"visual": "giggle",
+					"do": "pose"
+				},
+				{
+					"who": "blue",
+					"visual": "giggle",
+					"do": "pose"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "嘻嘻……被、被子里面……全是羽毛……！",
+			"emotion": "giggle",
+			"portrait": "bedroom_quilt"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……（脸贴着脸）……你、别动……你一动，羽毛就……"
+		},
+		{
+			"speaker": "公主",
+			"text": "是、是你先动的——哈哈……！",
+			"actions": [
+				{
+					"who": "princess",
+					"visual": "helpless_1",
+					"do": "pose"
+				},
+				{
+					"who": "blue",
+					"visual": "helpless_1",
+					"do": "pose"
+				},
+				{
+					"do": "voice",
+					"state": "laugh"
+				}
+			],
+			"emotion": "helpless_1",
+			"act": 3
+		},
+		{
+			"speaker": "",
+			"text": "（两个人越挣扎，被子裹得越紧；被子裹得越紧，羽毛蹭得越快）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "bed",
+					"zone": "sole",
+					"fx": "lines",
+					"repeat": 14,
+					"interval": 0.1,
+					"do": "tickle"
+				},
+				{
+					"who": "blue",
+					"by": "bed",
+					"zone": "thigh",
+					"fx": "feather",
+					"repeat": 14,
+					"interval": 0.1,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"visual": "helpless_2",
+					"do": "pose"
+				},
+				{
+					"who": "blue",
+					"visual": "helpless_2",
+					"do": "pose"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "哈哈哈！脚、脚底也有——这条被子到底有多少羽毛——！",
+			"emotion": "helpless_2"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……哈、哈哈……不、不行了……"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……哈……哈哈……（冰晶炸开，被子冻得硬邦邦的……）",
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "flash"
+				},
+				{
+					"sound": "ice_crack",
+					"volume": -2.0,
+					"do": "sfx"
+				},
+				{
+					"sound": "water_release",
+					"volume": -2.0,
+					"do": "sfx"
+				},
+				{
+					"who": "blue",
+					"time": 0.4,
+					"do": "shake"
+				},
+				{
+					"state": "laugh",
+					"do": "voice"
+				}
+			],
+			"act": "burst",
+			"wait": 1.0
+		},
+		{
+			"speaker": "公主",
+			"text": "（星光跟着炸开，冻住的被子「啪」地裂开了一条缝……哈啊……放出去了……）",
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "flash"
+				},
+				{
+					"sound": "star_burst",
+					"do": "sfx"
+				},
+				{
+					"sound": "water_release",
+					"volume": -2.0,
+					"do": "sfx"
+				},
+				{
+					"who": "princess",
+					"time": 0.4,
+					"do": "shake"
+				},
+				{
+					"state": "laugh",
+					"do": "voice"
+				}
+			],
+			"act": "burst",
+			"wait": 1.0
+		},
+		{
+			"speaker": "",
+			"text": "（两个人从被子的缝里滚了出来，摔在地毯上。……被子里最后一根羽毛飘出来，落在粉色公主的脚心上，轻轻地转了一圈）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "bed",
+					"zone": "sole",
+					"fx": "feather",
+					"repeat": 3,
+					"interval": 0.2,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"time": 0.3,
+					"do": "shake"
+				},
+				{
+					"who": "princess",
+					"visual": "helpless_1",
+					"do": "pose"
+				},
+				{
+					"who": "blue",
+					"visual": "helpless_1",
+					"do": "pose"
+				}
+			],
+			"act": 4
+		},
+		{
+			"speaker": "公主",
+			"text": "呀……！……哈……这、这床是给谁睡的啊……",
+			"emotion": "helpless_1"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……被子上绣着字。……「给怕冷的小不点」。"
+		},
+		{
+			"speaker": "公主",
+			"text": "……又是小不点。",
+			"emotion": "sad"
+		},
+		{
+			"actions": [
+				{
+					"state": "",
+					"do": "voice"
+				},
+				{
+					"time": 0.6,
+					"do": "fade_out"
+				}
+			],
+			"wait": 0.7
+		}
+	]
+}

@@ -1,0 +1,350 @@
+{
+	"name": "隧道：用痒付路费",
+	"cast": {
+		"princess": {
+			"kind": "princess",
+			"at": [
+				-14,
+				8
+			],
+			"visual": "normal",
+			"anim": "idle",
+			"dir": "right"
+		},
+		"blue": {
+			"kind": "npc:blue_princess",
+			"at": [
+				14,
+				8
+			],
+			"visual": "normal",
+			"anim": "idle",
+			"dir": "left"
+		},
+		"pants": {
+			"kind": "trap:hand",
+			"at": [
+				20,
+				10
+			]
+		},
+		"imp1": {
+			"kind": "monster:imp",
+			"at": [
+				-20,
+				-4
+			],
+			"dir": "right"
+		},
+		"imp2": {
+			"kind": "monster:imp",
+			"at": [
+				20,
+				-4
+			],
+			"dir": "left"
+		},
+		"imp3": {
+			"kind": "monster:imp",
+			"at": [
+				0,
+				14
+			],
+			"dir": "up"
+		}
+	},
+	"steps": [
+		{
+			"act": 1,
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "fade_in"
+				},
+				{
+					"state": "giggle",
+					"do": "voice"
+				}
+			],
+			"wait": 0.5
+		},
+		{
+			"speaker": "收路费的小鬼",
+			"text": "嘻嘻！此路是我开！此树是我栽！要从这里过，留下买路——",
+			"act": 1
+		},
+		{
+			"speaker": "公主",
+			"text": "……我们没有钱。",
+			"emotion": "sad"
+		},
+		{
+			"speaker": "收路费的小鬼",
+			"text": "没钱？没钱也行！我们收别的！"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……收什么。"
+		},
+		{
+			"speaker": "收路费的小鬼",
+			"text": "收——笑声！一个人一百声！我们来数！"
+		},
+		{
+			"speaker": "",
+			"text": "（小鬼们「呼啦」一下围了上来。一只拿羽毛、一只拿小刷子、一只什么也不拿——它用的是手）",
+			"act": 2
+		},
+		{
+			"speaker": "",
+			"text": "（羽毛钻进了腰侧，小刷子刷过膝盖窝，小手在肋下一下一下地点）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "imp1",
+					"zone": "sole",
+					"fx": "feather",
+					"repeat": 10,
+					"interval": 0.14,
+					"do": "tickle"
+				},
+				{
+					"who": "blue",
+					"by": "imp2",
+					"zone": "thigh",
+					"fx": "feather",
+					"repeat": 8,
+					"interval": 0.15,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"visual": "giggle",
+					"do": "pose"
+				},
+				{
+					"who": "blue",
+					"visual": "giggle",
+					"do": "pose"
+				}
+			]
+		},
+		{
+			"speaker": "收路费的小鬼",
+			"text": "一、二、三……太慢了！大声点！"
+		},
+		{
+			"speaker": "公主",
+			"text": "嘻……嘻嘻……数、数得这么认真……",
+			"emotion": "giggle"
+		},
+		{
+			"speaker": "",
+			"text": "（两个人背靠背坐在地上，被小鬼们团团围住。一只小鬼拿着羽毛笔，认认真真地在账本上画正字）",
+			"portrait": "toll_pay"
+		},
+		{
+			"speaker": "收路费的小鬼",
+			"text": "四十七、四十八……蓝色的那个！你一声都没笑！不算！"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……我在笑。……心里。"
+		},
+		{
+			"speaker": "收路费的小鬼",
+			"text": "心里的不算！伙计们，蓝色的加收！",
+			"act": 3
+		},
+		{
+			"speaker": "",
+			"text": "（三只小鬼一起扑向蓝色公主。千手痒痒裤听见了「加收」，也很配合地动了起来）",
+			"actions": [
+				{
+					"who": "blue",
+					"by": "pants",
+					"zone": "thigh",
+					"fx": "hand",
+					"repeat": 14,
+					"interval": 0.1,
+					"do": "tickle"
+				},
+				{
+					"who": "blue",
+					"by": "imp3",
+					"zone": "waist",
+					"fx": "hand",
+					"repeat": 10,
+					"interval": 0.12,
+					"do": "tickle"
+				},
+				{
+					"who": "blue",
+					"visual": "helpless_2",
+					"do": "pose"
+				},
+				{
+					"do": "voice",
+					"state": "laugh"
+				}
+			]
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……噗……哈、哈哈……裤子……你别帮它们……哈哈哈……"
+		},
+		{
+			"speaker": "公主",
+			"text": "哈哈哈！一起付！我也算上——",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "imp1",
+					"zone": "sole",
+					"fx": "lines",
+					"repeat": 12,
+					"interval": 0.11,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"visual": "helpless_2",
+					"do": "pose"
+				}
+			],
+			"emotion": "helpless_2"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……哈……哈哈……（冰晶炸开，账本冻成了一块冰砖……）",
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "flash"
+				},
+				{
+					"sound": "ice_crack",
+					"volume": -2.0,
+					"do": "sfx"
+				},
+				{
+					"sound": "water_release",
+					"volume": -2.0,
+					"do": "sfx"
+				},
+				{
+					"who": "blue",
+					"time": 0.4,
+					"do": "shake"
+				},
+				{
+					"state": "laugh",
+					"do": "voice"
+				}
+			],
+			"act": "burst",
+			"wait": 1.0
+		},
+		{
+			"speaker": "公主",
+			"text": "（星光跟着炸开，冰砖上的正字闪闪发亮……哈啊……放出去了……）",
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "flash"
+				},
+				{
+					"sound": "star_burst",
+					"do": "sfx"
+				},
+				{
+					"sound": "water_release",
+					"volume": -2.0,
+					"do": "sfx"
+				},
+				{
+					"who": "princess",
+					"time": 0.4,
+					"do": "shake"
+				},
+				{
+					"state": "laugh",
+					"do": "voice"
+				}
+			],
+			"act": "burst",
+			"wait": 1.0
+		},
+		{
+			"speaker": "收路费的小鬼",
+			"text": "（翻账本）……一百零三、一百零四……够了够了！还多了！找零！",
+			"act": 4
+		},
+		{
+			"speaker": "",
+			"text": "（「找零」是一只小鬼在两个人刚释放完、敏感得发烫的脚心上，一人戳了一下）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "imp3",
+					"zone": "sole",
+					"fx": "hand",
+					"repeat": 3,
+					"interval": 0.2,
+					"do": "tickle"
+				},
+				{
+					"who": "blue",
+					"by": "imp3",
+					"zone": "sole",
+					"fx": "hand",
+					"repeat": 3,
+					"interval": 0.2,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"time": 0.3,
+					"do": "shake"
+				},
+				{
+					"who": "blue",
+					"time": 0.3,
+					"do": "shake"
+				},
+				{
+					"do": "pose",
+					"who": "princess",
+					"visual": "helpless_2"
+				},
+				{
+					"do": "pose",
+					"who": "blue",
+					"visual": "helpless_2"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "呀！……那、那不叫找零！",
+			"emotion": "angry"
+		},
+		{
+			"speaker": "收路费的小鬼",
+			"text": "嘻嘻！欢迎下次光临！"
+		},
+		{
+			"actions": [
+				{
+					"state": "",
+					"do": "voice"
+				},
+				{
+					"time": 0.6,
+					"do": "fade_out"
+				}
+			],
+			"wait": 0.7
+		}
+	]
+}

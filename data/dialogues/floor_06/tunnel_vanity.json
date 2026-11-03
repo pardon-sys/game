@@ -1,0 +1,27 @@
+{
+	"name": "梳妆台",
+	"entries": [
+		{
+			"node": "default"
+		}
+	],
+	"nodes": {
+		"default": {
+			"lines": [
+				{
+					"text": "（梳妆台上放着两把一模一样的小梳子。一把缠着粉色的头发，一把缠着蓝色的头发）",
+					"speaker": ""
+				},
+				{
+					"text": "……两把小梳子。",
+					"speaker": "公主",
+					"emotion": "surprise"
+				},
+				{
+					"text": "……（拿起蓝色的那把，又放下）……",
+					"speaker": "蓝色的公主"
+				}
+			]
+		}
+	}
+}

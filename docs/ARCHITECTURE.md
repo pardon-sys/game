@@ -1310,6 +1310,21 @@ data/cutscenes/<楼层组>/  地图内过场；data/theater/<楼层组>/  小剧
   - 房间不是方方正正的：`quest_maps._chamfer`（把房间的角切成阶梯斜墙）+ `_disk`（圆形凸室 / 半圆凹位）组合出八角形大厅、圆形阅览室、飘窗、壁龛；
 	装饰在 `gen_floor06_after._dress_library / _dress_wardrobe / _dress_training`（书架贴着书架墙、机关格上摆对应的家具；道具有碰撞，所以抓脚的手 / 镜中手的范围放大到旁边一格）。
 	稻草人按 x 从左到右编号（标记点默认按离入口的步数排序）。
+- **第四章（下）·旧王宫**（文本 `tools/build/penance_text/palace3.py`；布局 `quest_maps._palace_ante / _palace_clock / _palace_tunnels / _palace_throne`）：
+  - `PalaceAnte`（`floor_06_palace_ante`，圆形中转厅）：南 → 训练场北门、西 → 钟楼、北 → 王座间（`unlock_flag = palace_bells_done`）、东墙的画后 → 隧道。
+  - `PalaceClock`（`floor_06_palace_clock`，52×120 竖长）：齿轮夹板（`GEAR_CYCLE` 一开一合，站刹车 brake 就停；AI 搭档会去踩）→ 钟摆羽毛（`pend_x()`）→ 风箱（`wind_dir(i)` 推人）
+	→ 挂在齿轮上（call `palace_gear_ride` → `clock_gear_ride` CG → 梯子放下 `palace_ladder_down`）→ 守钟人偶追逐（`PATH` 沿回廊中线，`progress(pos)` 投影；
+	闸门 gates 落下挡 `GATE_HOLD` 秒；追上 → `clock_caught` → 回检查点）→ 钟顶（call `palace_ring_bells` → 过场 `clock_bells`（背景大图）→ `palace_bells_done`）；
+	小宝箱 call `palace_chest_N`（第二口 = 新装备「守钟人的怀表」`clock_watch`）。守钟人偶图 `npcs/clock_keeper.png`（`gen_palace_sprites.py`）。
+  - `PalaceTunnels`（`floor_06_palace_tunnels`）：收路费栅栏（call `palace_toll_mint / _coin / _tickle`，「用痒付」= `tunnel_toll` CG）、羽毛蛛网（粉色公主攻击 / 施法烧掉）、
+	四口宝箱（`palace_real_chest` 一口真的，其余宝箱怪咬脚踝）、女王寝室（`tunnel_quilt` CG、梳妆台、日记）、婴儿房（`tunnel_cradle`、旋转吊铃 → `palace_lullaby_heard`、刻痕）。
+	各房间的密道口（`gen_floor06_after.SECRET`：浴场 / 图书馆 / 衣帽间 / 训练场墙上挂一幅画）`unlock_flag = palace_secret_<房间>`，从隧道那边走到过才打开。
+  - `PalaceThrone`（`floor_06_palace_throne`，配乐 `palace_boss`）：Boss「封笑的女王画像」三层画布——颜料坑 `PaintPool`（danger 组）+ 画像小手 → 小画像分身 `SmallPortrait`
+	（全打掉才有破绽 `VULN_TIME`，甩 `PaintHand`）→ 拉进画里（画里的世界在西南，`paint_gate` 一直挡着；画笔 `Brush` 巡逻；跑到 `paint_exit` = `throne_escape` → 胜利；
+	闷笑满 / 超时 = `throne_painting_trapped` CG → `empowered`，换外面的人打 `FRAME_HP`）→ 过场 `throne_finale`（两人各释放一次烧穿画布）→ `palace_end`
+	（另半枚徽章 + 摇篮曲，背景大图 `palace_badges`，章末「第四章　旧王宫　完」）。战败小剧场按层：`throne_fail_paint / throne_fail_tea / throne_fail_frame / throne_fail`（都有 CG）。
+	画像图 `portrait_boss.png`（三帧）/ `small_portrait.png`（两帧）。每破一层说一句胡话，战斗中随机冒一句（`palace.json` 的 `gibberish`）。
+  - 旧三张图（浴场 / 仆人回廊 / 厨房）也改成切角 + 凸室 + 柱子，家具用 `gen_floor06_after._dress`。
   - 新装备（衣帽间）：`palace_ribbon`、`palace_corset`、`palace_boots`、`palace_stockings`、`feather_shawl`（`gen_equipment.py` + `gen_equip_art.py` + `ItemDB`）。
 - 配乐（`tools/audio/gen_music.py`，ElevenLabs）：`old_palace` 旧王宫探索（荒凉、破旧、往日的华丽）、`palace_boss` 王座间 Boss「封笑的女王画像」，登记在 `Audio.MUSIC`，第四章用。
 

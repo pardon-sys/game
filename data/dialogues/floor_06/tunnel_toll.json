@@ -1,0 +1,81 @@
+{
+	"name": "收路费的小鬼",
+	"entries": [
+		{
+			"if": {
+				"flag": "palace_toll_paid"
+			},
+			"node": "paid"
+		},
+		{
+			"node": "default"
+		}
+	],
+	"nodes": {
+		"default": {
+			"lines": [
+				{
+					"text": "嘻嘻！此路是我开！要从这里过，留下买路钱！",
+					"speaker": "收路费的小鬼"
+				}
+			],
+			"prompt": "付什么？",
+			"choices": [
+				{
+					"text": "给一颗薄荷糖",
+					"next": "mint"
+				},
+				{
+					"text": "给 30 枚金币",
+					"next": "coin"
+				},
+				{
+					"text": "……没钱",
+					"next": "tickle"
+				}
+			]
+		},
+		"mint": {
+			"lines": [
+				{
+					"text": "……给你。",
+					"speaker": "公主"
+				}
+			],
+			"set": {
+				"call": "palace_toll_mint"
+			}
+		},
+		"coin": {
+			"lines": [
+				{
+					"text": "……给你。",
+					"speaker": "公主"
+				}
+			],
+			"set": {
+				"call": "palace_toll_coin"
+			}
+		},
+		"tickle": {
+			"lines": [
+				{
+					"text": "……我们没有钱。",
+					"speaker": "公主",
+					"emotion": "sad"
+				}
+			],
+			"set": {
+				"call": "palace_toll_tickle"
+			}
+		},
+		"paid": {
+			"lines": [
+				{
+					"text": "嘻嘻！付过了付过了！随便走！",
+					"speaker": "收路费的小鬼"
+				}
+			]
+		}
+	}
+}

@@ -387,6 +387,34 @@
 			"music": "old_palace"
 		},
 		{
+			"id": "floor_06_palace_ante",
+			"name": "旧王宫·王座前厅",
+			"scene": "res://levels/floor_06_palace_ante/floor.tscn",
+			"group": "floor_06",
+			"music": "old_palace"
+		},
+		{
+			"id": "floor_06_palace_clock",
+			"name": "旧王宫·钟楼",
+			"scene": "res://levels/floor_06_palace_clock/floor.tscn",
+			"group": "floor_06",
+			"music": "old_palace"
+		},
+		{
+			"id": "floor_06_palace_tunnels",
+			"name": "旧王宫·隧道与密室",
+			"scene": "res://levels/floor_06_palace_tunnels/floor.tscn",
+			"group": "floor_06",
+			"music": "old_palace"
+		},
+		{
+			"id": "floor_06_palace_throne",
+			"name": "旧王宫·王座间",
+			"scene": "res://levels/floor_06_palace_throne/floor.tscn",
+			"group": "floor_06",
+			"music": "palace_boss"
+		},
+		{
 			"id": "floor_08_maze_1",
 			"name": "第八层·夜迷宫一·外环回廊",
 			"scene": "res://levels/floor_08_maze_1/floor.tscn",

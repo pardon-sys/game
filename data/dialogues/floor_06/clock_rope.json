@@ -1,0 +1,66 @@
+{
+	"name": "钟绳",
+	"entries": [
+		{
+			"if": {
+				"flag": "palace_bells_done"
+			},
+			"node": "done"
+		},
+		{
+			"node": "default"
+		}
+	],
+	"nodes": {
+		"default": {
+			"lines": [
+				{
+					"text": "（一根粗粗的钟绳，从大钟上垂下来）",
+					"speaker": ""
+				},
+				{
+					"text": "……一起拉。……十三下。",
+					"speaker": "蓝色的公主"
+				}
+			],
+			"prompt": "拉钟绳？",
+			"choices": [
+				{
+					"text": "一起拉！",
+					"next": "go"
+				},
+				{
+					"text": "再等等",
+					"next": "no"
+				}
+			]
+		},
+		"go": {
+			"lines": [
+				{
+					"text": "……一、二——",
+					"speaker": "公主"
+				}
+			],
+			"set": {
+				"call": "palace_ring_bells"
+			}
+		},
+		"no": {
+			"lines": [
+				{
+					"text": "……先喘口气。",
+					"speaker": "公主"
+				}
+			]
+		},
+		"done": {
+			"lines": [
+				{
+					"text": "（大钟安安静静地挂着。王座间的门，已经开了）",
+					"speaker": ""
+				}
+			]
+		}
+	}
+}

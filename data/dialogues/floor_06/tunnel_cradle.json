@@ -1,0 +1,60 @@
+{
+	"name": "两个摇篮",
+	"entries": [
+		{
+			"if": {
+				"flag": "cg_seen_theater:tunnel_cradle"
+			},
+			"node": "again"
+		},
+		{
+			"node": "default"
+		}
+	],
+	"nodes": {
+		"default": {
+			"lines": [
+				{
+					"text": "（两个一模一样的小摇篮，一个系着粉色的丝带，一个系着蓝色的丝带）",
+					"speaker": ""
+				}
+			],
+			"prompt": "走近看看？",
+			"choices": [
+				{
+					"text": "……看看。",
+					"next": "go"
+				},
+				{
+					"text": "……先不了",
+					"next": "no"
+				}
+			]
+		},
+		"go": {
+			"lines": [
+				{
+					"text": "……看看。",
+					"speaker": "公主"
+				}
+			],
+			"theater": "tunnel_cradle"
+		},
+		"no": {
+			"lines": [
+				{
+					"text": "……等一下再说。",
+					"speaker": "公主"
+				}
+			]
+		},
+		"again": {
+			"lines": [
+				{
+					"text": "（摇篮轻轻地晃着。……布偶的小手朝你们挥了挥）",
+					"speaker": ""
+				}
+			]
+		}
+	}
+}

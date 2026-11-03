@@ -1,0 +1,217 @@
+{
+	"name": "王座间：被困在画里",
+	"cast": {
+		"princess": {
+			"kind": "princess",
+			"at": [
+				-14,
+				8
+			],
+			"visual": "helpless_1",
+			"anim": "helpless",
+			"dir": "right"
+		},
+		"blue": {
+			"kind": "npc:blue_princess",
+			"at": [
+				14,
+				8
+			],
+			"visual": "normal",
+			"anim": "idle",
+			"dir": "left"
+		},
+		"pants": {
+			"kind": "trap:hand",
+			"at": [
+				20,
+				10
+			]
+		},
+		"frame": {
+			"kind": "trap:feather_curtain",
+			"at": [
+				-6,
+				-8
+			]
+		}
+	},
+	"steps": [
+		{
+			"act": 1,
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "fade_in"
+				},
+				{
+					"state": "giggle",
+					"do": "voice"
+				}
+			],
+			"wait": 0.5
+		},
+		{
+			"speaker": "",
+			"text": "（画里的世界慢慢合拢了。她跑不出去，整个人变成了画布上的一幅小画——颜料一笔一笔地涂在她身上）",
+			"act": 1
+		},
+		{
+			"speaker": "女王画像",
+			"text": "（画像的声音从四面八方传过来）……别动。……画歪了。"
+		},
+		{
+			"speaker": "",
+			"text": "（三支画笔围着她转，在手臂上画花，在腰上画波浪，在膝盖窝里画小圈）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "frame",
+					"zone": "sole",
+					"fx": "feather",
+					"repeat": 10,
+					"interval": 0.14,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"visual": "helpless_1",
+					"do": "pose"
+				},
+				{
+					"do": "voice",
+					"state": "laugh"
+				}
+			],
+			"act": 2
+		},
+		{
+			"speaker": "公主",
+			"text": "嘻嘻……画、画笔……好凉……好痒……！",
+			"emotion": "giggle"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……（双手贴着画布）……我在这里。……等我。",
+			"actions": [
+				{
+					"who": "blue",
+					"visual": "normal",
+					"do": "pose"
+				}
+			],
+			"portrait": "painting_trapped"
+		},
+		{
+			"speaker": "",
+			"text": "（画布在蓝色公主手掌底下像水面一样晃。她看得见里面，可是怎么也伸不进去）"
+		},
+		{
+			"speaker": "女王画像",
+			"text": "……这一幅，要画很久很久。……先画脚心。",
+			"act": 3
+		},
+		{
+			"speaker": "",
+			"text": "（画笔蘸满了颜料，在她的脚心上慢慢地画起了一朵很复杂、很复杂的花）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "frame",
+					"zone": "sole",
+					"fx": "lines",
+					"repeat": 14,
+					"interval": 0.1,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"visual": "helpless_2",
+					"do": "pose"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "哈哈哈！花、花瓣太多了——画简单一点——哈哈哈！",
+			"emotion": "helpless_2"
+		},
+		{
+			"speaker": "公主",
+			"text": "（星光在画里炸开，可是画布把光吞了进去——画像的画框一下子亮了起来……）",
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "flash"
+				},
+				{
+					"sound": "star_burst",
+					"do": "sfx"
+				},
+				{
+					"sound": "water_release",
+					"volume": -2.0,
+					"do": "sfx"
+				},
+				{
+					"who": "princess",
+					"time": 0.4,
+					"do": "shake"
+				},
+				{
+					"state": "laugh",
+					"do": "voice"
+				}
+			],
+			"act": "burst",
+			"wait": 1.0
+		},
+		{
+			"speaker": "女王画像",
+			"text": "……好亮的笑声。……再多一点。",
+			"act": 4
+		},
+		{
+			"speaker": "",
+			"text": "（画框四周涨起了一圈紫色的光。……画像变强了。画笔又凑了上来，在她刚释放完、敏感得要命的脚心上点了一下）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "frame",
+					"zone": "sole",
+					"fx": "hand",
+					"repeat": 3,
+					"interval": 0.2,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"time": 0.3,
+					"do": "shake"
+				},
+				{
+					"do": "pose",
+					"who": "princess",
+					"visual": "helpless_2"
+				}
+			]
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……（转过身，面对画框）……还给我。"
+		},
+		{
+			"actions": [
+				{
+					"state": "",
+					"do": "voice"
+				},
+				{
+					"time": 0.6,
+					"do": "fade_out"
+				}
+			],
+			"wait": 0.7
+		}
+	]
+}

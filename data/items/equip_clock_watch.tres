@@ -1,0 +1,28 @@
+[gd_resource type="Resource" script_class="EquipData" format=3]
+
+[ext_resource type="Script" path="res://scripts/items/equip_data.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/generated/equip_icons.png" id="2"]
+
+[sub_resource type="AtlasTexture" id="icon"]
+atlas = ExtResource("2")
+region = Rect2(480, 0, 16, 16)
+
+[resource]
+script = ExtResource("1")
+id = "equip_clock_watch"
+display_name = "守钟人的怀表"
+description = "钟楼宝箱里的一块旧怀表。滴答滴答的，听着听着心就静下来了。表盖里面刻着两个很小的名字，磨得看不清了。"
+icon = SubResource("icon")
+category = 4
+stackable = false
+show_in_hud = false
+pickup_emotion = "happy"
+slots = Array[String](["waist"])
+owner_id = ""
+modifiers = {"laugh_decay": 0.12, "magic_cd": 0.95}
+zone_mods = {}
+block = {}
+cursed = false
+special = ""
+pros = "闷笑消减 +12%、魔法冷却 −5%"
+cons = "（无）"

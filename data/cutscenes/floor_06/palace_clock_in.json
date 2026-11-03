@@ -1,0 +1,29 @@
+{
+	"name": "钟楼",
+	"letterbox": true,
+	"skippable": true,
+	"steps": [
+		{
+			"speaker": "",
+			"text": "（钟楼里面全是齿轮。大大小小的铜齿轮咬在一起，一层一层地往上转，一直转到看不见的顶上）"
+		},
+		{
+			"speaker": "公主",
+			"text": "……好高。",
+			"emotion": "surprise"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……钟在最上面。……爬上去。"
+		},
+		{
+			"actions": [
+				{
+					"text": "爬上钟楼（齿轮缝会夹住脚踝：站在刹车上，齿轮就停）",
+					"do": "notify"
+				}
+			],
+			"wait": 0.3
+		}
+	]
+}

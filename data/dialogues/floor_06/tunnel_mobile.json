@@ -1,0 +1,45 @@
+{
+	"name": "旋转吊铃",
+	"entries": [
+		{
+			"node": "default"
+		}
+	],
+	"nodes": {
+		"default": {
+			"lines": [
+				{
+					"text": "（摇篮上方挂着一个旋转吊铃：月亮、星星、两只小兔子）",
+					"speaker": ""
+				},
+				{
+					"text": "（轻轻一碰，它就叮叮咚咚地转了起来，放出一段很慢很慢的曲子）",
+					"speaker": ""
+				},
+				{
+					"text": "……这首歌。……我好像听过。",
+					"speaker": "公主",
+					"emotion": "surprise"
+				},
+				{
+					"text": "……（小声地，跟着哼了两句）……",
+					"speaker": "蓝色的公主"
+				},
+				{
+					"text": "……你也会？",
+					"speaker": "公主",
+					"emotion": "surprise"
+				},
+				{
+					"text": "……不知道。……嘴巴自己会。",
+					"speaker": "蓝色的公主"
+				}
+			],
+			"set": {
+				"flags": [
+					"palace_lullaby_heard"
+				]
+			}
+		}
+	}
+}
