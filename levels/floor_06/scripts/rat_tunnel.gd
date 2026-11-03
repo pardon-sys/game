@@ -9,6 +9,7 @@ extends Node2D
 ##   猫咪追逐：走到 cat_start → 橘猫从身后（最近的检查点）追出来（CAT_SPEED，比走路快、比冲刺慢），跑到 cat_end 的小洞就安全；
 ##     追上了 → 小剧场 tunnel_cat_first（第一次，长一点）/ tunnel_cat，然后回检查点重跑。
 ##   老鼠窝（nest）、刻字的死胡同（clue）：按 E 调查（对话 floor_06/tunnel_nest、tunnel_clue）。
+## 等距地图：滴水管、猫都挂在 Entities（导演的父节点）下面，各自投影；导演自己只管逻辑。
 ## 测试：triggered、checkpoint、drips、cat、chasing、safe、caught_count、drip_hit(i)、catch_now()。
 
 const MAP := "floor_06_rat_tunnel"
@@ -52,8 +53,8 @@ func _ready() -> void:
 		var d := Drip.new()
 		d.tunnel = self
 		d.left = randf_range(DRIP_EVERY.x, DRIP_EVERY.y)
-		add_child(d)
-		d.global_position = Cutscene.cell_to_world(c)
+		get_parent().add_child.call_deferred(d)
+		d.position = Cutscene.cell_to_world(c)
 		drips.append(d)
 	for c in QuestMaps.cells(MAP, "checkpoints"):
 		_cps.append(Cutscene.cell_to_world(c))
@@ -63,9 +64,10 @@ func _ready() -> void:
 		sp.dialogue = str(pair[1])
 		add_child(sp)
 		sp.global_position = Cutscene.cell_to_world(QuestMaps.cell(MAP, str(pair[0])))
+	# 等距地图：每个要单独投影的东西都得是 Entities 的直接子节点（挂在导演下面会跟着导演的投影位置偏）
 	cat = TunnelCat.new()
 	cat.tunnel = self
-	add_child(cat)
+	get_parent().add_child.call_deferred(cat)
 	cat.hide()
 	safe = GameState.has_flag("tunnel_cat_safe")
 	# 跳关进来（没经过牢房的换装）：补穿鼠鼠装

@@ -166,14 +166,107 @@ static func run(t: Node) -> void:
 	verify(t, "竖井：上下窜的章末大段 → 「第二章　鼠洞　完」（%s）、鼠鼠装还穿着" % Cutscene.chapter_title.text,
 		GameState.has_flag("cg_seen_theater:tunnel_shaft") and t.seen_cuts.has("tunnel_out") and Cutscene.chapter_title.text.contains("鼠洞") and PenanceCell.wearing_mouse())
 	verify(t, "第二章章末接第三章·水道的出口（%s）" % Cutscene.chapter_next, Cutscene.chapter_next == "floor_06_waterway_exit")
-	# ---- 第三章开场：汇合，互相调侃裤子
-	for f in [MeetExit.DONE_FLAG, "cg_seen_theater:meet_pants"]:
+	# ---- 第三章：蓝色公主视角 → 汇合（互相调侃裤子）→ 废弃水道
+	for f in [MeetExit.DONE_FLAG, "cg_seen_theater:meet_pants", "intro_done_waterway_in", SluiceKeeper.DONE_FLAG, "cg_seen_keeper_intro",
+			"cg_seen_theater:waterway_down_first", "cg_seen_theater:keeper_fail", "cg_seen_theater:keeper_win"]:
 		GameState.set_flag(f, false)
+	GameState.vars.erase(WaterwayDirector.WATER_VAR)
 	Cutscene.continue_chapter()
-	await t._advance_until(func(): return t._level_id() == "floor_06_waterway_exit" and Cutscene.chapter_screen.visible and Cutscene.chapter_title.text.contains("汇合") and not Cutscene.is_playing(), 240.0)
-	verify(t, "水道出口：蓝色公主在等 → 互相调侃裤子的小剧场（千手裤挠蓝色公主、挠脚鼠不甘示弱挠粉色公主）→ 「第三章　汇合」（%s）" % Cutscene.chapter_title.text,
-		t.seen_cuts.has("meet_in") and GameState.has_flag("cg_seen_theater:meet_pants") and t.seen_cuts.has("meet_out") and Cutscene.chapter_title.text.contains("汇合"))
-	verify(t, "汇合以后鼠鼠装还穿着", PenanceCell.wearing_mouse())
+	await t._advance_until(func(): return t._level_id() == "floor_06_waterway" and not Cutscene.is_playing() and t.seen_cuts.has("waterway_in"), 300.0)
+	verify(t, "水道出口：蓝色公主视角（背景大图）→ 汇合 → 互相调侃裤子（千手裤挠蓝色、挠脚鼠不甘示弱挠粉色）→ 一起走进废弃水道（%s）" % t._level_id(),
+		t.seen_cuts.has("blue_pov") and t.seen_cuts.has("meet_in") and GameState.has_flag("cg_seen_theater:meet_pants") and t.seen_cuts.has("meet_out")
+		and t._level_id() == "floor_06_waterway" and PenanceCell.wearing_mouse())
+	var wd: WaterwayDirector = null
+	for nd in t.get_tree().root.find_children("*", "", true, false):
+		if nd is WaterwayDirector:
+			wd = nd
+	await t.get_tree().process_frame
+	verify(t, "废弃水道：两人同行（Duo，蓝色公主是 AI 搭档）", wd != null and Duo.active and is_instance_valid(wd.blue) and wd.blue != GameState.player)
+	var pk := wd.pink
+	# 水位：开始高水位（浮木能走、格栅淹着）；两个人一起站轮盘转得快 → 换水位
+	var log_c: Vector2i = QuestMaps.cells(WaterwayDirector.MAP, "logs")[0]
+	var grate_c: Vector2i = QuestMaps.cells(WaterwayDirector.MAP, "grate")[0]
+	verify(t, "开始高水位：浮木浮着能走，水下格栅淹着过不去", wd.high and not wd.blocked(log_c) and wd.blocked(grate_c))
+	var wheel_at: Vector2 = wd.wheels[0]["pos"]
+	pk.global_position = wheel_at
+	wd.blue.global_position = wheel_at + Vector2(4, 0)
+	for i in 30:
+		wd._tick_wheels(0.1, wd.members())
+	verify(t, "两个人一起站轮盘：%.1f 秒转满 → 低水位（浮木沉下去、格栅露出来）" % WaterwayDirector.WHEEL_TWO, not wd.high and wd.blocked(log_c) and not wd.blocked(grate_c))
+	pk.global_position = wheel_at + Vector2(60, 0)
+	wd.blue.global_position = wheel_at + Vector2(70, 0)
+	wd._tick_wheels(0.1, wd.members())
+	pk.global_position = wheel_at
+	for i in 30:
+		wd._tick_wheels(0.1, [pk])
+	verify(t, "一个人站轮盘 3 秒还没转满（%.0f%%）" % (float(wd.wheels[0]["progress"]) * 100.0), not wd.high)
+	for i in 15:
+		wd._tick_wheels(0.1, [pk])
+	verify(t, "一个人转 %.0f 秒也能转满 → 又是高水位" % WaterwayDirector.WHEEL_ONE, wd.high)
+	# 泡泡：裹住粉色公主 → 定身、闷笑涨；AI 蓝色公主走过来戳破
+	pk.global_position = Cutscene.cell_to_world(QuestMaps.cells(WaterwayDirector.MAP, "checkpoints")[0])
+	wd.blue.global_position = pk.global_position + Vector2(60, 0)
+	pk.laugh.set_value(0.0)
+	wd.trap(pk)
+	var l0 := pk.laugh.value
+	for i in 4:
+		wd._tick_trap(pk, 0.5)
+	verify(t, "被泡泡裹住：定身、闷笑一直涨（%.1f → %.1f）" % [l0, pk.laugh.value], wd.trapped.has(pk) and pk.status.is_rooted() and pk.laugh.value > l0)
+	verify(t, "AI 搭档的目标：去戳破泡泡", (WaterwayDirector.WaterwayHooks.new(wd).objective_for(wd.blue) as Vector2).distance_to(pk.global_position) < 1.0)
+	wd.blue.global_position = pk.global_position + Vector2(8, 0)
+	wd._tick_trap(pk, 0.1)
+	verify(t, "搭档走到旁边：泡泡戳破、能动了", not wd.trapped.has(pk) and not pk.status.is_rooted())
+	# 浅水小鱼群：站着越聚越多；冲刺甩掉
+	var sh: Vector2i = QuestMaps.cells(WaterwayDirector.MAP, "shallow")[10]
+	pk.global_position = WaterwayDirector.cell_pos(sh)
+	pk.velocity = Vector2.ZERO
+	for i in 20:
+		wd._tick_fish(pk, 0.1)
+	var n_fish := float(wd.fish.get(pk, 0.0))
+	verify(t, "站在浅水里：小鱼群越聚越多（%.1f 条）" % n_fish, n_fish >= 3.0)
+	# 黑泥：抹上 → 变慢、闷笑涨；踩清水池洗掉；蓝色公主在身边冰掉
+	wd.mud_on(pk)
+	verify(t, "被黑泥小人抹上泥：变慢", wd.mud.has(pk))
+	pk.global_position = WaterwayDirector.cell_pos(QuestMaps.cells(WaterwayDirector.MAP, "fountain")[0])
+	wd.blue.global_position = pk.global_position + Vector2(80, 0)
+	wd._tick_mud(pk, 0.1)
+	verify(t, "踩进清水池：泥洗掉了", not wd.mud.has(pk))
+	pk.global_position = WaterwayDirector.cell_pos(sh)
+	wd.mud_on(pk)
+	wd.blue.global_position = pk.global_position + Vector2(8, 0)
+	wd._tick_mud(pk, 0.1)
+	verify(t, "蓝色公主（AI）走到身边：用冰把泥冻碎", not wd.mud.has(pk))
+	# 两个都被裹住 → 短小剧场 → 回检查点
+	wd.trap(wd.blue)
+	wd.trap(pk)
+	await t._advance_until(func(): return GameState.has_flag("cg_seen_theater:waterway_down_first") and not CG.is_busy() and not Dialogue.is_active() and not wd._defeat_busy, 120.0)
+	verify(t, "两个都被泡泡裹住：短小剧场（第一次长一点）→ 回检查点、都放出来", GameState.has_flag("cg_seen_theater:waterway_down_first")
+		and wd.trapped.is_empty() and pk.global_position.distance_to(wd.checkpoint) < 2.0)
+	# 水闸守门人
+	pk.global_position = Cutscene.cell_to_world(QuestMaps.cell(WaterwayDirector.MAP, "arena"))
+	await t._advance_until(func(): return is_instance_valid(wd.keeper) and wd.keeper._started and not Cutscene.is_playing(), 60.0)
+	var kp := wd.keeper as SluiceKeeper
+	verify(t, "走进场地：水闸守门人登场（开场过场、三个阀门）", kp != null and t.seen_cuts.has("keeper_intro") and kp.valves.size() == 3)
+	kp.attack("sweep")
+	verify(t, "刷子臂横扫：先亮预警带（AI 会躲：danger 组）", kp._sweeps.size() == 1 and (kp._sweeps[0] as Node).is_in_group("danger"))
+	var sw_y: float = (kp._sweeps[0] as SluiceKeeper.Sweep).y
+	pk.global_position.y = sw_y
+	pk.laugh.set_value(0.0)
+	kp._do_sweep(kp._sweeps[0], [pk])
+	verify(t, "扫到没冲刺的人：被刷脚底（闷笑 %.0f）" % pk.laugh.value, pk.laugh.value > 0.0)
+	kp.close_valve(0)
+	verify(t, "关掉一个阀门：它放水淹场（%.1f 秒）" % kp.flooding, kp.valves_closed == 1 and kp.flooding > 0.0)
+	verify(t, "淹场时 AI 搭档跑上石堆", (kp.objective_for(wd.blue) as Vector2) in QuestMaps.cells(WaterwayDirector.MAP, "rocks").map(func(c): return Cutscene.cell_to_world(c)))
+	# 输了：战败小剧场（四幕 + CG）→ 场地复位
+	wd.on_defeat("downed")
+	await t._advance_until(func(): return GameState.has_flag("cg_seen_theater:keeper_fail") and not CG.is_busy() and not Dialogue.is_active() and not wd._defeat_busy, 180.0)
+	verify(t, "守门人战输了：战败小剧场 keeper_fail → 阀门复位、回到场地入口", GameState.has_flag("cg_seen_theater:keeper_fail") and kp.valves_closed == 0)
+	# 赢了：三个阀门 → 被困住的小剧场 → 章末
+	for i in 3:
+		kp.close_valve(i)
+	await t._advance_until(func(): return Cutscene.chapter_screen.visible and Cutscene.chapter_title.text.contains("废弃水道") and not Cutscene.is_playing(), 180.0)
+	verify(t, "三个阀门都关上：被困住、踩着肩膀爬上去 → 旧王宫的走廊 → 「第三章　废弃水道　完」（%s）、鼠鼠装还穿着" % Cutscene.chapter_title.text,
+		GameState.has_flag("cg_seen_theater:keeper_win") and GameState.has_flag(SluiceKeeper.DONE_FLAG) and Cutscene.chapter_title.text.contains("废弃水道") and PenanceCell.wearing_mouse())
 	Cutscene.chapter_screen.hide()
 	Cutscene.chapter_next = ""
 	PenanceCell.take_off_mouse()

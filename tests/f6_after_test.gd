@@ -74,7 +74,7 @@ func _ready() -> void:
 		return
 	if "--penance-only" in OS.get_cmdline_user_args():
 		await preload("res://tests/helpers/f6_penance.gd").run(self)
-		print("\n==== 反省篇第一、二章%s (%d 项失败) ====" % ["全部通过" if failures == 0 else "有失败", failures])
+		print("\n==== 反省篇第一~三章%s (%d 项失败) ====" % ["全部通过" if failures == 0 else "有失败", failures])
 		get_tree().quit(1 if failures else 0)
 		return
 	if "--knight-finale-only" in OS.get_cmdline_user_args():

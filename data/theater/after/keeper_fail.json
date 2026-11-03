@@ -1,0 +1,515 @@
+{
+	"name": "水闸守门人：笑声水闸",
+	"cast": {
+		"princess": {
+			"kind": "princess",
+			"at": [
+				-14,
+				8
+			],
+			"visual": "helpless_1",
+			"anim": "helpless",
+			"dir": "right"
+		},
+		"blue": {
+			"kind": "npc:blue_princess",
+			"at": [
+				14,
+				8
+			],
+			"visual": "helpless_1",
+			"anim": "helpless",
+			"dir": "left"
+		},
+		"pants": {
+			"kind": "trap:hand",
+			"at": [
+				20,
+				10
+			]
+		},
+		"rat": {
+			"kind": "monster:rat",
+			"at": [
+				-26,
+				12
+			],
+			"dir": "right"
+		},
+		"keeper": {
+			"kind": "trap:wheel",
+			"at": [
+				0,
+				-6
+			]
+		},
+		"fish": {
+			"kind": "monster:bubble_fish",
+			"at": [
+				6,
+				14
+			],
+			"dir": "up"
+		}
+	},
+	"steps": [
+		{
+			"act": 1,
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "fade_in"
+				},
+				{
+					"state": "giggle",
+					"do": "voice"
+				}
+			],
+			"wait": 0.5
+		},
+		{
+			"speaker": "",
+			"text": "（守门人的刷子臂「咔哒」一声，把两个人一左一右揽了过去，按在了闸门前的浅水里）",
+			"act": 1
+		},
+		{
+			"speaker": "水闸守门人",
+			"text": "（齿轮咯吱咯吱地转）……检查……闯入者……清洗……程序……开始……"
+		},
+		{
+			"speaker": "公主",
+			"text": "清、清洗！？我们不脏——！",
+			"emotion": "surprise"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……它听不懂。"
+		},
+		{
+			"speaker": "",
+			"text": "（闸门底下的格栅打开了。温温的水漫上来，刚好没过脚踝）",
+			"actions": [
+				{
+					"sound": "water_release",
+					"volume": -4.0,
+					"do": "sfx"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "……还好，只是水……",
+			"emotion": "sad"
+		},
+		{
+			"speaker": "",
+			"text": "（……水里冒出了一串串小泡泡。泡泡贴着脚底往上浮，一颗一颗在脚心上破掉）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "keeper",
+					"zone": "sole",
+					"fx": "lines",
+					"repeat": 8,
+					"interval": 0.18,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"visual": "giggle",
+					"do": "pose"
+				},
+				{
+					"who": "blue",
+					"visual": "giggle",
+					"do": "pose"
+				}
+			],
+			"act": 2
+		},
+		{
+			"speaker": "公主",
+			"text": "嘻……嘻嘻……泡泡……！",
+			"emotion": "giggle"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……忍、得住……"
+		},
+		{
+			"speaker": "",
+			"text": "（刷子臂慢慢放了下来。一把软刷贴上粉色公主的脚心，另一把贴上蓝色公主的大腿外侧，开始一下一下地「清洗」）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "keeper",
+					"zone": "sole",
+					"fx": "lines",
+					"repeat": 10,
+					"interval": 0.16,
+					"do": "tickle"
+				},
+				{
+					"who": "blue",
+					"by": "keeper",
+					"zone": "thigh",
+					"fx": "feather",
+					"repeat": 10,
+					"interval": 0.16,
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "哈、哈哈……这不是洗……这是挠……！",
+			"emotion": "giggle"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……刷……刷子……往里面……来了……",
+			"actions": [
+				{
+					"who": "blue",
+					"visual": "helpless_1",
+					"do": "pose"
+				},
+				{
+					"do": "voice",
+					"state": "laugh"
+				}
+			]
+		},
+		{
+			"speaker": "",
+			"text": "（千手痒痒裤也被刷子惊动了，裤子里的手跟着刷子的节奏一起揉——蓝色公主的膝盖一下子并紧了）",
+			"actions": [
+				{
+					"who": "blue",
+					"by": "pants",
+					"zone": "thigh",
+					"fx": "hand",
+					"repeat": 12,
+					"interval": 0.13,
+					"do": "tickle"
+				},
+				{
+					"who": "blue",
+					"by": "pants",
+					"zone": "butt",
+					"fx": "pinch",
+					"repeat": 6,
+					"interval": 0.2,
+					"do": "tickle"
+				}
+			],
+			"act": 3
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……哈……哈哈……两、两边……一起……不行……",
+			"actions": [
+				{
+					"who": "blue",
+					"visual": "helpless_2",
+					"do": "pose"
+				}
+			],
+			"portrait": "keeper_fail"
+		},
+		{
+			"speaker": "",
+			"text": "（粉色公主那边，小鱼群从格栅里涌了出来，绕着脚趾啃——挠脚鼠在短裤里听见了，吱吱叫着不甘示弱地从腿根窜到脚底）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "fish",
+					"zone": "sole",
+					"fx": "lines",
+					"repeat": 12,
+					"interval": 0.12,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"by": "rat",
+					"zone": "thigh",
+					"fx": "hand",
+					"repeat": 8,
+					"interval": 0.14,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"visual": "helpless_2",
+					"do": "pose"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "哈哈哈哈！小鱼……老鼠……刷子……全都来了——！",
+			"emotion": "helpless_2"
+		},
+		{
+			"speaker": "挠脚鼠",
+			"text": "吱吱！这里是我的地盘！小鱼一边去！"
+		},
+		{
+			"speaker": "",
+			"text": "（两个人笑得东倒西歪，肩膀撞在一起，谁也扶不住谁。水声、泡泡声、笑声在闸门前一圈圈回荡）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "keeper",
+					"zone": "sole",
+					"fx": "lines",
+					"repeat": 14,
+					"interval": 0.1,
+					"do": "tickle"
+				},
+				{
+					"who": "blue",
+					"by": "keeper",
+					"zone": "thigh",
+					"fx": "feather",
+					"repeat": 14,
+					"interval": 0.1,
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……哈哈……你……笑得……太吵了……"
+		},
+		{
+			"speaker": "公主",
+			"text": "你、你才是……哈哈哈……你今天笑了好多……！",
+			"emotion": "helpless_2"
+		},
+		{
+			"speaker": "水闸守门人",
+			"text": "……清洗度……百分之五十……继续……"
+		},
+		{
+			"speaker": "",
+			"text": "（刷子的速度又快了一档。魔力在两个人身体里一起往上涌——）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "keeper",
+					"zone": "sole",
+					"fx": "lines",
+					"repeat": 12,
+					"interval": 0.1,
+					"do": "tickle"
+				},
+				{
+					"who": "blue",
+					"by": "pants",
+					"zone": "thigh",
+					"fx": "hand",
+					"repeat": 12,
+					"interval": 0.1,
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……哈……哈哈……不、不行了……（冰晶炸开，水面一下子结了一层薄冰……）……身体……轻飘飘的……",
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "flash"
+				},
+				{
+					"sound": "ice_crack",
+					"volume": -2.0,
+					"do": "sfx"
+				},
+				{
+					"sound": "water_release",
+					"volume": -2.0,
+					"do": "sfx"
+				},
+				{
+					"who": "blue",
+					"time": 0.4,
+					"do": "shake"
+				},
+				{
+					"state": "laugh",
+					"do": "voice"
+				}
+			],
+			"act": "burst",
+			"wait": 1.0
+		},
+		{
+			"speaker": "公主",
+			"text": "（星光跟着炸开，薄冰碎成了一闪一闪的冰屑……哈啊……放出去了……好舒服……）",
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "flash"
+				},
+				{
+					"sound": "star_burst",
+					"do": "sfx"
+				},
+				{
+					"sound": "water_release",
+					"volume": -2.0,
+					"do": "sfx"
+				},
+				{
+					"who": "princess",
+					"time": 0.4,
+					"do": "shake"
+				},
+				{
+					"state": "laugh",
+					"do": "voice"
+				}
+			],
+			"act": "burst",
+			"wait": 1.0
+		},
+		{
+			"speaker": "",
+			"text": "（冰屑落进水里，很快又化开了。刷子臂停了一下——然后又慢慢地贴了上来，贴上两个人刚释放完、敏感得发烫的身体）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "keeper",
+					"zone": "sole",
+					"fx": "feather",
+					"repeat": 8,
+					"interval": 0.16,
+					"do": "tickle"
+				},
+				{
+					"who": "blue",
+					"by": "keeper",
+					"zone": "thigh",
+					"fx": "feather",
+					"repeat": 8,
+					"interval": 0.16,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"visual": "helpless_2",
+					"do": "pose"
+				},
+				{
+					"who": "blue",
+					"visual": "helpless_2",
+					"do": "pose"
+				}
+			],
+			"act": 4
+		},
+		{
+			"speaker": "公主",
+			"text": "呀……！放完以后……轻轻一下就……哈哈哈……！",
+			"emotion": "helpless_2"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……现、现在……别碰……哈……哈哈……"
+		},
+		{
+			"speaker": "",
+			"text": "（一只小鱼在粉色公主的小脚趾缝里轻轻啃了一口，裤子里的一只手在蓝色公主的腿根上轻轻点了一下——两个人同时弹了起来）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "fish",
+					"zone": "sole",
+					"fx": "lines",
+					"repeat": 6,
+					"interval": 0.18,
+					"do": "tickle"
+				},
+				{
+					"who": "blue",
+					"by": "pants",
+					"zone": "thigh",
+					"fx": "hand",
+					"repeat": 6,
+					"interval": 0.18,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"time": 0.4,
+					"do": "shake"
+				},
+				{
+					"who": "blue",
+					"time": 0.4,
+					"do": "shake"
+				},
+				{
+					"do": "pose",
+					"who": "princess",
+					"visual": "helpless_2"
+				},
+				{
+					"do": "pose",
+					"who": "blue",
+					"visual": "helpless_2"
+				}
+			]
+		},
+		{
+			"speaker": "水闸守门人",
+			"text": "……清洗度……百分之百……程序……结束……放行……回到……入口……"
+		},
+		{
+			"speaker": "",
+			"text": "（刷子臂松开了，闸门前的水也慢慢退了下去。两个人背靠着背坐在湿漉漉的地上，喘了好半天）",
+			"actions": [
+				{
+					"who": "princess",
+					"visual": "helpless_1",
+					"do": "pose"
+				},
+				{
+					"who": "blue",
+					"visual": "helpless_1",
+					"do": "pose"
+				}
+			]
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……阀门。……三个。……这次分开去关。"
+		},
+		{
+			"speaker": "公主",
+			"text": "……嗯。刷子扫过来的时候冲刺，放水的时候上石头……我记住了。",
+			"emotion": "sad"
+		},
+		{
+			"speaker": "挠脚鼠",
+			"text": "吱……我也记住了。下次那群小鱼来，我先挠它们。"
+		},
+		{
+			"actions": [
+				{
+					"state": "",
+					"do": "voice"
+				},
+				{
+					"time": 0.6,
+					"do": "fade_out"
+				}
+			],
+			"wait": 0.7
+		}
+	]
+}

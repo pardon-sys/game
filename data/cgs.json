@@ -272,6 +272,11 @@
 			"placeholder": "helpless_2",
 			"wide": true
 		},
+		"keeper_fail": {
+			"file": "res://assets/cg/portraits/keeper_fail.png",
+			"placeholder": "helpless_2",
+			"wide": true
+		},
 		"slime_1": {
 			"file": "res://assets/cg/portraits/slime_1.png",
 			"placeholder": "helpless_1"

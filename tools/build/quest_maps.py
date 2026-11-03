@@ -166,6 +166,9 @@ MARKS = {
     "floor_06_after_warehouse": {"R": "parts", "H": "hands", "C": "covers"},
     "floor_06_knight_storage": {"V": "brush_down", "A": "brush_up", "D": "doll"},
     "floor_06_knight_bridge": {"H": "hands", "E": "end"},
+    "floor_06_waterway": {"L": "lions", "D": "deep", "O": "logs", "G": "wheels", "U": "grate", "S": "shallow", "F": "fountain",
+                          "M": "mud", "Z": "foes", "C": "checkpoints", "A": "arena", "K": "keeper", "V": "valves", "R": "rocks",
+                          "N": "nozzles", "E": "end"},
     "floor_06_rat_tunnel": {"A": "thigh", "F": "sole", "S": "shaft", "W": "drips", "N": "nest", "K": "clue", "Q": "cat_start",
                             "R": "cat_end", "C": "checkpoints", "M": "rats", "E": "end"},
 }
@@ -237,6 +240,68 @@ def _tunnel():
 
 
 LAYOUTS["floor_06_rat_tunnel"] = _tunnel()
+
+
+def _waterway():
+    """反省篇第三章·废弃水道（等距，drain_water；WaterwayDirector）：两人同行。按顺序：
+    出口平台（P，C 检查点）→ 三格宽的走廊，两边墙上的狮子头（L）吐泡泡 → 第一条水渠（D 深水 / O 浮木，开始是高水位：浮木浮着能过）
+    → 轮盘 G（两个人一起转 = 换水位）→ 水下的格栅通道（U：低水位才露出来）→ 浅水大厅（S 浅水：小鱼群；F 清水池：洗黑泥；M 黑泥小人；Z 现有的水里的怪）
+    → 第二条水渠（又要高水位：G 轮盘就在渠前，旁边也有狮子头）→ 水闸守门人的场地（A 进场；K 守门人；V 三个阀门；R 石堆高处；N 黑泥喷口；E 赢了以后的出口）。"""
+    w, h = 110, 18
+    g = [["#"] * w for _ in range(h)]
+
+    def room(x0, y0, x1, y1, ch="."):
+        for y in range(y0, y1 + 1):
+            for x in range(x0, x1 + 1):
+                g[y][x] = ch
+
+    def put(x, y, ch):
+        g[y][x] = ch
+
+    room(2, 3, 6, 7)                      # 出口平台
+    room(7, 4, 30, 6)                     # 狮子头走廊
+    room(31, 2, 33, 9, "D")               # 第一条水渠
+    for x in (31, 32, 33):
+        put(x, 5, "O")
+    room(34, 4, 44, 6)
+    room(45, 5, 52, 5, "U")               # 水下格栅通道
+    room(53, 2, 70, 13)                   # 浅水大厅
+    room(55, 3, 68, 12, "S")
+    for (x, y) in ((58, 6), (59, 6), (64, 9), (65, 9), (61, 11)):
+        put(x, y, ".")                    # 大厅里的几块干地
+    put(62, 7, "F")
+    put(63, 7, "F")
+    room(71, 6, 80, 8)
+    room(81, 3, 83, 12, "D")              # 第二条水渠
+    for x in (81, 82, 83):
+        put(x, 7, "O")
+    room(84, 7, 90, 7)
+    room(91, 2, 107, 15)                  # 水闸守门人的场地
+    put(3, 5, "P")
+    put(7, 5, "C")
+    for (x, y) in ((11, 4), (17, 6), (23, 4), (28, 6), (76, 6), (79, 8)):
+        put(x, y, "L")
+    put(38, 5, "G")
+    put(54, 7, "C")
+    put(77, 7, "G")
+    for (x, y) in ((60, 4), (66, 11)):
+        put(x, y, "M")
+    for (x, y) in ((57, 10), (68, 4)):
+        put(x, y, "Z")
+    put(73, 7, "C")
+    put(92, 8, "A")
+    put(99, 3, "K")
+    for (x, y) in ((94, 12), (104, 12), (99, 9)):
+        put(x, y, "V")
+    for (x, y) in ((95, 5), (103, 5), (99, 14)):
+        put(x, y, "R")
+    for (x, y) in ((92, 3), (106, 3)):
+        put(x, y, "N")
+    put(106, 14, "E")
+    return ["".join(r) for r in g]
+
+
+LAYOUTS["floor_06_waterway"] = _waterway()
 
 
 def grid(fid):
