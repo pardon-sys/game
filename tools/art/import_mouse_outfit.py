@@ -8,7 +8,8 @@
 行走图 / 魔法图（princess.png、princess_hd.png、princess_magic.png、princess_magic_hd.png → 同名 *_mouse）：程序重画，
   每格找到裙摆下面露出来的腿：白色长筒袜 → 皮肤色，红鞋 → 灰色毛绒拖鞋（粉色肉垫、两只小耳朵），裙摆下沿一圈灰色绒毛（短裤），身后一条粉色细尾巴。
   已经光着脚的格子（失控一 / 失控二倒在地上）不画袜子鞋子，只加尾巴。
-用法：python tools/art/import_mouse_outfit.py [--refs] [--sprites-only] [--preview]
+  --reveal   概念图最后那个人物（背面）裁出来 → PENANCE_CG/mouse_outfit_reveal.png（第一章换装那一步展示用，再跑 import_cg.py --penance）
+用法：python tools/art/import_mouse_outfit.py [--refs] [--reveal] [--sprites-only] [--preview]
 """
 import sys
 
@@ -246,7 +247,28 @@ def preview():
     out.save(PREVIEW / "sprites.png")
 
 
+def export_reveal():
+    """概念图最后那个（背面回头、看得见尾巴）裁出来：第一章第一次穿上鼠鼠装时，过场里换上这张展示她现在的样子。
+    存进 assets/generated/PENANCE_CG/mouse_outfit_reveal.png（白底），import_cg.py --penance 像素化成立绘 mouse_outfit_reveal。"""
+    img = Image.open(SRC / "mouse_concept.png").convert("RGB")
+    third = img.crop((img.width * 2 // 3, 0, img.width, img.height))
+    rgb = np.asarray(third).astype(np.uint8)
+    alpha = np.where(_bg_mask(rgb), 0, 255).astype(np.uint8)
+    fig = Image.fromarray(np.dstack([rgb, alpha]), "RGBA")
+    x0, y0, x1, y1 = p2.body_bbox(fig)
+    m = 16
+    box = (max(0, x0 - m), max(0, y0 - m), min(fig.width, x1 + m), min(fig.height, y1 + m))
+    out = Image.new("RGB", (box[2] - box[0], box[3] - box[1]), "white")
+    out.paste(third.crop(box), (0, 0))
+    dst = ROOT / "assets/generated/PENANCE_CG/mouse_outfit_reveal.png"
+    out.save(dst)
+    print("换装展示图：", dst.name, out.size)
+
+
 def main():
+    if "--reveal" in sys.argv:
+        export_reveal()
+        return
     if "--refs" in sys.argv:
         export_refs()
         return

@@ -1,0 +1,629 @@
+{
+	"name": "汇合：两条奇怪的裤子",
+	"cast": {
+		"princess": {
+			"kind": "princess",
+			"at": [
+				-14,
+				8
+			],
+			"visual": "normal",
+			"anim": "idle",
+			"dir": "right"
+		},
+		"blue": {
+			"kind": "npc:blue_princess",
+			"at": [
+				14,
+				8
+			],
+			"visual": "normal",
+			"anim": "idle",
+			"dir": "left"
+		},
+		"rat": {
+			"kind": "monster:rat",
+			"at": [
+				-26,
+				12
+			],
+			"dir": "right"
+		},
+		"pants": {
+			"kind": "trap:hand",
+			"at": [
+				20,
+				10
+			]
+		}
+	},
+	"steps": [
+		{
+			"act": 1,
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "fade_in"
+				},
+				{
+					"state": "giggle",
+					"do": "voice"
+				}
+			],
+			"wait": 0.5
+		},
+		{
+			"speaker": "",
+			"text": "（水道出口的灯下，蓝色公主手里提着一双粉色的小鞋，一动不动地站着）",
+			"act": 1
+		},
+		{
+			"speaker": "公主",
+			"text": "……你！你怎么在这里！？",
+			"emotion": "surprise"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……派对主人说，地牢的鼠洞，通到这里。……等了很久。"
+		},
+		{
+			"speaker": "公主",
+			"text": "……你一直在等我？",
+			"emotion": "happy"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……",
+			"actions": [
+				{
+					"who": "blue",
+					"dir": "down",
+					"do": "face"
+				}
+			]
+		},
+		{
+			"speaker": "",
+			"text": "（蓝色公主的目光慢慢往下移——落在了那条灰色的毛绒短裤上，又落在了后面那条一甩一甩的粉色尾巴上）"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……那是什么。"
+		},
+		{
+			"speaker": "公主",
+			"text": "……裤、裤子。",
+			"emotion": "shy"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……有尾巴。"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……还有鞋。……有耳朵。"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……很合适。……噗。",
+			"actions": [
+				{
+					"who": "blue",
+					"visual": "giggle",
+					"do": "pose"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "你、你笑了！？你刚才是不是笑了！？",
+			"emotion": "angry"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……没有。",
+			"actions": [
+				{
+					"who": "blue",
+					"visual": "normal",
+					"do": "pose"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "你还好意思说我！你自己那条裤子呢！那条紫色的、紧紧的、会动的、里面有一千只手的——",
+			"emotion": "angry",
+			"act": 2
+		},
+		{
+			"speaker": "",
+			"text": "（话音刚落，蓝色公主腿上那条紫色的千手痒痒裤，「蠕」地动了一下）",
+			"actions": [
+				{
+					"who": "blue",
+					"by": "pants",
+					"zone": "thigh",
+					"fx": "hand",
+					"repeat": 4,
+					"interval": 0.25,
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……别、别提它。……它听得见。"
+		},
+		{
+			"speaker": "公主",
+			"text": "……诶？听、听得见？",
+			"emotion": "surprise"
+		},
+		{
+			"speaker": "",
+			"text": "（像是被叫到了名字，裤子里的手一只接一只地醒了过来。先是轻轻地揉了揉大腿外侧，又慢慢地往里面爬）",
+			"actions": [
+				{
+					"who": "blue",
+					"by": "pants",
+					"zone": "thigh",
+					"fx": "hand",
+					"repeat": 8,
+					"interval": 0.18,
+					"do": "tickle"
+				},
+				{
+					"who": "blue",
+					"visual": "giggle",
+					"do": "pose"
+				}
+			]
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……嗯……没、没事……"
+		},
+		{
+			"speaker": "",
+			"text": "（「没事」的时候，十几只手正一圈一圈地揉着她的大腿根。她的膝盖并得紧紧的，肩膀一抖一抖）",
+			"actions": [
+				{
+					"who": "blue",
+					"by": "pants",
+					"zone": "thigh",
+					"fx": "hand",
+					"repeat": 10,
+					"interval": 0.15,
+					"do": "tickle"
+				},
+				{
+					"who": "blue",
+					"by": "pants",
+					"zone": "butt",
+					"fx": "pinch",
+					"repeat": 6,
+					"interval": 0.2,
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "……嘿嘿嘿。你看你看，你的裤子也很「合适」嘛～",
+			"emotion": "happy"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……不准……看……",
+			"actions": [
+				{
+					"who": "blue",
+					"visual": "helpless_1",
+					"do": "pose"
+				},
+				{
+					"do": "voice",
+					"state": "laugh"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "千手裤～千手裤～再揉一揉～",
+			"emotion": "happy"
+		},
+		{
+			"speaker": "",
+			"text": "（裤子听话得要命。手们从大腿根一路揉到屁股，又从屁股一路揉回大腿根）",
+			"actions": [
+				{
+					"who": "blue",
+					"by": "pants",
+					"zone": "thigh",
+					"fx": "hand",
+					"repeat": 12,
+					"interval": 0.12,
+					"do": "tickle"
+				},
+				{
+					"who": "blue",
+					"by": "pants",
+					"zone": "butt",
+					"fx": "pinch",
+					"repeat": 8,
+					"interval": 0.15,
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……哈……你……你别……唱……哈、哈哈……"
+		},
+		{
+			"speaker": "",
+			"text": "（蓝色公主难得地笑出了声。笑声在水道里回荡——然后，粉色公主的短裤里，有什么东西竖起了耳朵）",
+			"act": 3
+		},
+		{
+			"speaker": "挠脚鼠",
+			"text": "（从短裤里探出头）……吱！？笑声！？"
+		},
+		{
+			"speaker": "挠脚鼠",
+			"text": "几只手就想在我面前抢风头？吱吱！挠脚鼠一族，可不能输给一条裤子！"
+		},
+		{
+			"speaker": "公主",
+			"text": "等、等等！你要比赛就去挠她啊！为什么是——呀！",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "rat",
+					"zone": "thigh",
+					"fx": "hand",
+					"repeat": 8,
+					"interval": 0.14,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"visual": "giggle",
+					"do": "pose"
+				}
+			],
+			"emotion": "giggle"
+		},
+		{
+			"speaker": "",
+			"text": "（挠脚鼠「嗖」地从大腿根窜下去，钻进鼠爪鞋，在脚心上转起了圈）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "rat",
+					"zone": "sole",
+					"fx": "lines",
+					"repeat": 10,
+					"interval": 0.13,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"visual": "helpless_1",
+					"do": "pose"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "哈哈哈！脚心！刚爬完竖井……还没缓过来……！",
+			"emotion": "helpless_1"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……哈、哈哈……你……你也……",
+			"actions": [
+				{
+					"who": "blue",
+					"by": "pants",
+					"zone": "thigh",
+					"fx": "hand",
+					"repeat": 10,
+					"interval": 0.13,
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "",
+			"text": "（一个大腿根，一个脚心。一条裤子，一只老鼠。两个人笑着靠在一起，谁也扶不住谁）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "rat",
+					"zone": "sole",
+					"fx": "lines",
+					"repeat": 12,
+					"interval": 0.11,
+					"do": "tickle"
+				},
+				{
+					"who": "blue",
+					"by": "pants",
+					"zone": "thigh",
+					"fx": "hand",
+					"repeat": 12,
+					"interval": 0.11,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"visual": "helpless_2",
+					"do": "pose"
+				},
+				{
+					"who": "blue",
+					"visual": "helpless_2",
+					"do": "pose"
+				}
+			]
+		},
+		{
+			"speaker": "挠脚鼠",
+			"text": "吱吱！比比看谁的笑声大！"
+		},
+		{
+			"speaker": "",
+			"text": "（千手痒痒裤像是听懂了，手们也一下子勤快起来——两边越比越凶）",
+			"actions": [
+				{
+					"who": "blue",
+					"by": "pants",
+					"zone": "thigh",
+					"fx": "hand",
+					"repeat": 14,
+					"interval": 0.1,
+					"do": "tickle"
+				},
+				{
+					"who": "blue",
+					"by": "pants",
+					"zone": "butt",
+					"fx": "pinch",
+					"repeat": 8,
+					"interval": 0.12,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"by": "rat",
+					"zone": "sole",
+					"fx": "lines",
+					"repeat": 14,
+					"interval": 0.1,
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……哈……哈哈……不、不行了……（冰晶「叮」地炸开，雪花落了一地……）……身、身体……轻飘飘的……",
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "flash"
+				},
+				{
+					"sound": "ice_crack",
+					"volume": -2.0,
+					"do": "sfx"
+				},
+				{
+					"sound": "water_release",
+					"volume": -2.0,
+					"do": "sfx"
+				},
+				{
+					"who": "blue",
+					"time": 0.4,
+					"do": "shake"
+				},
+				{
+					"state": "laugh",
+					"do": "voice"
+				}
+			],
+			"act": "burst",
+			"wait": 1.0
+		},
+		{
+			"speaker": "公主",
+			"text": "（星光跟着炸开，和雪花混在一起……哈啊……放出去了……好舒服……）",
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "flash"
+				},
+				{
+					"sound": "star_burst",
+					"do": "sfx"
+				},
+				{
+					"sound": "water_release",
+					"volume": -2.0,
+					"do": "sfx"
+				},
+				{
+					"who": "princess",
+					"time": 0.4,
+					"do": "shake"
+				},
+				{
+					"state": "laugh",
+					"do": "voice"
+				}
+			],
+			"act": "burst",
+			"wait": 1.0
+		},
+		{
+			"speaker": "",
+			"text": "（星光和雪花慢慢落下来。可是裤子里的手、短裤里的老鼠，一个都没有停——它们贴上的，是两个人刚释放完、敏感得发烫的身体）",
+			"actions": [
+				{
+					"who": "blue",
+					"by": "pants",
+					"zone": "thigh",
+					"fx": "hand",
+					"repeat": 8,
+					"interval": 0.15,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"by": "rat",
+					"zone": "sole",
+					"fx": "feather",
+					"repeat": 8,
+					"interval": 0.15,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"visual": "helpless_2",
+					"do": "pose"
+				},
+				{
+					"who": "blue",
+					"visual": "helpless_2",
+					"do": "pose"
+				}
+			],
+			"act": 4
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……现、现在……一下都……别……哈哈……"
+		},
+		{
+			"speaker": "公主",
+			"text": "呀……！轻一点……一下就……哈哈哈……！",
+			"emotion": "helpless_2"
+		},
+		{
+			"speaker": "",
+			"text": "（一只手在蓝色公主的大腿内侧轻轻点了一下，挠脚鼠在粉色公主的小脚趾缝里舔了一口——两个人同时弹了起来，又同时笑倒在对方身上）",
+			"actions": [
+				{
+					"who": "blue",
+					"by": "pants",
+					"zone": "thigh",
+					"fx": "hand",
+					"repeat": 6,
+					"interval": 0.18,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"by": "rat",
+					"zone": "sole",
+					"fx": "lines",
+					"repeat": 6,
+					"interval": 0.18,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"time": 0.4,
+					"do": "shake"
+				},
+				{
+					"who": "blue",
+					"time": 0.4,
+					"do": "shake"
+				},
+				{
+					"do": "pose",
+					"who": "blue",
+					"visual": "helpless_2"
+				},
+				{
+					"do": "pose",
+					"who": "princess",
+					"visual": "helpless_2"
+				}
+			]
+		},
+		{
+			"speaker": "挠脚鼠",
+			"text": "吱……平、平手。……今天就算平手。",
+			"actions": [
+				{
+					"who": "princess",
+					"visual": "helpless_1",
+					"do": "pose"
+				},
+				{
+					"who": "blue",
+					"visual": "helpless_1",
+					"do": "pose"
+				}
+			]
+		},
+		{
+			"speaker": "",
+			"text": "（老鼠钻回了短裤里，裤子里的手也一只一只安静下来。两个人背靠着背坐在水道边，喘了好半天）"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……你笑起来……还是那么吵。"
+		},
+		{
+			"speaker": "公主",
+			"text": "……你才是。笑那么小声，憋得脸都红了。",
+			"emotion": "shy"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……",
+			"actions": [
+				{
+					"who": "blue",
+					"visual": "normal",
+					"do": "pose"
+				}
+			]
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……鞋。给你带来了。"
+		},
+		{
+			"speaker": "挠脚鼠",
+			"text": "（探出头）吱。鞋子先收着，出了水道才能换回来哦。"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……那，我替你拿着。"
+		},
+		{
+			"speaker": "公主",
+			"text": "……嗯。谢谢你。",
+			"emotion": "happy"
+		},
+		{
+			"actions": [
+				{
+					"state": "",
+					"do": "voice"
+				},
+				{
+					"time": 0.6,
+					"do": "fade_out"
+				}
+			],
+			"wait": 0.7
+		}
+	]
+}

@@ -266,7 +266,7 @@ def tunnel_out():
         line(P, "还、还要穿着！？", "surprise"),
         line(N, "（灯光那边，水道的出口处，好像站着一个人影。那个人影手里，提着一双鞋）"),
         line(P, "……那是……", "surprise"),
-        {"actions": [A("chapter_end", title="第二章　鼠洞　完", subtitle="——出口的灯光里，站着一个熟悉的身影", next="floor_06_after_house")], "wait": 1.4},
+        {"actions": [A("chapter_end", title="第二章　鼠洞　完", subtitle="——出口的灯光里，站着一个熟悉的身影", next="floor_06_waterway_exit")], "wait": 1.4},
     ]
     return {"name": "出口", "letterbox": True, "skippable": False, "steps": s}
 

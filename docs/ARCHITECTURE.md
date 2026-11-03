@@ -1272,6 +1272,12 @@ data/cutscenes/<楼层组>/  地图内过场；data/theater/<楼层组>/  小剧
   走到 thigh / sole / shaft 演 `tunnel_thigh / tunnel_sole / tunnel_shaft`（竖井是章末大段 + CG `tunnel_shaft`，演完 `tunnel_out` 章末「第二章　鼠洞　完」）；
   滴水管 `Drip`（先出影子，滴到她 → 鼠鼠装发作一次）；检查点；猫咪追逐 `TunnelCat`（走到 cat_start 从身后的检查点追出来，`CAT_SPEED` 介于走和冲刺之间，
   跑到 cat_end 安全；追上 → `tunnel_cat_first` / `tunnel_cat` → 回检查点）；老鼠窝 / 刻字（`floor_06/tunnel_nest`、`tunnel_clue`）。短台词 `data/after/tunnel.json`。
+  第二章章末 `next = floor_06_waterway_exit`。
+- 第一章钻墙缝的过场里第一次穿上鼠鼠装：`cg` 换上立绘 `mouse_outfit_reveal`（概念图最后那张背面回头，`import_mouse_outfit.py --reveal` 裁出 → `import_cg.py --penance`）。
+- **第三章开场·水道的出口** `floor_06_waterway_exit`（等距 drain_water）：`MeetExit`（legend `meetexit`）进图依次放 `meet_in` → 小剧场 `meet_pants`
+  （蓝色公主笑鼠鼠短裤 → 粉色公主回嘴提到千手痒痒裤 → 裤子的手挠蓝色公主 → 挠脚鼠听见笑声不甘示弱挠粉色公主，两人各释放一次）→ `meet_out`
+  （章末「第三章　汇合」待续，`next = floor_06_after_house`）。文本 `tools/build/penance_text/meet.py`。
+- 配乐（`tools/audio/gen_music.py`，ElevenLabs）：`old_palace` 旧王宫探索（荒凉、破旧、往日的华丽）、`palace_boss` 王座间 Boss「封笑的女王画像」，登记在 `Audio.MUSIC`，第四章用。
 
 ## 公主状态与换美术素材
 

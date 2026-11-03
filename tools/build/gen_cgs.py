@@ -155,7 +155,7 @@ for _k in ("equip", "potion", "cart", "drain", "drill", "tailor", "mine", "inspe
 
 # 骑士 Boss 的战败 CG（tools/art/import_cg.py --knight 从 assets/generated/KNIGHT_CG/ 生成）：四个失败小剧场的高潮
 # 反省篇第一章：反省牢房·功能拘束挠痒床（import_cg.py --penance 从 assets/generated/PENANCE_CG/）
-for _k in ("knight_fail_1", "knight_fail_2", "knight_fail_3", "knight_fail_fog", "penance_bed", "tunnel_shaft"):
+for _k in ("knight_fail_1", "knight_fail_2", "knight_fail_3", "knight_fail_fog", "penance_bed", "tunnel_shaft", "mouse_outfit_reveal"):
     _f = "res://assets/cg/portraits/%s.png" % _k
     portraits[_k] = {"file": _f, "placeholder": "helpless_2"}
     if os.path.exists(_f.replace("res://", "")):
