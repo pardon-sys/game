@@ -165,6 +165,15 @@ static func run(t: Node) -> void:
 	await t._advance_until(func(): return Cutscene.chapter_screen.visible and not Cutscene.is_playing(), 180.0)
 	verify(t, "竖井：上下窜的章末大段 → 「第二章　鼠洞　完」（%s）、鼠鼠装还穿着" % Cutscene.chapter_title.text,
 		GameState.has_flag("cg_seen_theater:tunnel_shaft") and t.seen_cuts.has("tunnel_out") and Cutscene.chapter_title.text.contains("鼠洞") and PenanceCell.wearing_mouse())
+	verify(t, "第二章章末接第三章·水道的出口（%s）" % Cutscene.chapter_next, Cutscene.chapter_next == "floor_06_waterway_exit")
+	# ---- 第三章开场：汇合，互相调侃裤子
+	for f in [MeetExit.DONE_FLAG, "cg_seen_theater:meet_pants"]:
+		GameState.set_flag(f, false)
+	Cutscene.continue_chapter()
+	await t._advance_until(func(): return t._level_id() == "floor_06_waterway_exit" and Cutscene.chapter_screen.visible and Cutscene.chapter_title.text.contains("汇合") and not Cutscene.is_playing(), 240.0)
+	verify(t, "水道出口：蓝色公主在等 → 互相调侃裤子的小剧场（千手裤挠蓝色公主、挠脚鼠不甘示弱挠粉色公主）→ 「第三章　汇合」（%s）" % Cutscene.chapter_title.text,
+		t.seen_cuts.has("meet_in") and GameState.has_flag("cg_seen_theater:meet_pants") and t.seen_cuts.has("meet_out") and Cutscene.chapter_title.text.contains("汇合"))
+	verify(t, "汇合以后鼠鼠装还穿着", PenanceCell.wearing_mouse())
 	Cutscene.chapter_screen.hide()
 	Cutscene.chapter_next = ""
 	PenanceCell.take_off_mouse()

@@ -21,7 +21,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from after_text import d1, d2, equip_kids, errand_dance, errand_goats, errand_ladder, errand_massage, errand_gate_chain, errand_shearing, errand_canopy, errand_sifting, errand_lamp_calibration, errands, house, mine, play, potion, punish, stocks, tailor, tasks, totem, town, drain, drill, inspect, tom, night, penalty, festival_night, festival_talk, stall_guess, stall_ring, stall_ice, stall_fish, stall_lick, done_folk  # noqa: E402
 import quest_maps as qmaps  # noqa: E402
 from knight_text import prison as knight_prison  # noqa: E402
-from penance_text import argue as penance_argue, cell as penance_cell, tunnel as penance_tunnel  # noqa: E402
+from penance_text import argue as penance_argue, cell as penance_cell, tunnel as penance_tunnel, meet as penance_meet  # noqa: E402
 from knight_text import finale as knight_finale, quests as knight_quests, story as knight_story, story_cg as knight_story_cg, tasks as knight_tasks, townsfolk as knight_townsfolk  # noqa: E402
 
 # 只生成灯轮 / 报幕的文本（委托表、灯轮、补罚表、派对主人对话），不重新写地图、其他任务或别的镇民对白。
@@ -62,6 +62,8 @@ KFOG = "floor_06_knight_fog"
 PTENT, PCELL = "floor_06_penance_tent", "floor_06_penance_cell"
 # 反省篇第二章：鼠洞（等距，quest_maps.py 的 _tunnel）
 RTUNNEL = "floor_06_rat_tunnel"
+# 反省篇第三章开场：废弃水道的出口（汇合；MeetExit）
+WEXIT = "floor_06_waterway_exit"
 
 
 # 骑士篇支线小地图的标记点（quest_maps.py 画的图；写进 data/after/quest_maps.json，QuestMaps 读）
@@ -745,6 +747,14 @@ for (x, y) in rm["rats"]:
     rt.put(x, y, "monster type=rat")
 rt.write()
 
+# 废弃水道的出口：一个小小的等距平台，两边是水（drain_water）；进图 MeetExit 放汇合的过场和小剧场
+we = Map(WEXIT, 22, 14, "intro =\nambient = 0.6,0.62,0.7\nno_switch = true\nstyle = iso\niso_theme = drain_water")
+we.room(2, 3, 19, 10)
+we.put(4, 7, "player")
+we.put(4, 7, "spawn id=from_tunnel")
+we.put(3, 4, "meetexit")
+we.write()
+
 # ================================================================ 城门外的战场
 fd = Map(FIELD, 44, 30, "intro =\nambient = 0.72,0.66,0.62\nnight_ambient = 0.3,0.3,0.5")
 fd.room(2, 2, 41, 27)
@@ -1193,12 +1203,12 @@ def _with_done_cg(cid, data):
 
 
 cut = Path("data/cutscenes/floor_06")
-CUTS = dict(d1.CUTSCENES, **d2.CUTSCENES, **tasks.CUTSCENES, **potion.CUTSCENES, **tailor.CUTSCENES, **mine.CUTSCENES, **totem.CUTSCENES, **drain.CUTSCENES, **drill.CUTSCENES, **inspect.CUTSCENES, **festival_night.CUTSCENES, **knight_story.CUTSCENES, **knight_finale.CUTSCENES, **knight_quests.CUTSCENES, **knight_story_cg.CUTSCENES, **penance_argue.CUTSCENES, **penance_cell.CUTSCENES, **penance_tunnel.CUTSCENES)
+CUTS = dict(d1.CUTSCENES, **d2.CUTSCENES, **tasks.CUTSCENES, **potion.CUTSCENES, **tailor.CUTSCENES, **mine.CUTSCENES, **totem.CUTSCENES, **drain.CUTSCENES, **drill.CUTSCENES, **inspect.CUTSCENES, **festival_night.CUTSCENES, **knight_story.CUTSCENES, **knight_finale.CUTSCENES, **knight_quests.CUTSCENES, **knight_story_cg.CUTSCENES, **penance_argue.CUTSCENES, **penance_cell.CUTSCENES, **penance_tunnel.CUTSCENES, **penance_meet.CUTSCENES)
 for cid, fn in CUTS.items():
     (cut / (cid + ".json")).write_text(json.dumps(_with_done_cg(cid, done_folk.apply(cid, fn())), ensure_ascii=False, indent="\t") + "\n")
 th = Path("data/theater/after")
 th.mkdir(parents=True, exist_ok=True)
-for tid, data in dict(punish.THEATERS, **tasks.THEATERS, **potion.THEATERS, **tailor.THEATERS, **mine.THEATERS, **totem.THEATERS, **drain.THEATERS, **drill.THEATERS, **inspect.THEATERS, **night.THEATERS, **knight_tasks.THEATERS, **knight_finale.THEATERS, **errand_gate_chain.THEATERS, **knight_prison.THEATERS, **penance_cell.THEATERS, **penance_tunnel.THEATERS).items():
+for tid, data in dict(punish.THEATERS, **tasks.THEATERS, **potion.THEATERS, **tailor.THEATERS, **mine.THEATERS, **totem.THEATERS, **drain.THEATERS, **drill.THEATERS, **inspect.THEATERS, **night.THEATERS, **knight_tasks.THEATERS, **knight_finale.THEATERS, **errand_gate_chain.THEATERS, **knight_prison.THEATERS, **penance_cell.THEATERS, **penance_tunnel.THEATERS, **penance_meet.THEATERS).items():
     (th / (tid + ".json")).write_text(json.dumps(_with_voice(_with_h2(_with_fail_cg(tid, data))), ensure_ascii=False, indent="\t") + "\n")
 
 floors = json.loads(Path("data/floors.json").read_text())
@@ -1211,7 +1221,7 @@ NEW = [(TOWN, "地下小镇·战后", "town"), (FESTIVAL, "庆功宴的广场", 
        (WALL, "城墙上", "night_room"), (CRACK, "广场底下的裂缝", "night_room"), (OLDHALL, "旧会堂", "night_room"),
        (WAREHOUSE, "旧仓库", "night_room"), (STORAGE, "储物间", "night_room"), (BRIDGE, "排水渠上的小桥", "night_room"),
        (PTENT, "保卫队营地·医务帐篷", "night_room"), (PCELL, "反省牢房", "night_room"),
-       (RTUNNEL, "鼠洞", "night_room")]
+       (RTUNNEL, "鼠洞", "night_room"), (WEXIT, "废弃水道的出口", "night_room")]
 at = next(i for i, f in enumerate(lst) if f["id"] == "floor_06_siege") + 1
 for fid, name, music in NEW:
     if not any(f["id"] == fid for f in lst):

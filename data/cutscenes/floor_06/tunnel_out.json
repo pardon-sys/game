@@ -53,7 +53,7 @@
 				{
 					"title": "第二章　鼠洞　完",
 					"subtitle": "——出口的灯光里，站着一个熟悉的身影",
-					"next": "floor_06_after_house",
+					"next": "floor_06_waterway_exit",
 					"do": "chapter_end"
 				}
 			],

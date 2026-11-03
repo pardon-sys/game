@@ -1,0 +1,40 @@
+{
+	"name": "一起走",
+	"letterbox": true,
+	"skippable": false,
+	"steps": [
+		{
+			"speaker": "",
+			"text": "（两个人并肩站起来，看向水道的深处。很远很远的地方，好像有什么东西在发着微弱的光）"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……走吧。"
+		},
+		{
+			"speaker": "公主",
+			"text": "……嗯！一起走。",
+			"emotion": "happy"
+		},
+		{
+			"actions": [
+				{
+					"time": 1.0,
+					"do": "fade_out"
+				}
+			],
+			"wait": 1.0
+		},
+		{
+			"actions": [
+				{
+					"title": "第三章　汇合",
+					"subtitle": "——（待续）废弃水道的深处，传来了哗哗的水声",
+					"next": "floor_06_after_house",
+					"do": "chapter_end"
+				}
+			],
+			"wait": 1.4
+		}
+	]
+}

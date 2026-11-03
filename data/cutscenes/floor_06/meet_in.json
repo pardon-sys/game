@@ -1,0 +1,76 @@
+{
+	"name": "水道的出口",
+	"letterbox": true,
+	"skippable": true,
+	"steps": [
+		{
+			"actions": [
+				{
+					"id": "MtBlue",
+					"kind": "npc:blue_princess",
+					"at": [
+						14,
+						6
+					],
+					"dir": "left",
+					"do": "spawn"
+				},
+				{
+					"to": [
+						11,
+						7
+					],
+					"zoom": 1.0,
+					"time": 0.5,
+					"do": "camera"
+				}
+			],
+			"wait": 0.5
+		},
+		{
+			"speaker": "",
+			"text": "（竖井的出口外，是一条很宽的旧水道。哗哗的水声里，混着一点点灯光）"
+		},
+		{
+			"speaker": "公主",
+			"text": "……灯？有人？",
+			"emotion": "surprise",
+			"actions": [
+				{
+					"who": "princess",
+					"to": [
+						11,
+						7
+					],
+					"time": 0.8,
+					"do": "move"
+				}
+			]
+		},
+		{
+			"speaker": "",
+			"text": "（灯下站着一个熟悉的身影。她手里提着一双粉色的小鞋）",
+			"actions": [
+				{
+					"who": "MtBlue",
+					"to": [
+						13,
+						7
+					],
+					"time": 0.6,
+					"do": "move"
+				}
+			]
+		},
+		{
+			"actions": [
+				{
+					"reset": true,
+					"time": 0.3,
+					"do": "camera"
+				}
+			],
+			"wait": 0.3
+		}
+	]
+}
