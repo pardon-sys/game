@@ -347,7 +347,7 @@ DIALOGUES["penance_objects"] = dfile("", "反省室", {
 
 
 def crawl():
-    """换上鼠鼠装、钻进墙缝 → 章末画面。第二章（鼠洞）还没做：章末以后先回蓝色小屋，鼠鼠装由 PenanceCell.crawl 脱下还原。"""
+    """换上鼠鼠装、钻进墙缝 → 章末画面 → 按 E 进第二章·鼠洞（鼠鼠装一直穿着，到第三章出了水道才脱）。"""
     s = [
         {"actions": [A("camera", to=[16, 3], zoom=1.2, time=0.5)], "wait": 0.5},
         line(N, "（挠脚鼠从墙缝里钻出来，「嗖」地顺着她的腿爬了上去）"),
@@ -365,7 +365,7 @@ def crawl():
         line(P, "……队长。我没有认错。……我是去找答案的。", "sad"),
         line(N, "（橘猫在门口睁开了一只眼睛，看着那条毛茸茸的尾巴消失在墙缝里，舔了舔嘴巴）"),
         {"actions": [A("fade_out", time=1.0)], "wait": 1.0},
-        {"actions": [A("chapter_end", title="第一章　反省牢房　完", subtitle="——墙缝的另一头，是一条很老很老的洞", next="floor_06_after_house")], "wait": 1.4},
+        {"actions": [A("chapter_end", title="第一章　反省牢房　完", subtitle="——墙缝的另一头，是一条很老很老的洞", next="floor_06_rat_tunnel")], "wait": 1.4},
     ]
     return {"name": "钻进墙缝", "letterbox": True, "skippable": False, "steps": s}
 

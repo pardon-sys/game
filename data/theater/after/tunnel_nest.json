@@ -1,0 +1,292 @@
+{
+	"name": "鼠洞的老鼠窝",
+	"cast": {
+		"princess": {
+			"kind": "princess",
+			"at": [
+				0,
+				8
+			],
+			"visual": "normal",
+			"anim": "idle",
+			"dir": "down"
+		},
+		"r1": {
+			"kind": "monster:rat",
+			"at": [
+				-16,
+				12
+			],
+			"dir": "right"
+		},
+		"r2": {
+			"kind": "monster:rat",
+			"at": [
+				16,
+				12
+			],
+			"dir": "left"
+		},
+		"r3": {
+			"kind": "monster:rat",
+			"at": [
+				0,
+				16
+			],
+			"dir": "up"
+		}
+	},
+	"steps": [
+		{
+			"act": 1,
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "fade_in"
+				},
+				{
+					"state": "giggle",
+					"do": "voice"
+				}
+			],
+			"wait": 0.5
+		},
+		{
+			"speaker": "",
+			"text": "（岔路的尽头是一个小小的窝，铺满了碎布和面包渣。十几只小老鼠抬起头，齐刷刷地看着她）",
+			"act": 1
+		},
+		{
+			"speaker": "小老鼠们",
+			"text": "吱？吱吱？……吱吱吱！"
+		},
+		{
+			"speaker": "挠脚鼠",
+			"text": "（从短裤里探出头）它们说，你身上有我的味道。它们以为你是新来的老大。"
+		},
+		{
+			"speaker": "公主",
+			"text": "老、老大？我才不是老鼠……",
+			"emotion": "surprise"
+		},
+		{
+			"speaker": "",
+			"text": "（小老鼠们一拥而上，围着她的鼠爪鞋转圈，一边转一边用小脑袋蹭她的脚趾）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "r1",
+					"zone": "sole",
+					"fx": "lines",
+					"repeat": 6,
+					"interval": 0.2,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"by": "r2",
+					"zone": "sole",
+					"fx": "lines",
+					"repeat": 6,
+					"interval": 0.2,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"visual": "giggle",
+					"do": "pose"
+				}
+			],
+			"act": 2
+		},
+		{
+			"speaker": "公主",
+			"text": "嘻……嘻嘻……不、不要蹭……我不当老大……！",
+			"emotion": "giggle"
+		},
+		{
+			"speaker": "挠脚鼠",
+			"text": "吱吱，老大要被挠一挠脚心，这是规矩。"
+		},
+		{
+			"speaker": "公主",
+			"text": "又、又是规矩！你们老鼠的规矩怎么都是挠人！",
+			"emotion": "angry"
+		},
+		{
+			"speaker": "",
+			"text": "（小老鼠们排好队。一只一只地钻进鼠爪鞋，在脚心上踩一圈，再钻出来换下一只）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "r1",
+					"zone": "sole",
+					"fx": "lines",
+					"repeat": 8,
+					"interval": 0.16,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"by": "r3",
+					"zone": "sole",
+					"fx": "feather",
+					"repeat": 8,
+					"interval": 0.16,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"visual": "helpless_1",
+					"do": "pose"
+				},
+				{
+					"do": "voice",
+					"state": "laugh"
+				}
+			],
+			"act": 3
+		},
+		{
+			"speaker": "公主",
+			"text": "哈哈……排、排队挠……一只一只来……哈哈哈！",
+			"emotion": "helpless_1"
+		},
+		{
+			"speaker": "",
+			"text": "（排在后面的等不及了，干脆三四只一起钻进去，在脚心上挤成一团）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "r1",
+					"zone": "sole",
+					"fx": "lines",
+					"repeat": 12,
+					"interval": 0.11,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"by": "r2",
+					"zone": "sole",
+					"fx": "lines",
+					"repeat": 12,
+					"interval": 0.11,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"by": "r3",
+					"zone": "sole",
+					"fx": "feather",
+					"repeat": 12,
+					"interval": 0.11,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"visual": "helpless_2",
+					"do": "pose"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "哈哈哈哈！一起来不行——脚心——要满了——！",
+			"emotion": "helpless_2"
+		},
+		{
+			"speaker": "公主",
+			"text": "（星光一下子在窝里炸开，碎布和面包渣飞得满天都是……哈啊……好舒服……）",
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "flash"
+				},
+				{
+					"sound": "star_burst",
+					"do": "sfx"
+				},
+				{
+					"sound": "water_release",
+					"volume": -2.0,
+					"do": "sfx"
+				},
+				{
+					"who": "princess",
+					"time": 0.4,
+					"do": "shake"
+				},
+				{
+					"state": "laugh",
+					"do": "voice"
+				}
+			],
+			"act": "burst",
+			"wait": 1.0
+		},
+		{
+			"speaker": "",
+			"text": "（小老鼠们被吓得四散——过了一会儿，又一只一只地探出头来，凑过去蹭她刚释放完、敏感得发烫的脚趾）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "r2",
+					"zone": "sole",
+					"fx": "feather",
+					"repeat": 8,
+					"interval": 0.16,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"visual": "helpless_2",
+					"do": "pose"
+				}
+			],
+			"act": 4
+		},
+		{
+			"speaker": "公主",
+			"text": "……哈哈……轻、轻一点……现在轻轻一下都……！",
+			"emotion": "helpless_2"
+		},
+		{
+			"speaker": "小老鼠们",
+			"text": "吱吱！吱吱吱！（它们把一块面包渣恭恭敬敬地推到了她面前）"
+		},
+		{
+			"speaker": "挠脚鼠",
+			"text": "它们说，欢迎老大。这是见面礼。"
+		},
+		{
+			"speaker": "公主",
+			"text": "……谢、谢谢……不过我真的不是老大……",
+			"emotion": "helpless_1"
+		},
+		{
+			"speaker": "",
+			"text": "（她捡起那块面包渣，揉着发麻的脚心站了起来。小老鼠们一直把她送到了岔路口）",
+			"actions": [
+				{
+					"who": "princess",
+					"visual": "helpless_1",
+					"do": "pose"
+				}
+			]
+		},
+		{
+			"actions": [
+				{
+					"state": "",
+					"do": "voice"
+				},
+				{
+					"time": 0.6,
+					"do": "fade_out"
+				}
+			],
+			"wait": 0.7
+		}
+	]
+}

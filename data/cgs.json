@@ -262,6 +262,11 @@
 			"placeholder": "helpless_2",
 			"wide": true
 		},
+		"tunnel_shaft": {
+			"file": "res://assets/cg/portraits/tunnel_shaft.png",
+			"placeholder": "helpless_2",
+			"wide": true
+		},
 		"slime_1": {
 			"file": "res://assets/cg/portraits/slime_1.png",
 			"placeholder": "helpless_1"

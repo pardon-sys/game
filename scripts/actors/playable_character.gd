@@ -135,6 +135,11 @@ func _setup() -> void:
 		add_child(EquipFx.new())
 	if fatigue:
 		fatigue.full.connect(fatigue_burst)
+	# 服装造型（鼠鼠装）：装备变了就换整套精灵图
+	GameState.equipment_changed.connect(func(who: String):
+		if who == character_id:
+			refresh_outfit())
+	refresh_outfit.call_deferred()
 	if controller == null:
 		set_controller(PlayerInputController.new())
 	if faction == Faction.Type.PLAYER:
@@ -742,6 +747,12 @@ func _ring_bell() -> void:
 	for m in get_tree().get_nodes_in_group("enemy"):
 		if m is Monster and (m as Node2D).global_position.distance_to(global_position) <= BELL_RANGE:
 			(m as Monster).rally_to(self)
+
+
+func refresh_outfit() -> void:
+	var anim := get_node_or_null("Animator") as SpriteSheetAnimator
+	if anim:
+		anim.set_outfit(Equipment.outfit(character_id))
 
 
 func revive() -> void:

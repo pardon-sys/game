@@ -1,0 +1,407 @@
+{
+	"name": "鼠洞②：卡住的脚",
+	"cast": {
+		"princess": {
+			"kind": "princess",
+			"at": [
+				-6,
+				8
+			],
+			"visual": "normal",
+			"anim": "idle",
+			"dir": "down"
+		},
+		"rat": {
+			"kind": "monster:rat",
+			"at": [
+				14,
+				12
+			],
+			"dir": "left"
+		},
+		"guard": {
+			"kind": "npc:guard",
+			"at": [
+				70,
+				2
+			],
+			"dir": "left",
+			"hidden": true
+		}
+	},
+	"steps": [
+		{
+			"act": 1,
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "fade_in"
+				},
+				{
+					"state": "giggle",
+					"do": "voice"
+				}
+			],
+			"wait": 0.5
+		},
+		{
+			"speaker": "",
+			"text": "（前面是一道窄窄的石缝。她侧着身子挤过去——挤到一半，后面那只脚卡住了）",
+			"act": 1
+		},
+		{
+			"speaker": "公主",
+			"text": "……拔、拔不出来……鼠爪鞋太大了……",
+			"emotion": "surprise"
+		},
+		{
+			"speaker": "挠脚鼠",
+			"text": "吱吱，别急，我去帮你看看。"
+		},
+		{
+			"speaker": "",
+			"text": "（「嗖」。毛茸茸的一团顺着腿一路滑下去，钻进了卡在缝里的那只鼠爪鞋）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "rat",
+					"zone": "sole",
+					"fx": "hand",
+					"repeat": 4,
+					"interval": 0.25,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"visual": "giggle",
+					"do": "pose"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "你、你下去干什么——！我是让你……不对，我没让你下去！",
+			"emotion": "surprise"
+		},
+		{
+			"speaker": "挠脚鼠",
+			"text": "（在鞋里）嗯……这只脚卡得好紧。我得找找哪里松一点。"
+		},
+		{
+			"speaker": "",
+			"text": "（小鼻子贴着脚心，一路嗅过去。嗅到脚趾那里，停住了）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "rat",
+					"zone": "sole",
+					"fx": "feather",
+					"repeat": 6,
+					"interval": 0.25,
+					"do": "tickle"
+				}
+			],
+			"act": 2
+		},
+		{
+			"speaker": "挠脚鼠",
+			"text": "……嗯？这里有面包的香味。"
+		},
+		{
+			"speaker": "公主",
+			"text": "早、早上吃的面包……掉了点渣……别、别闻了……！",
+			"emotion": "giggle"
+		},
+		{
+			"speaker": "挠脚鼠",
+			"text": "哪个缝里最香呢……吱吱。我一个一个找。"
+		},
+		{
+			"speaker": "",
+			"text": "（它开始挨个舔脚趾缝。从大脚趾和第二根中间开始，慢慢地、认真地舔过去）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "rat",
+					"zone": "sole",
+					"fx": "lines",
+					"repeat": 10,
+					"interval": 0.18,
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "嘻嘻嘻……！不、不要一个一个……！",
+			"emotion": "giggle"
+		},
+		{
+			"speaker": "",
+			"text": "（这时候，缝的另一头传来了脚步声。哒、哒、哒——是营地夜里巡逻的保卫队员）",
+			"actions": [
+				{
+					"sound": "step",
+					"volume": -4.0,
+					"do": "sfx"
+				},
+				{
+					"who": "guard",
+					"to": [
+						40,
+						2
+					],
+					"time": 0.8,
+					"do": "enter"
+				}
+			],
+			"act": 3
+		},
+		{
+			"speaker": "保卫队员",
+			"text": "……嗯？墙里面是不是有什么声音？"
+		},
+		{
+			"speaker": "公主",
+			"text": "（……！不、不能出声……被发现就要被抓回反省室……！）",
+			"actions": [
+				{
+					"who": "princess",
+					"visual": "helpless_1",
+					"do": "pose"
+				},
+				{
+					"do": "voice",
+					"state": "laugh"
+				}
+			],
+			"emotion": "helpless_1"
+		},
+		{
+			"speaker": "",
+			"text": "（她捂住嘴，憋得满脸通红。鞋里的挠脚鼠一点都不知道外面有人——它舔到了第三个缝）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "rat",
+					"zone": "sole",
+					"fx": "lines",
+					"repeat": 12,
+					"interval": 0.14,
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "挠脚鼠",
+			"text": "（小声）这个缝……嗯，不对，还不是最香的。"
+		},
+		{
+			"speaker": "公主",
+			"text": "（……呜……呜呜……求你了……先、先别舔了……）",
+			"emotion": "helpless_1"
+		},
+		{
+			"speaker": "保卫队员",
+			"text": "……老鼠吧。墙里面老鼠多。",
+			"actions": [
+				{
+					"who": "guard",
+					"to": [
+						30,
+						2
+					],
+					"time": 0.6,
+					"do": "move"
+				}
+			]
+		},
+		{
+			"speaker": "",
+			"text": "（守卫没有走。他在墙外面停下来，靠着墙，打了个大大的呵欠——就隔着一道石缝，离她的脚只有一臂远）"
+		},
+		{
+			"speaker": "",
+			"text": "（挠脚鼠舔完了趾缝，开始在脚心正中央画圈。小爪子踩上去，一下，一下，又一下）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "rat",
+					"zone": "sole",
+					"fx": "feather",
+					"repeat": 14,
+					"interval": 0.12,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"visual": "helpless_2",
+					"do": "pose"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "（……脚、脚心……！不行了……要、要笑出来了……！）",
+			"emotion": "helpless_2"
+		},
+		{
+			"speaker": "挠脚鼠",
+			"text": "找到了！最香的是小脚趾那个缝！吱吱！"
+		},
+		{
+			"speaker": "",
+			"text": "（它高兴地在小脚趾缝里舔了好几口——憋着的笑一下子冲到了嗓子眼，连同魔力一起）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "rat",
+					"zone": "sole",
+					"fx": "lines",
+					"repeat": 14,
+					"interval": 0.1,
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "（「噗——」……星光从石缝里一下子喷了出去……哈啊……全、全放出去了……好舒服……）",
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "flash"
+				},
+				{
+					"sound": "star_burst",
+					"do": "sfx"
+				},
+				{
+					"sound": "water_release",
+					"volume": -2.0,
+					"do": "sfx"
+				},
+				{
+					"who": "princess",
+					"time": 0.4,
+					"do": "shake"
+				},
+				{
+					"state": "laugh",
+					"do": "voice"
+				}
+			],
+			"act": "burst",
+			"wait": 1.0
+		},
+		{
+			"speaker": "保卫队员",
+			"text": "什、什么！？墙里在发光！？……闹、闹鬼了——！",
+			"actions": [
+				{
+					"who": "guard",
+					"time": 0.4,
+					"do": "shake"
+				},
+				{
+					"who": "guard",
+					"to": [
+						90,
+						2
+					],
+					"time": 0.5,
+					"do": "move"
+				}
+			]
+		},
+		{
+			"speaker": "",
+			"text": "（守卫跑远了。可鞋里的挠脚鼠还在——它舔得正起劲，对着刚释放完、敏感得发烫的脚心又舔了一口）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "rat",
+					"zone": "sole",
+					"fx": "lines",
+					"repeat": 8,
+					"interval": 0.15,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"visual": "helpless_2",
+					"do": "pose"
+				}
+			],
+			"act": 4
+		},
+		{
+			"speaker": "公主",
+			"text": "哈哈哈哈！不用憋了……可是……可是现在一碰就……哈哈哈！",
+			"emotion": "helpless_2"
+		},
+		{
+			"speaker": "",
+			"text": "（她终于能放开笑了。笑得整个人在缝里抖，那只卡住的脚一抖一抖地——「啵」地一声，从缝里拔了出来）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "rat",
+					"zone": "sole",
+					"fx": "feather",
+					"repeat": 10,
+					"interval": 0.13,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"time": 0.5,
+					"do": "shake"
+				},
+				{
+					"do": "pose",
+					"who": "princess",
+					"visual": "helpless_2"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "……出、出来了……原来要笑着抖才拔得出来……",
+			"emotion": "helpless_1"
+		},
+		{
+			"speaker": "挠脚鼠",
+			"text": "（从鞋里钻出来，舔舔嘴巴）吱。面包很好吃。谢谢招待。"
+		},
+		{
+			"speaker": "公主",
+			"text": "……下次再敢舔……我就把你和面包一起……！",
+			"actions": [
+				{
+					"who": "princess",
+					"visual": "helpless_1",
+					"do": "pose"
+				}
+			],
+			"emotion": "angry"
+		},
+		{
+			"speaker": "挠脚鼠",
+			"text": "吱吱，下次你记得多掉一点渣。"
+		},
+		{
+			"actions": [
+				{
+					"state": "",
+					"do": "voice"
+				},
+				{
+					"time": 0.6,
+					"do": "fade_out"
+				}
+			],
+			"wait": 0.7
+		}
+	]
+}

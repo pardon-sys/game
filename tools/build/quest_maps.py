@@ -166,8 +166,77 @@ MARKS = {
     "floor_06_after_warehouse": {"R": "parts", "H": "hands", "C": "covers"},
     "floor_06_knight_storage": {"V": "brush_down", "A": "brush_up", "D": "doll"},
     "floor_06_knight_bridge": {"H": "hands", "E": "end"},
+    "floor_06_rat_tunnel": {"A": "thigh", "F": "sole", "S": "shaft", "W": "drips", "N": "nest", "K": "clue", "Q": "cat_start",
+                            "R": "cat_end", "C": "checkpoints", "M": "rats", "E": "end"},
 }
 COMMON = {"P": "start", "X": "exit", "B": "blue"}
+
+
+def _tunnel():
+    """反省篇第二章·鼠洞（等距，crack_cave）：一条拐来拐去的长通道，按顺序：
+    钻进来（P）→ 低矮的缝（A 大腿根那段小剧场）、岔路下去是老鼠窝（N）→ 往南、东边滴水管的长走廊（W，C 检查点）
+    → 北上、东边窄缝（F 脚心那段小剧场）、岔路尽头刻着字（K 线索）→ 南下、猫咪追逐：两格宽的长走廊（Q 猫从这里追出来）
+    一直跑到西南的小洞（R 猫钻不进来）→ 南下滴水管、东边小洞穴里的老鼠（M）→ 西边竖井（S 上下窜那段，本章章末大段）→ 出口（E）。"""
+    w, h = 96, 34
+    g = [["#"] * w for _ in range(h)]
+
+    def line(x0, y0, x1, y1, width=1):
+        for x in range(min(x0, x1), max(x0, x1) + 1):
+            for y in range(min(y0, y1), max(y0, y1) + 1):
+                for k in range(width):
+                    if x0 == x1:
+                        g[y][x + k] = "."
+                    else:
+                        g[y + k][x] = "."
+
+    def room(x0, y0, x1, y1):
+        for y in range(y0, y1 + 1):
+            for x in range(x0, x1 + 1):
+                g[y][x] = "."
+
+    def put(x, y, ch):
+        g[y][x] = ch
+
+    room(2, 2, 4, 4)                 # 钻进来的小洞
+    line(4, 3, 20, 3)                # 低矮的缝
+    line(10, 3, 10, 8)
+    room(7, 8, 13, 11)               # 老鼠窝
+    line(20, 3, 20, 10)
+    line(20, 10, 41, 10)             # 滴水管走廊
+    line(41, 10, 41, 4)
+    line(41, 4, 53, 4)               # 窄缝
+    line(45, 4, 45, 2)
+    line(45, 2, 49, 2)               # 刻字的死胡同
+    line(53, 4, 53, 14)
+    line(53, 14, 90, 14, 2)          # 猫咪追逐：两格宽
+    line(90, 14, 90, 23, 2)
+    line(90, 22, 61, 22, 2)
+    line(60, 22, 60, 31)             # 小洞往南
+    line(60, 28, 66, 28)
+    room(66, 26, 72, 30)             # 老鼠的小洞穴
+    line(60, 31, 28, 31)             # 竖井前的通道
+    room(26, 29, 29, 31)             # 竖井底
+    put(3, 3, "P")
+    put(14, 3, "A")
+    put(10, 10, "N")
+    for x in (25, 30, 35):
+        put(x, 10, "W")
+    put(21, 10, "C")
+    put(50, 4, "F")
+    put(49, 2, "K")
+    put(53, 12, "C")
+    put(56, 14, "Q")
+    put(61, 22, "R")
+    put(60, 24, "C")
+    put(60, 27, "W")
+    for (x, y) in ((68, 27), (70, 29), (67, 30)):
+        put(x, y, "M")
+    put(33, 31, "S")
+    put(27, 30, "E")
+    return ["".join(r) for r in g]
+
+
+LAYOUTS["floor_06_rat_tunnel"] = _tunnel()
 
 
 def grid(fid):

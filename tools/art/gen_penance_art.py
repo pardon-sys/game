@@ -4,6 +4,7 @@
   trophy_chest.png   队长的旧战利品箱：帧 0 上锁；帧 1 打开、露出袖套 / 袜子 / 短裤
   penance_bed.png    功能拘束挠痒床（32x16 一帧）：帧 0 收着；帧 1 脚枷扣上、羽毛排刷和腰侧软刷都伸出来
   wall_crack.png     墙角的裂缝：帧 0 裂缝；帧 1 挠脚鼠从缝里探出头
+  cat_run.png        第二章鼠洞里追人的橘猫（侧面朝右跑，4 帧）
 用法：python tools/art/gen_penance_art.py
 """
 from PIL import Image, ImageDraw
@@ -123,12 +124,35 @@ def wall_crack(frame):
     return add_outline(img)
 
 
+def cat_run(frame):
+    """鼠洞里追人的橘猫（侧面朝右跑，4 帧：腿前后交替，尾巴翘着摆）"""
+    img, d = canvas()
+    bob = (0, -1, 0, 1)[frame]
+    d.ellipse((2, 6 + bob, 12, 12 + bob), fill=FUR)               # 身子
+    for x in (5, 8):
+        d.line((x, 7 + bob, x, 10 + bob), fill=FUR_D)
+    d.ellipse((9, 3 + bob, 15, 9 + bob), fill=FUR)                # 头
+    d.polygon([(10, 4 + bob), (10, 1 + bob), (12, 3 + bob)], fill=FUR)
+    d.polygon([(13, 3 + bob), (15, 1 + bob), (15, 4 + bob)], fill=FUR)
+    d.point((13, 5 + bob), fill=DARK)
+    d.point((15, 7 + bob), fill=PINK_D)
+    d.ellipse((12, 6 + bob, 15, 9 + bob), fill=FUR_L)
+    legs = [((3, 4), (10, 12)), ((4, 3), (11, 10)), ((3, 4), (10, 12)), ((2, 5), (12, 9))][frame]
+    for (xa, xb) in (legs[0], legs[1]):
+        d.line((xa, 11 + bob, xa - 1, 15), fill=FUR_D)
+        d.line((xb, 11 + bob, xb + 1, 15), fill=FUR_D)
+    tail_y = (2, 1, 2, 3)[frame]
+    d.line((2, 8 + bob, 0, tail_y + bob), fill=FUR_D, width=2)
+    return add_outline(img)
+
+
 def main():
     _strip([plush_doll(f) for f in range(2)], 16, 16).save(OUT / "plush_doll.png")
     _strip([cat_guard(f) for f in range(2)], 16, 16).save(OUT / "cat_guard.png")
     _strip([trophy_chest(f) for f in range(2)], 16, 16).save(OUT / "trophy_chest.png")
     _strip([penance_bed(f) for f in range(2)], 32, 16).save(OUT / "penance_bed.png")
     _strip([wall_crack(f) for f in range(2)], 16, 16).save(OUT / "wall_crack.png")
+    _strip([cat_run(f) for f in range(4)], 16, 16).save(OUT / "cat_run.png")
     print("反省牢房的道具图已生成")
 
 
