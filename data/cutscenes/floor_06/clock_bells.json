@@ -1,0 +1,69 @@
+{
+	"name": "十三下",
+	"letterbox": true,
+	"skippable": true,
+	"steps": [
+		{
+			"actions": [
+				{
+					"img": "clock_bells",
+					"do": "bg"
+				}
+			],
+			"wait": 0.6
+		},
+		{
+			"speaker": "",
+			"text": "（两个人握住钟绳，一起往下拉）"
+		},
+		{
+			"actions": [
+				{
+					"sound": "chime",
+					"volume": 0.0,
+					"do": "sfx"
+				}
+			],
+			"wait": 0.4
+		},
+		{
+			"speaker": "",
+			"text": "（「铛——」。一下、两下、三下……钟声一圈一圈地荡开，荡过整座沉睡的王宫）"
+		},
+		{
+			"actions": [
+				{
+					"sound": "chime",
+					"volume": -2.0,
+					"do": "sfx"
+				}
+			],
+			"wait": 0.4
+		},
+		{
+			"speaker": "",
+			"text": "（……十一、十二……十三）"
+		},
+		{
+			"speaker": "公主",
+			"text": "……十三下。",
+			"emotion": "surprise"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……好像，以前也有人带我上来过。……看月亮。"
+		},
+		{
+			"speaker": "",
+			"text": "（远远的，王座间的方向，传来了「咔」的一声——像是一把很旧的锁，松开了）"
+		},
+		{
+			"actions": [
+				{
+					"do": "bg_clear"
+				}
+			],
+			"wait": 0.6
+		}
+	]
+}

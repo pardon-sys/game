@@ -1,6 +1,9 @@
 """旧王宫的新素材（codex 画的白底大图 → 游戏里的像素图；提示词 tools/art/src/palace_sprites/prompts.md）：
   doll_maid_sheet.png    → assets/generated/npcs/doll_maid.png   人偶女仆，4x4 格、每格 32x32（同 npcs/guard.png 的排法：下 / 左 / 右 / 上 各 4 帧）
   palace_statue_sheet.png → assets/generated/palace_statue.png   浴场雕像，3 帧横排、每帧 32x48（站着 / 发光预警 / 弯腰刷）
+  clock_keeper_sheet.png → assets/generated/npcs/clock_keeper.png  守钟人偶，4x4 格、每格 32x32（同人偶女仆）
+  portrait_boss_sheet.png → assets/generated/portrait_boss.png     王座间的大画像，3 帧横排、每帧 64x88（完好 / 裂开伸手 / 烧穿）
+  small_portrait_sheet.png → assets/generated/small_portrait.png   墙上的小画像，2 帧横排、每帧 28x36（睡着 / 醒了伸手）
 做法：白底抠掉（和边缘连通的白）→ 按格子切 → 每格取最大的人物块 → 等比缩到格子里（脚底对齐底边）→ 减色 + 1px 深色描边。
 用法：python tools/art/gen_palace_sprites.py
 """
@@ -107,6 +110,41 @@ def grid_cells(img, cols, rows):
     return cells
 
 
+def build_walker(src_name, out_name, label):
+    """4x4 走路图（下 / 左 / 右 / 上 各 4 帧）→ 每格 32x32"""
+    src = SRC / src_name
+    if not src.exists():
+        print("没有原图：", src)
+        return
+    cells = grid_cells(key_white(Image.open(src)), 4, 4)
+    sheet = Image.new("RGBA", (128, 128))
+    figs = [biggest(c) for c in cells]
+    hmax = max(f.height for f in figs)
+    for i, f in enumerate(figs):
+        small = _shrink(f, 30 / hmax)
+        cell = Image.new("RGBA", (32, 32))
+        a = np.asarray(small).copy()
+        a[..., 3] = np.where(a[..., 3] > 110, 255, 0)
+        small = Image.fromarray(a, "RGBA")
+        cell.alpha_composite(small, ((32 - small.width) // 2, 31 - small.height))
+        sheet.alpha_composite(outline(cell), ((i % 4) * 32, (i // 4) * 32))
+    sheet.save(OUT / out_name)
+    print(label + "：" + out_name)
+
+
+def build_strip(src_name, out_name, n, w, h, label):
+    src = SRC / src_name
+    if not src.exists():
+        print("没有原图：", src)
+        return
+    cells = grid_cells(key_white(Image.open(src)), n, 1)
+    sheet = Image.new("RGBA", (w * n, h))
+    for i, c in enumerate(cells):
+        sheet.alpha_composite(fit(biggest(c), w, h), (i * w, 0))
+    sheet.save(OUT / out_name)
+    print(label + "：" + out_name)
+
+
 def build_maid():
     src = SRC / "doll_maid_sheet.png"
     if not src.exists():
@@ -146,3 +184,6 @@ def build_statue():
 if __name__ == "__main__":
     build_maid()
     build_statue()
+    build_walker("clock_keeper_sheet.png", "npcs/clock_keeper.png", "守钟人偶")
+    build_strip("portrait_boss_sheet.png", "portrait_boss.png", 3, 64, 88, "大画像")
+    build_strip("small_portrait_sheet.png", "small_portrait.png", 2, 28, 36, "小画像")

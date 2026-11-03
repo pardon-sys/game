@@ -1,0 +1,273 @@
+{
+	"name": "钟楼：挂在齿轮上",
+	"cast": {
+		"princess": {
+			"kind": "princess",
+			"at": [
+				-14,
+				8
+			],
+			"visual": "normal",
+			"anim": "idle",
+			"dir": "right"
+		},
+		"blue": {
+			"kind": "npc:blue_princess",
+			"at": [
+				14,
+				8
+			],
+			"visual": "normal",
+			"anim": "idle",
+			"dir": "left"
+		},
+		"pants": {
+			"kind": "trap:hand",
+			"at": [
+				20,
+				10
+			]
+		},
+		"gear": {
+			"kind": "trap:spinwheel",
+			"at": [
+				-10,
+				-6
+			]
+		}
+	},
+	"steps": [
+		{
+			"act": 1,
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "fade_in"
+				},
+				{
+					"state": "giggle",
+					"do": "voice"
+				}
+			],
+			"wait": 0.5
+		},
+		{
+			"speaker": "",
+			"text": "（三层的东北角，一个比人还高的大铜齿轮慢慢地转着。齿轮的一边连着上一层，另一边连着地上的一根转轴）",
+			"act": 1
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……楼梯断了。……只能坐齿轮上去。"
+		},
+		{
+			"speaker": "公主",
+			"text": "一个人坐齿轮，一个人在下面转轴？……那我坐！你力气比我大！",
+			"emotion": "happy"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……好。……抓紧。"
+		},
+		{
+			"speaker": "",
+			"text": "（粉色公主爬上齿轮的边，蓝色公主握住转轴，一圈、两圈——齿轮「嘎吱嘎吱」地带着她往上升）",
+			"actions": [
+				{
+					"sound": "conveyor",
+					"volume": -4.0,
+					"do": "sfx"
+				}
+			],
+			"act": 2
+		},
+		{
+			"speaker": "公主",
+			"text": "升、升起来了！好高——",
+			"emotion": "surprise"
+		},
+		{
+			"speaker": "",
+			"text": "（升到一半，齿轮「咔」地卡住了。齿缝里伸出一簇簇积了灰的羽毛——那是以前给齿轮掸灰用的——正好贴着她的腰）",
+			"actions": [
+				{
+					"who": "princess",
+					"time": 0.4,
+					"do": "shake"
+				},
+				{
+					"who": "princess",
+					"by": "gear",
+					"zone": "sole",
+					"fx": "feather",
+					"repeat": 8,
+					"interval": 0.16,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"visual": "giggle",
+					"do": "pose"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "嘻……羽、羽毛……腰……不要在这个时候……！",
+			"emotion": "giggle"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……（咬着牙转转轴）……卡住了。……再坚持一下。",
+			"portrait": "gear_ride"
+		},
+		{
+			"speaker": "",
+			"text": "（蓝色公主每使一次劲，齿轮就抖一下，齿缝里的羽毛就跟着在她腰侧、肋下来回地刷）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "gear",
+					"zone": "sole",
+					"fx": "feather",
+					"repeat": 12,
+					"interval": 0.12,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"by": "gear",
+					"zone": "armpit",
+					"fx": "feather",
+					"repeat": 8,
+					"interval": 0.15,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"visual": "helpless_1",
+					"do": "pose"
+				},
+				{
+					"do": "voice",
+					"state": "laugh"
+				}
+			],
+			"act": 3
+		},
+		{
+			"speaker": "公主",
+			"text": "哈哈哈！你、你一转它就刷——不要转了——不对，要转——哈哈哈！",
+			"emotion": "helpless_1"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……到底转不转。"
+		},
+		{
+			"speaker": "公主",
+			"text": "转！转！快转——哈哈哈哈！",
+			"actions": [
+				{
+					"who": "princess",
+					"visual": "helpless_2",
+					"do": "pose"
+				}
+			],
+			"emotion": "helpless_2"
+		},
+		{
+			"speaker": "",
+			"text": "（齿轮又卡了一下。她两条腿在半空中乱蹬，羽毛顺着腰一路刷到了脖子）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "gear",
+					"zone": "sole",
+					"fx": "lines",
+					"repeat": 14,
+					"interval": 0.1,
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "（星光在半空中炸开，齿轮被震得「哐」地一声转了过去……哈啊……放出去了……）",
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "flash"
+				},
+				{
+					"sound": "star_burst",
+					"do": "sfx"
+				},
+				{
+					"sound": "water_release",
+					"volume": -2.0,
+					"do": "sfx"
+				},
+				{
+					"who": "princess",
+					"time": 0.4,
+					"do": "shake"
+				},
+				{
+					"state": "laugh",
+					"do": "voice"
+				}
+			],
+			"act": "burst",
+			"wait": 1.0
+		},
+		{
+			"speaker": "",
+			"text": "（齿轮一口气把她送到了上一层。她趴在平台边上，喘着气。……齿缝里最后一根羽毛，又在她刚释放完、敏感得要命的腰上蹭了一下）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "gear",
+					"zone": "sole",
+					"fx": "feather",
+					"repeat": 4,
+					"interval": 0.2,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"time": 0.3,
+					"do": "shake"
+				},
+				{
+					"who": "princess",
+					"visual": "helpless_1",
+					"do": "pose"
+				}
+			],
+			"act": 4
+		},
+		{
+			"speaker": "公主",
+			"text": "呀！……哈……哈……上来了……梯子……我放梯子下来……",
+			"emotion": "helpless_1"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……辛苦了。"
+		},
+		{
+			"actions": [
+				{
+					"state": "",
+					"do": "voice"
+				},
+				{
+					"time": 0.6,
+					"do": "fade_out"
+				}
+			],
+			"wait": 0.7
+		}
+	]
+}

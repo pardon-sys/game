@@ -1,0 +1,62 @@
+{
+	"name": "宝箱",
+	"entries": [
+		{
+			"if": {
+				"flag": "palace_tunnel_chest_3"
+			},
+			"node": "done"
+		},
+		{
+			"node": "default"
+		}
+	],
+	"nodes": {
+		"default": {
+			"lines": [
+				{
+					"text": "（一排四口一模一样的宝箱。……其中有几口，好像在呼吸）",
+					"speaker": ""
+				}
+			],
+			"prompt": "打开这一口？",
+			"choices": [
+				{
+					"text": "打开",
+					"next": "go"
+				},
+				{
+					"text": "不开",
+					"next": "no"
+				}
+			]
+		},
+		"go": {
+			"lines": [
+				{
+					"text": "……就这口。",
+					"speaker": "公主"
+				}
+			],
+			"set": {
+				"call": "palace_tunnel_chest_3"
+			}
+		},
+		"no": {
+			"lines": [
+				{
+					"text": "……再看看。",
+					"speaker": "公主"
+				}
+			]
+		},
+		"done": {
+			"lines": [
+				{
+					"text": "（宝箱已经打开过了）",
+					"speaker": ""
+				}
+			]
+		}
+	}
+}

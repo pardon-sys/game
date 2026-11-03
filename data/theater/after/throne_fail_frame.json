@@ -1,0 +1,270 @@
+{
+	"name": "王座间：两个人都被画进画里",
+	"cast": {
+		"princess": {
+			"kind": "princess",
+			"at": [
+				-14,
+				8
+			],
+			"visual": "helpless_2",
+			"anim": "helpless",
+			"dir": "right"
+		},
+		"blue": {
+			"kind": "npc:blue_princess",
+			"at": [
+				14,
+				8
+			],
+			"visual": "helpless_2",
+			"anim": "helpless",
+			"dir": "left"
+		},
+		"pants": {
+			"kind": "trap:hand",
+			"at": [
+				20,
+				10
+			]
+		},
+		"frame": {
+			"kind": "trap:feather_curtain",
+			"at": [
+				0,
+				-8
+			]
+		}
+	},
+	"steps": [
+		{
+			"act": 1,
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "fade_in"
+				},
+				{
+					"state": "giggle",
+					"do": "voice"
+				}
+			],
+			"wait": 0.5
+		},
+		{
+			"speaker": "",
+			"text": "（变强的画框发出刺眼的紫光。外面的那个人也被拉了进去——两个人一起，变成了画布上的一幅画）",
+			"act": 1
+		},
+		{
+			"speaker": "女王画像",
+			"text": "……两个人。……一起。……这幅画，叫做「笑着的公主」。"
+		},
+		{
+			"speaker": "",
+			"text": "（五支画笔围着她们转。从头发画到肩膀，从肩膀画到腰，从腰画到膝盖，一直画到脚尖）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "frame",
+					"zone": "sole",
+					"fx": "feather",
+					"repeat": 12,
+					"interval": 0.12,
+					"do": "tickle"
+				},
+				{
+					"who": "blue",
+					"by": "frame",
+					"zone": "waist",
+					"fx": "feather",
+					"repeat": 10,
+					"interval": 0.12,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"visual": "helpless_1",
+					"do": "pose"
+				},
+				{
+					"who": "blue",
+					"visual": "helpless_1",
+					"do": "pose"
+				},
+				{
+					"do": "voice",
+					"state": "laugh"
+				}
+			],
+			"act": 2
+		},
+		{
+			"speaker": "公主",
+			"text": "哈哈哈！一起被画……画、画得好痒……！",
+			"emotion": "helpless_2",
+			"portrait": "boss_fail_frame"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……哈、哈哈……画、画笔……数量……犯规……"
+		},
+		{
+			"speaker": "女王画像",
+			"text": "……还没画完。……要画到她们真的在笑。……一直笑。",
+			"act": 3
+		},
+		{
+			"speaker": "",
+			"text": "（画笔越画越快。腰侧、腋窝、膝盖窝、脚心——每一笔都蘸着亮晶晶的颜料，每一笔都痒到骨头里）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "frame",
+					"zone": "sole",
+					"fx": "lines",
+					"repeat": 16,
+					"interval": 0.09,
+					"do": "tickle"
+				},
+				{
+					"who": "blue",
+					"by": "frame",
+					"zone": "sole",
+					"fx": "feather",
+					"repeat": 14,
+					"interval": 0.09,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"visual": "helpless_2",
+					"do": "pose"
+				},
+				{
+					"who": "blue",
+					"visual": "helpless_2",
+					"do": "pose"
+				}
+			]
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……哈……哈哈……（冰晶在画里炸开，画布上结了一层霜……）",
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "flash"
+				},
+				{
+					"sound": "ice_crack",
+					"volume": -2.0,
+					"do": "sfx"
+				},
+				{
+					"sound": "water_release",
+					"volume": -2.0,
+					"do": "sfx"
+				},
+				{
+					"who": "blue",
+					"time": 0.4,
+					"do": "shake"
+				},
+				{
+					"state": "laugh",
+					"do": "voice"
+				}
+			],
+			"act": "burst",
+			"wait": 1.0
+		},
+		{
+			"speaker": "公主",
+			"text": "（星光跟着炸开，霜化成了亮晶晶的水珠，画布「哗啦」一下变得透明……哈啊……放出去了……）",
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "flash"
+				},
+				{
+					"sound": "star_burst",
+					"do": "sfx"
+				},
+				{
+					"sound": "water_release",
+					"volume": -2.0,
+					"do": "sfx"
+				},
+				{
+					"who": "princess",
+					"time": 0.4,
+					"do": "shake"
+				},
+				{
+					"state": "laugh",
+					"do": "voice"
+				}
+			],
+			"act": "burst",
+			"wait": 1.0
+		},
+		{
+			"speaker": "",
+			"text": "（两个人的光把画布撑开了一道缝，一起从画框里滚了出来。……一支画笔追出来，在两个人的脚心上补了最后一笔）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "frame",
+					"zone": "sole",
+					"fx": "hand",
+					"repeat": 4,
+					"interval": 0.2,
+					"do": "tickle"
+				},
+				{
+					"who": "blue",
+					"by": "frame",
+					"zone": "sole",
+					"fx": "hand",
+					"repeat": 4,
+					"interval": 0.2,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"visual": "helpless_1",
+					"do": "pose"
+				},
+				{
+					"who": "blue",
+					"visual": "helpless_1",
+					"do": "pose"
+				}
+			],
+			"act": 4
+		},
+		{
+			"speaker": "女王画像",
+			"text": "……画坏了。……重新画。……我等你们。"
+		},
+		{
+			"speaker": "公主",
+			"text": "……下次一定把你烧穿！",
+			"emotion": "angry"
+		},
+		{
+			"actions": [
+				{
+					"state": "",
+					"do": "voice"
+				},
+				{
+					"time": 0.6,
+					"do": "fade_out"
+				}
+			],
+			"wait": 0.7
+		}
+	]
+}

@@ -54,6 +54,7 @@ const PATHS := {
 	"equip_palace_boots": "res://data/items/equip_palace_boots.tres",
 	"equip_palace_stockings": "res://data/items/equip_palace_stockings.tres",
 	"equip_feather_shawl": "res://data/items/equip_feather_shawl.tres",
+	"equip_clock_watch": "res://data/items/equip_clock_watch.tres",
 }
 
 static var _cache := {}

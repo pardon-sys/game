@@ -1,0 +1,62 @@
+{
+	"name": "转轴",
+	"entries": [
+		{
+			"if": {
+				"flag": "palace_ladder_down"
+			},
+			"node": "done"
+		},
+		{
+			"node": "default"
+		}
+	],
+	"nodes": {
+		"default": {
+			"lines": [
+				{
+					"text": "（一根连着大齿轮的转轴。大齿轮的边上，刚好能坐一个人）",
+					"speaker": ""
+				}
+			],
+			"prompt": "一个人坐齿轮，一个人转轴？",
+			"choices": [
+				{
+					"text": "好",
+					"next": "go"
+				},
+				{
+					"text": "等一下",
+					"next": "no"
+				}
+			]
+		},
+		"go": {
+			"lines": [
+				{
+					"text": "……抓紧。",
+					"speaker": "蓝色的公主"
+				}
+			],
+			"set": {
+				"call": "palace_gear_ride"
+			}
+		},
+		"no": {
+			"lines": [
+				{
+					"text": "……准备好再说。",
+					"speaker": "公主"
+				}
+			]
+		},
+		"done": {
+			"lines": [
+				{
+					"text": "（梯子已经放下来了）",
+					"speaker": ""
+				}
+			]
+		}
+	}
+}

@@ -1,0 +1,238 @@
+{
+	"name": "钟楼：被守钟人偶抓住",
+	"cast": {
+		"princess": {
+			"kind": "princess",
+			"at": [
+				-14,
+				8
+			],
+			"visual": "helpless_1",
+			"anim": "helpless",
+			"dir": "right"
+		},
+		"blue": {
+			"kind": "npc:blue_princess",
+			"at": [
+				14,
+				8
+			],
+			"visual": "helpless_1",
+			"anim": "helpless",
+			"dir": "left"
+		},
+		"pants": {
+			"kind": "trap:hand",
+			"at": [
+				20,
+				10
+			]
+		},
+		"keeper": {
+			"kind": "npc:clock_keeper",
+			"at": [
+				0,
+				-6
+			],
+			"dir": "down"
+		}
+	},
+	"steps": [
+		{
+			"act": 1,
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "fade_in"
+				},
+				{
+					"state": "giggle",
+					"do": "voice"
+				}
+			],
+			"wait": 0.5
+		},
+		{
+			"speaker": "守钟人偶",
+			"text": "（咔哒、咔哒）……钟楼……不准……乱跑。……打扫。",
+			"act": 1
+		},
+		{
+			"speaker": "",
+			"text": "（守钟人偶一手拎起一个，像挂钟摆一样把两个人倒挂在钟楼的横梁上，羽毛掸子「唰唰」地掸了起来）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "keeper",
+					"zone": "sole",
+					"fx": "feather",
+					"repeat": 10,
+					"interval": 0.14,
+					"do": "tickle"
+				},
+				{
+					"who": "blue",
+					"by": "keeper",
+					"zone": "waist",
+					"fx": "feather",
+					"repeat": 8,
+					"interval": 0.14,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"visual": "helpless_2",
+					"do": "pose"
+				},
+				{
+					"who": "blue",
+					"visual": "helpless_2",
+					"do": "pose"
+				},
+				{
+					"do": "voice",
+					"state": "laugh"
+				}
+			],
+			"act": 2
+		},
+		{
+			"speaker": "公主",
+			"text": "哈哈哈！掸、掸灰不是这样掸的——！",
+			"emotion": "helpless_2"
+		},
+		{
+			"speaker": "守钟人偶",
+			"text": "……这里。……灰尘。……很多。"
+		},
+		{
+			"speaker": "",
+			"text": "（掸子从腰侧掸到肋下，又从肋下掸回膝盖窝。它掸得一丝不苟，就像在擦一口很贵的钟）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "keeper",
+					"zone": "sole",
+					"fx": "lines",
+					"repeat": 14,
+					"interval": 0.1,
+					"do": "tickle"
+				},
+				{
+					"who": "blue",
+					"by": "keeper",
+					"zone": "thigh",
+					"fx": "feather",
+					"repeat": 12,
+					"interval": 0.1,
+					"do": "tickle"
+				}
+			],
+			"act": 3
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……哈、哈哈……干、干净了……已经很干净了……"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……哈……哈哈……（冰晶炸开，横梁上挂了一排冰柱……）",
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "flash"
+				},
+				{
+					"sound": "ice_crack",
+					"volume": -2.0,
+					"do": "sfx"
+				},
+				{
+					"sound": "water_release",
+					"volume": -2.0,
+					"do": "sfx"
+				},
+				{
+					"who": "blue",
+					"time": 0.4,
+					"do": "shake"
+				},
+				{
+					"state": "laugh",
+					"do": "voice"
+				}
+			],
+			"act": "burst",
+			"wait": 1.0
+		},
+		{
+			"speaker": "公主",
+			"text": "（星光跟着炸开，守钟人偶的发条被震得停了一下……哈啊……放出去了……）",
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "flash"
+				},
+				{
+					"sound": "star_burst",
+					"do": "sfx"
+				},
+				{
+					"sound": "water_release",
+					"volume": -2.0,
+					"do": "sfx"
+				},
+				{
+					"who": "princess",
+					"time": 0.4,
+					"do": "shake"
+				},
+				{
+					"state": "laugh",
+					"do": "voice"
+				}
+			],
+			"act": "burst",
+			"wait": 1.0
+		},
+		{
+			"speaker": "",
+			"text": "（发条重新「咔哒咔哒」地转起来。它把两个人放回了楼梯口，鞠了一躬，又慢吞吞地走回了原处）",
+			"actions": [
+				{
+					"who": "princess",
+					"visual": "helpless_1",
+					"do": "pose"
+				},
+				{
+					"who": "blue",
+					"visual": "helpless_1",
+					"do": "pose"
+				}
+			],
+			"act": 4
+		},
+		{
+			"speaker": "守钟人偶",
+			"text": "……下次……走慢一点。"
+		},
+		{
+			"speaker": "公主",
+			"text": "……下次跑快一点……",
+			"emotion": "sad"
+		},
+		{
+			"actions": [
+				{
+					"state": "",
+					"do": "voice"
+				},
+				{
+					"time": 0.6,
+					"do": "fade_out"
+				}
+			],
+			"wait": 0.7
+		}
+	]
+}

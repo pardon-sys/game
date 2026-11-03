@@ -1,0 +1,78 @@
+{
+	"name": "两半徽章",
+	"letterbox": true,
+	"skippable": false,
+	"steps": [
+		{
+			"speaker": "",
+			"text": "（缺口后面，掉出来一个小小的东西，「叮」地落在王座的台阶上）"
+		},
+		{
+			"speaker": "公主",
+			"text": "……半枚徽章。",
+			"emotion": "surprise"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……（从怀里拿出自己的那半枚）……"
+		},
+		{
+			"actions": [
+				{
+					"img": "palace_badges",
+					"do": "bg"
+				}
+			],
+			"wait": 0.6
+		},
+		{
+			"speaker": "",
+			"text": "（两半合在一起，严丝合缝。徽章亮了起来——暖暖的、金色的光）"
+		},
+		{
+			"speaker": "",
+			"text": "（光里，好像有一个女人在哼歌。很慢很慢的曲子，和婴儿房的吊铃一样）"
+		},
+		{
+			"speaker": "公主",
+			"text": "……这首歌……",
+			"emotion": "sad"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……（跟着哼了一句，又停下来）……"
+		},
+		{
+			"speaker": "",
+			"text": "（歌声停了。徽章的光暗了下去，只剩一点余温）"
+		},
+		{
+			"speaker": "公主",
+			"text": "……我们，到底是谁呢。",
+			"emotion": "sad"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……不知道。……可是。……是两个人。"
+		},
+		{
+			"actions": [
+				{
+					"do": "bg_clear"
+				}
+			],
+			"wait": 0.6
+		},
+		{
+			"actions": [
+				{
+					"title": "第四章　旧王宫　完",
+					"subtitle": "——两半徽章，一首摇篮曲",
+					"next": "floor_06_after_house",
+					"do": "chapter_end"
+				}
+			],
+			"wait": 1.4
+		}
+	]
+}

@@ -127,6 +127,10 @@
 		"doll_maid": {
 			"name": "人偶女仆",
 			"sprite": "res://assets/generated/npcs/doll_maid.png"
+		},
+		"clock_keeper": {
+			"name": "守钟人偶",
+			"sprite": "res://assets/generated/npcs/clock_keeper.png"
 		}
 	}
 }

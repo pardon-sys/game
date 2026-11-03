@@ -1,0 +1,78 @@
+{
+	"name": "两个人的光",
+	"letterbox": true,
+	"skippable": false,
+	"steps": [
+		{
+			"speaker": "",
+			"text": "（画布只剩最后一层了。画像把两个人的笑声都收了进去，画框亮得刺眼）"
+		},
+		{
+			"speaker": "女王画像",
+			"text": "我数过天花板上的星星，一共有十三颗半。那半颗被谁借走了？"
+		},
+		{
+			"speaker": "公主",
+			"text": "……笑声被它吸走了……身体里……满满的……",
+			"emotion": "helpless_1"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……那就……还给它。……一起。"
+		},
+		{
+			"actions": [
+				{
+					"time": 0.6,
+					"do": "flash"
+				},
+				{
+					"sound": "ice_crack",
+					"volume": 0.0,
+					"do": "sfx"
+				},
+				{
+					"who": "blue",
+					"time": 0.5,
+					"do": "shake"
+				}
+			],
+			"wait": 0.6
+		},
+		{
+			"speaker": "",
+			"text": "（蓝色公主的冰晶和粉色公主的星光一起炸开，像两道光一样撞在画布上——）"
+		},
+		{
+			"actions": [
+				{
+					"time": 0.8,
+					"do": "flash"
+				},
+				{
+					"sound": "water_release",
+					"volume": 0.0,
+					"do": "sfx"
+				},
+				{
+					"who": "princess",
+					"time": 0.5,
+					"do": "shake"
+				}
+			],
+			"wait": 0.8
+		},
+		{
+			"speaker": "",
+			"text": "（画布正中央，被烧出了一个圆圆的缺口。缺口的边缘闪着金色的光）"
+		},
+		{
+			"speaker": "女王画像",
+			"text": "……嘘。画框后面，有人在睡觉。"
+		},
+		{
+			"speaker": "",
+			"text": "（画像不再说话了。画里女王那张糊掉的脸，好像——轻轻地笑了一下）"
+		}
+	]
+}

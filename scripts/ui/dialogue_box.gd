@@ -469,6 +469,84 @@ func palace_bell_fight() -> void:
 		r.start_fight()
 
 
+## 反省篇第四章（下）·钟楼 / 隧道的对话调用
+func palace_gear_ride() -> void:
+	runner.end_conversation()
+	var r := _palace_room("PalaceClock")
+	if r:
+		r.ride()
+
+
+func palace_ring_bells() -> void:
+	runner.end_conversation()
+	var r := _palace_room("PalaceClock")
+	if r:
+		r.ring()
+
+
+func palace_chest_1() -> void:
+	var r := _palace_room("PalaceClock")
+	if r:
+		r.open_chest(1)
+
+
+func palace_chest_2() -> void:
+	var r := _palace_room("PalaceClock")
+	if r:
+		r.open_chest(2)
+
+
+func palace_chest_3() -> void:
+	var r := _palace_room("PalaceClock")
+	if r:
+		r.open_chest(3)
+
+
+func palace_toll_mint() -> void:
+	runner.end_conversation()
+	var r := _palace_room("PalaceTunnels")
+	if r:
+		r.pay("mint")
+
+
+func palace_toll_coin() -> void:
+	runner.end_conversation()
+	var r := _palace_room("PalaceTunnels")
+	if r:
+		r.pay("coin")
+
+
+func palace_toll_tickle() -> void:
+	runner.end_conversation()
+	var r := _palace_room("PalaceTunnels")
+	if r:
+		r.pay("tickle")
+
+
+func palace_tunnel_chest_1() -> void:
+	var r := _palace_room("PalaceTunnels")
+	if r:
+		r.open_chest(1)
+
+
+func palace_tunnel_chest_2() -> void:
+	var r := _palace_room("PalaceTunnels")
+	if r:
+		r.open_chest(2)
+
+
+func palace_tunnel_chest_3() -> void:
+	var r := _palace_room("PalaceTunnels")
+	if r:
+		r.open_chest(3)
+
+
+func palace_tunnel_chest_4() -> void:
+	var r := _palace_room("PalaceTunnels")
+	if r:
+		r.open_chest(4)
+
+
 ## 反省篇第四章·旧王宫：拉唤人铃 / 拿钥匙（仆人回廊）、水槽洗脚（厨房）
 func palace_bell() -> void:
 	runner.end_conversation()

@@ -297,6 +297,46 @@
 			"placeholder": "helpless_2",
 			"wide": true
 		},
+		"gear_ride": {
+			"file": "res://assets/cg/portraits/gear_ride.png",
+			"placeholder": "helpless_2",
+			"wide": true
+		},
+		"toll_pay": {
+			"file": "res://assets/cg/portraits/toll_pay.png",
+			"placeholder": "helpless_2",
+			"wide": true
+		},
+		"bedroom_quilt": {
+			"file": "res://assets/cg/portraits/bedroom_quilt.png",
+			"placeholder": "helpless_2",
+			"wide": true
+		},
+		"painting_trapped": {
+			"file": "res://assets/cg/portraits/painting_trapped.png",
+			"placeholder": "helpless_2",
+			"wide": true
+		},
+		"boss_fail": {
+			"file": "res://assets/cg/portraits/boss_fail.png",
+			"placeholder": "helpless_2",
+			"wide": true
+		},
+		"boss_fail_paint": {
+			"file": "res://assets/cg/portraits/boss_fail_paint.png",
+			"placeholder": "helpless_2",
+			"wide": true
+		},
+		"boss_fail_tea": {
+			"file": "res://assets/cg/portraits/boss_fail_tea.png",
+			"placeholder": "helpless_2",
+			"wide": true
+		},
+		"boss_fail_frame": {
+			"file": "res://assets/cg/portraits/boss_fail_frame.png",
+			"placeholder": "helpless_2",
+			"wide": true
+		},
 		"slime_1": {
 			"file": "res://assets/cg/portraits/slime_1.png",
 			"placeholder": "helpless_1"

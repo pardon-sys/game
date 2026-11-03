@@ -1,0 +1,294 @@
+{
+	"name": "王座间：小画像的茶会",
+	"cast": {
+		"princess": {
+			"kind": "princess",
+			"at": [
+				-14,
+				8
+			],
+			"visual": "helpless_1",
+			"anim": "helpless",
+			"dir": "right"
+		},
+		"blue": {
+			"kind": "npc:blue_princess",
+			"at": [
+				14,
+				8
+			],
+			"visual": "helpless_1",
+			"anim": "helpless",
+			"dir": "left"
+		},
+		"pants": {
+			"kind": "trap:hand",
+			"at": [
+				20,
+				10
+			]
+		},
+		"s1": {
+			"kind": "trap:feather_curtain",
+			"at": [
+				-20,
+				-10
+			]
+		},
+		"s2": {
+			"kind": "trap:feather_curtain",
+			"at": [
+				20,
+				-10
+			]
+		}
+	},
+	"steps": [
+		{
+			"act": 1,
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "fade_in"
+				},
+				{
+					"state": "giggle",
+					"do": "voice"
+				}
+			],
+			"wait": 0.5
+		},
+		{
+			"speaker": "",
+			"text": "（四幅小画像从墙上飘了下来，围着一张不知道从哪里冒出来的小圆桌。两个人被按在了椅子上）",
+			"act": 1
+		},
+		{
+			"speaker": "小画像们",
+			"text": "（叽叽喳喳）客人！客人来喝茶！今天的茶是蓝色的！"
+		},
+		{
+			"speaker": "公主",
+			"text": "……蓝、蓝色的茶？",
+			"emotion": "question"
+		},
+		{
+			"speaker": "小画像们",
+			"text": "蓝色的茶不能用嘴喝！要用胳肢窝喝！"
+		},
+		{
+			"speaker": "",
+			"text": "（画里的贵妇人们伸出拿着羽毛扇的手，一边往杯子里倒茶，一边往两个人的腋窝里扇）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "s1",
+					"zone": "armpit",
+					"fx": "feather",
+					"repeat": 10,
+					"interval": 0.14,
+					"do": "tickle"
+				},
+				{
+					"who": "blue",
+					"by": "s2",
+					"zone": "armpit",
+					"fx": "feather",
+					"repeat": 8,
+					"interval": 0.15,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"visual": "giggle",
+					"do": "pose"
+				},
+				{
+					"who": "blue",
+					"visual": "giggle",
+					"do": "pose"
+				}
+			],
+			"act": 2
+		},
+		{
+			"speaker": "公主",
+			"text": "嘻嘻……哈哈……茶、茶要洒了——！",
+			"emotion": "giggle",
+			"portrait": "boss_fail_tea"
+		},
+		{
+			"speaker": "小画像们",
+			"text": "洒了要罚！罚一块方糖！方糖放在脚心上！"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……这、这是什么规矩……哈、哈……"
+		},
+		{
+			"speaker": "",
+			"text": "（方糖放在了脚心上，羽毛扇一下一下地扇，扇得方糖在脚心上滚来滚去）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "s1",
+					"zone": "sole",
+					"fx": "feather",
+					"repeat": 14,
+					"interval": 0.1,
+					"do": "tickle"
+				},
+				{
+					"who": "blue",
+					"by": "s2",
+					"zone": "sole",
+					"fx": "feather",
+					"repeat": 12,
+					"interval": 0.1,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"visual": "helpless_2",
+					"do": "pose"
+				},
+				{
+					"who": "blue",
+					"visual": "helpless_2",
+					"do": "pose"
+				},
+				{
+					"do": "voice",
+					"state": "laugh"
+				}
+			],
+			"act": 3
+		},
+		{
+			"speaker": "公主",
+			"text": "哈哈哈！方糖——滚、滚到脚趾缝里去了——！",
+			"emotion": "helpless_2"
+		},
+		{
+			"speaker": "小画像们",
+			"text": "好喝吗？好喝吗？再来一杯！"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……哈……哈哈……（冰晶炸开，茶杯里的茶全冻成了冰块……）",
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "flash"
+				},
+				{
+					"sound": "ice_crack",
+					"volume": -2.0,
+					"do": "sfx"
+				},
+				{
+					"sound": "water_release",
+					"volume": -2.0,
+					"do": "sfx"
+				},
+				{
+					"who": "blue",
+					"time": 0.4,
+					"do": "shake"
+				},
+				{
+					"state": "laugh",
+					"do": "voice"
+				}
+			],
+			"act": "burst",
+			"wait": 1.0
+		},
+		{
+			"speaker": "公主",
+			"text": "（星光跟着炸开，冰块叮叮当当地掉了一桌……哈啊……放出去了……）",
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "flash"
+				},
+				{
+					"sound": "star_burst",
+					"do": "sfx"
+				},
+				{
+					"sound": "water_release",
+					"volume": -2.0,
+					"do": "sfx"
+				},
+				{
+					"who": "princess",
+					"time": 0.4,
+					"do": "shake"
+				},
+				{
+					"state": "laugh",
+					"do": "voice"
+				}
+			],
+			"act": "burst",
+			"wait": 1.0
+		},
+		{
+			"speaker": "",
+			"text": "（贵妇人们不满地「哼」了一声，又在两个人刚释放完的腰上扇了最后一下，才慢慢飘回墙上）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "s1",
+					"zone": "waist",
+					"fx": "feather",
+					"repeat": 4,
+					"interval": 0.2,
+					"do": "tickle"
+				},
+				{
+					"who": "blue",
+					"by": "s2",
+					"zone": "waist",
+					"fx": "feather",
+					"repeat": 4,
+					"interval": 0.2,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"visual": "helpless_1",
+					"do": "pose"
+				},
+				{
+					"who": "blue",
+					"visual": "helpless_1",
+					"do": "pose"
+				}
+			],
+			"act": 4
+		},
+		{
+			"speaker": "小画像们",
+			"text": "下次再来喝茶！下次喝粉色的！"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……不、不想喝了。"
+		},
+		{
+			"actions": [
+				{
+					"state": "",
+					"do": "voice"
+				},
+				{
+					"time": 0.6,
+					"do": "fade_out"
+				}
+			],
+			"wait": 0.7
+		}
+	]
+}
