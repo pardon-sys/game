@@ -1,0 +1,29 @@
+{
+	"name": "骑士训练场",
+	"letterbox": true,
+	"skippable": true,
+	"steps": [
+		{
+			"speaker": "",
+			"text": "（西门后面是一座宽敞的训练场。地上铺着磨旧的软垫，墙边立着一排排稻草人和木人桩，中央挂着一口铜钟）"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……骑士的训练场。"
+		},
+		{
+			"speaker": "公主",
+			"text": "……那个骑士，以前在这里训练过吗？",
+			"emotion": "question"
+		},
+		{
+			"actions": [
+				{
+					"text": "调查骑士训练场",
+					"do": "notify"
+				}
+			],
+			"wait": 0.3
+		}
+	]
+}

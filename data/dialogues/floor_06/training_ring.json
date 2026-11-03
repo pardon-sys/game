@@ -1,0 +1,49 @@
+{
+	"name": "对练擂台",
+	"entries": [
+		{
+			"node": "default"
+		}
+	],
+	"nodes": {
+		"default": {
+			"lines": [
+				{
+					"text": "（擂台边的木牌：「骑士对练——背靠背坐下，先笑出声的人输」）",
+					"speaker": ""
+				}
+			],
+			"prompt": "和蓝色公主比一场？",
+			"choices": [
+				{
+					"text": "比！",
+					"next": "go"
+				},
+				{
+					"text": "下次",
+					"next": "no"
+				}
+			]
+		},
+		"go": {
+			"lines": [
+				{
+					"text": "……来比！",
+					"speaker": "公主",
+					"emotion": "angry"
+				}
+			],
+			"set": {
+				"call": "palace_spar"
+			}
+		},
+		"no": {
+			"lines": [
+				{
+					"text": "……下次。",
+					"speaker": "公主"
+				}
+			]
+		}
+	}
+}

@@ -694,6 +694,9 @@ func _tickle_multiplier(hit: HitData) -> float:
 # ------------------------------------------------------------------ 装备
 func _extra_stat_add(stat: String) -> float:
 	var v := Equipment.stat_add(character_id, stat)
+	# 被动「骑士的忍耐」（旧王宫骑士训练场的耐痒训练台）：闷笑涨幅 −value
+	if stat == "laugh_gain" and GameState.passives.has("knight_endurance"):
+		v -= PassiveDB.value("knight_endurance")
 	# 被动「冰封自制」（蓝色公主，特训后学会）：闷笑涨幅 −value、千手痒痒裤的闷笑下限 −10
 	if character_id == "blue" and GameState.passives.has("ice_composure"):
 		if stat == "laugh_gain":

@@ -1,0 +1,35 @@
+{
+	"name": "挂满大衣的衣架",
+	"entries": [
+		{
+			"if": {
+				"flag": "palace_trap_active"
+			},
+			"node": "search"
+		},
+		{
+			"node": "default"
+		}
+	],
+	"nodes": {
+		"default": {
+			"lines": [
+				{
+					"text": "（一排挂着旧大衣的衣架。……没什么特别的）",
+					"speaker": ""
+				}
+			]
+		},
+		"search": {
+			"lines": [
+				{
+					"text": "（翻了翻挂满大衣的衣架——）",
+					"speaker": ""
+				}
+			],
+			"set": {
+				"call": "palace_search_2"
+			}
+		}
+	}
+}

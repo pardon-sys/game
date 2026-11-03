@@ -1,0 +1,60 @@
+{
+	"name": "玫瑰色的礼服",
+	"entries": [
+		{
+			"if": {
+				"flag": "cg_seen_theater:wardrobe_tryon"
+			},
+			"node": "again"
+		},
+		{
+			"node": "default"
+		}
+	],
+	"nodes": {
+		"default": {
+			"lines": [
+				{
+					"text": "（一件玫瑰色的舞会礼服，层层叠叠的薄纱，金线绣的小花）",
+					"speaker": ""
+				}
+			],
+			"prompt": "试穿？",
+			"choices": [
+				{
+					"text": "……试一下。",
+					"next": "go"
+				},
+				{
+					"text": "……先不了",
+					"next": "no"
+				}
+			]
+		},
+		"go": {
+			"lines": [
+				{
+					"text": "……试一下。",
+					"speaker": "公主"
+				}
+			],
+			"theater": "wardrobe_tryon"
+		},
+		"no": {
+			"lines": [
+				{
+					"text": "……等一下再说。",
+					"speaker": "公主"
+				}
+			]
+		},
+		"again": {
+			"lines": [
+				{
+					"text": "（礼服叠好放进了背包。……下次找个机会再穿）",
+					"speaker": ""
+				}
+			]
+		}
+	}
+}

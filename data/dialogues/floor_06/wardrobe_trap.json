@@ -1,0 +1,83 @@
+{
+	"name": "雕花的大衣柜",
+	"entries": [
+		{
+			"if": {
+				"flag": "cg_seen_theater:wardrobe_trap_out"
+			},
+			"node": "done"
+		},
+		{
+			"if": {
+				"flag": "palace_trap_active"
+			},
+			"node": "locked"
+		},
+		{
+			"node": "default"
+		}
+	],
+	"nodes": {
+		"default": {
+			"lines": [
+				{
+					"text": "（一个雕着花的大衣柜。柜门上挂着一张泛黄的纸条：「捉迷藏专用——请勿关门」）",
+					"speaker": ""
+				}
+			],
+			"prompt": "打开看看？",
+			"choices": [
+				{
+					"text": "钻进去看看",
+					"next": "go"
+				},
+				{
+					"text": "不了",
+					"next": "no"
+				}
+			]
+		},
+		"go": {
+			"lines": [
+				{
+					"text": "……里面会不会有好东西。",
+					"speaker": "公主"
+				}
+			],
+			"set": {
+				"call": "palace_trap"
+			}
+		},
+		"no": {
+			"lines": [
+				{
+					"text": "……「请勿关门」。……不碰它。",
+					"speaker": "公主"
+				}
+			]
+		},
+		"locked": {
+			"lines": [
+				{
+					"text": "（柜门锁着。柜子里传来一阵阵笑声）",
+					"speaker": ""
+				},
+				{
+					"text": "……钥匙。……要去找钥匙。",
+					"speaker": "蓝色的公主"
+				}
+			],
+			"set": {
+				"call": "palace_trap_open"
+			}
+		},
+		"done": {
+			"lines": [
+				{
+					"text": "（柜门开着，里面空空的。……再也不想碰它了）",
+					"speaker": ""
+				}
+			]
+		}
+	}
+}

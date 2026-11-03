@@ -49,6 +49,11 @@ const PATHS := {
 	"equip_t_mark_patch": "res://data/items/equip_t_mark_patch.tres",
 	"equip_mouse_shorts": "res://data/items/equip_mouse_shorts.tres",
 	"equip_mouse_paw_shoes": "res://data/items/equip_mouse_paw_shoes.tres",
+	"equip_palace_ribbon": "res://data/items/equip_palace_ribbon.tres",
+	"equip_palace_corset": "res://data/items/equip_palace_corset.tres",
+	"equip_palace_boots": "res://data/items/equip_palace_boots.tres",
+	"equip_palace_stockings": "res://data/items/equip_palace_stockings.tres",
+	"equip_feather_shawl": "res://data/items/equip_feather_shawl.tres",
 }
 
 static var _cache := {}

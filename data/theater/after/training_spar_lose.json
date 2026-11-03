@@ -1,0 +1,194 @@
+{
+	"name": "训练场：对练输了",
+	"cast": {
+		"princess": {
+			"kind": "princess",
+			"at": [
+				-14,
+				8
+			],
+			"visual": "helpless_1",
+			"anim": "helpless",
+			"dir": "right"
+		},
+		"blue": {
+			"kind": "npc:blue_princess",
+			"at": [
+				14,
+				8
+			],
+			"visual": "normal",
+			"anim": "idle",
+			"dir": "left"
+		},
+		"pants": {
+			"kind": "trap:hand",
+			"at": [
+				20,
+				10
+			]
+		}
+	},
+	"steps": [
+		{
+			"act": 1,
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "fade_in"
+				},
+				{
+					"state": "giggle",
+					"do": "voice"
+				}
+			],
+			"wait": 0.5
+		},
+		{
+			"speaker": "",
+			"text": "（粉色公主先笑出了声。……她早就知道，自己根本忍不住）",
+			"act": 1
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……输了。"
+		},
+		{
+			"speaker": "公主",
+			"text": "……再、再来一局！三局两胜！",
+			"emotion": "angry"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……规则。……一刻钟。"
+		},
+		{
+			"speaker": "",
+			"text": "（蓝色公主把她的鞋袜放到一边，握住了一只脚踝。指尖在脚心上慢慢地画圈）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "blue",
+					"zone": "sole",
+					"fx": "hand",
+					"repeat": 10,
+					"interval": 0.15,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"visual": "giggle",
+					"do": "pose"
+				}
+			],
+			"act": 2
+		},
+		{
+			"speaker": "公主",
+			"text": "嘻……嘻嘻……你、你明明不爱笑，挠人倒是很会……！",
+			"emotion": "giggle"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……学的。……你挠我的时候。"
+		},
+		{
+			"speaker": "",
+			"text": "（画圈变成了轻轻地抓，抓完脚心，又一根一根地挠脚趾缝）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "blue",
+					"zone": "sole",
+					"fx": "lines",
+					"repeat": 14,
+					"interval": 0.11,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"visual": "helpless_2",
+					"do": "pose"
+				},
+				{
+					"do": "voice",
+					"state": "laugh"
+				}
+			],
+			"act": 3
+		},
+		{
+			"speaker": "公主",
+			"text": "哈哈哈！趾缝——不行——哈哈哈哈！",
+			"emotion": "helpless_2"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……还有十分钟。"
+		},
+		{
+			"speaker": "公主",
+			"text": "（星光在擂台上炸开……哈啊……放出去了……）",
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "flash"
+				},
+				{
+					"sound": "star_burst",
+					"do": "sfx"
+				},
+				{
+					"sound": "water_release",
+					"volume": -2.0,
+					"do": "sfx"
+				},
+				{
+					"who": "princess",
+					"time": 0.4,
+					"do": "shake"
+				},
+				{
+					"state": "laugh",
+					"do": "voice"
+				}
+			],
+			"act": "burst",
+			"wait": 1.0
+		},
+		{
+			"speaker": "",
+			"text": "（蓝色公主停下手，替她把袜子套了回去）",
+			"actions": [
+				{
+					"who": "princess",
+					"visual": "helpless_1",
+					"do": "pose"
+				}
+			],
+			"act": 4
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……下次。……让你赢。"
+		},
+		{
+			"speaker": "公主",
+			"text": "……不用让！下次我自己赢回来！",
+			"emotion": "angry"
+		},
+		{
+			"actions": [
+				{
+					"state": "",
+					"do": "voice"
+				},
+				{
+					"time": 0.6,
+					"do": "fade_out"
+				}
+			],
+			"wait": 0.7
+		}
+	]
+}

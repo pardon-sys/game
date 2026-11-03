@@ -402,6 +402,73 @@ func prison_alarm() -> void:
 	PrisonOddities.alarm()
 
 
+## 反省篇第四章（中）·图书馆 / 衣帽间 / 训练场的对话调用
+func _palace_room(cls: String) -> Node:
+	for k in get_tree().root.find_children("*", "", true, false):
+		if k.get_script() and str(k.get_script().get_global_name()) == cls:
+			return k
+	return null
+
+
+func palace_golden() -> void:
+	runner.end_conversation()
+	var r := _palace_room("PalaceLibrary")
+	if r:
+		r.golden()
+
+
+func palace_cipher_ok() -> void:
+	var r := _palace_room("PalaceLibrary")
+	if r:
+		r.open_cipher()
+
+
+func palace_trap() -> void:
+	runner.end_conversation()
+	var r := _palace_room("PalaceWardrobe")
+	if r:
+		r.start_trap()
+
+
+func palace_trap_open() -> void:
+	runner.end_conversation()
+	var r := _palace_room("PalaceWardrobe")
+	if r:
+		r.open_trap()
+
+
+func palace_search_1() -> void:
+	_palace_search(1)
+
+
+func palace_search_2() -> void:
+	_palace_search(2)
+
+
+func palace_search_3() -> void:
+	_palace_search(3)
+
+
+func _palace_search(i: int) -> void:
+	var r := _palace_room("PalaceWardrobe")
+	if r:
+		r.search(i)
+
+
+func palace_spar() -> void:
+	runner.end_conversation()
+	var r := _palace_room("PalaceTraining")
+	if r:
+		r.spar()
+
+
+func palace_bell_fight() -> void:
+	runner.end_conversation()
+	var r := _palace_room("PalaceTraining")
+	if r:
+		r.start_fight()
+
+
 ## 反省篇第四章·旧王宫：拉唤人铃 / 拿钥匙（仆人回廊）、水槽洗脚（厨房）
 func palace_bell() -> void:
 	runner.end_conversation()

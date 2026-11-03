@@ -1,0 +1,155 @@
+{
+	"name": "密码门",
+	"entries": [
+		{
+			"if": {
+				"flag": "palace_cipher_open"
+			},
+			"node": "open"
+		},
+		{
+			"node": "default"
+		}
+	],
+	"nodes": {
+		"default": {
+			"lines": [
+				{
+					"text": "（一扇沉重的木门，门上嵌着四个能转动的铜轮，每个轮子上刻着 2、3、5、7）",
+					"speaker": ""
+				}
+			],
+			"prompt": "转第一个轮子？",
+			"choices": [
+				{
+					"text": "2",
+					"next": "d2"
+				},
+				{
+					"text": "3",
+					"next": "wrong"
+				},
+				{
+					"text": "5",
+					"next": "wrong"
+				},
+				{
+					"text": "7",
+					"next": "wrong"
+				}
+			]
+		},
+		"wrong": {
+			"lines": [
+				{
+					"text": "（「咔哒」……门没有动。四个铜轮自己转回了原位）",
+					"speaker": ""
+				},
+				{
+					"text": "……不对。再想想。",
+					"speaker": "蓝色的公主"
+				}
+			]
+		},
+		"open": {
+			"lines": [
+				{
+					"text": "（门开着。里面是一间小小的书房）",
+					"speaker": ""
+				}
+			]
+		},
+		"d2": {
+			"lines": [
+				{
+					"text": "（「咔」）",
+					"speaker": ""
+				}
+			],
+			"prompt": "转第 2 个轮子？",
+			"choices": [
+				{
+					"text": "2",
+					"next": "wrong"
+				},
+				{
+					"text": "3",
+					"next": "wrong"
+				},
+				{
+					"text": "5",
+					"next": "d3"
+				},
+				{
+					"text": "7",
+					"next": "wrong"
+				}
+			]
+		},
+		"d3": {
+			"lines": [
+				{
+					"text": "（「咔」）",
+					"speaker": ""
+				}
+			],
+			"prompt": "转第 3 个轮子？",
+			"choices": [
+				{
+					"text": "2",
+					"next": "wrong"
+				},
+				{
+					"text": "3",
+					"next": "wrong"
+				},
+				{
+					"text": "5",
+					"next": "wrong"
+				},
+				{
+					"text": "7",
+					"next": "d4"
+				}
+			]
+		},
+		"d4": {
+			"lines": [
+				{
+					"text": "（「咔」）",
+					"speaker": ""
+				}
+			],
+			"prompt": "转第 4 个轮子？",
+			"choices": [
+				{
+					"text": "2",
+					"next": "wrong"
+				},
+				{
+					"text": "3",
+					"next": "ok"
+				},
+				{
+					"text": "5",
+					"next": "wrong"
+				},
+				{
+					"text": "7",
+					"next": "wrong"
+				}
+			]
+		},
+		"ok": {
+			"lines": [
+				{
+					"text": "（四个铜轮同时「咔哒」一声——门，慢慢地开了）",
+					"speaker": ""
+				}
+			],
+			"set": {
+				"call": "palace_cipher_ok"
+			}
+		}
+	}
+}

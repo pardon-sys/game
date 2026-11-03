@@ -1,0 +1,335 @@
+{
+	"name": "衣帽间：喜欢的礼服",
+	"cast": {
+		"princess": {
+			"kind": "princess",
+			"at": [
+				-14,
+				8
+			],
+			"visual": "normal",
+			"anim": "idle",
+			"dir": "right"
+		},
+		"blue": {
+			"kind": "npc:blue_princess",
+			"at": [
+				14,
+				8
+			],
+			"visual": "normal",
+			"anim": "idle",
+			"dir": "left"
+		},
+		"pants": {
+			"kind": "trap:hand",
+			"at": [
+				20,
+				10
+			]
+		}
+	},
+	"steps": [
+		{
+			"act": 1,
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "fade_in"
+				},
+				{
+					"state": "giggle",
+					"do": "voice"
+				}
+			],
+			"wait": 0.5
+		},
+		{
+			"speaker": "",
+			"text": "（衣帽间最里面的衣架上，挂着一件玫瑰色的舞会礼服。层层叠叠的薄纱，金线绣的小花，落满了灰也遮不住它的漂亮）",
+			"act": 1
+		},
+		{
+			"speaker": "公主",
+			"text": "……好漂亮。",
+			"emotion": "happy"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……喜欢？"
+		},
+		{
+			"speaker": "公主",
+			"text": "……嗯。很喜欢。……总觉得，好像以前很想穿这样的裙子。",
+			"emotion": "shy"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……试试。……我在外面等。"
+		},
+		{
+			"speaker": "",
+			"text": "（粉色公主抱着礼服钻到了屏风后面。过了好一会儿——）",
+			"act": 2
+		},
+		{
+			"speaker": "公主",
+			"text": "……怎、怎么样？",
+			"emotion": "shy"
+		},
+		{
+			"speaker": "",
+			"text": "（她提着裙摆从屏风后面走出来，在镜子前转了一圈。玫瑰色的薄纱散开，像一朵慢慢开放的花）",
+			"portrait": "wardrobe_tryon"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……",
+			"actions": [
+				{
+					"who": "blue",
+					"visual": "normal",
+					"do": "pose"
+				}
+			]
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……好看。"
+		},
+		{
+			"speaker": "公主",
+			"text": "……嘿嘿。",
+			"emotion": "happy"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……腰，有点松。……我帮你量一下。"
+		},
+		{
+			"speaker": "",
+			"text": "（蓝色公主拿起架子上的软尺，绕到她身后，把软尺围上了她的腰——）"
+		},
+		{
+			"speaker": "",
+			"text": "（……然后，手指「不小心」在她的腰侧点了一下）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "blue",
+					"zone": "waist",
+					"fx": "hand",
+					"repeat": 4,
+					"interval": 0.2,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"visual": "giggle",
+					"do": "pose"
+				}
+			],
+			"act": 3
+		},
+		{
+			"speaker": "公主",
+			"text": "呀！你、你干什么！",
+			"emotion": "giggle"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……量尺寸。"
+		},
+		{
+			"speaker": "",
+			"text": "（又点了一下。再一下。手指顺着腰侧往上爬，又爬回来——蓝色公主的脸还是一本正经的，嘴角却悄悄翘起了一点）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "blue",
+					"zone": "waist",
+					"fx": "hand",
+					"repeat": 10,
+					"interval": 0.14,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"visual": "helpless_1",
+					"do": "pose"
+				},
+				{
+					"do": "voice",
+					"state": "laugh"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "哈哈哈！你明明就是在挠我——！",
+			"emotion": "helpless_1"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……腰围。……还要再量。"
+		},
+		{
+			"speaker": "",
+			"text": "（粉色公主笑着想躲，可是长长的裙摆绊住了脚，整个人往后一倒——正好倒进蓝色公主怀里）",
+			"actions": [
+				{
+					"who": "princess",
+					"time": 0.3,
+					"do": "shake"
+				}
+			]
+		},
+		{
+			"speaker": "",
+			"text": "（蓝色公主顺势把她圈住，十根手指在腰侧、肋下一起动了起来）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "blue",
+					"zone": "waist",
+					"fx": "hand",
+					"repeat": 14,
+					"interval": 0.1,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"by": "blue",
+					"zone": "armpit",
+					"fx": "hand",
+					"repeat": 10,
+					"interval": 0.12,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"visual": "helpless_2",
+					"do": "pose"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "哈哈哈哈！投降——投降——裙子会皱的——！",
+			"emotion": "helpless_2"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……（小声）……这是报仇。……之前，你在帘子外面笑我。"
+		},
+		{
+			"speaker": "公主",
+			"text": "那、那是你自己憋笑憋的——哈哈哈！",
+			"emotion": "helpless_2"
+		},
+		{
+			"speaker": "公主",
+			"text": "（星光一下子在镜子前炸开，玫瑰色的裙摆被吹得飞了起来……哈啊……放出去了……）",
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "flash"
+				},
+				{
+					"sound": "star_burst",
+					"do": "sfx"
+				},
+				{
+					"sound": "water_release",
+					"volume": -2.0,
+					"do": "sfx"
+				},
+				{
+					"who": "princess",
+					"time": 0.4,
+					"do": "shake"
+				},
+				{
+					"state": "laugh",
+					"do": "voice"
+				}
+			],
+			"act": "burst",
+			"wait": 1.0
+		},
+		{
+			"speaker": "",
+			"text": "（两个人一起摔在了软软的地毯上。蓝色公主还想再点一下——粉色公主一把抓住她的手，反过来挠她的手心）",
+			"actions": [
+				{
+					"who": "blue",
+					"by": "princess",
+					"zone": "armpit",
+					"fx": "hand",
+					"repeat": 6,
+					"interval": 0.15,
+					"do": "tickle"
+				},
+				{
+					"who": "blue",
+					"visual": "giggle",
+					"do": "pose"
+				}
+			],
+			"act": 4
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……噗。……哈、哈哈……不准……",
+			"actions": [
+				{
+					"who": "blue",
+					"by": "pants",
+					"zone": "thigh",
+					"fx": "hand",
+					"repeat": 6,
+					"interval": 0.15,
+					"do": "tickle"
+				},
+				{
+					"who": "blue",
+					"visual": "helpless_1",
+					"do": "pose"
+				}
+			]
+		},
+		{
+			"speaker": "",
+			"text": "（千手痒痒裤听见笑声也凑起了热闹。两个人在地毯上笑成一团，礼服的薄纱铺了一地）",
+			"actions": [
+				{
+					"who": "princess",
+					"visual": "helpless_1",
+					"do": "pose"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "……哈……哈……这件裙子……我要带走。",
+			"emotion": "happy"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……嗯。……很适合你。"
+		},
+		{
+			"actions": [
+				{
+					"state": "",
+					"do": "voice"
+				},
+				{
+					"time": 0.6,
+					"do": "fade_out"
+				}
+			],
+			"wait": 0.7
+		}
+	]
+}

@@ -1,0 +1,20 @@
+{
+	"name": "考验通过",
+	"letterbox": true,
+	"skippable": true,
+	"steps": [
+		{
+			"speaker": "",
+			"text": "（大稻草人教官「哗啦」一声散成了一地稻草。四面的门又打开了）"
+		},
+		{
+			"speaker": "公主",
+			"text": "……通、通过了！",
+			"emotion": "happy"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……嗯。……箱子的锁，应该开了。"
+		}
+	]
+}

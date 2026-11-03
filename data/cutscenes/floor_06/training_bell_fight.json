@@ -1,0 +1,20 @@
+{
+	"name": "习武鸣钟",
+	"letterbox": true,
+	"skippable": true,
+	"steps": [
+		{
+			"speaker": "",
+			"text": "（钟声在训练场里回荡。四面的门「砰砰」地关上了，墙边的稻草人一个接一个地动了起来）"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……考验。"
+		},
+		{
+			"speaker": "公主",
+			"text": "来吧！",
+			"emotion": "angry"
+		}
+	]
+}

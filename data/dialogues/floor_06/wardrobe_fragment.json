@@ -1,0 +1,45 @@
+{
+	"name": "大衣口袋里的残页",
+	"entries": [
+		{
+			"if": {
+				"flag": "palace_frag_2"
+			},
+			"node": "again"
+		},
+		{
+			"node": "default"
+		}
+	],
+	"nodes": {
+		"default": {
+			"lines": [
+				{
+					"text": "（一件旧大衣的口袋里，叠着一张撕下来的纸）",
+					"speaker": ""
+				},
+				{
+					"text": "……是记录簿上撕下来的那一页！",
+					"speaker": "公主",
+					"emotion": "surprise"
+				}
+			],
+			"set": {
+				"flags": [
+					"palace_frag_2"
+				],
+				"add": {
+					"palace_frags": 1
+				}
+			}
+		},
+		"again": {
+			"lines": [
+				{
+					"text": "（残页已经拿走了）",
+					"speaker": ""
+				}
+			]
+		}
+	}
+}

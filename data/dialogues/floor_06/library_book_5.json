@@ -1,0 +1,27 @@
+{
+	"name": "《封笑之书》（残本）",
+	"entries": [
+		{
+			"node": "default"
+		}
+	],
+	"nodes": {
+		"default": {
+			"lines": [
+				{
+					"text": "（《封笑之书》（残本））",
+					"speaker": ""
+				},
+				{
+					"text": "「……以笑为钥，以□□为锁。被封住的笑声，要两个人一起，才能唤醒……」",
+					"speaker": ""
+				},
+				{
+					"text": "……两个人一起。",
+					"speaker": "公主",
+					"emotion": "sad"
+				}
+			]
+		}
+	}
+}

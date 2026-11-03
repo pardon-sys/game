@@ -1,0 +1,279 @@
+{
+	"name": "衣帽间：量尺寸",
+	"cast": {
+		"princess": {
+			"kind": "princess",
+			"at": [
+				-14,
+				8
+			],
+			"visual": "normal",
+			"anim": "idle",
+			"dir": "right"
+		},
+		"blue": {
+			"kind": "npc:blue_princess",
+			"at": [
+				14,
+				8
+			],
+			"visual": "normal",
+			"anim": "idle",
+			"dir": "left"
+		},
+		"pants": {
+			"kind": "trap:hand",
+			"at": [
+				20,
+				10
+			]
+		},
+		"m": {
+			"kind": "trap:binding",
+			"at": [
+				0,
+				-2
+			]
+		}
+	},
+	"steps": [
+		{
+			"act": 1,
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "fade_in"
+				},
+				{
+					"state": "giggle",
+					"do": "voice"
+				}
+			],
+			"wait": 0.5
+		},
+		{
+			"speaker": "",
+			"text": "（一具穿着半成品礼服的人台「咔」地转过身来，手里的软尺一甩一甩）",
+			"act": 1
+		},
+		{
+			"speaker": "礼服人台",
+			"text": "……客人。……量、尺寸。……请站好。"
+		},
+		{
+			"speaker": "公主",
+			"text": "不、不用了，我们只是路过——",
+			"emotion": "surprise"
+		},
+		{
+			"speaker": "",
+			"text": "（软尺「唰」地缠上了粉色公主的腰，把她拉到了人台跟前）",
+			"actions": [
+				{
+					"who": "princess",
+					"time": 0.3,
+					"do": "shake"
+				}
+			],
+			"act": 2
+		},
+		{
+			"speaker": "礼服人台",
+			"text": "……腰围。"
+		},
+		{
+			"speaker": "",
+			"text": "（软尺在腰上绕了一圈，又松开，又绕一圈——每绕一圈，都在腰侧轻轻勒一下）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "m",
+					"zone": "waist",
+					"fx": "hand",
+					"repeat": 8,
+					"interval": 0.18,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"visual": "giggle",
+					"do": "pose"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "嘻……嘻嘻……量、量一次就够了……！",
+			"emotion": "giggle"
+		},
+		{
+			"speaker": "礼服人台",
+			"text": "……腿长。"
+		},
+		{
+			"speaker": "",
+			"text": "（软尺从脚踝一路往上量，量到大腿根，又从大腿根量回脚踝）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "m",
+					"zone": "thigh",
+					"fx": "hand",
+					"repeat": 10,
+					"interval": 0.15,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"visual": "helpless_1",
+					"do": "pose"
+				},
+				{
+					"do": "voice",
+					"state": "laugh"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "哈哈……腿、腿根那里不用量……！",
+			"emotion": "helpless_1"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……（在旁边看着）……我来帮你。",
+			"act": 3
+		},
+		{
+			"speaker": "",
+			"text": "（蓝色公主刚伸手去扯软尺——人台的另一只手也伸了出来，把她一起拉了过去）",
+			"actions": [
+				{
+					"who": "blue",
+					"visual": "giggle",
+					"do": "pose"
+				}
+			]
+		},
+		{
+			"speaker": "礼服人台",
+			"text": "……两位客人。……一起量。……脚长。"
+		},
+		{
+			"speaker": "",
+			"text": "（软尺把两个人的脚并在一起，从脚跟量到脚尖，在脚心正中央停住、来回地蹭）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "m",
+					"zone": "sole",
+					"fx": "lines",
+					"repeat": 12,
+					"interval": 0.12,
+					"do": "tickle"
+				},
+				{
+					"who": "blue",
+					"by": "m",
+					"zone": "sole",
+					"fx": "lines",
+					"repeat": 10,
+					"interval": 0.12,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"visual": "helpless_2",
+					"do": "pose"
+				},
+				{
+					"who": "blue",
+					"visual": "helpless_2",
+					"do": "pose"
+				}
+			]
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……脚、脚心……没有必要……量……哈、哈哈……"
+		},
+		{
+			"speaker": "公主",
+			"text": "哈哈哈！它、它根本不是在量——！",
+			"emotion": "helpless_2"
+		},
+		{
+			"speaker": "公主",
+			"text": "（星光炸开，软尺被弹得缠成了一团……哈啊……放出去了……）",
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "flash"
+				},
+				{
+					"sound": "star_burst",
+					"do": "sfx"
+				},
+				{
+					"sound": "water_release",
+					"volume": -2.0,
+					"do": "sfx"
+				},
+				{
+					"who": "princess",
+					"time": 0.4,
+					"do": "shake"
+				},
+				{
+					"state": "laugh",
+					"do": "voice"
+				}
+			],
+			"act": "burst",
+			"wait": 1.0
+		},
+		{
+			"speaker": "礼服人台",
+			"text": "……尺寸……记、下了。……小殿下……长大了。",
+			"act": 4
+		},
+		{
+			"speaker": "",
+			"text": "（人台慢慢转了回去，安静下来。两个人对视了一眼）",
+			"actions": [
+				{
+					"who": "princess",
+					"visual": "helpless_1",
+					"do": "pose"
+				},
+				{
+					"who": "blue",
+					"visual": "helpless_1",
+					"do": "pose"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "……小殿下，长大了？",
+			"emotion": "question"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……它，在说谁。"
+		},
+		{
+			"actions": [
+				{
+					"state": "",
+					"do": "voice"
+				},
+				{
+					"time": 0.6,
+					"do": "fade_out"
+				}
+			],
+			"wait": 0.7
+		}
+	]
+}

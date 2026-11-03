@@ -1,0 +1,149 @@
+{
+	"name": "衣帽间：试穿宫廷长靴",
+	"cast": {
+		"princess": {
+			"kind": "princess",
+			"at": [
+				-14,
+				8
+			],
+			"visual": "normal",
+			"anim": "idle",
+			"dir": "right"
+		},
+		"blue": {
+			"kind": "npc:blue_princess",
+			"at": [
+				14,
+				8
+			],
+			"visual": "normal",
+			"anim": "idle",
+			"dir": "left"
+		},
+		"pants": {
+			"kind": "trap:hand",
+			"at": [
+				20,
+				10
+			]
+		},
+		"rack": {
+			"kind": "trap:wardrobe",
+			"at": [
+				0,
+				-2
+			]
+		}
+	},
+	"steps": [
+		{
+			"act": 1,
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "fade_in"
+				},
+				{
+					"state": "giggle",
+					"do": "voice"
+				}
+			],
+			"wait": 0.5
+		},
+		{
+			"speaker": "",
+			"text": "（一双白色的高筒靴。穿进去的时候，靴子里的绒毛蹭过脚心）",
+			"act": 1
+		},
+		{
+			"speaker": "",
+			"text": "（……刚穿好，它就像活过来似的，在身上蹭了好几下）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "rack",
+					"zone": "sole",
+					"fx": "feather",
+					"repeat": 10,
+					"interval": 0.15,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"visual": "giggle",
+					"do": "pose"
+				}
+			],
+			"act": 2
+		},
+		{
+			"speaker": "公主",
+			"text": "靴、靴子里面有毛……脚心……！",
+			"emotion": "giggle"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……合适吗。"
+		},
+		{
+			"speaker": "",
+			"text": "（又蹭了一下。她红着脸，硬是忍住了）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "rack",
+					"zone": "sole",
+					"fx": "feather",
+					"repeat": 6,
+					"interval": 0.18,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"visual": "helpless_1",
+					"do": "pose"
+				},
+				{
+					"do": "voice",
+					"state": "laugh"
+				}
+			],
+			"act": 3
+		},
+		{
+			"speaker": "公主",
+			"text": "……合、合适！挺好的！……可以带走！",
+			"emotion": "shy"
+		},
+		{
+			"speaker": "",
+			"text": "（「宫廷长靴」放进了背包）",
+			"actions": [
+				{
+					"who": "princess",
+					"visual": "normal",
+					"do": "pose"
+				}
+			],
+			"act": 4
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……嗯。……很好看。"
+		},
+		{
+			"actions": [
+				{
+					"state": "",
+					"do": "voice"
+				},
+				{
+					"time": 0.6,
+					"do": "fade_out"
+				}
+			],
+			"wait": 0.7
+		}
+	]
+}

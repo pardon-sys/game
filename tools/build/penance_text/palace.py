@@ -293,12 +293,14 @@ DIALOGUES = {
     "palace_mirror": dfile("", "起雾的镜子", {"default": {"lines": [
         L("（一面落满水汽的大镜子。她用袖子擦了擦——镜面上有一行用手指写的字，被水汽留了下来）", N),
         L("（「姐姐，泡好了吗？——小不点」）", N),
+        L("（字的下面，还用手指画了一个大大的数字：「2」。……大概是在数第几号浴池）", N),
         L("……小不点。又是这个名字。", P, "surprise"),
         L("……短裤里面，也绣着这三个字。", BLUE),
         L("……这个王宫里，以前住着一个「小不点」，还有她的姐姐。", P, "sad")]}}),
     "palace_schedule_1": dfile("", "旧排班表", {"default": {"lines": [
         L("（墙上钉着一张发黄的排班表）", N),
         L("（「早：两位小殿下的洗脚水（温，加薄荷）。晚：给小殿下读故事，读到她们睡着为止」）", N),
+        L("（底下用红笔圈着一行：「每月 5 日，换新的薄荷」）", N),
         L("……两位小殿下。", P, "surprise"),
         L("……两位。", BLUE)]}}),
     "palace_schedule_2": dfile("", "女仆的日记", {"default": {"lines": [
@@ -321,7 +323,7 @@ DIALOGUES = {
 SIGNS = {
     "palace_bath_door": [{"speaker": N, "text": "（门锁着。锁孔的形状……和雕像手里的东西很像）"}],
     "palace_servants_door": [{"speaker": N, "text": "（通往厨房的门锁着。钥匙……大概在女仆长那里）"}],
-    "palace_kitchen_north": [{"speaker": N, "text": "（北门后面是一条长长的走廊，堆满了倒下的书架。……要先把这里的事办完）"}],
+    "palace_kitchen_north": [{"speaker": N, "text": "（北门被一堆倒下的书架挡着……挠脚鼠在储藏间那边吱吱叫，好像闻到了什么。先去看看吧）"}],
 }
 
 
@@ -363,15 +365,4 @@ def kitchen_in():
     return {"name": "厨房", "letterbox": True, "skippable": True, "steps": s}
 
 
-def part1_end():
-    s = [
-        line(N, "（北门后面，倒下的书架堆成了一座小山。书页从缝里散出来，落了一地）"),
-        line(P, "……图书馆？", "surprise"),
-        line(BLUE, "……王国的书。……说不定，有那天晚上的事。"),
-        {"actions": [A("fade_out", time=1.0)], "wait": 1.0},
-        {"actions": [A("chapter_end", title="第四章　旧王宫（上）", subtitle="——（待续）书页上，写着两个小殿下的名字", next="floor_06_after_house")], "wait": 1.4},
-    ]
-    return {"name": "图书馆的门", "letterbox": True, "skippable": False, "steps": s}
-
-
-CUTSCENES = {"palace_bath_in": bath_in, "palace_servants_in": servants_in, "palace_kitchen_in": kitchen_in, "palace_part1_end": part1_end}
+CUTSCENES = {"palace_bath_in": bath_in, "palace_servants_in": servants_in, "palace_kitchen_in": kitchen_in}

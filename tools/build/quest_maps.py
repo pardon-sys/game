@@ -166,6 +166,12 @@ MARKS = {
     "floor_06_after_warehouse": {"R": "parts", "H": "hands", "C": "covers"},
     "floor_06_knight_storage": {"V": "brush_down", "A": "brush_up", "D": "doll"},
     "floor_06_knight_bridge": {"H": "hands", "E": "end"},
+    "floor_06_palace_library": {"Z": "south", "Y": "west", "X": "east", "D": "cipher_door", "K": "study", "R": "golden_book", "H": "shelf_hands",
+                                "B": "books", "Q": "book_piles", "J": "fragment", "W": "worms", "F": "quills"},
+    "floor_06_palace_wardrobe": {"X": "west", "M": "mannequins", "E": "racks", "C": "dresses", "L": "favorite", "S": "socks", "G": "shawl",
+                                 "V": "mirror_hands", "T": "trap_wardrobe", "K": "keys", "J": "fragment"},
+    "floor_06_palace_training": {"Y": "east", "X": "north", "U": "dummies", "N": "sign", "F": "swords", "W": "carvings", "A": "ring", "B": "bell",
+                                 "T": "stocks", "C": "diary", "J": "fragment"},
     "floor_06_palace_bath": {"V": "steam", "H": "laughs", "Q": "bubble_pool", "Y": "soap", "W": "towels", "M": "mirror", "T": "statues",
                              "J": "key_statue", "O": "pool", "B": "bath", "G": "door", "X": "east"},
     "floor_06_palace_servants": {"U": "hides", "Y": "west", "X": "east", "C": "clues", "S": "hide_event", "D": "dust", "Z": "brooms", "B": "head_maid",
@@ -324,6 +330,23 @@ def _canvas(w, h):
     return g, room, put
 
 
+def _chamfer(g, x0, y0, x1, y1, n, corners="nw ne sw se"):
+    """把矩形房间的角切成斜边（阶梯状的斜墙），n = 切掉的格数"""
+    for y in range(y0, y1 + 1):
+        for x in range(x0, x1 + 1):
+            for c, (cx, cy) in (("nw", (x0, y0)), ("ne", (x1, y0)), ("sw", (x0, y1)), ("se", (x1, y1))):
+                if c in corners.split() and abs(x - cx) + abs(y - cy) < n and g[y][x] == ".":
+                    g[y][x] = "#"
+
+
+def _disk(g, cx, cy, r, ch="."):
+    """画一个圆（圆形的凸室 / 半圆的凹位）；不出画布边界、留一圈外墙"""
+    for y in range(max(1, cy - r), min(len(g) - 1, cy + r + 1)):
+        for x in range(max(1, cx - r), min(len(g[0]) - 1, cx + r + 1)):
+            if (x - cx) ** 2 + (y - cy) ** 2 <= r * r + r:
+                g[y][x] = ch
+
+
 def _palace_bath():
     """第四章①·旧浴场（王宫入口）：从水闸上面的缝掉进来（P）→ 西边一大片蒸汽迷宫（V 蒸汽格；H 远处的笑声，跟着走）
     → 中间的大浴室：肥皂泡滑地板（Y，踩上去一路滑；旁边 Q 泡泡浴池，滑进去就是小剧场）、湿毛巾怪（W）、起雾的镜子（M 线索）
@@ -426,6 +449,135 @@ def _palace_kitchen():
     return ["".join(r) for r in g]
 
 
+def _palace_library():
+    """第四章④·图书馆：从厨房北门进来（P，南边）→ 大厅里一排排书架（墙），书架前的手（H：走过被抓脚踝）、可以读的书（B：有打码）、
+    倒塌的书山（Q：踩上去塌下来埋住半身，搭档来挖）、书虫（W）、羽毛笔（F 从这里飞出来）→ 东北的禁书区（R 金色大书：投影「那天晚上」的片段 → 恶作剧书怪）
+    → 北墙的密码门（D）→ 私人书房（K 大线索）；残页之一压在书山下（J）。西门 Y → 骑士训练场；东门 X → 衣帽间；南门 Z → 厨房。"""
+    g, room, put = _canvas(86, 42)
+    room(4, 6, 80, 34)                     # 大厅
+    _chamfer(g, 4, 6, 80, 34, 5)           # 四个角切成斜墙（八角形大厅）
+    _disk(g, 8, 19, 6)                     # 西门的圆形阅览凸室
+    _disk(g, 43, 34, 4)                    # 南门的半圆门厅
+    for y in (10, 15, 20, 25):             # 书架（一排排的墙，中间留走道）
+        for x0, x1 in ((8, 20), (24, 38), (46, 60), (64, 76)):
+            room(x0, y, x1, y, "#")
+    room(62, 6, 80, 8)                     # 禁书区的栏杆后面（东北）
+    room(62, 9, 62, 9, "#")
+    room(62, 6, 62, 6, "#")                # 禁书区的栏杆（中间留一格门）
+    room(62, 8, 62, 8, "#")
+    # 南边阅览区的柱子、北边大厅的柱子
+    for (x, y) in ((8, 29), (16, 32), (34, 28), (50, 32), (66, 31), (76, 29), (12, 7), (30, 7), (54, 7)):
+        room(x, y, x + 1, y + 1, "#")
+    room(38, 2, 48, 5)                     # 私人书房（北）
+    room(43, 5, 43, 5)
+    room(41, 35, 45, 37)                   # 南门
+    room(1, 18, 3, 20)                     # 西门
+    room(81, 18, 84, 20)                   # 东门
+    put(43, 33, "P")
+    put(43, 37, "Z")
+    put(2, 19, "Y")
+    put(83, 19, "X")
+    put(43, 6, "D")
+    put(43, 3, "K")
+    put(72, 7, "R")
+    for (x, y) in ((12, 11), (30, 14), (52, 11), (70, 16), (16, 21), (56, 26)):
+        put(x, y, "H")
+    for (x, y) in ((10, 9), (36, 16), (48, 21), (66, 24), (20, 27), (74, 12)):
+        put(x, y, "B")
+    for (x, y) in ((28, 30), (58, 30), (14, 17)):
+        put(x, y, "Q")
+    put(58, 30, "J")
+    for (x, y) in ((24, 31), (60, 18)):
+        put(x, y, "W")
+    for (x, y) in ((34, 22), (70, 28)):
+        put(x, y, "F")
+    return ["".join(r) for r in g]
+
+
+def _palace_wardrobe():
+    """第四章⑤·衣帽间：从图书馆进来（P，西）→ 礼服人台（M：量尺寸）、旧装备衣架（E ×3：试穿）、一大一小两件礼服（C：尺码 = 密码一位）、
+    喜欢的那件衣服（L：试衣服的 CG 剧情）、自动穿袜机（S）、羽毛披肩鬼（G：用冰冻住）、镜子迷宫（中间那一片；V 镜中人伸手）、
+    衣柜陷阱（T：被关进去 → 换蓝色公主找钥匙 K ×3 里的一把）、大衣口袋里的残页（J）。X 回图书馆。"""
+    g, room, put = _canvas(74, 38)
+    room(2, 16, 6, 20)                     # 进门
+    room(6, 4, 70, 32)                     # 衣帽间
+    _chamfer(g, 6, 4, 70, 32, 4, "ne se")  # 东边两个角切成斜墙
+    room(6, 4, 8, 11, "#")                 # 西边两头收进去：门廊往里一步步变宽
+    room(6, 25, 8, 32, "#")
+    _chamfer(g, 9, 4, 70, 32, 3, "nw sw")
+    _disk(g, 40, 4, 3)                     # 北墙的圆形飘窗（凸出去）
+    _disk(g, 58, 32, 3)                    # 南墙的半圆凹位
+    # 镜子迷宫（中间一片，用一格格的镜墙隔出弯路）
+    for (x0, y0, x1, y1) in ((30, 12, 30, 24), (34, 8, 34, 20), (38, 12, 38, 28), (42, 8, 42, 22), (46, 14, 46, 28), (30, 24, 36, 24), (40, 22, 44, 22)):
+        room(x0, y0, x1, y1, "#")
+    room(60, 12, 60, 24, "#")              # 东半边的隔墙（上下留路）
+    for x in (16, 20, 26):                 # 南墙边的试衣隔间
+        room(x, 28, x, 32, "#")
+    for x in (18, 22, 26):                 # 北墙边的衣架凹位
+        room(x, 4, x, 5, "#")
+    for (x, y) in ((50, 8), (50, 26), (66, 12), (66, 24), (12, 13), (12, 22)):
+        room(x, y, x + 1, y + 1, "#")      # 柱子
+    put(3, 18, "P")
+    put(2, 18, "X")
+    for (x, y) in ((12, 8), (12, 28)):
+        put(x, y, "M")
+    for (x, y) in ((20, 6), (24, 6), (28, 6)):
+        put(x, y, "E")
+    put(66, 6, "C")
+    put(56, 10, "L")
+    put(64, 28, "S")
+    put(52, 20, "G")
+    for (x, y) in ((32, 16), (40, 18), (44, 26)):
+        put(x, y, "V")
+    put(68, 18, "T")
+    for (x, y) in ((10, 18), (50, 30), (60, 4)):
+        put(x, y, "K")
+    put(22, 30, "J")
+    return ["".join(r) for r in g]
+
+
+def _palace_training():
+    """第四章⑥·骑士训练场：从图书馆进来（P，东）→ 稻草人 / 木人桩（U：按木牌 N 上的顺序打才不反击）、训练羽毛剑阵（F：一排挥来挥去的羽毛剑）、
+    墙上的刻痕（W：骑士和队长的名字 + 划痕 = 密码一位）、对练擂台（A：两人互挠）、习武鸣钟（B：遭遇战三波）、耐痒训练足枷台（T）、
+    队长的旧日记（C）、残页箱子（J）。北门 X（通往王座间的回廊，下一批）。Y 回图书馆。"""
+    g, room, put = _canvas(80, 40)
+    room(73, 16, 77, 20)                   # 进门（东）
+    room(6, 4, 72, 34)                     # 训练场
+    _chamfer(g, 6, 4, 72, 34, 7)           # 大斜角：八角形的场地
+    _disk(g, 38, 35, 3)                    # 南边的半圆壁龛
+    _disk(g, 72, 26, 3)                    # 东墙的小凸室
+    # 中间擂台的矮围栏（四边中间留三格口）
+    for y in (15, 23):
+        room(31, y, 36, y, "#")
+        room(40, y, 45, y, "#")
+    for x in (31, 45):
+        room(x, 15, x, 17, "#")
+        room(x, 21, x, 23, "#")
+    for (x, y) in ((20, 17), (20, 23), (56, 17), (56, 23), (48, 6), (60, 6)):
+        room(x, y, x + 1, y + 1, "#")      # 柱子
+    for x in (22, 32, 44, 54):             # 南墙边的兵器架
+        room(x, 32, x + 1, 34, "#")
+    room(36, 1, 40, 3)                     # 北门
+    put(76, 18, "P")
+    put(77, 18, "Y")
+    put(38, 1, "X")
+    for (x, y) in ((12, 8), (18, 8), (24, 8), (30, 8)):
+        put(x, y, "U")
+    put(10, 12, "N")
+    for x in range(52, 70, 3):
+        put(x, 12, "F")
+    put(8, 30, "W")
+    put(38, 19, "A")
+    put(38, 26, "B")
+    put(64, 30, "T")
+    put(14, 32, "C")
+    put(63, 6, "J")
+    return ["".join(r) for r in g]
+
+
+LAYOUTS["floor_06_palace_library"] = _palace_library()
+LAYOUTS["floor_06_palace_wardrobe"] = _palace_wardrobe()
+LAYOUTS["floor_06_palace_training"] = _palace_training()
 LAYOUTS["floor_06_palace_bath"] = _palace_bath()
 LAYOUTS["floor_06_palace_servants"] = _palace_servants()
 LAYOUTS["floor_06_palace_kitchen"] = _palace_kitchen()

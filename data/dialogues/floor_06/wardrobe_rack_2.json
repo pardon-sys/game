@@ -1,0 +1,65 @@
+{
+	"name": "旧衣架",
+	"entries": [
+		{
+			"if": {
+				"flag": "cg_seen_theater:wardrobe_try_2"
+			},
+			"node": "again"
+		},
+		{
+			"node": "default"
+		}
+	],
+	"nodes": {
+		"default": {
+			"lines": [
+				{
+					"text": "（衣架上挂着一条深蓝色的束腰）",
+					"speaker": ""
+				}
+			],
+			"prompt": "试试？",
+			"choices": [
+				{
+					"text": "……系上看看。",
+					"next": "go"
+				},
+				{
+					"text": "……先不了",
+					"next": "no"
+				}
+			]
+		},
+		"go": {
+			"lines": [
+				{
+					"text": "……系上看看。",
+					"speaker": "公主"
+				}
+			],
+			"theater": "wardrobe_try_2",
+			"set": {
+				"give_item": {
+					"equip_palace_corset": 1
+				}
+			}
+		},
+		"no": {
+			"lines": [
+				{
+					"text": "……等一下再说。",
+					"speaker": "公主"
+				}
+			]
+		},
+		"again": {
+			"lines": [
+				{
+					"text": "（衣架空了）",
+					"speaker": ""
+				}
+			]
+		}
+	}
+}

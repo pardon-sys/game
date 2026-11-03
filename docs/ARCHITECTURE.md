@@ -1294,8 +1294,23 @@ data/cutscenes/<楼层组>/  地图内过场；data/theater/<楼层组>/  小剧
 	`patrol_guard` 新参数 `sheet` / `doll` = 人偶女仆）；躲藏点 hide_event → `servants_hide`（CG，剧情）；尘土堆打喷嚏（noise）、扫帚、
 	F 丢出去的是挠脚鼠（穿着鼠鼠装时）、旧排班表 / 日记、唤人铃（call `palace_bell` → 女仆长去查看）→ 钥匙（call `palace_key`），厨房门要钥匙。
   - `PalaceKitchen`（`floor_06_palace_kitchen`）：糕点师「试吃」（`kitchen_chef`）、试吃推销员（`kitchen_promoter` → 薄荷糖 ×3）、奶油（脚底变甜，老鼠追；水槽 call `palace_wash` 洗掉）、
-	冰窖滑道（往东滑 + 羽毛扇）、大奶酪（`kitchen_farewell`：挠脚鼠告别、`take_off_mouse`）、北门 → `palace_part1_end`（「第四章　旧王宫（上）」待续，`next = floor_06_after_house`）。
+	冰窖滑道（往东滑 + 羽毛扇）、大奶酪（`kitchen_farewell`：挠脚鼠告别、`take_off_mouse`）、北门 = 通往图书馆的 exit（`unlock_flag = palace_mouse_farewell`，没有章末画面）。
   - 文本 `tools/build/penance_text/palace.py`；第三章章末 `next = floor_06_palace_bath`。
+- **第四章（中）·旧王宫**（同一个基类 `PalaceRoom`；文本 `tools/build/penance_text/palace2.py`；布局 `quest_maps._palace_library / _palace_wardrobe / _palace_training`）：
+  - `PalaceLibrary`（`floor_06_palace_library`，中转：南 → 厨房、西 → 训练场、东 → 衣帽间）：书架里的手（定身 + 挠）、书山（`buried`，搭档站 `DIG_TIME` 秒挖出来；AI 的 objective 是被埋的人）、
+	书虫 `Worm`、羽毛笔 `Quill`（攻击打掉）、六本书 `library_book_1..6`（第六本按 `vars.palace_frags` 去掉打码）、残页、
+	密码门 `library_door`（对话里链式转四个轮子，对了 call `palace_cipher_ok` → `palace_cipher_open`，拆掉挡路的 StaticBody2D）→ 走进 study 演 `library_study`（背景大图）；
+	金色大书 call `palace_golden` → 过场 `library_flashback`（背景大图）→ 小剧场 `library_bookmonster`。
+  - `PalaceWardrobe`：人台 `wardrobe_measure`、衣架 `wardrobe_try_1..3`（给装备）、穿袜机 `wardrobe_socks`、`wardrobe_tryon`（CG）、羽毛披肩鬼 `Shawl`（蓝色公主攻击 → `freeze_shawl`）、
+	镜中手、衣柜陷阱（call `palace_trap` → `wardrobe_trap_in` CG → `trap_active`、`GameState.switch_control(blue)`、粉色公主定在柜子里闷笑一直涨；
+	`wardrobe_key_1..3` 在陷阱期间 call `palace_search_N`，钥匙随机 `key_at`；回衣柜 call `palace_trap_open` → `wardrobe_trap_out`）。
+  - `PalaceTraining`：稻草人 `Dummy`（`ORDER`，打错还手重来，全对给薄荷糖）、羽毛剑 `Sword`（挥到底那段扫脚底）、对练 call `palace_spar`（`SparShow` = `BlueTickleShow` 换台词 `palace.json` 的 `spar_show`）、
+	习武鸣钟 call `palace_bell_fight`（关门、`WAVES` 三波现有怪物，全清 → `palace_training_cleared`、箱子给第三张残页；遭遇战里两个都倒下 → `training_lose` → 清怪开门可再敲）、
+	耐痒训练台（被动 `knight_endurance`，`PlayableCharacter._extra_stat_add` 里减 `laugh_gain`）、北门锁着（`palace_training_north`）。
+  - 房间不是方方正正的：`quest_maps._chamfer`（把房间的角切成阶梯斜墙）+ `_disk`（圆形凸室 / 半圆凹位）组合出八角形大厅、圆形阅览室、飘窗、壁龛；
+	装饰在 `gen_floor06_after._dress_library / _dress_wardrobe / _dress_training`（书架贴着书架墙、机关格上摆对应的家具；道具有碰撞，所以抓脚的手 / 镜中手的范围放大到旁边一格）。
+	稻草人按 x 从左到右编号（标记点默认按离入口的步数排序）。
+  - 新装备（衣帽间）：`palace_ribbon`、`palace_corset`、`palace_boots`、`palace_stockings`、`feather_shawl`（`gen_equipment.py` + `gen_equip_art.py` + `ItemDB`）。
 - 配乐（`tools/audio/gen_music.py`，ElevenLabs）：`old_palace` 旧王宫探索（荒凉、破旧、往日的华丽）、`palace_boss` 王座间 Boss「封笑的女王画像」，登记在 `Audio.MUSIC`，第四章用。
 
 ## 公主状态与换美术素材

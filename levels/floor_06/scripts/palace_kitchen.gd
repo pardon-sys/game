@@ -5,13 +5,12 @@ extends PalaceRoom
 ##   打翻的奶油（cream）：踩到脚底变甜 SWEET_TIME 秒，附近的老鼠（Monster）一直被引过来（rally_to）；水槽（sink，对话 call palace_wash，或者站过去）洗掉；
 ##   冰窖滑道（ice 格）：站上去就往东滑（ICE_SPEED，上下还能躲），两侧羽毛扇（fans）扫到就挠脚底；
 ##   大奶酪（cheese）：走过去就演挠脚鼠告别（kitchen_farewell）→ 脱下鼠鼠装、穿回原来的鞋（FAREWELL_FLAG）；
-##   北门（north）：告别以后走过去 → 过场 palace_part1_end（章末「第四章　旧王宫（上）」）；之前只提示一句。
+##   北门（north）：通往图书馆的出口（地图里的 exit，挠脚鼠告别以后才打开：unlock_flag = FAREWELL_FLAG）。
 ## 测试：sweet、wash(who)、fans、farewell_done()、PAID_FLAG。
 
 const MAP := "floor_06_palace_kitchen"
 const FAREWELL_FLAG := "palace_mouse_farewell"
 const PAID_FLAG := "kitchen_promoter_paid"
-const END_FLAG := "palace_part1_done"
 const MINTS := 3
 const SWEET_TIME := 15.0
 const RALLY_R := 120.0
@@ -21,7 +20,6 @@ const FAN_DX := 10.0
 const FAN_DY := 9.0
 
 var sweet := {}
-var _north_cool := 0.0
 var _rally_t := 0.0
 
 
@@ -58,7 +56,6 @@ static func farewell_done() -> bool:
 func _process(delta: float) -> void:
 	if busy():
 		return
-	_north_cool = maxf(0.0, _north_cool - delta)
 	# 推销员的报酬
 	if GameState.has_flag("cg_seen_theater:kitchen_promoter") and not GameState.has_flag(PAID_FLAG):
 		GameState.set_flag(PAID_FLAG)
@@ -97,15 +94,6 @@ func _process(delta: float) -> void:
 				var fp := world(f)
 				if absf(pc.global_position.x - fp.x) <= FAN_DX and absf(pc.global_position.y - fp.y) <= FAN_DY:
 					tickle(pc, "fan" + str(f), 0.5, 4.0, "sole", delta)
-		# 北门
-		if _north_cool <= 0.0 and pc.global_position.distance_to(world(cells("north")[0])) <= 16.0:
-			_north_cool = 4.0
-			if farewell_done() and not GameState.has_flag(END_FLAG):
-				GameState.set_flag(END_FLAG)
-				Cutscene.play("palace_part1_end")
-				return
-			elif not farewell_done():
-				PalaceRoom.say_random(pc, "door_wait")
 	# 脚底甜甜的：附近的老鼠追过来
 	_rally_t -= delta
 	if _rally_t <= 0.0:
