@@ -8,7 +8,7 @@ API key 从项目根目录的 .env 读（ELEVENLABS=...，.env 不进版本库�
   ③ 文件 = 原始音频 [0, T)，最后一拍（CROSSFADE，按拍长算）和 B 之前的同样长的一段交叉淡化——播到结尾跳回 B 时是连续的；
   ④ 把 edit/loop_begin = B（采样）写进 .wav.import，Godot 从 B 开始向前循环。T 之后的尾声丢掉。
 原始音频存在 tools/.cache/music/（不进版本库）。
-用法：python tools/audio/gen_music.py [dungeon] [town] [boss] [boss3] [night_room] [night_maze] [siege] [minigame] [knight_boss] [knight_fog]（不写就全部生成；已经生成过的跳过，加 --force 重新生成，
+用法：python tools/audio/gen_music.py [dungeon] [town] [boss] [boss3] [night_room] [night_maze] [siege] [minigame] [knight_boss] [knight_fog] [old_palace] [palace_boss]（不写就全部生成；已经生成过的跳过，加 --force 重新生成，
   加 --reloop 用缓存的原始音频重新切循环）
 导入：assets/audio/music/*.wav.import 用无损（compress/mode=0）+ 向前循环（edit/loop_mode=2、loop_begin 由本脚本写）——QOA 有损压缩会给高频多的曲子添沙沙声。
 """
@@ -44,6 +44,22 @@ ALIGN_SEARCH = 441
 ALIGN_WINDOW = 4096
 
 TRACKS = {
+    # 反省篇第四章：被遗弃的旧王宫（探索）——荒凉 + 破旧 + 往日的华丽
+    "old_palace": ("Instrumental video game exploration music for wandering through an abandoned underground royal palace in a cute pixel-art fantasy game. "
+                   "Mood: DESOLATE, WORN and HAUNTED BY PAST GLORY. Slow, about 72 BPM, in 3/4 like a ghost of a court waltz, minor key with "
+                   "occasional bittersweet major chords. A slightly out-of-tune old harpsichord and a dusty grand piano play fragments of a once-elegant "
+                   "court dance that keeps trailing off; soft sustained strings and a distant, reverberant solo cello like an empty ballroom; a faint "
+                   "music-box version of a lullaby drifting in from far away; a lonely flute; soft low choir 'ah' pads like echoes of a crowd that is long gone; "
+                   "occasional gentle glockenspiel glints like dust in a beam of light. Spacious and melancholic but beautiful, warm rounded mix, quiet dynamics, "
+                   "NO drums, NO cymbals, NO hi-hats, NO noisy or buzzing sounds. Loops seamlessly, steady mood throughout, no fade-in or fade-out."),
+    # 反省篇第四章：王座间 Boss「封笑的女王画像」——华丽、诡异、被封住的宫廷
+    "palace_boss": ("Instrumental video game boss battle music for a cute pixel-art fantasy game: in a ruined throne room, two princesses fight a giant, "
+                    "living portrait of a queen whose laughter has been sealed away; painted hands reach out of the gilded frame and splash magic paint. "
+                    "Grand, eerie and urgent, a dark baroque fantasy. 144 BPM, minor key. Driving harpsichord and staccato strings in a frantic baroque "
+                    "ostinato, a majestic pipe organ and solemn brass playing a corrupted royal anthem, a dark wordless choir, a twisted waltz section in 3/4 "
+                    "that snaps back into the driving 4/4 groove, pizzicato and celesta flourishes like brushstrokes of magic paint, a cracked music-box lullaby "
+                    "fragment cutting through. Powerful timpani and orchestral toms for impact. Warm rounded cinematic mix with clear low end: NO cymbal crashes, "
+                    "NO hi-hats, NO shakers, NO buzzing or noisy sounds. Builds tension, loops seamlessly, steady high energy, no fade-in or fade-out."),
     # 骑士 Boss 最后阶段「笑雾之中」：原曲的英雄悲壮 + 宿命 + 战斗 + 危险 + 诡异（第二版：更有战斗感和压迫感）
     "knight_fog": ("Instrumental video game FINAL BOSS battle music, last phase: inside a violet sea of laughing black fog, a cursed suit of knight armor "
                    "floats in the air like a puppet of fate while two princesses fight desperately to free him. Intense, driving and dangerous, "
