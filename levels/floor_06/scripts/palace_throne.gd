@@ -243,8 +243,10 @@ func _tick_paint(delta: float) -> void:
 				continue
 			spawn_pool((m as Node2D).global_position + Vector2(randf_range(-30, 30), randf_range(-20, 20)))
 	for p in pools:
+		if not is_instance_valid(p):   # 已经被释放的颜料池：先判断再 cast（cast 已释放的对象会报错）
+			continue
 		var pool := p as PaintPool
-		if not is_instance_valid(pool) or not pool.active():
+		if not pool.active():
 			continue
 		for m in members():
 			if (m as Node2D).global_position.distance_to(pool.position) <= POOL_R:

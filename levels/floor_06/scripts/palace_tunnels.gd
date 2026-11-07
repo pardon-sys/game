@@ -53,6 +53,12 @@ func _ready() -> void:
 			["mobile", "floor_06/tunnel_mobile"], ["height_marks", "floor_06/tunnel_marks"]]:
 		_spot(str(pair[1]), cells(str(pair[0]))[0])
 	_spot("floor_06/tunnel_cradle", cells("cradles")[0])
+	# 婴儿房的图：两个摇篮（粉 / 蓝丝带）、旋转吊铃
+	var ci := 0
+	for c in cells("cradles"):
+		sheet_view(PalaceRoom.PROPS3, 6, 1 + ci % 2, c, [], 0.8)
+		ci += 1
+	sheet_view(PalaceRoom.PROPS3, 6, 3, cells("mobile")[0], [], 0.8)
 	var i := 0
 	for c in cells("chests"):
 		i += 1
@@ -146,9 +152,9 @@ func _process(delta: float) -> void:
 			continue
 		web_stuck[pc] = maxf(0.0, float(web_stuck.get(pc, 0.0)) - delta)
 		for w in webs:
-			var wv := w as WebView
-			if not is_instance_valid(wv):
+			if not is_instance_valid(w):
 				continue
+			var wv := w as WebView
 			var d := pc.global_position.distance_to(wv.position)
 			if pc.character_id == "pink" and (pc.state == PlayableCharacter.State.ATTACK or pc.state == PlayableCharacter.State.CAST) and d <= BURN_R:
 				burn(wv.idx)
@@ -260,8 +266,10 @@ func webs_alive() -> int:
 
 func burn(idx: int) -> void:
 	for w in webs:
+		if not is_instance_valid(w):
+			continue
 		var wv := w as WebView
-		if is_instance_valid(wv) and wv.idx == idx:
+		if wv.idx == idx:
 			GameState.set_flag("palace_web_%d" % idx)
 			Fx.burst(get_parent(), wv.position + Vector2(0, -10), "dust", 14, 40.0, 0.6, Vector2(0, -12), Color(1.0, 0.75, 0.9))
 			Audio.play("ice_crack", -6.0, 0.0, 1.4)

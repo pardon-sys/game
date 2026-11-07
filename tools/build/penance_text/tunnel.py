@@ -359,4 +359,26 @@ def tunnel_out():
     return {"name": "出口", "letterbox": True, "skippable": False, "steps": s}
 
 
-CUTSCENES = {"tunnel_in": tunnel_in, "tunnel_out": tunnel_out}
+def king_in():
+    """胖鼠王的开场：笑脸徽记的来历（第一次走进洞底时演；镜头对着洞底中间的奶酪王座）"""
+    s = [
+        {"actions": [A("camera", to=[83, 28], zoom=1.1, time=0.5), A("sfx", sound="rumble", volume=-6.0)], "wait": 0.5},
+        line(N, "（洞底比想象中宽。正中间摆着一个大大的奶酪轮子，上面坐着一只胖得滚圆的老鼠——头上歪戴着一顶小金冠）"),
+        line(KING, "吱——！何人擅闯本王的洞底！"),
+        line(RAT, "（从短裤里探出头）……是大王。洞里所有的老鼠，都归他管。"),
+        line(P, "……老鼠也有国王？", "surprise"),
+        line(KING, "当然有！本王的祖上，可是给王宫看过宝贝的！"),
+        line(N, "（胖鼠王从披风里掏出一枚金灿灿的小徽章，上面刻着一张咧嘴笑的脸）"),
+        line(KING, "很久很久以前，一位女王陛下把这枚「笑脸徽记」交给我们鼠族保管。她说——"),
+        line(KING, "「只要洞里还有笑声，这里就不会塌。」……所以本王天天都在笑！吱嘻嘻！"),
+        line(P, "女王……又是女王。", "sad"),
+        line(RAT, "……大王，她想要那个徽记。"),
+        line(KING, "想要？可以！陪本王玩躲猫猫！本王在洞口钻来钻去——你把洞口一个一个堵上，堵到只剩一个，本王就亲自出来跟你打！"),
+        line(KING, "不过——被本王的胡子扫到可别哭哦！吱嘻嘻嘻！"),
+        line(P, "……谁哭啊。来就来！", "angry"),
+        {"actions": [A("camera", reset=True, time=0.4), A("notify", text="胖鼠王：冒头时打它；在洞口按 E 堵洞，堵到只剩一个把它逼出来")], "wait": 0.4},
+    ]
+    return {"name": "胖鼠王", "letterbox": True, "skippable": True, "steps": s}
+
+
+CUTSCENES = {"tunnel_in": tunnel_in, "tunnel_out": tunnel_out, "tunnel_king_in": king_in}

@@ -623,10 +623,10 @@ static func _rat_king(t: Node, rt: RatTunnel) -> void:
 	if kg == null:
 		return
 	kg.reset()
+	GameState.flags.erase(RatKing.INTRO_FLAG)
 	pk.global_position = kg.home + Vector2(0, 40)
-	await t.get_tree().process_frame
-	await t.get_tree().process_frame
-	verify(t, "走进洞底：胖鼠王钻进地下开打（%s）" % kg.phase, kg.phase == "under")
+	await t._advance_until(func(): return t.seen_cuts.has("tunnel_king_in") and not Cutscene.is_playing() and kg.phase == "under", 60.0)
+	verify(t, "走进洞底：先演开场（女王把笑脸徽记交给鼠族保管），再钻进地下开打（%s）" % kg.phase, t.seen_cuts.has("tunnel_king_in") and kg.phase == "under")
 	kg.peek_at(0)
 	pk.global_position = kg.holes[0] + Vector2(10, 0)
 	var l0 := pk.laugh.value
@@ -788,12 +788,20 @@ static func _extra_events(t: Node) -> void:
 		GameState.flags.erase(f)
 	for k in PalaceRoom.LOST_NAMES:
 		GameState.flags.erase(PalaceRoom.lost_flag(k))
+	GameState.flags.erase(PalaceRoom.LOST_ASKED)
 	await _goto(t, "floor_06_palace_bath")
 	var pb := _room(t, "PalaceBath") as PalaceBath
 	var sd: ScrubDoll = pb.scrub if pb else null
 	verify(t, "旧浴场：大浴室南边有搓澡人偶（三块海绵）", sd != null and sd.sponges == ScrubDoll.SPONGES and sd.phase == "idle")
 	if sd == null:
 		return
+	var sheet_spot: Node2D = null
+	for c in pb.get_children():
+		if c is PrisonOddities.Spot and (c as PrisonOddities.Spot).dialogue == "floor_06/bath_sheet":
+			sheet_spot = c
+	var mirror_at := pb.world(pb.cells("mirror")[0])
+	verify(t, "乐谱片③的拾取点和镜子分开（%.0f 像素）、人偶倒下前看不见" % (sheet_spot.global_position.distance_to(mirror_at) if sheet_spot else 0.0),
+		sheet_spot != null and sheet_spot.global_position.distance_to(mirror_at) >= 48.0 and not sheet_spot.visible)
 	var p := GameState.player as PlayableCharacter
 	var mate := Duo.partner_of(p)
 	_calm(t)
@@ -818,14 +826,26 @@ static func _extra_events(t: Node) -> void:
 		sd.hit_by(mate)
 	verify(t, "海绵打光以后打 %d 下：搓澡人偶倒下 → 笑脸徽记" % ScrubDoll.HP, sd.phase == "down" and GameState.has_flag(PalaceRoom.badge_flag("scrub")))
 	_calm(t)
+	await t.get_tree().process_frame
+	verify(t, "人偶倒下：倒下的地方浮出乐谱片③", sheet_spot.visible)
 	await t._talk("floor_06/palace_mirror", "")
-	verify(t, "人偶倒下以后擦镜子：镜子后面掉出乐谱片③", GameState.has_flag("palace_sheet_3"))
+	verify(t, "擦镜子只给线索（不给乐谱）", not GameState.has_flag("palace_sheet_3"))
+	await t._talk("floor_06/bath_sheet", "")
+	verify(t, "捡起乐谱片③", GameState.has_flag("palace_sheet_3"))
 	# ---- 送餐潜行：厨房拿托盘 → 回廊被发现 = 试吃惩罚（CG）；送到女仆长房间 = 乐谱片②
 	await _goto(t, "floor_06_palace_kitchen")
 	await t._talk("floor_06/kitchen_tray", "", [0])
 	await t.get_tree().process_frame
 	p = GameState.player as PlayableCharacter
 	verify(t, "厨房：端起点心托盘（不能冲刺）", PalaceRoom.carrying_tray() and p.has_meta(&"no_dash"))
+	var lost_spot: Node2D = null
+	for c in (_room(t, "PalaceKitchen") as Node).get_children():
+		if c is PrisonOddities.Spot and (c as PrisonOddities.Spot).dialogue == "floor_06/lost_cheese":
+			lost_spot = c
+	verify(t, "还没和隧道的小鬼说过「失物招领」：厨房的失物不出现", lost_spot != null and not lost_spot.visible)
+	GameState.set_flag(PalaceRoom.LOST_ASKED)
+	await t.get_tree().process_frame
+	verify(t, "说过以后：失物出现", lost_spot != null and lost_spot.visible)
 	await t._talk("floor_06/lost_cheese", "")
 	verify(t, "失物①：灶台边的奶酪", GameState.has_flag(PalaceRoom.lost_flag("cheese")))
 	await _goto(t, "floor_06_palace_servants")
@@ -954,13 +974,19 @@ static func _extra_events(t: Node) -> void:
 	verify(t, "王座间：八音盒自动放到 R 键上", GameState.hotkey_item("use_special") == "queen_music_box")
 	var used := GameState.inventory.use("queen_music_box", GameState.player)
 	verify(t, "按 R 打开八音盒：画像发呆、露出破绽（不消耗）", th.box_t > 0.0 and th.vulnerable() and GameState.inventory.has("queen_music_box") and not used)
+	# 颜料池被释放以后，泼颜料的循环不会去 cast 已释放的对象
+	var pool := th.spawn_pool(GameState.player.global_position + Vector2(200, 0))
+	await t.get_tree().process_frame
+	pool.free()
+	th._tick_paint(0.05)
+	verify(t, "颜料池释放以后照常运行（不 cast 已释放的对象）", th.pools.all(func(x): return is_instance_valid(x)))
 	th.use_music_box()
 	verify(t, "每场只能用 %d 次" % PalaceThrone.BOX_USES, th.box_used == PalaceThrone.BOX_USES and not th.use_music_box())
 	GameState.set_flag(PalaceThrone.BOSS_FLAG)
 	_calm(t)
 
 
-## 密道入口没走过之前不显示标志 / 黄字；反省篇的可交互点近处冒「！」
+## 密道入口没走过之前不显示标志 / 黄字；反省篇的可交互点近处浮出交互键
 static func _exit_hints(t: Node) -> void:
 	GameState.flags.erase(LevelExit.passage_flag("floor_06_palace_ante", "floor_06_palace_tunnels"))
 	var sec: Node = null
@@ -983,17 +1009,17 @@ static func _exit_hints(t: Node) -> void:
 			break
 	var p := GameState.player as PlayableCharacter
 	if hint == null:
-		verify(t, "前厅里有「！」交互提示", false)
+		verify(t, "前厅里有交互键提示", false)
 		return
 	var back := p.global_position
 	p.global_position = hint.target.global_position + Vector2(0, 60)
 	await t.get_tree().process_frame
 	await t.get_tree().process_frame
-	verify(t, "走到 5 格以内：头顶冒「！」", hint.visible)
+	verify(t, "走到 5 格以内：头顶浮出交互键", hint.visible)
 	p.global_position = hint.target.global_position + Vector2(0, 300)
 	await t.get_tree().process_frame
 	await t.get_tree().process_frame
-	verify(t, "走远了：「！」消失", not hint.visible)
+	verify(t, "走远了：交互键提示消失", not hint.visible)
 	p.global_position = back
 
 
@@ -1106,6 +1132,17 @@ static func _palace_c(t: Node) -> void:
 	cp.global_position = Cutscene.cell_to_world(cr.cells("up")[0])
 	await t._advance_until(func(): return t._level_id() == "floor_06_palace_clock_5" and not Cutscene.is_playing(), 30.0)
 	verify(t, "楼梯上到钟顶（%s）" % t._level_id(), t._level_id() == "floor_06_palace_clock_5")
+	# 从钟顶下来：追逐已经结束，人偶不再追
+	GameState.pending_spawn = "from_above"
+	await t.main.change_level(Floors.scene("floor_06_palace_clock_4"))
+	await t._advance_until(func(): return t._level_id() == "floor_06_palace_clock_4" and not Cutscene.is_playing(), 30.0)
+	var cr4 := _room(t, "PalaceClock") as PalaceClock
+	(GameState.player as Node2D).global_position = Cutscene.cell_to_world(cr4.cells("start")[0]) + Vector2(0, -80)
+	await t._wait(0.5)
+	verify(t, "上过钟顶再回四层：守钟人偶不再追", not cr4.chase_on)
+	GameState.pending_spawn = "from_below"
+	await t.main.change_level(Floors.scene("floor_06_palace_clock_5"))
+	await t._advance_until(func(): return t._level_id() == "floor_06_palace_clock_5" and not Cutscene.is_playing(), 30.0)
 	await t.get_tree().process_frame
 	await t._talk("floor_06/clock_rope", "", [0])
 	await t._advance_until(func(): return GameState.has_flag(PalaceClock.BELLS_FLAG) and not Cutscene.is_playing() and not Dialogue.is_active(), 90.0)

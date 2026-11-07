@@ -57,6 +57,11 @@ func _ready() -> void:
 	add_view(kv)
 	if not cells("deliver").is_empty():
 		_spot("floor_06/servants_deliver", cells("deliver")[0])
+		var cake := PalaceRoom.Events2View.new()   # 送到以后茶桌上摆着点心托盘
+		cake.frame = 1
+		cake.need = ["palace_sheet_2"]
+		cake.position = world(cells("deliver")[0] + Vector2i(0, -1))   # 摆在茶桌（deliver 北边一格）上
+		add_view(cake)
 	_tag_head_maid.call_deferred()
 
 

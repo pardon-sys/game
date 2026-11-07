@@ -43,12 +43,19 @@ DIALOGUES = {
     "lost_cheese": _lost("cheese", "一块奶酪", "（灶台边放着一块被啃过一口的奶酪，上面插着一面小旗子：「鬼的！」）"),
     "lost_spring": _lost("spring", "钟发条", "（地板缝里卡着一圈小小的铜发条，还在轻轻地弹）"),
     "tunnel_lost": dfile("", "收路费的小鬼（失物招领）", {
-        "default": {"lines": [L("呜呜……我的宝贝都丢了。羽毛笔、小铃铛、袜子、奶酪、钟发条——五样！帮我找回来，我就送你们一张免路费的通行证！", IMP)],
+        "default": {"lines": [L("呜呜……我的宝贝都丢了。羽毛笔、小铃铛、袜子、奶酪、钟发条——五样！丢在图书馆、仆人回廊、衣帽间、厨房，还有钟楼二层！帮我找回来，我就送你们一张免路费的通行证！", IMP)],
+                    "set": {"flags": ["palace_lost_asked"]},
                     "prompt": "交还找到的东西？", "choices": [{"text": "交还", "next": "go"}, {"text": "再找找", "next": "no"}]},
         "go": {"lines": [L("……看看这些是不是你的。", P)], "set": {"call": "palace_lost_return"}},
         "no": {"lines": [L("……还在找。", P)]},
         "done": {"lines": [L("嘻嘻！宝贝都回来了！通行证拿好，以后随便走！", IMP)]},
     }, entries=[{"if": {"flag": "palace_lost_done"}, "node": "done"}, {"node": "default"}]),
+    # 浴场：搓澡人偶倒下的地方掉出来的乐谱片③
+    "bath_sheet": dfile("", "掉在地上的乐谱", {
+        "default": {"lines": [L("（搓澡人偶倒下的地方，泡泡里浮着一张卷起来的纸——是一片泛黄的乐谱。旁边写着：「正中、左下」）", N),
+                              L("……又一片乐谱。……原来被它吞进肚子里了。", BLUE)], "set": {"call": "palace_bath_sheet"}},
+        "done": {"lines": [L("（泡泡已经散了）", N)]},
+    }, entries=[{"if": {"flag": "palace_sheet_3"}, "node": "done"}, {"node": "default"}]),
     # 送餐潜行
     "kitchen_tray": dfile("", "糕点台的托盘", {
         "default": {"lines": [L("（糕点台边放着一只银托盘，上面是刚「做好」的小蛋糕和茶。托盘边夹着一张纸条：「送去女仆长的房间——别被女仆们看见，她们会偷吃」）", N)],

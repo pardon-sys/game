@@ -1,6 +1,6 @@
 class_name InteractHint
 extends Node2D
-## 反省篇地图里可交互的东西：公主走到 HINT_R 以内，头顶冒一个黄色「！」；再走近、出现原来的 E 提示时就让给 E 提示。
+## 反省篇地图里可交互的东西：公主走到 HINT_R 以内，头顶浮出一个半透明的交互键图标（和 E 提示同一张图）；再走近、出现原来的 E 提示时就让给 E 提示。
 ## Interactable._ready 自动挂（只在 MAPS 那些地图）；放在关卡的 Entities 下（等距地图里自己是投影根，跟着投影）。
 ## 不显示：交互关掉了（enabled = false）、看不见、父节点的 done_flag 已经有了（做过的事件）、已经是哪位公主的 E 提示目标。
 
@@ -9,6 +9,8 @@ const MAPS := ["floor_06_penance", "floor_06_rat_tunnel", "floor_06_waterway", "
 
 var target: Interactable
 var _t := 0.0
+var _key: Sprite2D
+const KEY_TEX := "res://assets/generated/items.png"   # 同 princess.tscn 的 Prompt：hframes 8，第 7 帧是 E 键
 
 
 static func wants(it: Interactable) -> bool:
@@ -46,6 +48,13 @@ static func attach(it: Interactable) -> void:
 
 func _ready() -> void:
 	visible = false
+	_key = Sprite2D.new()
+	_key.texture = load(KEY_TEX)
+	_key.hframes = 8
+	_key.frame = 7
+	_key.modulate = Color(1, 1, 1, 0.6)
+	_key.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	add_child(_key)
 
 
 func showing() -> bool:
@@ -76,13 +85,4 @@ func _process(delta: float) -> void:
 	if v != visible:
 		visible = v
 	if visible:
-		queue_redraw()
-
-
-func _draw() -> void:
-	var y := target.prompt_offset.y - 6.0 + sin(_t * 5.0) * 1.5
-	var c := Vector2(0, y)
-	draw_circle(c, 6.5, Color(0.2, 0.12, 0.05, 0.85))
-	draw_circle(c, 5.5, Color(1.0, 0.85, 0.25))
-	draw_rect(Rect2(c.x - 1, c.y - 4, 2, 5), Color(0.25, 0.12, 0.05))
-	draw_rect(Rect2(c.x - 1, c.y + 2, 2, 2), Color(0.25, 0.12, 0.05))
+		_key.position = Vector2(target.prompt_offset.x, target.prompt_offset.y + sin(_t * 4.0) * 1.5).round()

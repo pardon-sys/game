@@ -85,9 +85,9 @@ static func alarm() -> int:
 ## 按 E 说话 / 调查的点
 class Spot extends Node2D:
 	var dialogue := ""
-	## 有这个剧情标记以后头顶不再冒「！」（InteractHint；做过的事件）
+	## 有这个剧情标记以后头顶不再浮出交互键（InteractHint；做过的事件）
 	var done_flag := ""
-	## 提示（E /「！」）离地多高（东西高的话往上挪）
+	## 提示（交互键）离地多高（东西高的话往上挪）
 	var prompt_y := -22.0
 
 	func _ready() -> void:

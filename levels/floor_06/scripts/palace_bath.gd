@@ -102,6 +102,21 @@ func _ready() -> void:
 		scrub.position = world(cells("scrub")[0])
 		scrub.home = scrub.position
 		add_view(scrub)
+		# 搓澡人偶倒下以后，它倒下的地方掉出乐谱片③（和镜子分开，离镜子很远）
+		var sc := cells("scrub")[0] + Vector2i(2, 0)
+		var ssp := PrisonOddities.Spot.new()
+		ssp.dialogue = "floor_06/bath_sheet"
+		ssp.done_flag = "palace_sheet_3"
+		add_child(ssp)
+		ssp.global_position = world(sc)
+		gate(ssp, [ScrubDoll.FLAG])
+		var sv := PalaceRoom.Events2View.new()
+		sv.tex = "res://assets/generated/item_music_sheet.png"
+		sv.scale_k = 1.2
+		sv.hide_flag = "palace_sheet_3"
+		sv.need = [ScrubDoll.FLAG]
+		sv.position = world(sc)
+		add_view(sv)
 
 
 func _process(delta: float) -> void:

@@ -28,7 +28,7 @@ var _door: StaticBody2D
 var _door_view: Node2D
 var shades: Array = []
 ## 私人书房的范围（密码门打开之前整间黑着、看不见里面）
-const STUDY_RECT := Rect2i(38, 2, 11, 4)
+const STUDY_RECT := Rect2i(38, 2, 11, 3)   # 只盖书房的地面（y 2..4）：南边那排墙和书架画在黑幕前面
 ## 追加事件：飞书群（踩到 book_swarm 开始，BOOK_WAVES 三波，粉色公主的火 ×2）、夹着衣架书签的书（hanger_book → SHELF_FLAG：禁书区的书架暗门通衣帽间）
 const BOOKS_FLAG := "palace_books_done"
 const SHELF_FLAG := "palace_shelf_door"
@@ -60,8 +60,8 @@ func _ready() -> void:
 		for y in range(STUDY_RECT.position.y, STUDY_RECT.end.y):
 			for x in range(STUDY_RECT.position.x, STUDY_RECT.end.x):
 				var sd := StudyShade.new()
-				sd.position = PalaceRoom.cell_pos(Vector2i(x, y))
-				sd.z_index = 20
+				# 放在格子底边、和墙块一起按屏幕 y 排序（以前 z_index 20 会盖到前面的书架）
+				sd.position = PalaceRoom.cell_pos(Vector2i(x, y)) + Vector2(0, 7)
 				add_view(sd)
 				shades.append(sd)
 	if not cells("hanger_book").is_empty():
@@ -290,8 +290,9 @@ class StudyShade extends Node2D:
 			queue_redraw()
 
 	func _draw() -> void:
-		var top := Vector2(0, -56)
-		var p := [IsoView.offset(Vector2(-8, -8)), IsoView.offset(Vector2(8, -8)), IsoView.offset(Vector2(8, 8)), IsoView.offset(Vector2(-8, 8))]
+		var top := Vector2(0, -34)   # 和墙一样高（再高就从墙头上冒出来了）
+		var c0 := IsoView.offset(Vector2(0, -7))   # 节点在格子底边：往回挪到格子中心
+		var p := [c0 + IsoView.offset(Vector2(-8, -8)), c0 + IsoView.offset(Vector2(8, -8)), c0 + IsoView.offset(Vector2(8, 8)), c0 + IsoView.offset(Vector2(-8, 8))]
 		var col := Color(0.03, 0.02, 0.05, 0.97 * a)
 		draw_colored_polygon(PackedVector2Array([p[0] + top, p[1] + top, p[1], p[2], p[3], p[3] + top]), col)
 		draw_colored_polygon(PackedVector2Array([p[0] + top, p[1] + top, p[2] + top, p[3] + top]), col)

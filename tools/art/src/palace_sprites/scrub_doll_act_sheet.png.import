@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://cnqw2mm74g6ep"
-path="res://.godot/imported/rat_king.png-5b325c910752b0bd37ce360e574092bd.ctex"
+uid="uid://dkdvtiuuwafek"
+path="res://.godot/imported/scrub_doll_act_sheet.png-bae167b3e1ea0c9f4b34f606db9c1f3e.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/generated/rat_king.png"
-dest_files=["res://.godot/imported/rat_king.png-5b325c910752b0bd37ce360e574092bd.ctex"]
+source_file="res://tools/art/src/palace_sprites/scrub_doll_act_sheet.png"
+dest_files=["res://.godot/imported/scrub_doll_act_sheet.png-bae167b3e1ea0c9f4b34f606db9c1f3e.ctex"]
 
 [params]
 

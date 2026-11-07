@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://c833kghebof8"
-path="res://.godot/imported/rat_king_sheet.png-dc61b514d5606bad4f392c4ec028be31.ctex"
+uid="uid://cehv75lw38q1o"
+path="res://.godot/imported/pastry_chef.png-120afd8641a17062f8c029706d3f321b.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://tools/art/src/palace_sprites/rat_king_sheet.png"
-dest_files=["res://.godot/imported/rat_king_sheet.png-dc61b514d5606bad4f392c4ec028be31.ctex"]
+source_file="res://assets/generated/npcs/pastry_chef.png"
+dest_files=["res://.godot/imported/pastry_chef.png-120afd8641a17062f8c029706d3f321b.ctex"]
 
 [params]
 

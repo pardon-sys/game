@@ -2,13 +2,6 @@
 	"name": "起雾的镜子",
 	"entries": [
 		{
-			"if": {
-				"flag": "palace_scrub_down",
-				"not": "palace_sheet_3"
-			},
-			"node": "sheet"
-		},
-		{
 			"node": "default"
 		}
 	],
@@ -42,25 +35,6 @@
 					"emotion": "sad"
 				}
 			]
-		},
-		"sheet": {
-			"lines": [
-				{
-					"text": "（搓澡人偶倒下以后，浴室里的水汽散了不少。镜子背后「咔哒」一声，掉出一张卷起来的纸）",
-					"speaker": ""
-				},
-				{
-					"text": "（是一片泛黄的乐谱，音符画得歪歪扭扭的。旁边写着：「正中、左下」）",
-					"speaker": ""
-				},
-				{
-					"text": "……又一片乐谱。",
-					"speaker": "蓝色的公主"
-				}
-			],
-			"set": {
-				"call": "palace_bath_sheet"
-			}
 		}
 	}
 }

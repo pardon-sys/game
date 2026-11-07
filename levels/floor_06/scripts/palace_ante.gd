@@ -37,7 +37,8 @@ func map_id() -> String:
 
 func _ready() -> void:
 	super()
-	_spot_at("floor_06/ante_statue", cells("statue")[0], STATUE_FLAG, -30.0)
+	_spot_at("floor_06/ante_statue", cells("statue")[0], STATUE_FLAG, -44.0)
+	sheet_view(PalaceRoom.PROPS3, 6, 0, cells("statue")[0], [], 1.0, Vector2(0, -4))   # 抱着剑的骑士石像
 	var d := PaintingDoor.new()
 	d.position = world(cells("painting")[0])
 	add_view(d)

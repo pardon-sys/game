@@ -1,0 +1,39 @@
+{
+	"name": "掉在地上的乐谱",
+	"entries": [
+		{
+			"if": {
+				"flag": "palace_sheet_3"
+			},
+			"node": "done"
+		},
+		{
+			"node": "default"
+		}
+	],
+	"nodes": {
+		"default": {
+			"lines": [
+				{
+					"text": "（搓澡人偶倒下的地方，泡泡里浮着一张卷起来的纸——是一片泛黄的乐谱。旁边写着：「正中、左下」）",
+					"speaker": ""
+				},
+				{
+					"text": "……又一片乐谱。……原来被它吞进肚子里了。",
+					"speaker": "蓝色的公主"
+				}
+			],
+			"set": {
+				"call": "palace_bath_sheet"
+			}
+		},
+		"done": {
+			"lines": [
+				{
+					"text": "（泡泡已经散了）",
+					"speaker": ""
+				}
+			]
+		}
+	}
+}

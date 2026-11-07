@@ -148,7 +148,16 @@ func _process(_d: float) -> void:
 
 
 ## 走进来那一刻正好有对话 / 换图被拒（main 正忙）时，人还站在出口里：空下来以后再试一次（以前会一直卡在出口上走不了）
+var _locked_inside := false
+
+
 func _physics_process(delta: float) -> void:
+	if _locked_inside and not _used and not is_locked_now():
+		_locked_inside = false
+		for b in get_overlapping_bodies():
+			if b.is_in_group("player"):
+				_on_body_entered(b)
+				return
 	if _used or not _pending:
 		return
 	_retry -= delta
@@ -182,6 +191,7 @@ func _on_body_entered(body: Node) -> void:
 	if is_locked:
 		await get_tree().create_timer(1.0).timeout
 		_used = false
+		_locked_inside = true   # 人还站在锁着的出口上：一解锁就直接走（不用先走开再回来）
 		return
 	GameState.pending_spawn = spawn
 	if secret or SECRET_MAPS.has(_dst_id()) or SECRET_MAPS.has(_floor_id()):
