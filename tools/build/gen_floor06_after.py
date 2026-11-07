@@ -1578,10 +1578,17 @@ NEW = [(TOWN, "地下小镇·战后", "town"), (FESTIVAL, "庆功宴的广场", 
        (PANTE, "旧王宫·王座前厅", "old_palace"),
        *[(f, "旧王宫·钟楼" + n, "old_palace") for f, n in zip(PCLOCKS, ["一层", "二层", "三层", "四层", "钟顶"])], (PTUN, "旧王宫·隧道与密室", "old_palace"),
        (PTHRONE, "旧王宫·王座间", "palace_boss")]
+# 已经拆掉的地图（单张钟楼 → 五层）从楼层表里删掉
+GONE = ["floor_06_palace_clock"]
+lst[:] = [f for f in lst if f["id"] not in GONE]
 at = next(i for i, f in enumerate(lst) if f["id"] == "floor_06_siege") + 1
 for fid, name, music in NEW:
-    if not any(f["id"] == fid for f in lst):
+    old = next((f for f in lst if f["id"] == fid), None)
+    if old is None:
         lst.insert(at, {"id": fid, "name": name, "scene": "res://levels/%s/floor.tscn" % fid, "group": "floor_06", "music": music})
+    else:
+        old["name"] = name     # 已有的条目也跟着改（以前只加不改：换配乐没生效）
+        old["music"] = music
     at += 1
 Path("data/floors.json").write_text(json.dumps(floors, ensure_ascii=False, indent="\t") + "\n")
 print("对话 %d 个文件、过场 %d 段、小剧场 %d 段" % (len(files), len(CUTS), len(punish.THEATERS)))

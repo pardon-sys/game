@@ -471,6 +471,10 @@ static func _palace_b(t: Node) -> void:
 	verify(t, "书山下的残页：残页 +1（%s）" % GameState.vars.get("palace_frags"), int(GameState.vars.get("palace_frags", 0)) == 1 and GameState.has_flag("palace_frag_1"))
 	# 密码门：错一次、对一次
 	verify(t, "密码门没开：私人书房整间黑着（%d 格遮罩）" % lr.shades.size(), lr.shades.size() >= 30)
+	var lvn := t.get_tree().get_first_node_in_group("main").get("level") as Node
+	var dc := lr.cells("cipher_door")[0]
+	verify(t, "书房只有密码门这一格能进：两边是墙、门口被门挡着", lvn != null and not GridPath.walkable(lvn, dc + Vector2i(-1, 0))
+		and not GridPath.walkable(lvn, dc + Vector2i(1, 0)) and is_instance_valid(lr._door))
 	await t._talk("floor_06/library_door", "", [1])
 	verify(t, "密码门：转错了，门不开", not GameState.has_flag(PalaceLibrary.CIPHER_FLAG))
 	await t._talk("floor_06/library_door", "", [0, 2, 3, 1])
@@ -602,7 +606,45 @@ static func _palace_b(t: Node) -> void:
 	tp.global_position = Cutscene.cell_to_world(tr.cells("north")[0])
 	await t._advance_until(func(): return t._level_id() == "floor_06_palace_ante" and not Cutscene.is_playing() and t.seen_cuts.has("palace_ante_in"), 60.0)
 	verify(t, "训练场北门：通往王座前厅（%s）" % t._level_id(), t._level_id() == "floor_06_palace_ante")
+	await _exit_hints(t)
 	await _palace_c(t)
+
+
+## 密道入口没走过之前不显示标志 / 黄字；反省篇的可交互点近处冒「！」
+static func _exit_hints(t: Node) -> void:
+	GameState.flags.erase(LevelExit.passage_flag("floor_06_palace_ante", "floor_06_palace_tunnels"))
+	var sec: Node = null
+	for nd in t.get_tree().root.find_children("*", "Area2D", true, false):
+		if nd is LevelExit and (nd as LevelExit)._dst_id() == "floor_06_palace_tunnels":
+			sec = nd
+	await t.get_tree().process_frame
+	await t.get_tree().process_frame
+	var lbl: Node = sec.get_node_or_null("MarkerLabel") if sec else null
+	verify(t, "前厅画后面的密道口：没走过 → 不显示标志和黄字", sec != null and lbl != null and not (lbl as CanvasItem).visible
+		and not (sec.get_node("Marker") as CanvasItem).visible)
+	GameState.set_flag(LevelExit.passage_flag("floor_06_palace_tunnels", "floor_06_palace_ante"))
+	await t.get_tree().process_frame
+	verify(t, "从密道那边走过一次：标志和黄字出现", lbl != null and (lbl as CanvasItem).visible)
+	var hint: InteractHint = null
+	for nd in t.get_tree().root.find_children("*", "Node2D", true, false):
+		if nd is InteractHint and is_instance_valid((nd as InteractHint).target) and (nd as InteractHint).target.enabled \
+				and (nd as InteractHint).target.is_visible_in_tree() and not (nd as InteractHint).target.get_parent() is PlayableCharacter:
+			hint = nd
+			break
+	var p := GameState.player as PlayableCharacter
+	if hint == null:
+		verify(t, "前厅里有「！」交互提示", false)
+		return
+	var back := p.global_position
+	p.global_position = hint.target.global_position + Vector2(0, 60)
+	await t.get_tree().process_frame
+	await t.get_tree().process_frame
+	verify(t, "走到 5 格以内：头顶冒「！」", hint.visible)
+	p.global_position = hint.target.global_position + Vector2(0, 300)
+	await t.get_tree().process_frame
+	await t.get_tree().process_frame
+	verify(t, "走远了：「！」消失", not hint.visible)
+	p.global_position = back
 
 
 ## 第四章（下）：王座前厅 → 钟楼 → 隧道与密室 → 王座间 Boss
@@ -658,6 +700,9 @@ static func _palace_c(t: Node) -> void:
 	cp.global_position = Cutscene.cell_to_world(cr.cells("ladder")[0])
 	await t._wait(0.5)
 	verify(t, "梯子还没放下来：上不去四层", t._level_id() == "floor_06_palace_clock_3")
+	var gear_spots := cr.get_children().filter(func(n): return n is PrisonOddities.Spot and n.dialogue == "floor_06/clock_axle" \
+		and (n as Node2D).global_position.distance_to(Cutscene.cell_to_world(cr.cells("gear_seat")[0])) < 4.0)
+	verify(t, "三层·大齿轮本身也能按 E（以前只有转轴能点）", gear_spots.size() == 1)
 	cp.global_position = Cutscene.cell_to_world(cr.cells("axle")[0]) + Vector2(0, 12)
 	await t._talk("floor_06/clock_axle", "", [0])
 	await t._advance_until(func(): return GameState.has_flag(PalaceClock.LADDER_FLAG) and not CG.is_busy() and not Dialogue.is_active(), 150.0)

@@ -321,28 +321,28 @@
 			"name": "反省牢房",
 			"scene": "res://levels/floor_06_penance_cell/floor.tscn",
 			"group": "floor_06",
-			"music": "night_room"
+			"music": "dungeon"
 		},
 		{
 			"id": "floor_06_rat_tunnel",
 			"name": "鼠洞",
 			"scene": "res://levels/floor_06_rat_tunnel/floor.tscn",
 			"group": "floor_06",
-			"music": "night_room"
+			"music": "dungeon"
 		},
 		{
 			"id": "floor_06_waterway_exit",
 			"name": "废弃水道的出口",
 			"scene": "res://levels/floor_06_waterway_exit/floor.tscn",
 			"group": "floor_06",
-			"music": "night_room"
+			"music": "dungeon"
 		},
 		{
 			"id": "floor_06_waterway",
 			"name": "废弃水道",
 			"scene": "res://levels/floor_06_waterway/floor.tscn",
 			"group": "floor_06",
-			"music": "night_maze"
+			"music": "dungeon"
 		},
 		{
 			"id": "floor_06_palace_bath",
@@ -425,13 +425,6 @@
 			"id": "floor_06_palace_clock_5",
 			"name": "旧王宫·钟楼钟顶",
 			"scene": "res://levels/floor_06_palace_clock_5/floor.tscn",
-			"group": "floor_06",
-			"music": "old_palace"
-		},
-		{
-			"id": "floor_06_palace_clock",
-			"name": "旧王宫·钟楼",
-			"scene": "res://levels/floor_06_palace_clock/floor.tscn",
 			"group": "floor_06",
 			"music": "old_palace"
 		},
