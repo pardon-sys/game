@@ -195,6 +195,12 @@ POINTS = [
           "meet_exit_done", "waterway_keeper_done", "palace_mouse_farewell", "palace_bath_key", "palace_servants_key", "palace_cipher_open",
           "palace_sheet_1", "palace_sheet_2", "palace_sheet_3", "intro_done_palace_library_in", "intro_done_palace_training_in", "intro_done_palace_ante_in"],
           knight_vars(10, 2, 10), cell=[30, 25], passives=PASSIVES),
+    # 第四章追加事件（第二批）：旧浴场的搓澡人偶 / 训练场的队长幽影
+    point("反省篇·追加 旧浴场·搓澡人偶", "floor_06_palace_bath", KNIGHT + KQ_ALL_DONE + ["knight_boss_done", "penance_ch1_done", "penance_mouse_dev", "meet_exit_done",
+          "waterway_keeper_done", "intro_done_palace_bath_in"], knight_vars(10, 2, 10), cell=[36, 24], passives=PASSIVES),
+    point("反省篇·追加 骑士训练场·年轻队长的幽影", "floor_06_palace_training", KNIGHT + KQ_ALL_DONE + ["knight_boss_done", "penance_ch1_done",
+          "meet_exit_done", "waterway_keeper_done", "palace_mouse_farewell", "palace_bath_key", "palace_servants_key", "palace_cipher_open",
+          "intro_done_palace_library_in", "intro_done_palace_training_in"], knight_vars(10, 2, 10), cell=[30, 23], passives=PASSIVES),
     point("反省篇·第三章 废弃水道", "floor_06_waterway", KNIGHT + KQ_ALL_DONE + ["knight_boss_done", "penance_ch1_done", "penance_mouse_dev", "meet_exit_done", "intro_done_waterway_in"],
           knight_vars(10, 2, 10), passives=PASSIVES),
 ]

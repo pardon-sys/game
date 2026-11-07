@@ -1,0 +1,356 @@
+{
+	"name": "旧浴场：搓澡人偶的泡泡桶",
+	"cast": {
+		"princess": {
+			"kind": "princess",
+			"at": [
+				-14,
+				8
+			],
+			"visual": "normal",
+			"anim": "idle",
+			"dir": "right"
+		},
+		"blue": {
+			"kind": "npc:blue_princess",
+			"at": [
+				14,
+				8
+			],
+			"visual": "normal",
+			"anim": "idle",
+			"dir": "left"
+		},
+		"pants": {
+			"kind": "trap:hand",
+			"at": [
+				20,
+				10
+			]
+		},
+		"tub": {
+			"kind": "trap:sitz_bath",
+			"at": [
+				-14,
+				2
+			]
+		},
+		"brush": {
+			"kind": "trap:brush",
+			"at": [
+				-26,
+				-4
+			]
+		}
+	},
+	"steps": [
+		{
+			"act": 1,
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "fade_in"
+				},
+				{
+					"state": "giggle",
+					"do": "voice"
+				}
+			],
+			"wait": 0.5
+		},
+		{
+			"speaker": "搓澡人偶",
+			"text": "……洗、洗澡的时间……到了……（咔哒、咔哒）",
+			"act": 1
+		},
+		{
+			"speaker": "",
+			"text": "（搓澡人偶一把把粉色公主拎了起来，「扑通」一声放进了冒着泡泡的大木桶里，两只脚被搁在桶沿上）",
+			"actions": [
+				{
+					"who": "princess",
+					"time": 0.4,
+					"do": "shake"
+				},
+				{
+					"who": "princess",
+					"visual": "normal",
+					"do": "pose"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "等、等一下！我、我自己会洗——！",
+			"emotion": "surprise"
+		},
+		{
+			"speaker": "搓澡人偶",
+			"text": "……脚底……最脏……要好好刷……"
+		},
+		{
+			"speaker": "",
+			"text": "（鞋被人偶随手放到了一边。长柄刷蘸满泡泡，从脚跟一路刷到脚趾缝）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "brush",
+					"zone": "sole",
+					"fx": "feather",
+					"repeat": 10,
+					"interval": 0.14,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"visual": "giggle",
+					"do": "pose"
+				}
+			],
+			"act": 2
+		},
+		{
+			"speaker": "公主",
+			"text": "嘻……嘻嘻……不、不脏——不要刷了——哈哈！",
+			"emotion": "giggle"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……放开她。",
+			"actions": [
+				{
+					"who": "blue",
+					"visual": "normal",
+					"do": "pose"
+				}
+			]
+		},
+		{
+			"speaker": "",
+			"text": "（蓝色公主抓起一条毛巾，「啪啪」地抽人偶的后背——可是飘过来的泡泡一个劲地往她脖子上蹭）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "brush",
+					"zone": "sole",
+					"fx": "lines",
+					"repeat": 14,
+					"interval": 0.1,
+					"do": "tickle"
+				},
+				{
+					"who": "blue",
+					"by": "tub",
+					"zone": "neck",
+					"fx": "feather",
+					"repeat": 8,
+					"interval": 0.14,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"visual": "helpless_1",
+					"do": "pose"
+				},
+				{
+					"who": "blue",
+					"visual": "giggle",
+					"do": "pose"
+				},
+				{
+					"do": "voice",
+					"state": "laugh"
+				}
+			],
+			"act": 3,
+			"portrait": "scrub_grab"
+		},
+		{
+			"speaker": "公主",
+			"text": "哈哈哈！脚、脚趾缝也——你、你快一点——！",
+			"emotion": "helpless_1"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……哈……泡泡……脖子……不、不许笑……"
+		},
+		{
+			"speaker": "搓澡人偶",
+			"text": "……另、另一位客人……也要洗……"
+		},
+		{
+			"speaker": "",
+			"text": "（人偶的另一只手抓起一块海绵，往蓝色公主的腰上一按——海绵吸饱了温水，一挤一放，一挤一放）",
+			"actions": [
+				{
+					"who": "blue",
+					"by": "tub",
+					"zone": "waist",
+					"fx": "hand",
+					"repeat": 12,
+					"interval": 0.1,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"by": "brush",
+					"zone": "sole",
+					"fx": "feather",
+					"repeat": 12,
+					"interval": 0.1,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"visual": "helpless_2",
+					"do": "pose"
+				},
+				{
+					"who": "blue",
+					"visual": "helpless_1",
+					"do": "pose"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "哈哈哈哈！两、两个人都——！",
+			"emotion": "helpless_2"
+		},
+		{
+			"speaker": "公主",
+			"text": "（星光在泡泡桶里炸开，泡泡全飞上了天花板……哈啊……放出去了……）",
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "flash"
+				},
+				{
+					"sound": "star_burst",
+					"do": "sfx"
+				},
+				{
+					"sound": "water_release",
+					"volume": -2.0,
+					"do": "sfx"
+				},
+				{
+					"who": "princess",
+					"time": 0.4,
+					"do": "shake"
+				},
+				{
+					"state": "laugh",
+					"do": "voice"
+				}
+			],
+			"act": "burst",
+			"wait": 1.0
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……哈……哈哈……（冰晶跟着炸开，满屋子的泡泡都冻成了亮晶晶的小球……）",
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "flash"
+				},
+				{
+					"sound": "ice_crack",
+					"volume": -2.0,
+					"do": "sfx"
+				},
+				{
+					"sound": "water_release",
+					"volume": -2.0,
+					"do": "sfx"
+				},
+				{
+					"who": "blue",
+					"time": 0.4,
+					"do": "shake"
+				},
+				{
+					"state": "laugh",
+					"do": "voice"
+				}
+			],
+			"act": "burst",
+			"wait": 1.0
+		},
+		{
+			"speaker": "",
+			"text": "（人偶被冻得一动不动。……只有那把刷子，还在她刚释放完、敏感得发烫的脚心上，轻轻地、最后刷了一下）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "brush",
+					"zone": "sole",
+					"fx": "feather",
+					"repeat": 4,
+					"interval": 0.2,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"time": 0.3,
+					"do": "shake"
+				},
+				{
+					"who": "princess",
+					"visual": "helpless_1",
+					"do": "pose"
+				},
+				{
+					"who": "blue",
+					"visual": "helpless_1",
+					"do": "pose"
+				}
+			],
+			"act": 4
+		},
+		{
+			"speaker": "公主",
+			"text": "呀……！……哈……哈……最、最后那一下……",
+			"emotion": "helpless_1"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……出来。……趁它冻着。"
+		},
+		{
+			"speaker": "",
+			"text": "（两个人从桶边爬了出来，湿漉漉地站好。人偶身上的冰开始「咔咔」地裂）",
+			"actions": [
+				{
+					"who": "princess",
+					"visual": "normal",
+					"do": "pose"
+				},
+				{
+					"who": "blue",
+					"visual": "normal",
+					"do": "pose"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "……先把它身上的海绵打掉！",
+			"emotion": "angry"
+		},
+		{
+			"actions": [
+				{
+					"state": "",
+					"do": "voice"
+				},
+				{
+					"time": 0.6,
+					"do": "fade_out"
+				}
+			],
+			"wait": 0.7
+		}
+	]
+}

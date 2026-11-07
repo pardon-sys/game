@@ -55,6 +55,8 @@ func _ready() -> void:
 	kv.hide_flag = KEY_FLAG
 	kv.position = world(cells("key")[0])
 	add_view(kv)
+	if not cells("deliver").is_empty():
+		_spot("floor_06/servants_deliver", cells("deliver")[0])
 	_tag_head_maid.call_deferred()
 
 
@@ -132,6 +134,16 @@ func ring_bell() -> int:
 	return sd.noise(world(cells("bell")[0]), BELL_R) if sd else 0
 
 
+## 追加事件·送餐潜行：把厨房的点心端到女仆长的房间（deliver）→ 笑声乐谱片②
+func deliver_tray() -> bool:
+	if not PalaceRoom.carrying_tray():
+		return false
+	PalaceRoom.set_tray(false)
+	Audio.play("chime", -4.0)
+	PalaceRoom.give_sheet(2)
+	return true
+
+
 func take_key() -> void:
 	if GameState.has_flag(KEY_FLAG):
 		return
@@ -151,6 +163,10 @@ func caught() -> void:
 	_defeat_busy = true
 	caught_count += 1
 	var id := "servants_caught_first" if not GameState.has_flag("cg_seen_theater:servants_caught_first") else "servants_caught"
+	# 追加事件：端着点心被发现 → 试吃惩罚（CG），点心没了，要回厨房重拿
+	if PalaceRoom.carrying_tray():
+		id = "servants_tasting"
+		PalaceRoom.set_tray(false)
 	await CG.play_theater(id)
 	reset_to(world(cells("start")[0]))
 	if StealthDirector.current:

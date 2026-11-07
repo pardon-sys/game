@@ -13,4 +13,5 @@ key_type = "palace"
 category = 1
 stackable = true
 show_in_hud = false
+hotkey = ""
 pickup_emotion = "happy"

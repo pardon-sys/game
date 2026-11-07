@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="MonsterStats" format=3]
+
+[ext_resource type="Script" path="res://scripts/actors/monsters/monster_stats.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+display_name = "旧鞋"
+reaction_key = "imp"
+taunt_chance = 0.2
+max_hp = 2
+wander_speed = 26.0
+chase_speed = 50.0
+detect_range = 120.0
+lose_range = 220.0
+hurt_time = 0.2
+attack_cooldown = 1.3
+tickle_amount = 2.5
+tickle_cooldown = 0.9
+tickle_weight = 0.9
+tickle_pitch = 1.5
+hit_fx = "brush"

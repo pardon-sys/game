@@ -1344,6 +1344,19 @@ data/cutscenes/<楼层组>/  地图内过场；data/theater/<楼层组>/  小剧
 	  四层 clockface（对话 `clock_face`：时针三、分针九 → `clockface_ok()`）。
 	- 王座前厅：`PalaceAnte.ArmorGuard`（巡逻 / 扇形视野 / 抓人挠腋下 / 背后 E 推倒）、笑声地砖（`step_tile`、`TILE_SEQ`，三片乐谱齐了才算）→ `VAULT_FLAG` → `vault_loot()`；
 	  石像问答（`ante_statue`，`statue_ok()` 给八音盒）、许愿喷泉（`wish(kind)`）、徽记台（`place_badges()` → 发饰 + `palace_badge_party` CG）。
+  - 追加事件·第二批（`penance_text/palace5.py`）：
+	- 浴场 `ScrubDoll`（`scrub_doll.gd`，标记 scrub；海绵护盾 `sponges` → 掉下的 `Sponge` 滚过来吸脚；招式刷 / 抓（第一次 `bath_scrub_grab` CG）；`hit_by(pc)`），
+	  倒下后镜子 `palace_mirror` 的 sheet 节点给乐谱片③。
+	- 送餐潜行：`PalaceRoom.TRAY_FLAG` / `TrayCarry`（厨房、回廊：头顶托盘 + meta no_dash）；厨房 `kitchen_tray` 拿、回廊被抓 `caught()` → `servants_tasting`（CG），
+	  `servants_deliver` → `PalaceServants.deliver_tray()` → 乐谱片②。
+	- 图书馆：飞书群（`FlyingBook`，`PalaceLibrary.start_books()` / `BOOK_WAVES`，粉色公主 ×2）；`library_hanger_book` → `SHELF_FLAG`，
+	  禁书区 ↔ 衣帽间的暗门（exit `secret=true`：`LevelExit.secret`，同密道一样走过才显示）。
+	- 衣帽间：`OldShoe`（套住脚 = `status.grab`），鞋柜 `close_closet()`（`CLOSET_R` 以内的全关进去）。
+	- 训练场：`PalaceTraining.start_shade()` 三回合（`Shade`；第三回合 `shade_wave()`），输了 `training_shade`（CG），赢了徽记。
+	- 失物招领：`PalaceRoom.LOST_ITEMS`（五张图各一个，`Events2View` + Spot），隧道 `tunnel_lost` → `PalaceTunnels.lost_return()`（通行证 = 路费付清 + 徽记）。
+	- 黑暗区：`PalaceTunnels.DARK_RECT`（`DarkCell`，`light_at(pos)` 按离蓝色公主的距离），粉色公主离开冰光 `DARK_GRAB` 秒 → `dark_grab()`；AI 蓝色公主贴着她。
+	- 王座间：`MusicBoxItem`（R 键，不消耗）→ `PalaceThrone.use_music_box()`（`BOX_TIME` 秒一直 vulnerable、不泼颜料，每场 `BOX_USES` 次）。
+	- 女王的回忆：`PalaceRoom.try_memory()`（徽记台换过 + 王座间通关，一次；过场 `palace_queen_memory`，背景大图 `queen_memory`）。
   - 修正（第 N+1 轮）：
 	- 配乐改了以后要真的生效：`gen_floor06_after.py` 以前只往 `floors.json` 里加新条目，已有条目的 name / music 不更新；现在会更新，并删掉 `GONE` 里的旧图（单张钟楼）。
 	- 密道入口（`LevelExit.SECRET_MAPS`，通往隧道与密室）：`secret_hidden()` 时不显示标志 / 黄字，只看得到那幅画；走过一次（`passage_flag(a, b)`，两个方向都算）才显示。

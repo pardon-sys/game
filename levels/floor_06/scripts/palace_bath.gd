@@ -38,6 +38,8 @@ var _laugh_t := 1.0
 var _laugh_marks: Array = []
 var _water := {}
 var _fog: SteamFog
+## 追加事件：大浴室南边的搓澡人偶（scrub_doll.gd）
+var scrub: ScrubDoll
 
 
 func map_id() -> String:
@@ -94,6 +96,12 @@ func _ready() -> void:
 	sp.global_position = world(cells("mirror")[0])
 	_fog = SteamFog.new()
 	add_child(_fog)
+	if not cells("scrub").is_empty():
+		scrub = ScrubDoll.new()
+		scrub.room = self
+		scrub.position = world(cells("scrub")[0])
+		scrub.home = scrub.position
+		add_view(scrub)
 
 
 func _process(delta: float) -> void:
@@ -119,6 +127,8 @@ func _process(delta: float) -> void:
 		(t as Towel).step(delta)
 	for s in statues:
 		(s as Statue).step(delta)
+	if is_instance_valid(scrub):
+		scrub.step(delta)
 	auto_theater("bath", "bath_friendship", 20.0)
 
 

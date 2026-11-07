@@ -352,6 +352,21 @@
 			"placeholder": "helpless_2",
 			"wide": true
 		},
+		"scrub_grab": {
+			"file": "res://assets/cg/portraits/scrub_grab.png",
+			"placeholder": "helpless_2",
+			"wide": true
+		},
+		"tasting_punish": {
+			"file": "res://assets/cg/portraits/tasting_punish.png",
+			"placeholder": "helpless_2",
+			"wide": true
+		},
+		"shade_training": {
+			"file": "res://assets/cg/portraits/shade_training.png",
+			"placeholder": "helpless_2",
+			"wide": true
+		},
 		"slime_1": {
 			"file": "res://assets/cg/portraits/slime_1.png",
 			"placeholder": "helpless_1"

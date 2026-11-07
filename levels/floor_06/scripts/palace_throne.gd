@@ -36,6 +36,11 @@ const PULL_DELAY := 1.5
 const PAINT_TIME := 45.0
 const BRUSH_SPEED := 46.0
 const FRAME_HP := 10
+## 追加事件：女王的八音盒（石像问答的奖励，背包里放在 R 键上）：每场 BOX_USES 次，画像发呆 BOX_TIME 秒、一直露破绽，不泼颜料不伸手
+const BOX_TIME := 8.0
+const BOX_USES := 2
+var box_t := 0.0
+var box_used := 0
 
 var layer := 0
 var hp := 12
@@ -96,6 +101,9 @@ func _ready() -> void:
 		add_view(b)
 		brushes.append(b)
 	hp = LAYER_HP[0]
+	if GameState.inventory.has("queen_music_box") and not win:
+		GameState.set_hotkey("use_special", "queen_music_box")
+		GameState.notify("「女王的八音盒」放在 R 键上了（每场能用 %d 次）" % BOX_USES)
 
 
 func weak_point() -> Vector2:
@@ -105,6 +113,8 @@ func weak_point() -> Vector2:
 func vulnerable() -> bool:
 	if win or inside != null and not empowered:
 		return false
+	if box_t > 0.0:
+		return true
 	if layer == 1:
 		return vuln_t > 0.0
 	return true
@@ -117,8 +127,10 @@ func _process(delta: float) -> void:
 		started = true
 		return
 	_tick_hits(delta)
-	_tick_paint(delta)
-	_tick_hands(delta)
+	box_t = maxf(0.0, box_t - delta)
+	if box_t <= 0.0:
+		_tick_paint(delta)
+		_tick_hands(delta)
 	if layer == 1:
 		vuln_t = maxf(0.0, vuln_t - delta)
 		if vuln_t <= 0.0 and small.all(func(s): return not (s as SmallPortrait).alive()):
@@ -141,6 +153,20 @@ func _process(delta: float) -> void:
 	if _gib_t <= 0.0:
 		_gib_t = randf_range(10.0, 16.0)
 		SpeechBubble.say(_portrait, str(PalaceRoom.data().get("gibberish", [""]).pick_random()), 40.0, 2.5)
+
+
+## 打开八音盒：放出很久以前的笑声，画像发呆露破绽（被拉进画里的时候没用）
+func use_music_box() -> bool:
+	if win or box_used >= BOX_USES or (inside != null and not empowered):
+		GameState.notify("八音盒的发条转不动了……" if box_used >= BOX_USES else "现在打开它没有用……")
+		return false
+	box_used += 1
+	box_t = BOX_TIME
+	_clear_pools()
+	Audio.play("music_box", -2.0)
+	SpeechBubble.say(_portrait, str((PalaceRoom.data().get("box_gibberish", ["……这个声音……"]) as Array).pick_random()), 40.0, 3.0)
+	GameState.notify("八音盒响了——画像发起呆来（还能用 %d 次）" % (BOX_USES - box_used))
+	return true
 
 
 # ------------------------------------------------------------------ 打破绽
@@ -336,6 +362,9 @@ func _finale() -> void:
 	while Cutscene.is_playing():
 		await get_tree().process_frame
 	GameState.set_flag(BOSS_FLAG)
+	await PalaceRoom.try_memory()   # 徽记台已经换过发饰：先看女王的回忆
+	while Cutscene.is_playing():
+		await get_tree().process_frame
 	Cutscene.play("palace_end")
 
 

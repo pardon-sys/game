@@ -464,6 +464,43 @@ func palace_vault() -> void:
 		r.vault_loot()
 
 
+# ---- 第四章追加事件（第二批）
+func palace_bath_sheet() -> void:
+	PalaceRoom.give_sheet(3)
+
+
+func palace_tray_take() -> void:
+	PalaceRoom.set_tray(true)
+	GameState.notify("端起了点心托盘——端着的时候不能冲刺，别被女仆们看见")
+
+
+func palace_tray_deliver() -> void:
+	var r := _palace_room("PalaceServants")
+	if r:
+		r.deliver_tray()
+
+
+func palace_shoe_closet() -> void:
+	runner.end_conversation()
+	var r := _palace_room("PalaceWardrobe")
+	if r:
+		r.close_closet()
+
+
+func palace_shade_start() -> void:
+	runner.end_conversation()
+	var r := _palace_room("PalaceTraining")
+	if r:
+		r.start_shade()
+
+
+func palace_lost_return() -> void:
+	runner.end_conversation()
+	var r := _palace_room("PalaceTunnels")
+	if r:
+		r.lost_return()
+
+
 func palace_golden() -> void:
 	runner.end_conversation()
 	var r := _palace_room("PalaceLibrary")

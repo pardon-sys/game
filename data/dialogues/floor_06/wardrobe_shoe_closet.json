@@ -1,0 +1,63 @@
+{
+	"name": "鞋柜",
+	"entries": [
+		{
+			"if": {
+				"flag": "palace_shoes_done"
+			},
+			"node": "done"
+		},
+		{
+			"node": "default"
+		}
+	],
+	"nodes": {
+		"default": {
+			"lines": [
+				{
+					"text": "（一个大鞋柜，柜门上写着：「乱跑的鞋子，一律关进来」）",
+					"speaker": ""
+				}
+			],
+			"prompt": "关上柜门？",
+			"choices": [
+				{
+					"text": "关门！",
+					"next": "go"
+				},
+				{
+					"text": "等一下",
+					"next": "no"
+				}
+			]
+		},
+		"go": {
+			"lines": [
+				{
+					"text": "……关门！",
+					"speaker": "公主",
+					"emotion": "angry"
+				}
+			],
+			"set": {
+				"call": "palace_shoe_closet"
+			}
+		},
+		"no": {
+			"lines": [
+				{
+					"text": "……先把旧鞋引过来。",
+					"speaker": "蓝色的公主"
+				}
+			]
+		},
+		"done": {
+			"lines": [
+				{
+					"text": "（鞋柜里传来「咚咚」的声音。……还是别打开了）",
+					"speaker": ""
+				}
+			]
+		}
+	}
+}

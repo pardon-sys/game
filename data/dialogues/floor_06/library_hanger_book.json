@@ -1,0 +1,68 @@
+{
+	"name": "夹着书签的书",
+	"entries": [
+		{
+			"if": {
+				"flag": "palace_shelf_door"
+			},
+			"node": "done"
+		},
+		{
+			"node": "default"
+		}
+	],
+	"nodes": {
+		"default": {
+			"lines": [
+				{
+					"text": "（书架上有一本书夹着金色的书签——书签是一只小小的衣架形状）",
+					"speaker": ""
+				}
+			],
+			"prompt": "抽出来？",
+			"choices": [
+				{
+					"text": "抽出来",
+					"next": "go"
+				},
+				{
+					"text": "不碰",
+					"next": "no"
+				}
+			]
+		},
+		"go": {
+			"lines": [
+				{
+					"text": "（「咔哒」——远远的，禁书区那边传来书架转动的声音）",
+					"speaker": ""
+				},
+				{
+					"text": "……书架后面。……有路。",
+					"speaker": "蓝色的公主"
+				}
+			],
+			"set": {
+				"flags": [
+					"palace_shelf_door"
+				]
+			}
+		},
+		"no": {
+			"lines": [
+				{
+					"text": "……先不碰。",
+					"speaker": "公主"
+				}
+			]
+		},
+		"done": {
+			"lines": [
+				{
+					"text": "（书签已经抽出来了。禁书区的书架开着一道缝）",
+					"speaker": ""
+				}
+			]
+		}
+	}
+}

@@ -603,6 +603,7 @@ static func _palace_b(t: Node) -> void:
 	await _exit_hints(t)
 	await _ante_events(t)
 	await _palace_c(t)
+	await _extra_events(t)
 
 
 static func _quiet_beetles(cr: PalaceClock) -> void:
@@ -757,6 +758,206 @@ static func _ante_events(t: Node) -> void:
 		and GameState.inventory.has("equip_queen_hairpin") and GameState.has_flag("cg_seen_theater:palace_badge_party"))
 	p.laugh.clear()
 	mate.laugh.clear()
+
+
+static func _goto(t: Node, fid: String) -> void:
+	GameState.pending_spawn = ""
+	await t.main.change_level(Floors.scene(fid))
+	await t._advance_until(func(): return t._level_id() == fid and not Cutscene.is_playing() and not Dialogue.is_active(), 60.0)
+	await t.get_tree().process_frame
+	await t.get_tree().process_frame
+
+
+static func _calm(t: Node) -> void:
+	for m in t.get_tree().get_nodes_in_group("player_chars"):
+		var pc := m as PlayableCharacter
+		if pc.status.is_grabbed():
+			pc.status.release()
+		pc.status.clear_root()
+		pc.laugh.clear()
+
+
+## 追加事件（第二批）：搓澡人偶 / 送餐潜行 / 飞书群与书架暗门 / 旧鞋军团 / 队长的幽影 / 失物招领与黑暗区 / 八音盒
+static func _extra_events(t: Node) -> void:
+	Cutscene.chapter_screen.hide()
+	Cutscene.chapter_next = ""
+	# ---- 旧浴场：搓澡人偶（抢海绵）
+	for f in [ScrubDoll.FLAG, PalaceRoom.badge_flag("scrub"), "palace_sheet_3", "cg_seen_theater:bath_scrub_grab", "palace_sheet_2", PalaceRoom.TRAY_FLAG,
+			PalaceLibrary.BOOKS_FLAG, PalaceLibrary.SHELF_FLAG, PalaceWardrobe.SHOES_FLAG, PalaceTraining.SHADE_FLAG, PalaceRoom.badge_flag("shade"),
+			"cg_seen_theater:training_shade", "cg_seen_theater:servants_tasting", PalaceTunnels.LOST_DONE, PalaceRoom.badge_flag("lost")]:
+		GameState.flags.erase(f)
+	for k in PalaceRoom.LOST_NAMES:
+		GameState.flags.erase(PalaceRoom.lost_flag(k))
+	await _goto(t, "floor_06_palace_bath")
+	var pb := _room(t, "PalaceBath") as PalaceBath
+	var sd: ScrubDoll = pb.scrub if pb else null
+	verify(t, "旧浴场：大浴室南边有搓澡人偶（三块海绵）", sd != null and sd.sponges == ScrubDoll.SPONGES and sd.phase == "idle")
+	if sd == null:
+		return
+	var p := GameState.player as PlayableCharacter
+	var mate := Duo.partner_of(p)
+	_calm(t)
+	p.global_position = sd.home + Vector2(0, 40)
+	mate.global_position = sd.home + Vector2(20, 40)
+	await t.get_tree().process_frame
+	await t.get_tree().process_frame
+	verify(t, "走近：搓澡人偶开打", sd.phase == "fight")
+	sd.grab(p)
+	await t._advance_until(func(): return GameState.has_flag("cg_seen_theater:bath_scrub_grab") and not CG.is_busy() and not Dialogue.is_active(), 150.0)
+	verify(t, "第一次被抓：按进泡泡桶刷脚底（小剧场 + CG）", GameState.has_flag("cg_seen_theater:bath_scrub_grab"))
+	_calm(t)
+	sd.grab(p)
+	verify(t, "之后在场上抓人：被抓住", sd.phase == "hold" and p.status.is_grabbed_by(sd))
+	sd.hit_by(mate)
+	verify(t, "搭档打它：松手 + 打掉一块海绵（掉在地上滚过来）", sd.phase == "fight" and not p.status.is_grabbed() and sd.sponges == 2 and sd.sponges_alive.size() == 1)
+	var hp0 := sd.hp
+	sd.hit_by(mate)
+	sd.hit_by(mate)
+	verify(t, "海绵还在的时候打不动本体（%d → %d）" % [hp0, sd.hp], sd.sponges == 0 and sd.hp == hp0)
+	for i in ScrubDoll.HP:
+		sd.hit_by(mate)
+	verify(t, "海绵打光以后打 %d 下：搓澡人偶倒下 → 笑脸徽记" % ScrubDoll.HP, sd.phase == "down" and GameState.has_flag(PalaceRoom.badge_flag("scrub")))
+	_calm(t)
+	await t._talk("floor_06/palace_mirror", "")
+	verify(t, "人偶倒下以后擦镜子：镜子后面掉出乐谱片③", GameState.has_flag("palace_sheet_3"))
+	# ---- 送餐潜行：厨房拿托盘 → 回廊被发现 = 试吃惩罚（CG）；送到女仆长房间 = 乐谱片②
+	await _goto(t, "floor_06_palace_kitchen")
+	await t._talk("floor_06/kitchen_tray", "", [0])
+	await t.get_tree().process_frame
+	p = GameState.player as PlayableCharacter
+	verify(t, "厨房：端起点心托盘（不能冲刺）", PalaceRoom.carrying_tray() and p.has_meta(&"no_dash"))
+	await t._talk("floor_06/lost_cheese", "")
+	verify(t, "失物①：灶台边的奶酪", GameState.has_flag(PalaceRoom.lost_flag("cheese")))
+	await _goto(t, "floor_06_palace_servants")
+	var sv := _room(t, "PalaceServants") as PalaceServants
+	verify(t, "端着托盘到了仆人回廊：托盘还在", PalaceRoom.carrying_tray())
+	sv.caught()
+	await t._advance_until(func(): return GameState.has_flag("cg_seen_theater:servants_tasting") and not CG.is_busy() and not Dialogue.is_active(), 150.0)
+	verify(t, "端着托盘被女仆发现：试吃惩罚（小剧场 + CG）、点心没了", GameState.has_flag("cg_seen_theater:servants_tasting") and not PalaceRoom.carrying_tray())
+	_calm(t)
+	PalaceRoom.set_tray(true)
+	await t._talk("floor_06/servants_deliver", "")
+	verify(t, "送到女仆长的房间：乐谱片②", GameState.has_flag("palace_sheet_2") and not PalaceRoom.carrying_tray())
+	await t._talk("floor_06/lost_bell", "")
+	# ---- 图书馆：飞书群三波、衣架书签 → 书架暗门
+	await _goto(t, "floor_06_palace_library")
+	var lr := _room(t, "PalaceLibrary") as PalaceLibrary
+	_calm(t)
+	lr.start_books()
+	await t.get_tree().process_frame
+	await t.get_tree().process_frame
+	verify(t, "图书馆·飞书群第一波（%d 本）" % lr.books_alive(), lr.book_wave == 0 and lr.books_alive() == PalaceLibrary.BOOK_WAVES[0])
+	var bk := lr.books[0] as FlyingBook
+	var pinkc: PlayableCharacter = GameState.player if (GameState.player as PlayableCharacter).character_id == "pink" else Duo.partner_of(GameState.player)
+	var hb := HitData.new()
+	hb.kind = HitData.Kind.ATTACK
+	hb.damage = 1
+	hb.source = pinkc
+	bk.receive_hit(hb)
+	verify(t, "粉色公主的攻击打飞书伤害 ×2（一下就打掉 2 血的书）", not bk.is_alive())
+	for w in PalaceLibrary.BOOK_WAVES.size():
+		for b in lr.books:
+			if is_instance_valid(b) and (b as Monster).is_alive():
+				(b as Monster).health.damage(99)
+		await t._wait(0.3)
+	await t._wait(0.3)
+	verify(t, "三波飞书全打完", GameState.has_flag(PalaceLibrary.BOOKS_FLAG))
+	_calm(t)
+	var shelf: LevelExit = null
+	for nd in t.get_tree().root.find_children("*", "Area2D", true, false):
+		if nd is LevelExit and (nd as LevelExit).secret:
+			shelf = nd
+	verify(t, "禁书区的书架暗门：锁着、没走过不显示标志", shelf != null and shelf.is_locked_now() and shelf.secret_hidden())
+	await t._talk("floor_06/library_hanger_book", "", [0])
+	verify(t, "抽出夹着衣架书签的书：书架暗门开了", GameState.has_flag(PalaceLibrary.SHELF_FLAG) and shelf != null and not shelf.is_locked_now())
+	await t._talk("floor_06/lost_quill", "")
+	# ---- 衣帽间：旧鞋军团 → 鞋柜
+	await _goto(t, "floor_06_palace_wardrobe")
+	var wr := _room(t, "PalaceWardrobe") as PalaceWardrobe
+	var shoes: Array = wr.shoes()
+	verify(t, "衣帽间：%d 只旧鞋在跳" % shoes.size(), shoes.size() == 6)
+	var closet := wr.world(wr.cells("shoe_closet")[0])
+	for i in shoes.size():
+		(shoes[i] as Node2D).global_position = closet + Vector2(10 + i * 4, 10) if i < 4 else closet + Vector2(400, 0)
+	var n1 := wr.close_closet()
+	verify(t, "引到鞋柜旁边关门：附近的 %d 只关进去" % n1, n1 == 4 and not GameState.has_flag(PalaceWardrobe.SHOES_FLAG))
+	await t.get_tree().process_frame
+	for m in wr.shoes():
+		(m as Node2D).global_position = closet + Vector2(12, 12)
+	wr.close_closet()
+	verify(t, "剩下的也关进去：旧鞋军团清空", GameState.has_flag(PalaceWardrobe.SHOES_FLAG))
+	_calm(t)
+	await t._talk("floor_06/lost_sock", "")
+	# ---- 骑士训练场：年轻队长的幽影（三回合）
+	await _goto(t, "floor_06_palace_training")
+	var tr := _room(t, "PalaceTraining") as PalaceTraining
+	_calm(t)
+	tr.start_shade()
+	await t.get_tree().process_frame
+	verify(t, "训练场·幽影对练第一回合：一个幽影", tr.shade_round == 1 and tr.shades_alive() == 1)
+	for r in 3:
+		for sh in tr.shades:
+			if is_instance_valid(sh):
+				for k in PalaceTraining.SHADE_HP:
+					(sh as PalaceTraining.Shade).hurt()
+		if r == 0:
+			await t.get_tree().process_frame
+			await t.get_tree().process_frame
+			verify(t, "第二回合：分出两个幽影", tr.shade_round == 2 and tr.shades_alive() == 2)
+		elif r == 1:
+			await t.get_tree().process_frame
+			await t.get_tree().process_frame
+			p = GameState.player as PlayableCharacter
+			var wl := p.laugh.value
+			tr.shade_wave()
+			verify(t, "第三回合：队长的绝招·羽毛风暴（%.0f → %.0f）" % [wl, p.laugh.value], tr.shade_round == 3 and p.laugh.value > wl)
+		else:
+			await t.get_tree().process_frame
+			await t.get_tree().process_frame
+	await t._advance_until(func(): return not Dialogue.is_active() and not Dialogue.runner.is_running(), 30.0)
+	verify(t, "三回合都赢：幽影说起「那两个小女孩」→ 笑脸徽记", GameState.has_flag(PalaceTraining.SHADE_FLAG) and GameState.has_flag(PalaceRoom.badge_flag("shade")))
+	GameState.flags.erase(PalaceTraining.SHADE_FLAG)
+	tr.start_shade()
+	tr.on_defeat("test")
+	await t._advance_until(func(): return GameState.has_flag("cg_seen_theater:training_shade") and not CG.is_busy() and not Dialogue.is_active(), 150.0)
+	verify(t, "输给幽影：耐痒训练（小剧场 + CG）", GameState.has_flag("cg_seen_theater:training_shade"))
+	GameState.set_flag(PalaceTraining.SHADE_FLAG)
+	tr.shade_round = 0
+	tr._clear_shades()
+	_calm(t)
+	# ---- 钟楼二层的钟发条
+	await _goto(t, "floor_06_palace_clock_2")
+	await t._talk("floor_06/lost_spring", "")
+	# ---- 隧道：失物招领、黑暗区
+	await _goto(t, "floor_06_palace_tunnels")
+	var tu := _room(t, "PalaceTunnels") as PalaceTunnels
+	verify(t, "五样失物都找到了（%d / 5）" % PalaceRoom.lost_found(), PalaceRoom.lost_found() == 5)
+	await t._talk("floor_06/tunnel_lost", "", [0])
+	verify(t, "交给收路费的小鬼：免路费通行证 + 笑脸徽记", GameState.has_flag(PalaceTunnels.LOST_DONE) and tu.toll_paid() and GameState.has_flag(PalaceRoom.badge_flag("lost")))
+	_calm(t)
+	var dark := PalaceRoom.cell_pos(Vector2i(11, 40))
+	tu.pink.global_position = dark
+	tu.blue.global_position = dark + Vector2(0, 200)
+	verify(t, "黑暗区：离开冰光就一片黑（%.2f），冰光里看得见（%.2f）" % [tu.light_at(dark), tu.light_at(tu.blue.global_position)], tu.in_dark(dark) and tu.light_at(dark) == 0.0 and tu.light_at(tu.blue.global_position) == 1.0)
+	var dl := tu.pink.laugh.value
+	tu._tick_dark(PalaceTunnels.DARK_GRAB + 0.1)
+	verify(t, "粉色公主离开冰光 %.1f 秒：暗处的手抓住挠（%.0f → %.0f）" % [PalaceTunnels.DARK_GRAB, dl, tu.pink.laugh.value], tu.pink.laugh.value > dl)
+	var hooks := tu.ai_hooks()
+	verify(t, "AI 是蓝色公主时：贴着进了黑暗区的粉色公主走", hooks.objective_for(tu.blue) == tu.pink.global_position)
+	_calm(t)
+	# ---- 王座间：女王的八音盒
+	GameState.set_flag(PalaceThrone.BOSS_FLAG, false)
+	GameState.pending_spawn = "from_ante"
+	await t.main.change_level(Floors.scene("floor_06_palace_throne"))
+	await t._advance_until(func(): return t._level_id() == "floor_06_palace_throne" and not Cutscene.is_playing() and not Dialogue.is_active(), 60.0)
+	var th := _room(t, "PalaceThrone") as PalaceThrone
+	verify(t, "王座间：八音盒自动放到 R 键上", GameState.hotkey_item("use_special") == "queen_music_box")
+	var used := GameState.inventory.use("queen_music_box", GameState.player)
+	verify(t, "按 R 打开八音盒：画像发呆、露出破绽（不消耗）", th.box_t > 0.0 and th.vulnerable() and GameState.inventory.has("queen_music_box") and not used)
+	th.use_music_box()
+	verify(t, "每场只能用 %d 次" % PalaceThrone.BOX_USES, th.box_used == PalaceThrone.BOX_USES and not th.use_music_box())
+	GameState.set_flag(PalaceThrone.BOSS_FLAG)
+	_calm(t)
 
 
 ## 密道入口没走过之前不显示标志 / 黄字；反省篇的可交互点近处冒「！」
@@ -1010,6 +1211,7 @@ static func _palace_c(t: Node) -> void:
 	await t._advance_until(func(): return Cutscene.chapter_screen.visible and not Cutscene.is_playing(), 120.0)
 	verify(t, "打破变强的画框：她出来 → 两人各释放一次烧穿画布 → 另半枚徽章 →「%s」" % Cutscene.chapter_title.text,
 		GameState.has_flag(PalaceThrone.BOSS_FLAG) and t.seen_cuts.has("throne_finale") and t.seen_cuts.has("palace_end") and Cutscene.chapter_title.text.contains("旧王宫"))
+	verify(t, "徽记台换过发饰 + 王座间通关：先看女王的回忆（背景大图）", t.seen_cuts.has("palace_queen_memory") and GameState.has_flag(PalaceRoom.MEMORY_FLAG))
 	Cutscene.chapter_screen.hide()
 	Cutscene.chapter_next = ""
 	# 画里自己逃出来（另一条路）：重新进王座间，直接到第三层

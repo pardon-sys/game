@@ -1,7 +1,7 @@
 """反省篇第四章（追加事件）的物品：16×16 图标 + data/items/<id>.tres（KeyItem，不能使用、背包里能看）。
   smile_badge     笑脸徽记（七枚集齐在王座前厅的徽记台换女王的羽毛发饰）
   music_sheet     笑声乐谱（三片：钟面暗格 / 送餐 / 浴场镜子；王座前厅的笑声地砖按它踩）
-  queen_music_box 女王的八音盒（石像问答全对；王座间 Boss 战里用）
+  queen_music_box 女王的八音盒（石像问答全对；王座间 Boss 战里用，MusicBoxItem，R 键）
 新物品还要在 scripts/items/item_db.gd 的 PATHS 里登记。
 用法：python tools/art/gen_palace_items.py
 """
@@ -58,9 +58,9 @@ ITEMS = {
     "queen_music_box": ("女王的八音盒", "粉色的小八音盒。打开它，会放出一段很久以前的笑声。……王座间的画像，好像很怕听到它。", i_queen_music_box, False),
 }
 
-TRES = """[gd_resource type="Resource" script_class="KeyItem" load_steps=3 format=3]
+TRES = """[gd_resource type="Resource" script_class="{cls}" load_steps=3 format=3]
 
-[ext_resource type="Script" path="res://scripts/items/key_item.gd" id="1"]
+[ext_resource type="Script" path="res://scripts/items/{script}.gd" id="1"]
 [ext_resource type="Texture2D" path="res://assets/generated/item_{id}.png" id="2"]
 
 [resource]
@@ -69,10 +69,10 @@ icon = ExtResource("2")
 id = "{id}"
 display_name = "{name}"
 description = "{desc}"
-key_type = "palace"
-category = 1
+{key_line}category = {cat}
 stackable = {stack}
 show_in_hud = false
+hotkey = "{hotkey}"
 pickup_emotion = "happy"
 """
 
@@ -80,7 +80,10 @@ pickup_emotion = "happy"
 def main():
     for iid, (name, desc, fn, stack) in ITEMS.items():
         fn().save(OUT / ("item_%s.png" % iid))
-        Path("data/items/%s.tres" % iid).write_text(TRES.format(id=iid, name=name, desc=desc, stack="true" if stack else "false"))
+        box = iid == "queen_music_box"   # 八音盒能用（王座间 Boss 战，R 键）：MusicBoxItem
+        Path("data/items/%s.tres" % iid).write_text(TRES.format(id=iid, name=name, desc=desc, stack="true" if stack else "false",
+            cls="MusicBoxItem" if box else "KeyItem", script="music_box_item" if box else "key_item",
+            key_line="" if box else 'key_type = "palace"\n', cat=0 if box else 1, hotkey="use_special" if box else ""))
     print("第四章追加事件的物品：", ", ".join(ITEMS))
 
 
