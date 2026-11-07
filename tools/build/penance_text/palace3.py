@@ -320,7 +320,7 @@ DIALOGUES = {
         L("（一口巨大的铜钟。钟口里卡着一个小小的东西——半个铃铛，系着褪色的粉色丝带）", N),
         L("……半个铃铛。……另外半个呢。", BLUE),
         L("（铃铛上刻着两个很小很小的字，被磨得看不清了）", N)]}}),
-    **{"clock_chest_%d" % i: _chest(i, "", 0) for i in (1, 2, 3)},
+    **{"clock_chest_%d" % i: _chest(i, "", 0) for i in (1, 2, 3, 4)},
     # 隧道
     "tunnel_toll": dfile("", "收路费的小鬼", {
         "default": {"lines": [L("嘻嘻！此路是我开！要从这里过，留下买路钱！", IMP)], "prompt": "付什么？",
@@ -366,6 +366,8 @@ DIALOGUES = {
 
 SIGNS = {
     "palace_throne_sealed": [{"speaker": N, "text": "（王座间的大门上缠着一圈紫色的封印。门上刻着一口钟——钟下面有十三道刻痕）"}],
+    "palace_ladder_up": [{"speaker": N, "text": "（梯子收在上面一层……够不着。东北角那个大齿轮，好像能把人带上去）"}],
+    "palace_keeper_block": [{"speaker": N, "text": "（楼梯口被一道铁栅栏拦着。……身后传来「咔哒、咔哒」的发条声）"}],
     "palace_secret_closed": [{"speaker": N, "text": "（墙后面好像是空的……可是从这一边打不开。也许要从另一边过来）"}],
 }
 

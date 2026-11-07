@@ -173,8 +173,11 @@ MARKS = {
     "floor_06_palace_training": {"Y": "east", "X": "north", "U": "dummies", "N": "sign", "F": "swords", "W": "carvings", "A": "ring", "B": "bell",
                                  "T": "stocks", "C": "diary", "J": "fragment"},
     "floor_06_palace_ante": {"Z": "south", "N": "throne_door", "W": "clock_door", "S": "painting", "L": "statue"},
-    "floor_06_palace_clock": {"Z": "south", "G": "gear_gaps", "C": "checkpoints", "L": "pendulum", "T": "chests", "F": "bellows",
-                              "R": "gear_seat", "A": "axle", "D": "ladder", "K": "keeper", "H": "gates", "E": "bell", "O": "rope", "J": "brake"},
+    "floor_06_palace_clock_1": {"Z": "south", "U": "up", "G": "gear_gaps", "J": "brake", "C": "checkpoints", "T": "chests"},
+    "floor_06_palace_clock_2": {"Z": "south", "U": "up", "L": "pendulum", "T": "chests", "C": "checkpoints"},
+    "floor_06_palace_clock_3": {"Z": "south", "D": "ladder", "F": "bellows", "R": "gear_seat", "A": "axle", "T": "chests", "C": "checkpoints"},
+    "floor_06_palace_clock_4": {"Z": "south", "U": "up", "K": "keeper", "H": "gates", "T": "chests", "C": "checkpoints"},
+    "floor_06_palace_clock_5": {"Z": "south", "E": "bell", "O": "rope", "C": "checkpoints"},
     "floor_06_palace_tunnels": {"Y": "to_bath", "U": "to_library", "V": "to_wardrobe", "W": "to_training", "K": "checkpoints",
                                 "I": "toll", "M": "chests", "N": "webs", "Q": "bedroom", "S": "quilt", "C": "vanity", "D": "diary",
                                 "R": "nursery", "O": "cradles", "L": "mobile", "H": "height_marks"},
@@ -622,76 +625,6 @@ def _palace_ante():
     return ["".join(r) for r in g]
 
 
-def _palace_clock():
-    """第四章⑧·钟楼（竖长，从南往北一层层往上爬）：
-    一层（底）齿轮间：齿轮夹板（G：缝里卡脚踝，搭档卡住齿轮才过得去）；检查点 C；
-    二层 钟摆厅：大钟摆（L：羽毛在桥上来回扫）、西边的小宝箱（T）；
-    三层 露天风箱台：风箱（F：顺着风走，逆风被吹回去、羽毛乱飞）、宝箱；
-    挂在齿轮上（R：一个人坐上大齿轮被带上四层，另一个人在下面转轴 A；上去以后放下梯子 D）；
-    四层 守钟人偶（K 醒过来）沿着长长的回廊追上来，闸门 H 拉下来挡它；
-    钟顶（E 大钟、O 钟绳：两个人一起拉，敲十三下 → 王座间的封印松开）。Z 回前厅。"""
-    g, room, put = _canvas(52, 120)
-    # 一层：齿轮间
-    room(8, 100, 44, 114)
-    _chamfer(g, 8, 100, 44, 114, 4)
-    room(24, 115, 28, 118)
-    put(26, 116, "P")
-    put(26, 118, "Z")
-    room(8, 104, 44, 105, "#")             # 一排大齿轮（墙，从这头到那头）
-    for x in range(12, 42, 6):             # 齿轮之间一格宽的缝（夹板）
-        put(x, 104, "G")
-        put(x, 105, ".")
-    put(10, 108, "J")                      # 刹车（站上去齿轮就停）
-    put(26, 110, "C")
-    # 楼梯一（东边绕上去）
-    room(40, 86, 43, 100)
-    # 二层：钟摆厅（中间一座窄桥）
-    room(6, 72, 46, 86)
-    _chamfer(g, 6, 72, 46, 86, 5)
-    room(6, 76, 20, 82, "#")
-    room(32, 76, 46, 82, "#")
-    room(21, 76, 31, 82)                   # 桥
-    put(26, 79, "L")
-    room(8, 74, 14, 75)                    # 西边小宝箱的凹位
-    put(9, 74, "T")
-    put(40, 84, "C")
-    # 楼梯二（西边）
-    room(8, 58, 11, 72)
-    # 三层：露天风箱台
-    room(6, 44, 46, 58)
-    _disk(g, 26, 44, 6)
-    for (x, y) in ((14, 50), (24, 48), (34, 52), (40, 47)):
-        put(x, y, "F")
-    room(43, 54, 46, 57)
-    put(45, 56, "T")
-    put(10, 56, "C")
-    # 挂在齿轮上：三层东北角的大齿轮 R → 四层；下面的转轴 A；四层的梯子 D 放下来以后两个人都能走
-    put(40, 45, "R")
-    put(36, 46, "A")
-    room(40, 40, 41, 43)                   # 梯子那一格（D 被挡住，放下梯子才通）
-    put(40, 42, "D")
-    # 四层：守钟人偶的追逐回廊（之字形）
-    room(30, 34, 46, 39)
-    put(44, 36, "K")
-    room(6, 30, 46, 33)
-    room(6, 24, 9, 29)
-    room(6, 20, 46, 23)
-    room(39, 12, 43, 19)
-    for (x, y) in ((20, 31), (8, 26), (30, 21), (41, 16)):
-        put(x, y, "H")
-    room(6, 34, 12, 38)
-    put(8, 36, "T")
-    put(38, 37, "C")
-    # 钟顶
-    room(14, 3, 46, 13)
-    _chamfer(g, 14, 3, 46, 13, 4)
-    room(28, 5, 32, 8, "#")                # 大钟（墙）
-    put(30, 9, "E")
-    put(30, 11, "O")
-    put(44, 12, "C")
-    return ["".join(r) for r in g]
-
-
 def _palace_tunnels():
     """第四章⑨·隧道与密室：串起各房间的密道网（入口：浴场壁炉 Y、图书馆书架 U、衣帽间衣柜 V、训练场画后 W、王座前厅画后 P）。
     收路费的小鬼（I：岔路口，给薄荷糖 / 金币，没有就「用痒付」）、一排宝箱（M ×4：一个真的，其余是宝箱怪）、羽毛蛛网（N：粉色公主的魔法烧掉）、
@@ -774,6 +707,108 @@ def _palace_throne():
     return ["".join(r) for r in g]
 
 
+# ---------------------------------------------------------------- 钟楼（拆成五层，一层一张图，楼梯 / 梯子连起来）
+def _clock_1():
+    """钟楼·一层 齿轮间：从前厅进来（P / Z，南）→ 一整排大齿轮（墙）中间一格宽的缝（G：合上时夹脚踝；站刹车 J 齿轮就停）→ 北边楼梯 U 上二层。T 小宝箱，C 检查点。"""
+    g, room, put = _canvas(46, 36)
+    room(6, 6, 39, 28)
+    _chamfer(g, 6, 6, 39, 28, 4)
+    room(20, 29, 24, 33)
+    room(20, 2, 24, 5)
+    room(6, 14, 39, 15, "#")
+    for x in range(10, 38, 6):
+        put(x, 14, "G")
+        put(x, 15, ".")
+    for (x, y) in ((12, 22), (32, 22), (14, 9), (30, 9)):
+        room(x, y, x, y, "#")
+    put(22, 30, "P")
+    put(22, 33, "Z")
+    put(22, 3, "U")
+    put(8, 20, "J")
+    put(22, 24, "C")
+    put(36, 9, "T")
+    return ["".join(r) for r in g]
+
+
+def _clock_2():
+    """钟楼·二层 钟摆厅：南边楼梯 Z 下来（P）→ 一座窄桥，大钟摆 L 在桥上来回扫 → 北边楼梯 U 上三层；西边凹位里的小宝箱 T。"""
+    g, room, put = _canvas(50, 36)
+    room(6, 6, 43, 28)
+    _chamfer(g, 6, 6, 43, 28, 5)
+    room(22, 29, 26, 33)
+    room(22, 2, 26, 5)
+    room(6, 12, 18, 22, "#")
+    room(30, 12, 43, 22, "#")
+    room(8, 8, 12, 10)
+    put(24, 30, "P")
+    put(24, 33, "Z")
+    put(24, 3, "U")
+    put(24, 17, "L")
+    put(9, 8, "T")
+    put(24, 26, "C")
+    return ["".join(r) for r in g]
+
+
+def _clock_3():
+    """钟楼·三层 露天风箱台：南边楼梯 Z（P）→ 风箱 F 一开一停地吹 → 东北的大齿轮 R（坐上去）/ 转轴 A（另一个人转）→ 梯子 D（放下来以后才能上四层）。T 小宝箱。"""
+    g, room, put = _canvas(50, 38)
+    room(6, 6, 43, 30)
+    _disk(g, 24, 6, 5)
+    room(22, 31, 26, 35)
+    room(38, 2, 40, 5)
+    for (x, y) in ((16, 22), (32, 24)):
+        room(x, y, x + 1, y + 1, "#")
+    put(24, 32, "P")
+    put(24, 35, "Z")
+    put(39, 3, "D")
+    for (x, y) in ((14, 16), (24, 13), (34, 18), (20, 26)):
+        put(x, y, "F")
+    put(38, 9, "R")
+    put(33, 10, "A")
+    put(41, 28, "T")
+    put(10, 28, "C")
+    return ["".join(r) for r in g]
+
+
+def _clock_4():
+    """钟楼·四层 回廊：从梯子 Z 上来（P，东南）→ 守钟人偶 K 醒过来、沿着之字形回廊追（闸门 H 落下挡它）→ 北边楼梯 U 上钟顶。T 小宝箱，C 检查点。"""
+    g, room, put = _canvas(52, 42)
+    room(32, 32, 46, 37)
+    room(44, 38, 46, 40)
+    room(32, 30, 36, 31)
+    room(6, 26, 46, 29)
+    room(6, 18, 9, 25)
+    room(6, 14, 46, 17)
+    room(40, 4, 44, 13)
+    room(41, 2, 43, 3)
+    room(6, 30, 12, 34)
+    put(44, 36, "P")
+    put(45, 40, "Z")
+    put(42, 2, "U")
+    put(46, 33, "K")
+    for (x, y) in ((20, 27), (8, 22), (30, 15), (42, 9)):
+        put(x, y, "H")
+    put(8, 32, "T")
+    put(40, 35, "C")
+    return ["".join(r) for r in g]
+
+
+def _clock_5():
+    """钟楼·钟顶：南边楼梯 Z 上来（P）→ 大钟 E（钟口里卡着半个铃铛）、钟绳 O（两个人一起拉，敲十三下）。"""
+    g, room, put = _canvas(46, 34)
+    room(8, 6, 37, 26)
+    _chamfer(g, 8, 6, 37, 26, 5)
+    _disk(g, 22, 6, 4)
+    room(20, 27, 24, 31)
+    room(20, 10, 24, 13, "#")
+    put(22, 28, "P")
+    put(22, 31, "Z")
+    put(22, 14, "E")
+    put(22, 17, "O")
+    put(32, 22, "C")
+    return ["".join(r) for r in g]
+
+
 LAYOUTS["floor_06_palace_library"] = _palace_library()
 LAYOUTS["floor_06_palace_wardrobe"] = _palace_wardrobe()
 LAYOUTS["floor_06_palace_training"] = _palace_training()
@@ -781,7 +816,8 @@ LAYOUTS["floor_06_palace_bath"] = _palace_bath()
 LAYOUTS["floor_06_palace_servants"] = _palace_servants()
 LAYOUTS["floor_06_palace_kitchen"] = _palace_kitchen()
 LAYOUTS["floor_06_palace_ante"] = _palace_ante()
-LAYOUTS["floor_06_palace_clock"] = _palace_clock()
+for _i, _f in enumerate((_clock_1, _clock_2, _clock_3, _clock_4, _clock_5), 1):
+    LAYOUTS["floor_06_palace_clock_%d" % _i] = _f()
 LAYOUTS["floor_06_palace_tunnels"] = _palace_tunnels()
 LAYOUTS["floor_06_palace_throne"] = _palace_throne()
 

@@ -20,6 +20,10 @@ extends Area2D
 @export var lock_flag := ""
 @export var unlock_flag := ""
 @export var locked_dialogue := ""
+## 反省篇的地图（牢房 / 鼠洞 / 水道 / 旧王宫）：出口上自动摆一个显眼的标记（exit_markers.png：往上的楼梯 / 往下的楼梯 / 门 / 墙洞 / 梯子）
+## + 头顶一行「→ 目的地」（锁着时加「（锁着）」），见 _add_marker。
+const MARKERS := "res://assets/generated/exit_markers.png"
+const MARKER_MAPS := ["floor_06_penance", "floor_06_rat_tunnel", "floor_06_waterway", "floor_06_palace"]
 ## 打开后第一次走进来播的对话（比如「用钥匙……打开了！」），只播一次。
 @export var open_dialogue := ""
 
@@ -37,6 +41,76 @@ func _ready() -> void:
 	shape.size = size
 	$Shape.shape = shape
 	body_entered.connect(_on_body_entered)
+	_add_marker.call_deferred()
+
+
+func _floor_id() -> String:
+	var n: Node = self
+	while n:
+		var v: Variant = n.get("floor_id")
+		if v != null and str(v) != "":
+			return str(v)
+		n = n.get_parent()
+	return ""
+
+
+## 出口长什么样：0 往上的楼梯 / 1 往下的楼梯 / 2 门 / 3 墙洞 / 4 梯子
+static func marker_kind(src: String, dst: String) -> int:
+	if src.begins_with("floor_06_palace_clock_") and dst.begins_with("floor_06_palace_clock_"):
+		var a := int(src.get_slice("_", 4))
+		var b := int(dst.get_slice("_", 4))
+		if (a == 3 and b == 4) or (a == 4 and b == 3):
+			return 4
+		return 0 if b > a else 1
+	if src.begins_with("floor_06_palace_clock_1") and dst == "floor_06_palace_ante":
+		return 1
+	if dst == "floor_06_palace_clock_1":
+		return 0
+	if dst.contains("tunnels") or src.contains("tunnels") or dst.contains("rat_tunnel") or dst.contains("waterway") or src.contains("rat_tunnel"):
+		return 3
+	return 2
+
+
+func _add_marker() -> void:
+	var src := _floor_id()
+	if not MARKER_MAPS.any(func(p): return src.begins_with(p)):
+		return
+	var dst_id := target_level
+	if dst_id == "" or dst_id == "next":
+		return
+	if dst_id.begins_with("res://"):
+		dst_id = dst_id.get_base_dir().get_file()   # 构建好的出口存的是 res://levels/<id>/floor.tscn
+	if ResourceLoader.exists(MARKERS):
+		var spr := Sprite2D.new()
+		spr.name = "Marker"
+		spr.texture = load(MARKERS)
+		spr.hframes = 5
+		spr.frame = marker_kind(src, dst_id)
+		spr.offset = Vector2(0, -20)
+		add_child(spr)
+	var tag := Label.new()
+	tag.name = "MarkerLabel"
+	var nm := Floors.display_name(dst_id).replace("旧王宫·", "")
+	tag.text = "→ " + nm + ("（锁着）" if is_locked_now() else "")
+	tag.add_theme_font_size_override("font_size", 8)
+	tag.add_theme_color_override("font_color", Color(1.0, 0.92, 0.6) if not is_locked_now() else Color(0.75, 0.7, 0.75))
+	tag.add_theme_color_override("font_outline_color", Color(0.15, 0.1, 0.15))
+	tag.add_theme_constant_override("outline_size", 3)
+	tag.position = Vector2(-tag.get_minimum_size().x * 0.5, -46)
+	tag.z_index = 30
+	add_child(tag)
+	_marker_lock = is_locked_now()
+
+
+var _marker_lock := false
+
+
+func _process(_d: float) -> void:
+	var tag := get_node_or_null("MarkerLabel") as Label
+	if tag and _marker_lock != is_locked_now():
+		_marker_lock = is_locked_now()
+		tag.text = tag.text.replace("（锁着）", "") + ("（锁着）" if _marker_lock else "")
+		tag.add_theme_color_override("font_color", Color(1.0, 0.92, 0.6) if not _marker_lock else Color(0.75, 0.7, 0.75))
 
 
 ## 走进来那一刻正好有对话 / 换图被拒（main 正忙）时，人还站在出口里：空下来以后再试一次（以前会一直卡在出口上走不了）

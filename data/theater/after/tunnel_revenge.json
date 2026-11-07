@@ -1,0 +1,329 @@
+{
+	"name": "鼠洞：挠脚鼠们的报复",
+	"cast": {
+		"princess": {
+			"kind": "princess",
+			"at": [
+				0,
+				8
+			],
+			"visual": "normal",
+			"anim": "idle",
+			"dir": "down"
+		},
+		"rat": {
+			"kind": "monster:rat",
+			"at": [
+				10,
+				10
+			],
+			"dir": "left"
+		},
+		"m1": {
+			"kind": "monster:rat",
+			"at": [
+				-22,
+				14
+			],
+			"dir": "right"
+		},
+		"m2": {
+			"kind": "monster:rat",
+			"at": [
+				24,
+				14
+			],
+			"dir": "left"
+		},
+		"m3": {
+			"kind": "monster:rat",
+			"at": [
+				-8,
+				22
+			],
+			"dir": "up"
+		}
+	},
+	"steps": [
+		{
+			"act": 1,
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "fade_in"
+				},
+				{
+					"state": "giggle",
+					"do": "voice"
+				}
+			],
+			"wait": 0.5
+		},
+		{
+			"speaker": "",
+			"text": "（最后一只老鼠「吱」地一声，晕乎乎地倒在地上转圈圈）",
+			"act": 1
+		},
+		{
+			"speaker": "公主",
+			"text": "……呼。总算打完了。",
+			"emotion": "happy"
+		},
+		{
+			"speaker": "挠脚鼠",
+			"text": "（从短裤里探出头，看了看满地晕倒的同伴）……吱。"
+		},
+		{
+			"speaker": "挠脚鼠",
+			"text": "……你把我的亲戚们全打晕了。"
+		},
+		{
+			"speaker": "公主",
+			"text": "是、是它们先扑上来的！",
+			"emotion": "surprise"
+		},
+		{
+			"speaker": "挠脚鼠",
+			"text": "吱吱。……那我也要扑上来。……大家——！",
+			"act": 2
+		},
+		{
+			"speaker": "",
+			"text": "（墙缝里、树根底下、碎石堆后面，一只、两只、五只……一群挠脚鼠探出了脑袋，眼睛亮晶晶的）"
+		},
+		{
+			"speaker": "小老鼠们",
+			"text": "吱吱吱！报仇！报仇！"
+		},
+		{
+			"speaker": "",
+			"text": "（她刚想跑，鼠爪鞋就被几只小老鼠一起拽掉了。她一屁股坐在软软的泥地上）",
+			"actions": [
+				{
+					"who": "princess",
+					"time": 0.4,
+					"do": "shake"
+				},
+				{
+					"who": "princess",
+					"visual": "helpless_1",
+					"do": "pose"
+				},
+				{
+					"do": "voice",
+					"state": "laugh"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "等、等一下！我道歉——！",
+			"emotion": "surprise"
+		},
+		{
+			"speaker": "",
+			"text": "（两只钻到脚边，用胡子在光着的脚心上来回地刷；一只爬上腰，小爪子在肋下一下一下地点）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "m1",
+					"zone": "sole",
+					"fx": "feather",
+					"repeat": 10,
+					"interval": 0.14,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"by": "m2",
+					"zone": "waist",
+					"fx": "hand",
+					"repeat": 8,
+					"interval": 0.16,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"visual": "giggle",
+					"do": "pose"
+				}
+			],
+			"act": 3
+		},
+		{
+			"speaker": "挠脚鼠",
+			"text": "（站在她膝盖上，像个小将军一样指挥）左边那只，脚趾缝！右边那只，脚跟！尾巴那边的，去咬尾巴！",
+			"portrait": "tunnel_revenge"
+		},
+		{
+			"speaker": "公主",
+			"text": "哈哈哈！你、你还指挥——！你到底是哪边的——！",
+			"actions": [
+				{
+					"who": "princess",
+					"visual": "helpless_1",
+					"do": "pose"
+				}
+			],
+			"emotion": "helpless_1"
+		},
+		{
+			"speaker": "挠脚鼠",
+			"text": "吱。我是老鼠这边的。"
+		},
+		{
+			"speaker": "",
+			"text": "（胡子刷脚心、小爪子挠脚趾缝、尾巴被拽一下松一下，脖子上还有一根不知道从哪里叼来的羽毛在晃）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "m1",
+					"zone": "sole",
+					"fx": "lines",
+					"repeat": 14,
+					"interval": 0.1,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"by": "m3",
+					"zone": "sole",
+					"fx": "feather",
+					"repeat": 12,
+					"interval": 0.11,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"by": "m2",
+					"zone": "neck",
+					"fx": "feather",
+					"repeat": 8,
+					"interval": 0.14,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"visual": "helpless_2",
+					"do": "pose"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "哈哈哈哈！不、不行了——全部一起不行——！",
+			"emotion": "helpless_2"
+		},
+		{
+			"speaker": "公主",
+			"text": "（星光一下子在洞里炸开，小老鼠们被吹得滚成了一个个小毛球……哈啊……放出去了……）",
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "flash"
+				},
+				{
+					"sound": "star_burst",
+					"do": "sfx"
+				},
+				{
+					"sound": "water_release",
+					"volume": -2.0,
+					"do": "sfx"
+				},
+				{
+					"who": "princess",
+					"time": 0.4,
+					"do": "shake"
+				},
+				{
+					"state": "laugh",
+					"do": "voice"
+				}
+			],
+			"act": "burst",
+			"wait": 1.0
+		},
+		{
+			"speaker": "",
+			"text": "（小毛球们晃晃脑袋爬起来，又不甘心地凑了回来——在她刚释放完、敏感得发烫的脚心上，一只一只排着队，各蹭了一下）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "m1",
+					"zone": "sole",
+					"fx": "hand",
+					"repeat": 4,
+					"interval": 0.2,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"by": "m3",
+					"zone": "sole",
+					"fx": "feather",
+					"repeat": 4,
+					"interval": 0.2,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"time": 0.3,
+					"do": "shake"
+				},
+				{
+					"who": "princess",
+					"visual": "helpless_1",
+					"do": "pose"
+				}
+			],
+			"act": 4
+		},
+		{
+			"speaker": "公主",
+			"text": "呀……！……哈……哈……排、排队蹭是什么意思……",
+			"emotion": "helpless_1"
+		},
+		{
+			"speaker": "小老鼠们",
+			"text": "吱吱！报完仇了！回家！"
+		},
+		{
+			"speaker": "",
+			"text": "（一群挠脚鼠呼啦啦地钻回了墙缝。只有短裤里的那只，心满意足地缩了回去）"
+		},
+		{
+			"speaker": "挠脚鼠",
+			"text": "……吱。下次打架之前，先问问我。"
+		},
+		{
+			"speaker": "公主",
+			"text": "……知、知道了……",
+			"emotion": "sad"
+		},
+		{
+			"speaker": "",
+			"text": "（她把鼠爪鞋捡回来穿上，扶着墙站了起来）",
+			"actions": [
+				{
+					"who": "princess",
+					"visual": "normal",
+					"do": "pose"
+				}
+			]
+		},
+		{
+			"actions": [
+				{
+					"state": "",
+					"do": "voice"
+				},
+				{
+					"time": 0.6,
+					"do": "fade_out"
+				}
+			],
+			"wait": 0.7
+		}
+	]
+}

@@ -1,0 +1,62 @@
+{
+	"name": "旧宝箱",
+	"entries": [
+		{
+			"if": {
+				"flag": "palace_tchest_4"
+			},
+			"node": "done"
+		},
+		{
+			"node": "default"
+		}
+	],
+	"nodes": {
+		"default": {
+			"lines": [
+				{
+					"text": "（一口落满灰的旧宝箱）",
+					"speaker": ""
+				}
+			],
+			"prompt": "打开？",
+			"choices": [
+				{
+					"text": "打开",
+					"next": "go"
+				},
+				{
+					"text": "不开",
+					"next": "no"
+				}
+			]
+		},
+		"go": {
+			"lines": [
+				{
+					"text": "……打开看看。",
+					"speaker": "公主"
+				}
+			],
+			"set": {
+				"call": "palace_chest_4"
+			}
+		},
+		"no": {
+			"lines": [
+				{
+					"text": "……先不碰。",
+					"speaker": "公主"
+				}
+			]
+		},
+		"done": {
+			"lines": [
+				{
+					"text": "（宝箱空了）",
+					"speaker": ""
+				}
+			]
+		}
+	}
+}

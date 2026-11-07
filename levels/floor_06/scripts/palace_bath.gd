@@ -4,7 +4,8 @@ extends PalaceRoom
 ##   蒸汽迷宫（steam 格）：站在蒸汽里画面四周一圈白雾（SteamFog），远处的笑声（laughs，按顺序）每隔一会儿响一次、冒一句「嘻嘻……」，跟着走就对了；
 ##   肥皂泡地板（soap 格）：踩上去顺着进来的方向一路滑（SLIDE_SPEED，自己控制不了），撞墙停下；往西滑出去掉进泡泡浴池（bubble_pool）→ 小剧场 bath_pool；
 ##   湿毛巾怪（towels）：追离得近的人，碰到就缠住腿（定身 + 挠），被攻击就散掉、过一会儿再冒出来；
-##   雕像刷池（statues）：每尊雕像按自己的节奏「站着 → 发光预警 → 弯腰刷」，弯腰时脚边的人被刷脚底；key_statue 那一尊被攻击就碎、掉出钥匙（KEY_FLAG）；
+##   雕像刷池（statues）：「木头人」——没有人面向它（两个人里任意一个面向它 FACE_DOT 以内都算）时，它慢慢挪向最近的公主（STATUE_CREEP，离原位最多 STATUE_LEASH）；
+##     有人面向它就一动不动。碰到人 = 抓住定身 GRAB_TIME 秒 + 刷脚底，抓完歇 STATUE_REST 秒（雕像留在原地，不回原位）；key_statue 那一尊被攻击就碎、掉出钥匙（KEY_FLAG）；
 ##   东边的门（出口 east 要钥匙）；起雾的镜子（mirror，线索）；温泉（bath）：走过去就演两个人一起泡温泉的小剧场 bath_friendship（CG）。
 ##   水池（bubble_pool / pool 格）过不去：放看不见的墙，水面由 PoolCell 画。
 ## 测试：on_soap / slide_dir、towels、statues、key_broken、break_key_statue()、fog_on。
@@ -18,10 +19,13 @@ const LAUGH_REACH := 24.0
 const TOWEL_SPEED := 32.0
 const TOWEL_CHASE := 80.0
 const TOWEL_RESPAWN := 10.0
-const STATUE_IDLE := 2.2
-const STATUE_WARN := 0.5
-const STATUE_BEND := 0.7
-const STATUE_R := 16.0
+const STATUE_CREEP := 16.0
+const STATUE_LEASH := 150.0
+const STATUE_R := 12.0
+const FACE_DOT := 0.5
+const WATCH_R := 200.0    # 离得太远的人「看」不住雕像
+const GRAB_TIME := 2.0
+const STATUE_REST := 3.0
 
 var slide_dir := {}
 var _overrun := {}
@@ -307,17 +311,37 @@ class Towel extends Node2D:
 		draw_circle(Vector2(2, -14 + w * 0.5), 1.0, Color(0.2, 0.2, 0.3))
 
 
-## 池边的雕像：站着 → 发光预警 → 弯腰刷脚底；钥匙雕像被攻击就碎
+## 这个位置是不是池水（雕像不会走进水里）
+func in_water(pos: Vector2) -> bool:
+	return _water.has(Vector2i(floori(pos.x / 16.0), floori(pos.y / 16.0)))
+
+
+## 池边的雕像「木头人」：没人面向它就慢慢挪过来（不进水），碰到就抓住刷脚底；钥匙雕像被攻击就碎
 class Statue extends Node2D:
 	var room: PalaceBath
 	var key := false
 	var broken := false
 	var t := 0.0
 	var phase := "idle"
+	var home := Vector2.ZERO
+	var rest := 0.0
 	var _spr: Sprite2D
 	const TEX := "res://assets/generated/palace_statue.png"
 
+	## 两个人里有没有人正面向这尊雕像
+	func watched() -> bool:
+		for c in room.members():
+			var pc := c as PlayableCharacter
+			if Downed.is_downed(pc):
+				continue
+			var to := position - pc.global_position
+			if to.length() > 1.0 and to.length() <= PalaceBath.WATCH_R and pc.facing.normalized().dot(to.normalized()) >= PalaceBath.FACE_DOT:
+				return true
+		return false
+
 	func _ready() -> void:
+		if home == Vector2.ZERO:
+			home = position
 		# 新素材（tools/art/gen_palace_sprites.py）：3 帧——站着 / 发光预警 / 弯腰刷；没有贴图时用下面 _draw 的简笔
 		if ResourceLoader.exists(TEX):
 			_spr = Sprite2D.new()
@@ -338,14 +362,41 @@ class Statue extends Node2D:
 					room.break_key_statue()
 					return
 		t += delta
-		var cyc := PalaceBath.STATUE_IDLE + PalaceBath.STATUE_WARN + PalaceBath.STATUE_BEND
-		var k := fposmod(t, cyc)
-		phase = "idle" if k < PalaceBath.STATUE_IDLE else ("warn" if k < PalaceBath.STATUE_IDLE + PalaceBath.STATUE_WARN else "bend")
-		if phase == "bend":
-			for c in room.members():
-				var pc := c as PlayableCharacter
-				if not Downed.is_downed(pc) and pc.global_position.distance_to(position) <= PalaceBath.STATUE_R:
-					room.tickle(pc, "statue", 0.35, 3.0, "sole", delta, self)
+		if rest > 0.0:
+			rest -= delta
+			phase = "bend" if rest > PalaceBath.STATUE_REST - PalaceBath.GRAB_TIME else "idle"
+			return
+		if watched():
+			phase = "idle"
+			return
+		# 没人看着：挪向最近的公主（不离原位太远）
+		var near: PlayableCharacter = null
+		for c in room.members():
+			var pc := c as PlayableCharacter
+			if not Downed.is_downed(pc) and pc.global_position.distance_to(home) <= PalaceBath.STATUE_LEASH + 40.0 \
+					and (near == null or pc.global_position.distance_to(position) < near.global_position.distance_to(position)):
+				near = pc
+		if near == null:
+			phase = "idle"
+			return
+		phase = "warn"
+		var next := position.move_toward(near.global_position, PalaceBath.STATUE_CREEP * delta)
+		if next.distance_to(home) <= PalaceBath.STATUE_LEASH and not room.in_water(next):
+			position = next
+		if position.distance_to(near.global_position) <= PalaceBath.STATUE_R:
+			grab(near)
+
+	## 抓住：定身 + 刷脚底，然后歇一会儿（留在原地）
+	func grab(pc: PlayableCharacter) -> void:
+		rest = PalaceBath.STATUE_REST
+		phase = "bend"
+		pc.status.apply_root(PalaceBath.GRAB_TIME)
+		for i in 3:
+			var h := HitData.make_tickle(self, 4.0)
+			h.zone = "sole"
+			pc.receive_hit(h)
+		PalaceRoom.say_random(pc, "statue_grab")
+		Audio.play("gate", -8.0, 0.0, 1.7)
 
 	func _draw() -> void:
 		if _spr:

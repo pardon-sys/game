@@ -502,6 +502,12 @@ func palace_chest_3() -> void:
 		r.open_chest(3)
 
 
+func palace_chest_4() -> void:
+	var r := _palace_room("PalaceClock")
+	if r:
+		r.open_chest(4)
+
+
 func palace_toll_mint() -> void:
 	runner.end_conversation()
 	var r := _palace_room("PalaceTunnels")

@@ -4,6 +4,10 @@
   clock_keeper_sheet.png → assets/generated/npcs/clock_keeper.png  守钟人偶，4x4 格、每格 32x32（同人偶女仆）
   portrait_boss_sheet.png → assets/generated/portrait_boss.png     王座间的大画像，3 帧横排、每帧 64x88（完好 / 裂开伸手 / 烧穿）
   small_portrait_sheet.png → assets/generated/small_portrait.png   墙上的小画像，2 帧横排、每帧 28x36（睡着 / 醒了伸手）
+  exit_markers_sheet.png → assets/generated/exit_markers.png       反省篇出口标记，5 帧、每帧 40x40（上楼梯 / 下楼梯 / 门 / 墙洞 / 梯子）
+  clock_props_sheet.png → assets/generated/clock_props.png         钟楼道具，6 帧、每帧 48x56（齿轮 / 钟摆 / 风箱 / 钟 / 钟绳 / 宝箱）
+  palace_misc_sheet.png → assets/generated/palace_misc.png         仆人回廊，3 帧、每帧 24x32（唤人铃 / 钥匙 / 小牌子）
+  head_maid_sheet.png → assets/generated/npcs/head_maid.png        女仆长，4x4 格、每格 32x32
 做法：白底抠掉（和边缘连通的白）→ 按格子切 → 每格取最大的人物块 → 等比缩到格子里（脚底对齐底边）→ 减色 + 1px 深色描边。
 用法：python tools/art/gen_palace_sprites.py
 """
@@ -187,3 +191,7 @@ if __name__ == "__main__":
     build_walker("clock_keeper_sheet.png", "npcs/clock_keeper.png", "守钟人偶")
     build_strip("portrait_boss_sheet.png", "portrait_boss.png", 3, 64, 88, "大画像")
     build_strip("small_portrait_sheet.png", "small_portrait.png", 2, 28, 36, "小画像")
+    build_strip("exit_markers_sheet.png", "exit_markers.png", 5, 40, 40, "出口标记（上楼梯 / 下楼梯 / 门 / 墙洞 / 梯子）")
+    build_strip("clock_props_sheet.png", "clock_props.png", 6, 48, 56, "钟楼道具（齿轮 / 钟摆 / 风箱 / 钟 / 钟绳 / 宝箱）")
+    build_strip("palace_misc_sheet.png", "palace_misc.png", 3, 24, 32, "仆人回廊（唤人铃 / 钥匙 / 小牌子）")
+    build_walker("head_maid_sheet.png", "npcs/head_maid.png", "女仆长")

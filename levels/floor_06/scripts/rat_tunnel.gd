@@ -9,6 +9,7 @@ extends Node2D
 ##   猫咪追逐：走到 cat_start → 橘猫从身后（最近的检查点）追出来（CAT_SPEED，比走路快、比冲刺慢），跑到 cat_end 的小洞就安全；
 ##     追上了 → 小剧场 tunnel_cat_first（第一次，长一点）/ tunnel_cat，然后回检查点重跑。
 ##   老鼠窝（nest）、刻字的死胡同（clue）：按 E 调查（对话 floor_06/tunnel_nest、tunnel_clue）。
+##   洞里的老鼠（地图里的 monster type=rat）全打倒 → 小剧场 tunnel_revenge（CG：裤子里的挠脚鼠叫来一群挠脚鼠报复，REVENGE_FLAG）。
 ## 等距地图：滴水管、猫都挂在 Entities（导演的父节点）下面，各自投影；导演自己只管逻辑。
 ## 测试：triggered、checkpoint、drips、cat、chasing、safe、caught_count、drip_hit(i)、catch_now()。
 
@@ -24,6 +25,7 @@ const CAT_SPEED := 92.0
 const CAT_CATCH_R := 10.0
 const CAT_START_R := 14.0
 const SAFE_R := 14.0
+const REVENGE_FLAG := "tunnel_mice_revenge"
 
 var lv: Node
 var triggered := {}
@@ -75,6 +77,20 @@ func _ready() -> void:
 		PenanceCell.wear_mouse()
 
 
+var _rats_seen := false
+
+
+## 洞里还活着的老鼠（地图里放的那几只）
+func rats_left() -> int:
+	var n := 0
+	for m in lv.find_children("*", "Monster", true, false) if lv else []:
+		if (m as Monster).is_alive():
+			n += 1
+	if n > 0:
+		_rats_seen = true
+	return n
+
+
 func _busy() -> bool:
 	return GameState.in_dialogue or GameState.in_cutscene or CG.is_busy() or Dialogue.is_active()
 
@@ -92,6 +108,12 @@ func _process(delta: float) -> void:
 			_stop_chase()
 			CG.play_theater(str(SCENES[k]))
 			return
+	# 洞里的老鼠全打倒：挠脚鼠们的报复
+	if not GameState.has_flag(REVENGE_FLAG) and rats_left() == 0 and _rats_seen:
+		GameState.set_flag(REVENGE_FLAG)
+		_stop_chase()
+		CG.play_theater("tunnel_revenge")
+		return
 	# 竖井那段演完：章末过场
 	if GameState.has_flag("cg_seen_theater:tunnel_shaft") and not GameState.has_flag(DONE_FLAG):
 		GameState.set_flag(DONE_FLAG)
