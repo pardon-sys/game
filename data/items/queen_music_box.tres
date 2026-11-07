@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="KeyItem" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/items/key_item.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/generated/item_queen_music_box.png" id="2"]
+
+[resource]
+script = ExtResource("1")
+icon = ExtResource("2")
+id = "queen_music_box"
+display_name = "女王的八音盒"
+description = "粉色的小八音盒。打开它，会放出一段很久以前的笑声。……王座间的画像，好像很怕听到它。"
+key_type = "palace"
+category = 1
+stackable = false
+show_in_hud = false
+pickup_emotion = "happy"

@@ -112,6 +112,7 @@ const TYPED_SCENES := {
 		"spider": "res://scenes/actors/monsters/tickle_spider.tscn",
 		"troll": "res://scenes/actors/monsters/tickle_troll.tscn",
 		"rat": "res://scenes/actors/monsters/foot_rat.tscn",
+		"clock_beetle": "res://scenes/actors/monsters/clock_beetle.tscn",
 		"crab": "res://scenes/actors/monsters/pincer_crab.tscn",
 		"split_slime": "res://scenes/actors/monsters/split_slime.tscn",
 		"mimic": "res://scenes/actors/monsters/mimic.tscn",

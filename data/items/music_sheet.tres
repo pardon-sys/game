@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="KeyItem" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/items/key_item.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/generated/item_music_sheet.png" id="2"]
+
+[resource]
+script = ExtResource("1")
+icon = ExtResource("2")
+id = "music_sheet"
+display_name = "笑声乐谱（残片）"
+description = "一小片泛黄的乐谱，音符画得歪歪扭扭的，旁边写着「踩」。三片拼起来，就是王座前厅地砖的顺序。"
+key_type = "palace"
+category = 1
+stackable = true
+show_in_hud = false
+pickup_emotion = "happy"

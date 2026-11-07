@@ -172,11 +172,11 @@ MARKS = {
                                  "V": "mirror_hands", "T": "trap_wardrobe", "K": "keys", "J": "fragment"},
     "floor_06_palace_training": {"Y": "east", "X": "north", "U": "dummies", "N": "sign", "F": "swords", "W": "carvings", "A": "ring", "B": "bell",
                                  "T": "stocks", "C": "diary", "J": "fragment"},
-    "floor_06_palace_ante": {"Z": "south", "N": "throne_door", "W": "clock_door", "S": "painting", "L": "statue"},
-    "floor_06_palace_clock_1": {"Z": "south", "U": "up", "G": "gear_gaps", "J": "brake", "C": "checkpoints", "T": "chests"},
+    "floor_06_palace_ante": {"Z": "south", "N": "throne_door", "W": "clock_door", "S": "painting", "L": "statue", "M": "tiles", "F": "fountain", "D": "pedestal", "V": "vault"},
+    "floor_06_palace_clock_1": {"Z": "south", "U": "up", "G": "gear_gaps", "J": "brake", "C": "checkpoints", "T": "chests", "B": "beetle_nests"},
     "floor_06_palace_clock_2": {"Z": "south", "U": "up", "L": "pendulum", "T": "chests", "C": "checkpoints"},
-    "floor_06_palace_clock_3": {"Z": "south", "D": "ladder", "F": "bellows", "R": "gear_seat", "A": "axle", "T": "chests", "C": "checkpoints"},
-    "floor_06_palace_clock_4": {"Z": "south", "U": "up", "K": "keeper", "H": "gates", "T": "chests", "C": "checkpoints"},
+    "floor_06_palace_clock_3": {"Z": "south", "D": "ladder", "F": "bellows", "R": "gear_seat", "A": "axle", "T": "chests", "C": "checkpoints", "B": "beetle_nests"},
+    "floor_06_palace_clock_4": {"Z": "south", "U": "up", "K": "keeper", "H": "gates", "T": "chests", "C": "checkpoints", "Q": "clockface"},
     "floor_06_palace_clock_5": {"Z": "south", "E": "bell", "O": "rope", "C": "checkpoints"},
     "floor_06_palace_tunnels": {"Y": "to_bath", "U": "to_library", "V": "to_wardrobe", "W": "to_training", "K": "checkpoints",
                                 "I": "toll", "M": "chests", "N": "webs", "Q": "bedroom", "S": "quilt", "C": "vanity", "D": "diary",
@@ -193,7 +193,7 @@ MARKS = {
                           "M": "mud", "Z": "foes", "C": "checkpoints", "A": "arena", "K": "keeper", "V": "valves", "R": "rocks",
                           "N": "nozzles", "E": "end"},
     "floor_06_rat_tunnel": {"A": "thigh", "F": "sole", "S": "shaft", "W": "drips", "N": "nest", "K": "clue", "Q": "cat_start",
-                            "R": "cat_end", "C": "checkpoints", "M": "rats", "E": "end"},
+                            "R": "cat_end", "C": "checkpoints", "M": "rats", "E": "end", "G": "king", "O": "king_holes", "T": "traps"},
 }
 COMMON = {"P": "start", "X": "exit", "B": "blue"}
 
@@ -242,6 +242,9 @@ def _tunnel():
     room(66, 26, 72, 30)             # 老鼠的小洞穴
     line(60, 31, 28, 31)             # 竖井前的通道
     room(26, 29, 29, 31)             # 竖井底
+    line(72, 28, 76, 28)             # 老鼠的小洞穴往东：胖鼠王的洞底
+    room(78, 25, 88, 32)             # 圆一点的洞底（四个角留成土墙；北边隔一层土和猫咪追逐的走廊分开）
+    room(76, 26, 90, 31)
     put(3, 3, "P")
     put(14, 3, "A")
     put(10, 10, "N")
@@ -259,6 +262,12 @@ def _tunnel():
         put(x, y, "M")
     put(33, 31, "S")
     put(27, 30, "E")
+    put(74, 28, "C")                 # 洞底门口的检查点（输给鼠王回这里）
+    put(83, 28, "G")                 # 胖鼠王的洞底（中间）
+    for (x, y) in ((78, 25), (87, 25), (90, 28), (86, 32), (76, 30)):
+        put(x, y, "O")               # 鼠王钻来钻去的洞口
+    for (x, y) in ((17, 3), (47, 4), (40, 31), (64, 28)):
+        put(x, y, "T")               # 奶酪捕鼠夹
     return ["".join(r) for r in g]
 
 
@@ -622,6 +631,12 @@ def _palace_ante():
     put(5, 20, "W")
     put(53, 20, "S")
     put(30, 30, "L")
+    for y in (19, 20, 21):                 # 大厅正中 3×3 的笑声地砖（行优先：左上 0 … 右下 8）
+        for x in (29, 30, 31):
+            put(x, y, "M")
+    put(24, 26, "F")                       # 许愿喷泉
+    put(36, 26, "D")                       # 徽记台（七个小凹槽）
+    put(30, 23, "V")                       # 地砖踩对以后打开的地下小宝库（台阶）
     return ["".join(r) for r in g]
 
 
@@ -727,6 +742,8 @@ def _clock_1():
     put(8, 20, "J")
     put(22, 24, "C")
     put(36, 9, "T")
+    for (x, y) in ((14, 17), (30, 17), (18, 9)):
+        put(x, y, "B")               # 齿轮缝里爬出发条挠痒虫
     return ["".join(r) for r in g]
 
 
@@ -767,6 +784,8 @@ def _clock_3():
     put(33, 10, "A")
     put(41, 28, "T")
     put(10, 28, "C")
+    for (x, y) in ((18, 19), (30, 14), (36, 26)):
+        put(x, y, "B")               # 发条挠痒虫
     return ["".join(r) for r in g]
 
 
@@ -790,6 +809,7 @@ def _clock_4():
         put(x, y, "H")
     put(8, 32, "T")
     put(40, 35, "C")
+    put(44, 6, "Q")                  # 回廊尽头的大钟面（拨到对的时间开暗格）
     return ["".join(r) for r in g]
 
 

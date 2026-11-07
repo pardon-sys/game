@@ -9,7 +9,9 @@ extends Node2D
 ##   猫咪追逐：走到 cat_start → 橘猫从身后（最近的检查点）追出来（CAT_SPEED，比走路快、比冲刺慢），跑到 cat_end 的小洞就安全；
 ##     追上了 → 小剧场 tunnel_cat_first（第一次，长一点）/ tunnel_cat，然后回检查点重跑。
 ##   老鼠窝（nest）、刻字的死胡同（clue）：按 E 调查（对话 floor_06/tunnel_nest、tunnel_clue）。
-##   洞里的老鼠（地图里的 monster type=rat）全打倒 → 小剧场 tunnel_revenge（CG：裤子里的挠脚鼠叫来一群挠脚鼠报复，REVENGE_FLAG）。
+##   洞底的胖鼠王（RatKing，king / king_holes 标记；躲猫猫式小 Boss，见 rat_king.gd）打倒 → 小剧场 tunnel_revenge
+##     （CG：裤子里的挠脚鼠叫来一群挠脚鼠报复，REVENGE_FLAG）。
+##   奶酪捕鼠夹（traps）：踩上去被夹住（status.grab，连按挣扎 TRAP_PRESSES 下），小老鼠围上来挠脚心；每个只夹一次（trap_<i> 标记）。
 ## 等距地图：滴水管、猫都挂在 Entities（导演的父节点）下面，各自投影；导演自己只管逻辑。
 ## 测试：triggered、checkpoint、drips、cat、chasing、safe、caught_count、drip_hit(i)、catch_now()。
 
@@ -26,12 +28,17 @@ const CAT_CATCH_R := 10.0
 const CAT_START_R := 14.0
 const SAFE_R := 14.0
 const REVENGE_FLAG := "tunnel_mice_revenge"
+const TRAP_R := 8.0
+const TRAP_PRESSES := 8
+const TRAP_TICK := 0.35
 
 var lv: Node
 var triggered := {}
 var checkpoint := Vector2.ZERO
 var drips: Array = []
 var cat: TunnelCat
+var king: RatKing
+var traps: Array = []
 var chasing := false
 var safe := false
 var caught_count := 0
@@ -67,6 +74,20 @@ func _ready() -> void:
 		add_child(sp)
 		sp.global_position = Cutscene.cell_to_world(QuestMaps.cell(MAP, str(pair[0])))
 	# 等距地图：每个要单独投影的东西都得是 Entities 的直接子节点（挂在导演下面会跟着导演的投影位置偏）
+	if not QuestMaps.cells(MAP, "king").is_empty():
+		king = RatKing.new()
+		king.tunnel = self
+		king.setup(get_parent(), QuestMaps.cells(MAP, "king_holes"), QuestMaps.cell(MAP, "king"))
+		get_parent().add_child.call_deferred(king)
+	var ti := 0
+	for c in QuestMaps.cells(MAP, "traps"):
+		var tr := Mousetrap.new()
+		tr.tunnel = self
+		tr.idx = ti
+		tr.position = Cutscene.cell_to_world(c)
+		get_parent().add_child.call_deferred(tr)
+		traps.append(tr)
+		ti += 1
 	cat = TunnelCat.new()
 	cat.tunnel = self
 	get_parent().add_child.call_deferred(cat)
@@ -108,8 +129,8 @@ func _process(delta: float) -> void:
 			_stop_chase()
 			CG.play_theater(str(SCENES[k]))
 			return
-	# 洞里的老鼠全打倒：挠脚鼠们的报复
-	if not GameState.has_flag(REVENGE_FLAG) and rats_left() == 0 and _rats_seen:
+	# 胖鼠王倒下：挠脚鼠们的报复
+	if not GameState.has_flag(REVENGE_FLAG) and GameState.has_flag(RatKing.FLAG):
 		GameState.set_flag(REVENGE_FLAG)
 		_stop_chase()
 		CG.play_theater("tunnel_revenge")
@@ -123,6 +144,11 @@ func _process(delta: float) -> void:
 	for c in _cps:
 		if at.distance_to(c) <= CHECK_R:
 			checkpoint = c
+	# 胖鼠王、捕鼠夹
+	if is_instance_valid(king) and p is PlayableCharacter:
+		king.step(p as PlayableCharacter, delta)
+	for tr in traps:
+		(tr as Mousetrap).tick(p as PlayableCharacter, delta)
 	# 滴水管
 	for d in drips:
 		(d as Drip).tick(delta, p)
@@ -239,6 +265,84 @@ class Drip extends Node2D:
 		if warn > 0.0:
 			var k2 := 1.0 - warn / RatTunnel.DRIP_WARN
 			draw_circle(Vector2(0, -40.0 + 40.0 * k2), 2.0, Color(0.7, 0.85, 1.0, 0.9))
+
+
+## 奶酪捕鼠夹：奶酪下面有一点金属反光；踩上去被夹住，小老鼠围上来挠脚心，连按挣扎 TRAP_PRESSES 下才挣开
+class Mousetrap extends Node2D:
+	const PROPS := "res://assets/generated/palace_events.png"
+	var tunnel: RatTunnel
+	var idx := 0
+	var _spr: Sprite2D
+	var _t := 0.0
+	var _tick := 0.0
+	var holding: PlayableCharacter
+
+	func flag() -> String:
+		return "tunnel_trap_%d" % idx
+
+	func sprung() -> bool:
+		return GameState.has_flag(flag())
+
+	func _ready() -> void:
+		z_index = 1
+		if ResourceLoader.exists(PROPS):
+			_spr = Sprite2D.new()
+			_spr.texture = load(PROPS)
+			_spr.hframes = 6
+			_spr.offset = Vector2(0, -8)
+			_spr.scale = Vector2(0.55, 0.55)
+			_spr.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+			add_child(_spr)
+
+	func tick(p: PlayableCharacter, delta: float) -> void:
+		_t += delta
+		if _spr:
+			_spr.frame = 1 if sprung() else 0
+		queue_redraw()
+		if p == null:
+			return
+		if holding:
+			if not holding.status.is_grabbed_by(self):
+				holding = null
+				var free_lines: Array = RatTunnel.data().get("trap_free", []) as Array
+				if not free_lines.is_empty():
+					GameState.princess_reacted.emit(str(free_lines.pick_random()), 2.0)
+				return
+			_tick -= delta
+			if _tick <= 0.0:
+				_tick = RatTunnel.TRAP_TICK
+				var h := HitData.make_tickle(self, 2.5)
+				h.zone = "sole"
+				holding.receive_hit(h)
+			return
+		if not sprung() and p.global_position.distance_to(global_position) <= RatTunnel.TRAP_R:
+			snap(p)
+
+	func snap(p: PlayableCharacter) -> void:
+		GameState.set_flag(flag())
+		if not p.status.grab(self, 8.0, RatTunnel.TRAP_PRESSES):
+			return
+		holding = p
+		_tick = 0.2
+		Audio.play("stocks", -4.0, 0.05, 1.3)
+		var lines: Array = RatTunnel.data().get("trap_snap", []) as Array
+		if not lines.is_empty():
+			GameState.princess_reacted.emit(str(lines.pick_random()), 2.0)
+
+	func _draw() -> void:
+		if not sprung() and fmod(_t, 2.2) < 0.35:   # 奶酪下面一闪一闪的金属反光（看仔细就能躲开）
+			draw_line(Vector2(-5, -2), Vector2(5, -2), Color(1, 1, 1, 0.9), 1.0)
+			draw_circle(Vector2(5, -2), 1.5, Color(1, 1, 1, 0.9))
+		if _spr == null:
+			draw_rect(Rect2(-6, -4, 12, 5), Color(0.55, 0.38, 0.2))
+			if not sprung():
+				draw_colored_polygon(PackedVector2Array([Vector2(-4, -4), Vector2(4, -4), Vector2(0, -9)]), Color(1, 0.85, 0.3))
+		if holding:   # 围上来的小老鼠
+			for k in 3:
+				var a := _t * 3.0 + k * TAU / 3.0
+				var o := Vector2(cos(a) * 12.0, sin(a) * 6.0)
+				draw_circle(o, 3.0, Color(0.6, 0.6, 0.65))
+				draw_circle(o + Vector2(2, -2), 1.2, Color(1, 0.7, 0.75))
 
 
 ## 追人的橘猫：沿格子路追她

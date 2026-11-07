@@ -33,6 +33,47 @@ static func say_random(who: Node2D, key: String) -> void:
 		SpeechBubble.say(who, str(lines.pick_random()), 28.0, 1.6)
 
 
+## 笑脸徽记（第四章追加事件）：每个来源（src）只给一枚；集齐 BADGES_ALL 枚到王座前厅的徽记台换女王的羽毛发饰
+const BADGE_SOURCES := ["rat_king", "clockface", "vault", "statue", "scrub", "shade", "lost"]
+const BADGES_ALL := 7
+
+
+static func badge_flag(src: String) -> String:
+	return "badge_" + src
+
+
+static func badges() -> int:
+	return BADGE_SOURCES.filter(func(s): return GameState.has_flag(badge_flag(s))).size()
+
+
+static func give_badge(src: String) -> bool:
+	if GameState.has_flag(badge_flag(src)):
+		return false
+	GameState.set_flag(badge_flag(src))
+	var it := ItemDB.get_item("smile_badge")
+	if it:
+		GameState.give_item(it, 1)
+	Audio.play("chime", -3.0, 0.0, 1.3)
+	GameState.notify("得到一枚笑脸徽记（%d / %d）" % [badges(), BADGES_ALL])
+	return true
+
+
+## 笑声乐谱（三片：1 钟面暗格 / 2 送餐 / 3 浴场镜子）；王座前厅的笑声地砖要三片都有
+static func sheets() -> int:
+	return [1, 2, 3].filter(func(i): return GameState.has_flag("palace_sheet_%d" % i)).size()
+
+
+static func give_sheet(i: int) -> bool:
+	if GameState.has_flag("palace_sheet_%d" % i):
+		return false
+	GameState.set_flag("palace_sheet_%d" % i)
+	var it := ItemDB.get_item("music_sheet")
+	if it:
+		GameState.give_item(it, 1)
+	GameState.notify("得到一片笑声乐谱（%d / 3）" % sheets())
+	return true
+
+
 static func cell_pos(c: Vector2i) -> Vector2:
 	return Vector2(c.x * 16.0 + 8.0, c.y * 16.0 + 8.0)
 

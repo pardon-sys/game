@@ -1336,6 +1336,14 @@ data/cutscenes/<楼层组>/  地图内过场；data/theater/<楼层组>/  小剧
   - 图书馆的私人书房：密码门打开前整间盖着 `PalaceLibrary.StudyShade`（`STUDY_RECT`），开门后淡掉。
   - 钟楼拆成五层（`floor_06_palace_clock_1` … `_5`，`quest_maps._clock_1` … `_5`），楼梯 / 梯子（exit）连起来：同一个 `PalaceClock`（token `map=`）按这一层有的标记开机关；
 	三层的梯子 `unlock_flag = palace_ladder_down`，四层上钟顶的楼梯 `unlock_flag = palace_keeper_done`；大道具用 `clock_props.png`（齿轮 / 钟摆 / 风箱 / 钟 / 钟绳 / 宝箱）。
+  - 追加事件·第一批（`penance_text/palace4.py`、`tunnel.py`；笑脸徽记 `PalaceRoom.give_badge(src)` / `badges()`，笑声乐谱 `PalaceRoom.give_sheet(i)` / `sheets()`；
+	物品 `smile_badge` / `music_sheet` / `queen_music_box`（`tools/art/gen_palace_items.py`）、装备 `queen_hairpin`）：
+	- 鼠洞：`RatKing`（`rat_king.gd`，标记 king / king_holes；`phase` idle → under ⇄ peek → out → down，`plug(i)` 堵洞，`fail_now()` 小剧场 `tunnel_rat_king_fail`），
+	  倒下 → `tunnel_revenge`（以前是打完洞里的老鼠触发）；`RatTunnel.Mousetrap`（traps，`status.grab` 连按 `TRAP_PRESSES` 挣开，各夹一次）。
+	- 钟楼：`ClockBeetle`（`scripts/actors/monsters/clock_beetle.gd`，发条 `WIND` 秒后翻倒消失；`PalaceClock.release_beetles(i)`，beetle_nests 每处最多 `NEST_MAX` 批）；
+	  四层 clockface（对话 `clock_face`：时针三、分针九 → `clockface_ok()`）。
+	- 王座前厅：`PalaceAnte.ArmorGuard`（巡逻 / 扇形视野 / 抓人挠腋下 / 背后 E 推倒）、笑声地砖（`step_tile`、`TILE_SEQ`，三片乐谱齐了才算）→ `VAULT_FLAG` → `vault_loot()`；
+	  石像问答（`ante_statue`，`statue_ok()` 给八音盒）、许愿喷泉（`wish(kind)`）、徽记台（`place_badges()` → 发饰 + `palace_badge_party` CG）。
   - 修正（第 N+1 轮）：
 	- 配乐改了以后要真的生效：`gen_floor06_after.py` 以前只往 `floors.json` 里加新条目，已有条目的 name / music 不更新；现在会更新，并删掉 `GONE` 里的旧图（单张钟楼）。
 	- 密道入口（`LevelExit.SECRET_MAPS`，通往隧道与密室）：`secret_hidden()` 时不显示标志 / 黄字，只看得到那幅画；走过一次（`passage_flag(a, b)`，两个方向都算）才显示。

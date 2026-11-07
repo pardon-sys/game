@@ -1,0 +1,63 @@
+{
+	"name": "许愿喷泉",
+	"entries": [
+		{
+			"node": "default"
+		}
+	],
+	"nodes": {
+		"default": {
+			"lines": [
+				{
+					"text": "（一座小小的大理石喷泉，池底躺着几枚旧金币。边上刻着：「投下心意，许一个愿」）",
+					"speaker": ""
+				}
+			],
+			"prompt": "投点什么？",
+			"choices": [
+				{
+					"text": "一颗薄荷糖",
+					"next": "mint"
+				},
+				{
+					"text": "10 枚金币",
+					"next": "coin"
+				},
+				{
+					"text": "算了",
+					"next": "no"
+				}
+			]
+		},
+		"mint": {
+			"lines": [
+				{
+					"text": "……许个愿。",
+					"speaker": "公主"
+				}
+			],
+			"set": {
+				"call": "palace_fountain_mint"
+			}
+		},
+		"coin": {
+			"lines": [
+				{
+					"text": "……许个愿。",
+					"speaker": "公主"
+				}
+			],
+			"set": {
+				"call": "palace_fountain_coin"
+			}
+		},
+		"no": {
+			"lines": [
+				{
+					"text": "……下次再许。",
+					"speaker": "公主"
+				}
+			]
+		}
+	}
+}

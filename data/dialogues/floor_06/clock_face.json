@@ -1,0 +1,144 @@
+{
+	"name": "大钟面",
+	"entries": [
+		{
+			"if": {
+				"flag": "palace_clockface_open"
+			},
+			"node": "open"
+		},
+		{
+			"node": "default"
+		}
+	],
+	"nodes": {
+		"default": {
+			"lines": [
+				{
+					"text": "（回廊尽头的墙上嵌着一面大钟。钟面落满了灰，两根指针都能用手拨动）",
+					"speaker": ""
+				},
+				{
+					"text": "（钟面底下有一道细细的缝——像是一个暗格）",
+					"speaker": ""
+				}
+			],
+			"prompt": "把时针拨到……",
+			"choices": [
+				{
+					"text": "指着「十二」",
+					"next": "wrong_h"
+				},
+				{
+					"text": "指着「三」",
+					"next": "m"
+				},
+				{
+					"text": "指着「六」",
+					"next": "wrong_h"
+				},
+				{
+					"text": "指着「九」",
+					"next": "wrong_h"
+				}
+			]
+		},
+		"m": {
+			"lines": [
+				{
+					"text": "（「咔」）",
+					"speaker": ""
+				}
+			],
+			"prompt": "再把分针拨到……",
+			"choices": [
+				{
+					"text": "指着「十二」",
+					"next": "wrong"
+				},
+				{
+					"text": "指着「三」",
+					"next": "wrong"
+				},
+				{
+					"text": "指着「六」",
+					"next": "wrong"
+				},
+				{
+					"text": "指着「九」",
+					"next": "ok"
+				}
+			]
+		},
+		"wrong_h": {
+			"lines": [
+				{
+					"text": "（「咔」）",
+					"speaker": ""
+				}
+			],
+			"prompt": "再把分针拨到……",
+			"choices": [
+				{
+					"text": "指着「十二」",
+					"next": "wrong"
+				},
+				{
+					"text": "指着「三」",
+					"next": "wrong"
+				},
+				{
+					"text": "指着「六」",
+					"next": "wrong"
+				},
+				{
+					"text": "指着「九」",
+					"next": "wrong"
+				}
+			]
+		},
+		"wrong": {
+			"lines": [
+				{
+					"text": "（「嘣」——钟面里弹出一圈羽毛，扫过两个人的腰）",
+					"speaker": ""
+				}
+			],
+			"set": {
+				"call": "palace_clockface_wrong"
+			}
+		},
+		"ok": {
+			"lines": [
+				{
+					"text": "（「当——」钟面里响了一声。底下的暗格「咔哒」一声弹开了）",
+					"speaker": ""
+				},
+				{
+					"text": "（暗格里放着一片泛黄的乐谱，和一枚金色的笑脸徽记。乐谱上写着：「左上、正中」）",
+					"speaker": ""
+				},
+				{
+					"text": "……三点四十五分。……训练场的日志、婴儿房的刻痕。",
+					"speaker": "蓝色的公主"
+				},
+				{
+					"text": "说好了，这个时候一起去钟楼……",
+					"speaker": "公主",
+					"emotion": "sad"
+				}
+			],
+			"set": {
+				"call": "palace_clockface_ok"
+			}
+		},
+		"open": {
+			"lines": [
+				{
+					"text": "（钟面停在三点四十五分。暗格空了）",
+					"speaker": ""
+				}
+			]
+		}
+	}
+}

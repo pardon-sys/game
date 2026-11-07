@@ -410,6 +410,60 @@ func _palace_room(cls: String) -> Node:
 	return null
 
 
+# ---- 第四章追加事件：钟面 / 石像问答 / 许愿喷泉 / 徽记台 / 地下小宝库
+func palace_clockface_ok() -> void:
+	var r := _palace_room("PalaceClock")
+	if r:
+		r.clockface_ok()
+
+
+func palace_clockface_wrong() -> void:
+	runner.end_conversation()
+	var r := _palace_room("PalaceClock")
+	if r:
+		r.clockface_wrong()
+
+
+func palace_statue_ok() -> void:
+	var r := _palace_room("PalaceAnte")
+	if r:
+		r.statue_ok()
+
+
+func palace_statue_wrong() -> void:
+	runner.end_conversation()
+	var r := _palace_room("PalaceAnte")
+	if r:
+		r.statue_wrong()
+
+
+func palace_fountain_mint() -> void:
+	runner.end_conversation()
+	var r := _palace_room("PalaceAnte")
+	if r:
+		r.wish("mint")
+
+
+func palace_fountain_coin() -> void:
+	runner.end_conversation()
+	var r := _palace_room("PalaceAnte")
+	if r:
+		r.wish("coin")
+
+
+func palace_badges() -> void:
+	runner.end_conversation()
+	var r := _palace_room("PalaceAnte")
+	if r:
+		r.place_badges()
+
+
+func palace_vault() -> void:
+	var r := _palace_room("PalaceAnte")
+	if r:
+		r.vault_loot()
+
+
 func palace_golden() -> void:
 	runner.end_conversation()
 	var r := _palace_room("PalaceLibrary")
