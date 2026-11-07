@@ -298,6 +298,11 @@ func open_chest(i: int) -> bool:
 		PalaceRoom.say_random(pc, "chest_ok")
 		return true
 	mimic_bites += 1
+	# 追加事件·宝箱怪的逃亡：第一次被咬以后，它跑出隧道躲进各个房间（厨房冷藏库 → 图书馆 → 衣帽间）
+	if not GameState.has_flag(PalaceRoom.MIMIC_FLED):
+		GameState.set_flag(PalaceRoom.MIMIC_FLED)
+		GameState.vars[PalaceRoom.MIMIC_STAGE] = 0
+		GameState.notify("咬人的宝箱怪「咔嗒咔嗒」地跑出了隧道……")
 	if is_instance_valid(pc):
 		pc.status.apply_root(2.0)
 		var h := HitData.make_tickle(self, 9.0)

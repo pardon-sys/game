@@ -501,6 +501,35 @@ func palace_lost_return() -> void:
 		r.lost_return()
 
 
+# ---- 第四章追加事件（第三批，跨图）
+func palace_wind_maid() -> void:
+	runner.end_conversation()
+	var r := _palace_room("PalaceServants")
+	if r and r.wind_maid():
+		Dialogue.talk("floor_06/servants_wind_maid")
+
+
+func palace_melt_cake() -> void:
+	var r := _palace_room("PalaceKitchen")
+	if r:
+		r.melt_cake()
+
+
+func palace_mimic_catch() -> void:
+	runner.end_conversation()
+	for cls in ["PalaceKitchen", "PalaceLibrary", "PalaceWardrobe"]:
+		var r := _palace_room(cls)
+		if r:
+			r.mimic_catch()
+			return
+
+
+func palace_fake_mirror() -> void:
+	var r := _palace_room("PalaceWardrobe")
+	if r:
+		r.find_portrait()
+
+
 func palace_golden() -> void:
 	runner.end_conversation()
 	var r := _palace_room("PalaceLibrary")

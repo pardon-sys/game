@@ -86,6 +86,8 @@ func _ready() -> void:
 		PenanceCell.wear_mouse()
 	_start_duo.call_deferred()
 	_add_lost.call_deferred()
+	_add_patrol.call_deferred()
+	_add_mimic.call_deferred()
 	if map_id() in [TRAY_FROM, TRAY_TO]:
 		var tc := TrayCarry.new()
 		tc.room = self
@@ -128,6 +130,240 @@ func _add_lost() -> void:
 	add_view(v)
 	gate(sp, [LOST_ASKED])
 	v.need = [LOST_ASKED]
+
+
+# ------------------------------------------------------------------ 人偶巡夜队（回廊被抓过一次以后：厨房 / 浴场 / 图书馆各多一个巡夜人偶）
+const PATROL_FLAG := "palace_night_patrol"
+const FRIEND_FLAG := "palace_headmaid_friend"   # 给女仆长上过发条：巡夜队撤掉、回廊不再抓人
+var patrols: Array = []
+
+
+func _add_patrol() -> void:
+	var cs := cells("patrol")
+	if cs.size() < 2 or not GameState.has_flag(PATROL_FLAG) or GameState.has_flag(FRIEND_FLAG):
+		return
+	var n := NightPatrol.new()
+	n.room = self
+	n.a = world(cs[0])
+	n.b = world(cs[1])
+	add_view(n)
+	patrols.append(n)
+
+
+func tick_patrols(delta: float) -> void:
+	for n in patrols:
+		if is_instance_valid(n):
+			(n as NightPatrol).tick(delta)
+
+
+## 巡夜人偶：在 a、b 之间来回走，前面一个扇形（VIEW_R、VIEW_HALF）；看到人就追（CHASE_SPEED，最多 CHASE_MAX 秒），
+## 追上了挠一阵、把两个人送回这张图的入口；女仆长变友好以后（FRIEND_FLAG）自己走掉
+class NightPatrol extends Node2D:
+	const SHEET := "res://assets/generated/npcs/doll_maid.png"
+	const SPEED := 26.0
+	const CHASE_SPEED := 58.0
+	const CHASE_MAX := 3.0
+	const VIEW_R := 80.0
+	const VIEW_HALF := 0.55
+	const CATCH_R := 12.0
+	var room: PalaceRoom
+	var a := Vector2.ZERO
+	var b := Vector2.ZERO
+	var to_b := true
+	var state := "walk"
+	var target: PlayableCharacter
+	var facing := Vector2.RIGHT
+	var caught_count := 0
+	var _t := 0.0
+	var _cool := 0.0
+	var _anim := 0.0
+	var _spr: Sprite2D
+
+	func _ready() -> void:
+		z_index = 1
+		position = a
+		if ResourceLoader.exists(SHEET):
+			_spr = Sprite2D.new()
+			_spr.texture = load(SHEET)
+			_spr.hframes = 4
+			_spr.vframes = 4
+			_spr.offset = Vector2(0, -15)
+			_spr.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+			add_child(_spr)
+
+	func sees(pc: PlayableCharacter) -> bool:
+		if Downed.is_downed(pc):
+			return false
+		var to := pc.global_position - position
+		return to.length() <= VIEW_R and to.length() > 0.1 and facing.dot(to.normalized()) >= cos(VIEW_HALF)
+
+	func tick(delta: float) -> void:
+		_t += delta
+		_cool = maxf(0.0, _cool - delta)
+		if GameState.has_flag(PalaceRoom.FRIEND_FLAG):
+			queue_free()
+			return
+		match state:
+			"walk":
+				var goal := b if to_b else a
+				_move(goal, SPEED, delta)
+				if position.distance_to(goal) < 2.0:
+					to_b = not to_b
+				if _cool <= 0.0:
+					for m in room.members():
+						if sees(m as PlayableCharacter):
+							state = "chase"
+							target = m
+							_t = 0.0
+							SpeechBubble.say(self, "……巡夜中。……站住。", 34.0, 1.2)
+							break
+			"chase":
+				if not is_instance_valid(target) or _t > CHASE_MAX:
+					state = "walk"
+					_cool = 3.0
+				else:
+					_move(target.global_position, CHASE_SPEED, delta)
+					if position.distance_to(target.global_position) <= CATCH_R:
+						catch(target)
+		queue_redraw()
+
+	func _move(goal: Vector2, speed: float, delta: float) -> void:
+		var d := goal - position
+		position = position.move_toward(goal, speed * delta)
+		if d.length() > 0.5:
+			facing = d.normalized()
+			_anim += delta * 6.0
+		if _spr:
+			var sd := IsoView.screen_dir(facing)
+			var row := (1 if sd.x < 0 else 2) if absf(sd.x) > absf(sd.y) else (0 if sd.y > 0 else 3)
+			_spr.frame = row * 4 + int(_anim) % 4
+
+	## 追上了：挠一阵，送回入口
+	func catch(pc: PlayableCharacter) -> void:
+		caught_count += 1
+		state = "walk"
+		_cool = 5.0
+		Audio.play("grab", -4.0)
+		for k in 4:
+			var h := HitData.make_tickle(self, 2.5)
+			h.zone = ["armpit", "waist", "sole"].pick_random()
+			pc.receive_hit(h)
+		PalaceRoom.say_random(pc, "patrol_caught")
+		GameState.notify("被巡夜人偶抓到了——送回了门口")
+		room.reset_to(room.world(room.cells("start")[0]))
+
+	func _draw() -> void:
+		if state == "walk":
+			var pts := PackedVector2Array([Vector2.ZERO])
+			for k in 9:
+				var an := facing.angle() - VIEW_HALF + VIEW_HALF * 2.0 * k / 8.0
+				pts.append(IsoView.offset(Vector2(cos(an), sin(an)) * VIEW_R))
+			draw_colored_polygon(pts, Color(1.0, 0.85, 0.5, 0.1))
+		if _spr == null:
+			draw_rect(Rect2(-5, -24, 10, 18), Color(0.2, 0.2, 0.4))
+
+
+# ------------------------------------------------------------------ 宝箱怪的逃亡（隧道里被咬过一次以后，它依次躲到 厨房冷藏库 → 图书馆 → 衣帽间）
+const MIMIC_FLED := "palace_mimic_fled"
+const MIMIC_DONE := "palace_mimic_done"
+const MIMIC_MAPS := ["floor_06_palace_kitchen", "floor_06_palace_library", "floor_06_palace_wardrobe"]
+const MIMIC_STAGE := "palace_mimic_stage"
+
+
+static func mimic_here(fid: String) -> bool:
+	return GameState.has_flag(MIMIC_FLED) and not GameState.has_flag(MIMIC_DONE) \
+		and int(GameState.vars.get(MIMIC_STAGE, 0)) == MIMIC_MAPS.find(fid)
+
+
+func _add_mimic() -> void:
+	if cells("mimic_hide").is_empty() or not MIMIC_MAPS.has(map_id()):
+		return
+	var v := MimicHide.new()
+	v.room = self
+	v.position = world(cells("mimic_hide")[0])
+	add_view(v)
+	var sp := PrisonOddities.Spot.new()
+	sp.dialogue = "floor_06/mimic_hide"
+	add_child(sp)
+	sp.global_position = world(cells("mimic_hide")[0])
+	v.spot = sp
+
+
+## 抓住宝箱怪（打开伪装的宝箱）：被咬住挠脚心，连按挣开；它又逃去下一个地方，三次都抓到就吐出宝物
+func mimic_catch() -> void:
+	for n in get_parent().get_children():
+		if n is MimicHide and (n as MimicHide).room == self:
+			(n as MimicHide).bite(GameState.player as PlayableCharacter)
+
+
+func mimic_escaped() -> void:
+	var st := int(GameState.vars.get(MIMIC_STAGE, 0)) + 1
+	GameState.vars[MIMIC_STAGE] = st
+	if st >= MIMIC_MAPS.size():
+		GameState.set_flag(MIMIC_DONE)
+		GameState.give_item(ItemDB.get_item("coin"), 60)
+		Dialogue.talk("floor_06/mimic_done")
+	else:
+		GameState.notify("宝箱怪「咔嗒咔嗒」地跑掉了……好像躲到%s去了" % ["厨房", "图书馆", "衣帽间"][st])
+
+
+## 伪装成宝箱的宝箱怪（地牢宝箱图，盖子一起一伏地「呼吸」）
+class MimicHide extends Node2D:
+	const TEX := "res://assets/third_party/kenney_tiny_dungeon/tilemap_packed.png"
+	const PRESSES := 6
+	var room: PalaceRoom
+	var spot: Node2D
+	var holding: PlayableCharacter
+	var _tick := 0.0
+	var _t := 0.0
+	var _s: Sprite2D
+
+	func _ready() -> void:
+		z_index = 1
+		_s = Sprite2D.new()
+		_s.texture = load(TEX)
+		_s.region_enabled = true
+		_s.region_rect = Rect2(80, 112, 16, 16)
+		_s.offset = Vector2(0, -7)
+		_s.scale = Vector2(1.25, 1.25)
+		_s.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+		add_child(_s)
+
+	func here() -> bool:
+		return room != null and PalaceRoom.mimic_here(room.map_id())
+
+	func bite(pc: PlayableCharacter) -> void:
+		if pc == null or holding or not here():
+			return
+		if not pc.status.grab(self, 4.0, PRESSES):
+			return
+		holding = pc
+		_tick = 0.1
+		Audio.play("gate", -6.0, 0.0, 1.8)
+		PalaceRoom.say_random(pc, "mimic")
+
+	func _process(delta: float) -> void:
+		_t += delta
+		var on := here()
+		visible = on or holding != null
+		if is_instance_valid(spot):
+			spot.visible = on and holding == null
+			for c in spot.get_children():
+				if c is Interactable:
+					(c as Interactable).enabled = on and holding == null
+		_s.region_rect = Rect2(96, 112, 16, 16) if holding else Rect2(80, 112, 16, 16)
+		_s.scale = Vector2(1.25, 1.25 + (sin(_t * 2.5) * 0.06 if on else 0.0))
+		if holding:
+			if not holding.status.is_grabbed_by(self):
+				holding = null
+				room.mimic_escaped()
+				return
+			_tick -= delta
+			if _tick <= 0.0:
+				_tick = 0.35
+				var h := HitData.make_tickle(self, 2.5)
+				h.zone = "sole"
+				holding.receive_hit(h)
 
 
 # ------------------------------------------------------------------ 按进度出现
@@ -210,7 +446,8 @@ class Events2View extends Node2D:
 
 # ------------------------------------------------------------------ 事件点的图（补素材）
 const PROPS3 := "res://assets/generated/palace_props3.png"   # 0 骑士石像 / 1 粉摇篮 / 2 蓝摇篮 / 3 旋转吊铃 / 4 水槽 / 5 糕点台
-const CHEF := "res://assets/generated/npcs/pastry_chef.png"   # 糕点师人偶：0 1 站着晃 / 2 端蛋糕 / 3 举打蛋器
+const CHEF := "res://assets/generated/npcs/pastry_chef.png"
+const PROPS4 := "res://assets/generated/palace_props4.png"   # 0 人偶按摩椅 / 1 冻住的门 / 2 冰块里的蛋糕 / 3 生日蛋糕 / 4 空的小画框 / 5 镜面墙板   # 糕点师人偶：0 1 站着晃 / 2 端蛋糕 / 3 举打蛋器
 
 
 ## 一张图集里的一帧（或几帧循环）；anim 为空就是静止的

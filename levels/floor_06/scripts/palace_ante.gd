@@ -20,6 +20,26 @@ const STATUE_FLAG := "palace_statue_done"
 const BADGES_FLAG := "palace_badges_done"
 const GUARD_R := 6.0 * 16.0
 const FOUNTAIN_COINS := 10
+## 追加事件·人偶舞会：三处一起「演奏」摇篮曲 —— 训练场的铜钟（BALL_BELL）、婴儿房的旋转吊铃（LULLABY）、
+## 宝库打开以后按吊铃底下的记号在地砖上踩一遍（LULLABY_SEQ → BALL_TILES）→ 前厅开舞会：
+## 三波舞会人偶（BALL_WAVES），地板按拍子（BEAT）亮红一块扇区，拍子落下时站在红区里的人被羽毛扫；全打完 → BALL_DONE。
+const LULLABY_SEQ := [6, 4, 2, 8, 4, 0]
+const BALL_BELL := "palace_ball_bell"
+const LULLABY := "palace_lullaby_heard"
+const BALL_TILES := "palace_ball_tiles"
+const BALL_DONE := "palace_ball_done"
+const BALL_WAVES := [3, 4, 5]
+const BEAT := 1.8
+const BEAT_WARN := 0.8
+const BALL_R := 15.0 * 16.0
+const DOLL_SCENE := "res://scenes/actors/monsters/dance_doll.tscn"
+var lull_progress := 0
+var ball_on := false
+var ball_wave := -1
+var dolls: Array = []
+var beat_q := -1
+var _beat_t := BEAT
+var _beat_view: BeatView
 
 var tile_progress := 0
 var guards: Array = []
@@ -141,6 +161,7 @@ func _process(delta: float) -> void:
 				step_tile(rel.y * 3 + rel.x, pc)
 	for g in guards:
 		(g as ArmorGuard).tick(delta)
+	_tick_ball(delta)
 
 
 ## 踩到第 i 块地砖（行优先 0..8）
@@ -151,6 +172,9 @@ func step_tile(i: int, pc: PlayableCharacter = null) -> void:
 	for tv in _tiles:
 		if (tv as TileView).idx == i:
 			(tv as TileView).flash = 0.4
+	if vault_open() and not GameState.has_flag(BALL_TILES):
+		_step_lullaby(i)
+		return
 	if not tiles_armed():
 		if randf() < 0.15:
 			PalaceRoom.say_random(pc, "tiles_note")
@@ -169,6 +193,148 @@ func step_tile(i: int, pc: PlayableCharacter = null) -> void:
 		pc.receive_hit(h)
 	Audio.play("puff", -6.0)
 	PalaceRoom.say_random(pc, "tiles_wrong")
+
+
+# ------------------------------------------------------------------ 人偶舞会
+func _step_lullaby(i: int) -> void:
+	if i == LULLABY_SEQ[lull_progress]:
+		lull_progress += 1
+		if lull_progress >= LULLABY_SEQ.size():
+			lull_progress = 0
+			GameState.set_flag(BALL_TILES)
+			Audio.play("music_box", -4.0)
+			try_ball()
+		return
+	lull_progress = 1 if i == LULLABY_SEQ[0] else 0
+
+
+## 三处都演奏过：开舞会；还差的给个提示
+func try_ball() -> bool:
+	if GameState.has_flag(BALL_DONE) or ball_on:
+		return false
+	var miss := []
+	if not GameState.has_flag(BALL_BELL):
+		miss.append("训练场的铜钟")
+	if not GameState.has_flag(LULLABY):
+		miss.append("婴儿房的吊铃")
+	if not GameState.has_flag(BALL_TILES):
+		miss.append("前厅的地砖")
+	if not miss.is_empty():
+		GameState.notify("摇篮曲好像还缺几个声部……（%s）" % "、".join(miss))
+		return false
+	start_ball()
+	return true
+
+
+func start_ball() -> void:
+	ball_on = true
+	_beat_t = BEAT
+	beat_q = -1
+	if not is_instance_valid(_beat_view):
+		_beat_view = BeatView.new()
+		_beat_view.room = self
+		_beat_view.position = _ball_center()
+		add_view(_beat_view)
+	await Cutscene.play("ante_ball_in")
+	while Cutscene.is_playing():
+		await get_tree().process_frame
+	_spawn_dolls(0)
+
+
+func _ball_center() -> Vector2:
+	return (world(_tile_origin) + world(_tile_origin + Vector2i(2, 2))) * 0.5
+
+
+func _spawn_dolls(w: int) -> void:
+	ball_wave = w
+	dolls.clear()
+	var scene := load(DOLL_SCENE) as PackedScene
+	var n := int(BALL_WAVES[w])
+	for k in n:
+		var d := scene.instantiate() as Node2D
+		var a := TAU * k / float(n)
+		d.position = _ball_center() + Vector2(cos(a), sin(a)) * 90.0
+		add_view(d)
+		dolls.append(d)
+	GameState.notify("人偶舞会·第 %d 支舞" % (w + 1))
+
+
+func dolls_alive() -> int:
+	return dolls.filter(func(d): return is_instance_valid(d) and (d as Monster).is_alive()).size()
+
+
+func _tick_ball(delta: float) -> void:
+	if not ball_on or ball_wave < 0:
+		return
+	_beat_t -= delta
+	if beat_q < 0 and _beat_t <= BEAT_WARN:
+		beat_q = randi() % 4
+	if _beat_t <= 0.0:
+		beat_sweep()
+	if dolls_alive() == 0:
+		if ball_wave + 1 < BALL_WAVES.size():
+			_spawn_dolls(ball_wave + 1)
+		else:
+			_ball_won()
+
+
+## 拍子落下：红色扇区里的人被羽毛扫一下
+func beat_sweep() -> void:
+	var q := beat_q
+	_beat_t = BEAT
+	beat_q = -1
+	if q < 0:
+		return
+	Audio.play("swish", -6.0)
+	for m in members():
+		var pc := m as PlayableCharacter
+		if in_quadrant(pc.global_position, q):
+			for k in 2:
+				var h := HitData.make_tickle(self, 2.5)
+				h.zone = ["sole", "waist"].pick_random()
+				pc.receive_hit(h)
+			PalaceRoom.say_random(pc, "ball_beat")
+
+
+func in_quadrant(pos: Vector2, q: int) -> bool:
+	var d := pos - _ball_center()
+	if d.length() > BALL_R:
+		return false
+	var qq := (1 if d.x >= 0.0 else 0) + (2 if d.y >= 0.0 else 0)
+	return qq == q
+
+
+func _end_ball() -> void:
+	ball_on = false
+	ball_wave = -1
+	beat_q = -1
+	for d in dolls:
+		if is_instance_valid(d):
+			(d as Node).queue_free()
+	dolls.clear()
+
+
+func _ball_won() -> void:
+	_end_ball()
+	GameState.set_flag(BALL_DONE)
+	GameState.give_item(ItemDB.get_item("mint"), 3)
+	Audio.play("win_fanfare", -6.0)
+	GameState.notify("舞会结束了——人偶们行了个屈膝礼。得到薄荷糖 ×3")
+
+
+func defeat_theater() -> String:
+	return "ante_ball_fail" if ball_on else super()
+
+
+func on_defeat(reason: String) -> void:
+	if ball_on and not _defeat_busy:
+		_defeat_busy = true
+		_end_ball()
+		await CG.play_theater("ante_ball_fail")
+		reset_to(world(cells("south")[0]) + Vector2(0, -32))
+		_defeat_busy = false
+		return
+	await super(reason)
 
 
 func _open_vault() -> void:
@@ -527,3 +693,27 @@ class ArmorGuard extends Node2D:
 		if _spr == null:
 			draw_rect(Rect2(-6, -28, 12, 20), Color(0.75, 0.77, 0.82))
 			draw_circle(Vector2(0, -32), 6.0, Color(0.8, 0.82, 0.88))
+
+
+## 舞会的拍子：要落下的那一块扇区先亮红（BEAT_WARN 秒）
+class BeatView extends Node2D:
+	var room: PalaceAnte
+
+	func _ready() -> void:
+		z_index = 0
+
+	func _process(_d: float) -> void:
+		queue_redraw()
+
+	func _draw() -> void:
+		if room == null or not room.ball_on:
+			return
+		var q := room.beat_q
+		for k in 4:
+			var a0: float = [PI, PI * 1.5, PI * 0.5, 0.0][k]
+			var col := Color(1.0, 0.3, 0.4, 0.28) if k == q else Color(1.0, 0.85, 0.5, 0.05)
+			var pts := PackedVector2Array([Vector2.ZERO])
+			for i in 9:
+				var a: float = a0 + PI * 0.5 * i / 8.0
+				pts.append(IsoView.offset(Vector2(cos(a), sin(a)) * PalaceAnte.BALL_R))
+			draw_colored_polygon(pts, col)

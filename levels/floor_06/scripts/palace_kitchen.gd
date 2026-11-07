@@ -15,6 +15,17 @@ const MINTS := 3
 const SWEET_TIME := 15.0
 const RALLY_R := 120.0
 const SINK_R := 14.0
+## 追加事件·冷藏库：滑道尽头冻住的门（粉色公主攻击 / 施法 MELT_R 以内就融开）→ 第一次进去演 kitchen_icecream、放出冰糕精灵；
+## 冰块里的生日蛋糕也要粉色公主来融（kitchen_ice_cake 对话 → melt_cake）
+const COLD_FLAG := "palace_cold_open"
+const COLD_IN_FLAG := "palace_cold_entered"
+const CAKE_FLAG := "palace_ice_cake"
+const MELT_R := 26.0
+const ICE_SPRITE := "res://scenes/actors/monsters/ice_sprite.tscn"
+var _cold_door: StaticBody2D
+var _cold_view: Node2D
+var ice_sprites: Array = []
+var _cake_view: PalaceRoom.SheetView
 const ICE_SPEED := 110.0
 const FAN_DX := 10.0
 const FAN_DY := 9.0
@@ -34,6 +45,25 @@ func _ready() -> void:
 		sp.dialogue = str(pair[1])
 		add_child(sp)
 		sp.global_position = world(cells(str(pair[0]))[0])
+	if not cells("cold_door").is_empty():
+		if not GameState.has_flag(COLD_FLAG):
+			_cold_door = StaticBody2D.new()
+			_cold_door.collision_layer = 1
+			_cold_door.collision_mask = 0
+			var sh := CollisionShape2D.new()
+			var r := RectangleShape2D.new()
+			r.size = Vector2(16, 16)
+			sh.shape = r
+			_cold_door.add_child(sh)
+			add_child(_cold_door)
+			_cold_door.global_position = PalaceRoom.cell_pos(cells("cold_door")[0])
+			_cold_view = sheet_view(PalaceRoom.PROPS4, 6, 1, cells("cold_door")[0], [], 0.8)
+		_cake_view = sheet_view(PalaceRoom.PROPS4, 6, 3 if GameState.has_flag(CAKE_FLAG) else 2, cells("ice_cake")[0], [], 0.8)
+		var csp := PrisonOddities.Spot.new()
+		csp.dialogue = "floor_06/kitchen_ice_cake"
+		csp.done_flag = CAKE_FLAG
+		add_child(csp)
+		csp.global_position = world(cells("ice_cake")[0])
 	# 事件点的图：糕点师人偶站在糕点台后面、水槽
 	sheet_view(PalaceRoom.PROPS3, 6, 5, cells("chef")[0], [], 0.9, Vector2(0, 8))
 	sheet_view(PalaceRoom.CHEF, 4, 0, cells("chef")[0], [0, 1], 1.0, Vector2(0, -6))
@@ -72,6 +102,8 @@ static func farewell_done() -> bool:
 func _process(delta: float) -> void:
 	if busy():
 		return
+	tick_patrols(delta)
+	_tick_cold()
 	# 推销员的报酬
 	if GameState.has_flag("cg_seen_theater:kitchen_promoter") and not GameState.has_flag(PAID_FLAG):
 		GameState.set_flag(PAID_FLAG)
@@ -118,6 +150,62 @@ func _process(delta: float) -> void:
 			for e in get_tree().get_nodes_in_group("enemy"):
 				if e is Monster and (e as Node2D).global_position.distance_to((pc as Node2D).global_position) <= RALLY_R:
 					(e as Monster).rally_to(pc)
+
+
+# ------------------------------------------------------------------ 冷藏库
+func _tick_cold() -> void:
+	if cells("cold_door").is_empty():
+		return
+	var door := world(cells("cold_door")[0])
+	if not GameState.has_flag(COLD_FLAG):
+		for m in members():
+			var pc := m as PlayableCharacter
+			if pc.character_id == "pink" and (pc.state == PlayableCharacter.State.ATTACK or pc.state == PlayableCharacter.State.CAST) \
+					and pc.global_position.distance_to(door) <= MELT_R:
+				melt_door()
+				return
+		return
+	if not GameState.has_flag(COLD_IN_FLAG):
+		for m in members():
+			if (m as Node2D).global_position.x > door.x + 8.0:
+				enter_cold()
+				return
+
+
+func melt_door() -> void:
+	GameState.set_flag(COLD_FLAG)
+	Audio.play("water_release", -4.0)
+	Fx.burst(get_parent(), world(cells("cold_door")[0]) + Vector2(0, -12), "dust", 16, 50.0, 0.7, Vector2(0, -10), Color(0.75, 0.9, 1.0))
+	if is_instance_valid(_cold_door):
+		_cold_door.queue_free()
+	if is_instance_valid(_cold_view):
+		_cold_view.queue_free()
+	PalaceRoom.say_random(pink if is_instance_valid(pink) else GameState.player, "cold_melt")
+
+
+## 第一次走进冷藏库：冰糕精灵们醒了（小剧场），然后放出来
+func enter_cold() -> void:
+	GameState.set_flag(COLD_IN_FLAG)
+	await CG.play_theater("kitchen_icecream")
+	var scene := load(ICE_SPRITE) as PackedScene
+	for c in cells("ice_sprites"):
+		var m := scene.instantiate() as Node2D
+		m.position = world(c)
+		add_view(m)
+		ice_sprites.append(m)
+
+
+## 冰块里的生日蛋糕：粉色公主的火融开（对话里叫）
+func melt_cake() -> bool:
+	if GameState.has_flag(CAKE_FLAG):
+		return true
+	if not members().any(func(m): return (m as PlayableCharacter).character_id == "pink"):
+		return false
+	GameState.set_flag(CAKE_FLAG)
+	Audio.play("water_release", -6.0)
+	if is_instance_valid(_cake_view) and _cake_view._s:
+		_cake_view._s.frame = 3
+	return true
 
 
 func wash(pc: PlayableCharacter) -> void:

@@ -123,6 +123,7 @@ func _process(delta: float) -> void:
 	if busy():
 		_fog.target = 0.0
 		return
+	tick_patrols(delta)
 	var p := GameState.player
 	if not is_instance_valid(p):
 		return

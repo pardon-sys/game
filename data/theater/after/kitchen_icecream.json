@@ -1,0 +1,302 @@
+{
+	"name": "厨房冷藏库：冰糕精灵",
+	"cast": {
+		"princess": {
+			"kind": "princess",
+			"at": [
+				-14,
+				8
+			],
+			"visual": "normal",
+			"anim": "idle",
+			"dir": "right"
+		},
+		"blue": {
+			"kind": "npc:blue_princess",
+			"at": [
+				14,
+				8
+			],
+			"visual": "normal",
+			"anim": "idle",
+			"dir": "left"
+		},
+		"pants": {
+			"kind": "trap:hand",
+			"at": [
+				20,
+				10
+			]
+		},
+		"s1": {
+			"kind": "trap:feather_curtain",
+			"at": [
+				-22,
+				-8
+			]
+		},
+		"s2": {
+			"kind": "trap:feather_curtain",
+			"at": [
+				22,
+				-8
+			]
+		}
+	},
+	"steps": [
+		{
+			"act": 1,
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "fade_in"
+				},
+				{
+					"state": "giggle",
+					"do": "voice"
+				}
+			],
+			"wait": 0.5
+		},
+		{
+			"speaker": "",
+			"text": "（冷藏库里白茫茫的，架子上摆满了冻得硬邦邦的点心。……一个冰淇淋球「啵」地睁开了眼睛）",
+			"act": 1
+		},
+		{
+			"speaker": "冰糕精灵们",
+			"text": "有人来了！有人来了！是来吃冰淇淋的吗！"
+		},
+		{
+			"speaker": "公主",
+			"text": "冰、冰淇淋会说话？！",
+			"emotion": "surprise"
+		},
+		{
+			"speaker": "冰糕精灵们",
+			"text": "我们不给吃！但是可以——给你们冰一下！"
+		},
+		{
+			"speaker": "",
+			"text": "（三个冰糕精灵扑了过来，冰凉凉的小手一下贴在脖子上，一下贴在脚踝上）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "s1",
+					"zone": "neck",
+					"fx": "hand",
+					"repeat": 8,
+					"interval": 0.15,
+					"do": "tickle"
+				},
+				{
+					"who": "blue",
+					"by": "s2",
+					"zone": "neck",
+					"fx": "hand",
+					"repeat": 8,
+					"interval": 0.15,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"visual": "giggle",
+					"do": "pose"
+				},
+				{
+					"who": "blue",
+					"visual": "giggle",
+					"do": "pose"
+				}
+			],
+			"act": 2
+		},
+		{
+			"speaker": "公主",
+			"text": "冰——！好冰！嘻嘻……不、不要贴脖子！",
+			"emotion": "giggle"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……这个，我习惯了。……哈……不对，它们在挠。"
+		},
+		{
+			"speaker": "",
+			"text": "（冰糕精灵们钻进了鞋子里，冰凉的小羽毛在脚心上来回地扫——又冷又痒）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "s1",
+					"zone": "sole",
+					"fx": "feather",
+					"repeat": 12,
+					"interval": 0.11,
+					"do": "tickle"
+				},
+				{
+					"who": "blue",
+					"by": "s2",
+					"zone": "sole",
+					"fx": "feather",
+					"repeat": 12,
+					"interval": 0.11,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"visual": "helpless_1",
+					"do": "pose"
+				},
+				{
+					"who": "blue",
+					"visual": "helpless_1",
+					"do": "pose"
+				},
+				{
+					"do": "voice",
+					"state": "laugh"
+				}
+			],
+			"act": 3
+		},
+		{
+			"speaker": "公主",
+			"text": "哈哈哈！冷、冷的羽毛最痒了——！",
+			"emotion": "helpless_1"
+		},
+		{
+			"speaker": "冰糕精灵们",
+			"text": "冰一下！冰一下！冰一下就好吃了！"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……哈哈……我、我们不是点心……",
+			"actions": [
+				{
+					"who": "blue",
+					"visual": "helpless_2",
+					"do": "pose"
+				}
+			]
+		},
+		{
+			"speaker": "",
+			"text": "（两个人缩成一团，冰糕精灵们在脖子、腰和脚心之间跳来跳去）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "s1",
+					"zone": "waist",
+					"fx": "lines",
+					"repeat": 14,
+					"interval": 0.09,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"visual": "helpless_2",
+					"do": "pose"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "（星光一炸，冷藏库里一下子暖了起来——冰糕精灵们「呀」地叫着往外飞……哈啊……放出去了……）",
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "flash"
+				},
+				{
+					"sound": "star_burst",
+					"do": "sfx"
+				},
+				{
+					"sound": "water_release",
+					"volume": -2.0,
+					"do": "sfx"
+				},
+				{
+					"who": "princess",
+					"time": 0.4,
+					"do": "shake"
+				},
+				{
+					"state": "laugh",
+					"do": "voice"
+				}
+			],
+			"act": "burst",
+			"wait": 1.0
+		},
+		{
+			"speaker": "",
+			"text": "（有一个飞得慢，临走前用最后一点冰凉，在她刚释放完、敏感得发烫的脚心上「啾」地贴了一下）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "s1",
+					"zone": "sole",
+					"fx": "feather",
+					"repeat": 4,
+					"interval": 0.2,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"time": 0.3,
+					"do": "shake"
+				},
+				{
+					"who": "princess",
+					"visual": "helpless_1",
+					"do": "pose"
+				},
+				{
+					"who": "blue",
+					"visual": "helpless_1",
+					"do": "pose"
+				}
+			],
+			"act": 4
+		},
+		{
+			"speaker": "公主",
+			"text": "呀……！……哈……又冷又热的……",
+			"emotion": "helpless_1"
+		},
+		{
+			"speaker": "冰糕精灵们",
+			"text": "不给吃不给吃！要打赢我们才行！"
+		},
+		{
+			"speaker": "",
+			"text": "（冰糕精灵们在冷藏库里飘了起来，摆好了架势）",
+			"actions": [
+				{
+					"who": "princess",
+					"visual": "normal",
+					"do": "pose"
+				},
+				{
+					"who": "blue",
+					"visual": "normal",
+					"do": "pose"
+				}
+			]
+		},
+		{
+			"actions": [
+				{
+					"state": "",
+					"do": "voice"
+				},
+				{
+					"time": 0.6,
+					"do": "fade_out"
+				}
+			],
+			"wait": 0.7
+		}
+	]
+}

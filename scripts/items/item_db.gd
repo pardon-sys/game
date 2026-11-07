@@ -60,6 +60,8 @@ const PATHS := {
 	"smile_badge": "res://data/items/smile_badge.tres",
 	"music_sheet": "res://data/items/music_sheet.tres",
 	"queen_music_box": "res://data/items/queen_music_box.tres",
+	"maid_key": "res://data/items/maid_key.tres",
+	"lost_portrait": "res://data/items/lost_portrait.tres",
 }
 
 static var _cache := {}

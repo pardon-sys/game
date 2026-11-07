@@ -52,9 +52,32 @@ def i_queen_music_box():
     return add_outline(img)
 
 
+def i_maid_key():
+    img, d = canvas(16, 16)
+    d.ellipse((2, 2, 8, 8), outline=GOLD_D, width=2)
+    d.ellipse((7, 2, 13, 8), outline=GOLD_D, width=2)
+    d.rectangle((7, 7, 9, 14), fill=GOLD)
+    d.rectangle((5, 12, 11, 13), fill=GOLD)
+    d.point((8, 4), fill=(170, 120, 210, 255))
+    return add_outline(img)
+
+
+def i_lost_portrait():
+    img, d = canvas(16, 16)
+    d.ellipse((2, 1, 13, 14), fill=GOLD_D)
+    d.ellipse((4, 3, 11, 12), fill=(245, 225, 215, 255))
+    d.ellipse((5, 3, 10, 7), fill=(235, 235, 245, 255))
+    d.point((6, 8), fill=INK)
+    d.point((9, 8), fill=INK)
+    d.arc((6, 8, 9, 11), 20, 160, fill=INK)
+    return add_outline(img)
+
+
 ITEMS = {
     "smile_badge": ("笑脸徽记", "金色的小徽记，上面刻着一张咧嘴笑的脸。王座前厅的徽记台上，有七个刚好放得下它的小凹槽。", i_smile_badge, True),
     "music_sheet": ("笑声乐谱（残片）", "一小片泛黄的乐谱，音符画得歪歪扭扭的，旁边写着「踩」。三片拼起来，就是王座前厅地砖的顺序。", i_music_sheet, True),
+    "maid_key": ("女仆长的发条钥匙", "钟楼一层的宝箱里找到的金色发条钥匙，柄上系着一小段紫色缎带。……仆人回廊的女仆长背后，好像有一个对得上的发条孔。", i_maid_key, False),
+    "lost_portrait": ("迷路的小画像", "衣帽间镜子迷宫里冒充镜子的一幅椭圆小画像。画里的贵妇人打着哈欠：「……王座间，我的位置……」", i_lost_portrait, False),
     "queen_music_box": ("女王的八音盒", "粉色的小八音盒。打开它，会放出一段很久以前的笑声。……王座间的画像，好像很怕听到它。", i_queen_music_box, False),
 }
 

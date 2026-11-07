@@ -1,0 +1,362 @@
+{
+	"name": "仆人回廊：女仆长的按摩椅",
+	"cast": {
+		"princess": {
+			"kind": "princess",
+			"at": [
+				-14,
+				8
+			],
+			"visual": "normal",
+			"anim": "idle",
+			"dir": "right"
+		},
+		"blue": {
+			"kind": "npc:blue_princess",
+			"at": [
+				14,
+				8
+			],
+			"visual": "normal",
+			"anim": "idle",
+			"dir": "left"
+		},
+		"pants": {
+			"kind": "trap:hand",
+			"at": [
+				20,
+				10
+			]
+		},
+		"c1": {
+			"kind": "trap:feather_curtain",
+			"at": [
+				-20,
+				-6
+			]
+		},
+		"c2": {
+			"kind": "trap:feather_curtain",
+			"at": [
+				20,
+				-6
+			]
+		}
+	},
+	"steps": [
+		{
+			"act": 1,
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "fade_in"
+				},
+				{
+					"state": "giggle",
+					"do": "voice"
+				}
+			],
+			"wait": 0.5
+		},
+		{
+			"speaker": "女仆长",
+			"text": "……请坐。……今天，是按摩日。",
+			"act": 1
+		},
+		{
+			"speaker": "",
+			"text": "（两个人刚坐下，扶手上的小机械手就「咔哒咔哒」地展开了，一只捏肩，一只捶背——居然很舒服）",
+			"actions": [
+				{
+					"who": "princess",
+					"visual": "normal",
+					"do": "pose"
+				},
+				{
+					"who": "blue",
+					"visual": "normal",
+					"do": "pose"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "……哦？……还、还挺舒服的……",
+			"emotion": "happy"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……嗯。……肩膀，松了。"
+		},
+		{
+			"speaker": "女仆长",
+			"text": "……接下来，是，脚底。（拧了一下椅背上的发条）",
+			"act": 2
+		},
+		{
+			"speaker": "",
+			"text": "（脚凳往上一抬，鞋被小机械手轻轻地脱了下来。一根羽毛从椅子底下伸出来，在脚心上「刷」地扫了一下）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "c1",
+					"zone": "sole",
+					"fx": "feather",
+					"repeat": 8,
+					"interval": 0.16,
+					"do": "tickle"
+				},
+				{
+					"who": "blue",
+					"by": "c2",
+					"zone": "sole",
+					"fx": "feather",
+					"repeat": 6,
+					"interval": 0.16,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"visual": "giggle",
+					"do": "pose"
+				},
+				{
+					"who": "blue",
+					"visual": "giggle",
+					"do": "pose"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "噫！？这、这也是按摩？！",
+			"emotion": "surprise"
+		},
+		{
+			"speaker": "女仆长",
+			"text": "……陛下说，笑一笑，血液循环，会变好。"
+		},
+		{
+			"speaker": "",
+			"text": "（捏肩的手换成了挠腰的手，捶背的手换成了挠肋下的手，脚凳上的羽毛一根变成三根——两张椅子一起「嗡嗡」地运转起来）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "c1",
+					"zone": "waist",
+					"fx": "hand",
+					"repeat": 12,
+					"interval": 0.11,
+					"do": "tickle"
+				},
+				{
+					"who": "blue",
+					"by": "c2",
+					"zone": "armpit",
+					"fx": "hand",
+					"repeat": 12,
+					"interval": 0.11,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"visual": "helpless_1",
+					"do": "pose"
+				},
+				{
+					"who": "blue",
+					"visual": "helpless_1",
+					"do": "pose"
+				},
+				{
+					"do": "voice",
+					"state": "laugh"
+				}
+			],
+			"act": 3,
+			"portrait": "massage_chair"
+		},
+		{
+			"speaker": "公主",
+			"text": "哈哈哈！循、循环——循环得太好了——停、停一下！",
+			"emotion": "helpless_1"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……哈、哈哈……发条……发条拧得太紧了……"
+		},
+		{
+			"speaker": "女仆长",
+			"text": "……小殿下们，每次都说「再来一次」。"
+		},
+		{
+			"speaker": "",
+			"text": "（两个人笑得在椅子上直扭，手拼命去够扶手上的停止拉杆，可是小机械手总是先一步挠在她们的手腕上）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "c1",
+					"zone": "sole",
+					"fx": "lines",
+					"repeat": 14,
+					"interval": 0.09,
+					"do": "tickle"
+				},
+				{
+					"who": "blue",
+					"by": "c2",
+					"zone": "waist",
+					"fx": "feather",
+					"repeat": 14,
+					"interval": 0.09,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"visual": "helpless_2",
+					"do": "pose"
+				},
+				{
+					"who": "blue",
+					"visual": "helpless_2",
+					"do": "pose"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "（星光在休息室里炸开，按摩椅的发条「嘣」地弹开了……哈啊……放出去了……）",
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "flash"
+				},
+				{
+					"sound": "star_burst",
+					"do": "sfx"
+				},
+				{
+					"sound": "water_release",
+					"volume": -2.0,
+					"do": "sfx"
+				},
+				{
+					"who": "princess",
+					"time": 0.4,
+					"do": "shake"
+				},
+				{
+					"state": "laugh",
+					"do": "voice"
+				}
+			],
+			"act": "burst",
+			"wait": 1.0
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……哈……哈哈……（冰晶跟着炸开，小机械手全冻成了冰雕……）",
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "flash"
+				},
+				{
+					"sound": "ice_crack",
+					"volume": -2.0,
+					"do": "sfx"
+				},
+				{
+					"sound": "water_release",
+					"volume": -2.0,
+					"do": "sfx"
+				},
+				{
+					"who": "blue",
+					"time": 0.4,
+					"do": "shake"
+				},
+				{
+					"state": "laugh",
+					"do": "voice"
+				}
+			],
+			"act": "burst",
+			"wait": 1.0
+		},
+		{
+			"speaker": "",
+			"text": "（冻住之前，最后一根羽毛还是不甘心地，在两人刚释放完、敏感得要命的脚心上轻轻划了一下）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "c1",
+					"zone": "sole",
+					"fx": "feather",
+					"repeat": 4,
+					"interval": 0.2,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"time": 0.3,
+					"do": "shake"
+				},
+				{
+					"who": "princess",
+					"visual": "helpless_1",
+					"do": "pose"
+				},
+				{
+					"who": "blue",
+					"visual": "helpless_1",
+					"do": "pose"
+				}
+			],
+			"act": 4
+		},
+		{
+			"speaker": "公主",
+			"text": "呀……！……哈……哈……按、按摩日结束了吗……",
+			"emotion": "helpless_1"
+		},
+		{
+			"speaker": "女仆长",
+			"text": "……结束了。……陛下也是，每次都笑到发条弹开。"
+		},
+		{
+			"speaker": "女仆长",
+			"text": "……陛下，和小殿下们，三个人，挤在一张椅子上。……那是，最热闹的一天。",
+			"actions": [
+				{
+					"who": "princess",
+					"visual": "normal",
+					"do": "pose"
+				},
+				{
+					"who": "blue",
+					"visual": "normal",
+					"do": "pose"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "……三个人。",
+			"emotion": "sad"
+		},
+		{
+			"actions": [
+				{
+					"state": "",
+					"do": "voice"
+				},
+				{
+					"time": 0.6,
+					"do": "fade_out"
+				}
+			],
+			"wait": 0.7
+		}
+	]
+}

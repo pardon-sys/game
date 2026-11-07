@@ -604,6 +604,7 @@ static func _palace_b(t: Node) -> void:
 	await _ante_events(t)
 	await _palace_c(t)
 	await _extra_events(t)
+	await _extra_events_c(t)
 
 
 static func _quiet_beetles(cr: PalaceClock) -> void:
@@ -984,6 +985,157 @@ static func _extra_events(t: Node) -> void:
 	verify(t, "每场只能用 %d 次" % PalaceThrone.BOX_USES, th.box_used == PalaceThrone.BOX_USES and not th.use_music_box())
 	GameState.set_flag(PalaceThrone.BOSS_FLAG)
 	_calm(t)
+
+
+## 追加事件（第三批，跨图）：发条钥匙 / 休息室、巡夜队、冷藏库、宝箱怪的逃亡、镜子迷宫与失窃的小画像、人偶舞会
+static func _extra_events_c(t: Node) -> void:
+	for f in [PalaceRoom.FRIEND_FLAG, PalaceRoom.PATROL_FLAG, "cg_seen_theater:servants_massage", PalaceKitchen.COLD_FLAG, PalaceKitchen.COLD_IN_FLAG,
+			PalaceKitchen.CAKE_FLAG, "cg_seen_theater:kitchen_icecream", PalaceRoom.MIMIC_FLED, PalaceRoom.MIMIC_DONE, PalaceWardrobe.PORTRAIT_FLAG,
+			PalaceThrone.PORTRAIT_BACK, PalaceAnte.BALL_BELL, PalaceAnte.BALL_TILES, PalaceAnte.BALL_DONE, "cg_seen_theater:ante_ball_fail"]:
+		GameState.flags.erase(f)
+	# ---- 回廊：女仆长的发条钥匙 → 休息室的按摩椅（CG）
+	await _goto(t, "floor_06_palace_servants")
+	var sv := _room(t, "PalaceServants") as PalaceServants
+	verify(t, "回廊：女仆长休息室的门锁着", sv != null and is_instance_valid(sv._lounge_door))
+	if sv == null:
+		return
+	verify(t, "没有发条钥匙：上不了弦", not sv.wind_maid())
+	GameState.give_item(ItemDB.get_item("maid_key"), 1)
+	verify(t, "钟楼一层宝箱里的「女仆长的发条钥匙」：给她上弦 → 友好、休息室开门", sv.wind_maid() and GameState.has_flag(PalaceRoom.FRIEND_FLAG)
+		and not GameState.inventory.has("maid_key"))
+	await t.get_tree().process_frame
+	verify(t, "休息室的门开了", not is_instance_valid(sv._lounge_door))
+	var cc0 := sv.caught_count
+	sv.caught()
+	verify(t, "女仆长友好以后：回廊的人偶不再抓人", sv.caught_count == cc0)
+	await t._talk("floor_06/servants_lounge_chair", "", [0])
+	await t._advance_until(func(): return GameState.has_flag("cg_seen_theater:servants_massage") and not CG.is_busy() and not Dialogue.is_active(), 150.0)
+	verify(t, "休息室的人偶按摩椅：小剧场（CG）", GameState.has_flag("cg_seen_theater:servants_massage"))
+	_calm(t)
+	# ---- 巡夜队：回廊被抓过一次 → 厨房多一个巡夜人偶；女仆长友好以后撤掉
+	GameState.flags.erase(PalaceRoom.FRIEND_FLAG)
+	GameState.set_flag(PalaceRoom.PATROL_FLAG)
+	await _goto(t, "floor_06_palace_kitchen")
+	var kr := _room(t, "PalaceKitchen") as PalaceKitchen
+	await t.get_tree().process_frame
+	verify(t, "回廊被抓过：厨房多了巡夜人偶", kr.patrols.size() == 1)
+	var p := GameState.player as PlayableCharacter
+	var np := kr.patrols[0] as PalaceRoom.NightPatrol
+	p.global_position = kr.world(kr.cells("ice_cake")[0])
+	np.catch(p)
+	verify(t, "被巡夜人偶抓到：挠一阵、送回入口", p.global_position.distance_to(kr.world(kr.cells("start")[0])) < 24.0)
+	GameState.set_flag(PalaceRoom.FRIEND_FLAG)
+	np.tick(0.05)
+	await t.get_tree().process_frame
+	verify(t, "女仆长友好以后：巡夜人偶撤掉", not is_instance_valid(np))
+	_calm(t)
+	# ---- 冷藏库
+	verify(t, "冰滑道尽头的门冻住了", is_instance_valid(kr._cold_door))
+	kr.melt_door()
+	await t.get_tree().process_frame
+	verify(t, "粉色公主的火融开冻住的门", GameState.has_flag(PalaceKitchen.COLD_FLAG) and not is_instance_valid(kr._cold_door))
+	kr.enter_cold()
+	await t._advance_until(func(): return GameState.has_flag("cg_seen_theater:kitchen_icecream") and not CG.is_busy() and not Dialogue.is_active(), 150.0)
+	await t.get_tree().process_frame
+	verify(t, "第一次进冷藏库：冰糕精灵的小剧场 → 放出 %d 只冰糕精灵" % kr.ice_sprites.size(), GameState.has_flag("cg_seen_theater:kitchen_icecream") and kr.ice_sprites.size() == 3)
+	for m in kr.ice_sprites:
+		if is_instance_valid(m):
+			(m as Node).queue_free()
+	_calm(t)
+	await t._talk("floor_06/kitchen_ice_cake", "", [0])
+	verify(t, "冰块里的生日蛋糕：融开 → 卡片「给两个小不点的第一个生日」", GameState.has_flag(PalaceKitchen.CAKE_FLAG))
+	# ---- 宝箱怪的逃亡：冷藏库 → 图书馆 → 衣帽间
+	GameState.set_flag(PalaceRoom.MIMIC_FLED)
+	GameState.vars[PalaceRoom.MIMIC_STAGE] = 0
+	for i in 3:
+		var fid: String = PalaceRoom.MIMIC_MAPS[i]
+		if i > 0:
+			await _goto(t, fid)
+		var room := _room(t, ["PalaceKitchen", "PalaceLibrary", "PalaceWardrobe"][i]) as PalaceRoom
+		_calm(t)
+		p = GameState.player as PlayableCharacter
+		room.mimic_catch()
+		verify(t, "宝箱怪躲在%s：打开 → 被咬住" % ["冷藏库", "图书馆", "衣帽间"][i], p.status.is_grabbed())
+		for k in 6:
+			p.status.struggle()
+		await t.get_tree().process_frame
+		await t.get_tree().process_frame
+		verify(t, "挣开：它又跑了（第 %d 次）" % (i + 1), int(GameState.vars.get(PalaceRoom.MIMIC_STAGE, 0)) == i + 1)
+		await t._advance_until(func(): return not Dialogue.is_active() and not Dialogue.runner.is_running(), 30.0)
+	verify(t, "三次都抓到：宝箱怪吐出金币和一张地图", GameState.has_flag(PalaceRoom.MIMIC_DONE))
+	# ---- 衣帽间：镜子迷宫（必经之路）、失窃的小画像
+	var wr := _room(t, "PalaceWardrobe") as PalaceWardrobe
+	var lvn := t.get_tree().get_first_node_in_group("main").get("level") as Node
+	var mc := wr.cells("mirror_wall")[0]
+	verify(t, "衣帽间的镜子迷宫：%d 块镜面墙板、镜墙走不过去" % wr.mirrors.size(), wr.mirrors.size() > 40 and not GridPath.walkable(lvn, Vector2i(28, 10)))
+	var path := GridPath.find(lvn, wr.world(wr.cells("start")[0]), wr.world(wr.cells("trap_wardrobe")[0]), 20000)
+	verify(t, "从门口到东边要穿过整个迷宫（路长 %d 格）" % path.size(), path.size() > 90)
+	_calm(t)
+	await t._talk("floor_06/wardrobe_fake_mirror", "", [0])
+	verify(t, "迷宫里那面奇怪的镜子：其实是失窃的小画像", GameState.has_flag(PalaceWardrobe.PORTRAIT_FLAG) and GameState.inventory.has("lost_portrait"))
+	_calm(t)
+	# ---- 王座间：挂回去，只剩三幅小画像醒来
+	GameState.set_flag(PalaceThrone.BOSS_FLAG, false)
+	GameState.pending_spawn = "from_ante"
+	await t.main.change_level(Floors.scene("floor_06_palace_throne"))
+	await t._advance_until(func(): return t._level_id() == "floor_06_palace_throne" and not Cutscene.is_playing() and not Dialogue.is_active(), 60.0)
+	var th := _room(t, "PalaceThrone") as PalaceThrone
+	var sp3 := th.small[3] as PalaceThrone.SmallPortrait
+	sp3.revive()
+	verify(t, "带着小画像进王座间：挂回空画框，那一幅一直睡着（第二层只剩三幅）", GameState.has_flag(PalaceThrone.PORTRAIT_BACK) and not GameState.inventory.has("lost_portrait")
+		and sp3.calm and not sp3.alive())
+	GameState.set_flag(PalaceThrone.BOSS_FLAG)
+	_calm(t)
+	# ---- 人偶舞会
+	await _goto(t, "floor_06_palace_ante")
+	var an := _room(t, "PalaceAnte") as PalaceAnte
+	for g in an.guards:
+		(g as PalaceAnte.ArmorGuard).push_down()
+		(g as PalaceAnte.ArmorGuard)._t = -9999.0
+	GameState.set_flag(PalaceAnte.VAULT_FLAG)
+	for i in PalaceAnte.LULLABY_SEQ:
+		an.step_tile(i)
+	verify(t, "只踩了地砖的舞步：还缺铜钟和吊铃，舞会不开", GameState.has_flag(PalaceAnte.BALL_TILES) and not an.ball_on)
+	GameState.set_flag(PalaceAnte.BALL_BELL)
+	GameState.set_flag(PalaceAnte.LULLABY)
+	an.try_ball()
+	await _wait_ball(t, an)
+	verify(t, "三处都演奏过摇篮曲：前厅开舞会（第一支舞 %d 个人偶）" % an.dolls_alive(), an.ball_on and an.dolls_alive() == PalaceAnte.BALL_WAVES[0])
+	var p2 := GameState.player as PlayableCharacter
+	_calm(t)
+	var q := (1 if (p2.global_position - an._ball_center()).x >= 0.0 else 0) + (2 if (p2.global_position - an._ball_center()).y >= 0.0 else 0)
+	p2.global_position = an._ball_center() + Vector2(-30 if q % 2 == 0 else 30, -30 if q < 2 else 30)
+	var bl := p2.laugh.value
+	an.beat_q = q
+	an.beat_sweep()
+	verify(t, "拍子落下：站在红色扇区里被羽毛扫（%.0f → %.0f）" % [bl, p2.laugh.value], p2.laugh.value > bl)
+	var mint0 := GameState.inventory.count("mint")
+	for w in PalaceAnte.BALL_WAVES.size():
+		_calm(t)
+		for d in an.dolls:
+			if is_instance_valid(d) and (d as Monster).is_alive():
+				(d as Monster).health.damage(99)
+		for k in 6:
+			_calm(t)   # 人偶挠得太凶会让两个人笑倒（= 舞会输了），测试里每帧清一下
+			await t.get_tree().process_frame
+	await t._wait(0.2)
+	verify(t, "三支舞都跳完（打倒人偶）：舞会结束、薄荷糖 ×3（薄荷糖 %d → %d）" % [mint0, GameState.inventory.count("mint")], GameState.has_flag(PalaceAnte.BALL_DONE) and GameState.inventory.count("mint") >= mini(mint0 + 3, ItemDB.get_item("mint").max_stack))
+	# 输的那条路：再开一场，倒下 → 小剧场（CG）
+	GameState.flags.erase(PalaceAnte.BALL_DONE)
+	_calm(t)
+	an.start_ball()
+	await _wait_ball(t, an)
+	an.on_defeat("test")
+	await t._advance_until(func(): return GameState.has_flag("cg_seen_theater:ante_ball_fail") and not CG.is_busy() and not Dialogue.is_active() and not an._defeat_busy, 150.0)
+	verify(t, "舞会里倒下：小剧场（CG），舞会停下", GameState.has_flag("cg_seen_theater:ante_ball_fail") and not an.ball_on)
+	GameState.set_flag(PalaceAnte.BALL_DONE)
+	_calm(t)
+
+
+static func _wait_ball(t: Node, an: PalaceAnte) -> void:
+	await t._advance_until(func():
+		_calm(t)
+		return an.ball_wave == 0 and not Cutscene.is_playing(), 60.0)
 
 
 ## 密道入口没走过之前不显示标志 / 黄字；反省篇的可交互点近处浮出交互键
