@@ -1336,6 +1336,12 @@ data/cutscenes/<楼层组>/  地图内过场；data/theater/<楼层组>/  小剧
   - 图书馆的私人书房：密码门打开前整间盖着 `PalaceLibrary.StudyShade`（`STUDY_RECT`），开门后淡掉。
   - 钟楼拆成五层（`floor_06_palace_clock_1` … `_5`，`quest_maps._clock_1` … `_5`），楼梯 / 梯子（exit）连起来：同一个 `PalaceClock`（token `map=`）按这一层有的标记开机关；
 	三层的梯子 `unlock_flag = palace_ladder_down`，四层上钟顶的楼梯 `unlock_flag = palace_keeper_done`；大道具用 `clock_props.png`（齿轮 / 钟摆 / 风箱 / 钟 / 钟绳 / 宝箱）。
+  - 修正（第 N+1 轮）：
+	- 配乐改了以后要真的生效：`gen_floor06_after.py` 以前只往 `floors.json` 里加新条目，已有条目的 name / music 不更新；现在会更新，并删掉 `GONE` 里的旧图（单张钟楼）。
+	- 密道入口（`LevelExit.SECRET_MAPS`，通往隧道与密室）：`secret_hidden()` 时不显示标志 / 黄字，只看得到那幅画；走过一次（`passage_flag(a, b)`，两个方向都算）才显示。
+	- 交互提示「！」：`InteractHint`（`scripts/components/interact_hint.gd`），由 `Interactable._ready` 挂在反省篇地图上；公主 `HINT_R` 以内、还不是 E 提示目标时显示，`Spot.done_flag` 有了就不再显示。
+	- 钟楼：道具缩小，宝箱换成地牢宝箱图（Kenney），大齿轮本身也有调查点（和转轴同一段对话），转轴画成小摇柄（`CrankView`）。
+	- 图书馆私人书房和大厅之间改成只有密码门那一格（`quest_maps._palace_library`），门（`_door`）挡住，开门后才能进。
   - 新装备（衣帽间）：`palace_ribbon`、`palace_corset`、`palace_boots`、`palace_stockings`、`feather_shawl`（`gen_equipment.py` + `gen_equip_art.py` + `ItemDB`）。
 - 配乐（`tools/audio/gen_music.py`，ElevenLabs）：`old_palace` 旧王宫探索（荒凉、破旧、往日的华丽）、`palace_boss` 王座间 Boss「封笑的女王画像」，登记在 `Audio.MUSIC`，第四章用。
 

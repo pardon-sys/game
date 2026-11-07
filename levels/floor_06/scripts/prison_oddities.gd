@@ -85,9 +85,14 @@ static func alarm() -> int:
 ## 按 E 说话 / 调查的点
 class Spot extends Node2D:
 	var dialogue := ""
+	## 有这个剧情标记以后头顶不再冒「！」（InteractHint；做过的事件）
+	var done_flag := ""
+	## 提示（E /「！」）离地多高（东西高的话往上挪）
+	var prompt_y := -22.0
 
 	func _ready() -> void:
 		var area := Interactable.new()
+		area.prompt_offset = Vector2(0, prompt_y)
 		var shape := CollisionShape2D.new()
 		var c := CircleShape2D.new()
 		c.radius = 12.0

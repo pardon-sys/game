@@ -66,17 +66,22 @@ func _ready() -> void:
 	super()
 	floor_no = int(map.get_slice("_", map.get_slice_count("_") - 1)) if map.get_slice_count("_") > 0 else 1
 	if has("axle"):
-		_spot("floor_06/clock_axle", cells("axle")[0])
+		_spot("floor_06/clock_axle", cells("axle")[0], LADDER_FLAG)
+		var crank := CrankView.new()
+		crank.position = world(cells("axle")[0])
+		add_view(crank)
+	if has("gear_seat"):
+		_spot("floor_06/clock_axle", cells("gear_seat")[0], LADDER_FLAG, -50.0)   # 点大齿轮本身也行（以前只有 5 格外的转轴能点）
 	if has("rope"):
-		_spot("floor_06/clock_rope", cells("rope")[0])
+		_spot("floor_06/clock_rope", cells("rope")[0], BELLS_FLAG)
 		add_view(_prop(4, world(cells("rope")[0])))
 	if has("bell"):
-		_spot("floor_06/clock_bell", cells("bell")[0])
-		var bell := _prop(3, world(cells("bell")[0]) + Vector2(0, -20))
-		bell.scale = Vector2(1.6, 1.6)
+		_spot("floor_06/clock_bell", cells("bell")[0], BELLS_FLAG)
+		var bell := _prop(3, world(cells("bell")[0]) + Vector2(0, -14))
+		bell.scale = Vector2(1.2, 1.2)
 		add_view(bell)
 	if has("chests"):
-		_spot("floor_06/clock_chest_%d" % floor_no, cells("chests")[0])
+		_spot("floor_06/clock_chest_%d" % floor_no, cells("chests")[0], "palace_tchest_%d" % floor_no)
 		var cv := ChestView.new()
 		cv.flag = "palace_tchest_%d" % floor_no
 		cv.position = world(cells("chests")[0])
@@ -105,7 +110,7 @@ func _ready() -> void:
 		fi += 1
 	if has("gear_seat"):
 		var big := _prop(0, world(cells("gear_seat")[0]))
-		big.scale = Vector2(1.6, 1.6)
+		big.scale = Vector2(0.85, 0.85)
 		add_view(big)
 	if has("ladder"):
 		_ladder_view = LadderView.new()
@@ -144,9 +149,11 @@ static func _prop(frame: int, at: Vector2) -> Node2D:
 	return n
 
 
-func _spot(dialogue: String, c: Vector2i) -> void:
+func _spot(dialogue: String, c: Vector2i, done_flag := "", prompt_y := -22.0) -> void:
 	var sp := PrisonOddities.Spot.new()
 	sp.dialogue = dialogue
+	sp.done_flag = done_flag
+	sp.prompt_y = prompt_y
 	add_child(sp)
 	sp.global_position = world(c)
 
@@ -435,6 +442,8 @@ class GearView extends Node2D:
 	func _ready() -> void:
 		_l = PalaceClock._prop(0, Vector2(-14, 0))
 		_r = PalaceClock._prop(0, Vector2(14, 0))
+		_l.scale = Vector2(0.7, 0.7)
+		_r.scale = Vector2(0.7, 0.7)
 		add_child(_l)
 		add_child(_r)
 
@@ -482,7 +491,7 @@ class PendulumView extends Node2D:
 
 	func _ready() -> void:
 		_s = PalaceClock._prop(1, Vector2.ZERO)
-		_s.scale = Vector2(1.5, 1.5)
+		_s.scale = Vector2(1.1, 1.1)
 		add_child(_s)
 		_last = position.x
 
@@ -509,7 +518,7 @@ class BellowsView extends Node2D:
 
 	func _ready() -> void:
 		_s = PalaceClock._prop(2, Vector2.ZERO)
-		_s.scale = Vector2(1.3, 1.3)
+		_s.scale = Vector2(1.0, 1.0)
 		add_child(_s)
 
 	func _process(_d: float) -> void:
@@ -518,7 +527,7 @@ class BellowsView extends Node2D:
 			return
 		var d := room.wind_dir(idx)
 		var sq := absf(sin(room.t * 6.0)) * 0.15 if d != 0.0 else 0.0
-		_s.scale = Vector2(1.3 + sq, 1.3 - sq)
+		_s.scale = Vector2(1.0 + sq, 1.0 - sq)
 		_s.scale.x *= -1.0 if d < 0.0 else 1.0
 
 	func _draw() -> void:
@@ -573,7 +582,7 @@ class KeeperView extends Node2D:
 			_spr.texture = load(SHEET)
 			_spr.hframes = 4
 			_spr.vframes = 4
-			_spr.scale = Vector2(1.6, 1.6)
+			_spr.scale = Vector2(1.25, 1.25)
 			_spr.offset = Vector2(0, -14)
 			add_child(_spr)
 
@@ -597,23 +606,42 @@ class KeeperView extends Node2D:
 		draw_circle(Vector2(0, -40), 6.0, Color(0.95, 0.92, 0.88))
 
 
-## 小宝箱（clock_props 第 5 帧；打开过就半透明）
+## 小宝箱（用地牢里的宝箱图：Kenney tiny dungeon，同 scripts/objects/chest.gd；打开过换成开着的那一格）
 class ChestView extends Node2D:
+	const TEX := "res://assets/third_party/kenney_tiny_dungeon/tilemap_packed.png"
+	const CLOSED := Rect2(80, 112, 16, 16)
+	const OPEN := Rect2(96, 112, 16, 16)
 	var flag := ""
-	var _s: Node2D
+	var _s: Sprite2D
 
 	func _ready() -> void:
-		_s = PalaceClock._prop(5, Vector2.ZERO)
+		_s = Sprite2D.new()
+		_s.texture = load(TEX)
+		_s.region_enabled = true
+		_s.region_rect = CLOSED
+		_s.offset = Vector2(0, -7)
+		_s.scale = Vector2(1.25, 1.25)
+		_s.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 		add_child(_s)
 
+	func is_open() -> bool:
+		return flag != "" and GameState.has_flag(flag)
+
 	func _process(_d: float) -> void:
-		var open := flag != "" and GameState.has_flag(flag)
-		_s.modulate = Color(0.6, 0.6, 0.6, 0.7) if open else Color.WHITE
+		_s.region_rect = OPEN if is_open() else CLOSED
+
+
+## 转轴上的小摇柄（三层；另一个人转它，坐齿轮的人被带上去）
+class CrankView extends Node2D:
+	var t := 0.0
+
+	func _process(d: float) -> void:
+		t += d * (0.0 if GameState.has_flag(PalaceClock.LADDER_FLAG) else 1.5)
 		queue_redraw()
 
 	func _draw() -> void:
-		if _s.get_child_count() > 0:
-			return
-		var open := flag != "" and GameState.has_flag(flag)
-		draw_rect(Rect2(-8, -10, 16, 10), Color(0.55, 0.32, 0.15))
-		draw_rect(Rect2(-8, -18 if open else -14, 16, 5), Color(0.6, 0.36, 0.18))
+		draw_rect(Rect2(-3, -14, 6, 14), Color(0.42, 0.3, 0.18))
+		draw_circle(Vector2(0, -14), 4.0, Color(0.72, 0.55, 0.25))
+		var h := Vector2(cos(t), sin(t) * 0.5) * 7.0
+		draw_line(Vector2(0, -14), Vector2(0, -14) + h, Color(0.55, 0.42, 0.22), 2.0)
+		draw_circle(Vector2(0, -14) + h, 2.0, Color(0.85, 0.3, 0.25))

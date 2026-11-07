@@ -1,3 +1,4 @@
+class_name LevelExit
 extends Area2D
 ## 关卡出口 / 楼梯：公主走进来时（可先播放一段对话）切换到 target_level。
 ## target_level 为 "next" 时按 data/floors.json 进入当前楼层的下一层。
@@ -24,6 +25,8 @@ extends Area2D
 ## + 头顶一行「→ 目的地」（锁着时加「（锁着）」），见 _add_marker。
 const MARKERS := "res://assets/generated/exit_markers.png"
 const MARKER_MAPS := ["floor_06_penance", "floor_06_rat_tunnel", "floor_06_waterway", "floor_06_palace"]
+## 密道：通往这些地图的出口（画后面 / 衣柜里……）没走过之前不显示标志和黄字，只看得到那幅画；走过一次（哪个方向都算）才显示
+const SECRET_MAPS := ["floor_06_palace_tunnels"]
 ## 打开后第一次走进来播的对话（比如「用钥匙……打开了！」），只播一次。
 @export var open_dialogue := ""
 
@@ -71,6 +74,28 @@ static func marker_kind(src: String, dst: String) -> int:
 	return 2
 
 
+## 目的地的地图 id（构建好的出口存的是 res://levels/<id>/floor.tscn）
+func _dst_id() -> String:
+	var d := target_level
+	if d.begins_with("res://"):
+		d = d.get_base_dir().get_file()
+	return d
+
+
+static func passage_flag(a: String, b: String) -> String:
+	var p := [a, b]
+	p.sort()
+	return "passage_seen_%s_%s" % p
+
+
+## 这个出口是不是还没被发现的密道入口（不显示标志）
+func secret_hidden() -> bool:
+	var dst := _dst_id()
+	if not SECRET_MAPS.has(dst) or SECRET_MAPS.has(_floor_id()):
+		return false
+	return not GameState.has_flag(passage_flag(_floor_id(), dst))
+
+
 func _add_marker() -> void:
 	var src := _floor_id()
 	if not MARKER_MAPS.any(func(p): return src.begins_with(p)):
@@ -78,8 +103,7 @@ func _add_marker() -> void:
 	var dst_id := target_level
 	if dst_id == "" or dst_id == "next":
 		return
-	if dst_id.begins_with("res://"):
-		dst_id = dst_id.get_base_dir().get_file()   # 构建好的出口存的是 res://levels/<id>/floor.tscn
+	dst_id = _dst_id()
 	if ResourceLoader.exists(MARKERS):
 		var spr := Sprite2D.new()
 		spr.name = "Marker"
@@ -100,13 +124,21 @@ func _add_marker() -> void:
 	tag.z_index = 30
 	add_child(tag)
 	_marker_lock = is_locked_now()
+	_marker_hidden = not secret_hidden()   # 让 _process 第一帧就刷新显隐
 
 
 var _marker_lock := false
+var _marker_hidden := false
 
 
 func _process(_d: float) -> void:
 	var tag := get_node_or_null("MarkerLabel") as Label
+	if tag and _marker_hidden != secret_hidden():
+		_marker_hidden = secret_hidden()
+		tag.visible = not _marker_hidden
+		var mk := get_node_or_null("Marker") as Node2D
+		if mk:
+			mk.visible = not _marker_hidden
 	if tag and _marker_lock != is_locked_now():
 		_marker_lock = is_locked_now()
 		tag.text = tag.text.replace("（锁着）", "") + ("（锁着）" if _marker_lock else "")
@@ -150,6 +182,8 @@ func _on_body_entered(body: Node) -> void:
 		_used = false
 		return
 	GameState.pending_spawn = spawn
+	if SECRET_MAPS.has(_dst_id()) or SECRET_MAPS.has(_floor_id()):
+		GameState.set_flag(passage_flag(_floor_id(), _dst_id()))
 	var path := resolve_target()
 	var main := get_tree().get_first_node_in_group("main")
 	if main and path != "":

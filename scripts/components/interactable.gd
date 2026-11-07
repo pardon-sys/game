@@ -13,6 +13,7 @@ func _ready() -> void:
 	collision_layer = 8
 	collision_mask = 0
 	monitoring = false
+	InteractHint.attach.call_deferred(self)   # 反省篇地图：近处冒「！」
 
 
 func interact(player: Node) -> void:
