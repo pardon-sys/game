@@ -1,0 +1,41 @@
+{
+	"name": "一只袜子",
+	"entries": [
+		{
+			"if": {
+				"flag": "palace_lost_sock"
+			},
+			"node": "done"
+		},
+		{
+			"node": "default"
+		}
+	],
+	"nodes": {
+		"default": {
+			"lines": [
+				{
+					"text": "（衣架底下掉着一只条纹袜子……只有一只。袜口绣着「鬼」）",
+					"speaker": ""
+				},
+				{
+					"text": "……这是隧道里那个小鬼说丢了的东西。收着吧。",
+					"speaker": "公主"
+				}
+			],
+			"set": {
+				"flags": [
+					"palace_lost_sock"
+				]
+			}
+		},
+		"done": {
+			"lines": [
+				{
+					"text": "（东西已经收起来了）",
+					"speaker": ""
+				}
+			]
+		}
+	}
+}

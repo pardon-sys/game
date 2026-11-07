@@ -27,6 +27,8 @@ const MARKERS := "res://assets/generated/exit_markers.png"
 const MARKER_MAPS := ["floor_06_penance", "floor_06_rat_tunnel", "floor_06_waterway", "floor_06_palace"]
 ## 密道：通往这些地图的出口（画后面 / 衣柜里……）没走过之前不显示标志和黄字，只看得到那幅画；走过一次（哪个方向都算）才显示
 const SECRET_MAPS := ["floor_06_palace_tunnels"]
+## 暗门（[legend] secret=true）：同密道一样，没走过之前不显示标志和黄字
+@export var secret := false
 ## 打开后第一次走进来播的对话（比如「用钥匙……打开了！」），只播一次。
 @export var open_dialogue := ""
 
@@ -91,7 +93,7 @@ static func passage_flag(a: String, b: String) -> String:
 ## 这个出口是不是还没被发现的密道入口（不显示标志）
 func secret_hidden() -> bool:
 	var dst := _dst_id()
-	if not SECRET_MAPS.has(dst) or SECRET_MAPS.has(_floor_id()):
+	if not secret and (not SECRET_MAPS.has(dst) or SECRET_MAPS.has(_floor_id())):
 		return false
 	return not GameState.has_flag(passage_flag(_floor_id(), dst))
 
@@ -182,7 +184,7 @@ func _on_body_entered(body: Node) -> void:
 		_used = false
 		return
 	GameState.pending_spawn = spawn
-	if SECRET_MAPS.has(_dst_id()) or SECRET_MAPS.has(_floor_id()):
+	if secret or SECRET_MAPS.has(_dst_id()) or SECRET_MAPS.has(_floor_id()):
 		GameState.set_flag(passage_flag(_floor_id(), _dst_id()))
 	var path := resolve_target()
 	var main := get_tree().get_first_node_in_group("main")

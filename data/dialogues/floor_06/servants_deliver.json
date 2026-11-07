@@ -1,0 +1,58 @@
+{
+	"name": "女仆长的房间",
+	"entries": [
+		{
+			"if": {
+				"flag": "palace_sheet_2"
+			},
+			"node": "done"
+		},
+		{
+			"if": {
+				"flag": "palace_tray_carry"
+			},
+			"node": "carry"
+		},
+		{
+			"node": "default"
+		}
+	],
+	"nodes": {
+		"default": {
+			"lines": [
+				{
+					"text": "（女仆长房间的小桌上，摆着一张空空的茶托。茶托下面压着什么东西）",
+					"speaker": ""
+				}
+			]
+		},
+		"carry": {
+			"lines": [
+				{
+					"text": "（把托盘放在小桌上。茶托下面压着的，是一张泛黄的乐谱——旁边写着：「右下、右上」）",
+					"speaker": ""
+				},
+				{
+					"text": "……第二片乐谱。",
+					"speaker": "蓝色的公主"
+				},
+				{
+					"text": "女仆长……原来是在等点心。",
+					"speaker": "公主",
+					"emotion": "happy"
+				}
+			],
+			"set": {
+				"call": "palace_tray_deliver"
+			}
+		},
+		"done": {
+			"lines": [
+				{
+					"text": "（小桌上的点心一口没动。……人偶本来就吃不了吧）",
+					"speaker": ""
+				}
+			]
+		}
+	}
+}

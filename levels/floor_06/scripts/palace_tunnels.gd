@@ -18,6 +18,14 @@ const TOLL_COINS := 30
 const TOLL_R := 30.0
 const WEB_R := 14.0
 const BURN_R := 26.0
+## 追加事件：失物招领（小鬼的五样东西散在五张图：PalaceRoom.LOST_ITEMS；lost_board 按 E 交还 → 免路费通行证 + 徽记）
+const LOST_DONE := "palace_lost_done"
+## 黑暗区：往婴儿房去的西边支路（DARK_RECT）。只有蓝色公主脚边一圈冰光（LIGHT_R）；粉色公主离开光圈 DARK_GRAB 秒 → 暗处的手抓住挠
+const DARK_RECT := Rect2i(10, 32, 3, 15)
+const LIGHT_R := 44.0
+const DARK_GRAB := 1.5
+var dark_cells: Array = []
+var _dark_t := 0.0
 const SECRETS := {"to_bath": "bath", "to_library": "library", "to_wardrobe": "wardrobe", "to_training": "training"}
 
 var webs: Array = []
@@ -61,6 +69,20 @@ func _ready() -> void:
 		_imps = TollView.new()
 		_imps.position = world(Vector2i(tx, 29))
 		add_view(_imps)
+	if not cells("lost_board").is_empty():
+		var lsp := PrisonOddities.Spot.new()
+		lsp.dialogue = "floor_06/tunnel_lost"
+		lsp.done_flag = LOST_DONE
+		add_child(lsp)
+		lsp.global_position = world(cells("lost_board")[0])
+	for y in range(DARK_RECT.position.y, DARK_RECT.end.y):
+		for x in range(DARK_RECT.position.x, DARK_RECT.end.x):
+			var dc := DarkCell.new()
+			dc.room = self
+			dc.position = PalaceRoom.cell_pos(Vector2i(x, y))
+			dc.z_index = 20
+			add_view(dc)
+			dark_cells.append(dc)
 	var wi := 0
 	for c in cells("webs"):
 		if GameState.has_flag("palace_web_%d" % wi):
@@ -139,6 +161,64 @@ func _process(delta: float) -> void:
 				pc.receive_hit(h)
 				PalaceRoom.say_random(pc, "web")
 	webs = webs.filter(func(w): return is_instance_valid(w))
+	_tick_dark(delta)
+
+
+# ------------------------------------------------------------------ 黑暗区
+func in_dark(pos: Vector2) -> bool:
+	return DARK_RECT.has_point(Vector2i(floori(pos.x / 16.0), floori(pos.y / 16.0)))
+
+
+## 这一点被蓝色公主的冰光照到多少（0 全黑 ~ 1 亮）
+func light_at(pos: Vector2) -> float:
+	if not is_instance_valid(blue):
+		return 0.0
+	var d := pos.distance_to(blue.global_position)
+	return clampf(1.0 - (d - LIGHT_R * 0.5) / (LIGHT_R * 0.5), 0.0, 1.0)
+
+
+func _tick_dark(delta: float) -> void:
+	if not is_instance_valid(pink) or Downed.is_downed(pink):
+		return
+	if in_dark(pink.global_position) and pink.global_position.distance_to(blue.global_position if is_instance_valid(blue) else Vector2(-9999, 0)) > LIGHT_R:
+		_dark_t += delta
+		if _dark_t >= DARK_GRAB:
+			dark_grab()
+	else:
+		_dark_t = maxf(0.0, _dark_t - delta)
+
+
+## 暗处伸出手来：抓住脚踝挠一阵
+func dark_grab() -> void:
+	_dark_t = -1.5
+	pink.status.apply_root(1.0)
+	Audio.play("hand_grab", -4.0)
+	for k in 4:
+		var h := HitData.make_tickle(self, 2.5)
+		h.zone = ["sole", "waist"].pick_random()
+		pink.receive_hit(h)
+	PalaceRoom.say_random(pink, "dark_hand")
+
+
+# ------------------------------------------------------------------ 失物招领
+func lost_return() -> bool:
+	if GameState.has_flag(LOST_DONE):
+		return true
+	var n := PalaceRoom.lost_found()
+	if n < PalaceRoom.LOST_NAMES.size():
+		var miss := PalaceRoom.LOST_NAMES.keys().filter(func(k): return not GameState.has_flag(PalaceRoom.lost_flag(k)))
+		GameState.notify("失物：%d / %d。还没找到：%s" % [n, PalaceRoom.LOST_NAMES.size(), "、".join(miss.map(func(k): return PalaceRoom.LOST_NAMES[k]))])
+		return false
+	GameState.set_flag(LOST_DONE)
+	GameState.notify("小鬼给了一张「免路费通行证」")
+	if not toll_paid():
+		GameState.set_flag(TOLL_FLAG)
+		if is_instance_valid(_toll_body):
+			_toll_body.queue_free()
+		if is_instance_valid(_imps):
+			_imps.queue_free()
+	PalaceRoom.give_badge("lost")
+	return true
 
 
 # ------------------------------------------------------------------ 收路费
@@ -230,6 +310,12 @@ class TunnelHooks extends BattleAIHooks:
 	func _init(room: PalaceTunnels) -> void:
 		r = room
 
+	## AI 是蓝色公主、粉色公主进了黑暗区：贴着她走（冰光照着她）
+	func objective_for(ai: PlayableCharacter) -> Variant:
+		if ai.character_id == "blue" and is_instance_valid(r.pink) and r.in_dark(r.pink.global_position):
+			return r.pink.global_position
+		return null
+
 	## AI 是粉色公主：离玩家近的蛛网先烧
 	func priority_target() -> Variant:
 		var p := GameState.player
@@ -298,3 +384,21 @@ class MimicChestView extends Node2D:
 				draw_colored_polygon(PackedVector2Array([Vector2(-7 + k * 3, -10), Vector2(-5.5 + k * 3, -6), Vector2(-4 + k * 3, -10)]), Color(1, 1, 1))
 			draw_circle(Vector2(-3, -13), 1.2, Color(1, 0.3, 0.3))
 			draw_circle(Vector2(3, -13), 1.2, Color(1, 0.3, 0.3))
+
+
+## 黑暗区的一格：离蓝色公主越远越黑（矮一点的暗柱子，人走进去也看不清）
+class DarkCell extends Node2D:
+	var room: PalaceTunnels
+
+	func _process(_d: float) -> void:
+		queue_redraw()
+
+	func _draw() -> void:
+		var a := 0.96 * (1.0 - room.light_at(global_position)) if room else 0.96
+		if a <= 0.02:
+			return
+		var top := Vector2(0, -40)
+		var p := [IsoView.offset(Vector2(-8, -8)), IsoView.offset(Vector2(8, -8)), IsoView.offset(Vector2(8, 8)), IsoView.offset(Vector2(-8, 8))]
+		var col := Color(0.02, 0.02, 0.05, a)
+		draw_colored_polygon(PackedVector2Array([p[0] + top, p[1] + top, p[1], p[2], p[3], p[3] + top]), col)
+		draw_colored_polygon(PackedVector2Array([p[0] + top, p[1] + top, p[2] + top, p[3] + top]), col)

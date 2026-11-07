@@ -1,0 +1,361 @@
+{
+	"name": "骑士训练场：幽影的耐痒训练",
+	"cast": {
+		"princess": {
+			"kind": "princess",
+			"at": [
+				-14,
+				8
+			],
+			"visual": "normal",
+			"anim": "idle",
+			"dir": "right"
+		},
+		"blue": {
+			"kind": "npc:blue_princess",
+			"at": [
+				14,
+				8
+			],
+			"visual": "normal",
+			"anim": "idle",
+			"dir": "left"
+		},
+		"pants": {
+			"kind": "trap:hand",
+			"at": [
+				20,
+				10
+			]
+		},
+		"stocks": {
+			"kind": "trap:stocks",
+			"at": [
+				0,
+				4
+			]
+		},
+		"sword": {
+			"kind": "trap:feather_curtain",
+			"at": [
+				0,
+				-14
+			]
+		}
+	},
+	"steps": [
+		{
+			"act": 1,
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "fade_in"
+				},
+				{
+					"state": "giggle",
+					"do": "voice"
+				}
+			],
+			"wait": 0.5
+		},
+		{
+			"speaker": "年轻队长的幽影",
+			"text": "……输了。……按规矩，输的人要做耐痒训练。",
+			"act": 1
+		},
+		{
+			"speaker": "",
+			"text": "（幽影把两个人请到训练台边的长凳上坐下，两双脚被轻轻地套进了软垫足枷里。鞋被整整齐齐地摆在了一边）",
+			"actions": [
+				{
+					"sound": "stocks",
+					"volume": -4.0,
+					"do": "sfx"
+				},
+				{
+					"who": "princess",
+					"visual": "normal",
+					"do": "pose"
+				},
+				{
+					"who": "blue",
+					"visual": "normal",
+					"do": "pose"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "耐、耐痒训练？！我们又不是骑士！",
+			"emotion": "surprise"
+		},
+		{
+			"speaker": "年轻队长的幽影",
+			"text": "……小殿下们以前也这么说。……然后每次都坚持不到十下。"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……几下。……要坚持几下。"
+		},
+		{
+			"speaker": "年轻队长的幽影",
+			"text": "……一百下。"
+		},
+		{
+			"speaker": "",
+			"text": "（羽毛剑在两人的脚心上轻轻地、一板一眼地划了下去，像在练剑的基本功：一、二、三……）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "sword",
+					"zone": "sole",
+					"fx": "feather",
+					"repeat": 10,
+					"interval": 0.16,
+					"do": "tickle"
+				},
+				{
+					"who": "blue",
+					"by": "sword",
+					"zone": "sole",
+					"fx": "feather",
+					"repeat": 10,
+					"interval": 0.16,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"visual": "giggle",
+					"do": "pose"
+				},
+				{
+					"who": "blue",
+					"visual": "giggle",
+					"do": "pose"
+				}
+			],
+			"act": 2
+		},
+		{
+			"speaker": "公主",
+			"text": "嘻……嘻嘻……四、五……不、不行——六——",
+			"emotion": "giggle"
+		},
+		{
+			"speaker": "",
+			"text": "（两把小一点的幽影羽毛剑也飘了过来，在两人的腰侧来回地挑。正中那把大的，还在脚心上一丝不苟地数着拍子）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "sword",
+					"zone": "sole",
+					"fx": "lines",
+					"repeat": 14,
+					"interval": 0.1,
+					"do": "tickle"
+				},
+				{
+					"who": "blue",
+					"by": "sword",
+					"zone": "waist",
+					"fx": "feather",
+					"repeat": 12,
+					"interval": 0.1,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"visual": "helpless_1",
+					"do": "pose"
+				},
+				{
+					"who": "blue",
+					"visual": "helpless_1",
+					"do": "pose"
+				},
+				{
+					"do": "voice",
+					"state": "laugh"
+				}
+			],
+			"act": 3,
+			"portrait": "shade_training"
+		},
+		{
+			"speaker": "年轻队长的幽影",
+			"text": "……二十一、二十二……腿不要乱动。骑士的脚，要稳。"
+		},
+		{
+			"speaker": "公主",
+			"text": "哈哈哈！谁、谁能稳啊——！",
+			"emotion": "helpless_1"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……哈、哈哈……数、数错了……刚才那下……是二十……"
+		},
+		{
+			"speaker": "年轻队长的幽影",
+			"text": "……数错了。……从头来。"
+		},
+		{
+			"speaker": "",
+			"text": "（「从头来」三个字一出，两个人一起笑倒在了长凳上，靠着彼此直喘气）",
+			"actions": [
+				{
+					"who": "princess",
+					"visual": "helpless_2",
+					"do": "pose"
+				},
+				{
+					"who": "blue",
+					"visual": "helpless_2",
+					"do": "pose"
+				},
+				{
+					"who": "blue",
+					"by": "sword",
+					"zone": "armpit",
+					"fx": "hand",
+					"repeat": 14,
+					"interval": 0.09,
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "（星光在训练场里炸开，木人桩被吹得转了好几圈……哈啊……放出去了……）",
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "flash"
+				},
+				{
+					"sound": "star_burst",
+					"do": "sfx"
+				},
+				{
+					"sound": "water_release",
+					"volume": -2.0,
+					"do": "sfx"
+				},
+				{
+					"who": "princess",
+					"time": 0.4,
+					"do": "shake"
+				},
+				{
+					"state": "laugh",
+					"do": "voice"
+				}
+			],
+			"act": "burst",
+			"wait": 1.0
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……哈……哈哈……（冰晶跟着炸开，羽毛剑全被冻在了半空中……）",
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "flash"
+				},
+				{
+					"sound": "ice_crack",
+					"volume": -2.0,
+					"do": "sfx"
+				},
+				{
+					"sound": "water_release",
+					"volume": -2.0,
+					"do": "sfx"
+				},
+				{
+					"who": "blue",
+					"time": 0.4,
+					"do": "shake"
+				},
+				{
+					"state": "laugh",
+					"do": "voice"
+				}
+			],
+			"act": "burst",
+			"wait": 1.0
+		},
+		{
+			"speaker": "",
+			"text": "（只有幽影手里那一把还能动。他低头看了看，在两人刚释放完、敏感得要命的脚心上，轻轻补完了最后一下）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "sword",
+					"zone": "sole",
+					"fx": "feather",
+					"repeat": 4,
+					"interval": 0.2,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"time": 0.3,
+					"do": "shake"
+				},
+				{
+					"who": "princess",
+					"visual": "helpless_1",
+					"do": "pose"
+				},
+				{
+					"who": "blue",
+					"visual": "helpless_1",
+					"do": "pose"
+				}
+			],
+			"act": 4
+		},
+		{
+			"speaker": "公主",
+			"text": "呀……！……哈……哈……这、这是第几下……",
+			"emotion": "helpless_1"
+		},
+		{
+			"speaker": "年轻队长的幽影",
+			"text": "……第一百下。……合格。"
+		},
+		{
+			"speaker": "",
+			"text": "（足枷「咔哒」一声松开了。幽影背过身去，肩膀好像在轻轻地抖——是在笑）",
+			"actions": [
+				{
+					"who": "princess",
+					"visual": "normal",
+					"do": "pose"
+				},
+				{
+					"who": "blue",
+					"visual": "normal",
+					"do": "pose"
+				}
+			]
+		},
+		{
+			"speaker": "年轻队长的幽影",
+			"text": "……再来对练吧。下次，别那么快倒下。"
+		},
+		{
+			"actions": [
+				{
+					"state": "",
+					"do": "voice"
+				},
+				{
+					"time": 0.6,
+					"do": "fade_out"
+				}
+			],
+			"wait": 0.7
+		}
+	]
+}

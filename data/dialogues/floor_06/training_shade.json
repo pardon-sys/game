@@ -1,0 +1,70 @@
+{
+	"name": "插着羽毛剑的木桩",
+	"entries": [
+		{
+			"if": {
+				"flag": "palace_shade_done"
+			},
+			"node": "done"
+		},
+		{
+			"node": "default"
+		}
+	],
+	"nodes": {
+		"default": {
+			"lines": [
+				{
+					"text": "（木桩上插着一把羽毛训练剑，剑柄上缠着褪色的紫色布条。四周的空气凉飕飕的）",
+					"speaker": ""
+				},
+				{
+					"text": "……谁在那里？",
+					"speaker": "年轻的队长（日记）"
+				},
+				{
+					"text": "（一个半透明的年轻骑士，从木桩旁边慢慢浮了出来）",
+					"speaker": ""
+				}
+			],
+			"prompt": "和他对练？",
+			"choices": [
+				{
+					"text": "对练！",
+					"next": "go"
+				},
+				{
+					"text": "下次",
+					"next": "no"
+				}
+			]
+		},
+		"go": {
+			"lines": [
+				{
+					"text": "……三回合。先倒下的输。输了——耐痒训练。",
+					"speaker": "年轻队长的幽影"
+				}
+			],
+			"set": {
+				"call": "palace_shade_start"
+			}
+		},
+		"no": {
+			"lines": [
+				{
+					"text": "……我会一直在这里练剑。",
+					"speaker": "年轻队长的幽影"
+				}
+			]
+		},
+		"done": {
+			"lines": [
+				{
+					"text": "（木桩上的羽毛剑安安静静地插着。……好像有人轻轻地笑了一下）",
+					"speaker": ""
+				}
+			]
+		}
+	}
+}

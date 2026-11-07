@@ -29,6 +29,14 @@ var _door_view: Node2D
 var shades: Array = []
 ## 私人书房的范围（密码门打开之前整间黑着、看不见里面）
 const STUDY_RECT := Rect2i(38, 2, 11, 4)
+## 追加事件：飞书群（踩到 book_swarm 开始，BOOK_WAVES 三波，粉色公主的火 ×2）、夹着衣架书签的书（hanger_book → SHELF_FLAG：禁书区的书架暗门通衣帽间）
+const BOOKS_FLAG := "palace_books_done"
+const SHELF_FLAG := "palace_shelf_door"
+const BOOK_SCENE := "res://scenes/actors/monsters/flying_book.tscn"
+const BOOK_WAVES := [4, 5, 6]
+const SWARM_R := 20.0
+var book_wave := -1
+var books: Array = []
 
 
 func map_id() -> String:
@@ -56,6 +64,13 @@ func _ready() -> void:
 				sd.z_index = 20
 				add_view(sd)
 				shades.append(sd)
+	if not cells("hanger_book").is_empty():
+		_spot("floor_06/library_hanger_book", cells("hanger_book")[0])
+		var hv := PalaceRoom.Events2View.new()
+		hv.frame = 7
+		hv.hide_flag = SHELF_FLAG
+		hv.position = world(cells("hanger_book")[0])
+		add_view(hv)
 	for c in cells("shelf_hands"):
 		var h := HandMark.new()
 		h.position = world(c)
@@ -122,10 +137,59 @@ func _process(delta: float) -> void:
 			continue
 		_tick_hands(pc, delta)
 		_tick_piles(pc, delta)
+	_tick_books()
 	for w in worms:
 		(w as Worm).step(delta)
 	for q in quills:
 		(q as Quill).step(delta)
+
+
+# ------------------------------------------------------------------ 飞书群
+func _tick_books() -> void:
+	if GameState.has_flag(BOOKS_FLAG) or cells("book_swarm").is_empty():
+		return
+	if book_wave < 0:
+		for m in members():
+			if (m as Node2D).global_position.distance_to(world(cells("book_swarm")[0])) <= SWARM_R:
+				start_books()
+				return
+		return
+	if books_alive() == 0:
+		if book_wave + 1 < BOOK_WAVES.size():
+			_spawn_books(book_wave + 1)
+		else:
+			_books_done()
+
+
+func books_alive() -> int:
+	return books.filter(func(b): return is_instance_valid(b) and (b as Monster).is_alive()).size()
+
+
+func start_books() -> void:
+	PalaceRoom.say_random(pink if is_instance_valid(pink) else blue, "books_start")
+	Audio.play("book", -2.0)
+	_spawn_books(0)
+
+
+func _spawn_books(w: int) -> void:
+	book_wave = w
+	books.clear()
+	var scene := load(BOOK_SCENE) as PackedScene
+	var c := world(cells("book_swarm")[0])
+	for k in int(BOOK_WAVES[w]):
+		var b := scene.instantiate() as Node2D
+		var a := TAU * k / float(BOOK_WAVES[w])
+		b.position = c + Vector2(cos(a), sin(a)) * 56.0
+		add_view(b)
+		books.append(b)
+	GameState.notify("飞书群·第 %d 波" % (w + 1))
+
+
+func _books_done() -> void:
+	GameState.set_flag(BOOKS_FLAG)
+	book_wave = BOOK_WAVES.size()
+	GameState.notify("飞书群安静下来了。……地上掉了一颗薄荷糖")
+	GameState.give_item(ItemDB.get_item("mint"), 1)
 
 
 func _tick_hands(pc: PlayableCharacter, delta: float) -> void:

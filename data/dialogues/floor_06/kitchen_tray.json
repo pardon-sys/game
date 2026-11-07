@@ -1,0 +1,76 @@
+{
+	"name": "糕点台的托盘",
+	"entries": [
+		{
+			"if": {
+				"flag": "palace_sheet_2"
+			},
+			"node": "done"
+		},
+		{
+			"if": {
+				"flag": "palace_tray_carry"
+			},
+			"node": "carrying"
+		},
+		{
+			"node": "default"
+		}
+	],
+	"nodes": {
+		"default": {
+			"lines": [
+				{
+					"text": "（糕点台边放着一只银托盘，上面是刚「做好」的小蛋糕和茶。托盘边夹着一张纸条：「送去女仆长的房间——别被女仆们看见，她们会偷吃」）",
+					"speaker": ""
+				}
+			],
+			"prompt": "端去仆人回廊？",
+			"choices": [
+				{
+					"text": "端起来",
+					"next": "go"
+				},
+				{
+					"text": "不了",
+					"next": "no"
+				}
+			]
+		},
+		"go": {
+			"lines": [
+				{
+					"text": "……端稳。不能跑。",
+					"speaker": "蓝色的公主"
+				}
+			],
+			"set": {
+				"call": "palace_tray_take"
+			}
+		},
+		"no": {
+			"lines": [
+				{
+					"text": "……等一下再送。",
+					"speaker": "公主"
+				}
+			]
+		},
+		"carrying": {
+			"lines": [
+				{
+					"text": "（手里已经端着一盘了）",
+					"speaker": ""
+				}
+			]
+		},
+		"done": {
+			"lines": [
+				{
+					"text": "（托盘空了。女仆长房间的纸条上画了一个笑脸）",
+					"speaker": ""
+				}
+			]
+		}
+	}
+}

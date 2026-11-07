@@ -167,28 +167,28 @@ MARKS = {
     "floor_06_knight_storage": {"V": "brush_down", "A": "brush_up", "D": "doll"},
     "floor_06_knight_bridge": {"H": "hands", "E": "end"},
     "floor_06_palace_library": {"Z": "south", "Y": "west", "X": "east", "D": "cipher_door", "K": "study", "R": "golden_book", "H": "shelf_hands",
-                                "B": "books", "Q": "book_piles", "J": "fragment", "W": "worms", "F": "quills"},
+                                "B": "books", "Q": "book_piles", "J": "fragment", "W": "worms", "F": "quills", "G": "book_swarm", "N": "hanger_book", "S": "shelf_door", "L": "lost"},
     "floor_06_palace_wardrobe": {"X": "west", "M": "mannequins", "E": "racks", "C": "dresses", "L": "favorite", "S": "socks", "G": "shawl",
-                                 "V": "mirror_hands", "T": "trap_wardrobe", "K": "keys", "J": "fragment"},
+                                 "V": "mirror_hands", "T": "trap_wardrobe", "K": "keys", "J": "fragment", "I": "lost", "O": "shoe_closet", "D": "shelf_door", "H": "shoes"},
     "floor_06_palace_training": {"Y": "east", "X": "north", "U": "dummies", "N": "sign", "F": "swords", "W": "carvings", "A": "ring", "B": "bell",
-                                 "T": "stocks", "C": "diary", "J": "fragment"},
+                                 "T": "stocks", "C": "diary", "J": "fragment", "D": "shade"},
     "floor_06_palace_ante": {"Z": "south", "N": "throne_door", "W": "clock_door", "S": "painting", "L": "statue", "M": "tiles", "F": "fountain", "D": "pedestal", "V": "vault"},
     "floor_06_palace_clock_1": {"Z": "south", "U": "up", "G": "gear_gaps", "J": "brake", "C": "checkpoints", "T": "chests", "B": "beetle_nests"},
-    "floor_06_palace_clock_2": {"Z": "south", "U": "up", "L": "pendulum", "T": "chests", "C": "checkpoints"},
+    "floor_06_palace_clock_2": {"Z": "south", "U": "up", "L": "pendulum", "T": "chests", "C": "checkpoints", "I": "lost"},
     "floor_06_palace_clock_3": {"Z": "south", "D": "ladder", "F": "bellows", "R": "gear_seat", "A": "axle", "T": "chests", "C": "checkpoints", "B": "beetle_nests"},
     "floor_06_palace_clock_4": {"Z": "south", "U": "up", "K": "keeper", "H": "gates", "T": "chests", "C": "checkpoints", "Q": "clockface"},
     "floor_06_palace_clock_5": {"Z": "south", "E": "bell", "O": "rope", "C": "checkpoints"},
     "floor_06_palace_tunnels": {"Y": "to_bath", "U": "to_library", "V": "to_wardrobe", "W": "to_training", "K": "checkpoints",
                                 "I": "toll", "M": "chests", "N": "webs", "Q": "bedroom", "S": "quilt", "C": "vanity", "D": "diary",
-                                "R": "nursery", "O": "cradles", "L": "mobile", "H": "height_marks"},
+                                "R": "nursery", "O": "cradles", "L": "mobile", "H": "height_marks", "A": "lost_board"},
     "floor_06_palace_throne": {"Z": "south", "Q": "portrait", "T": "throne", "S": "small_portraits", "A": "arena", "I": "paint_start",
                                "O": "paint_exit", "G": "brushes", "H": "paint_gate"},
     "floor_06_palace_bath": {"V": "steam", "H": "laughs", "Q": "bubble_pool", "Y": "soap", "W": "towels", "M": "mirror", "T": "statues",
-                             "J": "key_statue", "O": "pool", "B": "bath", "G": "door", "X": "east"},
+                             "J": "key_statue", "O": "pool", "B": "bath", "G": "door", "X": "east", "U": "scrub"},
     "floor_06_palace_servants": {"U": "hides", "Y": "west", "X": "east", "C": "clues", "S": "hide_event", "D": "dust", "Z": "brooms", "B": "head_maid",
-                                 "K": "key", "L": "bell"},
+                                 "K": "key", "L": "bell", "E": "deliver", "I": "lost"},
     "floor_06_palace_kitchen": {"X": "west", "N": "north", "A": "chef", "T": "booth", "Y": "cream", "S": "sink", "Z": "rats", "I": "ice",
-                                "F": "fans", "K": "cheese"},
+                                "F": "fans", "K": "cheese", "D": "tray", "L": "lost"},
     "floor_06_waterway": {"L": "lions", "D": "deep", "O": "logs", "G": "wheels", "U": "grate", "S": "shallow", "F": "fountain",
                           "M": "mud", "Z": "foes", "C": "checkpoints", "A": "arena", "K": "keeper", "V": "valves", "R": "rocks",
                           "N": "nozzles", "E": "end"},
@@ -404,6 +404,8 @@ def _palace_bath():
     put(58, 18, "B")
     put(65, 11, "G")
     put(68, 11, "X")
+    for (x, y) in ((36, 27),):
+        put(x, y, "U")                  # 追加事件（第二批）
     return ["".join(r) for r in g]
 
 
@@ -444,6 +446,10 @@ def _palace_servants():
     put(67, 6, "B")
     put(72, 12, "K")
     put(61, 13, "L")
+    for (x, y) in ((64, 6),):
+        put(x, y, "E")                  # 追加事件（第二批）
+    for (x, y) in ((35, 12),):
+        put(x, y, "I")                  # 追加事件（第二批）
     return ["".join(r) for r in g]
 
 
@@ -482,6 +488,10 @@ def _palace_kitchen():
         put(x, 24, "F")
         put(x + 4, 26, "F")
     put(57, 11, "K")
+    for (x, y) in ((18, 10),):
+        put(x, y, "D")                  # 追加事件（第二批）
+    for (x, y) in ((43, 18),):
+        put(x, y, "L")                  # 追加事件（第二批）
     return ["".join(r) for r in g]
 
 
@@ -527,6 +537,14 @@ def _palace_library():
         put(x, y, "W")
     for (x, y) in ((34, 22), (70, 28)):
         put(x, y, "F")
+    for (x, y) in ((44, 28),):
+        put(x, y, "G")                  # 追加事件（第二批）
+    for (x, y) in ((10, 23),):
+        put(x, y, "N")                  # 追加事件（第二批）
+    for (x, y) in ((76, 7),):
+        put(x, y, "S")                  # 追加事件（第二批）
+    for (x, y) in ((60, 32),):
+        put(x, y, "L")                  # 追加事件（第二批）
     return ["".join(r) for r in g]
 
 
@@ -569,6 +587,14 @@ def _palace_wardrobe():
     for (x, y) in ((10, 18), (50, 30), (60, 4)):
         put(x, y, "K")
     put(22, 30, "J")
+    for (x, y) in ((36, 32),):
+        put(x, y, "I")                  # 追加事件（第二批）
+    for (x, y) in ((46, 8),):
+        put(x, y, "O")                  # 追加事件（第二批）
+    for (x, y) in ((66, 22),):
+        put(x, y, "D")                  # 追加事件（第二批）
+    for (x, y) in ((30, 10), (36, 10), (41, 12), (48, 12), (54, 14), (59, 14)):
+        put(x, y, "H")                  # 追加事件（第二批）
     return ["".join(r) for r in g]
 
 
@@ -608,6 +634,8 @@ def _palace_training():
     put(64, 30, "T")
     put(14, 32, "C")
     put(63, 6, "J")
+    for (x, y) in ((30, 20),):
+        put(x, y, "D")                  # 追加事件（第二批）
     return ["".join(r) for r in g]
 
 
@@ -687,6 +715,8 @@ def _palace_tunnels():
     put(47, 7, "W")                        # 训练场的画后
     put(90, 29, "P")                       # 王座前厅的画后（从这里第一次进来）
     put(88, 29, "K")                       # 检查点
+    for (x, y) in ((51, 31),):
+        put(x, y, "A")                  # 追加事件（第二批）
     return ["".join(r) for r in g]
 
 
@@ -763,6 +793,8 @@ def _clock_2():
     put(24, 17, "L")
     put(9, 8, "T")
     put(24, 26, "C")
+    for (x, y) in ((14, 23),):
+        put(x, y, "I")                  # 追加事件（第二批）
     return ["".join(r) for r in g]
 
 

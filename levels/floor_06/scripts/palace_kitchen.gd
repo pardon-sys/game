@@ -34,6 +34,18 @@ func _ready() -> void:
 		sp.dialogue = str(pair[1])
 		add_child(sp)
 		sp.global_position = world(cells(str(pair[0]))[0])
+	# 追加事件·送餐潜行：糕点台旁边的托盘
+	if not cells("tray").is_empty():
+		var tsp := PrisonOddities.Spot.new()
+		tsp.dialogue = "floor_06/kitchen_tray"
+		tsp.done_flag = "palace_sheet_2"
+		add_child(tsp)
+		tsp.global_position = world(cells("tray")[0])
+		var tv := PalaceRoom.Events2View.new()
+		tv.frame = 1
+		tv.hide_flag = PalaceRoom.TRAY_FLAG
+		tv.position = world(cells("tray")[0])
+		add_view(tv)
 	for c in cells("fans"):
 		var f := FanMark.new()
 		f.position = world(c)

@@ -1,0 +1,41 @@
+{
+	"name": "小铃铛",
+	"entries": [
+		{
+			"if": {
+				"flag": "palace_lost_bell"
+			},
+			"node": "done"
+		},
+		{
+			"node": "default"
+		}
+	],
+	"nodes": {
+		"default": {
+			"lines": [
+				{
+					"text": "（柜子缝里卡着一只系粉丝带的银色小铃铛，一晃就「叮铃」一声）",
+					"speaker": ""
+				},
+				{
+					"text": "……这是隧道里那个小鬼说丢了的东西。收着吧。",
+					"speaker": "公主"
+				}
+			],
+			"set": {
+				"flags": [
+					"palace_lost_bell"
+				]
+			}
+		},
+		"done": {
+			"lines": [
+				{
+					"text": "（东西已经收起来了）",
+					"speaker": ""
+				}
+			]
+		}
+	}
+}

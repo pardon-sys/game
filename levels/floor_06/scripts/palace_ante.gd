@@ -268,6 +268,7 @@ func place_badges() -> bool:
 		GameState.give_item(it, 1)
 	await CG.play_theater("palace_badge_party")
 	GameState.notify("得到「女王的羽毛发饰」")
+	await PalaceRoom.try_memory()   # 王座间已经打完：接着看女王的回忆
 	return true
 
 

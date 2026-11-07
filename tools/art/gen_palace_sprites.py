@@ -200,3 +200,9 @@ if __name__ == "__main__":
     build_strip("rat_king_sheet.png", "rat_king.png", 4, 44, 40, "胖鼠王（洞里探头 / 坐着 / 晕 / 扫胡子）")
     build_strip("palace_events_sheet.png", "palace_events.png", 6, 40, 40, "追加事件道具（奶酪夹 / 夹子弹起 / 钟面 / 喷泉 / 徽记台 / 石堆）")
     build_walker("armor_guard_sheet.png", "npcs/armor_guard.png", "空铠甲卫兵")
+    # 第四章追加事件（第二批）
+    build_strip("scrub_doll_sheet.png", "scrub_doll.png", 4, 48, 52, "搓澡人偶（站着 / 刷 / 抓 / 没海绵晕了）")
+    build_strip("flying_book_sheet.png", "flying_book.png", 4, 22, 20, "飞书（三帧飞 + 合上夹）")
+    build_strip("old_shoe_sheet.png", "old_shoe.png", 4, 20, 16, "旧鞋（三帧跳 + 张口）")
+    build_strip("palace_events2_sheet.png", "palace_events2.png", 8, 36, 36, "追加事件道具二（海绵 / 点心托盘 / 羽毛笔 / 小铃铛 / 袜子 / 奶酪 / 钟发条 / 衣架书签的书）")
+    build_walker("captain_shade_sheet.png", "npcs/captain_shade.png", "年轻队长的幽影")

@@ -1,0 +1,41 @@
+{
+	"name": "一块奶酪",
+	"entries": [
+		{
+			"if": {
+				"flag": "palace_lost_cheese"
+			},
+			"node": "done"
+		},
+		{
+			"node": "default"
+		}
+	],
+	"nodes": {
+		"default": {
+			"lines": [
+				{
+					"text": "（灶台边放着一块被啃过一口的奶酪，上面插着一面小旗子：「鬼的！」）",
+					"speaker": ""
+				},
+				{
+					"text": "……这是隧道里那个小鬼说丢了的东西。收着吧。",
+					"speaker": "公主"
+				}
+			],
+			"set": {
+				"flags": [
+					"palace_lost_cheese"
+				]
+			}
+		},
+		"done": {
+			"lines": [
+				{
+					"text": "（东西已经收起来了）",
+					"speaker": ""
+				}
+			]
+		}
+	}
+}

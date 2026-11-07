@@ -1,0 +1,345 @@
+{
+	"name": "仆人回廊：试吃惩罚",
+	"cast": {
+		"princess": {
+			"kind": "princess",
+			"at": [
+				-14,
+				8
+			],
+			"visual": "normal",
+			"anim": "idle",
+			"dir": "right"
+		},
+		"blue": {
+			"kind": "npc:blue_princess",
+			"at": [
+				14,
+				8
+			],
+			"visual": "normal",
+			"anim": "idle",
+			"dir": "left"
+		},
+		"pants": {
+			"kind": "trap:hand",
+			"at": [
+				20,
+				10
+			]
+		},
+		"m1": {
+			"kind": "trap:feather_curtain",
+			"at": [
+				-26,
+				-8
+			]
+		},
+		"m2": {
+			"kind": "trap:feather_curtain",
+			"at": [
+				26,
+				-8
+			]
+		}
+	},
+	"steps": [
+		{
+			"act": 1,
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "fade_in"
+				},
+				{
+					"state": "giggle",
+					"do": "voice"
+				}
+			],
+			"wait": 0.5
+		},
+		{
+			"speaker": "人偶女仆们",
+			"text": "（咔哒、咔哒）……发现……偷、送、点、心、的……人。",
+			"act": 1
+		},
+		{
+			"speaker": "",
+			"text": "（三个人偶女仆围了上来。一个接过托盘，两个一左一右，把两个人「请」到了餐厅的长桌边上坐好）",
+			"actions": [
+				{
+					"who": "princess",
+					"time": 0.3,
+					"do": "shake"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "我、我们是来送点心的！不是偷！",
+			"emotion": "surprise"
+		},
+		{
+			"speaker": "人偶女仆们",
+			"text": "……送点心的人……要先、试、吃。……这是规矩。"
+		},
+		{
+			"speaker": "",
+			"text": "（一个女仆用小勺舀了一块奶油蛋糕，送到粉色公主嘴边。另外两个，悄悄地脱掉了她们的鞋，把脚搁在天鹅绒的脚凳上）",
+			"actions": [
+				{
+					"who": "princess",
+					"visual": "normal",
+					"do": "pose"
+				},
+				{
+					"who": "blue",
+					"visual": "normal",
+					"do": "pose"
+				}
+			],
+			"act": 2
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……为什么试吃要脱鞋。"
+		},
+		{
+			"speaker": "人偶女仆们",
+			"text": "……试吃的时候……要、笑。……笑了，才知道、好吃。"
+		},
+		{
+			"speaker": "",
+			"text": "（鸡毛掸子和打蛋器一起上阵：一个刷脚心，一个在肋下转圈。张嘴要笑的时候，勺子正好塞进来一口奶油）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "m1",
+					"zone": "sole",
+					"fx": "feather",
+					"repeat": 12,
+					"interval": 0.12,
+					"do": "tickle"
+				},
+				{
+					"who": "blue",
+					"by": "m2",
+					"zone": "sole",
+					"fx": "feather",
+					"repeat": 10,
+					"interval": 0.12,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"visual": "giggle",
+					"do": "pose"
+				},
+				{
+					"who": "blue",
+					"visual": "giggle",
+					"do": "pose"
+				}
+			],
+			"act": 3,
+			"portrait": "tasting_punish"
+		},
+		{
+			"speaker": "公主",
+			"text": "唔唔……哈哈……好、好吃——但是好痒——唔！",
+			"emotion": "giggle"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……哈……奶油……沾到脸上了……哈哈……"
+		},
+		{
+			"speaker": "人偶女仆们",
+			"text": "……好吃？……再来一口。……再刷一下。"
+		},
+		{
+			"speaker": "",
+			"text": "（一口蛋糕，一下掸子；一口茶，一下打蛋器。两个人笑得靠在一起，脸上全是奶油）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "m2",
+					"zone": "waist",
+					"fx": "hand",
+					"repeat": 14,
+					"interval": 0.1,
+					"do": "tickle"
+				},
+				{
+					"who": "blue",
+					"by": "m1",
+					"zone": "armpit",
+					"fx": "hand",
+					"repeat": 14,
+					"interval": 0.1,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"visual": "helpless_1",
+					"do": "pose"
+				},
+				{
+					"who": "blue",
+					"visual": "helpless_1",
+					"do": "pose"
+				},
+				{
+					"do": "voice",
+					"state": "laugh"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "哈哈哈！不、不吃了——饱了——真的饱了——！",
+			"actions": [
+				{
+					"who": "princess",
+					"visual": "helpless_2",
+					"do": "pose"
+				}
+			],
+			"emotion": "helpless_2"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……哈……哈哈……（冰晶炸开，桌上的奶油全冻成了冰淇淋……）",
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "flash"
+				},
+				{
+					"sound": "ice_crack",
+					"volume": -2.0,
+					"do": "sfx"
+				},
+				{
+					"sound": "water_release",
+					"volume": -2.0,
+					"do": "sfx"
+				},
+				{
+					"who": "blue",
+					"time": 0.4,
+					"do": "shake"
+				},
+				{
+					"state": "laugh",
+					"do": "voice"
+				}
+			],
+			"act": "burst",
+			"wait": 1.0
+		},
+		{
+			"speaker": "公主",
+			"text": "（星光跟着炸开，女仆们的发条被震得「咔」地停了一拍……哈啊……放出去了……）",
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "flash"
+				},
+				{
+					"sound": "star_burst",
+					"do": "sfx"
+				},
+				{
+					"sound": "water_release",
+					"volume": -2.0,
+					"do": "sfx"
+				},
+				{
+					"who": "princess",
+					"time": 0.4,
+					"do": "shake"
+				},
+				{
+					"state": "laugh",
+					"do": "voice"
+				}
+			],
+			"act": "burst",
+			"wait": 1.0
+		},
+		{
+			"speaker": "",
+			"text": "（发条重新转起来。最后一个女仆不紧不慢地，在两个人刚释放完的脚心上，各用打蛋器转了一圈）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "m1",
+					"zone": "sole",
+					"fx": "feather",
+					"repeat": 4,
+					"interval": 0.2,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"time": 0.3,
+					"do": "shake"
+				},
+				{
+					"who": "princess",
+					"visual": "helpless_1",
+					"do": "pose"
+				},
+				{
+					"who": "blue",
+					"visual": "helpless_1",
+					"do": "pose"
+				}
+			],
+			"act": 4
+		},
+		{
+			"speaker": "公主",
+			"text": "呀……！……哈……哈……这、这也是规矩吗……",
+			"emotion": "helpless_1"
+		},
+		{
+			"speaker": "人偶女仆们",
+			"text": "……试吃、完毕。……点心、没收。……请、回厨房、重拿。"
+		},
+		{
+			"speaker": "",
+			"text": "（两个人被客客气气地送回了回廊的入口。鞋也被摆得整整齐齐地还了回来）",
+			"actions": [
+				{
+					"who": "princess",
+					"visual": "normal",
+					"do": "pose"
+				},
+				{
+					"who": "blue",
+					"visual": "normal",
+					"do": "pose"
+				}
+			]
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……下次。……绕开她们。"
+		},
+		{
+			"actions": [
+				{
+					"state": "",
+					"do": "voice"
+				},
+				{
+					"time": 0.6,
+					"do": "fade_out"
+				}
+			],
+			"wait": 0.7
+		}
+	]
+}

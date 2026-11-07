@@ -15,6 +15,9 @@ const SHAWL_FLAG := "palace_shawl_frozen"
 const MIRROR_R := 18.0   # 手从穿衣镜里伸出来（镜子占一格），从旁边走过也够得着
 const SHAWL_SPEED := 26.0
 const TRAP_TICK := 1.2
+## 追加事件·旧鞋军团：鞋柜（shoe_closet）旁边 CLOSET_R 以内的旧鞋按 E 一次关进去；全关完 → SHOES_FLAG
+const SHOES_FLAG := "palace_shoes_done"
+const CLOSET_R := 70.0
 
 var trap_active := false
 var key_at := -1
@@ -55,6 +58,15 @@ func _ready() -> void:
 		h.position = world(c)
 		h.modulate = Color(0.75, 0.85, 1.0, 0.8)
 		add_view(h)
+	if not cells("shoe_closet").is_empty():
+		var csp := PrisonOddities.Spot.new()
+		csp.dialogue = "floor_06/wardrobe_shoe_closet"
+		csp.done_flag = SHOES_FLAG
+		csp.prompt_y = -34.0
+		add_child(csp)
+		csp.global_position = world(cells("shoe_closet")[0])
+	if GameState.has_flag(SHOES_FLAG):
+		_clear_shoes.call_deferred()
 	if not shawl_frozen:
 		_shawl = Shawl.new()
 		_shawl.room = self
@@ -95,6 +107,40 @@ func _process(delta: float) -> void:
 
 
 # ------------------------------------------------------------------ 衣柜陷阱
+func shoes() -> Array:
+	return lv.find_children("*", "OldShoe", true, false).filter(func(m): return (m as Monster).is_alive()) if lv else []
+
+
+func _clear_shoes() -> void:
+	for m in shoes():
+		(m as Node).queue_free()
+
+
+## 鞋柜关门：附近的旧鞋全关进去（被套住的脚也松开）
+func close_closet() -> int:
+	var c := world(cells("shoe_closet")[0])
+	var n := 0
+	for m in shoes():
+		if (m as Node2D).global_position.distance_to(c) <= CLOSET_R:
+			for pc in members():
+				if (pc as PlayableCharacter).status.is_grabbed_by(m):
+					(pc as PlayableCharacter).status.release()
+			(m as Node).queue_free()
+			n += 1
+	Audio.play("door_close", -2.0)
+	if n == 0:
+		GameState.notify("鞋柜「砰」地关上了……里面空空的。先把旧鞋引过来")
+		return 0
+	var left := shoes().size() - n
+	if left <= 0:
+		GameState.set_flag(SHOES_FLAG)
+		GameState.notify("旧鞋全关进鞋柜了！")
+		PalaceRoom.say_random(GameState.player, "shoes_done")
+	else:
+		GameState.notify("关进去 %d 只旧鞋，还剩 %d 只" % [n, left])
+	return n
+
+
 func start_trap() -> void:
 	if trap_active or not is_instance_valid(pink):
 		return

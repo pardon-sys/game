@@ -68,11 +68,22 @@ func _ready() -> void:
 	if GameState.has_flag(DUMMY_FLAG):
 		for d in dummies:
 			(d as Dummy).lit = true
+	if not cells("shade").is_empty():
+		var ssp := PrisonOddities.Spot.new()
+		ssp.dialogue = "floor_06/training_shade"
+		ssp.done_flag = SHADE_FLAG
+		ssp.prompt_y = -30.0
+		add_child(ssp)
+		ssp.global_position = world(cells("shade")[0])
+		var post := ShadePost.new()
+		post.position = world(cells("shade")[0])
+		add_view(post)
 
 
 func _process(delta: float) -> void:
 	if busy():
 		return
+	_tick_shade(delta)
 	for m in members():
 		var pc := m as PlayableCharacter
 		if Downed.is_downed(pc):
@@ -211,10 +222,19 @@ func clear_fight() -> void:
 
 ## 遭遇战里两个都倒下：小剧场 → 这一战重来（怪清掉、门打开）
 func defeat_theater() -> String:
+	if shade_round > 0:
+		return "training_shade"
 	return "training_lose" if fighting else "palace_down"
 
 
 func on_defeat(reason: String) -> void:
+	if shade_round > 0 and not _defeat_busy:
+		_defeat_busy = true
+		_clear_shades()
+		await CG.play_theater("training_shade")
+		reset_to(world(cells("shade")[0]) + Vector2(0, 30))
+		_defeat_busy = false
+		return
 	if fighting and not _defeat_busy:
 		_defeat_busy = true
 		fighting = false
@@ -231,6 +251,111 @@ func on_defeat(reason: String) -> void:
 		_defeat_busy = false
 		return
 	await super(reason)
+
+
+# ------------------------------------------------------------------ 追加事件：年轻队长的幽影（三回合对练）
+## 第一回合：一个幽影，羽毛剑连刺（THRUST_EVERY）；第二回合：分出两个；第三回合：「队长的绝招」每 WAVE_EVERY 秒全场羽毛风暴。
+## 每回合打掉 SHADE_HP 下（第二回合两个各 SHADE_HP_SPLIT）。输了（两个人都倒下）→ 耐痒训练小剧场 training_shade（CG）；赢了 → 徽记 + 一句话。
+const SHADE_FLAG := "palace_shade_done"
+const SHADE_HP := 6
+const SHADE_HP_SPLIT := 4
+const SHADE_SPEED := 40.0
+const THRUST_EVERY := 1.3
+const THRUST_R := 26.0
+const WAVE_EVERY := 3.2
+const SHADE_HIT_R := 26.0
+var shade_round := 0
+var shades: Array = []
+var _wave_t := WAVE_EVERY
+var _shade_was := {}
+
+
+func start_shade() -> void:
+	if GameState.has_flag(SHADE_FLAG) or shade_round > 0:
+		return
+	shade_round = 1
+	_spawn_shades(1, SHADE_HP)
+	Audio.play("chime", -4.0, 0.0, 0.7)
+
+
+func _spawn_shades(n: int, hp: int) -> void:
+	_clear_shades()
+	var c := world(cells("shade")[0])
+	for k in n:
+		var sh := Shade.new()
+		sh.room = self
+		sh.hp = hp
+		sh.position = c + Vector2(-20 + 40 * k if n > 1 else 0, -10)
+		add_view(sh)
+		shades.append(sh)
+	var lines: Array = PalaceRoom.data().get("shade_round_%d" % shade_round, []) as Array
+	if not lines.is_empty() and not shades.is_empty():
+		SpeechBubble.say(shades[0], str(lines.pick_random()), 40.0, 2.0)
+
+
+func _clear_shades() -> void:
+	for sh in shades:
+		if is_instance_valid(sh):
+			(sh as Node).queue_free()
+	shades.clear()
+
+
+func shades_alive() -> int:
+	return shades.filter(func(sh): return is_instance_valid(sh) and (sh as Shade).hp > 0).size()
+
+
+func _tick_shade(delta: float) -> void:
+	if shade_round <= 0:
+		return
+	var ms: Array = members().filter(func(m): return not Downed.is_downed(m as PlayableCharacter))
+	for m in ms:
+		var pc := m as PlayableCharacter
+		var atk := pc.state == PlayableCharacter.State.ATTACK
+		if atk and not bool(_shade_was.get(pc, false)):
+			for sh in shades:
+				if is_instance_valid(sh) and (sh as Shade).hp > 0 and pc.global_position.distance_to((sh as Node2D).position) <= SHADE_HIT_R:
+					(sh as Shade).hurt()
+					break
+		_shade_was[pc] = atk
+	for sh in shades:
+		if is_instance_valid(sh):
+			(sh as Shade).step(ms, delta)
+	if shade_round == 3:
+		_wave_t -= delta
+		if _wave_t <= 0.0:
+			_wave_t = WAVE_EVERY
+			shade_wave()
+	if shades_alive() == 0:
+		next_shade_round()
+
+
+## 第三回合的绝招：全场的羽毛风暴（冲刺中的人躲得开）
+func shade_wave() -> void:
+	Audio.play("wind", -4.0)
+	for m in members():
+		var pc := m as PlayableCharacter
+		if pc.state == PlayableCharacter.State.DASH:
+			continue
+		for k in 3:
+			var h := HitData.make_tickle(self, 2.5)
+			h.zone = ["armpit", "waist", "sole"].pick_random()
+			pc.receive_hit(h)
+	PalaceRoom.say_random(GameState.player, "shade_wave")
+
+
+func next_shade_round() -> void:
+	shade_round += 1
+	if shade_round == 2:
+		_spawn_shades(2, SHADE_HP_SPLIT)
+	elif shade_round == 3:
+		_wave_t = WAVE_EVERY
+		_spawn_shades(1, SHADE_HP)
+	else:
+		_clear_shades()
+		shade_round = 0
+		GameState.set_flag(SHADE_FLAG)
+		PalaceRoom.give_badge("shade")
+		Dialogue.talk("floor_06/training_shade_win")
 
 
 ## 对练擂台的找痒点小游戏：规则和「点灯笼」一样，台词换成擂台的、背景里没有灯笼
@@ -314,3 +439,87 @@ class Sword extends Node2D:
 			draw_line(p, p + Vector2(4, -1).rotated(a), Color(1, 1, 1, 0.9), 1.5)
 		if swinging():
 			draw_arc(Vector2(0, -6), 14.0, -PI / 2.0 - 1.0, -PI / 2.0 + 1.0, 12, Color(1, 1, 1, 0.5), 1.5)
+
+
+## 幽影的木桩（对练开始的地方：插着一把羽毛剑，发着淡淡的蓝光）
+class ShadePost extends Node2D:
+	func _process(_d: float) -> void:
+		queue_redraw()
+
+	func _draw() -> void:
+		if GameState.has_flag(PalaceTraining.SHADE_FLAG):
+			return
+		var a := 0.35 + 0.2 * sin(Time.get_ticks_msec() / 400.0)
+		draw_circle(Vector2(0, -12), 10.0, Color(0.6, 0.8, 1.0, a * 0.5))
+		draw_line(Vector2(0, 0), Vector2(0, -22), Color(0.75, 0.85, 1.0, 0.9), 2.0)
+		draw_circle(Vector2(0, -24), 4.0, Color(1, 1, 1, 0.9))
+
+
+## 年轻队长的幽影：追最近的人，隔 THRUST_EVERY 秒用羽毛剑刺一下（THRUST_R 以内挠腰 / 腋下）
+class Shade extends Node2D:
+	const SHEET := "res://assets/generated/npcs/captain_shade.png"
+	var room: PalaceTraining
+	var hp := 6
+	var _t := 0.0
+	var _thrust := PalaceTraining.THRUST_EVERY
+	var _anim := 0.0
+	var _stagger := 0.0
+	var _spr: Sprite2D
+
+	func _ready() -> void:
+		z_index = 1
+		modulate = Color(1, 1, 1, 0.85)
+		if ResourceLoader.exists(SHEET):
+			_spr = Sprite2D.new()
+			_spr.texture = load(SHEET)
+			_spr.hframes = 4
+			_spr.vframes = 4
+			_spr.offset = Vector2(0, -14)
+			_spr.scale = Vector2(1.2, 1.2)
+			_spr.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+			add_child(_spr)
+
+	func step(ms: Array, delta: float) -> void:
+		_t += delta
+		_stagger = maxf(0.0, _stagger - delta)
+		if hp <= 0:
+			return
+		var near: PlayableCharacter = null
+		for m in ms:
+			var pc := m as PlayableCharacter
+			if near == null or pc.global_position.distance_to(position) < near.global_position.distance_to(position):
+				near = pc
+		if near == null:
+			return
+		var d := near.global_position - position
+		if _stagger <= 0.0 and d.length() > 14.0:
+			position = position.move_toward(near.global_position, PalaceTraining.SHADE_SPEED * delta)
+			_anim += delta * 6.0
+		if _spr:
+			var sd := IsoView.screen_dir(d)
+			var row := (1 if sd.x < 0 else 2) if absf(sd.x) > absf(sd.y) else (0 if sd.y > 0 else 3)
+			_spr.frame = row * 4 + int(_anim) % 4
+		_thrust -= delta
+		if _thrust <= 0.0 and d.length() <= PalaceTraining.THRUST_R:
+			_thrust = PalaceTraining.THRUST_EVERY
+			Audio.play("swish", -4.0)
+			for k in 2:
+				var h := HitData.make_tickle(self, 3.0)
+				h.zone = ["waist", "armpit"].pick_random()
+				near.receive_hit(h)
+		queue_redraw()
+
+	func hurt() -> void:
+		hp -= 1
+		_stagger = 0.4
+		Audio.play("hit", -4.0)
+		modulate = Color(1.8, 1.8, 2.0, 0.9)
+		create_tween().tween_property(self, "modulate", Color(1, 1, 1, 0.85), 0.2)
+		if hp <= 0:
+			var tw := create_tween()
+			tw.tween_property(self, "modulate:a", 0.0, 0.5)
+
+	func _draw() -> void:
+		if _spr == null:
+			draw_rect(Rect2(-6, -28, 12, 20), Color(0.6, 0.8, 1.0, 0.7))
+			draw_circle(Vector2(0, -32), 6.0, Color(0.7, 0.85, 1.0, 0.7))

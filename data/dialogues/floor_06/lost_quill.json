@@ -1,0 +1,41 @@
+{
+	"name": "羽毛笔",
+	"entries": [
+		{
+			"if": {
+				"flag": "palace_lost_quill"
+			},
+			"node": "done"
+		},
+		{
+			"node": "default"
+		}
+	],
+	"nodes": {
+		"default": {
+			"lines": [
+				{
+					"text": "（书架底下躺着一支白羽毛笔，笔杆上刻着一个小小的「鬼」字）",
+					"speaker": ""
+				},
+				{
+					"text": "……这是隧道里那个小鬼说丢了的东西。收着吧。",
+					"speaker": "公主"
+				}
+			],
+			"set": {
+				"flags": [
+					"palace_lost_quill"
+				]
+			}
+		},
+		"done": {
+			"lines": [
+				{
+					"text": "（东西已经收起来了）",
+					"speaker": ""
+				}
+			]
+		}
+	}
+}
