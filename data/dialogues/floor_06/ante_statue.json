@@ -1,6 +1,12 @@
 {
-	"name": "石像",
+	"name": "骑士石像",
 	"entries": [
+		{
+			"if": {
+				"flag": "palace_statue_done"
+			},
+			"node": "done"
+		},
 		{
 			"node": "default"
 		}
@@ -17,13 +23,143 @@
 					"speaker": ""
 				},
 				{
-					"text": "……十三下。……图书馆的书里也写过。",
+					"text": "（石像的眼睛「咔」地亮了一下。底座上又浮出一行新的字：「答对三个问题，就把陛下的东西交给你们」）",
+					"speaker": ""
+				}
+			],
+			"prompt": "回答石像的问题？",
+			"choices": [
+				{
+					"text": "回答",
+					"next": "q1"
+				},
+				{
+					"text": "等一下",
+					"next": "no"
+				}
+			]
+		},
+		"no": {
+			"lines": [
+				{
+					"text": "……先去找找答案。",
+					"speaker": "公主"
+				}
+			]
+		},
+		"wrong": {
+			"lines": [
+				{
+					"text": "（石像的底座里伸出一只石头手，抓住了答题人的脚踝——）",
+					"speaker": ""
+				}
+			],
+			"set": {
+				"call": "palace_statue_wrong"
+			}
+		},
+		"ok": {
+			"lines": [
+				{
+					"text": "（石像缓缓地低下头，把抱着的剑移开。剑柄后面藏着一只粉色的小八音盒，和一枚笑脸徽记）",
+					"speaker": ""
+				},
+				{
+					"text": "……八音盒。",
 					"speaker": "蓝色的公主"
 				},
 				{
-					"text": "……那天晚上，钟敲了十三下。",
+					"text": "（打开盖子，里面传出一段很轻很轻的笑声——像是一个大人，和两个很小很小的孩子）",
+					"speaker": ""
+				},
+				{
+					"text": "……这个声音。",
 					"speaker": "公主",
 					"emotion": "sad"
+				},
+				{
+					"text": "……王座间的画像。……也许，会怕这个。",
+					"speaker": "蓝色的公主"
+				}
+			],
+			"set": {
+				"call": "palace_statue_ok"
+			}
+		},
+		"done": {
+			"lines": [
+				{
+					"text": "（石像抱着剑，安安静静地站着。底座上的字已经暗了）",
+					"speaker": ""
+				}
+			]
+		},
+		"q1": {
+			"lines": [
+				{
+					"text": "「问：那天晚上，钟楼的钟敲了几下？」",
+					"speaker": ""
+				}
+			],
+			"prompt": "回答……",
+			"choices": [
+				{
+					"text": "十二下",
+					"next": "wrong"
+				},
+				{
+					"text": "十三下",
+					"next": "q2"
+				},
+				{
+					"text": "一下也没有",
+					"next": "wrong"
+				}
+			]
+		},
+		"q2": {
+			"lines": [
+				{
+					"text": "「问：两位小殿下的礼服，是几号？」",
+					"speaker": ""
+				}
+			],
+			"prompt": "回答……",
+			"choices": [
+				{
+					"text": "五号",
+					"next": "wrong"
+				},
+				{
+					"text": "七号",
+					"next": "q3"
+				},
+				{
+					"text": "九号",
+					"next": "wrong"
+				}
+			]
+		},
+		"q3": {
+			"lines": [
+				{
+					"text": "「问：女王陛下最喜欢的花，是什么？」",
+					"speaker": ""
+				}
+			],
+			"prompt": "回答……",
+			"choices": [
+				{
+					"text": "玫瑰",
+					"next": "wrong"
+				},
+				{
+					"text": "铃兰",
+					"next": "ok"
+				},
+				{
+					"text": "向日葵",
+					"next": "wrong"
 				}
 			]
 		}

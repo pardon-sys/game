@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="KeyItem" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/items/key_item.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/generated/item_smile_badge.png" id="2"]
+
+[resource]
+script = ExtResource("1")
+icon = ExtResource("2")
+id = "smile_badge"
+display_name = "笑脸徽记"
+description = "金色的小徽记，上面刻着一张咧嘴笑的脸。王座前厅的徽记台上，有七个刚好放得下它的小凹槽。"
+key_type = "palace"
+category = 1
+stackable = true
+show_in_hud = false
+pickup_emotion = "happy"

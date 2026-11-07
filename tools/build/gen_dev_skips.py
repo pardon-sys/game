@@ -185,6 +185,16 @@ POINTS = [
     point("反省篇·第四章 旧王宫·钟楼一层", "floor_06_palace_clock_1", KNIGHT + KQ_ALL_DONE + ["knight_boss_done", "penance_ch1_done",
           "meet_exit_done", "waterway_keeper_done", "palace_mouse_farewell", "palace_bath_key", "palace_servants_key", "palace_cipher_open",
           "intro_done_palace_library_in", "intro_done_palace_training_in", "intro_done_palace_ante_in"], knight_vars(10, 2, 10), passives=PASSIVES),
+    # 第四章追加事件（第一批）：鼠洞底的胖鼠王 / 钟楼四层的钟面 / 王座前厅的笑声地砖（三片乐谱都有）
+    point("反省篇·追加 鼠洞·胖鼠王的洞底", "floor_06_rat_tunnel", KNIGHT + KQ_ALL_DONE + ["knight_boss_done", "penance_ch1_done", "penance_mouse_dev",
+          "tunnel_cat_safe", "intro_done_tunnel_in"], knight_vars(10, 2, 10), cell=[74, 28], passives=PASSIVES),
+    point("反省篇·追加 钟楼四层·大钟面", "floor_06_palace_clock_4", KNIGHT + KQ_ALL_DONE + ["knight_boss_done", "penance_ch1_done",
+          "meet_exit_done", "waterway_keeper_done", "palace_mouse_farewell", "palace_bath_key", "palace_servants_key", "palace_cipher_open",
+          "palace_ladder_down", "palace_keeper_done", "intro_done_palace_ante_in", "intro_done_palace_clock_in"], knight_vars(10, 2, 10), cell=[42, 10], passives=PASSIVES),
+    point("反省篇·追加 王座前厅·笑声地砖（乐谱齐了）", "floor_06_palace_ante", KNIGHT + KQ_ALL_DONE + ["knight_boss_done", "penance_ch1_done",
+          "meet_exit_done", "waterway_keeper_done", "palace_mouse_farewell", "palace_bath_key", "palace_servants_key", "palace_cipher_open",
+          "palace_sheet_1", "palace_sheet_2", "palace_sheet_3", "intro_done_palace_library_in", "intro_done_palace_training_in", "intro_done_palace_ante_in"],
+          knight_vars(10, 2, 10), cell=[30, 25], passives=PASSIVES),
     point("反省篇·第三章 废弃水道", "floor_06_waterway", KNIGHT + KQ_ALL_DONE + ["knight_boss_done", "penance_ch1_done", "penance_mouse_dev", "meet_exit_done", "intro_done_waterway_in"],
           knight_vars(10, 2, 10), passives=PASSIVES),
 ]

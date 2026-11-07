@@ -1,0 +1,28 @@
+[gd_resource type="Resource" script_class="EquipData" format=3]
+
+[ext_resource type="Script" path="res://scripts/items/equip_data.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/generated/equip_icons.png" id="2"]
+
+[sub_resource type="AtlasTexture" id="icon"]
+atlas = ExtResource("2")
+region = Rect2(496, 0, 16, 16)
+
+[resource]
+script = ExtResource("1")
+id = "equip_queen_hairpin"
+display_name = "女王的羽毛发饰"
+description = "七枚笑脸徽记换来的发饰：一根雪白的长羽毛别在金色的小发夹上。戴上它，好像连笑声都轻了一点。"
+icon = SubResource("icon")
+category = 4
+stackable = false
+show_in_hud = false
+pickup_emotion = "happy"
+slots = Array[String](["neck"])
+owner_id = ""
+modifiers = {"laugh_gain": -0.15, "magic_cd": 0.9}
+zone_mods = {}
+block = {}
+cursed = false
+special = ""
+pros = "闷笑涨幅 −15%、魔法冷却 −10%"
+cons = "（无）"

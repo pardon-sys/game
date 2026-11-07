@@ -1,0 +1,317 @@
+{
+	"name": "鼠洞：胖鼠王的胡子",
+	"cast": {
+		"princess": {
+			"kind": "princess",
+			"at": [
+				0,
+				8
+			],
+			"visual": "helpless_1",
+			"anim": "helpless",
+			"dir": "down"
+		},
+		"rat": {
+			"kind": "monster:rat",
+			"at": [
+				10,
+				10
+			],
+			"dir": "left"
+		},
+		"king": {
+			"kind": "monster:rat",
+			"at": [
+				0,
+				-6
+			],
+			"dir": "down",
+			"scale": 1.8
+		},
+		"m1": {
+			"kind": "monster:rat",
+			"at": [
+				-22,
+				14
+			],
+			"dir": "right"
+		},
+		"m2": {
+			"kind": "monster:rat",
+			"at": [
+				24,
+				14
+			],
+			"dir": "left"
+		}
+	},
+	"steps": [
+		{
+			"act": 1,
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "fade_in"
+				},
+				{
+					"state": "giggle",
+					"do": "voice"
+				}
+			],
+			"wait": 0.5
+		},
+		{
+			"speaker": "胖鼠王",
+			"text": "吱嘻嘻嘻！抓到了抓到了！本王的洞底，可不是随便能闹的！",
+			"act": 1
+		},
+		{
+			"speaker": "",
+			"text": "（她笑得腿一软，一屁股坐在了稻草堆上。胖鼠王挺着肚子，大摇大摆地爬上了她的小腿）",
+			"actions": [
+				{
+					"who": "princess",
+					"time": 0.4,
+					"do": "shake"
+				},
+				{
+					"who": "princess",
+					"visual": "helpless_1",
+					"do": "pose"
+				},
+				{
+					"do": "voice",
+					"state": "laugh"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "等、等一下！你、你好重——！",
+			"emotion": "surprise"
+		},
+		{
+			"speaker": "胖鼠王",
+			"text": "这叫威严！……卫兵们，脱鞋！"
+		},
+		{
+			"speaker": "",
+			"text": "（几只小老鼠「吱吱」地拽住鼠爪鞋，一拉——她的两只脚光溜溜地露了出来）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "m1",
+					"zone": "sole",
+					"fx": "hand",
+					"repeat": 4,
+					"interval": 0.2,
+					"do": "tickle"
+				}
+			],
+			"act": 2
+		},
+		{
+			"speaker": "挠脚鼠",
+			"text": "（从短裤里探出头）……大王，她的脚心最怕胡子。"
+		},
+		{
+			"speaker": "公主",
+			"text": "你、你出卖我——！",
+			"emotion": "angry"
+		},
+		{
+			"speaker": "挠脚鼠",
+			"text": "吱。我只是实话实说。"
+		},
+		{
+			"speaker": "",
+			"text": "（胖鼠王把那一大把雪白的长胡子垂下来，像两把鸡毛掸子一样，在她的两个脚心上慢悠悠地来回扫）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "king",
+					"zone": "sole",
+					"fx": "feather",
+					"repeat": 12,
+					"interval": 0.13,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"visual": "giggle",
+					"do": "pose"
+				}
+			],
+			"act": 3,
+			"portrait": "rat_king_fail"
+		},
+		{
+			"speaker": "公主",
+			"text": "嘻……嘻嘻……不、不要慢慢地扫……哈哈……！",
+			"emotion": "giggle"
+		},
+		{
+			"speaker": "胖鼠王",
+			"text": "慢慢地，才痒嘛！吱嘻嘻！卫兵们，肋下、脖子，一起上！"
+		},
+		{
+			"speaker": "",
+			"text": "（小老鼠们爬上她的腰，小爪子在肋下点来点去；一只叼着羽毛钻到她的脖子边）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "m1",
+					"zone": "waist",
+					"fx": "hand",
+					"repeat": 10,
+					"interval": 0.12,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"by": "m2",
+					"zone": "neck",
+					"fx": "feather",
+					"repeat": 8,
+					"interval": 0.14,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"visual": "helpless_1",
+					"do": "pose"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "哈哈哈！好、好多——胡子——爪子——全部——！",
+			"emotion": "helpless_1"
+		},
+		{
+			"speaker": "胖鼠王",
+			"text": "认输吗？说「大王最厉害」，本王就饶了你！"
+		},
+		{
+			"speaker": "公主",
+			"text": "才、才不说——哈哈哈哈——！",
+			"actions": [
+				{
+					"who": "princess",
+					"visual": "helpless_2",
+					"do": "pose"
+				}
+			],
+			"emotion": "helpless_2"
+		},
+		{
+			"speaker": "",
+			"text": "（胡子从脚跟扫到脚趾缝，又从脚趾缝扫回脚跟。她的脚趾蜷成一团又张开，张开又蜷成一团）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "king",
+					"zone": "sole",
+					"fx": "lines",
+					"repeat": 16,
+					"interval": 0.09,
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "（星光「砰」地在洞底炸开，小老鼠们被吹成了一个个小毛球……哈啊……放出去了……）",
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "flash"
+				},
+				{
+					"sound": "star_burst",
+					"do": "sfx"
+				},
+				{
+					"sound": "water_release",
+					"volume": -2.0,
+					"do": "sfx"
+				},
+				{
+					"who": "princess",
+					"time": 0.4,
+					"do": "shake"
+				},
+				{
+					"state": "laugh",
+					"do": "voice"
+				}
+			],
+			"act": "burst",
+			"wait": 1.0
+		},
+		{
+			"speaker": "",
+			"text": "（胖鼠王稳稳地坐在她腿上，一动不动——等星光散了，又用胡子尖在她刚释放完、敏感得要命的脚心上轻轻划了一道）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "king",
+					"zone": "sole",
+					"fx": "feather",
+					"repeat": 4,
+					"interval": 0.2,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"time": 0.3,
+					"do": "shake"
+				},
+				{
+					"who": "princess",
+					"visual": "helpless_1",
+					"do": "pose"
+				}
+			],
+			"act": 4
+		},
+		{
+			"speaker": "公主",
+			"text": "呀……！……哈……哈……你、你等着……",
+			"emotion": "helpless_1"
+		},
+		{
+			"speaker": "胖鼠王",
+			"text": "吱嘻嘻！本王等着！洞口的石头，本王全都搬开了！"
+		},
+		{
+			"speaker": "",
+			"text": "（小老鼠们把她抬到洞底的门口，还贴心地把鼠爪鞋给她套了回去）",
+			"actions": [
+				{
+					"who": "princess",
+					"visual": "normal",
+					"do": "pose"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "……下次。……下次一定把你堵出来。",
+			"emotion": "angry"
+		},
+		{
+			"actions": [
+				{
+					"state": "",
+					"do": "voice"
+				},
+				{
+					"time": 0.6,
+					"do": "fade_out"
+				}
+			],
+			"wait": 0.7
+		}
+	]
+}

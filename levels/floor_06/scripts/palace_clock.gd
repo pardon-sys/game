@@ -34,6 +34,14 @@ const GATE_HOLD := 2.5
 const CATCH_R := 40.0      # 回廊有 4~5 格宽：按「沿路线追到了」+ 这个距离算追上
 ## 四层的追逐路线：沿着每一段回廊的中线（从梯子口到上钟顶的楼梯口）
 const PATH := [Vector2i(44, 35), Vector2i(34, 35), Vector2i(34, 27), Vector2i(8, 27), Vector2i(8, 15), Vector2i(42, 15), Vector2i(42, 3)]
+## 发条挠痒虫（一层 / 三层的 beetle_nests）：有人走到 NEST_R 以内就从齿轮缝里放出一批（BEETLE_BATCH 只），隔 NEST_COOL 秒，每个缝最多 NEST_MAX 批
+const BEETLE_SCENE := "res://scenes/actors/monsters/clock_beetle.tscn"
+const NEST_R := 70.0
+const NEST_COOL := 12.0
+const NEST_MAX := 3
+const BEETLE_BATCH := Vector2i(3, 4)
+## 四层的大钟面（clockface）：时针指三、分针指九（训练场日志「时针走到三」+ 婴儿房刻痕「分针指着九」）→ 暗格：乐谱片① + 笑脸徽记
+const CLOCKFACE_FLAG := "palace_clockface_open"
 const CHEST_REWARDS := [{"mint": 2}, {"equip_clock_watch": 1}, {"mint": 1, "coin": 30}, {"mint": 1}]
 
 @export var map := MAP
@@ -70,6 +78,11 @@ func _ready() -> void:
 		var crank := CrankView.new()
 		crank.position = world(cells("axle")[0])
 		add_view(crank)
+	if has("clockface"):
+		_spot("floor_06/clock_face", cells("clockface")[0], CLOCKFACE_FLAG, -44.0)
+		var face := ClockFaceView.new()
+		face.position = world(cells("clockface")[0])
+		add_view(face)
 	if has("gear_seat"):
 		_spot("floor_06/clock_axle", cells("gear_seat")[0], LADDER_FLAG, -50.0)   # 点大齿轮本身也行（以前只有 5 格外的转轴能点）
 	if has("rope"):
@@ -158,11 +171,67 @@ func _spot(dialogue: String, c: Vector2i, done_flag := "", prompt_y := -22.0) ->
 	sp.global_position = world(c)
 
 
+var _nest_cool := {}
+var _nest_batches := {}
+var beetles: Array = []
+
+
+## 这个缝放一批发条挠痒虫（测试也直接调）
+func release_beetles(i: int) -> int:
+	var c := cells("beetle_nests")[i]
+	var n := randi_range(BEETLE_BATCH.x, BEETLE_BATCH.y)
+	var scene := load(BEETLE_SCENE) as PackedScene
+	for k in n:
+		var b := scene.instantiate() as Node2D
+		b.position = world(c) + Vector2(randf_range(-10, 10), randf_range(-6, 6))
+		add_view(b)
+		beetles.append(b)
+	_nest_batches[i] = int(_nest_batches.get(i, 0)) + 1
+	_nest_cool[i] = NEST_COOL
+	Audio.play("conveyor", -8.0, 0.1, 1.6)
+	_say(pink if is_instance_valid(pink) else blue, "beetle", 6.0)
+	return n
+
+
+func _tick_nests(delta: float) -> void:
+	var nests := cells("beetle_nests")
+	for i in nests.size():
+		_nest_cool[i] = maxf(0.0, float(_nest_cool.get(i, 0.0)) - delta)
+		if float(_nest_cool[i]) > 0.0 or int(_nest_batches.get(i, 0)) >= NEST_MAX:
+			continue
+		for m in members():
+			if (m as Node2D).global_position.distance_to(world(nests[i])) <= NEST_R:
+				release_beetles(i)
+				break
+
+
+func clockface_ok() -> void:
+	if GameState.has_flag(CLOCKFACE_FLAG):
+		return
+	GameState.set_flag(CLOCKFACE_FLAG)
+	Audio.play("unlock", -2.0)
+	PalaceRoom.give_sheet(1)
+	PalaceRoom.give_badge("clockface")
+
+
+## 拨错了：钟面里弹出一圈羽毛，在两个人腰上扫一下
+func clockface_wrong() -> void:
+	Audio.play("pop", -4.0)
+	for m in members():
+		for k in 3:
+			var h := HitData.make_tickle(self, 3.0)
+			h.zone = "waist"
+			(m as PlayableCharacter).receive_hit(h)
+	PalaceRoom.say_random(pink if is_instance_valid(pink) else blue, "clockface_wrong")
+
+
 func _process(delta: float) -> void:
 	t += delta
 	if busy():
 		return
 	update_checkpoints()
+	if has("beetle_nests"):
+		_tick_nests(delta)
 	for k in _say_cool.keys():
 		_say_cool[k] = maxf(0.0, float(_say_cool[k]) - delta)
 	for m in members():
@@ -629,6 +698,32 @@ class ChestView extends Node2D:
 
 	func _process(_d: float) -> void:
 		_s.region_rect = OPEN if is_open() else CLOSED
+
+
+## 四层回廊尽头的大钟面（palace_events.png 第 2 帧；打开暗格后钟面下面亮一点）
+class ClockFaceView extends Node2D:
+	const PROPS := "res://assets/generated/palace_events.png"
+	var _s: Sprite2D
+
+	func _ready() -> void:
+		if ResourceLoader.exists(PROPS):
+			_s = Sprite2D.new()
+			_s.texture = load(PROPS)
+			_s.hframes = 6
+			_s.frame = 2
+			_s.offset = Vector2(0, -20)
+			_s.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+			add_child(_s)
+
+	func _process(_d: float) -> void:
+		queue_redraw()
+
+	func _draw() -> void:
+		if _s == null:
+			draw_circle(Vector2(0, -24), 12.0, Color(0.95, 0.93, 0.85))
+			draw_arc(Vector2(0, -24), 12.0, 0, TAU, 24, Color(0.75, 0.6, 0.25), 2.0)
+		if GameState.has_flag(PalaceClock.CLOCKFACE_FLAG):
+			draw_rect(Rect2(-6, -6, 12, 5), Color(1.0, 0.85, 0.4, 0.5 + 0.2 * sin(Time.get_ticks_msec() / 200.0)))
 
 
 ## 转轴上的小摇柄（三层；另一个人转它，坐齿轮的人被带上去）

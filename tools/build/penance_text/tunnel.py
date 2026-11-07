@@ -6,11 +6,26 @@ from .common import A, GUARD, L, N, P, PRINCESS, RAT, burst, cg, dfile, line, po
 
 CAT = "橘猫"
 RATS = "小老鼠们"
+KING = "胖鼠王"
 
 # 玩法里的短台词（data/after/tunnel.json，RatTunnel 读）
 TEXT = {
     "cat_start": ["那、那只猫！它跟进来了——！", "哇啊！猫！快跑！", "它闻到鼠味了……全是这条短裤的错！"],
     "drip": ["冰、冰的！……呀！它被吓得乱窜了！", "水滴……别滴了……它又醒了……！", "噫！一滴水，它就从腿上窜到脚底……！"],
+    # 胖鼠王（躲猫猫：洞口钻来钻去 → 堵洞 → 最后一个洞口逼出来打）
+    "king_meet": ["……好大一只老鼠。头上还戴着王冠？", "那个……是老鼠的国王？"],
+    "king_peek": ["吱嘻嘻！这边这边～", "吱！抓不到！", "胡子扫扫～"],
+    "king_whisker": ["胡、胡子扫到脚了——！", "噫！它从洞里伸胡子出来——！"],
+    "king_hit": ["打中了！它缩回去了！", "哼！看你还敢探头！"],
+    "king_plug": ["堵上了！", "这个洞，用石头堵住！"],
+    "king_plug_busy": ["它正探着头呢……先把它打回去！"],
+    "king_out": ["吱——！最后一个洞也堵上了？！……那、那本王亲自出来！", "出、出来了！好胖！"],
+    "king_swipe": ["胡、胡子——不要扫脚心——！", "哈哈！好长的胡子——！"],
+    "king_win": ["……赢、赢了。……王冠都歪了。", "哼！老鼠的国王也不过如此！"],
+    # 奶酪捕鼠夹
+    "trap_snap": ["呀！奶、奶酪下面有夹子——！", "夹、夹住了！小老鼠们围过来了——！"],
+    "trap_free": ["……挣、挣开了！", "哈……哈……以后看见奶酪先踢一脚……"],
+    "trap_look": ["……奶酪下面，好像有什么在反光。"],
 }
 
 
@@ -219,10 +234,10 @@ REVENGE = theater("鼠洞：挠脚鼠们的报复", {
     "m2": {"kind": "monster:rat", "at": [24, 14], "dir": "left"},
     "m3": {"kind": "monster:rat", "at": [-8, 22], "dir": "up"},
 }, [
-    say(N, "（最后一只老鼠「吱」地一声，晕乎乎地倒在地上转圈圈）", act=1),
-    say(P, "……呼。总算打完了。", emotion="happy"),
-    say(RAT, "（从短裤里探出头，看了看满地晕倒的同伴）……吱。"),
-    say(RAT, "……你把我的亲戚们全打晕了。"),
+    say(N, "（胖鼠王「吱——」地一声，王冠歪到一边，晕乎乎地倒在大奶酪上转圈圈）", act=1),
+    say(P, "……呼。总算打赢了。", emotion="happy"),
+    say(RAT, "（从短裤里探出头，看了看晕倒的大王）……吱。"),
+    say(RAT, "……你把我们的大王打晕了。……我的亲戚们都看着呢。"),
     say(P, "是、是它们先扑上来的！", emotion="surprise"),
     say(RAT, "吱吱。……那我也要扑上来。……大家——！", act=2),
     say(N, "（墙缝里、树根底下、碎石堆后面，一只、两只、五只……一群挠脚鼠探出了脑袋，眼睛亮晶晶的）"),
@@ -248,7 +263,43 @@ REVENGE = theater("鼠洞：挠脚鼠们的报复", {
     say(N, "（她把鼠爪鞋捡回来穿上，扶着墙站了起来）", [pose("normal")]),
 ])
 
-THEATERS = {"tunnel_revenge": REVENGE, "tunnel_thigh": THIGH, "tunnel_sole": SOLE, "tunnel_shaft": SHAFT, "tunnel_nest": NEST,
+# ---------------------------------------------------------------- 胖鼠王：输了（CG）
+KING_FAIL = theater("鼠洞：胖鼠王的胡子", {
+    "princess": dict(PRINCESS, at=[0, 8], visual="helpless_1", anim="helpless"),
+    "rat": _rat((10, 10)),
+    "king": {"kind": "monster:rat", "at": [0, -6], "dir": "down", "scale": 1.8},
+    "m1": {"kind": "monster:rat", "at": [-22, 14], "dir": "right"},
+    "m2": {"kind": "monster:rat", "at": [24, 14], "dir": "left"},
+}, [
+    say(KING, "吱嘻嘻嘻！抓到了抓到了！本王的洞底，可不是随便能闹的！", act=1),
+    say(N, "（她笑得腿一软，一屁股坐在了稻草堆上。胖鼠王挺着肚子，大摇大摆地爬上了她的小腿）", [A("shake", who="princess", time=0.4), pose("helpless_1")]),
+    say(P, "等、等一下！你、你好重——！", emotion="surprise"),
+    say(KING, "这叫威严！……卫兵们，脱鞋！"),
+    say(N, "（几只小老鼠「吱吱」地拽住鼠爪鞋，一拉——她的两只脚光溜溜地露了出来）", [tk("m1", zone="sole", fx="hand", n=4, iv=0.2)], act=2),
+    say(RAT, "（从短裤里探出头）……大王，她的脚心最怕胡子。"),
+    say(P, "你、你出卖我——！", emotion="angry"),
+    say(RAT, "吱。我只是实话实说。"),
+    cg(say(N, "（胖鼠王把那一大把雪白的长胡子垂下来，像两把鸡毛掸子一样，在她的两个脚心上慢悠悠地来回扫）",
+           [tk("king", zone="sole", fx="feather", n=12, iv=0.13), pose("giggle")], act=3)),
+    say(P, "嘻……嘻嘻……不、不要慢慢地扫……哈哈……！", emotion="giggle"),
+    say(KING, "慢慢地，才痒嘛！吱嘻嘻！卫兵们，肋下、脖子，一起上！"),
+    say(N, "（小老鼠们爬上她的腰，小爪子在肋下点来点去；一只叼着羽毛钻到她的脖子边）",
+        [tk("m1", zone="waist", fx="hand", n=10, iv=0.12), tk("m2", zone="neck", fx="feather", n=8, iv=0.14), pose("helpless_1")]),
+    say(P, "哈哈哈！好、好多——胡子——爪子——全部——！", emotion="helpless_1"),
+    say(KING, "认输吗？说「大王最厉害」，本王就饶了你！"),
+    say(P, "才、才不说——哈哈哈哈——！", [pose("helpless_2")], emotion="helpless_2"),
+    say(N, "（胡子从脚跟扫到脚趾缝，又从脚趾缝扫回脚跟。她的脚趾蜷成一团又张开，张开又蜷成一团）",
+        [tk("king", zone="sole", fx="lines", n=16, iv=0.09)]),
+    burst("（星光「砰」地在洞底炸开，小老鼠们被吹成了一个个小毛球……哈啊……放出去了……）"),
+    say(N, "（胖鼠王稳稳地坐在她腿上，一动不动——等星光散了，又用胡子尖在她刚释放完、敏感得要命的脚心上轻轻划了一道）",
+        [tk("king", zone="sole", fx="feather", n=4, iv=0.2), A("shake", who="princess", time=0.3), pose("helpless_1")], act=4),
+    say(P, "呀……！……哈……哈……你、你等着……", emotion="helpless_1"),
+    say(KING, "吱嘻嘻！本王等着！洞口的石头，本王全都搬开了！"),
+    say(N, "（小老鼠们把她抬到洞底的门口，还贴心地把鼠爪鞋给她套了回去）", [pose("normal")]),
+    say(P, "……下次。……下次一定把你堵出来。", emotion="angry"),
+])
+
+THEATERS = {"tunnel_revenge": REVENGE, "tunnel_rat_king_fail": KING_FAIL, "tunnel_thigh": THIGH, "tunnel_sole": SOLE, "tunnel_shaft": SHAFT, "tunnel_nest": NEST,
             "tunnel_cat_first": CAT_FIRST, "tunnel_cat": CAT_AGAIN}
 
 DIALOGUES = {

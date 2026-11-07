@@ -1,0 +1,66 @@
+{
+	"name": "徽记台",
+	"entries": [
+		{
+			"if": {
+				"flag": "palace_badges_done"
+			},
+			"node": "done"
+		},
+		{
+			"node": "default"
+		}
+	],
+	"nodes": {
+		"default": {
+			"lines": [
+				{
+					"text": "（一座石台，台面上排着七个小小的圆形凹槽。最上面刻着一张咧嘴笑的脸）",
+					"speaker": ""
+				},
+				{
+					"text": "「七枚笑脸，换陛下的一件小礼物」",
+					"speaker": ""
+				}
+			],
+			"prompt": "把笑脸徽记放上去？",
+			"choices": [
+				{
+					"text": "放上去",
+					"next": "go"
+				},
+				{
+					"text": "再找找",
+					"next": "no"
+				}
+			]
+		},
+		"go": {
+			"lines": [
+				{
+					"text": "……放上去看看。",
+					"speaker": "公主"
+				}
+			],
+			"set": {
+				"call": "palace_badges"
+			}
+		},
+		"no": {
+			"lines": [
+				{
+					"text": "……还差几枚。",
+					"speaker": "公主"
+				}
+			]
+		},
+		"done": {
+			"lines": [
+				{
+					"text": "（七个凹槽里都嵌着金色的笑脸。……它们好像还在偷偷地笑）",
+					"speaker": ""
+				}
+			]
+		}
+	}
+}

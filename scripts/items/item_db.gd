@@ -55,6 +55,11 @@ const PATHS := {
 	"equip_palace_stockings": "res://data/items/equip_palace_stockings.tres",
 	"equip_feather_shawl": "res://data/items/equip_feather_shawl.tres",
 	"equip_clock_watch": "res://data/items/equip_clock_watch.tres",
+	"equip_queen_hairpin": "res://data/items/equip_queen_hairpin.tres",
+	# 第四章（追加事件）：笑脸徽记 / 笑声乐谱 / 女王的八音盒（tools/art/gen_palace_items.py）
+	"smile_badge": "res://data/items/smile_badge.tres",
+	"music_sheet": "res://data/items/music_sheet.tres",
+	"queen_music_box": "res://data/items/queen_music_box.tres",
 }
 
 static var _cache := {}

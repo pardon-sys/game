@@ -195,3 +195,8 @@ if __name__ == "__main__":
     build_strip("clock_props_sheet.png", "clock_props.png", 6, 48, 56, "钟楼道具（齿轮 / 钟摆 / 风箱 / 钟 / 钟绳 / 宝箱）")
     build_strip("palace_misc_sheet.png", "palace_misc.png", 3, 24, 32, "仆人回廊（唤人铃 / 钥匙 / 小牌子）")
     build_walker("head_maid_sheet.png", "npcs/head_maid.png", "女仆长")
+    # 第四章追加事件（第一批）
+    build_strip("clock_beetle_sheet.png", "clock_beetle.png", 4, 20, 18, "发条挠痒虫（三帧爬 + 翻倒）")
+    build_strip("rat_king_sheet.png", "rat_king.png", 4, 44, 40, "胖鼠王（洞里探头 / 坐着 / 晕 / 扫胡子）")
+    build_strip("palace_events_sheet.png", "palace_events.png", 6, 40, 40, "追加事件道具（奶酪夹 / 夹子弹起 / 钟面 / 喷泉 / 徽记台 / 石堆）")
+    build_walker("armor_guard_sheet.png", "npcs/armor_guard.png", "空铠甲卫兵")

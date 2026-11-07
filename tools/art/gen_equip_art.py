@@ -15,7 +15,7 @@ ICONS = ["armpit_pad", "scarf", "wool_socks", "dance_shoes", "waist_sash", "mint
          # 反省篇：挠脚鼠住在里面的鼠鼠装（诅咒）
          "mouse_shorts", "mouse_paw_shoes",
          # 第四章·旧王宫衣帽间：试穿的旧装备、自动穿袜机的丝袜、羽毛披肩鬼掉下来的披肩
-         "palace_ribbon", "palace_corset", "palace_boots", "palace_stockings", "feather_shawl", "clock_watch"]
+         "palace_ribbon", "palace_corset", "palace_boots", "palace_stockings", "feather_shawl", "clock_watch", "queen_hairpin"]
 
 
 def canvas():
@@ -120,6 +120,11 @@ def icon(name):
         d.line((8, 9, 10, 9), fill=(40, 30, 30, 255))
         d.line((8, 4, 8, 1), fill=(200, 160, 70, 255))
         d.line((8, 1, 13, 2), fill=(200, 160, 70, 255))
+    elif name == "queen_hairpin":   # 女王的羽毛发饰：金色小发夹 + 一根白长羽毛
+        d.line((3, 13, 13, 3), fill=(255, 255, 255, 255), width=3)
+        d.line((4, 12, 12, 4), fill=(225, 225, 240, 255))
+        d.rectangle((2, 11, 6, 14), fill=(230, 185, 70, 255))
+        d.point((4, 12), fill=(255, 120, 150, 255))
     elif name == "party_bow":     # 派对彩带蝴蝶结：彩色蝴蝶结 + 小铃铛
         d.polygon([(8, 7), (2, 3), (2, 11)], fill=(255, 120, 170, 255))
         d.polygon([(8, 7), (14, 3), (14, 11)], fill=(120, 200, 255, 255))

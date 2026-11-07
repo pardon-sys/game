@@ -1,0 +1,351 @@
+{
+	"name": "王座前厅：笑脸徽记的庆祝",
+	"cast": {
+		"princess": {
+			"kind": "princess",
+			"at": [
+				-14,
+				8
+			],
+			"visual": "normal",
+			"anim": "idle",
+			"dir": "right"
+		},
+		"blue": {
+			"kind": "npc:blue_princess",
+			"at": [
+				14,
+				8
+			],
+			"visual": "normal",
+			"anim": "idle",
+			"dir": "left"
+		},
+		"pants": {
+			"kind": "trap:hand",
+			"at": [
+				20,
+				10
+			]
+		},
+		"s1": {
+			"kind": "trap:feather_curtain",
+			"at": [
+				-24,
+				-10
+			]
+		},
+		"s2": {
+			"kind": "trap:feather_curtain",
+			"at": [
+				24,
+				-10
+			]
+		}
+	},
+	"steps": [
+		{
+			"act": 1,
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "fade_in"
+				},
+				{
+					"state": "giggle",
+					"do": "voice"
+				}
+			],
+			"wait": 0.5
+		},
+		{
+			"speaker": "",
+			"text": "（七枚笑脸徽记一放进凹槽，石台「嗡」地亮了。台阶下面，传来一阵叮叮当当的笑声）",
+			"act": 1
+		},
+		{
+			"speaker": "",
+			"text": "（一群金色的笑脸小精灵从徽记里钻了出来，扑扇着小翅膀，把一支雪白的羽毛发饰递到粉色公主手里）"
+		},
+		{
+			"speaker": "公主",
+			"text": "给、给我的？……好漂亮！",
+			"emotion": "happy"
+		},
+		{
+			"speaker": "笑脸小精灵们",
+			"text": "恭喜恭喜！庆祝庆祝！"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……庆祝。……怎么庆祝。"
+		},
+		{
+			"speaker": "笑脸小精灵们",
+			"text": "当然是——一起笑！",
+			"act": 2
+		},
+		{
+			"speaker": "",
+			"text": "（小精灵们一拥而上，把两个人推倒在宝库里的大天鹅绒软垫上，羽毛小手在腰上、肋下一阵乱挠）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "s1",
+					"zone": "sole",
+					"fx": "feather",
+					"repeat": 10,
+					"interval": 0.14,
+					"do": "tickle"
+				},
+				{
+					"who": "blue",
+					"by": "s2",
+					"zone": "waist",
+					"fx": "feather",
+					"repeat": 8,
+					"interval": 0.14,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"visual": "giggle",
+					"do": "pose"
+				},
+				{
+					"who": "blue",
+					"visual": "giggle",
+					"do": "pose"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "嘻嘻……等、等一下……发饰——发饰要掉了——！",
+			"emotion": "giggle"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……哈……不、不需要……这种庆祝……"
+		},
+		{
+			"speaker": "",
+			"text": "（两个人的鞋早被小精灵们扒到了一边。小精灵们排成一圈，有的挠脚心，有的挠脖子，五彩的纸屑哗哗地往下落）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "s1",
+					"zone": "sole",
+					"fx": "lines",
+					"repeat": 14,
+					"interval": 0.1,
+					"do": "tickle"
+				},
+				{
+					"who": "blue",
+					"by": "s2",
+					"zone": "sole",
+					"fx": "feather",
+					"repeat": 12,
+					"interval": 0.1,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"visual": "helpless_1",
+					"do": "pose"
+				},
+				{
+					"who": "blue",
+					"visual": "helpless_1",
+					"do": "pose"
+				},
+				{
+					"do": "voice",
+					"state": "laugh"
+				}
+			],
+			"act": 3,
+			"portrait": "badge_party"
+		},
+		{
+			"speaker": "公主",
+			"text": "哈哈哈！好、好多——！你们到底有几个——！",
+			"emotion": "helpless_1"
+		},
+		{
+			"speaker": "笑脸小精灵们",
+			"text": "七个七个！一个徽记一个！再来再来！"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……哈、哈哈……数、数不过来……",
+			"actions": [
+				{
+					"who": "blue",
+					"visual": "helpless_2",
+					"do": "pose"
+				}
+			]
+		},
+		{
+			"speaker": "",
+			"text": "（两个人笑得滚成一团，靠在一起，谁也扶不起谁）",
+			"actions": [
+				{
+					"who": "princess",
+					"visual": "helpless_2",
+					"do": "pose"
+				},
+				{
+					"who": "blue",
+					"by": "s2",
+					"zone": "armpit",
+					"fx": "hand",
+					"repeat": 14,
+					"interval": 0.09,
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……哈……哈哈……（冰晶在宝库里炸开，纸屑全冻成了亮晶晶的小雪花……）",
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "flash"
+				},
+				{
+					"sound": "ice_crack",
+					"volume": -2.0,
+					"do": "sfx"
+				},
+				{
+					"sound": "water_release",
+					"volume": -2.0,
+					"do": "sfx"
+				},
+				{
+					"who": "blue",
+					"time": 0.4,
+					"do": "shake"
+				},
+				{
+					"state": "laugh",
+					"do": "voice"
+				}
+			],
+			"act": "burst",
+			"wait": 1.0
+		},
+		{
+			"speaker": "公主",
+			"text": "（星光跟着炸开，满屋子都是叮叮当当的小星星……哈啊……放出去了……）",
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "flash"
+				},
+				{
+					"sound": "star_burst",
+					"do": "sfx"
+				},
+				{
+					"sound": "water_release",
+					"volume": -2.0,
+					"do": "sfx"
+				},
+				{
+					"who": "princess",
+					"time": 0.4,
+					"do": "shake"
+				},
+				{
+					"state": "laugh",
+					"do": "voice"
+				}
+			],
+			"act": "burst",
+			"wait": 1.0
+		},
+		{
+			"speaker": "",
+			"text": "（小精灵们在雪花和星星里转着圈——然后一个一个落下来，在两个人刚释放完、敏感得要命的脚心上各亲了一下似的蹭了一蹭）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "s1",
+					"zone": "sole",
+					"fx": "feather",
+					"repeat": 4,
+					"interval": 0.2,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"time": 0.3,
+					"do": "shake"
+				},
+				{
+					"who": "princess",
+					"visual": "helpless_1",
+					"do": "pose"
+				},
+				{
+					"who": "blue",
+					"visual": "helpless_1",
+					"do": "pose"
+				}
+			],
+			"act": 4
+		},
+		{
+			"speaker": "公主",
+			"text": "呀……！……哈……哈……最、最后那一下是什么……",
+			"emotion": "helpless_1"
+		},
+		{
+			"speaker": "笑脸小精灵们",
+			"text": "是祝福！陛下的祝福！"
+		},
+		{
+			"speaker": "",
+			"text": "（小精灵们钻回了徽记里。宝库又安静了下来）",
+			"actions": [
+				{
+					"who": "princess",
+					"visual": "normal",
+					"do": "pose"
+				},
+				{
+					"who": "blue",
+					"visual": "normal",
+					"do": "pose"
+				}
+			]
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……（把粉色公主歪掉的发饰扶正）……很适合你。"
+		},
+		{
+			"speaker": "公主",
+			"text": "……嘿嘿。",
+			"emotion": "happy"
+		},
+		{
+			"actions": [
+				{
+					"state": "",
+					"do": "voice"
+				},
+				{
+					"time": 0.6,
+					"do": "fade_out"
+				}
+			],
+			"wait": 0.7
+		}
+	]
+}
