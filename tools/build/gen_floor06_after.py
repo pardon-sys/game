@@ -911,6 +911,7 @@ pb.put(2, 2, "palacebath")
 pb.put(*pbm["east"][0], "exit target=%s spawn=from_bath unlock_flag=palace_bath_key locked_dialogue=palace_bath_door" % PSERV)
 pb.put(66, 11, "spawn id=from_servants")
 _secret_door(pb, PBATH)
+prop(pb, pbm["mirror"][0][0], pbm["mirror"][0][1] - 1, "mirror")   # 起雾的镜子（以前只有调查点，没有图）
 _dress(pb, PBATH, ((28, 8, "plant"), (28, 26, "plant"), (33, 7, "bench"), (40, 7, "bench"), (46, 15, "candle"), (46, 22, "candle"),
                    (51, 16, "plant"), (65, 16, "plant"), (53, 29, "candle"), (63, 29, "candle"), (35, 27, "feather_pile"), (64, 7, "barrel")))
 pb.write()
@@ -925,6 +926,10 @@ ps.put(3, 15, "stealth on_caught=palace alert_rate=1.8 alert_decay=0.5")
 ps.put(*psm["west"][0], "exit target=%s spawn=from_servants" % PBATH)
 ps.put(*psm["east"][0], "exit target=%s spawn=from_servants unlock_flag=palace_servants_key locked_dialogue=palace_servants_door" % PKITCH)
 ps.put(76, 17, "spawn id=from_kitchen")
+# 事件点补素材：两张排班表钉在告示板上；女仆长房间的小茶桌（送点心）
+for (_x, _y) in psm["clues"]:
+    prop(ps, _x, _y - 1, "notice_board")
+prop(ps, psm["deliver"][0][0], psm["deliver"][0][1] - 1, "tea_table")
 for (x, y) in psm["hides"] + psm["hide_event"]:
     prop(ps, x, y, "crate", "hide")
 for (x, y) in ((20, 16), (44, 18), (62, 17)):
@@ -952,6 +957,7 @@ pk.put(2, 4, "palacekitchen")
 pk.put(*pkm["west"][0], "exit target=%s spawn=from_kitchen" % PSERV)
 pk.put(*pkm["north"][0], "exit target=%s spawn=from_kitchen unlock_flag=palace_mouse_farewell locked_dialogue=palace_kitchen_north" % PLIB)
 pk.put(25, 2, "spawn id=from_library")
+prop(pk, pkm["booth"][0][0], pkm["booth"][0][1] - 1, "stall_0")   # 试吃推销员的小摊
 for (x, y) in pkm["rats"]:
     pk.put(x, y, "monster type=rat")
 _dress(pk, PKITCH, ((11, 8, "cauldron"), (23, 7, "cauldron"), (47, 9, "barrel"), (49, 13, "barrel"), (58, 9, "barrel"), (52, 13, "crate"),
@@ -1008,6 +1014,7 @@ pt2.put(7, 5, "palacetraining")
 pt2.put(*ptm["east"][0], "exit target=%s spawn=from_training" % PLIB)
 pt2.put(*ptm["north"][0], "exit target=%s spawn=from_training" % PANTE)
 pt2.put(38, 4, "spawn id=from_ante")
+prop(pt2, ptm["fragment"][0][0], ptm["fragment"][0][1] - 1, "crate")   # 锁着的旧箱子
 _secret_door(pt2, PTRAIN)
 _dress_training(pt2, qmaps.grid(PTRAIN), ptm)
 pt2.write()
@@ -1074,9 +1081,11 @@ for key, (ex, ey), (sx, sy), target in (("to_bath", (4, 29), (7, 29), PBATH), ("
                                          ("to_wardrobe", (84, 8), (83, 11), PWARD), ("to_training", (47, 6), (47, 9), PTRAIN)):
     pu.put(ex, ey, "exit target=%s spawn=from_tunnels" % target)
     pu.put(sx, sy, "spawn id=from_" + key[3:])
-for (x, y) in ((20, 29), (40, 29), (60, 29), (80, 29), (11, 20), (47, 20), (71, 40), (83, 20), (30, 41), (11, 46)):
+for (x, y) in ((20, 29), (40, 29), (60, 29), (80, 29), (11, 20), (47, 20), (71, 40), (83, 20), (30, 41), (11, 49)):   # 黑暗区（x 10..12, y 32..46）里不放灯
     prop(pu, x, y, "lamp")
-for (x, y, kind) in ((70, 6, "princess_bed"), (76, 6, "dresser"), (80, 12, "wardrobe"), (66, 6, "candle"),
+for (x, y, kind) in ((pum["quilt"][0][0], pum["quilt"][0][1] - 1, "princess_bed"), (pum["vanity"][0][0], pum["vanity"][0][1] - 1, "dresser"),
+                     (pum["diary"][0][0], pum["diary"][0][1] - 1, "old_dresser"), (pum["height_marks"][0][0], pum["height_marks"][0][1] - 1, "height_marks"),
+                     (pum["lost_board"][0][0] - 1, pum["lost_board"][0][1] + 1, "notice_board"), (80, 12, "wardrobe"), (66, 6, "candle"),
                      (20, 47, "plant"), (16, 52, "blue_bed"), (30, 49, "crate"), (60, 46, "cobweb"), (35, 28, "cobweb")):
     if qmaps.grid(PTUN)[y][x] == ".":
         prop(pu, x, y, kind)

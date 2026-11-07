@@ -208,6 +208,10 @@ func add_push(v: Vector2) -> void:
 
 ## 带外力的 move_and_slide：外力不会累积进 velocity。
 func move_with_push() -> void:
+	# 换关 / 过场时身体可能已经不在物理空间里（body->get_space() 为 null）：这一帧不移动
+	if not is_inside_tree() or not PhysicsServer2D.body_get_space(get_rid()).is_valid():
+		_push = Vector2.ZERO
+		return
 	if _push == Vector2.ZERO:
 		move_and_slide()
 		return

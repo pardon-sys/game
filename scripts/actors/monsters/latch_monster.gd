@@ -62,8 +62,8 @@ func _can_lunge() -> bool:
 		target = GameState.player
 	elif state != State.CHASE:
 		return false
-	var pc := target as PlayableCharacter
-	return pc != null and is_instance_valid(pc) and pc.can_be_latched() \
+	var pc := target as PlayableCharacter if is_instance_valid(target) else null
+	return pc != null and pc.can_be_latched() \
 			and global_position.distance_to(pc.global_position) <= lunge_range
 
 

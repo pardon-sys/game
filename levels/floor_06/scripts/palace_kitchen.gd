@@ -34,6 +34,10 @@ func _ready() -> void:
 		sp.dialogue = str(pair[1])
 		add_child(sp)
 		sp.global_position = world(cells(str(pair[0]))[0])
+	# 事件点的图：糕点师人偶站在糕点台后面、水槽
+	sheet_view(PalaceRoom.PROPS3, 6, 5, cells("chef")[0], [], 0.9, Vector2(0, 8))
+	sheet_view(PalaceRoom.CHEF, 4, 0, cells("chef")[0], [0, 1], 1.0, Vector2(0, -6))
+	sheet_view(PalaceRoom.PROPS3, 6, 4, cells("sink")[0], [], 0.8, Vector2(0, -6))
 	# 追加事件·送餐潜行：糕点台旁边的托盘
 	if not cells("tray").is_empty():
 		var tsp := PrisonOddities.Spot.new()

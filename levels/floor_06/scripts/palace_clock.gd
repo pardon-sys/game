@@ -89,10 +89,10 @@ func _ready() -> void:
 		_spot("floor_06/clock_rope", cells("rope")[0], BELLS_FLAG)
 		add_view(_prop(4, world(cells("rope")[0])))
 	if has("bell"):
-		_spot("floor_06/clock_bell", cells("bell")[0], BELLS_FLAG)
-		var bell := _prop(3, world(cells("bell")[0]) + Vector2(0, -14))
-		bell.scale = Vector2(1.2, 1.2)
-		add_view(bell)
+		_spot("floor_06/clock_bell", cells("bell")[0], BELLS_FLAG, -70.0)
+		var bv := BellBeam.new()
+		bv.position = world(cells("bell")[0])
+		add_view(bv)
 	if has("chests"):
 		_spot("floor_06/clock_chest_%d" % floor_no, cells("chests")[0], "palace_tchest_%d" % floor_no)
 		var cv := ChestView.new()
@@ -387,7 +387,9 @@ func _tick_chase(delta: float) -> void:
 			start_chase()
 		return
 	var ps := progress(p.global_position)
-	if ps >= path_len() - 10.0:
+	# 跑到路线尽头，或者已经站到上钟顶的楼梯口（U 一格以内）：甩掉了，以后不再追
+	var at_stairs := has("up") and p.global_position.distance_to(world(cells("up")[0])) <= 20.0
+	if ps >= path_len() - 10.0 or at_stairs:
 		chase_done()
 		return
 	for i in cells("gates").size():
@@ -724,6 +726,20 @@ class ClockFaceView extends Node2D:
 			draw_arc(Vector2(0, -24), 12.0, 0, TAU, 24, Color(0.75, 0.6, 0.25), 2.0)
 		if GameState.has_flag(PalaceClock.CLOCKFACE_FLAG):
 			draw_rect(Rect2(-6, -6, 12, 5), Color(1.0, 0.85, 0.4, 0.5 + 0.2 * sin(Time.get_ticks_msec() / 200.0)))
+
+
+## 钟顶的大钟：clock_props 第 3 帧（钟连着自己的木头钟架），立在空地上，轻轻晃
+class BellBeam extends Node2D:
+	var _bell: Node2D
+
+	func _ready() -> void:
+		_bell = PalaceClock._prop(3, Vector2.ZERO)
+		_bell.scale = Vector2(1.3, 1.3)
+		add_child(_bell)
+
+	func _process(_d: float) -> void:
+		if _bell and _bell.get_child_count() > 0:
+			(_bell.get_child(0) as Node2D).rotation = sin(Time.get_ticks_msec() / 900.0) * 0.015
 
 
 ## 转轴上的小摇柄（三层；另一个人转它，坐齿轮的人被带上去）

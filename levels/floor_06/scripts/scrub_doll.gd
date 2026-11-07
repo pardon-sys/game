@@ -9,7 +9,8 @@ extends Node2D
 ## 测试：phase、sponges、hp、hit_by(pc)、grab(pc)、sponges_alive。
 
 const FLAG := "palace_scrub_down"
-const SHEET := "res://assets/generated/scrub_doll.png"
+const WALK := "res://assets/generated/scrub_doll_walk.png"   # 4×4 走路图
+const ACT := "res://assets/generated/scrub_doll_act.png"     # 动作条：0 挥刷 / 1 抓人 / 2 没海绵晕了
 const MEET_R := 90.0
 const HIT_R := 28.0
 const SPONGES := 3
@@ -35,20 +36,18 @@ var _tick := 0.0
 var _stagger := 0.0
 var _swing := 0.0
 var _was := {}
-var _spr: Sprite2D
+var _look: WalkActLook
+var _moved := Vector2.ZERO
 
 
 func _ready() -> void:
 	z_index = 1
 	if home == Vector2.ZERO:
 		home = position
-	if ResourceLoader.exists(SHEET):
-		_spr = Sprite2D.new()
-		_spr.texture = load(SHEET)
-		_spr.hframes = 4
-		_spr.offset = Vector2(0, -24)
-		_spr.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
-		add_child(_spr)
+	_look = WalkActLook.new()
+	_look.walk_tex = WALK
+	_look.act_tex = ACT
+	add_child(_look)
 	if GameState.has_flag(FLAG):
 		phase = "down"
 	_refresh()
@@ -86,8 +85,11 @@ func step(delta: float) -> void:
 	match phase:
 		"fight":
 			var near := _nearest(ms)
+			_moved = Vector2.ZERO
 			if near and _stagger <= 0.0:
+				var before := position
 				position = position.move_toward(near.global_position, SPEED * delta)
+				_moved = position - before
 			_atk -= delta
 			if _atk <= 0.0 and near:
 				_atk = ATTACK_EVERY
@@ -193,16 +195,18 @@ func _down() -> void:
 
 
 func _refresh() -> void:
-	if _spr:
+	if _look and _look.ready_ok():
 		if phase == "down":
-			_spr.frame = 3
-			_spr.rotation = 0.35
+			_look.act(2)
+			_look.rotation = 0.35
 		elif phase == "hold":
-			_spr.frame = 2
+			_look.act(1)
 		elif _swing > 0.0:
-			_spr.frame = 1
+			_look.act(0)
+		elif _moved.length() > 0.01:
+			_look.walk(_moved, get_process_delta_time())
 		else:
-			_spr.frame = 0 if sponges > 0 else 3
+			_look.idle()
 	queue_redraw()
 
 
@@ -211,7 +215,7 @@ func _draw() -> void:
 		# 身上还剩几块海绵：头顶几个小黄点
 		for i in sponges:
 			draw_circle(Vector2(-6 + i * 6, -54), 2.5, Color(1.0, 0.88, 0.3))
-	if _spr == null:
+	if _look == null or not _look.ready_ok():
 		draw_circle(Vector2(0, -20), 14.0, Color(0.95, 0.92, 0.95))
 		draw_circle(Vector2(0, -38), 9.0, Color(0.98, 0.9, 0.88))
 

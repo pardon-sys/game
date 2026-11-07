@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://rrb23o3bx0w8"
-path="res://.godot/imported/scrub_doll_sheet.png-b22998e3808aef9cb1dac292b9827cb7.ctex"
+uid="uid://dgi0kh5r0b11s"
+path="res://.godot/imported/scrub_doll_walk.png-1af5c722eccc27e26b490af38e3115c0.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://tools/art/src/palace_sprites/scrub_doll_sheet.png"
-dest_files=["res://.godot/imported/scrub_doll_sheet.png-b22998e3808aef9cb1dac292b9827cb7.ctex"]
+source_file="res://assets/generated/scrub_doll_walk.png"
+dest_files=["res://.godot/imported/scrub_doll_walk.png-1af5c722eccc27e26b490af38e3115c0.ctex"]
 
 [params]
 

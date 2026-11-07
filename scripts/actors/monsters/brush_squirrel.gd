@@ -30,8 +30,8 @@ func _tick(delta: float) -> void:
 		move_with_push()
 		_animate(delta)
 		return
-	var p := target as PlayableCharacter
-	if state != State.CHASE or p == null or not is_instance_valid(p) or not p.is_alive() \
+	var p := target as PlayableCharacter if is_instance_valid(target) else null
+	if state != State.CHASE or p == null or not p.is_alive() \
 			or global_position.distance_to(p.global_position) > stats.lose_range:
 		super(delta)
 		return

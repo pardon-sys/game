@@ -11,7 +11,8 @@ extends Node2D
 ## 测试：phase、hp、holes、plugged、plug(i)、peek_at(i)、hit_now()、fail_now()。
 
 const FLAG := "tunnel_rat_king_down"
-const SHEET := "res://assets/generated/rat_king.png"
+const WALK := "res://assets/generated/rat_king_walk.png"   # 4×4 走路图
+const ACT := "res://assets/generated/rat_king_act.png"     # 动作条：0 洞里探头 / 1 晕 / 2 扫胡子
 const MEET_R := 100.0
 const DIVE_TIME := 1.2
 const PEEK_TIME := 2.6
@@ -36,19 +37,17 @@ var _swipe := 0.0
 var _whisk := 0.0
 var _was_attacking := false
 var _stagger := 0.0
-var _spr: Sprite2D
+var _look: WalkActLook
+var _moved := Vector2.ZERO
 var _hole_views: Array = []
 
 
 func _ready() -> void:
 	z_index = 2
-	if ResourceLoader.exists(SHEET):
-		_spr = Sprite2D.new()
-		_spr.texture = load(SHEET)
-		_spr.hframes = 4
-		_spr.offset = Vector2(0, -18)
-		_spr.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
-		add_child(_spr)
+	_look = WalkActLook.new()
+	_look.walk_tex = WALK
+	_look.act_tex = ACT
+	add_child(_look)
 	if GameState.has_flag(FLAG):
 		phase = "down"
 	_refresh()
@@ -91,6 +90,9 @@ func step(p: PlayableCharacter, delta: float) -> void:
 		return
 	if phase == "idle":
 		if p.global_position.distance_to(home) <= MEET_R:
+			if not GameState.has_flag(INTRO_FLAG):
+				_intro()
+				return
 			phase = "under"
 			_t = DIVE_TIME
 			_say(p, "king_meet")
@@ -125,7 +127,9 @@ func step(p: PlayableCharacter, delta: float) -> void:
 		"out":
 			_stagger = maxf(0.0, _stagger - delta)
 			if _stagger <= 0.0:
+				var before := position
 				position = position.move_toward(p.global_position, SPEED * delta)
+				_moved = position - before
 			_swipe -= delta
 			if _swipe <= 0.0 and p.global_position.distance_to(position) <= SWIPE_R:
 				_swipe = SWIPE_EVERY
@@ -136,6 +140,25 @@ func step(p: PlayableCharacter, delta: float) -> void:
 				_say(p, "king_swipe", 2.5)
 			if swing and p.global_position.distance_to(position) <= HIT_R:
 				hit_now()
+	_refresh()
+
+
+## 第一次走进洞底：开场过场（笑脸徽记的来历），演完再开打
+const INTRO_FLAG := "tunnel_king_intro"
+
+
+func _intro() -> void:
+	GameState.set_flag(INTRO_FLAG)
+	phase = "out_intro"
+	position = home
+	visible = true
+	if _look:
+		_look.idle()
+	await Cutscene.play("tunnel_king_in")
+	while Cutscene.is_playing():
+		await get_tree().process_frame
+	phase = "under"
+	_t = DIVE_TIME
 	_refresh()
 
 
@@ -249,23 +272,32 @@ func _say(p: Node, key: String, cool := 0.0) -> void:
 
 
 func _refresh() -> void:
-	visible = phase in ["peek", "out", "down"]
-	if _spr:
+	visible = phase in ["peek", "out", "down", "out_intro"]
+	if _look and _look.ready_ok():
 		match phase:
 			"peek":
-				_spr.frame = 0
-				_spr.offset = Vector2(0, -10 - absf(sin(_anim * 6.0)) * 2.0)
+				_look.act(0)
+				_look.bob(-absf(sin(_anim * 6.0)) * 2.0)
 			"out":
-				_spr.frame = 3 if _swipe > SWIPE_EVERY - 0.4 else (2 if _stagger > 0.0 else 1)
-				_spr.offset = Vector2(0, -18)
+				_look.bob(0.0)
+				if _swipe > SWIPE_EVERY - 0.4:
+					_look.act(2)
+				elif _stagger > 0.0:
+					_look.act(1)
+				elif _moved.length() > 0.01:
+					_look.walk(_moved, get_process_delta_time())
+				else:
+					_look.idle()
 			"down":
-				_spr.frame = 2
-				_spr.offset = Vector2(0, -18)
+				_look.bob(0.0)
+				_look.act(1)
+			_:
+				_look.idle()
 	queue_redraw()
 
 
 func _draw() -> void:
-	if _spr:
+	if _look and _look.ready_ok():
 		return
 	var c := Color(0.6, 0.58, 0.62)
 	draw_circle(Vector2(0, -10), 10.0 if phase != "peek" else 6.0, c)

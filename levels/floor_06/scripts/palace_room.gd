@@ -108,6 +108,10 @@ static func lost_found() -> int:
 	return LOST_NAMES.keys().filter(func(k): return GameState.has_flag(lost_flag(k))).size()
 
 
+## 和隧道的小鬼说过「失物招领」以后，五张图里的失物才出现（ASKED_FLAG）
+const LOST_ASKED := "palace_lost_asked"
+
+
 func _add_lost() -> void:
 	if not LOST_ITEMS.has(map_id()) or cells("lost").is_empty():
 		return
@@ -122,17 +126,67 @@ func _add_lost() -> void:
 	v.hide_flag = lost_flag(key)
 	v.position = world(cells("lost")[0])
 	add_view(v)
+	gate(sp, [LOST_ASKED])
+	v.need = [LOST_ASKED]
+
+
+# ------------------------------------------------------------------ 按进度出现
+## node 只有在 need 里的剧情标记都有了才显示、才能交互（每帧对一次，标记一有就出现）
+func gate(node: Node, need: Array) -> Gate:
+	var g := Gate.new()
+	g.target = node
+	g.need = need
+	add_child(g)
+	g.apply()
+	return g
+
+
+class Gate extends Node:
+	var target: Node
+	var need: Array = []
+	var _last := -1
+
+	func open() -> bool:
+		return need.all(func(f): return GameState.has_flag(str(f)))
+
+	func apply() -> void:
+		if not is_instance_valid(target):
+			return
+		var on := open()
+		if int(on) == _last:
+			return
+		_last = int(on)
+		if target is CanvasItem:
+			(target as CanvasItem).visible = on
+		for c in target.find_children("*", "Interactable", true, false):
+			(c as Interactable).enabled = on
+		if target is Interactable:
+			(target as Interactable).enabled = on
+
+	func _process(_d: float) -> void:
+		apply()
 
 
 ## palace_events2.png 的一帧（0 海绵 / 1 点心托盘 / 2 羽毛笔 / 3 小铃铛 / 4 袜子 / 5 奶酪 / 6 钟发条 / 7 夹着衣架书签的书）；hide_flag 有了就不画
 class Events2View extends Node2D:
 	var frame := 0
 	var hide_flag := ""
+	## 这些剧情标记都有了才显示（按进度出现）
+	var need: Array = []
 	var scale_k := 0.6
+	## 不用 palace_events2 的帧、直接用一张小图（物品图标之类）
+	var tex := ""
 	var _s: Sprite2D
 
 	func _ready() -> void:
-		if ResourceLoader.exists(PalaceRoom.EVENTS2):
+		if tex != "" and ResourceLoader.exists(tex):
+			_s = Sprite2D.new()
+			_s.texture = load(tex)
+			_s.offset = Vector2(0, -10)
+			_s.scale = Vector2.ONE * scale_k
+			_s.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+			add_child(_s)
+		elif ResourceLoader.exists(PalaceRoom.EVENTS2):
 			_s = Sprite2D.new()
 			_s.texture = load(PalaceRoom.EVENTS2)
 			_s.hframes = 8
@@ -143,7 +197,7 @@ class Events2View extends Node2D:
 			add_child(_s)
 
 	func _process(_d: float) -> void:
-		visible = hide_flag == "" or not GameState.has_flag(hide_flag)
+		visible = (hide_flag == "" or not GameState.has_flag(hide_flag)) and need.all(func(f): return GameState.has_flag(str(f)))
 		if _s:
 			_s.position.y = sin(Time.get_ticks_msec() / 300.0) * 1.5
 		else:
@@ -152,6 +206,53 @@ class Events2View extends Node2D:
 	func _draw() -> void:
 		if _s == null:
 			draw_circle(Vector2(0, -6), 4.0, Color(1.0, 0.85, 0.5))
+
+
+# ------------------------------------------------------------------ 事件点的图（补素材）
+const PROPS3 := "res://assets/generated/palace_props3.png"   # 0 骑士石像 / 1 粉摇篮 / 2 蓝摇篮 / 3 旋转吊铃 / 4 水槽 / 5 糕点台
+const CHEF := "res://assets/generated/npcs/pastry_chef.png"   # 糕点师人偶：0 1 站着晃 / 2 端蛋糕 / 3 举打蛋器
+
+
+## 一张图集里的一帧（或几帧循环）；anim 为空就是静止的
+class SheetView extends Node2D:
+	var tex := ""
+	var hframes := 1
+	var frame := 0
+	var anim: Array = []
+	var fps := 3.0
+	var lift := 0.0
+	var scale_k := 1.0
+	var _s: Sprite2D
+	var _t := 0.0
+
+	func _ready() -> void:
+		if not ResourceLoader.exists(tex):
+			return
+		_s = Sprite2D.new()
+		_s.texture = load(tex)
+		_s.hframes = hframes
+		_s.frame = frame
+		_s.scale = Vector2.ONE * scale_k
+		_s.offset = Vector2(0, -float(_s.texture.get_height()) * 0.5 + 2.0 - lift)
+		_s.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+		add_child(_s)
+
+	func _process(d: float) -> void:
+		if _s and not anim.is_empty():
+			_t += d
+			_s.frame = int(anim[int(_t * fps) % anim.size()])
+
+
+func sheet_view(tex: String, hf: int, frame: int, c: Vector2i, anim: Array = [], scale_k := 1.0, nudge := Vector2.ZERO) -> SheetView:
+	var v := SheetView.new()
+	v.tex = tex
+	v.hframes = hf
+	v.frame = frame
+	v.anim = anim
+	v.scale_k = scale_k
+	v.position = world(c) + nudge
+	add_view(v)
+	return v
 
 
 # ------------------------------------------------------------------ 送餐潜行（厨房 → 仆人回廊）

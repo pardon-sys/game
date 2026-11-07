@@ -1344,6 +1344,19 @@ data/cutscenes/<楼层组>/  地图内过场；data/theater/<楼层组>/  小剧
 	  四层 clockface（对话 `clock_face`：时针三、分针九 → `clockface_ok()`）。
 	- 王座前厅：`PalaceAnte.ArmorGuard`（巡逻 / 扇形视野 / 抓人挠腋下 / 背后 E 推倒）、笑声地砖（`step_tile`、`TILE_SEQ`，三片乐谱齐了才算）→ `VAULT_FLAG` → `vault_loot()`；
 	  石像问答（`ante_statue`，`statue_ok()` 给八音盒）、许愿喷泉（`wish(kind)`）、徽记台（`place_badges()` → 发饰 + `palace_badge_party` CG）。
+  - 第三轮修正：
+	- `Actor.move_with_push()`：不在物理空间里（换关 / 过场的那一帧）就不动，避免 `body->get_space()` 为 null；
+	  所有「先 cast 再判 is_instance_valid」改成先判再 cast（王座间颜料池、隧道蛛网、latch / 松鼠怪的 target）。
+	- 钟楼四层：站到上钟顶的楼梯口也算甩掉（`chase_done`），以后不再追；`LevelExit` 解锁时人还站在上面就直接走（`_locked_inside`）。
+	- 交互提示 `InteractHint` 改成半透明的交互键图（`items.png` 第 7 帧，和 E 提示同一张）。
+	- 书房黑幕 `StudyShade`：z_index 0、放在格子底边，和墙块一起按屏幕 y 排序（前面的书架画在黑幕前面），高度和墙一样。
+	- 按进度出现：`PalaceRoom.gate(node, need)`（`Gate`：标记齐了才显示、才能交互）、`Events2View.need`；
+	  失物要先和隧道的小鬼说过（`LOST_ASKED`），浴场乐谱片③要搓澡人偶倒下（拾取点 `bath_sheet`，和镜子分开）。
+	- 事件点补图：`PalaceRoom.SheetView` / `sheet_view()`（`palace_props3.png`：骑士石像、摇篮、吊铃、水槽、糕点台；`npcs/pastry_chef.png`）+ 生成器里的 town_props（告示板、茶桌、镜子、摊位、箱子……）。
+	- 钟顶：去掉钟下面的实心墙，钟（带木头钟架）立在空地上（`BellBeam`）。
+	- 胖鼠王 / 搓澡人偶：`WalkActLook`（4×4 走路图 + 动作条）；胖鼠王开场过场 `tunnel_king_in`（笑脸徽记的来历，`RatKing.INTRO_FLAG`）。
+	- 素材管线 `gen_palace_sprites.py`：洋红底（#FF00FF）抠图、按「东西」切（`object_cells`）、动画条统一缩放（`uniform`）、走路图可设格子大小。
+	- 谜题和答案：`docs/private/旧王宫谜题与答案.md`（`.git/info/exclude`，不进 git）。
   - 追加事件·第二批（`penance_text/palace5.py`）：
 	- 浴场 `ScrubDoll`（`scrub_doll.gd`，标记 scrub；海绵护盾 `sponges` → 掉下的 `Sponge` 滚过来吸脚；招式刷 / 抓（第一次 `bath_scrub_grab` CG）；`hit_by(pc)`），
 	  倒下后镜子 `palace_mirror` 的 sheet 节点给乐谱片③。
