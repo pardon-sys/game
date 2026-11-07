@@ -211,7 +211,44 @@ CAT_AGAIN = theater("又被橘猫追上了", {
     say(P, "……下次一定跑得掉。", emotion="angry"),
 ])
 
-THEATERS = {"tunnel_thigh": THIGH, "tunnel_sole": SOLE, "tunnel_shaft": SHAFT, "tunnel_nest": NEST,
+# ---------------------------------------------------------------- 打倒洞里的老鼠以后：挠脚鼠们的报复
+REVENGE = theater("鼠洞：挠脚鼠们的报复", {
+    "princess": dict(PRINCESS, at=[0, 8], visual="normal"),
+    "rat": _rat((10, 10)),
+    "m1": {"kind": "monster:rat", "at": [-22, 14], "dir": "right"},
+    "m2": {"kind": "monster:rat", "at": [24, 14], "dir": "left"},
+    "m3": {"kind": "monster:rat", "at": [-8, 22], "dir": "up"},
+}, [
+    say(N, "（最后一只老鼠「吱」地一声，晕乎乎地倒在地上转圈圈）", act=1),
+    say(P, "……呼。总算打完了。", emotion="happy"),
+    say(RAT, "（从短裤里探出头，看了看满地晕倒的同伴）……吱。"),
+    say(RAT, "……你把我的亲戚们全打晕了。"),
+    say(P, "是、是它们先扑上来的！", emotion="surprise"),
+    say(RAT, "吱吱。……那我也要扑上来。……大家——！", act=2),
+    say(N, "（墙缝里、树根底下、碎石堆后面，一只、两只、五只……一群挠脚鼠探出了脑袋，眼睛亮晶晶的）"),
+    say(RATS, "吱吱吱！报仇！报仇！"),
+    say(N, "（她刚想跑，鼠爪鞋就被几只小老鼠一起拽掉了。她一屁股坐在软软的泥地上）", [A("shake", who="princess", time=0.4), pose("helpless_1")]),
+    say(P, "等、等一下！我道歉——！", emotion="surprise"),
+    say(N, "（两只钻到脚边，用胡子在光着的脚心上来回地刷；一只爬上腰，小爪子在肋下一下一下地点）",
+        [tk("m1", zone="sole", fx="feather", n=10, iv=0.14), tk("m2", zone="waist", fx="hand", n=8, iv=0.16), pose("giggle")], act=3),
+    cg(say(RAT, "（站在她膝盖上，像个小将军一样指挥）左边那只，脚趾缝！右边那只，脚跟！尾巴那边的，去咬尾巴！")),
+    say(P, "哈哈哈！你、你还指挥——！你到底是哪边的——！", [pose("helpless_1")], emotion="helpless_1"),
+    say(RAT, "吱。我是老鼠这边的。"),
+    say(N, "（胡子刷脚心、小爪子挠脚趾缝、尾巴被拽一下松一下，脖子上还有一根不知道从哪里叼来的羽毛在晃）",
+        [tk("m1", zone="sole", fx="lines", n=14, iv=0.1), tk("m3", zone="sole", fx="feather", n=12, iv=0.11), tk("m2", zone="neck", fx="feather", n=8, iv=0.14), pose("helpless_2")]),
+    say(P, "哈哈哈哈！不、不行了——全部一起不行——！", emotion="helpless_2"),
+    burst("（星光一下子在洞里炸开，小老鼠们被吹得滚成了一个个小毛球……哈啊……放出去了……）"),
+    say(N, "（小毛球们晃晃脑袋爬起来，又不甘心地凑了回来——在她刚释放完、敏感得发烫的脚心上，一只一只排着队，各蹭了一下）",
+        [tk("m1", zone="sole", fx="hand", n=4, iv=0.2), tk("m3", zone="sole", fx="feather", n=4, iv=0.2), A("shake", who="princess", time=0.3), pose("helpless_1")], act=4),
+    say(P, "呀……！……哈……哈……排、排队蹭是什么意思……", emotion="helpless_1"),
+    say(RATS, "吱吱！报完仇了！回家！"),
+    say(N, "（一群挠脚鼠呼啦啦地钻回了墙缝。只有短裤里的那只，心满意足地缩了回去）"),
+    say(RAT, "……吱。下次打架之前，先问问我。"),
+    say(P, "……知、知道了……", emotion="sad"),
+    say(N, "（她把鼠爪鞋捡回来穿上，扶着墙站了起来）", [pose("normal")]),
+])
+
+THEATERS = {"tunnel_revenge": REVENGE, "tunnel_thigh": THIGH, "tunnel_sole": SOLE, "tunnel_shaft": SHAFT, "tunnel_nest": NEST,
             "tunnel_cat_first": CAT_FIRST, "tunnel_cat": CAT_AGAIN}
 
 DIALOGUES = {

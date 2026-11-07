@@ -394,6 +394,41 @@
 			"music": "old_palace"
 		},
 		{
+			"id": "floor_06_palace_clock_1",
+			"name": "旧王宫·钟楼一层",
+			"scene": "res://levels/floor_06_palace_clock_1/floor.tscn",
+			"group": "floor_06",
+			"music": "old_palace"
+		},
+		{
+			"id": "floor_06_palace_clock_2",
+			"name": "旧王宫·钟楼二层",
+			"scene": "res://levels/floor_06_palace_clock_2/floor.tscn",
+			"group": "floor_06",
+			"music": "old_palace"
+		},
+		{
+			"id": "floor_06_palace_clock_3",
+			"name": "旧王宫·钟楼三层",
+			"scene": "res://levels/floor_06_palace_clock_3/floor.tscn",
+			"group": "floor_06",
+			"music": "old_palace"
+		},
+		{
+			"id": "floor_06_palace_clock_4",
+			"name": "旧王宫·钟楼四层",
+			"scene": "res://levels/floor_06_palace_clock_4/floor.tscn",
+			"group": "floor_06",
+			"music": "old_palace"
+		},
+		{
+			"id": "floor_06_palace_clock_5",
+			"name": "旧王宫·钟楼钟顶",
+			"scene": "res://levels/floor_06_palace_clock_5/floor.tscn",
+			"group": "floor_06",
+			"music": "old_palace"
+		},
+		{
 			"id": "floor_06_palace_clock",
 			"name": "旧王宫·钟楼",
 			"scene": "res://levels/floor_06_palace_clock/floor.tscn",

@@ -6,7 +6,7 @@ extends PalaceRoom
 ##   尘土堆（dust）：走过去打喷嚏（声音引来人偶，StealthDirector.noise）；会动的扫帚（brooms）：在房间里来回扫，碰到就扫脚底（也有声音）；
 ##   F：丢出去的是挠脚鼠（StealthDirector.throw_stone，穿着鼠鼠装时）；旧排班表 / 日记（clues，线索）；
 ##   女仆长人偶（head_maid，站岗的 guard_patrol）守着钥匙：拉唤人铃（bell，对话 call palace_bell）她会过去查看，趁机拿钥匙（key，call palace_key → KEY_FLAG）；
-##   出口 east 要钥匙。
+##   出口 east 要钥匙。唤人铃、钥匙都画出来（MiscView：palace_misc.png 的「墙上的唤人铃 / 挂在钩子上的钥匙」），女仆长头顶挂着名牌「女仆长」、用自己的图集 head_maid.png。
 ## 测试：caught_count、hide_done、dust_t、brooms、ring_bell()、take_key()。
 
 const MAP := "floor_06_palace_servants"
@@ -46,6 +46,37 @@ func _ready() -> void:
 		_spot("floor_06/palace_schedule_%d" % ci, c)
 	_spot("floor_06/palace_bell", cells("bell")[0])
 	_spot("floor_06/palace_key", cells("key")[0])
+	var bv := MiscView.new()
+	bv.frame = 0
+	bv.position = world(cells("bell")[0])
+	add_view(bv)
+	var kv := MiscView.new()
+	kv.frame = 1
+	kv.hide_flag = KEY_FLAG
+	kv.position = world(cells("key")[0])
+	add_view(kv)
+	_tag_head_maid.call_deferred()
+
+
+## 女仆长：离她站岗那格最近的巡逻人偶，头顶挂名牌
+func _tag_head_maid() -> void:
+	await get_tree().process_frame
+	var at := world(cells("head_maid")[0])
+	var best: Node2D = null
+	for g in get_tree().get_nodes_in_group("patrol_guard"):
+		if best == null or (g as Node2D).global_position.distance_to(at) < best.global_position.distance_to(at):
+			best = g
+	if best == null:
+		return
+	var tag := Label.new()
+	tag.text = "女仆长"
+	tag.add_theme_font_size_override("font_size", 8)
+	tag.add_theme_color_override("font_color", Color(0.95, 0.75, 1.0))
+	tag.add_theme_color_override("font_outline_color", Color(0.2, 0.1, 0.25))
+	tag.add_theme_constant_override("outline_size", 3)
+	tag.position = Vector2(-14, -48)
+	best.add_child(tag)
+	best.scale = Vector2(1.15, 1.15)
 
 
 func _spot(dialogue: String, c: Vector2i) -> void:
@@ -125,6 +156,43 @@ func caught() -> void:
 	if StealthDirector.current:
 		StealthDirector.current.reset()
 	_defeat_busy = false
+
+
+## 墙上的唤人铃 / 挂在钩子上的钥匙（palace_misc.png 3 帧：铃 / 钥匙 / 小牌子；没有图就画简笔）；hide_flag 有了就不画（钥匙拿走了）
+class MiscView extends Node2D:
+	const TEX := "res://assets/generated/palace_misc.png"
+	var frame := 0
+	var hide_flag := ""
+	var _spr: Sprite2D
+	var _t := 0.0
+
+	func _ready() -> void:
+		if ResourceLoader.exists(TEX):
+			_spr = Sprite2D.new()
+			_spr.texture = load(TEX)
+			_spr.hframes = 3
+			_spr.frame = frame
+			_spr.offset = Vector2(0, -18)
+			add_child(_spr)
+
+	func _process(d: float) -> void:
+		_t += d
+		visible = hide_flag == "" or not GameState.has_flag(hide_flag)
+		if _spr:
+			_spr.modulate = Color(1, 1, 1).lerp(Color(1.4, 1.3, 0.9), 0.5 + sin(_t * 3.0) * 0.5)
+		queue_redraw()
+
+	func _draw() -> void:
+		if _spr:
+			return
+		if frame == 0:
+			draw_line(Vector2(0, -30), Vector2(0, -12), Color(0.75, 0.2, 0.2), 1.5)
+			draw_circle(Vector2(0, -32), 4.0, Color(0.9, 0.75, 0.3))
+			draw_circle(Vector2(0, -11), 2.0, Color(0.9, 0.3, 0.3))
+		else:
+			draw_circle(Vector2(-3, -14), 3.0, Color(0.95, 0.8, 0.3))
+			draw_line(Vector2(0, -14), Vector2(7, -14), Color(0.95, 0.8, 0.3), 2.0)
+			draw_line(Vector2(5, -14), Vector2(5, -11), Color(0.95, 0.8, 0.3), 1.5)
 
 
 ## 会动的扫帚：在房间里来回扫，碰到就扫脚底（还会发出声音）

@@ -297,6 +297,11 @@
 			"placeholder": "helpless_2",
 			"wide": true
 		},
+		"tunnel_revenge": {
+			"file": "res://assets/cg/portraits/tunnel_revenge.png",
+			"placeholder": "helpless_2",
+			"wide": true
+		},
 		"gear_ride": {
 			"file": "res://assets/cg/portraits/gear_ride.png",
 			"placeholder": "helpless_2",

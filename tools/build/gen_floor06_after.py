@@ -71,7 +71,10 @@ PBATH, PSERV, PKITCH = "floor_06_palace_bath", "floor_06_palace_servants", "floo
 # 第四章（中）：图书馆 / 衣帽间 / 骑士训练场
 PLIB, PWARD, PTRAIN = "floor_06_palace_library", "floor_06_palace_wardrobe", "floor_06_palace_training"
 # 第四章（下）：王座前厅 / 钟楼 / 隧道与密室 / 王座间
-PANTE, PCLOCK, PTUN, PTHRONE = "floor_06_palace_ante", "floor_06_palace_clock", "floor_06_palace_tunnels", "floor_06_palace_throne"
+PANTE, PTUN, PTHRONE = "floor_06_palace_ante", "floor_06_palace_tunnels", "floor_06_palace_throne"
+# 钟楼拆成五层（一层一张图，楼梯 / 梯子连起来）
+PCLOCKS = ["floor_06_palace_clock_%d" % i for i in range(1, 6)]
+PCLOCK = PCLOCKS[0]
 # 各房间通往隧道的密道口（挂着一幅画；从隧道那一边走到过才打开）：房间 → (出口格, 回来的出生点格, 隧道里的出生点 id)
 SECRET = {PBATH: ((46, 27), (44, 27), "bath"), PLIB: ((4, 13), (6, 13), "library"), PWARD: ((70, 26), (68, 26), "wardrobe"),
           PTRAIN: ((6, 18), (8, 18), "training")}
@@ -790,6 +793,12 @@ ww.put(4, 4, "blue_princess follow=true ai=false")
 ww.put(2, 3, "waterwaydir")
 for (x, y), foe in zip(wm["foes"], ["monster type=bubble_fish", "monster type=crab"]):
     ww.put(x, y, foe)
+# 多放一些水边的怪（不放进守门人的场地）
+_wg = qmaps.grid(WATERWAY)
+for (x, y, kind) in ((20, 5, "frog"), (36, 4, "crab"), (42, 6, "slime"), (62, 10, "bubble_fish"), (54, 12, "frog"), (69, 13, "crab"),
+                     (74, 7, "barnacle")):
+    if _wg[y][x] in ".S":
+        ww.put(x, y, "monster type=" + kind)
 ww.write()
 
 # ---------------------------------------------------------------- 第四章（上）：旧王宫（三张连在一起，来回都能走）
@@ -925,7 +934,8 @@ MAID = " sheet=" + MAID_SHEET + " doll=true view_range=70 view_angle=60 speed=28
 for path, extra in (("8,17;30,17", ""), ("32,16;56,16", " wait=1.4"), ("58,18;72,18", ""), ("13,7;13,11", " wait=1.6"), ("31,23;31,27", " wait=1.6")):
     ps.put(*[int(v) for v in path.split(";")[0].split(",")], "guard_patrol path=" + path + extra + MAID)
 hx, hy = psm["head_maid"][0]
-ps.put(hx, hy, ("guard_patrol path=%d,%d;%d,%d wait=3.0 sheet=" % (hx, hy, hx + 1, hy)) + MAID_SHEET + " doll=true view_range=96 view_angle=80 speed=24 investigate_speed=40 check_chance=0.4")
+HEAD_SHEET = "res://assets/generated/npcs/head_maid.png" if os.path.exists("assets/generated/npcs/head_maid.png") else MAID_SHEET
+ps.put(hx, hy, ("guard_patrol path=%d,%d;%d,%d wait=3.0 sheet=" % (hx, hy, hx + 1, hy)) + HEAD_SHEET + " doll=true view_range=96 view_angle=80 speed=24 investigate_speed=40 check_chance=0.4")
 for (x, y) in ((8, 15), (30, 15), (54, 19), (66, 9)):
     prop(ps, x, y, "lamp")
 _dress(ps, PSERV, tuple((x0 + 1, 7, "old_bed") for x0 in (10, 22, 34, 46)) + tuple((x0 + 6, 7, "old_dresser") for x0 in (10, 22, 34, 46))
@@ -1010,21 +1020,35 @@ for (x, y, kind) in ((28, 3, "banner"), (32, 3, "banner"), (17, 20, "plant"), (4
 prop(pa, 53, 19, "painting")
 pa.write()
 
-pcl, pclm = qmaps.build(Map, PCLOCK, "intro =\nintro_cutscene = palace_clock_in\n" + PAL_HEAD.replace("0.6,0.55,0.62", "0.5,0.48,0.52"), prop)
-QMARKS[PCLOCK] = pclm
-pcl.put(*pclm["start"][0], "player")
-pcl.put(*pclm["start"][0], "spawn id=from_ante")
-pcl.put(28, 116, "blue_princess follow=true ai=false")
-pcl.put(26, 114, "palaceclock")
-pcl.put(*pclm["south"][0], "exit target=%s spawn=from_clock" % PANTE)
-for (x, y) in ((12, 112), (40, 112), (8, 84), (44, 74), (8, 46), (44, 50), (8, 38), (44, 30), (8, 20), (44, 22), (16, 10), (44, 6)):
-    if qmaps.grid(PCLOCK)[y][x] == ".":
-        prop(pcl, x, y, "lamp")
-for (x, y, kind) in ((14, 110, "crate"), (38, 108, "crate"), (20, 84, "cobweb"), (8, 52, "cobweb"), (30, 56, "feather_pile"),
-                     (12, 36, "crate"), (24, 22, "cobweb"), (18, 6, "cobweb"), (40, 10, "plank_bundle")):
-    if qmaps.grid(PCLOCK)[y][x] == ".":
-        prop(pcl, x, y, kind)
-pcl.write()
+CLOCK_NAMES = ["一层·齿轮间", "二层·钟摆厅", "三层·风箱台", "四层·回廊", "钟顶"]
+for i, fid in enumerate(PCLOCKS):
+    head = "intro =\n" + ("intro_cutscene = palace_clock_in\n" if i == 0 else "") + PAL_HEAD.replace("0.6,0.55,0.62", "0.5,0.48,0.52")
+    cm, cmm = qmaps.build(Map, fid, head, prop)
+    QMARKS[fid] = cmm
+    sx, sy = cmm["start"][0]
+    cm.put(sx, sy, "player")
+    cm.put(sx, sy, "spawn id=" + ("from_ante" if i == 0 else "from_below"))
+    cm.put(sx + 2, sy, "blue_princess follow=true ai=false")
+    cm.put(sx, sy - 1, "palaceclock map=" + fid)
+    zx, zy = cmm["south"][0]
+    below = PANTE if i == 0 else PCLOCKS[i - 1]
+    cm.put(zx, zy, "exit target=%s spawn=%s" % (below, "from_clock" if i == 0 else "from_above"))
+    up = cmm.get("up") or cmm.get("ladder")
+    if up:
+        ux, uy = up[0]
+        lock = ""
+        if i == 2:
+            lock = " unlock_flag=palace_ladder_down locked_dialogue=palace_ladder_up"
+        elif i == 3:
+            lock = " unlock_flag=palace_keeper_done locked_dialogue=palace_keeper_block"
+        cm.put(ux, uy, "exit target=%s spawn=from_below%s" % (PCLOCKS[i + 1], lock))
+        cm.put(ux, uy + 2, "spawn id=from_above")
+    _cg = qmaps.grid(fid)
+    for (x, y, kind) in ((8, 8, "lamp"), (len(_cg[0]) - 8, 8, "lamp"), (8, len(_cg) - 10, "lamp"), (len(_cg[0]) - 8, len(_cg) - 10, "lamp"),
+                         (10, 10, "cobweb"), (len(_cg[0]) - 10, 12, "crate"), (12, len(_cg) - 12, "plank_bundle")):
+        if 0 < y < len(_cg) and 0 < x < len(_cg[0]) and _cg[y][x] == ".":
+            prop(cm, x, y, kind)
+    cm.write()
 
 pu, pum = qmaps.build(Map, PTUN, "intro =\n" + PAL_HEAD.replace("0.6,0.55,0.62", "0.36,0.34,0.42"), prop)
 QMARKS[PTUN] = pum
@@ -1423,7 +1447,7 @@ AFTER_CG_FAIL = {"after_fail_equip": "after_equip_fail", "after_fail_potion": "a
                  # 反省篇第一章：反省牢房·功能拘束挠痒床（PENANCE_CG，import_cg.py --penance）
                  "penance_bed": "penance_bed",
                  # 反省篇第二章：鼠洞的竖井（PENANCE_CG）
-                 "tunnel_shaft": "tunnel_shaft",
+                 "tunnel_shaft": "tunnel_shaft", "tunnel_revenge": "tunnel_revenge",
                  # 反省篇第三章：水闸守门人（PENANCE_CG）
                  "keeper_fail": "keeper_fail",
                  # 反省篇第四章（上）：温泉 / 帘子后面（PENANCE_CG）
@@ -1547,11 +1571,12 @@ NEW = [(TOWN, "地下小镇·战后", "town"), (FESTIVAL, "庆功宴的广场", 
        (ALLEY, "没有灯的小巷", "night_room"), (HERBCAVE, "草药洞", "night_room"),
        (WALL, "城墙上", "night_room"), (CRACK, "广场底下的裂缝", "night_room"), (OLDHALL, "旧会堂", "night_room"),
        (WAREHOUSE, "旧仓库", "night_room"), (STORAGE, "储物间", "night_room"), (BRIDGE, "排水渠上的小桥", "night_room"),
-       (PTENT, "保卫队营地·医务帐篷", "night_room"), (PCELL, "反省牢房", "night_room"),
-       (RTUNNEL, "鼠洞", "night_room"), (WEXIT, "废弃水道的出口", "night_room"), (WATERWAY, "废弃水道", "night_maze"),
+       (PTENT, "保卫队营地·医务帐篷", "night_room"), (PCELL, "反省牢房", "dungeon"),
+       (RTUNNEL, "鼠洞", "dungeon"), (WEXIT, "废弃水道的出口", "dungeon"), (WATERWAY, "废弃水道", "dungeon"),
        (PBATH, "旧王宫·旧浴场", "old_palace"), (PSERV, "旧王宫·仆人回廊", "old_palace"), (PKITCH, "旧王宫·厨房", "old_palace"),
        (PLIB, "旧王宫·图书馆", "old_palace"), (PWARD, "旧王宫·衣帽间", "old_palace"), (PTRAIN, "旧王宫·骑士训练场", "old_palace"),
-       (PANTE, "旧王宫·王座前厅", "old_palace"), (PCLOCK, "旧王宫·钟楼", "old_palace"), (PTUN, "旧王宫·隧道与密室", "old_palace"),
+       (PANTE, "旧王宫·王座前厅", "old_palace"),
+       *[(f, "旧王宫·钟楼" + n, "old_palace") for f, n in zip(PCLOCKS, ["一层", "二层", "三层", "四层", "钟顶"])], (PTUN, "旧王宫·隧道与密室", "old_palace"),
        (PTHRONE, "旧王宫·王座间", "palace_boss")]
 at = next(i for i, f in enumerate(lst) if f["id"] == "floor_06_siege") + 1
 for fid, name, music in NEW:

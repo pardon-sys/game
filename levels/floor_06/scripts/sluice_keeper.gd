@@ -13,8 +13,8 @@ extends Node2D
 const DONE_FLAG := "waterway_keeper_done"
 const MAP := "floor_06_waterway"
 const VALVE_R := 14.0
-const VALVE_TIME := 3.0
-const ATTACK_EVERY := 4.0
+const VALVE_TIME := 5.0      # 关一个阀门要站这么久（两个人一起快一倍）
+const ATTACK_EVERY := 2.6    # 守门人出招的间隔
 const SWEEP_WARN := 1.2
 const SWEEP_HALF := 10.0
 const FLOOD_TIME := 5.0

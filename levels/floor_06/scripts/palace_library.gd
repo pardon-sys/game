@@ -26,6 +26,9 @@ var quills: Array = []
 var _hand_t := {}
 var _door: StaticBody2D
 var _door_view: Node2D
+var shades: Array = []
+## 私人书房的范围（密码门打开之前整间黑着、看不见里面）
+const STUDY_RECT := Rect2i(38, 2, 11, 4)
 
 
 func map_id() -> String:
@@ -46,6 +49,13 @@ func _ready() -> void:
 		_door_view = CipherDoor.new()
 		_door_view.position = world(cells("cipher_door")[0])
 		add_view(_door_view)
+		for y in range(STUDY_RECT.position.y, STUDY_RECT.end.y):
+			for x in range(STUDY_RECT.position.x, STUDY_RECT.end.x):
+				var sd := StudyShade.new()
+				sd.position = PalaceRoom.cell_pos(Vector2i(x, y))
+				sd.z_index = 20
+				add_view(sd)
+				shades.append(sd)
 	for c in cells("shelf_hands"):
 		var h := HandMark.new()
 		h.position = world(c)
@@ -164,6 +174,9 @@ func open_cipher() -> void:
 		_door.queue_free()
 	if is_instance_valid(_door_view):
 		_door_view.queue_free()
+	for sd in shades:
+		if is_instance_valid(sd):
+			(sd as StudyShade).fade = true
 	Audio.play("unlock", -2.0)
 
 
@@ -197,6 +210,27 @@ class LibHooks extends BattleAIHooks:
 			if is_instance_valid(q) and (q as Quill).alive() and is_instance_valid(p) and (q as Node2D).position.distance_to(p.global_position) < 70.0:
 				return q
 		return null
+
+
+## 私人书房的遮罩：一格一根黑色的「柱子」（地面菱形 + 往上的高度，把书房里的家具也盖住）；门打开就慢慢淡掉
+class StudyShade extends Node2D:
+	var fade := false
+	var a := 1.0
+
+	func _process(d: float) -> void:
+		if fade:
+			a -= d * 1.2
+			if a <= 0.0:
+				queue_free()
+				return
+			queue_redraw()
+
+	func _draw() -> void:
+		var top := Vector2(0, -56)
+		var p := [IsoView.offset(Vector2(-8, -8)), IsoView.offset(Vector2(8, -8)), IsoView.offset(Vector2(8, 8)), IsoView.offset(Vector2(-8, 8))]
+		var col := Color(0.03, 0.02, 0.05, 0.97 * a)
+		draw_colored_polygon(PackedVector2Array([p[0] + top, p[1] + top, p[1], p[2], p[3], p[3] + top]), col)
+		draw_colored_polygon(PackedVector2Array([p[0] + top, p[1] + top, p[2] + top, p[3] + top]), col)
 
 
 ## 密码门：嵌着四个铜轮的厚木门（开了就消失）
