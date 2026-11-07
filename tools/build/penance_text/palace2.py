@@ -465,7 +465,15 @@ DIALOGUES = {
         "go": {"lines": [L("（「铛——」）", N)], "set": {"call": "palace_bell_fight"}},
         "no": {"lines": [L("……先准备一下。", P)]},
         "done": {"lines": [L("（铜钟静静地挂着。考验已经过了）", N)]},
-    }, entries=[{"if": {"flag": "palace_training_cleared"}, "node": "done"}, {"node": "default"}]),
+        # 追加事件·人偶舞会：听过婴儿房的摇篮曲以后，可以用铜钟敲一段
+        "lullaby": {"lines": [L("（铜钟静静地挂着。……刚才那首摇篮曲，好像能用它敲出来）", N)], "prompt": "敲一段摇篮曲？",
+                    "choices": [{"text": "敲", "next": "lull_go"}, {"text": "不了", "next": "no"}]},
+        "lull_go": {"lines": [L("（「铛——铛、铛——」……钟声慢慢地荡开，一直荡到王座前厅的方向）", N),
+                              L("……前厅那边，好像有什么在跟着唱。", BLUE)], "set": {"flags": ["palace_ball_bell"]}},
+        "lull_done": {"lines": [L("（铜钟的余音还在梁上绕着）", N)]},
+    }, entries=[{"if": {"flag": "palace_ball_bell"}, "node": "lull_done"},
+                {"if": {"flag": ["palace_training_cleared", "palace_lullaby_heard"]}, "node": "lullaby"},
+                {"if": {"flag": "palace_training_cleared"}, "node": "done"}, {"node": "default"}]),
     "training_stocks": _spot("耐痒训练台", "（「骑士耐痒训练——坚持一刻钟不笑出声者，可称骑士」）", "坐上去试试？", "……试试看。", "training_stocks",
                              "（训练台空着。牌子底下那行小字还亮着：「笑着坚持到最后的人，也是骑士」）", {"passive": "knight_endurance"}),
     "training_chest": dfile("", "旧箱子", {

@@ -124,6 +124,7 @@ func _block(c: Vector2i) -> StaticBody2D:
 func _process(delta: float) -> void:
 	if busy():
 		return
+	tick_patrols(delta)
 	# 私人书房
 	if GameState.has_flag(CIPHER_FLAG) and not GameState.has_flag(STUDY_FLAG):
 		for m in members():

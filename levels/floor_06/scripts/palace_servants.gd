@@ -62,6 +62,17 @@ func _ready() -> void:
 		cake.need = ["palace_sheet_2"]
 		cake.position = world(cells("deliver")[0] + Vector2i(0, -1))   # 摆在茶桌（deliver 北边一格）上
 		add_view(cake)
+	# 追加事件·女仆长的发条钥匙：她背后的发条孔、休息室（门上锁，女仆长友好以后开）、按摩椅
+	if not cells("wind_maid").is_empty():
+		_spot("floor_06/servants_wind_maid", cells("wind_maid")[0])
+		_spot("floor_06/servants_lounge_chair", cells("lounge_chair")[0])
+		sheet_view(PalaceRoom.PROPS4, 6, 0, cells("lounge_chair")[0], [], 1.0)
+		if not GameState.has_flag(PalaceRoom.FRIEND_FLAG):
+			var dc := cells("lounge_door")[0]
+			_lounge_door = _block_cells([dc + Vector2i(-1, 0), dc])
+			_lounge_view = PalaceLibrary.CipherDoor.new()
+			_lounge_view.position = world(dc) + Vector2(-8, 0)
+			add_view(_lounge_view)
 	_tag_head_maid.call_deferred()
 
 
@@ -84,6 +95,44 @@ func _tag_head_maid() -> void:
 	tag.position = Vector2(-14, -48)
 	best.add_child(tag)
 	best.scale = Vector2(1.15, 1.15)
+
+
+var _lounge_door: StaticBody2D
+var _lounge_view: Node2D
+
+
+func _block_cells(cs: Array) -> StaticBody2D:
+	var body := StaticBody2D.new()
+	body.collision_layer = 1
+	body.collision_mask = 0
+	for c in cs:
+		var sh := CollisionShape2D.new()
+		var r := RectangleShape2D.new()
+		r.size = Vector2(16, 16)
+		sh.shape = r
+		sh.position = PalaceRoom.cell_pos(c)
+		body.add_child(sh)
+	add_child(body)
+	body.global_position = Vector2.ZERO
+	return body
+
+
+## 给女仆长上发条（要钟楼一层宝箱里的「女仆长的发条钥匙」）：她变友好，回廊不再抓人，巡夜队撤掉，休息室开门
+func wind_maid() -> bool:
+	if GameState.has_flag(PalaceRoom.FRIEND_FLAG):
+		return true
+	if not GameState.inventory.has("maid_key"):
+		GameState.notify("女仆长背后有一个小小的发条孔……要一把对得上的发条钥匙")
+		return false
+	GameState.inventory.remove("maid_key", 1)
+	GameState.set_flag(PalaceRoom.FRIEND_FLAG)
+	Audio.play("unlock", -2.0)
+	if is_instance_valid(_lounge_door):
+		_lounge_door.queue_free()
+	if is_instance_valid(_lounge_view):
+		_lounge_view.queue_free()
+	GameState.notify("女仆长的发条转起来了——她向你们行了个礼。休息室的门开了")
+	return true
 
 
 func _spot(dialogue: String, c: Vector2i) -> void:
@@ -163,10 +212,11 @@ static func on_caught_static() -> void:
 
 
 func caught() -> void:
-	if _defeat_busy:
+	if _defeat_busy or GameState.has_flag(PalaceRoom.FRIEND_FLAG):   # 女仆长友好以后：人偶们不再抓人
 		return
 	_defeat_busy = true
 	caught_count += 1
+	GameState.set_flag(PalaceRoom.PATROL_FLAG)   # 被抓过一次：厨房 / 浴场 / 图书馆多了巡夜人偶
 	var id := "servants_caught_first" if not GameState.has_flag("cg_seen_theater:servants_caught_first") else "servants_caught"
 	# 追加事件：端着点心被发现 → 试吃惩罚（CG），点心没了，要回厨房重拿
 	if PalaceRoom.carrying_tray():

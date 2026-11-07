@@ -1,0 +1,64 @@
+{
+	"name": "人偶按摩椅",
+	"entries": [
+		{
+			"if": {
+				"flag": "cg_seen_theater:servants_massage"
+			},
+			"node": "again"
+		},
+		{
+			"node": "default"
+		}
+	],
+	"nodes": {
+		"default": {
+			"lines": [
+				{
+					"text": "（休息室里并排放着两张紫色天鹅绒的按摩椅，扶手上折着两只戴白手套的小机械手）",
+					"speaker": ""
+				},
+				{
+					"text": "……这是，陛下和小殿下们，「按摩日」坐的椅子。",
+					"speaker": "女仆长"
+				}
+			],
+			"prompt": "坐上去试试？",
+			"choices": [
+				{
+					"text": "……试试",
+					"next": "go"
+				},
+				{
+					"text": "不了",
+					"next": "no"
+				}
+			]
+		},
+		"go": {
+			"lines": [
+				{
+					"text": "……就坐一下。",
+					"speaker": "公主"
+				}
+			],
+			"theater": "servants_massage"
+		},
+		"no": {
+			"lines": [
+				{
+					"text": "……看起来不太对劲。",
+					"speaker": "蓝色的公主"
+				}
+			]
+		},
+		"again": {
+			"lines": [
+				{
+					"text": "（按摩椅的小机械手礼貌地折了回去。……扶手上刻着三个名字，有两个被磨掉了，剩下一个：「陛下」）",
+					"speaker": ""
+				}
+			]
+		}
+	}
+}

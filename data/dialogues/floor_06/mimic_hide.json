@@ -1,0 +1,49 @@
+{
+	"name": "一口眼熟的宝箱",
+	"entries": [
+		{
+			"node": "default"
+		}
+	],
+	"nodes": {
+		"default": {
+			"lines": [
+				{
+					"text": "（角落里放着一口宝箱。……盖子好像在一起一伏地呼吸）",
+					"speaker": ""
+				}
+			],
+			"prompt": "打开？",
+			"choices": [
+				{
+					"text": "抓住它！",
+					"next": "go"
+				},
+				{
+					"text": "先不碰",
+					"next": "no"
+				}
+			]
+		},
+		"go": {
+			"lines": [
+				{
+					"text": "……就是你！",
+					"speaker": "公主",
+					"emotion": "angry"
+				}
+			],
+			"set": {
+				"call": "palace_mimic_catch"
+			}
+		},
+		"no": {
+			"lines": [
+				{
+					"text": "……等一下再抓。",
+					"speaker": "蓝色的公主"
+				}
+			]
+		}
+	}
+}

@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="KeyItem" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/items/key_item.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/generated/item_maid_key.png" id="2"]
+
+[resource]
+script = ExtResource("1")
+icon = ExtResource("2")
+id = "maid_key"
+display_name = "女仆长的发条钥匙"
+description = "钟楼一层的宝箱里找到的金色发条钥匙，柄上系着一小段紫色缎带。……仆人回廊的女仆长背后，好像有一个对得上的发条孔。"
+key_type = "palace"
+category = 1
+stackable = false
+show_in_hud = false
+hotkey = ""
+pickup_emotion = "happy"

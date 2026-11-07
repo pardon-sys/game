@@ -1,0 +1,84 @@
+{
+	"name": "冰块里的蛋糕",
+	"entries": [
+		{
+			"if": {
+				"flag": "palace_ice_cake"
+			},
+			"node": "done"
+		},
+		{
+			"node": "default"
+		}
+	],
+	"nodes": {
+		"default": {
+			"lines": [
+				{
+					"text": "（一大块透明的冰里，冻着一个小小的粉色生日蛋糕，上面插着两根蜡烛）",
+					"speaker": ""
+				}
+			],
+			"prompt": "用粉色公主的火把冰融开？",
+			"choices": [
+				{
+					"text": "融开",
+					"next": "go"
+				},
+				{
+					"text": "不了",
+					"next": "no"
+				}
+			]
+		},
+		"go": {
+			"lines": [
+				{
+					"text": "……小心一点，别把蛋糕烤焦了。",
+					"speaker": "蓝色的公主"
+				}
+			],
+			"set": {
+				"call": "palace_melt_cake"
+			},
+			"next": "card"
+		},
+		"card": {
+			"lines": [
+				{
+					"text": "（冰化成了水。蛋糕底下压着一张小卡片，字迹很秀气）",
+					"speaker": ""
+				},
+				{
+					"text": "「给两个小不点的第一个生日——一根蜡烛给爱笑的，一根蜡烛给爱哭的」",
+					"speaker": ""
+				},
+				{
+					"text": "……两根蜡烛。",
+					"speaker": "公主",
+					"emotion": "sad"
+				},
+				{
+					"text": "……（盯着蛋糕看了很久）……",
+					"speaker": "蓝色的公主"
+				}
+			]
+		},
+		"no": {
+			"lines": [
+				{
+					"text": "……先不碰。",
+					"speaker": "公主"
+				}
+			]
+		},
+		"done": {
+			"lines": [
+				{
+					"text": "（蛋糕安安静静地放在盘子上。两根蜡烛，一根粉色，一根蓝色）",
+					"speaker": ""
+				}
+			]
+		}
+	}
+}

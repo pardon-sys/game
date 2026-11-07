@@ -1,0 +1,66 @@
+{
+	"name": "一面奇怪的镜子",
+	"entries": [
+		{
+			"if": {
+				"flag": "palace_portrait_found"
+			},
+			"node": "done"
+		},
+		{
+			"node": "default"
+		}
+	],
+	"nodes": {
+		"default": {
+			"lines": [
+				{
+					"text": "（镜子迷宫里，这一面镜子特别小，镜框是椭圆形的。……镜子里映出来的不是你们，是一位戴着大假发的贵妇人）",
+					"speaker": ""
+				}
+			],
+			"prompt": "伸手摸一摸？",
+			"choices": [
+				{
+					"text": "摸一摸",
+					"next": "go"
+				},
+				{
+					"text": "不了",
+					"next": "no"
+				}
+			]
+		},
+		"go": {
+			"lines": [
+				{
+					"text": "（「哎呀！」——贵妇人睁开眼睛，伸出画里的小手，在她脖子上挠了一下，然后从墙上「啪」地掉了下来）",
+					"speaker": ""
+				},
+				{
+					"text": "……这是，王座间的小画像？……跑到这里来了。",
+					"speaker": "蓝色的公主"
+				}
+			],
+			"set": {
+				"call": "palace_fake_mirror"
+			}
+		},
+		"no": {
+			"lines": [
+				{
+					"text": "……先不惹它。",
+					"speaker": "公主"
+				}
+			]
+		},
+		"done": {
+			"lines": [
+				{
+					"text": "（这一面现在是普通的镜子了）",
+					"speaker": ""
+				}
+			]
+		}
+	}
+}

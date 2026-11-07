@@ -1344,6 +1344,13 @@ data/cutscenes/<楼层组>/  地图内过场；data/theater/<楼层组>/  小剧
 	  四层 clockface（对话 `clock_face`：时针三、分针九 → `clockface_ok()`）。
 	- 王座前厅：`PalaceAnte.ArmorGuard`（巡逻 / 扇形视野 / 抓人挠腋下 / 背后 E 推倒）、笑声地砖（`step_tile`、`TILE_SEQ`，三片乐谱齐了才算）→ `VAULT_FLAG` → `vault_loot()`；
 	  石像问答（`ante_statue`，`statue_ok()` 给八音盒）、许愿喷泉（`wish(kind)`）、徽记台（`place_badges()` → 发饰 + `palace_badge_party` CG）。
+  - 追加事件·第三批（跨图，`penance_text/palace6.py`）：
+	- 女仆长的发条钥匙：钟楼一层宝箱给 `maid_key` → `PalaceServants.wind_maid()` → `PalaceRoom.FRIEND_FLAG`（`caught()` 不再抓人、巡夜队撤掉、休息室门 `_lounge_door` 打开）→ 按摩椅 `servants_massage`（CG）。
+	- 人偶巡夜队：`caught()` 设 `PalaceRoom.PATROL_FLAG` → 有 patrol 标记的图（厨房 / 浴场 / 图书馆）生成 `PalaceRoom.NightPatrol`，房间 `_process` 里 `tick_patrols()`。
+	- 冷藏库：`PalaceKitchen` 的 cold_door（`melt_door()`）、`enter_cold()`（`kitchen_icecream` + `IceSprite`）、`melt_cake()`。
+	- 宝箱怪的逃亡：隧道里第一次被宝箱怪咬 → `MIMIC_FLED`；`PalaceRoom.MimicHide` 按 `MIMIC_STAGE` 依次出现在 `MIMIC_MAPS`，`mimic_catch()` / `mimic_escaped()`。
+	- 镜子迷宫：`quest_maps.WALL_MARKS`（W 记成标记点但当墙画）+ `PalaceWardrobe.MirrorPanel`（`IsoTerrain.claim` 替地形画这格的墙）；失窃的小画像 `find_portrait()` → `lost_portrait` → `PalaceThrone.PORTRAIT_BACK`（`SmallPortrait.calm`）。
+	- 人偶舞会：`PalaceAnte.try_ball()`（`BALL_BELL` 训练场铜钟、`LULLABY` 婴儿房吊铃、`BALL_TILES` 地砖舞步 `LULLABY_SEQ`）→ `start_ball()`（`DanceDoll` 三波 + `BeatView` 拍子扇区 `beat_sweep()`），输了 `ante_ball_fail`（CG）。
   - 第三轮修正：
 	- `Actor.move_with_push()`：不在物理空间里（换关 / 过场的那一帧）就不动，避免 `body->get_space()` 为 null；
 	  所有「先 cast 再判 is_instance_valid」改成先判再 cast（王座间颜料池、隧道蛛网、latch / 松鼠怪的 target）。

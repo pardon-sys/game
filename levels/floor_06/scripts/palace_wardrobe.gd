@@ -18,6 +18,9 @@ const TRAP_TICK := 1.2
 ## 追加事件·旧鞋军团：鞋柜（shoe_closet）旁边 CLOSET_R 以内的旧鞋按 E 一次关进去；全关完 → SHOES_FLAG
 const SHOES_FLAG := "palace_shoes_done"
 const CLOSET_R := 70.0
+## 追加事件·镜子迷宫（mirror_wall：生成器当墙；这里每格摆一块镜面墙板、替地形画墙）、失窃的小画像（fake_mirror 旁边那块「镜子」其实是画）
+const PORTRAIT_FLAG := "palace_portrait_found"
+var mirrors: Array = []
 
 var trap_active := false
 var key_at := -1
@@ -65,6 +68,13 @@ func _ready() -> void:
 		csp.prompt_y = -34.0
 		add_child(csp)
 		csp.global_position = world(cells("shoe_closet")[0])
+	_build_mirrors.call_deferred()
+	if not cells("fake_mirror").is_empty():
+		var fsp := PrisonOddities.Spot.new()
+		fsp.dialogue = "floor_06/wardrobe_fake_mirror"
+		fsp.done_flag = PORTRAIT_FLAG
+		add_child(fsp)
+		fsp.global_position = world(cells("fake_mirror")[0])
 	if GameState.has_flag(SHOES_FLAG):
 		_clear_shoes.call_deferred()
 	if not shawl_frozen:
@@ -107,6 +117,47 @@ func _process(delta: float) -> void:
 
 
 # ------------------------------------------------------------------ 衣柜陷阱
+## 镜面墙板：只摆在挨着地面的镜墙格上（埋在土里的不用），并让等距地形别再画这格的墙块
+func _build_mirrors() -> void:
+	var lvl := lv
+	var fake := cells("fake_mirror")[0] + Vector2i(1, 0) if not cells("fake_mirror").is_empty() else Vector2i(-99, -99)
+	var terrain := IsoTerrain.of(self)
+	for c in cells("mirror_wall"):
+		var open := false
+		for d in [Vector2i(1, 0), Vector2i(-1, 0), Vector2i(0, 1), Vector2i(0, -1)]:
+			if GridPath.walkable(lvl, c + d):
+				open = true
+				break
+		if not open:
+			continue
+		var m := MirrorPanel.new()
+		m.cell = c
+		m.portrait = c == fake
+		m.position = PalaceRoom.cell_pos(c) + Vector2(0, 7)
+		add_view(m)
+		mirrors.append(m)
+		if terrain:
+			terrain.claim(c, m)
+
+
+## 识破「镜子」：小画像醒过来挠一下，拿到「迷路的小画像」（带去王座间挂回空画框）
+func find_portrait() -> bool:
+	if GameState.has_flag(PORTRAIT_FLAG):
+		return false
+	GameState.set_flag(PORTRAIT_FLAG)
+	var pc := GameState.player as PlayableCharacter
+	if pc:
+		for k in 3:
+			var h := HitData.make_tickle(self, 2.5)
+			h.zone = "neck"
+			pc.receive_hit(h)
+	var it := ItemDB.get_item("lost_portrait")
+	if it:
+		GameState.give_item(it, 1)
+	GameState.notify("得到「迷路的小画像」——王座间好像少了一幅")
+	return true
+
+
 func shoes() -> Array:
 	return lv.find_children("*", "OldShoe", true, false).filter(func(m): return (m as Monster).is_alive()) if lv else []
 
@@ -262,3 +313,35 @@ class Shawl extends Node2D:
 			draw_line(p, p + Vector2(sin(_t * 3.0 + k) * 2.0, 6), Color(0.95, 0.93, 1.0, 0.85), 2.0)
 		draw_circle(Vector2(-3, y - 2), 1.0, Color(0.3, 0.3, 0.45))
 		draw_circle(Vector2(3, y - 2), 1.0, Color(0.3, 0.3, 0.45))
+
+
+## 镜子迷宫的一块墙：一人多高的镜面板（palace_props4 第 5 帧），镜子里隐约映着走过的人影；
+## portrait = 失窃的小画像伪装成的那一块（没识破之前画框里是一张笑脸，识破以后变回普通镜子）
+class MirrorPanel extends Node2D:
+	var cell := Vector2i.ZERO
+	var portrait := false
+	var _s: Sprite2D
+
+	func _ready() -> void:
+		add_to_group(IsoTerrain.OWNER_GROUP)
+		if ResourceLoader.exists(PalaceRoom.PROPS4):
+			_s = Sprite2D.new()
+			_s.texture = load(PalaceRoom.PROPS4)
+			_s.hframes = 6
+			_s.frame = 5
+			_s.offset = Vector2(0, -24)
+			_s.scale = Vector2(0.9, 1.0)
+			_s.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+			add_child(_s)
+
+	func _process(_d: float) -> void:
+		queue_redraw()
+
+	func _draw() -> void:
+		var shine := 0.12 + 0.08 * sin(Time.get_ticks_msec() / 500.0 + cell.x * 0.7 + cell.y * 0.3)
+		draw_rect(Rect2(-6, -40, 12, 30), Color(0.85, 0.95, 1.0, shine))
+		if portrait and not GameState.has_flag(PalaceWardrobe.PORTRAIT_FLAG):
+			draw_circle(Vector2(0, -26), 5.0, Color(0.95, 0.85, 0.7, 0.9))
+			draw_arc(Vector2(0, -26), 5.0, 0.3, PI - 0.3, 8, Color(0.4, 0.2, 0.2), 1.0)
+		if _s == null:
+			draw_rect(Rect2(-7, -42, 14, 40), Color(0.75, 0.85, 0.95))

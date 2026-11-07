@@ -167,9 +167,9 @@ MARKS = {
     "floor_06_knight_storage": {"V": "brush_down", "A": "brush_up", "D": "doll"},
     "floor_06_knight_bridge": {"H": "hands", "E": "end"},
     "floor_06_palace_library": {"Z": "south", "Y": "west", "X": "east", "D": "cipher_door", "K": "study", "R": "golden_book", "H": "shelf_hands",
-                                "B": "books", "Q": "book_piles", "J": "fragment", "W": "worms", "F": "quills", "G": "book_swarm", "N": "hanger_book", "S": "shelf_door", "L": "lost"},
+                                "B": "books", "Q": "book_piles", "J": "fragment", "W": "worms", "F": "quills", "G": "book_swarm", "N": "hanger_book", "S": "shelf_door", "L": "lost", "A": "patrol", "M": "mimic_hide"},
     "floor_06_palace_wardrobe": {"X": "west", "M": "mannequins", "E": "racks", "C": "dresses", "L": "favorite", "S": "socks", "G": "shawl",
-                                 "V": "mirror_hands", "T": "trap_wardrobe", "K": "keys", "J": "fragment", "I": "lost", "O": "shoe_closet", "D": "shelf_door", "H": "shoes"},
+                                 "V": "mirror_hands", "T": "trap_wardrobe", "K": "keys", "J": "fragment", "I": "lost", "O": "shoe_closet", "D": "shelf_door", "H": "shoes", "W": "mirror_wall", "Z": "mimic_hide", "F": "fake_mirror"},
     "floor_06_palace_training": {"Y": "east", "X": "north", "U": "dummies", "N": "sign", "F": "swords", "W": "carvings", "A": "ring", "B": "bell",
                                  "T": "stocks", "C": "diary", "J": "fragment", "D": "shade"},
     "floor_06_palace_ante": {"Z": "south", "N": "throne_door", "W": "clock_door", "S": "painting", "L": "statue", "M": "tiles", "F": "fountain", "D": "pedestal", "V": "vault"},
@@ -182,13 +182,13 @@ MARKS = {
                                 "I": "toll", "M": "chests", "N": "webs", "Q": "bedroom", "S": "quilt", "C": "vanity", "D": "diary",
                                 "R": "nursery", "O": "cradles", "L": "mobile", "H": "height_marks", "A": "lost_board"},
     "floor_06_palace_throne": {"Z": "south", "Q": "portrait", "T": "throne", "S": "small_portraits", "A": "arena", "I": "paint_start",
-                               "O": "paint_exit", "G": "brushes", "H": "paint_gate"},
+                               "O": "paint_exit", "G": "brushes", "H": "paint_gate", "F": "empty_frame"},
     "floor_06_palace_bath": {"V": "steam", "H": "laughs", "Q": "bubble_pool", "Y": "soap", "W": "towels", "M": "mirror", "T": "statues",
-                             "J": "key_statue", "O": "pool", "B": "bath", "G": "door", "X": "east", "U": "scrub"},
+                             "J": "key_statue", "O": "pool", "B": "bath", "G": "door", "X": "east", "U": "scrub", "R": "patrol"},
     "floor_06_palace_servants": {"U": "hides", "Y": "west", "X": "east", "C": "clues", "S": "hide_event", "D": "dust", "Z": "brooms", "B": "head_maid",
-                                 "K": "key", "L": "bell", "E": "deliver", "I": "lost"},
+                                 "K": "key", "L": "bell", "E": "deliver", "I": "lost", "Q": "lounge_door", "R": "lounge_chair", "A": "wind_maid"},
     "floor_06_palace_kitchen": {"X": "west", "N": "north", "A": "chef", "T": "booth", "Y": "cream", "S": "sink", "Z": "rats", "I": "ice",
-                                "F": "fans", "K": "cheese", "D": "tray", "L": "lost"},
+                                "F": "fans", "K": "cheese", "D": "tray", "L": "lost", "Q": "cold_door", "R": "ice_cake", "O": "ice_sprites", "M": "mimic_hide", "G": "patrol"},
     "floor_06_waterway": {"L": "lions", "D": "deep", "O": "logs", "G": "wheels", "U": "grate", "S": "shallow", "F": "fountain",
                           "M": "mud", "Z": "foes", "C": "checkpoints", "A": "arena", "K": "keeper", "V": "valves", "R": "rocks",
                           "N": "nozzles", "E": "end"},
@@ -406,6 +406,8 @@ def _palace_bath():
     put(68, 11, "X")
     for (x, y) in ((36, 27),):
         put(x, y, "U")                  # 追加事件（第二批）
+    for (x, y) in ((28, 12), (44, 12)):
+        put(x, y, "R")                     # 巡夜人偶来回走的两头
     return ["".join(r) for r in g]
 
 
@@ -432,6 +434,9 @@ def _palace_servants():
     _chamfer(g, 60, 4, 74, 14, 3, "nw ne")
     room(66, 15, 67, 15)
     room(75, 16, 78, 18)                   # 出口
+    room(62, 22, 74, 30)                   # 女仆长的休息室（南；门 Q 上锁，给女仆长上过发条才开）
+    _chamfer(g, 62, 22, 74, 30, 2, "sw se")
+    room(66, 19, 67, 21)
     put(3, 17, "P")
     put(2, 17, "Y")
     put(77, 17, "X")
@@ -450,14 +455,17 @@ def _palace_servants():
         put(x, y, "E")                  # 追加事件（第二批）
     for (x, y) in ((35, 12),):
         put(x, y, "I")                  # 追加事件（第二批）
+    put(67, 20, "Q")                       # 休息室的门
+    put(68, 27, "R")                       # 休息室里的按摩椅
+    put(65, 9, "A")                        # 女仆长背后的发条孔（拿发条钥匙来上弦）
     return ["".join(r) for r in g]
 
 
-def _palace_kitchen():
+def _palace_kitchen():  # noqa: C901
     """第四章③·厨房：从回廊进来（P）→ 大厨房：糕点师人偶的台子（A：「试吃」小剧场）、试吃推销员的小摊（T：身上放食物让动物吃，换薄荷糖）、
     打翻的奶油（Y：踩到脚底变甜，老鼠群追着舔；S 水槽洗脚）、老鼠（Z）→ 西南的冰窖：一条长长的冰滑道（I，滑下去停不住；F 两侧的羽毛扇）
     → 厨房深处的大奶酪（K：挠脚鼠告别，脱下鼠鼠装、换上鞋）→ 北门 N（通往图书馆，下一批做）；X 回回廊。"""
-    g, room, put = _canvas(70, 36)
+    g, room, put = _canvas(80, 36)
     room(2, 4, 6, 8)                       # 进门
     room(6, 3, 44, 20)                     # 大厨房
     room(8, 5, 14, 7, "#")                 # 灶台（挡路）
@@ -471,6 +479,8 @@ def _palace_kitchen():
     room(10, 21, 12, 23)                   # 冰窖的楼梯
     room(10, 24, 60, 26, "I")              # 冰滑道（三格宽，往东滑）
     room(61, 23, 66, 28)                   # 滑道尽头
+    room(68, 22, 77, 30)                   # 冷藏库（滑道尽头冻住的门 Q 后面；粉色公主的火融开）
+    room(67, 25, 67, 25)
     room(64, 15, 66, 22)                   # 冰窖回厨房的路
     room(60, 15, 63, 15)
     room(24, 1, 26, 2)                     # 北门
@@ -492,6 +502,13 @@ def _palace_kitchen():
         put(x, y, "D")                  # 追加事件（第二批）
     for (x, y) in ((43, 18),):
         put(x, y, "L")                  # 追加事件（第二批）
+    put(67, 25, "Q")                       # 冻住的门
+    put(74, 24, "R")                       # 冰块里冻着的生日蛋糕
+    for (x, y) in ((70, 28), (75, 27), (72, 23)):
+        put(x, y, "O")                     # 冰糕精灵
+    put(76, 29, "M")                       # 宝箱怪躲的地方①
+    for (x, y) in ((10, 16), (31, 16)):
+        put(x, y, "G")                     # 巡夜人偶来回走的两头
     return ["".join(r) for r in g]
 
 
@@ -545,7 +562,13 @@ def _palace_library():
         put(x, y, "S")                  # 追加事件（第二批）
     for (x, y) in ((60, 32),):
         put(x, y, "L")                  # 追加事件（第二批）
+    for (x, y) in ((20, 32), (65, 32)):
+        put(x, y, "A")                     # 巡夜人偶来回走的两头
+    put(75, 30, "M")                       # 宝箱怪躲的地方②
     return ["".join(r) for r in g]
+
+
+MIRROR_XS = (28, 33, 38, 43, 48)
 
 
 def _palace_wardrobe():
@@ -562,8 +585,13 @@ def _palace_wardrobe():
     _disk(g, 40, 4, 3)                     # 北墙的圆形飘窗（凸出去）
     _disk(g, 58, 32, 3)                    # 南墙的半圆凹位
     # 镜子迷宫（中间一片，用一格格的镜墙隔出弯路）
-    for (x0, y0, x1, y1) in ((30, 12, 30, 24), (34, 8, 34, 20), (38, 12, 38, 28), (42, 8, 42, 22), (46, 14, 46, 28), (30, 24, 36, 24), (40, 22, 44, 22)):
-        room(x0, y0, x1, y1, "#")
+    # 镜子迷宫（必经之路）：五道从北墙顶到南墙的镜子墙，缺口上下交替——从西边进来只能一路穿过去（以前是摆在中间的几段墙，能绕开）
+    for x, (g0, g1) in zip(MIRROR_XS, ((17, 19), (29, 31), (5, 7), (29, 31), (17, 19))):
+        for y in range(1, 37):
+            if not (g0 <= y <= g1):
+                put(x, y, "W")
+    for (x, y) in ((35, 12), (40, 22), (45, 26), (46, 10)):
+        room(x, y, x, y + 1, "W")          # 迷宫里的几截短镜墙
     room(60, 12, 60, 24, "#")              # 东半边的隔墙（上下留路）
     for x in (16, 20, 26):                 # 南墙边的试衣隔间
         room(x, 28, x, 32, "#")
@@ -575,14 +603,14 @@ def _palace_wardrobe():
     put(2, 18, "X")
     for (x, y) in ((12, 8), (12, 28)):
         put(x, y, "M")
-    for (x, y) in ((20, 6), (24, 6), (28, 6)):
+    for (x, y) in ((20, 6), (24, 6), (26, 8)):
         put(x, y, "E")
     put(66, 6, "C")
     put(56, 10, "L")
     put(64, 28, "S")
     put(52, 20, "G")
-    for (x, y) in ((32, 16), (40, 18), (44, 26)):
-        put(x, y, "V")
+    for (x, y) in ((30, 12), (35, 20), (41, 14), (46, 24)):
+        put(x, y, "V")                     # 镜子里伸出手来（贴着镜墙）
     put(68, 18, "T")
     for (x, y) in ((10, 18), (50, 30), (60, 4)):
         put(x, y, "K")
@@ -593,8 +621,10 @@ def _palace_wardrobe():
         put(x, y, "O")                  # 追加事件（第二批）
     for (x, y) in ((66, 22),):
         put(x, y, "D")                  # 追加事件（第二批）
-    for (x, y) in ((30, 10), (36, 10), (41, 12), (48, 12), (54, 14), (59, 14)):
+    for (x, y) in ((30, 10), (36, 10), (41, 12), (46, 14), (54, 14), (59, 14)):
         put(x, y, "H")                  # 追加事件（第二批）
+    put(64, 31, "Z")                       # 宝箱怪躲的地方③
+    put(37, 25, "F")                       # 镜子迷宫里那面「镜子」（其实是失窃的小画像，挂在 (38, 25) 的镜墙上）
     return ["".join(r) for r in g]
 
 
@@ -749,6 +779,7 @@ def _palace_throne():
     room(3, 30, 13, 30)                    # 隐藏通道（运行时挡住）：大厅西墙 → 往下接到画里的世界
     room(3, 30, 3, 43)
     put(8, 30, "H")
+    put(28, 40, "F")                       # 空着的小画框（把迷路的小画像挂回去）
     return ["".join(r) for r in g]
 
 
@@ -880,7 +911,11 @@ def grid(fid):
     return [list(r.ljust(w, "#")) for r in rows]
 
 
-def _walk_dist(g, start):
+## 是墙、但要记成标记点的字母（衣帽间的镜子墙 W：生成器当墙画，代码在这些格子上摆镜面）
+WALL_MARKS = {"floor_06_palace_wardrobe": "W"}
+
+
+def _walk_dist(g, start, walls=""):
     """从 start 走过去的步数（道具当墙；走不到的不在里面）"""
     h, w = len(g), len(g[0])
     dist = {start: 0}
@@ -889,7 +924,7 @@ def _walk_dist(g, start):
         x, y = dq.popleft()
         for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1)):
             nx, ny = x + dx, y + dy
-            if 0 <= nx < w and 0 <= ny < h and (nx, ny) not in dist and (g[ny][nx] == "." or g[ny][nx].isupper()):
+            if 0 <= nx < w and 0 <= ny < h and (nx, ny) not in dist and (g[ny][nx] == "." or g[ny][nx].isupper()) and g[ny][nx] not in walls:
                 dist[(nx, ny)] = dist[(x, y)] + 1
                 dq.append((nx, ny))
     return dist
@@ -904,7 +939,7 @@ def marks(fid):
         for x, ch in enumerate(row):
             if ch in names:
                 out.setdefault(names[ch], []).append([x, y])
-    dist = _walk_dist(g, tuple(out["start"][0]))
+    dist = _walk_dist(g, tuple(out["start"][0]), WALL_MARKS.get(fid, ""))
     for cells in out.values():
         cells.sort(key=lambda c: (dist.get(tuple(c), 1 << 20), c[1], c[0]))
     return out
@@ -921,8 +956,12 @@ def check(fid):
             if ch not in "#." and not ch.isupper() and ch not in PROPS:
                 raise SystemExit("%s：(%d, %d) 不认识的字符 %r" % (fid, x, y, ch))
     m = marks(fid)
-    seen = _walk_dist(g, tuple(m["start"][0]))
+    walls = WALL_MARKS.get(fid, "")
+    seen = _walk_dist(g, tuple(m["start"][0]), walls)
+    wall_names = {MARKS[fid][c] for c in walls}
     for name, cells in m.items():
+        if name in wall_names:
+            continue
         for x, y in cells:
             if (x, y) not in seen:
                 raise SystemExit("%s：标记 %s (%d, %d) 走不到" % (fid, name, x, y))
@@ -935,9 +974,10 @@ def build(Map, fid, header, prop, torch=None, torch_every=9):
     g = grid(fid)
     m = Map(fid, len(g[0]), len(g), header)
     last = -torch_every
+    walls = WALL_MARKS.get(fid, "")
     for y, row in enumerate(g):
         for x, ch in enumerate(row):
-            if ch == "#":
+            if ch == "#" or ch in walls:
                 continue
             m.g[y][x] = "."
             if ch in PROPS:

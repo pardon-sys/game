@@ -42,7 +42,7 @@ const NEST_MAX := 3
 const BEETLE_BATCH := Vector2i(3, 4)
 ## 四层的大钟面（clockface）：时针指三、分针指九（训练场日志「时针走到三」+ 婴儿房刻痕「分针指着九」）→ 暗格：乐谱片① + 笑脸徽记
 const CLOCKFACE_FLAG := "palace_clockface_open"
-const CHEST_REWARDS := [{"mint": 2}, {"equip_clock_watch": 1}, {"mint": 1, "coin": 30}, {"mint": 1}]
+const CHEST_REWARDS := [{"mint": 2, "maid_key": 1}, {"equip_clock_watch": 1}, {"mint": 1, "coin": 30}, {"mint": 1}]
 
 @export var map := MAP
 

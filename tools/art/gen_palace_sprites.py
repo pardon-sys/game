@@ -229,6 +229,22 @@ def build_statue():
     print("浴场雕像：palace_statue.png")
 
 
+def build_dance_doll():
+    """舞会人偶：人偶女仆（npcs/doll_maid.png）的深蓝裙子换成粉色舞会裙（只改偏蓝、偏暗的颜色）"""
+    src = OUT / "npcs/doll_maid.png"
+    if not src.exists():
+        return
+    a = np.asarray(Image.open(src).convert("RGBA")).astype(np.float32)
+    r, g, b = a[..., 0], a[..., 1], a[..., 2]
+    blue = (b > r + 15) & (b > g + 5) & (a[..., 3] > 0)
+    lum = (r + g + b) / 3.0
+    a[..., 0] = np.where(blue, np.clip(lum * 1.9 + 60, 0, 255), r)
+    a[..., 1] = np.where(blue, np.clip(lum * 0.9 + 30, 0, 255), g)
+    a[..., 2] = np.where(blue, np.clip(lum * 1.3 + 50, 0, 255), b)
+    Image.fromarray(a.astype(np.uint8), "RGBA").save(OUT / "npcs/dance_doll.png")
+    print("舞会人偶：npcs/dance_doll.png")
+
+
 if __name__ == "__main__":
     build_maid()
     build_statue()
@@ -253,3 +269,7 @@ if __name__ == "__main__":
     build_strip("scrub_doll_act_sheet.png", "scrub_doll_act.png", 3, 48, 52, "搓澡人偶·动作（挥刷 / 抓人 / 没海绵晕了）", uniform=True)
     build_walker("armor_guard_sheet.png", "npcs/armor_guard.png", "空铠甲卫兵")
     build_walker("captain_shade_sheet.png", "npcs/captain_shade.png", "年轻队长的幽影")
+    # 第四章追加事件（第三批）
+    build_strip("ice_sprite_sheet.png", "ice_sprite.png", 4, 22, 22, "冰糕精灵（三帧飘 + 伸手）", uniform=True)
+    build_strip("palace_props4_sheet.png", "palace_props4.png", 6, 40, 48, "追加事件道具三（按摩椅 / 冻住的门 / 冰块蛋糕 / 生日蛋糕 / 空画框 / 镜面墙板）")
+    build_dance_doll()

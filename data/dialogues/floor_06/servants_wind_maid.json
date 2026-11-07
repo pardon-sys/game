@@ -1,0 +1,66 @@
+{
+	"name": "女仆长的背后",
+	"entries": [
+		{
+			"if": {
+				"flag": "palace_headmaid_friend"
+			},
+			"node": "friend"
+		},
+		{
+			"node": "default"
+		}
+	],
+	"nodes": {
+		"default": {
+			"lines": [
+				{
+					"text": "（女仆长人偶的背后有一个小小的发条孔，发条已经快停了。……她走路的样子，比别的人偶都累）",
+					"speaker": ""
+				}
+			],
+			"prompt": "用发条钥匙给她上弦？",
+			"choices": [
+				{
+					"text": "上弦",
+					"next": "go"
+				},
+				{
+					"text": "算了",
+					"next": "no"
+				}
+			]
+		},
+		"go": {
+			"lines": [
+				{
+					"text": "……慢慢转。",
+					"speaker": "蓝色的公主"
+				}
+			],
+			"set": {
+				"call": "palace_wind_maid"
+			}
+		},
+		"no": {
+			"lines": [
+				{
+					"text": "……先不惊动她。",
+					"speaker": "公主"
+				}
+			]
+		},
+		"friend": {
+			"lines": [
+				{
+					"text": "……谢、谢。……很久，没有人，给我上弦了。",
+					"speaker": "女仆长"
+				},
+				{
+					"text": "……休息室，请便。……按摩椅，很舒服。",
+					"speaker": "女仆长"
+				}
+			]
+		}
+	}
+}

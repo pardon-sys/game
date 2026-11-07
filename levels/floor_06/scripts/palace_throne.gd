@@ -37,6 +37,8 @@ const PAINT_TIME := 45.0
 const BRUSH_SPEED := 46.0
 const FRAME_HP := 10
 ## 追加事件：女王的八音盒（石像问答的奖励，背包里放在 R 键上）：每场 BOX_USES 次，画像发呆 BOX_TIME 秒、一直露破绽，不泼颜料不伸手
+const PORTRAIT_BACK := "palace_portrait_back"
+var _frame_view: Node2D
 const BOX_TIME := 8.0
 const BOX_USES := 2
 var box_t := 0.0
@@ -101,6 +103,17 @@ func _ready() -> void:
 		add_view(b)
 		brushes.append(b)
 	hp = LAYER_HP[0]
+	# 追加事件·失窃的小画像：带着「迷路的小画像」进来就挂回空画框；挂回去以后它安安静静地睡着，第二层只剩三幅小画像醒来
+	if not cells("empty_frame").is_empty():
+		_frame_view = sheet_view(PalaceRoom.PROPS4, 6, 4, cells("empty_frame")[0], [], 0.8)
+		if GameState.inventory.has("lost_portrait") and not GameState.has_flag(PORTRAIT_BACK):
+			GameState.inventory.remove("lost_portrait", 1)
+			GameState.set_flag(PORTRAIT_BACK)
+			GameState.notify("把迷路的小画像挂回了空画框——它打了个哈欠，又睡着了")
+	if GameState.has_flag(PORTRAIT_BACK) and small.size() >= 4:
+		(small[3] as SmallPortrait).calm = true
+		if is_instance_valid(_frame_view):
+			_frame_view.modulate = Color(1, 1, 1, 0.0)   # 画回到墙上了，画框不再空着
 	if GameState.inventory.has("queen_music_box") and not win:
 		GameState.set_hotkey("use_special", "queen_music_box")
 		GameState.notify("「女王的八音盒」放在 R 键上了（每场能用 %d 次）" % BOX_USES)
@@ -152,7 +165,10 @@ func _process(delta: float) -> void:
 	_gib_t -= delta
 	if _gib_t <= 0.0:
 		_gib_t = randf_range(10.0, 16.0)
-		SpeechBubble.say(_portrait, str(PalaceRoom.data().get("gibberish", [""]).pick_random()), 40.0, 2.5)
+		var gib: Array = (PalaceRoom.data().get("gibberish", [""]) as Array).duplicate()
+		if GameState.has_flag(PORTRAIT_BACK):
+			gib.append_array(PalaceRoom.data().get("portrait_back_gibberish", []) as Array)   # 挂回小画像以后多几句
+		SpeechBubble.say(_portrait, str(gib.pick_random()), 40.0, 2.5)
 
 
 ## 打开八音盒：放出很久以前的笑声，画像发呆露破绽（被拉进画里的时候没用）
@@ -497,7 +513,12 @@ class SmallPortrait extends Node2D:
 			_spr.offset = Vector2(0, -22)
 			add_child(_spr)
 
+	## 挂回来的那幅（失窃的小画像）：一直睡着，不参战
+	var calm := false
+
 	func revive() -> void:
+		if calm:
+			return
 		hp = PalaceThrone.SMALL_HP
 
 	func sleep() -> void:
