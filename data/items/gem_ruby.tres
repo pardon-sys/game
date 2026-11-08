@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="KeyItem" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/items/key_item.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/generated/item_gem_ruby.png" id="2"]
+
+[resource]
+script = ExtResource("1")
+icon = ExtResource("2")
+id = "gem_ruby"
+display_name = "红宝石"
+description = "旧浴场泡泡池底找到的红宝石，被一串泡泡托着。……隧道寝室的梳妆台上，有一只缺了宝石的首饰盒。"
+key_type = "palace"
+category = 1
+stackable = false
+show_in_hud = false
+hotkey = ""
+pickup_emotion = "happy"

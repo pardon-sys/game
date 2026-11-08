@@ -537,6 +537,51 @@ func palace_golden() -> void:
 		r.golden()
 
 
+# ---- 第四轮：和剧情有关的跨图事件（PalaceRoom 的静态函数 / 前厅的小宴会厅）
+func palace_diary_page() -> void:
+	PalaceRoom.diary_page()
+
+
+func palace_gem_ruby() -> void:
+	PalaceRoom.take_gem("ruby")
+
+
+func palace_gem_sapphire() -> void:
+	PalaceRoom.take_gem("sapphire")
+
+
+func palace_gem_topaz() -> void:
+	PalaceRoom.take_gem("topaz")
+
+
+func palace_jewel_open() -> void:
+	PalaceRoom.jewel_open()
+
+
+func palace_wind_chef() -> void:
+	PalaceRoom.wind_doll("chef")
+
+
+func palace_wind_keeper() -> void:
+	PalaceRoom.wind_doll("keeper")
+
+
+func palace_wind_scrub() -> void:
+	PalaceRoom.wind_doll("scrub")
+
+
+func palace_banquet_place() -> void:
+	var r := _palace_room("PalaceAnte")
+	if r:
+		r.banquet_place()
+
+
+func palace_banquet_done() -> void:
+	var r := _palace_room("PalaceAnte")
+	if r:
+		r.banquet_done()
+
+
 # ---- 第四轮：后花园
 func palace_gazebo_open() -> void:
 	var r := _palace_room("PalaceGarden")

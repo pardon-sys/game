@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="KeyItem" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/items/key_item.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/generated/item_gem_sapphire.png" id="2"]
+
+[resource]
+script = ExtResource("1")
+icon = ExtResource("2")
+id = "gem_sapphire"
+display_name = "蓝宝石"
+description = "衣帽间那件蓝色小礼服领口上别着的蓝宝石。……隧道寝室的首饰盒上，有一个蓝色的空槽。"
+key_type = "palace"
+category = 1
+stackable = false
+show_in_hud = false
+hotkey = ""
+pickup_emotion = "happy"
