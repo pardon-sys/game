@@ -28,7 +28,8 @@ TEXT = {
     "fountain_fish": ["小、小鱼在啄脚趾——！", "……鱼。……在啄。"],
 }
 
-_CLOCK_CHOICES = [("十二", "12"), ("三", "3"), ("六", "6"), ("九", "9")]
+# 钟面上 1~12 都能拨（选项多，ChoiceMenu 会滚动）
+_CLOCK_CHOICES = [(t, str(i + 1)) for i, t in enumerate(["一", "二", "三", "四", "五", "六", "七", "八", "九", "十", "十一", "十二"])]
 
 
 def _clock_face():
@@ -52,9 +53,10 @@ def _clock_face():
 
 def _statue():
     q = {
-        "q1": ("「问：那天晚上，钟楼的钟敲了几下？」", ["十二下", "十三下", "一下也没有"], 1),
-        "q2": ("「问：两位小殿下的礼服，是几号？」", ["五号", "七号", "九号"], 1),
-        "q3": ("「问：女王陛下最喜欢的花，是什么？」", ["玫瑰", "铃兰", "向日葵"], 1),
+        # (问题, 输入框提示, 算对的写法)：输入里包含任一写法就算对
+        "q1": ("「问：那天晚上，钟楼的钟敲了几下？」", "钟敲了几下？", ["十三", "13"]),
+        "q2": ("「问：两位小殿下的礼服，是几号？」", "礼服是几号？", ["七", "7"]),
+        "q3": ("「问：女王陛下最喜欢的花，是什么？」", "陛下最喜欢的花？", ["铃兰"]),
     }
     nodes = {
         "default": {"lines": [L("（一尊抱着剑的骑士石像。底座上刻着一行字）", N),
@@ -62,6 +64,7 @@ def _statue():
                               L("（石像的眼睛「咔」地亮了一下。底座上又浮出一行新的字：「答对三个问题，就把陛下的东西交给你们」）", N)],
                     "prompt": "回答石像的问题？", "choices": [{"text": "回答", "next": "q1"}, {"text": "等一下", "next": "no"}]},
         "no": {"lines": [L("……先去找找答案。", P)]},
+        "leave": {"lines": [L("……先去找找答案。", P), L("（石像的眼睛暗了下去）", N)]},
         "wrong": {"lines": [L("（石像的底座里伸出一只石头手，抓住了答题人的脚踝——）", N)], "set": {"call": "palace_statue_wrong"}},
         "ok": {"lines": [L("（石像缓缓地低下头，把抱着的剑移开。剑柄后面藏着一只粉色的小八音盒，和一枚笑脸徽记）", N),
                          L("……八音盒。", BLUE),
@@ -72,14 +75,81 @@ def _statue():
     }
     order = ["q1", "q2", "q3"]
     for i, k in enumerate(order):
-        text, options, right = q[k]
+        text, prompt, answers = q[k]
         nxt = order[i + 1] if i + 1 < len(order) else "ok"
-        nodes[k] = {"lines": [L(text, N)], "prompt": "回答……",
-                    "choices": [{"text": o, "next": nxt if j == right else "wrong"} for j, o in enumerate(options)]}
+        nodes[k] = {"lines": [L(text, N)],
+                    "input": {"prompt": prompt, "answers": answers, "ok": nxt, "wrong": "wrong", "cancel": "leave"}}
     return dfile("", "骑士石像", nodes, entries=[{"if": {"flag": "palace_statue_done"}, "node": "done"}, {"node": "default"}])
 
 
+# 前厅里闲逛的搭档：和她说话 → 按进度随机一句流程提示（PalaceAnte 每隔几秒往 vars.ante_hint 写一个当前用得上的 key）。
+# 只说「去哪 / 触发什么」，不说答案。每个 key 两种说法：(粉色公主说, 蓝色公主说)。
+ANTE_HINTS = {
+    "bells": ("石像说，钟楼的钟敲十三下，北边的门就会开……钟楼最上面，好像有拉钟的绳子。",
+              "……北边的门。……要钟楼的钟，敲十三下。……钟绳在最上面。"),
+    "sheets": ("地上这些笑脸地砖，好像要乐谱才会亮……钟楼、仆人回廊、浴场，到处找找？",
+               "……地砖。……要三片乐谱。……钟楼、回廊、浴场。"),
+    "tiles": ("三片乐谱都有了！上面写的……好像是踩地砖的顺序？",
+              "……乐谱上的字。……是踩地砖的顺序。"),
+    "statue": ("石像问的，都是王宫里的旧事……图书馆的书、衣帽间的礼服、宝库里的东西，说不定有答案。",
+               "……石像的问题。……答案在王宫里。……书、礼服、花。"),
+    "badges": ("徽记台要七枚笑脸徽记……打倒厉害的家伙、解开机关，好像都会掉一枚。",
+               "……七枚笑脸。……每解开一处，就有一枚。"),
+    "toll": ("隧道里收路费的小鬼，好像丢了好多东西……帮它找回来，说不定就不收钱了。",
+             "……收路费的小鬼。……丢了五样东西。……王宫里到处都是。"),
+    "maid": ("那把发条钥匙……女仆长背后，是不是有个发条孔？",
+             "……发条钥匙。……女仆长的背后。"),
+    "ball": ("婴儿房吊铃的那首曲子……训练场的铜钟、这里的地砖，好像都能「弹」出来。",
+             "……吊铃的曲子。……铜钟。……地砖。……三处一起。"),
+    "box": ("女王的八音盒……王座间的画像，会不会怕这个声音？",
+            "……八音盒。……画像，也许会发呆。"),
+    "idle": ("……这里好安静。我们分头到处看看吧？",
+             "……我在这边看看。……有事叫我。"),
+}
+
+
+def _ante_partner_hint():
+    nodes, entries = {}, []
+    for k, (pink_line, blue_line) in ANTE_HINTS.items():
+        nodes[k + "_p"] = {"lines": [L(pink_line, P)]}
+        nodes[k + "_b"] = {"lines": [L(blue_line, BLUE)]}
+        # hero = 现在操控的是谁 → 说话的是另一个
+        entries.append({"if": {"eq": {"ante_hint": k}, "hero": "blue"}, "node": k + "_p"})
+        entries.append({"if": {"eq": {"ante_hint": k}, "hero": "pink"}, "node": k + "_b"})
+    entries += [{"if": {"hero": "blue"}, "node": "idle_p"}, {"node": "idle_b"}]
+    return dfile("", "搭档", nodes, entries=entries)
+
+
+# 拿到跨图道具时的一小段提示（PalaceRoom.ItemHinter；节点名 = PalaceRoom.ITEM_HINTS 的 key）。只说大概用处，不给答案。
+ITEM_HINT = dfile("", "提示", {
+    "default": {"lines": [L("……这个，也许在别的地方用得上。", BLUE)]},
+    "maid_key": {"lines": [L("（一把小小的黄铜发条钥匙。钥匙柄上刻着一顶女仆帽）", N),
+                           L("……女仆帽。……仆人回廊的女仆长，背后，是不是有个发条孔。", BLUE),
+                           L("那她是不是……一直在等人给她上发条？", P, "sad")]},
+    "lost_portrait": {"lines": [L("（小小的椭圆画像，画里的小人缩成一团，像是迷路了）", N),
+                                L("……王座间的墙上，好像有一个空着的画框。", BLUE),
+                                L("把它送回家吧！", P, "happy")]},
+    "music_sheet": {"lines": [L("（一片泛黄的乐谱，上面的音符歪歪扭扭的，像在笑）", N),
+                              L("……前厅的笑脸地砖。……踩上去会笑的那些。", BLUE),
+                              L("好像要把乐谱凑齐，地砖才会亮起来……", P)]},
+    "smile_badge": {"lines": [L("（一枚金色的笑脸徽记，咧着嘴，摸上去暖暖的）", N),
+                              L("前厅有个石台，上面刻着一排一样的小凹槽！", P, "surprise"),
+                              L("……七个。……王宫里，一定还有别的。", BLUE)]},
+    "queen_music_box": {"lines": [L("（粉色的小八音盒。打开盖子，里面会传出很久以前的笑声）", N),
+                                  L("……王座间的那幅画像。……听到这个声音，也许会发呆。", BLUE),
+                                  L("（八音盒放在 R 键上了。打 Boss 的时候按 R 打开）", N)]},
+    "lost_thing": {"lines": [L("……这个，不像王宫里的东西。", BLUE),
+                             L("隧道里那个收路费的小鬼，是不是说它丢了好几样东西？", P),
+                             L("（找齐五样，拿去隧道的失物招领板给它）", N)]},
+    "watering_can": {"lines": [L("（一把小小的水壶，壶身上画着一朵花）", N),
+                               L("……后花园的小店主，说想浇花。", BLUE),
+                               L("拿去给她吧！", P, "happy")]},
+})
+
+
 DIALOGUES = {
+    "item_hint": ITEM_HINT,
+    "ante_partner_hint": _ante_partner_hint(),
     "clock_face": _clock_face(),
     "ante_statue": _statue(),
     "ante_fountain": dfile("", "许愿喷泉", {

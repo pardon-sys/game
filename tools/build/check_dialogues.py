@@ -16,7 +16,8 @@ CALLS = {"open_shop", "open_training", "rest", "sleep", "open_war_shop", "go_sie
          "palace_search_1", "palace_search_2", "palace_search_3", "palace_spar", "palace_bell_fight",
          "palace_gear_ride", "palace_ring_bells", "palace_chest_1", "palace_chest_2", "palace_chest_3", "palace_chest_4", "palace_toll_mint", "palace_toll_coin", "palace_toll_tickle", "palace_tunnel_chest_1", "palace_tunnel_chest_2", "palace_tunnel_chest_3", "palace_tunnel_chest_4", "palace_clockface_ok", "palace_clockface_wrong", "palace_statue_ok", "palace_statue_wrong", "palace_fountain_mint", "palace_fountain_coin", "palace_badges", "palace_vault", "palace_bath_sheet", "palace_tray_take", "palace_tray_deliver", "palace_shoe_closet", "palace_shade_start", "palace_lost_return", "palace_wind_maid", "palace_melt_cake", "palace_mimic_catch", "palace_fake_mirror", "kq_start", "kq_report", "kq_abandon", "kq_spear_replay", "kq_next", "kq_gate"}
 # 代码里写的变量（不是对话的 set 写的）：七日赎罪的时钟 DayClock、骑士篇的步骤 KnightStory
-CODE_VARS = {"after_day", "after_slot", "errand_req", "knight_step", "kq_samples_stage", "kq_fence_stage", "kq_shoes_stage", "kq_spear_stage", "kq_host_stage", "kq_blue_stage", "kq_shoes_gate", "kq_spear_gate", "kq_host_gate", "kq_blue_gate"}
+CODE_VARS = {"after_day", "after_slot", "errand_req", "knight_step", "kq_samples_stage", "kq_fence_stage", "kq_shoes_stage", "kq_spear_stage", "kq_host_stage", "kq_blue_stage", "kq_shoes_gate", "kq_spear_gate", "kq_host_gate", "kq_blue_gate",
+             "ante_hint"}  # ante_hint：PalaceAnte 按进度随机写
 
 
 def ids_in(folder):

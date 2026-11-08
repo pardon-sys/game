@@ -26,7 +26,11 @@
 			"prompt": "把时针拨到……",
 			"choices": [
 				{
-					"text": "指着「十二」",
+					"text": "指着「一」",
+					"next": "wrong_h"
+				},
+				{
+					"text": "指着「二」",
 					"next": "wrong_h"
 				},
 				{
@@ -34,11 +38,39 @@
 					"next": "m"
 				},
 				{
+					"text": "指着「四」",
+					"next": "wrong_h"
+				},
+				{
+					"text": "指着「五」",
+					"next": "wrong_h"
+				},
+				{
 					"text": "指着「六」",
 					"next": "wrong_h"
 				},
 				{
+					"text": "指着「七」",
+					"next": "wrong_h"
+				},
+				{
+					"text": "指着「八」",
+					"next": "wrong_h"
+				},
+				{
 					"text": "指着「九」",
+					"next": "wrong_h"
+				},
+				{
+					"text": "指着「十」",
+					"next": "wrong_h"
+				},
+				{
+					"text": "指着「十一」",
+					"next": "wrong_h"
+				},
+				{
+					"text": "指着「十二」",
 					"next": "wrong_h"
 				}
 			]
@@ -53,7 +85,11 @@
 			"prompt": "再把分针拨到……",
 			"choices": [
 				{
-					"text": "指着「十二」",
+					"text": "指着「一」",
+					"next": "wrong"
+				},
+				{
+					"text": "指着「二」",
 					"next": "wrong"
 				},
 				{
@@ -61,12 +97,40 @@
 					"next": "wrong"
 				},
 				{
+					"text": "指着「四」",
+					"next": "wrong"
+				},
+				{
+					"text": "指着「五」",
+					"next": "wrong"
+				},
+				{
 					"text": "指着「六」",
+					"next": "wrong"
+				},
+				{
+					"text": "指着「七」",
+					"next": "wrong"
+				},
+				{
+					"text": "指着「八」",
 					"next": "wrong"
 				},
 				{
 					"text": "指着「九」",
 					"next": "ok"
+				},
+				{
+					"text": "指着「十」",
+					"next": "wrong"
+				},
+				{
+					"text": "指着「十一」",
+					"next": "wrong"
+				},
+				{
+					"text": "指着「十二」",
+					"next": "wrong"
 				}
 			]
 		},
@@ -80,7 +144,11 @@
 			"prompt": "再把分针拨到……",
 			"choices": [
 				{
-					"text": "指着「十二」",
+					"text": "指着「一」",
+					"next": "wrong"
+				},
+				{
+					"text": "指着「二」",
 					"next": "wrong"
 				},
 				{
@@ -88,11 +156,39 @@
 					"next": "wrong"
 				},
 				{
+					"text": "指着「四」",
+					"next": "wrong"
+				},
+				{
+					"text": "指着「五」",
+					"next": "wrong"
+				},
+				{
 					"text": "指着「六」",
 					"next": "wrong"
 				},
 				{
+					"text": "指着「七」",
+					"next": "wrong"
+				},
+				{
+					"text": "指着「八」",
+					"next": "wrong"
+				},
+				{
 					"text": "指着「九」",
+					"next": "wrong"
+				},
+				{
+					"text": "指着「十」",
+					"next": "wrong"
+				},
+				{
+					"text": "指着「十一」",
+					"next": "wrong"
+				},
+				{
+					"text": "指着「十二」",
 					"next": "wrong"
 				}
 			]

@@ -231,3 +231,19 @@
 > Use your built-in image generation tool (image_gen) to create the image described below, saved in the current directory as palace_props4_sheet.png (PNG). Do not edit or create any other files. After saving it, reply with just the filename.
 > A game prop sprite sheet on a solid flat pure MAGENTA (#FF00FF) chroma-key background (the whole background is one flat magenta color; do NOT use magenta or pink-magenta anywhere in the artwork itself), cute chibi pixel-art-friendly style with clean dark outlines and flat soft shading, drawn in a 3/4 isometric-style view (as seen from above at about 45 degrees), it will be downscaled to small pixel sizes. Items evenly spaced in ONE row, same scale, centered, generous magenta gaps, no shadows on the ground, no text, no labels, no scenery. Landscape canvas 1536x1024, exactly 6 items.
 > ITEMS (left to right), old royal palace: 1) a plush velvet ARMCHAIR on brass clockwork legs with little mechanical soft-glove arms folded at its sides and a padded footrest (a doll massage chair), lavender velvet; 2) a heavy wooden DOOR completely FROZEN over with thick blue ice and icicles; 3) a big clear ICE BLOCK with a small pink-and-white birthday CAKE frozen inside it; 4) the same small pink-and-white BIRTHDAY CAKE on a plate with two candles, a few water drops around (melted free); 5) an empty small OVAL gilded picture FRAME hanging on a little wall hook (the canvas inside is blank); 6) a tall ornate silver standing MIRROR PANEL like a wall segment, reflective pale-blue glass with a gold top crest.
+
+## 第四轮·王座间（颜料小人 / 特效图集）
+
+### paint_imp_sheet.png — 颜料小人（王座间第一、二层从颜料坑里冒出来；三帧走 + 挥小刷子）→ paint_imp.png
+
+```
+A game sprite strip on a solid flat pure MAGENTA (#FF00FF) chroma-key background (the whole background is one flat magenta color; do NOT use magenta or pink-magenta anywhere in the artwork itself), cute chibi pixel-art-friendly style with clean dark outlines and flat soft shading, 3/4 top-down view, it will be downscaled to about 24 pixels per frame. Landscape canvas 1536x1024, exactly 4 frames in ONE row, same scale, evenly spaced, centered, no shadows, no text, no scenery.
+SUBJECT: a PAINT IMP, a cute little creature made of thick glossy wet paint (mixed swirls of rose pink, sky blue and golden yellow), a round blobby body that drips, two big cheeky eyes, a wide mischievous grin, little stubby arms, holding a tiny artist's brush like a sword. Frames 1-3: waddling walk cycle (body squishes and drips); frame 4: lunging forward swinging the little brush, paint splattering.
+```
+
+### paint_fx_sheet.png — 王座间特效图集（粉 / 蓝颜料飞溅、画布碎片、金色笔触、星光、颜料手）→ paint_fx.png
+
+```
+A game prop sprite sheet on a solid flat pure MAGENTA (#FF00FF) chroma-key background (the whole background is one flat magenta color; do NOT use magenta or pink-magenta anywhere in the artwork itself), cute chibi pixel-art-friendly style with clean dark outlines and flat soft shading, it will be downscaled to small pixel sizes. Items evenly spaced in ONE row, same scale, centered, generous magenta gaps, no shadows on the ground, no text, no labels, no scenery. Landscape canvas 1536x1024, exactly 6 items.
+ITEMS (left to right), magical paint battle VFX elements: 1) a big round SPLASH of glossy rose-pink paint with droplets; 2) a big SPLASH of glossy sky-blue paint with droplets; 3) a cluster of torn CANVAS SHARDS (cream canvas pieces with gilded painted edges) flying apart; 4) a sweeping GOLDEN BRUSH STROKE arc with sparkles; 5) a bright four-pointed golden STAR SPARKLE burst; 6) a long dripping PAINT HAND reaching (a cartoon hand made of pink paint with a feather in its fingers).
+```

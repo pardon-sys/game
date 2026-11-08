@@ -11,6 +11,8 @@ extends Node
 ##   choices     选项 [{text, next, if?, set?, return?, once?}]：
 ##                 return = true → 这个分支演完回到选项页（「回到选项页」型）；否则一路走 next 到结束（「继续到结束」型）
 ##                 if 不满足的选项不显示；once = true 选过一次就不再显示
+##   input       输入框（自己写答案的谜题）{prompt, numeric?, len?, answers: [...], exact?, ok: 节点, wrong: 节点, cancel?: 节点}：
+##                 TextPrompt.matches 判断（去空白、全角转半角；exact = false 时包含任一答案就算对）；Esc 放弃 → cancel（没有就结束）
 ##   next        没有选项时接着走的节点（空 = 结束）
 ##   goto        条件跳转 [{if: 条件, node: 节点}, ...]：进入节点时先看，第一个满足的直接跳过去（按选择记忆分支）
 ## 条件（if）：{flag: 标记 / [标记…]（都要有）, not: 标记 / [标记…]（都没有）, eq: {变量: 值}, var: {变量: [">=", 数]},
@@ -27,6 +29,7 @@ signal node_entered(file: String, node: String)
 const DIR := "res://data/dialogues/"
 
 var choice_menu: ChoiceMenu
+var text_prompt: TextPrompt
 ## 打开商店 / 训练这类效果调到它上面（Dialogue 设为当前场景里负责的节点）。
 var handler: Object
 var _cache := {}
@@ -39,6 +42,9 @@ func _ready() -> void:
 	choice_menu = ChoiceMenu.new()
 	choice_menu.name = "ChoiceMenu"
 	add_child(choice_menu)
+	text_prompt = TextPrompt.new()
+	text_prompt.name = "TextPrompt"
+	add_child(text_prompt)
 
 
 static func path_of(file: String) -> String:
@@ -123,6 +129,18 @@ func _run(file: String, d: Dictionary, id: String) -> void:
 			await _say(d, n["lines"])
 		if not n.get("perform_before", false):
 			await _perform(n)
+		if n.has("input"):
+			var inp: Dictionary = n["input"]
+			var typed: String = await text_prompt.ask(str(inp.get("prompt", "")), bool(inp.get("numeric", false)), int(inp.get("len", 12)))
+			if _end_requested:
+				return
+			if typed == "":
+				id = str(inp.get("cancel", ""))
+			elif TextPrompt.matches(typed, inp.get("answers", []), bool(inp.get("exact", false))):
+				id = str(inp.get("ok", ""))
+			else:
+				id = str(inp.get("wrong", ""))
+			continue
 		var choices: Array = n.get("choices", [])
 		if choices.is_empty():
 			id = str(n.get("next", ""))

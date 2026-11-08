@@ -31,6 +31,9 @@ static func run(t: Node) -> void:
 		GameState.set_flag(f, false)
 	for id in PenanceCell.SPOTS:
 		GameState.set_flag("cg_seen_theater:penance_" + id, false)
+	# 道具提示：流程测试里先当作都提示过（免得中途弹出来打断）；_round4 里单独测
+	for k in PalaceRoom.ITEM_HINTS:
+		GameState.set_flag(PalaceRoom.item_hint_flag(k))
 	# 原来穿着的裤子 / 鞋子：鼠鼠装脱下以后要还回来
 	GameState.set_flag(Equipment.UNLOCK_FLAG)
 	for id in ["equip_padded_shorts", "equip_dance_shoes"]:
@@ -469,10 +472,13 @@ static func _palace_b(t: Node) -> void:
 	var dc := lr.cells("cipher_door")[0]
 	verify(t, "书房只有密码门这一格能进：两边是墙、门口被门挡着", lvn != null and not GridPath.walkable(lvn, dc + Vector2i(-1, 0))
 		and not GridPath.walkable(lvn, dc + Vector2i(1, 0)) and is_instance_valid(lr._door))
-	await t._talk("floor_06/library_door", "", [1])
-	verify(t, "密码门：转错了，门不开", not GameState.has_flag(PalaceLibrary.CIPHER_FLAG))
-	await t._talk("floor_06/library_door", "", [0, 2, 3, 1])
-	verify(t, "密码门：2-5-7-3（浴场镜子 / 排班表 / 礼服尺码 / 刻痕）→ 门开了", GameState.has_flag(PalaceLibrary.CIPHER_FLAG) and not is_instance_valid(lr._door))
+	await t._talk("floor_06/library_door", "", ["2537"])
+	verify(t, "密码门：输错数字，门不开", not GameState.has_flag(PalaceLibrary.CIPHER_FLAG))
+	await t._talk("floor_06/library_door", "", ["25730"])
+	verify(t, "密码门：要完全一致（多一位也不开）", not GameState.has_flag(PalaceLibrary.CIPHER_FLAG))
+	verify(t, "密码门的输入框只收数字", TextPrompt.matches("２５７３", ["2573"], true) and not TextPrompt.matches("", ["2573"], true))
+	await t._talk("floor_06/library_door", "", ["2573"])
+	verify(t, "密码门：输入 2573（浴场镜子 / 排班表 / 礼服尺码 / 刻痕）→ 门开了", GameState.has_flag(PalaceLibrary.CIPHER_FLAG) and not is_instance_valid(lr._door))
 	verify(t, "门开了：书房的遮罩淡掉、露出里面", lr.shades.all(func(sd): return not is_instance_valid(sd) or (sd as PalaceLibrary.StudyShade).fade))
 	lp.global_position = Cutscene.cell_to_world(lr.cells("study")[0])
 	await t._advance_until(func(): return t.seen_cuts.has("library_study") and not Cutscene.is_playing(), 60.0)
@@ -605,6 +611,7 @@ static func _palace_b(t: Node) -> void:
 	await _palace_c(t)
 	await _extra_events(t)
 	await _extra_events_c(t)
+	await _round4(t)
 
 
 static func _quiet_beetles(cr: PalaceClock) -> void:
@@ -733,11 +740,11 @@ static func _ante_events(t: Node) -> void:
 	verify(t, "宝库：女王最喜欢的花（铃兰）+ 笑脸徽记", GameState.has_flag(PalaceAnte.VAULT_LOOT) and GameState.has_flag(PalaceRoom.badge_flag("vault")))
 	# 石像问答
 	p.laugh.clear()
-	await t._talk("floor_06/ante_statue", "", [0, 0])
+	await t._talk("floor_06/ante_statue", "", [0, "十二下"])
 	verify(t, "石像问答答错：石手抓住脚踝挠脚心", p.status.is_rooted() and not GameState.has_flag(PalaceAnte.STATUE_FLAG))
 	p.status.clear_root()
-	await t._talk("floor_06/ante_statue", "", [0, 1, 1, 1])
-	verify(t, "三题全对（十三下 / 七号 / 铃兰）：女王的八音盒 + 笑脸徽记", GameState.has_flag(PalaceAnte.STATUE_FLAG)
+	await t._talk("floor_06/ante_statue", "", [0, "我觉得是十三下", "7 号", "铃兰花"])
+	verify(t, "三题全对（输入里包含「十三 / 七 / 铃兰」就算对）：女王的八音盒 + 笑脸徽记", GameState.has_flag(PalaceAnte.STATUE_FLAG)
 		and GameState.inventory.has("queen_music_box") and GameState.has_flag(PalaceRoom.badge_flag("statue")))
 	# 许愿喷泉
 	p.laugh.clear()
@@ -952,6 +959,7 @@ static func _extra_events(t: Node) -> void:
 	# ---- 隧道：失物招领、黑暗区
 	await _goto(t, "floor_06_palace_tunnels")
 	var tu := _room(t, "PalaceTunnels") as PalaceTunnels
+	verify(t, "再进隧道：路费又要付了（付过一次不算数）", not tu.toll_paid() and is_instance_valid(tu._toll_body))
 	verify(t, "五样失物都找到了（%d / 5）" % PalaceRoom.lost_found(), PalaceRoom.lost_found() == 5)
 	await t._talk("floor_06/tunnel_lost", "", [0])
 	verify(t, "交给收路费的小鬼：免路费通行证 + 笑脸徽记", GameState.has_flag(PalaceTunnels.LOST_DONE) and tu.toll_paid() and GameState.has_flag(PalaceRoom.badge_flag("lost")))
@@ -999,6 +1007,10 @@ static func _extra_events_c(t: Node) -> void:
 	verify(t, "回廊：女仆长休息室的门锁着", sv != null and is_instance_valid(sv._lounge_door))
 	if sv == null:
 		return
+	await t.get_tree().process_frame
+	await t.get_tree().process_frame
+	verify(t, "上发条的调查点挂在女仆长本人身上（跟着她走）", is_instance_valid(sv.head_maid) and is_instance_valid(sv.wind_spot)
+		and sv.wind_spot.get_parent() == sv.head_maid)
 	verify(t, "没有发条钥匙：上不了弦", not sv.wind_maid())
 	GameState.give_item(ItemDB.get_item("maid_key"), 1)
 	verify(t, "钟楼一层宝箱里的「女仆长的发条钥匙」：给她上弦 → 友好、休息室开门", sv.wind_maid() and GameState.has_flag(PalaceRoom.FRIEND_FLAG)
@@ -1277,8 +1289,9 @@ static func _palace_c(t: Node) -> void:
 	for f in [PalaceClock.CLOCKFACE_FLAG, "palace_sheet_1", PalaceRoom.badge_flag("clockface")]:
 		GameState.flags.erase(f)
 	await t._talk("floor_06/clock_face", "", [0, 0])
-	verify(t, "四层·大钟面拨错：弹出羽毛，暗格没开", not GameState.has_flag(PalaceClock.CLOCKFACE_FLAG))
-	await t._talk("floor_06/clock_face", "", [1, 3])
+	verify(t, "四层·大钟面拨错：弹出羽毛，暗格没开（钟面有 1~12 共 %d 个选项）" % t.last_options.size(),
+		not GameState.has_flag(PalaceClock.CLOCKFACE_FLAG) and t.last_options.size() == 12)
+	await t._talk("floor_06/clock_face", "", [2, 8])
 	verify(t, "大钟面拨到三点四十五分：暗格开了 → 乐谱片① + 笑脸徽记", GameState.has_flag(PalaceClock.CLOCKFACE_FLAG)
 		and GameState.has_flag("palace_sheet_1") and GameState.has_flag(PalaceRoom.badge_flag("clockface")))
 	cp.global_position = Cutscene.cell_to_world(cr.cells("up")[0])
@@ -1308,6 +1321,16 @@ static func _palace_c(t: Node) -> void:
 	verify(t, "隧道：%d 张蛛网、收路费的栅栏挡着" % (tu.webs_alive() if tu else 0), tu != null and tu.webs_alive() == 4 and not tu.toll_paid())
 	if tu == null:
 		return
+	var tlv := t.get_tree().get_first_node_in_group("main").get("level") as Node
+	var gx := tu.cells("toll")[0].x
+	var open_rows: Array = []
+	for y in 60:
+		if GridPath.walkable(tlv, Vector2i(gx, y)):
+			open_rows.append(y)
+	verify(t, "从前厅进来：出生点离栅栏够远，不会一进门就被拦（%.0f > %.0f）" % [GameState.player.global_position.distance_to(tu.toll_pos()), PalaceTunnels.TOLL_R],
+		GameState.player.global_position.distance_to(tu.toll_pos()) > PalaceTunnels.TOLL_R and not Dialogue.is_active())
+	verify(t, "收路费的栅栏在必经之路上：x=%d 这一列只有栅栏挡着的 %s 能走（南边的环路绕不过去）" % [gx, open_rows],
+		open_rows == [28, 29, 30] and is_instance_valid(tu._toll_body))
 	var up := GameState.player as PlayableCharacter
 	var umate := Duo.partner_of(up)
 	var pinkc: PlayableCharacter = up if up.character_id == "pink" else umate
@@ -1355,6 +1378,54 @@ static func _palace_c(t: Node) -> void:
 	if th == null:
 		return
 	var bp := GameState.player as PlayableCharacter
+	await t.get_tree().process_frame
+	await t.get_tree().process_frame
+	verify(t, "王座间：顶上有 Boss 血条（%s，%.0f%%）" % [th.boss_name(), th.boss_ratio() * 100.0],
+		th._bar_on and th.boss_name().contains("第一层") and is_equal_approx(th.boss_ratio(), 1.0))
+	var px0 := th.portrait_pos()
+	th._slide_dir = 1.0
+	th._tick_move(1.0)
+	var px1 := th.portrait_pos()
+	verify(t, "第一层：大画像沿北墙滑动（x %.0f → %.0f，y 不变），破绽跟着走（在画像正下方）" % [px0.x, px1.x],
+		px1.x > px0.x and is_equal_approx(px1.y, px0.y) and is_equal_approx(th.weak_point().x, px1.x) and th.weak_point().y > px1.y + 40.0)
+	await t.get_tree().process_frame
+	var hk := th.ai_hooks()
+	verify(t, "AI 搭档：优先打破绽标记（跟着画像走），不再傻站在固定点", hk.priority_target() == th._weak and hk.objective_for(bp) == null
+		and th._weak.position.distance_to(th.weak_point()) < 1.0)
+	var im := th.spawn_imp(bp.global_position + Vector2(8, 0))
+	await t.get_tree().process_frame
+	im._rise = 0.0
+	im._cool = 0.0
+	var il0 := bp.laugh.value
+	im.step(0.05)
+	verify(t, "颜料小人：从颜料里冒出来，追到人就挥小刷子挠腰（%.0f → %.0f）" % [il0, bp.laugh.value], bp.laugh.value > il0)
+	verify(t, "AI 搭档也会去打离得近的颜料小人", hk.nearest_enemy(bp, 150.0) == im)
+	bp._set_state(PlayableCharacter.State.ATTACK)
+	th._hit_cool.clear()
+	th._tick_hits(0.05)
+	bp._set_state(PlayableCharacter.State.IDLE)
+	verify(t, "颜料小人一下就打掉（碎成一滩颜料）", im.is_queued_for_deletion())
+	var far := Duo.partner_of(bp)
+	if far:
+		far.global_position = th.weak_point() + Vector2(0, 150)
+		var sh := th.stretch(far)
+		await t.get_tree().process_frame
+		verify(t, "伸长的手：先出预警线（AI 会躲）", sh.phase == "warn" and sh.is_in_group("danger"))
+		far.global_position = sh.position   # （测试：搭档离玩家太远会被拉回身边，这里放回原位）
+		var g0 := far.global_position.distance_to(th.weak_point())
+		for k in 40:
+			if far.status.is_grabbed_by(sh):
+				break
+			sh._process(0.05)
+		verify(t, "然后手顺着地面伸过去：抓住远处的人", far.status.is_grabbed_by(sh) and sh.phase == "drag")
+		for k in 10:
+			sh._process(0.1)
+		verify(t, "抓住以后拖回破绽前挠（离破绽 %.0f → %.0f）" % [g0, far.global_position.distance_to(th.weak_point())],
+			far.global_position.distance_to(th.weak_point()) < g0 - 30.0)
+		far.status.release()
+		sh._process(0.05)
+		verify(t, "挣开了就松手、缩回去", sh.phase == "back")
+		sh._end()
 	var pool := th.spawn_pool(bp.global_position)
 	pool.t = PalaceThrone.POOL_WARN + 0.1
 	th._tick_paint(0.05)
@@ -1376,6 +1447,21 @@ static func _palace_c(t: Node) -> void:
 	th.hit(PalaceThrone.LAYER_HP[0])
 	await t._advance_until(func(): return th.layer == 1 and t.seen_cuts.has("throne_layer_1") and not Cutscene.is_playing(), 60.0)
 	verify(t, "第一层画布破了：胡话 → 第二层（小画像醒了，大画像没有破绽）", th.layer == 1 and not th.vulnerable() and th.small.all(func(s): return (s as PalaceThrone.SmallPortrait).alive()))
+	verify(t, "第二层：Boss 血条换成「第二层画布」", th.boss_name().contains("第二层") and is_equal_approx(th.boss_ratio(), 1.0))
+	var fp0 := th.portrait_pos()
+	for k in 10:
+		th._tick_move(0.3)
+	verify(t, "第二层：大画像离开墙面、飘起来慢慢追人（%.0f,%.0f → %.0f,%.0f），破绽在它脚下" % [fp0.x, fp0.y, th.portrait_pos().x, th.portrait_pos().y],
+		th.portrait_pos().distance_to(fp0) > 20.0 and th._portrait.hover_to > 0.0 and th.weak_point().distance_to(th.portrait_pos()) < 20.0)
+	var s0 := th.small[0] as PalaceThrone.SmallPortrait
+	for k in 10:
+		s0._process(0.2)
+	verify(t, "小画像醒来：从墙上飞下来追人（离墙 %.0f）" % s0.position.distance_to(s0.home), s0.position.distance_to(s0.home) > 10.0)
+	s0.sleep()
+	for k in 40:
+		s0._process(0.2)
+	verify(t, "小画像被打掉：飞回墙上睡觉", s0.position.distance_to(s0.home) < 2.0)
+	s0.revive()
 	for s in th.small:
 		for k in PalaceThrone.SMALL_HP:
 			(s as PalaceThrone.SmallPortrait).hurt()
@@ -1389,6 +1475,12 @@ static func _palace_c(t: Node) -> void:
 	await t._advance_until(func(): return th.layer == 2 and t.seen_cuts.has("throne_layer_2") and not Cutscene.is_playing(), 60.0)
 	await t._advance_until(func(): return th.inside != null, 10.0)
 	var inner := th.inside
+	var mid := Cutscene.cell_to_world(th.cells("arena")[0])
+	for k in 20:
+		th._tick_move(0.3)
+	verify(t, "第三层：大画像飘到场地中央转圈（离中心 %.0f）" % th.portrait_pos().distance_to(mid), th.portrait_pos().distance_to(mid) <= PalaceThrone.ORBIT_R + 6.0)
+	await t.get_tree().process_frame
+	verify(t, "被拉进画里：画面加上水彩滤镜", is_instance_valid(th._water) == (GameState.player == inner))
 	verify(t, "第三层：被拉进画里（在画里的世界）", inner != null and inner.global_position.distance_to(Cutscene.cell_to_world(th.cells("paint_start")[0])) < 30.0)
 	if inner == null:
 		return
@@ -1437,3 +1529,64 @@ static func _room(t: Node, cls: String) -> Node:
 			return nd
 	return null
 
+
+
+
+## 第四轮：道具提示、前厅搭档闲逛 + 提示、选项页滚动
+static func _round4(t: Node) -> void:
+	_calm(t)
+	await _goto(t, "floor_06_palace_ante")
+	var an := _room(t, "PalaceAnte") as PalaceAnte
+	await t.get_tree().process_frame
+	await t.get_tree().process_frame
+	var lead := GameState.player as PlayableCharacter
+	var mate := Duo.partner_of(lead)
+	verify(t, "前厅：搭档不跟随、自己闲逛（roam），还能走过去说话", mate != null and mate.roam and mate.partner_talk == PalaceAnte.HINT_FILE)
+	if mate == null:
+		return
+	var wt: Variant = an.ai_hooks().objective_for(mate)
+	var mid := an.world(an._tile_origin + Vector2i(1, 1))
+	verify(t, "闲逛点（%s）不在地砖上、走过去的路不穿过地砖" % str(wt), wt is Vector2 and (wt as Vector2).distance_to(mid) > 40.0
+		and Geometry2D.get_closest_point_to_segment(mid, mate.global_position, wt).distance_to(mid) >= PalaceAnte.TILE_CLEAR - 0.1)
+	var tp0 := an.tile_progress
+	mate.global_position = mid
+	an._process(0.05)
+	verify(t, "搭档路过地砖：不算踩（只认玩家操控的那个）", an.tile_progress == tp0 and not an._last_cell.has(mate.get_instance_id()))
+	mate.global_position = an.world(PalaceAnte.WANDER[0])
+	var ks := an.hint_keys()
+	verify(t, "搭档的提示按进度挑（现在：%s）" % str(ks), not ks.is_empty() and (ks as Array).all(func(k): return PalaceAnte.HINT_FILE != "" and str(k) != ""))
+	GameState.vars["ante_hint"] = str(ks[0])
+	var said := []
+	var cb := func(f: String, n: String): said.append(n)
+	Dialogue.runner.node_entered.connect(cb)
+	await t._talk(PalaceAnte.HINT_FILE, "")
+	Dialogue.runner.node_entered.disconnect(cb)
+	verify(t, "和搭档说话：说一句「%s」的提示（%s）" % [ks[0], str(said)], said.size() == 1 and str(said[0]).begins_with(str(ks[0])))
+	# 道具提示：拿到笑脸徽记（之前没提示过）→ 等对话空下来弹一小段
+	GameState.set_flag(PalaceRoom.item_hint_flag("smile_badge"), false)
+	var hs := []
+	var cb2 := func(f: String, n: String): hs.append(f + ":" + n)
+	Dialogue.runner.node_entered.connect(cb2)
+	await t._advance_until(func(): return hs.has(PalaceRoom.ITEM_HINT_FILE + ":smile_badge") and not Dialogue.runner.is_running(), 10.0)
+	Dialogue.runner.node_entered.disconnect(cb2)
+	verify(t, "拿到跨图道具（笑脸徽记）：弹出一小段提示说用处，只弹一次", hs.has(PalaceRoom.ITEM_HINT_FILE + ":smile_badge")
+		and GameState.has_flag(PalaceRoom.item_hint_flag("smile_badge")) and not PalaceRoom.pending_item_hints().has("smile_badge"))
+	# 选项页：12 个选项 → 只显示 6 个，选到下面会滚动，每次打开从最上面开始
+	var cm := Dialogue.runner.choice_menu
+	var opts := []
+	for i in 12:
+		opts.append("选项 %d" % (i + 1))
+	cm.ask(opts, "滚动测试")
+	await t.get_tree().process_frame
+	var shown0 := cm.box.get_children().filter(func(c): return c is Label and (c as Label).text.contains("选项")).size()
+	cm.selected = 9
+	cm._refresh()
+	await t.get_tree().process_frame
+	var top9 := cm.top
+	cm.choose(0)
+	cm.ask(opts, "")
+	await t.get_tree().process_frame
+	verify(t, "选项太多：一次只显示 %d 个，选到第 10 个滚到 top=%d，重新打开从最上面开始（top=%d）" % [shown0, top9, cm.top],
+		shown0 == ChoiceMenu.MAX_SHOWN and top9 == 4 and cm.top == 0)
+	cm.choose(0)
+	await t.get_tree().process_frame

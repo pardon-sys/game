@@ -1,0 +1,356 @@
+{
+	"name": "搭档",
+	"entries": [
+		{
+			"if": {
+				"eq": {
+					"ante_hint": "bells"
+				},
+				"hero": "blue"
+			},
+			"node": "bells_p"
+		},
+		{
+			"if": {
+				"eq": {
+					"ante_hint": "bells"
+				},
+				"hero": "pink"
+			},
+			"node": "bells_b"
+		},
+		{
+			"if": {
+				"eq": {
+					"ante_hint": "sheets"
+				},
+				"hero": "blue"
+			},
+			"node": "sheets_p"
+		},
+		{
+			"if": {
+				"eq": {
+					"ante_hint": "sheets"
+				},
+				"hero": "pink"
+			},
+			"node": "sheets_b"
+		},
+		{
+			"if": {
+				"eq": {
+					"ante_hint": "tiles"
+				},
+				"hero": "blue"
+			},
+			"node": "tiles_p"
+		},
+		{
+			"if": {
+				"eq": {
+					"ante_hint": "tiles"
+				},
+				"hero": "pink"
+			},
+			"node": "tiles_b"
+		},
+		{
+			"if": {
+				"eq": {
+					"ante_hint": "statue"
+				},
+				"hero": "blue"
+			},
+			"node": "statue_p"
+		},
+		{
+			"if": {
+				"eq": {
+					"ante_hint": "statue"
+				},
+				"hero": "pink"
+			},
+			"node": "statue_b"
+		},
+		{
+			"if": {
+				"eq": {
+					"ante_hint": "badges"
+				},
+				"hero": "blue"
+			},
+			"node": "badges_p"
+		},
+		{
+			"if": {
+				"eq": {
+					"ante_hint": "badges"
+				},
+				"hero": "pink"
+			},
+			"node": "badges_b"
+		},
+		{
+			"if": {
+				"eq": {
+					"ante_hint": "toll"
+				},
+				"hero": "blue"
+			},
+			"node": "toll_p"
+		},
+		{
+			"if": {
+				"eq": {
+					"ante_hint": "toll"
+				},
+				"hero": "pink"
+			},
+			"node": "toll_b"
+		},
+		{
+			"if": {
+				"eq": {
+					"ante_hint": "maid"
+				},
+				"hero": "blue"
+			},
+			"node": "maid_p"
+		},
+		{
+			"if": {
+				"eq": {
+					"ante_hint": "maid"
+				},
+				"hero": "pink"
+			},
+			"node": "maid_b"
+		},
+		{
+			"if": {
+				"eq": {
+					"ante_hint": "ball"
+				},
+				"hero": "blue"
+			},
+			"node": "ball_p"
+		},
+		{
+			"if": {
+				"eq": {
+					"ante_hint": "ball"
+				},
+				"hero": "pink"
+			},
+			"node": "ball_b"
+		},
+		{
+			"if": {
+				"eq": {
+					"ante_hint": "box"
+				},
+				"hero": "blue"
+			},
+			"node": "box_p"
+		},
+		{
+			"if": {
+				"eq": {
+					"ante_hint": "box"
+				},
+				"hero": "pink"
+			},
+			"node": "box_b"
+		},
+		{
+			"if": {
+				"eq": {
+					"ante_hint": "idle"
+				},
+				"hero": "blue"
+			},
+			"node": "idle_p"
+		},
+		{
+			"if": {
+				"eq": {
+					"ante_hint": "idle"
+				},
+				"hero": "pink"
+			},
+			"node": "idle_b"
+		},
+		{
+			"if": {
+				"hero": "blue"
+			},
+			"node": "idle_p"
+		},
+		{
+			"node": "idle_b"
+		}
+	],
+	"nodes": {
+		"bells_p": {
+			"lines": [
+				{
+					"text": "石像说，钟楼的钟敲十三下，北边的门就会开……钟楼最上面，好像有拉钟的绳子。",
+					"speaker": "公主"
+				}
+			]
+		},
+		"bells_b": {
+			"lines": [
+				{
+					"text": "……北边的门。……要钟楼的钟，敲十三下。……钟绳在最上面。",
+					"speaker": "蓝色的公主"
+				}
+			]
+		},
+		"sheets_p": {
+			"lines": [
+				{
+					"text": "地上这些笑脸地砖，好像要乐谱才会亮……钟楼、仆人回廊、浴场，到处找找？",
+					"speaker": "公主"
+				}
+			]
+		},
+		"sheets_b": {
+			"lines": [
+				{
+					"text": "……地砖。……要三片乐谱。……钟楼、回廊、浴场。",
+					"speaker": "蓝色的公主"
+				}
+			]
+		},
+		"tiles_p": {
+			"lines": [
+				{
+					"text": "三片乐谱都有了！上面写的……好像是踩地砖的顺序？",
+					"speaker": "公主"
+				}
+			]
+		},
+		"tiles_b": {
+			"lines": [
+				{
+					"text": "……乐谱上的字。……是踩地砖的顺序。",
+					"speaker": "蓝色的公主"
+				}
+			]
+		},
+		"statue_p": {
+			"lines": [
+				{
+					"text": "石像问的，都是王宫里的旧事……图书馆的书、衣帽间的礼服、宝库里的东西，说不定有答案。",
+					"speaker": "公主"
+				}
+			]
+		},
+		"statue_b": {
+			"lines": [
+				{
+					"text": "……石像的问题。……答案在王宫里。……书、礼服、花。",
+					"speaker": "蓝色的公主"
+				}
+			]
+		},
+		"badges_p": {
+			"lines": [
+				{
+					"text": "徽记台要七枚笑脸徽记……打倒厉害的家伙、解开机关，好像都会掉一枚。",
+					"speaker": "公主"
+				}
+			]
+		},
+		"badges_b": {
+			"lines": [
+				{
+					"text": "……七枚笑脸。……每解开一处，就有一枚。",
+					"speaker": "蓝色的公主"
+				}
+			]
+		},
+		"toll_p": {
+			"lines": [
+				{
+					"text": "隧道里收路费的小鬼，好像丢了好多东西……帮它找回来，说不定就不收钱了。",
+					"speaker": "公主"
+				}
+			]
+		},
+		"toll_b": {
+			"lines": [
+				{
+					"text": "……收路费的小鬼。……丢了五样东西。……王宫里到处都是。",
+					"speaker": "蓝色的公主"
+				}
+			]
+		},
+		"maid_p": {
+			"lines": [
+				{
+					"text": "那把发条钥匙……女仆长背后，是不是有个发条孔？",
+					"speaker": "公主"
+				}
+			]
+		},
+		"maid_b": {
+			"lines": [
+				{
+					"text": "……发条钥匙。……女仆长的背后。",
+					"speaker": "蓝色的公主"
+				}
+			]
+		},
+		"ball_p": {
+			"lines": [
+				{
+					"text": "婴儿房吊铃的那首曲子……训练场的铜钟、这里的地砖，好像都能「弹」出来。",
+					"speaker": "公主"
+				}
+			]
+		},
+		"ball_b": {
+			"lines": [
+				{
+					"text": "……吊铃的曲子。……铜钟。……地砖。……三处一起。",
+					"speaker": "蓝色的公主"
+				}
+			]
+		},
+		"box_p": {
+			"lines": [
+				{
+					"text": "女王的八音盒……王座间的画像，会不会怕这个声音？",
+					"speaker": "公主"
+				}
+			]
+		},
+		"box_b": {
+			"lines": [
+				{
+					"text": "……八音盒。……画像，也许会发呆。",
+					"speaker": "蓝色的公主"
+				}
+			]
+		},
+		"idle_p": {
+			"lines": [
+				{
+					"text": "……这里好安静。我们分头到处看看吧？",
+					"speaker": "公主"
+				}
+			]
+		},
+		"idle_b": {
+			"lines": [
+				{
+					"text": "……我在这边看看。……有事叫我。",
+					"speaker": "蓝色的公主"
+				}
+			]
+		}
+	}
+}

@@ -41,6 +41,8 @@ TEXT = {
     "escape": ["出来了！", "……回来了。"],
     "small_up": ["墙上的小画像全醒了！", "……小画像。……先打它们。"],
     "weak": ["画布露出破绽了！打它！", "……破绽。……现在。"],
+    "imp": ["颜、颜料小人拿刷子刷腰——呀哈哈！", "……颜料做的小东西。……一下就碎。"],
+    "stretch": ["手、手伸过来了——被拖过去了！", "……被抓住了。……拖回画前面了。"],
     "gibberish": GIBBERISH,
 }
 
@@ -455,6 +457,11 @@ def burst_finale():
         line(N, "（画布正中央，被烧出了一个圆圆的缺口。缺口的边缘闪着金色的光）"),
         line(PORTRAIT, LAST_WORDS),
         line(N, "（画像不再说话了。画里女王那张糊掉的脸，好像——轻轻地笑了一下）"),
+        {"actions": [A("sfx", sound="paper", volume=-6.0)], "wait": 0.8},
+        line(N, "（糊掉的颜料慢慢往下流。那双眼睛，最后转向了粉色公主）"),
+        line(PORTRAIT, "……你……不是她……"),
+        line(P, "……诶？", "surprise"),
+        line(N, "（没有回答。画布暗了下去，只剩缺口边缘的一圈金光）"),
     ]
     return {"name": "两个人的光", "letterbox": True, "skippable": False, "steps": s}
 

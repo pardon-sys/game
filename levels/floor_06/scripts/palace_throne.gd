@@ -14,7 +14,17 @@ extends PalaceRoom
 ##   两个都倒下：按在哪一层输播不同的小剧场（都有 CG）：第一层 throne_fail_paint（被涂成画）、第二层 throne_fail_tea（小画像的茶会）、
 ##     第三层画框变强以后 throne_fail_frame（两个人都被画进画里）、第三层其他时候 throne_fail（画像小手按在王座台阶上）→ 回入口，当前这一层回满。
 ##   逃出画：小剧场 throne_escape（短）→ throne_finale。
-## 测试：layer、hp、vulnerable()、hit(n)、pools、small、pull()、inside、escape()、fail_inside()、empowered、frame_hp、win。
+## 第四轮（会动的画像）：
+##   大画像：第一层沿北墙左右滑（SLIDE_SPEED，破绽跟着画像走、在画像正下方的王座前）；第二层离开墙面飘起来慢慢追人（FLOAT_SPEED）；
+##     第三层飘到场地中央转圈（ORBIT_R）。破绽一直在画像脚下（weak_point()；_weak = WeakMark，金色光圈，AI 的优先目标）。
+##   小画像：第二层醒来就从墙上飞下来、飘着追人（保持 SMALL_KEEP 的距离甩手），被打掉 → 飞回墙上睡觉，再醒来重新飞下来。
+##   颜料小人（PaintImp，图 paint_imp.png）：第一、二层从颜料坑里冒出来（IMP_EVERY 秒一只，最多 IMP_MAX），追人挠腰，一下就打掉。
+##   伸长的手（StretchHand）：每 STRETCH_EVERY 秒对离画像远的人：地上先出预警线（danger 组，AI 会躲）→ 手顺着地面伸过去 →
+##     抓到 = status.grab（连按挣扎），拖回破绽前挠腋窝。
+##   Boss 血条：GameState.boss_changed.emit(self)（BossBar 读 boss_name() / boss_ratio()）。
+##   特效：throne_fx.gd（颜料飞溅、画布碎片、金色笔触、闪屏、画里的水彩滤镜）。
+## 测试：layer、hp、vulnerable()、hit(n)、pools、small、pull()、inside、escape()、fail_inside()、empowered、frame_hp、win、
+##   imps、spawn_imp(at)、stretch(pc)、portrait_pos()、boss_ratio()、boss_name()。
 
 const MAP := "floor_06_palace_throne"
 const BOSS_FLAG := "palace_boss_done"
@@ -36,6 +46,21 @@ const PULL_DELAY := 1.5
 const PAINT_TIME := 45.0
 const BRUSH_SPEED := 46.0
 const FRAME_HP := 10
+const SLIDE_SPEED := 26.0
+const SLIDE_CELLS := Vector2i(23, 47)          # 第一层沿北墙滑动的 x 范围（格）
+const ARENA := Rect2i(18, 14, 35, 22)          # 第二层飘着追人的范围（格）
+const FLOAT_SPEED := 15.0
+const HOVER := 26.0
+const ORBIT_R := 44.0
+const ORBIT_SPEED := 0.55
+const IMP_EVERY := 6.0
+const IMP_MAX := 4
+const IMP_HIT_R := 20.0
+const STRETCH_EVERY := 6.5
+const STRETCH_WARN := 0.9
+const STRETCH_SPEED := 230.0
+const SMALL_FLY := 30.0
+const SMALL_KEEP := 46.0
 ## 追加事件：女王的八音盒（石像问答的奖励，背包里放在 R 键上）：每场 BOX_USES 次，画像发呆 BOX_TIME 秒、一直露破绽，不泼颜料不伸手
 const PORTRAIT_BACK := "palace_portrait_back"
 var _frame_view: Node2D
@@ -64,6 +89,14 @@ var _pull_t := -1.0
 var _portrait: PortraitView
 var _gate: StaticBody2D
 var _gib_t := 12.0
+var imps: Array = []
+var _imp_t := IMP_EVERY * 0.5
+var _stretch_t := STRETCH_EVERY
+var _slide_dir := 1.0
+var _orbit := 0.0
+var _weak: WeakMark
+var _water: ThroneFx.Watercolor
+var _bar_on := false
 
 
 func map_id() -> String:
@@ -77,6 +110,11 @@ func _ready() -> void:
 	_portrait.room = self
 	_portrait.position = world(cells("portrait")[0]) + Vector2(0, 8)
 	add_view(_portrait)
+	_weak = WeakMark.new()
+	_weak.room = self
+	_weak.set_meta("hit_radius", 10.0)
+	_weak.position = weak_point()
+	add_view(_weak)
 	_gate = StaticBody2D.new()
 	_gate.collision_layer = 1
 	var sh := CollisionShape2D.new()
@@ -92,6 +130,7 @@ func _ready() -> void:
 		s.room = self
 		s.idx = i
 		s.position = world(c)
+		s.home = s.position
 		add_view(s)
 		small.append(s)
 		i += 1
@@ -119,8 +158,53 @@ func _ready() -> void:
 		GameState.notify("「女王的八音盒」放在 R 键上了（每场能用 %d 次）" % BOX_USES)
 
 
+## 破绽：一直在画像脚下。第一层画像挂在北墙上滑动 → 破绽在它正下方的王座前；飘起来以后就在它影子上
 func weak_point() -> Vector2:
-	return world(cells("throne")[0]) + Vector2(0, -6)
+	if _portrait == null:
+		return world(cells("throne")[0]) + Vector2(0, -6)
+	if layer == 0 and not empowered:
+		return Vector2(_portrait.position.x, world(cells("throne")[0]).y - 6.0)
+	return _portrait.position + Vector2(0, 14)
+
+
+func portrait_pos() -> Vector2:
+	return _portrait.position
+
+
+# ------------------------------------------------------------------ Boss 血条（BossBar 鸭子类型）
+func boss_name() -> String:
+	if empowered:
+		return "封笑的女王画像·变强的画框"
+	return "封笑的女王画像·第%s层画布" % ["一", "二", "三"][clampi(layer, 0, 2)]
+
+
+func boss_ratio() -> float:
+	if win:
+		return 0.0
+	if empowered:
+		return float(frame_hp) / FRAME_HP
+	if layer < 2:
+		return float(hp) / float(LAYER_HP[layer])
+	if inside:
+		return 1.0 - inside_t / PAINT_TIME   # 画里：剩下的时间
+	return 1.0
+
+
+func _bar(on: bool) -> void:
+	if on == _bar_on:
+		return
+	_bar_on = on
+	GameState.boss_changed.emit(self if on else null)
+
+
+func _exit_tree() -> void:
+	for m in members():
+		(m as PlayableCharacter).roam = false
+	if _bar_on:
+		GameState.boss_changed.emit(null)
+	if is_instance_valid(_water):
+		_water.queue_free()
+	super()
 
 
 func vulnerable() -> bool:
@@ -134,16 +218,26 @@ func vulnerable() -> bool:
 
 
 func _process(delta: float) -> void:
+	if is_instance_valid(_weak):
+		_weak.position = weak_point()
+	_tick_water()
 	if win or busy():
 		return
 	if not started:
 		started = true
+		# Boss 战里两个人都不会被「拉回玩家身边」（不然被拉进画里时，外面的搭档会被瞬移进画里）
+		for m in members():
+			(m as PlayableCharacter).roam = true
 		return
+	_bar(true)
+	_tick_move(delta)
+	_tick_imps(delta)
 	_tick_hits(delta)
 	box_t = maxf(0.0, box_t - delta)
 	if box_t <= 0.0:
 		_tick_paint(delta)
 		_tick_hands(delta)
+		_tick_stretch(delta)
 	if layer == 1:
 		vuln_t = maxf(0.0, vuln_t - delta)
 		if vuln_t <= 0.0 and small.all(func(s): return not (s as SmallPortrait).alive()):
@@ -198,10 +292,18 @@ func _tick_hits(delta: float) -> void:
 		var k := pc.get_instance_id()
 		if float(_hit_cool.get(k, 0.0)) > 0.0:
 			continue
+		# 颜料小人：一下就打掉
+		for im in imps:
+			if is_instance_valid(im) and pc.global_position.distance_to((im as Node2D).position) <= IMP_HIT_R:
+				_hit_cool[k] = HIT_COOL * 0.5
+				(im as PaintImp).pop()
+				break
+		if float(_hit_cool.get(k, 0.0)) > 0.0:
+			continue
 		# 小画像
 		for s in small:
 			var sp := s as SmallPortrait
-			if sp.alive() and pc.global_position.distance_to(sp.position) <= 24.0:
+			if sp.alive() and pc.global_position.distance_to(sp.position) <= 26.0:
 				_hit_cool[k] = HIT_COOL
 				sp.hurt()
 				if layer == 1 and small.all(func(x): return not (x as SmallPortrait).alive()):
@@ -216,6 +318,8 @@ func _tick_hits(delta: float) -> void:
 
 
 func hit(n: int) -> void:
+	ThroneFx.gold(get_parent(), weak_point())
+	ThroneFx.splash(get_parent(), weak_point() + Vector2(randf_range(-8, 8), -4), randf() < 0.5, 0.7)
 	if empowered:
 		frame_hp -= n
 		_portrait.flash()
@@ -233,6 +337,12 @@ func hit(n: int) -> void:
 
 func _break_layer() -> void:
 	_clear_pools()
+	_clear_imps()
+	ThroneFx.shards(get_parent(), _portrait.position + Vector2(0, -_portrait.hover), 14)
+	ThroneFx.gold(get_parent(), _portrait.position)
+	ThroneFx.flash(get_tree(), Color(1, 0.95, 0.9, 0.8), 0.5)
+	for m in members():
+		(m as PlayableCharacter).shake_camera(0.5, 4.0)
 	var id := "throne_layer_%d" % (layer + 1)
 	layer += 1
 	await Cutscene.play(id)
@@ -281,6 +391,7 @@ func _tick_paint(delta: float) -> void:
 
 func spawn_pool(at: Vector2) -> PaintPool:
 	var p := PaintPool.new()
+	p.host = get_parent()
 	p.position = at
 	p.add_to_group("danger")
 	p.set_meta("rect", Rect2(at - Vector2(POOL_R, POOL_R), Vector2(POOL_R, POOL_R) * 2.0))
@@ -304,13 +415,132 @@ func _tick_hands(delta: float) -> void:
 	_hand_t = HAND_EVERY
 	for m in members():
 		var pc := m as PlayableCharacter
-		if pc != inside and pc.global_position.distance_to(weak_point()) <= HAND_R:
+		if pc != inside and pc.global_position.distance_to(weak_point()) <= (HAND_R if layer == 0 else HAND_R * 0.6):
 			pc.status.apply_root(1.0)
 			var h := HitData.make_tickle(self, 6.0)
 			h.zone = "armpit"
 			pc.receive_hit(h)
 			PalaceRoom.say_random(pc, "hand")
 			_portrait.reach(pc.global_position)
+
+
+# ------------------------------------------------------------------ 画像移动
+func _tick_move(delta: float) -> void:
+	if box_t > 0.0:
+		_portrait.hover_to = 0.0 if layer == 0 and not empowered else HOVER * 0.6   # 八音盒：发呆，不动
+		return
+	var pos := _portrait.position
+	if layer == 0 and not empowered:
+		# 第一层：挂在北墙上左右滑
+		_portrait.hover_to = 0.0
+		var x0 := world(Vector2i(SLIDE_CELLS.x, 7)).x
+		var x1 := world(Vector2i(SLIDE_CELLS.y, 7)).x
+		pos.x += _slide_dir * SLIDE_SPEED * delta
+		if pos.x >= x1:
+			pos.x = x1
+			_slide_dir = -1.0
+		elif pos.x <= x0:
+			pos.x = x0
+			_slide_dir = 1.0
+	elif layer == 1:
+		# 第二层：离开墙面，慢慢飘过去追人
+		_portrait.hover_to = HOVER
+		var near := _nearest_member(pos)
+		if near:
+			pos = pos.move_toward(near.global_position + Vector2(0, -10), FLOAT_SPEED * delta)
+	else:
+		# 第三层：飘到场地中央转圈
+		_portrait.hover_to = HOVER
+		_orbit += ORBIT_SPEED * delta
+		var c := world(cells("arena")[0])
+		pos = pos.move_toward(c + Vector2(cos(_orbit), sin(_orbit) * 0.7) * ORBIT_R, 60.0 * delta)
+	var lo := world(ARENA.position)
+	var hi := world(ARENA.end)
+	if layer >= 1 or empowered:
+		pos = pos.clamp(lo, hi)
+	_portrait.position = pos
+
+
+func _nearest_member(from: Vector2) -> PlayableCharacter:
+	var best: PlayableCharacter = null
+	for m in members():
+		var pc := m as PlayableCharacter
+		if pc == inside or Downed.is_downed(pc):
+			continue
+		if best == null or pc.global_position.distance_to(from) < best.global_position.distance_to(from):
+			best = pc
+	return best
+
+
+# ------------------------------------------------------------------ 颜料小人
+func _tick_imps(delta: float) -> void:
+	imps = imps.filter(func(x): return is_instance_valid(x))
+	for im in imps:
+		(im as PaintImp).step(delta)
+	if layer >= 2 or empowered or box_t > 0.0:
+		return
+	_imp_t -= delta
+	if _imp_t > 0.0:
+		return
+	_imp_t = IMP_EVERY * (0.8 if layer == 1 else 1.0)
+	if imps.size() >= IMP_MAX:
+		return
+	var src: Array = pools.filter(func(p): return is_instance_valid(p) and (p as PaintPool).active())
+	if src.is_empty():
+		return
+	spawn_imp((src.pick_random() as Node2D).position)
+
+
+func spawn_imp(at: Vector2) -> PaintImp:
+	var im := PaintImp.new()
+	im.room = self
+	im.position = at
+	add_view(im)
+	imps.append(im)
+	ThroneFx.splash(get_parent(), at, randf() < 0.5, 0.6)
+	return im
+
+
+func _clear_imps() -> void:
+	for im in imps:
+		if is_instance_valid(im):
+			(im as Node).queue_free()
+	imps.clear()
+
+
+# ------------------------------------------------------------------ 伸长的手
+func _tick_stretch(delta: float) -> void:
+	if layer >= 2 and not empowered:
+		return
+	_stretch_t -= delta
+	if _stretch_t > 0.0:
+		return
+	_stretch_t = STRETCH_EVERY * (0.7 if empowered else 1.0)
+	var far: Array = members().filter(func(m): return m != inside and not Downed.is_downed(m as PlayableCharacter) \
+			and (m as Node2D).global_position.distance_to(weak_point()) > HAND_R)
+	if not far.is_empty():
+		stretch(far.pick_random() as PlayableCharacter)
+
+
+## 对着 pc 现在站的地方伸一只手：先出预警线，再伸过去，抓到就拖回破绽前挠
+func stretch(pc: PlayableCharacter) -> StretchHand:
+	var h := StretchHand.new()
+	h.room = self
+	h.position = pc.global_position
+	h.from = _portrait.position + Vector2(0, 6)
+	add_view(h)
+	return h
+
+
+# ------------------------------------------------------------------ 画里的水彩滤镜（只在操控的人被拉进画里时）
+func _tick_water() -> void:
+	var on := inside != null and not empowered and GameState.player == inside and not win
+	if on and not is_instance_valid(_water):
+		_water = ThroneFx.Watercolor.new()
+		get_tree().root.add_child(_water)
+	elif not on and is_instance_valid(_water):
+		_water.queue_free()
+		_water = null
 
 
 # ------------------------------------------------------------------ 拉进画里
@@ -321,6 +551,8 @@ func pull() -> void:
 	inside = p
 	inside_t = 0.0
 	PalaceRoom.say_random(p, "pulled")
+	ThroneFx.flash(get_tree(), Color(1, 0.75, 0.9, 0.85), 0.6)
+	ThroneFx.splash(get_parent(), p.global_position, false, 1.4)
 	Fx.burst(get_parent(), p.global_position + Vector2(0, -10), "dust", 16, 50.0, 0.6, Vector2(0, -10), Color(0.9, 0.6, 0.9))
 	p.global_position = world(cells("paint_start")[0])
 	if p.get("camera"):
@@ -374,6 +606,10 @@ func _free_inside() -> void:
 
 func _finale() -> void:
 	_clear_pools()
+	_clear_imps()
+	_bar(false)
+	ThroneFx.shards(get_parent(), _portrait.position + Vector2(0, -_portrait.hover), 20)
+	ThroneFx.flash(get_tree(), Color(1, 0.9, 0.95, 0.9), 0.8)
 	win = true
 	_portrait.burned = true
 	await Cutscene.play("throne_finale")
@@ -401,6 +637,7 @@ func on_defeat(reason: String) -> void:
 	_defeat_busy = true
 	await CG.play_theater(defeat_theater())
 	_clear_pools()
+	_clear_imps()
 	if inside:
 		inside.status.clear_root()
 		inside.modulate.a = 1.0
@@ -424,19 +661,32 @@ class ThroneHooks extends BattleAIHooks:
 	func _init(room: PalaceThrone) -> void:
 		r = room
 
+	## 小画像醒着 → 打最近的一幅；露破绽 → 打破绽（WeakMark 跟着画像走）
 	func priority_target() -> Variant:
-		if r.layer == 1:
+		if r.layer == 1 and not r.vulnerable():
+			var best: Node2D = null
+			var lead := GameState.player
 			for s in r.small:
-				if (s as SmallPortrait).alive():
-					return s
-		if r.vulnerable():
-			return r._portrait
+				var sp := s as SmallPortrait
+				if sp.alive() and (best == null or (is_instance_valid(lead) and sp.position.distance_to(lead.global_position) < best.position.distance_to(lead.global_position))):
+					best = sp
+			if best:
+				return best
+		if r.vulnerable() and is_instance_valid(r._weak):
+			return r._weak
 		return null
 
-	func objective_for(_ai: PlayableCharacter) -> Variant:
-		if r.vulnerable():
-			return r.weak_point() + Vector2(0, 20)
-		return null
+	## 颜料小人不是 Actor：这里交给 AI（离得近的先打掉）
+	func nearest_enemy(ai: PlayableCharacter, rad: float) -> Variant:
+		var best: Node2D = null
+		var bd := minf(rad, 70.0)
+		for im in r.imps:
+			if is_instance_valid(im):
+				var d := (im as Node2D).position.distance_to(ai.global_position)
+				if d < bd:
+					bd = d
+					best = im
+		return best
 
 
 # ------------------------------------------------------------------ 画面
@@ -448,6 +698,10 @@ class PortraitView extends Node2D:
 	var _reach := 0.0
 	var _reach_to := Vector2.ZERO
 	var _spr: Sprite2D
+	var hover := 0.0
+	var hover_to := 0.0
+	var _t := 0.0
+	var _drip := 0.6
 
 	func _ready() -> void:
 		if ResourceLoader.exists(SHEET):
@@ -467,12 +721,30 @@ class PortraitView extends Node2D:
 	func _process(d: float) -> void:
 		_flash = maxf(0.0, _flash - d)
 		_reach = maxf(0.0, _reach - d)
+		_t += d
+		hover = move_toward(hover, hover_to, 30.0 * d)
+		if _spr:
+			_spr.offset = Vector2(0, -40 - hover + (sin(_t * 2.0) * 2.5 if hover > 1.0 else 0.0))
+		# 飘起来以后一路往下滴颜料
+		if hover > 4.0 and room and not room.win and not burned:
+			_drip -= d
+			if _drip <= 0.0:
+				_drip = randf_range(0.25, 0.5)
+				Fx.burst(get_parent(), position + Vector2(randf_range(-14, 14), -hover - 8), "drop", 2, 10.0, 0.6, Vector2(0, 60), Color.from_hsv(randf(), 0.5, 1.0))
 		if _spr:
 			_spr.frame = 2 if burned else (1 if room and (room.layer >= 1 or room.empowered) else 0)
 			_spr.modulate = Color(1.6, 1.3, 1.6) if _flash > 0.0 else (Color(1.2, 0.9, 1.3) if room and room.empowered else Color.WHITE)
 		queue_redraw()
 
 	func _draw() -> void:
+		if hover > 1.0:
+			# 飘起来时地上的影子（越高越小越淡）
+			draw_set_transform(Vector2(0, 2), 0.0, Vector2(1, 0.4))
+			draw_circle(Vector2.ZERO, 22.0 - hover * 0.2, Color(0.15, 0.05, 0.15, 0.35))
+			draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
+		if room and room.empowered:
+			# 变强的画框：一圈不安的紫光
+			draw_arc(Vector2(0, -40 - hover), 36.0 + sin(_t * 6.0) * 3.0, 0, TAU, 32, Color(0.85, 0.4, 1.0, 0.5), 3.0)
 		if not _spr:
 			var r := Rect2(-22, -80, 44, 60)
 			draw_rect(r.grow(4), Color(0.8, 0.62, 0.25))
@@ -483,7 +755,7 @@ class PortraitView extends Node2D:
 				draw_circle(Vector2(0, -50), 12.0, Color(0.1, 0.05, 0.08))
 				draw_arc(Vector2(0, -50), 12.0, 0, TAU, 20, Color(1, 0.8, 0.3), 2.0)
 		if _reach > 0.0:
-			draw_line(Vector2(0, -40), _reach_to, Color(0.9, 0.6, 0.8, 0.8), 3.0)
+			draw_line(Vector2(0, -40 - hover), _reach_to, Color(0.9, 0.6, 0.8, 0.8), 3.0)
 			draw_circle(_reach_to, 4.0, Color(0.95, 0.85, 0.8))
 		if room and not room.win:
 			var total: int = PalaceThrone.FRAME_HP if room.empowered else (PalaceThrone.LAYER_HP[room.layer] if room.layer < 2 else 1)
@@ -497,6 +769,8 @@ class SmallPortrait extends Node2D:
 	var room: PalaceThrone
 	var idx := 0
 	var hp := 0
+	var home := Vector2.ZERO
+	var _lift := 0.0
 	var _shot := 0.0
 	var _spr: Sprite2D
 	var _t := 0.0
@@ -527,17 +801,42 @@ class SmallPortrait extends Node2D:
 	func hurt() -> void:
 		hp -= 1
 		Audio.play("gate", -8.0, 0.0, 1.9)
+		ThroneFx.splash(get_parent(), position + Vector2(0, -_lift), idx % 2 == 1, 0.5)
+		modulate = Color(1.8, 1.6, 1.8)
+		create_tween().tween_property(self, "modulate", Color.WHITE, 0.2)
 		if hp <= 0:
-			Fx.burst(get_parent(), position + Vector2(0, -20), "dust", 10, 40.0, 0.5, Vector2(0, -8), Color(0.9, 0.7, 0.4))
+			ThroneFx.shards(get_parent(), position + Vector2(0, 10 - _lift), 5)
+			Fx.burst(get_parent(), position + Vector2(0, -20 - _lift), "dust", 10, 40.0, 0.5, Vector2(0, -8), Color(0.9, 0.7, 0.4))
 
 	func _process(d: float) -> void:
 		_t += d
 		if _spr:
 			_spr.frame = 1 if alive() else 0
 			_spr.modulate.a = 1.0 if alive() or room == null or room.layer != 1 else 0.45
+			_spr.offset = Vector2(0, -22 - _lift + (sin(_t * 3.0 + idx) * 2.0 if _lift > 1.0 else 0.0))
 		queue_redraw()
-		if room == null or not alive() or room.busy() or room.win:
+		if room == null or room.busy() or room.win:
 			return
+		# 醒着 = 从墙上飞下来飘着追人（保持一点距离甩手）；睡着 = 飞回墙上
+		if not alive():
+			position = position.move_toward(home, 70.0 * d)
+			_lift = move_toward(_lift, 0.0, 40.0 * d)
+			return
+		_lift = move_toward(_lift, 18.0, 30.0 * d)
+		var tgt: Node2D = null
+		for m in room.members():
+			if m != room.inside and (tgt == null or (m as Node2D).global_position.distance_to(position) < tgt.global_position.distance_to(position)):
+				tgt = m
+		if tgt:
+			var dist := tgt.global_position.distance_to(position)
+			var dir := (tgt.global_position - position).normalized()
+			if dist > PalaceThrone.SMALL_KEEP + 10.0:
+				position += dir * PalaceThrone.SMALL_FLY * d
+			elif dist < PalaceThrone.SMALL_KEEP - 14.0:
+				position -= dir * PalaceThrone.SMALL_FLY * 0.6 * d
+			else:
+				position += dir.orthogonal() * sin(_t * 0.8 + idx) * PalaceThrone.SMALL_FLY * 0.5 * d
+			position = position.clamp(room.world(PalaceThrone.ARENA.position) - Vector2(16, 16), room.world(PalaceThrone.ARENA.end) + Vector2(16, 16))
 		_shot -= d
 		if _shot <= 0.0:
 			_shot = PalaceThrone.SMALL_SHOT
@@ -548,11 +847,15 @@ class SmallPortrait extends Node2D:
 			if best:
 				var h := PaintHand.new()
 				h.room = room
-				h.position = position + Vector2(0, -16)
+				h.position = position + Vector2(0, -6)
 				h.vel = (best.global_position - h.position).normalized() * 90.0
 				room.add_view(h)
 
 	func _draw() -> void:
+		if _lift > 1.0:
+			draw_set_transform(Vector2(0, 2), 0.0, Vector2(1, 0.4))
+			draw_circle(Vector2.ZERO, 9.0, Color(0.15, 0.05, 0.15, 0.3))
+			draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
 		if _spr:
 			return
 		var on := alive()
@@ -597,12 +900,17 @@ class PaintHand extends Node2D:
 class PaintPool extends Node2D:
 	var t := 0.0
 	var col := Color.from_hsv(randf(), 0.55, 1.0)
+	var host: Node
+	var _landed := false
 
 	func active() -> bool:
 		return t >= PalaceThrone.POOL_WARN
 
 	func _process(d: float) -> void:
 		t += d
+		if active() and not _landed:
+			_landed = true
+			ThroneFx.splash(host if host else get_parent(), position, col.h > 0.45 and col.h < 0.75, 0.8)
 		if t >= PalaceThrone.POOL_WARN + PalaceThrone.POOL_LIFE:
 			queue_free()
 		queue_redraw()
@@ -645,3 +953,204 @@ class Brush extends Node2D:
 		var a := sin(_t * 5.0) * 0.4
 		draw_line(Vector2(0, -6), Vector2(0, -26).rotated(a), Color(0.55, 0.38, 0.2), 2.0)
 		draw_circle(Vector2(0, -6), 3.5, Color.from_hsv(fposmod(_t * 0.2, 1.0), 0.6, 1.0))
+
+
+## 破绽的位置（跟着画像走）：露破绽时一圈金光（AI 的优先目标）
+class WeakMark extends Node2D:
+	var room: PalaceThrone
+	var _t := 0.0
+
+	func _process(d: float) -> void:
+		_t += d
+		queue_redraw()
+
+	func _draw() -> void:
+		if room == null or room.win or not room.vulnerable():
+			return
+		var a := 0.55 + sin(_t * 6.0) * 0.25
+		draw_set_transform(Vector2.ZERO, 0.0, Vector2(1, 0.5))
+		draw_arc(Vector2.ZERO, 16.0 + sin(_t * 4.0) * 2.0, 0, TAU, 28, Color(1, 0.85, 0.35, a), 2.0)
+		draw_arc(Vector2.ZERO, 10.0, _t * 2.0, _t * 2.0 + PI, 14, Color(1, 0.95, 0.7, a), 1.5)
+		draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
+		for i in 3:
+			var ang := _t * 1.5 + i * TAU / 3.0
+			var p := Vector2(cos(ang) * 14.0, sin(ang) * 7.0 - 6.0 - fposmod(_t * 10.0 + i * 4.0, 12.0))
+			draw_circle(p, 1.2, Color(1, 0.95, 0.6, a))
+
+
+## 颜料小人：从颜料坑里冒出来，摇摇摆摆追最近的人，碰到就挥小刷子挠腰；一下就打掉（碎成一滩颜料）
+class PaintImp extends Node2D:
+	const SHEET := "res://assets/generated/paint_imp.png"
+	const SPEED := 30.0
+	const REACH := 12.0
+	var room: PalaceThrone
+	var _t := 0.0
+	var _cool := 0.8
+	var _swing := 0.0
+	var _rise := 0.4
+	var _spr: Sprite2D
+
+	func _ready() -> void:
+		z_index = 1
+		if ResourceLoader.exists(SHEET):
+			_spr = Sprite2D.new()
+			_spr.texture = load(SHEET)
+			_spr.hframes = 4
+			_spr.offset = Vector2(0, -11)
+			_spr.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+			add_child(_spr)
+
+	func step(d: float) -> void:
+		_t += d
+		_cool = maxf(0.0, _cool - d)
+		_swing = maxf(0.0, _swing - d)
+		if _rise > 0.0:
+			_rise -= d
+			if _spr:
+				_spr.scale = Vector2(1.0, 1.0 - _rise * 2.0).clamp(Vector2(0.2, 0.2), Vector2.ONE)
+			return
+		var near: PlayableCharacter = room._nearest_member(position)
+		if near == null:
+			return
+		var to := near.global_position - position
+		if to.length() > REACH:
+			position += to.normalized() * SPEED * d
+		elif _cool <= 0.0:
+			_cool = 1.4
+			_swing = 0.35
+			var h := HitData.make_tickle(self, 3.0)
+			h.zone = "waist"
+			near.receive_hit(h)
+			PalaceRoom.say_random(near, "imp")
+		if _spr:
+			_spr.frame = 3 if _swing > 0.0 else int(_t * 6.0) % 3
+			_spr.flip_h = to.x < 0.0
+			_spr.scale = Vector2(1.0 + sin(_t * 12.0) * 0.05, 1.0 - sin(_t * 12.0) * 0.05)
+
+	func pop() -> void:
+		Audio.play("bubble_pop", -4.0)
+		ThroneFx.splash(get_parent(), position, randf() < 0.5, 0.7)
+		queue_free()
+
+	func _draw() -> void:
+		if _spr == null:
+			draw_circle(Vector2(0, -8), 7.0, Color(1, 0.5, 0.7))
+
+
+## 伸长的手：地上先出一道预警线（danger 组：AI 会躲），然后手顺着地面伸过去；
+## 抓到人 = status.grab（连按挣扎），一路拖回破绽前、挠腋窝，挣开 / 时间到就松手缩回去
+class StretchHand extends Node2D:
+	const TEX := "res://assets/generated/paint_fx.png"
+	const DRAG_SPEED := 70.0
+	const HOLD := 3.0
+	var room: PalaceThrone
+	var from := Vector2.ZERO        # 画像的位置（世界坐标）
+	var phase := "warn"             # warn / reach / drag / back
+	var victim: PlayableCharacter
+	var _t := 0.0
+	var _tip := 0.0                 # 0 = 在画像那里，1 = 伸到目标点
+	var _tick := 0.0
+	var _spr: Sprite2D
+
+	func _ready() -> void:
+		z_index = 2
+		add_to_group("danger")
+		set_meta("radius", 16.0)
+		if ResourceLoader.exists(TEX):
+			_spr = Sprite2D.new()
+			_spr.texture = load(TEX)
+			_spr.hframes = 6
+			_spr.frame = 5
+			_spr.scale = Vector2(0.5, 0.5)
+			_spr.visible = false
+			_spr.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+			add_child(_spr)
+		Audio.play("paper", -6.0, 0.0, 0.7)
+
+	func tip_pos() -> Vector2:
+		if phase == "drag" and is_instance_valid(victim):
+			return victim.global_position
+		return from.lerp(position, _tip)
+
+	func _process(d: float) -> void:
+		if room == null or room.win:
+			_end()
+			return
+		if room.busy():
+			return
+		_t += d
+		queue_redraw()
+		match phase:
+			"warn":
+				if _t >= PalaceThrone.STRETCH_WARN:
+					phase = "reach"
+					remove_from_group("danger")
+			"reach":
+				_tip = minf(1.0, _tip + PalaceThrone.STRETCH_SPEED * d / maxf(1.0, from.distance_to(position)))
+				var tp := tip_pos()
+				for m in room.members():
+					var pc := m as PlayableCharacter
+					if pc != room.inside and not Downed.is_downed(pc) and pc.global_position.distance_to(tp) <= 14.0:
+						if pc.status.grab(self, HOLD, 8):
+							victim = pc
+							phase = "drag"
+							_t = 0.0
+							Audio.play("grab", -4.0)
+							PalaceRoom.say_random(pc, "stretch")
+							ThroneFx.splash(get_parent(), tp, false, 0.6)
+						break
+				if phase == "reach" and _tip >= 1.0:
+					phase = "back"
+			"drag":
+				if not is_instance_valid(victim) or not victim.status.is_grabbed_by(self):
+					phase = "back"
+					_tip = 1.0
+					position = victim.global_position if is_instance_valid(victim) else position
+					victim = null
+					return
+				var dest := room.weak_point() + Vector2(0, 12)
+				victim.global_position = victim.global_position.move_toward(dest, DRAG_SPEED * d)
+				_tick -= d
+				if _tick <= 0.0:
+					_tick = 0.3
+					var h := HitData.make_tickle(self, 2.5)
+					h.zone = "armpit"
+					victim.receive_hit(h)
+			"back":
+				_tip = maxf(0.0, _tip - 4.0 * d)
+				if _tip <= 0.0:
+					_end()
+
+	func _end() -> void:
+		if is_instance_valid(victim) and victim.status.is_grabbed_by(self):
+			victim.status.release()
+		queue_free()
+
+	func _draw() -> void:
+		var o := from - position
+		if phase == "warn":
+			# 预警线：从画像到目标点的一道虚线，目标点一个闪烁的圈
+			var a := 0.4 + 0.4 * absf(sin(_t * 12.0))
+			var n := 12
+			for i in n:
+				if i % 2 == 0:
+					draw_line(o.lerp(Vector2.ZERO, float(i) / n), o.lerp(Vector2.ZERO, float(i + 1) / n), Color(1, 0.35, 0.55, a), 2.0)
+			draw_set_transform(Vector2.ZERO, 0.0, Vector2(1, 0.5))
+			draw_arc(Vector2.ZERO, 14.0, 0, TAU, 20, Color(1, 0.35, 0.55, a), 2.0)
+			draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
+			if _spr:
+				_spr.visible = false
+			return
+		var tp := tip_pos() - position
+		# 颜料画出来的长胳膊：粗线 + 几滴往下滴
+		draw_line(o, tp, Color(0.55, 0.2, 0.35), 6.0)
+		draw_line(o, tp, Color(0.98, 0.6, 0.75), 4.0)
+		for i in 4:
+			var p := o.lerp(tp, (i + 0.5) / 4.0)
+			draw_circle(p + Vector2(0, 3 + fposmod(_t * 8.0 + i * 3.0, 6.0)), 1.5, Color(0.98, 0.6, 0.75, 0.8))
+		if _spr:
+			_spr.visible = true
+			_spr.position = tp + Vector2(0, -6)
+			_spr.rotation = (tp - o).angle() - PI * 0.35
+		else:
+			draw_circle(tp, 5.0, Color(0.98, 0.75, 0.85))

@@ -88,6 +88,10 @@ func _ready() -> void:
 	_add_lost.call_deferred()
 	_add_patrol.call_deferred()
 	_add_mimic.call_deferred()
+	var ih := ItemHinter.new()
+	ih.name = "ItemHinter"
+	ih.room = self
+	add_child(ih)
 	if map_id() in [TRAY_FROM, TRAY_TO]:
 		var tc := TrayCarry.new()
 		tc.room = self
@@ -652,3 +656,62 @@ func reset_to(at: Vector2) -> void:
 	var p := GameState.player
 	if is_instance_valid(p) and p.get("camera"):
 		p.camera.reset_smoothing()
+
+
+
+# ------------------------------------------------------------------ 道具提示（拿到跨图道具时弹一小段对话说用处，每种一次）
+## key → 条件：{"item": 背包里有这个} / {"flag_prefix": 有以它开头的标记}。对话 floor_06/item_hint 的节点名 = key。
+const ITEM_HINTS := {
+	"maid_key": {"item": "maid_key"},
+	"lost_portrait": {"item": "lost_portrait"},
+	"music_sheet": {"item": "music_sheet"},
+	"smile_badge": {"item": "smile_badge"},
+	"queen_music_box": {"item": "queen_music_box"},
+	"lost_thing": {"flag_prefix": "palace_lost_", "except": ["palace_lost_done"]},
+	"watering_can": {"item": "watering_can"},
+}
+const ITEM_HINT_FILE := "floor_06/item_hint"
+
+
+static func item_hint_flag(key: String) -> String:
+	return "palace_hint_" + key
+
+
+## 现在该提示（还没提示过、条件满足）的 key
+static func pending_item_hints() -> Array:
+	var out: Array = []
+	for k in ITEM_HINTS:
+		if GameState.has_flag(item_hint_flag(k)):
+			continue
+		var c: Dictionary = ITEM_HINTS[k]
+		if c.has("item") and GameState.inventory.has(str(c["item"])):
+			out.append(k)
+		elif c.has("flag_prefix"):
+			for f in GameState.flags:
+				if str(f).begins_with(str(c["flag_prefix"])) and not (c.get("except", []) as Array).has(str(f)) and GameState.has_flag(str(f)):
+					out.append(k)
+					break
+	return out
+
+
+class ItemHinter extends Node:
+	var room: PalaceRoom
+	var _t := 0.5
+	var _talking := false
+
+	func _process(d: float) -> void:
+		_t -= d
+		if _t > 0.0 or _talking or room == null:
+			return
+		_t = 0.4
+		if room.busy() or Dialogue.runner.is_running() or Cutscene.is_playing():
+			return
+		var ks := PalaceRoom.pending_item_hints()
+		if ks.is_empty():
+			return
+		var k := str(ks[0])
+		GameState.set_flag(PalaceRoom.item_hint_flag(k))
+		_talking = true
+		await Dialogue.talk(PalaceRoom.ITEM_HINT_FILE, k)
+		_talking = false
+		_t = 0.6
