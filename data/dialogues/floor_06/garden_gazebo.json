@@ -1,0 +1,62 @@
+{
+	"name": "凉亭里的宝箱",
+	"entries": [
+		{
+			"if": {
+				"flag": "palace_gazebo_done"
+			},
+			"node": "done"
+		},
+		{
+			"if": {
+				"flag": "palace_fountain_flow"
+			},
+			"node": "open"
+		},
+		{
+			"node": "default"
+		}
+	],
+	"nodes": {
+		"default": {
+			"lines": [
+				{
+					"text": "（白色的小凉亭里放着一只宝箱。锁孔是一个小小的水车——要有水流过来，才转得动）",
+					"speaker": ""
+				},
+				{
+					"text": "……喷泉是干的。……水，从哪里来。",
+					"speaker": "蓝色的公主"
+				}
+			]
+		},
+		"open": {
+			"lines": [
+				{
+					"text": "（喷泉里的水漫过石槽，流进凉亭，小水车「咕噜咕噜」地转了起来——宝箱「咔哒」一声开了）",
+					"speaker": ""
+				},
+				{
+					"text": "（宝箱里有两颗薄荷糖、一小袋金币，还有一张卡片：「陛下的花园，三个人一起的时候最热闹」）",
+					"speaker": ""
+				},
+				{
+					"text": "……三个人。",
+					"speaker": "公主",
+					"emotion": "sad"
+				}
+			],
+			"set": {
+				"call": "palace_gazebo_open"
+			}
+		},
+		"done": {
+			"lines": [
+				{
+					"text": "（宝箱空了。水车还在慢慢地转）",
+					"speaker": ""
+				}
+			]
+		}
+	}
+}

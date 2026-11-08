@@ -795,6 +795,8 @@ func hint_keys() -> Array:
 		ks.append("ball")
 	if GameState.inventory.has("queen_music_box") and not GameState.has_flag(PalaceThrone.BOSS_FLAG):
 		ks.append("box")
+	if GameState.has_flag(PalaceGarden.GARDEN_CLUE) and not GameState.has_flag(LevelExit.passage_flag(MAP, PalaceGarden.MAP)):
+		ks.append("garden")
 	if ks.is_empty():
 		ks.append("idle")
 	return ks

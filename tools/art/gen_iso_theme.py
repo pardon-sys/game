@@ -189,6 +189,31 @@ THEMES = {
         "vein": (190, 110, 255),
         "living_base": (80, 56, 60),
     },
+    # 旧王宫·后花园：草地 + 几块踏脚石（floor_kind = grass）、修剪过的树篱墙（wall_kind = hedge，有的开着蔷薇）
+    "palace_garden": {
+        "seed": 93,
+        "wall_h": 20,
+        "fade_alpha": 0.35,
+        "light_squash": 0.5,
+        "floor_kind": "grass",
+        "wall_kind": "hedge",
+        "grass": [(86, 132, 74), (96, 142, 80), (78, 122, 70), (104, 150, 86)],
+        "stone": [(176, 170, 156), (186, 180, 164), (166, 160, 148)],
+        "mortar": (70, 108, 62),
+        "stones": 1,
+        "flowers": [(250, 190, 210), (255, 250, 240), (255, 222, 120), (200, 170, 240)],
+        "wall_top": (88, 140, 76),
+        "wall_rim": (140, 190, 112),
+        "wall_left": (70, 118, 62),
+        "wall_right": (52, 94, 52),
+        "wall_mortar": (40, 72, 44),
+        "moss": (120, 170, 96),
+        "gate_iron": (110, 92, 70),
+        "gate_glow": (240, 210, 150),
+        "gate_purple": (150, 110, 180),
+        "vein": (240, 160, 210),
+        "living_base": (70, 100, 60),
+    },
 }
 
 
@@ -234,8 +259,55 @@ def project_patch(src, k, out_w, out_h, cx, cy, wrap=False):
 
 
 # ------------------------------------------------------------------ 地面
+def grass_floor(t, rng):
+    """格子空间里 PERIOD 格循环的草地（RGBA + 高度）：低频明暗（整数周期的正弦，保证无缝）+ 一根根草叶 + 几块踏脚石 + 小花。"""
+    n = PERIOD * CELL
+    img = np.zeros((n, n, 4), np.uint8)
+    height = np.zeros((n, n), np.float32)
+    nrng = np.random.default_rng(t["seed"])
+    waves = [(rng.randrange(1, 3), rng.randrange(1, 3), rng.uniform(0, math.tau)) for _ in range(3)]
+    pal = t["grass"]
+    for y in range(n):
+        for x in range(n):
+            w = sum(math.sin(math.tau * (a * x + b * y) / n + ph) for a, b, ph in waves) / len(waves)
+            idx = int((w * 0.5 + 0.5) * (len(pal) - 0.01))
+            c = np.array(pal[idx], np.float32) + nrng.integers(-6, 7)
+            img[y, x, :3] = np.clip(c, 0, 255)
+            img[y, x, 3] = 255
+            height[y, x] = 0.3 + 0.2 * w
+    # 草叶：竖着两三个像素的亮 / 暗短线
+    for _ in range(n * n // 7):
+        x, y = rng.randrange(n), rng.randrange(n)
+        c = shade(pal[rng.randrange(len(pal))], rng.choice([0.78, 0.85, 1.18, 1.25]))
+        for dy in range(rng.randrange(2, 4)):
+            img[(y - dy) % n, x, :3] = c
+            height[(y - dy) % n, x] = 0.7
+    # 踏脚石（圆圆的浅色石板，边上一圈暗）
+    for _ in range(t["stones"]):
+        cx, cy, r = rng.uniform(0, n), rng.uniform(0, n), rng.uniform(3.5, 5.0)
+        col = t["stone"][rng.randrange(len(t["stone"]))]
+        for yy in range(int(cy - r - 2), int(cy + r + 2)):
+            for xx in range(int(cx - r - 2), int(cx + r + 2)):
+                d = math.hypot((xx + 0.5 - cx) / 1.1, yy + 0.5 - cy)
+                if d < r:
+                    img[yy % n, xx % n, :3] = shade(col, 0.92 + 0.08 * (1 - d / r) + rng.uniform(-0.03, 0.03))
+                    height[yy % n, xx % n] = 0.9
+                elif d < r + 1.0:
+                    img[yy % n, xx % n, :3] = shade(pal[0], 0.7)
+    # 小花（一两个像素的点）
+    for _ in range(10):
+        x, y = rng.randrange(n), rng.randrange(n)
+        f = t["flowers"][rng.randrange(len(t["flowers"]))]
+        img[y, x, :3] = f
+        img[y, (x + 1) % n, :3] = shade(f, 0.85)
+        img[(y + 1) % n, x, :3] = (250, 230, 110)
+    return img, height
+
+
 def stone_floor(t, rng):
     """格子空间里 PERIOD 格循环的不规则石面（RGBA + 高度）。"""
+    if t.get("floor_kind") == "grass":
+        return grass_floor(t, rng)
     n = PERIOD * CELL
     pts = [(rng.uniform(0, n), rng.uniform(0, n)) for _ in range(t["stones"])]
     cols = [t["stone"][rng.randrange(len(t["stone"]))] for _ in pts]
@@ -319,9 +391,55 @@ def make_floor(t, rng):
 
 
 # ------------------------------------------------------------------ 地面装饰（格子空间 32x32 → 等距 64x32）
+def garden_decals(t, rng):
+    """花园的地面装饰：一丛三叶草 / 落下的花瓣 / 一圈小雏菊 / 几片落叶。"""
+    S = 32
+    patches = []
+    def blob(p, cx, cy, r, col, a=220, dens=0.8):
+        for yy in range(S):
+            for xx in range(S):
+                d = math.hypot(xx - cx, yy - cy)
+                if d < r and rng.random() < dens - d / r * 0.3:
+                    p[yy, xx] = (*shade(col, rng.uniform(0.85, 1.15)), a)
+    p = np.zeros((S, S, 4), np.uint8)       # 三叶草
+    for _ in range(7):
+        blob(p, rng.uniform(8, 24), rng.uniform(8, 24), rng.uniform(2, 3.5), (70, 128, 60))
+    patches.append(p)
+    p = np.zeros((S, S, 4), np.uint8)       # 花瓣
+    for _ in range(14):
+        x, y = rng.randrange(4, S - 4), rng.randrange(4, S - 4)
+        c = t["flowers"][0] if rng.random() < 0.7 else t["flowers"][1]
+        p[y, x] = (*c, 240)
+        p[y, x + 1] = (*shade(c, 0.85), 220)
+    patches.append(p)
+    p = np.zeros((S, S, 4), np.uint8)       # 小雏菊
+    for _ in range(6):
+        x, y = rng.randrange(4, S - 4), rng.randrange(4, S - 4)
+        for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1)):
+            p[y + dy, x + dx] = (255, 252, 244, 255)
+        p[y, x] = (250, 210, 80, 255)
+    patches.append(p)
+    p = np.zeros((S, S, 4), np.uint8)       # 落叶
+    for _ in range(5):
+        x, y = rng.randrange(4, S - 5), rng.randrange(4, S - 5)
+        c = rng.choice([(170, 120, 60), (190, 150, 70), (120, 150, 60)])
+        for dx in range(3):
+            p[y, x + dx] = (*c, 230)
+        p[y + 1, x + 1] = (*shade(c, 0.8), 230)
+    patches.append(p)
+    return patches
+
+
 def make_decals(t, rng):
     patches = []
     S = 32
+    if t.get("floor_kind") == "grass":
+        patches = garden_decals(t, rng)
+        atlas = np.zeros((len(patches) * TH * 2, 4 * TW * 2, 4), np.uint8)
+        for r, src in enumerate(patches):
+            for k in range(4):
+                atlas[r * TH * 2:(r + 1) * TH * 2, k * TW * 2:(k + 1) * TW * 2] = project_patch(src, k, TW * 2, TH * 2, S / 2.0, S / 2.0)
+        return atlas, len(patches)
     # 1) 大裂纹
     p = np.zeros((S, S, 4), np.uint8)
     x, y = 3.0, rng.uniform(8, 24)
@@ -419,7 +537,46 @@ def shade(c, k):
     return tuple(int(max(0, min(255, x * k))) for x in c)
 
 
+def make_hedge(t, rng, variant, face, u, v):
+    """树篱方块：叶团（一簇簇明暗）代替砖缝；顶面亮、两侧按朝向暗；variant 2 / 3 开着粉白的小蔷薇。"""
+    H, W = face.shape
+    img = np.zeros((H, W, 4), np.uint8)
+    mortar = np.zeros((H, W), np.uint8)
+    wall_h = H - TH
+    for py in range(H):
+        for px in range(W):
+            f = face[py, px]
+            if f == 0:
+                continue
+            base = t["wall_top"] if f == 1 else (t["wall_left"] if f == 2 else t["wall_right"])
+            # 叶团：按 (u, v) 的小格子给每一簇一个明暗，簇边上暗一点
+            cu, cv = u[py, px] / 3.0, v[py, px] / 3.0
+            jit = ((int(cu) * 73856093) ^ (int(cv) * 19349663) ^ (variant * 83492791)) % 17 - 8
+            edge = min(cu % 1.0, cv % 1.0) < 0.25
+            c = np.array(base, np.float32) + jit + rng.uniform(-5, 5)
+            if edge:
+                c = c * 0.86
+                mortar[py, px] = 1
+            if f != 1 and v[py, px] > wall_h - 1.5:
+                c = c * 0.7
+            if f == 1 and rng.random() < 0.05:
+                c = np.array(t["wall_rim"], np.float32)
+            img[py, px, :3] = np.clip(c, 0, 255)
+            img[py, px, 3] = 255
+    if variant in (2, 3):
+        col = t["flowers"][0] if variant == 2 else t["flowers"][1]
+        for _ in range(6):
+            px, py = rng.randrange(2, W - 2), rng.randrange(2, H - 2)
+            if face[py, px] != 0 and face[py + 1, px] != 0 and face[py, px + 1] != 0:
+                img[py, px, :3] = col
+                img[py, px + 1, :3] = shade(col, 0.88)
+                img[py + 1, px, :3] = shade(col, 0.8)
+    return img, mortar
+
+
 def make_wall(t, rng, variant, face, u, v):
+    if t.get("wall_kind") == "hedge":
+        return make_hedge(t, rng, variant, face, u, v)
     H, W = face.shape
     img = np.zeros((H, W, 4), np.uint8)
     mortar = np.zeros((H, W), np.uint8)

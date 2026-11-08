@@ -172,7 +172,9 @@ MARKS = {
                                  "V": "mirror_hands", "T": "trap_wardrobe", "K": "keys", "J": "fragment", "I": "lost", "O": "shoe_closet", "D": "shelf_door", "H": "shoes", "W": "mirror_wall", "Z": "mimic_hide", "F": "fake_mirror"},
     "floor_06_palace_training": {"Y": "east", "X": "north", "U": "dummies", "N": "sign", "F": "swords", "W": "carvings", "A": "ring", "B": "bell",
                                  "T": "stocks", "C": "diary", "J": "fragment", "D": "shade"},
-    "floor_06_palace_ante": {"Z": "south", "N": "throne_door", "W": "clock_door", "S": "painting", "L": "statue", "M": "tiles", "F": "fountain", "D": "pedestal", "V": "vault"},
+    "floor_06_palace_ante": {"Z": "south", "N": "throne_door", "W": "clock_door", "S": "painting", "L": "statue", "M": "tiles", "F": "fountain", "D": "pedestal", "V": "vault",
+                             "H": "garden_door"},
+    "floor_06_palace_garden": {"Z": "south", "W": "swing", "F": "fountain", "C": "cherubs", "G": "gazebo", "K": "keeper", "R": "beds", "M": "fairies"},
     "floor_06_palace_clock_1": {"Z": "south", "U": "up", "G": "gear_gaps", "J": "brake", "C": "checkpoints", "T": "chests", "B": "beetle_nests"},
     "floor_06_palace_clock_2": {"Z": "south", "U": "up", "L": "pendulum", "T": "chests", "C": "checkpoints", "I": "lost"},
     "floor_06_palace_clock_3": {"Z": "south", "D": "ladder", "F": "bellows", "R": "gear_seat", "A": "axle", "T": "chests", "C": "checkpoints", "B": "beetle_nests"},
@@ -695,6 +697,8 @@ def _palace_ante():
     put(24, 26, "F")                       # 许愿喷泉
     put(36, 26, "D")                       # 徽记台（七个小凹槽）
     put(30, 23, "V")                       # 地砖踩对以后打开的地下小宝库（台阶）
+    room(42, 10, 43, 10)                   # 东北角柱子后面的小凹位：后花园的暗门（石像三问全对以后才知道）
+    put(43, 10, "H")
     return ["".join(r) for r in g]
 
 
@@ -780,6 +784,38 @@ def _palace_throne():
     room(3, 30, 3, 43)
     put(8, 30, "H")
     put(28, 40, "F")                       # 空着的小画框（把迷路的小画像挂回去）
+    return ["".join(r) for r in g]
+
+
+def _palace_garden():
+    """第四章·后花园（追加事件；前厅东北角柱子后面的暗门进来，P / Z）：
+    双人秋千（W：一个坐一个推，藤蔓挠脚心；秋千板上磨掉的刻字）、
+    天使喷泉（F：中间干掉的喷泉；C ×3 抱水瓶的小天使，按 E 转 90°，都对准喷泉 → 水路连通 → 凉亭 G 里的宝箱打开）、
+    花园小店主（K：小花精玩偶，想浇花；R 花坛）、花丛里的小精灵（M：fairy_swarm）。"""
+    g, room, put = _canvas(56, 42)
+    room(4, 4, 51, 37)
+    _chamfer(g, 4, 4, 51, 37, 5)
+    _disk(g, 28, 20, 7)                     # 喷泉广场
+    # 树篱（矮墙）把花园分成几块：西北秋千草坪、东北凉亭、东南花坛、西南入口
+    room(16, 8, 16, 14, "#")
+    room(16, 26, 16, 32, "#")
+    room(40, 8, 40, 14, "#")
+    room(40, 26, 40, 32, "#")
+    room(20, 31, 26, 31, "#")
+    room(30, 31, 36, 31, "#")
+    room(26, 38, 30, 40)                    # 南门：接前厅的暗门
+    put(28, 38, "P")
+    put(28, 40, "Z")
+    put(10, 10, "W")                        # 双人秋千
+    put(28, 20, "F")                        # 天使喷泉（中间）
+    for (x, y) in ((22, 20), (34, 20), (28, 14)):
+        put(x, y, "C")                      # 小天使：西 / 东 / 北
+    put(45, 9, "G")                         # 凉亭（宝箱）
+    put(45, 30, "K")                        # 花园小店主
+    for (x, y) in ((42, 34), (48, 26), (49, 33)):
+        put(x, y, "R")                      # 花坛
+    for (x, y) in ((10, 28), (20, 9), (36, 34), (47, 18)):
+        put(x, y, "M")                      # 花丛里的小精灵
     return ["".join(r) for r in g]
 
 
@@ -903,6 +939,7 @@ for _i, _f in enumerate((_clock_1, _clock_2, _clock_3, _clock_4, _clock_5), 1):
     LAYOUTS["floor_06_palace_clock_%d" % _i] = _f()
 LAYOUTS["floor_06_palace_tunnels"] = _palace_tunnels()
 LAYOUTS["floor_06_palace_throne"] = _palace_throne()
+LAYOUTS["floor_06_palace_garden"] = _palace_garden()
 
 
 def grid(fid):

@@ -92,19 +92,36 @@
 				{
 					"text": "……王座间的画像。……也许，会怕这个。",
 					"speaker": "蓝色的公主"
+				},
+				{
+					"text": "（石像的底座侧面，又慢慢浮出一行小字：「陛下的后花园……在东北角的柱子后面」）",
+					"speaker": ""
+				},
+				{
+					"text": "……后花园？",
+					"speaker": "公主",
+					"emotion": "surprise"
 				}
 			],
 			"set": {
-				"call": "palace_statue_ok"
+				"call": "palace_statue_ok",
+				"flags": [
+					"palace_garden_clue"
+				]
 			}
 		},
 		"done": {
 			"lines": [
 				{
-					"text": "（石像抱着剑，安安静静地站着。底座上的字已经暗了）",
+					"text": "（石像抱着剑，安安静静地站着。底座侧面的小字还亮着：「陛下的后花园……在东北角的柱子后面」）",
 					"speaker": ""
 				}
-			]
+			],
+			"set": {
+				"flags": [
+					"palace_garden_clue"
+				]
+			}
 		},
 		"q1": {
 			"lines": [

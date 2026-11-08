@@ -247,3 +247,19 @@ SUBJECT: a PAINT IMP, a cute little creature made of thick glossy wet paint (mix
 A game prop sprite sheet on a solid flat pure MAGENTA (#FF00FF) chroma-key background (the whole background is one flat magenta color; do NOT use magenta or pink-magenta anywhere in the artwork itself), cute chibi pixel-art-friendly style with clean dark outlines and flat soft shading, it will be downscaled to small pixel sizes. Items evenly spaced in ONE row, same scale, centered, generous magenta gaps, no shadows on the ground, no text, no labels, no scenery. Landscape canvas 1536x1024, exactly 6 items.
 ITEMS (left to right), magical paint battle VFX elements: 1) a big round SPLASH of glossy rose-pink paint with droplets; 2) a big SPLASH of glossy sky-blue paint with droplets; 3) a cluster of torn CANVAS SHARDS (cream canvas pieces with gilded painted edges) flying apart; 4) a sweeping GOLDEN BRUSH STROKE arc with sparkles; 5) a bright four-pointed golden STAR SPARKLE burst; 6) a long dripping PAINT HAND reaching (a cartoon hand made of pink paint with a feather in its fingers).
 ```
+
+## 第四轮·后花园
+
+### garden_props_sheet.png — 后花园道具（双人秋千 / 抱水瓶的小天使 / 凉亭 / 花坛 / 小水壶 / 干喷泉）→ garden_props.png；小水壶也切成 item_watering_can.png
+
+```
+A game prop sprite sheet on a solid flat pure MAGENTA (#FF00FF) chroma-key background (the whole background is one flat magenta color; do NOT use magenta or pink-magenta anywhere in the artwork itself), cute chibi pixel-art-friendly style with clean dark outlines and flat soft shading, drawn in a 3/4 isometric-style view (as seen from above at about 45 degrees), it will be downscaled to small pixel sizes. Items evenly spaced in ONE row, same scale, centered, generous magenta gaps, no shadows on the ground, no text, no labels, no scenery. Landscape canvas 1536x1024, exactly 6 items.
+ITEMS (left to right), an abandoned royal BACK GARDEN: 1) a white wooden DOUBLE SWING hanging from a vine-covered arch frame with little pink flowers, two seats side by side; 2) a small marble CHERUB STATUE on a pedestal holding a tilted water jar on its shoulder (water pouring to the RIGHT); 3) a round white GAZEBO with a domed roof and climbing roses, a small treasure chest inside; 4) a round flower bed full of pastel tulips and daisies, some wilted and drooping; 5) a little tin WATERING CAN, pale blue with a flower decal; 6) a round marble garden FOUNTAIN basin, dry and empty with leaves inside.
+```
+
+### flower_keeper_sheet.png — 花园小店主（小花精玩偶）→ npcs/flower_keeper.png
+
+```
+A game sprite strip on a solid flat pure MAGENTA (#FF00FF) chroma-key background (the whole background is one flat magenta color; do NOT use magenta or pink-magenta anywhere in the artwork itself), cute chibi pixel-art-friendly style with clean dark outlines and flat soft shading, 3/4 top-down view, it will be downscaled to about 28 pixels per frame. Landscape canvas 1536x1024, exactly 4 frames in ONE row, same scale, evenly spaced, centered, no shadows, no text, no scenery.
+SUBJECT: a cute FLOWER-FAIRY SHOPKEEPER DOLL: a tiny porcelain doll girl with a tulip-petal dress (pink and white), a daisy hat, little green leaf wings, round rosy cheeks and button eyes, holding a little woven basket of flowers. Frames 1-2: idle bobbing; frame 3: pouting and pointing at a wilted flower; frame 4: happily throwing flower petals.
+```

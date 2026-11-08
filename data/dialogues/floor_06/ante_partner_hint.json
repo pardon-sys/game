@@ -166,6 +166,24 @@
 		{
 			"if": {
 				"eq": {
+					"ante_hint": "garden"
+				},
+				"hero": "blue"
+			},
+			"node": "garden_p"
+		},
+		{
+			"if": {
+				"eq": {
+					"ante_hint": "garden"
+				},
+				"hero": "pink"
+			},
+			"node": "garden_b"
+		},
+		{
+			"if": {
+				"eq": {
 					"ante_hint": "idle"
 				},
 				"hero": "blue"
@@ -332,6 +350,22 @@
 			"lines": [
 				{
 					"text": "……八音盒。……画像，也许会发呆。",
+					"speaker": "蓝色的公主"
+				}
+			]
+		},
+		"garden_p": {
+			"lines": [
+				{
+					"text": "石像说，后花园在东北角的柱子后面……去看看吧！",
+					"speaker": "公主"
+				}
+			]
+		},
+		"garden_b": {
+			"lines": [
+				{
+					"text": "……东北角的柱子后面。……后花园。",
 					"speaker": "蓝色的公主"
 				}
 			]
