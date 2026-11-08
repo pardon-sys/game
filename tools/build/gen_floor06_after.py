@@ -1074,7 +1074,7 @@ pu, pum = qmaps.build(Map, PTUN, "intro =\n" + PAL_HEAD.replace("0.6,0.55,0.62",
 QMARKS[PTUN] = pum
 pu.put(88, 29, "player")
 pu.put(88, 29, "spawn id=from_ante")
-pu.put(86, 29, "blue_princess follow=true ai=false")
+pu.put(89, 30, "blue_princess follow=true ai=false")
 pu.put(89, 30, "palacetunnels")
 pu.put(91, 29, "exit target=%s spawn=from_tunnels" % PANTE)
 for key, (ex, ey), (sx, sy), target in (("to_bath", (4, 29), (7, 29), PBATH), ("to_library", (11, 8), (11, 11), PLIB),

@@ -10,7 +10,10 @@ extends PalaceRoom
 ##   许愿喷泉（fountain）：投薄荷糖 / 10 金币，随机：回复 / 水柱喷脚底 / 小鱼啄脚趾（wish）。
 ##   徽记台（pedestal）：七枚笑脸徽记 → 女王的羽毛发饰 + 庆祝小剧场 palace_badge_party（CG）（place_badges）。
 ##   空铠甲卫兵 ×2（ArmorGuard）：绕着大厅巡逻，扇形视野里看到人就冲过来举起来挠腋下；从背后按 E 推倒，散架 DOWN_TIME 秒。
-## 测试：tile_progress、step_tile(i)、vault_open()、guards、wish(kind)、next_wish、place_badges()。
+## 搭档闲逛（第四轮）：没被操控的那个不跟着走，在大厅里随机闲逛 / 调查（AnteHooks.objective_for → WANDER 里的点，挑的路线不穿过地砖），
+##   到了冒个「？」；地砖只认玩家操控的那个人踩。走过去按 E 和她说话 → floor_06/ante_partner_hint：按进度随机一句流程提示
+##   （hint_keys() 算出当前用得上的 key，每 HINT_EVERY 秒随机写进 vars.ante_hint）。
+## 测试：tile_progress、step_tile(i)、vault_open()、guards、wish(kind)、next_wish、place_badges()、wander_target(ai)、hint_keys()。
 
 const MAP := "floor_06_palace_ante"
 const TILE_SEQ := [0, 4, 8, 2, 4, 6]   # 同 palace4.py 的 TILE_SEQ（行优先：0 左上 … 8 右下）
@@ -45,6 +48,16 @@ var tile_progress := 0
 var guards: Array = []
 ## 测试用：下一次许愿的结果（-1 = 随机；0 回复 / 1 水柱 / 2 小鱼）
 var next_wish := -1
+const HINT_FILE := "floor_06/ante_partner_hint"
+const HINT_EVERY := 2.5
+const WANDER := [Vector2i(20, 14), Vector2i(41, 14), Vector2i(19, 25), Vector2i(42, 25), Vector2i(25, 28), Vector2i(36, 28),
+		Vector2i(27, 31), Vector2i(33, 31), Vector2i(10, 19), Vector2i(50, 21), Vector2i(30, 9), Vector2i(23, 20), Vector2i(37, 20)]
+const WANDER_STAY := Vector2(2.0, 4.0)
+const TILE_CLEAR := 36.0
+var _wander := {}            # ai 的 id → {"to": Vector2, "stay": 秒}
+var _hint_t := 0.0
+var _roamers: Array = []
+var _old_talk := {}
 var _tile_origin := Vector2i.ZERO
 var _last_cell := {}
 var _tiles: Array = []
@@ -150,8 +163,11 @@ func tiles_armed() -> bool:
 func _process(delta: float) -> void:
 	if busy() or not has_marks():
 		return
+	_tick_partner(delta)
 	for m in members():
 		var pc := m as PlayableCharacter
+		if pc != GameState.player:
+			continue   # 地砖只认玩家操控的那个人（闲逛的搭档路过不算）
 		var c := Vector2i(floori(pc.global_position.x / 16.0), floori(pc.global_position.y / 16.0))
 		var key := pc.get_instance_id()
 		if _last_cell.get(key, Vector2i(-99, -99)) != c:
@@ -717,3 +733,105 @@ class BeatView extends Node2D:
 				var a: float = a0 + PI * 0.5 * i / 8.0
 				pts.append(IsoView.offset(Vector2(cos(a), sin(a)) * PalaceAnte.BALL_R))
 			draw_colored_polygon(pts, col)
+
+
+# ------------------------------------------------------------------ 搭档闲逛 + 提示
+func ai_hooks() -> BattleAIHooks:
+	return AnteHooks.new(self)
+
+
+func _tick_partner(delta: float) -> void:
+	for m in members():
+		var pc := m as PlayableCharacter
+		if not _roamers.has(pc):
+			_roamers.append(pc)
+			_old_talk[pc] = pc.partner_talk
+			pc.partner_talk = HINT_FILE
+			pc.roam = true
+		pc.refresh_partner_area()
+	_hint_t -= delta
+	if _hint_t <= 0.0:
+		_hint_t = HINT_EVERY
+		GameState.vars["ante_hint"] = str(hint_keys().pick_random())
+	for k in _wander.keys():
+		var w: Dictionary = _wander[k]
+		var ai := instance_from_id(int(k)) as PlayableCharacter
+		if ai == null or ai == GameState.player:
+			continue
+		if ai.global_position.distance_to(w["to"]) <= 12.0:
+			if not w.get("arrived", false):
+				w["arrived"] = true
+				SpeechBubble.say(ai, ["？", "……？", "这是什么……", "……嗯。"].pick_random(), 30.0, 1.2)
+			w["stay"] = float(w["stay"]) - delta
+
+
+func _exit_tree() -> void:
+	for pc in _roamers:
+		if is_instance_valid(pc):
+			(pc as PlayableCharacter).roam = false
+			(pc as PlayableCharacter).partner_talk = str(_old_talk.get(pc, ""))
+			(pc as PlayableCharacter).refresh_partner_area()
+	super()
+
+
+## 当前进度下用得上的提示（ANTE_HINTS 的 key；什么都做完了 = idle）
+func hint_keys() -> Array:
+	var ks: Array = []
+	if not GameState.has_flag(PalaceClock.BELLS_FLAG):
+		ks.append("bells")
+	if PalaceRoom.sheets() < 3:
+		ks.append("sheets")
+	elif not vault_open():
+		ks.append("tiles")
+	if not GameState.has_flag(STATUE_FLAG):
+		ks.append("statue")
+	if not GameState.has_flag(BADGES_FLAG) and PalaceRoom.badges() < 7:
+		ks.append("badges")
+	if not GameState.has_flag(PalaceTunnels.LOST_DONE) and GameState.has_flag(PalaceTunnels.SEEN_FLAG):
+		ks.append("toll")
+	if GameState.inventory.has("maid_key") and not GameState.has_flag(PalaceRoom.FRIEND_FLAG):
+		ks.append("maid")
+	if vault_open() and not GameState.has_flag(BALL_DONE):
+		ks.append("ball")
+	if GameState.inventory.has("queen_music_box") and not GameState.has_flag(PalaceThrone.BOSS_FLAG):
+		ks.append("box")
+	if ks.is_empty():
+		ks.append("idle")
+	return ks
+
+
+## 闲逛的下一个点：到了、待够了才换；挑的点要让「现在的位置 → 那个点」这条线离地砖中心够远（不穿过地砖）
+func wander_target(ai: PlayableCharacter) -> Vector2:
+	var k := ai.get_instance_id()
+	var w: Dictionary = _wander.get(k, {})
+	if not w.is_empty() and float(w["stay"]) > 0.0:
+		return w["to"]
+	var mid := world(_tile_origin + Vector2i(1, 1))
+	var pick: Array = []
+	for c in WANDER:
+		var to := world(c)
+		if to.distance_to(ai.global_position) < 40.0:
+			continue
+		if Geometry2D.get_closest_point_to_segment(mid, ai.global_position, to).distance_to(mid) >= TILE_CLEAR:
+			pick.append(to)
+	if pick.is_empty():
+		pick = WANDER.map(func(c): return world(c))
+	w = {"to": pick.pick_random(), "stay": randf_range(WANDER_STAY.x, WANDER_STAY.y), "arrived": false}
+	_wander[k] = w
+	return w["to"]
+
+
+class AnteHooks extends BattleAIHooks:
+	var r: PalaceAnte
+
+	func _init(room: PalaceAnte) -> void:
+		r = room
+
+	## 舞会打起来 / 被卫兵盯上的时候不闲逛（交给攻击 / 躲避）；其它时候自己在大厅里逛
+	func objective_for(ai: PlayableCharacter) -> Variant:
+		if r.ball_on:
+			return null
+		for g in r.guards:
+			if (g as ArmorGuard).state in ["charge", "hold"]:
+				return null
+		return r.wander_target(ai)

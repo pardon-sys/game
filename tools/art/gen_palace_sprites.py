@@ -272,4 +272,6 @@ if __name__ == "__main__":
     # 第四章追加事件（第三批）
     build_strip("ice_sprite_sheet.png", "ice_sprite.png", 4, 22, 22, "冰糕精灵（三帧飘 + 伸手）", uniform=True)
     build_strip("palace_props4_sheet.png", "palace_props4.png", 6, 40, 48, "追加事件道具三（按摩椅 / 冻住的门 / 冰块蛋糕 / 生日蛋糕 / 空画框 / 镜面墙板）")
+    build_strip("paint_imp_sheet.png", "paint_imp.png", 4, 24, 24, "颜料小人（三帧走 + 挥小刷子）", uniform=True)
+    build_strip("paint_fx_sheet.png", "paint_fx.png", 6, 48, 48, "王座间特效（粉飞溅 / 蓝飞溅 / 画布碎片 / 金色笔触 / 金色星光 / 颜料手）")
     build_dance_doll()

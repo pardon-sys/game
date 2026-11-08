@@ -362,14 +362,14 @@ def _fragment(name, look, flag):
 
 
 def _cipher_door():
-    nodes = {"default": {"lines": [L("（一扇沉重的木门，门上嵌着四个能转动的铜轮，每个轮子上刻着 2、3、5、7）", N)],
-                         "prompt": "转第一个轮子？", "choices": [{"text": d, "next": ("d2" if d == CODE[0] else "wrong")} for d in DIGITS]},
-             "wrong": {"lines": [L("（「咔哒」……门没有动。四个铜轮自己转回了原位）", N), L("……不对。再想想。", BLUE)]},
+    """密码门：自己输入四位数字（完全一致才开）。答案 = CODE 连起来。"""
+    nodes = {"default": {"lines": [L("（一扇沉重的木门，门上嵌着一块铜做的数字锁盘：四个空格，旁边刻着一行小字「以质数为钥」）", N)],
+                         "input": {"prompt": "输入四位数字", "numeric": True, "len": 4, "exact": True, "answers": ["".join(CODE)],
+                                   "ok": "ok", "wrong": "wrong", "cancel": "leave"}},
+             "wrong": {"lines": [L("（「咔哒」……门没有动。锁盘上的数字自己清空了）", N), L("……不对。再想想。", BLUE)]},
+             "leave": {"lines": [L("……等想到了再来。", P)]},
              "open": {"lines": [L("（门开着。里面是一间小小的书房）", N)]}}
-    for i in (2, 3, 4):
-        nodes["d%d" % i] = {"lines": [L("（「咔」）", N)], "prompt": "转第 %d 个轮子？" % i,
-                            "choices": [{"text": d, "next": (("d%d" % (i + 1)) if i < 4 else "ok") if d == CODE[i - 1] else "wrong"} for d in DIGITS]}
-    nodes["ok"] = {"lines": [L("（四个铜轮同时「咔哒」一声——门，慢慢地开了）", N)], "set": {"call": "palace_cipher_ok"}}
+    nodes["ok"] = {"lines": [L("（四个数字同时「咔哒」一声亮了起来——门，慢慢地开了）", N)], "set": {"call": "palace_cipher_ok"}}
     return dfile("", "密码门", nodes, entries=[{"if": {"flag": "palace_cipher_open"}, "node": "open"}, {"node": "default"}])
 
 

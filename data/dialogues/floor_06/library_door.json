@@ -15,39 +15,40 @@
 		"default": {
 			"lines": [
 				{
-					"text": "（一扇沉重的木门，门上嵌着四个能转动的铜轮，每个轮子上刻着 2、3、5、7）",
+					"text": "（一扇沉重的木门，门上嵌着一块铜做的数字锁盘：四个空格，旁边刻着一行小字「以质数为钥」）",
 					"speaker": ""
 				}
 			],
-			"prompt": "转第一个轮子？",
-			"choices": [
-				{
-					"text": "2",
-					"next": "d2"
-				},
-				{
-					"text": "3",
-					"next": "wrong"
-				},
-				{
-					"text": "5",
-					"next": "wrong"
-				},
-				{
-					"text": "7",
-					"next": "wrong"
-				}
-			]
+			"input": {
+				"prompt": "输入四位数字",
+				"numeric": true,
+				"len": 4,
+				"exact": true,
+				"answers": [
+					"2573"
+				],
+				"ok": "ok",
+				"wrong": "wrong",
+				"cancel": "leave"
+			}
 		},
 		"wrong": {
 			"lines": [
 				{
-					"text": "（「咔哒」……门没有动。四个铜轮自己转回了原位）",
+					"text": "（「咔哒」……门没有动。锁盘上的数字自己清空了）",
 					"speaker": ""
 				},
 				{
 					"text": "……不对。再想想。",
 					"speaker": "蓝色的公主"
+				}
+			]
+		},
+		"leave": {
+			"lines": [
+				{
+					"text": "……等想到了再来。",
+					"speaker": "公主"
 				}
 			]
 		},
@@ -59,91 +60,10 @@
 				}
 			]
 		},
-		"d2": {
-			"lines": [
-				{
-					"text": "（「咔」）",
-					"speaker": ""
-				}
-			],
-			"prompt": "转第 2 个轮子？",
-			"choices": [
-				{
-					"text": "2",
-					"next": "wrong"
-				},
-				{
-					"text": "3",
-					"next": "wrong"
-				},
-				{
-					"text": "5",
-					"next": "d3"
-				},
-				{
-					"text": "7",
-					"next": "wrong"
-				}
-			]
-		},
-		"d3": {
-			"lines": [
-				{
-					"text": "（「咔」）",
-					"speaker": ""
-				}
-			],
-			"prompt": "转第 3 个轮子？",
-			"choices": [
-				{
-					"text": "2",
-					"next": "wrong"
-				},
-				{
-					"text": "3",
-					"next": "wrong"
-				},
-				{
-					"text": "5",
-					"next": "wrong"
-				},
-				{
-					"text": "7",
-					"next": "d4"
-				}
-			]
-		},
-		"d4": {
-			"lines": [
-				{
-					"text": "（「咔」）",
-					"speaker": ""
-				}
-			],
-			"prompt": "转第 4 个轮子？",
-			"choices": [
-				{
-					"text": "2",
-					"next": "wrong"
-				},
-				{
-					"text": "3",
-					"next": "ok"
-				},
-				{
-					"text": "5",
-					"next": "wrong"
-				},
-				{
-					"text": "7",
-					"next": "wrong"
-				}
-			]
-		},
 		"ok": {
 			"lines": [
 				{
-					"text": "（四个铜轮同时「咔哒」一声——门，慢慢地开了）",
+					"text": "（四个数字同时「咔哒」一声亮了起来——门，慢慢地开了）",
 					"speaker": ""
 				}
 			],

@@ -2,6 +2,7 @@ class_name ChoiceMenu
 extends CanvasLayer
 ## 对话选项页：在对话框上方列出选项，上下键选择、E / 回车确定。await ask(选项文字, 提示) 返回选中的序号。
 ## 测试 / 脚本可以直接调 choose(序号)。打开期间 GameState.in_dialogue = true（人物不跟着上下键走）。
+## 选项多于 MAX_SHOWN 个时只显示一个窗口（上下 ▲ ▼ 提示还有更多），选中的那项跟着滚动；每次打开都从最上面开始。
 
 signal chosen(index: int)
 
@@ -9,7 +10,10 @@ const PINK := Color(1, 0.72, 0.86)
 const GOLD := Color(1, 0.86, 0.4)
 const TEXT := Color(0.95, 0.92, 0.98)
 
+const MAX_SHOWN := 6
+
 var selected := 0
+var top := 0
 var options: Array = []
 var panel: PanelContainer
 var box: VBoxContainer
@@ -50,6 +54,7 @@ func ask(texts: Array, prompt := "", layout := Rect2()) -> int:
 	panel.custom_minimum_size = layout.size
 	options = texts
 	selected = 0
+	top = 0
 	prompt_label.text = prompt
 	prompt_label.visible = prompt != ""
 	_refresh()
@@ -79,7 +84,15 @@ func _refresh() -> void:
 		if c != prompt_label:
 			box.remove_child(c)
 			c.queue_free()
-	for i in options.size():
+	if selected < top:
+		top = selected
+	elif selected >= top + MAX_SHOWN:
+		top = selected - MAX_SHOWN + 1
+	top = clampi(top, 0, maxi(0, options.size() - MAX_SHOWN))
+	var scrolls := options.size() > MAX_SHOWN
+	if scrolls:
+		box.add_child(_arrow("▲" if top > 0 else " "))
+	for i in range(top, mini(options.size(), top + MAX_SHOWN)):
 		var l := Label.new()
 		l.text = ("▶ " if i == selected else "　 ") + str(options[i])
 		if _layout.has_area():
@@ -88,10 +101,21 @@ func _refresh() -> void:
 			l.add_theme_font_size_override("font_size", 8)
 		l.add_theme_color_override("font_color", PINK if i == selected else TEXT)
 		box.add_child(l)
+	if scrolls:
+		box.add_child(_arrow("▼" if top + MAX_SHOWN < options.size() else " "))
 	await get_tree().process_frame
 	panel.reset_size()
 	var vp := get_viewport().get_visible_rect().size
 	panel.position = _layout.position if _layout.has_area() else Vector2(vp.x - panel.size.x - 16, vp.y - 96 - panel.size.y)
+
+
+func _arrow(t: String) -> Label:
+	var a := Label.new()
+	a.text = t
+	a.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	a.add_theme_font_size_override("font_size", 8)
+	a.add_theme_color_override("font_color", GOLD)
+	return a
 
 
 func _input(event: InputEvent) -> void:

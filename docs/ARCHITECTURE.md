@@ -1383,6 +1383,21 @@ data/cutscenes/<楼层组>/  地图内过场；data/theater/<楼层组>/  小剧
 	- 交互提示「！」：`InteractHint`（`scripts/components/interact_hint.gd`），由 `Interactable._ready` 挂在反省篇地图上；公主 `HINT_R` 以内、还不是 E 提示目标时显示，`Spot.done_flag` 有了就不再显示。
 	- 钟楼：道具缩小，宝箱换成地牢宝箱图（Kenney），大齿轮本身也有调查点（和转轴同一段对话），转轴画成小摇柄（`CrankView`）。
 	- 图书馆私人书房和大厅之间改成只有密码门那一格（`quest_maps._palace_library`），门（`_door`）挡住，开门后才能进。
+  - 第四轮：
+	- 隧道收路费：栅栏在入口西边（`toll` 标记 x=86，所有路线都要过）；`_ready` 每次进图清掉 `TOLL_FLAG`（有通行证 `LOST_DONE` 就一直算付过）；只认玩家操控的那个人走到栅栏跟前（`TOLL_R`）。
+	- 王座间 Boss 会动：第一层沿北墙滑（`SLIDE_CELLS`），第二层飘起来追人（`FLOAT_SPEED`，`PortraitView.hover`），第三层在场地中央转圈（`ORBIT_R`）；
+	  `weak_point()` 跟着画像，`WeakMark`（金色光圈）是 AI 的 `priority_target`；小画像第二层飞下来追人（`SmallPortrait.home`，打掉飞回墙上）；
+	  颜料小人 `PaintImp`（颜料坑里冒出来，`IMP_EVERY` / `IMP_MAX`，一下就打掉，AI 通过 `ThroneHooks.nearest_enemy` 去打）；伸长的手 `StretchHand`（预警虚线 danger 组 → 伸过去 → `status.grab` 拖回破绽前挠）。
+	  Boss 血条：`BossBar` 也接「不是 Monster 的 Boss」（有 `boss_name()` / `boss_ratio()` 就行），王座间 `GameState.boss_changed.emit(self)`。
+	  特效 `ThroneFx`（`levels/floor_06/scripts/throne_fx.gd`，图 `paint_fx.png`：颜料飞溅 / 画布碎片 / 金色笔触 / 星光 / 颜料手；`flash` 全屏闪；`Watercolor` 画里的水彩滤镜，只在操控的人被拉进画里时打开）。
+	  `burst_finale` 最后加了画像的一句「……你……不是她……」（对着粉色公主）。
+	- 输入式谜题：`TextPrompt`（`scripts/ui/text_prompt.gd`，`Dialogue.runner.text_prompt`；`await ask(提示, 只收数字, 长度)`，回车确定 / Esc 放弃；`matches()` 去空白、全角转半角，默认「包含答案」就算对）；
+	  对话节点 `input: {prompt, numeric, len, answers, exact, ok, wrong, cancel}`。密码门 = 数字输入 2573（exact），石像三问 = 文字输入。
+	  `ChoiceMenu` 选项多于 `MAX_SHOWN`（6）个时只显示一个窗口，▲▼ 提示，选中项跟着滚，每次打开从 top=0 开始（大钟面 1~12）。
+	- 前厅的搭档：`PlayableCharacter.roam`（不被拉回玩家身边，仍可按 E 说话）；`PalaceAnte.AnteHooks.objective_for` → `wander_target(ai)`（`WANDER` 里挑路线不穿过地砖的点）；
+	  地砖只认 `GameState.player`；搭档对话 `floor_06/ante_partner_hint`（`hint_keys()` 按进度写 `vars.ante_hint`）。
+	- 道具提示：`PalaceRoom.ITEM_HINTS` + `ItemHinter`（每张宫殿图一个；背包里有 / 有某前缀的标记 → 等空下来播 `floor_06/item_hint` 的对应节点，一次）。
+	- 女仆长上发条：调查点 `wind_spot` 挂在女仆长本人（`_tag_head_maid` 找到的巡逻人偶）身上，跟着她走。
   - 新装备（衣帽间）：`palace_ribbon`、`palace_corset`、`palace_boots`、`palace_stockings`、`feather_shawl`（`gen_equipment.py` + `gen_equip_art.py` + `ItemDB`）。
 - 配乐（`tools/audio/gen_music.py`，ElevenLabs）：`old_palace` 旧王宫探索（荒凉、破旧、往日的华丽）、`palace_boss` 王座间 Boss「封笑的女王画像」，登记在 `Audio.MUSIC`，第四章用。
 
@@ -1444,7 +1459,7 @@ levels/<楼层>/        每张地图的 map.txt 和场景
 scripts/dialogue/     DialogueRunner（人物对话、选项、条件、选择记忆）
 scripts/training/     TrainingDB、TrainingStats、TrainingStage（训练一 / 三 / 四的基类）、qte_endure / qte_resist / qte_sensitize / maze_release
 scripts/core/         …… SaveSystem（存档）、Town（小镇设施）
-scripts/ui/           …… ChoiceMenu、SlotMenu、ShopUI、TitleScreen、TrainingMenu、ScrollTextBox（滚动文字面板）
+scripts/ui/           …… ChoiceMenu、TextPrompt（输入框）、SlotMenu、ShopUI、TitleScreen、TrainingMenu、ScrollTextBox（滚动文字面板）
 tests/systems_test.gd 人物对话、选择记忆、存档读档、存档点、主界面、文件迁移
 tests/floor6_test.gd  第六层地图、楼梯、居民、设施、开场三种选择、第五层 → 第六层
 tests/training_test.gd 训练数值与上限、菜单、Esc 跳关列表、新陷阱和组合、四项训练、训练迷宫

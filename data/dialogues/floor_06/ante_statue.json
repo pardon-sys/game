@@ -47,6 +47,18 @@
 				}
 			]
 		},
+		"leave": {
+			"lines": [
+				{
+					"text": "……先去找找答案。",
+					"speaker": "公主"
+				},
+				{
+					"text": "（石像的眼睛暗了下去）",
+					"speaker": ""
+				}
+			]
+		},
 		"wrong": {
 			"lines": [
 				{
@@ -101,21 +113,16 @@
 					"speaker": ""
 				}
 			],
-			"prompt": "回答……",
-			"choices": [
-				{
-					"text": "十二下",
-					"next": "wrong"
-				},
-				{
-					"text": "十三下",
-					"next": "q2"
-				},
-				{
-					"text": "一下也没有",
-					"next": "wrong"
-				}
-			]
+			"input": {
+				"prompt": "钟敲了几下？",
+				"answers": [
+					"十三",
+					"13"
+				],
+				"ok": "q2",
+				"wrong": "wrong",
+				"cancel": "leave"
+			}
 		},
 		"q2": {
 			"lines": [
@@ -124,21 +131,16 @@
 					"speaker": ""
 				}
 			],
-			"prompt": "回答……",
-			"choices": [
-				{
-					"text": "五号",
-					"next": "wrong"
-				},
-				{
-					"text": "七号",
-					"next": "q3"
-				},
-				{
-					"text": "九号",
-					"next": "wrong"
-				}
-			]
+			"input": {
+				"prompt": "礼服是几号？",
+				"answers": [
+					"七",
+					"7"
+				],
+				"ok": "q3",
+				"wrong": "wrong",
+				"cancel": "leave"
+			}
 		},
 		"q3": {
 			"lines": [
@@ -147,21 +149,15 @@
 					"speaker": ""
 				}
 			],
-			"prompt": "回答……",
-			"choices": [
-				{
-					"text": "玫瑰",
-					"next": "wrong"
-				},
-				{
-					"text": "铃兰",
-					"next": "ok"
-				},
-				{
-					"text": "向日葵",
-					"next": "wrong"
-				}
-			]
+			"input": {
+				"prompt": "陛下最喜欢的花？",
+				"answers": [
+					"铃兰"
+				],
+				"ok": "ok",
+				"wrong": "wrong",
+				"cancel": "leave"
+			}
 		}
 	}
 }

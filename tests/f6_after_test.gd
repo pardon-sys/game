@@ -1630,12 +1630,18 @@ func _cell(info: Dictionary) -> Vector2:
 	return Vector2(float(a[0]), float(a[1]))
 
 
-## 说一段对话：picks = 依次在选项页选第几个（用完了选第一个）
+## 说一段对话：picks = 依次在选项页选第几个（用完了选第一个）；遇到输入框时 picks 里放字符串（用完了 = 放弃）
+var last_options: Array = []
+
+
 func _talk(file: String, node: String, picks: Array = []) -> void:
 	Dialogue.runner.talk(file, node)
 	var t := 0.0
 	while Dialogue.runner.is_running() and t < 10.0:
+		if Dialogue.runner.text_prompt.is_open():
+			Dialogue.runner.text_prompt.submit(str(picks.pop_front()) if not picks.is_empty() else "")
 		if Dialogue.runner.choice_menu.is_open():
+			last_options = Dialogue.runner.choice_menu.options.duplicate()
 			Dialogue.runner.choice_menu.choose(int(picks.pop_front()) if not picks.is_empty() else 0)
 		if Dialogue.is_active():
 			Dialogue.advance()
@@ -1648,6 +1654,8 @@ func _talk(file: String, node: String, picks: Array = []) -> void:
 func _advance_until(cond: Callable, max_time: float) -> float:
 	var t := 0.0
 	while not cond.call() and t < max_time:
+		if Dialogue.runner.text_prompt.is_open():
+			Dialogue.runner.text_prompt.submit("")
 		if Dialogue.runner.choice_menu.is_open():
 			Dialogue.runner.choice_menu.choose(0)
 		if Dialogue.is_active():

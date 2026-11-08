@@ -3,7 +3,7 @@ extends PalaceRoom
 ## 第四章⑨·隧道与密室（floor_06_palace_tunnels；台词 penance_text/palace3.py）：
 ##   第一次从王座前厅的画后进来（东）；各房间的密道口（to_bath / to_library / to_wardrobe / to_training）从隧道这一边走到过才打开
 ##   （SECRET_FLAG % 房间：那边房间的 exit 用这个 unlock_flag），打开以后两边都能走 = 抄近路。
-##   收路费的小鬼（toll）：岔路口东边一道栅栏挡着，走近自动开口要钱（对话 call palace_toll_mint / _coin / _tickle；
+##   收路费的小鬼（toll）：入口西边一道栅栏挡着（所有路线都要过，每次进这张图都要重新付；有失物招领换来的通行证就免），走近自动开口要钱（对话 call palace_toll_mint / _coin / _tickle；
 ##     薄荷糖 1 颗、金币 TOLL_COINS 枚，或者「用痒付」= 小剧场 tunnel_toll（CG））→ TOLL_FLAG，栅栏拆掉；
 ##   羽毛蛛网（webs）：挡住整条路，碰到 = 粘住（定身）+ 小蜘蛛挠；粉色公主攻击 / 施法烧掉（AI 粉色公主会去烧）；
 ##   四口宝箱（chests，对话 call palace_tunnel_chest_N）：一口是真的（REAL_VAR，第一次进来随机），其余是宝箱怪（咬住脚踝挠脚底）；
@@ -12,10 +12,11 @@ extends PalaceRoom
 
 const MAP := "floor_06_palace_tunnels"
 const TOLL_FLAG := "palace_toll_paid"
+const SEEN_FLAG := "palace_tunnels_seen"
 const REAL_VAR := "palace_real_chest"
 const SECRET_FLAG := "palace_secret_%s"
 const TOLL_COINS := 30
-const TOLL_R := 30.0
+const TOLL_R := 22.0   # 走到栅栏跟前（两边都行）才开口；入口出生点离栅栏两格，不会一进来就被拦
 const WEB_R := 14.0
 const BURN_R := 26.0
 ## 追加事件：失物招领（小鬼的五样东西散在五张图：PalaceRoom.LOST_ITEMS；lost_board 按 E 交还 → 免路费通行证 + 徽记）
@@ -42,11 +43,14 @@ func map_id() -> String:
 
 
 func toll_pos() -> Vector2:
-	return world(Vector2i(cells("toll")[0].x + 6, 29))
+	return world(Vector2i(cells("toll")[0].x, 29))
 
 
 func _ready() -> void:
 	super()
+	# 路费每趟都要付：进图时清掉「付过了」（有通行证 = 失物招领做完，就一直算付过）
+	GameState.set_flag(TOLL_FLAG, GameState.has_flag(LOST_DONE))
+	GameState.set_flag(SEEN_FLAG)
 	if not GameState.vars.has(REAL_VAR):
 		GameState.vars[REAL_VAR] = randi() % 4 + 1
 	for pair in [["quilt", "floor_06/tunnel_quilt"], ["vanity", "floor_06/tunnel_vanity"], ["diary", "floor_06/tunnel_diary"],
@@ -70,7 +74,7 @@ func _ready() -> void:
 		add_view(cv)
 		_chest_views.append(cv)
 	if not toll_paid():
-		var tx := cells("toll")[0].x + 5
+		var tx := cells("toll")[0].x
 		_toll_body = _block([Vector2i(tx, 28), Vector2i(tx, 29), Vector2i(tx, 30)])
 		_imps = TollView.new()
 		_imps.position = world(Vector2i(tx, 29))
@@ -140,12 +144,12 @@ func _process(delta: float) -> void:
 				if (m as Node2D).global_position.distance_to(world(cells(key)[0])) <= 40.0:
 					GameState.set_flag(f)
 	# 收路费
-	if not toll_paid() and _toll_cool <= 0.0:
-		for m in members():
-			if (m as Node2D).global_position.distance_to(toll_pos()) <= TOLL_R:
-				_toll_cool = 6.0
-				Dialogue.talk("floor_06/tunnel_toll")
-				return
+	# 收路费（只认玩家操控的那个人走过来；搭档站在旁边不算）
+	if not toll_paid() and _toll_cool <= 0.0 and is_instance_valid(GameState.player) \
+			and GameState.player.global_position.distance_to(toll_pos()) <= TOLL_R:
+		_toll_cool = 6.0
+		Dialogue.talk("floor_06/tunnel_toll")
+		return
 	for m in members():
 		var pc := m as PlayableCharacter
 		if Downed.is_downed(pc):

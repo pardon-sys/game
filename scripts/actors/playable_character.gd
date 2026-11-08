@@ -83,6 +83,8 @@ var character_id := "pink"
 const FOLLOW_WARP := 180.0
 ## 跟着走时和她说话用的对话文件（空 = 不能说话）
 var partner_talk := ""
+## 自己逛（房间的 AI hooks 给闲逛点，不跟着玩家）：不会被拉回玩家身边，但仍然可以走过去和她说话（例如旧王宫前厅）
+var roam := false
 var _partner_area: Interactable
 ## 睡着了（过场的 lie sleep=true）：小人一直是闭着眼的那张图（立绘照旧）
 var sleeping := false
@@ -194,6 +196,10 @@ func start_following(talk_file := "") -> void:
 	_refresh_partner_area()
 
 
+func refresh_partner_area() -> void:
+	_refresh_partner_area()
+
+
 func _refresh_partner_area() -> void:
 	if partner_talk == "":
 		if _partner_area:
@@ -211,7 +217,7 @@ func _refresh_partner_area() -> void:
 		_partner_area.add_child(cs)
 		_partner_area.interacted.connect(_on_partner_talk)
 		add_child(_partner_area)
-	_partner_area.enabled = follow and not is_controlled() and is_alive()
+	_partner_area.enabled = (follow or roam) and not is_controlled() and is_alive()
 
 
 func _on_partner_talk(_who: Node) -> void:
@@ -225,7 +231,7 @@ func _on_partner_talk(_who: Node) -> void:
 
 
 func _follow_warp() -> void:
-	if follow and not is_controlled() and is_instance_valid(GameState.player) and not GameState.in_cutscene \
+	if follow and not roam and not is_controlled() and is_instance_valid(GameState.player) and not GameState.in_cutscene \
 			and global_position.distance_to(GameState.player.global_position) > FOLLOW_WARP:
 		global_position = GameState.player.global_position + Vector2(0, 10)
 

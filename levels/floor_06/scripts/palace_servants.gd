@@ -62,9 +62,9 @@ func _ready() -> void:
 		cake.need = ["palace_sheet_2"]
 		cake.position = world(cells("deliver")[0] + Vector2i(0, -1))   # 摆在茶桌（deliver 北边一格）上
 		add_view(cake)
-	# 追加事件·女仆长的发条钥匙：她背后的发条孔、休息室（门上锁，女仆长友好以后开）、按摩椅
-	if not cells("wind_maid").is_empty():
-		_spot("floor_06/servants_wind_maid", cells("wind_maid")[0])
+	# 追加事件·女仆长的发条钥匙：发条孔在女仆长本人身上（_tag_head_maid 给她挂上调查点，绕到背后按 E）、
+	# 休息室（门上锁，女仆长友好以后开）、按摩椅
+	if not cells("lounge_chair").is_empty():
 		_spot("floor_06/servants_lounge_chair", cells("lounge_chair")[0])
 		sheet_view(PalaceRoom.PROPS4, 6, 0, cells("lounge_chair")[0], [], 1.0)
 		if not GameState.has_flag(PalaceRoom.FRIEND_FLAG):
@@ -95,8 +95,19 @@ func _tag_head_maid() -> void:
 	tag.position = Vector2(-14, -48)
 	best.add_child(tag)
 	best.scale = Vector2(1.15, 1.15)
+	head_maid = best
+	# 上发条：和女仆长本人交互（调查点跟着她走）
+	var sp := PrisonOddities.Spot.new()
+	sp.dialogue = "floor_06/servants_wind_maid"
+	sp.name = "WindSpot"
+	sp.done_flag = PalaceRoom.FRIEND_FLAG
+	best.add_child(sp)
+	sp.position = Vector2(0, -6)
+	wind_spot = sp
 
 
+var head_maid: Node2D
+var wind_spot: Node2D
 var _lounge_door: StaticBody2D
 var _lounge_view: Node2D
 
