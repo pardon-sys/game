@@ -1,0 +1,33 @@
+[gd_resource type="Resource" script_class="IsoTheme" format=3]
+
+[ext_resource type="Script" path="res://scripts/iso/iso_theme.gd" id="s"]
+[ext_resource type="Texture2D" path="res://assets/generated/iso/palace_garden/floor.png" id="t0"]
+[ext_resource type="Texture2D" path="res://assets/generated/iso/palace_garden/floor_n.png" id="t1"]
+[ext_resource type="Texture2D" path="res://assets/generated/iso/palace_garden/decals.png" id="t2"]
+[ext_resource type="Texture2D" path="res://assets/generated/iso/palace_garden/walls.png" id="t3"]
+[ext_resource type="Texture2D" path="res://assets/generated/iso/palace_garden/walls_n.png" id="t4"]
+[ext_resource type="Texture2D" path="res://assets/generated/iso/palace_garden/gate.png" id="t5"]
+[ext_resource type="Texture2D" path="res://assets/generated/iso/palace_garden/gate_n.png" id="t6"]
+[ext_resource type="Texture2D" path="res://assets/generated/iso/palace_garden/living.png" id="t7"]
+[ext_resource type="Texture2D" path="res://assets/generated/iso/palace_garden/living_n.png" id="t8"]
+[ext_resource type="Texture2D" path="res://assets/generated/iso/palace_garden/living_crack.png" id="t9"]
+
+[resource]
+script = ExtResource("s")
+theme_name = "palace_garden"
+floor = ExtResource("t0")
+floor_normal = ExtResource("t1")
+decals = ExtResource("t2")
+walls = ExtResource("t3")
+walls_normal = ExtResource("t4")
+gate = ExtResource("t5")
+gate_normal = ExtResource("t6")
+living = ExtResource("t7")
+living_normal = ExtResource("t8")
+living_crack = ExtResource("t9")
+floor_period = 4
+decal_count = 4
+wall_variants = 4
+wall_height = 20
+fade_alpha = 0.35
+light_squash = 0.5

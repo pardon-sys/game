@@ -1398,6 +1398,12 @@ data/cutscenes/<楼层组>/  地图内过场；data/theater/<楼层组>/  小剧
 	  地砖只认 `GameState.player`；搭档对话 `floor_06/ante_partner_hint`（`hint_keys()` 按进度写 `vars.ante_hint`）。
 	- 道具提示：`PalaceRoom.ITEM_HINTS` + `ItemHinter`（每张宫殿图一个；背包里有 / 有某前缀的标记 → 等空下来播 `floor_06/item_hint` 的对应节点，一次）。
 	- 女仆长上发条：调查点 `wind_spot` 挂在女仆长本人（`_tag_head_maid` 找到的巡逻人偶）身上，跟着她走。
+	- 后花园 `PalaceGarden`（`floor_06_palace_garden`，布局 `quest_maps._palace_garden`，文本 `penance_text/palace7.py`，图 `garden_props.png` / `npcs/flower_keeper.png`）：
+	  前厅东北角 `garden_door`（exit secret，`unlock_flag = palace_garden_clue`，石像全对时设上；锁着时 SIGNS `palace_garden_closed`）。
+	  双人秋千（`garden_swing` 小剧场）、天使喷泉的水路（`turn(i)` 转 90°，`_right_dir` 对准喷泉，三尊都对 → `FLOW_FLAG`，转错喷脚底）、
+	  凉亭宝箱（`open_gazebo()`）、花园小店主（`KEEPER_ASKED` → 厨房水槽东边的小水壶 `watering_can` → `water()` → `garden_petals`）、`fairy` ×4（fairy_swarm）。
+	  地板 / 墙用自己的等距主题 `palace_garden`（`gen_iso_theme.py`：`floor_kind = grass` 草地 + 少量踏脚石和小花，`wall_kind = hedge` 树篱叶团、有的开着蔷薇，地面装饰是三叶草 / 花瓣 / 雏菊 / 落叶）；
+	  小天使的水柱按逻辑方向算、用 `IsoView.offset` 换成屏幕偏移再画；`DECOR_BEDS` 沿树篱摆的装饰花坛。
   - 新装备（衣帽间）：`palace_ribbon`、`palace_corset`、`palace_boots`、`palace_stockings`、`feather_shawl`（`gen_equipment.py` + `gen_equip_art.py` + `ItemDB`）。
 - 配乐（`tools/audio/gen_music.py`，ElevenLabs）：`old_palace` 旧王宫探索（荒凉、破旧、往日的华丽）、`palace_boss` 王座间 Boss「封笑的女王画像」，登记在 `Audio.MUSIC`，第四章用。
 

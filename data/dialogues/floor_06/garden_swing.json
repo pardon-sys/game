@@ -1,0 +1,78 @@
+{
+	"name": "双人秋千",
+	"entries": [
+		{
+			"if": {
+				"flag": "cg_seen_theater:garden_swing"
+			},
+			"node": "again"
+		},
+		{
+			"node": "default"
+		}
+	],
+	"nodes": {
+		"default": {
+			"lines": [
+				{
+					"text": "（爬满蔷薇的白色秋千架，两块秋千板并排挂着，一边高一边低。藤蔓从架子上垂下来，轻轻地晃）",
+					"speaker": ""
+				},
+				{
+					"text": "（秋千板上刻着两个名字的缩写，早就磨掉了。只剩下两个小小的图案：一颗星星，和一片雪花）",
+					"speaker": ""
+				},
+				{
+					"text": "……星星，和雪花。",
+					"speaker": "公主",
+					"emotion": "surprise"
+				},
+				{
+					"text": "……婴儿房的刻痕旁边。……好像，也有这样的小图案。",
+					"speaker": "蓝色的公主"
+				}
+			],
+			"prompt": "坐上去荡一荡？",
+			"choices": [
+				{
+					"text": "一个坐，一个推",
+					"next": "go"
+				},
+				{
+					"text": "先不了",
+					"next": "no"
+				}
+			]
+		},
+		"go": {
+			"lines": [
+				{
+					"text": "我先坐！你推我——要推得高高的！",
+					"speaker": "公主",
+					"emotion": "happy"
+				}
+			],
+			"theater": "garden_swing"
+		},
+		"no": {
+			"lines": [
+				{
+					"text": "……等一下再玩。",
+					"speaker": "公主"
+				}
+			]
+		},
+		"again": {
+			"lines": [
+				{
+					"text": "（秋千还在轻轻地晃。藤蔓垂下来，好像在等下一个人坐上去）",
+					"speaker": ""
+				},
+				{
+					"text": "（板子上的星星和雪花，挨得很近很近）",
+					"speaker": ""
+				}
+			]
+		}
+	}
+}

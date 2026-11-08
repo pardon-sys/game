@@ -1,0 +1,331 @@
+{
+	"name": "后花园：双人秋千",
+	"cast": {
+		"princess": {
+			"kind": "princess",
+			"at": [
+				-14,
+				8
+			],
+			"visual": "normal",
+			"anim": "idle",
+			"dir": "right"
+		},
+		"blue": {
+			"kind": "npc:blue_princess",
+			"at": [
+				14,
+				8
+			],
+			"visual": "normal",
+			"anim": "idle",
+			"dir": "left"
+		},
+		"pants": {
+			"kind": "trap:hand",
+			"at": [
+				20,
+				10
+			]
+		},
+		"v1": {
+			"kind": "trap:feather_curtain",
+			"at": [
+				-20,
+				-10
+			]
+		},
+		"v2": {
+			"kind": "trap:feather_curtain",
+			"at": [
+				20,
+				-10
+			]
+		}
+	},
+	"steps": [
+		{
+			"act": 1,
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "fade_in"
+				},
+				{
+					"state": "giggle",
+					"do": "voice"
+				}
+			],
+			"wait": 0.5
+		},
+		{
+			"speaker": "",
+			"text": "（粉色公主坐上秋千，蓝色公主在后面一推——秋千「呼」地荡了出去）",
+			"act": 1
+		},
+		{
+			"speaker": "公主",
+			"text": "哇——！好高！再高一点！",
+			"emotion": "happy"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……好。……抓紧。"
+		},
+		{
+			"speaker": "",
+			"text": "（荡到最高的时候，秋千架上的藤蔓「沙沙」地垂下来，叶尖正好扫过她悬在半空、晃来晃去的光脚）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "v1",
+					"zone": "sole",
+					"fx": "leaf",
+					"repeat": 6,
+					"interval": 0.2,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"visual": "giggle",
+					"do": "pose"
+				}
+			],
+			"act": 2
+		},
+		{
+			"speaker": "公主",
+			"text": "嘻……！叶、叶子……扫到脚心了……",
+			"emotion": "giggle"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……（又推了一下）……再高一点？"
+		},
+		{
+			"speaker": "公主",
+			"text": "不、不要再高了——越高藤蔓越多——哈哈哈！",
+			"emotion": "helpless_1"
+		},
+		{
+			"speaker": "",
+			"text": "（藤蔓好像认得这架秋千。每荡一次，就多垂下来几根，卷着叶子在她的脚心、脚趾缝里来回地刷）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "v1",
+					"zone": "sole",
+					"fx": "leaf",
+					"repeat": 12,
+					"interval": 0.11,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"visual": "helpless_1",
+					"do": "pose"
+				},
+				{
+					"do": "voice",
+					"state": "laugh"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "换、换人！换你坐！",
+			"emotion": "helpless_1"
+		},
+		{
+			"speaker": "",
+			"text": "（换蓝色公主坐上去。粉色公主揉着脚，坏笑着把秋千推得比刚才还高）",
+			"actions": [
+				{
+					"who": "princess",
+					"visual": "normal",
+					"do": "pose"
+				},
+				{
+					"who": "blue",
+					"visual": "normal",
+					"do": "pose"
+				}
+			],
+			"act": 3
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……等、等一下……太高……"
+		},
+		{
+			"speaker": "",
+			"text": "（藤蔓一下子缠上了两块秋千板——连站在后面推秋千的粉色公主也被卷了上去，两个人并排挂在秋千上，脚底被叶子一起刷着）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "v1",
+					"zone": "sole",
+					"fx": "leaf",
+					"repeat": 14,
+					"interval": 0.09,
+					"do": "tickle"
+				},
+				{
+					"who": "blue",
+					"by": "v2",
+					"zone": "sole",
+					"fx": "leaf",
+					"repeat": 14,
+					"interval": 0.09,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"visual": "helpless_2",
+					"do": "pose"
+				},
+				{
+					"who": "blue",
+					"visual": "helpless_2",
+					"do": "pose"
+				}
+			],
+			"cg": true
+		},
+		{
+			"speaker": "公主",
+			"text": "哈哈哈哈！我、我只是在推——为什么我也——！",
+			"emotion": "helpless_2"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……哈、哈哈……秋千……停不下来……"
+		},
+		{
+			"speaker": "公主",
+			"text": "（星光在花园里炸开，藤蔓「哗」地缩回了架子上……哈啊……放出去了……）",
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "flash"
+				},
+				{
+					"sound": "star_burst",
+					"do": "sfx"
+				},
+				{
+					"sound": "water_release",
+					"volume": -2.0,
+					"do": "sfx"
+				},
+				{
+					"who": "princess",
+					"time": 0.4,
+					"do": "shake"
+				},
+				{
+					"state": "laugh",
+					"do": "voice"
+				}
+			],
+			"act": "burst",
+			"wait": 1.0
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……哈……哈哈……（冰晶跟着炸开，秋千的绳子结了一层薄薄的霜……）",
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "flash"
+				},
+				{
+					"sound": "ice_crack",
+					"volume": -2.0,
+					"do": "sfx"
+				},
+				{
+					"sound": "water_release",
+					"volume": -2.0,
+					"do": "sfx"
+				},
+				{
+					"who": "blue",
+					"time": 0.4,
+					"do": "shake"
+				},
+				{
+					"state": "laugh",
+					"do": "voice"
+				}
+			],
+			"act": "burst",
+			"wait": 1.0
+		},
+		{
+			"speaker": "",
+			"text": "（秋千慢慢地停下来。最后一根藤蔓缩回去之前，叶尖还是在两人刚释放完、敏感得要命的脚心上轻轻勾了一下）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "v1",
+					"zone": "sole",
+					"fx": "leaf",
+					"repeat": 4,
+					"interval": 0.2,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"time": 0.3,
+					"do": "shake"
+				},
+				{
+					"who": "princess",
+					"visual": "helpless_1",
+					"do": "pose"
+				},
+				{
+					"who": "blue",
+					"visual": "helpless_1",
+					"do": "pose"
+				}
+			],
+			"act": 4
+		},
+		{
+			"speaker": "公主",
+			"text": "呀……！……哈……哈……这架秋千……一定是故意的……",
+			"emotion": "helpless_1"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……嗯。……以前，一定也有人，在这里笑成这样。",
+			"actions": [
+				{
+					"who": "princess",
+					"visual": "normal",
+					"do": "pose"
+				},
+				{
+					"who": "blue",
+					"visual": "normal",
+					"do": "pose"
+				}
+			]
+		},
+		{
+			"actions": [
+				{
+					"state": "",
+					"do": "voice"
+				},
+				{
+					"time": 0.6,
+					"do": "fade_out"
+				}
+			],
+			"wait": 0.7
+		}
+	]
+}

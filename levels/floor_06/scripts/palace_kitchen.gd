@@ -68,6 +68,21 @@ func _ready() -> void:
 	sheet_view(PalaceRoom.PROPS3, 6, 5, cells("chef")[0], [], 0.9, Vector2(0, 8))
 	sheet_view(PalaceRoom.CHEF, 4, 0, cells("chef")[0], [0, 1], 1.0, Vector2(0, -6))
 	sheet_view(PalaceRoom.PROPS3, 6, 4, cells("sink")[0], [], 0.8, Vector2(0, -6))
+	# 第四轮·后花园：花园小店主的小水壶（店主拜托过以后才出现在水槽边，拿走就没了）
+	var can_c := cells("sink")[0] + Vector2i(2, 0)
+	var can_v := PalaceRoom.Events2View.new()
+	can_v.tex = "res://assets/generated/item_watering_can.png"
+	can_v.scale_k = 1.0
+	can_v.need = ["palace_keeper_asked"]
+	can_v.hide_flag = "palace_can_taken"
+	can_v.position = world(can_c)
+	add_view(can_v)
+	var can_sp := PrisonOddities.Spot.new()
+	can_sp.dialogue = "floor_06/kitchen_watering_can"
+	can_sp.done_flag = "palace_can_taken"
+	add_child(can_sp)
+	can_sp.global_position = world(can_c)
+	gate(can_sp, ["palace_keeper_asked"])
 	# 追加事件·送餐潜行：糕点台旁边的托盘
 	if not cells("tray").is_empty():
 		var tsp := PrisonOddities.Spot.new()

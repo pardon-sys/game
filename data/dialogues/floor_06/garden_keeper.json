@@ -1,0 +1,109 @@
+{
+	"name": "花园小店主",
+	"entries": [
+		{
+			"if": {
+				"flag": "palace_keeper_done"
+			},
+			"node": "done"
+		},
+		{
+			"if": {
+				"flag": [
+					"palace_keeper_asked",
+					"palace_can_taken"
+				]
+			},
+			"node": "water"
+		},
+		{
+			"if": {
+				"flag": "palace_keeper_asked"
+			},
+			"node": "wait"
+		},
+		{
+			"node": "default"
+		}
+	],
+	"nodes": {
+		"default": {
+			"lines": [
+				{
+					"text": "（花坛边上，一个戴着雏菊帽子的小花精人偶正对着一朵蔫掉的郁金香叹气）",
+					"speaker": ""
+				},
+				{
+					"text": "……蔫了，全都蔫了！……要浇花！要浇花！",
+					"speaker": "花园小店主"
+				},
+				{
+					"text": "可是我的小水壶……被厨房的人拿去装汤了！我、我不敢去厨房，厨师长好凶的！",
+					"speaker": "花园小店主"
+				},
+				{
+					"text": "……厨房。……水槽那边，也许有。",
+					"speaker": "蓝色的公主"
+				}
+			],
+			"set": {
+				"flags": [
+					"palace_keeper_asked"
+				]
+			}
+		},
+		"wait": {
+			"lines": [
+				{
+					"text": "小水壶！小水壶在厨房！拜托啦！",
+					"speaker": "花园小店主"
+				}
+			]
+		},
+		"water": {
+			"lines": [
+				{
+					"text": "啊——！我的小水壶！",
+					"speaker": "花园小店主"
+				},
+				{
+					"text": "（两个人帮她把花坛一个一个浇过去。蔫掉的郁金香慢慢地抬起头来）",
+					"speaker": ""
+				},
+				{
+					"text": "谢谢！谢谢！……要好好地谢谢你们才行！",
+					"speaker": "花园小店主"
+				}
+			],
+			"theater": "garden_petals",
+			"set": {
+				"call": "palace_keeper_water"
+			},
+			"next": "clue"
+		},
+		"clue": {
+			"lines": [
+				{
+					"text": "……以前啊，两个小殿下常常来这里。一个总把花别在左边，一个总别在右边。",
+					"speaker": "花园小店主"
+				},
+				{
+					"text": "陛下就笑着说：「这样，就分得清谁是谁了」。",
+					"speaker": "花园小店主"
+				},
+				{
+					"text": "……分得清，谁是谁。",
+					"speaker": "蓝色的公主"
+				}
+			]
+		},
+		"done": {
+			"lines": [
+				{
+					"text": "花都抬起头了！下次再来玩呀！",
+					"speaker": "花园小店主"
+				}
+			]
+		}
+	}
+}

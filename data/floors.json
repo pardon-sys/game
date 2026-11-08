@@ -443,6 +443,13 @@
 			"music": "palace_boss"
 		},
 		{
+			"id": "floor_06_palace_garden",
+			"name": "旧王宫·后花园",
+			"scene": "res://levels/floor_06_palace_garden/floor.tscn",
+			"group": "floor_06",
+			"music": "old_palace"
+		},
+		{
 			"id": "floor_08_maze_1",
 			"name": "第八层·夜迷宫一·外环回廊",
 			"scene": "res://levels/floor_08_maze_1/floor.tscn",

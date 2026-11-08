@@ -612,6 +612,7 @@ static func _palace_b(t: Node) -> void:
 	await _extra_events(t)
 	await _extra_events_c(t)
 	await _round4(t)
+	await _garden(t)
 
 
 static func _quiet_beetles(cr: PalaceClock) -> void:
@@ -1590,3 +1591,84 @@ static func _round4(t: Node) -> void:
 		shown0 == ChoiceMenu.MAX_SHOWN and top9 == 4 and cm.top == 0)
 	cm.choose(0)
 	await t.get_tree().process_frame
+
+
+## 第四轮·后花园：暗门（石像告诉你）、秋千、天使喷泉的水路、凉亭宝箱、花园小店主和小水壶、花丛里的小精灵
+static func _garden(t: Node) -> void:
+	_calm(t)
+	for k in PalaceRoom.ITEM_HINTS:   # 前面有测试重置过标记：道具提示照样先当作提示过
+		GameState.set_flag(PalaceRoom.item_hint_flag(k))
+	for f in [PalaceGarden.FLOW_FLAG, PalaceGarden.GAZEBO_FLAG, PalaceGarden.KEEPER_ASKED, PalaceGarden.KEEPER_DONE, "palace_can_taken",
+			"cg_seen_theater:garden_swing", "cg_seen_theater:garden_petals", "intro_done_palace_garden_in"]:
+		GameState.set_flag(f, false)
+	if GameState.inventory.has("watering_can"):
+		GameState.inventory.remove("watering_can", 1)
+	await _goto(t, "floor_06_palace_ante")
+	var an := _room(t, "PalaceAnte") as PalaceAnte
+	var lvn := t.get_tree().get_first_node_in_group("main").get("level") as Node
+	var gex: LevelExit = null
+	for e in lvn.find_children("*", "", true, false):
+		if e is LevelExit and str((e as LevelExit).target_level).contains("palace_garden"):
+			gex = e
+	verify(t, "前厅东北角有通往后花园的暗门（secret，要石像的线索）", gex != null and gex.secret and gex.unlock_flag == PalaceGarden.GARDEN_CLUE)
+	verify(t, "石像三问全对以后：知道了后花园的门（%s）" % PalaceGarden.GARDEN_CLUE, GameState.has_flag(PalaceGarden.GARDEN_CLUE))
+	GameState.pending_spawn = "from_ante"
+	await t.main.change_level(Floors.scene(PalaceGarden.MAP))
+	await t._advance_until(func(): return (t._level_id() == PalaceGarden.MAP and GameState.has_flag("intro_done_palace_garden_in")
+		and not Cutscene.is_playing() and not Dialogue.is_active()), 60.0)
+	var gd := _room(t, "PalaceGarden") as PalaceGarden
+	await t.get_tree().process_frame
+	verify(t, "后花园：秋千、三尊小天使、凉亭、花园小店主、小精灵（%d 只）" % t.get_tree().get_nodes_in_group("enemy").size(),
+		gd != null and gd.dirs.size() == 3 and t.get_tree().get_nodes_in_group("enemy").size() >= 3)
+	if gd == null:
+		return
+	_clear_enemies(t)
+	verify(t, "喷泉一开始是干的、凉亭宝箱打不开", not gd.flowing() and not gd.open_gazebo())
+	# 秋千
+	await t._talk("floor_06/garden_swing", "", [0])
+	await t._advance_until(func(): return GameState.has_flag("cg_seen_theater:garden_swing") and not CG.is_busy() and not Dialogue.is_active(), 120.0)
+	verify(t, "双人秋千：一个坐一个推，藤蔓挠脚心（小剧场）", GameState.has_flag("cg_seen_theater:garden_swing"))
+	# 转错：被水喷脚底
+	var p := GameState.player as PlayableCharacter
+	var c0 := gd.cells("cherubs")[0]
+	p.global_position = gd.world(c0) + Vector2(0, 16)
+	p.laugh.clear()
+	var wrong_once := false
+	var guard := 0
+	while not gd.flowing() and guard < 20:
+		guard += 1
+		for i in gd.dirs.size():
+			if int(gd.dirs[i]) != gd._right_dir(gd.cells("cherubs")[i]):
+				p.global_position = gd.world(gd.cells("cherubs")[i]) + Vector2(0, 16)
+				var l0 := p.laugh.value
+				gd.turn(i)
+				p.status.clear_root()
+				if int(gd.dirs[i]) != gd._right_dir(gd.cells("cherubs")[i]) and p.laugh.value > l0:
+					wrong_once = true
+				break
+	verify(t, "转到错误方向：水柱喷到脚底", wrong_once)
+	verify(t, "三尊小天使都对准喷泉：水路接通（转了 %d 下）" % guard, gd.flowing())
+	await t._talk("floor_06/garden_gazebo", "")
+	await t._advance_until(func(): return not Dialogue.is_active() and not Cutscene.is_playing(), 10.0)
+	verify(t, "凉亭的宝箱：水车转起来，开了", GameState.has_flag(PalaceGarden.GAZEBO_FLAG))
+	# 花园小店主 → 厨房的小水壶 → 浇花
+	await t._talk("floor_06/garden_keeper", "")
+	verify(t, "花园小店主：想浇花，水壶在厨房", GameState.has_flag(PalaceGarden.KEEPER_ASKED) and not GameState.has_flag(PalaceGarden.KEEPER_DONE))
+	await _goto(t, "floor_06_palace_kitchen")
+	await t._talk("floor_06/kitchen_watering_can", "")
+	verify(t, "厨房水槽边：拿到小水壶", GameState.inventory.has("watering_can"))
+	GameState.pending_spawn = "from_ante"
+	await t.main.change_level(Floors.scene(PalaceGarden.MAP))
+	await t._advance_until(func(): return t._level_id() == PalaceGarden.MAP and not Cutscene.is_playing() and not Dialogue.is_active(), 60.0)
+	_clear_enemies(t)
+	await t._talk("floor_06/garden_keeper", "")
+	await t._advance_until(func(): return GameState.has_flag("cg_seen_theater:garden_petals") and not CG.is_busy() and not Dialogue.is_active(), 120.0)
+	verify(t, "带着水壶回去浇花：花瓣谢礼（小剧场）→ 线索", GameState.has_flag(PalaceGarden.KEEPER_DONE) and GameState.has_flag("cg_seen_theater:garden_petals")
+		and not GameState.inventory.has("watering_can"))
+
+
+static func _clear_enemies(t: Node) -> void:
+	for e in t.get_tree().get_nodes_in_group("enemy"):
+		if e is Monster and (e as Monster).is_alive():
+			(e as Monster).health.damage(999)
+	_calm(t)

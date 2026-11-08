@@ -537,6 +537,19 @@ func palace_golden() -> void:
 		r.golden()
 
 
+# ---- 第四轮：后花园
+func palace_gazebo_open() -> void:
+	var r := _palace_room("PalaceGarden")
+	if r:
+		r.open_gazebo()
+
+
+func palace_keeper_water() -> void:
+	var r := _palace_room("PalaceGarden")
+	if r:
+		r.water()
+
+
 func palace_cipher_ok() -> void:
 	var r := _palace_room("PalaceLibrary")
 	if r:

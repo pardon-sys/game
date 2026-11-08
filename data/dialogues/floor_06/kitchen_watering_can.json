@@ -1,0 +1,44 @@
+{
+	"name": "水槽边的小水壶",
+	"entries": [
+		{
+			"if": {
+				"flag": "palace_can_taken"
+			},
+			"node": "done"
+		},
+		{
+			"node": "default"
+		}
+	],
+	"nodes": {
+		"default": {
+			"lines": [
+				{
+					"text": "（水槽边上倒扣着一把小小的水壶，壶身上画着一朵花。里面……装过汤）",
+					"speaker": ""
+				},
+				{
+					"text": "……花园小店主的水壶。……洗干净，带回去。",
+					"speaker": "蓝色的公主"
+				}
+			],
+			"set": {
+				"give_item": {
+					"watering_can": 1
+				},
+				"flags": [
+					"palace_can_taken"
+				]
+			}
+		},
+		"done": {
+			"lines": [
+				{
+					"text": "（水槽边空了）",
+					"speaker": ""
+				}
+			]
+		}
+	}
+}

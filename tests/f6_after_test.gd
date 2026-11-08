@@ -1635,6 +1635,8 @@ var last_options: Array = []
 
 
 func _talk(file: String, node: String, picks: Array = []) -> void:
+	# 别的对话（例如道具提示）还在跑：先让它说完，不然这一段会被忽略
+	await _advance_until(func(): return not Dialogue.runner.is_running(), 10.0)
 	Dialogue.runner.talk(file, node)
 	var t := 0.0
 	while Dialogue.runner.is_running() and t < 10.0:
