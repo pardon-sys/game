@@ -1411,6 +1411,12 @@ data/cutscenes/<楼层组>/  地图内过场；data/theater/<楼层组>/  小剧
 	- 随机挑没听过的：对话 call `pick_unheard`（vars `pick_key` / `pick_n` → `pick`，标记 `heard_<key>_<i>`），小画像和蓝色公主「随便聊聊」（`mem_rand`）用。
 	- Boss 新技能 `_tick_new_skills`：第三层起 `lullaby_ring()`（`ThroneParts.MusicNote`，`music_notes.png` 3 帧）、强化后每 `BELL_EVERY` 秒敲 13 下 `bell_ring(k)`（`ThroneParts.BellRing`，地上扩散圆环，冲刺无敌能躲，第 13 下最大 + 震屏）。
 	- 小剧场 + CG：`height_measure`（钟楼）、`pillow_fight`（隧道寝室）、`treasure_feather`（王座间宝箱）。
+  - 第八轮：
+	- 魔法伤害：开打时连上每个人的 `magic_event`（`_on_magic`）→ `magic_hits(at, r, tier, ice)`：半径取 `StarBurst.params` / `IceBarrier.params` 的档位半径；
+	  破绽露着打画像 tier 下、小画像挨 tier 下（金框护盾照挡）、小兵 / 分身 / 画笔精 `hurt()`、颜料小人 `pop()`；蓝色冰晶再让小画像僵住 `MAGIC_FREEZE` 秒。
+	- `SMALL_REVIVE` 12 秒。
+	- 第三层第一次被拉进画里（`pull()`）：过场 `throne_paint_intro`（`palace10.paint_intro`，镜头依次扫过颜料星 / 出口 / 光带 / 镜像），标记 `PAINT_INTRO_FLAG`；过场里 `busy()`，画里计时不走。
+	- 跳关：`gen_dev_skips.PALACE_SIDE_FLAGS / PALACE_SIDE_ITEMS`（支线全做完：生日缎带、发饰、羽毛披肩、怀表、长筒袜……），用在「王座间（Boss 前）」和两个尾声跳关点。
   - 新装备（衣帽间）：`palace_ribbon`、`palace_corset`、`palace_boots`、`palace_stockings`、`feather_shawl`（`gen_equipment.py` + `gen_equip_art.py` + `ItemDB`）。
 - 配乐（`tools/audio/gen_music.py`，ElevenLabs）：`old_palace` 旧王宫探索（荒凉、破旧、往日的华丽）、`palace_boss` 王座间 Boss「封笑的女王画像」，登记在 `Audio.MUSIC`，第四章用。
 

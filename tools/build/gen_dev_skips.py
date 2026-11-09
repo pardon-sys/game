@@ -223,6 +223,23 @@ PALACE_STAGES = [   # (段, 做完以后有的标记, 道具)；后面一段包�
 ]
 
 
+# 旧王宫的支线 / 跨图事件全部做完（Boss 前及以后的跳关点用）：完成标记 + 奖励道具（女王的生日缎带、发饰、羽毛披肩、怀表、长筒袜……）
+PALACE_SIDE_FLAGS = [
+    "palace_banquet_cake", "palace_banquet_flower", "palace_banquet_box", "palace_banquet_tea", "palace_banquet_done", "palace_tea_taken",
+    "palace_gem_ruby", "palace_gem_sapphire", "palace_gem_topaz", "palace_jewel_done",
+    "palace_diary_1", "palace_diary_2", "palace_diary_3", "palace_diary_done",
+    "palace_headmaid_friend", "palace_memory_chef", "palace_memory_keeper", "palace_memory_scrub", "palace_memories_done",
+    "palace_badges_done", "palace_keeper_asked", "palace_can_taken", "palace_keeper_done", "palace_fountain_flow", "palace_gazebo_done",
+    "palace_lost_done", "palace_portrait_found", "palace_portrait_back", "palace_books_done", "palace_shoes_done", "palace_ball_done",
+    "palace_mimic_done", "palace_shawl_frozen", "palace_ice_cake", "palace_cold_open", "palace_toll_paid",
+    "palace_tchest_1", "palace_tchest_2", "palace_tchest_3", "palace_tchest_4",
+    "cg_seen_theater:wardrobe_socks", "cg_seen_theater:wardrobe_try_1", "cg_seen_theater:wardrobe_try_2", "cg_seen_theater:wardrobe_try_3",
+    "cg_seen_theater:queen_birthday", "cg_seen_theater:garden_swing_song",
+]
+PALACE_SIDE_ITEMS = {"equip_birthday_ribbon": 1, "equip_queen_hairpin": 1, "equip_feather_shawl": 1, "equip_clock_watch": 1,
+                     "equip_palace_stockings": 1, "equip_palace_ribbon": 1, "equip_palace_corset": 1, "equip_palace_boots": 1}
+
+
 def palace_upto(stage, extra_flags=(), extra_items=None):
     """到 stage 这一段为止（含）的标记和道具；stage = None 表示一段都还没做。徽记 / 乐谱按标记数补齐。"""
     flags = list(PALACE_PRE)
@@ -261,15 +278,17 @@ _PALACE_POINTS = [
     palace_point("反省篇·追加 王座前厅·笑声地砖（乐谱齐了）", "floor_06_palace_ante", "clock", cell=[30, 26]),
     palace_point("反省篇·追加 旧浴场·搓澡人偶", "floor_06_palace_bath", None, ["penance_mouse_dev", "intro_done_palace_bath_in"], cell=[36, 24]),
     palace_point("反省篇·追加 骑士训练场·年轻队长的幽影", "floor_06_palace_training", "wardrobe", ["intro_done_palace_training_in"], cell=[30, 23]),
-    palace_point("反省篇·第四章 旧王宫·王座间（Boss 前）", "floor_06_palace_throne", "tunnels", ["intro_done_palace_throne_in"]),
+    point("反省篇·第四章 旧王宫·王座间（Boss 前，支线全做完）", "floor_06_palace_throne",
+          palace_upto("tunnels", ["intro_done_palace_throne_in"] + PALACE_SIDE_FLAGS)[0],
+          knight_vars(10, 2, 10), passives=PASSIVES, items=dict(palace_upto("tunnels")[1], **PALACE_SIDE_ITEMS)),
     point("反省篇·第四章尾声 王座间（打完 Boss，进画前）", "floor_06_palace_throne",
-          palace_upto("tunnels", ["intro_done_palace_throne_in", "palace_boss_done", "palace_badge_joined", "!palace_memory_done", "!palace_memory_out_seen",
+          palace_upto("tunnels", PALACE_SIDE_FLAGS + ["intro_done_palace_throne_in", "palace_boss_done", "palace_badge_joined", "!palace_memory_done", "!palace_memory_out_seen",
                                   "!palace_memory_1", "!palace_memory_2", "!palace_memory_3", "!palace_memory_4"])[0],
-          knight_vars(10, 2, 10), passives=PASSIVES, items=dict(palace_upto("tunnels")[1], joined_badge=1)),
+          knight_vars(10, 2, 10), passives=PASSIVES, items=dict(palace_upto("tunnels")[1], joined_badge=1, **PALACE_SIDE_ITEMS)),
     point("反省篇·第四章尾声后 王座间（寻宝 / 上色 / 温馨日常）", "floor_06_palace_throne",
-          palace_upto("tunnels", ["intro_done_palace_throne_in", "palace_boss_done", "palace_badge_joined", "palace_memory_done", "palace_memory_out_seen",
+          palace_upto("tunnels", PALACE_SIDE_FLAGS + ["intro_done_palace_throne_in", "palace_boss_done", "palace_badge_joined", "palace_memory_done", "palace_memory_out_seen",
                                   "palace_chapter_done", "palace_memory_1", "palace_memory_2", "palace_memory_3", "palace_memory_4"])[0],
-          knight_vars(10, 2, 10), passives=PASSIVES, items=dict(palace_upto("tunnels")[1], joined_badge=1)),
+          knight_vars(10, 2, 10), passives=PASSIVES, items=dict(palace_upto("tunnels")[1], joined_badge=1, **PALACE_SIDE_ITEMS)),
 ]
 _names = {p["name"] for p in _PALACE_POINTS}
 POINTS = [p for p in POINTS if p["name"] not in _names] + _PALACE_POINTS

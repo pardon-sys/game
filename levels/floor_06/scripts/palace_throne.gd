@@ -89,7 +89,7 @@ const BRUSHSP_MAX := 3
 const MINION_HIT_R := 22.0
 const MONSTER_SCENES := ["res://scenes/actors/monsters/flying_book.tscn", "res://scenes/actors/monsters/ghost_glove.tscn",
 		"res://scenes/actors/monsters/dance_doll.tscn"]
-const SMALL_REVIVE := 8.0                         # 小画像被打掉以后，没在这么久里全打掉 → 被别的画回来
+const SMALL_REVIVE := 12.0                        # 小画像被打掉以后，没在这么久里全打掉 → 被别的画回来
 const DIVE_EVERY := Vector2(6.0, 9.0)
 const SMALL_KINDS := ["red", "blue", "gold", "green"]
 ## 追加事件：女王的八音盒（石像问答的奖励，背包里放在 R 键上）：每场 BOX_USES 次，画像发呆 BOX_TIME 秒、一直露破绽，不泼颜料不伸手
@@ -278,6 +278,10 @@ func _process(delta: float) -> void:
 		# Boss 战里两个人都不会被「拉回玩家身边」（不然被拉进画里时，外面的搭档会被瞬移进画里）
 		for m in members():
 			(m as PlayableCharacter).roam = true
+			# 第八轮：公主的魔法（粉色星光 / 蓝色冰晶）也打得到画像、小画像、画框小兵、颜料小人
+			var mc := Callable(self, "_on_magic").bind(m)
+			if not (m as PlayableCharacter).magic_event.is_connected(mc):
+				(m as PlayableCharacter).magic_event.connect(mc)
 		# 右上角另一位公主的状态面板（同千手战 / 骑士战），让开顶上的 Boss 血条
 		if partner_panel == null:
 			partner_panel = PartnerPanel.new()   # 和右上角的头像并列（同第八层）
@@ -575,6 +579,51 @@ func _clear_imps() -> void:
 		if is_instance_valid(im):
 			(im as Node).queue_free()
 	imps.clear()
+
+
+# ------------------------------------------------------------------ 第八轮：魔法伤害
+const MAGIC_FREEZE := 2.0
+const PAINT_INTRO_FLAG := "palace_paint_intro_seen"     # 第一次被拉进画里看过介绍过场                       # 蓝色冰晶：范围里的小画像 / 小兵僵住这么久
+
+
+## 魔法放出来（magic_event "burst"）：以施法者为中心、按档位的半径——
+##   破绽露着就打画像 tier 下；小画像挨 tier 下（金框护盾照挡）；小兵 / 分身 / 画笔精挨一下；颜料小人直接打掉；蓝色的冰晶再把它们冻住一会儿。
+func _on_magic(event: String, tier: int, pc: PlayableCharacter) -> void:
+	if event != "burst" or win or not is_instance_valid(pc) or pc == inside and not empowered:
+		return
+	var ice := pc.character_id == "blue"
+	var r := float((IceBarrier.params(tier) if ice else StarBurst.params(tier))["radius"]) + StarBurst.BODY_ALLOWANCE
+	var at := StarBurst.center_of(pc)
+	magic_hits(at, r, tier, ice)
+
+
+func magic_hits(at: Vector2, r: float, tier: int, ice := false) -> int:
+	var n := 0
+	if vulnerable() and at.distance_to(weak_point()) <= r + 14.0:
+		hit(tier)
+		n += 1
+	for s in small:
+		var sp := s as SmallPortrait
+		if sp.alive() and minf(at.distance_to(sp.position), at.distance_to(sp.drawn_pos())) <= r + 10.0:
+			for k in tier:
+				if sp.alive():
+					sp.hurt()
+			if ice:
+				sp.stagger = maxf(sp.stagger, MAGIC_FREEZE)
+				sp.modulate = Color(0.7, 0.9, 1.3)
+			n += 1
+	if layer == 1 and small.all(func(x): return not (x as SmallPortrait).alive()) and vuln_t <= 0.0:
+		vuln_t = VULN_TIME
+		release_monsters(2)
+	for mn in minions.duplicate():
+		if is_instance_valid(mn) and at.distance_to((mn as Node2D).position) <= r and mn.has_method("hurt"):
+			mn.call("hurt")
+			n += 1
+	for im in imps.duplicate():
+		if is_instance_valid(im) and at.distance_to((im as Node2D).position) <= r:
+			(im as PaintImp).pop()
+			n += 1
+	return n
 
 
 # ------------------------------------------------------------------ 第七轮：摇篮曲音符 / 十三下钟声
@@ -925,6 +974,10 @@ func pull() -> void:
 		other.status.apply_root(0.5)
 	PalaceRoom.say_random(p, "inside")
 	_build_world()
+	# 第八轮：第一次被拉进画里——过场介绍画中世界的玩法（过场里 busy()，计时不走）
+	if not GameState.has_flag(PAINT_INTRO_FLAG):
+		GameState.set_flag(PAINT_INTRO_FLAG)
+		Cutscene.play("throne_paint_intro")
 
 
 func escape() -> void:
@@ -1390,6 +1443,8 @@ class SmallPortrait extends Node2D:
 		# 被打中：僵住一下（不退、不甩手）
 		if stagger > 0.0:
 			stagger -= d
+			if stagger <= 0.0:
+				modulate = Color.WHITE   # 冰冻 / 僵住结束
 			return
 		_lift = move_toward(_lift, 18.0, 30.0 * d)
 		var tgt := _nearest()
