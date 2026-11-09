@@ -2,229 +2,7 @@
 	"name": "搭档",
 	"entries": [
 		{
-			"if": {
-				"eq": {
-					"ante_hint": "bells"
-				},
-				"hero": "blue"
-			},
-			"node": "bells_p"
-		},
-		{
-			"if": {
-				"eq": {
-					"ante_hint": "bells"
-				},
-				"hero": "pink"
-			},
-			"node": "bells_b"
-		},
-		{
-			"if": {
-				"eq": {
-					"ante_hint": "sheets"
-				},
-				"hero": "blue"
-			},
-			"node": "sheets_p"
-		},
-		{
-			"if": {
-				"eq": {
-					"ante_hint": "sheets"
-				},
-				"hero": "pink"
-			},
-			"node": "sheets_b"
-		},
-		{
-			"if": {
-				"eq": {
-					"ante_hint": "tiles"
-				},
-				"hero": "blue"
-			},
-			"node": "tiles_p"
-		},
-		{
-			"if": {
-				"eq": {
-					"ante_hint": "tiles"
-				},
-				"hero": "pink"
-			},
-			"node": "tiles_b"
-		},
-		{
-			"if": {
-				"eq": {
-					"ante_hint": "statue"
-				},
-				"hero": "blue"
-			},
-			"node": "statue_p"
-		},
-		{
-			"if": {
-				"eq": {
-					"ante_hint": "statue"
-				},
-				"hero": "pink"
-			},
-			"node": "statue_b"
-		},
-		{
-			"if": {
-				"eq": {
-					"ante_hint": "badges"
-				},
-				"hero": "blue"
-			},
-			"node": "badges_p"
-		},
-		{
-			"if": {
-				"eq": {
-					"ante_hint": "badges"
-				},
-				"hero": "pink"
-			},
-			"node": "badges_b"
-		},
-		{
-			"if": {
-				"eq": {
-					"ante_hint": "toll"
-				},
-				"hero": "blue"
-			},
-			"node": "toll_p"
-		},
-		{
-			"if": {
-				"eq": {
-					"ante_hint": "toll"
-				},
-				"hero": "pink"
-			},
-			"node": "toll_b"
-		},
-		{
-			"if": {
-				"eq": {
-					"ante_hint": "maid"
-				},
-				"hero": "blue"
-			},
-			"node": "maid_p"
-		},
-		{
-			"if": {
-				"eq": {
-					"ante_hint": "maid"
-				},
-				"hero": "pink"
-			},
-			"node": "maid_b"
-		},
-		{
-			"if": {
-				"eq": {
-					"ante_hint": "ball"
-				},
-				"hero": "blue"
-			},
-			"node": "ball_p"
-		},
-		{
-			"if": {
-				"eq": {
-					"ante_hint": "ball"
-				},
-				"hero": "pink"
-			},
-			"node": "ball_b"
-		},
-		{
-			"if": {
-				"eq": {
-					"ante_hint": "box"
-				},
-				"hero": "blue"
-			},
-			"node": "box_p"
-		},
-		{
-			"if": {
-				"eq": {
-					"ante_hint": "box"
-				},
-				"hero": "pink"
-			},
-			"node": "box_b"
-		},
-		{
-			"if": {
-				"eq": {
-					"ante_hint": "banquet"
-				},
-				"hero": "blue"
-			},
-			"node": "banquet_p"
-		},
-		{
-			"if": {
-				"eq": {
-					"ante_hint": "banquet"
-				},
-				"hero": "pink"
-			},
-			"node": "banquet_b"
-		},
-		{
-			"if": {
-				"eq": {
-					"ante_hint": "garden"
-				},
-				"hero": "blue"
-			},
-			"node": "garden_p"
-		},
-		{
-			"if": {
-				"eq": {
-					"ante_hint": "garden"
-				},
-				"hero": "pink"
-			},
-			"node": "garden_b"
-		},
-		{
-			"if": {
-				"eq": {
-					"ante_hint": "idle"
-				},
-				"hero": "blue"
-			},
-			"node": "idle_p"
-		},
-		{
-			"if": {
-				"eq": {
-					"ante_hint": "idle"
-				},
-				"hero": "pink"
-			},
-			"node": "idle_b"
-		},
-		{
-			"if": {
-				"hero": "blue"
-			},
-			"node": "idle_p"
-		},
-		{
-			"node": "idle_b"
+			"node": "default"
 		}
 	],
 	"nodes": {
@@ -247,7 +25,7 @@
 		"sheets_p": {
 			"lines": [
 				{
-					"text": "地上这些笑脸地砖，好像要乐谱才会亮……钟楼、仆人回廊、浴场，到处找找？",
+					"text": "地上这些笑脸地砖，好像要乐谱才会亮……乐谱散在王宫各处，到处找找？",
 					"speaker": "公主"
 				}
 			]
@@ -255,7 +33,7 @@
 		"sheets_b": {
 			"lines": [
 				{
-					"text": "……地砖。……要三片乐谱。……钟楼、回廊、浴场。",
+					"text": "……地砖。……要三片乐谱。……王宫里，到处找找。",
 					"speaker": "蓝色的公主"
 				}
 			]
@@ -375,7 +153,7 @@
 		"banquet_p": {
 			"lines": [
 				{
-					"text": "西南边的小宴会厅……清单上的蛋糕、花、八音盒、茶具，在王宫里到处都有。",
+					"text": "西南边的小宴会厅……清单上的蛋糕、花、八音盒、茶具，王宫里到处找找吧。",
 					"speaker": "公主"
 				}
 			]
@@ -383,7 +161,7 @@
 		"banquet_b": {
 			"lines": [
 				{
-					"text": "……宴会厅的清单。……冷藏库、后花园、石像、女仆长的休息室。",
+					"text": "……宴会厅的清单。……四样东西。……慢慢找。",
 					"speaker": "蓝色的公主"
 				}
 			]
@@ -417,6 +195,606 @@
 				{
 					"text": "……我在这边看看。……有事叫我。",
 					"speaker": "蓝色的公主"
+				}
+			]
+		},
+		"hint": {
+			"goto": [
+				{
+					"if": {
+						"eq": {
+							"ante_hint": "bells"
+						},
+						"hero": "blue"
+					},
+					"node": "bells_p"
+				},
+				{
+					"if": {
+						"eq": {
+							"ante_hint": "bells"
+						},
+						"hero": "pink"
+					},
+					"node": "bells_b"
+				},
+				{
+					"if": {
+						"eq": {
+							"ante_hint": "sheets"
+						},
+						"hero": "blue"
+					},
+					"node": "sheets_p"
+				},
+				{
+					"if": {
+						"eq": {
+							"ante_hint": "sheets"
+						},
+						"hero": "pink"
+					},
+					"node": "sheets_b"
+				},
+				{
+					"if": {
+						"eq": {
+							"ante_hint": "tiles"
+						},
+						"hero": "blue"
+					},
+					"node": "tiles_p"
+				},
+				{
+					"if": {
+						"eq": {
+							"ante_hint": "tiles"
+						},
+						"hero": "pink"
+					},
+					"node": "tiles_b"
+				},
+				{
+					"if": {
+						"eq": {
+							"ante_hint": "statue"
+						},
+						"hero": "blue"
+					},
+					"node": "statue_p"
+				},
+				{
+					"if": {
+						"eq": {
+							"ante_hint": "statue"
+						},
+						"hero": "pink"
+					},
+					"node": "statue_b"
+				},
+				{
+					"if": {
+						"eq": {
+							"ante_hint": "badges"
+						},
+						"hero": "blue"
+					},
+					"node": "badges_p"
+				},
+				{
+					"if": {
+						"eq": {
+							"ante_hint": "badges"
+						},
+						"hero": "pink"
+					},
+					"node": "badges_b"
+				},
+				{
+					"if": {
+						"eq": {
+							"ante_hint": "toll"
+						},
+						"hero": "blue"
+					},
+					"node": "toll_p"
+				},
+				{
+					"if": {
+						"eq": {
+							"ante_hint": "toll"
+						},
+						"hero": "pink"
+					},
+					"node": "toll_b"
+				},
+				{
+					"if": {
+						"eq": {
+							"ante_hint": "maid"
+						},
+						"hero": "blue"
+					},
+					"node": "maid_p"
+				},
+				{
+					"if": {
+						"eq": {
+							"ante_hint": "maid"
+						},
+						"hero": "pink"
+					},
+					"node": "maid_b"
+				},
+				{
+					"if": {
+						"eq": {
+							"ante_hint": "ball"
+						},
+						"hero": "blue"
+					},
+					"node": "ball_p"
+				},
+				{
+					"if": {
+						"eq": {
+							"ante_hint": "ball"
+						},
+						"hero": "pink"
+					},
+					"node": "ball_b"
+				},
+				{
+					"if": {
+						"eq": {
+							"ante_hint": "box"
+						},
+						"hero": "blue"
+					},
+					"node": "box_p"
+				},
+				{
+					"if": {
+						"eq": {
+							"ante_hint": "box"
+						},
+						"hero": "pink"
+					},
+					"node": "box_b"
+				},
+				{
+					"if": {
+						"eq": {
+							"ante_hint": "banquet"
+						},
+						"hero": "blue"
+					},
+					"node": "banquet_p"
+				},
+				{
+					"if": {
+						"eq": {
+							"ante_hint": "banquet"
+						},
+						"hero": "pink"
+					},
+					"node": "banquet_b"
+				},
+				{
+					"if": {
+						"eq": {
+							"ante_hint": "garden"
+						},
+						"hero": "blue"
+					},
+					"node": "garden_p"
+				},
+				{
+					"if": {
+						"eq": {
+							"ante_hint": "garden"
+						},
+						"hero": "pink"
+					},
+					"node": "garden_b"
+				},
+				{
+					"if": {
+						"eq": {
+							"ante_hint": "idle"
+						},
+						"hero": "blue"
+					},
+					"node": "idle_p"
+				},
+				{
+					"if": {
+						"eq": {
+							"ante_hint": "idle"
+						},
+						"hero": "pink"
+					},
+					"node": "idle_b"
+				},
+				{
+					"if": {
+						"hero": "blue"
+					},
+					"node": "idle_p"
+				},
+				{
+					"if": {},
+					"node": "idle_b"
+				}
+			]
+		},
+		"pal0_p": {
+			"lines": [
+				{
+					"text": "画像最后说的那句……「你不是她」……是什么意思呢？",
+					"speaker": "公主"
+				}
+			]
+		},
+		"pal0_b": {
+			"lines": [
+				{
+					"text": "……………不知道。……别想了。",
+					"speaker": "蓝色的公主"
+				}
+			]
+		},
+		"pal1_p": {
+			"lines": [
+				{
+					"text": "三个人偶说的都不一样……那天晚上到底发生了什么呢？",
+					"speaker": "公主"
+				}
+			]
+		},
+		"pal1_b": {
+			"lines": [
+				{
+					"text": "……谁都没有说错。……也许，大家看到的，都只是一部分。",
+					"speaker": "蓝色的公主"
+				}
+			]
+		},
+		"pal2_p": {
+			"lines": [
+				{
+					"text": "后花园的秋千……板子上的星星和雪花，好像在哪见过。",
+					"speaker": "公主"
+				}
+			]
+		},
+		"pal2_b": {
+			"lines": [
+				{
+					"text": "……秋千。……我好像，荡过。……不记得了。",
+					"speaker": "蓝色的公主"
+				}
+			]
+		},
+		"pal3_p": {
+			"lines": [
+				{
+					"text": "宝库里只有一束干掉的铃兰……陛下一定很喜欢那两个小不点吧。",
+					"speaker": "公主"
+				}
+			]
+		},
+		"pal3_b": {
+			"lines": [
+				{
+					"text": "……「两个小不点」。……卡片上的字，很温柔。",
+					"speaker": "蓝色的公主"
+				}
+			]
+		},
+		"pal4_p": {
+			"lines": [
+				{
+					"text": "钟敲了十三下以后，北边的门就开了……那天晚上，也是这样吗？",
+					"speaker": "公主"
+				}
+			]
+		},
+		"pal4_b": {
+			"lines": [
+				{
+					"text": "……十三下。……那个声音，我好像听过。",
+					"speaker": "蓝色的公主"
+				}
+			]
+		},
+		"pal5_p": {
+			"lines": [
+				{
+					"text": "这里以前一定很热闹吧……地上的笑脸地砖，墙上的画，都好像在等人回来。",
+					"speaker": "公主"
+				}
+			]
+		},
+		"pal5_b": {
+			"lines": [
+				{
+					"text": "……这里，很安静。……太安静了。像是在等谁。",
+					"speaker": "蓝色的公主"
+				}
+			]
+		},
+		"palace": {
+			"goto": [
+				{
+					"if": {
+						"flag": "palace_boss_done",
+						"hero": "blue"
+					},
+					"node": "pal0_p"
+				},
+				{
+					"if": {
+						"flag": "palace_boss_done",
+						"hero": "pink"
+					},
+					"node": "pal0_b"
+				},
+				{
+					"if": {
+						"flag": "palace_headmaid_memories",
+						"hero": "blue"
+					},
+					"node": "pal1_p"
+				},
+				{
+					"if": {
+						"flag": "palace_headmaid_memories",
+						"hero": "pink"
+					},
+					"node": "pal1_b"
+				},
+				{
+					"if": {
+						"flag": "intro_done_palace_garden_in",
+						"hero": "blue"
+					},
+					"node": "pal2_p"
+				},
+				{
+					"if": {
+						"flag": "intro_done_palace_garden_in",
+						"hero": "pink"
+					},
+					"node": "pal2_b"
+				},
+				{
+					"if": {
+						"flag": "palace_vault_open",
+						"hero": "blue"
+					},
+					"node": "pal3_p"
+				},
+				{
+					"if": {
+						"flag": "palace_vault_open",
+						"hero": "pink"
+					},
+					"node": "pal3_b"
+				},
+				{
+					"if": {
+						"flag": "palace_bells_done",
+						"hero": "blue"
+					},
+					"node": "pal4_p"
+				},
+				{
+					"if": {
+						"flag": "palace_bells_done",
+						"hero": "pink"
+					},
+					"node": "pal4_b"
+				},
+				{
+					"if": {
+						"hero": "blue"
+					},
+					"node": "pal5_p"
+				},
+				{
+					"if": {
+						"hero": "pink"
+					},
+					"node": "pal5_b"
+				}
+			]
+		},
+		"chat0_p": {
+			"lines": [
+				{
+					"text": "我还好！就是脚底还有点痒……刚才那些机关太坏了！",
+					"speaker": "公主"
+				}
+			]
+		},
+		"chat0_b": {
+			"lines": [
+				{
+					"text": "……还好。……你呢，别逞强。",
+					"speaker": "蓝色的公主"
+				}
+			]
+		},
+		"chat1_p": {
+			"lines": [
+				{
+					"text": "肚子饿了……厨房的蛋糕还能吃吗？",
+					"speaker": "公主"
+				}
+			]
+		},
+		"chat1_b": {
+			"lines": [
+				{
+					"text": "……那些人偶。……下次再挠，就冻住它们。",
+					"speaker": "蓝色的公主"
+				}
+			]
+		},
+		"chat2_p": {
+			"lines": [
+				{
+					"text": "你刚才是不是偷偷笑了？我听到了哦。",
+					"speaker": "公主"
+				}
+			]
+		},
+		"chat2_b": {
+			"lines": [
+				{
+					"text": "……没有笑。……你听错了。",
+					"speaker": "蓝色的公主"
+				}
+			]
+		},
+		"chat3_p": {
+			"lines": [
+				{
+					"text": "这里的人偶都好可爱……就是太喜欢挠人了。",
+					"speaker": "公主"
+				}
+			]
+		},
+		"chat3_b": {
+			"lines": [
+				{
+					"text": "……累了就说。……我背你。……开玩笑的。",
+					"speaker": "蓝色的公主"
+				}
+			]
+		},
+		"chat": {
+			"goto": [
+				{
+					"if": {
+						"eq": {
+							"ante_chat": 0
+						},
+						"hero": "blue"
+					},
+					"node": "chat0_p"
+				},
+				{
+					"if": {
+						"eq": {
+							"ante_chat": 0
+						},
+						"hero": "pink"
+					},
+					"node": "chat0_b"
+				},
+				{
+					"if": {
+						"eq": {
+							"ante_chat": 1
+						},
+						"hero": "blue"
+					},
+					"node": "chat1_p"
+				},
+				{
+					"if": {
+						"eq": {
+							"ante_chat": 1
+						},
+						"hero": "pink"
+					},
+					"node": "chat1_b"
+				},
+				{
+					"if": {
+						"eq": {
+							"ante_chat": 2
+						},
+						"hero": "blue"
+					},
+					"node": "chat2_p"
+				},
+				{
+					"if": {
+						"eq": {
+							"ante_chat": 2
+						},
+						"hero": "pink"
+					},
+					"node": "chat2_b"
+				},
+				{
+					"if": {
+						"eq": {
+							"ante_chat": 3
+						},
+						"hero": "blue"
+					},
+					"node": "chat3_p"
+				},
+				{
+					"if": {
+						"eq": {
+							"ante_chat": 3
+						},
+						"hero": "pink"
+					},
+					"node": "chat3_b"
+				},
+				{
+					"if": {
+						"hero": "blue"
+					},
+					"node": "chat0_p"
+				},
+				{
+					"if": {},
+					"node": "chat0_b"
+				}
+			]
+		},
+		"swap": {
+			"lines": [
+				{
+					"text": "……换你来吧。"
+				}
+			],
+			"set": {
+				"call": "switch_hero"
+			}
+		},
+		"default": {
+			"prompt": "想聊些什么？",
+			"choices": [
+				{
+					"text": "接下来去哪？",
+					"next": "hint",
+					"return": true
+				},
+				{
+					"text": "这座王宫……",
+					"next": "palace",
+					"return": true
+				},
+				{
+					"text": "你还好吗？",
+					"next": "chat",
+					"return": true
+				},
+				{
+					"text": "换我来",
+					"next": "swap"
+				},
+				{
+					"text": "没什么",
+					"next": ""
 				}
 			]
 		}

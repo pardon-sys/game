@@ -279,3 +279,47 @@ ITEMS (left to right), an old royal palace: 1) an ornate rosewood JEWELRY BOX, c
 A game prop sprite sheet on a solid flat pure MAGENTA (#FF00FF) chroma-key background (the whole background is one flat magenta color; do NOT use magenta or pink-magenta anywhere in the artwork itself), cute chibi pixel-art-friendly style with clean dark outlines and flat soft shading, drawn in a 3/4 isometric-style view (as seen from above at about 45 degrees), it will be downscaled to small pixel sizes. Items evenly spaced in ONE row, same scale, centered, generous magenta gaps, no shadows on the ground, no text, no labels, no scenery. Landscape canvas 1536x1024, exactly 3 items.
 ITEMS (left to right), a small royal birthday banquet: 1) a long banquet TABLE with a white lace tablecloth, set for THREE: one tall ornate chair at the head and two small child-sized chairs (all empty, no name cards readable); 2) a small three-tier CAKE STAND on a plate (empty); 3) a little wooden PLACE-CARD stand whose card text is completely worn away (no letters).
 ```
+
+## 第五轮（修正 + 王座间加难）
+
+### pants_hands_sheet.png — 千手裤的小手 → pants_hands.png（defringe 去杂边、重新上淡紫）
+
+```
+A game sprite strip on a solid flat pure MAGENTA (#FF00FF) chroma-key background (the whole background is one flat magenta color; do NOT use magenta or pink-magenta anywhere in the artwork itself), cute chibi pixel-art-friendly style with clean dark outlines and flat soft shading, 3/4 top-down view, it will be downscaled to about 32 pixels per frame. Landscape canvas 1536x1024, exactly 3 frames in ONE row, same scale, evenly spaced, centered, generous magenta gaps, no shadows, no text, no scenery.
+SUBJECT: a small cluster of five or six cute translucent LAVENDER-PURPLE ghostly little HANDS (a playful magic curse, wholesome), sprouting together from a short frilly hem edge of lace at the bottom of the frame. Each little hand has five small fingers, soft glow at the edges. Frame 1: hands curled up resting; frame 2: hands wiggling their fingers (tickling motion, little motion lines); frame 3: hands stretched open and reaching forward with sparkles.
+```
+
+### toll_imps_sheet.png — 收路费的小鬼们 → toll_imps.png
+
+```
+A game sprite strip on a solid flat pure MAGENTA (#FF00FF) chroma-key background (the whole background is one flat magenta color; do NOT use magenta or pink-magenta anywhere in the artwork itself), cute chibi pixel-art-friendly style with clean dark outlines and flat soft shading, 3/4 top-down view, it will be downscaled to about 36 pixels per frame. Landscape canvas 1536x1024, exactly 4 frames in ONE row, same scale, evenly spaced, centered, generous magenta gaps, no shadows, no text, no scenery.
+SUBJECT: a group of THREE cute mischievous little IMPS squeezed together (small round bodies, stubby horns, bat-like tiny wings, big shiny eyes, one wears a tiny conductor cap, one holds a coin pouch, one holds a tiny feather), standing behind a small wooden toll barrier pole with a red-white stripe. Frame 1-2: idle bobbing and grinning; frame 3: all three holding out their little palms asking for payment; frame 4: happily jumping and hugging a gold coin.
+```
+
+### frame_soldier_sheet.png — 画框小兵 → frame_soldier.png
+
+```
+A game sprite strip on a solid flat pure MAGENTA (#FF00FF) chroma-key background (the whole background is one flat magenta color; do NOT use magenta or pink-magenta anywhere in the artwork itself), cute chibi pixel-art-friendly style with clean dark outlines and flat soft shading, 3/4 top-down view, it will be downscaled to about 28 pixels per frame. Landscape canvas 1536x1024, exactly 4 frames in ONE row, same scale, evenly spaced, centered, generous magenta gaps, no shadows, no text, no scenery.
+SUBJECT: a PAPER SOLDIER cut out of an old painting: a flat paper-thin little soldier doll (you can see its thin paper edge from the side), painted uniform in faded royal blue and gold, with a long FEATHER-tipped spear. Frames 1-3: marching walk cycle (paper body bends slightly); frame 4: lunging forward poking with the feather spear.
+```
+
+### brush_sprite_sheet.png — 羽毛画笔精 → brush_sprite.png
+
+```
+A game sprite strip on a solid flat pure MAGENTA (#FF00FF) chroma-key background (the whole background is one flat magenta color; do NOT use magenta or pink-magenta anywhere in the artwork itself), cute chibi pixel-art-friendly style with clean dark outlines and flat soft shading, 3/4 top-down view, it will be downscaled to about 24 pixels per frame. Landscape canvas 1536x1024, exactly 4 frames in ONE row, same scale, evenly spaced, centered, generous magenta gaps, no shadows, no text, no scenery.
+SUBJECT: a FLYING FEATHER PAINTBRUSH SPRITE: a cute little paintbrush with a fluffy white feather-like bristle tip dipped in rose-pink paint, two big eyes on the wooden handle, tiny wings, a short ribbon trail of paint behind it. Frames 1-3: flying and swishing; frame 4: brushing forward fast with paint splatter.
+```
+
+### small_portraits4_sheet.png — 四色小画像 → small_portraits4.png
+
+```
+A game sprite strip on a solid flat pure MAGENTA (#FF00FF) chroma-key background (the whole background is one flat magenta color; do NOT use magenta or pink-magenta anywhere in the artwork itself), cute chibi pixel-art-friendly style with clean dark outlines and flat soft shading, 3/4 top-down view, it will be downscaled to about 30 pixels per frame. Landscape canvas 1536x1024, exactly 8 frames in ONE row, same scale, evenly spaced, centered, generous magenta gaps, no shadows, no text, no scenery.
+SUBJECT: EIGHT small oval portrait frames (four frame colors, each shown twice: first ASLEEP, then AWAKE). Order: 1) RED gilded frame, the painted little noble lady inside is asleep with closed eyes; 2) the same RED frame, the lady awake with mischievous eyes and a little painted hand reaching out of the frame; 3) BLUE frame asleep; 4) BLUE frame awake with a dripping slippery blue paint trail; 5) GOLD frame asleep; 6) GOLD frame awake with a shimmering golden shield bubble; 7) GREEN frame asleep; 8) GREEN frame awake with a tiny paint blob creature peeking out. Cute, not scary.
+```
+
+### throne_fx2_sheet.png — 王座间特效二 → throne_fx2.png
+
+```
+A game VFX sprite sheet on a solid flat pure MAGENTA (#FF00FF) chroma-key background (the whole background is one flat magenta color; do NOT use magenta or pink-magenta anywhere in the artwork itself), cute chibi pixel-art-friendly style with clean outlines, it will be downscaled. Landscape canvas 1536x1024, exactly 8 items in ONE row, same scale, evenly spaced, generous magenta gaps, no text.
+ITEMS (left to right): 1) a giant painted EYE (soft painter style, lavender iris, long lashes) looking down; 2) a wide soft golden LIGHT BEAM fan (the eye's gaze) pointing down, semi-transparent; 3) a five-pointed PAINT STAR, glossy rainbow paint with a sparkle; 4) an ornate glowing EXIT picture FRAME standing upright, warm golden light inside (no picture); 5) a wooden painter's EASEL holding a blank canvas; 6) a golden SHIELD BUBBLE (round, translucent, sparkly); 7) a swirling VORTEX ring of gold and pink paint lines (suction effect, seen from above); 8) a big rolling WAVE of glossy pink-purple paint seen from the side.
+```

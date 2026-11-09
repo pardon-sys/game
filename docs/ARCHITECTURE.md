@@ -1410,6 +1410,15 @@ data/cutscenes/<楼层组>/  地图内过场；data/theater/<楼层组>/  小剧
 	  人偶们的记忆（`wind_doll(key)`，要 `FRIEND_FLAG`；三个都听完 → `MEMORIES_DONE`）。
 	  女王的生日宴：前厅 `banquet` 小宴会厅（`quest_maps._palace_ante` 西南），`PalaceAnte.banquet_place()`（八音盒不收走）→ 对话 goto 四样齐 →
 	  小剧场 `queen_birthday`（CG）→ `banquet_done()` 给 `equip_birthday_ribbon`。图：`story_props.png`、`banquet_props.png`、物品图标 `item_gem_* / birthday_cake / bouquet / tea_set / diary_page`。
+  - 第五轮修正：
+	- 道具提示不剧透：`palace4._HINTS`（需要的「去过」标记 → 具体说法 `<key>_at`，没去过 → 只说东西本身）。
+	- 前厅搭档：`InteractHint.wants` 认 `roam` 的搭档（`PlayableCharacter.hint_partner_area()`，提示半径加倍）；`ante_partner_hint` 改成选项页（`hint` / `palace`（`PALACE_TALK` 按进度）/ `chat`（`vars.ante_chat`）/ 换我来）。
+	- 千手裤：`trap_actors.pants_hands`（`pants_hands.png`，`gen_palace_sprites.defringe` 去洋红杂边 + 重新上淡紫），`_duo` 等的 `pants` 都换成它。
+	- 收路费的小鬼 `toll_imps.png`（`TollView`，付过退到告示板旁边）；用痒付 → `add_buff("fatigue_scar")`；逃走的宝箱怪 `MIMIC_FROM` → `_refresh_fled()`。
+	- 训练场：`torch.gd` 新增 `light_radius`（痒痒幽灵按它显形），擂台四周 6 支；`WAVES` 5 / 6 / 5。墙上刻痕只剩一个被磨掉的名字（骑士 = 队长不揭开）。
+	- 笑声地砖 `TILE_STEP = 2`（`tile_index(c)` / `tile_cell(i)`）；完整的笑声乐谱 `laugh_score`（`ScoreItem` → `ScoreView` 面板，`PalaceRoom.combine_score()`）。
+	- 王座间：去掉王座后面挡住画像的台阶墙（等距里会盖住画像），破绽在画像下方 3 格；小画像脚下有血条。
+	- 线索改写：糕点师（踩凳子 / 扶凳子）、乳母日记（布兔子 / 会唱歌的那个）、蛋糕卡片（先学会走路 / 先学会说话）、队长幽影（抢木剑 / 躲在身后）。
   - 新装备（衣帽间）：`palace_ribbon`、`palace_corset`、`palace_boots`、`palace_stockings`、`feather_shawl`（`gen_equipment.py` + `gen_equip_art.py` + `ItemDB`）。
 - 配乐（`tools/audio/gen_music.py`，ElevenLabs）：`old_palace` 旧王宫探索（荒凉、破旧、往日的华丽）、`palace_boss` 王座间 Boss「封笑的女王画像」，登记在 `Audio.MUSIC`，第四章用。
 

@@ -90,8 +90,8 @@ def _statue():
 ANTE_HINTS = {
     "bells": ("石像说，钟楼的钟敲十三下，北边的门就会开……钟楼最上面，好像有拉钟的绳子。",
               "……北边的门。……要钟楼的钟，敲十三下。……钟绳在最上面。"),
-    "sheets": ("地上这些笑脸地砖，好像要乐谱才会亮……钟楼、仆人回廊、浴场，到处找找？",
-               "……地砖。……要三片乐谱。……钟楼、回廊、浴场。"),
+    "sheets": ("地上这些笑脸地砖，好像要乐谱才会亮……乐谱散在王宫各处，到处找找？",
+               "……地砖。……要三片乐谱。……王宫里，到处找找。"),
     "tiles": ("三片乐谱都有了！上面写的……好像是踩地砖的顺序？",
               "……乐谱上的字。……是踩地砖的顺序。"),
     "statue": ("石像问的，都是王宫里的旧事……图书馆的书、衣帽间的礼服、宝库里的东西，说不定有答案。",
@@ -106,8 +106,8 @@ ANTE_HINTS = {
              "……吊铃的曲子。……铜钟。……地砖。……三处一起。"),
     "box": ("女王的八音盒……王座间的画像，会不会怕这个声音？",
             "……八音盒。……画像，也许会发呆。"),
-    "banquet": ("西南边的小宴会厅……清单上的蛋糕、花、八音盒、茶具，在王宫里到处都有。",
-                "……宴会厅的清单。……冷藏库、后花园、石像、女仆长的休息室。"),
+    "banquet": ("西南边的小宴会厅……清单上的蛋糕、花、八音盒、茶具，王宫里到处找找吧。",
+                "……宴会厅的清单。……四样东西。……慢慢找。"),
     "garden": ("石像说，后花园在东北角的柱子后面……去看看吧！",
                "……东北角的柱子后面。……后花园。"),
     "idle": ("……这里好安静。我们分头到处看看吧？",
@@ -115,50 +115,143 @@ ANTE_HINTS = {
 }
 
 
+# 前厅搭档的闲聊（可以一直聊；说话的是没被操控的那个：hero = 现在操控的是谁）
+PALACE_TALK = [   # (要的标记 / None, 粉色说, 蓝色说)，从上往下第一个满足的
+    ("palace_boss_done", "画像最后说的那句……「你不是她」……是什么意思呢？", "……………不知道。……别想了。"),
+    ("palace_headmaid_memories", "三个人偶说的都不一样……那天晚上到底发生了什么呢？", "……谁都没有说错。……也许，大家看到的，都只是一部分。"),
+    ("intro_done_palace_garden_in", "后花园的秋千……板子上的星星和雪花，好像在哪见过。", "……秋千。……我好像，荡过。……不记得了。"),
+    ("palace_vault_open", "宝库里只有一束干掉的铃兰……陛下一定很喜欢那两个小不点吧。", "……「两个小不点」。……卡片上的字，很温柔。"),
+    ("palace_bells_done", "钟敲了十三下以后，北边的门就开了……那天晚上，也是这样吗？", "……十三下。……那个声音，我好像听过。"),
+    (None, "这里以前一定很热闹吧……地上的笑脸地砖，墙上的画，都好像在等人回来。", "……这里，很安静。……太安静了。像是在等谁。"),
+]
+CHAT = [   # 「你还好吗？」的拌嘴（PalaceAnte 随机写 vars.ante_chat）
+    ("我还好！就是脚底还有点痒……刚才那些机关太坏了！", "……还好。……你呢，别逞强。"),
+    ("肚子饿了……厨房的蛋糕还能吃吗？", "……那些人偶。……下次再挠，就冻住它们。"),
+    ("你刚才是不是偷偷笑了？我听到了哦。", "……没有笑。……你听错了。"),
+    ("这里的人偶都好可爱……就是太喜欢挠人了。", "……累了就说。……我背你。……开玩笑的。"),
+]
+
+
 def _ante_partner_hint():
-    nodes, entries = {}, []
+    nodes = {}
+    # 「接下来去哪？」：按进度随机的流程提示（vars.ante_hint）
+    hint_goto = []
     for k, (pink_line, blue_line) in ANTE_HINTS.items():
         nodes[k + "_p"] = {"lines": [L(pink_line, P)]}
         nodes[k + "_b"] = {"lines": [L(blue_line, BLUE)]}
-        # hero = 现在操控的是谁 → 说话的是另一个
-        entries.append({"if": {"eq": {"ante_hint": k}, "hero": "blue"}, "node": k + "_p"})
-        entries.append({"if": {"eq": {"ante_hint": k}, "hero": "pink"}, "node": k + "_b"})
-    entries += [{"if": {"hero": "blue"}, "node": "idle_p"}, {"node": "idle_b"}]
-    return dfile("", "搭档", nodes, entries=entries)
+        hint_goto.append({"if": {"eq": {"ante_hint": k}, "hero": "blue"}, "node": k + "_p"})
+        hint_goto.append({"if": {"eq": {"ante_hint": k}, "hero": "pink"}, "node": k + "_b"})
+    hint_goto += [{"if": {"hero": "blue"}, "node": "idle_p"}, {"if": {}, "node": "idle_b"}]
+    nodes["hint"] = {"goto": hint_goto}
+    # 「这座王宫……」：按进度变的感想
+    pal_goto = []
+    for i, (flag, pink_line, blue_line) in enumerate(PALACE_TALK):
+        nodes["pal%d_p" % i] = {"lines": [L(pink_line, P)]}
+        nodes["pal%d_b" % i] = {"lines": [L(blue_line, BLUE)]}
+        cond = {"flag": flag} if flag else {}
+        pal_goto.append({"if": dict(cond, hero="blue"), "node": "pal%d_p" % i})
+        pal_goto.append({"if": dict(cond, hero="pink"), "node": "pal%d_b" % i})
+    nodes["palace"] = {"goto": pal_goto}
+    # 「你还好吗？」：随机拌嘴
+    chat_goto = []
+    for i, (pink_line, blue_line) in enumerate(CHAT):
+        nodes["chat%d_p" % i] = {"lines": [L(pink_line, P)]}
+        nodes["chat%d_b" % i] = {"lines": [L(blue_line, BLUE)]}
+        chat_goto.append({"if": {"eq": {"ante_chat": i}, "hero": "blue"}, "node": "chat%d_p" % i})
+        chat_goto.append({"if": {"eq": {"ante_chat": i}, "hero": "pink"}, "node": "chat%d_b" % i})
+    chat_goto += [{"if": {"hero": "blue"}, "node": "chat0_p"}, {"if": {}, "node": "chat0_b"}]
+    nodes["chat"] = {"goto": chat_goto}
+    nodes["swap"] = {"lines": [L("……换你来吧。", None)], "set": {"call": "switch_hero"}}
+    nodes["default"] = {"prompt": "想聊些什么？", "choices": [
+        {"text": "接下来去哪？", "next": "hint", "return": True},
+        {"text": "这座王宫……", "next": "palace", "return": True},
+        {"text": "你还好吗？", "next": "chat", "return": True},
+        {"text": "换我来", "next": "swap"},
+        {"text": "没什么", "next": ""},
+    ]}
+    return dfile("", "搭档", nodes)
 
 
 # 拿到跨图道具时的一小段提示（PalaceRoom.ItemHinter；节点名 = PalaceRoom.ITEM_HINTS 的 key）。只说大概用处，不给答案。
-ITEM_HINT = dfile("", "提示", {
-    "default": {"lines": [L("……这个，也许在别的地方用得上。", BLUE)]},
-    "maid_key": {"lines": [L("（一把小小的黄铜发条钥匙。钥匙柄上刻着一顶女仆帽）", N),
-                           L("……女仆帽。……仆人回廊的女仆长，背后，是不是有个发条孔。", BLUE),
-                           L("那她是不是……一直在等人给她上发条？", P, "sad")]},
-    "lost_portrait": {"lines": [L("（小小的椭圆画像，画里的小人缩成一团，像是迷路了）", N),
-                                L("……王座间的墙上，好像有一个空着的画框。", BLUE),
-                                L("把它送回家吧！", P, "happy")]},
-    "music_sheet": {"lines": [L("（一片泛黄的乐谱，上面的音符歪歪扭扭的，像在笑）", N),
-                              L("……前厅的笑脸地砖。……踩上去会笑的那些。", BLUE),
-                              L("好像要把乐谱凑齐，地砖才会亮起来……", P)]},
-    "smile_badge": {"lines": [L("（一枚金色的笑脸徽记，咧着嘴，摸上去暖暖的）", N),
-                              L("前厅有个石台，上面刻着一排一样的小凹槽！", P, "surprise"),
-                              L("……七个。……王宫里，一定还有别的。", BLUE)]},
-    "queen_music_box": {"lines": [L("（粉色的小八音盒。打开盖子，里面会传出很久以前的笑声）", N),
-                                  L("……王座间的那幅画像。……听到这个声音，也许会发呆。", BLUE),
-                                  L("（八音盒放在 R 键上了。打 Boss 的时候按 R 打开）", N)]},
-    "lost_thing": {"lines": [L("……这个，不像王宫里的东西。", BLUE),
-                             L("隧道里那个收路费的小鬼，是不是说它丢了好几样东西？", P),
-                             L("（找齐五样，拿去隧道的失物招领板给它）", N)]},
-    "diary": {"lines": [L("（一页乳母的日记。……日记本被撕成了好几页）", N),
-                        L("……剩下的几页，也许在小殿下们常去的地方。……浴场、厨房。", BLUE)]},
-    "gem": {"lines": [L("……这颗宝石，和隧道寝室梳妆台上那只首饰盒的空槽，颜色一样。", BLUE),
-                      L("三颗都找齐，盒子就能打开吧？", P)]},
-    "birthday_cake": {"lines": [L("……前厅西南边的小宴会厅。……布置清单上，写着蛋糕。", BLUE)]},
-    "bouquet": {"lines": [L("小宴会厅的布置清单上，也有「花」！", P, "happy")]},
-    "tea_set": {"lines": [L("……三只杯子。……拿去小宴会厅。", BLUE)]},
-    "watering_can": {"lines": [L("（一把小小的水壶，壶身上画着一朵花）", N),
-                               L("……后花园的小店主，说想浇花。", BLUE),
-                               L("拿去给她吧！", P, "happy")]},
-})
+# 道具提示：去过目标地点（need 里的标记都有）→ 具体说法；没去过 → 只说东西本身，不提还没去过的地方
+_HINTS = {
+    "maid_key": (["intro_done_palace_servants_in"],
+                 [L("（一把小小的黄铜发条钥匙。钥匙柄上刻着一顶女仆帽）", N),
+                  L("……女仆帽。……仆人回廊的女仆长，背后，是不是有个发条孔。", BLUE),
+                  L("那她是不是……一直在等人给她上发条？", P, "sad")],
+                 [L("（一把小小的黄铜发条钥匙。钥匙柄上刻着一顶女仆帽）", N),
+                  L("……女仆帽。……也许，是给哪个发条人偶用的。", BLUE)]),
+    "lost_portrait": (["intro_done_palace_throne_in"],
+                      [L("（小小的椭圆画像，画里的小人缩成一团，像是迷路了）", N),
+                       L("……王座间的墙上，好像有一个空着的画框。", BLUE),
+                       L("把它送回家吧！", P, "happy")],
+                      [L("（小小的椭圆画像，画里的小人缩成一团，像是迷路了）", N),
+                       L("……它在找自己的位置。……王宫里，一定有一个空着的画框。", BLUE)]),
+    "music_sheet": (["intro_done_palace_ante_in"],
+                    [L("（一片泛黄的乐谱，上面的音符歪歪扭扭的，像在笑）", N),
+                     L("……前厅的笑脸地砖。……踩上去会笑的那些。", BLUE),
+                     L("好像要把乐谱凑齐，地砖才会亮起来……", P)],
+                    [L("（一片泛黄的乐谱，上面的音符歪歪扭扭的，像在笑）", N),
+                     L("……只有一片。……凑齐了，也许能看出点什么。", BLUE)]),
+    "laugh_score": (["intro_done_palace_ante_in"],
+                    [L("（三片乐谱拼成了一整张。音符排成了一张小小的地砖图）", N),
+                     L("……前厅的笑声地砖。……按这个顺序踩。", BLUE),
+                     L("（在背包里使用「完整的笑声乐谱」，随时能看）", N)],
+                    [L("（三片乐谱拼成了一整张。音符排成了一张三格乘三格的小图）", N),
+                     L("……像是什么东西的踩法。", BLUE),
+                     L("（在背包里使用「完整的笑声乐谱」，随时能看）", N)]),
+    "smile_badge": (["intro_done_palace_ante_in"],
+                    [L("（一枚金色的笑脸徽记，咧着嘴，摸上去暖暖的）", N),
+                     L("前厅有个石台，上面刻着一排一样的小凹槽！", P, "surprise"),
+                     L("……七个。……王宫里，一定还有别的。", BLUE)],
+                    [L("（一枚金色的笑脸徽记，咧着嘴，摸上去暖暖的）", N),
+                     L("……王宫里，也许还有别的。……先收着。", BLUE)]),
+    "queen_music_box": (["intro_done_palace_throne_in"],
+                        [L("（粉色的小八音盒。打开盖子，里面会传出很久以前的笑声）", N),
+                         L("……王座间的那幅画像。……听到这个声音，也许会发呆。", BLUE),
+                         L("（打 Boss 的时候按 R 打开）", N)],
+                        [L("（粉色的小八音盒。打开盖子，里面会传出很久以前的笑声）", N),
+                         L("……很久以前的笑声。……也许，有什么东西会怕这个声音。", BLUE)]),
+    "lost_thing": (["palace_tunnels_seen"],
+                   [L("……这个，不像王宫里的东西。", BLUE),
+                    L("隧道里那个收路费的小鬼，是不是说它丢了好几样东西？", P),
+                    L("（找齐五样，拿去隧道的失物招领板给它）", N)],
+                   [L("……这个，不像王宫里的东西。……也许有谁在找它。", BLUE)]),
+    "diary": (["intro_done_palace_bath_in", "intro_done_palace_kitchen_in"],
+              [L("（一页乳母的日记。……日记本被撕成了好几页）", N),
+               L("……剩下的几页，也许在小殿下们常去的地方。……浴场、厨房。", BLUE)],
+              [L("（一页乳母的日记。……日记本被撕成了好几页）", N),
+               L("……剩下的几页，也许在小殿下们常去的地方。", BLUE)]),
+    "gem": (["dlg_floor_06/tunnel_jewel_box_default"],
+            [L("……这颗宝石，和隧道寝室梳妆台上那只首饰盒的空槽，颜色一样。", BLUE),
+             L("三颗都找齐，盒子就能打开吧？", P)],
+            [L("……一颗很漂亮的宝石。……像是从什么首饰盒上掉下来的。", BLUE)]),
+    "birthday_cake": (["dlg_floor_06/banquet_table_default"],
+                      [L("……前厅西南边的小宴会厅。……布置清单上，写着蛋糕。", BLUE)],
+                      [L("……生日蛋糕。……也许，有人在等它。", BLUE)]),
+    "bouquet": (["dlg_floor_06/banquet_table_default"],
+                [L("小宴会厅的布置清单上，也有「花」！", P, "happy")],
+                [L("好漂亮的花束……要拿去哪里呢？", P, "happy")]),
+    "tea_set": (["dlg_floor_06/banquet_table_default"],
+                [L("……三只杯子。……拿去小宴会厅。", BLUE)],
+                [L("……三只杯子。……是给谁准备的呢。", BLUE)]),
+    "watering_can": (["intro_done_palace_garden_in"],
+                     [L("（一把小小的水壶，壶身上画着一朵花）", N),
+                      L("……后花园的小店主，说想浇花。", BLUE),
+                      L("拿去给她吧！", P, "happy")],
+                     [L("（一把小小的水壶，壶身上画着一朵花）", N)]),
+}
+
+
+def _item_hint():
+    nodes = {"default": {"lines": [L("……这个，也许在别的地方用得上。", BLUE)]}}
+    for k, (need, at, vague) in _HINTS.items():
+        nodes[k] = {"goto": [{"if": {"flag": need}, "node": k + "_at"}], "lines": vague}
+        nodes[k + "_at"] = {"lines": at}
+    return dfile("", "提示", nodes)
+
+
+ITEM_HINT = _item_hint()
 
 
 DIALOGUES = {

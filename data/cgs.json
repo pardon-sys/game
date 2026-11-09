@@ -1123,6 +1123,20 @@
 			"fps": 6,
 			"z": 2
 		},
+		"pants_hands": {
+			"hit_fx": "hand",
+			"texture": "res://assets/generated/pants_hands.png",
+			"hframes": 3,
+			"idle": [
+				0
+			],
+			"active": [
+				1,
+				2
+			],
+			"fps": 7,
+			"z": 2
+		},
 		"vine": {
 			"hit_fx": "brush",
 			"texture": "res://assets/generated/vine.png",

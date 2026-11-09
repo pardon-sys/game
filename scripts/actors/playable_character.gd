@@ -86,6 +86,15 @@ var partner_talk := ""
 ## 自己逛（房间的 AI hooks 给闲逛点，不跟着玩家）：不会被拉回玩家身边，但仍然可以走过去和她说话（例如旧王宫前厅）
 var roam := false
 var _partner_area: Interactable
+var _partner_hinted := false
+
+
+## 自己逛的搭档头上也飘交互键（InteractHint）；挂一次
+func hint_partner_area() -> void:
+	if _partner_hinted or _partner_area == null:
+		return
+	_partner_hinted = true
+	InteractHint.attach(_partner_area)
 ## 睡着了（过场的 lie sleep=true）：小人一直是闭着眼的那张图（立绘照旧）
 var sleeping := false
 ## 正在进行疲倦爆发（CAST 期间用战损释放姿势）。

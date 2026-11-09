@@ -15,7 +15,9 @@ const KEY_TEX := "res://assets/generated/items.png"   # 同 princess.tscn 的 Pr
 
 static func wants(it: Interactable) -> bool:
 	if it.get_parent() is PlayableCharacter:
-		return false   # 搭档身上的那个（换人 / 互动）不用提示
+		# 搭档身上的那个（换人 / 互动）一般不用提示；自己在逛的搭档（roam，例如旧王宫前厅）要提示「可以和她说话」
+		if not (it.get_parent() as PlayableCharacter).roam:
+			return false
 	var fid := level_floor(it)
 	return MAPS.any(func(p): return fid.begins_with(p))
 
@@ -70,7 +72,9 @@ func showing() -> bool:
 	for pc in get_tree().get_nodes_in_group("player_chars"):
 		if pc.get("_target") == target:
 			return false
-		if pc.is_in_group("player") and (pc as Node2D).global_position.distance_to(target.global_position) <= HINT_R:
+		# 自己在逛的搭档（roam）：离得远一点也提示「可以和她说话」
+		var r := HINT_R * (2.0 if p is PlayableCharacter else 1.0)
+		if pc.is_in_group("player") and (pc as Node2D).global_position.distance_to(target.global_position) <= r:
 			near = true
 	return near
 

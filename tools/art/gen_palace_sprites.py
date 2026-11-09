@@ -193,6 +193,41 @@ def build_strip(src_name, out_name, n, w, h, label, uniform=False):
     print(label + "：" + out_name)
 
 
+def defringe(out_name, recolor=None):
+    """淡紫色的图在洋红底上抠完，边上会残留一圈粉紫色杂边：只看贴着透明处的边缘像素，偏洋红（红蓝高、绿很低）的去掉，里面的不动"""
+    path = OUT / out_name
+    im = Image.open(path).convert("RGBA")
+    px = im.load()
+    w, h = im.size
+    drop = []
+    for y in range(h):
+        for x in range(w):
+            r, g, b, a = px[x, y]
+            if not a or not (r > 200 and b > 190 and g < 95):
+                continue
+            edge = any(not (0 <= x + dx < w and 0 <= y + dy < h) or px[x + dx, y + dy][3] == 0
+                       for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1)))
+            if edge:
+                drop.append((x, y))
+    for x, y in drop:
+        px[x, y] = (0, 0, 0, 0)
+    if recolor:
+        # 里面的颜色按亮度重新上一套干净的淡紫（洋红底抠图会把淡紫抠花）
+        dark, light = recolor
+        for y in range(h):
+            for x in range(w):
+                r, g, b, a = px[x, y]
+                if not a:
+                    continue
+                lum = (r * 0.3 + g * 0.59 + b * 0.11) / 255.0
+                if lum < 0.25:
+                    continue   # 描边
+                t = min(1.0, max(0.0, (lum - 0.3) / 0.6))
+                t = round(t * 3) / 3.0
+                px[x, y] = (int(dark[0] + (light[0] - dark[0]) * t), int(dark[1] + (light[1] - dark[1]) * t), int(dark[2] + (light[2] - dark[2]) * t), 255)
+    im.save(path)
+
+
 def build_maid():
     src = SRC / "doll_maid_sheet.png"
     if not src.exists():
@@ -278,4 +313,11 @@ if __name__ == "__main__":
     build_strip("flower_keeper_sheet.png", "npcs/flower_keeper.png", 4, 28, 36, "花园小店主（站着 ×2 / 噘嘴指着蔫花 / 撒花瓣）", uniform=True)
     build_strip("story_props_sheet.png", "story_props.png", 8, 40, 40, "剧情事件（首饰盒 合 / 开、红 / 蓝 / 黄宝石、日记页、茶具、花束）")
     build_strip("banquet_props_sheet.png", "banquet_props.png", 3, 80, 64, "小宴会厅（三人座长桌 / 蛋糕架 / 名牌）")
+    build_strip("pants_hands_sheet.png", "pants_hands.png", 3, 26, 26, "千手裤的小手（蜷着 / 扭动 / 伸开挠）")
+    defringe("pants_hands.png", ((128, 88, 180), (226, 206, 250)))
+    build_strip("toll_imps_sheet.png", "toll_imps.png", 4, 56, 44, "收路费的小鬼们（待机 ×2 / 伸手要钱 / 抱着金币开心）")
+    build_strip("frame_soldier_sheet.png", "frame_soldier.png", 4, 28, 32, "画框小兵（三帧走 + 羽毛长矛戳）", uniform=True)
+    build_strip("brush_sprite_sheet.png", "brush_sprite.png", 4, 28, 20, "羽毛画笔精（三帧飞 + 快速刷）", uniform=True)
+    build_strip("small_portraits4_sheet.png", "small_portraits4.png", 8, 28, 36, "四色小画像（红 / 蓝 / 金 / 绿，各 睡着 + 醒着）", uniform=True)
+    build_strip("throne_fx2_sheet.png", "throne_fx2.png", 8, 48, 48, "王座间特效二（画像之眼 / 光带 / 颜料星 / 出口画框 / 画架 / 护盾 / 吸引旋涡 / 颜料浪）")
     build_dance_doll()

@@ -30,7 +30,7 @@ MEET = theater("汇合：两条奇怪的裤子", {
     "princess": dict(PRINCESS, at=[-14, 8], visual="normal", dir="right"),
     "blue": {"kind": "npc:blue_princess", "at": [14, 8], "visual": "normal", "anim": "idle", "dir": "left"},
     "rat": {"kind": "monster:rat", "at": [-26, 12], "dir": "right"},
-    "pants": {"kind": "trap:hand", "at": [20, 10]},
+    "pants": {"kind": "trap:pants_hands", "at": [20, 10]},
 }, [
     say(N, "（水道出口的灯下，蓝色公主手里提着一双粉色的小鞋，一动不动地站着）", act=1),
     say(P, "……你！你怎么在这里！？", emotion="surprise"),

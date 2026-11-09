@@ -1018,6 +1018,9 @@ pt2.put(38, 4, "spawn id=from_ante")
 prop(pt2, ptm["fragment"][0][0], ptm["fragment"][0][1] - 1, "crate")   # 锁着的旧箱子
 _secret_door(pt2, PTRAIN)
 _dress_training(pt2, qmaps.grid(PTRAIN), ptm)
+# 第五轮：擂台四周的墙上六支火把（没点；鸣钟战第二波有幽灵，要点亮才看得见）
+for (_x, _y) in ((34, 15), (42, 15), (34, 23), (42, 23), (31, 17), (45, 21)):
+    pt2.put(_x, _y, "torch lit=false light_radius=110")
 pt2.write()
 
 # ---------------------------------------------------------------- 第四章（下）

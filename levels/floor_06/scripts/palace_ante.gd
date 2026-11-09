@@ -54,12 +54,14 @@ const HINT_EVERY := 2.5
 const WANDER := [Vector2i(20, 14), Vector2i(41, 14), Vector2i(19, 25), Vector2i(42, 25), Vector2i(25, 28), Vector2i(36, 28),
 		Vector2i(27, 31), Vector2i(33, 31), Vector2i(10, 19), Vector2i(50, 21), Vector2i(30, 9), Vector2i(23, 20), Vector2i(37, 20)]
 const WANDER_STAY := Vector2(2.0, 4.0)
-const TILE_CLEAR := 36.0
+const TILE_CLEAR := 56.0
 var _wander := {}            # ai 的 id → {"to": Vector2, "stay": 秒}
 var _hint_t := 0.0
 var _roamers: Array = []
 var _old_talk := {}
 var _tile_origin := Vector2i.ZERO
+## 笑声地砖之间隔一格（第五轮：原来挨得太紧）
+const TILE_STEP := 2
 var _last_cell := {}
 var _tiles: Array = []
 var _vault_spot: Node
@@ -81,6 +83,22 @@ func _ready() -> void:
 		_ready_events()
 
 
+## 格子 → 地砖序号（行优先 0..8；不是地砖 = -1）
+func tile_index(c: Vector2i) -> int:
+	var rel := c - _tile_origin
+	if rel.x < 0 or rel.y < 0 or rel.x % TILE_STEP != 0 or rel.y % TILE_STEP != 0:
+		return -1
+	var gx := rel.x / TILE_STEP
+	var gy := rel.y / TILE_STEP
+	if gx > 2 or gy > 2:
+		return -1
+	return gy * 3 + gx
+
+
+func tile_cell(i: int) -> Vector2i:
+	return _tile_origin + Vector2i(i % 3, i / 3) * TILE_STEP
+
+
 func has_marks() -> bool:
 	return not cells("tiles").is_empty()
 
@@ -91,7 +109,7 @@ func _ready_events() -> void:
 	for c in tc:
 		var tv := TileView.new()
 		tv.room = self
-		tv.idx = (c.y - _tile_origin.y) * 3 + (c.x - _tile_origin.x)
+		tv.idx = tile_index(c)
 		tv.position = world(c)
 		add_view(tv)
 		_tiles.append(tv)
@@ -106,7 +124,7 @@ func _ready_events() -> void:
 	add_view(vv)
 	_vault_spot = _spot_at("floor_06/ante_vault", cells("vault")[0], VAULT_LOOT)
 	_set_vault_enabled(vault_open())
-	var center := (world(_tile_origin) + world(_tile_origin + Vector2i(2, 2))) * 0.5
+	var center := world(_tile_origin + Vector2i(TILE_STEP, TILE_STEP))
 	for k in 2:
 		var g := ArmorGuard.new()
 		g.room = self
@@ -174,9 +192,9 @@ func _process(delta: float) -> void:
 		var key := pc.get_instance_id()
 		if _last_cell.get(key, Vector2i(-99, -99)) != c:
 			_last_cell[key] = c
-			var rel := c - _tile_origin
-			if rel.x >= 0 and rel.x < 3 and rel.y >= 0 and rel.y < 3:
-				step_tile(rel.y * 3 + rel.x, pc)
+			var ti := tile_index(c)
+			if ti >= 0:
+				step_tile(ti, pc)
 	for g in guards:
 		(g as ArmorGuard).tick(delta)
 	_tick_ball(delta)
@@ -260,7 +278,7 @@ func start_ball() -> void:
 
 
 func _ball_center() -> Vector2:
-	return (world(_tile_origin) + world(_tile_origin + Vector2i(2, 2))) * 0.5
+	return world(_tile_origin + Vector2i(TILE_STEP, TILE_STEP))
 
 
 func _spawn_dolls(w: int) -> void:
@@ -751,10 +769,12 @@ func _tick_partner(delta: float) -> void:
 			pc.partner_talk = HINT_FILE
 			pc.roam = true
 		pc.refresh_partner_area()
+		pc.hint_partner_area()
 	_hint_t -= delta
 	if _hint_t <= 0.0:
 		_hint_t = HINT_EVERY
 		GameState.vars["ante_hint"] = str(hint_keys().pick_random())
+		GameState.vars["ante_chat"] = randi() % 4
 	for k in _wander.keys():
 		var w: Dictionary = _wander[k]
 		var ai := instance_from_id(int(k)) as PlayableCharacter
@@ -812,7 +832,7 @@ func wander_target(ai: PlayableCharacter) -> Vector2:
 	var w: Dictionary = _wander.get(k, {})
 	if not w.is_empty() and float(w["stay"]) > 0.0:
 		return w["to"]
-	var mid := world(_tile_origin + Vector2i(1, 1))
+	var mid := world(_tile_origin + Vector2i(TILE_STEP, TILE_STEP))
 	var pick: Array = []
 	for c in WANDER:
 		var to := world(c)

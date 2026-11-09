@@ -4,6 +4,8 @@ extends Node2D
 
 @export var lit := false
 @export var target := ""
+## 照亮的范围（痒痒幽灵在这个范围里显形；0 = 用幽灵自己的 reveal_radius）
+@export var light_radius := 0.0
 
 @onready var sprite: Sprite2D = $Sprite
 @onready var light: PointLight2D = $Light

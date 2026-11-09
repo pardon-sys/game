@@ -163,7 +163,7 @@ func weak_point() -> Vector2:
 	if _portrait == null:
 		return world(cells("throne")[0]) + Vector2(0, -6)
 	if layer == 0 and not empowered:
-		return Vector2(_portrait.position.x, world(cells("throne")[0]).y - 6.0)
+		return Vector2(_portrait.position.x, _portrait.position.y + 48.0)   # 挂在北墙上：破绽在它正下方三格
 	return _portrait.position + Vector2(0, 14)
 
 
@@ -704,6 +704,7 @@ class PortraitView extends Node2D:
 	var _drip := 0.6
 
 	func _ready() -> void:
+		z_index = 1   # 画在北墙前面
 		if ResourceLoader.exists(SHEET):
 			_spr = Sprite2D.new()
 			_spr.texture = load(SHEET)
@@ -856,6 +857,11 @@ class SmallPortrait extends Node2D:
 			draw_set_transform(Vector2(0, 2), 0.0, Vector2(1, 0.4))
 			draw_circle(Vector2.ZERO, 9.0, Color(0.15, 0.05, 0.15, 0.3))
 			draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
+		# 醒着的时候脚下一条小血条
+		if alive():
+			var w := 20.0
+			draw_rect(Rect2(-w * 0.5 - 1, 5, w + 2, 4), Color(0.1, 0.05, 0.1, 0.8))
+			draw_rect(Rect2(-w * 0.5, 6, w * float(hp) / PalaceThrone.SMALL_HP, 2), Color(0.95, 0.35, 0.5))
 		if _spr:
 			return
 		var on := alive()

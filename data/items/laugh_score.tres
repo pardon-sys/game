@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="ScoreItem" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/items/score_item.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/generated/item_laugh_score.png" id="2"]
+
+[resource]
+script = ExtResource("1")
+icon = ExtResource("2")
+id = "laugh_score"
+display_name = "完整的笑声乐谱"
+description = "三片笑声乐谱拼成的一整张。打开来看，音符排成了一张小小的地砖图——王座前厅的笑声地砖，该按什么顺序踩。"
+category = 0
+stackable = false
+show_in_hud = false
+hotkey = ""
+pickup_emotion = "happy"

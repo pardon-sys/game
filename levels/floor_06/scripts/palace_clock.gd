@@ -56,6 +56,7 @@ var gates_closed := {}
 var _gate_hold := {}
 var _wait := 0.0
 var _keeper: KeeperView
+var keeper_spot: Node2D
 var _pend: Node2D
 var _ladder_view: Node2D
 var _path_pts: Array[Vector2] = []
@@ -146,6 +147,14 @@ func _ready() -> void:
 		add_view(_keeper)
 		if GameState.has_flag(KEEPER_FLAG):
 			_keeper.position = world(PATH[PATH.size() - 1]) + Vector2(0, 40)
+			# 第五轮·人偶们的记忆：追累了的守钟人偶，和女仆长交好以后能上弦（调查点挂在它身上）
+			var ksp := PrisonOddities.Spot.new()
+			ksp.dialogue = "floor_06/memory_keeper"
+			ksp.done_flag = "palace_memory_keeper"
+			add_child(ksp)
+			ksp.global_position = _keeper.position
+			gate(ksp, [PalaceRoom.FRIEND_FLAG])
+			keeper_spot = ksp
 
 
 ## clock_props.png 的一帧（0 齿轮 / 1 钟摆 / 2 风箱 / 3 钟 / 4 钟绳 / 5 宝箱）；没有图就给一个空节点

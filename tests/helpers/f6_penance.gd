@@ -579,7 +579,7 @@ static func _palace_b(t: Node) -> void:
 	# 遭遇战：输一次、再赢
 	await t._talk("floor_06/training_bell", "", [0])
 	await t._advance_until(func(): return tr.fighting, 60.0)
-	verify(t, "敲钟：门关上、第一波（%d 只）" % tr.spawned.size(), tr.fighting and tr.wave == 0 and tr.spawned.size() == 4 and tr._gates.size() == 2)
+	verify(t, "敲钟：门关上、第一波（%d 只）" % tr.spawned.size(), tr.fighting and tr.wave == 0 and tr.spawned.size() == PalaceTraining.WAVES[0].size() and tr._gates.size() == 2)
 	tr.on_defeat("both_down")
 	await t._advance_until(func(): return GameState.has_flag("cg_seen_theater:training_lose") and not CG.is_busy() and not tr._defeat_busy, 150.0)
 	verify(t, "遭遇战里两个都倒下：补课的小剧场 → 怪清掉、门打开、可以再敲", not tr.fighting and tr._gates.is_empty() and not GameState.has_flag(PalaceTraining.CLEAR_FLAG))
@@ -593,7 +593,7 @@ static func _palace_b(t: Node) -> void:
 		await t.get_tree().process_frame
 		tr._tick_fight()
 	await t._advance_until(func(): return not Cutscene.is_playing(), 30.0)
-	verify(t, "三波（%s）全打倒：考验通过、门打开" % [waves], waves == [4, 4, 1] and GameState.has_flag(PalaceTraining.CLEAR_FLAG) and tr._gates.is_empty())
+	verify(t, "三波（%s）全打倒：考验通过、门打开" % [waves], waves == PalaceTraining.WAVES.map(func(w): return w.size()) and GameState.has_flag(PalaceTraining.CLEAR_FLAG) and tr._gates.is_empty())
 	await t._talk("floor_06/training_chest", "")
 	verify(t, "旧箱子打开：最后一张残页（%s）" % GameState.vars.get("palace_frags"), int(GameState.vars.get("palace_frags", 0)) == 3 and GameState.has_flag("palace_frag_3"))
 	# 耐痒训练台：被动
@@ -614,6 +614,7 @@ static func _palace_b(t: Node) -> void:
 	await _round4(t)
 	await _garden(t)
 	await _story(t)
+	await _round5(t)
 
 
 static func _quiet_beetles(cr: PalaceClock) -> void:
@@ -1547,7 +1548,7 @@ static func _round4(t: Node) -> void:
 	if mate == null:
 		return
 	var wt: Variant = an.ai_hooks().objective_for(mate)
-	var mid := an.world(an._tile_origin + Vector2i(1, 1))
+	var mid := an.world(an._tile_origin + Vector2i(PalaceAnte.TILE_STEP, PalaceAnte.TILE_STEP))
 	verify(t, "闲逛点（%s）不在地砖上、走过去的路不穿过地砖" % str(wt), wt is Vector2 and (wt as Vector2).distance_to(mid) > 40.0
 		and Geometry2D.get_closest_point_to_segment(mid, mate.global_position, wt).distance_to(mid) >= PalaceAnte.TILE_CLEAR - 0.1)
 	var tp0 := an.tile_progress
@@ -1561,17 +1562,22 @@ static func _round4(t: Node) -> void:
 	var said := []
 	var cb := func(f: String, n: String): said.append(n)
 	Dialogue.runner.node_entered.connect(cb)
-	await t._talk(PalaceAnte.HINT_FILE, "")
+	await t._talk(PalaceAnte.HINT_FILE, "", [0, 1, 2, 4])
 	Dialogue.runner.node_entered.disconnect(cb)
-	verify(t, "和搭档说话：说一句「%s」的提示（%s）" % [ks[0], str(said)], said.size() == 1 and str(said[0]).begins_with(str(ks[0])))
+	var menu: Array = t.last_options
+	verify(t, "和搭档说话：「想聊些什么」选项页（%s），接下来去哪 → 「%s」的提示，这座王宫 / 你还好吗也能聊（%s）" % [str(menu), ks[0], str(said)],
+		menu.size() == 5 and said.any(func(n): return str(n).begins_with(str(ks[0]) + "_"))
+		and said.any(func(n): return str(n).begins_with("pal")) and said.any(func(n): return str(n).begins_with("chat")))
+	await t.get_tree().process_frame
+	verify(t, "前厅的搭档头上会飘交互键（InteractHint）", mate._partner_hinted and InteractHint.wants(mate._partner_area))
 	# 道具提示：拿到笑脸徽记（之前没提示过）→ 等对话空下来弹一小段
 	GameState.set_flag(PalaceRoom.item_hint_flag("smile_badge"), false)
 	var hs := []
 	var cb2 := func(f: String, n: String): hs.append(f + ":" + n)
 	Dialogue.runner.node_entered.connect(cb2)
-	await t._advance_until(func(): return hs.has(PalaceRoom.ITEM_HINT_FILE + ":smile_badge") and not Dialogue.runner.is_running(), 10.0)
+	await t._advance_until(func(): return hs.has(PalaceRoom.ITEM_HINT_FILE + ":smile_badge_at") and not Dialogue.runner.is_running(), 10.0)
 	Dialogue.runner.node_entered.disconnect(cb2)
-	verify(t, "拿到跨图道具（笑脸徽记）：弹出一小段提示说用处，只弹一次", hs.has(PalaceRoom.ITEM_HINT_FILE + ":smile_badge")
+	verify(t, "拿到跨图道具（笑脸徽记）：弹出一小段提示说用处（去过前厅，所以提徽记台），只弹一次", hs.has(PalaceRoom.ITEM_HINT_FILE + ":smile_badge_at")
 		and GameState.has_flag(PalaceRoom.item_hint_flag("smile_badge")) and not PalaceRoom.pending_item_hints().has("smile_badge"))
 	# 选项页：12 个选项 → 只显示 6 个，选到下面会滚动，每次打开从最上面开始
 	var cm := Dialogue.runner.choice_menu
@@ -1758,3 +1764,75 @@ static func _story(t: Node) -> void:
 	verify(t, "蛋糕 / 花束 / 八音盒 / 茶具摆齐：人偶们的生日派对（CG）→ 女王的生日缎带（%d / 4）" % an.banquet_placed(),
 		an.banquet_placed() == 4 and GameState.has_flag("cg_seen_theater:queen_birthday") and GameState.inventory.has(PalaceAnte.BANQUET_REWARD)
 		and GameState.inventory.has("queen_music_box"))
+
+
+## 第五轮修正：提示不剧透、小鬼与疲倦印记、逃走的宝箱、守钟人偶、完整乐谱、地砖间隔、训练场火把
+static func _round5(t: Node) -> void:
+	_calm(t)
+	for k in PalaceRoom.ITEM_HINTS:
+		GameState.set_flag(PalaceRoom.item_hint_flag(k))
+	# ---- 道具提示：没去过仆人回廊 → 只说钥匙本身；去过 → 才提女仆长
+	var hs := []
+	var cb := func(f: String, n: String): hs.append(n)
+	Dialogue.runner.node_entered.connect(cb)
+	GameState.set_flag("intro_done_palace_servants_in", false)
+	await t._talk(PalaceRoom.ITEM_HINT_FILE, "maid_key")
+	var vague := hs.duplicate()
+	hs.clear()
+	GameState.set_flag("intro_done_palace_servants_in")
+	await t._talk(PalaceRoom.ITEM_HINT_FILE, "maid_key")
+	Dialogue.runner.node_entered.disconnect(cb)
+	verify(t, "道具提示不超过进度：没去过回廊（%s）只说钥匙本身，去过（%s）才提女仆长" % [str(vague), str(hs)],
+		vague.has("maid_key") and not vague.has("maid_key_at") and hs.has("maid_key_at"))
+	# ---- 完整的笑声乐谱
+	GameState.inventory.remove("laugh_score", 1)
+	for i in [1, 2, 3]:
+		GameState.set_flag("palace_sheet_%d" % i)
+	while GameState.inventory.count("music_sheet") < 3:
+		GameState.inventory.add(ItemDB.get_item("music_sheet"))
+	PalaceRoom.combine_score()
+	verify(t, "三片乐谱自动拼成「完整的笑声乐谱」", GameState.inventory.has("laugh_score") and not GameState.inventory.has("music_sheet"))
+	ItemDB.get_item("laugh_score").use(GameState.player)
+	await t.get_tree().process_frame
+	var lab := ScoreView.labels()
+	verify(t, "使用完整乐谱：弹出地砖图，标着踩的顺序（左上 %s / 正中 %s）" % [lab[0], lab[4]], is_instance_valid(ScoreView.current) and lab[0] == "1" and lab[4] == "2·5")
+	if is_instance_valid(ScoreView.current):
+		ScoreView.current.close()
+	await t.get_tree().process_frame
+	# ---- 地砖隔开
+	await _goto(t, "floor_06_palace_ante")
+	var an := _room(t, "PalaceAnte") as PalaceAnte
+	verify(t, "笑声地砖隔一格放（(28,18)=0、(30,20)=4、中间的 (29,19) 不是地砖）", an.tile_index(Vector2i(28, 18)) == 0 and an.tile_index(Vector2i(30, 20)) == 4
+		and an.tile_index(Vector2i(29, 19)) == -1 and an.tile_cell(8) == Vector2i(32, 22))
+	# ---- 训练场的火把
+	await _goto(t, "floor_06_palace_training")
+	var torches := t.get_tree().get_nodes_in_group("torch").size()
+	verify(t, "训练场擂台四周有火把（%d 支，要点亮才看得见幽灵）；鸣钟战一波比一波多（%s）" % [torches, str(PalaceTraining.WAVES.map(func(w): return w.size()))],
+		torches >= 6 and PalaceTraining.WAVES[0].size() == 5 and PalaceTraining.WAVES[1].size() == 6 and PalaceTraining.WAVES[2].size() == 5)
+	# ---- 钟顶没有守钟人偶；四层追完以后它身上能上弦
+	verify(t, "钟顶不再多一个守钟人偶", not PalaceRoom.STORY_SPOTS.has("floor_06_palace_clock_5"))
+	GameState.set_flag(PalaceClock.KEEPER_FLAG)
+	await _goto(t, "floor_06_palace_clock_4")
+	var cr := _room(t, "PalaceClock") as PalaceClock
+	verify(t, "守钟人偶的记忆：四层回廊尽头的人偶身上（调查点）", cr != null and is_instance_valid(cr.keeper_spot))
+	# ---- 隧道：小鬼的图、用痒付留下疲倦印记、逃走的宝箱不见了
+	var had_lost := GameState.has_flag(PalaceTunnels.LOST_DONE)
+	GameState.set_flag(PalaceTunnels.LOST_DONE, false)
+	await _goto(t, "floor_06_palace_tunnels")
+	var tu := _room(t, "PalaceTunnels") as PalaceTunnels
+	await t.get_tree().process_frame
+	verify(t, "收路费的小鬼们有图（toll_imps.png），站在栅栏前", is_instance_valid(tu._imps) and (tu._imps as PalaceTunnels.TollView)._spr != null
+		and tu._imps.position.distance_to(tu.imps_pos()) < 1.0)
+	var p := GameState.player as PlayableCharacter
+	var sc0: int = (p.buffs["fatigue_scar"] as Buff).stacks if p.buffs.has("fatigue_scar") else 0
+	tu.pay("tickle")
+	await t._advance_until(func(): return tu.toll_paid() and not CG.is_busy() and not Dialogue.is_active(), 150.0)
+	var sc1: int = (p.buffs["fatigue_scar"] as Buff).stacks if p.buffs.has("fatigue_scar") else 0
+	verify(t, "用痒付：叠一层疲倦印记（%d → %d），小鬼退到告示板旁边" % [sc0, sc1], sc1 == sc0 + 1 and tu._imps.position.distance_to(tu.imps_pos()) < 1.0)
+	p.buffs.erase("fatigue_scar")
+	var fake := 1 if tu.real_chest() != 1 else 2
+	GameState.set_flag(PalaceRoom.MIMIC_FLED)
+	GameState.vars[PalaceTunnels.MIMIC_FROM] = fake
+	tu._refresh_fled()
+	verify(t, "宝箱怪逃出隧道以后：那口宝箱不见了（第 %d 口）" % fake, not (tu._chest_views[fake - 1] as Node2D).visible and not (tu._chest_spots[fake - 1] as Node2D).visible)
+	GameState.set_flag(PalaceTunnels.LOST_DONE, had_lost)
