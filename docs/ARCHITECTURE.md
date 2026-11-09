@@ -1419,6 +1419,17 @@ data/cutscenes/<楼层组>/  地图内过场；data/theater/<楼层组>/  小剧
 	- 笑声地砖 `TILE_STEP = 2`（`tile_index(c)` / `tile_cell(i)`）；完整的笑声乐谱 `laugh_score`（`ScoreItem` → `ScoreView` 面板，`PalaceRoom.combine_score()`）。
 	- 王座间：去掉王座后面挡住画像的台阶墙（等距里会盖住画像），破绽在画像下方 3 格；小画像脚下有血条。
 	- 线索改写：糕点师（踩凳子 / 扶凳子）、乳母日记（布兔子 / 会唱歌的那个）、蛋糕卡片（先学会走路 / 先学会说话）、队长幽影（抢木剑 / 躲在身后）。
+  - 第五轮·王座间加难（`levels/floor_06/scripts/throne_parts.gd`，图 `throne_fx2.png` / `frame_soldier.png` / `brush_sprite.png` / `small_portraits4.png`）：
+	- 数值：`LAYER_HP` [20, 18]、`FRAME_HP` 18、`SMALL_HP` 6、`IMP_MAX` 6；强化画框后技能间隔 × `ANGRY_K`（0.6）。
+	- 技能：`frame_suck()`（`ThroneParts.Vortex`，`ThroneParts.shove` 用 `move_and_collide` 推人，冲刺不受影响）、`paint_wave()`（`PaintWave`，南 → 北，`gaps` 缺口，卷到的人推到北边 + 挠脚心）、
+	  `spawn_clones()`（`PaintClone` 每帧抄本体 `sprite` 的帧，追本体）。
+	- 小怪：`spawn_soldiers()`（`FrameSoldier`，`frames` 标记的画框里走出来，2 血）、`spawn_brush_sprite()`（`BrushSprite`，`spawn_trail` 小颜料坑）、`release_monsters(n)`（`MONSTER_SCENES`：飞书 / 幽灵手套 / 舞会人偶）；
+	  都进 `minions` / `monsters`，`_tick_hits` 打得到，`ThroneHooks.nearest_enemy` 让 AI 去打（追着自己的分身最优先）。
+	- 小画像 `SmallPortrait.kind`（red / blue / gold / green）：红连甩三只手、蓝留 `SlipPaint`（`room.slides`）、金护盾（`shielded()`）、绿召唤颜料小人；`_tick_dive`（`DiveMark` 预警 → 俯冲 → `status.grab` 框住）；`revive_t`（`SMALL_REVIVE` 秒后被画回来，半血）。
+	- 画中世界：`quest_maps._palace_throne` 重画（地图 104×58，迷宫 `MAZE` 在东边、离大厅 12 格以上，递归回溯 + 打通几处；标记 `paint_stars` / `easels` / `mirror_start` / `frames`）；
+	  `ThroneParts.PaintWorld`（`pull()` 时 `_build_world()`）：颜料格 `PaintCell`（z_index 1：一格宽的路在等距里会被墙挡住）、画像之眼的光带（`band_y`，画架旁 `hidden_at` 看不到，`seen_t` 时画笔冲刺）、
+	  颜料星（`exit_open()` 才能出去）、`MirrorSelf`（以迷宫中线镜像）；`PAINT_TIME` 40 秒。
+	- AI：`ThroneHooks.objective_for`（有人在画里时，外面的没东西打就守在破绽前）、`partner_of`（画里的人不算搭档）。
   - 新装备（衣帽间）：`palace_ribbon`、`palace_corset`、`palace_boots`、`palace_stockings`、`feather_shawl`（`gen_equipment.py` + `gen_equip_art.py` + `ItemDB`）。
 - 配乐（`tools/audio/gen_music.py`，ElevenLabs）：`old_palace` 旧王宫探索（荒凉、破旧、往日的华丽）、`palace_boss` 王座间 Boss「封笑的女王画像」，登记在 `Audio.MUSIC`，第四章用。
 

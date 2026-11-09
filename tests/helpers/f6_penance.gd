@@ -615,6 +615,7 @@ static func _palace_b(t: Node) -> void:
 	await _garden(t)
 	await _story(t)
 	await _round5(t)
+	await _boss2(t)
 
 
 static func _quiet_beetles(cr: PalaceClock) -> void:
@@ -1465,7 +1466,10 @@ static func _palace_c(t: Node) -> void:
 		s0._process(0.2)
 	verify(t, "小画像被打掉：飞回墙上睡觉", s0.position.distance_to(s0.home) < 2.0)
 	s0.revive()
-	for s in th.small:
+	# 金框活着时别的小画像有护盾：先打金框
+	var order := th.small.duplicate()
+	order.sort_custom(func(x, y): return (x as PalaceThrone.SmallPortrait).kind == "gold" and (y as PalaceThrone.SmallPortrait).kind != "gold")
+	for s in order:
 		for k in PalaceThrone.SMALL_HP:
 			(s as PalaceThrone.SmallPortrait).hurt()
 	bp.global_position = (th.small[0] as Node2D).position
@@ -1519,6 +1523,8 @@ static func _palace_c(t: Node) -> void:
 		b0.step(0.05)
 		verify(t, "画里的画笔碰到人：闷笑涨、被弹开", esc.laugh.value > el0)
 		esc.global_position = Cutscene.cell_to_world(th2.cells("paint_exit")[0])
+		if is_instance_valid(th2.world_view):
+			th2.world_view.stars_got = 3   # （测试：颜料星当作拿齐了）
 		th2._process(0.05)
 		await t._advance_until(func(): return Cutscene.chapter_screen.visible and not Cutscene.is_playing(), 120.0)
 		verify(t, "在画里跑到画框出口：逃出画的小剧场 → 两人各释放一次 → 胜利", GameState.has_flag("cg_seen_theater:throne_escape") and GameState.has_flag(PalaceThrone.BOSS_FLAG))
@@ -1836,3 +1842,173 @@ static func _round5(t: Node) -> void:
 	tu._refresh_fled()
 	verify(t, "宝箱怪逃出隧道以后：那口宝箱不见了（第 %d 口）" % fake, not (tu._chest_views[fake - 1] as Node2D).visible and not (tu._chest_spots[fake - 1] as Node2D).visible)
 	GameState.set_flag(PalaceTunnels.LOST_DONE, had_lost)
+
+
+## 第五轮·王座间加难：技能（吸引 / 浪潮 / 分身）、新小怪、原有怪物、四色小画像、画中世界、AI
+static func _boss2(t: Node) -> void:
+	_calm(t)
+	for k in PalaceRoom.ITEM_HINTS:
+		GameState.set_flag(PalaceRoom.item_hint_flag(k))
+	GameState.set_flag(PalaceThrone.BOSS_FLAG, false)
+	GameState.set_flag("intro_done_palace_throne_in")
+	GameState.pending_spawn = "from_ante"
+	await t.main.change_level(Floors.scene(PalaceThrone.MAP))
+	await t._advance_until(func(): return t._level_id() == PalaceThrone.MAP and not Cutscene.is_playing() and not Dialogue.is_active(), 60.0)
+	var th := _room(t, "PalaceThrone") as PalaceThrone
+	await t.get_tree().process_frame
+	await t.get_tree().process_frame
+	if th == null:
+		verify(t, "（王座间加载）", false)
+		return
+	verify(t, "血量加厚：第一层 %d、第二层 %d、强化画框 %d、小画像 %d" % [PalaceThrone.LAYER_HP[0], PalaceThrone.LAYER_HP[1], PalaceThrone.FRAME_HP, PalaceThrone.SMALL_HP],
+		PalaceThrone.LAYER_HP == [20, 18] and PalaceThrone.FRAME_HP == 18 and PalaceThrone.SMALL_HP == 6 and th.hp == 20)
+	var p := GameState.player as PlayableCharacter
+	var mate := Duo.partner_of(p)
+	# ---- 画框吸引
+	p.global_position = th.weak_point() + Vector2(0, 120)
+	var v := th.frame_suck()
+	await t.get_tree().process_frame
+	v._t = v.warn + 0.1
+	var d0 := p.global_position.distance_to(th.weak_point())
+	for k in 10:
+		th._tick_skills(0.1)
+	verify(t, "画框吸引：预警以后把人往画像拖（离破绽 %.0f → %.0f）" % [d0, p.global_position.distance_to(th.weak_point())],
+		p.global_position.distance_to(th.weak_point()) < d0 - 20.0)
+	v.queue_free()
+	_calm(t)
+	# ---- 颜料浪潮
+	var w := th.paint_wave()
+	await t.get_tree().process_frame
+	w._t = ThroneParts.PaintWave.WARN
+	var wx := (w.x0 + w.x1) * 0.5
+	while w.in_gap(wx):
+		wx += 8.0
+	p.global_position = Vector2(wx, w.y0 - 4.0)
+	var y0 := p.global_position.y
+	for k in 12:
+		w._process(0.05)
+	verify(t, "颜料浪潮：没找到缺口 → 被卷着往北推（y %.0f → %.0f）" % [y0, p.global_position.y], is_instance_valid(w) and w.carried.has(p) and p.global_position.y < y0 - 20.0)
+	if is_instance_valid(w):
+		w.queue_free()
+	_calm(t)
+	# ---- 临摹分身 / 画框小兵 / 画笔精 / 原有怪物
+	var cs := th.spawn_clones()
+	await t.get_tree().process_frame
+	var cl := cs[0] as ThroneParts.PaintClone
+	cl.position = cl.owner_pc.global_position
+	cl._cool = 0.0
+	var l0 := cl.owner_pc.laugh.value
+	cl.step(0.05)
+	verify(t, "临摹分身：抄着本体的样子追过来挠腰（%.0f → %.0f）；AI 先打追着自己的那个" % [l0, cl.owner_pc.laugh.value],
+		cl.owner_pc.laugh.value > l0 and (cs.size() < 2 or th.ai_hooks().nearest_enemy(cs[1].owner_pc, 150.0) == cs[1]))
+	cl.hurt()
+	verify(t, "分身一下就碎", cl.is_queued_for_deletion())
+	var sds := th.spawn_soldiers()
+	await t.get_tree().process_frame
+	var sd := sds[0] as ThroneParts.FrameSoldier
+	sd.hurt()
+	var alive1 := not sd.is_queued_for_deletion()
+	sd.hurt()
+	verify(t, "画框小兵：一列 %d 只，打两下才倒" % sds.size(), sds.size() == 3 and alive1 and sd.is_queued_for_deletion())
+	var bs := th.spawn_brush_sprite()
+	await t.get_tree().process_frame
+	var pools0 := th.pools.size()
+	for k in 20:
+		bs.step(0.05)
+	verify(t, "羽毛画笔精：绕着人转、身后留颜料轨迹（%d 滩）" % (th.pools.size() - pools0), th.pools.size() > pools0)
+	var ms := th.release_monsters(2)
+	verify(t, "墙上的画框里放出原有的怪（%d 只：飞书 / 幽灵手套 / 舞会人偶）" % ms.size(), ms.size() == 2 and ms.all(func(m): return m is Monster))
+	th._clear_minions()
+	th._clear_imps()
+	_calm(t)
+	# ---- 四色小画像
+	th.layer = 1
+	for s in th.small:
+		(s as PalaceThrone.SmallPortrait).calm = false
+		(s as PalaceThrone.SmallPortrait).revive()
+	var kinds: Array = th.small.map(func(s): return (s as PalaceThrone.SmallPortrait).kind)
+	var red: PalaceThrone.SmallPortrait = th.small[kinds.find("red")]
+	var gold: PalaceThrone.SmallPortrait = th.small[kinds.find("gold")]
+	var blue: PalaceThrone.SmallPortrait = th.small[kinds.find("blue")]
+	var h0 := red.hp
+	red.hurt()
+	verify(t, "四色小画像（%s）：金框活着时别的有护盾，打不动" % str(kinds), kinds == ["red", "blue", "gold", "green"] and red.hp == h0 and red.shielded())
+	for k in PalaceThrone.SMALL_HP:
+		gold.hurt()
+	red.hurt()
+	verify(t, "先打掉金框：护盾没了", not gold.alive() and red.hp == h0 - 1)
+	for k in PalaceThrone.SMALL_HP:
+		blue.hurt()
+	blue.revive_t = 0.05
+	blue._process(0.1)
+	verify(t, "没在 %d 秒里全打掉：别的小画像把它「画回来」（半血 %d）" % [int(PalaceThrone.SMALL_REVIVE), blue.hp], blue.alive() and blue.hp == PalaceThrone.SMALL_HP / 2)
+	# 俯冲框人
+	red._dive = 0.0
+	red._tick_dive(0.01)
+	var warned := red._dive_phase == "warn"
+	p.global_position = red._dive_at
+	red._dive_t = 0.0
+	red._tick_dive(0.01)
+	red._dive_t = 0.0
+	red.position = p.global_position
+	red._tick_dive(0.01)
+	verify(t, "小画像俯冲：先出预警圈，再把人「框」住挠痒", warned and red._dive_phase == "hold" and p.status.is_grabbed_by(red))
+	red.hurt()
+	verify(t, "搭档打它一下：松手", not p.status.is_grabbed_by(red))
+	_calm(t)
+	# ---- 画中世界 + AI
+	th.layer = 2
+	for s in th.small:
+		(s as PalaceThrone.SmallPortrait).sleep()
+	th.pull()
+	await t.get_tree().process_frame
+	var wv := th.world_view
+	var ps := Cutscene.cell_to_world(th.cells("paint_start")[0])
+	var hall := Cutscene.cell_to_world(th.cells("arena")[0])
+	verify(t, "画中世界：离大厅很远（%.0f 格），出口没拿齐颜料星是锁着的" % ((ps.x - Cutscene.cell_to_world(Vector2i(56, 0)).x) / 16.0),
+		is_instance_valid(wv) and ps.x - Cutscene.cell_to_world(Vector2i(56, 0)).x >= 12 * 16.0 and not wv.exit_open() and wv.stars.size() == 3)
+	if not is_instance_valid(wv):
+		return
+	var inner := th.inside
+	inner.global_position = Cutscene.cell_to_world(th.cells("paint_exit")[0])
+	th._process(0.05)
+	verify(t, "没有三颗颜料星：站在出口也出不去", th.inside == inner)
+	for c in wv.stars.duplicate():
+		inner.global_position = Cutscene.cell_to_world(c)
+		wv.step(0.05)
+	verify(t, "拿齐三颗颜料星：出口的画框亮了", wv.exit_open())
+	var pc0 := wv.cell_of(inner.global_position)
+	wv.paint[pc0] = 0.0
+	var il0 := inner.laugh.value
+	wv._tick.clear()
+	wv.step(0.05)
+	verify(t, "踩到被涂掉的画布：减速 + 挠脚心（%.0f → %.0f）" % [il0, inner.laugh.value], inner.laugh.value > il0)
+	wv.paint.clear()
+	wv._paint_some(Vector2i(-99, -99))
+	verify(t, "画布一块块被涂掉（先闪再变，%d 格）" % wv.paint.size(), wv.paint.size() > 0 and wv.paint.values().all(func(x): return float(x) < 0.0))
+	# 画像之眼：把光带转到玩家那一行
+	var free_cell := Vector2i(-1, -1)
+	for c in wv.cells:
+		if not wv.hidden_at(c) and not wv.painted_at(c):
+			free_cell = c
+			break
+	inner.global_position = Cutscene.cell_to_world(free_cell)
+	var k := float(free_cell.y - PalaceThrone.MAZE.position.y) / float(PalaceThrone.MAZE.size.y - 1)
+	wv._t = acos(clampf(1.0 - 2.0 * k, -1.0, 1.0)) * ThroneParts.PaintWorld.EYE_PERIOD / TAU - 0.05
+	wv.seen_t = 0.0
+	wv.step(0.05)
+	verify(t, "画像之眼的光带扫到（不在画架旁边）：画笔冲过来", wv.seen_t > 0.0)
+	if is_instance_valid(wv.mirror):
+		var mid := Cutscene.cell_to_world(Vector2i(PalaceThrone.MAZE.position.x + PalaceThrone.MAZE.size.x / 2, 0)).x
+		verify(t, "颜料镜像：以迷宫中线为轴，左右反着跟着走", is_instance_valid(wv.mirror))
+	if mate and mate != inner:
+		var hk := th.ai_hooks()
+		th._clear_minions()
+		th._clear_imps()
+		var obj: Variant = hk.objective_for(mate)
+		verify(t, "画外的 AI：不往画里跑，没东西打就守在破绽前；画里的人不算搭档", obj is Vector2 and (obj as Vector2).distance_to(th.weak_point()) < 40.0
+			and hk.partner_of(mate) == null)
+	th._clear_world()
+	th.inside = null
+	inner.global_position = hall
+	GameState.set_flag(PalaceThrone.BOSS_FLAG)
