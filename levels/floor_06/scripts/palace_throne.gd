@@ -124,6 +124,7 @@ var _clone_t := CLONE_EVERY
 var _soldier_t := SOLDIER_EVERY * 0.5
 var _brushsp_t := BRUSHSP_EVERY
 var _vortex: ThroneParts.Vortex
+var partner_panel: PartnerPanel
 
 
 func map_id() -> String:
@@ -255,6 +256,11 @@ func _process(delta: float) -> void:
 		# Boss 战里两个人都不会被「拉回玩家身边」（不然被拉进画里时，外面的搭档会被瞬移进画里）
 		for m in members():
 			(m as PlayableCharacter).roam = true
+		# 右上角另一位公主的状态面板（同千手战 / 骑士战），让开顶上的 Boss 血条
+		if partner_panel == null:
+			partner_panel = PartnerPanel.new()
+			partner_panel.top = 52.0
+			add_child(partner_panel)
 		return
 	_bar(true)
 	_tick_move(delta)
@@ -750,6 +756,23 @@ func _clear_minions() -> void:
 		_vortex.queue_free()
 
 
+## 战败重置前：小画像松手、伸长的手缩回、旋涡 / 滑颜料清掉（不然复活以后人还被抓着，不能动也不能切人）
+func _release_all() -> void:
+	for s in small:
+		(s as SmallPortrait)._release()
+	for n in get_parent().get_children():
+		if n is StretchHand:
+			(n as StretchHand)._end()
+	slides.clear()
+	painted.clear()
+	if is_instance_valid(_vortex):
+		_vortex.queue_free()
+	for m in members():
+		var pc := m as PlayableCharacter
+		if pc.status.is_grabbed():
+			pc.status.release()
+
+
 func gold_alive() -> bool:
 	return small.any(func(s): return (s as SmallPortrait).kind == "gold" and (s as SmallPortrait).alive())
 
@@ -850,6 +873,8 @@ func _free_inside() -> void:
 
 
 func _finale() -> void:
+	if is_instance_valid(partner_panel):
+		partner_panel.queue_free()
 	_clear_pools()
 	_clear_imps()
 	_clear_minions()
@@ -887,6 +912,7 @@ func on_defeat(reason: String) -> void:
 	_clear_imps()
 	_clear_minions()
 	_clear_world()
+	_release_all()
 	if inside:
 		inside.status.clear_root()
 		inside.modulate.a = 1.0

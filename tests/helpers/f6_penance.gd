@@ -616,6 +616,7 @@ static func _palace_b(t: Node) -> void:
 	await _story(t)
 	await _round5(t)
 	await _boss2(t)
+	await _round6(t)
 
 
 static func _quiet_beetles(cr: PalaceClock) -> void:
@@ -2011,4 +2012,74 @@ static func _boss2(t: Node) -> void:
 	th._clear_world()
 	th.inside = null
 	inner.global_position = hall
+	GameState.set_flag(PalaceThrone.BOSS_FLAG)
+
+
+## 第六轮修正：物品面板层级、地砖复原、千手裤（只在发动时出现 / 自动获得）、Boss 复活不卡、切人面板、存档点
+static func _round6(t: Node) -> void:
+	_calm(t)
+	for k in PalaceRoom.ITEM_HINTS:
+		GameState.set_flag(PalaceRoom.item_hint_flag(k))
+	# ---- 物品面板画在背包上面
+	ScoreView.open(t.get_tree())
+	await t.get_tree().process_frame
+	verify(t, "背包里使用的物品面板画在背包上面（layer %d > 25）" % (ScoreView.current.layer if is_instance_valid(ScoreView.current) else -1),
+		is_instance_valid(ScoreView.current) and ScoreView.current.layer > 25)
+	if is_instance_valid(ScoreView.current):
+		ScoreView.current.close()
+	await t.get_tree().process_frame
+	# ---- 千手裤
+	var info: Dictionary = CG.data.get("trap_actors", {}).get("pants_hands", {})
+	var pa := CGActor.make_trap("pants", "pants_hands", info)
+	t.add_child(pa)
+	await t.get_tree().process_frame
+	var hidden0 := not pa.visible
+	pa.activate(1.0)
+	for k in 5:
+		pa._process_trap(0.05)
+	verify(t, "千手裤的小手：平时不出现，挠的时候才弹出来（%s → %s）" % [not hidden0, pa.visible], hidden0 and pa.visible)
+	pa.queue_free()
+	verify(t, "夜迷宫的结尾一律是千手裤的那一版（不看手数）", MazeDirector.finale_id() == "f8_maze_finale_pants")
+	var had := GameState.has_flag(Equipment.PANTS_FLAG)
+	GameState.set_flag(Equipment.PANTS_FLAG, false)
+	PalaceRoom.ensure_pants()
+	verify(t, "旧存档进反省篇：补上千手痒痒裤", GameState.has_flag(Equipment.PANTS_FLAG) and GameState.inventory.has("thousand_pants"))
+	GameState.set_flag(Equipment.PANTS_FLAG)
+	if not had:
+		pass
+	# ---- 笑声地砖：宝库开了以后重新进前厅，地砖复原
+	GameState.set_flag(PalaceAnte.VAULT_FLAG)
+	await _goto(t, "floor_06_palace_ante")
+	var an := _room(t, "PalaceAnte") as PalaceAnte
+	var lvn := t.get_tree().get_first_node_in_group("main").get("level") as Node
+	var saves := lvn.find_children("*", "", true, false).filter(func(n): return n.get_script() and str(n.get_script().resource_path).ends_with("save_point.gd")).size()
+	verify(t, "宝库开过以后再进前厅：地砖复原（还能踩舞会的步法）；前厅有存档点（%d）" % saves, not an.sunk_this_visit and an.tile_index(Vector2i(28, 18)) == 0 and saves >= 1)
+	await _goto(t, "floor_06_palace_kitchen")
+	lvn = t.get_tree().get_first_node_in_group("main").get("level") as Node
+	saves = lvn.find_children("*", "", true, false).filter(func(n): return n.get_script() and str(n.get_script().resource_path).ends_with("save_point.gd")).size()
+	verify(t, "厨房有存档点（%d）" % saves, saves >= 1)
+	# ---- 王座间：切人面板、被框住时战败 → 复活以后能动、能切人
+	GameState.set_flag(PalaceThrone.BOSS_FLAG, false)
+	GameState.set_flag("intro_done_palace_throne_in")
+	GameState.pending_spawn = "from_ante"
+	await t.main.change_level(Floors.scene(PalaceThrone.MAP))
+	await t._advance_until(func(): return t._level_id() == PalaceThrone.MAP and not Cutscene.is_playing() and not Dialogue.is_active(), 60.0)
+	var th := _room(t, "PalaceThrone") as PalaceThrone
+	await t.get_tree().process_frame
+	await t.get_tree().process_frame
+	await t.get_tree().process_frame
+	verify(t, "王座间：右上角有切人状态面板（同千手 / 骑士战）", th != null and is_instance_valid(th.partner_panel))
+	if th == null:
+		return
+	var p := GameState.player as PlayableCharacter
+	var sp := th.small[0] as PalaceThrone.SmallPortrait
+	th.layer = 1
+	sp.revive()
+	p.status.grab(sp, 9.0, 99)
+	sp.held = p
+	sp._dive_phase = "hold"
+	th.on_defeat("both_down")
+	await t._advance_until(func(): return not th._defeat_busy and not CG.is_busy() and not Dialogue.is_active(), 150.0)
+	verify(t, "被框住的时候战败：复活以后没被抓着（能动、能切人）", not p.status.is_grabbed() and not p.status.is_rooted() and p.is_alive())
+	th.layer = 0
 	GameState.set_flag(PalaceThrone.BOSS_FLAG)

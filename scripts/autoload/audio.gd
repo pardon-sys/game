@@ -115,6 +115,7 @@ const MUSIC := {
 	# 反省篇第四章：被遗弃的旧王宫（荒凉、破旧、往日的华丽）/ 王座间 Boss「封笑的女王画像」
 	"old_palace": "res://assets/audio/music/old_palace_loop.wav",
 	"palace_boss": "res://assets/audio/music/palace_boss_loop.wav",
+	"palace_memory": "res://assets/audio/music/palace_memory_loop.wav",
 }
 const MUSIC_DB := -6.0
 const SFX_BUS := &"SFX"

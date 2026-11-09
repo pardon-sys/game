@@ -1135,7 +1135,10 @@
 				2
 			],
 			"fps": 7,
-			"z": 2
+			"z": 2,
+			"hide_idle": true,
+			"bob": true,
+			"scale": 0.85
 		},
 		"vine": {
 			"hit_fx": "brush",

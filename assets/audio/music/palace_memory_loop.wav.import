@@ -1,0 +1,11 @@
+[remap]
+
+importer="wav"
+type="AudioStreamWAV"
+
+[params]
+
+edit/loop_mode=2
+edit/loop_begin=597996
+edit/loop_end=-1
+compress/mode=0

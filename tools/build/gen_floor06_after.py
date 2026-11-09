@@ -58,7 +58,7 @@ PRISON = "floor_06_after_prison"
 FESTIVAL = "floor_06_festival"
 KDAY, KNIGHT_N, KCHASE = "floor_06_knight_day", "floor_06_knight_night", "floor_06_knight_chase"
 KFOG = "floor_06_knight_fog"
-# 反省篇第一章（骑士篇之后）：营地医务帐篷（吵架）→ 反省牢房（docs/STORY_AFTER_KNIGHT.md）
+# 反省篇第一章（骑士篇之后）：营地医务帐篷（吵架）→ 反省牢房（docs/private/剧情设定与伏笔.md（不进版本库））
 PTENT, PCELL = "floor_06_penance_tent", "floor_06_penance_cell"
 # 反省篇第二章：鼠洞（等距，quest_maps.py 的 _tunnel）
 RTUNNEL = "floor_06_rat_tunnel"
@@ -765,6 +765,7 @@ pc.put(3, 3, "penancecell")
 prop(pc, 10, 12, "dungeon_gate", "talk:floor_06/penance_objects#gate")
 for x in (6, 14):
     pc.put(x, 1, "torch lit=true")
+pc.put(16, 10, "savepoint place=反省牢房")
 pc.write()
 
 # 鼠洞：等距（crack_cave），不挂冷光、靠火把；RatTunnel 按标记点摆滴水管、检查点、猫咪追逐、三段小剧场的触发点。
@@ -953,6 +954,7 @@ pk, pkm = qmaps.build(Map, PKITCH, "intro =\nintro_cutscene = palace_kitchen_in\
 QMARKS[PKITCH] = pkm
 pk.put(*pkm["start"][0], "player")
 pk.put(*pkm["start"][0], "spawn id=from_servants")
+pk.put(4, 7, "savepoint place=旧王宫·厨房")
 pk.put(4, 5, "blue_princess follow=true ai=false")
 pk.put(2, 4, "palacekitchen")
 pk.put(*pkm["west"][0], "exit target=%s spawn=from_kitchen" % PSERV)
@@ -1028,6 +1030,7 @@ pa, pam = qmaps.build(Map, PANTE, "intro =\nintro_cutscene = palace_ante_in\n" +
 QMARKS[PANTE] = pam
 pa.put(*pam["start"][0], "player")
 pa.put(*pam["start"][0], "spawn id=from_training")
+pa.put(33, 36, "savepoint place=旧王宫·王座前厅")
 pa.put(32, 35, "blue_princess follow=true ai=false")
 pa.put(30, 34, "palaceante")
 pa.put(*pam["south"][0], "exit target=%s spawn=from_ante" % PTRAIN)

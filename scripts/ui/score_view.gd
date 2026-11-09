@@ -36,7 +36,7 @@ static func labels() -> Array:
 
 
 func _ready() -> void:
-	layer = 24
+	layer = 40   # 背包是 25：从背包里「使用」打开时要画在它上面
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	_opened_at = Engine.get_process_frames()
 	_panel = Control.new()

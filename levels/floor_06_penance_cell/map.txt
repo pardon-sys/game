@@ -12,6 +12,7 @@ t = torch lit=true
 A = spawn id=from_tent
 C = penancecell
 D = prop type=dungeon_gate action=talk:floor_06/penance_objects#gate
+E = savepoint place=反省牢房
 
 [map]
 ####################
@@ -24,7 +25,7 @@ D = prop type=dungeon_gate action=talk:floor_06/penance_objects#gate
 ##................##
 ##................##
 ##........A.......##
-##........P.......##
+##........P.....E.##
 ##................##
 ##########D#########
 ####################

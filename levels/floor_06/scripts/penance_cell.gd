@@ -32,6 +32,7 @@ var crack_open := false
 
 
 func _ready() -> void:
+	PalaceRoom.ensure_pants()
 	for id in SPOTS:
 		var info: Dictionary = SPOTS[id]
 		var key := str(info["key"])
