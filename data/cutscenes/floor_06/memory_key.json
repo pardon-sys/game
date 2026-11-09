@@ -1,0 +1,102 @@
+{
+	"name": "交钥匙的回忆",
+	"letterbox": true,
+	"skippable": false,
+	"steps": [
+		{
+			"actions": [
+				{
+					"img": "memory_key",
+					"do": "bg"
+				}
+			],
+			"wait": 1.2
+		},
+		{
+			"speaker": "",
+			"text": "（门前的走廊上。陛下蹲下来，把一把小小的金钥匙，放进一个孩子的手心里）"
+		},
+		{
+			"speaker": "",
+			"text": "（孩子背对着这边，看不清脸。只看得见她头发上，系着一条长长的蓝色发带）"
+		},
+		{
+			"speaker": "女王",
+			"text": "……你是守门的那个孩子。"
+		},
+		{
+			"speaker": "女王",
+			"text": "……这扇门，不可以打开。……答应我。"
+		},
+		{
+			"speaker": "",
+			"text": "（孩子用力地点了点头）"
+		},
+		{
+			"actions": [
+				{
+					"who": "blue",
+					"time": 0.3,
+					"do": "shake"
+				}
+			],
+			"wait": 0.4
+		},
+		{
+			"speaker": "公主",
+			"text": "……蓝色的发带。",
+			"emotion": "surprise"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……………"
+		},
+		{
+			"speaker": "",
+			"text": "（蓝色公主一句话也没说。她的手，下意识地按住了自己的发带）"
+		},
+		{
+			"actions": [
+				{
+					"sound": "ice_crack",
+					"volume": -4.0,
+					"do": "sfx"
+				},
+				{
+					"time": 0.6,
+					"do": "shake"
+				},
+				{
+					"time": 0.4,
+					"do": "flash"
+				}
+			],
+			"wait": 0.8
+		},
+		{
+			"speaker": "",
+			"text": "（画布，从中间裂开了一道缝。裂缝那边，陛下慢慢地站了起来，背对着她们）"
+		},
+		{
+			"speaker": "女王",
+			"text": "……把门，关好。"
+		},
+		{
+			"actions": [
+				{
+					"time": 1.0,
+					"do": "flash"
+				},
+				{
+					"sound": "water_release",
+					"volume": -2.0,
+					"do": "sfx"
+				},
+				{
+					"do": "bg_clear"
+				}
+			],
+			"wait": 1.0
+		}
+	]
+}

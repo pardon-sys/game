@@ -1,0 +1,54 @@
+{
+	"name": "被吸进画里",
+	"letterbox": true,
+	"skippable": false,
+	"steps": [
+		{
+			"speaker": "",
+			"text": "（徽章贴上画布的那一刻，画框里涌出了水彩的旋涡——粉的、淡紫的、金的、天蓝的）"
+		},
+		{
+			"actions": [
+				{
+					"time": 0.6,
+					"do": "flash"
+				},
+				{
+					"sound": "water_release",
+					"volume": -2.0,
+					"do": "sfx"
+				},
+				{
+					"img": "memory_sucked",
+					"do": "bg"
+				}
+			],
+			"wait": 1.0
+		},
+		{
+			"speaker": "公主",
+			"text": "……！抓紧我！",
+			"emotion": "surprise"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……嗯。……不会放开。"
+		},
+		{
+			"speaker": "",
+			"text": "（颜料卷着她们的裙摆和头发，像一阵很温柔的风。旋涡里，有一首很慢很慢的曲子）"
+		},
+		{
+			"actions": [
+				{
+					"do": "bg_clear"
+				},
+				{
+					"time": 0.8,
+					"do": "flash"
+				}
+			],
+			"wait": 0.8
+		}
+	]
+}

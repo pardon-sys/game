@@ -194,6 +194,12 @@ func is_controlled() -> bool:
 # ------------------------------------------------------------------ 跟着走 / 和搭档说话（两个公主通用）
 ## 没被操控时跟着玩家操控的那个走（离太远就直接跟上）；partner_talk 不为空时可以走过去按 E 和她说话
 ## （对话文件，比如「换我来」切换操控：dialogue_box 的 call switch_hero）。
+## 合在一起的两半徽章（第四章尾声的道具）：带在身上就有「两半徽章的余温」（移动加速、闷笑消减加快）
+func refresh_badge_glow() -> void:
+	if GameState.inventory.has("joined_badge") and not has_buff("badge_glow"):
+		add_buff("badge_glow", -1.0)
+
+
 func start_following(talk_file := "") -> void:
 	follow = true
 	if talk_file != "":
@@ -1181,9 +1187,13 @@ func _update_interact_target() -> void:
 	_target = best
 	if prompt == null:
 		return
-	if best:
+	# 只有正在操控的那位头顶出 E 提示（跟着走的搭档被拉过来以后，提示会留在旧的偏移上，飘到墙外）
+	if best and is_in_group("player"):
 		prompt.show()
-		prompt.global_position = best.global_position + best.prompt_offset + Vector2(0, sin(Time.get_ticks_msec() / 150.0) * 1.5).round()
+		var bob := Vector2(0, sin(Time.get_ticks_msec() / 150.0) * 1.5).round()
+		# Prompt 是 top_level：等距地图里不会跟着投影，要自己换成投影后的屏幕坐标（不然 E 会飘到别处）
+		var at := IsoView.current.project(best.global_position) if IsoView.current else best.global_position
+		prompt.global_position = at + best.prompt_offset + bob
 	else:
 		prompt.hide()
 

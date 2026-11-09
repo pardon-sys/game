@@ -485,7 +485,9 @@ def palace_end():
         line(P, "……我们，到底是谁呢。", "sad"),
         line(BLUE, "……不知道。……可是。……是两个人。", None),
         {"actions": [A("bg_clear")], "wait": 0.6},
-        {"actions": [A("chapter_end", title="第四章　旧王宫　完", subtitle="——两半徽章，一首摇篮曲", next="floor_06_after_house")], "wait": 1.4},
+        # 第四章尾声：章末挪到「画里的记忆」走完以后（palace9.memory_out）
+        line(N, "（画像静静地挂在墙上。烧穿的缺口，正在慢慢地合上）"),
+        line(BLUE, "……画里。……好像还有什么。", None),
     ]
     return {"name": "两半徽章", "letterbox": True, "skippable": False, "steps": s}
 

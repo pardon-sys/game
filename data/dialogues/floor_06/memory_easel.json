@@ -1,0 +1,52 @@
+{
+	"name": "画了一半的全家福",
+	"entries": [
+		{
+			"if": {
+				"flag": "palace_memory_2"
+			},
+			"node": "again"
+		},
+		{
+			"if": {
+				"not": "palace_memory_1"
+			},
+			"node": "locked"
+		},
+		{
+			"node": "default"
+		}
+	],
+	"nodes": {
+		"default": {
+			"lines": [
+				{
+					"text": "（画室中间立着一个巨大的画架）",
+					"speaker": ""
+				}
+			],
+			"cutscene": "memory_portrait",
+			"set": {
+				"flags": [
+					"palace_memory_2"
+				]
+			}
+		},
+		"again": {
+			"lines": [
+				{
+					"text": "（画架上，陛下身边的两个位置还是空着。一个糊掉，一个只有铅笔线）",
+					"speaker": ""
+				}
+			]
+		},
+		"locked": {
+			"lines": [
+				{
+					"text": "（画室的门口浮着一层铅笔线，进不去。……也许要先去别的地方）",
+					"speaker": ""
+				}
+			]
+		}
+	}
+}

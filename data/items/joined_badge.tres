@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="KeyItem" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/items/key_item.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/generated/item_joined_badge.png" id="2"]
+
+[resource]
+script = ExtResource("1")
+icon = ExtResource("2")
+id = "joined_badge"
+display_name = "合在一起的两半徽章"
+description = "两个半枚的徽章合在一起，严丝合缝，摸上去暖暖的。带在身上：走路快一点，闷笑也消得快一点。……王座间那幅画前，它会发烫。"
+key_type = "palace"
+category = 1
+stackable = false
+show_in_hud = false
+hotkey = ""
+pickup_emotion = "happy"

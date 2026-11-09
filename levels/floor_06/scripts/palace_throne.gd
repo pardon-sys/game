@@ -27,6 +27,11 @@ extends PalaceRoom
 ##   imps、spawn_imp(at)、stretch(pc)、portrait_pos()、boss_ratio()、boss_name()。
 
 const MAP := "floor_06_palace_throne"
+## 第四章尾声：打完 Boss 两半徽章合在一起（BADGE_FLAG，道具 joined_badge）→ 画前按 E 进画（floor_06_palace_memory）→ 出来以后 EPILOGUE_FLAG
+const BADGE_FLAG := "palace_badge_joined"
+const EPILOGUE_FLAG := "palace_memory_done"
+const MEMORY_OUT := "palace_memory_out_seen"
+const CLEAN_TEX := "res://assets/generated/portrait_clean.png"
 const BOSS_FLAG := "palace_boss_done"
 const LAYER_HP := [20, 18]
 const HIT_R := 34.0
@@ -181,6 +186,7 @@ func _ready() -> void:
 		(small[3] as SmallPortrait).calm = true
 		if is_instance_valid(_frame_view):
 			_frame_view.modulate = Color(1, 1, 1, 0.0)   # 画回到墙上了，画框不再空着
+	_ready_epilogue.call_deferred()
 	if GameState.inventory.has("queen_music_box") and not win:
 		GameState.set_hotkey("use_special", "queen_music_box")
 		GameState.notify("「女王的八音盒」放在 R 键上了（每场能用 %d 次）" % BOX_USES)
@@ -249,7 +255,13 @@ func _process(delta: float) -> void:
 	if is_instance_valid(_weak):
 		_weak.position = weak_point()
 	_tick_water()
-	if win or busy():
+	if win:
+		_pick_t -= delta
+		if _pick_t <= 0.0:
+			_pick_t = 1.5
+			GameState.vars["palace_portrait_pick"] = randi() % 4
+		return
+	if busy():
 		return
 	if not started:
 		started = true
@@ -892,6 +904,10 @@ func _finale() -> void:
 	while Cutscene.is_playing():
 		await get_tree().process_frame
 	Cutscene.play("palace_end")
+	while Cutscene.is_playing():
+		await get_tree().process_frame
+	give_joined_badge()
+	_ready_epilogue()
 
 
 # ------------------------------------------------------------------ 战败
@@ -928,6 +944,66 @@ func on_defeat(reason: String) -> void:
 
 func ai_hooks() -> BattleAIHooks:
 	return ThroneHooks.new(self)
+
+
+# ------------------------------------------------------------------ 第四章尾声
+var portrait_spot: Node2D
+var _pick_t := 0.0
+
+
+## 打完以后：画像留在原地（进画前：烧穿的样子；出来以后：干干净净、闭着眼睛）；画前一个调查点；搭档可以聊天
+func give_joined_badge() -> void:
+	if GameState.has_flag(BADGE_FLAG):
+		return
+	GameState.set_flag(BADGE_FLAG)
+	var it := ItemDB.get_item("joined_badge")
+	if it:
+		GameState.give_item(it, 1)
+	for m in members():
+		(m as PlayableCharacter).add_buff("badge_glow", -1.0)
+	GameState.notify("得到「合在一起的两半徽章」（带着它：移动快一点、闷笑消得快一点）")
+
+
+func _ready_epilogue() -> void:
+	if not win or is_instance_valid(portrait_spot):
+		return
+	_refresh_portrait()
+	portrait_spot = PrisonOddities.Spot.new()
+	portrait_spot.dialogue = "floor_06/throne_portrait_after" if GameState.has_flag(EPILOGUE_FLAG) else "floor_06/throne_portrait_enter"
+	add_child(portrait_spot)
+	portrait_spot.global_position = world(cells("throne")[0])
+	for m in members():
+		var pc := m as PlayableCharacter
+		pc.partner_talk = PalaceAnte.HINT_FILE
+		pc.roam = true
+		pc.refresh_partner_area()
+		pc.hint_partner_area()
+	# 从画里出来：先演尾声（画像闭着眼睛 → 章末）
+	if GameState.has_flag(EPILOGUE_FLAG) and not GameState.has_flag(MEMORY_OUT):
+		GameState.set_flag(MEMORY_OUT)
+		await get_tree().process_frame
+		Cutscene.play("palace_memory_out")
+
+
+func _refresh_portrait() -> void:
+	if not is_instance_valid(_portrait):
+		return
+	_portrait.burned = true
+	_portrait.position = world(cells("portrait")[0]) + Vector2(0, 8)
+	_portrait.hover_to = 0.0
+	if GameState.has_flag(EPILOGUE_FLAG) and ResourceLoader.exists(CLEAN_TEX):
+		_portrait.clean = true
+
+
+## 进画（对话 call palace_memory_enter）：被吸进去的过场 → 画里的记忆
+func enter_memory() -> void:
+	await Cutscene.play("palace_memory_enter")
+	while Cutscene.is_playing():
+		await get_tree().process_frame
+	GameState.pending_spawn = ""
+	var main := get_tree().get_first_node_in_group("main")
+	if main and main.has_method("change_level"):
+		main.change_level(Floors.scene(PalaceMemory.MAP))
 
 
 class ThroneHooks extends BattleAIHooks:
@@ -991,6 +1067,7 @@ class PortraitView extends Node2D:
 	var _spr: Sprite2D
 	var hover := 0.0
 	var hover_to := 0.0
+	var clean := false
 	var _t := 0.0
 	var _drip := 0.6
 
@@ -1023,7 +1100,12 @@ class PortraitView extends Node2D:
 			if _drip <= 0.0:
 				_drip = randf_range(0.25, 0.5)
 				Fx.burst(get_parent(), position + Vector2(randf_range(-14, 14), -hover - 8), "drop", 2, 10.0, 0.6, Vector2(0, 60), Color.from_hsv(randf(), 0.5, 1.0))
-		if _spr:
+		if _spr and clean and _spr.hframes != 1:
+			_spr.texture = load(PalaceThrone.CLEAN_TEX)
+			_spr.hframes = 1
+		if _spr and clean:
+			_spr.frame = 0
+		elif _spr:
 			_spr.frame = 2 if burned else (1 if room and (room.layer >= 1 or room.empowered) else 0)
 			_spr.modulate = Color(1.6, 1.3, 1.6) if _flash > 0.0 else (Color(1.2, 0.9, 1.3) if room and room.empowered else Color.WHITE)
 		queue_redraw()

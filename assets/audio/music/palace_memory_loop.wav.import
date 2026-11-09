@@ -2,9 +2,22 @@
 
 importer="wav"
 type="AudioStreamWAV"
+uid="uid://h1m8xr1qoyo6"
+path="res://.godot/imported/palace_memory_loop.wav-05d520a0b8ed4d9d5cfe952d5c7b1160.sample"
+
+[deps]
+
+source_file="res://assets/audio/music/palace_memory_loop.wav"
+dest_files=["res://.godot/imported/palace_memory_loop.wav-05d520a0b8ed4d9d5cfe952d5c7b1160.sample"]
 
 [params]
 
+force/8_bit=false
+force/mono=false
+force/max_rate=false
+force/max_rate_hz=44100
+edit/trim=false
+edit/normalize=false
 edit/loop_mode=2
 edit/loop_begin=597996
 edit/loop_end=-1

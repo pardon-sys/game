@@ -1,0 +1,173 @@
+{
+	"name": "女王的画像",
+	"entries": [
+		{
+			"if": {
+				"not": "palace_portrait_eyes"
+			},
+			"node": "eyes"
+		},
+		{
+			"if": {
+				"flag": [
+					"palace_portrait_eyes"
+				],
+				"not": "palace_portrait_paint"
+			},
+			"node": "paint"
+		},
+		{
+			"if": {
+				"flag": [
+					"palace_portrait_eyes",
+					"palace_portrait_paint"
+				],
+				"not": "palace_portrait_plate"
+			},
+			"node": "plate"
+		},
+		{
+			"if": {
+				"flag": [
+					"palace_portrait_eyes",
+					"palace_portrait_paint",
+					"palace_portrait_plate"
+				],
+				"not": "palace_portrait_laugh"
+			},
+			"node": "laugh"
+		},
+		{
+			"if": {
+				"eq": {
+					"palace_portrait_pick": 0
+				}
+			},
+			"node": "eyes"
+		},
+		{
+			"if": {
+				"eq": {
+					"palace_portrait_pick": 1
+				}
+			},
+			"node": "paint"
+		},
+		{
+			"if": {
+				"eq": {
+					"palace_portrait_pick": 2
+				}
+			},
+			"node": "plate"
+		},
+		{
+			"if": {
+				"eq": {
+					"palace_portrait_pick": 3
+				}
+			},
+			"node": "laugh"
+		},
+		{
+			"node": "eyes"
+		}
+	],
+	"nodes": {
+		"eyes": {
+			"lines": [
+				{
+					"text": "（画像里女王的脸干干净净，第一次看得清——眉眼很温柔。可是她闭着眼睛）",
+					"speaker": ""
+				},
+				{
+					"text": "……她像在等什么人。",
+					"speaker": "公主",
+					"emotion": "sad"
+				},
+				{
+					"text": "……………",
+					"speaker": "蓝色的公主"
+				}
+			],
+			"set": {
+				"flags": [
+					"palace_portrait_eyes"
+				]
+			}
+		},
+		"paint": {
+			"lines": [
+				{
+					"text": "（画布合上的那道缝里，还留着两种颜色的颜料。一种是粉色的）",
+					"speaker": ""
+				},
+				{
+					"text": "……另一种呢？",
+					"speaker": "公主"
+				},
+				{
+					"text": "……不是蓝。……说不出是什么颜色。……像是，还没调出来的颜色。",
+					"speaker": "蓝色的公主"
+				}
+			],
+			"set": {
+				"flags": [
+					"palace_portrait_paint"
+				]
+			}
+		},
+		"plate": {
+			"lines": [
+				{
+					"text": "（画框下面钉着一块小铜牌：「愿你们一直笑着」）",
+					"speaker": ""
+				},
+				{
+					"text": "（铜牌背后夹着一片干掉的铃兰，花瓣一碰就碎了）",
+					"speaker": ""
+				},
+				{
+					"text": "……「你们」。",
+					"speaker": "公主",
+					"emotion": "sad"
+				},
+				{
+					"text": "……陛下最喜欢的花。",
+					"speaker": "蓝色的公主"
+				}
+			],
+			"set": {
+				"flags": [
+					"palace_portrait_plate"
+				]
+			}
+		},
+		"laugh": {
+			"lines": [
+				{
+					"text": "（把耳朵贴到画布上——很远很远的地方，有很多很多笑声）",
+					"speaker": ""
+				},
+				{
+					"text": "（笑声里，有一个大人的，和两个很小很小的孩子的）",
+					"speaker": ""
+				},
+				{
+					"text": "……那是，陛下替我们收着的笑声吗。",
+					"speaker": "公主",
+					"emotion": "sad"
+				},
+				{
+					"text": "……总有一天，要还给她。",
+					"speaker": "蓝色的公主"
+				}
+			],
+			"set": {
+				"flags": [
+					"palace_portrait_laugh"
+				]
+			}
+		}
+	}
+}

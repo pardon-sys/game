@@ -100,6 +100,7 @@ func _ready() -> void:
 		PenanceCell.wear_mouse()
 	PalaceRoom.ensure_pants()
 	_start_duo.call_deferred()
+	_badge_glow.call_deferred()
 	_add_lost.call_deferred()
 	_add_patrol.call_deferred()
 	_add_mimic.call_deferred()
@@ -759,6 +760,11 @@ const MEMORIES_DONE := "palace_memories_done"
 
 
 ## 旧存档补发千手痒痒裤（以前要夜迷宫里同时有 4 只手以上才给；现在一定给）
+func _badge_glow() -> void:
+	for m in members():
+		(m as PlayableCharacter).refresh_badge_glow()
+
+
 static func ensure_pants() -> void:
 	if GameState.has_flag(Equipment.PANTS_FLAG):
 		return

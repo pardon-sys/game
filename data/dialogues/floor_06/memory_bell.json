@@ -1,0 +1,43 @@
+{
+	"name": "钟楼上的大钟",
+	"entries": [
+		{
+			"if": {
+				"flag": "palace_memory_3"
+			},
+			"node": "again"
+		},
+		{
+			"node": "default"
+		}
+	],
+	"nodes": {
+		"default": {
+			"lines": [
+				{
+					"text": "（钟楼的顶上，一口大钟静静地挂着。钟身上全是裂纹，裂纹里透出金色的光）",
+					"speaker": ""
+				}
+			],
+			"cutscene": "memory_sacrifice",
+			"set": {
+				"flags": [
+					"palace_memory_3"
+				]
+			}
+		},
+		"again": {
+			"lines": [
+				{
+					"text": "（大钟不再响了。裂纹里的金光，像是在轻轻地呼吸）",
+					"speaker": ""
+				},
+				{
+					"text": "……「我先替你们收着」。",
+					"speaker": "公主",
+					"emotion": "sad"
+				}
+			]
+		}
+	}
+}
