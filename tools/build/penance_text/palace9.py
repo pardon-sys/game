@@ -263,7 +263,8 @@ def memory_out():
         line(BLUE, "……也许，是在等。", None),
         line(P, "……等什么？", None),
         line(BLUE, "……等我们，把门关好。", None),
-        {"actions": [A("chapter_end", title="第四章　旧王宫　完", subtitle="——两半徽章，一首摇篮曲，一扇要关好的门", next="floor_06_after_house")], "wait": 1.4},
+        {"actions": [A("set_flag", flag="palace_chapter_done")], "wait": 0.0},   # 第五章从哪里接，之后再定（先留在王座间）
+        {"actions": [A("chapter_end", title="第四章　旧王宫　完", subtitle="——两半徽章，一首摇篮曲，一扇要关好的门", next="stay")], "wait": 1.4},
     ]
     return {"name": "画里的记忆·完", "letterbox": True, "skippable": False, "steps": s}
 

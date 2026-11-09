@@ -125,6 +125,12 @@ func revive_now() -> void:
 		_revive()
 
 
+## 战败重来时用：不管倒计时 / 失败流程有没有走过（_fail 已经把 _done 设上了），都把人扶起来
+func force_revive() -> void:
+	_done = false
+	_revive()
+
+
 func _revive() -> void:
 	_done = true
 	var c := who
