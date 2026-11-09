@@ -184,7 +184,8 @@ MARKS = {
                                 "I": "toll", "M": "chests", "N": "webs", "Q": "bedroom", "S": "quilt", "C": "vanity", "D": "diary",
                                 "R": "nursery", "O": "cradles", "L": "mobile", "H": "height_marks", "A": "lost_board"},
     "floor_06_palace_throne": {"Z": "south", "Q": "portrait", "T": "throne", "S": "small_portraits", "A": "arena", "I": "paint_start",
-                               "O": "paint_exit", "G": "brushes", "H": "paint_gate", "F": "empty_frame"},
+                               "O": "paint_exit", "G": "brushes", "H": "paint_gate", "F": "empty_frame",
+                               "K": "frames", "R": "paint_stars", "E": "easels", "M": "mirror_start"},
     "floor_06_palace_bath": {"V": "steam", "H": "laughs", "Q": "bubble_pool", "Y": "soap", "W": "towels", "M": "mirror", "T": "statues",
                              "J": "key_statue", "O": "pool", "B": "bath", "G": "door", "X": "east", "U": "scrub", "R": "patrol"},
     "floor_06_palace_servants": {"U": "hides", "Y": "west", "X": "east", "C": "clues", "S": "hide_event", "D": "dust", "Z": "brooms", "B": "head_maid",
@@ -759,9 +760,11 @@ def _palace_tunnels():
 
 def _palace_throne():
     """第四章⑩·王座间（Boss：封笑的女王画像）：从前厅进来（P，南）→ 八角形大厅，北墙正中是大画像（Q），东西墙四幅小画像（S）、
-    台阶上的空王座（T）；颜料泼洒的范围（A：场地中间）。画里的世界（被拉进画里的人在这里：起点 I，画框出口 O，画笔巡逻 G），
-    用一格隐藏通道（H，运行时一直挡着）接在大厅西边，只给检查用。Z 回前厅。"""
-    g, room, put = _canvas(70, 56)
+    王座（T）；颜料泼洒的范围（A：场地中间）；墙上的画框（K：画框小兵 / 原有怪物从这里出来）。
+    画里的世界（第五轮重画）：大厅东边很远的一整块迷宫（离大厅 12 格，中间全是墙），只用一条一格宽的隐藏通道（H 在大厅那头，运行时一直挡着）连着给检查用。
+    迷宫里：起点 I、出口 O（要先拿齐 3 颗颜料星 R 才开）、画笔 G ×5、画架 E（躲画像之眼的光带）、镜像起点 M。Z 回前厅。"""
+    import random
+    g, room, put = _canvas(104, 58)
     room(14, 6, 56, 40)
     _chamfer(g, 14, 6, 56, 40, 8)
     room(31, 41, 39, 46)
@@ -774,18 +777,54 @@ def _palace_throne():
     put(35, 24, "A")
     for (x, y) in ((24, 18), (46, 18), (24, 32), (46, 32)):
         room(x, y, x + 1, y + 1, "#")      # 柱子
-    # 画里的世界（西南角外面，弯弯曲曲的画布小路）
-    room(2, 44, 26, 53)
-    room(6, 46, 22, 47, "#")
-    room(6, 50, 22, 51, "#")
-    put(4, 45, "I")
-    put(24, 52, "O")
-    for (x, y) in ((12, 45), (18, 48), (10, 52)):
-        put(x, y, "G")
-    room(3, 30, 13, 30)                    # 隐藏通道（运行时挡住）：大厅西墙 → 往下接到画里的世界
-    room(3, 30, 3, 43)
-    put(8, 30, "H")
+    for (x, y) in ((15, 22), (55, 22), (26, 7), (44, 7)):
+        put(x, y, "K")                     # 墙上的画框（出怪）
     put(28, 40, "F")                       # 空着的小画框（把迷路的小画像挂回去）
+    # ---- 画里的世界：x 70..100、y 6..52 的迷宫（递归回溯 + 几处打通，固定种子）
+    X0, Y0, CW, CH = 70, 8, 15, 21          # 迷宫格（每格 2×2 像素格：1 格路 + 1 格墙）
+    rng = random.Random(4471)
+    seen = set()
+    stack = [(0, 0)]
+    seen.add((0, 0))
+    cells_xy = lambda cx, cy: (X0 + cx * 2, Y0 + cy * 2)
+    while stack:
+        cx, cy = stack[-1]
+        nb = [(cx + dx, cy + dy, dx, dy) for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1))
+              if 0 <= cx + dx < CW and 0 <= cy + dy < CH and (cx + dx, cy + dy) not in seen]
+        x, y = cells_xy(cx, cy)
+        g[y][x] = "."
+        if not nb:
+            stack.pop()
+            continue
+        nx, ny, dx, dy = rng.choice(nb)
+        g[y + dy][x + dx] = "."
+        seen.add((nx, ny))
+        stack.append((nx, ny))
+    # 打通几处墙，多几条岔路（不只一条路）
+    for _ in range(26):
+        cx, cy = rng.randrange(CW - 1), rng.randrange(CH - 1)
+        x, y = cells_xy(cx, cy)
+        if rng.random() < 0.5:
+            g[y][x + 1] = "."
+        else:
+            g[y + 1][x] = "."
+    sx, sy = cells_xy(0, CH - 1)
+    ex, ey = cells_xy(CW - 1, 0)
+    put(sx, sy, "I")
+    put(ex, ey, "O")
+    put(*cells_xy(CW // 2, CH - 1), "M")    # 颜料镜像的起点（下边正中）
+    for (cx, cy) in ((CW - 1, CH - 1), (0, 0), (CW // 2, CH // 2)):
+        put(*cells_xy(cx, cy), "R")         # 颜料星 ×3
+    for (cx, cy) in ((3, 16), (11, 15), (6, 9), (12, 5), (2, 4)):
+        put(*cells_xy(cx, cy), "G")         # 画笔
+    for (cx, cy) in ((2, 18), (9, 18), (5, 13), (13, 11), (8, 6), (3, 2), (11, 2)):
+        put(*cells_xy(cx, cy), "E")         # 画架（躲光带）
+    # 隐藏通道（运行时挡住）：大厅东墙 → 往东接到迷宫（只给检查用；H 在大厅那一头）
+    room(57, 30, 68, 30)
+    room(68, 30, 68, 30 + (sy - 30))
+    room(68, sy, sx - 1, sy)
+    put(sx, sy, "I")                        # 通道会盖掉起点：重新放一次
+    put(57, 30, "H")
     return ["".join(r) for r in g]
 
 
