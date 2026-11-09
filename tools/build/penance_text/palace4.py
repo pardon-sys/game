@@ -4,6 +4,7 @@
 """
 from .common import A, BLUE, L, N, P, cg, dfile, pose, say, theater, tk
 from .palace2 import _bp, _bt, _burst_blue, _burst_pink, _duo
+from .palace9 import BLUE_TALK
 
 STATUE = "骑士石像"
 SPRITES = "笑脸小精灵们"
@@ -162,10 +163,16 @@ def _ante_partner_hint():
     chat_goto += [{"if": {"hero": "blue"}, "node": "chat0_p"}, {"if": {}, "node": "chat0_b"}]
     nodes["chat"] = {"goto": chat_goto}
     nodes["swap"] = {"lines": [L("……换你来吧。", None)], "set": {"call": "switch_hero"}}
+    # 画里的记忆走完以后：关于画里的几段（钥匙和门 / 冒牌货 / 摇篮曲 / 替我们收着的笑声 / 两个人）
+    talks = [("钥匙和门", "key"), ("「冒牌货」", "fake"), ("摇篮曲的第二段", "song"), ("替我们收着的笑声", "queen"), ("……两个人", "two")]
+    for _t, k in talks:
+        nodes["mem_" + k] = {"lines": BLUE_TALK[k], "set": {"flags": ["palace_blue_talk_" + k]}}
+    nodes["memory"] = {"prompt": "关于画里……", "choices": [{"text": t, "next": "mem_" + k, "return": True} for t, k in talks] + [{"text": "算了", "next": ""}]}
     nodes["default"] = {"prompt": "想聊些什么？", "choices": [
         {"text": "接下来去哪？", "next": "hint", "return": True},
         {"text": "这座王宫……", "next": "palace", "return": True},
         {"text": "你还好吗？", "next": "chat", "return": True},
+        {"text": "关于画里……", "next": "memory", "return": True, "if": {"flag": "palace_memory_done"}},
         {"text": "换我来", "next": "swap"},
         {"text": "没什么", "next": ""},
     ]}

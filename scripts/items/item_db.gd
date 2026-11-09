@@ -64,6 +64,7 @@ const PATHS := {
 	"lost_portrait": "res://data/items/lost_portrait.tres",
 	"watering_can": "res://data/items/watering_can.tres",
 	"laugh_score": "res://data/items/laugh_score.tres",
+	"joined_badge": "res://data/items/joined_badge.tres",
 	"gem_ruby": "res://data/items/gem_ruby.tres",
 	"gem_sapphire": "res://data/items/gem_sapphire.tres",
 	"gem_topaz": "res://data/items/gem_topaz.tres",

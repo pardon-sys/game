@@ -1,0 +1,24 @@
+{
+	"name": "走廊尽头的旧门",
+	"entries": [
+		{
+			"node": "default"
+		}
+	],
+	"nodes": {
+		"default": {
+			"lines": [
+				{
+					"text": "（走廊的尽头，是一扇很重很重的旧木门。门缝里漏着一线光）",
+					"speaker": ""
+				}
+			],
+			"cutscene": "memory_key",
+			"set": {
+				"flags": [
+					"palace_memory_4"
+				]
+			}
+		}
+	}
+}

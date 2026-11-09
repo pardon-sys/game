@@ -1,0 +1,302 @@
+{
+	"name": "画里的婴儿房：午睡时间",
+	"cast": {
+		"princess": {
+			"kind": "princess",
+			"at": [
+				-14,
+				8
+			],
+			"visual": "normal",
+			"anim": "idle",
+			"dir": "right"
+		},
+		"blue": {
+			"kind": "npc:blue_princess",
+			"at": [
+				14,
+				8
+			],
+			"visual": "normal",
+			"anim": "idle",
+			"dir": "left"
+		},
+		"pants": {
+			"kind": "trap:pants_hands",
+			"at": [
+				20,
+				10
+			]
+		},
+		"d1": {
+			"kind": "trap:feather_curtain",
+			"at": [
+				-22,
+				-8
+			]
+		},
+		"d2": {
+			"kind": "trap:feather_curtain",
+			"at": [
+				22,
+				-8
+			]
+		}
+	},
+	"steps": [
+		{
+			"act": 1,
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "fade_in"
+				},
+				{
+					"state": "giggle",
+					"do": "voice"
+				}
+			],
+			"wait": 0.5
+		},
+		{
+			"speaker": "画里的人偶",
+			"text": "……午睡时间到了。……小殿下们，最不喜欢午睡了。",
+			"act": 1
+		},
+		{
+			"speaker": "画里的人偶",
+			"text": "……所以。……要先，把她们，哄得笑累了。"
+		},
+		{
+			"speaker": "",
+			"text": "（人偶们把两个人按在一张又大又软的绗缝垫子上，鞋子一只只被轻轻脱下来摆好，羽毛掸子在腰边试探地扫了一下）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "d1",
+					"zone": "waist",
+					"fx": "feather",
+					"repeat": 6,
+					"interval": 0.2,
+					"do": "tickle"
+				},
+				{
+					"who": "blue",
+					"by": "d2",
+					"zone": "waist",
+					"fx": "feather",
+					"repeat": 6,
+					"interval": 0.2,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"visual": "giggle",
+					"do": "pose"
+				},
+				{
+					"who": "blue",
+					"visual": "giggle",
+					"do": "pose"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "嘻……！等、等一下，我们不是小殿下——哈哈——",
+			"emotion": "giggle"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……哈……解、解释没有用……它们不听……"
+		},
+		{
+			"speaker": "画里的人偶",
+			"text": "……陛下说过。……笑累了，就睡得香。",
+			"act": 2
+		},
+		{
+			"speaker": "",
+			"text": "（软软的小刷子刷过脚心，羽毛掸子钻进腰侧和腋下，人偶们哼着那首摇篮曲，挠的节奏跟着曲子一拍一拍）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "d1",
+					"zone": "sole",
+					"fx": "feather",
+					"repeat": 14,
+					"interval": 0.09,
+					"do": "tickle"
+				},
+				{
+					"who": "blue",
+					"by": "d2",
+					"zone": "sole",
+					"fx": "feather",
+					"repeat": 14,
+					"interval": 0.09,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"visual": "helpless_2",
+					"do": "pose"
+				},
+				{
+					"who": "blue",
+					"visual": "helpless_2",
+					"do": "pose"
+				},
+				{
+					"do": "voice",
+					"state": "laugh"
+				}
+			],
+			"act": 3,
+			"portrait": "memory_nursery"
+		},
+		{
+			"speaker": "公主",
+			"text": "哈哈哈哈！这首歌——这首歌我知道——哈哈哈！",
+			"emotion": "helpless_2"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……哈哈……哈哈哈……不、不要跟着拍子……"
+		},
+		{
+			"speaker": "画里的人偶",
+			"text": "……小殿下们，以前，也是这样。……一个笑得打滚，一个笑着笑着就睡着了。"
+		},
+		{
+			"speaker": "公主",
+			"text": "（星光在婴儿房里炸开，吊铃上的星星一颗颗亮了起来……哈啊……放出去了……）",
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "flash"
+				},
+				{
+					"sound": "star_burst",
+					"do": "sfx"
+				},
+				{
+					"sound": "water_release",
+					"volume": -2.0,
+					"do": "sfx"
+				},
+				{
+					"who": "princess",
+					"time": 0.4,
+					"do": "shake"
+				},
+				{
+					"state": "laugh",
+					"do": "voice"
+				}
+			],
+			"act": "burst",
+			"wait": 1.0
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……哈……哈哈……（冰晶跟着炸开，落在吊铃上，变成了一片片小雪花……）",
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "flash"
+				},
+				{
+					"sound": "ice_crack",
+					"volume": -2.0,
+					"do": "sfx"
+				},
+				{
+					"sound": "water_release",
+					"volume": -2.0,
+					"do": "sfx"
+				},
+				{
+					"who": "blue",
+					"time": 0.4,
+					"do": "shake"
+				},
+				{
+					"state": "laugh",
+					"do": "voice"
+				}
+			],
+			"act": "burst",
+			"wait": 1.0
+		},
+		{
+			"speaker": "",
+			"text": "（人偶们最后用羽毛在两人刚释放完、敏感得要命的脚心上，轻轻地拍了三下——像哄小孩那样）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "d1",
+					"zone": "sole",
+					"fx": "feather",
+					"repeat": 3,
+					"interval": 0.3,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"time": 0.3,
+					"do": "shake"
+				},
+				{
+					"who": "princess",
+					"visual": "helpless_1",
+					"do": "pose"
+				},
+				{
+					"who": "blue",
+					"visual": "helpless_1",
+					"do": "pose"
+				}
+			],
+			"act": 4
+		},
+		{
+			"speaker": "公主",
+			"text": "呀……！……哈……哈……这、这样根本睡不着啦……",
+			"emotion": "helpless_1"
+		},
+		{
+			"speaker": "画里的人偶",
+			"text": "……嗯。……小殿下们，也总是这么说。",
+			"actions": [
+				{
+					"who": "princess",
+					"visual": "normal",
+					"do": "pose"
+				},
+				{
+					"who": "blue",
+					"visual": "normal",
+					"do": "pose"
+				}
+			]
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……「总是」。……她们，以前真的在这里。"
+		},
+		{
+			"actions": [
+				{
+					"state": "",
+					"do": "voice"
+				},
+				{
+					"time": 0.6,
+					"do": "fade_out"
+				}
+			],
+			"wait": 0.7
+		}
+	]
+}

@@ -515,6 +515,18 @@
 				"speed": 0.85
 			},
 			"desc": "碰到了笑雾之中外圈的黑雾：脚底痒得发麻，走不快。回到雾圈里面就好。"
+		},
+		"badge_glow": {
+			"name": "两半徽章的余温",
+			"icon": 18,
+			"debuff": false,
+			"duration": -1,
+			"max_stacks": 1,
+			"modifiers": {
+				"speed": 1.08,
+				"laugh_decay": 0.1
+			},
+			"desc": "合在一起的两半徽章暖暖的：移动 ×1.08、闷笑消减 +10%。"
 		}
 	}
 }

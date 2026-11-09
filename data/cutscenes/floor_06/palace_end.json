@@ -64,15 +64,12 @@
 			"wait": 0.6
 		},
 		{
-			"actions": [
-				{
-					"title": "第四章　旧王宫　完",
-					"subtitle": "——两半徽章，一首摇篮曲",
-					"next": "floor_06_after_house",
-					"do": "chapter_end"
-				}
-			],
-			"wait": 1.4
+			"speaker": "",
+			"text": "（画像静静地挂在墙上。烧穿的缺口，正在慢慢地合上）"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……画里。……好像还有什么。"
 		}
 	]
 }

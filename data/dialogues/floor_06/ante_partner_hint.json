@@ -770,6 +770,200 @@
 				"call": "switch_hero"
 			}
 		},
+		"mem_key": {
+			"lines": [
+				{
+					"text": "……画里那个系蓝发带的孩子……",
+					"speaker": "公主"
+				},
+				{
+					"text": "……不是我。",
+					"speaker": "蓝色的公主"
+				},
+				{
+					"text": "可是——",
+					"speaker": "公主"
+				},
+				{
+					"text": "……………",
+					"speaker": "蓝色的公主"
+				},
+				{
+					"text": "……钥匙。……我弄丢过一次。",
+					"speaker": "蓝色的公主"
+				},
+				{
+					"text": "……丢在哪里了？",
+					"speaker": "公主"
+				},
+				{
+					"text": "……不记得了。……只记得，不该把门打开。",
+					"speaker": "蓝色的公主"
+				}
+			],
+			"set": {
+				"flags": [
+					"palace_blue_talk_key"
+				]
+			}
+		},
+		"mem_fake": {
+			"lines": [
+				{
+					"text": "……那个骑士说过。「那天晚上有两个殿下，其中一个是假的」。",
+					"speaker": "蓝色的公主"
+				},
+				{
+					"text": "……画里的位置，我们两个，谁站上去都不对。",
+					"speaker": "蓝色的公主"
+				},
+				{
+					"text": "……如果，假的那个是我呢。",
+					"speaker": "蓝色的公主"
+				},
+				{
+					"text": "（粉色公主没说话，突然伸手戳了戳她的腰）",
+					"speaker": ""
+				},
+				{
+					"text": "……！……哈、你干什么——",
+					"speaker": "蓝色的公主"
+				},
+				{
+					"text": "你看，你会笑。假的才不会这么怕痒呢！",
+					"speaker": "公主",
+					"emotion": "happy"
+				},
+				{
+					"text": "……哈……哈哈……这、这算什么证据……",
+					"speaker": "蓝色的公主"
+				},
+				{
+					"text": "（两个人闹成一团。闹完了，蓝色公主小声说了一句「……谢谢」）",
+					"speaker": ""
+				}
+			],
+			"set": {
+				"flags": [
+					"palace_blue_talk_fake"
+				]
+			}
+		},
+		"mem_song": {
+			"lines": [
+				{
+					"text": "……那首摇篮曲。你能唱完吗。",
+					"speaker": "蓝色的公主"
+				},
+				{
+					"text": "……只会第一段。第二段……怎么都想不起来。",
+					"speaker": "公主",
+					"emotion": "sad"
+				},
+				{
+					"text": "……我听过有人，从头唱到尾。",
+					"speaker": "蓝色的公主"
+				},
+				{
+					"text": "是谁？",
+					"speaker": "公主"
+				},
+				{
+					"text": "……不记得是谁了。……只记得，唱得很好听。",
+					"speaker": "蓝色的公主"
+				}
+			],
+			"set": {
+				"flags": [
+					"palace_blue_talk_song"
+				]
+			}
+		},
+		"mem_queen": {
+			"lines": [
+				{
+					"text": "……替我们收着的笑声。",
+					"speaker": "蓝色的公主"
+				},
+				{
+					"text": "……什么时候，能还给她呢。",
+					"speaker": "蓝色的公主"
+				},
+				{
+					"text": "……等我们找到「对的人」的时候吧。",
+					"speaker": "公主"
+				},
+				{
+					"text": "……对的人。",
+					"speaker": "蓝色的公主"
+				}
+			],
+			"set": {
+				"flags": [
+					"palace_blue_talk_queen"
+				]
+			}
+		},
+		"mem_two": {
+			"lines": [
+				{
+					"text": "……不管我们是谁。",
+					"speaker": "蓝色的公主"
+				},
+				{
+					"text": "……现在，是两个人。",
+					"speaker": "蓝色的公主"
+				},
+				{
+					"text": "（粉色公主什么也没说，只是拉住了她的手）",
+					"speaker": ""
+				},
+				{
+					"text": "……嗯。两个人。",
+					"speaker": "公主",
+					"emotion": "happy"
+				}
+			],
+			"set": {
+				"flags": [
+					"palace_blue_talk_two"
+				]
+			}
+		},
+		"memory": {
+			"prompt": "关于画里……",
+			"choices": [
+				{
+					"text": "钥匙和门",
+					"next": "mem_key",
+					"return": true
+				},
+				{
+					"text": "「冒牌货」",
+					"next": "mem_fake",
+					"return": true
+				},
+				{
+					"text": "摇篮曲的第二段",
+					"next": "mem_song",
+					"return": true
+				},
+				{
+					"text": "替我们收着的笑声",
+					"next": "mem_queen",
+					"return": true
+				},
+				{
+					"text": "……两个人",
+					"next": "mem_two",
+					"return": true
+				},
+				{
+					"text": "算了",
+					"next": ""
+				}
+			]
+		},
 		"default": {
 			"prompt": "想聊些什么？",
 			"choices": [
@@ -787,6 +981,14 @@
 					"text": "你还好吗？",
 					"next": "chat",
 					"return": true
+				},
+				{
+					"text": "关于画里……",
+					"next": "memory",
+					"return": true,
+					"if": {
+						"flag": "palace_memory_done"
+					}
 				},
 				{
 					"text": "换我来",

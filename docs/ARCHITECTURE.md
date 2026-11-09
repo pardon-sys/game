@@ -1392,6 +1392,16 @@ data/cutscenes/<楼层组>/  地图内过场；data/theater/<楼层组>/  小剧
 	  `ThroneParts.PaintWorld`（`pull()` 时 `_build_world()`）：颜料格 `PaintCell`（z_index 1：一格宽的路在等距里会被墙挡住）、画像之眼的光带（`band_y`，画架旁 `hidden_at` 看不到，`seen_t` 时画笔冲刺）、
 	  颜料星（`exit_open()` 才能出去）、`MirrorSelf`（以迷宫中线镜像）；`PAINT_TIME` 40 秒。
 	- AI：`ThroneHooks.objective_for`（有人在画里时，外面的没东西打就守在破绽前）、`partner_of`（画里的人不算搭档）。
+  - 第六轮修正：`ScoreView.layer` 40（在背包 25 上面）；笑声地砖 `sunk_this_visit`（只有沉下去的那一趟不画）；`PalaceRoom.reset_to` 和 `PalaceThrone._release_all` 战败时松开所有抓人；
+	王座间 `PartnerPanel`（`top = 52`）；`ThroneParts.PaintWave` 沿浪线摆 `paint_wave.png`（4 帧）；陷阱演员新增 `hide_idle` / `bob` / `scale`（千手裤 `pants_hands` 只在发动时弹出来扭动）；
+	`MazeDirector.finale_id()` 一律给千手裤、`PalaceRoom.ensure_pants()` 补发旧存档；存档点：反省牢房 / 厨房 / 前厅 / 王座间；`gen_dev_skips.PALACE_STAGES` 跳关累计补齐。
+  - 第四章尾声「画里的记忆」（剧情见 `docs/private/剧情设定与伏笔.md`；文本 `penance_text/palace9.py`；配乐 `palace_memory`）：
+	- 打完 Boss：`palace_end` 不再接章末；`PalaceThrone.give_joined_badge()`（道具 `joined_badge`、状态 `badge_glow`：移动 ×1.08、闷笑消减 +10%，`PlayableCharacter.refresh_badge_glow()` 每次进宫殿图补上）；
+	  `_ready_epilogue()`：画像留在原地，调查点 `throne_portrait_enter`（call `palace_memory_enter` → `enter_memory()`：过场 `palace_memory_enter` → `floor_06_palace_memory`）。
+	- `PalaceMemory`（`floor_06_palace_memory`，等距主题 `memory_palace`，一直开着 `ThroneFx.Watercolor`）：四个调查点 `memory_cradles`（小剧场 `memory_nursery`，CG）/ `memory_easel` / `memory_bell` / `memory_door`
+	  （过场 `memory_portrait` / `memory_sacrifice` / `memory_key`，背景大图 `story_scenes/memory_*.png`），`PencilGate` 三道铅笔门按 `palace_memory_1..3` 化开；`palace_memory_4` 以后 `finish()` → 回王座间（spawn `from_memory`）。
+	- 回到王座间：`EPILOGUE_FLAG` → 画像换 `portrait_clean.png`（闭着眼睛），演 `palace_memory_out`（章末「第四章　旧王宫　完」）；之后调查点 `throne_portrait_after`（四段，按进度 / `vars.palace_portrait_pick` 随机重看）；
+	  搭档的「想聊些什么」多一页「关于画里……」（`palace4._ante_partner_hint` 的 `memory`，台词 `palace9.BLUE_TALK`）。
   - 新装备（衣帽间）：`palace_ribbon`、`palace_corset`、`palace_boots`、`palace_stockings`、`feather_shawl`（`gen_equipment.py` + `gen_equip_art.py` + `ItemDB`）。
 - 配乐（`tools/audio/gen_music.py`，ElevenLabs）：`old_palace` 旧王宫探索（荒凉、破旧、往日的华丽）、`palace_boss` 王座间 Boss「封笑的女王画像」，登记在 `Audio.MUSIC`，第四章用。
 

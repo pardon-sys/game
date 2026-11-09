@@ -1,0 +1,56 @@
+{
+	"name": "女王的画像",
+	"entries": [
+		{
+			"node": "default"
+		}
+	],
+	"nodes": {
+		"default": {
+			"lines": [
+				{
+					"text": "（烧穿的缺口已经慢慢合上了。画布上，女王的脸还是糊的，可是画框在轻轻地发烫）",
+					"speaker": ""
+				},
+				{
+					"text": "（合在一起的两半徽章，也跟着暖了起来。……画里，好像还有什么）",
+					"speaker": ""
+				}
+			],
+			"prompt": "把徽章贴到画布上？",
+			"choices": [
+				{
+					"text": "贴上去",
+					"next": "go"
+				},
+				{
+					"text": "再等等",
+					"next": "no"
+				}
+			]
+		},
+		"go": {
+			"lines": [
+				{
+					"text": "……一起。",
+					"speaker": "蓝色的公主"
+				},
+				{
+					"text": "嗯。一起。",
+					"speaker": "公主"
+				}
+			],
+			"set": {
+				"call": "palace_memory_enter"
+			}
+		},
+		"no": {
+			"lines": [
+				{
+					"text": "……等准备好了再来。",
+					"speaker": "公主"
+				}
+			]
+		}
+	}
+}

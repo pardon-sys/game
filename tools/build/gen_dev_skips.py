@@ -262,6 +262,10 @@ _PALACE_POINTS = [
     palace_point("反省篇·追加 旧浴场·搓澡人偶", "floor_06_palace_bath", None, ["penance_mouse_dev", "intro_done_palace_bath_in"], cell=[36, 24]),
     palace_point("反省篇·追加 骑士训练场·年轻队长的幽影", "floor_06_palace_training", "wardrobe", ["intro_done_palace_training_in"], cell=[30, 23]),
     palace_point("反省篇·第四章 旧王宫·王座间（Boss 前）", "floor_06_palace_throne", "tunnels", ["intro_done_palace_throne_in"]),
+    point("反省篇·第四章尾声 王座间（打完 Boss，进画前）", "floor_06_palace_throne",
+          palace_upto("tunnels", ["intro_done_palace_throne_in", "palace_boss_done", "palace_badge_joined", "!palace_memory_done", "!palace_memory_out_seen",
+                                  "!palace_memory_1", "!palace_memory_2", "!palace_memory_3", "!palace_memory_4"])[0],
+          knight_vars(10, 2, 10), passives=PASSIVES, items=dict(palace_upto("tunnels")[1], joined_badge=1)),
 ]
 _names = {p["name"] for p in _PALACE_POINTS}
 POINTS = [p for p in POINTS if p["name"] not in _names] + _PALACE_POINTS

@@ -174,6 +174,8 @@ MARKS = {
                                  "T": "stocks", "C": "diary", "J": "fragment", "D": "shade"},
     "floor_06_palace_ante": {"Z": "south", "N": "throne_door", "W": "clock_door", "S": "painting", "L": "statue", "M": "tiles", "F": "fountain", "D": "pedestal", "V": "vault",
                              "H": "garden_door", "Q": "banquet"},
+    "floor_06_palace_memory": {"Z": "south", "C": "cradles", "N": "nursery", "E": "easel", "B": "bell", "D": "door", "G": "gate1", "H": "gate2",
+                               "J": "gate3", "L": "pencil"},
     "floor_06_palace_garden": {"Z": "south", "W": "swing", "F": "fountain", "C": "cherubs", "G": "gazebo", "K": "keeper", "R": "beds", "M": "fairies"},
     "floor_06_palace_clock_1": {"Z": "south", "U": "up", "G": "gear_gaps", "J": "brake", "C": "checkpoints", "T": "chests", "B": "beetle_nests"},
     "floor_06_palace_clock_2": {"Z": "south", "U": "up", "L": "pendulum", "T": "chests", "C": "checkpoints", "I": "lost"},
@@ -860,6 +862,39 @@ def _palace_garden():
     return ["".join(r) for r in g]
 
 
+def _palace_memory():
+    """第四章尾声·画里的记忆（女王画进画里的旧王宫；水彩滤镜）：从画框进来（P，南；Z 回王座间）→ 一条路走过四段记忆：
+    婴儿房（C 两个摇篮、N 调查点）→ 画室（E 画了一半的全家福）→ 钟楼顶（B 大钟）→ 走廊尽头的旧门（D）。
+    G1 / G2 / G3：铅笔线画的「门」（运行时挡住，上一段记忆看完才化开）。L：只有铅笔线轮廓的房间（装饰，进不去）。"""
+    g, room, put = _canvas(50, 52)
+    room(18, 42, 30, 48)                    # 进来的地方（画框）
+    put(24, 44, "P")
+    put(24, 48, "Z")
+    room(23, 36, 25, 41)
+    room(14, 24, 34, 35)                    # 婴儿房
+    for (x, y) in ((19, 27), (29, 27)):
+        put(x, y, "C")
+    put(24, 29, "N")
+    room(23, 19, 25, 23)                    # 婴儿房 → 画室（G1 挡着）
+    for x in (23, 24, 25):
+        put(x, 22, "G")
+    room(14, 9, 34, 18)                     # 画室
+    put(24, 12, "E")
+    room(12, 12, 13, 14)                    # 画室 → 钟楼顶（G2 挡着）
+    for y in (12, 13, 14):
+        put(13, y, "H")
+    room(2, 3, 11, 14)                      # 钟楼顶
+    put(6, 7, "B")
+    room(12, 3, 35, 5)                      # 钟楼顶 → 走廊（G3 挡着）
+    for y in (3, 4, 5):
+        put(13, y, "J")
+    room(36, 2, 46, 10)                     # 走廊尽头的旧门
+    put(44, 6, "D")
+    for (x, y) in ((33, 31), (15, 33), (33, 10), (3, 12), (45, 9)):
+        put(x, y, "L")                      # 铅笔线轮廓的房间（贴着墙画）
+    return ["".join(r) for r in g]
+
+
 # ---------------------------------------------------------------- 钟楼（拆成五层，一层一张图，楼梯 / 梯子连起来）
 def _clock_1():
     """钟楼·一层 齿轮间：从前厅进来（P / Z，南）→ 一整排大齿轮（墙）中间一格宽的缝（G：合上时夹脚踝；站刹车 J 齿轮就停）→ 北边楼梯 U 上二层。T 小宝箱，C 检查点。"""
@@ -981,6 +1016,7 @@ for _i, _f in enumerate((_clock_1, _clock_2, _clock_3, _clock_4, _clock_5), 1):
 LAYOUTS["floor_06_palace_tunnels"] = _palace_tunnels()
 LAYOUTS["floor_06_palace_throne"] = _palace_throne()
 LAYOUTS["floor_06_palace_garden"] = _palace_garden()
+LAYOUTS["floor_06_palace_memory"] = _palace_memory()
 
 
 def grid(fid):

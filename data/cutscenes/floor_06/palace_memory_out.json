@@ -1,0 +1,43 @@
+{
+	"name": "画里的记忆·完",
+	"letterbox": true,
+	"skippable": false,
+	"steps": [
+		{
+			"speaker": "",
+			"text": "（回过神来，两个人又站在王座间里。画像静静地挂在墙上）"
+		},
+		{
+			"speaker": "",
+			"text": "（画里陛下的脸，第一次干干净净的——很温柔的眉眼。可是，她闭着眼睛）"
+		},
+		{
+			"speaker": "公主",
+			"text": "……她睡着了吗。",
+			"emotion": "sad"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……也许，是在等。"
+		},
+		{
+			"speaker": "公主",
+			"text": "……等什么？"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……等我们，把门关好。"
+		},
+		{
+			"actions": [
+				{
+					"title": "第四章　旧王宫　完",
+					"subtitle": "——两半徽章，一首摇篮曲，一扇要关好的门",
+					"next": "floor_06_after_house",
+					"do": "chapter_end"
+				}
+			],
+			"wait": 1.4
+		}
+	]
+}

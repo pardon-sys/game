@@ -617,6 +617,7 @@ static func _palace_b(t: Node) -> void:
 	await _round5(t)
 	await _boss2(t)
 	await _round6(t)
+	await _epilogue(t)
 
 
 static func _quiet_beetles(cr: PalaceClock) -> void:
@@ -1497,9 +1498,10 @@ static func _palace_c(t: Node) -> void:
 	await t._advance_until(func(): return th.empowered and not CG.is_busy() and not Dialogue.is_active(), 150.0)
 	verify(t, "画里没逃出来：被困在画里（CG）→ 画框变强、换外面的人操控", th.empowered and GameState.has_flag("cg_seen_theater:throne_painting_trapped") and GameState.player != inner)
 	th.hit(PalaceThrone.FRAME_HP)
-	await t._advance_until(func(): return Cutscene.chapter_screen.visible and not Cutscene.is_playing(), 120.0)
-	verify(t, "打破变强的画框：她出来 → 两人各释放一次烧穿画布 → 另半枚徽章 →「%s」" % Cutscene.chapter_title.text,
-		GameState.has_flag(PalaceThrone.BOSS_FLAG) and t.seen_cuts.has("throne_finale") and t.seen_cuts.has("palace_end") and Cutscene.chapter_title.text.contains("旧王宫"))
+	await t._advance_until(func(): return GameState.has_flag(PalaceThrone.BADGE_FLAG) and not Cutscene.is_playing() and not Dialogue.is_active(), 120.0)
+	verify(t, "打破变强的画框：她出来 → 两人各释放一次烧穿画布 → 两半徽章合在一起（不出章末，画像留着）",
+		GameState.has_flag(PalaceThrone.BOSS_FLAG) and t.seen_cuts.has("throne_finale") and t.seen_cuts.has("palace_end") and not Cutscene.chapter_screen.visible
+		and GameState.inventory.has("joined_badge") and is_instance_valid(th.portrait_spot))
 	verify(t, "徽记台换过发饰 + 王座间通关：先看女王的回忆（背景大图）", t.seen_cuts.has("palace_queen_memory") and GameState.has_flag(PalaceRoom.MEMORY_FLAG))
 	Cutscene.chapter_screen.hide()
 	Cutscene.chapter_next = ""
@@ -1527,7 +1529,7 @@ static func _palace_c(t: Node) -> void:
 		if is_instance_valid(th2.world_view):
 			th2.world_view.stars_got = 3   # （测试：颜料星当作拿齐了）
 		th2._process(0.05)
-		await t._advance_until(func(): return Cutscene.chapter_screen.visible and not Cutscene.is_playing(), 120.0)
+		await t._advance_until(func(): return GameState.has_flag(PalaceThrone.BOSS_FLAG) and th2.win and not CG.is_busy() and not Cutscene.is_playing() and not Dialogue.is_active(), 120.0)
 		verify(t, "在画里跑到画框出口：逃出画的小剧场 → 两人各释放一次 → 胜利", GameState.has_flag("cg_seen_theater:throne_escape") and GameState.has_flag(PalaceThrone.BOSS_FLAG))
 	Cutscene.chapter_screen.hide()
 	Cutscene.chapter_next = ""
@@ -2083,3 +2085,71 @@ static func _round6(t: Node) -> void:
 	verify(t, "被框住的时候战败：复活以后没被抓着（能动、能切人）", not p.status.is_grabbed() and not p.status.is_rooted() and p.is_alive())
 	th.layer = 0
 	GameState.set_flag(PalaceThrone.BOSS_FLAG)
+
+
+## 第六轮·第四章尾声：两半徽章、画像留着、进画（四段记忆）、出来以后的调查和蓝色公主的对话
+static func _epilogue(t: Node) -> void:
+	_calm(t)
+	for k in PalaceRoom.ITEM_HINTS:
+		GameState.set_flag(PalaceRoom.item_hint_flag(k))
+	for f in ["palace_badge_joined", "palace_memory_done", "palace_memory_out_seen", "palace_memory_1", "palace_memory_2", "palace_memory_3", "palace_memory_4",
+			"palace_portrait_eyes", "palace_portrait_paint", "palace_portrait_plate", "palace_portrait_laugh", "intro_done_palace_memory_in",
+			"cg_seen_theater:memory_nursery"]:
+		GameState.set_flag(f, false)
+	GameState.inventory.remove("joined_badge", 1)
+	GameState.set_flag(PalaceThrone.BOSS_FLAG)
+	GameState.pending_spawn = "from_ante"
+	await t.main.change_level(Floors.scene(PalaceThrone.MAP))
+	await t._advance_until(func(): return t._level_id() == PalaceThrone.MAP and not Cutscene.is_playing() and not Dialogue.is_active(), 60.0)
+	var th := _room(t, "PalaceThrone") as PalaceThrone
+	await t.get_tree().process_frame
+	await t.get_tree().process_frame
+	verify(t, "打完 Boss：画像留在王座间，画前有调查点", th != null and th.win and is_instance_valid(th.portrait_spot))
+	if th == null:
+		return
+	th.give_joined_badge()
+	var p := GameState.player as PlayableCharacter
+	verify(t, "得到「合在一起的两半徽章」：带着它移动加速、闷笑消得快（状态 badge_glow）", GameState.inventory.has("joined_badge") and p.has_buff("badge_glow"))
+	# 进画
+	await t._talk("floor_06/throne_portrait_enter", "", [0])
+	await t._advance_until(func(): return t._level_id() == PalaceMemory.MAP and not Cutscene.is_playing() and not Dialogue.is_active(), 90.0)
+	var mr := _room(t, "PalaceMemory") as PalaceMemory
+	await t.get_tree().process_frame
+	verify(t, "贴上徽章：被吸进画里（画里的记忆，水彩滤镜开着，三道铅笔门关着）", mr != null and is_instance_valid(mr._water) and mr.gates_open() == [false, false, false])
+	if mr == null:
+		return
+	await t._talk("floor_06/memory_cradles", "")
+	await t._advance_until(func(): return GameState.has_flag("cg_seen_theater:memory_nursery") and not CG.is_busy() and not Dialogue.is_active(), 150.0)
+	await t.get_tree().process_frame
+	verify(t, "① 婴儿房的下午：人偶们「哄睡」（小剧场 + CG）→ 第一道铅笔门化开", GameState.has_flag("palace_memory_1") and mr.gates_open()[0])
+	await t._talk("floor_06/memory_easel", "")
+	await t._advance_until(func(): return t.seen_cuts.has("memory_portrait") and not Cutscene.is_playing() and not Dialogue.is_active(), 90.0)
+	await t.get_tree().process_frame
+	verify(t, "② 画了一半的全家福（背景大图）→ 第二道门化开", t.seen_cuts.has("memory_portrait") and mr.gates_open()[1])
+	await t._talk("floor_06/memory_bell", "")
+	await t._advance_until(func(): return t.seen_cuts.has("memory_sacrifice") and not Cutscene.is_playing() and not Dialogue.is_active(), 90.0)
+	await t.get_tree().process_frame
+	verify(t, "③ 女王的牺牲 → 第三道门化开", t.seen_cuts.has("memory_sacrifice") and mr.gates_open()[2])
+	await t._talk("floor_06/memory_door", "")
+	await t._advance_until(func(): return Cutscene.chapter_screen.visible and not Cutscene.is_playing(), 150.0)
+	verify(t, "④ 交钥匙的回忆 →「把门，关好」→ 回王座间：画像闭着眼睛 → 「%s」" % Cutscene.chapter_title.text,
+		t.seen_cuts.has("memory_key") and t.seen_cuts.has("palace_memory_out") and GameState.has_flag("palace_memory_done") and Cutscene.chapter_title.text.contains("旧王宫"))
+	Cutscene.chapter_screen.hide()
+	Cutscene.chapter_next = ""
+	# 出来以后：画像的调查、蓝色公主的对话
+	GameState.pending_spawn = "from_memory"
+	await t.main.change_level(Floors.scene(PalaceThrone.MAP))
+	await t._advance_until(func(): return t._level_id() == PalaceThrone.MAP and not Cutscene.is_playing() and not Dialogue.is_active(), 60.0)
+	th = _room(t, "PalaceThrone") as PalaceThrone
+	await t.get_tree().process_frame
+	await t.get_tree().process_frame
+	verify(t, "画像换成干干净净、闭着眼睛的那张", th != null and th._portrait.clean)
+	verify(t, "尾声的四张背景大图都在（被吸进画里 / 全家福 / 女王的牺牲 / 交钥匙）",
+		["memory_sucked", "memory_portrait", "memory_sacrifice", "memory_key"].all(func(n): return StoryBackdrop.exists(n)))
+	for k in 4:
+		await t._talk("floor_06/throne_portrait_after", "")
+	verify(t, "画像可以调查四段（闭着眼的女王 / 两种颜料 / 铜牌和铃兰 / 画布后面的笑声）",
+		["eyes", "paint", "plate", "laugh"].all(func(k): return GameState.has_flag("palace_portrait_" + k)))
+	await t._talk(PalaceAnte.HINT_FILE, "", [3, 0, 1, 2, 3, 4, 5, 5])
+	verify(t, "蓝色公主的新对话：关于画里……（钥匙和门 / 冒牌货 / 摇篮曲 / 替我们收着的笑声 / 两个人）",
+		["key", "fake", "song", "queen", "two"].all(func(k): return GameState.has_flag("palace_blue_talk_" + k)))

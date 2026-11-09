@@ -570,6 +570,13 @@ func palace_wind_scrub() -> void:
 	PalaceRoom.wind_doll("scrub")
 
 
+func palace_memory_enter() -> void:
+	runner.end_conversation()
+	var r := _palace_room("PalaceThrone")
+	if r:
+		r.enter_memory()
+
+
 func palace_banquet_place() -> void:
 	var r := _palace_room("PalaceAnte")
 	if r:
