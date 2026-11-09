@@ -49,7 +49,7 @@ def _burst_pink(text):
 def _duo(pv="normal", bv="normal", **extra):
     c = {"princess": dict(PRINCESS, at=[-14, 8], visual=pv, anim="helpless" if pv.startswith("helpless") else "idle", dir="right"),
          "blue": {"kind": "npc:blue_princess", "at": [14, 8], "visual": bv, "anim": "helpless" if bv.startswith("helpless") else "idle", "dir": "left"},
-         "pants": {"kind": "trap:hand", "at": [20, 10]},
+         "pants": {"kind": "trap:pants_hands", "at": [20, 10]},
          "rat": {"kind": "monster:rat", "at": [-26, 12], "dir": "right"}}
     c.update(extra)
     return c

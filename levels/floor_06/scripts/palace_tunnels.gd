@@ -33,6 +33,9 @@ var webs: Array = []
 var web_stuck := {}
 var mimic_bites := 0
 var _toll_body: StaticBody2D
+var _chest_spots: Array = []
+## 第一次咬人的那口宝箱怪（逃出隧道以后，这口宝箱就不在了）
+const MIMIC_FROM := "palace_mimic_from"
 var _toll_cool := 0.0
 var _imps: Node2D
 var _chest_views: Array = []
@@ -66,19 +69,23 @@ func _ready() -> void:
 	var i := 0
 	for c in cells("chests"):
 		i += 1
-		_spot("floor_06/tunnel_chest_%d" % i, c)
+		_chest_spots.append(_spot("floor_06/tunnel_chest_%d" % i, c))
 		var cv := MimicChestView.new()
 		cv.idx = i
 		cv.room = self
 		cv.position = world(c)
 		add_view(cv)
 		_chest_views.append(cv)
+	_refresh_fled()
+	# 收路费的小鬼们（toll_imps.png）：没付钱时挡在栅栏前；付过 / 有通行证就退到失物告示板旁边
+	var tv := TollView.new()
+	tv.room = self
+	_imps = tv
+	add_view(_imps)
 	if not toll_paid():
 		var tx := cells("toll")[0].x
 		_toll_body = _block([Vector2i(tx, 28), Vector2i(tx, 29), Vector2i(tx, 30)])
-		_imps = TollView.new()
-		_imps.position = world(Vector2i(tx, 29))
-		add_view(_imps)
+	_imps.position = imps_pos()
 	if not cells("lost_board").is_empty():
 		var lsp := PrisonOddities.Spot.new()
 		lsp.dialogue = "floor_06/tunnel_lost"
@@ -109,11 +116,12 @@ func _ready() -> void:
 		wi += 1
 
 
-func _spot(dialogue: String, c: Vector2i) -> void:
+func _spot(dialogue: String, c: Vector2i) -> Node2D:
 	var sp := PrisonOddities.Spot.new()
 	sp.dialogue = dialogue
 	add_child(sp)
 	sp.global_position = world(c)
+	return sp
 
 
 func _block(cs: Array) -> StaticBody2D:
@@ -226,12 +234,33 @@ func lost_return() -> bool:
 		if is_instance_valid(_toll_body):
 			_toll_body.queue_free()
 		if is_instance_valid(_imps):
-			_imps.queue_free()
+			_imps.position = imps_pos()
 	PalaceRoom.give_badge("lost")
 	return true
 
 
 # ------------------------------------------------------------------ 收路费
+## 小鬼们站的地方：没付钱 = 栅栏前；付过 = 失物告示板东边
+func imps_pos() -> Vector2:
+	if toll_paid() and not cells("lost_board").is_empty():
+		return world(cells("lost_board")[0] + Vector2i(1, 0))
+	return world(Vector2i(cells("toll")[0].x, 29))
+
+
+## 逃走的那口宝箱怪：图和调查点都去掉
+func _refresh_fled() -> void:
+	if not GameState.has_flag(PalaceRoom.MIMIC_FLED):
+		return
+	var k := int(GameState.vars.get(MIMIC_FROM, -1))
+	for j in _chest_views.size():
+		var gone := j + 1 == k
+		(_chest_views[j] as Node2D).visible = not gone
+		if j < _chest_spots.size() and is_instance_valid(_chest_spots[j]):
+			(_chest_spots[j] as Node2D).visible = not gone
+			for it in (_chest_spots[j] as Node).find_children("*", "Interactable", true, false):
+				(it as Interactable).enabled = not gone
+
+
 func toll_paid() -> bool:
 	return GameState.has_flag(TOLL_FLAG)
 
@@ -253,11 +282,15 @@ func pay(kind: String) -> bool:
 			GameState.inventory.remove("coin", TOLL_COINS)
 		"tickle":
 			await CG.play_theater("tunnel_toll")
+			# 用痒付：笑得太厉害，两个人身上都留下一层疲倦印记
+			for m in members():
+				(m as PlayableCharacter).add_buff("fatigue_scar", -1.0)
+			GameState.notify("笑得太厉害……身上留下了一层疲倦印记")
 	GameState.set_flag(TOLL_FLAG)
 	if is_instance_valid(_toll_body):
 		_toll_body.queue_free()
 	if is_instance_valid(_imps):
-		_imps.queue_free()
+		_imps.position = imps_pos()
 	Audio.play("unlock", -4.0)
 	GameState.notify("小鬼们让开了路")
 	return true
@@ -306,7 +339,9 @@ func open_chest(i: int) -> bool:
 	if not GameState.has_flag(PalaceRoom.MIMIC_FLED):
 		GameState.set_flag(PalaceRoom.MIMIC_FLED)
 		GameState.vars[PalaceRoom.MIMIC_STAGE] = 0
+		GameState.vars[MIMIC_FROM] = i
 		GameState.notify("咬人的宝箱怪「咔嗒咔嗒」地跑出了隧道……")
+		_refresh_fled.call_deferred()
 	if is_instance_valid(pc):
 		pc.status.apply_root(2.0)
 		var h := HitData.make_tickle(self, 9.0)
@@ -345,21 +380,31 @@ class TunnelHooks extends BattleAIHooks:
 
 
 class TollView extends Node2D:
+	const SHEET := "res://assets/generated/toll_imps.png"   # 0 / 1 待机、2 伸手要钱、3 抱着金币开心
+	var room: PalaceTunnels
 	var _t := 0.0
+	var _spr: Sprite2D
+
+	func _ready() -> void:
+		z_index = 1
+		if ResourceLoader.exists(SHEET):
+			_spr = Sprite2D.new()
+			_spr.texture = load(SHEET)
+			_spr.hframes = 4
+			_spr.offset = Vector2(0, -20)
+			_spr.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+			add_child(_spr)
 
 	func _process(d: float) -> void:
 		_t += d
-		queue_redraw()
-
-	func _draw() -> void:
-		draw_rect(Rect2(-3, -40, 6, 40), Color(0.5, 0.35, 0.2))
-		draw_rect(Rect2(-2, -38, 4, 34), Color(0.85, 0.3, 0.3))
-		for k in 3:
-			var p := Vector2(10 + k * 6, -14 - k * 10 + sin(_t * 4.0 + k) * 2.0)
-			draw_circle(p, 4.0, Color(0.55, 0.3, 0.6))
-			draw_circle(p + Vector2(-1.5, -1), 0.9, Color(1, 1, 0.5))
-			draw_circle(p + Vector2(1.5, -1), 0.9, Color(1, 1, 0.5))
-			draw_line(p + Vector2(-4, 0), p + Vector2(-7, -3), Color(0.4, 0.2, 0.45), 1.5)
+		if _spr == null or room == null:
+			return
+		if room.toll_paid():
+			_spr.frame = 3 if int(_t * 1.2) % 3 == 0 else int(_t * 2.0) % 2
+		else:
+			var near := is_instance_valid(GameState.player) and GameState.player.global_position.distance_to(position) < 56.0
+			_spr.frame = 2 if near else int(_t * 2.0) % 2
+		_spr.position.y = -absf(sin(_t * 4.0)) * 1.5
 
 
 class WebView extends Node2D:

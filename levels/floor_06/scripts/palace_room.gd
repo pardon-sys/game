@@ -71,6 +71,20 @@ static func give_sheet(i: int) -> bool:
 	if it:
 		GameState.give_item(it, 1)
 	GameState.notify("得到一片笑声乐谱（%d / 3）" % sheets())
+	combine_score()
+	return true
+
+
+## 三片乐谱齐了：自动拼成「完整的笑声乐谱」（使用 = 看地砖的踩法）。旧存档进宫殿任一张图时也补一次
+static func combine_score() -> bool:
+	if sheets() < 3 or GameState.inventory.has("laugh_score"):
+		return false
+	while GameState.inventory.has("music_sheet"):
+		GameState.inventory.remove("music_sheet", 1)
+	var sc := ItemDB.get_item("laugh_score")
+	if sc:
+		GameState.give_item(sc, 1)
+	GameState.notify("三片乐谱拼在了一起——「完整的笑声乐谱」（在背包里使用，看笑声地砖的踩法）")
 	return true
 
 
@@ -89,6 +103,7 @@ func _ready() -> void:
 	_add_patrol.call_deferred()
 	_add_mimic.call_deferred()
 	_add_story.call_deferred()
+	combine_score()
 	var ih := ItemHinter.new()
 	ih.name = "ItemHinter"
 	ih.room = self
@@ -666,6 +681,7 @@ const ITEM_HINTS := {
 	"maid_key": {"item": "maid_key"},
 	"lost_portrait": {"item": "lost_portrait"},
 	"music_sheet": {"item": "music_sheet"},
+	"laugh_score": {"item": "laugh_score"},
 	"smile_badge": {"item": "smile_badge"},
 	"queen_music_box": {"item": "queen_music_box"},
 	"lost_thing": {"flag_prefix": "palace_lost_", "except": ["palace_lost_done"]},
@@ -810,14 +826,13 @@ const STORY_SPOTS := {
 	"floor_06_palace_tunnels": [["floor_06/diary_1", Vector2i(22, 51), [], "palace_diary_1", "diary_page"],
 			["floor_06/tunnel_jewel_box", Vector2i(80, 7), [], "palace_jewel_done", ""]],
 	"floor_06_palace_bath": [["floor_06/diary_2", Vector2i(32, 27), ["palace_diary_1"], "palace_diary_2", "diary_page"],
-			["floor_06/gem_ruby", Vector2i(31, 19), [], "palace_gem_ruby", "gem_ruby"],
+			["floor_06/gem_ruby", Vector2i(27, 19), [], "palace_gem_ruby", "gem_ruby"],
 			["floor_06/memory_scrub", Vector2i(36, 28), ["palace_scrub_down", "palace_headmaid_friend"], "palace_memory_scrub", ""]],
 	"floor_06_palace_kitchen": [["floor_06/diary_3", Vector2i(37, 18), ["palace_diary_1"], "palace_diary_3", "diary_page"],
 			["floor_06/memory_chef", Vector2i(16, 12), ["palace_headmaid_friend"], "palace_memory_chef", ""]],
 	"floor_06_palace_wardrobe": [["floor_06/gem_sapphire", Vector2i(66, 8), [], "palace_gem_sapphire", "gem_sapphire"]],
 	"floor_06_palace_garden": [["floor_06/gem_topaz", Vector2i(28, 21), ["palace_fountain_flow"], "palace_gem_topaz", "gem_topaz"]],
 	"floor_06_palace_servants": [["floor_06/servants_tea_set", Vector2i(70, 27), ["palace_headmaid_friend"], "palace_tea_taken", "tea_set"]],
-	"floor_06_palace_clock_5": [["floor_06/memory_keeper", Vector2i(16, 18), ["palace_headmaid_friend"], "palace_memory_keeper", ""]],
 }
 var story_spots: Array = []
 
@@ -846,17 +861,3 @@ func _add_story() -> void:
 	# 隧道寝室梳妆台上的首饰盒（打开以后换成打开的那帧）
 	if map_id() == "floor_06_palace_tunnels":
 		sheet_view(STORY, 8, 1 if GameState.has_flag(JEWEL_DONE) else 0, Vector2i(80, 7), [], 0.8)
-	# 钟顶角落里停摆的守钟人偶（灰灰的，一动不动）
-	if map_id() == "floor_06_palace_clock_5":
-		var kv := Node2D.new()
-		kv.position = world(Vector2i(16, 17))
-		var spr := Sprite2D.new()
-		if ResourceLoader.exists("res://assets/generated/npcs/clock_keeper.png"):
-			spr.texture = load("res://assets/generated/npcs/clock_keeper.png")
-			spr.hframes = 4
-			spr.vframes = 4
-			spr.frame = 0
-			spr.offset = Vector2(0, -16)
-			spr.modulate = Color(0.75, 0.72, 0.78)
-		kv.add_child(spr)
-		add_view(kv)

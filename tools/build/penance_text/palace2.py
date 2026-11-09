@@ -27,7 +27,7 @@ TEXT = {
     "dummy_ok": ["……对了。", "顺序对了！"],
     "dummy_bad": ["呀！稻草人反击了——！", "……打错了。……被挠了。"],
     "sword": ["羽毛剑扫过来了！", "……剑。……躲。"],
-    "wave": ["第一波！稻草人兵！", "第二波……羽毛剑幽灵。", "最后一个——大稻草人教官！"],
+    "wave": ["第一波！稻草人兵！", "第二波……幽灵！四周墙上的火把——点亮了才看得见它们！", "最后一个——大稻草人教官！"],
 }
 
 # 训练场对练擂台：沿用「点灯笼」的找痒点小游戏，换成擂台的台词（PalaceTraining.SparShow）
@@ -68,7 +68,7 @@ def _burst_pink(text):
 def _duo(pv="normal", bv="normal", **extra):
     c = {"princess": dict(PRINCESS, at=[-14, 8], visual=pv, anim="helpless" if pv.startswith("helpless") else "idle", dir="right"),
          "blue": {"kind": "npc:blue_princess", "at": [14, 8], "visual": bv, "anim": "helpless" if bv.startswith("helpless") else "idle", "dir": "left"},
-         "pants": {"kind": "trap:hand", "at": [20, 10]}}
+         "pants": {"kind": "trap:pants_hands", "at": [20, 10]}}
     c.update(extra)
     return c
 
@@ -441,9 +441,9 @@ DIALOGUES = {
     "training_sign": dfile("", "木牌", {"default": {"lines": [
         L("（木牌上刻着：「对练稻草人：先打最左边的，再打最右边的，然后从右往左打中间两个。打错了，稻草人会还手」）", N)]}}),
     "training_carvings": dfile("", "墙上的刻痕", {"default": {"lines": [
-        L("（墙上刻着两个名字。一个是骑士的名字——另一个，是保卫队队长的名字。两个名字下面，各有几道深深的划痕）", N),
-        L("（骑士的名字下面，是三道。……旁边还有一行小小的字：「输给小殿下们，三次」）", N),
-        L("……队长和骑士，以前在这里一起训练过。", P, "surprise"),
+        L("（墙上刻满了骑士们的名字，一个挨着一个，每个名字下面都有几道划痕）", N),
+        L("（最显眼的那一格，名字被磨掉了，只剩下面三道很深的划痕。旁边刻着一支小小的长矛，和一行小字：「输给小殿下们，三次」）", N),
+        L("……名字被磨掉了。……这个人，好像很厉害。", P, "surprise"),
         L("……三道。", BLUE)]}}),
     "training_diary": dfile("", "旧训练日志", {"default": {"lines": [
         L("（柜子里有一本旧日志。字迹很年轻，可是——是队长的字）", N),

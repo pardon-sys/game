@@ -17,7 +17,8 @@ const ORDER := [0, 3, 2, 1]
 const DUMMY_R := 18.0
 const SWORD_CYCLE := 1.6
 const SWORD_R := 10.0
-const WAVES := [["rat", "rat", "spider", "spider"], ["ghost", "glove", "bat", "bat"], ["troll"]]
+## 一波比一波多：5 → 6（两只幽灵：要点亮擂台四周的火把才看得见）→ 巨魔 + 4 只小怪
+const WAVES := [["rat", "rat", "spider", "spider", "rat"], ["ghost", "ghost", "glove", "bat", "bat", "bat"], ["troll", "rat", "spider", "glove", "bat"]]
 const MONSTERS := {"rat": "res://scenes/actors/monsters/foot_rat.tscn", "spider": "res://scenes/actors/monsters/tickle_spider.tscn",
 	"ghost": "res://scenes/actors/monsters/tickle_ghost.tscn", "glove": "res://scenes/actors/monsters/ghost_glove.tscn",
 	"bat": "res://scenes/actors/monsters/feather_bat.tscn", "troll": "res://scenes/actors/monsters/tickle_troll.tscn"}

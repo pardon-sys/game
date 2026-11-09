@@ -22,7 +22,7 @@
 			"dir": "left"
 		},
 		"pants": {
-			"kind": "trap:hand",
+			"kind": "trap:pants_hands",
 			"at": [
 				20,
 				10
