@@ -19,6 +19,7 @@ static func _cell(t: Node) -> PenanceCell:
 
 static func run(t: Node) -> void:
 	checks = 0
+	GameState.set_flag(PalaceThrone.PAINT_INTRO_FLAG)   # 第三层的介绍过场只在第八轮的测试里放
 	# 骑士篇尾声的章末画面 → 医务帐篷
 	var ep: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://data/cutscenes/floor_06/knight_epilogue.json"))
 	var nxt := ""
@@ -620,6 +621,7 @@ static func _palace_b(t: Node) -> void:
 	await _epilogue(t)
 	await _round7(t)
 	await _round7b(t)
+	await _round8(t)
 
 
 static func _quiet_beetles(cr: PalaceClock) -> void:
@@ -2377,3 +2379,65 @@ static func _menu_talk(t: Node, file: String, texts: Array) -> void:
 	if Dialogue.runner.is_running():
 		Dialogue.runner.end_conversation()
 		await t._advance_until(func(): return not Dialogue.runner.is_running(), 5.0)
+
+
+## 第八轮：魔法打得到画像 / 小画像 / 小兵、小画像复活变慢、第三层第一次进画的介绍过场、Boss 前跳关点带支线道具
+static func _round8(t: Node) -> void:
+	_calm(t)
+	GameState.set_flag(PalaceThrone.BOSS_FLAG, false)
+	GameState.pending_spawn = "from_ante"
+	await t.main.change_level(Floors.scene(PalaceThrone.MAP))
+	await t._advance_until(func(): return t._level_id() == PalaceThrone.MAP and not Cutscene.is_playing() and not Dialogue.is_active(), 60.0)
+	var th := _room(t, "PalaceThrone") as PalaceThrone
+	await t._advance_until(func(): return th.started, 30.0)
+	var pc := GameState.player as PlayableCharacter
+	verify(t, "魔法：施法的人连上了画像的魔法处理", pc.magic_event.is_connected(Callable(th, "_on_magic").bind(pc)))
+	# 小画像：粉色星光二档打两下
+	th.layer = 1
+	var sp := th.small[1] as PalaceThrone.SmallPortrait
+	sp.revive()
+	for s in th.small:
+		if s != sp:
+			(s as PalaceThrone.SmallPortrait).sleep()
+	pc.global_position = sp.position + Vector2(0, 40)
+	var hp0 := sp.hp
+	th._on_magic("burst", 2, pc)
+	verify(t, "魔法打小画像：二档掉两格（%d → %d）" % [hp0, sp.hp], sp.hp == hp0 - 2)
+	# 小兵
+	var sd := th.spawn_soldiers()
+	for x in sd:
+		(x as Node2D).position = pc.global_position + Vector2(10, 0)
+	var n := th.magic_hits(StarBurst.center_of(pc), 60.0, 1)
+	verify(t, "魔法打画框小兵（命中 %d）" % n, n >= 3)
+	th._clear_minions()
+	# 破绽露着：魔法打画像
+	th.vuln_t = PalaceThrone.VULN_TIME
+	pc.global_position = th.weak_point() + Vector2(0, 30)
+	var bhp := th.hp
+	th._on_magic("burst", 3, pc)
+	verify(t, "破绽露着：魔法打画像（%d → %d）" % [bhp, th.hp], th.hp < bhp)
+	verify(t, "小画像复活时间加长到 %.0f 秒" % PalaceThrone.SMALL_REVIVE, PalaceThrone.SMALL_REVIVE >= 12.0)
+	# 第三层第一次被拉进画里：介绍过场
+	GameState.set_flag(PalaceThrone.PAINT_INTRO_FLAG, false)
+	th.layer = 2
+	th.vuln_t = 0.0
+	th.pull()
+	await t.get_tree().process_frame
+	var playing := Cutscene.is_playing()
+	await t._advance_until(func(): return not Cutscene.is_playing(), 90.0)
+	verify(t, "第三层第一次被拉进画里：介绍画中世界的过场（颜料星 / 出口 / 光带 / 镜像 / 被困了怎么办）",
+		playing and t.seen_cuts.has("throne_paint_intro") and GameState.has_flag(PalaceThrone.PAINT_INTRO_FLAG))
+	var inside_t0 := th.inside_t
+	verify(t, "过场里画里的计时不走（%.1f 秒）" % inside_t0, inside_t0 < 1.0)
+	th.escape()
+	await t._advance_until(func(): return not CG.is_busy() and not Cutscene.is_playing() and not Dialogue.is_active(), 150.0)
+	# 跳关点：Boss 前带上支线奖励
+	var sk: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://data/dev/skip_points_more.json"))
+	var bp: Dictionary = {}
+	for x in sk.get("skip_points", []):
+		if str(x.get("name", "")).contains("王座间（Boss 前"):
+			bp = x
+	var its: Dictionary = bp.get("items", {})
+	verify(t, "跳关「王座间（Boss 前）」：自动带上女王的生日缎带、发饰、羽毛披肩、怀表等事件道具，支线标记也补齐",
+		its.has("equip_birthday_ribbon") and its.has("equip_queen_hairpin") and its.has("equip_feather_shawl") and its.has("equip_clock_watch")
+		and (bp.get("flags", []) as Array).has("palace_banquet_done"))

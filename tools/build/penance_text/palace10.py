@@ -5,10 +5,11 @@
   ④ 身高线测量（钟楼，CG height_measure）、枕头大战（隧道寝室，CG pillow_fight）。
 陛下：坚强、温文尔雅、风趣、关心孩子、怕痒。只写日常，不揭开真相。只写痒、笑、友情；两位都是成年人。
 """
-from .common import A, BLUE, L, N, P, cg, dfile, pose, say, theater, tk
+from .common import A, BLUE, L, N, P, cg, dfile, line, pose, say, theater, tk
 from .palace2 import _bp, _bt, _burst_blue, _burst_pink, _duo
 
 QUEEN_NOTE = "陛下的字条"
+PORTRAIT = "女王画像"
 QUEEN_DIARY = "陛下的日记"
 KEEPER = "花园小店主"
 PAINTER = "宫廷画师（小画像）"
@@ -380,5 +381,31 @@ for _k in PAINTS:
     DIALOGUES["small_" + _k] = _small(_k)
 
 THEATERS = {"height_measure": HEIGHT_T, "pillow_fight": PILLOW_T, "treasure_feather": TREASURE_T}
-CUTSCENES = {}
+# ================================================================ 第八轮：第三层第一次被拉进画里——介绍画中世界怎么玩（坐标见 quest_maps 的王座间）
+GUIDE = "提示"
+
+
+def paint_intro():
+    s = [
+        {"actions": [A("camera", to=[70, 47], zoom=1.0, time=0.5)], "wait": 0.6},
+        line(N, "（被拉进画里了！四周是一座用颜料画出来的迷宫）"),
+        line(PORTRAIT, "……来……陪我……画画……"),
+        {"actions": [A("camera", to=[84, 28], zoom=1.0, time=0.6)], "wait": 0.7},
+        line(GUIDE, "迷宫里藏着三颗「颜料星」。三颗都捡到，出口的画框才会亮起来。"),
+        {"actions": [A("camera", to=[97, 9], zoom=1.0, time=0.6)], "wait": 0.7},
+        line(GUIDE, "出口在迷宫的另一头。要在大约四十秒里跑出去——闷笑满了、或者时间到了，就会被困在画里。"),
+        {"actions": [A("camera", to=[84, 36], zoom=0.9, time=0.6)], "wait": 0.7},
+        line(GUIDE, "画像之眼的光带会上下扫过整幅画。被照到，画笔就会冲过来——躲到画架旁边，它就看不见你。"),
+        line(GUIDE, "地上的格子会一块一块被涂掉：先闪一下，再变成颜料。踩上去会变慢、脚心发痒。"),
+        {"actions": [A("camera", to=[84, 47], zoom=1.0, time=0.6)], "wait": 0.7},
+        line(GUIDE, "还有一个颜料画出来的「你」，会照着你的动作反着走。被它碰到，会被挠腰。"),
+        {"actions": [A("camera", reset=True, time=0.5)], "wait": 0.5},
+        line(GUIDE, "要是被困住了——外面的搭档要把变强的画框打破，才能把你救出来。"),
+        {"actions": [A("notify", text="捡齐三颗颜料星 → 从亮起来的画框出去")], "wait": 0.2},
+    ]
+    return {"name": "画里的世界", "letterbox": True, "skippable": True, "steps": s}
+
+
+PORTRAIT_INTRO_FLAG = "palace_paint_intro_seen"
+CUTSCENES = {"throne_paint_intro": paint_intro}
 SIGNS = {}
