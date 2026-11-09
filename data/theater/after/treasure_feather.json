@@ -1,0 +1,300 @@
+{
+	"name": "王座间：寻宝的终点",
+	"cast": {
+		"princess": {
+			"kind": "princess",
+			"at": [
+				-14,
+				8
+			],
+			"visual": "normal",
+			"anim": "idle",
+			"dir": "right"
+		},
+		"blue": {
+			"kind": "npc:blue_princess",
+			"at": [
+				14,
+				8
+			],
+			"visual": "normal",
+			"anim": "idle",
+			"dir": "left"
+		},
+		"pants": {
+			"kind": "trap:pants_hands",
+			"at": [
+				20,
+				10
+			]
+		},
+		"d1": {
+			"kind": "trap:feather_curtain",
+			"at": [
+				-20,
+				-8
+			]
+		},
+		"d2": {
+			"kind": "trap:feather_curtain",
+			"at": [
+				20,
+				-8
+			]
+		}
+	},
+	"steps": [
+		{
+			"act": 1,
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "fade_in"
+				},
+				{
+					"state": "giggle",
+					"do": "voice"
+				}
+			],
+			"wait": 0.5
+		},
+		{
+			"speaker": "",
+			"text": "（盖子一掀开——「噗」，一大把羽毛和几只弹簧小手从箱子里蹦了出来）",
+			"act": 1
+		},
+		{
+			"speaker": "公主",
+			"text": "……机、机关？！",
+			"emotion": "surprise"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……陛下。……写了「终点」。……没写「安全」。"
+		},
+		{
+			"speaker": "",
+			"text": "（两个人跌坐在台阶上。弹簧小手「啪嗒啪嗒」地伸过来，挠着腰；羽毛钻到了脚底下）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "d1",
+					"zone": "waist",
+					"fx": "hand",
+					"repeat": 8,
+					"interval": 0.16,
+					"do": "tickle"
+				},
+				{
+					"who": "blue",
+					"by": "d2",
+					"zone": "sole",
+					"fx": "feather",
+					"repeat": 8,
+					"interval": 0.16,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"visual": "giggle",
+					"do": "pose"
+				},
+				{
+					"who": "blue",
+					"visual": "giggle",
+					"do": "pose"
+				}
+			],
+			"act": 2
+		},
+		{
+			"speaker": "公主",
+			"text": "嘻……！这个……一定是专门给我们准备的……",
+			"emotion": "giggle"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……陛下……好坏……"
+		},
+		{
+			"speaker": "",
+			"text": "（箱子里的机关一层接一层地弹出来：羽毛、小刷子、更多的小手——全都朝着两个人怕痒的地方去）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "d1",
+					"zone": "armpit",
+					"fx": "hand",
+					"repeat": 16,
+					"interval": 0.08,
+					"do": "tickle"
+				},
+				{
+					"who": "blue",
+					"by": "d2",
+					"zone": "sole",
+					"fx": "hand",
+					"repeat": 16,
+					"interval": 0.08,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"visual": "helpless_2",
+					"do": "pose"
+				},
+				{
+					"who": "blue",
+					"visual": "helpless_2",
+					"do": "pose"
+				},
+				{
+					"do": "voice",
+					"state": "laugh"
+				}
+			],
+			"act": 3,
+			"portrait": "treasure_feather"
+		},
+		{
+			"speaker": "公主",
+			"text": "哈哈哈哈！陛下——陛下太狡猾了——哈哈哈！",
+			"emotion": "helpless_2"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……哈哈……哈哈哈……寻宝的……奖励……是这个……"
+		},
+		{
+			"speaker": "公主",
+			"text": "（星光炸开，弹簧小手「啵啵」地缩回了箱子里……哈啊……放出去了……）",
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "flash"
+				},
+				{
+					"sound": "star_burst",
+					"do": "sfx"
+				},
+				{
+					"sound": "water_release",
+					"volume": -2.0,
+					"do": "sfx"
+				},
+				{
+					"who": "princess",
+					"time": 0.4,
+					"do": "shake"
+				},
+				{
+					"state": "laugh",
+					"do": "voice"
+				}
+			],
+			"act": "burst",
+			"wait": 1.0
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……哈……哈哈……（冰晶跟着炸开，箱盖上结了一层亮晶晶的霜……）",
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "flash"
+				},
+				{
+					"sound": "ice_crack",
+					"volume": -2.0,
+					"do": "sfx"
+				},
+				{
+					"sound": "water_release",
+					"volume": -2.0,
+					"do": "sfx"
+				},
+				{
+					"who": "blue",
+					"time": 0.4,
+					"do": "shake"
+				},
+				{
+					"state": "laugh",
+					"do": "voice"
+				}
+			],
+			"act": "burst",
+			"wait": 1.0
+		},
+		{
+			"speaker": "",
+			"text": "（最后一只小手慢吞吞地伸出来，在两人刚释放完、敏感得要命的脚心上，比了一个「胜利」的手势，才缩回去）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "d1",
+					"zone": "sole",
+					"fx": "hand",
+					"repeat": 4,
+					"interval": 0.25,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"time": 0.3,
+					"do": "shake"
+				},
+				{
+					"who": "princess",
+					"visual": "helpless_1",
+					"do": "pose"
+				},
+				{
+					"who": "blue",
+					"visual": "helpless_1",
+					"do": "pose"
+				}
+			],
+			"act": 4
+		},
+		{
+			"speaker": "公主",
+			"text": "呀……！……哈……陛下……",
+			"emotion": "helpless_1"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……陛下，一定很想看。……我们，被挠成这样。",
+			"actions": [
+				{
+					"who": "princess",
+					"visual": "normal",
+					"do": "pose"
+				},
+				{
+					"who": "blue",
+					"visual": "normal",
+					"do": "pose"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "……嗯。一定，笑得最大声。",
+			"emotion": "sad"
+		},
+		{
+			"actions": [
+				{
+					"state": "",
+					"do": "voice"
+				},
+				{
+					"time": 0.6,
+					"do": "fade_out"
+				}
+			],
+			"wait": 0.7
+		}
+	]
+}

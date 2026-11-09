@@ -67,7 +67,14 @@ const STRETCH_SPEED := 230.0
 const SMALL_FLY := 30.0
 const SMALL_KEEP := 34.0
 const SMALL_HIT_R := 38.0                          # 小画像的受击半径（量到它画出来的位置）
-const SMALL_STAGGER := 0.8                         # 被打中以后僵住：不退、不甩手，可以连打
+const SMALL_STAGGER := 0.8
+# 第七轮：第三层「摇篮曲音符」（画像飘在中央时一圈一圈往外放）/ 强化「十三下钟声」（每响一下扩散一圈冲击波，第十三下最大）
+const NOTE_EVERY := 2.4                             # 一圈的间隔（强化 ×ANGRY_K）
+const NOTE_RING := 10                               # 一圈几个（强化 +4）
+const NOTE_SPEED := 46.0
+const BELL_EVERY := 16.0                            # 强化以后每隔这么久敲一轮
+const BELL_GAP := 0.9                               # 一轮里两下钟声的间隔
+const BELL_COUNT := 13                         # 被打中以后僵住：不退、不甩手，可以连打
 ## 第五轮加难（throne_parts.gd）：强化画框以后各种技能的间隔 × ANGRY_K
 const ANGRY_K := 0.6
 const MAZE := Rect2i(70, 8, 29, 41)              # 画中世界的迷宫（离大厅很远，中间全是墙）
@@ -287,6 +294,7 @@ func _process(delta: float) -> void:
 		_tick_hands(delta)
 		_tick_stretch(delta)
 		_tick_skills(delta)
+		_tick_new_skills(delta)
 	if layer == 1:
 		vuln_t = maxf(0.0, vuln_t - delta)
 		if vuln_t <= 0.0 and small.all(func(s): return not (s as SmallPortrait).alive()):
@@ -569,6 +577,76 @@ func _clear_imps() -> void:
 	imps.clear()
 
 
+# ------------------------------------------------------------------ 第七轮：摇篮曲音符 / 十三下钟声
+var _note_t := 1.5
+var _note_k := 0
+var _bell_t := 6.0
+var _bell_left := 0
+var _bell_gap := 0.0
+var notes: Array = []
+var bells: Array = []
+
+
+func _tick_new_skills(delta: float) -> void:
+	notes = notes.filter(func(x): return is_instance_valid(x))
+	bells = bells.filter(func(x): return is_instance_valid(x))
+	if layer >= 2 or empowered:
+		_note_t -= delta
+		if _note_t <= 0.0:
+			_note_t = NOTE_EVERY * _k()
+			lullaby_ring()
+	if empowered:
+		if _bell_left > 0:
+			_bell_gap -= delta
+			if _bell_gap <= 0.0:
+				_bell_gap = BELL_GAP
+				_bell_left -= 1
+				bell_ring(BELL_COUNT - _bell_left)
+		else:
+			_bell_t -= delta
+			if _bell_t <= 0.0:
+				_bell_t = BELL_EVERY
+				_bell_left = BELL_COUNT
+				_bell_gap = 0.0
+				SpeechBubble.say(_portrait, "……钟……响了……", 40.0, 1.6)
+				GameState.notify("远处的钟响了——冲刺躲开冲击波！", 2.0)
+
+
+## 摇篮曲音符：从画像脚下放一圈，每圈错开半格角度（强化更密）
+func lullaby_ring() -> Array:
+	var out: Array = []
+	var n := NOTE_RING + (4 if empowered else 0)
+	var from := portrait_pos() + Vector2(0, 6)
+	_note_k += 1
+	for i in n:
+		var a := TAU * (i + 0.5 * (_note_k % 2)) / n
+		var nt := ThroneParts.MusicNote.new()
+		nt.room = self
+		nt.position = from
+		nt.vel = Vector2.from_angle(a) * NOTE_SPEED
+		nt.kind = i % 3
+		add_view(nt)
+		notes.append(nt)
+		out.append(nt)
+	Audio.play("music_box", -10.0, 0.0, 1.0 + 0.06 * (_note_k % 5))
+	return out
+
+
+## 钟声冲击波：第 k 下（1..13），第十三下最大、全屏震
+func bell_ring(k: int) -> ThroneParts.BellRing:
+	var b := ThroneParts.BellRing.new()
+	b.room = self
+	b.position = portrait_pos() + Vector2(0, 8)
+	b.big = k >= BELL_COUNT
+	add_view(b)
+	bells.append(b)
+	Audio.play("gate", -2.0 if b.big else -8.0, 0.0, 0.5 if b.big else 0.75)
+	if b.big:
+		SiegeFx.screen_shake(get_parent(), 6.0, 0.6)
+		SpeechBubble.say(_portrait, "……第、十三……", 40.0, 1.6)
+	return b
+
+
 # ------------------------------------------------------------------ 伸长的手
 func _tick_stretch(delta: float) -> void:
 	if layer >= 2 and not empowered:
@@ -760,6 +838,13 @@ func release_monsters(n: int) -> Array:
 
 
 func _clear_minions() -> void:
+	for x in notes + bells:
+		if is_instance_valid(x):
+			(x as Node).queue_free()
+	notes.clear()
+	bells.clear()
+	_bell_left = 0
+	_bell_t = 6.0
 	for mn in minions + monsters:
 		if is_instance_valid(mn):
 			(mn as Node).queue_free()
@@ -975,6 +1060,18 @@ func _ready_epilogue() -> void:
 	add_child(portrait_spot)
 	portrait_spot.prompt_y = -30.0
 	portrait_spot.global_position = world(cells("portrait")[0] + Vector2i(0, 2))
+	# 第七轮：墙上的小画像褪了色，各有一个调查点（拿着对应的颜料来上色 → 开口讲陛下的事）
+	for sp in small:
+		var ss := sp as SmallPortrait
+		ss.sleep()
+		ss.position = ss.home
+		_fade_small(ss, GameState.has_flag("palace_small_" + ss.kind))
+		var talk := PrisonOddities.Spot.new()
+		talk.dialogue = "floor_06/small_" + ss.kind
+		talk.prompt_y = -40.0
+		add_child(talk)
+		talk.global_position = ss.home + Vector2(0, 14)
+		small_spots.append(talk)
 	for m in members():
 		var pc := m as PlayableCharacter
 		pc.partner_talk = PalaceAnte.HINT_FILE
@@ -986,6 +1083,29 @@ func _ready_epilogue() -> void:
 		GameState.set_flag(MEMORY_OUT)
 		await get_tree().process_frame
 		Cutscene.play("palace_memory_out")
+
+
+var small_spots: Array = []
+
+
+func _fade_small(ss: SmallPortrait, coloured: bool) -> void:
+	ss.modulate = Color.WHITE if coloured else Color(0.62, 0.6, 0.64, 0.85)
+
+
+## 上色（对话 call palace_small_color_<kind>）：颜色从画框边上铺开
+func color_small(kind: String) -> void:
+	PalaceRoom.use_paint(kind)
+	for sp in small:
+		var ss := sp as SmallPortrait
+		if ss.kind != kind:
+			continue
+		var col: Color = {"red": Color(1, 0.55, 0.6), "blue": Color(0.55, 0.7, 1), "gold": Color(1, 0.85, 0.4), "green": Color(0.55, 0.9, 0.55)}[kind]
+		var tw := ss.create_tween()
+		tw.tween_property(ss, "modulate", col * 1.6, 0.4)
+		tw.tween_property(ss, "modulate", Color.WHITE, 0.8)
+		ThroneFx.splash(get_parent(), ss.position + Vector2(0, -20), kind == "blue", 0.8)
+		Fx.burst(get_parent(), ss.position + Vector2(0, -24), "spark", 10, 40.0, 0.7, Vector2(0, -10), col)
+		Audio.play("chime", -4.0, 0.0, 1.5)
 
 
 func _refresh_portrait() -> void:

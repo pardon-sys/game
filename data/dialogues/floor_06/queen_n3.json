@@ -1,0 +1,50 @@
+{
+	"name": "蛋糕模子里的字条",
+	"entries": [
+		{
+			"if": {
+				"flag": "palace_note_n3"
+			},
+			"node": "done"
+		},
+		{
+			"node": "default"
+		}
+	],
+	"nodes": {
+		"default": {
+			"lines": [
+				{
+					"text": "（碗柜最里面，一只烤歪了的蛋糕模子。模子里卷着一张字条）",
+					"speaker": ""
+				},
+				{
+					"text": "「嘘——这个歪掉的模子是证物，看完请销毁。」",
+					"speaker": "陛下的字条"
+				},
+				{
+					"text": "「第三站：会冒泡泡、会让人打喷嚏、裁判总是判平局的地方。」",
+					"speaker": "陛下的字条"
+				}
+			],
+			"set": {
+				"flags": [
+					"palace_note_n3"
+				],
+				"call": "palace_note_found"
+			}
+		},
+		"done": {
+			"lines": [
+				{
+					"text": "「嘘——这个歪掉的模子是证物，看完请销毁。」",
+					"speaker": "陛下的字条"
+				},
+				{
+					"text": "「第三站：会冒泡泡、会让人打喷嚏、裁判总是判平局的地方。」",
+					"speaker": "陛下的字条"
+				}
+			]
+		}
+	}
+}

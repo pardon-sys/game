@@ -266,6 +266,10 @@ _PALACE_POINTS = [
           palace_upto("tunnels", ["intro_done_palace_throne_in", "palace_boss_done", "palace_badge_joined", "!palace_memory_done", "!palace_memory_out_seen",
                                   "!palace_memory_1", "!palace_memory_2", "!palace_memory_3", "!palace_memory_4"])[0],
           knight_vars(10, 2, 10), passives=PASSIVES, items=dict(palace_upto("tunnels")[1], joined_badge=1)),
+    point("反省篇·第四章尾声后 王座间（寻宝 / 上色 / 温馨日常）", "floor_06_palace_throne",
+          palace_upto("tunnels", ["intro_done_palace_throne_in", "palace_boss_done", "palace_badge_joined", "palace_memory_done", "palace_memory_out_seen",
+                                  "palace_chapter_done", "palace_memory_1", "palace_memory_2", "palace_memory_3", "palace_memory_4"])[0],
+          knight_vars(10, 2, 10), passives=PASSIVES, items=dict(palace_upto("tunnels")[1], joined_badge=1)),
 ]
 _names = {p["name"] for p in _PALACE_POINTS}
 POINTS = [p for p in POINTS if p["name"] not in _names] + _PALACE_POINTS

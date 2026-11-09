@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="KeyItem" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/items/key_item.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/generated/item_drawing_half.png" id="2"]
+
+[resource]
+script = ExtResource("1")
+icon = ExtResource("2")
+id = "drawing_half"
+display_name = "半张蜡笔画"
+description = "被撕成两半的蜡笔画。一个戴王冠的大人，牵着一个小孩的手。"
+key_type = "palace"
+category = 1
+stackable = true
+show_in_hud = false
+hotkey = ""
+pickup_emotion = "happy"

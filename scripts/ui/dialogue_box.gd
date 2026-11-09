@@ -570,6 +570,73 @@ func palace_wind_scrub() -> void:
 	PalaceRoom.wind_doll("scrub")
 
 
+## 随机挑一段没听过的（vars：pick_key 池子名、pick_n 段数 → 写 vars.pick；都听过了就全随机）。小画像、蓝色公主「随便聊聊」用
+func pick_unheard() -> void:
+	var key := str(GameState.vars.get("pick_key", ""))
+	var n := int(GameState.vars.get("pick_n", 1))
+	var pool: Array = []
+	for i in n:
+		if not GameState.has_flag("heard_%s_%d" % [key, i]):
+			pool.append(i)
+	if pool.is_empty():
+		pool = range(n)
+	var i: int = pool.pick_random()
+	GameState.set_flag("heard_%s_%d" % [key, i])
+	GameState.set_var("pick", i)
+
+
+func palace_note_found() -> void:
+	PalaceRoom.note_found()
+
+
+func palace_treasure_open() -> void:
+	PalaceRoom.treasure_open()
+
+
+func palace_drawing_half() -> void:
+	PalaceRoom.drawing_half()
+
+
+func palace_paint_red() -> void:
+	PalaceRoom.take_paint("red")
+
+
+func palace_paint_blue() -> void:
+	PalaceRoom.take_paint("blue")
+
+
+func palace_paint_gold() -> void:
+	PalaceRoom.take_paint("gold")
+
+
+func palace_paint_green() -> void:
+	PalaceRoom.take_paint("green")
+
+
+func palace_small_color_red() -> void:
+	_color_small("red")
+
+
+func palace_small_color_blue() -> void:
+	_color_small("blue")
+
+
+func palace_small_color_gold() -> void:
+	_color_small("gold")
+
+
+func palace_small_color_green() -> void:
+	_color_small("green")
+
+
+func _color_small(kind: String) -> void:
+	var r := _palace_room("PalaceThrone")
+	if r:
+		r.color_small(kind)
+	else:
+		PalaceRoom.use_paint(kind)
+
+
 func palace_memory_enter() -> void:
 	runner.end_conversation()
 	var r := _palace_room("PalaceThrone")

@@ -930,9 +930,68 @@
 				]
 			}
 		},
+		"mem_rand": {
+			"set": {
+				"vars": {
+					"pick_key": "blue_mem",
+					"pick_n": 5
+				},
+				"call": "pick_unheard"
+			},
+			"next": "mem_rand_go"
+		},
+		"mem_rand_go": {
+			"goto": [
+				{
+					"if": {
+						"eq": {
+							"pick": 0
+						}
+					},
+					"node": "mem_key"
+				},
+				{
+					"if": {
+						"eq": {
+							"pick": 1
+						}
+					},
+					"node": "mem_fake"
+				},
+				{
+					"if": {
+						"eq": {
+							"pick": 2
+						}
+					},
+					"node": "mem_song"
+				},
+				{
+					"if": {
+						"eq": {
+							"pick": 3
+						}
+					},
+					"node": "mem_queen"
+				},
+				{
+					"if": {
+						"eq": {
+							"pick": 4
+						}
+					},
+					"node": "mem_two"
+				}
+			]
+		},
 		"memory": {
 			"prompt": "关于画里……",
 			"choices": [
+				{
+					"text": "随便聊聊",
+					"next": "mem_rand",
+					"return": true
+				},
 				{
 					"text": "钥匙和门",
 					"next": "mem_key",

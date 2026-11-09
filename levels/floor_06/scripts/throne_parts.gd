@@ -82,6 +82,126 @@ class Vortex extends Node2D:
 			draw_line(p, q, Color(1, 0.8, 0.4, 0.8 if active() else 0.45), 2.0)
 
 
+# ================================================================ 第七轮：摇篮曲音符（八音盒的音符，一圈一圈往外飘）
+class MusicNote extends Node2D:
+	const SHEET := "res://assets/generated/music_notes.png"   # 3 帧：八分音符 / 双八分 / 高音谱号（Python 画）
+	const LIFE := 4.5
+	const HIT_R := 9.0
+	var room: PalaceThrone
+	var vel := Vector2.ZERO
+	var kind := 0
+	var _t := 0.0
+	var _spr: Sprite2D
+
+	func _ready() -> void:
+		z_index = 3
+		_spr = Sprite2D.new()
+		if ResourceLoader.exists(SHEET):
+			_spr.texture = load(SHEET)
+			_spr.hframes = 3
+			_spr.frame = kind
+		_spr.offset = Vector2(0, -12)
+		_spr.scale = Vector2(1.4, 1.4)
+		_spr.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+		_spr.modulate = [Color(1.0, 0.7, 0.9), Color(0.7, 0.85, 1.0), Color(1.0, 0.92, 0.55)][kind % 3]
+		# 不受房间暗光影响（暗地板上要看得清）
+		var mat := CanvasItemMaterial.new()
+		mat.light_mode = CanvasItemMaterial.LIGHT_MODE_UNSHADED
+		_spr.material = mat
+		add_child(_spr)
+		queue_redraw()
+
+	func _draw() -> void:
+		# 音符底下一小圈柔光
+		draw_circle(Vector2(0, -12) + (_spr.position if _spr else Vector2.ZERO), 7.0, Color(_spr.modulate if _spr else Color.WHITE, 0.28))
+
+	func _process(d: float) -> void:
+		if room == null or room.win:
+			queue_free()
+			return
+		if room.busy():
+			return
+		_t += d
+		# 跟着摇篮曲的拍子一快一慢地飘，轻轻上下晃
+		var beat := 0.65 + 0.45 * absf(sin(_t * PI / 0.85))
+		position += vel * beat * d
+		_spr.position.y = sin(_t * 5.0 + kind) * 2.0
+		_spr.modulate.a = clampf((LIFE - _t) / 0.6, 0.0, 1.0)
+		queue_redraw()
+		if _t >= LIFE:
+			queue_free()
+			return
+		for m in room.members():
+			var pc := m as PlayableCharacter
+			if pc == room.inside or Downed.is_downed(pc) or pc.is_fully_invulnerable():
+				continue
+			if pc.global_position.distance_to(position) <= HIT_R:
+				var h := HitData.make_tickle(room, 4.0)
+				h.zone = ["neck", "waist", "sole"][kind % 3]
+				pc.receive_hit(h)
+				Fx.burst(room.get_parent(), position + Vector2(0, -10), "heart", 3, 24.0, 0.4, Vector2(0, -10), _spr.modulate)
+				queue_free()
+				return
+
+
+# ================================================================ 第七轮：十三下钟声的冲击波（地上扩散的圆环；冲刺无敌帧能躲）
+class BellRing extends Node2D:
+	const SPEED := 70.0
+	const BAND := 7.0
+	var room: PalaceThrone
+	var big := false
+	var r := 6.0
+	var _hit := {}
+
+	func _ready() -> void:
+		z_index = 1
+		add_to_group(IsoView.GROUND_GROUP)
+		var mat := CanvasItemMaterial.new()
+		mat.light_mode = CanvasItemMaterial.LIGHT_MODE_UNSHADED
+		material = mat
+
+	func max_r() -> float:
+		return 150.0 if big else 96.0
+
+	func _process(d: float) -> void:
+		if room == null or room.win:
+			queue_free()
+			return
+		if room.busy():
+			return
+		r += SPEED * (1.3 if big else 1.0) * d
+		if r >= max_r():
+			queue_free()
+			return
+		for m in room.members():
+			var pc := m as PlayableCharacter
+			if _hit.has(pc) or pc == room.inside or Downed.is_downed(pc) or pc.is_fully_invulnerable():
+				continue
+			var dist := pc.global_position.distance_to(position)
+			if absf(dist - r) <= BAND * (1.6 if big else 1.0):
+				_hit[pc] = true
+				var h := HitData.make_tickle(room, 9.0 if big else 5.0)
+				h.zone = "armpit"
+				pc.receive_hit(h)
+				ThroneParts.shove(pc, (pc.global_position - position).normalized() * (26.0 if big else 14.0))
+		queue_redraw()
+
+	func _draw() -> void:
+		var a := clampf(1.0 - r / max_r(), 0.0, 1.0)
+		var col := Color(1.0, 0.85, 0.45, 0.85 * a) if not big else Color(1.0, 0.55, 0.75, 0.95 * a)
+		var pts := PackedVector2Array()
+		for i in 49:
+			pts.append(Vector2.from_angle(TAU * i / 48.0) * r)
+		# 发光的一圈：外沿亮线 + 内侧一圈半透明的带子
+		var inner := PackedVector2Array()
+		for i in 49:
+			inner.append(Vector2.from_angle(TAU * i / 48.0) * maxf(r - BAND, 1.0))
+		for i in 48:
+			draw_colored_polygon(PackedVector2Array([pts[i], pts[i + 1], inner[i + 1], inner[i]]), Color(col, col.a * 0.25))
+		draw_polyline(pts, col, 4.0 if big else 3.0)
+		draw_polyline(inner, Color(col, col.a * 0.5), 1.0)
+
+
 # ================================================================ 颜料浪潮：从南往北推，留 1~2 个缺口
 class PaintWave extends Node2D:
 	const SPEED := 64.0

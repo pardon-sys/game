@@ -810,6 +810,73 @@ static func take_gem(key: String) -> bool:
 	return true
 
 
+# ------------------------------------------------------------------ 第七轮：陛下藏的字条 / 「我们三个」涂鸦 / 颜料
+const NOTE_KEYS := ["n1", "n2", "n3", "n4", "n5", "n6"]
+const PAINT_ZONE := {"red": "waist", "blue": "armpit", "gold": "sole", "green": "neck"}
+const PAINT_TEXT := {"red": "paint_jam", "blue": "paint_dye", "gold": "paint_dust", "green": "paint_juice"}
+
+
+static func _give(id: String, n := 1) -> String:
+	var it := ItemDB.get_item(id)
+	if it:
+		GameState.give_item(it, n)
+	return it.display_name if it else id
+
+
+static func note_found() -> void:
+	var got := NOTE_KEYS.filter(func(k): return GameState.has_flag("palace_note_" + k)).size()
+	var nm := _give("queen_note")
+	Audio.play("book", -4.0, 0.0, 1.2)
+	GameState.notify("得到「%s」（%d / %d）" % [nm, got, NOTE_KEYS.size()])
+
+
+static func drawing_half() -> void:
+	_give("drawing_half")
+	join_drawing()
+
+
+static func treasure_open() -> void:
+	if GameState.has_flag("palace_treasure_done"):
+		return
+	GameState.set_flag("palace_treasure_done")
+	_give("drawing_half")
+	join_drawing()
+
+
+## 王座下的半张 + 宝箱里的半张都在 →「我们三个」
+static func join_drawing() -> bool:
+	if GameState.has_flag("palace_drawing_joined") or not GameState.has_flag("palace_drawing_half") or not GameState.has_flag("palace_treasure_done"):
+		return false
+	GameState.set_flag("palace_drawing_joined")
+	GameState.inventory.remove("drawing_half", 2)
+	var nm := _give("family_drawing")
+	Audio.play("chime", -4.0, 0.0, 1.1)
+	GameState.notify("两个半张拼在了一起——得到「%s」" % nm)
+	return true
+
+
+static func take_paint(kind: String) -> bool:
+	if GameState.has_flag("palace_paint_" + kind):
+		return false
+	GameState.set_flag("palace_paint_" + kind)
+	var pc := GameState.player as PlayableCharacter
+	if is_instance_valid(pc):
+		pc.status.apply_root(1.0)
+		for k in 3:
+			var h := HitData.make_tickle(pc, 2.5)
+			h.zone = str(PAINT_ZONE.get(kind, "waist"))
+			pc.receive_hit(h)
+		PalaceRoom.say_random(pc, str(PAINT_TEXT.get(kind, "paint_jam")))
+	var nm := _give("paint_" + kind)
+	Audio.play("chime", -4.0, 0.0, 1.3)
+	GameState.notify("得到「%s」——王座间墙上那幅褪了色的小画像，也许用得上" % nm)
+	return true
+
+
+static func use_paint(kind: String) -> void:
+	GameState.inventory.remove("paint_" + kind, 1)
+
+
 ## 首饰盒：三颗宝石都在 → 嵌进去、打开
 static func jewel_open() -> bool:
 	if GameState.has_flag(JEWEL_DONE):
@@ -860,6 +927,29 @@ const STORY_SPOTS := {
 	"floor_06_palace_garden": [["floor_06/gem_topaz", Vector2i(28, 21), ["palace_fountain_flow"], "palace_gem_topaz", "gem_topaz"]],
 	"floor_06_palace_servants": [["floor_06/servants_tea_set", Vector2i(70, 27), ["palace_headmaid_friend"], "palace_tea_taken", "tea_set"]],
 }
+## 第七轮：温馨日常 / 陛下藏的字条 / 颜料（penance_text/palace10.py）。[对话, 格子, 要的标记, 做过的标记（头顶不再提示）, 图标（item_*.png，空 = 不画）, 图标在这个标记有了以后消失]
+const DAILY_SPOTS := {
+	"floor_06_palace_library": [["floor_06/daily_story", Vector2i(16, 19), [], "palace_daily_story", "record_book", ""],
+			["floor_06/queen_n2", Vector2i(18, 22), ["palace_note_n1"], "palace_note_n2", "queen_note", "palace_note_n2"]],
+	"floor_06_palace_wardrobe": [["floor_06/daily_fitting", Vector2i(14, 10), [], "palace_daily_fitting", "record_book", ""]],
+	"floor_06_palace_tunnels": [["floor_06/daily_pillow", Vector2i(70, 10), [], "palace_pillow_fought", "feather_pillow", ""]],
+	"floor_06_palace_clock_1": [["floor_06/daily_height", Vector2i(11, 23), [], "palace_height_measured", "", ""],
+			["floor_06/paint_gold", Vector2i(10, 12), [PalaceThrone.BOSS_FLAG], "palace_paint_gold", "paint_gold", "palace_paint_gold"]],
+	"floor_06_palace_clock_5": [["floor_06/daily_moon", Vector2i(30, 18), [], "palace_daily_moon", "telescope", ""],
+			["floor_06/queen_n5", Vector2i(32, 20), ["palace_note_n4"], "palace_note_n5", "queen_note", "palace_note_n5"]],
+	"floor_06_palace_garden": [["floor_06/queen_n6", Vector2i(12, 12), ["palace_note_n5"], "palace_note_n6", "queen_note", "palace_note_n6"],
+			["floor_06/paint_green", Vector2i(46, 24), [PalaceThrone.BOSS_FLAG], "palace_paint_green", "paint_green", "palace_paint_green"]],
+	"floor_06_palace_throne": [["floor_06/daily_drawing", Vector2i(34, 14), [PalaceThrone.BOSS_FLAG], "palace_drawing_half", "drawing_half", "palace_drawing_half"],
+			["floor_06/daily_court", Vector2i(39, 12), [PalaceThrone.BOSS_FLAG], "palace_daily_court", "record_book", ""],
+			["floor_06/queen_n1", Vector2i(37, 9), ["palace_memory_done", PalaceThrone.BOSS_FLAG], "palace_note_n1", "queen_note", "palace_note_n1"],
+			["floor_06/treasure_chest", Vector2i(32, 14), ["palace_note_n6", PalaceThrone.BOSS_FLAG], "palace_treasure_done", "treasure_box", ""]],
+	"floor_06_palace_bath": [["floor_06/daily_bubbles", Vector2i(40, 24), [], "palace_daily_bubbles", "", ""],
+			["floor_06/queen_n4", Vector2i(31, 24), ["palace_note_n3"], "palace_note_n4", "queen_note", "palace_note_n4"],
+			["floor_06/paint_blue", Vector2i(41, 12), [PalaceThrone.BOSS_FLAG], "palace_paint_blue", "paint_blue", "palace_paint_blue"]],
+	"floor_06_palace_ante": [["floor_06/daily_waltz", Vector2i(36, 20), [], "palace_daily_waltz", "record_book", ""]],
+	"floor_06_palace_kitchen": [["floor_06/queen_n3", Vector2i(20, 10), ["palace_note_n2"], "palace_note_n3", "queen_note", "palace_note_n3"],
+			["floor_06/paint_red", Vector2i(38, 14), [PalaceThrone.BOSS_FLAG], "palace_paint_red", "paint_red", "palace_paint_red"]],
+}
 var story_spots: Array = []
 
 
@@ -884,6 +974,25 @@ func _add_story() -> void:
 		if not need.is_empty():
 			gate(sp, need)
 		story_spots.append(sp)
+	for e in DAILY_SPOTS.get(map_id(), []):
+		var dc: Vector2i = e[1]
+		var dneed: Array = e[2]
+		if str(e[4]) != "":
+			var dv := Events2View.new()
+			dv.tex = "res://assets/generated/item_%s.png" % str(e[4])
+			dv.scale_k = 0.8
+			dv.need = dneed
+			dv.hide_flag = str(e[5])
+			dv.position = world(dc)
+			add_view(dv)
+		var dsp := PrisonOddities.Spot.new()
+		dsp.dialogue = str(e[0])
+		dsp.done_flag = str(e[3])
+		add_child(dsp)
+		dsp.global_position = world(dc)
+		if not dneed.is_empty():
+			gate(dsp, dneed)
+		story_spots.append(dsp)
 	# 隧道寝室梳妆台上的首饰盒（打开以后换成打开的那帧）
 	if map_id() == "floor_06_palace_tunnels":
 		sheet_view(STORY, 8, 1 if GameState.has_flag(JEWEL_DONE) else 0, Vector2i(80, 7), [], 0.8)

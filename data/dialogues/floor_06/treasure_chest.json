@@ -1,0 +1,99 @@
+{
+	"name": "台阶下的小宝箱",
+	"entries": [
+		{
+			"if": {
+				"flag": "palace_treasure_done"
+			},
+			"node": "done"
+		},
+		{
+			"node": "default"
+		}
+	],
+	"nodes": {
+		"default": {
+			"lines": [
+				{
+					"text": "（王座台阶的最下面一级，有一块松动的木板。掀开——下面藏着一只小小的木宝箱）",
+					"speaker": ""
+				},
+				{
+					"text": "……终点。",
+					"speaker": "公主",
+					"emotion": "happy"
+				},
+				{
+					"text": "……打开吧。",
+					"speaker": "蓝色的公主"
+				}
+			],
+			"theater": "treasure_feather",
+			"set": {
+				"call": "palace_treasure_open"
+			},
+			"next": "after"
+		},
+		"after": {
+			"lines": [
+				{
+					"text": "（宝箱底下，压着另外半张蜡笔画）",
+					"speaker": ""
+				},
+				{
+					"text": "……另一半。",
+					"speaker": "蓝色的公主"
+				}
+			],
+			"next": "join"
+		},
+		"join": {
+			"goto": [
+				{
+					"if": {
+						"flag": "palace_drawing_joined"
+					},
+					"node": "joined"
+				}
+			],
+			"next": "wait"
+		},
+		"joined": {
+			"lines": [
+				{
+					"text": "（两个半张拼在一起：戴王冠的大人站在中间，两只手各牵着一个小孩。一个涂成粉色，一个涂成蓝色。三个人头顶，画满了歪歪扭扭的爱心）",
+					"speaker": ""
+				},
+				{
+					"text": "（最下面，是那行字的全部）「我们三个」",
+					"speaker": ""
+				},
+				{
+					"text": "……我们三个。",
+					"speaker": "公主",
+					"emotion": "sad"
+				},
+				{
+					"text": "……（轻轻地，把画按平）……嗯。",
+					"speaker": "蓝色的公主"
+				}
+			]
+		},
+		"wait": {
+			"lines": [
+				{
+					"text": "……王座底下，好像还有另外半张。",
+					"speaker": "蓝色的公主"
+				}
+			]
+		},
+		"done": {
+			"lines": [
+				{
+					"text": "（小宝箱空了。里面还有几根羽毛）",
+					"speaker": ""
+				}
+			]
+		}
+	}
+}

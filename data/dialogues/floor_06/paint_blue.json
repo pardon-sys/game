@@ -1,0 +1,62 @@
+{
+	"name": "蓝色泡泡染料",
+	"entries": [
+		{
+			"if": {
+				"flag": "palace_paint_blue"
+			},
+			"node": "done"
+		},
+		{
+			"node": "default"
+		}
+	],
+	"nodes": {
+		"default": {
+			"lines": [
+				{
+					"text": "（泡泡池边的架子上，一瓶蓝色的泡泡染料闪着光）",
+					"speaker": ""
+				}
+			],
+			"prompt": "拿一点？",
+			"choices": [
+				{
+					"text": "拿",
+					"next": "go"
+				},
+				{
+					"text": "算了",
+					"next": "no"
+				}
+			]
+		},
+		"go": {
+			"lines": [
+				{
+					"text": "（瓶塞「啵」地弹开，一串蓝泡泡钻进袖口，顺着胳膊一路痒到腋下——）",
+					"speaker": ""
+				}
+			],
+			"set": {
+				"call": "palace_paint_blue"
+			}
+		},
+		"no": {
+			"lines": [
+				{
+					"text": "……等一下。",
+					"speaker": "公主"
+				}
+			]
+		},
+		"done": {
+			"lines": [
+				{
+					"text": "（这里已经拿过了）",
+					"speaker": ""
+				}
+			]
+		}
+	}
+}

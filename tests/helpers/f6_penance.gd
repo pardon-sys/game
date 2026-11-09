@@ -619,6 +619,7 @@ static func _palace_b(t: Node) -> void:
 	await _round6(t)
 	await _epilogue(t)
 	await _round7(t)
+	await _round7b(t)
 
 
 static func _quiet_beetles(cr: PalaceClock) -> void:
@@ -1707,7 +1708,7 @@ static func _story(t: Node) -> void:
 	await _goto(t, "floor_06_palace_tunnels")
 	var tu := _room(t, "PalaceTunnels") as PalaceTunnels
 	await t.get_tree().process_frame
-	verify(t, "隧道：婴儿房的日记页、寝室的首饰盒（%d 个调查点）" % tu.story_spots.size(), tu.story_spots.size() == 2)
+	verify(t, "隧道：婴儿房的日记页、寝室的首饰盒（%d 个调查点）" % tu.story_spots.size(), tu.story_spots.size() == 2 + PalaceRoom.DAILY_SPOTS.get("floor_06_palace_tunnels", []).size())
 	await t._talk("floor_06/tunnel_jewel_box", "")
 	verify(t, "首饰盒缺三颗宝石：打不开", not GameState.has_flag(PalaceRoom.JEWEL_DONE))
 	await t._talk("floor_06/diary_1", "")
@@ -2151,7 +2152,7 @@ static func _epilogue(t: Node) -> void:
 		await t._talk("floor_06/throne_portrait_after", "")
 	verify(t, "画像可以调查四段（闭着眼的女王 / 两种颜料 / 铜牌和铃兰 / 画布后面的笑声）",
 		["eyes", "paint", "plate", "laugh"].all(func(k): return GameState.has_flag("palace_portrait_" + k)))
-	await t._talk(PalaceAnte.HINT_FILE, "", [3, 0, 1, 2, 3, 4, 5, 5])
+	await _menu_talk(t, PalaceAnte.HINT_FILE, ["关于画里", "钥匙和门", "冒牌货", "摇篮曲", "收着的笑声", "两个人"])
 	verify(t, "蓝色公主的新对话：关于画里……（钥匙和门 / 冒牌货 / 摇篮曲 / 替我们收着的笑声 / 两个人）",
 		["key", "fake", "song", "queen", "two"].all(func(k): return GameState.has_flag("palace_blue_talk_" + k)))
 
@@ -2228,3 +2229,151 @@ static func _round7(t: Node) -> void:
 static func _standing(x: Node) -> bool:
 	var pc := x as PlayableCharacter
 	return pc.is_alive() and pc.health.hp == pc.health.max_hp and pc.state != PlayableCharacter.State.DEAD and not Downed.is_downed(pc)
+
+
+## 第七轮·剧情：温馨日常、陛下藏的字条、给小画像上色、身高线 / 枕头大战、Boss 的音符和钟声、蓝色公主「随便聊聊」
+static func _round7b(t: Node) -> void:
+	_calm(t)
+	for k in PalaceRoom.ITEM_HINTS:
+		GameState.set_flag(PalaceRoom.item_hint_flag(k))
+	var reset := ["palace_note_n1", "palace_note_n2", "palace_note_n3", "palace_note_n4", "palace_note_n5", "palace_note_n6", "palace_treasure_done",
+			"palace_drawing_half", "palace_drawing_joined", "palace_height_measured", "palace_pillow_fought", "palace_daily_height", "palace_daily_pillow",
+			"cg_seen_theater:height_measure", "cg_seen_theater:pillow_fight", "cg_seen_theater:treasure_feather"]
+	for k in PalaceRoom.PAINT_ZONE:
+		reset.append("palace_paint_" + k)
+		reset.append("palace_small_" + k)
+	for f in reset:
+		GameState.set_flag(f, false)
+	for id in ["queen_note", "drawing_half", "family_drawing", "paint_red", "paint_blue", "paint_gold", "paint_green"]:
+		GameState.inventory.remove(id, 99)
+	GameState.set_flag(PalaceThrone.BOSS_FLAG)
+	GameState.set_flag("palace_memory_done")
+	GameState.set_flag("palace_memory_out_seen")
+	GameState.pending_spawn = "from_ante"
+	await t.main.change_level(Floors.scene(PalaceThrone.MAP))
+	await t._advance_until(func(): return t._level_id() == PalaceThrone.MAP and not Cutscene.is_playing() and not Dialogue.is_active() and not Dialogue.runner.is_running(), 60.0)
+	print("  （第七轮剧情开头：对话 %s / 过场 %s / in_dialogue %s）" % [Dialogue.runner.current_file, Cutscene.is_playing(), GameState.in_dialogue])
+	# ① 替换掉的旧暗示不在了
+	var diary := FileAccess.get_file_as_string("res://data/dialogues/floor_06/tunnel_diary.json")
+	var keeper := FileAccess.get_file_as_string("res://data/dialogues/floor_06/garden_keeper.json")
+	var nursery := FileAccess.get_file_as_string("res://data/theater/after/memory_nursery.json")
+	verify(t, "替换掉的旧暗示：寝室日记 / 小店主 / 婴儿房人偶都换成了温馨日常",
+		not diary.contains("一个爱笑") and diary.contains("下个月，换我挠回来") and not keeper.contains("别在左边") and keeper.contains("明天编完")
+		and not nursery.contains("笑得打滚"))
+	# ② 十段温馨日常都能读
+	var dailies := ["daily_story", "daily_fitting", "daily_moon", "daily_bubbles", "daily_waltz", "daily_court"]
+	for d in dailies:
+		await t._talk("floor_06/" + d, "")
+	verify(t, "温馨日常：童话书 / 试衣记录 / 看月亮计划 / 水仗战绩表 / 舞步记录 / 朝会记录本都读过了",
+		dailies.all(func(d): return GameState.has_flag("palace_" + str(d))))
+	var spots := 0
+	for m in PalaceRoom.DAILY_SPOTS:
+		spots += (PalaceRoom.DAILY_SPOTS[m] as Array).size()
+	verify(t, "新调查点（日常 / 字条 / 颜料）一共 %d 个，分在 %d 张图" % [spots, PalaceRoom.DAILY_SPOTS.size()], spots >= 20 and PalaceRoom.DAILY_SPOTS.size() >= 10)
+	# 身高线、枕头大战（小剧场 + CG）
+	await t._talk("floor_06/daily_height", "", [0])
+	await t._advance_until(func(): return GameState.has_flag("cg_seen_theater:height_measure") and not CG.is_busy() and not Dialogue.is_active(), 150.0)
+	verify(t, "钟楼：两道身高线 → 比身高（小剧场 + CG）", GameState.has_flag("palace_height_measured") and GameState.has_flag("cg_seen_theater:height_measure"))
+	await t._talk("floor_06/daily_pillow", "", [0])
+	await t._advance_until(func(): return GameState.has_flag("cg_seen_theater:pillow_fight") and not CG.is_busy() and not Dialogue.is_active(), 150.0)
+	verify(t, "寝室：「下一场，妈妈一定赢」→ 枕头大战（小剧场 + CG）", GameState.has_flag("palace_pillow_fought") and GameState.has_flag("cg_seen_theater:pillow_fight"))
+	# ③ 陛下藏的字条：画像背后 → 图书馆 → 厨房 → 浴场 → 钟楼顶 → 秋千 → 王座台阶下的宝箱
+	for k in PalaceRoom.NOTE_KEYS:
+		await t._talk("floor_06/queen_" + str(k), "")
+	verify(t, "陛下藏的字条：六张都找到了（背包里 %d 张）" % GameState.inventory.count("queen_note"),
+		PalaceRoom.NOTE_KEYS.all(func(k): return GameState.has_flag("palace_note_" + str(k))) and GameState.inventory.count("queen_note") == 6)
+	await t._talk("floor_06/daily_drawing", "")
+	verify(t, "王座底下的半张「我们三」", GameState.has_flag("palace_drawing_half") and GameState.inventory.count("drawing_half") == 1)
+	await t._talk("floor_06/treasure_chest", "")
+	await t._advance_until(func(): return GameState.has_flag("cg_seen_theater:treasure_feather") and not CG.is_busy() and not Dialogue.is_active(), 150.0)
+	verify(t, "寻宝终点：小宝箱的羽毛机关（小剧场 + CG）→ 两个半张拼成「我们三个」",
+		GameState.has_flag("palace_treasure_done") and GameState.has_flag("palace_drawing_joined") and GameState.inventory.has("family_drawing")
+		and not GameState.inventory.has("drawing_half") and GameState.has_flag("cg_seen_theater:treasure_feather"))
+	# ④ 颜料 → 小画像上色 → 开口
+	GameState.set_flag(PalaceThrone.BOSS_FLAG)
+	for k in PalaceRoom.PAINT_ZONE:
+		await t._talk("floor_06/paint_" + str(k), "", [0])
+	verify(t, "四种颜料：果酱 / 泡泡染料 / 铜粉 / 叶汁（拿的时候被挠）",
+		PalaceRoom.PAINT_ZONE.keys().all(func(k): return GameState.inventory.has("paint_" + str(k))))
+	GameState.set_flag("palace_memory_done")
+	GameState.set_flag("palace_memory_out_seen")
+	GameState.pending_spawn = "from_ante"
+	await t.main.change_level(Floors.scene(PalaceThrone.MAP))
+	await t._advance_until(func(): return t._level_id() == PalaceThrone.MAP and not Cutscene.is_playing() and not Dialogue.is_active(), 60.0)
+	var th := _room(t, "PalaceThrone") as PalaceThrone
+	await t.get_tree().process_frame
+	await t.get_tree().process_frame
+	verify(t, "Boss 后：四幅小画像褪了色，各有一个调查点", th.small_spots.size() == 4 and (th.small[0] as Node2D).modulate.r < 0.9)
+	for k in PalaceRoom.PAINT_ZONE:
+		await t._talk("floor_06/small_" + str(k), "")
+	await t.get_tree().create_timer(1.4).timeout
+	verify(t, "上色：四幅小画像都上了颜色、颜料用掉了", PalaceRoom.PAINT_ZONE.keys().all(_coloured) and (th.small[0] as Node2D).modulate.r > 0.95)
+	for i in 5:
+		await t._talk("floor_06/small_red", "")
+	var heard := range(5).filter(func(i): return GameState.has_flag("heard_small_red_%d" % i)).size()
+	verify(t, "宫廷画师的小画像：随机讲陛下的事，没听过的优先（五次听了 %d 段不一样的）" % heard, heard == 5)
+	# ⑤ Boss：第三层的摇篮曲音符、强化以后的十三下钟声
+	GameState.set_flag(PalaceThrone.BOSS_FLAG, false)
+	GameState.pending_spawn = "from_ante"
+	await t.main.change_level(Floors.scene(PalaceThrone.MAP))
+	await t._advance_until(func(): return t._level_id() == PalaceThrone.MAP and not Cutscene.is_playing() and not Dialogue.is_active(), 60.0)
+	th = _room(t, "PalaceThrone") as PalaceThrone
+	await t._advance_until(func(): return th.started, 30.0)
+	th.layer = 2
+	var ring := th.lullaby_ring()
+	verify(t, "第三层：摇篮曲音符一圈 %d 个" % ring.size(), ring.size() == PalaceThrone.NOTE_RING)
+	var pc := GameState.player as PlayableCharacter
+	pc.laugh.set_value(0.0)
+	pc.set_invulnerable(0.0)
+	var nt := ring[0] as Node2D
+	pc.global_position = nt.position + Vector2(0, 2)
+	await t.get_tree().process_frame
+	await t.get_tree().process_frame
+	verify(t, "音符碰到人：闷笑涨（%.1f）" % pc.laugh.value, pc.laugh.value > 0.0)
+	th.empowered = true
+	var b := th.bell_ring(PalaceThrone.BELL_COUNT)
+	pc.laugh.set_value(0.0)
+	pc.global_position = b.position + Vector2(b.r + 40.0, 0)
+	await t._advance_until(func(): return pc.laugh.value > 0.0 or not is_instance_valid(b), 3.0)
+	verify(t, "强化：第十三下钟声的大冲击波，扫到人闷笑涨（%.1f）" % pc.laugh.value, b != null and pc.laugh.value > 0.0)
+	th.empowered = false
+	th.layer = 0
+	th._clear_minions()
+	# ⑥ 蓝色公主：随便聊聊
+	for k in ["key", "fake", "song", "queen", "two"]:
+		GameState.set_flag("palace_blue_talk_" + k, false)
+	await _menu_talk(t, PalaceAnte.HINT_FILE, ["关于画里", "随便聊聊"])
+	verify(t, "蓝色公主「关于画里……」→「随便聊聊」：随机聊了一段",
+		["key", "fake", "song", "queen", "two"].any(func(k): return GameState.has_flag("palace_blue_talk_" + k)))
+
+
+static func _coloured(k: Variant) -> bool:
+	return GameState.has_flag("palace_small_" + str(k)) and not GameState.inventory.has("paint_" + str(k))
+
+
+## 按选项的文字点菜单（菜单里的选项数量随进度变，按下标点会点错）；texts 用完以后选「算了」/ 最后一项收尾，最后确保这段对话结束
+static func _menu_talk(t: Node, file: String, texts: Array) -> void:
+	await t._advance_until(func(): return not Dialogue.runner.is_running(), 10.0)
+	Dialogue.runner.talk(file, "")
+	var left := texts.duplicate()
+	var tm := 0.0
+	while Dialogue.runner.is_running() and tm < 20.0:
+		var cm := Dialogue.runner.choice_menu
+		if cm.is_open():
+			var opts: Array = cm.options
+			var want := str(left.pop_front()) if not left.is_empty() else "算了"
+			var idx := -1
+			for i in opts.size():
+				if str(opts[i]).contains(want):
+					idx = i
+					break
+			if idx < 0:
+				idx = opts.size() - 1
+			cm.choose(idx)
+		if Dialogue.is_active():
+			Dialogue.advance()
+		await t.get_tree().process_frame
+		tm += t.get_process_delta_time()
+	if Dialogue.runner.is_running():
+		Dialogue.runner.end_conversation()
+		await t._advance_until(func(): return not Dialogue.runner.is_running(), 5.0)

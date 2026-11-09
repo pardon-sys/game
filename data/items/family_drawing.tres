@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="KeyItem" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/items/key_item.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/generated/item_family_drawing.png" id="2"]
+
+[resource]
+script = ExtResource("1")
+icon = ExtResource("2")
+id = "family_drawing"
+display_name = "「我们三个」"
+description = "拼好的蜡笔画：戴王冠的大人站在中间，两只手各牵着一个小孩，一个粉色，一个蓝色。头顶画满了歪歪扭扭的爱心。"
+key_type = "palace"
+category = 1
+stackable = false
+show_in_hud = false
+hotkey = ""
+pickup_emotion = "happy"

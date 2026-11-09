@@ -110,3 +110,15 @@ ANATOMY (critical): each princess has exactly TWO arms and TWO hands, each hand 
 FACES (critical, most important): faces must match ref_princesses.png exactly in face SHAPE, eye size and proportions — soft round anime face, small chin, normal face length (NOT elongated, NOT stretched, NOT squashed), eyes the same size as in the reference. Expression: sweet natural laughter — eyes closed in gentle smooth crescents or half-open with small tears, blushing cheeks, mouth open only a little to moderately in a soft rounded smile; NO wide gaping mouth, NO visible fangs or rows of teeth, NO stiff grin, no warped or melted features. Draw the faces large and clean.
 No text, no letters, no numbers, no UI, no watermark, no signature.
 ```
+
+## memory_sucked（第七轮：以第一版为参考重画，只修牵手的手；采用）
+
+```
+Use your built-in image generation tool (image_gen) to create the image described below, saved in the current directory as memory_sucked_v3.png (PNG). Do not edit or create any other files. After saving it, reply with just the filename.
+Attached ref_sucked_v1.png is the APPROVED illustration. Recreate it as faithfully as possible — SAME composition, same camera, same two princesses in the same poses, outfits, hair, expressions, colors, lighting, the same golden picture frame with the watercolor vortex behind them, the same ruined throne room, petals and paint ribbons. Same 1536x1024 landscape canvas, same polished anime event-CG style (ref_style.png), faces as in ref_princesses.png.
+THE ONLY CHANGE — fix the HANDS:
+- In the center, the pink princess's hand and the blue princess's hand hold each other in ONE clean, simple, clearly readable hand-hold (palm to palm, fingers gently wrapped around the other's hand, like holding hands while running) — exactly two hands touching, each with five fingers, no extra or tangled fingers, no merged hands.
+- Each princess's OTHER arm is stretched outward with an open, relaxed hand: one thumb and four fingers, clearly separated and natural.
+- Exactly two arms and two hands per princess.
+Keep shoes on (this scene is not a tickling scene). No text, no letters, no numbers, no UI, no watermark, no signature.
+```
