@@ -122,3 +122,18 @@ THE ONLY CHANGE — fix the HANDS:
 - Exactly two arms and two hands per princess.
 Keep shoes on (this scene is not a tickling scene). No text, no letters, no numbers, no UI, no watermark, no signature.
 ```
+
+## memory_sucked（第八轮：并排牵手用一左一右、掌心相对，不是握手；身材比例规范；采用）
+
+```
+Use your built-in image generation tool (image_gen) to create the image described below, saved in the current directory as memory_sucked_v4.png (PNG). Do not edit or create any other files. After saving it, reply with just the filename.
+Attached ref_sucked_v1.png is the APPROVED illustration. Recreate it as faithfully as possible — SAME composition, same camera, same two princesses in the same poses, outfits, hair, expressions, colors, lighting, the same golden picture frame with the watercolor vortex behind them, the same ruined throne room, petals and paint ribbons. Same 1536x1024 landscape canvas, same polished anime event-CG style (ref_style.png), faces as in ref_princesses.png.
+THE ONLY CHANGE — fix the HANDS so they are anatomically correct:
+- The two princesses stand side by side, so they hold hands with OPPOSITE hands: the pink princess (left) uses her LEFT hand, the blue princess (right) uses her RIGHT hand. Draw a simple, natural side-by-side HAND-HOLD (like two friends walking together): palms facing each other, fingers gently wrapped around the other's hand, both thumbs resting on top, seen clearly from the front. It is NOT a handshake (a handshake would need two right hands) and NOT interlocked in a confusing knot.
+- Each hand has exactly five fingers; only these two hands touch.
+- Each princess's OTHER arm is stretched outward with an open, relaxed hand with one thumb and four clearly separated fingers.
+- Exactly two arms and two hands per princess, each arm a natural length.
+BODY (mandatory, critical): slim and long-limbed figures with natural limb proportions and long legs, about 6.5 to 7 heads tall, balanced shoulder / waist / leg ratios. Keep cute, youthful, girlish anime faces, but NOT child bodies, NOT chibi short arms or legs, NOT oversized heads. Outfits complete, neat and tidy. Natural poses with accurate human anatomy — every arm attached at the shoulder with a correct upper arm, elbow and forearm of normal length; legs attached at the hips with correct thighs, knees and calves; no misplaced, twisted, stretched, extra or missing limbs.
+QUALITY: high-definition, polished Japanese anime illustration, fine delicate line art, soft highlights, bright candy colors, complete full-figure composition with nothing cropped.
+Keep shoes on (this scene is not a tickling scene). No text, no letters, no numbers, no UI, no watermark, no signature.
+```

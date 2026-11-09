@@ -2429,6 +2429,19 @@ static func _round8(t: Node) -> void:
 		playing and t.seen_cuts.has("throne_paint_intro") and GameState.has_flag(PalaceThrone.PAINT_INTRO_FLAG))
 	var inside_t0 := th.inside_t
 	verify(t, "过场里画里的计时不走（%.1f 秒）" % inside_t0, inside_t0 < 1.0)
+	# 画里的画笔能被打掉：攻击三下 → 碎成颜料、不再挠人；过一会儿重新画出来
+	var inner := th.inside
+	var br := th.brushes[0] as PalaceThrone.Brush
+	if inner:
+		for k in PalaceThrone.BRUSH_HP:
+			br.position = inner.global_position + Vector2(8, 0)
+			inner._set_state(PlayableCharacter.State.ATTACK)
+			th._hit_cool.clear()
+			th._tick_hits(0.05)
+		inner._set_state(PlayableCharacter.State.IDLE)
+	verify(t, "画里：攻击三下把画笔打掉（剩 %d 下）" % br.hp, inner != null and not br.alive() and br.down_t > 0.0)
+	br.step(PalaceThrone.BRUSH_RESPAWN + 0.1)
+	verify(t, "打掉的画笔过一会儿在巡逻点重新画出来", br.alive() and br.position == br.home)
 	th.escape()
 	await t._advance_until(func(): return not CG.is_busy() and not Cutscene.is_playing() and not Dialogue.is_active(), 150.0)
 	# 跳关点：Boss 前带上支线奖励
