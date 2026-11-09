@@ -88,6 +88,7 @@ func _ready() -> void:
 	_add_lost.call_deferred()
 	_add_patrol.call_deferred()
 	_add_mimic.call_deferred()
+	_add_story.call_deferred()
 	var ih := ItemHinter.new()
 	ih.name = "ItemHinter"
 	ih.room = self
@@ -669,6 +670,11 @@ const ITEM_HINTS := {
 	"queen_music_box": {"item": "queen_music_box"},
 	"lost_thing": {"flag_prefix": "palace_lost_", "except": ["palace_lost_done"]},
 	"watering_can": {"item": "watering_can"},
+	"diary": {"flag_prefix": "palace_diary_", "except": ["palace_diary_done"]},
+	"gem": {"flag_prefix": "palace_gem_"},
+	"birthday_cake": {"item": "birthday_cake"},
+	"bouquet": {"item": "bouquet"},
+	"tea_set": {"item": "tea_set"},
 }
 const ITEM_HINT_FILE := "floor_06/item_hint"
 
@@ -715,3 +721,142 @@ class ItemHinter extends Node:
 		await Dialogue.talk(PalaceRoom.ITEM_HINT_FILE, k)
 		_talking = false
 		_t = 0.6
+
+
+
+# ------------------------------------------------------------------ 第四轮·和剧情有关的跨图事件（文本 penance_text/palace8.py）
+## 乳母的日记：婴儿房（隧道）→ 浴场 / 厨房，三页（DIARY_FLAG % i）；第一页先找到，另外两页才出现。三页齐了 → DIARY_DONE + 读一遍（diary_all）
+const DIARY_FLAG := "palace_diary_%d"
+const DIARY_DONE := "palace_diary_done"
+## 女王的首饰盒（隧道寝室）：三颗宝石 GEMS（浴场泡泡池 / 衣帽间礼服领口 / 后花园喷泉）→ JEWEL_DONE
+const GEMS := {"ruby": "gem_ruby", "sapphire": "gem_sapphire", "topaz": "gem_topaz"}
+const GEM_ZONE := {"ruby": "waist", "sapphire": "armpit", "topaz": "sole"}
+const JEWEL_DONE := "palace_jewel_done"
+## 人偶们的记忆：和女仆长交好以后（她借出发条钥匙）给三个停摆的人偶上弦（MEMORY_FLAG % key）→ MEMORIES_DONE
+const DOLL_MEMORY_FLAG := "palace_memory_%s"
+const MEMORY_KEYS := ["chef", "keeper", "scrub"]
+const MEMORIES_DONE := "palace_memories_done"
+
+
+static func diary_count() -> int:
+	return [1, 2, 3].filter(func(i): return GameState.has_flag(DIARY_FLAG % i)).size()
+
+
+## 捡到一页日记（对话先设了 DIARY_FLAG；三页齐了的那一读在对话里接着走 goto）
+static func diary_page() -> void:
+	GameState.notify("乳母的日记：%d / 3 页" % diary_count())
+
+
+## 拿宝石：伸手的时候被机关挠一下（泡泡 / 人台 / 水柱），然后拿到
+static func take_gem(key: String) -> bool:
+	if GameState.has_flag("palace_gem_" + key):
+		return false
+	GameState.set_flag("palace_gem_" + key)
+	var pc := GameState.player as PlayableCharacter
+	if is_instance_valid(pc):
+		pc.status.apply_root(1.0)
+		for k in 3:
+			var h := HitData.make_tickle(pc, 2.5)
+			h.zone = str(GEM_ZONE.get(key, "waist"))
+			pc.receive_hit(h)
+		PalaceRoom.say_random(pc, "gem_" + {"ruby": "bubble", "sapphire": "gown", "topaz": "spray"}[key])
+	var it := ItemDB.get_item(str(GEMS[key]))
+	if it:
+		GameState.give_item(it, 1)
+	Audio.play("chime", -4.0, 0.0, 1.4)
+	GameState.notify("得到「%s」" % (it.display_name if it else key))
+	return true
+
+
+## 首饰盒：三颗宝石都在 → 嵌进去、打开
+static func jewel_open() -> bool:
+	if GameState.has_flag(JEWEL_DONE):
+		return true
+	for k in GEMS:
+		if not GameState.has_flag("palace_gem_" + k):
+			return false
+	for k in GEMS:
+		GameState.inventory.remove(str(GEMS[k]), 1)
+	GameState.set_flag(JEWEL_DONE)
+	Audio.play("unlock", -3.0)
+	return true
+
+
+## 给停摆的人偶上弦：要和女仆长交好（FRIEND_FLAG）、手里还有发条钥匙；发条弹一下挠一下
+static func wind_doll(key: String) -> bool:
+	if GameState.has_flag(DOLL_MEMORY_FLAG % key):
+		return true
+	if not GameState.has_flag(FRIEND_FLAG):
+		GameState.notify("要一把对得上的发条钥匙……女仆长那里也许有")
+		return false
+	GameState.set_flag(DOLL_MEMORY_FLAG % key)
+	Audio.play("unlock", -6.0, 0.0, 1.6)
+	var pc := GameState.player as PlayableCharacter
+	if is_instance_valid(pc):
+		var h := HitData.make_tickle(pc, 3.0)
+		h.zone = "waist"
+		pc.receive_hit(h)
+		PalaceRoom.say_random(pc, "doll_spring")
+	if MEMORY_KEYS.all(func(k): return GameState.has_flag(DOLL_MEMORY_FLAG % k)):
+		GameState.set_flag(MEMORIES_DONE)
+		GameState.notify("三个人偶的话都听完了……回廊的女仆长，好像有话想说")
+	return true
+
+
+
+## 剧情跨图事件的调查点：[对话, 格子, 要这些标记才出现, 做完的标记（之后不再提示 / 图标消失）, 地上画的物品图标（item_<id>.png，空 = 不画）]
+const STORY := "res://assets/generated/story_props.png"   # 0 首饰盒（合上）/ 1 打开 / 2~4 宝石 / 5 日记页 / 6 茶具 / 7 花束
+const STORY_SPOTS := {
+	"floor_06_palace_tunnels": [["floor_06/diary_1", Vector2i(22, 51), [], "palace_diary_1", "diary_page"],
+			["floor_06/tunnel_jewel_box", Vector2i(80, 7), [], "palace_jewel_done", ""]],
+	"floor_06_palace_bath": [["floor_06/diary_2", Vector2i(32, 27), ["palace_diary_1"], "palace_diary_2", "diary_page"],
+			["floor_06/gem_ruby", Vector2i(31, 19), [], "palace_gem_ruby", "gem_ruby"],
+			["floor_06/memory_scrub", Vector2i(36, 28), ["palace_scrub_down", "palace_headmaid_friend"], "palace_memory_scrub", ""]],
+	"floor_06_palace_kitchen": [["floor_06/diary_3", Vector2i(37, 18), ["palace_diary_1"], "palace_diary_3", "diary_page"],
+			["floor_06/memory_chef", Vector2i(16, 12), ["palace_headmaid_friend"], "palace_memory_chef", ""]],
+	"floor_06_palace_wardrobe": [["floor_06/gem_sapphire", Vector2i(66, 8), [], "palace_gem_sapphire", "gem_sapphire"]],
+	"floor_06_palace_garden": [["floor_06/gem_topaz", Vector2i(28, 21), ["palace_fountain_flow"], "palace_gem_topaz", "gem_topaz"]],
+	"floor_06_palace_servants": [["floor_06/servants_tea_set", Vector2i(70, 27), ["palace_headmaid_friend"], "palace_tea_taken", "tea_set"]],
+	"floor_06_palace_clock_5": [["floor_06/memory_keeper", Vector2i(16, 18), ["palace_headmaid_friend"], "palace_memory_keeper", ""]],
+}
+var story_spots: Array = []
+
+
+func _add_story() -> void:
+	for e in STORY_SPOTS.get(map_id(), []):
+		var c: Vector2i = e[1]
+		var need: Array = e[2]
+		var done := str(e[3])
+		if str(e[4]) != "":
+			var v := Events2View.new()
+			v.tex = "res://assets/generated/item_%s.png" % str(e[4])
+			v.scale_k = 0.9
+			v.need = need
+			v.hide_flag = done
+			v.position = world(c)
+			add_view(v)
+		var sp := PrisonOddities.Spot.new()
+		sp.dialogue = str(e[0])
+		sp.done_flag = done
+		add_child(sp)
+		sp.global_position = world(c)
+		if not need.is_empty():
+			gate(sp, need)
+		story_spots.append(sp)
+	# 隧道寝室梳妆台上的首饰盒（打开以后换成打开的那帧）
+	if map_id() == "floor_06_palace_tunnels":
+		sheet_view(STORY, 8, 1 if GameState.has_flag(JEWEL_DONE) else 0, Vector2i(80, 7), [], 0.8)
+	# 钟顶角落里停摆的守钟人偶（灰灰的，一动不动）
+	if map_id() == "floor_06_palace_clock_5":
+		var kv := Node2D.new()
+		kv.position = world(Vector2i(16, 17))
+		var spr := Sprite2D.new()
+		if ResourceLoader.exists("res://assets/generated/npcs/clock_keeper.png"):
+			spr.texture = load("res://assets/generated/npcs/clock_keeper.png")
+			spr.hframes = 4
+			spr.vframes = 4
+			spr.frame = 0
+			spr.offset = Vector2(0, -16)
+			spr.modulate = Color(0.75, 0.72, 0.78)
+		kv.add_child(spr)
+		add_view(kv)

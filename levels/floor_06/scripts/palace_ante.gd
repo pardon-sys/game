@@ -48,6 +48,7 @@ var tile_progress := 0
 var guards: Array = []
 ## 测试用：下一次许愿的结果（-1 = 随机；0 回复 / 1 水柱 / 2 小鱼）
 var next_wish := -1
+const BANQUET := "res://assets/generated/banquet_props.png"   # 0 三人座的长桌 / 1 蛋糕架 / 2 磨掉字的名牌
 const HINT_FILE := "floor_06/ante_partner_hint"
 const HINT_EVERY := 2.5
 const WANDER := [Vector2i(20, 14), Vector2i(41, 14), Vector2i(19, 25), Vector2i(42, 25), Vector2i(25, 28), Vector2i(36, 28),
@@ -70,6 +71,7 @@ func map_id() -> String:
 
 func _ready() -> void:
 	super()
+	_ready_banquet()
 	_spot_at("floor_06/ante_statue", cells("statue")[0], STATUE_FLAG, -44.0)
 	sheet_view(PalaceRoom.PROPS3, 6, 0, cells("statue")[0], [], 1.0, Vector2(0, -4))   # 抱着剑的骑士石像
 	var d := PaintingDoor.new()
@@ -797,6 +799,8 @@ func hint_keys() -> Array:
 		ks.append("box")
 	if GameState.has_flag(PalaceGarden.GARDEN_CLUE) and not GameState.has_flag(LevelExit.passage_flag(MAP, PalaceGarden.MAP)):
 		ks.append("garden")
+	if GameState.has_flag("dlg_floor_06/banquet_table_default") and not GameState.has_flag(BANQUET_DONE):
+		ks.append("banquet")
 	if ks.is_empty():
 		ks.append("idle")
 	return ks
@@ -837,3 +841,74 @@ class AnteHooks extends BattleAIHooks:
 			if (g as ArmorGuard).state in ["charge", "hold"]:
 				return null
 		return r.wander_target(ai)
+
+
+# ------------------------------------------------------------------ 第四轮·女王的生日宴（前厅西南的小宴会厅 banquet）
+## 布置清单四样：蛋糕（冷藏库融出来的）/ 花束（后花园小店主）/ 八音盒（石像，摆一下不收走）/ 茶具（女仆长休息室）
+const BANQUET_ITEMS := {"cake": "birthday_cake", "flower": "bouquet", "box": "queen_music_box", "tea": "tea_set"}
+const BANQUET_NAMES := {"cake": "生日蛋糕", "flower": "花束", "box": "八音盒", "tea": "茶具"}
+const BANQUET_FLAG := "palace_banquet_%s"
+const BANQUET_DONE := "palace_banquet_done"
+const BANQUET_REWARD := "equip_birthday_ribbon"
+var _banquet_views := {}
+
+
+func _ready_banquet() -> void:
+	if cells("banquet").is_empty():
+		return
+	var c := cells("banquet")[0]
+	sheet_view(BANQUET, 3, 0, c + Vector2i(0, -1), [], 1.0)
+	var i := 0
+	for k in BANQUET_ITEMS:
+		var v := PalaceRoom.Events2View.new()
+		v.tex = "res://assets/generated/item_%s.png" % str(BANQUET_ITEMS[k])
+		v.scale_k = 0.8
+		v.need = [BANQUET_FLAG % k]
+		# 逻辑 (k, -k) = 屏幕上水平排开；(-18, -18) = 抬到桌面上（等距里往上）；画在桌子上面
+		var kx := (i - 1.5) * 7.0
+		v.position = world(c) + Vector2(-23, -23) + Vector2(kx + 5.0, -kx - 5.0)
+		v.z_index = 3
+		add_view(v)
+		_banquet_views[k] = v
+		i += 1
+	var sp := PrisonOddities.Spot.new()
+	sp.dialogue = "floor_06/banquet_table"
+	sp.done_flag = BANQUET_DONE
+	add_child(sp)
+	sp.global_position = world(c + Vector2i(0, 1))
+
+
+func banquet_placed() -> int:
+	return BANQUET_ITEMS.keys().filter(func(k): return GameState.has_flag(BANQUET_FLAG % k)).size()
+
+
+## 把手里有的东西摆上桌（八音盒不收走）；四样齐了 → 接着演庆祝（对话 ready 节点）
+func banquet_place() -> bool:
+	var put: Array = []
+	for k in BANQUET_ITEMS:
+		if GameState.has_flag(BANQUET_FLAG % k):
+			continue
+		var id := str(BANQUET_ITEMS[k])
+		if GameState.inventory.has(id):
+			GameState.set_flag(BANQUET_FLAG % k)
+			if k != "box":
+				GameState.inventory.remove(id, 1)
+			put.append(BANQUET_NAMES[k])
+	var miss: Array = BANQUET_ITEMS.keys().filter(func(k): return not GameState.has_flag(BANQUET_FLAG % k)).map(func(k): return BANQUET_NAMES[k])
+	if not put.is_empty():
+		Audio.play("chime", -6.0, 0.0, 1.2)
+	if miss.is_empty():
+		GameState.notify("四样都摆好了")
+		return true
+	GameState.notify(("摆上了：%s。" % "、".join(put) if not put.is_empty() else "") + "还差：%s" % "、".join(miss))
+	return false
+
+
+func banquet_done() -> void:
+	if GameState.has_flag(BANQUET_DONE):
+		return
+	GameState.set_flag(BANQUET_DONE)
+	var it := ItemDB.get_item(BANQUET_REWARD)
+	if it:
+		GameState.give_item(it, 1)
+	GameState.notify("得到「女王的生日缎带」")

@@ -1,0 +1,62 @@
+{
+	"name": "礼服领口的蓝宝石",
+	"entries": [
+		{
+			"if": {
+				"flag": "palace_gem_sapphire"
+			},
+			"node": "done"
+		},
+		{
+			"node": "default"
+		}
+	],
+	"nodes": {
+		"default": {
+			"lines": [
+				{
+					"text": "（一件蓝色的小礼服领口上，别着一颗蓝宝石。穿着礼服的人台，手里攥着软尺）",
+					"speaker": ""
+				}
+			],
+			"prompt": "伸手去拿？",
+			"choices": [
+				{
+					"text": "拿",
+					"next": "go"
+				},
+				{
+					"text": "算了",
+					"next": "no"
+				}
+			]
+		},
+		"go": {
+			"lines": [
+				{
+					"text": "（手指刚碰到宝石，人台的两只手就「咔」地抱了上来，软尺在腰上缠了一圈——）",
+					"speaker": ""
+				}
+			],
+			"set": {
+				"call": "palace_gem_sapphire"
+			}
+		},
+		"no": {
+			"lines": [
+				{
+					"text": "……等一下。",
+					"speaker": "公主"
+				}
+			]
+		},
+		"done": {
+			"lines": [
+				{
+					"text": "（这里已经空了）",
+					"speaker": ""
+				}
+			]
+		}
+	}
+}

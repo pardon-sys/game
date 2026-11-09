@@ -173,7 +173,7 @@ MARKS = {
     "floor_06_palace_training": {"Y": "east", "X": "north", "U": "dummies", "N": "sign", "F": "swords", "W": "carvings", "A": "ring", "B": "bell",
                                  "T": "stocks", "C": "diary", "J": "fragment", "D": "shade"},
     "floor_06_palace_ante": {"Z": "south", "N": "throne_door", "W": "clock_door", "S": "painting", "L": "statue", "M": "tiles", "F": "fountain", "D": "pedestal", "V": "vault",
-                             "H": "garden_door"},
+                             "H": "garden_door", "Q": "banquet"},
     "floor_06_palace_garden": {"Z": "south", "W": "swing", "F": "fountain", "C": "cherubs", "G": "gazebo", "K": "keeper", "R": "beds", "M": "fairies"},
     "floor_06_palace_clock_1": {"Z": "south", "U": "up", "G": "gear_gaps", "J": "brake", "C": "checkpoints", "T": "chests", "B": "beetle_nests"},
     "floor_06_palace_clock_2": {"Z": "south", "U": "up", "L": "pendulum", "T": "chests", "C": "checkpoints", "I": "lost"},
@@ -699,6 +699,9 @@ def _palace_ante():
     put(30, 23, "V")                       # 地砖踩对以后打开的地下小宝库（台阶）
     room(42, 10, 43, 10)                   # 东北角柱子后面的小凹位：后花园的暗门（石像三问全对以后才知道）
     put(43, 10, "H")
+    room(5, 26, 12, 32)                    # 西南的小宴会厅（陛下的生日宴）
+    room(13, 29, 18, 29)                   # 接大厅的小走廊
+    put(8, 28, "Q")
     return ["".join(r) for r in g]
 
 

@@ -3,6 +3,13 @@
 	"entries": [
 		{
 			"if": {
+				"flag": "palace_memories_done",
+				"not": "palace_headmaid_memories"
+			},
+			"node": "memories"
+		},
+		{
+			"if": {
 				"flag": "palace_headmaid_friend"
 			},
 			"node": "friend"
@@ -61,6 +68,39 @@
 					"speaker": "女仆长"
 				}
 			]
+		},
+		"memories": {
+			"lines": [
+				{
+					"text": "……三个人偶，说的，都不一样。",
+					"speaker": "女仆长"
+				},
+				{
+					"text": "……一个说，小殿下们在厨房。……一个说，有人从钟楼下来。……一个说，谁都没有来。",
+					"speaker": "女仆长"
+				},
+				{
+					"text": "……………",
+					"speaker": "女仆长"
+				},
+				{
+					"text": "……那天晚上。……我，在哪里呢。",
+					"speaker": "女仆长"
+				},
+				{
+					"text": "……女仆长？",
+					"speaker": "公主"
+				},
+				{
+					"text": "……我想不起来。……发条，只记得，转到那一下为止的事。",
+					"speaker": "女仆长"
+				}
+			],
+			"set": {
+				"flags": [
+					"palace_headmaid_memories"
+				]
+			}
 		}
 	}
 }

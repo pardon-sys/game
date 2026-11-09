@@ -1,0 +1,86 @@
+{
+	"name": "守钟人偶",
+	"entries": [
+		{
+			"if": {
+				"flag": "palace_memory_keeper"
+			},
+			"node": "done"
+		},
+		{
+			"node": "default"
+		}
+	],
+	"nodes": {
+		"default": {
+			"lines": [
+				{
+					"text": "（钟顶的角落里，守钟人偶靠着墙一动不动。背后的发条孔里积满了灰）",
+					"speaker": ""
+				}
+			],
+			"prompt": "用女仆长借给你们的发条钥匙给它上弦？",
+			"choices": [
+				{
+					"text": "上弦",
+					"next": "go",
+					"if": {
+						"flag": "palace_headmaid_friend"
+					}
+				},
+				{
+					"text": "算了",
+					"next": "no"
+				}
+			]
+		},
+		"go": {
+			"lines": [
+				{
+					"text": "……慢慢转。",
+					"speaker": "蓝色的公主"
+				}
+			],
+			"set": {
+				"call": "palace_wind_keeper"
+			},
+			"next": "talk"
+		},
+		"talk": {
+			"lines": [
+				{
+					"text": "……那天晚上，钟，敲了十三下。",
+					"speaker": "守钟人偶"
+				},
+				{
+					"text": "……有一个人，从钟楼上，下来了。……抱着，什么东西。……很小，很小。",
+					"speaker": "守钟人偶"
+				},
+				{
+					"text": "……我看不清，是谁。……天太黑了。",
+					"speaker": "守钟人偶"
+				},
+				{
+					"text": "（说完，它又慢慢地停了下来）",
+					"speaker": ""
+				}
+			]
+		},
+		"no": {
+			"lines": [
+				{
+					"text": "……发条孔，和女仆长背后的一模一样。……先和她打好关系，也许能借到钥匙。",
+					"speaker": "蓝色的公主"
+				}
+			]
+		},
+		"done": {
+			"lines": [
+				{
+					"text": "（守钟人偶安安静静地停着。发条已经松了）",
+					"speaker": ""
+				}
+			]
+		}
+	}
+}

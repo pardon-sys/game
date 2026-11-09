@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="KeyItem" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/items/key_item.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/generated/item_birthday_cake.png" id="2"]
+
+[resource]
+script = ExtResource("1")
+icon = ExtResource("2")
+id = "birthday_cake"
+display_name = "小小的生日蛋糕"
+description = "冷藏库冰块里融出来的生日蛋糕，插着两根蜡烛。「给两个小不点的第一个生日」。"
+key_type = "palace"
+category = 1
+stackable = false
+show_in_hud = false
+hotkey = ""
+pickup_emotion = "happy"

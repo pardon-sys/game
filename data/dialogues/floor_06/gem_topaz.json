@@ -1,0 +1,62 @@
+{
+	"name": "喷泉里的黄宝石",
+	"entries": [
+		{
+			"if": {
+				"flag": "palace_gem_topaz"
+			},
+			"node": "done"
+		},
+		{
+			"node": "default"
+		}
+	],
+	"nodes": {
+		"default": {
+			"lines": [
+				{
+					"text": "（水流进喷泉以后，池底露出了一颗黄宝石，被小天使的水柱冲得一闪一闪）",
+					"speaker": ""
+				}
+			],
+			"prompt": "伸手去拿？",
+			"choices": [
+				{
+					"text": "拿",
+					"next": "go"
+				},
+				{
+					"text": "算了",
+					"next": "no"
+				}
+			]
+		},
+		"go": {
+			"lines": [
+				{
+					"text": "（伸手去捞的时候，三尊小天使的水柱一起转了过来——）",
+					"speaker": ""
+				}
+			],
+			"set": {
+				"call": "palace_gem_topaz"
+			}
+		},
+		"no": {
+			"lines": [
+				{
+					"text": "……等一下。",
+					"speaker": "公主"
+				}
+			]
+		},
+		"done": {
+			"lines": [
+				{
+					"text": "（这里已经空了）",
+					"speaker": ""
+				}
+			]
+		}
+	}
+}

@@ -15,7 +15,7 @@ ICONS = ["armpit_pad", "scarf", "wool_socks", "dance_shoes", "waist_sash", "mint
          "training_wraps", "padded_shorts", "party_bow", "feather_anklet", "ice_hairpin", "thousand_pants",
          "t_feather_socks", "t_toe_brush", "t_fluff_bra", "t_thigh_ring", "t_pinch_pad", "t_knead_tights",
          "t_feather_shackles", "t_thigh_strap", "t_bell_anklet", "t_mark_patch",
-         "mouse_shorts", "mouse_paw_shoes", "palace_ribbon", "palace_corset", "palace_boots", "palace_stockings", "feather_shawl", "clock_watch", "queen_hairpin"]
+         "mouse_shorts", "mouse_paw_shoes", "palace_ribbon", "palace_corset", "palace_boots", "palace_stockings", "feather_shawl", "clock_watch", "queen_hairpin", "birthday_ribbon"]
 
 # 名字 -> (显示名, 部位, 谁能穿, 属性, 部位加减, 挡下次数, 诅咒, 特殊, 好处, 代价, 说明, 价格(0 = 不卖))
 EQUIP = {
@@ -95,6 +95,10 @@ EQUIP["clock_watch"] = ("守钟人的怀表", ["waist"], "", {"laugh_decay": 0.1
 EQUIP["queen_hairpin"] = ("女王的羽毛发饰", ["neck"], "", {"laugh_gain": -0.15, "magic_cd": 0.9}, {}, {}, False, "",
                           "闷笑涨幅 −15%、魔法冷却 −10%", "（无）",
                           "七枚笑脸徽记换来的发饰：一根雪白的长羽毛别在金色的小发夹上。戴上它，好像连笑声都轻了一点。", 0)
+# 第四章（第四轮）：小宴会厅的生日宴，女仆长送的缎带
+EQUIP["birthday_ribbon"] = ("女王的生日缎带", ["waist"], "", {"laugh_decay": 0.1, "magic_cd": 0.95}, {"waist": -0.1}, {}, False, "",
+                            "闷笑消减 +10%、魔法冷却 −5%、腰敏感 −0.1", "（无）",
+                            "一条很旧的粉色生日缎带，绣着「给陛下」三个字。系在腰上，暖暖的——好像有很多人在一起笑。", 0)
 # 攻防战的临时痒痒装备（被痒痒裁缝铺 / 捆绑藤怪强制穿上 20 秒；不卖、不进背包）：名字 -> (显示名, 部位, 类别, 属性, 部位加减, 特殊, 好处, 代价, 说明)
 TEMP = {
     "t_feather_socks": ("羽毛袜", ["sole"], "tickle", {"speed": 0.8}, {"sole": 0.3}, "",

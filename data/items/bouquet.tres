@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="KeyItem" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/items/key_item.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/generated/item_bouquet.png" id="2"]
+
+[resource]
+script = ExtResource("1")
+icon = ExtResource("2")
+id = "bouquet"
+display_name = "铃兰和蔷薇的花束"
+description = "花园小店主送的花束，系着粉色缎带。……前厅西南的小宴会厅，布置清单上写着「花」。"
+key_type = "palace"
+category = 1
+stackable = false
+show_in_hud = false
+hotkey = ""
+pickup_emotion = "happy"

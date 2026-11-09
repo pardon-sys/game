@@ -3,6 +3,13 @@
 	"entries": [
 		{
 			"if": {
+				"flag": "palace_ice_cake",
+				"not": "palace_cake_taken"
+			},
+			"node": "take"
+		},
+		{
+			"if": {
 				"flag": "palace_ice_cake"
 			},
 			"node": "done"
@@ -62,7 +69,8 @@
 					"text": "……（盯着蛋糕看了很久）……",
 					"speaker": "蓝色的公主"
 				}
-			]
+			],
+			"next": "take"
 		},
 		"no": {
 			"lines": [
@@ -79,6 +87,22 @@
 					"speaker": ""
 				}
 			]
+		},
+		"take": {
+			"lines": [
+				{
+					"text": "……这个蛋糕。……带上吧。也许，有人在等它。",
+					"speaker": "蓝色的公主"
+				}
+			],
+			"set": {
+				"give_item": {
+					"birthday_cake": 1
+				},
+				"flags": [
+					"palace_cake_taken"
+				]
+			}
 		}
 	}
 }

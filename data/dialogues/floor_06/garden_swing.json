@@ -35,6 +35,14 @@
 			"prompt": "坐上去荡一荡？",
 			"choices": [
 				{
+					"text": "哼那首歌",
+					"next": "song",
+					"if": {
+						"flag": "palace_diary_done",
+						"not": "cg_seen_theater:garden_swing_song"
+					}
+				},
+				{
 					"text": "一个坐，一个推",
 					"next": "go"
 				},
@@ -72,7 +80,31 @@
 					"text": "（板子上的星星和雪花，挨得很近很近）",
 					"speaker": ""
 				}
+			],
+			"prompt": "……",
+			"choices": [
+				{
+					"text": "哼那首歌",
+					"next": "song",
+					"if": {
+						"flag": "palace_diary_done",
+						"not": "cg_seen_theater:garden_swing_song"
+					}
+				},
+				{
+					"text": "走开",
+					"next": ""
+				}
 			]
+		},
+		"song": {
+			"lines": [
+				{
+					"text": "……乳母日记里的那首。……我们一起坐上去吧。",
+					"speaker": "公主"
+				}
+			],
+			"theater": "garden_swing_song"
 		}
 	}
 }

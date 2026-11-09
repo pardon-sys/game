@@ -1,0 +1,340 @@
+{
+	"name": "小宴会厅：陛下的生日宴",
+	"cast": {
+		"princess": {
+			"kind": "princess",
+			"at": [
+				-14,
+				8
+			],
+			"visual": "normal",
+			"anim": "idle",
+			"dir": "right"
+		},
+		"blue": {
+			"kind": "npc:blue_princess",
+			"at": [
+				14,
+				8
+			],
+			"visual": "normal",
+			"anim": "idle",
+			"dir": "left"
+		},
+		"pants": {
+			"kind": "trap:hand",
+			"at": [
+				20,
+				10
+			]
+		},
+		"d1": {
+			"kind": "trap:feather_curtain",
+			"at": [
+				-24,
+				-8
+			]
+		},
+		"d2": {
+			"kind": "trap:feather_curtain",
+			"at": [
+				24,
+				-8
+			]
+		}
+	},
+	"steps": [
+		{
+			"act": 1,
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "fade_in"
+				},
+				{
+					"state": "giggle",
+					"do": "voice"
+				}
+			],
+			"wait": 0.5
+		},
+		{
+			"speaker": "",
+			"text": "（宴会厅的门「吱呀」一声开了。女仆长、糕点师、守钟人偶、搓澡人偶、舞会人偶、还有花园的小店主——一个接一个地走了进来）",
+			"act": 1
+		},
+		{
+			"speaker": "女仆长",
+			"text": "……陛下的生日。……准备好了。……谢谢。"
+		},
+		{
+			"speaker": "人偶们",
+			"text": "（齐声）……生日，快乐。"
+		},
+		{
+			"speaker": "公主",
+			"text": "……可是，陛下不在这里……",
+			"emotion": "sad"
+		},
+		{
+			"speaker": "女仆长",
+			"text": "……所以。……今天，请两位，坐在小殿下们的位置上。"
+		},
+		{
+			"speaker": "",
+			"text": "（人偶们把两个人按在长凳上，脚搁到天鹅绒的脚凳上，鞋子被小心地脱下来摆好——）",
+			"actions": [
+				{
+					"who": "princess",
+					"visual": "normal",
+					"do": "pose"
+				},
+				{
+					"who": "blue",
+					"visual": "normal",
+					"do": "pose"
+				}
+			],
+			"act": 2
+		},
+		{
+			"speaker": "女仆长",
+			"text": "……陛下的生日，规矩是。……大家一起，笑。"
+		},
+		{
+			"speaker": "",
+			"text": "（羽毛掸子从左右两边伸过来，在腰和腋下轻轻地挠；脚凳边上，两个女仆人偶拿着软毛刷，一下一下地刷着脚心）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "d1",
+					"zone": "waist",
+					"fx": "feather",
+					"repeat": 8,
+					"interval": 0.16,
+					"do": "tickle"
+				},
+				{
+					"who": "blue",
+					"by": "d2",
+					"zone": "sole",
+					"fx": "feather",
+					"repeat": 8,
+					"interval": 0.16,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"visual": "giggle",
+					"do": "pose"
+				},
+				{
+					"who": "blue",
+					"visual": "giggle",
+					"do": "pose"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "嘻嘻……！这、这个规矩……哈哈……",
+			"emotion": "giggle"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……哈……人、人太多了……"
+		},
+		{
+			"speaker": "",
+			"text": "（糕点师举着蛋糕在旁边转圈，花精撒着花瓣，舞会人偶戴着尖尖的派对帽——所有人偶都围了上来，羽毛、刷子、小手，一起挠）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "d1",
+					"zone": "sole",
+					"fx": "hand",
+					"repeat": 16,
+					"interval": 0.08,
+					"do": "tickle"
+				},
+				{
+					"who": "blue",
+					"by": "d2",
+					"zone": "waist",
+					"fx": "hand",
+					"repeat": 16,
+					"interval": 0.08,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"visual": "helpless_2",
+					"do": "pose"
+				},
+				{
+					"who": "blue",
+					"visual": "helpless_2",
+					"do": "pose"
+				},
+				{
+					"do": "voice",
+					"state": "laugh"
+				}
+			],
+			"act": 3,
+			"portrait": "queen_birthday"
+		},
+		{
+			"speaker": "公主",
+			"text": "哈哈哈哈！生、生日快乐——生日快乐啦——哈哈哈！",
+			"emotion": "helpless_2"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……哈哈……哈哈哈……生日……快乐……"
+		},
+		{
+			"speaker": "女仆长",
+			"text": "……对。……就是这个声音。……陛下，最喜欢的。"
+		},
+		{
+			"speaker": "公主",
+			"text": "（星光在宴会厅里炸开，烛火一下子全亮了起来……哈啊……放出去了……）",
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "flash"
+				},
+				{
+					"sound": "star_burst",
+					"do": "sfx"
+				},
+				{
+					"sound": "water_release",
+					"volume": -2.0,
+					"do": "sfx"
+				},
+				{
+					"who": "princess",
+					"time": 0.4,
+					"do": "shake"
+				},
+				{
+					"state": "laugh",
+					"do": "voice"
+				}
+			],
+			"act": "burst",
+			"wait": 1.0
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……哈……哈哈……（冰晶跟着炸开，落在蛋糕上，变成了糖霜一样的小雪花……）",
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "flash"
+				},
+				{
+					"sound": "ice_crack",
+					"volume": -2.0,
+					"do": "sfx"
+				},
+				{
+					"sound": "water_release",
+					"volume": -2.0,
+					"do": "sfx"
+				},
+				{
+					"who": "blue",
+					"time": 0.4,
+					"do": "shake"
+				},
+				{
+					"state": "laugh",
+					"do": "voice"
+				}
+			],
+			"act": "burst",
+			"wait": 1.0
+		},
+		{
+			"speaker": "",
+			"text": "（人偶们安静下来。最后，小花精踮着脚，用一片花瓣在两人刚释放完、敏感得要命的脚心上，轻轻地写了一个「谢」字）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "d1",
+					"zone": "sole",
+					"fx": "leaf",
+					"repeat": 5,
+					"interval": 0.2,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"time": 0.3,
+					"do": "shake"
+				},
+				{
+					"who": "princess",
+					"visual": "helpless_1",
+					"do": "pose"
+				},
+				{
+					"who": "blue",
+					"visual": "helpless_1",
+					"do": "pose"
+				}
+			],
+			"act": 4
+		},
+		{
+			"speaker": "公主",
+			"text": "呀……！……哈……谢、谢什么呀……",
+			"emotion": "helpless_1"
+		},
+		{
+			"speaker": "女仆长",
+			"text": "……谢谢，让这张桌子，再热闹一次。",
+			"actions": [
+				{
+					"who": "princess",
+					"visual": "normal",
+					"do": "pose"
+				},
+				{
+					"who": "blue",
+					"visual": "normal",
+					"do": "pose"
+				}
+			]
+		},
+		{
+			"speaker": "",
+			"text": "（女仆长把一条缎带放到两个人手里。那是一条很旧的生日缎带，绣着「给陛下」三个字）"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……三张椅子。……一张高的，两张小的。"
+		},
+		{
+			"speaker": "公主",
+			"text": "……嗯。",
+			"emotion": "sad"
+		},
+		{
+			"actions": [
+				{
+					"state": "",
+					"do": "voice"
+				},
+				{
+					"time": 0.6,
+					"do": "fade_out"
+				}
+			],
+			"wait": 0.7
+		}
+	]
+}

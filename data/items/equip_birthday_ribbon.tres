@@ -1,0 +1,28 @@
+[gd_resource type="Resource" script_class="EquipData" format=3]
+
+[ext_resource type="Script" path="res://scripts/items/equip_data.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/generated/equip_icons.png" id="2"]
+
+[sub_resource type="AtlasTexture" id="icon"]
+atlas = ExtResource("2")
+region = Rect2(512, 0, 16, 16)
+
+[resource]
+script = ExtResource("1")
+id = "equip_birthday_ribbon"
+display_name = "女王的生日缎带"
+description = "一条很旧的粉色生日缎带，绣着「给陛下」三个字。系在腰上，暖暖的——好像有很多人在一起笑。"
+icon = SubResource("icon")
+category = 4
+stackable = false
+show_in_hud = false
+pickup_emotion = "happy"
+slots = Array[String](["waist"])
+owner_id = ""
+modifiers = {"laugh_decay": 0.1, "magic_cd": 0.95}
+zone_mods = {"waist": -0.1}
+block = {}
+cursed = false
+special = ""
+pros = "闷笑消减 +10%、魔法冷却 −5%、腰敏感 −0.1"
+cons = "（无）"

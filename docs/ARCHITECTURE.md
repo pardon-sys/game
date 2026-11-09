@@ -1404,6 +1404,12 @@ data/cutscenes/<楼层组>/  地图内过场；data/theater/<楼层组>/  小剧
 	  凉亭宝箱（`open_gazebo()`）、花园小店主（`KEEPER_ASKED` → 厨房水槽东边的小水壶 `watering_can` → `water()` → `garden_petals`）、`fairy` ×4（fairy_swarm）。
 	  地板 / 墙用自己的等距主题 `palace_garden`（`gen_iso_theme.py`：`floor_kind = grass` 草地 + 少量踏脚石和小花，`wall_kind = hedge` 树篱叶团、有的开着蔷薇，地面装饰是三叶草 / 花瓣 / 雏菊 / 落叶）；
 	  小天使的水柱按逻辑方向算、用 `IsoView.offset` 换成屏幕偏移再画；`DECOR_BEDS` 沿树篱摆的装饰花坛。
+	- 和剧情有关的跨图事件（文本 `penance_text/palace8.py`，import 时顺手给 palace6 / palace7 的对话接线：冷藏库蛋糕可带走、女仆长的「那天晚上」、店主送花束、秋千「哼那首歌」）：
+	  `PalaceRoom.STORY_SPOTS`（按地图列出调查点：对话 / 格子 / 出现条件 / 做完标记 / 地上的物品图标），`_add_story()` 统一摆；
+	  乳母的日记（`DIARY_FLAG`，第三页的对话 goto `all` 拼起来读 → `DIARY_DONE`）、首饰盒（`take_gem(key)` 拿宝石时被机关挠，`jewel_open()`）、
+	  人偶们的记忆（`wind_doll(key)`，要 `FRIEND_FLAG`；三个都听完 → `MEMORIES_DONE`）。
+	  女王的生日宴：前厅 `banquet` 小宴会厅（`quest_maps._palace_ante` 西南），`PalaceAnte.banquet_place()`（八音盒不收走）→ 对话 goto 四样齐 →
+	  小剧场 `queen_birthday`（CG）→ `banquet_done()` 给 `equip_birthday_ribbon`。图：`story_props.png`、`banquet_props.png`、物品图标 `item_gem_* / birthday_cake / bouquet / tea_set / diary_page`。
   - 新装备（衣帽间）：`palace_ribbon`、`palace_corset`、`palace_boots`、`palace_stockings`、`feather_shawl`（`gen_equipment.py` + `gen_equip_art.py` + `ItemDB`）。
 - 配乐（`tools/audio/gen_music.py`，ElevenLabs）：`old_palace` 旧王宫探索（荒凉、破旧、往日的华丽）、`palace_boss` 王座间 Boss「封笑的女王画像」，登记在 `Audio.MUSIC`，第四章用。
 

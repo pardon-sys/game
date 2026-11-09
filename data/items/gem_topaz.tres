@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="KeyItem" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/items/key_item.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/generated/item_gem_topaz.png" id="2"]
+
+[resource]
+script = ExtResource("1")
+icon = ExtResource("2")
+id = "gem_topaz"
+display_name = "黄宝石"
+description = "后花园喷泉的水流通以后，池底露出来的黄宝石。……隧道寝室的首饰盒上，有一个黄色的空槽。"
+key_type = "palace"
+category = 1
+stackable = false
+show_in_hud = false
+hotkey = ""
+pickup_emotion = "happy"

@@ -613,6 +613,7 @@ static func _palace_b(t: Node) -> void:
 	await _extra_events_c(t)
 	await _round4(t)
 	await _garden(t)
+	await _story(t)
 
 
 static func _quiet_beetles(cr: PalaceClock) -> void:
@@ -1672,3 +1673,88 @@ static func _clear_enemies(t: Node) -> void:
 		if e is Monster and (e as Monster).is_alive():
 			(e as Monster).health.damage(999)
 	_calm(t)
+
+
+## 第四轮·和剧情有关的跨图事件：乳母的日记、女王的首饰盒、人偶们的记忆、女王的生日宴（CG）
+static func _story(t: Node) -> void:
+	_calm(t)
+	for k in PalaceRoom.ITEM_HINTS:
+		GameState.set_flag(PalaceRoom.item_hint_flag(k))
+	for f in [PalaceRoom.FRIEND_FLAG, ScrubDoll.FLAG, PalaceGarden.FLOW_FLAG, PalaceGarden.KEEPER_DONE, "palace_ice_cake"]:
+		GameState.set_flag(f)
+	for f in ["palace_diary_1", "palace_diary_2", "palace_diary_3", PalaceRoom.DIARY_DONE, "palace_gem_ruby", "palace_gem_sapphire", "palace_gem_topaz",
+			PalaceRoom.JEWEL_DONE, "palace_memory_chef", "palace_memory_keeper", "palace_memory_scrub", PalaceRoom.MEMORIES_DONE, "palace_headmaid_memories",
+			"palace_cake_taken", "palace_bouquet_taken", "palace_tea_taken", PalaceAnte.BANQUET_DONE, "cg_seen_theater:garden_swing_song", "cg_seen_theater:queen_birthday",
+			"palace_banquet_cake", "palace_banquet_flower", "palace_banquet_box", "palace_banquet_tea"]:
+		GameState.set_flag(f, false)
+	# ---- 隧道：婴儿房的第一页日记、梳妆台上的首饰盒
+	await _goto(t, "floor_06_palace_tunnels")
+	var tu := _room(t, "PalaceTunnels") as PalaceTunnels
+	await t.get_tree().process_frame
+	verify(t, "隧道：婴儿房的日记页、寝室的首饰盒（%d 个调查点）" % tu.story_spots.size(), tu.story_spots.size() == 2)
+	await t._talk("floor_06/tunnel_jewel_box", "")
+	verify(t, "首饰盒缺三颗宝石：打不开", not GameState.has_flag(PalaceRoom.JEWEL_DONE))
+	await t._talk("floor_06/diary_1", "")
+	verify(t, "乳母的日记①（婴儿房）", GameState.has_flag("palace_diary_1") and PalaceRoom.diary_count() == 1)
+	# ---- 浴场：日记②、泡泡池底的红宝石、搓澡人偶的记忆
+	await _goto(t, "floor_06_palace_bath")
+	var p := GameState.player as PlayableCharacter
+	p.laugh.clear()
+	await t._talk("floor_06/diary_2", "")
+	await t._talk("floor_06/gem_ruby", "", [0])
+	verify(t, "泡泡池底的红宝石：伸手时被泡泡挠（%.0f），拿到" % p.laugh.value, GameState.inventory.has("gem_ruby") and p.laugh.value > 0.0)
+	_calm(t)
+	await t._talk("floor_06/memory_scrub", "", [0])
+	verify(t, "给搓澡人偶上弦：「那天晚上浴室没有人来」", GameState.has_flag("palace_memory_scrub"))
+	# ---- 厨房：日记③（三页齐了 → 拼起来读）、糕点师人偶的记忆、冷藏库的生日蛋糕
+	await _goto(t, "floor_06_palace_kitchen")
+	var said := []
+	var cb := func(f: String, n: String): said.append(f + ":" + n)
+	Dialogue.runner.node_entered.connect(cb)
+	await t._talk("floor_06/diary_3", "")
+	Dialogue.runner.node_entered.disconnect(cb)
+	verify(t, "日记三页齐了：拼起来读一遍（爱哭的那个怕黑……）", GameState.has_flag(PalaceRoom.DIARY_DONE) and said.has("floor_06/diary_3:all"))
+	await t._talk("floor_06/memory_chef", "", [0])
+	await t._talk("floor_06/kitchen_ice_cake", "")
+	verify(t, "糕点师人偶的记忆 + 带走融开的生日蛋糕", GameState.has_flag("palace_memory_chef") and GameState.inventory.has("birthday_cake"))
+	# ---- 衣帽间：礼服领口的蓝宝石
+	await _goto(t, "floor_06_palace_wardrobe")
+	await t._talk("floor_06/gem_sapphire", "", [0])
+	verify(t, "礼服领口的蓝宝石（人台抓住挠）", GameState.inventory.has("gem_sapphire"))
+	_calm(t)
+	# ---- 后花园：喷泉里的黄宝石、店主的花束、秋千上哼那首歌
+	GameState.pending_spawn = "from_ante"
+	await t.main.change_level(Floors.scene(PalaceGarden.MAP))
+	await t._advance_until(func(): return t._level_id() == PalaceGarden.MAP and not Cutscene.is_playing() and not Dialogue.is_active(), 60.0)
+	_clear_enemies(t)
+	await t._talk("floor_06/gem_topaz", "", [0])
+	await t._talk("floor_06/garden_keeper", "")
+	verify(t, "喷泉里的黄宝石 + 店主送的花束", GameState.inventory.has("gem_topaz") and GameState.inventory.has("bouquet"))
+	_calm(t)
+	await t._talk("floor_06/garden_swing", "", [0])
+	await t._advance_until(func(): return GameState.has_flag("cg_seen_theater:garden_swing_song") and not CG.is_busy() and not Dialogue.is_active(), 120.0)
+	verify(t, "日记读完以后：秋千上哼那首歌（小剧场）", GameState.has_flag("cg_seen_theater:garden_swing_song"))
+	# ---- 钟顶：守钟人偶的记忆 → 三段都听完
+	await _goto(t, "floor_06_palace_clock_5")
+	await t._talk("floor_06/memory_keeper", "", [0])
+	verify(t, "三个人偶的记忆都听完了", GameState.has_flag(PalaceRoom.MEMORIES_DONE))
+	# ---- 回廊：女仆长「那天晚上，我在哪里呢」、休息室的茶具
+	await _goto(t, "floor_06_palace_servants")
+	await t._talk("floor_06/servants_wind_maid", "")
+	await t._talk("floor_06/servants_tea_set", "")
+	verify(t, "女仆长想不起来那天晚上 + 拿到茶具", GameState.has_flag("palace_headmaid_memories") and GameState.inventory.has("tea_set"))
+	# ---- 隧道：三颗宝石 → 首饰盒打开（钥匙形状的空位）
+	await _goto(t, "floor_06_palace_tunnels")
+	await t._talk("floor_06/tunnel_jewel_box", "")
+	verify(t, "三颗宝石嵌进首饰盒：打开了（宝石收走）", GameState.has_flag(PalaceRoom.JEWEL_DONE) and not GameState.inventory.has("gem_ruby"))
+	# ---- 前厅的小宴会厅：四样摆齐 → 生日宴（CG）→ 生日缎带
+	if not GameState.inventory.has("queen_music_box"):
+		GameState.inventory.add(ItemDB.get_item("queen_music_box"))
+	await _goto(t, "floor_06_palace_ante")
+	var an := _room(t, "PalaceAnte") as PalaceAnte
+	verify(t, "前厅西南有小宴会厅", not an.cells("banquet").is_empty())
+	await t._talk("floor_06/banquet_table", "")
+	await t._advance_until(func(): return GameState.has_flag(PalaceAnte.BANQUET_DONE) and not CG.is_busy() and not Dialogue.is_active(), 150.0)
+	verify(t, "蛋糕 / 花束 / 八音盒 / 茶具摆齐：人偶们的生日派对（CG）→ 女王的生日缎带（%d / 4）" % an.banquet_placed(),
+		an.banquet_placed() == 4 and GameState.has_flag("cg_seen_theater:queen_birthday") and GameState.inventory.has(PalaceAnte.BANQUET_REWARD)
+		and GameState.inventory.has("queen_music_box"))

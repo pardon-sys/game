@@ -166,6 +166,24 @@
 		{
 			"if": {
 				"eq": {
+					"ante_hint": "banquet"
+				},
+				"hero": "blue"
+			},
+			"node": "banquet_p"
+		},
+		{
+			"if": {
+				"eq": {
+					"ante_hint": "banquet"
+				},
+				"hero": "pink"
+			},
+			"node": "banquet_b"
+		},
+		{
+			"if": {
+				"eq": {
 					"ante_hint": "garden"
 				},
 				"hero": "blue"
@@ -350,6 +368,22 @@
 			"lines": [
 				{
 					"text": "……八音盒。……画像，也许会发呆。",
+					"speaker": "蓝色的公主"
+				}
+			]
+		},
+		"banquet_p": {
+			"lines": [
+				{
+					"text": "西南边的小宴会厅……清单上的蛋糕、花、八音盒、茶具，在王宫里到处都有。",
+					"speaker": "公主"
+				}
+			]
+		},
+		"banquet_b": {
+			"lines": [
+				{
+					"text": "……宴会厅的清单。……冷藏库、后花园、石像、女仆长的休息室。",
 					"speaker": "蓝色的公主"
 				}
 			]
