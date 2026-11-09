@@ -98,6 +98,7 @@ func _ready() -> void:
 		lv = lv.get_parent()
 	if GameState.has_flag("penance_mouse_dev") and not GameState.has_flag(PalaceKitchen.FAREWELL_FLAG) and not PenanceCell.wearing_mouse():
 		PenanceCell.wear_mouse()
+	PalaceRoom.ensure_pants()
 	_start_duo.call_deferred()
 	_add_lost.call_deferred()
 	_add_patrol.call_deferred()
@@ -666,8 +667,11 @@ func reset_to(at: Vector2) -> void:
 		var pc := c as PlayableCharacter
 		if Downed.is_downed(pc):
 			(pc.get_node("Downed") as Downed).revive_now()
+		if pc.status.is_grabbed():
+			pc.status.release()
 		pc.status.clear_root()
 		pc.laugh.set_value(0.0)
+		pc.velocity = Vector2.ZERO
 		pc.global_position = at + (Vector2(10, 0) if pc.character_id == "blue" else Vector2.ZERO)
 	var p := GameState.player
 	if is_instance_valid(p) and p.get("camera"):
@@ -752,6 +756,16 @@ const JEWEL_DONE := "palace_jewel_done"
 const DOLL_MEMORY_FLAG := "palace_memory_%s"
 const MEMORY_KEYS := ["chef", "keeper", "scrub"]
 const MEMORIES_DONE := "palace_memories_done"
+
+
+## 旧存档补发千手痒痒裤（以前要夜迷宫里同时有 4 只手以上才给；现在一定给）
+static func ensure_pants() -> void:
+	if GameState.has_flag(Equipment.PANTS_FLAG):
+		return
+	GameState.set_flag(Equipment.PANTS_FLAG)
+	var it := ItemDB.get_item("thousand_pants")
+	if it and not GameState.inventory.has("thousand_pants"):
+		GameState.give_item(it, 1)
 
 
 static func diary_count() -> int:

@@ -8,7 +8,7 @@ API key 从项目根目录的 .env 读（ELEVENLABS=...，.env 不进版本库�
   ③ 文件 = 原始音频 [0, T)，最后一拍（CROSSFADE，按拍长算）和 B 之前的同样长的一段交叉淡化——播到结尾跳回 B 时是连续的；
   ④ 把 edit/loop_begin = B（采样）写进 .wav.import，Godot 从 B 开始向前循环。T 之后的尾声丢掉。
 原始音频存在 tools/.cache/music/（不进版本库）。
-用法：python tools/audio/gen_music.py [dungeon] [town] [boss] [boss3] [night_room] [night_maze] [siege] [minigame] [knight_boss] [knight_fog] [old_palace] [palace_boss]（不写就全部生成；已经生成过的跳过，加 --force 重新生成，
+用法：python tools/audio/gen_music.py [dungeon] [town] [boss] [boss3] [night_room] [night_maze] [siege] [minigame] [knight_boss] [knight_fog] [old_palace] [palace_boss] [palace_memory]（不写就全部生成；已经生成过的跳过，加 --force 重新生成，
   加 --reloop 用缓存的原始音频重新切循环）
 导入：assets/audio/music/*.wav.import 用无损（compress/mode=0）+ 向前循环（edit/loop_mode=2、loop_begin 由本脚本写）——QOA 有损压缩会给高频多的曲子添沙沙声。
 """
@@ -60,6 +60,14 @@ TRACKS = {
                     "that snaps back into the driving 4/4 groove, pizzicato and celesta flourishes like brushstrokes of magic paint, a cracked music-box lullaby "
                     "fragment cutting through. Powerful timpani and orchestral toms for impact. Warm rounded cinematic mix with clear low end: NO cymbal crashes, "
                     "NO hi-hats, NO shakers, NO buzzing or noisy sounds. Builds tension, loops seamlessly, steady high energy, no fade-in or fade-out."),
+    # 第四章尾声「画里的记忆」：那首摇篮曲的八音盒变奏（温柔、怀旧、有点泪目）
+    "palace_memory": ("Instrumental video game music for a tender, tearful memory sequence in a cute pixel-art fantasy game: two princesses walk "
+                      "through a watercolor painting that holds a lost queen's memories of her children. A gentle LULLABY theme in 3/4 time, "
+                      "72 BPM, major key with bittersweet minor turns. Lead: a delicate old music box playing the lullaby melody, sometimes "
+                      "slightly out of tune like a worn record; a soft concert harp with flowing arpeggios, warm low solo cello answering the "
+                      "melody, a quiet string ensemble swelling gently, a faint celesta sparkle and a distant soft wordless female hum. "
+                      "Nostalgic, loving, heartbreaking but warm. Intimate, calm, no drums, no percussion, NO cymbals, NO noise. "
+                      "Loops seamlessly, steady soft dynamics, no fade-in or fade-out."),
     # 骑士 Boss 最后阶段「笑雾之中」：原曲的英雄悲壮 + 宿命 + 战斗 + 危险 + 诡异（第二版：更有战斗感和压迫感）
     "knight_fog": ("Instrumental video game FINAL BOSS battle music, last phase: inside a violet sea of laughing black fog, a cursed suit of knight armor "
                    "floats in the air like a puppet of fate while two princesses fight desperately to free him. Intense, driving and dangerous, "

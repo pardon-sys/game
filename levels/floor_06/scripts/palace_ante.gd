@@ -60,6 +60,8 @@ var _hint_t := 0.0
 var _roamers: Array = []
 var _old_talk := {}
 var _tile_origin := Vector2i.ZERO
+## 这一趟里地砖刚沉下去（宝库打开）：这一趟不画；重新进图地砖复原（舞会的摇篮曲步法还要踩）
+var sunk_this_visit := false
 ## 笑声地砖之间隔一格（第五轮：原来挨得太紧）
 const TILE_STEP := 2
 var _last_cell := {}
@@ -375,6 +377,7 @@ func on_defeat(reason: String) -> void:
 
 func _open_vault() -> void:
 	GameState.set_flag(VAULT_FLAG)
+	sunk_this_visit = true
 	tile_progress = 0
 	Audio.play("rumble", -4.0)
 	Audio.play("unlock", -2.0)
@@ -504,7 +507,7 @@ class TileView extends Node2D:
 		queue_redraw()
 
 	func _draw() -> void:
-		if room == null or room.vault_open():
+		if room == null or room.sunk_this_visit:
 			return
 		var glow := 0.25 + 0.15 * sin(Time.get_ticks_msec() / 300.0 + idx) if room.tiles_armed() else 0.0
 		var c := Color(1.0, 0.85, 0.45, 0.18 + glow + flash)

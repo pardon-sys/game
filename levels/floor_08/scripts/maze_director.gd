@@ -698,7 +698,9 @@ func _run_ending() -> void:
 
 ## 出口过场用哪一版：迷宫里身上同时有 PANTS_HANDS 只手过 → 千手痒痒裤的那一版。
 static func finale_id() -> String:
-	return "f8_maze_finale_pants" if GameState.has_flag(PANTS_FLAG) else "f8_maze_finale"
+	# 千手痒痒裤改成一定会得到（不再看迷宫里同时有几只手）
+	GameState.set_flag(PANTS_FLAG)
+	return "f8_maze_finale_pants"
 
 
 ## 回小屋：主角换回粉色公主（蓝色公主之后跟着她），换关卡；迷宫带的手 / 冷光不再带着走。

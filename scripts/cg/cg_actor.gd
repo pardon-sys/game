@@ -34,6 +34,7 @@ var _hframes := 1
 var trap_info := {}
 var _parts: Array[Sprite2D] = []
 var _active := 0.0
+var _pop := 0.0
 var _arm_parts: Array[Sprite2D] = []
 
 
@@ -206,6 +207,10 @@ static func make_trap(actor_id: String, key: String, info: Dictionary) -> CGActo
 				a.add_child(sp)
 				a._parts.append(sp)
 	a.sprite = a._parts[0]
+	if info.has("scale"):
+		a.scale = Vector2.ONE * float(info["scale"])
+	if info.get("hide_idle", false):
+		a.visible = false
 	return a
 
 
@@ -221,6 +226,17 @@ func is_active_trap() -> bool:
 func _process_trap(delta: float) -> void:
 	_active = maxf(_active - delta, 0.0)
 	var on := _active > 0.0
+	# hide_idle：只在发动时出现（弹出 / 缩回）；bob：发动时上下扭动（千手裤的小手）
+	if trap_info.get("hide_idle", false):
+		var want := 1.0 if on else 0.0
+		_pop = move_toward(_pop, want, delta * (8.0 if on else 4.0))
+		visible = _pop > 0.01
+		scale = Vector2.ONE * float(trap_info.get("scale", 1.0)) * (0.4 + 0.6 * _pop)
+	if trap_info.get("bob", false) and not _parts.is_empty():
+		var b := sin(_t * 14.0) * 1.5 if on else 0.0
+		for p in _parts:
+			p.position.y = b
+			p.rotation = sin(_t * 9.0) * 0.12 if on else 0.0
 	var frames: Array = trap_info.get("active" if on else "idle", [0])
 	var fps := float(trap_info.get("fps", 8.0))
 	var f := int(frames[int(_t * fps) % frames.size()]) if not frames.is_empty() else 0

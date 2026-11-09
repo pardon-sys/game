@@ -204,6 +204,68 @@ POINTS = [
     point("反省篇·第三章 废弃水道", "floor_06_waterway", KNIGHT + KQ_ALL_DONE + ["knight_boss_done", "penance_ch1_done", "penance_mouse_dev", "meet_exit_done", "intro_done_waterway_in"],
           knight_vars(10, 2, 10), passives=PASSIVES),
 ]
+
+# ---------------------------------------------------------------- 旧王宫：跳关时把「到这一段为止」的进度都补上（标记 + 道具）
+PALACE_PRE = KNIGHT + KQ_ALL_DONE + ["knight_boss_done", "penance_ch1_done", "meet_exit_done", "waterway_keeper_done", "blue_tickle_pants"]
+PALACE_STAGES = [   # (段, 做完以后有的标记, 道具)；后面一段包含前面所有段
+    ("bath", ["intro_done_palace_bath_in", "palace_bath_key", "palace_scrub_down", "badge_scrub", "palace_sheet_3"], {}),
+    ("servants", ["intro_done_palace_servants_in", "palace_servants_key", "palace_sheet_2"], {}),
+    ("kitchen", ["intro_done_palace_kitchen_in", "palace_mouse_farewell"], {}),
+    ("library", ["intro_done_palace_library_in", "palace_cipher_open", "palace_study_seen"], {}),
+    ("wardrobe", ["intro_done_palace_wardrobe_in"], {"equip_palace_ribbon": 1, "equip_palace_corset": 1, "equip_palace_boots": 1}),
+    ("training", ["intro_done_palace_training_in", "palace_dummies_done", "palace_training_cleared", "palace_shade_done", "badge_shade"], {}),
+    ("ante", ["intro_done_palace_ante_in"], {}),
+    ("clock", ["intro_done_palace_clock_in", "palace_clockface_open", "palace_sheet_1", "badge_clockface", "palace_ladder_down",
+               "palace_keeper_done", "palace_bells_done"], {"maid_key": 1}),
+    ("statue", ["palace_vault_open", "palace_queen_flower", "badge_vault", "palace_statue_done", "badge_statue", "palace_garden_clue"],
+     {"queen_music_box": 1}),
+    ("tunnels", ["palace_tunnels_seen"], {}),
+]
+
+
+def palace_upto(stage, extra_flags=(), extra_items=None):
+    """到 stage 这一段为止（含）的标记和道具；stage = None 表示一段都还没做。徽记 / 乐谱按标记数补齐。"""
+    flags = list(PALACE_PRE)
+    items = {"thousand_pants": 1}
+    for name, fl, it in PALACE_STAGES:
+        if stage is None:
+            break
+        flags += fl
+        for k, v in it.items():
+            items[k] = max(items.get(k, 0), v)
+        if name == stage:
+            break
+    flags += list(extra_flags)
+    badges = sum(1 for f in flags if f.startswith("badge_"))
+    sheets = sum(1 for f in flags if f.startswith("palace_sheet_"))
+    if badges:
+        items["smile_badge"] = badges
+    if sheets:
+        items["music_sheet"] = sheets
+    items.update(extra_items or {})
+    return flags, items
+
+
+def palace_point(name, floor, stage, extra_flags=(), **kw):
+    flags, items = palace_upto(stage, extra_flags)
+    return point(name, floor, flags, knight_vars(10, 2, 10), passives=PASSIVES, items=items, **kw)
+
+
+# 旧王宫的跳关点都改成「到这一段为止」的累计进度（同名的旧点换掉）
+_PALACE_POINTS = [
+    palace_point("反省篇·第四章 旧王宫·旧浴场", "floor_06_palace_bath", None, ["penance_mouse_dev", "intro_done_palace_bath_in"]),
+    palace_point("反省篇·第四章 旧王宫·图书馆", "floor_06_palace_library", "kitchen", ["intro_done_palace_library_in"]),
+    palace_point("反省篇·第四章 旧王宫·王座前厅（钟楼 / 隧道 / 王座间）", "floor_06_palace_ante", "training", ["intro_done_palace_ante_in"]),
+    palace_point("反省篇·第四章 旧王宫·钟楼一层", "floor_06_palace_clock_1", "ante"),
+    palace_point("反省篇·追加 钟楼四层·大钟面", "floor_06_palace_clock_4", "ante", ["palace_ladder_down", "palace_keeper_done", "intro_done_palace_clock_in"], cell=[42, 10]),
+    palace_point("反省篇·追加 王座前厅·笑声地砖（乐谱齐了）", "floor_06_palace_ante", "clock", cell=[30, 26]),
+    palace_point("反省篇·追加 旧浴场·搓澡人偶", "floor_06_palace_bath", None, ["penance_mouse_dev", "intro_done_palace_bath_in"], cell=[36, 24]),
+    palace_point("反省篇·追加 骑士训练场·年轻队长的幽影", "floor_06_palace_training", "wardrobe", ["intro_done_palace_training_in"], cell=[30, 23]),
+    palace_point("反省篇·第四章 旧王宫·王座间（Boss 前）", "floor_06_palace_throne", "tunnels", ["intro_done_palace_throne_in"]),
+]
+_names = {p["name"] for p in _PALACE_POINTS}
+POINTS = [p for p in POINTS if p["name"] not in _names] + _PALACE_POINTS
+
 Path("data/dev").mkdir(parents=True, exist_ok=True)
 Path("data/dev/skip_points_more.json").write_text(json.dumps({
     "_说明": "测试模式跳关点（tools/build/gen_dev_skips.py 生成）：接在 dev_config.json 的 skip_points 后面。",

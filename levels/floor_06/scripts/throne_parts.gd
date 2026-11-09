@@ -86,6 +86,9 @@ class Vortex extends Node2D:
 class PaintWave extends Node2D:
 	const SPEED := 64.0
 	const WARN := 1.2
+	const SHEET := "res://assets/generated/paint_wave.png"   # 4 帧：涌起 / 卷浪 + 泡沫 / 浪头碎开 / 落下滴落（第六轮，codex）
+	const SEG := 22.0     # 浪头图一段的宽度（逻辑像素）
+	var _segs: Array = []
 	var room: PalaceThrone
 	var y0 := 0.0          # 起点（南）
 	var y1 := 0.0          # 终点（北墙边）
@@ -100,6 +103,29 @@ class PaintWave extends Node2D:
 		z_index = 2
 		y = y0
 		position = Vector2((x0 + x1) * 0.5, y0)
+		# 沿浪线一段一段摆浪头图（缺口不摆）；每段自己是一个投影根，跟着浪走
+		if ResourceLoader.exists(SHEET):
+			var tex: Texture2D = load(SHEET)
+			var x := x0 + SEG * 0.5
+			var i := 0
+			while x < x1:
+				if not in_gap(x):
+					var n := Node2D.new()
+					n.z_index = 3
+					var sp := Sprite2D.new()
+					sp.texture = tex
+					sp.hframes = 4
+					sp.frame = i % 4
+					sp.offset = Vector2(0, -14)
+					sp.scale = Vector2(0.62, 0.62)
+					sp.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+					n.add_child(sp)
+					n.position = Vector2(x, y0)
+					n.modulate.a = 0.0
+					room.add_view(n)
+					_segs.append(n)
+				x += SEG
+				i += 1
 
 	func in_gap(x: float) -> bool:
 		for g in gaps:
@@ -115,6 +141,21 @@ class PaintWave extends Node2D:
 			return
 		_t += d
 		queue_redraw()
+		# 浪头图：预警时淡淡地冒出来，涨起来以后播帧、跟着浪往北走
+		var k := 0
+		for n in _segs:
+			if is_instance_valid(n):
+				(n as Node2D).modulate.a = 0.35 if _t < WARN else 1.0
+				(n as Node2D).position.y = y
+				var sp := (n as Node2D).get_child(0) as Sprite2D
+				sp.frame = (int(_t * 9.0) + k) % 4
+				sp.position.y = sin(_t * 8.0 + k) * 1.5
+			k += 1
+		if _t >= WARN and fmod(_t, 0.15) < d:
+			# 浪前一排泡沫 / 颜料滴
+			var fx := randf_range(x0, x1)
+			if not in_gap(fx):
+				Fx.burst(room.get_parent(), Vector2(fx, y - 4.0), "drop", 3, 26.0, 0.5, Vector2(0, -20), Color(1.0, 0.75, 0.9))
 		if _t < WARN:
 			return
 		y = maxf(y1, y - SPEED * d)
@@ -134,6 +175,10 @@ class PaintWave extends Node2D:
 			_end()
 
 	func _end() -> void:
+		for n in _segs:
+			if is_instance_valid(n):
+				(n as Node).queue_free()
+		_segs.clear()
 		if room:
 			for pc in carried:
 				if is_instance_valid(pc):

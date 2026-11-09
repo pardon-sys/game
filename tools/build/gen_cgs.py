@@ -72,7 +72,8 @@ trap_actors = {
     "brush": {"hit_fx": "brush", "texture": T % "feather_brush", "hframes": 1, "idle": [0], "active": [0], "spin": 0.6, "offset": [-8, -8]},
     "hand": {"hit_fx": "hand", "texture": T % "grab_hand", "hframes": 3, "idle": [0], "active": [2, 1], "fps": 6, "z": 2},
     # 蓝色公主的千手痒痒裤：从裤腿边冒出来的一簇紫色小手（旧王宫的小剧场都用它）
-    "pants_hands": {"hit_fx": "hand", "texture": T % "pants_hands", "hframes": 3, "idle": [0], "active": [1, 2], "fps": 7, "z": 2},
+    "pants_hands": {"hit_fx": "hand", "texture": T % "pants_hands", "hframes": 3, "idle": [0], "active": [1, 2], "fps": 7, "z": 2,
+                    "hide_idle": True, "bob": True, "scale": 0.85},
     "vine": {"hit_fx": "brush", "texture": T % "vine", "hframes": 3, "idle": [0], "active": [1], "z": 1, "pitch": 0.9},
     "fan": {"hit_fx": "feather", "texture": T % "fan", "hframes": 2, "idle": [0], "active": [0, 1], "fps": 14},
     "feather": {"hit_fx": "feather", "texture": T % "feather_arm", "hframes": 4, "idle": [3], "active": [3], "spin": 0.3},
