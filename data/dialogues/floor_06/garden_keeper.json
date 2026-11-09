@@ -3,9 +3,18 @@
 	"entries": [
 		{
 			"if": {
-				"flag": "palace_keeper_done"
+				"flag": [
+					"palace_keeper_done",
+					"palace_bouquet_taken"
+				]
 			},
 			"node": "done"
+		},
+		{
+			"if": {
+				"flag": "palace_keeper_done"
+			},
+			"node": "bouquet"
 		},
 		{
 			"if": {
@@ -95,7 +104,8 @@
 					"text": "……分得清，谁是谁。",
 					"speaker": "蓝色的公主"
 				}
-			]
+			],
+			"next": "bouquet"
 		},
 		"done": {
 			"lines": [
@@ -104,6 +114,26 @@
 					"speaker": "花园小店主"
 				}
 			]
+		},
+		"bouquet": {
+			"lines": [
+				{
+					"text": "对了对了！这个送给你们——前厅那边的小宴会厅，以前每年都要摆花的！",
+					"speaker": "花园小店主"
+				},
+				{
+					"text": "（一束铃兰和蔷薇，系着粉色的缎带）",
+					"speaker": ""
+				}
+			],
+			"set": {
+				"give_item": {
+					"bouquet": 1
+				},
+				"flags": [
+					"palace_bouquet_taken"
+				]
+			}
 		}
 	}
 }

@@ -1,0 +1,82 @@
+{
+	"name": "女王的首饰盒",
+	"entries": [
+		{
+			"if": {
+				"flag": "palace_jewel_done"
+			},
+			"node": "done"
+		},
+		{
+			"if": {
+				"flag": [
+					"palace_gem_ruby",
+					"palace_gem_sapphire",
+					"palace_gem_topaz"
+				]
+			},
+			"node": "open"
+		},
+		{
+			"node": "default"
+		}
+	],
+	"nodes": {
+		"default": {
+			"lines": [
+				{
+					"text": "（梳妆台上放着一只玫瑰木的首饰盒。盒盖上有三个空着的小圆槽——红的、蓝的、黄的）",
+					"speaker": ""
+				},
+				{
+					"text": "……少了三颗宝石。……一颗在水里，一颗在衣服上，一颗在花里。",
+					"speaker": "蓝色的公主"
+				}
+			]
+		},
+		"open": {
+			"lines": [
+				{
+					"text": "（三颗宝石嵌进盒盖，「咔哒」——首饰盒自己打开了）",
+					"speaker": ""
+				},
+				{
+					"text": "（天鹅绒的内衬上，压着一个钥匙形状的空位。钥匙已经不在了。空位旁边，有一张折起来的小纸条）",
+					"speaker": ""
+				},
+				{
+					"text": "「交给能守住门的那个孩子」",
+					"speaker": ""
+				},
+				{
+					"text": "……钥匙。",
+					"speaker": "公主",
+					"emotion": "surprise"
+				},
+				{
+					"text": "……………",
+					"speaker": "蓝色的公主"
+				},
+				{
+					"text": "……你怎么了？",
+					"speaker": "公主"
+				},
+				{
+					"text": "……没什么。……只是，好像在哪里，听过这句话。",
+					"speaker": "蓝色的公主"
+				}
+			],
+			"set": {
+				"call": "palace_jewel_open"
+			}
+		},
+		"done": {
+			"lines": [
+				{
+					"text": "（首饰盒开着。钥匙形状的空位，还是空的）",
+					"speaker": ""
+				}
+			]
+		}
+	}
+}

@@ -1,0 +1,44 @@
+{
+	"name": "休息室的茶具",
+	"entries": [
+		{
+			"if": {
+				"flag": "palace_tea_taken"
+			},
+			"node": "done"
+		},
+		{
+			"node": "default"
+		}
+	],
+	"nodes": {
+		"default": {
+			"lines": [
+				{
+					"text": "（休息室的小柜子里收着一套瓷茶具：一把茶壶，三只茶杯。茶托上贴着女仆长的字条：「陛下的生日用」）",
+					"speaker": ""
+				},
+				{
+					"text": "……三只杯子。……借走了。",
+					"speaker": "蓝色的公主"
+				}
+			],
+			"set": {
+				"give_item": {
+					"tea_set": 1
+				},
+				"flags": [
+					"palace_tea_taken"
+				]
+			}
+		},
+		"done": {
+			"lines": [
+				{
+					"text": "（柜子空了）",
+					"speaker": ""
+				}
+			]
+		}
+	}
+}

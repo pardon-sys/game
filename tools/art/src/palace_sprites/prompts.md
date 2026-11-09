@@ -263,3 +263,19 @@ ITEMS (left to right), an abandoned royal BACK GARDEN: 1) a white wooden DOUBLE 
 A game sprite strip on a solid flat pure MAGENTA (#FF00FF) chroma-key background (the whole background is one flat magenta color; do NOT use magenta or pink-magenta anywhere in the artwork itself), cute chibi pixel-art-friendly style with clean dark outlines and flat soft shading, 3/4 top-down view, it will be downscaled to about 28 pixels per frame. Landscape canvas 1536x1024, exactly 4 frames in ONE row, same scale, evenly spaced, centered, no shadows, no text, no scenery.
 SUBJECT: a cute FLOWER-FAIRY SHOPKEEPER DOLL: a tiny porcelain doll girl with a tulip-petal dress (pink and white), a daisy hat, little green leaf wings, round rosy cheeks and button eyes, holding a little woven basket of flowers. Frames 1-2: idle bobbing; frame 3: pouting and pointing at a wilted flower; frame 4: happily throwing flower petals.
 ```
+
+## 第四轮·剧情跨图事件
+
+### story_props_sheet.png — 首饰盒（合 / 开）、三颗宝石、日记页、茶具、花束 → story_props.png 和物品图标
+
+```
+A game prop sprite sheet on a solid flat pure MAGENTA (#FF00FF) chroma-key background (the whole background is one flat magenta color; do NOT use magenta or pink-magenta anywhere in the artwork itself), cute chibi pixel-art-friendly style with clean dark outlines and flat soft shading, drawn in a 3/4 isometric-style view (as seen from above at about 45 degrees), it will be downscaled to small pixel sizes. Items evenly spaced in ONE row, same scale, centered, generous magenta gaps, no shadows on the ground, no text, no labels, no scenery. Landscape canvas 1536x1024, exactly 8 items.
+ITEMS (left to right), an old royal palace: 1) an ornate rosewood JEWELRY BOX, closed, with three EMPTY round gem sockets on the lid; 2) the same jewelry box OPEN, velvet inside with an empty KEY-SHAPED indentation; 3) a red RUBY gem; 4) a blue SAPPHIRE gem; 5) a yellow TOPAZ gem; 6) a torn yellowed DIARY PAGE with faint handwriting lines (no readable letters); 7) a dainty porcelain TEA SET on a tray (teapot and three cups); 8) a BOUQUET of white lily-of-the-valley and pink roses tied with a ribbon.
+```
+
+### banquet_props_sheet.png — 小宴会厅（三人座长桌 / 蛋糕架 / 磨掉字的名牌）→ banquet_props.png
+
+```
+A game prop sprite sheet on a solid flat pure MAGENTA (#FF00FF) chroma-key background (the whole background is one flat magenta color; do NOT use magenta or pink-magenta anywhere in the artwork itself), cute chibi pixel-art-friendly style with clean dark outlines and flat soft shading, drawn in a 3/4 isometric-style view (as seen from above at about 45 degrees), it will be downscaled to small pixel sizes. Items evenly spaced in ONE row, same scale, centered, generous magenta gaps, no shadows on the ground, no text, no labels, no scenery. Landscape canvas 1536x1024, exactly 3 items.
+ITEMS (left to right), a small royal birthday banquet: 1) a long banquet TABLE with a white lace tablecloth, set for THREE: one tall ornate chair at the head and two small child-sized chairs (all empty, no name cards readable); 2) a small three-tier CAKE STAND on a plate (empty); 3) a little wooden PLACE-CARD stand whose card text is completely worn away (no letters).
+```

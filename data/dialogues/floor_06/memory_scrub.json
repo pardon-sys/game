@@ -1,0 +1,86 @@
+{
+	"name": "搓澡人偶",
+	"entries": [
+		{
+			"if": {
+				"flag": "palace_memory_scrub"
+			},
+			"node": "done"
+		},
+		{
+			"node": "default"
+		}
+	],
+	"nodes": {
+		"default": {
+			"lines": [
+				{
+					"text": "（浴场里，那个被打倒的搓澡人偶坐在泡泡桶边上，发条孔朝着天）",
+					"speaker": ""
+				}
+			],
+			"prompt": "用女仆长借给你们的发条钥匙给它上弦？",
+			"choices": [
+				{
+					"text": "上弦",
+					"next": "go",
+					"if": {
+						"flag": "palace_headmaid_friend"
+					}
+				},
+				{
+					"text": "算了",
+					"next": "no"
+				}
+			]
+		},
+		"go": {
+			"lines": [
+				{
+					"text": "……慢慢转。",
+					"speaker": "蓝色的公主"
+				}
+			],
+			"set": {
+				"call": "palace_wind_scrub"
+			},
+			"next": "talk"
+		},
+		"talk": {
+			"lines": [
+				{
+					"text": "……那天晚上？……浴室，没有人来。",
+					"speaker": "搓澡人偶"
+				},
+				{
+					"text": "……一个都，没有。……泡泡，凉了一整夜。",
+					"speaker": "搓澡人偶"
+				},
+				{
+					"text": "……真奇怪。……小殿下们，每天晚上，都要来洗澡的。",
+					"speaker": "搓澡人偶"
+				},
+				{
+					"text": "（说完，它又慢慢地停了下来）",
+					"speaker": ""
+				}
+			]
+		},
+		"no": {
+			"lines": [
+				{
+					"text": "……发条孔，和女仆长背后的一模一样。……先和她打好关系，也许能借到钥匙。",
+					"speaker": "蓝色的公主"
+				}
+			]
+		},
+		"done": {
+			"lines": [
+				{
+					"text": "（搓澡人偶安安静静地停着。发条已经松了）",
+					"speaker": ""
+				}
+			]
+		}
+	}
+}

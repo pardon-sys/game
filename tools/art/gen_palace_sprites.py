@@ -276,4 +276,6 @@ if __name__ == "__main__":
     build_strip("paint_fx_sheet.png", "paint_fx.png", 6, 48, 48, "王座间特效（粉飞溅 / 蓝飞溅 / 画布碎片 / 金色笔触 / 金色星光 / 颜料手）")
     build_strip("garden_props_sheet.png", "garden_props.png", 6, 48, 48, "后花园（双人秋千 / 抱水瓶的小天使 / 凉亭 / 花坛 / 小水壶 / 干喷泉）")
     build_strip("flower_keeper_sheet.png", "npcs/flower_keeper.png", 4, 28, 36, "花园小店主（站着 ×2 / 噘嘴指着蔫花 / 撒花瓣）", uniform=True)
+    build_strip("story_props_sheet.png", "story_props.png", 8, 40, 40, "剧情事件（首饰盒 合 / 开、红 / 蓝 / 黄宝石、日记页、茶具、花束）")
+    build_strip("banquet_props_sheet.png", "banquet_props.png", 3, 80, 64, "小宴会厅（三人座长桌 / 蛋糕架 / 名牌）")
     build_dance_doll()

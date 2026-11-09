@@ -1,0 +1,100 @@
+{
+	"name": "厨房碗柜里的日记",
+	"entries": [
+		{
+			"if": {
+				"flag": "palace_diary_3"
+			},
+			"node": "done"
+		},
+		{
+			"node": "default"
+		}
+	],
+	"nodes": {
+		"default": {
+			"lines": [
+				{
+					"text": "（一页从日记本上撕下来的纸，字迹很温柔。署名是「乳母」）",
+					"speaker": ""
+				},
+				{
+					"text": "「……只有爱笑的那个唱那首歌，爱哭的那个才睡得着。我唱不行，陛下唱也不行。……真奇怪」",
+					"speaker": ""
+				}
+			],
+			"set": {
+				"flags": [
+					"palace_diary_3"
+				],
+				"call": "palace_diary_page"
+			},
+			"next": "check"
+		},
+		"check": {
+			"goto": [
+				{
+					"if": {
+						"flag": [
+							"palace_diary_1",
+							"palace_diary_2",
+							"palace_diary_3"
+						],
+						"not": "palace_diary_done"
+					},
+					"node": "all"
+				}
+			]
+		},
+		"all": {
+			"lines": [
+				{
+					"text": "（三页日记拼在一起——）",
+					"speaker": ""
+				},
+				{
+					"text": "「……两个小殿下今天又抢同一个摇篮。爱哭的那个怕黑，夜里一定要留一盏灯……」",
+					"speaker": ""
+				},
+				{
+					"text": "「……洗澡的时候，爱笑的那个总把泡泡吹到爱哭的那个脸上。然后两个人一起笑……」",
+					"speaker": ""
+				},
+				{
+					"text": "「……只有爱笑的那个唱那首歌，爱哭的那个才睡得着。我唱不行，陛下唱也不行。……真奇怪」",
+					"speaker": ""
+				},
+				{
+					"text": "……爱笑的那个，唱那首歌。",
+					"speaker": "公主",
+					"emotion": "sad"
+				},
+				{
+					"text": "……婴儿房吊铃的那首。……你，会哼吧。",
+					"speaker": "蓝色的公主"
+				},
+				{
+					"text": "……嗯。不知道为什么……一听就会。",
+					"speaker": "公主"
+				},
+				{
+					"text": "……后花园的秋千。……乳母说，她们总在那里睡午觉。",
+					"speaker": "蓝色的公主"
+				}
+			],
+			"set": {
+				"flags": [
+					"palace_diary_done"
+				]
+			}
+		},
+		"done": {
+			"lines": [
+				{
+					"text": "（这里已经没有别的了）",
+					"speaker": ""
+				}
+			]
+		}
+	}
+}

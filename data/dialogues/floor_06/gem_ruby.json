@@ -1,0 +1,62 @@
+{
+	"name": "泡泡池底的红宝石",
+	"entries": [
+		{
+			"if": {
+				"flag": "palace_gem_ruby"
+			},
+			"node": "done"
+		},
+		{
+			"node": "default"
+		}
+	],
+	"nodes": {
+		"default": {
+			"lines": [
+				{
+					"text": "（泡泡池的池底，一颗红宝石被一串泡泡托着，在水里一闪一闪）",
+					"speaker": ""
+				}
+			],
+			"prompt": "伸手去拿？",
+			"choices": [
+				{
+					"text": "拿",
+					"next": "go"
+				},
+				{
+					"text": "算了",
+					"next": "no"
+				}
+			]
+		},
+		"go": {
+			"lines": [
+				{
+					"text": "（手刚伸进池子，一大串泡泡就「咕噜咕噜」地顺着胳膊钻进了袖子里——）",
+					"speaker": ""
+				}
+			],
+			"set": {
+				"call": "palace_gem_ruby"
+			}
+		},
+		"no": {
+			"lines": [
+				{
+					"text": "……等一下。",
+					"speaker": "公主"
+				}
+			]
+		},
+		"done": {
+			"lines": [
+				{
+					"text": "（这里已经空了）",
+					"speaker": ""
+				}
+			]
+		}
+	}
+}
