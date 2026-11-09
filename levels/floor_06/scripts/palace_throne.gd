@@ -348,9 +348,18 @@ func _tick_hits(delta: float) -> void:
 		_hit_cool[k] = maxf(0.0, float(_hit_cool[k]) - delta)
 	for m in members():
 		var pc := m as PlayableCharacter
-		if pc == inside and not empowered:
-			continue
 		if pc.state != PlayableCharacter.State.ATTACK and pc.state != PlayableCharacter.State.CAST:
+			continue
+		if pc == inside and not empowered:
+			# 画里：攻击能打画笔
+			var ki := pc.get_instance_id()
+			if float(_hit_cool.get(ki, 0.0)) <= 0.0:
+				for b in brushes:
+					var br := b as Brush
+					if br.alive() and pc.global_position.distance_to(br.position) <= BRUSH_HIT_R:
+						_hit_cool[ki] = HIT_COOL
+						br.hurt(pc.global_position)
+						break
 			continue
 		var k := pc.get_instance_id()
 		if float(_hit_cool.get(k, 0.0)) > 0.0:
@@ -583,13 +592,25 @@ func _clear_imps() -> void:
 
 # ------------------------------------------------------------------ 第八轮：魔法伤害
 const MAGIC_FREEZE := 2.0
-const PAINT_INTRO_FLAG := "palace_paint_intro_seen"     # 第一次被拉进画里看过介绍过场                       # 蓝色冰晶：范围里的小画像 / 小兵僵住这么久
+const PAINT_INTRO_FLAG := "palace_paint_intro_seen"
+const BRUSH_HP := 3                                  # 画里的画笔：挨三下打掉（碎成颜料）
+const BRUSH_HIT_R := 24.0
+const BRUSH_RESPAWN := 10.0                          # 打掉以后这么久在巡逻点重新画出来     # 第一次被拉进画里看过介绍过场                       # 蓝色冰晶：范围里的小画像 / 小兵僵住这么久
 
 
 ## 魔法放出来（magic_event "burst"）：以施法者为中心、按档位的半径——
 ##   破绽露着就打画像 tier 下；小画像挨 tier 下（金框护盾照挡）；小兵 / 分身 / 画笔精挨一下；颜料小人直接打掉；蓝色的冰晶再把它们冻住一会儿。
 func _on_magic(event: String, tier: int, pc: PlayableCharacter) -> void:
-	if event != "burst" or win or not is_instance_valid(pc) or pc == inside and not empowered:
+	if event != "burst" or win or not is_instance_valid(pc):
+		return
+	if pc == inside and not empowered:
+		# 画里放魔法：范围里的画笔各挨 tier 下
+		var rr := float(StarBurst.params(tier)["radius"]) + StarBurst.BODY_ALLOWANCE
+		for b in brushes:
+			var br := b as Brush
+			if br.alive() and StarBurst.center_of(pc).distance_to(br.position) <= rr:
+				for k in tier:
+					br.hurt(pc.global_position)
 		return
 	var ice := pc.character_id == "blue"
 	var r := float((IceBarrier.params(tier) if ice else StarBurst.params(tier))["radius"]) + StarBurst.BODY_ALLOWANCE
@@ -928,6 +949,10 @@ func gold_alive() -> bool:
 # ------------------------------------------------------------------ 画中世界
 func _build_world() -> void:
 	_clear_world()
+	for b in brushes:
+		(b as Brush).hp = BRUSH_HP
+		(b as Brush).down_t = 0.0
+		(b as Node2D).position = (b as Brush).home
 	world_view = ThroneParts.PaintWorld.new()
 	world_view.setup(self)
 	add_view(world_view)
@@ -1624,11 +1649,42 @@ class PaintPool extends Node2D:
 class Brush extends Node2D:
 	var room: PalaceThrone
 	var home := Vector2.ZERO
+	var hp := PalaceThrone.BRUSH_HP
+	var down_t := 0.0             # 被打掉以后倒数，到 0 在巡逻点重新画出来
 	var _t := 0.0
 	var _cool := 0.0
+	var _flash := 0.0
+
+	func alive() -> bool:
+		return hp > 0
+
+	## 被打一下：闪一下、往后弹；三下打掉 → 碎成颜料，过 BRUSH_RESPAWN 秒再画出来
+	func hurt(from: Vector2) -> void:
+		if not alive():
+			return
+		hp -= 1
+		_flash = 0.2
+		_cool = maxf(_cool, 0.6)
+		position += (position - from).normalized() * 12.0
+		Audio.play("hit", -6.0, 0.05, 1.3)
+		ThroneFx.splash(room.get_parent(), position + Vector2(0, -12), randf() < 0.5, 0.4)
+		if hp <= 0:
+			down_t = PalaceThrone.BRUSH_RESPAWN
+			Fx.burst(room.get_parent(), position + Vector2(0, -12), "drop", 10, 50.0, 0.6, Vector2(0, 10), Color.from_hsv(fposmod(_t * 0.2, 1.0), 0.6, 1.0))
+			Audio.play("pop", -4.0, 0.0, 0.9)
+			queue_redraw()
 
 	func step(d: float) -> void:
 		_t += d
+		_flash = maxf(0.0, _flash - d)
+		if not alive():
+			down_t -= d
+			if down_t <= 0.0:
+				hp = PalaceThrone.BRUSH_HP
+				position = home
+				ThroneFx.gold(room.get_parent(), position + Vector2(0, -12))
+			queue_redraw()
+			return
 		_cool = maxf(0.0, _cool - d)
 		var p := room.inside
 		var target := home + Vector2(sin(_t * 1.3) * 40.0, 0)
@@ -1645,9 +1701,19 @@ class Brush extends Node2D:
 			p.global_position += (p.global_position - position).normalized() * 14.0
 
 	func _draw() -> void:
+		if not alive():
+			# 打掉了：地上一小滩颜料
+			draw_set_transform(Vector2.ZERO, 0.0, Vector2(1, 0.5))
+			draw_circle(Vector2.ZERO, 6.0, Color(0.85, 0.5, 0.8, 0.5))
+			draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
+			return
 		var a := sin(_t * 5.0) * 0.4
-		draw_line(Vector2(0, -6), Vector2(0, -26).rotated(a), Color(0.55, 0.38, 0.2), 2.0)
-		draw_circle(Vector2(0, -6), 3.5, Color.from_hsv(fposmod(_t * 0.2, 1.0), 0.6, 1.0))
+		var wood := Color(0.55, 0.38, 0.2) if _flash <= 0.0 else Color(1, 1, 1)
+		draw_line(Vector2(0, -6), Vector2(0, -26).rotated(a), wood, 2.0)
+		draw_circle(Vector2(0, -6), 3.5, Color.from_hsv(fposmod(_t * 0.2, 1.0), 0.6, 1.0) if _flash <= 0.0 else Color.WHITE)
+		# 血量：笔杆旁三个小点
+		for i in PalaceThrone.BRUSH_HP:
+			draw_circle(Vector2(-4 + i * 4, -30), 1.2, Color(1, 0.85, 0.4) if i < hp else Color(0.3, 0.3, 0.3, 0.6))
 
 
 ## 破绽的位置（跟着画像走）：露破绽时一圈金光（AI 的优先目标）
