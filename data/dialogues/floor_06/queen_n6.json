@@ -1,0 +1,63 @@
+{
+	"name": "秋千上的字条",
+	"entries": [
+		{
+			"if": {
+				"flag": "palace_note_n6"
+			},
+			"node": "done"
+		},
+		{
+			"node": "default"
+		}
+	],
+	"nodes": {
+		"default": {
+			"lines": [
+				{
+					"text": "（秋千的绳结里，夹着最后一张字条。字比前面的都潦草一些，像是写得很急）",
+					"speaker": ""
+				},
+				{
+					"text": "「终点，就在我最喜欢坐的那把椅子的台阶下面。」",
+					"speaker": "陛下的字条"
+				},
+				{
+					"text": "「等你们找到了，我们三个，就一起——」",
+					"speaker": "陛下的字条"
+				},
+				{
+					"text": "（字停在这里。后面，一个字也没有了）",
+					"speaker": ""
+				},
+				{
+					"text": "……就一起，什么呢。",
+					"speaker": "公主",
+					"emotion": "sad"
+				},
+				{
+					"text": "……王座。……台阶下面。",
+					"speaker": "蓝色的公主"
+				}
+			],
+			"set": {
+				"flags": [
+					"palace_note_n6"
+				],
+				"call": "palace_note_found"
+			}
+		},
+		"done": {
+			"lines": [
+				{
+					"text": "「终点，就在我最喜欢坐的那把椅子的台阶下面。」",
+					"speaker": "陛下的字条"
+				},
+				{
+					"text": "「等你们找到了，我们三个，就一起——」",
+					"speaker": "陛下的字条"
+				}
+			]
+		}
+	}
+}

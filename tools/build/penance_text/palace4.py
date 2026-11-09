@@ -167,7 +167,11 @@ def _ante_partner_hint():
     talks = [("钥匙和门", "key"), ("「冒牌货」", "fake"), ("摇篮曲的第二段", "song"), ("替我们收着的笑声", "queen"), ("……两个人", "two")]
     for _t, k in talks:
         nodes["mem_" + k] = {"lines": BLUE_TALK[k], "set": {"flags": ["palace_blue_talk_" + k]}}
-    nodes["memory"] = {"prompt": "关于画里……", "choices": [{"text": t, "next": "mem_" + k, "return": True} for t, k in talks] + [{"text": "算了", "next": ""}]}
+    # 第七轮：「随便聊聊」——随机一段，没听过的优先
+    nodes["mem_rand"] = {"set": {"vars": {"pick_key": "blue_mem", "pick_n": len(talks)}, "call": "pick_unheard"}, "next": "mem_rand_go"}
+    nodes["mem_rand_go"] = {"goto": [{"if": {"eq": {"pick": i}}, "node": "mem_" + k} for i, (_t, k) in enumerate(talks)]}
+    nodes["memory"] = {"prompt": "关于画里……", "choices": [{"text": "随便聊聊", "next": "mem_rand", "return": True}]
+                       + [{"text": t, "next": "mem_" + k, "return": True} for t, k in talks] + [{"text": "算了", "next": ""}]}
     nodes["default"] = {"prompt": "想聊些什么？", "choices": [
         {"text": "接下来去哪？", "next": "hint", "return": True},
         {"text": "这座王宫……", "next": "palace", "return": True},

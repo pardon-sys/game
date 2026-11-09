@@ -1402,6 +1402,15 @@ data/cutscenes/<楼层组>/  地图内过场；data/theater/<楼层组>/  小剧
 	  （过场 `memory_portrait` / `memory_sacrifice` / `memory_key`，背景大图 `story_scenes/memory_*.png`），`PencilGate` 三道铅笔门按 `palace_memory_1..3` 化开；`palace_memory_4` 以后 `finish()` → 回王座间（spawn `from_memory`）。
 	- 回到王座间：`EPILOGUE_FLAG` → 画像换 `portrait_clean.png`（闭着眼睛），演 `palace_memory_out`（章末「第四章　旧王宫　完」）；之后调查点 `throne_portrait_after`（四段，按进度 / `vars.palace_portrait_pick` 随机重看）；
 	  搭档的「想聊些什么」多一页「关于画里……」（`palace4._ante_partner_hint` 的 `memory`，台词 `palace9.BLUE_TALK`）。
+  - 第七轮修正：`Downed.force_revive()`（两人都倒下时 `_fail` 已设 `_done`，重来要强制扶起）+ `reset_to` 满血离开 DEAD；小画像 `SMALL_HIT_R` 38（量到 `drawn_pos()`）、
+	`SMALL_KEEP` 34、`SMALL_STAGGER` 被打僵住；王座间 `PartnerPanel` 用默认高度；画像交互点在画像下两格；`chapter_end` 的 `next: "stay"` 关掉章末留在原地（标记 `palace_chapter_done`）。
+  - 第七轮剧情（文本 `penance_text/palace10.py`，剧情见 `docs/private/剧情设定与伏笔.md`）：
+	- `PalaceRoom.DAILY_SPOTS`：[对话, 格子, 要的标记, 做过的标记, 图标 item_*.png, 图标消失的标记]，`_add_story` 里和 `STORY_SPOTS` 一起摆；温馨日常 `daily_*`、字条 `queen_n1..n6`、颜料 `paint_*`、宝箱 `treasure_chest`。
+	- 静态：`note_found()`（道具 `queen_note`）、`drawing_half()` / `treasure_open()` / `join_drawing()`（两个 `drawing_half` → `family_drawing`）、`take_paint(kind)` / `use_paint(kind)`。
+	- 王座间 Boss 后：`small_spots`（四幅小画像各一个调查点，`_fade_small` 褪色）、`color_small(kind)`（对话 call `palace_small_color_<kind>`）；台词 `small_<kind>`。
+	- 随机挑没听过的：对话 call `pick_unheard`（vars `pick_key` / `pick_n` → `pick`，标记 `heard_<key>_<i>`），小画像和蓝色公主「随便聊聊」（`mem_rand`）用。
+	- Boss 新技能 `_tick_new_skills`：第三层起 `lullaby_ring()`（`ThroneParts.MusicNote`，`music_notes.png` 3 帧）、强化后每 `BELL_EVERY` 秒敲 13 下 `bell_ring(k)`（`ThroneParts.BellRing`，地上扩散圆环，冲刺无敌能躲，第 13 下最大 + 震屏）。
+	- 小剧场 + CG：`height_measure`（钟楼）、`pillow_fight`（隧道寝室）、`treasure_feather`（王座间宝箱）。
   - 新装备（衣帽间）：`palace_ribbon`、`palace_corset`、`palace_boots`、`palace_stockings`、`feather_shawl`（`gen_equipment.py` + `gen_equip_art.py` + `ItemDB`）。
 - 配乐（`tools/audio/gen_music.py`，ElevenLabs）：`old_palace` 旧王宫探索（荒凉、破旧、往日的华丽）、`palace_boss` 王座间 Boss「封笑的女王画像」，登记在 `Audio.MUSIC`，第四章用。
 

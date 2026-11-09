@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="KeyItem" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/items/key_item.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/generated/item_queen_note.png" id="2"]
+
+[resource]
+script = ExtResource("1")
+icon = ExtResource("2")
+id = "queen_note"
+display_name = "陛下的字条"
+description = "系着粉色缎带的小字条，字迹很秀气。陛下陪孩子们玩寻宝时藏的——一张指向下一张。"
+key_type = "palace"
+category = 1
+stackable = true
+show_in_hud = false
+hotkey = ""
+pickup_emotion = "happy"

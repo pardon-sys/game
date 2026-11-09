@@ -1,0 +1,62 @@
+{
+	"name": "草莓果酱",
+	"entries": [
+		{
+			"if": {
+				"flag": "palace_paint_red"
+			},
+			"node": "done"
+		},
+		{
+			"node": "default"
+		}
+	],
+	"nodes": {
+		"default": {
+			"lines": [
+				{
+					"text": "（灶台上放着一罐草莓果酱，红得像陛下画像上的玫瑰）",
+					"speaker": ""
+				}
+			],
+			"prompt": "拿一点？",
+			"choices": [
+				{
+					"text": "拿",
+					"next": "go"
+				},
+				{
+					"text": "算了",
+					"next": "no"
+				}
+			]
+		},
+		"go": {
+			"lines": [
+				{
+					"text": "（手刚伸过去，搅果酱的小木勺就自己跳了起来，在手心、又在腰上「咕叽咕叽」地画圈——）",
+					"speaker": ""
+				}
+			],
+			"set": {
+				"call": "palace_paint_red"
+			}
+		},
+		"no": {
+			"lines": [
+				{
+					"text": "……等一下。",
+					"speaker": "公主"
+				}
+			]
+		},
+		"done": {
+			"lines": [
+				{
+					"text": "（这里已经拿过了）",
+					"speaker": ""
+				}
+			]
+		}
+	}
+}

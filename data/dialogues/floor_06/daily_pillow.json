@@ -1,0 +1,92 @@
+{
+	"name": "鼓鼓的羽毛枕头",
+	"entries": [
+		{
+			"if": {
+				"flag": "palace_pillow_fought"
+			},
+			"node": "done"
+		},
+		{
+			"if": {
+				"flag": "palace_daily_pillow"
+			},
+			"node": "ask"
+		},
+		{
+			"node": "default"
+		}
+	],
+	"nodes": {
+		"default": {
+			"lines": [
+				{
+					"text": "（大床上堆着好几个羽毛枕头。最鼓的那个下面，压着一张小纸条）",
+					"speaker": ""
+				},
+				{
+					"text": "「下一场，妈妈一定赢。——你们的手下败将」",
+					"speaker": "陛下的字条"
+				},
+				{
+					"text": "……手下败将。",
+					"speaker": "公主",
+					"emotion": "happy"
+				},
+				{
+					"text": "……陛下，输了很多场。",
+					"speaker": "蓝色的公主"
+				}
+			],
+			"set": {
+				"flags": [
+					"palace_daily_pillow"
+				]
+			},
+			"next": "ask"
+		},
+		"ask": {
+			"prompt": "拍拍枕头？",
+			"choices": [
+				{
+					"text": "拍一下",
+					"next": "go"
+				},
+				{
+					"text": "算了",
+					"next": ""
+				}
+			]
+		},
+		"go": {
+			"lines": [
+				{
+					"text": "（「噗」——枕头一下子炸开了，满屋子的羽毛飞了起来）",
+					"speaker": ""
+				}
+			],
+			"theater": "pillow_fight",
+			"set": {
+				"flags": [
+					"palace_pillow_fought"
+				]
+			}
+		},
+		"done": {
+			"lines": [
+				{
+					"text": "（枕头瘪瘪的，羽毛还落了一床）",
+					"speaker": ""
+				},
+				{
+					"text": "……这一场。……算谁赢。",
+					"speaker": "蓝色的公主"
+				},
+				{
+					"text": "……算陛下赢吧。",
+					"speaker": "公主"
+				}
+			]
+		}
+	}
+}

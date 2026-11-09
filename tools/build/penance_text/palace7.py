@@ -5,6 +5,7 @@
 """
 from .common import A, BLUE, L, N, P, cg, dfile, line, pose, say, theater, tk
 from .palace2 import _bp, _bt, _burst_blue, _burst_pink, _duo
+from . import palace10
 
 KEEPER = "花园小店主"
 
@@ -53,9 +54,7 @@ DIALOGUES = {
                             L("（两个人帮她把花坛一个一个浇过去。蔫掉的郁金香慢慢地抬起头来）", N),
                             L("谢谢！谢谢！……要好好地谢谢你们才行！", KEEPER)], "theater": "garden_petals",
                   "set": {"call": "palace_keeper_water"}, "next": "clue"},
-        "clue": {"lines": [L("……以前啊，两个小殿下常常来这里。一个总把花别在左边，一个总别在右边。", KEEPER),
-                           L("陛下就笑着说：「这样，就分得清谁是谁了」。", KEEPER),
-                           L("……分得清，谁是谁。", BLUE)]},
+        "clue": {"lines": palace10.KEEPER_CLUE},   # 第七轮：编了一半的花环
         "done": {"lines": [L("花都抬起头了！下次再来玩呀！", KEEPER)]},
     }, entries=[{"if": {"flag": "palace_keeper_done"}, "node": "done"},
                 {"if": {"flag": ["palace_keeper_asked", "palace_can_taken"]}, "node": "water"},

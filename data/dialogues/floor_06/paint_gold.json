@@ -1,0 +1,62 @@
+{
+	"name": "铜粉",
+	"entries": [
+		{
+			"if": {
+				"flag": "palace_paint_gold"
+			},
+			"node": "done"
+		},
+		{
+			"node": "default"
+		}
+	],
+	"nodes": {
+		"default": {
+			"lines": [
+				{
+					"text": "（大齿轮下面，积着一小撮亮晶晶的铜粉）",
+					"speaker": ""
+				}
+			],
+			"prompt": "拿一点？",
+			"choices": [
+				{
+					"text": "拿",
+					"next": "go"
+				},
+				{
+					"text": "算了",
+					"next": "no"
+				}
+			]
+		},
+		"go": {
+			"lines": [
+				{
+					"text": "（刚蹲下去，旁边的小齿轮就转了起来，齿尖一下、一下地刮着脚心——）",
+					"speaker": ""
+				}
+			],
+			"set": {
+				"call": "palace_paint_gold"
+			}
+		},
+		"no": {
+			"lines": [
+				{
+					"text": "……等一下。",
+					"speaker": "公主"
+				}
+			]
+		},
+		"done": {
+			"lines": [
+				{
+					"text": "（这里已经拿过了）",
+					"speaker": ""
+				}
+			]
+		}
+	}
+}

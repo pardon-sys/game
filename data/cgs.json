@@ -387,6 +387,21 @@
 			"placeholder": "helpless_2",
 			"wide": true
 		},
+		"height_measure": {
+			"file": "res://assets/cg/portraits/height_measure.png",
+			"placeholder": "helpless_2",
+			"wide": true
+		},
+		"pillow_fight": {
+			"file": "res://assets/cg/portraits/pillow_fight.png",
+			"placeholder": "helpless_2",
+			"wide": true
+		},
+		"treasure_feather": {
+			"file": "res://assets/cg/portraits/treasure_feather.png",
+			"placeholder": "helpless_2",
+			"wide": true
+		},
 		"slime_1": {
 			"file": "res://assets/cg/portraits/slime_1.png",
 			"placeholder": "helpless_1"

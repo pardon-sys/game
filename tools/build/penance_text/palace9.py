@@ -8,6 +8,7 @@
 只给线索、不说破（剧情设定见 docs/private/剧情设定与伏笔.md）；抱走孩子的人只是黑色剪影。只写痒、笑、友情；两位都是成年人。
 """
 from .common import A, BLUE, L, N, P, cg, dfile, line, pose, say, theater, tk
+from . import palace10
 from .palace2 import _bp, _bt, _burst_blue, _burst_pink, _duo
 
 QUEEN = "女王"
@@ -154,7 +155,7 @@ NURSERY = theater("画里的婴儿房：午睡时间", _duo("normal", "normal", 
            [tk("d1", zone="sole", fx="feather", n=14, iv=0.09), _bt(14, 0.09, by="d2", zone="sole", fx="feather"), pose("helpless_2"), _bp("helpless_2")], act=3)),
     say(P, "哈哈哈哈！这首歌——这首歌我知道——哈哈哈！", emotion="helpless_2"),
     say(BLUE, "……哈哈……哈哈哈……不、不要跟着拍子……"),
-    say(DOLL, "……小殿下们，以前，也是这样。……一个笑得打滚，一个笑着笑着就睡着了。"),
+    say(DOLL, palace10.NURSERY_DOLL),   # 第七轮：陛下改睡前故事的结局，讲到一半
     _burst_pink("（星光在婴儿房里炸开，吊铃上的星星一颗颗亮了起来……哈啊……放出去了……）"),
     _burst_blue("……哈……哈哈……（冰晶跟着炸开，落在吊铃上，变成了一片片小雪花……）"),
     say(N, "（人偶们最后用羽毛在两人刚释放完、敏感得要命的脚心上，轻轻地拍了三下——像哄小孩那样）",

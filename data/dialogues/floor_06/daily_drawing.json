@@ -1,0 +1,83 @@
+{
+	"name": "王座底下的纸",
+	"entries": [
+		{
+			"if": {
+				"flag": "palace_drawing_half"
+			},
+			"node": "done"
+		},
+		{
+			"node": "default"
+		}
+	],
+	"nodes": {
+		"default": {
+			"lines": [
+				{
+					"text": "（王座底下塞着半张蜡笔画：一个戴王冠的大人，牵着一个小孩的手。大人的另一只手，伸向纸的边上——那里被撕掉了）",
+					"speaker": ""
+				},
+				{
+					"text": "（背面一行歪歪扭扭的字：「我们三」）",
+					"speaker": ""
+				},
+				{
+					"text": "……我们三……个。",
+					"speaker": "公主",
+					"emotion": "sad"
+				},
+				{
+					"text": "……另一半，不在这里。",
+					"speaker": "蓝色的公主"
+				}
+			],
+			"set": {
+				"flags": [
+					"palace_drawing_half"
+				],
+				"call": "palace_drawing_half"
+			},
+			"next": "join"
+		},
+		"join": {
+			"goto": [
+				{
+					"if": {
+						"flag": "palace_drawing_joined"
+					},
+					"node": "joined"
+				}
+			]
+		},
+		"joined": {
+			"lines": [
+				{
+					"text": "（和宝箱里的那半张拼在一起：戴王冠的大人站在中间，两只手各牵着一个小孩。一个涂成粉色，一个涂成蓝色。三个人头顶，画满了歪歪扭扭的爱心）",
+					"speaker": ""
+				},
+				{
+					"text": "（最下面，是那行字的全部）「我们三个」",
+					"speaker": ""
+				},
+				{
+					"text": "……我们三个。",
+					"speaker": "公主",
+					"emotion": "sad"
+				},
+				{
+					"text": "……（轻轻地，把画按平）……嗯。",
+					"speaker": "蓝色的公主"
+				}
+			]
+		},
+		"done": {
+			"lines": [
+				{
+					"text": "（王座底下空了）",
+					"speaker": ""
+				}
+			]
+		}
+	}
+}

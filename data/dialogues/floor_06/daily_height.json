@@ -1,0 +1,105 @@
+{
+	"name": "楼梯边的两道身高线",
+	"entries": [
+		{
+			"if": {
+				"flag": "palace_height_measured"
+			},
+			"node": "done"
+		},
+		{
+			"if": {
+				"flag": "palace_daily_height"
+			},
+			"node": "ask"
+		},
+		{
+			"node": "default"
+		}
+	],
+	"nodes": {
+		"default": {
+			"lines": [
+				{
+					"text": "（楼梯转角的白墙上，刻着两道身高线。一年一年，往上爬）",
+					"speaker": ""
+				},
+				{
+					"text": "「这一年：粉的高一点点！（裁判：踮脚了，不算）」",
+					"speaker": ""
+				},
+				{
+					"text": "「这一年：蓝的高！（裁判：陛下作证，没踮脚）」",
+					"speaker": ""
+				},
+				{
+					"text": "「这一年：一样高。陛下说，那就都算赢。」",
+					"speaker": ""
+				},
+				{
+					"text": "（最上面的一年，只刻了一道。另一道该刻的地方，只有一个小小的铅笔点，像是刚要刻下去）",
+					"speaker": ""
+				},
+				{
+					"text": "……只刻了一道。",
+					"speaker": "公主",
+					"emotion": "sad"
+				},
+				{
+					"text": "……………",
+					"speaker": "蓝色的公主"
+				}
+			],
+			"set": {
+				"flags": [
+					"palace_daily_height"
+				]
+			},
+			"next": "ask"
+		},
+		"ask": {
+			"prompt": "……比比看？",
+			"choices": [
+				{
+					"text": "站过去比比",
+					"next": "go"
+				},
+				{
+					"text": "算了",
+					"next": ""
+				}
+			]
+		},
+		"go": {
+			"lines": [
+				{
+					"text": "（两个人背靠着墙站好。楼梯下面，一个拿着软尺的小人偶「哒哒哒」地跑了上来）",
+					"speaker": ""
+				}
+			],
+			"theater": "height_measure",
+			"set": {
+				"flags": [
+					"palace_height_measured"
+				]
+			}
+		},
+		"done": {
+			"lines": [
+				{
+					"text": "（两道旧的身高线下面，多了两道新的。……都比旧的高）",
+					"speaker": ""
+				},
+				{
+					"text": "……长高了。",
+					"speaker": "公主",
+					"emotion": "happy"
+				},
+				{
+					"text": "……嗯。……长高了。",
+					"speaker": "蓝色的公主"
+				}
+			]
+		}
+	}
+}

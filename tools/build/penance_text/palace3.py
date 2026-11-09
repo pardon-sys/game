@@ -4,6 +4,7 @@
 """
 from .common import A, BLUE, L, N, P, PRINCESS, cg, dfile, line, pose, release, say, theater, tk
 from .palace2 import _bp, _bt, _burst_blue, _burst_pink, _duo, _spot
+from . import palace10
 
 KEEPER = "守钟人偶"
 PORTRAIT = "女王画像"
@@ -345,12 +346,7 @@ DIALOGUES = {
         L("（梳妆台上放着两把一模一样的小梳子。一把缠着粉色的头发，一把缠着蓝色的头发）", N),
         L("……两把小梳子。", P, "surprise"),
         L("……（拿起蓝色的那把，又放下）……", BLUE)]}}),
-    "tunnel_diary": dfile("", "床头的日记", {"default": {"lines": [
-        L("（床头柜里有一本日记，大部分的字都褪了色。只有一页还看得清）", N),
-        L("「两个孩子。一个像我，一个像他。一个爱笑，一个爱哭——爱哭的那个，一被挠就笑得最大声」", QUEEN_DIARY),
-        L("「等钟楼的钟修好了，要带她们上去看月亮」", QUEEN_DIARY),
-        L("……一个爱笑，一个爱哭。", P, "sad"),
-        L("……", BLUE)]}}),
+    "tunnel_diary": dfile("", "床头的日记", {"default": {"lines": palace10.TUNNEL_DIARY}}),   # 第七轮：量尺寸那件事的另一半
     "tunnel_cradle": _spot("两个摇篮", "（两个一模一样的小摇篮，一个系着粉色的丝带，一个系着蓝色的丝带）", "走近看看？", "……看看。", "tunnel_cradle",
                            "（摇篮轻轻地晃着。……布偶的小手朝你们挥了挥）"),
     "tunnel_mobile": dfile("", "旋转吊铃", {"default": {"lines": [

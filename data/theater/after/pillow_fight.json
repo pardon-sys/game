@@ -1,0 +1,300 @@
+{
+	"name": "寝室：枕头大战",
+	"cast": {
+		"princess": {
+			"kind": "princess",
+			"at": [
+				-14,
+				8
+			],
+			"visual": "normal",
+			"anim": "idle",
+			"dir": "right"
+		},
+		"blue": {
+			"kind": "npc:blue_princess",
+			"at": [
+				14,
+				8
+			],
+			"visual": "normal",
+			"anim": "idle",
+			"dir": "left"
+		},
+		"pants": {
+			"kind": "trap:pants_hands",
+			"at": [
+				20,
+				10
+			]
+		},
+		"d1": {
+			"kind": "trap:feather_curtain",
+			"at": [
+				-20,
+				-10
+			]
+		},
+		"d2": {
+			"kind": "trap:feather_curtain",
+			"at": [
+				20,
+				-10
+			]
+		}
+	},
+	"steps": [
+		{
+			"act": 1,
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "fade_in"
+				},
+				{
+					"state": "giggle",
+					"do": "voice"
+				}
+			],
+			"wait": 0.5
+		},
+		{
+			"speaker": "",
+			"text": "（羽毛像雪一样在屋子里打转，落下来，又被看不见的风托起来）",
+			"act": 1
+		},
+		{
+			"speaker": "公主",
+			"text": "……这些羽毛……在动？",
+			"emotion": "surprise"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……陛下的枕头。……不服输。"
+		},
+		{
+			"speaker": "",
+			"text": "（羽毛一团一团地扑过来，钻进领口，扫过脖子和腰）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "d1",
+					"zone": "neck",
+					"fx": "feather",
+					"repeat": 8,
+					"interval": 0.16,
+					"do": "tickle"
+				},
+				{
+					"who": "blue",
+					"by": "d2",
+					"zone": "waist",
+					"fx": "feather",
+					"repeat": 8,
+					"interval": 0.16,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"visual": "giggle",
+					"do": "pose"
+				},
+				{
+					"who": "blue",
+					"visual": "giggle",
+					"do": "pose"
+				}
+			],
+			"act": 2
+		},
+		{
+			"speaker": "公主",
+			"text": "嘻嘻……！我、我投降……！",
+			"emotion": "giggle"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……不许投降。……打回去。"
+		},
+		{
+			"speaker": "",
+			"text": "（蓝色公主举起枕头一挥——又一个枕头炸开了。满屋子的羽毛一起涌上来，从腋下到脚心，挠得两个人滚成一团）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "d1",
+					"zone": "armpit",
+					"fx": "feather",
+					"repeat": 16,
+					"interval": 0.08,
+					"do": "tickle"
+				},
+				{
+					"who": "blue",
+					"by": "d2",
+					"zone": "sole",
+					"fx": "feather",
+					"repeat": 16,
+					"interval": 0.08,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"visual": "helpless_2",
+					"do": "pose"
+				},
+				{
+					"who": "blue",
+					"visual": "helpless_2",
+					"do": "pose"
+				},
+				{
+					"do": "voice",
+					"state": "laugh"
+				}
+			],
+			"act": 3,
+			"portrait": "pillow_fight"
+		},
+		{
+			"speaker": "公主",
+			"text": "哈哈哈哈！是你把它打炸的——哈哈哈！",
+			"emotion": "helpless_2"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……哈哈哈……失、失算……"
+		},
+		{
+			"speaker": "公主",
+			"text": "（星光炸开，羽毛被吹得贴满了床帐……哈啊……放出去了……）",
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "flash"
+				},
+				{
+					"sound": "star_burst",
+					"do": "sfx"
+				},
+				{
+					"sound": "water_release",
+					"volume": -2.0,
+					"do": "sfx"
+				},
+				{
+					"who": "princess",
+					"time": 0.4,
+					"do": "shake"
+				},
+				{
+					"state": "laugh",
+					"do": "voice"
+				}
+			],
+			"act": "burst",
+			"wait": 1.0
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……哈……哈哈……（冰晶跟着炸开，羽毛冻成了一片一片的小雪花……）",
+			"actions": [
+				{
+					"time": 0.5,
+					"do": "flash"
+				},
+				{
+					"sound": "ice_crack",
+					"volume": -2.0,
+					"do": "sfx"
+				},
+				{
+					"sound": "water_release",
+					"volume": -2.0,
+					"do": "sfx"
+				},
+				{
+					"who": "blue",
+					"time": 0.4,
+					"do": "shake"
+				},
+				{
+					"state": "laugh",
+					"do": "voice"
+				}
+			],
+			"act": "burst",
+			"wait": 1.0
+		},
+		{
+			"speaker": "",
+			"text": "（最后一根羽毛慢悠悠地飘下来，落在两人刚释放完、敏感得要命的脚心上，扫了两下，才肯停）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "d1",
+					"zone": "sole",
+					"fx": "feather",
+					"repeat": 4,
+					"interval": 0.25,
+					"do": "tickle"
+				},
+				{
+					"who": "princess",
+					"time": 0.3,
+					"do": "shake"
+				},
+				{
+					"who": "princess",
+					"visual": "helpless_1",
+					"do": "pose"
+				},
+				{
+					"who": "blue",
+					"visual": "helpless_1",
+					"do": "pose"
+				}
+			],
+			"act": 4
+		},
+		{
+			"speaker": "公主",
+			"text": "呀……！……哈……这一场……",
+			"emotion": "helpless_1"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……陛下，赢了。",
+			"actions": [
+				{
+					"who": "princess",
+					"visual": "normal",
+					"do": "pose"
+				},
+				{
+					"who": "blue",
+					"visual": "normal",
+					"do": "pose"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "……嗯。下一场，妈妈一定赢。",
+			"emotion": "happy"
+		},
+		{
+			"actions": [
+				{
+					"state": "",
+					"do": "voice"
+				},
+				{
+					"time": 0.6,
+					"do": "fade_out"
+				}
+			],
+			"wait": 0.7
+		}
+	]
+}

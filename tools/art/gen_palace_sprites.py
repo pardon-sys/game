@@ -317,6 +317,11 @@ if __name__ == "__main__":
     defringe("pants_hands.png", ((128, 88, 180), (226, 206, 250)))
     build_strip("paint_wave_sheet.png", "paint_wave.png", 4, 56, 36, "颜料浪头（涌起 / 卷浪 / 碎开 / 落下）", uniform=True)
     build_strip("portrait_clean_sheet.png", "portrait_clean.png", 1, 64, 88, "画里的记忆走完以后：女王的画像（脸干干净净、闭着眼睛）")
+    # 第七轮：字条 / 涂鸦 / 四种颜料 / 宝箱 / 望远镜 / 花环 / 记录本 / 枕头（item_*.png，16x16）
+    _items7 = key_white(Image.open(SRC / "palace_items7_sheet.png").convert("RGBA"))
+    for _n, _c in zip(["queen_note", "drawing_half", "family_drawing", "paint_red", "paint_blue", "paint_gold", "paint_green", "treasure_box",
+                       "telescope", "flower_wreath", "record_book", "feather_pillow"], grid_cells(_items7, 4, 3)):
+        outline(fit(biggest(_c), 16, 16, pad=0)).save(OUT / ("item_%s.png" % _n))
     build_strip("toll_imps_sheet.png", "toll_imps.png", 4, 56, 44, "收路费的小鬼们（待机 ×2 / 伸手要钱 / 抱着金币开心）")
     build_strip("frame_soldier_sheet.png", "frame_soldier.png", 4, 28, 32, "画框小兵（三帧走 + 羽毛长矛戳）", uniform=True)
     build_strip("brush_sprite_sheet.png", "brush_sprite.png", 4, 28, 20, "羽毛画笔精（三帧飞 + 快速刷）", uniform=True)

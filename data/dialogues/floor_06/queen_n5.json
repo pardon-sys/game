@@ -1,0 +1,50 @@
+{
+	"name": "望远镜筒里的字条",
+	"entries": [
+		{
+			"if": {
+				"flag": "palace_note_n5"
+			},
+			"node": "done"
+		},
+		{
+			"node": "default"
+		}
+	],
+	"nodes": {
+		"default": {
+			"lines": [
+				{
+					"text": "（铜望远镜的镜筒里，卷着一张小字条）",
+					"speaker": ""
+				},
+				{
+					"text": "「月亮说，它也想玩寻宝。可是它太胖了，挤不进王宫的门。」",
+					"speaker": "陛下的字条"
+				},
+				{
+					"text": "「最后一站：会自己荡起来、编花环的地方。」",
+					"speaker": "陛下的字条"
+				}
+			],
+			"set": {
+				"flags": [
+					"palace_note_n5"
+				],
+				"call": "palace_note_found"
+			}
+		},
+		"done": {
+			"lines": [
+				{
+					"text": "「月亮说，它也想玩寻宝。可是它太胖了，挤不进王宫的门。」",
+					"speaker": "陛下的字条"
+				},
+				{
+					"text": "「最后一站：会自己荡起来、编花环的地方。」",
+					"speaker": "陛下的字条"
+				}
+			]
+		}
+	}
+}
