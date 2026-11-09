@@ -72,6 +72,7 @@ var chapter_screen: Control
 var chapter_hint: Label
 ## 章节结束画面按 E 后进入的楼层（chapter_end 的 next，空 = 停在结束画面）。
 var chapter_next := ""
+const STAY := "stay"
 ## goto 动作：过场结束后换到这一层（{floor, spawn}）
 var _goto := {}
 var chapter_title: Label
@@ -378,7 +379,8 @@ func continue_chapter() -> void:
 	chapter_next = ""
 	chapter_hint.hide()
 	var main := get_tree().get_first_node_in_group("main")
-	if main:
+	# next = "stay"：关掉章末画面，留在当前地图（第四章尾声：出画以后留在王座间）
+	if main and next != STAY:
 		await main.change_level(Floors.scene(next))
 	chapter_screen.hide()
 	curtain.color.a = 0.0

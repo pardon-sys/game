@@ -31,9 +31,18 @@
 		{
 			"actions": [
 				{
+					"flag": "palace_chapter_done",
+					"do": "set_flag"
+				}
+			],
+			"wait": 0.0
+		},
+		{
+			"actions": [
+				{
 					"title": "第四章　旧王宫　完",
 					"subtitle": "——两半徽章，一首摇篮曲，一扇要关好的门",
-					"next": "floor_06_after_house",
+					"next": "stay",
 					"do": "chapter_end"
 				}
 			],

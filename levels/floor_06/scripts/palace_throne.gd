@@ -65,7 +65,9 @@ const STRETCH_EVERY := 6.5
 const STRETCH_WARN := 0.9
 const STRETCH_SPEED := 230.0
 const SMALL_FLY := 30.0
-const SMALL_KEEP := 46.0
+const SMALL_KEEP := 34.0
+const SMALL_HIT_R := 38.0                          # 小画像的受击半径（量到它画出来的位置）
+const SMALL_STAGGER := 0.8                         # 被打中以后僵住：不退、不甩手，可以连打
 ## 第五轮加难（throne_parts.gd）：强化画框以后各种技能的间隔 × ANGRY_K
 const ANGRY_K := 0.6
 const MAZE := Rect2i(70, 8, 29, 41)              # 画中世界的迷宫（离大厅很远，中间全是墙）
@@ -130,6 +132,7 @@ var _soldier_t := SOLDIER_EVERY * 0.5
 var _brushsp_t := BRUSHSP_EVERY
 var _vortex: ThroneParts.Vortex
 var partner_panel: PartnerPanel
+var shield_told := false
 
 
 func map_id() -> String:
@@ -270,8 +273,7 @@ func _process(delta: float) -> void:
 			(m as PlayableCharacter).roam = true
 		# 右上角另一位公主的状态面板（同千手战 / 骑士战），让开顶上的 Boss 血条
 		if partner_panel == null:
-			partner_panel = PartnerPanel.new()
-			partner_panel.top = 52.0
+			partner_panel = PartnerPanel.new()   # 和右上角的头像并列（同第八层）
 			add_child(partner_panel)
 		return
 	_bar(true)
@@ -360,7 +362,7 @@ func _tick_hits(delta: float) -> void:
 		# 小画像
 		for s in small:
 			var sp := s as SmallPortrait
-			if sp.alive() and pc.global_position.distance_to(sp.position) <= 26.0:
+			if sp.alive() and minf(pc.global_position.distance_to(sp.position), pc.global_position.distance_to(sp.drawn_pos())) <= SMALL_HIT_R:
 				_hit_cool[k] = HIT_COOL
 				sp.hurt()
 				if layer == 1 and small.all(func(x): return not (x as SmallPortrait).alive()):
@@ -971,7 +973,8 @@ func _ready_epilogue() -> void:
 	portrait_spot = PrisonOddities.Spot.new()
 	portrait_spot.dialogue = "floor_06/throne_portrait_after" if GameState.has_flag(EPILOGUE_FLAG) else "floor_06/throne_portrait_enter"
 	add_child(portrait_spot)
-	portrait_spot.global_position = world(cells("throne")[0])
+	portrait_spot.prompt_y = -30.0
+	portrait_spot.global_position = world(cells("portrait")[0] + Vector2i(0, 2))
 	for m in members():
 		var pc := m as PlayableCharacter
 		pc.partner_talk = PalaceAnte.HINT_FILE
@@ -1202,10 +1205,21 @@ class SmallPortrait extends Node2D:
 	func shielded() -> bool:
 		return kind != "gold" and room != null and room.gold_alive()
 
+	## 画出来的位置（飘起来的高度换成逻辑坐标里往北一点）
+	func drawn_pos() -> Vector2:
+		return position + Vector2(0, -_lift * 0.5)
+
+	var stagger := 0.0
+
 	func hurt() -> void:
+		stagger = PalaceThrone.SMALL_STAGGER
 		if shielded():
 			Audio.play("chime", -8.0, 0.0, 2.0)
 			ThroneFx.gold(get_parent(), position + Vector2(0, -20 - _lift))
+			if room and not room.shield_told:
+				room.shield_told = true
+				GameState.notify("金色的光罩着它——先打金色的那幅！", 2.0)
+				PalaceRoom.say_random(room._nearest_member(position), "weak")
 			return
 		hp -= 1
 		Audio.play("gate", -8.0, 0.0, 1.9)
@@ -1252,6 +1266,10 @@ class SmallPortrait extends Node2D:
 			return
 		_tick_dive(d)
 		if _dive_phase != "":
+			return
+		# 被打中：僵住一下（不退、不甩手）
+		if stagger > 0.0:
+			stagger -= d
 			return
 		_lift = move_toward(_lift, 18.0, 30.0 * d)
 		var tgt := _nearest()

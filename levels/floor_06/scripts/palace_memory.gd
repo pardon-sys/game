@@ -127,7 +127,7 @@ class PencilGate extends Node:
 		if open or not GameState.has_flag(need):
 			return
 		open = true
-		Audio.play("paper", -4.0, 0.0, 0.9)
+		Audio.play("book", -4.0, 0.0, 0.9)
 		if is_instance_valid(_body):
 			_body.queue_free()
 		for v in _views:

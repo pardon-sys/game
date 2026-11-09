@@ -667,7 +667,13 @@ func reset_to(at: Vector2) -> void:
 	for c in members():
 		var pc := c as PlayableCharacter
 		if Downed.is_downed(pc):
-			(pc.get_node("Downed") as Downed).revive_now()
+			(pc.get_node("Downed") as Downed).force_revive()
+		# 战败重来：一律满血、站起来（两个人都倒下时 Downed 的失败流程已经走完，单靠 revive_now 扶不起来）
+		if not pc.is_alive() or pc.state == PlayableCharacter.State.DEAD:
+			pc.revive()
+			pc._set_state(PlayableCharacter.State.IDLE)
+		if pc.health:
+			pc.health.set_hp(pc.health.max_hp)
 		if pc.status.is_grabbed():
 			pc.status.release()
 		pc.status.clear_root()

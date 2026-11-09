@@ -618,6 +618,7 @@ static func _palace_b(t: Node) -> void:
 	await _boss2(t)
 	await _round6(t)
 	await _epilogue(t)
+	await _round7(t)
 
 
 static func _quiet_beetles(cr: PalaceClock) -> void:
@@ -2153,3 +2154,77 @@ static func _epilogue(t: Node) -> void:
 	await t._talk(PalaceAnte.HINT_FILE, "", [3, 0, 1, 2, 3, 4, 5, 5])
 	verify(t, "蓝色公主的新对话：关于画里……（钥匙和门 / 冒牌货 / 摇篮曲 / 替我们收着的笑声 / 两个人）",
 		["key", "fake", "song", "queen", "two"].all(func(k): return GameState.has_flag("palace_blue_talk_" + k)))
+
+
+## 第七轮·修正：复活满血能动、小画像打得到、切人面板在顶上、画像交互点、出画留在原地
+static func _round7(t: Node) -> void:
+	_calm(t)
+	for k in PalaceRoom.ITEM_HINTS:
+		GameState.set_flag(PalaceRoom.item_hint_flag(k))
+	GameState.set_flag(PalaceThrone.BOSS_FLAG, false)
+	GameState.set_flag("intro_done_palace_throne_in")
+	GameState.pending_spawn = "from_ante"
+	await t.main.change_level(Floors.scene(PalaceThrone.MAP))
+	await t._advance_until(func(): return t._level_id() == PalaceThrone.MAP and not Cutscene.is_playing() and not Dialogue.is_active(), 60.0)
+	var th := _room(t, "PalaceThrone") as PalaceThrone
+	await t._advance_until(func(): return th != null and th.started, 30.0)
+	await t.get_tree().process_frame
+	verify(t, "切人面板和右上角头像并列（top = %.0f）" % (th.partner_panel.top if is_instance_valid(th.partner_panel) else -1.0),
+		is_instance_valid(th.partner_panel) and th.partner_panel.top < 10.0)
+	# 两个人都倒下 → 战败 → 复活
+	var pcs := th.members()
+	for m in pcs:
+		var pc := m as PlayableCharacter
+		pc.health.set_hp(0)
+		pc._set_state(PlayableCharacter.State.DEAD)
+	for m in pcs:
+		Downed.start(m as PlayableCharacter)
+	await t._advance_until(func(): return not th._defeat_busy and not CG.is_busy() and not Dialogue.is_active(), 150.0)
+	await t.get_tree().process_frame
+	verify(t, "两个人都倒下 → 战败重来：两人满血、站着、没倒地（%s）" % str(pcs.map(func(x): return [(x as PlayableCharacter).health.hp, (x as PlayableCharacter).state])),
+		pcs.all(_standing))
+	var p0 := GameState.player as PlayableCharacter
+	var pos0 := p0.global_position
+	p0.velocity = Vector2(80, 0)
+	p0.move_and_slide()
+	verify(t, "复活以后能移动", p0.global_position.distance_to(pos0) > 0.5 and p0.can_act())
+	GameState.switch_control(Duo.partner_of(p0))
+	verify(t, "复活以后能切人", GameState.player != p0)
+	# 小画像：站在旁边攻击就能打到，被打中会僵住
+	th.layer = 1
+	var sp := th.small[0] as PalaceThrone.SmallPortrait
+	sp.revive()
+	var pc2 := GameState.player as PlayableCharacter
+	pc2.global_position = sp.position + Vector2(0, 30)
+	var hp0 := sp.hp
+	for s in th.small:
+		if s != sp:
+			(s as PalaceThrone.SmallPortrait).sleep()
+	pc2._set_state(PlayableCharacter.State.ATTACK)
+	th._hit_cool.clear()
+	th._tick_hits(0.05)
+	verify(t, "第二层小画像：站在攻击距离里能打掉血（%d → %d），被打中会僵住" % [hp0, sp.hp], sp.hp < hp0 and sp.stagger > 0.0)
+	pc2._set_state(PlayableCharacter.State.IDLE)
+	th.layer = 0
+	# 画像的交互点（Boss 后）
+	GameState.set_flag(PalaceThrone.BOSS_FLAG)
+	GameState.pending_spawn = "from_ante"
+	await t.main.change_level(Floors.scene(PalaceThrone.MAP))
+	await t._advance_until(func(): return t._level_id() == PalaceThrone.MAP and not Cutscene.is_playing() and not Dialogue.is_active(), 60.0)
+	th = _room(t, "PalaceThrone") as PalaceThrone
+	await t.get_tree().process_frame
+	await t.get_tree().process_frame
+	var pw := th.world(th.cells("portrait")[0])
+	verify(t, "画像的交互点就在画像下面（%.0f 像素）" % th.portrait_spot.global_position.distance_to(pw), th.portrait_spot.global_position.distance_to(pw) <= 36.0)
+	# 出画的章末：按 E 留在原地
+	Cutscene.play("palace_memory_out")
+	await t._advance_until(func(): return Cutscene.chapter_screen.visible and not Cutscene.is_playing(), 90.0)
+	await Cutscene.continue_chapter()
+	await t.get_tree().process_frame
+	verify(t, "章末「第四章　旧王宫　完」按 E 以后留在王座间（%s）" % t._level_id(),
+		t._level_id() == PalaceThrone.MAP and not Cutscene.chapter_screen.visible and GameState.has_flag("palace_chapter_done"))
+
+
+static func _standing(x: Node) -> bool:
+	var pc := x as PlayableCharacter
+	return pc.is_alive() and pc.health.hp == pc.health.max_hp and pc.state != PlayableCharacter.State.DEAD and not Downed.is_downed(pc)
