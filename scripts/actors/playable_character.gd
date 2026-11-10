@@ -341,6 +341,9 @@ func _tick(delta: float) -> void:
 						dash(input)
 					elif controller.is_action_just_pressed(&"dash") and is_in_group("player") and Equipment.has_special(character_id, "no_dash"):
 						GameState.notify("脚上戴着羽毛脚镣——迈不开步子，闪避不了", 1.2)
+					elif controller.is_action_just_pressed(&"dash") and OS.is_debug_build():
+						# 调试：按了闪避却没闪出去——在控制台记下原因（以后再遇到「K 闪避不了」可以直接看）
+						print_debug("闪避被挡住：rooted=%s busy_hands=%s no_dash=%s" % [rooted, hands, has_meta(&"no_dash")])
 					elif controller.is_action_just_pressed(&"magic") and not hands:
 						# 关卡可以接管魔法键（攻防战：蓝色公主打开瞄准施法）
 						if not (magic_override.is_valid() and magic_override.call(self)):
@@ -445,6 +448,8 @@ func attack() -> void:
 
 func dash(input := Vector2.ZERO) -> void:
 	if not can_act() or _dash_cd > 0.0 or (status and (status.is_rooted() or status.is_hobbled())):
+		if OS.is_debug_build() and is_in_group("player") and _dash_cd <= 0.0:
+			print_debug("闪避被挡住：can_act=%s rooted=%s hobbled=%s" % [can_act(), status.is_rooted() if status else false, status.is_hobbled() if status else false])
 		return
 	_dash_dir = input.normalized() if input != Vector2.ZERO else facing
 	_dash_cd = dash_cooldown

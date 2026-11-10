@@ -294,7 +294,8 @@ func _run_slot_menu_and_save_point() -> void:
 	var run := func(): result[0] = await menu.choose("save")
 	run.call()
 	await _wait(0.1)
-	check("存档界面列出 3 个存档位并暂停游戏", menu.rows.get_child_count() == SaveSystem.SLOTS and get_tree().paused)
+	check("存档界面列出存档位（一次显示 %d 个，共 %d 个，可以滚动）并暂停游戏" % [menu.rows.get_child_count(), SaveSystem.SLOTS],
+		menu.rows.get_child_count() == mini(SlotMenu.VISIBLE, SaveSystem.SLOTS) and SaveSystem.SLOTS >= 8 and get_tree().paused)
 	menu.pick(2)
 	check("覆盖已有存档要再确认一次", menu.confirm and result[0] == 0)
 	menu.pick(2)

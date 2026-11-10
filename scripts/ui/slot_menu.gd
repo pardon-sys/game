@@ -2,6 +2,7 @@ class_name SlotMenu
 extends CanvasLayer
 ## 存档位选择界面（存档点存档、主界面读取共用）。mode = "save" / "load"。
 ## await choose(mode) 返回选中的存档位（1~SLOTS），取消返回 -1。存档时覆盖已有存档要再按一次确认。
+## 存档位多（SaveSystem.SLOTS）：一次显示 VISIBLE 个，跟着选中的那一格滚动（上下有 ▲ ▼ 提示还有更多）。
 ## 测试 / 脚本可以直接调 pick(存档位) 和 cancel()。
 
 signal done(slot: int)
@@ -19,6 +20,9 @@ var title: Label
 var rows: VBoxContainer
 var hint: Label
 var _paused_by_me := false
+const VISIBLE := 3
+var top := 1          # 现在列表最上面那一格是第几个存档位
+var page: Label
 
 
 func _ready() -> void:
@@ -48,6 +52,9 @@ func _ready() -> void:
 	hint = _label(DIM)
 	hint.position = Vector2(12, 166)
 	panel.add_child(hint)
+	page = _label(DIM)
+	page.position = Vector2(250, 6)
+	panel.add_child(page)
 
 
 func _label(c: Color) -> Label:
@@ -96,7 +103,15 @@ func _refresh() -> void:
 	for c in rows.get_children():
 		rows.remove_child(c)
 		c.queue_free()
-	for s in range(1, SaveSystem.SLOTS + 1):
+	# 滚动：选中的那一格一直在可见范围里
+	if selected < top:
+		top = selected
+	elif selected >= top + VISIBLE:
+		top = selected - VISIBLE + 1
+	top = clampi(top, 1, maxi(1, SaveSystem.SLOTS - VISIBLE + 1))
+	var last := mini(SaveSystem.SLOTS, top + VISIBLE - 1)
+	page.text = "%s %d–%d / %d %s" % ["▲" if top > 1 else "　", top, last, SaveSystem.SLOTS, "▼" if last < SaveSystem.SLOTS else "　"]
+	for s in range(top, last + 1):
 		var info := SaveSystem.info(s)
 		var l := _label(PINK if s == selected else (TEXT if not info.is_empty() else DIM))
 		var head := ("▶ " if s == selected else "　 ") + "存档 %d　" % s
