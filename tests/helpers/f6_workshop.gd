@@ -12,7 +12,7 @@ static func show(t: Node, id: String) -> ErrandWorkStage:
 static func start(t: Node, id: String) -> ErrandWorkStage:
 	var npc := "after_merchant" if id=="canopy" else "after_pharm"
 	await t._talk("floor_06/"+npc,"errand_"+id,[0])
-	t._go(Cutscene.cell_to_world(AfterErrands.info(id)["target"]))
+	t._go(Cells.to_world(AfterErrands.info(id)["target"]))
 	await t._advance_until(func():return show(t,id)!=null,3.0)
 	return show(t,id)
 
@@ -81,7 +81,7 @@ static func run(t: Node) -> void:
 	s.quit()
 	await t._advance_until(func():return show(t,"canopy")==null,2)
 	verify(t,"棚布退出保留挂角且不发奖励",CanopyShow.saved_step()==1 and PenanceBook.hours()==50 and GameState.dialogue_holds==0)
-	t._go(Cutscene.cell_to_world([13,29]))
+	t._go(Cells.to_world([13,29]))
 	var old_save_dir:=SaveSystem.dir
 	SaveSystem.dir="/private/tmp/f6-workshop-test-saves/"
 	verify(t,"棚布进度写入真实隔离存档",SaveSystem.save(1,"workshop") and int(SaveSystem.read(1)["vars"]["errand_canopy_step"])==1)
@@ -119,7 +119,7 @@ static func run(t: Node) -> void:
 	verify(t,"棚布四处主剧情，减3工时一次",blocks==[4] and PenanceBook.hours()==47 and AfterErrands.is_done("canopy"))
 	AfterErrands.complete("canopy")
 	verify(t,"棚布重复结算不重复减工时",PenanceBook.hours()==47)
-	t._go(Cutscene.cell_to_world([16,13]))
+	t._go(Cells.to_world([16,13]))
 	s=await start(t,"sifting")
 	verify(t,"药剂师对话接取后在门外开演",s!=null and AfterErrands.active()=="sifting")
 	if s==null:return
@@ -157,7 +157,7 @@ static func run(t: Node) -> void:
 	await t._wait(0.2)
 	verify(t,"换图清理新舞台、保留已接及进度",show(t,"sifting")==null and SiftingShow.saved_step()==2 and AfterErrands.is_active("sifting") and GameState.dialogue_holds==0)
 	verify(t,"换图归还临时数值",incoming.size()==1 and is_equal_approx(incoming[0][0],old_laugh) and is_equal_approx(incoming[0][1],old_fatigue))
-	t._go(Cutscene.cell_to_world([17,12]))
+	t._go(Cells.to_world([17,12]))
 	await t._advance_until(func():return show(t,"sifting")!=null,3)
 	s=show(t,"sifting")
 	if s==null:return

@@ -57,7 +57,7 @@ func setup() -> void:
 		_light.position = Vector2(0, -8)
 		pink.add_child(_light)
 	for c in SHADOW_AT:
-		var sh := put(ShadowHand.new(), Cutscene.cell_to_world(c)) as ShadowHand
+		var sh := put(ShadowHand.new(), Cells.to_world(c)) as ShadowHand
 		sh.target = pink
 		shadows.append(sh)
 	_hide_all()
@@ -92,7 +92,7 @@ func _hide_all() -> void:
 		if not hd.found:
 			hd.spot = free.pop_back()
 			hd.stop()
-			hd.global_position = Cutscene.cell_to_world(hd.spot)
+			hd.global_position = Cells.to_world(hd.spot)
 			hd.visible = true
 
 
@@ -153,7 +153,7 @@ func find(hd: Hider) -> void:
 		pink.laugh.add(pink.laugh.max_value * POUNCE_LAUGH)
 	ZoneFx.play("sole", pink.get_parent(), ZoneFx.body_point(pink, "sole"), 0.9, false)
 	Audio.play("tickle", -6.0, 0.1)
-	hd.go_to(Cutscene.cell_to_world(ENTRANCE) + Vector2(10 + (found - 1) * 9, 18))
+	hd.go_to(Cells.to_world(ENTRANCE) + Vector2(10 + (found - 1) * 9, 18))
 	if found >= FIND:
 		_finish()
 
@@ -176,7 +176,7 @@ func caught() -> void:
 	_hide_all()
 	if pink.laugh:
 		pink.laugh.set_value(pink.laugh.max_value * 0.3)
-	pink.global_position = Cutscene.cell_to_world(ENTRANCE)
+	pink.global_position = Cells.to_world(ENTRANCE)
 	_heard = HEARD_COOL
 	for sh in shadows:
 		if is_instance_valid(sh):

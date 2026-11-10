@@ -372,7 +372,28 @@ TREASURE_T = theater("王座间：寻宝的终点", _duo("normal", "normal", d1=
 ])
 
 # ================================================================ 汇总
+# ================================================================ 第十轮：王座间「破败的往日荣光」（Boss 后能调查的三处）
+RUINS = {
+    "ruin_relics": _read("王座台阶上的旧物", [
+        L("（王座台阶最上面一级，并排放着三样东西：一顶小小的纸王冠、一只掉了一颗纽扣眼睛的布兔子、一本夹着书签的书）", N),
+        L("（纸王冠歪歪扭扭的，边上用蜡笔涂满了星星。……一看就是孩子做的）", N),
+        L("……纸王冠。……陛下，戴过吗。", P, "sad"),
+        L("……一定戴过。……戴着它上朝。", BLUE),
+        L("（布兔子被摸得起了球。缺了眼睛的那一边，有人用线缝了一个小小的笑脸）", N)], "palace_ruin_relics"),
+    "ruin_tapestry": _read("褪色的挂毯", [
+        L("（墙上的挂毯褪了色，织的是王国的庆典：广场上所有的人一起笑，钟楼的钟在发光）", N),
+        L("（挂毯的下半截被颜料泼脏了，看不清笑着的都是谁。只有角落里一个小小的身影还看得清——一个大人，牵着两个孩子）", N),
+        L("……以前的小镇。……这么热闹。", P),
+        L("……现在，也会的。", BLUE)], "palace_ruin_tapestry"),
+    "ruin_chandelier": _read("摔碎的水晶吊灯", [
+        L("（一盏巨大的水晶吊灯摔在地上，金色的灯架弯了，碎水晶撒了一地）", N),
+        L("（听说以前每逢庆典，它会亮一整夜，整个王座间都是彩色的光斑）", N),
+        L("……碎成这样，还在发光。", P, "surprise"),
+        L("……像在等人，把它挂回去。", BLUE)], "palace_ruin_chandelier"),
+}
+
 DIALOGUES = dict(DAILY)
+DIALOGUES.update(RUINS)
 DIALOGUES.update({"daily_height": HEIGHT, "daily_pillow": PILLOW, "daily_drawing": DRAWING, "treasure_chest": CHEST})
 for _i in range(len(NOTES)):
     DIALOGUES["queen_" + NOTES[_i][0]] = _note(_i)
@@ -408,4 +429,8 @@ def paint_intro():
 
 PORTRAIT_INTRO_FLAG = "palace_paint_intro_seen"
 CUTSCENES = {"throne_paint_intro": paint_intro}
-SIGNS = {}
+SIGNS = {
+    # 第十轮：Boss 战没打完不能回前厅
+    "throne_exit_locked": [{"speaker": N, "text": "（门框上糊满了湿漉漉的颜料，门推不开。……画像不放人走）"},
+                           {"speaker": BLUE, "text": "……先把它打破。"}],
+}

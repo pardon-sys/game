@@ -16,7 +16,7 @@ def _tk(zone="sole", fx="feather", n=6, iv=0.22):
 SCENES = {
     # 痒痒装备回收：补给站的木箱上，孩子们穿上收回来的毛绒靴子，拿毛球「试试还灵不灵」
     "after_d2_equip_done": [
-        line(N, "（装备点完了。补给站的木箱堆里，孩子们翻出了几双毛茸茸的粉色靴子，一个个套在自己脚上，乐得直蹦）"),
+        line(N, "（正说着，旁边的孩子们从回收的木箱里翻出了几双毛茸茸的粉色靴子，一个个套在自己脚上，乐得直蹦）"),
         line(TOM, "姐姐姐姐！这双靴子里面全是软毛！穿着走路好痒——"),
         line(LILY, "要、要检查一下还灵不灵！姐姐把脚伸出来！"),
         line(N, "（她刚在木箱上坐下，就被三个小家伙团团围住。毛球、软毛靴口，一下一下地蹭着光着的脚心）", None, [_tk("sole", "feather", 8, 0.18)]),
@@ -37,7 +37,7 @@ SCENES = {
     ],
     # 推矿车：夕阳下的城外，冰晶把车轮包住了，队长来验收
     "after_d3_cart_done": [
-        line(N, "（夕阳把城墙染成了橘色。矿车停在城门外，两个车轮被蓝色公主的冰晶包得亮晶晶的，一点都不晃）"),
+        line(N, "（城门那边传来了脚步声——队长来验收了。夕阳把城墙染成了橘色，停在门外的矿车，两个车轮还包着蓝色公主的冰晶，亮晶晶的，一点都不晃）"),
         line(BLUE, "……刹住了。冰，两层。"),
         line(P, "（扛着撬棍，得意地叉腰）哼哼，全靠我一路推上来的！", "happy"),
         line(CAP, "（走过来，敲了敲冰壳）……矿车完好。货也完好。……合格。"),
@@ -46,7 +46,7 @@ SCENES = {
     ],
     # 排水管：刚从管口爬出来，孩子们抓着她的脚「帮忙擦泥」
     "after_d4_drain_done": [
-        line(N, "（她从排水管口爬出来，一屁股坐在石头上。光着的脚上全是泥，旁边的鞋袜早就湿透了）"),
+        line(N, "（最后一团淤泥「噗」地冲了出去。她手脚并用地从排水管口爬出来，一屁股坐在石头上。光着的脚上全是泥，鞋袜早就湿透了）"),
         line(TOM, "姐姐的脚好脏！我们帮你擦干净！"),
         line(FAT, "我、我抓左脚！"),
         line(LILY, "我拿袖子擦脚心～"),
@@ -56,7 +56,7 @@ SCENES = {
     ],
     # 特训第一课：蓝色公主坐在冰壳里纹丝不动，粉色公主想逗她笑，结果自己先笑了
     "after_d4_drill_done": [
-        line(N, "（课程结束。蓝色公主还坐在冰台上，身上一层薄薄的冰壳，闭着眼睛，一动不动）"),
+        line(N, "（课程结束，可是队长没让蓝色公主马上起来。她还坐在冰台上，身上一层薄薄的冰壳，闭着眼睛，一动不动）"),
         line(CAP, "……第一课，过了。……冰壳不用化，再坐一会儿，巩固。"),
         line(P, "哦——那我来检验一下成果！（凑过去，对着冰壳上她的腰挠了挠）", "happy"),
         line(BLUE, "…………（冰壳里，一点反应都没有）"),
@@ -66,7 +66,7 @@ SCENES = {
     ],
     # 裁缝：新做的棉衣试身，裁缝跪下来检查棉袜底的接缝，一边捏一边量
     "after_d5_tailor_done": [
-        line(N, "（新缝好的棉背心穿在身上，暖暖的。裁缝让她坐在小凳上，把一只光着的脚搁上天鹅绒脚凳）"),
+        line(N, "（裁缝让她当场把棉背心穿上试试——暖暖的。接着又让她坐在小凳上，把一只光着的脚搁上天鹅绒脚凳）"),
         line(TAILOR_N, "最后一步——袜底的尺寸。别动哦，我量一下脚长和脚弓。"),
         line(N, "（软尺贴着脚心拉过去，裁缝的手指沿着接缝一寸一寸地捏，确认哪里会漏风）", None, [_tk("sole", "hand", 8, 0.2)]),
         line(P, "噗……那、那里不漏风了啦……哈哈……", "helpless_1"),
@@ -75,7 +75,7 @@ SCENES = {
     ],
     # 矿洞：最后一车矿石运出去，两人坐着空矿车滑下来，老矿工在旁边欢呼
     "after_d5_mine_done": [
-        line(N, "（最后一车矿石运出了矿洞。空矿车停在轨道上，老矿工拍拍车斗：「上来！送你们一程！」）"),
+        line(N, "（热汤喝完，老矿工拍了拍空了的矿车：「回去的路是下坡——上来！送你们一程！」）"),
         line(P, "坐、坐矿车？", "surprise"),
         line(BLUE, "……坐。"),
         line(N, "（两个人挤进车斗，光着的脚丫搭在车沿上。矿车「咕噜咕噜」地顺着坡滑下去，两旁的水晶一闪一闪）"),
@@ -85,7 +85,7 @@ SCENES = {
     ],
     # 陷阱验收：验收合格，小芬拿着报告单来请她「签字」
     "after_d6_inspect_done": [
-        line(N, "（训练营的空地上，五个陷阱排成一排。她光着脚站在最后一个吊环架旁边，叉着腰，一脸得意）"),
+        line(N, "（验收报告写好了。她光着脚站在最后一个吊环架旁边，叉着腰，一脸得意——五个陷阱，一个都没让她趴下）"),
         line(G2, "验收报告——全部合格！（举起报告单）姐姐，这里要签个字！"),
         line(P, "签字？好呀，笔呢？", "happy"),
         line(G2, "不用笔！按个脚印就行！（指着报告单旁边一盒粉色的印泥，印泥里插着一根羽毛）"),
@@ -94,7 +94,7 @@ SCENES = {
     ],
     # 特训考核：考核通过，粉色公主扑上去抱住蓝色公主，队长宣布结业
     "after_d6_drill_done": [
-        line(N, "（考核结束。训练室的阳光亮得晃眼，粉色公主一下子扑上去，抱住了蓝色公主）"),
+        line(N, "（考核结束的铃声一响，粉色公主一下子扑上去，抱住了蓝色公主。训练室里的灯亮得晃眼）"),
         line(P, "过了过了！你考过啦——！", "happy"),
         line(BLUE, "……嗯。……（被抱得有点喘不过气）……你，抱太紧了。"),
         line(CAP, "……（站在一旁，难得地点了点头）……冰封自制，结业。"),
@@ -104,7 +104,7 @@ SCENES = {
     ],
     # 图腾柱：修好的图腾柱亮起来，两人靠在底座上歇着，工匠来道谢
     "after_d7_totem_done": [
-        line(N, "（修好的图腾柱亮了起来，暖黄色的光一圈圈地往外晕。两个人光着脚坐在底座上，靠在一起直喘气）"),
+        line(N, "（身后，修好的图腾柱亮了起来，暖黄色的光一圈圈地往外晕。两个人光着脚坐在底座上，靠在一起直喘气）"),
         line(P, "……终、终于……刻完了……", "helpless_1"),
         line(BLUE, "……脚，还在麻。"),
         line(ENG, "（拄着锤子走过来）辛苦啦！这根柱子，比原来的还亮。"),
@@ -114,19 +114,44 @@ SCENES = {
 }
 
 
+# 每段收尾插在哪一句前面（原成功过场里的一句台词的片段）；None = 插在原过场的最后（镇民们的感谢之前）
+ANCHORS = {
+    "after_d2_equip_done": "工时我记上了",
+    "after_d3_potion_done": None,
+    "after_d3_cart_done": None,
+    "after_d4_drain_done": "（不知什么时候站在了水沟边上）",
+    "after_d4_drill_done": "（走出训练室的时候",
+    "after_d5_tailor_done": "说起来，你量尺寸的时候",
+    "after_d5_mine_done": None,
+    "after_d6_inspect_done": "……下午，训练室。别忘了。",
+    "after_d6_drill_done": "（走出训练室的时候，天已经黑了",
+    "after_d7_totem_done": "（往下看了一眼）……还没清",
+}
+
+
 def apply(cid, data):
-    """把成功收尾的场面插到过场最后的镜头复位（camera reset）之前；第一句标 cg，_with_done_cg 在那一句挂 CG。"""
+    """在原成功过场里（gen_floor06_after 先调它、再接镇民们的感谢 done_folk）找到 ANCHORS 那一句，把成功收尾的场面插在它前面；
+    没写 / 找不到就插在过场最后的镜头复位之前。第一句标 cg_here（_with_done_cg 在那一句挂 CG），场面演完收起 CG。"""
     scene = SCENES.get(cid)
     if not scene:
         return data
     steps = data["steps"]
     at = len(steps)
-    for i in range(len(steps) - 1, -1, -1):
-        acts = steps[i].get("actions", [])
-        if any(a.get("do") == "camera" and a.get("reset") for a in acts) and not steps[i].get("text"):
-            at = i
-            break
+    anchor = ANCHORS.get(cid)
+    found = False
+    if anchor:
+        for i, st in enumerate(steps):
+            if anchor in str(st.get("text", "")):
+                at, found = i, True
+                break
+    if not found:
+        for i in range(len(steps) - 1, -1, -1):
+            acts = steps[i].get("actions", [])
+            if any(a.get("do") == "camera" and a.get("reset") for a in acts) and not steps[i].get("text"):
+                at = i
+                break
     scene = [dict(s) for s in scene]
     scene[0]["cg_here"] = True
+    scene.append({"actions": [A("cg", key="")], "wait": 0.1})
     data["steps"] = steps[:at] + scene + steps[at:]
     return data

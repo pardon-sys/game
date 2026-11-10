@@ -63,6 +63,58 @@
 			"emotion": "angry"
 		},
 		{
+			"speaker": "",
+			"text": "（裁缝让她当场把棉背心穿上试试——暖暖的。接着又让她坐在小凳上，把一只光着的脚搁上天鹅绒脚凳）",
+			"actions": [
+				{
+					"do": "cg",
+					"key": "after_tailor_ok"
+				}
+			]
+		},
+		{
+			"speaker": "裁缝",
+			"text": "最后一步——袜底的尺寸。别动哦，我量一下脚长和脚弓。"
+		},
+		{
+			"speaker": "",
+			"text": "（软尺贴着脚心拉过去，裁缝的手指沿着接缝一寸一寸地捏，确认哪里会漏风）",
+			"actions": [
+				{
+					"who": "princess",
+					"by": "",
+					"zone": "sole",
+					"fx": "hand",
+					"repeat": 8,
+					"interval": 0.2,
+					"do": "tickle"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "噗……那、那里不漏风了啦……哈哈……",
+			"emotion": "helpless_1"
+		},
+		{
+			"speaker": "裁缝",
+			"text": "嗯？这里一捏就笑……说明这里最怕冷，袜底要加厚一层。记下了。"
+		},
+		{
+			"speaker": "公主",
+			"text": "那是怕痒，不是怕冷——！",
+			"emotion": "angry"
+		},
+		{
+			"actions": [
+				{
+					"key": "",
+					"do": "cg"
+				}
+			],
+			"wait": 0.1
+		},
+		{
 			"speaker": "裁缝",
 			"text": "呵呵。……说起来，你量尺寸的时候，我总觉得在哪里见过这个尺码。"
 		},
@@ -108,49 +160,6 @@
 			"speaker": "公主",
 			"text": "……嗯。（把香包捧在手心里，闻起来有薰衣草和面包的味道）",
 			"emotion": "happy"
-		},
-		{
-			"speaker": "",
-			"text": "（新缝好的棉背心穿在身上，暖暖的。裁缝让她坐在小凳上，把一只光着的脚搁上天鹅绒脚凳）",
-			"actions": [
-				{
-					"do": "cg",
-					"key": "after_tailor_ok"
-				}
-			]
-		},
-		{
-			"speaker": "裁缝",
-			"text": "最后一步——袜底的尺寸。别动哦，我量一下脚长和脚弓。"
-		},
-		{
-			"speaker": "",
-			"text": "（软尺贴着脚心拉过去，裁缝的手指沿着接缝一寸一寸地捏，确认哪里会漏风）",
-			"actions": [
-				{
-					"who": "princess",
-					"by": "",
-					"zone": "sole",
-					"fx": "hand",
-					"repeat": 8,
-					"interval": 0.2,
-					"do": "tickle"
-				}
-			]
-		},
-		{
-			"speaker": "公主",
-			"text": "噗……那、那里不漏风了啦……哈哈……",
-			"emotion": "helpless_1"
-		},
-		{
-			"speaker": "裁缝",
-			"text": "嗯？这里一捏就笑……说明这里最怕冷，袜底要加厚一层。记下了。"
-		},
-		{
-			"speaker": "公主",
-			"text": "那是怕痒，不是怕冷——！",
-			"emotion": "angry"
 		},
 		{
 			"actions": [

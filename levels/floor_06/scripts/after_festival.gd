@@ -99,7 +99,7 @@ static func run_finale() -> void:
 	if lv:
 		fw = FestivalFireworks.new()
 		fw.spread = FIREWORKS_SPREAD
-		fw.global_position = Cutscene.cell_to_world(FIREWORKS_CELL)
+		fw.global_position = Cells.to_world(FIREWORKS_CELL)
 		lv.add_child(fw)
 	GameState.set_flag(FINALE_DONE)
 	GameState.set_flag(AfterStory.NIGHT_BUSY, false)

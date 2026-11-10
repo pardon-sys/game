@@ -53,7 +53,7 @@ func _process(_delta: float) -> void:
 	if _emitted or _busy or not started or GameState.in_dialogue or GameState.in_cutscene:
 		return
 	var p := GameState.player
-	if is_instance_valid(p) and p.global_position.distance_to(Cutscene.cell_to_world(CELL)) <= NEAR:
+	if is_instance_valid(p) and p.global_position.distance_to(Cells.to_world(CELL)) <= NEAR:
 		talk_now()
 
 
@@ -92,7 +92,7 @@ func caught_now() -> void:
 		return
 	var p := GameState.player
 	if is_instance_valid(p):
-		p.global_position = Cutscene.cell_to_world(SPAWN)
+		p.global_position = Cells.to_world(SPAWN)
 		if p.laugh:
 			p.laugh.set_value(p.laugh.max_value * 0.3)
 		if p.camera:

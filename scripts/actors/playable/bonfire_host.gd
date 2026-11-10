@@ -98,7 +98,7 @@ func fatigue_burst_visual() -> String:
 func place_schedule(info: Dictionary) -> void:
 	show_flag = "after_never" if bool(info.get("hidden", false)) else ""
 	if info.has("at"):
-		global_position = Cutscene.cell_to_world(info["at"])
+		global_position = Cells.to_world(info["at"])
 		_host_home = global_position
 		velocity = Vector2.ZERO
 	if info.has("dir"):

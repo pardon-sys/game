@@ -73,7 +73,7 @@ func _refresh_clues(lv: Node) -> void:
 		pr.set("action", "talk:floor_06/after_house_objects#" + id)
 		pr.name = "Clue_" + id
 		(ents if ents else lv).add_child(pr)
-		pr.global_position = Cutscene.cell_to_world(CLUES[id])
+		pr.global_position = Cells.to_world(CLUES[id])
 		_clue_nodes.append(pr)
 
 

@@ -85,7 +85,7 @@ func _ready() -> void:
 		get_parent().add_child.call_deferred(wc)
 		_water_nodes.append(wc)
 	for c in QuestMaps.cells(MAP, "wheels"):
-		wheels.append({"cell": c, "pos": Cutscene.cell_to_world(c), "progress": 0.0, "latched": false})
+		wheels.append({"cell": c, "pos": Cells.to_world(c), "progress": 0.0, "latched": false})
 		var wn := WheelMark.new()
 		wn.position = cell_pos(c)
 		get_parent().add_child.call_deferred(wn)
@@ -102,13 +102,13 @@ func _ready() -> void:
 	for c in QuestMaps.cells(MAP, "mud"):
 		var m := MudMan.new()
 		m.dir = self
-		m.home = Cutscene.cell_to_world(c)
+		m.home = Cells.to_world(c)
 		m.position = m.home
 		get_parent().add_child.call_deferred(m)
 		mudmen.append(m)
 	for c in QuestMaps.cells(MAP, "checkpoints"):
-		_cps.append(Cutscene.cell_to_world(c))
-	checkpoint = _cps[0] if not _cps.is_empty() else Cutscene.cell_to_world(QuestMaps.cell(MAP, "start"))
+		_cps.append(Cells.to_world(c))
+	checkpoint = _cps[0] if not _cps.is_empty() else Cells.to_world(QuestMaps.cell(MAP, "start"))
 	_apply_water()
 	# 跳关进来：补穿鼠鼠装
 	if GameState.has_flag("penance_mouse_dev") and not PenanceCell.wearing_mouse():
@@ -405,7 +405,7 @@ func release(pc: PlayableCharacter) -> void:
 func _check_arena(ms: Array) -> void:
 	if is_instance_valid(keeper) or GameState.has_flag(SluiceKeeper.DONE_FLAG):
 		return
-	var a := Cutscene.cell_to_world(QuestMaps.cell(MAP, "arena"))
+	var a := Cells.to_world(QuestMaps.cell(MAP, "arena"))
 	for c in ms:
 		if (c as Node2D).global_position.distance_to(a) <= ARENA_R:
 			start_keeper()

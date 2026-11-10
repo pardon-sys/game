@@ -38,9 +38,9 @@ func c() -> Dictionary:
 func setup() -> void:
 	moss.clear()
 	for m in MOSS:
-		moss.append(put(TaskDrain.MossBall.new(), Cutscene.cell_to_world(m)))
+		moss.append(put(TaskDrain.MossBall.new(), Cells.to_world(m)))
 	for i in NAILS.size():
-		var n := put(NailMark.new(), Cutscene.cell_to_world(NAILS[i])) as NailMark
+		var n := put(NailMark.new(), Cells.to_world(NAILS[i])) as NailMark
 		n.index = i
 		n.runner = self
 	_crawl(true)
@@ -126,7 +126,7 @@ func tick(delta: float, holding: bool) -> void:
 		say(c().get("hand", []), 1.4)
 	# 封印钉
 	if nails_done < NAILS.size():
-		var d := pink.global_position.distance_to(Cutscene.cell_to_world(NAILS[nails_done]))
+		var d := pink.global_position.distance_to(Cells.to_world(NAILS[nails_done]))
 		if d <= NAIL_R:
 			start_hammer()
 		elif d >= NAIL_R + 10.0:
@@ -187,7 +187,7 @@ func finish_hammer(hits: int) -> bool:
 	if hits < HAMMER_PASS:
 		say(c().get("nail_miss", ""), 1.6)
 		if is_instance_valid(pink):
-			pink.global_position = _safe if _safe != Vector2.ZERO else Cutscene.cell_to_world(QuestMaps.cell("floor_06_after_crack", "start"))
+			pink.global_position = _safe if _safe != Vector2.ZERO else Cells.to_world(QuestMaps.cell("floor_06_after_crack", "start"))
 		return false
 	nails_done += 1
 	say(c().get("nail_ok", ""), 1.6)

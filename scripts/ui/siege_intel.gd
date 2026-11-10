@@ -37,6 +37,13 @@ static func data() -> Dictionary:
 static var auto_controls := true
 
 
+## 按键名换成看得懂的符号（OS 给的是 Minus / Equal / BracketLeft 这种英文名）
+const KEY_READABLE := {"Escape": "Esc", "Space": "空格", "Up": "↑", "Down": "↓", "Left": "←", "Right": "→",
+	"Minus": "-", "Equal": "+（=）", "Plus": "+", "Kp Subtract": "小键盘 -", "Kp Add": "小键盘 +", "Kp Multiply": "小键盘 *",
+	"BracketLeft": "[", "BracketRight": "]", "Comma": ",", "Period": ".", "Slash": "/", "Backslash": "\\", "Semicolon": ";",
+	"Apostrophe": "'", "Quoteleft": "`", "Tab": "Tab", "Shift": "Shift", "Ctrl": "Ctrl", "Alt": "Alt", "Enter": "回车", "Backspace": "退格"}
+
+
 static func keys_of(action: String, n := 2) -> String:
 	if not InputMap.has_action(action):
 		return "?"
@@ -47,7 +54,7 @@ static func keys_of(action: String, n := 2) -> String:
 			continue
 		var code := k.physical_keycode if k.physical_keycode != KEY_NONE else k.keycode
 		var name := OS.get_keycode_string(code)
-		name = {"Escape": "Esc", "Space": "空格", "Up": "↑", "Down": "↓", "Left": "←", "Right": "→"}.get(name, name)
+		name = KEY_READABLE.get(name, name)
 		if name != "" and not out.has(name):
 			out.append(name)
 		if out.size() >= n:

@@ -18,7 +18,7 @@ func _process(_delta: float) -> void:
 	var info := AfterErrands.info(errand_id)
 	if not info.has("target") or not info.has("show"):
 		return
-	if GameState.player.global_position.distance_to(Cutscene.cell_to_world(info["target"])) > NEAR:
+	if GameState.player.global_position.distance_to(Cells.to_world(info["target"])) > NEAR:
 		return
 	if AfterStory.running or DayClock.passing or CG.is_busy(): return
 	var main := get_tree().get_first_node_in_group("main")

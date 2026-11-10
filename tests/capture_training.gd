@@ -28,7 +28,7 @@ func _ready() -> void:
 	await _wait(1.0)
 	_finish()
 	var p := GameState.player
-	p.global_position = Cutscene.cell_to_world([32, 20])
+	p.global_position = Cells.to_world([32, 20])
 	GameState.give_item(ItemDB.get_item("coin"), 50)
 	await _wait(0.5)
 	# 菜单
@@ -124,7 +124,7 @@ func _ready() -> void:
 	await _until(func(): return TrainingDB.current == null, true)
 	await _wait(0.3)
 	# 训练二：迷宫
-	GameState.player.global_position = Cutscene.cell_to_world([40, 21])
+	GameState.player.global_position = Cells.to_world([40, 21])
 	go = func(): await TrainingDB.run("fatigue_release")
 	go.call()
 	await _wait(1.5)
@@ -168,7 +168,7 @@ func _ready() -> void:
 		GameState.set_flag("met_" + k)
 	for f in ["hint_restraint", "hint_grabbed", "hint_tickled"]:
 		GameState.set_flag(f)
-	GameState.player.global_position = Cutscene.cell_to_world([38, 22])
+	GameState.player.global_position = Cells.to_world([38, 22])
 	for key in ["thigh_brush_ring", "spring_seat", "scissor_stand"]:
 		var pl := GameState.player
 		var t: Node2D = load("res://scenes/traps/%s.tscn" % key).instantiate()

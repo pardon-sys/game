@@ -139,26 +139,26 @@ func _ready() -> void:
 		var b := Beacon.new()
 		b.lit = i < lit()
 		get_parent().add_child(b)
-		b.global_position = Cutscene.cell_to_world(BEACONS[i])
+		b.global_position = Cells.to_world(BEACONS[i])
 		beacons.append(b)
 	# 栅栏门：支线「夜里的栅栏」钉的那三道
 	for c in (GATES if KnightQuests.is_done("fence") else []):
 		var g := Gate.new()
 		get_parent().add_child(g)
-		g.global_position = Cutscene.cell_to_world(c)
+		g.global_position = Cells.to_world(c)
 		gates.append(g)
 	armor = CursedArmor.new()
 	get_parent().add_child(armor)
-	armor.global_position = Cutscene.cell_to_world(START)
+	armor.global_position = Cells.to_world(START)
 	armor.target = pink
 	armor.grabbed.connect(func(_w): grab())
 	armor.stun(START_STUN)
 	if is_instance_valid(pink):
-		pink.global_position = Cutscene.cell_to_world(PINK_START)
+		pink.global_position = Cells.to_world(PINK_START)
 		if pink.camera:
 			pink.camera.reset_smoothing()
 	if is_instance_valid(blue):
-		blue.global_position = Cutscene.cell_to_world(PINK_START) + Vector2(-14, 4)
+		blue.global_position = Cells.to_world(PINK_START) + Vector2(-14, 4)
 	safe_left = SAFE_TIME
 	captain_block = 1 if KnightQuests.is_done("spear") else 0
 	KnightAI.install([pink, blue], ai_plan, null, ["struggle", "dodge", "task", "follow"])
@@ -211,7 +211,7 @@ func advance(delta: float) -> void:
 		else:
 			hold = maxf(0.0, hold - delta * 0.5)
 			b.progress = hold / HOLD
-	elif pink.global_position.distance_to(Cutscene.cell_to_world(PLAZA)) <= PLAZA_R:
+	elif pink.global_position.distance_to(Cells.to_world(PLAZA)) <= PLAZA_R:
 		_emit(true)
 		return
 	_throw_tick(delta)
@@ -325,7 +325,7 @@ func aim_points() -> Array:
 	var n := 1 + (1 if lit() >= 2 else 0) + (1 if lit() >= 3 else 0)
 	if n >= 2:
 		# 拦路：她和下一座信标（全亮了是广场）之间
-		var goal := Cutscene.cell_to_world(target_cell())
+		var goal := Cells.to_world(target_cell())
 		out.append(p + p.direction_to(goal) * minf(80.0, p.distance_to(goal) * 0.5))
 	if n >= 3:
 		var side := (main - armor.global_position).orthogonal().normalized() * 40.0
@@ -365,7 +365,7 @@ func _free_spot(want: Vector2) -> Vector2:
 	for r in [0.0, 16.0, 32.0]:
 		for k in 8:
 			var p: Vector2 = want + Vector2.RIGHT.rotated(k * TAU / 8.0) * float(r)
-			var c := Cutscene.cell_to_world(_cell_of(p))
+			var c := Cells.to_world(_cell_of(p))
 			var q := PhysicsPointQueryParameters2D.new()
 			q.position = c
 			q.collision_mask = 1
@@ -373,7 +373,7 @@ func _free_spot(want: Vector2) -> Vector2:
 				return c
 			if r == 0.0:
 				break
-	return Cutscene.cell_to_world(_cell_of(pink.global_position))
+	return Cells.to_world(_cell_of(pink.global_position))
 
 
 static func _cell_of(p: Vector2) -> Vector2i:

@@ -43,9 +43,9 @@ func setup() -> void:
 		_light.position = Vector2(0, -10)
 		pink.add_child(_light)
 	for c in HANDS:
-		var h := put(CurseHand.new(), Cutscene.cell_to_world(c)) as CurseHand
+		var h := put(CurseHand.new(), Cells.to_world(c)) as CurseHand
 		hands.append(h)
-	cluster = put(HandCluster.new(), Cutscene.cell_to_world(CLUSTER)) as HandCluster
+	cluster = put(HandCluster.new(), Cells.to_world(CLUSTER)) as HandCluster
 	cluster.lines = {"split_line": [hl().get("split", "")]}
 	cluster.split_into.connect(_on_split)
 	_intro()
@@ -127,7 +127,7 @@ func tick(delta: float) -> void:
 ## 在旧烛台旁按 E：续满火把
 func refuel_near(who: Node2D) -> bool:
 	for c in CANDLES:
-		if who.global_position.distance_to(Cutscene.cell_to_world(c)) <= CANDLE_R:
+		if who.global_position.distance_to(Cells.to_world(c)) <= CANDLE_R:
 			fuel = 1.0
 			_out = false
 			_warned = false

@@ -279,7 +279,7 @@ func _spawn_devices() -> void:
 		d.set("active", false)
 		d.name = "TrainDevice%d" % i
 		parent.add_child(d)
-		d.global_position = Cutscene.cell_to_world(_arr(_spot))
+		d.global_position = Cells.to_world(_arr(_spot))
 		devices.append(d)
 
 

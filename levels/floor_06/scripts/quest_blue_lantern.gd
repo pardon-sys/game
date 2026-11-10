@@ -16,7 +16,7 @@ func mode() -> String:
 
 
 func setup() -> void:
-	lantern = put(OldLantern.new(), Cutscene.cell_to_world(LANTERN)) as OldLantern
+	lantern = put(OldLantern.new(), Cells.to_world(LANTERN)) as OldLantern
 
 
 func _process(_delta: float) -> void:

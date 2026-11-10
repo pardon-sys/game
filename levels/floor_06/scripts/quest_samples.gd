@@ -40,7 +40,7 @@ func setup() -> void:
 		var spots: Array = SPOTS[stage()]
 		var real := randi() % spots.size()
 		for i in spots.size():
-			var at := Cutscene.cell_to_world(spots[i])
+			var at := Cells.to_world(spots[i])
 			if i == real:
 				var s := HandShard.make(get_parent(), at, "stone", _text())
 				s.caught_by.connect(_on_caught)
@@ -50,7 +50,7 @@ func setup() -> void:
 				put(Decoy.new(), at)
 	else:
 		need = HandCluster.SPLIT
-		cluster = put(HandCluster.new(), Cutscene.cell_to_world(CLUSTER)) as HandCluster
+		cluster = put(HandCluster.new(), Cells.to_world(CLUSTER)) as HandCluster
 		cluster.lines = _text()
 		cluster.split_into.connect(_on_split)
 		say(q.get("cluster", ""), 3.0)

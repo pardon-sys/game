@@ -134,7 +134,7 @@ func _start_round(i: int) -> void:
 
 
 func origin() -> Vector2:
-	return captain.global_position if is_instance_valid(captain) else Cutscene.cell_to_world(CAPTAIN)
+	return captain.global_position if is_instance_valid(captain) else Cells.to_world(CAPTAIN)
 
 
 func _process(delta: float) -> void:

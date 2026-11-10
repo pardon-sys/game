@@ -268,8 +268,9 @@ func _physics_process(delta: float) -> void:
 	Characters.unscope()
 	if follow:
 		_follow_warp()
-		if _partner_area:
-			_partner_area.enabled = partner_talk != "" and not is_controlled() and is_alive()
+	# 每帧都更新（以前只在跟随时更新：不跟随的场景里换人以后，自己身上的「和搭档说话」交互还开着，头顶一直飘 E）
+	if _partner_area:
+		_partner_area.enabled = partner_talk != "" and not is_controlled() and is_alive()
 
 
 func receive_hit(hit: HitData) -> bool:

@@ -62,13 +62,13 @@ func _ready() -> void:
 		var p := Pile.new()
 		p.amount = float(GameState.vars["task_sweep_left"][i])
 		get_parent().add_child(p)
-		p.global_position = Cutscene.cell_to_world(PILES[i])
+		p.global_position = Cells.to_world(PILES[i])
 		piles.append(p)
 	for c in SHELTERS:
 		var sh := Shelter.new()
 		sh.task = self
 		get_parent().add_child(sh)
-		sh.global_position = Cutscene.cell_to_world(c)
+		sh.global_position = Cells.to_world(c)
 		shelters.append(sh)
 	_intro.call_deferred()
 
@@ -191,7 +191,7 @@ func gust_now() -> void:
 
 ## 站在避风处
 func sheltered(at: Vector2) -> bool:
-	return SHELTERS.any(func(c): return at.distance_to(Cutscene.cell_to_world(c)) <= SHELTER_R)
+	return SHELTERS.any(func(c): return at.distance_to(Cells.to_world(c)) <= SHELTER_R)
 
 
 ## 要起风了（避风处亮起来）

@@ -904,6 +904,10 @@ data/cutscenes/<楼层组>/  地图内过场；data/theater/<楼层组>/  小剧
 	一条走廊（`TaskInspect.COURSE`）：五个挠痒陷阱的踏板（羽毛帘 / 地洞挠挠手 / 脚趾分隔刷 / 单脚吊环架 / 跪台脚心朝天，各自的挣脱方式见 `InspectShow`）+ 三个辅助设施
 	（泡脚盆「泡软」、精油踏板「滑溜」、冷敷石板清状态，踏板整条走廊宽、走过去强制施加），按顺序走。体验完报「太强 / 刚好 / 太弱」——要报陷阱本身的强度（屏幕给出涨了多少闷笑和身上的状态）；评「太弱」被加强、评「太强」被削弱但要再体验一次。
 	五个评完 → 综合演练（按评分调整过强度、闷笑不清零），笑倒 = 失败（`after_fail_inspect`，重来直接综合演练）。
+- **第十轮**：`Cells.to_world(格)` 取代 `Cutscene.cell_to_world`（静态函数从 autoload 实例上调用会报 STATIC_CALLED_ON_INSTANCE）；
+	`PlayableCharacter._partner_area.enabled` 每帧更新（不跟随时换人以后头顶一直飘 E）；捉人游戏的孩子也查物理层 1（房子 / 摊位）；
+	成功收尾的 CG 场面按 `done_cg.ANCHORS` 插到原成功过场里合适的那一句前面（镇民感谢之前），演完收起 CG；防痒棉衣有了自己的图标 `item_tailor_coat.png`；
+	攻防战按键说明的键名换成可读符号（`SiegeIntel.KEY_READABLE`：Minus → -、Equal → +（=）……）。
 - **第九轮修正（七日赎罪）**：
 	- K 闪避：「痒痒装备回收」失败后没重来就离开，强制穿上的 `equip_t_` 临时装备（羽毛脚镣 special `no_dash`）一直留着 → `TaskEquip._exit_tree` 一律卸掉，
 	  `AfterStory._strip_stale_task_gear()`（`on_level_entered`）清旧存档；被 `no_dash` 挡住时按 K 有提示。
@@ -1426,6 +1430,9 @@ data/cutscenes/<楼层组>/  地图内过场；data/theater/<楼层组>/  小剧
 	  破绽露着打画像 tier 下、小画像挨 tier 下（金框护盾照挡）、小兵 / 分身 / 画笔精 `hurt()`、颜料小人 `pop()`；蓝色冰晶再让小画像僵住 `MAGIC_FREEZE` 秒。
 	- `SMALL_REVIVE` 12 秒。
 	- 第三层第一次被拉进画里（`pull()`）：过场 `throne_paint_intro`（`palace10.paint_intro`，镜头依次扫过颜料星 / 出口 / 光带 / 镜像），标记 `PAINT_INTRO_FLAG`；过场里 `busy()`，画里计时不走。
+	- 第十轮：Boss 战没打完 `_lock_exits(true)` 封住回前厅的出口（标志 `throne_exit_locked`），打完打开；画笔撞人改用 `ThroneParts.shove`（撞墙就停）；
+	  王座间「破败的往日荣光」`_build_ruins()`（`throne_ruins.png` 12 帧：吊灯 / 挂毯 / 王旗 / 石柱 / 长桌 / 铠甲 ×2 / 台阶旧物 / 裂缝 / 花瓣 / 破彩窗 / 烛台，`GlassLight` 彩窗光斑），Boss 后三处能调查（`ruin_*`）；
+	  `PalaceRoom.add_view` 改成 `_add_view_now`：挂上去之前已经被 queue_free 的不挂（同一帧生成又清掉的小兵，以前换图会崩）。
 	- 画里的画笔（`Brush`）：`BRUSH_HP` 3 下打掉（画里那个人的攻击 / 魔法），碎成颜料、`BRUSH_RESPAWN` 秒后在巡逻点重新画出来；每次被拉进画里回满。
 	- 跳关：`gen_dev_skips.PALACE_SIDE_FLAGS / PALACE_SIDE_ITEMS`（支线全做完：生日缎带、发饰、羽毛披肩、怀表、长筒袜……），用在「王座间（Boss 前）」和两个尾声跳关点。
   - 新装备（衣帽间）：`palace_ribbon`、`palace_corset`、`palace_boots`、`palace_stockings`、`feather_shawl`（`gen_equipment.py` + `gen_equip_art.py` + `ItemDB`）。

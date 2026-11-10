@@ -44,7 +44,7 @@ func _ready() -> void:
 	Dialogue._finish_typing()
 	await shot("canopy_ending")
 	await _advance_until(func():return AfterErrands.is_done("canopy"),5)
-	_go(Cutscene.cell_to_world([16,13]))
+	_go(Cells.to_world([16,13]))
 	s=await SPEC.start(self,"sifting")
 	if s==null:
 		get_tree().quit(1)

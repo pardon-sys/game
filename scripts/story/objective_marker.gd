@@ -47,7 +47,7 @@ func set_target(info: Dictionary) -> void:
 	text = str(info.get("text", ""))
 	has_cell = info.has("cell")
 	if has_cell:
-		global_position = Cutscene.cell_to_world(info["cell"])
+		global_position = Cells.to_world(info["cell"])
 		radius = float(info.get("radius", 1.0)) * 16.0
 	queue_redraw()
 

@@ -62,7 +62,7 @@ func _ready() -> void:
 	for c in COURSE:
 		var aux := str(c[0]) == "aux"
 		var nm := str(data().get("aux" if aux else "stations", {}).get(str(c[1]), {}).get("name", c[1]))
-		var at := Cutscene.cell_to_world(Vector2i(int(c[2]), ROWS.x)) + Vector2(0, (ROWS.y - ROWS.x) * 8.0)
+		var at := Cells.to_world(Vector2i(int(c[2]), ROWS.x)) + Vector2(0, (ROWS.y - ROWS.x) * 8.0)
 		_pad(at, Color(0.6, 0.85, 1.0) if aux else Color(1, 0.7, 0.85), nm, aux)
 	_start.call_deferred()
 
@@ -125,7 +125,7 @@ func _process(delta: float) -> void:
 	if step >= COURSE.size():
 		return
 	var c: Array = COURSE[step]
-	var x := Cutscene.cell_to_world(Vector2i(int(c[2]), 0)).x
+	var x := Cells.to_world(Vector2i(int(c[2]), 0)).x
 	if p.global_position.x >= x - 8.0:
 		step += 1
 		if str(c[0]) == "aux":
@@ -136,7 +136,7 @@ func _process(delta: float) -> void:
 	# 还没评完前面的陷阱不能往前走
 	var nxt := COURSE.slice(step).filter(func(e): return str(e[0]) == "station")
 	if not nxt.is_empty():
-		var limit := Cutscene.cell_to_world(Vector2i(int(nxt[0][2]), 0)).x + 2.0
+		var limit := Cells.to_world(Vector2i(int(nxt[0][2]), 0)).x + 2.0
 		if p.global_position.x > limit:
 			p.global_position.x = limit
 

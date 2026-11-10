@@ -30,13 +30,13 @@ func setup() -> void:
 	parts.clear()
 	got = 0
 	for c in HANDS:
-		var h := put(WindupHand.new(), Cutscene.cell_to_world(c)) as WindupHand
+		var h := put(WindupHand.new(), Cells.to_world(c)) as WindupHand
 		h.target = pink
 		hands.append(h)
 	var pool := PARTS.duplicate()
 	pool.shuffle()
 	for i in NEED:
-		parts.append(put(PartMark.new(), Cutscene.cell_to_world(pool[i])))
+		parts.append(put(PartMark.new(), Cells.to_world(pool[i])))
 	set_music(true)
 	_intro()
 
@@ -67,7 +67,7 @@ func set_music(on: bool) -> void:
 
 
 func hidden_now() -> bool:
-	return COVERS.any(func(c): return pink.global_position.distance_to(Cutscene.cell_to_world(c)) <= COVER_R)
+	return COVERS.any(func(c): return pink.global_position.distance_to(Cells.to_world(c)) <= COVER_R)
 
 
 func _process(delta: float) -> void:

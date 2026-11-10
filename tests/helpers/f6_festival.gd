@@ -11,7 +11,7 @@ static func show(t: Node, id: String) -> ErrandWorkStage:
 static func start(t: Node, id: String) -> ErrandWorkStage:
 	if id == "lamp_calibration":
 		await t._talk("floor_06/after_bonfire_host", "", [0])
-		t._go(Cutscene.cell_to_world(AfterErrands.info(id)["target"]))
+		t._go(Cells.to_world(AfterErrands.info(id)["target"]))
 	else:
 		await t._talk("floor_06/after_bonfire_host", "", [1, 1])
 	await t._advance_until(func(): return show(t,id) != null, 3)
@@ -108,7 +108,7 @@ static func run(t: Node) -> void:
 	s.quit()
 	await t._advance_until(func(): return show(t,"lamp_calibration")==null,2)
 	verify(t,"退出不奖励，保留灯轮进度并还锁",PenanceBook.hours()==50 and LampCalibrationShow.saved_step()==1 and GameState.dialogue_holds==0)
-	t._go(Cutscene.cell_to_world([42,28]))
+	t._go(Cells.to_world([42,28]))
 	var save_dir := SaveSystem.dir
 	SaveSystem.dir="/private/tmp/f6-festival-saves/"
 	verify(t,"实际隔离存档保存已校准项",SaveSystem.save(1,"festival") and int(SaveSystem.read(1)["vars"][LampCalibrationShow.SAVE_KEY])==1)

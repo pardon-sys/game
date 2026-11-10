@@ -38,12 +38,12 @@ func setup() -> void:
 		pink.add_buff("barefoot", -1.0)
 	for k in PATCHES:
 		for c in PATCHES[k]:
-			var p := put(HerbPatch.new(), Cutscene.cell_to_world(c)) as HerbPatch
+			var p := put(HerbPatch.new(), Cells.to_world(c)) as HerbPatch
 			p.kind = str(k)
 			p.yawned.connect(_on_yawn)
 			patches.append(p)
 	for c in HANDS:
-		var h := put(CurseHand.new(), Cutscene.cell_to_world(c)) as CurseHand
+		var h := put(CurseHand.new(), Cells.to_world(c)) as CurseHand
 		h.ticked.connect(_on_hand_tick)
 		hands.append(h)
 

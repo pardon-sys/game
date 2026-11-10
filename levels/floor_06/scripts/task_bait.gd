@@ -90,21 +90,21 @@ func _ready() -> void:
 	_lv.set_meta(&"free_switch", true)
 	Duo._bind_tab()   # 骑士篇的小镇图写了 no_switch，C 键原来没绑上
 	for c in SPAWN.slice(0, HANDS):
-		_spawn(Cutscene.cell_to_world(c))
+		_spawn(Cells.to_world(c))
 	for c in GRASS:
 		var g := TickleGrass.new()
 		g.reach = 1.4
 		g.scale = Vector2.ONE * 1.4
 		g.material = _unshaded()
 		get_parent().add_child(g)
-		g.global_position = Cutscene.cell_to_world(c)
+		g.global_position = Cells.to_world(c)
 		grass.append(g)
 	for c in MARKS:
 		var m := CurseMark.new()
 		m.scale = Vector2.ONE * 1.5
 		m.on_step = _on_mark
 		get_parent().add_child(m)
-		m.global_position = Cutscene.cell_to_world(c)
+		m.global_position = Cells.to_world(c)
 		marks.append(m)
 	started = true
 
@@ -289,7 +289,7 @@ func bottle_near(who: PlayableCharacter) -> int:
 	if caught() >= GOAL:
 		_emit(true)
 	elif hands.size() < GOAL - caught() + 1:
-		_spawn(Cutscene.cell_to_world(SPAWN[randi() % SPAWN.size()]))
+		_spawn(Cells.to_world(SPAWN[randi() % SPAWN.size()]))
 	return n
 
 

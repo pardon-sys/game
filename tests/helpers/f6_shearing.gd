@@ -11,7 +11,7 @@ static func find_show(t: Node) -> ShearingShow:
 
 static func start(t: Node) -> ShearingShow:
 	await t._talk("floor_06/after_maid", "errand_shearing", [0])
-	t._go(Cutscene.cell_to_world([57, 33]))
+	t._go(Cells.to_world([57, 33]))
 	await t._advance_until(func(): return find_show(t) != null, 3.0)
 	return find_show(t)
 
@@ -135,7 +135,7 @@ static func run(t: Node) -> void:
 	s.quit()
 	await t._advance_until(func(): return find_show(t) == null, 2.0)
 	verify(t, "退出保留两段且不发奖励，归还输入锁和临时状态", ShearingShow.saved_step() == 2 and PenanceBook.hours() == 50 and GameState.dialogue_holds == 0 and is_equal_approx(GameState.player.laugh.value, clean_laugh) and is_equal_approx(GameState.player.fatigue.value, clean_fatigue) and GameState.player.laugh.is_processing() and not GameState.player.has_meta("suppress_laugh_tutorials"))
-	t._go(Cutscene.cell_to_world([55, 34]))
+	t._go(Cells.to_world([55, 34]))
 	var save_dir := SaveSystem.dir
 	SaveSystem.dir = "/private/tmp/f6-shearing-test-saves/"
 	verify(t, "真实隔离存档保存剪毛进度", SaveSystem.save(1, "shearing-test") and int(SaveSystem.read(1)["vars"][ShearingShow.SAVE_STEP]) == 2)
@@ -166,7 +166,7 @@ static func run(t: Node) -> void:
 	await t._wait(0.2)
 	verify(t, "工作中换图释放演出并保留委托", find_show(t) == null and AfterErrands.is_active("shearing") and GameState.dialogue_holds == 0)
 	verify(t, "换图不携带临时闷笑疲倦", carry.size() == 1 and is_equal_approx(float(carry[0][0]), clean_laugh) and is_equal_approx(float(carry[0][1]), clean_fatigue))
-	t._go(Cutscene.cell_to_world([57, 33]))
+	t._go(Cells.to_world([57, 33]))
 	await t._advance_until(func(): return find_show(t) != null, 3.0)
 	s = find_show(t)
 	if s == null: return

@@ -160,7 +160,7 @@ static func run(t: Node) -> void:
 		Dialogue.is_active(), p.global_position.distance_to(pos0)],
 		not GameState.in_dialogue and not Dialogue.is_active() and p.global_position.distance_to(pos0) > 4.0)
 	TotemResonanceShow.quiet = true
-	t._go(Cutscene.cell_to_world(Vector2i(2, 12)) + Vector2(6, 0))
+	t._go(Cells.to_world(Vector2i(2, 12)) + Vector2(6, 0))
 	Input.action_press("move_left")
 	await t._advance_until(func(): return t._level_id() == AfterStory.TOWN, 5.0)
 	Input.action_release("move_left")

@@ -96,7 +96,7 @@ func stage() -> int:
 
 
 func cell(c: Array) -> Vector2:
-	return Cutscene.cell_to_world(Vector2(float(c[0]), float(c[1])))
+	return Cells.to_world(Vector2(float(c[0]), float(c[1])))
 
 
 ## 摆到地图的实体层（跟着这个节点一起收走）

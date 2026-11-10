@@ -15,16 +15,16 @@ var _found := false
 func setup() -> void:
 	prints.clear()
 	for i in PATH.size():
-		var p := put(IcePrint.new(), Cutscene.cell_to_world(PATH[i])) as IcePrint
+		var p := put(IcePrint.new(), Cells.to_world(PATH[i])) as IcePrint
 		p.index = i
 		prints.append(p)
-	put(QuestBlueLantern.OldLantern.new(), Cutscene.cell_to_world(LANTERN))
+	put(QuestBlueLantern.OldLantern.new(), Cells.to_world(LANTERN))
 
 
 func _process(_delta: float) -> void:
 	if _found or not live() or GameState.in_dialogue or GameState.in_cutscene or not is_instance_valid(pink) or GameState.player != pink:
 		return
-	if pink.global_position.distance_to(Cutscene.cell_to_world(LANTERN)) <= LANTERN_R:
+	if pink.global_position.distance_to(Cells.to_world(LANTERN)) <= LANTERN_R:
 		found()
 
 

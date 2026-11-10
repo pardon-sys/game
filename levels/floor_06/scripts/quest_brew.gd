@@ -12,7 +12,7 @@ var brewing := false
 
 
 func setup() -> void:
-	pot = put(PotMark.new(), Cutscene.cell_to_world(POT)) as Node2D
+	pot = put(PotMark.new(), Cells.to_world(POT)) as Node2D
 
 
 func _process(_delta: float) -> void:

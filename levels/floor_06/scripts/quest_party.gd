@@ -16,7 +16,7 @@ func mode() -> String:
 
 
 func setup() -> void:
-	mark = put(QuestBrew.PotMark.new(), Cutscene.cell_to_world(FIRE) + Vector2(0, 16)) as Node2D
+	mark = put(QuestBrew.PotMark.new(), Cells.to_world(FIRE) + Vector2(0, 16)) as Node2D
 
 
 func _process(_delta: float) -> void:

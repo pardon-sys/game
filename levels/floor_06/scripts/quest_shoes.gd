@@ -48,7 +48,7 @@ func setup() -> void:
 		var bf := BareFloor.make(get_parent(), str(f[0]), f[1], f[2], q.get("%s_react" % f[0], []))
 		spawned.append(bf)
 	for at in KIDS:
-		var k := AfterKid.spawn(get_parent(), Cutscene.cell_to_world(at), 3.0)
+		var k := AfterKid.spawn(get_parent(), Cells.to_world(at), 3.0)
 		k.lure = func() -> bool: return is_instance_valid(pink) and pink.has_meta(&"barefoot") and pink.laugh and pink.laugh.ratio() < 0.85
 		k.pick_zone = func(_k) -> String: return "sole"
 		k.caption = func(_k, _z) -> String: return str((q.get("kid_captions", [""]) as Array).pick_random())
@@ -62,7 +62,7 @@ func setup() -> void:
 		spot.kind = "hay" if stage() == 0 else "ribbon"
 		spot.runner = self
 	else:
-		lily = put(Sprite2D.new(), Cutscene.cell_to_world(LILY) + Vector2(0, -10)) as Sprite2D
+		lily = put(Sprite2D.new(), Cells.to_world(LILY) + Vector2(0, -10)) as Sprite2D
 		lily.texture = KID_SHEET
 		lily.region_enabled = true
 		lily.region_rect = Rect2(64, 32, 32, 32)

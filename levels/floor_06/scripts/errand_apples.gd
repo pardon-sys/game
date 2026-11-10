@@ -21,12 +21,12 @@ func _ready() -> void:
 		var a := Node2D.new()
 		a.set_script(preload("res://levels/floor_06/scripts/errand_apple.gd"))
 		get_parent().add_child(a)
-		a.global_position = Cutscene.cell_to_world(c)
+		a.global_position = Cells.to_world(c)
 		_apples.append(a)
 	for c in GRASS:
 		var g := TickleGrass.new()
 		get_parent().add_child(g)
-		g.global_position = Cutscene.cell_to_world(c)
+		g.global_position = Cells.to_world(c)
 		_grass.append(g)
 
 
