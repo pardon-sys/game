@@ -24,6 +24,7 @@ const NEAR := 12.0
 static var auto_rate := {}
 static var _data := {}
 
+var drill_retries := 0   # 综合演练里笑倒、重来的次数
 var aborted := false
 var started := false
 var statuses := {}
@@ -229,9 +230,16 @@ func _drill() -> void:
 		if i > 0 and i - 1 < btw.size():
 			GameState.notify(str(btw[i - 1]), 1.2)
 		var res := await _experience(id, data().get("stations", {}).get(id, {}), true)
-		if bool(res.get("laughed_out", false)):
-			_emit(false)
-			return
+		# 笑倒：演一小段，闷笑回到一半，这个陷阱重来（不算失败）
+		while bool(res.get("laughed_out", false)) and not _emitted:
+			drill_retries += 1
+			var lo: Array = data().get("drill_laugh_out", [])
+			if not lo.is_empty():
+				await _say(lo[(drill_retries - 1) % lo.size()])
+			var pl := GameState.player as PlayableCharacter
+			if is_instance_valid(pl) and pl.laugh:
+				pl.laugh.set_value(pl.laugh.max_value * 0.5)
+			res = await _experience(id, data().get("stations", {}).get(id, {}), true)
 	drill_done = true
 	await _say(data().get("drill_done", []))
 	_emit(true)

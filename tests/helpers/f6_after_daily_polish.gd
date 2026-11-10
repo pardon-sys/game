@@ -33,9 +33,20 @@ static func lantern(t: Node) -> void:
 			show.lit = count
 			show._punish("fatigue")
 			losses[count-show.lit] = true
-			valid = valid and show.lit>=0 and count-show.lit>=mini(1,count) and count-show.lit<=mini(2,count)
-		verify(t,"灯笼%d盏：16次释放边界均正确" % count, valid)
-		if count>1: verify(t,"灯笼随机覆盖一盏与两盏",losses.has(1) and losses.has(2))
+			valid = valid and show.lit>=0 and count-show.lit==mini(1,count)
+		verify(t,"灯笼%d盏：16次释放每次只碎一盏" % count, valid)
+	# 第九轮：Esc 能退出笑声灯笼
+	show.playing = true
+	show.busy = false
+	show.quit()
+	verify(t, "笑声灯笼：Esc 退出小游戏（委托算中断，之后能重新开始）", show.quitting)
+	show.quitting = false
+	# 第九轮：「痒痒装备回收」失败后留在身上的临时装备（羽毛脚镣 no_dash）进七日赎罪的图时卸掉——K 能闪避
+	Equipment.force("pink", "equip_t_feather_shackles", 9999.0)
+	var had := Equipment.has_special("pink", "no_dash")
+	GameState.set_flag(AfterStory.TASK_FLAG, false)
+	AfterStory._strip_stale_task_gear()
+	verify(t, "残留的羽毛脚镣被卸掉（之前 %s）→ K 能闪避" % str(had), had and not Equipment.has_special("pink", "no_dash"))
 	show.lit = show.lanterns().size()
 	show._punish("fatigue")
 	verify(t,"全部点亮优先完成，不倒扣",show._done and show.lit==show.lanterns().size())

@@ -117,7 +117,18 @@ const NIGHT_BUSY := "after_night_busy"
 static var running := false
 
 
+## 「痒痒装备回收」失败后没重来就离开，强制穿上的临时装备（羽毛脚镣 no_dash 等）会一直留在身上（K 闪避不了）：
+## 进七日赎罪的图时，只要这个任务没在进行，就把 equip_t_ 的临时装备全卸掉（重新开始时会从地上再捡）。
+static func _strip_stale_task_gear() -> void:
+	if GameState.has_flag(TASK_FLAG):
+		return
+	for id in Equipment.forced_items("pink"):
+		if str(id).begins_with("equip_t_"):
+			Equipment.release("pink", str(id))
+
+
 static func on_level_entered(floor_id: String) -> void:
+	_strip_stale_task_gear()
 	if floor_id == "floor_06_war" and GameState.has_flag("siege_won") and not GameState.has_flag(STARTED) and StoryDirector.instance:
 		await TrainingDB.wait_dialogue_free()
 		if not StoryDirector.instance.sequence_running:

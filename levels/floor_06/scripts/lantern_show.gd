@@ -3,14 +3,15 @@ extends TrainingStage
 ## 第 6 天晚上 镇长「笑声灯笼」（借训练小游戏的画面）：两只脚伸进祖传的「欢笑踏板」，里面的软毛刷刷脚底，笑声给灯笼充能。台词 data/after/night.json 的 lantern。
 ##   ↑↓ 调刷子的强度（level 0~4）：闷笑每秒按 RATES[level] 涨落；魔力疲倦每秒 +level × FATIGUE。
 ##   每盏灯笼要求闷笑停在 [lo, hi] 里 HOLD 秒就点亮；超过 hi = 灯泡炸了（这盏重来，闷笑回落）；
-##   魔力疲倦满 = 自动释放：随机吹灭1–2盏已点亮的灯，不销毁；全部点亮优先完成。
+##   魔力疲倦满 = 自动释放：震碎一盏已点亮的灯（那一盏要重新点亮）；全部点亮优先完成。
+##   Esc 退出小游戏：委托没做完（play() 返回 null → 任务算中断，走回镇长那里能重新开始）。
 ## await play() → true。测试：quiet、press(键)、level。
 
 const RATES := [-0.14, -0.03, 0.05, 0.1, 0.16]
 const FATIGUE := 0.035
 const HOLD := 2.2
 const MIN_LOSS := 1
-const MAX_LOSS := 2
+const MAX_LOSS := 1
 
 static var quiet := false
 
@@ -32,7 +33,8 @@ func panel_title() -> String:
 
 
 func quit() -> void:
-	pass
+	if playing and not busy and not _done:
+		quitting = true
 
 
 func data() -> Dictionary:
@@ -76,7 +78,7 @@ func level_name() -> String:
 	return str(lv[level]) if level < lv.size() else str(level)
 
 
-func play() -> bool:
+func play() -> Variant:
 	player = GameState.player
 	rng.randomize()
 	layer = 14
@@ -102,8 +104,13 @@ func play() -> bool:
 	busy = true
 	await _lines(data().get("intro", []))
 	busy = false
-	while not _done:
+	while not _done and not quitting:
 		await get_tree().process_frame
+	if quitting and not _done:
+		# Esc：不做了（灯笼不算数，下次从头点）
+		await _exit_game()
+		finished.emit()
+		return null
 	busy = true
 	await _lines(data().get("done", []))
 	await _exit_game()

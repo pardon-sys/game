@@ -1,11 +1,12 @@
 class_name TaskSweep
 extends Node2D
 ## 第 2 天晚上 面包店奶奶「羽毛大扫除」（小镇里，烤炉后院 PILES 这几格）的玩法节点（AfterStory.run_task 摆进来，发 finished(ok)）。台词 data/after/night.json 的 sweep。
-##   扫：站在羽毛堆旁边（SWEEP_R 以内）按住 J，那一堆的量每秒 −SWEEP_RATE；全部扫光 = 做完（演 done：最后一阵风把整袋羽毛吹到她身上）。
-##   起风：每 GUST_EVERY 秒左右先预警 GUST_WARN 秒，再刮一阵：脚上的羽毛 +GUST_FEET（越往后越多），随机一堆羽毛量 +GUST_REFILL。
-##   脚上的羽毛：每根每秒闷笑 +FEATHER_RATE；K 抖脚（掉 SHAKE_DROP 根，冷却 SHAKE_CD），按住 E PICK_TIME 秒抠出 PICK_DROP 根。
-##   奶奶「帮忙」：每 GRANNY_EVERY 秒拿鸡毛掸子掸一下（演几句，挠腋下 / 腰 / 脚心）。
-##   扫的时候两只手拿着扫帚（meta busy_hands：不攻击 / 冲刺）。闷笑到 FAIL_AT = 掉进羽毛堆（after_fail_sweep）。
+##   扫：走到羽毛堆旁边（SWEEP_R 以内）按住 J，那一堆的量每秒 −SWEEP_RATE；全部扫光 = 做完（演 done：最后一阵风把整袋羽毛吹到她身上）。
+##   （第九轮简化）起风：每 GUST_EVERY 秒左右先预警 GUST_WARN 秒——屋檐下的避风处（SHELTERS，Shelter 画的布篷）亮起来；
+##     刮风那一下站在避风处（SHELTER_R 以内）= 一根羽毛也不沾；否则脚上的羽毛 +GUST_FEET（越往后越多）。随机一堆羽毛量 +GUST_REFILL。
+##   脚上的羽毛：每根每秒闷笑 +FEATHER_RATE，每 FALL_EVERY 秒自己掉一根（不用按键）。
+##   奶奶「帮忙」：每 GRANNY_EVERY 秒拿鸡毛掸子掸一下（演几句，挠腋下 / 腰 / 脚心）。闷笑到 FAIL_AT = 掉进羽毛堆（after_fail_sweep）。
+##   羽毛堆（Pile）画在地面上面（z_index 1），量越少越小。
 ## 状态：vars.task_sweep_left（每堆剩的量，失败不清）。测试：sweep(秒)、gust_now()、shake()、pick()。
 
 signal finished(ok: bool)
@@ -18,10 +19,9 @@ const GUST_WARN := 2.0
 const GUST_FEET := 2
 const GUST_REFILL := 25.0
 const FEATHER_RATE := 0.012
-const SHAKE_DROP := 1
-const SHAKE_CD := 0.5
-const PICK_TIME := 0.8
-const PICK_DROP := 2
+const SHELTERS := [Vector2i(45, 13), Vector2i(59, 13)]   # 屋檐下的避风处
+const SHELTER_R := 20.0
+const FALL_EVERY := 3.0
 const GRANNY_EVERY := 14.0
 const FAIL_AT := 0.95
 
@@ -32,8 +32,8 @@ var feet := 0
 var gusts := 0
 var _gust_t := GUST_EVERY
 var _warned := false
-var _shake_cd := 0.0
-var _pick_t := 0.0
+var _fall_t := FALL_EVERY
+var shelters: Array = []
 var _granny_t := GRANNY_EVERY
 var _granny_i := 0
 var _say_t := 0.0
@@ -64,11 +64,17 @@ func _ready() -> void:
 		get_parent().add_child(p)
 		p.global_position = Cutscene.cell_to_world(PILES[i])
 		piles.append(p)
+	for c in SHELTERS:
+		var sh := Shelter.new()
+		sh.task = self
+		get_parent().add_child(sh)
+		sh.global_position = Cutscene.cell_to_world(c)
+		shelters.append(sh)
 	_intro.call_deferred()
 
 
 func _exit_tree() -> void:
-	for p in piles:
+	for p in piles + shelters:
 		if is_instance_valid(p):
 			p.queue_free()
 	var pl := GameState.player
@@ -79,9 +85,6 @@ func _exit_tree() -> void:
 func _intro() -> void:
 	await TrainingDB.wait_dialogue_free()
 	await _say(data().get("intro", []))
-	var pl := GameState.player
-	if is_instance_valid(pl):
-		pl.set_meta(&"busy_hands", true)
 	started = true
 
 
@@ -93,16 +96,14 @@ func _process(delta: float) -> void:
 		return
 	if Input.is_action_pressed("attack"):
 		sweep(delta)
-	_shake_cd = maxf(0.0, _shake_cd - delta)
-	if Input.is_action_just_pressed("dash"):
-		shake()
-	if Input.is_action_pressed("interact"):
-		_pick_t += delta
-		if _pick_t >= PICK_TIME:
-			_pick_t = 0.0
-			pick()
+	# 脚上的羽毛自己慢慢掉
+	if feet > 0:
+		_fall_t -= delta
+		if _fall_t <= 0.0:
+			_fall_t = FALL_EVERY
+			shake()
 	else:
-		_pick_t = 0.0
+		_fall_t = FALL_EVERY
 	# 脚上的羽毛一直挠
 	if feet > 0 and p.laugh:
 		p.laugh.set_value(minf(p.laugh.value + p.laugh.max_value * FEATHER_RATE * feet * delta, p.laugh.max_value))
@@ -166,7 +167,13 @@ func gust_now() -> void:
 	gusts += 1
 	_warned = false
 	_gust_t = maxf(4.0, GUST_EVERY - gusts * 0.4)
-	feet += GUST_FEET + gusts / 3
+	var p0 := GameState.player
+	if is_instance_valid(p0) and sheltered(p0.global_position):
+		var ok: Array = data().get("shelter_ok", [])
+		if not ok.is_empty():
+			GameState.princess_reacted.emit(str(ok.pick_random()), 2.0)
+	else:
+		feet += GUST_FEET + gusts / 3
 	GameState.vars["task_sweep_feet"] = feet
 	var alive := piles.filter(func(pl): return is_instance_valid(pl))
 	if not alive.is_empty():
@@ -182,30 +189,25 @@ func gust_now() -> void:
 		Fx.burst(p.get_parent(), p.global_position + Vector2(0, -4), "feather", 10, 60.0, 0.6, Vector2(40, 10), Color(1, 0.95, 1))
 
 
-## K：抖脚
+## 站在避风处
+func sheltered(at: Vector2) -> bool:
+	return SHELTERS.any(func(c): return at.distance_to(Cutscene.cell_to_world(c)) <= SHELTER_R)
+
+
+## 要起风了（避风处亮起来）
+func warning() -> bool:
+	return _warned
+
+
+## 脚上的羽毛掉一根（每 FALL_EVERY 秒自己掉）
 func shake() -> void:
-	if _shake_cd > 0.0 or feet <= 0:
+	if feet <= 0:
 		return
-	_shake_cd = SHAKE_CD
-	feet = maxi(0, feet - SHAKE_DROP)
+	feet = maxi(0, feet - 1)
 	GameState.vars["task_sweep_feet"] = feet
 	var s: Array = data().get("shake", [])
 	if not s.is_empty():
 		GameState.princess_reacted.emit(str(s.pick_random()), 1.0)
-
-
-## 按住 E：把趾缝里的羽毛抠出来（自己也痒一下）
-func pick() -> void:
-	if feet <= 0:
-		return
-	feet = maxi(0, feet - PICK_DROP)
-	GameState.vars["task_sweep_feet"] = feet
-	var p := GameState.player
-	if is_instance_valid(p) and p.laugh:
-		p.laugh.set_value(minf(p.laugh.value + p.laugh.max_value * 0.03, p.laugh.max_value))
-	var s: Array = data().get("pick", [])
-	if not s.is_empty():
-		GameState.princess_reacted.emit(str(s.pick_random()), 1.4)
 
 
 func _granny() -> void:
@@ -272,15 +274,51 @@ class Pile extends Node2D:
 	var amount := 100.0
 
 	func _ready() -> void:
-		z_index = -1
+		z_index = 1
 
 	func _draw() -> void:
 		if amount <= 0.0:
 			return
-		var k := 0.35 + 0.65 * amount / 100.0
-		var cols := [Color(1, 0.98, 1), Color(1, 0.82, 0.92), Color(0.86, 0.9, 1)]
-		for i in 9:
-			var a := i * 0.7
-			var r := 7.0 * k
-			var p := Vector2(cos(a) * r * (0.4 + (i % 3) * 0.3), sin(a) * r * 0.5 - 2)
-			draw_line(p - Vector2(3, 1) * k, p + Vector2(3, -1) * k, cols[i % 3], 2.0)
+		var k := 0.45 + 0.55 * amount / 100.0
+		# 一小座软软的羽毛山：底下一圈淡影 + 一团白 / 粉 / 蓝的羽毛
+		draw_set_transform(Vector2(0, 2), 0.0, Vector2(1, 0.45))
+		draw_circle(Vector2.ZERO, 15.0 * k, Color(0.2, 0.15, 0.25, 0.25))
+		draw_circle(Vector2(0, -6), 13.0 * k, Color(1, 0.97, 1))
+		draw_circle(Vector2(-6, -9), 7.0 * k, Color(1, 0.86, 0.94))
+		draw_circle(Vector2(6, -10), 7.0 * k, Color(0.88, 0.92, 1))
+		draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
+		var cols := [Color(1, 0.98, 1), Color(1, 0.8, 0.92), Color(0.84, 0.9, 1)]
+		for i in 12:
+			var a := i * 0.55
+			var r := 9.0 * k
+			var p := Vector2(cos(a) * r * (0.4 + (i % 3) * 0.3), sin(a) * r * 0.45 - 5.0 * k)
+			draw_line(p - Vector2(4, 1.5) * k, p + Vector2(4, -1.5) * k, Color(0.55, 0.45, 0.6), 3.0)
+			draw_line(p - Vector2(4, 1.5) * k, p + Vector2(4, -1.5) * k, cols[i % 3], 2.0)
+
+
+## 屋檐下的避风处：一块条纹布篷投下的影子；要起风时一闪一闪地亮
+class Shelter extends Node2D:
+	var task: Node
+	var _t := 0.0
+
+	func _ready() -> void:
+		z_index = 1
+
+	func _process(d: float) -> void:
+		_t += d
+		queue_redraw()
+
+	func _draw() -> void:
+		var warn := task != null and bool(task.call("warning"))
+		var a := 0.35 + (0.35 * (0.5 + 0.5 * sin(_t * 10.0)) if warn else 0.0)
+		draw_set_transform(Vector2.ZERO, 0.0, Vector2(1, 0.5))
+		draw_circle(Vector2.ZERO, 18.0, Color(0.95, 0.85, 0.5, a * 0.6) if warn else Color(0.1, 0.1, 0.15, 0.3))
+		draw_arc(Vector2.ZERO, 18.0, 0, TAU, 32, Color(1, 0.9, 0.5, a + 0.2) if warn else Color(1, 1, 1, 0.25), 1.5)
+		draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
+		# 布篷：红白条纹，撑在两根小木杆上
+		draw_line(Vector2(-14, 0), Vector2(-14, -24), Color(0.45, 0.3, 0.2), 2.0)
+		draw_line(Vector2(14, 0), Vector2(14, -24), Color(0.45, 0.3, 0.2), 2.0)
+		for i in 4:
+			var x0 := -16.0 + i * 8.0
+			draw_colored_polygon(PackedVector2Array([Vector2(x0, -28), Vector2(x0 + 8, -28), Vector2(x0 + 8, -22), Vector2(x0, -22)]),
+				Color(0.85, 0.3, 0.35) if i % 2 == 0 else Color(1, 0.95, 0.9))

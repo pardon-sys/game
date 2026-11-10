@@ -119,11 +119,16 @@ POTION = {
                     say(T, "哎呀呀，这下要打一下午了。……喝口水，喝口水。")]},
     },
     "order": ["mint", "ice", "lavender", "mushroom", "feather", "honey", "ginger", "sour"],
+    # 第九轮加难：水渍盖住的字更多，还混进了误导的字（学徒的铅笔补字、涂掉的字、页边的涂鸦）
     "recipes": [
-        {"answer": ["mint", "ice", "lavender"], "blurred": "「止痒药：薄荷▒、冰晶▒、▒▒草，文火慢熬……」（后半张被水渍晕开了）"},
-        {"answer": ["mint", "ice", "honey"], "blurred": "「止痒药（甜口）：薄▒叶、▒晶草，再加一味▒▒根……」"},
-        {"answer": ["ice", "lavender", "ginger"], "blurred": "「止痒药（暖身）：▒晶▒、▒衣草，佐以一味▒▒根……」（根？蜂蜜根还是暖姜根？）"},
-        {"answer": ["mint", "lavender", "honey"], "blurred": "「止痒药（安神）：▒▒叶、薰▒▒，再加▒▒▒……」"},
+        {"answer": ["mint", "ice", "lavender"],
+         "blurred": "「止痒药：▒▒叶、冰▒▒、▒衣▒，文火慢熬……」（水渍边上还能认出半个「蜜」字——是配方里的，还是溅上去的？）"},
+        {"answer": ["mint", "ice", "honey"],
+         "blurred": "「止痒药（甜口）：▒荷▒、▒▒草，再加一味▒▒……」（页边有学徒补的铅笔字：「甜的就加姜糖？」——奶奶的字可不是这样的）"},
+        {"answer": ["ice", "lavender", "ginger"],
+         "blurred": "「止痒药（暖身）：▒晶▒、▒▒草，佐以一味▒根……」（「根」前面的字泡烂了，旁边却画着一只小蜜蜂。蜂蜜根？暖姜根？）"},
+        {"answer": ["mint", "lavender", "honey"],
+         "blurred": "「止痒药（安神）：▒▒▒、▒▒▒，再加▒▒▒……」（只剩一行小字「睡前喝，别放冰」，和一个被墨水涂掉的「薄」字）"},
     ],
     "success": [
         say(T, "（羽毛扫过手心、脚心、腰侧……）……嗯？"),

@@ -903,6 +903,14 @@ data/cutscenes/<楼层组>/  地图内过场；data/theater/<楼层组>/  小剧
 	一条走廊（`TaskInspect.COURSE`）：五个挠痒陷阱的踏板（羽毛帘 / 地洞挠挠手 / 脚趾分隔刷 / 单脚吊环架 / 跪台脚心朝天，各自的挣脱方式见 `InspectShow`）+ 三个辅助设施
 	（泡脚盆「泡软」、精油踏板「滑溜」、冷敷石板清状态，踏板整条走廊宽、走过去强制施加），按顺序走。体验完报「太强 / 刚好 / 太弱」——要报陷阱本身的强度（屏幕给出涨了多少闷笑和身上的状态）；评「太弱」被加强、评「太强」被削弱但要再体验一次。
 	五个评完 → 综合演练（按评分调整过强度、闷笑不清零），笑倒 = 失败（`after_fail_inspect`，重来直接综合演练）。
+- **第九轮修正（七日赎罪）**：
+	- K 闪避：「痒痒装备回收」失败后没重来就离开，强制穿上的 `equip_t_` 临时装备（羽毛脚镣 special `no_dash`）一直留着 → `TaskEquip._exit_tree` 一律卸掉，
+	  `AfterStory._strip_stale_task_gear()`（`on_level_entered`）清旧存档；被 `no_dash` 挡住时按 K 有提示。
+	- 冰封静坐：六处全冻住（`IceSitShow.all_frozen()`）寒冷值不回落、每秒 +`ALL_FROZEN_COLD`。
+	- 挠痒捉人：孩子们跑动没有边界（`TagKid._ok` 按 `GridPath.walkable` 沿墙滑，不再夹在 `AREA` 里）。
+	- 陷阱验收：被挠时魔力疲倦跟着涨（`InspectShow.FATIGUE_RATE`），满了自动释放（清空、闷笑降一半）；综合演练笑倒 → `drill_laugh_out` 一小段 → 这个陷阱重来（闷笑一半），不再直接判失败。
+	- 成功收尾：`after_text/done_cg.py` 给十个成功过场补「CG 里正在发生的事」，插在最后的镜头复位前，第一句挂成功 CG（`_with_done_cg` 认 `cg_here`）。
+	- 试药员：配方的水渍更多、混进误导字（学徒的铅笔补字、涂掉的字、页边涂鸦）。
 - **弥补任务的 CG**（白天 10 个主线委托，每个一张成功、一张失败；第 6 天考核的失败和第 4 天特训共用）：原图 `assets/generated/AFTER_CG/after_<任务>_ok / _fail.png`
   （codex image_gen，提示词和参考图 `tools/art/src/after_cg/`，规则见 `docs/POLISH_RULES.md`）→ `import_cg.py --after` → `gen_cgs.py` 登记立绘 id。
   `gen_floor06_after.py` 的 `AFTER_CG_FAIL` / `AFTER_CG_DONE` 自动挂上：失败小剧场里标了 `"cg": True` 的那一步优先（9 个失败剧场加长版：CG 前约 10 句、CG 后约 20 句，
@@ -918,10 +926,11 @@ data/cutscenes/<楼层组>/  地图内过场；data/theater/<楼层组>/  小剧
   配对后成品测试（`final`）。
 - **晚上的弥补任务**（第 2 / 3 / 4 / 6 天晚上，宵禁前在镇上做；晚上的事没做完床不让睡（`AfterStory.sleep_later`），小屋的门只在没有夜里任务时才锁（`after_curfew`）；
   委托人那天晚上留在外面（日程 `d<N>.night`）；做完自动回小屋睡到天亮）。台词 `after_text/night.py` → `data/after/night.json`（`AfterNight`）。
-  - 第 2 天 面包店奶奶「羽毛大扫除」（`TaskSweep`，小镇东边的烤炉后院）：按住 J 扫羽毛堆；起风时羽毛钻进脚趾缝（K 抖脚、按住 E 抠），奶奶拿鸡毛掸子「帮忙」。
+  - 第 2 天 面包店奶奶「羽毛大扫除」（`TaskSweep`，小镇东边的烤炉后院）：按住 J 扫羽毛堆（`Pile`，z_index 1 画在地面上）；起风前屋檐下的避风处（`Shelter`，`SHELTERS`）亮起来，
+	躲进去不沾羽毛，否则羽毛钻进脚趾缝、每 `FALL_EVERY` 秒自己掉一根（第九轮简化：去掉 K 抖脚 / E 抠、不再占着两只手）；奶奶拿鸡毛掸子「帮忙」。
   - 第 3 天 药剂师奶奶「逃跑的痒痒鼠」（`TaskMice` → `MouseShow`）：身体图 Q W E / A S D，小鼠在格子间乱窜，拍对地方抓住，最后一只钻进鞋里连按 D。
   - 第 4 天 小孩们「挠痒捉人」（`TaskTag` + `TaskTag.TagKid`）：姐姐当鬼（追上去 J 挠）/ 孩子当鬼（被摸到按倒挠）/ 大家一起当鬼。
-  - 第 6 天 镇长「笑声灯笼」（`TaskLantern` → `LanternShow`）：↑↓ 调欢笑踏板的刷子强度，闷笑停在每盏灯要的范围里几秒点亮，笑过头灯泡炸；疲倦释放只随机吹灭 1–2 盏已亮灯笼（`MIN_LOSS/MAX_LOSS`），不损坏、可以重亮，无亮灯不扣，全部完成优先。
+  - 第 6 天 镇长「笑声灯笼」（`TaskLantern` → `LanternShow`）：↑↓ 调欢笑踏板的刷子强度，闷笑停在每盏灯要的范围里几秒点亮，笑过头灯泡炸；疲倦释放只震碎 1 盏已亮灯笼（`MIN_LOSS = MAX_LOSS = 1`），可以重亮，无亮灯不扣，全部完成优先；Esc 退出小游戏 = 任务中断（`play()` 返回 null → `TaskShow.aborted`），走回镇长那里重新开始。
   「小游戏画面」型的任务用 `TaskShow`（`make_show()` → `await play()`）。
 - **第 5 天夜里 小汤姆的恶作剧**（`AfterStory` 的 `d5_tom`：进小屋就开演 `TomPrankShow`，扮演小汤姆，文本选择）：痒 / 舒服两条（借闷笑条 / 疲倦条显示），
   四段（观察 / 轻挠 / 橘子上场 / 一起来），脚趾缝的揉法又痒又舒服；痒满笑醒被抓，舒服满魔力释放时选加大强度 = 笑晕（fainted），住手 = 被惊醒；做完都没满 = 悄悄溜走。
