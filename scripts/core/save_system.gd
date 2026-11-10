@@ -11,7 +11,7 @@ extends RefCounted
 
 ## 正式游戏的存档目录。
 const DIR := "user://saves/"
-const SLOTS := 3
+const SLOTS := 8
 const VERSION := 1
 
 ## 当前的存档目录（测试时改到别的目录，不碰玩家的存档）。
