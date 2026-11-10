@@ -42,9 +42,9 @@ func setup() -> void:
 	for c in EAVES:
 		var e := EaveHand.new()
 		e.lines = q
-		put(e, Cutscene.cell_to_world(c))
+		put(e, Cells.to_world(c))
 		eaves.append(e)
-	_captain = put(Sprite2D.new(), Cutscene.cell_to_world(TOWER)) as Sprite2D
+	_captain = put(Sprite2D.new(), Cells.to_world(TOWER)) as Sprite2D
 	_captain.offset = Vector2(0, -12)   # 站在塔上：画面里往上抬（不挪节点，等距楼层投影不会斜着偏）
 	_captain.texture = CAP_SHEET
 	_captain.hframes = 4
@@ -76,7 +76,7 @@ func _process(delta: float) -> void:
 	if not live() or GameState.in_dialogue or GameState.in_cutscene or not is_instance_valid(pink) or GameState.player != pink:
 		return
 	if not blind:
-		if not _starting and pink.global_position.distance_to(Cutscene.cell_to_world(TOWER)) <= TOWER_R:
+		if not _starting and pink.global_position.distance_to(Cells.to_world(TOWER)) <= TOWER_R:
 			_begin()
 		return
 	tick(delta)

@@ -49,7 +49,7 @@ func setup() -> void:
 	for c in EAVES:
 		var e := EaveHand.new()
 		e.lines = q
-		put(e, Cutscene.cell_to_world(c))
+		put(e, Cells.to_world(c))
 		eaves.append(e)
 	_rig = put(FenceRig.new(), Vector2.ZERO) as FenceRig
 	_rig.runner = self

@@ -24,7 +24,7 @@ static func solve_node(t: Node, show: GateChainShow) -> void:
 
 static func start(t: Node) -> GateChainShow:
 	await t._talk("floor_06/after_engineer", "errand_gate_chain", [0])
-	t._go(Cutscene.cell_to_world([31,38]))
+	t._go(Cells.to_world([31,38]))
 	await t._advance_until(func(): return find_show(t) != null, 3.0)
 	return find_show(t)
 
@@ -146,7 +146,7 @@ static func run(t: Node) -> void:
 	verify(t,"Esc暂存退出不结算奖励",AfterErrands.active()=="" and not AfterErrands.is_done("gate_chain") and GateChainShow.saved_step()==2 and PenanceBook.hours()==50)
 	verify(t,"退出释放锁并恢复原闷笑疲倦（锁%d，对话%s，文本%s，runner%s，CG%s，闷笑%.3f/%.3f，疲倦%.3f/%.3f）" % [GameState.dialogue_holds,GameState.in_dialogue,Dialogue.is_active(),Dialogue.runner.is_running(),GameState.in_cutscene,GameState.player.laugh.value,original_laugh,GameState.player.fatigue.value,original_fatigue],GameState.dialogue_holds==0 and not GameState.in_dialogue and is_equal_approx(GameState.player.laugh.value,original_laugh) and is_equal_approx(GameState.player.fatigue.value,original_fatigue))
 	verify(t,"退出归还临时教学隔离及闷笑组件时钟",not GameState.player.has_meta("suppress_laugh_tutorials") and GameState.player.laugh.is_processing())
-	t._go(Cutscene.cell_to_world([30,35]))
+	t._go(Cells.to_world([30,35]))
 	var old_dir := SaveSystem.dir
 	SaveSystem.dir = "/private/tmp/f6-gate-chain-test-saves/"
 	verify(t,"使用隔离测试目录写真实存档",SaveSystem.save(1,"gate-chain-test") and int(SaveSystem.read(1)["vars"][GateChainShow.SAVE_STEP])==2)
@@ -182,7 +182,7 @@ static func run(t: Node) -> void:
 	await t._wait(0.2)
 	verify(t,"换图取消root演出但保持已接委托与进度",find_show(t)==null and AfterErrands.is_active("gate_chain") and GateChainShow.saved_step()==stored and GameState.dialogue_holds==0)
 	verify(t,"换图不会携带小游戏的临时闷笑疲倦（注册值%s，预期%.3f/%.3f）" % [incoming_values,clean_laugh,clean_fatigue],incoming_values.size()==1 and is_equal_approx(float(incoming_values[0][0]),clean_laugh) and is_equal_approx(float(incoming_values[0][1]),clean_fatigue))
-	t._go(Cutscene.cell_to_world([31,38]))
+	t._go(Cells.to_world([31,38]))
 	await t._advance_until(func():return find_show(t)!=null,3.0)
 	g = find_show(t)
 	verify(t,"原委托回目标后接着入轮",g!=null and g.completed==stored and g.phase==1)
@@ -213,7 +213,7 @@ static func run(t: Node) -> void:
 	# 通用show入口被修补，附带验证既有梯子演出的来源退出清理，不跑整项梯子。
 	LadderShow.quiet = true
 	await t._talk("floor_06/after_engineer","errand_ladder",[0])
-	t._go(Cutscene.cell_to_world([24,10]))
+	t._go(Cells.to_world([24,10]))
 	await t._advance_until(func():return t._show(LadderShow)!=null,3.0)
 	verify(t,"旧梯子委托仍经通用入口开演",t._show(LadderShow)!=null)
 	await t.main.change_level(Floors.scene(AfterStory.TOWN))

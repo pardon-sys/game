@@ -50,9 +50,9 @@ func _ready() -> void:
 	for i in NAMES.size():
 		var k := TagKid.new()
 		k.kid_name = NAMES[i]
-		k.area = Rect2(Cutscene.cell_to_world(AREA.position), Vector2(AREA.size) * 16.0)
+		k.area = Rect2(Cells.to_world(AREA.position), Vector2(AREA.size) * 16.0)
 		get_parent().add_child(k)
-		k.global_position = Cutscene.cell_to_world(SPAWN[i])
+		k.global_position = Cells.to_world(SPAWN[i])
 		kids.append(k)
 	_intro.call_deferred()
 
@@ -86,7 +86,7 @@ func _start_round(i: int) -> void:
 		var k: TagKid = kids[j]
 		k.down_t = 0.0
 		k.out = false
-		k.global_position = Cutscene.cell_to_world(SPAWN[j])
+		k.global_position = Cells.to_world(SPAWN[j])
 		match id:
 			"seek":
 				k.mode = TagKid.Mode.FLEE
@@ -248,13 +248,21 @@ class TagKid extends Node2D:
 	var _t := 0.0
 	var _wiggle := Vector2.ZERO
 
-	## 这一点能不能站（脚下的格子是地板、不是墙）
+	## 这一点能不能站：脚下的格子是地板、不是墙，而且没压着房子 / 摊位 / 栅栏这些有碰撞的东西（物理层 1 world）
 	func _ok(p: Vector2) -> bool:
 		var main := get_tree().get_first_node_in_group("main")
 		var lv: Node = main.get("level") if main else null
-		if lv == null:
-			return true
-		return GridPath.walkable(lv, Vector2i(floori(p.x / 16.0), floori(p.y / 16.0)))
+		if lv != null and not GridPath.walkable(lv, Vector2i(floori(p.x / 16.0), floori(p.y / 16.0))):
+			return false
+		var space := get_world_2d().direct_space_state
+		var q := PhysicsShapeQueryParameters2D.new()
+		var c := CircleShape2D.new()
+		c.radius = 4.0
+		q.shape = c
+		q.transform = Transform2D(0.0, p)
+		q.collision_mask = 1
+		q.collide_with_areas = false
+		return space.intersect_shape(q, 1).is_empty()
 
 	func _ready() -> void:
 		_spr = Sprite2D.new()

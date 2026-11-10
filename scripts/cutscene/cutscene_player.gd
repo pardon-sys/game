@@ -757,8 +757,9 @@ func _fireworks(cells: Array, count: int, t: float) -> void:
 					Audio.play("pop", -4.0, 0.15, 0.8)))
 
 
-static func cell_to_world(c: Variant) -> Vector2:
-	return Vector2(float(c[0]) * 16.0 + 8.0, float(c[1]) * 16.0 + 12.0)
+## 旧接口：转给 Cells.to_world（不再是静态函数，免得从 autoload 实例上调用时报警告）。
+func cell_to_world(c: Variant) -> Vector2:
+	return Cells.to_world(c)
 
 
 func _level() -> Node:

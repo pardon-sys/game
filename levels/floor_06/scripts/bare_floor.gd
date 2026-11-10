@@ -36,7 +36,7 @@ static func make(parent: Node, k: String, cell: Vector2i, cells: Vector2i, lines
 	# 铺在地面层（关卡的 FloorObjects，和地毯、楼梯一样画在地砖上、人物下面）
 	var floor_layer: Node = parent.get_parent().get_node_or_null("FloorObjects") if parent.name == "Entities" and parent.get_parent() else null
 	(floor_layer if floor_layer else parent).add_child(f)
-	f.global_position = Cutscene.cell_to_world(cell) - Vector2(8, 8)
+	f.global_position = Cells.to_world(cell) - Vector2(8, 8)
 	return f
 
 

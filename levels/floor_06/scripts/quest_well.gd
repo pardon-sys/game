@@ -32,11 +32,11 @@ func setup() -> void:
 	rink = scn.instantiate()
 	rink.set("tiles_w", RINK_SIZE.x)
 	rink.set("tiles_h", RINK_SIZE.y)
-	put(rink, Cutscene.cell_to_world(RINK))
+	put(rink, Cells.to_world(RINK))
 	for c in BELLS:
-		bells.append(put(Bell.new(), Cutscene.cell_to_world(c)))
+		bells.append(put(Bell.new(), Cells.to_world(c)))
 	for c in SNOW:
-		snow.append(put(SnowBank.new(), Cutscene.cell_to_world(c)))
+		snow.append(put(SnowBank.new(), Cells.to_world(c)))
 	_intro()
 
 
@@ -73,7 +73,7 @@ func tick(_delta: float) -> void:
 			if pink.laugh:
 				pink.laugh.add(pink.laugh.max_value * SNOW_LAUGH)
 			ZoneFx.play("sole", pink.get_parent(), ZoneFx.body_point(pink, "sole"), 0.8, false)
-			pink.global_position += s.global_position.direction_to(Cutscene.cell_to_world(RINK) + Vector2(RINK_SIZE.x * 8, RINK_SIZE.y * 8)) * 14.0
+			pink.global_position += s.global_position.direction_to(Cells.to_world(RINK) + Vector2(RINK_SIZE.x * 8, RINK_SIZE.y * 8)) * 14.0
 	if got >= BELLS.size():
 		_finish()
 

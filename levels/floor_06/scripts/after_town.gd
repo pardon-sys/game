@@ -105,7 +105,7 @@ static func place(r: Node2D, info: Dictionary) -> void:
 static func _place_resident(r: Resident, info: Dictionary) -> void:
 	r.show_flag = NEVER if bool(info.get("hidden", false)) else ""
 	if info.has("at"):
-		var p: Vector2 = Cutscene.cell_to_world(info["at"])
+		var p: Vector2 = Cells.to_world(info["at"])
 		r.global_position = p
 		r._home = p
 		r._goal = p
@@ -189,7 +189,7 @@ func _process(_delta: float) -> void:
 		return
 	if GameState.in_dialogue or GameState.in_cutscene or not is_instance_valid(GameState.player):
 		return
-	var at: Vector2 = Cutscene.cell_to_world(_objective["cell"])
+	var at: Vector2 = Cells.to_world(_objective["cell"])
 	if GameState.player.global_position.distance_to(at) <= float(_objective.get("radius", 1.0)) * 16.0:
 		_objective = {}
 		if qgate != "":

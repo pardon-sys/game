@@ -59,7 +59,7 @@ static func run(t: Node) -> void:
 		and GameState.has_flag(AfterStory.FESTIVAL_OPEN))
 	var towners: Array = t.main.level.find_children("*", "Resident", true, false).filter(func(n): return n.visible and str(n.name) in ["after_granny", "after_captain", "after_kid_lily"])
 	verify(t, "小镇上不再摆庆功宴的人（奶奶、队长、小莉莉都不在：%s）" % [towners.map(func(n): return n.name)], towners.is_empty())
-	t._go(Cutscene.cell_to_world(AfterStory.TOWN_DOORS[AfterStory.FESTIVAL]))
+	t._go(Cells.to_world(AfterStory.TOWN_DOORS[AfterStory.FESTIVAL]))
 	await t._advance_until(func(): return t._level_id() == AfterStory.FESTIVAL and GameState.has_flag(AfterFestival.ON) and not Cutscene.is_playing() and not AfterStory.running, 30.0)
 	verify(t, "走进入口 → 庆功宴的广场 → 开场过场 → 庆功宴开始（床不能睡）", t._level_id() == AfterStory.FESTIVAL and t.seen_cuts.has("after_d7_festival")
 		and AfterFestival.active() and GameState.has_flag(AfterStory.NIGHT_BUSY))

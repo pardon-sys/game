@@ -1,0 +1,63 @@
+{
+	"name": "摔碎的水晶吊灯",
+	"entries": [
+		{
+			"if": {
+				"flag": "palace_ruin_chandelier"
+			},
+			"node": "done"
+		},
+		{
+			"node": "default"
+		}
+	],
+	"nodes": {
+		"default": {
+			"lines": [
+				{
+					"text": "（一盏巨大的水晶吊灯摔在地上，金色的灯架弯了，碎水晶撒了一地）",
+					"speaker": ""
+				},
+				{
+					"text": "（听说以前每逢庆典，它会亮一整夜，整个王座间都是彩色的光斑）",
+					"speaker": ""
+				},
+				{
+					"text": "……碎成这样，还在发光。",
+					"speaker": "公主",
+					"emotion": "surprise"
+				},
+				{
+					"text": "……像在等人，把它挂回去。",
+					"speaker": "蓝色的公主"
+				}
+			],
+			"set": {
+				"flags": [
+					"palace_ruin_chandelier"
+				]
+			}
+		},
+		"done": {
+			"lines": [
+				{
+					"text": "（一盏巨大的水晶吊灯摔在地上，金色的灯架弯了，碎水晶撒了一地）",
+					"speaker": ""
+				},
+				{
+					"text": "（听说以前每逢庆典，它会亮一整夜，整个王座间都是彩色的光斑）",
+					"speaker": ""
+				},
+				{
+					"text": "……碎成这样，还在发光。",
+					"speaker": "公主",
+					"emotion": "surprise"
+				},
+				{
+					"text": "……像在等人，把它挂回去。",
+					"speaker": "蓝色的公主"
+				}
+			]
+		}
+	}
+}

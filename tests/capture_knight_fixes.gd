@@ -94,7 +94,7 @@ func _chase() -> void:
 	ch.light(0)
 	await _wait(0.4)
 	await shot("chase_beacon_lit")
-	ch.pink.global_position = Cutscene.cell_to_world(TaskArmorChase.BEACONS[0])
+	ch.pink.global_position = Cells.to_world(TaskArmorChase.BEACONS[0])
 	await _wait(0.5)
 	await shot("chase_guide_next")
 
@@ -176,7 +176,7 @@ func _festival() -> void:
 	GameState.pending_spawn = "from_house"
 	await main.change_level(Floors.scene(AfterStory.TOWN))
 	await _wait(0.8)
-	_go(Cutscene.cell_to_world(AfterStory.TOWN_DOORS[AfterStory.FESTIVAL]))
+	_go(Cells.to_world(AfterStory.TOWN_DOORS[AfterStory.FESTIVAL]))
 	await _advance_until(func(): return _level_id() == AfterStory.FESTIVAL and GameState.has_flag(AfterFestival.ON) and not Cutscene.is_playing() and not AfterStory.running, 30.0)
 	FestivalDanceShow.quiet = true
 	await _talk("floor_06/after_fest_host", "festival_dance", [0])

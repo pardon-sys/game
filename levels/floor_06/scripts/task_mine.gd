@@ -80,7 +80,7 @@ func _ready() -> void:
 	cart = Cart.new()
 	cart.name = "MineCart"
 	get_parent().add_child(cart)
-	cart_x = Cutscene.cell_to_world(Vector2i(START_X, RAIL_ROW)).x
+	cart_x = Cells.to_world(Vector2i(START_X, RAIL_ROW)).x
 	_place_cart()
 	_blue = get_parent().find_child("AfterBlue", true, false) as Node2D
 	if _blue == null:
@@ -117,7 +117,7 @@ func _intro() -> void:
 
 
 func rail_y() -> float:
-	return Cutscene.cell_to_world(Vector2i(0, RAIL_ROW)).y
+	return Cells.to_world(Vector2i(0, RAIL_ROW)).y
 
 
 func cell_x() -> float:
@@ -146,7 +146,7 @@ func _process(delta: float) -> void:
 		if cell_x() >= SLOPE_X:
 			if Input.is_action_just_pressed("move_right") and _behind(p):
 				tap()
-			elif cart_x > Cutscene.cell_to_world(Vector2i(SLOPE_X, 0)).x:
+			elif cart_x > Cells.to_world(Vector2i(SLOPE_X, 0)).x:
 				cart_x -= SLOPE_BACK * delta
 		elif Input.is_action_pressed("move_right") and _behind(p):
 			push(delta)
@@ -414,7 +414,7 @@ func _slip() -> void:
 	if slips >= SLIPS:
 		_emit(false)
 		return
-	cart_x = Cutscene.cell_to_world(Vector2i(int(STAGES[stage]), RAIL_ROW)).x
+	cart_x = Cells.to_world(Vector2i(int(STAGES[stage]), RAIL_ROW)).x
 	for i in imps:
 		if is_instance_valid(i):
 			i.queue_free()

@@ -17,7 +17,7 @@ func _ready() -> void:
 	if not GameState.vars.has("errand_cookies_left") or int(GameState.vars["errand_cookies_left"]) <= 0:
 		GameState.vars["errand_cookies_left"] = COOKIES
 	for c in KIDS:
-		var k := AfterKid.spawn(get_parent(), Cutscene.cell_to_world(c), 2.0)
+		var k := AfterKid.spawn(get_parent(), Cells.to_world(c), 2.0)
 		k.lure = func() -> bool: return left() > 0
 		k.on_catch = _on_caught
 		k.on_shoo = func(kid: AfterKid): _take(kid, "谢谢姐姐！")

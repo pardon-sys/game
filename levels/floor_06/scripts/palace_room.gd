@@ -609,7 +609,19 @@ func busy() -> bool:
 
 
 func add_view(n: Node2D) -> void:
-	get_parent().add_child.call_deferred(n)
+	_add_view_now.call_deferred(n)
+
+
+## 延后到这一帧空下来再挂上去；挂之前已经被 queue_free 掉的（同一帧里刚生成就被清掉的小兵 / 特效）就不挂了
+## ——以前照样挂进树里，换图时会崩（CanvasItem index_in_parent unset / rp_node is null）。
+func _add_view_now(n: Node2D) -> void:
+	if not is_instance_valid(n) or n.is_queued_for_deletion() or n.get_parent() != null:
+		return
+	var host := get_parent()
+	if host == null or not host.is_inside_tree():
+		n.queue_free()
+		return
+	host.add_child(n)
 
 
 func cells(key: String) -> Array[Vector2i]:
@@ -617,7 +629,7 @@ func cells(key: String) -> Array[Vector2i]:
 
 
 func world(c: Vector2i) -> Vector2:
-	return Cutscene.cell_to_world(c)
+	return Cells.to_world(c)
 
 
 func tickle(pc: PlayableCharacter, key: String, every: float, amount: float, zone: String, delta: float, src: Node = null) -> void:
@@ -939,7 +951,10 @@ const DAILY_SPOTS := {
 			["floor_06/queen_n5", Vector2i(32, 20), ["palace_note_n4"], "palace_note_n5", "queen_note", "palace_note_n5"]],
 	"floor_06_palace_garden": [["floor_06/queen_n6", Vector2i(12, 12), ["palace_note_n5"], "palace_note_n6", "queen_note", "palace_note_n6"],
 			["floor_06/paint_green", Vector2i(46, 24), [PalaceThrone.BOSS_FLAG], "palace_paint_green", "paint_green", "palace_paint_green"]],
-	"floor_06_palace_throne": [["floor_06/daily_drawing", Vector2i(34, 14), [PalaceThrone.BOSS_FLAG], "palace_drawing_half", "drawing_half", "palace_drawing_half"],
+	"floor_06_palace_throne": [["floor_06/ruin_relics", Vector2i(37, 14), [PalaceThrone.BOSS_FLAG], "palace_ruin_relics", "", ""],
+			["floor_06/ruin_tapestry", Vector2i(30, 8), [PalaceThrone.BOSS_FLAG], "palace_ruin_tapestry", "", ""],
+			["floor_06/ruin_chandelier", Vector2i(21, 27), [PalaceThrone.BOSS_FLAG], "palace_ruin_chandelier", "", ""],
+			["floor_06/daily_drawing", Vector2i(34, 14), [PalaceThrone.BOSS_FLAG], "palace_drawing_half", "drawing_half", "palace_drawing_half"],
 			["floor_06/daily_court", Vector2i(39, 12), [PalaceThrone.BOSS_FLAG], "palace_daily_court", "record_book", ""],
 			["floor_06/queen_n1", Vector2i(37, 9), ["palace_memory_done", PalaceThrone.BOSS_FLAG], "palace_note_n1", "queen_note", "palace_note_n1"],
 			["floor_06/treasure_chest", Vector2i(32, 14), ["palace_note_n6", PalaceThrone.BOSS_FLAG], "palace_treasure_done", "treasure_box", ""]],

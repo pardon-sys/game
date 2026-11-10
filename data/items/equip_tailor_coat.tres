@@ -1,18 +1,14 @@
 [gd_resource type="Resource" script_class="EquipData" format=3]
 
 [ext_resource type="Script" path="res://scripts/items/equip_data.gd" id="1"]
-[ext_resource type="Texture2D" path="res://assets/generated/equip_icons.png" id="2"]
-
-[sub_resource type="AtlasTexture" id="icon"]
-atlas = ExtResource("2")
-region = Rect2(0, 0, 16, 16)
+[ext_resource type="Texture2D" path="res://assets/generated/item_tailor_coat.png" id="2"]
 
 [resource]
 script = ExtResource("1")
 id = "equip_tailor_coat"
 display_name = "防痒棉衣"
 description = "裁缝给保卫队做的防痒棉衣样品（配一双棉袜）。五个漏风的地方都是你找出来的。"
-icon = SubResource("icon")
+icon = ExtResource("2")
 category = 4
 stackable = false
 show_in_hud = false

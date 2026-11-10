@@ -59,7 +59,7 @@ static func text() -> Dictionary:
 func _ready() -> void:
 	for g in text().get("goats", []):
 		var info: Dictionary = g
-		var goat := MushroomGoat.spawn(get_parent(), Cutscene.cell_to_world(info["cell"]), str(info["id"]), str(info.get("trait", "calm")))
+		var goat := MushroomGoat.spawn(get_parent(), Cells.to_world(info["cell"]), str(info["id"]), str(info.get("trait", "calm")))
 		goats[goat.gid] = goat
 		_lick_i[goat.gid] = 0
 		_cd[goat.gid] = 0.0
@@ -212,7 +212,7 @@ func _lead(p: PlayableCharacter, delta: float) -> void:
 		_trip(p)
 		return
 	# 进圈
-	if not followers.is_empty() and Cutscene.cell_to_world(PEN_GATE).distance_to(p.global_position) < 22.0:
+	if not followers.is_empty() and Cells.to_world(PEN_GATE).distance_to(p.global_position) < 22.0:
 		_pen()
 
 
@@ -302,7 +302,7 @@ func _pen() -> void:
 	for i in followers.size():
 		var g: MushroomGoat = followers[i]
 		g.mode = MushroomGoat.Mode.GOTO
-		g.goal_pos = Cutscene.cell_to_world(PEN_IN[(penned.size()) % PEN_IN.size()])
+		g.goal_pos = Cells.to_world(PEN_IN[(penned.size()) % PEN_IN.size()])
 		penned.append(g)
 	followers.clear()
 	GameState.notify("%d 只羊进了羊圈（%d / 5）" % [n, penned.size()], 2.0)

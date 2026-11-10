@@ -300,7 +300,7 @@ func _inspect() -> String:
 			m.zone = id
 			m.name = "Mannequin_" + id
 			lv.add_child(m)
-			m.global_position = Cutscene.cell_to_world(MANNEQUINS[id])
+			m.global_position = Cells.to_world(MANNEQUINS[id])
 			_mannequins[id] = m
 	var passed := {}
 	while true:
@@ -321,10 +321,10 @@ func _inspect() -> String:
 					await _say(data().get("inspect_leak", {}).get(id, []))
 					_add_laugh(0.06)
 					return id
-		if Cutscene.cell_to_world(MIRROR).distance_to(p.global_position) < 14.0:
+		if Cells.to_world(MIRROR).distance_to(p.global_position) < 14.0:
 			if passed.size() < PARTS.size():
 				GameState.notify("要从三个人台中间走过去才算验收哦。", 2.0)
-				p.global_position = Cutscene.cell_to_world(MIRROR - Vector2i(1, 0))
+				p.global_position = Cells.to_world(MIRROR - Vector2i(1, 0))
 				continue
 			await _say(data().get("inspect_pass", []))
 			return ""

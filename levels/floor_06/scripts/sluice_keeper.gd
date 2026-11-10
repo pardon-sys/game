@@ -41,7 +41,7 @@ func _ready() -> void:
 		var vn := ValveMark.new()
 		vn.position = WaterwayDirector.cell_pos(c)
 		dir.get_parent().add_child.call_deferred(vn)
-		valves.append({"pos": Cutscene.cell_to_world(c), "progress": 0.0, "closed": false, "node": vn})
+		valves.append({"pos": Cells.to_world(c), "progress": 0.0, "closed": false, "node": vn})
 	_body = KeeperBody.new()
 	_body.keeper = self
 	_body.position = WaterwayDirector.cell_pos(QuestMaps.cell(MAP, "keeper"))
@@ -130,7 +130,7 @@ func _process(delta: float) -> void:
 
 func _on_rock(pc: Node2D) -> bool:
 	for c in QuestMaps.cells(MAP, "rocks"):
-		if pc.global_position.distance_to(Cutscene.cell_to_world(c)) <= ROCK_R:
+		if pc.global_position.distance_to(Cells.to_world(c)) <= ROCK_R:
 			return true
 	return false
 
@@ -181,7 +181,7 @@ func attack(kind: String) -> void:
 			for c in QuestMaps.cells(MAP, "nozzles"):
 				var m := WaterwayDirector.MudMan.new()
 				m.dir = dir
-				m.home = Cutscene.cell_to_world(c)
+				m.home = Cells.to_world(c)
 				m.position = m.home
 				dir.get_parent().add_child(m)
 				dir.mudmen.append(m)
@@ -214,7 +214,7 @@ func objective_for(ai: PlayableCharacter) -> Variant:
 	if flooding > 0.0:
 		var best: Variant = null
 		for c in QuestMaps.cells(MAP, "rocks"):
-			var p := Cutscene.cell_to_world(c)
+			var p := Cells.to_world(c)
 			if best == null or p.distance_to(ai.global_position) < (best as Vector2).distance_to(ai.global_position):
 				best = p
 		return best
@@ -262,7 +262,7 @@ func on_defeat(_reason: String) -> void:
 	for b in dir.bubbles:
 		if is_instance_valid(b) and (b as WaterwayDirector.Bubble).holding == null:
 			(b as Node).queue_free()
-	dir.reset_to(Cutscene.cell_to_world(QuestMaps.cell(MAP, "arena")))
+	dir.reset_to(Cells.to_world(QuestMaps.cell(MAP, "arena")))
 
 
 ## 水闸机关本体（画一扇生锈的大闸门、两只刷子臂、狮子头喷口）

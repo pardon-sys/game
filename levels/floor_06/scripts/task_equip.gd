@@ -48,7 +48,7 @@ func _ready() -> void:
 	if fx and fx.has_signal("flared"):
 		fx.flared.connect(_on_flared)
 	for c in KIDS:
-		var k := AfterKid.spawn(get_parent(), Cutscene.cell_to_world(c), 2.5)
+		var k := AfterKid.spawn(get_parent(), Cells.to_world(c), 2.5)
 		k.lure = _lure
 		k.pick_zone = func(_k) -> String: return EquipKids.zone_for(worn())
 		k.caption = func(_k, _z: String) -> String: return EquipKids.caption(worn())
@@ -114,7 +114,7 @@ func _spawn_spots() -> void:
 		s.set_script(preload("res://levels/floor_06/scripts/item_spot.gd"))
 		s.set("item_id", str(it[0]))
 		get_parent().add_child(s)
-		s.global_position = Cutscene.cell_to_world([it[1], it[2]])
+		s.global_position = Cells.to_world([it[1], it[2]])
 		spots.append(s)
 
 
@@ -130,12 +130,12 @@ func _process(delta: float) -> void:
 		if is_instance_valid(s) and s.global_position.distance_to(p.global_position) <= PICK_R:
 			_pick(s)
 	# 送到补给站
-	if p.global_position.distance_to(Cutscene.cell_to_world(DEPOT)) <= DEPOT_R * 16.0 and not worn().is_empty():
+	if p.global_position.distance_to(Cells.to_world(DEPOT)) <= DEPOT_R * 16.0 and not worn().is_empty():
 		_deliver()
 	# 长椅 / 井
 	var on_bench := false
 	for b in BENCHES:
-		if p.global_position.distance_to(Cutscene.cell_to_world(b)) < 16.0 and p.velocity.length() < 5.0:
+		if p.global_position.distance_to(Cells.to_world(b)) < 16.0 and p.velocity.length() < 5.0:
 			on_bench = true
 	_bench_t = _bench_t + delta if on_bench else 0.0
 	if _bench_t > 0.5:
@@ -144,7 +144,7 @@ func _process(delta: float) -> void:
 			SpeechBubble.say(p, ["呼……歇一会儿……", "腿……腿还在抖……"].pick_random(), 30.0, 1.0)
 	for i in WELLS.size():
 		_well_cool[i] = maxf(0.0, float(_well_cool.get(i, 0.0)) - delta)
-		if float(_well_cool[i]) <= 0.0 and p.global_position.distance_to(Cutscene.cell_to_world(WELLS[i])) < 20.0:
+		if float(_well_cool[i]) <= 0.0 and p.global_position.distance_to(Cells.to_world(WELLS[i])) < 20.0:
 			_well_cool[i] = WELL_COOL
 			p.laugh.reduce_ratio(WELL_CUT)
 			Audio.play("water_release", -8.0)
@@ -194,7 +194,7 @@ func _drop(id: String, at: Vector2) -> void:
 	s.set_script(preload("res://levels/floor_06/scripts/item_spot.gd"))
 	s.set("item_id", id)
 	get_parent().add_child(s)
-	s.global_position = Cutscene.cell_to_world(cell)
+	s.global_position = Cells.to_world(cell)
 	spots.append(s)
 	GameState.notify("同一个部位穿不下两件：「%s」掉在地上了" % (ItemDB.get_item(id) as EquipData).display_name, 2.0)
 

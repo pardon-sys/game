@@ -25,7 +25,7 @@ func setup() -> void:
 	spots.shuffle()
 	var text := {"peek": b().get("peek", []), "caught": b().get("got", []), "flee": [], "corner": []}
 	for i in PIECES:
-		var s := HandShard.make(get_parent(), Cutscene.cell_to_world(spots[i]), "stall", text)
+		var s := HandShard.make(get_parent(), Cells.to_world(spots[i]), "stall", text)
 		s.tease = true
 		s.caught_by.connect(_on_caught)
 		s.teased.connect(func(_s): say(b().get("tickle", []), 1.6))

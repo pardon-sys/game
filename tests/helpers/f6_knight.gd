@@ -98,7 +98,7 @@ static func run(t: Node) -> void:
 	verify(t, "小镇的目标：自由活动，东北角地牢入口有人在喊", mk != null and mk.text.contains("自由活动") and mk.text.contains("地牢入口"))
 	var gd := t._node("after_k_guard_dungeon") as Node2D
 	verify(t, "地牢入口的队员头上冒「！」", gd != null and gd.get_node_or_null("ErrandMark") != null)
-	t._go(Cutscene.cell_to_world(KnightStory.STEPS[0]["cell"]) + Vector2(0, 12))
+	t._go(Cells.to_world(KnightStory.STEPS[0]["cell"]) + Vector2(0, 12))
 	await t._wait(1.0)
 	verify(t, "走到地牢入口不会自动开演", not t.seen_cuts.has("knight_found") and task(t, "found") == null)
 	await t._talk("floor_06/after_k_guard_dungeon", "")
@@ -146,7 +146,7 @@ static func run(t: Node) -> void:
 	if st == null:
 		return
 	st.leg = TaskStretcher.PATH.size() - 1
-	st.walker.global_position = Cutscene.cell_to_world(TaskStretcher.PATH[-1])
+	st.walker.global_position = Cells.to_world(TaskStretcher.PATH[-1])
 	st.pink.global_position = st.walker.global_position + Vector2(0, 16)
 	st.advance(0.05)
 	await t._advance_until(func(): return t._level_id() == KnightStory.PHARMACY and KnightStory.step_id() == "afternoon" and not Cutscene.is_playing() and not KnightStory.running, 60.0)
@@ -280,7 +280,7 @@ static func run(t: Node) -> void:
 		and not (GameState.player is BluePrincess))
 	# D 夜探地牢
 	GameState.vars[TaskSneak.CAUGHT_KEY] = 0
-	t._go(Cutscene.cell_to_world(KnightStory.STEPS[4]["cell"]) + Vector2(-16, 0))
+	t._go(Cells.to_world(KnightStory.STEPS[4]["cell"]) + Vector2(-16, 0))
 	await t._wait(1.0)
 	verify(t, "走到路障边不会自动开演", t._level_id() == KnightStory.KNIGHT_N and not t.seen_cuts.has("knight_sneak_open"))
 	await t._talk("floor_06/after_k_objects", "vent")
@@ -327,25 +327,25 @@ static func run(t: Node) -> void:
 		# 挠痒鼠 / 手套关在牢房里：调查牢门（按 E）触发它们，不再是「门锁着」
 		var rat_gate_on := false
 		for g in t.main.level.find_children("*", "", true, false):
-			if g.get_script() and str(g.get_script().resource_path).ends_with("gate.gd") and (g as Node2D).global_position.distance_to(Cutscene.cell_to_world(Vector2i(14, 4))) <= 10.0:
+			if g.get_script() and str(g.get_script().resource_path).ends_with("gate.gd") and (g as Node2D).global_position.distance_to(Cells.to_world(Vector2i(14, 4))) <= 10.0:
 				rat_gate_on = (g.get_node("Interactable") as Interactable).enabled
 		verify(t, "挠痒鼠的牢门：门自己的「门锁着」调查关掉了，调查点就在牢门上", not rat_gate_on
-			and od.spot("rat").global_position.distance_to(Cutscene.cell_to_world(Vector2i(14, 4))) < 2.0)
+			and od.spot("rat").global_position.distance_to(Cells.to_world(Vector2i(14, 4))) < 2.0)
 		var gp0: Array = guards.map(func(g): return g.state if "state" in g else 0)
 		var n_alarm := PrisonOddities.alarm()
 		verify(t, "挠痒鼠没放出来就尖叫：把附近的守卫引过来（%d 个）" % n_alarm, n_alarm >= 0)
 		GameState.player.global_position = od.saddle.global_position + Vector2(8, 0)
 		await t._advance_until(func(): return GameState.has_flag("cg_seen_theater:prison_saddle") and not CG.is_busy(), 60.0)
 		verify(t, "走到马凳旁边：触发小剧场（她说绝对不坐 → 守卫来了 → 又坐上去）", GameState.has_flag("cg_seen_theater:prison_saddle") and od.saddle_done)
-		GameState.player.global_position = Cutscene.cell_to_world(TaskSneak.SPAWN)
+		GameState.player.global_position = Cells.to_world(TaskSneak.SPAWN)
 		await t._wait(0.3)
 	TaskSneak.auto_chair = true
 	sk.caught_now()
 	await t._wait(0.3)
 	verify(t, "被发现：审问椅 → 送回通风口（被抓 %d 次）" % TaskSneak.caught(), TaskSneak.caught() == 1
-		and GameState.player.global_position.distance_to(Cutscene.cell_to_world(TaskSneak.SPAWN)) < 4.0)
+		and GameState.player.global_position.distance_to(Cells.to_world(TaskSneak.SPAWN)) < 4.0)
 	TaskSneak.auto_chair = false
-	t._go(Cutscene.cell_to_world(TaskSneak.CELL))
+	t._go(Cells.to_world(TaskSneak.CELL))
 	await t._advance_until(func(): return t.seen_cuts.has("knight_cell_end") and not Cutscene.is_playing(), 60.0)
 	verify(t, "隔着栏杆：他只回答了一个问题，其余拒绝（%s）" % [["knight_asked_night", "knight_asked_fall", "knight_asked_why", "knight_answered", "knight_refused"].filter(func(f): return GameState.has_flag(f))],
 		GameState.has_flag("knight_answered") and GameState.has_flag("knight_refused") and GameState.has_flag("dlg_floor_06/after_knight_night") and GameState.has_flag("dlg_floor_06/after_knight_fall_no"))

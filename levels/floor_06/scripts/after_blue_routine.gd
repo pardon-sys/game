@@ -105,7 +105,7 @@ func sync(force := false) -> void:
 	# 支线「点灯笼的小姑娘」第一段：她一个人站在西南角的旧石灯笼前（等粉色公主跟着冰晶脚印找过来）
 	if KnightStory.active() and KnightQuests.active() == "blue" and KnightQuests.stage("blue") == 0:
 		if _state != "lantern":
-			var at := Cutscene.cell_to_world(QuestFootprints.LANTERN) + Vector2(12, 2)
+			var at := Cells.to_world(QuestFootprints.LANTERN) + Vector2(12, 2)
 			blue.global_position = at
 			blue.velocity = Vector2.ZERO
 			blue.facing = Vector2.LEFT
@@ -137,7 +137,7 @@ func sync(force := false) -> void:
 		blue.start_following(PARTNER)
 	else:
 		var spec := DayClock.npc("after_blue")
-		var home := Cutscene.cell_to_world(spec.get("at", [12, 14]))
+		var home := Cells.to_world(spec.get("at", [12, 14]))
 		# 时段切换在时钟黑幕内换位，结束同行则沿路走回。
 		if _slot != slot_key or _state == "away":
 			blue.global_position = home

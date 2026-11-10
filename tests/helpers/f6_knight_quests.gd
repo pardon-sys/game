@@ -216,7 +216,7 @@ static func run(t: Node) -> void:
 	var spots_before: Array = rh.hiders.filter(func(x): return not x.found).map(func(x): return x.spot)
 	pink.laugh.set_value(pink.laugh.max_value * 0.7)
 	rh._heard = 0.0
-	pink.global_position = Cutscene.cell_to_world(QuestHide.ENTRANCE)
+	pink.global_position = Cells.to_world(QuestHide.ENTRANCE)
 	rh.tick(0.05)
 	verify(t, "笑出声：剩下的小孩换地方藏", rh._heard > 0.0 and rh.hiders.filter(func(x): return not x.found).map(func(x): return x.spot) != spots_before)
 	pink.laugh.set_value(0.0)
@@ -241,7 +241,7 @@ static func run(t: Node) -> void:
 	pink.laugh.set_value(pink.laugh.max_value * 0.99)
 	rh.tick(0.05)
 	verify(t, "笑满：鬼被抓走，重新藏、重来；小孩停在藏身处，不会接着往巷口走", rh.found == 0 and pink.laugh.ratio() < 0.5
-		and rh.hiders.all(func(x): return not x.walking() and x.global_position == Cutscene.cell_to_world(x.spot)))
+		and rh.hiders.all(func(x): return not x.walking() and x.global_position == Cells.to_world(x.spot)))
 	for x in rh.hiders:
 		rh.find(x)
 	await t._advance_until(func(): return KnightQuests.stage("shoes") == 4 and not Cutscene.is_playing(), 20.0)
@@ -633,7 +633,7 @@ static func run(t: Node) -> void:
 		return
 	pink = rwh.pink
 	var wh0: WindupHand = rwh.hands[0]
-	pink.global_position = Cutscene.cell_to_world(Vector2i(14, 7))
+	pink.global_position = Cells.to_world(Vector2i(14, 7))
 	wh0.global_position = pink.global_position + Vector2(40, 0)
 	rwh.set_music(true)
 	rwh.tick(0.05)
@@ -653,7 +653,7 @@ static func run(t: Node) -> void:
 	for i in 14:
 		wh0._process(0.05)
 	verify(t, "挠到以后只弹开一小段、很快又追上来（离她 %.0f，状态 %s）" % [wh0.global_position.distance_to(pink.global_position), wh0.state], wh0.global_position.distance_to(pink.global_position) < 40.0)
-	pink.global_position = Cutscene.cell_to_world(QuestWarehouse.COVERS[1]) + Vector2(8, 0)
+	pink.global_position = Cells.to_world(QuestWarehouse.COVERS[1]) + Vector2(8, 0)
 	rwh.tick(0.05)
 	wh0._process(0.05)
 	verify(t, "躲在箱子旁边：它看不见她", wh0.state == "still")
@@ -786,12 +786,12 @@ static func run(t: Node) -> void:
 	hc.latch(pink)
 	verify(t, "缝里伸出手印贴上来，按 J 抖下去", rc.shake_off() == 1 and hc.state == "flee")
 	for i in 3:
-		pink.global_position = Cutscene.cell_to_world(QuestCrack.NAILS[i])
+		pink.global_position = Cells.to_world(QuestCrack.NAILS[i])
 		rc.tick(0.05, false)
 		if i == 0:
 			verify(t, "爬到封印钉旁：节拍条敲钉子", rc.hammering and rc.lane != null)
 			verify(t, "敲歪了：再来", not rc.finish_hammer(1))
-			pink.global_position = Cutscene.cell_to_world(QuestCrack.NAILS[i])
+			pink.global_position = Cells.to_world(QuestCrack.NAILS[i])
 			rc.tick(0.05, false)
 		rc.finish_hammer(QuestCrack.HAMMER_BEATS)
 	await t._advance_until(func(): return KnightQuests.stage("fence") == 4 and not Cutscene.is_playing(), 20.0)
@@ -816,7 +816,7 @@ static func run(t: Node) -> void:
 	ho.global_position = pink.global_position + Vector2(60, 0)
 	ro.tick(0.1)
 	verify(t, "火把烧完：手印扑上来", ro.fuel == 0.0 and ho.state == "seek")
-	pink.global_position = Cutscene.cell_to_world(QuestOldHall.CANDLES[0])
+	pink.global_position = Cells.to_world(QuestOldHall.CANDLES[0])
 	verify(t, "在旧烛台旁按 E：续满", ro.refuel_near(pink) and ro.fuel == 1.0)
 	var pieces: Array = ro.cluster.split()
 	for x in pieces:
@@ -840,11 +840,11 @@ static func run(t: Node) -> void:
 	await t._wait(0.3)
 	var kblue := t._node("AfterBlue") as Node2D
 	verify(t, "接下：地上一串冰晶脚印（%d），蓝色公主一个人站在旧石灯笼前" % (rfp.prints.size() if rfp else 0), rfp != null and rfp.prints.size() == QuestFootprints.PATH.size()
-		and kblue != null and kblue.global_position.distance_to(Cutscene.cell_to_world(QuestFootprints.LANTERN)) < 30.0)
+		and kblue != null and kblue.global_position.distance_to(Cells.to_world(QuestFootprints.LANTERN)) < 30.0)
 	if rfp == null:
 		return
 	pink = rfp.pink
-	t._go(Cutscene.cell_to_world(QuestFootprints.LANTERN) + Vector2(0, 16))
+	t._go(Cells.to_world(QuestFootprints.LANTERN) + Vector2(0, 16))
 	await t._advance_until(func(): return KnightQuests.stage("blue") == 1 and not Cutscene.is_playing(), 15.0)
 	verify(t, "跟着脚印找到她：「小时候，每年都是我点它」", KnightQuests.stage("blue") == 1 and t.seen_cuts.has("kq_blue_lantern"))
 	# 1 逗她笑
@@ -903,7 +903,7 @@ static func run(t: Node) -> void:
 	await t._wait(0.5)
 	verify(t, "灯笼那段做完不马上开始井边：走到井边才开始（门槛）", KnightQuests.gated("blue") and runner(t, "blue") == null
 		and bool(KnightQuests.objective(KnightStory.KNIGHT_N).get("quest_gate", "") == "blue"))
-	t._go(Cutscene.cell_to_world([26, 14]))
+	t._go(Cells.to_world([26, 14]))
 	await t._advance_until(func(): return runner(t, "blue") is QuestWell and not GameState.in_dialogue, 8.0)
 	var rwl := runner(t, "blue") as QuestWell
 	verify(t, "井边：冰面（滑溜地板）、%d 个笑声铃铛、雪堆" % (rwl.bells.size() if rwl else 0), rwl != null and is_instance_valid(rwl.rink) and rwl.bells.size() == QuestWell.BELLS.size())
@@ -937,7 +937,7 @@ static func run(t: Node) -> void:
 	br0._process(0.01)
 	verify(t, "旧刷子扫下来：刷子底下的人被挠（%s）" % br0.state, br0.state == "sweep" and pink.laugh.value > lb0)
 	verify(t, "离布偶太远按 E 没用", not rst.take(pink) or true)
-	pink.global_position = Cutscene.cell_to_world(QuestStorage.DOLL)
+	pink.global_position = Cells.to_world(QuestStorage.DOLL)
 	rst.take(pink)
 	await t._advance_until(func(): return KnightQuests.stage("blue") == 4 and not GameState.in_dialogue, 10.0)
 	verify(t, "找到旧布偶：「抱着它，就不怕了」→ 小桥（路开了）", KnightQuests.stage("blue") == 4 and GameState.has_flag("kq_blue_bridge"))
@@ -953,9 +953,9 @@ static func run(t: Node) -> void:
 	pink.global_position = rbr.hands[2].global_position
 	for i in QuestBridge.LET_GO:
 		rbr.hands[2].grab_now(pink)
-	verify(t, "被抓 %d 次：手被扯开，两个人退回桥头" % QuestBridge.LET_GO, rbr.grabs == 0 and pink.global_position.distance_to(Cutscene.cell_to_world(QuestBridge.START)) < 4.0)
+	verify(t, "被抓 %d 次：手被扯开，两个人退回桥头" % QuestBridge.LET_GO, rbr.grabs == 0 and pink.global_position.distance_to(Cells.to_world(QuestBridge.START)) < 4.0)
 	pink.status.clear_root()
-	pink.global_position = Cutscene.cell_to_world(QuestBridge.END)
+	pink.global_position = Cells.to_world(QuestBridge.END)
 	rbr.tick(0.05)
 	await t._advance_until(func(): return KnightQuests.stage("blue") == 5 and not GameState.in_dialogue, 10.0)
 	verify(t, "走到桥那头：「那时候，她的手也是这么暖的」→ 回旧石灯笼", KnightQuests.stage("blue") == 5)

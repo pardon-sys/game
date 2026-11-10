@@ -55,10 +55,10 @@ func _ready() -> void:
 
 ## 洞口（RatTunnel._ready 里调；每个洞口一个 HoleSpot，挂在 Entities 下面各自投影）
 func setup(host: Node, hole_cells: Array, king_cell: Vector2i) -> void:
-	home = Cutscene.cell_to_world(king_cell)
+	home = Cells.to_world(king_cell)
 	position = home
 	for c in hole_cells:
-		holes.append(Cutscene.cell_to_world(c))
+		holes.append(Cells.to_world(c))
 		plugged.append(false)
 		var hv := HoleSpot.new()
 		hv.king = self

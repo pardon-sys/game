@@ -40,13 +40,13 @@ func _ready() -> void:
 		# CG 舞台用的陷阱演员有的 z = -1（压在人物下面）：放到地图上会被地板盖住，调回地板之上
 		a.z_index = maxi(a.z_index, 1)
 		add_child(a)
-		a.global_position = Cutscene.cell_to_world(info["cell"])
+		a.global_position = Cells.to_world(info["cell"])
 		actors[id] = a
 		spots[id] = _make_spot("floor_06/penance_" + id, info["cell"] + Vector2i(0, 1))
 	crack = CGActor.make_trap("penance_crack", "wall_crack", CG.data.get("trap_actors", {}).get("wall_crack", {}))
 	crack.z_index = 1
 	add_child(crack)
-	crack.global_position = Cutscene.cell_to_world(CRACK_CELL)
+	crack.global_position = Cells.to_world(CRACK_CELL)
 	crack_spot = _make_spot("floor_06/penance_rat", CRACK_CELL + Vector2i(-1, 1))
 	_refresh()
 
@@ -55,7 +55,7 @@ func _make_spot(dialogue: String, cell: Vector2i) -> Node2D:
 	var sp := PrisonOddities.Spot.new()
 	sp.dialogue = dialogue
 	add_child(sp)
-	sp.global_position = Cutscene.cell_to_world(cell)
+	sp.global_position = Cells.to_world(cell)
 	return sp
 
 

@@ -43,7 +43,7 @@ func _ready() -> void:
 	Dialogue._finish_typing()
 	await shot("chain_ending")
 	await _advance_until(func(): return AfterErrands.is_done("gate_chain"), 5.0)
-	_go(Cutscene.cell_to_world([55, 34]))
+	_go(Cells.to_world([55, 34]))
 	ShearingShow.quiet = true
 	ShearingShow.fixed_seed = 61605
 	var s := await WOOL.start(self)

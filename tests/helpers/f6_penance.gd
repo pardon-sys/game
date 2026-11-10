@@ -140,7 +140,7 @@ static func run(t: Node) -> void:
 	verify(t, "离水滴远的时候不会被滴到", not rt.drip_hit(0))
 	# 三段小剧场：走到就演（大腿根、脚心）
 	for k in ["thigh", "sole"]:
-		pp.global_position = Cutscene.cell_to_world(QuestMaps.cell(RatTunnel.MAP, k))
+		pp.global_position = Cells.to_world(QuestMaps.cell(RatTunnel.MAP, k))
 		await t._advance_until(func(): return GameState.has_flag("cg_seen_theater:" + str(RatTunnel.SCENES[k])) and not CG.is_busy() and not Dialogue.is_active(), 150.0)
 	verify(t, "走到低矮的缝 / 窄缝：演大腿根、脚心两段小剧场", GameState.has_flag("cg_seen_theater:tunnel_thigh") and GameState.has_flag("cg_seen_theater:tunnel_sole"))
 	# 老鼠窝 / 刻字（按 E）
@@ -148,10 +148,10 @@ static func run(t: Node) -> void:
 	await t._advance_until(func(): return not CG.is_busy() and not Dialogue.runner.is_running() and not Dialogue.is_active(), 120.0)
 	verify(t, "老鼠窝：小剧场（小老鼠们认她当老大）", GameState.has_flag("cg_seen_theater:tunnel_nest"))
 	# 猫咪追逐：走到起点 → 猫从身后追出来；追上 → 小剧场 → 回检查点
-	var cp := Cutscene.cell_to_world(QuestMaps.cells(RatTunnel.MAP, "checkpoints")[1])
+	var cp := Cells.to_world(QuestMaps.cells(RatTunnel.MAP, "checkpoints")[1])
 	pp.global_position = cp
 	await t.get_tree().process_frame
-	pp.global_position = Cutscene.cell_to_world(QuestMaps.cell(RatTunnel.MAP, "cat_start"))
+	pp.global_position = Cells.to_world(QuestMaps.cell(RatTunnel.MAP, "cat_start"))
 	await t.get_tree().process_frame
 	await t.get_tree().process_frame
 	verify(t, "走到追逐起点：橘猫从身后追出来（%s）" % rt.chasing, rt.chasing and rt.cat.visible)
@@ -161,15 +161,15 @@ static func run(t: Node) -> void:
 	await t.get_tree().process_frame
 	verify(t, "被猫追上：小剧场（第一次长一点）→ 回到检查点（离检查点 %.0f）" % pp.global_position.distance_to(cp),
 		GameState.has_flag("cg_seen_theater:tunnel_cat_first") and pp.global_position.distance_to(cp) < 2.0 and not rt.chasing)
-	pp.global_position = Cutscene.cell_to_world(QuestMaps.cell(RatTunnel.MAP, "cat_start"))
+	pp.global_position = Cells.to_world(QuestMaps.cell(RatTunnel.MAP, "cat_start"))
 	await t.get_tree().process_frame
 	await t.get_tree().process_frame
-	pp.global_position = Cutscene.cell_to_world(QuestMaps.cell(RatTunnel.MAP, "cat_end"))
+	pp.global_position = Cells.to_world(QuestMaps.cell(RatTunnel.MAP, "cat_end"))
 	await t.get_tree().process_frame
 	await t.get_tree().process_frame
 	verify(t, "跑进小洞：猫进不来，安全了", rt.safe and not rt.chasing)
 	# 竖井：章末大段（CG）→ 章末画面
-	pp.global_position = Cutscene.cell_to_world(QuestMaps.cell(RatTunnel.MAP, "shaft"))
+	pp.global_position = Cells.to_world(QuestMaps.cell(RatTunnel.MAP, "shaft"))
 	await t._advance_until(func(): return Cutscene.chapter_screen.visible and not Cutscene.is_playing(), 180.0)
 	verify(t, "竖井：上下窜的章末大段 → 「第二章　鼠洞　完」（%s）、鼠鼠装还穿着" % Cutscene.chapter_title.text,
 		GameState.has_flag("cg_seen_theater:tunnel_shaft") and t.seen_cuts.has("tunnel_out") and Cutscene.chapter_title.text.contains("鼠洞") and PenanceCell.wearing_mouse())
@@ -212,7 +212,7 @@ static func run(t: Node) -> void:
 		wd._tick_wheels(0.1, [pk])
 	verify(t, "一个人转 %.0f 秒也能转满 → 又是高水位" % WaterwayDirector.WHEEL_ONE, wd.high)
 	# 泡泡：裹住粉色公主 → 定身、闷笑涨；AI 蓝色公主走过来戳破
-	pk.global_position = Cutscene.cell_to_world(QuestMaps.cells(WaterwayDirector.MAP, "checkpoints")[0])
+	pk.global_position = Cells.to_world(QuestMaps.cells(WaterwayDirector.MAP, "checkpoints")[0])
 	wd.blue.global_position = pk.global_position + Vector2(60, 0)
 	pk.laugh.set_value(0.0)
 	wd.trap(pk)
@@ -251,7 +251,7 @@ static func run(t: Node) -> void:
 	verify(t, "两个都被泡泡裹住：短小剧场（第一次长一点）→ 回检查点、都放出来", GameState.has_flag("cg_seen_theater:waterway_down_first")
 		and wd.trapped.is_empty() and pk.global_position.distance_to(wd.checkpoint) < 2.0)
 	# 水闸守门人
-	pk.global_position = Cutscene.cell_to_world(QuestMaps.cell(WaterwayDirector.MAP, "arena"))
+	pk.global_position = Cells.to_world(QuestMaps.cell(WaterwayDirector.MAP, "arena"))
 	await t._advance_until(func(): return is_instance_valid(wd.keeper) and wd.keeper._started and not Cutscene.is_playing(), 60.0)
 	var kp := wd.keeper as SluiceKeeper
 	verify(t, "走进场地：水闸守门人登场（开场过场、三个阀门）", kp != null and t.seen_cuts.has("keeper_intro") and kp.valves.size() == 3)
@@ -264,7 +264,7 @@ static func run(t: Node) -> void:
 	verify(t, "扫到没冲刺的人：被刷脚底（闷笑 %.0f）" % pk.laugh.value, pk.laugh.value > 0.0)
 	kp.close_valve(0)
 	verify(t, "关掉一个阀门：它放水淹场（%.1f 秒）" % kp.flooding, kp.valves_closed == 1 and kp.flooding > 0.0)
-	verify(t, "淹场时 AI 搭档跑上石堆", (kp.objective_for(wd.blue) as Vector2) in QuestMaps.cells(WaterwayDirector.MAP, "rocks").map(func(c): return Cutscene.cell_to_world(c)))
+	verify(t, "淹场时 AI 搭档跑上石堆", (kp.objective_for(wd.blue) as Vector2) in QuestMaps.cells(WaterwayDirector.MAP, "rocks").map(func(c): return Cells.to_world(c)))
 	# 输了：战败小剧场（四幕 + CG）→ 场地复位
 	wd.on_defeat("downed")
 	await t._advance_until(func(): return GameState.has_flag("cg_seen_theater:keeper_fail") and not CG.is_busy() and not Dialogue.is_active() and not wd._defeat_busy, 180.0)
@@ -297,7 +297,7 @@ static func run(t: Node) -> void:
 	await t.get_tree().process_frame
 	verify(t, "旧王宫·旧浴场：开场、两人同行、鼠鼠装还穿着", pb != null and Duo.active and PenanceCell.wearing_mouse())
 	var bp := GameState.player as PlayableCharacter
-	bp.global_position = Cutscene.cell_to_world(pb.cells("steam")[5])
+	bp.global_position = Cells.to_world(pb.cells("steam")[5])
 	pb._process(0.1)
 	verify(t, "走进蒸汽：四周起雾", pb.fog_on)
 	# 肥皂泡地板：往西滑 → 掉进泡泡浴池 → 小剧场
@@ -306,7 +306,7 @@ static func run(t: Node) -> void:
 	for c in soap:
 		if c.x < west.x or (c.x == west.x and c.y == 18):
 			west = c
-	bp.global_position = Cutscene.cell_to_world(Vector2i(west.x + 3, 18))
+	bp.global_position = Cells.to_world(Vector2i(west.x + 3, 18))
 	bp.velocity = Vector2(-60, 0)
 	pb._tick_soap(bp, 0.05)
 	verify(t, "踩上肥皂泡地板：顺着进来的方向滑（%s）" % [pb.slide_dir.get(bp, Vector2.ZERO)], pb.slide_dir.get(bp, Vector2.ZERO) == Vector2.LEFT)
@@ -356,7 +356,7 @@ static func run(t: Node) -> void:
 	verify(t, "湿毛巾怪碰到人：缠住腿（定身）", bp.status.is_rooted())
 	bp.status.clear_root()
 	# 温泉：两个人一起泡（CG）
-	bp.global_position = Cutscene.cell_to_world(pb.cells("bath")[0])
+	bp.global_position = Cells.to_world(pb.cells("bath")[0])
 	await t._advance_until(func(): return GameState.has_flag("cg_seen_theater:bath_friendship") and not CG.is_busy() and not Dialogue.is_active(), 180.0)
 	verify(t, "走到温泉：两个人一起泡温泉的小剧场（CG、友情、挠脚鼠来捣乱）", GameState.has_flag("cg_seen_theater:bath_friendship"))
 	# ---- 仆人回廊（潜入）
@@ -370,14 +370,14 @@ static func run(t: Node) -> void:
 	verify(t, "仆人回廊：潜入（人偶女仆 %d 个，被发现交给 palace）" % maids, ps != null and sd != null and sd.on_caught == "palace" and maids >= 5)
 	var sp := GameState.player as PlayableCharacter
 	# 尘土堆：打喷嚏
-	sp.global_position = Cutscene.cell_to_world(ps.cells("dust")[0])
+	sp.global_position = Cells.to_world(ps.cells("dust")[0])
 	sp.velocity = Vector2(40, 0)
 	ps._process(0.1)
 	verify(t, "走过尘土堆：打喷嚏（声音会引来人偶）", not ps.dust_t.is_empty() and ps.dust_t.values().any(func(v): return float(v) > 0.0))
 	# 躲藏点：千手裤发作，粉色公主去引开（CG）
 	var dummy := Node2D.new()
 	t.get_tree().current_scene.add_child(dummy)
-	dummy.global_position = Cutscene.cell_to_world(ps.cells("hide_event")[0])
+	dummy.global_position = Cells.to_world(ps.cells("hide_event")[0])
 	sd.hidden_in = dummy
 	ps._process(0.1)
 	sd.hidden_in = null
@@ -388,7 +388,7 @@ static func run(t: Node) -> void:
 	ps.caught()
 	await t._advance_until(func(): return GameState.has_flag("cg_seen_theater:servants_caught_first") and not CG.is_busy() and not Dialogue.is_active() and not ps._defeat_busy, 120.0)
 	verify(t, "被人偶女仆发现：按在地上用掸子「打扫」的小剧场 → 回入口", GameState.has_flag("cg_seen_theater:servants_caught_first")
-		and sp.global_position.distance_to(Cutscene.cell_to_world(ps.cells("start")[0])) < 2.0)
+		and sp.global_position.distance_to(Cells.to_world(ps.cells("start")[0])) < 2.0)
 	# 唤人铃 → 拿钥匙
 	var lured := ps.ring_bell()
 	ps.take_key()
@@ -400,14 +400,14 @@ static func run(t: Node) -> void:
 	var kr := _room(t, "PalaceKitchen") as PalaceKitchen
 	await t.get_tree().process_frame
 	var kp2 := GameState.player as PlayableCharacter
-	kp2.global_position = Cutscene.cell_to_world(kr.cells("cream")[0])
+	kp2.global_position = Cells.to_world(kr.cells("cream")[0])
 	kr._process(0.1)
 	verify(t, "踩到奶油：脚底变甜（老鼠会追）", kr.sweet.has(kp2))
-	kp2.global_position = Cutscene.cell_to_world(kr.cells("sink")[0])
+	kp2.global_position = Cells.to_world(kr.cells("sink")[0])
 	kr._process(0.1)
 	verify(t, "去水槽：洗掉了", not kr.sweet.has(kp2))
 	var ice: Vector2i = kr.cells("ice")[3]
-	kp2.global_position = Cutscene.cell_to_world(ice)
+	kp2.global_position = Cells.to_world(ice)
 	var x0 := kp2.global_position.x
 	kr._process(0.2)
 	verify(t, "冰窖滑道：站上去往东滑（%.0f → %.0f）" % [x0, kp2.global_position.x], kp2.global_position.x > x0 + 10.0)
@@ -416,11 +416,11 @@ static func run(t: Node) -> void:
 	await t._advance_until(func(): return GameState.has_flag("cg_seen_theater:kitchen_promoter") and GameState.has_flag(PalaceKitchen.PAID_FLAG) and not CG.is_busy() and not Dialogue.is_active(), 150.0)
 	verify(t, "当试吃推销员（身上放食物让动物吃）→ 拿到薄荷糖 ×%d" % (GameState.inventory.count("mint") - mints0), GameState.inventory.count("mint") - mints0 == PalaceKitchen.MINTS)
 	# 大奶酪：挠脚鼠告别，脱下鼠鼠装
-	kp2.global_position = Cutscene.cell_to_world(kr.cells("cheese")[0])
+	kp2.global_position = Cells.to_world(kr.cells("cheese")[0])
 	await t._advance_until(func(): return GameState.has_flag("cg_seen_theater:kitchen_farewell") and not CG.is_busy() and not Dialogue.is_active(), 180.0)
 	kr._process(0.1)
 	verify(t, "储藏间的大奶酪：挠脚鼠告别 → 脱下鼠鼠装、换回原来的装备", PalaceKitchen.farewell_done() and not PenanceCell.wearing_mouse())
-	kp2.global_position = Cutscene.cell_to_world(kr.cells("north")[0])
+	kp2.global_position = Cells.to_world(kr.cells("north")[0])
 	await t._advance_until(func(): return t._level_id() == "floor_06_palace_library" and not Cutscene.is_playing() and t.seen_cuts.has("palace_library_in"), 60.0)
 	verify(t, "北门：没有「待续」章末画面，直接走进图书馆（%s）" % t._level_id(), t._level_id() == "floor_06_palace_library" and not Cutscene.chapter_screen.visible)
 	await _palace_b(t)
@@ -438,13 +438,13 @@ static func _palace_b(t: Node) -> void:
 	var lp := GameState.player as PlayableCharacter
 	var mate := Duo.partner_of(lp)
 	# 书架里的手
-	lp.global_position = Cutscene.cell_to_world(lr.cells("shelf_hands")[0])
+	lp.global_position = Cells.to_world(lr.cells("shelf_hands")[0])
 	lr._tick_hands(lp, 0.05)
 	verify(t, "从书架旁边走过：手伸出来抓住脚踝（定身）", lp.status.is_rooted())
 	lp.status.clear_root()
 	# 书山：埋住 → 搭档挖出来
 	mate.global_position = Vector2(-9999, -9999)
-	lp.global_position = Cutscene.cell_to_world(lr.cells("book_piles")[0])
+	lp.global_position = Cells.to_world(lr.cells("book_piles")[0])
 	lr._tick_piles(lp, 0.05)
 	verify(t, "踩到书山：塌下来埋住半身", lr.buried.has(lp))
 	mate.global_position = lp.global_position + Vector2(8, 0)
@@ -481,7 +481,7 @@ static func _palace_b(t: Node) -> void:
 	await t._talk("floor_06/library_door", "", ["2573"])
 	verify(t, "密码门：输入 2573（浴场镜子 / 排班表 / 礼服尺码 / 刻痕）→ 门开了", GameState.has_flag(PalaceLibrary.CIPHER_FLAG) and not is_instance_valid(lr._door))
 	verify(t, "门开了：书房的遮罩淡掉、露出里面", lr.shades.all(func(sd): return not is_instance_valid(sd) or (sd as PalaceLibrary.StudyShade).fade))
-	lp.global_position = Cutscene.cell_to_world(lr.cells("study")[0])
+	lp.global_position = Cells.to_world(lr.cells("study")[0])
 	await t._advance_until(func(): return t.seen_cuts.has("library_study") and not Cutscene.is_playing(), 60.0)
 	verify(t, "私人书房：女王的画、没写完的信、两个半圆凹槽（背景大图）", t.seen_cuts.has("library_study") and GameState.has_flag(PalaceLibrary.STUDY_FLAG))
 	# 金色大书：投影 → 书怪
@@ -604,7 +604,7 @@ static func _palace_b(t: Node) -> void:
 	verify(t, "耐痒训练台：小剧场 → 被动「骑士的忍耐」（闷笑涨幅 %.2f → %.2f）" % [g0, tp._extra_stat_add("laugh_gain")],
 		GameState.passives.has("knight_endurance") and tp._extra_stat_add("laugh_gain") < g0 - 0.05)
 	await t._talk("floor_06/training_diary", "")
-	tp.global_position = Cutscene.cell_to_world(tr.cells("north")[0])
+	tp.global_position = Cells.to_world(tr.cells("north")[0])
 	await t._advance_until(func(): return t._level_id() == "floor_06_palace_ante" and not Cutscene.is_playing() and t.seen_cuts.has("palace_ante_in"), 60.0)
 	verify(t, "训练场北门：通往王座前厅（%s）" % t._level_id(), t._level_id() == "floor_06_palace_ante")
 	await _exit_hints(t)
@@ -622,6 +622,7 @@ static func _palace_b(t: Node) -> void:
 	await _round7(t)
 	await _round7b(t)
 	await _round8(t)
+	await _round10(t)
 
 
 static func _quiet_beetles(cr: PalaceClock) -> void:
@@ -1223,28 +1224,28 @@ static func _palace_c(t: Node) -> void:
 	verify(t, "发条转完：虫子自己翻倒停下", is_instance_valid(bt) and bt.stopped())
 	_quiet_beetles(cr)
 	cr.t = PalaceClock.GEAR_CYCLE * 0.8
-	cp.global_position = Cutscene.cell_to_world(cr.cells("gear_gaps")[0])
+	cp.global_position = Cells.to_world(cr.cells("gear_gaps")[0])
 	cr._tick_gear(cp, 0.05)
 	verify(t, "齿轮合上时站在缝里：卡住脚踝", cp.status.is_rooted())
 	cp.status.clear_root()
-	mate.global_position = Cutscene.cell_to_world(cr.cells("brake")[0])
+	mate.global_position = Cells.to_world(cr.cells("brake")[0])
 	verify(t, "搭档站上刹车：齿轮停了（缝不会合上）", cr.braked() and not cr.gear_closed())
-	verify(t, "AI 搭档的目标：刹车（另一个人还没过齿轮）", (cr.ai_hooks() as BattleAIHooks).objective_for(mate) == Cutscene.cell_to_world(cr.cells("brake")[0]))
-	cp.global_position = Cutscene.cell_to_world(cr.cells("up")[0])
+	verify(t, "AI 搭档的目标：刹车（另一个人还没过齿轮）", (cr.ai_hooks() as BattleAIHooks).objective_for(mate) == Cells.to_world(cr.cells("brake")[0]))
+	cp.global_position = Cells.to_world(cr.cells("up")[0])
 	await t._advance_until(func(): return t._level_id() == "floor_06_palace_clock_2" and not Cutscene.is_playing(), 30.0)
 	verify(t, "一层北边的楼梯：上到二层（%s）" % t._level_id(), t._level_id() == "floor_06_palace_clock_2")
 	cr = _room(t, "PalaceClock") as PalaceClock
 	await t.get_tree().process_frame
 	cp = GameState.player as PlayableCharacter
 	cr.t = 0.0
-	cp.global_position = Vector2(cr.pend_x(), Cutscene.cell_to_world(cr.cells("pendulum")[0]).y)
+	cp.global_position = Vector2(cr.pend_x(), Cells.to_world(cr.cells("pendulum")[0]).y)
 	var cl0 := cp.laugh.value
 	for i in 10:
 		cr._tick_pendulum(cp, 0.1)
 	verify(t, "二层·钟摆的羽毛扫到桥上的人（%.0f → %.0f）" % [cl0, cp.laugh.value], cp.laugh.value > cl0)
 	await t._talk("floor_06/clock_chest_2", "", [0])
 	verify(t, "二层的小宝箱：守钟人的怀表", GameState.inventory.has("equip_clock_watch"))
-	cp.global_position = Cutscene.cell_to_world(cr.cells("up")[0])
+	cp.global_position = Cells.to_world(cr.cells("up")[0])
 	await t._advance_until(func(): return t._level_id() == "floor_06_palace_clock_3" and not Cutscene.is_playing(), 30.0)
 	cr = _room(t, "PalaceClock") as PalaceClock
 	await t.get_tree().process_frame
@@ -1255,28 +1256,28 @@ static func _palace_c(t: Node) -> void:
 	while cr.wind_dir(0) == 0.0 and wt < 10.0:
 		cr.t += 0.5
 		wt += 0.5
-	cp.global_position = Cutscene.cell_to_world(cr.cells("bellows")[0]) + Vector2(4, 0)
+	cp.global_position = Cells.to_world(cr.cells("bellows")[0]) + Vector2(4, 0)
 	var wx := cp.global_position.x
 	cr._tick_wind(cp, 0.2)
 	verify(t, "三层·风箱吹着走（%.1f → %.1f）" % [wx, cp.global_position.x], not is_equal_approx(cp.global_position.x, wx))
-	cp.global_position = Cutscene.cell_to_world(cr.cells("ladder")[0])
+	cp.global_position = Cells.to_world(cr.cells("ladder")[0])
 	await t._wait(0.5)
 	verify(t, "梯子还没放下来：上不去四层", t._level_id() == "floor_06_palace_clock_3")
 	var gear_spots := cr.get_children().filter(func(n): return n is PrisonOddities.Spot and n.dialogue == "floor_06/clock_axle" \
-		and (n as Node2D).global_position.distance_to(Cutscene.cell_to_world(cr.cells("gear_seat")[0])) < 4.0)
+		and (n as Node2D).global_position.distance_to(Cells.to_world(cr.cells("gear_seat")[0])) < 4.0)
 	verify(t, "三层·大齿轮本身也能按 E（以前只有转轴能点）", gear_spots.size() == 1)
-	cp.global_position = Cutscene.cell_to_world(cr.cells("axle")[0]) + Vector2(0, 12)
+	cp.global_position = Cells.to_world(cr.cells("axle")[0]) + Vector2(0, 12)
 	await t._talk("floor_06/clock_axle", "", [0])
 	await t._advance_until(func(): return GameState.has_flag(PalaceClock.LADDER_FLAG) and not CG.is_busy() and not Dialogue.is_active(), 150.0)
 	verify(t, "挂在齿轮上（CG）：梯子放下来", GameState.has_flag("cg_seen_theater:clock_gear_ride") and GameState.has_flag(PalaceClock.LADDER_FLAG))
-	(GameState.player as Node2D).global_position = Cutscene.cell_to_world(cr.cells("ladder")[0])
+	(GameState.player as Node2D).global_position = Cells.to_world(cr.cells("ladder")[0])
 	await t._advance_until(func(): return t._level_id() == "floor_06_palace_clock_4" and not Cutscene.is_playing(), 30.0)
 	verify(t, "爬梯子上到四层·回廊（%s）" % t._level_id(), t._level_id() == "floor_06_palace_clock_4")
 	cr = _room(t, "PalaceClock") as PalaceClock
 	await t.get_tree().process_frame
 	cp = GameState.player as PlayableCharacter
 	mate = Duo.partner_of(cp)
-	cp.global_position = Cutscene.cell_to_world(Vector2i(40, 35))
+	cp.global_position = Cells.to_world(Vector2i(40, 35))
 	mate.global_position = cp.global_position + Vector2(10, 0)
 	cr._tick_chase(0.05)
 	await t._advance_until(func(): return t.seen_cuts.has("clock_keeper_wake") and not Cutscene.is_playing(), 30.0)
@@ -1304,7 +1305,7 @@ static func _palace_c(t: Node) -> void:
 	await t._talk("floor_06/clock_face", "", [2, 8])
 	verify(t, "大钟面拨到三点四十五分：暗格开了 → 乐谱片① + 笑脸徽记", GameState.has_flag(PalaceClock.CLOCKFACE_FLAG)
 		and GameState.has_flag("palace_sheet_1") and GameState.has_flag(PalaceRoom.badge_flag("clockface")))
-	cp.global_position = Cutscene.cell_to_world(cr.cells("up")[0])
+	cp.global_position = Cells.to_world(cr.cells("up")[0])
 	await t._advance_until(func(): return t._level_id() == "floor_06_palace_clock_5" and not Cutscene.is_playing(), 30.0)
 	verify(t, "楼梯上到钟顶（%s）" % t._level_id(), t._level_id() == "floor_06_palace_clock_5")
 	# 从钟顶下来：追逐已经结束，人偶不再追
@@ -1312,7 +1313,7 @@ static func _palace_c(t: Node) -> void:
 	await t.main.change_level(Floors.scene("floor_06_palace_clock_4"))
 	await t._advance_until(func(): return t._level_id() == "floor_06_palace_clock_4" and not Cutscene.is_playing(), 30.0)
 	var cr4 := _room(t, "PalaceClock") as PalaceClock
-	(GameState.player as Node2D).global_position = Cutscene.cell_to_world(cr4.cells("start")[0]) + Vector2(0, -80)
+	(GameState.player as Node2D).global_position = Cells.to_world(cr4.cells("start")[0]) + Vector2(0, -80)
 	await t._wait(0.5)
 	verify(t, "上过钟顶再回四层：守钟人偶不再追", not cr4.chase_on)
 	GameState.pending_spawn = "from_below"
@@ -1359,7 +1360,7 @@ static func _palace_c(t: Node) -> void:
 	await t._talk("floor_06/tunnel_toll", "", [2])
 	await t._advance_until(func(): return tu.toll_paid() and not CG.is_busy() and not Dialogue.is_active(), 150.0)
 	verify(t, "没钱付路费：用痒付（CG）→ 栅栏拆了", tu.toll_paid() and GameState.has_flag("cg_seen_theater:tunnel_toll"))
-	up.global_position = Cutscene.cell_to_world(tu.cells("to_library")[0]) + Vector2(0, 20)
+	up.global_position = Cells.to_world(tu.cells("to_library")[0]) + Vector2(0, 20)
 	tu._process(0.05)
 	verify(t, "走到图书馆那边的密道口：那边的入口打开了（抄近路）", GameState.has_flag("palace_secret_library"))
 	var real := tu.real_chest()
@@ -1488,13 +1489,13 @@ static func _palace_c(t: Node) -> void:
 	await t._advance_until(func(): return th.layer == 2 and t.seen_cuts.has("throne_layer_2") and not Cutscene.is_playing(), 60.0)
 	await t._advance_until(func(): return th.inside != null, 10.0)
 	var inner := th.inside
-	var mid := Cutscene.cell_to_world(th.cells("arena")[0])
+	var mid := Cells.to_world(th.cells("arena")[0])
 	for k in 20:
 		th._tick_move(0.3)
 	verify(t, "第三层：大画像飘到场地中央转圈（离中心 %.0f）" % th.portrait_pos().distance_to(mid), th.portrait_pos().distance_to(mid) <= PalaceThrone.ORBIT_R + 6.0)
 	await t.get_tree().process_frame
 	verify(t, "被拉进画里：画面加上水彩滤镜", is_instance_valid(th._water) == (GameState.player == inner))
-	verify(t, "第三层：被拉进画里（在画里的世界）", inner != null and inner.global_position.distance_to(Cutscene.cell_to_world(th.cells("paint_start")[0])) < 30.0)
+	verify(t, "第三层：被拉进画里（在画里的世界）", inner != null and inner.global_position.distance_to(Cells.to_world(th.cells("paint_start")[0])) < 30.0)
 	if inner == null:
 		return
 	inner.laugh.set_value(inner.laugh.max_value)
@@ -1529,7 +1530,7 @@ static func _palace_c(t: Node) -> void:
 		var el0 := esc.laugh.value
 		b0.step(0.05)
 		verify(t, "画里的画笔碰到人：闷笑涨、被弹开", esc.laugh.value > el0)
-		esc.global_position = Cutscene.cell_to_world(th2.cells("paint_exit")[0])
+		esc.global_position = Cells.to_world(th2.cells("paint_exit")[0])
 		if is_instance_valid(th2.world_view):
 			th2.world_view.stars_got = 3   # （测试：颜料星当作拿齐了）
 		th2._process(0.05)
@@ -1970,18 +1971,18 @@ static func _boss2(t: Node) -> void:
 	th.pull()
 	await t.get_tree().process_frame
 	var wv := th.world_view
-	var ps := Cutscene.cell_to_world(th.cells("paint_start")[0])
-	var hall := Cutscene.cell_to_world(th.cells("arena")[0])
-	verify(t, "画中世界：离大厅很远（%.0f 格），出口没拿齐颜料星是锁着的" % ((ps.x - Cutscene.cell_to_world(Vector2i(56, 0)).x) / 16.0),
-		is_instance_valid(wv) and ps.x - Cutscene.cell_to_world(Vector2i(56, 0)).x >= 12 * 16.0 and not wv.exit_open() and wv.stars.size() == 3)
+	var ps := Cells.to_world(th.cells("paint_start")[0])
+	var hall := Cells.to_world(th.cells("arena")[0])
+	verify(t, "画中世界：离大厅很远（%.0f 格），出口没拿齐颜料星是锁着的" % ((ps.x - Cells.to_world(Vector2i(56, 0)).x) / 16.0),
+		is_instance_valid(wv) and ps.x - Cells.to_world(Vector2i(56, 0)).x >= 12 * 16.0 and not wv.exit_open() and wv.stars.size() == 3)
 	if not is_instance_valid(wv):
 		return
 	var inner := th.inside
-	inner.global_position = Cutscene.cell_to_world(th.cells("paint_exit")[0])
+	inner.global_position = Cells.to_world(th.cells("paint_exit")[0])
 	th._process(0.05)
 	verify(t, "没有三颗颜料星：站在出口也出不去", th.inside == inner)
 	for c in wv.stars.duplicate():
-		inner.global_position = Cutscene.cell_to_world(c)
+		inner.global_position = Cells.to_world(c)
 		wv.step(0.05)
 	verify(t, "拿齐三颗颜料星：出口的画框亮了", wv.exit_open())
 	var pc0 := wv.cell_of(inner.global_position)
@@ -1999,14 +2000,14 @@ static func _boss2(t: Node) -> void:
 		if not wv.hidden_at(c) and not wv.painted_at(c):
 			free_cell = c
 			break
-	inner.global_position = Cutscene.cell_to_world(free_cell)
+	inner.global_position = Cells.to_world(free_cell)
 	var k := float(free_cell.y - PalaceThrone.MAZE.position.y) / float(PalaceThrone.MAZE.size.y - 1)
 	wv._t = acos(clampf(1.0 - 2.0 * k, -1.0, 1.0)) * ThroneParts.PaintWorld.EYE_PERIOD / TAU - 0.05
 	wv.seen_t = 0.0
 	wv.step(0.05)
 	verify(t, "画像之眼的光带扫到（不在画架旁边）：画笔冲过来", wv.seen_t > 0.0)
 	if is_instance_valid(wv.mirror):
-		var mid := Cutscene.cell_to_world(Vector2i(PalaceThrone.MAZE.position.x + PalaceThrone.MAZE.size.x / 2, 0)).x
+		var mid := Cells.to_world(Vector2i(PalaceThrone.MAZE.position.x + PalaceThrone.MAZE.size.x / 2, 0)).x
 		verify(t, "颜料镜像：以迷宫中线为轴，左右反着跟着走", is_instance_valid(wv.mirror))
 	if mate and mate != inner:
 		var hk := th.ai_hooks()
@@ -2454,3 +2455,64 @@ static func _round8(t: Node) -> void:
 	verify(t, "跳关「王座间（Boss 前）」：自动带上女王的生日缎带、发饰、羽毛披肩、怀表等事件道具，支线标记也补齐",
 		its.has("equip_birthday_ribbon") and its.has("equip_queen_hairpin") and its.has("equip_feather_shawl") and its.has("equip_clock_watch")
 		and (bp.get("flags", []) as Array).has("palace_banquet_done"))
+
+
+## 第十轮：Boss 战里回不去前厅、画笔不把人挤进墙、Boss 后换人不再飘 E、王座间的破败旧物
+static func _round10(t: Node) -> void:
+	_calm(t)
+	GameState.set_flag(PalaceThrone.BOSS_FLAG, false)
+	GameState.pending_spawn = "from_ante"
+	await t.main.change_level(Floors.scene(PalaceThrone.MAP))
+	await t._advance_until(func(): return t._level_id() == PalaceThrone.MAP and not Cutscene.is_playing() and not Dialogue.is_active(), 60.0)
+	var th := _room(t, "PalaceThrone") as PalaceThrone
+	await t.get_tree().process_frame
+	await t.get_tree().process_frame
+	var exits: Array = t.main.level.find_children("*", "LevelExit", true, false)
+	verify(t, "Boss 战没打完：回前厅的出口封住（%d 个出口）" % exits.size(), not exits.is_empty() and exits.all(func(e): return (e as LevelExit).is_locked_now()))
+	if ResourceLoader.exists(PalaceThrone.RUINS_TEX):
+		var views := th.get_parent().get_children().filter(func(n): return n is PalaceRoom.SheetView and (n as PalaceRoom.SheetView).tex == PalaceThrone.RUINS_TEX)
+		verify(t, "王座间摆上了破败的旧物（%d 件）" % views.size(), views.size() == PalaceThrone.RUINS.size())
+	# 画里的画笔撞人：撞墙就停，不会把人挤进墙里
+	await t._advance_until(func(): return th.started, 30.0)
+	th.layer = 2
+	th.pull()
+	await t._advance_until(func(): return not Cutscene.is_playing(), 30.0)
+	var inner := th.inside
+	if inner:
+		var lvn: Node = t.main.level
+		# 找一格紧挨着墙的路：人站上去，画笔从路那边撞过来，把人往墙里推
+		var wall_side := Vector2i(-99, -99)
+		for c in th.world_view.cells:
+			var cc := c as Vector2i
+			if not GridPath.walkable(lvn, cc + Vector2i(1, 0)) and GridPath.walkable(lvn, cc - Vector2i(1, 0)):
+				wall_side = cc
+				break
+		if wall_side.x > -99:
+			inner.global_position = th.world(wall_side)
+			var br := th.brushes[0] as PalaceThrone.Brush
+			br.hp = PalaceThrone.BRUSH_HP
+			br._cool = 0.0
+			br.position = inner.global_position + Vector2(-6, 0)
+			inner.set_invulnerable(0.0)
+			br.step(0.01)
+			var cell := Vector2i(floori(inner.global_position.x / 16.0), floori(inner.global_position.y / 16.0))
+			verify(t, "画里的画笔撞人：撞到墙就停，不会把人挤进墙里", GridPath.walkable(lvn, cell))
+		th.escape()
+		await t._advance_until(func(): return not CG.is_busy() and not Cutscene.is_playing() and not Dialogue.is_active(), 150.0)
+	# Boss 后：换人两次，脚下不会一直飘 E（自己身上的「和搭档说话」关掉）
+	await t._advance_until(func(): return th.win, 60.0)
+	var p0 := GameState.player as PlayableCharacter
+	var other := Duo.partner_of(p0) if Duo.active else null
+	if other == null:
+		for m in th.members():
+			if m != p0:
+				other = m
+	if other:
+		GameState.switch_control(other)
+		await t.get_tree().physics_frame
+		GameState.switch_control(p0)
+		await t.get_tree().physics_frame
+		await t.get_tree().physics_frame
+		var pa: Node = p0.get("_partner_area")
+		verify(t, "Boss 后换人再换回来：自己身上的「和搭档说话」关掉，头顶不会一直飘 E", pa == null or not (pa as Interactable).enabled)
+	verify(t, "打完 Boss：回前厅的出口打开", exits.all(func(e): return is_instance_valid(e) and not (e as LevelExit).is_locked_now()))

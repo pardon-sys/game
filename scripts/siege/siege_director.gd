@@ -1555,11 +1555,11 @@ func stage_victory() -> void:
 		c.velocity = Vector2.ZERO
 		c.visible = true
 	if is_instance_valid(pink):
-		pink.global_position = Cutscene.cell_to_world([VICTORY_CELL.x - 1, VICTORY_CELL.y])
+		pink.global_position = Cells.to_world([VICTORY_CELL.x - 1, VICTORY_CELL.y])
 		pink.facing = Vector2.DOWN
 	if is_instance_valid(blue):
 		blue.set_controller(CharacterController.new())
-		blue.global_position = Cutscene.cell_to_world([VICTORY_CELL.x + 1, VICTORY_CELL.y])
+		blue.global_position = Cells.to_world([VICTORY_CELL.x + 1, VICTORY_CELL.y])
 		blue.facing = Vector2.DOWN
 		blue.name = "SiegeBlue"
 

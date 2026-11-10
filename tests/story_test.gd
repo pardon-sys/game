@@ -303,7 +303,7 @@ func _run_stealth() -> void:
 	for c in floor_layer.get_used_cells():
 		if walls_layer.get_cell_source_id(c) != -1 or (c.x + c.y) % 3 != 0:
 			continue
-		var p := Cutscene.cell_to_world([c.x, c.y])
+		var p := Cells.to_world([c.x, c.y])
 		if p.distance_to(spawn_pos) > 120.0 and Cutscene._blocked(main.level, spawn_pos, p) and not GridPath.find(main.level, spawn_pos, p, 6000).is_empty():
 			far = p
 			break

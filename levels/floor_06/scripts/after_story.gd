@@ -385,7 +385,7 @@ static func play_task(ev: String, spec: Dictionary) -> bool:
 			if p.laugh:
 				p.laugh.clear()
 			if spec.has("respawn"):
-				p.global_position = Cutscene.cell_to_world(spec["respawn"])
+				p.global_position = Cells.to_world(spec["respawn"])
 	GameState.set_flag(TASK_FLAG, false)
 	_mute_partner(false)
 	return true

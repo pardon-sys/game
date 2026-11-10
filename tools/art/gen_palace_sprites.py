@@ -317,6 +317,9 @@ if __name__ == "__main__":
     defringe("pants_hands.png", ((128, 88, 180), (226, 206, 250)))
     build_strip("paint_wave_sheet.png", "paint_wave.png", 4, 56, 36, "颜料浪头（涌起 / 卷浪 / 碎开 / 落下）", uniform=True)
     build_strip("portrait_clean_sheet.png", "portrait_clean.png", 1, 64, 88, "画里的记忆走完以后：女王的画像（脸干干净净、闭着眼睛）")
+    # 第十轮：王座间的破败旧物（12 帧）、防痒棉衣的图标（以前和腋下护垫共用一格）
+    build_strip("throne_ruins_sheet.png", "throne_ruins.png", 12, 56, 56, "王座间的破败旧物", uniform=True)
+    outline(fit(biggest(key_white(Image.open(SRC / "tailor_coat_sheet.png").convert("RGBA"))), 16, 16, pad=0)).save(OUT / "item_tailor_coat.png")
     # 第七轮：字条 / 涂鸦 / 四种颜料 / 宝箱 / 望远镜 / 花环 / 记录本 / 枕头（item_*.png，16x16）
     _items7 = key_white(Image.open(SRC / "palace_items7_sheet.png").convert("RGBA"))
     for _n, _c in zip(["queen_note", "drawing_half", "family_drawing", "paint_red", "paint_blue", "paint_gold", "paint_green", "treasure_box",

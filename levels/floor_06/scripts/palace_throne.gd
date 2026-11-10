@@ -196,7 +196,9 @@ func _ready() -> void:
 		(small[3] as SmallPortrait).calm = true
 		if is_instance_valid(_frame_view):
 			_frame_view.modulate = Color(1, 1, 1, 0.0)   # 画回到墙上了，画框不再空着
+	_build_ruins()
 	_ready_epilogue.call_deferred()
+	_lock_exits.call_deferred(not win)
 	if GameState.inventory.has("queen_music_box") and not win:
 		GameState.set_hotkey("use_special", "queen_music_box")
 		GameState.notify("「女王的八音盒」放在 R 键上了（每场能用 %d 次）" % BOX_USES)
@@ -1072,6 +1074,7 @@ func _finale() -> void:
 	while Cutscene.is_playing():
 		await get_tree().process_frame
 	give_joined_badge()
+	_lock_exits(false)
 	_ready_epilogue()
 
 
@@ -1117,6 +1120,85 @@ var _pick_t := 0.0
 
 
 ## 打完以后：画像留在原地（进画前：烧穿的样子；出来以后：干干净净、闭着眼睛）；画前一个调查点；搭档可以聊天
+## 第十轮：王座间「破败的往日荣光」——摆在大厅边上的旧物（throne_ruins.png，12 帧），地上的裂缝 / 花瓣压扁贴地，
+## 破彩窗下面一片彩色光斑（GlassLight）。只是画面，没有碰撞；Boss 后三处能调查（PalaceRoom.DAILY_SPOTS）。
+const RUINS_TEX := "res://assets/generated/throne_ruins.png"
+const RUINS := [
+	# [帧, 格子, 缩放, 贴地]
+	[0, Vector2i(21, 26), 1.5, false],     # 摔碎的水晶吊灯
+	[1, Vector2i(30, 7), 1.4, false],      # 褪色的挂毯
+	[1, Vector2i(41, 7), 1.4, false],
+	[2, Vector2i(50, 13), 1.3, false],     # 倒下的王旗
+	[3, Vector2i(17, 21), 1.4, false],     # 断掉的石柱和藤蔓
+	[3, Vector2i(53, 29), 1.4, false],
+	[4, Vector2i(50, 36), 1.3, false],     # 翻倒的宴会长桌
+	[5, Vector2i(19, 15), 1.2, false],     # 空的卫兵铠甲
+	[6, Vector2i(53, 23), 1.2, false],     # 倒在地上的铠甲
+	[7, Vector2i(37, 13), 0.9, false],     # 王座台阶上的旧物
+	[8, Vector2i(28, 30), 0.7, true],      # 大理石地面的裂缝和小花
+	[8, Vector2i(44, 33), 0.7, true],
+	[8, Vector2i(24, 37), 0.7, true],
+	[9, Vector2i(33, 15), 1.0, true],      # 枯玫瑰花瓣
+	[9, Vector2i(41, 38), 1.0, true],
+	[10, Vector2i(24, 9), 1.5, false],     # 破彩窗
+	[10, Vector2i(47, 9), 1.5, false],
+	[11, Vector2i(47, 35), 1.1, false],    # 倒下的烛台
+]
+const GLASS_LIGHT_AT := [Vector2i(26, 12), Vector2i(45, 12)]
+
+
+func _build_ruins() -> void:
+	if not ResourceLoader.exists(RUINS_TEX):
+		return
+	for r in RUINS:
+		var v := sheet_view(RUINS_TEX, 12, int(r[0]), r[1], [], float(r[2]))
+		if bool(r[3]):
+			v.add_to_group(IsoView.GROUND_GROUP)
+			v.z_index = -1
+			if int(r[0]) == 8:
+				v.modulate = Color(1, 1, 1, 0.55)   # 裂缝贴片：淡一点，别像一块补丁
+	for c in GLASS_LIGHT_AT:
+		var gl := GlassLight.new()
+		gl.position = world(c)
+		add_view(gl)
+
+
+## 破彩窗投在地上的光斑：几块粉 / 蓝 / 金的半透明四边形，慢慢地明暗
+class GlassLight extends Node2D:
+	var _t := randf() * 5.0
+
+	func _ready() -> void:
+		z_index = -1
+		add_to_group(IsoView.GROUND_GROUP)
+		var mat := CanvasItemMaterial.new()
+		mat.blend_mode = CanvasItemMaterial.BLEND_MODE_ADD
+		mat.light_mode = CanvasItemMaterial.LIGHT_MODE_UNSHADED
+		material = mat
+
+	func _process(d: float) -> void:
+		_t += d
+		queue_redraw()
+
+	func _draw() -> void:
+		var cols := [Color(1, 0.5, 0.75), Color(0.5, 0.65, 1), Color(1, 0.85, 0.4), Color(0.6, 1, 0.8)]
+		for i in 6:
+			var a := 0.16 + 0.07 * sin(_t * 0.8 + i)
+			var o := Vector2((i % 3) * 14.0 - 14.0, (i / 3) * 12.0 - 6.0)
+			var q := PackedVector2Array([o + Vector2(-6, -5), o + Vector2(7, -6), o + Vector2(6, 6), o + Vector2(-7, 5)])
+			draw_colored_polygon(q, Color(cols[i % cols.size()], a))
+
+
+## 第十轮：Boss 战没打完，回前厅的出口封住（走过去只说一句）；打完以后打开
+func _lock_exits(on: bool) -> void:
+	var lv := get_parent().get_parent() if get_parent() else null
+	if lv == null:
+		return
+	for n in lv.find_children("*", "", true, false):
+		if n is LevelExit:
+			(n as LevelExit).locked = on
+			(n as LevelExit).locked_dialogue = "throne_exit_locked" if on else ""
+
+
 func give_joined_badge() -> void:
 	if GameState.has_flag(BADGE_FLAG):
 		return
@@ -1698,7 +1780,7 @@ class Brush extends Node2D:
 			var h := HitData.make_tickle(self, 7.0)
 			h.zone = "waist"
 			p.receive_hit(h)
-			p.global_position += (p.global_position - position).normalized() * 14.0
+			ThroneParts.shove(p, (p.global_position - position).normalized() * 14.0)   # 撞墙就停（以前直接改位置会把人挤进墙里）
 
 	func _draw() -> void:
 		if not alive():

@@ -241,7 +241,7 @@ func map_checks() -> void:
 	check("战后日程登记真实派对角色",is_instance_valid(party))
 	if is_instance_valid(party):
 		AfterTown.place(party,{"at":[46,24],"wander":1,"dir":"left","dialogue":"after_bonfire_host"})
-		check("原日程入口配置位置与闲逛",party.controller is WanderController and party.global_position.distance_to(Cutscene.cell_to_world([46,24]))<1 and party.dialogue=="floor_06/after_bonfire_host")
+		check("原日程入口配置位置与闲逛",party.controller is WanderController and party.global_position.distance_to(Cells.to_world([46,24]))<1 and party.dialogue=="floor_06/after_bonfire_host")
 		AfterTown.place(party,{"hidden":true})
 		check("隐藏日程关闭交互",not party.visible and not party.get_node("Talk").enabled)
 		AfterTown.place(party,{"hidden":false})

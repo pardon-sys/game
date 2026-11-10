@@ -35,7 +35,7 @@ func setup() -> void:
 	for spec in HANDS:
 		var h := BridgeHand.new()
 		h.phase_offset = float(spec[1])
-		put(h, Cutscene.cell_to_world(spec[0]))
+		put(h, Cells.to_world(spec[0]))
 		h.grabbed.connect(_on_grab)
 		hands.append(h)
 	_intro()
@@ -61,11 +61,11 @@ func _process(delta: float) -> void:
 
 
 func tick(_delta: float) -> void:
-	var on_bridge := pink.global_position.x > Cutscene.cell_to_world(START + Vector2i(4, 0)).x
+	var on_bridge := pink.global_position.x > Cells.to_world(START + Vector2i(4, 0)).x
 	if on_bridge and (pink.is_dashing() or (pink.laugh and pink.laugh.ratio() >= LET_GO_LAUGH)):
 		let_go()
 		return
-	if pink.global_position.distance_to(Cutscene.cell_to_world(END)) <= END_R:
+	if pink.global_position.distance_to(Cells.to_world(END)) <= END_R:
 		_finish()
 
 
@@ -80,13 +80,13 @@ func _on_grab(_who: PlayableCharacter) -> void:
 func let_go() -> void:
 	grabs = 0
 	say(br().get("let_go", ""), 2.0)
-	pink.global_position = Cutscene.cell_to_world(START)
+	pink.global_position = Cells.to_world(START)
 	if pink.laugh:
 		pink.laugh.set_value(pink.laugh.max_value * 0.3)
 	if pink.status:
 		pink.status.clear_root()
 	if is_instance_valid(blue):
-		blue.global_position = Cutscene.cell_to_world(START) + Vector2(0, 14)
+		blue.global_position = Cells.to_world(START) + Vector2(0, 14)
 
 
 func _finish() -> void:

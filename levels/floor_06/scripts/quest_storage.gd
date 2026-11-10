@@ -33,9 +33,9 @@ func setup() -> void:
 		var b := OldBrush.new()
 		b.down = bool(spec[1])
 		b.phase_offset = float(spec[2])
-		put(b, Cutscene.cell_to_world(spec[0]) + Vector2(0, -8 if b.down else 6))
+		put(b, Cells.to_world(spec[0]) + Vector2(0, -8 if b.down else 6))
 		brushes.append(b)
-	put(DollMark.new(), Cutscene.cell_to_world(DOLL))
+	put(DollMark.new(), Cells.to_world(DOLL))
 	_intro()
 
 
@@ -56,7 +56,7 @@ func _process(_delta: float) -> void:
 
 
 func take(who: Node2D) -> bool:
-	if _done or who.global_position.distance_to(Cutscene.cell_to_world(DOLL)) > DOLL_R:
+	if _done or who.global_position.distance_to(Cells.to_world(DOLL)) > DOLL_R:
 		return false
 	_done = true
 	_finish()

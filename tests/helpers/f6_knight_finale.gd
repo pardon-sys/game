@@ -45,7 +45,7 @@ static func run(t: Node) -> void:
 	ch.ai_enabled = false
 	var pink := ch.pink
 	verify(t, "开局：两人在楼梯口附近，盔甲先在楼梯口挣扎一会儿", ch.armor.stun_left > 0.0
-		and pink.global_position.distance_to(Cutscene.cell_to_world(TaskArmorChase.PINK_START)) < 8.0)
+		and pink.global_position.distance_to(Cells.to_world(TaskArmorChase.PINK_START)) < 8.0)
 	ch.armor.stun_left = 0.0
 	var d0 := ch.armor.global_position.distance_to(pink.global_position)
 	for i in 10:
@@ -187,7 +187,7 @@ static func run(t: Node) -> void:
 		ch.light(i)
 	verify(t, "四座都亮了：目标提示指回广场", KnightStory.objective(KnightStory.KCHASE).get("cell", []) == [TaskArmorChase.PLAZA.x, TaskArmorChase.PLAZA.y])
 	ch.armor.paused = true
-	ch.pink.global_position = Cutscene.cell_to_world(TaskArmorChase.PLAZA)
+	ch.pink.global_position = Cells.to_world(TaskArmorChase.PLAZA)
 	ch.advance(0.05)
 	await t._advance_until(func(): return Cutscene.current == "story_knight_boss" and Cutscene.is_playing() and Cutscene.backdrop.is_shown(), 40.0)
 	verify(t, "Boss 开场演完：背景大图过场「背靠背」（整屏大图 %s）" % Cutscene.backdrop.current, t.seen_cuts.has("knight_boss_open")

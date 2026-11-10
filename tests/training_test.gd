@@ -570,7 +570,7 @@ func _run_maze() -> void:
 	player = GameState.player as Princess
 	ctrl = ScriptedController.new()   # 换地图后旧公主（连同控制器）已经释放
 	player.set_controller(ctrl)
-	home = Cutscene.cell_to_world([40, 21])
+	home = Cells.to_world([40, 21])
 	var out := await _start_training("fatigue_release")
 	var r = out[0]
 	if r == null:
@@ -579,7 +579,7 @@ func _run_maze() -> void:
 	var lv: Node = main.level
 	check("营地走到迷宫入口 → 换到训练迷宫，站在起点，出口找到了，训练中不播组合小演出",
 		lv.scene_file_path == Floors.scene("floor_06_training") and r.exit_pos != Vector2.ZERO
-		and player.global_position.distance_to(Cutscene.cell_to_world([25, 39])) < 24.0 and not ComboTracker.play_scenes)
+		and player.global_position.distance_to(Cells.to_world([25, 39])) < 24.0 and not ComboTracker.play_scenes)
 	var doors := lv.find_children("*", "StaticBody2D", true, false).filter(func(n): return n.scene_file_path.ends_with("door.tscn"))
 	check("迷宫 12 个房间，门都关着", doors.size() == 12 and doors.all(func(d): return not d.is_open))
 	var design: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://levels/floor_06_training/design.json"))
@@ -647,7 +647,7 @@ func _run_maze() -> void:
 	check("逃到出口 → 这一轮结束（失败），已经拿到的保留：触发 %d 次、%s" % [res.get("successes", 0), res.get("gained", {})],
 		res.get("reason", "") == "escaped" and res.get("successes", 0) == 2 and is_equal_approx(float(res.get("gained", {}).get("train_fatigue_down", 0)), 6.0))
 	check("回到营地的迷宫入口旁，组合小演出恢复", main.level.scene_file_path == Floors.scene("floor_06_camp")
-		and player.global_position.distance_to(Cutscene.cell_to_world([46, 20])) < 24.0 and ComboTracker.play_scenes == false)
+		and player.global_position.distance_to(Cells.to_world([46, 20])) < 24.0 and ComboTracker.play_scenes == false)
 	check("魔力疲倦上限 500 - 6 = 494，释放强度 ×%.3f" % TrainingStats.burst_mult(), player.fatigue.max_value == 494.0
 		and is_equal_approx(TrainingStats.burst_mult(), 1.03))
 

@@ -315,7 +315,7 @@ func _ready() -> void:
 	_lv.set("no_switch", false)
 	_lv.set_meta(&"free_switch", true)
 	Duo._bind_tab()   # 骑士篇的小镇图写了 no_switch，C 键原来没绑上
-	_home = Cutscene.cell_to_world(CENTER)
+	_home = Cells.to_world(CENTER)
 	_body = Body.new()
 	(_body as Body).task = self
 	get_parent().add_child(_body)

@@ -71,14 +71,14 @@ func _ready() -> void:
 			var c := Clog.new()
 			c.name = "Clog_%d" % i
 			get_parent().add_child(c)
-			c.global_position = Cutscene.cell_to_world(CLOGS[i])
+			c.global_position = Cells.to_world(CLOGS[i])
 			clogs.append(c)
 		else:
 			clogs.append(null)
 	for m in MOSS:
 		var b := MossBall.new()
 		get_parent().add_child(b)
-		b.global_position = Cutscene.cell_to_world(m)
+		b.global_position = Cells.to_world(m)
 		moss.append(b)
 	_grabs_left = GRABS.duplicate()
 	_crawl(true)
@@ -120,7 +120,7 @@ func _process(delta: float) -> void:
 	var pos := p.global_position
 	# 段落开场
 	for i in SEG_AT.size():
-		if not _seg_seen.has(i) and pos.distance_to(Cutscene.cell_to_world(SEG_AT[i])) < NEAR:
+		if not _seg_seen.has(i) and pos.distance_to(Cells.to_world(SEG_AT[i])) < NEAR:
 			_seg_seen[i] = true
 			_busy = true
 			await _say(_seg(i).get("start", []))
@@ -131,7 +131,7 @@ func _process(delta: float) -> void:
 		_grab_tick(delta)
 	else:
 		for g in _grabs_left.duplicate():
-			if pos.distance_to(Cutscene.cell_to_world(g)) < NEAR * 0.8:
+			if pos.distance_to(Cells.to_world(g)) < NEAR * 0.8:
 				_grabs_left.erase(g)
 				grab_now()
 				return
@@ -180,7 +180,7 @@ func _process(delta: float) -> void:
 			if Input.is_action_pressed("interact"):
 				scrub(delta)
 	# 总闸
-	if cleared() >= CLOGS.size() and Input.is_action_just_pressed("interact") and pos.distance_to(Cutscene.cell_to_world(LEVER)) < NEAR + 6.0:
+	if cleared() >= CLOGS.size() and Input.is_action_just_pressed("interact") and pos.distance_to(Cells.to_world(LEVER)) < NEAR + 6.0:
 		pull_lever()
 		return
 	if p.laugh and p.laugh.value >= p.laugh.max_value * FAIL_AT:

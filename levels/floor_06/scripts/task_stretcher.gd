@@ -64,7 +64,7 @@ func _ready() -> void:
 	pink = GameState.player
 	walker = Walker.new()
 	walker.task = self
-	walker.global_position = Cutscene.cell_to_world(PATH[0]) + Vector2(0, -10)
+	walker.global_position = Cells.to_world(PATH[0]) + Vector2(0, -10)
 	get_parent().add_child(walker)
 	if is_instance_valid(pink):
 		pink.set_meta(&"busy_hands", true)
@@ -125,14 +125,14 @@ func advance(delta: float) -> void:
 		elif grace_left <= 0.0 and float(h.get_meta(&"age")) >= ARM_TIME \
 				and h.global_position.distance_to(walker.global_position) <= CurseHand.LATCH_R:
 			_drop(h)
-	if leg >= PATH.size() - 1 and walker.global_position.distance_to(Cutscene.cell_to_world(PATH[-1])) < 4.0:
+	if leg >= PATH.size() - 1 and walker.global_position.distance_to(Cells.to_world(PATH[-1])) < 4.0:
 		_emit(true)
 
 
 func _walk(delta: float) -> void:
 	if leg >= PATH.size() - 1:
 		return
-	var to := Cutscene.cell_to_world(PATH[leg + 1])
+	var to := Cells.to_world(PATH[leg + 1])
 	var d := to - walker.global_position
 	if d.length() < 2.0:
 		leg += 1

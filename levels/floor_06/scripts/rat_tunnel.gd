@@ -63,16 +63,16 @@ func _ready() -> void:
 		d.tunnel = self
 		d.left = randf_range(DRIP_EVERY.x, DRIP_EVERY.y)
 		get_parent().add_child.call_deferred(d)
-		d.position = Cutscene.cell_to_world(c)
+		d.position = Cells.to_world(c)
 		drips.append(d)
 	for c in QuestMaps.cells(MAP, "checkpoints"):
-		_cps.append(Cutscene.cell_to_world(c))
-	checkpoint = Cutscene.cell_to_world(QuestMaps.cell(MAP, "start"))
+		_cps.append(Cells.to_world(c))
+	checkpoint = Cells.to_world(QuestMaps.cell(MAP, "start"))
 	for pair in [["nest", "floor_06/tunnel_nest"], ["clue", "floor_06/tunnel_clue"]]:
 		var sp := PrisonOddities.Spot.new()
 		sp.dialogue = str(pair[1])
 		add_child(sp)
-		sp.global_position = Cutscene.cell_to_world(QuestMaps.cell(MAP, str(pair[0])))
+		sp.global_position = Cells.to_world(QuestMaps.cell(MAP, str(pair[0])))
 	# 等距地图：每个要单独投影的东西都得是 Entities 的直接子节点（挂在导演下面会跟着导演的投影位置偏）
 	if not QuestMaps.cells(MAP, "king").is_empty():
 		king = RatKing.new()
@@ -84,7 +84,7 @@ func _ready() -> void:
 		var tr := Mousetrap.new()
 		tr.tunnel = self
 		tr.idx = ti
-		tr.position = Cutscene.cell_to_world(c)
+		tr.position = Cells.to_world(c)
 		get_parent().add_child.call_deferred(tr)
 		traps.append(tr)
 		ti += 1
@@ -124,7 +124,7 @@ func _process(delta: float) -> void:
 	# 三段挠脚鼠的小剧场
 	for k in SCENES:
 		if not triggered.has(k) and not GameState.has_flag("cg_seen_theater:" + str(SCENES[k])) \
-				and at.distance_to(Cutscene.cell_to_world(QuestMaps.cell(MAP, k))) <= TRIGGER_R:
+				and at.distance_to(Cells.to_world(QuestMaps.cell(MAP, k))) <= TRIGGER_R:
 			triggered[k] = true
 			_stop_chase()
 			CG.play_theater(str(SCENES[k]))
@@ -154,11 +154,11 @@ func _process(delta: float) -> void:
 		(d as Drip).tick(delta, p)
 	# 猫咪追逐
 	if not safe:
-		if not chasing and at.distance_to(Cutscene.cell_to_world(QuestMaps.cell(MAP, "cat_start"))) <= CAT_START_R:
+		if not chasing and at.distance_to(Cells.to_world(QuestMaps.cell(MAP, "cat_start"))) <= CAT_START_R:
 			_start_chase()
 		if chasing:
 			cat.step(p, delta)
-			if at.distance_to(Cutscene.cell_to_world(QuestMaps.cell(MAP, "cat_end"))) <= SAFE_R:
+			if at.distance_to(Cells.to_world(QuestMaps.cell(MAP, "cat_end"))) <= SAFE_R:
 				_reach_safe()
 			elif cat.global_position.distance_to(at) <= CAT_CATCH_R:
 				catch_now()
