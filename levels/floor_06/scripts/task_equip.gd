@@ -62,9 +62,9 @@ func _ready() -> void:
 
 
 func _exit_tree() -> void:
-	# 换图 / 读档 / 测试跳关：身上的临时装备一起卸掉（重新开始时从头捡）
-	if not _emitted or aborted:
-		Equipment.release("pink")
+	# 换图 / 读档 / 测试跳关 / 失败以后：身上的临时装备一起卸掉（重新开始时从头捡；以前失败后不卸，羽毛脚镣会让 K 一直闪避不了）
+	for id in TaskEquip.worn():
+		Equipment.release("pink", str(id))
 	for n in spots:
 		if is_instance_valid(n):
 			n.queue_free()

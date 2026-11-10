@@ -780,6 +780,16 @@ func _run_drill() -> void:
 	ice.freeze("knee")
 	await _wait(0.2)
 	check("冻太多：发抖，冻住的地方全化开", ice.shivers == 1 and ice.frozen.is_empty())
+	# 第九轮：六处全冻住 → 寒冷值不回落、很快涨
+	ice.cold = 0.0
+	for sp in ice.lesson().get("spots", []):
+		ice.frozen[str(sp["id"])] = IceSitShow.FREEZE_TIME
+	var shiv0 := ice.shivers
+	ice._tick(1.0)
+	check("全身都冻住：寒冷值大幅积累（1 秒 +%.0f）" % ice.cold, ice.all_frozen() and ice.cold >= IceSitShow.ALL_FROZEN_COLD * 0.9 or ice.shivers > shiv0)
+	ice.frozen.clear()
+	ice.cold = 0.0
+	await _wait(0.2)
 	ice.add_fatigue(ice.fatigue_max())
 	await _wait(0.3)
 	check("魔力疲倦满：自动释放 → 释放后敏感（%.0f 秒）" % ice.sensitive_t, ice.releases == 1 and ice.sensitive_t > 10.0)
@@ -1272,7 +1282,25 @@ func _run_inspect() -> void:
 	var res2 := {}
 	(func(): res2.merge(await sh2.play_station("kneel", tx["stations"]["kneel"], 1.0, 1.3, true))).call()
 	await _advance_until(func(): return not res2.is_empty(), 8.0)
-	check("综合演练里笑满：算笑倒（任务会判失败）", bool(res2.get("laughed_out", false)))
+	check("综合演练里笑满：算笑倒（TaskInspect 演一小段、这个陷阱重来）", bool(res2.get("laughed_out", false)))
+	# 魔力疲倦：被挠时跟着涨；满了自动释放、闷笑降一半
+	p.laugh.set_value(p.laugh.max_value * 0.4)
+	if p.fatigue:
+		p.fatigue.clear()
+	var sh3 := InspectShow.new()
+	add_child(sh3)
+	var res3 := {}
+	(func(): res3.merge(await sh3.play_station("toes", tx["stations"]["toes"], 1.0, 1.0, true))).call()
+	await _advance_until(func(): return sh3.playing, 3.0)
+	var fa0 := p.fatigue.value if p.fatigue else 0.0
+	await _advance_until(func(): return p.fatigue and p.fatigue.value > fa0 + 1.0, 3.0)
+	check("陷阱验收：被挠的时候魔力疲倦跟着涨（%.1f → %.1f）" % [fa0, p.fatigue.value if p.fatigue else -1.0], p.fatigue and p.fatigue.value > fa0)
+	var lh := p.laugh.value
+	sh3._punish("fatigue")
+	check("魔力满：自动释放、清空魔力、闷笑降一半（%.0f → %.0f）" % [lh, p.laugh.value], sh3.bursts == 1 and p.laugh.value <= lh * 0.55 and (p.fatigue == null or p.fatigue.value == 0.0))
+	sh3._done = true
+	await _advance_until(func(): return not res3.is_empty(), 5.0)
+	sh3.queue_free()
 	sh2.queue_free()
 	p.laugh.clear()
 	# 评分：评对 / 评「太弱」加强 / 评「太强」再体验一次
@@ -1423,13 +1451,18 @@ func _run_sweep() -> void:
 	if task == null:
 		return
 	var p := GameState.player
+	check("羽毛堆画在地面上面（z_index %d）、两处屋檐下的避风处" % task.piles[0].z_index, task.piles[0].z_index >= 1 and task.shelters.size() == 2)
+	check("扫的时候不再占着两只手（能闪避）", not p.has_meta(&"busy_hands"))
+	_go(Cutscene.cell_to_world(TaskSweep.SHELTERS[0]))
+	var f00 := task.feet
 	task.gust_now()
-	check("起风：羽毛钻进脚趾缝（%d 根）" % task.feet, task.feet >= 2)
+	check("起风时躲在屋檐下：一根羽毛也没沾上", task.feet == f00)
+	_go(Cutscene.cell_to_world(TaskSweep.PILES[0]) + Vector2(0, 30))
+	task.gust_now()
+	check("起风时站在外面：羽毛钻进脚趾缝（%d 根）" % task.feet, task.feet >= 2)
 	var f0 := task.feet
 	task.shake()
-	check("K 抖脚：掉出来一根", task.feet == f0 - 1)
-	task.pick()
-	check("按住 E 抠出来", task.feet < f0 - 1)
+	check("脚上的羽毛自己掉一根（不用按键）", task.feet == f0 - 1)
 	for pl in task.piles:
 		_go(pl.global_position)
 		task.sweep(4.0)
@@ -1472,6 +1505,24 @@ func _run_tag() -> void:
 	check("第 4 天晚上：捉人游戏", DayClock.slot() == DayClock.NIGHT and DayClock.event() == "d4_tag")
 	var task := await _night_start("floor_06_after", "from_drill", [31, 31], "Task_d4_tag") as TaskTag
 	check("广场 → 孩子们的开场 → 第一轮姐姐当鬼（四个孩子）", task != null and task.kids.size() == 4 and task.round_i == 0)
+	# 第九轮：孩子们跑动没有边界（不再被关在广场的方框里）
+	if task:
+		await _advance_until(func(): return not GameState.in_dialogue and not GameState.in_cutscene, 15.0)
+		var kd = task.kids[0]
+		var edge := Cutscene.cell_to_world(Vector2i(TaskTag.AREA.end.x, TaskTag.AREA.position.y + 4))
+		var lvn: Node = main.get("level")
+		print("  （方框外那一格能走：%s）" % str(GridPath.walkable(lvn, Vector2i(TaskTag.AREA.end.x + 1, TaskTag.AREA.position.y + 4))))
+		kd.global_position = edge
+		kd.mode = TaskTag.TagKid.Mode.FLEE
+		var pl := GameState.player
+		kd.target = pl
+		var pos_pl := pl.global_position
+		pl.global_position = edge + Vector2(-30, 0)
+		for k in 20:
+			kd._process(0.05)
+		check("捉人游戏：孩子能跑出原来的方框（x %.0f > %.0f）" % [kd.global_position.x, edge.x], kd.global_position.x > edge.x + 4.0)
+		kd.global_position = Cutscene.cell_to_world(TaskTag.SPAWN[0])
+		pl.global_position = pos_pl
 	if task == null:
 		return
 	for k in task.kids:

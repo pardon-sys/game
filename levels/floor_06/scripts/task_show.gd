@@ -38,6 +38,12 @@ func _run() -> void:
 	var ok: Variant = await show.play()
 	if is_instance_valid(show):
 		show.queue_free()
+	if ok == null:
+		# 小游戏里按 Esc 退出：任务算中断（AfterStory 清掉标记，走回触发点能重新开始），不演失败
+		aborted = true
+		_emit(false)
+		queue_free()
+		return
 	_emit(bool(ok))
 
 

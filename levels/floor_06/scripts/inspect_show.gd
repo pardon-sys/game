@@ -17,6 +17,7 @@ const ESC_TOES := 10
 const ESC_HOIST := 12
 const ESC_KNEEL := 10
 const BASE_RATE := 0.07
+const FATIGUE_RATE := 0.045                       # 被挠时魔力疲倦每秒涨（× 挠的力度）；满了自动释放：清空、闷笑降一半
 const MAX_TIME := 14.0
 
 static var auto_escape := false
@@ -26,6 +27,7 @@ var station_id := ""
 var status_mul := 1.0
 var tune := 1.0
 var keep_laugh := false
+var bursts := 0
 var escaped := false
 var laughed_out := false
 var presses := 0
@@ -176,6 +178,7 @@ func _tick(delta: float) -> void:
 
 func _tickle(delta: float, k: float) -> void:
 	add_laugh(laugh_max() * _rate() * k * delta, 1.0)
+	add_fatigue(fatigue_max() * FATIGUE_RATE * k * delta)
 	_hit_t -= delta
 	if _hit_t <= 0.0:
 		_hit_t = 0.35
@@ -256,11 +259,33 @@ func _escape() -> void:
 ## 闷笑满：笑倒（综合演练里就是失败）
 func _punish(kind: String) -> void:
 	if kind != "laugh":
+		# 魔力满：自动释放——清空魔力、闷笑降一半
+		bursts += 1
 		if player.fatigue:
 			player.fatigue.clear()
+		if player.laugh:
+			player.laugh.set_value(player.laugh.value * 0.5)
+		flash(Color(1, 0.95, 0.8, 0.8), 0.5)
+		Audio.play("star_burst", -3.0)
+		var caps: Array = TaskInspect.data().get("magic_burst", ["魔力释放！"])
+		pop(actors.get("princess"), "魔力释放！", GOLD, 1.4)
+		narrate(str(caps.pick_random()), 1.6)
+		var pr: CGActor = actors.get("princess")
+		if pr:
+			pr.shake(0.5)
 		return
 	laughed_out = true
 	if keep_laugh:
+		# 综合演练：笑倒——台上笑软一下，这一站结束（TaskInspect 演一小段、这个陷阱重来）
+		busy = true
+		var pa: CGActor = actors.get("princess")
+		if pa:
+			pa.set_pose("helpless_2", "helpless")
+			pa.shake(0.8)
+		pop(pa, "笑、笑倒了……", PINK, 1.4)
+		Audio.play("laugh", -2.0)
+		await _sleep(1.2)
+		busy = false
 		_done = true
 		return
 	if player.laugh:

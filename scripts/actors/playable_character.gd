@@ -339,6 +339,8 @@ func _tick(delta: float) -> void:
 						attack()
 					elif controller.is_action_just_pressed(&"dash") and not rooted and not hands and not has_meta(&"no_dash") and not Equipment.has_special(character_id, "no_dash"):
 						dash(input)
+					elif controller.is_action_just_pressed(&"dash") and is_in_group("player") and Equipment.has_special(character_id, "no_dash"):
+						GameState.notify("脚上戴着羽毛脚镣——迈不开步子，闪避不了", 1.2)
 					elif controller.is_action_just_pressed(&"magic") and not hands:
 						# 关卡可以接管魔法键（攻防战：蓝色公主打开瞄准施法）
 						if not (magic_override.is_valid() and magic_override.call(self)):

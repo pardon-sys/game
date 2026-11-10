@@ -18,7 +18,7 @@ from pathlib import Path
 os.chdir(Path(__file__).resolve().parents[2])
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-from after_text import d1, d2, equip_kids, errand_dance, errand_goats, errand_ladder, errand_massage, errand_gate_chain, errand_shearing, errand_canopy, errand_sifting, errand_lamp_calibration, errands, house, mine, play, potion, punish, stocks, tailor, tasks, totem, town, drain, drill, inspect, tom, night, penalty, festival_night, festival_talk, stall_guess, stall_ring, stall_ice, stall_fish, stall_lick, done_folk  # noqa: E402
+from after_text import d1, d2, equip_kids, errand_dance, errand_goats, errand_ladder, errand_massage, errand_gate_chain, errand_shearing, errand_canopy, errand_sifting, errand_lamp_calibration, errands, house, mine, play, potion, punish, stocks, tailor, tasks, totem, town, drain, drill, inspect, tom, night, penalty, festival_night, festival_talk, stall_guess, stall_ring, stall_ice, stall_fish, stall_lick, done_folk, done_cg  # noqa: E402
 import quest_maps as qmaps  # noqa: E402
 from knight_text import prison as knight_prison  # noqa: E402
 from penance_text import argue as penance_argue, cell as penance_cell, tunnel as penance_tunnel, meet as penance_meet, waterway as penance_waterway, palace as penance_palace, palace2 as penance_palace2, palace3 as penance_palace3, palace4 as penance_palace4, palace5 as penance_palace5, palace6 as penance_palace6, palace7 as penance_palace7, palace8 as penance_palace8, palace9 as penance_palace9, palace10 as penance_palace10  # noqa: E402
@@ -1620,8 +1620,12 @@ def _with_done_cg(cid, data):
     if not key:
         return data
     steps = data["steps"]
-    texts = [i for i, st in enumerate(steps) if st.get("text")]
-    at = texts[min(len(texts) - 1, int(len(texts) * 0.6))]
+    marked = [i for i, st in enumerate(steps) if st.pop("cg_here", False)]
+    if marked:
+        at = marked[0]   # 第九轮：成功收尾的场面（after_text/done_cg.py）第一句挂 CG
+    else:
+        texts = [i for i, st in enumerate(steps) if st.get("text")]
+        at = texts[min(len(texts) - 1, int(len(texts) * 0.6))]
     steps[at].setdefault("actions", []).insert(0, {"do": "cg", "key": key})
     steps.append({"actions": [{"do": "cg", "key": ""}], "wait": 0.1})
     return data
@@ -1630,7 +1634,7 @@ def _with_done_cg(cid, data):
 cut = Path("data/cutscenes/floor_06")
 CUTS = dict(d1.CUTSCENES, **d2.CUTSCENES, **tasks.CUTSCENES, **potion.CUTSCENES, **tailor.CUTSCENES, **mine.CUTSCENES, **totem.CUTSCENES, **drain.CUTSCENES, **drill.CUTSCENES, **inspect.CUTSCENES, **festival_night.CUTSCENES, **knight_story.CUTSCENES, **knight_finale.CUTSCENES, **knight_quests.CUTSCENES, **knight_story_cg.CUTSCENES, **penance_argue.CUTSCENES, **penance_cell.CUTSCENES, **penance_tunnel.CUTSCENES, **penance_meet.CUTSCENES, **penance_waterway.CUTSCENES, **penance_palace.CUTSCENES, **penance_palace2.CUTSCENES, **penance_palace3.CUTSCENES, **penance_palace5.CUTSCENES, **penance_palace6.CUTSCENES, **penance_palace7.CUTSCENES, **penance_palace9.CUTSCENES, **penance_palace10.CUTSCENES)
 for cid, fn in CUTS.items():
-    (cut / (cid + ".json")).write_text(json.dumps(_with_done_cg(cid, done_folk.apply(cid, fn())), ensure_ascii=False, indent="\t") + "\n")
+    (cut / (cid + ".json")).write_text(json.dumps(_with_done_cg(cid, done_cg.apply(cid, done_folk.apply(cid, fn()))), ensure_ascii=False, indent="\t") + "\n")
 th = Path("data/theater/after")
 th.mkdir(parents=True, exist_ok=True)
 for tid, data in dict(punish.THEATERS, **tasks.THEATERS, **potion.THEATERS, **tailor.THEATERS, **mine.THEATERS, **totem.THEATERS, **drain.THEATERS, **drill.THEATERS, **inspect.THEATERS, **night.THEATERS, **knight_tasks.THEATERS, **knight_finale.THEATERS, **errand_gate_chain.THEATERS, **knight_prison.THEATERS, **penance_cell.THEATERS, **penance_tunnel.THEATERS, **penance_meet.THEATERS, **penance_waterway.THEATERS, **penance_palace.THEATERS, **penance_palace2.THEATERS, **penance_palace3.THEATERS, **penance_palace4.THEATERS, **penance_palace5.THEATERS, **penance_palace6.THEATERS, **penance_palace7.THEATERS, **penance_palace8.THEATERS, **penance_palace9.THEATERS, **penance_palace10.THEATERS).items():

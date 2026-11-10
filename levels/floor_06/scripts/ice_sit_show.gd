@@ -4,6 +4,7 @@ extends DrillShow
 ##   队长要挠哪里，身体图（2 × 3 格，键 Q W E / A S D）上那里就先亮 warn 秒；按对应的键用冰魔法把那里冻住 FREEZE_TIME 秒（冻住的地方挠了没感觉）。
 ##   冻新的地方不冷；对已经冻住的地方再按一次（冻太多）寒冷值 +FREEZE_COLD；寒冷值满 = 发抖（演一段）：冻住的地方全化开、表情 −SHIVER。
 ##   挠到没冻的地方：表情 −HIT_FACE（释放后敏感 ×1.6），闷笑 / 疲倦上涨。表情掉光 = 破功记一笔（break），三笔这节课重来（redo）。
+##   全身都冻住（六处同时冻着）：寒冷值不再回落、每秒 +ALL_FROZEN_COLD——别想把自己整个冻起来。
 ##   假动作（feint）：先亮一处，半路换成另一处。释放后敏感时冻住的地方化得快一倍。撑够 time 秒过关。
 
 const FREEZE_TIME := 6.0
@@ -13,10 +14,12 @@ const COLD_DECAY := 4.0
 const HIT_FACE := 18.0
 const SHIVER := 30.0
 const MARKS := 3
+const ALL_FROZEN_COLD := 16.0                     # 六处全冻住：寒冷值不再回落，每秒 +这么多（很快就会发抖）
 
 var time_left := 55.0
 var frozen := {}
 var cold := 0.0
+var _all_warned := false
 var face := 100.0
 var marks := 0
 var target := ""
@@ -130,7 +133,16 @@ func _tick(delta: float) -> void:
 	if time_left <= 0.0:
 		_done = true
 		return
-	cold = maxf(0.0, cold - COLD_DECAY * delta)
+	if all_frozen():
+		cold += ALL_FROZEN_COLD * delta
+		if not _all_warned:
+			_all_warned = true
+			pop(actors.get("princess"), "全身都冻住了……冷、冷得发抖……", Color(0.7, 0.9, 1.0), 1.2)
+		if cold >= 100.0:
+			_shiver()
+	else:
+		_all_warned = false
+		cold = maxf(0.0, cold - COLD_DECAY * delta)
 	for id in frozen.keys():
 		frozen[id] = float(frozen[id]) - delta * (2.0 if sensitive_t > 0.0 else 1.0)
 		if float(frozen[id]) <= 0.0:
@@ -162,6 +174,12 @@ func _tick(delta: float) -> void:
 
 func _progress() -> float:
 	return clampf(1.0 - time_left / float(lesson().get("time", 55.0)), 0.0, 1.0)
+
+
+## 六处（这节课所有的部位）是不是同时都冻着
+func all_frozen() -> bool:
+	var sp: Array = lesson().get("spots", [])
+	return not sp.is_empty() and sp.all(func(s): return frozen.has(str(s["id"])))
 
 
 func _pick_target() -> void:

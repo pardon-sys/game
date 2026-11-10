@@ -62,13 +62,7 @@
 		{
 			"speaker": "公主",
 			"text": "……旧门？",
-			"emotion": "surprise",
-			"actions": [
-				{
-					"do": "cg",
-					"key": "after_mine_ok"
-				}
-			]
+			"emotion": "surprise"
 		},
 		{
 			"speaker": "老矿工",
@@ -98,6 +92,42 @@
 			"speaker": "公主",
 			"text": "……嘿嘿。好难听。……可是，好好听。",
 			"emotion": "happy"
+		},
+		{
+			"speaker": "",
+			"text": "（最后一车矿石运出了矿洞。空矿车停在轨道上，老矿工拍拍车斗：「上来！送你们一程！」）",
+			"actions": [
+				{
+					"do": "cg",
+					"key": "after_mine_ok"
+				}
+			]
+		},
+		{
+			"speaker": "公主",
+			"text": "坐、坐矿车？",
+			"emotion": "surprise"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……坐。"
+		},
+		{
+			"speaker": "",
+			"text": "（两个人挤进车斗，光着的脚丫搭在车沿上。矿车「咕噜咕噜」地顺着坡滑下去，两旁的水晶一闪一闪）"
+		},
+		{
+			"speaker": "公主",
+			"text": "哇——！好快好快！哈哈哈——！",
+			"emotion": "happy"
+		},
+		{
+			"speaker": "蓝色的公主",
+			"text": "……（举起手）……哇。"
+		},
+		{
+			"speaker": "老矿工",
+			"text": "哈哈哈！这条轨道，好久没有这么热闹了！"
 		},
 		{
 			"actions": [

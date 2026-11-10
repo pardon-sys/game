@@ -2,6 +2,7 @@ class_name TaskTag
 extends Node2D
 ## 第 4 天晚上 小孩们「挠痒捉人」（小镇广场 AREA 一带）的玩法节点（AfterStory.run_task 摆进来，发 finished(ok)）。台词 data/after/night.json 的 tag。
 ##   四个孩子（TagKid，用居民 kid 的行走图）。三轮（rounds）：
+##     （孩子们跑动没有边界：整个小镇能走的地方都能跑，撞墙沿墙滑——TagKid._ok）
 ##     seek 姐姐当鬼：孩子们躲着她跑；追上去（KID_R 以内）按 J 挠——孩子笑倒算抓到；时限内四个都抓到过关（没抓完：被孩子们笑话、挠一下、这一轮重来）。
 ##     run  两个孩子当鬼追她：被摸到 = 按倒挠 PIN_TIME 秒（定身、闷笑上涨）；撑到时间、被抓不超过 MAX_CAUGHT 次过关（超过这一轮重来）。
 ##     all  四个孩子一起追，撑到时间过关。
@@ -247,6 +248,14 @@ class TagKid extends Node2D:
 	var _t := 0.0
 	var _wiggle := Vector2.ZERO
 
+	## 这一点能不能站（脚下的格子是地板、不是墙）
+	func _ok(p: Vector2) -> bool:
+		var main := get_tree().get_first_node_in_group("main")
+		var lv: Node = main.get("level") if main else null
+		if lv == null:
+			return true
+		return GridPath.walkable(lv, Vector2i(floori(p.x / 16.0), floori(p.y / 16.0)))
+
 	func _ready() -> void:
 		_spr = Sprite2D.new()
 		_spr.texture = load("res://assets/generated/npcs/kid.png")
@@ -276,11 +285,16 @@ class TagKid extends Node2D:
 			Mode.CHASE:
 				if cool <= 0.0:
 					v = d.normalized() * speed
-		var np := global_position + v * delta
-		# 贴着边的时候沿边跑
-		np.x = clampf(np.x, area.position.x, area.end.x)
-		np.y = clampf(np.y, area.position.y, area.end.y)
-		global_position = np
+		# 没有边界：哪里能走就往哪里跑；撞墙就沿着墙滑，滑不动换个方向
+		var step := v * delta
+		if _ok(global_position + step):
+			global_position += step
+		elif _ok(global_position + Vector2(step.x, 0)):
+			global_position += Vector2(step.x, 0)
+		elif _ok(global_position + Vector2(0, step.y)):
+			global_position += Vector2(0, step.y)
+		elif v.length() > 1.0:
+			_wiggle = -_wiggle if _wiggle != Vector2.ZERO else Vector2.from_angle(randf() * TAU)
 		var row := 0
 		if absf(v.x) > absf(v.y):
 			row = 1 if v.x < 0 else 2
