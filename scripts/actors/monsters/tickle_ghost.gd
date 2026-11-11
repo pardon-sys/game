@@ -53,7 +53,7 @@ func receive_hit(hit: HitData) -> bool:
 	return super(hit)
 
 
-func _choose_action(_t: Actor) -> String:
+func _choose_action(_target: Actor) -> String:
 	return "tickle"
 
 

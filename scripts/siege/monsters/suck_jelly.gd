@@ -13,7 +13,7 @@ func _setup() -> void:
 	tickle_zones = {"armpit": 3.0, "waist": 1.0}
 
 
-func siege_wander(_mind: SiegeMind, delta: float) -> bool:
+func siege_wander(_mind: SiegeMind, _delta: float) -> bool:
 	if director == null:
 		return false
 	var b := director.blue

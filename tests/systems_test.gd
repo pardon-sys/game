@@ -37,6 +37,7 @@ func _ready() -> void:
 	await _run_save_load()
 	await _run_slot_menu_and_save_point()
 	await _run_title()
+	await _run_stuck_keys()
 	for s in range(1, SaveSystem.SLOTS + 1):
 		SaveSystem.delete(s)
 	print("\n==== %s (%d 项失败) ====" % ["全部通过" if failures == 0 else "有失败", failures])
@@ -389,6 +390,42 @@ func _drive() -> void:
 			Dialogue.advance()
 			Dialogue.advance()
 		await _wait(0.03)
+
+
+## 卡键：Shift 的松开事件丢了（macOS 中文输入法切中英文时会吞掉），闪避（K / Shift 共用）一直「按住」→ 再按 K 也要算刚按下
+func _run_stuck_keys() -> void:
+	print("-- 卡键兜底")
+	var c := PlayerInputController.new()
+	add_child(c)
+	await get_tree().physics_frame
+	var sh := InputEventKey.new()
+	sh.physical_keycode = KEY_SHIFT
+	sh.keycode = KEY_SHIFT
+	sh.pressed = true
+	Input.parse_input_event(sh)
+	Input.flush_buffered_events()
+	for i in 3:
+		await get_tree().physics_frame
+		c.is_action_just_pressed(&"dash")
+	var k := InputEventKey.new()
+	k.physical_keycode = KEY_K
+	k.keycode = KEY_K
+	k.pressed = true
+	Input.parse_input_event(k)
+	Input.flush_buffered_events()
+	var got := false
+	for i in 3:
+		await get_tree().physics_frame
+		got = got or c.is_action_just_pressed(&"dash")
+	check("Shift 松开丢了、闪避卡在按住：再按 K 照样算刚按下（闪避能用）", got)
+	for code in [KEY_SHIFT, KEY_K]:
+		var up := InputEventKey.new()
+		up.physical_keycode = code
+		up.keycode = code
+		up.pressed = false
+		Input.parse_input_event(up)
+	Input.flush_buffered_events()
+	c.queue_free()
 
 
 func check(label: String, ok: bool) -> void:

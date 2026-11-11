@@ -42,7 +42,7 @@ func pair_ready(t: Node) -> bool:
 			and p.global_position.distance_to((t as Node2D).global_position) <= pair_range
 
 
-func _choose_action(_t: Actor) -> String:
+func _choose_action(_target: Actor) -> String:
 	return "tickle"
 
 
