@@ -1282,7 +1282,7 @@ func _run_inspect() -> void:
 	var res2 := {}
 	(func(): res2.merge(await sh2.play_station("kneel", tx["stations"]["kneel"], 1.0, 1.3, true))).call()
 	await _advance_until(func(): return not res2.is_empty(), 8.0)
-	check("综合演练里笑满：算笑倒（TaskInspect 演一小段、这个陷阱重来）", bool(res2.get("laughed_out", false)))
+	check("综合演练里笑满：算笑倒（任务判失败 → 失败小剧场 + CG）", bool(res2.get("laughed_out", false)))
 	# 魔力疲倦：被挠时跟着涨；满了自动释放、闷笑降一半
 	p.laugh.set_value(p.laugh.max_value * 0.4)
 	if p.fatigue:
@@ -1303,6 +1303,19 @@ func _run_inspect() -> void:
 	sh3.queue_free()
 	sh2.queue_free()
 	p.laugh.clear()
+	# 第十一轮：体验陷阱时笑满 → 任务失败 → 失败小剧场（CG）→ 任务重来（评过的记着）
+	GameState.set_flag("cg_seen_theater:after_fail_inspect", false)
+	InspectShow.auto_escape = false
+	p.laugh.set_value(p.laugh.max_value * 0.97)
+	task.run_station("toes")
+	await _advance_until(func(): return GameState.has_flag("cg_seen_theater:after_fail_inspect") and not CG.is_busy() and not Dialogue.is_active(), 90.0)
+	check("体验陷阱时笑满：失败小剧场 + CG（after_fail_inspect）", GameState.has_flag("cg_seen_theater:after_fail_inspect"))
+	await _advance_until(func(): return _node("Task_d6_inspect") != null and _node("Task_d6_inspect") != task and (_node("Task_d6_inspect") as TaskInspect).started and not GameState.in_dialogue, 40.0)
+	task = _node("Task_d6_inspect") as TaskInspect
+	check("失败以后任务重来（闷笑清空）", task != null and GameState.player.laugh.value < GameState.player.laugh.max_value * 0.1)
+	if task == null:
+		return
+	p = GameState.player
 	# 评分：评对 / 评「太弱」加强 / 评「太强」再体验一次
 	InspectShow.auto_escape = true
 	TaskInspect.auto_rate = {"curtain": "weak", "holes": "weak", "toes": "strong", "hoist": "ok", "kneel": ["strong", "ok"]}

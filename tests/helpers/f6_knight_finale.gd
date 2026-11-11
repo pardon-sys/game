@@ -216,6 +216,8 @@ static func run(t: Node) -> void:
 	verify(t, "Boss 战里两位公主都不跟随瞬移（follow 关掉）", not pink.follow and not b.blue.follow)
 	verify(t, "右上角状态面板显示另一位公主（%s）" % (b.partner_panel.partner().display_name() if b.partner_panel and b.partner_panel.partner() else "无"),
 		is_instance_valid(b.partner_panel) and b.partner_panel.partner() == (b.blue if GameState.player == pink else pink))
+	verify(t, "切人面板挪到顶上，和右上角的头像并列（top = %.0f），耐久条收窄让开" % (b.partner_panel.top if is_instance_valid(b.partner_panel) else -1.0),
+		is_instance_valid(b.partner_panel) and b.partner_panel.top < 10.0 and KnightBossHud.X + KnightBossHud.W + 10.0 <= 480.0 - 44.0 - PartnerPanel.W - 6.0)
 	KnightTickle.no_crit = true
 	pink.laugh.set_value(0.0)
 	pink.fatigue.clear()
@@ -397,6 +399,8 @@ static func run(t: Node) -> void:
 	var kinds := {}
 	var last := ""
 	var no_repeat := true
+	var phase0 = b.phase
+	b.phase = KnightCurse.VEINS_PHASE
 	for i in 12:
 		b.curse.start()
 		kinds[b.curse.surge] = true
@@ -404,7 +408,20 @@ static func run(t: Node) -> void:
 			no_repeat = false
 		last = b.curse.surge
 		b.curse.end(true)
-	verify(t, "前三个阶段的爆发在三种里轮换、不连着重复（%s）" % [kinds.keys()], kinds.size() == 3 and kinds.has("hands") and kinds.has("veins") and kinds.has("heart") and no_repeat)
+	verify(t, "护腿阶段的爆发在三种里轮换、不连着重复（%s）" % [kinds.keys()], kinds.size() == 3 and kinds.has("hands") and kinds.has("veins") and kinds.has("heart") and no_repeat)
+	# 第十一轮：痒波地脉要引它冲撞木桩，只有护腿阶段会冲撞——胸甲阶段不出（以前出了就破不了、卡住）
+	b.phase = 2
+	var chest := {}
+	for i in 12:
+		b.curse.start()
+		chest[b.curse.surge] = true
+		b.curse.end(true)
+	verify(t, "胸甲阶段不出痒波地脉（%s）" % [chest.keys()], not chest.has("veins") and chest.size() == 2)
+	b.curse.start("heart")
+	b.curse.surge_age = KnightCurse.SURGE_MAX - 0.05
+	b.curse._tick_surge(0.1)
+	verify(t, "爆发撑满 %.0f 秒破不了：诅咒自己散开（不会卡死）" % KnightCurse.SURGE_MAX, b.curse.surge == "")
+	b.phase = phase0
 	GameState.set_flag("knight_intro_seen_surge_heart", false)
 	TaskKnightBoss.intros = true
 	b.curse.start("heart")

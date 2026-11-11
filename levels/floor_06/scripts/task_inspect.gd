@@ -6,6 +6,7 @@ extends Node2D
 ##     挠痒：走上去 → InspectShow 体验一遍（挠痒 × 身上状态的倍率）→ 评分（选项页：太强 / 刚好 / 太弱，提示里写涨了多少闷笑和身上的状态）：
 ##       评对 → 原样；评「太弱」（其实不弱）→ 加强 tune ×1.3；评「太强」（其实不强）→ 削弱 ×0.8，但队长让你再体验一次（重新评）。
 ##   五个都评完 → 综合演练（五个连着来，闷笑不清零、keep_laugh；倍率用评分调整后的 tune），笑倒 = 失败（after_fail_inspect，重来时从综合演练开始）。
+##   单个陷阱体验时笑倒也算失败（评过的记在 vars 里，重来时接着评没评的）。
 ## 状态：vars.task_inspect_rates {陷阱: 评分}、task_inspect_tune {陷阱: 倍率}。
 ## 测试：auto_rate = {陷阱: 评分}（不弹选项页）、InspectShow.auto_escape、run_station(id)、use_aux(id)。
 
@@ -24,7 +25,6 @@ const NEAR := 12.0
 static var auto_rate := {}
 static var _data := {}
 
-var drill_retries := 0   # 综合演练里笑倒、重来的次数
 var aborted := false
 var started := false
 var statuses := {}
@@ -168,6 +168,11 @@ func run_station(id: String) -> void:
 		await _say(info.get("intro", []))
 	while true:
 		var res := await _experience(id, info, false)
+		# 第十一轮：单个陷阱体验时笑倒也算失败（演失败小剧场 + CG；评过的陷阱记着，重来时接着评没评的）
+		if bool(res.get("laughed_out", false)):
+			_busy = false
+			_emit(false)
+			return
 		var pick := await _rate(id, info, float(res["gain"]))
 		var truth := str(info.get("strength", "ok"))
 		var rt: Dictionary = data().get("rate", {})
@@ -230,16 +235,10 @@ func _drill() -> void:
 		if i > 0 and i - 1 < btw.size():
 			GameState.notify(str(btw[i - 1]), 1.2)
 		var res := await _experience(id, data().get("stations", {}).get(id, {}), true)
-		# 笑倒：演一小段，闷笑回到一半，这个陷阱重来（不算失败）
-		while bool(res.get("laughed_out", false)) and not _emitted:
-			drill_retries += 1
-			var lo: Array = data().get("drill_laugh_out", [])
-			if not lo.is_empty():
-				await _say(lo[(drill_retries - 1) % lo.size()])
-			var pl := GameState.player as PlayableCharacter
-			if is_instance_valid(pl) and pl.laugh:
-				pl.laugh.set_value(pl.laugh.max_value * 0.5)
-			res = await _experience(id, data().get("stations", {}).get(id, {}), true)
+		# 第十一轮：笑倒 = 失败（AfterStory 演失败小剧场 after_fail_inspect + CG、扣工时，重来时从综合演练开始）
+		if bool(res.get("laughed_out", false)):
+			_emit(false)
+			return
 	drill_done = true
 	await _say(data().get("drill_done", []))
 	_emit(true)

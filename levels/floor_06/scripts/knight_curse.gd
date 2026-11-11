@@ -20,6 +20,9 @@ const SURGE_R := 70.0
 const SURGE_LAUGH := 0.25
 const DRAIN_EVERY := 1.5
 const SURGE_DELAY := 2.5
+## 第十一轮：一次爆发最多撑这么久（破不了也会自己散开，免得卡死）；veins（痒波地脉，靠引它冲撞木桩）只在护腿阶段出（别的阶段不会冲撞）
+const SURGE_MAX := 45.0
+const VEINS_PHASE := 1
 const VEINS := 5
 const VEIN_R := 18.0
 const VEIN_LAUGH := 0.1
@@ -74,6 +77,7 @@ var _lure_cool := 0.0
 var _aura: KnightFx
 var _drain_fx := {}
 var _t := 0.0
+var surge_age := 0.0
 
 
 static func text() -> Dictionary:
@@ -135,9 +139,13 @@ func start(kind := "") -> void:
 			kind = "drain"
 		else:
 			var pool := ROTATE.duplicate()
-			pool.erase(_last_kind)
+			if task.phase != VEINS_PHASE:
+				pool.erase("veins")
+			if pool.size() > 1:
+				pool.erase(_last_kind)
 			kind = str(pool[randi() % pool.size()]) if force_kind == "" else force_kind
 	surge = kind
+	surge_age = 0.0
 	_last_kind = kind
 	surges += 1
 	_drain_t = DRAIN_EVERY
@@ -216,6 +224,12 @@ func end(quiet := false) -> void:
 
 
 func _tick_surge(delta: float) -> void:
+	# 破不了也不会卡死：撑满 SURGE_MAX 秒，诅咒自己散开（照样露出破绽）
+	surge_age += delta
+	if surge != "drain" and surge_age >= SURGE_MAX:
+		GameState.notify("诅咒撑不住了，自己散开了……", 2.0)
+		end()
+		return
 	var body := task._body.global_position
 	if is_instance_valid(_aura):
 		_aura.global_position = body + Vector2(0, -16)

@@ -7,7 +7,7 @@ extends TrainingStage
 ##     toes     踏板夹住脚趾：连按 J ESC_TOES 下挣开，越晚挣开刷得越快
 ##     hoist    单脚吊起：按住 W 踮脚（踮脚体力 tiptoe 掉，松开回），脚跟落地被刷；同时连按 J ESC_HOIST 下挣开
 ##     kneel    跪台锁住：按提示左右交替 A / D（按错了重数）ESC_KNEEL 下挣开
-##   挠痒强度 = 基础 × 陷阱倍率 mul × 状态倍率 status_mul × 评分调整 tune；闷笑满 = 笑倒（keep_laugh 时任务判失败，否则回到 60%）。
+##   挠痒强度 = 基础 × 陷阱倍率 mul × 状态倍率 status_mul × 评分调整 tune；闷笑满 = 笑倒（任务判失败：失败小剧场 + CG）。
 ##   体验时闷笑不清零（keep_laugh，综合演练用）还是从当前值开始；结束时返回 {gain 涨了多少（比例）, escaped, laughed_out}。
 ## 测试：auto_escape（直接挣开）、press(键)。
 
@@ -275,22 +275,17 @@ func _punish(kind: String) -> void:
 			pr.shake(0.5)
 		return
 	laughed_out = true
-	if keep_laugh:
-		# 综合演练：笑倒——台上笑软一下，这一站结束（TaskInspect 演一小段、这个陷阱重来）
-		busy = true
-		var pa: CGActor = actors.get("princess")
-		if pa:
-			pa.set_pose("helpless_2", "helpless")
-			pa.shake(0.8)
-		pop(pa, "笑、笑倒了……", PINK, 1.4)
-		Audio.play("laugh", -2.0)
-		await _sleep(1.2)
-		busy = false
-		_done = true
-		return
-	if player.laugh:
-		player.laugh.set_value(player.laugh.max_value * 0.6)
-	pop(actors.get("princess"), "笑、笑软了……", BAD, 1.2)
+	# 笑倒：台上笑软一下，这一站结束（TaskInspect 判失败 → 失败小剧场 + CG）
+	busy = true
+	var pa: CGActor = actors.get("princess")
+	if pa:
+		pa.set_pose("helpless_2", "helpless")
+		pa.shake(0.8)
+	pop(pa, "笑、笑倒了……", PINK, 1.4)
+	Audio.play("laugh", -2.0)
+	await _sleep(1.2)
+	busy = false
+	_done = true
 
 
 func _update_count() -> void:

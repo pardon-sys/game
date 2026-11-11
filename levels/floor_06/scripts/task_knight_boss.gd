@@ -352,7 +352,7 @@ func _ready() -> void:
 	add_child(_hud)
 	partner_panel = PartnerPanel.new()
 	partner_panel.pair = [pink, blue]
-	partner_panel.top = 52.0   # 让开顶部的耐久条
+	# 和右上角的头像并列（耐久条收窄让出了位置；同第八层 / 王座间）
 	add_child(partner_panel)
 	# Boss 战里不瞬移：离太远时 AI 自己走过去（剧情跟随的瞬移在 _exit_tree 恢复）
 	for c in [pink, blue]:
