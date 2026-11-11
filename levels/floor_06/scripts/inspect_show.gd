@@ -7,7 +7,7 @@ extends TrainingStage
 ##     toes     踏板夹住脚趾：连按 J ESC_TOES 下挣开，越晚挣开刷得越快
 ##     hoist    单脚吊起：按住 W 踮脚（踮脚体力 tiptoe 掉，松开回），脚跟落地被刷；同时连按 J ESC_HOIST 下挣开
 ##     kneel    跪台锁住：按提示左右交替 A / D（按错了重数）ESC_KNEEL 下挣开
-##   挠痒强度 = 基础 × 陷阱倍率 mul × 状态倍率 status_mul × 评分调整 tune；闷笑满 = 笑倒（任务判失败：失败小剧场 + CG）。
+##   挠痒强度 = 基础 × 陷阱倍率 mul × 状态倍率 status_mul × 评分调整 tune；闷笑满 = 笑倒，这一站结束（综合演练里任务判失败：失败小剧场 + CG；单个陷阱：重来一遍）。
 ##   体验时闷笑不清零（keep_laugh，综合演练用）还是从当前值开始；结束时返回 {gain 涨了多少（比例）, escaped, laughed_out}。
 ## 测试：auto_escape（直接挣开）、press(键)。
 
@@ -275,7 +275,7 @@ func _punish(kind: String) -> void:
 			pr.shake(0.5)
 		return
 	laughed_out = true
-	# 笑倒：台上笑软一下，这一站结束（TaskInspect 判失败 → 失败小剧场 + CG）
+	# 笑倒：台上笑软一下，这一站结束（综合演练 → TaskInspect 判失败、失败小剧场 + CG；单个陷阱 → 重来一遍）
 	busy = true
 	var pa: CGActor = actors.get("princess")
 	if pa:

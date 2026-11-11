@@ -6,7 +6,7 @@ extends Node2D
 ##     挠痒：走上去 → InspectShow 体验一遍（挠痒 × 身上状态的倍率）→ 评分（选项页：太强 / 刚好 / 太弱，提示里写涨了多少闷笑和身上的状态）：
 ##       评对 → 原样；评「太弱」（其实不弱）→ 加强 tune ×1.3；评「太强」（其实不强）→ 削弱 ×0.8，但队长让你再体验一次（重新评）。
 ##   五个都评完 → 综合演练（五个连着来，闷笑不清零、keep_laugh；倍率用评分调整后的 tune），笑倒 = 失败（after_fail_inspect，重来时从综合演练开始）。
-##   单个陷阱体验时笑倒也算失败（评过的记在 vars 里，重来时接着评没评的）。
+##   单个陷阱体验时笑倒：闷笑回到 60%、这个陷阱重来（不算失败）。
 ## 状态：vars.task_inspect_rates {陷阱: 评分}、task_inspect_tune {陷阱: 倍率}。
 ## 测试：auto_rate = {陷阱: 评分}（不弹选项页）、InspectShow.auto_escape、run_station(id)、use_aux(id)。
 
@@ -168,11 +168,13 @@ func run_station(id: String) -> void:
 		await _say(info.get("intro", []))
 	while true:
 		var res := await _experience(id, info, false)
-		# 第十一轮：单个陷阱体验时笑倒也算失败（演失败小剧场 + CG；评过的陷阱记着，重来时接着评没评的）
+		# 单个陷阱体验时笑倒：不算失败，闷笑回到 60%，这个陷阱重来（只有综合演练笑满才演失败小剧场 + CG）
 		if bool(res.get("laughed_out", false)):
-			_busy = false
-			_emit(false)
-			return
+			var pl := GameState.player as PlayableCharacter
+			if is_instance_valid(pl) and pl.laugh:
+				pl.laugh.set_value(pl.laugh.max_value * 0.6)
+			GameState.notify("笑软了……这个陷阱重来一遍", 1.6)
+			continue
 		var pick := await _rate(id, info, float(res["gain"]))
 		var truth := str(info.get("strength", "ok"))
 		var rt: Dictionary = data().get("rate", {})

@@ -908,7 +908,7 @@ data/cutscenes/<楼层组>/  地图内过场；data/theater/<楼层组>/  小剧
 	- 王座间第三层没逃出画：被困的人挂 meta `out_of_fight`（`Duo.is_out`）——`Duo.can_switch` 不让换过去、`Duo.all_down` 算倒下、`Downed` 不自动切过去；逃出 / 战败重来时去掉。
 	- 骑士 Boss：耐久条收窄（`KnightBossHud.X/W`，爆发提示写在底板下面一行），切人面板用默认高度和右上角头像并列；
 	  `KnightCurse`：痒波地脉（veins，靠引它冲撞木桩）只在护腿阶段出（`VEINS_PHASE`），任何爆发撑满 `SURGE_MAX` 秒自己散开（以前胸甲阶段出了 veins 破不了、卡住）。
-	- 陷阱验收：单个陷阱 / 综合演练笑满都算任务失败 → AfterStory 演 `after_fail_inspect`（CG）、扣工时、重来（评过的记着）。
+	- 陷阱验收：综合演练笑满 = 任务失败 → AfterStory 演 `after_fail_inspect`（CG）、扣工时、重来（评过的记着）；单个陷阱笑满：闷笑回到 60%、这个陷阱重来。
 - **第十轮**：`Cells.to_world(格)` 取代 `Cutscene.cell_to_world`（静态函数从 autoload 实例上调用会报 STATIC_CALLED_ON_INSTANCE）；
 	`PlayableCharacter._partner_area.enabled` 每帧更新（不跟随时换人以后头顶一直飘 E）；捉人游戏的孩子也查物理层 1（房子 / 摊位）；
 	成功收尾的 CG 场面按 `done_cg.ANCHORS` 插到原成功过场里合适的那一句前面（镇民感谢之前），演完收起 CG；防痒棉衣有了自己的图标 `item_tailor_coat.png`；
