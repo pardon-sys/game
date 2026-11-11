@@ -1033,6 +1033,8 @@ func fail_inside() -> void:
 	release_monsters(3)
 	inside.status.apply_root(999.0)
 	inside.modulate.a = 0.4
+	# 第十一轮：被困在画里 = 退场（算倒下、不能换过去）；外面那个人也倒下就输
+	inside.set_meta(&"out_of_fight", true)
 	var other := Duo.partner_of(inside) if Duo.active else null
 	if other and GameState.player != other:
 		GameState.switch_control(other)
@@ -1044,6 +1046,7 @@ func _free_inside() -> void:
 	var p := inside
 	inside = null
 	if is_instance_valid(p):
+		p.remove_meta(&"out_of_fight")
 		p.status.clear_root()
 		p.modulate.a = 1.0
 		p.laugh.set_value(0.0)
@@ -1100,6 +1103,8 @@ func on_defeat(reason: String) -> void:
 	if inside:
 		inside.status.clear_root()
 		inside.modulate.a = 1.0
+		if inside.has_meta(&"out_of_fight"):
+			inside.remove_meta(&"out_of_fight")
 		inside = null
 	empowered = false
 	if layer < 2:

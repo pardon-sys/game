@@ -46,7 +46,7 @@ func _ready() -> void:
 		who.emotion.request("helpless_2", 999.0, false)
 	SpeechBubble.say(who, "……", 26.0)
 	var other := Duo.partner_of(who)
-	if who == GameState.player and other and other.is_alive() and not Downed.is_downed(other):
+	if who == GameState.player and other and other.is_alive() and not Downed.is_downed(other) and not Duo.is_out(other):
 		# 搭档正被吊着献祭：先让她挣脱（闷笑大降），挣开后再由玩家操控
 		if Duo.director and Duo.director.has_method("is_sacrificed") and Duo.director.is_sacrificed(other):
 			Duo.director.on_partner_down_while_sacrificed(other, who)

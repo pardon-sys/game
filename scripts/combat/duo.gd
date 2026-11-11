@@ -52,13 +52,18 @@ static func can_switch() -> bool:
 	if sacrifice_lock:
 		return false
 	var other := partner_of(GameState.player)
-	return other != null and other.is_alive() and not Downed.is_downed(other)
+	return other != null and other.is_alive() and not Downed.is_downed(other) and not is_out(other)
+
+
+## 退场了（meta out_of_fight：比如王座间第三层没逃出画、被困在画里）：算倒下，不能换过去
+static func is_out(c: Node) -> bool:
+	return is_instance_valid(c) and c.has_meta(&"out_of_fight")
 
 
 ## 两个人都倒下了吗。
 static func all_down() -> bool:
 	for m in members:
-		if is_instance_valid(m) and not Downed.is_downed(m) and m.is_alive():
+		if is_instance_valid(m) and not Downed.is_downed(m) and m.is_alive() and not is_out(m):
 			return false
 	return true
 

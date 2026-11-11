@@ -4,8 +4,8 @@ extends CanvasLayer
 ##   「诅咒盔甲」：按部件分段（PHASE_PARTS：铁手套 2 / 护腿 2 / 胸甲 2 / 笑面 1），碎一块少一段；笑面那一段按灯笼亮了几盏往下掉（durability）。
 ##   下面一条「骑士的笑」（挠破绽涨，满了他清醒）、当前阶段的名字；最后阶段再显示四盏灯笼的进度。
 
-const W := 220.0
-const X := 130.0
+const W := 110.0   # 第十一轮：窄一点——左边让开自己的闷笑 / 魔力条，右边让给切人面板（和头像并列）
+const X := 176.0
 const Y := 6.0
 
 var task: TaskKnightBoss
@@ -68,7 +68,10 @@ class Bar extends Control:
 				"heart": prog = "心核 %d / 2" % cu.cores.filter(func(c): return float(c["frozen"]) > 0.0).size()
 				"drain": prog = "躲进灯笼光里！"
 			var label := ("吸笑！" if cu.surge == "drain" else "诅咒爆发！打不动") + "　" + prog
-			draw_string(font, Vector2(X + W - 150, Y + 6), label, HORIZONTAL_ALIGNMENT_RIGHT, 150, 8, Color(1, 0.6, 1.0))
+			# 写在底板下面一行（耐久条窄了，和名字挤在一行放不下）
+			var lh := 46.0 if not task.lanterns.is_empty() else 32.0
+			draw_string_outline(font, Vector2(X - 46, Y + lh + 6), label, HORIZONTAL_ALIGNMENT_CENTER, W + 56, 8, 3, Color(0.1, 0.03, 0.12))
+			draw_string(font, Vector2(X - 46, Y + lh + 6), label, HORIZONTAL_ALIGNMENT_CENTER, W + 56, 8, Color(1, 0.6, 1.0))
 		# 骑士的笑
 		draw_rect(Rect2(X + W * 0.25, Y + 21, W * 0.5, 4), Color(0.08, 0.05, 0.1, 0.85))
 		draw_rect(Rect2(X + W * 0.25, Y + 21, W * 0.5 * task.knight_laugh, 4), Color(1, 0.85, 0.4))

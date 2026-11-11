@@ -623,6 +623,7 @@ static func _palace_b(t: Node) -> void:
 	await _round7b(t)
 	await _round8(t)
 	await _round10(t)
+	await _round11(t)
 
 
 static func _quiet_beetles(cr: PalaceClock) -> void:
@@ -2516,3 +2517,29 @@ static func _round10(t: Node) -> void:
 		var pa: Node = p0.get("_partner_area")
 		verify(t, "Boss 后换人再换回来：自己身上的「和搭档说话」关掉，头顶不会一直飘 E", pa == null or not (pa as Interactable).enabled)
 	verify(t, "打完 Boss：回前厅的出口打开", exits.all(func(e): return is_instance_valid(e) and not (e as LevelExit).is_locked_now()))
+
+
+## 第十一轮：第三层没逃出画 → 被困的人退场（不能切换、算倒下）；外面的人再倒下就输，重来时恢复
+static func _round11(t: Node) -> void:
+	_calm(t)
+	GameState.set_flag(PalaceThrone.BOSS_FLAG, false)
+	GameState.pending_spawn = "from_ante"
+	await t.main.change_level(Floors.scene(PalaceThrone.MAP))
+	await t._advance_until(func(): return t._level_id() == PalaceThrone.MAP and not Cutscene.is_playing() and not Dialogue.is_active(), 60.0)
+	var th := _room(t, "PalaceThrone") as PalaceThrone
+	await t._advance_until(func(): return th.started, 30.0)
+	th.layer = 2
+	th.pull()
+	await t._advance_until(func(): return not Cutscene.is_playing(), 30.0)
+	var trapped := th.inside
+	if trapped == null:
+		verify(t, "（第十一轮）被拉进画里", false)
+		return
+	th.fail_inside()
+	await t._advance_until(func(): return th.empowered and not CG.is_busy() and not Dialogue.is_active(), 150.0)
+	verify(t, "没逃出画：被困的人退场（不能切换过去、算倒下）", Duo.is_out(trapped) and not Duo.can_switch() and GameState.player != trapped)
+	var outside := GameState.player as PlayableCharacter
+	verify(t, "被困时只剩外面的人：她倒下 = 两个人都倒下", Duo.all_down() == false)
+	th.on_defeat("downed")
+	await t._advance_until(func(): return not th._defeat_busy and not CG.is_busy() and not Dialogue.is_active(), 150.0)
+	verify(t, "战败重来：被困的人回来了（能切换）", not Duo.is_out(trapped) and Duo.can_switch() and is_instance_valid(outside))
