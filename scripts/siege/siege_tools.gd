@@ -242,7 +242,7 @@ class Hold extends Node2D:
 		if is_instance_valid(c):
 			if c.status and c.status.is_grabbed_by(self):
 				c.status.release(broke_free)
-			if c.get_meta("siege_dragger") == self:
+			if c.get_meta("siege_dragger", null) == self:
 				c.set_meta("siege_dragged", false)
 				c.set_meta("siege_dragger", null)
 			if lifted:
@@ -391,7 +391,7 @@ class Move extends Node2D:
 			c.collision_mask = entry["mask"]
 			c.set_physics_process(entry["physics"])
 			c.set_meta("siege_puppet_move", false)
-			if c.get_meta("siege_dragger") == self:
+			if c.get_meta("siege_dragger", null) == self:
 				c.set_meta("siege_dragged", false)
 				c.set_meta("siege_dragger", null)
 			if c.status and c.status.is_grabbed_by(self):
